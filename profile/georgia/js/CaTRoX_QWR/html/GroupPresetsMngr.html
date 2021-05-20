@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="x-ua-compatible" content="IE=8"/>
+        <link rel="stylesheet" type="text/css" href="styles10.css">
+        <style type="text/css">
+            /* body { background-color: black; } */
+            div { overflow: hidden; }
+            span { display:block; overflow: hidden; padding-right:10px; }
+            input[type="checkbox"] { display: inline; position: relative; border: 0; padding: 2px 1px; }
+            input[type="checkbox"]:focus { border:1px solid #0078D7; padding: 1px 0; }
+            input[type="checkbox"]:hover:focus { border:1px solid #0078D7; padding: 1px 0; }
+            input[type="checkbox"]:hover { border:1px solid #000000; padding: 1px 0; }
+            select { font:caption; border: 1px solid #646464; vertical-align: top; width: 100%; }
+            .label_for_checkbox { float:left; margin-top: -2px; width: 3rem; }
+            .cnt { margin: 10px; }
+            .select_cnt { float: left; width: 230px; }
+            .select_cnt_list { width: 200px; float: left; }
+            .select_cnt_btn { width: 30px; margin-top: 40px; margin-left: 200px; position: relative; }
+            .input_cnt_block label { font-family: "Segoe UI", "Georgia", "Arial", sans-serif; font-size: 14px; }
+            .input_cnt_block { margin-left: 20px; margin-bottom: 10px; }
+            .input_cnt_block input { width: 100%; }
+            .input_cnt_block_checkbox { margin-bottom: 2px; }
+            .input_cnt_block_checkbox input { width: 20px; }
+            .normal_button { width: 70px; float: right; }
+            .select_button { width: 98px; float: left; margin: 2px; padding: 0px; }
+            .move_button { width:25px; height:35px; float: left; padding: 0px; }
+            .button_ok { position: absolute; right:168px; bottom:8px; }
+            .button_cancel { position: absolute; right:88px; bottom:8px; }
+            .button_apply { position: absolute; right:8px; bottom:8px; }
+        </style>
+        <title>Foobar2000: Manage grouping presets</title>
+    </head>
+    <body>
+        <div class="cnt">
+             <div class="select_cnt">
+                  <div class="select_cnt_list">
+                       <select id="input_select" size="20"></select>
+                       <button class="select_button" id="btn_new" style="margin-top: 5px; margin-left: 0;">New</button>
+                       <button class="select_button" id="btn_update" style="margin-top: 5px; margin-right: 0;" disabled>Update</button>
+                       <button class="select_button" id="btn_remove" style="margin-left: 0;">Remove</button>
+                       <button class="select_button" id="btn_default" style="margin-right: 0;">Set as Default</button>
+                  </div>
+                  <div class="select_cnt_btn">
+                       <button class="move_button" id="btn_up">&#9650</button>
+                       <button class="move_button" id="btn_down">&#9660</button>
+                  </div>
+             </div>
+             <div class="input_cnt">
+                  <div class="input_cnt_block">
+                       <label>Preset Name:</label>
+                       <span><input id="input_preset_name"/></span>
+                  </div>
+                  <div class="input_cnt_block">
+                       <label>Grouping Query:</label>
+                       <span><input id="input_group_query"/></span>
+                  </div>
+                  <div class="input_cnt_block">
+                       <label>Title Query:</label>
+                       <span><input id="input_title_query"/></span>
+                  </div>
+                  <div class="input_cnt_block">
+                       <label>Sub-title Query:</label>
+                       <span><input id="input_sub_title_query"/></span>
+                  </div>
+                  <div class="input_cnt_block">
+                       <label>Description:</label>
+                       <span><input id="input_description"/></span>
+                  </div>
+                  <div class="input_cnt_block input_cnt_block_checkbox">
+                       <label class="label_for_checkbox">Show Date:</label>
+                       <span><input id="input_show_date" type="checkbox"/></span>
+                  </div>
+                  <div class="input_cnt_block input_cnt_block_checkbox">
+                       <label class="label_for_checkbox">Show Disc Headers:</label>
+                       <span><input id="input_show_cd" type="checkbox"/></span>
+                  </div>
+             </div>
+        </div>
+        <button class="normal_button button_ok" id="btn_ok">OK</button>
+        <button class="normal_button button_cancel" id="btn_cancel">Cancel</button>
+        <button class="normal_button button_apply" id="btn_apply" disabled>Apply</button>
+        <script>
+            // consts
+            var VK_BACKSPACE = 0x08;
+            var VK_DELETE = 0x2E;
+
+            // helpers
+            function resizeToImpl(w,h) {
+                if (window.dialogWidth != undefined && window.dialogHeight != undefined) {
+                    window.dialogWidth  = '' + w + 'px';
+                    window.dialogHeight = '' + h + 'px';
+                }
+                else {
+                    window.resizeTo(w, h);
+                }
+            }
+
+            Array.isArray = function (obj) {
+                return Object.prototype.toString.call(obj) === "[object Array]";
+            };
+
+            function find(arr, predicate) {
+                for (var i = 0; i < arr.length; ++i) {
+                    if (predicate(arr[i], i)) {
+                        return arr[i];
+                    }
+                }
+                return undefined;
+            }
+
+            function findIndex(arr, predicate) {
+                for (var i = 0; i < arr.length; ++i) {
+                    if (predicate(arr[i], i)) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+
+            function forEach(arr, func) {
+                for (var i = 0; i < arr.length; ++i) {
+                    func(arr[i], i);
+                }
+            }
+
+            function cloneDeep(aObject) {
+                if (!aObject) {
+                    return aObject;
+                }
+
+                var bObject, v, k;
+                bObject = Array.isArray(aObject) ? [] : {};
+                for (k in aObject) {
+                    v = aObject[k];
+                    bObject[k] = (typeof v === "object") ? cloneDeep(v) : v;
+                }
+                return bObject;
+            }
+
+            function get_default_data(arr) {
+                return find(arr, function (item) {
+                    return item.is_default;
+                });
+            }
+
+            function populate_select(selected_idx) {
+                var select = window.input_select;
+                select.options.length = 0;
+
+                forEach(group_data_list_copy, function (item, i) {
+                    var option = window.document.createElement('option');
+                    option.setAttribute('value', item.name);
+
+                    var text = item.name;
+                    if (item.is_default) {
+                        text += ' [default]'
+                    }
+                    option.appendChild(window.document.createTextNode(text));
+
+                    select.appendChild(option);
+                });
+                if (selected_idx !== null && selected_idx !== undefined) {
+                    select.selectedIndex = selected_idx;
+                }
+            }
+
+            function populate_data() {
+                var select = window.input_select;
+                var cur_data = group_data_list_copy[select.selectedIndex];
+                window.input_preset_name.value = cur_data.name;
+                window.input_group_query.value = cur_data.group_query;
+                window.input_title_query.value = cur_data.title_query;
+                window.input_sub_title_query.value = cur_data.sub_title_query;
+                window.input_description.value = cur_data.description;
+                window.input_show_cd.checked = cur_data.show_cd;
+                window.input_show_date.checked = cur_data.show_date;
+            }
+
+            function update_buttons_on_populate() {
+                if (group_data_list_copy[window.input_select.selectedIndex].is_default) {
+                    window.btn_default.setAttribute('disabled');
+                }
+                else {
+                    window.btn_default.removeAttribute('disabled');
+                }
+            }
+
+            function move_array_element(array, from, to) {
+                array.splice(to, 0, array.splice(from, 1)[0]);
+            }
+
+            function prepare_output_data(arr) {
+                var output_copy = cloneDeep(arr);
+                var default_name = get_default_data(output_copy).name;
+                var selected_name = output_copy[window.input_select.selectedIndex].name;
+                forEach(output_copy, function (item) {
+                    delete item.is_default;
+                });
+
+                return JSON.stringify([output_copy, selected_name, default_name]);
+            }
+
+            function on_input_change() {
+                window.btn_apply.removeAttribute('disabled');
+                window.btn_update.removeAttribute('disabled');
+            }
+
+            function on_input_key_down() {
+                if (window.event.keyCode === VK_BACKSPACE || window.event.keyCode === VK_DELETE) {
+                    on_input_change();
+                }
+            }
+
+            function make_unique_name(new_name) {
+                var new_name_idx = 2;
+                while (find(group_data_list_copy, function (item) { return item.name === new_name + '(' + new_name_idx + ')'; })) {
+                    ++new_name_idx;
+                }
+                return new_name + '(' + new_name_idx + ')';
+            }
+
+            resizeToImpl(650, 450);
+
+            // parse input data
+            var parsed_args;
+            var group_data_list_copy;
+            var cur_group_name;
+            var default_group_name;
+            var callbackFn;
+
+            try {
+                parsed_args = window.external.dialogArguments.toArray();
+            }
+            catch (e) {
+            }
+
+            if (parsed_args) {
+                var parsed_data = JSON.parse(parsed_args[0]);
+                group_data_list_copy = parsed_data[0];
+                cur_group_name = parsed_data[1];
+                default_group_name = parsed_data[2];
+                callbackFn = parsed_args[1];
+            }
+            else {
+                group_data_list_copy = [{
+                    name: 'preset name',
+                    description: 'preset description',
+                    group_query: '',
+                    title_query: '[%album artist%]',
+                    sub_title_query: '[%album%[ - %subtitle%]]',
+                    show_date: false,
+                    show_cd: false
+                }];
+                cur_group_name = 'preset name';
+                default_group_name = 'preset name';
+            }
+
+            // main script
+            find(group_data_list_copy, function (item) { return item.name === default_group_name; }).is_default = true;
+
+            window.input_select.onchange = function () {
+                populate_data();
+                update_buttons_on_populate();
+            };
+
+            var input_fields = [
+                window.input_preset_name,
+                window.input_group_query,
+                window.input_title_query,
+                window.input_sub_title_query,
+                window.input_description,
+                window.input_show_cd,
+                window.input_show_date
+            ];
+
+            var input_box = [
+                window.input_show_cd,
+                window.input_show_date
+            ];
+
+            forEach(input_fields, function (item) {
+                item.onchange = on_input_change;
+                item.onkeypress = on_input_change;
+                item.onkeydown = on_input_key_down;
+                item.onpaste = on_input_change;
+                item.oncut = on_input_change;
+            });
+
+            forEach(input_box, function (item) {
+                item.onchange = on_input_change;
+                item.onclick = on_input_change;
+            });
+
+            window.btn_default.onclick = function () {
+                var select = window.input_select;
+                get_default_data(group_data_list_copy).is_default = false;
+                group_data_list_copy[select.selectedIndex].is_default = true;
+                populate_select(select.selectedIndex);
+
+                window.btn_default.setAttribute('disabled');
+                window.btn_apply.removeAttribute('disabled');
+            };
+
+            window.btn_remove.onclick = function () {
+                var select = window.input_select;
+
+                if (select.options.length <= 1) {
+                    return;
+                }
+
+                var was_default = group_data_list_copy[select.selectedIndex].is_default;
+                group_data_list_copy.splice(select.selectedIndex, 1);
+                if (was_default) {
+                    group_data_list_copy[0].is_default = true;
+                }
+
+                populate_select(Math.max(0, select.selectedIndex - 1));
+                populate_data();
+                update_buttons_on_populate();
+
+                window.btn_apply.removeAttribute('disabled');
+            };
+
+            window.btn_new.onclick = function () {
+                var select = window.input_select;
+
+                var new_data = cloneDeep(group_data_list_copy[select.selectedIndex]);
+
+                new_data.is_default = false;
+                new_data.name = make_unique_name(new_data.name);
+
+                group_data_list_copy.push(new_data);
+
+                populate_select(group_data_list_copy.length - 1);
+                populate_data();
+                update_buttons_on_populate();
+
+                window.btn_apply.removeAttribute('disabled');
+            };
+
+            window.btn_update.onclick = function () {
+                if (window.btn_update.hasAttribute('disabled')) {
+                    return;
+                }
+
+                var cur_data = group_data_list_copy[window.input_select.selectedIndex];
+
+                var new_name = window.input_preset_name.value;
+                if (cur_data.name !== new_name && find(group_data_list_copy, function (item) { return item.name === new_name; })) {
+                    // Hide old name from unique name generation
+                    cur_data.name = new_name;
+
+                    new_name = make_unique_name(new_name);
+                    window.input_preset_name.value = new_name;
+                }
+
+                cur_data.name = new_name;
+                cur_data.group_query = window.input_group_query.value;
+                cur_data.title_query = window.input_title_query.value;
+                cur_data.sub_title_query = window.input_sub_title_query.value;
+                cur_data.description = window.input_description.value;
+                cur_data.show_cd = window.input_show_cd.checked;
+                cur_data.show_date = window.input_show_date.checked;
+
+                populate_select(window.input_select.selectedIndex);
+
+                window.btn_update.setAttribute('disabled');
+            };
+
+            window.btn_up.onclick = function () {
+                var selected_idx = window.input_select.selectedIndex;
+                if (!selected_idx) {
+                    return;
+                }
+
+                move_array_element(group_data_list_copy, selected_idx, selected_idx - 1);
+
+                populate_select(selected_idx - 1);
+
+                window.btn_apply.removeAttribute('disabled');
+            };
+
+            window.btn_down.onclick = function () {
+                var selected_idx = window.input_select.selectedIndex;
+                if (selected_idx === window.input_select.options.length) {
+                    return;
+                }
+
+                move_array_element(group_data_list_copy, selected_idx, selected_idx + 1);
+
+                populate_select(selected_idx + 1);
+
+                window.btn_apply.removeAttribute('disabled');
+            };
+
+            window.btn_cancel.onclick = function () {
+                window.close();
+            };
+
+            window.btn_apply.onclick = function () {
+                if (window.btn_apply.hasAttribute('disabled')) {
+                    return;
+                }
+
+                window.btn_update.onclick();
+
+                callbackFn && callbackFn(prepare_output_data(group_data_list_copy));
+
+                window.btn_apply.setAttribute('disabled');
+            };
+
+            window.btn_ok.onclick = function () {
+                if (window.btn_apply.hasAttribute('disabled')) {
+                    window.close();
+                    return;
+                }
+
+                window.btn_update.onclick();
+
+                var output_data = prepare_output_data(group_data_list_copy);
+
+                window.close();
+                callbackFn && callbackFn(output_data);
+            };
+
+            populate_select(findIndex(group_data_list_copy, function (item) { return item.name === cur_group_name; }));
+            populate_data();
+            update_buttons_on_populate();
+
+            window.document.body.focus();
+            window.btn_ok.focus();
+        </script>
+    </body>
+</html>

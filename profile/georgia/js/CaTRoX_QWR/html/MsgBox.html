@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="x-ua-compatible" content="IE=7"/>
+        <!-- IE=8 is broken on Windows 10: document.documentElement.clientHeight is totally wrong -->
+        <link rel="stylesheet" type="text/css" href="styles10.css">
+        <style type="text/css">
+            div { overflow: hidden; } 
+            span { display: block; overflow: hidden; padding-right:10px; } 
+            label { float:left; width: 50px; text-align: right; padding-right:7px; padding-top: 2px; white-space: nowrap; } 
+            button { float: right; } 
+            .input_line { padding-bottom:7px; } 
+        </style>
+        <title>Placeholder title</title>
+    </head>
+    <body>
+        <div id="main_div">
+            <button id="hta_cancel">Cancel</button>
+            <button id="hta_ok">OK</button>
+        </div>
+        <script>
+            // helpers
+            function resizeToImpl(w,h) {
+                if (window.dialogWidth != undefined && window.dialogHeight != undefined) {
+                    window.dialogWidth  = '' + w + 'px';
+                    window.dialogHeight = '' + h + 'px';
+                }
+                else {
+                    window.resizeTo(w, h);
+                }
+            }
+            
+            function forEach(arr, func) {
+                for (var i = 0; i < arr.length; ++i) {
+                    func(arr[i], i);
+                }
+            }
+            
+            // parse data
+            var parsed_args;
+            var prompt;
+            var defval;
+            var callback_fn;
+            try {
+                parsed_args = window.external.dialogArguments.toArray();
+            }
+            catch(e) {
+            }
+            if (parsed_args) {
+                document.title = parsed_args[0];
+                prompt = parsed_args[1];
+                defval = parsed_args[2];
+                callback_fn = parsed_args[3];
+            }
+            else {
+                prompt = ['Placeholder prompt 1', 'Placeholder prompt 2'];
+                defval = ['Placeholder defval 1', 'Placeholder defval 2'];
+            }
+
+            // main script
+            var val_count = prompt.length;
+            var input_text = '';
+            
+            for (var i = 0; i < val_count; ++i) {
+                input_text +=
+                    '<div class="input_line">' +
+                    '   <label id="label_' + i + '">' + prompt[i] + '</label>' +
+                    '   <span>' +
+                    '       <input id="input_val_' + i + '" type="text" value="' +  defval[i] + '"/>' +
+                    '   </span>' +
+                    '</div>';
+            }
+            
+            window.main_div.innerHTML = input_text + window.main_div.innerHTML;
+                        
+            var labels = [];
+            var label_max_width = 0;
+            for (var i = 0; i < val_count; ++i) {
+                var cur_label = window['label_' + i];
+                labels.push(cur_label);
+                label_max_width = Math.max(label_max_width, cur_label.scrollWidth);
+            }
+            
+            forEach(labels, function(item){
+                item.style.width = label_max_width + 'px';
+            });
+            
+            window.hta_cancel.onclick = function () {
+                window.close();
+            };
+            
+            window.hta_ok.onclick = function () {
+                var vals = [];
+                for (var i = 0; i < val_count; ++i) {
+                    vals.push(window['input_val_' + i].value);
+                }
+            
+                window.close();
+                callback_fn && callback_fn(vals);
+            };
+            
+            // Adjust size size
+            resizeToImpl(300, 100);
+            var padW = 300 - document.documentElement.clientWidth;
+            var padH = 100 - document.documentElement.clientHeight;
+            if (document.documentElement.scrollHeight > document.body.clientHeight) {
+                resizeToImpl(370 + padW, document.documentElement.scrollHeight + padH);
+            }
+            
+            window.document.body.focus();
+            window.hta_ok.focus();
+        </script>
+    </body>
+</html>
