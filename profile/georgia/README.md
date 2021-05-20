@@ -1,15 +1,15 @@
 ### Help Wanted
 
-If you are a developer or have knowledge in Javascript, I would appreciate your help in optimizing Georgia ReBORN. <br />
+If you are a developer or have knowledge in Javascript, I would appreciate your help in optimizing Georgia-ReBORN. <br />
 I am certain the code can be improved for better performance, thank you!
 
-# Georgia ReBORN - a foobar2000 theme
+# Georgia-ReBORN - A Clean foobar2000 Theme
 
-Georgia ReBORN is a modification of **[Mordred's original Georgia theme](https://github.com/kbuffington/Georgia)** for foobar2000.<br />
+Georgia-ReBORN is a modification of **[Mordred's original Georgia theme](https://github.com/kbuffington/Georgia)** for foobar2000.<br />
 It's purpose is to be used mainly as a desktop version, the layout has been modified to look clean and simple without any distractions.
 The cover artwork and playlist are the main focus.
 
-Gerogia ReBORN has 10 themes in total ( Options -> Change Theme ):
+Georgia-ReBORN has 10 themes in total ( Options -> Change Theme ):
 
 ![Themes](https://i.ibb.co/PgVtM21/George-Re-BORN-Themes-Animation.webp)
 
@@ -20,7 +20,7 @@ Synched lyrics will be highlighted with a theme color, unsynched lyrics have the
 
 ![BiographyLyrics](https://i.ibb.co/fddMnxc/George-Re-BORN-Biography-And-Lyrics-Animation.webp)
 
-Georgia ReBORN supports 4k resolutions and will adjust theme elements based on DPI and screen size. Fullscreen mode is also supported!
+Georgia-ReBORN supports 4k resolutions and will adjust theme elements based on DPI and screen size. Fullscreen mode is also supported!
 There are 6 pre-defined sizes ( Options -> Change Player Size ), 3 for FULL HD and below and 3 for 4K resolution and higher.
 These pre-defined sizes are restricted, if you have a monitor capable of 1920 x 1200 and below the first 3 are available,
 if you have a monitor capable of 4K resolution and higher the other 3 are available.
@@ -31,7 +31,7 @@ You can resize the width and height but it also has a minimum width restriction:
 
 ![Sizes](https://i.ibb.co/0sZswgG/George-Re-BORN-Sizes-And-Playlist-Mode-Animation.webp)
 
-**NOTE:** Georgia ReBORN starts in player size 'Small' as a failsafe player size for small res. monitor/laptop screens<br />
+**NOTE:** Georgia-ReBORN starts in player size 'Small' as a failsafe player size for small res. monitor/laptop screens<br />
 and looks best if you switch to 'Normal' or a bigger player size!
 
 ## Image Packs
@@ -45,6 +45,8 @@ Extract them to your foobar2000/profile/images
 ![Details](https://i.ibb.co/DC5J4Sj/George-Re-BORN-Details-Animation.webp)
 
 ## Features
+
+<b>✓</b> Georgia-ReBORN design
 
 <b>✓</b> 10 different themes
 
@@ -60,7 +62,7 @@ Extract them to your foobar2000/profile/images
 
 <b>✓</b> Automatic scrollbar hide for playlist, library and biography
 
-<b>✓</b> A more modern library design that matches Georgia ReBORN
+<b>✓</b> A more modern library design that matches Georgia-ReBORN
 
 Please visit Mordred's original Georgia theme to learn more: https://github.com/kbuffington/Georgia
 
@@ -68,7 +70,7 @@ Please visit Mordred's original Georgia theme to learn more: https://github.com/
 
 <b>1.</b> Install foobar2000 as portable from the **[Official Website](https://www.foobar2000.org/download)**.
 
-<b>2.</b> Download the Georgia ReBORN theme from this **[Github Page](https://github.com/TT-ReBORN/Georgia-ReBORN/archive/master.zip)**.
+<b>2.</b> Download the Georgia-ReBORN theme from this **[Github Page](https://github.com/TT-ReBORN/Georgia-ReBORN/archive/master.zip)**.
 
 <b>3.</b> Extract the profile folder from the zip into foobar's root folder.
 
