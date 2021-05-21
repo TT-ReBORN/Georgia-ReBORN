@@ -20,7 +20,7 @@ class Volume {
      */
     trace(x, y) {
         // const margin = this.drag ? 200 : 0; // the area the mouse can go outside physical bounds of the volume control
-        const margin = 0; // the area the mouse can go outside physical bounds of the volume control
+        const margin = 5; // the area the mouse can go outside physical bounds of the volume control
         return x > this.x - margin &&
                 x < this.x + this.w + margin &&
                 y > this.y - margin &&
@@ -203,6 +203,7 @@ class VolumeBtn {
             // const volMeasurements = gr.MeasureString(volume, volFont, 0, 0, 0, 0);
             // const volHeight = volMeasurements.Height;
             // const volWidth = volMeasurements.Width + 1;
+            // const border = scaleForDisplay(3);
             let txtY = y;
             if (transport.displayBelowArtwork) {
                 txtY = this.y - this.volTextH + scaleForDisplay(4);
@@ -211,6 +212,7 @@ class VolumeBtn {
             if (pref.whiteTheme) {
             gr.DrawString(volume, volFont, rgb(140, 140, 140), x + (this.volume_bar.w / 2), txtY + h, this.volTextW, this.volTextH);
             } else if (pref.blackTheme) {
+            gr.FillSolidRect(x - border, txtY + h, volWidth + border * 2, volHeight + border, rgba(0, 0, 0, 128));
             gr.DrawString(volume, volFont, rgb(0,0,0), x - 1, txtY - 1 + h, this.volTextW, this.volTextH);
             gr.DrawString(volume, volFont, rgb(0,0,0), x - 1, txtY + 1 + h, this.volTextW, this.volTextH);
             gr.DrawString(volume, volFont, rgb(0,0,0), x + 1, txtY - 1 + h, this.volTextW, this.volTextH);
@@ -222,14 +224,14 @@ class VolumeBtn {
     }
 
     repaint() {
-        const xyPadding = 3, whPadding = xyPadding * 2;
-        window.RepaintRect(this.x - xyPadding, this.volume_bar.y - xyPadding, this.volume_bar.w + whPadding, this.volume_bar.h + whPadding);
+        const xyPadding = scaleForDisplay(3), whPadding = xyPadding * 2;
+        window.RepaintRect(this.x - xyPadding, this.volume_bar.y, this.volume_bar.w + whPadding, this.volume_bar.h + whPadding);
 
         let txtY = this.y + this.h;
         if (transport.displayBelowArtwork) {
             txtY = this.y - this.volTextH;
         }
-        window.RepaintRect(this.x, txtY, this.volTextW, this.volTextH);
+        //window.RepaintRect(this.x - xyPadding, txtY, this.volTextW + xyPadding, this.volTextH + xyPadding);
     }
 
     setPosition(x, y, btnWidth) {
