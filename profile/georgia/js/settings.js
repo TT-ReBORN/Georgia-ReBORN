@@ -41,6 +41,8 @@ pref.add_properties({
 	rotate_cdart: ['Art: Rotate CD art on new track', true], // true: rotate cdArt based on track number. i.e. rotationAmt = %tracknum% * x degrees
 	cdart_ontop: ['Art: Show CD art above front cover', false], // true: display cdArt above front cover
 	spinCdart: ['Art: Spin CD art', false], // true: cdArt will spin while the song plays
+	spinCdArtImageCount: ['Art: # of images to create while spinning', 60], // higher numbers will increase memory usage, and slow down spin
+	spinCdArtRedrawInterval: ['Art: Spin CD draw interval', 200], // speed in ms with which to attempt redraw. Lower numbers will increase CPU
 	filterCdJpgsFromAlbumArt: ['Art: Filter out cd/vinyl .jpgs from showing as artwork', false],
 	labelArtOnBg: ['Art: Draw label art on background', false], // true: don't show the theme color background behind label art
 	show_flags: ['Show country flags', true], // true: show the artist country flags
@@ -200,6 +202,18 @@ pref.vinyl_path = '$directory_path(%path%)\\vinyl.png' // vinyl cdart named viny
 pref.cdartdisc_path = '$directory_path(%path%)\\' + settings.cdArtBasename + '$ifgreater(%totaldiscs%,1,%discnumber%,).png'; // cdart named cd1.png, cd2.png, etc.
 pref.cdart_path = '$directory_path(%path%)\\' + settings.cdArtBasename + '.png'; // cdart named cd.png (or whatever custom value was specified). This is the most common single disc case.
 pref.cdart_amount = 0.48; // show 48% of the CD image if it will fit on the screen
+{
+	let count = Number(pref.spinCdArtImageCount);
+	if (count !== count) { // check if NaN
+		count = 72;
+	}
+	pref.spinCdArtImageCount = count;
+	let interval = Number(pref.spinCdArtRedrawInterval);
+	if (interval !== interval) {
+		interval = 200;
+	}
+	pref.spinCdArtRedrawInterval = Math.max(50, interval);
+}
 
 if (!pref.lyricsRememberDisplay) {
 	pref.displayLyrics = false;

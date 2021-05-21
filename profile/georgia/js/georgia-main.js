@@ -1296,21 +1296,21 @@ window.RepaintRect = (x, y, w, h, force = undefined) => {
 	}
 }
 
-let rotatedCdIndex = 0;
-const maxRotatedCdImages = 72;
+let rotatedCdIndex = 0;	// global index of current cdartArray img to draw
 function setupRotationTimer() {
 	clearInterval(cdartRotationTimer);
+	console.log(`creating ${pref.spinCdArtImageCount} rotated cd images, shown every ${pref.spinCdArtRedrawInterval}ms`);
 	if (pref.display_cdart && cdart && fb.IsPlaying && !fb.IsPaused && pref.spinCdart && !displayLibrary && !displayPlaylist) {
 		cdartRotationTimer = setInterval(() => {
 			rotatedCdIndex++;
-			rotatedCdIndex %= maxRotatedCdImages;
+			rotatedCdIndex %= pref.spinCdArtImageCount;
 			if (!cdartArray[rotatedCdIndex] && cdart && cdart_size.w) {
-				console.log(`creating cdImg: ${rotatedCdIndex} (${cdart_size.w}x${cdart_size.h}) with rotation: ${360/maxRotatedCdImages * rotatedCdIndex} degrees`);
-				cdartArray[rotatedCdIndex] = rotateImg(cdart, cdart_size.w, cdart_size.h, 360/maxRotatedCdImages * rotatedCdIndex)
+				debugLog(`creating cdImg: ${rotatedCdIndex} (${cdart_size.w}x${cdart_size.h}) with rotation: ${360/pref.spinCdArtImageCount * rotatedCdIndex} degrees`);
+				cdartArray[rotatedCdIndex] = rotateImg(cdart, cdart_size.w, cdart_size.h, 360/pref.spinCdArtImageCount * rotatedCdIndex)
 			}
 			const cdLeftEdge = pref.cdart_ontop ? cdart_size.x : albumart_size.x + albumart_size.w; // the first line of cdImage that will be drawn
 			window.RepaintRect(cdLeftEdge, cdart_size.y, cdart_size.w - (cdLeftEdge - cdart_size.x), cdart_size.h);
-		}, 200);
+		}, pref.spinCdArtRedrawInterval);
 	}
 }
 
@@ -1880,6 +1880,7 @@ function onOptionsMenu(x, y) {
 	});
 	cdArtMenu.addToggleItem('Display cdArt above cover', pref, 'cdart_ontop', () => RepaintWindow(), !pref.display_cdart);
 	cdArtMenu.addToggleItem('Filter out cd/vinyl .jpgs from artwork', pref, 'filterCdJpgsFromAlbumArt');
+	cdArtMenu.addSeparator();
 	cdArtMenu.addToggleItem('Spin cdArt while songs play (increases memory and CPU)', pref, 'spinCdart', () => {
 		if (pref.spinCdart) {
 			setupRotationTimer();
@@ -1888,6 +1889,17 @@ function onOptionsMenu(x, y) {
 			cdartArray = [];
 		}
 	});
+	cdArtMenu.createRadioSubMenu('# Rotation Images (memory usage/rotational speed)', ['36 (10 degrees)', '45 (8 degrees)', '60 (6 degrees) (default)', '72 (5 degrees)', '90 (4 degrees)'], pref.spinCdArtImageCount, [36, 45, 60, 72, 90], (count) => {
+		pref.spinCdArtImageCount = count;
+		rotatedCdIndex = 0;
+		cdartArray = [];
+		RepaintWindow();
+	}, !pref.spinCdart);
+	cdArtMenu.createRadioSubMenu('Spinning cdArt redraw speed', ['250ms (lower CPU)', '200ms (default)', '150ms', '125ms', '100ms', '75ms (higher CPU)'], pref.spinCdArtRedrawInterval, [250, 200, 150, 125, 100, 75], interval => {
+		pref.spinCdArtRedrawInterval = interval;
+		setupRotationTimer();
+	}, !pref.spinCdart)
+	cdArtMenu.addSeparator();
 	cdArtMenu.addToggleItem('Rotate cdArt as tracks change', pref, 'rotate_cdart', () => { RepaintWindow(); }, !pref.display_cdart || pref.spinCdart);
 	cdArtMenu.createRadioSubMenu('cdArt Rotation Amount', ['2 degrees', '3 degrees', '4 degrees', '5 degrees'], parseInt(pref.rotation_amt), [2,3,4,5], (rot) => {
 		pref.rotation_amt = rot;
@@ -2662,6 +2674,7 @@ function on_playback_seek() {
 }
 
 function on_mouse_lbtn_down(x, y, m) {
+	window.SetCursor(32512); // arrow
 	if (progressBar.mouseInThis(x, y)) {
 		progressBar.on_mouse_lbtn_down(x, y);
 	} else if (!volume_btn.on_mouse_lbtn_down(x, y, m)) {
@@ -3013,7 +3026,6 @@ function on_item_focus_change(playlist_arg, from, to) {
 }
 
 function on_key_down(vkey) {
-
 	var CtrlKeyPressed = utils.IsKeyPressed(VK_CONTROL);
 	var ShiftKeyPressed = utils.IsKeyPressed(VK_SHIFT);
 
