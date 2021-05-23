@@ -1093,7 +1093,7 @@ function draw_ui(gr) {
 				}
 				gr.DrawString(str.artist, artistFont, col.artist, textLeft + (pref.show_flags && flagImgs.length ? flagSize + 2 : 0) - (is_4k ? 2 : 1), lowerBarTop - scaleForDisplay(20) + heightAdjustment, availableWidth, height, StringFormat(0, 0, 4));
 				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - (is_4k ? 1 : 0), lowerBarTop, trackNumWidth - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
-				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x - (is_4k ? 1 : 0) + trackNumWidth - scaleForDisplay(3), lowerBarTop, 0.34 * ww, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
+				gr.DrawString(str.title_lower, ft_lower, col.now_playing, trackNumWidth > 0 ? progressBar.x - (is_4k ? 1 : 0) + trackNumWidth - scaleForDisplay(3) : progressBar.x - (is_4k ? 1 : 0) - scaleForDisplay(11), lowerBarTop, 0.34 * ww, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
 			} else {
 				if (pref.show_flags && flagImgs.length && width + flagImgs[0].Width * flagImgs.length < availableWidth) {
 					var flagsLeft = textLeft - (is_4k ? 1 : 0);
@@ -3103,7 +3103,7 @@ function on_playback_queue_changed(origin) {
 
 function on_playback_pause(pausing) {
 	refreshPlayButton();
-	if (pausing) {
+	if (pausing || fb.PlaybackLength < 0) {
 		clearInterval(progressBarTimer);
 		clearInterval(cdartRotationTimer);
 		progressBarTimer = 0;
@@ -3840,6 +3840,9 @@ function fetchNewArtwork(metadb) {
 		albumart = utils.GetAlbumArtV2(metadb);
 		getThemeColors(albumart);
 		ResizeArtwork(true);
+		if (!albumart && !cdart) {	// Switching from Album to Stream Shadow Fix
+			shadow_image = null;
+		}
 	} else {
 		aa_list = globals.imgPaths.map(path => utils.Glob($(path), FileAttributes.Directory | FileAttributes.Hidden)).flat();
 		const filteredFileTypes = pref.filterCdJpgsFromAlbumArt ? '(png|jpg)' : 'png';
