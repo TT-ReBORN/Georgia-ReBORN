@@ -1,5 +1,5 @@
-const panelVersion = window.GetProperty('_theme_version (do not hand edit!)', '2.0.2');
-window.DefineScript('Georgia', {author: 'Mordred', version: panelVersion, features: {drag_n_drop: true} });
+const panelVersion = window.GetProperty('_theme_version (do not hand edit!)', '2.0.3');
+window.DefineScript('Georgia-ReBORN', {author: 'TT', version: panelVersion, features: {drag_n_drop: true} });
 
 const basePath = fb.ProfilePath + 'georgia\\';
 
@@ -65,7 +65,7 @@ const fileList = [
     'js\\georgia-main.js'
 ];
 includeFiles(fileList).then(() => {
-    console.log(`Georgia loaded in ${Date.now() - startTime}ms`);
+    console.log(`Georgia-ReBORN loaded in ${Date.now() - startTime}ms`);
 
     if (pref.checkForUpdates) {
         scheduleUpdateCheck(0);
@@ -77,16 +77,16 @@ function on_paint(gr) {
     const RGB = (r, g, b) => { return (0xff000000 | (r << 16) | (g << 8) | (b)); }
     const scaleForDisplay = (number) => { return is_4k ? number * 2 : number };
     const darkMode = window.GetProperty('Use Dark Theme', false);
-    const whiteTheme = window.GetProperty('Georgia ReBORN White Theme', 'white');
-    const blackTheme = window.GetProperty('Georgia ReBORN Black Theme', 'black');
-    const blueTheme = window.GetProperty('Georgia ReBORN Blue Theme', 'blue');
-    const darkblueTheme = window.GetProperty('Georgia ReBORN Dark Blue Theme', 'darkblue');
-    const redTheme = window.GetProperty('Georgia ReBORN Red Theme', 'red');
-    const creamTheme = window.GetProperty('Georgia ReBORN Cream Theme', 'cream');
-    const nblueTheme = window.GetProperty('Georgia ReBORN Neon Blue Theme', 'nblue');
-    const ngreenTheme = window.GetProperty('Georgia ReBORN Neon Green Theme', 'ngreen');
-    const nredTheme = window.GetProperty('Georgia ReBORN Neon Red Theme', 'nred');
-    const ngoldTheme = window.GetProperty('Georgia ReBORN Neon Gold Theme', 'ngold');
+    const whiteTheme = window.GetProperty('Georgia-ReBORN White Theme', 'white');
+    const blackTheme = window.GetProperty('Georgia-ReBORN Black Theme', 'black');
+    const blueTheme = window.GetProperty('Georgia-ReBORN Blue Theme', 'blue');
+    const darkblueTheme = window.GetProperty('Georgia-ReBORN Dark Blue Theme', 'darkblue');
+    const redTheme = window.GetProperty('Georgia-ReBORN Red Theme', 'red');
+    const creamTheme = window.GetProperty('Georgia-ReBORN Cream Theme', 'cream');
+    const nblueTheme = window.GetProperty('Georgia-ReBORN Neon Blue Theme', 'nblue');
+    const ngreenTheme = window.GetProperty('Georgia-ReBORN Neon Green Theme', 'ngreen');
+    const nredTheme = window.GetProperty('Georgia-ReBORN Neon Red Theme', 'nred');
+    const ngoldTheme = window.GetProperty('Georgia-ReBORN Neon Gold Theme', 'ngold');
     const col = {};
 
     if (whiteTheme) {

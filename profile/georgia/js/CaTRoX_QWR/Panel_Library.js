@@ -2997,7 +2997,7 @@ function LibraryTree() {
                 lib_manager.treeState(false, libraryProps.rememberTree);
                 break;
             case ObjType.Item:
-                // only use for this code is drag/drop which doesn't work in Georgia since there's no place to drop to
+                // only use for this code is drag/drop which doesn't work in Georgia-ReBORN since there's no place to drop to
                 // last_pressed_coord.x = x - ui.x;
                 // last_pressed_coord.y = y - ui.y;
                 // lbtn_dn = true;
@@ -4755,7 +4755,7 @@ class LibraryCallbacks {
 			let inScrollArea = '';
 
 			if ((scrollBar_hitarea_x - (is_4k ? 40 : 20) * trace_pad <= x) && (x <= scrollBar_hitarea_x - (is_4k ? 40 : 20) + scrollBar_hitarea_w + trace_pad) && 
-			    (scrollBar_hitarea_y + (is_4k ? 160 : 80) <= y) && (y <= scrollBar_hitarea_y + scrollBar_hitarea_h + (is_4k ? 60 : 40))) {
+				(scrollBar_hitarea_y + (is_4k ? 160 : 80) <= y) && (y <= scrollBar_hitarea_y + scrollBar_hitarea_h + (is_4k ? 60 : 40))) {
 				g_properties.show_scrollbar = true;
 				if (!inScrollArea) {
 					ui.scr_but_w = scaleForDisplay(17);
@@ -4777,8 +4777,8 @@ class LibraryCallbacks {
 				} else { inScrollArea = false; }
 			}
 		} else if (pref.autoSbar_Library === false) {
-            ui.scr_but_w = scaleForDisplay(17);
-            sbar.w = scaleForDisplay(12);
+			ui.scr_but_w = scaleForDisplay(17);
+			sbar.w = scaleForDisplay(12);
 		}
 	}
     on_mouse_rbtn_up(x, y) {if (y < p.s_h && x > p.s_x && x < p.s_x + p.s_w2) {if (libraryProps.searchMode) sL.rbtn_up(x, y); return true;} else {men.rbtn_up(x, y); return true;}}
@@ -4857,7 +4857,7 @@ function initLibraryColors() {
 		ui.iconcol_h = rgb(0, 0, 0);
 		ui.col.iconPlus = rgb(80, 80, 80);
 		ui.col.iconPlus_h = rgb(0, 0, 0);
-        ui.col.iconMinus_e = rgb(80, 80, 80);
+		ui.col.iconMinus_e = rgb(80, 80, 80);
 		ui.col.iconMinus_c = rgb(80, 80, 80);
 		ui.col.iconMinus_h = rgb(0, 0, 0);
 		ui.col.iconPlussel = rgb(255, 255, 255);

@@ -144,6 +144,7 @@ class ProgressBar {
     on_size(windowWidth, windowHeight) {
         this.y = 0;
         this.h = geo.prog_bar_h;
+        this.progressMoved = true;
         if (pref.layout_mode === 'default_mode') {
             this.x = windowWidth ? scaleForDisplay(40) : 0;
             this.w = windowWidth - scaleForDisplay(80);

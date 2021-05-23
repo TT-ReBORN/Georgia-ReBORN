@@ -263,7 +263,7 @@ class Lyrics {
 				this.on_size(albumart_size.x, albumart_size.y, albumart_size.w, albumart_size.h);
 			}
 			clearInterval(this.lyricsSearchTimer);
-		}, 15000);
+		}, 30000);
 	}
 
 	// Automatic Lyric Show 3 File Saver

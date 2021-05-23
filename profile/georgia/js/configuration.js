@@ -127,7 +127,7 @@ class Configuration {
 	 */
 	writeConfiguration() {
 		const p = fso.CreateTextFile(this.path, true, true);
-		p.WriteLine('/* Configuration file for Georgia. Manual changes to this file will take effect');
+		p.WriteLine('/* Configuration file for Georgia-ReBORN. Manual changes to this file will take effect');
 		p.WriteLine('   on the next reload. To ensure changes are not overwritten or lost, reload theme');
 		p.WriteLine('   immediately after manually changing values. */');
 		p.WriteLine('{');

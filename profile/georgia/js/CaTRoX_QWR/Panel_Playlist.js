@@ -110,8 +110,12 @@ function createPlaylistFonts() {
 	playlistFontsCreated = true;
 }
 
-function rescalePlaylist() {
-	if (playlistFontsCreated && playlistFontsCreated === is_4k) {
+/**
+ * @param {boolean=} forceRescale
+ * @returns
+ */
+ function rescalePlaylist(forceRescale) {
+	if (playlistFontsCreated && !forceRescale) {
 		return;	// don't redo fonts
 	}
 	createPlaylistFonts();

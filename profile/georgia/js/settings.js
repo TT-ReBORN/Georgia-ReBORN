@@ -9,7 +9,7 @@ let transport = {};
 /** @type {MetadataGridEntry[]} */
 let metadataGrid;
 
-const currentVersion = '2.0.3-dev';
+const currentVersion = '2.0.3';
 let configVersion = currentVersion; // will be overwritten when loaded from config file
 let updateAvailable = false;
 let updateHyperlink;
@@ -42,7 +42,7 @@ pref.add_properties({
 	cdart_ontop: ['Art: Show CD art above front cover', false], // true: display cdArt above front cover
 	spinCdart: ['Art: Spin CD art', false], // true: cdArt will spin while the song plays
 	spinCdArtImageCount: ['Art: # of images to create while spinning', 60], // higher numbers will increase memory usage, and slow down spin
-	spinCdArtRedrawInterval: ['Art: Spin CD draw interval', 200], // speed in ms with which to attempt redraw. Lower numbers will increase CPU
+	spinCdArtRedrawInterval: ['Art: Spin CD draw interval', 150], // speed in ms with which to attempt redraw. Lower numbers will increase CPU
 	filterCdJpgsFromAlbumArt: ['Art: Filter out cd/vinyl .jpgs from showing as artwork', false],
 	labelArtOnBg: ['Art: Draw label art on background', false], // true: don't show the theme color background behind label art
 	show_flags: ['Show country flags', true], // true: show the artist country flags
@@ -60,27 +60,27 @@ pref.add_properties({
 
 	freq_update: ['Frequent progress bar updates', true], // true: update progress bar multiple times a second. Smoother, but uses more CPU
 	darkMode: ['Use Dark Theme', false], // true: use a darker background
-	whiteTheme: ['Georgia ReBORN White Theme', 'white'], // white: use white theme
-	blackTheme: ['Georgia ReBORN Black Theme', 'black'], // dark: use dark theme
-	blueTheme: ['Georgia ReBORN Blue Theme', 'blue'], // blue: use blue theme
-	darkblueTheme: ['Georgia ReBORN Dark Blue Theme', 'darkblue'], // darkblue: use dark blue theme
-	redTheme: ['Georgia ReBORN Red Theme', 'red'], // red: use red theme
-	creamTheme: ['Georgia ReBORN Cream Theme', 'cream'], // cream: use cream theme
-	nblueTheme: ['Georgia ReBORN Neon Blue Theme', 'nblue'], // nblue: use Neon Blue theme
-	ngreenTheme: ['Georgia ReBORN Neon Green Theme', 'ngreen'], // ngreen: use Neon Green theme
-	nredTheme: ['Georgia ReBORN Neon Red Theme', 'nred'], // nred: use Neon Red theme
-	ngoldTheme: ['Georgia ReBORN Neon Gold Theme', 'ngold'], // ngold: use Neon Gold theme
-	layout_mode: ['Georgia ReBORN Layout Mode', 'default_mode'],
-	Player_Small: ['Georgia ReBORN Player Small', 'Player_Small'],
-	Player_Normal: ['Georgia ReBORN Player Normal', 'Player_Normal'],
-	Player_Big: ['Georgia ReBORN Player Big', 'Player_Big'],
-	Player_4K_Small: ['Georgia ReBORN Player 4K Small', 'Player_4K_Small'],
-	Player_4K_Normal: ['Georgia ReBORN Player 4K Normal', 'Player_4K_Normal'],
-	Player_4K_Big: ['Georgia ReBORN Player 4K Big', 'Player_4K_Big'],
-	autoSbar_Library: ['Georgia ReBORN Auto Sbar Library', true], // Library Automatic Scrollbar Hide
-	autoSbar_Playlist: ['Georgia ReBORN Auto Sbar Playlist', true], // Playlist Automatic Scrollbar Hide
-	autoHidePLM: ['Georgia ReBORN Auto Hide Playlist Manager', true], // Playlist Automatic Playlist Manager Hide
-	lib_design: ['Georgia ReBORN Library Design', 'library_modern'], // Library Design - library_modern (default) or library_traditional
+	whiteTheme: ['Georgia-ReBORN White Theme', 'white'], // white: use white theme
+	blackTheme: ['Georgia-ReBORN Black Theme', 'black'], // dark: use dark theme
+	blueTheme: ['Georgia-ReBORN Blue Theme', 'blue'], // blue: use blue theme
+	darkblueTheme: ['Georgia-ReBORN Dark Blue Theme', 'darkblue'], // darkblue: use dark blue theme
+	redTheme: ['Georgia-ReBORN Red Theme', 'red'], // red: use red theme
+	creamTheme: ['Georgia-ReBORN Cream Theme', 'cream'], // cream: use cream theme
+	nblueTheme: ['Georgia-ReBORN Neon Blue Theme', 'nblue'], // nblue: use Neon Blue theme
+	ngreenTheme: ['Georgia-ReBORN Neon Green Theme', 'ngreen'], // ngreen: use Neon Green theme
+	nredTheme: ['Georgia-ReBORN Neon Red Theme', 'nred'], // nred: use Neon Red theme
+	ngoldTheme: ['Georgia-ReBORN Neon Gold Theme', 'ngold'], // ngold: use Neon Gold theme
+	layout_mode: ['Georgia-ReBORN Layout Mode', 'default_mode'],
+	Player_Small: ['Georgia-ReBORN Player Small', 'Player_Small'],
+	Player_Normal: ['Georgia-ReBORN Player Normal', 'Player_Normal'],
+	Player_Big: ['Georgia-ReBORN Player Big', 'Player_Big'],
+	Player_4K_Small: ['Georgia-ReBORN Player 4K Small', 'Player_4K_Small'],
+	Player_4K_Normal: ['Georgia-ReBORN Player 4K Normal', 'Player_4K_Normal'],
+	Player_4K_Big: ['Georgia-ReBORN Player 4K Big', 'Player_4K_Big'],
+	autoSbar_Library: ['Georgia-ReBORN Auto Sbar Library', true], // Library Automatic Scrollbar Hide
+	autoSbar_Playlist: ['Georgia-ReBORN Auto Sbar Playlist', true], // Playlist Automatic Scrollbar Hide
+	autoHidePLM: ['Georgia-ReBORN Auto Hide Playlist Manager', true], // Playlist Automatic Playlist Manager Hide
+	lib_design: ['Georgia-ReBORN Library Design', 'library_modern'], // Library Design - library_modern (default) or library_traditional
 	
 	use_4k: ['Detect 4k', 'auto'], // auto: switch to 4k mode when window width wide enough, never: never use 4k mode, always: always use 4k mode
 	checkForUpdates: ['Check for Updates', true], // true: check github repo to determine if updates exist
@@ -263,16 +263,21 @@ function migrateCheck(version, storedVersion) {
 				replaceGridEntry(grid, 'Release Country', 7);
 				config.addConfigurationObject(gridSchema, grid);
 
+			case '2.0.2':
+			case '2.0.3-dev':
+				window.SetProperty('ADV.Limit Menu Expand: 10-6000', undefined);
+				window.SetProperty('SYSTEM: Filter By', undefined);
+				window.SetProperty('SYSTEM: View By', undefined);
+
 				// this block should appear after all previous versions have fallen through
-				console.log('> Upgrading Georgia Theme settings from', storedVersion);
+				console.log('> Upgrading Georgia-ReBORN Theme settings from', storedVersion);
 				const fileName = `georgia\\georgia-config-${storedVersion}.jsonc`;
-				console.log(`> Backing up Georgia Configuration file to ${fileName}`);
+				console.log(`> Backing up Georgia-ReBORN Configuration file to ${fileName}`);
 				fso.CopyFile(configPath, fb.ProfilePath + fileName);
 				config.writeConfiguration();
 				window.Reload();
 
-			case '2.0.2':
-			case '2.0.3-dev':
+			case '2.0.3':
 
 			default:
 				break;
@@ -285,14 +290,14 @@ function migrateCheck(version, storedVersion) {
 let retryCount = 0; // don't hammer if it's not working
 
 function checkForUpdates(openUrl) {
-	var url = 'https://api.github.com/repos/kbuffington/Georgia/tags';
+	var url = 'https://api.github.com/repos/TT-ReBORN/Georgia-ReBORN/tags';
 	makeHttpRequest('GET', url, function (resp) {
 		try {
 			var respObj = JSON.parse(resp);
 			updateAvailable = isNewerVersion(currentVersion, respObj[0].name);
-			console.log('Current released version of Georgia: v' + respObj[0].name);
+			console.log('Current released version of Georgia-ReBORN: v' + respObj[0].name);
 			if (updateAvailable) {
-				console.log('>>> Georgia update available. Download it here: https://github.com/kbuffington/Georgia/releases');
+				console.log('>>> Georgia-ReBORN update available. Download it here: https://github.com/TT-ReBORN/Georgia-ReBORN/releases');
 				updateHyperlink = new Hyperlink('Update Available', ft.lower_bar, 'update', 0, 0, window.Width);
 				if (updateHyperlink) {
 					stoppedTime += ' - ';
@@ -305,7 +310,7 @@ function checkForUpdates(openUrl) {
 					}
 				}
 			} else {
-				console.log('You are on the most current version of Georgia');
+				console.log('You are on the most current version of Georgia-ReBORN');
 			}
 		} catch (e) {
 			if (!updateHyperlink && retryCount < 3) {

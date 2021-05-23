@@ -1,10 +1,9 @@
 ### My prioritized todo list
 
-* Always update Georgia ReBORN to Georgia's latest version.
+* Always update Georgia-ReBORN to Georgia's latest version.
 
-* Fix Georgia ReBORN Wine Bugs under Linux:
+* Fix Georgia-ReBORN Wine Bugs under Linux:
 01. Drag and drop to Playlist not working
-02. Rating not working
 
 ### My unprioritized todo list
 

@@ -143,7 +143,7 @@ class Hyperlink {
 		let query;
 		switch (this.type) {
 			case 'update':
-				_.runCmd('https://github.com/kbuffington/Georgia/releases');
+				_.runCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/releases');
 				break;
 			case 'date':
 				if (pref.showPlaylistFulldate) {

@@ -1,10 +1,11 @@
-// Georgia
+// Georgia-ReBORN
 //
 // Description  a fullscreen theme for foo_spider_monkey_panel
-// Author 		Mordred
-// Version 		2.0.2
+// Author 		TT
+// Org. Author  Mordred
+// Version 		2.0.3
 // Dev. Started 2017-12-22
-// Last change  2021-03-26
+// Last change  2021-05-22
 // --------------------------------------------------------------------------------------
 
 // CONFIGURATION //////////////////////////////////////
@@ -557,7 +558,7 @@ function draw_ui(gr) {
 				drawnInfo = array.join(' | ');
 				infoSize = gr.MeasureString(drawnInfo, infoFont, 0, 0, 0, 0);
 			}
-			if (drawnInfo.length) {
+			if (drawnInfo.length && maxInfoWidth) {
 				trackInfoHeight = Math.ceil(infoSize.Height + 1);
 				//gr.DrawString(drawnInfo, infoFont, col.artist, infoLeft, geo.top_bg_h - trackInfoHeight - scaleForDisplay(73), maxInfoWidth, trackInfoHeight, StringFormat(2));
 				gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
@@ -1286,12 +1287,14 @@ function draw_ui(gr) {
 		// End
 }
 
+let repaintRectCount = 0;
 window.oldRepaintRect = window.RepaintRect;
 window.RepaintRect = (x, y, w, h, force = undefined) => {
 	if (timings.drawRepaintRects) {
 		repaintRects.push({ x, y, w, h });
 		window.Repaint();
 	} else {
+		repaintRectCount++;
 		window.oldRepaintRect(x, y, w, h, force);
 	}
 }
@@ -1299,24 +1302,23 @@ window.RepaintRect = (x, y, w, h, force = undefined) => {
 let rotatedCdIndex = 0;	// global index of current cdartArray img to draw
 function setupRotationTimer() {
 	clearInterval(cdartRotationTimer);
-	console.log(`creating ${pref.spinCdArtImageCount} rotated cd images, shown every ${pref.spinCdArtRedrawInterval}ms`);
 	if (pref.display_cdart && cdart && fb.IsPlaying && !fb.IsPaused && pref.spinCdart && !displayLibrary && !displayPlaylist) {
+		console.log(`creating ${pref.spinCdArtImageCount} rotated cd images, shown every ${pref.spinCdArtRedrawInterval}ms`);
 		cdartRotationTimer = setInterval(() => {
 			rotatedCdIndex++;
 			rotatedCdIndex %= pref.spinCdArtImageCount;
 			if (!cdartArray[rotatedCdIndex] && cdart && cdart_size.w) {
-				debugLog(`creating cdImg: ${rotatedCdIndex} (${cdart_size.w}x${cdart_size.h}) with rotation: ${360/pref.spinCdArtImageCount * rotatedCdIndex} degrees`);
+				// debugLog(`creating cdImg: ${rotatedCdIndex} (${cdart_size.w}x${cdart_size.h}) with rotation: ${360/pref.spinCdArtImageCount * rotatedCdIndex} degrees`);
 				cdartArray[rotatedCdIndex] = rotateImg(cdart, cdart_size.w, cdart_size.h, 360/pref.spinCdArtImageCount * rotatedCdIndex)
 			}
 			const cdLeftEdge = pref.cdart_ontop ? cdart_size.x : albumart_size.x + albumart_size.w; // the first line of cdImage that will be drawn
-			window.RepaintRect(cdLeftEdge, cdart_size.y, cdart_size.w - (cdLeftEdge - cdart_size.x), cdart_size.h);
+			window.RepaintRect(cdLeftEdge, cdart_size.y, cdart_size.w - (cdLeftEdge - cdart_size.x), cdart_size.h, !pref.cdart_ontop && !pref.displayLyrics);
 		}, pref.spinCdArtRedrawInterval);
 	}
 }
 
 function drawCdArt(gr) {
 	if (pref.display_cdart && cdart_size.y >= albumart_size.y && cdart_size.h <= albumart_size.h) {
-		let drawCdProfiler = null;
 		// if (timings.showExtraDrawTiming) drawCdProfiler = fb.CreateProfiler('cdart');
 		const cdImg = cdartArray[rotatedCdIndex] || rotatedCD;
 		gr.DrawImage(cdImg, cdart_size.x, cdart_size.y, cdart_size.w, cdart_size.h, 0, 0, cdImg.Width, cdImg.Height, 0);
@@ -1325,14 +1327,18 @@ function drawCdArt(gr) {
 }
 
 function on_paint(gr) {
-	let onPaintProfiler = null;
-	if (timings.showDrawTiming || timings.showExtraDrawTiming) onPaintProfiler = fb.CreateProfiler('on_paint');
+	const start = new Date();
 	draw_ui(gr);
 	if (transport.showVolume) {
 		volume_btn.on_paint(gr);
 	}
 
-	onPaintProfiler && onPaintProfiler.Print();
+	if (timings.showDrawTiming || timings.showExtraDrawTiming) {
+		const end = Date.now();
+		console.log(`${start.getHours()}:${leftPad(start.getMinutes(), 2, '0')}:${leftPad(start.getSeconds(), 2, '0')}.${leftPad(start.getMilliseconds(),3,'0')}: ` +
+			`on_paint took ${end - start.getTime()}ms ${repaintRectCount > 1 ? '- ' + repaintRectCount + ' repaintRect calls' : ''}`);
+	}
+	repaintRectCount = 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1895,7 +1901,7 @@ function onOptionsMenu(x, y) {
 		cdartArray = [];
 		RepaintWindow();
 	}, !pref.spinCdart);
-	cdArtMenu.createRadioSubMenu('Spinning cdArt redraw speed', ['250ms (lower CPU)', '200ms (default)', '150ms', '125ms', '100ms', '75ms (higher CPU)'], pref.spinCdArtRedrawInterval, [250, 200, 150, 125, 100, 75], interval => {
+	cdArtMenu.createRadioSubMenu('Spinning cdArt redraw speed', ['250ms (lower CPU)', '200ms', '150ms (default)', '125ms', '100ms', '75ms', '50ms (higher CPU)'], pref.spinCdArtRedrawInterval, [250, 200, 150, 125, 100, 75, 50], interval => {
 		pref.spinCdArtRedrawInterval = interval;
 		setupRotationTimer();
 	}, !pref.spinCdart)
@@ -2285,7 +2291,7 @@ function on_size() {
 		if (fb.IsPlaying) {
 			loadCountryFlags(); // wrong size flag gets loaded on 4k systems
 		}
-		rescalePlaylist();
+		rescalePlaylist(true);
 		initPlaylist();
 		volume_btn = new VolumeBtn();
 		sizeInitialized = true;
@@ -2416,8 +2422,11 @@ function on_playback_new_track(metadb) {
 			displayNextImage();
 		}, settings.artworkDisplayTime * 1000);
 	}
+	if (cdart) {
+		setupRotationTimer();
+	}
 	loadFromCache = true;
-	CreateRotatedCDImage(); // we need to always setup the rotated image because it rotates on every track
+	// CreateRotatedCDImage(); // we need to always setup the rotated image because it rotates on every track
 
 	/* code to retrieve record label logos */
 	let labelStrings = [];
@@ -3131,9 +3140,9 @@ function on_playback_stop(reason) {
 		refreshPlayButton();
 		loadFromCache = false;
 	}
-	progressBarTimer && clearInterval(progressBarTimer);
-	if (albumArtTimeout)
-		clearTimeout(albumArtTimeout);
+	clearInterval(cdartRotationTimer);
+	clearInterval(progressBarTimer);
+	clearTimeout(albumArtTimeout);
 	if (albumart && ((pref.cycleArt && albumArtIndex !== 0) || lastFolder == '')) {
 		debugLog("disposing artwork");
 		albumart = null;
@@ -3152,7 +3161,6 @@ function on_playback_stop(reason) {
 
 	if (reason === 0 || reason === 1) {	// Stop or end of playlist
 		cdart = disposeCDImg(cdart);
-		clearInterval(cdartRotationTimer);
 		cdartArray = [];	// clear Images
 		window.Repaint();
 	}
@@ -3276,10 +3284,10 @@ function on_playback_time() {
 
 function refresh_seekbar() {
 	if (pref.layout_mode === 'default_mode') {
-		window.RepaintRect(scaleForDisplay(40), wh - geo.lower_bar_h - 24, ww - scaleForDisplay(80), geo.lower_bar_h);
+		window.RepaintRect(scaleForDisplay(40), wh - geo.lower_bar_h - 24, ww - scaleForDisplay(80), geo.lower_bar_h, pref.spinCdart && !pref.displayLyrics);
 	}
 	if (pref.layout_mode === 'playlist_mode') {
-		window.RepaintRect(scaleForDisplay(20), wh - geo.lower_bar_h - 24, ww - scaleForDisplay(40), geo.lower_bar_h);
+		window.RepaintRect(scaleForDisplay(20), wh - geo.lower_bar_h - 24, ww - scaleForDisplay(40), geo.lower_bar_h, pref.spinCdart && !pref.displayLyrics);
 	}
 }
 
@@ -3511,7 +3519,7 @@ function disposeCDImg(cdImage) {
 function rotateImg(img, w, h, degrees) {
 	/** @type {GdiBitmap} */ let rotatedImg;
 	if (degrees === 0) {
-		rotatedImg = img.Clone(0, 0, img.Width, img.Height);
+		rotatedImg = img.Clone(0, 0, img.Width, img.Height).Resize(w, h);
 	} else {
 		rotatedImg = gdi.CreateImage(w, h);
 		const gotGraphics = rotatedImg.GetGraphics();
@@ -4781,7 +4789,7 @@ g_properties.add_properties(
 );
 
 // USING for creating foo_ui_columns.dll.cfg to set system.first_launch', true
-// For automatic 4k detection and pre-configured Georgia ReBORN settings.
+// For automatic 4k detection and pre-configured Georgia-ReBORN settings.
 // Always create a new foo_ui_columns.dll.cfg in FULL HD resolution when a new Georgia version was published or new settings/features were added.
 // Uncomment, save georgia-main.js, start foobar and clear Panel Properties, close foobar. A new generated foo_ui_columns.dll.cfg was created in the configuration folder.
 //is_first_launch = window.SetProperty('system.first_launch', true);
