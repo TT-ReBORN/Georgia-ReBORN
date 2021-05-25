@@ -61,28 +61,73 @@ function setTheme(theme) {
 	col.primary = theme.primary;
 
 	if (pref.whiteTheme) {
-	col.progress_bar = RGB(220, 220, 220);
+		col.progress_bar = isStreaming ? rgb(207, 0, 5) : rgb(180, 180, 180);
+		if (isStreaming) {
+			col.tl_added = theme.darkAccent = RGB(207, 0, 5);
+			col.tl_played = theme.accent = RGB(207, 41, 44);
+			col.tl_unplayed = theme.lightAccent = RGB(207, 72, 75);
+			col.primary = theme.primary = rgb(207, 0, 5);
+			//col.tl_added = theme.darkAccent = RGB(180, 180, 180);
+			//col.tl_played = theme.accent = RGB(200, 200, 200);
+			//col.tl_unplayed = theme.lightAccent = RGB(220, 220, 220);
+			//col.primary = theme.primary = rgb(180, 180, 180);
+		}
 	} else if (pref.blackTheme) {
-	col.progress_bar = RGB(50, 50, 50);
+		col.progress_bar = isStreaming ? rgb(207, 0, 5) : rgb(50, 50, 50);
+		if (isStreaming) {
+			col.tl_added = theme.darkAccent = RGB(207, 0, 5);
+			col.tl_played = theme.accent = RGB(207, 41, 44);
+			col.tl_unplayed = theme.lightAccent = RGB(207, 72, 75);
+			col.primary = theme.primary = rgb(207, 0, 5);
+			//col.tl_added = theme.darkAccent = RGB(60, 60, 60);
+			//col.tl_played = theme.accent = RGB(80, 80, 80);
+			//col.tl_unplayed = theme.lightAccent = RGB(100, 100, 100);
+			//col.primary = theme.primary = rgb(80, 80, 80);
+		}
 	} else if (pref.blueTheme) {
-	col.progress_bar = RGB(10, 130, 220);
+		col.progress_bar = RGB(10, 130, 220);
+		if (isStreaming) {
+			col.tl_added = theme.darkAccent = RGB(12, 144, 245);
+			col.tl_played = theme.accent = RGB(12, 137, 232);
+			col.tl_unplayed = theme.lightAccent = RGB(10, 130, 220);
+		}
 	} else if (pref.darkblueTheme) {
-	col.progress_bar = RGB(27, 55, 90);
+		col.progress_bar = RGB(27, 55, 90);
+		if (isStreaming) {
+			col.tl_added = theme.darkAccent = RGB(31, 65, 107);
+			col.tl_played = theme.accent = RGB(27, 58, 94);
+			col.tl_unplayed = theme.lightAccent = RGB(24, 50, 82);
+		}
 	} else if (pref.redTheme) {
-	col.progress_bar = RGB(140, 25, 25);
+		col.progress_bar = RGB(140, 25, 25);
+		if (isStreaming) {
+			col.tl_added = theme.darkAccent = RGB(156, 30, 30);
+			col.tl_played = theme.accent = RGB(143, 27, 27);
+			col.tl_unplayed = theme.lightAccent = RGB(130, 25, 25);
+		}
 	} else if (pref.creamTheme) {
-	col.progress_bar = RGB(255, 255, 255);
+		col.progress_bar = RGB(255, 255, 255);
+		if (isStreaming) {
+			col.tl_added = theme.darkAccent = RGB(120, 170, 130);
+			col.tl_played = theme.accent = RGB(130, 184, 141);
+			col.tl_unplayed = theme.lightAccent = RGB(139, 196, 151);
+		}
 	} else if (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) {
-	col.progress_bar = RGB(35, 35, 35);
+		col.progress_bar = RGB(35, 35, 35);
+		if (isStreaming) {
+			col.tl_added = theme.darkAccent = RGB(30, 30, 30);
+			col.tl_played = theme.accent = RGB(40, 40, 40);
+			col.tl_unplayed = theme.lightAccent = RGB(50, 50, 50);
+		}
 	}
 
 	if (colorDistance(theme.primary, col.progress_bar, true) < (themeCol.isCloseToGreyscale ? 60 : 45)) {
 		// progress fill is too close in color to bg
 		if (settings.showThemeLog) console.log('>>> Theme primary color is too close to progress bar. Adjusting progress_bar');
 		if (pref.whiteTheme && themeCol.brightness < 125) {
-			col.progress_bar = rgb(180, 180, 180);
+			col.progress_bar = isStreaming ? rgb(207, 0, 5) : rgb(180, 180, 180);
 		} if (pref.blackTheme && themeCol.brightness < 125) {
-			col.progress_bar = rgb(100, 100, 100);
+			col.progress_bar = isStreaming ? rgb(207, 0, 5) : rgb(100, 100, 100);
 		}
 	}
 	if (str.timeline) {

@@ -164,6 +164,9 @@ function initColors() {
 		col.now_playing = RGB(120, 120, 120); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 60);
+		col.tl_added = RGB(180, 180, 180);
+		col.tl_played = RGB(200, 200, 200);
+		col.tl_unplayed = RGB(220, 220, 220);
 
 	} else if (pref.blackTheme) {
 		col.artist = RGB(240, 240, 240);
@@ -174,6 +177,9 @@ function initColors() {
 		col.now_playing = RGB(200, 200, 200); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 255);
+		col.tl_added = RGB(60, 60, 60);
+		col.tl_played = RGB(80, 80, 80);
+		col.tl_unplayed = RGB(100, 100, 100);
 
 	} else if (pref.blueTheme) {
 		col.artist = RGB(242, 230, 170);
@@ -184,6 +190,9 @@ function initColors() {
 		col.now_playing = RGB(245, 245, 245); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 90);
+		col.tl_added = RGB(12, 144, 245);
+		col.tl_played = RGB(12, 137, 232);
+		col.tl_unplayed = RGB(10, 130, 220);
 
 	} else if (pref.darkblueTheme) {
 		col.artist = RGB(255, 202, 128);
@@ -194,6 +203,9 @@ function initColors() {
 		col.now_playing = RGB(230, 230, 230); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 140);
+		col.tl_added = RGB(31, 65, 107);
+		col.tl_played = RGB(27, 58, 94);
+		col.tl_unplayed = RGB(24, 50, 82);
 
 	} else if (pref.redTheme) {
 		col.artist = RGB(245, 212, 165);
@@ -204,6 +216,9 @@ function initColors() {
 		col.now_playing = RGB(220, 220, 220); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 140);
+		col.tl_added = RGB(156, 30, 30);
+		col.tl_played = RGB(143, 27, 27);
+		col.tl_unplayed = RGB(130, 25, 25);
 
 	} else if (pref.creamTheme) {
 		col.artist = RGB(100, 150, 110);
@@ -214,6 +229,9 @@ function initColors() {
 		col.now_playing = RGB(100, 100, 100); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 60);
+		col.tl_added = RGB(120, 170, 130);
+		col.tl_played = RGB(130, 184, 141);
+		col.tl_unplayed = RGB(139, 196, 151);
 
 	} else if (pref.nblueTheme) {
 		col.artist = RGB(0, 200, 255);
@@ -224,6 +242,9 @@ function initColors() {
 		col.now_playing = RGB(220, 220, 220); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 140);
+		col.tl_added = RGB(30, 30, 30);
+		col.tl_played = RGB(40, 40, 40);
+		col.tl_unplayed = RGB(50, 50, 50);
 
 	} else if (pref.ngreenTheme) {
 		col.artist = RGB(0, 200, 0);
@@ -234,6 +255,9 @@ function initColors() {
 		col.now_playing = RGB(220, 220, 220); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 140);
+		col.tl_added = RGB(30, 30, 30);
+		col.tl_played = RGB(40, 40, 40);
+		col.tl_unplayed = RGB(50, 50, 50);
 
 	} else if (pref.nredTheme) {
 		col.artist = RGB(229, 7, 44);
@@ -244,6 +268,9 @@ function initColors() {
 		col.now_playing = RGB(220, 220, 220); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 140);
+		col.tl_added = RGB(30, 30, 30);
+		col.tl_played = RGB(40, 40, 40);
+		col.tl_unplayed = RGB(50, 50, 50);
 
 	} else if (pref.ngoldTheme) {
 		col.artist = RGB(254, 204, 3);
@@ -254,14 +281,13 @@ function initColors() {
 		col.now_playing = RGB(220, 220, 220); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 140);
+		col.tl_added = RGB(30, 30, 30);
+		col.tl_played = RGB(40, 40, 40);
+		col.tl_unplayed = RGB(50, 50, 50);
 	}
 
 	col.rating = RGB(255, 170, 32);
 	col.hotness = RGB(192, 192, 0);
-
-	col.tl_added = RGB(15, 51, 65);
-	col.tl_played = RGB(44, 66, 75);
-	col.tl_unplayed = RGB(126, 173, 195);
 }
 initColors();
 
@@ -506,7 +532,7 @@ function draw_ui(gr) {
 
 	// Background
 	if (!albumart && noArtwork) { // we use noArtwork to prevent flashing of blue default theme
-		albumart_size.x = Math.floor(ww / 3); // if there's no album art info panel takes up 1/3 screen
+		albumart_size.x = isStreaming ? ww : Math.floor(ww / 2); // if there's no album art info panel takes up 1/2 screen
 		albumart_size.w = albumart_size.x;
 		albumart_size.y = geo.top_art_spacing;
 		albumart_size.h = playlist.h + (is_4k ? 2 : 1);
@@ -518,6 +544,7 @@ function draw_ui(gr) {
 	gr.FillSolidRect(0, 0, ww, wh, col.bg);
 	//gr.FillSolidRect(0, 0, ww, geo.top_bg_h, col.menu_bg); // I don't need this
 	if ((fb.IsPaused || fb.IsPlaying) && (!albumart && cdart)) {
+		// info grid background drawn here before cdArt if no albumArt
 		gr.SetSmoothingMode(SmoothingMode.None);
 		gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, col.primary);
 		gr.DrawRect(-1, albumart_size.y, albumart_size.x, albumart_size.h - 1, 1, col.accent);
@@ -609,11 +636,48 @@ function draw_ui(gr) {
 			drawCdArt(gr);
 		}
 		if (timings.showExtraDrawTiming) drawArt.Print();
+
 	}
 	if (fb.IsPlaying && (albumart || !cdart) && ((!displayLibrary && !displayPlaylist) || !settings.hidePanelBgWhenCollapsed)) {
 		gr.SetSmoothingMode(SmoothingMode.None);
 		gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, col.primary); // info bg -- must be drawn after shadow
 		gr.DrawRect(-1, albumart_size.y, albumart_size.x, albumart_size.h - 1, 1, col.accent);
+		if (isStreaming && noArtwork && pref.whiteTheme) {
+			gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, g_pl_colors.background); // info bg -- must be drawn after shadow
+			gr.FillGradRect(0, geo.top_art_spacing - (is_4k ? 13 : 6), albumart_size.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Artwork's Top Pseudo Shadow Fix
+			gr.FillGradRect(is_4k ? albumart_size.x - 4 : albumart_size.x - 2, is_4k ? albumart_size.y - 4 : albumart_size.y, is_4k ? 8 : 4, is_4k ? albumart_size.h + 4 : albumart_size.h, 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Artwork's Left Side Pseudo Shadow Fix
+			gr.FillGradRect(0, albumart_size.y + albumart_size.h - (is_4k ? 4 : 2), albumart_size.w, is_4k ? 8 : 5, 90, RGBtoRGBA(col.shadow, 30), RGBtoRGBA(col.shadow, 0)); // Artwork's Bottom Pseudo Shadow Fix
+		} else if (isStreaming && noArtwork && pref.blackTheme) {
+			gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, g_pl_colors.background); // info bg -- must be drawn after shadow
+			gr.FillGradRect(0, geo.top_art_spacing - (is_4k ? 13 : 6), albumart_size.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Artwork's Top Pseudo Shadow Fix
+			gr.FillGradRect(is_4k ? albumart_size.x - 4 : albumart_size.x - 2, is_4k ? albumart_size.y - 4 : albumart_size.y, is_4k ? 8 : 4, is_4k ? albumart_size.h + 4 : albumart_size.h, 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Artwork's Left Side Pseudo Shadow Fix
+			gr.FillGradRect(0, albumart_size.y + albumart_size.h - (is_4k ? 4 : 2), albumart_size.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 80), RGBtoRGBA(col.shadow, 0)); // Artwork's Bottom Pseudo Shadow Fix
+		} else if (isStreaming && noArtwork && pref.blueTheme) {
+			gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, g_pl_colors.background); // info bg -- must be drawn after shadow
+			gr.FillGradRect(0, geo.top_art_spacing - (is_4k ? 13 : 6), albumart_size.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 26)); // Artwork's Top Pseudo Shadow Fix
+			gr.FillGradRect(is_4k ? albumart_size.x - 4 : albumart_size.x - 2, is_4k ? albumart_size.y - 4 : albumart_size.y, is_4k ? 8 : 4, is_4k ? albumart_size.h + 4 : albumart_size.h, 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 26)); // Artwork's Left Side Pseudo Shadow Fix
+			gr.FillGradRect(0, albumart_size.y + albumart_size.h - (is_4k ? 4 : 2), albumart_size.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 34), RGBtoRGBA(col.shadow, 0)); // Artwork's Bottom Pseudo Shadow Fix
+		} else if (isStreaming && noArtwork && pref.darkblueTheme) {
+			gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, g_pl_colors.background); // info bg -- must be drawn after shadow
+			gr.FillGradRect(0, geo.top_art_spacing - (is_4k ? 13 : 6), albumart_size.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Artwork's Top Pseudo Shadow Fix
+			gr.FillGradRect(is_4k ? albumart_size.x - 4 : albumart_size.x - 2, is_4k ? albumart_size.y - 4 : albumart_size.y, is_4k ? 8 : 4, is_4k ? albumart_size.h + 4 : albumart_size.h, 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Artwork's Left Side Pseudo Shadow Fix
+			gr.FillGradRect(0, albumart_size.y + albumart_size.h - (is_4k ? 4 : 2), albumart_size.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 60), RGBtoRGBA(col.shadow, 0)); // Artwork's Bottom Pseudo Shadow Fix
+		} else if (isStreaming && noArtwork && pref.redTheme) {
+			gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, g_pl_colors.background); // info bg -- must be drawn after shadow
+			gr.FillGradRect(0, geo.top_art_spacing - (is_4k ? 13 : 6), albumart_size.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Artwork's Top Pseudo Shadow Fix
+			gr.FillGradRect(is_4k ? albumart_size.x - 4 : albumart_size.x - 2, is_4k ? albumart_size.y - 4 : albumart_size.y, is_4k ? 8 : 4, is_4k ? albumart_size.h + 4 : albumart_size.h, 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Artwork's Left Side Pseudo Shadow Fix
+			gr.FillGradRect(0, albumart_size.y + albumart_size.h - (is_4k ? 4 : 2), albumart_size.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 72), RGBtoRGBA(col.shadow, 0)); // Artwork's Bottom Pseudo Shadow Fix
+		} else if (isStreaming && noArtwork && pref.creamTheme) {
+			gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, g_pl_colors.background); // info bg -- must be drawn after shadow
+			gr.FillGradRect(0, geo.top_art_spacing - (is_4k ? 13 : 6), albumart_size.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Artwork's Top Pseudo Shadow Fix
+			gr.FillGradRect(is_4k ? albumart_size.x - 4 : albumart_size.x - 2, is_4k ? albumart_size.y - 4 : albumart_size.y, is_4k ? 8 : 4, is_4k ? albumart_size.h + 4 : albumart_size.h, 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Artwork's Left Side Pseudo Shadow Fix
+			gr.FillGradRect(0, albumart_size.y + albumart_size.h - (is_4k ? 4 : 2), albumart_size.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 18), RGBtoRGBA(col.shadow, 0)); // Artwork's Bottom Pseudo Shadow Fix
+		} else if (isStreaming && noArtwork && pref.nblueTheme || isStreaming && noArtwork && pref.ngreenTheme || isStreaming && noArtwork && pref.nredTheme || isStreaming && noArtwork && pref.ngoldTheme) {
+			gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, g_pl_colors.background); // info bg -- must be drawn after shadow
+			gr.FillGradRect(0, geo.top_art_spacing - (is_4k ? 10 : 6), albumart_size.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 180)); // Artwork's Top Pseudo Shadow Fix
+			gr.FillGradRect(is_4k ? albumart_size.x - 4 : albumart_size.x - 2, is_4k ? albumart_size.y - 4 : albumart_size.y, is_4k ? 8 : 4, is_4k ? albumart_size.h + 4 : albumart_size.h, 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Artwork's Left Side Pseudo Shadow Fix
+			gr.FillGradRect(0, albumart_size.y + albumart_size.h - (is_4k ? 4 : 2), albumart_size.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 120), RGBtoRGBA(col.shadow, 0)); // Artwork's Bottom Pseudo Shadow Fix
+		}
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 	}
 	if (fb.IsPaused) {
@@ -662,6 +726,9 @@ function draw_ui(gr) {
 		} else {
 			col.info_text = rgb(255, 255, 255);
 		}
+		if (pref.whiteTheme && isStreaming || pref.creamTheme && isStreaming) {
+			col.info_text = rgb(120, 120, 120);
+		}
 
 		var top = (albumart_size.y ? albumart_size.y : geo.top_art_spacing) + scaleForDisplay(68);
 		if (gridSpace > 120) {
@@ -670,7 +737,7 @@ function draw_ui(gr) {
 			
 			function drawTitle(top) {
 				if (!str.title) return 0;
-				ft.title = ft.title_lrg;
+				ft.title = ft.album_lrg;
 				ft.tracknum = ft.tracknum_lrg;
 				let title_spacing = scaleForDisplay(8);
 				var trackNumWidth = 0;
@@ -855,7 +922,7 @@ function draw_ui(gr) {
 			if (is_4k) {
 				logoTop -= 20;
 			}
-			gr.DrawImage(logo, Math.round(albumart_size.x / 2 - logoWidth / 2), logoTop, Math.round(logoWidth), Math.round(logo.Height * heightScale),
+			gr.DrawImage(logo, Math.round(isStreaming ? scaleForDisplay(40) : albumart_size.x / 2 - logoWidth / 2), logoTop, Math.round(logoWidth), Math.round(logo.Height * heightScale),
 				0, 0, logo.Width, logo.Height, 0);
 		}
 
@@ -1915,7 +1982,7 @@ function onOptionsMenu(x, y) {
 	cdArtMenu.appendTo(menu);
 
 	menu.addToggleItem('Draw label art on background', pref, 'labelArtOnBg', () => RepaintWindow());
-	menu.addToggleItem('Display song title in info grid', pref, 'showTitleInGrid', () => RepaintWindow());
+	menu.addToggleItem('Display song title in info grid', pref, 'showTitleInGrid', () => { RepaintWindow(); }, isStreaming);
 
 	menu.addSeparator();
 	const menuFontMenu = new Menu('Menu font size');
@@ -3106,7 +3173,6 @@ function on_playback_pause(pausing) {
 	if (pausing || fb.PlaybackLength < 0) {
 		clearInterval(progressBarTimer);
 		clearInterval(cdartRotationTimer);
-		progressBarTimer = 0;
 		window.RepaintRect(0, geo.top_art_spacing, Math.max(albumart_size.x, scaleForDisplay(40)), playlist.h);
 	} else { // unpausing
 		clearInterval(progressBarTimer); // clear to avoid multiple progressTimers which can happen depending on the playback state when theme is loaded
@@ -3170,6 +3236,7 @@ function on_playback_stop(reason) {
 	if (displayBiography) {
 		biography.on_playback_stop(reason);
 	}
+	initColors();
 }
 
 function on_playback_starting(cmd, is_paused) {
@@ -3356,17 +3423,19 @@ function SetProgressBarRefresh() {
 		} else {
 			t_interval = 333; // for slow computers, only update 3x a second
 		}
+	} else {
+		t_interval = 1000;
+	}
 
-		if (timings.showDebugTiming)
-			console.log(`Progress bar will update every ${t_interval}ms or ${1000 / t_interval} times per second.`);
+	if (timings.showDebugTiming)
+		console.log(`Progress bar will update every ${t_interval}ms or ${1000 / t_interval} times per second.`);
 
-		progressBarTimer && clearInterval(progressBarTimer);
-		progressBarTimer = null;
-		if (!fb.IsPaused) { // only create progressTimer if actually playing
-			progressBarTimer = setInterval(() => {
-				refresh_seekbar();
-			}, t_interval);
-		}
+	progressBarTimer && clearInterval(progressBarTimer);
+	progressBarTimer = null;
+	if (!fb.IsPaused) { // only create progressTimer if actually playing
+		progressBarTimer = setInterval(() => {
+			refresh_seekbar();
+		}, t_interval);
 	}
 }
 
@@ -3838,12 +3907,16 @@ function fetchNewArtwork(metadb) {
 	if (isStreaming) {
 		cdart = disposeCDImg(cdart);
 		albumart = utils.GetAlbumArtV2(metadb);
-		getThemeColors(albumart);
-		ResizeArtwork(true);
-		if (!albumart && !cdart) {	// Switching from Album to Stream Shadow Fix
+		pref.showTitleInGrid = true;
+		if (albumart) {
+			getThemeColors(albumart);
+			ResizeArtwork(true);
+		} else {
+			noArtwork = true;
 			shadow_image = null;
 		}
 	} else {
+		pref.showTitleInGrid = false;
 		aa_list = globals.imgPaths.map(path => utils.Glob($(path), FileAttributes.Directory | FileAttributes.Hidden)).flat();
 		const filteredFileTypes = pref.filterCdJpgsFromAlbumArt ? '(png|jpg)' : 'png';
 		const pattern = new RegExp('(cd|vinyl|' + settings.cdArtBasename + ')([0-9]*|[a-h])\.' + filteredFileTypes, 'i');

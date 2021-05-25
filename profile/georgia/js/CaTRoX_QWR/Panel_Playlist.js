@@ -769,8 +769,8 @@ function PlaylistPanel(x, y) {
 		}
 
 		if (pref.nblueTheme && pref.layout_mode === 'default_mode' || pref.ngreenTheme && pref.layout_mode === 'default_mode' || pref.nredTheme && pref.layout_mode === 'default_mode' || pref.ngoldTheme && pref.layout_mode === 'default_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(5) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Playlist's Top Pseudo Shadow Fix
-		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 86), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(4) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 160)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y + this.h : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 160), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		} else if (pref.nblueTheme && pref.layout_mode === 'playlist_mode' || pref.ngreenTheme && pref.layout_mode === 'playlist_mode' || pref.nredTheme && pref.layout_mode === 'playlist_mode' || pref.ngoldTheme && pref.layout_mode === 'playlist_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 255), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h - 2 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 200), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
@@ -4476,7 +4476,7 @@ class Header extends BaseHeader {
 						cache_header = false;   // don't cache until artwork is loaded
 					}
 					else {// null
-						grClip.DrawString('NO COVER', g_pl_fonts.cover, g_pl_colors.title_normal, art_box_x, art_box_y, art_box_size, art_box_size, g_string_format.align_center);
+						grClip.DrawString(isStreaming ? 'LIVE\n ON AIR' : 'NO COVER', g_pl_fonts.cover, g_pl_colors.title_normal, art_box_x, art_box_y, art_box_size, art_box_size, g_string_format.align_center);
 					}
 
 					grClip.DrawRect(art_box_x, art_box_y, art_box_w - 1, art_box_h - 1, 1, line_color);
@@ -4672,7 +4672,9 @@ class Header extends BaseHeader {
 				if (line_x1 !== left_pad) {
 					line_x1 += is_4k ? 20 : 9;
 				}
-				var line_x2 = this.w - part2_right_pad - (is_4k ? 58 : 25);
+				const date_query = pref.showPlaylistFulldate ? tf.date : tf.year;
+				const date_text = $(date_query, this.metadb);
+				var line_x2 = this.w - part2_right_pad - (date_text ? (is_4k ? 58 : 25) : (is_4k ? 40 : 20));
 				var line_y = Math.round(this.h / 2) + (is_4k ? 10 : 6);
 
 				if (line_x2 - line_x1 > 0) {

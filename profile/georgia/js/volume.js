@@ -159,11 +159,11 @@ class VolumeBtn {
 			if (pref.whiteTheme) {
 			gr.FillSolidRect(is_4k ? x - 3 : x - 2, y + p, is_4k ? w + 3 : w + 2, h, RGB(255, 255, 255));
 			gr.FillSolidRect(x, y + 5, fillWidth - 2, h - 5, col.primary);
-			gr.DrawRect(is_4k ? x - 3 : x - 2, y + 2, w + 3, h, 1, col.progress_bar);
+			gr.DrawRect(is_4k ? x - 3 : x - 2, y + 2, w + 3, h, 1, RGB(220, 220, 220));
 			} else if (pref.blackTheme) {
 			gr.FillSolidRect(is_4k ? x - 3 : x - 2, y + p, is_4k ? w + 3 : w + 2, h, RGB(35, 35, 35));
 			gr.FillSolidRect(x, y + 5, fillWidth - 2, h - 5, col.primary);
-			gr.DrawRect(is_4k ? x - 3 : x - 2, y + 2, w + 3, h, 1, col.progress_bar);
+			gr.DrawRect(is_4k ? x - 3 : x - 2, y + 2, w + 3, h, 1, RGB(60, 60, 60));
 			} else if (pref.blueTheme) {
 			gr.FillSolidRect(is_4k ? x - 3 : x - 2, y + p, is_4k ? w + 3 : w + 2, h, RGB(10, 130, 220));
 			gr.FillSolidRect(x, y + 5, fillWidth - 2, h - 5, RGB(242, 230, 170));
