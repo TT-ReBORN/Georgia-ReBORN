@@ -81,8 +81,9 @@ Please visit Mordred's original Georgia theme to learn more: https://github.com/
 ## Support
 
 The official discussion thread for this theme is located at **[Discussions](https://github.com/TT-ReBORN/Georgia-ReBORN/discussions)** or at 
-**[HydrogenAudio](https://hydrogenaud.io/index.php/topic,116190.0.html)** and that's a great place to go for questions and other support issues. 
-If you discover a bug, please open an issue on Github if you can.
+**[HydrogenAudio](https://hydrogenaud.io/index.php?topic=121047.0)** and that's a great place to go for questions and other support issues. 
+If you discover a bug, please open an issue on Github if you can, or visit 
+**[Mordred's Georgia HydrogenAudio Thread](https://hydrogenaud.io/index.php/topic,116190.0.html)** since most of the code is based from Georgia.
 
 ## Thanks
 
