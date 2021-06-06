@@ -2814,7 +2814,7 @@ function on_mouse_lbtn_up(x, y, m) {
 		if (just_dblclicked) {
 			// You just did a double-click, so do nothing
 			just_dblclicked = false;
-		} else {
+		} else if (pref.layout_mode === 'default_mode') {
 			if ((!displayBiography && albumart && albumart_size.x <= x && albumart_size.y <= y && albumart_size.x + albumart_size.w >= x && albumart_size.y + albumart_size.h >= y) ||
 				(cdart && !albumart && cdart_size.x <= x && cdart_size.y <= y && cdart_size.x + cdart_size.w >= x && cdart_size.y + cdart_size.h >= y) ||
 				pauseBtn.mouseInThis(x, y)) {
