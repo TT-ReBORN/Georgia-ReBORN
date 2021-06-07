@@ -5418,9 +5418,9 @@ class Row extends ListItem {
 				track_num_query = tf.vinyl_track;
 			}
 			if (this.is_playing) {
-				track_num_query = '      ';
+				track_num_query = g_properties.show_header ? '      ' : '$if2(%tracknumber%,$pad_right(' + (this.idx_in_header + 1) + ',2,0)). ';
 			}
-			var title_query = track_num_query + '  %title%[ \'(\'%original artist%\' cover)\']';
+			var title_query = g_properties.show_header ? track_num_query + '  %title%[ \'(\'%original artist%\' cover)\']' : '     %artist% - %album% - ' + track_num_query + ' %title%[ \'(\'%original artist%\' cover)\']';
 			this.title_text = (fb.IsPlaying && this.is_playing && is_radio) ? $(title_query) : $(title_query, this.metadb);
 		}
 
