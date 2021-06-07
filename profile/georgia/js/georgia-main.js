@@ -1172,7 +1172,7 @@ function draw_ui(gr) {
 				}
 				gr.DrawString(str.artist, artistFont, col.artist, textLeft + (pref.show_flags && flagImgs.length ? flagSize + 2 : 0) - (is_4k ? 2 : 1), lowerBarTop + heightAdjustment, availableWidth, height, StringFormat(0, 0, 4));
 				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x + (pref.show_flags && flagImgs.length ? flagSize + width + scaleForDisplay(9) : is_4k ? width + scaleForDisplay(8) : width + scaleForDisplay(7)), lowerBarTop, trackNumWidth - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
-				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + (pref.show_flags && flagImgs.length ? is_4k ? flagSize + trackNumWidth + width : flagSize + trackNumWidth + width + scaleForDisplay(1) : trackNumWidth + width - scaleForDisplay(1)) + (is_4k ? scaleForDisplay(1) : 0), lowerBarTop, 0.34 * ww, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
+				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + (pref.show_flags && flagImgs.length ? is_4k ? flagSize + trackNumWidth + width : flagSize + trackNumWidth + width + scaleForDisplay(1) : trackNumWidth + width - scaleForDisplay(1)) + (is_4k ? scaleForDisplay(1) : 0), lowerBarTop, ww < 1600 ? 0.22 * ww : 0.34 * ww, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
 			}
 		} else {
 			gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x, lowerBarTop + heightAdjustment, 0.95 * ww - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
