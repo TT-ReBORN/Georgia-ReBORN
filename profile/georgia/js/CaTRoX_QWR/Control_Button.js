@@ -178,8 +178,7 @@ function btnActionHandler(btn) {
 		case 'Stop':
 			fb.Stop();
 			if (!displayPlaylist) {
-				displayPlaylist = true;
-				btns.playlist.enable = false;
+				btns.playlist.onClick();
 			}
 			break;
 		case 'Previous':
