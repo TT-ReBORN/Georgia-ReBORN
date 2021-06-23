@@ -75,7 +75,7 @@ var fontsCreated = null;
 function createFonts() {
 	g_tooltip = window.Tooltip;
 	g_tooltip.Text = '';	// just in case
-	g_tooltip.SetFont('Segoe UI', scaleForDisplay(15))
+	g_tooltip.SetFont('Segoe UI', scaleForDisplay(15));
 	g_tooltip.SetMaxWidth(scaleForDisplay(300));
 
 	function font(name, size, style) {
@@ -1986,7 +1986,7 @@ function onOptionsMenu(x, y) {
 
 	menu.addSeparator();
 	const menuFontMenu = new Menu('Menu font size');
-	menuFontMenu.addRadioItems(['-1', '11px', '12px (default)', '13px', '14px', '16px', '+1'], pref.menu_font_size, [-1,11,12,13,14,16,999], (size) => {
+	menuFontMenu.addRadioItems(['11px', '12px (default)', '13px', '14px', '16px'], pref.menu_font_size, [11,12,13,14,16], (size) => {
 		if (size === -1) {
 			pref.menu_font_size--;
 		} else if (size === 999) {
@@ -2147,6 +2147,7 @@ function onOptionsMenu(x, y) {
 			} else {
 				pref.font_size_playlist_header = size;
 			}
+			createPlaylistFonts();
 			playlist.on_size(ww, wh);
 			window.Repaint();
 		});
@@ -2167,6 +2168,7 @@ function onOptionsMenu(x, y) {
 				pref.font_size_playlist = size;
 			}
 			g_properties.row_h = Math.round(pref.font_size_playlist * 1.667);
+			createPlaylistFonts();
 			playlist.on_size(ww, wh);
 			window.Repaint();
 		});
@@ -4070,7 +4072,39 @@ function createButtonObjects(ww, wh) {
 		let y = is_4k ? 16 : 9;
 		let h = img[0].Height;
 		let w = img[0].Width;
-		let centerMenu = is_4k? 550 : 280;
+		let centerMenu = is_4k ? 550 : 280;
+
+		if (pref.menu_font_size === 11) {
+			if (pref.Player_Small && ww < 1600 || pref.Player_4K_Small) {
+				centerMenu = is_4k ? 396 : 204;
+			} else {
+				centerMenu = is_4k ? 532 : 264;
+			}
+		} else if (pref.menu_font_size === 12) {
+			if (pref.Player_Small && ww < 1600 || pref.Player_4K_Small) {
+				centerMenu = is_4k ? 550 : 280;
+			} else {
+				centerMenu = is_4k ? 564 : 280;
+			}
+		} else if (pref.menu_font_size === 13) {
+			if (pref.Player_Small && ww < 1600 || pref.Player_4K_Small) {
+				centerMenu = is_4k ? 708 : 356;
+			} else {
+				centerMenu = is_4k ? 593 : 295;
+			}
+		} else if (pref.menu_font_size === 14) {
+			if (pref.Player_Small && ww < 1600 || pref.Player_4K_Small) {
+				centerMenu = is_4k ? 856 : 432;
+			} else {
+				centerMenu = is_4k ? 626 : 314;
+			}
+		} else if (pref.menu_font_size === 16) {
+			if (pref.Player_Small && ww < 1600 || pref.Player_4K_Small) {
+				centerMenu = is_4k ? 1158 : 584;
+			} else {
+				centerMenu = is_4k ? 688 : 343;
+			}
+		}
 
 		btns[20] = new Button(x, y, w, h, 'File', img);
 
@@ -4111,23 +4145,28 @@ function createButtonObjects(ww, wh) {
 		x = Math.round(ww * .5 + (centerMenu / 2));
 		y = is_4k ? 16 : 9;
 		h = img[0].Height + 4;
+		if (pref.menu_font_size === 11) { is_4k ? h = img[0].Height + 6 : h = img[0].Height + 5; }
+		if (pref.menu_font_size === 12) { h = img[0].Height + 4; }
+		if (pref.menu_font_size === 13) { is_4k ? h = img[0].Height + 1 : h = img[0].Height + 2; }
+		if (pref.menu_font_size === 14) { is_4k ? h = img[0].Height - 2 : h = img[0].Height + 1; }
+		if (pref.menu_font_size === 16) { is_4k ? h = img[0].Height - 7 : h = img[0].Height - 2; }
 		btns[30] = new Button(x, y, 0, h, img);
 		img = btnImg.Rating;
 		x -= (img[0].Width);
-		btns[32] = new Button(x, y, img[0].Width, h, 'Rating', img, 'Rate Song');
+		btns[32] = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Rating', img, 'Rate Song');
 		img = btnImg.Lyrics;
 		x -= (img[0].Width) - (is_4k ? 3 : 2);
-		btns.lyrics = new Button(x, y, img[0].Width, h, 'Lyrics', img, 'Display Lyrics');
+		btns.lyrics = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Lyrics', img, 'Display Lyrics');
 		img = btnImg.Biography;
 		x -= (img[0].Width) - (is_4k ? 3 : 2);
-		btns.biography = new Button(x, y, img[0].Width, h, 'Biography', img, 'Display Biography');
+		btns.biography = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Biography', img, 'Display Biography');
 		img = btnImg.ShowLibrary;
 		x -= (img[0].Width) - (is_4k ? 3 : 2);
-		btns.library = new Button(x, y, img[0].Width, h, 'ShowLibrary', img, 'Show Library');
+		btns.library = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'ShowLibrary', img, 'Show Library');
 		img = btnImg.Playlist;
 		x -= (img[0].Width) - (is_4k ? 3 : 2);
-		btns.playlist = new Button(x, y, img[0].Width, h, 'Playlist', img, 'Show Playlist');
-	
+		btns.playlist = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Playlist', img, 'Show Playlist');
+
 	} else if (pref.layout_mode === 'playlist_mode') {
 
 		/** @type {GdiBitmap[]} */
@@ -4139,31 +4178,59 @@ function createButtonObjects(ww, wh) {
 		
 		btns[20] = new Button(x, y, w, h, 'File', img);
 
-		x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
+		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
+		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
+		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
+		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
 		img = btnImg.Edit;
 		btns[21] = new Button(x, y, img[0].Width, h, 'Edit', img);
 
-		x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
+		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
+		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
+		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
+		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
 		img = btnImg.View;
 		btns[22] = new Button(x, y, img[0].Width, h, 'View', img);
 
-		x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
+		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
+		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
+		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
+		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
 		img = btnImg.Playback;
 		btns[23] = new Button(x, y, img[0].Width, h, 'Playback', img);
 
-		x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
+		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
+		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
+		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
+		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
 		img = btnImg.Library;
 		btns[24] = new Button(x, y, img[0].Width, h, 'Library', img);
 
-		x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
+		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
+		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
+		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
+		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
 		img = btnImg.Help;
 		btns[25] = new Button(x, y, img[0].Width, h, 'Help', img);
 
-		x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
+		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
+		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
+		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
+		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
 		img = btnImg.Playlists;
 		btns[26] = new Button(x, y, img[0].Width, h, 'Playlists', img);
 
-		x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
+		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
+		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
+		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
+		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
 		img = btnImg.Options;
 		btns[27] = new Button(x, y, img[0].Width, h, 'Options', img);
 
