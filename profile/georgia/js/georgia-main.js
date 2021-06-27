@@ -1823,8 +1823,8 @@ function onOptionsMenu(x, y) {
 	menu.addToggleItem('Display song title in info grid', pref, 'showTitleInGrid', () => { RepaintWindow(); }, isStreaming);
 
 	menu.addSeparator();
-	const menuFontMenu = new Menu('Menu font size');
-	menuFontMenu.addRadioItems(['11px', '12px (default)', '13px', '14px', '16px'], pref.menu_font_size, [11,12,13,14,16], (size) => {
+	const changeFontSizeMenu = new Menu('Change Font Sizes');
+	changeFontSizeMenu.createRadioSubMenu('Menu Font Size', ['11px', '12px (default)', '13px', '14px', '16px'], pref.menu_font_size, [11,12,13,14,16], (size) => {
 		if (size === -1) {
 			pref.menu_font_size--;
 		} else if (size === 999) {
@@ -1837,7 +1837,76 @@ function onOptionsMenu(x, y) {
 		createButtonObjects(ww, wh);
 		RepaintWindow();
 	});
-	menuFontMenu.appendTo(menu);
+	const playlistFontSizeMenu = new Menu('Playlist Font Sizes');
+	playlistFontSizeMenu.createRadioSubMenu('Header Font Size', ['-1', '14px', '15px (default)', '16px', '18px', '20px', '22px', '+1'], pref.font_size_playlist_header,
+	[-1, 14, 15, 16, 18, 20, 22, 999],
+	(size) => {
+		if (size === -1) {
+			pref.font_size_playlist_header--;
+		} else if (size === 999) {
+			pref.font_size_playlist_header++;
+		} else {
+			pref.font_size_playlist_header = size;
+		}
+		createPlaylistFonts();
+		playlist.on_size(ww, wh);
+		window.Repaint();
+	});
+	playlistFontSizeMenu.createRadioSubMenu('Row Font Size', ['-1', '11px', '12px (default)', '13px', '14px', '16px', '18px', '+1'], pref.font_size_playlist,
+	[-1, 11, 12, 13, 14, 16, 18, 999],
+	(size) => {
+		if (size === -1) {
+			pref.font_size_playlist--;
+		} else if (size === 999) {
+			pref.font_size_playlist++;
+		} else {
+			pref.font_size_playlist = size;
+		}
+		g_properties.row_h = Math.round(pref.font_size_playlist * 1.667);
+		createPlaylistFonts();
+		playlist.on_size(ww, wh);
+		window.Repaint();
+	});
+	playlistFontSizeMenu.appendTo(changeFontSizeMenu);
+	changeFontSizeMenu.createRadioSubMenu('Library Font Size', ['-1', '11px', '12px', '13px', '14px', '16px (default)', '18px', '+1'], libraryProps.baseFontSize,
+	[-1, is_4k ? 11 * 1.5 : 1.4, is_4k ? 12 * 1.5 : 12, is_4k ? 13 * 1.5 : 13, is_4k ? 14 * 1.5 : 14, is_4k ? 16 * 1.5 : 16, is_4k ? 18 * 1.5 : 18, 999],
+	(size) => {
+		if (size === -1) {
+			libraryProps.baseFontSize--;
+			p.filterFont--;
+			p.filterBtnFont--;
+		} else if (size === 999) {
+			libraryProps.baseFontSize++;
+			p.filterFont++;
+			p.filterBtnFont++;
+		} else {
+			libraryProps.baseFontSize = size;
+			p.filterFont = size;
+			p.filterBtnFont = size;
+		}
+		p.resetZoom();
+		library_tree.create_images();
+		initLibraryPanel();
+		setLibrarySize();
+		window.Repaint();
+	});
+	changeFontSizeMenu.createRadioSubMenu('Biography Font Size', ['-1', '11px', '12px (default)', '13px', '14px', '16px', '18px', '+1'], ppt.baseFontSize,
+	[-1, is_4k ? 11 * 2 : 1.4, is_4k ? 12 * 2 : 12, is_4k ? 13 * 2 : 13, is_4k ? 14 * 2 : 14, is_4k ? 16 * 2 : 16, is_4k ? 18 * 2 : 18, 999],
+	(size) => {
+		if (size === -1) {
+			ppt.baseFontSize--;
+		} else if (size === 999) {
+			ppt.baseFontSize++;
+		} else {
+			ppt.baseFontSize = size;
+		}
+		butBio.resetZoom();
+		butBio.create_images();
+		initBiographyPanel();
+		setBiographySize();
+		window.Repaint();
+	});
+	changeFontSizeMenu.appendTo(menu);
 
 	const scrollBarMenu = new Menu('Scrollbar Settings');
 	scrollBarMenu.createRadioSubMenu('Library Scrollbar', ['Auto Hide ON', 'Auto Hide OFF'], pref.autoSbar_Library, [true,false], function (nodeIndex) {

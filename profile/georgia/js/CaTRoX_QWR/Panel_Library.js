@@ -1005,8 +1005,8 @@ function panel_operations() {
 
     this.setFilterFont = () => {
         var scale = Math.max(libraryProps.zoomFilter / 100, 0.9);
-        this.filterFont = gdi.Font("Segoe UI", is_4k ? 24 : 14, 1);
-        this.filterBtnFont = gdi.Font("Segoe UI", is_4k ? 32 : 14, 1);
+        this.filterFont = gdi.Font("Segoe UI", libraryProps.baseFontSize * 0.90, 1);
+        this.filterBtnFont = gdi.Font("Segoe UI", libraryProps.baseFontSize * 0.90, 1);
     }
     this.setFilterFont();
 
@@ -1252,8 +1252,8 @@ function panel_operations() {
         libraryProps.zoomFilter = 100;
         ui.node_sz = Math.round(16 * s.scale);
         // ppt.set(" Zoom Tooltip [Button] (%)", 100);
-        this.filterFont = gdi.Font("Segoe UI", is_4k ? 24 : 14, 1);
-        this.filterBtnFont = gdi.Font("Segoe UI", is_4k ? 32 : 14, 1);
+        this.filterFont = gdi.Font("Segoe UI", libraryProps.baseFontSize * 0.90, 1);
+        this.filterBtnFont = gdi.Font("Segoe UI", libraryProps.baseFontSize * 0.90, 1);
         this.calc_text();
         ui.get_font();
         this.on_size(); jumpSearch.on_size();
@@ -2501,7 +2501,12 @@ function LibraryTree() {
                     if (pref.lib_design === 'library_traditional') {
                         // Hide
                     } else if (pref.lib_design === 'library_modern') {
-                        g.FillEllipse(x + (is_4k ? 3 : !is_4k && initDPI.dpi() > 120 ? 1 : 0), y + (is_4k ? 3 : !is_4k && initDPI.dpi() > 120 ? 1 : 0), is_4k ? 22 : !is_4k && initDPI.dpi() > 120 ? 16 : 15, is_4k ? 22 : !is_4k && initDPI.dpi() > 120 ? 16 : 15, !plus ? ui.col.bg : ui.col.bg);
+                        g.FillEllipse(x + (is_4k ? 3 : !is_4k && initDPI.dpi() > 120 ? 1 : 0), y + (is_4k ? 3 : !is_4k && initDPI.dpi() > 120 ? 1 : 0),
+                                           is_4k ? libraryProps.baseFontSize * 0.95 : !is_4k && initDPI.dpi() > 120 ? libraryProps.baseFontSize * 0.92 :
+                                                   libraryProps.baseFontSize > 16 || libraryProps.baseFontSize < 12 ? libraryProps.baseFontSize * 0.80 : libraryProps.baseFontSize * 0.91,
+                                           is_4k ? libraryProps.baseFontSize * 0.95 : !is_4k && initDPI.dpi() > 120 ? libraryProps.baseFontSize * 0.92 :
+                                                   libraryProps.baseFontSize > 16 || libraryProps.baseFontSize < 12 ? libraryProps.baseFontSize * 0.80 : libraryProps.baseFontSize * 0.91,
+                        !plus ? ui.col.bg : ui.col.bg);
                     }
 
                 g.SetSmoothingMode(SmoothingMode.None);
@@ -2853,52 +2858,7 @@ function LibraryTree() {
                 if (libraryProps.fullLine) {
                     item_w = ui.x + sbar.tree_w - item_x - (is_4k ? 35 : 17);
                 }
-				/*
-				let bgColorsel = item.sel ? col.primary : undefined;
-				var icon_plus = item.sel ? ui.col.iconPlussel : m_i == i ? ui.col.iconPlus_h : ui.col.iconPlus;
-				if (pref.whiteTheme && pref.lib_design === 'library_traditional' || pref.blackTheme && pref.lib_design === 'library_traditional') {
-					// Hide
-				} else if (pref.whiteTheme && pref.lib_design === 'library_modern') {
-					if (new Color(bgColorsel).brightness > 180) {
-						icon_plus = m_i == i ? rgb(255, 255, 255) : rgb(100, 100, 100);
-						ui.col.iconPlus = icon_plus;
-						library_tree.create_images();
-					} else {
-						icon_plus = rgb(100, 100, 100);
-						ui.col.iconPlus = icon_plus;
-						library_tree.create_images();
-					}
-				} if (pref.blackTheme && pref.lib_design === 'library_modern') {
-					if (new Color(bgColorsel).brightness > 10) {
-						icon_plus = m_i == i ? rgb(0, 0, 0) : rgb(255, 255, 255);
-						ui.col.iconPlus = icon_plus;
-						library_tree.create_images();
-					} else {
-						icon_plus = rgb(200, 200, 200);
-						ui.col.iconPlus = icon_plus;
-						library_tree.create_images();
-					}
-				} else if (pref.creamTheme && pref.lib_design === 'library_modern') {
-					if (new Color(bgColorsel).brightness > 10) {
-						icon_plus = m_i == i ? rgb(255, 255, 255) : rgb(120, 170, 130);
-						ui.col.iconPlus = icon_plus;
-						library_tree.create_images();
-					}
-				}
-				*/
-				/*
-				var icon_plus = item.sel ? ui.col.iconPlussel : m_i == i ? ui.col.iconPlus_h : ui.col.iconPlus;
-				if (pref.creamTheme && pref.lib_design === 'library_modern' && !m_i == i && !item.sel) {
-					ui.col.iconPlus = rgb(120, 170, 130);
-					library_tree.create_images();
-				} else if (pref.creamTheme && pref.lib_design === 'library_modern' && m_i == i) {
-					ui.col.iconPlus_h = rgb(0, 0, 0);
-					library_tree.create_images();
-				} else if (pref.creamTheme && pref.lib_design === 'library_modern' && item.sel) {
-					ui.col.iconPlussel = rgb(255, 255, 255);
-					library_tree.create_images();
-				}
-				*/
+
                 item.w = item_w;
 				if (!libraryProps.fullLine && pref.lib_design === 'library_modern') {
 					item.w = item_w + scaleForDisplay(50);

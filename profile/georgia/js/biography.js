@@ -207,7 +207,7 @@ let properties = [
 	["SYSTEM.Cycle Picture", true, "cycPic"],
 	["SYSTEM.Cycle Time Item", 45, "cycTimeItem"],
 	["SYSTEM.Cycle Time Picture", 15, "cycTimePic"],
-	["SYSTEM.Font Size", 16, "baseFontSize"],
+	["SYSTEM.Font Size", is_4k ? 24 : 12, "baseFontSize"],
 	["SYSTEM.Freestyle Custom", JSON.stringify([]), "styles"],
 	["SYSTEM.Heading Always Full Width", true, "fullWidthHeading"],
 	["SYSTEM.Heading Button Hide-0 Left-1 Right-2", 2, "src"],
@@ -419,7 +419,7 @@ function UserInterfaceBio() {
 		if (!this.font) {this.font = gdi.Font("Segoe UI", 16, 0); sBio.trace("Spider Monkey Panel is unable to use your default font. Using Segoe UI at default size & style instead");}
 		if (this.font.Size != ppt.baseFontSize) ppt.zoomFont = 100;
 		//ppt.baseFontSize = baseHeadFontSize = this.font.Size;
-		ppt.baseFontSize = is_4k ? 24 : 12; baseHeadFontSize = ppt.baseFontSize;
+		ppt.baseFontSize = ppt.baseFontSize; baseHeadFontSize = ppt.baseFontSize;
 		zoomFontSize = Math.max(Math.round(ppt.baseFontSize * ppt.zoomFont / 100), 1);
 		const setSegoeUI = ppt.heading && ppt.headFontStyle > 15 || ppt.sourceHeading && ppt.sourceStyle > 15 || pBio.inclTrackRev && ppt.trackHeading && ppt.trackStyle > 15;
 		if (ppt.customCol && ppt.custHeadFont.length) {const custHeadFont = ppt.custHeadFont.splt(1); baseHeadFontSize = Math.round(sBio.value(custHeadFont[1], 16, 0)); this.headFont = gdi.Font(custHeadFont[0], baseHeadFontSize, style); style = Math.round(sBio.value(custHeadFont[2], 3, 0)); this.custHeadFont = true;}
@@ -1564,7 +1564,7 @@ function ButtonsBio() {
 	let amBioBtn = "", amRevBtn = "", lfmBioBtn = "", lfmRevBtn = "", amlfmBioBtn = "", amlfmRevBtn = "", lfmamBioBtn = "", lfmamRevBtn = "";
 	const albScrBtns = ["alb_scrollDn", "alb_scrollUp"], artScrBtns = ["art_scrollDn", "art_scrollUp"], bahnSemiBoldCond = "Bahnschrift SemiBold SemiConden", bahnSemiBoldCondInstalled = utils.CheckFont(bahnSemiBoldCond), orig_mt_sz = 15 * sBio.scale, scc = 2, scrBtns = albScrBtns.concat(artScrBtns);
 	let arrow_symb = 0, b_x, btnIcon = false, btnTxt = false, btnVisible = false, byDn, byUp, cur_btn = null, drawTxt = "", dx3 = 0, hoverCol = uiBio.col.text & RGBA(255, 255, 255, 51), iconFontName = "Segoe UI Symbol", iconFontStyle = 0, init = true, l = false, m = false, mt = false, mtL = false, name_w = 0, r = false, sAlpha = 255, sbarButPad = sBio.clamp(ppt.sbarButPad / 100, -0.5, 0.3), scrollBtn = false, scrollBtn_x, scrollDn_y, scrollUp_y, sp_w = [], src_fs = 12, src_h = 19, src_im = false, src_w = 50, src_font = gdi.Font("Segoe UI", src_fs, 1), ico_font = src_font, tooltip, transition, tt_start = Date.now() - 2000, y_offset = 0, zoom_mt_sz = Math.max(Math.round(orig_mt_sz * ppt.zoomBut / 100), 7), scale = Math.round(zoom_mt_sz / orig_mt_sz * 100); ppt.zoomBut = scale;
-	let mt_w = 12, mtCol = sBio.toRGB(uiBio.col.text), mtFont = gdi.Font("FontAwesome", is_4k ? 32 * scale / 100 : 16 * scale / 100, 0), mtFontL = gdi.Font("FontAwesome", is_4k ? 34 * scale / 100 : 17 * scale / 100, 0);
+	let mt_w = 12, mtCol = sBio.toRGB(uiBio.col.text), mtFont = gdi.Font("FontAwesome", ppt.baseFontSize * 1.4 * scale / 100, 0), mtFontL = gdi.Font("FontAwesome", ppt.baseFontSize * 1.5 * scale / 100, 0);
 	this.btns = {}; this.Dn = false; this.r_h1 = 0; this.r_h2 = 0; this.r_w1 = 0; this.r_w2 = 0; this.ratingImages = []; if (uiBio.stars == 1 && uiBio.lfmTheme) this.ratingImagesLfm = []; this.show_tt = true;
 
 	this.setSbarIcon = () => {
@@ -1655,8 +1655,8 @@ function ButtonsBio() {
 		ppt.zoomFont = 100; ppt.zoomHead = 115;
 		zoom_mt_sz = orig_mt_sz;
 		scale = ppt.zoomBut = 100;
-		mtFont = gdi.Font("FontAwesome", 15 * scale / 100, 0);
-		mtFontL = gdi.Font("FontAwesome", 14 * scale / 100, 0);
+		mtFont = gdi.Font("FontAwesome", ppt.baseFontSize * 1.4 * scale / 100, 0);
+		mtFontL = gdi.Font("FontAwesome", ppt.baseFontSize * 1.5 * scale / 100, 0);
 		ppt.headerConfig = ppt.headerConfig.replace(/BtnSize,(-|)\d+/, "BtnSize,0");
 		uiBio.srcSizeAdjust = 0; ppt.set(" Zoom Tooltip (%)", 100); uiBio.get_font(); butBio.create_stars(); this.create_mt(); this.create_tooltip(); this.refresh(true); t.toggle(12);
 	}
@@ -1916,10 +1916,10 @@ function ButtonsBio() {
 			if (ppt.style === 0 || ppt.style > 3) {
 				switch (uiBio.fontAwesomeInstalled) {
 					case true:
-						this.btns.mt = new Btn(b_x - scaleForDisplay(2), pBio.text_t - uiBio.heading_h + scaleForDisplay(2), mt_w * 1.5, mt_w * 1.5, 7, mt_w, mt_w, "", {normal: RGBA(mtCol[0], mtCol[1], mtCol[2], 50), hover: RGBA(mtCol[0], mtCol[1], mtCol[2], sAlpha[1])}, !ppt.mul_item, "", () => menBio.button(12 * scale / 100, 16), () => "Click: More...\r\nMiddle Click: " + (!pBio.lock ? "Lock: Stop Track Change Updates" : "Unlock") + "...", true, "mt");
+						this.btns.mt = new Btn(b_x - scaleForDisplay(2), pBio.text_t - uiBio.heading_h + scaleForDisplay(1), mt_w * 1.5, mt_w * 1.5, 7, mt_w, mt_w, "", {normal: RGBA(mtCol[0], mtCol[1], mtCol[2], 50), hover: RGBA(mtCol[0], mtCol[1], mtCol[2], sAlpha[1])}, !ppt.mul_item, "", () => menBio.button(12 * scale / 100, 16), () => "Click: More...\r\nMiddle Click: " + (!pBio.lock ? "Lock: Stop Track Change Updates" : "Unlock") + "...", true, "mt");
 						break;
 					case false:
-						this.btns.mt = new Btn(b_x - scaleForDisplay(2), pBio.text_t - uiBio.heading_h + scaleForDisplay(2), 12 * scale / 100 * 1.5, 12 * scale / 100 * 1.5, 7, "", "", "", [mt, mtL], !ppt.mul_item, "", () => menBio.button(12 * scale / 100, 16), () => "Click: More...\r\nMiddle Click: " + (!pBio.lock ? "Lock: Stop Track Change Updates" : "Unlock") + "...", true, "mt");
+						this.btns.mt = new Btn(b_x - scaleForDisplay(2), pBio.text_t - uiBio.heading_h + scaleForDisplay(1), 12 * scale / 100 * 1.5, 12 * scale / 100 * 1.5, 7, "", "", "", [mt, mtL], !ppt.mul_item, "", () => menBio.button(12 * scale / 100, 16), () => "Click: More...\r\nMiddle Click: " + (!pBio.lock ? "Lock: Stop Track Change Updates" : "Unlock") + "...", true, "mt");
 						break;
 				}
 			} else if (ppt.style === 1 || ppt.style === 2 || ppt.style === 3) {
