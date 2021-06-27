@@ -376,6 +376,7 @@ function btnActionHandler(btn) {
 			displayBiography = !displayBiography;
 			if (fb.IsPlaying || fb.IsPaused || fb.Prev || fb.Next) {
 				if (displayBiography) {
+					playlist.on_size(ww, wh);
 					initBiographyPanel();
 					setBiographySize();
 					biography.on_playback_new_track();

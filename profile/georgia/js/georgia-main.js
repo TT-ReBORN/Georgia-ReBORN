@@ -1449,17 +1449,6 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme = false;
 		pref.ngoldTheme = false;
 		on_init();
-		initColors();
-		initPlaylistColors(); initPlaylist();
-		initLibraryColors();
-		initBiographyColors(); alb_scrollbar.setCol(); art_scrollbar.setCol(); butBio.create_images();
-		if (fb.IsPlaying) {
-			albumart = null;
-			loadFromCache = false;
-			on_playback_new_track(fb.GetNowPlaying());
-		} else {
-			RepaintWindow();
-		}
 	});
 	menuThemeMenu.addToggleItem('Black', pref, 'blackTheme', () => {
 		pref.blackTheme = 'black';
@@ -1473,17 +1462,6 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme = false;
 		pref.ngoldTheme = false;
 		on_init();
-		initColors();
-		initPlaylistColors(); initPlaylist();
-		initLibraryColors();
-		initBiographyColors(); alb_scrollbar.setCol(); art_scrollbar.setCol(); butBio.create_images();
-		if (fb.IsPlaying) {
-			albumart = null;
-			loadFromCache = false;
-			on_playback_new_track(fb.GetNowPlaying());
-		} else {
-			RepaintWindow();
-		}
 	});
 	menuThemeMenu.addToggleItem('Blue', pref, 'blueTheme', () => {
 		pref.blueTheme = 'blue';
@@ -1497,17 +1475,6 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme = false;
 		pref.ngoldTheme = false;
 		on_init();
-		initColors();
-		initPlaylistColors(); initPlaylist();
-		initLibraryColors();
-		initBiographyColors(); alb_scrollbar.setCol(); art_scrollbar.setCol(); butBio.create_images();
-		if (fb.IsPlaying) {
-			albumart = null;
-			loadFromCache = false;
-			on_playback_new_track(fb.GetNowPlaying());
-		} else {
-			RepaintWindow();
-		}
 	});
 	menuThemeMenu.addToggleItem('Dark Blue', pref, 'darkblueTheme', () => {
 		pref.darkblueTheme = 'darkblue';
@@ -1521,17 +1488,6 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme = false;
 		pref.ngoldTheme = false;
 		on_init();
-		initColors();
-		initPlaylistColors(); initPlaylist();
-		initLibraryColors();
-		initBiographyColors(); alb_scrollbar.setCol(); art_scrollbar.setCol(); butBio.create_images();
-		if (fb.IsPlaying) {
-			albumart = null;
-			loadFromCache = false;
-			on_playback_new_track(fb.GetNowPlaying());
-		} else {
-			RepaintWindow();
-		}
 	});
 	menuThemeMenu.addToggleItem('Red', pref, 'redTheme', () => {
 		pref.redTheme = 'red';
@@ -1545,17 +1501,6 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme = false;
 		pref.ngoldTheme = false;
 		on_init();
-		initColors();
-		initPlaylistColors(); initPlaylist();
-		initLibraryColors();
-		initBiographyColors(); alb_scrollbar.setCol(); art_scrollbar.setCol(); butBio.create_images();
-		if (fb.IsPlaying) {
-			albumart = null;
-			loadFromCache = false;
-			on_playback_new_track(fb.GetNowPlaying());
-		} else {
-			RepaintWindow();
-		}
 	});
 	menuThemeMenu.addToggleItem('Cream', pref, 'creamTheme', () => {
 		pref.creamTheme = 'cream';
@@ -1569,17 +1514,6 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme = false;
 		pref.ngoldTheme = false;
 		on_init();
-		initColors();
-		initPlaylistColors(); initPlaylist();
-		initLibraryColors();
-		initBiographyColors(); alb_scrollbar.setCol(); art_scrollbar.setCol(); butBio.create_images();
-		if (fb.IsPlaying) {
-			albumart = null;
-			loadFromCache = false;
-			on_playback_new_track(fb.GetNowPlaying());
-		} else {
-			RepaintWindow();
-		}
 	});
 	menuThemeMenu.addToggleItem('Neon Blue', pref, 'nblueTheme', () => {
 		pref.nblueTheme = 'nblue';
@@ -1593,17 +1527,6 @@ function onOptionsMenu(x, y) {
 		pref.redTheme = false;
 		pref.creamTheme = false;
 		on_init();
-		initColors();
-		initPlaylistColors(); initPlaylist();
-		initLibraryColors();
-		initBiographyColors(); alb_scrollbar.setCol(); art_scrollbar.setCol(); butBio.create_images();
-		if (fb.IsPlaying) {
-			albumart = null;
-			loadFromCache = false;
-			on_playback_new_track(fb.GetNowPlaying());
-		} else {
-			RepaintWindow();
-		}
 	});
 	menuThemeMenu.addToggleItem('Neon Green', pref, 'ngreenTheme', () => {
 		pref.ngreenTheme = 'ngreen';
@@ -1617,17 +1540,6 @@ function onOptionsMenu(x, y) {
 		pref.redTheme = false;
 		pref.creamTheme = false;
 		on_init();
-		initColors();
-		initPlaylistColors(); initPlaylist();
-		initLibraryColors();
-		initBiographyColors(); alb_scrollbar.setCol(); art_scrollbar.setCol(); butBio.create_images();
-		if (fb.IsPlaying) {
-			albumart = null;
-			loadFromCache = false;
-			on_playback_new_track(fb.GetNowPlaying());
-		} else {
-			RepaintWindow();
-		}
 	});
 	menuThemeMenu.addToggleItem('Neon Red', pref, 'nredTheme', () => {
 		pref.nredTheme = 'nred';
@@ -1641,17 +1553,6 @@ function onOptionsMenu(x, y) {
 		pref.redTheme = false;
 		pref.creamTheme = false;
 		on_init();
-		initColors();
-		initPlaylistColors(); initPlaylist();
-		initLibraryColors();
-		initBiographyColors(); alb_scrollbar.setCol(); art_scrollbar.setCol(); butBio.create_images();
-		if (fb.IsPlaying) {
-			albumart = null;
-			loadFromCache = false;
-			on_playback_new_track(fb.GetNowPlaying());
-		} else {
-			RepaintWindow();
-		}
 	});
 	menuThemeMenu.addToggleItem('Neon Gold', pref, 'ngoldTheme', () => {
 		pref.ngoldTheme = 'ngold';
@@ -1665,17 +1566,6 @@ function onOptionsMenu(x, y) {
 		pref.redTheme = false;
 		pref.creamTheme = false;
 		on_init();
-		initColors();
-		initPlaylistColors(); initPlaylist();
-		initLibraryColors();
-		initBiographyColors(); alb_scrollbar.setCol(); art_scrollbar.setCol(); butBio.create_images();
-		if (fb.IsPlaying) {
-			albumart = null;
-			loadFromCache = false;
-			on_playback_new_track(fb.GetNowPlaying());
-		} else {
-			RepaintWindow();
-		}
 	});
 	menuThemeMenu.appendTo(menu);
 
@@ -1692,20 +1582,13 @@ function onOptionsMenu(x, y) {
 				displayBiography = false;
 				if (pref.Player_Small === 'Player_Small') {
 					mode_handler.player_size_small();
-					on_size();
 					createPlaylistFonts();
 					setBiographySize();
 					playlist.on_size(ww, wh);
-				} if (fb.IsPlaying) {
-					albumart = null;
-					loadFromCache = false;
-					on_playback_new_track(fb.GetNowPlaying());
-				} else {
 					RepaintWindow();
 				}
 			} else {
 				pref.Player_Small = false;
-				return;
 			}
 		});
 	}
@@ -1721,20 +1604,13 @@ function onOptionsMenu(x, y) {
 				displayBiography = false;
 				if (pref.Player_Normal === 'Player_Normal') {
 					mode_handler.player_size_normal();
-					on_size();
 					createPlaylistFonts();
 					setBiographySize();
 					playlist.on_size(ww, wh);
-				} if (fb.IsPlaying) {
-					albumart = null;
-					loadFromCache = false;
-					on_playback_new_track(fb.GetNowPlaying());
-				} else {
 					RepaintWindow();
 				}
 			} else {
 				pref.Player_Normal = false;
-				return;
 			}
 		});
 	}
@@ -1750,20 +1626,13 @@ function onOptionsMenu(x, y) {
 				displayBiography = false;
 				if (pref.Player_Big === 'Player_Big') {
 					mode_handler.player_size_big();
-					on_size();
 					createPlaylistFonts();
 					setBiographySize();
 					playlist.on_size(ww, wh);
-				} if (fb.IsPlaying) {
-					albumart = null;
-					loadFromCache = false;
-					on_playback_new_track(fb.GetNowPlaying());
-				} else {
 					RepaintWindow();
 				}
 			} else {
 				pref.Player_Big = false;
-				return;
 			}
 		});
 	}
@@ -1779,20 +1648,13 @@ function onOptionsMenu(x, y) {
 				displayBiography = false;
 				if (pref.Player_4K_Small === 'Player_4K_Small') {
 					mode_handler.player_size_4K_Small();
-					on_size();
 					createPlaylistFonts();
 					setBiographySize();
 					playlist.on_size(ww, wh);
-				} if (fb.IsPlaying) {
-					albumart = null;
-					loadFromCache = false;
-					on_playback_new_track(fb.GetNowPlaying());
-				} else {
 					RepaintWindow();
 				}
 			} else {
 				pref.Player_4K_Small = false;
-				return;
 			}
 		});
 	}
@@ -1808,20 +1670,13 @@ function onOptionsMenu(x, y) {
 				displayBiography = false;
 				if (pref.Player_4K_Normal === 'Player_4K_Normal') {
 					mode_handler.player_size_4K_Normal();
-					on_size();
 					createPlaylistFonts();
 					setBiographySize();
 					playlist.on_size(ww, wh);
-				} if (fb.IsPlaying) {
-					albumart = null;
-					loadFromCache = false;
-					on_playback_new_track(fb.GetNowPlaying());
-				} else {
 					RepaintWindow();
 				}
 			} else {
 				pref.Player_4K_Normal = false;
-				return;
 			}
 		});
 	}
@@ -1837,20 +1692,13 @@ function onOptionsMenu(x, y) {
 				displayBiography = false;
 				if (pref.Player_4K_Big === 'Player_4K_Big') {
 					mode_handler.player_size_4K_Big();
-					on_size();
 					createPlaylistFonts();
 					setBiographySize();
 					playlist.on_size(ww, wh);
-				} if (fb.IsPlaying) {
-					albumart = null;
-					loadFromCache = false;
-					on_playback_new_track(fb.GetNowPlaying());
-				} else {
 					RepaintWindow();
 				}
 			} else {
 				pref.Player_4K_Big = false;
-				return;
 			}
 		});
 	}
@@ -1860,29 +1708,19 @@ function onOptionsMenu(x, y) {
 		pref.layout_mode = mode;
 		if (pref.layout_mode === 'default_mode') {
 			mode_handler.layout_mode_default_mode();
-			on_init();
 			createFonts();
 			initPlaylistColors();
-			if (fb.IsPlaying) {
-				albumart = null;
-				loadFromCache = false;
-				on_playback_new_track(fb.GetNowPlaying());
-			} else {
-				RepaintWindow();
-			}
+			RepaintWindow();
 		}
 		if (pref.layout_mode === 'playlist_mode') {
+			displayLibrary = false;
+			displayBiography = false;
+			displayPlaylist = true;
 			mode_handler.layout_mode_playlist_mode();
-			on_init();
+			playlist.on_size(ww, wh);
 			createFonts();
 			initPlaylistColors();
-			if (fb.IsPlaying) {
-				albumart = null;
-				loadFromCache = false;
-				on_playback_new_track(fb.GetNowPlaying());
-			} else {
-				RepaintWindow();
-			}
+			RepaintWindow();
 		}
 	});
 
@@ -2302,7 +2140,33 @@ function on_init() {
 	progressBar = new ProgressBar(ww, wh);
 	setTheme(blueTheme.colors);
 	themeColorSet = true;
-	
+
+	// Main Colors
+	initColors();
+	// Playlist Colors
+	initPlaylistColors();
+	initPlaylist();
+	// Library Colors
+	initLibraryColors();
+	// Biography Colors
+	initBiographyColors();
+	alb_scrollbar.setCol();
+	art_scrollbar.setCol();
+	butBio.create_images();
+
+	if (displayPlaylist) {
+		playlist.on_size(ww, wh);
+	}
+	if (displayLibrary) {
+		initLibraryPanel();
+		setLibrarySize();
+	}
+	if (displayBiography) {
+		playlist.on_size(ww, wh);
+		initBiographyPanel();
+		setBiographySize();
+	}
+
 	if (fb.IsPlaying && fb.GetNowPlaying()) {
 		on_playback_new_track(fb.GetNowPlaying());
 	}
@@ -2312,7 +2176,7 @@ function on_init() {
 		when the panel has focus and a dedicated playlist viewer doesn't. */
 	plman.SetActivePlaylistContext(); // once on startup
 
-	if (pref.startPlaylist) {
+	if (pref.startPlaylist && !displayPlaylist && !displayLibrary && !displayBiography && !albumart) {
 		displayPlaylist = false;
 		setTimeout(() => {
 			if (btns && btns.playlist) {
@@ -2320,7 +2184,6 @@ function on_init() {
 			}
 		}, 30);
 	}
-
 	setTimeout(() => {
 		// defer initing of library panel until everything else has loaded
 		if (!libraryInitialized) {
@@ -2333,7 +2196,7 @@ function on_init() {
 			initBiographyPanel();
 		}
 	}, 10000);
-		
+
 }
 
 // window size changed
