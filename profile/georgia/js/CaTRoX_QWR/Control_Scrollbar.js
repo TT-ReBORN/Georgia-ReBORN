@@ -400,12 +400,7 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
         const start = this.scroll;
         const direction = start - end > 0 ? -1 : 1;
         let animationProgress = 0;  // Percent of animation completion: 0 (start) - 100 (end). Use 100 scale to avoid .009999 issues
-        let timerVal;   // local copy of the interval timer because we can have waiting interval callbacks that have fired, but not been executed, and thus can't be clear'd
-        const scrollFunc = (timerVal) => {
-            if (timerVal !== smoothScrollTimer) {
-                clearInterval(timerVal);
-                return; // this timer was canceled
-            }
+        const scrollFunc = () => {
             animationProgress += 8; // slow things down slightly from 10
             let newVal = start + easeOut(animationProgress/100) * (end - start);
             if ((Math.abs(newPosition - newVal) < 0.1) ||
@@ -422,11 +417,10 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
                 clearInterval(smoothScrollTimer);
             }
         }
-        timerVal = setInterval(() => {
-            scrollFunc(timerVal);
+        smoothScrollTimer = setInterval(() => {
+            scrollFunc();
         }, 40);
-        smoothScrollTimer = timerVal;
-        scrollFunc(timerVal);   // want to immediately start scroll
+        scrollFunc();   // want to immediately start scroll
     }
 
     this.scroll_to = (new_position, scroll_wo_redraw = false) => {
