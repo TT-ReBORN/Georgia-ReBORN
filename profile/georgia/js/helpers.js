@@ -395,12 +395,12 @@ function makeHttpRequest(type, url, successCB) {
 	var xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
 	xmlhttp.open(type, url, true);
 	xmlhttp.setRequestHeader('User-Agent', 'foo_spider_monkey_georgia');
-	xmlhttp.send();
 	xmlhttp.onreadystatechange = () => {
 		if (xmlhttp.readyState == 4) {
 			successCB(xmlhttp.responseText);
 		}
 	};
+	xmlhttp.send();
 }
 
 // from: https://github.com/substack/semver-compare/issues/1#issuecomment-594765531
