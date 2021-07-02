@@ -1869,7 +1869,7 @@ function onOptionsMenu(x, y) {
 	});
 	playlistFontSizeMenu.appendTo(changeFontSizeMenu);
 	changeFontSizeMenu.createRadioSubMenu('Library Font Size', ['-1', '11px', '12px', '13px', '14px', '16px (default)', '18px', '+1'], libraryProps.baseFontSize,
-	[-1, is_4k ? 11 * 1.5 : 1.4, is_4k ? 12 * 1.5 : 12, is_4k ? 13 * 1.5 : 13, is_4k ? 14 * 1.5 : 14, is_4k ? 16 * 1.5 : 16, is_4k ? 18 * 1.5 : 18, 999],
+	[-1, is_4k ? 11 * 1.5 : 11, is_4k ? 12 * 1.5 : 12, is_4k ? 13 * 1.5 : 13, is_4k ? 14 * 1.5 : 14, is_4k ? 16 * 1.5 : 16, is_4k ? 18 * 1.5 : 18, 999],
 	(size) => {
 		if (size === -1) {
 			libraryProps.baseFontSize--;
@@ -1891,7 +1891,7 @@ function onOptionsMenu(x, y) {
 		window.Repaint();
 	});
 	changeFontSizeMenu.createRadioSubMenu('Biography Font Size', ['-1', '11px', '12px (default)', '13px', '14px', '16px', '18px', '+1'], ppt.baseFontSize,
-	[-1, is_4k ? 11 * 2 : 1.4, is_4k ? 12 * 2 : 12, is_4k ? 13 * 2 : 13, is_4k ? 14 * 2 : 14, is_4k ? 16 * 2 : 16, is_4k ? 18 * 2 : 18, 999],
+	[-1, is_4k ? 11 * 2 : 11, is_4k ? 12 * 2 : 12, is_4k ? 13 * 2 : 13, is_4k ? 14 * 2 : 14, is_4k ? 16 * 2 : 16, is_4k ? 18 * 2 : 18, 999],
 	(size) => {
 		if (size === -1) {
 			ppt.baseFontSize--;
