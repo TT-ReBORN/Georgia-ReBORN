@@ -452,7 +452,7 @@ function userinterface() {
         zoomFilter += step * 0.1;
         zoomFilter = Math.max(zoomFilter, 0.8);
         p.filterFont = gdi.Font("Segoe UI", 11 * s.scale * zoomFilter, 1);
-        p.filterBtnFont = gdi.Font("Segoe UI", zoomFilter > 1.05 ? Math.floor(9 * s.scale * zoomFilter) : 9 * s.scale * zoomFilter, 1);
+        p.filterBtnFont = gdi.Font("Segoe UI Symbol", zoomFilter > 1.05 ? Math.floor(9 * s.scale * zoomFilter) : 9 * s.scale * zoomFilter, 1);
         libraryProps.zoomFilter = Math.round(zoomFilter * 100);
         p.calc_text(); but.refresh(true);
     }
@@ -1005,8 +1005,8 @@ function panel_operations() {
 
     this.setFilterFont = () => {
         var scale = Math.max(libraryProps.zoomFilter / 100, 0.9);
-        this.filterFont = gdi.Font("Segoe UI", libraryProps.baseFontSize * 0.90, 1);
-        this.filterBtnFont = gdi.Font("Segoe UI", libraryProps.baseFontSize * 0.90, 1);
+        this.filterFont = gdi.Font("Segoe UI", is_4k ? libraryProps.baseFontSize * 1.0 : libraryProps.baseFontSize * 0.90, 1);
+        this.filterBtnFont = gdi.Font("Segoe UI Symbol", is_4k ? libraryProps.baseFontSize * 1.35 : libraryProps.baseFontSize * 0.90, 1);
     }
     this.setFilterFont();
 
@@ -1252,8 +1252,8 @@ function panel_operations() {
         libraryProps.zoomFilter = 100;
         ui.node_sz = Math.round(16 * s.scale);
         // ppt.set(" Zoom Tooltip [Button] (%)", 100);
-        this.filterFont = gdi.Font("Segoe UI", libraryProps.baseFontSize * 0.90, 1);
-        this.filterBtnFont = gdi.Font("Segoe UI", libraryProps.baseFontSize * 0.90, 1);
+        this.filterFont = gdi.Font("Segoe UI", is_4k ? libraryProps.baseFontSize * 1.0 : libraryProps.baseFontSize * 0.90, 1);
+        this.filterBtnFont = gdi.Font("Segoe UI Symbol", is_4k ? libraryProps.baseFontSize * 1.35 : libraryProps.baseFontSize * 0.90, 1);
         this.calc_text();
         ui.get_font();
         this.on_size(); jumpSearch.on_size();
@@ -3443,7 +3443,7 @@ function searchLibrary() {
             if (libraryProps.searchMode > 1) {
                 var l_x = p.filter_x1 - 25 - ui.l_width,
                     l_y = p.s_y;
-                gr.GdiDrawText(p.filt[libraryProps.filterBy].name, p.filterFont, ui.col.filter, p.filter_x1 + (is_4k ? 15 : 5), ui.y, p.f_w[libraryProps.filterBy], p.s_sp, p.cc);
+                gr.GdiDrawText(p.filt[libraryProps.filterBy].name, p.filterFont, ui.col.filter, p.filter_x1 + (is_4k ? libraryProps.baseFontSize * 1.21 : libraryProps.baseFontSize * 0.70), ui.y, p.f_w[libraryProps.filterBy], p.s_sp, p.cc);
                 //gr.FillSolidRect(l_x, l_y, ui.l_width, p.s_sp, ui.s_linecol);
             }
         } catch (e) {
@@ -3609,7 +3609,7 @@ class LibraryPanel {
 
 function Buttons() {
     const sbarButPad = s.clamp(pptDefault.sbarButPad / 100, -0.5, 0.3), sAlpha = pptDefault.sbarCol ? [68, 153, 255] : [75, 192, 228], scrBtns = ["scrollUp", "scrollDn"];
-    let arrow_symb = '\uE010', b_x, bx, by, bh, byDn, byUp, cur_btn = null, fw, hot_o, i, iconFontName = "Segoe UI", iconFontStyle = 0, qx, qy, qh, s_img, scrollBtn, scrollBtn_x, scrollDn_y, scrollUp_y, tooltip, transition, tt_start = Date.now() - 2000;
+    let arrow_symb = '\uE010', b_x, bx, by, bh, byDn, byUp, cur_btn = null, fw, hot_o, i, iconFontName = "Segoe UI Symbol", iconFontStyle = 0, qx, qy, qh, s_img, scrollBtn, scrollBtn_x, scrollDn_y, scrollUp_y, tooltip, transition, tt_start = Date.now() - 2000;
     let scrollBtnStates = {}; //0=normal, 1=hover, 2=down, 3=hot;
     const scrollBtns = {
         lineUp:   {
