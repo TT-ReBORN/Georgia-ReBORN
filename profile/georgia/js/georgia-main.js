@@ -48,18 +48,19 @@ let geo = {};
 
 let is_4k = false;
 
-const fontThin = 'HelveticaNeueLT Pro 35 Th'; // Helvetica Neue LT Pro
-const fontLight = 'HelveticaNeueLT Pro 45 Lt'; // Helvetica Neue LT Pro
-const fontRegular = 'HelveticaNeueLT Pro 55 Roman'; // Helvetica Neue LT Pro
-const fontBold = 'HelveticaNeueLT Pro 65 Md'; // Helvetica Neue LT Pro
-const fontLightAlternate = 'NeueHaasGroteskDisp Pro XLt'; // Neue Haas Grotesk Display Pro
+const fontThin = 'HelveticaNeueLT Pro 35 Th'; // Helvetica Neue LT Pro 35 Thin
+const fontLight = 'HelveticaNeueLT Pro 45 Lt'; // Helvetica Neue LT Pro 45 Light
+const fontRegular = 'HelveticaNeueLT Pro 55 Roman'; // Helvetica Neue LT Pro 55 Roman
+const fontBold = 'HelveticaNeueLT Pro 65 Md'; // Helvetica Neue LT Pro 65 Medium
+const fontLightAlternate = 'NeueHaasGroteskDisp Pro XLt'; // Neue Haas Grotesk Display Pro 35 Extra Light
 const fontGuiFx = 'Guifx v2 Transports'; // Guifx v2 Transports
 const fontAwesome = 'FontAwesome'; // Font Awesome
 const fontMarlett = 'Marlett'; // Marlett
 const fontSegoeUI = 'Segoe UI'; // Segoe UI
 const fontSegoeUISemibold = 'Segoe UI Semibold'; // Segoe UI Semibold
+const fontSegoeUISymbol = 'Segoe UI Symbol'; // Segoe UI Symbol
 
-var fontList = [fontThin, fontLight, fontRegular, fontBold, fontLightAlternate, fontGuiFx, fontAwesome, fontMarlett, fontSegoeUI, fontSegoeUISemibold];
+var fontList = [fontThin, fontLight, fontRegular, fontBold, fontLightAlternate, fontGuiFx, fontAwesome, fontMarlett, fontSegoeUI, fontSegoeUISemibold, fontSegoeUISymbol];
 
 // FONTS
 var fontsInstalled = true;
