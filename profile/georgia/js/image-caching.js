@@ -1,68 +1,80 @@
-function ArtCache(maxCacheSize) {
-    const art_cache_max_size = maxCacheSize;
-    const art_cache = {};
-    /** @type {string[]} */
-    const art_cache_indexes = [];
-    const max_width = 1440;
-    const max_height = 872;
+class ArtCache {
+    /**
+     * Create ArtCache. ArtCache is a Least-Recently Used cache meaning that each cache hit
+     * will bump that image to be the last image to be removed from the cache (if maxCacheSize is exceeded).
+     * @param {number} maxCacheSize maximum number of images to keep in the cache.
+     */
+    constructor(maxCacheSize) {
+        /** @private @type {Object.<string, GdiBitmap>} */
+        this.cache = {};
+        /** @private @type {string[]} */
+        this.cacheIndexes = [];
+        /** @private */ this.cacheMaxSize = maxCacheSize;
+        /** @private */ this.imgMaxWidth = scaleForDisplay(1440);   // these are the maximum width and height an image can be displayed in Georgia
+        /** @private */ this.imgMaxHeight = scaleForDisplay(872);
+    }
 
     /**
      * Adds a rescaled image to the cache under string `location` and returns the cached image.
      * @param {GdiBitmap} img
-     * @param {string} location
+     * @param {string} location String value to cache image under. Does not need to be a path.
      * @return {GdiBitmap}
      */
-    this.encache = function(img, location) {
+    encache(img, location) {
         try {
-            var h = img.Height;
-            var w = img.Width;
-            var max_w = scaleForDisplay(max_width);
-            var max_h = scaleForDisplay(max_height);
-            if (w > max_w || h > max_h) {
-                var scale_factor = w / max_w;
-                if (scale_factor < h / max_h) {
-                    scale_factor = h / max_h;
+            let h = img.Height;
+            let w = img.Width;
+            if (w > this.imgMaxWidth || h > this.imgMaxHeight) {
+                let scaleFactor = w / this.imgMaxWidth;
+                if (scaleFactor < h / this.imgMaxHeight) {
+                    scaleFactor = h / this.imgMaxHeight;
                 }
-                h = Math.min(h / scale_factor);
-                w = Math.min(w / scale_factor);
+                h = Math.min(h / scaleFactor);
+                w = Math.min(w / scaleFactor);
             }
-            art_cache[location] = img.Resize(w, h);
+            this.cache[location] = img.Resize(w, h);
             img = null;
-            var pathIdx = art_cache_indexes.indexOf(location);
-            if (pathIdx !== -1) {
+            const pathIndex = this.cacheIndexes.indexOf(location);
+            if (pathIndex !== -1) {
                 // remove from middle of cache and put on end
-                art_cache_indexes.splice(pathIdx, 1);
+                this.cacheIndexes.splice(pathIndex, 1);
             }
-            art_cache_indexes.push(location);
-            if (art_cache_indexes.length > art_cache_max_size) {
-                const remove = art_cache_indexes.shift();
-                debugLog('deleting cached img:', remove);
-                delete art_cache[remove];
+            this.cacheIndexes.push(location);
+            if (this.cacheIndexes.length > this.cacheMaxSize) {
+                const remove = this.cacheIndexes.shift();
+                debugLog('Removing img from cache:', remove);
+                delete this.cache[remove];
             }
         } catch (e) {
             console.log('<Error: Image could not be properly parsed: ' + location + '>');
         }
-        return art_cache[location] || img;
+        return this.cache[location] || img;
     }
 
     /**
-     * Get image at the cached location
-     * @param {string} location
+     * Get cached image if it exists under the location string. If image is found, move it's index to the end of the cacheIndexes.
+     * @param {string} location String value to check if image is cached under.
      * @return {GdiBitmap}
      */
-    this.getImage = function(location) {
-        if (art_cache[location]) {
+    getImage(location) {
+        if (this.cache[location]) {
             debugLog('cache hit:', location);
-            return art_cache[location];
+            const pathIndex = this.cacheIndexes.indexOf(location);
+            this.cacheIndexes.splice(pathIndex, 1);
+            this.cacheIndexes.push(location);
+            return this.cache[location];
         }
         return null;
     }
 
-    this.clear = function() {
-        while (art_cache_indexes.length) {
-            var remove = art_cache_indexes.shift();
-            art_cache[remove] = null;
-            delete art_cache[remove];
+    /**
+     * Completely clear all cached entries and release memory held by scaled bitmaps.
+     */
+    clear() {
+        while (this.cacheIndexes.length) {
+            const remove = this.cacheIndexes.shift();
+            this.cache[remove] = null;
+            delete this.cache[remove];
         }
     }
 }
