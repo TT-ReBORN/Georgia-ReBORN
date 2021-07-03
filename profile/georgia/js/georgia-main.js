@@ -1725,6 +1725,8 @@ function onOptionsMenu(x, y) {
 		}
 	});
 
+	menu.addSeparator();
+
 	menu.addToggleItem('Check for theme updates', pref, 'checkForUpdates', () => { scheduleUpdateCheck(1000) });
 	menu.createRadioSubMenu('Use 4K mode', ['Auto-detect', 'Never', 'Always'], pref.use_4k, ['auto', 'never', 'always'], (mode) => {
 		pref.use_4k = mode;
@@ -1907,6 +1909,21 @@ function onOptionsMenu(x, y) {
 		setBiographySize();
 		window.Repaint();
 	});
+	changeFontSizeMenu.createRadioSubMenu('Lyrics Font Size', ['-1', '16px', '18px', '20px (default)', '22px', '24px', '26px', '+1'], pref.lyricsFontSize,
+	[-1, 16, 18, 20, 22, 24, 26, 999],
+	(size) => {
+		if (size === -1) {
+			pref.lyricsFontSize--;
+		} else if (size === 999) {
+			pref.lyricsFontSize++;
+		} else {
+			pref.lyricsFontSize = size;
+		}
+		pref.lyricsFontSize = Math.max(6, pref.lyricsFontSize);
+		createFonts();
+		pref.displayLyrics && initLyrics();
+		// window.Repaint();
+	});
 	changeFontSizeMenu.appendTo(menu);
 
 	const scrollBarMenu = new Menu('Scrollbar Settings');
@@ -2004,6 +2021,8 @@ function onOptionsMenu(x, y) {
 	});
 	transportSpacingMenu.appendTo(transportMenu);
 
+	menu.addSeparator();
+
 	menu.addToggleItem('Show timeline tooltips', pref, 'show_timeline_tooltips');
 	menu.addToggleItem('Show progress bar', pref, 'show_progress_bar', () => {
 		setGeometry();
@@ -2045,41 +2064,11 @@ function onOptionsMenu(x, y) {
 	playlistManagerMenu.addToggleItem('Show Playlist Manager', g_properties, 'show_playlist_info', playlistCallback);
 	playlistManagerMenu.appendTo(playlistMenu);
 	playlistMenu.addToggleItem('Use compact group header', g_properties, 'use_compact_header', playlistCallback, !g_properties.show_header);
-	playlistMenu.createRadioSubMenu('Header font size', ['-1', '14px', '15px (default)', '16px', '18px', '20px', '22px', '+1'], pref.font_size_playlist_header,
-		[-1, 14, 15, 16, 18, 20, 22, 999],
-		(size) => {
-			if (size === -1) {
-				pref.font_size_playlist_header--;
-			} else if (size === 999) {
-				pref.font_size_playlist_header++;
-			} else {
-				pref.font_size_playlist_header = size;
-			}
-			createPlaylistFonts();
-			playlist.on_size(ww, wh);
-			window.Repaint();
-		});
-
 	playlistMenu.addToggleItem('Show full date in header', pref, 'showPlaylistFulldate', () => {
 		playlist.on_size(ww, wh);
 		window.Repaint();
 	});
 	var rowsMenu = new Menu('Rows');
-	rowsMenu.createRadioSubMenu('Row font size', ['-1', '11px', '12px (default)', '13px', '14px', '16px', '18px', '+1'], pref.font_size_playlist,
-		[-1, 11, 12, 13, 14, 16, 18, 999],
-		(size) => {
-			if (size === -1) {
-				pref.font_size_playlist--;
-			} else if (size === 999) {
-				pref.font_size_playlist++;
-			} else {
-				pref.font_size_playlist = size;
-			}
-			g_properties.row_h = Math.round(pref.font_size_playlist * 1.667);
-			createPlaylistFonts();
-			playlist.on_size(ww, wh);
-			window.Repaint();
-		});
 	rowsMenu.addToggleItem('Alternate row color', g_properties, 'alternate_row_color', playlistCallback);
 	rowsMenu.addToggleItem('Show play count', g_properties, 'show_playcount', playlistCallback, !g_component_playcount);
 	rowsMenu.addToggleItem('Show queue position', g_properties, 'show_queue_position', playlistCallback);
@@ -2132,21 +2121,6 @@ function onOptionsMenu(x, y) {
 
 	const lyricsMenu = new Menu('Lyrics Settings');
 	lyricsMenu.addToggleItem('Remember lyrics setting after restart', pref, 'lyricsRememberDisplay');
-	lyricsMenu.createRadioSubMenu('Lyrics font size', ['-1', '16px', '18px', '20px (default)', '22px', '24px', '26px', '+1'], pref.lyricsFontSize,
-		[-1, 16, 18, 20, 22, 24, 26, 999],
-		(size) => {
-			if (size === -1) {
-				pref.lyricsFontSize--;
-			} else if (size === 999) {
-				pref.lyricsFontSize++;
-			} else {
-				pref.lyricsFontSize = size;
-			}
-			pref.lyricsFontSize = Math.max(6, pref.lyricsFontSize);
-			createFonts();
-			pref.displayLyrics && initLyrics();
-			// window.Repaint();
-		});
 	lyricsMenu.appendTo(menu);
 
 	menu.addSeparator();
