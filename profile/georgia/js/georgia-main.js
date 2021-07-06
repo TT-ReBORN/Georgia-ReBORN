@@ -165,9 +165,6 @@ function initColors() {
 		col.now_playing = RGB(120, 120, 120); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 60);
-		col.tl_added = RGB(180, 180, 180);
-		col.tl_played = RGB(200, 200, 200);
-		col.tl_unplayed = RGB(220, 220, 220);
 
 	} else if (pref.blackTheme) {
 		col.artist = RGB(240, 240, 240);
@@ -178,9 +175,6 @@ function initColors() {
 		col.now_playing = RGB(200, 200, 200); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 255);
-		col.tl_added = RGB(60, 60, 60);
-		col.tl_played = RGB(80, 80, 80);
-		col.tl_unplayed = RGB(100, 100, 100);
 
 	} else if (pref.blueTheme) {
 		col.artist = RGB(242, 230, 170);
@@ -191,9 +185,6 @@ function initColors() {
 		col.now_playing = RGB(245, 245, 245); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 90);
-		col.tl_added = RGB(12, 144, 245);
-		col.tl_played = RGB(12, 137, 232);
-		col.tl_unplayed = RGB(10, 130, 220);
 
 	} else if (pref.darkblueTheme) {
 		col.artist = RGB(255, 202, 128);
@@ -204,9 +195,6 @@ function initColors() {
 		col.now_playing = RGB(230, 230, 230); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 140);
-		col.tl_added = RGB(31, 65, 107);
-		col.tl_played = RGB(27, 58, 94);
-		col.tl_unplayed = RGB(24, 50, 82);
 
 	} else if (pref.redTheme) {
 		col.artist = RGB(245, 212, 165);
@@ -217,9 +205,6 @@ function initColors() {
 		col.now_playing = RGB(220, 220, 220); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 140);
-		col.tl_added = RGB(156, 30, 30);
-		col.tl_played = RGB(143, 27, 27);
-		col.tl_unplayed = RGB(130, 25, 25);
 
 	} else if (pref.creamTheme) {
 		col.artist = RGB(100, 150, 110);
@@ -230,9 +215,6 @@ function initColors() {
 		col.now_playing = RGB(100, 100, 100); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 60);
-		col.tl_added = RGB(120, 170, 130);
-		col.tl_played = RGB(130, 184, 141);
-		col.tl_unplayed = RGB(139, 196, 151);
 
 	} else if (pref.nblueTheme) {
 		col.artist = RGB(0, 200, 255);
@@ -243,9 +225,6 @@ function initColors() {
 		col.now_playing = RGB(220, 220, 220); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 140);
-		col.tl_added = RGB(30, 30, 30);
-		col.tl_played = RGB(40, 40, 40);
-		col.tl_unplayed = RGB(50, 50, 50);
 
 	} else if (pref.ngreenTheme) {
 		col.artist = RGB(0, 200, 0);
@@ -256,9 +235,6 @@ function initColors() {
 		col.now_playing = RGB(220, 220, 220); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 140);
-		col.tl_added = RGB(30, 30, 30);
-		col.tl_played = RGB(40, 40, 40);
-		col.tl_unplayed = RGB(50, 50, 50);
 
 	} else if (pref.nredTheme) {
 		col.artist = RGB(229, 7, 44);
@@ -269,9 +245,6 @@ function initColors() {
 		col.now_playing = RGB(220, 220, 220); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 140);
-		col.tl_added = RGB(30, 30, 30);
-		col.tl_played = RGB(40, 40, 40);
-		col.tl_unplayed = RGB(50, 50, 50);
 
 	} else if (pref.ngoldTheme) {
 		col.artist = RGB(254, 204, 3);
@@ -282,9 +255,6 @@ function initColors() {
 		col.now_playing = RGB(220, 220, 220); // tracknumber, title, and time
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.shadow = RGBA(0, 0, 0, 140);
-		col.tl_added = RGB(30, 30, 30);
-		col.tl_played = RGB(40, 40, 40);
-		col.tl_unplayed = RGB(50, 50, 50);
 	}
 
 	col.rating = RGB(255, 170, 32);

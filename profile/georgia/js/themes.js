@@ -62,62 +62,48 @@ function setTheme(theme) {
 
 	if (pref.whiteTheme) {
 		col.progress_bar = isStreaming ? rgb(207, 0, 5) : rgb(220, 220, 220);
-		if (isStreaming) {
-			col.tl_added = theme.darkAccent = rgb(207, 0, 5);
-			col.tl_played = theme.accent = rgb(207, 41, 44);
-			col.tl_unplayed = theme.lightAccent = rgb(207, 72, 75);
-			col.primary = theme.primary = rgb(207, 0, 5);
-			//col.tl_added = theme.darkAccent = rgb(180, 180, 180);
-			//col.tl_played = theme.accent = rgb(200, 200, 200);
-			//col.tl_unplayed = theme.lightAccent = rgb(220, 220, 220);
-			//col.primary = theme.primary = rgb(180, 180, 180);
-		}
+		col.tl_added = isStreaming ? theme.darkAccent = rgb(207, 0, 5) : theme.darkAccent;
+		col.tl_played = isStreaming ? theme.accent = rgb(207, 41, 44) : theme.accent;
+		col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(207, 72, 75) : theme.lightAccent;
+		col.primary = isStreaming ? theme.primary = rgb(207, 0, 5) : theme.primary;
 	} else if (pref.blackTheme) {
 		col.progress_bar = isStreaming ? rgb(207, 0, 5) : rgb(50, 50, 50);
-		if (isStreaming) {
-			col.tl_added = theme.darkAccent = rgb(207, 0, 5);
-			col.tl_played = theme.accent = rgb(207, 41, 44);
-			col.tl_unplayed = theme.lightAccent = rgb(207, 72, 75);
-			col.primary = theme.primary = rgb(207, 0, 5);
-			//col.tl_added = theme.darkAccent = rgb(60, 60, 60);
-			//col.tl_played = theme.accent = rgb(80, 80, 80);
-			//col.tl_unplayed = theme.lightAccent = rgb(100, 100, 100);
-			//col.primary = theme.primary = rgb(80, 80, 80);
-		}
+		col.tl_added = isStreaming ? theme.darkAccent = rgb(207, 0, 5) : theme.darkAccent;
+		col.tl_played = isStreaming ? theme.accent = rgb(207, 41, 44) : theme.accent;
+		col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(207, 72, 75) : theme.lightAccent;
+		col.primary = isStreaming ? theme.primary = rgb(207, 0, 5) : theme.primary;
 	} else if (pref.blueTheme) {
 		col.progress_bar = rgb(10, 130, 220);
-		if (isStreaming) {
-			col.tl_added = theme.darkAccent = rgb(12, 144, 245);
-			col.tl_played = theme.accent = rgb(12, 137, 232);
-			col.tl_unplayed = theme.lightAccent = rgb(10, 130, 220);
-		}
+		col.tl_added = isStreaming ? theme.darkAccent = rgb(12, 144, 245) : theme.darkAccent;
+		col.tl_played = isStreaming ? theme.accent = rgb(12, 137, 232) : theme.accent;
+		col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(10, 130, 220) : theme.lightAccent;
 	} else if (pref.darkblueTheme) {
 		col.progress_bar = rgb(27, 55, 90);
 		if (isStreaming) {
-			col.tl_added = theme.darkAccent = rgb(31, 65, 107);
-			col.tl_played = theme.accent = rgb(27, 58, 94);
-			col.tl_unplayed = theme.lightAccent = rgb(24, 50, 82);
+			col.tl_added = isStreaming ? theme.darkAccent = rgb(31, 65, 107) : theme.darkAccent;
+			col.tl_played = isStreaming ? theme.accent = rgb(27, 58, 94) : theme.accent;
+			col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(24, 50, 82) : theme.lightAccent;
 		}
 	} else if (pref.redTheme) {
 		col.progress_bar = rgb(140, 25, 25);
 		if (isStreaming) {
-			col.tl_added = theme.darkAccent = rgb(156, 30, 30);
-			col.tl_played = theme.accent = rgb(143, 27, 27);
-			col.tl_unplayed = theme.lightAccent = rgb(130, 25, 25);
+			col.tl_added = isStreaming ? theme.darkAccent = rgb(156, 30, 30) : theme.darkAccent;
+			col.tl_played = isStreaming ? theme.accent = rgb(143, 27, 27) : theme.accent;
+			col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(130, 25, 25) : theme.lightAccent;
 		}
 	} else if (pref.creamTheme) {
 		col.progress_bar = rgb(255, 255, 255);
 		if (isStreaming) {
-			col.tl_added = theme.darkAccent = rgb(120, 170, 130);
-			col.tl_played = theme.accent = rgb(130, 184, 141);
-			col.tl_unplayed = theme.lightAccent = rgb(139, 196, 151);
+			col.tl_added = isStreaming ? theme.darkAccent = rgb(120, 170, 130) : theme.darkAccent;
+			col.tl_played = isStreaming ? theme.accent = rgb(130, 184, 141) : theme.accent;
+			col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(139, 196, 151) : theme.lightAccent;
 		}
 	} else if (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) {
 		col.progress_bar = rgb(35, 35, 35);
 		if (isStreaming) {
-			col.tl_added = theme.darkAccent = rgb(30, 30, 30);
-			col.tl_played = theme.accent = rgb(40, 40, 40);
-			col.tl_unplayed = theme.lightAccent = rgb(50, 50, 50);
+			col.tl_added = isStreaming ? theme.darkAccent = rgb(30, 30, 30) : theme.darkAccent;
+			col.tl_played = isStreaming ? theme.accent = rgb(40, 40, 40) : theme.accent;
+			col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(50, 50, 50) : theme.lightAccent;
 		}
 	}
 
