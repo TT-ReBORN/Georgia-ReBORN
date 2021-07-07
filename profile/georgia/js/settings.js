@@ -57,6 +57,12 @@ pref.add_properties({
 	show_timeline_tooltips: ['Show timeline tooltips', true], // true: show tooltips when hovering over the timeline that show information on plays
 
 	menu_font_size: ['Menu font size', 12],
+	artist_font_size: ['Artist font size', 18],
+	album_font_size: ['Album font size', 20],
+	lower_bar_font_size: ['Lowerbar font size', 18],
+	tracknum_font_size : ['Tracknumber font size', 20],
+	MetadataGrid_key_font_size: ['MetadataGrid key font size', 18],
+	MetadataGrid_val_font_size: ['MetadataGrid value font size', 18],
 
 	freq_update: ['Frequent progress bar updates', true], // true: update progress bar multiple times a second. Smoother, but uses more CPU
 	darkMode: ['Use Dark Theme', false], // true: use a darker background

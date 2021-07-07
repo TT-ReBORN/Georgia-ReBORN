@@ -88,46 +88,46 @@ function createFonts() {
 		}
 		return font;
 	}
-	ft.album_lrg = font(fontBold, 20, 0);
-	ft.album_med = font(fontBold, 18, 0);
-	ft.album_sml = font(fontBold, 14, 0);
+	ft.album_lrg = font(fontBold, pref.album_font_size ? pref.album_font_size : 20, 0);
+	ft.album_med = font(fontBold, pref.album_font_size ? pref.album_font_size : 18, 0);
+	ft.album_sml = font(fontBold, pref.album_font_size ? pref.album_font_size : 14, 0);
 	ft.album_lrg_alt = font(fontRegular, 20, 0);
 	ft.album_med_alt = font(fontRegular, 18, 0);
 	ft.album_sml_alt = font(fontRegular, 14, 0);
 	ft.album_substitle_lrg = font(fontBold, 20, g_font_style.italic);
 	ft.album_substitle_med = font(fontBold, 18, g_font_style.italic);
 	ft.album_substitle_sml = font(fontBold, 14, g_font_style.italic);
-	ft.title_lrg = font(fontThin, 20, 0);
-	ft.title_med = font(fontThin, 16, 0);
-	ft.title_sml = font(fontThin, 12, 0);
-	ft.tracknum_lrg = font(fontLight, 20, g_font_style.bold);
-	ft.tracknum_med = font(fontLight, 16, g_font_style.bold);
-	ft.tracknum_sml = font(fontLight, 12, g_font_style.bold);
+	ft.title_lrg = font(fontThin, pref.album_font_size ? pref.album_font_size : 20, 0);
+	ft.title_med = font(fontThin, pref.album_font_size ? pref.album_font_size : 16, 0);
+	ft.title_sml = font(fontThin, pref.album_font_size ? pref.album_font_size : 12, 0);
+	ft.tracknum_lrg = font(fontLight, pref.tracknum_font_size ? pref.tracknum_font_size : 20, g_font_style.bold);
+	ft.tracknum_med = font(fontLight, pref.tracknum_font_size ? pref.tracknum_font_size : 16, g_font_style.bold);
+	ft.tracknum_sml = font(fontLight, pref.tracknum_font_size ? pref.tracknum_font_size : 12, g_font_style.bold);
 	ft.year = font(fontRegular, 22, g_font_style.bold);
 
 	if (pref.layout_mode === 'default_mode') {
-	ft.artist_lrg = font(fontBold, 18, 0);
+	ft.artist_lrg = font(fontBold, pref.artist_font_size ? pref.artist_font_size : 18, 0);
 	} else if (pref.layout_mode === 'playlist_mode') {
 	ft.artist_lrg = font(fontBold, 16, 0);
 	}
 
-	ft.artist_med = font(fontBold, 12, 0);
-	ft.artist_sml = font(fontBold, 8, 0);
+	ft.artist_med = font(fontBold, pref.artist_font_size ? pref.artist_font_size : 12, 0);
+	ft.artist_sml = font(fontBold, pref.artist_font_size ? pref.artist_font_size : 8, 0);
 	ft.track_info = font(fontThin, 18, 0);
 	ft.track_info_sml = font(fontThin, 16, 0);
-	ft.grd_key_lrg = font(fontRegular, 18, 0); // used instead of ft.grd_key if ww > 1280
-	ft.grd_val_lrg = font(fontLight, 18, 0); // used instead of ft.grd_val if ww > 1280
-	ft.grd_key_med = font(fontRegular, 18, 0);
-	ft.grd_val_med = font(fontLight, 18, 0);
-	ft.grd_key_sml = font(fontRegular, 18, 0);
-	ft.grd_val_sml = font(fontLight, 18, 0);
+	ft.grd_key_lrg = font(fontRegular, pref.MetadataGrid_key_font_size ? pref.MetadataGrid_key_font_size : 18, 0); // used instead of ft.grd_key if ww > 1280
+	ft.grd_val_lrg = font(fontLight, pref.MetadataGrid_val_font_size ? pref.MetadataGrid_val_font_size : 18, 0); // used instead of ft.grd_val if ww > 1280
+	ft.grd_key_med = font(fontRegular, pref.MetadataGrid_key_font_size ? pref.MetadataGrid_key_font_size : 18, 0);
+	ft.grd_val_med = font(fontLight, pref.MetadataGrid_val_font_size ? pref.MetadataGrid_val_font_size : 18, 0);
+	ft.grd_key_sml = font(fontRegular, pref.MetadataGrid_key_font_size ? pref.MetadataGrid_key_font_size : 18, 0);
+	ft.grd_val_sml = font(fontLight, pref.MetadataGrid_val_font_size ? pref.MetadataGrid_val_font_size : 18, 0);
 
 	if (pref.layout_mode === 'default_mode') {
-	ft.lower_bar = font(fontLight, 18, 0);
+	ft.lower_bar = font(fontLight, pref.lower_bar_font_size ? pref.lower_bar_font_size : 18, 0);
 	if (updateHyperlink) {
 		updateHyperlink.setFont(ft.lower_bar);
 	}
-	ft.lower_bar_bold = font(fontBold, 18, 0);
+	ft.lower_bar_bold = font(fontBold, pref.lower_bar_font_size ? pref.lower_bar_font_size : 18, 0);
 	} else if (pref.layout_mode === 'playlist_mode') {
 	ft.lower_bar = font(fontLight, 16, 0);
 	if (updateHyperlink) {
@@ -136,8 +136,8 @@ function createFonts() {
 	ft.lower_bar_bold = font(fontBold, 16, 0);
 	}
 
-	ft.lower_bar_sml = font(fontLight, 12, 0);
-	ft.lower_bar_sml_bold = font(fontBold, 12, 0);
+	ft.lower_bar_sml = font(fontLight, pref.lower_bar_font_size ? pref.lower_bar_font_size : 12, 0);
+	ft.lower_bar_sml_bold = font(fontBold, pref.lower_bar_font_size ? pref.lower_bar_font_size : 12, 0);
 	if (utils.CheckFont(fontLightAlternate)) {
 		useNeue = true;
 		ft.lower_bar_artist = font(fontLightAlternate, 18, g_font_style.italic);
@@ -1120,16 +1120,36 @@ function draw_ui(gr) {
 			const height = gr.CalcTextHeight(str.artist, artistFont);
 			var artistTitleTrackWidth = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width + gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(str.title_lower, ft_lower, 0, 0, 0, 0).Width;
 			let flagSize = is_4k ? 64 : 32;
+
 			if (artistTitleTrackWidth > 0.35 * ww) {
-				if (pref.show_flags && flagImgs.length && width + flagImgs[0].Width * flagImgs.length < availableWidth) {
+				if (pref.show_flags && flagImgs.length && width + flagImgs[0].Width * flagImgs.length) {
 					var flagsLeft = textLeft - (is_4k ? 1 : 0);
 					for (let i = 0; i < flagImgs.length; i++) {
-						gr.DrawImage(flagImgs[i], flagsLeft, Math.round(artistY - (is_4k ? scaleForDisplay(17) : scaleForDisplay(16) + 1) + height / 2 - flagImgs[i].Height / 2),
+						gr.DrawImage(flagImgs[i], flagsLeft,
+							pref.lower_bar_font_size === 24 ? Math.round(artistY - (is_4k ? 45 : 22) + height / 2 - flagImgs[i].Height / 2) : !pref.lower_bar_font_size === 24 ? Math.round(artistY - (is_4k ? 34 : 17) + height / 2 - flagImgs[i].Height / 2) : 0 +
+							pref.lower_bar_font_size === 22 ? Math.round(artistY - (is_4k ? 41 : 19) + height / 2 - flagImgs[i].Height / 2) : !pref.lower_bar_font_size === 22 ? Math.round(artistY - (is_4k ? 34 : 17) + height / 2 - flagImgs[i].Height / 2) : 0 +
+							pref.lower_bar_font_size === 20 ? Math.round(artistY - (is_4k ? 40 : 19) + height / 2 - flagImgs[i].Height / 2) : !pref.lower_bar_font_size === 20 ? Math.round(artistY - (is_4k ? 34 : 17) + height / 2 - flagImgs[i].Height / 2) : 0 +
+							pref.lower_bar_font_size === 18 ? Math.round(artistY - (is_4k ? 36 : 17) + height / 2 - flagImgs[i].Height / 2) : !pref.lower_bar_font_size === 18 ? Math.round(artistY - (is_4k ? 34 : 17) + height / 2 - flagImgs[i].Height / 2) : 0 +
+							pref.lower_bar_font_size === 16 ? Math.round(artistY - (is_4k ? 34 : 16) + height / 2 - flagImgs[i].Height / 2) : !pref.lower_bar_font_size === 16 ? Math.round(artistY - (is_4k ? 34 : 17) + height / 2 - flagImgs[i].Height / 2) : 0,
 							flagImgs[i].Width - scaleForDisplay(8), flagImgs[i].Height - scaleForDisplay(8), 0, 0, flagImgs[i].Width, flagImgs[i].Height)
 						flagsLeft += flagImgs[i].Width;
 					}
 				}
-				gr.DrawString(str.artist, artistFont, col.artist, textLeft + (pref.show_flags && flagImgs.length ? flagSize + 2 : 0) - (is_4k ? 2 : 1), lowerBarTop - scaleForDisplay(20) + heightAdjustment, availableWidth, height, StringFormat(0, 0, 4));
+				gr.DrawString(str.artist, artistFont, col.artist, textLeft + (pref.show_flags && flagImgs.length ? flagSize + 2 : 0) - (is_4k ? 2 : 1) +
+					// X-Coordinates
+					(pref.lower_bar_font_size === 24 && pref.show_flags && flagImgs.length ? scaleForDisplay(11) : pref.lower_bar_font_size === 24 && !pref.show_flags ? scaleForDisplay(1) : 0) +
+					(pref.lower_bar_font_size === 22 && pref.show_flags && flagImgs.length ? scaleForDisplay(7)  : pref.lower_bar_font_size === 22 && !pref.show_flags ? scaleForDisplay(1) : 0) +
+					(pref.lower_bar_font_size === 20 && pref.show_flags && flagImgs.length ? scaleForDisplay(3)  : pref.lower_bar_font_size === 20 && !pref.show_flags ? scaleForDisplay(1) : 0) +
+					(pref.lower_bar_font_size === 18 && pref.show_flags && flagImgs.length ? scaleForDisplay(0)  : pref.lower_bar_font_size === 18 && !pref.show_flags ? scaleForDisplay(1) : 0) +
+					(pref.lower_bar_font_size === 16 && pref.show_flags && flagImgs.length ? scaleForDisplay(-4) : pref.lower_bar_font_size === 16 && !pref.show_flags ? scaleForDisplay(2) : 0),
+					// Y-Coordinates
+					(pref.lower_bar_font_size === 24 ? lowerBarTop - scaleForDisplay(25) + heightAdjustment : !pref.lower_bar_font_size === 24 ? lowerBarTop - scaleForDisplay(20) + heightAdjustment : 0) +
+					(pref.lower_bar_font_size === 22 ? lowerBarTop - scaleForDisplay(23) + heightAdjustment : !pref.lower_bar_font_size === 22 ? lowerBarTop - scaleForDisplay(20) + heightAdjustment : 0) +
+					(pref.lower_bar_font_size === 20 ? lowerBarTop - scaleForDisplay(22) + heightAdjustment : !pref.lower_bar_font_size === 20 ? lowerBarTop - scaleForDisplay(20) + heightAdjustment : 0) +
+					(pref.lower_bar_font_size === 18 ? lowerBarTop - scaleForDisplay(20) + heightAdjustment : !pref.lower_bar_font_size === 18 ? lowerBarTop - scaleForDisplay(20) + heightAdjustment : 0) +
+					(pref.lower_bar_font_size === 16 ? lowerBarTop - scaleForDisplay(19) + heightAdjustment : !pref.lower_bar_font_size === 18 ? lowerBarTop - scaleForDisplay(20) + heightAdjustment : 0),
+					// End String
+					availableWidth, height, StringFormat(0, 0, 4));
 				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - (is_4k ? 1 : 0), lowerBarTop, trackNumWidth - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
 				gr.DrawString(str.title_lower, ft_lower, col.now_playing, trackNumWidth > 0 ? progressBar.x - (is_4k ? 1 : 0) + trackNumWidth - scaleForDisplay(3) : progressBar.x - (is_4k ? 1 : 0) - scaleForDisplay(11), lowerBarTop, 0.34 * ww, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
 			} else {
@@ -1793,25 +1813,73 @@ function onOptionsMenu(x, y) {
 	cdArtMenu.appendTo(menu);
 
 	menu.addToggleItem('Draw label art on background', pref, 'labelArtOnBg', () => RepaintWindow());
-	menu.addToggleItem('Display song title in info grid', pref, 'showTitleInGrid', () => { RepaintWindow(); }, isStreaming);
+	menu.addToggleItem('Display song title in info grid', pref, 'showTitleInGrid', () => RepaintWindow());
 
 	menu.addSeparator();
 	const changeFontSizeMenu = new Menu('Change Font Sizes');
-	changeFontSizeMenu.createRadioSubMenu('Menu Font Size', ['11px', '12px (default)', '13px', '14px', '16px'], pref.menu_font_size, [11,12,13,14,16], (size) => {
-		if (size === -1) {
-			pref.menu_font_size--;
-		} else if (size === 999) {
-			pref.menu_font_size++;
-		} else {
+	const mainFontSizeMenu = new Menu('Main');
+	mainFontSizeMenu.createRadioSubMenu('Top Menu', ['11px', '12px (default)', '13px', '14px', '16px'], pref.menu_font_size, [11,12,13,14,16], (size) => {
+		if (size) {
 			pref.menu_font_size = size;
 		}
 		ft.SegoeUi = gdi.Font('Segoe Ui Semibold', scaleForDisplay(pref.menu_font_size), 0);
 		createButtonImages();
 		createButtonObjects(ww, wh);
-		RepaintWindow();
+		window.Repaint();
 	});
-	const playlistFontSizeMenu = new Menu('Playlist Font Sizes');
-	playlistFontSizeMenu.createRadioSubMenu('Header Font Size', ['-1', '14px', '15px (default)', '16px', '18px', '20px', '22px', '+1'], pref.font_size_playlist_header,
+	mainFontSizeMenu.createRadioSubMenu('Lower Bar', ['16px', '18px (default)', '20px', '22px', '24px'], pref.artist_font_size && pref.lower_bar_font_size, [16,18,20,22,24], (size) => {
+		if (size) {
+			pref.artist_font_size = size;
+			pref.lower_bar_font_size = size;
+		}
+		if (size === 14) {
+			pref.transport_buttons_size = 28;
+		} else if ( size === 16) {
+			pref.transport_buttons_size = 30;
+		} else {
+			pref.transport_buttons_size = 32;
+		}
+		ft.guifx = gdi.Font(fontGuiFx, scaleForDisplay(Math.floor(pref.transport_buttons_size / 2)), 0);
+		ft.artist_lrg = gdi.Font(fontBold, scaleForDisplay(pref.artist_font_size), 0);
+		ft.lower_bar = gdi.Font(fontLight, scaleForDisplay(pref.lower_bar_font_size), 0);
+		createFonts();
+		createButtonImages();
+		createButtonObjects(ww, wh);
+		window.Repaint();
+	});
+	mainFontSizeMenu.appendTo(changeFontSizeMenu);
+
+	const detailsFontSizeMenu = new Menu('Details');
+	detailsFontSizeMenu.createRadioSubMenu('Title Album', ['11px', '12px', '13px', '14px', '16px', '18px', '20px (default)', '22px', '24px'], pref.tracknum_font_size && pref.album_font_size, [11,12,13,14,16,18,20,22,24], (size) => {
+		if (size) {
+			pref.tracknum_font_size = size;
+			pref.album_font_size = size;
+		}
+		ft.tracknum_lrg = gdi.Font(fontLight, scaleForDisplay(pref.tracknum_font_size), 0);
+		ft.album_lrg = gdi.Font(fontBold, scaleForDisplay(pref.album_font_size), 0);
+		createFonts();
+		window.Repaint();
+	});
+	detailsFontSizeMenu.createRadioSubMenu('Tag Name', ['11px', '12px', '13px', '14px', '16px', '18px (default)', '20px', '22px', '24px'], pref.MetadataGrid_key_font_size, [11,12,13,14,16,18,20,22,24], (size) => {
+		if (size) {
+			pref.MetadataGrid_key_font_size = size;
+		}
+		ft.grd_key_lrg = gdi.Font(fontRegular, scaleForDisplay(pref.MetadataGrid_key_font_size), 0);
+		createFonts();
+		window.Repaint();
+	});
+	detailsFontSizeMenu.createRadioSubMenu('Tag Value', ['11px', '12px', '13px', '14px', '16px', '18px (default)', '20px', '22px', '24px'], pref.MetadataGrid_val_font_size, [11,12,13,14,16,18,20,22,24], (size) => {
+		if (size) {
+			pref.MetadataGrid_val_font_size = size;
+		}
+		ft.grd_val_lrg = gdi.Font(fontRegular, scaleForDisplay(pref.MetadataGrid_val_font_size), 0);
+		createFonts();
+		window.Repaint();
+	});
+	detailsFontSizeMenu.appendTo(changeFontSizeMenu);
+
+	const playlistFontSizeMenu = new Menu('Playlist');
+	playlistFontSizeMenu.createRadioSubMenu('Header', ['-1', '14px', '15px (default)', '16px', '18px', '20px', '22px', '+1'], pref.font_size_playlist_header,
 	[-1, 14, 15, 16, 18, 20, 22, 999],
 	(size) => {
 		if (size === -1) {
@@ -1825,7 +1893,7 @@ function onOptionsMenu(x, y) {
 		playlist.on_size(ww, wh);
 		window.Repaint();
 	});
-	playlistFontSizeMenu.createRadioSubMenu('Row Font Size', ['-1', '11px', '12px (default)', '13px', '14px', '16px', '18px', '+1'], pref.font_size_playlist,
+	playlistFontSizeMenu.createRadioSubMenu('Row', ['-1', '11px', '12px (default)', '13px', '14px', '16px', '18px', '+1'], pref.font_size_playlist,
 	[-1, 11, 12, 13, 14, 16, 18, 999],
 	(size) => {
 		if (size === -1) {
@@ -1841,7 +1909,8 @@ function onOptionsMenu(x, y) {
 		window.Repaint();
 	});
 	playlistFontSizeMenu.appendTo(changeFontSizeMenu);
-	changeFontSizeMenu.createRadioSubMenu('Library Font Size', ['-1', '11px', '12px', '13px', '14px', '16px (default)', '18px', '+1'], libraryProps.baseFontSize,
+
+	changeFontSizeMenu.createRadioSubMenu('Library', ['-1', '11px', '12px', '13px', '14px', '16px (default)', '18px', '+1'], libraryProps.baseFontSize,
 	[-1, is_4k ? 11 * 1.5 : 11, is_4k ? 12 * 1.5 : 12, is_4k ? 13 * 1.5 : 13, is_4k ? 14 * 1.5 : 14, is_4k ? 16 * 1.5 : 16, is_4k ? 18 * 1.5 : 18, 999],
 	(size) => {
 		if (size === -1) {
@@ -1863,7 +1932,8 @@ function onOptionsMenu(x, y) {
 		setLibrarySize();
 		window.Repaint();
 	});
-	changeFontSizeMenu.createRadioSubMenu('Biography Font Size', ['-1', '11px', '12px (default)', '13px', '14px', '16px', '18px', '+1'], ppt.baseFontSize,
+
+	changeFontSizeMenu.createRadioSubMenu('Biography', ['-1', '11px', '12px (default)', '13px', '14px', '16px', '18px', '+1'], ppt.baseFontSize,
 	[-1, is_4k ? 11 * 2 : 11, is_4k ? 12 * 2 : 12, is_4k ? 13 * 2 : 13, is_4k ? 14 * 2 : 14, is_4k ? 16 * 2 : 16, is_4k ? 18 * 2 : 18, 999],
 	(size) => {
 		if (size === -1) {
@@ -1879,7 +1949,8 @@ function onOptionsMenu(x, y) {
 		setBiographySize();
 		window.Repaint();
 	});
-	changeFontSizeMenu.createRadioSubMenu('Lyrics Font Size', ['-1', '16px', '18px', '20px (default)', '22px', '24px', '26px', '+1'], pref.lyricsFontSize,
+
+	changeFontSizeMenu.createRadioSubMenu('Lyrics', ['-1', '16px', '18px', '20px (default)', '22px', '24px', '26px', '+1'], pref.lyricsFontSize,
 	[-1, 16, 18, 20, 22, 24, 26, 999],
 	(size) => {
 		if (size === -1) {
