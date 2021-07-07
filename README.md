@@ -21,9 +21,9 @@ Synched lyrics will be highlighted with a theme color, unsynched lyrics have the
 ![BiographyLyrics](https://i.ibb.co/fddMnxc/George-Re-BORN-Biography-And-Lyrics-Animation.webp)
 
 Georgia-ReBORN supports 4k resolutions and will adjust theme elements based on DPI and screen size. Fullscreen mode is also supported!
-There are 6 pre-defined sizes ( Options -> Change Player Size ), 3 for FULL HD and below and 3 for 4K resolution and higher.
-These pre-defined sizes are restricted, if you have a monitor capable of 1920 x 1200 and below the first 3 are available,
-if you have a monitor capable of 4K resolution and higher the other 3 are available.
+There are 6 predefined sizes ( Options -> Change Player Size ), 3 for FULL HD and below and 3 for 4K resolution and higher.
+These predefined sizes are restricted, if you have a monitor capable of 1920 x 1200 and below, the first 3 are available.
+If you have a monitor capable of 4K resolution and higher, the other 3 are available.<br />
 You can of course resize foobar to your liking, but it has minimum size restrictions ( Player Size 'Small' ) to prevent button and text overlapping.
 
 There is also a mini compact player ala Winamp ( Options -> Change Layout Mode -> Playlist Mode ).<br />
@@ -50,9 +50,11 @@ Extract them to your foobar2000/profile/images
 
 <b>✓</b> 10 different themes
 
-<b>✓</b> 6 pre-definied player sizes
+<b>✓</b> 6 predefined player sizes
 
 <b>✓</b> Default and playlist mode
+
+<b>✓</b> Configurable font sizes
 
 <b>✓</b> Biography
 
@@ -76,14 +78,14 @@ Please visit Mordred's original Georgia theme to learn more: https://github.com/
 
 <b>4.</b> Install all located fonts from your foobar2000\profile\georgia\fonts folder.
 
-<b>5.</b> Start foobar and select Columns UI, everything else is already pre-configured.
+<b>5.</b> Start foobar and select Columns UI, everything else is already preconfigured.
 
 ## Support
 
 The official discussion thread for this theme is located at **[Discussions](https://github.com/TT-ReBORN/Georgia-ReBORN/discussions)** or at 
 **[HydrogenAudio](https://hydrogenaud.io/index.php?topic=121047.0)** and that's a great place to go for questions and other support issues. 
 If you discover a bug, please open an issue on Github if you can, or visit 
-**[Mordred's Georgia HydrogenAudio Thread](https://hydrogenaud.io/index.php/topic,116190.0.html)** since most of the code is based from Georgia.
+**[Mordred's Georgia HydrogenAudio Thread](https://hydrogenaud.io/index.php/topic,116190.0.html)** since most of the code is based on Georgia.
 
 ## Thanks
 
@@ -91,7 +93,8 @@ Many thanks to **[Mordred](https://github.com/kbuffington)** for his original Ge
 Many thanks to **[TheQwertiest](https://github.com/TheQwertiest)** for his SpiderMonkey Panel and Playlist!<br />
 Many thanks to **[WilB](https://hydrogenaud.io/index.php?action=profile;u=33113)** for his Biography and Library script!<br />
 Many thanks to **[The vern](https://hydrogenaud.io/index.php?action=profile;u=70332)** for his Lyric Show 3 component and **[veksha](https://hydrogenaud.io/index.php?action=profile;u=130067)** for Multisource!<br />
-Many thanks to **[zeremy](https://github.com/smoralis)** for his automatic lyric save script to work great along with Lyric Show 3!
+Many thanks to **[zeremy](https://github.com/smoralis)** for his automatic lyric save script to work great along with Lyric Show 3!<br />
+Many thanks to **[paregistrase](https://hydrogenaud.io/index.php?action=profile;u=111244)** for his testing and help on Linux!
 
 If you want to support this theme, you can send a donation to Mordred ( author of the original Georgia theme ):<br />
 [![donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9LW4ABRYXG2DY&source=url)
