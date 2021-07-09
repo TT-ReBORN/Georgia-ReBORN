@@ -627,11 +627,11 @@ function Scrollbar() {
                 case 1:
                     if (pref.whiteTheme) {
                         if (!pptDefault.sbarCol) {
-                            if (g_properties.show_scrollbar === true || pref.autoSbar_Library === false) {
+                            if (libraryProps.showScrollbar === true && sbar.w === scaleForDisplay(12) || pref.autoSbar_Library === false && sbar.w === scaleForDisplay(12)) {
                                 const thumbColors = [
                                     RGBA(200, 200, 200, alpha), // normal
                                     RGBA(120, 120, 120, alpha), // hover
-                                    RGBA(120, 120, 120, alpha) // drag
+                                    RGBA(120, 120, 120, alpha)  // drag
                                 ]
                                 gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 + 8, ui.col.bg);
                                 gr.FillSolidRect(this.x, this.y + bar_y, this.w, bar_ht, b_is_dragging ? thumbColors[2] : hover ? thumbColors[1] : thumbColors[0]);
@@ -642,11 +642,11 @@ function Scrollbar() {
                         break;
                     } else if (pref.blackTheme) {
                         if (!pptDefault.sbarCol) {
-                            if (g_properties.show_scrollbar === true || pref.autoSbar_Library === false) {
+                            if (libraryProps.showScrollbar === true && sbar.w === scaleForDisplay(12) || pref.autoSbar_Library === false && sbar.w === scaleForDisplay(12)) {
                                 const thumbColors = [
                                     RGBA(100, 100, 100, alpha), // normal
                                     RGBA(160, 160, 160, alpha), // hover
-                                    RGBA(160, 160, 160, alpha) // drag
+                                    RGBA(160, 160, 160, alpha)  // drag
                                 ]
                                 gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 + 8, ui.col.bg);
                                 gr.FillSolidRect(this.x, this.y + bar_y, this.w, bar_ht, b_is_dragging ? thumbColors[2] : hover ? thumbColors[1] : thumbColors[0]);
@@ -657,11 +657,11 @@ function Scrollbar() {
                         break;
                     } else if (pref.blueTheme) {
                         if (!pptDefault.sbarCol) {
-                            if (g_properties.show_scrollbar === true || pref.autoSbar_Library === false) {
+                            if (libraryProps.showScrollbar === true && sbar.w === scaleForDisplay(12) || pref.autoSbar_Library === false && sbar.w === scaleForDisplay(12)) {
                                 const thumbColors = [
-                                    RGBA(10, 135, 225, alpha), // normal
+                                    RGBA(10, 135, 225, alpha),  // normal
                                     RGBA(242, 230, 170, alpha), // hover
-                                    RGBA(242, 230, 170, alpha) // drag
+                                    RGBA(242, 230, 170, alpha)  // drag
                                 ]
                                 gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 + 8, ui.col.bg);
                                 gr.FillSolidRect(this.x, this.y + bar_y, this.w, bar_ht, b_is_dragging ? thumbColors[2] : hover ? thumbColors[1] : thumbColors[0]);
@@ -672,11 +672,11 @@ function Scrollbar() {
                         break;
                     } else if (pref.darkblueTheme) {
                         if (!pptDefault.sbarCol) {
-                            if (g_properties.show_scrollbar === true || pref.autoSbar_Library === false) {
+                            if (libraryProps.showScrollbar === true && sbar.w === scaleForDisplay(12) || pref.autoSbar_Library === false && sbar.w === scaleForDisplay(12)) {
                                 const thumbColors = [
-                                    RGBA(27, 55, 90, alpha), // normal
+                                    RGBA(27, 55, 90, alpha),    // normal
                                     RGBA(255, 202, 128, alpha), // hover
-                                    RGBA(255, 202, 128, alpha) // drag
+                                    RGBA(255, 202, 128, alpha)  // drag
                                 ]
                                 gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 + 8, ui.col.bg);
                                 gr.FillSolidRect(this.x, this.y + bar_y, this.w, bar_ht, b_is_dragging ? thumbColors[2] : hover ? thumbColors[1] : thumbColors[0]);
@@ -687,11 +687,11 @@ function Scrollbar() {
                         break;
                     } else if (pref.redTheme) {
                         if (!pptDefault.sbarCol) {
-                            if (g_properties.show_scrollbar === true || pref.autoSbar_Library === false) {
+                            if (libraryProps.showScrollbar === true && sbar.w === scaleForDisplay(12) || pref.autoSbar_Library === false && sbar.w === scaleForDisplay(12)) {
                                 const thumbColors = [
-                                    RGBA(145, 25, 25, alpha), // normal
+                                    RGBA(145, 25, 25, alpha),   // normal
                                     RGBA(245, 212, 165, alpha), // hover
-                                    RGBA(245, 212, 165, alpha) // drag
+                                    RGBA(245, 212, 165, alpha)  // drag
                                 ]
                                 gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 + 8, ui.col.bg);
                                 gr.FillSolidRect(this.x, this.y + bar_y, this.w, bar_ht, b_is_dragging ? thumbColors[2] : hover ? thumbColors[1] : thumbColors[0]);
@@ -702,11 +702,11 @@ function Scrollbar() {
                         break;
                     } else if (pref.creamTheme) {
                         if (!pptDefault.sbarCol) {
-                            if (g_properties.show_scrollbar === true || pref.autoSbar_Library === false) {
+                            if (libraryProps.showScrollbar === true && sbar.w === scaleForDisplay(12) || pref.autoSbar_Library === false && sbar.w === scaleForDisplay(12)) {
                                 const thumbColors = [
                                     RGBA(200, 200, 200, alpha), // normal
                                     RGBA(120, 170, 130, alpha), // hover
-                                    RGBA(120, 170, 130, alpha) // drag
+                                    RGBA(120, 170, 130, alpha)  // drag
                                 ]
                                 gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 + 8, ui.col.bg);
                                 gr.FillSolidRect(this.x, this.y + bar_y, this.w, bar_ht, b_is_dragging ? thumbColors[2] : hover ? thumbColors[1] : thumbColors[0]);
@@ -717,11 +717,11 @@ function Scrollbar() {
                         break;
                     } else if (pref.nblueTheme) {
                         if (!pptDefault.sbarCol) {
-                            if (g_properties.show_scrollbar === true || pref.autoSbar_Library === false) {
+                            if (libraryProps.showScrollbar === true && sbar.w === scaleForDisplay(12) || pref.autoSbar_Library === false && sbar.w === scaleForDisplay(12)) {
                                 const thumbColors = [
                                     RGBA(0, 200, 255, alpha), // normal
                                     RGBA(0, 238, 255, alpha), // hover
-                                    RGBA(0, 238, 255, alpha) // drag
+                                    RGBA(0, 238, 255, alpha)  // drag
                                 ]
                                 gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 + 8, ui.col.bg);
                                 gr.FillSolidRect(this.x, this.y + bar_y, this.w, bar_ht, b_is_dragging ? thumbColors[2] : hover ? thumbColors[1] : thumbColors[0]);
@@ -732,11 +732,11 @@ function Scrollbar() {
                         break;
                     } else if (pref.ngreenTheme) {
                         if (!pptDefault.sbarCol) {
-                            if (g_properties.show_scrollbar === true || pref.autoSbar_Library === false) {
+                            if (libraryProps.showScrollbar === true && sbar.w === scaleForDisplay(12) || pref.autoSbar_Library === false && sbar.w === scaleForDisplay(12)) {
                                 const thumbColors = [
                                     RGBA(0, 200, 0, alpha), // normal
                                     RGBA(0, 255, 0, alpha), // hover
-                                    RGBA(0, 255, 0, alpha) // drag
+                                    RGBA(0, 255, 0, alpha)  // drag
                                 ]
                                 gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 + 8, ui.col.bg);
                                 gr.FillSolidRect(this.x, this.y + bar_y, this.w, bar_ht, b_is_dragging ? thumbColors[2] : hover ? thumbColors[1] : thumbColors[0]);
@@ -747,11 +747,11 @@ function Scrollbar() {
                         break;
                     } else if (pref.nredTheme) {
                         if (!pptDefault.sbarCol) {
-                            if (g_properties.show_scrollbar === true || pref.autoSbar_Library === false) {
+                            if (libraryProps.showScrollbar === true && sbar.w === scaleForDisplay(12) || pref.autoSbar_Library === false && sbar.w === scaleForDisplay(12)) {
                                 const thumbColors = [
                                     RGBA(229, 7, 44, alpha), // normal
-                                    RGBA(255, 0, 0, alpha), // hover
-                                    RGBA(255, 0, 0, alpha) // drag
+                                    RGBA(255, 0, 0, alpha),  // hover
+                                    RGBA(255, 0, 0, alpha)   // drag
                                 ]
                                 gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 + 8, ui.col.bg);
                                 gr.FillSolidRect(this.x, this.y + bar_y, this.w, bar_ht, b_is_dragging ? thumbColors[2] : hover ? thumbColors[1] : thumbColors[0]);
@@ -762,11 +762,11 @@ function Scrollbar() {
                         break;
                     } else if (pref.ngoldTheme) {
                         if (!pptDefault.sbarCol) {
-                            if (g_properties.show_scrollbar === true || pref.autoSbar_Library === false) {
+                            if (libraryProps.showScrollbar === true && sbar.w === scaleForDisplay(12) || pref.autoSbar_Library === false && sbar.w === scaleForDisplay(12)) {
                                 const thumbColors = [
                                     RGBA(254, 204, 3, alpha), // normal
                                     RGBA(255, 242, 3, alpha), // hover
-                                    RGBA(255, 242, 3, alpha) // drag
+                                    RGBA(255, 242, 3, alpha)  // drag
                                 ]
                                 gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 + 8, ui.col.bg);
                                 gr.FillSolidRect(this.x, this.y + bar_y, this.w, bar_ht, b_is_dragging ? thumbColors[2] : hover ? thumbColors[1] : thumbColors[0]);
@@ -4716,8 +4716,9 @@ class LibraryCallbacks {
 
 			if ((scrollBar_hitarea_x - (is_4k ? 40 : 20) * trace_pad <= x) && (x <= scrollBar_hitarea_x - (is_4k ? 40 : 20) + scrollBar_hitarea_w + trace_pad) && 
 				(scrollBar_hitarea_y + (is_4k ? 160 : 80) <= y) && (y <= scrollBar_hitarea_y + scrollBar_hitarea_h + (is_4k ? 60 : 40))) {
-				g_properties.show_scrollbar = true;
+
 				if (!inScrollArea) {
+					inScrollArea = true;
 					ui.scr_but_w = scaleForDisplay(17);
 					sbar.w = scaleForDisplay(12);
 					but.refresh(true);
@@ -4726,7 +4727,6 @@ class LibraryCallbacks {
 
 			} else if ((!sbar.isDragging() && scrollBar_hitarea_x - (is_4k ? 60 : 30) * trace_pad <= x) && (x <= scrollBar_hitarea_x - (is_4k ? 60 : 30) + scrollBar_hitarea_w + trace_pad) && 
 				(scrollBar_hitarea_y + (is_4k ? 80 : 40) <= y) && (y <= scrollBar_hitarea_y + scrollBar_hitarea_h + (is_4k ? 120 : 80))) {
-				g_properties.show_scrollbar = false;
 
 				if (!inScrollArea) {
 					inScrollArea = true;

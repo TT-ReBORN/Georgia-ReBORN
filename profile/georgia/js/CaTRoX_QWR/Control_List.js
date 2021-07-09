@@ -352,8 +352,18 @@ class List {
         parent_menu.append_item(
             'Show scrollbar',
             () => {
-                g_properties.show_scrollbar = !g_properties.show_scrollbar;
-                this.on_scrollbar_visibility_change(g_properties.show_scrollbar);
+                //g_properties.show_scrollbar = !g_properties.show_scrollbar;
+                //this.on_scrollbar_visibility_change(g_properties.show_scrollbar);
+                pref.autoSbar_Playlist = !pref.autoSbar_Playlist;
+                if (pref.autoSbar_Playlist === true) {
+                    g_properties.show_scrollbar = false;
+                    initPlaylist();
+                    window.Reload();
+                } else if (pref.autoSbar_Playlist === false) {
+                    g_properties.show_scrollbar = true;
+                    initPlaylist();
+                    window.Reload();
+                }
             },
             {is_checked: g_properties.show_scrollbar}
         );
