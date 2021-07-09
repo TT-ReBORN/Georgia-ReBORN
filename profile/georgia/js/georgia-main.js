@@ -663,7 +663,7 @@ function draw_ui(gr) {
 			const height = gr.CalcTextHeight(str.artist, artistFont);
 			const width = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width;
 			var artistY = wh - geo.lower_bar_h + scaleForDisplay(2);
-			let flagSize = is_4k ? 64 : 32;
+			let flagSize = flagImgs.length === 3 ? scaleForDisplay(96) : flagImgs.length === 2 ? scaleForDisplay(64) : scaleForDisplay(32);
 			if (pref.show_flags && flagImgs.length && width + flagImgs[0].Width * flagImgs.length < availableWidth) {
 				//var flagsLeft = textLeft + width + scaleForDisplay(8);
 				var flagsLeft = textLeft;
@@ -1118,8 +1118,8 @@ function draw_ui(gr) {
 		if (str.artist && pref.layout_mode === 'default_mode') {
 			const width = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width;
 			const height = gr.CalcTextHeight(str.artist, artistFont);
-			var artistTitleTrackWidth = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width + gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(str.title_lower, ft_lower, 0, 0, 0, 0).Width;
-			let flagSize = is_4k ? 64 : 32;
+			let flagSize = flagImgs.length === 3 ? scaleForDisplay(96) : flagImgs.length === 2 ? scaleForDisplay(64) : scaleForDisplay(32);
+			var artistTitleTrackWidth = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width + gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(str.title_lower, ft_lower, 0, 0, 0, 0).Width + flagSize;
 
 			if (artistTitleTrackWidth > 0.35 * ww) {
 				if (pref.show_flags && flagImgs.length && width + flagImgs[0].Width * flagImgs.length) {
@@ -1149,7 +1149,7 @@ function draw_ui(gr) {
 					(pref.lower_bar_font_size === 18 ? lowerBarTop - scaleForDisplay(20) + heightAdjustment : !pref.lower_bar_font_size === 18 ? lowerBarTop - scaleForDisplay(20) + heightAdjustment : 0) +
 					(pref.lower_bar_font_size === 16 ? lowerBarTop - scaleForDisplay(19) + heightAdjustment : !pref.lower_bar_font_size === 18 ? lowerBarTop - scaleForDisplay(20) + heightAdjustment : 0),
 					// End String
-					availableWidth, height, StringFormat(0, 0, 4));
+					availableWidth - flagSize, height, StringFormat(0, 0, 4));
 				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - (is_4k ? 1 : 0), lowerBarTop, trackNumWidth - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
 				gr.DrawString(str.title_lower, ft_lower, col.now_playing, trackNumWidth > 0 ? progressBar.x - (is_4k ? 1 : 0) + trackNumWidth - scaleForDisplay(3) : progressBar.x - (is_4k ? 1 : 0) - scaleForDisplay(11), lowerBarTop, 0.34 * ww, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
 			} else {
@@ -1173,7 +1173,7 @@ function draw_ui(gr) {
 		bottomTextWidth += Math.ceil(titleMeasurements.Width);
 		if (str.original_artist && bottomTextWidth < 0.95 * ww) {
 			const width = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width;
-			let flagSize = is_4k ? 64 : 32;
+			let flagSize = flagImgs.length === 3 ? scaleForDisplay(96) : flagImgs.length === 2 ? scaleForDisplay(64) : scaleForDisplay(32);
 			var h_spacing = 0;
 			var v_spacing = 0;
 			if (useNeue) {
