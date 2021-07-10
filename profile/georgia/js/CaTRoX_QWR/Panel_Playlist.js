@@ -6769,15 +6769,16 @@ function PlaylistManager(x, y, w, h) {
 
 		if (plman.ActivePlaylist !== -1 && plman.IsPlaylistLocked(plman.ActivePlaylist)) {
 			// Position above scrollbar for eye candy
-			var sbar_x = x + w - playlist_geo.scrollbar_w - playlist_geo.scrollbar_right_pad;
+			// var sbar_x = x + w - playlist_geo.scrollbar_w - playlist_geo.scrollbar_right_pad;
+			var lock_x = ww - scaleForDisplay(29);
 			var lock_text = '\uf023';
 			var lock_w = Math.ceil(
 				/** @type {!number} */
 				gr.MeasureString(lock_text, g_pl_fonts.font_awesome, 0, 0, 0, 0).Width
 			);
-			gr.DrawString(lock_text, g_pl_fonts.font_awesome, text_color, sbar_x + Math.round((playlist_geo.scrollbar_w - lock_w) / 2), y, lock_w, h, g_string_format.align_center);
+			gr.DrawString(lock_text, g_pl_fonts.font_awesome, text_color, lock_x, y, lock_w, h, g_string_format.align_center);
 
-			right_pad += lock_w;
+			//right_pad += lock_w;  // deactivated -> PLM text should be always centered
 		}
 
 		var info_x = x + p;
