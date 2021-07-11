@@ -190,7 +190,8 @@ function btnActionHandler(btn) {
 		case 'Next':
 			fb.Next();
 			break;
-		case 'Playback/Random':
+		case 'PlaybackOrder':
+			/*
 			fb.RunMainMenuCommand('Edit/Sort/Randomize');
 			if (fb.IsPlaying) {
 				var playing_location = plman.GetPlayingItemLocation();
@@ -215,6 +216,19 @@ function btnActionHandler(btn) {
 				plman.AddPlaylistItemToPlaybackQueue(pl, 0);
 				fb.RunMainMenuCommand('Playback/Play');
 			}
+			*/
+			var pbo = fb.PlaybackOrder;
+			fb.PlaybackOrder = PlaybackOrder.Default;
+			if (pbo == PlaybackOrder.Default) {
+				fb.PlaybackOrder = PlaybackOrder.RepeatTrack;
+			} else if (pbo == PlaybackOrder.RepeatTrack) {
+				fb.PlaybackOrder = PlaybackOrder.ShuffleTracks;
+			} else if (pbo == PlaybackOrder.ShuffleTracks) {
+				fb.PlaybackOrder = PlaybackOrder.Default;
+			} else {
+				fb.PlaybackOrder = PlaybackOrder.RepeatTrack;
+			}
+			refreshPlaybackOrderButton();
 			break;
 		case 'Volume':
 			volume_btn.toggleVolumeBar();
@@ -478,6 +492,25 @@ function refreshPlayButton() {
 	if (transport.enableTransportControls) {
 		btns.play.img = !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause;
 		btns.play.repaint();
+	}
+}
+
+function refreshPlaybackOrderButton() {
+	var pbo = fb.PlaybackOrder;
+	if (transport.enableTransportControls) {
+		if (pbo === PlaybackOrder.Default) {
+			fb.RunMainMenuCommand('Playback/Order/Default');
+			btns.playbackOrder.img = btnImg.PlaybackDefault;
+		}
+		if (pbo === PlaybackOrder.RepeatTrack) {
+			fb.RunMainMenuCommand('Playback/Order/Repeat (track)');
+			btns.playbackOrder.img = btnImg.PlaybackReplay;
+		}
+		if (pbo === PlaybackOrder.ShuffleTracks) {
+			fb.RunMainMenuCommand('Playback/Order/Shuffle (tracks)');
+			btns.playbackOrder.img = btnImg.PlaybackShuffle;
+		}
+		btns.playbackOrder.repaint();
 	}
 }
 

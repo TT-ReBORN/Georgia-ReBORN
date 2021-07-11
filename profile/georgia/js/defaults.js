@@ -65,14 +65,14 @@ const defaultMetadataGrid = [
 	{ label: 'Genre',          val: '[$meta_sep(genre, \u2022 )]' },
 	{ label: 'Style',          val: '[$meta_sep(style, \u2022 )]' },
 	{ label: 'Release',        val: '[%release%]' },
-	{ label: 'Codec',   	   val: "[$if($not($strstr(%codec%,'MP3')),$replace($if2(%codec_profile%,%codec%),ATSC A/52,Dolby Digital)[ $replace($replace($replace($info(channel_mode), + LFE,),' front, ','/'),' rear surround channels',$if($strstr($info(channel_mode),' + LFE'),.1,.0))])]" },
+	{ label: 'Codec',          val: "[$if($not($strstr(%codec%,'MP3')),$replace($if2(%codec_profile%,%codec%),ATSC A/52,Dolby Digital)[ $replace($replace($replace($info(channel_mode), + LFE,),' front, ','/'),' rear surround channels',$if($strstr($info(channel_mode),' + LFE'),.1,.0))])]" },
 	{ label: 'Added',          val: '[$if2(%added_enhanced%,%added%)]', age: true },
 	{ label: 'Last Played',    val: '[' + tf.last_played + ']', age: true },
-	{ label: 'Hotness',	       val: "$puts(X,5)$puts(Y,$div(%_dynamic_rating%,400))$repeat($repeat(I,$get(X))   ,$div($get(Y),$get(X)))$repeat(I,$mod($get(Y),$get(X)))$ifgreater(%_dynamic_rating%,0,   $replace($div(%_dynamic_rating%,1000)'.'$mod($div(%_dynamic_rating%,100),10),0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9),)" },
+	{ label: 'Hotness',        val: "$puts(X,5)$puts(Y,$div(%_dynamic_rating%,400))$repeat($repeat(I,$get(X))   ,$div($get(Y),$get(X)))$repeat(I,$mod($get(Y),$get(X)))$ifgreater(%_dynamic_rating%,0,   $replace($div(%_dynamic_rating%,1000)'.'$mod($div(%_dynamic_rating%,100),10),0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9),)" },
 	{ label: 'View Count',     val: '[%fy_view_count%]' },
 	{ label: 'Likes',          val: "[$if(%fy_like_count%,%fy_like_count% \u25B2 / %fy_dislike_count% \u25BC,)]" },
 	{ label: 'Play Count',     val: '$if($or(%play_count%,%lastfm_play_count%),$puts(X,5)$puts(Y,$max(%play_count%,%lastfm_play_count%))$ifgreater($get(Y),30,,$repeat($repeat(I,$get(X)) ,$div($get(Y),$get(X)))$repeat(I,$mod($get(Y),$get(X)))   )$get(Y))' },
-	{ label: 'Rating', 	       val: '$if(%rating%,$repeat(\u2605 ,%rating%))' },
+	{ label: 'Rating',         val: '$if(%rating%,$repeat(\u2605 ,%rating%))' },
 	{ label: 'Mood',           val: '$if(%mood%,$puts(X,5)$puts(Y,$mul(5,%mood%))$repeat($repeat(I,$get(X))   ,$div($get(Y),$get(X)))$repeat(I,$mod($get(Y),$get(X)))$replace(%mood%,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9))' },
 ];
 const gridSchema = new ConfigurationObjectSchema('metadataGrid', ConfigurationObjectType.Array, [
@@ -145,7 +145,7 @@ const settingsSchema = new ConfigurationObjectSchema('settings', ConfigurationOb
 const transportDefaults = {
 	displayBelowArtwork: true,
 	enableTransportControls: true,
-	showRandom: true,
+	showPlaybackOrder: true,
 	showVolume: true,
 	showReload: false,
 }
@@ -153,7 +153,7 @@ const transportDefaults = {
 const transportComments = {
 	displayBelowArtwork: 'Should the transport controls be placed below the artwork. Disabled by default.',
 	enableTransportControls: 'Should transport controls be displayed. If false, all other transport settings are ignored.',
-	showRandom: 'Show the randomize button',
+	showPlaybackOrder: 'Show the Playback Order button',
 	showVolume: 'Show the volume control',
 	showReload: 'Show the reload theme button',
 }

@@ -148,6 +148,10 @@ function createFonts() {
 	}
 	ft.small_font = font(fontRegular, 14, 0);
 	ft.guifx = font(fontGuiFx, Math.floor(pref.transport_buttons_size / 2), 0);
+	ft.playbackOrder_default = font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.6), 0);
+	ft.playbackOrder_replay = font(fontAwesome, Math.floor(pref.transport_buttons_size / 2), 0);
+	ft.playbackOrder_shuffle = font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.65), 0);
+	ft.guifx_volume = font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.33), 0);
 	ft.Marlett = font('Marlett', 13, 0);
 	ft.SegoeUi = font('Segoe Ui Semibold', pref.menu_font_size, 0);
 	ft.library_tree = font('Segoe UI', libraryProps.baseFontSize, 0);
@@ -1840,6 +1844,10 @@ function onOptionsMenu(x, y) {
 			pref.transport_buttons_size = 32;
 		}
 		ft.guifx = gdi.Font(fontGuiFx, scaleForDisplay(Math.floor(pref.transport_buttons_size / 2)), 0);
+		ft.playbackOrder_default = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.6), 0);
+		ft.playbackOrder_replay = gdi.Font(fontAwesome, Math.floor(pref.transport_buttons_size / 2), 0);
+		ft.playbackOrder_shuffle = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.65), 0);
+		ft.guifx_volume = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.33), 0);
 		ft.artist_lrg = gdi.Font(fontBold, scaleForDisplay(pref.artist_font_size), 0);
 		ft.lower_bar = gdi.Font(fontLight, scaleForDisplay(pref.lower_bar_font_size), 0);
 		createFonts();
@@ -2014,7 +2022,7 @@ function onOptionsMenu(x, y) {
 		RepaintWindow();
 	}, !transport.enableTransportControls);
 	*/
-	transportMenu.addToggleItem('Show random button', transport, 'showRandom', () => {
+	transportMenu.addToggleItem('Show Playback Order button', transport, 'showPlaybackOrder', () => {
 		createButtonObjects(ww, wh);
 		RepaintWindow();
 	}, !transport.enableTransportControls);
@@ -2038,6 +2046,10 @@ function onOptionsMenu(x, y) {
 			pref.transport_buttons_size = size;
 		}
 		ft.guifx = gdi.Font(fontGuiFx, scaleForDisplay(Math.floor(pref.transport_buttons_size / 2)), 0);
+		ft.playbackOrder_default = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.6), 0);
+		ft.playbackOrder_replay = font(fontAwesome, Math.floor(pref.transport_buttons_size / 2), 0);
+		ft.playbackOrder_shuffle = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.65), 0);
+		ft.guifx_volume = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.33), 0);
 		createButtonImages();
 		createButtonObjects(ww, wh);
 		if (transport.displayBelowArtwork) {
@@ -3922,7 +3934,7 @@ function createButtonObjects(ww, wh) {
 	if (pref.layout_mode === 'default_mode') {
 
 		if (transport.enableTransportControls) {
-			let count = 4 + (transport.showRandom ? 1 : 0) +
+			let count = 4 + (transport.showPlaybackOrder ? 1 : 0) +
 					(transport.showVolume ? 1 : 0) +
 					(transport.showReload ? 1 : 0);
 
@@ -3941,8 +3953,9 @@ function createButtonObjects(ww, wh) {
 			btns.prev = new Button(calcX(++count), y, w, h, 'Previous', btnImg.Previous, 'Previous');
 			btns.play = new Button(calcX(++count), y, w, h, 'Play/Pause', !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause, 'Play');
 			btns.next = new Button(calcX(++count), y, w, h, 'Next', btnImg.Next, 'Next');
-			if (transport.showRandom) {
-				btns.random = new Button(calcX(++count), y, w, h, 'Playback/Random', btnImg.PlaybackRandom, 'Randomize Playlist');
+			if (transport.showPlaybackOrder) {
+				var pbo = fb.PlaybackOrder;
+				btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', pbo === PlaybackOrder.Default || fb.RunMainMenuCommand('Playback/Order/Default') ? btnImg.PlaybackDefault : pbo === PlaybackOrder.RepeatTrack || fb.RunMainMenuCommand('Playback/Order/Repeat (track)') ? btnImg.PlaybackReplay : pbo === PlaybackOrder.ShuffleTracks || fb.RunMainMenuCommand('Playback/Order/Shuffle (tracks)') ? btnImg.PlaybackShuffle : btnImg.PlaybackDefault, 'Playback order');
 			}
 			if (transport.showVolume) {
 				btns.volume = new Button(calcX(++count), y, w, h, 'Volume', btnImg.ShowVolume);
@@ -3957,7 +3970,7 @@ function createButtonObjects(ww, wh) {
 	if (pref.layout_mode === 'playlist_mode') {
 
 		if (transport.enableTransportControls) {
-			let count = 4 + (transport.showRandom ? 1 : 0) +
+			let count = 4 + (transport.showPlaybackOrder ? 1 : 0) +
 					(transport.showVolume ? 1 : 0) +
 					(transport.showReload ? 1 : 0);
 
@@ -3976,8 +3989,9 @@ function createButtonObjects(ww, wh) {
 			btns.prev = new Button(calcX(++count), y, w, h, 'Previous', btnImg.Previous, 'Previous');
 			btns.play = new Button(calcX(++count), y, w, h, 'Play/Pause', !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause, 'Play');
 			btns.next = new Button(calcX(++count), y, w, h, 'Next', btnImg.Next, 'Next');
-			if (transport.showRandom) {
-				btns.random = new Button(calcX(++count), y, w, h, 'Playback/Random', btnImg.PlaybackRandom, 'Randomize Playlist');
+			if (transport.showPlaybackOrder) {
+				var pbo = fb.PlaybackOrder;
+				btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', pbo === PlaybackOrder.Default || fb.RunMainMenuCommand('Playback/Order/Default') ? btnImg.PlaybackDefault : pbo === PlaybackOrder.RepeatTrack || fb.RunMainMenuCommand('Playback/Order/Repeat (track)') ? btnImg.PlaybackReplay : pbo === PlaybackOrder.ShuffleTracks || fb.RunMainMenuCommand('Playback/Order/Shuffle (tracks)') ? btnImg.PlaybackShuffle : btnImg.PlaybackDefault, 'Playback order');
 			}
 			if (transport.showVolume) {
 				btns.volume = new Button(calcX(++count), y, w, h, 'Volume', btnImg.ShowVolume);
@@ -4241,16 +4255,30 @@ function createButtonImages() {
 				w: transportCircleSize,
 				h: transportCircleSize
 			},
-			PlaybackRandom: {
+			PlaybackDefault: {
+				ico: g_guifx.right,
+				font: ft.playbackOrder_default,
+				type: 'transport',
+				w: transportCircleSize,
+				h: transportCircleSize
+			},
+			PlaybackReplay: {
+				ico: "\uf021",
+				font: ft.playbackOrder_replay,
+				type: 'transport',
+				w: transportCircleSize,
+				h: transportCircleSize
+			},
+			PlaybackShuffle: {
 				ico: g_guifx.shuffle,
-				font: ft.guifx,
+				font: ft.playbackOrder_shuffle,
 				type: 'transport',
 				w: transportCircleSize,
 				h: transportCircleSize
 			},
 			ShowVolume: {
-				ico:  g_guifx.volume_up,
-				font: ft.guifx,
+				ico:  g_guifx.volume_down,
+				font: ft.guifx_volume,
 				type: 'transport',
 				w: transportCircleSize,
 				h: transportCircleSize
