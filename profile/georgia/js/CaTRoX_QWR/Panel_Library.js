@@ -2742,7 +2742,7 @@ function LibraryTree() {
 						if (libraryProps.fullLine) sel_x = ui.x; sel_w = ui.x + sbar.tree_w - sel_x + (is_4k ? 40 : 20);
 						if (!libraryProps.fullLine) sel_x = ui.x; sel_w = ui.x + sbar.tree_w - sel_x + (is_4k ? 40 : 20);
 					}
-					if (!tt.Text || m_i != i && tt.Text) {
+					if (!tt.Text || tt.Text || m_i != i && tt.Text) {
 						if (pref.whiteTheme || pref.blackTheme) {
 							bgColor = col.primary;
 							gr.FillSolidRect(sel_x, item_y, sel_w, ui.row_h, bgColor);
