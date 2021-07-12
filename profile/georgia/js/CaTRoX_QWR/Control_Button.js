@@ -62,6 +62,8 @@ function buttonEventHandler(x, y, m) {
 					tt.showDelayed(lastOverButton.tooltip);
 				} else if (lastOverButton.id === 'Volume' && !volume_btn.show_volume_bar) {
 					tt.showDelayed(fb.Volume.toFixed(2) + ' dB');
+				} else if (lastOverButton.id === 'PlaybackOrder') {
+					tt.showDelayed(playbackOrder_tt());
 				}
 			}
 
@@ -219,11 +221,11 @@ function btnActionHandler(btn) {
 			*/
 			var pbo = fb.PlaybackOrder;
 			fb.PlaybackOrder = PlaybackOrder.Default;
-			if (pbo == PlaybackOrder.Default) {
+			if (pbo === PlaybackOrder.Default) {
 				fb.PlaybackOrder = PlaybackOrder.RepeatTrack;
-			} else if (pbo == PlaybackOrder.RepeatTrack) {
+			} else if (pbo === PlaybackOrder.RepeatTrack) {
 				fb.PlaybackOrder = PlaybackOrder.ShuffleTracks;
-			} else if (pbo == PlaybackOrder.ShuffleTracks) {
+			} else if (pbo === PlaybackOrder.ShuffleTracks) {
 				fb.PlaybackOrder = PlaybackOrder.Default;
 			} else {
 				fb.PlaybackOrder = PlaybackOrder.RepeatTrack;
@@ -512,6 +514,20 @@ function refreshPlaybackOrderButton() {
 		}
 		btns.playbackOrder.repaint();
 	}
+}
+
+function playbackOrder_tt() {
+	var pbo = fb.PlaybackOrder;
+	if (pbo === PlaybackOrder.Default) {
+		tiptext = 'Sequential';
+	} else if (pbo === PlaybackOrder.RepeatTrack || pbo === PlaybackOrder.RepeatPlaylist){
+		tiptext = 'Repeat';
+	} else if (pbo === PlaybackOrder.ShuffleTracks || pbo === PlaybackOrder.ShuffleAlbums || pbo === PlaybackOrder.ShuffleFolders || pbo === PlaybackOrder.Random) {
+		tiptext = 'Shuffle';
+	} else {
+		tiptext = 'Playback Order';
+	}
+	return tiptext;
 }
 
 // =================================================== //

@@ -2701,6 +2701,16 @@ function on_playback_order_changed(this_pb) {
 		window.RepaintRect(0.5 * ww, wh - geo.lower_bar_h, 0.5 * ww, geo.lower_bar_h);
 	}
 	last_pb = this_pb;
+
+	// Link foobar's playback order menu functions with playback order button
+	pbo = this_pb;
+	if (pbo === PlaybackOrder.Default) {
+		btns.playbackOrder.img = btnImg.PlaybackDefault;
+	} else if (pbo === PlaybackOrder.RepeatTrack || pbo === PlaybackOrder.RepeatPlaylist) {
+		btns.playbackOrder.img = btnImg.PlaybackReplay;
+	} else if (pbo === PlaybackOrder.ShuffleTracks || pbo === PlaybackOrder.ShuffleAlbums || pbo === PlaybackOrder.ShuffleFolders || pbo === PlaybackOrder.Random) {
+		btns.playbackOrder.img = btnImg.PlaybackShuffle;
+	}
 }
 
 function on_playback_seek() {
@@ -3955,7 +3965,11 @@ function createButtonObjects(ww, wh) {
 			btns.next = new Button(calcX(++count), y, w, h, 'Next', btnImg.Next, 'Next');
 			if (transport.showPlaybackOrder) {
 				var pbo = fb.PlaybackOrder;
-				btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', pbo === PlaybackOrder.Default || fb.RunMainMenuCommand('Playback/Order/Default') ? btnImg.PlaybackDefault : pbo === PlaybackOrder.RepeatTrack || fb.RunMainMenuCommand('Playback/Order/Repeat (track)') ? btnImg.PlaybackReplay : pbo === PlaybackOrder.ShuffleTracks || fb.RunMainMenuCommand('Playback/Order/Shuffle (tracks)') ? btnImg.PlaybackShuffle : btnImg.PlaybackDefault, 'Playback order');
+				btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', 
+				pbo === PlaybackOrder.Default || fb.RunMainMenuCommand('Playback/Order/Default') ? btnImg.PlaybackDefault : 
+				pbo === PlaybackOrder.RepeatTrack || pbo === PlaybackOrder.RepeatPlaylist || fb.RunMainMenuCommand('Playback/Order/Repeat (track)') ? btnImg.PlaybackReplay : 
+				pbo === PlaybackOrder.ShuffleTracks || pbo === PlaybackOrder.ShuffleAlbums || pbo === PlaybackOrder.ShuffleFolders || pbo === PlaybackOrder.Random || fb.RunMainMenuCommand('Playback/Order/Shuffle (tracks)') ? btnImg.PlaybackShuffle : 
+				btnImg.PlaybackDefault);
 			}
 			if (transport.showVolume) {
 				btns.volume = new Button(calcX(++count), y, w, h, 'Volume', btnImg.ShowVolume);
