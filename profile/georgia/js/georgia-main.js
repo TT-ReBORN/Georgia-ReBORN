@@ -2703,13 +2703,15 @@ function on_playback_order_changed(this_pb) {
 	last_pb = this_pb;
 
 	// Link foobar's playback order menu functions with playback order button
-	pbo = this_pb;
-	if (pbo === PlaybackOrder.Default) {
-		btns.playbackOrder.img = btnImg.PlaybackDefault;
-	} else if (pbo === PlaybackOrder.RepeatTrack || pbo === PlaybackOrder.RepeatPlaylist) {
-		btns.playbackOrder.img = btnImg.PlaybackReplay;
-	} else if (pbo === PlaybackOrder.ShuffleTracks || pbo === PlaybackOrder.ShuffleAlbums || pbo === PlaybackOrder.ShuffleFolders || pbo === PlaybackOrder.Random) {
-		btns.playbackOrder.img = btnImg.PlaybackShuffle;
+	if (transport.showPlaybackOrder) {
+		pbo = this_pb;
+		if (pbo === PlaybackOrder.Default) {
+			btns.playbackOrder.img = btnImg.PlaybackDefault;
+		} else if (pbo === PlaybackOrder.RepeatTrack || pbo === PlaybackOrder.RepeatPlaylist) {
+			btns.playbackOrder.img = btnImg.PlaybackReplay;
+		} else if (pbo === PlaybackOrder.ShuffleTracks || pbo === PlaybackOrder.ShuffleAlbums || pbo === PlaybackOrder.ShuffleFolders || pbo === PlaybackOrder.Random) {
+			btns.playbackOrder.img = btnImg.PlaybackShuffle;
+		}
 	}
 }
 
