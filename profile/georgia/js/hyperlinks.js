@@ -28,7 +28,7 @@ class Hyperlink {
 		}
 		this.y_offset = yOffset;
 		this.y = yOffset;
-		this.container_w = containerWidth;
+		this.container_w = containerWidth - scaleForDisplay(30);
 		this.state = HyperlinkStates.Normal;
 		this.inPlaylist = inPlaylist;
 
@@ -101,7 +101,7 @@ class Hyperlink {
 	 */
 	draw(gr, color) {
 		var font = this.state === HyperlinkStates.Hovered ? this.hoverFont : this.font;
-		gr.DrawString(this.text, font, color, this.x, this.inPlaylist ? this.y_offset : this.y, this.w, this.h);
+		gr.DrawString(this.text, font, color, this.x, this.inPlaylist ? this.y_offset : this.y, this.w, this.h, g_string_format.trim_ellipsis_char);
 	}
 
 	repaint() {
