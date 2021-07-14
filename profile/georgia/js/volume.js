@@ -52,7 +52,7 @@ class Volume {
         if (this.trace(x, y) || this.drag) {
             if (this.drag) {
                 x -= this.x;
-                const maxAreaExtraWidth = 5;   // give a little bigger target area to select -0.00dB
+                const maxAreaExtraWidth = 0;   // give a little bigger target area to select -0.00dB
                 const pos = (x < maxAreaExtraWidth) ?
                         0 :
                         (x > this.w) ?
