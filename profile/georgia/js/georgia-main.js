@@ -1705,7 +1705,7 @@ function onOptionsMenu(x, y) {
 			mode_handler.layout_mode_default_mode();
 			createFonts();
 			initPlaylistColors();
-			RepaintWindow();
+			on_init();
 		}
 		if (pref.layout_mode === 'playlist_mode') {
 			displayLibrary = false;
@@ -1725,18 +1725,21 @@ function onOptionsMenu(x, y) {
 	menu.createRadioSubMenu('Use 4K mode', ['Auto-detect', 'Never', 'Always'], pref.use_4k, ['auto', 'never', 'always'], (mode) => {
 		pref.use_4k = mode;
 		if (pref.use_4k === 'auto') {
-			displayBiography = false;
-			mode_handler.player_size_4K_Normal();
+			if (pref.layout_mode === 'default_mode') {
+				set_window_size(1140, 730); // Reset player size for initialization
+				mode_handler.layout_mode_default_mode();
+			} else if (pref.layout_mode === 'playlist_mode') {
+				set_window_size(484, 730); // Reset player size for initialization
+				mode_handler.layout_mode_playlist_mode();
+			}
 			window.Reload();
 		}
-		if (pref.use_4k === 'never') {
-			displayBiography = false;
-			mode_handler.player_size_small();
-			window.Reload();
-		}
-		if (pref.use_4k === 'always') {
-			displayBiography = false;
-			mode_handler.player_size_4K_Normal();
+		if (pref.use_4k === 'never' || pref.use_4k === 'always') {
+			if (pref.layout_mode === 'default_mode') {
+				mode_handler.layout_mode_default_mode();
+			} else if (pref.layout_mode === 'playlist_mode') {
+				mode_handler.layout_mode_playlist_mode();
+			}
 			window.Reload();
 		}
 	});
@@ -2843,7 +2846,7 @@ function on_mouse_rbtn_up(x, y, m) {
 		return library.on_mouse_rbtn_up(x, y, m);
 	} else if (displayBiography && biography.mouse_in_this(x, y)) {
 		trace_call && console.log(qwr_utils.function_name());
-		return biography.on_mouse_rbtn_up(x, y, m);		
+		return biography.on_mouse_rbtn_up(x, y, m);
 	} else
 		return settings.locked;
 }
@@ -2880,7 +2883,7 @@ function on_mouse_move(x, y, m) {
 		} else if (displayLibrary && library.mouse_in_this(x, y)) {
 			library.on_mouse_move(x, y, m);
 		} else if (displayBiography && biography.mouse_in_this(x, y)) {
-			biography.on_mouse_move(x, y, m);			
+			biography.on_mouse_move(x, y, m);
 		} else if (str.timeline && str.timeline.mouseInThis(x, y)) {
 			str.timeline.on_mouse_move(x, y, m);
 		}
@@ -2890,39 +2893,35 @@ function on_mouse_move(x, y, m) {
 
 		// ---> UIHacks
 		if (!mouseInPanel) mouseInPanel = true;
-		buttonEventHandler(x, y, m);
 		if (!componentUiHacks) return;
 
 		try {
-
 			if (mouseInControl || downButton) {
-
 				UIHacks.SetPseudoCaption(0, 0, 0, 0);
+
 				if (UIHacks.FrameStyle == 3) UIHacks.DisableSizing = true;
-				pseudoCaption = false;
+					pseudoCaption = false;
 
 			} else if (!pseudoCaption || pseudoCaptionWidth != ww) {
 
 				if (pref.layout_mode === 'default_mode' && !is_4k) {
-				UIHacks.SetPseudoCaption(5, 5, ww, 40);
+					UIHacks.SetPseudoCaption(5, 5, ww, 40);
 				} else if (pref.layout_mode === 'default_mode' && is_4k) {
-				UIHacks.SetPseudoCaption(5, 5, ww, 80);
+					UIHacks.SetPseudoCaption(5, 5, ww, 80);
 				}
 
 				if (pref.layout_mode === 'playlist_mode' && !is_4k) {
-				UIHacks.SetPseudoCaption(5, 5, ww, 50);
+					UIHacks.SetPseudoCaption(5, 5, ww, 50);
 				} else if (pref.layout_mode === 'playlist_mode' && is_4k) {
-				UIHacks.SetPseudoCaption(5, 5, ww, 100);
+					UIHacks.SetPseudoCaption(5, 5, ww, 100);
 				}
 
 				if (UIHacks.FrameStyle == 3) UIHacks.DisableSizing = false;
-				pseudoCaption = true;
-				pseudoCaptionWidth = ww;
-
+					pseudoCaption = true;
+					pseudoCaptionWidth = ww;
 			}
-
 		} catch (e) {};
-		// END
+
 	}
 }
 
@@ -3618,25 +3617,25 @@ function ResizeArtwork(resetCDPosition) {
 				xCenter = is_4k ? 0.261 * ww : 0.23 * ww;
 
 			} else if (UIHacks.FullScreen === true && displayBiography === true && is_4k) {
-			// Set Biography Window Size and Padding
-			ppt.borT = scaleForDisplay(30);
-			ppt.borB = scaleForDisplay(30);
-			ppt.borL = scaleForDisplay(40);
-			ppt.borR = scaleForDisplay(40);
-			ppt.textT = scaleForDisplay(70);
-			ppt.textL = scaleForDisplay(40);
-			ppt.textR = scaleForDisplay(40);
-			ppt.gap = scaleForDisplay(11);
+				// Set Biography Window Size and Padding
+				ppt.borT = scaleForDisplay(30);
+				ppt.borB = scaleForDisplay(30);
+				ppt.borL = scaleForDisplay(40);
+				ppt.borR = scaleForDisplay(40);
+				ppt.textT = scaleForDisplay(70);
+				ppt.textL = scaleForDisplay(40);
+				ppt.textR = scaleForDisplay(40);
+				ppt.gap = scaleForDisplay(11);
 			} else {
-			// Set Biography Window Size and Padding
-			ppt.borT = scaleForDisplay(30);
-			ppt.borB = scaleForDisplay(30);
-			ppt.borL = scaleForDisplay(40);
-			ppt.borR = scaleForDisplay(40);
-			ppt.textT = scaleForDisplay(70);
-			ppt.textL = scaleForDisplay(40);
-			ppt.textR = scaleForDisplay(40);
-			ppt.gap = scaleForDisplay(11);
+				// Set Biography Window Size and Padding
+				ppt.borT = scaleForDisplay(30);
+				ppt.borB = scaleForDisplay(30);
+				ppt.borL = scaleForDisplay(40);
+				ppt.borR = scaleForDisplay(40);
+				ppt.textT = scaleForDisplay(70);
+				ppt.textL = scaleForDisplay(40);
+				ppt.textR = scaleForDisplay(40);
+				ppt.gap = scaleForDisplay(11);
 			}
 
 			// ---> Can't use because UIHack Fullscreen function is same as UIHack Maximize function!?
@@ -4958,22 +4957,53 @@ function LayoutModeHandler() {
 				}
 			}
 			pss_switch.layoutmode.state = new_layoutmode_state;
-			if (pref.layout_mode === 'default_mode' && !pref.Player_Normal === 'Player_Normal') { // Fix for FULL HD Res that causes ugly resize from Playlist Mode with Player Size 'Normal' to Default Mode
-			set_window_size(g_properties.default_mode_saved_width, g_properties.default_mode_saved_height);
-			} else if (is_4k && pref.layout_mode === 'default_mode') {
-			set_window_size(2800, 1720);
-			}
-			if (!is_4k) {
-				UIHacks.MinSize.Width = 1140;
-				UIHacks.MinSize.Height = 730;
-				UIHacks.MinSize.Enabled = true;
-			} else if (is_4k) {
-				UIHacks.MinSize.Width = 2300;
-				UIHacks.MinSize.Height = 1470;
-				UIHacks.MinSize.Enabled = true;
-			}
-			if (pref.use_4k === 'never' || pref.use_4k === 'auto' && ww < 2560 && wh < 1600) {
+
+			if (pref.use_4k === 'auto') {
+				if (initDPI.dpi() > 120) {
+					set_window_size(2800, 1720);
+					if (ww > 2560 && wh > 1600) {
+						is_4k = true;
+						pref.Player_4K_Normal = 'Player_4K_Normal';
+						pref.Player_Small = false;
+						orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 24); // sets library font size to 24 pixel for 4K
+						libraryProps.zoomNode = window.SetProperty(prefix + 'Zoom Node Size (%)', 100); // resets library node size
+						ppt.baseFontSize = 24; // sets biography font size for 24 pixel for 4K
+						ppt.set(" Scrollbar Size", "Bar," + 26 + ",Arrow," + 26 + ",Gap(+/-),0,GripMinHeight," + 36, "sbarMetrics") // sets biography scrollbar size for 4K
+					} else if (ww < 2560 && wh < 1600) {
+						set_window_size(1140, 730);
+					}
+				} else {
+					if (ww < 2560 && wh < 1600) {
+						set_window_size(1140, 730);
+						is_4k = false;
+						pref.Player_Small = 'Player_Small';
+						pref.Player_4K_Small = false;
+						orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 16); // sets library font size to 16 pixel for FHD
+						libraryProps.zoomNode = window.SetProperty(prefix + 'Zoom Node Size (%)', 100); // resets library node size
+						ppt.baseFontSize = 12; // sets biography font size for 12 pixel for FHD
+						ppt.set(" Scrollbar Size", "Bar," + 12 + ",Arrow," + 12 + ",Gap(+/-),0,GripMinHeight," + 20, "sbarMetrics") // sets biography scrollbar size for FHD
+					}
+				}
+
+			} else if (pref.use_4k === 'always') {
+				set_window_size(2800, 1720);
+				is_4k = true;
+				pref.Player_4K_Normal = 'Player_4K_Normal';
+				pref.Player_Small = false;
+				orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 24); // sets library font size to 24 pixel for 4K
+				libraryProps.zoomNode = window.SetProperty(prefix + 'Zoom Node Size (%)', 100); // resets library node size
+				ppt.baseFontSize = 24; // sets biography font size for 24 pixel for 4K
+				ppt.set(" Scrollbar Size", "Bar," + 26 + ",Arrow," + 26 + ",Gap(+/-),0,GripMinHeight," + 36, "sbarMetrics") // sets biography scrollbar size for 4K
+
+			} else if (pref.use_4k === 'never') {
 				set_window_size(1140, 730);
+				is_4k = false;
+				pref.Player_Small = 'Player_Small';
+				pref.Player_4K_Normal = false;
+				orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 16); // sets library font size to 16 pixel for FHD
+				libraryProps.zoomNode = window.SetProperty(prefix + 'Zoom Node Size (%)', 100); // resets library node size
+				ppt.baseFontSize = 12; // sets biography font size for 12 pixel for FHD
+				ppt.set(" Scrollbar Size", "Bar," + 12 + ",Arrow," + 12 + ",Gap(+/-),0,GripMinHeight," + 20, "sbarMetrics") // sets biography scrollbar size for FHD
 			}
 		}
 	};
@@ -4990,15 +5020,39 @@ function LayoutModeHandler() {
 				}
 			}
 			pss_switch.layoutmode.state = new_layoutmode_state;
-			set_window_size(g_properties.playlist_mode_saved_width, g_properties.playlist_mode_saved_height);
-			if (!is_4k) {
-				UIHacks.MinSize.Width = 484;
-				UIHacks.MinSize.Height = 730;
-				UIHacks.MinSize.Enabled = true;
-			} else if (is_4k) {
-				UIHacks.MinSize.Width = 964;
-				UIHacks.MinSize.Height = 1470;
-				UIHacks.MinSize.Enabled = true;
+
+			if (pref.use_4k === 'auto') {
+
+				if (initDPI.dpi() > 120) {
+					set_window_size(964, 1720);
+					if (wh > 1600) {
+						set_window_size(964, 1720);
+						is_4k = true;
+						pref.Player_4K_Normal = 'Player_4K_Normal';
+						pref.Player_Small = false;
+					} else if (wh < 1600) {
+						set_window_size(484, 730);
+					}
+				} else {
+					if (wh < 1600) {
+						set_window_size(484, 730);
+						is_4k = false;
+						pref.Player_Small = 'Player_Small';
+						pref.Player_4K_Small = false;
+					}
+				}
+
+			} else if (pref.use_4k === 'always') {
+				set_window_size(964, 1720);
+				is_4k = true;
+				pref.Player_4K_Normal = 'Player_4K_Normal';
+				pref.Player_Small = false;
+
+			} else if (pref.use_4k === 'never') {
+				set_window_size(484, 730);
+				is_4k = false;
+				pref.Player_Small = 'Player_Small';
+				pref.Player_4K_Normal = false;
 			}
 		}
 	};
@@ -5024,10 +5078,6 @@ function LayoutModeHandler() {
 		}
 		if (pref.use_4k === 'never' && pref.layout_mode === 'default_mode' || pref.use_4k === 'auto' && ww < 2560 && wh < 1600 && pref.layout_mode === 'default_mode') {
 			set_window_size(1140, 730);
-			orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 16); // sets library font size to 16 pixel for FHD
-			libraryProps.zoomNode = window.SetProperty(prefix + 'Zoom Node Size (%)', 100); // resets library node size
-			ppt.baseFontSize = 12; // sets biography font size for 12 pixel for FHD
-			ppt.set(" Scrollbar Size", "Bar," + 12 + ",Arrow," + 12 + ",Gap(+/-),0,GripMinHeight," + 20, "sbarMetrics") // sets biography scrollbar size for FHD
 		}
 		if (pref.layout_mode === 'playlist_mode') {
 			set_window_size(484, 730);
@@ -5134,75 +5184,11 @@ function LayoutModeHandler() {
 				UIHacks.MinSize.Enabled = true;
 			}
 		}
-		if (pref.use_4k === 'auto' && pref.layout_mode === 'default_mode') {
-			if (initDPI.dpi() > 120) {
-				set_window_size(2800, 1720);
-				if (ww > 2560 && wh > 1600) {
-					is_4k = true;
-					pref.Player_4K_Normal = 'Player_4K_Normal';
-					pref.Player_Small = false;
-					orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 24); // sets library font size to 24 pixel for 4K
-					ppt.baseFontSize = 24; // sets biography font size for 24 pixel for 4K
-					ppt.set(" Scrollbar Size", "Bar," + 26 + ",Arrow," + 26 + ",Gap(+/-),0,GripMinHeight," + 36, "sbarMetrics") // sets biography scrollbar size for 4K
-				} else if (ww < 2560 && wh < 1600) {
-					set_window_size(1140, 730);
-				}
-			} else {
-				if (ww < 2560 && wh < 1600) {
-					set_window_size(1140, 730);
-					is_4k = false;
-					pref.Player_Small = 'Player_Small';
-					pref.Player_4K_Small = false;
-					orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 16); // sets library font size to 16 pixel for FHD
-					libraryProps.zoomNode = window.SetProperty(prefix + 'Zoom Node Size (%)', 100); // resets library node size
-					ppt.baseFontSize = 12; // sets biography font size for 12 pixel for FHD
-					ppt.set(" Scrollbar Size", "Bar," + 12 + ",Arrow," + 12 + ",Gap(+/-),0,GripMinHeight," + 20, "sbarMetrics") // sets biography scrollbar size for FHD
-				}
-			}
-		} else if (pref.use_4k === 'auto' && pref.layout_mode === 'playlist_mode') {
-			if (initDPI.dpi() > 120) {
-				set_window_size(964, 1720);
-				if (wh > 1600) {
-					set_window_size(964, 1720);
-					is_4k = true;
-					pref.Player_4K_Normal = 'Player_4K_Normal';
-					pref.Player_Small = false;
-					orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 24); // sets library font size to 24 pixel for 4K
-					ppt.baseFontSize = 24; // sets biography font size for 24 pixel for 4K
-					ppt.set(" Scrollbar Size", "Bar," + 26 + ",Arrow," + 26 + ",Gap(+/-),0,GripMinHeight," + 36, "sbarMetrics") // sets biography scrollbar size for 4K
-					window.Repaint();
-				} else if (wh < 1600) {
-					set_window_size(484, 730);
-				}
-			} else {
-				if (wh < 1600) {
-					set_window_size(484, 730);
-					is_4k = false;
-					pref.Player_Small = 'Player_Small';
-					pref.Player_4K_Small = false;
-					orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 16); // sets library font size to 16 pixel for FHD
-					libraryProps.zoomNode = window.SetProperty(prefix + 'Zoom Node Size (%)', 100); // resets library node size
-					ppt.baseFontSize = 12; // sets biography font size for 12 pixel for FHD
-					ppt.set(" Scrollbar Size", "Bar," + 12 + ",Arrow," + 12 + ",Gap(+/-),0,GripMinHeight," + 20, "sbarMetrics") // sets biography scrollbar size for FHD
-				}
-			}
-		}
-		if (pref.use_4k === 'always' && pref.layout_mode === 'default_mode' || pref.use_4k === 'auto' && ww > 2560 && wh > 1600 && pref.layout_mode === 'default_mode') {
-			set_window_size(2800, 1720);
-			is_4k = true;
-			pref.Player_4K_Normal = 'Player_4K_Normal';
-			pref.Player_Small = false;
-			orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 24); // sets library font size to 24 pixel for 4K
-			ppt.baseFontSize = 24; // sets biography font size for 24 pixel for 4K
-			ppt.set(" Scrollbar Size", "Bar," + 26 + ",Arrow," + 26 + ",Gap(+/-),0,GripMinHeight," + 36, "sbarMetrics") // sets biography scrollbar size for 4K
-		} else if (pref.use_4k === 'always' && pref.layout_mode === 'playlist_mode') {
+		if (pref.use_4k === 'always' && pref.layout_mode === 'playlist_mode') {
 			set_window_size(964, 1720);
 			is_4k = true;
 			pref.Player_4K_Normal = 'Player_4K_Normal';
 			pref.Player_Small = false;
-			orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 24); // sets library font size to 24 pixel for 4K
-			ppt.baseFontSize = 24; // sets biography font size for 24 pixel for 4K
-			ppt.set(" Scrollbar Size", "Bar," + 26 + ",Arrow," + 26 + ",Gap(+/-),0,GripMinHeight," + 36, "sbarMetrics") // sets biography scrollbar size for 4K
 		}
 		if (pref.layout_mode === 'playlist_mode' && is_4k) {
 			set_window_size(964, 1720);
@@ -5289,6 +5275,8 @@ function LayoutModeHandler() {
 			pref.Player_4K_Big = false;
 
 			// Init 4k resolution check and player size on first launch
+			set_window_size(1140, 730); // Reset player size for initialization
+
 			if (initDPI.dpi() > 120) {
 				set_window_size(2800, 1720);
 				if (ww > 2560 && wh > 1600) {
@@ -5296,6 +5284,7 @@ function LayoutModeHandler() {
 					pref.Player_4K_Normal = 'Player_4K_Normal';
 					pref.Player_Small = false;
 					orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 24); // sets library font size to 24 pixel for 4K
+					libraryProps.zoomNode = window.SetProperty(prefix + 'Zoom Node Size (%)', 100); // resets library node size
 					ppt.baseFontSize = 24; // sets biography font size for 24 pixel for 4K
 					ppt.set(" Scrollbar Size", "Bar," + 26 + ",Arrow," + 26 + ",Gap(+/-),0,GripMinHeight," + 36, "sbarMetrics") // sets biography scrollbar size for 4K
 					default_mode_saved_width = window.SetProperty('system.window.default_mode.saved_width', 2800);
@@ -5312,6 +5301,7 @@ function LayoutModeHandler() {
 					pref.Player_Small = 'Player_Small';
 					pref.Player_4K_Small = false;
 					orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 16); // sets library font size to 16 pixel for FHD
+					libraryProps.zoomNode = window.SetProperty(prefix + 'Zoom Node Size (%)', 100); // resets library node size
 					ppt.baseFontSize = 12; // sets biography font size for 12 pixel for FHD
 					ppt.set(" Scrollbar Size", "Bar," + 12 + ",Arrow," + 12 + ",Gap(+/-),0,GripMinHeight," + 20, "sbarMetrics") // sets biography scrollbar size for FHD
 					default_mode_saved_width = window.SetProperty('system.window.default_mode.saved_width', 1140);
@@ -5336,38 +5326,38 @@ function LayoutModeHandler() {
 		}
 	};
 
-	function set_window_size(width, height) {
-		//To avoid resizing bugs, when the window is bigger\smaller than the saved one.
-		UIHacks.MinSize.Enabled = false;
-		UIHacks.MaxSize.Enabled = false;
-		UIHacks.MinSize.Width = width;
-		UIHacks.MinSize.Height = height;
-		UIHacks.MaxSize.Width = width;
-		UIHacks.MaxSize.Height = height;
-
-		UIHacks.MaxSize.Enabled = true;
-		UIHacks.MaxSize.Enabled = false;
-		UIHacks.MinSize.Enabled = true;
-		UIHacks.MinSize.Enabled = false;
-
-		window.NotifyOthers('layoutmode_state_size', pss_switch.layoutmode.state);
-	}
-
-	function set_window_size_limits(min_w, min_w_4K, max_w, max_w_4K, min_h, min_h_4K, max_h,max_h_4K) {
-		UIHacks.MinSize.Enabled = !!min_w || !!min_w_4K;
-		UIHacks.MinSize.Width = min_w || min_w_4K;
-
-		UIHacks.MaxSize.Enabled = !!max_w || !!max_w_4K;
-		UIHacks.MaxSize.Width = max_w || max_w_4K;
-
-		UIHacks.MinSize.Enabled = !!min_h || !!min_h_4K;
-		UIHacks.MinSize.Height = min_h || min_h_4K;
-
-		UIHacks.MaxSize.Enabled = !!max_h || !!max_h_4K;
-		UIHacks.MaxSize.Height = max_h || max_h_4K;
-	}
-
 	var fb_handle = undefined;
+}
+
+function set_window_size(width, height) {
+	//To avoid resizing bugs, when the window is bigger\smaller than the saved one.
+	UIHacks.MinSize.Enabled = false;
+	UIHacks.MaxSize.Enabled = false;
+	UIHacks.MinSize.Width = width;
+	UIHacks.MinSize.Height = height;
+	UIHacks.MaxSize.Width = width;
+	UIHacks.MaxSize.Height = height;
+
+	UIHacks.MaxSize.Enabled = true;
+	UIHacks.MaxSize.Enabled = false;
+	UIHacks.MinSize.Enabled = true;
+	UIHacks.MinSize.Enabled = false;
+
+	window.NotifyOthers('layoutmode_state_size', pss_switch.layoutmode.state);
+}
+
+function set_window_size_limits(min_w, min_w_4K, max_w, max_w_4K, min_h, min_h_4K, max_h,max_h_4K) {
+	UIHacks.MinSize.Enabled = !!min_w || !!min_w_4K;
+	UIHacks.MinSize.Width = min_w || min_w_4K;
+
+	UIHacks.MaxSize.Enabled = !!max_w || !!max_w_4K;
+	UIHacks.MaxSize.Width = max_w || max_w_4K;
+
+	UIHacks.MinSize.Enabled = !!min_h || !!min_h_4K;
+	UIHacks.MinSize.Height = min_h || min_h_4K;
+
+	UIHacks.MaxSize.Enabled = !!max_h || !!max_h_4K;
+	UIHacks.MaxSize.Height = max_h || max_h_4K;
 }
 
 // ================================================ END ====================================================== //

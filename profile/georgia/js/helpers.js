@@ -604,7 +604,7 @@ function checkFor4k(w, h) {
 		default_mode_saved_height = window.SetProperty('system.window.default_mode.saved_height', 1720);
 		playlist_mode_saved_width = window.SetProperty('system.window.playlist_mode.saved_width', 964);
 		playlist_mode_saved_height = window.SetProperty('system.window.playlist_mode.saved_height', 1720);
-	} else if (pref.use_4k === 'auto' && (initDPI.dpi() > 120 && w > 1920 && initDPI.dpi() > 120 && h > 1200 || initDPI.dpi() > 120 && h > 1600 && pref.layout_mode === 'playlist_mode')) {
+	} else if (pref.use_4k === 'auto' && (initDPI.dpi() > 120 && w > 1920 && initDPI.dpi() > 120 && h > 1200 || initDPI.dpi() > 120 && h > 1440 && pref.layout_mode === 'playlist_mode')) {
 		is_4k = true;
 		default_mode_saved_width = window.SetProperty('system.window.default_mode.saved_width', 2800);
 		default_mode_saved_height = window.SetProperty('system.window.default_mode.saved_height', 1720);
