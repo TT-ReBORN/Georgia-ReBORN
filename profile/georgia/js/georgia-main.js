@@ -2784,7 +2784,8 @@ function on_mouse_lbtn_up(x, y, m) {
 		} else if (displayLibrary) { // && library.mouse_in_this(x, y)) {
 			trace_call && console.log(qwr_utils.function_name());
 			library.on_mouse_lbtn_up(x, y, m);
-		} if (displayBiography && biography.mouse_in_this(x, y)) {
+		} if (displayBiography && state.mouse_x > uiBio.x && state.mouse_x <= uiBio.x + uiBio.w &&
+			state.mouse_y > uiBio.y && state.mouse_y <= uiBio.y + uiBio.h) {
 			trace_call && console.log(qwr_utils.function_name());
 			biography.on_mouse_lbtn_up(x, y, m);
 		}
