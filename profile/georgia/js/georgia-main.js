@@ -4969,6 +4969,23 @@ function LayoutModeHandler() {
 			}
 			pss_switch.layoutmode.state = new_layoutmode_state;
 
+			// Fix for FULL HD Res that causes ugly resize from Playlist Mode with Player Size 'Normal' to Default Mode
+			if (pref.layout_mode === 'default_mode' && !pref.Player_Normal === 'Player_Normal') {
+				set_window_size(g_properties.default_mode_saved_width, g_properties.default_mode_saved_height);
+			} else if (is_4k && pref.layout_mode === 'default_mode') {
+				set_window_size(2800, 1720);
+			}
+			if (!is_4k) {
+				UIHacks.MinSize.Width = 1140;
+				UIHacks.MinSize.Height = 730;
+				UIHacks.MinSize.Enabled = true;
+			} else if (is_4k) {
+				UIHacks.MinSize.Width = 2300;
+				UIHacks.MinSize.Height = 1470;
+				UIHacks.MinSize.Enabled = true;
+			}
+			// End
+
 			if (pref.use_4k === 'auto') {
 				if (initDPI.dpi() > 120) {
 					set_window_size(2800, 1720);
