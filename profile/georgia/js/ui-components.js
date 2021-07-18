@@ -199,22 +199,42 @@ class ProgressBar {
     // Lowerbar truncated text tooltip
     lowerBar_truncatedText_tt(x, y) {
         if (pref.show_truncatedText_tt) {
-            const lowerBar_tt_hitarea_x = scaleForDisplay(20);
-            const lowerBar_tt_hitarea_y = wh - geo.lower_bar_h - scaleForDisplay(20);
-            const lowerBar_tt_hitarea_w = 0.35 * ww;
-            const lowerBar_tt_hitarea_h = scaleForDisplay(40);
-            g_tooltip.SetMaxWidth(800);
+            if (pref.layout_mode === 'default_mode') {
+                const lowerBar_tt_hitarea_x = scaleForDisplay(20);
+                const lowerBar_tt_hitarea_y = wh - geo.lower_bar_h - scaleForDisplay(20);
+                const lowerBar_tt_hitarea_w = 0.35 * ww;
+                const lowerBar_tt_hitarea_h = scaleForDisplay(40);
+                g_tooltip.SetMaxWidth(800);
 
-            if (lowerBar_tt_hitarea_x <= x && lowerBar_tt_hitarea_y <= y && lowerBar_tt_hitarea_x + lowerBar_tt_hitarea_w >= x && 
-                lowerBar_tt_hitarea_y + lowerBar_tt_hitarea_h >= y) {
-                if (this.artist_text_w > this.w * 0.32) {
-                    tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
+                if (lowerBar_tt_hitarea_x <= x && lowerBar_tt_hitarea_y <= y && lowerBar_tt_hitarea_x + lowerBar_tt_hitarea_w >= x && 
+                    lowerBar_tt_hitarea_y + lowerBar_tt_hitarea_h >= y) {
+                    if (this.artist_text_w > this.w * 0.32) {
+                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
+                    }
+                    else if (this.title_text_w > this.w * 0.37) {
+                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
+                    }
+                } else {
+                    tt.stop();
                 }
-                else if (this.title_text_w > this.w * 0.37) {
-                    tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
+            } else if (pref.layout_mode === 'playlist_mode') {
+                const lowerBar_tt_hitarea_x = scaleForDisplay(20);
+                const lowerBar_tt_hitarea_y = wh - geo.lower_bar_h - scaleForDisplay(15);
+                const lowerBar_tt_hitarea_w = ww;
+                const lowerBar_tt_hitarea_h = scaleForDisplay(20);
+                g_tooltip.SetMaxWidth(400);
+
+                if (lowerBar_tt_hitarea_x <= x && lowerBar_tt_hitarea_y <= y && lowerBar_tt_hitarea_x + lowerBar_tt_hitarea_w >= x && 
+                    lowerBar_tt_hitarea_y + lowerBar_tt_hitarea_h >= y) {
+                    if (this.artist_text_w > this.w * 0.32) {
+                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
+                    }
+                    else if (this.title_text_w > this.w * 0.37) {
+                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
+                    }
+                } else {
+                    tt.stop();
                 }
-            } else {
-                tt.stop();
             }
         }
     }

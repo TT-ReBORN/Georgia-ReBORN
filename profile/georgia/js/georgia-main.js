@@ -1890,9 +1890,8 @@ function onOptionsMenu(x, y) {
 	detailsFontSizeMenu.appendTo(changeFontSizeMenu);
 
 	const playlistFontSizeMenu = new Menu('Playlist');
-	playlistFontSizeMenu.createRadioSubMenu('Header', ['-1', '14px', '15px (default)', '16px', '18px', '20px', '22px', '+1'], pref.font_size_playlist_header,
-	[-1, 14, 15, 16, 18, 20, 22, 999],
-	(size) => {
+	playlistFontSizeMenu.createRadioSubMenu('Header', pref.layout_mode === 'default_mode' ? ['-1', '14px', '15px (default)', '16px', '18px', '20px', '22px', '+1'] : ['14px', '15px (default)', '16px', '18px'],
+	pref.font_size_playlist_header, pref.layout_mode === 'default_mode' ? [-1, 14, 15, 16, 18, 20, 22, 999] : [14, 15, 16, 18], (size) => {
 		if (size === -1) {
 			pref.font_size_playlist_header--;
 		} else if (size === 999) {
@@ -1904,9 +1903,8 @@ function onOptionsMenu(x, y) {
 		playlist.on_size(ww, wh);
 		window.Repaint();
 	});
-	playlistFontSizeMenu.createRadioSubMenu('Row', ['-1', '11px', '12px (default)', '13px', '14px', '16px', '18px', '+1'], pref.font_size_playlist,
-	[-1, 11, 12, 13, 14, 16, 18, 999],
-	(size) => {
+	playlistFontSizeMenu.createRadioSubMenu('Row', pref.layout_mode === 'default_mode' ? ['-1', '11px', '12px (default)', '13px', '14px', '16px', '18px', '+1'] : ['11px', '12px (default)', '13px', '14px'],
+	pref.font_size_playlist, pref.layout_mode === 'default_mode' ? [-1, 11, 12, 13, 14, 16, 18, 999] : [11, 12, 13, 14], (size) => {
 		if (size === -1) {
 			pref.font_size_playlist--;
 		} else if (size === 999) {
