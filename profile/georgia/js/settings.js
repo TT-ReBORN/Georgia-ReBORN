@@ -54,6 +54,8 @@ pref.add_properties({
 	transport_buttons_spacing: ['Transport: Button spacing', 5], // size in pixels of the spacing between buttons
 	showTitleInGrid: ['Display song title in info grid', false], // false: don't show title at top of info grid, and move album title above timeline
 
+	show_tt: ['Show tooltips', true], // true: show all tooltips
+	show_truncatedText_tt: ['Show tooltips on truncated text', true], // true: show tooltips when hovering over truncated text on lowerbar and playlist
 	show_timeline_tooltips: ['Show timeline tooltips', true], // true: show tooltips when hovering over the timeline that show information on plays
 
 	menu_font_size: ['Menu font size', 12],

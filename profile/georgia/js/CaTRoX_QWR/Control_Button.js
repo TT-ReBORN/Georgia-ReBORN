@@ -57,13 +57,15 @@ function buttonEventHandler(x, y, m) {
 				thisButton.changeState(ButtonState.Hovered);
 			}
 
-			if (lastOverButton) {
-				if (lastOverButton.tooltip) {
-					tt.showDelayed(lastOverButton.tooltip);
-				} else if (lastOverButton.id === 'Volume' && !volume_btn.show_volume_bar) {
-					tt.showDelayed(fb.Volume.toFixed(2) + ' dB');
-				} else if (lastOverButton.id === 'PlaybackOrder') {
-					tt.showDelayed(playbackOrder_tt());
+			if (pref.show_tt) {
+				if (lastOverButton) {
+					if (lastOverButton.tooltip) {
+						tt.showDelayed(lastOverButton.tooltip);
+					} else if (lastOverButton.id === 'Volume' && !volume_btn.show_volume_bar) {
+						tt.showDelayed(fb.Volume.toFixed(2) + ' dB');
+					} else if (lastOverButton.id === 'PlaybackOrder') {
+						tt.showDelayed(playbackOrder_tt());
+					}
 				}
 			}
 

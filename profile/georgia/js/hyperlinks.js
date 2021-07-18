@@ -28,7 +28,7 @@ class Hyperlink {
 		}
 		this.y_offset = yOffset;
 		this.y = yOffset;
-		this.container_w = containerWidth - scaleForDisplay(30);
+		this.container_w = containerWidth;
 		this.state = HyperlinkStates.Normal;
 		this.inPlaylist = inPlaylist;
 

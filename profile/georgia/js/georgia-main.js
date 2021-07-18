@@ -2079,6 +2079,18 @@ function onOptionsMenu(x, y) {
 
 	menu.addSeparator();
 
+	menu.addToggleItem('Show tooltips', pref, 'show_tt', () => {
+		if (pref.show_tt) {
+			pref.show_tt = true;
+			pref.show_truncatedText_tt = true;
+			pref.show_timeline_tooltips = true;
+		} else {
+			pref.show_tt = false;
+			pref.show_truncatedText_tt = false;
+			pref.show_timeline_tooltips = false;
+		}
+	});
+	menu.addToggleItem('Show tooltips on truncated text', pref, 'show_truncatedText_tt');
 	menu.addToggleItem('Show timeline tooltips', pref, 'show_timeline_tooltips');
 	menu.addToggleItem('Show progress bar', pref, 'show_progress_bar', () => {
 		setGeometry();

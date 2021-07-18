@@ -138,6 +138,13 @@ class ProgressBar {
                     gr.DrawLine(this.progressLength + this.x + 1, this.y, this.progressLength + this.x + 1, this.y + this.h - 1, 1, this.progressAlphaCol);
                 }
             }
+            // Callback for tooltip
+            const ft_lower = ft.lower_bar;
+            const textLeft = scaleForDisplay(40);
+            const availableWidth = displayPlaylist || displayLibrary ? Math.min(ww / 2 - 20, btns.playlist.x - textLeft) : btns.playlist.x - textLeft;
+            const artistFont = chooseFontForWidth(gr, availableWidth, str.artist, [ft.artist_lrg, ft.artist_med, ft.artist_sml]);
+            this.artist_text_w = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width;
+            this.title_text_w = gr.MeasureString(str.title_lower, ft_lower, 0, 0, 0, 0).Width;
         }
     }
 
@@ -169,6 +176,9 @@ class ProgressBar {
         if (this.drag) {
             this.setPlaybackTime(x);
         }
+        if (pref.show_tt || pref.show_truncatedText_tt) {
+            this.lowerBar_truncatedText_tt(x, y);
+        }
     }
 
     mouseInThis(x, y) {
@@ -183,6 +193,29 @@ class ProgressBar {
         v = (v < 0) ? 0 : (v < 1) ? v : 1;
         if (fb.PlaybackTime !== v * fb.PlaybackLength) {
             fb.PlaybackTime = v * fb.PlaybackLength;
+        }
+    }
+
+    // Lowerbar truncated text tooltip
+    lowerBar_truncatedText_tt(x, y) {
+        if (pref.show_truncatedText_tt) {
+            const lowerBar_tt_hitarea_x = scaleForDisplay(20);
+            const lowerBar_tt_hitarea_y = wh - geo.lower_bar_h - scaleForDisplay(20);
+            const lowerBar_tt_hitarea_w = 0.35 * ww;
+            const lowerBar_tt_hitarea_h = scaleForDisplay(40);
+            g_tooltip.SetMaxWidth(800);
+
+            if (lowerBar_tt_hitarea_x <= x && lowerBar_tt_hitarea_y <= y && lowerBar_tt_hitarea_x + lowerBar_tt_hitarea_w >= x && 
+                lowerBar_tt_hitarea_y + lowerBar_tt_hitarea_h >= y) {
+                if (this.artist_text_w > this.w * 0.32) {
+                    tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
+                }
+                else if (this.title_text_w > this.w * 0.37) {
+                    tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
+                }
+            } else {
+                tt.stop();
+            }
         }
     }
 }

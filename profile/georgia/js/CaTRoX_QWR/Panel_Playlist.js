@@ -1266,6 +1266,12 @@ class Playlist extends List {
 			}
 		}
 
+		if (pref.show_tt || pref.show_truncatedText_tt) {
+			if (item instanceof Row) {
+				item.title_truncatedText_tt(x, y);
+			}
+		}
+
 		if (!this.mouse_down) {
 			return true;
 		}
@@ -4907,7 +4913,7 @@ class Header extends BaseHeader {
 			if (artist_text) {
 				var artist_x = left_pad;
 
-				this.hyperlinks.artist = new Hyperlink(artist_text, artist_font, 'artist', artist_x, is_4k ? 10 : 5, this.w * 0.75, true);
+				this.hyperlinks.artist = new Hyperlink(artist_text, artist_font, 'artist', artist_x, is_4k ? 10 : 5, this.w * 0.70, true);
 			}
 		}
 
@@ -4916,6 +4922,10 @@ class Header extends BaseHeader {
 		if (album_text) {
 			this.hyperlinks.album = new Hyperlink(album_text, g_pl_fonts.album, 'album', left_pad, album_y, this.w * 0.65, true);
 		}
+
+		// Callback for tooltip
+		this.artist_text_w = gr.MeasureString(artist_text, artist_font, 0, 0, 0, 0).Width;
+		this.album_text_w = gr.MeasureString(album_text, g_pl_fonts.album, 0, 0, 0, 0).Width;
 
 		var separatorWidth = gr.MeasureString(' \u2020', g_pl_fonts.info, 0, 0, 0, 0).Width;
 		var bulletWidth = Math.ceil(gr.MeasureString('\u2020', g_pl_fonts.info, 0, 0, 0, 0).Width);
@@ -4973,6 +4983,10 @@ class Header extends BaseHeader {
 			}
 		}
 
+		if (pref.show_tt || pref.show_truncatedText_tt) {
+			this.header_truncatedText_tt(x, y);
+		}
+
 		if (needs_redraw) {
 			this.clearCachedHeaderImg();
 			this.repaint();
@@ -5022,6 +5036,22 @@ class Header extends BaseHeader {
 
 	clearCachedHeaderImg() {
 		this.header_image = null;
+	}
+
+	// Playlist group header truncated text tooltip
+	header_truncatedText_tt() {
+		if (pref.show_truncatedText_tt) {
+			const artist_text = $(this.grouping_handler.get_title_query(), this.metadb);
+			const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+			g_tooltip.SetMaxWidth(800);
+
+			if (this.artist_text_w > this.w * 0.70) {
+				tt.showDelayed(artist_text + "\n" + album_text);
+			}
+			else if (this.album_text_w > this.w * 0.65) {
+				tt.showDelayed(artist_text + "\n" + album_text);
+			}
+		}
 	}
 }
 
@@ -5454,6 +5484,10 @@ class Row extends ListItem {
 			);
 		}
 
+		// Callback for tooltip
+		this.title_w = this.w - right_pad - scaleForDisplay(44);
+		this.title_text_w = gr.MeasureString(this.title_text, title_font, 0, 0, 0, 0).Width;
+
 		//---> TITLE ARTIST draw
 		if (this.title_artist_text) {
 			const title_artist_x = cur_x;
@@ -5541,6 +5575,14 @@ class Row extends ListItem {
 		this.title_text = null;
 	}
 
+	// Playlist row truncated text tooltip
+	title_truncatedText_tt() {
+		if (pref.show_truncatedText_tt) {
+			if (this.title_text_w > this.title_w) {
+				tt.showDelayed(this.title_text);
+			}
+		}
+	}
 }
 
 /**
