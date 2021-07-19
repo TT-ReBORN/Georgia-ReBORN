@@ -81,10 +81,10 @@ pref.add_properties({
 	layout_mode: ['Georgia-ReBORN Layout Mode', 'default_mode'],
 	Player_Small: ['Georgia-ReBORN Player Small', 'Player_Small'],
 	Player_Normal: ['Georgia-ReBORN Player Normal', 'Player_Normal'],
-	Player_Big: ['Georgia-ReBORN Player Big', 'Player_Big'],
+	Player_Large: ['Georgia-ReBORN Player Large', 'Player_Large'],
 	Player_4K_Small: ['Georgia-ReBORN Player 4K Small', 'Player_4K_Small'],
 	Player_4K_Normal: ['Georgia-ReBORN Player 4K Normal', 'Player_4K_Normal'],
-	Player_4K_Big: ['Georgia-ReBORN Player 4K Big', 'Player_4K_Big'],
+	Player_4K_Large: ['Georgia-ReBORN Player 4K Large', 'Player_4K_Large'],
 	autoSbar_Library: ['Georgia-ReBORN Auto Sbar Library', true], // Library automatic scrollbar hide
 	autoSbar_Playlist: ['Georgia-ReBORN Auto Sbar Playlist', true], // Playlist automatic scrollbar hide
 	autoSbar_Biography: ['Georgia-ReBORN Auto Sbar Biography', true], // Biography automatic scrollbar hide

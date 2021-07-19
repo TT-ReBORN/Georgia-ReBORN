@@ -602,20 +602,20 @@ function checkFor4k(w, h) {
 		is_4k = true;
 		default_mode_saved_width = window.SetProperty('system.window.default_mode.saved_width', 2800);
 		default_mode_saved_height = window.SetProperty('system.window.default_mode.saved_height', 1720);
-		playlist_mode_saved_width = window.SetProperty('system.window.playlist_mode.saved_width', 964);
-		playlist_mode_saved_height = window.SetProperty('system.window.playlist_mode.saved_height', 1720);
-	} else if (pref.use_4k === 'auto' && (initDPI.dpi() > 120 && w > 1920 && initDPI.dpi() > 120 && h > 1200 || initDPI.dpi() > 120 && h > 1440 && pref.layout_mode === 'playlist_mode')) {
+		compact_mode_saved_width = window.SetProperty('system.window.compact_mode.saved_width', 964);
+		compact_mode_saved_height = window.SetProperty('system.window.compact_mode.saved_height', 1720);
+	} else if (pref.use_4k === 'auto' && (initDPI.dpi() > 120 && w > 1920 && initDPI.dpi() > 120 && h > 1200 || initDPI.dpi() > 120 && h > 1440 && pref.layout_mode === 'compact_mode')) {
 		is_4k = true;
 		default_mode_saved_width = window.SetProperty('system.window.default_mode.saved_width', 2800);
 		default_mode_saved_height = window.SetProperty('system.window.default_mode.saved_height', 1720);
-		playlist_mode_saved_width = window.SetProperty('system.window.playlist_mode.saved_width', 964);
-		playlist_mode_saved_height = window.SetProperty('system.window.playlist_mode.saved_height', 1720);
+		compact_mode_saved_width = window.SetProperty('system.window.compact_mode.saved_width', 964);
+		compact_mode_saved_height = window.SetProperty('system.window.compact_mode.saved_height', 1720);
 	} else {
 		is_4k = false;
 		default_mode_saved_width = window.SetProperty('system.window.default_mode.saved_width', 1140);
 		default_mode_saved_height = window.SetProperty('system.window.default_mode.saved_height', 730);
-		playlist_mode_saved_width = window.SetProperty('system.window.playlist_mode.saved_width', 484);
-		playlist_mode_saved_height = window.SetProperty('system.window.playlist_mode.saved_height', 730);
+		compact_mode_saved_width = window.SetProperty('system.window.compact_mode.saved_width', 484);
+		compact_mode_saved_height = window.SetProperty('system.window.compact_mode.saved_height', 730);
 	}
 	if (last_size !== is_4k) {
 		sizeInitialized = false;

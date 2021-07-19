@@ -176,7 +176,7 @@ function initPlaylistColors() {
 		g_theme.colors.panel_line_selected = RGB(200, 200, 200);
 		g_theme.colors.panel_text_normal = RGB(120, 120, 120);
 
-		} else if (pref.layout_mode === 'playlist_mode') {
+		} else if (pref.layout_mode === 'compact_mode') {
 		//---> Common
 		g_pl_colors.background = RGB(255, 255, 255);
 		//---> Playlist Manager
@@ -713,7 +713,7 @@ function PlaylistPanel(x, y) {
 		gr.FillSolidRect(this.x, this.y, this.w, scaleForDisplay(2), g_pl_colors.background); // <- Hides also Playlist's Top Shadow
 		gr.FillSolidRect(this.x, this.y + this.h, this.w, g_properties.row_h * 4, col.bg); // <- Hides also Playlist's Bottom Shadow
 		gr.FillSolidRect(this.x, this.y + this.h - g_properties.row_h, this.w, g_properties.row_h, g_pl_colors.background); // <- Hide Playlist Bottom Row and margin
-		} else if (pref.layout_mode === 'playlist_mode') {
+		} else if (pref.layout_mode === 'compact_mode') {
 		gr.FillSolidRect(this.x, is_4k ? this.y - scaleForDisplay(20) : this.y - scaleForDisplay(20), this.w, g_properties.row_h, col.bg); // <- Hides Top Row that shouldn't be visible
 		gr.FillSolidRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(20), this.w, g_properties.row_h, g_pl_colors.background); // <- Hides also Playlist's Top Shadow
 		gr.FillSolidRect(this.x, this.y + this.h, this.w, g_properties.row_h * 4, col.bg); // <- Hides also Playlist's Bottom Shadow
@@ -723,7 +723,7 @@ function PlaylistPanel(x, y) {
 		if (pref.whiteTheme && pref.layout_mode === 'default_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(5) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 18), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
-		} else if (pref.whiteTheme && pref.layout_mode === 'playlist_mode') {
+		} else if (pref.whiteTheme && pref.layout_mode === 'compact_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 28), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h - 1 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 28), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
@@ -731,7 +731,7 @@ function PlaylistPanel(x, y) {
 		if (pref.blackTheme && pref.layout_mode === 'default_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(5) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 120), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
-		} else if (pref.blackTheme && pref.layout_mode === 'playlist_mode') {
+		} else if (pref.blackTheme && pref.layout_mode === 'compact_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 105), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h - 1 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 105), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
@@ -739,7 +739,7 @@ function PlaylistPanel(x, y) {
 		if (pref.blueTheme && pref.layout_mode === 'default_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(5) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 26)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 26), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
-		} else if (pref.blueTheme && pref.layout_mode === 'playlist_mode') {
+		} else if (pref.blueTheme && pref.layout_mode === 'compact_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 26), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 26), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
@@ -747,7 +747,7 @@ function PlaylistPanel(x, y) {
 		if (pref.darkblueTheme && pref.layout_mode === 'default_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(5) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 74), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
-		} else if (pref.darkblueTheme && pref.layout_mode === 'playlist_mode') {
+		} else if (pref.darkblueTheme && pref.layout_mode === 'compact_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 72), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 72), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
@@ -755,7 +755,7 @@ function PlaylistPanel(x, y) {
 		if (pref.redTheme && pref.layout_mode === 'default_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(5) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 74), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
-		} else if (pref.redTheme && pref.layout_mode === 'playlist_mode') {
+		} else if (pref.redTheme && pref.layout_mode === 'compact_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 72), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 72), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
@@ -763,7 +763,7 @@ function PlaylistPanel(x, y) {
 		if (pref.creamTheme && pref.layout_mode === 'default_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(5) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 18), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
-		} else if (pref.creamTheme && pref.layout_mode === 'playlist_mode') {
+		} else if (pref.creamTheme && pref.layout_mode === 'compact_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 24), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 24), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
@@ -771,7 +771,7 @@ function PlaylistPanel(x, y) {
 		if (pref.nblueTheme && pref.layout_mode === 'default_mode' || pref.ngreenTheme && pref.layout_mode === 'default_mode' || pref.nredTheme && pref.layout_mode === 'default_mode' || pref.ngoldTheme && pref.layout_mode === 'default_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(4) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 160)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 160), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
-		} else if (pref.nblueTheme && pref.layout_mode === 'playlist_mode' || pref.ngreenTheme && pref.layout_mode === 'playlist_mode' || pref.nredTheme && pref.layout_mode === 'playlist_mode' || pref.ngoldTheme && pref.layout_mode === 'playlist_mode') {
+		} else if (pref.nblueTheme && pref.layout_mode === 'compact_mode' || pref.ngreenTheme && pref.layout_mode === 'compact_mode' || pref.nredTheme && pref.layout_mode === 'compact_mode' || pref.ngoldTheme && pref.layout_mode === 'compact_mode') {
 		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 255), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h - 2 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 200), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
@@ -802,8 +802,8 @@ function PlaylistPanel(x, y) {
 			playlist_info.set_xywh(x, y, this.w);
 
 			is_activated = window.IsVisible && displayPlaylist;
-			
-		} else if (pref.layout_mode === 'playlist_mode') {
+
+		} else if (pref.layout_mode === 'compact_mode') {
 
 			rescalePlaylist();
 			var x = 0;
@@ -4319,7 +4319,7 @@ class Header extends BaseHeader {
 					date_color = rgb(20, 20, 20);
 				}
 				const brightBackground2 = (new Color(bg_color).brightness) > 151;
-				if (brightBackground2 && pref.whiteTheme && pref.layout_mode === 'playlist_mode') {
+				if (brightBackground2 && pref.whiteTheme && pref.layout_mode === 'compact_mode') {
 					artist_color  = rgb(80, 80, 80);
 					album_color = rgb(80, 80, 80);
 					info_color = rgb(80, 80, 80);
@@ -4351,13 +4351,13 @@ class Header extends BaseHeader {
 					if (this.hasSelection) {
 						if (pref.layout_mode === 'default_mode') {
 						grClip.FillSolidRect(0, p, scaleForDisplay(8), this.h - p * 2, col.primary);
-						} else if (pref.layout_mode === 'playlist_mode') {
+						} else if (pref.layout_mode === 'compact_mode') {
 						grClip.FillSolidRect(0, 0, this.w, this.h * 2, col.primary);
 						}
 					} else {
 						if (pref.layout_mode === 'default_mode') {
 						grClip.FillSolidRect(0, p, scaleForDisplay(8), this.h - p * 2, col.primary);
-						} else if (pref.layout_mode === 'playlist_mode') {
+						} else if (pref.layout_mode === 'compact_mode') {
 						grClip.FillSolidRect(0, 0, this.w, this.h * 2, col.primary);
 						}
 					}
@@ -5333,7 +5333,7 @@ class Row extends ListItem {
 				if (brightBackground && pref.whiteTheme && pref.layout_mode === 'default_mode' || brightBackground && pref.blackTheme) {
 					title_color = rgb(20, 20, 20);
 					title_artist_color = rgb(0, 0, 0);
-				} else if (brightBackground && pref.whiteTheme && pref.layout_mode === 'playlist_mode') {
+				} else if (brightBackground && pref.whiteTheme && pref.layout_mode === 'compact_mode') {
 					title_color = rgb(80, 80, 80);
 					title_artist_color = rgb(80, 80, 80);
 				} if (darkBackground && pref.whiteTheme && pref.layout_mode === 'default_mode') {

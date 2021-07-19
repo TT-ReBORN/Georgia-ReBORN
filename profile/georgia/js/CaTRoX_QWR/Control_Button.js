@@ -332,7 +332,7 @@ function btnActionHandler(btn) {
 			if (pref.layout_mode === 'default_mode') {
 				btns.biography.enable = false;
 				btns.library.enable = false;
-			} else if (pref.layout_mode === 'playlist_mode') {
+			} else if (pref.layout_mode === 'compact_mode') {
 				// Hide
 			}
 			window.Repaint();
@@ -361,7 +361,7 @@ function btnActionHandler(btn) {
 				btns.biography.enable = false;
 				btns.lyrics.enable = false;
 				btns.playlist.enable = false;
-			} else if (pref.layout_mode === 'playlist_mode') {
+			} else if (pref.layout_mode === 'compact_mode') {
 				// Hide
 			}
 			window.Repaint();
@@ -385,7 +385,7 @@ function btnActionHandler(btn) {
 				btns.biography.enable = false;
 				btns.library.enable = false;
 				btns.lyrics.enable = false;
-			} else if (pref.layout_mode === 'playlist_mode') {
+			} else if (pref.layout_mode === 'compact_mode') {
 				// Hide
 			}
 			window.Repaint();
@@ -415,7 +415,7 @@ function btnActionHandler(btn) {
 				btns.library.enable = false;
 				btns.lyrics.enable = false;
 				btns.playlist.enable = false;
-			} else if (pref.layout_mode === 'playlist_mode') {
+			} else if (pref.layout_mode === 'compact_mode') {
 				// Hide
 			}
 			window.Repaint();
@@ -466,7 +466,7 @@ function onMainMenu(x, y, name) {
 		var menu = new Menu(name);
 
 		if (name === 'Help') {
-			var statusMenu = new Menu('Georgia-ReBORN Theme Status');
+			var statusMenu = new Menu('Georgia-ReBORN theme status');
 
 			statusMenu.addItem('All fonts installed', fontsInstalled, undefined, true);
 			statusMenu.addItem('Artist logos found', IsFile(paths.artistlogos + 'Metallica.png'), undefined, true);
@@ -478,8 +478,11 @@ function onMainMenu(x, y, name) {
 
 			menu.addItem('Georgia-ReBORN releases', false, function() { _.runCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/releases') });
 			menu.addItem('Georgia-ReBORN changelog', false, function() { _.runCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/blob/master/profile/georgia/changelog.md') });
-			menu.addItem('Check for updated version of Georgia-ReBORN', false, function() { checkForUpdates(true); });
-			menu.addItem('Report an issue with Georgia-ReBORN', false, function() { _.runCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/issues') });
+			var updatesMenu = new Menu('Georgia-ReBORN updates');
+			updatesMenu.addToggleItem('Check for theme updates', pref, 'checkForUpdates', () => { scheduleUpdateCheck(1000) });
+			updatesMenu.addItem('Check for updated version of Georgia-ReBORN', false, function() { checkForUpdates(true); });
+			updatesMenu.appendTo(menu);
+			menu.addItem('Georgia-ReBORN bug tracker', false, function() { _.runCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/issues') });
 		}
 		menu.initFoobarMenu(name);
 

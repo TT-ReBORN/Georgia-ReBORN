@@ -51,7 +51,7 @@ class ProgressBar {
         if (pref.layout_mode === 'default_mode') {
             this.x = scaleForDisplay(40);
             this.w = ww - scaleForDisplay(80);
-        } if (pref.layout_mode === 'playlist_mode') {
+        } if (pref.layout_mode === 'compact_mode') {
             this.x = scaleForDisplay(20);
             this.w = ww - scaleForDisplay(40);
         }
@@ -155,7 +155,7 @@ class ProgressBar {
         if (pref.layout_mode === 'default_mode') {
             this.x = windowWidth ? scaleForDisplay(40) : 0;
             this.w = windowWidth - scaleForDisplay(80);
-        } if (pref.layout_mode === 'playlist_mode') {
+        } if (pref.layout_mode === 'compact_mode') {
             this.x = windowWidth ? scaleForDisplay(20) : 0;
             this.w = windowWidth - scaleForDisplay(40);
         }
@@ -217,7 +217,7 @@ class ProgressBar {
                 } else if (!displayLibrary) {
                     tt.stop();
                 }
-            } else if (pref.layout_mode === 'playlist_mode') {
+            } else if (pref.layout_mode === 'compact_mode') {
                 const lowerBar_tt_hitarea_x = scaleForDisplay(20);
                 const lowerBar_tt_hitarea_y = wh - geo.lower_bar_h - scaleForDisplay(15);
                 const lowerBar_tt_hitarea_w = ww;
