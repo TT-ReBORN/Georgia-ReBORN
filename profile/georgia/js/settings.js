@@ -85,8 +85,9 @@ pref.add_properties({
 	Player_4K_Small: ['Georgia-ReBORN Player 4K Small', 'Player_4K_Small'],
 	Player_4K_Normal: ['Georgia-ReBORN Player 4K Normal', 'Player_4K_Normal'],
 	Player_4K_Big: ['Georgia-ReBORN Player 4K Big', 'Player_4K_Big'],
-	autoSbar_Library: ['Georgia-ReBORN Auto Sbar Library', true], // Library Automatic Scrollbar Hide
-	autoSbar_Playlist: ['Georgia-ReBORN Auto Sbar Playlist', true], // Playlist Automatic Scrollbar Hide
+	autoSbar_Library: ['Georgia-ReBORN Auto Sbar Library', true], // Library automatic scrollbar hide
+	autoSbar_Playlist: ['Georgia-ReBORN Auto Sbar Playlist', true], // Playlist automatic scrollbar hide
+	autoSbar_Biography: ['Georgia-ReBORN Auto Sbar Biography', true], // Biography automatic scrollbar hide
 	autoHidePLM: ['Georgia-ReBORN Auto Hide Playlist Manager', true], // Playlist Automatic Playlist Manager Hide
 	lib_design: ['Georgia-ReBORN Library Design', 'library_modern'], // Library Design - library_modern (default) or library_traditional
 	

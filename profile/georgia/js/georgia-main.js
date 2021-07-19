@@ -2048,7 +2048,7 @@ function onOptionsMenu(x, y) {
 		}
 		ft.guifx = gdi.Font(fontGuiFx, scaleForDisplay(Math.floor(pref.transport_buttons_size / 2)), 0);
 		ft.playbackOrder_default = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.6), 0);
-		ft.playbackOrder_replay = font(fontAwesome, Math.floor(pref.transport_buttons_size / 2), 0);
+		ft.playbackOrder_replay = gdi.Font(fontAwesome, Math.floor(pref.transport_buttons_size / 2), 0);
 		ft.playbackOrder_shuffle = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.65), 0);
 		ft.guifx_volume = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.33), 0);
 		createButtonImages();
@@ -2082,10 +2082,14 @@ function onOptionsMenu(x, y) {
 			pref.show_tt = true;
 			pref.show_truncatedText_tt = true;
 			pref.show_timeline_tooltips = true;
+			libraryProps.tooltips = true;
+			setLibrarySize();
 		} else {
 			pref.show_tt = false;
 			pref.show_truncatedText_tt = false;
 			pref.show_timeline_tooltips = false;
+			libraryProps.tooltips = false;
+			setLibrarySize();
 		}
 	});
 	menu.addToggleItem('Show tooltips on truncated text', pref, 'show_truncatedText_tt');
@@ -2173,7 +2177,7 @@ function onOptionsMenu(x, y) {
 	libraryMenu.addToggleItem('Show Tracks', libraryProps, 'nodeShowTracks', () => { library_tree.collapseAll(); });
 	libraryMenu.addToggleItem('Show library scrollbar', libraryProps, 'showScrollbar', () => { setLibrarySize(); });
 	libraryMenu.addToggleItem('Send files to current playlist', libraryProps, 'sendToCurrent');
-	libraryMenu.addToggleItem('Auto-fill playlist on selection', libraryProps, 'autoFill');
+	//libraryMenu.addToggleItem('Auto-fill playlist on selection', libraryProps, 'autoFill');
 	libraryMenu.createRadioSubMenu('Double-click action', ['Expand/Collapse Folders', 'Send and Play', 'Send to Playlist'], libraryProps.doubleClickAction, [0,1,2], function(action) {
 		libraryProps.doubleClickAction = action;
 	});

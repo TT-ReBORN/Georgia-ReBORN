@@ -214,7 +214,7 @@ class ProgressBar {
                     else if (this.title_text_w > this.w * 0.37) {
                         tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
                     }
-                } else {
+                } else if (!displayLibrary) {
                     tt.stop();
                 }
             } else if (pref.layout_mode === 'playlist_mode') {
@@ -232,7 +232,7 @@ class ProgressBar {
                     else if (this.title_text_w > this.w * 0.37) {
                         tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
                     }
-                } else {
+                } else if (!displayLibrary) {
                     tt.stop();
                 }
             }

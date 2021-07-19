@@ -52,7 +52,7 @@ libraryProps.add_properties({
     fullLine: [prefix + 'Text Whole Line Clickable', true],
     searchMode: [prefix + 'Search: Hide-0, SearchOnly-1, Search+Filter-2', 2],
     searchAutoExpand: [prefix + 'Search: Auto-expand', false],
-    tooltips: [prefix + 'Tooltips', false],
+    tooltips: [prefix + 'Tooltips', true],
     rootNode: [prefix + 'Root Node: 0=Hide 1=All Music 2=View Name', 0],
     autoCollapse: [prefix + 'Node: Auto Collapse', false],
     nodeItemCounts: [prefix + 'Node Item Counts: 0=Hide 1=# Tracks 2=Sub-Items', 1],

@@ -35,7 +35,7 @@ g_properties.add_properties(
 		show_group_info:    ['user.header.info.show', true],
 		show_disc_header:   ['user.header.disc_header.show', true],
 
-		alternate_row_color:  ['user.row.alternate_color', true],
+		alternate_row_color:  ['user.row.alternate_color', false],
 		show_playcount:       ['user.row.play_count.show', g_component_playcount],
 		show_rating:          ['user.row.rating.show', g_component_playcount && !g_is_mini_panel],
 		use_rating_from_tags: ['user.row.rating.from_tags', false],
@@ -165,7 +165,7 @@ function initPlaylistColors() {
 		g_pl_colors.title_hover = RGB(250, 0, 0);
 		g_pl_colors.rating_color = RGB(255, 190, 0);
 		g_pl_colors.row_selected = RGB(255, 255, 255);
-		g_pl_colors.row_alternate = RGB(255, 255, 255);
+		g_pl_colors.row_alternate = RGB(245, 245, 245);
 		g_pl_colors.row_focus_selected = RGB(200, 200, 200);
 		g_pl_colors.row_focus_normal = RGB(80, 80, 80);
 		//---> Common.js Settings Override
@@ -206,7 +206,7 @@ function initPlaylistColors() {
 		g_pl_colors.count_selected = g_pl_colors.title_selected;
 		g_pl_colors.count_playing = g_pl_colors.title_playing;
 		g_pl_colors.row_selected = RGB(255, 255, 255);
-		g_pl_colors.row_alternate = RGB(255, 255, 255);
+		g_pl_colors.row_alternate = RGB(245, 245, 245);
 		g_pl_colors.row_focus_selected = RGB(200, 200, 200);
 		g_pl_colors.row_focus_normal = RGB(80, 80, 80);
 		//---> Common.js Settings Override
@@ -255,7 +255,7 @@ function initPlaylistColors() {
 		g_pl_colors.count_selected = g_pl_colors.title_selected;
 		g_pl_colors.count_playing = g_pl_colors.title_playing;
 		g_pl_colors.row_selected = RGB(20, 20, 20);
-		g_pl_colors.row_alternate = RGB(20, 20, 20);
+		g_pl_colors.row_alternate = RGB(25, 25, 25);
 		g_pl_colors.row_focus_selected = RGB(45, 45, 45);
 		g_pl_colors.row_focus_normal = RGB(80, 80, 80);
 		//---> Common.js Settings Override
@@ -303,7 +303,7 @@ function initPlaylistColors() {
 		g_pl_colors.count_selected = g_pl_colors.title_selected;
 		g_pl_colors.count_playing = g_pl_colors.title_playing;
 		g_pl_colors.row_selected = RGB(10, 130, 220);
-		g_pl_colors.row_alternate = RGB(10, 115, 200);
+		g_pl_colors.row_alternate = RGB(5, 110, 195);
 		g_pl_colors.row_focus_selected = RGB(10, 115, 200);
 		g_pl_colors.row_focus_normal = RGB(80, 80, 80);
 		//---> Common.js Settings Override
@@ -351,7 +351,7 @@ function initPlaylistColors() {
 		g_pl_colors.count_selected = g_pl_colors.title_selected;
 		g_pl_colors.count_playing = g_pl_colors.title_playing;
 		g_pl_colors.row_selected = RGB(24, 50, 82);
-		g_pl_colors.row_alternate = RGB(21, 37, 56);
+		g_pl_colors.row_alternate = RGB(22, 40, 63);
 		g_pl_colors.row_focus_selected = RGB(21, 37, 56);
 		g_pl_colors.row_focus_normal = RGB(80, 80, 80);
 		//---> Common.js Settings Override
@@ -399,7 +399,7 @@ function initPlaylistColors() {
 		g_pl_colors.count_selected = g_pl_colors.title_selected;
 		g_pl_colors.count_playing = g_pl_colors.title_playing;
 		g_pl_colors.row_selected = RGB(130, 25, 25);
-		g_pl_colors.row_alternate = RGB(110, 20, 20);
+		g_pl_colors.row_alternate = RGB(100, 20, 20);
 		g_pl_colors.row_focus_selected = RGB(110, 20, 20);
 		g_pl_colors.row_focus_normal = RGB(80, 80, 80);
 		//---> Common.js Settings Override
@@ -447,7 +447,7 @@ function initPlaylistColors() {
 		g_pl_colors.count_selected = g_pl_colors.title_selected;
 		g_pl_colors.count_playing = g_pl_colors.title_playing;
 		g_pl_colors.row_selected = RGB(255, 249, 245);
-		g_pl_colors.row_alternate = RGB(255, 249, 245);
+		g_pl_colors.row_alternate = RGB(255, 255, 255);
 		g_pl_colors.row_focus_selected = RGB(200, 200, 200);
 		g_pl_colors.row_focus_normal = RGB(80, 80, 80);
 		//---> Common.js Settings Override
@@ -495,7 +495,7 @@ function initPlaylistColors() {
 		g_pl_colors.count_selected = g_pl_colors.title_selected;
 		g_pl_colors.count_playing = g_pl_colors.title_playing;
 		g_pl_colors.row_selected = RGB(25, 25, 25);
-		g_pl_colors.row_alternate = RGB(12, 12, 12);
+		g_pl_colors.row_alternate = RGB(20, 20, 20);
 		g_pl_colors.row_focus_selected = RGB(12, 12, 12);
 		g_pl_colors.row_focus_normal = RGB(80, 80, 80);
 		//---> Common.js Settings Override
@@ -543,7 +543,7 @@ function initPlaylistColors() {
 		g_pl_colors.count_selected = g_pl_colors.title_selected;
 		g_pl_colors.count_playing = g_pl_colors.title_playing;
 		g_pl_colors.row_selected = RGB(25, 25, 25);
-		g_pl_colors.row_alternate = RGB(12, 12, 12);
+		g_pl_colors.row_alternate = RGB(20, 20, 20);
 		g_pl_colors.row_focus_selected = RGB(12, 12, 12);
 		g_pl_colors.row_focus_normal = RGB(80, 80, 80);
 		//---> Common.js Settings Override
@@ -591,7 +591,7 @@ function initPlaylistColors() {
 		g_pl_colors.count_selected = g_pl_colors.title_selected;
 		g_pl_colors.count_playing = g_pl_colors.title_playing;
 		g_pl_colors.row_selected = RGB(25, 25, 25);
-		g_pl_colors.row_alternate = RGB(12, 12, 12);
+		g_pl_colors.row_alternate = RGB(20, 20, 20);
 		g_pl_colors.row_focus_selected = RGB(12, 12, 12);
 		g_pl_colors.row_focus_normal = RGB(80, 80, 80);
 		//---> Common.js Settings Override
@@ -639,7 +639,7 @@ function initPlaylistColors() {
 		g_pl_colors.count_selected = g_pl_colors.title_selected;
 		g_pl_colors.count_playing = g_pl_colors.title_playing;
 		g_pl_colors.row_selected = RGB(25, 25, 25);
-		g_pl_colors.row_alternate = RGB(12, 12, 12);
+		g_pl_colors.row_alternate = RGB(20, 20, 20);
 		g_pl_colors.row_focus_selected = RGB(12, 12, 12);
 		g_pl_colors.row_focus_normal = RGB(80, 80, 80);
 		//---> Common.js Settings Override
@@ -4791,7 +4791,7 @@ class Header extends BaseHeader {
 			var date_text = $(date_query, this.metadb);
 			if (date_text) {
 				var date_w = Math.ceil(gr.MeasureString(date_text, date_font, 0, 0, 0, 0).Width + 5);
-				var date_x = this.w - date_w;
+				var date_x = this.w - date_w - scaleForDisplay(12);
 				var date_y = 0;
 				var date_h = this.h;
 
@@ -4834,7 +4834,7 @@ class Header extends BaseHeader {
 
 				var album_h = this.h;
 				var album_x = cur_x;
-				var album_w = this.w - album_x - (right_pad + 5);
+				var album_w = this.w - album_x - (right_pad + scaleForDisplay(40));
 
 				var album_text_format = g_string_format.v_align_center | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
 				grClip.DrawString(album_text, g_pl_fonts.album, album_color, album_x, 0, album_w, album_h, album_text_format);
@@ -4842,6 +4842,12 @@ class Header extends BaseHeader {
 				//cur_x += gr.MeasureString(album_text, g_pl_fonts.album, 0, 0, 0, 0).Width;
 			}
 		}
+
+		// Callback for tooltip
+		this.artist_w_compact = this.w - artist_x - (right_pad + 5);
+		this.album_w_compact = this.w - album_x - (right_pad + scaleForDisplay(40));
+		this.artist_text_w_compact = gr.MeasureString(artist_text, artist_font, 0, 0, 0, 0).Width;
+		this.album_text_w_compact = gr.MeasureString(album_text, g_pl_fonts.album, 0, 0, 0, 0).Width;
 
 		clipImg.ReleaseGraphics(grClip);
 		gr.DrawImage(clipImg, this.x, this.y, this.w, this.h, 0, 0, this.w, this.h, 0, 255);
@@ -4920,7 +4926,7 @@ class Header extends BaseHeader {
 		var album_y = part_h + (is_4k ? 5 : 4);
 		var album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
 		if (album_text) {
-			this.hyperlinks.album = new Hyperlink(album_text, g_pl_fonts.album, 'album', left_pad, album_y, this.w * 0.65, true);
+			this.hyperlinks.album = new Hyperlink(album_text, g_pl_fonts.album, 'album', left_pad, album_y, this.w * 0.60, true);
 		}
 
 		// Callback for tooltip
@@ -5048,8 +5054,17 @@ class Header extends BaseHeader {
 			if (this.artist_text_w > this.w * 0.70) {
 				tt.showDelayed(artist_text + "\n" + album_text);
 			}
-			else if (this.album_text_w > this.w * 0.65) {
+			else if (this.album_text_w > this.w * 0.60) {
 				tt.showDelayed(artist_text + "\n" + album_text);
+			}
+
+			if (g_properties.use_compact_header) {
+				if (this.artist_text_w_compact > this.artist_w_compact) {
+					tt.showDelayed(artist_text + "\n" + album_text);
+				}
+				else if (this.album_text_w_compact > this.album_w_compact) {
+					tt.showDelayed(artist_text + "\n" + album_text);
+				}
 			}
 		}
 	}
