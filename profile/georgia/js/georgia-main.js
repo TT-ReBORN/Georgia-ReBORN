@@ -4007,12 +4007,13 @@ function createButtonObjects(ww, wh) {
 			btns.play = new Button(calcX(++count), y, w, h, 'Play/Pause', !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause, 'Play');
 			btns.next = new Button(calcX(++count), y, w, h, 'Next', btnImg.Next, 'Next');
 			if (transport.showPlaybackOrder) {
-				var pbo = fb.PlaybackOrder;
-				btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', 
-				pbo === PlaybackOrder.Default || fb.RunMainMenuCommand('Playback/Order/Default') ? btnImg.PlaybackDefault : 
-				pbo === PlaybackOrder.RepeatTrack || pbo === PlaybackOrder.RepeatPlaylist || fb.RunMainMenuCommand('Playback/Order/Repeat (track)') ? btnImg.PlaybackReplay : 
-				pbo === PlaybackOrder.ShuffleTracks || pbo === PlaybackOrder.ShuffleAlbums || pbo === PlaybackOrder.ShuffleFolders || pbo === PlaybackOrder.Random || fb.RunMainMenuCommand('Playback/Order/Shuffle (tracks)') ? btnImg.PlaybackShuffle : 
-				btnImg.PlaybackDefault);
+				if (plman.PlaybackOrder === 0) {
+					btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackDefault);
+				} else if (plman.PlaybackOrder === 1 || plman.PlaybackOrder === 2) {
+					btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackReplay);
+				} else if (plman.PlaybackOrder === 3 || plman.PlaybackOrder === 4 || plman.PlaybackOrder === 5 || plman.PlaybackOrder === 6) {
+					btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackShuffle);
+				}
 			}
 			if (transport.showVolume) {
 				btns.volume = new Button(calcX(++count), y, w, h, 'Volume', btnImg.ShowVolume);
@@ -4047,8 +4048,13 @@ function createButtonObjects(ww, wh) {
 			btns.play = new Button(calcX(++count), y, w, h, 'Play/Pause', !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause, 'Play');
 			btns.next = new Button(calcX(++count), y, w, h, 'Next', btnImg.Next, 'Next');
 			if (transport.showPlaybackOrder) {
-				var pbo = fb.PlaybackOrder;
-				btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', pbo === PlaybackOrder.Default || fb.RunMainMenuCommand('Playback/Order/Default') ? btnImg.PlaybackDefault : pbo === PlaybackOrder.RepeatTrack || fb.RunMainMenuCommand('Playback/Order/Repeat (track)') ? btnImg.PlaybackReplay : pbo === PlaybackOrder.ShuffleTracks || fb.RunMainMenuCommand('Playback/Order/Shuffle (tracks)') ? btnImg.PlaybackShuffle : btnImg.PlaybackDefault, 'Playback order');
+				if (plman.PlaybackOrder === 0) {
+					btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackDefault);
+				} else if (plman.PlaybackOrder === 1 || plman.PlaybackOrder === 2) {
+					btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackReplay);
+				} else if (plman.PlaybackOrder === 3 || plman.PlaybackOrder === 4 || plman.PlaybackOrder === 5 || plman.PlaybackOrder === 6) {
+					btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackShuffle);
+				}
 			}
 			if (transport.showVolume) {
 				btns.volume = new Button(calcX(++count), y, w, h, 'Volume', btnImg.ShowVolume);

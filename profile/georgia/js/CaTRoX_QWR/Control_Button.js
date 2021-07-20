@@ -221,13 +221,11 @@ function btnActionHandler(btn) {
 				fb.RunMainMenuCommand('Playback/Play');
 			}
 			*/
-			var pbo = fb.PlaybackOrder;
-			fb.PlaybackOrder = PlaybackOrder.Default;
-			if (pbo === PlaybackOrder.Default) {
+			if (plman.PlaybackOrder === 0) {
 				fb.PlaybackOrder = PlaybackOrder.RepeatTrack;
-			} else if (pbo === PlaybackOrder.RepeatTrack) {
+			} else if (plman.PlaybackOrder === 2) {
 				fb.PlaybackOrder = PlaybackOrder.ShuffleTracks;
-			} else if (pbo === PlaybackOrder.ShuffleTracks) {
+			} else if (plman.PlaybackOrder === 4) {
 				fb.PlaybackOrder = PlaybackOrder.Default;
 			} else {
 				fb.PlaybackOrder = PlaybackOrder.RepeatTrack;
