@@ -2023,13 +2023,23 @@ function onOptionsMenu(x, y) {
 			pref.show_tt = true;
 			pref.show_truncatedText_tt = true;
 			pref.show_timeline_tooltips = true;
+			libraryProps.tooltips = true;
 		} else {
 			pref.show_tt = false;
 			pref.show_truncatedText_tt = false;
 			pref.show_timeline_tooltips = false;
+			libraryProps.tooltips = false;
 		}
 	});
-	playerControlsMenu.addToggleItem('Enable tooltips on truncated text', pref, 'show_truncatedText_tt');
+	playerControlsMenu.addToggleItem('Enable tooltips on truncated text', pref, 'show_truncatedText_tt', () => {
+		if (pref.show_truncatedText_tt) {
+			pref.show_truncatedText_tt = true;
+			libraryProps.tooltips = true;
+		} else {
+			pref.show_truncatedText_tt = false;
+			libraryProps.tooltips = false;
+		}
+	});
 	playerControlsMenu.addToggleItem('Enable timeline tooltips', pref, 'show_timeline_tooltips');
 
 	playerControlsMenu.appendTo(menu);
@@ -2185,7 +2195,17 @@ function onOptionsMenu(x, y) {
 
 	libraryMenu.addToggleItem('Remember library state', libraryProps, 'rememberTree');
 	libraryMenu.addToggleItem('Full line clickable', libraryProps, 'fullLine');
-	libraryMenu.addToggleItem('Show tooltips', libraryProps, 'tooltips', () => { setLibrarySize(); });
+	libraryMenu.addToggleItem('Show tooltips', libraryProps, 'tooltips', () => {
+		if (libraryProps.tooltips) {
+			libraryProps.tooltips = true;
+			pref.show_truncatedText_tt = true;
+			setLibrarySize();
+		} else {
+			libraryProps.tooltips = false;
+			pref.show_truncatedText_tt = false;
+			setLibrarySize();
+		}
+	});
 	libraryMenu.addToggleItem('Show tracks when expanding nodes', libraryProps, 'nodeShowTracks', () => { library_tree.collapseAll(); });
 	libraryMenu.addToggleItem('Show library scrollbar', libraryProps, 'showScrollbar', () => { setLibrarySize(); });
 	libraryMenu.addToggleItem('Send files to current playlist', libraryProps, 'sendToCurrent');
