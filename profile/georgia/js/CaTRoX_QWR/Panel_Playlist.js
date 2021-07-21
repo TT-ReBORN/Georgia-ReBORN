@@ -5320,26 +5320,26 @@ class Row extends ListItem {
 		}
 
 		if (this.is_playing) { // Might override 'selected' fonts
-				title_color = g_pl_colors.title_playing;
-				title_font = g_pl_fonts.title_playing;
+			title_color = g_pl_colors.title_playing;
+			title_font = g_pl_fonts.title_playing;
 
-				const bg_color = this.is_selected() + col.primary;
-				gr.FillSolidRect(this.x, this.y, this.w, this.h, bg_color);
-				if (colorDistance(bg_color, title_artist_color) < 195) {
-					title_artist_color = title_color;
-				}
-				const brightBackground = (new Color(bg_color).brightness) > 151;
-				const darkBackground = (new Color(bg_color).brightness) > 195;
-				if (brightBackground && pref.whiteTheme && pref.layout_mode === 'default_mode' || brightBackground && pref.blackTheme) {
-					title_color = rgb(20, 20, 20);
-					title_artist_color = rgb(0, 0, 0);
-				} else if (brightBackground && pref.whiteTheme && pref.layout_mode === 'compact_mode') {
-					title_color = rgb(80, 80, 80);
-					title_artist_color = rgb(80, 80, 80);
-				} if (darkBackground && pref.whiteTheme && pref.layout_mode === 'default_mode') {
-					title_color = rgb(240, 240, 240);
-					title_artist_color = rgb(220, 220, 220);
-				}
+			const bg_color = this.is_selected() + col.primary;
+			gr.FillSolidRect(this.x, this.y, this.w, this.h, bg_color);
+			if (colorDistance(bg_color, title_artist_color) < 195) {
+				title_artist_color = title_color;
+			}
+			const brightBackground = (new Color(bg_color).brightness) > 151;
+			const darkBackground = (new Color(bg_color).brightness) > 195;
+			if (brightBackground && pref.whiteTheme && pref.layout_mode === 'default_mode' || brightBackground && pref.blackTheme) {
+				title_color = rgb(20, 20, 20);
+				title_artist_color = rgb(0, 0, 0);
+			} else if (brightBackground && pref.whiteTheme && pref.layout_mode === 'compact_mode') {
+				title_color = rgb(80, 80, 80);
+				title_artist_color = rgb(80, 80, 80);
+			} if (darkBackground && pref.whiteTheme && pref.layout_mode === 'default_mode') {
+				title_color = rgb(240, 240, 240);
+				title_artist_color = rgb(220, 220, 220);
+			}
 
 			if (pref.whiteTheme || pref.blackTheme) {
 				gr.FillSolidRect(this.x, this.y, scaleForDisplay(2), this.h, col.primary);
@@ -5395,6 +5395,11 @@ class Row extends ListItem {
 		//---> LENGTH
 		{
 			if (this.length_text == null) {
+				this.length_text = $('[%length%]', this.metadb);
+			}
+			if (this.is_playing && pref.playlistTimeRemaining) {
+				this.length_text = $('[-%playback_time_remaining%]');
+			} else {
 				this.length_text = $('[%length%]', this.metadb);
 			}
 
@@ -5528,6 +5533,16 @@ class Row extends ListItem {
 			gr.DrawString(queueText, title_font, queueColor, queueX, this.y, queueW, this.h, queueTextFormat);
 		}
 		gr.SetSmoothingMode(SmoothingMode.HighQuality);
+
+		// Refresh playlist time remaining all the time when activated
+		if (pref.playlistTimeRemaining && this.is_playing && fb.IsPlaying) {
+			let timer_timeRemaining;
+			timer_timeRemaining = setTimeout(() => {
+				window.RepaintRect(ww - scaleForDisplay(60), this.y, scaleForDisplay(40), scaleForDisplay(20));
+			}, 1000);
+		} else {
+			clearTimeout(this.timer_timeRemaining);
+		}
 	};
 
 	/** @override */

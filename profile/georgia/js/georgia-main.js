@@ -2099,6 +2099,7 @@ function onOptionsMenu(x, y) {
 	rowsMenu.addToggleItem('Show rating', g_properties, 'show_rating', playlistCallback);
 	rowsMenu.appendTo(playlistMenu);
 
+	playlistMenu.addToggleItem('Show time remaining on playing track', pref, 'playlistTimeRemaining', () => { RepaintWindow(); });
 	playlistMenu.addToggleItem('Show playlist on startup', pref, 'startPlaylist');
 	playlistMenu.addToggleItem('Use vinyl style numbering if available', pref, 'use_vinyl_nums', () => { RepaintWindow(); });
 

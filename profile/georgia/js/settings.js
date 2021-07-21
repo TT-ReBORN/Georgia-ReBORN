@@ -90,7 +90,8 @@ pref.add_properties({
 	autoSbar_Biography: ['Georgia-ReBORN Auto Sbar Biography', true], // Biography automatic scrollbar hide
 	autoHidePLM: ['Georgia-ReBORN Auto Hide Playlist Manager', true], // Playlist Automatic Playlist Manager Hide
 	lib_design: ['Georgia-ReBORN Library Design', 'library_modern'], // Library Design - library_modern (default) or library_traditional
-	switchPlaybackTime : ['Georgia-ReBORN Switch to playback time remaining', false], // switch the playback time from time elapsed to time remaining
+	switchPlaybackTime: ['Georgia-ReBORN Switch to playback time remaining', false], // switch the playback time from time elapsed to time remaining
+	playlistTimeRemaining: ['Georgia-ReBORN Show time remaining on playing track', false], // Show time remaining in playlist on currently playing track
 
 	use_4k: ['Detect 4k', 'auto'], // auto: switch to 4k mode when window width wide enough, never: never use 4k mode, always: always use 4k mode
 	checkForUpdates: ['Check for Updates', true], // true: check github repo to determine if updates exist
