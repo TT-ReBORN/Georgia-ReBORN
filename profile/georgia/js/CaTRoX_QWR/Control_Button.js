@@ -238,6 +238,15 @@ function btnActionHandler(btn) {
 		case 'Reload':
 			window.Reload();
 			break;
+		case 'PlaybackTime':
+			pref.switchPlaybackTime = !pref.switchPlaybackTime;
+			if (pref.switchPlaybackTime) {
+				str.time = $('-%playback_time_remaining%');
+			} else {
+				str.time = $('%playback_time%')
+			}
+			window.Repaint();
+			break;
 		case 'Console':
 			fb.RunMainMenuCommand("View/Console");
 			break;

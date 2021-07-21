@@ -220,7 +220,7 @@ class ProgressBar {
             } else if (pref.layout_mode === 'compact_mode') {
                 const lowerBar_tt_hitarea_x = scaleForDisplay(20);
                 const lowerBar_tt_hitarea_y = wh - geo.lower_bar_h - scaleForDisplay(15);
-                const lowerBar_tt_hitarea_w = ww;
+                const lowerBar_tt_hitarea_w = ww - btns.playbackTime.w - scaleForDisplay(42);
                 const lowerBar_tt_hitarea_h = scaleForDisplay(20);
                 g_tooltip.SetMaxWidth(400);
 

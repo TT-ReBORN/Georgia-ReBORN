@@ -3382,7 +3382,7 @@ function on_script_unload() {
 
 function on_playback_time() {
 	// Refresh playback time
-	str.time = $('%playback_time%');
+	str.time = pref.switchPlaybackTime ? $('-%playback_time_remaining%') : $('%playback_time%');
 }
 
 function refresh_seekbar() {
@@ -4042,6 +4042,7 @@ function createButtonObjects(ww, wh) {
 			if (transport.showReload) {
 				btns.reload = new Button(calcX(++count), y, w, h, 'Reload', btnImg.Reload, 'Reload');
 			}
+			btns.playbackTime = new Button(ww - scaleForDisplay(170), y + scaleForDisplay(5), scaleForDisplay(130), scaleForDisplay(20), 'PlaybackTime', '', 'Switch playback time');
 		}
 	}
 
@@ -4083,6 +4084,7 @@ function createButtonObjects(ww, wh) {
 			if (transport.showReload) {
 				btns.reload = new Button(calcX(++count), y, w, h, 'Reload', btnImg.Reload, 'Reload');
 			}
+			btns.playbackTime = new Button(ww - scaleForDisplay(150), y - scaleForDisplay(50), scaleForDisplay(130), scaleForDisplay(20), 'PlaybackTime', '', 'Switch playback time');
 		}
 	}
 
@@ -5026,7 +5028,7 @@ function LayoutModeHandler() {
 			}
 			pss_switch.layoutmode.state = new_layoutmode_state;
 
-			// Fix for FULL HD Res that causes ugly resize from Playlist Mode with Player Size 'Normal' to Default Mode
+			// Fix for FULL HD Res that causes ugly resize from Compact Mode with Player Size 'Normal' to Default Mode
 			if (pref.layout_mode === 'default_mode' && !pref.Player_Normal === 'Player_Normal') {
 				set_window_size(g_properties.default_mode_saved_width, g_properties.default_mode_saved_height);
 			} else if (is_4k && pref.layout_mode === 'default_mode') {

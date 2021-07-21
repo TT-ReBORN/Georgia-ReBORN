@@ -65,9 +65,9 @@ pref.add_properties({
 	tracknum_font_size : ['Tracknumber font size', 20],
 	MetadataGrid_key_font_size: ['MetadataGrid key font size', 18],
 	MetadataGrid_val_font_size: ['MetadataGrid value font size', 18],
-
 	freq_update: ['Frequent progress bar updates', true], // true: update progress bar multiple times a second. Smoother, but uses more CPU
 	darkMode: ['Use Dark Theme', false], // true: use a darker background
+
 	whiteTheme: ['Georgia-ReBORN White Theme', 'white'], // white: use white theme
 	blackTheme: ['Georgia-ReBORN Black Theme', 'black'], // dark: use dark theme
 	blueTheme: ['Georgia-ReBORN Blue Theme', 'blue'], // blue: use blue theme
@@ -90,7 +90,8 @@ pref.add_properties({
 	autoSbar_Biography: ['Georgia-ReBORN Auto Sbar Biography', true], // Biography automatic scrollbar hide
 	autoHidePLM: ['Georgia-ReBORN Auto Hide Playlist Manager', true], // Playlist Automatic Playlist Manager Hide
 	lib_design: ['Georgia-ReBORN Library Design', 'library_modern'], // Library Design - library_modern (default) or library_traditional
-	
+	switchPlaybackTime : ['Georgia-ReBORN Switch to playback time remaining', false], // switch the playback time from time elapsed to time remaining
+
 	use_4k: ['Detect 4k', 'auto'], // auto: switch to 4k mode when window width wide enough, never: never use 4k mode, always: always use 4k mode
 	checkForUpdates: ['Check for Updates', true], // true: check github repo to determine if updates exist
 	loadAsync: ['Load Theme Asynchronously', true], // loads individual theme files asynchronously at startup to reduce risk of FSM throwing slow script error on startup
