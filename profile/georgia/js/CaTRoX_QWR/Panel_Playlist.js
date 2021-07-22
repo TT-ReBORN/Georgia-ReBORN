@@ -5608,8 +5608,16 @@ class Row extends ListItem {
 	// Playlist row truncated text tooltip
 	title_truncatedText_tt() {
 		if (pref.show_truncatedText_tt) {
+			var is_radio = _.startsWith(this.metadb.RawPath, 'http');
+			var track_num_query_tt = '$if2(%tracknumber%,$pad_right(' + (this.idx_in_header + 1) + ',2,0)).';
+			if (pref.use_vinyl_nums) {
+				track_num_query_tt = tf.vinyl_track;
+			}
+			var title_query_tt = g_properties.show_header ? track_num_query_tt + '  %title%[ \'(\'%original artist%\' cover)\']' : '     %artist% - %album% - ' + track_num_query_tt + ' %title%[ \'(\'%original artist%\' cover)\']';
+			this.title_text_tt = (fb.IsPlaying && this.is_playing && is_radio) ? $(title_query_tt) : $(title_query_tt, this.metadb);
+
 			if (this.title_text_w > this.title_w) {
-				tt.showDelayed(this.title_text);
+				tt.showDelayed(this.title_text_tt);
 			}
 		}
 	}
