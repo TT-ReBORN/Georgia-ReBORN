@@ -714,65 +714,65 @@ function PlaylistPanel(x, y) {
 		gr.FillSolidRect(this.x, this.y + this.h, this.w, g_properties.row_h * 4, col.bg); // <- Hides also Playlist's Bottom Shadow
 		gr.FillSolidRect(this.x, this.y + this.h - g_properties.row_h, this.w, g_properties.row_h, g_pl_colors.background); // <- Hide Playlist Bottom Row and margin
 		} else if (pref.layout_mode === 'compact_mode') {
-		gr.FillSolidRect(this.x, is_4k ? this.y - scaleForDisplay(20) : this.y - scaleForDisplay(20), this.w, g_properties.row_h, col.bg); // <- Hides Top Row that shouldn't be visible
-		gr.FillSolidRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(20), this.w, g_properties.row_h, g_pl_colors.background); // <- Hides also Playlist's Top Shadow
+		gr.FillSolidRect(this.x, is_4k ? this.y - 40 : this.y - 20, this.w, g_properties.row_h, col.bg); // <- Hides Top Row that shouldn't be visible
+		gr.FillSolidRect(this.x, is_4k ? this.y - 20 : this.y - 20, this.w, g_properties.row_h, g_pl_colors.background); // <- Hides also Playlist's Top Shadow
 		gr.FillSolidRect(this.x, this.y + this.h, this.w, g_properties.row_h * 4, col.bg); // <- Hides also Playlist's Bottom Shadow
 		gr.FillSolidRect(this.x, this.y + this.h - g_properties.row_h, this.w, g_properties.row_h, g_pl_colors.background); // <- Hide Playlist Bottom Row and margin
 		}
 
 		if (pref.whiteTheme && pref.layout_mode === 'default_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(5) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 10 : this.y - 6, this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 18), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		} else if (pref.whiteTheme && pref.layout_mode === 'compact_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 28), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 20 : this.y - 23, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 28), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h - 1 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 28), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
 
 		if (pref.blackTheme && pref.layout_mode === 'default_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(5) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 10 : this.y - 6, this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 120), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		} else if (pref.blackTheme && pref.layout_mode === 'compact_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 105), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 20 : this.y - 23, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 105), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h - 1 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 105), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
 
 		if (pref.blueTheme && pref.layout_mode === 'default_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(5) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 26)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 10 : this.y - 6, this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 26)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 26), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		} else if (pref.blueTheme && pref.layout_mode === 'compact_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 26), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 20 : this.y - 23, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 26), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 26), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
 
 		if (pref.darkblueTheme && pref.layout_mode === 'default_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(5) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 10 : this.y - 6, this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 74), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		} else if (pref.darkblueTheme && pref.layout_mode === 'compact_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 72), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 20 : this.y - 23, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 72), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 72), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
 
 		if (pref.redTheme && pref.layout_mode === 'default_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(5) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 10 : this.y - 6, this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 74), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		} else if (pref.redTheme && pref.layout_mode === 'compact_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 72), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 20 : this.y - 23, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 72), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 72), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
 
 		if (pref.creamTheme && pref.layout_mode === 'default_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(5) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 10 : this.y - 6, this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 18), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		} else if (pref.creamTheme && pref.layout_mode === 'compact_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 24), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 20 : this.y - 23, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 24), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h + 1 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 24), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
 
 		if (pref.nblueTheme && pref.layout_mode === 'default_mode' || pref.ngreenTheme && pref.layout_mode === 'default_mode' || pref.nredTheme && pref.layout_mode === 'default_mode' || pref.ngoldTheme && pref.layout_mode === 'default_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(4) : this.y - scaleForDisplay(6), this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 160)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 8 : this.y - 6, this.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 160)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h : this.y + this.h - 1, this.w, is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 160), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		} else if (pref.nblueTheme && pref.layout_mode === 'compact_mode' || pref.ngreenTheme && pref.layout_mode === 'compact_mode' || pref.nredTheme && pref.layout_mode === 'compact_mode' || pref.ngoldTheme && pref.layout_mode === 'compact_mode') {
-		gr.FillGradRect(this.x, is_4k ? this.y - scaleForDisplay(10) : this.y - scaleForDisplay(23), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 255), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x, is_4k ? this.y - 20 : this.y - 23, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 255), RGBtoRGBA(col.shadow, 0)); // Playlist's Top Pseudo Shadow Fix
 		gr.FillGradRect(this.x, is_4k ? this.y + this.h - 2 : this.y + this.h, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 200), RGBtoRGBA(col.shadow, 0)); // Playlist's Bottom Pseudo Shadow Fix
 		}
 
@@ -785,10 +785,10 @@ function PlaylistPanel(x, y) {
 
 			rescalePlaylist();
 			var x = Math.round(ww *.5);
-			var y = btns[30].y + btns[30].h + (is_4k ? scaleForDisplay(5) : scaleForDisplay(6));
+			var y = btns[30].y + btns[30].h + (is_4k ? 10 : 6);
 			var lowerSpace = calcLowerSpace();
 			var playlist_w = w - x;
-			var playlist_h = Math.max(0, h - lowerSpace + (is_4k ? scaleForDisplay(6) : scaleForDisplay(8)) - y);
+			var playlist_h = Math.max(0, h - lowerSpace + (is_4k ? 12 : 8) - y);
 
 			this.h = playlist_h;
 			this.w = playlist_w;
@@ -807,10 +807,10 @@ function PlaylistPanel(x, y) {
 
 			rescalePlaylist();
 			var x = 0;
-			var y = btns[30].y + btns[30].h + (is_4k ? scaleForDisplay(18) + 1 : scaleForDisplay(32));
+			var y = btns[30].y + btns[30].h + (is_4k ? 37 : 32);
 			var lowerSpace = calcLowerSpace();
 			var playlist_w = w - x;
-			var playlist_h = Math.max(0, h - lowerSpace + (is_4k ? scaleForDisplay(6) : scaleForDisplay(8)) - y);
+			var playlist_h = Math.max(0, h - lowerSpace + (is_4k ? 12 : 8) - y);
 
 			this.h = playlist_h;
 			this.w = playlist_w;
@@ -4942,7 +4942,7 @@ class Header extends BaseHeader {
 			labels.push(...getMetaValues(tf.labels[i], this.metadb));
 		}
 		labels = [... new Set(labels)];	// remove duplicates
-		var label_left = -right_edge * 2 + (is_4k ? scaleForDisplay(21) : scaleForDisplay(20));
+		var label_left = -right_edge * 2 + (is_4k ? 42 : 20);
 		let label_y = Math.round(2 * this.h / 3) - (is_4k ? 4 : -1);
 		for (var i = labels.length - 1; i >= 0; --i) {
 			if (i != labels.length - 1) {

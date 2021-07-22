@@ -3650,7 +3650,7 @@ function ImagesBio() {
 		if (ppt.text_only && !uiBio.blur) return;
 		if (uiBio.blur && cur_blur) gr.DrawImage(cur_blur, this.x - 1, this.y - 1, cur_blur.Width + 2, cur_blur.Height + 2, 0, 0, cur_blur.Width, cur_blur.Height);
 		if (this.get) return getImgFallback();
-		if (!ppt.text_only && cur_img) gr.DrawImage(cur_img, xa, ya + (is_4k ? scaleForDisplay(38) : scaleForDisplay(40)), cur_img.Width, cur_img.Height, 0, 0, cur_img.Width, cur_img.Height, 0, alpha);
+		if (!ppt.text_only && cur_img) gr.DrawImage(cur_img, xa, ya + (is_4k ? 76 : 40), cur_img.Width, cur_img.Height, 0, 0, cur_img.Width, cur_img.Height, 0, alpha);
 
 		if (!this.bar.show || this.bar.imgNo < 2) return;
 		if (ppt.text_only || !(ppt.cycPhoto && ppt.artistView && artImages.length > 1) && !(this.cycCov && !ppt.artistView && covers.length > 2 && !pBio.alb_ix)) return;

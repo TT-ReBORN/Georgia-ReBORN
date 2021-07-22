@@ -200,12 +200,12 @@ function on_paint(gr) {
     const titleMeasurements = gr.MeasureString(loadStrs.fileName, ft_lower, 0, 0, 0, 0);
     const progressBar = {
         x: scaleForDisplay(40),
-        y: Math.round(lowerBarTop + titleMeasurements.Height) + (is_4k ? scaleForDisplay(6) - 1 : scaleForDisplay(7)),
+        y: Math.round(lowerBarTop + titleMeasurements.Height) + (is_4k ? 11 : 7),
         w: ww - scaleForDisplay(80),
         h: scaleForDisplay(12) + (ww > 1920 ? 2 : 0)
     }
-    gr.DrawString(loadStrs.loading, ft_lower_bold, col.now_playing, progressBar.x, lowerBarTop - (is_4k ? scaleForDisplay(6) - 1 : scaleForDisplay(5) - 1), progressBar.w, titleMeasurements.Height);
-    gr.DrawString(loadStrs.fileName, ft_lower, col.now_playing, progressBar.x + loadingWidth + scaleForDisplay(20), lowerBarTop - (is_4k ? scaleForDisplay(6) - 1 : scaleForDisplay(5) - 1), progressBar.w, titleMeasurements.Height);
+    gr.DrawString(loadStrs.loading, ft_lower_bold, col.now_playing, progressBar.x, lowerBarTop - (is_4k ? 11 : 4), progressBar.w, titleMeasurements.Height);
+    gr.DrawString(loadStrs.fileName, ft_lower, col.now_playing, progressBar.x + loadingWidth + scaleForDisplay(20), lowerBarTop - (is_4k ? 11 : 4), progressBar.w, titleMeasurements.Height);
     if (whiteTheme) {
     gr.FillSolidRect(progressBar.x, progressBar.y, progressBar.w, progressBar.h, RGB(220, 220, 220));
     gr.FillSolidRect(progressBar.x, progressBar.y, progressBar.w * (loadStrs.fileIndex + 1) / fileList.length, progressBar.h, RGB(180, 180, 180));

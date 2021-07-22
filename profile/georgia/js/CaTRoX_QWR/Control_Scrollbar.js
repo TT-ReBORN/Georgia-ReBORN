@@ -98,9 +98,9 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
         var h = this.h;
 
         this.sb_parts = {
-            lineUp:   new ScrollBarPart(x - (is_4k ? scaleForDisplay(6) + 1 : scaleForDisplay(6)), y, w, this.btn_h, scrollbar_images.lineUp),
+            lineUp:   new ScrollBarPart(x - (is_4k ? 13 : 6), y, w, this.btn_h, scrollbar_images.lineUp),
             thumb:    new ScrollBarPart(x, y + this.thumb_y, w - scaleForDisplay(14), this.thumb_h, scrollbar_images.thumb),
-            lineDown: new ScrollBarPart(x - (is_4k ? scaleForDisplay(6) + 1 : scaleForDisplay(6)), y + h - this.btn_h, w, this.btn_h, scrollbar_images.lineDown)
+            lineDown: new ScrollBarPart(x - (is_4k ? 13 : 6), y + h - this.btn_h, w, this.btn_h, scrollbar_images.lineDown)
         };
     };
 

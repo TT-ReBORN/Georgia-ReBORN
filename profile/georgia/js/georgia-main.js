@@ -672,7 +672,7 @@ function draw_ui(gr) {
 				//var flagsLeft = textLeft + width + scaleForDisplay(8);
 				var flagsLeft = textLeft;
 				for (let i = 0; i < flagImgs.length; i++) {
-					//gr.DrawImage(flagImgs[i], flagsLeft, Math.round(artistY + (is_4k ? scaleForDisplay(6) : scaleForDisplay(4)) + height / 2 - flagImgs[i].Height / 2),
+					//gr.DrawImage(flagImgs[i], flagsLeft, Math.round(artistY + (is_4k ? 12 : 4) + height / 2 - flagImgs[i].Height / 2),
 					//	flagImgs[i].Width - scaleForDisplay(8), flagImgs[i].Height - scaleForDisplay(8), 0, 0, flagImgs[i].Width, flagImgs[i].Height)
 					//flagsLeft += flagImgs[i].Width + scaleForDisplay(5);
 					//gr.DrawString(str.artist, artistFont, col.artist, textLeft + flagSize, artistY, availableWidth, height, StringFormat(0, 0, 4));
@@ -1016,9 +1016,9 @@ function draw_ui(gr) {
 
 	// LOWER BAR
 	if (pref.layout_mode === 'default_mode') {
-	var lowerBarTop = wh - geo.lower_bar_h + (is_4k ? scaleForDisplay(0) : scaleForDisplay(2));
+	var lowerBarTop = wh - geo.lower_bar_h + (is_4k ? 0 : 2);
 	} else if (pref.layout_mode === 'compact_mode') {
-	var lowerBarTop = wh - geo.lower_bar_h - (is_4k ? scaleForDisplay(16) : scaleForDisplay(14));
+	var lowerBarTop = wh - geo.lower_bar_h - (is_4k ? 32 : 14);
 	}
 
 	// Title & artist
@@ -1160,14 +1160,14 @@ function draw_ui(gr) {
 				if (pref.show_flags && flagImgs.length && width + flagImgs[0].Width * flagImgs.length < availableWidth) {
 					var flagsLeft = textLeft - (is_4k ? 1 : 0);
 					for (let i = 0; i < flagImgs.length; i++) {
-						gr.DrawImage(flagImgs[i], flagsLeft, Math.round(artistY + (is_4k ? scaleForDisplay(3) : scaleForDisplay(4) - 1) + height / 2 - flagImgs[i].Height / 2),
+						gr.DrawImage(flagImgs[i], flagsLeft, Math.round(artistY + scaleForDisplay(3) + height / 2 - flagImgs[i].Height / 2),
 							flagImgs[i].Width - scaleForDisplay(8), flagImgs[i].Height - scaleForDisplay(8), 0, 0, flagImgs[i].Width, flagImgs[i].Height)
 						flagsLeft += flagImgs[i].Width;
 					}
 				}
 				gr.DrawString(str.artist, artistFont, col.artist, textLeft + (pref.show_flags && flagImgs.length ? flagSize + 2 : 0) - (is_4k ? 2 : 1), lowerBarTop + heightAdjustment, availableWidth, height, StringFormat(0, 0, 4));
-				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x + (pref.show_flags && flagImgs.length ? flagSize + width + scaleForDisplay(9) : is_4k ? width + scaleForDisplay(8) : width + scaleForDisplay(7)), lowerBarTop, trackNumWidth - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
-				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + (pref.show_flags && flagImgs.length ? is_4k ? flagSize + trackNumWidth + width : flagSize + trackNumWidth + width + scaleForDisplay(1) : trackNumWidth + width - scaleForDisplay(1)) + (is_4k ? scaleForDisplay(1) : 0), lowerBarTop, ww < 1600 ? 0.22 * ww : 0.34 * ww, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
+				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x + (pref.show_flags && flagImgs.length ? flagSize + width + scaleForDisplay(9) : is_4k ? width + 16 : width + 7), lowerBarTop, trackNumWidth - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
+				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + (pref.show_flags && flagImgs.length ? is_4k ? flagSize + trackNumWidth + width : flagSize + trackNumWidth + width + scaleForDisplay(1) : trackNumWidth + width - scaleForDisplay(1)) + (is_4k ? 2 : 0), lowerBarTop, ww < 1600 ? 0.22 * ww : 0.34 * ww, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
 			}
 		} else {
 			gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x, lowerBarTop + heightAdjustment, 0.95 * ww - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
@@ -1181,7 +1181,7 @@ function draw_ui(gr) {
 			var h_spacing = 0;
 			var v_spacing = 0;
 			if (useNeue) {
-				h_spacing = is_4k ? scaleForDisplay(4) : scaleForDisplay(2);
+				h_spacing = is_4k ? 8 : 2;
 				v_spacing = scaleForDisplay(0);
 			}
 			gr.DrawString(str.original_artist, ft_lower, col.now_playing, artistTitleTrackWidth > 0.35 * ww ? progressBar.x + trackNumWidth + titleMeasurements.Width : progressBar.x + (pref.show_flags && flagImgs.length ? flagSize + 2 : 0) - (is_4k ? 2 : 1) + width + trackNumWidth + titleMeasurements.Width + h_spacing, lowerBarTop + v_spacing, artistTitleTrackWidth > 0.35 * ww ? 0.34 * ww - (trackNumWidth + titleMeasurements.Width) : 0.34 * ww - (artistTitleTrackWidth + (pref.show_flags && flagImgs.length ? flagSize + 2 : 0) - (is_4k ? 2 : 1)), titleMeasurements.Height, g_string_format.trim_ellipsis_char);
@@ -1202,7 +1202,7 @@ function draw_ui(gr) {
 		var artistWidth = artistMeasurements.Width;
 		/*
 			if (timeAreaWidth + trackNumWidth + titleMeasurements.Width + artistWidth > 0.90 * ww) {
-				lowerBarTop = wh - geo.lower_bar_h - (is_4k ? scaleForDisplay(10) : scaleForDisplay(12));
+				lowerBarTop = wh - geo.lower_bar_h - (is_4k ? 20 : 12);
 				// we don't have room for all the text so use a smaller font and recalc size
 				artistFont = ft.artist_med;
 				ft_lower_bold = ft.lower_bar_sml_bold;
@@ -1216,7 +1216,7 @@ function draw_ui(gr) {
 				} else {
 					timeAreaWidth = gr.CalcTextWidth(' ' + str.time + '   ' + str.length, ft_lower);
 				}
-				gr.DrawString(str.artist, artistFont, col.now_playing, progressBar.x, lowerBarTop + (is_4k ? scaleForDisplay(1) : 0), artistWidth, titleMeasurements.Height, StringFormat(0, 0, 4));
+				gr.DrawString(str.artist, artistFont, col.now_playing, progressBar.x, lowerBarTop + (is_4k ? 2 : 0), artistWidth, titleMeasurements.Height, StringFormat(0, 0, 4));
 				timeAreaWidth += artistMeasurements.Width;
 				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x + artistWidth + (is_4k ? 12 : 8), lowerBarTop - 1, 0.35 * ww - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
 				timeAreaWidth += trackNumWidth;
@@ -1237,7 +1237,7 @@ function draw_ui(gr) {
 			} else {
 				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1) + artistWidth, lowerBarTop + heightAdjustment, trackNumWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
 			}
-				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + artistWidth + trackNumWidth + (is_4k ? scaleForDisplay(2) : 0), lowerBarTop + heightAdjustment, ww - (artistWidth + trackNumWidth + (0.32 * ww)), titleMeasurements.Height, g_string_format.trim_ellipsis_char);
+				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + artistWidth + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop + heightAdjustment, ww - (artistWidth + trackNumWidth + (0.32 * ww)), titleMeasurements.Height, g_string_format.trim_ellipsis_char);
 
 			let bottomTextWidth = timeAreaWidth + trackNumWidth;
 			bottomTextWidth += Math.ceil(titleMeasurements.Width);
@@ -1250,7 +1250,7 @@ function draw_ui(gr) {
 			} else {
 				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop + heightAdjustment, trackNumWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
 			}
-				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + trackNumWidth + (is_4k ? scaleForDisplay(2) : 0), lowerBarTop + heightAdjustment, ww - (trackNumWidth + (0.32 * ww)), titleMeasurements.Height, g_string_format.trim_ellipsis_char);
+				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop + heightAdjustment, ww - (trackNumWidth + (0.32 * ww)), titleMeasurements.Height, g_string_format.trim_ellipsis_char);
 
 			let bottomTextWidth = timeAreaWidth + trackNumWidth;
 			bottomTextWidth += Math.ceil(titleMeasurements.Width);
@@ -1268,7 +1268,7 @@ function draw_ui(gr) {
 
 	// Progress bar/Seekbar
 	if (pref.layout_mode === 'default_mode') {
-	progressBar.setY(Math.round(lowerBarTop + titleMeasurements.Height) + (is_4k ? scaleForDisplay(12) - 1 : scaleForDisplay(11)));
+	progressBar.setY(Math.round(lowerBarTop + titleMeasurements.Height) + (is_4k ? 23 : 11));
 	} else if (pref.layout_mode === 'compact_mode') {
 	progressBar.setY(Math.round(lowerBarTop + titleMeasurements.Height) + (scaleForDisplay(8)));
 	}
@@ -1284,7 +1284,7 @@ function draw_ui(gr) {
 				if (pref.layout_mode === 'default_mode') {
 					gr.DrawString(str.time, ft_lower_bold, col.now_playing, ww - scaleForDisplay(300), lowerBarTop + heightAdjustment, scaleForDisplay(260) - width, titleMeasurements.Height, StringFormat(2, 0));
 				} else if (pref.layout_mode === 'compact_mode') {
-					gr.DrawString(str.time, ft_lower_bold, col.now_playing, ww - scaleForDisplay(280), lowerBarTop + (is_4k ? scaleForDisplay(1) : 0), scaleForDisplay(260) - width, titleMeasurements.Height, StringFormat(2, 0));
+					gr.DrawString(str.time, ft_lower_bold, col.now_playing, ww - scaleForDisplay(280), lowerBarTop + (is_4k ? 2 : 0), scaleForDisplay(260) - width, titleMeasurements.Height, StringFormat(2, 0));
 				}
 				width += gr.CalcTextWidth('  ' + str.time, ft_lower_bold);
 				if (pref.layout_mode === 'default_mode') {
@@ -2446,10 +2446,10 @@ function on_size() {
 function setLibrarySize() {
 	if (typeof libraryPanel !== 'undefined') {
 		var x = Math.round(ww * .5);
-		var y = btns[30].y + btns[30].h + (is_4k ? scaleForDisplay(17) : scaleForDisplay(18));
+		var y = btns[30].y + btns[30].h + (is_4k ? 34 : 18);
 		var lowerSpace = calcLowerSpace();
 		var library_w = ww - x;
-		var library_h = Math.max(0, wh - lowerSpace + (is_4k ? scaleForDisplay(6) : scaleForDisplay(8)) - y);
+		var library_h = Math.max(0, wh - lowerSpace + (is_4k ? 12 : 8) - y);
 
 		ui.sizedNode = false;
 		ui.node_sz = Math.round(16 * sBio.scale);
@@ -2465,10 +2465,10 @@ function setLibrarySize() {
 function setBiographySize() {
 	if (typeof biographyPanel !== 'undefined') {
 		var x = 0;
-		var y = btns[30].y + btns[30].h + (is_4k ? scaleForDisplay(5) : scaleForDisplay(6));
+		var y = btns[30].y + btns[30].h + (is_4k ? 10 : 6);
 		var lowerSpace = calcLowerSpace();
 		var biography_w = ww / 2;
-		var biography_h = Math.max(0, wh - lowerSpace + (is_4k ? scaleForDisplay(7) : scaleForDisplay(8)) - y);
+		var biography_h = Math.max(0, wh - lowerSpace + (is_4k ? 14 : 8) - y);
 
 		initBiographyColors();
 		biographyPanel.on_size(x, y, biography_w, biography_h);
@@ -4029,7 +4029,7 @@ function createButtonObjects(ww, wh) {
 					(transport.showVolume ? 1 : 0) +
 					(transport.showReload ? 1 : 0);
 
-			const y = transport.displayBelowArtwork ? wh - geo.lower_bar_h + (is_4k ? scaleForDisplay(27) : scaleForDisplay(28)) - buttonSize : scaleForDisplay(10) + (showingMinMaxButtons ? scaleForDisplay(5) : 0);
+			const y = transport.displayBelowArtwork ? wh - geo.lower_bar_h + (is_4k ? 54 : 28) - buttonSize : scaleForDisplay(10) + (showingMinMaxButtons ? scaleForDisplay(5) : 0);
 			const w = buttonSize;
 			const h = w;
 			const p = scaleForDisplay(pref.transport_buttons_spacing); // space between buttons
@@ -4071,7 +4071,7 @@ function createButtonObjects(ww, wh) {
 					(transport.showVolume ? 1 : 0) +
 					(transport.showReload ? 1 : 0);
 
-			const y = transport.displayBelowArtwork ? wh - geo.lower_bar_h + (is_4k ? scaleForDisplay(63) : scaleForDisplay(65)) - buttonSize : scaleForDisplay(10);
+			const y = transport.displayBelowArtwork ? wh - geo.lower_bar_h + (is_4k ? 126 : 65) - buttonSize : scaleForDisplay(10);
 			const w = buttonSize;
 			const h = w;
 			const p = scaleForDisplay(pref.transport_buttons_spacing); // space between buttons
@@ -4231,7 +4231,7 @@ function createButtonObjects(ww, wh) {
 		btns.library = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'ShowLibrary', img, 'Display Library');
 		img = btnImg.Playlist;
 		x -= (img[0].Width) - (is_4k ? 3 : 2);
-		btns.playlist = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Playlist', img, 'Display Playlist');
+		btns.playlist = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Playlist', img, 'Display Details');
 
 	} else if (pref.layout_mode === 'compact_mode') {
 
@@ -4306,7 +4306,7 @@ function createButtonObjects(ww, wh) {
 		}
 
 		btns[30] = new Button(x, y, 0, h, img);
-		btns.playlist = new Button(x, y, img[0].Width, h, 'Playlist', img, 'Show Playlist');
+		btns.playlist = new Button(x, y, img[0].Width, h, 'Playlist', img, 'Display Details');
 
 	}
 

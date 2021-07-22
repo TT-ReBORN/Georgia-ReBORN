@@ -116,7 +116,7 @@ class VolumeBtn {
     constructor() {
         this.x = 0;
         this.y = 0;
-        this.w = is_4k ? scaleForDisplay(106) : scaleForDisplay(104);
+        this.w = scaleForDisplay(104);
         this.h = scaleForDisplay(12);
 
         this.inThisPadding = Math.min(this.w / 2);
@@ -240,7 +240,7 @@ class VolumeBtn {
         this.w = this.w;
         this.x = x + scaleForDisplay(40);
         if (transport.displayBelowArtwork) {
-            this.y = y + center - this.h - scaleForDisplay(15);
+            this.y = y + center - this.h - scaleForDisplay(14);
         } else {
             this.y = y + center + scaleForDisplay(3);
         }

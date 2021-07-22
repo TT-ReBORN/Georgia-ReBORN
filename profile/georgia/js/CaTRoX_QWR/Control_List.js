@@ -431,12 +431,12 @@ class List {
         this.is_scrollbar_available = false;
 
         var scrollbar_x = this.x - scaleForDisplay(32) + this.w - playlist_geo.scrollbar_w - playlist_geo.scrollbar_right_pad;
-        var scrollbar_y = this.y + playlist_geo.scrollbar_top_pad - (is_4k ? scaleForDisplay(6) : scaleForDisplay(5));
+        var scrollbar_y = this.y + playlist_geo.scrollbar_top_pad - (is_4k ? 12 : 5);
         var scrollbar_w = scaleForDisplay(28);
         if (pref.layout_mode === 'default_mode') {
-        var scrollbar_h = this.h - (playlist_geo.scrollbar_bottom_pad + playlist_geo.scrollbar_top_pad) - (is_4k ? scaleForDisplay(6) : scaleForDisplay(11));
+        var scrollbar_h = this.h - (playlist_geo.scrollbar_bottom_pad + playlist_geo.scrollbar_top_pad) - (is_4k ? 12 : 11);
         } else if (pref.layout_mode === 'compact_mode') {
-        var scrollbar_h = this.h - (playlist_geo.scrollbar_bottom_pad + playlist_geo.scrollbar_top_pad) + (is_4k ? scaleForDisplay(5) - 1 : scaleForDisplay(-10));
+        var scrollbar_h = this.h - (playlist_geo.scrollbar_bottom_pad + playlist_geo.scrollbar_top_pad) + (is_4k ? 9 : -10);
         }
 
         if (this.scrollbar) {

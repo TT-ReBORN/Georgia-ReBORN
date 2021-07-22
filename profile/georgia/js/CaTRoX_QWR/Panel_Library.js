@@ -3547,32 +3547,32 @@ class LibraryPanel {
 		gr.FillSolidRect(this.x, this.y + this.h - g_properties.row_h, this.w, g_properties.row_h, g_pl_colors.background); // Library Bottom Margin
 
 		if (pref.whiteTheme) {
-		gr.FillGradRect(this.x - 1, is_4k ? this.y - scaleForDisplay(17) : this.y - scaleForDisplay(18), this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Library's Top Pseudo Shadow Fix
-		gr.FillGradRect(is_4k ? this.x - 8 : this.x - 4, this.y - scaleForDisplay(12), is_4k ? 8 : 4, this.h + scaleForDisplay(12), 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Library's Left Side Pseudo Shadow Fix
+		gr.FillGradRect(this.x - 1, is_4k ? this.y - 34 : this.y - 18, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Library's Top Pseudo Shadow Fix
+		gr.FillGradRect(is_4k ? this.x - 8 : this.x - 4, this.y - 12, is_4k ? 8 : 4, this.h + scaleForDisplay(12), 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Library's Left Side Pseudo Shadow Fix
 		gr.FillGradRect(this.x - 1, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 18), RGBtoRGBA(col.shadow, 0)); // Library's Bottom Pseudo Shadow Fix
 		} else if (pref.blackTheme) {
-		gr.FillGradRect(this.x - 1, is_4k ? this.y - scaleForDisplay(17) : this.y - scaleForDisplay(18), this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Library's Top Pseudo Shadow Fix
-		gr.FillGradRect(is_4k ? this.x - 8 : this.x - 4, this.y - scaleForDisplay(12), is_4k ? 8 : 4, this.h + scaleForDisplay(12), 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Library's Left Side Pseudo Shadow Fix
+		gr.FillGradRect(this.x - 1, is_4k ? this.y - 34 : this.y - 18, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Library's Top Pseudo Shadow Fix
+		gr.FillGradRect(is_4k ? this.x - 8 : this.x - 4, this.y - 12, is_4k ? 8 : 4, this.h + scaleForDisplay(12), 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Library's Left Side Pseudo Shadow Fix
 		gr.FillGradRect(this.x - 1, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 120), RGBtoRGBA(col.shadow, 0)); // Library's Bottom Pseudo Shadow Fix
 		} else if (pref.blueTheme) {
-		gr.FillGradRect(this.x - 1, is_4k ? this.y - scaleForDisplay(17) : this.y - scaleForDisplay(18), this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 26)); // Library's Top Pseudo Shadow Fix
-		gr.FillGradRect(is_4k ? this.x - 8 : this.x - 4, this.y - scaleForDisplay(12), is_4k ? 8 : 4, this.h + scaleForDisplay(12), 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 38)); // Library's Left Side Pseudo Shadow Fix
+		gr.FillGradRect(this.x - 1, is_4k ? this.y - 34 : this.y - 18, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 26)); // Library's Top Pseudo Shadow Fix
+		gr.FillGradRect(is_4k ? this.x - 8 : this.x - 4, this.y - 12, is_4k ? 8 : 4, this.h + scaleForDisplay(12), 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 38)); // Library's Left Side Pseudo Shadow Fix
 		gr.FillGradRect(this.x - 1, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 26), RGBtoRGBA(col.shadow, 0)); // Library's Bottom Pseudo Shadow Fix
 		} else if (pref.darkblueTheme) {
-		gr.FillGradRect(this.x - 1, is_4k ? this.y - scaleForDisplay(17) : this.y - scaleForDisplay(18), this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Library's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x - 1, is_4k ? this.y - 34 : this.y - 18, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Library's Top Pseudo Shadow Fix
 		gr.FillGradRect(is_4k ? this.x - 8 : this.x - 4, this.y - scaleForDisplay(12), is_4k ? 8 : 4, this.h + scaleForDisplay(12), 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 60)); // Library's Left Side Pseudo Shadow Fix
 		gr.FillGradRect(this.x - 1, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 74), RGBtoRGBA(col.shadow, 0)); // Library's Bottom Pseudo Shadow Fix
 		} else if (pref.redTheme) {
-		gr.FillGradRect(this.x - 1, is_4k ? this.y - scaleForDisplay(17) : this.y - scaleForDisplay(18), this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Library's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x - 1, is_4k ? this.y - 34 : this.y - 18, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 72)); // Library's Top Pseudo Shadow Fix
 		gr.FillGradRect(is_4k ? this.x - 8 : this.x - 4, this.y - scaleForDisplay(12), is_4k ? 8 : 4, this.h + scaleForDisplay(12), 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 64)); // Library's Left Side Pseudo Shadow Fix
 		gr.FillGradRect(this.x - 1, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 74), RGBtoRGBA(col.shadow, 0)); // Library's Bottom Pseudo Shadow Fix
 		} else if (pref.creamTheme) {
-		gr.FillGradRect(this.x - 1, is_4k ? this.y - scaleForDisplay(17) : this.y - scaleForDisplay(18), this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Library's Top Pseudo Shadow Fix
+		gr.FillGradRect(this.x - 1, is_4k ? this.y - 34 : this.y - 18, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Library's Top Pseudo Shadow Fix
 		gr.FillGradRect(is_4k ? this.x - 8 : this.x - 4, this.y - scaleForDisplay(12), is_4k ? 8 : 4, this.h + scaleForDisplay(12), 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 28)); // Library's Left Side Pseudo Shadow Fix
 		gr.FillGradRect(this.x - 1, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 18), RGBtoRGBA(col.shadow, 0)); // Library's Bottom Pseudo Shadow Fix
 		} else if (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) {
-		gr.FillGradRect(this.x - 1, is_4k ? this.y - scaleForDisplay(17) : this.y - scaleForDisplay(17), this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Library's Top Pseudo Shadow Fix
-		gr.FillGradRect(is_4k ? this.x - 8 : this.x - 4, this.y - scaleForDisplay(12), is_4k ? 8 : 4, this.h + scaleForDisplay(12), 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Library's Left Side Pseudo Shadow Fix
+		gr.FillGradRect(this.x - 1, is_4k ? this.y - 34 : this.y - 17, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Library's Top Pseudo Shadow Fix
+		gr.FillGradRect(is_4k ? this.x - 8 : this.x - 4, this.y - 12, is_4k ? 8 : 4, this.h + scaleForDisplay(12), 0, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 120)); // Library's Left Side Pseudo Shadow Fix
 		gr.FillGradRect(this.x - 1, is_4k ? this.y + this.h + 1 : this.y + this.h - 1, this.w + (is_4k ? 35 : 17), is_4k ? 10 : 5, 90, RGBtoRGBA(col.shadow, 86), RGBtoRGBA(col.shadow, 0));  // Library's Bottom Pseudo Shadow Fix
 		}
 
