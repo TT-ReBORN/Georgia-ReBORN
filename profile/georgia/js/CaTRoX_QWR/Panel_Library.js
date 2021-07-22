@@ -1252,7 +1252,7 @@ function panel_operations() {
         libraryProps.zoomNode = 100;
         this.zoomFilter = 1;
         libraryProps.zoomFilter = 100;
-        ui.node_sz = Math.round(16 * s.scale);
+        ui.node_sz = Math.round(scaleForDisplay(16) * s.scale);
         // ppt.set(" Zoom Tooltip [Button] (%)", 100);
         this.filterFont = gdi.Font("Segoe UI", is_4k ? libraryProps.baseFontSize * 1.0 : libraryProps.baseFontSize * 0.90, 1);
         this.filterBtnFont = gdi.Font("Segoe UI Symbol", is_4k ? libraryProps.baseFontSize * 1.35 : libraryProps.baseFontSize * 0.90, 1);

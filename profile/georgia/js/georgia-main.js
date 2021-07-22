@@ -5071,7 +5071,7 @@ function LayoutModeHandler() {
 						pref.Player_4K_Normal = 'Player_4K_Normal';
 						pref.Player_Small = false;
 						orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 24); // sets library font size to 24 pixel for 4K
-						libraryProps.zoomNode = window.SetProperty(prefix + 'Zoom Node Size (%)', 100); // resets library node size
+						initLibraryPanel(); p.resetZoom(); // resets library node size
 						ppt.baseFontSize = 24; // sets biography font size for 24 pixel for 4K
 						ppt.set(" Scrollbar Size", "Bar," + 26 + ",Arrow," + 26 + ",Gap(+/-),0,GripMinHeight," + 36, "sbarMetrics") // sets biography scrollbar size for 4K
 					} else if (ww < 2560 && wh < 1600) {
@@ -5084,7 +5084,7 @@ function LayoutModeHandler() {
 						pref.Player_Small = 'Player_Small';
 						pref.Player_4K_Small = false;
 						orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 16); // sets library font size to 16 pixel for FHD
-						libraryProps.zoomNode = window.SetProperty(prefix + 'Zoom Node Size (%)', 100); // resets library node size
+						initLibraryPanel(); p.resetZoom(); // resets library node size
 						ppt.baseFontSize = 12; // sets biography font size for 12 pixel for FHD
 						ppt.set(" Scrollbar Size", "Bar," + 12 + ",Arrow," + 12 + ",Gap(+/-),0,GripMinHeight," + 20, "sbarMetrics") // sets biography scrollbar size for FHD
 					}
@@ -5096,7 +5096,7 @@ function LayoutModeHandler() {
 				pref.Player_4K_Normal = 'Player_4K_Normal';
 				pref.Player_Small = false;
 				orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 24); // sets library font size to 24 pixel for 4K
-				libraryProps.zoomNode = window.SetProperty(prefix + 'Zoom Node Size (%)', 100); // resets library node size
+				initLibraryPanel(); p.resetZoom(); // resets library node size
 				ppt.baseFontSize = 24; // sets biography font size for 24 pixel for 4K
 				ppt.set(" Scrollbar Size", "Bar," + 26 + ",Arrow," + 26 + ",Gap(+/-),0,GripMinHeight," + 36, "sbarMetrics") // sets biography scrollbar size for 4K
 
@@ -5106,7 +5106,7 @@ function LayoutModeHandler() {
 				pref.Player_Small = 'Player_Small';
 				pref.Player_4K_Normal = false;
 				orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 16); // sets library font size to 16 pixel for FHD
-				libraryProps.zoomNode = window.SetProperty(prefix + 'Zoom Node Size (%)', 100); // resets library node size
+				initLibraryPanel(); p.resetZoom(); // resets library node size
 				ppt.baseFontSize = 12; // sets biography font size for 12 pixel for FHD
 				ppt.set(" Scrollbar Size", "Bar," + 12 + ",Arrow," + 12 + ",Gap(+/-),0,GripMinHeight," + 20, "sbarMetrics") // sets biography scrollbar size for FHD
 			}
@@ -5135,6 +5135,10 @@ function LayoutModeHandler() {
 						is_4k = true;
 						pref.Player_4K_Normal = 'Player_4K_Normal';
 						pref.Player_Small = false;
+						orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 24); // sets library font size to 24 pixel for 4K
+						initLibraryPanel(); p.resetZoom(); // resets library node size
+						ppt.baseFontSize = 24; // sets biography font size for 24 pixel for 4K
+						ppt.set(" Scrollbar Size", "Bar," + 26 + ",Arrow," + 26 + ",Gap(+/-),0,GripMinHeight," + 36, "sbarMetrics") // sets biography scrollbar size for 4K
 					} else if (wh < 1600) {
 						set_window_size(484, 730);
 					}
@@ -5144,6 +5148,10 @@ function LayoutModeHandler() {
 						is_4k = false;
 						pref.Player_Small = 'Player_Small';
 						pref.Player_4K_Small = false;
+						orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 16); // sets library font size to 16 pixel for FHD
+						initLibraryPanel(); p.resetZoom(); // resets library node size
+						ppt.baseFontSize = 12; // sets biography font size for 12 pixel for FHD
+						ppt.set(" Scrollbar Size", "Bar," + 12 + ",Arrow," + 12 + ",Gap(+/-),0,GripMinHeight," + 20, "sbarMetrics") // sets biography scrollbar size for FHD
 					}
 				}
 
@@ -5152,12 +5160,20 @@ function LayoutModeHandler() {
 				is_4k = true;
 				pref.Player_4K_Normal = 'Player_4K_Normal';
 				pref.Player_Small = false;
+				orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 24); // sets library font size to 24 pixel for 4K
+				initLibraryPanel(); p.resetZoom(); // resets library node size
+				ppt.baseFontSize = 24; // sets biography font size for 24 pixel for 4K
+				ppt.set(" Scrollbar Size", "Bar," + 26 + ",Arrow," + 26 + ",Gap(+/-),0,GripMinHeight," + 36, "sbarMetrics") // sets biography scrollbar size for 4K
 
 			} else if (pref.use_4k === 'never') {
 				set_window_size(484, 730);
 				is_4k = false;
 				pref.Player_Small = 'Player_Small';
 				pref.Player_4K_Normal = false;
+				orig_font_sz = window.SetProperty(systemPrefix + 'Font Size', 16); // sets library font size to 16 pixel for FHD
+				initLibraryPanel(); p.resetZoom(); // resets library node size
+				ppt.baseFontSize = 12; // sets biography font size for 12 pixel for FHD
+				ppt.set(" Scrollbar Size", "Bar," + 12 + ",Arrow," + 12 + ",Gap(+/-),0,GripMinHeight," + 20, "sbarMetrics") // sets biography scrollbar size for FHD
 			}
 		}
 	};
