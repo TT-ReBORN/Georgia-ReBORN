@@ -1195,7 +1195,7 @@ function draw_ui(gr) {
 		var trackNumWidth = Math.ceil(gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width);
 		var titleMeasurements = gr.MeasureString(str.title_lower, ft_lower, 0, 0, 0, 0);
 		var origArtistWidth = gr.MeasureString(str.original_artist, ft_lower_orig_artist, 0, 0, 0, 0).Width;
-		var availableWidth = (ww);
+		var availableWidth = (ww * 0.50);
 		var artistFont = chooseFontForWidth(gr, availableWidth, str.artist, [ft.artist_lrg, ft.artist_med, ft.artist_sml]);
 		height = gr.CalcTextHeight(str.artist, artistFont);
 		var artistMeasurements = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0);
@@ -1228,16 +1228,33 @@ function draw_ui(gr) {
 			}
 
 		*/
-		gr.DrawString(str.artist, artistFont, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop + (is_4k ? scaleForDisplay(1) : 0), artistWidth + trackNumWidth, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
-		var heightAdjustment = is_4k ? 1 : 0;
-		if (fb.IsPlaying) {
-		gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1) + artistWidth + (is_4k ? 19 : 8), lowerBarTop + heightAdjustment, trackNumWidth - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
-		} else {
-		gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1) + artistWidth, lowerBarTop + heightAdjustment, trackNumWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
+		if (artistWidth < availableWidth) {
+			var heightAdjustment = is_4k ? 1 : 0;
+
+				gr.DrawString(str.artist, artistFont, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop + (is_4k ? 1 : 0), artistWidth + trackNumWidth, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
+			if (fb.IsPlaying) {
+				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1) + artistWidth + (is_4k ? 19 : 8), lowerBarTop + heightAdjustment, trackNumWidth - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
+			} else {
+				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1) + artistWidth, lowerBarTop + heightAdjustment, trackNumWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
+			}
+				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + artistWidth + trackNumWidth + (is_4k ? scaleForDisplay(2) : 0), lowerBarTop + heightAdjustment, ww - (artistWidth + trackNumWidth + (0.32 * ww)), titleMeasurements.Height, g_string_format.trim_ellipsis_char);
+
+			let bottomTextWidth = timeAreaWidth + trackNumWidth;
+			bottomTextWidth += Math.ceil(titleMeasurements.Width);
 		}
-		let bottomTextWidth = timeAreaWidth + trackNumWidth;
-		gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + artistWidth + trackNumWidth + (is_4k ? scaleForDisplay(2) : 0), lowerBarTop + heightAdjustment, ww - (artistWidth + trackNumWidth + (0.32 * ww)), titleMeasurements.Height, g_string_format.trim_ellipsis_char);
-		bottomTextWidth += Math.ceil(titleMeasurements.Width);
+		else {
+			var heightAdjustment = is_4k ? 1 : 0;
+
+			if (fb.IsPlaying) {
+				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop + heightAdjustment, trackNumWidth - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
+			} else {
+				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop + heightAdjustment, trackNumWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
+			}
+				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + trackNumWidth + (is_4k ? scaleForDisplay(2) : 0), lowerBarTop + heightAdjustment, ww - (trackNumWidth + (0.32 * ww)), titleMeasurements.Height, g_string_format.trim_ellipsis_char);
+
+			let bottomTextWidth = timeAreaWidth + trackNumWidth;
+			bottomTextWidth += Math.ceil(titleMeasurements.Width);
+		}
 		if (str.original_artist && bottomTextWidth < 0.90 * ww) {
 			var h_spacing = 0;
 			var v_spacing = 0;
