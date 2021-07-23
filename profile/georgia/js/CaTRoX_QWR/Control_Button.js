@@ -436,10 +436,10 @@ function onPlaylistsMenu(x, y) {
 	menu_down = true;
 	var lists = window.CreatePopupMenu();
 	var playlistCount = plman.PlaylistCount;
-	var playlistId = 3;
-	lists.AppendMenuItem(MF_STRING, 1, "Playlist manager...");
-	lists.AppendMenuSeparator();
-	lists.AppendMenuItem(MF_STRING, 2, "Create New Playlist");
+	var playlistId = 4;
+	lists.AppendMenuItem(MF_STRING, 1, "Playlist manager");
+	lists.AppendMenuItem(MF_STRING, 2, "Playlist search");
+	lists.AppendMenuItem(MF_STRING, 3, "Create new playlist");
 	lists.AppendMenuSeparator();
 	for (var i = 0; i != playlistCount; i++) {
 		lists.AppendMenuItem(MF_STRING, playlistId + i, plman.GetPlaylistName(i).replace(/\&/g, '&&') + ' [' + plman.PlaylistItemCount(i) + ']' + (plman.IsAutoPlaylist(i) ? ' (Auto)' : '') + (i === plman.PlayingPlaylist ? ' (Now Playing)' : ''));
@@ -452,6 +452,9 @@ function onPlaylistsMenu(x, y) {
 			fb.RunMainMenuCommand("View/Playlist Manager");
 			break;
 		case 2:
+			fb.RunMainMenuCommand("View/Playlist search");
+			break;
+		case 3:
 			plman.CreatePlaylist(playlistCount, "");
 			plman.ActivePlaylist = plman.PlaylistCount - 1;
 			break;

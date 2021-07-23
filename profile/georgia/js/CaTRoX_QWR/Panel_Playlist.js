@@ -1433,6 +1433,7 @@ class Playlist extends List {
 
 		var has_selected_item = this.selection_handler.has_selected_items();
 		var is_cur_playlist_empty = !this.cnt.rows.length;
+		var playlist_count = plman.PlaylistCount;
 
 		var cmm = new ContextMainMenu();
 
@@ -1442,9 +1443,30 @@ class Playlist extends List {
 				() => {
 					this.show_now_playing();
 				});
+			cmm.append_separator();
 		}
 
+			cmm.append_item(
+				'Playlist manager \tCtrl+M',
+				() => {
+					fb.RunMainMenuCommand("View/Playlist Manager");
+				});
+
+			cmm.append_item(
+				'Playlist search \tCtrl+F',
+				() => {
+					fb.RunMainMenuCommand("View/Playlist search");
+				});
+
+			cmm.append_item(
+				'Create new playlist \tCtrl+N',
+				() => {
+					plman.CreatePlaylist(playlist_count, '');
+					plman.ActivePlaylist = plman.PlaylistCount - 1;
+				});
+
 		if (!is_cur_playlist_empty) {
+			cmm.append_separator();
 			cmm.append_item(
 				'Refresh playlist \tF5',
 				() => {
@@ -6684,15 +6706,16 @@ function PlaylistManager(x, y, w, h) {
 
 		var playlist_count = plman.PlaylistCount;
 
-		cpm.AppendMenuItem(MF_STRING, 1, 'Playlist manager... \tCtrl+M');
+		cpm.AppendMenuItem(MF_STRING, 1, 'Playlist manager \tCtrl+M');
+		cpm.AppendMenuItem(MF_STRING, 2, 'Playlist search \tCtrl+F');
+		cpm.AppendMenuItem(MF_STRING, 3, 'Create new playlist \tCtrl+N');
 		cpm.AppendMenuSeparator();
 		if (g_component_utils) {
-			cpm.AppendMenuItem(MF_STRING, 2, 'Lock Current Playlist');
-			cpm.CheckMenuItem(2, plman.IsPlaylistLocked(plman.ActivePlaylist));
+			cpm.AppendMenuItem(MF_STRING, 4, 'Lock current playlist');
+			cpm.CheckMenuItem(4, plman.IsPlaylistLocked(plman.ActivePlaylist));
+			cpm.AppendMenuSeparator();
 		}
-		cpm.AppendMenuItem(MF_STRING, 3, 'Create New Playlist \tCtrl+N');
-		cpm.AppendMenuSeparator();
-		var playlists_start_id = 4;
+		var playlists_start_id = 5;
 		for (var i = 0; i < playlist_count; ++i) {
 			cpm.AppendMenuItem(MF_STRING, playlists_start_id + i, plman.GetPlaylistName(i).replace(/&/g, '&&') + ' [' + plman.PlaylistItemCount(i) + ']' + (plman.IsAutoPlaylist(i) ? ' (Auto)' : '') + (i === plman.PlayingPlaylist ? ' \t(Now Playing)' : ''));
 		}
@@ -6703,11 +6726,14 @@ function PlaylistManager(x, y, w, h) {
 				fb.RunMainMenuCommand('View/Playlist Manager');
 				break;
 			case 2:
-				fb.RunMainMenuCommand('Edit/Read-only');
+				fb.RunMainMenuCommand("View/Playlist search");
 				break;
 			case 3:
 				plman.CreatePlaylist(playlist_count, '');
 				plman.ActivePlaylist = plman.PlaylistCount - 1;
+				break;
+			case 4:
+				fb.RunMainMenuCommand('Edit/Read-only');
 				break;
 		}
 
