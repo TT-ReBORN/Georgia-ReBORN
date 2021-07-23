@@ -9,7 +9,7 @@ Georgia-ReBORN is a modification of **[Mordred's original Georgia theme](https:/
 It's purpose is to be used mainly as a desktop version, the layout has been modified to look clean and simple without any distractions.
 The cover artwork and playlist are the main focus.
 
-Georgia-ReBORN has 10 themes in total ( Options -> Change Theme ):
+Georgia-ReBORN has 10 themes in total ( Options -> Theme ):
 
 ![Themes](https://i.ibb.co/PgVtM21/George-Re-BORN-Themes-Animation.webp)
 
@@ -21,18 +21,18 @@ Synched lyrics will be highlighted with a theme color, unsynched lyrics have the
 ![BiographyLyrics](https://i.ibb.co/fddMnxc/George-Re-BORN-Biography-And-Lyrics-Animation.webp)
 
 Georgia-ReBORN supports 4k resolutions and will adjust theme elements based on DPI and screen size. Fullscreen mode is also supported!
-There are 6 predefined sizes ( Options -> Change Player Size ), 3 for FULL HD and below and 3 for 4K resolution and higher.
+There are 6 predefined sizes ( Options -> Player size ), 3 for FULL HD and below and 3 for 4K resolution and higher.
 These predefined sizes are restricted, if you have a monitor capable of 1920 x 1200 and below, the first 3 are available.
 If you have a monitor capable of 4K resolution and higher, the other 3 are available.<br />
-You can of course resize foobar to your liking, but it has minimum size restrictions ( Player Size 'Small' ) to prevent button and text overlapping.
+You can of course resize foobar to your liking, but it has minimum size restrictions ( Player size 'Small' ) to prevent button and text overlapping.
 
-There is also a mini compact player ala Winamp ( Options -> Change Layout Mode -> Playlist Mode ).<br />
+There is also a mini compact player ala Winamp ( Options -> Layout -> Compact ).<br />
 You can resize the width and height but it also has a minimum width restriction:
 
 ![Sizes](https://i.ibb.co/0sZswgG/George-Re-BORN-Sizes-And-Playlist-Mode-Animation.webp)
 
 **NOTE:** Georgia-ReBORN starts in player size 'Small' as a failsafe player size for small res. monitor/laptop screens<br />
-and looks best if you switch to 'Normal' or a bigger player size!
+and looks best if you switch to 'Normal' or a larger player size!
 
 ## Image Packs
 
