@@ -5538,7 +5538,7 @@ class Row extends ListItem {
 		if (pref.playlistTimeRemaining && this.is_playing && fb.IsPlaying) {
 			let timer_timeRemaining;
 			timer_timeRemaining = setTimeout(() => {
-				window.RepaintRect(ww - scaleForDisplay(60), this.y, scaleForDisplay(40), scaleForDisplay(20));
+				window.RepaintRect(length_x + 5, this.y, length_w + 5, this.h);
 			}, 1000);
 		} else {
 			clearTimeout(this.timer_timeRemaining);
