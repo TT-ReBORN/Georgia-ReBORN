@@ -4504,7 +4504,8 @@ class Header extends BaseHeader {
 						cache_header = false;   // don't cache until artwork is loaded
 					}
 					else {// null
-						grClip.DrawString(isStreaming ? 'LIVE\n ON AIR' : 'NO COVER', g_pl_fonts.cover, g_pl_colors.title_normal, art_box_x, art_box_y, art_box_size, art_box_size, g_string_format.align_center);
+						var is_radio = _.startsWith(this.metadb.RawPath, 'http') || _.startsWith(this.metadb.Path, 'spotify');
+						grClip.DrawString(isStreaming && is_radio ? 'LIVE\n ON AIR' : 'NO COVER', g_pl_fonts.cover, g_pl_colors.title_normal, art_box_x, art_box_y, art_box_size, art_box_size, g_string_format.align_center);
 					}
 
 					grClip.DrawRect(art_box_x, art_box_y, art_box_w - 1, art_box_h - 1, 1, line_color);

@@ -745,12 +745,13 @@ function draw_ui(gr) {
 
 				trackNumWidth = Math.ceil(trackNumWidth);
 				gr.DrawString(str.tracknum, ft.tracknum, col.info_text, textLeft, top - heightAdjustment + 1, trackNumWidth, height);
-                if (is_4k) {
-                    gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
-                } else {
-                    gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit); // thicker fonts can use anti-alias
-                }
-				gr.DrawString(str.title, ft.title, col.info_text, textLeft + trackNumWidth, top, text_width - trackNumWidth, height, g_string_format.trim_ellipsis_word);
+				if (is_4k) {
+					gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
+				} else {
+					gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit); // thicker fonts can use anti-alias
+				}
+				const artist_title_query = '%artist% - %title%';
+				gr.DrawString(isStreaming ? $(artist_title_query, this.metadb) : str.title, ft.title, col.info_text, textLeft + trackNumWidth, top, text_width - trackNumWidth, height, g_string_format.trim_ellipsis_word);
 
 				gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 				return height + scaleForDisplay(7);
