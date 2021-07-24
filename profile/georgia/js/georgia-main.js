@@ -2918,6 +2918,20 @@ function on_mouse_rbtn_down(x, y, m) {
 }
 
 function on_mouse_rbtn_up(x, y, m) {
+	if (((fb.IsPlaying || fb.IsPaused) && !displayBiography) &&
+		state.mouse_x > albumart_size.x && state.mouse_x <= albumart_size.x + albumart_size.w &&
+		state.mouse_y > albumart_size.y && state.mouse_y <= albumart_size.y + albumart_size.h) {
+
+		trace_call && console.log(qwr_utils.function_name());
+		const cmac = new ContextMainMenu();
+		qwr_utils.append_albumCover_context_menu_to(cmac);
+
+		menu_down = true;
+		cmac.execute(x, y);
+		menu_down = false;
+
+		return true;
+	}
 	if (displayPlaylist && playlist.mouse_in_this(x, y)) {
 		trace_call && console.log(qwr_utils.function_name());
 		return playlist.on_mouse_rbtn_up(x, y, m);

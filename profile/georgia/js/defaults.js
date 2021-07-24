@@ -120,7 +120,7 @@ const settingsDefaults = {
 	showThemeLog: false,
 	stoppedString1: 'foobar2000',
 	stoppedString2: '$replace(%_foobar2000_version%,foobar2000 ,)',
-	locked: false,
+	locked: true,
 }
 const settingsComments = {
 	artworkDisplayTime: 'Number of seconds to show each image if more than one is found and "Cycle through all artwork" option is enabled. (Min: 5, Max: 120)',

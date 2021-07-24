@@ -466,3 +466,60 @@ Object.assign(qwr_utils, {
             });
     }
 });
+
+Object.assign(qwr_utils, {
+    /**
+     * @param {ContextMenu} cmac
+     */
+     append_albumCover_context_menu_to: function (cmac) {
+
+        cmac.append_item(
+            displayPlaylist ? 'Details' : 'Playlist', () => {
+                btns.playlist.onClick();
+                btns.playlist.changeState(ButtonState.Down)
+                displayPlaylist ? btns.playlist.changeState(ButtonState.Default) : btns.playlist.changeState(ButtonState.Down);
+            }
+        );
+
+        cmac.append_item(
+            pref.displayLyrics ? 'Hide lyrics' : 'Display lyrics', () => {
+                pref.displayLyrics = !pref.displayLyrics;
+                btns.lyrics.changeState(ButtonState.Down)
+                pref.displayLyrics ? btns.lyrics.changeState(ButtonState.Down) : btns.lyrics.changeState(ButtonState.Default);
+                initLyrics();
+                on_playback_seek();
+                window.Repaint();
+            }
+        );
+
+        cmac.append_separator();
+
+        cmac.append_item(
+            'Get disc art', () => {
+                _.runCmd('https://fanart.tv/music-fanart')
+            }
+        );
+
+        cmac.append_separator();
+
+        cmac.append_item(
+            'Open containing folder', () => {
+                fb.RunContextCommandWithMetadb('Open Containing Folder', fb.GetFocusItem());
+            }
+        );
+
+        cmac.append_item(
+            'Properties', () => {
+                fb.RunContextCommand("Properties");
+            }
+        );
+
+        cmac.append_separator();
+
+        cmac.append_item(
+            'Reload theme', () => {
+                window.Reload();
+            }
+        );
+    }
+});
