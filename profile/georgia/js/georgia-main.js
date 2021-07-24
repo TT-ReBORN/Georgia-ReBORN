@@ -2349,6 +2349,12 @@ function on_init() {
 	if (fb.IsPlaying && fb.GetNowPlaying()) {
 		on_playback_new_track(fb.GetNowPlaying());
 	}
+
+	if (!pref.startPlaylist) {
+		btns.playlist.changeState(ButtonState.Down);
+		btns.playlist.enabled = true;
+		displayPlaylist ? btns.playlist.changeState(ButtonState.Default) : btns.playlist.changeState(ButtonState.Down);
+	}
 	window.Repaint();	// needed when loading async, otherwise superfluous
 
 	/** Workaround so we can use the Edit menu or run fb.RunMainMenuCommand("Edit/Something...")

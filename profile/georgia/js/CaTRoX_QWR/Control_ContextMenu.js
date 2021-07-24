@@ -476,7 +476,7 @@ Object.assign(qwr_utils, {
         cmac.append_item(
             displayPlaylist ? 'Details' : 'Playlist', () => {
                 btns.playlist.onClick();
-                btns.playlist.changeState(ButtonState.Down)
+                btns.playlist.changeState(ButtonState.Down);
                 displayPlaylist ? btns.playlist.changeState(ButtonState.Default) : btns.playlist.changeState(ButtonState.Down);
             }
         );
@@ -484,7 +484,7 @@ Object.assign(qwr_utils, {
         cmac.append_item(
             pref.displayLyrics ? 'Hide lyrics' : 'Display lyrics', () => {
                 pref.displayLyrics = !pref.displayLyrics;
-                btns.lyrics.changeState(ButtonState.Down)
+                btns.lyrics.changeState(ButtonState.Down);
                 pref.displayLyrics ? btns.lyrics.changeState(ButtonState.Down) : btns.lyrics.changeState(ButtonState.Default);
                 initLyrics();
                 on_playback_seek();
