@@ -478,6 +478,9 @@ Object.assign(qwr_utils, {
                 btns.playlist.onClick();
                 btns.playlist.changeState(ButtonState.Down);
                 displayPlaylist ? btns.playlist.changeState(ButtonState.Default) : btns.playlist.changeState(ButtonState.Down);
+                if (displayPlaylist) {
+                    pref.displayLyrics = false;
+                }
             }
         );
 
