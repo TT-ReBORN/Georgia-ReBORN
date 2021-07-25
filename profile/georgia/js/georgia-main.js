@@ -510,7 +510,7 @@ function draw_ui(gr) {
 		albumart_size.x = isStreaming ? ww : Math.floor(ww / 2); // if there's no album art info panel takes up 1/2 screen
 		albumart_size.w = albumart_size.x;
 		albumart_size.y = geo.top_art_spacing;
-		albumart_size.h = playlist.h + (is_4k ? 2 : 1);
+		albumart_size.h = playlist.h;
 		if (!themeColorSet) {
 			setTheme(blueTheme.colors);
 			themeColorSet = true;
@@ -2925,7 +2925,7 @@ function on_mouse_rbtn_down(x, y, m) {
 }
 
 function on_mouse_rbtn_up(x, y, m) {
-	if (((fb.IsPlaying || fb.IsPaused) && !displayBiography) &&
+	if (((fb.IsPlaying || fb.IsPaused) && albumart && !displayBiography) &&
 		state.mouse_x > albumart_size.x && state.mouse_x <= albumart_size.x + albumart_size.w &&
 		state.mouse_y > albumart_size.y && state.mouse_y <= albumart_size.y + albumart_size.h) {
 
