@@ -80,6 +80,16 @@ Please visit Mordred's original Georgia theme to learn more: https://github.com/
 
 <b>5.</b> Start foobar and select Columns UI, everything else is already preconfigured.
 
+**For standard non-portable installation:**
+
+Install foobar2000 as a standard installation, start and close foobar.<br />
+Extract the content ( configuration, georgia, images and user-components ) from the profile folder<br />
+of the **[Github master.zip](https://github.com/TT-ReBORN/Georgia-ReBORN/archive/master.zip)** into the root folder of: C:\Users\YourUsername\AppData\Roaming\foobar2000
+
+Install all located fonts from your: C:\Users\YourUsername\AppData\Roaming\foobar2000\georgia\fonts folder.
+
+Start foobar and select Columns UI, everything else is already preconfigured.
+
 ## Support
 
 The official discussion thread for this theme is located at **[Discussions](https://github.com/TT-ReBORN/Georgia-ReBORN/discussions)** or at 
