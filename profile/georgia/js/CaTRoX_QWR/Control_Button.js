@@ -327,6 +327,7 @@ function btnActionHandler(btn) {
 					initLyrics();
 					displayBiography = false;
 					displayLibrary = false;
+					btns.playlist.enable = false;
 				}
 				if (!displayPlaylist) {
 					playlist.on_size(ww, wh);
@@ -377,6 +378,8 @@ function btnActionHandler(btn) {
 			displayPlaylist = !displayPlaylist;
 			if (displayPlaylist) {
 				playlist.on_size(ww, wh);
+			} else {
+				pref.displayLyrics = false;
 			}
 			if (displayLibrary) {
 				displayLibrary = false;
