@@ -668,13 +668,24 @@ function draw_ui(gr) {
 			const width = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width;
 			var artistY = wh - geo.lower_bar_h + scaleForDisplay(2);
 			let flagSize = flagImgs.length === 3 ? scaleForDisplay(96) : flagImgs.length === 2 ? scaleForDisplay(64) : scaleForDisplay(32);
-			if (pref.show_flags && flagImgs.length && width + flagImgs[0].Width * flagImgs.length < availableWidth) {
+			if (!displayPlaylist && !displayLibrary && pref.showArtistInGrid && pref.show_flags && flagImgs.length && width + flagImgs[0].Width * flagImgs.length) {
 				//var flagsLeft = textLeft + width + scaleForDisplay(8);
 				var flagsLeft = textLeft;
+				var top = (albumart_size.y ? albumart_size.y : geo.top_art_spacing) + scaleForDisplay(33);
 				for (let i = 0; i < flagImgs.length; i++) {
-					//gr.DrawImage(flagImgs[i], flagsLeft, Math.round(artistY + (is_4k ? 12 : 4) + height / 2 - flagImgs[i].Height / 2),
-					//	flagImgs[i].Width - scaleForDisplay(8), flagImgs[i].Height - scaleForDisplay(8), 0, 0, flagImgs[i].Width, flagImgs[i].Height)
-					//flagsLeft += flagImgs[i].Width + scaleForDisplay(5);
+					gr.DrawImage(flagImgs[i], flagsLeft, top +
+					// Y-Coordinates
+					(pref.album_font_size === 24 ? scaleForDisplay(3) : !pref.album_font_size === 24 ? scaleForDisplay(3) : 0) +
+					(pref.album_font_size === 22 ? scaleForDisplay(3) : !pref.album_font_size === 22 ? scaleForDisplay(3) : 0) +
+					(pref.album_font_size === 20 ? scaleForDisplay(1) : !pref.album_font_size === 20 ? scaleForDisplay(1) : 0) +
+					(pref.album_font_size === 18 ? scaleForDisplay(0) : !pref.album_font_size === 18 ? scaleForDisplay(0) : 0) -
+					(pref.album_font_size === 16 ? scaleForDisplay(2) : !pref.album_font_size === 18 ? scaleForDisplay(2) : 0) -
+					(pref.album_font_size === 14 ? scaleForDisplay(3) : !pref.album_font_size === 18 ? scaleForDisplay(3) : 0) -
+					(pref.album_font_size === 13 ? scaleForDisplay(4) : !pref.album_font_size === 18 ? scaleForDisplay(4) : 0) -
+					(pref.album_font_size === 12 ? scaleForDisplay(5) : !pref.album_font_size === 18 ? scaleForDisplay(5) : 0) -
+					(pref.album_font_size === 11 ? scaleForDisplay(5) : !pref.album_font_size === 18 ? scaleForDisplay(5) : 0),
+					flagImgs[i].Width - scaleForDisplay(8), flagImgs[i].Height - scaleForDisplay(8), 0, 0, flagImgs[i].Width, flagImgs[i].Height)
+					flagsLeft += flagImgs[i].Width + scaleForDisplay(5);
 					//gr.DrawString(str.artist, artistFont, col.artist, textLeft + flagSize, artistY, availableWidth, height, StringFormat(0, 0, 4));
 				}
 			} else {
@@ -709,6 +720,40 @@ function draw_ui(gr) {
 		if (gridSpace > 120) {
 			/** @type {MeasureStringInfo} */
 			let txtRec;
+
+			function drawArtist(top) {
+				if (!str.artist) return 0;
+				let flagSize = flagImgs.length === 3 ? scaleForDisplay(96) : flagImgs.length === 2 ? scaleForDisplay(64) : scaleForDisplay(32);
+				ft.artist = ft.album_lrg;
+				let title_spacing = scaleForDisplay(8);
+
+				txtRec = gr.MeasureString(str.artist, ft.artist, 0, 0, text_width, wh);
+				if (txtRec.Lines > 2) {
+					ft.artist = ft.artist_med;
+					title_spacing = scaleForDisplay(7);
+					txtRec = gr.MeasureString(str.artist, ft.artist, 0, 0, text_width, wh);
+					if (txtRec.Lines > 2) {
+						ft.artist = ft.artist_sml;
+						title_spacing = scaleForDisplay(6);
+						txtRec = gr.MeasureString(str.artist, ft.artist, 0, 0, text_width, wh);
+					}
+				}
+
+				const numLines = Math.min(2, txtRec.Lines);
+				const height = gr.CalcTextHeight(str.title, ft.artist) * numLines + 3;
+
+				if (is_4k) {
+					gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
+				} else {
+					gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit); // thicker fonts can use anti-alias
+				}
+				gr.DrawString(str.artist, ft.artist, col.info_text, (pref.show_flags && flagImgs.length ? flagSize + 2 : 0) + (is_4k ? 2 : 0) + textLeft, top, text_width - scaleForDisplay(60), height, g_string_format.trim_ellipsis_char);
+
+				gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
+				return height + (is_4k ? 17 : 7);
+			}
+
+			top += geo.timeline_h - scaleForDisplay(15);
 			
 			function drawTitle(top) {
 				if (!str.title) return 0;
@@ -754,9 +799,8 @@ function draw_ui(gr) {
 				gr.DrawString(isStreaming ? $(artist_title_query, this.metadb) : str.title, ft.title, col.info_text, textLeft + trackNumWidth, top, text_width - trackNumWidth, height, g_string_format.trim_ellipsis_word);
 
 				gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
-				return height + scaleForDisplay(7);
+				return height + (is_4k ? 17 : 7);
 			}
-			
 
 			top += geo.timeline_h - scaleForDisplay(55);
 
@@ -774,9 +818,12 @@ function draw_ui(gr) {
 				return height + scaleForDisplay(10);
 			}
 
+			if (pref.showArtistInGrid) {
+				top += drawArtist(top);
+			}
 			if (pref.showTitleInGrid) {
 				top += drawTitle(top);
-			} else {
+			} else if (!pref.showArtistInGrid) {
 				top += drawAlbumTitle(top, 3);
 			}
 			//Timeline playcount bars
@@ -785,7 +832,7 @@ function draw_ui(gr) {
 				str.timeline.draw(gr);
 			}
 			top += geo.timeline_h + scaleForDisplay(18);
-			if (pref.showTitleInGrid) {
+			if (pref.showArtistInGrid || pref.showTitleInGrid) {
 				top += drawAlbumTitle(top, 2);
 			}
 
@@ -2127,6 +2174,7 @@ function onOptionsMenu(x, y) {
 	// Details panel settings ///////////////////////////////////////////////
 
 	const detailsMenu = new Menu('Details');
+	detailsMenu.addToggleItem('Show artist', pref, 'showArtistInGrid', () => RepaintWindow());
 	detailsMenu.addToggleItem('Show song title', pref, 'showTitleInGrid', () => RepaintWindow());
 	detailsMenu.addToggleItem('Show label art on background', pref, 'labelArtOnBg', () => RepaintWindow());
 	detailsMenu.addToggleItem('Show playback history timeline tooltips', pref, 'show_timeline_tooltips');
