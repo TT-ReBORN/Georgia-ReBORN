@@ -3992,7 +3992,9 @@ function fetchNewArtwork(metadb) {
 			shadow_image = null;
 		}
 	} else {
-		pref.showTitleInGrid = false;
+		if (!pref.showTitleInGrid) {
+			pref.showTitleInGrid = false;
+	   }
 		aa_list = globals.imgPaths.map(path => utils.Glob($(path), FileAttributes.Directory | FileAttributes.Hidden)).flat();
 		const filteredFileTypes = pref.filterCdJpgsFromAlbumArt ? '(png|jpg)' : 'png';
 		const pattern = new RegExp('(cd|vinyl|' + settings.cdArtBasename + ')([0-9]*|[a-h])\.' + filteredFileTypes, 'i');
