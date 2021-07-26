@@ -1998,6 +1998,30 @@ function onOptionsMenu(x, y) {
 	//	RepaintWindow();
 	//}, !transport.enableTransportControls);
 
+	playerControlsMenu.addToggleItem('Enable tooltips', pref, 'show_tt', () => {
+		if (pref.show_tt) {
+			pref.show_tt = true;
+			pref.show_truncatedText_tt = true;
+			pref.show_timeline_tooltips = true;
+			libraryProps.tooltips = true;
+		} else {
+			pref.show_tt = false;
+			pref.show_truncatedText_tt = false;
+			pref.show_timeline_tooltips = false;
+			libraryProps.tooltips = false;
+		}
+	});
+	playerControlsMenu.addToggleItem('Enable tooltips on truncated text', pref, 'show_truncatedText_tt', () => {
+		if (pref.show_truncatedText_tt) {
+			pref.show_truncatedText_tt = true;
+			libraryProps.tooltips = true;
+		} else {
+			pref.show_truncatedText_tt = false;
+			libraryProps.tooltips = false;
+		}
+	});
+	playerControlsMenu.addToggleItem('Enable timeline tooltips', pref, 'show_timeline_tooltips');
+
 	const transportSizeMenu = new Menu('Transport button size');
 	transportSizeMenu.addRadioItems(['-2', '28px', '32px (default)', '36px', '40px', '44px', '+2'], pref.transport_buttons_size, [-1,28,32,36,40,44,999], (size) => {
 		if (size === -1) {
@@ -2035,30 +2059,6 @@ function onOptionsMenu(x, y) {
 		RepaintWindow();
 	});
 	transportSpacingMenu.appendTo(playerControlsMenu);
-
-	playerControlsMenu.addToggleItem('Enable tooltips', pref, 'show_tt', () => {
-		if (pref.show_tt) {
-			pref.show_tt = true;
-			pref.show_truncatedText_tt = true;
-			pref.show_timeline_tooltips = true;
-			libraryProps.tooltips = true;
-		} else {
-			pref.show_tt = false;
-			pref.show_truncatedText_tt = false;
-			pref.show_timeline_tooltips = false;
-			libraryProps.tooltips = false;
-		}
-	});
-	playerControlsMenu.addToggleItem('Enable tooltips on truncated text', pref, 'show_truncatedText_tt', () => {
-		if (pref.show_truncatedText_tt) {
-			pref.show_truncatedText_tt = true;
-			libraryProps.tooltips = true;
-		} else {
-			pref.show_truncatedText_tt = false;
-			libraryProps.tooltips = false;
-		}
-	});
-	playerControlsMenu.addToggleItem('Enable timeline tooltips', pref, 'show_timeline_tooltips');
 
 	playerControlsMenu.appendTo(menu);
 	menu.addSeparator();
@@ -2118,6 +2118,7 @@ function onOptionsMenu(x, y) {
 	rowsMenu.appendTo(playlistMenu);
 
 	playlistMenu.addToggleItem('Show time remaining on playing track', pref, 'playlistTimeRemaining', () => { RepaintWindow(); });
+	playlistMenu.addToggleItem('Always scroll to current playing song', pref, 'always_showPlaying');
 	playlistMenu.addToggleItem('Show playlist on startup', pref, 'startPlaylist');
 	playlistMenu.addToggleItem('Use vinyl style numbering if available', pref, 'use_vinyl_nums', () => { RepaintWindow(); });
 

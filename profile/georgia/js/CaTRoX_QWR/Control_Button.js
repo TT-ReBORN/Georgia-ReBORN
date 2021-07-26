@@ -252,10 +252,8 @@ function btnActionHandler(btn) {
 			break;
 		case 'Minimize':
 			fb.RunMainMenuCommand("View/Hide");
-			on_init(); if (fb.IsPlaying || fb.IsPaused) { fb.GetNowPlaying(); } // Automatic Show Playing when resume from minimize
 			break;
 		case 'Maximize':
-			on_init();
 			const maximizeToFullScreen = true; // TODO to clear the error. Test this stuff eventually
 			if (maximizeToFullScreen ? !utils.IsKeyPressed(VK_CONTROL) : utils.IsKeyPressed(VK_CONTROL)) {
 				UIHacks.FullScreen = !UIHacks.FullScreen;
@@ -330,9 +328,11 @@ function btnActionHandler(btn) {
 					btns.playlist.enable = false;
 				}
 				if (!displayPlaylist) {
-					playlist.on_size(ww, wh);
 					displayPlaylist = true;
 					ResizeArtwork(false);
+				}
+				if (pref.always_showPlaying) {
+					playlist.on_size(ww, wh);
 				}
 				window.RepaintRect(albumart_size.x, albumart_size.y, albumart_size.w, albumart_size.h);
 			}
