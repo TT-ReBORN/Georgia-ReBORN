@@ -391,6 +391,7 @@ var loadFromCache = true; // always load art from cache unless this is set
 /**
  * @typedef {Object} StringsObj Collection of strings and other objects to be displayed throughout UI
  * @property {string=} artist
+ * @property {string=} composer
  * @property {string=} album
  * @property {string=} album_subtitle
  * @property {string=} disc By default this string is displayed if there is more than one total disc. Formated like: "CD1/2"
@@ -1171,7 +1172,7 @@ function draw_ui(gr) {
 			const width = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width;
 			const height = gr.CalcTextHeight(str.artist, artistFont);
 			let flagSize = flagImgs.length === 3 ? scaleForDisplay(96) : flagImgs.length === 2 ? scaleForDisplay(64) : scaleForDisplay(32);
-			var artistTitleTrackWidth = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width + gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(str.title_lower, ft_lower, 0, 0, 0, 0).Width + flagSize;
+			var artistTitleTrackWidth = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width + gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(pref.showComposer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, 0, 0).Width + flagSize;
 
 			if (artistTitleTrackWidth > 0.35 * ww) {
 				if (pref.show_flags && flagImgs.length && width + flagImgs[0].Width * flagImgs.length) {
@@ -1203,7 +1204,7 @@ function draw_ui(gr) {
 					// End String
 					availableWidth - flagSize, height, StringFormat(0, 0, 4));
 				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - (is_4k ? 1 : 0), lowerBarTop, trackNumWidth - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
-				gr.DrawString(str.title_lower, ft_lower, col.now_playing, trackNumWidth > 0 ? progressBar.x - (is_4k ? 1 : 0) + trackNumWidth - scaleForDisplay(3) : progressBar.x - (is_4k ? 1 : 0) - scaleForDisplay(11), lowerBarTop, 0.34 * ww, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
+				gr.DrawString(pref.showComposer ? str.title_lower + str.composer : str.title_lower, ft_lower, col.now_playing, trackNumWidth > 0 ? progressBar.x - (is_4k ? 1 : 0) + trackNumWidth - scaleForDisplay(3) : progressBar.x - (is_4k ? 1 : 0) - scaleForDisplay(11), lowerBarTop, 0.34 * ww, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
 			} else {
 				if (pref.show_flags && flagImgs.length && width + flagImgs[0].Width * flagImgs.length < availableWidth) {
 					var flagsLeft = textLeft - (is_4k ? 1 : 0);
@@ -1215,7 +1216,7 @@ function draw_ui(gr) {
 				}
 				gr.DrawString(str.artist, artistFont, col.artist, textLeft + (pref.show_flags && flagImgs.length ? flagSize + 2 : 0) - (is_4k ? 2 : 1), lowerBarTop + heightAdjustment, availableWidth, height, StringFormat(0, 0, 4));
 				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x + (pref.show_flags && flagImgs.length ? flagSize + width + scaleForDisplay(9) : is_4k ? width + 16 : width + 7), lowerBarTop, trackNumWidth - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
-				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + (pref.show_flags && flagImgs.length ? is_4k ? flagSize + trackNumWidth + width : flagSize + trackNumWidth + width + scaleForDisplay(1) : trackNumWidth + width - scaleForDisplay(1)) + (is_4k ? 2 : 0), lowerBarTop, ww < 1600 ? 0.22 * ww : 0.34 * ww, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
+				gr.DrawString(pref.showComposer ? str.title_lower + str.composer : str.title_lower, ft_lower, col.now_playing, progressBar.x + (pref.show_flags && flagImgs.length ? is_4k ? flagSize + trackNumWidth + width : flagSize + trackNumWidth + width + scaleForDisplay(1) : trackNumWidth + width - scaleForDisplay(1)) + (is_4k ? 2 : 0), lowerBarTop, ww < 1600 ? 0.22 * ww : 0.34 * ww, titleMeasurements.Height, g_string_format.trim_ellipsis_char);
 			}
 		} else {
 			gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x, lowerBarTop + heightAdjustment, 0.95 * ww - timeAreaWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
@@ -1241,7 +1242,7 @@ function draw_ui(gr) {
 		var ft_lower = ft.lower_bar;
 		var ft_lower_orig_artist = ft.lower_bar_artist;
 		var trackNumWidth = Math.ceil(gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width);
-		var titleMeasurements = gr.MeasureString(str.title_lower, ft_lower, 0, 0, 0, 0);
+		var titleMeasurements = gr.MeasureString(pref.showComposer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, 0, 0);
 		var origArtistWidth = gr.MeasureString(str.original_artist, ft_lower_orig_artist, 0, 0, 0, 0).Width;
 		var availableWidth = (ww * 0.50);
 		var artistFont = chooseFontForWidth(gr, availableWidth, str.artist, [ft.artist_lrg, ft.artist_med, ft.artist_sml]);
@@ -1285,7 +1286,7 @@ function draw_ui(gr) {
 			} else {
 				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1) + artistWidth, lowerBarTop + heightAdjustment, trackNumWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
 			}
-				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + artistWidth + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop + heightAdjustment, ww - (artistWidth + trackNumWidth + (0.32 * ww)), titleMeasurements.Height, g_string_format.trim_ellipsis_char);
+				gr.DrawString(pref.showComposer ? str.title_lower + str.composer : str.title_lower, ft_lower, col.now_playing, progressBar.x + artistWidth + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop + heightAdjustment, ww - (artistWidth + trackNumWidth + (0.32 * ww)), titleMeasurements.Height, g_string_format.trim_ellipsis_char);
 
 			let bottomTextWidth = timeAreaWidth + trackNumWidth;
 			bottomTextWidth += Math.ceil(titleMeasurements.Width);
@@ -1298,7 +1299,7 @@ function draw_ui(gr) {
 			} else {
 				gr.DrawString(str.tracknum, ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop + heightAdjustment, trackNumWidth, titleMeasurements.Height, StringFormat(0, 0, 4, 0x00001000));
 			}
-				gr.DrawString(str.title_lower, ft_lower, col.now_playing, progressBar.x + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop + heightAdjustment, ww - (trackNumWidth + (0.32 * ww)), titleMeasurements.Height, g_string_format.trim_ellipsis_char);
+				gr.DrawString(pref.showComposer ? str.title_lower + str.composer : str.title_lower, ft_lower, col.now_playing, progressBar.x + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop + heightAdjustment, ww - (trackNumWidth + (0.32 * ww)), titleMeasurements.Height, g_string_format.trim_ellipsis_char);
 
 			let bottomTextWidth = timeAreaWidth + trackNumWidth;
 			bottomTextWidth += Math.ceil(titleMeasurements.Width);
@@ -2036,7 +2037,7 @@ function onOptionsMenu(x, y) {
 		createButtonObjects(ww, wh);
 		RepaintWindow();
 	}, !transport.enableTransportControls);
-	playerControlsMenu.addToggleItem('Show volume control', transport, 'showVolume', () => {
+	playerControlsMenu.addToggleItem('Show volume control button', transport, 'showVolume', () => {
 		createButtonObjects(ww, wh);
 		RepaintWindow();
 	}, !transport.enableTransportControls);
@@ -2044,6 +2045,7 @@ function onOptionsMenu(x, y) {
 	//	createButtonObjects(ww, wh);
 	//	RepaintWindow();
 	//}, !transport.enableTransportControls);
+	playerControlsMenu.addToggleItem('Show composer in lower bar', pref, 'showComposer');
 
 	playerControlsMenu.addToggleItem('Enable tooltips', pref, 'show_tt', () => {
 		if (pref.show_tt) {
@@ -2715,6 +2717,7 @@ function on_metadb_changed(handle_list, fromhook) {
 			// the handle_list contains the currently playing song so update
 			var title = $(tf.title);
 			var artist = $(tf.artist);
+			var composer = $(tf.composer);
 			var original_artist = $(tf.original_artist);
 			let tracknum = '';
 			if (pref.use_vinyl_nums)
@@ -2723,10 +2726,11 @@ function on_metadb_changed(handle_list, fromhook) {
 				tracknum = $(tf.tracknum);
 
 			str.tracknum = tracknum.trim();
-			str.title = title + original_artist;
+			str.title = title + original_artist + composer;
 			str.title_lower = '  ' + title;
 			str.original_artist = original_artist;
 			str.artist = artist;
+			str.composer = composer;
 			str.year = $(tf.year);
 			if (str.year === '0000') {
 				str.year = '';

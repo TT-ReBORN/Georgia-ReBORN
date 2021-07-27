@@ -144,7 +144,7 @@ class ProgressBar {
             const availableWidth = displayPlaylist || displayLibrary ? Math.min(ww / 2 - 20, btns.playlist.x - textLeft) : btns.playlist.x - textLeft;
             const artistFont = chooseFontForWidth(gr, availableWidth, str.artist, [ft.artist_lrg, ft.artist_med, ft.artist_sml]);
             this.artist_text_w = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width;
-            this.title_text_w = gr.MeasureString(str.title_lower, ft_lower, 0, 0, 0, 0).Width;
+            this.title_text_w = gr.MeasureString(pref.showComposer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, 0, 0).Width;
         }
     }
 
@@ -209,10 +209,10 @@ class ProgressBar {
                 if (lowerBar_tt_hitarea_x <= x && lowerBar_tt_hitarea_y <= y && lowerBar_tt_hitarea_x + lowerBar_tt_hitarea_w >= x && 
                     lowerBar_tt_hitarea_y + lowerBar_tt_hitarea_h >= y) {
                     if (this.artist_text_w > this.w * 0.32) {
-                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
+                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower + str.composer);
                     }
                     else if (this.title_text_w > this.w * 0.37) {
-                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
+                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower + str.composer);
                     }
                 } else if (!displayLibrary) {
                     tt.stop();
@@ -227,10 +227,10 @@ class ProgressBar {
                 if (lowerBar_tt_hitarea_x <= x && lowerBar_tt_hitarea_y <= y && lowerBar_tt_hitarea_x + lowerBar_tt_hitarea_w >= x && 
                     lowerBar_tt_hitarea_y + lowerBar_tt_hitarea_h >= y) {
                     if (this.artist_text_w > this.w * 0.32) {
-                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
+                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower + str.composer);
                     }
                     else if (this.title_text_w > this.w * 0.37) {
-                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower);
+                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower + str.composer);
                     }
                 } else if (!displayLibrary) {
                     tt.stop();

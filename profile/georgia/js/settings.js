@@ -96,6 +96,7 @@ pref.add_properties({
 	always_showPlaying: ['Georgia-ReBORN Always scroll to current playing song', false], // Always scroll to current playing song on playlist
 	invertedBand: ['Georgia-ReBORN Invert band logos to black', false], // manually invert band logos to black
 	invertedLabel: ['Georgia-ReBORN Invert label logos to black', false], // manually invert label logos to black
+	showComposer: ['Georgia-ReBORN Show composer in lower bar', false], // show composer in lower bar
 
 	use_4k: ['Detect 4k', 'auto'], // auto: switch to 4k mode when window width wide enough, never: never use 4k mode, always: always use 4k mode
 	checkForUpdates: ['Check for Updates', true], // true: check github repo to determine if updates exist

@@ -20,6 +20,7 @@ tf.edition = '[$if(%original release date%,$ifequal($year(%original release date
 tf.last_played = '[$if2(%last_played_enhanced%,%last_played%)]';
 tf.lyrics = '[$if3(%synced lyrics%,%syncedlyrics%,%lyrics%,%lyric%,%unsyncedlyrics%,%unsynced lyrics%,)]';
 tf.original_artist = '[ \'(\'%original artist%\' cover)\']';
+tf.composer = '[\' -\' %composer% \' \']';
 tf.releaseCountry = '$replace($if3(%releasecountry%,%discogs_country%,),AF,XW)';
 tf.title = '%title%[ \'[\'%translation%\']\']';
 tf.tracknum = '[%tracknumber%.]';
