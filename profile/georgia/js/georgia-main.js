@@ -929,7 +929,7 @@ function draw_ui(gr) {
 		let drawLogos = null;
 		timings.showExtraDrawTiming && (drawLogos = fb.CreateProfiler('on_paint -> logos/labels'));
 		// BAND LOGO drawing code
-		const brightBackground = (new Color(col.primary).brightness) > 190;
+		const brightBackground = pref.invertedBandLabel ? (new Color(col.primary).brightness) > 0 : (new Color(col.primary).brightness) > 190;
 		const availableSpace = albumart_size.y + albumart_size.h - top;
 		var logo = brightBackground ? (invertedBandLogo ? invertedBandLogo : bandLogo) : bandLogo;
 		if (logo && availableSpace > 75) {
@@ -952,7 +952,7 @@ function draw_ui(gr) {
 		// RECORD LABEL drawing code
 		// this section should draw in 3ms or less always
 		if (recordLabels.length > 0) {
-			const labels = brightBackground && !pref.labelArtOnBg ? (recordLabelsInverted.length ? recordLabelsInverted : recordLabels) : recordLabels;
+			const labels = brightBackground && !pref.labelArtOnBg ? (recordLabelsInverted.length ? recordLabelsInverted : recordLabels) : pref.invertedBandLabel ? recordLabelsInverted : recordLabels;
 			var rightSideGap = 20, // how close last label is to right edge
 				labelSpacing = 0,
 				leftEdgeGap = (art_off_center ? 20 : 40) * (is_4k ? 1.8 : 1), // space between art and label
@@ -2176,8 +2176,9 @@ function onOptionsMenu(x, y) {
 	const detailsMenu = new Menu('Details');
 	detailsMenu.addToggleItem('Show artist', pref, 'showArtistInGrid', () => RepaintWindow());
 	detailsMenu.addToggleItem('Show song title', pref, 'showTitleInGrid', () => RepaintWindow());
-	detailsMenu.addToggleItem('Show label art on background', pref, 'labelArtOnBg', () => RepaintWindow());
 	detailsMenu.addToggleItem('Show playback history timeline tooltips', pref, 'show_timeline_tooltips');
+	detailsMenu.addToggleItem('Show label art on background', pref, 'labelArtOnBg', () => RepaintWindow());
+	detailsMenu.addToggleItem('Invert band and label logos to black', pref, 'invertedBandLabel', () => RepaintWindow());
 
 	const cdArtMenu = new Menu('Disc art');
 	cdArtMenu.addToggleItem(`Display disc art if found (${settings.cdArtBasename}.png, ${settings.cdArtBasename}2.png, vinylA.png, etc.)`, pref, 'display_cdart', () => {
