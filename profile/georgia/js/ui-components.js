@@ -209,10 +209,10 @@ class ProgressBar {
                 if (lowerBar_tt_hitarea_x <= x && lowerBar_tt_hitarea_y <= y && lowerBar_tt_hitarea_x + lowerBar_tt_hitarea_w >= x && 
                     lowerBar_tt_hitarea_y + lowerBar_tt_hitarea_h >= y) {
                     if (this.artist_text_w > this.w * 0.32) {
-                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower + str.composer);
+                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower + (pref.showComposer ? str.composer : ''));
                     }
                     else if (this.title_text_w > this.w * 0.37) {
-                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower + str.composer);
+                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower + (pref.showComposer ? str.composer : ''));
                     }
                 } else if (!displayLibrary) {
                     tt.stop();
@@ -227,10 +227,10 @@ class ProgressBar {
                 if (lowerBar_tt_hitarea_x <= x && lowerBar_tt_hitarea_y <= y && lowerBar_tt_hitarea_x + lowerBar_tt_hitarea_w >= x && 
                     lowerBar_tt_hitarea_y + lowerBar_tt_hitarea_h >= y) {
                     if (this.artist_text_w > this.w * 0.32) {
-                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower + str.composer);
+                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower + (pref.showComposer ? str.composer : ''));
                     }
                     else if (this.title_text_w > this.w * 0.37) {
-                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower + str.composer);
+                        tt.showDelayed(str.artist + "\n" + str.tracknum + str.title_lower + (pref.showComposer ? str.composer : ''));
                     }
                 } else if (!displayLibrary) {
                     tt.stop();
