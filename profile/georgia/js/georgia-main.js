@@ -108,7 +108,7 @@ function createFonts() {
 	if (pref.layout_mode === 'default_mode') {
 	ft.artist_lrg = font(fontBold, pref.artist_font_size ? pref.artist_font_size : 18, 0);
 	} else if (pref.layout_mode === 'compact_mode') {
-	ft.artist_lrg = font(fontBold, 16, 0);
+	ft.artist_lrg = font(fontBold, pref.artist_font_size_compact ? pref.artist_font_size_compact : 16, 0);
 	}
 
 	ft.artist_med = font(fontBold, pref.artist_font_size ? pref.artist_font_size : 12, 0);
@@ -129,11 +129,11 @@ function createFonts() {
 	}
 	ft.lower_bar_bold = font(fontBold, pref.lower_bar_font_size ? pref.lower_bar_font_size : 18, 0);
 	} else if (pref.layout_mode === 'compact_mode') {
-	ft.lower_bar = font(fontLight, 16, 0);
+	ft.lower_bar = font(fontLight, pref.lower_bar_font_size_compact ? pref.lower_bar_font_size_compact : 16, 0);
 	if (updateHyperlink) {
 		updateHyperlink.setFont(ft.lower_bar);
 	}
-	ft.lower_bar_bold = font(fontBold, 16, 0);
+	ft.lower_bar_bold = font(fontBold, pref.lower_bar_font_size_compact ? pref.lower_bar_font_size_compact : 16, 0);
 	}
 
 	ft.lower_bar_sml = font(fontLight, pref.lower_bar_font_size ? pref.lower_bar_font_size : 12, 0);
@@ -1145,6 +1145,12 @@ function draw_ui(gr) {
 	gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 
 	if (pref.layout_mode === 'default_mode') {
+		// Add other working antialiasing on smaller font sizes in FHD
+		if (!is_4k && pref.lower_bar_font_size < 18) {
+			gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+		} else {
+			gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
+		}
 
 		var ft_lower_bold = ft.lower_bar_bold;
 		var ft_lower = ft.lower_bar;
@@ -1237,6 +1243,12 @@ function draw_ui(gr) {
 		}
 
 	} else if (pref.layout_mode === 'compact_mode') {
+		// Add other working antialiasing on smaller font sizes in FHD
+		if (!is_4k && pref.lower_bar_font_size_compact < 18) {
+			gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+		} else {
+			gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
+		}
 
 		var ft_lower_bold = ft.lower_bar_bold;
 		var ft_lower = ft.lower_bar;
@@ -1848,30 +1860,30 @@ function onOptionsMenu(x, y) {
 		createButtonObjects(ww, wh);
 		window.Repaint();
 	});
-	mainFontSizeMenu.createRadioSubMenu('Lower bar', ['16px', '18px (default)', '20px', '22px', '24px'], pref.artist_font_size && pref.lower_bar_font_size, [16,18,20,22,24], (size) => {
-		if (size) {
-			pref.artist_font_size = size;
-			pref.lower_bar_font_size = size;
-		}
-		if (size === 14) {
-			pref.transport_buttons_size = 28;
-		} else if ( size === 16) {
-			pref.transport_buttons_size = 30;
-		} else {
-			pref.transport_buttons_size = 32;
-		}
-		ft.guifx = gdi.Font(fontGuiFx, scaleForDisplay(Math.floor(pref.transport_buttons_size / 2)), 0);
-		ft.playbackOrder_default = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.6), 0);
-		ft.playbackOrder_replay = gdi.Font(fontAwesome, Math.floor(pref.transport_buttons_size / 2), 0);
-		ft.playbackOrder_shuffle = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.65), 0);
-		ft.guifx_volume = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.33), 0);
-		ft.artist_lrg = gdi.Font(fontBold, scaleForDisplay(pref.artist_font_size), 0);
-		ft.lower_bar = gdi.Font(fontLight, scaleForDisplay(pref.lower_bar_font_size), 0);
-		createFonts();
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		window.Repaint();
-	});
+	if (pref.layout_mode === 'default_mode') {
+		mainFontSizeMenu.createRadioSubMenu('Lower bar', ['16px', '18px (default)', '20px', '22px', '24px'], pref.artist_font_size && pref.lower_bar_font_size, [16,18,20,22,24], (size) => {
+			if (size) {
+				pref.artist_font_size = size;
+				pref.lower_bar_font_size = size;
+			}
+			createFonts();
+			createButtonImages();
+			createButtonObjects(ww, wh);
+			window.Repaint();
+		});
+	}
+	if (pref.layout_mode === 'compact_mode') {
+		mainFontSizeMenu.createRadioSubMenu('Lower bar', ['16px (default)', '18px', '20px', '22px', '24px'], pref.artist_font_size_compact && pref.lower_bar_font_size_compact, [16,18,20,22,24], (size_compact) => {
+			if (size_compact) {
+				pref.artist_font_size_compact = size_compact;
+				pref.lower_bar_font_size_compact = size_compact;
+			}
+			createFonts();
+			createButtonImages();
+			createButtonObjects(ww, wh);
+			window.Repaint();
+		});
+	}
 	mainFontSizeMenu.appendTo(changeFontSizeMenu);
 
 	const detailsFontSizeMenu = new Menu('Details');
@@ -2072,7 +2084,8 @@ function onOptionsMenu(x, y) {
 	playerControlsMenu.addToggleItem('Enable timeline tooltips', pref, 'show_timeline_tooltips');
 
 	const transportSizeMenu = new Menu('Transport button size');
-	transportSizeMenu.addRadioItems(['-2', '28px', '32px (default)', '36px', '40px', '44px', '+2'], pref.transport_buttons_size, [-1,28,32,36,40,44,999], (size) => {
+	transportSizeMenu.addRadioItems(pref.layout_mode === 'default_mode' ? ['24px', '26px', '28px', '32px (default)', '34px', '36px', '40px'] : ['26px', '28px', '32px (default)', '34px', '36px'],
+	pref.transport_buttons_size, pref.layout_mode === 'default_mode' ? [24,26,28,32,34,36,40] : [26,28,32,34,36], (size) => {
 		if (size === -1) {
 			pref.transport_buttons_size -= 2;
 		} else if (size === 999) {
@@ -2081,10 +2094,10 @@ function onOptionsMenu(x, y) {
 			pref.transport_buttons_size = size;
 		}
 		ft.guifx = gdi.Font(fontGuiFx, scaleForDisplay(Math.floor(pref.transport_buttons_size / 2)), 0);
-		ft.playbackOrder_default = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.6), 0);
-		ft.playbackOrder_replay = gdi.Font(fontAwesome, Math.floor(pref.transport_buttons_size / 2), 0);
-		ft.playbackOrder_shuffle = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.65), 0);
-		ft.guifx_volume = gdi.Font(fontGuiFx, Math.floor(pref.transport_buttons_size / 1.33), 0);
+		ft.playbackOrder_default = gdi.Font(fontGuiFx, scaleForDisplay(Math.floor(pref.transport_buttons_size / 1.6)), 0);
+		ft.playbackOrder_replay = gdi.Font(fontAwesome, scaleForDisplay(Math.floor(pref.transport_buttons_size / 2)), 0);
+		ft.playbackOrder_shuffle = gdi.Font(fontGuiFx, scaleForDisplay(Math.floor(pref.transport_buttons_size / 1.65)), 0);
+		ft.guifx_volume = gdi.Font(fontGuiFx, scaleForDisplay(Math.floor(pref.transport_buttons_size / 1.33)), 0);
 		createButtonImages();
 		createButtonObjects(ww, wh);
 		if (transport.displayBelowArtwork) {
@@ -2726,7 +2739,7 @@ function on_metadb_changed(handle_list, fromhook) {
 				tracknum = $(tf.tracknum);
 
 			str.tracknum = tracknum.trim();
-			str.title = title + original_artist + composer;
+			str.title = title + original_artist;
 			str.title_lower = '  ' + title;
 			str.original_artist = original_artist;
 			str.artist = artist;
@@ -3741,7 +3754,8 @@ function CreateRotatedCDImage() {
 }
 
 function calcLowerSpace() {
-	return transport.displayBelowArtwork ? geo.lower_bar_h + scaleForDisplay(pref.transport_buttons_size + 10) : geo.lower_bar_h + scaleForDisplay(16);
+	return geo.lower_bar_h + scaleForDisplay(42); // Always use fixed lower bar size to align artwork height with playlist and library height when changing lower bar font sizes
+	//return transport.displayBelowArtwork ? geo.lower_bar_h + scaleForDisplay(pref.transport_buttons_size + 10) : geo.lower_bar_h + scaleForDisplay(16);
 }
 
 function ResizeArtwork(resetCDPosition) {
@@ -4107,7 +4121,13 @@ function createButtonObjects(ww, wh) {
 					(transport.showVolume ? 1 : 0) +
 					(transport.showReload ? 1 : 0);
 
-			const y = transport.displayBelowArtwork ? wh - geo.lower_bar_h + (is_4k ? 54 : 28) - buttonSize : scaleForDisplay(10) + (showingMinMaxButtons ? scaleForDisplay(5) : 0);
+			const y = transport.displayBelowArtwork ?
+			pref.lower_bar_font_size === 16 ? wh - geo.lower_bar_h + (is_4k ? 50 : 26) - buttonSize :
+			pref.lower_bar_font_size === 18 ? wh - geo.lower_bar_h + (is_4k ? 54 : 28) - buttonSize :
+			pref.lower_bar_font_size === 20 ? wh - geo.lower_bar_h + (is_4k ? 58 : 30) - buttonSize :
+			pref.lower_bar_font_size === 22 ? wh - geo.lower_bar_h + (is_4k ? 62 : 32) - buttonSize :
+			pref.lower_bar_font_size === 24 ? wh - geo.lower_bar_h + (is_4k ? 66 : 34) - buttonSize :
+			wh - geo.lower_bar_h + (is_4k ? 54 : 28) - buttonSize : scaleForDisplay(10) + (showingMinMaxButtons ? scaleForDisplay(5) : 0);
 			const w = buttonSize;
 			const h = w;
 			const p = scaleForDisplay(pref.transport_buttons_spacing); // space between buttons
@@ -4149,7 +4169,13 @@ function createButtonObjects(ww, wh) {
 					(transport.showVolume ? 1 : 0) +
 					(transport.showReload ? 1 : 0);
 
-			const y = transport.displayBelowArtwork ? wh - geo.lower_bar_h + (is_4k ? 126 : 65) - buttonSize : scaleForDisplay(10);
+			const y = transport.displayBelowArtwork ?
+			pref.lower_bar_font_size_compact === 16 ? wh - geo.lower_bar_h + (is_4k ? 126 : 65) - buttonSize :
+			pref.lower_bar_font_size_compact === 18 ? wh - geo.lower_bar_h + (is_4k ? 132 : 67) - buttonSize :
+			pref.lower_bar_font_size_compact === 20 ? wh - geo.lower_bar_h + (is_4k ? 136 : 69) - buttonSize :
+			pref.lower_bar_font_size_compact === 22 ? wh - geo.lower_bar_h + (is_4k ? 146 : 71) - buttonSize :
+			pref.lower_bar_font_size_compact === 24 ? wh - geo.lower_bar_h + (is_4k ? 152 : 73) - buttonSize :
+			wh - geo.lower_bar_h + (is_4k ? 126 : 65) - buttonSize : scaleForDisplay(10);
 			const w = buttonSize;
 			const h = w;
 			const p = scaleForDisplay(pref.transport_buttons_spacing); // space between buttons

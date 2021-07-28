@@ -61,8 +61,10 @@ pref.add_properties({
 
 	menu_font_size: ['Menu font size', 12],
 	artist_font_size: ['Artist font size', 18],
+	artist_font_size_compact: ['Artist font size compact', 16],
 	album_font_size: ['Album font size', 20],
 	lower_bar_font_size: ['Lowerbar font size', 18],
+	lower_bar_font_size_compact: ['Lowerbar font size compact', 16],
 	tracknum_font_size : ['Tracknumber font size', 20],
 	MetadataGrid_key_font_size: ['MetadataGrid key font size', 18],
 	MetadataGrid_val_font_size: ['MetadataGrid value font size', 18],
