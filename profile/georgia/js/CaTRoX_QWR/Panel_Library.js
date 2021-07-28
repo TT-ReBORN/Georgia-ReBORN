@@ -923,7 +923,7 @@ function panel_operations() {
     var view_ppt = [
         window.GetProperty(prefix + "View 01: Name // Pattern", "View by Artist // %artist%|%album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%"),
         window.GetProperty(prefix + "View 02: Name // Pattern", "View by Artist - Album // %<artist>%|%album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%"),
-        window.GetProperty(prefix + "View 03: Name // Pattern", "View by Composer // %composer%|%album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%"),
+        window.GetProperty(prefix + "View 03: Name // Pattern", "View by Composer // [%<composer>%]|%album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%"),
         window.GetProperty(prefix + "View 04: Name // Pattern", "View by Album Artist // %album artist%|%album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%"),
         window.GetProperty(prefix + "View 05: Name // Pattern", "View by Album Artist ordered by Date // %album artist%|[$year($if3(%original release date%,%originaldate%,%date%)) - ]%album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%"),
         window.GetProperty(prefix + "View 06: Name // Pattern", "View by Album Artist - Album // [%album artist% - ][$year($if3(%original release date%,%originaldate%,%date%)) - ]%album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%"),
