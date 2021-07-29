@@ -77,7 +77,7 @@ function createFonts() {
 	g_tooltip = window.Tooltip;
 	g_tooltip.Text = '';	// just in case
 	g_tooltip.SetFont('Segoe UI', scaleForDisplay(15));
-	g_tooltip.SetMaxWidth(scaleForDisplay(300));
+	g_tooltip.SetMaxWidth(scaleForDisplay(800));
 
 	function font(name, size, style) {
 		var font;
@@ -3022,6 +3022,13 @@ function on_mouse_rbtn_up(x, y, m) {
 
 function on_mouse_move(x, y, m) {
 	if (x != state.mouse_x || y != state.mouse_y) {
+
+		if (pref.layout_mode === 'compact_mode') {
+			g_tooltip.SetMaxWidth(400);
+		} else {
+			g_tooltip.SetMaxWidth(800);
+		}
+
 		window.SetCursor(32512); // arrow
 		progressBar.on_mouse_move(x, y);
 		state.mouse_x = x;

@@ -1596,7 +1596,7 @@ function ButtonsBio() {
 	const tt = (n, force) => {if (tooltip.Text !== n || force) {tooltip.Text = n; tooltip.SetMaxWidth(800); tooltip.Activate();}}
 
 	this.clear_tooltip = () => {if (!tooltip.Text || !this.btns["mt"].tt) return; this.btns["mt"].tt.stop();}
-	this.create_tooltip = () => tooltip = window.CreateTooltip("Segoe UI", 15 * sBio.scale * ppt.get(" Zoom Tooltip (%)", 100) / 100, 0); this.create_tooltip();
+	this.create_tooltip = () => tooltip = window.CreateTooltip("Segoe UI", scaleForDisplay(15) * sBio.scale * ppt.get(" Zoom Tooltip (%)", 100) / 100, 0); this.create_tooltip();
 	this.draw = gr => Object.values(this.btns).forEach(v => {if (!v.hide) v.draw(gr);});
 	this.lbtn_dn = (x, y) => {this.move(x, y); if (!cur_btn || cur_btn.hide) {this.Dn = false; return false} else this.Dn = cur_btn.name; cur_btn.down = true; cur_btn.cs("down"); cur_btn.lbtn_dn(x, y); return true;}
 	this.leave = () => {if (cur_btn) {cur_btn.cs("normal"); if (!cur_btn.hide) transition.start();} cur_btn = null;}

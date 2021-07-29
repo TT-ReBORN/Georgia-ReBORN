@@ -5075,7 +5075,6 @@ class Header extends BaseHeader {
 		if (pref.show_truncatedText_tt) {
 			const artist_text = $(this.grouping_handler.get_title_query(), this.metadb);
 			const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
-			g_tooltip.SetMaxWidth(800);
 
 			if (this.artist_text_w > this.w * 0.70) {
 				tt.showDelayed(artist_text + "\n" + album_text);
