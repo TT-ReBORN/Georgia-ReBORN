@@ -96,6 +96,7 @@ pref.add_properties({
 	switchPlaybackTime: ['Georgia-ReBORN Switch to playback time remaining', false], // switch the playback time from time elapsed to time remaining
 	playlistTimeRemaining: ['Georgia-ReBORN Show time remaining on playing track', false], // Show time remaining in playlist on currently playing track
 	always_showPlaying: ['Georgia-ReBORN Always scroll to current playing song', false], // Always scroll to current playing song on playlist
+	no_cdartBG: ['Georgia-ReBORN Show full background when no disc art', true], // Fill background when no disc art is available
 	invertedBand: ['Georgia-ReBORN Invert band logos to black', false], // manually invert band logos to black
 	invertedLabel: ['Georgia-ReBORN Invert label logos to black', false], // manually invert label logos to black
 	showComposer: ['Georgia-ReBORN Show composer in lower bar', false], // show composer in lower bar

@@ -618,6 +618,9 @@ function draw_ui(gr) {
 		gr.SetSmoothingMode(SmoothingMode.None);
 		gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, col.primary); // info bg -- must be drawn after shadow
 		gr.DrawRect(-1, albumart_size.y, albumart_size.x, albumart_size.h - 1, 1, col.accent);
+		if (pref.no_cdartBG) {
+			noCdArtBG(gr);
+		}
 		if (isStreaming && noArtwork && pref.whiteTheme) {
 			gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, g_pl_colors.background); // info bg -- must be drawn after shadow
 			gr.FillGradRect(0, geo.top_art_spacing - (is_4k ? 13 : 6), albumart_size.w + 2, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24)); // Artwork's Top Pseudo Shadow Fix
@@ -1034,6 +1037,24 @@ function draw_ui(gr) {
 				const origLabelHeight = labelHeight;
 
 				if (!pref.labelArtOnBg) {
+					if (!pref.no_cdartBG) {
+						if (!pref.darkMode) {
+							if (!labelShadowImg) {
+								labelShadowImg = createShadowRect(ww - labelX + leftEdgeWidth, labelHeight + 40);
+							}
+							gr.DrawImage(labelShadowImg, labelX - leftEdgeWidth - geo.aa_shadow, topEdge - 20 - geo.aa_shadow, ww - labelX + leftEdgeWidth + 2 * geo.aa_shadow, labelHeight + 40 + 2 * geo.aa_shadow,
+								0, 0, labelShadowImg.Width, labelShadowImg.Height);
+						}
+						gr.SetSmoothingMode(SmoothingMode.None); // disable smoothing
+						gr.FillSolidRect(labelX - leftEdgeWidth, topEdge - 20, ww - labelX + leftEdgeWidth, labelHeight + 40, col.primary);
+						gr.DrawRect(labelX - leftEdgeWidth, topEdge - 20, ww - labelX + leftEdgeWidth, labelHeight + 40 - 1, 1, col.accent);
+						gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
+					}
+				} else if (pref.no_cdartBG && !pref.display_cdart) {
+					gr.DrawImage(labelShadowImg, labelX - leftEdgeWidth - geo.aa_shadow, topEdge - 20 - geo.aa_shadow, ww - labelX + leftEdgeWidth + 2 * geo.aa_shadow, labelHeight + 40 + 2 * geo.aa_shadow,
+						0, 0, labelShadowImg.Width, labelShadowImg.Height);
+				}
+				if (pref.no_cdartBG && pref.display_cdart && cdart) {
 					if (!pref.darkMode) {
 						if (!labelShadowImg) {
 							labelShadowImg = createShadowRect(ww - labelX + leftEdgeWidth, labelHeight + 40);
@@ -1463,6 +1484,19 @@ function drawCdArt(gr) {
 		const cdImg = cdartArray[rotatedCdIndex] || rotatedCD;
 		gr.DrawImage(cdImg, cdart_size.x, cdart_size.y, cdart_size.w, cdart_size.h, 0, 0, cdImg.Width, cdImg.Height, 0);
 		// if (timings.showExtraDrawTiming) drawCdProfiler.Print();
+	}
+}
+
+function noCdArtBG(gr) {
+	if (!cdart) {
+		if (pref.no_cdartBG) {
+			gr.FillSolidRect(ww - albumart_size.x, albumart_size.y, albumart_size.x, albumart_size.h, col.primary)
+			gr.DrawRect(ww - albumart_size.x, albumart_size.y, albumart_size.x, albumart_size.h - 1, 1, col.accent);
+		}
+	}
+	if (!pref.display_cdart) {
+		gr.FillSolidRect(ww - albumart_size.x, albumart_size.y, albumart_size.x, albumart_size.h, col.primary)
+		gr.DrawRect(ww - albumart_size.x, albumart_size.y, albumart_size.x, albumart_size.h - 1, 1, col.accent);		
 	}
 }
 
@@ -2192,7 +2226,8 @@ function onOptionsMenu(x, y) {
 	detailsMenu.addToggleItem('Show artist', pref, 'showArtistInGrid', () => RepaintWindow());
 	detailsMenu.addToggleItem('Show song title', pref, 'showTitleInGrid', () => RepaintWindow());
 	detailsMenu.addToggleItem('Show playback history timeline tooltips', pref, 'show_timeline_tooltips');
-	detailsMenu.addToggleItem('Show label art on background', pref, 'labelArtOnBg', () => RepaintWindow());
+	detailsMenu.addToggleItem('Show full background when no disc art', pref, 'no_cdartBG', () => { RepaintWindow(); });
+	detailsMenu.addToggleItem('Show label art on background', pref, 'labelArtOnBg', () => RepaintWindow(), pref.no_cdartBG);
 	detailsMenu.addToggleItem('Invert band logos to black', pref, 'invertedBand', () => RepaintWindow());
 	detailsMenu.addToggleItem('Invert label logos to black', pref, 'invertedLabel', () => RepaintWindow());
 
