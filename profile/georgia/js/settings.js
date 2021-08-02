@@ -220,6 +220,9 @@ pref.vinylside_path = '$directory_path(%path%)\\vinyl$if2(' + tf.vinyl_side + ',
 pref.vinyl_path = '$directory_path(%path%)\\vinyl.png' // vinyl cdart named vinylA.png, vinylB.png, etc.
 pref.cdartdisc_path = '$directory_path(%path%)\\' + settings.cdArtBasename + '$ifgreater(%totaldiscs%,1,%discnumber%,).png'; // cdart named cd1.png, cd2.png, etc.
 pref.cdart_path = '$directory_path(%path%)\\' + settings.cdArtBasename + '.png'; // cdart named cd.png (or whatever custom value was specified). This is the most common single disc case.
+pref.cdart_path_artwork = '$directory_path(%path%)\\Artwork\\' + settings.cdArtBasename + '.png'; // Subfolder Artwork - cdart named cd1.png, cd2.png, etc.
+pref.cdart_path_images = '$directory_path(%path%)\\Images\\' + settings.cdArtBasename + '.png'; // Subfolder Images - cdart named cd1.png, cd2.png, etc.
+pref.cdart_path_scans = '$directory_path(%path%)\\Scans\\' + settings.cdArtBasename + '.png'; // Subfolder Scans - cdart named cd1.png, cd2.png, etc.
 pref.cdart_amount = 0.48; // show 48% of the CD image if it will fit on the screen
 {
 	let count = Number(pref.spinCdArtImageCount);

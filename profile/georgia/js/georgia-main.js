@@ -4051,7 +4051,16 @@ function fetchNewArtwork(metadb) {
 				if (!IsFile(cdartPath)) {
 					cdartPath = $(pref.cdart_path); // cd%discnumber%.png didn't exist so try cd.png.
 					if (!IsFile(cdartPath)) {
-						disc_art_exists = false; // didn't find anything
+						cdartPath = $(pref.cdart_path_artwork); // cd%discnumber%.png didn't exist so try cd.png in subfolder Artwork.
+						if (!IsFile(cdartPath)) {
+							cdartPath = $(pref.cdart_path_images); // cd%discnumber%.png didn't exist so try cd.png in subfolder Images.
+							if (!IsFile(cdartPath)) {
+								cdartPath = $(pref.cdart_path_scans); // cd%discnumber%.png didn't exist so try cd.png in subfolder Scans.
+								if (!IsFile(cdartPath)) {
+									disc_art_exists = false; // didn't find anything
+								}
+							}
+						}
 					}
 				}
 			}
