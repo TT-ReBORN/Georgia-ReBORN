@@ -2226,7 +2226,12 @@ function onOptionsMenu(x, y) {
 	detailsMenu.addToggleItem('Show artist', pref, 'showArtistInGrid', () => RepaintWindow());
 	detailsMenu.addToggleItem('Show song title', pref, 'showTitleInGrid', () => RepaintWindow());
 	detailsMenu.addToggleItem('Show playback history timeline tooltips', pref, 'show_timeline_tooltips');
-	detailsMenu.addToggleItem('Show full background when no disc art', pref, 'no_cdartBG', () => { RepaintWindow(); });
+	detailsMenu.addToggleItem('Show full background when no disc art', pref, 'no_cdartBG', () => {
+		if (pref.labelArtOnBg) {
+			pref.labelArtOnBg = false;
+		}
+		RepaintWindow();
+	});
 	detailsMenu.addToggleItem('Show label art on background', pref, 'labelArtOnBg', () => RepaintWindow(), pref.no_cdartBG);
 	detailsMenu.addToggleItem('Invert band logos to black', pref, 'invertedBand', () => RepaintWindow());
 	detailsMenu.addToggleItem('Invert label logos to black', pref, 'invertedLabel', () => RepaintWindow());
