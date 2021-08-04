@@ -364,3 +364,193 @@ class Timeline {
         tt.stop();
     };
 }
+
+class MetadataGrid_tt {
+    constructor(height) {
+        this.x = 0;
+        this.y = 0;
+        this.w = albumart_size.x;
+        this.h = height;
+        this.tooltipText = '';
+    }
+
+    setSize(x, y, width) {
+        if (this.x !== x || this.y !== y || this.w !== width) {
+            this.x = x;
+            this.y = y;
+            this.w = width;
+        }
+    };
+
+    setHeight(height) {
+        this.h = height;
+    };
+
+    draw(gr) {
+        this.wh = window.Height;
+        this.textLeft = scaleForDisplay(40);
+        this.textRight = scaleForDisplay(20);
+        this.line_spacing = scaleForDisplay(8);
+        this.flag_spacing = scaleForDisplay(15);
+        this.tracknum_spacing = scaleForDisplay(8);
+        this.timeline_h = scaleForDisplay(60);
+        this.flagSize = flagImgs.length === 3 ? scaleForDisplay(62) : flagImgs.length === 2 ? scaleForDisplay(48) : scaleForDisplay(24);
+
+        if (!albumart && cdart) {
+            this.gridSpace = Math.round(cdart_size.x - geo.aa_shadow - this.textLeft - this.textRight);
+        } else {
+            this.gridSpace = Math.round(albumart_size.x - geo.aa_shadow - this.textLeft - this.textRight);
+        }
+
+        if (pref.showArtistInGrid) {
+            this.artistWidth = gr.MeasureString(str.artist, ft.artist, 0, 0, 0, 0).Width;
+            this.artistHeight = gr.MeasureString(str.artist, ft.artist, 0, 0, 0, 0).Height;
+            this.artistWidth_oneline = gr.MeasureString(str.artist, ft.artist, 0, 0, this.gridSpace, this.wh).Width;
+            this.artistWidth_wrap = this.artistWidth - (this.artistWidth_oneline * 1.5);
+            this.artist_txtRec = gr.MeasureString(str.artist, ft.artist, 0, 0, this.gridSpace, this.wh);
+            this.artist_numLines = Math.min(2, this.artist_txtRec.Lines);
+            this.artist_numLines_h = this.artist_numLines === 3 ? this.artistHeight * 3 : this.artist_numLines === 2 ? this.artistHeight * 2 : this.artistHeight;
+        }
+        if (pref.showTitleInGrid) {
+            this.titleWidth = gr.MeasureString(str.title, ft.title, 0, 0, 0, 0).Width;
+            this.titleHeight = gr.MeasureString(str.title, ft.title, 0, 0, 0, 0).Height;
+            this.titleWidth_oneline = gr.MeasureString(str.title, ft.title, 0, 0, this.gridSpace, this.wh).Width;
+            this.titleWidth_wrap = this.titleWidth - (this.titleWidth_oneline * 1.5);
+            this.trackNumWidth = gr.MeasureString(str.tracknum, ft.tracknum, 0, 0, 0, 0).Width;
+            this.title_txtRec = gr.MeasureString(str.title, ft.title, 0, 0, this.gridSpace, this.wh);
+            this.title_numLines = Math.min(2, this.title_txtRec.Lines);
+            this.title_numLines_h = this.title_numLines === 3 ? this.titleHeight * 3 : this.title_numLines === 2 ? this.titleHeight * 2 : this.titleHeight;
+        }
+            this.albumWidth = gr.MeasureString(str.album, ft.album_lrg, 0, 0, 0, 0).Width;
+            this.albumHeight = gr.MeasureString(str.album, ft.album_lrg, 0, 0, 0, 0).Height;
+            this.album_txtRec = gr.MeasureString(str.album, ft.album_lrg, 0, 0, this.gridSpace, this.wh);
+            this.albumWidth_oneline = gr.MeasureString(str.album, ft.album_lrg, 0, 0, this.gridSpace, this.wh).Width;
+            this.albumWidth_wrap = this.albumWidth - (this.albumWidth_oneline * 1.5);
+            this.album_numLines = Math.min(2, this.album_txtRec.Lines);
+            this.album_numLines_h = !pref.showArtistInGrid && !pref.showTitleInGrid ? this.albumHeight * 3 : this.album_numLines === 2 ? this.albumHeight * 2 : this.albumHeight;
+    };
+
+    mouseInThis(x, y) {
+        // Artist tooltip hitarea
+        if (pref.showArtistInGrid && this.artist_numLines === 1 && pref.showTitleInGrid && this.title_numLines === 1 ||
+            pref.showArtistInGrid && this.artist_numLines === 1 && pref.showTitleInGrid && this.title_numLines === 2 ||
+            pref.showArtistInGrid && this.artist_numLines === 2 && pref.showTitleInGrid && this.title_numLines === 1 ||
+            pref.showArtistInGrid && this.artist_numLines === 2 && pref.showTitleInGrid && this.title_numLines === 2 ||
+            pref.showArtistInGrid && this.artist_numLines === 1 && !pref.showTitleInGrid || 
+            pref.showArtistInGrid && this.artist_numLines === 2 && !pref.showTitleInGrid) {
+            this.top_artist = (albumart_size.y ? albumart_size.y : geo.top_art_spacing) + this.artistHeight + this.line_spacing;
+        }
+        // Title tooltip hitarea
+        if (pref.showTitleInGrid && this.title_numLines === 1 && !pref.showArtistInGrid || 
+            pref.showTitleInGrid && this.title_numLines === 2 && !pref.showArtistInGrid) {
+            this.top_title = (albumart_size.y ? albumart_size.y : geo.top_art_spacing) + this.titleHeight + this.line_spacing;
+        }
+        if (pref.showTitleInGrid && this.title_numLines === 1 && pref.showArtistInGrid && this.artist_numLines === 1 ||
+            pref.showTitleInGrid && this.title_numLines === 2 && pref.showArtistInGrid && this.artist_numLines === 1) {
+            this.top_title = (albumart_size.y ? albumart_size.y : geo.top_art_spacing) + (this.titleHeight * 2) + (this.line_spacing * 2);
+        }
+        if (pref.showTitleInGrid && this.title_numLines === 1 && pref.showArtistInGrid && this.artist_numLines === 2 ||
+            pref.showTitleInGrid && this.title_numLines === 2 && pref.showArtistInGrid && this.artist_numLines === 2) {
+            this.top_title = (albumart_size.y ? albumart_size.y : geo.top_art_spacing) + (this.titleHeight * 2 ) + (this.line_spacing * 2) + this.artistHeight;
+        }
+        // Album tooltip hitarea
+        if (!pref.showArtistInGrid && !pref.showTitleInGrid) {
+            this.top_album = (albumart_size.y ? albumart_size.y : geo.top_art_spacing) + this.albumHeight + this.line_spacing;
+        }
+        if (pref.showArtistInGrid && this.artist_numLines === 1 && !pref.showTitleInGrid ||
+            pref.showTitleInGrid  && this.title_numLines  === 1 && !pref.showArtistInGrid) {
+            this.top_album = (albumart_size.y ? albumart_size.y : geo.top_art_spacing) +
+            (this.artistHeight + this.timeline_h + this.albumHeight || this.titleHeight + this.timeline_h + this.albumHeight);
+        }
+        if (pref.showArtistInGrid && this.artist_numLines === 2 && !pref.showTitleInGrid ||
+            pref.showTitleInGrid  && this.title_numLines  === 2 && !pref.showArtistInGrid) {
+            this.top_album = (albumart_size.y ? albumart_size.y : geo.top_art_spacing) + 
+            ((this.artistHeight * 2) + this.timeline_h + this.albumHeight || (this.titleHeight * 2) + this.timeline_h + this.albumHeight);
+        }
+        if (pref.showArtistInGrid && this.artist_numLines === 1 && pref.showTitleInGrid && this.title_numLines === 1) {
+            this.top_album = (albumart_size.y ? albumart_size.y : geo.top_art_spacing)  +  this.artistHeight + this.titleHeight + this.timeline_h + this.albumHeight;
+        }
+        if (pref.showArtistInGrid && this.artist_numLines === 1 && pref.showTitleInGrid && this.title_numLines === 2 ||
+            pref.showArtistInGrid && this.artist_numLines === 2 && pref.showTitleInGrid && this.title_numLines === 1) {
+            this.top_album = (albumart_size.y ? albumart_size.y : geo.top_art_spacing)  + (this.artistHeight * 2 ) + this.titleHeight + this.timeline_h + this.albumHeight;
+        }
+        if (pref.showArtistInGrid && this.artist_numLines === 2 && pref.showTitleInGrid && this.title_numLines === 2) {
+            this.top_album = (albumart_size.y ? albumart_size.y : geo.top_art_spacing)  + (this.artistHeight * 2 ) + (this.titleHeight * 2) + this.timeline_h + this.albumHeight;
+        }
+
+        this.inMetadataGrid_artist_tt = (x >= this.x && x < this.x + this.w && y >= this.top_artist && y < this.top_artist + this.artist_numLines_h);
+        this.inMetadataGrid_title_tt  = (x >= this.x && x < this.x + this.w && y >= this.top_title  && y < this.top_title  + this.title_numLines_h);
+        this.inMetadataGrid_album_tt  = (x >= this.x && x < this.x + this.w && y >= this.top_album  && y < this.top_album  + this.album_numLines_h);
+        this.metadataGrid_tt_top      = this.inMetadataGrid_artist_tt + this.inMetadataGrid_title_tt + this.inMetadataGrid_album_tt;
+
+        if (!this.metadataGrid_tt_top && this.tooltipText.length) {
+            this.clearTooltip();
+        }
+        return this.metadataGrid_tt_top;
+    };
+
+    on_mouse_move(x, y, m) {
+        if (pref.show_tt || pref.show_truncatedText_tt) {
+            this.grid_truncatedText_tt(x, y);
+        }
+    };
+
+    // Metadata Grid truncated text tooltip
+    grid_truncatedText_tt(x, y) {
+        if (pref.show_truncatedText_tt) {
+            // Artist
+            if (pref.showArtistInGrid && this.inMetadataGrid_artist_tt && this.artist_numLines === 1) {
+                if (pref.show_flags && flagImgs.length) {
+                    if (this.artistWidth + this.flag_spacing + this.flagSize > this.gridSpace) {
+                        tt.showDelayed(str.artist);
+                    }
+                } else {
+                    if (this.artistWidth > this.gridSpace) {
+                        tt.showDelayed(str.artist);
+                    }
+                }
+            }
+            else if (pref.showArtistInGrid && this.inMetadataGrid_artist_tt && this.artist_numLines === 2) {
+                if (pref.show_flags && flagImgs.length) {
+                    if (this.artistWidth + this.flag_spacing + this.flagSize + this.artistWidth_wrap > this.gridSpace * 2) {
+                        tt.showDelayed(str.artist);
+                    }
+                } else {
+                    if (this.artistWidth + this.artistWidth_wrap > this.gridSpace * 2) {
+                        tt.showDelayed(str.artist);
+                    }
+                }
+            }
+            // Title
+            if (pref.showTitleInGrid && this.inMetadataGrid_title_tt && this.title_numLines === 1) {
+                if (this.titleWidth + this.tracknum_spacing + this.trackNumWidth > this.gridSpace) {
+                    tt.showDelayed(str.tracknum + '  ' + str.title + (pref.showComposer ? str.composer : ''));
+                }
+            }
+            else if (pref.showTitleInGrid && this.inMetadataGrid_title_tt && this.title_numLines === 2) {
+                if (this.titleWidth + this.tracknum_spacing + this.trackNumWidth + this.titleWidth_wrap > this.gridSpace * 2) {
+                    tt.showDelayed(str.tracknum + '  ' + str.title + (pref.showComposer ? str.composer : ''));
+                }
+            }
+            // Album
+            if (this.inMetadataGrid_album_tt && this.album_numLines === 1) {
+                if (this.albumWidth > this.gridSpace) {
+                    tt.showDelayed(str.album + (pref.showComposer ? str.composer : ''));
+                }
+            }
+            else if (this.inMetadataGrid_album_tt && (pref.showArtistInGrid || pref.showTitleInGrid) && this.album_numLines === 2) {
+                if (this.albumWidth + this.albumWidth_wrap > this.gridSpace * 2) {
+                    tt.showDelayed(str.album + (pref.showComposer ? str.composer : ''));
+                }
+            }
+            else if (this.inMetadataGrid_album_tt && !pref.showArtistInGrid && !pref.showTitleInGrid && this.album_numLines === 2) {
+                if (this.albumWidth > this.gridSpace * 3) {
+                    tt.showDelayed(str.album + (pref.showComposer ? str.composer : ''));
+                }
+            }
+
+        } else if (!displayLibrary) {
+            tt.stop();
+        }
+    }
+}

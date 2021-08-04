@@ -97,7 +97,13 @@ function createFonts() {
 	ft.album_substitle_lrg = font(fontBold, 20, g_font_style.italic);
 	ft.album_substitle_med = font(fontBold, 18, g_font_style.italic);
 	ft.album_substitle_sml = font(fontBold, 14, g_font_style.italic);
-	ft.title_lrg = font(fontThin, pref.album_font_size ? pref.album_font_size : 20, 0);
+
+	if (pref.showArtistInGrid && pref.showTitleInGrid) {
+	ft.title_lrg = font(fontLight, pref.album_font_size ? pref.album_font_size : 20, 0);
+	} else {
+	ft.title_lrg = font(fontBold, pref.album_font_size ? pref.album_font_size : 20, 0);
+	}
+
 	ft.title_med = font(fontThin, pref.album_font_size ? pref.album_font_size : 16, 0);
 	ft.title_sml = font(fontThin, pref.album_font_size ? pref.album_font_size : 12, 0);
 	ft.tracknum_lrg = font(fontLight, pref.tracknum_font_size ? pref.tracknum_font_size : 20, g_font_style.bold);
@@ -281,6 +287,7 @@ function setGeometry() {
 	geo.top_art_spacing = scaleForDisplay(40); // space between top of theme and artwork
 	geo.top_bg_h = scaleForDisplay(160 + (showingMinMaxButtons ? 12 : 0)); // height of offset color background
 	geo.timeline_h = scaleForDisplay(18); // height of timeline
+	geo.metadataGrid_tt_h = scaleForDisplay(100) // height of metadata grid tooltip area
 	if (!pref.show_progress_bar) {
 		//geo.lower_bar_h -= geo.prog_bar_h * 2; // disabled, need the same geo.prog_bar_h height for correct artwork Y-position
 	}
@@ -405,6 +412,7 @@ var loadFromCache = true; // always load art from cache unless this is set
  * @property {*=} trackInfo The piece of text shown in the upper right corner under the year
  * @property {string=} year
  * @property {Timeline=} timeline Timeline object
+ * @property {MetadataGrid_tt=} metadataGrid_tt MetadataGrid Tooltip object
  */
 /** @type StringsObj */
 let str = {};
@@ -677,18 +685,29 @@ function draw_ui(gr) {
 				var flagsLeft = textLeft;
 				var top = (albumart_size.y ? albumart_size.y : geo.top_art_spacing) + scaleForDisplay(33);
 				for (let i = 0; i < flagImgs.length; i++) {
-					gr.DrawImage(flagImgs[i], flagsLeft, top +
-					// Y-Coordinates
-					(pref.album_font_size === 24 ? scaleForDisplay(3) : !pref.album_font_size === 24 ? scaleForDisplay(3) : 0) +
-					(pref.album_font_size === 22 ? scaleForDisplay(3) : !pref.album_font_size === 22 ? scaleForDisplay(3) : 0) +
-					(pref.album_font_size === 20 ? scaleForDisplay(1) : !pref.album_font_size === 20 ? scaleForDisplay(1) : 0) +
-					(pref.album_font_size === 18 ? scaleForDisplay(0) : !pref.album_font_size === 18 ? scaleForDisplay(0) : 0) -
-					(pref.album_font_size === 16 ? scaleForDisplay(2) : !pref.album_font_size === 18 ? scaleForDisplay(2) : 0) -
-					(pref.album_font_size === 14 ? scaleForDisplay(3) : !pref.album_font_size === 18 ? scaleForDisplay(3) : 0) -
-					(pref.album_font_size === 13 ? scaleForDisplay(4) : !pref.album_font_size === 18 ? scaleForDisplay(4) : 0) -
-					(pref.album_font_size === 12 ? scaleForDisplay(5) : !pref.album_font_size === 18 ? scaleForDisplay(5) : 0) -
-					(pref.album_font_size === 11 ? scaleForDisplay(5) : !pref.album_font_size === 18 ? scaleForDisplay(5) : 0),
-					flagImgs[i].Width - scaleForDisplay(8), flagImgs[i].Height - scaleForDisplay(8), 0, 0, flagImgs[i].Width, flagImgs[i].Height)
+					gr.DrawImage(flagImgs[i], flagsLeft, top,
+					// Flag Width
+					 pref.album_font_size === 24 ? flagImgs[i].Width - scaleForDisplay(2) :
+					 pref.album_font_size === 22 ? flagImgs[i].Width - scaleForDisplay(4) :
+					 pref.album_font_size === 20 ? flagImgs[i].Width - scaleForDisplay(8) :
+					 pref.album_font_size === 18 ? flagImgs[i].Width - scaleForDisplay(10) :
+					 pref.album_font_size === 16 ? flagImgs[i].Width - scaleForDisplay(12) :
+					 pref.album_font_size === 14 ? flagImgs[i].Width - scaleForDisplay(14) :
+					 pref.album_font_size === 13 ? flagImgs[i].Width - scaleForDisplay(15) :
+					 pref.album_font_size === 12 ? flagImgs[i].Width - scaleForDisplay(16) :
+					 pref.album_font_size === 11 ? flagImgs[i].Width - scaleForDisplay(17) :
+					flagImgs[i].Width - scaleForDisplay(8),
+					// Flag Height
+					 pref.album_font_size === 24 ? flagImgs[i].Height - scaleForDisplay(2) :
+					 pref.album_font_size === 22 ? flagImgs[i].Height - scaleForDisplay(4) :
+					 pref.album_font_size === 20 ? flagImgs[i].Height - scaleForDisplay(8) :
+					 pref.album_font_size === 18 ? flagImgs[i].Height - scaleForDisplay(10) :
+					 pref.album_font_size === 16 ? flagImgs[i].Height - scaleForDisplay(12) :
+					 pref.album_font_size === 14 ? flagImgs[i].Height - scaleForDisplay(14) :
+					 pref.album_font_size === 13 ? flagImgs[i].Height - scaleForDisplay(15) :
+					 pref.album_font_size === 12 ? flagImgs[i].Height - scaleForDisplay(16) :
+					 pref.album_font_size === 11 ? flagImgs[i].Height - scaleForDisplay(17) :
+					flagImgs[i].Height - scaleForDisplay(8), 0, 0, flagImgs[i].Width, flagImgs[i].Height)
 					flagsLeft += flagImgs[i].Width + scaleForDisplay(5);
 					//gr.DrawString(str.artist, artistFont, col.artist, textLeft + flagSize, artistY, availableWidth, height, StringFormat(0, 0, 4));
 				}
@@ -703,10 +722,11 @@ function draw_ui(gr) {
 		let drawTextGrid = null;
 		if (timings.showExtraDrawTiming) drawTextGrid = fb.CreateProfiler('on_paint -> textGrid');
 		let gridSpace = 0;
+		let textRight = scaleForDisplay(20);
 		if (!albumart && cdart) {
-			gridSpace = Math.round(cdart_size.x - geo.aa_shadow - textLeft);
+			gridSpace = Math.round(cdart_size.x - geo.aa_shadow - textLeft - textRight);
 		} else {
-			gridSpace = Math.round(albumart_size.x - geo.aa_shadow - textLeft);
+			gridSpace = Math.round(albumart_size.x - geo.aa_shadow - textLeft - textRight);
 		}
 		const text_width = gridSpace;
 
@@ -726,32 +746,31 @@ function draw_ui(gr) {
 			let txtRec;
 
 			function drawArtist(top) {
+				let artist_txtRec;
 				if (!str.artist) return 0;
-				let flagSize = flagImgs.length === 3 ? scaleForDisplay(96) : flagImgs.length === 2 ? scaleForDisplay(64) : scaleForDisplay(32);
+				let flagSize = flagImgs.length === 3 ? scaleForDisplay(62) : flagImgs.length === 2 ? scaleForDisplay(48) : scaleForDisplay(24);
+				let flag_spacing = scaleForDisplay(10);
 				ft.artist = ft.album_lrg;
-				let title_spacing = scaleForDisplay(8);
 
-				txtRec = gr.MeasureString(str.artist, ft.artist, 0, 0, text_width, wh);
-				if (txtRec.Lines > 2) {
-					ft.artist = ft.artist_med;
-					title_spacing = scaleForDisplay(7);
-					txtRec = gr.MeasureString(str.artist, ft.artist, 0, 0, text_width, wh);
-					if (txtRec.Lines > 2) {
-						ft.artist = ft.artist_sml;
-						title_spacing = scaleForDisplay(6);
-						txtRec = gr.MeasureString(str.artist, ft.artist, 0, 0, text_width, wh);
-					}
+				if (pref.show_flags && flagImgs.length) {
+					artist_txtRec = gr.MeasureString(str.artist, ft.artist, 0, 0, text_width - (flagSize + flag_spacing), wh);
+				} else {
+					artist_txtRec = gr.MeasureString(str.artist, ft.artist, 0, 0, text_width - (flagSize + flag_spacing), wh);
 				}
 
-				const numLines = Math.min(2, txtRec.Lines);
-				const height = gr.CalcTextHeight(str.title, ft.artist) * numLines + 3;
+				const numLines = Math.min(2, artist_txtRec.Lines);
+				const height = gr.CalcTextHeight(str.artist, ft.artist) * numLines + 3;
 
 				if (is_4k) {
 					gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 				} else {
 					gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit); // thicker fonts can use anti-alias
 				}
-				gr.DrawString(str.artist, ft.artist, col.info_text, (pref.show_flags && flagImgs.length ? flagSize + 2 : 0) + (is_4k ? 2 : 0) + textLeft, top, text_width - scaleForDisplay(60), height, g_string_format.trim_ellipsis_char);
+				if (pref.show_flags && flagImgs.length) {
+					gr.DrawString('      ' + str.artist, ft.artist, col.info_text, textLeft, top, text_width, height, g_string_format.trim_ellipsis_char);
+				} else {
+					gr.DrawString(str.artist, ft.artist, col.info_text, textLeft, top, text_width, height, g_string_format.trim_ellipsis_char);
+				}
 
 				gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 				return height + (is_4k ? 17 : 7);
@@ -760,15 +779,17 @@ function draw_ui(gr) {
 			top += geo.timeline_h - scaleForDisplay(15);
 			
 			function drawTitle(top) {
+				let title_txtRec;
 				if (!str.title) return 0;
-				ft.title = ft.album_lrg;
+				ft.title = ft.title_lrg;
 				ft.tracknum = ft.tracknum_lrg;
-				let title_spacing = scaleForDisplay(8);
+				let title_spacing = scaleForDisplay(6);
 				var trackNumWidth = 0;
 				if (str.tracknum) {
 					trackNumWidth = gr.MeasureString(str.tracknum, ft.tracknum, 0, 0, 0, 0).Width + title_spacing;
 				}
-				txtRec = gr.MeasureString(str.title, ft.title, 0, 0, text_width - trackNumWidth, wh);
+				title_txtRec = gr.MeasureString(str.title, ft.title, 0, 0, text_width - trackNumWidth, wh);
+				/*
 				if (txtRec.Lines > 2) {
 					ft.title = ft.title_med;
 					ft.tracknum = ft.tracknum_med;
@@ -787,20 +808,21 @@ function draw_ui(gr) {
 						txtRec = gr.MeasureString(str.title, ft.title, 0, 0, text_width - trackNumWidth, wh);
 					}
 				}
+				*/
 				const tracknumHeight = gr.MeasureString(str.tracknum, ft.tracknum, 0, 0, 0, 0).Height;
 				const heightAdjustment = Math.ceil((tracknumHeight - gr.MeasureString(str.title, ft.title, 0, 0, 0, 0).Height) / 2);
-				const numLines = Math.min(2, txtRec.Lines);
+				const numLines = Math.min(2, title_txtRec.Lines);
 				const height = gr.CalcTextHeight(str.title, ft.title) * numLines + 3;
 
 				trackNumWidth = Math.ceil(trackNumWidth);
-				gr.DrawString(str.tracknum, ft.tracknum, col.info_text, textLeft, top - heightAdjustment + 1, trackNumWidth, height);
-				if (is_4k) {
-					gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
-				} else {
-					gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit); // thicker fonts can use anti-alias
-				}
+				//gr.DrawString(str.tracknum, ft.tracknum, col.info_text, title_txtRec.Lines > 1 ? textLeft - scaleForDisplay(32) : textLeft, top - heightAdjustment + 1, trackNumWidth, height);
+				//if (is_4k) {
+				//	gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
+				//} else {
+				//	gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit); // thicker fonts can use anti-alias
+				//}
 				const artist_title_query = '%artist% - %title%';
-				gr.DrawString(isStreaming ? $(artist_title_query, this.metadb) : str.title, ft.title, col.info_text, textLeft + trackNumWidth, top, text_width - trackNumWidth, height, g_string_format.trim_ellipsis_word);
+				gr.DrawString(isStreaming ? $(artist_title_query, this.metadb) : str.tracknum + ' ' + str.title, ft.title, col.info_text, textLeft, top, text_width, height, g_string_format.trim_ellipsis_char);
 
 				gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 				return height + (is_4k ? 17 : 7);
@@ -834,6 +856,11 @@ function draw_ui(gr) {
 			if (fb.IsPlaying && str.timeline) {
 				str.timeline.setSize(0, top + scaleForDisplay(4), albumart_size.x);
 				str.timeline.draw(gr);
+			}
+			// Metadata grid tooltip
+			if (fb.IsPlaying && str.metadataGrid_tt) {
+				str.metadataGrid_tt.setSize(0, geo.top_art_spacing, albumart_size.x);
+				str.metadataGrid_tt.draw(gr);
 			}
 			top += geo.timeline_h + scaleForDisplay(18);
 			if (pref.showArtistInGrid || pref.showTitleInGrid) {
@@ -2223,8 +2250,8 @@ function onOptionsMenu(x, y) {
 	// Details panel settings ///////////////////////////////////////////////
 
 	const detailsMenu = new Menu('Details');
-	detailsMenu.addToggleItem('Show artist', pref, 'showArtistInGrid', () => RepaintWindow());
-	detailsMenu.addToggleItem('Show song title', pref, 'showTitleInGrid', () => RepaintWindow());
+	detailsMenu.addToggleItem('Show artist', pref, 'showArtistInGrid', () => { createFonts(); RepaintWindow(); });
+	detailsMenu.addToggleItem('Show song title', pref, 'showTitleInGrid', () => { createFonts(); RepaintWindow(); });
 	detailsMenu.addToggleItem('Show playback history timeline tooltips', pref, 'show_timeline_tooltips');
 	detailsMenu.addToggleItem('Show full background when no disc art', pref, 'no_cdartBG', () => {
 		if (pref.labelArtOnBg) {
@@ -2523,6 +2550,9 @@ function on_size() {
 		if (str.timeline) {
 			str.timeline.setHeight(geo.timeline_h);
 		}
+		if (str.metadataGrid_tt) {
+			str.metadataGrid_tt.setHeight(geo.metadataGrid_tt_h);
+		}
 	}
 	progressBar && progressBar.on_size(ww, wh);
 
@@ -2636,6 +2666,7 @@ function on_playback_new_track(metadb) {
 	}
 
 	str.timeline = new Timeline(geo.timeline_h);
+	str.metadataGrid_tt = new MetadataGrid_tt(geo.metadataGrid_tt_h);
 
 	// Fetch new albumart
 	if ((pref.cycleArt && albumArtIndex !== 0) || isStreaming || embeddedArt || currentFolder !== lastFolder || albumart == null ||
@@ -3102,6 +3133,8 @@ function on_mouse_move(x, y, m) {
 			biography.on_mouse_move(x, y, m);
 		} else if (str.timeline && str.timeline.mouseInThis(x, y)) {
 			str.timeline.on_mouse_move(x, y, m);
+		} else if (str.metadataGrid_tt && str.metadataGrid_tt.mouseInThis(x, y)) {
+			str.metadataGrid_tt.on_mouse_move(x, y, m);
 		}
 		if (transport.enableTransportControls && transport.showVolume && volume_btn) {
 			volume_btn.on_mouse_move(x, y, m);
