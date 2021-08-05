@@ -258,8 +258,12 @@ function btnActionHandler(btn) {
 			if (maximizeToFullScreen ? !utils.IsKeyPressed(VK_CONTROL) : utils.IsKeyPressed(VK_CONTROL)) {
 				UIHacks.FullScreen = !UIHacks.FullScreen;
 				if (displayLibrary) {
-					playlist.on_size(ww, wh);
-					displayPlaylist = true;
+					initLibraryPanel();
+					setLibrarySize();
+				}
+				if (displayBiography) {
+					initBiographyPanel();
+					setBiographySize();
 				}
 			} else {
 				if (UIHacks.MainWindowState == WindowState.Maximized)
@@ -267,6 +271,7 @@ function btnActionHandler(btn) {
 				else
 					UIHacks.MainWindowState = WindowState.Maximized;
 			}
+			window.Repaint();
 			break;
 		case 'Close':
 			fb.Exit();
