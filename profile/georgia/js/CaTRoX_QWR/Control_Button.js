@@ -257,13 +257,29 @@ function btnActionHandler(btn) {
 			const maximizeToFullScreen = true; // TODO to clear the error. Test this stuff eventually
 			if (maximizeToFullScreen ? !utils.IsKeyPressed(VK_CONTROL) : utils.IsKeyPressed(VK_CONTROL)) {
 				UIHacks.FullScreen = !UIHacks.FullScreen;
+				if (!displayPlaylist && !displayLibrary && !displayBiography && !pref.displayLyrics) {
+					btns.playlist.onClick();
+					btns.playlist.onClick();
+					btns.playlist.changeState(ButtonState.Down);
+				}
 				if (displayLibrary) {
 					initLibraryPanel();
 					setLibrarySize();
+					btns.library.onClick();
+					btns.library.onClick();
+					btns.library.changeState(ButtonState.Down);
 				}
 				if (displayBiography) {
 					initBiographyPanel();
 					setBiographySize();
+					btns.biography.onClick();
+					btns.biography.onClick();
+					btns.biography.changeState(ButtonState.Down);
+				}
+				if (pref.displayLyrics) {
+					btns.lyrics.onClick();
+					btns.lyrics.onClick();
+					btns.lyrics.changeState(ButtonState.Down);
 				}
 			} else {
 				if (UIHacks.MainWindowState == WindowState.Maximized)
@@ -271,7 +287,6 @@ function btnActionHandler(btn) {
 				else
 					UIHacks.MainWindowState = WindowState.Maximized;
 			}
-			window.Repaint();
 			break;
 		case 'Close':
 			fb.Exit();
