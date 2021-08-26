@@ -42,7 +42,7 @@ function clearInterval(timerID) { } // (void)
  *
  * @param {function()} func
  * @param {number} delay
- * @param {...*} [func_args]
+ * @param {...*} func_args
  * @return {number}
  */
 function setInterval(func, delay, ...func_args) { } // (uint)
@@ -52,7 +52,7 @@ function setInterval(func, delay, ...func_args) { } // (uint)
  *
  * @param {function()} func
  * @param {number} delay
- * @param {...*} [func_args]
+ * @param {...*} func_args
  * @return {number}
  *
  * @example
@@ -325,7 +325,7 @@ let fb = {
      *
      * @example <caption>Cut playlist items</caption>
      * let ap = plman.ActivePlaylist;
-     * if (!plman.IsPlaylistLocked(ap)) {
+     * if (!plman.GetPlaylistLockedActions(ap).includes('RemoveItems')) {
      *    let handle_list = plman.GetPlaylistSelectedItems(ap);
      *    if (fb.CopyHandleListToClipboard(handle_list)) {
      *        plman.UndoBackup(ap);
@@ -419,7 +419,7 @@ let fb = {
      * function on_mouse_rbtn_up(x, y) {
      *    let ap = plman.ActivePlaylist;
      *    let menu = window.CreatePopupMenu();
-     *    menu.AppendMenuItem(!plman.IsPlaylistLocked(ap) && fb.CheckClipboardContents() ? MF_STRING : MF_GRAYED, 1, "Paste"); // see Flags.js for MF_* definitions
+     *    menu.AppendMenuItem(!plman.GetPlaylistLockedActions(ap).includes('AddItems') && fb.CheckClipboardContents() ? MF_STRING : MF_GRAYED, 1, "Paste"); // see Flags.js for MF_* definitions
      *    let idx = menu.TrackPopupMenu(x, y);
      *    if (idx == 1) {
      *        let handle_list  = fb.GetClipboardContents();
@@ -636,6 +636,9 @@ let fb = {
 
     /** @method */
     Random: function () { }, // (void)
+
+    /** @method */
+    Restart: function () { }, // (void)
 
     /**
      * Shows context menu for currently played track.
@@ -1001,6 +1004,27 @@ let plman = {
     GetPlaylistItems: function (playlistIndex) { }, // (FbMetadbHandleList)
 
     /**
+     * Returns the list of blocked actions
+     * 
+     * @param {number} playlistIndex
+     * @return {Array<string>} May contain the following:<br>
+     *   - 'AddItems'<br>
+     *   - 'RemoveItems'<br>
+     *   - 'ReorderItems'<br>
+     *   - 'ReplaceItems'<br>
+     *   - 'RenamePlaylist'<br>
+     *   - 'RemovePlaylist'<br>
+     *   - 'ExecuteDefaultAction'
+     */
+    GetPlaylistLockedActions: function (playlistIndex) { },
+
+    /**
+     * @param {number} playlistIndex
+     * @return {?string} name of lock owner if there is a lock, null otherwise
+     */
+    GetPlaylistLockName: function (playlistIndex) { },
+
+    /**
      * @param {number} playlistIndex
      * @return {string}
      *
@@ -1060,7 +1084,11 @@ let plman = {
     /**
      * Note: returns true, if the playlist is an autoplaylist. To determine if a playlist is not an autoplaylist,
      * but locked with something like `foo_utils` or `foo_playlist_attributes`, use with conjunction of {@link plman.IsAutoPlaylist}.
+     * <br>
+     * Deprecated: use {@link plman.GetPlaylistLockedActions}.
      *
+     * @deprecated
+     * 
      * @param {number} playlistIndex
      * @return {boolean}
      */
@@ -1165,6 +1193,24 @@ let plman = {
      * plman.SetPlaylistFocusItemByHandle(ap, handle);
      */
     SetPlaylistFocusItemByHandle: function (playlistIndex, handle) { }, // (void)
+
+    /**
+     * Blocks requested actions.<br>
+     * Note: the lock can be changed only if there is no lock or if it's owned by `foo_spider_monkey_panel`.
+     * The owner of the lock can be checked via {@link plman.GetPlaylistLockName}.
+     * 
+     * 
+     * @param {number} playlistIndex
+     * @param {Array<string>} lockedActions May contain the following:<br>
+     *   - 'AddItems'<br>
+     *   - 'RemoveItems'<br>
+     *   - 'ReorderItems'<br>
+     *   - 'ReplaceItems'<br>
+     *   - 'RenamePlaylist'<br>
+     *   - 'RemovePlaylist'<br>
+     *   - 'ExecuteDefaultAction'
+    */
+    SetPlaylistLockedActions: function (playlistIndex, lockedActions) { },
 
     /**
      * @param {number} playlistIndex
@@ -1512,8 +1558,38 @@ let utils = {
     GetFileSize: function (path) { },
 
     /**
+     * Note: returned directories are not guaranteed to exist.
+     * 
+     * @typedef {Object} JsPackageDirs
+     * @property {string} Root Root directory of the package
+     * @property {string} Assets Directory inside package folder that contains assets
+     * @property {string} Scripts Directory inside package folder that contains scripts
+     * @property {string} Storage Persistent and unique directory inside foobar2000 profile folder that can be used to store runtime data (e.g. cache)
+     */
+
+    /**
+     * Return value of {@link window.GetPackageInfo}.<br>
+     *
+     * @typedef {Object} JsPackageInfo
+     * @property {string} Version Package version
+     * @property {JsPackageDirs} Directories Package directories
+     */
+
+    /**
+     * Get information about a package with the specified id.<br>
+     * 
+     * @param {string} package_id
+     * @return {?JsPackageInfo} null if not found, package information otherwise
+     */
+    GetPackageInfo: function (package_id) { },
+
+    /**
      * Get path to a package directory with the specified id.<br>
-     * Throws exception if package is not found.
+     * Throws exception if package is not found. <br>
+     * <br>
+     * Deprecated: use {@link window.GetPackageInfo} instead.
+     * 
+     * @deprecated
      * 
      * @param {string} package_id
      * @return {string}
@@ -3191,12 +3267,17 @@ function GdiGraphics() {
 
     /**
      * Calculates text width for {@link GdiGraphics#GdiDrawText}.
+     * 
+     * Note: When the str contains a kerning pair that is found in the specified 
+     * font, the return value will be larger than the actual drawn width of the
+     * text. If accurate values are required, set use_exact to true.
      *
      * @param {string} str
      * @param {GdiFont} font
+     * @param {boolean=} [use_exact=false] Uses a slower, but more accurate method of calculating text width which accounts for kerning pairs.  
      * @return {number}
      */
-    this.CalcTextWidth = function (str, font) { }; // (uint)
+    this.CalcTextWidth = function (str, font, use_exact) { }; // (uint)
 
     /**
      * @param {number} x
@@ -3380,7 +3461,7 @@ function GdiGraphics() {
      * this will result in visual artifacts caused by ClearType hinting.<br>
      * Use {@link GdiGraphics#DrawString} instead in such cases.<br>
      * <br>
-     * To calculate text dimensions use {@link GdiGraphics#CalcTextHeight}, {@link GdiGraphics#CalcTextWidth} or DT_CALCRECT flag.<br>
+     * To calculate text dimensions use {@link GdiGraphics#CalcTextHeight}, {@link GdiGraphics#CalcTextWidth}.<br>
      * <br>
      * Note: uses special rules for `&` character by default, which consumes the `&` and causes the next character to be underscored.
      * This behaviour can be changed (or disabled) via `format` parameter.
@@ -3393,15 +3474,8 @@ function GdiGraphics() {
      * @param {number} w
      * @param {number} h
      * @param {number=} [format=0] See Flags.js > DT_*
-     * @return {Array<number>}
-     *     index | meaning <br>
-     *     [0] left   (DT_CALCRECT) <br>
-     *     [1] top    (DT_CALCRECT) <br>
-     *     [2] right  (DT_CALCRECT) <br>
-     *     [3] bottom (DT_CALCRECT) <br>
-     *     [4] characters drawn
      */
-    this.GdiDrawText = function (str, font, colour, x, y, w, h, format) { }; // (Array) [, format]
+    this.GdiDrawText = function (str, font, colour, x, y, w, h, format) { };
 
     /**
      * Calculates text dimensions for {@link GdiGraphics#DrawString}.

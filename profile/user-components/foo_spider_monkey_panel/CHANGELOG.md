@@ -2,6 +2,9 @@
 
 #### Table of Contents
 - [Unreleased](#unreleased)
+- [1.5.2](#152---2021-08-10)
+- [1.5.1](#151---2021-07-03)
+- [1.5.0](#150---2021-06-30)
 - [1.4.1](#141---2021-02-14)
 - [1.4.0](#140---2021-02-11)
 - [1.3.1](#131---2020-07-18)
@@ -26,6 +29,48 @@
 ___
 
 ## [Unreleased][]
+
+## [1.5.2][] - 2021-08-10
+### Changed
+- Rollbacked the fix for timers from [1.5.0](#150---2021-06-30), since it was causing fb2k freezes ([#135](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/135)).
+
+### Fixed
+- Fixed unicode handling in script paths.
+
+## [1.5.1][] - 2021-07-03
+### Added
+- API changes:
+  - Added `plman.GetPlaylistLockName()` method.
+
+### Fixed
+- Fixed fb2k freeze that could happen when using `ActiveXObject`.
+
+## [1.5.0][] - 2021-06-30
+### Added
+- API changes:
+  - Added fine-grained playlist lock control via `plman.GetPlaylistLockedActions()` and `plman.SetPlaylistLockedActions()` ([#144](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/144)).
+  - Added `utils.GetPackageInfo()` method.
+  - Added `fb.Restart()` method.
+
+### Changed
+- `utils.InputBox()` now automatically resizes to fit the text ([#71](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/71)).
+- Additional properties provided by component are no longer displayed when not set ([#141](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/141)).
+- API changes:
+  - Added `use_exact` argument to `GdiGraphics.CalcTextWidth()` to improve width calculation accuracy in certain cases ([#140](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/140)).
+  - `utils.GetPackagePath()` is marked as **\[Deprecated]**. Use `utils.GetPackageInfo()` instead.
+  - `plman.IsPlaylistLocked()` is marked as **\[Deprecated]**. Use `plman.GetPlaylistLockedActions()` instead.
+
+### Fixed
+- Fixed various bugs and crashes in `Configure` dialog.
+- Revamped package update process to avoid potential problems when that package is being in use ([#137](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/137)).
+- Fixed inability to import package if there are no packages installed ([#134](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/134)).
+- `Enable drag-n-drop` checkbox value in `Configure` dialog is no longer ignored.
+- Slow script detection now works inside script-editing modals ([#143](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/143)).
+- Fixed incorrect relative path calculation when `include` is called from methods defined in another file ([#142](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/142)).
+- Fixed timers not stopping when they should ([#135](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/135)).
+- Fixed various errors in `complete` samples (by marc2003):
+  - Fixed crash on invalid query in auto-playlist script.
+  - Thumbs script now downloads images only when the corresponding mode is set.
 
 ## [1.4.1][] - 2021-02-14
 ### Changed
@@ -378,7 +423,10 @@ ___
   - More rigorous error checks.
 - Updated samples with compatibility fixes.
 
-[unreleased]: https://github.com/TheQwertiest/foo_spider_monkey_panel/compare/v1.4.1...HEAD
+[unreleased]: https://github.com/TheQwertiest/foo_spider_monkey_panel/compare/v1.5.2...HEAD
+[1.5.2]: https://github.com/TheQwertiest/foo_spider_monkey_panel/compare/v1.5.1...v1.5.2
+[1.5.1]: https://github.com/TheQwertiest/foo_spider_monkey_panel/compare/v1.5.0...v1.5.1
+[1.5.0]: https://github.com/TheQwertiest/foo_spider_monkey_panel/compare/v1.4.1...v1.5.0
 [1.4.1]: https://github.com/TheQwertiest/foo_spider_monkey_panel/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/TheQwertiest/foo_spider_monkey_panel/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/TheQwertiest/foo_spider_monkey_panel/compare/v1.3.0...v1.3.1

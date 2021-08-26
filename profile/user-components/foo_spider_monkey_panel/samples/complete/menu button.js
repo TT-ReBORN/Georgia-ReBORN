@@ -1,6 +1,6 @@
 'use strict';
 
-window.DefinePanel('Menu Button', {author:'marc2003'});
+window.DefineScript('Menu Button', {author:'marc2003', options:{grab_focus:false}});
 include(fb.ComponentPath + 'samples\\complete\\js\\lodash.min.js');
 include(fb.ComponentPath + 'samples\\complete\\js\\helpers.js');
 include(fb.ComponentPath + 'samples\\complete\\js\\panel.js');

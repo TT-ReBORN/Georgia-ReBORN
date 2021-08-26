@@ -475,7 +475,8 @@ function on_playlist_switch() { }
 /**
  * Called when:<br>
  * - Playlists are added/removed/reordered/renamed.<br>
- * - A playlist's lock status changes through the use of components such as foo_utils or foo_playlist_attributes.
+ * - A playlist's lock status changes through the use of {@link plman.SetPlaylistLockedActions} or
+ *   components such as `foo_utils` or `foo_playlist_attributes`.
  *
  * @function
  */

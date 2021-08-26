@@ -1,6 +1,6 @@
 'use strict';
 
-window.DefinePanel('Last.fm Similar Artists + User Charts + Recent Tracks', {author:'marc2003'});
+window.DefineScript('Last.fm Similar Artists + User Charts + Recent Tracks', {author:'marc2003'});
 include(fb.ComponentPath + 'samples\\complete\\js\\lodash.min.js');
 include(fb.ComponentPath + 'samples\\complete\\js\\helpers.js');
 include(fb.ComponentPath + 'samples\\complete\\js\\panel.js');

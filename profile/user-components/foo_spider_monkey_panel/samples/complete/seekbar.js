@@ -1,6 +1,6 @@
 'use strict';
 
-window.DefinePanel('Seekbar', {author:'marc2003'});
+window.DefineScript('Seekbar', {author:'marc2003', options:{grab_focus:false}});
 include(fb.ComponentPath + 'samples\\complete\\js\\lodash.min.js');
 include(fb.ComponentPath + 'samples\\complete\\js\\helpers.js');
 include(fb.ComponentPath + 'samples\\complete\\js\\seekbar.js');

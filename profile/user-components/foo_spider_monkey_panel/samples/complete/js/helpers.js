@@ -624,7 +624,7 @@ const ONE_DAY = 86400000;
 const ONE_WEEK = 604800000;
 
 const DEFAULT_ARTIST = '$meta(artist,0)';
-const N = window.Name + ':';
+const N = window.ScriptInfo.Name + ':';
 
 const DPI = WshShell.RegRead('HKCU\\Control Panel\\Desktop\\WindowMetrics\\AppliedDPI');
 

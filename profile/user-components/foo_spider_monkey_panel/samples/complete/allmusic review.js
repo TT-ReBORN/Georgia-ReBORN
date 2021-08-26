@@ -1,6 +1,6 @@
 'use strict';
 
-window.DefinePanel('Allmusic Review', {author:'marc2003'});
+window.DefineScript('Allmusic Review', {author:'marc2003'});
 include(fb.ComponentPath + 'samples\\complete\\js\\lodash.min.js');
 include(fb.ComponentPath + 'samples\\complete\\js\\helpers.js');
 include(fb.ComponentPath + 'samples\\complete\\js\\panel.js');
