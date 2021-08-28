@@ -476,7 +476,6 @@ function draw_ui(gr) {
 			const height = gr.CalcTextHeight(str.artist, artistFont);
 			const width = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width;
 			var artistY = wh - geo.lower_bar_h + scaleForDisplay(2);
-			let flagSize = flagImgs.length === 3 ? scaleForDisplay(96) : flagImgs.length === 2 ? scaleForDisplay(64) : scaleForDisplay(32);
 			if ((!displayPlaylist && !displayLibrary && pref.show_artistInGrid || ((displayPlaylist || displayLibrary) && !albumart && pref.show_artistInGrid)) &&
 				pref.show_flags_details && flagImgs.length && width + flagImgs[0].Width * flagImgs.length) {
 				var flagsLeft = textLeft;
@@ -494,7 +493,9 @@ function draw_ui(gr) {
 					 pref.album_font_size === 12 ? top - (is_4k ? 1 : 1) :
 					 pref.album_font_size === 11 ? top - (is_4k ? 1 : 1) :
 					top, flagImgs[i].Width - scaleForDisplay(28) + scaleForDisplay(pref.album_font_size), flagImgs[i].Height - scaleForDisplay(28) + scaleForDisplay(pref.album_font_size), 0, 0, flagImgs[i].Width, flagImgs[i].Height),
-					flagsLeft += flagImgs[i].Width + scaleForDisplay(5);
+					flagsLeft += flagImgs[i].Width - scaleForDisplay(20) + scaleForDisplay(pref.album_font_size);
+					// Maximum 3 flags
+					if (i > 1) { break; }
 				}
 			}
 		}
@@ -532,14 +533,23 @@ function draw_ui(gr) {
 
 			function drawArtist(top) {
 				if (!str.artist) return 0;
-				let flagSize = flagImgs.length === 3 ? scaleForDisplay(62) : flagImgs.length === 2 ? scaleForDisplay(48) : scaleForDisplay(24);
-				let flag_spacing = scaleForDisplay(10);
 				ft.artist = ft.album_lrg;
 
+				const flagSize =
+				pref.album_font_size === 24 ? flagImgs.length >= 3 ? '                 ' : flagImgs.length === 2 ? '            ' : '      ' :
+				pref.album_font_size === 22 ? flagImgs.length >= 3 ? '                 ' : flagImgs.length === 2 ? '            ' : '      ' :
+				pref.album_font_size === 20 ? flagImgs.length >= 3 ? '                  ' : flagImgs.length === 2 ? '            ' : '      ' :
+				pref.album_font_size === 18 ? flagImgs.length >= 3 ? '                  ' : flagImgs.length === 2 ? '             ' : '      ' :
+				pref.album_font_size === 16 ? flagImgs.length >= 3 ? '                   ' : flagImgs.length === 2 ? '             ' : '      ' :
+				pref.album_font_size === 14 ? flagImgs.length >= 3 ? '                    ' : flagImgs.length === 2 ? '              ' : '      ' :
+				pref.album_font_size === 13 ? flagImgs.length >= 3 ? '                     ' : flagImgs.length === 2 ? '              ' : '      ' :
+				pref.album_font_size === 12 ? flagImgs.length >= 3 ? '                      ' : flagImgs.length === 2 ? '               ' : '      ' :
+				pref.album_font_size === 11 ? flagImgs.length >= 3 ? '                       ' : flagImgs.length === 2 ? '               ' : '      ' : '';
+
 				if (pref.show_flags_details && flagImgs.length) {
-					artist_txtRec = gr.MeasureString(str.artist, ft.artist, 0, 0, text_width - (flagSize + flag_spacing), wh);
+					artist_txtRec = gr.MeasureString(str.artist, ft.artist, 0, 0, text_width - flagsLeft, wh);
 				} else {
-					artist_txtRec = gr.MeasureString(str.artist, ft.artist, 0, 0, text_width - (flagSize + flag_spacing), wh);
+					artist_txtRec = gr.MeasureString(str.artist, ft.artist, 0, 0, text_width, wh);
 				}
 
 				const numLines = Math.min(2, artist_txtRec.Lines);
@@ -551,7 +561,7 @@ function draw_ui(gr) {
 					gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit); // thicker fonts can use anti-alias
 				}
 				if (pref.show_flags_details && flagImgs.length) {
-					gr.DrawString('      ' + str.artist, ft.artist, col.info_text, textLeft, top, text_width, height, g_string_format.trim_ellipsis_char);
+					gr.DrawString(flagSize + str.artist, ft.artist, col.info_text, textLeft, top, text_width, height, g_string_format.trim_ellipsis_char);
 				} else {
 					gr.DrawString(str.artist, ft.artist, col.info_text, textLeft, top, text_width, height, g_string_format.trim_ellipsis_char);
 				}
@@ -968,7 +978,7 @@ function draw_ui(gr) {
 		var heightAdjustment = is_4k ? 1 : 0;
 
 		const lowerMargin_default = scaleForDisplay(80); // 40px left + 40px right
-		const flagSize = flagImgs.length === 3 ? scaleForDisplay(42) + scaleForDisplay(pref.lower_bar_font_size_default) : flagImgs.length === 2 ? scaleForDisplay(28) + scaleForDisplay(pref.lower_bar_font_size_default) : scaleForDisplay(14) + scaleForDisplay(pref.lower_bar_font_size_default);
+		const flagSize = flagImgs.length >= 3 ? scaleForDisplay(42) + scaleForDisplay(pref.lower_bar_font_size_default * 3) : flagImgs.length === 2 ? scaleForDisplay(28) + scaleForDisplay(pref.lower_bar_font_size_default * 2) : scaleForDisplay(14) + scaleForDisplay(pref.lower_bar_font_size_default);
 
 		// Calculate all transport buttons width
 		const buttonSize_default = scaleForDisplay(pref.transport_buttons_size_default);
@@ -977,8 +987,8 @@ function draw_ui(gr) {
 		const p = scaleForDisplay(pref.transport_buttons_spacing_default);
 
 		// Setup width for artist and song title
-        const origArtistWidth = gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
-		const availableWidth = transport.enableTransportControls_default ? Math.min(ww / 2 - ((w * count) + (p * count) / 2) - (str.original_artist ? origArtistWidth : 0)) : Math.min(ww - lowerMargin_default - timeAreaWidth);
+		const origArtistWidth = gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
+		const availableWidth = transport.enableTransportControls_default ? Math.min(ww / 2 - ((w * count) + (p * count) / 2) - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0) - (str.original_artist ? origArtistWidth : 0)) : Math.min(ww - lowerMargin_default - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0) - timeAreaWidth);
 		const artistMaxWidth = (pref.show_artist_default || pref.show_title_default) && transport.enableTransportControls_default ? availableWidth : Math.min(ww - lowerMargin_default - trackNumWidth - timeAreaWidth);
 		const titleMaxWidth =  (pref.show_artist_default || pref.show_title_default) && transport.enableTransportControls_default ? availableWidth : Math.min(ww - lowerMargin_default - trackNumWidth - timeAreaWidth);
 
@@ -987,7 +997,7 @@ function draw_ui(gr) {
 		const artistHeight = gr.CalcTextHeight(str.artist, ft_lower_bold);
 		const titleWidth = gr.MeasureString(pref.show_composer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, titleMaxWidth, 0).Width;
 		const titleHeight = gr.CalcTextHeight(str.title_lower, ft_lower);
-		const artistTitleWidth = gr.MeasureString(str.artist, ft_lower_bold, 0, 0, 0, 0).Width + gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(pref.show_composer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, 0, 0).Width + flagSize;
+		const artistTitleWidth = gr.MeasureString(str.artist, ft_lower_bold, 0, 0, 0, 0).Width + gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(pref.show_composer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, 0, 0).Width;
 
 		if (artistTitleWidth > availableWidth) { // Two lines
 
@@ -1002,7 +1012,9 @@ function draw_ui(gr) {
 					 pref.lower_bar_font_size_default === 18 ? Math.round(artistY + (is_4k ? 29 : 16) + artistHeight / 2 - flagImgs[i].Height / 2) : 0 +
 					 pref.lower_bar_font_size_default === 16 ? Math.round(artistY + (is_4k ? 33 : 18) + artistHeight / 2 - flagImgs[i].Height / 2) : 0,
 					flagImgs[i].Width + scaleForDisplay(pref.lower_bar_font_size_default) - scaleForDisplay(26), flagImgs[i].Height + scaleForDisplay(pref.lower_bar_font_size_default) - scaleForDisplay(26), 0, 0, flagImgs[i].Width, flagImgs[i].Height),
-					flagsLeft += flagImgs[i].Width;
+					flagsLeft += flagImgs[i].Width - scaleForDisplay(20) + scaleForDisplay(pref.lower_bar_font_size_default);
+					// Maximum 3 flags
+					if (i > 1) { break; }
 				}
 			} else { // On two lines -> one line flag position
 				if (pref.show_flags_lowerbar && flagImgs.length && artistWidth + flagImgs[0].Width * flagImgs.length && pref.show_artist_default && pref.show_title_default < availableWidth) {
@@ -1010,17 +1022,19 @@ function draw_ui(gr) {
 					for (let i = 0; i < flagImgs.length; i++) {
 						gr.DrawImage(flagImgs[i], flagsLeft, Math.round(lowerBarTop - (flagImgs[i].Height / artistHeight)),
 						flagImgs[i].Width + scaleForDisplay(pref.lower_bar_font_size_default) - scaleForDisplay(26), flagImgs[i].Height + scaleForDisplay(pref.lower_bar_font_size_default) - scaleForDisplay(26), 0, 0, flagImgs[i].Width, flagImgs[i].Height),
-						flagsLeft += flagImgs[i].Width;
+						flagsLeft += flagImgs[i].Width - scaleForDisplay(20) + scaleForDisplay(pref.lower_bar_font_size_default);
+						// Maximum 3 flags
+						if (i > 1) { break; }
 					}
 				}
 			}
 			gr.DrawString(pref.show_artist_default ? str.artist : '', ft_lower_bold, col.artist, textLeft +
-            // Artist X-Coordinates
-             (pref.lower_bar_font_size_default === 24 && pref.show_flags_lowerbar && flagImgs.length ? flagSize + scaleForDisplay(5)  : pref.lower_bar_font_size_default === 24 && !pref.show_flags_lowerbar ? 0 : 0) +
-             (pref.lower_bar_font_size_default === 22 && pref.show_flags_lowerbar && flagImgs.length ? flagSize + scaleForDisplay(3)  : pref.lower_bar_font_size_default === 22 && !pref.show_flags_lowerbar ? 0 : 0) +
-             (pref.lower_bar_font_size_default === 20 && pref.show_flags_lowerbar && flagImgs.length ? flagSize + scaleForDisplay(1)  : pref.lower_bar_font_size_default === 20 && !pref.show_flags_lowerbar ? 0 : 0) +
-             (pref.lower_bar_font_size_default === 18 && pref.show_flags_lowerbar && flagImgs.length ? flagSize + scaleForDisplay(0)  : pref.lower_bar_font_size_default === 18 && !pref.show_flags_lowerbar ? 0 : 0) +
-             (pref.lower_bar_font_size_default === 16 && pref.show_flags_lowerbar && flagImgs.length ? flagSize + scaleForDisplay(-2) : pref.lower_bar_font_size_default === 16 && !pref.show_flags_lowerbar ? 0 : 0),
+			// Artist X-Coordinates
+			 (pref.lower_bar_font_size_default === 24 && pref.show_flags_lowerbar && flagImgs.length ? flagSize + scaleForDisplay(5)  : pref.lower_bar_font_size_default === 24 && !pref.show_flags_lowerbar ? 0 : 0) +
+			 (pref.lower_bar_font_size_default === 22 && pref.show_flags_lowerbar && flagImgs.length ? flagSize + scaleForDisplay(3)  : pref.lower_bar_font_size_default === 22 && !pref.show_flags_lowerbar ? 0 : 0) +
+			 (pref.lower_bar_font_size_default === 20 && pref.show_flags_lowerbar && flagImgs.length ? flagSize + scaleForDisplay(1)  : pref.lower_bar_font_size_default === 20 && !pref.show_flags_lowerbar ? 0 : 0) +
+			 (pref.lower_bar_font_size_default === 18 && pref.show_flags_lowerbar && flagImgs.length ? flagSize + scaleForDisplay(0)  : pref.lower_bar_font_size_default === 18 && !pref.show_flags_lowerbar ? 0 : 0) +
+			 (pref.lower_bar_font_size_default === 16 && pref.show_flags_lowerbar && flagImgs.length ? flagSize + scaleForDisplay(-2) : pref.lower_bar_font_size_default === 16 && !pref.show_flags_lowerbar ? 0 : 0),
 			// Artist Y-Coordinates
 			 pref.show_artist_default && !pref.show_title_default ? lowerBarTop + heightAdjustment :
 			 (pref.lower_bar_font_size_default === 24 ? lowerBarTop - scaleForDisplay(25) + heightAdjustment : 0) +
@@ -1039,7 +1053,9 @@ function draw_ui(gr) {
 				for (let i = 0; i < flagImgs.length; i++) {
 					gr.DrawImage(flagImgs[i], flagsLeft, Math.round(lowerBarTop - (flagImgs[i].Height / artistHeight)),
 					flagImgs[i].Width + scaleForDisplay(pref.lower_bar_font_size_default) - scaleForDisplay(26), flagImgs[i].Height + scaleForDisplay(pref.lower_bar_font_size_default) - scaleForDisplay(26), 0, 0, flagImgs[i].Width, flagImgs[i].Height),
-					flagsLeft += flagImgs[i].Width;
+					flagsLeft += flagImgs[i].Width - scaleForDisplay(20) + scaleForDisplay(pref.lower_bar_font_size_default);
+					// Maximum 3 flags
+					if (i > 1) { break; }
 				}
 			}
 			gr.DrawString(pref.show_artist_default ? str.artist : '', ft_lower_bold, col.artist, textLeft + (pref.show_flags_lowerbar && flagImgs.length ? flagSize + 2 : 0) - scaleForDisplay(1), lowerBarTop + heightAdjustment, availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
@@ -1049,7 +1065,7 @@ function draw_ui(gr) {
 		let bottomTextWidth = timeAreaWidth + trackNumWidth;
 		bottomTextWidth += Math.ceil(titleWidth);
 		if (str.original_artist && bottomTextWidth < availableWidth) {
-			let flagSize = flagImgs.length === 3 ? scaleForDisplay(96) : flagImgs.length === 2 ? scaleForDisplay(64) : scaleForDisplay(32);
+			const flagSize = flagImgs.length >= 3 ? scaleForDisplay(42) + scaleForDisplay(pref.lower_bar_font_size_default * 3) : flagImgs.length === 2 ? scaleForDisplay(28) + scaleForDisplay(pref.lower_bar_font_size_default * 2) : scaleForDisplay(14) + scaleForDisplay(pref.lower_bar_font_size_default);
 			var h_spacing = 0;
 			var v_spacing = 0;
 			if (useNeue) {
@@ -1076,7 +1092,7 @@ function draw_ui(gr) {
 		const lowerMargin_compact = scaleForDisplay(40); // 20px left + 20px right
 
 		// Setup width for artist and song title
-        const origArtistWidth = gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
+		const origArtistWidth = gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
 		const availableWidth = Math.min(ww - lowerMargin_compact - timeAreaWidth - (str.original_artist ? origArtistWidth : 0) - scaleForDisplay(20));
 		const artistMaxWidth = Math.min(ww - lowerMargin_compact - timeAreaWidth);
 		const titleMaxWidth =  Math.min(ww - lowerMargin_compact - trackNumWidth - timeAreaWidth - scaleForDisplay(20));

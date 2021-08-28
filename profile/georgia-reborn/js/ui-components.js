@@ -134,6 +134,7 @@ class ProgressBar {
 
             // Callback for tooltip
             const ft_lower = ft.lower_bar;
+            const flagSize = flagImgs.length >= 3 ? scaleForDisplay(42) + scaleForDisplay(pref.lower_bar_font_size_default * 3) : flagImgs.length === 2 ? scaleForDisplay(28) + scaleForDisplay(pref.lower_bar_font_size_default * 2) : scaleForDisplay(14) + scaleForDisplay(pref.lower_bar_font_size_default);
             this.lowerMargin_default = scaleForDisplay(80); // 40px left + 40px right
             this.lowerMargin_compact = scaleForDisplay(40); // 20px left + 20px right
 
@@ -151,7 +152,7 @@ class ProgressBar {
 
             // Setup width for artist and song title
             this.origArtistWidth = gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
-            this.availableWidth = transport.enableTransportControls_default ? Math.min(ww / 2 - ((w * count) + (p * count) / 2) - (str.original_artist ? this.origArtistWidth : 0)) : Math.min(ww - this.lowerMargin_default - this.timeAreaWidth);
+            this.availableWidth = transport.enableTransportControls_default ? Math.min(ww / 2 - ((w * count) + (p * count) / 2) - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0) - (str.original_artist ? origArtistWidth : 0)) : Math.min(ww - this.lowerMargin_default - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0) - this.timeAreaWidth);
             this.trackNumWidth = Math.ceil(gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width);
             this.artistWidth = gr.MeasureString(str.artist, ft.artist_lrg, 0, 0, 0, 0).Width;
             this.titleWidth = gr.MeasureString(pref.show_composer ? str.title_lower + str.composer + str.original_artist : str.title_lower + str.original_artist, ft_lower, 0, 0, 0, 0).Width;
@@ -419,15 +420,14 @@ class MetadataGrid_tt {
         this.textLeft = scaleForDisplay(40);
         this.textRight = scaleForDisplay(20);
         this.line_spacing = scaleForDisplay(8);
-        this.flag_spacing = scaleForDisplay(15);
         this.tracknum_spacing = scaleForDisplay(8);
         this.timeline_h = scaleForDisplay(60);
-        this.flagSize = flagImgs.length === 3 ? scaleForDisplay(62) : flagImgs.length === 2 ? scaleForDisplay(48) : scaleForDisplay(24);
+        this.flagSize = flagImgs.length >= 3 ? scaleForDisplay(42) + scaleForDisplay(pref.album_font_size * 3) : flagImgs.length === 2 ? scaleForDisplay(28) + scaleForDisplay(pref.album_font_size * 2) : scaleForDisplay(14) + scaleForDisplay(pref.album_font_size);
 
         if (!albumart && cdart) {
-            this.gridSpace = Math.round(cdart_size.x - geo.aa_shadow - this.textLeft - this.textRight);
+            this.gridSpace = Math.round(cdart_size.x - geo.aa_shadow - this.textLeft - this.textRight - (pref.show_flags_details && flagImgs.length ? this.flagSize : 0));
         } else {
-            this.gridSpace = Math.round(albumart_size.x - geo.aa_shadow - this.textLeft - this.textRight);
+            this.gridSpace = Math.round(albumart_size.x - geo.aa_shadow - this.textLeft - this.textRight - (pref.show_flags_details && flagImgs.length ? this.flagSize : 0));
         }
 
         if (pref.show_artistInGrid) {
@@ -529,7 +529,7 @@ class MetadataGrid_tt {
             // Artist
             if (pref.show_artistInGrid && this.inMetadataGrid_artist_tt && this.artist_numLines === 1) {
                 if (pref.show_flags && flagImgs.length) {
-                    if (this.artistWidth + this.flag_spacing + this.flagSize > this.gridSpace) {
+                    if (this.artistWidth + this.flagSize > this.gridSpace) {
                         tt.showDelayed(str.artist);
                     }
                 } else {
@@ -540,7 +540,7 @@ class MetadataGrid_tt {
             }
             else if (pref.show_artistInGrid && this.inMetadataGrid_artist_tt && this.artist_numLines === 2) {
                 if (pref.show_flags && flagImgs.length) {
-                    if (this.artistWidth + this.flag_spacing + this.flagSize + this.artistWidth_wrap > this.gridSpace * 2) {
+                    if (this.artistWidth + this.flagSize + this.artistWidth_wrap > this.gridSpace * 2) {
                         tt.showDelayed(str.artist);
                     }
                 } else {
