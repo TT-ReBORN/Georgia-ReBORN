@@ -987,8 +987,7 @@ function draw_ui(gr) {
 		const p = scaleForDisplay(pref.transport_buttons_spacing_default);
 
 		// Setup width for artist and song title
-		const origArtistWidth = gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
-		const availableWidth = transport.enableTransportControls_default ? Math.min(ww / 2 - ((w * count) + (p * count) / 2) - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0) - (str.original_artist ? origArtistWidth : 0)) : Math.min(ww - lowerMargin_default - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0) - timeAreaWidth);
+		const availableWidth = transport.enableTransportControls_default ? Math.min(ww / 2 - ((w * count) + (p * count) / 2) - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0)) : Math.min(ww - lowerMargin_default - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0) - timeAreaWidth);
 		const artistMaxWidth = (pref.show_artist_default || pref.show_title_default) && transport.enableTransportControls_default ? availableWidth : Math.min(ww - lowerMargin_default - trackNumWidth - timeAreaWidth);
 		const titleMaxWidth =  (pref.show_artist_default || pref.show_title_default) && transport.enableTransportControls_default ? availableWidth : Math.min(ww - lowerMargin_default - trackNumWidth - timeAreaWidth);
 
@@ -997,7 +996,7 @@ function draw_ui(gr) {
 		const artistHeight = gr.CalcTextHeight(str.artist, ft_lower_bold);
 		const titleWidth = gr.MeasureString(pref.show_composer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, titleMaxWidth, 0).Width;
 		const titleHeight = gr.CalcTextHeight(str.title_lower, ft_lower);
-		const artistTitleWidth = gr.MeasureString(str.artist, ft_lower_bold, 0, 0, 0, 0).Width + gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(pref.show_composer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, 0, 0).Width;
+		const artistTitleWidth = gr.MeasureString(str.artist, ft_lower_bold, 0, 0, 0, 0).Width + gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(pref.show_composer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
 
 		if (artistTitleWidth > availableWidth) { // Two lines
 
@@ -1045,7 +1044,7 @@ function draw_ui(gr) {
 			availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
 
 			gr.DrawString(pref.show_title_default || !pref.show_title_default && !fb.IsPlaying ? str.tracknum : '', ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop, trackNumWidth - timeAreaWidth, titleHeight, StringFormat(0, 0, 4, 0x00001000));
-			gr.DrawString(pref.show_title_default || !pref.show_title_default && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.composer : str.title_lower : '', ft_lower, col.now_playing, trackNumWidth > 0 ? progressBar.x - scaleForDisplay(4) + trackNumWidth : progressBar.x - (is_4k ? 1 : 0) - scaleForDisplay(11), lowerBarTop, availableWidth, titleHeight, g_string_format.trim_ellipsis_char);
+			gr.DrawString(pref.show_title_default || !pref.show_title_default && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.original_artist + str.composer : str.title_lower + str.original_artist : '', ft_lower, col.now_playing, trackNumWidth > 0 ? progressBar.x - scaleForDisplay(4) + trackNumWidth : progressBar.x - (is_4k ? 1 : 0) - scaleForDisplay(11), lowerBarTop, availableWidth, titleHeight, g_string_format.trim_ellipsis_char);
 
 		} else { // One line
 			if (pref.show_artist_default && pref.show_flags_lowerbar && flagImgs.length && artistWidth + flagImgs[0].Width * flagImgs.length < availableWidth) {
@@ -1061,18 +1060,6 @@ function draw_ui(gr) {
 			gr.DrawString(pref.show_artist_default ? str.artist : '', ft_lower_bold, col.artist, textLeft + (pref.show_flags_lowerbar && flagImgs.length ? flagSize + 2 : 0) - scaleForDisplay(1), lowerBarTop + heightAdjustment, availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
 			gr.DrawString(pref.show_title_default || !pref.show_title_default && !fb.IsPlaying ? str.tracknum : '', ft_lower, col.now_playing, pref.show_artist_default ? fb.IsPlaying ? progressBar.x + (pref.show_flags_lowerbar && flagImgs.length ? flagSize + artistWidth + scaleForDisplay(9) : is_4k ? artistWidth + 16 : artistWidth + 7) : progressBar.x : progressBar.x, lowerBarTop, trackNumWidth - timeAreaWidth, titleHeight, StringFormat(0, 0, 4, 0x00001000));
 			gr.DrawString(pref.show_title_default || !pref.show_title_default && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.composer : str.title_lower : '', ft_lower, col.now_playing, pref.show_artist_default ? progressBar.x + (pref.show_flags_lowerbar && flagImgs.length ? is_4k ? flagSize + trackNumWidth + artistWidth : flagSize + trackNumWidth + artistWidth + scaleForDisplay(1) : trackNumWidth + artistWidth - scaleForDisplay(1)) + (is_4k ? 2 : 0) : progressBar.x + trackNumWidth - scaleForDisplay(1) + (is_4k ? 2 : 0), lowerBarTop, fb.IsPlaying ? availableWidth : ww, titleHeight, g_string_format.trim_ellipsis_char);
-		}
-		let bottomTextWidth = timeAreaWidth + trackNumWidth;
-		bottomTextWidth += Math.ceil(titleWidth);
-		if (str.original_artist && bottomTextWidth < availableWidth) {
-			const flagSize = flagImgs.length >= 3 ? scaleForDisplay(42) + scaleForDisplay(pref.lower_bar_font_size_default * 3) : flagImgs.length === 2 ? scaleForDisplay(28) + scaleForDisplay(pref.lower_bar_font_size_default * 2) : scaleForDisplay(14) + scaleForDisplay(pref.lower_bar_font_size_default);
-			var h_spacing = 0;
-			var v_spacing = 0;
-			if (useNeue) {
-				h_spacing = is_4k ? 8 : 2;
-				v_spacing = scaleForDisplay(0);
-			}
-			gr.DrawString(pref.show_title_default ? str.original_artist : '', ft_lower, col.now_playing, artistTitleWidth > availableWidth ? progressBar.x + trackNumWidth + titleWidth : progressBar.x + (pref.show_flags_lowerbar && flagImgs.length ? flagSize + 2 : 0) - scaleForDisplay(1) + artistWidth + trackNumWidth + titleWidth + h_spacing, lowerBarTop + v_spacing, availableWidth, titleHeight, g_string_format.trim_ellipsis_char);
 		}
 
 	} else if (pref.layout_mode === 'compact_mode') {
@@ -1092,8 +1079,7 @@ function draw_ui(gr) {
 		const lowerMargin_compact = scaleForDisplay(40); // 20px left + 20px right
 
 		// Setup width for artist and song title
-		const origArtistWidth = gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
-		const availableWidth = Math.min(ww - lowerMargin_compact - timeAreaWidth - (str.original_artist ? origArtistWidth : 0) - scaleForDisplay(20));
+		const availableWidth = Math.min(ww - lowerMargin_compact - timeAreaWidth - scaleForDisplay(20));
 		const artistMaxWidth = Math.min(ww - lowerMargin_compact - timeAreaWidth);
 		const titleMaxWidth =  Math.min(ww - lowerMargin_compact - trackNumWidth - timeAreaWidth - scaleForDisplay(20));
 
@@ -1102,28 +1088,17 @@ function draw_ui(gr) {
 		const artistHeight = gr.CalcTextHeight(str.artist, ft_lower_bold);
 		const titleWidth = gr.MeasureString(pref.show_composer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, titleMaxWidth, 0).Width;
 		const titleHeight = gr.CalcTextHeight(str.title_lower, ft_lower);
-		const artistTitleWidth = gr.MeasureString(str.artist, ft_lower_bold, 0, 0, 0, 0).Width + gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(pref.show_composer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, 0, 0).Width;
+		const artistTitleWidth = gr.MeasureString(str.artist, ft_lower_bold, 0, 0, 0, 0).Width + gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(pref.show_composer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
 
 		if (artistTitleWidth < availableWidth) { // Artist + title displayed if space available
 			gr.DrawString(pref.show_artist_compact ? str.artist : '', ft_lower_bold, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop + heightAdjustment, availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
 			gr.DrawString(pref.show_title_compact || !pref.show_title_compact && !fb.IsPlaying ? str.tracknum : '', ft_lower, col.now_playing, pref.show_artist_compact ? progressBar.x - scaleForDisplay(1) + artistWidth + (fb.IsPlaying ? (is_4k ? 19 : 8) : 0) : progressBar.x, lowerBarTop, trackNumWidth, titleHeight, StringFormat(0, 0, 4, 0x00001000));
-			gr.DrawString(pref.show_title_compact || !pref.show_title_compact && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.composer : str.title_lower : '', ft_lower, col.now_playing, pref.show_artist_compact ? progressBar.x + artistWidth + trackNumWidth + (is_4k ? 4 : 0) : progressBar.x + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop, availableWidth, titleHeight, g_string_format.trim_ellipsis_char);
+			gr.DrawString(pref.show_title_compact || !pref.show_title_compact && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.original_artist + str.composer : str.title_lower + str.original_artist : '', ft_lower, col.now_playing, pref.show_artist_compact ? progressBar.x + artistWidth + trackNumWidth + (is_4k ? 4 : 0) : progressBar.x + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop, availableWidth, titleHeight, g_string_format.trim_ellipsis_char);
 		}
 		else { // Artist hidden if too long
 			gr.DrawString(pref.show_artist_compact && !pref.show_title_compact ? str.artist : '', ft_lower_bold, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop + heightAdjustment, availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
 			gr.DrawString(pref.show_title_compact  || !pref.show_title_compact && !fb.IsPlaying ? str.tracknum : '', ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop, fb.IsPlaying ? trackNumWidth - timeAreaWidth : trackNumWidth, titleHeight, StringFormat(0, 0, 4, 0x00001000));
-			gr.DrawString(pref.show_title_compact  || !pref.show_title_compact && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.composer : str.title_lower : '', ft_lower, col.now_playing, progressBar.x + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop, fb.IsPlaying ? availableWidth : ww, titleHeight, g_string_format.trim_ellipsis_char);
-		}
-		let bottomTextWidth = timeAreaWidth + trackNumWidth;
-		bottomTextWidth += Math.ceil(titleMeasurements.Width);
-		if (str.original_artist && bottomTextWidth < availableWidth) {
-			var h_spacing = 0;
-			var v_spacing = 0;
-			if (useNeue) {
-				h_spacing = scaleForDisplay(4);
-				v_spacing = scaleForDisplay(1);
-			}
-			gr.DrawString(pref.show_title_default ? str.original_artist : '', ft_lower, col.now_playing, artistTitleWidth < availableWidth ? progressBar.x + trackNumWidth + artistWidth + titleWidth : progressBar.x - scaleForDisplay(1) + trackNumWidth + titleWidth + h_spacing, lowerBarTop + v_spacing, availableWidth, titleHeight, g_string_format.trim_ellipsis_char);
+			gr.DrawString(pref.show_title_compact  || !pref.show_title_compact && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.original_artist + str.composer : str.title_lower + str.original_artist : '', ft_lower, col.now_playing, progressBar.x + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop, fb.IsPlaying ? availableWidth : ww, titleHeight, g_string_format.trim_ellipsis_char);
 		}
 	}
 
@@ -2449,7 +2424,7 @@ function setLibrarySize() {
 		var library_h = Math.max(0, wh - lowerSpace - y);
 
 		ui.sizedNode = false;
-		ui.node_sz = Math.round(16 * sBio.scale);
+		ui.node_sz = Math.round(16 * s.scale);
 		p.setFilterFont();	// resets filter font in case the zoom was reset
 		initLibraryColors();
 		libraryPanel.on_size(x, y, library_w, library_h);

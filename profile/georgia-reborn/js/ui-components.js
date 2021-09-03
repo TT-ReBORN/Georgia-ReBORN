@@ -151,11 +151,10 @@ class ProgressBar {
             const p = scaleForDisplay(pref.transport_buttons_spacing_default);
 
             // Setup width for artist and song title
-            this.origArtistWidth = gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
-            this.availableWidth = transport.enableTransportControls_default ? Math.min(ww / 2 - ((w * count) + (p * count) / 2) - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0) - (str.original_artist ? origArtistWidth : 0)) : Math.min(ww - this.lowerMargin_default - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0) - this.timeAreaWidth);
+            this.availableWidth = transport.enableTransportControls_default ? Math.min(ww / 2 - ((w * count) + (p * count) / 2) - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0)) : Math.min(ww - this.lowerMargin_default - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0) - this.timeAreaWidth);
             this.trackNumWidth = Math.ceil(gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width);
             this.artistWidth = gr.MeasureString(str.artist, ft.artist_lrg, 0, 0, 0, 0).Width;
-            this.titleWidth = gr.MeasureString(pref.show_composer ? str.title_lower + str.composer + str.original_artist : str.title_lower + str.original_artist, ft_lower, 0, 0, 0, 0).Width;
+            this.titleWidth = gr.MeasureString(pref.show_composer ? str.title_lower + str.composer + str.original_artist : str.title_lower + str.original_artist, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
             this.artistMaxWidth_compact = ww - (this.titleWidth + this.trackNumWidth + this.timeAreaWidth + this.lowerMargin_compact);
             this.titleMaxWidth_compact = ww - (this.artistWidth + this.timeAreaWidth + this.lowerMargin_compact);
             this.only_artistMaxWidth_compact = ww - (this.timeAreaWidth + this.lowerMargin_compact);

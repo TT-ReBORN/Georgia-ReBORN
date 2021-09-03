@@ -719,10 +719,10 @@ class Playlist extends List {
 		this.w = w;
 		this.was_on_size_called = true;
 
+		this.reinitialize();
 		if (pref.always_showPlaying) {
 			this.show_now_playing();
 		}
-		this.reinitialize();
 	}
 
 	on_mouse_move(x, y, m) {
