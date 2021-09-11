@@ -13,6 +13,7 @@ const currentVersion = '2.0.3';
 let configVersion = currentVersion; // will be overwritten when loaded from config file
 let updateAvailable = false;
 let updateHyperlink;
+let is_4k = false;
 
 const g_component_playcount = utils.CheckComponent('foo_playcount');
 const g_component_utils = utils.CheckComponent('foo_utils');

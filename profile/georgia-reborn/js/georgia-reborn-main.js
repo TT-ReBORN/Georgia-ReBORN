@@ -43,7 +43,6 @@ var ft = {}; // fonts
 /** @type GeometryObj */
 let geo = {};
 
-let is_4k = false;
 
 const fontThin = 'HelveticaNeueLT Pro 35 Th'; // Helvetica Neue LT Pro 35 Thin
 const fontLight = 'HelveticaNeueLT Pro 45 Lt'; // Helvetica Neue LT Pro 45 Light
