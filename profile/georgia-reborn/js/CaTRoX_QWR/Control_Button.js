@@ -228,7 +228,7 @@ function btnActionHandler(btn) {
 			if (pref.switchPlaybackTime) {
 				str.time = $('-%playback_time_remaining%');
 			} else {
-				str.time = $('%playback_time%')
+				str.time = $('%playback_time%');
 			}
 			window.Repaint();
 			break;

@@ -550,7 +550,7 @@ Object.assign(qwr_utils, {
 
         cmac.append_item(
             'Get disc art', () => {
-                _.runCmd('https://fanart.tv/music-fanart')
+                _.runCmd('https://fanart.tv/music-fanart');
             }
         );
 

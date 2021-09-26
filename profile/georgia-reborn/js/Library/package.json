@@ -1,0 +1,9 @@
+﻿{
+  "author": "WilB",
+  "description": "Feature rich library viewer\r\n\r\n• Tree viewer + full album art support\r\n• Library and playlist sources\r\n• Single panel and two panel modes\r\n• Album art flow mode\r\n\r\nCredits\r\n\r\n• Original Jscript library search (2013): thanhdat1710\r\n• Original JS smooth browser design (2015): Br3tt (aka falstaff)",
+  "enableDragDrop": false,
+  "id": "{E85C9EF0-778B-46DD-AF20-F4BE831360DD}",
+  "name": "Library Tree",
+  "shouldGrabFocus": true,
+  "version": "2.2.0"
+}

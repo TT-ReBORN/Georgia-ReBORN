@@ -101,6 +101,7 @@ pref.add_properties({
 	show_title_compact:                 ['Georgia-ReBORN - Player controls: Compact mode - Show song title in lower bar', true], // Show song title in lower bar Compact mode
 	show_composer:                      ['Georgia-ReBORN - Player controls: Show composer in lower bar', false], // Show composer in lower bar
 	show_flags_lowerbar:                ['Georgia-ReBORN - Player controls: Show country flags in lower bar', true], // true: Show the artist country flags in lower bar
+	show_pause:                         ['Georgia-ReBORN - Player controls: Show pause', true], // true: Show pause button on cover
 	show_tt:                            ['Georgia-ReBORN - Player controls: Show tooltips', true], // true: Show all tooltips
 	show_truncatedText_tt:              ['Georgia-ReBORN - Player controls: Show tooltips on truncated text', true], // true: Show tooltips when hovering over truncated text on lower bar, metadata grid and playlist
 	show_timeline_tooltips:             ['Georgia-ReBORN - Player controls: Show timeline tooltips', true], // true: Show tooltips when hovering over the timeline that show information on plays
@@ -138,11 +139,15 @@ pref.add_properties({
 	art_rotate_delay:                   ['Georgia-ReBORN - Details: Art - Seconds to display each art', 30], // Seconds per image
 
 	// Library
-	libraryDesign:                      ['Georgia-ReBORN - Library: Design', 'library_modern'], // Library Design - library_modern (default) or library_traditional
+	libraryDesign:                      ['Georgia-ReBORN - Library: Design', 'reborn'], // Library design - reborn (default), ultraModern, modern, traditional, listView, listView_albumCovers, listView_artistPhotos, albumCovers, flowMode
+	libraryLayout:                      ['Georgia-ReBORN - Library: Layout', 'normal_width'], // Library layout - normal_width (default) or full_width
+	libraryThumbnailSize:               ['Georgia-ReBORN - Library: Thumbnail size', 'auto'], // Library thumbnail size - auto (default)
 	autoHideScrollbar_Library:          ['Georgia-ReBORN - Library: Auto hide scrollbar', true], // Library automatic scrollbar hide
 	libraryPlaylistSwitch:              ['Georgia-ReBORN - Library: Switch to playlist when adding songs', false], // When adding songs from Library auto-switch to Playlist
 
 	// Biography
+	biographyTheme:                     ['Georgia-ReBORN - Biography: Theme', 0], // 0 (default)
+	biographyDisplay:                   ['Georgia-ReBORN - Biography: Display', 'Image+text'], // Image+text (default)
 	autoHideScrollbar_Biography:        ['Georgia-ReBORN - Biography: Auto hide scrollbar', true], // Biography automatic scrollbar hide
 
 	// Lyrics
@@ -150,6 +155,9 @@ pref.add_properties({
 	lyrics_normal_color:                ['Georgia-ReBORN - Lyrics: Text Color', 'RGBA(255, 255, 255, 255);'],
 	lyrics_focus_color:                 ['Georgia-ReBORN - Lyrics: Text Highlite Color', 'RGBA(255, 241, 150, 255);'],
 	displayLyrics:                      ['Georgia-ReBORN - Lyrics: Show lyrics', false], // true: Shows lyrics, always set to false at startup unless lyricsRememberDisplay is true
+
+	// Settings
+	devTools:                           ['Georgia-ReBORN - Settings: Enable developer tools', false], // true: Show developer tools in options context menu
 
 	// System
 	maximize_to_fullscreen:             ['Georgia-ReBORN - System: Maximize to fullscreen', true], // Maximize function
@@ -279,21 +287,21 @@ tf.labels = [ // Array of fields to test for publisher. Add, change or re-order 
 
 // CD-ART SETTINGS
 // we expect cd-art will be in .png with transparent background, best found at fanart.tv.
-pref.vinylside_path = '$directory_path(%path%)\\vinyl$if2(' + tf.vinyl_side + ',).png' // vinyl cdart named vinylA.png, vinylB.png, etc.
-pref.vinylside_path_artwork_root = '$directory_path(%path%)\\..\\Artwork\\vinyl$if2(' + tf.vinyl_side + ',).png' // Root Artwork
-pref.vinylside_path_images_root = '$directory_path(%path%)\\..\\Images\\vinyl$if2(' + tf.vinyl_side + ',).png' // Root Images
-pref.vinylside_path_scans_root = '$directory_path(%path%)\\..\\Scans\\vinyl$if2(' + tf.vinyl_side + ',).png' // Root Scans
-pref.vinylside_path_artwork = '$directory_path(%path%)\\Artwork\\vinyl$if2(' + tf.vinyl_side + ',).png' // Subfolder Artwork
-pref.vinylside_path_images = '$directory_path(%path%)\\Images\\vinyl$if2(' + tf.vinyl_side + ',).png' // Subfolder Images
-pref.vinylside_path_scans = '$directory_path(%path%)\\Scans\\vinyl$if2(' + tf.vinyl_side + ',).png' // Subfolder Scans
+pref.vinylside_path = '$directory_path(%path%)\\vinyl$if2(' + tf.vinyl_side + ',).png'; // vinyl cdart named vinylA.png, vinylB.png, etc.
+pref.vinylside_path_artwork_root = '$directory_path(%path%)\\..\\Artwork\\vinyl$if2(' + tf.vinyl_side + ',).png'; // Root Artwork
+pref.vinylside_path_images_root = '$directory_path(%path%)\\..\\Images\\vinyl$if2(' + tf.vinyl_side + ',).png'; // Root Images
+pref.vinylside_path_scans_root = '$directory_path(%path%)\\..\\Scans\\vinyl$if2(' + tf.vinyl_side + ',).png'; // Root Scans
+pref.vinylside_path_artwork = '$directory_path(%path%)\\Artwork\\vinyl$if2(' + tf.vinyl_side + ',).png'; // Subfolder Artwork
+pref.vinylside_path_images = '$directory_path(%path%)\\Images\\vinyl$if2(' + tf.vinyl_side + ',).png'; // Subfolder Images
+pref.vinylside_path_scans = '$directory_path(%path%)\\Scans\\vinyl$if2(' + tf.vinyl_side + ',).png'; // Subfolder Scans
 
-pref.vinyl_path = '$directory_path(%path%)\\vinyl.png' // vinyl cdart named vinylA.png, vinylB.png, etc.
-pref.vinyl_path_artwork_root = '$directory_path(%path%)\\..\\Artwork\\vinyl.png' // Root Artwork
-pref.vinyl_path_images_root = '$directory_path(%path%)\\..\\Images\\vinyl.png' // Root Images
-pref.vinyl_path_scans_root = '$directory_path(%path%)\\..\\Scans\\vinyl.png' // Root Scans
-pref.vinyl_path_artwork = '$directory_path(%path%)\\Artwork\\vinyl.png' // Subfolder Artwork
-pref.vinyl_path_images = '$directory_path(%path%)\\Images\\vinyl.png' // Subfolder Images
-pref.vinyl_path_scans = '$directory_path(%path%)\\Scans\\vinyl.png' // Subfolder Scans
+pref.vinyl_path = '$directory_path(%path%)\\vinyl.png'; // vinyl cdart named vinylA.png, vinylB.png, etc.
+pref.vinyl_path_artwork_root = '$directory_path(%path%)\\..\\Artwork\\vinyl.png'; // Root Artwork
+pref.vinyl_path_images_root = '$directory_path(%path%)\\..\\Images\\vinyl.png'; // Root Images
+pref.vinyl_path_scans_root = '$directory_path(%path%)\\..\\Scans\\vinyl.png'; // Root Scans
+pref.vinyl_path_artwork = '$directory_path(%path%)\\Artwork\\vinyl.png'; // Subfolder Artwork
+pref.vinyl_path_images = '$directory_path(%path%)\\Images\\vinyl.png'; // Subfolder Images
+pref.vinyl_path_scans = '$directory_path(%path%)\\Scans\\vinyl.png'; // Subfolder Scans
 
 pref.cdartdisc_path = '$directory_path(%path%)\\' + settings.cdArtBasename + '$ifgreater(%totaldiscs%,1,%discnumber%,).png'; // cdart named cd1.png, cd2.png, etc.
 pref.cdartdisc_path_artwork_root = '$directory_path(%path%)\\..\\Artwork\\' + settings.cdArtBasename + '$ifgreater(%totaldiscs%,1,%discnumber%,).png'; // Root Artwork

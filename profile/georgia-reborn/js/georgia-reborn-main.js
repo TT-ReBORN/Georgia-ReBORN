@@ -157,7 +157,7 @@ function createFonts() {
 	ft.guifx_reload = font(fontGuiFx, pref.layout_mode === 'compact_mode' ? Math.floor(pref.transport_buttons_size_compact / 1.5) : Math.floor(pref.transport_buttons_size_default / 1.5), 0);
 	ft.Marlett = font('Marlett', 13, 0);
 	ft.SegoeUi = font('Segoe Ui Semibold', pref.menu_font_size, 0);
-	ft.library_tree = font('Segoe UI', libraryProps.baseFontSize, 0);
+	ft.library_tree = font('Segoe UI', ppt.baseFontSize, 0);
 	ft.lyrics = font(fontRegular, pref.lyricsFontSize || 20, 1);
 }
 
@@ -462,8 +462,10 @@ function draw_ui(gr) {
 		}
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 	}
-	if (fb.IsPaused) {
-		pauseBtn.draw(gr);
+	if (pref.show_pause) {
+		if (fb.IsPaused) {
+			pauseBtn.draw(gr);
+		}
 	}
 
 	// flag info grid
@@ -1438,41 +1440,41 @@ function onOptionsMenu(x, y) {
 			pref.player_4k_small  = false;
 			pref.player_4k_normal = false;
 			pref.player_4k_large  = false;
-            mode_handler.player_size_small();
-            createPlaylistFonts();
-            setBiographySize();
-            playlist.on_size(ww, wh);
-            RepaintWindow();
+			mode_handler.player_size_small();
+			createPlaylistFonts();
+			setBiographySize();
+			playlist.on_size(ww, wh);
+			RepaintWindow();
 		});
 	}
 	if (!is_4k) {
 		playerSizeMenu.addToggleItem('Normal', pref, 'player_normal', () => {
 			pref.player_small     = false;
-            pref.player_normal    = 'player_normal';
+			pref.player_normal    = 'player_normal';
 			pref.player_large     = false;
 			pref.player_4k_small  = false;
 			pref.player_4k_normal = false;
 			pref.player_4k_large  = false;
-            mode_handler.player_size_normal();
-            createPlaylistFonts();
-            setBiographySize();
-            playlist.on_size(ww, wh);
-            RepaintWindow();
+			mode_handler.player_size_normal();
+			createPlaylistFonts();
+			setBiographySize();
+			playlist.on_size(ww, wh);
+			RepaintWindow();
 		});
 	}
 	if (!is_4k) {
 		playerSizeMenu.addToggleItem('Large', pref, 'player_large', () => {
 			pref.player_small     = false;
 			pref.player_normal    = false;
-            pref.player_large     = 'player_large';
+			pref.player_large     = 'player_large';
 			pref.player_4k_small  = false;
 			pref.player_4k_normal = false;
 			pref.player_4k_large  = false;
-            mode_handler.player_size_large();
-            createPlaylistFonts();
-            setBiographySize();
-            playlist.on_size(ww, wh);
-            RepaintWindow();
+			mode_handler.player_size_large();
+			createPlaylistFonts();
+			setBiographySize();
+			playlist.on_size(ww, wh);
+			RepaintWindow();
 		});
 	}
 	if (is_4k) {
@@ -1480,15 +1482,14 @@ function onOptionsMenu(x, y) {
 			pref.player_small     = false;
 			pref.player_normal    = false;
 			pref.player_large     = false;
-            pref.player_4k_small  = 'player_4k_small';
+			pref.player_4k_small  = 'player_4k_small';
 			pref.player_4k_normal = false;
 			pref.player_4k_large  = false;
-            mode_handler.player_size_4k_small();
-            createPlaylistFonts();
-            setBiographySize();
-            playlist.on_size(ww, wh);
-            RepaintWindow();
-
+			mode_handler.player_size_4k_small();
+			createPlaylistFonts();
+			setBiographySize();
+			playlist.on_size(ww, wh);
+			RepaintWindow();
 		});
 	}
 	if (is_4k) {
@@ -1496,14 +1497,14 @@ function onOptionsMenu(x, y) {
 			pref.player_small     = false;
 			pref.player_normal    = false;
 			pref.player_large     = false;
-            pref.player_4k_small  = false;
-            pref.player_4k_normal = 'player_4k_normal';
+			pref.player_4k_small  = false;
+			pref.player_4k_normal = 'player_4k_normal';
 			pref.player_4k_large  = false;
-            mode_handler.player_size_4k_normal();
-            createPlaylistFonts();
-            setBiographySize();
-            playlist.on_size(ww, wh);
-            RepaintWindow();
+			mode_handler.player_size_4k_normal();
+			createPlaylistFonts();
+			setBiographySize();
+			playlist.on_size(ww, wh);
+			RepaintWindow();
 		});
 	}
 	if (is_4k) {
@@ -1511,14 +1512,14 @@ function onOptionsMenu(x, y) {
 			pref.player_small     = false;
 			pref.player_normal    = false;
 			pref.player_large     = false;
-            pref.player_4k_small  = false;
-            pref.player_4k_normal = false;
+			pref.player_4k_small  = false;
+			pref.player_4k_normal = false;
 			pref.player_4k_large  = 'player_4k_large';
-            mode_handler.player_size_4k_large();
-            createPlaylistFonts();
-            setBiographySize();
-            playlist.on_size(ww, wh);
-            RepaintWindow();
+			mode_handler.player_size_4k_large();
+			createPlaylistFonts();
+			setBiographySize();
+			playlist.on_size(ww, wh);
+			RepaintWindow();
 		});
 	}
 	playerSizeMenu.appendTo(menu);
@@ -1580,18 +1581,11 @@ function onOptionsMenu(x, y) {
 				mode_handler.layout_mode_compact_mode();
 			}
 		}
-        if (is_4k) {
-            libraryProps.baseFontSize = 24; // Sets Library font size to 24 pixel for 4K
-            initLibraryPanel(); setLibrarySize(); library_tree.create_images(); p.resetZoom(); // Resets Library
-            ppt.baseFontSize = 24; // Sets Biography font size for 24 pixel for 4K
-            initBiographyPanel(); setBiographySize(); butBio.create_images(); butBio.resetZoom(); uiBio.updSbar(); initBiographyColors(); // Resets Biography
-        } else {
-            libraryProps.baseFontSize = 16; // Sets Library font size to 16 pixel for FHD
-            initLibraryPanel(); setLibrarySize(); library_tree.create_images(); p.resetZoom(); // Resets Library
-            ppt.baseFontSize = 12; // Sets Biography font size for 12 pixel for FHD
-            initBiographyPanel(); setBiographySize(); butBio.create_images(); butBio.resetZoom(); uiBio.updSbar(); initBiographyColors(); // Resets Biography
-        }
-        window.Repaint();
+		ppt.baseFontSize = scaleForDisplay(12); // Sets Library font size to 12px (FHD) or 24 pixel (4k)
+		initLibraryPanel(); setLibrarySize(); pop.createImages(); panel.zoomReset(); // Resets Library
+		pptBio.baseFontSizeBio = scaleForDisplay(12); // Sets Biography font size to 12px (FHD) or 24 pixel (4k)
+		initBiographyPanel(); setBiographySize(); uiBio.setSbar(); butBio.createImages(); butBio.resetZoom(); initBiographyColors(); // Resets Biography
+		window.Repaint();
 	});
 
 	const changeFontSizeMenu = new Menu('Font size');
@@ -1690,41 +1684,41 @@ function onOptionsMenu(x, y) {
 	});
 	playlistFontSizeMenu.appendTo(changeFontSizeMenu);
 
-	changeFontSizeMenu.createRadioSubMenu('Library', ['-1', '11px', '12px', '13px', '14px', '16px (default)', '18px', '+1'], libraryProps.baseFontSize,
+	changeFontSizeMenu.createRadioSubMenu('Library', ['-1', '11px', '12px (default)', '13px', '14px', '16px', '18px', '+1'], ppt.baseFontSize,
 	[-1, is_4k ? 11 * 1.5 : 11, is_4k ? 12 * 1.5 : 12, is_4k ? 13 * 1.5 : 13, is_4k ? 14 * 1.5 : 14, is_4k ? 16 * 1.5 : 16, is_4k ? 18 * 1.5 : 18, 999], (size) => {
 		if (size === -1) {
-			libraryProps.baseFontSize--;
-			p.filterFont--;
-			p.filterBtnFont--;
+			ppt.baseFontSize--;
+			panel.filter.font--;
+			panel.settings.font.Size--;
 		} else if (size === 999) {
-			libraryProps.baseFontSize++;
-			p.filterFont++;
-			p.filterBtnFont++;
+			ppt.baseFontSize++;
+			panel.filter.font++;
+			panel.settings.font.Size++;
 		} else {
-			libraryProps.baseFontSize = size;
-			p.filterFont = size;
-			p.filterBtnFont = size;
+			ppt.baseFontSize = size;
+			panel.filter.font = size;
+			panel.settings.font.Size = size;
 		}
-		p.resetZoom();
-		library_tree.create_images();
 		initLibraryPanel();
 		setLibrarySize();
+		panel.zoomReset();
+		pop.createImages();
 		window.Repaint();
 	});
 
-	changeFontSizeMenu.createRadioSubMenu('Biography', ['-1', '11px', '12px (default)', '13px', '14px', '16px', '18px', '+1'], ppt.baseFontSize,
+	changeFontSizeMenu.createRadioSubMenu('Biography', ['-1', '11px', '12px (default)', '13px', '14px', '16px', '18px', '+1'], pptBio.baseFontSizeBio,
 	[-1, is_4k ? 11 * 2 : 11, is_4k ? 12 * 2 : 12, is_4k ? 13 * 2 : 13, is_4k ? 14 * 2 : 14, is_4k ? 16 * 2 : 16, is_4k ? 18 * 2 : 18, 999], (size) => {
 		if (size === -1) {
-			ppt.baseFontSize--;
+			pptBio.baseFontSizeBio--;
 		} else if (size === 999) {
-			ppt.baseFontSize++;
+			pptBio.baseFontSizeBio++;
 		} else {
-			ppt.baseFontSize = size;
+			pptBio.baseFontSizeBio = size;
 		}
-		butBio.resetZoom();
-		butBio.create_images();
 		initBiographyPanel();
 		setBiographySize();
+		butBio.resetZoom();
+		butBio.createImages();
 		window.Repaint();
 	});
 
@@ -1741,7 +1735,6 @@ function onOptionsMenu(x, y) {
 		pref.displayLyrics && initLyrics();
 	});
 	changeFontSizeMenu.appendTo(menu);
-
 	menu.addSeparator();
 
 	// Player controls options
@@ -1916,6 +1909,7 @@ function onOptionsMenu(x, y) {
 		loadCountryFlags();
 		RepaintWindow();
 	});
+	playerControlsMenu.addToggleItem('Show pause on album cover', pref, 'show_pause', () => { RepaintWindow(); });
 	playerControlsMenu.addSeparator();
 
 	playerControlsMenu.addToggleItem('Enable tooltips', pref, 'show_tt', () => {
@@ -1923,21 +1917,21 @@ function onOptionsMenu(x, y) {
 			pref.show_tt = true;
 			pref.show_truncatedText_tt = true;
 			pref.show_timeline_tooltips = true;
-			libraryProps.tooltips = true;
+			ppt.tooltips = true;
 		} else {
 			pref.show_tt = false;
 			pref.show_truncatedText_tt = false;
 			pref.show_timeline_tooltips = false;
-			libraryProps.tooltips = false;
+			ppt.tooltips = false;
 		}
 	});
 	playerControlsMenu.addToggleItem('Enable tooltips on truncated text', pref, 'show_truncatedText_tt', () => {
 		if (pref.show_truncatedText_tt) {
 			pref.show_truncatedText_tt = true;
-			libraryProps.tooltips = true;
+			ppt.tooltips = true;
 		} else {
 			pref.show_truncatedText_tt = false;
-			libraryProps.tooltips = false;
+			ppt.tooltips = false;
 		}
 	});
 	playerControlsMenu.addToggleItem('Enable timeline tooltips', pref, 'show_timeline_tooltips');
@@ -1965,8 +1959,8 @@ function onOptionsMenu(x, y) {
 		window.Repaint();
 	};
 
-	const playlistScrollBarMenu = new Menu('Playlist scrollbar');
-	playlistScrollBarMenu.addToggleItem('Auto-hide scrollbar', pref, 'autoHideScrollbar_Playlist',  () => {
+	const playlistScrollBarMenu = new Menu('Scrollbar');
+	playlistScrollBarMenu.addToggleItem('Auto-hide', pref, 'autoHideScrollbar_Playlist',  () => {
 		if (pref.autoHideScrollbar_Playlist) {
 			g_properties.show_scrollbar = false;
 			initPlaylist();
@@ -1979,11 +1973,11 @@ function onOptionsMenu(x, y) {
 			RepaintWindow();
 		}
 	});
-	playlistScrollBarMenu.addToggleItem('Playlist smooth scroll', pref, 'smoothScrolling');
+	playlistScrollBarMenu.addToggleItem('Smooth scroll', pref, 'smoothScrolling');
 	playlistScrollBarMenu.appendTo(playlistMenu);
 
 	const playlistManagerMenu = new Menu('Playlist manager');
-	playlistManagerMenu.addToggleItem('Auto-hide playlist manager', pref, 'autoHidePLM',  () => {
+	playlistManagerMenu.addToggleItem('Auto-hide', pref, 'autoHidePLM',  () => {
 		if (pref.autoHidePLM) {
 			initPlaylistColors();
 			RepaintWindow();
@@ -2089,66 +2083,179 @@ function onOptionsMenu(x, y) {
 	// Library panel options
 
 	const libraryMenu = new Menu('Library');
-	libraryMenu.createRadioSubMenu('Change design', ['Traditional', 'Modern'], pref.libraryDesign, ['library_traditional', 'library_modern'], (mode) => {
+	libraryMenu.createRadioSubMenu('Design', ['Georgia-ReBORN', 'Ultra-modern', 'Modern', 'Traditional', 'List view', 'List view + album covers', 'List view + artist photos', 'Album covers', 'Flow mode', ], pref.libraryDesign,
+	['reborn', 'ultraModern', 'modern', 'traditional', 'listView', 'listView_albumCovers', 'listView_artistPhotos', 'albumCovers', 'flowMode'], (mode) => {
 		pref.libraryDesign = mode;
-		if (pref.libraryDesign === 'library_traditional') {
-			libraryProps.fullLine = '';
-		} else if (pref.libraryDesign === 'library_modern') {
-			libraryProps.fullLine = true;
+		if (pref.libraryDesign === 'reborn') {
+			panel.set('quickSetup', 9);
+		} else if (pref.libraryDesign === 'ultraModern') {
+			panel.set('quickSetup', 2);
+		} else if (pref.libraryDesign === 'modern') {
+			panel.set('quickSetup', 1);
+		} else if (pref.libraryDesign === 'traditional') {
+			panel.set('quickSetup', 0);
+		} else if (pref.libraryDesign === 'listView') {
+			panel.set('quickSetup', 3);
+		} else if (pref.libraryDesign === 'listView_albumCovers') {
+			panel.set('quickSetup', 4);
+		} else if (pref.libraryDesign === 'listView_artistPhotos') {
+			panel.set('quickSetup', 5);
+		} else if (pref.libraryDesign === 'albumCovers') {
+			panel.set('quickSetup', 6);
+		} else if (pref.libraryDesign === 'flowMode') {
+			pref.libraryLayout = 'full_width';
+			panel.set('quickSetup', 7);
 		}
-		library_tree.create_images();
-		RepaintWindow();
 	});
+	const libraryAlbumArtMenu = new Menu('Album art');
+	libraryAlbumArtMenu.createRadioSubMenu('Layout', pref.libraryDesign === 'flowMode' ? ['Only "Full" available when flow mode is active'] : ['Normal', 'Full'], pref.libraryLayout, pref.libraryDesign === 'flowMode' ? ['full_width'] : ['normal_width', 'full_width'], function (libraryLayout) {
+		pref.libraryLayout = libraryLayout;
+		setLibrarySize();
+		window.Repaint();
+	}, !ppt.albumArtShow || ppt.albumArtShow && (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos'));
+	libraryAlbumArtMenu.createRadioSubMenu('Thumbnail size', ['Auto (default)', 'Small', 'Regular', 'Medium', 'Large'], pref.libraryThumbnailSize, ['auto', 0,1,2,3], function (thumbnailSize) {
+		pref.libraryThumbnailSize = thumbnailSize;
+		if (pref.libraryThumbnailSize === 0) {
+			ppt.thumbNailSize = 0;
+		} else if (pref.libraryThumbnailSize === 1) {
+			ppt.thumbNailSize = 1;
+		} else if (pref.libraryThumbnailSize === 2) {
+			ppt.thumbNailSize = 2;
+		} else if (pref.libraryThumbnailSize === 3) {
+			ppt.thumbNailSize = 3;
+		}
+		setLibrarySize();
+		window.Repaint();
+	}, !ppt.albumArtShow);
+	if (!ppt.albumArtShow) {
+		libraryAlbumArtMenu.addToggleItem('Activate options or change design to album art', ppt, 'albumArtShow', () => {
+			if (pref.libraryDesign === 'flowMode') pref.libraryLayout = 'full_width';
+			lib.logTree();
+			pop.clearTree();
+			ppt.toggle('albumArtShow');
+			panel.imgView = ppt.albumArtShow = true;
+			men.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
+			initLibraryPanel();
+			setLibrarySize();
+			initLibraryColors();
+			displayPlaylist = false;
+			displayLibrary = true;
+			btns.library.enabled = true;
+			btns.library.changeState(ButtonState.Down);
+		}, ppt.albumArtShow);
+		libraryAlbumArtMenu.addSeparator();
+	}
+	libraryAlbumArtMenu.appendTo(libraryMenu);
 
-	const libraryScrollBarMenu = new Menu('Library scrollbar');
-	libraryScrollBarMenu.addToggleItem('Auto-hide scrollbar', pref, 'autoHideScrollbar_Library', () => {
+	const libraryViewMenu = new Menu('View');
+	libraryViewMenu.addRadioItems(['Front (default)', 'Back', 'Disc', 'Icon', 'Artist'], ppt.artId, [0, 1, 2, 3, 4], function(view) {
+		ppt.artId = view;
+		men.setAlbumart(view)
+		panel.updateProp(1);
+	});
+	libraryViewMenu.addSeparator();
+	libraryViewMenu.addRadioItems(['Group: auto', 'Group: top level', 'Group: two levels'], ppt.albumArtGrpLevel, [0, 1, 2], function(view) {
+		ppt.albumArtGrpLevel = view;
+		men.setAlbumart(view - 5)
+		panel.updateProp(1);
+	});
+	libraryViewMenu.appendTo(libraryAlbumArtMenu);
+
+	const libraryImageMenu = new Menu('Image');
+	libraryImageMenu.createRadioSubMenu('Front', ['Regular', 'Auto-fill (default)', 'Circular'], ppt.imgStyleFront, [0, 1, 2], function(style) {
+		ppt.imgStyleFront = style;
+		panel.updateProp(1);
+	});
+	libraryImageMenu.createRadioSubMenu('Back', ['Regular', 'Auto-fill (default)', 'Circular'], ppt.imgStyleBack, [0, 1, 2], function(style) {
+		ppt.imgStyleBack = style;
+		panel.updateProp(1);
+	});
+	libraryImageMenu.createRadioSubMenu('Disc', ['Regular', 'Auto-fill (default)', 'Circular'], ppt.imgStyleDisc, [0, 1, 2], function(style) {
+		ppt.imgStyleDisc = style;
+		panel.updateProp(1);
+	});
+	libraryImageMenu.createRadioSubMenu('Icon', ['Regular', 'Auto-fill (default)', 'Circular'], ppt.imgStyleIcon, [0, 1, 2], function(style) {
+		ppt.imgStyleIcon = style;
+		panel.updateProp(1);
+	});
+	libraryImageMenu.createRadioSubMenu('Artist', ['Regular', 'Auto-fill (default)', 'Circular'], ppt.imgStyleArtist, [0, 1, 2], function(style) {
+		ppt.imgStyleArtist = style;
+		panel.updateProp(1);
+	});
+	libraryImageMenu.appendTo(libraryAlbumArtMenu);
+
+	const libraryLabelsMenu = new Menu('Labels');
+	libraryLabelsMenu.addRadioItems(['Bottom (default)', 'Right', 'Blend', 'Dark', 'None'], ppt.albumArtLabelType, [1, 2, 3, 4, 0], (style) => {
+		ppt.albumArtLabelType = style;
+		panel.updateProp(1);
+	});
+	libraryLabelsMenu.addSeparator();
+	libraryLabelsMenu.addToggleItem('Flip', ppt, 'albumArtFlipLabels', () => {  panel.updateProp(1); });
+	libraryLabelsMenu.appendTo(libraryAlbumArtMenu);
+
+	const libraryScrollBarMenu = new Menu('Scrollbar');
+	libraryScrollBarMenu.addToggleItem('Auto-hide', pref, 'autoHideScrollbar_Library', () => {
 		if (pref.autoHideScrollbar_Library) {
 			g_properties.show_scrollbar = false;
+			ppt.sbarShow = 1;
 			setLibrarySize();
 		} else {
 			g_properties.show_scrollbar = true;
+			ppt.sbarShow = 2;
 			setLibrarySize();
 		}
 	});
-	libraryScrollBarMenu.addToggleItem('Smooth scroll', libraryProps, 'smoothScroll');
+	libraryScrollBarMenu.addToggleItem('Smooth scroll', ppt, 'smooth');
 	libraryScrollBarMenu.appendTo(libraryMenu);
+	libraryMenu.addSeparator();
 
-	libraryMenu.createRadioSubMenu('Root node type', ['Hide', '"All Music"', 'View name'], libraryProps.rootNode, [0,1,2], function (nodeIndex) {
-		libraryProps.rootNode = nodeIndex;
-		lib_manager.rootNodes(1);
+	libraryMenu.createRadioSubMenu('Node root type', ['Hide', 'All Music', 'View name', 'Summary item'], ppt.rootNode, [0,1,2,3], function (nodeIndex) {
+		ppt.rootNode = nodeIndex;
+		panel.updateProp(1);
 	});
-	libraryMenu.createRadioSubMenu('Node item counts', ['Hidden', '# Tracks', '# Sub-Items'], libraryProps.nodeItemCounts, [0,1,2], function (nodeIndex) {
-		libraryProps.nodeItemCounts = nodeIndex;
-		lib_manager.rootNodes(1);
+	libraryMenu.createRadioSubMenu('Node item counts', ['Hidden', '# Tracks', '# Sub-Items'], ppt.nodeCounts, [0,1,2], function (nodeIndex) {
+		ppt.nodeCounts = nodeIndex;
+		panel.updateProp(1);
 	});
-	libraryMenu.createRadioSubMenu('Double-click action', ['Expand/Collapse Folders', 'Send and Play', 'Send to Playlist'], libraryProps.doubleClickAction, [0,1,2], function(action) {
-		libraryProps.doubleClickAction = action;
+	libraryMenu.createRadioSubMenu('Node item counts position', ['Right', 'Left'], ppt.countsRight, [true,false], function (nodeCounts) {
+		ppt.countsRight = nodeCounts;
+		panel.updateProp(1);
+	});
+	libraryMenu.createRadioSubMenu('Node auto collapse', ['On', 'Off'], ppt.autoCollapse, [true,false], function (nodeCollapse) {
+		ppt.autoCollapse = nodeCollapse;
+		panel.updateProp(1);
 	});
 	libraryMenu.addSeparator();
 
-	libraryMenu.addToggleItem('Switch to playlist when adding songs', pref, 'libraryPlaylistSwitch');
-	libraryMenu.addToggleItem('Remember library state', libraryProps, 'rememberTree');
-	libraryMenu.addToggleItem('Full line clickable', libraryProps, 'fullLine');
-	libraryMenu.addToggleItem('Show tooltips', libraryProps, 'tooltips', () => {
-		if (libraryProps.tooltips) {
-			libraryProps.tooltips = true;
+	libraryMenu.createRadioSubMenu('Double-click action', ['Send to playlist', 'Send to playlist and play', 'Expand/Collapse tree'], ppt.dblClickAction, [0,1,2], function(action) {
+		ppt.dblClickAction = action;
+	});
+	libraryMenu.addSeparator();
+
+	libraryMenu.addToggleItem('Remember library state', ppt, 'rememberTree', () => { panel.updateProp(1); });
+	libraryMenu.addToggleItem('Full line clickable', ppt, 'fullLineSelection', () => { panel.updateProp(1); });
+	libraryMenu.addToggleItem('Show now playing', ppt, 'highLightNowplaying', () => { panel.updateProp(1); });
+	libraryMenu.addToggleItem('Show tooltips', ppt, 'tooltips', () => {
+		if (ppt.tooltips) {
+			ppt.tooltips = true;
 			pref.show_truncatedText_tt = true;
 			setLibrarySize();
 		} else {
-			libraryProps.tooltips = false;
+			ppt.tooltips = false;
 			pref.show_truncatedText_tt = false;
 			setLibrarySize();
 		}
 	});
-	libraryMenu.addToggleItem('Show tracks when expanding nodes', libraryProps, 'nodeShowTracks', () => { library_tree.collapseAll(); });
-	libraryMenu.addToggleItem('Show library scrollbar', libraryProps, 'showScrollbar', () => { setLibrarySize(); });
+	libraryMenu.addToggleItem('Show tracks when expanding nodes', ppt, 'showTracks', () => { pop.collapseAll(); });
+	libraryMenu.addToggleItem('Show row stripes', ppt, 'rowStripes', () => { panel.updateProp(1); });
+	libraryMenu.addToggleItem('Switch to playlist when adding songs', pref, 'libraryPlaylistSwitch');
+	libraryMenu.addSeparator();
+	libraryMenu.addToggleItem('Always load View by same as tree', ppt, 'artTreeSameView', () => { panel.updateProp(1); });
+	libraryMenu.addToggleItem('Always load preset with current view pattern', ppt, 'presetLoadCurView', () => { panel.updateProp(1); });
 	libraryMenu.addSeparator();
 
-	libraryMenu.addToggleItem('Send files to current playlist', libraryProps, 'sendToCurrent');
-	//libraryMenu.addToggleItem('Auto-fill playlist on selection', libraryProps, 'autoFill');
-	libraryMenu.addToggleItem('Auto collapse nodes', libraryProps, 'autoCollapse');
 	libraryMenu.addItem('Reset library zoom', false, () => {
-		p.resetZoom();
+		panel.zoomReset();
 	});
 
 	libraryMenu.appendTo(menu);
@@ -2156,15 +2263,182 @@ function onOptionsMenu(x, y) {
 	// Biography panel options
 
 	const biographyMenu = new Menu('Biography');
-	const biographyScrollBarMenu = new Menu('Biography scrollbar');
-	biographyScrollBarMenu.addToggleItem('Auto-hide scrollbar', pref, 'autoHideScrollbar_Biography', () => {
+
+	const biographyThemeMenu = new Menu('Theme');
+	biographyThemeMenu.addRadioItems(['Georgia-ReBORN', 'Dark', 'Blend', 'Light'], pref.biographyTheme, [0, 1, 2, 3], (theme) => {
+		pref.biographyTheme = theme;
+		if (pref.biographyTheme === 0) {
+			pptBio.theme = 0; // User interface ( Default )
+		} else if (pref.biographyTheme === 1) {
+			pptBio.theme = 1; // Dark
+		} else if (pref.biographyTheme === 2) {
+			pptBio.theme = 2; // Blend
+		} else if (pref.biographyTheme === 3) {
+			pptBio.theme = 3; // Light
+		}
+		uiBio.updateProp(1);
+		txt.refresh(4); // Needed to correctly update and paint Blend theme
+		initBiographyColors();
+	});
+	biographyThemeMenu.appendTo(biographyMenu);
+
+	const biographyDisplayMenu = new Menu('Display');
+	biographyDisplayMenu.addRadioItems(['Image + text', 'Image', 'Text'], pref.biographyDisplay, ['Image+text', 'Image', 'Text'], (display) => {
+		pref.biographyDisplay = display;
+		if (pref.biographyDisplay === 'Image+text') {
+			pptBio.style = 0;
+			pptBio.img_only = false;
+			pptBio.text_only = false;
+		} else if (pref.biographyDisplay === 'Image') {
+			pptBio.img_only = true;
+			pptBio.text_only = false;
+		} else if (pref.biographyDisplay === 'Text') {
+			pptBio.img_only = false;
+			pptBio.text_only = true;
+		}
+		uiBio.updateProp(1);
+	});
+	biographyDisplayMenu.addSeparator();
+	biographyDisplayMenu.addToggleItem('Filmstrip', pptBio, 'showFilmStrip', () => { uiBio.updateProp(1); });
+	biographyDisplayMenu.addToggleItem('Seeker', pptBio, 'imgSeeker', () => { uiBio.updateProp(1); });
+	biographyDisplayMenu.addToggleItem('Heading', pptBio, 'heading', () => { uiBio.updateProp(1); });
+	biographyDisplayMenu.addSeparator();
+	biographyDisplayMenu.addRadioItems(['Artist view', 'Album view'], pptBio.artistView, [true, false], (view) => {
+		pptBio.artistView = view;
+		uiBio.updateProp(1);
+	});
+	biographyDisplayMenu.addSeparator();
+	biographyDisplayMenu.addRadioItems(['Prefer now playing', 'Follow selected track (playlist)'], pptBio.focus, [false, true], (view) => {
+		pptBio.focus = view;
+		uiBio.updateProp(1);
+	});
+	biographyDisplayMenu.appendTo(biographyMenu);
+
+	const biographyLayoutMenu = new Menu('Layout');
+	biographyLayoutMenu.addRadioItems(['Top (default)', 'Right', 'Bottom', 'Left', 'Overlay'], pptBio.style, [0, 1, 2, 3, 4], (layout) => {
+		pptBio.style = layout;
+		uiBio.updateProp(1);
+	});
+	biographyLayoutMenu.addSeparator();
+	biographyLayoutMenu.appendTo(biographyMenu);
+
+	const biographyFilmstripMenu = new Menu('Filmstrip');
+	biographyFilmstripMenu.addRadioItems(['Top', 'Right', 'Bottom', 'Left (default)'], pptBio.filmStripPos, [0, 1, 2, 3], (pos) => {
+		pptBio.filmStripPos = pos;
+		uiBio.updateProp(1);
+	});
+	biographyFilmstripMenu.appendTo(biographyLayoutMenu);
+
+	const biographyImageMenu = new Menu('Image');
+	const biographyImageDefaultMenu = new Menu('Image + text');
+	biographyImageDefaultMenu.createRadioSubMenu('Photo', ['Regular', 'Auto-fill (default)', 'Circular'], pptBio.artStyleDual, [0, 1, 2], function(style) {
+		pptBio.artStyleDual = style;
+		uiBio.updateProp(1);
+	});
+	biographyImageDefaultMenu.addToggleItem('Reflection', pptBio, 'artReflDual', () => { pptBio.artShadowDual = false; uiBio.updateProp(1); });
+	biographyImageDefaultMenu.addToggleItem('Shadow', pptBio, 'artShadowDual', () => { pptBio.artReflDual = false; uiBio.updateProp(1); });
+	biographyImageDefaultMenu.addSeparator();
+	biographyImageDefaultMenu.createRadioSubMenu('Cover', ['Regular', 'Auto-fill (default)', 'Circular'], pptBio.covStyleDual, [0, 1, 2], function(style) {
+		pptBio.covStyleDual = style;
+		uiBio.updateProp(1);
+	});
+	biographyImageDefaultMenu.addToggleItem('Reflection', pptBio, 'covReflDual', () => { pptBio.covShadowDual = false; uiBio.updateProp(1); });
+	biographyImageDefaultMenu.addToggleItem('Shadow', pptBio, 'covShadowDual', () => { pptBio.covReflDual = false; uiBio.updateProp(1); });
+
+	biographyImageDefaultMenu.appendTo(biographyImageMenu);
+	const biographyImageOnlyMenu = new Menu('Image only');
+	biographyImageOnlyMenu.createRadioSubMenu('Photo', ['Regular', 'Auto-fill (default)', 'Circular'], pptBio.artStyleImgOnly, [0, 1, 2], function(style) {
+		pptBio.artStyleImgOnly = style;
+		uiBio.updateProp(1);
+	});
+	biographyImageOnlyMenu.addToggleItem('Reflection', pptBio, 'artReflImgOnly', () => { pptBio.artShadowImgOnly = false; uiBio.updateProp(1); });
+	biographyImageOnlyMenu.addToggleItem('Shadow', pptBio, 'artShadowImgOnly', () => { pptBio.artReflImgOnly = false; uiBio.updateProp(1); });
+	biographyImageOnlyMenu.addSeparator();
+	biographyImageOnlyMenu.createRadioSubMenu('Cover', ['Regular', 'Auto-fill (default)', 'Circular'], pptBio.covStyleImgOnly, [0, 1, 2], function(style) {
+		pptBio.covStyleImgOnly = style;
+		uiBio.updateProp(1);
+	});
+	biographyImageOnlyMenu.addToggleItem('Reflection', pptBio, 'covReflImgOnly', () => { pptBio.covShadowImgOnly = false; uiBio.updateProp(1); });
+	biographyImageOnlyMenu.addToggleItem('Shadow', pptBio, 'covShadowImgOnly', () => { pptBio.covReflImgOnly = false; uiBio.updateProp(1); });
+	biographyImageOnlyMenu.appendTo(biographyImageMenu);
+
+	const biographyImageFilmstripMenu = new Menu('Filmstrip');
+	biographyImageFilmstripMenu.createRadioSubMenu('Photo', ['Regular', 'Auto-fill (default)', 'Circular'], pptBio.filmPhotoStyle, [0, 1, 2], function(style) {
+		pptBio.filmPhotoStyle = style;
+		uiBio.updateProp(1);
+	});
+	biographyImageFilmstripMenu.createRadioSubMenu('Cover', ['Regular', 'Auto-fill (default)', 'Circular'], pptBio.filmCoverStyle, [0, 1, 2], function(style) {
+		pptBio.filmCoverStyle = style;
+		uiBio.updateProp(1);
+	});
+	biographyImageFilmstripMenu.appendTo(biographyImageMenu);
+	biographyImageMenu.addSeparator();
+
+	biographyImageMenu.addToggleItem('Auto cycle', pptBio, 'cycPic', () => { uiBio.updateProp(1); });
+	biographyImageMenu.appendTo(biographyMenu);
+
+	const biographySourcesMenu = new Menu('Sources');
+	const biographyPreferLastfmMenu = new Menu('Biography: prefer last.fm');
+	if (!pptBio.bothBio) {
+		biographyPreferLastfmMenu.addRadioItems(['Prefer allmusic', 'Prefer last.fm'], pptBio.allmusic_bio, [true, false], function(source) {
+			pptBio.allmusic_bio = source;
+			uiBio.updateProp(1);
+		});
+		biographyPreferLastfmMenu.addSeparator();
+	}
+	biographyPreferLastfmMenu.addToggleItem('Prefer both', pptBio, 'bothBio', () => { uiBio.updateProp(1); });
+	biographyPreferLastfmMenu.addSeparator();
+	biographyPreferLastfmMenu.addToggleItem('Lock to single source', pptBio, 'lockBio', () => { uiBio.updateProp(1); }, pptBio.bothBio);
+	biographyPreferLastfmMenu.appendTo(biographySourcesMenu);
+
+	const biographyPreferAllmusicMenu = new Menu('Review: prefer allmusic');
+	if (!pptBio.bothRev) {
+		biographyPreferAllmusicMenu.addRadioItems(['Prefer allmusic', 'Prefer last.fm'], pptBio.allmusic_alb, [true, false], function(source) {
+			pptBio.allmusic_alb = source;
+			uiBio.updateProp(1);
+		});
+	}
+	biographyPreferAllmusicMenu.addSeparator();
+	biographyPreferAllmusicMenu.addToggleItem('Prefer both', pptBio, 'bothRev', () => { uiBio.updateProp(1); });
+	biographyPreferAllmusicMenu.addSeparator();
+	biographyPreferAllmusicMenu.addToggleItem('Lock to single source', pptBio, 'lockRev', () => { uiBio.updateProp(1); }, pptBio.bothRev);
+	biographyPreferAllmusicMenu.addSeparator();
+	biographyPreferAllmusicMenu.createRadioSubMenu('Last.fm type', ['Album', 'Album + track', 'Track'], pptBio.inclTrackRev, [0,1,2], function(source) {
+		pptBio.inclTrackRev = source;
+	});
+	biographyPreferAllmusicMenu.appendTo(biographySourcesMenu);
+
+	biographySourcesMenu.createRadioSubMenu('Photo: cycle', ['Cycle from folder', 'Artist (single image [fb2k: display])'], pptBio.cycPhoto, [true,false], function(cycle) {
+		pptBio.cycPhoto = cycle;
+	});
+
+	const biographyCoverSrcMenu = new Menu('Cover: front');
+	biographyCoverSrcMenu.createRadioSubMenu('Cycle', ['Front', 'Back', 'Disc', 'Icon', 'Artist'], pptBio.covType, [0, 1, 2, 3, 4], (cycle) => {
+		pptBio.covType = cycle;
+		uiBio.updateProp(1);
+	}, !pptBio.loadCovAllFb);
+	biographyCoverSrcMenu.addSeparator();
+	biographyCoverSrcMenu.addToggleItem('Cycle above', pptBio, 'loadCovAllFb', () => {
+		uiBio.updateProp(1);
+	});
+	biographyCoverSrcMenu.addToggleItem('Cycle from folder', pptBio, 'loadCovFolder', () => {
+		pptBio.toggle(['cycPhoto', 'cycPhoto']);
+		fb.ShowPopupMessage("Enter folder in options: \"Server Settings\"\\Cover\\Covers: cycle folder.\n\nDefault: artist photo folder.\n\nImages are updated when the album changes. Any images arriving after choosing the current album aren't included.", 'Biography: load folder for cover cycling');
+		uiBio.updateProp(1);
+	});
+	biographyCoverSrcMenu.appendTo(biographySourcesMenu);
+
+	biographySourcesMenu.appendTo(biographyMenu);
+
+	const biographyScrollBarMenu = new Menu('Scrollbar');
+	biographyScrollBarMenu.addToggleItem('Auto-hide', pref, 'autoHideScrollbar_Biography', () => {
 		if (pref.autoHideScrollbar_Biography) {
-			ppt.sbarShow = 1;
+			pptBio.sbarShow = 1;
 			butBio.set_src_btn_hide();
 			butBio.set_scroll_btns_hide();
 			window.Repaint();
 		} else {
-			ppt.sbarShow = 2;
+			pptBio.sbarShow = 2;
 			art_scrollbar.narrow = false;
 			alb_scrollbar.narrow = false;
 			butBio.set_scroll_btns_hide(false);
@@ -2173,9 +2447,9 @@ function onOptionsMenu(x, y) {
 			window.Repaint();
 		}
 	});
-	biographyScrollBarMenu.addToggleItem('Biography smooth scroll', ppt, 'smooth');
-
+	biographyScrollBarMenu.addToggleItem('Smooth scroll', ppt, 'smooth');
 	biographyScrollBarMenu.appendTo(biographyMenu);
+
 	biographyMenu.appendTo(menu);
 
 	// Lyrics panel options
@@ -2186,35 +2460,62 @@ function onOptionsMenu(x, y) {
 
 	menu.addSeparator();
 
-	// Developer options
+	// Settings options
 
-	const debugMenu = new Menu('Developer settings');
-	debugMenu.addToggleItem('Enable debug output', settings, 'showDebugLog');
-	debugMenu.addItem('Enable theme debug output', settings.showThemeLog, () => {
-		settings.showThemeLog = !settings.showThemeLog;
-		if (settings.showThemeLog) {
-			albumart = null;
-			on_playback_new_track(fb.GetNowPlaying());
-		}
-	});
-	debugMenu.addSeparator();
+	const settingsMenu = new Menu('Settings');
+	// const themeSettingsMenu = new Menu('Theme settings');
+	// themeSettingsMenu.addItem('Create a backup', false, () => { window.ShowProperties(); });
+	// themeSettingsMenu.addItem('Restore a backup', false, () => { window.ShowProperties(); });
+	// themeSettingsMenu.addSeparator();
+	// themeSettingsMenu.addItem('Reset all', false, () => {
+	// 	const msg = '                                        Do you want to reset all theme settings to default?\n\nThis will also clear all library custom views and filters and resets all biography server settings.\n\n                                                                           Continue?';
+	// 	const continue_confirmation = (status, confirmed) => {
+	// 		if (confirmed) {
+	// 			was_first_launch = pref.is_first_launch;
+	// 			pref.is_first_launch = true; // reset all Georgia-ReBORN theme settings
+	// 			panel.updateProp(ppt, 'default_value'); // reset all library panel settings
+	// 			uiBio.updateProp(pptBio, 'default_value'); // reset all biography panel settings
+	// 			const serverBio = new SettingsBio;
+	// 			serverBio.resetCfg(); // reset all biography server settings
+	// 			return was_first_launch;
+	// 		}
+	// 	}
+	// 	popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', continue_confirmation);
+	// });
+	// themeSettingsMenu.appendTo(settingsMenu);
 
-	debugMenu.addToggleItem('Show draw timing (doesn\'t persist)', timings, 'showDrawTiming');
-	debugMenu.addToggleItem('Show extra draw timing (doesn\'t persist)', timings, 'showExtraDrawTiming');
-	debugMenu.addToggleItem('Show debug timing (doesn\'t persist)', timings, 'showDebugTiming');
-	debugMenu.addToggleItem('Show RepaintRect areas (doesn\'t persist)', timings, 'drawRepaintRects', (val) => {
-		if (!val) { repaintRects = []; window.Repaint(); }
-	});
-	debugMenu.addSeparator();
-
-	const configMenu = new Menu('Configuration file');
+	const configMenu = new Menu('Theme configuration');
 	configMenu.addItem('Edit configuration file', false, () => { _.runCmd(config.getPath()); });
 	configMenu.addToggleItem('Reload configuration', pref, 'show_reload_button', () => { window.Reload(); });
 	configMenu.addItem('Reset configuration file', false, () => { config.resetConfiguration(); });
-	configMenu.appendTo(debugMenu);
-	debugMenu.addSeparator();
-	debugMenu.addToggleItem('Disable right-click', settings, 'locked');
-	debugMenu.appendTo(menu);
+	configMenu.appendTo(settingsMenu);
+	settingsMenu.addSeparator();
+	settingsMenu.addToggleItem('Developer tools', pref, 'devTools', () => { if (pref.devTools) settings.locked = false; else settings.locked = true; });
+	settingsMenu.addToggleItem('Disable right-click', settings, 'locked');
+	settingsMenu.appendTo(menu);
+	if (pref.devTools) menu.addSeparator();
+
+	// Developer options
+
+	if (pref.devTools) {
+		const debugMenu = new Menu('Developer tools');
+		debugMenu.addToggleItem('Enable debug output', settings, 'showDebugLog');
+		debugMenu.addItem('Enable theme debug output', settings.showThemeLog, () => {
+			settings.showThemeLog = !settings.showThemeLog;
+			if (settings.showThemeLog) {
+				albumart = null;
+				on_playback_new_track(fb.GetNowPlaying());
+			}
+		});
+		debugMenu.addSeparator();
+		debugMenu.addToggleItem('Show draw timing (doesn\'t persist)', timings, 'showDrawTiming');
+		debugMenu.addToggleItem('Show extra draw timing (doesn\'t persist)', timings, 'showExtraDrawTiming');
+		debugMenu.addToggleItem('Show debug timing (doesn\'t persist)', timings, 'showDebugTiming');
+		debugMenu.addToggleItem('Show RepaintRect areas (doesn\'t persist)', timings, 'drawRepaintRects', (val) => {
+			if (!val) { repaintRects = []; window.Repaint(); }
+		});
+		debugMenu.appendTo(menu);
+	}
 
 	var idx = menu.trackPopupMenu(x, y);
 	menu.doCallback(idx);
@@ -2243,13 +2544,14 @@ function initTheme() {
 	initPlaylist();
 	// Library Colors
 	initLibraryColors();
+	but.createImages();
 	// Biography Colors
 	initBiographyColors();
-	uiBio.get_colors();
+	uiBio.getColours();
 	alb_scrollbar.setCol();
 	art_scrollbar.setCol();
-	butBio.create_images();
-	imgBio.create_images();
+	butBio.createImages();
+	imgBio.createImages();
 
 	if (displayPlaylist) {
 		playlist.on_size(ww, wh);
@@ -2325,11 +2627,14 @@ function on_init() {
 		}, 30);
 	}
 	setTimeout(() => {
-		// defer initing of library panel until everything else has loaded
+		// defer initing of library and biography panel until everything else has loaded
 		if (!libraryInitialized) {
 			initLibraryPanel();
 		}
-	}, 10000);
+		if (!biographyInitialized) {
+			initBiographyPanel();
+		}
+	}, 2000);
 }
 
 // window size changed
@@ -2337,12 +2642,12 @@ function on_size() {
 	ww = window.Width;
 	wh = window.Height;
 
-	if (pref.layout_mode === 'default_mode' && ww === 1140 && wh === 730  || pref.layout_mode === 'compact_mode' && ww === 484  && wh === 730)  { pref.player_small = true;     } else { pref.player_small = false;}
-	if (pref.layout_mode === 'default_mode' && ww === 1600 && wh === 960  || pref.layout_mode === 'compact_mode' && ww === 484  && wh === 960)  { pref.player_normal = true;    } else { pref.player_normal = false;}
-	if (pref.layout_mode === 'default_mode' && ww === 1802 && wh === 1061 || pref.layout_mode === 'compact_mode' && ww === 1600 && wh === 960)  { pref.player_large = true;     } else { pref.player_large = false;}
-	if (pref.layout_mode === 'default_mode' && ww === 2300 && wh === 1470 || pref.layout_mode === 'compact_mode' && ww === 964  && wh === 1470) { pref.player_4k_small = true;  } else { pref.player_4k_small = false;}
-	if (pref.layout_mode === 'default_mode' && ww === 2800 && wh === 1720 || pref.layout_mode === 'compact_mode' && ww === 964  && wh === 1720) { pref.player_4k_normal = true; } else { pref.player_4k_normal = false;}
-	if (pref.layout_mode === 'default_mode' && ww === 3400 && wh === 2020 || pref.layout_mode === 'compact_mode' && ww === 2800 && wh === 1720) { pref.player_4k_large = true;  } else { pref.player_4k_large = false;}
+	if (pref.layout_mode === 'default_mode' && ww === 1140 && wh === 730  || pref.layout_mode === 'compact_mode' && ww === 484  && wh === 730)  pref.player_small     = true; else pref.player_small     = false;
+	if (pref.layout_mode === 'default_mode' && ww === 1600 && wh === 960  || pref.layout_mode === 'compact_mode' && ww === 484  && wh === 960)  pref.player_normal    = true; else pref.player_normal    = false;
+	if (pref.layout_mode === 'default_mode' && ww === 1802 && wh === 1061 || pref.layout_mode === 'compact_mode' && ww === 1600 && wh === 960)  pref.player_large     = true; else pref.player_large     = false;
+	if (pref.layout_mode === 'default_mode' && ww === 2300 && wh === 1470 || pref.layout_mode === 'compact_mode' && ww === 964  && wh === 1470) pref.player_4k_small  = true; else pref.player_4k_small  = false;
+	if (pref.layout_mode === 'default_mode' && ww === 2800 && wh === 1720 || pref.layout_mode === 'compact_mode' && ww === 964  && wh === 1720) pref.player_4k_normal = true; else pref.player_4k_normal = false;
+	if (pref.layout_mode === 'default_mode' && ww === 3400 && wh === 2020 || pref.layout_mode === 'compact_mode' && ww === 2800 && wh === 1720) pref.player_4k_large  = true; else pref.player_4k_large  = false;
 
 	console.log(`in on_size() => width: ${ww}, height: ${wh}`);
 
@@ -2416,15 +2721,13 @@ function on_size() {
 
 function setLibrarySize() {
 	if (typeof libraryPanel !== 'undefined') {
-		var x = Math.round(ww * .5);
+		var x = pref.libraryLayout === 'full_width' || (pref.libraryDesign === 'library_flowMode' && ppt.albumArtShow) ? 0 : Math.round(ww * .5);
 		var y = geo.top_art_spacing;
 		var lowerSpace = calcLowerSpace();
-		var library_w = ww - x;
+		var library_w = pref.libraryLayout === 'full_width' || (pref.libraryDesign === 'library_flowMode' && ppt.albumArtShow) ? ww : ww - x;
 		var library_h = Math.max(0, wh - lowerSpace - y);
-
-		ui.sizedNode = false;
-		ui.node_sz = Math.round(16 * s.scale);
-		p.setFilterFont();	// resets filter font in case the zoom was reset
+		ppt.zoomNode = 100; // Sets correct node zoom value, i.e when switching to 4K
+		panel.setTopBar();	// Resets filter font in case the zoom was reset, also needed when changing font size
 		initLibraryColors();
 		libraryPanel.on_size(x, y, library_w, library_h);
 	} else {
@@ -2435,12 +2738,11 @@ function setLibrarySize() {
 
 function setBiographySize() {
 	if (typeof biographyPanel !== 'undefined') {
-		var x = 0;
-		var y = geo.top_art_spacing;
+		var x = pptBio.borL;
+		var y = pptBio.borT;
 		var lowerSpace = calcLowerSpace();
 		var biography_w = ww / 2;
 		var biography_h = Math.max(0, wh - lowerSpace - y);
-
 		initBiographyColors();
 		biographyPanel.on_size(x, y, biography_w, biography_h);
 	} else {
@@ -2875,13 +3177,19 @@ function on_mouse_lbtn_up(x, y, m) {
 		if (albumart && !displayBiography && pref.layout_mode === 'default_mode' && (UIHacks.MainWindowState == WindowState.Normal || pauseBtn.mouseInThis(x, y))) {
 			if ((albumart_size.x <= x && albumart_size.y <= y && albumart_size.x + albumart_size.w >= x && albumart_size.y + albumart_size.h >= y) ||
 				(cdart && !albumart && cdart_size.x <= x && cdart_size.y <= y && cdart_size.x + cdart_size.w >= x && cdart_size.y + cdart_size.h >= y) || pauseBtn.mouseInThis(x, y)) {
-				fb.PlayOrPause();
+				// Do not pause when library is in flow mode or library layout is in full width
+				if (!(ppt.albumArtShow && pref.libraryLayout === 'full_width' && displayLibrary || pref.libraryDesign === 'flowMode' && pref.libraryLayout === 'full_width' && displayLibrary || pref.libraryDesign === 'albumCovers' && pref.libraryLayout === 'full_width' && displayLibrary)) {
+					fb.PlayOrPause();
+				}
 			}
 		}
 		else if (!albumart && !displayBiography && pref.layout_mode === 'default_mode' && (UIHacks.MainWindowState == WindowState.Normal || pauseBtn.mouseInThis(x, y))) {
 			if (state.mouse_x > 0 && state.mouse_x <= (displayPlaylist || displayLibrary ? ww / 2 : !displayPlaylist || !displayLibrary ? ww :  ww / 2) &&
 				state.mouse_y > albumart_size.y && state.mouse_y <= albumart_size.h + geo.top_art_spacing || pauseBtn.mouseInThis(x, y)) {
-				fb.PlayOrPause();
+				// Do not pause when library is in flow mode or library layout is in full width
+				if (!(ppt.albumArtShow && pref.libraryLayout === 'full_width' && displayLibrary || pref.libraryDesign === 'flowMode' && pref.libraryLayout === 'full_width' && displayLibrary || pref.libraryDesign === 'albumCovers' && pref.libraryLayout === 'full_width' && displayLibrary)) {
+					fb.PlayOrPause();
+				}
 			}
 		}
 		on_mouse_move(x, y);
@@ -2931,15 +3239,18 @@ function on_mouse_rbtn_up(x, y, m) {
 		state.mouse_x > 0 && state.mouse_x <= ((isStreaming || !albumart && noArtwork || albumart) && (displayPlaylist || displayLibrary) ? ww / 2 : !displayPlaylist || !displayLibrary ? ww : albumart_size.w) &&
 		state.mouse_y > albumart_size.y && state.mouse_y <= albumart_size.h + geo.top_art_spacing) {
 
-		trace_call && console.log(qwr_utils.function_name());
-		const cmac = new ContextMainMenu();
-		qwr_utils.append_albumCover_context_menu_to(cmac);
+		// Do not show album cover context menu when library is in flow mode or library layout is in full width
+		if (!(ppt.albumArtShow && pref.libraryLayout === 'full_width' || (pref.libraryDesign === 'flowMode' || pref.libraryDesign === 'albumCovers') && pref.libraryLayout === 'full_width' && displayLibrary)) {
+			trace_call && console.log(qwr_utils.function_name());
+			const cmac = new ContextMainMenu();
+			qwr_utils.append_albumCover_context_menu_to(cmac);
 
-		menu_down = true;
-		cmac.execute(x, y);
-		menu_down = false;
+			menu_down = true;
+			cmac.execute(x, y);
+			menu_down = false;
 
-		return true;
+			return true;
+		}
 	}
 	if (displayPlaylist && playlist.mouse_in_this(x, y)) {
 		trace_call && console.log(qwr_utils.function_name());
@@ -3438,7 +3749,7 @@ function on_get_album_art_done(metadb, art_id, image, image_path) {
 function on_script_unload() {
 	console.log('Unloading Script');
 	// it appears we don't need to dispose the images which we loaded using gdi.Image in their declaration for some reason. Attempting to dispose them causes a script error.
-	if (pBio.server) {window.NotifyOthers("script_unload_bio", 0); timerBio.clear(timerBio.img);} butBio.on_script_unload();
+	if (panelBio.server) {window.NotifyOthers("script_unload_bio", 0); timerBio.clear(timerBio.img);} butBio.on_script_unload();
 }
 
 // Timed events
@@ -3743,14 +4054,13 @@ function ResizeArtwork(resetCDPosition) {
 			xCenter = is_4k ? 0.267 * ww : 0.24 * ww;
 		} else {
 			// Set Biography Window Size and Padding
-			ppt.borT  = scaleForDisplay(30);
-			ppt.borB  = scaleForDisplay(30);
-			ppt.borL  = scaleForDisplay(40);
-			ppt.borR  = scaleForDisplay(40);
-			ppt.textT = scaleForDisplay(70);
-			ppt.textL = scaleForDisplay(40);
-			ppt.textR = scaleForDisplay(40);
-			ppt.gap   = scaleForDisplay(11);
+			pptBio.borT  = scaleForDisplay(70);
+			pptBio.borL  = scaleForDisplay(40);
+			pptBio.borR  = scaleForDisplay(40);
+			pptBio.textT = scaleForDisplay(70);
+			pptBio.textL = scaleForDisplay(40);
+			pptBio.textR = scaleForDisplay(40);
+			pptBio.gap   = scaleForDisplay(11);
 		}
 		if (UIHacks.MainWindowState == WindowState.Normal && (displayPlaylist || displayLibrary || displayBiography)) {
 			var album_scale = Math.min(((displayPlaylist || displayLibrary) ? 0.50 * ww : 0.75 * ww) / albumart.Width, (wh - lowerSpace - geo.top_art_spacing) / albumart.Height);
@@ -4308,11 +4618,11 @@ function createButtonObjects(ww, wh) {
 		x = Math.round(ww * .5 + (centerMenu / 2));
 		y = is_4k ? 16 : 9;
 		h = img[0].Height + 4;
-		if (pref.menu_font_size === 11) { is_4k ? h = img[0].Height + 6 : h = img[0].Height + 5; }
-		if (pref.menu_font_size === 12) { is_4k ? h = img[0].Height + 4 : h = img[0].Height + 4; }
-		if (pref.menu_font_size === 13) { is_4k ? h = img[0].Height + 1 : h = img[0].Height + 2; }
-		if (pref.menu_font_size === 14) { is_4k ? h = img[0].Height - 2 : h = img[0].Height + 1; }
-		if (pref.menu_font_size === 16) { is_4k ? h = img[0].Height - 7 : h = img[0].Height - 2; }
+		if (pref.menu_font_size === 11) is_4k ? h = img[0].Height + 6 : h = img[0].Height + 5;
+		if (pref.menu_font_size === 12) is_4k ? h = img[0].Height + 4 : h = img[0].Height + 4;
+		if (pref.menu_font_size === 13) is_4k ? h = img[0].Height + 1 : h = img[0].Height + 2;
+		if (pref.menu_font_size === 14) is_4k ? h = img[0].Height - 2 : h = img[0].Height + 1;
+		if (pref.menu_font_size === 16) is_4k ? h = img[0].Height - 7 : h = img[0].Height - 2;
 		btns[30] = new Button(x, y, 0, h, img);
 		img = btnImg.Rating;
 		x -= (img[0].Width);
@@ -4341,59 +4651,59 @@ function createButtonObjects(ww, wh) {
 
 		btns[20] = new Button(x, y, w, h, 'File', img);
 
-		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
-		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
-		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
-		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
-		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
+		if (pref.menu_font_size === 11) x += img[0].Width + (is_4k ? 3 : 0);
+		if (pref.menu_font_size === 12) x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 13) x += img[0].Width - (is_4k ? 8 : 5);
+		if (pref.menu_font_size === 14) x += img[0].Width - (is_4k ? 14 : 8);
+		if (pref.menu_font_size === 16) x += img[0].Width - (is_4k ? 26 : 14);
 		img = btnImg.Edit;
 		btns[21] = new Button(x, y, img[0].Width, h, 'Edit', img);
 
-		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
-		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
-		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
-		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
-		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
+		if (pref.menu_font_size === 11) x += img[0].Width + (is_4k ? 3 : 0);
+		if (pref.menu_font_size === 12) x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 13) x += img[0].Width - (is_4k ? 8 : 5);
+		if (pref.menu_font_size === 14) x += img[0].Width - (is_4k ? 14 : 8);
+		if (pref.menu_font_size === 16) x += img[0].Width - (is_4k ? 26 : 14);
 		img = btnImg.View;
 		btns[22] = new Button(x, y, img[0].Width, h, 'View', img);
 
-		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
-		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
-		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
-		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
-		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
+		if (pref.menu_font_size === 11) x += img[0].Width + (is_4k ? 3 : 0);
+		if (pref.menu_font_size === 12) x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 13) x += img[0].Width - (is_4k ? 8 : 5);
+		if (pref.menu_font_size === 14) x += img[0].Width - (is_4k ? 14 : 8);
+		if (pref.menu_font_size === 16) x += img[0].Width - (is_4k ? 26 : 14);
 		img = btnImg.Playback;
 		btns[23] = new Button(x, y, img[0].Width, h, 'Playback', img);
 
-		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
-		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
-		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
-		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
-		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
+		if (pref.menu_font_size === 11) x += img[0].Width + (is_4k ? 3 : 0);
+		if (pref.menu_font_size === 12) x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 13) x += img[0].Width - (is_4k ? 8 : 5);
+		if (pref.menu_font_size === 14) x += img[0].Width - (is_4k ? 14 : 8);
+		if (pref.menu_font_size === 16) x += img[0].Width - (is_4k ? 26 : 14);
 		img = btnImg.Library;
 		btns[24] = new Button(x, y, img[0].Width, h, 'Library', img);
 
-		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
-		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
-		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
-		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
-		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
+		if (pref.menu_font_size === 11) x += img[0].Width + (is_4k ? 3 : 0);
+		if (pref.menu_font_size === 12) x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 13) x += img[0].Width - (is_4k ? 8 : 5);
+		if (pref.menu_font_size === 14) x += img[0].Width - (is_4k ? 14 : 8);
+		if (pref.menu_font_size === 16) x += img[0].Width - (is_4k ? 26 : 14);
 		img = btnImg.Help;
 		btns[25] = new Button(x, y, img[0].Width, h, 'Help', img);
 
-		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
-		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
-		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
-		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
-		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
+		if (pref.menu_font_size === 11) x += img[0].Width + (is_4k ? 3 : 0);
+		if (pref.menu_font_size === 12) x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 13) x += img[0].Width - (is_4k ? 8 : 5);
+		if (pref.menu_font_size === 14) x += img[0].Width - (is_4k ? 14 : 8);
+		if (pref.menu_font_size === 16) x += img[0].Width - (is_4k ? 26 : 14);
 		img = btnImg.Playlists;
 		btns[26] = new Button(x, y, img[0].Width, h, 'Playlists', img);
 
-		if (pref.menu_font_size === 11) { x += img[0].Width + (is_4k ? 3 : 0); }
-		if (pref.menu_font_size === 12) { x += img[0].Width - (is_4k ? 3 : 2); }
-		if (pref.menu_font_size === 13) { x += img[0].Width - (is_4k ? 8 : 5); }
-		if (pref.menu_font_size === 14) { x += img[0].Width - (is_4k ? 14 : 8); }
-		if (pref.menu_font_size === 16) { x += img[0].Width - (is_4k ? 26 : 14); }
+		if (pref.menu_font_size === 11) x += img[0].Width + (is_4k ? 3 : 0);
+		if (pref.menu_font_size === 12) x += img[0].Width - (is_4k ? 3 : 2);
+		if (pref.menu_font_size === 13) x += img[0].Width - (is_4k ? 8 : 5);
+		if (pref.menu_font_size === 14) x += img[0].Width - (is_4k ? 14 : 8);
+		if (pref.menu_font_size === 16) x += img[0].Width - (is_4k ? 26 : 14);
 		img = btnImg.Options;
 		btns[27] = new Button(x, y, img[0].Width, h, 'Options', img);
 
@@ -5009,12 +5319,12 @@ function LayoutModeHandler() {
 				set_window_size(2800, 1720);
 			}
 			if (!is_4k) {
-				UIHacks.MinSize.Width = 1140;
-				UIHacks.MinSize.Height = 730;
+				UIHacks.MinSize.Width   = 1140;
+				UIHacks.MinSize.Height  = 730;
 				UIHacks.MinSize.Enabled = true;
 			} else if (is_4k) {
-				UIHacks.MinSize.Width = 2300;
-				UIHacks.MinSize.Height = 1470;
+				UIHacks.MinSize.Width   = 2300;
+				UIHacks.MinSize.Height  = 1470;
 				UIHacks.MinSize.Enabled = true;
 			}
 			// End
@@ -5118,8 +5428,8 @@ function LayoutModeHandler() {
 			pss_switch.player_size.state = new_player_size_state;
 			if (pref.layout_mode === 'default_mode') {
 				set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
-				UIHacks.MinSize.Width = 1140;
-				UIHacks.MinSize.Height = 730;
+				UIHacks.MinSize.Width   = 1140;
+				UIHacks.MinSize.Height  = 730;
 				UIHacks.MinSize.Enabled = true;
 			}
 		}
@@ -5145,8 +5455,8 @@ function LayoutModeHandler() {
 			pss_switch.player_size.state = new_player_size_state;
 			if (pref.layout_mode === 'default_mode') {
 				set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
-				UIHacks.MinSize.Width = 1600;
-				UIHacks.MinSize.Height = 960;
+				UIHacks.MinSize.Width   = 1600;
+				UIHacks.MinSize.Height  = 960;
 				UIHacks.MinSize.Enabled = true;
 			}
 		}
@@ -5172,8 +5482,8 @@ function LayoutModeHandler() {
 			pss_switch.player_size.state = new_player_size_state;
 			if (pref.layout_mode === 'default_mode') {
 				set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
-				UIHacks.MinSize.Width = 1802;
-				UIHacks.MinSize.Height = 1061;
+				UIHacks.MinSize.Width   = 1802;
+				UIHacks.MinSize.Height  = 1061;
 				UIHacks.MinSize.Enabled = true;
 			}
 		}
@@ -5199,8 +5509,8 @@ function LayoutModeHandler() {
 			pss_switch.player_size.state = new_player_size_state;
 			if (pref.layout_mode === 'default_mode') {
 				set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
-				UIHacks.MinSize.Width = 2300;
-				UIHacks.MinSize.Height = 1470;
+				UIHacks.MinSize.Width   = 2300;
+				UIHacks.MinSize.Height  = 1470;
 				UIHacks.MinSize.Enabled = true;
 			}
 		}
@@ -5226,8 +5536,8 @@ function LayoutModeHandler() {
 			pss_switch.player_size.state = new_player_size_state;
 			if (pref.layout_mode === 'default_mode') {
 				set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
-				UIHacks.MinSize.Width = 2800;
-				UIHacks.MinSize.Height = 1720;
+				UIHacks.MinSize.Width   = 2800;
+				UIHacks.MinSize.Height  = 1720;
 				UIHacks.MinSize.Enabled = true;
 			}
 		}
@@ -5256,8 +5566,8 @@ function LayoutModeHandler() {
 			pss_switch.player_size.state = new_player_size_state;
 			if (pref.layout_mode === 'default_mode') {
 				set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
-				UIHacks.MinSize.Width = 3400;
-				UIHacks.MinSize.Height = 2020;
+				UIHacks.MinSize.Width   = 3400;
+				UIHacks.MinSize.Height  = 2020;
 				UIHacks.MinSize.Enabled = true;
 			}
 		}
@@ -5303,21 +5613,22 @@ function LayoutModeHandler() {
 
 		if (pref.is_first_launch) {
 			// Set default mode and pref.whiteTheme on first launch
-			pref.layout_mode = 'default_mode';
-			pref.whiteTheme = 'white';
-			pref.blackTheme = false;
-			pref.blueTheme = false;
-			pref.darkblueTheme = false;
-			pref.redTheme = false;
-			pref.creamTheme = false;
-			pref.nblueTheme = false;
-			pref.ngreenTheme = false;
-			pref.nredTheme = false;
-			pref.ngoldTheme = false;
-			pref.player_normal = false;
-			pref.player_large = false;
+			pref.layout_mode      = 'default_mode';
+			pref.whiteTheme       = 'white';
+			pref.libraryDesign    = 'reborn';
+			pref.blackTheme       = false;
+			pref.blueTheme        = false;
+			pref.darkblueTheme    = false;
+			pref.redTheme         = false;
+			pref.creamTheme       = false;
+			pref.nblueTheme       = false;
+			pref.ngreenTheme      = false;
+			pref.nredTheme        = false;
+			pref.ngoldTheme       = false;
+			pref.player_normal    = false;
+			pref.player_large     = false;
 			pref.player_4k_normal = false;
-			pref.player_4k_large = false;
+			pref.player_4k_large  = false;
 
 			// Init 4k resolution check and player size on first launch
 			set_window_size(1140, 730); // Reset player size for initialization
@@ -5328,11 +5639,11 @@ function LayoutModeHandler() {
 					is_4k = true;
 					pref.player_4k_normal = 'player_4k_normal';
 					pref.player_small = false;
-					libraryProps.baseFontSize = 24; // Sets Library font size to 24 pixel for 4K
-					ppt.baseFontSize = 24; // Sets Biography font size for 24 pixel for 4K
-					default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width', 2800);
+					ppt.baseFontSize = 24; // Sets Library font size to 24 pixel for 4K
+					pptBio.baseFontSizeBio = 24; // Sets Biography font size for 24 pixel for 4K
+					default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width',  2800);
 					default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height', 1720);
-					compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width', 964);
+					compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width',   964);
 					compact_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved height', 1720);
 				}
 				else if (ww < 2560 && wh < 1600) {
@@ -5344,11 +5655,11 @@ function LayoutModeHandler() {
 					is_4k = false;
 					pref.player_small = 'player_small';
 					pref.player_4k_small = false;
-					libraryProps.baseFontSize = 16; // Sets Library font size to 16 pixel for FHD
-					ppt.baseFontSize = 12; // Sets Biography font size for 12 pixel for FHD
+					ppt.baseFontSize = 12; // Sets Library font size to 12 pixel for FHD
+					pptBio.baseFontSizeBio = 12; // Sets Biography font size for 12 pixel for FHD
 					default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width', 1140);
 					default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height', 730);
-					compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width', 484);
+					compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width',  484);
 					compact_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved height', 730);
 				}
 			}
@@ -5373,10 +5684,10 @@ function set_window_size(width, height) {
 	//To avoid resizing bugs, when the window is bigger\smaller than the saved one.
 	UIHacks.MinSize.Enabled = false;
 	UIHacks.MaxSize.Enabled = false;
-	UIHacks.MinSize.Width = width;
-	UIHacks.MinSize.Height = height;
-	UIHacks.MaxSize.Width = width;
-	UIHacks.MaxSize.Height = height;
+	UIHacks.MinSize.Width   = width;
+	UIHacks.MinSize.Height  = height;
+	UIHacks.MaxSize.Width   = width;
+	UIHacks.MaxSize.Height  = height;
 
 	UIHacks.MaxSize.Enabled = true;
 	UIHacks.MaxSize.Enabled = false;
@@ -5388,14 +5699,14 @@ function set_window_size(width, height) {
 
 function set_window_size_limits(min_w, min_w_4K, max_w, max_w_4K, min_h, min_h_4K, max_h,max_h_4K) {
 	UIHacks.MinSize.Enabled = !!min_w || !!min_w_4K;
-	UIHacks.MinSize.Width = min_w || min_w_4K;
+	UIHacks.MinSize.Width   =   min_w ||   min_w_4K;
 
 	UIHacks.MaxSize.Enabled = !!max_w || !!max_w_4K;
-	UIHacks.MaxSize.Width = max_w || max_w_4K;
+	UIHacks.MaxSize.Width   =   max_w ||   max_w_4K;
 
 	UIHacks.MinSize.Enabled = !!min_h || !!min_h_4K;
-	UIHacks.MinSize.Height = min_h || min_h_4K;
+	UIHacks.MinSize.Height  =   min_h ||   min_h_4K;
 
 	UIHacks.MaxSize.Enabled = !!max_h || !!max_h_4K;
-	UIHacks.MaxSize.Height = max_h || max_h_4K;
+	UIHacks.MaxSize.Height  =   max_h ||   max_h_4K;
 }

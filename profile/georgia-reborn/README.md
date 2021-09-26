@@ -1,34 +1,57 @@
 ### New Team Members Wanted
 
-If you are a developer or have knowledge in Javascript, I would appreciate your help in optimizing Georgia-ReBORN. <br />
+If you are a developer or have knowledge in Javascript, I would appreciate your help in optimizing Georgia-ReBORN.
 
 # Georgia-ReBORN - A Clean foobar2000 Theme
 
 Georgia-ReBORN is a modification of **[Mordred's original Georgia theme](https://github.com/kbuffington/Georgia)** for foobar2000.<br />
-It's purpose is to be used mainly as a desktop version, the layout has been modified to look clean and simple without any distractions.
-The cover artwork and playlist are the main focus.
+It's purpose is to be used mainly as a desktop version, the layout has been modified to look clean and simple <br />
+without any distractions. The cover artwork and playlist are the main focus.
 
-Georgia-ReBORN has 10 themes in total ( Options -> Theme ):
+Georgia-ReBORN has 10 themes in total ( Options > Theme ):
 
-![Themes](https://i.ibb.co/PgVtM21/George-Re-BORN-Themes-Animation.webp)
+![Themes](https://i.ibb.co/w6LqrzP/George-Re-BORN-Themes-Animation.webp)
 
-WilB's awesome biography script has been integrated and modified. You can right click on the biography
-to change various options. There are 4 different biography layouts to choose from. Top is the default.
-There is also an automatic lyric fetcher using the Lyric Show 3 ( by The vern ) and Multisource component ( by veksha ).
-Synched lyrics will be highlighted with a theme color, unsynched lyrics have the default white text color:
+WilB's awesome library and biograhpy script has been integrated and modified to fit the overall design.<br />
+You can choose the top menu > Options > Library to change various library options. Besides the 8 existing<br />
+built-in designs, the library has it's own default Georgia-ReBORN design. The classical tree view can be changed<br />
+swiftly by right clicking for the context menu and choose "Show album art". You can switch back to the default<br />
+tree view by right click and choose "Tree view".
 
-![BiographyLyrics](https://i.ibb.co/fddMnxc/George-Re-BORN-Biography-And-Lyrics-Animation.webp)
+When album art is active, new options are now available in Options > Library > Album art.<br />
+The layout feature is not available for "List view + album covers/artist photos" and "Flow mode".<br />
+For convenience, when album art is active, you can easily change the layout by right clicking and choose:<br />
+Change layout to full width or Change layout to normal width depending on the current state.<br />
+Another cool feature is the dynamic thumbnail resizing, thumbnail size will change dynamically according<br />
+to the foobar player size.
 
-Georgia-ReBORN supports 4k resolutions and will adjust theme elements based on DPI and screen size. Fullscreen mode is also supported!
-There are 6 predefined sizes ( Options -> Player size ), 3 for FULL HD and below and 3 for 4K resolution and higher.
-These predefined sizes are restricted, if you have a monitor capable of 1920 x 1200 and below, the first 3 are available.
-If you have a monitor capable of 4K resolution and higher, the other 3 are available.<br />
-You can of course resize foobar to your liking, but it has minimum size restrictions ( Player size 'Small' ) to prevent button and text overlapping.
+If you want to display artist photos in the library, you need to link your path to your biography directory.<br />
+Go to File > Preferences > Display and under Album art click on the Artist tab. Here you need to set<br />
+your full path, e.g: E:\PortableApps\foobar2000\profile\yttm\art_img\$cut(%artist%,1)\%artist%\*<br />
+If you now fetch the images from the biography, it will automatically update your library with the photos.<br />
+You can easily switch the view from albums to artists. If album art or flow mode is active, right click<br />
+in the library > Show artists, to go back to default view open again the context menu and choose Show albums.
 
-There is also a mini compact player ala Winamp ( Options -> Layout -> Compact ).<br />
+![Library](https://i.ibb.co/DMmHVpW/George-Re-BORN-Library-Animation.webp)
+
+In the biography you can change options via top menu Options > Biography or you can use the context menu.<br />
+There are 4 different biography layouts to choose from, top is the default. There is also an automatic lyric fetcher<br />
+using the Lyric Show 3 ( by The vern ) and Multisource component ( by veksha ). Synched lyrics will be highlighted<br />
+with a theme color, unsynched lyrics have the default white text color.
+
+![BiographyLyrics](https://i.ibb.co/HhN4PVV/George-Re-BORN-Biography-And-Lyrics-Animation.webp)
+
+Georgia-ReBORN supports 4k resolutions and will adjust theme elements based on DPI and screen size.<br />
+Fullscreen mode is also supported! There are 6 predefined sizes ( Options > Player size ), 3 for FULL HD and below<br />
+and 3 for 4K resolution and higher. These predefined sizes are restricted, if you have a monitor that supports only<br />
+a res of 1920 x 1200 and below, the first 3 are available. If you have a monitor capable of 4K resolution and higher,<br />
+the other 3 are available. You can of course resize foobar to your liking, but it has minimum size restrictions to prevent<br />
+button and text overlapping.
+
+There is also a mini compact player ala Winamp ( Options > Layout > Compact ).<br />
 You can resize the width and height but it also has a minimum width restriction:
 
-![Sizes](https://i.ibb.co/0sZswgG/George-Re-BORN-Sizes-And-Playlist-Mode-Animation.webp)
+![Sizes](https://i.ibb.co/zrLZXhx/George-Re-BORN-Sizes-And-Playlist-Mode-Animation.webp)
 
 **NOTE:** Georgia-ReBORN starts in player size 'Small' as a failsafe player size for small res. monitor/laptop screens<br />
 and looks best if you switch to 'Normal' or a larger player size!
@@ -41,7 +64,7 @@ These image packs are optional, they contain record labels and artist logos whic
 **[Download Artist Logos Part 2](https://github.com/kbuffington/georgia-image-packs/raw/master/artistlogos.z01)**.
 Extract them to your foobar2000/profile/images
 
-![Details](https://i.ibb.co/DC5J4Sj/George-Re-BORN-Details-Animation.webp)
+![Details](https://i.ibb.co/56bGbxp/George-Re-BORN-Details-Animation.webp)
 
 ## Features
 
@@ -92,11 +115,191 @@ The optional image packs need to be extracted in C:\Users\YourUsername\AppData\R
 
 Start foobar and select Columns UI, everything else is already preconfigured.
 
+## FAQ
+
+<details>
+<summary>My foobar does not look like in the screenshots, what went wrong?</summary>
+<br />
+First, check if you have installed everything correctly, go to top menu Help > Georgia-ReBORN theme status and see<br />
+if all are checked. You don't need to have the optional image packs installed, but they look pretty cool in Details.<br />
+<br />
+Second, check if your albums are tagged correctly and if your album folder does contain a cover.<br />
+If you want to tag your albums automatically, you can choose between:<br />
+foo_MusicBrainz: https://www.foobar2000.org/components/view/foo_musicbrainz<br />
+foo_discogs: https://www.foobar2000.org/components/view/foo_discogs
+</details>
+
+<details>
+<summary>My foobar displays weird icons, what am I missing?</summary>
+<br />
+You have not installed the fonts correctly, install all located fonts from your foobar2000\profile\georgia\fonts folder.<br />
+For Windows: Into your C:\Windows\Fonts folder.<br />
+For Linux: Into your home/user/.local/share/fonts folder.
+</details>
+
+<details>
+<summary>How do you display flags in the playbar?</summary>
+<br />
+You need to tag your album with the &lt;ARTISTCOUNTRY&gt; tag:<br />
+<br />
+In the playlist click on the album cover to select all songs, right click > Properties.<br />
+Now click on the +add new button and type ARTISTCOUNTRY. In the value field type the country ( e.g United States ).<br />
+Click OK and now the flag should display in the playbar.
+</details>
+
+<details>
+<summary>How do you display the disc art in Details?</summary>
+<br />
+You need to download the disc art from https://fanart.tv and put them in your album folder with the following structure support:<br />
+
+#
+
+<b>For 1 CD:</b>
+
+<b>In root dir of the album:</b>
+
+* <b>Covers:</b><br />
+cover.jpg/png, cover2.jpg/png, cover3.jpg/png etc...<br />
+folder.jpg/png, folder2.jpg/png, folder3.jpg/png etc...<br />
+front.jpg/png, front2.jpg/png, front3.jpg/png etc...
+
+* <b>cdART:</b><br />
+cd.png, cd2.png, cd3.png etc...
+
+* <b>vinylART:</b><br />
+vinyl.png, vinyl2.png, vinyl3.png etc...
+
+#
+
+<b>Best choice for a clean folder structure, create in root dir of the album following folder or your choice:<br />
+Artwork OR Images OR Scans and put in:</b>
+
+* <b>Covers:</b><br />
+cover.jpg/png, cover2.jpg/png, cover3.jpg/png etc...<br />
+folder.jpg/png, folder2.jpg/png, folder3.jpg/png etc...<br />
+front.jpg/png, front2.jpg/png, front3.jpg/png etc...
+
+* <b>cdART:</b><br />
+cd.png, cd2.png, cd3.png etc...
+
+* <b>vinylART:</b><br />
+vinyl.png, vinyl2.png, vinyl3.png etc...
+
+#
+
+<b>For Multi CD:</b>
+
+<b>In root dir of the album:</b>
+
+* <b>Covers:</b><br />
+cover.jpg/png, cover2.jpg/png, cover3.jpg/png etc...<br />
+folder.jpg/png, folder2.jpg/png, folder3.jpg/png etc...<br />
+front.jpg/png, front2.jpg/png, front3.jpg/png etc...
+
+* <b>cdART:</b><br />
+cd.png, cd2.png, cd3.png etc...
+
+* <b>vinylART:</b><br />
+vinyl.png, vinyl2.png, vinyl3.png etc...
+
+#
+
+<b>In folders CD1, CD2 etc:</b>
+
+* <b>Covers:</b><br />
+cover.jpg/png, cover2.jpg/png, cover3.jpg/png etc...<br />
+folder.jpg/png, folder2.jpg/png, folder3.jpg/png etc...<br />
+front.jpg/png, front2.jpg/png, front3.jpg/png etc...
+
+* <b>cdART:</b><br />
+cd.png, cd2.png, cd3.png etc...
+
+* <b>vinylART:</b><br />
+vinyl.png, vinyl2.png, vinyl3.png etc...
+
+#
+
+<b>Best choice for a clean folder structure, create in root dir of the album following folder or your choice:<br />
+Artwork OR Images OR Scans and put in:</b>
+
+* <b>Covers:</b><br />
+cover.jpg/png, cover2.jpg/png, cover3.jpg/png etc...<br />
+folder.jpg/png, folder2.jpg/png, folder3.jpg/png etc...<br />
+front.jpg/png, front2.jpg/png, front3.jpg/png etc...
+
+* <b>cdART:</b><br />
+cd.png, cd2.png, cd3.png etc...
+
+* <b>vinylART:</b><br />
+vinyl.png, vinyl2.png, vinyl3.png etc...
+</details>
+
+<details>
+<summary>How can I add or remove tags displayed in Details?</summary>
+<br />
+You need to edit your georgia-reborn-config file, it can be found in your:<br />
+foobar2000\profile\georgia-reborn\georgia-reborn-config.jsonc<br />
+<br />
+This json file can be edited in any text editor, find the "metadataGrid" section and edit it to your liking,<br />
+but be careful that the line you edited ends with a comma, unless it’s the last entry in an object or array.<br />
+Make sure you spelled all the required properties correctly and you didn’t inadvertently delete a } or ].<br />
+<br />
+If something goes wrong and the theme does not load correctly, you can delete the edited config file<br />
+and a new one will be automatically created upon next foobar start.
+</details>
+
+<details>
+<summary>How can I listen to radio streams?</summary>
+<br />
+That's pretty easy, just download the m3u or pls streaming file format and drag it to your playlist.<br />
+You can then delete the m3u or pls streaming files, the streaming information will be saved in the playlist file.<br />
+MP3, AAC and OGG codecs are supported.
+</details>
+
+<details>
+<summary>How can I add my own custom view patterns in the playlist and library?</summary>
+<br />
+In the playlist, right click for the context menu and select:<br />
+Grouping > Manage presets<br />
+<br />
+In the library, click on the settings menu <b>...</b> and navigate to Configure views.<br />
+At the bottom, click on the Add new button and paste your custom view pattern, e.g:<br />
+<br />
+$stripprefix(%album artist%)|%date% %album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%
+$swapprefix(%album artist%)|%date% %album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%<br />
+<br />
+You can also change the view order by clicking the Up and Down buttons located at the bottom.
+</details>
+
+<details>
+<summary>How do I backup and transfer my playlists?</summary>
+<br />
+If you want to transfer your playlists to a new foobar installation just copy your old existing<br />
+playlists-v1.4 folder in foobar\profile and replace it with the new existing one.
+</details>
+
+<details>
+<summary>I downloaded the image packs but Artist Logos Part 2 is empty, is it down?</summary>
+<br />
+No, everything is good. This means the current size of the image pack does not need to be split into two parts<br />
+for the Github size limit.
+</details>
+
+<details>
+<summary>I want to contact you, how?</summary>
+<br />
+If you want to contact me in private, you can send me a personal message at:<br />
+https://hydrogenaud.io/index.php?action=profile;u=139848<br />
+or you can write in the general thread at:<br />
+https://github.com/TT-ReBORN/Georgia-ReBORN/discussions
+</details>
+
+
 ## Support
 
 The official discussion thread for this theme is located at **[Discussions](https://github.com/TT-ReBORN/Georgia-ReBORN/discussions)** or at
-**[HydrogenAudio](https://hydrogenaud.io/index.php?topic=121047.0)** and that's a great place to go for questions and other support issues.
-If you discover a bug, please open an issue on Github if you can, or visit
+**[HydrogenAudio](https://hydrogenaud.io/index.php?topic=121047.0)** and that's a great place<br />
+to go for questions and other support issues. If you discover a bug, please open an issue on Github if you can, or visit<br />
 **[Mordred's Georgia HydrogenAudio Thread](https://hydrogenaud.io/index.php/topic,116190.0.html)** since most of the code is based on Georgia.
 
 ## Thanks

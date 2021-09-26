@@ -4713,7 +4713,7 @@ class Row extends ListItem {
 				pref.redTheme ? RGB(145, 25, 25) :
 				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(40, 40, 40) : ''
 			);
-			// Hide DrawRect gaps when all songs are completely selected
+			// Hide DrawRect gaps when all songs are completely selected and mask lines when selecting now playing
 			gr.DrawRect(this.x, this.is_playing ? this.y - 1 : this.y, scaleForDisplay(7), this.h, 1,
 				pref.whiteTheme || pref.blackTheme ? col.primary :
 				pref.blueTheme ? RGB(242, 230, 170) :
@@ -5539,7 +5539,7 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 		if (shift_pressed) {
 			selected_indexes = get_shift_selection(row.idx);
 
-			plman.ClearPlaylistSelection(cur_playlist_idx);
+			// plman.ClearPlaylistSelection(cur_playlist_idx); // Disabled to enable contiguous Ctrl+shift selection
 			plman.SetPlaylistSelection(cur_playlist_idx, selected_indexes, true);
 		}
 		else if (ctrl_pressed) {

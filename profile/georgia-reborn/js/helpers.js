@@ -600,23 +600,23 @@ let initDPI = {
 function checkFor4k(w, h) {
 	if (pref.use_4k === 'always') {
 		is_4k = true;
-		default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width', 2800);
+		default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width',  2800);
 		default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height', 1720);
-		compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width', 964);
+		compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width',   964);
 		compact_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved height', 1720);
 	}
 	else if (pref.use_4k === 'auto' && (initDPI.dpi() > 120 && w > 1920 && initDPI.dpi() > 120 && h > 1200 || initDPI.dpi() > 120 && h > 1440 && pref.layout_mode === 'compact_mode')) {
 		is_4k = true;
-		default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width', 2800);
+		default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width',  2800);
 		default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height', 1720);
-		compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width', 964);
+		compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width',   964);
 		compact_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved height', 1720);
 	}
 	else {
 		is_4k = false;
 		default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width', 1140);
 		default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height', 730);
-		compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width', 484);
+		compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width',  484);
 		compact_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved height', 730);
 	}
 	if (last_size !== is_4k) {

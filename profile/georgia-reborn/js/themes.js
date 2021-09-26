@@ -17,9 +17,7 @@ function initPlaylistColors() {
 
 		//---> Playlist Manager
 		if (pref.autoHidePLM) {
-			g_pl_colors.playlist_mgr_text_normal =
-			pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-			g_pl_colors.background : g_pl_colors.background;
+			g_pl_colors.playlist_mgr_text_normal = g_pl_colors.background;
 
 			g_pl_colors.playlist_mgr_text_hovered =
 			pref.whiteTheme ? RGB(120, 120, 120) :
@@ -219,12 +217,8 @@ function initPlaylistColors() {
 		pref.creamTheme ? RGB(90, 90, 90) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(200, 200, 200) : '';
 
-		g_pl_colors.title_hover =
-		pref.whiteTheme ? RGB(250, 0, 0) : RGB(100, 100, 100);
-
-		g_pl_colors.rating_color =
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-		RGB(255, 190, 0) : RGB(255, 190, 0);
+		g_pl_colors.title_hover = pref.whiteTheme ? RGB(250, 0, 0) : RGB(100, 100, 100);
+		g_pl_colors.rating_color = RGB(255, 190, 0);
 
 		g_pl_colors.count_normal =
 		pref.whiteTheme ? RGB(120, 122, 124) :
@@ -235,13 +229,8 @@ function initPlaylistColors() {
 		pref.creamTheme ? RGB(120, 122, 124) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(220, 220, 220) : '';
 
-		g_pl_colors.count_selected =
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-		g_pl_colors.title_selected : g_pl_colors.title_selected;
-
-		g_pl_colors.count_playing =
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-		g_pl_colors.title_playing : g_pl_colors.title_playing;
+		g_pl_colors.count_selected = g_pl_colors.title_selected;
+		g_pl_colors.count_playing = g_pl_colors.title_playing;
 
 		g_pl_colors.row_selected =
 		pref.whiteTheme ? RGB(255, 255, 255) :
@@ -270,27 +259,12 @@ function initPlaylistColors() {
 		pref.creamTheme ? RGB(200, 200, 200) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(12, 12, 12) : '';
 
-		g_pl_colors.row_focus_normal =
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-		RGB(80, 80, 80) : RGB(80, 80, 80);
+		g_pl_colors.row_focus_normal = RGB(80, 80, 80);
 
 		//---> Common.js Settings Override
-		g_theme.colors.pss_back =
-		pref.whiteTheme ? RGB(255, 255, 255) :
-		pref.blackTheme ? RGB(20, 20, 20) :
-		pref.blueTheme ? RGB(10, 115, 200) :
-		pref.darkblueTheme ? RGB(21, 37, 56) :
-		pref.redTheme ? RGB(110, 20, 20) :
-		pref.creamTheme ? RGB(255, 249, 245) :
-		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(12, 12, 12) : '';
-
-		g_theme.colors.panel_back =
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-		g_theme.colors.pss_back : g_theme.colors.pss_back;
-
-		g_theme.colors.panel_front =
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-		g_theme.colors.pss_back : g_theme.colors.pss_back;
+		g_theme.colors.pss_back = g_pl_colors.background;
+		g_theme.colors.panel_back = g_pl_colors.background;
+		g_theme.colors.panel_front = g_pl_colors.background;
 
 		g_theme.colors.panel_line =
 		pref.whiteTheme ? RGB(200, 200, 200) :
@@ -324,17 +298,12 @@ function initPlaylistColors() {
 
 // LIBRARY COLORS
 function initLibraryColors() {
-	ui = new userinterface();
 
-		ui.col.bg =
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-		g_theme.colors.pss_back : g_theme.colors.pss_back;
-
-		ui.iconcol_h =
-		pref.whiteTheme ? RGB(0, 0, 0) : '';
+		ui.col.bg = g_pl_colors.background;
+		ui.col.topBarUnderlay = ui.col.bg;
 
 		ui.col.iconPlus =
-		pref.whiteTheme ? RGB(80, 80, 80) :
+		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(220, 220, 220) :
 		pref.blueTheme ? RGB(242, 230, 170) :
 		pref.darkblueTheme ? RGB(255, 202, 128) :
@@ -352,7 +321,7 @@ function initLibraryColors() {
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(255, 255, 255) : '';
 
 		ui.col.iconMinus_e =
-		pref.whiteTheme ? RGB(80, 80, 80) :
+		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(220, 220, 220) :
 		pref.blueTheme ? RGB(242, 230, 170) :
 		pref.darkblueTheme ? RGB(255, 202, 128) :
@@ -360,9 +329,7 @@ function initLibraryColors() {
 		pref.creamTheme ? RGB(100, 150, 110) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : '';
 
-		ui.col.iconMinus_c =
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-		ui.col.iconMinus_e : ui.col.iconMinus_e;
+		ui.col.iconMinus_c = ui.col.iconMinus_e;
 
 		ui.col.iconMinus_h =
 		pref.whiteTheme ? RGB(0, 0, 0) :
@@ -371,15 +338,6 @@ function initLibraryColors() {
 		pref.darkblueTheme ? RGB(255, 255, 255) :
 		pref.redTheme ? RGB(255, 255, 255) :
 		pref.creamTheme ? RGB(0, 0, 0) :
-		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(255, 255, 255) : '';
-
-		ui.col.iconPlussel =
-		pref.whiteTheme ? RGB(255, 255, 255) :
-		pref.blackTheme ? RGB(255, 255, 255) :
-		pref.blueTheme ? RGB(255, 255, 255) :
-		pref.darkblueTheme ? RGB(255, 255, 255) :
-		pref.redTheme ? RGB(255, 255, 255) :
-		pref.creamTheme ? RGB(255, 255, 255) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(255, 255, 255) : '';
 
 		ui.col.iconPlusbg =
@@ -391,14 +349,23 @@ function initLibraryColors() {
 		pref.creamTheme ? RGB(255, 255, 255) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(45, 45, 45) : '';
 
-		ui.col.txt_box =
-		pref.whiteTheme ? RGB(80, 80, 80) :
-		pref.blackTheme ? g_pl_colors.artist_playing :
-		pref.blueTheme ? RGB(230, 230, 230) :
-		pref.darkblueTheme ? RGB(230, 230, 230) :
-		pref.redTheme ? RGB(230, 230, 230) :
-		pref.creamTheme ? RGB(90, 90, 90) :
-		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(200, 200, 200) : '';
+		ui.col.iconPlusSel =
+		pref.whiteTheme ? RGB(0, 0, 0) :
+		pref.blackTheme ? RGB(255, 255, 255) :
+		pref.blueTheme ? RGB(255, 255, 255) :
+		pref.darkblueTheme ? RGB(255, 255, 255) :
+		pref.redTheme ? RGB(255, 255, 255) :
+		pref.creamTheme ? RGB(0, 0, 0) :
+		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(255, 255, 255) : '';
+
+		ui.col.nowpBgSel =
+		pref.whiteTheme ? RGB(255, 255, 255) :
+		pref.blackTheme ? RGB(255, 255, 255) :
+		pref.blueTheme ? RGB(255, 255, 255) :
+		pref.darkblueTheme ? RGB(255, 255, 255) :
+		pref.redTheme ? RGB(255, 255, 255) :
+		pref.creamTheme ? RGB(0, 0, 0) :
+		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(255, 255, 255) : '';
 
 		ui.col.text =
 		pref.whiteTheme ? RGB(100, 100, 100) :
@@ -418,9 +385,20 @@ function initLibraryColors() {
 		pref.creamTheme ? RGB(0, 0, 0) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(255, 255, 255) : '';
 
-		ui.col.textsel =
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-		RGB(255, 255, 255) : RGB(255, 255, 255);
+		ui.col.textSel = ui.col.text_h;
+
+		ui.col.txt_box =
+		pref.whiteTheme ? RGB(80, 80, 80) :
+		pref.blackTheme ? RGB(200, 200, 200) :
+		pref.blueTheme ? RGB(230, 230, 230) :
+		pref.darkblueTheme ? RGB(230, 230, 230) :
+		pref.redTheme ? RGB(230, 230, 230) :
+		pref.creamTheme ? RGB(90, 90, 90) :
+		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(200, 200, 200) : '';
+
+		ui.col.count = ui.col.text;
+		ui.col.selBlend = ui.col.text;
+		ui.col.lotBlend = ui.col.selBlend;
 
 		ui.col.search =
 		pref.whiteTheme ? RGB(100, 100, 100) :
@@ -449,7 +427,7 @@ function initLibraryColors() {
 		pref.creamTheme ? RGB(120, 170, 130) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : '';
 
-		ui.col.filter =
+		ui.col.filterBtn =
 		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(220, 220, 220) :
 		pref.blueTheme ? RGB(230, 230, 230) :
@@ -458,7 +436,7 @@ function initLibraryColors() {
 		pref.creamTheme ? RGB(120, 120, 120) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(200, 200, 200) : '';
 
-		ui.col.filterBtn =
+		ui.col.settingsBtn =
 		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(220, 220, 220) :
 		pref.blueTheme ? RGB(230, 230, 230) :
@@ -466,15 +444,6 @@ function initLibraryColors() {
 		pref.redTheme ? RGB(230, 230, 230) :
 		pref.creamTheme ? RGB(120, 170, 130) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : '';
-
-		ui.selcol =
-		pref.whiteTheme ? g_pl_colors.artist_playing :
-		pref.blackTheme ? g_pl_colors.artist_playing :
-		pref.blueTheme ? RGB(242, 230, 170) :
-		pref.darkblueTheme ? RGB(242, 230, 170) :
-		pref.redTheme ? RGB(230, 230, 230) :
-		pref.creamTheme ? RGB(90, 90, 90) :
-		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(25, 25, 25) : '';
 
 		ui.col.line =
 		pref.whiteTheme ? RGB(200, 200, 200) :
@@ -485,9 +454,7 @@ function initLibraryColors() {
 		pref.creamTheme ? RGB(200, 200, 200) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(45, 45, 45) : '';
 
-		ui.s_linecol =
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-		ui.col.line : ui.col.line;
+		ui.col.s_line = ui.col.line;
 
 }		initLibraryColors();
 
@@ -495,54 +462,61 @@ function initLibraryColors() {
 // BIOGRAPHY COLORS
 function initBiographyColors() {
 
-	if ((pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) && !ppt.blurDark && !ppt.blurBlend && !ppt.blurLight) {
-		ppt.headFontStyle = 1;                            // Artist/Album Type Style 0 = Normal, 1 = Bold, 2 = Italic, 3 = Bold Italic, 16 = Semibold, 18 = Semibold Italic
+	if ((pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light) {
+		pptBio.headFontStyle = 1;                         // Artist/Album Type Style 0 = Normal, 1 = Bold, 2 = Italic, 3 = Bold Italic, 16 = Semibold, 18 = Semibold Italic
 		uiBio.col.bg = g_pl_colors.background;            // Background Color
 		uiBio.col.head = g_pl_colors.artist_playing;      // Artist/Album Color
 		uiBio.col.text = g_pl_colors.title_normal;        // Text Color
+		uiBio.col.source = g_pl_colors.title_normal;      // Text Source Color
 		uiBio.col.bottomLine = g_pl_colors.line_normal;   // Line Color
 		uiBio.col.centerLine = g_pl_colors.line_normal;   // Line Color
 	}
-	else if (pref.creamTheme && !ppt.blurDark && !ppt.blurBlend && !ppt.blurLight) {
-		ppt.headFontStyle = 1;
+	else if (pref.creamTheme && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.blend) {
+		pptBio.headFontStyle = 1;
 		uiBio.col.bg = g_pl_colors.background;
 		uiBio.col.head = rgb(120, 170, 130);
 		uiBio.col.text = g_pl_colors.title_normal;
+		uiBio.col.source = g_pl_colors.title_normal;
 		uiBio.col.bottomLine = g_pl_colors.line_normal;
 		uiBio.col.centerLine = g_pl_colors.line_normal;
 	}
-	else if (ppt.blurDark) {
-		ppt.headFontStyle = 1;
+	else if (uiBio.blur.dark) {
+		pptBio.headFontStyle = 1;
 		uiBio.col.bg = g_pl_colors.background;
 		uiBio.col.head = rgb(230, 230, 230);
 		uiBio.col.text = rgb(230, 230, 230);
+		uiBio.col.source = rgb(230, 230, 230);
 		uiBio.col.bottomLine = rgb(200, 200, 200);
 		uiBio.col.centerLine = rgb(200, 200, 200);
 		if (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) {
 		uiBio.col.head = g_pl_colors.artist_playing;
 		}
 	}
-	else if (ppt.blurBlend) {
-		ppt.headFontStyle = 1;
+	else if (uiBio.blur.blend) {
+		pptBio.headFontStyle = 1;
 		uiBio.col.bg = g_pl_colors.background;
 		uiBio.col.head = rgb(65, 65, 65);
 		uiBio.col.text = rgb(60, 60, 60);
+		uiBio.col.source = rgb(60, 60, 60);
 		uiBio.col.bottomLine = rgb(120, 120, 120);
 		uiBio.col.centerLine = rgb(120, 120, 120);
 		if (pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme) {
 		uiBio.col.head = g_pl_colors.artist_playing;
 		uiBio.col.text = rgb(230, 230, 230);
+		uiBio.col.source = rgb(230, 230, 230);
 		}
 		if (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) {
 		uiBio.col.head = g_pl_colors.artist_playing;
 		uiBio.col.text = rgb(230, 230, 230);
+		uiBio.col.source = rgb(230, 230, 230);
 		}
 	}
-	else if (ppt.blurLight) {
-		ppt.headFontStyle = 1;
+	else if (uiBio.blur.light) {
+		pptBio.headFontStyle = 1;
 		uiBio.col.bg = g_pl_colors.background;
 		uiBio.col.head = rgb(65, 65, 65);
 		uiBio.col.text = rgb(60, 60, 60);
+		uiBio.col.source = rgb(60, 60, 60);
 		uiBio.col.bottomLine = rgb(120, 120, 120);
 		uiBio.col.centerLine = rgb(120, 120, 120);
 		if (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) {
@@ -628,10 +602,6 @@ function initColors() {
 		pref.creamTheme ? RGB(100, 100, 100) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(220, 220, 220) : '';
 
-		col.aa_border =
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-		RGBA(60, 60, 60, 128) : RGBA(60, 60, 60, 128);
-
 		col.shadow =
 		pref.whiteTheme ? RGBA(0, 0, 0, 60) :
 		pref.blackTheme ? RGBA(0, 0, 0, 255) :
@@ -641,13 +611,9 @@ function initColors() {
 		pref.creamTheme ? RGBA(0, 0, 0, 60) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBA(0, 0, 0, 140) : '';
 
-		col.rating =
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-		RGB(255, 170, 32) : RGB(255, 170, 32);
-
-		col.hotness =
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ?
-		RGB(192, 192, 0) : RGB(192, 192, 0);
+		col.aa_border = RGBA(60, 60, 60, 128);
+		col.rating = RGB(255, 170, 32);
+		col.hotness = RGB(192, 192, 0);
 
 }		initColors();
 
