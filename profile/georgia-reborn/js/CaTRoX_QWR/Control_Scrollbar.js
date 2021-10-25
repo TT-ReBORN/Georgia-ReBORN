@@ -12,15 +12,7 @@ g_properties.add_properties(
 /** @constructor */
 function ScrollBar(x, y, w, h, row_h, fn_redraw) {
     this.paint = function (gr) {
-        gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - scaleForDisplay(3), this.w + scaleForDisplay(8), this.h + scaleForDisplay(6),
-            pref.whiteTheme ? RGB(255, 255, 255) :
-            pref.blackTheme ? RGB(20, 20, 20) :
-            pref.blueTheme ? RGB(10, 115, 200) :
-            pref.darkblueTheme ? RGB(21, 37, 56) :
-            pref.redTheme ? RGB(110, 20, 20) :
-            pref.creamTheme ? RGB(255, 249, 245) :
-            pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(12, 12, 12) : ''
-        );
+        gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - scaleForDisplay(3), this.w + scaleForDisplay(8), this.h + scaleForDisplay(6), g_pl_colors.background);
 
         for (let part in this.sb_parts) {
             const item = this.sb_parts[part];
@@ -456,43 +448,17 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 
         var ico_back_colors =
         [
-            pref.whiteTheme ? RGB(255, 255, 255) :
-            pref.blackTheme ? RGB(20, 20, 20) :
-            pref.blueTheme ? RGB(10, 115, 200) :
-            pref.darkblueTheme ? RGB(21, 37, 56) :
-            pref.redTheme ? RGB(110, 20, 20) :
-            pref.creamTheme ? RGB(255, 249, 245) :
-            pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(12, 12, 12) : '',
-
-            pref.whiteTheme ? RGB(255, 255, 255) :
-            pref.blackTheme ? RGB(20, 20, 20) :
-            pref.blueTheme ? RGB(10, 115, 200) :
-            pref.darkblueTheme ? RGB(21, 37, 56) :
-            pref.redTheme ? RGB(110, 20, 20) :
-            pref.creamTheme ? RGB(255, 249, 245) :
-            pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(12, 12, 12) : '',
-
-            pref.whiteTheme ? RGB(255, 255, 255) :
-            pref.blackTheme ? RGB(20, 20, 20) :
-            pref.blueTheme ? RGB(10, 115, 200) :
-            pref.darkblueTheme ? RGB(21, 37, 56) :
-            pref.redTheme ? RGB(110, 20, 20) :
-            pref.creamTheme ? RGB(255, 249, 245) :
-            pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(12, 12, 12) : '',
-
-            pref.whiteTheme ? RGB(255, 255, 255) :
-            pref.blackTheme ? RGB(20, 20, 20) :
-            pref.blueTheme ? RGB(10, 115, 200) :
-            pref.darkblueTheme ? RGB(21, 37, 56) :
-            pref.redTheme ? RGB(110, 20, 20) :
-            pref.creamTheme ? RGB(255, 249, 245) :
-            pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(12, 12, 12) : ''
+            g_pl_colors.background,
+            g_pl_colors.background,
+            g_pl_colors.background,
+            g_pl_colors.background
         ];
 
         var ico_fore_colors =
         [
             pref.whiteTheme ? RGB(120, 120, 120) :
             pref.blackTheme ? RGB(100, 100, 100) :
+            pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(120, 120, 120) :
             pref.blueTheme ? RGB(220, 220, 220) :
             pref.darkblueTheme ? RGB(220, 220, 220) :
             pref.redTheme ? RGB(220, 220, 220) :
@@ -504,6 +470,7 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 
             pref.whiteTheme ? RGB(0, 0, 0) :
             pref.blackTheme ? RGB(160, 160, 160) :
+            pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(0, 0, 0) :
             pref.blueTheme ? RGB(242, 230, 170) :
             pref.darkblueTheme ? RGB(255, 255, 255) :
             pref.redTheme ? RGB(255, 255, 255) :
@@ -515,6 +482,7 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 
             pref.whiteTheme ? RGB(0, 0, 0) :
             pref.blackTheme ? RGB(160, 160, 160) :
+            pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(0, 0, 0) :
             pref.blueTheme ? RGB(242, 230, 170) :
             pref.darkblueTheme ? RGB(255, 255, 255) :
             pref.redTheme ? RGB(255, 255, 255) :
@@ -526,6 +494,7 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 
             pref.whiteTheme ? RGB(120, 120, 120) :
             pref.blackTheme ? RGB(100, 100, 100) :
+            pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(120, 120, 120) :
             pref.blueTheme ? RGB(220, 220, 220) :
             pref.darkblueTheme ? RGB(220, 220, 220) :
             pref.redTheme ? RGB(220, 220, 220) :
@@ -535,6 +504,16 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
             pref.nredTheme ? RGB(229, 7, 44) :
             pref.ngoldTheme ? RGB(254, 204, 3) : ''
         ];
+
+        let bgColor = col.primary;
+        if (g_pl_colors.background != RGB(255, 255, 255)) {
+            if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
+                ico_fore_colors = [col.superDarkAccent, col.maxDarkAccent, col.maxDarkAccent, col.superDarkAccent];
+            }
+            else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
+                ico_fore_colors = [col.superLightAccent, col.maxLightAccent, col.maxLightAccent, col.superLightAccent];
+            }
+        }
 
         var btn =
             {
@@ -608,6 +587,7 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
             [
                 pref.whiteTheme ? RGB(200, 200, 200) :
                 pref.blackTheme ? RGB(100, 100, 100) :
+                pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(200, 200, 200) :
                 pref.blueTheme ? RGB(10, 135, 225) :
                 pref.darkblueTheme ? RGB(27, 55, 90) :
                 pref.redTheme ? RGB(145, 25, 25) :
@@ -619,6 +599,7 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 
                 pref.whiteTheme ? RGB(120, 120, 120) :
                 pref.blackTheme ? RGB(160, 160, 160) :
+                pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(120, 120, 120) :
                 pref.blueTheme ? RGB(242, 230, 170) :
                 pref.darkblueTheme ? RGB(255, 202, 128) :
                 pref.redTheme ? RGB(245, 212, 165) :
@@ -630,6 +611,7 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 
                 pref.whiteTheme ? RGB(120, 120, 120) :
                 pref.blackTheme ? RGB(160, 160, 160) :
+                pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(120, 120, 120) :
                 pref.blueTheme ? RGB(242, 230, 170) :
                 pref.darkblueTheme ? RGB(255, 202, 128) :
                 pref.redTheme ? RGB(245, 212, 165) :
@@ -639,6 +621,16 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
                 pref.nredTheme ? RGB(255, 0, 0) :
                 pref.ngoldTheme ? RGB(255, 242, 3) : '',
             ];
+
+        let bgColor = col.primary;
+        if (g_pl_colors.background != RGB(255, 255, 255)) {
+            if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
+                thumb_colors = [col.accent, col.extraLightAccent, col.extraLightAccent];
+            }
+            else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
+                thumb_colors = [col.lightMiddleAccent, col.extraLightAccent, col.extraLightAccent];
+            }
+        }
 
         var w = thumb_w,
             h = thumb_h;

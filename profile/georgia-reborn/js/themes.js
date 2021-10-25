@@ -9,10 +9,11 @@ function initPlaylistColors() {
 		g_pl_colors.background =
 		pref.whiteTheme ? RGB(255, 255, 255) :
 		pref.blackTheme ? RGB(20, 20, 20) :
+		pref.rebornTheme ? pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode' ? g_pl_colors.background != undefined ? /* Need this extra condition to overwrite col.primary when switching themes, no album art loaded i.e on startup and going back to Reborn theme. Reborn theme should stay default white and not the defined col.primary blue */ !albumart || col.primary === rgb(5, 110, 195) && !fb.IsPlaying || col.primary === rgb(25, 160, 240) && !fb.IsPlaying ? RGB(255, 255, 255) : col.altBG : RGB(255, 255, 255) : g_pl_colors.background != undefined ? /* Same for Default mode */ !albumart || col.primary === rgb(5, 110, 195) && !fb.IsPlaying || col.primary === rgb(25, 160, 240) && !fb.IsPlaying ? RGB(255, 255, 255) : col.primary : RGB(255, 255, 255) :
 		pref.blueTheme ?  RGB(10, 115, 200) :
 		pref.darkblueTheme ? RGB(21, 37, 56) :
 		pref.redTheme ? RGB(110, 20, 20) :
-		pref.creamTheme ? RGB(255, 249, 245) :
+		pref.creamTheme ? RGB(255, 247, 245) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(12, 12, 12) : '';
 
 		//---> Playlist Manager
@@ -22,6 +23,7 @@ function initPlaylistColors() {
 			g_pl_colors.playlist_mgr_text_hovered =
 			pref.whiteTheme ? RGB(120, 120, 120) :
 			pref.blackTheme ? RGB(200, 200, 200) :
+			pref.rebornTheme ? RGB(120, 120, 120) :
 			pref.blueTheme ? RGB(230, 230, 230) :
 			pref.darkblueTheme ? RGB(220, 220, 220) :
 			pref.redTheme ? RGB(220, 220, 220) :
@@ -31,6 +33,7 @@ function initPlaylistColors() {
 			g_pl_colors.playlist_mgr_text_pressed =
 			pref.whiteTheme ? RGB(80, 80, 80) :
 			pref.blackTheme ? RGB(240, 240, 240) :
+			pref.rebornTheme ? RGB(80, 80, 80) :
 			pref.blueTheme ? RGB(255, 255, 255) :
 			pref.darkblueTheme ? RGB(255, 255, 255) :
 			pref.redTheme ? RGB(255, 255, 255) :
@@ -41,6 +44,7 @@ function initPlaylistColors() {
 			g_pl_colors.playlist_mgr_text_normal =
 			pref.whiteTheme ? RGB(140, 140, 140) :
 			pref.blackTheme ? RGB(180, 180, 180) :
+			pref.rebornTheme ? RGB(140, 140, 140) :
 			pref.blueTheme ? RGB(220, 220, 220) :
 			pref.darkblueTheme ? RGB(220, 220, 220) :
 			pref.redTheme ? RGB(220, 220, 220) :
@@ -50,6 +54,7 @@ function initPlaylistColors() {
 			g_pl_colors.playlist_mgr_text_hovered =
 			pref.whiteTheme ? RGB(80, 80, 80) :
 			pref.blackTheme ? RGB(240, 240, 240) :
+			pref.rebornTheme ? RGB(80, 80, 80) :
 			pref.blueTheme ? RGB(255, 255, 255) :
 			pref.darkblueTheme ? RGB(255, 255, 255) :
 			pref.redTheme ? RGB(255, 255, 255) :
@@ -58,7 +63,8 @@ function initPlaylistColors() {
 
 			g_pl_colors.playlist_mgr_text_pressed =
 			pref.whiteTheme ? RGB(140, 140, 140) :
-			pref.blackTheme ? RGB(180, 160, 180) :
+			pref.blackTheme ? RGB(180, 180, 180) :
+			pref.rebornTheme ? RGB(140, 140, 140) :
 			pref.blueTheme ? RGB(220, 220, 220) :
 			pref.darkblueTheme ? RGB(220, 220, 220) :
 			pref.redTheme ? RGB(220, 220, 220) :
@@ -69,6 +75,7 @@ function initPlaylistColors() {
 		g_pl_colors.group_title =
 		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(220, 220, 220) :
+		pref.rebornTheme ? RGB(120, 120, 120) :
 		pref.blueTheme ? RGB(220, 220, 220) :
 		pref.darkblueTheme ? RGB(220, 220, 220) :
 		pref.redTheme ? RGB(220, 220, 220) :
@@ -76,8 +83,9 @@ function initPlaylistColors() {
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(220, 220, 220) : '';
 
 		g_pl_colors.group_title_selected =
-		pref.whiteTheme && pref.layout_mode === 'default_mode' ? g_pl_colors.group_title : pref.whiteTheme && pref.layout_mode === 'compact_mode' ? RGB(255, 255, 255) :
+		pref.whiteTheme && pref.layout_mode === 'default_mode' ? g_pl_colors.group_title : pref.whiteTheme && (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') ? RGB(255, 255, 255) :
 		pref.blackTheme ? g_pl_colors.group_title :
+		pref.rebornTheme ? g_pl_colors.group_title :
 		pref.blueTheme ? RGB(245, 245, 245) :
 		pref.darkblueTheme ? RGB(240, 240, 240) :
 		pref.redTheme ? RGB(240, 240, 240) :
@@ -87,6 +95,7 @@ function initPlaylistColors() {
 		g_pl_colors.artist_normal =
 		pref.whiteTheme ? g_pl_colors.group_title :
 		pref.blackTheme ? g_pl_colors.group_title :
+		pref.rebornTheme ? g_pl_colors.group_title :
 		pref.blueTheme ? RGB(240, 240, 240) :
 		pref.darkblueTheme ? RGB(240, 240, 240) :
 		pref.redTheme ? RGB(240, 240, 240) :
@@ -94,8 +103,9 @@ function initPlaylistColors() {
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(240, 240, 240) : '';
 
 		g_pl_colors.artist_playing =
-		pref.whiteTheme && pref.layout_mode === 'default_mode' ? RGB(120, 120, 120) : pref.whiteTheme && pref.layout_mode === 'compact_mode' ? RGB(255, 255, 255) :
+		pref.whiteTheme && pref.layout_mode === 'default_mode' ? RGB(120, 120, 120) : pref.whiteTheme && (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') ? RGB(255, 255, 255) :
 		pref.blackTheme ? RGB(255, 255, 255) :
+		pref.rebornTheme ? RGB(120, 120, 120) :
 		pref.blueTheme ? RGB(242, 230, 170) :
 		pref.darkblueTheme ? RGB(255, 202, 128) :
 		pref.redTheme ? RGB(245, 212, 165) :
@@ -108,6 +118,7 @@ function initPlaylistColors() {
 		g_pl_colors.album_normal =
 		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(200, 200, 200) :
+		pref.rebornTheme ? RGB(120, 120, 120) :
 		pref.blueTheme ? RGB(230, 230, 230) :
 		pref.darkblueTheme ? RGB(220, 220, 220) :
 		pref.redTheme ? RGB(220, 220, 220) :
@@ -115,8 +126,9 @@ function initPlaylistColors() {
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(220, 220, 220) : '';
 
 		g_pl_colors.album_playing =
-		pref.whiteTheme && pref.layout_mode === 'default_mode' ? RGB(120, 120, 120) : pref.whiteTheme && pref.layout_mode === 'compact_mode' ? RGB(255, 255, 255) :
+		pref.whiteTheme && pref.layout_mode === 'default_mode' ? RGB(120, 120, 120) : pref.whiteTheme && (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') ? RGB(255, 255, 255) :
 		pref.blackTheme ? RGB(245, 245, 245) :
+		pref.rebornTheme ? RGB(120, 120, 120) :
 		pref.blueTheme ? RGB(245, 245, 245) :
 		pref.darkblueTheme ? RGB(245, 245, 245) :
 		pref.redTheme ? RGB(245, 245, 245) :
@@ -126,6 +138,7 @@ function initPlaylistColors() {
 		g_pl_colors.info_normal =
 		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(200, 200, 200) :
+		pref.rebornTheme ? RGB(120, 120, 120) :
 		pref.blueTheme ? RGB(230, 230, 230) :
 		pref.darkblueTheme ? RGB(220, 220, 220) :
 		pref.redTheme ? RGB(220, 220, 220) :
@@ -133,8 +146,9 @@ function initPlaylistColors() {
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(220, 220, 220) : '';
 
 		g_pl_colors.info_playing =
-		pref.whiteTheme && pref.layout_mode === 'default_mode' ? g_pl_colors.info_normal : pref.whiteTheme && pref.layout_mode === 'compact_mode' ? RGB(255, 255, 255) :
+		pref.whiteTheme && pref.layout_mode === 'default_mode' ? g_pl_colors.info_normal : pref.whiteTheme && (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') ? RGB(255, 255, 255) :
 		pref.blackTheme ? RGB(245, 245, 245) :
+		pref.rebornTheme ? g_pl_colors.info_normal :
 		pref.blueTheme ? RGB(245, 245, 245) :
 		pref.darkblueTheme ? RGB(245, 245, 245) :
 		pref.redTheme ? RGB(245, 245, 245) :
@@ -144,6 +158,7 @@ function initPlaylistColors() {
 		g_pl_colors.date_normal =
 		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(220, 220, 220) :
+		pref.rebornTheme ? RGB(120, 120, 120) :
 		pref.blueTheme ? RGB(240, 240, 240) :
 		pref.darkblueTheme ? RGB(220, 220, 220) :
 		pref.redTheme ? RGB(220, 220, 220) :
@@ -151,8 +166,9 @@ function initPlaylistColors() {
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(220, 220, 220) : '';
 
 		g_pl_colors.date_playing =
-		pref.whiteTheme && pref.layout_mode === 'default_mode' ? g_pl_colors.date_normal : pref.whiteTheme && pref.layout_mode === 'compact_mode' ? RGB(255, 255, 255) :
+		pref.whiteTheme && pref.layout_mode === 'default_mode' ? g_pl_colors.date_normal : pref.whiteTheme && (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') ? RGB(255, 255, 255) :
 		pref.blackTheme ? RGB(245, 245, 245) :
+		pref.rebornTheme ? g_pl_colors.date_normal :
 		pref.blueTheme ? RGB(245, 245, 245) :
 		pref.darkblueTheme ? RGB(245, 245, 245) :
 		pref.redTheme ? RGB(245, 245, 245) :
@@ -165,6 +181,7 @@ function initPlaylistColors() {
 		g_pl_colors.line_normal =
 		pref.whiteTheme ? RGB(200, 200, 200) :
 		pref.blackTheme ? RGB(45, 45, 45) :
+		pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.accent : RGB(200, 200, 200) :
 		pref.blueTheme ? RGB(17, 100, 182) :
 		pref.darkblueTheme ? RGB(12, 21, 31) :
 		pref.redTheme ? RGB(75, 18, 18) :
@@ -174,6 +191,7 @@ function initPlaylistColors() {
 		g_pl_colors.line_playing =
 		pref.whiteTheme ? RGB(200, 200, 200) :
 		pref.blackTheme ? RGB(25, 25, 25) :
+		pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.accent : RGB(200, 200, 200) :
 		pref.blueTheme ? RGB(17, 100, 182) :
 		pref.darkblueTheme ? RGB(12, 21, 31) :
 		pref.redTheme ? RGB(75, 18, 18) :
@@ -183,6 +201,7 @@ function initPlaylistColors() {
 		g_pl_colors.line_selected =
 		pref.whiteTheme ? RGB(200, 200, 200) :
 		pref.blackTheme ? RGB(25, 25, 25) :
+		pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.accent : RGB(200, 200, 200) :
 		pref.blueTheme ? RGB(17, 100, 182) :
 		pref.darkblueTheme ? RGB(12, 21, 31) :
 		pref.redTheme ? RGB(75, 18, 18) :
@@ -193,6 +212,7 @@ function initPlaylistColors() {
 		g_pl_colors.title_selected =
 		pref.whiteTheme ? RGB(0, 0, 0) :
 		pref.blackTheme ? RGB(255, 255, 255) :
+		pref.rebornTheme ? RGB(0, 0, 0) :
 		pref.blueTheme ? RGB(255, 255, 255) :
 		pref.darkblueTheme ? RGB(255, 255, 255) :
 		pref.redTheme ? RGB(255, 255, 255) :
@@ -202,6 +222,7 @@ function initPlaylistColors() {
 		g_pl_colors.title_playing =
 		pref.whiteTheme ? RGB(245, 245, 245) :
 		pref.blackTheme ? RGB(245, 245, 245) :
+		pref.rebornTheme ? RGB(245, 245, 245) :
 		pref.blueTheme ? RGB(255, 255, 255) :
 		pref.darkblueTheme ? RGB(255, 255, 255) :
 		pref.redTheme ? RGB(255, 255, 255) :
@@ -209,8 +230,9 @@ function initPlaylistColors() {
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(255, 255, 255) : '';
 
 		g_pl_colors.title_normal =
-		pref.whiteTheme && pref.layout_mode === 'default_mode' ? RGB(100, 100, 100) : pref.whiteTheme && pref.layout_mode === 'compact_mode' ? RGB(120, 120, 120) :
+		pref.whiteTheme && (pref.layout_mode === 'default_mode' || pref.layout_mode === 'artwork_mode') ? RGB(100, 100, 100) : pref.layout_mode === 'compact_mode' ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(200, 200, 200) :
+		pref.rebornTheme ? RGB(100, 100, 100) :
 		pref.blueTheme ? RGB(230, 230, 230) :
 		pref.darkblueTheme ? RGB(230, 230, 230) :
 		pref.redTheme ? RGB(220, 220, 220) :
@@ -223,6 +245,7 @@ function initPlaylistColors() {
 		g_pl_colors.count_normal =
 		pref.whiteTheme ? RGB(120, 122, 124) :
 		pref.blackTheme ? RGB(200, 200, 200) :
+		pref.rebornTheme ? RGB(120, 122, 124) :
 		pref.blueTheme ? RGB(220, 220, 220) :
 		pref.darkblueTheme ? RGB(220, 220, 220) :
 		pref.redTheme ? RGB(220, 220, 220) :
@@ -235,15 +258,17 @@ function initPlaylistColors() {
 		g_pl_colors.row_selected =
 		pref.whiteTheme ? RGB(255, 255, 255) :
 		pref.blackTheme ? RGB(20, 20, 20) :
+		pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.darkMiddleAccent : RGB(255, 255, 255) :
 		pref.blueTheme ? RGB(10, 115, 200) :
 		pref.darkblueTheme ? RGB(21, 37, 56) :
 		pref.redTheme ? RGB(110, 20, 20) :
-		pref.creamTheme ? RGB(255, 249, 245) :
+		pref.creamTheme ? RGB(255, 247, 245) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(12, 12, 12) : '';
 
 		g_pl_colors.row_alternate =
 		pref.whiteTheme ? RGB(245, 245, 245) :
 		pref.blackTheme ? RGB(25, 25, 25) :
+		pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.altBG : RGB(245, 245, 245) :
 		pref.blueTheme ? RGB(5, 110, 195) :
 		pref.darkblueTheme ? RGB(22, 40, 63) :
 		pref.redTheme ? RGB(100, 20, 20) :
@@ -253,6 +278,7 @@ function initPlaylistColors() {
 		g_pl_colors.row_focus_selected =
 		pref.whiteTheme ? RGB(200, 200, 200) :
 		pref.blackTheme ? RGB(45, 45, 45) :
+		pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(200, 200, 200) :
 		pref.blueTheme ? RGB(10, 115, 200) :
 		pref.darkblueTheme ? RGB(21, 37, 56) :
 		pref.redTheme ? RGB(110, 20, 20) :
@@ -269,6 +295,7 @@ function initPlaylistColors() {
 		g_theme.colors.panel_line =
 		pref.whiteTheme ? RGB(200, 200, 200) :
 		pref.blackTheme ? RGB(45, 45, 45) :
+		pref.rebornTheme ? RGB(200, 200, 200) :
 		pref.blueTheme ? RGB(17, 100, 182) :
 		pref.darkblueTheme ? RGB(12, 21, 31) :
 		pref.redTheme ? RGB(75, 18, 18) :
@@ -278,6 +305,7 @@ function initPlaylistColors() {
 		g_theme.colors.panel_line_selected =
 		pref.whiteTheme ? RGB(200, 200, 200) :
 		pref.blackTheme ? RGB(0, 0, 0) :
+		pref.rebornTheme ? RGB(200, 200, 200) :
 		pref.blueTheme ? RGB(17, 100, 182) :
 		pref.darkblueTheme ? RGB(12, 21, 31) :
 		pref.redTheme ? RGB(75, 18, 18) :
@@ -287,11 +315,55 @@ function initPlaylistColors() {
 		g_theme.colors.panel_text_normal =
 		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(200, 200, 200) :
+		pref.rebornTheme ? RGB(120, 120, 120) :
 		pref.blueTheme ? RGB(220, 220, 220) :
 		pref.darkblueTheme ? RGB(220, 220, 220) :
 		pref.redTheme ? RGB(220, 220, 220) :
 		pref.creamTheme ? RGB(110, 110, 110) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(220, 220, 220) : '';
+
+		// Reborn theme
+		let bgColor = col.primary;
+		if (g_pl_colors.background != RGB(255, 255, 255)) {
+			if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
+				g_pl_colors.playlist_mgr_text_hovered = col.maxDarkAccent;
+				g_pl_colors.playlist_mgr_text_pressed = col.maxDarkAccent;
+				g_pl_colors.playlist_mgr_text_normal = pref.autoHidePLM ? col.primary : col.superDarkAccent;
+				g_pl_colors.artist_normal = col.superDarkAccent;
+				g_pl_colors.artist_playing = col.superDarkAccent;
+				g_pl_colors.album_normal = col.superDarkAccent;
+				g_pl_colors.album_playing = col.superDarkAccent;
+				g_pl_colors.info_normal = col.superDarkAccent;
+				g_pl_colors.info_playing = col.superDarkAccent;
+				g_pl_colors.date_normal = col.superDarkAccent;
+				g_pl_colors.date_playing = col.superDarkAccent;
+				g_pl_colors.title_normal = col.superDarkAccent;
+				g_pl_colors.title_selected = col.maxDarkAccent;
+				g_pl_colors.title_playing = col.maxDarkAccent;
+				g_pl_colors.sbarBio = g_pl_colors.background != RGB(255, 255, 255) ? col.accent : RGB(180, 180, 180);
+				g_pl_colors.sbarBio_hover = g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : RGB(220, 220, 220);
+				g_pl_colors.sbarBio_btns = g_pl_colors.background != RGB(255, 255, 255) ? col.maxDarkAccent : RGB(20, 20, 20);
+			}
+			else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
+				g_pl_colors.playlist_mgr_text_hovered = col.maxLightAccent;
+				g_pl_colors.playlist_mgr_text_pressed = col.maxLightAccent;
+				g_pl_colors.playlist_mgr_text_normal = pref.autoHidePLM ? col.primary : col.superLightAccent;
+				g_pl_colors.artist_normal = col.superLightAccent;
+				g_pl_colors.artist_playing = col.maxLightAccent;
+				g_pl_colors.album_normal = col.superLightAccent;
+				g_pl_colors.album_playing = col.maxLightAccent;
+				g_pl_colors.info_normal = col.superLightAccent;
+				g_pl_colors.info_playing = col.maxLightAccent;
+				g_pl_colors.date_normal = col.superLightAccent;
+				g_pl_colors.date_playing = col.maxLightAccent;
+				g_pl_colors.title_normal = col.superLightAccent;
+				g_pl_colors.title_selected = col.maxLightAccent;
+				g_pl_colors.title_playing = col.maxLightAccent;
+				g_pl_colors.sbarBio = g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : RGB(180, 180, 180);
+				g_pl_colors.sbarBio_hover = g_pl_colors.background != RGB(255, 255, 255) ? col.superLightAccent : RGB(220, 220, 220);
+				g_pl_colors.sbarBio_btns = g_pl_colors.background != RGB(255, 255, 255) ? col.maxLightAccent : RGB(220, 220, 220);
+			}
+		}
 
 }		initPlaylistColors();
 
@@ -305,6 +377,7 @@ function initLibraryColors() {
 		ui.col.iconPlus =
 		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(220, 220, 220) :
+		pref.rebornTheme ? RGB(120, 120, 120) :
 		pref.blueTheme ? RGB(242, 230, 170) :
 		pref.darkblueTheme ? RGB(255, 202, 128) :
 		pref.redTheme ? RGB(245, 212, 165) :
@@ -314,6 +387,7 @@ function initLibraryColors() {
 		ui.col.iconPlus_h =
 		pref.whiteTheme ? RGB(0, 0, 0) :
 		pref.blackTheme ? RGB(255, 255, 255) :
+		pref.rebornTheme ? RGB(0, 0, 0) :
 		pref.blueTheme ? RGB(255, 255, 255) :
 		pref.darkblueTheme ? RGB(255, 255, 255) :
 		pref.redTheme ? RGB(255, 255, 255) :
@@ -323,6 +397,7 @@ function initLibraryColors() {
 		ui.col.iconMinus_e =
 		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(220, 220, 220) :
+		pref.rebornTheme ? RGB(120, 120, 120) :
 		pref.blueTheme ? RGB(242, 230, 170) :
 		pref.darkblueTheme ? RGB(255, 202, 128) :
 		pref.redTheme ? RGB(255, 202, 128) :
@@ -334,6 +409,7 @@ function initLibraryColors() {
 		ui.col.iconMinus_h =
 		pref.whiteTheme ? RGB(0, 0, 0) :
 		pref.blackTheme ? RGB(255, 255, 255) :
+		pref.rebornTheme ? RGB(0, 0, 0) :
 		pref.blueTheme ? RGB(255, 255, 255) :
 		pref.darkblueTheme ? RGB(255, 255, 255) :
 		pref.redTheme ? RGB(255, 255, 255) :
@@ -343,6 +419,7 @@ function initLibraryColors() {
 		ui.col.iconPlusbg =
 		pref.whiteTheme ? RGB(240, 240, 240) :
 		pref.blackTheme ? RGB(45, 45, 45) :
+		pref.rebornTheme ? RGB(240, 240, 240) :
 		pref.blueTheme ? RGB(10, 130, 220) :
 		pref.darkblueTheme ? RGB(24, 50, 82) :
 		pref.redTheme ? RGB(140, 25, 25) :
@@ -352,6 +429,7 @@ function initLibraryColors() {
 		ui.col.iconPlusSel =
 		pref.whiteTheme ? RGB(0, 0, 0) :
 		pref.blackTheme ? RGB(255, 255, 255) :
+		pref.rebornTheme ? RGB(0, 0, 0) :
 		pref.blueTheme ? RGB(255, 255, 255) :
 		pref.darkblueTheme ? RGB(255, 255, 255) :
 		pref.redTheme ? RGB(255, 255, 255) :
@@ -361,6 +439,7 @@ function initLibraryColors() {
 		ui.col.nowpBgSel =
 		pref.whiteTheme ? RGB(255, 255, 255) :
 		pref.blackTheme ? RGB(255, 255, 255) :
+		pref.rebornTheme ? RGB(255, 255, 255) :
 		pref.blueTheme ? RGB(255, 255, 255) :
 		pref.darkblueTheme ? RGB(255, 255, 255) :
 		pref.redTheme ? RGB(255, 255, 255) :
@@ -370,6 +449,7 @@ function initLibraryColors() {
 		ui.col.text =
 		pref.whiteTheme ? RGB(100, 100, 100) :
 		pref.blackTheme ? RGB(200, 200, 200) :
+		pref.rebornTheme ? RGB(100, 100, 100) :
 		pref.blueTheme ? RGB(230, 230, 230) :
 		pref.darkblueTheme ? RGB(230, 230, 230) :
 		pref.redTheme ? RGB(230, 230, 230) :
@@ -379,6 +459,7 @@ function initLibraryColors() {
 		ui.col.text_h =
 		pref.whiteTheme ? RGB(0, 0, 0) :
 		pref.blackTheme ? RGB(255, 255, 255) :
+		pref.rebornTheme ? RGB(0, 0, 0) :
 		pref.blueTheme ? RGB(255, 255, 255) :
 		pref.darkblueTheme ? RGB(255, 255, 255) :
 		pref.redTheme ? RGB(255, 255, 255) :
@@ -390,6 +471,7 @@ function initLibraryColors() {
 		ui.col.txt_box =
 		pref.whiteTheme ? RGB(80, 80, 80) :
 		pref.blackTheme ? RGB(200, 200, 200) :
+		pref.rebornTheme ? RGB(80, 80, 80) :
 		pref.blueTheme ? RGB(230, 230, 230) :
 		pref.darkblueTheme ? RGB(230, 230, 230) :
 		pref.redTheme ? RGB(230, 230, 230) :
@@ -403,6 +485,7 @@ function initLibraryColors() {
 		ui.col.search =
 		pref.whiteTheme ? RGB(100, 100, 100) :
 		pref.blackTheme ? RGB(200, 200, 200) :
+		pref.rebornTheme ? RGB(100, 100, 100) :
 		pref.blueTheme ? RGB(230, 230, 230) :
 		pref.darkblueTheme ? RGB(230, 230, 230) :
 		pref.redTheme ? RGB(230, 230, 230) :
@@ -412,6 +495,7 @@ function initLibraryColors() {
 		ui.col.searchBtn =
 		pref.whiteTheme ? RGB(0, 0, 0) :
 		pref.blackTheme ? RGB(255, 255, 255) :
+		pref.rebornTheme ? RGB(0, 0, 0) :
 		pref.blueTheme ? RGB(242, 230, 170) :
 		pref.darkblueTheme ? RGB(255, 202, 128) :
 		pref.redTheme ? RGB(245, 212, 165) :
@@ -421,6 +505,7 @@ function initLibraryColors() {
 		ui.col.crossBtn =
 		pref.whiteTheme ? RGB(80, 80, 80) :
 		pref.blackTheme ? RGB(255, 255, 255) :
+		pref.rebornTheme ? RGB(80, 80, 80) :
 		pref.blueTheme ? RGB(242, 230, 170) :
 		pref.darkblueTheme ? RGB(255, 202, 128) :
 		pref.redTheme ? RGB(245, 212, 165) :
@@ -430,6 +515,7 @@ function initLibraryColors() {
 		ui.col.filterBtn =
 		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(220, 220, 220) :
+		pref.rebornTheme ? RGB(120, 120, 120) :
 		pref.blueTheme ? RGB(230, 230, 230) :
 		pref.darkblueTheme ? RGB(230, 230, 230) :
 		pref.redTheme ? RGB(230, 230, 230) :
@@ -439,6 +525,7 @@ function initLibraryColors() {
 		ui.col.settingsBtn =
 		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(220, 220, 220) :
+		pref.rebornTheme ? RGB(120, 120, 120) :
 		pref.blueTheme ? RGB(230, 230, 230) :
 		pref.darkblueTheme ? RGB(230, 230, 230) :
 		pref.redTheme ? RGB(230, 230, 230) :
@@ -448,6 +535,7 @@ function initLibraryColors() {
 		ui.col.line =
 		pref.whiteTheme ? RGB(200, 200, 200) :
 		pref.blackTheme ? RGB(45, 45, 45) :
+		pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.accent : RGB(200, 200, 200) :
 		pref.blueTheme ? RGB(17, 100, 182) :
 		pref.darkblueTheme ? RGB(12, 21, 31) :
 		pref.redTheme ? RGB(75, 18, 18) :
@@ -456,13 +544,54 @@ function initLibraryColors() {
 
 		ui.col.s_line = ui.col.line;
 
+		// Reborn theme
+		let bgColor = col.primary;
+		if (g_pl_colors.background != RGB(255, 255, 255)) {
+			if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
+				ui.col.iconPlus = col.superDarkAccent;
+				ui.col.iconPlus_h = col.maxDarkAccent;
+				ui.col.iconMinus_e = col.superDarkAccent;
+				ui.col.iconMinus_h = col.maxDarkAccent;
+				ui.col.iconPlusbg = col.primary;
+				ui.col.iconPlusSel = col.maxDarkAccent;
+				ui.col.nowpBgSel = col.maxDarkAccent;
+				ui.col.text = col.superDarkAccent;
+				ui.col.text_h = col.maxDarkAccent;
+				ui.col.txt_box = col.superDarkAccent;
+				ui.col.search = col.superDarkAccent;
+				ui.col.searchBtn = col.superDarkAccent;
+				ui.col.crossBtn = col.superDarkAccent;
+				ui.col.filterBtn = col.superDarkAccent;
+				ui.col.settingsBtn = col.superDarkAccent;
+				ui.col.line = col.accent;
+			}
+			else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
+				ui.col.iconPlus = col.superLightAccent;
+				ui.col.iconPlus_h = col.maxLightAccent;
+				ui.col.iconMinus_e = col.superLightAccent;
+				ui.col.iconMinus_h = col.maxLightAccent;
+				ui.col.iconPlusbg = col.primary;
+				ui.col.iconPlusSel = col.maxLightAccent;
+				ui.col.nowpBgSel = col.maxLightAccent;
+				ui.col.text = col.superLightAccent;
+				ui.col.text_h = col.maxLightAccent;
+				ui.col.txt_box = col.superLightAccent;
+				ui.col.search = col.superLightAccent;
+				ui.col.searchBtn = col.superLightAccent;
+				ui.col.crossBtn = col.superLightAccent;
+				ui.col.filterBtn = col.superLightAccent;
+				ui.col.settingsBtn = col.superLightAccent;
+				ui.col.line = col.accent;
+			}
+		}
+
 }		initLibraryColors();
 
 
 // BIOGRAPHY COLORS
 function initBiographyColors() {
 
-	if ((pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light) {
+	if ((pref.whiteTheme || pref.blackTheme || pref.rebornTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light) {
 		pptBio.headFontStyle = 1;                         // Artist/Album Type Style 0 = Normal, 1 = Bold, 2 = Italic, 3 = Bold Italic, 16 = Semibold, 18 = Semibold Italic
 		uiBio.col.bg = g_pl_colors.background;            // Background Color
 		uiBio.col.head = g_pl_colors.artist_playing;      // Artist/Album Color
@@ -470,6 +599,9 @@ function initBiographyColors() {
 		uiBio.col.source = g_pl_colors.title_normal;      // Text Source Color
 		uiBio.col.bottomLine = g_pl_colors.line_normal;   // Line Color
 		uiBio.col.centerLine = g_pl_colors.line_normal;   // Line Color
+		if (pref.whiteTheme && pref.layout_mode === 'artwork_mode') {
+			uiBio.col.head = RGB(120, 120, 120);
+		}
 	}
 	else if (pref.creamTheme && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.blend) {
 		pptBio.headFontStyle = 1;
@@ -554,6 +686,7 @@ function initColors() {
 		col.artist =
 		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(240, 240, 240) :
+		pref.rebornTheme ? RGB(120, 120, 120) :
 		pref.blueTheme ? RGB(242, 230, 170) :
 		pref.darkblueTheme ? RGB(255, 202, 128) :
 		pref.redTheme ? RGB(245, 212, 165) :
@@ -566,6 +699,7 @@ function initColors() {
 		col.bg =
 		pref.whiteTheme ? RGB(245, 245, 245) :
 		pref.blackTheme ? RGB(25, 25, 25) :
+		pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.primary : RGB(245, 245, 245) :
 		pref.blueTheme ? RGB(5, 110, 195) :
 		pref.darkblueTheme ? RGB(22, 40, 63) :
 		pref.redTheme ? RGB(100, 20, 20) :
@@ -575,6 +709,7 @@ function initColors() {
 		col.progress_fill =
 		pref.whiteTheme ? RGB(180, 180, 180) :
 		pref.blackTheme ? RGB(100, 100, 100) :
+		pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : RGB(180, 180, 180) :
 		pref.blueTheme ? RGB(242, 230, 170) :
 		pref.darkblueTheme ? RGB(255, 202, 128) :
 		pref.redTheme ? RGB(245, 212, 165) :
@@ -587,6 +722,7 @@ function initColors() {
 		col.progress_bar =
 		pref.whiteTheme ? RGB(220, 220, 220) :
 		pref.blackTheme ? RGB(50, 50, 50) :
+		pref.rebornTheme ? col.primary === rgb(207, 0, 5) && !albumart ? /* When radio streaming */ rgb(207, 0, 5) : g_pl_colors.background != RGB(255, 255, 255) ? col.accent : RGB(220, 220, 220) :
 		pref.blueTheme ? RGB(10, 130, 220) :
 		pref.darkblueTheme ? RGB(27, 55, 90) :
 		pref.redTheme ? RGB(140, 25, 25) :
@@ -596,6 +732,7 @@ function initColors() {
 		col.now_playing =
 		pref.whiteTheme ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(200, 200, 200) :
+		pref.rebornTheme ? RGB(120, 120, 120) :
 		pref.blueTheme ? RGB(245, 245, 245) :
 		pref.darkblueTheme ? RGB(230, 230, 230) :
 		pref.redTheme ? RGB(220, 220, 220) :
@@ -605,15 +742,39 @@ function initColors() {
 		col.shadow =
 		pref.whiteTheme ? RGBA(0, 0, 0, 60) :
 		pref.blackTheme ? RGBA(0, 0, 0, 255) :
+		pref.rebornTheme ? RGBA(0, 0, 0, 60) :
 		pref.blueTheme ? RGBA(0, 0, 0, 90) :
 		pref.darkblueTheme ? RGBA(0, 0, 0, 140) :
 		pref.redTheme ? RGBA(0, 0, 0, 140) :
 		pref.creamTheme ? RGBA(0, 0, 0, 60) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBA(0, 0, 0, 140) : '';
 
+		col.discArtShadow =
+		pref.whiteTheme ? RGBA(0, 0, 0, 20) :
+		pref.blackTheme ? RGBA(0, 0, 0, 255) :
+		pref.rebornTheme ? RGBA(0, 0, 0, 60) :
+		pref.blueTheme ? RGBA(0, 0, 0, 90) :
+		pref.darkblueTheme ? RGBA(0, 0, 0, 140) :
+		pref.redTheme ? RGBA(0, 0, 0, 140) :
+		pref.creamTheme ? RGBA(0, 0, 0, 20) :
+		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBA(0, 0, 0, 255) : '';
+
 		col.aa_border = RGBA(60, 60, 60, 128);
 		col.rating = RGB(255, 170, 32);
 		col.hotness = RGB(192, 192, 0);
+
+		// Reborn theme
+		let bgColor = col.primary;
+		if (g_pl_colors.background != RGB(255, 255, 255)) {
+			if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
+				col.artist = col.superDarkAccent;
+				col.now_playing = col.superDarkAccent;
+			}
+			else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
+				col.artist = col.maxLightAccent;
+				col.now_playing = col.maxLightAccent;
+			}
+		}
 
 }		initColors();
 
@@ -621,7 +782,7 @@ function initColors() {
 const whiteTheme = {
 	name: 'white',
 	colors: {
-		primary: rgb(5, 110, 195),
+		primary: rgb(25, 160, 240),
 		darkAccent: rgb(12, 144, 245),
 		accent: rgb(12, 137, 232),
 		lightAccent: rgb(10, 130, 220),
@@ -638,6 +799,17 @@ const blackTheme = {
 		lightAccent: rgb(207, 72, 75),
 	},
 	hint: [rgb(207, 0, 5), rgb(50, 50, 50)]
+};
+
+const rebornTheme = {
+	name: 'reborn',
+	colors: {
+		primary: rgb(5, 110, 195),
+		darkAccent: rgb(12, 144, 245),
+		accent: rgb(12, 137, 232),
+		lightAccent: rgb(10, 130, 220),
+	},
+	hint: [rgb(207, 0, 5), rgb(220, 220, 220)]
 };
 
 const blueTheme = {
@@ -676,7 +848,7 @@ const redTheme = {
 const creamTheme = {
 	name: 'cream',
 	colors: {
-		primary: rgb(255, 249, 245),
+		primary: rgb(255, 247, 240),
 		darkAccent: rgb(120, 170, 130),
 		accent: rgb(130, 184, 141),
 		lightAccent: rgb(139, 196, 151),
@@ -761,43 +933,42 @@ function setTheme(theme) {
 		col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(207, 72, 75) : theme.lightAccent;
 		col.primary = isStreaming ? theme.primary = rgb(207, 0, 5) : theme.primary;
 	}
+	else if (pref.rebornTheme) {
+		col.progress_bar = isStreaming ? rgb(207, 0, 5) : g_pl_colors.background != RGB(255, 255, 255) ? col.accent : RGB(220, 220, 220);
+		col.tl_added = isStreaming ? theme.darkAccent = rgb(207, 0, 5) : theme.darkAccent;
+		col.tl_played = isStreaming ? theme.accent = rgb(207, 41, 44) : theme.accent;
+		col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(207, 72, 75) : theme.lightAccent;
+		col.primary = isStreaming ? theme.primary = rgb(207, 0, 5) : theme.primary;
+	}
 	else if (pref.blueTheme) {
 		col.progress_bar = rgb(10, 130, 220);
-		col.tl_added = isStreaming ? theme.darkAccent = rgb(12, 144, 245) : theme.darkAccent;
-		col.tl_played = isStreaming ? theme.accent = rgb(12, 137, 232) : theme.accent;
-		col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(10, 130, 220) : theme.lightAccent;
+		col.tl_added = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.darkAccent = rgb(12, 144, 245) : theme.darkAccent;
+		col.tl_played = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.accent = rgb(12, 137, 232) : theme.accent;
+		col.tl_unplayed = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.lightAccent = rgb(10, 130, 220) : theme.lightAccent;
 	}
 	else if (pref.darkblueTheme) {
 		col.progress_bar = rgb(27, 55, 90);
-		if (isStreaming) {
-			col.tl_added = isStreaming ? theme.darkAccent = rgb(31, 65, 107) : theme.darkAccent;
-			col.tl_played = isStreaming ? theme.accent = rgb(27, 58, 94) : theme.accent;
-			col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(24, 50, 82) : theme.lightAccent;
-		}
+		col.tl_added = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.darkAccent = rgb(31, 65, 107) : theme.darkAccent;
+		col.tl_played = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.accent = rgb(27, 58, 94) : theme.accent;
+		col.tl_unplayed = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.lightAccent = rgb(24, 50, 82) : theme.lightAccent;
 	}
 	else if (pref.redTheme) {
 		col.progress_bar = rgb(140, 25, 25);
-		if (isStreaming) {
-			col.tl_added = isStreaming ? theme.darkAccent = rgb(156, 30, 30) : theme.darkAccent;
-			col.tl_played = isStreaming ? theme.accent = rgb(143, 27, 27) : theme.accent;
-			col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(130, 25, 25) : theme.lightAccent;
-		}
+		col.tl_added = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.darkAccent = rgb(156, 30, 30) : theme.darkAccent;
+		col.tl_played = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.accent = rgb(143, 27, 27) : theme.accent;
+		col.tl_unplayed = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.lightAccent = rgb(130, 25, 25) : theme.lightAccent;
 	}
 	else if (pref.creamTheme) {
 		col.progress_bar = rgb(255, 255, 255);
-		if (isStreaming) {
-			col.tl_added = isStreaming ? theme.darkAccent = rgb(120, 170, 130) : theme.darkAccent;
-			col.tl_played = isStreaming ? theme.accent = rgb(130, 184, 141) : theme.accent;
-			col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(139, 196, 151) : theme.lightAccent;
-		}
+		col.tl_added = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.darkAccent = rgb(120, 170, 130) : theme.darkAccent;
+		col.tl_played = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.accent = rgb(130, 184, 141) : theme.accent;
+		col.tl_unplayed = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.lightAccent = rgb(139, 196, 151) : theme.lightAccent;
 	}
 	else if (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) {
 		col.progress_bar = rgb(35, 35, 35);
-		if (isStreaming) {
-			col.tl_added = isStreaming ? theme.darkAccent = rgb(30, 30, 30) : theme.darkAccent;
-			col.tl_played = isStreaming ? theme.accent = rgb(40, 40, 40) : theme.accent;
-			col.tl_unplayed = isStreaming ? theme.lightAccent = rgb(50, 50, 50) : theme.lightAccent;
-		}
+		col.tl_added = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.darkAccent = rgb(30, 30, 30) : theme.darkAccent;
+		col.tl_played = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.accent = rgb(40, 40, 40) : theme.accent;
+		col.tl_unplayed = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.lightAccent = rgb(50, 50, 50) : theme.lightAccent;
 	}
 
 	if (colorDistance(theme.primary, col.progress_bar, true) < (themeCol.isCloseToGreyscale ? 60 : 45)) {
@@ -805,10 +976,12 @@ function setTheme(theme) {
 		if (settings.showThemeLog) console.log('>>> Theme primary color is too close to progress bar. Adjusting progress_bar');
 		if (pref.whiteTheme && themeCol.brightness < 125) {
 			col.progress_bar = isStreaming ? rgb(207, 0, 5) : rgb(180, 180, 180);
-		} if (pref.blackTheme && themeCol.brightness < 125) {
-			col.progress_bar = isStreaming ? rgb(207, 0, 5) : rgb(100, 100, 100);
 		}
+		// if (pref.blackTheme && themeCol.brightness < 125) {
+		// 	col.progress_bar = isStreaming ? rgb(207, 0, 5) : rgb(100, 100, 100);
+		// }
 	}
+
 	if (str.timeline) {
 		str.timeline.setColors(theme.darkAccent, theme.accent, theme.lightAccent);
 	}
@@ -817,10 +990,24 @@ function setTheme(theme) {
 	col.tl_unplayed = theme.lightAccent;
 
 	col.primary = theme.primary;
+	col.accent = theme.accent;
+
+	// Reborn theme main tone palette
+	col.maxDarkAccent = shadeColor(theme.primary, 100);
+	col.superDarkAccent = shadeColor(theme.primary, 70);
 	col.extraDarkAccent = shadeColor(theme.primary, 50);
 	col.darkAccent = theme.darkAccent;
-	col.accent = theme.accent;
+
+	col.altBG = tintColor(theme.primary, 2);
+	col.darkMiddleAccent = tintColor(theme.primary, 7);
+	col.middleAccent = tintColor(theme.primary, 10);
+	col.lightMiddleAccent = tintColor(theme.primary, 35);
+
 	col.lightAccent = theme.lightAccent;
+	col.extraLightAccent = tintColor(theme.primary, 50);
+	col.superLightAccent = tintColor(theme.primary, 80);
+	col.maxLightAccent = tintColor(theme.primary, 100);
+
 }
 
 /**

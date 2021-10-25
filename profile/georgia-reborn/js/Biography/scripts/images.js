@@ -733,7 +733,7 @@
 		if (panelBio.alb.ix && panelBio.alb.ix < panelBio.alb.list.length && !pptBio.artistView) { // !stndAlb
 			const a = panelBio.alb.list[panelBio.alb.ix].artist;
 			const l = panelBio.alb.list[panelBio.alb.ix].album;
-			const l_handle = lib.inLibrary(2, a, l);
+			const l_handle = libBio.inLibrary(2, a, l);
 			if (l_handle) { // check local
 				this.getImg(l_handle, 0, false);
 				return;
@@ -744,7 +744,7 @@
 				if (pth.fe != this.cov.done && cfg.dlRevImg) {
 					const pth_cov = pth.pe[!cfg.supCache ? 0 : 1];
 					const fn_cov = pth_cov + pth.fe;
-					if (panelBio.server) server.getRevImg(a, l, pth_cov, fn_cov, false);
+					if (panelBio.server) serverBio.getRevImg(a, l, pth_cov, fn_cov, false);
 					else window.NotifyOthers('bio_getRevImg', [a, l, pth_cov, fn_cov]);
 					this.cov.done = pth.fe;
 				}
@@ -756,7 +756,7 @@
 			if (this.chkPths(cfg.cusCovPaths, '', 0, true)) return;
 		}
 		if (panelBio.art.ix && panelBio.art.ix < panelBio.art.list.length && pptBio.artistView) { // !stndBio
-			const a_handle = lib.inLibrary(3, this.artist);
+			const a_handle = libBio.inLibrary(3, this.artist);
 			if (a_handle) {
 				this.getImg(a_handle, 4, false);
 				return;
@@ -969,7 +969,7 @@
 				if (pth.fe != this.cov.done && cfg.dlRevImg) {
 					const pth_cov = pth.pe[!cfg.supCache ? 0 : 1];
 					const fn_cov = pth_cov + pth.fe;
-					if (panelBio.server) server.getRevImg(a, l, pth_cov, fn_cov, false);
+					if (panelBio.server) serverBio.getRevImg(a, l, pth_cov, fn_cov, false);
 					else window.NotifyOthers('bio_getRevImg', [a, l, pth_cov, fn_cov]);
 					this.cov.done = pth.fe;
 				}

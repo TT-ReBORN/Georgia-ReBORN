@@ -193,7 +193,7 @@ function on_mouse_move(x, y) {
 }
 
 function on_mouse_rbtn_up(x, y) {
-	if (y < panel.search.h && x > panel.search.x && x < panel.search.x + panel.search.w) {
+	if (y < ui.y + panel.search.h && x > panel.search.x && x < panel.search.x + panel.search.w) {
 		if (ppt.searchShow) search.rbtn_up(x, y);
 	} else men.rbtn_up(x, y);
 	return true;
@@ -596,7 +596,7 @@ class LibraryCallbacks {
 	}
 
 	on_mouse_rbtn_up(x, y) {
-		if (y < panel.search.h && x > panel.search.x && x < panel.search.x + panel.search.w) {
+		if (y < ui.y + panel.search.h && x > panel.search.x && x < panel.search.x + panel.search.w) {
 			if (ppt.searchShow) search.rbtn_up(x, y);
 		} else men.rbtn_up(x, y);
 		return true;

@@ -761,7 +761,7 @@ class Populate {
 					sel_w = Math.min(item.name_w + ui.sz.sel * 2, ui.x + panel.tree.w - sel_x - item.count_w - 1);
 					if (this.fullLineSelection) {
 						sel_x = ui.x;
-						sel_w = ui.x + panel.tree.sel.w - ui.l.w;
+						sel_w = ui.x + panel.tree.sel.w /*- ui.l.w'*/ + scaleForDisplay(2);
 					}
 					if (!nowp_c.includes(i)) {
 						if (this.fullLineSelection && this.sbarShow == 1 && ui.sbar.type == 2) {
@@ -778,6 +778,7 @@ class Populate {
 						bgColor = col.primary;
 						gr.FillSolidRect(pref.libraryDesign === 'traditional' ? item_x - scaleForDisplay(2) : ui.x, item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : pref.libraryDesign === 'traditional' && !this.fullLineSelection ? sel_w + sel_x - item_x + scaleForDisplay(2) : sel_w + ui.sz.margin + sel_x - ui.x - ui.sz.sideMarker, ui.row.h,
 							pref.whiteTheme || pref.blackTheme ? bgColor :
+							pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.darkMiddleAccent : bgColor :
 							pref.blueTheme ? RGB(10, 130, 220) :
 							pref.darkblueTheme ? RGB(24, 50, 82) :
 							pref.redTheme ? RGB(140, 25, 25) :
@@ -787,6 +788,7 @@ class Populate {
 						if (pref.libraryDesign !== 'traditional') {
 							gr.FillSolidRect(ui.x, item_y, ui.sz.sideMarker, ui.row.h,
 								pref.whiteTheme || pref.blackTheme ? col.primary :
+								pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
 								pref.blueTheme ? RGB(242, 230, 170) :
 								pref.darkblueTheme ? RGB(255, 202, 128) :
 								pref.redTheme ? RGB(245, 212, 165) :
@@ -801,6 +803,7 @@ class Populate {
 							gr.DrawRect(this.fullLineSelection ? sel_x : ui.x, item_y, this.fullLineSelection ? sel_w : sel_w + ui.sz.margin + sel_x - ui.x - ui.sz.sideMarker, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? ui.row.h - 1 : ui.row.h, 1,
 								pref.whiteTheme ? RGB(200, 200, 200) :
 								pref.blackTheme ? RGB(45, 45, 45) :
+								pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(200, 200, 200) :
 								pref.blueTheme ? RGB(10, 135, 230) :
 								pref.darkblueTheme ? RGB(27, 55, 90) :
 								pref.redTheme ? RGB(145, 25, 25) :
@@ -809,6 +812,7 @@ class Populate {
 							);
 							gr.FillSolidRect(ui.x, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? item_y + 1 : item_y, ui.sz.sideMarker, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? ui.row.h - 1 : ui.row.h + 1,
 								pref.whiteTheme || pref.blackTheme ? col.primary :
+								pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
 								pref.blueTheme ? RGB(242, 230, 170) :
 								pref.darkblueTheme ? RGB(255, 202, 128) :
 								pref.redTheme ? RGB(245, 212, 165) :
@@ -819,6 +823,7 @@ class Populate {
 							if (this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item)) {
 								gr.DrawRect(this.fullLineSelection ? sel_x : ui.x, item_y, this.fullLineSelection ? sel_w : sel_w + ui.sz.margin + sel_x - ui.x - ui.sz.sideMarker, ui.row.h - 1, 1,
 									pref.whiteTheme || pref.blackTheme ? col.primary :
+									pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : col.primary :
 									pref.blueTheme ? RGB(10, 130, 220) :
 									pref.darkblueTheme ? RGB(24, 50, 82) :
 									pref.redTheme ? RGB(140, 25, 25) :
@@ -827,6 +832,7 @@ class Populate {
 								);
 								gr.FillSolidRect(ui.x, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? item_y : item_y, ui.sz.sideMarker, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? ui.row.h : ui.row.h + 1,
 									pref.whiteTheme || pref.blackTheme ? col.primary :
+									pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
 									pref.blueTheme ? RGB(242, 230, 170) :
 									pref.darkblueTheme ? RGB(255, 202, 128) :
 									pref.redTheme ? RGB(245, 212, 165) :
@@ -837,6 +843,7 @@ class Populate {
 						} else if (pref.libraryDesign === 'traditional') {
 							gr.FillSolidRect(item_x - scaleForDisplay(2), item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : sel_w, ui.row.h,
 								pref.whiteTheme || pref.blackTheme ? col.primary :
+								pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
 								pref.blueTheme ? RGB(10, 130, 220) :
 								pref.darkblueTheme ? RGB(24, 50, 82) :
 								pref.redTheme ? RGB(140, 25, 25) :
@@ -850,6 +857,7 @@ class Populate {
 						bgColor = col.primary;
 						gr.FillSolidRect(pref.libraryDesign === 'traditional' && this.fullLineSelection ? item_x - scaleForDisplay(2) : sel_x, item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : sel_w, ui.row.h,
 							pref.whiteTheme || pref.blackTheme ? bgColor :
+							pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : bgColor :
 							pref.blueTheme ? RGB(10, 130, 220) :
 							pref.darkblueTheme ? RGB(24, 50, 82) :
 							pref.redTheme ? RGB(140, 25, 25) :
@@ -859,6 +867,7 @@ class Populate {
 						if (pref.libraryDesign !== 'traditional') {
 							gr.FillSolidRect(ui.x, item_y, ui.sz.sideMarker, ui.row.h,
 								pref.whiteTheme || pref.blackTheme ? col.primary :
+								pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
 								pref.blueTheme ? RGB(242, 230, 170) :
 								pref.darkblueTheme ? RGB(255, 202, 128) :
 								pref.redTheme ? RGB(245, 212, 165) :
@@ -930,28 +939,28 @@ class Populate {
 				this.m.i == i ? this.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
 				this.highlight.nowPlaying ? ui.col.text : ui.col.text;
 
-				if (pref.whiteTheme && (new Color(bgColor).brightness > 151)) {
+				if ((pref.whiteTheme) && (new Color(bgColor).brightness > 130)) {
 					txt_c =
 					this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? RGB(0, 0, 0) :
 					item.sel ? this.highlight.nowPlaying ? pref.libraryDesign === 'traditional' ? RGB(0, 0, 0) : RGB(0, 0, 0) : RGB(0, 0, 0) :
 					this.m.i == i ? this.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
 					this.highlight.nowPlaying ? ui.col.text : ui.col.text;
 				}
-				else if (pref.whiteTheme && (new Color(bgColor).brightness < 151)) {
+				else if ((pref.whiteTheme) && (new Color(bgColor).brightness < 131)) {
 					txt_c =
 					this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? RGB(255, 255, 255) :
 					item.sel ? this.highlight.nowPlaying ? pref.libraryDesign === 'traditional' ? RGB(255, 255, 255) : RGB(0, 0, 0) : RGB(255, 255, 255) :
 					this.m.i == i ? this.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
 					this.highlight.nowPlaying ? ui.col.text : ui.col.text;
 				}
-				if (pref.blackTheme && (new Color(bgColor).brightness < 151)) {
+				if (pref.blackTheme && (new Color(bgColor).brightness < 131)) {
 					txt_c =
 					this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? RGB(255, 255, 255) :
 					item.sel ? this.highlight.nowPlaying ? pref.libraryDesign === 'traditional' ? RGB(255, 255, 255) : RGB(255, 255, 255) : RGB(255, 255, 255) :
 					this.m.i == i ? this.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
 					this.highlight.nowPlaying ? ui.col.text : ui.col.text;
 				}
-				else if (pref.blackTheme && (new Color(bgColor).brightness > 151)) {
+				else if (pref.blackTheme && (new Color(bgColor).brightness > 130)) {
 					txt_c =
 					this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? RGB(0, 0, 0) :
 					item.sel ? this.highlight.nowPlaying ? pref.libraryDesign === 'traditional' ? RGB(0, 0, 0) : RGB(255, 255, 255) : RGB(0, 0, 0) :
@@ -960,7 +969,7 @@ class Populate {
 				}
 
 				!panel.colMarker ? gr.GdiDrawText(nm[i], ui.font.main, txt_c, item_x, item_y, w, ui.row.h, panel.lc) : this.cusCol(gr, nm[i], item, item_x, item_y, w, ui.row.h, type, np, ui.font.main, ui.font.mainEllipsisSpace, 'text');
-				if (this.countsRight) gr.GdiDrawText(item.count, ui.font.small, txt_c /*txt_co*/, item_x, item_y, ui.x + panel.tree.w - (sbar.w === 0 ? item_x : item_x + (is_4k ? 45 : 25)), ui.row.h, panel.rc);
+				if (this.countsRight) gr.GdiDrawText(item.count, ui.font.small, txt_c /*txt_co*/, item_x, item_y, ui.x + panel.tree.w - (sbar.w === 0 ? pref.layout_mode === 'artwork_mode' ? item_x - (is_4k ? 73 : 40) : item_x : item_x + (is_4k ? pref.layout_mode === 'artwork_mode' ? -28 : 45 : pref.layout_mode === 'artwork_mode' ? -16 : 25)), ui.row.h, panel.rc);
 			}
 		}
 	}
@@ -978,22 +987,22 @@ class Populate {
 		let nowpBgSel = this.highlight.nowPlaying && !itemtr.root && this.inRange(this.nowp, itemtr.item);
 		var icon_c = nowpBgSel ? ui.col.nowpBgSel : selFullLine ? ui.col.iconPlusSel : !selFullLine ? ui.col.iconPlus : this.highlight.node ? ui.col.iconPlus_h : ui.col.iconPlus;
 
-		if ((pref.whiteTheme) && (new Color(bgColor).brightness > 151)) {
+		if ((pref.whiteTheme) && (new Color(bgColor).brightness > 130)) {
 			icon_c = nowpBgSel ? rgb(0, 0, 0) : selFullLine ? this.highlight.nowPlaying ? rgb(0, 0, 0) : rgb(0, 0, 0) : !selFullLine ? ui.col.iconPlus : this.highlight.node ? ui.col.iconPlus_h : ui.col.iconPlus;
 			ui.col.icon_h = rgb(0, 0, 0);
 			ui.col.icon_e = rgb(0, 0, 0);
 			ui.col.textSel = rgb(0, 0, 0);
 		}
-		else if ((pref.whiteTheme) && (new Color(bgColor).brightness < 151)) {
+		else if ((pref.whiteTheme) && (new Color(bgColor).brightness < 131)) {
 			icon_c = nowpBgSel ? rgb(255, 255, 255) : selFullLine ? this.highlight.nowPlaying ? rgb(0, 0, 0) : rgb(255, 255, 255) : !selFullLine ? ui.col.iconPlus : this.highlight.node ? ui.col.iconPlus_h : ui.col.iconPlus;
 			ui.col.icon_h = rgb(255, 255, 255);
 			ui.col.icon_e = rgb(255, 255, 255);
 			ui.col.textSel = rgb(255, 255, 255);
 		}
-		if ((pref.blackTheme) && (new Color(bgColor).brightness > 151)) {
+		if ((pref.blackTheme) && (new Color(bgColor).brightness > 130)) {
 			icon_c = nowpBgSel ? rgb(0, 0, 0) : selFullLine ? this.highlight.nowPlaying ? rgb(255, 255, 255) : rgb(0, 0, 0) : !selFullLine ? ui.col.iconPlus : this.highlight.node ? ui.col.iconPlus_h : ui.col.iconPlus;
 		}
-		else if ((pref.blackTheme) && (new Color(bgColor).brightness < 151)) {
+		else if ((pref.blackTheme) && (new Color(bgColor).brightness < 131)) {
 			icon_c = nowpBgSel ? rgb(255, 255, 255) : selFullLine ? this.highlight.nowPlaying ? rgb(255, 255, 255) : rgb(255, 255, 255) : !selFullLine ? ui.col.iconPlus : this.highlight.node ? ui.col.iconPlus_h : ui.col.iconPlus;
 		}
 

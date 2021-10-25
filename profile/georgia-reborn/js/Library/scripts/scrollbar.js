@@ -199,10 +199,11 @@ class Scrollbar {
 						//gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
 						if (!this.narrow.show || ppt.sbarShow != 1) {
 							if (ppt.sbarShow && sbar.w === scaleForDisplay(12) || !pref.autoHideScrollbar_Library && sbar.w === scaleForDisplay(12)) {
-								const thumbColors = [
+								let thumbColors = [
 									// normal
 									pref.whiteTheme ? RGBA(200, 200, 200, this.alpha) :
 									pref.blackTheme ? RGBA(100, 100, 100, this.alpha) :
+									pref.rebornTheme ? RGBA(200, 200, 200, this.alpha) :
 									pref.blueTheme ? RGBA(10, 135, 225, this.alpha) :
 									pref.darkblueTheme ? RGBA(27, 55, 90, this.alpha) :
 									pref.redTheme ? RGBA(145, 25, 25, this.alpha) :
@@ -214,6 +215,7 @@ class Scrollbar {
 									// hover
 									pref.whiteTheme ? RGBA(120, 120, 120, this.alpha) :
 									pref.blackTheme ? RGBA(160, 160, 160, this.alpha) :
+									pref.rebornTheme ? RGBA(120, 120, 120, this.alpha) :
 									pref.blueTheme ? RGBA(242, 230, 170, this.alpha) :
 									pref.darkblueTheme ? RGBA(255, 202, 128, this.alpha) :
 									pref.redTheme ? RGBA(245, 212, 165, this.alpha) :
@@ -225,6 +227,7 @@ class Scrollbar {
 									// drag
 									pref.whiteTheme ? RGBA(120, 120, 120, this.alpha) :
 									pref.blackTheme ? RGBA(160, 160, 160, this.alpha) :
+									pref.rebornTheme ? RGBA(120, 120, 120, this.alpha) :
 									pref.blueTheme ? RGBA(242, 230, 170, this.alpha) :
 									pref.darkblueTheme ? RGBA(255, 202, 128, this.alpha) :
 									pref.redTheme ? RGBA(245, 212, 165, this.alpha) :
@@ -234,6 +237,15 @@ class Scrollbar {
 									pref.nredTheme ? RGBA(255, 0, 0, this.alpha) :
 									pref.ngoldTheme ? RGBA(255, 242, 3, this.alpha) : '',
 								]
+								let bgColor = col.primary;
+								if (g_pl_colors.background != RGB(255, 255, 255)) {
+									if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
+										thumbColors = [col.accent, col.extraLightAccent, col.extraLightAccent];
+									}
+									else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
+										thumbColors = [col.lightMiddleAccent, col.extraLightAccent, col.extraLightAccent];
+									}
+								}
 								gr.FillSolidRect(sbar_x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 + 8, ui.col.bg);
 								gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
 							}
@@ -242,6 +254,7 @@ class Scrollbar {
 								(!this.hover && !this.bar.isDragging ?
 								pref.whiteTheme ? RGBA(200, 200, 200, 255) :
 								pref.blackTheme ? RGBA(100, 100, 100, 255) :
+								pref.rebornTheme ? RGBA(200, 200, 200, 255) :
 								pref.blueTheme ? RGBA(10, 135, 225, 255) :
 								pref.darkblueTheme ? RGBA(38, 70, 112, 255) :
 								pref.redTheme ? RGBA(145, 25, 25, 255) :
@@ -254,6 +267,7 @@ class Scrollbar {
 								this.hover && !this.bar.isDragging ?
 								pref.whiteTheme ? RGBA(100, 100, 100, 255) :
 								pref.blackTheme ? RGBA(160, 160, 160, 255) :
+								pref.rebornTheme ? RGBA(100, 100, 100, 255) :
 								pref.blueTheme ? RGBA(242, 230, 170, 255) :
 								pref.darkblueTheme ? RGBA(255, 202, 128, 255) :
 								pref.redTheme ? RGBA(245, 212, 165, 255) :
@@ -265,6 +279,7 @@ class Scrollbar {
 								:
 								pref.whiteTheme ? 0xff8c8c8c :
 								pref.blackTheme ? 0xffa0a0a0 :
+								pref.rebornTheme ? 0xff8c8c8c :
 								pref.blueTheme ? 0xffffe4cb :
 								pref.darkblueTheme ? 0xffffca80 :
 								pref.redTheme ? 0xffffc59a :
@@ -280,10 +295,11 @@ class Scrollbar {
 							//gr.FillSolidRect(this.x - panel.sbar_o, sbar_y, this.w + panel.sbar_o * 2, this.h, this.col['bg']);
 							//gr.FillSolidRect(this.x + this.bar.x, sbar_y, this.bar.h, sbar_h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
 							if (ppt.sbarShow && sbar.h === scaleForDisplay(12) || !pref.autoHideScrollbar_Library && sbar.h === scaleForDisplay(12)) {
-								const thumbColors = [
+								let thumbColors = [
 									// normal
 									pref.whiteTheme ? RGBA(200, 200, 200, this.alpha) :
 									pref.blackTheme ? RGBA(100, 100, 100, this.alpha) :
+									pref.rebornTheme ? RGBA(200, 200, 200, this.alpha) :
 									pref.blueTheme ? RGBA(10, 135, 225, this.alpha) :
 									pref.darkblueTheme ? RGBA(27, 55, 90, this.alpha) :
 									pref.redTheme ? RGBA(145, 25, 25, this.alpha) :
@@ -295,6 +311,7 @@ class Scrollbar {
 									// hover
 									pref.whiteTheme ? RGBA(120, 120, 120, this.alpha) :
 									pref.blackTheme ? RGBA(160, 160, 160, this.alpha) :
+									pref.rebornTheme ? RGBA(120, 120, 120, this.alpha) :
 									pref.blueTheme ? RGBA(242, 230, 170, this.alpha) :
 									pref.darkblueTheme ? RGBA(255, 202, 128, this.alpha) :
 									pref.redTheme ? RGBA(245, 212, 165, this.alpha) :
@@ -306,6 +323,7 @@ class Scrollbar {
 									// drag
 									pref.whiteTheme ? RGBA(120, 120, 120, this.alpha) :
 									pref.blackTheme ? RGBA(160, 160, 160, this.alpha) :
+									pref.rebornTheme ? RGBA(120, 120, 120, this.alpha) :
 									pref.blueTheme ? RGBA(242, 230, 170, this.alpha) :
 									pref.darkblueTheme ? RGBA(255, 202, 128, this.alpha) :
 									pref.redTheme ? RGBA(245, 212, 165, this.alpha) :
@@ -315,6 +333,15 @@ class Scrollbar {
 									pref.nredTheme ? RGBA(255, 0, 0, this.alpha) :
 									pref.ngoldTheme ? RGBA(255, 242, 3, this.alpha) : '',
 								]
+								let bgColor = col.primary;
+								if (g_pl_colors.background != RGB(255, 255, 255)) {
+									if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
+										thumbColors = [col.accent, col.extraLightAccent, col.extraLightAccent];
+									}
+									else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
+										thumbColors = [col.lightMiddleAccent, col.extraLightAccent, col.extraLightAccent];
+									}
+								}
 								gr.FillSolidRect(this.x + this.bar.x, sbar_y, this.bar.h, sbar_h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
 							}
 						}
@@ -482,7 +509,7 @@ class Scrollbar {
 		this.bar.x = this.bar.y = this.but_h + this.scrollbar.travel * (this.delta * this.ratio) / (this.row.count * this.row.h);
 		this.drag_distance_per_row = this.scrollbar.travel / this.scrollable_lines;
 		// panel info
-		if (this.vertical) this.narrow.x = this.x + this.w - $Lib.clamp(ui.sbar.narrowWidth, 5, this.w);
+		if (this.vertical) this.narrow.x = /* countsright position fix for FHD in artwork mode, why is it ok in 4K and what is different in artwork mode? -> */ pref.layout_mode === 'artwork_mode' ? this.x - (is_4k ? 0 : 5) : this.x + this.w - $Lib.clamp(ui.sbar.narrowWidth, 5, this.w);
 		else this.narrow.y = this.y + this.h - $Lib.clamp(ui.sbar.narrowWidth, 5, this.h);
 		panel.tree.w = ui.w - Math.max(ppt.sbarShow && this.scrollable_lines > 0 ? !ppt.countsRight ? ui.sbar.sp + ui.sz.sel : ppt.sbarShow == 2 ? ui.sbar.sp + ui.sz.margin : ppt.sbarShow == 1 ? (ui.w - this.narrow.x) + ui.sz.marginRight + Math.max(this.w - 11, 0) : ui.sz.sel : ui.sz.sel, ui.sz.margin);
 		pop.id = ui.id.tree + ppt.fullLineSelection + panel.tree.w + panel.imgView + ppt.albumArtLabelType + ppt.albumArtFlipLabels + ppt.albumArtFlowMode;

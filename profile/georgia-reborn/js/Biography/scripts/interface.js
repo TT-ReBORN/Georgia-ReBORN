@@ -169,34 +169,37 @@ class UserInterfaceBio {
 	draw(gr) {
 		if (this.style.bg) gr.FillSolidRect(this.x - pptBio.borL, this.y - scaleForDisplay(30), panelBio.w, panelBio.h + scaleForDisplay(30), this.col.bg)
 
-		if (pref.layout_mode === 'default_mode') {
-			if (albumart) {
-				// Biography's top shadow
-				gr.FillGradRect(this.x - pptBio.borL, is_4k ? this.y - 70 : this.y - 36, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0),
-					pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
-					pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
-					pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
-					pref.darkblueTheme ? RGBtoRGBA(col.shadow, 72) :
-					pref.redTheme ? RGBtoRGBA(col.shadow, 72) :
-					pref.creamTheme ? RGBtoRGBA(col.shadow, 24) :
-					pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 120) : ''
-				);
-				// Biography's bottom shadow
-				gr.FillGradRect(this.x - pptBio.borL, is_4k ? this.y + (pref.blackTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? this. h : this.h + 1) : this.y + this.h - 1, this.w, scaleForDisplay(5), 90,
-					pref.whiteTheme ? RGBtoRGBA(col.shadow, 18) :
-					pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
-					pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
-					pref.darkblueTheme ? RGBtoRGBA(col.shadow, 74) :
-					pref.redTheme ? RGBtoRGBA(col.shadow, 74) :
-					pref.creamTheme ? RGBtoRGBA(col.shadow, 18) :
-					pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 86) : '',
-					RGBtoRGBA(col.shadow, 0)
-				);
-			}
-			// Biography's left shadow
+		if (albumart && pref.layout_mode !== 'compact_mode' || pref.layout_mode === 'artwork_mode' && !albumart) {
+			// Biography's top shadow
+			gr.FillGradRect(this.x - pptBio.borL, is_4k ? this.y - 70 : this.y - 36, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0),
+				pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
+				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
+				pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
+				pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
+				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 72) :
+				pref.redTheme ? RGBtoRGBA(col.shadow, 72) :
+				pref.creamTheme ? RGBtoRGBA(col.shadow, 24) :
+				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 120) : ''
+			);
+			// Biography's bottom shadow
+			gr.FillGradRect(this.x - pptBio.borL, is_4k ? this.y + (pref.blackTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? this. h : this.h + 1) : this.y + this.h - 1, this.w, scaleForDisplay(5), 90,
+				pref.whiteTheme ? RGBtoRGBA(col.shadow, 18) :
+				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
+				pref.rebornTheme ? RGBtoRGBA(col.shadow, 30) :
+				pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
+				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 74) :
+				pref.redTheme ? RGBtoRGBA(col.shadow, 74) :
+				pref.creamTheme ? RGBtoRGBA(col.shadow, 18) :
+				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 86) : '',
+				RGBtoRGBA(col.shadow, 0)
+			);
+		}
+		// Biography's left shadow
+		if (pref.layout_mode !== 'artwork_mode') {
 			gr.FillGradRect(ww / 2 - 4, this.y - scaleForDisplay(30), 4, this.h + scaleForDisplay(30), 0, RGBtoRGBA(col.shadow, 0),
 				pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
 				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
+				pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
 				pref.blueTheme ? RGBtoRGBA(col.shadow, 38) :
 				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 60) :
 				pref.redTheme ? RGBtoRGBA(col.shadow, 64) :

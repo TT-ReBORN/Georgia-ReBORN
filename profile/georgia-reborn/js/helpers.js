@@ -602,13 +602,17 @@ function checkFor4k(w, h) {
 		is_4k = true;
 		default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width',  2800);
 		default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height', 1720);
+		artwork_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved width',  1052);
+		artwork_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved height', 1372);
 		compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width',   964);
 		compact_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved height', 1720);
 	}
-	else if (pref.use_4k === 'auto' && (initDPI.dpi() > 120 && w > 1920 && initDPI.dpi() > 120 && h > 1200 || initDPI.dpi() > 120 && h > 1440 && pref.layout_mode === 'compact_mode')) {
+	else if (pref.use_4k === 'auto' && (initDPI.dpi() > 120 && w > 1920 && initDPI.dpi() > 120 && h > 1200 || initDPI.dpi() > 120 && h > 1200 && pref.layout_mode === 'artwork_mode' || initDPI.dpi() > 120 && h > 1440 && pref.layout_mode === 'compact_mode')) {
 		is_4k = true;
 		default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width',  2800);
 		default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height', 1720);
+		artwork_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved width',  1052);
+		artwork_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved height', 1372);
 		compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width',   964);
 		compact_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved height', 1720);
 	}
@@ -616,6 +620,8 @@ function checkFor4k(w, h) {
 		is_4k = false;
 		default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width', 1140);
 		default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height', 730);
+		artwork_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved width',  526);
+		artwork_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved height', 686);
 		compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width',  484);
 		compact_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved height', 730);
 	}

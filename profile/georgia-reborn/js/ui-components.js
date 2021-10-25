@@ -56,7 +56,7 @@ class ProgressBar {
             this.x = scaleForDisplay(40);
             this.w = ww - scaleForDisplay(80);
         }
-        if (pref.layout_mode === 'compact_mode') {
+        if (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') {
             this.x = scaleForDisplay(20);
             this.w = ww - scaleForDisplay(40);
         }
@@ -81,7 +81,7 @@ class ProgressBar {
      * @param {GdiGraphics} gr
      */
     draw(gr) {
-        if (pref.show_progress_bar_default || pref.show_progress_bar_compact) {
+        if (pref.show_progress_bar_default || pref.show_progress_bar_artwork || pref.show_progress_bar_compact) {
             gr.SetSmoothingMode(SmoothingMode.None); // disable smoothing
             gr.FillSolidRect(this.x, this.y, this.w, this.h, col.progress_bar);
             if ((pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme) && !pref.is_first_launch) {
@@ -90,7 +90,7 @@ class ProgressBar {
 
             if (fb.PlaybackLength) {
                 let progressStationary = false;
-                let fillColor = col.primary;
+                let fillColor = pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary : col.primary;
                 /* in some cases the progress bar would move backwards at the end of a song while buffering/streaming was occurring.
                     This created strange looking jitter so now the progress bar can only increase unless the user seeked in the track. */
                 if (this.progressMoved || Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
@@ -104,7 +104,9 @@ class ProgressBar {
                     if (pref.blackTheme) {
                         fillColor = rgb(140, 140, 140);
                     } else {
-                        fillColor = col.darkAccent;
+                        if (!pref.rebornTheme) {
+                            fillColor = col.darkAccent;
+                        }
                     }
                 }
 
@@ -128,7 +130,7 @@ class ProgressBar {
                         this.progressAlphaCol = rgba(c.r, c.g, c.b, 128); // fake anti-aliased edge so things look a little smoother
                         this.lastAccentCol = col.accent;
                     }
-                    gr.DrawLine(this.progressLength + this.x + 1, this.y, this.progressLength + this.x + 1, this.y + this.h - 1, 1, this.progressAlphaCol);
+                    //gr.DrawLine(this.progressLength + this.x + 1, this.y, this.progressLength + this.x + 1, this.y + this.h - 1, 1, this.progressAlphaCol);
                 }
             }
 
@@ -136,6 +138,7 @@ class ProgressBar {
             const ft_lower = ft.lower_bar;
             const flagSize = flagImgs.length >= 3 ? scaleForDisplay(42) + scaleForDisplay(pref.lower_bar_font_size_default * 3) : flagImgs.length === 2 ? scaleForDisplay(28) + scaleForDisplay(pref.lower_bar_font_size_default * 2) : scaleForDisplay(14) + scaleForDisplay(pref.lower_bar_font_size_default);
             this.lowerMargin_default = scaleForDisplay(80); // 40px left + 40px right
+            this.lowerMargin_artwork = scaleForDisplay(40); // 20px left + 20px right
             this.lowerMargin_compact = scaleForDisplay(40); // 20px left + 20px right
 
             if (str.disc != '') {
@@ -155,6 +158,10 @@ class ProgressBar {
             this.trackNumWidth = Math.ceil(gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width);
             this.artistWidth = gr.MeasureString(str.artist, ft.artist_lrg, 0, 0, 0, 0).Width;
             this.titleWidth = gr.MeasureString(pref.show_composer ? str.title_lower + str.composer + str.original_artist : str.title_lower + str.original_artist, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
+            this.artistMaxWidth_artwork = ww - (this.titleWidth + this.trackNumWidth + this.timeAreaWidth + this.lowerMargin_artwork);
+            this.titleMaxWidth_artwork = ww - (this.artistWidth + this.timeAreaWidth + this.lowerMargin_artwork);
+            this.only_artistMaxWidth_artwork = ww - (this.timeAreaWidth + this.lowerMargin_artwork);
+            this.only_titleMaxWidth_artwork  = ww - (this.trackNumWidth + this.timeAreaWidth + this.lowerMargin_artwork);
             this.artistMaxWidth_compact = ww - (this.titleWidth + this.trackNumWidth + this.timeAreaWidth + this.lowerMargin_compact);
             this.titleMaxWidth_compact = ww - (this.artistWidth + this.timeAreaWidth + this.lowerMargin_compact);
             this.only_artistMaxWidth_compact = ww - (this.timeAreaWidth + this.lowerMargin_compact);
@@ -170,7 +177,7 @@ class ProgressBar {
             this.x = windowWidth ? scaleForDisplay(40) : 0;
             this.w = windowWidth - scaleForDisplay(80);
         }
-        if (pref.layout_mode === 'compact_mode') {
+        if (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') {
             this.x = windowWidth ? scaleForDisplay(20) : 0;
             this.w = windowWidth - scaleForDisplay(40);
         }
@@ -227,6 +234,36 @@ class ProgressBar {
                     }
                     else if (this.titleWidth > this.availableWidth) {
                         tt.showDelayed(str.artist + "\n" + str.tracknum + ' ' + str.title + (pref.show_composer ? str.composer : ''));
+                    }
+                } else if (!displayLibrary) {
+                    tt.stop();
+                }
+
+            } else if (pref.layout_mode === 'artwork_mode') {
+                const lowerBar_tt_hitarea_x = scaleForDisplay(20);
+                const lowerBar_tt_hitarea_y = wh - geo.lower_bar_h + scaleForDisplay(15);
+                const lowerBar_tt_hitarea_w = ww - this.lowerMargin_artwork - this.timeAreaWidth;
+                const lowerBar_tt_hitarea_h = scaleForDisplay(20);
+
+                if (lowerBar_tt_hitarea_x <= x && lowerBar_tt_hitarea_y <= y && lowerBar_tt_hitarea_x + lowerBar_tt_hitarea_w >= x &&
+                    lowerBar_tt_hitarea_y + lowerBar_tt_hitarea_h >= y) {
+                    if (pref.show_title_artwork) {
+                        if (this.artistWidth > this.artistMaxWidth_artwork) {
+                            tt.showDelayed(str.artist + "\n" + str.tracknum + ' ' + str.title + (pref.show_composer ? str.composer : ''));
+                        }
+                    } else if (!pref.show_title_artwork) {
+                        if (this.artistWidth > this.only_artistMaxWidth_artwork) {
+                            tt.showDelayed(str.artist + "\n" + str.tracknum + ' ' + str.title + (pref.show_composer ? str.composer : ''));
+                        }
+                    }
+                    if (pref.show_artist_artwork) {
+                        if (this.titleWidth > this.titleMaxWidth_artwork) {
+                            tt.showDelayed(str.artist + "\n" + str.tracknum + ' ' + str.title + (pref.show_composer ? str.composer : ''));
+                        }
+                    } else if (!pref.show_artist_artwork) {
+                        if (this.titleWidth > this.only_titleMaxWidth_artwork) {
+                            tt.showDelayed(str.artist + "\n" + str.tracknum + ' ' + str.title + (pref.show_composer ? str.composer : ''));
+                        }
                     }
                 } else if (!displayLibrary) {
                     tt.stop();

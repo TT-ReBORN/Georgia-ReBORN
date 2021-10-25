@@ -108,6 +108,8 @@ function createFonts() {
 
 	if (pref.layout_mode === 'default_mode') {
 		ft.artist_lrg = font(fontBold, pref.artist_font_size_default ? pref.artist_font_size_default : 18, 0);
+	} else if (pref.layout_mode === 'artwork_mode') {
+		ft.artist_lrg = font(fontBold, pref.artist_font_size_artwork ? pref.artist_font_size_artwork : 16, 0);
 	} else if (pref.layout_mode === 'compact_mode') {
 		ft.artist_lrg = font(fontBold, pref.artist_font_size_compact ? pref.artist_font_size_compact : 16, 0);
 	}
@@ -124,17 +126,18 @@ function createFonts() {
 
 	if (pref.layout_mode === 'default_mode') {
 		ft.lower_bar = font(fontLight, pref.lower_bar_font_size_default ? pref.lower_bar_font_size_default : 18, 0);
-		if (updateHyperlink) {
-			updateHyperlink.setFont(ft.lower_bar);
-		}
 		ft.lower_bar_bold = font(fontBold, pref.lower_bar_font_size_default ? pref.lower_bar_font_size_default : 18, 0);
+	}
+	else if (pref.layout_mode === 'artwork_mode') {
+		ft.lower_bar = font(fontLight, pref.lower_bar_font_size_artwork ? pref.lower_bar_font_size_artwork : 16, 0);
+		ft.lower_bar_bold = font(fontBold, pref.lower_bar_font_size_artwork ? pref.lower_bar_font_size_artwork : 16, 0);
 	}
 	else if (pref.layout_mode === 'compact_mode') {
 		ft.lower_bar = font(fontLight, pref.lower_bar_font_size_compact ? pref.lower_bar_font_size_compact : 16, 0);
-		if (updateHyperlink) {
-			updateHyperlink.setFont(ft.lower_bar);
-		}
 		ft.lower_bar_bold = font(fontBold, pref.lower_bar_font_size_compact ? pref.lower_bar_font_size_compact : 16, 0);
+	}
+	if (updateHyperlink) {
+		updateHyperlink.setFont(ft.lower_bar);
 	}
 	ft.lower_bar_sml = font(fontLight, pref.lower_bar_font_size_default ? pref.lower_bar_font_size_default : 12, 0);
 	ft.lower_bar_sml_bold = font(fontBold, pref.lower_bar_font_size_default ? pref.lower_bar_font_size_default : 12, 0);
@@ -149,12 +152,12 @@ function createFonts() {
 	}
 
 	ft.small_font = font(fontRegular, 14, 0);
-	ft.guifx = font(fontGuiFx, pref.layout_mode === 'compact_mode' ? Math.floor(pref.transport_buttons_size_compact / 2) : Math.floor(pref.transport_buttons_size_default / 2), 0);
-	ft.playbackOrder_default = font(fontGuiFx, pref.layout_mode === 'compact_mode' ? Math.floor(pref.transport_buttons_size_compact / 1.6) : Math.floor(pref.transport_buttons_size_default / 1.6), 0);
-	ft.playbackOrder_replay = font(fontAwesome, pref.layout_mode === 'compact_mode' ? Math.floor(pref.transport_buttons_size_compact / 2) : Math.floor(pref.transport_buttons_size_default / 2), 0);
-	ft.playbackOrder_shuffle = font(fontGuiFx, pref.layout_mode === 'compact_mode' ? Math.floor(pref.transport_buttons_size_compact / 1.65) : Math.floor(pref.transport_buttons_size_default / 1.65), 0);
-	ft.guifx_volume = font(fontGuiFx, pref.layout_mode === 'compact_mode' ? Math.floor(pref.transport_buttons_size_compact / 1.33) : Math.floor(pref.transport_buttons_size_default / 1.33), 0);
-	ft.guifx_reload = font(fontGuiFx, pref.layout_mode === 'compact_mode' ? Math.floor(pref.transport_buttons_size_compact / 1.5) : Math.floor(pref.transport_buttons_size_default / 1.5), 0);
+	ft.guifx = font(fontGuiFx, pref.layout_mode === 'artwork_mode' ? Math.floor(pref.transport_buttons_size_artwork / 2) : pref.layout_mode === 'compact_mode' ? Math.floor(pref.transport_buttons_size_compact / 2) : Math.floor(pref.transport_buttons_size_default / 2), 0);
+	ft.playbackOrder_default = font(fontGuiFx, pref.layout_mode === 'artwork_mode' ? Math.floor(pref.transport_buttons_size_artwork / 1.6) : pref.layout_mode === 'compact_mode' ? Math.floor(pref.transport_buttons_size_compact / 1.6) : Math.floor(pref.transport_buttons_size_default / 1.6), 0);
+	ft.playbackOrder_replay = font(fontAwesome, pref.layout_mode === 'artwork_mode' ? Math.floor(pref.transport_buttons_size_artwork / 2) : pref.layout_mode === 'compact_mode' ? Math.floor(pref.transport_buttons_size_compact / 2) : Math.floor(pref.transport_buttons_size_default / 2), 0);
+	ft.playbackOrder_shuffle = font(fontGuiFx, pref.layout_mode === 'artwork_mode' ? Math.floor(pref.transport_buttons_size_artwork / 1.65) : pref.layout_mode === 'compact_mode' ? Math.floor(pref.transport_buttons_size_compact / 1.65) : Math.floor(pref.transport_buttons_size_default / 1.65), 0);
+	ft.guifx_volume = font(fontGuiFx, pref.layout_mode === 'artwork_mode' ? Math.floor(pref.transport_buttons_size_artwork / 1.33) : pref.layout_mode === 'compact_mode' ? Math.floor(pref.transport_buttons_size_compact / 1.33) : Math.floor(pref.transport_buttons_size_default / 1.33), 0);
+	ft.guifx_reload = font(fontGuiFx, pref.layout_mode === 'artwork_mode' ? Math.floor(pref.transport_buttons_size_artwork / 1.5) : pref.layout_mode === 'compact_mode' ? Math.floor(pref.transport_buttons_size_compact / 1.5) : Math.floor(pref.transport_buttons_size_default / 1.5), 0);
 	ft.Marlett = font('Marlett', 13, 0);
 	ft.SegoeUi = font('Segoe Ui Semibold', pref.menu_font_size, 0);
 	ft.library_tree = font('Segoe UI', ppt.baseFontSize, 0);
@@ -169,7 +172,7 @@ function setGeometry() {
 
 	if (pref.layout_mode === 'default_mode') {
 		geo.prog_bar_h = scaleForDisplay(12) + (ww > 1920 ? 2 : 0); // height of progress bar
-	} else if (pref.layout_mode === 'compact_mode') {
+	} else if (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') {
 		geo.prog_bar_h = scaleForDisplay(10) + (ww > 1920 ? 2 : 0); // height of progress bar
 	}
 
@@ -185,8 +188,22 @@ var playedTimesRatios = [];
 // PATHS
 const paths = {};
 
-paths.lastFmImageRed = fb.ProfilePath + 'georgia-reborn/images/last-fm-red-36.png';
-paths.lastFmImageWhite = fb.ProfilePath + 'georgia-reborn/images/last-fm-36.png';
+paths.cdArtWhiteStub = fb.ProfilePath + 'georgia-reborn/images/discart/cd-white.png';
+paths.cdArtBlackStub = fb.ProfilePath + 'georgia-reborn/images/discart/cd-black.png';
+paths.cdArtBlankStub = fb.ProfilePath + 'georgia-reborn/images/discart/cd-blank.png';
+paths.cdArtTransStub = fb.ProfilePath + 'georgia-reborn/images/discart/cd-transparent.png';
+paths.vinylArtWhiteStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-white.png';
+paths.vinylArtVoidStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-void.png';
+paths.vinylArtColdFusionStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-cold-fusion.png';
+paths.vinylArtRingOfFireStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-ring-of-fire.png';
+paths.vinylArtMapleStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-maple.png';
+paths.vinylArtBlackStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-black.png';
+paths.vinylArtBlackHoleStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-black-hole.png';
+paths.vinylArtEbonyStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-ebony.png';
+paths.vinylArtTransStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-transparent.png';
+paths.noAlbumArt = fb.ProfilePath + 'georgia-reborn/images/misc/no-cover.png';
+paths.lastFmImageRed = fb.ProfilePath + 'georgia-reborn/images/misc/last-fm-red-36.png';
+paths.lastFmImageWhite = fb.ProfilePath + 'georgia-reborn/images/misc/last-fm-36.png';
 paths.labelsBase = fb.ProfilePath + 'images/recordlabel/'; // location of the record label logos for the bottom right corner
 paths.artistlogos = fb.ProfilePath + 'images/artistlogos/'; // location of High-Qualiy band logos for the bottom left corner
 paths.artistlogosColor = fb.ProfilePath + 'images/artistlogos color/';
@@ -234,6 +251,8 @@ var libraryImg = null; // library image
 var lyricsImg = null; // lyrics image
 var lastFmImg = gdi.Image(paths.lastFmImageRed); // Last.fm logo image
 var lastFmWhiteImg = gdi.Image(paths.lastFmImageWhite); // white Last.fm logo image
+var noAlbumArt = gdi.Image(paths.noAlbumArt); // No album art stub image
+var noAlbumArtStub = null; // No album art stub
 var shadow_image = null; // shadow behind the artwork + discart
 var labelShadowImg = null; // shadow behind labels
 var flagImgs = []; // array of flag images
@@ -298,6 +317,7 @@ var t_interval; // milliseconds between screen updates
 let lastLeftEdge = 0; // the left edge of the record labels. Saved so we don't have to recalculate every on every on_paint unless size has changed
 let lastLabelHeight = 0;
 let displayPlaylist = false;
+let displayPlaylistArtworkMode = false;
 let displayLibrary = false;
 let displayBiography = false;
 
@@ -341,10 +361,10 @@ function draw_ui(gr) {
 	// Background
 	if (!albumart && noArtwork) { // we use noArtwork to prevent flashing of blue default theme
 
-		if (!displayPlaylist || !displayLibrary) {
+		if (!displayPlaylist && pref.layout_mode === 'artwork_mode' || !displayLibrary) {
 			albumart_size.x = ww; // if there's no album art and no playlist/library, info panel takes up fullscreen
 		}
-		if (displayPlaylist || displayLibrary) {
+		if (displayPlaylist && pref.layout_mode !== 'artwork_mode' || displayLibrary) {
 			albumart_size.x = Math.floor(ww / 2); // if there's no album art and playlist/library is displayed, art info panel takes up 1/2 screen
 		}
 		albumart_size.w = albumart_size.x;
@@ -353,6 +373,7 @@ function draw_ui(gr) {
 		if (!themeColorSet) {
 			pref.whiteTheme ? setTheme(whiteTheme.colors) :
 			pref.blackTheme ? setTheme(blackTheme.colors) :
+			pref.rebornTheme ? setTheme(rebornTheme.colors) :
 			pref.blueTheme ? setTheme(blueTheme.colors) :
 			pref.darkblueTheme ? setTheme(darkblueTheme.colors) :
 			pref.redTheme ? setTheme(redTheme.colors) :
@@ -361,6 +382,7 @@ function draw_ui(gr) {
 			pref.ngreenTheme ? setTheme(ngreenTheme.colors) :
 			pref.nredTheme ? setTheme(nredTheme.colors) :
 			pref.ngoldTheme ? setTheme(ngoldTheme.colors) : '';
+			if (pref.rebornTheme) initTheme();
 			themeColorSet = true;
 		}
 	}
@@ -386,7 +408,7 @@ function draw_ui(gr) {
 		if (cdart && !rotatedCD && !displayPlaylist && !displayLibrary && pref.display_cdart) {
 			CreateRotatedCDImage();
 		}
-		if ((!pref.blackTheme || !pref.nblueTheme || !pref.ngreenTheme || !pref.nredTheme || !pref.ngoldTheme) && albumart && (albumart_scaled || rotatedCD)) {
+		if ((!pref.blackTheme || !pref.nblueTheme || !pref.ngreenTheme || !pref.nredTheme || !pref.ngoldTheme) && albumart && (albumart_scaled || rotatedCD) && pref.layout_mode !== 'artwork_mode') {
 			shadow_image && gr.DrawImage(shadow_image, -geo.aa_shadow, albumart_size.y - geo.aa_shadow, shadow_image.Width, shadow_image.Height,
 				0, 0, shadow_image.Width, shadow_image.Height);
 			// gr.DrawRect(-geo.aa_shadow, albumart_size.y - geo.aa_shadow, shadow_image.Width, shadow_image.Height, 1, RGBA(0,0,255,125)); // viewing border line
@@ -413,33 +435,47 @@ function draw_ui(gr) {
 		}
 		if (timings.showExtraDrawTiming) drawArt.Print();
 	}
-	if (fb.IsPlaying && (albumart || !cdart) && ((!displayLibrary && !displayPlaylist) || !settings.hidePanelBgWhenCollapsed)) {
+	if (fb.IsPlaying && (albumart || !cdart || !albumart && cdart) && ((!displayLibrary && !displayPlaylist) || !settings.hidePanelBgWhenCollapsed)) {
 		gr.SetSmoothingMode(SmoothingMode.None);
-		gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, col.primary); // info background -- must be drawn after shadow
+		gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, pref.layout_mode === 'artwork_mode' ? g_pl_colors.background : col.primary); // info background -- must be drawn after shadow
 
 		if (!cdart) {
 			if (pref.no_cdartBG) {
 				if (albumart) {
-					gr.FillSolidRect(ww - albumart_size.x - 1, albumart_size.y, albumart_size.x + 1, albumart_size.h, col.primary);
+					gr.FillSolidRect(ww - albumart_size.x - (pref.layout_mode === 'artwork_mode' ? 0 : 1), albumart_size.y, albumart_size.x + (pref.layout_mode === 'artwork_mode' ? 0 : 1), albumart_size.h, pref.layout_mode === 'artwork_mode' ? g_pl_colors.background : col.primary);
 				}
 			}
 		}
 		if (!pref.display_cdart) {
 			if (albumart) {
-				gr.FillSolidRect(ww - albumart_size.x - 1, albumart_size.y, albumart_size.x + 1, albumart_size.h, col.primary);
+				gr.FillSolidRect(ww - albumart_size.x - (pref.layout_mode === 'artwork_mode' ? 0 : 1), albumart_size.y, albumart_size.x + (pref.layout_mode === 'artwork_mode' ? 0 : 1), albumart_size.h, pref.layout_mode === 'artwork_mode' ? g_pl_colors.background : col.primary);
 			}
 		}
 
-		if (pref.whiteTheme && (isStreaming && noArtwork || !albumart && noArtwork)) {
+		if (pref.whiteTheme && (isStreaming && noArtwork || !albumart && noArtwork) && pref.layout_mode !== 'artwork_mode') {
 			// Info background top shadow
 			gr.FillGradRect(0, geo.top_art_spacing  - (is_4k ? 10 : 6), displayLibrary ? ww / 2 : ww, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24));
 			// Info background bottom shadow
 			gr.FillGradRect(0, wh - geo.lower_bar_h - (is_4k ? -1 : 1), displayLibrary ? ww / 2 : ww, scaleForDisplay(5), 90, RGBtoRGBA(col.shadow, 18), RGBtoRGBA(col.shadow, 0));
 		}
-		if ((pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) && (isStreaming && noArtwork || !albumart && noArtwork)) {
+		if (pref.layout_mode === 'artwork_mode' && !displayBiography) {
+			if (pref.whiteTheme) {
+				// Info background top shadow
+				gr.FillGradRect(0, geo.top_art_spacing  - (is_4k ? 10 : 6), displayLibrary ? ww / 2 : ww, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24));
+				// Info background bottom shadow
+				gr.FillGradRect(0, wh - geo.lower_bar_h - (is_4k ? -1 : 1), displayLibrary ? ww / 2 : ww, scaleForDisplay(5), 90, RGBtoRGBA(col.shadow, 18), RGBtoRGBA(col.shadow, 0));
+			} else {
+				// Info background top shadow
+				gr.FillGradRect(0, geo.top_art_spacing - (is_4k ? 10 : 6), ww, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 40));
+				// Info background bottom shadow
+				gr.FillGradRect(0, wh - geo.lower_bar_h - (is_4k ? -1 : 1), ww, scaleForDisplay(5), 90, RGBtoRGBA(col.shadow, 30), RGBtoRGBA(col.shadow, 0));
+			}
+		}
+		if ((pref.blackTheme || pref.rebornTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) && (isStreaming && noArtwork || !albumart && noArtwork) && pref.layout_mode !== 'artwork_mode') {
 			// Info background top shadow
-			gr.FillGradRect(0, albumart_size.y - (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? (is_4k ? 8 : 6) : (is_4k ? 10 : 6)), albumart_size.x, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0),
+			gr.FillGradRect(0, albumart_size.y - (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? (is_4k ? 8 : 6) : (is_4k ? 10 : 6)), displayLibrary ? ww / 2 : ww, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0),
 				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
+				pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
 				pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
 				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 72) :
 				pref.redTheme ? RGBtoRGBA(col.shadow, 72) :
@@ -447,8 +483,9 @@ function draw_ui(gr) {
 				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 180) : ''
 			);
 			// Info background bottom shadow
-			gr.FillGradRect(0, albumart_size.y + albumart_size.h - (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? (is_4k ? 0 : 1) : (is_4k ? -1 : 1)), albumart_size.x, scaleForDisplay(5), 90,
+			gr.FillGradRect(0, albumart_size.y + albumart_size.h - (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? (is_4k ? 0 : 1) : (is_4k ? -1 : 1)), displayLibrary ? ww / 2 : ww, scaleForDisplay(5), 90,
 				pref.blackTheme ? RGBtoRGBA(col.shadow, 80) :
+				pref.rebornTheme ? RGBtoRGBA(col.shadow, 30) :
 				pref.blueTheme ? RGBtoRGBA(col.shadow, 34) :
 				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 60) :
 				pref.redTheme ? RGBtoRGBA(col.shadow, 72) :
@@ -462,6 +499,48 @@ function draw_ui(gr) {
 		}
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 	}
+
+	// noAlbumArtStub if no album cover exist
+	if (!albumart && noArtwork && (fb.IsPlaying || fb.IsPaused)) {
+		noAlbumArtStub = true;
+		if (!isStreaming || isStreaming && (displayPlaylist || displayLibrary) || isStreaming && !displayPlaylistArtworkMode && pref.layout_mode === 'artwork_mode') {
+			albumart = null;
+			artCache.clear();
+			cdartArray = [];
+			cdart = null;
+
+			albumart_size.x =
+			pref.layout_mode === 'default_mode' ? displayPlaylist || displayLibrary ? 0 : ww / 2 :
+			pref.layout_mode === 'artwork_mode' ? !displayPlaylist ? 0 : ww : 0;
+
+			albumart_size.w =
+			pref.layout_mode === 'default_mode' ? displayPlaylist || displayLibrary ? albumart_size.w : albumart_size.w / 2 :
+			pref.layout_mode === 'artwork_mode' ? displayPlaylist ? ww : ww : 0;
+		}
+		if (!isStreaming || isStreaming && (displayPlaylist || !displayPlaylistArtworkMode || displayLibrary)) {
+			gr.FillSolidRect(albumart_size.x, geo.top_art_spacing, albumart_size.w, albumart_size.h - 1, g_pl_colors.background);
+			gr.DrawImage(noAlbumArt, albumart_size.x, geo.top_art_spacing, albumart_size.w, albumart_size.h, 0, 0, noAlbumArt.Width, noAlbumArt.Height);
+			if (pref.displayLyrics && fb.IsPlaying) {
+				gr.FillSolidRect(albumart_size.x - 1, albumart_size.y - 1, albumart_size.w + 1, albumart_size.h + 1, RGBA(0, 0, 0, 155));
+				gLyrics && gLyrics.drawLyrics(gr);
+			}
+		}
+		if (pref.layout_mode !== 'artwork_mode' && !isStreaming && !displayPlaylist && !displayLibrary) {
+			// Info background left shadow
+			gr.FillGradRect(ww / 2 - 4, geo.top_art_spacing, 4, wh - geo.top_art_spacing - geo.lower_bar_h, 0, RGBtoRGBA(col.shadow, 0),
+				pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
+				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
+				pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
+				pref.blueTheme ? RGBtoRGBA(col.shadow, 38) :
+				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 60) :
+				pref.redTheme ? RGBtoRGBA(col.shadow, 64) :
+				pref.creamTheme ? RGBtoRGBA(col.shadow, 28) :
+				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 120) : ''
+			);
+		}
+	} else {
+		noAlbumArtStub = false;
+	}
 	if (pref.show_pause) {
 		if (fb.IsPaused) {
 			pauseBtn.draw(gr);
@@ -469,7 +548,7 @@ function draw_ui(gr) {
 	}
 
 	// flag info grid
-	if (pref.layout_mode === 'default_mode') {
+	if (pref.layout_mode === 'default_mode' || pref.layout_mode === 'artwork_mode') {
 		var textLeft = scaleForDisplay(40);
 		if (str.artist) {
 			var availableWidth = displayPlaylist || displayLibrary ? Math.min(ww / 2 - 20, btns.playlist.x - textLeft) : btns.playlist.x - textLeft;
@@ -477,7 +556,8 @@ function draw_ui(gr) {
 			const height = gr.CalcTextHeight(str.artist, artistFont);
 			const width = gr.MeasureString(str.artist, artistFont, 0, 0, 0, 0).Width;
 			var artistY = wh - geo.lower_bar_h + scaleForDisplay(2);
-			if ((!displayPlaylist && !displayLibrary && pref.show_artistInGrid || ((displayPlaylist || displayLibrary) && !albumart && pref.show_artistInGrid)) &&
+			if (pref.layout_mode === 'default_mode' && (!displayPlaylist && !displayLibrary && pref.show_artistInGrid || ((displayPlaylist || displayLibrary) && !albumart && pref.show_artistInGrid)) ||
+			   (pref.layout_mode === 'artwork_mode' && displayPlaylist && !albumart && pref.show_artistInGrid) &&
 				pref.show_flags_details && flagImgs.length && width + flagImgs[0].Width * flagImgs.length) {
 				var flagsLeft = textLeft;
 				var top = (albumart_size.y ? albumart_size.y : geo.top_art_spacing) + scaleForDisplay(33);
@@ -496,14 +576,14 @@ function draw_ui(gr) {
 					top, flagImgs[i].Width - scaleForDisplay(28) + scaleForDisplay(pref.album_font_size), flagImgs[i].Height - scaleForDisplay(28) + scaleForDisplay(pref.album_font_size), 0, 0, flagImgs[i].Width, flagImgs[i].Height),
 					flagsLeft += flagImgs[i].Width - scaleForDisplay(20) + scaleForDisplay(pref.album_font_size);
 					// Maximum 3 flags
-					if (i > 1) { break; }
+					if (i > 1) break;
 				}
 			}
 		}
 	}
 
 	// text info grid
-	if (((!displayPlaylist && !displayLibrary) || (!albumart && noArtwork)) && fb.IsPlaying) {
+	if (((!displayPlaylist && !displayLibrary || !displayPlaylistArtworkMode && !displayLibrary) || (!albumart && noArtwork)) && fb.IsPlaying) {
 		let drawTextGrid = null;
 		if (timings.showExtraDrawTiming) drawTextGrid = fb.CreateProfiler('on_paint -> textGrid');
 		let gridSpace = 0;
@@ -515,14 +595,19 @@ function draw_ui(gr) {
 		}
 		const text_width = gridSpace;
 
-		var c = new Color(col.primary);
-		if (c.brightness > 190) {
+		var c = new Color(pref.layout_mode === 'artwork_mode' ? g_pl_colors.background : col.primary);
+		if (c.brightness > 130) {
 			col.info_text = rgb(55, 55, 55);
+			if (pref.rebornTheme) col.info_text = col.superDarkAccent;
 		} else {
 			col.info_text = rgb(255, 255, 255);
+			if (pref.rebornTheme) col.info_text = !albumart ? rgb(120, 120, 120) : col.maxLightAccent;
 		}
-		if ((pref.whiteTheme && isStreaming || pref.whiteTheme && !albumart) || pref.creamTheme && isStreaming) {
+		if ((pref.layout_mode === 'artwork_mode' && (pref.whiteTheme || pref.creamTheme) || pref.whiteTheme && isStreaming || pref.whiteTheme && !albumart) || pref.creamTheme && isStreaming || pref.creamTheme && !albumart) {
 			col.info_text = rgb(120, 120, 120);
+		}
+		if (pref.layout_mode === 'artwork_mode' && c.brightness > 130 && (pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme)) {
+			col.info_text = rgb(220, 220, 220);
 		}
 
 		var top = (albumart_size.y ? albumart_size.y : geo.top_art_spacing) + scaleForDisplay(68);
@@ -894,7 +979,7 @@ function draw_ui(gr) {
 	// LOWER BAR
 	if (pref.layout_mode === 'default_mode') {
 		var lowerBarTop = wh - geo.lower_bar_h + (is_4k ? 65 : 35);
-	} else if (pref.layout_mode === 'compact_mode') {
+	} else if (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') {
 		var lowerBarTop = wh - geo.lower_bar_h + (is_4k ? 33 : 18);
 	}
 
@@ -928,7 +1013,27 @@ function draw_ui(gr) {
 			biographyPanel.on_paint(gr);
 			drawBiographyProfiler && drawBiographyProfiler.Print();
 		}
-	} else if (pref.layout_mode === 'compact_mode') {
+	} else if (pref.layout_mode === 'artwork_mode') {
+		if (displayPlaylistArtworkMode) {
+			let drawPlaylistProfiler = null;
+			timings.showExtraDrawTiming && (drawPlaylistProfiler = fb.CreateProfiler('on_paint -> playlist'));
+			playlist.on_paint(gr);
+			timings.showExtraDrawTiming && drawPlaylistProfiler.Print();
+		}
+		else if (displayLibrary) {
+			let drawLibraryProfiler = null;
+			timings.showExtraDrawTiming && (drawLibraryProfiler = fb.CreateProfiler('on_paint -> library'));
+			libraryPanel.on_paint(gr);
+			drawLibraryProfiler && drawLibraryProfiler.Print();
+		}
+		if (displayBiography) {
+			let drawBiographyProfiler = null;
+			timings.showExtraDrawTiming && (drawBiographyProfiler = fb.CreateProfiler('on_paint -> biography'));
+			biographyPanel.on_paint(gr);
+			drawBiographyProfiler && drawBiographyProfiler.Print();
+		}
+	}
+	else if (pref.layout_mode === 'compact_mode') {
 		if (displayPlaylist) {
 			let drawPlaylistProfiler = null;
 			timings.showExtraDrawTiming && (drawPlaylistProfiler = fb.CreateProfiler('on_paint -> playlist'));
@@ -1014,7 +1119,7 @@ function draw_ui(gr) {
 					flagImgs[i].Width + scaleForDisplay(pref.lower_bar_font_size_default) - scaleForDisplay(26), flagImgs[i].Height + scaleForDisplay(pref.lower_bar_font_size_default) - scaleForDisplay(26), 0, 0, flagImgs[i].Width, flagImgs[i].Height),
 					flagsLeft += flagImgs[i].Width - scaleForDisplay(20) + scaleForDisplay(pref.lower_bar_font_size_default);
 					// Maximum 3 flags
-					if (i > 1) { break; }
+					if (i > 1) break;
 				}
 			} else { // On two lines -> one line flag position
 				if (pref.show_flags_lowerbar && flagImgs.length && artistWidth + flagImgs[0].Width * flagImgs.length && pref.show_artist_default && pref.show_title_default < availableWidth) {
@@ -1024,7 +1129,7 @@ function draw_ui(gr) {
 						flagImgs[i].Width + scaleForDisplay(pref.lower_bar_font_size_default) - scaleForDisplay(26), flagImgs[i].Height + scaleForDisplay(pref.lower_bar_font_size_default) - scaleForDisplay(26), 0, 0, flagImgs[i].Width, flagImgs[i].Height),
 						flagsLeft += flagImgs[i].Width - scaleForDisplay(20) + scaleForDisplay(pref.lower_bar_font_size_default);
 						// Maximum 3 flags
-						if (i > 1) { break; }
+						if (i > 1) break;
 					}
 				}
 			}
@@ -1045,7 +1150,7 @@ function draw_ui(gr) {
 			availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
 
 			gr.DrawString(pref.show_title_default || !pref.show_title_default && !fb.IsPlaying ? str.tracknum : '', ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop, trackNumWidth - timeAreaWidth, titleHeight, StringFormat(0, 0, 4, 0x00001000));
-			gr.DrawString(pref.show_title_default || !pref.show_title_default && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.original_artist + str.composer : str.title_lower + str.original_artist : '', ft_lower, col.now_playing, trackNumWidth > 0 ? progressBar.x - scaleForDisplay(4) + trackNumWidth : progressBar.x - (is_4k ? 1 : 0) - scaleForDisplay(11), lowerBarTop, availableWidth, titleHeight, g_string_format.trim_ellipsis_char);
+			gr.DrawString(pref.show_title_default || !pref.show_title_default && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.original_artist + str.composer : str.title_lower : '', ft_lower, col.now_playing, trackNumWidth > 0 ? progressBar.x - scaleForDisplay(4) + trackNumWidth : progressBar.x - (is_4k ? 1 : 0) - scaleForDisplay(11), lowerBarTop, availableWidth, titleHeight, g_string_format.trim_ellipsis_char);
 
 		} else { // One line
 			if (pref.show_artist_default && pref.show_flags_lowerbar && flagImgs.length && artistWidth + flagImgs[0].Width * flagImgs.length < availableWidth) {
@@ -1055,7 +1160,7 @@ function draw_ui(gr) {
 					flagImgs[i].Width + scaleForDisplay(pref.lower_bar_font_size_default) - scaleForDisplay(26), flagImgs[i].Height + scaleForDisplay(pref.lower_bar_font_size_default) - scaleForDisplay(26), 0, 0, flagImgs[i].Width, flagImgs[i].Height),
 					flagsLeft += flagImgs[i].Width - scaleForDisplay(20) + scaleForDisplay(pref.lower_bar_font_size_default);
 					// Maximum 3 flags
-					if (i > 1) { break; }
+					if (i > 1) break;
 				}
 			}
 			gr.DrawString(pref.show_artist_default ? str.artist : '', ft_lower_bold, col.artist, textLeft + (pref.show_flags_lowerbar && flagImgs.length ? flagSize + 2 : 0) - scaleForDisplay(1), lowerBarTop + heightAdjustment, availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
@@ -1063,9 +1168,59 @@ function draw_ui(gr) {
 			gr.DrawString(pref.show_title_default || !pref.show_title_default && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.composer : str.title_lower : '', ft_lower, col.now_playing, pref.show_artist_default ? progressBar.x + (pref.show_flags_lowerbar && flagImgs.length ? is_4k ? flagSize + trackNumWidth + artistWidth : flagSize + trackNumWidth + artistWidth + scaleForDisplay(1) : trackNumWidth + artistWidth - scaleForDisplay(1)) + (is_4k ? 2 : 0) : progressBar.x + trackNumWidth - scaleForDisplay(1) + (is_4k ? 2 : 0), lowerBarTop, fb.IsPlaying ? availableWidth : ww, titleHeight, g_string_format.trim_ellipsis_char);
 		}
 
+	} else if (pref.layout_mode === 'artwork_mode') {
+		// Add other working antialiasing on smaller font sizes in FHD
+		if (!is_4k && (pref.lower_bar_font_size_artwork) < 18) {
+			gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+		} else {
+			gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
+		}
+
+		var ft_lower_bold = ft.lower_bar_bold;
+		var ft_lower = ft.lower_bar;
+		var trackNumWidth = Math.ceil(gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width);
+		var titleMeasurements = gr.MeasureString(pref.show_composer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, 0, 0);
+		var heightAdjustment = is_4k ? 1 : 0;
+
+		const textLeftArtwork = scaleForDisplay(20);
+		const lowerMargin_artwork = scaleForDisplay(40); // 20px left + 20px right
+		const flagSize = flagImgs.length >= 3 ? scaleForDisplay(42) + scaleForDisplay(pref.lower_bar_font_size_artwork * 3) : flagImgs.length === 2 ? scaleForDisplay(28) + scaleForDisplay(pref.lower_bar_font_size_artwork * 2) : scaleForDisplay(14) + scaleForDisplay(pref.lower_bar_font_size_artwork);
+
+		// Setup width for artist and song title
+		const availableWidth = Math.min(ww - lowerMargin_artwork - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0) - timeAreaWidth - scaleForDisplay(20));
+		const artistMaxWidth = Math.min(ww - lowerMargin_artwork - timeAreaWidth);
+		const titleMaxWidth =  Math.min(ww - lowerMargin_artwork - trackNumWidth - timeAreaWidth - scaleForDisplay(20));
+
+		// Measure width and height for artist, orig artist and song title
+		const artistWidth = gr.MeasureString(str.artist, ft_lower_bold, 0, 0, artistMaxWidth, 0).Width;
+		const artistHeight = gr.CalcTextHeight(str.artist, ft_lower_bold);
+		const titleWidth = gr.MeasureString(pref.show_composer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, titleMaxWidth, 0).Width;
+		const titleHeight = gr.CalcTextHeight(str.title_lower, ft_lower);
+		const artistTitleWidth = gr.MeasureString(str.artist, ft_lower_bold, 0, 0, 0, 0).Width + gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(pref.show_composer ? str.title_lower + str.composer : str.title_lower, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
+
+		if (artistTitleWidth < availableWidth) { // Artist + title displayed if space available
+			if (pref.show_artist_artwork && pref.show_flags_lowerbar && flagImgs.length && artistWidth + flagImgs[0].Width * flagImgs.length < availableWidth) {
+				var flagsLeft = textLeftArtwork - (is_4k ? 1 : 0);
+				for (let i = 0; i < flagImgs.length; i++) {
+					gr.DrawImage(flagImgs[i], flagsLeft, Math.round(lowerBarTop - (flagImgs[i].Height / artistHeight)),
+					flagImgs[i].Width + scaleForDisplay(pref.lower_bar_font_size_artwork) - scaleForDisplay(26), flagImgs[i].Height + scaleForDisplay(pref.lower_bar_font_size_artwork) - scaleForDisplay(26), 0, 0, flagImgs[i].Width, flagImgs[i].Height),
+					flagsLeft += flagImgs[i].Width - scaleForDisplay(20) + scaleForDisplay(pref.lower_bar_font_size_artwork);
+					// Maximum 3 flags
+					if (i > 1) break;
+				}
+			}
+			gr.DrawString(pref.show_artist_artwork ? str.artist : '', ft_lower_bold, col.artist, textLeftArtwork + (pref.show_flags_lowerbar && flagImgs.length ? flagSize + 2 : 0) - scaleForDisplay(1), lowerBarTop + heightAdjustment, availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
+			gr.DrawString(pref.show_title_artwork || !pref.show_title_artwork && !fb.IsPlaying ? str.tracknum : '', ft_lower, col.now_playing, pref.show_artist_artwork ? fb.IsPlaying ? progressBar.x + (pref.show_flags_lowerbar && flagImgs.length ? flagSize + artistWidth + scaleForDisplay(9) : is_4k ? artistWidth + 16 : artistWidth + 7) : progressBar.x : progressBar.x, lowerBarTop, trackNumWidth - timeAreaWidth, titleHeight, StringFormat(0, 0, 4, 0x00001000));
+			gr.DrawString(pref.show_title_artwork || !pref.show_title_artwork && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.composer : str.title_lower : '', ft_lower, col.now_playing, pref.show_artist_artwork ? progressBar.x + (pref.show_flags_lowerbar && flagImgs.length ? is_4k ? flagSize + trackNumWidth + artistWidth : flagSize + trackNumWidth + artistWidth + scaleForDisplay(1) : trackNumWidth + artistWidth - scaleForDisplay(1)) + (is_4k ? 2 : 0) : progressBar.x + trackNumWidth - scaleForDisplay(1) + (is_4k ? 2 : 0), lowerBarTop, fb.IsPlaying ? availableWidth : ww, titleHeight, g_string_format.trim_ellipsis_char);
+		}
+		else { // Artist hidden if too long
+			gr.DrawString(pref.show_artist_artwork && !pref.show_title_artwork ? str.artist : '', ft_lower_bold, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop + heightAdjustment, availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
+			gr.DrawString(pref.show_title_artwork  || !pref.show_title_artwork && !fb.IsPlaying ? str.tracknum : '', ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop, fb.IsPlaying ? trackNumWidth - timeAreaWidth : trackNumWidth, titleHeight, StringFormat(0, 0, 4, 0x00001000));
+			gr.DrawString(pref.show_title_artwork  || !pref.show_title_artwork && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.original_artist + str.composer : str.title_lower : '', ft_lower, col.now_playing, progressBar.x + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop, fb.IsPlaying ? availableWidth : ww, titleHeight, g_string_format.trim_ellipsis_char);
+		}
 	} else if (pref.layout_mode === 'compact_mode') {
 		// Add other working antialiasing on smaller font sizes in FHD
-		if (!is_4k && pref.lower_bar_font_size_compact < 18) {
+		if (!is_4k && (pref.lower_bar_font_size_compact) < 18) {
 			gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 		} else {
 			gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
@@ -1094,12 +1249,12 @@ function draw_ui(gr) {
 		if (artistTitleWidth < availableWidth) { // Artist + title displayed if space available
 			gr.DrawString(pref.show_artist_compact ? str.artist : '', ft_lower_bold, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop + heightAdjustment, availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
 			gr.DrawString(pref.show_title_compact || !pref.show_title_compact && !fb.IsPlaying ? str.tracknum : '', ft_lower, col.now_playing, pref.show_artist_compact ? progressBar.x - scaleForDisplay(1) + artistWidth + (fb.IsPlaying ? (is_4k ? 19 : 8) : 0) : progressBar.x, lowerBarTop, trackNumWidth, titleHeight, StringFormat(0, 0, 4, 0x00001000));
-			gr.DrawString(pref.show_title_compact || !pref.show_title_compact && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.original_artist + str.composer : str.title_lower + str.original_artist : '', ft_lower, col.now_playing, pref.show_artist_compact ? progressBar.x + artistWidth + trackNumWidth + (is_4k ? 4 : 0) : progressBar.x + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop, availableWidth, titleHeight, g_string_format.trim_ellipsis_char);
+			gr.DrawString(pref.show_title_compact || !pref.show_title_compact && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.original_artist + str.composer : str.title_lower : '', ft_lower, col.now_playing, pref.show_artist_compact ? progressBar.x + artistWidth + trackNumWidth + (is_4k ? 4 : 0) : progressBar.x + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop, availableWidth, titleHeight, g_string_format.trim_ellipsis_char);
 		}
 		else { // Artist hidden if too long
 			gr.DrawString(pref.show_artist_compact && !pref.show_title_compact ? str.artist : '', ft_lower_bold, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop + heightAdjustment, availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
-			gr.DrawString(pref.show_title_compact  || !pref.show_title_compact && !fb.IsPlaying ? str.tracknum : '', ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop, fb.IsPlaying ? trackNumWidth - timeAreaWidth : trackNumWidth, titleHeight, StringFormat(0, 0, 4, 0x00001000));
-			gr.DrawString(pref.show_title_compact  || !pref.show_title_compact && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.original_artist + str.composer : str.title_lower + str.original_artist : '', ft_lower, col.now_playing, progressBar.x + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop, fb.IsPlaying ? availableWidth : ww, titleHeight, g_string_format.trim_ellipsis_char);
+			gr.DrawString(pref.show_title_compact || !pref.show_title_compact && !fb.IsPlaying ? str.tracknum : '', ft_lower, col.now_playing, progressBar.x - scaleForDisplay(1), lowerBarTop, fb.IsPlaying ? trackNumWidth - timeAreaWidth : trackNumWidth, titleHeight, StringFormat(0, 0, 4, 0x00001000));
+			gr.DrawString(pref.show_title_compact || !pref.show_title_compact && !fb.IsPlaying ? pref.show_composer && fb.IsPlaying ? str.title_lower + str.original_artist + str.composer : str.title_lower : '', ft_lower, col.now_playing, progressBar.x + trackNumWidth + (is_4k ? 4 : 0), lowerBarTop, fb.IsPlaying ? availableWidth : ww, titleHeight, g_string_format.trim_ellipsis_char);
 		}
 	}
 
@@ -1110,25 +1265,35 @@ function draw_ui(gr) {
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 		if (fb.PlaybackLength > 0) {
 			if (pref.show_playbackTime_default && pref.layout_mode === 'default_mode') {
-				gr.DrawString(str.length, ft_lower, col.now_playing, ww - (pref.layout_mode === 'compact_mode' ? scaleForDisplay(240) : scaleForDisplay(260)), lowerBarTop, scaleForDisplay(220), titleMeasurements.Height, StringFormat(2, 0));
+				gr.DrawString(str.length, ft_lower, col.now_playing, ww - scaleForDisplay(260), lowerBarTop, scaleForDisplay(220), titleMeasurements.Height, StringFormat(2, 0));
 				let width = gr.CalcTextWidth('  ' + str.length, ft_lower);
-				gr.DrawString(str.time, ft_lower_bold, col.now_playing, ww - (pref.layout_mode === 'compact_mode' ? scaleForDisplay(280) : scaleForDisplay(300)), lowerBarTop + heightAdjustment, scaleForDisplay(260) - width, titleMeasurements.Height, StringFormat(2, 0));
+				gr.DrawString(str.time, ft_lower_bold, col.now_playing, ww - scaleForDisplay(300), lowerBarTop + heightAdjustment, scaleForDisplay(260) - width, titleMeasurements.Height, StringFormat(2, 0));
 				width += gr.CalcTextWidth('  ' + str.time, ft_lower_bold);
-				gr.DrawString(pref.layout_mode === 'default_mode' ? str.disc : '', ft_lower, col.now_playing, ww - scaleForDisplay(340), lowerBarTop, scaleForDisplay(300) - width, titleMeasurements.Height, StringFormat(2, 0));
+				gr.DrawString(str.disc, ft_lower, col.now_playing, ww - scaleForDisplay(340), lowerBarTop, scaleForDisplay(300) - width, titleMeasurements.Height, StringFormat(2, 0));
+			}
+			else if (pref.show_playbackTime_artwork && pref.layout_mode === 'artwork_mode') {
+				gr.DrawString(str.length, ft_lower, col.now_playing, ww - scaleForDisplay(240), lowerBarTop, scaleForDisplay(220), titleMeasurements.Height, StringFormat(2, 0));
+				let width = gr.CalcTextWidth('  ' + str.length, ft_lower);
+				gr.DrawString(str.time, ft_lower_bold, col.now_playing, ww - scaleForDisplay(280), lowerBarTop + heightAdjustment, scaleForDisplay(260) - width, titleMeasurements.Height, StringFormat(2, 0));
+				width += gr.CalcTextWidth('  ' + str.time, ft_lower_bold);
+				gr.DrawString('', ft_lower, col.now_playing, ww - scaleForDisplay(340), lowerBarTop, scaleForDisplay(300) - width, titleMeasurements.Height, StringFormat(2, 0));
 			}
 			else if (pref.show_playbackTime_compact && pref.layout_mode === 'compact_mode') {
-				gr.DrawString(str.length, ft_lower, col.now_playing, ww - (pref.layout_mode === 'compact_mode' ? scaleForDisplay(240) : scaleForDisplay(260)), lowerBarTop, scaleForDisplay(220), titleMeasurements.Height, StringFormat(2, 0));
+				gr.DrawString(str.length, ft_lower, col.now_playing, ww - scaleForDisplay(240), lowerBarTop, scaleForDisplay(220), titleMeasurements.Height, StringFormat(2, 0));
 				let width = gr.CalcTextWidth('  ' + str.length, ft_lower);
-				gr.DrawString(str.time, ft_lower_bold, col.now_playing, ww - (pref.layout_mode === 'compact_mode' ? scaleForDisplay(280) : scaleForDisplay(300)), lowerBarTop + heightAdjustment, scaleForDisplay(260) - width, titleMeasurements.Height, StringFormat(2, 0));
+				gr.DrawString(str.time, ft_lower_bold, col.now_playing, ww - scaleForDisplay(280), lowerBarTop + heightAdjustment, scaleForDisplay(260) - width, titleMeasurements.Height, StringFormat(2, 0));
 				width += gr.CalcTextWidth('  ' + str.time, ft_lower_bold);
-				gr.DrawString(pref.layout_mode === 'default_mode' ? str.disc : '', ft_lower, col.now_playing, ww - scaleForDisplay(340), lowerBarTop, scaleForDisplay(300) - width, titleMeasurements.Height, StringFormat(2, 0));
+				gr.DrawString('', ft_lower, col.now_playing, ww - scaleForDisplay(340), lowerBarTop, scaleForDisplay(300) - width, titleMeasurements.Height, StringFormat(2, 0));
 			}
 		} else if (fb.IsPlaying) { // streaming, but still want to show time
 			if (pref.show_playbackTime_default && pref.layout_mode === 'default_mode') {
-				gr.DrawString(str.time, ft.lower_bar, col.now_playing, ww - (pref.layout_mode === 'compact_mode' ? scaleForDisplay(240) : scaleForDisplay(260)), lowerBarTop, scaleForDisplay(220), 0.5 * geo.lower_bar_h, StringFormat(2, 0));
+				gr.DrawString(str.time, ft.lower_bar, col.now_playing, ww - scaleForDisplay(260), lowerBarTop, scaleForDisplay(220), 0.5 * geo.lower_bar_h, StringFormat(2, 0));
+			}
+			else if (pref.show_playbackTime_artwork && pref.layout_mode === 'artwork_mode') {
+				gr.DrawString(str.time, ft.lower_bar, col.now_playing, ww - scaleForDisplay(240), lowerBarTop, scaleForDisplay(220), 0.5 * geo.lower_bar_h, StringFormat(2, 0));
 			}
 			else if (pref.show_playbackTime_compact && pref.layout_mode === 'compact_mode') {
-				gr.DrawString(str.time, ft.lower_bar, col.now_playing, ww - (pref.layout_mode === 'compact_mode' ? scaleForDisplay(240) : scaleForDisplay(260)), lowerBarTop, scaleForDisplay(220), 0.5 * geo.lower_bar_h, StringFormat(2, 0));
+				gr.DrawString(str.time, ft.lower_bar, col.now_playing, ww - scaleForDisplay(240), lowerBarTop, scaleForDisplay(220), 0.5 * geo.lower_bar_h, StringFormat(2, 0));
 			}
 		}
 		else {
@@ -1143,15 +1308,22 @@ function draw_ui(gr) {
 				offset += scaleForDisplay(6);
 			}
 			if (pref.show_playbackTime_default && pref.layout_mode === 'default_mode') {
-				gr.DrawString(str.time, ft.lower_bar, color, ww - (pref.layout_mode === 'compact_mode' ? scaleForDisplay(280) : scaleForDisplay(300)) - offset, lowerBarTop, scaleForDisplay(260), geo.lower_bar_h, StringFormat(2, 0));
+				gr.DrawString(str.time, ft.lower_bar, color, ww - scaleForDisplay(300) - offset, lowerBarTop, scaleForDisplay(260), geo.lower_bar_h, StringFormat(2, 0));
+			}
+			else if (pref.show_playbackTime_artwork && pref.layout_mode === 'artwork_mode') {
+				gr.DrawString(str.time, ft.lower_bar, color, ww - scaleForDisplay(280) - offset, lowerBarTop, scaleForDisplay(260), geo.lower_bar_h, StringFormat(2, 0));
 			}
 			else if (pref.show_playbackTime_compact && pref.layout_mode === 'compact_mode') {
-				gr.DrawString(str.time, ft.lower_bar, color, ww - (pref.layout_mode === 'compact_mode' ? scaleForDisplay(280) : scaleForDisplay(300)) - offset, lowerBarTop, scaleForDisplay(260), geo.lower_bar_h, StringFormat(2, 0));
+				gr.DrawString(str.time, ft.lower_bar, color, ww - scaleForDisplay(280) - offset, lowerBarTop, scaleForDisplay(260), geo.lower_bar_h, StringFormat(2, 0));
 			}
 		}
 		if (pref.show_playbackTime_default && fb.IsPlaying && pref.layout_mode === 'default_mode') {
 			btns.playbackTime = new Button(ww - timeAreaWidth - scaleForDisplay(40), wh - scaleForDisplay(105) + scaleForDisplay(pref.lower_bar_font_size_default),
 			timeAreaWidth, scaleForDisplay(20), pref.show_playbackTime_default ? 'PlaybackTime' : '', '', pref.show_playbackTime_default ? 'Switch playback time' : '');
+		}
+		else if (pref.show_playbackTime_artwork && fb.IsPlaying && pref.layout_mode === 'artwork_mode') {
+			btns.playbackTime = new Button(ww - timeAreaWidth - scaleForDisplay(20), wh - scaleForDisplay(120) + scaleForDisplay(pref.lower_bar_font_size_artwork),
+			timeAreaWidth, scaleForDisplay(20), pref.show_playbackTime_artwork ? 'PlaybackTime' : '', '', pref.show_playbackTime_artwork ? 'Switch playback time' : '');
 		}
 		else if (pref.show_playbackTime_compact && fb.IsPlaying && pref.layout_mode === 'compact_mode') {
 			btns.playbackTime = new Button(ww - timeAreaWidth - scaleForDisplay(20), wh - scaleForDisplay(120) + scaleForDisplay(pref.lower_bar_font_size_compact),
@@ -1160,6 +1332,10 @@ function draw_ui(gr) {
 	}
 	if (pref.layout_mode === 'default_mode') {
 		if (pref.show_progress_bar_default) {
+			progressBar.draw(gr);
+		}
+	} else if (pref.layout_mode === 'artwork_mode') {
+		if (pref.show_progress_bar_artwork) {
 			progressBar.draw(gr);
 		}
 	} else if (pref.layout_mode === 'compact_mode') {
@@ -1179,19 +1355,21 @@ function draw_ui(gr) {
 	gr.DrawLine(0, 0, ww, 0, 1,
 		pref.whiteTheme ? RGB(245, 245, 245) :
 		pref.blackTheme ? RGB(35, 35, 35) :
+		pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.primary : RGB(245, 245, 245) :
 		pref.blueTheme ? RGB(63, 155, 202) :
 		pref.darkblueTheme ? RGB(27, 55, 90) :
 		pref.redTheme ? RGB(125, 0, 0) :
-		pref.creamTheme ? RGB(255, 249, 245) :
+		pref.creamTheme ? RGB(255, 247, 240) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(30, 30, 30) : ''
 	);
 	gr.DrawLine(ww, wh - 1, 0, wh - 1, 1,
 		pref.whiteTheme ? RGB(245, 245, 245) :
 		pref.blackTheme ? RGB(35, 35, 35) :
+		pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.primary : RGB(245, 245, 245) :
 		pref.blueTheme ? RGB(63, 155, 202) :
 		pref.darkblueTheme ? RGB(27, 55, 90) :
 		pref.redTheme ? RGB(125, 0, 0) :
-		pref.creamTheme ? RGB(255, 249, 245) :
+		pref.creamTheme ? RGB(255, 247, 240) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(30, 30, 30) : ''
 	);
 
@@ -1258,6 +1436,9 @@ function on_paint(gr) {
 	if (transport.show_volume_default && pref.layout_mode === 'default_mode') {
 		volume_btn.on_paint(gr);
 	}
+	if (transport.show_volume_artwork && pref.layout_mode === 'artwork_mode') {
+		volume_btn.on_paint(gr);
+	}
 	if (transport.show_volume_compact && pref.layout_mode === 'compact_mode') {
 		volume_btn.on_paint(gr);
 	}
@@ -1302,6 +1483,7 @@ function onOptionsMenu(x, y) {
 	themeMenu.addToggleItem('White', pref, 'whiteTheme', () => {
 		pref.whiteTheme      = 'white';
 		pref.blackTheme      = false;
+		pref.rebornTheme     = false;
 		pref.blueTheme       = false;
 		pref.darkblueTheme   = false;
 		pref.redTheme        = false;
@@ -1315,6 +1497,7 @@ function onOptionsMenu(x, y) {
 	themeMenu.addToggleItem('Black', pref, 'blackTheme', () => {
 		pref.whiteTheme      = false;
 		pref.blackTheme      = 'black';
+		pref.rebornTheme     = false;
 		pref.blueTheme       = false;
 		pref.darkblueTheme   = false;
 		pref.redTheme        = false;
@@ -1325,9 +1508,25 @@ function onOptionsMenu(x, y) {
 		pref.ngoldTheme      = false;
 		initTheme();
 	});
+	themeMenu.addToggleItem('Reborn', pref, 'rebornTheme', () => {
+		pref.whiteTheme      = false;
+		pref.blackTheme      = false;
+		pref.rebornTheme     = 'reborn';
+		pref.blueTheme       = false;
+		pref.darkblueTheme   = false;
+		pref.redTheme        = false;
+		pref.creamTheme      = false;
+		pref.nblueTheme      = false;
+		pref.ngreenTheme     = false;
+		pref.nredTheme       = false;
+		pref.ngoldTheme      = false;
+		initTheme();
+	});
+	themeMenu.addSeparator();
 	themeMenu.addToggleItem('Blue', pref, 'blueTheme', () => {
 		pref.whiteTheme      = false;
 		pref.blackTheme      = false;
+		pref.rebornTheme     = false;
 		pref.blueTheme       = 'blue';
 		pref.darkblueTheme   = false;
 		pref.redTheme        = false;
@@ -1341,6 +1540,7 @@ function onOptionsMenu(x, y) {
 	themeMenu.addToggleItem('Dark blue', pref, 'darkblueTheme', () => {
 		pref.whiteTheme      = false;
 		pref.blackTheme      = false;
+		pref.rebornTheme     = false;
 		pref.blueTheme       = false;
 		pref.darkblueTheme   = 'darkblue';
 		pref.redTheme        = false;
@@ -1354,6 +1554,7 @@ function onOptionsMenu(x, y) {
 	themeMenu.addToggleItem('Red', pref, 'redTheme', () => {
 		pref.whiteTheme      = false;
 		pref.blackTheme      = false;
+		pref.rebornTheme     = false;
 		pref.blueTheme       = false;
 		pref.darkblueTheme   = false;
 		pref.redTheme        = 'red';
@@ -1367,6 +1568,7 @@ function onOptionsMenu(x, y) {
 	themeMenu.addToggleItem('Cream', pref, 'creamTheme', () => {
 		pref.whiteTheme      = false;
 		pref.blackTheme      = false;
+		pref.rebornTheme     = false;
 		pref.blueTheme       = false;
 		pref.darkblueTheme   = false;
 		pref.redTheme        = false;
@@ -1377,9 +1579,11 @@ function onOptionsMenu(x, y) {
 		pref.ngoldTheme      = false;
 		initTheme();
 	});
+	themeMenu.addSeparator();
 	themeMenu.addToggleItem('Neon blue', pref, 'nblueTheme', () => {
 		pref.whiteTheme      = false;
 		pref.blackTheme      = false;
+		pref.rebornTheme     = false;
 		pref.blueTheme       = false;
 		pref.darkblueTheme   = false;
 		pref.redTheme        = false;
@@ -1393,6 +1597,7 @@ function onOptionsMenu(x, y) {
 	themeMenu.addToggleItem('Neon green', pref, 'ngreenTheme', () => {
 		pref.whiteTheme      = false;
 		pref.blackTheme      = false;
+		pref.rebornTheme     = false;
 		pref.blueTheme       = false;
 		pref.darkblueTheme   = false;
 		pref.redTheme        = false;
@@ -1406,6 +1611,7 @@ function onOptionsMenu(x, y) {
 	themeMenu.addToggleItem('Neon red', pref, 'nredTheme', () => {
 		pref.whiteTheme      = false;
 		pref.blackTheme      = false;
+		pref.rebornTheme     = false;
 		pref.blueTheme       = false;
 		pref.darkblueTheme   = false;
 		pref.redTheme        = false;
@@ -1419,6 +1625,7 @@ function onOptionsMenu(x, y) {
 	themeMenu.addToggleItem('Neon gold', pref, 'ngoldTheme', () => {
 		pref.whiteTheme      = false;
 		pref.blackTheme      = false;
+		pref.rebornTheme     = false;
 		pref.blueTheme       = false;
 		pref.darkblueTheme   = false;
 		pref.redTheme        = false;
@@ -1524,9 +1731,18 @@ function onOptionsMenu(x, y) {
 	}
 	playerSizeMenu.appendTo(menu);
 
-	menu.createRadioSubMenu('Layout', ['Default', 'Compact'], pref.layout_mode, ['default_mode', 'compact_mode'], (mode) => {
+	menu.createRadioSubMenu('Layout', ['Default', 'Artwork', 'Compact'], pref.layout_mode, ['default_mode', 'artwork_mode', 'compact_mode'], (mode) => {
 		pref.layout_mode = mode;
 		if (pref.layout_mode === 'default_mode') {
+			if (pref.startPlaylist) { // Switch back to playlist from Artwork mode to Default mode
+				displayPlaylist = true;
+				displayBiography = false;
+				pref.displayLyrics = false;
+			} else { // Switch back to Details from Artwork mode to Default mode
+				displayPlaylist = false;
+				displayBiography = false;
+				pref.displayLyrics = false;
+			}
 			mode_handler.layout_mode_default_mode();
 			createFonts();
 			setGeometry();
@@ -1535,6 +1751,26 @@ function onOptionsMenu(x, y) {
 				createButtonImages();
 				createButtonObjects(ww, wh);
 			}
+			initTheme();
+			initPlaylistColors();
+			initPlaylist();
+			playlist.on_size(ww, wh);
+			progressBar = new ProgressBar(ww, wh);
+			RepaintWindow();
+		}
+		if (pref.layout_mode === 'artwork_mode') {
+			displayLibrary = false;
+			displayBiography = false;
+			displayPlaylist = false;
+			mode_handler.layout_mode_artwork_mode();
+			createFonts();
+			setGeometry();
+			ResizeArtwork(true);
+			if (transport.enableTransportControls_artwork) {
+				createButtonImages();
+				createButtonObjects(ww, wh);
+			}
+			initTheme();
 			initPlaylistColors();
 			initPlaylist();
 			playlist.on_size(ww, wh);
@@ -1553,6 +1789,7 @@ function onOptionsMenu(x, y) {
 				createButtonImages();
 				createButtonObjects(ww, wh);
 			}
+			initTheme();
 			initPlaylistColors();
 			initPlaylist();
 			playlist.on_size(ww, wh);
@@ -1568,6 +1805,10 @@ function onOptionsMenu(x, y) {
 				set_window_size(1140, 730); // Reset player size for initialization
 				mode_handler.layout_mode_default_mode();
 			}
+			else if (pref.layout_mode === 'artwork_mode') {
+				set_window_size(526, 686); // Reset player size for initialization
+				mode_handler.layout_mode_artwork_mode();
+			}
 			else if (pref.layout_mode === 'compact_mode') {
 				set_window_size(484, 730); // Reset player size for initialization
 				mode_handler.layout_mode_compact_mode();
@@ -1576,6 +1817,9 @@ function onOptionsMenu(x, y) {
 		if (pref.use_4k === 'never' || pref.use_4k === 'always') {
 			if (pref.layout_mode === 'default_mode') {
 				mode_handler.layout_mode_default_mode();
+			}
+			else if (pref.layout_mode === 'artwork_mode') {
+				mode_handler.layout_mode_artwork_mode();
 			}
 			else if (pref.layout_mode === 'compact_mode') {
 				mode_handler.layout_mode_compact_mode();
@@ -1600,10 +1844,22 @@ function onOptionsMenu(x, y) {
 		window.Repaint();
 	});
 	if (pref.layout_mode === 'default_mode') {
-		mainFontSizeMenu.createRadioSubMenu('Lower bar', ['16px', '18px (default)', '20px', '22px', '24px'], pref.artist_font_size_default && pref.lower_bar_font_size_default, [16,18,20,22,24], (size) => {
-			if (size) {
-				pref.artist_font_size_default = size;
-				pref.lower_bar_font_size_default = size;
+		mainFontSizeMenu.createRadioSubMenu('Lower bar', ['16px', '18px (default)', '20px', '22px', '24px'], pref.artist_font_size_default && pref.lower_bar_font_size_default, [16,18,20,22,24], (size_default) => {
+			if (size_default) {
+				pref.artist_font_size_default = size_default;
+				pref.lower_bar_font_size_default = size_default;
+			}
+			createFonts();
+			createButtonImages();
+			createButtonObjects(ww, wh);
+			window.Repaint();
+		});
+	}
+	if (pref.layout_mode === 'artwork_mode') {
+		mainFontSizeMenu.createRadioSubMenu('Lower bar', ['16px (default)', '18px', '20px', '22px', '24px'], pref.artist_font_size_artwork && pref.lower_bar_font_size_artwork, [16,18,20,22,24], (size_artwork) => {
+			if (size_artwork) {
+				pref.artist_font_size_artwork = size_artwork;
+				pref.lower_bar_font_size_artwork = size_artwork;
 			}
 			createFonts();
 			createButtonImages();
@@ -1751,18 +2007,40 @@ function onOptionsMenu(x, y) {
 		} else {
 			pref.transport_buttons_size_default = size;
 		}
-		ft.guifx                    = gdi.Font(fontGuiFx,   pref.layout_mode === 'compact_mode' ? Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 2))    : Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 2)), 0);
-		ft.playbackOrder_default    = gdi.Font(fontGuiFx,   pref.layout_mode === 'compact_mode' ? Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 1.6))  : Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 1.6)), 0);
-		ft.playbackOrder_replay     = gdi.Font(fontAwesome, pref.layout_mode === 'compact_mode' ? Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 2))    : Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 2)), 0);
-		ft.playbackOrder_shuffle    = gdi.Font(fontGuiFx,   pref.layout_mode === 'compact_mode' ? Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 1.65)) : Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 1.65)), 0);
-		ft.guifx_volume             = gdi.Font(fontGuiFx,   pref.layout_mode === 'compact_mode' ? Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 1.33)) : Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 1.33)), 0);
-		ft.guifx_reload             = gdi.Font(fontGuiFx,   pref.layout_mode === 'compact_mode' ? Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 1.5))  : Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 1.5)), 0);
+		ft.guifx                    = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 2    )), 0);
+		ft.playbackOrder_default    = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 1.6  )), 0);
+		ft.playbackOrder_replay     = gdi.Font(fontAwesome, Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 2    )), 0);
+		ft.playbackOrder_shuffle    = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 1.65 )), 0);
+		ft.guifx_volume             = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 1.33 )), 0);
+		ft.guifx_reload             = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 1.5  )), 0);
 		createButtonImages();
 		createButtonObjects(ww, wh);
 		ResizeArtwork(true);
 		RepaintWindow();
 	});
 	transportSizeMenuDefault.appendTo(transportSizeMenu);
+
+	const transportSizeMenuArtwork = new Menu('Artwork');
+	transportSizeMenuArtwork.addRadioItems(['26px', '28px', '32px (default)', '34px', '36px'], pref.transport_buttons_size_artwork, [26,28,32,34,36], (size) => {
+		if (size === -1) {
+			pref.transport_buttons_size_artwork -= 2;
+		} else if (size === 999) {
+			pref.transport_buttons_size_artwork += 2;
+		} else {
+			pref.transport_buttons_size_artwork = size;
+		}
+		ft.guifx                    = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_artwork / 2    )), 0);
+		ft.playbackOrder_default    = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_artwork / 1.6  )), 0);
+		ft.playbackOrder_replay     = gdi.Font(fontAwesome, Math.floor(scaleForDisplay(pref.transport_buttons_size_artwork / 2    )), 0);
+		ft.playbackOrder_shuffle    = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_artwork / 1.65 )), 0);
+		ft.guifx_volume             = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_artwork / 1.33 )), 0);
+		ft.guifx_reload             = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_artwork / 1.5  )), 0);
+		createButtonImages();
+		createButtonObjects(ww, wh);
+		ResizeArtwork(true);
+		RepaintWindow();
+	});
+	transportSizeMenuArtwork.appendTo(transportSizeMenu);
 
 	const transportSizeMenuCompact = new Menu('Compact');
 	transportSizeMenuCompact.addRadioItems(['26px', '28px', '32px (default)', '34px', '36px'], pref.transport_buttons_size_compact, [26,28,32,34,36], (size) => {
@@ -1773,12 +2051,12 @@ function onOptionsMenu(x, y) {
 		} else {
 			pref.transport_buttons_size_compact = size;
 		}
-		ft.guifx                    = gdi.Font(fontGuiFx,   pref.layout_mode === 'compact_mode' ? Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 2))    : Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 2)), 0);
-		ft.playbackOrder_default    = gdi.Font(fontGuiFx,   pref.layout_mode === 'compact_mode' ? Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 1.6))  : Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 1.6)), 0);
-		ft.playbackOrder_replay     = gdi.Font(fontAwesome, pref.layout_mode === 'compact_mode' ? Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 2))    : Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 2)), 0);
-		ft.playbackOrder_shuffle    = gdi.Font(fontGuiFx,   pref.layout_mode === 'compact_mode' ? Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 1.65)) : Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 1.65)), 0);
-		ft.guifx_volume             = gdi.Font(fontGuiFx,   pref.layout_mode === 'compact_mode' ? Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 1.33)) : Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 1.33)), 0);
-		ft.guifx_reload             = gdi.Font(fontGuiFx,   pref.layout_mode === 'compact_mode' ? Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 1.5))  : Math.floor(scaleForDisplay(pref.transport_buttons_size_default / 1.5)), 0);
+		ft.guifx                    = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 2    )), 0);
+		ft.playbackOrder_default    = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 1.6  )), 0);
+		ft.playbackOrder_replay     = gdi.Font(fontAwesome, Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 2    )), 0);
+		ft.playbackOrder_shuffle    = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 1.65 )), 0);
+		ft.guifx_volume             = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 1.33 )), 0);
+		ft.guifx_reload             = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transport_buttons_size_compact / 1.5  )), 0);
 		createButtonImages();
 		createButtonObjects(ww, wh);
 		ResizeArtwork(true);
@@ -1802,6 +2080,21 @@ function onOptionsMenu(x, y) {
 		RepaintWindow();
 	});
 	transportSpacingMenuDefault.appendTo(transportSpacingMenu);
+
+	const transportSpacingMenuArtwork = new Menu('Artwork');
+	transportSpacingMenuArtwork.addRadioItems(['-2', '3px', '5px (default)', '7px', '10px', '15px', '+2'], pref.transport_buttons_spacing_artwork, [-1,3,5,7,10,15,999], (size) => {
+		if (size === -1) {
+			pref.transport_buttons_spacing_artwork -= 2;
+		} else if (size === 999) {
+			pref.transport_buttons_spacing_artwork += 2;
+		} else {
+			pref.transport_buttons_spacing_artwork = size;
+		}
+		createButtonImages();
+		createButtonObjects(ww, wh);
+		RepaintWindow();
+	});
+	transportSpacingMenuArtwork.appendTo(transportSpacingMenu);
 
 	const transportSpacingMenuCompact = new Menu('Compact');
 	transportSpacingMenuCompact.addRadioItems(['-2', '3px', '5px (default)', '7px', '10px', '15px', '+2'], pref.transport_buttons_spacing_compact, [-1,3,5,7,10,15,999], (size) => {
@@ -1827,6 +2120,12 @@ function onOptionsMenu(x, y) {
 		ResizeArtwork(true);
 		RepaintWindow();
 	});
+	transportControlsMenu.addToggleItem('Artwork', transport, 'enableTransportControls_artwork', () => {
+		createButtonImages();
+		createButtonObjects(ww, wh);
+		ResizeArtwork(true);
+		RepaintWindow();
+	});
 	transportControlsMenu.addToggleItem('Compact', transport, 'enableTransportControls_compact', () => {
 		createButtonImages();
 		createButtonObjects(ww, wh);
@@ -1840,6 +2139,10 @@ function onOptionsMenu(x, y) {
 		createButtonObjects(ww, wh);
 		RepaintWindow();
 	}, !transport.enableTransportControls_default);
+	playbackOrderBtnMenu.addToggleItem('Artwork', transport, 'show_playbackOrder_artwork', () => {
+		createButtonObjects(ww, wh);
+		RepaintWindow();
+	}, !transport.enableTransportControls_artwork);
 	playbackOrderBtnMenu.addToggleItem('Compact', transport, 'show_playbackOrder_compact', () => {
 		createButtonObjects(ww, wh);
 		RepaintWindow();
@@ -1852,6 +2155,11 @@ function onOptionsMenu(x, y) {
 		createButtonObjects(ww, wh);
 		RepaintWindow();
 	}, !transport.enableTransportControls_default);
+	reloadBtnMenu.addToggleItem('Artwork', transport, 'show_reload_artwork', () => {
+		volume_btn = new VolumeBtn(); // create new volume btn for new width size
+		createButtonObjects(ww, wh);
+		RepaintWindow();
+	}, !transport.enableTransportControls_artwork);
 	reloadBtnMenu.addToggleItem('Compact', transport, 'show_reload_compact', () => {
 		volume_btn = new VolumeBtn(); // create new volume btn for new width size
 		createButtonObjects(ww, wh);
@@ -1864,6 +2172,10 @@ function onOptionsMenu(x, y) {
 		createButtonObjects(ww, wh);
 		RepaintWindow();
 	}, !transport.enableTransportControls_default);
+	volumeBtnMenu.addToggleItem('Artwork', transport, 'show_volume_artwork', () => {
+		createButtonObjects(ww, wh);
+		RepaintWindow();
+	}, !transport.enableTransportControls_artwork);
 	volumeBtnMenu.addToggleItem('Compact', transport, 'show_volume_compact', () => {
 		createButtonObjects(ww, wh);
 		RepaintWindow();
@@ -1872,6 +2184,11 @@ function onOptionsMenu(x, y) {
 
 	const progressBarMenu = new Menu('Show progress bar');
 	progressBarMenu.addToggleItem('Default', pref, 'show_progress_bar_default', () => {
+		setGeometry();
+		ResizeArtwork(true);
+		RepaintWindow();
+	});
+	progressBarMenu.addToggleItem('Artwork', pref, 'show_progress_bar_artwork', () => {
 		setGeometry();
 		ResizeArtwork(true);
 		RepaintWindow();
@@ -1888,6 +2205,10 @@ function onOptionsMenu(x, y) {
 		createButtonObjects(ww, wh);
 		RepaintWindow();
 	});
+	playbackTimeMenu.addToggleItem('Artwork', pref, 'show_playbackTime_artwork', () => {
+		createButtonObjects(ww, wh);
+		RepaintWindow();
+	});
 	playbackTimeMenu.addToggleItem('Compact', pref, 'show_playbackTime_compact', () => {
 		createButtonObjects(ww, wh);
 		RepaintWindow();
@@ -1896,11 +2217,13 @@ function onOptionsMenu(x, y) {
 
 	const showArtistMenu = new Menu('Show artist in lower bar');
 	showArtistMenu.addToggleItem('Default', pref, 'show_artist_default', () => { RepaintWindow(); });
+	showArtistMenu.addToggleItem('Artwork', pref, 'show_artist_artwork', () => { RepaintWindow(); });
 	showArtistMenu.addToggleItem('Compact', pref, 'show_artist_compact', () => { RepaintWindow(); });
 	showArtistMenu.appendTo(playerControlsMenu);
 
 	const showTitleMenu = new Menu('Show song title in lower bar');
 	showTitleMenu.addToggleItem('Default', pref, 'show_title_default', () => { RepaintWindow(); });
+	showTitleMenu.addToggleItem('Artwork', pref, 'show_title_artwork', () => { RepaintWindow(); });
 	showTitleMenu.addToggleItem('Compact', pref, 'show_title_compact', () => { RepaintWindow(); });
 	showTitleMenu.appendTo(playerControlsMenu);
 
@@ -1910,6 +2233,7 @@ function onOptionsMenu(x, y) {
 		RepaintWindow();
 	});
 	playerControlsMenu.addToggleItem('Show pause on album cover', pref, 'show_pause', () => { RepaintWindow(); });
+	playerControlsMenu.addToggleItem('Show logo on startup', pref, 'show_logo', () => { RepaintWindow(); });
 	playerControlsMenu.addSeparator();
 
 	playerControlsMenu.addToggleItem('Enable tooltips', pref, 'show_tt', () => {
@@ -1947,7 +2271,7 @@ function onOptionsMenu(x, y) {
 	});
 	playerControlsMenu.addToggleItem('Update progress bar frequently (higher CPU)', pref, 'freq_update', () => {
 		SetProgressBarRefresh();
-	}, !pref.show_progress_bar_default || !pref.show_progress_bar_compact);
+	}, !pref.show_progress_bar_default || !pref.show_progress_bar_artwork || !pref.show_progress_bar_compact);
 	playerControlsMenu.appendTo(menu);
 	menu.addSeparator();
 
@@ -1986,7 +2310,20 @@ function onOptionsMenu(x, y) {
 			RepaintWindow();
 		}
 	});
-	playlistManagerMenu.addToggleItem('Show playlist manager', g_properties, 'show_playlist_info', playlistCallback);
+	const playlistManagerShowMenu = new Menu('Show playlist manager');
+	playlistManagerShowMenu.addToggleItem('Default', pref, 'showPLM_default', () => {
+		playlist.on_size(ww, wh);
+		RepaintWindow();
+	});
+	playlistManagerShowMenu.addToggleItem('Artwork', pref, 'showPLM_artwork', () => {
+		playlist.on_size(ww, wh);
+		RepaintWindow();
+	});
+	playlistManagerShowMenu.addToggleItem('Compact', pref, 'showPLM_compact', () => {
+		playlist.on_size(ww, wh);
+		RepaintWindow();
+	});
+	playlistManagerShowMenu.appendTo(playlistManagerMenu);
 	playlistManagerMenu.appendTo(playlistMenu);
 
 	const playlistAlbumMenu = new Menu('Album headers');
@@ -2042,12 +2379,270 @@ function onOptionsMenu(x, y) {
 	detailsMenu.addSeparator();
 
 	const cdArtMenu = new Menu('Disc art');
+	const displayDiscArtMenu = new Menu('Display disc art placeholder');
+	displayDiscArtMenu.addToggleItem('No placeholder', pref, 'noDiscArtStub',() => {
+		pref.noDiscArtStub          = true;
+		pref.cdArtWhiteStub         = false;
+		pref.cdArtBlackStub         = false;
+		pref.cdArtBlankStub         = false;
+		pref.cdArtTransStub         = false;
+		pref.vinylArtWhiteStub      = false;
+		pref.vinylArtVoidStub       = false;
+		pref.vinylArtColdFusionStub = false;
+		pref.vinylArtRingOfFireStub = false;
+		pref.vinylArtMapleStub      = false;
+		pref.vinylArtBlackStub      = false;
+		pref.vinylArtBlackHoleStub  = false;
+		pref.vinylArtEbonyStub      = false;
+		pref.vinylArtTransStub      = false;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addSeparator();
+	displayDiscArtMenu.addToggleItem('CD - White', pref, 'cdArtWhiteStub',() => {
+		pref.noDiscArtStub          = false;
+		pref.cdArtWhiteStub         = true;
+		pref.cdArtBlackStub         = false;
+		pref.cdArtBlankStub         = false;
+		pref.cdArtTransStub         = false;
+		pref.vinylArtWhiteStub      = false;
+		pref.vinylArtVoidStub       = false;
+		pref.vinylArtColdFusionStub = false;
+		pref.vinylArtRingOfFireStub = false;
+		pref.vinylArtMapleStub      = false;
+		pref.vinylArtBlackStub      = false;
+		pref.vinylArtBlackHoleStub  = false;
+		pref.vinylArtEbonyStub      = false;
+		pref.vinylArtTransStub      = false;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addToggleItem('CD - Black', pref, 'cdArtBlackStub',() => {
+		pref.noDiscArtStub          = false;
+		pref.cdArtWhiteStub         = false;
+		pref.cdArtBlackStub         = true;
+		pref.cdArtBlankStub         = false;
+		pref.cdArtTransStub         = false;
+		pref.vinylArtWhiteStub      = false;
+		pref.vinylArtVoidStub       = false;
+		pref.vinylArtColdFusionStub = false;
+		pref.vinylArtRingOfFireStub = false;
+		pref.vinylArtMapleStub      = false;
+		pref.vinylArtBlackStub      = false;
+		pref.vinylArtBlackHoleStub  = false;
+		pref.vinylArtEbonyStub      = false;
+		pref.vinylArtTransStub      = false;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addToggleItem('CD - Blank', pref, 'cdArtBlankStub',() => {
+		pref.noDiscArtStub          = false;
+		pref.cdArtWhiteStub         = false;
+		pref.cdArtBlackStub         = false;
+		pref.cdArtBlankStub         = true;
+		pref.cdArtTransStub         = false;
+		pref.vinylArtWhiteStub      = false;
+		pref.vinylArtVoidStub       = false;
+		pref.vinylArtColdFusionStub = false;
+		pref.vinylArtRingOfFireStub = false;
+		pref.vinylArtMapleStub      = false;
+		pref.vinylArtBlackStub      = false;
+		pref.vinylArtBlackHoleStub  = false;
+		pref.vinylArtEbonyStub      = false;
+		pref.vinylArtTransStub      = false;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addToggleItem('CD - Transparent', pref, 'cdArtTransStub',() => {
+		pref.noDiscArtStub          = false;
+		pref.cdArtWhiteStub         = false;
+		pref.cdArtBlackStub         = false;
+		pref.cdArtBlankStub         = false;
+		pref.cdArtTransStub         = true;
+		pref.vinylArtWhiteStub      = false;
+		pref.vinylArtVoidStub       = false;
+		pref.vinylArtColdFusionStub = false;
+		pref.vinylArtRingOfFireStub = false;
+		pref.vinylArtMapleStub      = false;
+		pref.vinylArtBlackStub      = false;
+		pref.vinylArtBlackHoleStub  = false;
+		pref.vinylArtEbonyStub      = false;
+		pref.vinylArtTransStub      = false;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addSeparator();
+	displayDiscArtMenu.addToggleItem('Vinyl - White', pref, 'vinylArtWhiteStub',() => {
+		pref.noDiscArtStub          = false;
+		pref.cdArtWhiteStub         = false;
+		pref.cdArtBlackStub         = false;
+		pref.cdArtBlankStub         = false;
+		pref.cdArtTransStub         = false;
+		pref.vinylArtWhiteStub      = true;
+		pref.vinylArtVoidStub       = false;
+		pref.vinylArtColdFusionStub = false;
+		pref.vinylArtRingOfFireStub = false;
+		pref.vinylArtMapleStub      = false;
+		pref.vinylArtBlackStub      = false;
+		pref.vinylArtBlackHoleStub  = false;
+		pref.vinylArtEbonyStub      = false;
+		pref.vinylArtTransStub      = false;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addToggleItem('Vinyl - Void', pref, 'vinylArtVoidStub',() => {
+		pref.noDiscArtStub          = false;
+		pref.cdArtWhiteStub         = false;
+		pref.cdArtBlackStub         = false;
+		pref.cdArtBlankStub         = false;
+		pref.cdArtTransStub         = false;
+		pref.vinylArtWhiteStub      = false;
+		pref.vinylArtVoidStub       = true;
+		pref.vinylArtColdFusionStub = false;
+		pref.vinylArtRingOfFireStub = false;
+		pref.vinylArtMapleStub      = false;
+		pref.vinylArtBlackStub      = false;
+		pref.vinylArtBlackHoleStub  = false;
+		pref.vinylArtEbonyStub      = false;
+		pref.vinylArtTransStub      = false;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addToggleItem('Vinyl - Cold fusion', pref, 'vinylArtColdFusionStub',() => {
+		pref.noDiscArtStub          = false;
+		pref.cdArtWhiteStub         = false;
+		pref.cdArtBlackStub         = false;
+		pref.cdArtBlankStub         = false;
+		pref.cdArtTransStub         = false;
+		pref.vinylArtWhiteStub      = false;
+		pref.vinylArtVoidStub       = false;
+		pref.vinylArtColdFusionStub = true;
+		pref.vinylArtRingOfFireStub = false;
+		pref.vinylArtMapleStub      = false;
+		pref.vinylArtBlackStub      = false;
+		pref.vinylArtBlackHoleStub  = false;
+		pref.vinylArtEbonyStub      = false;
+		pref.vinylArtTransStub      = false;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addToggleItem('Vinyl - Ring of fire', pref, 'vinylArtRingOfFireStub',() => {
+		pref.noDiscArtStub          = false;
+		pref.cdArtWhiteStub         = false;
+		pref.cdArtBlackStub         = false;
+		pref.cdArtBlankStub         = false;
+		pref.cdArtTransStub         = false;
+		pref.vinylArtWhiteStub      = false;
+		pref.vinylArtVoidStub       = false;
+		pref.vinylArtColdFusionStub = false;
+		pref.vinylArtRingOfFireStub = true;
+		pref.vinylArtMapleStub      = false;
+		pref.vinylArtBlackStub      = false;
+		pref.vinylArtBlackHoleStub  = false;
+		pref.vinylArtEbonyStub      = false;
+		pref.vinylArtTransStub      = false;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addToggleItem('Vinyl - Maple', pref, 'vinylArtMapleStub',() => {
+		pref.noDiscArtStub          = false;
+		pref.cdArtWhiteStub         = false;
+		pref.cdArtBlackStub         = false;
+		pref.cdArtBlankStub         = false;
+		pref.cdArtTransStub         = false;
+		pref.vinylArtWhiteStub      = false;
+		pref.vinylArtVoidStub       = false;
+		pref.vinylArtColdFusionStub = false;
+		pref.vinylArtRingOfFireStub = false;
+		pref.vinylArtMapleStub      = true;
+		pref.vinylArtBlackStub      = false;
+		pref.vinylArtBlackHoleStub  = false;
+		pref.vinylArtEbonyStub      = false;
+		pref.vinylArtTransStub      = false;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addToggleItem('Vinyl - Black', pref, 'vinylArtBlackStub',() => {
+		pref.noDiscArtStub          = false;
+		pref.cdArtWhiteStub         = false;
+		pref.cdArtBlackStub         = false;
+		pref.cdArtBlankStub         = false;
+		pref.cdArtTransStub         = false;
+		pref.vinylArtWhiteStub      = false;
+		pref.vinylArtVoidStub       = false;
+		pref.vinylArtColdFusionStub = false;
+		pref.vinylArtRingOfFireStub = false;
+		pref.vinylArtMapleStub      = false;
+		pref.vinylArtBlackStub      = true;
+		pref.vinylArtBlackHoleStub  = false;
+		pref.vinylArtEbonyStub      = false;
+		pref.vinylArtTransStub      = false;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addToggleItem('Vinyl - Black hole', pref, 'vinylArtBlackHoleStub',() => {
+		pref.noDiscArtStub          = false;
+		pref.cdArtWhiteStub         = false;
+		pref.cdArtBlackStub         = false;
+		pref.cdArtBlankStub         = false;
+		pref.cdArtTransStub         = false;
+		pref.vinylArtWhiteStub      = false;
+		pref.vinylArtVoidStub       = false;
+		pref.vinylArtColdFusionStub = false;
+		pref.vinylArtRingOfFireStub = false;
+		pref.vinylArtMapleStub      = false;
+		pref.vinylArtBlackStub      = false;
+		pref.vinylArtBlackHoleStub  = true;
+		pref.vinylArtEbonyStub      = false;
+		pref.vinylArtTransStub      = false;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addToggleItem('Vinyl - Ebony', pref, 'vinylArtEbonyStub',() => {
+		pref.noDiscArtStub          = false;
+		pref.cdArtWhiteStub         = false;
+		pref.cdArtBlackStub         = false;
+		pref.cdArtBlankStub         = false;
+		pref.cdArtTransStub         = false;
+		pref.vinylArtWhiteStub      = false;
+		pref.vinylArtVoidStub       = false;
+		pref.vinylArtColdFusionStub = false;
+		pref.vinylArtRingOfFireStub = false;
+		pref.vinylArtMapleStub      = false;
+		pref.vinylArtBlackStub      = false;
+		pref.vinylArtBlackHoleStub  = false;
+		pref.vinylArtEbonyStub      = true;
+		pref.vinylArtTransStub      = false;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addToggleItem('Vinyl - Transparent', pref, 'vinylArtTransStub',() => {
+		pref.noDiscArtStub          = false;
+		pref.cdArtWhiteStub         = false;
+		pref.cdArtBlackStub         = false;
+		pref.cdArtBlankStub         = false;
+		pref.cdArtTransStub         = false;
+		pref.vinylArtWhiteStub      = false;
+		pref.vinylArtVoidStub       = false;
+		pref.vinylArtColdFusionStub = false;
+		pref.vinylArtRingOfFireStub = false;
+		pref.vinylArtMapleStub      = false;
+		pref.vinylArtBlackStub      = false;
+		pref.vinylArtBlackHoleStub  = false;
+		pref.vinylArtEbonyStub      = false;
+		pref.vinylArtTransStub      = true;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.appendTo(cdArtMenu);
+
 	cdArtMenu.addToggleItem(`Display disc art if found (${settings.cdArtBasename}.png, ${settings.cdArtBasename}2.png, vinylA.png, etc.)`, pref, 'display_cdart', () => {
 		if (fb.IsPlaying) fetchNewArtwork(fb.GetNowPlaying());
 		lastLeftEdge = 0; // resize labels
 		ResizeArtwork(true);
 		RepaintWindow();
 	});
+
 	cdArtMenu.addToggleItem('Display disc art above cover', pref, 'cdart_ontop', () => RepaintWindow(), !pref.display_cdart);
 	cdArtMenu.addToggleItem('Filter cd/vinyl .jpgs from artwork', pref, 'filterCdJpgsFromAlbumArt');
 	cdArtMenu.addSeparator();
@@ -2246,7 +2841,8 @@ function onOptionsMenu(x, y) {
 			setLibrarySize();
 		}
 	});
-	libraryMenu.addToggleItem('Show tracks when expanding nodes', ppt, 'showTracks', () => { pop.collapseAll(); });
+	libraryMenu.addToggleItem('Show tracks when expanding nodes', ppt, 'showTracks', () => { pop.collapseAll(); panel.updateProp(1); });
+	libraryMenu.addToggleItem('Show track count in album art', pref, 'showTrackCount', () => { panel.updateProp(1); });
 	libraryMenu.addToggleItem('Show row stripes', ppt, 'rowStripes', () => { panel.updateProp(1); });
 	libraryMenu.addToggleItem('Switch to playlist when adding songs', pref, 'libraryPlaylistSwitch');
 	libraryMenu.addSeparator();
@@ -2463,6 +3059,7 @@ function onOptionsMenu(x, y) {
 	// Settings options
 
 	const settingsMenu = new Menu('Settings');
+	// Disabled for now, waiting for TheQwertiest to implement callback funcs for SMP panel properties - Clear, Import, Export
 	// const themeSettingsMenu = new Menu('Theme settings');
 	// themeSettingsMenu.addItem('Create a backup', false, () => { window.ShowProperties(); });
 	// themeSettingsMenu.addItem('Restore a backup', false, () => { window.ShowProperties(); });
@@ -2545,6 +3142,7 @@ function initTheme() {
 	// Library Colors
 	initLibraryColors();
 	but.createImages();
+	if (libraryInitialized) panel.updateProp(1);
 	// Biography Colors
 	initBiographyColors();
 	uiBio.getColours();
@@ -2552,8 +3150,9 @@ function initTheme() {
 	art_scrollbar.setCol();
 	butBio.createImages();
 	imgBio.createImages();
+	if (biographyInitialized) uiBio.updateProp(1);
 
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		playlist.on_size(ww, wh);
 	}
 	if (displayLibrary) {
@@ -2566,10 +3165,18 @@ function initTheme() {
 		setBiographySize();
 	}
 
-	if (fb.IsPlaying && fb.GetNowPlaying()) {
-		on_playback_new_track(fb.GetNowPlaying());
+	if (!pref.rebornTheme) {
+		if (fb.IsPlaying && fb.GetNowPlaying()) {
+			on_playback_new_track(fb.GetNowPlaying());
+		}
 	}
 	window.Repaint();
+
+	if (pref.rebornTheme) { // Need to init col.primary once again when switching through themes and going back to Reborn theme
+		initColors();
+		on_size();
+		window.Repaint();
+	}
 }
 
 // custom initialisation function, called once after variable declarations
@@ -2590,10 +3197,14 @@ function on_init() {
 	}
 	setGeometry();
 	progressBar = new ProgressBar(ww, wh);
-	setTheme(whiteTheme.colors);
+	if (pref.rebornTheme) {
+		setTheme(rebornTheme.colors);
+	} else {
+		setTheme(whiteTheme.colors);
+	}
 	themeColorSet = true;
 
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		playlist.on_size(ww, wh);
 	}
 	else if (displayLibrary) {
@@ -2618,7 +3229,7 @@ function on_init() {
 
 	/** Added additional conditions to show playlist and not 'Details' in Compact Mode if playlist is not displayed on startup while starting in Compact Mode,
 		this also fixes ugly switch from Default to Compact Mode */
-	if (pref.startPlaylist && !displayPlaylist && !displayLibrary && !displayBiography || !pref.startPlaylist && pref.layout_mode === 'compact_mode') {
+	if (pref.startPlaylist && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout_mode !== 'artwork_mode' || !pref.startPlaylist && pref.layout_mode === 'compact_mode') {
 		displayPlaylist = false;
 		setTimeout(() => {
 			if (btns && btns.playlist) {
@@ -2626,15 +3237,15 @@ function on_init() {
 			}
 		}, 30);
 	}
-	setTimeout(() => {
-		// defer initing of library and biography panel until everything else has loaded
-		if (!libraryInitialized) {
-			initLibraryPanel();
-		}
-		if (!biographyInitialized) {
-			initBiographyPanel();
-		}
-	}, 2000);
+	// setTimeout(() => { // I think, we don't need this anymore? Causing problems for library, testing without this...
+	// 	// defer initing of library and biography panel until everything else has loaded
+	// 	if (!libraryInitialized) {
+	// 		initLibraryPanel();
+	// 	}
+	// 	if (!biographyInitialized) {
+	// 		initBiographyPanel();
+	// 	}
+	// }, 10000);
 }
 
 // window size changed
@@ -2642,12 +3253,12 @@ function on_size() {
 	ww = window.Width;
 	wh = window.Height;
 
-	if (pref.layout_mode === 'default_mode' && ww === 1140 && wh === 730  || pref.layout_mode === 'compact_mode' && ww === 484  && wh === 730)  pref.player_small     = true; else pref.player_small     = false;
-	if (pref.layout_mode === 'default_mode' && ww === 1600 && wh === 960  || pref.layout_mode === 'compact_mode' && ww === 484  && wh === 960)  pref.player_normal    = true; else pref.player_normal    = false;
-	if (pref.layout_mode === 'default_mode' && ww === 1802 && wh === 1061 || pref.layout_mode === 'compact_mode' && ww === 1600 && wh === 960)  pref.player_large     = true; else pref.player_large     = false;
-	if (pref.layout_mode === 'default_mode' && ww === 2300 && wh === 1470 || pref.layout_mode === 'compact_mode' && ww === 964  && wh === 1470) pref.player_4k_small  = true; else pref.player_4k_small  = false;
-	if (pref.layout_mode === 'default_mode' && ww === 2800 && wh === 1720 || pref.layout_mode === 'compact_mode' && ww === 964  && wh === 1720) pref.player_4k_normal = true; else pref.player_4k_normal = false;
-	if (pref.layout_mode === 'default_mode' && ww === 3400 && wh === 2020 || pref.layout_mode === 'compact_mode' && ww === 2800 && wh === 1720) pref.player_4k_large  = true; else pref.player_4k_large  = false;
+	if (pref.layout_mode === 'default_mode' && ww === 1140 && wh === 730  || pref.layout_mode === 'artwork_mode' && ww === 526  && wh === 686   || pref.layout_mode === 'compact_mode' && ww === 484  && wh === 730)  pref.player_small     = true; else pref.player_small     = false;
+	if (pref.layout_mode === 'default_mode' && ww === 1600 && wh === 960  || pref.layout_mode === 'artwork_mode' && ww === 700  && wh === 860   || pref.layout_mode === 'compact_mode' && ww === 484  && wh === 960)  pref.player_normal    = true; else pref.player_normal    = false;
+	if (pref.layout_mode === 'default_mode' && ww === 1802 && wh === 1061 || pref.layout_mode === 'artwork_mode' && ww === 901  && wh === 1062  || pref.layout_mode === 'compact_mode' && ww === 1600 && wh === 960)  pref.player_large     = true; else pref.player_large     = false;
+	if (pref.layout_mode === 'default_mode' && ww === 2300 && wh === 1470 || pref.layout_mode === 'artwork_mode' && ww === 1052 && wh === 1372  || pref.layout_mode === 'compact_mode' && ww === 964  && wh === 1470) pref.player_4k_small  = true; else pref.player_4k_small  = false;
+	if (pref.layout_mode === 'default_mode' && ww === 2800 && wh === 1720 || pref.layout_mode === 'artwork_mode' && ww === 1400 && wh === 1720  || pref.layout_mode === 'compact_mode' && ww === 964  && wh === 1720) pref.player_4k_normal = true; else pref.player_4k_normal = false;
+	if (pref.layout_mode === 'default_mode' && ww === 3400 && wh === 2020 || pref.layout_mode === 'artwork_mode' && ww === 1699 && wh === 2020  || pref.layout_mode === 'compact_mode' && ww === 2800 && wh === 1720) pref.player_4k_large  = true; else pref.player_4k_large  = false;
 
 	console.log(`in on_size() => width: ${ww}, height: ${wh}`);
 
@@ -2681,16 +3292,22 @@ function on_size() {
 	createButtonImages();
 	createButtonObjects(ww, wh);
 
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		playlist.on_size(ww, wh);
 	}
-	if (!displayPlaylist && !displayLibrary && !displayBiography && !pref.displayLyrics) {
+	if (!displayPlaylist && !displayLibrary && !displayBiography && !pref.displayLyrics && pref.layout_mode !== 'artwork_mode') {
 		btns.playlist.enabled = true;
 		btns.playlist.changeState(ButtonState.Down);
 	}
+	if (displayPlaylistArtworkMode && !displayLibrary && !displayBiography && !pref.displayLyrics && pref.layout_mode === 'artwork_mode') {
+		btns.playlistArtworkMode.enabled = true;
+		btns.playlistArtworkMode.changeState(ButtonState.Down);
+	}
 	if (displayLibrary) {
-		btns.library.enabled = true;
-		btns.library.changeState(ButtonState.Down);
+		if (!displayPlaylist) { // Fixes active library button state when switching from Artwork mode to Default mode and pref.startPlaylist is active
+			btns.library.enabled = true;
+			btns.library.changeState(ButtonState.Down);
+		}
 		initLibraryPanel();
 		setLibrarySize();
 	}
@@ -2712,8 +3329,8 @@ function on_size() {
 	// UIHacks double click on caption in fullscreen
 	if (!componentUiHacks) return;
 
-	try { // Needed when double clicking on caption and UIHacks.FullScreen == true;
-		if (!utils.IsKeyPressed(VK_CONTROL) && UIHacks.FullScreen && UIHacks.MainWindowState == WindowState.Normal) {
+	try { // Needed when double clicking on caption and UIHacks.FullScreen == true; also disabling maximize in Artwork mode
+		if (!utils.IsKeyPressed(VK_CONTROL) && UIHacks.FullScreen && UIHacks.MainWindowState == WindowState.Normal || pref.layout_mode === 'artwork_mode') {
 			UIHacks.MainWindowState = WindowState.Normal;
 		}
 	} catch (e) {};
@@ -2721,10 +3338,10 @@ function on_size() {
 
 function setLibrarySize() {
 	if (typeof libraryPanel !== 'undefined') {
-		var x = pref.libraryLayout === 'full_width' || (pref.libraryDesign === 'library_flowMode' && ppt.albumArtShow) ? 0 : Math.round(ww * .5);
+		var x = pref.layout_mode === 'artwork_mode' || pref.libraryLayout === 'full_width' || (pref.libraryDesign === 'library_flowMode' && ppt.albumArtShow) ? 0 : Math.round(ww * .5);
 		var y = geo.top_art_spacing;
 		var lowerSpace = calcLowerSpace();
-		var library_w = pref.libraryLayout === 'full_width' || (pref.libraryDesign === 'library_flowMode' && ppt.albumArtShow) ? ww : ww - x;
+		var library_w = pref.layout_mode === 'artwork_mode' || pref.libraryLayout === 'full_width' || (pref.libraryDesign === 'library_flowMode' && ppt.albumArtShow) ? ww : ww - x;
 		var library_h = Math.max(0, wh - lowerSpace - y);
 		ppt.zoomNode = 100; // Sets correct node zoom value, i.e when switching to 4K
 		panel.setTopBar();	// Resets filter font in case the zoom was reset, also needed when changing font size
@@ -2741,7 +3358,7 @@ function setBiographySize() {
 		var x = pptBio.borL;
 		var y = pptBio.borT;
 		var lowerSpace = calcLowerSpace();
-		var biography_w = ww / 2;
+		var biography_w = pref.layout_mode === 'artwork_mode' ? ww : ww / 2;
 		var biography_h = Math.max(0, wh - lowerSpace - y);
 		initBiographyColors();
 		biographyPanel.on_size(x, y, biography_w, biography_h);
@@ -2755,7 +3372,7 @@ function on_playback_dynamic_info_track() {
 	const metadb = fb.IsPlaying ? fb.GetNowPlaying() : null;
 	on_playback_new_track(metadb);
 
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		playlist.on_playback_dynamic_info_track();
 	}
 	if (displayBiography) {
@@ -2893,7 +3510,7 @@ function on_playback_new_track(metadb) {
 	on_playback_time();
 	progressBar.progressLength = 0;
 
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		playlist.on_playback_new_track(metadb);
 	}
 	else if (displayLibrary) {
@@ -2973,6 +3590,8 @@ function on_metadb_changed(handle_list, fromhook) {
 			// str.trackInfo += $('$if(%replaygain_track_gain%, | LUFS $puts(l,$sub(-1800,$replace(%replaygain_track_gain%,.,)))$div($get(l),100).$right($get(l),2) dB,)');
 			if (pref.layout_mode === 'default_mode') {
 				str.disc = fb.TitleFormat(tf.disc).Eval();
+			} else if (pref.layout_mode === 'artwork_mode') {
+				str.disc = fb.TitleFormat(tf.disc).Eval();
 			} else if (pref.layout_mode === 'compact_mode') {
 				str.disc = fb.TitleFormat(tf.disc).Eval();
 			}
@@ -3038,7 +3657,7 @@ function on_metadb_changed(handle_list, fromhook) {
 		}
 	}
 	if (handle_list) {	// not called manually from on_playback_new_track
-		if (displayPlaylist) {
+		if (displayPlaylist || displayPlaylistArtworkMode) {
 			trace_call && console.log(qwr_utils.function_name());
 			playlist.on_metadb_changed(handle_list, fromhook);
 		}
@@ -3065,7 +3684,7 @@ function on_playback_order_changed(this_pb) {
 	last_pb = this_pb;
 
 	// Link foobar's playback order menu functions with playback order button
-	if ((transport.show_playbackOrder_default || transport.show_playbackOrder_compact) && (transport.enableTransportControls_default && transport.enableTransportControls_compact)) {
+	if ((transport.show_playbackOrder_default || transport.show_playbackOrder_artwork || transport.show_playbackOrder_compact) && (transport.enableTransportControls_default && transport.enableTransportControls_artwork && transport.enableTransportControls_compact)) {
 		pbo = this_pb;
 		if (pbo === PlaybackOrder.Default) {
 			pref.playbackOrder = 'Default';
@@ -3079,7 +3698,7 @@ function on_playback_order_changed(this_pb) {
 			pref.playbackOrder = 'Shuffle';
 			btns.playbackOrder.img = btnImg.PlaybackShuffle;
 		}
-	} else if ((!transport.show_playbackOrder_default || !transport.show_playbackOrder_compact) || (!transport.enableTransportControls_default || !transport.enableTransportControls_compact)) {
+	} else if ((!transport.show_playbackOrder_default || !transport.show_playbackOrder_artwork || !transport.show_playbackOrder_compact) || (!transport.enableTransportControls_default || !transport.enableTransportControls_artwork || !transport.enableTransportControls_compact)) {
 		pbo = this_pb;
 		if (pbo === PlaybackOrder.Default) {
 			pref.playbackOrder = 'Default';
@@ -3117,6 +3736,14 @@ function on_mouse_lbtn_down(x, y, m) {
 				if (fb.PlaybackTime != v * fb.PlaybackLength) fb.PlaybackTime = v * fb.PlaybackLength;
 				window.RepaintRect(0, wh - geo.lower_bar_h, ww, geo.lower_bar_h);
 			}
+		} else if (pref.layout_mode === 'artwork_mode') {
+			// clicking on progress bar
+			if (pref.show_progress_bar_artwork && y >= wh - 0.5 * geo.lower_bar_h && y <= wh - 0.5 * geo.lower_bar_h + geo.prog_bar_h - 20 && x >= 0.025 * ww && x < 0.975 * ww) {
+				var v = (x - 0.025 * ww) / (0.95 * ww);
+				v = (v < 0) ? 0 : (v < 1) ? v : 1;
+				if (fb.PlaybackTime != v * fb.PlaybackLength) fb.PlaybackTime = v * fb.PlaybackLength;
+				window.RepaintRect(0, wh - geo.lower_bar_h, ww, geo.lower_bar_h);
+			}
 		} else if (pref.layout_mode === 'compact_mode') {
 			// clicking on progress bar
 			if (pref.show_progress_bar_compact && y >= wh - 0.5 * geo.lower_bar_h && y <= wh - 0.5 * geo.lower_bar_h + geo.prog_bar_h - 20 && x >= 0.025 * ww && x < 0.975 * ww) {
@@ -3132,7 +3759,7 @@ function on_mouse_lbtn_down(x, y, m) {
 			updateHyperlink.click();
 		}
 
-		if (displayPlaylist && playlist.mouse_in_this(x, y)) {// && playlist.mouse_in_this(x, y)) {
+		if ((displayPlaylist || displayPlaylistArtworkMode) && playlist.mouse_in_this(x, y)) {// && playlist.mouse_in_this(x, y)) {
 			trace_call && console.log(qwr_utils.function_name());
 			playlist.on_mouse_lbtn_down(x, y, m);
 		}
@@ -3152,7 +3779,7 @@ function on_mouse_lbtn_up(x, y, m) {
 
 	if (!volume_btn.on_mouse_lbtn_up(x, y, m)) {
 		// not handled by volume_btn
-		if (displayPlaylist) { // && playlist.mouse_in_this(x, y)) {
+		if (displayPlaylist || displayPlaylistArtworkMode) { // && playlist.mouse_in_this(x, y)) {
 			trace_call && console.log(qwr_utils.function_name());
 			playlist.on_mouse_lbtn_up(x, y, m);
 
@@ -3174,7 +3801,7 @@ function on_mouse_lbtn_up(x, y, m) {
 		}
 		/** Workaround when using maximize ( double click on top menu ) by adding additional condition UIHacks.MainWindowState == WindowState.Normal otherwise registered
 			on_mouse_lbtn_up click will be in Y-hitarea causing unnecessary pause when maximized/enlarged. In maximized state pauseBtn.mouseInThis area is much bigger */
-		if (albumart && !displayBiography && pref.layout_mode === 'default_mode' && (UIHacks.MainWindowState == WindowState.Normal || pauseBtn.mouseInThis(x, y))) {
+		if (albumart && !displayBiography && (pref.layout_mode === 'default_mode' || !displayPlaylistArtworkMode && !displayLibrary && pref.layout_mode === 'artwork_mode') && (UIHacks.MainWindowState == WindowState.Normal || pauseBtn.mouseInThis(x, y))) {
 			if ((albumart_size.x <= x && albumart_size.y <= y && albumart_size.x + albumart_size.w >= x && albumart_size.y + albumart_size.h >= y) ||
 				(cdart && !albumart && cdart_size.x <= x && cdart_size.y <= y && cdart_size.x + cdart_size.w >= x && cdart_size.y + cdart_size.h >= y) || pauseBtn.mouseInThis(x, y)) {
 				// Do not pause when library is in flow mode or library layout is in full width
@@ -3183,7 +3810,7 @@ function on_mouse_lbtn_up(x, y, m) {
 				}
 			}
 		}
-		else if (!albumart && !displayBiography && pref.layout_mode === 'default_mode' && (UIHacks.MainWindowState == WindowState.Normal || pauseBtn.mouseInThis(x, y))) {
+		else if (!albumart && !displayBiography && (pref.layout_mode === 'default_mode' || !displayPlaylistArtworkMode && !displayLibrary && pref.layout_mode === 'artwork_mode') && (UIHacks.MainWindowState == WindowState.Normal || pauseBtn.mouseInThis(x, y))) {
 			if (state.mouse_x > 0 && state.mouse_x <= (displayPlaylist || displayLibrary ? ww / 2 : !displayPlaylist || !displayLibrary ? ww :  ww / 2) &&
 				state.mouse_y > albumart_size.y && state.mouse_y <= albumart_size.h + geo.top_art_spacing || pauseBtn.mouseInThis(x, y)) {
 				// Do not pause when library is in flow mode or library layout is in full width
@@ -3198,7 +3825,7 @@ function on_mouse_lbtn_up(x, y, m) {
 }
 
 function on_mouse_lbtn_dblclk(x, y, m) {
-	if (displayPlaylist && playlist.mouse_in_this(x, y)) {
+	if ((displayPlaylist || displayPlaylistArtworkMode) && playlist.mouse_in_this(x, y)) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_mouse_lbtn_dblclk(x, y, m);
 	}
@@ -3224,7 +3851,7 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 }
 
 function on_mouse_rbtn_down(x, y, m) {
-	if (displayPlaylist && playlist.mouse_in_this(x, y)) {
+	if ((displayPlaylist || displayPlaylistArtworkMode) && playlist.mouse_in_this(x, y)) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_mouse_rbtn_down(x, y, m);
 	}
@@ -3235,8 +3862,8 @@ function on_mouse_rbtn_down(x, y, m) {
 }
 
 function on_mouse_rbtn_up(x, y, m) {
-	if (((fb.IsPlaying || fb.IsPaused) && !displayBiography && pref.layout_mode === 'default_mode') &&
-		state.mouse_x > 0 && state.mouse_x <= ((isStreaming || !albumart && noArtwork || albumart) && (displayPlaylist || displayLibrary) ? ww / 2 : !displayPlaylist || !displayLibrary ? ww : albumart_size.w) &&
+	if (((fb.IsPlaying || fb.IsPaused) && !displayBiography && (pref.layout_mode === 'default_mode' || !displayPlaylistArtworkMode && !displayLibrary && pref.layout_mode === 'artwork_mode')) &&
+		state.mouse_x > 0 && state.mouse_x <= ((isStreaming || !albumart && noArtwork || albumart) && (displayPlaylist || displayLibrary) && pref.layout_mode === 'default_mode' ? ww / 2 : !displayPlaylist || !displayLibrary ? ww : albumart_size.w) &&
 		state.mouse_y > albumart_size.y && state.mouse_y <= albumart_size.h + geo.top_art_spacing) {
 
 		// Do not show album cover context menu when library is in flow mode or library layout is in full width
@@ -3252,7 +3879,7 @@ function on_mouse_rbtn_up(x, y, m) {
 			return true;
 		}
 	}
-	if (displayPlaylist && playlist.mouse_in_this(x, y)) {
+	if ((displayPlaylist || displayPlaylistArtworkMode) && playlist.mouse_in_this(x, y)) {
 		trace_call && console.log(qwr_utils.function_name());
 		return playlist.on_mouse_rbtn_up(x, y, m);
 	}
@@ -3271,7 +3898,7 @@ function on_mouse_rbtn_up(x, y, m) {
 function on_mouse_move(x, y, m) {
 	if (x != state.mouse_x || y != state.mouse_y) {
 
-		if (pref.layout_mode === 'compact_mode') {
+		if (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') {
 			g_tooltip.SetFont('Segoe UI', scaleForDisplay(15));
 			g_tooltip.SetMaxWidth(scaleForDisplay(400));
 		} else {
@@ -3297,7 +3924,7 @@ function on_mouse_move(x, y, m) {
 		buttonEventHandler(x, y, m);
 		if (updateHyperlink) Hyperlinks_on_mouse_move(updateHyperlink, x, y);
 
-		if (displayPlaylist && playlist.mouse_in_this(x, y)) {
+		if ((displayPlaylist || displayPlaylistArtworkMode) && playlist.mouse_in_this(x, y)) {
 			trace_call && trace_on_move && console.log(qwr_utils.function_name());
 
 			if (mouse_move_suppress.is_supressed(x, y, m)) {
@@ -3313,14 +3940,14 @@ function on_mouse_move(x, y, m) {
 		else if (displayBiography && biography.mouse_in_this(x, y)) {
 			biography.on_mouse_move(x, y, m);
 		}
-		else if (str.timeline && str.timeline.mouseInThis(x, y)) {
+		if (str.timeline && str.timeline.mouseInThis(x, y) && (pref.layout_mode === 'default_mode' && !displayPlaylist || pref.layout_mode === 'artwork_mode' && displayPlaylist)) { // Prevent tooltips on album cover when Artwork mode is active
 			str.timeline.on_mouse_move(x, y, m);
 		}
-		else if (str.metadataGrid_tt && str.metadataGrid_tt.mouseInThis(x, y)) {
+		if (str.metadataGrid_tt && str.metadataGrid_tt.mouseInThis(x, y)) {
 			str.metadataGrid_tt.on_mouse_move(x, y, m);
 		}
-		if ((transport.enableTransportControls_default && pref.layout_mode === 'default_mode' || transport.enableTransportControls_compact && pref.layout_mode === 'compact_mode') &&
-			(transport.show_volume_default && pref.layout_mode === 'default_mode' || transport.show_volume_compact && pref.layout_mode === 'compact_mode') && volume_btn) {
+		if ((transport.enableTransportControls_default && pref.layout_mode === 'default_mode' || transport.enableTransportControls_artwork && pref.layout_mode === 'artwork_mode' || transport.enableTransportControls_compact && pref.layout_mode === 'compact_mode') &&
+			(transport.show_volume_default && pref.layout_mode === 'default_mode' || transport.show_volume_artwork && pref.layout_mode === 'artwork_mode' || transport.show_volume_compact && pref.layout_mode === 'compact_mode') && volume_btn) {
 			volume_btn.on_mouse_move(x, y, m);
 		}
 
@@ -3340,8 +3967,8 @@ function on_mouse_move(x, y, m) {
 				if (pref.layout_mode === 'default_mode') {
 					UIHacks.SetPseudoCaption(0, 0, ww, geo.top_art_spacing);
 				}
-				if (pref.layout_mode === 'compact_mode') {
-					UIHacks.SetPseudoCaption(0, 0, ww, geo.top_art_spacing + scaleForDisplay(10));
+				if (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') {
+					UIHacks.SetPseudoCaption(0, 0, ww, geo.top_art_spacing + scaleForDisplay(5));
 				}
 
 				if (UIHacks.FrameStyle == 3) UIHacks.DisableSizing = false;
@@ -3353,7 +3980,7 @@ function on_mouse_move(x, y, m) {
 }
 
 function on_mouse_wheel(delta) {
-	if (transport.show_volume_default && pref.layout_mode === 'default_mode' || transport.show_volume_compact && pref.layout_mode === 'compact_mode') {
+	if (transport.show_volume_default && pref.layout_mode === 'default_mode' || transport.show_volume_artwork && pref.layout_mode === 'artwork_mode' || transport.show_volume_compact && pref.layout_mode === 'compact_mode') {
 		if (volume_btn.on_mouse_wheel(delta)) return;
 	}
 	if (state.mouse_y > wh - geo.lower_bar_h) {
@@ -3369,7 +3996,7 @@ function on_mouse_wheel(delta) {
 		state.mouse_y > uiBio.y && state.mouse_y <= uiBio.y + uiBio.h) {
 		biography.on_mouse_wheel(delta);
 	}
-	else if (displayPlaylist) {
+	else if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_mouse_wheel(delta);
 	}
@@ -3385,7 +4012,7 @@ function on_mouse_leave() {
 	if (transport.show_volume_default && pref.layout_mode === 'default_mode' || transport.show_volume_compact && pref.layout_mode === 'compact_mode') {
 		volume_btn.on_mouse_leave();
 	}
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		playlist.on_mouse_leave();
 	}
 	else if (displayLibrary) {
@@ -3397,7 +4024,7 @@ function on_mouse_leave() {
 }
 
 function on_playlists_changed() {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_playlists_changed();
 	}
@@ -3408,7 +4035,7 @@ function on_playlists_changed() {
 }
 
 function on_playlist_switch() {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_playlist_switch();
 	}
@@ -3419,14 +4046,14 @@ function on_playlist_switch() {
 }
 
 function on_playlist_item_ensure_visible(playlistIndex, playlistItemIndex) {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_playlist_item_ensure_visible(playlistIndex, playlistItemIndex);
 	}
 }
 
 function on_playlist_items_added(playlistIndex) {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_playlist_items_added(playlistIndex);
 	}
@@ -3437,14 +4064,14 @@ function on_playlist_items_added(playlistIndex) {
 }
 
 function on_playlist_items_reordered(playlistIndex) {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_playlist_items_reordered(playlistIndex);
 	}
 }
 
 function on_playlist_items_removed(playlistIndex) {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_playlist_items_removed(playlistIndex);
 	}
@@ -3455,7 +4082,7 @@ function on_playlist_items_removed(playlistIndex) {
 }
 
 function on_playlist_items_selection_change() {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_playlist_items_selection_change();
 	}
@@ -3495,7 +4122,7 @@ function on_library_items_changed(handle_list) {
 }
 
 function on_item_focus_change(playlist_arg, from, to) {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_item_focus_change(playlist_arg, from, to);
 	}
@@ -3513,7 +4140,7 @@ function on_key_down(vkey) {
 	var CtrlKeyPressed = utils.IsKeyPressed(VK_CONTROL);
 	var ShiftKeyPressed = utils.IsKeyPressed(VK_SHIFT);
 
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 
 		if (key_down_suppress.is_supressed(vkey)) {
@@ -3539,7 +4166,7 @@ function on_key_down(vkey) {
 				if (fb.IsPlaying) {
 					var metadb = fb.GetNowPlaying();
 					fb.RunContextCommandWithMetadb('Playback Statistics/Rating/' + action, metadb);
-				} else if (!metadb && displayPlaylist) {
+				} else if (!metadb && (displayPlaylist || displayPlaylistArtworkMode)) {
 					var metadbList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 					if (metadbList.Count === 1) {
 						fb.RunContextCommandWithMetadb('Playback Statistics/Rating/' + action, metadbList[0]);
@@ -3594,11 +4221,11 @@ function on_playback_pause(pausing) {
 	}
 
 	pauseBtn.repaint();
-	if (albumart && pref.displayLyrics) { // if we are displaying lyrics we need to refresh all the lyrics to avoid tearing at the edges of the pause button
+	if ((albumart || noAlbumArtStub) && pref.displayLyrics) { // if we are displaying lyrics we need to refresh all the lyrics to avoid tearing at the edges of the pause button
 		gLyrics.on_playback_pause(pausing);
 	}
 
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		playlist.on_playback_pause(pausing);
 	}
 }
@@ -3639,7 +4266,7 @@ function on_playback_stop(reason) {
 		cdartArray = [];	// clear Images
 		window.Repaint();
 	}
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		playlist.on_playback_stop(reason);
 	}
 	if (displayBiography) {
@@ -3656,28 +4283,28 @@ function on_playback_starting(cmd, is_paused) {
 }
 
 function on_drag_enter(action, x, y, mask) {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_drag_enter(action, x, y, mask);
 	}
 }
 
 function on_drag_leave() {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_drag_leave();
 	}
 }
 
 function on_drag_drop(action, x, y, mask) {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_drag_drop(action, x, y, mask);
 	}
 }
 
 function on_focus(is_focused) {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_focus(is_focused);
 	}
@@ -3693,7 +4320,7 @@ function on_focus(is_focused) {
 }
 
 function on_notify_data(name, info) {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_notify_data(name, info);
 	}
@@ -3732,7 +4359,7 @@ function clearUIVariables() {
 
 // album art retrieved from GetAlbumArtAsync
 function on_get_album_art_done(metadb, art_id, image, image_path) {
-	if (displayPlaylist) {
+	if (displayPlaylist || displayPlaylistArtworkMode) {
 		trace_call && console.log(qwr_utils.function_name());
 		playlist.on_get_album_art_done(metadb, art_id, image, image_path);
 	}
@@ -3763,7 +4390,7 @@ function refresh_seekbar() {
 	if (pref.layout_mode === 'default_mode') {
 		window.RepaintRect(scaleForDisplay(40), wh - geo.lower_bar_h, ww - scaleForDisplay(80), geo.lower_bar_h, pref.spinCdart && !pref.displayLyrics);
 	}
-	if (pref.layout_mode === 'compact_mode') {
+	if (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') {
 		window.RepaintRect(scaleForDisplay(20), wh - geo.lower_bar_h, ww - scaleForDisplay(40), geo.lower_bar_h, pref.spinCdart && !pref.displayLyrics);
 	}
 }
@@ -3774,6 +4401,7 @@ function displayNextImage() {
 	albumArtIndex = (albumArtIndex + 1) % aa_list.length;
 	loadImageFromAlbumArtList(albumArtIndex, true);
 	lastLeftEdge = 0;
+	if (pref.rebornTheme) initTheme();
 	RepaintWindow();
 	albumArtTimeout = setTimeout(() => {
 		displayNextImage();
@@ -3810,8 +4438,8 @@ function createDropShadow() {
 				var offset = cdart_size.w * 0.40; // don't change this value
 				var xVal = cdart_size.x;
 				var shadowOffset = geo.aa_shadow * 2;
-				shimg.DrawEllipse(xVal + shadowOffset, shadowOffset + 1, cdart_size.w - shadowOffset, cdart_size.w - shadowOffset, geo.aa_shadow, col.shadow); // outer shadow
-				shimg.DrawEllipse(xVal + geo.aa_shadow + offset - 2, offset + geo.aa_shadow + 1, cdart_size.w - offset * 2, cdart_size.h - offset * 2, 60, col.shadow); // inner shadow
+				shimg.DrawEllipse(xVal + shadowOffset, shadowOffset + 4, cdart_size.w - shadowOffset - 2, cdart_size.w - shadowOffset - 2, geo.aa_shadow, col.discArtShadow); // outer shadow
+				shimg.DrawEllipse(xVal + geo.aa_shadow + offset - 2, offset + geo.aa_shadow + 1, cdart_size.w - offset * 2, cdart_size.h - offset * 2, 60, col.discArtShadow); // inner shadow
 			}
 			shadow_image.ReleaseGraphics(shimg);
 			shadow_image.StackBlur(geo.aa_shadow);
@@ -3973,10 +4601,12 @@ function loadImageFromAlbumArtList(index, loadFromCache) {
 			ResizeArtwork(true);
 			cdart && CreateRotatedCDImage();
 			lastLeftEdge = 0; // recalc label location
+			if (pref.rebornTheme) initTheme();
 			RepaintWindow();
 		});
 	}
 	ResizeArtwork(false); // recalculate image positions
+
 	if (cdart) {
 		CreateRotatedCDImage();
 	}
@@ -4031,7 +4661,9 @@ function ResizeArtwork(resetCDPosition) {
 	if (albumart && albumart.Width && albumart.Height) {
 		// Size for big albumart
 		let xCenter = 0;
-		var album_scale = Math.min(((displayPlaylist || displayLibrary) ? 0.50 * ww : 0.75 * ww) / albumart.Width, (wh - lowerSpace - geo.top_art_spacing) / albumart.Height);
+		var album_scale = pref.layout_mode === 'artwork_mode' ?
+		Math.min((ww / albumart.Width), (wh - lowerSpace - geo.top_art_spacing) / albumart.Height) :
+		Math.min(((displayPlaylist || displayLibrary) ? 0.50 * ww : 0.75 * ww) / albumart.Width, (wh - lowerSpace - geo.top_art_spacing) / albumart.Height);
 		if (displayPlaylist || displayLibrary) {
 			xCenter = 0.25 * ww;
 		} else if (ww / wh < 1.40) { // when using a roughly 4:3 display the album art crowds, so move it slightly off center
@@ -4054,22 +4686,26 @@ function ResizeArtwork(resetCDPosition) {
 			xCenter = is_4k ? 0.267 * ww : 0.24 * ww;
 		} else {
 			// Set Biography Window Size and Padding
-			pptBio.borT  = scaleForDisplay(70);
-			pptBio.borL  = scaleForDisplay(40);
-			pptBio.borR  = scaleForDisplay(40);
-			pptBio.textT = scaleForDisplay(70);
-			pptBio.textL = scaleForDisplay(40);
-			pptBio.textR = scaleForDisplay(40);
+			pptBio.borT  = pref.layout_mode === 'artwork_mode' ? scaleForDisplay(70) : scaleForDisplay(70);
+			pptBio.borL  = pref.layout_mode === 'artwork_mode' ? scaleForDisplay(30) : scaleForDisplay(40);
+			pptBio.borR  = pref.layout_mode === 'artwork_mode' ? scaleForDisplay(30) : scaleForDisplay(40);
+			pptBio.textT = pref.layout_mode === 'artwork_mode' ? scaleForDisplay(70) : scaleForDisplay(70);
+			pptBio.textL = pref.layout_mode === 'artwork_mode' ? scaleForDisplay(30) : scaleForDisplay(40);
+			pptBio.textR = pref.layout_mode === 'artwork_mode' ? scaleForDisplay(30) : scaleForDisplay(40);
 			pptBio.gap   = scaleForDisplay(11);
 		}
 		if (UIHacks.MainWindowState == WindowState.Normal && (displayPlaylist || displayLibrary || displayBiography)) {
 			var album_scale = Math.min(((displayPlaylist || displayLibrary) ? 0.50 * ww : 0.75 * ww) / albumart.Width, (wh - lowerSpace - geo.top_art_spacing) / albumart.Height);
 			xCenter = 0.25 * ww;
 		}
+		if (pref.layout_mode === 'artwork_mode') { // Full width/height artwork in Artwork mode
+			var album_scale = Math.min(ww / albumart.Width, (wh - lowerSpace - geo.top_art_spacing) / albumart.Height);
+			xCenter = 0;
+		}
 
 		albumart_size.w = Math.floor(albumart.Width * album_scale); // width
 		albumart_size.h = Math.floor(albumart.Height * album_scale); // height
-		albumart_size.x = Math.floor(xCenter - 0.5 * albumart_size.w); // left
+		albumart_size.x = pref.layout_mode === 'artwork_mode' && (!displayPlaylist || pref.displayLyrics) ? 0 : pref.layout_mode === 'artwork_mode' && displayPlaylist ? ww : Math.floor(xCenter - 0.5 * albumart_size.w); // left
 		if (album_scale !== (wh - geo.top_art_spacing - lowerSpace) / albumart.Height) {
 			// restricted by width
 			var y = Math.floor(((wh - geo.lower_bar_h + geo.top_art_spacing) / 2) - albumart_size.h / 2);
@@ -4141,15 +4777,15 @@ function ResizeArtwork(resetCDPosition) {
 	} else {
 		cdart_size = new ImageSize(0, 0, 0, 0);
 	}
-	if (hasArtwork) {
+	if (hasArtwork || noAlbumArtStub) {
 		if (gLyrics) {
-			gLyrics.on_size(albumart_size.x, albumart_size.y, albumart_size.w, albumart_size.h);
+			gLyrics.on_size(noAlbumArtStub ? 0 : albumart_size.x, noAlbumArtStub ? geo.top_art_spacing : albumart_size.y, noAlbumArtStub ? pref.layout_mode === 'artwork_mode' ? ww : ww / 2 : albumart_size.w, noAlbumArtStub ? wh - geo.top_art_spacing - geo.lower_bar_h : albumart_size.h);
 		}
-		if (!pref.blackTheme || !pref.nblueTheme || !pref.ngreenTheme || !pref.nredTheme || !pref.ngoldTheme) {
+		if ((!pref.blackTheme || !pref.nblueTheme || !pref.ngreenTheme || !pref.nredTheme || !pref.ngoldTheme) && pref.layout_mode !== 'artwork_mode') {
 			createDropShadow();
 		}
 	} else {
-		if (displayLibrary || displayPlaylist) {
+		if ((displayLibrary || displayPlaylist) && pref.layout_mode !== 'artwork_mode') {
 			pauseBtn.setCoords(ww * (0.5 / 2), wh / 2 - (geo.top_art_spacing));
 		} else {
 			pauseBtn.setCoords(ww / 2, wh / 2 - (geo.top_art_spacing));
@@ -4243,6 +4879,7 @@ function fetchNewArtwork(metadb) {
 	aa_list = [];
 	var disc_art_exists = true;
 
+
 	if (pref.display_cdart && !isStreaming) { // we must attempt to load CD/vinyl art first so that the shadow is drawn correctly
 		cdartPath = $(pref.vinylside_path); // try vinyl%vinyl disc%.png first
 		if (!IsFile(cdartPath)) {
@@ -4300,7 +4937,7 @@ function fetchNewArtwork(metadb) {
 																												if (!IsFile(cdartPath)) {
 																													cdartPath = $(pref.cdart_path_scans); // cd%discnumber%.png didn't exist so try cd.png in subfolder Scans.
 																													if (!IsFile(cdartPath)) {
-																														disc_art_exists = false; // didn't find anything
+																														if (!noAlbumArtStub && pref.noDiscArtStub) disc_art_exists = false; // didn't find anything
 																													}
 																												}
 																											}
@@ -4329,6 +4966,54 @@ function fetchNewArtwork(metadb) {
 				}
 			}
 		}
+
+		// Display custom disc art placeholders
+		if (!pref.noDiscArtStub) {
+			disc_art_exists = true;
+			if (pref.cdArtWhiteStub) {
+				cdartPath = paths.cdArtWhiteStub; // Use white cdArt stub if enabled
+			}
+			else if (pref.cdArtBlackStub) {
+				cdartPath = paths.cdArtBlackStub; // Use black cdArt stub if enabled
+			}
+			else if (pref.cdArtBlankStub) {
+				cdartPath = paths.cdArtBlankStub; // Use blank cdArt stub if enabled
+			}
+			else if (pref.cdArtTransStub) {
+				cdartPath = paths.cdArtTransStub; // Use transparent cdArt stub if enabled
+			}
+			else if (pref.vinylArtWhiteStub) {
+				cdartPath = paths.vinylArtWhiteStub; // Use white vinylArt stub if enabled
+			}
+			else if (pref.vinylArtVoidStub) {
+				cdartPath = paths.vinylArtVoidStub; // Use void vinylArt stub if enabled
+			}
+			else if (pref.vinylArtColdFusionStub) {
+				cdartPath = paths.vinylArtColdFusionStub; // Use cold fusion vinylArt stub if enabled
+			}
+			else if (pref.vinylArtRingOfFireStub) {
+				cdartPath = paths.vinylArtRingOfFireStub; // Use ring of fire vinylArt stub if enabled
+			}
+			else if (pref.vinylArtMapleStub) {
+				cdartPath = paths.vinylArtMapleStub; // Use maple vinylArt stub if enabled
+			}
+			else if (pref.vinylArtBlackStub) {
+				cdartPath = paths.vinylArtBlackStub; // Use black vinylArt stub if enabled
+			}
+			else if (pref.vinylArtBlackHoleStub) {
+				cdartPath = paths.vinylArtBlackHoleStub; // Use black hole vinylArt stub if enabled
+			}
+			else if (pref.vinylArtEbonyStub) {
+				cdartPath = paths.vinylArtEbonyStub; // Use ebony vinylArt stub if enabled
+			}
+			else if (pref.vinylArtTransStub) {
+				cdartPath = paths.vinylArtTransStub; // Use transparent vinylArt stub if enabled
+			}
+			else {
+				disc_art_exists = false;
+			}
+		}
+
 		if (disc_art_exists) {
 			let temp_cdart;
 			if (loadFromCache) {
@@ -4407,6 +5092,7 @@ function fetchNewArtwork(metadb) {
 			RepaintWindow();
 		}
 	}
+	if (pref.rebornTheme) initTheme();
 	if (timings.showDebugTiming) fetchArtworkProfiler.Print();
 }
 
@@ -4427,6 +5113,7 @@ function createButtonObjects(ww, wh) {
 	}
 
 	var buttonSize_default = scaleForDisplay(pref.transport_buttons_size_default);
+	var buttonSize_artwork = scaleForDisplay(pref.transport_buttons_size_artwork);
 	var buttonSize_compact = scaleForDisplay(pref.transport_buttons_size_compact);
 	//---> Transport buttons
 
@@ -4465,6 +5152,47 @@ function createButtonObjects(ww, wh) {
 				btns.reload = new Button(calcX(++count), y, w, h, 'Reload', btnImg.Reload, 'Reload');
 			}
 			if (transport.show_volume_default) {
+				btns.volume = new Button(calcX(++count), y, w, h, 'Volume', btnImg.ShowVolume);
+				volume_btn.setPosition(btns.volume.x, y, w);
+			}
+		}
+	}
+
+	if (pref.layout_mode === 'artwork_mode') {
+
+		if (transport.enableTransportControls_artwork) {
+			let count = 4 + (transport.show_playbackOrder_artwork ? 1 : 0) + (transport.show_reload_artwork ? 1 : 0) + (transport.show_volume_artwork ? 1 : 0);
+
+			const y = wh - buttonSize_artwork - scaleForDisplay(36) + scaleForDisplay(pref.lower_bar_font_size_artwork);
+			const w = buttonSize_artwork;
+			const h = w;
+			const p = scaleForDisplay(pref.transport_buttons_spacing_artwork); // space between buttons
+			const x = (ww - w * count - p * (count - 1)) / 2;
+
+			const calcX = (index) => {
+				return x + (w + p) * index;
+			}
+
+			count = 0;
+			btns.stop = new Button(x, y, w, h, 'Stop', btnImg.Stop, 'Stop');
+			btns.prev = new Button(calcX(++count), y, w, h, 'Previous', btnImg.Previous, 'Previous');
+			btns.play = new Button(calcX(++count), y, w, h, 'Play/Pause', !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause, 'Play');
+			btns.next = new Button(calcX(++count), y, w, h, 'Next', btnImg.Next, 'Next');
+			if (transport.show_playbackOrder_artwork) {
+				if (plman.PlaybackOrder === 0) {
+					btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackDefault);
+				}
+				else if (plman.PlaybackOrder === 1 || plman.PlaybackOrder === 2) {
+					btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackReplay);
+				}
+				else if (plman.PlaybackOrder === 3 || plman.PlaybackOrder === 4 || plman.PlaybackOrder === 5 || plman.PlaybackOrder === 6) {
+					btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackShuffle);
+				}
+			}
+			if (transport.show_reload_artwork) {
+				btns.reload = new Button(calcX(++count), y, w, h, 'Reload', btnImg.Reload, 'Reload');
+			}
+			if (transport.show_volume_artwork) {
 				btns.volume = new Button(calcX(++count), y, w, h, 'Volume', btnImg.ShowVolume);
 				volume_btn.setPosition(btns.volume.x, y, w);
 			}
@@ -4530,7 +5258,7 @@ function createButtonObjects(ww, wh) {
 			if (!hideClose)
 				btns.Close = new Button(x + (w + p) * 2, y, w, h, "Close", btnImg.Close);
 		}
-		else if (pref.layout_mode === 'compact_mode') {
+		else if (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') {
 			btns.Minimize = new Button(x + (w + p), y, w, h, "Minimize", btnImg.Minimize);
 			if (!hideClose)
 				btns[12] = new Button(x + (w + p) * 2, y, w, h, "Close", btnImg.Close);
@@ -4579,6 +5307,11 @@ function createButtonObjects(ww, wh) {
 			}
 		}
 
+		if (pref.menu_font_size === 11) y += scaleForDisplay(1);
+		if (pref.menu_font_size === 12) y += scaleForDisplay(0);
+		if (pref.menu_font_size === 13) y -= scaleForDisplay(1);
+		if (pref.menu_font_size === 14) y -= scaleForDisplay(2);
+		if (pref.menu_font_size === 16) y -= scaleForDisplay(3);
 		btns[20] = new Button(x, y, w, h, 'File', img);
 
 		x += img[0].Width - (is_4k ? 3 : 2);
@@ -4616,13 +5349,8 @@ function createButtonObjects(ww, wh) {
 
 		img = btnImg.Settings;
 		x = Math.round(ww * .5 + (centerMenu / 2));
-		y = is_4k ? 16 : 9;
 		h = img[0].Height + 4;
-		if (pref.menu_font_size === 11) is_4k ? h = img[0].Height + 6 : h = img[0].Height + 5;
-		if (pref.menu_font_size === 12) is_4k ? h = img[0].Height + 4 : h = img[0].Height + 4;
-		if (pref.menu_font_size === 13) is_4k ? h = img[0].Height + 1 : h = img[0].Height + 2;
-		if (pref.menu_font_size === 14) is_4k ? h = img[0].Height - 2 : h = img[0].Height + 1;
-		if (pref.menu_font_size === 16) is_4k ? h = img[0].Height - 7 : h = img[0].Height - 2;
+
 		btns[30] = new Button(x, y, 0, h, img);
 		img = btnImg.Rating;
 		x -= (img[0].Width);
@@ -4640,6 +5368,155 @@ function createButtonObjects(ww, wh) {
 		x -= (img[0].Width) - (is_4k ? 3 : 2);
 		btns.playlist = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Playlist', img, 'Display Details');
 
+	} else if (pref.layout_mode === 'artwork_mode') {
+
+		/** @type {GdiBitmap[]} */
+		let img = btnImg.File;
+		let x = is_4k ? 18 : 8;
+		let y = is_4k ? 16 : 9;
+		let h = img[0].Height;
+		let w = img[0].Width;
+		let centerMenu = is_4k ? 666 : 338;
+
+		if (pref.menu_font_size === 11) {
+			if (pref.player_small && ww < 700 || pref.player_4k_small) {
+				centerMenu = is_4k ? 512 : 262;
+			} else {
+				centerMenu = is_4k ? 647 : 322;
+			}
+		} else if (pref.menu_font_size === 12) {
+			if (pref.player_small && ww < 700 || pref.player_4k_small) {
+				centerMenu = is_4k ? 666 : 338;
+			} else {
+				centerMenu = is_4k ? 696 : 345;
+			}
+		} else if (pref.menu_font_size === 13) {
+			if (pref.player_small && ww < 700 || pref.player_4k_small) {
+				centerMenu = is_4k ? 824 : 414;
+			} else {
+				centerMenu = is_4k ? 748 : 372;
+			}
+		} else if (pref.menu_font_size === 14) {
+			if (pref.player_small && ww < 700 || pref.player_4k_small) {
+				centerMenu = is_4k ? 972 : 490;
+			} else {
+				centerMenu = is_4k ? 798 : 394;
+			}
+		} else if (pref.menu_font_size === 16) {
+			if (pref.player_small && ww < 700 || pref.player_4k_small) {
+				centerMenu = is_4k ? 1274 : 542;
+			} else {
+				centerMenu = is_4k ? 893 : 445;
+			}
+		}
+
+		if (pref.menu_font_size === 11) y += scaleForDisplay(1);
+		if (pref.menu_font_size === 12) y += scaleForDisplay(0);
+		if (pref.menu_font_size === 13) y -= scaleForDisplay(1);
+		if (pref.menu_font_size === 14) y -= scaleForDisplay(2);
+		if (pref.menu_font_size === 16) y -= scaleForDisplay(3);
+		btns[20] = new Button(x, y, w, h, 'File', img);
+		x += img[0].Width - (is_4k ? 3 : 2);
+
+		img = btnImg.Options;
+		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 120 : 60);
+			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 127 : 64);
+			if (pref.menu_font_size === 13) x -= img[0].Width - (is_4k ? 134 : 68);
+			if (pref.menu_font_size === 14) x -= img[0].Width - (is_4k ? 136 : 70);
+			if (pref.menu_font_size === 16) x -= img[0].Width - (is_4k ? 132 : 66);
+		} else {
+			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 118 : 60);
+			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 125 : 64);
+			if (pref.menu_font_size === 13) x -= img[0].Width - (is_4k ? 134 : 67);
+			if (pref.menu_font_size === 14) x -= img[0].Width - (is_4k ? 141 : 71);
+			if (pref.menu_font_size === 16) x -= img[0].Width - (is_4k ? 155 : 78);
+		}
+		btns[27] = new Button(x, y, img[0].Width, h, 'Options', img);
+
+		let buttonY = 15;
+		if (showingMinMaxButtons) {
+			buttonY = 15 + btns.Minimize.h;
+		}
+
+		img = btnImg.Settings;
+		x = Math.round(ww * .5 + (centerMenu / 2) + scaleForDisplay(23));
+		h = img[0].Height + 4;
+
+		btns[30] = new Button(x, y, 0, h, img);
+
+		img = btnImg.Rating;
+		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 36 : 23);
+			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 8 : 0);
+			if (pref.menu_font_size === 13) x -= img[0].Width + (is_4k ? 47 : 29);
+			if (pref.menu_font_size === 14) x -= img[0].Width + (is_4k ? 111 : 63);
+			if (pref.menu_font_size === 16) x -= img[0].Width + (is_4k ? 260 : 88);
+	 	} else {
+			x -= (img[0].Width);
+		}
+		btns[32] = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Rating', img, 'Rate Song');
+
+		img = btnImg.Lyrics;
+		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 3 : 0);
+			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 3 : 2);
+			if (pref.menu_font_size === 13) x -= img[0].Width - (is_4k ? 8 : 5);
+			if (pref.menu_font_size === 14) x -= img[0].Width - (is_4k ? 14 : 8);
+			if (pref.menu_font_size === 16) x -= img[0].Width - (is_4k ? 26 : 14);
+		} else {
+			x -= (img[0].Width) - (is_4k ? 3 : 2);
+		}
+		btns.lyrics = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Lyrics', img, 'Display Lyrics');
+
+		img = btnImg.Biography;
+		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 3 : 0);
+			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 3 : 2);
+			if (pref.menu_font_size === 13) x -= img[0].Width - (is_4k ? 8 : 5);
+			if (pref.menu_font_size === 14) x -= img[0].Width - (is_4k ? 14 : 8);
+			if (pref.menu_font_size === 16) x -= img[0].Width - (is_4k ? 26 : 14);
+		} else {
+			x -= (img[0].Width) - (is_4k ? 3 : 2);
+		}
+		btns.biography = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Biography', img, 'Display Biography');
+
+		img = btnImg.ShowLibrary;
+		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 3 : 0);
+			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 3 : 2);
+			if (pref.menu_font_size === 13) x -= img[0].Width - (is_4k ? 8 : 5);
+			if (pref.menu_font_size === 14) x -= img[0].Width - (is_4k ? 14 : 8);
+			if (pref.menu_font_size === 16) x -= img[0].Width - (is_4k ? 26 : 14);
+		} else {
+			x -= (img[0].Width) - (is_4k ? 3 : 2);
+		}
+		btns.library = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'ShowLibrary', img, 'Display Library');
+
+		img = btnImg.playlistArtworkMode;
+		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 3 : 0);
+			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 3 : 2);
+			if (pref.menu_font_size === 13) x -= img[0].Width - (is_4k ? 8 : 5);
+			if (pref.menu_font_size === 14) x -= img[0].Width - (is_4k ? 14 : 8);
+			if (pref.menu_font_size === 16) x -= img[0].Width - (is_4k ? 26 : 14);
+		} else {
+			x -= (img[0].Width) - (is_4k ? 3 : 2);
+		}
+		btns.playlistArtworkMode = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'playlistArtworkMode', img, 'Display Playlist');
+
+		img = btnImg.Playlist;
+		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 3 : 0);
+			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 3 : 2);
+			if (pref.menu_font_size === 13) x -= img[0].Width - (is_4k ? 8 : 5);
+			if (pref.menu_font_size === 14) x -= img[0].Width - (is_4k ? 14 : 8);
+			if (pref.menu_font_size === 16) x -= img[0].Width - (is_4k ? 26 : 14);
+		} else {
+			x -= (img[0].Width) - (is_4k ? 3 : 2);
+		}
+		btns.playlist = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Playlist', img, 'Display Details');
+
 	} else if (pref.layout_mode === 'compact_mode') {
 
 		/** @type {GdiBitmap[]} */
@@ -4649,6 +5526,11 @@ function createButtonObjects(ww, wh) {
 		let h = img[0].Height;
 		let w = img[0].Width;
 
+		if (pref.menu_font_size === 11) y += scaleForDisplay(1);
+		if (pref.menu_font_size === 12) y += scaleForDisplay(0);
+		if (pref.menu_font_size === 13) y -= scaleForDisplay(1);
+		if (pref.menu_font_size === 14) y -= scaleForDisplay(2);
+		if (pref.menu_font_size === 16) y -= scaleForDisplay(3);
 		btns[20] = new Button(x, y, w, h, 'File', img);
 
 		if (pref.menu_font_size === 11) x += img[0].Width + (is_4k ? 3 : 0);
@@ -4725,7 +5607,7 @@ function createButtonObjects(ww, wh) {
 function createButtonImages() {
 	let createButtonProfiler = null;
 	if (timings.showExtraDrawTiming) createButtonProfiler = fb.CreateProfiler('createButtonImages');
-	const transportCircleSize = pref.layout_mode === 'compact_mode' ? Math.round(pref.transport_buttons_size_compact * 0.93333) : Math.round(pref.transport_buttons_size_default * 0.93333);
+	const transportCircleSize = pref.layout_mode === 'artwork_mode' ? Math.round(pref.transport_buttons_size_artwork * 0.93333) : pref.layout_mode === 'compact_mode' ? Math.round(pref.transport_buttons_size_compact * 0.93333) : Math.round(pref.transport_buttons_size_default * 0.93333);
 	let btns = {}
 
 	try {
@@ -4866,6 +5748,11 @@ function createButtonImages() {
 				font: ft.SegoeUi,
 				type: "menu"
 			},
+			playlistArtworkMode: {
+				ico: "Playlist",
+				font: ft.SegoeUi,
+				type: "menu"
+			},
 			ShowLibrary: {
 				ico: "Library",
 				font: ft.SegoeUi,
@@ -4951,6 +5838,7 @@ function createButtonImages() {
 			var menuTextColor =
 			pref.whiteTheme ? RGB(120, 120, 120) :
 			pref.blackTheme ? RGB(180, 180, 180) :
+			pref.rebornTheme ? RGB(120, 120, 120) :
 			pref.blueTheme ? RGB(230, 230, 230) :
 			pref.darkblueTheme ? RGB(230, 230, 230) :
 			pref.redTheme ? RGB(220, 220, 220) :
@@ -4963,6 +5851,7 @@ function createButtonImages() {
 			var menuRectColor =
 			pref.whiteTheme ? RGB(140, 140, 140) :
 			pref.blackTheme ? RGB(60, 60, 60) :
+			pref.rebornTheme ? RGB(140, 140, 140) :
 			pref.blueTheme ? RGB(76, 175, 255) :
 			pref.darkblueTheme ? RGB(200, 200, 200) :
 			pref.redTheme ? RGB(200, 200, 200) :
@@ -4975,6 +5864,7 @@ function createButtonImages() {
 			var minMaxIcoColor =
 			pref.whiteTheme ? RGB(120, 120, 120) :
 			pref.blackTheme ? RGB(180, 180, 180) :
+			pref.rebornTheme ? RGB(120, 120, 120) :
 			pref.blueTheme ? RGB(220, 220, 220) :
 			pref.darkblueTheme ? RGB(220, 220, 220) :
 			pref.redTheme ? RGB(200, 200, 200) :
@@ -4987,6 +5877,7 @@ function createButtonImages() {
 			var transportIconColor =
 			pref.whiteTheme ? RGB(120, 120, 120) :
 			pref.blackTheme ? RGB(160, 160, 160) :
+			pref.rebornTheme ? RGB(120, 120, 120) :
 			pref.blueTheme ? RGB(242, 230, 170) :
 			pref.darkblueTheme ? RGB(255, 202, 128) :
 			pref.redTheme ? RGB(245, 212, 165) :
@@ -4999,6 +5890,7 @@ function createButtonImages() {
 			var transportEllipseColor =
 			pref.whiteTheme ? RGB(220, 220, 220) :
 			pref.blackTheme ? RGB(60, 60, 60) :
+			pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.darkMiddleAccent : RGB(220, 220, 220) :
 			pref.blueTheme ? RGB(22, 107, 186) :
 			pref.darkblueTheme ? RGB(20, 33, 48) :
 			pref.redTheme ? RGB(82, 19, 19) :
@@ -5011,6 +5903,7 @@ function createButtonImages() {
 			var transportEllipseBGColor =
 			pref.whiteTheme ? RGB(255, 255, 255) :
 			pref.blackTheme ? RGB(35, 35, 35) :
+			pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : RGB(255, 255, 255) :
 			pref.blueTheme ? RGB(10, 130, 220) :
 			pref.darkblueTheme ? RGB(27, 55, 90) :
 			pref.redTheme ? RGB(140, 25, 25) :
@@ -5027,6 +5920,7 @@ function createButtonImages() {
 					menuTextColor =
 					pref.whiteTheme ? RGB(80, 80, 80) :
 					pref.blackTheme ? RGB(255, 255, 255) :
+					pref.rebornTheme ? RGB(80, 80, 80) :
 					pref.blueTheme ? RGB(255, 255, 255) :
 					pref.darkblueTheme ? RGB(255, 255, 255) :
 					pref.redTheme ? RGB(255, 255, 255) :
@@ -5039,6 +5933,7 @@ function createButtonImages() {
 					menuRectColor =
 					pref.whiteTheme ? RGB(200, 200, 200) :
 					pref.blackTheme ? RGB(120, 120, 120) :
+					pref.rebornTheme ? RGB(200, 200, 200) :
 					pref.blueTheme ? RGB(76, 175, 255) :
 					pref.darkblueTheme ? RGB(50, 90, 150) :
 					pref.redTheme ? RGB(204, 45, 45) :
@@ -5051,6 +5946,7 @@ function createButtonImages() {
 					minMaxIcoColor =
 					pref.whiteTheme ? RGB(80, 80, 80) :
 					pref.blackTheme ? RGB(255, 255, 255) :
+					pref.rebornTheme ? RGB(80, 80, 80) :
 					pref.blueTheme ? RGB(255, 255, 255) :
 					pref.darkblueTheme ? RGB(255, 255, 255) :
 					pref.redTheme ? RGB(255, 255, 255) :
@@ -5063,6 +5959,7 @@ function createButtonImages() {
 					transportIconColor =
 					pref.whiteTheme ? RGB(80, 80, 80) :
 					pref.blackTheme ? RGB(255, 255, 255) :
+					pref.rebornTheme ? RGB(80, 80, 80) :
 					pref.blueTheme ? RGB(255, 255, 255) :
 					pref.darkblueTheme ? RGB(255, 255, 255) :
 					pref.redTheme ? RGB(255, 255, 255) :
@@ -5075,6 +5972,7 @@ function createButtonImages() {
 					transportEllipseColor =
 					pref.whiteTheme ? RGB(200, 200, 200) :
 					pref.blackTheme ? RGB(120, 120, 120) :
+					pref.rebornTheme ? RGB(200, 200, 200) :
 					pref.blueTheme ? RGB(76, 175, 255) :
 					pref.darkblueTheme ? RGB(50, 90, 150) :
 					pref.redTheme ? RGB(204, 45, 45) :
@@ -5091,6 +5989,7 @@ function createButtonImages() {
 					menuTextColor =
 					pref.whiteTheme ? RGB(80, 80, 80) :
 					pref.blackTheme ? RGB(255, 255, 255) :
+					pref.rebornTheme ? RGB(80, 80, 80) :
 					pref.blueTheme ? RGB(255, 255, 255) :
 					pref.darkblueTheme ? RGB(255, 255, 255) :
 					pref.redTheme ? RGB(255, 255, 255) :
@@ -5103,6 +6002,7 @@ function createButtonImages() {
 					menuRectColor =
 					pref.whiteTheme ? RGB(200, 200, 200) :
 					pref.blackTheme ? RGB(120, 120, 120) :
+					pref.rebornTheme ? RGB(200, 200, 200) :
 					pref.blueTheme ? RGB(76, 175, 255) :
 					pref.darkblueTheme ? RGB(50, 90, 150) :
 					pref.redTheme ? RGB(204, 45, 45) :
@@ -5115,6 +6015,7 @@ function createButtonImages() {
 					minMaxIcoColor =
 					pref.whiteTheme ? RGB(80, 80, 80) :
 					pref.blackTheme ? RGB(255, 255, 255) :
+					pref.rebornTheme ? RGB(80, 80, 80) :
 					pref.blueTheme ? RGB(255, 255, 255) :
 					pref.darkblueTheme ? RGB(255, 255, 255) :
 					pref.redTheme ? RGB(255, 255, 255) :
@@ -5127,6 +6028,7 @@ function createButtonImages() {
 					transportIconColor =
 					pref.whiteTheme ? RGB(80, 80, 80) :
 					pref.blackTheme ? RGB(255, 255, 255) :
+					pref.rebornTheme ? RGB(80, 80, 80) :
 					pref.blueTheme ? RGB(255, 255, 255) :
 					pref.darkblueTheme ? RGB(255, 255, 255) :
 					pref.redTheme ? RGB(255, 255, 255) :
@@ -5139,6 +6041,7 @@ function createButtonImages() {
 					transportEllipseColor =
 					pref.whiteTheme ? RGB(200, 200, 200) :
 					pref.blackTheme ? RGB(120, 120, 120) :
+					pref.rebornTheme ? RGB(200, 200, 200) :
 					pref.blueTheme ? RGB(76, 175, 255) :
 					pref.darkblueTheme ? RGB(50, 90, 150) :
 					pref.redTheme ? RGB(204, 45, 45) :
@@ -5153,6 +6056,67 @@ function createButtonImages() {
 				case ButtonState.Enabled:
 					iconAlpha = 250;
 					break;
+			}
+
+			let bgColor = col.primary;
+			if (g_pl_colors.background != RGB(255, 255, 255)) {
+				if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
+					menuTextColor = col.superDarkAccent;
+					menuRectColor = col.darkAccent;
+					minMaxIcoColor = col.superDarkAccent;
+					transportIconColor = col.extraDarkAccent;
+					transportEllipseColor = col.accent;
+					iconAlpha = 255;
+					switch (s) {
+						case ButtonState.Hovered:
+							menuTextColor = col.maxDarkAccent;
+							menuRectColor = col.darkAccent;
+							minMaxIcoColor = col.maxDarkAccent;
+							transportIconColor = col.maxDarkAccent;
+							transportEllipseColor = col.darkAccent;
+							iconAlpha = 215;
+						break;
+						case ButtonState.Down:
+							menuTextColor = col.maxDarkAccent;
+							menuRectColor = col.darkAccent;
+							minMaxIcoColor = col.maxDarkAccent;
+							transportIconColor = col.maxDarkAccent;
+							transportEllipseColor = col.darkAccent;
+							iconAlpha = 190;
+						break;
+						case ButtonState.Enabled:
+							iconAlpha = 250;
+						break;
+					}
+				}
+				else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
+					menuTextColor = col.superLightAccent;
+					menuRectColor = col.extraLightAccent;
+					minMaxIcoColor = col.superLightAccent;
+					transportIconColor = col.extraDarkAccent;
+					transportEllipseColor = col.accent;
+					switch (s) {
+						case ButtonState.Hovered:
+							menuTextColor = col.maxLightAccent;
+							menuRectColor = col.extraLightAccent;
+							minMaxIcoColor = col.maxLightAccent;
+							transportIconColor = col.maxDarkAccent;
+							transportEllipseColor = col.darkAccent;
+							iconAlpha = 215;
+						break;
+						case ButtonState.Down:
+							menuTextColor = col.maxLightAccent;
+							menuRectColor = col.extraLightAccent;
+							minMaxIcoColor = col.maxLightAccent;
+							transportIconColor = col.maxDarkAccent;
+							transportEllipseColor = col.darkAccent;
+							iconAlpha = 190;
+						break;
+						case ButtonState.Enabled:
+							iconAlpha = 250;
+						break;
+					}
+				}
 			}
 
 			if (btns[i].type == 'menu') {
@@ -5287,7 +6251,7 @@ var pss_switch = new function() {
 	_.createFolder(settings_path);
 
 	/** @type {StateObject} */
-	this.layoutmode = new StateObject('layoutmode', ['default_mode', 'compact_mode'], 'default_mode');
+	this.layoutmode = new StateObject('layoutmode', ['default_mode', 'artwork_mode', 'compact_mode'], 'default_mode');
 	this.player_size = new StateObject('player_size', ['player_small', 'player_normal', 'player_large', 'player_4k_small', 'player_4k_normal', 'player_4k_large'], 'player_small');
 
 };
@@ -5357,6 +6321,56 @@ function LayoutModeHandler() {
 
 			} else if (pref.use_4k === 'never') {
 				set_window_size(1140, 730);
+				is_4k = false;
+				pref.player_small = 'player_small';
+				pref.player_4k_normal = false;
+			}
+		}
+	};
+
+	this.layout_mode_artwork_mode = function() {
+		var new_layoutmode_state = 'artwork_mode';
+		if (new_layoutmode_state === 'artwork_mode') {
+			if (UIHacks.FullScreen) {
+				UIHacks.FullScreen = false;
+			} else {
+				if (fb_handle) {
+					pref.artwork_mode_saved_width = fb_handle.Width;
+					pref.artwork_mode_saved_height = fb_handle.Height;
+				}
+			}
+			pss_switch.layoutmode.state = new_layoutmode_state;
+
+			if (pref.use_4k === 'auto') {
+
+				if (initDPI.dpi() > 120) {
+					set_window_size(1052, 1372);
+					if (wh > 1200) {
+						set_window_size(1052, 1372);
+						is_4k = true;
+						pref.player_4k_small = 'player_4k_small';
+						pref.player_small = false;
+					}
+					else if (wh < 1600) {
+						set_window_size(526, 686);
+					}
+				} else {
+					if (wh < 1200) {
+						set_window_size(526, 686);
+						is_4k = false;
+						pref.player_small = 'player_small';
+						pref.player_4k_small = false;
+					}
+				}
+
+			} else if (pref.use_4k === 'always') {
+				set_window_size(1052, 1372);
+				is_4k = true;
+				pref.player_4k_small = 'player_4k_small';
+				pref.player_small = false;
+
+			} else if (pref.use_4k === 'never') {
+				set_window_size(526, 686);
 				is_4k = false;
 				pref.player_small = 'player_small';
 				pref.player_4k_normal = false;
@@ -5436,6 +6450,9 @@ function LayoutModeHandler() {
 		if (pref.use_4k === 'never' && pref.layout_mode === 'default_mode' || pref.use_4k === 'auto' && ww < 2560 && wh < 1600 && pref.layout_mode === 'default_mode') {
 			set_window_size(1140, 730);
 		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(526, 686);
+		}
 		if (pref.layout_mode === 'compact_mode') {
 			set_window_size(484, 730);
 		}
@@ -5462,6 +6479,9 @@ function LayoutModeHandler() {
 		}
 		if (pref.use_4k === 'never' && pref.layout_mode === 'default_mode' || pref.use_4k === 'auto' && ww < 2560 && wh < 1600 && pref.layout_mode === 'default_mode') {
 			set_window_size(1600, 960);
+		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(700, 860);
 		}
 		if (pref.layout_mode === 'compact_mode') {
 			set_window_size(484, 960);
@@ -5490,6 +6510,9 @@ function LayoutModeHandler() {
 		if (pref.use_4k === 'never' && pref.layout_mode === 'default_mode' || pref.use_4k === 'auto' && ww < 2560 && wh < 1600 && pref.layout_mode === 'default_mode') {
 			set_window_size(1802, 1061);
 		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(901, 1062);
+		}
 		if (pref.layout_mode === 'compact_mode') {
 			set_window_size(1600, 960);
 		}
@@ -5516,6 +6539,9 @@ function LayoutModeHandler() {
 		}
 		if (pref.use_4k === 'always' && pref.layout_mode === 'default_mode' || pref.use_4k === 'auto' && ww > 2560 && wh > 1600 && pref.layout_mode === 'default_mode') {
 			set_window_size(2300, 1470);
+		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(1052, 1372);
 		}
 		if (pref.layout_mode === 'compact_mode') {
 			set_window_size(964, 1470);
@@ -5547,6 +6573,9 @@ function LayoutModeHandler() {
 			pref.player_4k_normal = 'player_4k_normal';
 			pref.player_small = false;
 		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(1400, 1720);
+		}
 		if (pref.layout_mode === 'compact_mode' && is_4k) {
 			set_window_size(964, 1720);
 		}
@@ -5574,6 +6603,9 @@ function LayoutModeHandler() {
 		if (pref.use_4k === 'always' && pref.layout_mode === 'default_mode' || pref.use_4k === 'auto' && ww > 2560 && wh > 1600 && pref.layout_mode === 'default_mode') {
 			set_window_size(3400, 2020);
 		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(1699, 2020);
+		}
 		if (pref.layout_mode === 'compact_mode') {
 			set_window_size(2800, 1720);
 		}
@@ -5589,6 +6621,14 @@ function LayoutModeHandler() {
 			} else if (is_4k) {
 				min_w_4K = 2300;
 				min_h_4K = 1470;
+			}
+		} else if (layoutmode === 'artwork_mode') {
+			if (!is_4k) {
+				min_w = 526;
+				min_h = 686;
+			} else if (is_4k) {
+				min_w_4K = 1052;
+				min_h_4K = 1372;
 			}
 		} else if (layoutmode === 'compact_mode') {
 			if (!is_4k) {
@@ -5617,6 +6657,7 @@ function LayoutModeHandler() {
 			pref.whiteTheme       = 'white';
 			pref.libraryDesign    = 'reborn';
 			pref.blackTheme       = false;
+			pref.rebornTheme      = false;
 			pref.blueTheme        = false;
 			pref.darkblueTheme    = false;
 			pref.redTheme         = false;
@@ -5643,6 +6684,8 @@ function LayoutModeHandler() {
 					pptBio.baseFontSizeBio = 24; // Sets Biography font size for 24 pixel for 4K
 					default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width',  2800);
 					default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height', 1720);
+					artwork_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved width',  1052);
+					artwork_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved height', 1372);
 					compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width',   964);
 					compact_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved height', 1720);
 				}
@@ -5659,6 +6702,8 @@ function LayoutModeHandler() {
 					pptBio.baseFontSizeBio = 12; // Sets Biography font size for 12 pixel for FHD
 					default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width', 1140);
 					default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height', 730);
+					artwork_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved width',  526);
+					artwork_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved height', 686);
 					compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width',  484);
 					compact_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved height', 730);
 				}

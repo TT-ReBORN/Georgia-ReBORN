@@ -49,6 +49,7 @@ pref.add_properties({
 	// Themes
 	whiteTheme:                         ['Georgia-ReBORN - Theme: White', 'white'], // white: use white theme
 	blackTheme:                         ['Georgia-ReBORN - Theme: Black', 'black'], // black: use black theme
+	rebornTheme:                        ['Georgia-ReBORN - Theme: ReBORN', 'reborn'], // reborn: use full dynamic colors theme
 	blueTheme:                          ['Georgia-ReBORN - Theme: Blue', 'blue'], // blue: use blue theme
 	darkblueTheme:                      ['Georgia-ReBORN - Theme: Dark blue', 'darkblue'], // darkblue: use dark blue theme
 	redTheme:                           ['Georgia-ReBORN - Theme: Red', 'red'], // red: use red theme
@@ -75,9 +76,11 @@ pref.add_properties({
 	// Font size
 	menu_font_size:                     ['Georgia-ReBORN - Font size: Menu font size', 12], // Default menu font size
 	artist_font_size_default:           ['Georgia-ReBORN - Font size: Default mode: Artist font size', 18], // Default artist font size in Default mode
+	artist_font_size_artwork:           ['Georgia-ReBORN - Font size: Artwork mode: Artist font size', 16], // Default artist font size in Artwork mode
 	artist_font_size_compact:           ['Georgia-ReBORN - Font size: Compact mode: Artist font size', 16], // Default artist font size in Compact mode
 	album_font_size:                    ['Georgia-ReBORN - Font size: Album font size', 20], // Default album font size
 	lower_bar_font_size_default:        ['Georgia-ReBORN - Font size: Default mode: Lower bar font size', 18], // Default lower bar font size in Default mode
+	lower_bar_font_size_artwork:        ['Georgia-ReBORN - Font size: Artwork mode: Lower bar font size', 16], // Default lower bar font size in Artwork mode
 	lower_bar_font_size_compact:        ['Georgia-ReBORN - Font size: Compact mode: Lower bar font size', 16], // Default lower bar font size in Compact mode
 	tracknum_font_size :                ['Georgia-ReBORN - Font size: Tracknumber font size', 20], // Default tracknumber font size
 	MetadataGrid_key_font_size:         ['Georgia-ReBORN - Font size: MetadataGrid key font size', 18], // Default metadata grid key font size
@@ -89,19 +92,26 @@ pref.add_properties({
 	// Player controls
 	transport_buttons_size_default:     ['Georgia-ReBORN - Player controls: Default mode - Transport button size', 32], // Size in pixels of the buttons in Default mode
 	transport_buttons_spacing_default:  ['Georgia-ReBORN - Player controls: Default mode - Transport button spacing', 5], // Size in pixels of the spacing between buttons in Default mode
+	transport_buttons_size_artwork:     ['Georgia-ReBORN - Player controls: Artwork mode - Transport button size', 32], // Size in pixels of the buttons in Artwork mode
+	transport_buttons_spacing_artwork:  ['Georgia-ReBORN - Player controls: Artwork mode - Transport button spacing', 5], // Size in pixels of the spacing between buttons in Artwork mode
 	transport_buttons_size_compact:     ['Georgia-ReBORN - Player controls: Compact mode - Transport button size', 32], // Size in pixels of the buttons in Compact mode
 	transport_buttons_spacing_compact:  ['Georgia-ReBORN - Player controls: Compact mode - Transport button spacing', 5], // Size in pixels of the spacing between buttons in Compact mode
 	show_progress_bar_default:          ['Georgia-ReBORN - Player controls: Default mode - Show Progress Bar', true], // true: Show progress bar in Default mode, otherwise hide it (useful is using another panel for this)
+	show_progress_bar_artwork:          ['Georgia-ReBORN - Player controls: Artwork mode - Show Progress Bar', true], // true: Show progress bar in Artwork mode, otherwise hide it (useful is using another panel for this)
 	show_progress_bar_compact:          ['Georgia-ReBORN - Player controls: Compact mode - Show Progress Bar', true], // true: Show progress bar in Compact mode, otherwise hide it (useful is using another panel for this)
 	show_playbackTime_default:          ['Georgia-ReBORN - Player controls: Default mode - Show playback time in lower bar', true], // Show playback time in lower bar Default mode
+	show_playbackTime_artwork:          ['Georgia-ReBORN - Player controls: Artwork mode - Show playback time in lower bar', true], // Show playback time in lower bar Artwork mode
 	show_playbackTime_compact:          ['Georgia-ReBORN - Player controls: Compact mode - Show playback time in lower bar', true], // Show playback time in lower bar Compact mode
 	show_artist_default:                ['Georgia-ReBORN - Player controls: Default mode - Show artist in lower bar', true], // Show artist in lower bar Default mode
+	show_artist_artwork:                ['Georgia-ReBORN - Player controls: Artwork mode - Show artist in lower bar', true], // Show artist in lower bar Artwork mode
 	show_artist_compact:                ['Georgia-ReBORN - Player controls: Compact mode - Show artist in lower bar', true], // Show artist in lower bar Compact mode
 	show_title_default:                 ['Georgia-ReBORN - Player controls: Default mode - Show song title in lower bar', true], // Show song title in lower bar Default mode
+	show_title_artwork:                 ['Georgia-ReBORN - Player controls: Artwork mode - Show song title in lower bar', true], // Show song title in lower bar Artwork mode
 	show_title_compact:                 ['Georgia-ReBORN - Player controls: Compact mode - Show song title in lower bar', true], // Show song title in lower bar Compact mode
 	show_composer:                      ['Georgia-ReBORN - Player controls: Show composer in lower bar', false], // Show composer in lower bar
 	show_flags_lowerbar:                ['Georgia-ReBORN - Player controls: Show country flags in lower bar', true], // true: Show the artist country flags in lower bar
-	show_pause:                         ['Georgia-ReBORN - Player controls: Show pause', true], // true: Show pause button on cover
+	show_pause:                         ['Georgia-ReBORN - Player controls: Show pause on album cover', true], // true: Show pause button on album cover
+	show_logo:                          ['Georgia-ReBORN - Player controls: Show logo on startup', true], // true: Show logo on foobar startup
 	show_tt:                            ['Georgia-ReBORN - Player controls: Show tooltips', true], // true: Show all tooltips
 	show_truncatedText_tt:              ['Georgia-ReBORN - Player controls: Show tooltips on truncated text', true], // true: Show tooltips when hovering over truncated text on lower bar, metadata grid and playlist
 	show_timeline_tooltips:             ['Georgia-ReBORN - Player controls: Show timeline tooltips', true], // true: Show tooltips when hovering over the timeline that show information on plays
@@ -112,6 +122,9 @@ pref.add_properties({
 	autoHideScrollbar_Playlist:         ['Georgia-ReBORN - Playlist: Auto hide scrollbar', true], // Playlist automatic scrollbar hide
 	smoothScrolling:                    ['Georgia-ReBORN - Playlist: Smooth scrolling', true], // Playlist smooth scrolling
 	autoHidePLM:                        ['Georgia-ReBORN - Playlist: Auto hide playlist manager', true], // Playlist Automatic Playlist Manager Hide
+	showPLM_default:                    ['Georgia-ReBORN - Playlist: PLM Default mode - Show playlist manager',  true], // Show Playlist manager in Default mode
+	showPLM_artwork:                    ['Georgia-ReBORN - Playlist: PLM Artwork mode - Show playlist manager', false], // Show Playlist manager in Artwork mode
+	showPLM_compact:                    ['Georgia-ReBORN - Playlist: PLM Compact mode - Show playlist manager', false], // Show Playlist manager in Compact mode
 	showPlaylistFulldate:               ['Georgia-ReBORN - Playlist: Show full date', false], // Playlist show full date YYYY-MM-DD
 	hyperlinks_ctrl:                    ['Georgia-ReBORN - Playlist: Hyperlinks require CTRL Key', false], // true: Clicking on hyperlinks only works if CTRL key is held down
 	show_weblinks:                      ['Georgia-ReBORN - Playlist: Show weblinks', true], // Show weblinks in context menu
@@ -129,6 +142,20 @@ pref.add_properties({
 	invertedBand:                       ['Georgia-ReBORN - Details: Invert band logos to black', false], // Manually invert band logos to black
 	invertedLabel:                      ['Georgia-ReBORN - Details: Invert label logos to black', false], // Manually invert label logos to black
 	display_cdart:                      ['Georgia-ReBORN - Details: Art - Display CD art', true], // true: Show CD artwork behind album artwork. This artwork is expected to be named cd.png and have transparent backgrounds (can be found at fanart.tv)
+	noDiscArtStub:                      ['Georgia-ReBORN - Details: Art - No disc art placeholder', true], // Do not show disc art placeholder
+	cdArtWhiteStub:                     ['Georgia-ReBORN - Details: Art - Show CD art white placeholder', false], // Show cdArt white placeholder if no disc art exist
+	cdArtBlackStub:                     ['Georgia-ReBORN - Details: Art - Show CD art black placeholder', false], // Show cdArt black placeholder if no disc art exist
+	cdArtBlankStub:                     ['Georgia-ReBORN - Details: Art - Show CD art blank placeholder', false], // Show cdArt blank placeholder if no disc art exist
+	cdArtTransStub:                     ['Georgia-ReBORN - Details: Art - Show CD art transparent placeholder', false], // Show cdArt transparent placeholder if no disc art exist
+	vinylArtWhiteStub:                  ['Georgia-ReBORN - Details: Art - Show Vinyl art white placeholder', false], // Show vinylArt white placeholder if no disc art exist
+	vinylArtVoidStub:                   ['Georgia-ReBORN - Details: Art - Show Vinyl art void placeholder', false], // Show vinylArt void placeholder if no disc art exist
+	vinylArtColdFusionStub:             ['Georgia-ReBORN - Details: Art - Show Vinyl art cold fusion placeholder', false], // Show vinylArt cold fusion placeholder if no disc art exist
+	vinylArtRingOfFireStub:             ['Georgia-ReBORN - Details: Art - Show Vinyl art ring of fire placeholder', false], // Show vinylArt ring of fire placeholder if no disc art exist
+	vinylArtMapleStub:                  ['Georgia-ReBORN - Details: Art - Show Vinyl art maple placeholder', false], // Show vinylArt maple placeholder if no disc art exist
+	vinylArtBlackStub:                  ['Georgia-ReBORN - Details: Art - Show Vinyl art black placeholder', false], // Show vinylArt black placeholder if no disc art exist
+	vinylArtBlackHoleStub:              ['Georgia-ReBORN - Details: Art - Show Vinyl art black hole placeholder', false], // Show vinylArt black hole placeholder if no disc art exist
+	vinylArtEbonyStub:                  ['Georgia-ReBORN - Details: Art - Show Vinyl art ebony placeholder', false], // Show vinylArt ebony placeholder if no disc art exist
+	vinylArtTransStub:                  ['Georgia-ReBORN - Details: Art - Show Vinyl art transparent placeholder', false], // Show vinylArt transparent placeholder if no disc art exist
 	cdart_ontop:                        ['Georgia-ReBORN - Details: Art - Show CD art above front cover', false], // true: Display cdArt above front cover
 	filterCdJpgsFromAlbumArt:           ['Georgia-ReBORN - Details: Art - Filter out cd/vinyl .jpgs from showing as artwork', false],
 	spinCdart:                          ['Georgia-ReBORN - Details: Art - Spin CD art', false], // true: cdArt will spin while the song plays
@@ -143,6 +170,7 @@ pref.add_properties({
 	libraryLayout:                      ['Georgia-ReBORN - Library: Layout', 'normal_width'], // Library layout - normal_width (default) or full_width
 	libraryThumbnailSize:               ['Georgia-ReBORN - Library: Thumbnail size', 'auto'], // Library thumbnail size - auto (default)
 	autoHideScrollbar_Library:          ['Georgia-ReBORN - Library: Auto hide scrollbar', true], // Library automatic scrollbar hide
+	showTrackCount:                     ['Georgia-ReBORN - Library: Show track count in album art', true], // Show track count in album art
 	libraryPlaylistSwitch:              ['Georgia-ReBORN - Library: Switch to playlist when adding songs', false], // When adding songs from Library auto-switch to Playlist
 
 	// Biography
@@ -162,10 +190,12 @@ pref.add_properties({
 	// System
 	maximize_to_fullscreen:             ['Georgia-ReBORN - System: Maximize to fullscreen', true], // Maximize function
 	saved_layout_mode:                  ['Georgia-ReBORN - System: Saved layout mode', 'default_mode'], // Default saved layout mode
-	default_mode_saved_width:           ['Georgia-ReBORN - System: Default mode - Saved width', is_4k ? 2800 : 1140], // Default saved width for Default mode
-	default_mode_saved_height:          ['Georgia-ReBORN - System: Default mode - Saved height', is_4k ? 1720 : 730], // Default saved height for Default mode
-	compact_mode_saved_width:           ['Georgia-ReBORN - System: Compact mode - Saved width', is_4k ? 964 : 484], // Default saved width for Compact mode
-	compact_mode_saved_height:          ['Georgia-ReBORN - System: Compact mode - Saved height', is_4k ? 1720 : 730], // Default saved height for Compact mode
+	default_mode_saved_width:           ['Georgia-ReBORN - System: Default mode - Saved width',  is_4k ? 2800 : 1140], // Default saved width for Default mode
+	default_mode_saved_height:          ['Georgia-ReBORN - System: Default mode - Saved height', is_4k ? 1720 :  730], // Default saved height for Default mode
+	artwork_mode_saved_width:           ['Georgia-ReBORN - System: Artwork mode - Saved width',  is_4k ? 1052 :  526], // Default saved width for Artwork mode
+	artwork_mode_saved_height:          ['Georgia-ReBORN - System: Artwork mode - Saved height', is_4k ? 1372 :  686], // Default saved height for Artwork mode
+	compact_mode_saved_width:           ['Georgia-ReBORN - System: Compact mode - Saved width',  is_4k ?  964 :  484], // Default saved width for Compact mode
+	compact_mode_saved_height:          ['Georgia-ReBORN - System: Compact mode - Saved height', is_4k ? 1720 :  730], // Default saved height for Compact mode
 	is_first_launch:                    ['Georgia-ReBORN - System: First launch', true], // true: Init DPI/RES check and setup size
 	checkForUpdates:                    ['Georgia-ReBORN - System: Check for Updates', true], // true: Check github repo to determine if updates exist
 	loadAsync:                          ['Georgia-ReBORN - System: Load Theme Asynchronously', true], // Loads individual theme files asynchronously at startup to reduce risk of FSM throwing slow script error on startup
@@ -180,8 +210,8 @@ pref.add_properties({
 // USING for creating foo_ui_columns.dll.cfg to set Georgia-ReBORN - First launch', true
 // For automatic 4k detection and pre-configured Georgia-ReBORN settings.
 // Always create a new foo_ui_columns.dll.cfg in FULL HD resolution when a new Georgia version was published or new settings/features were added.
-// Uncomment, save georgia-reborn-main.js, start foobar and clear Panel Properties, close foobar. A new generated foo_ui_columns.dll.cfg was created in the configuration folder.
-//is_first_launch = window.SetProperty('Georgia-ReBORN - System: First launch', true);
+// Uncomment, save settings.js, start foobar and clear Panel Properties, close foobar. A new generated foo_ui_columns.dll.cfg was created in the configuration folder.
+// is_first_launch = window.SetProperty('Georgia-ReBORN - System: First launch', true);
 
 // Fixup properties
 (function() {

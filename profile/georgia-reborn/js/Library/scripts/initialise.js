@@ -29,6 +29,7 @@ class LibraryPanel {
 		gr.FillGradRect(this.x, is_4k ? this.y - 10 : (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? this.y - 5 : this.y - 6), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0),
 			pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
 			pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
+			pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
 			pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
 			pref.darkblueTheme ? RGBtoRGBA(col.shadow, 72) :
 			pref.redTheme ? RGBtoRGBA(col.shadow, 72) :
@@ -39,6 +40,7 @@ class LibraryPanel {
 		gr.FillGradRect(this.x - 4, this.y, 4, this.h, 0, RGBtoRGBA(col.shadow, 0),
 			pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
 			pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
+			pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
 			pref.blueTheme ? RGBtoRGBA(col.shadow, 38) :
 			pref.darkblueTheme ? RGBtoRGBA(col.shadow, 60) :
 			pref.redTheme ? RGBtoRGBA(col.shadow, 64) :
@@ -49,6 +51,7 @@ class LibraryPanel {
 		gr.FillGradRect(this.x, is_4k ? this.y + (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? this.h : this.h + 1) : this.y + this.h - 1, this.w, scaleForDisplay(5), 90,
 			pref.whiteTheme ? RGBtoRGBA(col.shadow, 18) :
 			pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
+			pref.rebornTheme ? RGBtoRGBA(col.shadow, 30) :
 			pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
 			pref.darkblueTheme ? RGBtoRGBA(col.shadow, 74) :
 			pref.redTheme ? RGBtoRGBA(col.shadow, 74) :
@@ -102,29 +105,29 @@ class LibraryPanel {
 		// Dynamic library album cover thumbnail resizing
 		if (pref.libraryThumbnailSize === 'auto') {
 			if (!is_4k) {
-				if (pref.layout_mode === 'default_mode' && ww <= 1140 && wh <= 730 && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
+				if ((pref.layout_mode === 'default_mode' && ww <= 1140 && wh <= 730 || pref.layout_mode === 'artwork_mode' && ww <= 526 && wh <= 686) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
 					ppt.thumbNailSize = 1;
 					if (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 0;
 				}
-				else if (pref.layout_mode === 'default_mode' && ww >= 1140 && wh >= 730 && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
+				else if ((pref.layout_mode === 'default_mode' && ww >= 1140 && wh >= 730 || pref.layout_mode === 'artwork_mode' && ww >= 526 && wh >= 686) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
 					ppt.thumbNailSize = 2;
 					if (pref.libraryDesign === 'listView_albumCovers') ppt.thumbNailSize = 1; else if (pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 0;
 				}
-				if (pref.layout_mode === 'default_mode' && ww >  1600 && wh >  960 && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
+				if ((pref.layout_mode === 'default_mode' && ww > 1600 && wh > 960 || pref.layout_mode === 'artwork_mode' && ww > 700 && wh > 860) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
 					ppt.thumbNailSize = 3;
 					if (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 1;
 				}
 			}
 			else if (is_4k) {
-				if (pref.layout_mode === 'default_mode' && ww <= 2300 && wh <= 1470 && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
+				if ((pref.layout_mode === 'default_mode' && ww <= 2300 && wh <= 1470 || pref.layout_mode === 'artwork_mode' && ww <= 1052 && wh <= 1372) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
 					pref.libraryLayout === 'normal_width' ? ppt.thumbNailSize = 1 : ppt.thumbNailSize = 2;
 					if (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 0;
 				}
-				if (pref.layout_mode === 'default_mode' && ww >  2301 && wh >  1471 && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
+				if ((pref.layout_mode === 'default_mode' && ww > 2301 && wh > 1471 || pref.layout_mode === 'artwork_mode' && ww > 1053 && wh > 1373) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
 					ppt.thumbNailSize = 2;
 					if (pref.libraryDesign === 'listView_albumCovers') ppt.thumbNailSize = 1; else if (pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 0;
 				}
-				if (pref.layout_mode === 'default_mode' && ww >  2800 && wh >  1720 && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
+				if (pref.layout_mode === 'default_mode' && ww > 2800 && wh > 1720 || pref.layout_mode === 'artwork_mode' && ww > 1400 && wh > 1720 && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
 					ppt.thumbNailSize = 3;
 					if (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 1;
 				}

@@ -194,23 +194,31 @@ const settingsSchema = new ConfigurationObjectSchema('settings', ConfigurationOb
 
 const transportDefaults = {
 	enableTransportControls_default: true,
+	enableTransportControls_artwork: true,
 	enableTransportControls_compact: true,
 	show_playbackOrder_default: true,
+	show_playbackOrder_artwork: true,
 	show_playbackOrder_compact: true,
 	show_volume_default: true,
+	show_volume_artwork: true,
 	show_volume_compact: true,
 	show_reload_default: false,
+	show_reload_artwork: false,
 	show_reload_compact: false,
 }
 
 const transportComments = {
 	enableTransportControls_default: 'Should transport controls be displayed in Default mode. If false, all other transport settings are ignored.',
+	enableTransportControls_artwork: 'Should transport controls be displayed in Default mode. If false, all other transport settings are ignored.',
 	enableTransportControls_compact: 'Should transport controls be displayed in Compact mode. If false, all other transport settings are ignored.',
 	show_playbackOrder_default: 'Show the Playback order button in Default mode',
+	show_playbackOrder_artwork: 'Show the Playback order button in Artwork mode',
 	show_playbackOrder_compact: 'Show the Playback order button in Compact mode',
 	show_volume_default: 'Show the volume control in Default mode',
+	show_volume_artwork: 'Show the volume control in Artwork mode',
 	show_volume_compact: 'Show the volume control in Compact mode',
 	show_reload_default: 'Show the reload theme button in Default mode',
+	show_reload_artwork: 'Show the reload theme button in Artwork mode',
 	show_reload_compact: 'Show the reload theme button in Compact mode',
 }
 

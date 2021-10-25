@@ -5,12 +5,12 @@ class BiographyPanel {
 		this.w = -1; // not set
 		this.h = -1; // not set
 		// Set Biography Window Size and Padding
-		pptBio.borT  = scaleForDisplay(70);
-		pptBio.borL  = scaleForDisplay(40);
-		pptBio.borR  = scaleForDisplay(40);
-		pptBio.textT = scaleForDisplay(70);
-		pptBio.textL = scaleForDisplay(40);
-		pptBio.textR = scaleForDisplay(40);
+		pptBio.borT  = pref.layout_mode === 'artwork_mode' ? scaleForDisplay(70) : scaleForDisplay(70);
+		pptBio.borL  = pref.layout_mode === 'artwork_mode' ? scaleForDisplay(30) : scaleForDisplay(40);
+		pptBio.borR  = pref.layout_mode === 'artwork_mode' ? scaleForDisplay(30) : scaleForDisplay(40);
+		pptBio.textT = pref.layout_mode === 'artwork_mode' ? scaleForDisplay(70) : scaleForDisplay(70);
+		pptBio.textL = pref.layout_mode === 'artwork_mode' ? scaleForDisplay(30) : scaleForDisplay(40);
+		pptBio.textR = pref.layout_mode === 'artwork_mode' ? scaleForDisplay(30) : scaleForDisplay(40);
 		pptBio.gap   = scaleForDisplay(11);
 	}
 

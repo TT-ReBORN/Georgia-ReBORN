@@ -523,28 +523,33 @@ Object.assign(qwr_utils, {
         }
 
         cmac.append_item(
-            displayPlaylist ? 'Details' : 'Playlist', () => {
-                btns.playlist.onClick();
-                btns.playlist.changeState(ButtonState.Down);
-                displayPlaylist ? btns.playlist.changeState(ButtonState.Default) : btns.playlist.changeState(ButtonState.Down);
-                if (displayPlaylist) {
-                    pref.displayLyrics = false;
+            pref.layout_mode !== 'artwork_mode' && displayPlaylist ? 'Details' : 'Playlist', () => {
+                if (pref.layout_mode !== 'artwork_mode') {
+                    btns.playlist.onClick();
+                    btns.playlist.changeState(ButtonState.Down);
+                    displayPlaylist ? btns.playlist.changeState(ButtonState.Default) : btns.playlist.changeState(ButtonState.Down);
+                    if (displayPlaylist) pref.displayLyrics = false;
+                }
+                if (pref.layout_mode === 'artwork_mode') {
+                    btns.playlistArtworkMode.onClick();
+                    btns.playlistArtworkMode.changeState(ButtonState.Down);
+                    displayPlaylistArtworkMode ? btns.playlistArtworkMode.changeState(ButtonState.Down) : btns.playlistArtworkMode.changeState(ButtonState.Default);
+                    if (displayPlaylistArtworkMode) pref.displayLyrics = false;
                 }
             }
         );
 
-        if (albumart) {
-            cmac.append_item(
-                pref.displayLyrics ? 'Hide lyrics' : 'Display lyrics', () => {
-                    pref.displayLyrics = !pref.displayLyrics;
-                    btns.lyrics.changeState(ButtonState.Down);
-                    pref.displayLyrics ? btns.lyrics.changeState(ButtonState.Down) : btns.lyrics.changeState(ButtonState.Default);
-                    initLyrics();
-                    on_playback_seek();
-                    window.Repaint();
-                }
-            );
-        } else { /* Hide */ }
+        cmac.append_item(
+            pref.displayLyrics ? 'Hide lyrics' : 'Display lyrics', () => {
+                if (pref.layout_mode === 'artwork_mode' && displayPlaylist) btns.playlist.onClick();
+                pref.displayLyrics = !pref.displayLyrics;
+                btns.lyrics.changeState(ButtonState.Down);
+                pref.displayLyrics ? btns.lyrics.changeState(ButtonState.Down) : btns.lyrics.changeState(ButtonState.Default);
+                initLyrics();
+                on_playback_seek();
+                window.Repaint();
+            }
+        );
 
         cmac.append_separator();
 

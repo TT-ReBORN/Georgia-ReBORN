@@ -416,6 +416,7 @@ class ScrollbarBio {
 						for (let i = 0; i < this.alpha2 - this.alpha + 1; i++) this.col[this.alpha + i] =
 						pref.whiteTheme ? RGBA(uiBio.col.t, uiBio.col.t, uiBio.col.t, this.alpha + i) :
 						pref.blackTheme ? RGBA(100, 100, 100, 200 + i) :
+						pref.rebornTheme ? g_pl_colors.sbarBio :
 						pref.blueTheme ? RGBA(10, 135, 225, 200 + i) :
 						pref.darkblueTheme ? RGBA(27, 55, 90, 200 + i) :
 						pref.redTheme ? RGBA(200, 200, 200, 200 + i) :
@@ -427,6 +428,7 @@ class ScrollbarBio {
 						this.col.max =
 						pref.whiteTheme ? RGBA(uiBio.col.t, uiBio.col.t, uiBio.col.t, 192) :
 						pref.blackTheme ? RGBA(160, 160, 160, 255) :
+						pref.rebornTheme ? g_pl_colors.sbarBio_hover :
 						pref.blueTheme ? RGBA(242, 230, 170, 255) :
 						pref.darkblueTheme ? RGBA(255, 202, 128, 255) :
 						pref.redTheme ? RGBA(245, 212, 165, 255) :

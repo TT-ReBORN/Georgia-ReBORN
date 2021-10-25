@@ -1,14 +1,14 @@
-### New Team Members Wanted
+<p align="center"><img src="https://i.ibb.co/xYSQXFT/logo-reborn.png" alt="Georgia-ReBORN logo"/></p>
 
-If you are a developer or have knowledge in Javascript, I would appreciate your help in optimizing Georgia-ReBORN.
-
-# Georgia-ReBORN - A Clean foobar2000 Theme
+# A Clean, Full Dynamic Color Reborn foobar2000 Theme
 
 Georgia-ReBORN is a modification of **[Mordred's original Georgia theme](https://github.com/kbuffington/Georgia)** for foobar2000.<br />
-It's purpose is to be used mainly as a desktop version, the layout has been modified to look clean and simple <br />
-without any distractions. The cover artwork and playlist are the main focus.
-
-Georgia-ReBORN has 10 themes in total ( Options > Theme ):
+It's purpose is to be used mainly as a desktop version, the layout has been modified to look clean and simple<br />
+without any distractions. The cover artwork and playlist are the main focus. Besides the 10 existing themes<br />
+Georgia-ReBORN has to offer ( Options > Theme ) there is one special theme "ReBORN". Based on Mordred's<br />
+awesome dynamic color change feature, this theme will completely change it's appearance based on album art,<br />
+this means there are unlimited possibilites how the player will look like. Every new album you play will be<br />
+a new experience!
 
 ![Themes](https://i.ibb.co/w6LqrzP/George-Re-BORN-Themes-Animation.webp)
 
@@ -42,16 +42,17 @@ with a theme color, unsynched lyrics have the default white text color.
 ![BiographyLyrics](https://i.ibb.co/HhN4PVV/George-Re-BORN-Biography-And-Lyrics-Animation.webp)
 
 Georgia-ReBORN supports 4k resolutions and will adjust theme elements based on DPI and screen size.<br />
-Fullscreen mode is also supported! There are 6 predefined sizes ( Options > Player size ), 3 for FULL HD and below<br />
-and 3 for 4K resolution and higher. These predefined sizes are restricted, if you have a monitor that supports only<br />
-a res of 1920 x 1200 and below, the first 3 are available. If you have a monitor capable of 4K resolution and higher,<br />
-the other 3 are available. You can of course resize foobar to your liking, but it has minimum size restrictions to prevent<br />
-button and text overlapping.
+Fullscreen mode is also supported! There are 18 predefined sizes ( Options > Player size ), 9 for FULL HD<br />
+and below and 9 for 4K resolution and higher. Each layout (Default, Artwork, Compact) has 3 different sizes.<br />
+These predefined sizes are restricted, if you have a monitor that supports only a res of 1920 x 1200 and below,<br />
+the first 9 are available. If you have a monitor capable of 4K resolution and higher, the other 9 are available.<br />
+You can of course resize foobar to your liking, but it has minimum size restrictions to prevent button and<br />
+text overlapping.
 
-There is also a mini compact player ala Winamp ( Options > Layout > Compact ).<br />
-You can resize the width and height but it also has a minimum width restriction:
+There are 3 different layouts to choose from ( Options > Layout ).<br />
+You can resize the width and height but the player has a minimum size restriction:
 
-![Sizes](https://i.ibb.co/zrLZXhx/George-Re-BORN-Sizes-And-Playlist-Mode-Animation.webp)
+![Sizes](https://i.ibb.co/P5W1Vxh/George-Re-BORN-Sizes-And-Layouts-Animation.webp)
 
 **NOTE:** Georgia-ReBORN starts in player size 'Small' as a failsafe player size for small res. monitor/laptop screens<br />
 and looks best if you switch to 'Normal' or a larger player size!
@@ -66,17 +67,25 @@ Extract them to your foobar2000/profile/images
 
 ![Details](https://i.ibb.co/56bGbxp/George-Re-BORN-Details-Animation.webp)
 
+**NOTE:** You need to download the disc art from https://fanart.tv. If you don't have any disc art, you can choose<br />
+between 13 self created placeholders: Options > Details > Disc art > Display disc art placeholder<br />
+For more information, please see the FAQ.
+
 ## Features
 
 <b>✓</b> Georgia-ReBORN design
 
-<b>✓</b> 10 different themes
+<b>✓</b> 11 different themes
 
-<b>✓</b> 6 predefined player sizes
+<b>✓</b> Special theme 'Reborn' will fully automatically change colors based on album art
 
-<b>✓</b> Default and playlist mode
+<b>✓</b> 18 predefined player sizes, 9 for Full HD and 9 for 4K
 
-<b>✓</b> Configurable font sizes
+<b>✓</b> Default, Artwork and Compact mode
+
+<b>✓</b> All layout modes fully configurable
+
+<b>✓</b> 13 awesome disc art placeholders
 
 <b>✓</b> Biography
 
@@ -87,8 +96,6 @@ Extract them to your foobar2000/profile/images
 <b>✓</b> Automatic scrollbar hide for playlist, library and biography
 
 <b>✓</b> A more modern library design that matches Georgia-ReBORN
-
-Please visit Mordred's original Georgia theme to learn more: https://github.com/kbuffington/Georgia
 
 ## Installation Instructions
 
@@ -150,6 +157,8 @@ Click OK and now the flag should display in the playbar.
 <details>
 <summary>How do you display the disc art in Details?</summary>
 <br />
+If you don't have any disc art, you can choose between 13 self created placeholders:<br />
+Options > Details > Disc art > Display disc art placeholder - or<br />
 You need to download the disc art from https://fanart.tv and put them in your album folder with the following structure support:<br />
 
 #
@@ -235,6 +244,27 @@ vinyl.png, vinyl2.png, vinyl3.png etc...
 </details>
 
 <details>
+<summary>How can I set my own lyrics directory?</summary>
+<br />
+Open your foobar preferences ( File > Preferences ) and go to Tools > Lyric Show 3.<br />
+Click on the Lyric Saving tab and under Save method select Save to user defined directory.<br />
+Set your path under the Custom directory field, for this example we use D:\Audio\SongLyrics<br />
+<br />
+Next go to and open your foobar2000\profile\georgia-reborn\js\settings.js<br />
+Search for the "tf.lyr_path" and add the path you have set previously in Lyric Show 3.<br />
+<br />
+tf.lyr_path = [ // simply add, change or re-order entries as needed
+	'$replace($replace(%path%,%filename_ext%,),\,\\)',
+	fb.ProfilePath + 'lyrics\\',
+	fb.FoobarPath + 'lyrics\\',
+	'D:\\Audio\\SongLyrics\\',
+];
+<br />
+<br />
+Lyrics should be saved now in your new directory and displayed in Georgia-ReBORN.
+</details>
+
+<details>
 <summary>How can I add or remove tags displayed in Details?</summary>
 <br />
 You need to edit your georgia-reborn-config file, it can be found in your:<br />
@@ -254,6 +284,18 @@ and a new one will be automatically created upon next foobar start.
 That's pretty easy, just download the m3u or pls streaming file format and drag it to your playlist.<br />
 You can then delete the m3u or pls streaming files, the streaming information will be saved in the playlist file.<br />
 MP3, AAC and OGG codecs are supported.
+</details>
+
+<details>
+<summary>How can I display artist photos in the library?</summary>
+<br />
+If you want to display artist photos in the library, you need to link your path to your biography directory.<br />
+Go to File > Preferences > Display and under Album art click on the Artist tab. Here you need to set<br />
+your full path, e.g: E:\PortableApps\foobar2000\profile\yttm\art_img$cut(%artist%,1)%artist%*<br />
+If you now fetch the images from the biography, it will automatically update your library with the photos.<br />
+<br />
+You can easily switch the view from albums to artists. If album art or flow mode is active, right click<br />
+in the library > Show artists, to go back to default view open again the context menu and choose Show albums.
 </details>
 
 <details>
@@ -298,9 +340,14 @@ https://github.com/TT-ReBORN/Georgia-ReBORN/discussions
 ## Support
 
 The official discussion thread for this theme is located at **[Discussions](https://github.com/TT-ReBORN/Georgia-ReBORN/discussions)** or at
-**[HydrogenAudio](https://hydrogenaud.io/index.php?topic=121047.0)** and that's a great place<br />
-to go for questions and other support issues. If you discover a bug, please open an issue on Github if you can, or visit<br />
-**[Mordred's Georgia HydrogenAudio Thread](https://hydrogenaud.io/index.php/topic,116190.0.html)** since most of the code is based on Georgia.
+**[HydrogenAudio](https://hydrogenaud.io/index.php?topic=121047.0)** and that's a great<br />
+place to go for questions and other support issues. If you discover a bug, please open an issue on Github<br />
+if you can, or visit **[Mordred's Georgia HydrogenAudio Thread](https://hydrogenaud.io/index.php/topic,116190.0.html)** since most of the code is based on Georgia.
+
+## Help
+
+If you are a developer or have knowledge in Javascript, I would appreciate your help and welcome you<br />
+in optimizing Georgia-ReBORN.
 
 ## Thanks
 

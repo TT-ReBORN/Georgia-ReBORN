@@ -436,7 +436,7 @@ class List {
         var scrollbar_y = this.y + playlist_geo.scrollbar_top_pad - (is_4k ? 12 : 5);
         var scrollbar_w = scaleForDisplay(28);
 
-        if (pref.layout_mode === 'default_mode') {
+        if (pref.layout_mode === 'default_mode' || pref.layout_mode === 'artwork_mode') {
             var scrollbar_h = this.h - (playlist_geo.scrollbar_bottom_pad + playlist_geo.scrollbar_top_pad) - (is_4k ? 12 : 11);
         }
         else if (pref.layout_mode === 'compact_mode') {

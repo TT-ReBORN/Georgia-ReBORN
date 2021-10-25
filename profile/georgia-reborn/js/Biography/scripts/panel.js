@@ -1279,7 +1279,7 @@ class PanelBio {
 				this.text.l = pptBio.textL + (this.filmStripSize.l ? 0 : this.filmStripSize.l);
 				this.text.r = (pptBio.sbarShow ? Math.max(pptBio.textR, uiBio.sbar.sp + sp2) : pptBio.textR) - scaleForDisplay(18);
 				this.text.t = this.img.t + this.style.imgSize + this.style.gap + uiBio.heading.h;
-				this.text.w = this.w - this.text.l - this.text.r - pptBio.textR;
+				this.text.w = this.w - this.text.l - this.text.r - (pref.layout_mode === 'artwork_mode' ? pptBio.textR + pptBio.textR / 2 : pptBio.textR);
 				this.heading.x = (!this.style.fullWidthHeading ? this.text.l : pptBio.textL);
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : panelBio.w - pptBio.textL - pptBio.textR;
 				if (pptBio.sbarShow) {

@@ -304,7 +304,7 @@ function btnActionHandler(btn) {
 		case 'Lyrics':
 			pref.displayLyrics = !pref.displayLyrics;
 			btn.enable = pref.displayLyrics;
-			if ((fb.IsPlaying || fb.IsPaused) && albumart_scaled) {
+			if ((fb.IsPlaying || fb.IsPaused) && (albumart_scaled || noAlbumArtStub)) {
 				if (pref.displayLyrics) {
 					initLyrics();
 					displayBiography = false;
@@ -312,18 +312,31 @@ function btnActionHandler(btn) {
 					if (pref.startPlaylist) {
 						btns.playlist.enable = false;
 					}
+					if (pref.layout_mode === 'artwork_mode') {
+						btns.playlist.enable = false;
+						btns.playlistArtworkMode.enable = false;
+						displayPlaylistArtworkMode = false;
+						ResizeArtwork(true);
+					}
+				} else {
+					if (pref.layout_mode === 'artwork_mode') {
+						displayPlaylist = false;
+						ResizeArtwork(true);
+					}
 				}
-				if (!displayPlaylist && pref.startPlaylist && pref.startPlaylist) {
+				if (!displayPlaylist && pref.startPlaylist && pref.layout_mode !== 'artwork_mode') {
 					displayPlaylist = true;
 					ResizeArtwork(false);
 				}
 				if (pref.always_showPlaying) {
 					playlist.on_size(ww, wh);
 				}
+				if (displayPlaylist && pref.layout_mode === 'artwork_mode') displayPlaylist = !displayPlaylist;
+
 				window.RepaintRect(albumart_size.x, albumart_size.y, albumart_size.w, albumart_size.h);
 			}
 			btn.repaint();
-			if (pref.layout_mode === 'default_mode') {
+			if (pref.layout_mode === 'default_mode' || pref.layout_mode === 'artwork_mode') {
 				btns.biography.enable = false;
 				btns.library.enable = false;
 			}
@@ -335,7 +348,18 @@ function btnActionHandler(btn) {
 				initLibraryPanel();
 				setLibrarySize();
 				pref.displayLyrics = false;
-				displayPlaylist = true;
+				if (pref.layout_mode !== 'artwork_mode') {
+					displayPlaylist = true;
+				}
+				if (pref.layout_mode === 'artwork_mode') {
+					displayPlaylistArtworkMode = false;
+					displayBiography = false;
+					ResizeArtwork(true);
+				}
+			} else {
+				if (pref.layout_mode === 'artwork_mode') {
+					ResizeArtwork(true);
+				}
 			}
 			if (displayPlaylist) {
 				displayBiography = false;
@@ -343,30 +367,48 @@ function btnActionHandler(btn) {
 				displayLibrary = true;
 				ResizeArtwork(false);
 			} else {
-				playlist.on_size(ww, wh);
-				displayPlaylist = true;
-				ResizeArtwork(false);
+				if (pref.layout_mode !== 'artwork_mode') {
+					playlist.on_size(ww, wh);
+					displayPlaylist = true;
+					ResizeArtwork(false);
+				}
 			}
-			if (pref.layout_mode === 'default_mode') {
+			if (pref.layout_mode === 'default_mode' || pref.layout_mode === 'artwork_mode') {
 				setupRotationTimer();	// clear or start cdRotation if required
 				btn.enable = displayLibrary;
 				btns.biography.enable = false;
 				btns.lyrics.enable = false;
 				btns.playlist.enable = false;
+				if (pref.layout_mode === 'artwork_mode') {
+					btns.playlistArtworkMode.enable = false;
+				}
 			}
 			window.Repaint();
 			break;
 		case 'Playlist':
 			displayPlaylist = !displayPlaylist;
 			if (displayPlaylist) {
-				playlist.on_size(ww, wh);
+				if (pref.layout_mode !== 'artwork_mode') {
+					playlist.on_size(ww, wh);
+				}
+				if (pref.layout_mode === 'artwork_mode') {
+					displayPlaylistArtworkMode = false;
+					playlist.on_size(0, 0); // Disable hidden playlist ( drag and drop function ) from displayPlaylistArtworkMode in Details
+					pref.displayLyrics = false;
+					ResizeArtwork(true);
+				}
 			} else {
 				pref.displayLyrics = false;
+				if (pref.layout_mode === 'artwork_mode') {
+					ResizeArtwork(true);
+				}
 			}
 			if (displayLibrary) {
 				displayLibrary = false;
-				displayPlaylist = !displayPlaylist;
-				ResizeArtwork(false);
+				if (pref.layout_mode !== 'artwork_mode') {
+					displayPlaylist = !displayPlaylist;
+					ResizeArtwork(false);
+				}
 			} else {
 				displayBiography = false;
 				ResizeArtwork(false);
@@ -378,38 +420,92 @@ function btnActionHandler(btn) {
 				btns.library.enable = false;
 				btns.lyrics.enable = false;
 			}
+			if (pref.layout_mode === 'artwork_mode') {
+				setupRotationTimer();	// clear or start cdRotation if required
+				btn.enable = displayPlaylist;
+				btns.playlistArtworkMode.enable = false;
+				btns.biography.enable = false;
+				btns.library.enable = false;
+				btns.lyrics.enable = false;
+			}
+			window.Repaint();
+			break;
+		case 'playlistArtworkMode':
+			displayPlaylistArtworkMode = !displayPlaylistArtworkMode;
+			if (displayPlaylistArtworkMode) {
+				playlist.on_size(ww, wh);
+				displayPlaylist = false;
+				displayLibrary = false;
+				pref.displayLyrics = false;
+			} else {
+				if (pref.layout_mode === 'artwork_mode') {
+					displayPlaylistArtworkMode = false;
+					ResizeArtwork(true);
+				}
+			}
+			if (displayLibrary) {
+				displayLibrary = true;
+				displayPlaylistArtworkMode = !displayPlaylistArtworkMode;
+				ResizeArtwork(false);
+			} else {
+				displayBiography = false;
+				ResizeArtwork(false);
+			}
+			if (pref.layout_mode === 'artwork_mode') {
+				setupRotationTimer();	// clear or start cdRotation if required
+				btn.enable = displayPlaylistArtworkMode;
+				btns.playlist.enable = false;
+				btns.biography.enable = false;
+				btns.library.enable = false;
+				btns.lyrics.enable = false;
+			}
 			window.Repaint();
 			break;
 		case 'Biography':
 			displayBiography = !displayBiography;
 			if (fb.IsPlaying || fb.IsPaused || fb.Prev || fb.Next) {
 				if (displayBiography) {
-					playlist.on_size(ww, wh);
+					if (pref.layout_mode !== 'artwork_mode') {
+						playlist.on_size(ww, wh);
+					}
 					initBiographyPanel();
 					setBiographySize();
 					biography.on_playback_new_track();
 					displayLibrary = false;
 					pref.displayLyrics = false;
-					displayPlaylist = true;
+					if (pref.layout_mode === 'artwork_mode') {
+						displayPlaylistArtworkMode = false;
+					} else {
+						displayPlaylist = true;
+					}
 				} else {
 					displayBiography = false;
-					biographyInitialized = false;
+					if (pref.layout_mode === 'artwork_mode') {
+						ResizeArtwork(true);
+					}
 				}
 				if (displayLibrary) {
 					displayLibrary = false;
 				} else {
-					displayPlaylist = true;
-					ResizeArtwork(false);
+					if (pref.layout_mode === 'artwork_mode') {
+						displayPlaylist = false;
+					} else {
+						displayPlaylist = true;
+						ResizeArtwork(false);
+					}
 				}
 			}
 			if (!fb.IsPlaying) {
 				displayBiography = false;
 			}
-			if (pref.layout_mode === 'default_mode') {
+			if (pref.layout_mode === 'default_mode' || pref.layout_mode === 'artwork_mode') {
 				btn.enable = displayBiography;
 				btns.library.enable = false;
 				btns.lyrics.enable = false;
 				btns.playlist.enable = false;
+				if (pref.layout_mode === 'artwork_mode') {
+					btns.playlistArtworkMode.enable = false;
+				}
 			}
 			window.Repaint();
 			break;
@@ -492,7 +588,7 @@ function onMainMenu(x, y, name) {
 // =================================================== //
 
 function refreshPlayButton() {
-	if (transport.enableTransportControls_default && pref.layout_mode === 'default_mode' || transport.enableTransportControls_compact && pref.layout_mode === 'compact_mode') {
+	if (transport.enableTransportControls_default && pref.layout_mode === 'default_mode' || transport.enableTransportControls_artwork && pref.layout_mode === 'artwork_mode' || transport.enableTransportControls_compact && pref.layout_mode === 'compact_mode') {
 		btns.play.img = !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause;
 		btns.play.repaint();
 	}
@@ -500,7 +596,7 @@ function refreshPlayButton() {
 
 function refreshPlaybackOrderButton() {
 	var pbo = fb.PlaybackOrder;
-	if (transport.enableTransportControls_default && pref.layout_mode === 'default_mode' || transport.enableTransportControls_compact && pref.layout_mode === 'compact_mode') {
+	if (transport.enableTransportControls_default && pref.layout_mode === 'default_mode' || transport.enableTransportControls_artwork && pref.layout_mode === 'artwork_mode' || transport.enableTransportControls_compact && pref.layout_mode === 'compact_mode') {
 		if (pbo === PlaybackOrder.Default) {
 			fb.RunMainMenuCommand('Playback/Order/Default');
 			pref.playbackOrder = 'Default';

@@ -116,7 +116,7 @@ class VolumeBtn {
     constructor() {
         this.x = 0;
         this.y = 0;
-        this.w = transport.show_reload_compact ? scaleForDisplay(86) : scaleForDisplay(104);
+        this.w = transport.show_reload_artwork || transport.show_reload_compact ? scaleForDisplay(86) : scaleForDisplay(104);
         this.h = scaleForDisplay(12);
 
         this.inThisPadding = Math.min(this.w / 2);
@@ -147,13 +147,14 @@ class VolumeBtn {
             const fillWidth = this.volume_bar.fillSize('w');
             let fillColor = col.primary;
             if (colorDistance(col.primary, col.progress_bar) < 105 && pref.blackTheme) {
-                fillColor = rgb(255,255,255);
+                fillColor = rgb(140, 140, 140);
             } else if (colorDistance(col.primary, col.bg) < 105) {
-                fillColor = col.darkAccent;
+                fillColor = col.accent;
             }
             gr.FillSolidRect(x - scaleForDisplay(2), y + (is_4k ? p + 1 : p), w + scaleForDisplay(2), h,
                 pref.whiteTheme ? RGB(255, 255, 255) :
                 pref.blackTheme ? RGB(35, 35, 35) :
+                pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : RGB(255, 255, 255) :
                 pref.blueTheme ? RGB(10, 130, 220) :
                 pref.darkblueTheme ? RGB(27, 55, 90) :
                 pref.redTheme ? RGB(140, 25, 25) :
@@ -162,7 +163,8 @@ class VolumeBtn {
             );
             gr.FillSolidRect(x, y + (is_4k ? 7 : 4), fillWidth - scaleForDisplay(2), h - scaleForDisplay(4),
                 pref.whiteTheme ? col.primary :
-                pref.blackTheme ? col.primary :
+                pref.blackTheme ? fillColor :
+                pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.accent : col.primary :
                 pref.blueTheme ? RGB(242, 230, 170) :
                 pref.darkblueTheme ? RGB(255, 202, 128) :
                 pref.redTheme ? RGB(245, 212, 165) :
@@ -172,9 +174,10 @@ class VolumeBtn {
                 pref.nredTheme ? RGB(229, 7, 44) :
                 pref.ngoldTheme ? RGB(254, 204, 3) : ''
             );
-            gr.DrawRect(x - (is_4k ? 5 : transport.show_reload_default || transport.show_reload_compact ? 3 : 2), y + scaleForDisplay(1), w + (is_4k ? 5 : 3), h + 1, 1,
+            gr.DrawRect(x - (is_4k ? 5 : transport.show_reload_default || transport.show_reload_artwork || transport.show_reload_compact ? 3 : 2), y + scaleForDisplay(1), w + (is_4k ? 5 : 3), h + 1, 1,
                 pref.whiteTheme ? RGB(220, 220, 220) :
                 pref.blackTheme ? RGB(60, 60, 60) :
+                pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.accent : RGB(220, 220, 220) :
                 pref.blueTheme ? RGB(22, 107, 186) :
                 pref.darkblueTheme ? RGB(20, 33, 48) :
                 pref.redTheme ? RGB(82, 19, 19) :
@@ -192,12 +195,14 @@ class VolumeBtn {
     setPosition(x, y, btnWidth) {
         const wh = window.Height;
         const buttonSize_default = scaleForDisplay(pref.transport_buttons_size_default);
+        const buttonSize_artwork = scaleForDisplay(pref.transport_buttons_size_artwork);
         const buttonSize_compact = scaleForDisplay(pref.transport_buttons_size_compact);
         const center_default = Math.floor(buttonSize_default / 2 + scaleForDisplay(4));
+        const center_artwork = Math.floor(buttonSize_artwork / 2 + scaleForDisplay(4));
         const center_compact = Math.floor(buttonSize_compact / 2 + scaleForDisplay(4));
         this.w = this.w;
         this.x = x + scaleForDisplay(40);
-        this.y = y + (pref.layout_mode === 'compact_mode' ? center_compact : center_default) - this.h;
+        this.y = y + (pref.layout_mode === 'artwork_mode' ? center_artwork : pref.layout_mode === 'compact_mode' ? center_compact : center_default) - this.h;
         this.volume_bar = new Volume(this.x, this.y, this.w, Math.min(wh - this.y, this.h));
     }
 

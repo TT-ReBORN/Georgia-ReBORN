@@ -92,6 +92,7 @@
 				g.DrawString(this.scr.arrow, iconFont,
 					pref.whiteTheme ? RGB(120, 120, 120) :
 					pref.blackTheme ? RGB(100, 100, 100) :
+					pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? ui.col.text : RGB(120, 120, 120) :
 					pref.blueTheme ? RGB(220, 220, 220) :
 					pref.darkblueTheme ? RGB(220, 220, 220) :
 					pref.redTheme ? RGB(220, 220, 220) :

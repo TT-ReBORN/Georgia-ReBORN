@@ -201,7 +201,7 @@
 			const sz = this.scr.arrow == 0 ? Math.max(Math.round(uiBio.sbar.but_h * 1.666667), 1) : 100;
 			const sc = sz / 100;
 			const iconFont = gdi.Font(this.scr.iconFontName, sz, this.scr.iconFontStyle);
-			this.alpha = !uiBio.sbar.col ? [75, 192, 228] : [68, 153, 255];
+			this.alpha = !uiBio.sbar.col ? [180, 220, 255] : [180, 220, 255];
 			const hovAlpha = (!uiBio.sbar.col ? 75 : (!uiBio.sbar.type ? 68 : 51)) * 0.4;
 			this.scr.hover = !uiBio.sbar.col ? RGBA(uiBio.col.t, uiBio.col.t, uiBio.col.t, hovAlpha) : uiBio.col.text & RGBA(255, 255, 255, hovAlpha);
 			this.scr.img = $Bio.gr(sz, sz, true, g => {
@@ -215,6 +215,7 @@
 					this.scr.arrow == 0 ? g.FillPolygon(uiBio.col.text, 1, [50 * sc, 0, 100 * sc, 76 * sc, 0, 76 * sc]) :
 					g.DrawString(this.scr.arrow, iconFont,
 						pref.blackTheme ? RGBA(160, 160, 160, 160, 160, 160, 160, 160, 160, 255) :
+						pref.rebornTheme ? g_pl_colors.sbarBio_btns :
 						pref.blueTheme || pref.darkblueTheme || pref.redTheme ? RGBA(255, 255, 255, 255, 255, 255, 255, 255, 255, 255) :
 						pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBA(200, 200, 200, 200, 200, 200, 200, 200, 200, 255) : '',
 						0, sz * this.scr.pad, sz, sz, StringFormat(1, 1)
