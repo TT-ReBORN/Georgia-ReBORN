@@ -3330,7 +3330,7 @@ function on_size() {
 	if (!componentUiHacks) return;
 
 	try { // Needed when double clicking on caption and UIHacks.FullScreen == true; also disabling maximize in Artwork mode
-		if (!utils.IsKeyPressed(VK_CONTROL) && UIHacks.FullScreen && UIHacks.MainWindowState == WindowState.Normal || pref.layout_mode === 'artwork_mode') {
+		if (!utils.IsKeyPressed(VK_CONTROL) && UIHacks.FullScreen && UIHacks.MainWindowState == WindowState.Normal || pref.layout_mode === 'artwork_mode' && UIHacks.MainWindowState == WindowState.Maximized) {
 			UIHacks.MainWindowState = WindowState.Normal;
 		}
 	} catch (e) {};
