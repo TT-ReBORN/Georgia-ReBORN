@@ -201,7 +201,7 @@ class List {
                 } else { inScrollArea = false; }
 
             } else if ((scrollbar_hitarea_x - scaleForDisplay(30) * trace_pad <= x) && (x <= scrollbar_hitarea_x - scaleForDisplay(30) + scrollbar_hitarea_w + trace_pad) &&
-                       (scrollbar_hitarea_y + (is_4k ? 80 : 40) <= y) && (y <= scrollbar_hitarea_y + scrollbar_hitarea_h + (is_4k ? 120 : 80))) {
+                       (scrollbar_hitarea_y + (is_4k ? 80 : 40) <= y) && (y <= scrollbar_hitarea_y + scrollbar_hitarea_h + (is_4k ? 120 : 80)) || !this.mouse_in) {
                 g_properties.show_scrollbar = false;
 
                 if (!inScrollArea) {
