@@ -9,7 +9,7 @@ function initPlaylistColors() {
 		g_pl_colors.background =
 		pref.whiteTheme ? RGB(255, 255, 255) :
 		pref.blackTheme ? RGB(20, 20, 20) :
-		pref.rebornTheme ? pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode' ? g_pl_colors.background != undefined ? /* Need this extra condition to overwrite col.primary when switching themes, no album art loaded i.e on startup and going back to Reborn theme. Reborn theme should stay default white and not the defined col.primary blue */ !albumart || col.primary === rgb(5, 110, 195) && !fb.IsPlaying || col.primary === rgb(25, 160, 240) && !fb.IsPlaying ? RGB(255, 255, 255) : col.altBG : RGB(255, 255, 255) : g_pl_colors.background != undefined ? /* Same for Default mode */ !albumart || col.primary === rgb(5, 110, 195) && !fb.IsPlaying || col.primary === rgb(25, 160, 240) && !fb.IsPlaying ? RGB(255, 255, 255) : col.primary : RGB(255, 255, 255) :
+		pref.rebornTheme ? pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode' ? g_pl_colors.background != undefined ? /* Need this extra condition to overwrite col.primary when switching themes, no album art loaded i.e on startup and going back to Reborn theme. Reborn theme should stay default white and not the defined col.primary dark gray */ !albumart || col.primary === rgb(90, 90, 90) && !fb.IsPlaying || col.primary === rgb(25, 160, 240) && !fb.IsPlaying ? RGB(255, 255, 255) : col.altBG : RGB(255, 255, 255) : g_pl_colors.background != undefined ? /* Same for Default mode */ !albumart || col.primary === rgb(90, 90, 90) && !fb.IsPlaying || col.primary === rgb(25, 160, 240) && !fb.IsPlaying ? RGB(255, 255, 255) : col.primary : RGB(255, 255, 255) :
 		pref.blueTheme ?  RGB(10, 115, 200) :
 		pref.darkblueTheme ? RGB(21, 37, 56) :
 		pref.redTheme ? RGB(110, 20, 20) :
@@ -804,12 +804,12 @@ const blackTheme = {
 const rebornTheme = {
 	name: 'reborn',
 	colors: {
-		primary: rgb(5, 110, 195),
-		darkAccent: rgb(12, 144, 245),
-		accent: rgb(12, 137, 232),
-		lightAccent: rgb(10, 130, 220),
+		primary: rgb(90, 90, 90),
+		darkAccent: rgb(60, 60, 60),
+		accent: rgb(80, 80, 80),
+		lightAccent: rgb(100, 100, 100),
 	},
-	hint: [rgb(207, 0, 5), rgb(220, 220, 220)]
+	hint: [rgb(250, 150, 50), rgb(220, 220, 220)]
 };
 
 const blueTheme = {
