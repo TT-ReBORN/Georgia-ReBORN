@@ -720,7 +720,7 @@ class Panel {
 								ppt.treeListView = false;
 								ui.sbar.type = 1; // ui.sbar.type = 0;
 								ppt.sbarType = 1; // ppt.sbarType = 0;
-								ppt.sbarShow = 1; // ppt.sbarShow = 2;
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library // ppt.sbarShow = 2;
 								ppt.fullLineSelection = false;
 								ppt.highLightText = true;
 								ppt.rowStripes = false;
@@ -753,7 +753,7 @@ class Panel {
 								ppt.treeListView = false;
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								ppt.sbarShow = 1;
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false; // ppt.rowStripes = true;
@@ -787,7 +787,7 @@ class Panel {
 								ppt.treeListView = false;
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								ppt.sbarShow = 1;
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false; // ppt.rowStripes = true;
@@ -825,7 +825,7 @@ class Panel {
 								ppt.artId = 0;
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								ppt.sbarShow = 1;
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false; // ppt.rowStripes = true;
@@ -851,7 +851,7 @@ class Panel {
 								ppt.inlineRoot = true; // In default does not exist
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								ppt.sbarShow = 1;
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false; // ppt.rowStripes = true;
@@ -886,7 +886,7 @@ class Panel {
 								ppt.inlineRoot = true; // In default does not exist
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								ppt.sbarShow = 1;
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false; // ppt.rowStripes = true;
@@ -920,7 +920,7 @@ class Panel {
 								ppt.inlineRoot = true; // In default does not exist
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								ppt.sbarShow = 1;
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false; // ppt.rowStripes = true;
@@ -990,7 +990,7 @@ class Panel {
 								ppt.treeListView = false;
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								ppt.sbarShow = 1;
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false;

@@ -545,7 +545,7 @@ class LibraryCallbacks {
 				} else { inScrollArea = false; }
 
 			} else if ((!sbar.bar.isDragging && scrollBar_hitarea_x - scaleForDisplay(30) * trace_pad <= x) && (x <= scrollBar_hitarea_x - scaleForDisplay(30) + scrollBar_hitarea_w + trace_pad) &&
-				(scrollBar_hitarea_y + (is_4k ? 200 : 100) <= y) && (y <= scrollBar_hitarea_y + scrollBar_hitarea_h + (is_4k ? 120 : 80))) {
+				(scrollBar_hitarea_y + (is_4k ? 200 : 100) <= y) && (y <= scrollBar_hitarea_y + scrollBar_hitarea_h + (is_4k ? 120 : 80)) || !sbar.bar.isDragging && (!(scrollBar_hitarea_x - scaleForDisplay(30) * trace_pad <= x))) {
 
 				if (!inScrollArea) {
 					inScrollArea = true;
@@ -579,7 +579,7 @@ class LibraryCallbacks {
 				} else { inScrollArea = false; }
 
 			} else if ((!sbar.bar.isDragging && scrollBar_hitarea_x * trace_pad <= x) && (x <= scrollBar_hitarea_x + scrollBar_hitarea_w + trace_pad) &&
-				(scrollBar_hitarea_y - (is_4k ? 60 : 30) <= y) && (y <= scrollBar_hitarea_y + scrollBar_hitarea_h - (is_4k ? 40 : 10))) {
+				(scrollBar_hitarea_y - (is_4k ? 60 : 30) <= y) && (y <= scrollBar_hitarea_y + scrollBar_hitarea_h - (is_4k ? 40 : 10)) || !sbar.bar.isDragging && (!(scrollBar_hitarea_y - (is_4k ? 60 : 30) <= y))) {
 
 				if (!inScrollArea) {
 					inScrollArea = true;
