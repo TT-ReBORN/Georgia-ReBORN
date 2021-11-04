@@ -466,7 +466,7 @@ function initLibraryColors() {
 		pref.creamTheme ? RGB(0, 0, 0) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(255, 255, 255) : '';
 
-		ui.col.textSel = ui.col.text_h;
+		ui.col.textSel = pref.rebornTheme ? RGB(255, 255, 255) : ui.col.text_h;
 
 		ui.col.txt_box =
 		pref.whiteTheme ? RGB(80, 80, 80) :
