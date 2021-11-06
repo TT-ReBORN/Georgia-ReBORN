@@ -3622,7 +3622,7 @@ function on_metadb_changed(handle_list, fromhook) {
 		}
 	}
 	if (handle_list) {	// not called manually from on_playback_new_track
-		if (displayPlaylist || displayPlaylistArtworkMode) {
+		if (displayPlaylist || displayPlaylistArtworkMode || !displayPlaylist) {
 			trace_call && console.log(qwr_utils.function_name());
 			playlist.on_metadb_changed(handle_list, fromhook);
 		}
