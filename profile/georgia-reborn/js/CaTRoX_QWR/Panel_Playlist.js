@@ -765,8 +765,8 @@ class Playlist extends List {
 			needs_reinit = false;
 		}
 
-		if (pref.always_showPlaying) {
-			this.show_now_playing();
+		if (pref.rebornTheme && fb.CursorFollowPlayback) {
+			this.on_playback_new_track();
 		}
 	}
 
@@ -1340,6 +1340,10 @@ class Playlist extends List {
 				}
 				this.scroll_to_now_playing();
 			}
+		}
+
+		if (pref.always_showPlaying) {
+			this.show_now_playing();
 		}
 
 		this.repaint();
