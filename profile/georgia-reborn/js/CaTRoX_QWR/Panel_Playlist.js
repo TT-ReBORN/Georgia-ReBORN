@@ -277,7 +277,7 @@ function PlaylistPanel(x, y) {
 				playlist_info.set_xywh(x, y, 0); // Hide Playlist manager
 			}
 
-			is_activated = window.IsVisible && displayPlaylist;
+			is_activated = window.IsVisible;
 
 		} else if (pref.layout_mode === 'artwork_mode') {
 
@@ -302,7 +302,7 @@ function PlaylistPanel(x, y) {
 				playlist_info.set_xywh(x, y, 0); // Hide Playlist manager
 			}
 
-			is_activated = window.IsVisible && displayPlaylist;
+			is_activated = window.IsVisible;
 
 		} else if (pref.layout_mode === 'compact_mode') {
 
@@ -327,7 +327,7 @@ function PlaylistPanel(x, y) {
 				playlist_info.set_xywh(x, y, 0); // Hide Playlist manager
 			}
 
-			is_activated = window.IsVisible && displayPlaylist;
+			is_activated = window.IsVisible;
 		}
 	};
 
@@ -753,14 +753,18 @@ class Playlist extends List {
 	// Playlist.on_size
 	on_size(w, h, x, y) {
 		List.prototype.on_size.apply(this, [w, h, x, y]);
-		// TODO: Mordred - can we avoid this? this.reinitialize causing probs
+
 		this.x = x;
 		this.y = y;
 		this.h = h;
 		this.w = w;
 		this.was_on_size_called = true;
 
-		this.reinitialize();
+		if (needs_reinit) {
+			this.reinitialize();
+			needs_reinit = false;
+		}
+
 		if (pref.always_showPlaying) {
 			this.show_now_playing();
 		}
@@ -3816,7 +3820,7 @@ class Header extends BaseHeader {
 			cache_header = false;
 			this.clearCachedHeaderImg();
 		}
-		if (!cache_header || !this.header_image) {
+		if (!cache_header || !this.header_image || initTheme) {
 			var artist_color = g_pl_colors.artist_normal;
 			var album_color = g_pl_colors.album_normal;
 			var info_color = g_pl_colors.info_normal;
@@ -6928,6 +6932,12 @@ Header.art_cache = new ArtImageCache(200);
 /** @type {PlaylistPanel} */
 let playlist;
 function initPlaylist() {
-	playlist = new PlaylistPanel(0, 0);
+	playlist = new PlaylistPanel(pref.layout_mode === 'default_mode' ? ww / 2 : 0, 0);
 	playlist.initialize();
+}
+
+// Call reinitialize(); only when needed
+var needs_reinit = false;
+function reinitPlaylist() {
+	needs_reinit = true;
 }

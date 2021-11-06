@@ -1753,7 +1753,6 @@ function onOptionsMenu(x, y) {
 			}
 			initTheme();
 			initPlaylistColors();
-			initPlaylist();
 			playlist.on_size(ww, wh);
 			progressBar = new ProgressBar(ww, wh);
 			RepaintWindow();
@@ -1772,7 +1771,6 @@ function onOptionsMenu(x, y) {
 			}
 			initTheme();
 			initPlaylistColors();
-			initPlaylist();
 			playlist.on_size(ww, wh);
 			progressBar = new ProgressBar(ww, wh);
 			RepaintWindow();
@@ -1791,7 +1789,6 @@ function onOptionsMenu(x, y) {
 			}
 			initTheme();
 			initPlaylistColors();
-			initPlaylist();
 			playlist.on_size(ww, wh);
 			progressBar = new ProgressBar(ww, wh);
 			RepaintWindow();
@@ -2287,14 +2284,10 @@ function onOptionsMenu(x, y) {
 	playlistScrollBarMenu.addToggleItem('Auto-hide', pref, 'autoHideScrollbar_Playlist',  () => {
 		if (pref.autoHideScrollbar_Playlist) {
 			g_properties.show_scrollbar = false;
-			initPlaylist();
-			playlist.on_size(ww, wh);
-			RepaintWindow();
+			playlistCallback();
 		} else {
 			g_properties.show_scrollbar = true;
-			initPlaylist();
-			playlist.on_size(ww, wh);
-			RepaintWindow();
+			playlistCallback();
 		}
 	});
 	playlistScrollBarMenu.addToggleItem('Smooth scroll', pref, 'smoothScrolling');
@@ -2311,28 +2304,16 @@ function onOptionsMenu(x, y) {
 		}
 	});
 	const playlistManagerShowMenu = new Menu('Show playlist manager');
-	playlistManagerShowMenu.addToggleItem('Default', pref, 'showPLM_default', () => {
-		playlist.on_size(ww, wh);
-		RepaintWindow();
-	});
-	playlistManagerShowMenu.addToggleItem('Artwork', pref, 'showPLM_artwork', () => {
-		playlist.on_size(ww, wh);
-		RepaintWindow();
-	});
-	playlistManagerShowMenu.addToggleItem('Compact', pref, 'showPLM_compact', () => {
-		playlist.on_size(ww, wh);
-		RepaintWindow();
-	});
+	playlistManagerShowMenu.addToggleItem('Default', pref, 'showPLM_default', playlistCallback);
+	playlistManagerShowMenu.addToggleItem('Artwork', pref, 'showPLM_artwork', playlistCallback);
+	playlistManagerShowMenu.addToggleItem('Compact', pref, 'showPLM_compact', playlistCallback);
 	playlistManagerShowMenu.appendTo(playlistManagerMenu);
 	playlistManagerMenu.appendTo(playlistMenu);
 
 	const playlistAlbumMenu = new Menu('Album headers');
 	playlistAlbumMenu.addToggleItem('Show album header', g_properties, 'show_header', playlistCallback);
 	playlistAlbumMenu.addToggleItem('Use compact group header', g_properties, 'use_compact_header', playlistCallback, !g_properties.show_header);
-	playlistAlbumMenu.addToggleItem('Show long release date (YYYY-MM-DD)', pref, 'showPlaylistFulldate', () => {
-		playlist.on_size(ww, wh);
-		window.Repaint();
-	});
+	playlistAlbumMenu.addToggleItem('Show long release date (YYYY-MM-DD)', pref, 'showPlaylistFulldate', () => { initPlaylist(); playlistCallback(); });
 	playlistAlbumMenu.addToggleItem('Ctrl+click to follow links', pref, 'hyperlinks_ctrl');
 	playlistAlbumMenu.addToggleItem('Show weblinks in context menu', pref, 'show_weblinks');
 	playlistAlbumMenu.appendTo(playlistMenu);
@@ -3130,15 +3111,12 @@ function initTheme() {
 	console.log("initTheme()");
 	lastFolder = '';
 
-	if (pref.loadAsync) {
-		on_size();	// needed when loading async, otherwise just needed in fb.IsPlaying conditional
-	}
-
 	// Main Colors
 	initColors();
+	createButtonImages();
+	createButtonObjects(ww, wh);
 	// Playlist Colors
 	initPlaylistColors();
-	initPlaylist();
 	// Library Colors
 	initLibraryColors();
 	but.createImages();
@@ -3152,29 +3130,14 @@ function initTheme() {
 	imgBio.createImages();
 	if (biographyInitialized) uiBio.updateProp(1);
 
-	if (displayPlaylist || displayPlaylistArtworkMode) {
-		playlist.on_size(ww, wh);
-	}
-	if (displayLibrary) {
-		initLibraryPanel();
-		setLibrarySize();
-	}
-	if (displayBiography) {
-		playlist.on_size(ww, wh);
-		initBiographyPanel();
-		setBiographySize();
-	}
-
-	if (!pref.rebornTheme) {
-		if (fb.IsPlaying && fb.GetNowPlaying()) {
-			on_playback_new_track(fb.GetNowPlaying());
-		}
-	}
 	window.Repaint();
 
-	if (pref.rebornTheme) { // Need to init col.primary once again when switching through themes and going back to Reborn theme
+	if (pref.rebornTheme) { // Needed to init col.primary once again when !albumart, switching through themes and going back to Reborn theme
 		initColors();
-		on_size();
+		initPlaylistColors();
+		createButtonImages();
+		createButtonObjects(ww, wh);
+		playlist.on_size(ww, wh); // Needed to update playlist scrollbar colors -> calling on_size(); from Control_List
 		window.Repaint();
 	}
 }
@@ -3265,6 +3228,8 @@ function on_size() {
 	if (ww <= 0 || wh <= 0) return;
 
 	checkFor4k(ww, wh);
+
+	if (sizeInitialized) reinitPlaylist(); // TODO: Is there another workaround? It's a performance killer when active playlist has a ridicouls amount of tracks - Needed to reposition playlist panel after player size has changed
 
 	if (!sizeInitialized) {
 		createFonts();
@@ -3510,7 +3475,7 @@ function on_playback_new_track(metadb) {
 	on_playback_time();
 	progressBar.progressLength = 0;
 
-	if (displayPlaylist || displayPlaylistArtworkMode) {
+	if (displayPlaylist || displayPlaylistArtworkMode || !displayPlaylist) {
 		playlist.on_playback_new_track(metadb);
 	}
 	else if (displayLibrary) {

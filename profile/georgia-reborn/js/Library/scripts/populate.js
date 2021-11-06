@@ -1361,6 +1361,7 @@ class Populate {
 				if (ppt.dblClickAction == 2 && !item.track && !panel.imgView) {
 					this.expandCollapse(x, y, item, ix);
 					lib.treeState(false, ppt.rememberTree);
+					reinitPlaylist();
 				}
 				if (!ppt.dblClickAction || this.autoPlay.click == 2) return;
 				if (ppt.dblClickAction != 2 || ppt.dblClickAction == 2 && item.track || ppt.dblClickAction == 2 && panel.imgView) {
@@ -1371,6 +1372,7 @@ class Populate {
 					plman.ActivePlaylist = pln;
 					const c = (plman.PlaybackOrder == 3 || plman.PlaybackOrder == 4) ? Math.ceil(plman.PlaylistItemCount(pln) * Math.random() - 1) : 0;
 					plman.ExecutePlaylistDefaultAction(pln, c);
+					reinitPlaylist();
 				}
 				break;
 		}

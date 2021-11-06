@@ -165,6 +165,12 @@ class List {
             this.list_x = this.x + g_properties.list_left_pad;
             this.on_w_size(w);
         }
+
+        if (pref.rebornTheme || !pref.autoHideScrollbar_Playlist) { // Called from initTheme(); or playlistScrollBarMenu -> Auto-hide
+            this.initialize_scrollbar();
+            this.update_scrollbar();
+            this.repaint();
+        }
     }
 
     /**
@@ -196,7 +202,7 @@ class List {
                 g_properties.show_scrollbar = true;
                 if (!inScrollArea) {
                     inScrollArea = true;
-                    this.initialize_list();
+                    this.update_scrollbar();
                     this.repaint();
                 } else { inScrollArea = false; }
 
@@ -206,7 +212,7 @@ class List {
 
                 if (!inScrollArea) {
                     inScrollArea = true;
-                    this.initialize_list();
+                    this.update_scrollbar();
                     this.repaint();
                 } else { inScrollArea = false; }
             }

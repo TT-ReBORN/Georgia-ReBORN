@@ -41,7 +41,7 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
     };
 
     this.repaint = function () {
-        window.RepaintRect(this.x, this.y, this.w, this.h);
+        window.RepaintRect(this.x - (is_4k ? 13 : 6), this.y, this.w, this.h);
     };
 
     this.reset = () => {
