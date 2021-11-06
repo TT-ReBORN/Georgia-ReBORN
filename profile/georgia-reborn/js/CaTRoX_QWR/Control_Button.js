@@ -569,7 +569,7 @@ function onMainMenu(x, y, name) {
 			statusMenu.appendTo(menu);
 
 			menu.addItem('Georgia-ReBORN releases', false, function() { _.runCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/releases') });
-			menu.addItem('Georgia-ReBORN changelog', false, function() { _.runCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/blob/master/profile/georgia/changelog.md') });
+			menu.addItem('Georgia-ReBORN changelog', false, function() { _.runCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/blob/master/profile/georgia-reborn/changelog.md') });
 			var updatesMenu = new Menu('Georgia-ReBORN updates');
 			updatesMenu.addToggleItem('Check for theme updates', pref, 'checkForUpdates', () => { scheduleUpdateCheck(1000) });
 			updatesMenu.addItem('Check for updated version of Georgia-ReBORN', false, function() { checkForUpdates(true); });
