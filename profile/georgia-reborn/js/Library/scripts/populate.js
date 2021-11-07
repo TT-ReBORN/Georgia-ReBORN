@@ -1357,11 +1357,10 @@ class Populate {
 					plman.ExecutePlaylistDefaultAction($Lib.pl_active, this.range(item.item)[0]);
 					return;
 				}
-				if (!ppt.dblClickAction && !this.autoFill.mouse && !this.autoPlay.click) return this.send(item, x, y);
+				if (!ppt.dblClickAction && !this.autoFill.mouse && !this.autoPlay.click) return this.send(item, x, y), reinitPlaylist();
 				if (ppt.dblClickAction == 2 && !item.track && !panel.imgView) {
 					this.expandCollapse(x, y, item, ix);
 					lib.treeState(false, ppt.rememberTree);
-					reinitPlaylist();
 				}
 				if (!ppt.dblClickAction || this.autoPlay.click == 2) return;
 				if (ppt.dblClickAction != 2 || ppt.dblClickAction == 2 && item.track || ppt.dblClickAction == 2 && panel.imgView) {
@@ -1432,6 +1431,7 @@ class Populate {
 		if (this.autoFill.mouse || this.autoPlay.click) {
 			window.Repaint(true);
 			this.send(item, x, y);
+			reinitPlaylist();
 		} else {
 			panel.treePaint();
 		}
@@ -1646,6 +1646,7 @@ class Populate {
 		}
 		if (panel.search.active) return;
 		if (vk.k('enter')) {
+			reinitPlaylist();
 			if (!this.sel_items.length) return;
 			if (!ppt.libSource) {
 				if (this.autoPlay.send) plman.ExecutePlaylistDefaultAction($Lib.pl_active, this.sel_items[0]);

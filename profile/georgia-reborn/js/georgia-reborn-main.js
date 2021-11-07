@@ -4303,7 +4303,6 @@ function on_volume_change(val) {
 var debounced_init_playlist = _.debounce(function (playlistIndex) {
 	trace_call && console.log('debounced_init_playlist');
 	playlist.on_playlist_items_added(playlistIndex);
-	biography.on_playlist_items_added(playlistIndex);
 }, 0, {
 	leading: false,
 	trailing: true
