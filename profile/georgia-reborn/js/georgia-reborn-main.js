@@ -1776,6 +1776,7 @@ function onOptionsMenu(x, y) {
 			RepaintWindow();
 		}
 		if (pref.layout_mode === 'compact_mode') {
+			pref.displayLyrics = false;
 			displayLibrary = false;
 			displayBiography = false;
 			displayPlaylist = true;
