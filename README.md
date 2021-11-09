@@ -5,14 +5,14 @@
 Georgia-ReBORN is a modification of **[Mordred's original Georgia theme](https://github.com/kbuffington/Georgia)** for foobar2000.<br />
 It's purpose is to be used mainly as a desktop version, the layout has been modified to look clean and simple<br />
 without any distractions. The cover artwork and playlist are the main focus. Besides the 10 existing themes<br />
-Georgia-ReBORN has to offer ( Options > Theme ) there is one special theme "ReBORN". Based on Mordred's<br />
+Georgia-ReBORN has to offer ( Options > Theme ) there is one special theme "Reborn". Based on Mordred's<br />
 awesome dynamic color change feature, this theme will completely change it's appearance based on album art,<br />
-this means there are unlimited possibilites how the player will look like. Every new album you play will be<br />
+this means there are unlimited possibilities how the player will look like. Every new album you play will be<br />
 a new experience!
 
 ![Themes](https://i.ibb.co/w6LqrzP/George-Re-BORN-Themes-Animation.webp)
 
-WilB's awesome library and biograhpy script has been integrated and modified to fit the overall design.<br />
+WilB's awesome library and biography script has been integrated and modified to fit the overall design.<br />
 You can choose the top menu > Options > Library to change various library options. Besides the 8 existing<br />
 built-in designs, the library has it's own default Georgia-ReBORN design. The classical tree view can be changed<br />
 swiftly by right clicking for the context menu and choose "Show album art". You can switch back to the default<br />
@@ -36,8 +36,8 @@ in the library > Show artists, to go back to default view open again the context
 
 In the biography you can change options via top menu Options > Biography or you can use the context menu.<br />
 There are 4 different biography layouts to choose from, top is the default. There is also an automatic lyric fetcher<br />
-using the Lyric Show 3 ( by The vern ) and Multisource component ( by veksha ). Synched lyrics will be highlighted<br />
-with a theme color, unsynched lyrics have the default white text color.
+using the Lyric Show 3 ( by The vern ) and Multisource component ( by veksha ). Synced lyrics will be highlighted<br />
+with a theme color, unsynced lyrics have the default white text color.
 
 ![BiographyLyrics](https://i.ibb.co/HhN4PVV/George-Re-BORN-Biography-And-Lyrics-Animation.webp)
 
@@ -105,7 +105,7 @@ For more information, please see the FAQ.
 
 <b>3.</b> Extract the profile folder from the zip into foobar's root folder.
 
-<b>4.</b> Install all located fonts from your foobar2000\profile\georgia\fonts folder.
+<b>4.</b> Install all located fonts from your foobar2000\profile\georgia-reborn\fonts folder.
 
 <b>5.</b> Start foobar and select Columns UI, everything else is already preconfigured.
 
@@ -114,10 +114,10 @@ For more information, please see the FAQ.
 **For standard non-portable installation:**
 
 Install foobar2000 as a standard installation, start and close foobar.<br />
-Extract the content ( configuration, georgia, images and user-components ) from the profile folder<br />
+Extract the content ( configuration, georgia-reborn, images and user-components ) from the profile folder<br />
 of the **[Github master.zip](https://github.com/TT-ReBORN/Georgia-ReBORN/archive/master.zip)** into the root folder of: C:\Users\YourUsername\AppData\Roaming\foobar2000
 
-Install all located fonts from C:\Users\YourUsername\AppData\Roaming\foobar2000\georgia\fonts.<br />
+Install all located fonts from C:\Users\YourUsername\AppData\Roaming\foobar2000\georgia-reborn\fonts.<br />
 The optional image packs need to be extracted in C:\Users\YourUsername\AppData\Roaming\foobar2000\images.
 
 Start foobar and select Columns UI, everything else is already preconfigured.
@@ -139,7 +139,7 @@ foo_discogs: https://www.foobar2000.org/components/view/foo_discogs
 <details>
 <summary>My foobar displays weird icons, what am I missing?</summary>
 <br />
-You have not installed the fonts correctly, install all located fonts from your foobar2000\profile\georgia\fonts folder.<br />
+You have not installed the fonts correctly, install all located fonts from your foobar2000\profile\georgia-reborn\fonts folder.<br />
 For Windows: Into your C:\Windows\Fonts folder.<br />
 For Linux: Into your home/user/.local/share/fonts folder.
 </details>
