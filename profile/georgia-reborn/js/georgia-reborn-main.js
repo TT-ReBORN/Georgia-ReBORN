@@ -4749,7 +4749,6 @@ function ResizeArtwork(resetCDPosition) {
 		if ((!pref.blackTheme || !pref.nblueTheme || !pref.ngreenTheme || !pref.nredTheme || !pref.ngoldTheme) && pref.layout_mode !== 'artwork_mode') {
 			createDropShadow();
 		}
-	} else {
 		if ((displayLibrary || displayPlaylist) && pref.layout_mode !== 'artwork_mode') {
 			pauseBtn.setCoords(ww * (0.5 / 2), wh / 2 - (geo.top_art_spacing));
 		} else {
