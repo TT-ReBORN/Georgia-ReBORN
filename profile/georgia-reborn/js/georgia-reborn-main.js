@@ -4749,11 +4749,11 @@ function ResizeArtwork(resetCDPosition) {
 		if ((!pref.blackTheme || !pref.nblueTheme || !pref.ngreenTheme || !pref.nredTheme || !pref.ngoldTheme) && pref.layout_mode !== 'artwork_mode') {
 			createDropShadow();
 		}
-		if ((displayLibrary || displayPlaylist) && pref.layout_mode !== 'artwork_mode') {
-			pauseBtn.setCoords(ww * (0.5 / 2), wh / 2 - (geo.top_art_spacing));
-		} else {
-			pauseBtn.setCoords(ww / 2, wh / 2 - (geo.top_art_spacing));
-		}
+	}
+	if ((displayLibrary || displayPlaylist) && pref.layout_mode !== 'artwork_mode') {
+		pauseBtn.setCoords(ww * (0.5 / 2), wh / 2 - (geo.top_art_spacing));
+	} else {
+		pauseBtn.setCoords(ww / 2, wh / 2 - (geo.top_art_spacing));
 	}
 }
 
