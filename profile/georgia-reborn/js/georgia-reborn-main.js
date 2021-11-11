@@ -521,7 +521,10 @@ function draw_ui(gr) {
 			gr.FillSolidRect(albumart_size.x, geo.top_art_spacing, albumart_size.w, albumart_size.h - 1, g_pl_colors.background);
 			gr.DrawImage(noAlbumArt, albumart_size.x, geo.top_art_spacing, albumart_size.w, albumart_size.h, 0, 0, noAlbumArt.Width, noAlbumArt.Height);
 			if (pref.displayLyrics && fb.IsPlaying) {
-				gr.FillSolidRect(albumart_size.x - 1, albumart_size.y - 1, albumart_size.w + 1, albumart_size.h + 1, RGBA(0, 0, 0, 155));
+				gr.FillSolidRect(albumart_size.x - 1, albumart_size.y, albumart_size.w + 1, albumart_size.h,
+					pref.whiteTheme || pref.rebornTheme || pref.creamTheme ? RGB(120, 120, 120) :
+					pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme ||	pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.background : ''
+				);
 				gLyrics && gLyrics.drawLyrics(gr);
 			}
 		}

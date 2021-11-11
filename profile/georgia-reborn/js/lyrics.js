@@ -7,8 +7,8 @@ const SCROLL_WHEEL_TIME_OFFSET = 500;	// amount of time (ms) to adjust lyrics wh
 const OFFSET_DISPLAY_TIME = 5000;	// time in ms to display scroll offset at the top of the lyrics area
 const LYRICS_PADDING = 24;	// padding between edge of artwork and the lyrics
 const NO_LYRICS_STRING = 'No lyrics found';    // what to show when no lyrics exist
-const LYRICS_NOT_FOUND_STRING = 'Search completed\n \nNo lyrics were found';    // what to show when no lyrics exist
-const SEARCHING_LYRICS_STRING = 'Searching for lyrics... \n \nPlease wait...';  // what to show when searching for lyrics
+const LYRICS_NOT_FOUND_STRING = '\u200b \nSearch completed\n \nNo lyrics were found';    // what to show when no lyrics exist
+const SEARCHING_LYRICS_STRING = '\u200b \nSearching for lyrics...\n \nPlease wait...';  // what to show when searching for lyrics
 
 const lyricShow3loaded = utils.CheckComponent("foo_uie_lyrics3");
 
@@ -55,8 +55,8 @@ class Line {
 	 * @param {number} yOffset
 	 */
 	draw(gr, x, width, yOffset, highlightActive) {
-		const color = highlightActive && this.focus ? g_txt_highlightcolour : g_txt_normalcolour;
-		const ncolor = highlightActive && this.focus ? g_pl_colors.artist_playing : g_txt_normalcolour; 	// Neon Colors Highlight
+		const color = highlightActive && this.focus  /* Disable synced lyrics when streaming -> */ && !isStreaming ? g_txt_highlightcolour : g_txt_normalcolour;
+		const ncolor = highlightActive && this.focus /* Disable synced lyrics when streaming -> */ && !isStreaming ? g_pl_colors.artist_playing : g_txt_normalcolour; 	// Neon Colors Highlight
 		const center = StringFormat(1, 1, 4);	// center with ellipses
 
 		// drop shadow behind text
@@ -64,11 +64,7 @@ class Line {
 		gr.DrawString(this.lyric, ft.lyrics, g_txt_shadowcolor, x, this.y + yOffset - 1, width, this.height + 1, center);
 		gr.DrawString(this.lyric, ft.lyrics, g_txt_shadowcolor, x + 2, this.y + yOffset + 2, width, this.height + 1, center);
 		// text
-		gr.DrawString(this.lyric, ft.lyrics, color, x, this.y + yOffset, width, this.height + 1, center);
-
-		if (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) {
-			gr.DrawString(this.lyric, ft.lyrics, ncolor, x, this.y + yOffset, width, this.height + 1, center);
-		}
+		gr.DrawString(this.lyric, ft.lyrics, pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? ncolor : color, x, this.y + yOffset, width, this.height + 1, center);
 	}
 }
 
@@ -130,7 +126,7 @@ class Lyrics {
 		this.x = x + LYRICS_PADDING;
 		this.y = y + LYRICS_PADDING;
 		this.w = w - LYRICS_PADDING * 2;	// should width/height be split?
-		this.h = h - LYRICS_PADDING * 2;
+		this.h = h - LYRICS_PADDING * 3;
 		this.lineSpacing = scaleForDisplay(10);
 		if (this.lines.length && this.w > 10 && this.h > 100) {
 			const tmpImg = gdi.CreateImage(this.w, Math.round(this.h / 5));
@@ -287,7 +283,7 @@ class Lyrics {
 	 * Sets the focus line. Should be called when playback starts, or whenever seeking in the file
 	 */
 	seek() {
-		const time = Math.round(fb.PlaybackTime * 1000) + this.timeOffset;
+		const time = Math.round(fb.PlaybackTime * 1000) + this.timeOffset - this.streamOffset;
 		this.lines.forEach(l => l.focus = false);
 		const index = this.lines.findIndex(l => l.timeMs >= time);
 		this.activeLine = index === -1 ? this.lines.length - 1 : Math.max(0, index - 1);	// if time > all timeMs values, then we're on the last line of the song, otherwise choose previous line
@@ -320,6 +316,13 @@ class Lyrics {
 	processLyrics(rawLyrics) {
 		let tsCount = 0;
 		const noLyrics = rawLyrics[0] === NO_LYRICS_STRING;
+
+		// Reset lyric time state when new track on stream starts to make lyrics work correctly again
+		if (isStreaming) {
+			this.streamOffset = Math.round(fb.PlaybackTime * 1000);
+		} else {
+			this.streamOffset = 0;
+		}
 
 		rawLyrics.forEach(line => {
 			if (timeStampRegex.test(line)) {
@@ -354,7 +357,7 @@ class Lyrics {
 			const lineTiming = availSecs / rawLyrics.length;
 			rawLyrics.forEach((line, i) => {
 				const lyric = replaceUnicodeChars(line);
-				const time = unsyncedScrollDelay + lineTiming * i;
+				const time = isStreaming ? rawLyrics.length / 30 * i : unsyncedScrollDelay + lineTiming * i;
 				lyrics.push({ timeStamp: '--', time, lyric });
 			});
 			let done = false;
@@ -372,7 +375,7 @@ class Lyrics {
 
 	timerTick() {
 		/** @type {float} */
-		const time = Math.round(fb.PlaybackTime * 1000) + this.timeOffset;
+		const time = Math.round(fb.PlaybackTime * 1000) + this.timeOffset - this.streamOffset;
 		if ((this.lines.length > this.activeLine + 1) && (time > this.lines[this.activeLine + 1].timeMs)) {
 			// advance active Line
 			this.scrolling = true;
@@ -419,7 +422,7 @@ class Lyrics {
 	}
 
 	repaint() {
-		window.RepaintRect(this.x - scaleForDisplay(20), this.y - scaleForDisplay(20), this.w + scaleForDisplay(40), this.h + scaleForDisplay(40));
+		window.RepaintRect(this.x - LYRICS_PADDING, this.y - LYRICS_PADDING, this.w + LYRICS_PADDING * 2, this.h + LYRICS_PADDING * 3);
 	}
 }
 
