@@ -160,7 +160,7 @@ pref.add_properties({
 	filterCdJpgsFromAlbumArt:           ['Georgia-ReBORN - Details: Art - Filter out cd/vinyl .jpgs from showing as artwork', false],
 	spinCdart:                          ['Georgia-ReBORN - Details: Art - Spin CD art', false], // true: cdArt will spin while the song plays
 	spinCdArtImageCount:                ['Georgia-ReBORN - Details: Art - # of images to create while spinning', 60], // Higher numbers will increase memory usage, and slow down spin
-	spinCdArtRedrawInterval:            ['Georgia-ReBORN - Details: Art - Spin CD draw interval', 150], // Speed in ms with which to attempt redraw. Lower numbers will increase CPU
+	spinCdArtRedrawInterval:            ['Georgia-ReBORN - Details: Art - Spin CD draw interval', 75], // Speed in ms with which to attempt redraw. Lower numbers will increase CPU
 	rotate_cdart:                       ['Georgia-ReBORN - Details: Art - Rotate CD art on new track', true], // true: Rotate cdArt based on track number. i.e. rotationAmt = %tracknum% * x degrees
 	rotation_amt:                       ['Georgia-ReBORN - Details: Art - Degrees to rotate CDart', 3], // # of degrees to rotate per track change.
 	art_rotate_delay:                   ['Georgia-ReBORN - Details: Art - Seconds to display each art', 30], // Seconds per image
