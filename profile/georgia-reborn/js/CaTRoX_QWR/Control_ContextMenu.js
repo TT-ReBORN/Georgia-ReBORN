@@ -551,6 +551,17 @@ Object.assign(qwr_utils, {
             }
         );
 
+        if (aa_list.length > 1) {
+            cmac.append_item(
+                fb.IsPlaying || fb.IsPaused ? 'Display next artwork' : '', () => {
+                    albumArtIndex = (albumArtIndex + 1) % aa_list.length;
+                    loadImageFromAlbumArtList(albumArtIndex, true);
+                    lastLeftEdge = 0;
+                    window.Repaint();
+                }
+            );
+        }
+
         cmac.append_separator();
 
         cmac.append_item(
