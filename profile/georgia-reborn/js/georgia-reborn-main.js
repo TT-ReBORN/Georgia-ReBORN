@@ -3124,15 +3124,14 @@ function initTheme() {
 	// Library Colors
 	initLibraryColors();
 	but.createImages();
-	if (libraryInitialized) panel.updateProp(1);
+	but.refresh(true);
 	// Biography Colors
-	initBiographyColors();
 	uiBio.getColours();
 	alb_scrollbar.setCol();
 	art_scrollbar.setCol();
-	butBio.createImages();
+	butBio.createImages('all');
 	imgBio.createImages();
-	if (biographyInitialized) uiBio.updateProp(1);
+	initBiographyColors();
 
 	window.Repaint();
 
@@ -3482,7 +3481,7 @@ function on_playback_new_track(metadb) {
 	if (displayPlaylist || displayPlaylistArtworkMode || !displayPlaylist) {
 		playlist.on_playback_new_track(metadb);
 	}
-	else if (displayLibrary) {
+	if (displayLibrary) {
 		library.on_playback_new_track(metadb);
 	}
 	if (displayBiography) {
@@ -3630,10 +3629,10 @@ function on_metadb_changed(handle_list, fromhook) {
 			trace_call && console.log(qwr_utils.function_name());
 			playlist.on_metadb_changed(handle_list, fromhook);
 		}
-		else if (displayLibrary) {
+		if (displayLibrary) {
 			library.on_metadb_changed(handle_list, fromhook);
 		}
-		else if (displayBiography) {
+		if (displayBiography) {
 			trace_call && console.log(qwr_utils.function_name());
 			biography.on_metadb_changed(handle_list, fromhook);
 		}
