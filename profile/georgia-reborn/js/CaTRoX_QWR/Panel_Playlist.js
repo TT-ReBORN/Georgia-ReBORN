@@ -981,6 +981,130 @@ class Playlist extends List {
 					plman.ActivePlaylist = plman.PlaylistCount - 1;
 				});
 
+		var autopl = new ContextMenu('Create new auto playlist');
+		cmm.append(autopl);
+
+			autopl.append_item(
+				"Custom auto playlist",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) New auto playlist", "", "", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+					plman.ShowAutoPlaylistUI(this.cur_playlist_idx);
+				});
+
+			autopl.append_separator();
+
+			autopl.append_item(
+				"Tracks from the library",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks from the library", "ALL", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+				});
+
+			autopl.append_separator();
+
+			autopl.append_item(
+				"Tracks most played",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks most played", "%play_count% GREATER 9", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+				});
+
+			autopl.append_item(
+				"Tracks never played",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks never played", "%play_count% MISSING", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+				});
+
+			autopl.append_item(
+				"Tracks played in the last week",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks played in the last week", "%last_played% DURING LAST 1 WEEK", "%last_played%", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+				});
+
+			autopl.append_item(
+				"Tracks played in the last month",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks played in the last month", "%last_played% DURING LAST 4 WEEKS", "%last_played%", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+				});
+
+			autopl.append_item(
+				"Tracks played in the last year",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks played in the last year", "%last_played% DURING LAST 52 WEEKS", "%last_played%", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+				});
+
+			autopl.append_separator();
+
+			autopl.append_item(
+				"Tracks unrated",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks unrated", "%rating% MISSING", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+				});
+
+			autopl.append_item(
+				"Tracks rated 1",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 1", "%rating% IS 1", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+				});
+
+			autopl.append_item(
+				"Tracks rated 2",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 2", "%rating% IS 2", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+				});
+
+			autopl.append_item(
+				"Tracks rated 3",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 3", "%rating% IS 3", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+				});
+
+			autopl.append_item(
+				"Tracks rated 4",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 4", "%rating% IS 4", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+				});
+
+			autopl.append_item(
+				"Tracks rated 5",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 5", "%rating% IS 5", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+				});
+
+			autopl.append_separator();
+
+			autopl.append_item(
+				"Loved tracks",
+				() => {
+					plman.CreateAutoPlaylist(playlist_count, "(Auto) Loved tracks", "%mood% GREATER 0", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+					plman.ActivePlaylist = this.cur_playlist_idx;
+				});
+
 		if (!is_cur_playlist_empty) {
 			cmm.append_separator();
 			cmm.append_item(
@@ -6157,21 +6281,41 @@ function PlaylistManager(x, y, w, h) {
 		}
 
 		var cpm = window.CreatePopupMenu();
+		var autopl = window.CreatePopupMenu();
 
 		var playlist_count = plman.PlaylistCount;
 
 		cpm.AppendMenuItem(MF_STRING, 1, 'Playlist manager \tCtrl+M');
 		cpm.AppendMenuItem(MF_STRING, 2, 'Playlist search \tCtrl+F');
 		cpm.AppendMenuItem(MF_STRING, 3, 'Create new playlist \tCtrl+N');
-		cpm.AppendMenuSeparator();
+		autopl.AppendTo(cpm, MF_STRING, "Create new auto playlist");
+		autopl.AppendMenuItem(MF_STRING, 4, "Custom auto playlist");
+		autopl.AppendMenuSeparator();
+		autopl.AppendMenuItem(MF_STRING, 5, "Tracks from the library");
+		autopl.AppendMenuSeparator();
+		autopl.AppendMenuItem(MF_STRING, 6, "Tracks most played");
+		autopl.AppendMenuItem(MF_STRING, 7, "Tracks never played");
+		autopl.AppendMenuItem(MF_STRING, 8, "Tracks played in the last week");
+		autopl.AppendMenuItem(MF_STRING, 9, "Tracks played in the last month");
+		autopl.AppendMenuItem(MF_STRING, 10, "Tracks played in the last year");
+		autopl.AppendMenuSeparator();
+		autopl.AppendMenuItem(MF_STRING, 11, "Tracks unrated");
+		autopl.AppendMenuItem(MF_STRING, 12, "Tracks rated 1 star");
+		autopl.AppendMenuItem(MF_STRING, 13, "Tracks rated 2 stars");
+		autopl.AppendMenuItem(MF_STRING, 14, "Tracks rated 3 stars");
+		autopl.AppendMenuItem(MF_STRING, 15, "Tracks rated 4 stars");
+		autopl.AppendMenuItem(MF_STRING, 16, "Tracks rated 5 stars");
+		autopl.AppendMenuSeparator();
+		autopl.AppendMenuItem(MF_STRING, 17, "Loved tracks");
 		if (g_component_utils) {
-			cpm.AppendMenuItem(MF_STRING, 4, 'Lock current playlist');
-			cpm.CheckMenuItem(4, plman.IsPlaylistLocked(plman.ActivePlaylist));
 			cpm.AppendMenuSeparator();
+			cpm.AppendMenuItem(MF_STRING, 18, 'Lock current playlist');
+			cpm.CheckMenuItem(18, plman.IsPlaylistLocked(plman.ActivePlaylist));
 		}
-		var playlists_start_id = 5;
+		cpm.AppendMenuSeparator();
+		var playlists_start_id = 19;
 		for (var i = 0; i < playlist_count; ++i) {
-			cpm.AppendMenuItem(MF_STRING, playlists_start_id + i, plman.GetPlaylistName(i).replace(/&/g, '&&') + ' [' + plman.PlaylistItemCount(i) + ']' + (plman.IsAutoPlaylist(i) ? ' (Auto)' : '') + (i === plman.PlayingPlaylist ? ' \t(Now Playing)' : ''));
+			cpm.AppendMenuItem(MF_STRING, playlists_start_id + i, plman.GetPlaylistName(i).replace(/&/g, '&&') + ' [' + plman.PlaylistItemCount(i) + ']' /*+ (plman.IsAutoPlaylist(i) ? ' (Auto)' : '')*/ + (i === plman.PlayingPlaylist ? ' \t(Now Playing)' : ''));
 		}
 
 		var id = cpm.TrackPopupMenu(x, y);
@@ -6187,6 +6331,77 @@ function PlaylistManager(x, y, w, h) {
 				plman.ActivePlaylist = plman.PlaylistCount - 1;
 				break;
 			case 4:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) New custom auto playlist", "", "", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				plman.ShowAutoPlaylistUI(playlist_idx);
+				break;
+			case 5:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks from the library", "ALL", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				break;
+			case 6:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks most played", "%play_count% GREATER 9", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				break;
+			case 7:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks never played", "%play_count% MISSING", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				break;
+			case 8:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks played in the last week", "%last_played% DURING LAST 1 WEEK", "%last_played%", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				break;
+			case 9:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks played in the last month", "%last_played% DURING LAST 4 WEEKS", "%last_played%", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				break;
+			case 10:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks played in the last year", "%last_played% DURING LAST 52 WEEKS", "%last_played%", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				break;
+			case 11:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks unrated", "%rating% MISSING", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				break;
+			case 12:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 1", "%rating% IS 1", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				break;
+			case 13:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 2", "%rating% IS 2", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				break;
+			case 14:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 3", "%rating% IS 3", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				break;
+			case 15:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 4", "%rating% IS 4", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				break;
+			case 16:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 5", "%rating% IS 5", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				break;
+			case 17:
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Loved tracks", "%mood% GREATER 0", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, playlist_idx);
+				plman.ActivePlaylist = playlist_idx;
+				break;
+			case 18:
 				fb.RunMainMenuCommand('Edit/Read-only');
 				break;
 		}

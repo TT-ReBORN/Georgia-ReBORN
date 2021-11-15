@@ -523,7 +523,7 @@ function draw_ui(gr) {
 			if (pref.displayLyrics && fb.IsPlaying) {
 				gr.FillSolidRect(albumart_size.x - 1, albumart_size.y, albumart_size.w + 1, albumart_size.h,
 					pref.whiteTheme || pref.rebornTheme || pref.creamTheme ? RGB(120, 120, 120) :
-					pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme ||	pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.background : ''
+					pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.background : ''
 				);
 				gLyrics && gLyrics.drawLyrics(gr);
 			}
