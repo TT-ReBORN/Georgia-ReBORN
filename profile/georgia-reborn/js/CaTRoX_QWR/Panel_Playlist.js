@@ -2172,7 +2172,7 @@ class Playlist extends List {
 		this.append_scrollbar_visibility_context_menu_to(appear);
 
 		appear.append_item(
-			'Show artist names in row',
+			'Show artist name in row',
 			() => {
 				pref.show_artist_playlistRow = !pref.show_artist_playlistRow;
 
@@ -2180,6 +2180,17 @@ class Playlist extends List {
 				this.scroll_to_focused_or_now_playing();
 			},
 			{is_checked: pref.show_artist_playlistRow}
+		);
+
+		appear.append_item(
+			'Show album title in row',
+			() => {
+				pref.show_album_playlistRow = !pref.show_album_playlistRow;
+
+				this.initialize_list();
+				this.scroll_to_focused_or_now_playing();
+			},
+			{is_checked: pref.show_album_playlistRow}
 		);
 
 		appear.append_item(
@@ -5081,7 +5092,7 @@ class Row extends ListItem {
 			if (this.is_playing) {
 				track_num_query = g_properties.show_header ? '      ' : '$if2(%tracknumber%,$pad_right(' + (this.idx_in_header + 1) + ',2,0)). ';
 			}
-			var title_query = g_properties.show_header ? track_num_query + (pref.show_artist_playlistRow ? '  %artist% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : '  %title%[ \'(\'%original artist%\' cover)\']') : '     %artist% - %album% - ' + track_num_query + ' %title%[ \'(\'%original artist%\' cover)\']';
+			var title_query = g_properties.show_header ? track_num_query + (pref.show_artist_playlistRow && pref.show_album_playlistRow ? '  %artist% - %album% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : pref.show_artist_playlistRow ? '  %artist% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : pref.show_album_playlistRow ? '  %album% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : '  %title%[ \'(\'%original artist%\' cover)\']') : '     %artist% - %album% - ' + track_num_query + ' %title%[ \'(\'%original artist%\' cover)\']';
 			this.title_text = (fb.IsPlaying && this.is_playing && is_radio) ? $(title_query) : $(title_query, this.metadb);
 		}
 
@@ -5224,7 +5235,7 @@ class Row extends ListItem {
 			if (pref.use_vinyl_nums) {
 				track_num_query_tt = tf.vinyl_track;
 			}
-			var title_query_tt = g_properties.show_header ? track_num_query_tt + '%title%[ \'(\'%original artist%\' cover)\']' : '     %artist% - %album% - ' + track_num_query_tt + ' %title%[ \'(\'%original artist%\' cover)\']';
+			var title_query_tt = g_properties.show_header ? track_num_query_tt + (pref.show_artist_playlistRow && pref.show_album_playlistRow ? '  %artist% - %album% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : pref.show_artist_playlistRow ? '  %artist% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : pref.show_album_playlistRow ? '  %album% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : '  %title%[ \'(\'%original artist%\' cover)\']') : '     %artist% - %album% - ' + track_num_query_tt + ' %title%[ \'(\'%original artist%\' cover)\']';
 			this.title_text_tt = (fb.IsPlaying && this.is_playing && is_radio) ? $(title_query_tt) : $(title_query_tt, this.metadb);
 
 			if (this.title_text_w > this.title_w) {
