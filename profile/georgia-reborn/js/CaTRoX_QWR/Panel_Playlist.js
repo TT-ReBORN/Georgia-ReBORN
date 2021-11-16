@@ -2172,6 +2172,17 @@ class Playlist extends List {
 		this.append_scrollbar_visibility_context_menu_to(appear);
 
 		appear.append_item(
+			'Show artist names in row',
+			() => {
+				pref.show_artist_playlistRow = !pref.show_artist_playlistRow;
+
+				this.initialize_list();
+				this.scroll_to_focused_or_now_playing();
+			},
+			{is_checked: pref.show_artist_playlistRow}
+		);
+
+		appear.append_item(
 			'Show group header',
 			() => {
 				g_properties.show_header = !g_properties.show_header;
@@ -5070,7 +5081,7 @@ class Row extends ListItem {
 			if (this.is_playing) {
 				track_num_query = g_properties.show_header ? '      ' : '$if2(%tracknumber%,$pad_right(' + (this.idx_in_header + 1) + ',2,0)). ';
 			}
-			var title_query = g_properties.show_header ? track_num_query + '  %title%[ \'(\'%original artist%\' cover)\']' : '     %artist% - %album% - ' + track_num_query + ' %title%[ \'(\'%original artist%\' cover)\']';
+			var title_query = g_properties.show_header ? track_num_query + (pref.show_artist_playlistRow ? '  %artist% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : '  %title%[ \'(\'%original artist%\' cover)\']') : '     %artist% - %album% - ' + track_num_query + ' %title%[ \'(\'%original artist%\' cover)\']';
 			this.title_text = (fb.IsPlaying && this.is_playing && is_radio) ? $(title_query) : $(title_query, this.metadb);
 		}
 

@@ -129,6 +129,7 @@ pref.add_properties({
 	showPlaylistFulldate:               ['Georgia-ReBORN - Playlist: Show full date', false], // Playlist show full date YYYY-MM-DD
 	hyperlinks_ctrl:                    ['Georgia-ReBORN - Playlist: Hyperlinks require CTRL Key', false], // true: Clicking on hyperlinks only works if CTRL key is held down
 	show_weblinks:                      ['Georgia-ReBORN - Playlist: Show weblinks', true], // Show weblinks in context menu
+	show_artist_playlistRow:            ['Georgia-ReBORN - Playlist: Show artist names in playlist row', false], // Show artist names in playlist row
 	playlistTimeRemaining:              ['Georgia-ReBORN - Playlist: Show time remaining on playing track', false], // Show time remaining in playlist on currently playing track
 	always_showPlaying:                 ['Georgia-ReBORN - Playlist: Always scroll to current playing song', false], // Always scroll to current playing song on playlist
 	startPlaylist:                      ['Georgia-ReBORN - Playlist: Display playlist on startup', true], // true: Show the playlist window when the theme starts up

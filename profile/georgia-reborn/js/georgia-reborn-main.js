@@ -2331,6 +2331,7 @@ function onOptionsMenu(x, y) {
 	rowsMenu.appendTo(playlistMenu);
 	playlistMenu.addSeparator();
 
+	playlistMenu.addToggleItem('Show artist names in row', pref, 'show_artist_playlistRow', () => { initPlaylist(); playlistCallback(); });
 	playlistMenu.addToggleItem('Show time remaining on playing track', pref, 'playlistTimeRemaining', () => { RepaintWindow(); });
 	playlistMenu.addToggleItem('Always scroll to current playing song', pref, 'always_showPlaying');
 	playlistMenu.addToggleItem('Show playlist on startup', pref, 'startPlaylist');
