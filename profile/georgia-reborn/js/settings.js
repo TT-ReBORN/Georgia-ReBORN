@@ -116,6 +116,7 @@ pref.add_properties({
 	show_truncatedText_tt:              ['Georgia-ReBORN - Player controls: Show tooltips on truncated text', true], // true: Show tooltips when hovering over truncated text on lower bar, metadata grid and playlist
 	show_timeline_tooltips:             ['Georgia-ReBORN - Player controls: Show timeline tooltips', true], // true: Show tooltips when hovering over the timeline that show information on plays
 	cycleArt:                           ['Georgia-ReBORN - Player controls: Cycle through all images', false], // true: Use glob, false: use albumart reader (front only)
+	cycleArtMWheel:                     ['Georgia-ReBORN - Player controls: Cycle through all images with mouse wheel', true], // true: Cycle through all images with mouse wheel
 	freq_update:                        ['Georgia-ReBORN - Player controls: Frequent progress bar updates', true], // true: Update progress bar multiple times a second. Smoother, but uses more CPU
 
 	// Playlist

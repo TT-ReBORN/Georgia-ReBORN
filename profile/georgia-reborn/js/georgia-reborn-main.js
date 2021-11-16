@@ -2270,6 +2270,7 @@ function onOptionsMenu(x, y) {
 			displayNextImage();
 		}
 	});
+	playerControlsMenu.addToggleItem('Cycle album artwork with mouse wheel', pref, 'cycleArtMWheel');
 	playerControlsMenu.addToggleItem('Update progress bar frequently (higher CPU)', pref, 'freq_update', () => {
 		SetProgressBarRefresh();
 	}, !pref.show_progress_bar_default || !pref.show_progress_bar_artwork || !pref.show_progress_bar_compact);
@@ -3956,21 +3957,33 @@ function on_mouse_wheel(delta) {
 		refresh_seekbar();
 		return;
 	}
-	if (pref.displayLyrics && state.mouse_x > albumart_size.x && state.mouse_x <= albumart_size.x + albumart_size.w &&
-		state.mouse_y > albumart_size.y && state.mouse_y <= albumart_size.y + albumart_size.h) {
-		gLyrics.on_mouse_wheel(delta);
-	}
-	else if (displayBiography && state.mouse_x > uiBio.x && state.mouse_x <= uiBio.x + uiBio.w &&
-		state.mouse_y > uiBio.y && state.mouse_y <= uiBio.y + uiBio.h) {
-		biography.on_mouse_wheel(delta);
-	}
-	else if (displayPlaylist || displayPlaylistArtworkMode) {
-		trace_call && console.log(qwr_utils.function_name());
-		playlist.on_mouse_wheel(delta);
-	}
-	else if (displayLibrary) {
-		// trace_call && console.log(qwr_utils.function_name());
-		library.on_mouse_wheel(delta);
+	if (pref.cycleArtMWheel && aa_list.length > 1 && (!pref.displayLyrics && !displayBiography && (!(displayLibrary && pref.layout_mode === 'artwork_mode')) && !displayPlaylistArtworkMode && pref.libraryLayout !== 'full_width') &&
+		state.mouse_x > albumart_size.x && state.mouse_x <= albumart_size.x + albumart_size.w && state.mouse_y > albumart_size.y && state.mouse_y <= albumart_size.y + albumart_size.h) {
+		if (delta > 0) { // Prev
+			if (albumArtIndex !== 0) albumArtIndex = (albumArtIndex - 1) % aa_list.length;
+		} else { // Next
+			if (albumArtIndex !== aa_list.length - 1) albumArtIndex = (albumArtIndex + 1) % aa_list.length;
+		}
+		loadImageFromAlbumArtList(albumArtIndex, true);
+		lastLeftEdge = 0;
+		RepaintWindow();
+	} else {
+		if (pref.displayLyrics && state.mouse_x > albumart_size.x && state.mouse_x <= albumart_size.x + albumart_size.w &&
+			state.mouse_y > albumart_size.y && state.mouse_y <= albumart_size.y + albumart_size.h) {
+			gLyrics.on_mouse_wheel(delta);
+		}
+		else if (displayBiography && state.mouse_x > uiBio.x && state.mouse_x <= uiBio.x + uiBio.w &&
+			state.mouse_y > uiBio.y && state.mouse_y <= uiBio.y + uiBio.h) {
+			biography.on_mouse_wheel(delta);
+		}
+		else if (displayPlaylist || displayPlaylistArtworkMode) {
+			trace_call && console.log(qwr_utils.function_name());
+			playlist.on_mouse_wheel(delta);
+		}
+		else if (displayLibrary) {
+			// trace_call && console.log(qwr_utils.function_name());
+			library.on_mouse_wheel(delta);
+		}
 	}
 }
 // =================================================== //
