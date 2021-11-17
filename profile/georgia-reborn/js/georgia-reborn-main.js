@@ -2334,7 +2334,7 @@ function onOptionsMenu(x, y) {
 	playlistMenu.addToggleItem('Show artist name in row', pref, 'show_artist_playlistRow', () => { initPlaylist(); playlistCallback(); });
 	playlistMenu.addToggleItem('Show album title in row', pref, 'show_album_playlistRow', () => { initPlaylist(); playlistCallback(); });
 	playlistMenu.addToggleItem('Show time remaining on playing track', pref, 'playlistTimeRemaining', () => { RepaintWindow(); });
-	playlistMenu.addToggleItem('Always scroll to current playing song', pref, 'always_showPlaying');
+	playlistMenu.addToggleItem('Always scroll to current playing song', pref, 'always_showPlayingPl');
 	playlistMenu.addToggleItem('Show playlist on startup', pref, 'startPlaylist');
 	playlistMenu.addToggleItem('Use vinyl style numbering if available', pref, 'use_vinyl_nums', () => { RepaintWindow(); });
 
@@ -2833,6 +2833,7 @@ function onOptionsMenu(x, y) {
 	libraryMenu.addToggleItem('Show track count in album art', pref, 'showTrackCount', () => { panel.updateProp(1); });
 	libraryMenu.addToggleItem('Show row stripes', ppt, 'rowStripes', () => { panel.updateProp(1); });
 	libraryMenu.addToggleItem('Switch to playlist when adding songs', pref, 'libraryPlaylistSwitch');
+	libraryMenu.addToggleItem('Always scroll to current playing song', pref, 'always_showPlayingLib');
 	libraryMenu.addSeparator();
 	libraryMenu.addToggleItem('Always load View by same as tree', ppt, 'artTreeSameView', () => { panel.updateProp(1); });
 	libraryMenu.addToggleItem('Always load preset with current view pattern', ppt, 'presetLoadCurView', () => { panel.updateProp(1); });

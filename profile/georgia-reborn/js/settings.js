@@ -132,7 +132,7 @@ pref.add_properties({
 	show_artist_playlistRow:            ['Georgia-ReBORN - Playlist: Show artist name in playlist row', false], // Show artist name in playlist row
 	show_album_playlistRow:             ['Georgia-ReBORN - Playlist: Show album title in playlist row', false], // Show album title in playlist row
 	playlistTimeRemaining:              ['Georgia-ReBORN - Playlist: Show time remaining on playing track', false], // Show time remaining in playlist on currently playing track
-	always_showPlaying:                 ['Georgia-ReBORN - Playlist: Always scroll to current playing song', false], // Always scroll to current playing song on playlist
+	always_showPlayingPl:               ['Georgia-ReBORN - Playlist: Always scroll to current playing song', false], // Always scroll to current playing song in playlist
 	startPlaylist:                      ['Georgia-ReBORN - Playlist: Display playlist on startup', true], // true: Show the playlist window when the theme starts up
 	use_vinyl_nums:                     ['Georgia-ReBORN - Playlist: Use vinyl style numbering (e.g. A1)', true], // true: If the tags specified in tf.vinyl_side and tf.vinyl_tracknum are set, then we'll show vinyl style track numbers (i.e. "B2." instead of "04.")
 
@@ -175,6 +175,7 @@ pref.add_properties({
 	autoHideScrollbar_Library:          ['Georgia-ReBORN - Library: Auto hide scrollbar', true], // Library automatic scrollbar hide
 	showTrackCount:                     ['Georgia-ReBORN - Library: Show track count in album art', true], // Show track count in album art
 	libraryPlaylistSwitch:              ['Georgia-ReBORN - Library: Switch to playlist when adding songs', false], // When adding songs from Library auto-switch to Playlist
+	always_showPlayingLib:              ['Georgia-ReBORN - Library: Always scroll to current playing song', false], // Always scroll to current playing song in library
 
 	// Biography
 	biographyTheme:                     ['Georgia-ReBORN - Biography: Theme', 0], // 0 (default)

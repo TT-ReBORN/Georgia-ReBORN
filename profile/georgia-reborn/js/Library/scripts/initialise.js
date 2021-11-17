@@ -102,6 +102,10 @@ class LibraryPanel {
 			but.refresh(true);
 		}
 
+		if (pref.always_showPlayingLib) {
+			pop.nowPlayingShow();
+		}
+
 		// Dynamic library album cover thumbnail resizing
 		if (pref.libraryThumbnailSize === 'auto') {
 			if (!is_4k) {

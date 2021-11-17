@@ -309,6 +309,9 @@ function btnActionHandler(btn) {
 					initLyrics();
 					displayBiography = false;
 					displayLibrary = false;
+					if (pref.always_showPlayingPl) {
+						playlist.on_playback_new_track();
+					}
 					if (pref.startPlaylist) {
 						btns.playlist.enable = false;
 					}

@@ -148,7 +148,7 @@ class MenuItems {
 
 	mainMenu() {
 		menu.newMenu({hide: () => !this.settingsBtnDn && ppt.settingsShow && this.validItem});
-		[/*'Send to current playlist' + '\tEnter',*/ 'Add to current playlist' + '\tShift+enter', 'Send to new playlist' + '\tCtrl+enter', /*'Show nowplaying'*/].forEach((v, i) => menu.newItem({
+		['Add to current playlist' + '\tShift+enter', 'Send to new playlist' + '\tCtrl+enter', 'Show now playing'].forEach((v, i) => menu.newItem({
 			str: v,
 			func: () => { this.setPlaylist(i); reinitPlaylist(); },
 			flags: () => {
@@ -161,7 +161,7 @@ class MenuItems {
 
 		menu.newItem({
 			str: () => !panel.imgView ? 'Show album art' : 'Show tree',
-			func: () => this.setPlaylist(4),
+			func: () => this.setPlaylist(3),
 			flags: () => !panel.pn_h_auto || ppt.pn_h != ppt.pn_h_min ? MF_STRING_LIB : MF_GRAYED_LIB,
 			separator: () => !panel.imgView || this.show_context && !ui.style.topBarShow,
 			hide: () => !this.validItem || !ppt.albumArtOptionsShow
@@ -553,24 +553,39 @@ class MenuItems {
 
 	setPlaylist(i) {
 		switch (i) {
-			case 0: // The infamous 'Send to current playlist' func, deleting your entire playlist... >_<
-				// pop.load(pop.sel_items, true, false, pop.autoPlay.send, false, false);
-				// panel.treePaint();
-				// lib.treeState(false, ppt.rememberTree);
-				// break;
-			case 1:
+			// case 0: // The infamous 'Send to current playlist' func, deleting your entire playlist... >_<
+			// 	pop.load(pop.sel_items, true, false, pop.autoPlay.send, false, false);
+			// 	panel.treePaint();
+			// 	lib.treeState(false, ppt.rememberTree);
+			// 	break;
+			case 0:
 				pop.load(pop.sel_items, true, true, false, false, false);
 				lib.treeState(false, ppt.rememberTree);
+				if (pref.libraryPlaylistSwitch) {
+					btns.library.enabled = false;
+					btns.library.changeState(ButtonState.Default);
+					displayLibrary = false;
+					displayPlaylist = true;
+					playlist.on_size(ww, wh);
+					window.Repaint();
+				}
 				break;
-			case 2:
+			case 1:
 				pop.sendToNewPlaylist();
 				panel.treePaint();
 				lib.treeState(false, ppt.rememberTree);
+				if (pref.libraryPlaylistSwitch) {
+					btns.library.enabled = false;
+					btns.library.changeState(ButtonState.Default);
+					displayLibrary = false;
+					displayPlaylist = true;
+					window.Repaint();
+				}
 				break;
-			case 3:
+			case 2:
 				pop.nowPlayingShow();
 				break;
-			case 4:
+			case 3:
 				lib.logTree();
 				pop.clearTree();
 				ppt.toggle('albumArtShow');
@@ -582,14 +597,6 @@ class MenuItems {
 				setLibrarySize();
 				window.Repaint();
 				break;
-		}
-		if (pref.libraryPlaylistSwitch) {
-			btns.library.enabled = false;
-			btns.library.changeState(ButtonState.Default);
-			displayLibrary = false;
-			displayPlaylist = true;
-			playlist.on_size(ww, wh);
-			window.Repaint();
 		}
 	}
 
