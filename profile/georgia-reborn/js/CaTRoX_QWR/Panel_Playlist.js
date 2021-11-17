@@ -6825,13 +6825,13 @@ function GroupingHandler() {
 		if (cur_group.name === 'user_defined') {
 			group_by_text += ' [' + this.get_query() + ']';
 		}
-		group.append_item(
-			group_by_text,
-			() => {
-				request_user_query(on_execute_callback_fn);
-			},
-			{is_radio_checked: cur_group.name === 'user_defined'}
-		);
+		// group.append_item(
+		// 	group_by_text,
+		// 	() => {
+		// 		request_user_query(on_execute_callback_fn);
+		// 	},
+		// 	{is_radio_checked: cur_group.name === 'user_defined'}
+		// );
 
 		settings.group_presets.forEach(function (group_item) {
 			var group_by_text = group_item.description;
