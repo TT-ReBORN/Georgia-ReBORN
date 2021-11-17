@@ -178,6 +178,13 @@ cd.png, cd2.png, cd3.png etc...
 * <b>vinylART:</b><br />
 vinyl.png, vinyl2.png, vinyl3.png etc...
 
+* <b>Booklet:</b><br />
+booklet.jpg/png, booklet2.jpg/png, booklet3.jpg/png etc...<br />
+artwork.jpg/png, artwork2.jpg/png, artwork3.jpg/png etc...<br />
+image.jpg/png, image2.jpg/png, image3.jpg/png etc...<br />
+scan.jpg/png, scan2.jpg/png, scan3.jpg/png etc...<br />
+back.jpg/png, back2.jpg/png, back3.jpg/png etc...<br />
+
 #
 
 <b>Best choice for a clean folder structure, create in root dir of the album following folder or your choice:<br />
@@ -193,6 +200,13 @@ cd.png, cd2.png, cd3.png etc...
 
 * <b>vinylART:</b><br />
 vinyl.png, vinyl2.png, vinyl3.png etc...
+
+* <b>Booklet:</b><br />
+booklet.jpg/png, booklet2.jpg/png, booklet3.jpg/png etc...<br />
+artwork.jpg/png, artwork2.jpg/png, artwork3.jpg/png etc...<br />
+image.jpg/png, image2.jpg/png, image3.jpg/png etc...<br />
+scan.jpg/png, scan2.jpg/png, scan3.jpg/png etc...<br />
+back.jpg/png, back2.jpg/png, back3.jpg/png etc...<br />
 
 #
 
@@ -211,6 +225,13 @@ cd.png, cd2.png, cd3.png etc...
 * <b>vinylART:</b><br />
 vinyl.png, vinyl2.png, vinyl3.png etc...
 
+* <b>Booklet:</b><br />
+booklet.jpg/png, booklet2.jpg/png, booklet3.jpg/png etc...<br />
+artwork.jpg/png, artwork2.jpg/png, artwork3.jpg/png etc...<br />
+image.jpg/png, image2.jpg/png, image3.jpg/png etc...<br />
+scan.jpg/png, scan2.jpg/png, scan3.jpg/png etc...<br />
+back.jpg/png, back2.jpg/png, back3.jpg/png etc...<br />
+
 #
 
 <b>In folders CD1, CD2 etc:</b>
@@ -225,6 +246,13 @@ cd.png, cd2.png, cd3.png etc...
 
 * <b>vinylART:</b><br />
 vinyl.png, vinyl2.png, vinyl3.png etc...
+
+* <b>Booklet:</b><br />
+booklet.jpg/png, booklet2.jpg/png, booklet3.jpg/png etc...<br />
+artwork.jpg/png, artwork2.jpg/png, artwork3.jpg/png etc...<br />
+image.jpg/png, image2.jpg/png, image3.jpg/png etc...<br />
+scan.jpg/png, scan2.jpg/png, scan3.jpg/png etc...<br />
+back.jpg/png, back2.jpg/png, back3.jpg/png etc...<br />
 
 #
 
@@ -241,6 +269,13 @@ cd.png, cd2.png, cd3.png etc...
 
 * <b>vinylART:</b><br />
 vinyl.png, vinyl2.png, vinyl3.png etc...
+
+* <b>Booklet:</b><br />
+booklet.jpg/png, booklet2.jpg/png, booklet3.jpg/png etc...<br />
+artwork.jpg/png, artwork2.jpg/png, artwork3.jpg/png etc...<br />
+image.jpg/png, image2.jpg/png, image3.jpg/png etc...<br />
+scan.jpg/png, scan2.jpg/png, scan3.jpg/png etc...<br />
+back.jpg/png, back2.jpg/png, back3.jpg/png etc...
 </details>
 
 <details>
