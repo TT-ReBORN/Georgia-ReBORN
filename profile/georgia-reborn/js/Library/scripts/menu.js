@@ -566,7 +566,7 @@ class MenuItems {
 					btns.library.changeState(ButtonState.Default);
 					displayLibrary = false;
 					displayPlaylist = true;
-					playlist.on_size(ww, wh);
+					if (!pref.always_showPlayingPl) playlist.on_size(ww, wh);
 					window.Repaint();
 				}
 				break;
