@@ -744,7 +744,7 @@
 				if (pth.fe != this.cov.done && cfg.dlRevImg) {
 					const pth_cov = pth.pe[!cfg.supCache ? 0 : 1];
 					const fn_cov = pth_cov + pth.fe;
-					if (panelBio.server) serverBio.getRevImg(a, l, pth_cov, fn_cov, false);
+					if (panelBio.serverBio) serverBio.getRevImg(a, l, pth_cov, fn_cov, false);
 					else window.NotifyOthers('bio_getRevImg', [a, l, pth_cov, fn_cov]);
 					this.cov.done = pth.fe;
 				}
@@ -969,7 +969,7 @@
 				if (pth.fe != this.cov.done && cfg.dlRevImg) {
 					const pth_cov = pth.pe[!cfg.supCache ? 0 : 1];
 					const fn_cov = pth_cov + pth.fe;
-					if (panelBio.server) serverBio.getRevImg(a, l, pth_cov, fn_cov, false);
+					if (panelBio.serverBio) serverBio.getRevImg(a, l, pth_cov, fn_cov, false);
 					else window.NotifyOthers('bio_getRevImg', [a, l, pth_cov, fn_cov]);
 					this.cov.done = pth.fe;
 				}

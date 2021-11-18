@@ -4359,7 +4359,7 @@ function on_get_album_art_done(metadb, art_id, image, image_path) {
 function on_script_unload() {
 	console.log('Unloading Script');
 	// it appears we don't need to dispose the images which we loaded using gdi.Image in their declaration for some reason. Attempting to dispose them causes a script error.
-	if (panelBio.server) {window.NotifyOthers("script_unload_bio", 0); timerBio.clear(timerBio.img);} butBio.on_script_unload();
+	if (panelBio.serverBio) {window.NotifyOthers("script_unload_bio", 0); timerBio.clear(timerBio.img);} butBio.on_script_unload();
 }
 
 // Timed events
