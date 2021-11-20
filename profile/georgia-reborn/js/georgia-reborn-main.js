@@ -2863,7 +2863,7 @@ function onOptionsMenu(x, y) {
 		}
 		uiBio.updateProp(1);
 		txt.refresh(4); // Needed to correctly update and paint Blend theme
-		initBiographyColors();
+		initTheme();
 	});
 	biographyThemeMenu.appendTo(biographyMenu);
 

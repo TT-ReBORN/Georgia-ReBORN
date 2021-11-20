@@ -340,9 +340,9 @@ function initPlaylistColors() {
 				g_pl_colors.title_normal = col.superDarkAccent;
 				g_pl_colors.title_selected = col.maxDarkAccent;
 				g_pl_colors.title_playing = col.maxDarkAccent;
-				g_pl_colors.sbarBio = g_pl_colors.background != RGB(255, 255, 255) ? col.accent : RGB(180, 180, 180);
-				g_pl_colors.sbarBio_hover = g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : RGB(220, 220, 220);
-				g_pl_colors.sbarBio_btns = g_pl_colors.background != RGB(255, 255, 255) ? col.maxDarkAccent : RGB(20, 20, 20);
+				g_pl_colors.sbarBio = g_pl_colors.background != RGB(255, 255, 255) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light ? col.accent : uiBio.blur.light ? col.extraDarkAccent : uiBio.blur.dark ? col.extraLightAccent : uiBio.blur.blend ? col.extraDarkAccent : RGB(180, 180, 180);
+				g_pl_colors.sbarBio_hover = g_pl_colors.background != RGB(255, 255, 255) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light ? col.extraLightAccent : uiBio.blur.light ? col.maxDarkAccent : uiBio.blur.dark ? col.maxLightAccent : RGB(220, 220, 220);
+				g_pl_colors.sbarBio_btns = g_pl_colors.background != RGB(255, 255, 255) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light ? col.maxDarkAccent : uiBio.blur.light ? col.maxDarkAccent : uiBio.blur.dark ? col.maxLightAccent : RGB(20, 20, 20);
 			}
 			else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
 				g_pl_colors.playlist_mgr_text_hovered = col.maxLightAccent;
@@ -359,9 +359,9 @@ function initPlaylistColors() {
 				g_pl_colors.title_normal = col.superLightAccent;
 				g_pl_colors.title_selected = col.maxLightAccent;
 				g_pl_colors.title_playing = col.maxLightAccent;
-				g_pl_colors.sbarBio = g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : RGB(180, 180, 180);
-				g_pl_colors.sbarBio_hover = g_pl_colors.background != RGB(255, 255, 255) ? col.superLightAccent : RGB(220, 220, 220);
-				g_pl_colors.sbarBio_btns = g_pl_colors.background != RGB(255, 255, 255) ? col.maxLightAccent : RGB(220, 220, 220);
+				g_pl_colors.sbarBio = g_pl_colors.background != RGB(255, 255, 255) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light ? col.extraLightAccent : uiBio.blur.dark ? col.extraLightAccent : uiBio.blur.light ? col.extraDarkAccent : uiBio.blur.blend ?  col.extraLightAccent : RGB(180, 180, 180);
+				g_pl_colors.sbarBio_hover = g_pl_colors.background != RGB(255, 255, 255) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light ? col.superLightAccent : uiBio.blur.dark ? col.maxLightAccent : uiBio.blur.light ? col.maxDarkAccent : RGB(220, 220, 220);
+				g_pl_colors.sbarBio_btns = g_pl_colors.background != RGB(255, 255, 255) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light ? col.maxLightAccent : uiBio.blur.dark ? col.maxLightAccent : uiBio.blur.light ? col.maxDarkAccent : RGB(220, 220, 220);
 			}
 		}
 
@@ -591,7 +591,7 @@ function initLibraryColors() {
 // BIOGRAPHY COLORS
 function initBiographyColors() {
 
-	if ((pref.whiteTheme || pref.blackTheme || pref.rebornTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light) {
+	if ((pref.whiteTheme || pref.blackTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light) {
 		pptBio.headFontStyle = 1;                         // Artist/Album Type Style 0 = Normal, 1 = Bold, 2 = Italic, 3 = Bold Italic, 16 = Semibold, 18 = Semibold Italic
 		uiBio.col.bg = g_pl_colors.background;            // Background Color
 		uiBio.col.head = g_pl_colors.artist_playing;      // Artist/Album Color
@@ -603,7 +603,7 @@ function initBiographyColors() {
 			uiBio.col.head = RGB(120, 120, 120);
 		}
 	}
-	else if (pref.creamTheme && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.blend) {
+	else if (pref.creamTheme && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light) {
 		pptBio.headFontStyle = 1;
 		uiBio.col.bg = g_pl_colors.background;
 		uiBio.col.head = rgb(120, 170, 130);
@@ -675,6 +675,30 @@ function initBiographyColors() {
 	else if (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) {
 		uiBio.col.bottomLine = rgb(55, 55, 55);
 		uiBio.col.centerLine = rgb(55, 55, 55);
+	}
+
+	if (pref.rebornTheme) {
+		let bgColor = col.primary;
+		if (g_pl_colors.background != RGB(255, 255, 255)) {
+			if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
+				pptBio.headFontStyle = 1;
+				uiBio.col.bg = g_pl_colors.background;
+				uiBio.col.head = uiBio.blur.dark ? col.superLightAccent : col.superDarkAccent;
+				uiBio.col.text = uiBio.blur.dark ? col.superLightAccent : col.superDarkAccent;
+				uiBio.col.source = uiBio.blur.dark ? col.superLightAccent : col.superDarkAccent;
+				uiBio.col.bottomLine = col.darkAccent;
+				uiBio.col.centerLine = col.darkAccent;
+			}
+			else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
+				pptBio.headFontStyle = 1;
+				uiBio.col.bg = g_pl_colors.background;
+				uiBio.col.head = uiBio.blur.light ? col.superDarkAccent : col.superLightAccent;
+				uiBio.col.text = uiBio.blur.light ? col.superDarkAccent : col.superLightAccent;
+				uiBio.col.source = uiBio.blur.light ? col.superDarkAccent : col.superLightAccent;
+				uiBio.col.bottomLine = col.darkAccent;
+				uiBio.col.centerLine = col.darkAccent;
+			}
+		}
 	}
 
 }	initBiographyColors();
