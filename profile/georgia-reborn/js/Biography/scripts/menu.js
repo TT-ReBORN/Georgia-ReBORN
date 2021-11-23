@@ -1012,7 +1012,7 @@ class MenuItemsBio {
 		this.shift = vkBio.k('shift');
 		const imgInfo = imgBio.pth();
 
-		this.docTxt = docBio.parentWindow.clipboardData.getData('text');
+		// this.docTxt = docBio.parentWindow.clipboardData.getData('text'); // TODO: crashes SMP on right click in Wine, used for paste from clipboard. Disabled for now until SMP fix available...
 		this.getDisplayStr();
 		this.img.artist = imgInfo.artist;
 		this.path.img = imgInfo.imgPth;

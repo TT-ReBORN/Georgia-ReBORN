@@ -194,7 +194,7 @@ function on_mouse_move(x, y) {
 
 function on_mouse_rbtn_up(x, y) {
 	if (y < ui.y + panel.search.h && x > panel.search.x && x < panel.search.x + panel.search.w) {
-		if (ppt.searchShow) search.rbtn_up(x, y);
+		// if (ppt.searchShow) search.rbtn_up(x, y); // TODO: doc.parentWindow.clipboardData.getData crashes SMP on right click in Wine, used for paste from clipboard, disabled for now until SMP fix
 	} else men.rbtn_up(x, y);
 	return true;
 }
@@ -597,7 +597,7 @@ class LibraryCallbacks {
 
 	on_mouse_rbtn_up(x, y) {
 		if (y < ui.y + panel.search.h && x > panel.search.x && x < panel.search.x + panel.search.w) {
-			if (ppt.searchShow) search.rbtn_up(x, y);
+			// if (ppt.searchShow) search.rbtn_up(x, y); // TODO: doc.parentWindow.clipboardData.getData crashes SMP on right click in Wine, used for paste from clipboard, disabled for now until SMP fix
 		} else men.rbtn_up(x, y);
 		return true;
 	}
