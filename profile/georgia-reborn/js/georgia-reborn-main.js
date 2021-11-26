@@ -5258,31 +5258,31 @@ function createButtonObjects(ww, wh) {
 		let centerMenu = is_4k ? 550 : 280;
 
 		if (pref.menu_font_size === 11) {
-			if (pref.player_small && ww < 1600 || pref.player_4k_small) {
+			if (!is_4k && ww < 1600 || is_4k && ww < 2800) {
 				centerMenu = is_4k ? 396 : 204;
 			} else {
 				centerMenu = is_4k ? 532 : 264;
 			}
 		} else if (pref.menu_font_size === 12) {
-			if (pref.player_small && ww < 1600 || pref.player_4k_small) {
+			if (!is_4k && ww < 1600 || is_4k && ww < 2800) {
 				centerMenu = is_4k ? 550 : 280;
 			} else {
 				centerMenu = is_4k ? 564 : 280;
 			}
 		} else if (pref.menu_font_size === 13) {
-			if (pref.player_small && ww < 1600 || pref.player_4k_small) {
+			if (!is_4k && ww < 1600 || is_4k && ww < 2800) {
 				centerMenu = is_4k ? 708 : 356;
 			} else {
 				centerMenu = is_4k ? 593 : 295;
 			}
 		} else if (pref.menu_font_size === 14) {
-			if (pref.player_small && ww < 1600 || pref.player_4k_small) {
+			if (!is_4k && ww < 1600 || is_4k && ww < 2800) {
 				centerMenu = is_4k ? 856 : 432;
 			} else {
 				centerMenu = is_4k ? 626 : 314;
 			}
 		} else if (pref.menu_font_size === 16) {
-			if (pref.player_small && ww < 1600 || pref.player_4k_small) {
+			if (!is_4k && ww < 1600 || is_4k && ww < 2800) {
 				centerMenu = is_4k ? 1158 : 584;
 			} else {
 				centerMenu = is_4k ? 688 : 343;
@@ -5361,31 +5361,31 @@ function createButtonObjects(ww, wh) {
 		let centerMenu = is_4k ? 666 : 338;
 
 		if (pref.menu_font_size === 11) {
-			if (pref.player_small && ww < 700 || pref.player_4k_small) {
+			if (!is_4k && ww < 700 || is_4k && ww < 1400) {
 				centerMenu = is_4k ? 512 : 262;
 			} else {
 				centerMenu = is_4k ? 647 : 322;
 			}
 		} else if (pref.menu_font_size === 12) {
-			if (pref.player_small && ww < 700 || pref.player_4k_small) {
+			if (!is_4k && ww < 700 || is_4k && ww < 1400) {
 				centerMenu = is_4k ? 666 : 338;
 			} else {
 				centerMenu = is_4k ? 696 : 345;
 			}
 		} else if (pref.menu_font_size === 13) {
-			if (pref.player_small && ww < 700 || pref.player_4k_small) {
+			if (!is_4k && ww < 700 || is_4k && ww < 1400) {
 				centerMenu = is_4k ? 824 : 414;
 			} else {
 				centerMenu = is_4k ? 748 : 372;
 			}
 		} else if (pref.menu_font_size === 14) {
-			if (pref.player_small && ww < 700 || pref.player_4k_small) {
+			if (!is_4k && ww < 700 || is_4k && ww < 1400) {
 				centerMenu = is_4k ? 972 : 490;
 			} else {
 				centerMenu = is_4k ? 798 : 394;
 			}
 		} else if (pref.menu_font_size === 16) {
-			if (pref.player_small && ww < 700 || pref.player_4k_small) {
+			if (!is_4k && ww < 700 || is_4k && ww < 1400) {
 				centerMenu = is_4k ? 1274 : 542;
 			} else {
 				centerMenu = is_4k ? 893 : 445;
@@ -5401,7 +5401,7 @@ function createButtonObjects(ww, wh) {
 		x += img[0].Width - (is_4k ? 3 : 2);
 
 		img = btnImg.Options;
-		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+		if (!is_4k && ww < 700 || is_4k && ww < 1400) {
 			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 120 : 60);
 			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 127 : 64);
 			if (pref.menu_font_size === 13) x -= img[0].Width - (is_4k ? 134 : 68);
@@ -5428,7 +5428,7 @@ function createButtonObjects(ww, wh) {
 		btns[30] = new Button(x, y, 0, h, img);
 
 		img = btnImg.Rating;
-		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+		if (!is_4k && ww < 700 || is_4k && ww < 1400) {
 			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 36 : 23);
 			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 8 : 0);
 			if (pref.menu_font_size === 13) x -= img[0].Width + (is_4k ? 47 : 29);
@@ -5440,7 +5440,7 @@ function createButtonObjects(ww, wh) {
 		btns[32] = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Rating', img, 'Rate Song');
 
 		img = btnImg.Lyrics;
-		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+		if (!is_4k && ww < 700 || is_4k && ww < 1400) {
 			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 3 : 0);
 			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 3 : 2);
 			if (pref.menu_font_size === 13) x -= img[0].Width - (is_4k ? 8 : 5);
@@ -5452,7 +5452,7 @@ function createButtonObjects(ww, wh) {
 		btns.lyrics = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Lyrics', img, 'Display Lyrics');
 
 		img = btnImg.Biography;
-		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+		if (!is_4k && ww < 700 || is_4k && ww < 1400) {
 			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 3 : 0);
 			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 3 : 2);
 			if (pref.menu_font_size === 13) x -= img[0].Width - (is_4k ? 8 : 5);
@@ -5464,7 +5464,7 @@ function createButtonObjects(ww, wh) {
 		btns.biography = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'Biography', img, 'Display Biography');
 
 		img = btnImg.ShowLibrary;
-		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+		if (!is_4k && ww < 700 || is_4k && ww < 1400) {
 			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 3 : 0);
 			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 3 : 2);
 			if (pref.menu_font_size === 13) x -= img[0].Width - (is_4k ? 8 : 5);
@@ -5476,7 +5476,7 @@ function createButtonObjects(ww, wh) {
 		btns.library = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'ShowLibrary', img, 'Display Library');
 
 		img = btnImg.playlistArtworkMode;
-		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+		if (!is_4k && ww < 700 || is_4k && ww < 1400) {
 			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 3 : 0);
 			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 3 : 2);
 			if (pref.menu_font_size === 13) x -= img[0].Width - (is_4k ? 8 : 5);
@@ -5488,7 +5488,7 @@ function createButtonObjects(ww, wh) {
 		btns.playlistArtworkMode = new Button(x, y, img[0].Width, is_4k ? h + 7 : h + 2, 'playlistArtworkMode', img, 'Display Playlist');
 
 		img = btnImg.Playlist;
-		if (pref.player_small && ww < 700 || pref.player_4k_small) {
+		if (!is_4k && ww < 700 || is_4k && ww < 1400) {
 			if (pref.menu_font_size === 11) x -= img[0].Width - (is_4k ? 3 : 0);
 			if (pref.menu_font_size === 12) x -= img[0].Width - (is_4k ? 3 : 2);
 			if (pref.menu_font_size === 13) x -= img[0].Width - (is_4k ? 8 : 5);
