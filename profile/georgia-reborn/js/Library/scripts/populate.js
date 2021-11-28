@@ -1358,6 +1358,7 @@ class Populate {
 					return;
 				}
 				if (!ppt.dblClickAction && !this.autoFill.mouse && !this.autoPlay.click) return this.send(item, x, y), reinitPlaylist();
+				if (pref.playlistRowHover) repaintPlaylistRows();
 				if (ppt.dblClickAction == 2 && !item.track && !panel.imgView) {
 					this.expandCollapse(x, y, item, ix);
 					lib.treeState(false, ppt.rememberTree);
@@ -1372,6 +1373,7 @@ class Populate {
 					const c = (plman.PlaybackOrder == 3 || plman.PlaybackOrder == 4) ? Math.ceil(plman.PlaylistItemCount(pln) * Math.random() - 1) : 0;
 					plman.ExecutePlaylistDefaultAction(pln, c);
 					reinitPlaylist();
+					if (pref.playlistRowHover) repaintPlaylistRows();
 				}
 				break;
 		}

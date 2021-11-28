@@ -184,7 +184,7 @@ function on_mouse_move(x, y) {
 	pop.hand = false;
 	if (ppt.searchShow || ppt.sbarShow) but.move(x, y);
 	if (ppt.searchShow) search.move(x, y);
-	pop.move(x, y);
+	if (pref.libraryRowHover) pop.move(x, y);
 	pop.dragDrop(x, y);
 	sbar.move(x, y);
 	ui.zoomDrag(x, y);
@@ -518,7 +518,7 @@ class LibraryCallbacks {
 		pop.hand = false;
 		if (ppt.searchShow || ppt.sbarShow) but.move(x, y);
 		if (ppt.searchShow) search.move(x, y);
-		pop.move(x, y);
+		if (pref.libraryRowHover) pop.move(x, y);
 		pop.dragDrop(x, y);
 		sbar.move(x, y);
 		ui.zoomDrag(x, y);

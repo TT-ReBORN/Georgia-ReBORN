@@ -195,6 +195,12 @@ class List {
             const scrollbar_hitarea_h = this.h;
             const scrollbar_hitarea_w = scaleForDisplay(10);
             const scrollbar_hitarea_y = 0;
+
+            const scrollbar_repaint_w = this.h / 2;
+            const scrollbar_repaint_h = this.h;
+            const scrollbar_repaint_x = this.x + this.w - scrollbar_repaint_w;
+            const scrollbar_repaint_y = this.y + playlist_geo.scrollbar_top_pad;
+
             let inScrollArea = '';
 
             if ((scrollbar_hitarea_x - scaleForDisplay(20) * trace_pad <= x) && (x <= scrollbar_hitarea_x - scaleForDisplay(20) + scrollbar_hitarea_w + trace_pad) &&
@@ -203,7 +209,7 @@ class List {
                 if (!inScrollArea) {
                     inScrollArea = true;
                     this.update_scrollbar();
-                    this.repaint();
+                    window.RepaintRect(scrollbar_repaint_x, scrollbar_repaint_y, scrollbar_repaint_w, scrollbar_repaint_h);
                 } else { inScrollArea = false; }
 
             } else if ((scrollbar_hitarea_x - scaleForDisplay(30) * trace_pad <= x) && (x <= scrollbar_hitarea_x - scaleForDisplay(30) + scrollbar_hitarea_w + trace_pad) &&
@@ -213,7 +219,7 @@ class List {
                 if (!inScrollArea) {
                     inScrollArea = true;
                     this.update_scrollbar();
-                    this.repaint();
+                    window.RepaintRect(scrollbar_repaint_x, scrollbar_repaint_y, scrollbar_repaint_w, scrollbar_repaint_h);
                 } else { inScrollArea = false; }
             }
         }

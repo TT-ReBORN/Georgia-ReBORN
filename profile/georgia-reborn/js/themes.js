@@ -239,7 +239,7 @@ function initPlaylistColors() {
 		pref.creamTheme ? RGB(90, 90, 90) :
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(200, 200, 200) : '';
 
-		g_pl_colors.title_hover = pref.whiteTheme ? RGB(250, 0, 0) : RGB(100, 100, 100);
+		g_pl_colors.title_hovered = g_pl_colors.title_selected;
 		g_pl_colors.rating_color = RGB(255, 190, 0);
 
 		g_pl_colors.count_normal =
@@ -339,6 +339,7 @@ function initPlaylistColors() {
 				g_pl_colors.date_playing = col.superDarkAccent;
 				g_pl_colors.title_normal = col.superDarkAccent;
 				g_pl_colors.title_selected = col.maxDarkAccent;
+				g_pl_colors.title_hovered = col.maxDarkAccent;
 				g_pl_colors.title_playing = col.maxDarkAccent;
 				g_pl_colors.sbarBio = g_pl_colors.background != RGB(255, 255, 255) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light ? col.accent : uiBio.blur.light ? col.extraDarkAccent : uiBio.blur.dark ? col.extraLightAccent : uiBio.blur.blend ? col.extraDarkAccent : RGB(180, 180, 180);
 				g_pl_colors.sbarBio_hover = g_pl_colors.background != RGB(255, 255, 255) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light ? col.extraLightAccent : uiBio.blur.light ? col.maxDarkAccent : uiBio.blur.dark ? col.maxLightAccent : RGB(220, 220, 220);
@@ -358,6 +359,7 @@ function initPlaylistColors() {
 				g_pl_colors.date_playing = col.maxLightAccent;
 				g_pl_colors.title_normal = col.superLightAccent;
 				g_pl_colors.title_selected = col.maxLightAccent;
+				g_pl_colors.title_hovered = col.maxLightAccent;
 				g_pl_colors.title_playing = col.maxLightAccent;
 				g_pl_colors.sbarBio = g_pl_colors.background != RGB(255, 255, 255) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light ? col.extraLightAccent : uiBio.blur.dark ? col.extraLightAccent : uiBio.blur.light ? col.extraDarkAccent : uiBio.blur.blend ?  col.extraLightAccent : RGB(180, 180, 180);
 				g_pl_colors.sbarBio_hover = g_pl_colors.background != RGB(255, 255, 255) && !uiBio.blur.dark && !uiBio.blur.blend && !uiBio.blur.light ? col.superLightAccent : uiBio.blur.dark ? col.maxLightAccent : uiBio.blur.light ? col.maxDarkAccent : RGB(220, 220, 220);

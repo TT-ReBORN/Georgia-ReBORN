@@ -2337,6 +2337,8 @@ function onOptionsMenu(x, y) {
 	playlistMenu.addToggleItem('Always scroll to current playing song', pref, 'always_showPlayingPl');
 	playlistMenu.addToggleItem('Show playlist on startup', pref, 'startPlaylist');
 	playlistMenu.addToggleItem('Use vinyl style numbering if available', pref, 'use_vinyl_nums', () => { RepaintWindow(); });
+	playlistMenu.addSeparator();
+	playlistMenu.addToggleItem('Row mouse hover', pref, 'playlistRowHover', () => { RepaintWindow(); });
 
 	playlistMenu.appendTo(menu);
 
@@ -2838,6 +2840,8 @@ function onOptionsMenu(x, y) {
 	libraryMenu.addToggleItem('Always load View by same as tree', ppt, 'artTreeSameView', () => { panel.updateProp(1); });
 	libraryMenu.addToggleItem('Always load preset with current view pattern', ppt, 'presetLoadCurView', () => { panel.updateProp(1); });
 	libraryMenu.addSeparator();
+	libraryMenu.addToggleItem('Row mouse hover', pref, 'libraryRowHover', () => { RepaintWindow(); });
+	libraryMenu.addSeparator();
 
 	libraryMenu.addItem('Reset library zoom', false, () => {
 		panel.zoomReset();
@@ -3147,6 +3151,8 @@ function initTheme() {
 		playlist.on_size(ww, wh); // Needed to update playlist scrollbar colors -> calling on_size(); from Control_List
 		window.Repaint();
 	}
+
+	if (pref.playlistRowHover) repaintPlaylistRows();
 }
 
 // custom initialisation function, called once after variable declarations

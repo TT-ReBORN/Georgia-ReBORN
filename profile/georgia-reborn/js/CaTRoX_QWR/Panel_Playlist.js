@@ -444,6 +444,8 @@ function PlaylistPanel(x, y) {
 			playlist_info.on_playlist_modified();
 		}
 		playlist.on_playlists_changed();
+
+		if (pref.playlistRowHover) repaintPlaylistRows();
 	};
 
 	this.on_playlist_switch = function () {
@@ -455,6 +457,8 @@ function PlaylistPanel(x, y) {
 			playlist_info.on_playlist_modified();
 		}
 		playlist.on_playlist_switch();
+
+		if (pref.playlistRowHover) repaintPlaylistRows();
 	};
 
 	this.on_playlist_item_ensure_visible = function (playlistIndex, playlistItemIndex) {
@@ -782,9 +786,14 @@ class Playlist extends List {
 			}
 		}
 
-		if (pref.show_tt || pref.show_truncatedText_tt) {
-			if (item instanceof Row) {
+		if (item instanceof Row) {
+			if (pref.show_tt || pref.show_truncatedText_tt) {
 				item.title_truncatedText_tt(x, y);
+			}
+			if (pref.playlistRowHover) {
+				try { // Prevent crash when playlist rows are not fully initialized while mouse moving in panel, e.g on foobar startup or while changing playlist idx
+					item.on_mouse_move(x, y, m);
+				} catch (e) {};
 			}
 		}
 
@@ -4861,7 +4870,6 @@ class Row extends ListItem {
 		 */
 		this.cur_playlist_idx = cur_playlist_idx_arg;
 
-		// var that = this;
 		/**
 		 * @type {number}
 		 */
@@ -4883,6 +4891,59 @@ class Row extends ListItem {
 		this.length_text = undefined;
 
 		this.initialize_rating();
+
+
+		// Playlist row hover
+		/** @enum {number} */
+		var rowState = {
+			normal:  0,
+			hovered: 1,
+			pressed: 2
+		};
+
+		/** @type {number} */
+		this.hover_alpha = 0;
+
+		//private:
+		var that = this;
+
+		let alpha_timer = new _alpha_timer([this], function () {
+			clearInterval(that.rowHoverTimer);
+			that.rowHoverTimer = setInterval(() => {
+				return that.title_color = g_pl_colors.title_normal;
+			}, 1000 );
+		});
+
+		/**
+		 * @param {rowState} item
+		 */
+		function change_row_state(item) {
+			switch (item) {
+				case rowState.normal: {
+					that.title_color = g_pl_colors.title_normal;
+					break;
+				}
+				case rowState.hovered: {
+					that.title_color = g_pl_colors.title_hovered;
+					break;
+				}
+				case rowState.pressed: {
+					that.title_color = g_pl_colors.title_selected;
+					break;
+				}
+			}
+			alpha_timer.start();
+			window.RepaintRect(playlist.x, playlist.y, playlist.w, playlist.h);
+		}
+
+		this.on_mouse_move = function (x, y, m) {
+			clearInterval(that.rowHoverTimer);
+			change_row_state(this.trace(x, y) ? rowState.hovered : rowState.normal);
+		};
+
+		this.trace = function (x, y) {
+			return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
+		};
 	}
 
 	//public:
@@ -4894,12 +4955,23 @@ class Row extends ListItem {
 			gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.row_alternate);
 		}
 
+		if (pref.playlistRowHover) {
+			if (needs_rows_repaint) {
+				repaintPlaylistRows();
+				needs_rows_repaint = false;
+			}
+		} else {
+			this.title_color = g_pl_colors.title_normal;
+		}
 		var title_font = g_pl_fonts.title_normal;
-		var title_color = g_pl_colors.title_normal;
 		var title_artist_font = g_pl_fonts.title_selected;
 		var title_artist_color = g_pl_colors.title_selected;
 
 		if (this.is_selected()) {
+			this.title_color = g_pl_colors.title_selected;
+			title_font = g_pl_fonts.title_selected;
+			title_artist_color = g_pl_colors.title_normal;
+
 			if (g_properties.alternate_row_color) {
 				// last item is cropped
 				var rect_h = this.is_cropped ? this.h - 1 : this.h;
@@ -4939,30 +5011,25 @@ class Row extends ListItem {
 				pref.creamTheme ? RGB(120, 170, 130) :
 				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : ''
 			);
-
-			title_color = g_pl_colors.title_selected;
-			title_font = g_pl_fonts.title_selected;
-
-			title_artist_color = g_pl_colors.title_normal;
 		}
 
 		if (this.is_playing) { // Might override 'selected' fonts
-			title_color = g_pl_colors.title_playing;
+			this.title_color = g_pl_colors.title_playing;
 			title_font = g_pl_fonts.title_playing;
 
 			const bg_color = pref.rebornTheme ? this.is_selected() + (g_pl_colors.background != RGB(255, 255, 255) ? col.darkMiddleAccent : col.primary) : this.is_selected() + col.primary;
 			gr.FillSolidRect(this.x, this.y, this.w, this.h, bg_color);
 			if (colorDistance(bg_color, title_artist_color) < 195) {
-				title_artist_color = title_color;
+				title_artist_color = this.title_color;
 			}
 			const brightBackground = (new Color(bg_color).brightness) > 151;
 			const darkBackground = (new Color(bg_color).brightness) < 151;
 			if (brightBackground && (pref.whiteTheme || pref.blackTheme)) {
-				title_color = rgb(20, 20, 20);
+				this.title_color = rgb(20, 20, 20);
 				title_artist_color = rgb(0, 0, 0);
 			}
 			if (darkBackground && pref.whiteTheme && pref.layout_mode === 'default_mode') {
-				title_color = rgb(240, 240, 240);
+				this.title_color = rgb(240, 240, 240);
 				title_artist_color = rgb(220, 220, 220);
 			}
 
@@ -5029,7 +5096,7 @@ class Row extends ListItem {
 			if (this.length_text) {
 				var length_x = this.x + this.w - length_w - right_pad;
 
-				gr.DrawString(this.length_text, title_font, title_color, length_x, this.y, length_w, this.h, g_string_format.h_align_far | g_string_format.v_align_center);
+				gr.DrawString(this.length_text, title_font, this.title_color, length_x, this.y, length_w, this.h, g_string_format.h_align_far | g_string_format.v_align_center);
 				testRect && gr.DrawRect(length_x, this.y - 1, length_w, this.h, 1, RGBA(155, 155, 255, 250));
 			}
 			// We always want that padding
@@ -5070,7 +5137,7 @@ class Row extends ListItem {
 				);
 				var count_x = this.x + this.w - count_w - right_pad;
 
-				gr.DrawString(this.count_text, g_pl_fonts.playcount, title_color, count_x, this.y, count_w, this.h, g_string_format.align_center);
+				gr.DrawString(this.count_text, g_pl_fonts.playcount, this.title_color, count_x, this.y, count_w, this.h, g_string_format.align_center);
 				testRect && gr.DrawRect(count_x, this.y - 1, count_w, this.h, 1, RGBA(155, 155, 255, 250));
 
 				right_pad += count_w;
@@ -5113,9 +5180,9 @@ class Row extends ListItem {
 		{
 			const title_w = this.w - right_pad - scaleForDisplay(44);
 			const title_text_format = g_string_format.v_align_center | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
-			gr.DrawString(this.title_text, title_font, title_color, cur_x, this.y, title_w, this.h, title_text_format);
+			gr.DrawString(this.title_text, title_font, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
 			if (this.is_playing) {
-				gr.DrawString(fb.IsPaused ? g_guifx.pause : g_guifx.play, ft.guifx, title_color, cur_x, this.y, title_w, this.h, title_text_format);
+				gr.DrawString(fb.IsPaused ? g_guifx.pause : g_guifx.play, ft.guifx, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
 			}
 
 			testRect && gr.DrawRect(this.x, this.y - 1, title_w, this.h, 1, RGBA(155, 155, 255, 250));
@@ -5165,6 +5232,8 @@ class Row extends ListItem {
 		} else {
 			clearTimeout(this.timer_timeRemaining);
 		}
+
+		this.title_color = g_pl_colors.title_normal;
 	};
 
 	/** @override */
@@ -7181,4 +7250,11 @@ function initPlaylist() {
 var needs_reinit = false;
 function reinitPlaylist() {
 	needs_reinit = true;
+}
+
+// Repaint playlist rows when using playlist row hover
+var needs_rows_repaint = true;
+function repaintPlaylistRows() {
+	window.Repaint();
+	needs_rows_repaint = true;
 }
