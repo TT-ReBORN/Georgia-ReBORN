@@ -4894,6 +4894,8 @@ class Row extends ListItem {
 
 
 		// Playlist row hover
+		this.title_color = g_pl_colors.title_normal;
+
 		/** @enum {number} */
 		var rowState = {
 			normal:  0,
