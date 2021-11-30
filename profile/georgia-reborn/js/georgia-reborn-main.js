@@ -1922,6 +1922,7 @@ function onOptionsMenu(x, y) {
 			pref.font_size_playlist_header = size;
 		}
 		createPlaylistFonts();
+		reinitPlaylist();
 		playlist.on_size(ww, wh);
 		window.Repaint();
 	});
@@ -1936,6 +1937,7 @@ function onOptionsMenu(x, y) {
 		}
 		g_properties.row_h = Math.round(pref.font_size_playlist * 1.667);
 		createPlaylistFonts();
+		reinitPlaylist();
 		playlist.on_size(ww, wh);
 		window.Repaint();
 	});
