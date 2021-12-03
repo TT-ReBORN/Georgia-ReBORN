@@ -2756,7 +2756,7 @@ class Playlist extends List {
 			invisible_part: item_to_check.h / this.row_h
 		};
 
-		this.items_to_draw.forEach((item) => {
+		this.items_to_draw.every((item) => {
 			if (item === item_to_check) {
 				if (item.y < this.list_y && item.y + item.h > this.list_y) {
 					item_state.visibility = visibility_state.partial_top;
@@ -2770,8 +2770,9 @@ class Playlist extends List {
 					item_state.visibility = visibility_state.full;
 					item_state.invisible_part = 0;
 				}
-				return false;
+				return false; // aborts every
 			}
+			return true;
 		});
 
 		return item_state;
@@ -3622,9 +3623,9 @@ class DiscHeader extends BaseHeader {
 		}
 
 		var first_data = rows_with_data[0][1];
-		rows_with_data.forEach((item, i) => {
+		rows_with_data.every((item, i) => {
 			if (first_data !== item[1]) {
-				return false;
+				return false;	// aborts the every
 			}
 
 			var row = item[0];
@@ -3635,6 +3636,7 @@ class DiscHeader extends BaseHeader {
 			row.parent = this;
 
 			this.sub_items.push(row);
+			return true;
 		});
 
 		this.disc_title = first_data;
@@ -5963,18 +5965,12 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	 * @return {boolean}
 	 */
 	function is_selection_contiguous() {
-		var is_contiguous = true;
-		selected_indexes.forEach((item, i) => {
-			if (i === 0) {
-				return true;
-			}
-			if ((selected_indexes[i] - selected_indexes[i - 1]) !== 1) {
-				is_contiguous = false;
+		return selected_indexes.every((item, i) => {
+			if (i !== 0 && (selected_indexes[i] - selected_indexes[i - 1]) !== 1) {
 				return false;
 			}
+			return true;
 		});
-
-		return is_contiguous;
 	}
 
 	/**
