@@ -2655,7 +2655,7 @@ class Playlist extends List {
 	 * @param {Row} to_row
 	 */
 	scroll_to_row(from_row, to_row) {
-		if (!this.is_scrollbar_available) {
+		if (!this.is_scrollbar_available || /* Needed for auto-hide scrollbar when removing almost everything in playlist and some tracks in top remain to prevent crash */ !this.is_scrollbar_visible) {
 			return;
 		}
 
