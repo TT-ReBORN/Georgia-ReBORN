@@ -268,8 +268,7 @@ function PlaylistPanel(x, y) {
 
 			playlist_info_h = scaleForDisplay(g_properties.row_h);
 			playlist_info_and_gap_h = playlist_info_h + scaleForDisplay(4);
-			playlist.on_size(playlist_w, playlist_h - (g_properties.show_playlist_info ? playlist_info_and_gap_h : playlist_info_and_gap_h),
-					x, y + (g_properties.show_playlist_info ? playlist_info_and_gap_h : playlist_info_and_gap_h));
+			playlist.on_size(playlist_w, playlist_h - (playlist_info_and_gap_h + (playlist_info_h / 2 + scaleForDisplay(1))), x, y + playlist_info_and_gap_h);
 
 			if (pref.showPLM_default) {
 				playlist_info.set_xywh(x, y, this.w);
@@ -294,7 +293,7 @@ function PlaylistPanel(x, y) {
 			this.y = y;
 
 			playlist_info_h = scaleForDisplay(g_properties.row_h);
-			playlist.on_size(playlist_w, playlist_h, x, y + scaleForDisplay(4));
+			playlist.on_size(playlist_w, playlist_h - (playlist_info_h / 2 + scaleForDisplay(5)), x, y + scaleForDisplay(4));
 
 			if (pref.showPLM_artwork) {
 				playlist_info.set_xywh(x, y - playlist_info_h, this.w);
@@ -319,7 +318,7 @@ function PlaylistPanel(x, y) {
 			this.y = y;
 
 			playlist_info_h = scaleForDisplay(g_properties.row_h);
-			playlist.on_size(playlist_w, playlist_h, x, y + scaleForDisplay(4));
+			playlist.on_size(playlist_w, playlist_h - (playlist_info_h / 2 + scaleForDisplay(5)), x, y + scaleForDisplay(4));
 
 			if (pref.showPLM_compact) {
 				playlist_info.set_xywh(x, y - playlist_info_h, this.w);

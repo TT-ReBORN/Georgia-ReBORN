@@ -198,7 +198,7 @@ class List {
 
             const scrollbar_repaint_w = this.h / 2;
             const scrollbar_repaint_h = this.h;
-            const scrollbar_repaint_x = this.x + this.w - scrollbar_repaint_w;
+            const scrollbar_repaint_x = this.x + this.w - scrollbar_repaint_w + scaleForDisplay(2);
             const scrollbar_repaint_y = this.y + playlist_geo.scrollbar_top_pad;
 
             let inScrollArea = '';

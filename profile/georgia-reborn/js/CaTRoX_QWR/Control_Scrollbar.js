@@ -12,7 +12,7 @@ g_properties.add_properties(
 /** @constructor */
 function ScrollBar(x, y, w, h, row_h, fn_redraw) {
     this.paint = function (gr) {
-        gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - scaleForDisplay(3), this.w + scaleForDisplay(8), this.h + scaleForDisplay(6), g_pl_colors.background);
+        gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - scaleForDisplay(3), this.w + scaleForDisplay(8), playlist.h, g_pl_colors.background);
 
         for (let part in this.sb_parts) {
             const item = this.sb_parts[part];
