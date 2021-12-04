@@ -3144,18 +3144,17 @@ function initTheme() {
 	imgBio.createImages();
 	initBiographyColors();
 
-	window.Repaint();
-
 	if (pref.rebornTheme) { // Needed to init col.primary once again when !albumart, switching through themes and going back to Reborn theme
 		initColors();
 		initPlaylistColors();
 		createButtonImages();
 		createButtonObjects(ww, wh);
 		playlist.on_size(ww, wh); // Needed to update playlist scrollbar colors -> calling on_size(); from Control_List
-		window.Repaint();
 	}
 
+	initButtonState();
 	if (pref.playlistRowHover) repaintPlaylistRows();
+	window.Repaint();
 }
 
 // custom initialisation function, called once after variable declarations
@@ -3276,36 +3275,16 @@ function on_size() {
 	if (displayPlaylist || displayPlaylistArtworkMode) {
 		playlist.on_size(ww, wh);
 	}
-	if (!displayPlaylist && !displayLibrary && !displayBiography && !pref.displayLyrics && pref.layout_mode !== 'artwork_mode') {
-		btns.playlist.enabled = true;
-		btns.playlist.changeState(ButtonState.Down);
-	}
-	if (displayPlaylistArtworkMode && !displayLibrary && !displayBiography && !pref.displayLyrics && pref.layout_mode === 'artwork_mode') {
-		btns.playlistArtworkMode.enabled = true;
-		btns.playlistArtworkMode.changeState(ButtonState.Down);
-	}
 	if (displayLibrary) {
-		if (!displayPlaylist) { // Fixes active library button state when switching from Artwork mode to Default mode and pref.startPlaylist is active
-			btns.library.enabled = true;
-			btns.library.changeState(ButtonState.Down);
-		}
 		initLibraryPanel();
 		setLibrarySize();
 	}
-	if (pref.displayLyrics) {
-		btns.lyrics.enabled = true;
-		btns.lyrics.changeState(ButtonState.Down);
-	}
 	if (displayBiography) {
-		btns.biography.enabled = true;
-		btns.biography.changeState(ButtonState.Down);
 		initBiographyPanel();
 		setBiographySize();
 	}
-	if (!pref.startPlaylist && pref.displayLyrics) {
-		btns.playlist.enabled = true;
-		btns.playlist.changeState(ButtonState.Down);
-	}
+
+	initButtonState();
 
 	// UIHacks double click on caption in fullscreen
 	if (!componentUiHacks) return;
@@ -3315,6 +3294,39 @@ function on_size() {
 			UIHacks.MainWindowState = WindowState.Normal;
 		}
 	} catch (e) {};
+}
+
+function initButtonState() {
+	if (!displayPlaylist && !displayLibrary && !displayBiography && !pref.displayLyrics && pref.layout_mode !== 'artwork_mode') {
+		btns.playlist.enabled = true;
+		btns.playlist.changeState(ButtonState.Down);
+	}
+	else if (displayPlaylist && !displayLibrary && !displayBiography && !pref.displayLyrics && pref.layout_mode === 'artwork_mode') {
+		btns.playlist.enabled = true;
+		btns.playlist.changeState(ButtonState.Down);
+	}
+	else if (displayPlaylistArtworkMode && !displayLibrary && !displayBiography && !pref.displayLyrics && pref.layout_mode === 'artwork_mode') {
+		btns.playlistArtworkMode.enabled = true;
+		btns.playlistArtworkMode.changeState(ButtonState.Down);
+	}
+	else if (displayLibrary) {
+		if (!displayPlaylist) { // Fixes active library button state when switching from Artwork mode to Default mode and pref.startPlaylist is active
+			btns.library.enabled = true;
+			btns.library.changeState(ButtonState.Down);
+		}
+	}
+	else if (pref.displayLyrics) {
+		btns.lyrics.enabled = true;
+		btns.lyrics.changeState(ButtonState.Down);
+	}
+	else if (displayBiography) {
+		btns.biography.enabled = true;
+		btns.biography.changeState(ButtonState.Down);
+	}
+	else if (!pref.startPlaylist && pref.displayLyrics) {
+		btns.playlist.enabled = true;
+		btns.playlist.changeState(ButtonState.Down);
+	}
 }
 
 function setLibrarySize() {
