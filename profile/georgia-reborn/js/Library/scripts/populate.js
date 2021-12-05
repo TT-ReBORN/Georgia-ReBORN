@@ -969,7 +969,16 @@ class Populate {
 				}
 
 				!panel.colMarker ? gr.GdiDrawText(nm[i], ui.font.main, txt_c, item_x, item_y, w, ui.row.h, panel.lc) : this.cusCol(gr, nm[i], item, item_x, item_y, w, ui.row.h, type, np, ui.font.main, ui.font.mainEllipsisSpace, 'text');
-				if (this.countsRight) gr.GdiDrawText(item.count, ui.font.small, txt_c /*txt_co*/, item_x, item_y, ui.x + panel.tree.w - (sbar.w === 0 ? pref.layout_mode === 'artwork_mode' ? item_x - (is_4k ? 73 : 40) : item_x : item_x + (is_4k ? pref.layout_mode === 'artwork_mode' ? -28 : 45 : pref.layout_mode === 'artwork_mode' ? -16 : 25)), ui.row.h, panel.rc);
+				if (pref.layout_mode === 'default_mode') {
+					if (this.countsRight) gr.GdiDrawText(item.count, ui.font.small, txt_c /*txt_co*/, item_x, item_y, ui.x + panel.tree.w -
+						(sbar.scrollable_lines <= 0 ? item_x - (is_4k ? 1 : 0) : sbar.scrollable_lines > 0 && !sbar.scrollbar.zone && !sbar.bar.isDragging ? item_x - (is_4k ? 1 : 0) : item_x - (is_4k ? -45 : -25)),
+						ui.row.h, panel.rc);
+				}
+				else if (pref.layout_mode === 'artwork_mode') {
+					if (this.countsRight) gr.GdiDrawText(item.count, ui.font.small, txt_c /*txt_co*/, item_x, item_y, ui.x + panel.tree.w -
+						(sbar.scrollable_lines <= 0 ? item_x - (is_4k ? 1 : 0) : sbar.scrollable_lines > 0 && !sbar.scrollbar.zone && !sbar.bar.isDragging ? item_x - (is_4k ? 74 : 40) : item_x - (is_4k ? 28 : 15)),
+						ui.row.h, panel.rc);
+				}
 			}
 		}
 	}

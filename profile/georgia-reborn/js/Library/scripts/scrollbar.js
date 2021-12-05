@@ -509,7 +509,7 @@ class Scrollbar {
 		this.bar.x = this.bar.y = this.but_h + this.scrollbar.travel * (this.delta * this.ratio) / (this.row.count * this.row.h);
 		this.drag_distance_per_row = this.scrollbar.travel / this.scrollable_lines;
 		// panel info
-		if (this.vertical) this.narrow.x = /* countsright position fix for FHD in artwork mode, why is it ok in 4K and what is different in artwork mode? -> */ pref.layout_mode === 'artwork_mode' ? this.x - (is_4k ? 0 : 5) : this.x + this.w - $Lib.clamp(ui.sbar.narrowWidth, 5, this.w);
+		if (this.vertical) this.narrow.x = pref.layout_mode === 'artwork_mode' ? this.x - 5 : this.x + this.w - $Lib.clamp(ui.sbar.narrowWidth, 5, this.w);
 		else this.narrow.y = this.y + this.h - $Lib.clamp(ui.sbar.narrowWidth, 5, this.h);
 		panel.tree.w = ui.w - Math.max(ppt.sbarShow && this.scrollable_lines > 0 ? !ppt.countsRight ? ui.sbar.sp + ui.sz.sel : ppt.sbarShow == 2 ? ui.sbar.sp + ui.sz.margin : ppt.sbarShow == 1 ? (ui.w - this.narrow.x) + ui.sz.marginRight + Math.max(this.w - 11, 0) : ui.sz.sel : ui.sz.sel, ui.sz.margin);
 		pop.id = ui.id.tree + ppt.fullLineSelection + panel.tree.w + panel.imgView + ppt.albumArtLabelType + ppt.albumArtFlipLabels + ppt.albumArtFlowMode;
