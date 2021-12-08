@@ -1,1 +1,1 @@
-Updated to Georgia-2.0.3, Dec 3, 2021 - Commit 487 df62ace
+Updated to Georgia-2.0.3, Dec 8, 2021 - Commit 489 dc5d703
