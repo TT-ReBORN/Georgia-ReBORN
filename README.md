@@ -32,7 +32,7 @@ If you now fetch the images from the biography, it will automatically update you
 You can easily switch the view from albums to artists. If album art or flow mode is active, right click<br />
 in the library > Show artists, to go back to default view open again the context menu and choose Show albums.
 
-![Library](https://i.ibb.co/DMmHVpW/George-Re-BORN-Library-Animation.webp)
+![Library](https://i.ibb.co/LxZ9mvT/George-Re-BORN-Library-Animation.webp)
 
 In the biography you can change options via top menu Options > Biography or you can use the context menu.<br />
 There are 4 different biography layouts to choose from, top is the default. There is also an automatic lyric fetcher<br />
