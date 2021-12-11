@@ -3161,6 +3161,12 @@ function initTheme() {
 function on_init() {
 	console.log("in on_init()");
 
+	/** Added additional conditions to show playlist and not 'Details' in Compact Mode if playlist is not displayed on startup while starting in Compact Mode,
+		this also fixes ugly switch from Default to Compact Mode */
+	if (pref.startPlaylist && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout_mode !== 'artwork_mode' || !pref.startPlaylist && pref.layout_mode === 'compact_mode') {
+		displayPlaylist = true;
+	}
+
 	str = clearUIVariables();
 
 	ww = window.Width;
@@ -3205,25 +3211,26 @@ function on_init() {
 		when the panel has focus and a dedicated playlist viewer doesn't. */
 	plman.SetActivePlaylistContext(); // once on startup
 
-	/** Added additional conditions to show playlist and not 'Details' in Compact Mode if playlist is not displayed on startup while starting in Compact Mode,
-		this also fixes ugly switch from Default to Compact Mode */
-	if (pref.startPlaylist && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout_mode !== 'artwork_mode' || !pref.startPlaylist && pref.layout_mode === 'compact_mode') {
-		displayPlaylist = false;
+	// /** Added additional conditions to show playlist and not 'Details' in Compact Mode if playlist is not displayed on startup while starting in Compact Mode,
+	// 	this also fixes ugly switch from Default to Compact Mode */
+	// if (pref.startPlaylist && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout_mode !== 'artwork_mode' || !pref.startPlaylist && pref.layout_mode === 'compact_mode') {
+	// 	displayPlaylist = false;
+	// 	setTimeout(() => {
+	// 		if (btns && btns.playlist) {
+	// 			btns.playlist.onClick();	// displays playlist
+	// 		}
+	// 	}, 30);
+	// }
+
+	if (!libraryInitialized) {
+		initLibraryPanel(); // Need to init library right away, otherwise we get in trouble in library options -> panel.updateProp(1); if !libraryInitialized ( i.e user didn't click displayLibrary )
 		setTimeout(() => {
-			if (btns && btns.playlist) {
-				btns.playlist.onClick();	// displays playlist
-			}
-		}, 30);
+			panel.updateProp(1); // Wait for full library init and update library tree, otherwise some nodes are not painted correctly
+		}, 500);
 	}
-	// setTimeout(() => { // I think, we don't need this anymore? Causing problems for library, testing without this...
-	// 	// defer initing of library and biography panel until everything else has loaded
-	// 	if (!libraryInitialized) {
-	// 		initLibraryPanel();
-	// 	}
-	// 	if (!biographyInitialized) {
-	// 		initBiographyPanel();
-	// 	}
-	// }, 10000);
+	if (!biographyInitialized) {
+		initBiographyPanel();
+	}
 }
 
 // window size changed
