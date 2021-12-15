@@ -3771,6 +3771,25 @@ function on_mouse_lbtn_down(x, y, m) {
 			trace_call && console.log(qwr_utils.function_name());
 			biography.on_mouse_lbtn_down(x, y, m);
 		}
+
+		if (albumart && !displayBiography && (pref.layout_mode === 'default_mode' || !displayPlaylistArtworkMode && !displayLibrary && pref.layout_mode === 'artwork_mode')) {
+			if ((albumart_size.x <= x && albumart_size.y <= y && albumart_size.x + albumart_size.w >= x && albumart_size.y + albumart_size.h >= y) ||
+				(cdart && !albumart && cdart_size.x <= x && cdart_size.y <= y && cdart_size.x + cdart_size.w >= x && cdart_size.y + cdart_size.h >= y) || pauseBtn.mouseInThis(x, y)) {
+				// Do not pause when library is in flow mode or library layout is in full width
+				if (!(ppt.albumArtShow && pref.libraryLayout === 'full_width' && displayLibrary || pref.libraryDesign === 'flowMode' && pref.libraryLayout === 'full_width' && displayLibrary || pref.libraryDesign === 'albumCovers' && pref.libraryLayout === 'full_width' && displayLibrary)) {
+					fb.PlayOrPause();
+				}
+			}
+		}
+		else if (!albumart && !displayBiography && (pref.layout_mode === 'default_mode' || !displayPlaylistArtworkMode && !displayLibrary && pref.layout_mode === 'artwork_mode')) {
+			if (state.mouse_x > 0 && state.mouse_x <= (displayPlaylist || displayLibrary ? ww / 2 : !displayPlaylist || !displayLibrary ? ww :  ww / 2) &&
+				state.mouse_y > albumart_size.y && state.mouse_y <= albumart_size.h + geo.top_art_spacing || pauseBtn.mouseInThis(x, y)) {
+				// Do not pause when library is in flow mode or library layout is in full width
+				if (!(ppt.albumArtShow && pref.libraryLayout === 'full_width' && displayLibrary || pref.libraryDesign === 'flowMode' && pref.libraryLayout === 'full_width' && displayLibrary || pref.libraryDesign === 'albumCovers' && pref.libraryLayout === 'full_width' && displayLibrary)) {
+					fb.PlayOrPause();
+				}
+			}
+		}
 	}
 }
 
@@ -3798,26 +3817,6 @@ function on_mouse_lbtn_up(x, y, m) {
 		if (just_dblclicked) {
 			// You just did a double-click, so do nothing
 			just_dblclicked = false;
-		}
-		/** Workaround when using maximize ( double click on top menu ) by adding additional condition UIHacks.MainWindowState == WindowState.Normal otherwise registered
-			on_mouse_lbtn_up click will be in Y-hitarea causing unnecessary pause when maximized/enlarged. In maximized state pauseBtn.mouseInThis area is much bigger */
-		if (albumart && !displayBiography && (pref.layout_mode === 'default_mode' || !displayPlaylistArtworkMode && !displayLibrary && pref.layout_mode === 'artwork_mode') && (UIHacks.MainWindowState == WindowState.Normal || pauseBtn.mouseInThis(x, y))) {
-			if ((albumart_size.x <= x && albumart_size.y <= y && albumart_size.x + albumart_size.w >= x && albumart_size.y + albumart_size.h >= y) ||
-				(cdart && !albumart && cdart_size.x <= x && cdart_size.y <= y && cdart_size.x + cdart_size.w >= x && cdart_size.y + cdart_size.h >= y) || pauseBtn.mouseInThis(x, y)) {
-				// Do not pause when library is in flow mode or library layout is in full width
-				if (!(ppt.albumArtShow && pref.libraryLayout === 'full_width' && displayLibrary || pref.libraryDesign === 'flowMode' && pref.libraryLayout === 'full_width' && displayLibrary || pref.libraryDesign === 'albumCovers' && pref.libraryLayout === 'full_width' && displayLibrary)) {
-					fb.PlayOrPause();
-				}
-			}
-		}
-		else if (!albumart && !displayBiography && (pref.layout_mode === 'default_mode' || !displayPlaylistArtworkMode && !displayLibrary && pref.layout_mode === 'artwork_mode') && (UIHacks.MainWindowState == WindowState.Normal || pauseBtn.mouseInThis(x, y))) {
-			if (state.mouse_x > 0 && state.mouse_x <= (displayPlaylist || displayLibrary ? ww / 2 : !displayPlaylist || !displayLibrary ? ww :  ww / 2) &&
-				state.mouse_y > albumart_size.y && state.mouse_y <= albumart_size.h + geo.top_art_spacing || pauseBtn.mouseInThis(x, y)) {
-				// Do not pause when library is in flow mode or library layout is in full width
-				if (!(ppt.albumArtShow && pref.libraryLayout === 'full_width' && displayLibrary || pref.libraryDesign === 'flowMode' && pref.libraryLayout === 'full_width' && displayLibrary || pref.libraryDesign === 'albumCovers' && pref.libraryLayout === 'full_width' && displayLibrary)) {
-					fb.PlayOrPause();
-				}
-			}
 		}
 		on_mouse_move(x, y);
 		buttonEventHandler(x, y, m);

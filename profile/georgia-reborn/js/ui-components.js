@@ -38,11 +38,7 @@ class PauseButton {
 
     mouseInThis(x, y) {
         // console.log(x, y, this.top, x >= this.left, y >= this.top, x < this.left + geo.pause_size + 1, y <= this.top + geo.pause_size + 1)
-        if (UIHacks.MainWindowState == WindowState.Maximized) { // Workaround for using maximize double click on top menu, make pause hitarea larger
-            return (x >= this.left / 4 && y >= this.top / 2 && x < this.left + geo.pause_size * 4 + 1 && y <= this.top + geo.pause_size * 3 + 1);
-        } else {
-            return (x >= this.left && y >= this.top && x < this.left + geo.pause_size + 1 && y <= this.top + geo.pause_size + 1);
-        }
+        return (x >= this.left && y >= this.top && x < this.left + geo.pause_size + 1 && y <= this.top + geo.pause_size + 1);
     };
 }
 
