@@ -805,6 +805,43 @@ function initColors() {
 }		initColors();
 
 
+function timelineColors() {
+	col.tl_added =
+	pref.whiteTheme ? isStreaming ? rgb(207, 0, 5) : col.darkAccent :
+	pref.blackTheme ? isStreaming ? rgb(207, 0, 5) : col.darkAccent :
+	pref.rebornTheme ? isStreaming ? rgb(207, 0, 5) : col.darkAccent :
+	pref.blueTheme ? rgb(12, 144, 245) :
+	pref.darkblueTheme ? rgb(31, 65, 107) :
+	pref.redTheme ? rgb(156, 30, 30) :
+	pref.creamTheme ? rgb(120, 170, 130) :
+	pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? rgb(30, 30, 30) : '';
+
+	col.tl_played =
+	pref.whiteTheme ? isStreaming ? rgb(207, 41, 44) : col.accent :
+	pref.blackTheme ? isStreaming ? rgb(207, 41, 44) : col.accent :
+	pref.rebornTheme ? isStreaming ? rgb(207, 41, 44) : col.accent :
+	pref.blueTheme ? rgb(12, 137, 232) :
+	pref.darkblueTheme ? rgb(27, 58, 94) :
+	pref.redTheme ? rgb(143, 27, 27) :
+	pref.creamTheme ? rgb(130, 184, 141) :
+	pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? rgb(40, 40, 40) : '';
+
+	col.tl_unplayed =
+	pref.whiteTheme ? isStreaming ? rgb(207, 72, 75) : col.lightAccent :
+	pref.blackTheme ? isStreaming ? rgb(207, 72, 75) : col.lightAccent :
+	pref.rebornTheme ? isStreaming ? rgb(207, 72, 75) : col.lightAccent :
+	pref.blueTheme ? rgb(10, 130, 220) :
+	pref.darkblueTheme ? rgb(24, 50, 82) :
+	pref.redTheme ? rgb(130, 25, 25) :
+	pref.creamTheme ? rgb(139, 196, 151) :
+	pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? rgb(50, 50, 50) : '';
+
+	if (fb.IsPlaying && fb.GetNowPlaying()) {
+		on_playback_new_track(fb.GetNowPlaying()); // Refresh timeline colors
+	}
+}
+
+
 const whiteTheme = {
 	name: 'white',
 	colors: {
@@ -968,33 +1005,33 @@ function setTheme(theme) {
 	}
 	else if (pref.blueTheme) {
 		col.progress_bar = rgb(10, 130, 220);
-		col.tl_added = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.darkAccent = rgb(12, 144, 245) : theme.darkAccent;
-		col.tl_played = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.accent = rgb(12, 137, 232) : theme.accent;
-		col.tl_unplayed = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.lightAccent = rgb(10, 130, 220) : theme.lightAccent;
+		col.tl_added = theme.darkAccent = rgb(12, 144, 245);
+		col.tl_played = theme.accent = rgb(12, 137, 232);
+		col.tl_unplayed = theme.lightAccent = rgb(10, 130, 220);
 	}
 	else if (pref.darkblueTheme) {
 		col.progress_bar = rgb(27, 55, 90);
-		col.tl_added = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.darkAccent = rgb(31, 65, 107) : theme.darkAccent;
-		col.tl_played = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.accent = rgb(27, 58, 94) : theme.accent;
-		col.tl_unplayed = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.lightAccent = rgb(24, 50, 82) : theme.lightAccent;
+		col.tl_added = theme.darkAccent = rgb(31, 65, 107);
+		col.tl_played = theme.accent = rgb(27, 58, 94);
+		col.tl_unplayed = theme.lightAccent = rgb(24, 50, 82);
 	}
 	else if (pref.redTheme) {
 		col.progress_bar = rgb(140, 25, 25);
-		col.tl_added = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.darkAccent = rgb(156, 30, 30) : theme.darkAccent;
-		col.tl_played = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.accent = rgb(143, 27, 27) : theme.accent;
-		col.tl_unplayed = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.lightAccent = rgb(130, 25, 25) : theme.lightAccent;
+		col.tl_added = theme.darkAccent = rgb(156, 30, 30);
+		col.tl_played = theme.accent = rgb(143, 27, 27);
+		col.tl_unplayed = theme.lightAccent = rgb(130, 25, 25);
 	}
 	else if (pref.creamTheme) {
 		col.progress_bar = rgb(255, 255, 255);
-		col.tl_added = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.darkAccent = rgb(120, 170, 130) : theme.darkAccent;
-		col.tl_played = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.accent = rgb(130, 184, 141) : theme.accent;
-		col.tl_unplayed = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.lightAccent = rgb(139, 196, 151) : theme.lightAccent;
+		col.tl_added = theme.darkAccent = rgb(120, 170, 130);
+		col.tl_played = theme.accent = rgb(130, 184, 141);
+		col.tl_unplayed = theme.lightAccent = rgb(139, 196, 151);
 	}
 	else if (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) {
 		col.progress_bar = rgb(35, 35, 35);
-		col.tl_added = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.darkAccent = rgb(30, 30, 30) : theme.darkAccent;
-		col.tl_played = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.accent = rgb(40, 40, 40) : theme.accent;
-		col.tl_unplayed = isStreaming || pref.layout_mode === 'artwork_mode' ? theme.lightAccent = rgb(50, 50, 50) : theme.lightAccent;
+		col.tl_added = theme.darkAccent = rgb(30, 30, 30);
+		col.tl_played = theme.accent = rgb(40, 40, 40);
+		col.tl_unplayed = theme.lightAccent = rgb(50, 50, 50);
 	}
 
 	if (colorDistance(theme.primary, col.progress_bar, true) < (themeCol.isCloseToGreyscale ? 60 : 45)) {

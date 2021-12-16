@@ -437,18 +437,36 @@ function draw_ui(gr) {
 	}
 	if (fb.IsPlaying && (albumart || !cdart || !albumart && cdart) && ((!displayLibrary && !displayPlaylist) || !settings.hidePanelBgWhenCollapsed)) {
 		gr.SetSmoothingMode(SmoothingMode.None);
-		gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, pref.layout_mode === 'artwork_mode' ? g_pl_colors.background : col.primary); // info background -- must be drawn after shadow
+		gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, pref.layout_mode === 'artwork_mode' ? g_pl_colors.background : pref.whiteTheme || pref.blackTheme || pref.rebornTheme ? col.primary : g_pl_colors.background); // info background -- must be drawn after shadow
 
-		if (!cdart) {
+		if (!cdart || !pref.display_cdart) {
 			if (pref.no_cdartBG) {
 				if (albumart) {
-					gr.FillSolidRect(ww - albumart_size.x - (pref.layout_mode === 'artwork_mode' ? 0 : 1), albumart_size.y, albumart_size.x + (pref.layout_mode === 'artwork_mode' ? 0 : 1), albumart_size.h, pref.layout_mode === 'artwork_mode' ? g_pl_colors.background : col.primary);
+					gr.FillSolidRect(ww - albumart_size.x - (pref.layout_mode === 'artwork_mode' ? 0 : 1), albumart_size.y, albumart_size.x + (pref.layout_mode === 'artwork_mode' ? 0 : 1), albumart_size.h, pref.layout_mode === 'artwork_mode' ? g_pl_colors.background : pref.whiteTheme || pref.blackTheme || pref.rebornTheme ? col.primary : g_pl_colors.background);
+					// Info background right top shadow
+					gr.FillGradRect(ww - albumart_size.x - 1, geo.top_art_spacing - (is_4k ? 10 : 6), ww, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0),
+						pref.whiteTheme ? RGBtoRGBA(col.shadow, 30) :
+						pref.blackTheme ? RGBtoRGBA(col.shadow, 80) :
+						pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
+						pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
+						pref.darkblueTheme ? RGBtoRGBA(col.shadow, 72) :
+						pref.redTheme ? RGBtoRGBA(col.shadow, 72) :
+						pref.creamTheme ? RGBtoRGBA(col.shadow, 24) :
+						pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 120) : ''
+					);
+					// Info background right bottom shadow
+					gr.FillGradRect(ww - albumart_size.x - 1, wh - geo.lower_bar_h - (is_4k ? -1 : 1), ww, scaleForDisplay(5), 90,
+						pref.whiteTheme ? RGBtoRGBA(col.shadow, 18) :
+						pref.blackTheme ? RGBtoRGBA(col.shadow, 80) :
+						pref.rebornTheme ? RGBtoRGBA(col.shadow, 30) :
+						pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
+						pref.darkblueTheme ? RGBtoRGBA(col.shadow, 72) :
+						pref.redTheme ? RGBtoRGBA(col.shadow, 72) :
+						pref.creamTheme ? RGBtoRGBA(col.shadow, 18) :
+						pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 120) : '',
+						RGBtoRGBA(col.shadow, 0)
+					);
 				}
-			}
-		}
-		if (!pref.display_cdart) {
-			if (albumart) {
-				gr.FillSolidRect(ww - albumart_size.x - (pref.layout_mode === 'artwork_mode' ? 0 : 1), albumart_size.y, albumart_size.x + (pref.layout_mode === 'artwork_mode' ? 0 : 1), albumart_size.h, pref.layout_mode === 'artwork_mode' ? g_pl_colors.background : col.primary);
 			}
 		}
 
@@ -606,6 +624,12 @@ function draw_ui(gr) {
 			col.info_text = rgb(255, 255, 255);
 			if (pref.rebornTheme) col.info_text = !albumart ? rgb(120, 120, 120) : col.maxLightAccent;
 		}
+		if (pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) {
+			col.info_text = rgb(255, 255, 255);
+		}
+		else if (pref.creamTheme) {
+			col.info_text = rgb(120, 120, 120);
+		}
 		if ((pref.layout_mode === 'artwork_mode' && (pref.whiteTheme || pref.creamTheme) || pref.whiteTheme && isStreaming || pref.whiteTheme && !albumart) || pref.creamTheme && isStreaming || pref.creamTheme && !albumart) {
 			col.info_text = rgb(120, 120, 120);
 		}
@@ -650,9 +674,9 @@ function draw_ui(gr) {
 					gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit); // thicker fonts can use anti-alias
 				}
 				if (pref.show_flags_details && flagImgs.length) {
-					gr.DrawString(flagSize + str.artist, ft.artist, col.info_text, textLeft, top, text_width, height, g_string_format.trim_ellipsis_char);
+					gr.DrawString(flagSize + str.artist, ft.artist, pref.whiteTheme || pref.blackTheme || pref.rebornTheme ? col.info_text : pref.creamTheme ? g_pl_colors.artist_normal : g_pl_colors.artist_playing, textLeft, top, text_width, height, g_string_format.trim_ellipsis_char);
 				} else {
-					gr.DrawString(str.artist, ft.artist, col.info_text, textLeft, top, text_width, height, g_string_format.trim_ellipsis_char);
+					gr.DrawString(str.artist, ft.artist, pref.whiteTheme || pref.blackTheme || pref.rebornTheme ? col.info_text : pref.creamTheme ? g_pl_colors.artist_normal : g_pl_colors.artist_playing, textLeft, top, text_width, height, g_string_format.trim_ellipsis_char);
 				}
 
 				gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
@@ -1496,6 +1520,7 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme       = false;
 		pref.ngoldTheme      = false;
 		initTheme();
+		timelineColors();
 	});
 	themeMenu.addToggleItem('Black', pref, 'blackTheme', () => {
 		pref.whiteTheme      = false;
@@ -1510,6 +1535,7 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme       = false;
 		pref.ngoldTheme      = false;
 		initTheme();
+		timelineColors();
 	});
 	themeMenu.addToggleItem('Reborn', pref, 'rebornTheme', () => {
 		pref.whiteTheme      = false;
@@ -1524,6 +1550,7 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme       = false;
 		pref.ngoldTheme      = false;
 		initTheme();
+		timelineColors();
 	});
 	themeMenu.addSeparator();
 	themeMenu.addToggleItem('Blue', pref, 'blueTheme', () => {
@@ -1539,6 +1566,7 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme       = false;
 		pref.ngoldTheme      = false;
 		initTheme();
+		timelineColors();
 	});
 	themeMenu.addToggleItem('Dark blue', pref, 'darkblueTheme', () => {
 		pref.whiteTheme      = false;
@@ -1553,6 +1581,7 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme       = false;
 		pref.ngoldTheme      = false;
 		initTheme();
+		timelineColors();
 	});
 	themeMenu.addToggleItem('Red', pref, 'redTheme', () => {
 		pref.whiteTheme      = false;
@@ -1567,6 +1596,7 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme       = false;
 		pref.ngoldTheme      = false;
 		initTheme();
+		timelineColors();
 	});
 	themeMenu.addToggleItem('Cream', pref, 'creamTheme', () => {
 		pref.whiteTheme      = false;
@@ -1581,6 +1611,7 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme       = false;
 		pref.ngoldTheme      = false;
 		initTheme();
+		timelineColors();
 	});
 	themeMenu.addSeparator();
 	themeMenu.addToggleItem('Neon blue', pref, 'nblueTheme', () => {
@@ -1596,6 +1627,7 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme       = false;
 		pref.ngoldTheme      = false;
 		initTheme();
+		timelineColors();
 	});
 	themeMenu.addToggleItem('Neon green', pref, 'ngreenTheme', () => {
 		pref.whiteTheme      = false;
@@ -1610,6 +1642,7 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme       = false;
 		pref.ngoldTheme      = false;
 		initTheme();
+		timelineColors();
 	});
 	themeMenu.addToggleItem('Neon red', pref, 'nredTheme', () => {
 		pref.whiteTheme      = false;
@@ -1624,6 +1657,7 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme       = 'nred';
 		pref.ngoldTheme      = false;
 		initTheme();
+		timelineColors();
 	});
 	themeMenu.addToggleItem('Neon gold', pref, 'ngoldTheme', () => {
 		pref.whiteTheme      = false;
@@ -1638,6 +1672,7 @@ function onOptionsMenu(x, y) {
 		pref.nredTheme       = false;
 		pref.ngoldTheme      = 'ngold';
 		initTheme();
+		timelineColors();
 	});
 	themeMenu.appendTo(menu);
 
@@ -3150,6 +3185,7 @@ function initTheme() {
 		createButtonImages();
 		createButtonObjects(ww, wh);
 		playlist.on_size(ww, wh); // Needed to update playlist scrollbar colors -> calling on_size(); from Control_List
+		window.Repaint(); // Needed additional repaint when changing back to Reborn theme
 	}
 
 	initButtonState();
