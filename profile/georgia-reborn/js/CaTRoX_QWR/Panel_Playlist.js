@@ -41,7 +41,7 @@ g_properties.add_properties(
 		use_rating_from_tags: ['user.row.rating.from_tags', false],
 		show_queue_position:  ['user.row.queue_position.show', true],
 
-		auto_colapse:                ['user.header.collapse.auto', g_is_mini_panel],
+		auto_collapse:               ['user.header.collapse.auto', g_is_mini_panel],
 		collapse_on_playlist_switch: ['user.header.collapse.on_playlist_switch', false],
 		collapse_on_start:           ['user.header.collapse.on_start', false],
 
@@ -763,6 +763,10 @@ class Playlist extends List {
 		this.w = w;
 		this.was_on_size_called = true;
 
+		if (g_properties.auto_collapse || g_properties.collapse_on_start) {
+			this.collapse_handler.collapse_all_but_now_playing();
+		}
+
 		if (needs_reinit) {
 			this.reinitialize();
 			needs_reinit = false;
@@ -1386,6 +1390,10 @@ class Playlist extends List {
 		if (plman.ActivePlaylist !== this.cur_playlist_idx) {
 			this.initialize_and_repaint_list();
 		}
+
+		if (this.collapse_handler && (g_properties.auto_collapse || g_properties.collapse_on_start)) {
+			this.collapse_handler.collapse_all_but_now_playing();
+		}
 	}
 
 	on_playlist_switch() {
@@ -1394,6 +1402,10 @@ class Playlist extends List {
 		}
 
 		this.initialize_and_repaint_list();
+
+		if (this.collapse_handler && (g_properties.auto_collapse || g_properties.collapse_on_start)) {
+			this.collapse_handler.collapse_all_but_now_playing();
+		}
 	}
 
 	on_playlist_item_ensure_visible(playlist_idx, playlistItemIndex) {
@@ -1464,12 +1476,9 @@ class Playlist extends List {
 			this.playing_item.is_playing = true;
 			this.playing_item.clear_title_text();
 
-			if (fb.CursorFollowPlayback) {
+			if (this.collapse_handler && (g_properties.auto_collapse || g_properties.collapse_on_start)) {
 				this.selection_handler.clear_selection();
-
-				if (this.collapse_handler && g_properties.auto_colapse) {
-					this.collapse_handler.collapse_all_but_now_playing();
-				}
+				this.collapse_handler.collapse_all_but_now_playing();
 				this.scroll_to_now_playing();
 			}
 		}
@@ -2141,15 +2150,17 @@ class Playlist extends List {
 		ce.append_item(
 			'Auto',
 			() => {
-				g_properties.auto_colapse = !g_properties.auto_colapse;
-				if (g_properties.auto_colapse) {
+				g_properties.auto_collapse = !g_properties.auto_collapse;
+				if (g_properties.auto_collapse) {
 					this.collapse_handler.collapse_all_but_now_playing();
 					if (this.collapse_handler.changed) {
 						this.scroll_to_now_playing_or_focused();
 					}
+				} else {
+					this.collapse_handler.expand_all();
 				}
 			},
-			{is_checked: g_properties.auto_colapse}
+			{is_checked: g_properties.auto_collapse}
 		);
 
 		ce.append_item(
@@ -6025,7 +6036,7 @@ function CollapseHandler(cnt_arg) {
 		this.changed = false;
 
 		if (g_properties.collapse_on_playlist_switch) {
-			if (g_properties.auto_colapse) {
+			if (g_properties.auto_collapse) {
 				this.collapse_all_but_now_playing()
 			}
 			else {
