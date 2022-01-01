@@ -476,20 +476,7 @@ function draw_ui(gr) {
 			// Info background bottom shadow
 			gr.FillGradRect(0, wh - geo.lower_bar_h - (is_4k ? -1 : 1), displayLibrary ? ww / 2 : ww, scaleForDisplay(5), 90, RGBtoRGBA(col.shadow, 18), RGBtoRGBA(col.shadow, 0));
 		}
-		if (pref.layout_mode === 'artwork_mode' && !displayBiography) {
-			if (pref.whiteTheme) {
-				// Info background top shadow
-				gr.FillGradRect(0, geo.top_art_spacing  - (is_4k ? 10 : 6), displayLibrary ? ww / 2 : ww, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24));
-				// Info background bottom shadow
-				gr.FillGradRect(0, wh - geo.lower_bar_h - (is_4k ? -1 : 1), displayLibrary ? ww / 2 : ww, scaleForDisplay(5), 90, RGBtoRGBA(col.shadow, 18), RGBtoRGBA(col.shadow, 0));
-			} else {
-				// Info background top shadow
-				gr.FillGradRect(0, geo.top_art_spacing - (is_4k ? 10 : 6), ww, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 40));
-				// Info background bottom shadow
-				gr.FillGradRect(0, wh - geo.lower_bar_h - (is_4k ? -1 : 1), ww, scaleForDisplay(5), 90, RGBtoRGBA(col.shadow, 30), RGBtoRGBA(col.shadow, 0));
-			}
-		}
-		if ((pref.blackTheme || pref.rebornTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) && (isStreaming && noArtwork || !albumart && noArtwork) && pref.layout_mode !== 'artwork_mode') {
+		else if ((pref.blackTheme || pref.rebornTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) && (isStreaming && noArtwork || !albumart && noArtwork) && pref.layout_mode !== 'artwork_mode') {
 			// Info background top shadow
 			gr.FillGradRect(0, albumart_size.y - (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? (is_4k ? 8 : 6) : (is_4k ? 10 : 6)), displayLibrary ? ww / 2 : ww, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0),
 				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
@@ -511,6 +498,19 @@ function draw_ui(gr) {
 				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 120) : '',
 				RGBtoRGBA(col.shadow, 0)
 			);
+		}
+		else if (pref.layout_mode === 'artwork_mode' && (!displayPlaylist && !displayBiography || displayPlaylist && !displayBiography && !albumart)) {
+			if (pref.whiteTheme) {
+				// Info background top shadow
+				gr.FillGradRect(0, geo.top_art_spacing  - (is_4k ? 10 : 6), displayLibrary ? ww / 2 : ww, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24));
+				// Info background bottom shadow
+				gr.FillGradRect(0, wh - geo.lower_bar_h - (is_4k ? -1 : 1), displayLibrary ? ww / 2 : ww, scaleForDisplay(5), 90, RGBtoRGBA(col.shadow, 18), RGBtoRGBA(col.shadow, 0));
+			} else {
+				// Info background top shadow
+				gr.FillGradRect(0, geo.top_art_spacing - (is_4k ? 10 : 6), ww, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 40));
+				// Info background bottom shadow
+				gr.FillGradRect(0, wh - geo.lower_bar_h - (is_4k ? -1 : 1), ww, scaleForDisplay(5), 90, RGBtoRGBA(col.shadow, 30), RGBtoRGBA(col.shadow, 0));
+			}
 		}
 		if ((isStreaming && noArtwork || !albumart && noArtwork)) {
 			gr.FillSolidRect(0, geo.top_art_spacing, ww, wh - geo.top_art_spacing - geo.lower_bar_h, g_pl_colors.background); // Info background -- must be drawn after shadow

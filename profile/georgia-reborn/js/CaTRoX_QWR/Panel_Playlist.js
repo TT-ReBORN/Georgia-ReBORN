@@ -236,7 +236,7 @@ function PlaylistPanel(x, y) {
 				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 255) : ''
 			);
 			// Playlist's bottom shadow
-			gr.FillGradRect(this.x, this.y + this.h, this.w, is_4k ? 10 : 6, 90,
+			gr.FillGradRect(this.x, this.y + this.h - (is_4k ? -1 : 1), this.w, scaleForDisplay(5), 90,
 				pref.whiteTheme ? RGBtoRGBA(col.shadow, 18) :
 				pref.blackTheme ? RGBtoRGBA(col.shadow, 105) :
 				pref.rebornTheme ? RGBtoRGBA(col.shadow, 30) :
