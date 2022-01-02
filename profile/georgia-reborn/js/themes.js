@@ -230,7 +230,7 @@ function initPlaylistColors() {
 		pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(255, 255, 255) : '';
 
 		g_pl_colors.title_normal =
-		pref.whiteTheme && (pref.layout_mode === 'default_mode' || pref.layout_mode === 'artwork_mode') ? RGB(100, 100, 100) : pref.layout_mode === 'compact_mode' ? RGB(120, 120, 120) :
+		pref.whiteTheme && (pref.layout_mode === 'default_mode' || pref.layout_mode === 'artwork_mode') ? RGB(100, 100, 100) : pref.whiteTheme && pref.layout_mode === 'compact_mode' ? RGB(120, 120, 120) :
 		pref.blackTheme ? RGB(200, 200, 200) :
 		pref.rebornTheme ? RGB(100, 100, 100) :
 		pref.blueTheme ? RGB(230, 230, 230) :
