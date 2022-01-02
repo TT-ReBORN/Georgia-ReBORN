@@ -499,7 +499,7 @@ function draw_ui(gr) {
 				RGBtoRGBA(col.shadow, 0)
 			);
 		}
-		else if (pref.layout_mode === 'artwork_mode' && (!displayPlaylist && !displayBiography || displayPlaylist && !displayBiography && !albumart)) {
+		else if (pref.layout_mode === 'artwork_mode' && (!displayPlaylist && !displayBiography || displayPlaylist && !displayBiography && (!albumart || cdart))) {
 			if (pref.whiteTheme) {
 				// Info background top shadow
 				gr.FillGradRect(0, geo.top_art_spacing  - (is_4k ? 10 : 6), displayLibrary ? ww / 2 : ww, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0), RGBtoRGBA(col.shadow, 24));
