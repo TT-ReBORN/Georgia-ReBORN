@@ -700,6 +700,16 @@ function initBiographyColors() {
 				uiBio.col.bottomLine = col.darkAccent;
 				uiBio.col.centerLine = col.darkAccent;
 			}
+		} else {
+			uiBio.col.bg = g_pl_colors.background;
+			uiBio.col.head = g_pl_colors.artist_playing;
+			uiBio.col.text = g_pl_colors.title_normal;
+			uiBio.col.source = g_pl_colors.title_normal;
+			uiBio.col.bottomLine = g_pl_colors.line_normal;
+			uiBio.col.centerLine = g_pl_colors.line_normal;
+			g_pl_colors.sbarBio = RGB(180, 180, 180);
+			g_pl_colors.sbarBio_hover = RGB(100, 100, 100);
+			g_pl_colors.sbarBio_btns = RGB(20, 20, 20);
 		}
 	}
 
