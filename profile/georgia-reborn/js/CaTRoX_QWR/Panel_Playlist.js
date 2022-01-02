@@ -178,9 +178,9 @@ function PlaylistPanel(x, y) {
 		// Hide rows that shouldn't be visible
 		gr.SetSmoothingMode(SmoothingMode.None);
 		gr.FillSolidRect(this.x, 0, this.w, geo.top_art_spacing, col.bg); // Hides top row that shouldn't be visible
-		gr.FillSolidRect(this.x, pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode' ? this.y - 20 : this.y, this.w, pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode' ? g_properties.row_h + scaleForDisplay(4) : scaleForDisplay(2), g_pl_colors.background); // Hides also Playlist's top shadow
-		gr.FillSolidRect(this.x, this.y + this.h, this.w, g_properties.row_h * 4, col.bg); // Hides also Playlist's bottom shadow
-		gr.FillSolidRect(this.x, this.y + this.h - g_properties.row_h, this.w, g_properties.row_h, g_pl_colors.background); // Hide Playlist bottom row and margin
+		gr.FillSolidRect(this.x, this.y, this.w, pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode' ? playlist_geo.row_h : scaleForDisplay(2), g_pl_colors.background); // Hides also Playlist's top shadow
+		gr.FillSolidRect(this.x, this.y + this.h, this.w, playlist_geo.row_h * 4, col.bg); // Hides also Playlist's bottom shadow
+		gr.FillSolidRect(this.x, this.y + this.h - playlist_geo.row_h, this.w, playlist_geo.row_h, g_pl_colors.background); // Hide Playlist bottom row and margin
 
 		if (g_properties.show_playlist_info) {
 			//gr.FillSolidRect(playlist_info.x, playlist_info.y + playlist_info.h, playlist_info.w, 2, g_theme.colors.pss_back);
@@ -225,7 +225,7 @@ function PlaylistPanel(x, y) {
 
 		} else if (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') {
 			// Playlist's top shadow
-			gr.FillGradRect(this.x, is_4k ? this.y - 30 : this.y - 26, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0),
+			gr.FillGradRect(this.x, is_4k ? this.y - 10 : this.y - 6, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0),
 				pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
 				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
 				pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
@@ -267,8 +267,7 @@ function PlaylistPanel(x, y) {
 			this.y = y;
 
 			playlist_info_h = scaleForDisplay(g_properties.row_h);
-			playlist_info_and_gap_h = playlist_info_h + scaleForDisplay(4);
-			playlist.on_size(playlist_w, playlist_h - (playlist_info_and_gap_h + (playlist_info_h / 2 + scaleForDisplay(1))), x, y + playlist_info_and_gap_h);
+			playlist.on_size(playlist_w, playlist_h - (playlist_info_h * 2), x, y + playlist_info_h + scaleForDisplay(4));
 
 			if (pref.showPLM_default) {
 				playlist_info.set_xywh(x, y, this.w);
@@ -282,7 +281,7 @@ function PlaylistPanel(x, y) {
 
 			rescalePlaylist();
 			var x = 0;
-			var y = geo.top_art_spacing + 20;
+			var y = geo.top_art_spacing;
 			var lowerSpace = calcLowerSpace();
 			var playlist_w = w - x;
 			var playlist_h = Math.max(0, h - lowerSpace - y);
@@ -293,10 +292,10 @@ function PlaylistPanel(x, y) {
 			this.y = y;
 
 			playlist_info_h = scaleForDisplay(g_properties.row_h);
-			playlist.on_size(playlist_w, playlist_h - (playlist_info_h / 2 + scaleForDisplay(5)), x, y + scaleForDisplay(4));
+			playlist.on_size(playlist_w, playlist_h - (playlist_info_h * 2), x, y + playlist_info_h + scaleForDisplay(4));
 
 			if (pref.showPLM_artwork) {
-				playlist_info.set_xywh(x, y - playlist_info_h, this.w);
+				playlist_info.set_xywh(x, y, this.w);
 			} else {
 				playlist_info.set_xywh(x, y, 0); // Hide Playlist manager
 			}
@@ -307,7 +306,7 @@ function PlaylistPanel(x, y) {
 
 			rescalePlaylist();
 			var x = 0;
-			var y = geo.top_art_spacing + 20;
+			var y = geo.top_art_spacing;
 			var lowerSpace = calcLowerSpace();
 			var playlist_w = w - x;
 			var playlist_h = Math.max(0, h - lowerSpace - y);
@@ -318,10 +317,10 @@ function PlaylistPanel(x, y) {
 			this.y = y;
 
 			playlist_info_h = scaleForDisplay(g_properties.row_h);
-			playlist.on_size(playlist_w, playlist_h - (playlist_info_h / 2 + scaleForDisplay(5)), x, y + scaleForDisplay(4));
+			playlist.on_size(playlist_w, playlist_h - (playlist_info_h * 2), x, y + playlist_info_h + scaleForDisplay(4));
 
 			if (pref.showPLM_compact) {
-				playlist_info.set_xywh(x, y - playlist_info_h, this.w);
+				playlist_info.set_xywh(x, y, this.w);
 			} else {
 				playlist_info.set_xywh(x, y, 0); // Hide Playlist manager
 			}
