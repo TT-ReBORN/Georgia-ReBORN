@@ -2430,7 +2430,7 @@ class Playlist extends List {
 			'by date',
 			() => {
 				plman.UndoBackup(this.cur_playlist_idx);
-				plman.SortByFormat(this.cur_playlist_idx, '%date%', has_multiple_selected_items);
+				plman.SortByFormat(this.cur_playlist_idx, '$if3(%original release date%, %originaldate%, %date%) %album% %edition% %codec% %discnumber% %tracknumber%', has_multiple_selected_items);
 			}
 		);
 
