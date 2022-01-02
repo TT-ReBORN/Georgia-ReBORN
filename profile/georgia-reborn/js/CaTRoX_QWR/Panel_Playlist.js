@@ -178,7 +178,7 @@ function PlaylistPanel(x, y) {
 		// Hide rows that shouldn't be visible
 		gr.SetSmoothingMode(SmoothingMode.None);
 		gr.FillSolidRect(this.x, 0, this.w, geo.top_art_spacing, col.bg); // Hides top row that shouldn't be visible
-		gr.FillSolidRect(this.x, this.y, this.w, pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode' ? playlist_geo.row_h : scaleForDisplay(2), g_pl_colors.background); // Hides also Playlist's top shadow
+		gr.FillSolidRect(this.x, this.y, this.w, pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode' ? playlist_geo.row_h + scaleForDisplay(4) : scaleForDisplay(2), g_pl_colors.background); // Hides also Playlist's top shadow
 		gr.FillSolidRect(this.x, this.y + this.h, this.w, playlist_geo.row_h * 4, col.bg); // Hides also Playlist's bottom shadow
 		gr.FillSolidRect(this.x, this.y + this.h - playlist_geo.row_h, this.w, playlist_geo.row_h, g_pl_colors.background); // Hide Playlist bottom row and margin
 
