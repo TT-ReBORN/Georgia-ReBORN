@@ -75,13 +75,13 @@ pref.add_properties({
 
 	// Font size
 	menu_font_size:                     ['Georgia-ReBORN - Font size: Menu font size', 12], // Default menu font size
-	artist_font_size_default:           ['Georgia-ReBORN - Font size: Default mode: Artist font size', 18], // Default artist font size in Default mode
-	artist_font_size_artwork:           ['Georgia-ReBORN - Font size: Artwork mode: Artist font size', 16], // Default artist font size in Artwork mode
-	artist_font_size_compact:           ['Georgia-ReBORN - Font size: Compact mode: Artist font size', 16], // Default artist font size in Compact mode
+	artist_font_size_default:           ['Georgia-ReBORN - Font size: Default mode - Artist font size', 18], // Default artist font size in Default mode
+	artist_font_size_artwork:           ['Georgia-ReBORN - Font size: Artwork mode - Artist font size', 16], // Default artist font size in Artwork mode
+	artist_font_size_compact:           ['Georgia-ReBORN - Font size: Compact mode - Artist font size', 16], // Default artist font size in Compact mode
 	album_font_size:                    ['Georgia-ReBORN - Font size: Album font size', 20], // Default album font size
-	lower_bar_font_size_default:        ['Georgia-ReBORN - Font size: Default mode: Lower bar font size', 18], // Default lower bar font size in Default mode
-	lower_bar_font_size_artwork:        ['Georgia-ReBORN - Font size: Artwork mode: Lower bar font size', 16], // Default lower bar font size in Artwork mode
-	lower_bar_font_size_compact:        ['Georgia-ReBORN - Font size: Compact mode: Lower bar font size', 16], // Default lower bar font size in Compact mode
+	lower_bar_font_size_default:        ['Georgia-ReBORN - Font size: Default mode - Lower bar font size', 18], // Default lower bar font size in Default mode
+	lower_bar_font_size_artwork:        ['Georgia-ReBORN - Font size: Artwork mode - Lower bar font size', 16], // Default lower bar font size in Artwork mode
+	lower_bar_font_size_compact:        ['Georgia-ReBORN - Font size: Compact mode - Lower bar font size', 16], // Default lower bar font size in Compact mode
 	tracknum_font_size :                ['Georgia-ReBORN - Font size: Tracknumber font size', 20], // Default tracknumber font size
 	MetadataGrid_key_font_size:         ['Georgia-ReBORN - Font size: MetadataGrid key font size', 18], // Default metadata grid key font size
 	MetadataGrid_val_font_size:         ['Georgia-ReBORN - Font size: MetadataGrid value font size', 18], // Default metadata grid value font size
@@ -90,6 +90,12 @@ pref.add_properties({
 	lyricsFontSize:                     ['Georgia-ReBORN - Font size: Lyrics', 20], // Lyrics font size
 
 	// Player controls
+	autoHideScrollbar_Playlist:         ['Georgia-ReBORN - Player controls: Playlist - Auto hide scrollbar', true], // Playlist automatic scrollbar hide
+	smoothScrolling:                    ['Georgia-ReBORN - Player controls: Playlist - Smooth scrolling', true], // Playlist smooth scrolling
+	wheelScrollSteps_Playlist:          ['Georgia-ReBORN - Player controls: Playlist - Mouse wheel scroll steps', 2], // Playlist mouse wheel scroll steps
+	wheelScrollDuration_Playlist:       ['Georgia-ReBORN - Player controls: Playlist - Mouse wheel scroll smooth duration', 50], // Playlist mouse wheel scroll smooth duration in ms
+	autoHideScrollbar_Library:          ['Georgia-ReBORN - Player controls: Library - Auto hide scrollbar', true], // Library automatic scrollbar hide
+	autoHideScrollbar_Biography:        ['Georgia-ReBORN - Player controls: Biography - Auto hide scrollbar', true], // Biography automatic scrollbar hide
 	transport_buttons_size_default:     ['Georgia-ReBORN - Player controls: Default mode - Transport button size', 32], // Size in pixels of the buttons in Default mode
 	transport_buttons_spacing_default:  ['Georgia-ReBORN - Player controls: Default mode - Transport button spacing', 5], // Size in pixels of the spacing between buttons in Default mode
 	transport_buttons_size_artwork:     ['Georgia-ReBORN - Player controls: Artwork mode - Transport button size', 32], // Size in pixels of the buttons in Artwork mode
@@ -120,8 +126,6 @@ pref.add_properties({
 	freq_update:                        ['Georgia-ReBORN - Player controls: Frequent progress bar updates', true], // true: Update progress bar multiple times a second. Smoother, but uses more CPU
 
 	// Playlist
-	autoHideScrollbar_Playlist:         ['Georgia-ReBORN - Playlist: Auto hide scrollbar', true], // Playlist automatic scrollbar hide
-	smoothScrolling:                    ['Georgia-ReBORN - Playlist: Smooth scrolling', true], // Playlist smooth scrolling
 	autoHidePLM:                        ['Georgia-ReBORN - Playlist: Auto hide playlist manager', true], // Playlist Automatic Playlist Manager Hide
 	showPLM_default:                    ['Georgia-ReBORN - Playlist: PLM Default mode - Show playlist manager',  true], // Show Playlist manager in Default mode
 	showPLM_artwork:                    ['Georgia-ReBORN - Playlist: PLM Artwork mode - Show playlist manager', false], // Show Playlist manager in Artwork mode
@@ -173,7 +177,6 @@ pref.add_properties({
 	libraryDesign:                      ['Georgia-ReBORN - Library: Design', 'reborn'], // Library design - reborn (default), ultraModern, modern, traditional, listView, listView_albumCovers, listView_artistPhotos, albumCovers, flowMode
 	libraryLayout:                      ['Georgia-ReBORN - Library: Layout', 'normal_width'], // Library layout - normal_width (default) or full_width
 	libraryThumbnailSize:               ['Georgia-ReBORN - Library: Thumbnail size', 'auto'], // Library thumbnail size - auto (default)
-	autoHideScrollbar_Library:          ['Georgia-ReBORN - Library: Auto hide scrollbar', true], // Library automatic scrollbar hide
 	showTrackCount:                     ['Georgia-ReBORN - Library: Show track count in album art', true], // Show track count in album art
 	libraryPlaylistSwitch:              ['Georgia-ReBORN - Library: Switch to playlist when adding songs', false], // When adding songs from Library auto-switch to Playlist
 	always_showPlayingLib:              ['Georgia-ReBORN - Library: Always scroll to current playing song', false], // Always scroll to current playing song in library
@@ -182,7 +185,6 @@ pref.add_properties({
 	// Biography
 	biographyTheme:                     ['Georgia-ReBORN - Biography: Theme', 0], // 0 (default)
 	biographyDisplay:                   ['Georgia-ReBORN - Biography: Display', 'Image+text'], // Image+text (default)
-	autoHideScrollbar_Biography:        ['Georgia-ReBORN - Biography: Auto hide scrollbar', true], // Biography automatic scrollbar hide
 
 	// Lyrics
 	lyricsRememberDisplay:              ['Georgia-ReBORN - Lyrics: Remember toggle setting', false], // true: Show lyrics on startup if they were displayed when theme last reloaded

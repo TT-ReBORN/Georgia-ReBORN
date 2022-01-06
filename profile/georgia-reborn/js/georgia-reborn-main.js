@@ -2036,6 +2036,95 @@ function onOptionsMenu(x, y) {
 
 	const playerControlsMenu = new Menu('Player controls');
 
+	const playerControlsScrollbarMenu = new Menu('Scrollbar settings');
+	const playerControlsScrollbarPlaylistMenu = new Menu('Playlist');
+	const playerControlsScrollbarPlaylistStepsMenu = new Menu('Mouse wheel scroll steps');
+	playerControlsScrollbarPlaylistStepsMenu.addRadioItems(['1 Step', '2 Steps', '3 Steps (default)', '4 Steps', '5 Steps', '6 Steps', '7 Steps', '8 Steps', '9 Steps', '10 Steps'], pref.wheelScrollSteps_Playlist, [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9], (steps) => {
+		pref.wheelScrollSteps_Playlist = steps;
+		playlistCallback();
+	});
+	playerControlsScrollbarPlaylistStepsMenu.appendTo(playerControlsScrollbarPlaylistMenu);
+	const playerControlsScrollbarPlaylistDurationMenu = new Menu('Mouse wheel scroll smooth duration');
+	playerControlsScrollbarPlaylistDurationMenu.addRadioItems(['100ms', '200ms', '300ms', '400ms', '500ms (default)', '600ms', '700ms', '800ms', '900ms', '1000ms'], pref.wheelScrollDuration_Playlist, [10, 20, 30, 40, 50, 60, 70, 80, 90, 100], (duration) => {
+		pref.wheelScrollDuration_Playlist = duration;
+		playlistCallback();
+	});
+	playerControlsScrollbarPlaylistDurationMenu.appendTo(playerControlsScrollbarPlaylistMenu);
+	playerControlsScrollbarPlaylistMenu.addSeparator();
+	playerControlsScrollbarPlaylistMenu.addToggleItem('Auto-hide', pref, 'autoHideScrollbar_Playlist',  () => {
+		if (pref.autoHideScrollbar_Playlist) {
+			g_properties.show_scrollbar = false;
+			playlistCallback();
+		} else {
+			g_properties.show_scrollbar = true;
+			playlistCallback();
+		}
+	});
+	playerControlsScrollbarPlaylistMenu.addToggleItem('Smooth scroll', pref, 'smoothScrolling');
+	playerControlsScrollbarPlaylistMenu.appendTo(playerControlsScrollbarMenu);
+
+	const playerControlsScrollbarLibraryMenu = new Menu('Library');
+	const playerControlsScrollbarLibraryStepsMenu = new Menu('Mouse wheel scroll steps');
+	playerControlsScrollbarLibraryStepsMenu.addRadioItems(['1 Step', '2 Steps', '3 Steps (default)', '4 Steps', '5 Steps', '6 Steps', '7 Steps', '8 Steps', '9 Steps', '10 Steps'], ppt.scrollStep, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (steps) => {
+		ppt.scrollStep = steps;
+		panel.updateProp(1);
+	});
+	playerControlsScrollbarLibraryStepsMenu.appendTo(playerControlsScrollbarLibraryMenu);
+	const playerControlsScrollbarLibraryDurationMenu = new Menu('Mouse wheel scroll smooth duration');
+	playerControlsScrollbarLibraryDurationMenu.addRadioItems(['100ms', '200ms', '300ms', '400ms', '500ms (default)', '600ms', '700ms', '800ms', '900ms', '1000ms'], ppt.durationScroll, [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], (duration) => {
+		ppt.durationScroll = duration;
+		panel.updateProp(1);
+	});
+	playerControlsScrollbarLibraryDurationMenu.appendTo(playerControlsScrollbarLibraryMenu);
+	playerControlsScrollbarLibraryMenu.addSeparator();
+	playerControlsScrollbarLibraryMenu.addToggleItem('Auto-hide', pref, 'autoHideScrollbar_Library', () => {
+		if (pref.autoHideScrollbar_Library) {
+			g_properties.show_scrollbar = false;
+			ppt.sbarShow = 1;
+			setLibrarySize();
+		} else {
+			g_properties.show_scrollbar = true;
+			ppt.sbarShow = 2;
+			setLibrarySize();
+		}
+	});
+	playerControlsScrollbarLibraryMenu.addToggleItem('Smooth scroll', ppt, 'smooth');
+	playerControlsScrollbarLibraryMenu.appendTo(playerControlsScrollbarMenu);
+
+	const playerControlsBiographyMenu = new Menu('Biography');
+	const playerControlsScrollbarBiographyStepsMenu = new Menu('Mouse wheel scroll steps');
+	playerControlsScrollbarBiographyStepsMenu.addRadioItems(['1 Step', '2 Steps', '3 Steps (default)', '4 Steps', '5 Steps', '6 Steps', '7 Steps', '8 Steps', '9 Steps', '10 Steps'], pptBio.scrollStep, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (steps) => {
+		pptBio.scrollStep = steps;
+		uiBio.updateProp(1);
+	});
+	playerControlsScrollbarBiographyStepsMenu.appendTo(playerControlsBiographyMenu);
+	const playerControlsScrollbarBiographyDurationMenu = new Menu('Mouse wheel scroll smooth duration');
+	playerControlsScrollbarBiographyDurationMenu.addRadioItems(['100ms', '200ms', '300ms', '400ms', '500ms (default)', '600ms', '700ms', '800ms', '900ms', '1000ms'], pptBio.durationScroll, [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], (duration) => {
+		pptBio.durationScroll = duration;
+		uiBio.updateProp(1);
+	});
+	playerControlsScrollbarBiographyDurationMenu.appendTo(playerControlsBiographyMenu);
+	playerControlsBiographyMenu.addToggleItem('Auto-hide', pref, 'autoHideScrollbar_Biography', () => {
+		if (pref.autoHideScrollbar_Biography) {
+			pptBio.sbarShow = 1;
+			butBio.set_src_btn_hide();
+			butBio.set_scroll_btns_hide();
+			window.Repaint();
+		} else {
+			pptBio.sbarShow = 2;
+			art_scrollbar.narrow = false;
+			alb_scrollbar.narrow = false;
+			butBio.set_scroll_btns_hide(false);
+			art_scrollbar.resetAuto();
+			alb_scrollbar.resetAuto();
+			window.Repaint();
+		}
+	});
+	playerControlsBiographyMenu.addToggleItem('Smooth scroll', ppt, 'smooth');
+	playerControlsBiographyMenu.appendTo(playerControlsScrollbarMenu);
+
+	playerControlsScrollbarMenu.appendTo(playerControlsMenu);
+
 	const transportSizeMenu = new Menu('Transport button size');
 	const transportSizeMenuDefault = new Menu('Default');
 	transportSizeMenuDefault.addRadioItems(['24px', '26px', '28px', '32px (default)', '34px', '36px', '38px'], pref.transport_buttons_size_default, [24,26,28,32,34,36,38], (size) => {
@@ -2322,19 +2411,6 @@ function onOptionsMenu(x, y) {
 		playlist.on_size(ww, wh);
 		window.Repaint();
 	};
-
-	const playlistScrollBarMenu = new Menu('Scrollbar');
-	playlistScrollBarMenu.addToggleItem('Auto-hide', pref, 'autoHideScrollbar_Playlist',  () => {
-		if (pref.autoHideScrollbar_Playlist) {
-			g_properties.show_scrollbar = false;
-			playlistCallback();
-		} else {
-			g_properties.show_scrollbar = true;
-			playlistCallback();
-		}
-	});
-	playlistScrollBarMenu.addToggleItem('Smooth scroll', pref, 'smoothScrolling');
-	playlistScrollBarMenu.appendTo(playlistMenu);
 
 	const playlistManagerMenu = new Menu('Playlist manager');
 	playlistManagerMenu.addToggleItem('Auto-hide', pref, 'autoHidePLM',  () => {
@@ -2815,21 +2891,6 @@ function onOptionsMenu(x, y) {
 	libraryLabelsMenu.addSeparator();
 	libraryLabelsMenu.addToggleItem('Flip', ppt, 'albumArtFlipLabels', () => {  panel.updateProp(1); });
 	libraryLabelsMenu.appendTo(libraryAlbumArtMenu);
-
-	const libraryScrollBarMenu = new Menu('Scrollbar');
-	libraryScrollBarMenu.addToggleItem('Auto-hide', pref, 'autoHideScrollbar_Library', () => {
-		if (pref.autoHideScrollbar_Library) {
-			g_properties.show_scrollbar = false;
-			ppt.sbarShow = 1;
-			setLibrarySize();
-		} else {
-			g_properties.show_scrollbar = true;
-			ppt.sbarShow = 2;
-			setLibrarySize();
-		}
-	});
-	libraryScrollBarMenu.addToggleItem('Smooth scroll', ppt, 'smooth');
-	libraryScrollBarMenu.appendTo(libraryMenu);
 	libraryMenu.addSeparator();
 
 	libraryMenu.createRadioSubMenu('Node root type', ['Hide', 'All Music', 'View name', 'Summary item'], ppt.rootNode, [0,1,2,3], function (nodeIndex) {
@@ -3056,27 +3117,6 @@ function onOptionsMenu(x, y) {
 	biographyCoverSrcMenu.appendTo(biographySourcesMenu);
 
 	biographySourcesMenu.appendTo(biographyMenu);
-
-	const biographyScrollBarMenu = new Menu('Scrollbar');
-	biographyScrollBarMenu.addToggleItem('Auto-hide', pref, 'autoHideScrollbar_Biography', () => {
-		if (pref.autoHideScrollbar_Biography) {
-			pptBio.sbarShow = 1;
-			butBio.set_src_btn_hide();
-			butBio.set_scroll_btns_hide();
-			window.Repaint();
-		} else {
-			pptBio.sbarShow = 2;
-			art_scrollbar.narrow = false;
-			alb_scrollbar.narrow = false;
-			butBio.set_scroll_btns_hide(false);
-			art_scrollbar.resetAuto();
-			alb_scrollbar.resetAuto();
-			window.Repaint();
-		}
-	});
-	biographyScrollBarMenu.addToggleItem('Smooth scroll', ppt, 'smooth');
-	biographyScrollBarMenu.appendTo(biographyMenu);
-
 	biographyMenu.appendTo(menu);
 
 	// Lyrics panel options

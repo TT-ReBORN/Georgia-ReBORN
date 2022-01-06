@@ -101,12 +101,12 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
         } else {
             var newScroll = this.nearestScroll(direction);
             if (!pref.smoothScrolling) {
-                this.scroll_to(newScroll + direction * 2);
+                this.scroll_to(newScroll + direction * pref.wheelScrollSteps_Playlist);
             } else {
                 if (this.desiredScrollPosition === undefined) {
-                    this.desiredScrollPosition = newScroll + direction * 2;
+                    this.desiredScrollPosition = newScroll + direction * pref.wheelScrollSteps_Playlist;
                 } else {
-                    this.desiredScrollPosition += (direction * 2);
+                    this.desiredScrollPosition += (direction * pref.wheelScrollSteps_Playlist);
                 }
                 if (direction === -1 && this.desiredScrollPosition < 0) {
                     this.desiredScrollPosition = 0;
@@ -412,7 +412,7 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
         }
         smoothScrollTimer = setInterval(() => {
             scrollFunc();
-        }, 40);
+        }, pref.wheelScrollDuration_Playlist);
         scrollFunc();   // want to immediately start scroll
     }
 
