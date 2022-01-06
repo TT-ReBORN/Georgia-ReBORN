@@ -307,6 +307,7 @@ function btnActionHandler(btn) {
 			if ((fb.IsPlaying || fb.IsPaused) && (albumart_scaled || noAlbumArtStub)) {
 				if (pref.displayLyrics) {
 					initLyrics();
+					playlist.on_size(ww, wh);
 					displayBiography = false;
 					displayLibrary = false;
 					if (pref.always_showPlayingPl) {
