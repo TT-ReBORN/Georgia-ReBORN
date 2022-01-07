@@ -848,7 +848,7 @@ function draw_ui(gr) {
 		if (timings.showExtraDrawTiming) drawTextGrid.Print();
 	} /* if (!displayPlaylist && !displayLibrary) */
 
-	if ((fb.IsPlaying && (!displayPlaylist && pref.layout_mode === 'default_mode') && !displayLibrary) || (!albumart && !cdart && noArtwork && !displayPlaylist && pref.layout_mode === 'default_mode')) {
+	if ((fb.IsPlaying && (!displayPlaylist && pref.layout_mode === 'default_mode') && !displayLibrary) || (!albumart && !cdart && noArtwork && !displayPlaylist && !displayLibrary && pref.layout_mode === 'default_mode')) {
 		let drawLogos = null;
 		timings.showExtraDrawTiming && (drawLogos = fb.CreateProfiler('on_paint -> logos/labels'));
 		// BAND LOGO drawing code
