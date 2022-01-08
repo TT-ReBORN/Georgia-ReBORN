@@ -2370,11 +2370,13 @@ function onOptionsMenu(x, y) {
 			pref.show_truncatedText_tt = true;
 			pref.show_timeline_tooltips = true;
 			ppt.tooltips = true;
+			but.tooltipLib.show = true;
 		} else {
 			pref.show_tt = false;
 			pref.show_truncatedText_tt = false;
 			pref.show_timeline_tooltips = false;
 			ppt.tooltips = false;
+			but.tooltipLib.show = false;
 		}
 	});
 	playerControlsMenu.addToggleItem('Enable tooltips on truncated text', pref, 'show_truncatedText_tt', () => {
@@ -2922,10 +2924,12 @@ function onOptionsMenu(x, y) {
 	libraryMenu.addToggleItem('Show tooltips', ppt, 'tooltips', () => {
 		if (ppt.tooltips) {
 			ppt.tooltips = true;
+			but.tooltipLib.show = true;
 			pref.show_truncatedText_tt = true;
 			setLibrarySize();
 		} else {
 			ppt.tooltips = false;
+			but.tooltipLib.show = false;
 			pref.show_truncatedText_tt = false;
 			setLibrarySize();
 		}

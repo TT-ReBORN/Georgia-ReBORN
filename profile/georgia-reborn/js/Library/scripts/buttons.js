@@ -36,7 +36,7 @@
 
 		this.tooltipLib = {
 			delay: true,
-			show: true,
+			show: ppt.tooltips ? true : false,
 			start: Date.now() - 2000
 		}
 
