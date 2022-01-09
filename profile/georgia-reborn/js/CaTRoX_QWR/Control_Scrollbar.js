@@ -401,11 +401,13 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
                 (direction === -1 && newVal < newPosition)) {
                 newVal = newPosition;
                 animationProgress = 100;    // clear interval
+            } else if (newPosition <= 0) { // Fix crash for auto-hide scrollbar when removing almost everything in playlist and some tracks in top remain
+                animationProgress = 100;
             }
             newVal = Math.round(newVal * 100)/100;
             // console.log(`${start} + easeOut(${animationProgress}/100) * (${end} - ${start}) = `, newVal)
             this.scroll_to(newVal, false);
-            if (animationProgress >= 100) {
+            if (animationProgress >= 100 && newPosition > 0) {
                 this.desiredScrollPosition = undefined;
                 this.stopScrolling();
             }
