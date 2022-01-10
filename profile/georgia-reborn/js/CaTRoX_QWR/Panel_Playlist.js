@@ -1817,6 +1817,10 @@ class Playlist extends List {
 
 		key_handler.register_key_action(VK_RETURN,
 			(modifiers) => {
+				if (!this.focused_item) { // Needed to reinit lost focus to prevent crash, e.g from 3rd party components using their own window
+					var top_item = this.items_to_draw[0];
+					this.focused_item = top_item instanceof Row ? top_item : top_item.get_first_row();
+				}
 				plman.ExecutePlaylistDefaultAction(this.cur_playlist_idx, this.focused_item.idx);
 			});
 
