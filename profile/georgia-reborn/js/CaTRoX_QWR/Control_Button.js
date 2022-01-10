@@ -218,7 +218,11 @@ function btnActionHandler(btn) {
 			refreshPlaybackOrderButton();
 			break;
 		case 'Volume':
-			volume_btn.toggleVolumeBar();
+			if (pref.autoHideVolumeBar) {
+				volume_btn.toggleVolumeBar();
+			} else {
+				fb.VolumeMute();
+			}
 			break;
 		case 'Reload':
 			window.Reload();

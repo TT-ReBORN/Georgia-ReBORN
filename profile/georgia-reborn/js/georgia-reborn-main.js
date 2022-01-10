@@ -437,7 +437,7 @@ function draw_ui(gr) {
 	}
 	if (fb.IsPlaying && (albumart || !cdart || !albumart && cdart) && ((!displayLibrary && !displayPlaylist) || !settings.hidePanelBgWhenCollapsed)) {
 		gr.SetSmoothingMode(SmoothingMode.None);
-		gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, pref.layout_mode === 'artwork_mode' ? g_pl_colors.background : pref.whiteTheme || pref.blackTheme || pref.rebornTheme ? col.primary : g_pl_colors.background); // info background -- must be drawn after shadow
+		gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, pref.layout_mode === 'artwork_mode' ? g_pl_colors.background : (pref.show_coloredGap_albumart || !pref.show_gap_albumart && !displayPlaylist && !displayLibrary) && (pref.whiteTheme || pref.blackTheme || pref.rebornTheme) ? col.primary : g_pl_colors.background); // info background -- must be drawn after shadow
 
 		if (!cdart || !pref.display_cdart) {
 			if (pref.no_cdartBG) {
@@ -2308,6 +2308,12 @@ function onOptionsMenu(x, y) {
 		createButtonObjects(ww, wh);
 		RepaintWindow();
 	}, !transport.enableTransportControls_compact);
+	volumeBtnMenu.addSeparator();
+	volumeBtnMenu.addToggleItem('Auto-hide bar', pref, 'autoHideVolumeBar', () => {
+		volume_btn.toggleVolumeBar();
+		createButtonObjects(ww, wh);
+		RepaintWindow();
+	});
 	volumeBtnMenu.appendTo(playerControlsMenu);
 
 	const progressBarMenu = new Menu('Show progress bar');
@@ -2362,6 +2368,7 @@ function onOptionsMenu(x, y) {
 	});
 	playerControlsMenu.addToggleItem('Show pause on album cover', pref, 'show_pause', () => { RepaintWindow(); });
 	playerControlsMenu.addToggleItem('Show logo on startup', pref, 'show_logo', () => { RepaintWindow(); });
+	playerControlsMenu.addToggleItem('Show colored gap if player size is not proportional', pref, 'show_coloredGap_albumart', () => { RepaintWindow(); });
 	playerControlsMenu.addSeparator();
 
 	playerControlsMenu.addToggleItem('Enable tooltips', pref, 'show_tt', () => {

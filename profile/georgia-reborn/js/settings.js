@@ -96,6 +96,7 @@ pref.add_properties({
 	wheelScrollDuration_Playlist:       ['Georgia-ReBORN - Player controls: Playlist - Mouse wheel scroll smooth duration', 50], // Playlist mouse wheel scroll smooth duration in ms
 	autoHideScrollbar_Library:          ['Georgia-ReBORN - Player controls: Library - Auto hide scrollbar', true], // Library automatic scrollbar hide
 	autoHideScrollbar_Biography:        ['Georgia-ReBORN - Player controls: Biography - Auto hide scrollbar', true], // Biography automatic scrollbar hide
+	autoHideVolumeBar:                  ['Georgia-ReBORN - Player controls: Auto hide volume bar', true], // Volume control bar hide
 	transport_buttons_size_default:     ['Georgia-ReBORN - Player controls: Default mode - Transport button size', 32], // Size in pixels of the buttons in Default mode
 	transport_buttons_spacing_default:  ['Georgia-ReBORN - Player controls: Default mode - Transport button spacing', 5], // Size in pixels of the spacing between buttons in Default mode
 	transport_buttons_size_artwork:     ['Georgia-ReBORN - Player controls: Artwork mode - Transport button size', 32], // Size in pixels of the buttons in Artwork mode
@@ -118,6 +119,7 @@ pref.add_properties({
 	show_flags_lowerbar:                ['Georgia-ReBORN - Player controls: Show country flags in lower bar', true], // true: Show the artist country flags in lower bar
 	show_pause:                         ['Georgia-ReBORN - Player controls: Show pause on album cover', true], // true: Show pause button on album cover
 	show_logo:                          ['Georgia-ReBORN - Player controls: Show logo on startup', true], // true: Show logo on foobar startup
+	show_coloredGap_albumart:           ['Georgia-ReBORN - Player controls: Show colored gap if player size is not proportional', true], // true: Show colored gap left of albumart if player size is not proportional
 	show_tt:                            ['Georgia-ReBORN - Player controls: Show tooltips', true], // true: Show all tooltips
 	show_truncatedText_tt:              ['Georgia-ReBORN - Player controls: Show tooltips on truncated text', true], // true: Show tooltips when hovering over truncated text on lower bar, metadata grid and playlist
 	show_timeline_tooltips:             ['Georgia-ReBORN - Player controls: Show timeline tooltips', true], // true: Show tooltips when hovering over the timeline that show information on plays

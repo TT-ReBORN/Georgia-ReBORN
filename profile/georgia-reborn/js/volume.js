@@ -126,7 +126,7 @@ class VolumeBtn {
 
         // Runtime state
         this.mouse_in_panel = false;
-        this.show_volume_bar = false;
+        this.show_volume_bar = pref.autoHideVolumeBar ? false : true;
 
         // Objects
         /** @type {Volume} */
@@ -223,7 +223,7 @@ class VolumeBtn {
         if (this.show_volume_bar) {
             if (this.mouseInThis(x, y)) {
                 this.volume_bar.move(x, y);
-            } else {
+            } else if (pref.autoHideVolumeBar) {
                 this.showVolumeBar(false);
                 this.repaint();
             }
@@ -279,11 +279,13 @@ class VolumeBtn {
 
         this.mouse_in_panel = false;
 
-        if (this.show_volume_bar) {
+        if (this.show_volume_bar && pref.autoHideVolumeBar) {
             this.showVolumeBar(false);
             this.repaint();
         }
-        this.volume_bar.leave();
+        if (pref.autoHideVolumeBar) {
+            this.volume_bar.leave();
+        }
     }
 
     on_volume_change(val) {
