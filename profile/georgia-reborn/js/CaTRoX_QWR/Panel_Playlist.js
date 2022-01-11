@@ -5235,7 +5235,7 @@ class Row extends ListItem {
 
 			let queueColor = col.primary;
 			if (this.is_playing || colorDistance(queueColor, g_pl_colors.row_alternate) < 165) {
-				queueColor = title_color;
+				queueColor = this.title_color;
 			}
 			gr.DrawString(queueText, title_font, queueColor, queueX, this.y, queueW, this.h, queueTextFormat);
 		}
