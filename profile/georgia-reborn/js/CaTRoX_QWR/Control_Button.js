@@ -198,6 +198,9 @@ function btnActionHandler(btn) {
 			break;
 		case 'Play/Pause':
 			fb.PlayOrPause();
+			if (pref.layout_mode === 'artwork_mode') {
+				displayPlaylist = false;
+			}
 			break;
 		case 'Next':
 			fb.Next();
