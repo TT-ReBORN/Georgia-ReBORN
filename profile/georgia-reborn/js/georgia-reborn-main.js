@@ -2919,9 +2919,13 @@ function onOptionsMenu(x, y) {
 		panel.updateProp(1);
 	});
 	libraryMenu.addSeparator();
-
+	libraryMenu.createRadioSubMenu('Single-click action', ['Select', 'Send to playlist', 'Send to playlist and play', 'Send to playlist and play (add if playing)'], ppt.clickAction, [0,1,2,3], function(action) {
+		ppt.clickAction = action;
+		panel.updateProp(1);
+	});
 	libraryMenu.createRadioSubMenu('Double-click action', ['Send to playlist', 'Send to playlist and play', 'Expand/Collapse tree'], ppt.dblClickAction, [0,1,2], function(action) {
 		ppt.dblClickAction = action;
+		panel.updateProp(1);
 	});
 	libraryMenu.addSeparator();
 
