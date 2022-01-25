@@ -2107,18 +2107,13 @@ function onOptionsMenu(x, y) {
 	playerControlsBiographyMenu.addToggleItem('Auto-hide', pref, 'autoHideScrollbar_Biography', () => {
 		if (pref.autoHideScrollbar_Biography) {
 			pptBio.sbarShow = 1;
-			butBio.set_src_btn_hide();
-			butBio.set_scroll_btns_hide();
-			window.Repaint();
+			butBio.setScrollBtnsHide();
+			butBio.setSrcBtnHide();
 		} else {
 			pptBio.sbarShow = 2;
-			art_scrollbar.narrow = false;
-			alb_scrollbar.narrow = false;
-			butBio.set_scroll_btns_hide(false);
-			art_scrollbar.resetAuto();
-			alb_scrollbar.resetAuto();
-			window.Repaint();
+			butBio.setScrollBtnsHide(false, 'both');
 		}
+		uiBio.updateProp(1);
 	});
 	playerControlsBiographyMenu.addToggleItem('Smooth scroll', ppt, 'smooth');
 	playerControlsBiographyMenu.appendTo(playerControlsScrollbarMenu);
