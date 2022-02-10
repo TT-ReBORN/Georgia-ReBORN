@@ -1366,7 +1366,7 @@ class Populate {
 					plman.ExecutePlaylistDefaultAction($Lib.pl_active, this.range(item.item)[0]);
 					return;
 				}
-				if (!ppt.dblClickAction && !this.autoFill.mouse && !this.autoPlay.click) return this.send(item, x, y), reinitPlaylist();
+				if (!ppt.dblClickAction && !this.autoFill.mouse && !this.autoPlay.click) return this.send(item, x, y), initPlaylist();
 				if (pref.playlistRowHover) repaintPlaylistRows();
 				if (ppt.dblClickAction == 2 && !item.track && !panel.imgView) {
 					this.expandCollapse(x, y, item, ix);
@@ -1381,7 +1381,7 @@ class Populate {
 					plman.ActivePlaylist = pln;
 					const c = (plman.PlaybackOrder == 3 || plman.PlaybackOrder == 4) ? Math.ceil(plman.PlaylistItemCount(pln) * Math.random() - 1) : 0;
 					plman.ExecutePlaylistDefaultAction(pln, c);
-					reinitPlaylist();
+					initPlaylist();
 					if (pref.playlistRowHover) repaintPlaylistRows();
 				}
 				break;
@@ -1434,7 +1434,17 @@ class Populate {
 		if (this.clicked_on != 'text') return;
 
 		if (!ppt.libSource) return this.setPlaylistSelection(ix, item);
-		if (vk.k('alt')) return this.add(x, y, !ppt.altAddToCur);
+		if (vk.k('alt')) {
+			if (pref.libraryPlaylistSwitch) {
+				btns.library.enabled = false;
+				btns.library.changeState(ButtonState.Default);
+				displayLibrary = false;
+				displayPlaylist = true;
+				if (!pref.always_showPlayingPl) playlist.on_size(ww, wh);
+				window.Repaint();
+			}
+			return this.add(x, y, !ppt.altAddToCur), initPlaylist();
+		}
 		if (!vk.k('ctrl')) {
 			this.clearSelected();
 			if (!item.sel) this.setTreeSel(ix, item.sel);
@@ -1442,7 +1452,7 @@ class Populate {
 		if (this.autoFill.mouse || this.autoPlay.click) {
 			window.Repaint(true);
 			this.send(item, x, y);
-			reinitPlaylist();
+			initPlaylist();
 		} else {
 			panel.treePaint();
 		}
@@ -1539,7 +1549,7 @@ class Populate {
 
 	mbtn_up(x, y) {
 		if (!ppt.libSource) return;
-		this.add(x, y, !ppt.mbtnAddToCur);
+		this.add(x, y, !ppt.mbtnAddToCur); initPlaylist();
 	}
 
 	merge(m, mergeBrCount) {
@@ -1657,7 +1667,7 @@ class Populate {
 		}
 		if (panel.search.active) return;
 		if (vk.k('enter')) {
-			reinitPlaylist();
+			initPlaylist();
 			if (!this.sel_items.length) return;
 			if (!ppt.libSource) {
 				if (this.autoPlay.send) plman.ExecutePlaylistDefaultAction($Lib.pl_active, this.sel_items[0]);
