@@ -485,7 +485,7 @@ Object.assign(qwr_utils, {
                 }
             );
             cmac.append_item(
-                !fb.IsPlaying || fb.IsPaused ? 'Play' : 'Pause', () => {
+                !fb.IsPlaying ? 'Play' : 'Pause', () => {
                     fb.PlayOrPause();
                 }
             );
@@ -553,11 +553,14 @@ Object.assign(qwr_utils, {
 
         if (aa_list.length > 1) {
             cmac.append_item(
-                fb.IsPlaying || fb.IsPaused ? 'Display next artwork' : '', () => {
+                fb.IsPlaying ? 'Display next artwork' : '', () => {
                     albumArtIndex = (albumArtIndex + 1) % aa_list.length;
                     loadImageFromAlbumArtList(albumArtIndex, true);
                     lastLeftEdge = 0;
-                    window.Repaint();
+                    if (pref.rebornTheme || pref.randomTheme) { // Update Reborn/Random theme colors on new album art
+                        newTrackFetchingArtwork = true;
+                        getThemeColors(albumart);
+                    }
                 }
             );
         }

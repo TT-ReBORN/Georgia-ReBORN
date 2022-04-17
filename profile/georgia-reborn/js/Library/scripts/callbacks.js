@@ -190,11 +190,13 @@ function on_mouse_move(x, y) {
 	ui.zoomDrag(x, y);
 	panel.m.x = x;
 	panel.m.y = y;
+
+	initScrollbarState(x, y);
 }
 
 function on_mouse_rbtn_up(x, y) {
 	if (y < ui.y + panel.search.h && x > panel.search.x && x < panel.search.x + panel.search.w) {
-		// if (ppt.searchShow) search.rbtn_up(x, y); // TODO: doc.parentWindow.clipboardData.getData crashes SMP on right click in Wine, used for paste from clipboard, disabled for now until SMP fix
+		if (ppt.searchShow) search.rbtn_up(x, y);
 	} else men.rbtn_up(x, y);
 	return true;
 }
@@ -245,6 +247,9 @@ function on_playback_new_track(handle) {
 	lib.checkFilter();
 	pop.getNowplaying(handle);
 	ui.on_playback_new_track(handle);
+	if (pref.always_showPlayingLib) {
+		pop.nowPlayingShow();
+	}
 }
 
 function on_playback_stop(reason) {
@@ -524,80 +529,13 @@ class LibraryCallbacks {
 		ui.zoomDrag(x, y);
 		panel.m.x = x;
 		panel.m.y = y;
-		// ---> Automatic Scrollbar Hide & Scrollbar Hit Area
-		if (pref.autoHideScrollbar_Library && sbar.vertical) {
-			const trace_pad = 2;
-			const scrollBar_hitarea_x = ui.x + ui.w;
-			const scrollBar_hitarea_h = ui.h;
-			const scrollBar_hitarea_w = sbar.w;
-			const scrollBar_hitarea_y = 0;
-			let inScrollArea = '';
 
-			if ((scrollBar_hitarea_x - scaleForDisplay(20) * trace_pad <= x) && (x <= scrollBar_hitarea_x - scaleForDisplay(20) + scrollBar_hitarea_w + trace_pad) &&
-				(scrollBar_hitarea_y + (is_4k ? 140 : 85) <= y) && (y <= scrollBar_hitarea_y + scrollBar_hitarea_h + (is_4k ? 90 : 50))) {
-
-				if (!inScrollArea) {
-					inScrollArea = true;
-					ui.sbar.but_w = scaleForDisplay(12);
-					sbar.w = scaleForDisplay(12);
-					but.refresh(true);
-					window.Repaint();
-				} else { inScrollArea = false; }
-
-			} else if ((!sbar.bar.isDragging && scrollBar_hitarea_x - scaleForDisplay(30) * trace_pad <= x) && (x <= scrollBar_hitarea_x - scaleForDisplay(30) + scrollBar_hitarea_w + trace_pad) &&
-				(scrollBar_hitarea_y + (is_4k ? 200 : 100) <= y) && (y <= scrollBar_hitarea_y + scrollBar_hitarea_h + (is_4k ? 120 : 80)) || !sbar.bar.isDragging && (!(scrollBar_hitarea_x - scaleForDisplay(30) * trace_pad <= x))) {
-
-				if (!inScrollArea) {
-					inScrollArea = true;
-					ui.sbar.but_w = 0;
-					sbar.w = 0;
-					but.refresh(true);
-					window.Repaint();
-				} else { inScrollArea = false; }
-			}
-		} else if (sbar.vertical) {
-			ui.sbar.but_w = scaleForDisplay(12);
-			sbar.w = scaleForDisplay(12);
-		}
-		if (pref.autoHideScrollbar_Library && !sbar.vertical) {
-			const trace_pad = 2;
-			const scrollBar_hitarea_x = ui.x;
-			const scrollBar_hitarea_h = sbar.h * 2;
-			const scrollBar_hitarea_w = ui.w;
-			const scrollBar_hitarea_y = ui.h;
-			let inScrollArea = '';
-
-			if ((scrollBar_hitarea_x * trace_pad <= x) && (x <= scrollBar_hitarea_x + scrollBar_hitarea_w + trace_pad) &&
-				(scrollBar_hitarea_y - (is_4k ? 40 : 15) <= y) && (y <= scrollBar_hitarea_y + scrollBar_hitarea_h - (is_4k ? 20 : 5))) {
-
-				if (!inScrollArea) {
-					inScrollArea = true;
-					ui.sbar.but_w = scaleForDisplay(12);
-					sbar.h = scaleForDisplay(12);
-					but.refresh(true);
-					window.Repaint();
-				} else { inScrollArea = false; }
-
-			} else if ((!sbar.bar.isDragging && scrollBar_hitarea_x * trace_pad <= x) && (x <= scrollBar_hitarea_x + scrollBar_hitarea_w + trace_pad) &&
-				(scrollBar_hitarea_y - (is_4k ? 60 : 30) <= y) && (y <= scrollBar_hitarea_y + scrollBar_hitarea_h - (is_4k ? 40 : 10)) || !sbar.bar.isDragging && (!(scrollBar_hitarea_y - (is_4k ? 60 : 30) <= y))) {
-
-				if (!inScrollArea) {
-					inScrollArea = true;
-					ui.sbar.but_w = 0;
-					sbar.h = 0;
-					but.refresh(true);
-					window.Repaint();
-				} else { inScrollArea = false; }
-			}
-		} else if (!sbar.vertical) {
-			ui.sbar.but_w = scaleForDisplay(12);
-			sbar.h = scaleForDisplay(12);
-		}
+		initScrollbarState(x, y);
 	}
 
 	on_mouse_rbtn_up(x, y) {
 		if (y < ui.y + panel.search.h && x > panel.search.x && x < panel.search.x + panel.search.w) {
-			// if (ppt.searchShow) search.rbtn_up(x, y); // TODO: doc.parentWindow.clipboardData.getData crashes SMP on right click in Wine, used for paste from clipboard, disabled for now until SMP fix
+			if (ppt.searchShow) search.rbtn_up(x, y);
 		} else men.rbtn_up(x, y);
 		return true;
 	}
@@ -648,6 +586,9 @@ class LibraryCallbacks {
 		lib.checkFilter();
 		pop.getNowplaying(handle);
 		ui.on_playback_new_track(handle);
+		if (pref.always_showPlayingLib) {
+			pop.nowPlayingShow();
+		}
 	}
 
 	on_playback_stop(reason) {

@@ -163,17 +163,40 @@ class ScrollbarBio {
 		if (this.drawBar && this.active) {
 			let sbar_x = this.x;
 			let sbar_w = this.w;
+
+			ui.col.sbarNormalRGBA        = RGBA(ui.col.sbarNormalR, ui.col.sbarNormalG, ui.col.sbarNormalB, pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? this.alpha + 120 : pref.themeStyleBlackAndWhite ? this.alpha + 74 : pref.themeStyleBlackAndWhite2 ? this.alpha + 72 : this.alpha);
+			ui.col.sbarHoveredRGBA       = RGBA(ui.col.sbarHoveredR, ui.col.sbarHoveredG, ui.col.sbarHoveredB, this.alpha);
+			ui.col.sbarDragRGBA          = RGBA(ui.col.sbarDragR, ui.col.sbarDragG, ui.col.sbarDragB, this.alpha2);
+			ui.col.accentRGBA            = RGBA(ui.col.accentR, ui.col.accentG, ui.col.accentB, this.alpha + 155);
+			ui.col.extraLightAccentRGBA  = RGBA(ui.col.extraLightAccentR, ui.col.extraLightAccentG, ui.col.extraLightAccentB, this.alpha);
+			ui.col.extraLightAccentRGBA2 = RGBA(ui.col.extraLightAccentR, ui.col.extraLightAccentG, ui.col.extraLightAccentB, 255);
+			ui.col.lightMiddleAccentRGBA = RGBA(ui.col.lightMiddleAccentR, ui.col.lightMiddleAccentG, ui.col.lightMiddleAccentB, this.alpha + 155);
+			ui.col.extraDarkAccentRGBA   = this.hover ? RGBA(ui.col.extraLightAccentR, ui.col.extraLightAccentG, ui.col.extraLightAccentB, this.alpha) : RGBA(ui.col.extraDarkAccentR, ui.col.extraDarkAccentG, ui.col.extraDarkAccentB, this.alpha);
+
+			let thumbColors = [ui.col.sbarNormalRGBA, ui.col.sbarHoveredRGBA, ui.col.sbarDragRGBA];
+
+			if (g_pl_colors.background != RGB(255, 255, 255)) {
+				if ((pref.rebornTheme || pref.randomTheme) && (new Color(col.primary).brightness > (pref.themeStyleBlend || pref.themeStyleBlend2 ? 160 : 130))) {
+					thumbColors = [ui.col.accentRGBA, ui.col.extraDarkAccentRGBA, ui.col.extraLightAccentRGBA2];
+				}
+				else if ((pref.rebornTheme || pref.randomTheme) && (new Color(col.primary).brightness < (pref.themeStyleBlend || pref.themeStyleBlend2 ? 161 : 131))) {
+					thumbColors = [ui.col.lightMiddleAccentRGBA, ui.col.extraLightAccentRGBA, ui.col.extraLightAccentRGBA2];
+				}
+			}
+
 			if (pptBio.sbarShow == 1) {
 				sbar_x = !this.narrow.show ? this.x : this.narrow.x;
 				sbar_w = !this.narrow.show ? this.w : 0; // Hide mini scrollbar
 			}
 			switch (uiBio.sbar.type) {
 				case 0:
-					gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
+					// gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
+					gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : pref.rebornTheme || pref.randomTheme ? thumbColors[1] : thumbColors[0]);
 					break;
 				case 1:
-					if (!this.narrow.show || pptBio.sbarShow != 1) gr.FillSolidRect(sbar_x, this.y - panelBio.sbar.offset, this.w, this.h + panelBio.sbar.offset * 2, this.col['bg']);
-					gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
+					// if (!this.narrow.show || pptBio.sbarShow != 1) gr.FillSolidRect(sbar_x, this.y - panelBio.sbar.offset, this.w, this.h + panelBio.sbar.offset * 2, this.col['bg']);
+					// gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
+					gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : pref.rebornTheme || pref.randomTheme ? thumbColors[1] : thumbColors[0]);
 					break;
 				case 2:
 					uiBio.theme.SetPartAndStateID(6, 1);
@@ -344,7 +367,7 @@ class ScrollbarBio {
 	}
 
 	paint() {
-		window.RepaintRect(this.x, this.y, this.w, this.h);
+		window.RepaintRect(this.x, this.y, this.w + 1, this.h);
 	}
 
 	position(Start, End, Elapsed, Duration, Event) {
@@ -401,9 +424,9 @@ class ScrollbarBio {
 	}
 
 	setCol() { // not called by film type
-		this.alpha = !uiBio.sbar.col ? 75 : (!uiBio.sbar.type ? 68 : 51);
+		this.alpha = !uiBio.sbar.col ? 75 : (!uiBio.sbar.type ? 100 : 100);
 		this.alpha1 = this.alpha;
-		this.alpha2 = !uiBio.sbar.col ? 128 : (!uiBio.sbar.type ? 119 : 85);
+		this.alpha2 = !uiBio.sbar.col ? 128 : (!uiBio.sbar.type ? 255 : 255);
 		this.inStep = uiBio.sbar.type && uiBio.sbar.col ? 12 : 18;
 		switch (uiBio.sbar.type) {
 			case 0:
@@ -413,30 +436,8 @@ class ScrollbarBio {
 						this.col.max = RGBA(uiBio.col.t, uiBio.col.t, uiBio.col.t, 192);
 						break;
 					case 1:
-						for (let i = 0; i < this.alpha2 - this.alpha + 1; i++) this.col[this.alpha + i] =
-						pref.whiteTheme ? RGBA(uiBio.col.t, uiBio.col.t, uiBio.col.t, this.alpha + i) :
-						pref.blackTheme ? RGBA(100, 100, 100, 200 + i) :
-						pref.rebornTheme ? g_pl_colors.sbarBio :
-						pref.blueTheme ? RGBA(10, 135, 225, 200 + i) :
-						pref.darkblueTheme ? RGBA(27, 55, 90, 200 + i) :
-						pref.redTheme ? RGBA(200, 200, 200, 200 + i) :
-						pref.creamTheme ? RGBA(200, 200, 200, 200 + i) :
-						pref.nblueTheme ? RGBA(0, 200, 255, 200 + i) :
-						pref.ngreenTheme ? RGBA(0, 200, 0, 200 + i) :
-						pref.nredTheme ? RGBA(229, 7, 44, 200 + i) :
-						pref.ngoldTheme ? RGBA(254, 204, 3, 200 + i) : '';
-						this.col.max =
-						pref.whiteTheme ? RGBA(uiBio.col.t, uiBio.col.t, uiBio.col.t, 192) :
-						pref.blackTheme ? RGBA(160, 160, 160, 255) :
-						pref.rebornTheme ? g_pl_colors.sbarBio_hover :
-						pref.blueTheme ? RGBA(242, 230, 170, 255) :
-						pref.darkblueTheme ? RGBA(255, 202, 128, 255) :
-						pref.redTheme ? RGBA(245, 212, 165, 255) :
-						pref.creamTheme ? RGBA(120, 170, 130, 255) :
-						pref.nblueTheme ? RGBA(0, 238, 255, 255) :
-						pref.ngreenTheme ? RGBA(0, 255, 0, 255) :
-						pref.nredTheme ? RGBA(255, 0, 0, 255) :
-						pref.ngoldTheme ? RGBA(255, 242, 3, 255) : '';
+						for (let i = 0; i < this.alpha2 - this.alpha + 1; i++) this.col[this.alpha + i] = uiBio.col.text & RGBA(255, 255, 255, this.alpha + i);
+						this.col.max = uiBio.col.text & 0x99ffffff;
 						break;
 				}
 				break;
@@ -544,11 +545,11 @@ class ScrollbarBio {
 
 	transitionPaint() {
 		if (this.init) return;
-		this.alpha = this.hover ? this.alpha1 : this.alpha2;
+		this.alpha = this.hover ? this.alpha1 : pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme || pref.themeStyleBlackAndWhite || pref.themeStyleBlackAndWhite2 ? this.alpha1 : this.alpha2;
 		clearTimeout(this.bar.timerBio);
 		this.bar.timerBio = null;
 		this.bar.timerBio = setInterval(() => {
-			this.alpha = this.hover ? Math.min(this.alpha += this.inStep, this.alpha2) : Math.max(this.alpha -= 3, this.alpha1);
+			this.alpha = this.hover ? Math.min(this.alpha += this.inStep, this.alpha2) : Math.max(this.alpha -= 8, this.alpha1);
 			this.paint();
 			if (this.hover && this.alpha == this.alpha2 || !this.hover && this.alpha == this.alpha1) {
 				this.cur_hover = this.hover;

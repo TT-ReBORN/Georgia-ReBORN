@@ -387,7 +387,13 @@ let fb = {
      *   cursor icon will be changed, on_drag_drop won't be called after releasing lmbtn, on_drag_leave will be called instead.<br>
      * - DROPEFFECT_LINK should be used as fallback in case effect argument does not have DROPEFFECT_COPY (===1), since some external drops only allow DROPEFFECT_LINK effect.<br>
      * - Changing effect on key modifiers is nice (to be in line with native Windows behaviour): see the example below.<br>
-     *
+     * <br>
+     * Note: due to the asynchronous nature of event handling, `fb.DoDragDrop()` might exit before `on_drag_drop` callback is triggered
+     * when dropping data on the same panel as the one that had a call to `fb.DoDragDrop()`.<br>
+     * <br>
+     * Related callbacks: {@link module:callbacks~on_drag_enter on_drag_enter, {@link module:callbacks~on_drag_drop on_drag_drop},
+     * {@link module:callbacks~on_drag_over on_drag_over}, {@link module:callbacks~on_drag_leave on_drag_leave}
+     * 
      * @param {number} window_id unused
      * @param {FbMetadbHandleList} handle_list
      * @param {number} effect Allowed effects.
@@ -433,7 +439,9 @@ let fb = {
     /**
      * Available only in foobar2000 v1.4 and above. Throws a script error on v1.3. * <br>
      * Returns a JSON array in string form so you need to use JSON.parse() on the result.
-     *
+     * <br>
+     * Related methods: {@link fb.SetDSPPreset}.
+     * 
      * @return {string}
      *
      * @example
@@ -496,7 +504,9 @@ let fb = {
     /**
      * Available only in foobar2000 v1.4 and above. Throws a script error on v1.3. * <br>
      * Returns a JSON array in string form so you need to use JSON.parse() on the result.
-     *
+     * <br>
+     * Related methods: {@link fb.SetOutputDevice}.
+     * 
      * @return {string}
      *
      * @example
@@ -637,6 +647,23 @@ let fb = {
     /** @method */
     Random: function () { }, // (void)
 
+    /**
+     * Registers a main menu item that will be displayed under `main menu`>`File`>`Spider Monkey Panel`>`Script commands`>`{Current panel name}`.<br>
+     * Being main menu item means you can bind it to global keyboard shortcuts, standard toolbar buttons, panel stack splitter buttons and etc.<br>
+     * Execution of the correspoding menu item will trigger {@link module:callbacks~on_main_menu_dynamic on_main_menu_dynamic} callback.<br>
+     * <br>
+     * Note: SMP uses a combination of panel name and command id to identify and bind the command. Hence all corresponding binds will fail
+     * if the id or the panel name is changed. This also means that collision WILL occur if there are two panels with the same name.<br>
+     * <br>
+     * Related methods: {@link fb.UnregisterMainMenuCommand}<br>
+     * Related callbacks: {@link module:callbacks~on_main_menu_dynamic on_main_menu_dynamic}
+     * 
+     * @param {number} id
+     * @param {string} name
+     * @param {string=} [description='']
+     */
+    RegisterMainMenuCommand: function (id, name, description) { },
+
     /** @method */
     Restart: function () { }, // (void)
 
@@ -680,7 +707,8 @@ let fb = {
 
     /**
      * Available only in foobar2000 v1.4 and above. Throws a script error on v1.3.<br>
-     * See {@link fb.GetDSPPresets}.
+     * <br>
+     * Related methods: {@link fb.GetDSPPresets}.
      *
      * @param {number} idx
      *
@@ -694,7 +722,8 @@ let fb = {
 
     /**
      * Available only in foobar2000 v1.4 and above. Throws a script error on v1.3.<br>
-     * See {@link fb.GetOutputDevices}.
+     * <br>
+     * Related methods: {@link fb.GetOutputDevices}.
      *
      * @param {string} output
      * @param {string} device
@@ -740,6 +769,15 @@ let fb = {
      * @return {FbTitleFormat}
      */
     TitleFormat: function (expression) { }, // (FbTitleFormat)
+
+    /**
+     * Unregisters a main menu item.<br>
+     * <br>
+     * Related methods: {@link fb.RegisterMainMenuCommand}
+     *
+     * @param {number} id
+     */
+    UnregisterMainMenuCommand: function (id, name, description) { },
 
     /** @method */
     VolumeDown: function () { }, // (void)
@@ -1095,6 +1133,26 @@ let plman = {
     IsPlaylistLocked: function (playlistIndex) { }, // (boolean)
 
     /**
+     * Returns whether a redo restore point is available for specified playlist.
+     * <br>
+     * Related methods: {@link plman.IsUndoAvailable}, {@link plman.Redo}, {@link plman.Undo}, {@link plman.UndoBackup}
+     *
+     * @param {number} playlistIndex
+     * @return {boolean}
+     */
+    IsRedoAvailable: function (playlistIndex) { }, // (void)
+
+    /**
+     * Returns whether an undo restore point is available for specified playlist.
+     * <br>
+     * Related methods: {@link plman.IsRedoAvailable}, {@link plman.Redo}, {@link plman.Undo}, {@link plman.UndoBackup}
+     *
+     * @param {number} playlistIndex
+     * @return {boolean}
+     */
+    IsUndoAvailable: function (playlistIndex) { }, // (void)
+
+    /**
      * @param {number} from
      * @param {number} to
      * @return {boolean}
@@ -1120,6 +1178,17 @@ let plman = {
      * console.log(plman.PlaylistItemCount(plman.PlayingPlaylist)); // 12
      */
     PlaylistItemCount: function (playlistIndex) { }, // (uint) (read)
+
+    /**
+     * Reverts specified playlist to the next redo restore point and generates an undo restore point.<br>
+     * Note: revert operation may be not applied if the corresponding action is locked.
+     * Use {@link plman.GetPlaylistLockedActions} to check if there are any locks present.<br>
+     * <br>
+     * Related methods: {@link plman.IsRedoAvailable}, {@link plman.IsUndoAvailable}, {@link plman.Undo}, {@link plman.UndoBackup}
+     *
+     * @param {number} playlistIndex
+     */
+    Redo: function (playlistIndex) { }, // (void)
 
     /**
      * Removes the specified playlist.<br>
@@ -1277,9 +1346,22 @@ let plman = {
     SortPlaylistsByName: function (direction) { }, //(void)
 
     /**
-     * Saves playlist's current state: this will enable `Edit`>`Undo` menu item after calling other {@link plman} methods that change playlist content.<br>
-     * Note: this method should be called before performing modification to the playlist.
+     * Reverts specified playlist to the last undo restore point and generates a redo restore point.<br>
+     * Note: revert operation may be not applied if the corresponding action is locked.
+     * Use {@link plman.GetPlaylistLockedActions} to check if there are any locks present.<br>
+     * <br>
+     * Related methods: {@link plman.IsRedoAvailable}, {@link plman.IsUndoAvailable}, {@link plman.Redo}, {@link plman.UndoBackup}
      *
+     * @param {number} playlistIndex
+     */
+    Undo: function (playlistIndex) { }, // (void)
+
+    /**
+     * Creates an undo restore point for the specified playlist. This will enable `Edit`>`Undo` menu item after calling other {@link plman} methods that change playlist content.<br>
+     * Note: this method should be called before performing modification to the playlist.<br>
+     * <br>
+     * Related methods: {@link plman.IsRedoAvailable}, {@link plman.IsUndoAvailable}, {@link plman.Redo}, {@link plman.Undo}
+     * 
      * @param {number} playlistIndex
      */
     UndoBackup: function (playlistIndex) { }, // (void)
@@ -1552,6 +1634,11 @@ let utils = {
     GetAlbumArtV2: function (handle, art_id, need_stub) { }, // (GdiBitmap) [, art_id][, need_stub]
 
     /**
+     * @return {string} Returns an empty string if clipboard contents are not text.
+     */
+    GetClipboardText: function () { },
+
+    /**
      * @param {string} path
      * @return {number} File size, in bytes
      */
@@ -1713,6 +1800,11 @@ let utils = {
      * let username = utils.ReadINI("e:\\my_file.ini", "Last.fm", "username");
      */
     ReadINI: function (filename, section, key, default_val) { }, // (string) [, default_val]
+
+    /**
+     * @param {string} text
+     */
+    SetClipboardText: function (text) { },
 
     /**
      * Displays an html dialog, rendered by IE engine.<br>
@@ -2121,9 +2213,19 @@ let window = {
 
     /**
      * This will trigger {@link module:callbacks~on_notify_data on_notify_data}(name, info) in other panels.<br>
+     * <b>!!! Beware !!!</b>: data passed via `info` argument must NOT be used or modified in the source panel after invoking this method.
      *
      * @param {string} name
      * @param {*} info
+     * 
+     * @example
+     * let data = { 
+     *    // some data
+     * };
+     * window.NotifyOthers('have_some_data', data);
+     * 
+     * data = null; // stop using the object immediately
+     * // AddSomeAdditionalValues(data); // don't try to modify it, since it will affect the object in the other panel as well
      */
     NotifyOthers: function (name, info) { }, // (void)
 
@@ -3629,6 +3731,15 @@ function DropTargetAction() {
      * @type {boolean}
      */
     this.ToSelect = undefined; // (boolean) (write)
+
+    /**
+     * True, if the drag session was started by {@link fb.DoDragDrop}.
+     * False, otherwise.
+     * 
+     * @type {boolean}
+     * @readonly
+     */
+    this.IsInternal = undefined;
 }
 
 /**

@@ -114,7 +114,7 @@ function on_drag_enter(action, x, y, mask) {
         action.Effect = (action.Effect & g_drop_effect.move)
                 || (action.Effect & g_drop_effect.copy)
                 || (action.Effect & g_drop_effect.link);
-        action.Text = get_text_from_effect(action.Effect);
+        action.Text = get_text_from_effect(action.Effect, action.IsInternal);
     }
     else {        
         action.Effect = g_drop_effect.none;
@@ -136,7 +136,7 @@ function on_drag_leave() {
 function on_drag_over(action, x, y, mask) {
     if (trace_end_zone(x, y)) {
         action.Effect = filter_effect_by_modifiers(action.Effect);
-        action.Text = get_text_from_effect(action.Effect);
+        action.Text = get_text_from_effect(action.Effect, action.IsInternal);
     }
     else {
         action.Effect = g_drop_effect.none;
@@ -153,7 +153,6 @@ function on_drag_drop(action, x, y, m) {
 
     if (!is_dragging || !trace_end_zone(x, y)) {
         is_dragging = false;
-        is_internal_drag_n_drop_active = false;
         action.Effect = g_drop_effect.none;
         
         return;
@@ -161,7 +160,7 @@ function on_drag_drop(action, x, y, m) {
 
     let ctrl_pressed = utils.IsKeyPressed(VK_CONTROL);
 
-    if (is_internal_drag_n_drop_active) {        
+    if (action.IsInternal) {        
         let copy_drop = ctrl_pressed && ((action.Effect & 1) || (action.Effect & 4));
         drop(copy_drop);
 
@@ -182,7 +181,6 @@ function on_drag_drop(action, x, y, m) {
         }
         else {
             is_dragging = false;
-            is_internal_drag_n_drop_active = false;
             
             status_text_2 = 'Item from outside was dropped but the action was forbidden';            
             window.Repaint(); 
@@ -207,7 +205,6 @@ function perform_internal_drag_n_drop() {
     let cur_playlist_idx = plman.ActivePlaylist;
     
     is_dragging = true;
-    is_internal_drag_n_drop_active = true;
     
     plman.ClearPlaylistSelection(cur_playlist_idx);
     plman.SetPlaylistSelectionSingle(cur_playlist_idx, cur_selected_index, true);
@@ -218,6 +215,13 @@ function perform_internal_drag_n_drop() {
     
     let effect = fb.DoDragDrop(0, cur_playlist_selection, g_drop_effect.copy | g_drop_effect.move | g_drop_effect.link);
 
+    if (is_dragging) {
+        // If drag operation was not cancelled, then it means that nor on_drag_drop, nor on_drag_leave event handlers
+        // were triggered, which means that the items were most likely dropped inside the panel
+        // (and relevant methods were not called because of async event processing)        
+        return;
+    }
+
     function can_handle_move_drop() {
         // We can handle the 'move drop' properly only when playlist is still in the same state
         return cur_playlist_size === plman.PlaylistItemCount(cur_playlist_idx)
@@ -225,7 +229,7 @@ function perform_internal_drag_n_drop() {
     }
 
     if (g_drop_effect.none === effect && can_handle_move_drop()) {
-        // This needs special handling, because on NT, DROPEFFECT_NONE
+        // DROPEFFECT_NONE needs special handling, because on NT it
         // is returned for some move operations, instead of DROPEFFECT_MOVE.
         // See Q182219 for the details.
 
@@ -247,8 +251,6 @@ function perform_internal_drag_n_drop() {
     else if (g_drop_effect.move === effect && can_handle_move_drop()) {
         plman.RemovePlaylistSelection(cur_playlist_idx);
     }
-
-    is_internal_drag_n_drop_active = false;
 }
 
 function drop(copy_selection) {
@@ -292,10 +294,9 @@ function external_drop(action) {
 
     action.Playlist = playlist_idx;
     action.ToSelect = true;
-    action.Base = plman.PlaylistCount;
+    action.Base = plman.PlaylistItemCount(cur_playlist_idx);
 
     is_dragging = false;
-    is_internal_drag_n_drop_active = false;
 }
 
 function filter_effect_by_modifiers(effect) {
@@ -323,18 +324,18 @@ function filter_effect_by_modifiers(effect) {
     return (effect & g_drop_effect.move) || (effect & g_drop_effect.copy) || (effect & g_drop_effect.link);
 }
 
-function get_text_from_effect(effect) {
+function get_text_from_effect(effect, is_internal) {
     switch (effect) {
         case g_drop_effect.move:
         {
-            if (is_internal_drag_n_drop_active) {
+            if (is_internal) {
                 return 'Moving from inside';
             }
             return 'Moving from outside';
         }
         case g_drop_effect.copy:
         {
-            if (is_internal_drag_n_drop_active) {
+            if (is_internal) {
                 return 'Copying from inside';
             }
             return 'Copying from outside';

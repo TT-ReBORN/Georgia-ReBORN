@@ -456,24 +456,14 @@
 		const font2 = gdi.Font('Segoe UI', 80, 1);
 		const font3 = gdi.Font('Segoe UI', 200, 1);
 		const font4 = gdi.Font('Segoe UI', 90, 1);
-		const tcol = !bg ? uiBio.col.text : uiBio.dui ? window.GetColourDUI(0) :
-		pref.whiteTheme || pref.blackTheme || pref.blueTheme ||	pref.darkblueTheme || pref.redTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing :
-		pref.creamTheme ? RGB(120, 170, 130) : '';
+		const tcol = !bg ? uiBio.col.text : uiBio.dui ? window.GetColourDUI(0) : uiBio.col.noPhotoStubText;
 		const sz = 600;
 		for (let i = 0; i < 3; i++) {
 			this.stub.default[i] = $Bio.gr(sz, sz, true, g => {
 				g.SetSmoothingMode(2);
 				if (bg) {
 					g.FillSolidRect(0, 0, sz, sz, tcol);
-					g.FillSolidRect(-1, 0, sz + 5, sz,
-						pref.whiteTheme ? RGB(245, 245, 245) :
-						pref.blackTheme ? RGB(25, 25, 25) :
-						pref.blueTheme ? RGB(5, 110, 195) :
-						pref.darkblueTheme ? RGB(22, 40, 63) :
-						pref.redTheme ? RGB(100, 20, 20) :
-						pref.creamTheme ? RGB(255, 247, 240) :
-						pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB (20, 20, 20) : ''
-					);
+					g.FillSolidRect(-1, 0, sz + 5, sz, uiBio.col.noPhotoStubBg);
 				}
 				g.SetTextRenderingHint(3);
 				g.DrawString('NO', i == 2 ? font3 : font1, tcol, 0, 0, sz, sz * 275 / 500, cc);

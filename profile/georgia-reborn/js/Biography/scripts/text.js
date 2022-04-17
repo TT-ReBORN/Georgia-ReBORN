@@ -1229,6 +1229,7 @@ class Text {
 				}
 				break;
 		}
+		initBiographyColors();
 	}
 
 	toggle(n) {

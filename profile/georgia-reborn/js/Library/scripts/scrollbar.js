@@ -181,6 +181,28 @@ class Scrollbar {
 			let sbar_w = this.w;
 			let sbar_y = this.y;
 			let sbar_h = this.h;
+
+			ui.col.sbarNormalRGBA        = RGBA(ui.col.sbarNormalR, ui.col.sbarNormalG, ui.col.sbarNormalB, pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? this.alpha + 120 : pref.themeStyleBlackAndWhite ? this.alpha + 74 : pref.themeStyleBlackAndWhite2 ? this.alpha + 72 : this.alpha);
+			ui.col.sbarHoveredRGBA       = RGBA(ui.col.sbarHoveredR, ui.col.sbarHoveredG, ui.col.sbarHoveredB, this.alpha);
+			ui.col.sbarDragRGBA          = RGBA(ui.col.sbarDragR, ui.col.sbarDragG, ui.col.sbarDragB, this.alpha2);
+			ui.col.accentRGBA            = RGBA(ui.col.accentR, ui.col.accentG, ui.col.accentB, this.alpha + 155);
+			ui.col.extraLightAccentRGBA  = RGBA(ui.col.extraLightAccentR, ui.col.extraLightAccentG, ui.col.extraLightAccentB, this.alpha);
+			ui.col.extraLightAccentRGBA2 = RGBA(ui.col.extraLightAccentR, ui.col.extraLightAccentG, ui.col.extraLightAccentB, 255);
+			ui.col.lightMiddleAccentRGBA = RGBA(ui.col.lightMiddleAccentR, ui.col.lightMiddleAccentG, ui.col.lightMiddleAccentB, this.alpha + 155);
+			ui.col.extraDarkAccentRGBA   = this.hover ? RGBA(ui.col.extraLightAccentR, ui.col.extraLightAccentG, ui.col.extraLightAccentB, this.alpha) : RGBA(ui.col.extraDarkAccentR, ui.col.extraDarkAccentG, ui.col.extraDarkAccentB, this.alpha);
+
+			let thumbColors = [ui.col.sbarNormalRGBA, ui.col.sbarHoveredRGBA, ui.col.sbarDragRGBA];
+			const colBrightness = new Color(col.primary).brightness;
+
+			if (g_pl_colors.background != RGB(255, 255, 255)) {
+				if ((pref.rebornTheme || pref.randomTheme) && (colBrightness > (pref.themeStyleBlend || pref.themeStyleBlend2 ? 160 : 130))) {
+					thumbColors = [ui.col.accentRGBA, ui.col.extraDarkAccentRGBA, ui.col.extraLightAccentRGBA2];
+				}
+				else if ((pref.rebornTheme || pref.randomTheme) && (colBrightness < (pref.themeStyleBlend || pref.themeStyleBlend2 ? 161 : 131))) {
+					thumbColors = [ui.col.lightMiddleAccentRGBA, ui.col.extraLightAccentRGBA, ui.col.extraLightAccentRGBA2];
+				}
+			}
+
 			if (ppt.sbarShow == 1) {
 				sbar_x = !this.narrow.show ? this.x : this.narrow.x;
 				sbar_w = !this.narrow.show ? this.w : 0; // Hide vertical scrollbar
@@ -189,160 +211,50 @@ class Scrollbar {
 			}
 			switch (ui.sbar.type) {
 				case 0:
+					// if (ppt.rowStripes && ppt.sbarShow == 2 && !this.vertical) gr.FillSolidRect(this.x, this.y, this.w, this.h, ui.col.bg1);
+					// if (this.vertical) gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
+					// else gr.FillSolidRect(this.x + this.bar.x, sbar_y, this.bar.h, sbar_h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
 					if (ppt.rowStripes && ppt.sbarShow == 2 && !this.vertical) gr.FillSolidRect(this.x, this.y, this.w, this.h, ui.col.bg1);
-					if (this.vertical) gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
-					else gr.FillSolidRect(this.x + this.bar.x, sbar_y, this.bar.h, sbar_h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
+					if (this.vertical) {
+						if (ppt.sbarShow && sbar.w === scaleForDisplay(12) || !pref.libraryAutoHideScrollbar && sbar.w === scaleForDisplay(12)) {
+							gr.FillSolidRect(sbar_x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 - 8, ui.col.bg);
+							gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : pref.rebornTheme || pref.randomTheme ? thumbColors[1] : thumbColors[0]);
+							if (pref.themeStyleBlend && albumart) {
+								gr.DrawImage(blendedImg, sbar_x - scaleForDisplay(8), this.y - 8, ww, wh, sbar_x - scaleForDisplay(8), this.y - 8, blendedImg.Width, blendedImg.Height);
+							}
+						}
+					}
+					else {
+						// gr.FillSolidRect(this.x + this.bar.x, sbar_y, this.bar.h, sbar_h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
+						if (!this.narrow.show || ppt.sbarShow != 1) {
+							if (ppt.sbarShow && sbar.h === scaleForDisplay(12) || !pref.libraryAutoHideScrollbar && sbar.h === scaleForDisplay(12)) {
+								gr.FillSolidRect(this.x + this.bar.x, sbar_y, this.bar.h, sbar_h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : pref.rebornTheme || pref.randomTheme ? thumbColors[1] : thumbColors[0]);
+							}
+						}
+					}
 					break;
 				case 1:
+					// if (this.vertical) {
+					// 	if (!this.narrow.show || ppt.sbarShow != 1) gr.FillSolidRect(sbar_x, this.y - panel.sbar_o, this.w, this.h + panel.sbar_o * 2, this.col['bg']);
+					// 	gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
+					// } else {
+					// 	if (!this.narrow.show || ppt.sbarShow != 1) gr.FillSolidRect(this.x - panel.sbar_o, sbar_y, this.w + panel.sbar_o * 2, this.h, this.col['bg']);
+					// 	gr.FillSolidRect(this.x + this.bar.x, sbar_y, this.bar.h, sbar_h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
+					// }
 					if (this.vertical) {
-						//if (!this.narrow.show || ppt.sbarShow != 1) gr.FillSolidRect(sbar_x, this.y - panel.sbar_o, this.w, this.h + panel.sbar_o * 2, this.col['bg']);
-						//gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
 						if (!this.narrow.show || ppt.sbarShow != 1) {
-							if (ppt.sbarShow && sbar.w === scaleForDisplay(12) || !pref.autoHideScrollbar_Library && sbar.w === scaleForDisplay(12)) {
-								let thumbColors = [
-									// normal
-									pref.whiteTheme ? RGBA(200, 200, 200, this.alpha) :
-									pref.blackTheme ? RGBA(100, 100, 100, this.alpha) :
-									pref.rebornTheme ? RGBA(200, 200, 200, this.alpha) :
-									pref.blueTheme ? RGBA(10, 135, 225, this.alpha) :
-									pref.darkblueTheme ? RGBA(27, 55, 90, this.alpha) :
-									pref.redTheme ? RGBA(145, 25, 25, this.alpha) :
-									pref.creamTheme ? RGBA(200, 200, 200, this.alpha) :
-									pref.nblueTheme ? RGBA(0, 200, 255, this.alpha) :
-									pref.ngreenTheme ? RGBA(0, 200, 0, this.alpha) :
-									pref.nredTheme ? RGBA(229, 7, 44, this.alpha) :
-									pref.ngoldTheme ? RGBA(254, 204, 3, this.alpha) : '',
-									// hover
-									pref.whiteTheme ? RGBA(120, 120, 120, this.alpha) :
-									pref.blackTheme ? RGBA(160, 160, 160, this.alpha) :
-									pref.rebornTheme ? RGBA(120, 120, 120, this.alpha) :
-									pref.blueTheme ? RGBA(242, 230, 170, this.alpha) :
-									pref.darkblueTheme ? RGBA(255, 202, 128, this.alpha) :
-									pref.redTheme ? RGBA(245, 212, 165, this.alpha) :
-									pref.creamTheme ? RGBA(120, 170, 130, this.alpha) :
-									pref.nblueTheme ? RGBA(0, 238, 255, this.alpha) :
-									pref.ngreenTheme ? RGBA(0, 255, 0, this.alpha) :
-									pref.nredTheme ? RGBA(255, 0, 0, this.alpha) :
-									pref.ngoldTheme ? RGBA(255, 242, 3, this.alpha) : '',
-									// drag
-									pref.whiteTheme ? RGBA(120, 120, 120, this.alpha) :
-									pref.blackTheme ? RGBA(160, 160, 160, this.alpha) :
-									pref.rebornTheme ? RGBA(120, 120, 120, this.alpha) :
-									pref.blueTheme ? RGBA(242, 230, 170, this.alpha) :
-									pref.darkblueTheme ? RGBA(255, 202, 128, this.alpha) :
-									pref.redTheme ? RGBA(245, 212, 165, this.alpha) :
-									pref.creamTheme ? RGBA(120, 170, 130, this.alpha) :
-									pref.nblueTheme ? RGBA(0, 238, 255, this.alpha) :
-									pref.ngreenTheme ? RGBA(0, 255, 0, this.alpha) :
-									pref.nredTheme ? RGBA(255, 0, 0, this.alpha) :
-									pref.ngoldTheme ? RGBA(255, 242, 3, this.alpha) : '',
-								]
-								let bgColor = col.primary;
-								if (g_pl_colors.background != RGB(255, 255, 255)) {
-									if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
-										thumbColors = [col.accent, col.extraLightAccent, col.extraLightAccent];
-									}
-									else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
-										thumbColors = [col.lightMiddleAccent, col.extraLightAccent, col.extraLightAccent];
-									}
+							if (ppt.sbarShow && sbar.w === scaleForDisplay(12) || !pref.libraryAutoHideScrollbar && sbar.w === scaleForDisplay(12)) {
+								gr.FillSolidRect(sbar_x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 - 8, ui.col.bg);
+								gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : pref.rebornTheme || pref.randomTheme ? thumbColors[1] : thumbColors[0]);
+								if (pref.themeStyleBlend && albumart) {
+									gr.DrawImage(blendedImg, sbar_x - scaleForDisplay(8), this.y - 8, ww, wh, sbar_x - scaleForDisplay(8), this.y - 8, blendedImg.Width, blendedImg.Height);
 								}
-								gr.FillSolidRect(sbar_x - scaleForDisplay(8), this.y - 8, this.w + scaleForDisplay(26), this.h + g_properties.row_h * 2 + 8, ui.col.bg);
-								gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
 							}
-						} else {
-							gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, RGBA(255, 255, 255, 255) &
-								(!this.hover && !this.bar.isDragging ?
-								pref.whiteTheme ? RGBA(200, 200, 200, 255) :
-								pref.blackTheme ? RGBA(100, 100, 100, 255) :
-								pref.rebornTheme ? RGBA(200, 200, 200, 255) :
-								pref.blueTheme ? RGBA(10, 135, 225, 255) :
-								pref.darkblueTheme ? RGBA(38, 70, 112, 255) :
-								pref.redTheme ? RGBA(145, 25, 25, 255) :
-								pref.creamTheme ? RGBA(200, 200, 200, 255) :
-								pref.nblueTheme ? RGBA(0, 200, 255, 255) :
-								pref.ngreenTheme ? RGBA(0, 200, 0, 255) :
-								pref.nredTheme ? RGBA(229, 7, 44, 255) :
-								pref.ngoldTheme ? RGBA(254, 204, 3, 255) : ''
-								:
-								this.hover && !this.bar.isDragging ?
-								pref.whiteTheme ? RGBA(100, 100, 100, 255) :
-								pref.blackTheme ? RGBA(160, 160, 160, 255) :
-								pref.rebornTheme ? RGBA(100, 100, 100, 255) :
-								pref.blueTheme ? RGBA(242, 230, 170, 255) :
-								pref.darkblueTheme ? RGBA(255, 202, 128, 255) :
-								pref.redTheme ? RGBA(245, 212, 165, 255) :
-								pref.creamTheme ? RGBA(120, 170, 130, 255) :
-								pref.nblueTheme ? RGBA(0, 238, 255, 255) :
-								pref.ngreenTheme ? RGBA(0, 255, 0, 255) :
-								pref.nredTheme ? RGBA(255, 8, 8, 255) :
-								pref.ngoldTheme ? RGBA(255, 242, 3, 255) : ''
-								:
-								pref.whiteTheme ? 0xff8c8c8c :
-								pref.blackTheme ? 0xffa0a0a0 :
-								pref.rebornTheme ? 0xff8c8c8c :
-								pref.blueTheme ? 0xffffe4cb :
-								pref.darkblueTheme ? 0xffffca80 :
-								pref.redTheme ? 0xffffc59a :
-								pref.creamTheme ? 0xff668068 :
-								pref.nblueTheme ? 0xff00eeff :
-								pref.ngreenTheme ? 0xff00ff00 :
-								pref.nredTheme ? 0xffff0808 :
-								pref.ngoldTheme ? 0xfffff203 : '')
-							);
 						}
 					} else {
 						if (!this.narrow.show || ppt.sbarShow != 1) {
-							//gr.FillSolidRect(this.x - panel.sbar_o, sbar_y, this.w + panel.sbar_o * 2, this.h, this.col['bg']);
-							//gr.FillSolidRect(this.x + this.bar.x, sbar_y, this.bar.h, sbar_h, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col['max']);
-							if (ppt.sbarShow && sbar.h === scaleForDisplay(12) || !pref.autoHideScrollbar_Library && sbar.h === scaleForDisplay(12)) {
-								let thumbColors = [
-									// normal
-									pref.whiteTheme ? RGBA(200, 200, 200, this.alpha) :
-									pref.blackTheme ? RGBA(100, 100, 100, this.alpha) :
-									pref.rebornTheme ? RGBA(200, 200, 200, this.alpha) :
-									pref.blueTheme ? RGBA(10, 135, 225, this.alpha) :
-									pref.darkblueTheme ? RGBA(27, 55, 90, this.alpha) :
-									pref.redTheme ? RGBA(145, 25, 25, this.alpha) :
-									pref.creamTheme ? RGBA(200, 200, 200, this.alpha) :
-									pref.nblueTheme ? RGBA(0, 200, 255, this.alpha) :
-									pref.ngreenTheme ? RGBA(0, 200, 0, this.alpha) :
-									pref.nredTheme ? RGBA(229, 7, 44, this.alpha) :
-									pref.ngoldTheme ? RGBA(254, 204, 3, this.alpha) : '',
-									// hover
-									pref.whiteTheme ? RGBA(120, 120, 120, this.alpha) :
-									pref.blackTheme ? RGBA(160, 160, 160, this.alpha) :
-									pref.rebornTheme ? RGBA(120, 120, 120, this.alpha) :
-									pref.blueTheme ? RGBA(242, 230, 170, this.alpha) :
-									pref.darkblueTheme ? RGBA(255, 202, 128, this.alpha) :
-									pref.redTheme ? RGBA(245, 212, 165, this.alpha) :
-									pref.creamTheme ? RGBA(120, 170, 130, this.alpha) :
-									pref.nblueTheme ? RGBA(0, 238, 255, this.alpha) :
-									pref.ngreenTheme ? RGBA(0, 255, 0, this.alpha) :
-									pref.nredTheme ? RGBA(255, 0, 0, this.alpha) :
-									pref.ngoldTheme ? RGBA(255, 242, 3, this.alpha) : '',
-									// drag
-									pref.whiteTheme ? RGBA(120, 120, 120, this.alpha) :
-									pref.blackTheme ? RGBA(160, 160, 160, this.alpha) :
-									pref.rebornTheme ? RGBA(120, 120, 120, this.alpha) :
-									pref.blueTheme ? RGBA(242, 230, 170, this.alpha) :
-									pref.darkblueTheme ? RGBA(255, 202, 128, this.alpha) :
-									pref.redTheme ? RGBA(245, 212, 165, this.alpha) :
-									pref.creamTheme ? RGBA(120, 170, 130, this.alpha) :
-									pref.nblueTheme ? RGBA(0, 238, 255, this.alpha) :
-									pref.ngreenTheme ? RGBA(0, 255, 0, this.alpha) :
-									pref.nredTheme ? RGBA(255, 0, 0, this.alpha) :
-									pref.ngoldTheme ? RGBA(255, 242, 3, this.alpha) : '',
-								]
-								let bgColor = col.primary;
-								if (g_pl_colors.background != RGB(255, 255, 255)) {
-									if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
-										thumbColors = [col.accent, col.extraLightAccent, col.extraLightAccent];
-									}
-									else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
-										thumbColors = [col.lightMiddleAccent, col.extraLightAccent, col.extraLightAccent];
-									}
-								}
-								gr.FillSolidRect(this.x + this.bar.x, sbar_y, this.bar.h, sbar_h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
+							if (ppt.sbarShow && sbar.h === scaleForDisplay(12) || !pref.libraryAutoHideScrollbar && sbar.h === scaleForDisplay(12)) {
+								gr.FillSolidRect(this.x + this.bar.x, sbar_y, this.bar.h, sbar_h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : pref.rebornTheme || pref.randomTheme ? thumbColors[1] : thumbColors[0]);
 							}
 						}
 					}
@@ -586,11 +498,11 @@ class Scrollbar {
 
 	paint() {
 		if (this.init) return;
-		this.alpha = this.hover ? this.alpha1 : this.alpha2;
+		this.alpha = this.hover ? this.alpha1 : pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme || pref.themeStyleBlackAndWhite || pref.themeStyleBlackAndWhite2 ? this.alpha1 : this.alpha2;
 		clearTimeout(this.bar.timer);
 		this.bar.timer = null;
 		this.bar.timer = setInterval(() => {
-			this.alpha = this.hover ? Math.min(this.alpha += this.inStep, this.alpha2) : Math.max(this.alpha -= 3, this.alpha1);
+			this.alpha = this.hover ? Math.min(this.alpha += this.inStep, this.alpha2) : Math.max(this.alpha -= 8, this.alpha1);
 			window.RepaintRect(this.x, this.y, this.w, this.h);
 			if (this.hover && this.alpha == this.alpha2 || !this.hover && this.alpha == this.alpha1) {
 				this.cur_hover = this.hover;
@@ -699,9 +611,9 @@ class Scrollbar {
 
 	setCol() {
 		let opaque = ui.getOpaque();
-		this.alpha = !ui.sbar.col ? 75 : (!ui.sbar.type ? 68 : 255);
+		this.alpha = !ui.sbar.col ? 75 : (!ui.sbar.type ? 100 : 100);
 		this.alpha1 = this.alpha;
-		this.alpha2 = !ui.sbar.col ? 128 : (!ui.sbar.type ? 119 : 255);
+		this.alpha2 = !ui.sbar.col ? 128 : (!ui.sbar.type ? 255 : 255);
 		this.inStep = ui.sbar.type && ui.sbar.col ? 12 : 18;
 		switch (ui.sbar.type) {
 			case 0:

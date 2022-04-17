@@ -549,7 +549,7 @@ class Populate {
 						else g.FillGradRect(x + ln_w, y + ln_w, sz - ln_w * 2, sz - ln_w * 2, 91, ui.col.icon_h[0], ui.col.icon_h[1], 1.0);
 						let x_o = [x, x + sz - ln_w, x, x + sz - ln_w];
 						let y_o = [y, y, y + sz - ln_w, y + sz - ln_w];
-						for (let i = 0; i < 4; i++) //g.FillSolidRect(x_o[i], y_o[i], ln_w, ln_w, RGB(186, 187, 188));
+						for (let i = 0; i < 4; i++) // g.FillSolidRect(x_o[i], y_o[i], ln_w, ln_w, RGB(186, 187, 188));
 						if (pref.libraryDesign === 'traditional') g.FillSolidRect(x, y, sz, sz, ui.col.iconPlusbg);
 					}
 					if (plus) g.FillSolidRect(Math.floor(x + (sz - sy_w) / 2), y + ln_w + Math.min(ln_w, sy_w), sy_w, sz - ln_w * 2 - Math.min(ln_w, sy_w) * 2, !hot ? ui.col.iconPlus : ui.col.iconPlus_h);
@@ -768,112 +768,48 @@ class Populate {
 							gr.FillSolidRect(sel_x, item_y, sel_w + ui.l.w, ui.row.h, bgColor);
 							gr.FillSolidRect(sel_x, item_y, sel_w + ui.l.w, ui.l.w, ui.col.bgSelframe);
 							gr.FillSolidRect(sel_x, item_y + ui.row.h, sel_w + ui.l.w, ui.l.w, ui.col.bgSelframe);
-						} else {
-							// gr.FillSolidRect(sel_x, item_y, sel_w, ui.row.h, ui.col.bgSel);
-							// gr.DrawRect(sel_x + Math.floor(ui.l.w / 2), item_y, sel_w, ui.row.h, ui.l.w, ui.col.bgSelframe);
 						}
+						// else {
+						// 	gr.FillSolidRect(sel_x, item_y, sel_w, ui.row.h, ui.col.bgSel);
+						// 	gr.DrawRect(sel_x + Math.floor(ui.l.w / 2), item_y, sel_w, ui.row.h, ui.l.w, ui.col.bgSelframe);
+						// }
 					}
 					// Now playing bg selection
 					else if (this.highlight.nowPlaying) {
-						bgColor = col.primary;
-						gr.FillSolidRect(pref.libraryDesign === 'traditional' ? item_x - scaleForDisplay(2) : ui.x, item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : pref.libraryDesign === 'traditional' && !this.fullLineSelection ? sel_w + sel_x - item_x + scaleForDisplay(2) : sel_w + ui.sz.margin + sel_x - ui.x - ui.sz.sideMarker, ui.row.h,
-							pref.whiteTheme || pref.blackTheme ? bgColor :
-							pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.darkMiddleAccent : bgColor :
-							pref.blueTheme ? RGB(10, 130, 220) :
-							pref.darkblueTheme ? RGB(24, 50, 82) :
-							pref.redTheme ? RGB(140, 25, 25) :
-							pref.creamTheme ? RGB(120, 170, 130) :
-							pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(35, 35, 35) : ''
-						);
+						bgColor = pref.whiteTheme && !pref.themeStyleBlackAndWhite && !pref.themeStyleBlackAndWhite2 || pref.blackTheme ? col.primary : pref.rebornTheme || pref.randomTheme ? g_pl_colors.background != RGB(255, 255, 255) ? pref.themeStyleBlend && (pref.rebornTheme || pref.randomTheme) ? RGBtoRGBA(col.darkMiddleAccent, 130) : col.darkMiddleAccent : col.primary : ui.col.nowPlayingBg;
+						gr.FillSolidRect(pref.libraryDesign === 'traditional' ? item_x - scaleForDisplay(2) : ui.x, item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : pref.libraryDesign === 'traditional' && !this.fullLineSelection ? sel_w + sel_x - item_x + scaleForDisplay(2) : sel_w + ui.sz.margin + sel_x - ui.x - ui.sz.sideMarker, ui.row.h, bgColor);
+
 						if (pref.libraryDesign !== 'traditional') {
-							gr.FillSolidRect(ui.x, item_y, ui.sz.sideMarker, ui.row.h,
-								pref.whiteTheme || pref.blackTheme ? col.primary :
-								pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
-								pref.blueTheme ? RGB(242, 230, 170) :
-								pref.darkblueTheme ? RGB(255, 202, 128) :
-								pref.redTheme ? RGB(245, 212, 165) :
-								pref.creamTheme ? RGB(120, 170, 130) :
-								pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : ''
-							);
+							bgColor = pref.whiteTheme && !pref.themeStyleBlackAndWhite && !pref.themeStyleBlackAndWhite2 || pref.blackTheme ? col.primary : pref.rebornTheme || pref.randomTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary : ui.col.sideMarker;
+							gr.FillSolidRect(ui.x, item_y, ui.sz.sideMarker, ui.row.h, bgColor);
 						}
 					}
 					// Marker selection with now playing active
 					if (item.sel && this.highlight.nowPlaying) {
 						if (pref.libraryDesign !== 'traditional') {
-							gr.DrawRect(this.fullLineSelection ? sel_x : ui.x, item_y, this.fullLineSelection ? sel_w : sel_w + ui.sz.margin + sel_x - ui.x - ui.sz.sideMarker, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? ui.row.h - 1 : ui.row.h, 1,
-								pref.whiteTheme ? RGB(200, 200, 200) :
-								pref.blackTheme ? RGB(45, 45, 45) :
-								pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(200, 200, 200) :
-								pref.blueTheme ? RGB(10, 135, 230) :
-								pref.darkblueTheme ? RGB(27, 55, 90) :
-								pref.redTheme ? RGB(145, 25, 25) :
-								pref.creamTheme ? RGB(200, 200, 200) :
-								pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(40, 40, 40) : ''
-							);
-							gr.FillSolidRect(ui.x, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? item_y + 1 : item_y, ui.sz.sideMarker, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? ui.row.h - 1 : ui.row.h + 1,
-								pref.whiteTheme || pref.blackTheme ? col.primary :
-								pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
-								pref.blueTheme ? RGB(242, 230, 170) :
-								pref.darkblueTheme ? RGB(255, 202, 128) :
-								pref.redTheme ? RGB(245, 212, 165) :
-								pref.creamTheme ? RGB(120, 170, 130) :
-								pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : ''
-							);
+							gr.DrawRect(this.fullLineSelection ? sel_x : ui.x, item_y, this.fullLineSelection ? sel_w : sel_w + ui.sz.margin + sel_x - ui.x - ui.sz.sideMarker, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? ui.row.h - 1 : ui.row.h, 1, ui.col.selectionFrame);
+							let sideMarker = pref.whiteTheme && !pref.themeStyleBlackAndWhite && !pref.themeStyleBlackAndWhite2 || pref.blackTheme ? col.primary : ui.col.sideMarker;
+							gr.FillSolidRect(ui.x, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? item_y + 1 : item_y, ui.sz.sideMarker, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? ui.row.h - 1 : ui.row.h + 1, sideMarker);
+
 							// Hide DrawRect gaps when all songs are completely selected and mask lines when selecting now playing
 							if (this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item)) {
-								gr.DrawRect(this.fullLineSelection ? sel_x : ui.x, item_y, this.fullLineSelection ? sel_w : sel_w + ui.sz.margin + sel_x - ui.x - ui.sz.sideMarker, ui.row.h - 1, 1,
-									pref.whiteTheme || pref.blackTheme ? col.primary :
-									pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : col.primary :
-									pref.blueTheme ? RGB(10, 130, 220) :
-									pref.darkblueTheme ? RGB(24, 50, 82) :
-									pref.redTheme ? RGB(140, 25, 25) :
-									pref.creamTheme ? RGB(120, 170, 130) :
-									pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(35, 35, 35) : ''
-								);
-								gr.FillSolidRect(ui.x, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? item_y : item_y, ui.sz.sideMarker, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? ui.row.h : ui.row.h + 1,
-									pref.whiteTheme || pref.blackTheme ? col.primary :
-									pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
-									pref.blueTheme ? RGB(242, 230, 170) :
-									pref.darkblueTheme ? RGB(255, 202, 128) :
-									pref.redTheme ? RGB(245, 212, 165) :
-									pref.creamTheme ? RGB(120, 170, 130) :
-									pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : ''
-								);
+								let frameColor = pref.whiteTheme && !pref.themeStyleBlackAndWhite && !pref.themeStyleBlackAndWhite2 || pref.blackTheme ? col.primary : pref.rebornTheme || pref.randomTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : col.primary : ui.col.nowPlayingBg;
+								gr.DrawRect(this.fullLineSelection ? sel_x : ui.x, item_y, this.fullLineSelection ? sel_w : sel_w + ui.sz.margin + sel_x - ui.x - ui.sz.sideMarker, ui.row.h - 1, 1, frameColor);
+								let sideMarker = pref.whiteTheme && !pref.themeStyleBlackAndWhite && !pref.themeStyleBlackAndWhite2 || pref.blackTheme ? col.primary : ui.col.sideMarker;
+								gr.FillSolidRect(ui.x, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? item_y : item_y, ui.sz.sideMarker, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? ui.row.h : ui.row.h + 1, sideMarker);
 							}
 						} else if (pref.libraryDesign === 'traditional') {
-							gr.FillSolidRect(item_x - scaleForDisplay(2), item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : sel_w, ui.row.h,
-								pref.whiteTheme || pref.blackTheme ? col.primary :
-								pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
-								pref.blueTheme ? RGB(10, 130, 220) :
-								pref.darkblueTheme ? RGB(24, 50, 82) :
-								pref.redTheme ? RGB(140, 25, 25) :
-								pref.creamTheme ? RGB(120, 170, 130) :
-								pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(35, 35, 35) : ''
-							);
+							let selColor = pref.whiteTheme && !pref.themeStyleBlackAndWhite && !pref.themeStyleBlackAndWhite2 || pref.blackTheme ? col.primary : pref.rebornTheme || pref.randomTheme ? g_pl_colors.background != RGB(255, 255, 255) ? pref.themeStyleBlend && (pref.rebornTheme || pref.randomTheme) ? RGBtoRGBA(col.darkMiddleAccent, 130) : col.lightAccent : col.primary : ui.col.nowPlayingBg;
+							gr.FillSolidRect(item_x - scaleForDisplay(2), item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : sel_w, ui.row.h, selColor);
 						}
 					}
 					// Marker selection with now playing deactivated
 					if (item.sel && !this.highlight.nowPlaying) {
-						bgColor = col.primary;
-						gr.FillSolidRect(pref.libraryDesign === 'traditional' && this.fullLineSelection ? item_x - scaleForDisplay(2) : sel_x, item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : sel_w, ui.row.h,
-							pref.whiteTheme || pref.blackTheme ? bgColor :
-							pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : bgColor :
-							pref.blueTheme ? RGB(10, 130, 220) :
-							pref.darkblueTheme ? RGB(24, 50, 82) :
-							pref.redTheme ? RGB(140, 25, 25) :
-							pref.creamTheme ? RGB(120, 170, 130) :
-							pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(35, 35, 35) : ''
-						);
+						bgColor = pref.whiteTheme && !pref.themeStyleBlackAndWhite && !pref.themeStyleBlackAndWhite2 || pref.blackTheme ? col.primary : pref.rebornTheme || pref.randomTheme ? g_pl_colors.background != RGB(255, 255, 255) ? pref.themeStyleBlend && (pref.rebornTheme || pref.randomTheme) ? RGBtoRGBA(col.darkMiddleAccent, 130) : col.lightAccent : col.primary : ui.col.nowPlayingBg;
+						gr.FillSolidRect(pref.libraryDesign === 'traditional' && this.fullLineSelection ? item_x - scaleForDisplay(2) : sel_x, item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : sel_w, ui.row.h, bgColor);
+
 						if (pref.libraryDesign !== 'traditional') {
-							gr.FillSolidRect(ui.x, item_y, ui.sz.sideMarker, ui.row.h,
-								pref.whiteTheme || pref.blackTheme ? col.primary :
-								pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
-								pref.blueTheme ? RGB(242, 230, 170) :
-								pref.darkblueTheme ? RGB(255, 202, 128) :
-								pref.redTheme ? RGB(245, 212, 165) :
-								pref.creamTheme ? RGB(120, 170, 130) :
-								pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : ''
-							);
+							gr.FillSolidRect(ui.x, item_y, ui.sz.sideMarker, ui.row.h, ui.col.sideMarker);
 						}
 					}
 				}
@@ -900,14 +836,14 @@ class Populate {
 						sel_w = ui.x + panel.tree.sel.w - ui.l.w;
 					}
 					if (this.highlight.row == 3) {
-						//gr.FillSolidRect(sel_x, item_y, sel_w, ui.row.h, ui.col.bg_h);
+						// gr.FillSolidRect(sel_x, item_y, sel_w, ui.row.h, ui.col.bg_h);
 						if (this.fullLineSelection && this.sbarShow == 1 && ui.sbar.type == 2) {
 							gr.DrawLine(sel_x, item_y, sel_w, item_y, ui.l.w, ui.col.frame);
 							gr.DrawLine(sel_x, item_y + ui.row.h, sel_w, item_y + ui.row.h, ui.l.w, ui.col.frame);
-						} //else
-						  //gr.DrawRect(sel_x + Math.floor(ui.l.w / 2), item_y, sel_w, ui.row.h, ui.l.w, ui.col.frame);
+						} // else
+						  // gr.DrawRect(sel_x + Math.floor(ui.l.w / 2), item_y, sel_w, ui.row.h, ui.l.w, ui.col.frame);
 					}
-					if (this.highlight.row == 2) gr.FillSolidRect(sel_x + (!item.sel || (this.sbarShow == 1 && ui.sbar.type == 2) ? 0 : ui.l.w), item_y + ui.l.wc, sel_w + (!item.sel || (this.sbarShow == 1 && ui.sbar.type == 2) ? ui.l.w : -ui.l.w), ui.row.h - ui.l.w, !item.sel ? ui.col.bg_h : ui.col.bgSel_h);
+					// if (this.highlight.row == 2) gr.FillSolidRect(sel_x + (!item.sel || (this.sbarShow == 1 && ui.sbar.type == 2) ? 0 : ui.l.w), item_y + ui.l.wc, sel_w + (!item.sel || (this.sbarShow == 1 && ui.sbar.type == 2) ? ui.l.w : -ui.l.w), ui.row.h - ui.l.w, !item.sel ? ui.col.bg_h : ui.col.bgSel_h);
 				}
 				// if (this.highlight.row == 1 && this.row.i == i && !sbar.draw_timer) gr.FillSolidRect(ui.l.w, item_y, ui.sz.sideMarker, ui.row.h, ui.col.sideMarker);
 
@@ -932,38 +868,39 @@ class Populate {
 				// const txt_co = np ? ui.col.nowp : item.sel && this.fullLineSelection ? ui.col.textSel : this.m.i == i && this.highlight.text ? ui.col.text_h : ui.col.counts || ui.col.count;
 				const type = item.sel ? 2 : this.m.i == i && this.highlight.text ? 1 : 0;
 				// const txt_c = np ? ui.col.nowp : ui.col.txtArr[type];
+				const colBrightness = new Color(col.primary).brightness;
 
-				var txt_c =
-				this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? ui.col.nowpBgSel :
-				item.sel ? this.highlight.nowPlaying ? ui.col.textSel : ui.col.textSel :
-				this.m.i == i ? this.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
-				this.highlight.nowPlaying ? ui.col.text : ui.col.text;
+				let txt_c =
+					this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? ui.col.nowpBgSel :
+					item.sel ? this.highlight.nowPlaying ? ui.col.textSel : ui.col.textSel :
+					this.m.i == i ? this.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
+					this.highlight.nowPlaying ? ui.col.text : ui.col.text;
 
-				if ((pref.whiteTheme) && (new Color(bgColor).brightness > 130)) {
+				if (pref.whiteTheme && (colBrightness > (pref.themeStyleBlend || pref.themeStyleBlend2 ? 150 : 130))) {
 					txt_c =
 					this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? RGB(0, 0, 0) :
 					item.sel ? this.highlight.nowPlaying ? pref.libraryDesign === 'traditional' ? RGB(0, 0, 0) : RGB(0, 0, 0) : RGB(0, 0, 0) :
 					this.m.i == i ? this.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
 					this.highlight.nowPlaying ? ui.col.text : ui.col.text;
 				}
-				else if ((pref.whiteTheme) && (new Color(bgColor).brightness < 131)) {
+				else if (pref.whiteTheme && (colBrightness < (pref.themeStyleBlend || pref.themeStyleBlend2 ? 151 : 131))) {
 					txt_c =
 					this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? RGB(255, 255, 255) :
 					item.sel ? this.highlight.nowPlaying ? pref.libraryDesign === 'traditional' ? RGB(255, 255, 255) : RGB(0, 0, 0) : RGB(255, 255, 255) :
 					this.m.i == i ? this.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
 					this.highlight.nowPlaying ? ui.col.text : ui.col.text;
 				}
-				if (pref.blackTheme && (new Color(bgColor).brightness < 131)) {
-					txt_c =
-					this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? RGB(255, 255, 255) :
-					item.sel ? this.highlight.nowPlaying ? pref.libraryDesign === 'traditional' ? RGB(255, 255, 255) : RGB(255, 255, 255) : RGB(255, 255, 255) :
-					this.m.i == i ? this.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
-					this.highlight.nowPlaying ? ui.col.text : ui.col.text;
-				}
-				else if (pref.blackTheme && (new Color(bgColor).brightness > 130)) {
+				if ((pref.blackTheme || pref.themeStyleBlackAndWhite) && (colBrightness > (pref.themeStyleBlend || pref.themeStyleBlend2 ? 150 : 130))) {
 					txt_c =
 					this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? RGB(0, 0, 0) :
 					item.sel ? this.highlight.nowPlaying ? pref.libraryDesign === 'traditional' ? RGB(0, 0, 0) : RGB(255, 255, 255) : RGB(0, 0, 0) :
+					this.m.i == i ? this.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
+					this.highlight.nowPlaying ? ui.col.text : ui.col.text;
+				}
+				else if ((pref.blackTheme || pref.themeStyleBlackAndWhite) && (colBrightness < (pref.themeStyleBlend || pref.themeStyleBlend2 ? 151 : 131))) {
+					txt_c =
+					this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? RGB(255, 255, 255) :
+					item.sel ? this.highlight.nowPlaying ? pref.libraryDesign === 'traditional' ? RGB(255, 255, 255) : RGB(255, 255, 255) : RGB(255, 255, 255) :
 					this.m.i == i ? this.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
 					this.highlight.nowPlaying ? ui.col.text : ui.col.text;
 				}
@@ -971,12 +908,12 @@ class Populate {
 				!panel.colMarker ? gr.GdiDrawText(nm[i], ui.font.main, txt_c, item_x, item_y, w, ui.row.h, panel.lc) : this.cusCol(gr, nm[i], item, item_x, item_y, w, ui.row.h, type, np, ui.font.main, ui.font.mainEllipsisSpace, 'text');
 				if (pref.layout_mode === 'default_mode') {
 					if (this.countsRight) gr.GdiDrawText(item.count, ui.font.small, txt_c /*txt_co*/, item_x, item_y, ui.x + panel.tree.w -
-						(sbar.scrollable_lines <= 0 ? item_x - (is_4k ? 1 : 0) : sbar.scrollable_lines > 0 && !sbar.scrollbar.zone && !sbar.bar.isDragging && pref.autoHideScrollbar_Library ? item_x - (is_4k ? 1 : 0) : !pref.autoHideScrollbar_Library ? item_x - (is_4k ? -33 : -12) : item_x - (is_4k ? -45 : -25)),
+						(sbar.scrollable_lines <= 0 ? item_x - (is_4k ? 1 : 0) : sbar.scrollable_lines > 0 && ui.sbar.but_w === 0 && !sbar.bar.isDragging && pref.libraryAutoHideScrollbar ? item_x - (is_4k ? 1 : 0) : !pref.libraryAutoHideScrollbar ? item_x - (is_4k ? -33 : -12) : item_x - (is_4k ? -45 : -25)),
 						ui.row.h, panel.rc);
 				}
 				else if (pref.layout_mode === 'artwork_mode') {
 					if (this.countsRight) gr.GdiDrawText(item.count, ui.font.small, txt_c /*txt_co*/, item_x, item_y, ui.x + panel.tree.w -
-						(sbar.scrollable_lines <= 0 ? item_x - (is_4k ? 1 : 0) : sbar.scrollable_lines > 0 && !sbar.scrollbar.zone && !sbar.bar.isDragging && pref.autoHideScrollbar_Library ? item_x - (is_4k ? 74 : 40) : !pref.autoHideScrollbar_Library ? item_x - (is_4k ? -33 : -12) : item_x - (is_4k ? 28 : 15)),
+						(sbar.scrollable_lines <= 0 ? item_x - (is_4k ? 1 : 0) : sbar.scrollable_lines > 0 && ui.sbar.but_w === 0 && !sbar.bar.isDragging && pref.libraryAutoHideScrollbar ? item_x - (is_4k ? 74 : 40) : !pref.libraryAutoHideScrollbar ? item_x - (is_4k ? -33 : -12) : item_x - (is_4k ? 28 : 15)),
 						ui.row.h, panel.rc);
 				}
 			}
@@ -986,32 +923,31 @@ class Populate {
 	drawNode(gr, item, x, y, parent, hover, sel) {
 		const selFullLine = sel && this.fullLineSelection;
 		const y2 = Math.round(y);
-
 		const ix = this.get_ix(x, y, true, false);
-		panel.pos = ix;
 		if (ix >= this.tree.length || ix < 0) return;
 		const itemtr = this.tree[ix];
 		ui.col.textSel = ui.col.iconPlusSel; ui.col.icon_h = ui.col.iconPlus_h;	ui.col.icon_c = ui.col.iconPlus; ui.col.icon_e = ui.col.iconPlus;
 		let bgColor = selFullLine || this.highlight.nowPlaying && !itemtr.root && this.inRange(this.nowp, itemtr.item) ? col.primary : undefined;
 		let nowpBgSel = this.highlight.nowPlaying && !itemtr.root && this.inRange(this.nowp, itemtr.item);
-		var icon_c = nowpBgSel ? ui.col.nowpBgSel : selFullLine ? ui.col.iconPlusSel : !selFullLine ? ui.col.iconPlus : this.highlight.node ? ui.col.iconPlus_h : ui.col.iconPlus;
+		let icon_c = nowpBgSel ? ui.col.nowpBgSel : selFullLine ? ui.col.iconPlusSel : !selFullLine ? ui.col.iconPlus : this.highlight.node ? ui.col.iconPlus_h : ui.col.iconPlus;
+		const colBrightness = new Color(col.primary).brightness;
 
-		if ((pref.whiteTheme) && (new Color(bgColor).brightness > 130)) {
+		if ((pref.whiteTheme) && (colBrightness > (pref.themeStyleBlend || pref.themeStyleBlend2 ? 150 : 130))) {
 			icon_c = nowpBgSel ? rgb(0, 0, 0) : selFullLine ? this.highlight.nowPlaying ? rgb(0, 0, 0) : rgb(0, 0, 0) : !selFullLine ? ui.col.iconPlus : this.highlight.node ? ui.col.iconPlus_h : ui.col.iconPlus;
 			ui.col.icon_h = rgb(0, 0, 0);
 			ui.col.icon_e = rgb(0, 0, 0);
 			ui.col.textSel = rgb(0, 0, 0);
 		}
-		else if ((pref.whiteTheme) && (new Color(bgColor).brightness < 131)) {
+		else if ((pref.whiteTheme) && (colBrightness < (pref.themeStyleBlend || pref.themeStyleBlend2 ? 151 : 131))) {
 			icon_c = nowpBgSel ? rgb(255, 255, 255) : selFullLine ? this.highlight.nowPlaying ? rgb(0, 0, 0) : rgb(255, 255, 255) : !selFullLine ? ui.col.iconPlus : this.highlight.node ? ui.col.iconPlus_h : ui.col.iconPlus;
 			ui.col.icon_h = rgb(255, 255, 255);
 			ui.col.icon_e = rgb(255, 255, 255);
 			ui.col.textSel = rgb(255, 255, 255);
 		}
-		if ((pref.blackTheme) && (new Color(bgColor).brightness > 130)) {
+		if ((pref.blackTheme || pref.themeStyleBlackAndWhite) && (colBrightness > (pref.themeStyleBlend || pref.themeStyleBlend2 ? 150 : 130))) {
 			icon_c = nowpBgSel ? rgb(0, 0, 0) : selFullLine ? this.highlight.nowPlaying ? rgb(255, 255, 255) : rgb(0, 0, 0) : !selFullLine ? ui.col.iconPlus : this.highlight.node ? ui.col.iconPlus_h : ui.col.iconPlus;
 		}
-		else if ((pref.blackTheme) && (new Color(bgColor).brightness < 131)) {
+		else if ((pref.blackTheme || pref.themeStyleBlackAndWhite) && (colBrightness < (pref.themeStyleBlend || pref.themeStyleBlend2 ? 151 : 131))) {
 			icon_c = nowpBgSel ? rgb(255, 255, 255) : selFullLine ? this.highlight.nowPlaying ? rgb(255, 255, 255) : rgb(255, 255, 255) : !selFullLine ? ui.col.iconPlus : this.highlight.node ? ui.col.iconPlus_h : ui.col.iconPlus;
 		}
 
@@ -1289,7 +1225,7 @@ class Populate {
 	get_ix(x, y, simple, type) {
 		let ix;
 		y -= ui.y - 1; // - 1 = workaround to adjust and fix background color selection ( nowpBgSel in drawNode() ) to draw correct colored nodes in tree when option "Nowplaying in highlight" is active
-        x -= ui.x;
+		x -= ui.x;
 		if (panel.imgView) {
 			if (y > img.panel.y && y < img.panel.y + img.panel.h && x > img.panel.x && x < img.panel.x + img.panel.w) {
 				const row_ix = img.style.vertical ? Math.ceil((y + sbar.delta - img.panel.y) / img.row.h) - 1 : 0;

@@ -83,7 +83,7 @@ class PanelPropertiesLib {
 		this[name] = !this[name];
 	}
 }
-var libraryProps = new PanelPropertiesLib(); // library Preferences
+
 let properties = [
 	['Colour Swap', false, 'swapCol'],
 	['Cover Auto-Fill', true, 'autoFill'],

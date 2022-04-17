@@ -17,48 +17,26 @@ class LibraryPanel {
 		but.draw(gr);
 		find.draw(gr);
 
-		gr.FillSolidRect(this.x, 0, this.w, geo.top_art_spacing, col.bg); // Hides top row that shouldn't be visible
-		gr.FillSolidRect(this.x, this.y + this.h, this.w, this.h, col.bg); // Hides bottom row that shouldn't be visible
+		gr.FillSolidRect(this.x, 0, this.w, geo.top_art_spacing, col.bg); // Hides top row that shouldn't be visible in album art mode
+		gr.FillSolidRect(this.x, this.y + this.h, this.w, this.h, col.bg); // Hides bottom row that shouldn't be visible in album art mode
+
+		if (UIHacks.Aero.Effect === 2) gr.DrawLine(this.x, 0, ww, 0, 1, col.bg); // UIHacks Aero Glass Shadow Frame Fix - Needed for theme style Blend
+
+		if (pref.themeStyleBlend && albumart) {
+			gr.DrawImage(blendedImg, this.x, this.y - this.h - geo.top_art_spacing - geo.lower_bar_h, ww, wh, this.x, this.y - this.h - geo.top_art_spacing - geo.lower_bar_h, blendedImg.Width, blendedImg.Height);
+			gr.DrawImage(blendedImg, this.x, this.y + this.h, ww, wh, this.x, this.y + this.h, blendedImg.Width, blendedImg.Height);
+		}
 
 		if (ppt.albumArtFlowMode && panel.imgView) {
 			gr.FillSolidRect(this.x, this.y, scaleForDisplay(20), this.h - ui.sbar.but_h, ui.col.bg); // Margin left and masking for horizontal flow mode
 			gr.FillSolidRect(this.x + this.w - scaleForDisplay(20), this.y, scaleForDisplay(20), this.h - ui.sbar.but_h, ui.col.bg); // Margin right and masking for horizontal flow mode
+			if (pref.themeStyleBlend && albumart) {
+				gr.FillSolidRect(this.x, this.y, scaleForDisplay(20), this.h + geo.lower_bar_h, ui.col.bg); // Hide alpha overlapping at the left
+				gr.DrawImage(blendedImg, this.x - this.w + scaleForDisplay(20), this.y, ww, wh, this.x - this.w + scaleForDisplay(20), this.y, blendedImg.Width, blendedImg.Height);
+				gr.FillSolidRect(this.x + this.w - scaleForDisplay(20), this.y, scaleForDisplay(20), this.h + geo.lower_bar_h, ui.col.bg); // Hide alpha overlapping at the right
+				gr.DrawImage(blendedImg, this.x + this.w - scaleForDisplay(20), this.y, ww, wh, this.x + this.w - scaleForDisplay(20), this.y, blendedImg.Width, blendedImg.Height);
+			}
 		}
-
-		// Library's top shadow
-		gr.FillGradRect(this.x, is_4k ? this.y - 10 : (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? this.y - 5 : this.y - 6), this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0),
-			pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
-			pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
-			pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
-			pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
-			pref.darkblueTheme ? RGBtoRGBA(col.shadow, 72) :
-			pref.redTheme ? RGBtoRGBA(col.shadow, 72) :
-			pref.creamTheme ? RGBtoRGBA(col.shadow, 24) :
-			pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 120) : ''
-		);
-		// Library's left shadow
-		gr.FillGradRect(this.x - 4, this.y, 4, this.h, 0, RGBtoRGBA(col.shadow, 0),
-			pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
-			pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
-			pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
-			pref.blueTheme ? RGBtoRGBA(col.shadow, 38) :
-			pref.darkblueTheme ? RGBtoRGBA(col.shadow, 60) :
-			pref.redTheme ? RGBtoRGBA(col.shadow, 64) :
-			pref.creamTheme ? RGBtoRGBA(col.shadow, 28) :
-			pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 120) : ''
-		);
-		// Library's bottom shadow
-		gr.FillGradRect(this.x, is_4k ? this.y + (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? this.h : this.h + 1) : this.y + this.h - 1, this.w, scaleForDisplay(5), 90,
-			pref.whiteTheme ? RGBtoRGBA(col.shadow, 18) :
-			pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
-			pref.rebornTheme ? RGBtoRGBA(col.shadow, 30) :
-			pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
-			pref.darkblueTheme ? RGBtoRGBA(col.shadow, 74) :
-			pref.redTheme ? RGBtoRGBA(col.shadow, 74) :
-			pref.creamTheme ? RGBtoRGBA(col.shadow, 18) :
-			pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 86) : '',
-			RGBtoRGBA(col.shadow, 0)
-		);
 	}
 
 	on_size(x, y, width, height) {
@@ -82,61 +60,6 @@ class LibraryPanel {
 		find.on_size();
 		but.createImages();
 		pop.createImages();
-
-		if (pref.autoHideScrollbar_Library && sbar.vertical) {
-			ui.sbar.but_w = 0;
-			sbar.w = 0;
-			but.refresh(true);
-		} else if (sbar.vertical) {
-			ui.sbar.but_w = scaleForDisplay(12);
-			sbar.w = scaleForDisplay(12);
-			but.refresh(true);
-		}
-		if (pref.autoHideScrollbar_Library && !sbar.vertical) {
-			ui.sbar.but_w = 0;
-			sbar.h = 0;
-			but.refresh(true);
-		} else if (!sbar.vertical) {
-			ui.sbar.but_w = scaleForDisplay(12);
-			sbar.h = scaleForDisplay(12);
-			but.refresh(true);
-		}
-
-		if (pref.always_showPlayingLib) {
-			pop.nowPlayingShow();
-		}
-
-		// Dynamic library album cover thumbnail resizing
-		if (pref.libraryThumbnailSize === 'auto') {
-			if (!is_4k) {
-				if ((pref.layout_mode === 'default_mode' && ww <= 1140 && wh <= 730 || pref.layout_mode === 'artwork_mode' && ww <= 526 && wh <= 686) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
-					ppt.thumbNailSize = 1;
-					if (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 0;
-				}
-				else if ((pref.layout_mode === 'default_mode' && ww >= 1140 && wh >= 730 || pref.layout_mode === 'artwork_mode' && ww >= 526 && wh >= 686) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
-					ppt.thumbNailSize = 2;
-					if (pref.libraryDesign === 'listView_albumCovers') ppt.thumbNailSize = 1; else if (pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 0;
-				}
-				if ((pref.layout_mode === 'default_mode' && ww > 1600 && wh > 960 || pref.layout_mode === 'artwork_mode' && ww > 700 && wh > 860) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
-					ppt.thumbNailSize = 3;
-					if (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 1;
-				}
-			}
-			else if (is_4k) {
-				if ((pref.layout_mode === 'default_mode' && ww <= 2300 && wh <= 1470 || pref.layout_mode === 'artwork_mode' && ww <= 1052 && wh <= 1372) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
-					pref.libraryLayout === 'normal_width' ? ppt.thumbNailSize = 1 : ppt.thumbNailSize = 2;
-					if (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 0;
-				}
-				if ((pref.layout_mode === 'default_mode' && ww > 2301 && wh > 1471 || pref.layout_mode === 'artwork_mode' && ww > 1053 && wh > 1373) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
-					ppt.thumbNailSize = 2;
-					if (pref.libraryDesign === 'listView_albumCovers') ppt.thumbNailSize = 1; else if (pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 0;
-				}
-				if (pref.layout_mode === 'default_mode' && ww > 2800 && wh > 1720 || pref.layout_mode === 'artwork_mode' && ww > 1400 && wh > 1720 && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
-					ppt.thumbNailSize = 3;
-					if (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 1;
-				}
-			}
-		}
 	}
 }
 
@@ -168,10 +91,10 @@ let timer = new Timers;
 let libraryPanel = new LibraryPanel;
 /** @type {LibraryCallbacks} */
 let library;
-//timer.lib();
+// timer.lib();
 
-//if (!ppt.get('Software Notice Checked', false)) fb.ShowPopupMessage('License\r\n\r\nCopyright (c) 2021 WilB\r\n\r\nThe above copyright notice shall be included in all copies or substantial portions of the Software.\r\n\r\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.', 'Library Tree');
-//ppt.set('Software Notice Checked', true);
+// if (!ppt.get('Software Notice Checked', false)) fb.ShowPopupMessage('License\r\n\r\nCopyright (c) 2021 WilB\r\n\r\nThe above copyright notice shall be included in all copies or substantial portions of the Software.\r\n\r\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.', 'Library Tree');
+// ppt.set('Software Notice Checked', true);
 
 
 var libraryInitialized = false;
@@ -188,7 +111,7 @@ function initLibraryPanel() {
 		find = new Find();
 		but = new Buttons();
 		popUpBox = new PopUpBox();
-		//men = new MenuItems(); // Disabled -> double context menu entries if created
+		// men = new MenuItems(); // Disabled -> double context menu entries if created
 		timer = new Timers();
 		timer.lib();
 		libraryPanel = new LibraryPanel();
@@ -200,17 +123,86 @@ function initLibraryPanel() {
 
 function freeLibraryPanel() {
 	ui = null;
+	panel = null;
 	sbar = null;
-	p = null;
 	vk = null;
-	lib_manager = null;
-	library_tree = null;
-	sL = null;
-	jumpSearch = null;
-	libraryPanel = null;
+	lib = null;
+	pop = null;
+	search = null;
+	find = null;
 	but = null;
+	popUpBox = null;
 	men = null;
 	timer = null;
+	libraryPanel = null;
 	library = null;
+
 	libraryInitialized = false;
+}
+
+function initScrollbarState(x, y) {
+	// ---> Automatic Scrollbar Hide
+	if (pref.libraryAutoHideScrollbar && sbar.vertical) {
+		if (x + scaleForDisplay(15) > sbar.x && x < sbar.x + sbar.w + scaleForDisplay(15) || sbar.bar.isDragging) {
+			ui.sbar.but_w = scaleForDisplay(12);
+			sbar.w = scaleForDisplay(12);
+		} else {
+			ui.sbar.but_w = 0;
+			sbar.w = 0;
+		}
+		but.refresh(true);
+		if (!sbar.bar.isDragging) window.Repaint();
+	} else if (sbar.vertical) {
+		ui.sbar.but_w = scaleForDisplay(12);
+		sbar.w = scaleForDisplay(12);
+	}
+	if (pref.libraryAutoHideScrollbar && !sbar.vertical) {
+		if (y + scaleForDisplay(15) > sbar.y && y < sbar.y + sbar.h + scaleForDisplay(15) || sbar.bar.isDragging) {
+			ui.sbar.but_w = scaleForDisplay(12);
+			sbar.h = scaleForDisplay(12);
+		} else {
+			ui.sbar.but_w = 0;
+			sbar.h = 0;
+		}
+		but.refresh(true);
+		if (!sbar.bar.isDragging) window.Repaint();
+	} else if (!sbar.vertical) {
+		ui.sbar.but_w = scaleForDisplay(12);
+		sbar.h = scaleForDisplay(12);
+	}
+}
+
+function autoThumbnailSize() {
+	// Dynamic library album cover thumbnail resizing
+	if (pref.libraryThumbnailSize === 'auto') {
+		if (!is_4k) {
+			if ((pref.layout_mode === 'default_mode' && ww <= 1140 && wh <= 730 || pref.layout_mode === 'artwork_mode' && ww <= 526 && wh <= 686) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
+				ppt.thumbNailSize = 1;
+				if (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 0;
+			}
+			else if ((pref.layout_mode === 'default_mode' && ww >= 1140 && wh >= 730 || pref.layout_mode === 'artwork_mode' && ww >= 526 && wh >= 686) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
+				ppt.thumbNailSize = 2;
+				if (pref.libraryDesign === 'listView_albumCovers') ppt.thumbNailSize = 1; else if (pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 0;
+			}
+			if ((pref.layout_mode === 'default_mode' && ww > 1600 && wh > 960 || pref.layout_mode === 'artwork_mode' && ww > 700 && wh > 860) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
+				ppt.thumbNailSize = 3;
+				if (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 1;
+			}
+		}
+		else if (is_4k) {
+			if ((pref.layout_mode === 'default_mode' && ww <= 2300 && wh <= 1470 || pref.layout_mode === 'artwork_mode' && ww <= 1052 && wh <= 1372) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
+				pref.libraryLayout === 'normal_width' ? ppt.thumbNailSize = 1 : ppt.thumbNailSize = 2;
+				if (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 0;
+			}
+			if ((pref.layout_mode === 'default_mode' && ww > 2301 && wh > 1471 || pref.layout_mode === 'artwork_mode' && ww > 1053 && wh > 1373) && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
+				ppt.thumbNailSize = 2;
+				if (pref.libraryDesign === 'listView_albumCovers') ppt.thumbNailSize = 1; else if (pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 0;
+			}
+			if (pref.layout_mode === 'default_mode' && ww > 2800 && wh > 1720 || pref.layout_mode === 'artwork_mode' && ww > 1400 && wh > 1720 && (ppt.albumArtShow || pref.libraryDesign === 'albumCovers') && pref.libraryThumbnailSize === 'auto') {
+				ppt.thumbNailSize = 3;
+				if (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos') ppt.thumbNailSize = 1;
+			}
+		}
+		img.sizeDebounce();
+	}
 }

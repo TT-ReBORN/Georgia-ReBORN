@@ -116,13 +116,10 @@ class VolumeBtn {
     constructor() {
         this.x = 0;
         this.y = 0;
-        this.w = transport.show_reload_artwork || transport.show_reload_compact ? scaleForDisplay(86) : scaleForDisplay(104);
+        this.w = transport.show_reload_artwork && pref.layout_mode === 'artwork_mode' || transport.show_reload_compact && pref.layout_mode === 'compact_mode' ? scaleForDisplay(64) : scaleForDisplay(104);
         this.h = scaleForDisplay(12);
 
         this.inThisPadding = Math.min(this.w / 2);
-        this.volTextW = scaleForDisplay(150);
-        this.volTextH = scaleForDisplay(30);
-
 
         // Runtime state
         this.mouse_in_panel = false;
@@ -145,45 +142,41 @@ class VolumeBtn {
                 p = 2;
 
             const fillWidth = this.volume_bar.fillSize('w');
-            let fillColor = col.primary;
-            if (colorDistance(col.primary, col.progress_bar) < 105 && pref.blackTheme) {
-                fillColor = rgb(140, 140, 140);
-            } else if (colorDistance(col.primary, col.bg) < 105) {
-                fillColor = col.accent;
+            if (pref.themeStyleVolumeBarRounded) gr.SetSmoothingMode(SmoothingMode.AntiAlias); else gr.SetSmoothingMode(SmoothingMode.None);
+            // Default background
+            if (pref.themeStyleVolumeBarRounded && pref.themeStyleTransportButtons !== 'minimal') {
+                gr.FillRoundRect(x - scaleForDisplay(2), y + (is_4k ? p + 1 : p), w + scaleForDisplay(2), h, scaleForDisplay(5), scaleForDisplay(5), col.volumeBar);
+                gr.DrawRoundRect(x - (is_4k ? 5 : transport.show_reload_default || transport.show_reload_artwork || transport.show_reload_compact ? 3 : 2), y + scaleForDisplay(1), w + (is_4k ? 5 : 3), h + 2, scaleForDisplay(6), scaleForDisplay(6), 1, col.volumeBarFrame);
             }
-            gr.FillSolidRect(x - scaleForDisplay(2), y + (is_4k ? p + 1 : p), w + scaleForDisplay(2), h,
-                pref.whiteTheme ? RGB(255, 255, 255) :
-                pref.blackTheme ? RGB(35, 35, 35) :
-                pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : RGB(255, 255, 255) :
-                pref.blueTheme ? RGB(10, 130, 220) :
-                pref.darkblueTheme ? RGB(27, 55, 90) :
-                pref.redTheme ? RGB(140, 25, 25) :
-                pref.creamTheme ? RGB(255, 255, 255) :
-                pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(30, 30, 30) : ''
-            );
-            gr.FillSolidRect(x, y + (is_4k ? 7 : 4), fillWidth - scaleForDisplay(2), h - scaleForDisplay(4),
-                pref.whiteTheme ? col.primary :
-                pref.blackTheme ? fillColor :
-                pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.accent : col.primary :
-                pref.blueTheme ? RGB(242, 230, 170) :
-                pref.darkblueTheme ? RGB(255, 202, 128) :
-                pref.redTheme ? RGB(245, 212, 165) :
-                pref.creamTheme ? RGB(120, 170, 130) :
-                pref.nblueTheme ? RGB(0, 200, 255) :
-                pref.ngreenTheme ? RGB(0, 200, 0) :
-                pref.nredTheme ? RGB(229, 7, 44) :
-                pref.ngoldTheme ? RGB(254, 204, 3) : ''
-            );
-            gr.DrawRect(x - (is_4k ? 5 : transport.show_reload_default || transport.show_reload_artwork || transport.show_reload_compact ? 3 : 2), y + scaleForDisplay(1), w + (is_4k ? 5 : 3), h + 1, 1,
-                pref.whiteTheme ? RGB(220, 220, 220) :
-                pref.blackTheme ? RGB(60, 60, 60) :
-                pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.accent : RGB(220, 220, 220) :
-                pref.blueTheme ? RGB(22, 107, 186) :
-                pref.darkblueTheme ? RGB(20, 33, 48) :
-                pref.redTheme ? RGB(82, 19, 19) :
-                pref.creamTheme ? RGB(220, 220, 220) :
-                pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(50, 50, 50) : ''
-            );
+            else if (!pref.themeStyleVolumeBarRounded && pref.themeStyleTransportButtons !== 'minimal') {
+                gr.FillSolidRect(x - scaleForDisplay(2), y + (is_4k ? p + 1 : p), w + scaleForDisplay(2), h, col.volumeBar);
+                gr.DrawRect(x - (is_4k ? 5 : transport.show_reload_default || transport.show_reload_artwork || transport.show_reload_compact ? 3 : 2), y + scaleForDisplay(1), w + (is_4k ? 5 : 3), h + 1, 1, col.volumeBarFrame);
+            }
+            // Theme style background
+            if ((pref.themeStyleVolumeBar === 'bevel' || pref.themeStyleVolumeBar === 'inner') && pref.themeStyleTransportButtons !== 'minimal') {
+                if (pref.themeStyleVolumeBarRounded) {
+                    FillGradRoundRect(gr, x - scaleForDisplay(2), y + (is_4k ? p + 1 : p) - (pref.themeStyleVolumeBar === 'inner' ? 1 : 0), w + scaleForDisplay(5), h + scaleForDisplay(4), scaleForDisplay(6), scaleForDisplay(6),
+                    pref.themeStyleVolumeBar === 'inner' ? -89 : 89, pref.themeStyleVolumeBar === 'inner' ? col.themeStyleVolumeBar : 0, pref.themeStyleVolumeBar === 'inner' ? 0 : col.themeStyleVolumeBar, pref.themeStyleVolumeBar === 'inner' ? 0 : 1);
+                } else {
+                    gr.FillGradRect(x - scaleForDisplay(2), y + (is_4k ? p + (pref.themeStyleVolumeBar === 'inner' ? 0 : 2) : p), w + scaleForDisplay(2), h, pref.themeStyleVolumeBar === 'inner' ? -90 : 90, 0, col.themeStyleVolumeBar);
+                }
+            }
+            // Default fill
+            if (pref.themeStyleVolumeBarRounded) {
+                try { gr.FillRoundRect(x + 1, y + (is_4k ? 7 : 4), fillWidth - scaleForDisplay(3), h - scaleForDisplay(4), scaleForDisplay(3), scaleForDisplay(3), col.volumeBarFill); } catch(e) {};
+            } else {
+                gr.FillSolidRect(x, y + (is_4k ? 7 : 4), fillWidth - scaleForDisplay(2), h - scaleForDisplay(4), col.volumeBarFill);
+            }
+            // Theme style fill
+            if (pref.themeStyleVolumeBarFill === 'bevel' || pref.themeStyleVolumeBarFill === 'inner') {
+                try {
+                    if (pref.themeStyleVolumeBarRounded) {
+                        FillGradRoundRect(gr, x + 1, y + (is_4k ? 7 : 4), fillWidth - scaleForDisplay(0.5), h - scaleForDisplay(2), scaleForDisplay(3), scaleForDisplay(3), pref.themeStyleVolumeBarFill === 'inner' ? -89 : 89, 0, col.themeStyleVolumeBarFill, 1);
+                    } else {
+                        gr.FillGradRect(x, y + (is_4k ? 7 : 4), fillWidth - scaleForDisplay(2), h - scaleForDisplay(3), pref.themeStyleVolumeBarFill === 'inner' ? -90 : 90, pref.themeStyleBlackAndWhite ? col.themeStyleVolumeBarFill : 0, pref.themeStyleBlackAndWhite ? 0 : col.themeStyleVolumeBarFill);
+                    }
+                } catch(e) {};
+            }
         }
     }
 
@@ -201,7 +194,7 @@ class VolumeBtn {
         const center_artwork = Math.floor(buttonSize_artwork / 2 + scaleForDisplay(4));
         const center_compact = Math.floor(buttonSize_compact / 2 + scaleForDisplay(4));
         this.w = this.w;
-        this.x = x + scaleForDisplay(40);
+        this.x = x + (pref.layout_mode === 'artwork_mode' ? pref.transport_buttons_size_artwork * scaleForDisplay(1.25) : pref.layout_mode === 'compact_mode' ? pref.transport_buttons_size_compact * scaleForDisplay(1.25) : pref.transport_buttons_size_default * scaleForDisplay(1.25));
         this.y = y + (pref.layout_mode === 'artwork_mode' ? center_artwork : pref.layout_mode === 'compact_mode' ? center_compact : center_default) - this.h;
         this.volume_bar = new Volume(this.x, this.y, this.w, Math.min(wh - this.y, this.h));
     }

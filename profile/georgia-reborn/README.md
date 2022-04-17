@@ -1,16 +1,23 @@
-<p align="center"><img src="https://i.ibb.co/xYSQXFT/logo-reborn.png" alt="Georgia-ReBORN logo"/></p>
+<p align="center"><img src="https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/logo.png" alt="Georgia-ReBORN logo"/></p>
 
 # A Clean, Full Dynamic Color Reborn foobar2000 Theme
 
 Georgia-ReBORN is a modification of **[Mordred's original Georgia theme](https://github.com/kbuffington/Georgia)** for foobar2000.<br />
 It's purpose is to be used mainly as a desktop version, the layout has been modified to look clean and simple<br />
-without any distractions. The cover artwork and playlist are the main focus. Besides the 10 existing themes<br />
+without any distractions. The cover artwork and playlist are the main focus. Besides the 11 existing themes<br />
 Georgia-ReBORN has to offer ( Options > Theme ) there is one special theme "Reborn". Based on Mordred's<br />
 awesome dynamic color change feature, this theme will completely change it's appearance based on album art,<br />
 this means there are unlimited possibilities how the player will look like. Every new album you play will be<br />
 a new experience!
 
-![Themes](https://i.ibb.co/w6LqrzP/George-Re-BORN-Themes-Animation.webp)
+![Themes](https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/01_Georgia_Reborn_Themes_Animation.webp)
+
+If you want to change the active theme's default look, you can activate different theme styles ( Options > Style ).<br />
+Each column in the context menu can have one activated style, this means you can combine styles altogether.<br />
+It should be noted that some active themes have more or less and also different theme styles available,<br />
+you can spend hours in experimenting and achieving some pretty cool results.
+
+![ThemeStyles](https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/02_Georgia_Reborn_Theme_Styles_Animation.webp)
 
 WilB's awesome library and biography script has been integrated and modified to fit the overall design.<br />
 You can choose the top menu > Options > Library to change various library options. Besides the 8 existing<br />
@@ -32,27 +39,21 @@ If you now fetch the images from the biography, it will automatically update you
 You can easily switch the view from albums to artists. If album art or flow mode is active, right click<br />
 in the library > Show artists, to go back to default view open again the context menu and choose Show albums.
 
-![Library](https://i.ibb.co/LxZ9mvT/George-Re-BORN-Library-Animation.webp)
+![Library](https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/03_Georgia_Reborn_Library_Animation.webp)
 
 In the biography you can change options via top menu Options > Biography or you can use the context menu.<br />
 There are 4 different biography layouts to choose from, top is the default. There is also an automatic lyric fetcher<br />
 using the Lyric Show 3 ( by The vern ) and Multisource component ( by veksha ). Synced lyrics will be highlighted<br />
 with a theme color, unsynced lyrics have the default white text color.
 
-![BiographyLyrics](https://i.ibb.co/HhN4PVV/George-Re-BORN-Biography-And-Lyrics-Animation.webp)
+![BiographyLyrics](https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/04_Georgia_Reborn_Biography_And_Lyrics_Animation.webp)
 
-Georgia-ReBORN supports 4k resolutions and will adjust theme elements based on DPI and screen size.<br />
-Fullscreen mode is also supported! There are 18 predefined sizes ( Options > Player size ), 9 for FULL HD<br />
-and below and 9 for 4K resolution and higher. Each layout (Default, Artwork, Compact) has 3 different sizes.<br />
-These predefined sizes are restricted, if you have a monitor that supports only a res of 1920 x 1200 and below,<br />
-the first 9 are available. If you have a monitor capable of 4K resolution and higher, the other 9 are available.<br />
-You can of course resize foobar to your liking, but it has minimum size restrictions to prevent button and<br />
-text overlapping.
+Georgia-ReBORN supports 4K resolutions and will adjust theme elements based on DPI and screen size.<br />
+Fullscreen mode is also supported! There are predefined sizes ( Options > Player size ) and each layout<br />
+has 3 different sizes. You can of course resize foobar to your liking, but it has minimum size restrictions<br />
+to prevent button and text overlapping. There are 3 different layouts to choose from ( Options > Layout ).<br />
 
-There are 3 different layouts to choose from ( Options > Layout ).<br />
-You can resize the width and height but the player has a minimum size restriction:
-
-![Sizes](https://i.ibb.co/P5W1Vxh/George-Re-BORN-Sizes-And-Layouts-Animation.webp)
+![Sizes](https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/05_Georgia_Reborn_Sizes_And_Layouts_Animation.webp)
 
 **NOTE:** Georgia-ReBORN starts in player size 'Small' as a failsafe player size for small res. monitor/laptop screens<br />
 and looks best if you switch to 'Normal' or a larger player size!
@@ -63,9 +64,9 @@ These image packs are optional, they contain record labels and artist logos whic
 **[Download Record Labels](https://github.com/kbuffington/georgia-image-packs/raw/master/recordlabel.zip)** plus
 **[Download Artist Logos Part 1](https://github.com/kbuffington/georgia-image-packs/raw/master/artistlogos.zip)** and
 **[Download Artist Logos Part 2](https://github.com/kbuffington/georgia-image-packs/raw/master/artistlogos.z01)**.
-Extract them to your foobar2000/profile/images
+Extract them to foobar2000/profile/images
 
-![Details](https://i.ibb.co/56bGbxp/George-Re-BORN-Details-Animation.webp)
+![Details](https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/06_Georgia_Reborn_Details_Animation.webp)
 
 **NOTE:** You need to download the disc art from https://fanart.tv. If you don't have any disc art, you can choose<br />
 between 13 self created placeholders: Options > Details > Disc art > Display disc art placeholder<br />
@@ -75,11 +76,13 @@ For more information, please see the FAQ.
 
 <b>✓</b> Georgia-ReBORN design
 
-<b>✓</b> 11 different themes
+<b>✓</b> 12 different themes
 
 <b>✓</b> Special theme 'Reborn' will fully automatically change colors based on album art
 
-<b>✓</b> 18 predefined player sizes, 9 for Full HD and 9 for 4K
+<b>✓</b> Various theme styles that can be combined to change the default look
+
+<b>✓</b> Predefined player sizes for HD, QHD and 4K
 
 <b>✓</b> Default, Artwork and Compact mode
 
@@ -89,7 +92,7 @@ For more information, please see the FAQ.
 
 <b>✓</b> Biography
 
-<b>✓</b> Automatic 4k detection
+<b>✓</b> Automatic 4K, QHD, HD detection
 
 <b>✓</b> Automatic lyric downloader
 
@@ -142,6 +145,32 @@ foo_discogs: https://www.foobar2000.org/components/view/foo_discogs
 You have not installed the fonts correctly, install all located fonts from your foobar2000\profile\georgia-reborn\fonts folder.<br />
 For Windows: Into your C:\Windows\Fonts folder.<br />
 For Linux: Into your home/user/.local/share/fonts folder.
+</details>
+
+<details>
+<summary>How do I backup, update, restore and reset the theme?</summary>
+<br />
+<b>Backup:</b><br />
+In your profile folder backup the index-data folder ( stored information of playcounts, last.fm scrobbles and lyrics )<br />
+and the playlists-v1.4 folder. Optional: If you want to save your current theme settings, go to<br />
+Options > Settings > Theme settings > Create/Restore backup. Click on the Export button and save the json file.<br />
+Also make a backup of your current georgia-reborn-config.jsonc from your profile\georgia-reborn folder.<br />
+<br />
+<b>Update:</b><br />
+Download the latest https://github.com/TT-ReBORN/Georgia-ReBORN/archive/master.zip<br />
+and replace your existing files.<br />
+<br />
+<b>Restore:</b><br />
+If you made a completely new installation, start and close foobar. This will automatically create the index-data and<br />
+playlists-v1.4 folders. Just replace those folders and if you followed the optional backup step ( save theme settings )<br />
+replace your georgia-reborn-config.jsonc, start foobar and go to<br />
+Options > Settings > Theme settings > Create/Restore backup and click on Import. Load your saved json file.<br />
+<br />
+<b>Reset:</b><br />
+Go to Options > Settings > Theme settings > Reset all.<br />
+Warning, this will also reset your georgia-reborn-config.jsonc file to default. if you have modified the config file,<br />
+you should probably make a backup. If you still encounter some problems, you could try to manually delete your<br />
+panel properties in Options > Settings > Theme settings > Create/Restore backup and click on the Clear button.
 </details>
 
 <details>

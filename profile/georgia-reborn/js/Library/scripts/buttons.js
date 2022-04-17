@@ -79,7 +79,7 @@
 			g.SetSmoothingMode(2);
 			g.DrawLine(69, 71, 88, 90, 12, !ui.id.local ? ui.col.searchBtn : ui.col.searchBtn);
 			g.DrawEllipse(8, 11, 67, 67, 10, !ui.id.local ? ui.col.searchBtn : ui.col.searchBtn);
-			g.FillEllipse(15, 17, 55, 55, ui.col.bg);
+			// g.FillEllipse(15, 17, 55, 55, ui.col.bg); // Don't need this
 			g.SetSmoothingMode(0);
 		});
 		this.q.s_img.RotateFlip(4);
@@ -89,20 +89,7 @@
 			g.SetSmoothingMode(2);
 			if (ui.sbar.col) {
 				this.scr.arrow == 0 ? g.FillPolygon(ui.col.text, 1, [50 * sc, 0, 100 * sc, 76 * sc, 0, 76 * sc]) :
-				g.DrawString(this.scr.arrow, iconFont,
-					pref.whiteTheme ? RGB(120, 120, 120) :
-					pref.blackTheme ? RGB(100, 100, 100) :
-					pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? ui.col.text : RGB(120, 120, 120) :
-					pref.blueTheme ? RGB(220, 220, 220) :
-					pref.darkblueTheme ? RGB(220, 220, 220) :
-					pref.redTheme ? RGB(220, 220, 220) :
-					pref.creamTheme ? RGB(120, 170, 130) :
-					pref.nblueTheme ? RGB(0, 200, 255) :
-					pref.ngreenTheme ? RGB(0, 200, 0) :
-					pref.nredTheme ? RGB(229, 7, 44) :
-					pref.ngoldTheme ? RGB(254, 204, 3) : '',
-					0, sz * this.scr.pad, sz, sz, StringFormat(1, 1)
-				);
+				g.DrawString(this.scr.arrow, iconFont, ui.col.sbarBtns, 0, sz * this.scr.pad, sz, sz, StringFormat(1, 1));
 			} else {
 				this.scr.arrow == 0 ? g.FillPolygon(RGBA(ui.col.t, ui.col.t, ui.col.t, 255), 1, [50 * sc, 0, 100 * sc, 76 * sc, 0, 76 * sc]) :
 					g.DrawString(this.scr.arrow, iconFont, RGBA(ui.col.t, ui.col.t, ui.col.t, 255), 0, sz * this.scr.pad, sz, sz, StringFormat(1, 1));
@@ -462,7 +449,7 @@ class Btn {
 		const crossIm = this.state === 'normal' || !panel.search.txt ? this.item.normal : this.item.hover;
 		const colRect = this.state !== 'down' ? ui.getBlend(ui.col.bg4, ui.col.bg5, this.transition_factor, true) : ui.col.bg4;
 		gr.SetSmoothingMode(2);
-		//gr.FillRoundRect(this.x, this.y, this.w, this.h, but.arc, but.arc, colRect); // Hover effect
+		// gr.FillRoundRect(this.x, this.y, this.w, this.h, but.arc, but.arc, colRect); // Hover effect
 		gr.SetSmoothingMode(0);
 		gr.SetInterpolationMode(2);
 		if (crossIm) gr.DrawImage(crossIm, this.p1, this.p2 - scaleForDisplay(2), this.p3, this.p3, 0, 0, crossIm.Width, crossIm.Height, 0, a);
@@ -473,7 +460,7 @@ class Btn {
 		const colText = !ui.id.local ? (this.state !== 'down' ? ui.getBlend(this.item.hover, this.item.normal, this.transition_factor) : this.item.hover) : this.item.normal;
 		const colRect = this.state !== 'down' ? ui.getBlend(ui.col.bg4, ui.col.bg5, this.transition_factor, true) : ui.col.bg4;
 		gr.SetSmoothingMode(2);
-		//gr.FillRoundRect(this.x, ui.y + but.hoverArea, this.w, but.hot_h, but.arc, but.arc, colRect); // Hover effect
+		// gr.FillRoundRect(this.x, ui.y + but.hoverArea, this.w, but.hot_h, but.arc, but.arc, colRect); // Hover effect
 		gr.SetSmoothingMode(0);
 		gr.GdiDrawText(panel.filter.mode[ppt.filterBy].name, panel.filter.font, ui.col.filterBtn, this.p1 + (is_4k ? 22 : 9), ui.y, this.p3, this.h, this.p2);
 	}
@@ -496,20 +483,20 @@ class Btn {
 
 	drawSearch(gr) {
 		const a = !ui.id.local ? (this.state !== 'down' ? Math.min(255 + (240 - 180) * this.transition_factor, 240) : 240) : 255;
-		//const colRect = this.state !== 'down' ? ui.getBlend(ui.col.bg4, ui.col.bg5, this.transition_factor, true) : ui.col.bg4;
-		//gr.SetSmoothingMode(2);
-		//gr.FillRoundRect(this.x, ui.y + scaleForDisplay(6), this.w, this.h, but.arc, but.arc, colRect); // Hover effect
-		//gr.SetSmoothingMode(0);
+		// const colRect = this.state !== 'down' ? ui.getBlend(ui.col.bg4, ui.col.bg5, this.transition_factor, true) : ui.col.bg4;
+		// gr.SetSmoothingMode(2);
+		// gr.FillRoundRect(this.x, ui.y + scaleForDisplay(6), this.w, this.h, but.arc, but.arc, colRect); // Hover effect
+		// gr.SetSmoothingMode(0);
 		gr.SetInterpolationMode(2);
 		if (this.item.normal) gr.DrawImage(this.item.normal, this.p1, ui.y + scaleForDisplay(18), this.p3, this.p3, 0, 0, this.item.normal.Width, this.item.normal.Height, 0, a);
-		//gr.SetInterpolationMode(0); // Causes ugly rendering of lower bar flags when switching to Library
+		// gr.SetInterpolationMode(0); // Causes ugly rendering of lower bar flags when switching to Library
 	}
 
 	drawSettings(gr) {
 		const colText = !ui.id.local ? (this.state !== 'down' ? ui.getBlend(this.item.hover, this.item.normal, this.transition_factor) : this.item.hover) : this.item.normal;
 		const colRect = this.state !== 'down' ? ui.getBlend(ui.col.bg4, ui.col.bg5, this.transition_factor, true) : ui.col.bg4;
 		gr.SetSmoothingMode(2);
-		//gr.FillRoundRect(this.x, ui.y + but.hoverArea, this.w, but.hot_h, but.arc, but.arc, colRect); // Hover effect
+		// gr.FillRoundRect(this.x, ui.y + but.hoverArea, this.w, but.hot_h, but.arc, but.arc, colRect); // Hover effect
 		gr.SetSmoothingMode(0);
 		gr.GdiDrawText(panel.settings.icon, panel.settings.font, ui.col.settingsBtn, ui.x + (is_4k ? 1 : 0), ui.y + scaleForDisplay(2), this.p1, this.p2, panel.rc);
 	}

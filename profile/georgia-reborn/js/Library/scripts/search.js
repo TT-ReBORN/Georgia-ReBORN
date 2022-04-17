@@ -220,10 +220,10 @@ class Search {
 				this.end = panel.search.txt.length;
 				break;
 			case vk.copy:
-				if (this.start != this.end) this.doc.parentWindow.clipboardData.setData('text', panel.search.txt.substring(this.start, this.end));
+				if (this.start != this.end) utils.SetClipboardText(panel.search.txt.substring(this.start, this.end));
 				break;
 			case vk.cut:
-				if (this.start != this.end) this.doc.parentWindow.clipboardData.setData('text', panel.search.txt.substring(this.start, this.end)); // fall through
+				if (this.start != this.end) utils.SetClipboardText(panel.search.txt.substring(this.start, this.end)); // fall through
 			case vk.back:
 				this.record();
 				if (this.start == this.end) {
@@ -285,7 +285,7 @@ class Search {
 				this.end = this.start;
 				break;
 			case vk.paste:
-				text = this.doc.parentWindow.clipboardData.getData('text') || ''; // fall through
+				text = utils.GetClipboardText(); // fall through
 				text = text.replace(/(\r\n|\n|\r)/gm, ' ');
 			default:
 				this.record();
@@ -381,7 +381,7 @@ class Search {
 	}
 
 	rbtn_up(x, y) {
-		this.paste = this.doc.parentWindow.clipboardData.getData('text') ? true : false;
+		this.paste = utils.GetClipboardText() ? true : false;
 		searchMenu.load(x, y);
 	}
 

@@ -163,7 +163,7 @@ function PlaylistPanel(x, y) {
 
 	//<editor-fold desc="Callback Implementation">
 	this.on_paint = function (gr) {
-		gr.FillSolidRect(this.x, this.y, this.w, this.h, g_theme.colors.pss_back); //TODO: can I not need this
+		gr.FillSolidRect(this.x, this.y, this.w, this.h, g_theme.colors.pss_back); // TODO: can I not need this
 
 		if (!is_activated) {
 			is_activated = true;
@@ -174,79 +174,29 @@ function PlaylistPanel(x, y) {
 			playlist.reinitialize();
 		}
 
-		playlist.on_paint(gr);
-		// Hide rows that shouldn't be visible
-		gr.SetSmoothingMode(SmoothingMode.None);
-		gr.FillSolidRect(this.x, 0, this.w, geo.top_art_spacing, col.bg); // Hides top row that shouldn't be visible
-		gr.FillSolidRect(this.x, this.y, this.w, pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode' ? playlist_geo.row_h + scaleForDisplay(4) : scaleForDisplay(2), g_pl_colors.background); // Hides also Playlist's top shadow
-		gr.FillSolidRect(this.x, this.y + this.h, this.w, playlist_geo.row_h * 4, col.bg); // Hides also Playlist's bottom shadow
-		gr.FillSolidRect(this.x, this.y + this.h - playlist_geo.row_h, this.w, playlist_geo.row_h, g_pl_colors.background); // Hide Playlist bottom row and margin
-
-		if (g_properties.show_playlist_info) {
-			//gr.FillSolidRect(playlist_info.x, playlist_info.y + playlist_info.h, playlist_info.w, 2, g_theme.colors.pss_back);
-			playlist_info.on_paint(gr);
+		if (pref.themeStyleBlend && albumart && (displayPlaylist || displayPlaylistArtworkMode)) {
+			gr.DrawImage(blendedImg, 0, 0, ww, wh, 0, 0, blendedImg.Width, blendedImg.Height);
 		}
 
-		if (pref.layout_mode === 'default_mode') {
-			// Playlist's top shadow
-			gr.FillGradRect(this.x, is_4k ? this.y - 10 : this.y - 6, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0),
-				pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
-				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
-				pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
-				pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
-				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 72) :
-				pref.redTheme ? RGBtoRGBA(col.shadow, 72) :
-				pref.creamTheme ? RGBtoRGBA(col.shadow, 24) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 120) : ''
-			);
-			// Playlist's left shadow
-			gr.FillGradRect(this.x - 4, this.y, 4, this.h, 0, RGBtoRGBA(col.shadow, 0),
-				pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
-				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
-				pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
-				pref.blueTheme ? RGBtoRGBA(col.shadow, 38) :
-				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 60) :
-				pref.redTheme ? RGBtoRGBA(col.shadow, 64) :
-				pref.creamTheme ? RGBtoRGBA(col.shadow, 28) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 120) : ''
-			);
-			// Playlist's bottom shadow
-			gr.FillGradRect(this.x, is_4k ? this.y + (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? this.h : this.h + 1) : this.y + this.h - 1, this.w, scaleForDisplay(5), 90,
-				pref.whiteTheme ? RGBtoRGBA(col.shadow, 18) :
-				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
-				pref.rebornTheme ? RGBtoRGBA(col.shadow, 30) :
-				pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
-				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 74) :
-				pref.redTheme ? RGBtoRGBA(col.shadow, 74) :
-				pref.creamTheme ? RGBtoRGBA(col.shadow, 18) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 86) : '',
-				RGBtoRGBA(col.shadow, 0)
-			);
+		playlist.on_paint(gr);
 
-		} else if (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') {
-			// Playlist's top shadow
-			gr.FillGradRect(this.x, is_4k ? this.y - 10 : this.y - 6, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0),
-				pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
-				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
-				pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
-				pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
-				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 72) :
-				pref.redTheme ? RGBtoRGBA(col.shadow, 72) :
-				pref.creamTheme ? RGBtoRGBA(col.shadow, 24) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 255) : ''
-			);
-			// Playlist's bottom shadow
-			gr.FillGradRect(this.x, this.y + this.h - (is_4k ? -1 : 1), this.w, scaleForDisplay(5), 90,
-				pref.whiteTheme ? RGBtoRGBA(col.shadow, 18) :
-				pref.blackTheme ? RGBtoRGBA(col.shadow, 105) :
-				pref.rebornTheme ? RGBtoRGBA(col.shadow, 30) :
-				pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
-				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 74) :
-				pref.redTheme ? RGBtoRGBA(col.shadow, 60) :
-				pref.creamTheme ? RGBtoRGBA(col.shadow, 18) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 200) : '',
-				RGBtoRGBA(col.shadow, 0)
-			);
+		// Hide rows that shouldn't be visible
+		gr.SetSmoothingMode(SmoothingMode.None);
+		gr.FillSolidRect(this.x, 0, this.w, geo.top_art_spacing, col.bg); // Hide alpha overlapping at the top
+		gr.FillSolidRect(this.x, geo.top_art_spacing, this.w, playlist_info_h, g_pl_colors.background); // Hide alpha overlapping at the top
+		gr.FillSolidRect(this.x, this.y + this.h - playlist_geo.row_h, this.w, playlist_geo.row_h + geo.lower_bar_h, g_pl_colors.background); // Hide alpha overlapping at the bottom
+		gr.FillSolidRect(this.x, this.y + this.h, this.w, geo.lower_bar_h, col.bg); // Hide alpha overlapping at the bottom
+
+		if (UIHacks.Aero.Effect === 2) gr.DrawLine(this.x, 0, ww, 0, 1, col.bg); // UIHacks Aero Glass Shadow Frame Fix - Needed for theme style Blend
+
+		if (pref.themeStyleBlend && albumart) {
+			gr.DrawImage(blendedImg, this.x, this.y - this.h - geo.top_art_spacing - geo.lower_bar_h + playlist_info_h, ww, wh, this.x, this.y - this.h - geo.top_art_spacing - geo.lower_bar_h + playlist_info_h, blendedImg.Width, blendedImg.Height);
+			gr.DrawImage(blendedImg, this.x, this.y + this.h - playlist_geo.row_h, ww, wh, this.x, this.y + this.h - playlist_geo.row_h, blendedImg.Width, blendedImg.Height);
+		}
+
+		if (g_properties.show_playlist_info) {
+			// gr.FillSolidRect(playlist_info.x, playlist_info.y + playlist_info.h, playlist_info.w, 2, g_theme.colors.pss_back);
+			playlist_info.on_paint(gr);
 		}
 	};
 
@@ -432,6 +382,10 @@ function PlaylistPanel(x, y) {
 
 		playlist.on_item_focus_change(playlist_idx, from_idx, to_idx);
 	};
+
+	this.scroll_to_focused = function() {
+		playlist.scroll_to_focused();
+	}
 
 	this.on_playlists_changed = function () {
 		if (!is_activated) {
@@ -714,7 +668,7 @@ class Playlist extends List {
 	}
 	//<editor-fold desc="Callback Implementation">
 	on_paint(gr) {
-		gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.background);
+		if (!pref.themeStyleBlend) gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.background);
 		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 
 		if (this.items_to_draw.length) {
@@ -735,17 +689,15 @@ class Playlist extends List {
 			gr.DrawString(text, g_pl_fonts.title_normal, g_pl_colors.title_normal, this.x, this.y, this.w, this.h, g_string_format.align_center);
 		}
 
-		/*
-		if (this.is_scrollbar_available) {
-			var gradiantHeight = Math.ceil(playlist_geo.row_h * 2 / 3);
-			if (!this.scrollbar.is_scrolled_up) {
-				gr.FillGradRect(this.x, this.list_y - 1, this.list_w, gradiantHeight, 270, RGBtoRGBA(g_theme.colors.panel_back, 0), RGBtoRGBA(g_theme.colors.panel_back, 200));
-			}
-			if (!this.scrollbar.is_scrolled_down) {
-				gr.FillGradRect(this.x, this.y + this.h - gradiantHeight, this.w, gradiantHeight, 270, RGBtoRGBA(g_theme.colors.panel_back, 255), RGBtoRGBA(g_theme.colors.panel_back, 0));
-			}
-		}
-		*/
+		// if (this.is_scrollbar_available) {
+		// 	var gradiantHeight = Math.ceil(playlist_geo.row_h * 2 / 3);
+		// 	if (!this.scrollbar.is_scrolled_up) {
+		// 		gr.FillGradRect(this.x, this.list_y - 1, this.list_w, gradiantHeight, 270, 0, RGBtoRGBA(g_theme.colors.panel_back, 200));
+		// 	}
+		// 	if (!this.scrollbar.is_scrolled_down) {
+		// 		gr.FillGradRect(this.x, this.y + this.h - gradiantHeight, this.w, gradiantHeight, 270, RGBtoRGBA(g_theme.colors.panel_back, 255), 0);
+		// 	}
+		// }
 
 		if (this.is_scrollbar_visible) {
 			this.scrollbar.paint(gr);
@@ -766,12 +718,7 @@ class Playlist extends List {
 			this.collapse_handler.collapse_all_but_now_playing();
 		}
 
-		if (needs_reinit) {
-			this.reinitialize();
-			needs_reinit = false;
-		}
-
-		if (pref.always_showPlayingPl || pref.rebornTheme && fb.CursorFollowPlayback) {
+		if (fb.IsPlaying && (((pref.rebornTheme || pref.randomTheme || pref.themeStyleBlackAndWhiteReborn) && pref.playlistRowHover) || pref.always_showPlayingPl || fb.CursorFollowPlayback)) {
 			this.on_playback_new_track();
 		}
 	}
@@ -793,7 +740,7 @@ class Playlist extends List {
 				item.title_truncatedText_tt(x, y);
 			}
 			if (pref.playlistRowHover) {
-				try { // Prevent crash when playlist rows are not fully initialized while mouse moving in panel, e.g on foobar startup or while changing playlist idx
+				try { // Prevent crash when playlist rows are not fully initialized
 					item.on_mouse_move(x, y, m);
 				} catch (e) {};
 			}
@@ -973,148 +920,161 @@ class Playlist extends List {
 			cmm.append_separator();
 		}
 
-			cmm.append_item(
-				'Playlist manager \tCtrl+M',
-				() => {
-					fb.RunMainMenuCommand("View/Playlist Manager");
-				});
+		cmm.append_item(
+			'Playlist manager \tCtrl+M',
+			() => {
+				fb.RunMainMenuCommand("View/Playlist Manager");
+			});
 
-			cmm.append_item(
-				'Playlist search \tCtrl+F',
-				() => {
-					fb.RunMainMenuCommand("View/Playlist search");
-				});
+		cmm.append_item(
+			'Playlist search \tCtrl+F',
+			() => {
+				fb.RunMainMenuCommand("View/Playlist search");
+			});
 
-			cmm.append_item(
-				'Create new playlist \tCtrl+N',
-				() => {
-					plman.CreatePlaylist(playlist_count, '');
-					plman.ActivePlaylist = plman.PlaylistCount - 1;
-				});
+		cmm.append_item(
+			'Create new playlist \tCtrl+N',
+			() => {
+				plman.CreatePlaylist(playlist_count, '');
+				plman.ActivePlaylist = plman.PlaylistCount - 1;
+			});
 
 		var autopl = new ContextMenu('Create new auto playlist');
 		cmm.append(autopl);
 
-			autopl.append_item(
-				"Custom auto playlist",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) New auto playlist", "", "", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-					plman.ShowAutoPlaylistUI(this.cur_playlist_idx);
-				});
+		autopl.append_item(
+			"Custom auto playlist",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) New auto playlist", "", "", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+				plman.ShowAutoPlaylistUI(this.cur_playlist_idx);
+			});
 
-			autopl.append_separator();
+		autopl.append_separator();
 
-			autopl.append_item(
-				"Tracks from the library",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks from the library", "ALL", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-				});
+		autopl.append_item(
+			"Tracks from the library",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks from the library", "ALL", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+			});
 
-			autopl.append_separator();
+		autopl.append_separator();
 
-			autopl.append_item(
-				"Tracks most played",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks most played", "%play_count% GREATER 9", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-				});
+		autopl.append_item(
+			"Tracks most played",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks most played", "%play_count% GREATER 9", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+			});
 
-			autopl.append_item(
-				"Tracks never played",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks never played", "%play_count% MISSING", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-				});
+		autopl.append_item(
+			"Tracks never played",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks never played", "%play_count% MISSING", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+			});
 
-			autopl.append_item(
-				"Tracks played in the last week",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks played in the last week", "%last_played% DURING LAST 1 WEEK", "%last_played%", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-				});
+		autopl.append_item(
+			"Tracks played in the last week",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks played in the last week", "%last_played% DURING LAST 1 WEEK", "%last_played%", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+			});
 
-			autopl.append_item(
-				"Tracks played in the last month",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks played in the last month", "%last_played% DURING LAST 4 WEEKS", "%last_played%", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-				});
+		autopl.append_item(
+			"Tracks played in the last month",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks played in the last month", "%last_played% DURING LAST 4 WEEKS", "%last_played%", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+			});
 
-			autopl.append_item(
-				"Tracks played in the last year",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks played in the last year", "%last_played% DURING LAST 52 WEEKS", "%last_played%", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-				});
+		autopl.append_item(
+			"Tracks played in the last year",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks played in the last year", "%last_played% DURING LAST 52 WEEKS", "%last_played%", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+			});
 
-			autopl.append_separator();
+		autopl.append_separator();
 
-			autopl.append_item(
-				"Tracks unrated",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks unrated", "%rating% MISSING", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-				});
+		autopl.append_item(
+			"Tracks unrated",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks unrated", "%rating% MISSING", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+			});
 
-			autopl.append_item(
-				"Tracks rated 1",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 1", "%rating% IS 1", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-				});
+		autopl.append_item(
+			"Tracks rated 1",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 1", "%rating% IS 1", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+			});
 
-			autopl.append_item(
-				"Tracks rated 2",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 2", "%rating% IS 2", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-				});
+		autopl.append_item(
+			"Tracks rated 2",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 2", "%rating% IS 2", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+			});
 
-			autopl.append_item(
-				"Tracks rated 3",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 3", "%rating% IS 3", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-				});
+		autopl.append_item(
+			"Tracks rated 3",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 3", "%rating% IS 3", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+			});
 
-			autopl.append_item(
-				"Tracks rated 4",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 4", "%rating% IS 4", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-				});
+		autopl.append_item(
+			"Tracks rated 4",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 4", "%rating% IS 4", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+			});
 
-			autopl.append_item(
-				"Tracks rated 5",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 5", "%rating% IS 5", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-				});
+		autopl.append_item(
+			"Tracks rated 5",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Tracks rated 5", "%rating% IS 5", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+			});
 
-			autopl.append_separator();
+		autopl.append_separator();
 
-			autopl.append_item(
-				"Loved tracks",
-				() => {
-					plman.CreateAutoPlaylist(playlist_count, "(Auto) Loved tracks", "%mood% GREATER 0", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-					plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
-					plman.ActivePlaylist = this.cur_playlist_idx;
-				});
+		autopl.append_item(
+			"Loved tracks",
+			() => {
+				plman.CreateAutoPlaylist(playlist_count, "(Auto) Loved tracks", "%mood% GREATER 0", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(playlist_count, this.cur_playlist_idx);
+				plman.ActivePlaylist = this.cur_playlist_idx;
+			});
+
+		cmm.append_separator();
+		cmm.append_item(
+			'Save playlist \tCtrl+S',
+			() => {
+				fb.RunMainMenuCommand('File/Save playlist...');
+			});
+
+		cmm.append_item(
+			'Load playlist',
+			() => {
+				fb.RunMainMenuCommand('File/Load playlist...');
+			});
 
 		if (!is_cur_playlist_empty) {
 			cmm.append_separator();
@@ -1484,6 +1444,19 @@ class Playlist extends List {
 
 		if (pref.always_showPlayingPl) {
 			this.show_now_playing();
+		}
+
+		// TODO: Figure out if it's possible to repaint playlist title_color without using initialize_rows() & create_headers when using Reborn/Random theme or theme style Black And White Reborn
+		// to fix the ugly title_color repaint when text changes to black or white color. Best visible if using Options > Playlist > Always scroll to current playing song
+		// and using the transport next button with random shuffle mode on or while playlist scrolling. This cosmetic fix only used if active playlist has less than 5000 playlist items for performance reason.
+		if ((pref.rebornTheme || pref.randomTheme || pref.themeStyleBlackAndWhiteReborn) && pref.playlistRowHover && plman.PlaylistItemCount(plman.ActivePlaylist) < 5000) {
+			this.cnt.rows = this.initialize_rows(plman.GetPlaylistItems(this.cur_playlist_idx));
+			this.cnt.sub_items = this.create_headers(this.cnt.rows, plman.GetPlaylistItems(this.cur_playlist_idx));
+			this.playing_item = this.cnt.rows[playing_item_location.PlaylistItemIndex];
+			this.playing_item.is_playing = true;
+		}
+		else if ((pref.rebornTheme || pref.randomTheme || pref.themeStyleBlackAndWhiteReborn) && pref.playlistRowHover && plman.PlaylistItemCount(plman.ActivePlaylist) > 5000)  {
+			repaintPlaylistRows();
 		}
 
 		this.repaint();
@@ -2195,25 +2168,36 @@ class Playlist extends List {
 		this.append_scrollbar_visibility_context_menu_to(appear);
 
 		appear.append_item(
-			'Show artist name in row',
+			'Show artist name on difference',
 			() => {
-				pref.show_artist_playlistRow = !pref.show_artist_playlistRow;
+				pref.show_different_artist = !pref.show_different_artist;
 
 				this.initialize_list();
 				this.scroll_to_focused_or_now_playing();
 			},
-			{is_checked: pref.show_artist_playlistRow}
+			{is_checked: pref.show_different_artist}
 		);
 
 		appear.append_item(
-			'Show album title in row',
+			'Show artist name in all rows',
 			() => {
-				pref.show_album_playlistRow = !pref.show_album_playlistRow;
+				pref.show_artist_playlistRows = !pref.show_artist_playlistRows;
 
 				this.initialize_list();
 				this.scroll_to_focused_or_now_playing();
 			},
-			{is_checked: pref.show_album_playlistRow}
+			{is_checked: pref.show_artist_playlistRows}
+		);
+
+		appear.append_item(
+			'Show album title in all rows',
+			() => {
+				pref.show_album_playlistRows = !pref.show_album_playlistRows;
+
+				this.initialize_list();
+				this.scroll_to_focused_or_now_playing();
+			},
+			{is_checked: pref.show_album_playlistRows}
 		);
 
 		appear.append_item(
@@ -2439,6 +2423,27 @@ class Playlist extends List {
 		);
 
 		sort.append_separator();
+
+		sort.append_item(
+			'Save',
+			() => {
+				fb.RunMainMenuCommand('File/Save playlist...');
+			}
+		);
+
+		sort.append_item(
+			'Load',
+			() => {
+				fb.RunMainMenuCommand('File/Load playlist...');
+			}
+		);
+
+		sort.append_item(
+			'Undo',
+			() => {
+				fb.RunMainMenuCommand('Edit/Undo');
+			}
+		);
 
 		sort.append_item(
 			'Randomize',
@@ -2756,7 +2761,10 @@ class Playlist extends List {
 		else {
 			var item_draw_idx = this.get_item_draw_row_idx(visible_to_item);
 			var new_scroll_pos = Math.max(0, item_draw_idx - Math.floor(this.rows_to_draw_precise / 2));
-			this.scrollbar.smooth_scroll_to(new_scroll_pos);
+			if (!this.drag_event_invoked) { // Don't scroll when dragging/reordering playlist items, needed to prevent playlist smooth scroll jump
+				this.scrollbar.smooth_scroll_to(new_scroll_pos);
+			}
+			this.drag_event_invoked = false;
 		}
 	}
 
@@ -3120,6 +3128,7 @@ class PlaylistContent extends ListRowContent {
 					// @ts-ignore
 					const header = sub_items[i];
 					if (cur_row + header_h_in_rows - 1 >= row_shift /*&& !header.dont_draw*/) {
+						header.set_x(pref.layout_mode === 'default_mode' ? ww * 0.5 : 0);
 						header.set_y(start_y + (cur_row - row_shift) * row_h);
 						return header;
 					}
@@ -3144,6 +3153,7 @@ class PlaylistContent extends ListRowContent {
 					cur_row += row_start_idx;
 
 					var row = sub_items[row_start_idx];
+					row.set_x(pref.layout_mode === 'default_mode' ? ww * 0.5 : 0);
 					row.set_y(start_y + (cur_row - row_shift) * row_h);
 
 					return row;
@@ -3195,6 +3205,7 @@ class PlaylistContent extends ListRowContent {
 			for (var i = start_idx; i < sub_items.length; ++i) {
 				var item = sub_items[i];
 				if (start_item_used /* && !item.dont_draw*/) {
+					item.set_x(pref.layout_mode === 'default_mode' ? ww * 0.5 : 0);
 					item.set_y(cur_y);
 
 					items_to_draw.push(item);
@@ -3661,9 +3672,9 @@ class DiscHeader extends BaseHeader {
 	//public:
 	draw(gr, top, bottom) {
 		gr.SetSmoothingMode(SmoothingMode.None);
-		gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.background);
+		if (!pref.themeStyleBlend) gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.background);
 
-		if (this.is_collapsed || (this.is_odd && g_properties.alternate_row_color)) {
+		if (this.is_odd && g_properties.alternate_row_color) {
 			gr.FillSolidRect(this.x, this.y + 1, this.w, this.h - 1, g_pl_colors.row_alternate);
 		}
 
@@ -3676,13 +3687,11 @@ class DiscHeader extends BaseHeader {
 		if (this.is_selected()) {
 			title_color = g_pl_colors.title_selected;
 			title_font = g_pl_fonts.title_selected;
-			if (pref.whiteTheme || pref.blackTheme) {
-				gr.FillSolidRect(this.x, this.y, scaleForDisplay(8), this.h - 1, col.primary);
-			}
+			gr.FillSolidRect(this.x, this.y, scaleForDisplay(8), this.h - 1, g_pl_colors.row_sideMarker);
 		}
 
 		var disc_header_text_format = g_string_format.v_align_center | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
-		var disc_text = this.disc_title; //$('[Disc %discnumber% $if('+ tf.disc_subtitle+', \u2014 ,) ]['+ tf.disc_subtitle +']', that.sub_items[0].metadb);
+		var disc_text = this.disc_title; // $('[Disc %discnumber% $if('+ tf.disc_subtitle+', \u2014 ,) ]['+ tf.disc_subtitle +']', that.sub_items[0].metadb);
 		gr.DrawString(disc_text, title_font, title_color, cur_x, this.y, this.w, this.h, disc_header_text_format);
 		var disc_w = Math.ceil(gr.MeasureString(disc_text, title_font, 0, 0, 0, 0).Width + 14);
 
@@ -3693,23 +3702,9 @@ class DiscHeader extends BaseHeader {
 
 		gr.DrawString(tracks_text, title_font, title_color, tracks_x, this.y, tracks_w, this.h, g_string_format.v_align_center | g_string_format.h_align_far);
 
-		if (this.is_collapsed) {
+		if (this.is_collapsed || !this.is_collapsed) {
 			var line_y = Math.round(this.y + this.h / 2) + scaleForDisplay(4);
-			gr.DrawLine(is_4k ? cur_x + disc_w + 5 : cur_x + disc_w - 5, line_y, is_4k ? this.x + this.w - tracks_w - 40 : this.x + this.w - tracks_w - 10, line_y, 1, RGBA(100, 100, 100, 100));
-			//line_y += 4;
-			//gr.DrawLine(is_4k ? cur_x + disc_w + 5 : cur_x + disc_w - 5, line_y, is_4k ? this.x + this.w - tracks_w - 40 : this.x + this.w - tracks_w - 10, line_y, 1, RGBA(100, 100, 100, 100));
-		} else {
-			var line_y = Math.round(this.y + this.h / 2) + scaleForDisplay(4);
-			gr.DrawLine(is_4k ? cur_x + disc_w + 5 : cur_x + disc_w - 5, line_y, is_4k ? this.x + this.w - tracks_w - 40 : this.x + this.w - tracks_w - 10, line_y, 1,
-				pref.whiteTheme ? RGB(200, 200, 200) :
-				pref.blackTheme ? RGB(45, 45, 45) :
-				pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.accent : RGB(200, 200, 200) :
-				pref.blueTheme ? RGB(17, 100, 182) :
-				pref.darkblueTheme ? RGB(12, 21, 31) :
-				pref.redTheme ? RGB(75, 18, 18) :
-				pref.creamTheme ? RGB(200, 200, 200) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(45, 45, 45) : ''
-			);
+			gr.DrawLine(is_4k ? cur_x + disc_w + 5 : cur_x + disc_w - 5, line_y, is_4k ? this.x + this.w - tracks_w - 40 : this.x + this.w - tracks_w - 10, line_y, 1, g_theme.colors.panel_line);
 		}
 	}
 
@@ -3910,7 +3905,7 @@ class Header extends BaseHeader {
 		var bitspersample = Number($('$info(bitspersample)', this.metadb));
 		var samplerate = Number($('$info(samplerate)', this.metadb));
 		var sample = ((bitspersample > 16 || samplerate > 44100 || settings.playlistAlwaysShowBitrate) ? $(' [$info(bitspersample)bit/]', this.metadb) + samplerate / 1000 + 'khz' : '');
-		var codec = $('$lower($if2(%codec%,$ext(%path%)))', this.metadb);
+		var codec = $('$if2(%codec%,$ext(%path%))', this.metadb);
 
 		if (codec === "dca (dts coherent acoustics)") {
 			codec = "dts";
@@ -4013,7 +4008,7 @@ class Header extends BaseHeader {
 				artist_font = g_pl_fonts.artist_playing;
 
 				const bg_color = this.is_playing() + col.primary;
-				const brightBackground = (new Color(bg_color).brightness) > 151;
+				const brightBackground = new Color(bg_color).brightness > 131;
 				if (brightBackground && pref.blackTheme) {
 					artist_color = rgb(0, 0, 0);
 					album_color = rgb(20, 20, 20);
@@ -4027,16 +4022,11 @@ class Header extends BaseHeader {
 					line_color = rgb(100, 100, 100);
 				}
 			}
-			/*
-			if (this.hasSelection) {
-				line_color = g_pl_colors.line_selected;
-				artist_color = album_color = date_color = info_color = g_pl_colors.group_title_selected;
-			}
-			*/
+
 			var clipImg = gdi.CreateImage(this.w, this.h);
 			var grClip = clipImg.GetGraphics();
 
-			grClip.FillSolidRect(0, 0, this.w, this.h, g_pl_colors.background); // Solid background for ClearTypeGridFit text rendering
+			if (!pref.themeStyleBlend) grClip.FillSolidRect(0, 0, this.w, this.h, g_pl_colors.background); // Solid background for ClearTypeGridFit text rendering
 
 			if (this.hasSelection) {
 				if (pref.whiteTheme || pref.blackTheme) {
@@ -4047,76 +4037,23 @@ class Header extends BaseHeader {
 			if (this.is_playing()) {
 				var p = scaleForDisplay(6);  // from art below
 
-				if (this.hasSelection && pref.whiteTheme) {
-					if (pref.layout_mode === 'default_mode') {
-						grClip.FillSolidRect(0, p, scaleForDisplay(8), this.h - p * 2, col.primary);
-					} else if (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') {
-						grClip.FillSolidRect(0, 0, this.w, this.h * 2, col.primary);
-					}
-				} else if (!this.hasSelection && pref.whiteTheme) {
-					if (pref.layout_mode === 'default_mode') {
-						grClip.FillSolidRect(0, p, scaleForDisplay(8), this.h - p * 2, col.primary);
-					} else if (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') {
-						grClip.FillSolidRect(0, 0, this.w, this.h * 2, col.primary);
-					}
+				if (pref.whiteTheme && !pref.themeStyleBlackAndWhite && !pref.themeStyleBlackAndWhite2 && pref.layout_mode === 'default_mode' || (pref.rebornTheme || pref.randomTheme) && noAlbumArtStub) {
+					grClip.FillSolidRect(0, p, scaleForDisplay(8), this.h - p * 2, g_pl_colors.header_nowplaying_bg);
 				}
-
-				if (this.hasSelection && pref.blackTheme) {
-					grClip.FillSolidRect(0, 0, this.w, this.h * 2, col.primary);
-				} else if (!this.hasSelection && pref.blackTheme) {
-					grClip.FillSolidRect(0, 0, this.w, this.h * 2, col.primary);
+				else if ((pref.whiteTheme && (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode')) || pref.blackTheme || (pref.rebornTheme || pref.randomTheme) && !noAlbumArtStub || pref.creamTheme) {
+					grClip.FillSolidRect(0, 0, this.w, this.h * 2, g_pl_colors.header_nowplaying_bg);
 				}
-
-				if (this.hasSelection && pref.rebornTheme) {
-					grClip.FillSolidRect(0, 0, this.w, this.h * 2, g_pl_colors.background != RGB(255, 255, 255) ? col.darkMiddleAccent : !albumart ? RGB(255, 255, 255) : col.primary);
-				} else if (!this.hasSelection && pref.rebornTheme) {
-					grClip.FillSolidRect(0, 0, this.w, this.h * 2, g_pl_colors.background != RGB(255, 255, 255) ? col.darkMiddleAccent : !albumart ? RGB(255, 255, 255) : col.primary);
-				}
-
-				if (this.hasSelection && pref.creamTheme) {
-					grClip.FillSolidRect(0, 0, this.w, this.h * 2, RGB(120, 170, 130));
-				} else if (!this.hasSelection && pref.creamTheme) {
-					grClip.FillSolidRect(0, 0, this.w, this.h * 2, RGB(120, 170, 130));
-				}
-
-				if (this.hasSelection && (pref.rebornTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme)) {
-					grClip.FillSolidRect(0, 0, scaleForDisplay(8), this.h,
-						pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
-						pref.blueTheme ? RGB(242, 230, 170) :
-						pref.darkblueTheme ? RGB(255, 202, 128) :
-						pref.redTheme ? RGB(245, 212, 165) :
-						pref.nblueTheme ? RGB(0, 200, 255) :
-						pref.ngreenTheme ? RGB(0, 200, 0) :
-						pref.nredTheme ? RGB(229, 7, 44) :
-						pref.ngoldTheme ? RGB(254, 204, 3) : ''
-					);
-					grClip.FillSolidRect(scaleForDisplay(8), 0, this.w, this.h,
-						pref.blueTheme ? RGB(10, 130, 220) :
-						pref.darkblueTheme ? RGB(24, 50, 82) :
-						pref.redTheme ? RGB(130, 25, 25) :
-						pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(25, 25, 25) : ''
-					);
-				} else if (!this.hasSelection && (pref.rebornTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme)) {
-					grClip.FillSolidRect(0, 0, scaleForDisplay(8), this.h,
-						pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
-						pref.blueTheme ? RGB(242, 230, 170) :
-						pref.darkblueTheme ? RGB(255, 202, 128) :
-						pref.redTheme ? RGB(245, 212, 165) :
-						pref.nblueTheme ? RGB(0, 200, 255) :
-						pref.ngreenTheme ? RGB(0, 200, 0) :
-						pref.nredTheme ? RGB(229, 7, 44) :
-						pref.ngoldTheme ? RGB(254, 204, 3) : ''
-					);
-					grClip.FillSolidRect(scaleForDisplay(8), 0, this.w, this.h,
-						pref.blueTheme ? RGB(10, 130, 220) :
-						pref.darkblueTheme ? RGB(24, 50, 82) :
-						pref.redTheme ? RGB(130, 25, 25) :
-						pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(25, 25, 25) : ''
-					);
+				if (pref.whiteTheme && (pref.themeStyleBlackAndWhite || pref.themeStyleBlackAndWhite2) || !pref.whiteTheme && !pref.blackTheme && !pref.creamTheme) {
+					grClip.FillSolidRect(0, 0, scaleForDisplay(8), this.h, g_pl_colors.header_sideMarker);
+					if (!((pref.rebornTheme || pref.randomTheme) && (noAlbumArtStub || isPlayingCD || pref.themeStyleBlend || pref.themeStyleAlternative2))) grClip.FillSolidRect(scaleForDisplay(8), 0, this.w, this.h, g_pl_colors.header_nowplaying_bg);
 				}
 			}
 
-			grClip.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+			if (pref.themeStyleBlend) { // Need to change text rendering to AntiAliasGridFit
+				grClip.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
+			} else {
+				grClip.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+			}
 
 			if (this.is_collapsed && this.is_focused()) {
 				grClip.DrawRect(-1, 0, this.w + 1, this.h - 1, 1, line_color);
@@ -4161,14 +4098,12 @@ class Header extends BaseHeader {
 						grClip.DrawImage(this.art, art_x, art_y, art_w, art_h, 0, 0, art_w, art_h, 0, 220);
 					}
 					else if (!this.is_art_loaded()) {
-						grClip.DrawString('LOADING', g_pl_fonts.cover, g_pl_colors.title_normal, art_box_x, art_box_y, art_box_size, art_box_size, g_string_format.align_center);
+						grClip.DrawString('LOADING', g_pl_fonts.cover, this.is_playing() ? artist_color : g_pl_colors.title_normal, art_box_x, art_box_y, art_box_size, art_box_size, g_string_format.align_center);
 						cache_header = false;   // don't cache until artwork is loaded
 					}
 					else {// null
 						var is_radio = _.startsWith(this.metadb.RawPath, 'http') || _.startsWith(this.metadb.Path, 'spotify');
-						grClip.DrawString(isStreaming && is_radio ? 'LIVE\n ON AIR' : 'NO COVER', g_pl_fonts.cover,
-						(pref.whiteTheme || pref.creamTheme) && (pref.layout_mode === 'artwork_mode' || pref.layout_mode === 'compact_mode') && this.is_playing() ? RGB(255, 255, 255) :
-						g_pl_colors.title_normal, art_box_x, art_box_y, art_box_size, art_box_size, g_string_format.align_center);
+						grClip.DrawString(isStreaming && is_radio ? 'LIVE\n ON AIR' : 'NO COVER', g_pl_fonts.cover, this.is_playing() ? artist_color : g_pl_colors.title_normal, art_box_x, art_box_y, art_box_size, art_box_size, g_string_format.align_center);
 					}
 
 					grClip.DrawRect(art_box_x, art_box_y, art_box_w - 1, art_box_h - 1, 1, line_color);
@@ -4243,7 +4178,7 @@ class Header extends BaseHeader {
 					} else {
 						this.hyperlinks.artist.draw(grClip, artist_color);
 					}
-					//part1_cur_x += artist_w;
+					// part1_cur_x += artist_w;
 				}
 			}
 
@@ -4295,7 +4230,7 @@ class Header extends BaseHeader {
 				var info_w = this.w - info_x;
 
 				var genre_text_w = 0;
-				var extraGenreSpacing = 0; //is_4k ? 6 : 8;  // don't use scaleForDisplay due to font differences
+				var extraGenreSpacing = 0; // don't use scaleForDisplay due to font differences
 				var genreX = info_x;
 				if (!is_radio && this.grouping_handler.get_query_name() !== 'artist') {
 					if (!this.hyperlinks.genre0) {
@@ -4367,7 +4302,20 @@ class Header extends BaseHeader {
 				const date_query = pref.showPlaylistFulldate ? tf.date : tf.year;
 				const date_text = $(date_query, this.metadb);
 				var line_x2 = this.w - part2_right_pad - (date_text ? (is_4k ? 58 : 25) : scaleForDisplay(20));
-				var line_y = Math.round(this.h / 2) + (is_4k ? 10 : 6);
+				var line_y = Math.round(this.h / 2) + scaleForDisplay(6) +
+				// Y-corrections
+				(pref.font_size_playlist_header === 22  ? is_4k ? -4 : -1 :
+				 pref.font_size_playlist_header === 20  ? is_4k ? -5 :  0 :
+				 pref.font_size_playlist_header === 18  ? is_4k ? -5 : -1 :
+				 pref.font_size_playlist_header === 17  ? is_4k ? -4 :  1 :
+				 pref.font_size_playlist_header === 16  ? is_4k ? -3 : -1 :
+				 pref.font_size_playlist_header === 15  ? is_4k ? -4 :  0 :
+				 pref.font_size_playlist_header === 14 && is_4k ? -4 :
+				 pref.font_size_playlist_header === 13 && is_4k ? -3 :
+				 pref.font_size_playlist_header === 12 && is_4k ? -5 :
+				 pref.font_size_playlist_header === 10 && is_4k ? -2 :
+				 pref.font_size_playlist_header &&  !is_4k < 15 ? -1 :
+				 0);
 
 				if (line_x2 - line_x1 > 0) {
 					grClip.DrawLine(line_x1, line_y, line_x2, line_y, 1, line_color);
@@ -4421,8 +4369,8 @@ class Header extends BaseHeader {
 			artist_font = g_pl_fonts.artist_playing_compact;
 
 			const bg_color = col.primary;
-			const brightBackground = (new Color(bg_color).brightness) > 151;
-			const darkBackground = (new Color(bg_color).brightness) < 151;
+			const brightBackground = (new Color(bg_color).brightness) > 130;
+			const darkBackground = (new Color(bg_color).brightness) < 131;
 			if (brightBackground && (pref.whiteTheme || pref.blackTheme)) {
 				artist_color = rgb(0, 0, 0);
 				album_color = rgb(20, 20, 20);
@@ -4434,55 +4382,33 @@ class Header extends BaseHeader {
 				date_color = rgb(220, 220, 220);
 			}
 		}
-		/*
-		if (this.has_selected_items()) {
-			line_color = g_pl_colors.line_selected;
-			artist_color = album_color = date_color = g_pl_colors.group_title_selected;
-		}
-		*/
+
+		// if (this.has_selected_items()) {
+		// 	line_color = g_pl_colors.line_selected;
+		// 	artist_color = album_color = date_color = g_pl_colors.group_title_selected;
+		// }
+
 		var clipImg = gdi.CreateImage(this.w, this.h);
 		var grClip = clipImg.GetGraphics();
 
-		gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.background);
+		if (!pref.themeStyleBlend) gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.background);
 
 		//--->
-		grClip.FillSolidRect(0, 0, this.w, this.h, g_pl_colors.background); // Solid background for ClearTypeGridFit text rendering
+		if (!pref.themeStyleBlend) grClip.FillSolidRect(0, 0, this.w, this.h, g_pl_colors.background); // Solid background for ClearTypeGridFit text rendering
 		if (this.has_selected_items()) {
-			grClip.FillSolidRect(0, 0, this.w, this.h, g_pl_colors.row_selected);
+			if (!pref.rebornTheme || !pref.randomTheme) grClip.FillSolidRect(0, 0, this.w, this.h, g_pl_colors.row_selected);
 		}
 
 		if (this.is_playing()) {
-			grClip.FillSolidRect(0, 0, this.w, this.h,
-				pref.whiteTheme ? col.primary :
-				pref.blackTheme ? col.primary :
-				pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
-				pref.blueTheme ? RGB(10, 130, 220) :
-				pref.darkblueTheme ? RGB(24, 50, 82) :
-				pref.redTheme ? RGB(130, 25, 25) :
-				pref.creamTheme ? RGB(120, 170, 130) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(25, 25, 25) : ''
-			);
+			grClip.FillSolidRect(0, 0, this.w, this.h, g_pl_colors.header_compact_nowplaying_bg);
+			grClip.FillSolidRect(0, 0, pref.blackTheme || pref.creamTheme ? this.w : scaleForDisplay(8), this.h, g_pl_colors.header_compact_marker);
 		}
 
-		if (this.is_playing() && pref.whiteTheme) {
-			grClip.FillSolidRect(0, 0, scaleForDisplay(8), this.h, col.primary);
-		} else if (this.is_playing() && pref.blackTheme) {
-			grClip.FillSolidRect(0, 0, this.w, this.h, col.primary);
-		} else if (this.is_playing() && pref.rebornTheme) {
-			grClip.FillSolidRect(0, 0, scaleForDisplay(8), this.h, g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary);
-		} else if (this.is_playing() && pref.blueTheme) {
-			grClip.FillSolidRect(0, 0, scaleForDisplay(8), this.h, rgb(242, 230, 170));
-		} else if (this.is_playing() && pref.darkblueTheme) {
-			grClip.FillSolidRect(0, 0, scaleForDisplay(8), this.h, rgb(255, 202, 128));
-		} else if (this.is_playing() && pref.redTheme) {
-			grClip.FillSolidRect(0, 0, scaleForDisplay(8), this.h, rgb(245, 212, 165));
-		} else if (this.is_playing() && pref.creamTheme) {
-			grClip.FillSolidRect(0, 0, this.w, this.h, rgb(120, 170, 130));
-		} else if (this.is_playing() && (pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme)) {
-			grClip.FillSolidRect(0, 0, scaleForDisplay(8), this.h, g_pl_colors.artist_playing);
+		if (pref.themeStyleBlend) { // Need to change text rendering to AntiAliasGridFit
+			grClip.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
+		} else {
+			grClip.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 		}
-
-		grClip.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 
 		if (this.is_collapsed && this.is_focused()) {
 			grClip.DrawRect(-1, 0, this.w + 1, this.h - 1, 1, line_color);
@@ -4550,7 +4476,7 @@ class Header extends BaseHeader {
 				var album_text_format = g_string_format.v_align_center | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
 				grClip.DrawString(album_text, g_pl_fonts.album, album_color, album_x, 0, album_w, album_h, album_text_format);
 
-				//cur_x += gr.MeasureString(album_text, g_pl_fonts.album, 0, 0, 0, 0).Width;
+				// cur_x += gr.MeasureString(album_text, g_pl_fonts.album, 0, 0, 0, 0).Width;
 			}
 		}
 
@@ -4604,25 +4530,15 @@ class Header extends BaseHeader {
 	initialize_hyperlinks(gr) {
 		var right_edge = scaleForDisplay(20);
 		this.hyperlinks_initialized = true;
-		var date_font = g_pl_fonts.date;
+		var date_font = g_pl_fonts.artist_normal;
 		var artist_font = g_pl_fonts.artist_normal;
-
-		const date_query = pref.showPlaylistFulldate ? tf.date : tf.year;
-		const date_text = $(date_query, this.metadb);
-		if (date_text) {
-			var date_w = Math.ceil(gr.MeasureString(date_text, date_font, 0, 0, 0, 0).Width + 5);
-			var date_x = -date_w - right_edge + (is_4k ? 5 : 7);
-			var date_y = Math.floor((this.h / 2) - scaleForDisplay(16));
-
-			this.hyperlinks.date = new Hyperlink(date_text, date_font, 'date', date_x, date_y, this.w, true);
-		}
-
 		var left_pad = scaleForDisplay(10);
 		var art_box_x = 3 * scaleForDisplay(6);
 		var spacing = scaleForDisplay(2);
 		var art_box_size = this.art_max_size + spacing * 2;
 		var part_h = (!g_properties.show_group_info) ? this.h / 2 : this.h / 3;
 		left_pad += art_box_x + art_box_size;
+		this.hyperlinksMaxWidth = pref.showPlaylistFulldate ? this.w - scaleForDisplay(320) : this.w - scaleForDisplay(240); // Max allowed container width of hyperlinks = width - largest size of date_w
 
 		if (!_.startsWith(this.metadb.RawPath, 'http')) {
 			// don't create for radio
@@ -4630,14 +4546,29 @@ class Header extends BaseHeader {
 			if (artist_text) {
 				var artist_x = left_pad;
 
-				this.hyperlinks.artist = new Hyperlink(artist_text, artist_font, 'artist', artist_x, scaleForDisplay(5), this.w * 0.70, true);
+				this.hyperlinks.artist = new Hyperlink(artist_text, artist_font, 'artist', artist_x, scaleForDisplay(5), this.hyperlinksMaxWidth, true);
 			}
 		}
 
-		var album_y = part_h + (is_4k ? 5 : 4);
+		var album_y = part_h + (is_4k || is_QHD && pref.font_size_playlist_header === 17 ? 5 : 4);
 		var album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
 		if (album_text) {
-			this.hyperlinks.album = new Hyperlink(album_text, g_pl_fonts.album, 'album', left_pad, album_y, this.w * 0.60, true);
+			this.hyperlinks.album = new Hyperlink(album_text, g_pl_fonts.album, 'album', left_pad, album_y, this.hyperlinksMaxWidth, true);
+		}
+
+		const date_query = pref.showPlaylistFulldate ? tf.date : tf.year;
+		const date_text = $(date_query, this.metadb);
+		if (date_text) {
+			this.album_y = part_h - (is_4k ? 1 : 0) +
+			// Y-corrections
+			(is_4k && pref.font_size_playlist_header === 20 || is_4k && pref.font_size_playlist_header === 18 || is_4k && pref.font_size_playlist_header === 13 || is_4k && pref.font_size_playlist_header === 12 ? -1 : is_4k && pref.font_size_playlist_header === 16 ? 1 : 0) +
+			(!is_4k && pref.font_size_playlist_header < 15 ? 1 : 0) + (!is_4k && pref.font_size_playlist_header === 20 ? 2 : 0);
+
+			var date_w = Math.ceil(gr.MeasureString(date_text, date_font, 0, 0, 0, 0).Width + 5);
+			var date_x = -date_w - right_edge + (is_4k ? 5 : 7);
+			var date_y = this.album_y;
+
+			this.hyperlinks.date = new Hyperlink(date_text, date_font, 'date', date_x, date_y, this.w, true);
 		}
 
 		// Callback for tooltip
@@ -4726,6 +4657,10 @@ class Header extends BaseHeader {
 		return handled;
 	}
 
+	set_x(x) {
+		ListItem.prototype.set_x.apply(this, [x]);
+	}
+
 	set_y(y) {
 		ListItem.prototype.set_y.apply(this, [y]);
 
@@ -4761,10 +4696,7 @@ class Header extends BaseHeader {
 			const artist_text = $(this.grouping_handler.get_title_query(), this.metadb);
 			const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
 
-			if (this.artist_text_w > this.w * 0.70) {
-				tt.showDelayed(artist_text + "\n" + album_text);
-			}
-			else if (this.album_text_w > this.w * 0.60) {
+			if (this.artist_text_w > this.hyperlinksMaxWidth || this.album_text_w > this.hyperlinksMaxWidth) {
 				tt.showDelayed(artist_text + "\n" + album_text);
 			}
 
@@ -4919,71 +4851,49 @@ class Row extends ListItem {
 			pressed: 2
 		};
 
-		/** @type {number} */
-		this.hover_alpha = 0;
-
-		//private:
-		var that = this;
-
-		let alpha_timer = new _alpha_timer([this], function () {
-			clearInterval(that.rowHoverTimer);
-			that.rowHoverTimer = setInterval(() => {
-				return that.title_color = g_pl_colors.title_normal;
-			}, 1000 );
-		});
-
 		/**
 		 * @param {rowState} item
 		 */
-		function change_row_state(item) {
+		this.changeRowState = function(item) {
 			switch (item) {
 				case rowState.normal: {
-					that.title_color = g_pl_colors.title_normal;
+					this.title_color = g_pl_colors.title_normal;
 					break;
 				}
 				case rowState.hovered: {
-					that.title_color = g_pl_colors.title_hovered;
+					this.title_color = g_pl_colors.title_hovered;
 					break;
 				}
 				case rowState.pressed: {
-					that.title_color = g_pl_colors.title_selected;
+					this.title_color = g_pl_colors.title_selected;
 					break;
 				}
 			}
-			alpha_timer.start();
-			window.RepaintRect(playlist.x, playlist.y, playlist.w, playlist.h);
 		}
-
-		this.on_mouse_move = function (x, y, m) {
-			clearInterval(that.rowHoverTimer);
-			change_row_state(this.trace(x, y) ? rowState.hovered : rowState.normal);
-		};
 
 		this.trace = function (x, y) {
 			return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
+		};
+
+		this.on_mouse_move = function (x, y, m) {
+			this.changeRowState(this.trace(x, y) ? rowState.hovered : rowState.normal);
 		};
 	}
 
 	//public:
 	draw(gr) {
 		gr.SetSmoothingMode(SmoothingMode.None);
-		gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.background);
+		if (!pref.themeStyleBlend) gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.background);
 
 		if (this.is_odd && g_properties.alternate_row_color) {
 			gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.row_alternate);
 		}
 
-		if (pref.playlistRowHover) {
-			if (needs_rows_repaint) {
-				repaintPlaylistRows();
-				needs_rows_repaint = false;
-			}
-		} else {
-			this.title_color = g_pl_colors.title_normal;
-		}
 		var title_font = g_pl_fonts.title_normal;
 		var title_artist_font = g_pl_fonts.title_selected;
 		var title_artist_color = g_pl_colors.title_selected;
+
+		if (!pref.playlistRowHover) this.title_color = g_pl_colors.title_normal;
 
 		if (this.is_selected()) {
 			this.title_color = g_pl_colors.title_selected;
@@ -4993,87 +4903,40 @@ class Row extends ListItem {
 			if (g_properties.alternate_row_color) {
 				// last item is cropped
 				var rect_h = this.is_cropped ? this.h - 1 : this.h;
-				gr.DrawRect(this.x, this.y, this.w, rect_h, 1,
-					pref.whiteTheme || pref.blackTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.row_focus_selected :
-					pref.blueTheme ? RGB(10, 135, 230) :
-					pref.darkblueTheme ? RGB(27, 55, 90) :
-					pref.redTheme ? RGB(145, 25, 25) : ''
-				);
+				gr.DrawRect(this.x, this.y, this.w, rect_h, 1, g_pl_colors.row_selection_frame_cropped);
 			}
 			else {
-				if (!pref.rebornTheme)	gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.row_selected);
+				if (!pref.rebornTheme && !pref.randomTheme) gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.row_selected);
 			}
-			gr.DrawRect(this.x, this.is_playing ? this.y - 1 : this.y, this.w, this.h, 1,
-				pref.whiteTheme || pref.blackTheme || pref.rebornTheme || pref.creamTheme ? g_pl_colors.row_focus_selected :
-				pref.blueTheme ? RGB(10, 135, 230) :
-				pref.darkblueTheme ? RGB(27, 55, 90) :
-				pref.redTheme ? RGB(145, 25, 25) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(40, 40, 40) : ''
-			);
-			// Hide DrawRect gaps when all songs are completely selected and mask lines when selecting now playing
-			gr.DrawRect(this.x, this.is_playing ? this.y - 1 : this.y, scaleForDisplay(7), this.h, 1,
-				pref.whiteTheme || pref.blackTheme ? col.primary :
-				pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
-				pref.blueTheme ? RGB(242, 230, 170) :
-				pref.darkblueTheme ? RGB(255, 202, 128) :
-				pref.redTheme ? RGB(245, 212, 165) :
-				pref.creamTheme ? RGB(120, 170, 130) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : ''
-			);
-			gr.FillSolidRect(this.x, this.y, scaleForDisplay(8), this.h,
-				pref.whiteTheme || pref.blackTheme ? col.primary :
-				pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
-				pref.blueTheme ? RGB(242, 230, 170) :
-				pref.darkblueTheme ? RGB(255, 202, 128) :
-				pref.redTheme ? RGB(245, 212, 165) :
-				pref.creamTheme ? RGB(120, 170, 130) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : ''
-			);
+			if (!this.is_playing) { // Do not draw selection on now playing to prevent 1px overlapping
+				gr.DrawRect(this.x, this.is_playing ? this.y - 1 : this.y, this.w, this.h, 1, g_pl_colors.row_selection_frame);
+				// Hide DrawRect 1px gaps when all songs are completely selected
+				gr.DrawRect(this.x, this.is_playing ? this.y - 1 : this.y, scaleForDisplay(7), this.h, 1, g_pl_colors.row_sideMarker);
+				gr.FillSolidRect(this.x, this.y, scaleForDisplay(8), this.h, g_pl_colors.row_sideMarker);
+			}
 		}
 
 		if (this.is_playing) { // Might override 'selected' fonts
 			this.title_color = g_pl_colors.title_playing;
 			title_font = g_pl_fonts.title_playing;
 
-			const bg_color = pref.rebornTheme ? this.is_selected() + (g_pl_colors.background != RGB(255, 255, 255) ? col.darkMiddleAccent : col.primary) : this.is_selected() + col.primary;
+			const bg_color = g_pl_colors.row_nowplaying_bg;
 			gr.FillSolidRect(this.x, this.y, this.w, this.h, bg_color);
 			if (colorDistance(bg_color, title_artist_color) < 195) {
 				title_artist_color = this.title_color;
 			}
-			const brightBackground = (new Color(bg_color).brightness) > 151;
-			const darkBackground = (new Color(bg_color).brightness) < 151;
-			if (brightBackground && (pref.whiteTheme || pref.blackTheme)) {
+			const brightBackground = new Color(col.primary).brightness > 130;
+			const darkBackground = new Color(col.primary).brightness < 131;
+			if (brightBackground && (pref.whiteTheme && !pref.themeStyleBlackAndWhite && !pref.themeStyleBlackAndWhite2 || pref.blackTheme)) {
 				this.title_color = rgb(20, 20, 20);
 				title_artist_color = rgb(0, 0, 0);
 			}
-			if (darkBackground && pref.whiteTheme && pref.layout_mode === 'default_mode') {
-				this.title_color = rgb(240, 240, 240);
+			if (darkBackground && pref.whiteTheme && !pref.themeStyleBlackAndWhite && !pref.themeStyleBlackAndWhite2 && !isStreaming && pref.layout_mode === 'default_mode') {
+				this.title_color = !albumart ? rgb(20, 20, 20) : rgb(240, 240, 240);
 				title_artist_color = rgb(220, 220, 220);
 			}
-
-			if (pref.whiteTheme || pref.blackTheme) {
-				gr.FillSolidRect(this.x, this.y, scaleForDisplay(2), this.h, col.primary);
-			}
-			else if (pref.rebornTheme || pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) {
-				gr.FillSolidRect(this.x, this.y, this.w, this.h,
-					pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
-					pref.blueTheme ? RGB(242, 230, 170) :
-					pref.darkblueTheme ? RGB(255, 202, 128) :
-					pref.redTheme ? RGB(245, 212, 165) :
-					pref.creamTheme ? RGB(120, 170, 130) :
-					pref.nblueTheme ? RGB(0, 200, 255) :
-					pref.ngreenTheme ? RGB(0, 200, 0) :
-					pref.nredTheme ? RGB(229, 7, 44) :
-					pref.ngoldTheme ? RGB(254, 204, 3) : ''
-				);
-				gr.FillSolidRect(this.x + scaleForDisplay(8), this.y, this.w - scaleForDisplay(8), this.h,
-					pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.darkMiddleAccent : col.primary :
-					pref.blueTheme ? RGB(10, 130, 220) :
-					pref.darkblueTheme ? RGB(24, 50, 82) :
-					pref.redTheme ? RGB(130, 25, 25) :
-					pref.creamTheme ? RGB(120, 170, 130) :
-					pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(25, 25, 25) : ''
-				);
+			if (pref.whiteTheme && (pref.themeStyleBlackAndWhite || pref.themeStyleBlackAndWhite2) || !pref.whiteTheme && !pref.blackTheme && !pref.creamTheme) {
+				gr.FillSolidRect(this.x, this.y, scaleForDisplay(8), this.h, g_pl_colors.row_sideMarker);
 			}
 		}
 
@@ -5110,7 +4973,7 @@ class Row extends ListItem {
 				this.length_text = $('[%length%]', this.metadb);
 			}
 
-			var length_w = is_4k ? 80 : 50;
+			var length_w = scaleForDisplay(60);
 			if (this.length_text) {
 				var length_x = this.x + this.w - length_w - right_pad;
 
@@ -5142,8 +5005,13 @@ class Row extends ListItem {
 						this.count_text = $('[$max(%play_count%, %lastfm_play_count%)]', this.metadb);
 						this.count_text = !Number(this.count_text) ? '' : (this.count_text + ' |');
 					} else {
-						// don't want to show lastfm play count if track hasn't been played locally
-						this.count_text = '';
+						if (pref.lastFmScrobblesFallback) {
+							this.count_text = $('[$max(%lastfm_play_count%, %play_count%)]', this.metadb);
+							this.count_text = !Number(this.count_text) ? '' : (this.count_text + ' |');
+						} else {
+							// don't want to show lastfm play count if track hasn't been played locally
+							this.count_text = '';
+						}
 					}
 				}
 			}
@@ -5175,9 +5043,13 @@ class Row extends ListItem {
 				track_num_query = tf.vinyl_track;
 			}
 			if (this.is_playing) {
-				track_num_query = g_properties.show_header ? '      ' : '$if2(%tracknumber%,$pad_right(' + (this.idx_in_header + 1) + ',2,0)). ';
+				track_num_query = g_properties.show_header ? '      ' : '$if2(%tracknumber%,$pad_right(' + (this.idx_in_header + 1) + ',2,0)).';
 			}
-			var title_query = g_properties.show_header ? track_num_query + (pref.show_artist_playlistRow && pref.show_album_playlistRow ? '  %artist% - %album% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : pref.show_artist_playlistRow ? '  %artist% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : pref.show_album_playlistRow ? '  %album% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : '  %title%[ \'(\'%original artist%\' cover)\']') : '     %artist% - %album% - ' + track_num_query + ' %title%[ \'(\'%original artist%\' cover)\']';
+			var title_query = g_properties.show_header ? track_num_query +
+				(pref.show_artist_playlistRows && pref.show_album_playlistRows ? '  %artist% - %album% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' :
+				 pref.show_artist_playlistRows ? '  %artist% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' :
+				 pref.show_album_playlistRows  ? '  %album% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' :
+				 '  %title%[ \'(\'%original artist%\' cover)\']') : '     %artist% - %album% - ' + track_num_query + ' %title%[ \'(\'%original artist%\' cover)\']';
 			this.title_text = (fb.IsPlaying && this.is_playing && is_radio) ? $(title_query) : $(title_query, this.metadb);
 		}
 
@@ -5221,7 +5093,9 @@ class Row extends ListItem {
 			const title_artist_w = this.w - (title_artist_x - this.x) - right_pad;
 
 			const title_artist_text_format = g_string_format.v_align_center | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
-			//gr.DrawString(this.title_artist_text, title_artist_font, title_artist_color, title_artist_x, this.y, title_artist_w, this.h, title_artist_text_format);
+			if (pref.show_different_artist) {
+				gr.DrawString(this.title_artist_text, title_artist_font, this.title_color, title_artist_x, this.y, title_artist_w, this.h, title_artist_text_format);
+			}
 			cur_x += Math.ceil(
 				/** @type {!number} */
 				gr.MeasureString(this.title_artist_text, title_artist_font, 0, 0, title_artist_w, this.h, title_artist_text_format).Width
@@ -5252,6 +5126,12 @@ class Row extends ListItem {
 		}
 
 		this.title_color = g_pl_colors.title_normal;
+	};
+
+	/** @override */
+	set_x(x) {
+		ListItem.prototype.set_x.apply(this, [x]);
+		this.rating.x = x;
 	};
 
 	/** @override */
@@ -5322,7 +5202,7 @@ class Row extends ListItem {
 			if (pref.use_vinyl_nums) {
 				track_num_query_tt = tf.vinyl_track;
 			}
-			var title_query_tt = g_properties.show_header ? track_num_query_tt + (pref.show_artist_playlistRow && pref.show_album_playlistRow ? '  %artist% - %album% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : pref.show_artist_playlistRow ? '  %artist% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : pref.show_album_playlistRow ? '  %album% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : '  %title%[ \'(\'%original artist%\' cover)\']') : '     %artist% - %album% - ' + track_num_query_tt + ' %title%[ \'(\'%original artist%\' cover)\']';
+			var title_query_tt = g_properties.show_header ? track_num_query_tt + (pref.show_artist_playlistRows && pref.show_album_playlistRows ? '  %artist% - %album% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : pref.show_artist_playlistRows ? '  %artist% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : pref.show_album_playlistRows ? '  %album% - ' + ' %title%[ \'(\'%original artist%\' cover)\']' : '  %title%[ \'(\'%original artist%\' cover)\']') : '     %artist% - %album% - ' + track_num_query_tt + ' %title%[ \'(\'%original artist%\' cover)\']';
 			this.title_text_tt = (fb.IsPlaying && this.is_playing && is_radio) ? $(title_query_tt) : $(title_query_tt, this.metadb);
 
 			if (this.title_text_w > this.title_w) {
@@ -5357,7 +5237,7 @@ function Rating(x, y, max_w, h, metadb) {
 				gr.DrawString('\u2605', g_pl_fonts.rating_set, color, cur_rating_x, y, btn_w, this.h, g_string_format.align_center);
 			}
 			else {
-				//gr.DrawString('\u2219', g_pl_fonts.rating_not_set, color, cur_rating_x, y, btn_w, this.h, g_string_format.align_center);
+				// gr.DrawString('\u2219', g_pl_fonts.rating_not_set, color, cur_rating_x, y, btn_w, this.h, g_string_format.align_center);
 			}
 			cur_rating_x += btn_w;
 		}
@@ -6040,7 +5920,7 @@ function CollapseHandler(cnt_arg) {
 
 		if (g_properties.collapse_on_playlist_switch) {
 			if (g_properties.auto_collapse) {
-				this.collapse_all_but_now_playing()
+				this.collapse_all_but_now_playing();
 			}
 			else {
 				this.collapse_all();
@@ -6384,14 +6264,14 @@ function PlaylistManager(x, y, w, h) {
 		}
 
 		var cpm = window.CreatePopupMenu();
+		var pltools = window.CreatePopupMenu();
 		var autopl = window.CreatePopupMenu();
-
-		var playlist_count = plman.PlaylistCount;
-
-		cpm.AppendMenuItem(MF_STRING, 1, 'Playlist manager \tCtrl+M');
-		cpm.AppendMenuItem(MF_STRING, 2, 'Playlist search \tCtrl+F');
-		cpm.AppendMenuItem(MF_STRING, 3, 'Create new playlist \tCtrl+N');
-		autopl.AppendTo(cpm, MF_STRING, "Create new auto playlist");
+		pltools.AppendTo(cpm, MF_STRING, "Playlist tools");
+		pltools.AppendMenuItem(MF_STRING, 1, 'Playlist manager \tCtrl+M');
+		pltools.AppendMenuItem(MF_STRING, 2, 'Playlist search \tCtrl+F');
+		pltools.AppendMenuSeparator();
+		pltools.AppendMenuItem(MF_STRING, 3, 'Create new playlist \tCtrl+N');
+		autopl.AppendTo(pltools, MF_STRING, "Create new auto playlist");
 		autopl.AppendMenuItem(MF_STRING, 4, "Custom auto playlist");
 		autopl.AppendMenuSeparator();
 		autopl.AppendMenuItem(MF_STRING, 5, "Tracks from the library");
@@ -6410,13 +6290,18 @@ function PlaylistManager(x, y, w, h) {
 		autopl.AppendMenuItem(MF_STRING, 16, "Tracks rated 5 stars");
 		autopl.AppendMenuSeparator();
 		autopl.AppendMenuItem(MF_STRING, 17, "Loved tracks");
+		pltools.AppendMenuSeparator();
+		pltools.AppendMenuItem(MF_STRING, 18, 'Save playlist \tCtrl+S');
+		pltools.AppendMenuItem(MF_STRING, 19, 'Load playlist');
 		if (g_component_utils) {
-			cpm.AppendMenuSeparator();
-			cpm.AppendMenuItem(MF_STRING, 18, 'Lock current playlist');
-			cpm.CheckMenuItem(18, plman.IsPlaylistLocked(plman.ActivePlaylist));
+			pltools.AppendMenuSeparator();
+			pltools.AppendMenuItem(MF_STRING, 20, 'Lock current playlist');
+			pltools.CheckMenuItem(20, plman.IsPlaylistLocked(plman.ActivePlaylist));
 		}
 		cpm.AppendMenuSeparator();
-		var playlists_start_id = 19;
+
+		var playlist_count = plman.PlaylistCount;
+		var playlists_start_id = 21;
 		for (var i = 0; i < playlist_count; ++i) {
 			cpm.AppendMenuItem(MF_STRING, playlists_start_id + i, plman.GetPlaylistName(i).replace(/&/g, '&&') + ' [' + plman.PlaylistItemCount(i) + ']' /*+ (plman.IsAutoPlaylist(i) ? ' (Auto)' : '')*/ + (i === plman.PlayingPlaylist ? ' \t(Now Playing)' : ''));
 		}
@@ -6505,6 +6390,12 @@ function PlaylistManager(x, y, w, h) {
 				plman.ActivePlaylist = playlist_idx;
 				break;
 			case 18:
+				fb.RunMainMenuCommand('File/Save playlist...');
+				break;
+			case 19:
+				fb.RunMainMenuCommand('File/Load playlist...');
+				break;
+			case 20:
 				fb.RunMainMenuCommand('Edit/Read-only');
 				break;
 		}
@@ -6623,7 +6514,7 @@ function PlaylistManager(x, y, w, h) {
 
 		switch (panel_state) {
 			case state.normal: {
-				text_color = g_pl_colors.playlist_mgr_text_normal;
+				text_color = pref.themeStyleBlend && pref.autoHidePLM ? '' : g_pl_colors.playlist_mgr_text_normal;
 				bg_color = g_theme.colors.panel_front;
 				break;
 			}
@@ -6639,8 +6530,12 @@ function PlaylistManager(x, y, w, h) {
 			}
 		}
 
-		gr.FillSolidRect(x, y, w, h, bg_color); // Playlist Manager Hide Top Rows that shouldn't be visible
-		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+		if (!pref.themeStyleBlend) gr.FillSolidRect(x, y, w, h, bg_color); // Playlist Manager Hide Top Rows that shouldn't be visible
+		if (pref.themeStyleBlend) { // Need to change text rendering to AntiAliasGridFit
+			gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
+		} else {
+			gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+		}
 
 		var p = 10;
 		var right_pad = p;
@@ -6656,7 +6551,7 @@ function PlaylistManager(x, y, w, h) {
 			);
 			gr.DrawString(lock_text, g_pl_fonts.font_awesome, text_color, lock_x, y, lock_w, h, g_string_format.align_center);
 
-			//right_pad += lock_w;  // deactivated -> PLM text should be always centered
+			// right_pad += lock_w;  // deactivated -> PLM text should be always centered
 		}
 
 		var info_x = x + p;
@@ -6966,7 +6861,7 @@ function GroupingHandler() {
 			? [cur_group.group_query, cur_group.title_query]
 			: ['', '[%album artist%]'];
 
-		var htmlCode = qwr_utils.prepare_html_file(`${fb.ProfilePath}${g_theme.script_folder}js\\CaTRoX_QWR\\html\\MsgBox.html`);
+		var htmlCode = qwr_utils.prepare_html_file(`${fb.ProfilePath}${g_theme.script_folder}js\\playlist\\assets\\html\\MsgBox.html`);
 		utils.ShowHtmlDialog(window.ID, htmlCode, { width: 650, height: 425, data: ['Foobar2000: Group by', ['Grouping Query', 'Title Query'], parsed_query, on_ok_fn] });
 	}
 
@@ -6992,7 +6887,7 @@ function GroupingHandler() {
 			on_execute_callback_fn();
 		};
 
-		var htmlCode = qwr_utils.prepare_html_file(`${fb.ProfilePath}${g_theme.script_folder}js\\CaTRoX_QWR\\html\\GroupPresetsMngr.html`);
+		var htmlCode = qwr_utils.prepare_html_file(`${fb.ProfilePath}${g_theme.script_folder}js\\playlist\\assets\\html\\GroupPresetsMngr.html`);
 		utils.ShowHtmlDialog(window.ID, htmlCode, { width: 650, height: 425, data: [JSON.stringify([settings.group_presets, cur_group.name, settings.default_group_name]), on_ok_fn] });
 	}
 
@@ -7254,19 +7149,13 @@ Header.art_cache = new ArtImageCache(200);
 /** @type {PlaylistPanel} */
 let playlist;
 function initPlaylist() {
-	playlist = new PlaylistPanel(pref.layout_mode === 'default_mode' ? ww / 2 : 0, 0);
+	playlist = new PlaylistPanel(pref.layout_mode === 'default_mode' ? ww * 0.5 : 0, 0);
 	playlist.initialize();
 }
 
-// Call reinitialize(); only when needed
-var needs_reinit = false;
-function reinitPlaylist() {
-	needs_reinit = true;
-}
-
 // Repaint playlist rows when using playlist row hover
-var needs_rows_repaint = true;
 function repaintPlaylistRows() {
-	window.Repaint();
-	needs_rows_repaint = true;
+	setTimeout(() => {
+		window.Repaint();
+	}, 10);
 }

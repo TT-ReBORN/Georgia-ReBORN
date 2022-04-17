@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-if (typeof my_utilsBio === 'undefined') include(`${basePath}js\\Biography\\scripts\\utils.js`);
+if (typeof my_utilsBio === 'undefined') include(`${basePath}js\\biography\\scripts\\utils.js`);
 
 // const loadAsync = window.GetProperty('Load Biography Asynchronously', true);
 

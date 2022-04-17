@@ -167,45 +167,13 @@ class UserInterfaceBio {
 	}
 
 	draw(gr) {
-		if (this.style.bg) gr.FillSolidRect(this.x - pptBio.borL, this.y - scaleForDisplay(30), panelBio.w, panelBio.h + scaleForDisplay(30), this.col.bg)
-
-		if (albumart && pref.layout_mode !== 'compact_mode' || pref.layout_mode === 'artwork_mode' && !albumart) {
-			// Biography's top shadow
-			gr.FillGradRect(this.x - pptBio.borL, is_4k ? this.y - 70 : this.y - 36, this.w, is_4k ? 10 : 6, 90, RGBtoRGBA(col.shadow, 0),
-				pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
-				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
-				pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
-				pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
-				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 72) :
-				pref.redTheme ? RGBtoRGBA(col.shadow, 72) :
-				pref.creamTheme ? RGBtoRGBA(col.shadow, 24) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 120) : ''
-			);
-			// Biography's bottom shadow
-			gr.FillGradRect(this.x - pptBio.borL, is_4k ? this.y + (pref.blackTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? this. h : this.h + 1) : this.y + this.h - 1, this.w, scaleForDisplay(5), 90,
-				pref.whiteTheme ? RGBtoRGBA(col.shadow, 18) :
-				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
-				pref.rebornTheme ? RGBtoRGBA(col.shadow, 30) :
-				pref.blueTheme ? RGBtoRGBA(col.shadow, 26) :
-				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 74) :
-				pref.redTheme ? RGBtoRGBA(col.shadow, 74) :
-				pref.creamTheme ? RGBtoRGBA(col.shadow, 18) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 86) : '',
-				RGBtoRGBA(col.shadow, 0)
-			);
-		}
-		// Biography's left shadow
-		if (pref.layout_mode !== 'artwork_mode') {
-			gr.FillGradRect(ww / 2 - 4, this.y - scaleForDisplay(30), 4, this.h + scaleForDisplay(30), 0, RGBtoRGBA(col.shadow, 0),
-				pref.whiteTheme ? RGBtoRGBA(col.shadow, 24) :
-				pref.blackTheme ? RGBtoRGBA(col.shadow, 120) :
-				pref.rebornTheme ? RGBtoRGBA(col.shadow, 40) :
-				pref.blueTheme ? RGBtoRGBA(col.shadow, 38) :
-				pref.darkblueTheme ? RGBtoRGBA(col.shadow, 60) :
-				pref.redTheme ? RGBtoRGBA(col.shadow, 64) :
-				pref.creamTheme ? RGBtoRGBA(col.shadow, 28) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGBtoRGBA(col.shadow, 120) : ''
-			);
+		if (this.style.bg) gr.FillSolidRect(this.x - pptBio.borL, this.y - scaleForDisplay(30), panelBio.w, panelBio.h + scaleForDisplay(30), this.col.bg);
+		if (pref.themeStyleBlend && albumart) {
+			gr.FillSolidRect(0, 0, pref.layout_mode === 'artwork_mode' ? ww : ww * 0.5, geo.top_art_spacing, col.bg); // Hide alpha overlapping at the top
+			if (pref.layout_mode === 'artwork_mode') gr.FillSolidRect(0, this.y + this.h, ww, geo.lower_bar_h, col.bg); // Hide alpha overlapping at the bottom
+			if (UIHacks.Aero.Effect === 2) gr.DrawLine(0, 0, pref.layout_mode === 'artwork_mode' ? ww : ww * 0.5 - 1, 0, 1, col.bg); // UIHacks Aero Glass Shadow Frame Fix - Needed for theme style Blend
+			gr.DrawImage(blendedImg, pref.layout_mode === 'artwork_mode' ? 0 : this.x - pptBio.borL - this.w, pref.layout_mode === 'artwork_mode' ? this.h - panelBio.h : this.h - panelBio.h - geo.lower_bar_h,
+							 ww, wh, pref.layout_mode === 'artwork_mode' ? 0 : this.x - pptBio.borL - this.w, pref.layout_mode === 'artwork_mode' ? this.h - panelBio.h : this.h - panelBio.h - geo.lower_bar_h, blendedImg.Width, blendedImg.Height);
 		}
 	}
 
@@ -267,7 +235,7 @@ class UserInterfaceBio {
 			$Bio.trace('Spider Monkey Panel is unable to use your default font. Using Segoe UI at default size & style instead');
 		}
 		if (this.font.main.Size != pptBio.baseFontSizeBio) pptBio.zoomFont = 100;
-		//pptBio.baseFontSizeBio = this.font.headingBaseSize = this.font.main.Size;
+		// pptBio.baseFontSizeBio = this.font.headingBaseSize = this.font.main.Size;
 		pptBio.baseFontSizeBio = pptBio.baseFontSizeBio; this.font.headingBaseSize = pptBio.baseFontSizeBio;
 
 		this.font.zoomSize = Math.max(Math.round(pptBio.baseFontSizeBio * pptBio.zoomFont / 100), 1);
@@ -565,8 +533,6 @@ class UserInterfaceBio {
 
 		if (pptBio.showFilmStrip && pptBio.autoFilm) txt.getScrollPos();
 		if (pptBio.text_only && !uiBio.style.isBlur) txt.paint();
-
-		initBiographyColors();
 	}
 
 	setBrightness(c, percent) {

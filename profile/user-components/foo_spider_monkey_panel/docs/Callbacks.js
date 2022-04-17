@@ -174,6 +174,10 @@ function on_load_image_done(cookie, image, image_path) { }
  * multiple instances.<br>
  * Important: you should avoid sharing scripts containing this code so as not to conflict with what other users may already be using.
  *
+ * Deprecated: use {@link module:callbacks~on_main_menu_dynamic on_main_menu_dynamic} instead.
+ *
+ * @deprecated
+ * 
  * @param {number} index
  *
  * @example
@@ -189,6 +193,15 @@ function on_load_image_done(cookie, image, image_path) { }
  * }
  */
 function on_main_menu(index) { }
+
+/**
+ * Called whe one of the commands corresponding to this panel from `main menu`>`File`>`Spider Monkey Panel`>`Script commands` is executed.<br>
+ * <br>
+ * Related methods: {@link fb.RegisterMainMenuCommand}, {@link fb.UnregisterMainMenuCommand}
+ *
+ * @param {number} command_id Id of the associated command
+ */
+function on_main_menu_dynamic(command_id) { }
 
 /**
  * Called when metadb contents change.

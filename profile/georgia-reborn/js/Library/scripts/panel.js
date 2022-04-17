@@ -693,6 +693,8 @@ class Panel {
 			if (this.init) img.sizeDebounce();
 			else if (sbar.scroll > sbar.max_scroll) sbar.checkScroll(sbar.max_scroll);
 		}
+		initScrollbarState(); // Needed to immediately paint scrollbar on first panel visit if library scrollbar auto-hide is off
+		autoThumbnailSize();
 	}
 
 	searchPaint() {
@@ -720,7 +722,7 @@ class Panel {
 								ppt.treeListView = false;
 								ui.sbar.type = 1; // ui.sbar.type = 0;
 								ppt.sbarType = 1; // ppt.sbarType = 0;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library // ppt.sbarShow = 2;
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar // ppt.sbarShow = 2;
 								ppt.fullLineSelection = false;
 								ppt.highLightText = true;
 								ppt.rowStripes = false;
@@ -753,7 +755,7 @@ class Panel {
 								ppt.treeListView = false;
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false; // ppt.rowStripes = true;
@@ -787,7 +789,7 @@ class Panel {
 								ppt.treeListView = false;
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false; // ppt.rowStripes = true;
@@ -825,7 +827,7 @@ class Panel {
 								ppt.artId = 0;
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false; // ppt.rowStripes = true;
@@ -851,7 +853,7 @@ class Panel {
 								ppt.inlineRoot = true; // In default does not exist
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false; // ppt.rowStripes = true;
@@ -886,7 +888,7 @@ class Panel {
 								ppt.inlineRoot = true; // In default does not exist
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false; // ppt.rowStripes = true;
@@ -920,7 +922,7 @@ class Panel {
 								ppt.inlineRoot = true; // In default does not exist
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false; // ppt.rowStripes = true;
@@ -949,7 +951,7 @@ class Panel {
 								pref.libraryDesign = 'flowMode';
 								panel.imgView = ppt.albumArtShow = true;
 								pref.libraryLayout = ppt.albumArtShow ? 'full_width' : 'normal_width';
-								if (pref.player_small && ppt.thumbNailSize === 'auto') ppt.thumbNailSize = 1;
+								if (pref.player_HD_small && ppt.thumbNailSize === 'auto') ppt.thumbNailSize = 1;
 								ppt.highLightNowplaying = true; // In default does not exist
 								ppt.zoomNode = 100; // In default does not exist
 								ppt.countsRight = true;
@@ -979,7 +981,7 @@ class Panel {
 						// 	if (confirmed) {
 								pref.libraryDesign = 'reborn';
 								pref.libraryLayout = 'normal_width';
-								if (pref.player_small && ppt.thumbNailSize === 'auto') ppt.thumbNailSize = 1;
+								if (pref.player_HD_small && ppt.thumbNailSize === 'auto') ppt.thumbNailSize = 1;
 								ppt.highLightNowplaying = true;
 								ppt.zoomNode = 100;
 								ppt.countsRight = true;
@@ -990,7 +992,7 @@ class Panel {
 								ppt.treeListView = false;
 								ui.sbar.type = 1;
 								ppt.sbarType = 1;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.autoHideScrollbar_Library
+								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
 								ppt.fullLineSelection = true;
 								ppt.highLightText = false;
 								ppt.rowStripes = false;

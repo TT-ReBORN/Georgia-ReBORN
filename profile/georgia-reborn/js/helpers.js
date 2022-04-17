@@ -1,9 +1,36 @@
+/** @type {*} */
+const fso = new ActiveXObject('Scripting.FileSystemObject');
+
 function IsFile(filename) {
 	return utils.IsFile(filename);
 }
 
 function IsFolder(folder) {
 	return utils.IsDirectory(folder);
+}
+
+function _createFolder(folder, is_recursive) {
+	if (utils.IsDirectory(folder)) {
+		return;
+	}
+
+	if (is_recursive) {
+		let parent_path = fso.GetParentFolderName(folder);
+		if (!utils.IsDirectory(parent_path)) {
+			_createFolder(parent_path, true);
+		}
+	}
+
+	fso.CreateFolder(folder)
+}
+
+function _deleteFile(file) {
+	if (utils.IsFile(file)) {
+		try {
+			fso.DeleteFile(file);
+		} catch (e) {
+		}
+	}
 }
 
 /**
@@ -97,6 +124,7 @@ function getBlue(color) {
 function RGB(r, g, b) { return (0xff000000 | (r << 16) | (g << 8) | (b)); }
 function RGBA(r, g, b, a) { return ((a << 24) | (r << 16) | (g << 8) | (b)); }
 function RGBtoRGBA (rgb, a) { return a << 24 | (rgb & 0x00FFFFFF); }
+function toRGB(c) { return [c >> 16 & 0xff, c >> 8 & 0xff, c & 0xff]; }
 var rgb = RGB;
 var rgba = RGBA;
 
@@ -113,11 +141,112 @@ function colToRgb(c, showPrefix) {
 	}
 }
 
+function clamp(num, min, max) {
+	num = num <= max ? num : max;
+	num = num >= min ? num : min;
+	return num;
+}
+
 function calcBrightness(c) {
 	var r = getRed(c);
 	var g = getGreen(c);
 	var b = getBlue(c);
 	return Math.round(Math.sqrt( 0.299*r*r + 0.587*g*g + 0.114*b*b ));
+}
+
+function calcImageBrightness(image) {
+	try {
+		const colorSchemeArray = JSON.parse(image.GetColourSchemeJSON(15));
+		let rTot = 0;
+		let gTot = 0;
+		let bTot = 0;
+		let freqTot = 0;
+
+		colorSchemeArray.forEach(v => {
+			const col = toRGB(v.col);
+			rTot += col[0] ** 2 * v.freq;
+			gTot += col[1] ** 2 * v.freq;
+			bTot += col[2] ** 2 * v.freq;
+			freqTot += v.freq;
+		});
+
+		const avgCol =
+			Math.round([
+			clamp(Math.round(Math.sqrt(rTot / freqTot)), 0, 255) +
+			clamp(Math.round(Math.sqrt(gTot / freqTot)), 0, 255) +
+			clamp(Math.round(Math.sqrt(bTot / freqTot)), 0, 255)
+			] / 3);
+
+		if (settings.showThemeLog) console.log(`Image brightness:`, avgCol);
+		return avgCol;
+
+	} catch (e) {
+		console.log(`<Error: GetColourSchemeJSON failed.>`);
+	}
+}
+
+function FillGradEllipse(gr, x, y, w, h, angle, color1, color2, focus) {
+	let lw = scaleForDisplay(2);
+	// Mask
+	let maskImg = gdi.CreateImage(w + scaleForDisplay(1), h + scaleForDisplay(1));
+	let g = maskImg.GetGraphics();
+	g.FillSolidRect(0, 0, w, h, 0xffffffff);
+	g.SetSmoothingMode(SmoothingMode.AntiAlias);
+	g.FillEllipse(Math.floor(lw / 2), Math.floor(lw / 2), w - lw - scaleForDisplay(1), h - lw - scaleForDisplay(1), 0xff000000);
+	maskImg.ReleaseGraphics(g);
+
+	// Gradient ellipse
+	let gradEllipseImg = gdi.CreateImage(w + scaleForDisplay(1), h + scaleForDisplay(1));
+	g = gradEllipseImg.GetGraphics();
+	g.FillGradRect(Math.floor(lw / 2), Math.floor(lw / 2), w - lw - scaleForDisplay(1), h - lw - scaleForDisplay(1), angle, color1, color2, focus);
+	gradEllipseImg.ReleaseGraphics(g);
+
+	let mask = maskImg.Resize(w + scaleForDisplay(1), h + scaleForDisplay(1));
+	gradEllipseImg.ApplyMask(mask);
+
+	gr.DrawImage(gradEllipseImg, x, y, w - scaleForDisplay(1), h - scaleForDisplay(1), 0, 0, w, h, 0, 255);
+}
+
+function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1, color2, focus) {
+	// Mask
+	let maskImg = gdi.CreateImage(w + scaleForDisplay(1), h + scaleForDisplay(1));
+	let g = maskImg.GetGraphics();
+	g.FillSolidRect(0, 0, w, h, 0xffffffff);
+	g.SetSmoothingMode(SmoothingMode.AntiAlias);
+	g.FillRoundRect(0, 0, w - scaleForDisplay(1), h - scaleForDisplay(1), arc_width, arc_height, 0xff000000);
+	maskImg.ReleaseGraphics(g);
+
+	// Gradient rect
+	let gradRectImg = gdi.CreateImage(w + scaleForDisplay(1), h + scaleForDisplay(1));
+	g = gradRectImg.GetGraphics();
+	g.FillGradRect(0, 0, w - scaleForDisplay(1), h - scaleForDisplay(1), angle, color1, color2, focus);
+	gradRectImg.ReleaseGraphics(g);
+
+	let mask = maskImg.Resize(w + scaleForDisplay(1), h + scaleForDisplay(1));
+	gradRectImg.ApplyMask(mask);
+
+	gr.DrawImage(gradRectImg, x, y, w - scaleForDisplay(1), h - scaleForDisplay(1), 0, 0, w, h, 0, 255);
+}
+
+function FillBlendedRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, focus) {
+	// Mask
+	let maskImg = gdi.CreateImage(w + scaleForDisplay(1), h + scaleForDisplay(1));
+	let g = maskImg.GetGraphics();
+	g.FillSolidRect(0, 0, w, h, 0xffffffff);
+	g.SetSmoothingMode(SmoothingMode.AntiAlias);
+	g.FillRoundRect(0, 0, w - scaleForDisplay(1), h - scaleForDisplay(1), arc_width, arc_height, 0xff000000);
+	maskImg.ReleaseGraphics(g);
+
+	// Blended rect
+	let gradRectImg = gdi.CreateImage(w + scaleForDisplay(1), h + scaleForDisplay(1));
+	g = gradRectImg.GetGraphics();
+	g.DrawImage(blendedImg, 0, 0, w - scaleForDisplay(1), h - scaleForDisplay(1), 0, h, blendedImg.Width, blendedImg.Height);
+	gradRectImg.ReleaseGraphics(g);
+
+	let mask = maskImg.Resize(w + scaleForDisplay(1), h + scaleForDisplay(1));
+	gradRectImg.ApplyMask(mask);
+
+	gr.DrawImage(gradRectImg, x, y, w - scaleForDisplay(1), h - scaleForDisplay(1), 0, 0, w, h, 0, 255);
 }
 
 class ImageSize {
@@ -597,9 +726,10 @@ let initDPI = {
 	WshShell : new ActiveXObject('WScript.Shell')
 }
 
-function checkFor4k(w, h) {
-	if (pref.use_4k === 'always') {
+function checkForRes(w, h) {
+	if (pref.displayRes === '4k') {
 		is_4k = true;
+		is_QHD = false;
 		default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width',  2800);
 		default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height', 1720);
 		artwork_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved width',  1052);
@@ -607,17 +737,19 @@ function checkFor4k(w, h) {
 		compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width',   964);
 		compact_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved height', 1720);
 	}
-	else if (pref.use_4k === 'auto' && (initDPI.dpi() > 120 && w > 1920 && initDPI.dpi() > 120 && h > 1200 || initDPI.dpi() > 120 && h > 1200 && pref.layout_mode === 'artwork_mode' || initDPI.dpi() > 120 && h > 1440 && pref.layout_mode === 'compact_mode')) {
-		is_4k = true;
-		default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width',  2800);
-		default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height', 1720);
-		artwork_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved width',  1052);
-		artwork_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved height', 1372);
-		compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width',   964);
-		compact_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved height', 1720);
-	}
-	else {
+	else if (pref.displayRes === 'QHD') {
 		is_4k = false;
+		is_QHD = true;
+		default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width',  1280);
+		default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height',  800);
+		artwork_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved width',   640);
+		artwork_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved height',  800);
+		compact_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved width',   540);
+		compact_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Compact mode - Saved height',  800);
+	}
+	else if (pref.displayRes === 'HD') {
+		is_4k = false;
+		is_QHD = false;
 		default_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved width', 1140);
 		default_mode_saved_height = window.SetProperty('Georgia-ReBORN - System: Default mode - Saved height', 730);
 		artwork_mode_saved_width  = window.SetProperty('Georgia-ReBORN - System: Artwork mode - Saved width',  526);
@@ -631,6 +763,167 @@ function checkFor4k(w, h) {
 	}
 }
 
+function checkForPlayerSize() {
+	if (!is_4k && !is_QHD) {
+		if (pref.layout_mode === 'default_mode' && ww === 1140 && wh ===  730 || pref.layout_mode === 'artwork_mode' && ww ===  526 && wh ===  686 || pref.layout_mode === 'compact_mode' && ww ===  484 && wh ===  730) { pref.playerSize = 'small';  pref.player_HD_small   = true; } else { pref.player_HD_small   = false; }
+		if (pref.layout_mode === 'default_mode' && ww === 1600 && wh ===  960 || pref.layout_mode === 'artwork_mode' && ww ===  700 && wh ===  860 || pref.layout_mode === 'compact_mode' && ww ===  484 && wh ===  960) { pref.playerSize = 'normal'; pref.player_HD_normal  = true; } else { pref.player_HD_normal  = false; }
+		if (pref.layout_mode === 'default_mode' && ww === 1802 && wh === 1061 || pref.layout_mode === 'artwork_mode' && ww ===  901 && wh === 1062 || pref.layout_mode === 'compact_mode' && ww === 1600 && wh ===  960) { pref.playerSize = 'large';  pref.player_HD_large   = true; } else { pref.player_HD_large   = false; }
+	}
+	if (is_QHD) {
+		if (pref.layout_mode === 'default_mode' && ww === 1280 && wh ===  800 || pref.layout_mode === 'artwork_mode' && ww ===  640 && wh ===  800 || pref.layout_mode === 'compact_mode' && ww ===  540 && wh ===  800) { pref.playerSize = 'small';  pref.player_QHD_small  = true; } else { pref.player_QHD_small  = false; }
+		if (pref.layout_mode === 'default_mode' && ww === 1802 && wh === 1061 || pref.layout_mode === 'artwork_mode' && ww ===  901 && wh === 1061 || pref.layout_mode === 'compact_mode' && ww ===  540 && wh === 1061) { pref.playerSize = 'normal'; pref.player_QHD_normal = true; } else { pref.player_QHD_normal = false; }
+		if (pref.layout_mode === 'default_mode' && ww === 2280 && wh === 1300 || pref.layout_mode === 'artwork_mode' && ww === 1140 && wh === 1300 || pref.layout_mode === 'compact_mode' && ww === 2080 && wh === 1300) { pref.playerSize = 'large';  pref.player_QHD_large  = true; } else { pref.player_QHD_large  = false; }
+	}
+	if (is_4k) {
+		if (pref.layout_mode === 'default_mode' && ww === 2300 && wh === 1470 || pref.layout_mode === 'artwork_mode' && ww === 1052 && wh === 1372 || pref.layout_mode === 'compact_mode' && ww ===  964 && wh === 1470) { pref.playerSize = 'small';  pref.player_4k_small   = true; } else { pref.player_4k_small   = false; }
+		if (pref.layout_mode === 'default_mode' && ww === 2800 && wh === 1720 || pref.layout_mode === 'artwork_mode' && ww === 1400 && wh === 1720 || pref.layout_mode === 'compact_mode' && ww ===  964 && wh === 1720) { pref.playerSize = 'normal'; pref.player_4k_normal  = true; } else { pref.player_4k_normal  = false; }
+		if (pref.layout_mode === 'default_mode' && ww === 3400 && wh === 2020 || pref.layout_mode === 'artwork_mode' && ww === 1699 && wh === 2020 || pref.layout_mode === 'compact_mode' && ww === 2800 && wh === 1720) { pref.playerSize = 'large';  pref.player_4k_large   = true; } else { pref.player_4k_large   = false; }
+	}
+	if (!(pref.player_HD_small   || pref.player_HD_normal  || pref.player_HD_large  ||
+		  pref.player_QHD_small  || pref.player_QHD_normal || pref.player_QHD_large ||
+		  pref.player_4k_small   || pref.player_4k_normal  || pref.player_4k_large)) {
+		pref.playerSize = 'custom';
+	}
+}
+
+function autoDetectRes() {
+	set_window_size(1140, 730); // Reset player size for initialization
+
+	// Check for 4K
+	if (initDPI.dpi() > 120) {
+		set_window_size(2800, 1720); // Check if player size 'Normal' for 4k can be attained
+		if (ww > 2560 && wh > 1600) {
+			is_4k = true;
+			setSizesFor4KorHD();
+			pref.displayRes = '4k';
+			pref.player_4k_normal = 'player_4k_normal';
+			pref.player_QHD_small = false;
+			pref.player_HD_small  = false;
+		}
+		if (pref.layout_mode === 'default_mode') {
+			mode_handler.default_mode();
+		}
+		else if (pref.layout_mode === 'artwork_mode') {
+			mode_handler.artwork_mode();
+		}
+		else if (pref.layout_mode === 'compact_mode') {
+			mode_handler.compact_mode();
+		}
+	}
+	// Check for QHD
+	else if (ww < 2560 && wh < 1600) {
+		set_window_size(2500, 1400); // Check if this resolution for QHD can be attained
+		is_QHD = true;
+		setSizesForQHD();
+		pref.displayRes = 'QHD';
+		pref.player_4k_normal = false;
+		pref.player_QHD_small = 'player_QHD_small';
+		pref.player_HD_small  = false;
+		if (pref.layout_mode === 'default_mode') {
+			mode_handler.default_mode();
+		}
+		else if (pref.layout_mode === 'artwork_mode') {
+			mode_handler.artwork_mode();
+		}
+		else if (pref.layout_mode === 'compact_mode') {
+			mode_handler.compact_mode();
+		}
+	}
+	// Set to HD res
+	if (initDPI.dpi() < 120 && ww < 2500 && wh < 1400) {
+		is_4k = false;
+		is_QHD = false;
+		setSizesFor4KorHD();
+		pref.displayRes = 'HD';
+		pref.player_4k_small  = false;
+		pref.player_QHD_small = false;
+		pref.player_HD_small  = 'player_HD_small';
+		if (pref.layout_mode === 'default_mode') {
+			mode_handler.default_mode();
+		}
+		else if (pref.layout_mode === 'artwork_mode') {
+			mode_handler.artwork_mode();
+		}
+		else if (pref.layout_mode === 'compact_mode') {
+			mode_handler.compact_mode();
+		}
+	}
+
+	initPanels();
+}
+
+function setSizesFor4KorHD() {
+	is_QHD = false;
+
+	// Main
+	pref.menu_font_size = 12;
+	pref.artist_font_size_default = 18;
+	pref.artist_font_size_artwork = 16;
+	pref.artist_font_size_compact = 16;
+	pref.lower_bar_font_size_default = 18;
+	pref.lower_bar_font_size_artwork = 16;
+	pref.lower_bar_font_size_compact = 16;
+	pref.transport_buttons_size_default = 32;
+	pref.transport_buttons_size_artwork = 32;
+	pref.transport_buttons_size_compact = 32;
+
+	// Details
+	pref.album_font_size = 18;
+	pref.tracknum_font_size = 18;
+	pref.MetadataGrid_key_font_size = 17;
+	pref.MetadataGrid_val_font_size = 17;
+
+	// Playlist
+	pref.font_size_playlist_header = 15;
+	pref.font_size_playlist = 12;
+	g_properties.row_h = Math.round(pref.font_size_playlist * 1.667);
+
+	if (is_4k) {
+		ppt.baseFontSize = 24; // Library
+		pptBio.baseFontSizeBio = 24; // Biography
+	} else {
+		ppt.baseFontSize = 12; // Library
+		pptBio.baseFontSizeBio = 12; // Biography
+	}
+}
+
+function setSizesForQHD() {
+	is_4k = false;
+	is_QHD = true;
+	pref.player_4k_normal = false;
+	pref.player_QHD_small = 'player_QHD_small';
+	pref.player_HD_small  = false;
+
+	// Main
+	pref.menu_font_size = 14;
+	pref.artist_font_size_default = 20;
+	pref.artist_font_size_artwork = 18;
+	pref.artist_font_size_compact = 18;
+	pref.lower_bar_font_size_default = 20;
+	pref.lower_bar_font_size_artwork = 18;
+	pref.lower_bar_font_size_compact = 18;
+	pref.transport_buttons_size_default = 34;
+	pref.transport_buttons_size_artwork = 34;
+	pref.transport_buttons_size_compact = 34;
+
+	// Details
+	pref.album_font_size = 20;
+	pref.tracknum_font_size = 20;
+	pref.MetadataGrid_key_font_size = 19;
+	pref.MetadataGrid_val_font_size = 19;
+
+	// Playlist
+	pref.font_size_playlist_header = 17;
+	pref.font_size_playlist = 14;
+	g_properties.row_h = Math.round(pref.font_size_playlist * 1.667);
+
+	// Library
+	ppt.baseFontSize = 14;
+
+	// Biography
+	pptBio.baseFontSizeBio = 14;
+}
+
 /**
  * Scales the value based on 4k mode or not. TODO: Use _.scale() instead of is_4k.
  * @param {number} val
@@ -639,6 +932,801 @@ function checkFor4k(w, h) {
 function scaleForDisplay(val) {
 	return is_4k ? val * 2 : val;
 }
+
+
+// ================================================ LAYOUT MODE SWITCHER ====================================================== //
+
+var ui_switch = new function() {
+	const fso = new ActiveXObject('Scripting.FileSystemObject');
+	/**
+	* @constructor
+	*/
+	function StateObject(name_arg, states_list_arg, default_state_arg) {
+
+		// public:
+
+		Object.defineProperty(this, "state", {
+
+			/**
+			 * @return {string}
+			 */
+			get : function () {
+				return cur_state;
+			},
+
+			/**
+			 * @param {string} val
+			 */
+			set : function (val) {
+				cur_state = val;
+				write_state(val);
+			}
+		});
+
+		this.refresh = function() {
+			write_state(cur_state);
+		};
+
+		// private:
+		function initialize() {
+			cur_state = read_state(name);
+		}
+
+		function read_state() {
+			var pathToState = settings_path + '\\' + name.toUpperCase() + '_';
+
+			var state = null;
+			states_list.forEach(function(item,i) {
+				if (fso.FileExists(pathToState + i)) {
+					state = item;
+					return false;
+				}
+			});
+			if (state !== null) {
+				return state;
+			}
+
+			var default_idx = states_list.indexOf(default_state);
+			fso.CreateTextFile(pathToState + default_idx, true).Close();
+			return default_state;
+		}
+
+		function write_state(new_state) {
+			var pathToState = settings_path + '\\' + name.toUpperCase() + '_';
+
+			var index_new = states_list.indexOf(new_state);
+
+			if (index_new === -1) {
+				throw Error('Argument Error:\nUnknown state ' + new_state);
+			}
+
+			states_list.forEach(function(item,i) {
+				_deleteFile(pathToState + i);
+			});
+			if (!fso.FileExists(pathToState + index_new)) {
+				fso.CreateTextFile(pathToState + index_new, true).Close();
+			}
+
+			window.NotifyOthers(name + '_state', new_state);
+			refresh_ui();
+		}
+
+		// private:
+		var name = name_arg;
+		var default_state = default_state_arg;
+		var states_list = states_list_arg;
+
+		var cur_state;
+
+		initialize();
+	}
+
+	function refresh_ui() {
+		if (fb.IsPlaying) {
+			fb.RunMainMenuCommand('Playback/Play or Pause');
+			fb.RunMainMenuCommand('Playback/Play or Pause');
+		}
+		else {
+			fb.RunMainMenuCommand('Playback/Play');
+			fb.RunMainMenuCommand('Playback/Stop');
+		}
+	}
+
+	// private:
+	var settings_path = fb.ProfilePath + 'georgia-reborn\\settings\\';
+	_createFolder(settings_path, true);
+
+	/** @type {StateObject} */
+	this.layout_mode = new StateObject('layout_mode', ['default_mode', 'artwork_mode', 'compact_mode'], 'default_mode');
+	this.player_size = new StateObject('player_size', ['player_HD_small', 'player_HD_normal', 'player_HD_large', 'player_QHD_small', 'player_QHD_normal', 'player_QHD_large', 'player_4k_small', 'player_4k_normal', 'player_4k_large'], 'player_HD_small');
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var mode_handler = new LayoutModeHandler();
+
+function LayoutModeHandler() {
+
+	this.default_mode = function() {
+		var new_layout_mode_state = 'default_mode';
+		if (new_layout_mode_state === 'default_mode') {
+			if (UIHacks.FullScreen) {
+				UIHacks.FullScreen = false;
+			} else {
+				if (fb_handle) {
+					pref.default_mode_saved_width = fb_handle.Width;
+					pref.default_mode_saved_height = fb_handle.Height;
+				}
+			}
+			ui_switch.layout_mode.state = new_layout_mode_state;
+
+			if (pref.displayRes === '4k') {
+				pref.player_4k_normal   = 'player_4k_normal';
+				pref.player_QHD_small   = false;
+				pref.player_HD_small    = false;
+				UIHacks.MinSize.Width   = 2300;
+				UIHacks.MinSize.Height  = 1470;
+				UIHacks.MinSize.Enabled = true;
+				set_window_size(2800, 1720);
+			}
+			if (pref.displayRes === 'QHD') {
+				pref.player_4k_normal   = false;
+				pref.player_QHD_small   = 'player_QHD_small';
+				pref.player_HD_small    = false;
+				UIHacks.MinSize.Width   = 1280;
+				UIHacks.MinSize.Height  = 800;
+				UIHacks.MinSize.Enabled = true;
+				set_window_size(1280, 800);
+			}
+			if (pref.displayRes === 'HD') {
+				pref.player_4k_normal   = false;
+				pref.player_QHD_small   = false;
+				pref.player_HD_small    = 'player_HD_small';
+				UIHacks.MinSize.Width   = 1140;
+				UIHacks.MinSize.Height  = 730;
+				UIHacks.MinSize.Enabled = true;
+				set_window_size(1140, 730);
+			}
+		}
+	};
+
+	this.artwork_mode = function() {
+		var new_layout_mode_state = 'artwork_mode';
+		if (new_layout_mode_state === 'artwork_mode') {
+			if (UIHacks.FullScreen) {
+				UIHacks.FullScreen = false;
+			} else {
+				if (fb_handle) {
+					pref.artwork_mode_saved_width = fb_handle.Width;
+					pref.artwork_mode_saved_height = fb_handle.Height;
+				}
+			}
+			ui_switch.layout_mode.state = new_layout_mode_state;
+
+			if (pref.displayRes === '4k') {
+				pref.player_4k_small  = 'player_4k_small';
+				pref.player_QHD_small = false;
+				pref.player_HD_small  = false;
+				set_window_size(1052, 1372);
+			}
+			else if (pref.displayRes === 'QHD') {
+				pref.player_4k_normal = false;
+				pref.player_QHD_small = 'player_QHD_small';
+				pref.player_HD_small  = false;
+				set_window_size(640, 800);
+			}
+			else if (pref.displayRes === 'HD') {
+				pref.player_4k_normal = false;
+				pref.player_QHD_small = false;
+				pref.player_HD_small  = 'player_HD_small';
+				set_window_size(526, 686);
+			}
+		}
+	};
+
+	this.compact_mode = function() {
+		var new_layout_mode_state = 'compact_mode';
+		if (new_layout_mode_state === 'compact_mode') {
+			if (UIHacks.FullScreen) {
+				UIHacks.FullScreen = false;
+			} else {
+				if (fb_handle) {
+					pref.compact_mode_saved_width = fb_handle.Width;
+					pref.compact_mode_saved_height = fb_handle.Height;
+				}
+			}
+			ui_switch.layout_mode.state = new_layout_mode_state;
+
+			if (pref.displayRes === '4k') {
+				pref.player_4k_normal = 'player_4k_normal';
+				pref.player_QHD_small = false;
+				pref.player_HD_small  = false;
+				set_window_size(964, 1720);
+			}
+			else if (pref.displayRes === 'QHD') {
+				pref.player_4k_normal = false;
+				pref.player_QHD_small = 'player_QHD_small';
+				pref.player_HD_small  = false;
+				set_window_size(540, 800);
+			}
+			else if (pref.displayRes === 'HD') {
+				pref.player_4k_normal = false;
+				pref.player_QHD_small = false;
+				pref.player_HD_small  = 'player_HD_small';
+				set_window_size(484, 730);
+			}
+		}
+	};
+
+	this.player_size_HD_small = function() {
+		var new_player_size_state = 'player_HD_small';
+		if (new_player_size_state === 'player_HD_small') {
+			if (UIHacks.FullScreen) {
+				UIHacks.FullScreen = false;
+			} else {
+				if (fb_handle) {
+					pref.default_mode_saved_width = fb_handle.Width;
+					pref.default_mode_saved_height = fb_handle.Height;
+				}
+			}
+			ui_switch.player_size.state = new_player_size_state;
+			if (pref.layout_mode === 'default_mode') {
+				// set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
+				UIHacks.MinSize.Width   = 1140;
+				UIHacks.MinSize.Height  = 730;
+				UIHacks.MinSize.Enabled = true;
+			}
+		}
+		if (pref.layout_mode === 'default_mode') {
+			set_window_size(1140, 730);
+		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(526, 686);
+		}
+		if (pref.layout_mode === 'compact_mode') {
+			set_window_size(484, 730);
+		}
+	};
+
+	this.player_size_HD_normal = function() {
+		var new_player_size_state = 'player_HD_normal';
+		if (new_player_size_state === 'player_HD_normal') {
+			if (UIHacks.FullScreen) {
+				UIHacks.FullScreen = false;
+			} else {
+				if (fb_handle) {
+					pref.default_mode_saved_width = fb_handle.Width;
+					pref.default_mode_saved_height = fb_handle.Height;
+				}
+			}
+			ui_switch.player_size.state = new_player_size_state;
+			if (pref.layout_mode === 'default_mode') {
+				// set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
+				UIHacks.MinSize.Width   = 1600;
+				UIHacks.MinSize.Height  = 960;
+				UIHacks.MinSize.Enabled = true;
+			}
+		}
+		if (pref.layout_mode === 'default_mode') {
+			set_window_size(1600, 960);
+		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(700, 860);
+		}
+		if (pref.layout_mode === 'compact_mode') {
+			set_window_size(484, 960);
+		}
+	};
+
+	this.player_size_HD_large = function() {
+		var new_player_size_state = 'player_HD_large';
+		if (new_player_size_state === 'player_HD_large') {
+			if (UIHacks.FullScreen) {
+				UIHacks.FullScreen = false;
+			} else {
+				if (fb_handle) {
+					pref.default_mode_saved_width = fb_handle.Width;
+					pref.default_mode_saved_height = fb_handle.Height;
+				}
+			}
+			ui_switch.player_size.state = new_player_size_state;
+			if (pref.layout_mode === 'default_mode') {
+				// set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
+				UIHacks.MinSize.Width   = 1802;
+				UIHacks.MinSize.Height  = 1061;
+				UIHacks.MinSize.Enabled = true;
+			}
+		}
+		if (pref.layout_mode === 'default_mode') {
+			set_window_size(1802, 1061);
+		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(901, 1062);
+		}
+		if (pref.layout_mode === 'compact_mode') {
+			set_window_size(1600, 960);
+		}
+	};
+
+	this.player_size_QHD_small = function() {
+		var new_player_size_state = 'player_QHD_small';
+		if (new_player_size_state === 'player_QHD_small') {
+			if (UIHacks.FullScreen) {
+				UIHacks.FullScreen = false;
+			} else {
+				if (fb_handle) {
+					pref.default_mode_saved_width = fb_handle.Width;
+					pref.default_mode_saved_height = fb_handle.Height;
+				}
+			}
+			ui_switch.player_size.state = new_player_size_state;
+			if (pref.layout_mode === 'default_mode') {
+				// set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
+				UIHacks.MinSize.Width   = 1280;
+				UIHacks.MinSize.Height  = 800;
+				UIHacks.MinSize.Enabled = true;
+			}
+		}
+		if (pref.layout_mode === 'default_mode') {
+			set_window_size(1280, 800);
+		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(640, 800);
+		}
+		if (pref.layout_mode === 'compact_mode') {
+			set_window_size(540, 800);
+		}
+	};
+
+	this.player_size_QHD_normal = function() {
+		var new_player_size_state = 'player_QHD_normal';
+		if (new_player_size_state === 'player_QHD_normal') {
+			if (UIHacks.FullScreen) {
+				UIHacks.FullScreen = false;
+			} else {
+				if (fb_handle) {
+					pref.default_mode_saved_width = fb_handle.Width;
+					pref.default_mode_saved_height = fb_handle.Height;
+				}
+			}
+			ui_switch.player_size.state = new_player_size_state;
+			if (pref.layout_mode === 'default_mode') {
+				// set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
+				UIHacks.MinSize.Width   = 1802;
+				UIHacks.MinSize.Height  = 1061;
+				UIHacks.MinSize.Enabled = true;
+			}
+		}
+		if (pref.layout_mode === 'default_mode') {
+			set_window_size(1802, 1061);
+		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(901, 1061);
+		}
+		if (pref.layout_mode === 'compact_mode') {
+			set_window_size(540, 1061);
+		}
+	};
+
+	this.player_size_QHD_large = function() {
+		var new_player_size_state = 'player_QHD_large';
+		if (new_player_size_state === 'player_QHD_large') {
+			if (UIHacks.FullScreen) {
+				UIHacks.FullScreen = false;
+			} else {
+				if (fb_handle) {
+					pref.default_mode_saved_width = fb_handle.Width;
+					pref.default_mode_saved_height = fb_handle.Height;
+				}
+			}
+			ui_switch.player_size.state = new_player_size_state;
+			if (pref.layout_mode === 'default_mode') {
+				// set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
+				UIHacks.MinSize.Width   = 2100;
+				UIHacks.MinSize.Height  = 1300;
+				UIHacks.MinSize.Enabled = true;
+			}
+		}
+		if (pref.layout_mode === 'default_mode') {
+			set_window_size(2280, 1300);
+		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(1140, 1300);
+		}
+		if (pref.layout_mode === 'compact_mode') {
+			set_window_size(2080, 1300);
+		}
+	};
+
+	this.player_size_4k_small = function() {
+		var new_player_size_state = 'player_4k_small';
+		if (new_player_size_state === 'player_4k_small') {
+			if (UIHacks.FullScreen) {
+				UIHacks.FullScreen = false;
+			} else {
+				if (fb_handle) {
+					pref.default_mode_saved_width = fb_handle.Width;
+					pref.default_mode_saved_height = fb_handle.Height;
+				}
+			}
+			ui_switch.player_size.state = new_player_size_state;
+			if (pref.layout_mode === 'default_mode') {
+				// set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
+				UIHacks.MinSize.Width   = 2300;
+				UIHacks.MinSize.Height  = 1470;
+				UIHacks.MinSize.Enabled = true;
+			}
+		}
+		if (pref.layout_mode === 'default_mode') {
+			set_window_size(2300, 1470);
+		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(1052, 1372);
+		}
+		if (pref.layout_mode === 'compact_mode') {
+			set_window_size(964, 1470);
+		}
+	};
+
+	this.player_size_4k_normal = function() {
+		var new_player_size_state = 'player_4k_normal';
+		if (new_player_size_state === 'player_4k_normal') {
+			if (UIHacks.FullScreen) {
+				UIHacks.FullScreen = false;
+			} else {
+				if (fb_handle) {
+					pref.default_mode_saved_width = fb_handle.Width;
+					pref.default_mode_saved_height = fb_handle.Height;
+				}
+			}
+			ui_switch.player_size.state = new_player_size_state;
+			if (pref.layout_mode === 'default_mode') {
+				// set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
+				UIHacks.MinSize.Width   = 2800;
+				UIHacks.MinSize.Height  = 1720;
+				UIHacks.MinSize.Enabled = true;
+			}
+		}
+		if (pref.layout_mode === 'default_mode') {
+			set_window_size(2800, 1720);
+		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(1400, 1720);
+		}
+		if (pref.layout_mode === 'compact_mode') {
+			set_window_size(964, 1720);
+		}
+	};
+
+	this.player_size_4k_large = function() {
+		var new_player_size_state = 'player_4k_large';
+		if (new_player_size_state === 'player_4k_large') {
+			if (UIHacks.FullScreen) {
+				UIHacks.FullScreen = false;
+			} else {
+				if (fb_handle) {
+					pref.default_mode_saved_width = fb_handle.Width;
+					pref.default_mode_saved_height = fb_handle.Height;
+				}
+			}
+			ui_switch.player_size.state = new_player_size_state;
+			if (pref.layout_mode === 'default_mode') {
+				// set_window_size(pref.default_mode_saved_width, pref.default_mode_saved_height);
+				UIHacks.MinSize.Width   = 3400;
+				UIHacks.MinSize.Height  = 2020;
+				UIHacks.MinSize.Enabled = true;
+			}
+		}
+		if (pref.layout_mode === 'default_mode') {
+			set_window_size(3400, 2020);
+		}
+		if (pref.layout_mode === 'artwork_mode') {
+			set_window_size(1699, 2020);
+		}
+		if (pref.layout_mode === 'compact_mode') {
+			set_window_size(2800, 1720);
+		}
+	};
+
+	this.set_window_size_limits_for_mode = function(layoutmode) {
+		var min_w_4k  = 0, max_w_4k  = 0, min_h_4k  = 0, max_h_4k  = 0,
+			min_w_QHD = 0, max_w_QHD = 0, min_h_QHD = 0, max_h_QHD = 0,
+			min_w_HD  = 0, max_w_HD  = 0, min_h_HD  = 0, max_h_HD  = 0;
+		if (layoutmode === 'default_mode') {
+			if (is_4k) {
+				min_w_4k = 2300;
+				min_h_4k = 1470;
+			} else if (is_QHD) {
+				min_w_QHD = 1280;
+				min_h_QHD = 800;
+			} else if (!is_4k && !is_QHD) {
+				min_w_HD = 1140;
+				min_h_HD = 730;
+			}
+		} else if (layoutmode === 'artwork_mode') {
+			if (is_4k) {
+				min_w_4k = 1052;
+				min_h_4k = 1372;
+			} else if (is_QHD) {
+				min_w_QHD = 640;
+				min_h_QHD = 800;
+			} else if (!is_4k && !is_QHD) {
+				min_w_HD = 526;
+				min_h_HD = 686;
+			}
+		} else if (layoutmode === 'compact_mode') {
+			if (is_4k) {
+				min_w_4k = 964;
+				min_h_4k = 1470;
+			} else if (is_QHD) {
+				min_w_QHD = 540;
+				min_h_QHD = 800;
+			} else if (!is_4k && !is_QHD) {
+				min_w_HD = 484;
+				min_h_HD = 730;
+			}
+		}
+		set_window_size_limits(min_w_4k, max_w_4k, min_h_4k, max_h_4k, min_w_QHD, max_w_QHD, min_h_QHD, max_h_QHD, min_w_HD, max_w_HD, min_h_HD, max_h_HD);
+	};
+
+	this.fix_window_size = function() {
+
+		if (fb_handle) {
+			var last_w = fb_handle.Width;
+			var last_h = fb_handle.Height;
+		} else {
+			var was_first_launch = pref.is_first_launch;
+		}
+
+		// Setup Georgia-ReBORN theme defaults on first startup or theme reset
+		if (pref.is_first_launch) { // TODO: Once SMP has implemented Panel Properties 'Clear' callback, replace it
+			// Themes
+			pref.theme = 'white';
+			pref.whiteTheme = true;
+			pref.blackTheme = false;
+			pref.rebornTheme = false;
+			pref.randomTheme = false;
+			pref.blueTheme = false;
+			pref.darkblueTheme = false;
+			pref.redTheme = false;
+			pref.creamTheme = false;
+			pref.nblueTheme = false;
+			pref.ngreenTheme = false;
+			pref.nredTheme = false;
+			pref.ngoldTheme = false;
+			// Theme style
+			pref.themeStyleDefault = true;
+			pref.themeStyleBevel = false;
+			pref.themeStyleBlend = false;
+			pref.themeStyleBlend2 = false;
+			pref.themeStyleGradient = false;
+			pref.themeStyleGradient2 = false;
+			pref.themeStyleAlternative = false;
+			pref.themeStyleAlternative2 = false;
+			pref.themeStyleBlackAndWhite = false;
+			pref.themeStyleBlackAndWhite2 = false;
+			pref.themeStyleBlackAndWhiteReborn = false;
+			pref.themeStyleBlackReborn = false;
+			pref.themeStyleRebornWhite = false;
+			pref.themeStyleRebornBlack = false;
+			pref.themeStyleRandomPastel = false;
+			pref.themeStyleRandomDark = false;
+			pref.themeStyleRandomAutoColor = 'off';
+			pref.themeStyleTopMenuButtons = 'default';
+			pref.themeStyleTransportButtons = 'default';
+			pref.themeStyleProgressBarRounded = false;
+			pref.themeStyleProgressBar = 'default';
+			pref.themeStyleProgressBarFill = 'default';
+			pref.themeStyleVolumeBarRounded = false;
+			pref.themeStyleVolumeBar = 'default';
+			pref.themeStyleVolumeBarFill = 'default';
+			// Player size
+			pref.playerSize = 'small';
+			pref.player_4k_normal = false;
+			pref.player_4k_large = false;
+			pref.player_QHD_normal = false;
+			pref.player_QHD_large = false;
+			pref.player_HD_normal = false;
+			pref.player_HD_large = false;
+			// Layout
+			pref.layout_mode = 'default_mode';
+			// Brightness
+			pref.themeBrightness = 'default';
+			// Player controls
+			pref.playlistAutoHideScrollbar = true;
+			pref.smoothScrolling = true;
+			pref.playlistWheelScrollSteps = 2;
+			pref.playlistWheelScrollDuration = 30;
+			pref.libraryAutoHideScrollbar = true;
+			pref.biographyAutoHideScrollbar = true;
+			pref.autoHideVolumeBar = true;
+			pref.transport_buttons_size_default = 32;
+			pref.transport_buttons_spacing_default = 5;
+			pref.transport_buttons_size_artwork = 32;
+			pref.transport_buttons_spacing_artwork = 5;
+			pref.transport_buttons_size_compact = 32;
+			pref.transport_buttons_spacing_compact = 5;
+			pref.show_progressBar_default = true;
+			pref.show_progressBar_artwork = true;
+			pref.show_progressBar_compact = true;
+			pref.show_playbackTime_default = true;
+			pref.show_playbackTime_artwork = true;
+			pref.show_playbackTime_compact = true;
+			pref.show_artist_default = true;
+			pref.show_artist_artwork = true;
+			pref.show_artist_compact = true;
+			pref.show_title_default = true;
+			pref.show_title_artwork = true;
+			pref.show_title_compact = true;
+			pref.show_composer = false;
+			pref.show_flags_lowerbar = true;
+			pref.show_pause = true;
+			pref.show_logo = true;
+			pref.show_coloredGap_albumart = true;
+			pref.show_tt = false;
+			pref.show_truncatedText_tt = true;
+			pref.show_timeline_tooltips = true;
+			pref.cycleArt = false;
+			pref.cycleArtMWheel = true;
+			pref.freq_update = true;
+			// Playlist
+			pref.autoHidePLM = true;
+			pref.showPLM_default = true;
+			pref.showPLM_artwork = false;
+			pref.showPLM_compact = false;
+			pref.showPlaylistFulldate = false;
+			pref.hyperlinks_ctrl = false;
+			pref.show_weblinks = true;
+			pref.show_different_artist = false;
+			pref.show_artist_playlistRows = false;
+			pref.show_album_playlistRows = false;
+			pref.playlistTimeRemaining = false;
+			pref.lastFmScrobblesFallback = true;
+			pref.startPlaylist = true;
+			pref.use_vinyl_nums = true;
+			pref.always_showPlayingPl = false;
+			pref.playlistRowHover = true;
+			// Details
+			pref.show_artistInGrid = false;
+			pref.show_titleInGrid = false;
+			pref.show_flags_details = true;
+			pref.no_cdartBG = true;
+			pref.labelArtOnBg = false;
+			pref.invertedBand = false;
+			pref.invertedLabel = false;
+			pref.display_cdart = true;
+			pref.noDiscArtStub = true;
+			pref.cdArtWhiteStub = false;
+			pref.cdArtBlackStub = false;
+			pref.cdArtBlankStub = false;
+			pref.cdArtTransStub = false;
+			pref.vinylArtWhiteStub = false;
+			pref.vinylArtVoidStub = false;
+			pref.vinylArtColdFusionStub = false;
+			pref.vinylArtRingOfFireStub = false;
+			pref.vinylArtMapleStub = false;
+			pref.vinylArtBlackStub = false;
+			pref.vinylArtBlackHoleStub = false;
+			pref.vinylArtEbonyStub = false;
+			pref.vinylArtTransStub = false;
+			pref.cdart_ontop = false;
+			pref.filterCdJpgsFromAlbumArt = false;
+			pref.spinCdart = false;
+			pref.spinCdArtImageCount = 60;
+			pref.spinCdArtRedrawInterval = 75;
+			pref.rotate_cdart = true;
+			pref.rotation_amt = 3;
+			pref.art_rotate_delay = 30;
+			// Library
+			pref.libraryDesign = 'reborn';
+			pref.libraryLayout = 'normal_width';
+			pref.libraryThumbnailSize = 'auto';
+			pref.showTrackCount = true;
+			pref.libraryPlaylistSwitch = false;
+			pref.always_showPlayingLib = false;
+			pref.libraryRowHover = true;
+			// Biography
+			pref.biographyTheme = 0;
+			pref.biographyDisplay = 'Image+text';
+			// Lyrics
+			pref.albumArtLyrics = true;
+			pref.lyricsRememberDisplay = false;
+			pref.lyrics_normal_color = 'RGBA(255, 255, 255, 255);';
+			pref.lyrics_focus_color = 'RGBA(255, 241, 150, 255);';
+			pref.displayLyrics = false;
+			// Settings
+			pref.devTools = false;
+			// Misc
+			pref.switchPlaybackTime = false;
+			pref.playbackOrder = 'Default';
+			// Playlist properties
+			g_properties.list_left_pad = 0;
+			g_properties.list_top_pad = 0;
+			g_properties.list_right_pad = 0;
+			g_properties.list_bottom_pad = 15;
+			g_properties.show_scrollbar = true;
+			g_properties.scrollbar_right_pad = 0;
+			g_properties.scrollbar_top_pad = 0;
+			g_properties.scrollbar_bottom_pad = 3;
+			g_properties.scrollbar_w = '';
+			g_properties.row_h = 20;
+			g_properties.scroll_pos = 0;
+			g_properties.wheel_scroll_page = false;
+			g_properties.rows_in_header = 4;
+			g_properties.rows_in_compact_header = 3;
+			g_properties.show_playlist_info = true;
+			g_properties.show_header = true;
+			g_properties.use_compact_header = g_is_mini_panel;
+			g_properties.show_album_art = true;
+			g_properties.auto_album_art = false;
+			g_properties.show_group_info = true;
+			g_properties.show_disc_header = true;
+			g_properties.alternate_row_color = false;
+			g_properties.show_playcount = g_component_playcount;
+			g_properties.show_rating = g_component_playcount && !g_is_mini_panel;
+			g_properties.use_rating_from_tags = false;
+			g_properties.show_queue_position = true;
+			g_properties.auto_collapse = g_is_mini_panel;
+			g_properties.collapse_on_playlist_switch = false;
+			g_properties.collapse_on_start = false;
+			g_properties.playlist_group_data = '';
+			g_properties.playlist_custom_group_data = '';
+			g_properties.default_group_name = '';
+			g_properties.group_presets = '';
+
+			// Init auto resolution check and player size on first launch
+			autoDetectRes();
+			on_init();
+			initTheme();
+			pref.is_first_launch = false;
+		}
+
+		// Workaround for messed up settings file or properties
+		this.set_window_size_limits_for_mode(ui_switch.layout_mode.state);
+
+		if (fb_handle) {
+			return last_w !== fb_handle.Width || last_h !== fb_handle.Height;
+		} else {
+			return was_first_launch;
+		}
+	};
+
+	var fb_handle = undefined;
+}
+
+function set_window_size(width, height) {
+	// To avoid resizing bugs, when the window is bigger\smaller than the saved one.
+	UIHacks.MinSize.Enabled = false;
+	UIHacks.MaxSize.Enabled = false;
+	UIHacks.MinSize.Width   = width;
+	UIHacks.MinSize.Height  = height;
+	UIHacks.MaxSize.Width   = width;
+	UIHacks.MaxSize.Height  = height;
+
+	UIHacks.MaxSize.Enabled = true;
+	UIHacks.MaxSize.Enabled = false;
+	UIHacks.MinSize.Enabled = true;
+	UIHacks.MinSize.Enabled = false;
+
+	window.NotifyOthers('layout_mode_state_size', ui_switch.layout_mode.state);
+}
+
+function set_window_size_limits(min_w_4k, max_w_4k, min_h_4k, max_h_4k, min_w_QHD, max_w_QHD, min_h_QHD, max_h_QHD, min_w_HD, max_w_HD, min_h_HD, max_h_HD) {
+	UIHacks.MinSize.Enabled = !!min_w_4k || !!min_w_QHD || !!min_w_HD;
+	UIHacks.MinSize.Width   =   min_w_4k ||   min_w_QHD ||   min_w_HD;
+
+	UIHacks.MaxSize.Enabled = !!max_w_4k || !!max_w_QHD || !!max_w_HD;
+	UIHacks.MaxSize.Width   =   max_w_4k ||   max_w_QHD ||   max_w_HD;
+
+	UIHacks.MinSize.Enabled = !!min_h_4k || !!min_h_QHD || !!min_h_HD;
+	UIHacks.MinSize.Height  =   min_h_4k ||   min_h_QHD ||   min_h_HD;
+
+	UIHacks.MaxSize.Enabled = !!max_h_4k || !!max_h_QHD || !!max_h_HD;
+	UIHacks.MaxSize.Height  =   max_h_4k ||   max_h_QHD ||   max_h_HD;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 const countryCodes = {
 	'US': 'United States',

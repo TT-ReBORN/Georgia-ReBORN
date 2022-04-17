@@ -27,7 +27,7 @@ g_properties.add_properties(
 // Fixup properties
 (function() {
     g_properties.row_h = Math.max(10, g_properties.row_h);
-    checkFor4k(window.Width, window.Height);
+    checkForRes(window.Width, window.Height);
 })();
 
 /**
@@ -114,7 +114,7 @@ class List {
          * @function
          */
         this.throttled_repaint = _.throttle(() => {
-            window.RepaintRect(this.x, this.y, this.w, this.h);
+            window.RepaintRect(this.x - 1, playlist.y, this.w + 1, playlist.h);
         }, 1000 / 60);
     }
 
@@ -138,10 +138,10 @@ class List {
 
         if (this.is_scrollbar_available) {
             if (!this.scrollbar.is_scrolled_up) {
-                gr.FillGradRect(this.list_x, this.list_y - 1, this.list_w, 7 + 1, 270, RGBtoRGBA(g_theme.colors.panel_back, 0), RGBtoRGBA(this.panel_back_color, 200));
+                gr.FillGradRect(this.list_x, this.list_y - 1, this.list_w, 7 + 1, 270, 0, RGBtoRGBA(this.panel_back_color, 200));
             }
             if (!this.scrollbar.is_scrolled_down) {
-                gr.FillGradRect(this.list_x, this.list_y + this.list_h - 8, this.list_w, 7 + 1, 90, RGBtoRGBA(g_theme.colors.panel_back, 0), RGBtoRGBA(this.panel_back_color, 200));
+                gr.FillGradRect(this.list_x, this.list_y + this.list_h - 8, this.list_w, 7 + 1, 90, 0, RGBtoRGBA(this.panel_back_color, 200));
             }
         }
 
@@ -166,7 +166,7 @@ class List {
             this.on_w_size(w);
         }
 
-        if (pref.rebornTheme || !pref.autoHideScrollbar_Playlist) { // Called from initTheme(); or playlistScrollBarMenu -> Auto-hide
+        if (pref.rebornTheme || pref.randomTheme || this.is_scrollbar_visible) { // Called from initTheme(); or playerControlsScrollbarPlaylistMenu -> Auto-hide
             this.initialize_scrollbar();
             this.update_scrollbar();
             this.repaint();
@@ -187,40 +187,16 @@ class List {
                 return true;
             }
         }
-
-        // ---> Automatic Scrollbar Hide & Scrollbar Hit Area
-        if (pref.autoHideScrollbar_Playlist) {
-            const trace_pad = 2;
-            const scrollbar_hitarea_x = this.x + this.w - playlist_geo.scrollbar_w - playlist_geo.scrollbar_right_pad;
-            const scrollbar_hitarea_h = this.h;
-            const scrollbar_hitarea_w = scaleForDisplay(10);
-            const scrollbar_hitarea_y = 0;
-
-            const scrollbar_repaint_w = this.h / 2;
-            const scrollbar_repaint_h = this.h;
-            const scrollbar_repaint_x = this.x + this.w - scrollbar_repaint_w + scaleForDisplay(2);
-            const scrollbar_repaint_y = this.y + playlist_geo.scrollbar_top_pad;
-
-            let inScrollArea = '';
-
-            if ((scrollbar_hitarea_x - scaleForDisplay(20) * trace_pad <= x) && (x <= scrollbar_hitarea_x - scaleForDisplay(20) + scrollbar_hitarea_w + trace_pad) &&
-                (scrollbar_hitarea_y + (is_4k ? 120 : 60) <= y) && (y <= scrollbar_hitarea_y + scrollbar_hitarea_h + (is_4k ? 60 : 20))) {
+        // ---> Automatic Scrollbar Hide
+        if (pref.playlistAutoHideScrollbar) {
+            if (this.scrollbar.trace(x, y)) {
                 g_properties.show_scrollbar = true;
-                if (!inScrollArea) {
-                    inScrollArea = true;
-                    this.update_scrollbar();
-                    window.RepaintRect(scrollbar_repaint_x, scrollbar_repaint_y, scrollbar_repaint_w, scrollbar_repaint_h);
-                } else { inScrollArea = false; }
-
-            } else if ((scrollbar_hitarea_x - scaleForDisplay(30) * trace_pad <= x) && (x <= scrollbar_hitarea_x - scaleForDisplay(30) + scrollbar_hitarea_w + trace_pad) &&
-                       (scrollbar_hitarea_y + (is_4k ? 80 : 40) <= y) && (y <= scrollbar_hitarea_y + scrollbar_hitarea_h + (is_4k ? 120 : 80)) || !this.mouse_in) {
+                this.update_scrollbar();
+                window.RepaintRect(this.x, this.y, this.w, this.h);
+            } else if (!this.mouse_in || !this.scrollbar.trace(x, y)) {
                 g_properties.show_scrollbar = false;
-
-                if (!inScrollArea) {
-                    inScrollArea = true;
-                    this.update_scrollbar();
-                    window.RepaintRect(scrollbar_repaint_x, scrollbar_repaint_y, scrollbar_repaint_w, scrollbar_repaint_h);
-                } else { inScrollArea = false; }
+                this.update_scrollbar();
+                window.RepaintRect(this.x, this.y, this.w, this.h);
             }
         }
 
@@ -361,26 +337,11 @@ class List {
     }
 
     append_scrollbar_visibility_context_menu_to(parent_menu) {
-        parent_menu.append_item(
-            'Show scrollbar',
-            () => {
-                //g_properties.show_scrollbar = !g_properties.show_scrollbar;
-                //this.on_scrollbar_visibility_change(g_properties.show_scrollbar);
-                pref.autoHideScrollbar_Playlist = !pref.autoHideScrollbar_Playlist;
-                if (pref.autoHideScrollbar_Playlist) {
-                    g_properties.show_scrollbar = false;
-                    initPlaylist();
-                    playlist.on_size(ww, wh);
-                    RepaintWindow();
-                } else {
-                    g_properties.show_scrollbar = true;
-                    initPlaylist();
-                    playlist.on_size(ww, wh);
-                    RepaintWindow();
-                }
-            },
-            {is_checked: g_properties.show_scrollbar}
-        );
+        parent_menu.append_item('Disable auto-hide', () => {
+            pref.playlistAutoHideScrollbar = !pref.playlistAutoHideScrollbar;
+            pref.playlistAutoHideScrollbar ? g_properties.show_scrollbar : !g_properties.show_scrollbar;
+            updatePlaylist();
+        }, { is_checked: pref.playlistAutoHideScrollbar ? !g_properties.show_scrollbar : g_properties.show_scrollbar} );
     }
 
     /**
@@ -578,7 +539,12 @@ class ListItem {
     trace(x, y) {
         return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
     }
-
+    /**
+     * @param {number} x
+     */
+     set_x(x) {
+        this.x = x;
+    }
     /**
      * @param {number} y
      */

@@ -150,7 +150,7 @@ class MenuItems {
 		menu.newMenu({hide: () => !this.settingsBtnDn && ppt.settingsShow && this.validItem});
 		['Add to current playlist' + '\tShift+enter', 'Send to new playlist' + '\tCtrl+enter', 'Show now playing'].forEach((v, i) => menu.newItem({
 			str: v,
-			func: () => { this.setPlaylist(i); reinitPlaylist(); },
+			func: () => { this.setPlaylist(i); updatePlaylist(); },
 			flags: () => {
 				const pln = !ppt.sendToCur ? plman.FindPlaylist(ppt.libPlaylist.replace(/%view_name%/i, panel.viewName)) : plman.ActivePlaylist;
 				// return !i && !plman.GetPlaylistLockedActions(pln).includes('RemoveItems') && !plman.GetPlaylistLockedActions(pln).includes('AddItems') || i == 1 && !plman.GetPlaylistLockedActions(pln).includes('AddItems') || i == 2 || i == 3 && pop.nowp != -1 ? MF_STRING_LIB : MF_GRAYED_LIB // Crashing foobar when no library playlist exists and right clicking for context menu
@@ -168,7 +168,7 @@ class MenuItems {
 		});
 		menu.newItem({
 			str: () => ppt.artId === 0 ? 'Show artists' : 'Show albums',
-			func: () => {ppt.artId === 0 ? men.setAlbumart(4) : men.setAlbumart(0);},
+			func: () => {ppt.artId === 0 ? men.setAlbumart(4) : men.setAlbumart(0)},
 			flags: () => ppt.albumArtShow ? MF_STRING_LIB : MF_GRAYED_LIB,
 			separator: () => !panel.imgView || this.show_context && !ui.style.topBarShow || ppt.albumArtShow,
 			hide: () => !this.validItem || !ppt.albumArtShow
@@ -332,12 +332,14 @@ class MenuItems {
 			hide: () => i < 2 && !panel.imgView || i == 3 && ppt.libAutoSync
 		});
 
-		menu.newItem({
-			menuName: () => mainMenu(),
-			str: 'Options...',
-			func: () => panel.open(),
-			hide: () => !this.settingsBtnDn && ppt.settingsShow && this.validItem
-		});
+		if (!IsFolder("Z:\\lib")) { // Disable Options... in ... context menu ( right beside the Filter btn ) on Linux, otherwise it will crash and is not yet supported
+			menu.newItem({
+				menuName: () => mainMenu(),
+				str: 'Options...',
+				func: () => panel.open(),
+				hide: () => !this.settingsBtnDn && ppt.settingsShow && this.validItem
+			});
+		}
 	}
 
 	filterMenu() {
@@ -529,6 +531,8 @@ class MenuItems {
 				break;
 		}
 		this.loadView(clearCache, ppt.albumArtViewBy);
+		initLibraryColors();
+		if (pref.themeStyleBlackAndWhite || pref.themeStyleBlackAndWhite2) initMainColors();
 	}
 
 	setMode(i) {
@@ -592,9 +596,19 @@ class MenuItems {
 				panel.imgView = ppt.albumArtShow;
 				this.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
 
-				if (ppt.albumArtShow && panel.imgView && pref.libraryDesign === 'flowMode') pref.libraryLayout = 'full_width';
-				else pref.libraryLayout = 'normal_width';
-				setLibrarySize();
+				if (ppt.albumArtShow && panel.imgView && pref.libraryDesign === 'flowMode') {
+					pref.libraryLayout = 'full_width';
+					autoThumbnailSize();
+					setLibrarySize();
+				} else {
+					pref.libraryLayout = 'normal_width';
+					autoThumbnailSize();
+					setLibrarySize();
+				}
+				initLibraryColors();
+				if (pref.themeStyleBlackAndWhite || pref.themeStyleBlackAndWhite2) initMainColors();
+				if (pref.libraryDesign === 'traditional') pop.createImages();
+				if (pref.themeBrightness !== 'default') initThemeBrightness();
 				window.Repaint();
 				break;
 		}

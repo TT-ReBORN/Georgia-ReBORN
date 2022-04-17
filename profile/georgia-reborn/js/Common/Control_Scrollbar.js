@@ -12,7 +12,8 @@ g_properties.add_properties(
 /** @constructor */
 function ScrollBar(x, y, w, h, row_h, fn_redraw) {
     this.paint = function (gr) {
-        gr.FillSolidRect(this.x - scaleForDisplay(8), this.y - scaleForDisplay(3), this.w + scaleForDisplay(8), playlist.h, g_pl_colors.background);
+        gr.SetSmoothingMode(SmoothingMode.None); // Disable antialiasing, otherwise there will be an ugly 1px outline in theme style blending
+        gr.FillSolidRect(this.x - scaleForDisplay(10), this.y - scaleForDisplay(3), this.w + scaleForDisplay(14), playlist.h - this.y + scaleForDisplay(3) + playlist_geo.row_h, g_pl_colors.background);
 
         for (let part in this.sb_parts) {
             const item = this.sb_parts[part];
@@ -38,6 +39,10 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
                     break;
             }
         };
+
+        if (pref.themeStyleBlend && albumart) {
+            gr.DrawImage(blendedImg, this.x - scaleForDisplay(10), this.y - scaleForDisplay(3), ww, wh, this.x - scaleForDisplay(10), this.y - scaleForDisplay(3), blendedImg.Width, blendedImg.Height);
+        }
     };
 
     this.repaint = function () {
@@ -54,7 +59,7 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
     };
 
     this.trace = function (x, y) {
-        return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
+        return x + scaleForDisplay(20) > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
     };
 
     this.set_window_param = (rows_drawn, row_count) => {
@@ -101,12 +106,12 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
         } else {
             var newScroll = this.nearestScroll(direction);
             if (!pref.smoothScrolling) {
-                this.scroll_to(newScroll + direction * pref.wheelScrollSteps_Playlist);
+                this.scroll_to(newScroll + direction * pref.playlistWheelScrollSteps);
             } else {
                 if (this.desiredScrollPosition === undefined) {
-                    this.desiredScrollPosition = newScroll + direction * pref.wheelScrollSteps_Playlist;
+                    this.desiredScrollPosition = newScroll + direction * pref.playlistWheelScrollSteps;
                 } else {
-                    this.desiredScrollPosition += (direction * pref.wheelScrollSteps_Playlist);
+                    this.desiredScrollPosition += (direction * pref.playlistWheelScrollSteps);
                 }
                 if (direction === -1 && this.desiredScrollPosition < 0) {
                     this.desiredScrollPosition = 0;
@@ -414,7 +419,7 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
         }
         smoothScrollTimer = setInterval(() => {
             scrollFunc();
-        }, pref.wheelScrollDuration_Playlist);
+        }, pref.playlistWheelScrollDuration);
         scrollFunc();   // want to immediately start scroll
     }
 
@@ -464,61 +469,19 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 
         var ico_fore_colors =
         [
-            pref.whiteTheme ? RGB(120, 120, 120) :
-            pref.blackTheme ? RGB(100, 100, 100) :
-            pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(120, 120, 120) :
-            pref.blueTheme ? RGB(220, 220, 220) :
-            pref.darkblueTheme ? RGB(220, 220, 220) :
-            pref.redTheme ? RGB(220, 220, 220) :
-            pref.creamTheme ? RGB(120, 170, 130) :
-            pref.nblueTheme ? RGB(0, 200, 255) :
-            pref.ngreenTheme ? RGB(0, 200, 0) :
-            pref.nredTheme ? RGB(229, 7, 44) :
-            pref.ngoldTheme ? RGB(254, 204, 3) : '',
-
-            pref.whiteTheme ? RGB(0, 0, 0) :
-            pref.blackTheme ? RGB(160, 160, 160) :
-            pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(0, 0, 0) :
-            pref.blueTheme ? RGB(242, 230, 170) :
-            pref.darkblueTheme ? RGB(255, 255, 255) :
-            pref.redTheme ? RGB(255, 255, 255) :
-            pref.creamTheme ? RGB(100, 100, 100) :
-            pref.nblueTheme ? RGB(0, 238, 255) :
-            pref.ngreenTheme ? RGB(0, 255, 0) :
-            pref.nredTheme ? RGB(255, 0, 0) :
-            pref.ngoldTheme ? RGB(255, 242, 3) : '',
-
-            pref.whiteTheme ? RGB(0, 0, 0) :
-            pref.blackTheme ? RGB(160, 160, 160) :
-            pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(0, 0, 0) :
-            pref.blueTheme ? RGB(242, 230, 170) :
-            pref.darkblueTheme ? RGB(255, 255, 255) :
-            pref.redTheme ? RGB(255, 255, 255) :
-            pref.creamTheme ? RGB(100, 100, 100) :
-            pref.nblueTheme ? RGB(0, 238, 255) :
-            pref.ngreenTheme ? RGB(0, 255, 0) :
-            pref.nredTheme ? RGB(255, 0, 0) :
-            pref.ngoldTheme ? RGB(255, 242, 3) : '',
-
-            pref.whiteTheme ? RGB(120, 120, 120) :
-            pref.blackTheme ? RGB(100, 100, 100) :
-            pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(120, 120, 120) :
-            pref.blueTheme ? RGB(220, 220, 220) :
-            pref.darkblueTheme ? RGB(220, 220, 220) :
-            pref.redTheme ? RGB(220, 220, 220) :
-            pref.creamTheme ? RGB(120, 170, 130) :
-            pref.nblueTheme ? RGB(0, 200, 255) :
-            pref.ngreenTheme ? RGB(0, 200, 0) :
-            pref.nredTheme ? RGB(229, 7, 44) :
-            pref.ngoldTheme ? RGB(254, 204, 3) : ''
+            g_pl_colors.ico_fore_colors_normal,
+            g_pl_colors.ico_fore_colors_hovered,
+            g_pl_colors.ico_fore_colors_hovered,
+            g_pl_colors.ico_fore_colors_normal
         ];
 
         let bgColor = col.primary;
+        const colBrightness = new Color(col.primary).brightness;
         if (g_pl_colors.background != RGB(255, 255, 255)) {
-            if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
+            if ((pref.rebornTheme || pref.randomTheme) && (colBrightness > (pref.themeStyleBlend || pref.themeStyleBlend2 ? 150 : 130))) {
                 ico_fore_colors = [col.superDarkAccent, col.maxDarkAccent, col.maxDarkAccent, col.superDarkAccent];
             }
-            else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
+            else if ((pref.rebornTheme || pref.randomTheme) && (colBrightness < (pref.themeStyleBlend || pref.themeStyleBlend2 ? 151 : 131))) {
                 ico_fore_colors = [col.superLightAccent, col.maxLightAccent, col.maxLightAccent, col.superLightAccent];
             }
         }
@@ -593,49 +556,18 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 
         var thumb_colors =
             [
-                pref.whiteTheme ? RGB(200, 200, 200) :
-                pref.blackTheme ? RGB(100, 100, 100) :
-                pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(200, 200, 200) :
-                pref.blueTheme ? RGB(10, 135, 225) :
-                pref.darkblueTheme ? RGB(27, 55, 90) :
-                pref.redTheme ? RGB(145, 25, 25) :
-                pref.creamTheme ? RGB(200, 200, 200) :
-                pref.nblueTheme ? RGB(0, 200, 255) :
-                pref.ngreenTheme ? RGB(0, 200, 0) :
-                pref.nredTheme ? RGB(229, 7, 44) :
-                pref.ngoldTheme ? RGB(254, 204, 3) : '',
-
-                pref.whiteTheme ? RGB(120, 120, 120) :
-                pref.blackTheme ? RGB(160, 160, 160) :
-                pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(120, 120, 120) :
-                pref.blueTheme ? RGB(242, 230, 170) :
-                pref.darkblueTheme ? RGB(255, 202, 128) :
-                pref.redTheme ? RGB(245, 212, 165) :
-                pref.creamTheme ? RGB(120, 170, 130) :
-                pref.nblueTheme ? RGB(0, 238, 255) :
-                pref.ngreenTheme ? RGB(0, 255, 0) :
-                pref.nredTheme ? RGB(255, 0, 0) :
-                pref.ngoldTheme ? RGB(255, 242, 3) : '',
-
-                pref.whiteTheme ? RGB(120, 120, 120) :
-                pref.blackTheme ? RGB(160, 160, 160) :
-                pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(120, 120, 120) :
-                pref.blueTheme ? RGB(242, 230, 170) :
-                pref.darkblueTheme ? RGB(255, 202, 128) :
-                pref.redTheme ? RGB(245, 212, 165) :
-                pref.creamTheme ? RGB(120, 170, 130) :
-                pref.nblueTheme ? RGB(0, 238, 255) :
-                pref.ngreenTheme ? RGB(0, 255, 0) :
-                pref.nredTheme ? RGB(255, 0, 0) :
-                pref.ngoldTheme ? RGB(255, 242, 3) : '',
+                g_pl_colors.thumb_colors_normal,
+                g_pl_colors.thumb_colors_hovered,
+                g_pl_colors.thumb_colors_down
             ];
 
         let bgColor = col.primary;
+        const colBrightness = new Color(col.primary).brightness;
         if (g_pl_colors.background != RGB(255, 255, 255)) {
-            if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
+            if ((pref.rebornTheme || pref.randomTheme) && (colBrightness > (pref.themeStyleBlend || pref.themeStyleBlend2 ? 150 : 130))) {
                 thumb_colors = [col.accent, col.extraLightAccent, col.extraLightAccent];
             }
-            else if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
+            else if ((pref.rebornTheme || pref.randomTheme) && (colBrightness < (pref.themeStyleBlend || pref.themeStyleBlend2 ? 151 : 131))) {
                 thumb_colors = [col.lightMiddleAccent, col.extraLightAccent, col.extraLightAccent];
             }
         }

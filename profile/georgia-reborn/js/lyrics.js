@@ -55,14 +55,16 @@ class Line {
 	 * @param {number} yOffset
 	 */
 	draw(gr, x, width, yOffset, highlightActive) {
-		const color = highlightActive && this.focus  /* Disable synced lyrics when streaming -> */ && !isStreaming ? g_txt_highlightcolour : g_txt_normalcolour;
-		const ncolor = highlightActive && this.focus /* Disable synced lyrics when streaming -> */ && !isStreaming ? g_pl_colors.artist_playing : g_txt_normalcolour; 	// Neon Colors Highlight
+		const color = highlightActive && this.focus  /* Disable synced lyrics when streaming -> */ && !isStreaming ? g_txt_highlightcolour : pref.albumArtLyrics ? g_txt_normalcolour : g_pl_colors.title_normal;
+		const ncolor = highlightActive && this.focus /* Disable synced lyrics when streaming -> */ && !isStreaming ? g_pl_colors.artist_playing : pref.albumArtLyrics ? g_txt_normalcolour : g_pl_colors.title_normal; 	// Neon Colors Highlight
 		const center = StringFormat(1, 1, 4);	// center with ellipses
 
 		// drop shadow behind text
-		gr.DrawString(this.lyric, ft.lyrics, g_txt_shadowcolor, x - 1, this.y + yOffset, width, this.height + 1, center);
-		gr.DrawString(this.lyric, ft.lyrics, g_txt_shadowcolor, x, this.y + yOffset - 1, width, this.height + 1, center);
-		gr.DrawString(this.lyric, ft.lyrics, g_txt_shadowcolor, x + 2, this.y + yOffset + 2, width, this.height + 1, center);
+		if (pref.albumArtLyrics) {
+			gr.DrawString(this.lyric, ft.lyrics, g_txt_shadowcolor, x - 1, this.y + yOffset, width, this.height + 1, center);
+			gr.DrawString(this.lyric, ft.lyrics, g_txt_shadowcolor, x, this.y + yOffset - 1, width, this.height + 1, center);
+			gr.DrawString(this.lyric, ft.lyrics, g_txt_shadowcolor, x + 2, this.y + yOffset + 2, width, this.height + 1, center);
+		}
 		// text
 		gr.DrawString(this.lyric, ft.lyrics, pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? ncolor : color, x, this.y + yOffset, width, this.height + 1, center);
 	}

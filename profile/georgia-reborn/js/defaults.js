@@ -84,145 +84,75 @@ const gridSchema = new ConfigurationObjectSchema('metadataGrid', ConfigurationOb
 
 const imgPathDefaults = [ // simply add, change or re-order entries as needed
 	'$replace(%path%,%filename_ext%,)folder*',
-	'$replace(%path%,%filename_ext%,)front*',
 	'$replace(%path%,%filename_ext%,)cover*',
+	'$replace(%path%,%filename_ext%,)front*',
 	'$replace(%path%,%filename_ext%,)booklet*',
 	'$replace(%path%,%filename_ext%,)artwork*',
 	'$replace(%path%,%filename_ext%,)image*',
 	'$replace(%path%,%filename_ext%,)scan*',
 	'$replace(%path%,%filename_ext%,)back*',
-
-	'$replace(%path%,%directoryname%\\%filename_ext%,)folder*', // all folder images in parent directory
-	'$replace(%path%,%directoryname%\\%filename_ext%,)front*', // all folder images in parent directory
-	'$replace(%path%,%directoryname%\\%filename_ext%,)cover*', // all folder images in parent directory
-	'$replace(%path%,%directoryname%\\%filename_ext%,)booklet*', // all folder images in parent directory
-	'$replace(%path%,%directoryname%\\%filename_ext%,)artwork*', // all folder images in parent directory
-	'$replace(%path%,%directoryname%\\%filename_ext%,)image*', // all folder images in parent directory
-	'$replace(%path%,%directoryname%\\%filename_ext%,)scan*', // all folder images in parent directory
-	'$replace(%path%,%directoryname%\\%filename_ext%,)back*', // all folder images in parent directory
 	'$replace(%path%,%filename_ext%,)*.jpg',
 	'$replace(%path%,%filename_ext%,)*.png',
 
+	// All folder images in parent directory
+	'$replace(%path%,%directoryname%\\%filename_ext%,)folder*',
+	'$replace(%path%,%directoryname%\\%filename_ext%,)cover*',
+	'$replace(%path%,%directoryname%\\%filename_ext%,)front*',
+	'$replace(%path%,%directoryname%\\%filename_ext%,)booklet*',
+	'$replace(%path%,%directoryname%\\%filename_ext%,)artwork*',
+	'$replace(%path%,%directoryname%\\%filename_ext%,)image*',
+	'$replace(%path%,%directoryname%\\%filename_ext%,)scan*',
+	'$replace(%path%,%directoryname%\\%filename_ext%,)back*',
+
+	// Artwork, Images, Scans in root folder ( 1 CD )
 	'$replace(%path%\\..\\Artwork\\,%filename_ext%,)folder*',
-	'$replace(%path%\\..\\Artwork\\,%filename_ext%,)front*',
 	'$replace(%path%\\..\\Artwork\\,%filename_ext%,)cover*',
-	'$replace(%path%\\..\\Artwork\\,%filename_ext%,)booklet*',
+	'$replace(%path%\\..\\Artwork\\,%filename_ext%,)front*',
 	'$replace(%path%\\..\\Artwork\\,%filename_ext%,)artwork*',
 	'$replace(%path%\\..\\Artwork\\,%filename_ext%,)image*',
 	'$replace(%path%\\..\\Artwork\\,%filename_ext%,)scan*',
 	'$replace(%path%\\..\\Artwork\\,%filename_ext%,)back*',
-
 	'$replace(%path%\\..\\Images\\,%filename_ext%,)folder*',
-	'$replace(%path%\\..\\Images\\,%filename_ext%,)front*',
 	'$replace(%path%\\..\\Images\\,%filename_ext%,)cover*',
-	'$replace(%path%\\..\\Images\\,%filename_ext%,)booklet*',
+	'$replace(%path%\\..\\Images\\,%filename_ext%,)front*',
 	'$replace(%path%\\..\\Images\\,%filename_ext%,)artwork*',
 	'$replace(%path%\\..\\Images\\,%filename_ext%,)image*',
 	'$replace(%path%\\..\\Images\\,%filename_ext%,)scan*',
 	'$replace(%path%\\..\\Images\\,%filename_ext%,)back*',
-
 	'$replace(%path%\\..\\Scans\\,%filename_ext%,)folder*',
-	'$replace(%path%\\..\\Scans\\,%filename_ext%,)front*',
 	'$replace(%path%\\..\\Scans\\,%filename_ext%,)cover*',
+	'$replace(%path%\\..\\Scans\\,%filename_ext%,)front*',
 	'$replace(%path%\\..\\Scans\\,%filename_ext%,)booklet*',
 	'$replace(%path%\\..\\Scans\\,%filename_ext%,)artwork*',
 	'$replace(%path%\\..\\Scans\\,%filename_ext%,)image*',
 	'$replace(%path%\\..\\Scans\\,%filename_ext%,)scan*',
 	'$replace(%path%\\..\\Scans\\,%filename_ext%,)back*',
 
+	// Artwork, Images, Scans in other subfolders ( Multi CDs)
 	'$replace(%path%\\Artwork\\,%filename_ext%,)folder*',
-	'$replace(%path%\\Artwork\\,%filename_ext%,)front*',
 	'$replace(%path%\\Artwork\\,%filename_ext%,)cover*',
+	'$replace(%path%\\Artwork\\,%filename_ext%,)front*',
 	'$replace(%path%\\Artwork\\,%filename_ext%,)booklet*',
 	'$replace(%path%\\Artwork\\,%filename_ext%,)artwork*',
 	'$replace(%path%\\Artwork\\,%filename_ext%,)image*',
 	'$replace(%path%\\Artwork\\,%filename_ext%,)scan*',
 	'$replace(%path%\\Artwork\\,%filename_ext%,)back*',
-
 	'$replace(%path%\\Images\\,%filename_ext%,)folder*',
-	'$replace(%path%\\Images\\,%filename_ext%,)front*',
 	'$replace(%path%\\Images\\,%filename_ext%,)cover*',
+	'$replace(%path%\\Images\\,%filename_ext%,)front*',
 	'$replace(%path%\\Images\\,%filename_ext%,)booklet*',
 	'$replace(%path%\\Images\\,%filename_ext%,)artwork*',
 	'$replace(%path%\\Images\\,%filename_ext%,)image*',
 	'$replace(%path%\\Images\\,%filename_ext%,)scan*',
 	'$replace(%path%\\Images\\,%filename_ext%,)back*',
-
 	'$replace(%path%\\Scans\\,%filename_ext%,)folder*',
-	'$replace(%path%\\Scans\\,%filename_ext%,)front*',
 	'$replace(%path%\\Scans\\,%filename_ext%,)cover*',
+	'$replace(%path%\\Scans\\,%filename_ext%,)front*',
 	'$replace(%path%\\Scans\\,%filename_ext%,)booklet*',
 	'$replace(%path%\\Scans\\,%filename_ext%,)artwork*',
 	'$replace(%path%\\Scans\\,%filename_ext%,)image*',
 	'$replace(%path%\\Scans\\,%filename_ext%,)scan*',
-	'$replace(%path%\\Scans\\,%filename_ext%,)back*',
-
-	'$replace(%path%,%directoryname%\\..\\Artwork\\%filename_ext%,)folder*',
-	'$replace(%path%,%directoryname%\\..\\Artwork\\%filename_ext%,)front*',
-	'$replace(%path%,%directoryname%\\..\\Artwork\\%filename_ext%,)cover*',
-	'$replace(%path%,%directoryname%\\..\\Artwork\\%filename_ext%,)booklet*',
-	'$replace(%path%,%directoryname%\\..\\Artwork\\%filename_ext%,)artwork*',
-	'$replace(%path%,%directoryname%\\..\\Artwork\\%filename_ext%,)image*',
-	'$replace(%path%,%directoryname%\\..\\Artwork\\%filename_ext%,)scan*',
-	'$replace(%path%,%directoryname%\\..\\Artwork\\%filename_ext%,)back*',
-
-	'$replace(%path%,%directoryname%\\..\\Images\\%filename_ext%,)folder*',
-	'$replace(%path%,%directoryname%\\..\\Images\\%filename_ext%,)front*',
-	'$replace(%path%,%directoryname%\\..\\Images\\%filename_ext%,)cover*',
-	'$replace(%path%,%directoryname%\\..\\Images\\%filename_ext%,)booklet*',
-	'$replace(%path%,%directoryname%\\..\\Images\\%filename_ext%,)artwork*',
-	'$replace(%path%,%directoryname%\\..\\Images\\%filename_ext%,)image*',
-	'$replace(%path%,%directoryname%\\..\\Images\\%filename_ext%,)scan*',
-	'$replace(%path%,%directoryname%\\..\\Images\\%filename_ext%,)back*',
-
-	'$replace(%path%,%directoryname%\\..\\Scans\\%filename_ext%,)folder*',
-	'$replace(%path%,%directoryname%\\..\\Scans\\%filename_ext%,)front*',
-	'$replace(%path%,%directoryname%\\..\\Scans\\%filename_ext%,)cover*',
-	'$replace(%path%,%directoryname%\\..\\Scans\\%filename_ext%,)booklet*',
-	'$replace(%path%,%directoryname%\\..\\Scans\\%filename_ext%,)artwork*',
-	'$replace(%path%,%directoryname%\\..\\Scans\\%filename_ext%,)image*',
-	'$replace(%path%,%directoryname%\\..\\Scans\\%filename_ext%,)scan*',
-	'$replace(%path%,%directoryname%\\..\\Scans\\%filename_ext%,)back*',
-
-	'$replace(%path%,%directoryname%\\Artwork\\%filename_ext%,)folder*',
-	'$replace(%path%,%directoryname%\\Artwork\\%filename_ext%,)front*',
-	'$replace(%path%,%directoryname%\\Artwork\\%filename_ext%,)cover*',
-	'$replace(%path%,%directoryname%\\Artwork\\%filename_ext%,)booklet*',
-	'$replace(%path%,%directoryname%\\Artwork\\%filename_ext%,)artwork*',
-	'$replace(%path%,%directoryname%\\Artwork\\%filename_ext%,)image*',
-	'$replace(%path%,%directoryname%\\Artwork\\%filename_ext%,)scan*',
-	'$replace(%path%,%directoryname%\\Artwork\\%filename_ext%,)back*',
-
-	'$replace(%path%,%directoryname%\\Images\\%filename_ext%,)folder*',
-	'$replace(%path%,%directoryname%\\Images\\%filename_ext%,)front*',
-	'$replace(%path%,%directoryname%\\Images\\%filename_ext%,)cover*',
-	'$replace(%path%,%directoryname%\\Images\\%filename_ext%,)booklet*',
-	'$replace(%path%,%directoryname%\\Images\\%filename_ext%,)artwork*',
-	'$replace(%path%,%directoryname%\\Images\\%filename_ext%,)image*',
-	'$replace(%path%,%directoryname%\\Images\\%filename_ext%,)scan*',
-	'$replace(%path%,%directoryname%\\Images\\%filename_ext%,)back*',
-
-	'$replace(%path%,%directoryname%\\Scans\\%filename_ext%,)folder*',
-	'$replace(%path%,%directoryname%\\Scans\\%filename_ext%,)front*',
-	'$replace(%path%,%directoryname%\\Scans\\%filename_ext%,)cover*',
-	'$replace(%path%,%directoryname%\\Scans\\%filename_ext%,)booklet*',
-	'$replace(%path%,%directoryname%\\Scans\\%filename_ext%,)artwork*',
-	'$replace(%path%,%directoryname%\\Scans\\%filename_ext%,)image*',
-	'$replace(%path%,%directoryname%\\Scans\\%filename_ext%,)scan*',
-	'$replace(%path%,%directoryname%\\Scans\\%filename_ext%,)back*',
-
-	'$replace(%path%,%directoryname%\\..\\Artwork\\%filename_ext%,)*.jpg',
-	'$replace(%path%,%directoryname%\\..\\Images\\%filename_ext%,)*.jpg',
-	'$replace(%path%,%directoryname%\\..\\Scans\\%filename_ext%,)*.jpg',
-	'$replace(%path%,%directoryname%\\..\\Artwork\\%filename_ext%,)*.png',
-	'$replace(%path%,%directoryname%\\..\\Images\\%filename_ext%,)*.png',
-	'$replace(%path%,%directoryname%\\..\\Scans\\%filename_ext%,)*.png',
-	'$replace(%path%,%directoryname%\\Artwork\\%filename_ext%,)*.jpg',
-	'$replace(%path%,%directoryname%\\Images\\%filename_ext%,)*.jpg',
-	'$replace(%path%,%directoryname%\\Scans\\%filename_ext%,)*.jpg',
-	'$replace(%path%,%directoryname%\\Artwork\\%filename_ext%,)*.png',
-	'$replace(%path%,%directoryname%\\Images\\%filename_ext%,)*.png',
-	'$replace(%path%,%directoryname%\\Scans\\%filename_ext%,)*.png'
+	'$replace(%path%\\Scans\\,%filename_ext%,)back*'
 ];
 const imgPathSchema = new ConfigurationObjectSchema('imgPaths', ConfigurationObjectType.Array, undefined,
 	'The titleformatting defined paths for artwork to be displayed. The first image matched will be shown first.' +
@@ -251,6 +181,7 @@ const settingsDefaults = {
 	showReleaseCountryFlag: true,
 	showThemeLog: false,
 	stoppedString1: 'foobar2000',
+	stoppedString1acr: 'fb2k',
 	stoppedString2: '$replace(%_foobar2000_version%,foobar2000 ,)',
 	locked: true,
 }

@@ -416,61 +416,25 @@
 
 				// Now playing bg selection with now playing deactivated ( album art )
 				if (item.sel && ppt.albumArtShow && (!(pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos' || ppt.albumArtLabelType == 2))) {
-					gr.FillSolidRect(box_x, box_y, this.box.w, this.box.h,
-						pref.whiteTheme || pref.blackTheme ? col.primary :
-						pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : col.primary :
-						pref.blueTheme ? RGB(10, 130, 220) :
-						pref.darkblueTheme ? RGB(24, 50, 82) :
-						pref.redTheme ? RGB(140, 25, 25) :
-						pref.creamTheme ? RGB(120, 170, 130) :
-						pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(35, 35, 35) : ''
-					);
+					let bgColor = pref.whiteTheme || pref.blackTheme ? col.primary : pref.rebornTheme || pref.randomTheme ? g_pl_colors.background != RGB(255, 255, 255) ? pref.themeStyleBlend && (pref.rebornTheme || pref.randomTheme) ? RGBtoRGBA(col.lightAccent, 130) : col.lightAccent : col.primary : ui.col.nowPlayingBg;
+					gr.FillSolidRect(box_x, box_y, this.box.w, this.box.h, bgColor);
 				}
 				// Now playing bg selection with now playing deactivated
 				if (!pop.highlight.nowPlaying && item.sel && (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos' || ppt.albumArtLabelType == 2)) {
-					gr.FillSolidRect(ui.x, box_y, ui.w, this.box.h,
-						pref.whiteTheme || pref.blackTheme ? col.primary :
-						pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : col.primary :
-						pref.blueTheme ? RGB(10, 130, 220) :
-						pref.darkblueTheme ? RGB(24, 50, 82) :
-						pref.redTheme ? RGB(140, 25, 25) :
-						pref.creamTheme ? RGB(120, 170, 130) :
-						pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(35, 35, 35) : ''
-					);
+					let bgColor = pref.whiteTheme || pref.blackTheme ? col.primary : pref.rebornTheme || pref.randomTheme ? g_pl_colors.background != RGB(255, 255, 255) ? pref.themeStyleBlend && (pref.rebornTheme || pref.randomTheme) ? RGBtoRGBA(col.lightAccent, 130) : col.lightAccent : col.primary : ui.col.nowPlayingBg;
+					gr.FillSolidRect(ui.x, box_y, ui.w, this.box.h, bgColor);
 				}
 				// Marker selection with now playing active
 				if (pop.highlight.nowPlaying && item.sel && pref.libraryDesign !== 'flowMode') {
-					gr.DrawRect(ui.x, box_y, ui.w, this.box.h, 1,
-						pref.whiteTheme ? RGB(200, 200, 200) :
-						pref.blackTheme ? RGB(45, 45, 45) :
-						pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : RGB(200, 200, 200) :
-						pref.blueTheme ? RGB(10, 135, 230) :
-						pref.darkblueTheme ? RGB(27, 55, 90) :
-						pref.redTheme ? RGB(145, 25, 25) :
-						pref.creamTheme ? RGB(200, 200, 200) :
-						pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(40, 40, 40) : ''
-					);
-					gr.FillSolidRect(ui.x, box_y, ui.sz.sideMarker, this.box.h + 1,
-						pref.whiteTheme || pref.blackTheme ? col.primary :
-						pref.blueTheme ? RGB(242, 230, 170) :
-						pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
-						pref.darkblueTheme ? RGB(255, 202, 128) :
-						pref.redTheme ? RGB(245, 212, 165) :
-						pref.creamTheme ? RGB(120, 170, 130) :
-						pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : ''
-					);
+					let frameColor = pref.rebornTheme || pref.randomTheme ? g_pl_colors.background != RGB(255, 255, 255) ? ui.col.selectionFrame : RGB(200, 200, 200) : ui.col.selectionFrame;
+					gr.DrawRect(ui.x, box_y, ui.w, this.box.h, 1, frameColor);
+					let sideMarker = pref.whiteTheme && !pref.themeStyleBlackAndWhite && !pref.themeStyleBlackAndWhite2 || pref.blackTheme ? col.primary : ui.col.sideMarker;
+					gr.FillSolidRect(ui.x, box_y, ui.sz.sideMarker, this.box.h + 1, sideMarker);
 				}
 				// Hide DrawRect gaps when all songs are completely selected and mask lines when selecting now playing
-				if (pop.highlight.nowPlaying && item.sel && !item.root && pop.inRange(pop.nowp, item.item) && (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos' || ppt.albumArtLabelType == 2)) {
-					gr.DrawRect(pop.fullLineSelection ? ui.x : ui.x, box_y, pop.fullLineSelection ? ui.w : ui.w + ui.sz.margin + box_x - ui.x - ui.sz.sideMarker, this.box.h, 1,
-						pref.whiteTheme || pref.blackTheme ? col.primary :
-						pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : col.primary :
-						pref.blueTheme ? RGB(10, 130, 220) :
-						pref.darkblueTheme ? RGB(24, 50, 82) :
-						pref.redTheme ? RGB(140, 25, 25) :
-						pref.creamTheme ? RGB(120, 170, 130) :
-						pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(35, 35, 35) : ''
-					);
+				if ((pref.whiteTheme || pref.blackTheme || pref.creamTheme) && (pop.highlight.nowPlaying && item.sel && !item.root && pop.inRange(pop.nowp, item.item) && (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos' || ppt.albumArtLabelType == 2))) {
+					let bgColor = pref.whiteTheme || pref.blackTheme ? col.primary : pref.rebornTheme || pref.randomTheme ? g_pl_colors.background != RGB(255, 255, 255) ? pref.themeStyleBlend && (pref.rebornTheme || pref.randomTheme) ? RGBtoRGBA(col.lightAccent, 130) : col.lightAccent : col.primary : ui.col.nowPlayingBg;
+					gr.DrawRect(pop.fullLineSelection ? ui.x : ui.x, box_y, pop.fullLineSelection ? ui.w : ui.w + ui.sz.margin + box_x - ui.x - ui.sz.sideMarker, this.box.h, 1, bgColor);
 				}
 
 				this.im.y = this.labels.overlay ? this.im.offset + box_y + ppt.thumbNailGapCompact / 2 : this.im.offset + box_y;
@@ -530,88 +494,68 @@
 				this.drawItemOverlay(gr, item, x1, y1, iw, ih);
 				if (i == pop.m.i) {
 					if (pop.highlight.row == 3 || pop.highlight.row == 2 && (this.labels.overlay || this.labels.hide)) {
-						this.drawFrame(gr, box_x, box_y,
-							pref.whiteTheme || pref.blackTheme ? col.primary :
-							pref.blueTheme ? RGB(242, 230, 170) :
-							pref.darkblueTheme ? RGB(255, 202, 128) :
-							pref.redTheme ? RGB(245, 212, 165) :
-							pref.creamTheme ? RGB(120, 170, 130) :
-							pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : '',
-							!this.labels.overlay && !this.labels.hide ? 'stnd' : 'thick'
-						);
+						this.drawFrame(gr, box_x, box_y, ui.col.hoverFrame, !this.labels.overlay && !this.labels.hide ? 'stnd' : 'thick');
 					} // else if (pop.highlight.row == 1 && !sbar.draw_timer) gr.FillSolidRect(ui.l.w, y1, ui.sz.sideMarker, this.im.w, ui.col.sideMarker);
 				}
-				if ((this.labels.overlay || this.labels.hide) && item.sel)
-				this.drawFrame(gr, box_x, box_y, /*ui.col.imgBgSel*/
-					pref.whiteTheme || pref.blackTheme ? col.primary :
-					pref.blueTheme ? RGB(242, 230, 170) :
-					pref.darkblueTheme ? RGB(255, 202, 128) :
-					pref.redTheme ? RGB(245, 212, 165) :
-					pref.creamTheme ? RGB(120, 170, 130) :
-					pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : '', 'thick'
-				);
+				if ((this.labels.overlay || this.labels.hide) && item.sel) this.drawFrame(gr, box_x, box_y, /*ui.col.imgBgSel*/ ui.col.selectionFrame2, 'thick');
 				if (!this.labels.hide) {
 					const x = box_x + this.text.x;
 					let type = 0;
 					let bgColor = item.sel || pop.highlight.nowPlaying && !item.root && pop.inRange(pop.nowp, item.item) ? col.primary : undefined;
+					const colBrightness = new Color(col.primary).brightness;
 
-					var txt_c =
-					pop.highlight.nowPlaying && !item.root && pop.inRange(pop.nowp, item.item) ? ui.col.nowpBgSel :
-					item.sel ? pop.highlight.nowPlaying ? ui.col.textSel : ui.col.textSel :
-					pop.m.i == i ? pop.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
-					pop.highlight.nowPlaying ? ui.col.text : ui.col.text;
+					let txt_c =
+						pop.highlight.nowPlaying && !item.root && pop.inRange(pop.nowp, item.item) ? ui.col.nowpBgSel :
+						item.sel ? pop.highlight.nowPlaying ? ui.col.textSel : ui.col.textSel :
+						pop.m.i == i ? pop.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
+						pop.highlight.nowPlaying ? ui.col.text : ui.col.text;
 
-					var txt_c_nobw =
-					pop.highlight.nowPlaying && !item.root && pop.inRange(pop.nowp, item.item) ?
-						pref.blueTheme ? RGB(242, 230, 170) :
-						pref.darkblueTheme ? RGB(255, 202, 128) :
-						pref.redTheme ? RGB(245, 212, 165) :
-						pref.creamTheme ? RGB(0, 0, 0) :
-						pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : '' :
-					item.sel ? pop.highlight.nowPlaying ? ui.col.textSel : ui.col.textSel :
-					pop.m.i == i ? pop.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
-					pop.highlight.nowPlaying ? ui.col.text : ui.col.text;
+					let txt_c_nobw =
+						pop.highlight.nowPlaying && !item.root && pop.inRange(pop.nowp, item.item) ? ui.col.text_nobw_nowp :
+						item.sel ? pop.highlight.nowPlaying ? ui.col.textSel : ui.col.textSel :
+						pop.m.i == i ? pop.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
+						pop.highlight.nowPlaying ? ui.col.text : ui.col.text;
 
-					if (pref.whiteTheme && (new Color(bgColor).brightness > 130)) {
+					if (pref.whiteTheme && (colBrightness > (pref.themeStyleBlend || pref.themeStyleBlend2 ? 150 : 130))) {
 						txt_c =
 						pop.highlight.nowPlaying && !item.root && pop.inRange(pop.nowp, item.item) ? RGB(0, 0, 0) :
 						item.sel ? pop.highlight.nowPlaying ? RGB(0, 0, 0) : RGB(0, 0, 0) :
 						pop.m.i == i ? pop.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
 						pop.highlight.nowPlaying ? ui.col.text : ui.col.text;
 					}
-					else if (pref.whiteTheme && (new Color(bgColor).brightness < 131)) {
+					else if (pref.whiteTheme && (colBrightness < (pref.themeStyleBlend || pref.themeStyleBlend2 ? 151 : 131))) {
 						txt_c =
 						pop.highlight.nowPlaying && !item.root && pop.inRange(pop.nowp, item.item) ? RGB(255, 255, 255) :
 						item.sel ? pop.highlight.nowPlaying ? pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos' || ppt.albumArtLabelType == 2 ? RGB(0, 0, 0) : RGB(255, 255, 255) : RGB(255, 255, 255) :
 						pop.m.i == i ? pop.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
 						pop.highlight.nowPlaying ? ui.col.text : ui.col.text;
 					}
-					if (pref.blackTheme && (new Color(bgColor).brightness < 131)) {
-						txt_c =
-						pop.highlight.nowPlaying && !item.root && pop.inRange(pop.nowp, item.item) ? RGB(255, 255, 255) :
-						item.sel ? pop.highlight.nowPlaying ? RGB(255, 255, 255) : RGB(255, 255, 255) :
-						pop.m.i == i ? pop.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
-						pop.highlight.nowPlaying ? ui.col.text : ui.col.text;
-					}
-					else if (pref.blackTheme && (new Color(bgColor).brightness > 130)) {
+					if (pref.blackTheme && (colBrightness > (pref.themeStyleBlend || pref.themeStyleBlend2 ? 150 : 130))) {
 						txt_c =
 						pop.highlight.nowPlaying && !item.root && pop.inRange(pop.nowp, item.item) ? RGB(0, 0, 0) :
 						item.sel ? pop.highlight.nowPlaying ? pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos' || ppt.albumArtLabelType == 2 ? RGB(255, 255, 255 ) : RGB(0, 0, 0) : RGB(0, 0, 0) :
 						pop.m.i == i ? pop.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
 						pop.highlight.nowPlaying ? ui.col.text : ui.col.text;
 					}
+					else if (pref.blackTheme && (colBrightness < (pref.themeStyleBlend || pref.themeStyleBlend2 ? 151 : 131))) {
+						txt_c =
+						pop.highlight.nowPlaying && !item.root && pop.inRange(pop.nowp, item.item) ? RGB(255, 255, 255) :
+						item.sel ? pop.highlight.nowPlaying ? RGB(255, 255, 255) : RGB(255, 255, 255) :
+						pop.m.i == i ? pop.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
+						pop.highlight.nowPlaying ? ui.col.text : ui.col.text;
+					}
 					if (g_pl_colors.background != RGB(255, 255, 255)) {
-						if (pref.rebornTheme && (new Color(bgColor).brightness < 131)) {
-							txt_c =
-							pop.highlight.nowPlaying && !item.root && pop.inRange(pop.nowp, item.item) ? RGB(255, 255, 255) :
-							item.sel ? pop.highlight.nowPlaying ? RGB(255, 255, 255) : RGB(255, 255, 255) :
-							pop.m.i == i ? pop.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
-							pop.highlight.nowPlaying ? ui.col.text : ui.col.text;
-						}
-						else if (pref.rebornTheme && (new Color(bgColor).brightness > 130)) {
+						if ((pref.rebornTheme || pref.randomTheme) && (colBrightness > (pref.themeStyleBlend || pref.themeStyleBlend2 ? 150 : 130))) {
 							txt_c =
 							pop.highlight.nowPlaying && !item.root && pop.inRange(pop.nowp, item.item) ? RGB(0, 0, 0) :
 							item.sel ? pop.highlight.nowPlaying ? pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos' || ppt.albumArtLabelType == 2 ? RGB(255, 255, 255 ) : RGB(0, 0, 0) : RGB(0, 0, 0) :
+							pop.m.i == i ? pop.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
+							pop.highlight.nowPlaying ? ui.col.text : ui.col.text;
+						}
+						else if ((pref.rebornTheme || pref.randomTheme) && (colBrightness < (pref.themeStyleBlend || pref.themeStyleBlend2 ? 151 : 131))) {
+							txt_c =
+							pop.highlight.nowPlaying && !item.root && pop.inRange(pop.nowp, item.item) ? RGB(255, 255, 255) :
+							item.sel ? pop.highlight.nowPlaying ? RGB(255, 255, 255) : RGB(255, 255, 255) :
 							pop.m.i == i ? pop.highlight.nowPlaying ? ui.col.text_h : ui.col.text_h :
 							pop.highlight.nowPlaying ? ui.col.text : ui.col.text;
 						}
@@ -623,7 +567,7 @@
 						y2 = this.im.y + this.text.y2
 						if (panel.lines == 2) {
 							this.checkTooltip(gr, item, x, y1, y2, this.text.w, grp, lot, ui.font.group, ui.font.group /*ui.font.lot*/);
-							!panel.colMarker ? gr.GdiDrawText(grp, ui.font.group, pref.whiteTheme || pref.blackTheme || pref.rebornTheme ? txt_c : txt_c_nobw /*grpCol*/, x, y1, this.text.w, this.text.h, this.style.image != 1 && !this.labels.right && !item.tt[1] ? panel.cc : panel.lc) : pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, ui.font.group, ui.font.groupEllipsisSpace, 'group');
+							!panel.colMarker ? gr.GdiDrawText(grp, ui.font.group, pref.whiteTheme || pref.blackTheme || pref.rebornTheme || pref.randomTheme ? txt_c : txt_c_nobw /*grpCol*/, x, y1, this.text.w, this.text.h, this.style.image != 1 && !this.labels.right && !item.tt[1] ? panel.cc : panel.lc) : pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, ui.font.group, ui.font.groupEllipsisSpace, 'group');
 							!panel.colMarker ? gr.GdiDrawText(lot, ui.font.group /*ui.font.lot*/, txt_c /*lotCol*/, x, y2, this.text.w, this.text.h, this.style.image != 1 && !this.labels.right && !item.tt[2] ? panel.cc : panel.lc) : pop.cusCol(gr, lot, item, x, y2, this.text.w, this.text.h, type, nowp, ui.font.group /*ui.font.lot*/, ui.font.lotEllipsisSpace, 'lott');
 						} else {
 							this.checkTooltip(gr, item, x, y1, -1, this.text.w, grp, false, ui.font.main, ui.font.main);
@@ -635,11 +579,11 @@
 						y2 = y1 + this.text.h * 0.9;
 						if (panel.lines == 2) {
 							this.checkTooltip(gr, item, x, y1, y2, this.text.w, grp, lot, ui.font.group, ui.font.group /*ui.font.lot*/);
-							!panel.colMarker ? gr.GdiDrawText(grp, ui.font.group, pref.whiteTheme || pref.blackTheme || pref.rebornTheme ? txt_c : txt_c_nobw /*grpCol*/, x, y1, this.text.w, this.text.h, this.style.image != 1 && !item.tt[1] ? panel.cc : panel.lc) : pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, ui.font.group, ui.font.groupEllipsisSpace, 'lott');
-							!panel.colMarker ? gr.GdiDrawText(lot, ui.font.group /*ui.font.lot*/, pref.whiteTheme || pref.blackTheme || pref.rebornTheme ? txt_c : txt_c_nobw /*lotCol*/, x, y2, this.text.w, this.text.h, this.style.image != 1 && !item.tt[2] ? panel.cc : panel.lc) : pop.cusCol(gr, lot, item, x, y2, this.text.w, this.text.h, type, nowp, ui.font.group /*ui.font.lot*/, ui.font.lotEllipsisSpace, 'group');
+							!panel.colMarker ? gr.GdiDrawText(grp, ui.font.group, pref.whiteTheme || pref.blackTheme || pref.rebornTheme || pref.randomTheme ? txt_c : txt_c_nobw /*grpCol*/, x, y1, this.text.w, this.text.h, this.style.image != 1 && !item.tt[1] ? panel.cc : panel.lc) : pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, ui.font.group, ui.font.groupEllipsisSpace, 'lott');
+							!panel.colMarker ? gr.GdiDrawText(lot, ui.font.group /*ui.font.lot*/, pref.whiteTheme || pref.blackTheme || pref.rebornTheme || pref.randomTheme ? txt_c : txt_c_nobw /*lotCol*/, x, y2, this.text.w, this.text.h, this.style.image != 1 && !item.tt[2] ? panel.cc : panel.lc) : pop.cusCol(gr, lot, item, x, y2, this.text.w, this.text.h, type, nowp, ui.font.group /*ui.font.lot*/, ui.font.lotEllipsisSpace, 'group');
 						} else {
 							this.checkTooltip(gr, item, x, y1 + (this.overlayHeight - this.text.h) / 2, -1, this.text.w, grp, false, ui.font.group, ui.font.group /*ui.font.lot*/);
-							!panel.colMarker ? gr.GdiDrawText(grp, ui.font.group, pref.whiteTheme || pref.blackTheme || pref.rebornTheme ? txt_c : txt_c_nobw /*grpCol*/, x, y1, this.text.w, this.text.h, this.style.image != 1 && !item.tt[1] ? panel.cc : panel.lc) : pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, ui.font.group, ui.font.groupEllipsisSpace, 'group');
+							!panel.colMarker ? gr.GdiDrawText(grp, ui.font.group, pref.whiteTheme || pref.blackTheme || pref.rebornTheme || pref.randomTheme ? txt_c : txt_c_nobw /*grpCol*/, x, y1, this.text.w, this.text.h, this.style.image != 1 && !item.tt[1] ? panel.cc : panel.lc) : pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, ui.font.group, ui.font.groupEllipsisSpace, 'group');
 						}
 					}
 				}
@@ -750,22 +694,11 @@
 
 		gr.FillSolidRect(x, pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos' || ppt.albumArtLabelType == 2 ? y - 1 : y, w + 2, pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos' || ppt.albumArtLabelType == 2 ? h + 2 : h,
 			pref.whiteTheme || pref.blackTheme ? pop.highlight.row == 2 && i == pop.m.i ? RGB(160, 160, 160) : col.primary :
-			pref.rebornTheme ? pop.highlight.row == 2 && i == pop.m.i ? RGB(160, 160, 160) : g_pl_colors.background != RGB(255, 255, 255) ? col.lightAccent : col.primary :
-			pref.blueTheme ? RGB(10, 130, 220) :
-			pref.darkblueTheme ? RGB(24, 50, 82) :
-			pref.redTheme ? RGB(140, 25, 25) :
-			pref.creamTheme ? RGB(120, 170, 130) :
-			pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(35, 35, 35) : ''
+			pref.rebornTheme || pref.randomTheme ? pop.highlight.row == 2 && i == pop.m.i ? RGB(160, 160, 160) : g_pl_colors.background != RGB(255, 255, 255) ? pref.themeStyleBlend && (pref.rebornTheme || pref.randomTheme) ? RGBtoRGBA(col.lightAccent, 130) : col.lightAccent : col.primary :
+			ui.col.nowPlayingBg
 		);
 		if ((!pref.whiteTheme || !pref.blackTheme) && !ppt.albumArtShow || (!pref.whiteTheme || !pref.blackTheme) && ppt.albumArtShow && (pref.libraryDesign === 'listView_albumCovers' || pref.libraryDesign === 'listView_artistPhotos' || ppt.albumArtLabelType == 2)) {
-			gr.FillSolidRect(x, y, ui.sz.sideMarker, h,
-				pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary :
-				pref.blueTheme ? RGB(242, 230, 170) :
-				pref.darkblueTheme ? RGB(255, 202, 128) :
-				pref.redTheme ? RGB(245, 212, 165) :
-				pref.creamTheme ? RGB(120, 170, 130) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? g_pl_colors.artist_playing : ''
-			);
+			gr.FillSolidRect(x, y - 1, ui.sz.sideMarker, h + 2, ui.col.sideMarker_nobw);
 		}
 	}
 

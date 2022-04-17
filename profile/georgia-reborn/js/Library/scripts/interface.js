@@ -259,6 +259,7 @@ class UserInterface {
 	draw(gr) {
 		gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing for sharp edges on top and bottom bg
 		if (this.style.bg) gr.FillSolidRect(this.x, this.y, this.w + (is_4k ? 35 : 17), this.h, this.col.bg);
+		if (pref.themeStyleBlend && albumart) gr.DrawImage(blendedImg, 0, 0, ww, wh, 0, 0, blendedImg.Width, blendedImg.Height);
 		if (this.img.isBlur || this.img.bg) {
 			this.getImgFallback();
 			if (this.img.cur) gr.DrawImage(this.img.cur, this.x, this.y, this.w, this.h, 0, 0, this.img.cur.Width, this.img.cur.Height);
@@ -269,10 +270,10 @@ class UserInterface {
 		if (!this.style.topBarShow) return;
 		if (this.style.pen == 1) gr.DrawLine(this.x + (ppt.nodeStyle === 0 ? ui.sz.margin : panel.ln.x + ui.sz.margin), ui.y - scaleForDisplay(10) + panel.search.sp, this.x + (ppt.nodeStyle === 0 ? panel.ln.w : panel.ln.w - ui.sz.margin), ui.y - scaleForDisplay(10) + panel.search.sp, this.l.w, this.col.s_line);
 		if (!ppt.searchShow || !ppt.filterShow) return;
-		//const l_x = panel.filter.x - this.l.wc;
-		//const l_h = ui.row.h / 2;
-		//gr.FillGradRect(l_x, ui.y, this.l.w, l_h, 91, RGBA(0, 0, 0, 0), this.col.s_line);
-		//gr.FillGradRect(l_x, ui.y + l_h, this.l.w, l_h, 91, this.col.s_line, RGBA(0, 0, 0, 0));
+		// const l_x = panel.filter.x - this.l.wc;
+		// const l_h = ui.row.h / 2;
+		// gr.FillGradRect(l_x, ui.y, this.l.w, l_h, 91, RGBA(0, 0, 0, 0), this.col.s_line);
+		// gr.FillGradRect(l_x, ui.y + l_h, this.l.w, l_h, 91, this.col.s_line, RGBA(0, 0, 0, 0));
 	}
 
 	drawTopBarUnderlay(gr) {
@@ -281,6 +282,7 @@ class UserInterface {
 			gr.FillSolidRect(this.x, this.y, this.w, img.panel.y, this.col.topBarUnderlay);
 			gr.DrawImage(this.img.cur, this.x, this.y, this.w, img.panel.y, 0, 0, this.img.cur.Width, panel.search.h);
 		} else gr.FillSolidRect(this.x, this.y, this.w, img.panel.y, this.col.topBarUnderlay);
+		if (pref.themeStyleBlend && albumart) gr.DrawImage(blendedImg, this.x, this.y - this.h - geo.lower_bar_h + img.panel.y - geo.top_art_spacing, ww, wh, this.x, this.y - this.h - geo.lower_bar_h + img.panel.y - geo.top_art_spacing, blendedImg.Width, blendedImg.Height);
 	}
 
 	formatImg(image) {
@@ -367,7 +369,7 @@ class UserInterface {
 	getColours() {
 		this.assignColours();
 		this.getBlurColours();
-		this.getUIColours();
+		if (libraryInitialized) this.getUIColours(); // Wait until ui.col.txt is initialized
 		this.getItemColours();
 	}
 
@@ -437,7 +439,7 @@ class UserInterface {
 
 		this.font.zoomSize = Math.max(Math.round(ppt.baseFontSize * ppt.zoomFont / 100), 1);
 
-		//this.sz.node = this.style.squareNode ? Math.round(this.sz.node_base * ppt.zoomNode / 50) : Math.round(ppt.baseFontSize * ppt.zoomNode / 100);
+		// this.sz.node = this.style.squareNode ? Math.round(this.sz.node_base * ppt.zoomNode / 50) : Math.round(ppt.baseFontSize * ppt.zoomNode / 100);
 		this.sz.node =
 		this.style.squareNode ? Math.round(this.sz.node * ppt.zoomNode / (is_4k ? 50 : 100 ) + ppt.baseFontSize / 100) :
 		pop.nodeStyle == 4 ? Math.round(ppt.baseFontSize * ppt.zoomNode / 200 + ppt.baseFontSize / 100) :
@@ -466,7 +468,7 @@ class UserInterface {
 
 		this.font.small = gdi.Font(this.font.main.Name, Math.round(this.font.main.Size * 12 / 14), this.font.main.Style);
 		this.font.tracks = gdi.Font('Arial', Math.round(this.font.main.Size * 12 / 14), 2);
-		this.sz.sideMarker = scaleForDisplay(8); //$Lib.clamp(Math.floor(this.font.main.Size / 7), 2, 10);
+		this.sz.sideMarker = scaleForDisplay(8); // $Lib.clamp(Math.floor(this.font.main.Size / 7), 2, 10);
 		this.sbar.narrowWidth = ppt.narrowSbarWidth == 0 ? this.sz.sideMarker : ppt.narrowSbarWidth;
 
 		if (ppt.custAlbumArtGrpFontUse && ppt.custAlbumArtGrpFont.length) {
@@ -634,21 +636,14 @@ class UserInterface {
 			case 0:
 				if (this.col.bg === '') this.col.bg = /*window.GetColourCUI(3)*/ g_pl_colors.background; // Needed to prevent bg flashing when switching from tree to album art
 				if (this.col.bgSel === '') this.col.bgSel = this.img.blurDark ? RGBA(255, 255, 255, 36) : this.img.blurLight ? RGBA(0, 0, 0, 36) : window.GetColourCUI(4);
-				this.col.txt = /*window.GetColourCUI(0)*/
-				pref.whiteTheme ? RGB(100, 100, 100) :
-				pref.blackTheme ? RGB(200, 200, 200) :
-				pref.blueTheme ? RGB(230, 230, 230) :
-				pref.darkblueTheme ? RGB(230, 230, 230) :
-				pref.redTheme ? RGB(230, 230, 230) :
-				pref.creamTheme ? RGB(90, 90, 90) :
-				pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme ? RGB(200, 200, 200) : '';
-				this.col.txt_h = window.GetColourCUI(2);
+				this.col.txt = /*window.GetColourCUI(0)*/ ui.col.txt;
+				this.col.txt_h = /*window.GetColourCUI(2)*/ ui.col.txt_h;
 				break;
 			case 1:
 				if (this.col.bg === '') this.col.bg = window.GetColourDUI(1);
 				if (this.col.bgSel === '') this.col.bgSel = this.img.blurDark ? RGBA(255, 255, 255, 36) : this.img.blurLight ? RGBA(0, 0, 0, 36) : window.GetColourDUI(3);
-				this.col.txt = window.GetColourDUI(0);
-				this.col.txt_h = window.GetColourDUI(2);
+				this.col.txt = /*window.GetColourCUI(0)*/ ui.col.txt;
+				this.col.txt_h = /*window.GetColourCUI(2)*/ ui.col.txt_h;
 				break;
 		}
 	}

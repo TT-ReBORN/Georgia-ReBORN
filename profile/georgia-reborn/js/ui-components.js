@@ -77,62 +77,75 @@ class ProgressBar {
      * @param {GdiGraphics} gr
      */
     draw(gr) {
-        if (pref.show_progress_bar_default || pref.show_progress_bar_artwork || pref.show_progress_bar_compact) {
-            gr.SetSmoothingMode(SmoothingMode.None); // disable smoothing
-            gr.FillSolidRect(this.x, this.y, this.w, this.h, col.progress_bar);
-            if ((pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme) && !pref.is_first_launch) {
-                gr.DrawRect(this.x - 2, this.y - 2, this.w + 3, this.h + 3, 1, pref.blueTheme ? RGB(23, 111, 194) : pref.darkblueTheme ? RGB(22, 37, 54) : pref.redTheme ? RGB(92, 21, 21) : pref.creamTheme ? RGB(230, 230, 230) : '');
-            }
+        if (pref.show_progressBar_default || pref.show_progressBar_artwork || pref.show_progressBar_compact) {
+            if (pref.themeStyleProgressBarRounded) gr.SetSmoothingMode(SmoothingMode.AntiAlias); else gr.SetSmoothingMode(SmoothingMode.None);
 
-            if (fb.PlaybackLength) {
-                let progressStationary = false;
-                let fillColor = pref.rebornTheme ? g_pl_colors.background != RGB(255, 255, 255) ? col.extraLightAccent : col.primary : col.primary;
-                /* in some cases the progress bar would move backwards at the end of a song while buffering/streaming was occurring.
-                    This created strange looking jitter so now the progress bar can only increase unless the user seeked in the track. */
-                if (this.progressMoved || Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
-                    this.progressLength = Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength));
+            try {
+                // Progress bar background
+                if (pref.themeStyleProgressBarRounded) {
+                    gr.FillRoundRect(this.x, this.y, this.w, this.h, pref.layout_mode !== 'default_mode' ? scaleForDisplay(5) : scaleForDisplay(6), pref.layout_mode !== 'default_mode' ? scaleForDisplay(5) : scaleForDisplay(6), isStreaming && fb.IsPlaying ? col.progressBarStreaming : col.progressBar);
                 } else {
-                    progressStationary = true;
+                    gr.FillSolidRect(this.x, this.y, this.w, this.h, isStreaming && fb.IsPlaying ? col.progressBarStreaming : col.progressBar);
                 }
-                this.progressMoved = false;
-
-                if (colorDistance(col.primary, col.progress_bar) < 50) {
-                    if (pref.blackTheme) {
-                        fillColor = rgb(140, 140, 140);
+                if (pref.themeStyleDefault && (pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme) || (pref.creamTheme && (pref.themeStyleAlternative || pref.themeStyleAlternative2) && (!pref.themeStyleBlend && !pref.themeStyleBlend2)) && !pref.is_first_launch) {
+                    gr.DrawRect(this.x - 2, this.y - 2, this.w + 3, this.h + 3, 1, col.progressBarFrame);
+                }
+                if (pref.themeStyleProgressBar === 'bevel' || pref.themeStyleProgressBar === 'inner') {
+                    if (pref.themeStyleProgressBarRounded) {
+                        FillGradRoundRect(gr, this.x, this.y, this.w + scaleForDisplay(2), this.h + scaleForDisplay(2.5), pref.layout_mode !== 'default_mode' ? scaleForDisplay(5) : scaleForDisplay(6), pref.layout_mode !== 'default_mode' ? scaleForDisplay(5) : scaleForDisplay(6),
+                            pref.themeStyleProgressBar === 'inner' ? pref.themeStyleBlackReborn && fb.IsPlaying ? 90 : -90 : pref.themeStyleBlackReborn && fb.IsPlaying ? - 90 : 90, 0, col.themeStyleProgressBar, 1);
                     } else {
-                        if (!pref.rebornTheme) {
-                            fillColor = col.darkAccent;
+                        gr.FillGradRect(this.x, this.y, this.w, this.h, pref.themeStyleProgressBar === 'inner' ? pref.themeStyleBlackReborn && fb.IsPlaying ? 90 : -90 : pref.themeStyleBlackReborn && fb.IsPlaying ? -90 : 90, 0, col.themeStyleProgressBar);
+                    }
+                    if (pref.themeStyleProgressBarRounded) { // Smooth top and bottom line edges
+                        gr.FillGradRect(this.x + scaleForDisplay(3), this.y - 0.5, scaleForDisplay(9), 1, 179, col.themeStyleProgressBarLineTop, 0); // Top left
+                        gr.FillGradRect(this.x + scaleForDisplay(3), this.y + this.h - 0.5, scaleForDisplay(9), 1, 179, col.themeStyleProgressBarLineBottom, 0); // Bottom left
+                        gr.FillGradRect(this.w + this.x - scaleForDisplay(12), this.y - 0.5, scaleForDisplay(9), 1, 179, 0, col.themeStyleProgressBarLineTop); // Top right
+                        gr.FillGradRect(this.w + this.x - scaleForDisplay(12), this.y + this.h - 0.5, scaleForDisplay(9), 1, 179, 0, col.themeStyleProgressBarLineBottom); // Bottom right
+                    }
+                    gr.DrawLine(this.x + (pref.themeStyleProgressBarRounded ? scaleForDisplay(12) : 0), this.y, this.x + this.w - (pref.themeStyleProgressBarRounded ? scaleForDisplay(12) : 1), this.y, 1, col.themeStyleProgressBarLineTop);
+                    gr.DrawLine(this.x + (pref.themeStyleProgressBarRounded ? scaleForDisplay(12) : 0), this.y + this.h, this.x + this.w - (pref.themeStyleProgressBarRounded ? scaleForDisplay(12) : 1), this.y + this.h, 1, col.themeStyleProgressBarLineBottom);
+                }
+
+                // Progress bar fill
+                if (fb.PlaybackLength) {
+                    let progressStationary = false;
+                    /* in some cases the progress bar would move backwards at the end of a song while buffering/streaming was occurring.
+                        This created strange looking jitter so now the progress bar can only increase unless the user seeked in the track. */
+                    if (this.progressMoved || Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
+                        this.progressLength = Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength));
+                    } else {
+                        progressStationary = true;
+                    }
+                    this.progressMoved = false;
+
+                    if (pref.themeStyleProgressBarRounded) {
+                        gr.FillRoundRect(this.x, this.y, this.progressLength, this.h, pref.layout_mode !== 'default_mode' ? scaleForDisplay(5) : scaleForDisplay(6), pref.layout_mode !== 'default_mode' ? scaleForDisplay(5) : scaleForDisplay(6), col.progressBarFill);
+                    } else {
+                        gr.FillSolidRect(this.x, this.y, this.progressLength, this.h, col.progressBarFill);
+                    }
+                    if (fb.IsPlaying && (pref.themeStyleProgressBarFill === 'bevel' || pref.themeStyleProgressBarFill === 'inner')) {
+                        if (pref.themeStyleProgressBarRounded) {
+                            FillGradRoundRect(gr, this.x, this.y, this.progressLength + scaleForDisplay(2), this.h + scaleForDisplay(2.5), pref.layout_mode !== 'default_mode' ? scaleForDisplay(5) : scaleForDisplay(6), pref.layout_mode !== 'default_mode' ? scaleForDisplay(5) : scaleForDisplay(6), pref.themeStyleProgressBarFill === 'inner' ? -88 : 88, col.themeStyleProgressBarFill, 0);
+                        } else {
+                            gr.FillGradRect(this.x, this.y, this.progressLength, this.h, pref.themeStyleProgressBarFill === 'inner' ? -90 : 89, 0, col.themeStyleProgressBarFill);
+                        }
+                    }
+                    else if (fb.IsPlaying && pref.themeStyleProgressBarFill === 'blend' && albumart) {
+                        if (pref.themeStyleProgressBarRounded) {
+                            FillBlendedRoundRect(gr, this.x, this.y, this.progressLength + scaleForDisplay(2), this.h + scaleForDisplay(2.5), pref.layout_mode !== 'default_mode' ? scaleForDisplay(5) : scaleForDisplay(6), pref.layout_mode !== 'default_mode' ? scaleForDisplay(5) : scaleForDisplay(6), 88, blendedImg, 0);
+                        } else {
+                            gr.DrawImage(blendedImg, this.x, this.y, this.progressLength, this.h, 0, this.h, blendedImg.Width, blendedImg.Height);
                         }
                     }
                 }
-
-                if (pref.blueTheme || pref.darkblueTheme || pref.redTheme || pref.creamTheme || pref.nblueTheme || pref.ngreenTheme || pref.nredTheme || pref.ngoldTheme) {
-                    fillColor =
-                    pref.blueTheme ? RGB(242, 230, 170) :
-                    pref.darkblueTheme ? RGB(255, 202, 128) :
-                    pref.redTheme ? RGB(245, 212, 165) :
-                    pref.creamTheme ? RGB(120, 170, 130) :
-                    pref.nblueTheme ? rgb(0, 200, 255) :
-                    pref.ngreenTheme ? rgb(0, 200, 0) :
-                    pref.nredTheme ? rgb(229, 7, 44) :
-                    pref.ngoldTheme ? rgb(254, 204, 3) : '';
-                }
-
-                gr.FillSolidRect(this.x, this.y, this.progressLength, this.h, fillColor);
-                //gr.DrawRect(this.x, this.y, this.progressLength, this.h - 1, 1, col.darkAccent);
-                if (progressStationary && fb.IsPlaying && !fb.IsPaused) {
-                    if (col.accent !== this.lastAccentCol || this.progressAlphaCol === undefined) {
-                        const c = new Color(col.accent);
-                        this.progressAlphaCol = rgba(c.r, c.g, c.b, 128); // fake anti-aliased edge so things look a little smoother
-                        this.lastAccentCol = col.accent;
-                    }
-                    //gr.DrawLine(this.progressLength + this.x + 1, this.y, this.progressLength + this.x + 1, this.y + this.h - 1, 1, this.progressAlphaCol);
-                }
-            }
+            } catch(e) {};
 
             // Callback for tooltip
             const ft_lower = ft.lower_bar;
-            const flagSize = flagImgs.length >= 3 ? scaleForDisplay(42) + scaleForDisplay(pref.lower_bar_font_size_default * 3) : flagImgs.length === 2 ? scaleForDisplay(28) + scaleForDisplay(pref.lower_bar_font_size_default * 2) : scaleForDisplay(14) + scaleForDisplay(pref.lower_bar_font_size_default);
+            const flagSize =
+                  flagImgs.length >=   6 ? scaleForDisplay(84) + scaleForDisplay(pref.lower_bar_font_size_default * 6) : flagImgs.length === 5 ? scaleForDisplay(70) + scaleForDisplay(pref.lower_bar_font_size_default * 5) : flagImgs.length === 4 ? scaleForDisplay(56) + scaleForDisplay(pref.lower_bar_font_size_default * 4) :
+                  flagImgs.length ===  3 ? scaleForDisplay(42) + scaleForDisplay(pref.lower_bar_font_size_default * 3) : flagImgs.length === 2 ? scaleForDisplay(28) + scaleForDisplay(pref.lower_bar_font_size_default * 2) : scaleForDisplay(14) + scaleForDisplay(pref.lower_bar_font_size_default);
             this.lowerMargin_default = scaleForDisplay(80); // 40px left + 40px right
             this.lowerMargin_artwork = scaleForDisplay(40); // 20px left + 20px right
             this.lowerMargin_compact = scaleForDisplay(40); // 20px left + 20px right
@@ -150,7 +163,7 @@ class ProgressBar {
             const p = scaleForDisplay(pref.transport_buttons_spacing_default);
 
             // Setup width for artist and song title
-            this.availableWidth = transport.enableTransportControls_default ? Math.min(ww / 2 - ((w * count) + (p * count) / 2) - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0)) : Math.min(ww - this.lowerMargin_default - (pref.show_flags_lowerbar && flagImgs.length ? flagSize : 0) - this.timeAreaWidth);
+            this.availableWidth = transport.enableTransportControls_default ? Math.min(ww * 0.5 - ((w * count) + (p * count) / 2)) : Math.min(ww - this.lowerMargin_default - this.timeAreaWidth);
             this.trackNumWidth = Math.ceil(gr.MeasureString(str.tracknum, ft_lower, 0, 0, 0, 0).Width);
             this.artistWidth = gr.MeasureString(str.artist, ft.artist_lrg, 0, 0, 0, 0).Width;
             this.titleWidth = gr.MeasureString(pref.show_composer ? str.title_lower + str.composer + str.original_artist : str.title_lower + str.original_artist, ft_lower, 0, 0, 0, 0).Width + gr.MeasureString(str.original_artist, ft_lower, 0, 0, 0, 0).Width;
@@ -226,10 +239,10 @@ class ProgressBar {
                 if (lowerBar_tt_hitarea_x <= x && lowerBar_tt_hitarea_y <= y && lowerBar_tt_hitarea_x + lowerBar_tt_hitarea_w >= x &&
                     lowerBar_tt_hitarea_y + lowerBar_tt_hitarea_h >= y) {
                     if (this.artistWidth > this.availableWidth) {
-                        tt.showDelayed(str.artist + "\n" + str.tracknum + ' ' + str.title + (pref.show_composer ? str.composer : ''));
+                        tt.showDelayed(str.artist + "\n" + (str.tracknum === '' ? '' : str.tracknum + ' ') + str.title + (pref.show_composer ? str.composer : ''));
                     }
                     else if (this.titleWidth > this.availableWidth) {
-                        tt.showDelayed(str.artist + "\n" + str.tracknum + ' ' + str.title + (pref.show_composer ? str.composer : ''));
+                        tt.showDelayed(str.artist + "\n" + (str.tracknum === '' ? '' : str.tracknum + ' ') + str.title + (pref.show_composer ? str.composer : ''));
                     }
                 } else if (!displayLibrary) {
                     tt.stop();
@@ -454,7 +467,9 @@ class MetadataGrid_tt {
         this.line_spacing = scaleForDisplay(8);
         this.tracknum_spacing = scaleForDisplay(8);
         this.timeline_h = scaleForDisplay(60);
-        this.flagSize = flagImgs.length >= 3 ? scaleForDisplay(42) + scaleForDisplay(pref.album_font_size * 3) : flagImgs.length === 2 ? scaleForDisplay(28) + scaleForDisplay(pref.album_font_size * 2) : scaleForDisplay(14) + scaleForDisplay(pref.album_font_size);
+        this.flagSize =
+             flagImgs.length >=   6 ? scaleForDisplay(84) + scaleForDisplay(pref.album_font_size * 6) : flagImgs.length === 5 ? scaleForDisplay(70) + scaleForDisplay(pref.album_font_size * 5) : flagImgs.length === 4 ? scaleForDisplay(56) + scaleForDisplay(pref.album_font_size * 4) :
+             flagImgs.length ===  3 ? scaleForDisplay(42) + scaleForDisplay(pref.album_font_size * 3) : flagImgs.length === 2 ? scaleForDisplay(28) + scaleForDisplay(pref.album_font_size * 2) : scaleForDisplay(14) + scaleForDisplay(pref.album_font_size);
 
         if (!albumart && cdart) {
             this.gridSpace = Math.round(cdart_size.x - geo.aa_shadow - this.textLeft - this.textRight - (pref.show_flags_details && flagImgs.length ? this.flagSize : 0));
@@ -611,6 +626,152 @@ class MetadataGrid_tt {
 
         } else if (!displayLibrary) {
             tt.stop();
+        }
+    }
+}
+
+
+class JumpSearch {
+    constructor() {
+        this.arc1 = 5;
+        this.arc2 = 4;
+        this.j = {
+            x: 5,
+            y: 5,
+            w: 50,
+            h: 30
+        };
+        this.jSearch = '';
+        this.jump_search = true;
+    }
+
+    setY(y) {
+        this.y = y;
+    }
+
+    draw(gr) {
+        if (this.jSearch) {
+            gr.SetSmoothingMode(4);
+            this.j.w = gr.CalcTextWidth(this.jSearch, ui.font.find) + 25;
+            gr.FillRoundRect(this.j.x - this.j.w / 2, this.j.y, this.j.w, this.j.h, this.arc1, this.arc1, 0x96000000);
+            gr.DrawRoundRect(this.j.x - this.j.w / 2, this.j.y, this.j.w, this.j.h, this.arc1, this.arc1, 1, 0x64000000);
+            gr.DrawRoundRect(this.j.x - this.j.w / 2 + 1, this.j.y + 1, this.j.w - 2, this.j.h - 2, this.arc2, this.arc2, 1, 0x28ffffff);
+            gr.GdiDrawText(this.jSearch, ui.font.find, RGB(0, 0, 0), this.j.x - this.j.w / 2 + 1, this.j.y + 1, this.j.w, this.j.h, panel.cc);
+            gr.GdiDrawText(this.jSearch, ui.font.find, this.jump_search ? 0xfffafafa : 0xffff4646, this.j.x - this.j.w / 2, this.j.y, this.j.w, this.j.h, panel.cc);
+            gr.SetSmoothingMode(0);
+        }
+    }
+
+    on_size() {
+        this.j.x = Math.round(pref.layout_mode !== 'default_mode' ? ww * 0.5 : ww * 0.5 + ww * 0.25);
+        this.j.h = Math.round(playlist_geo.row_h * 1.5);
+        this.j.y = Math.round((wh + geo.top_art_spacing - geo.lower_bar_h - this.j.h) / 2);
+        this.arc1 = Math.min(5, this.j.h / 2);
+        this.arc2 = Math.min(4, (this.j.h - 2) / 2);
+    }
+
+    on_char(code) {
+        if (utils.IsKeyPressed(0x09) || utils.IsKeyPressed(0x11) || utils.IsKeyPressed(0x1B) || utils.IsKeyPressed(0x6A) || utils.IsKeyPressed(0x6D)) return;
+        const text = String.fromCharCode(code);
+        if (!panel.search.active) {
+            let foundInPlaylist = false;
+            let foundInLibrary = false;
+            let pos = -1;
+            switch (code) {
+                case vk.back:
+                    this.jSearch = this.jSearch.substr(0, this.jSearch.length - 1);
+                    break;
+                case vk.enter:
+                    this.jSearch = '';
+                    return;
+                default:
+                    this.jSearch += text;
+                    break;
+            }
+            pop.clearSelected();
+            if (!this.jSearch) return;
+            pop.sel_items = [];
+            this.jump_search = true;
+            window.RepaintRect(pref.layout_mode !== 'default_mode' ? 0 : ww * 0.5, this.j.y, pref.layout_mode !== 'default_mode' ? ww : ww * 0.5, this.j.h + 1);
+            timer.clear(timer.jsearch1);
+            timer.jsearch1.id = setTimeout(() => {
+                // First search in the playlist -> // TODO: Instead of showing library results ( from library search ) in the active playlist, make a playlist search from the active playlist content.
+                const plName = plman.GetPlaylistName(plman.ActivePlaylist);
+                if (plName == 'Library View' || plman.IsAutoPlaylist(plman.ActivePlaylist)) {
+                    pop.tree.some((v, i) => {
+                        const name = v.name.replace(/@!#.*?@!#/g, '');
+                        if (name != panel.rootName && name.substring(0, this.jSearch.length).toLowerCase() == this.jSearch.toLowerCase()) {
+                            foundInPlaylist = true;
+                            foundInLibrary = false;
+                            pos = i;
+                            v.sel = true;
+                            pop.setPos(pos);
+                            return true;
+                        }
+                    });
+                }
+                // If no playlist results, then try search in the library
+                else if (!foundInPlaylist) {
+                    pop.tree.some((v, i) => {
+                        const name = v.name.replace(/@!#.*?@!#/g, '');
+                        if (name != panel.rootName && name.substring(0, this.jSearch.length).toLowerCase() == this.jSearch.toLowerCase()) {
+                            foundInPlaylist = false;
+                            foundInLibrary = true;
+                            pos = i;
+                            v.sel = true;
+                            pop.setPos(pos);
+                            return true;
+                        }
+                    });
+                }
+
+                if (!foundInPlaylist && !foundInLibrary) this.jump_search = false;
+                window.RepaintRect(pref.layout_mode !== 'default_mode' ? 0 : ww * 0.5, geo.top_art_spacing, pref.layout_mode !== 'default_mode' ? ww : ww * 0.5, wh - geo.top_art_spacing - geo.lower_bar_h);
+
+                if (foundInPlaylist) {
+                    displayPlaylist = true;
+                    displayLibrary = false;
+                    displayBiography = false;
+                    pref.displayLyrics = false;
+                    pop.showItem(pos, 'focus');
+                    initButtonState();
+                }
+                else if (foundInLibrary) {
+                    displayPlaylist = false;
+                    displayLibrary = true;
+                    displayBiography = false;
+                    pref.displayLyrics = false;
+                    pop.showItem(pos, 'focus');
+                    initButtonState();
+                }
+                timer.jsearch1.id = null;
+            }, 500);
+
+            timer.clear(timer.jsearch2);
+            timer.jsearch2.id = setTimeout(() => {
+                if (foundInPlaylist) {
+                    if (pos >= 0 && pos < pop.tree.length) {
+                        displayPlaylist = true;
+                        displayLibrary = false;
+                        displayBiography = false;
+                        pref.displayLyrics = false;
+                        pop.setPlaylistSelection(pos, pop.tree[pos]);
+                        initButtonState();
+                    }
+                }
+                else if (foundInLibrary) {
+                    if (pos >= 0 && pos < pop.tree.length) {
+                        displayPlaylist = false;
+                        displayLibrary = true;
+                        displayBiography = false;
+                        pref.displayLyrics = false;
+                        initButtonState();
+                    }
+                }
+                this.jSearch = '';
+                window.RepaintRect(pref.layout_mode !== 'default_mode' ? 0 : ww * 0.5, this.j.y, pref.layout_mode !== 'default_mode' ? ww : ww * 0.5, this.j.h + 1);
+                timer.jsearch2.id = null;
+            }, 1200);
         }
     }
 }

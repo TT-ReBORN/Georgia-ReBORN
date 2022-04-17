@@ -1008,7 +1008,7 @@ function _list(mode, x, y, w, h) {
 				let tmp = [];
 				for (let i = 0; i < f.InfoCount; i++) {
 					const name = f.InfoName(i);
-					const value = f.InfoValue(i);
+					const value = f.InfoValue(i).replace(/\s{2,}/g, ' ');
 					tmp.push({
 						name : name.toUpperCase(),
 						value : value,

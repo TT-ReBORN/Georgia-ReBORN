@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-if (typeof my_utilsLib === 'undefined') include(`${basePath}js\\Library\\scripts\\utils.js`);
+if (typeof my_utilsLib === 'undefined') include(`${basePath}js\\library\\scripts\\utils.js`);
 
 // const loadAsync = window.GetProperty('Load Library Tree Asynchronously', true);
 

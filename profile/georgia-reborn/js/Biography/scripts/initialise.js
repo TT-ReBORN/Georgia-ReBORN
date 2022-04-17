@@ -156,15 +156,23 @@ function freeBiographyPanel() {
 	name = null;
 	alb_scrollbar = null;
 	art_scrollbar = null;
+	art_scroller = null;
+	cov_scroller = null;
 	butBio = null;
-	menBio = null;
+	popUpBoxBio = null;
 	txt = null;
 	tagBio = null;
+	resize = null;
 	libBio = null;
 	imgBio = null;
+	seeker = null;
+	filmStrip = null;
 	timerBio = null;
+	menBio = null;
 	serverBio = null;
 	biographyPanel = null;
+	biography = null;
+
 	biographyInitialized = false;
 }
 
