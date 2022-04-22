@@ -3088,7 +3088,11 @@ function onOptionsMenu(x, y) {
 				serverBio.resetCfg(); // reset biography server settings
 			}
 		}
-		popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', continue_confirmation);
+		if (!IsFolder("Z:\\lib")) { // Disable fancy popup on Linux, otherwise it will crash and is not yet supported
+			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', continue_confirmation);
+		} else {
+			continue_confirmation(false, 'Yes');
+		}
 		console.log('>>> Georgia-ReBORN has been successfully reset <<<');
 	});
 	themeSettingsMenu.appendTo(settingsMenu);
