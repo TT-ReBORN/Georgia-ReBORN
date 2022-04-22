@@ -4692,6 +4692,11 @@ function loadImageFromAlbumArtList(index, loadFromCache) {
 		gdi.LoadImageAsyncV2(window.ID, aa_list[index]).then(coverImage => {
 			albumart = artCache.encache(coverImage, aa_list[index]);
 			if (newTrackFetchingArtwork) {
+				if (!albumart && fb.IsPlaying) { // Use noAlbumArtStub if album art could not be properly parsed
+					noArtwork = true;
+					noAlbumArtStub = true;
+					console.log('<Error: Album art could not be properly parsed! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>');
+				}
 				getThemeColors(albumart);
 				newTrackFetchingArtwork = false;
 			}
@@ -4813,7 +4818,15 @@ function ResizeArtwork(resetCDPosition) {
 		if (albumart_scaled) {
 			albumart_scaled = null;
 		}
-		albumart_scaled = albumart.Resize(albumart_size.w, albumart_size.h);
+		try { // Prevent crash if album art is corrupt, file format is not supported or has an unusual ICC profile embedded
+			albumart_scaled = albumart.Resize(albumart_size.w, albumart_size.h);
+		} catch (e) {
+			noArtwork = true;
+			albumart = null;
+			noAlbumArtStub = true;
+			albumart_size = new ImageSize(0, geo.top_art_spacing, 0, 0);
+			console.log('<Error: Album art could not be scaled! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>');
+		}
 		pauseBtn.setCoords(albumart_size.x + albumart_size.w / 2, albumart_size.y + albumart_size.h / 2);
 		hasArtwork = true;
 	} else {

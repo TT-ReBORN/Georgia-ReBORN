@@ -3252,8 +3252,11 @@ function setThemeStyleBlend() {
 				case imgBrightness >   0: alpha =  80; break;
 			}
 		}
-
-		g.DrawImage(image, 0, 0, ww, wh, 0, 0, image.Width, image.Height, angle, alpha);
+		try { // Prevent crash if album art is corrupt, file format is not supported or has a unusual ICC profile embedded
+			g.DrawImage(image, 0, 0, ww, wh, 0, 0, image.Width, image.Height, angle, alpha);
+		} catch (e) {
+			console.log('<Error: Image blending failed, album art could not be properly parsed! Maybe it is corrupt, file format is not supported or has a unusual ICC profile embedded>');
+		}
 		tempImg.ReleaseGraphics(g);
 		tempImg = blurImage(tempImg, 0, 0, tempImg.Width, tempImg.Height, 0, 0, tempImg.Width, tempImg.Height);
 

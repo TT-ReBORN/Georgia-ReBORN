@@ -4514,7 +4514,11 @@ class Header extends BaseHeader {
 				art_h = Math.round(art_w * ratio);
 			}
 
-			this.art = image.Resize(art_w, art_h);
+			try { // Prevent crash if album art is corrupt, file format is not supported or has an unusual ICC profile embedded
+				this.art = image.Resize(art_w, art_h);
+			} catch (e) {
+				console.log('<Error: Album art in Playlist could not be scaled! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>');
+			}
 		}
 
 		Header.art_cache.add_image_for_meta(this.art, this.metadb);
