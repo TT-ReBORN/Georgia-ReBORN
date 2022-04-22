@@ -5458,7 +5458,7 @@ function createButtonObjects(ww, wh) {
 		let w = img[0].Width;
 
 		// Top menu font size X-correction
-		let x_offset = pref.menu_font_size ===  13 ? 3 : pref.menu_font_size ===  14 ? 5 : pref.menu_font_size ===  16 ? 12 : 0;
+		let x_offset = pref.menu_font_size ===  13 ? is_QHD ? 0 : 3 : pref.menu_font_size ===  14 ? is_QHD ? 0 : 5 : pref.menu_font_size ===  16 ? is_QHD ? 0 : 12 : 0;
 
 		// Top menu font size Y-correction
 		pref.menu_font_size ===   8 ? y += scaleForDisplay(3) :
@@ -5470,7 +5470,7 @@ function createButtonObjects(ww, wh) {
 		pref.menu_font_size ===  16 ? y -= scaleForDisplay(3) : 0;
 
 		btns[20] = new Button(x, y, w, h, 'File', img);
-		x += img[0].Width - (is_4k ? 3 : !is_4k && ww < 700 && is_QHD && pref.menu_font_size === 16 ? -10 : 2);
+		x += img[0].Width - (is_4k ? 3 : 2);
 
 		x -= x_offset;
 		img = btnImg.Options;
@@ -5523,7 +5523,7 @@ function createButtonObjects(ww, wh) {
 		let w = img[0].Width;
 
 		// Top menu font size X-correction
-		let x_offset = pref.menu_font_size ===  13 ? 3 : pref.menu_font_size ===  14 ? 5 : pref.menu_font_size ===  16 ? 12 : 0;
+		let x_offset = pref.menu_font_size ===  13 ? is_QHD ? 0 : 3 : pref.menu_font_size ===  14 ? is_QHD ? 0 : 5 : pref.menu_font_size ===  16 ? is_QHD ? 4 : 12 : 0;
 
 		// Top menu font size Y-correction
 		pref.menu_font_size ===   8 ? y += scaleForDisplay(3) :
