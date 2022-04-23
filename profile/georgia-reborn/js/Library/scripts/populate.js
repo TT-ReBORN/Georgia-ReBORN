@@ -1506,6 +1506,7 @@ class Populate {
 		if (but.Dn) return;
 		const ix = this.get_ix(x, y, false, false);
 		this.row.i = this.checkRow(x, y);
+		if (this.on_key_down) this.row.i = -1; // Needed to prevent selection mouse jump while using vkey up/down while moving the mouse
 		this.m.i = -1;
 		if (ix != -1) {
 			this.m.i = ix;
