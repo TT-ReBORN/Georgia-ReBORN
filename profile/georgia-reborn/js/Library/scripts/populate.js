@@ -1302,8 +1302,7 @@ class Populate {
 					plman.ExecutePlaylistDefaultAction($Lib.pl_active, this.range(item.item)[0]);
 					return;
 				}
-				if (!ppt.dblClickAction && !this.autoFill.mouse && !this.autoPlay.click) return this.send(item, x, y), initPlaylist();
-				if (pref.playlistRowHover) repaintPlaylistRows();
+				if (!ppt.dblClickAction && !this.autoFill.mouse && !this.autoPlay.click) return this.send(item, x, y);
 				if (ppt.dblClickAction == 2 && !item.track && !panel.imgView) {
 					this.expandCollapse(x, y, item, ix);
 					lib.treeState(false, ppt.rememberTree);
@@ -1317,8 +1316,6 @@ class Populate {
 					plman.ActivePlaylist = pln;
 					const c = (plman.PlaybackOrder == 3 || plman.PlaybackOrder == 4) ? Math.ceil(plman.PlaylistItemCount(pln) * Math.random() - 1) : 0;
 					plman.ExecutePlaylistDefaultAction(pln, c);
-					initPlaylist();
-					if (pref.playlistRowHover) repaintPlaylistRows();
 				}
 				break;
 		}
@@ -1379,7 +1376,7 @@ class Populate {
 				if (!pref.always_showPlayingPl) playlist.on_size(ww, wh);
 				window.Repaint();
 			}
-			return this.add(x, y, !ppt.altAddToCur), initPlaylist();
+			return this.add(x, y, !ppt.altAddToCur);
 		}
 		if (!vk.k('ctrl')) {
 			this.clearSelected();
@@ -1388,7 +1385,6 @@ class Populate {
 		if (this.autoFill.mouse || this.autoPlay.click) {
 			window.Repaint(true);
 			this.send(item, x, y);
-			initPlaylist();
 		} else {
 			panel.treePaint();
 		}
@@ -1485,7 +1481,7 @@ class Populate {
 
 	mbtn_up(x, y) {
 		if (!ppt.libSource) return;
-		this.add(x, y, !ppt.mbtnAddToCur); initPlaylist();
+		this.add(x, y, !ppt.mbtnAddToCur);
 	}
 
 	merge(m, mergeBrCount) {
@@ -1604,7 +1600,6 @@ class Populate {
 		}
 		if (panel.search.active) return;
 		if (vk.k('enter')) {
-			initPlaylist();
 			if (!this.sel_items.length) return;
 			if (!ppt.libSource) {
 				if (this.autoPlay.send) plman.ExecutePlaylistDefaultAction($Lib.pl_active, this.sel_items[0]);

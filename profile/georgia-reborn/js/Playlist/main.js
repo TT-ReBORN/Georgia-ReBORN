@@ -1451,10 +1451,7 @@ class Playlist extends List {
 		// and using the transport next button with random shuffle mode on or while playlist scrolling. This cosmetic fix only used if active playlist has less than 5000 playlist items for performance reason.
 		if (playing_item_location.IsValid && playing_item_location.PlaylistIndex === this.cur_playlist_idx &&
 			(pref.rebornTheme || pref.randomTheme || pref.themeStyleBlackAndWhiteReborn) && pref.playlistRowHover && plman.PlaylistItemCount(plman.ActivePlaylist) < 5000) {
-			this.cnt.rows = this.initialize_rows(plman.GetPlaylistItems(this.cur_playlist_idx));
-			this.cnt.sub_items = this.create_headers(this.cnt.rows, plman.GetPlaylistItems(this.cur_playlist_idx));
-			this.playing_item = this.cnt.rows[playing_item_location.PlaylistItemIndex];
-			this.playing_item.is_playing = true;
+			this.initialize_and_repaint_list(true);
 		}
 		else if (playing_item_location.IsValid && playing_item_location.PlaylistIndex === this.cur_playlist_idx &&
 			(pref.rebornTheme || pref.randomTheme || pref.themeStyleBlackAndWhiteReborn) && pref.playlistRowHover && plman.PlaylistItemCount(plman.ActivePlaylist) > 5000) {

@@ -4146,6 +4146,10 @@ function on_playlist_items_added(playlistIndex) {
 		trace_call && console.log(qwr_utils.function_name());
 		biography.on_playlist_items_added(playlistIndex);
 	}
+	if (displayLibrary) {
+		trace_call && console.log(qwr_utils.function_name());
+		library.on_playlist_items_added(playlistIndex);
+	}
 }
 
 function on_playlist_items_reordered(playlistIndex) {

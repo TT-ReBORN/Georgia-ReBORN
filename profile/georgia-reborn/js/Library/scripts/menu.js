@@ -150,7 +150,7 @@ class MenuItems {
 		menu.newMenu({hide: () => !this.settingsBtnDn && ppt.settingsShow && this.validItem});
 		['Add to current playlist' + '\tShift+enter', 'Send to new playlist' + '\tCtrl+enter', 'Show now playing'].forEach((v, i) => menu.newItem({
 			str: v,
-			func: () => { this.setPlaylist(i); updatePlaylist(); },
+			func: () => this.setPlaylist(i),
 			flags: () => {
 				const pln = !ppt.sendToCur ? plman.FindPlaylist(ppt.libPlaylist.replace(/%view_name%/i, panel.viewName)) : plman.ActivePlaylist;
 				// return !i && !plman.GetPlaylistLockedActions(pln).includes('RemoveItems') && !plman.GetPlaylistLockedActions(pln).includes('AddItems') || i == 1 && !plman.GetPlaylistLockedActions(pln).includes('AddItems') || i == 2 || i == 3 && pop.nowp != -1 ? MF_STRING_LIB : MF_GRAYED_LIB // Crashing foobar when no library playlist exists and right clicking for context menu

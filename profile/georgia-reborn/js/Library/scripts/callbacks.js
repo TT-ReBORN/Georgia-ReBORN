@@ -286,6 +286,7 @@ function on_playlist_items_added(playlistIndex) {
 		lib.playlist_update(playlistIndex);
 
 	}
+	initPlaylist(); // Update Playlist when adding items from Library
 }
 
 function on_playlist_items_removed(playlistIndex) {
@@ -625,6 +626,7 @@ class LibraryCallbacks {
 			lib.playlist_update(playlistIndex);
 
 		}
+		initPlaylist(); // Update Playlist when adding items from Library
 	}
 
 	on_playlist_items_removed(playlistIndex) {
