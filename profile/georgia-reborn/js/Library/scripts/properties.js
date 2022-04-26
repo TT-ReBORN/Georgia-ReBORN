@@ -214,7 +214,7 @@ let properties = [
 	['Node [Squares]: Windows 0 or 1', false, 'winNode'],
 	['Node Custom Icon: +|-', '\uE013|\uE015', 'iconCustom'],
 	['Node Custom Icon: Vertical Offset (%)', -2, 'iconVerticalPad'],
-	['Play on Enter or Send from Menu', false, 'autoPlay'],
+	['Play on Enter or Send from Menu', true, 'autoPlay'],
 	['Playlist: Add to Current [Alt+Click]', false, 'altAddToCur'],
 	['Playlist: Add to Current [MiddleClick]', true, 'mbtnAddToCur'],
 	['Playlist: Custom Sort', '', 'customSort'],

@@ -2852,6 +2852,14 @@ function onOptionsMenu(x, y) {
 		ppt.dblClickAction = action;
 		panel.updateProp(1);
 	});
+	const libraryKeystrokeMenu = new Menu('Keystroke action');
+	libraryKeystrokeMenu.addToggleItem('Play on Enter or send from menu', ppt, 'autoPlay', () => { panel.updateProp(1); });
+	libraryKeystrokeMenu.addSeparator();
+	libraryKeystrokeMenu.addRadioItems(['Select', 'Send to Playlist'], ppt.keyAction, [0,1], (action) => {
+		ppt.keyAction = action;
+		panel.updateProp(1);
+	});
+	libraryKeystrokeMenu.appendTo(libraryMenu);
 	libraryMenu.addSeparator();
 
 	libraryMenu.addToggleItem('Remember library state', ppt, 'rememberTree', () => { panel.updateProp(1); });
