@@ -389,7 +389,7 @@ function draw_ui(gr) {
 
 		// Show full background when no disc art
 		if (pref.no_cdartBG && (!cdart || !pref.display_cdart) && albumart && (!displayLibrary && !displayPlaylist && !displayBiography)) {
-			gr.FillSolidRect(albumart_size.x + albumart_size.w, albumart_size.y, albumart_size.x + 1, albumart_size.h, col.detailsBg);
+			gr.FillSolidRect(albumart_size.x + albumart_size.w - 1, albumart_size.y, albumart_size.x + 1, albumart_size.h, col.detailsBg);
 		}
 
 		if ((isStreaming && noArtwork || !albumart && noArtwork)) {
@@ -467,12 +467,12 @@ function draw_ui(gr) {
 			cdartArray = [];
 			cdart = null;
 
-			albumart_size.x =
-				pref.layout_mode === 'default_mode' ? displayPlaylist || displayLibrary ? 0 : ww * 0.5 :
-				pref.layout_mode === 'artwork_mode' ? !displayPlaylist ? 0 : ww : 0;
+			albumart_size.x = /* If player size is not proportional, album art sticks to playlist in default mode and is centered in artwork mode */
+				pref.layout_mode === 'default_mode' ? displayPlaylist || displayLibrary ? ww * 0.5 - albumart_size.w : ww * 0.5 :
+				pref.layout_mode === 'artwork_mode' ? !displayPlaylist || pref.displayLyrics ? ww * 0.5 - albumart_size.w * 0.5 : ww : 0;
 
 			albumart_size.w =
-				pref.layout_mode === 'default_mode' ? displayPlaylist || displayLibrary ? albumart_size.w : albumart_size.w / 2 :
+				pref.layout_mode === 'default_mode' ? displayPlaylist || displayLibrary ? albumart_size.w : albumart_size.w * 0.5 :
 				pref.layout_mode === 'artwork_mode' ? displayPlaylist ? ww : ww : 0;
 		}
 		if (!isStreaming || isStreaming && (displayPlaylist || !displayPlaylistArtworkMode || displayLibrary)) {
@@ -512,7 +512,7 @@ function draw_ui(gr) {
 	}
 
 	// text info grid
-	if (((!displayPlaylist && !displayLibrary || !displayPlaylistArtworkMode && !displayLibrary) || (!albumart && noArtwork)) && fb.IsPlaying) {
+	if (((pref.layout_mode === 'default_mode' && !displayPlaylist && !displayLibrary || pref.layout_mode === 'artwork_mode' && displayPlaylist) || (!albumart && noArtwork)) && fb.IsPlaying) {
 		let drawTextGrid = null;
 		if (timings.showExtraDrawTiming) drawTextGrid = fb.CreateProfiler('on_paint -> textGrid');
 		let gridSpace = 0;
@@ -938,6 +938,7 @@ function draw_ui(gr) {
 
 	// Theme styles
 	if (pref.themeStyleBevel) {
+		gr.SetSmoothingMode(SmoothingMode.None);
 		if (fb.IsPlaying && ((displayPlaylist || displayLibrary) && !displayBiography && pref.layout_mode === 'default_mode' || (!displayPlaylistArtworkMode && !displayLibrary && !displayBiography) && pref.layout_mode === 'artwork_mode')) {
 			// Fill gap when album art or player size is not proportional
 			gr.FillSolidRect(-1, geo.top_art_spacing, pref.layout_mode === 'default_mode' ? ww * 0.5 + 1 : ww + 1, albumart_size.y - geo.top_art_spacing - 1, RGBtoRGBA(col.themeStyleBevel, 40));
@@ -4822,7 +4823,10 @@ function ResizeArtwork(resetCDPosition) {
 
 		albumart_size.w = Math.floor(albumart.Width * album_scale); // width
 		albumart_size.h = Math.floor(albumart.Height * album_scale); // height
-		albumart_size.x = pref.layout_mode === 'artwork_mode' && (!displayPlaylist || pref.displayLyrics) ? 0 : pref.layout_mode === 'artwork_mode' && displayPlaylist ? ww : Math.floor(xCenter - 0.5 * albumart_size.w); // left
+		albumart_size.x = /* If player size is not proportional, album art sticks to playlist in default mode and is centered in artwork mode */
+			pref.layout_mode === 'default_mode' ? displayPlaylist || displayLibrary ? ww * 0.5 - albumart_size.w : Math.floor(xCenter - 0.5 * albumart_size.w) :
+			pref.layout_mode === 'artwork_mode' ? !displayPlaylist || pref.displayLyrics ? ww * 0.5 - albumart_size.w * 0.5 : ww : 0;
+
 		if (album_scale !== (wh - geo.top_art_spacing - lowerSpace) / albumart.Height) {
 			// restricted by width
 			var y = Math.floor(((wh - geo.lower_bar_h + geo.top_art_spacing) / 2) - albumart_size.h / 2);
