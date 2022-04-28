@@ -5491,7 +5491,11 @@ function createButtonObjects(ww, wh) {
 		let w = img[0].Width;
 
 		// Top menu font size X-correction
-		let x_offset = pref.menu_font_size ===  13 ? is_QHD ? 0 : 3 : pref.menu_font_size ===  14 ? is_QHD ? 0 : 5 : pref.menu_font_size ===  16 ? is_QHD ? 0 : 12 : 0;
+		let x_offset =
+			ww > scaleForDisplay(620) ? 0 :
+			pref.menu_font_size ===  13 && !is_QHD ? scaleForDisplay(3) :
+			pref.menu_font_size ===  14 && !is_QHD ? scaleForDisplay(5) :
+			pref.menu_font_size ===  16 ? is_QHD ? 4 : scaleForDisplay(12) : 0;
 
 		// Top menu font size Y-correction
 		pref.menu_font_size ===   8 ? y += scaleForDisplay(3) :
@@ -5556,7 +5560,11 @@ function createButtonObjects(ww, wh) {
 		let w = img[0].Width;
 
 		// Top menu font size X-correction
-		let x_offset = pref.menu_font_size ===  13 ? is_QHD ? 0 : 3 : pref.menu_font_size ===  14 ? is_QHD ? 0 : 5 : pref.menu_font_size ===  16 ? is_QHD ? 4 : 12 : 0;
+		let x_offset =
+			ww > scaleForDisplay(570) ? 0 :
+			pref.menu_font_size ===  13 && !is_QHD ? scaleForDisplay(3) :
+			pref.menu_font_size ===  14 && !is_QHD ? scaleForDisplay(5) :
+			pref.menu_font_size ===  16 ? is_QHD ? 4 : scaleForDisplay(12) : 0;
 
 		// Top menu font size Y-correction
 		pref.menu_font_size ===   8 ? y += scaleForDisplay(3) :
