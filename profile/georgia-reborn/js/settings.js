@@ -72,7 +72,6 @@ pref.add_properties({
 	themeStyleBlackAndWhite:            ['Georgia-ReBORN - Theme style: Black And White', false], // use Black And White theme style
 	themeStyleBlackAndWhite2:           ['Georgia-ReBORN - Theme style: Black And White 2', false], // use Black And White 2 theme style
 	themeStyleBlackAndWhiteReborn:      ['Georgia-ReBORN - Theme style: Black And White Reborn', false], // use Black And White Reborn theme style
-	themeStyleAlternative2:             ['Georgia-ReBORN - Theme style: Alternative Colors 2', false], // use alternative colors 2 theme style
 	themeStyleBlackReborn:              ['Georgia-ReBORN - Theme style: Black Reborn', false], // use Black reborn theme style
 	themeStyleRebornWhite:              ['Georgia-ReBORN - Theme style: Reborn White', false], // use Reborn white theme style
 	themeStyleRebornBlack:              ['Georgia-ReBORN - Theme style: Reborn Black', false], // use Reborn black theme style

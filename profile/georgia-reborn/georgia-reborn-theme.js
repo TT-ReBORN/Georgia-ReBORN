@@ -179,7 +179,7 @@ function on_paint(gr) {
 		pref_darkblueTheme ? RGB(27, 55, 90) :
 		pref_redTheme ? RGB(140, 25, 25) :
 		pref_creamTheme ? RGB(255, 255, 255) :
-		pref_nblueTheme || pref_ngreenTheme || pref_nredTheme || pref_ngoldTheme ? RGB(35, 35, 35) : ''
+		pref_nblueTheme || pref_ngreenTheme || pref_nredTheme || pref_ngoldTheme ? RGB(35, 35, 35) : '';
 
 	col.progressBarFill =
 		pref_whiteTheme ? pref_themeStyleBlackAndWhite ? RGB(255, 255, 255) : pref_themeStyleBlackAndWhite2 ? RGB(210, 210, 210) : RGB(25, 160, 240) :

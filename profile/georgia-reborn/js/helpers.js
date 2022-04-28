@@ -21,7 +21,7 @@ function _createFolder(folder, is_recursive) {
 		}
 	}
 
-	fso.CreateFolder(folder)
+	fso.CreateFolder(folder);
 }
 
 function _deleteFile(file) {
@@ -787,10 +787,17 @@ function checkForPlayerSize() {
 }
 
 function autoDetectRes() {
-	set_window_size(1140, 730); // Reset player size for initialization
+	function resetSize() { // Reset player size for initialization
+		is_4k = false;
+		is_QHD = false;
+		setSizesFor4KorHD();
+		pref.displayRes = 'HD';
+		pref.player_4k_small  = false;
+		pref.player_QHD_small = false;
+		pref.player_HD_small  = 'player_HD_small';
+	}
 
-	// Check for 4K
-	if (initDPI.dpi() > 120) {
+	function check4k() {
 		set_window_size(2800, 1720); // Check if player size 'Normal' for 4k can be attained
 		if (ww > 2560 && wh > 1600) {
 			is_4k = true;
@@ -800,56 +807,46 @@ function autoDetectRes() {
 			pref.player_QHD_small = false;
 			pref.player_HD_small  = false;
 		}
-		if (pref.layout_mode === 'default_mode') {
-			mode_handler.default_mode();
-		}
-		else if (pref.layout_mode === 'artwork_mode') {
-			mode_handler.artwork_mode();
-		}
-		else if (pref.layout_mode === 'compact_mode') {
-			mode_handler.compact_mode();
-		}
 	}
-	// Check for QHD
-	else if (ww < 2560 && wh < 1600) {
-		set_window_size(2500, 1400); // Check if this resolution for QHD can be attained
-		is_QHD = true;
-		setSizesForQHD();
-		pref.displayRes = 'QHD';
-		pref.player_4k_normal = false;
-		pref.player_QHD_small = 'player_QHD_small';
-		pref.player_HD_small  = false;
-		if (pref.layout_mode === 'default_mode') {
-			mode_handler.default_mode();
-		}
-		else if (pref.layout_mode === 'artwork_mode') {
-			mode_handler.artwork_mode();
-		}
-		else if (pref.layout_mode === 'compact_mode') {
-			mode_handler.compact_mode();
-		}
-	}
-	// Set to HD res
-	if (initDPI.dpi() < 120 && ww < 2500 && wh < 1400) {
-		is_4k = false;
-		is_QHD = false;
-		setSizesFor4KorHD();
-		pref.displayRes = 'HD';
-		pref.player_4k_small  = false;
-		pref.player_QHD_small = false;
-		pref.player_HD_small  = 'player_HD_small';
-		if (pref.layout_mode === 'default_mode') {
-			mode_handler.default_mode();
-		}
-		else if (pref.layout_mode === 'artwork_mode') {
-			mode_handler.artwork_mode();
-		}
-		else if (pref.layout_mode === 'compact_mode') {
-			mode_handler.compact_mode();
+
+	function checkQHD() {
+		if (ww < 2800 && wh < 1720) {
+			set_window_size(2500, 1400);  // Check if this resolution for QHD can be attained
+			if (ww < 2500 && wh < 1400) { // If not, set to HD mode
+				resetSize();
+			}
+			else { // Set to QHD mode
+				is_QHD = true;
+				setSizesForQHD();
+				pref.displayRes = 'QHD';
+				pref.player_4k_normal = false;
+				pref.player_QHD_small = 'player_QHD_small';
+				pref.player_HD_small  = false;
+			}
 		}
 	}
 
-	initPanels();
+	function updatePanels() {
+		if (pref.layout_mode === 'default_mode') {
+			mode_handler.default_mode();
+		}
+		else if (pref.layout_mode === 'artwork_mode') {
+			mode_handler.artwork_mode();
+		}
+		else if (pref.layout_mode === 'compact_mode') {
+			mode_handler.compact_mode();
+		}
+		initPanels();
+	}
+
+	async function startDetection() {
+		await resetSize();
+		await check4k();
+		await checkQHD();
+		await updatePanels();
+	}
+
+	startDetection();
 }
 
 function setSizesFor4KorHD() {
