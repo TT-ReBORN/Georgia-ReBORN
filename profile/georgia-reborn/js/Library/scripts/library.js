@@ -494,7 +494,7 @@ class Library {
 				c: tr > 1 ? pop.tree[pop.tree[v.par].par].root || pop.tree[pop.tree[v.par].par].srt[0] : ''
 			});
 		});
-		ix = pop.get_ix(!panel.imgView ? 0 : img.panel.x + 1, (!panel.imgView || img.style.vertical ? panel.tree.y : panel.tree.x) + sbar.row.h / 2, true, false);
+		ix = pop.get_ix((!panel.imgView ? 0 : img.panel.x + 1) + ui.x, (!panel.imgView || img.style.vertical ? panel.tree.y : panel.tree.x) + sbar.row.h / 2 + ui.y, true, false);
 		tr = 0;
 		let l = Math.min(Math.floor(ix + panel.rows), pop.tree.length);
 		if (ix != -1) {
