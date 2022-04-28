@@ -171,7 +171,7 @@
 				let supCache = false;
 				if (new_artist == this.artist && !force || new_artist == '') artist_done = true;
 				else this.artist = new_artist;
-				if (!stndBio) supCache = cfg.supCache && !lib.inLibrary(0, this.artist);
+				if (!stndBio) supCache = cfg.supCache && !libBio.inLibrary(0, this.artist);
 				if (cfg.dlLfmBio && !artist_done) {
 					const lfm_bio = panelBio.getPth('bio', art.focus, this.artist, '', stndBio, supCache, $Bio.clean(this.artist), '', '', 'foLfmBio', true, true);
 					const text = $Bio.open(lfm_bio.pth);
@@ -297,7 +297,7 @@
 		this.albm = stndAlb ? name.albm(alb.focus, true) : alb.arr[alb.ix].album;
 		this.albumArtist = stndAlb ? name.albumArtist(alb.focus, true) : alb.arr[alb.ix].artist;
 		if (!this.album || !this.albumArtist) return this.getBio(force, art, 1);
-		if (!stndAlb) supCache = cfg.supCache && !lib.inLibrary(1, this.albumArtist, this.album);
+		if (!stndAlb) supCache = cfg.supCache && !libBio.inLibrary(1, this.albumArtist, this.album);
 		if (stndAlb) {
 			if (this.albm) this.getCover(force, alb);
 		} else if (force && cfg.dlRevImg) this.getRevImg(this.albumArtist, this.album, '', '', force);
@@ -305,7 +305,7 @@
 		if (cfg.dlAmRev && !onlyForceLfm) {
 			const am_rev = panelBio.getPth('rev', alb.focus, this.albumArtist, this.album, stndAlb, supCache, $Bio.clean(this.albumArtist), $Bio.clean(this.albumArtist), $Bio.clean(this.album), 'foAmRev', true, true);
 			const artiste = stndAlb ? name.artist(alb.focus, true) : this.albumArtist;
-			const am_bio = panelBio.getPth('bio', alb.focus, artiste, '', stndAlb, cfg.supCache && !lib.inLibrary(0, artiste), $Bio.clean(artiste), '', '', 'foAmBio', true, true);
+			const am_bio = panelBio.getPth('bio', alb.focus, artiste, '', stndAlb, cfg.supCache && !libBio.inLibrary(0, artiste), $Bio.clean(artiste), '', '', 'foAmBio', true, true);
 			const art_upd = this.expired(am_bio.pth, this.exp, 'Bio ' + cfg.partialMatch + ' ' + am_rev.pth, false) && !$Bio.open(am_bio.pth).includes('Custom Biography');
 			let rev_upd = !this.done('Rev ' + cfg.partialMatch + ' ' + am_rev.pth, this.exp);
 			if (rev_upd) {
@@ -339,7 +339,7 @@
 			const lfm_cov = new LfmAlbum(() => lfm_cov.onStateChange());
 			lfm_cov.search(a, l, false, pe, fe, l, false, true);
 		} else {
-			const metadb = lib.inLibrary(2, a, l);
+			const metadb = libBio.inLibrary(2, a, l);
 			if (metadb) {
 				const g_img = utils.GetAlbumArtV2(metadb, 0, false);
 				if (g_img) return;
