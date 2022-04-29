@@ -60,7 +60,7 @@ and looks best if you switch to 'Normal' or a larger player size!
 
 ## Image Packs
 
-These image packs are optional, they contain record labels and artist logos which will be displayed in 'Details'.
+These image packs are optional, they contain record labels and artist logos which will be displayed in 'Details'.<br />
 **[Download Record Labels](https://github.com/kbuffington/georgia-image-packs/raw/master/recordlabel.zip)** plus
 **[Download Artist Logos Part 1](https://github.com/kbuffington/georgia-image-packs/raw/master/artistlogos.zip)** and
 **[Download Artist Logos Part 2](https://github.com/kbuffington/georgia-image-packs/raw/master/artistlogos.z01)**.
@@ -71,6 +71,15 @@ Extract them to foobar2000/profile/images
 **NOTE:** You need to download the disc art from https://fanart.tv. If you don't have any disc art, you can choose<br />
 between 13 self created placeholders: Options > Details > Disc art > Display disc art placeholder<br />
 For more information, please see the FAQ.
+
+## Resources
+
+If you want you to make your own disc art placeholders or other graphics, you are welcome to download and use<br />
+these resources, respectively templates that contain all Georgia-ReBORN logos plus all cd and vinyl placeholders.<br />
+Feel free to post your creations in the **[HydrogenAudio](https://hydrogenaud.io/index.php?topic=121047.0)** thread or
+start your own at **[Discussions](https://github.com/TT-ReBORN/Georgia-ReBORN/discussions)**. I would love to see<br />
+what you have created and I am sure other users feel the same!
+**[Download Resources](https://github.com/TT-ReBORN/Georgia-ReBORN-images/raw/master/Resources/Georgia-ReBORN_Resources.7z)**.
 
 ## Features
 
@@ -404,9 +413,9 @@ https://github.com/TT-ReBORN/Georgia-ReBORN/discussions
 ## Support
 
 The official discussion thread for this theme is located at **[Discussions](https://github.com/TT-ReBORN/Georgia-ReBORN/discussions)** or at
-**[HydrogenAudio](https://hydrogenaud.io/index.php?topic=121047.0)** and that's a great<br />
-place to go for questions and other support issues. If you discover a bug, please open an issue on Github<br />
-if you can, or visit **[Mordred's Georgia HydrogenAudio Thread](https://hydrogenaud.io/index.php/topic,116190.0.html)** since most of the code is based on Georgia.
+**[HydrogenAudio](https://hydrogenaud.io/index.php?topic=121047.0)** and that's a great place<br />
+to go for questions and other support issues. If you discover a bug, please open an issue on Github if you can,<br />
+or post them in this thread **[REPORT A BUG](https://github.com/TT-ReBORN/Georgia-ReBORN/discussions/38)**.
 
 ## Help
 
