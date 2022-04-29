@@ -2745,7 +2745,7 @@ function initMainColors() {
 	// Theme style Black Reborn
 	if (pref.themeStyleBlackReborn && (fb.IsPlaying && !isStreaming && !isPlayingCD)) {
 		if (!fb.IsPlaying || !albumart && !noAlbumArtStub) col.primary = RGB(25, 25, 25);
-		else if (colBrightness < 25) col.primary = RGB(165, 195, 215);
+		else if (colBrightness < 25) col.primary = tintColor(col.primary, 5);
 
 		// Playlist
 		g_pl_colors.background = colBrightness < 35 ? RGB(0, 0, 0) : RGB(20, 20, 20);
@@ -3099,11 +3099,11 @@ const ngoldTheme = {
 function setTheme(theme) {
 	var themeCol = new Color(theme.primary);
 	if (colorDistance(theme.primary, col.bg, true) < (themeCol.isCloseToGreyscale ? 60 : 45)) {
-		if (pref.blackTheme) {
+		if (pref.blackTheme && !pref.themeStyleBlackReborn) {
 			if (settings.showThemeLog) console.log('>>> Theme primary color is too close to bg color. Tinting theme color.');
-			theme.primary = tintColor(theme.primary, 5);
+			theme.primary = tintColor(theme.primary, 20);
 			themeCol = new Color(theme.primary);
-		} else if (pref.blackTheme) {
+		} else {
 			if (settings.showThemeLog) console.log('>>> Theme primary color is too close to bg color. Shading theme color.');
 			theme.primary = shadeColor(theme.primary, 5);
 			themeCol = new Color(theme.primary);
@@ -3148,9 +3148,9 @@ function setTheme(theme) {
 	if (pref.whiteTheme && (colorDistance(col.primary, col.progressBar)) < 60) {
 		col.primary = col.darkAccent;
 	}
-	else if (pref.blackTheme && !pref.themeStyleBlackReborn && (colorDistance(col.primary, col.bg)) < 50) {
-		col.primary = rgb(165, 195, 215);
-	}
+	// else if (pref.blackTheme && !pref.themeStyleBlackReborn && (colorDistance(col.primary, col.bg)) < 50) {
+	// 	col.primary = rgb(165, 195, 215);
+	// }
 	// else if (colorDistance(col.primary, col.bg) < 60) {
 	// 	col.primary = col.darkAccent;
 	// }
