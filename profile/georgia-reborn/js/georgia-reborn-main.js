@@ -986,7 +986,7 @@ function draw_ui(gr) {
 	if (fb.IsPlaying && (albumart && albumart_scaled || noAlbumArtStub) && ((pref.layout_mode ==='default_mode' && !displayBiography) || pref.layout_mode ==='artwork_mode' && !displayPlaylistArtworkMode && !displayLibrary && !displayBiography)) {
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 		// Top shadow
-		gr.FillGradRect(0, albumart_size.y - (is_4k ? 10 : 6),
+		gr.FillGradRect(0, ppt.albumArtShow && pref.libraryLayout === 'full_width' && displayLibrary ? ui.y - (is_4k ? 10 : 6) : albumart_size.y - (is_4k ? 10 : 6),
 			pref.no_cdartBG && (!cdart || !pref.display_cdart) && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout_mode === 'default_mode' || pref.layout_mode !== 'default_mode' ? ww : albumart_size.x + albumart_size.w,
 			is_4k ? 10 : 6, 90, 0, col.shadow);
 
@@ -996,7 +996,7 @@ function draw_ui(gr) {
 				noAlbumArtStub ? 0 : pref.themeStyleBlackAndWhite ? RGB(0, 0, 0) : col.shadow, noAlbumArtStub ? pref.themeStyleBlackAndWhite ? RGB(0, 0, 0) : col.shadow : 0);
 		}
 		// Bottom shadow
-		gr.FillGradRect(0, albumart_size.y + albumart_size.h + (is_4k ? 0 : - 1),
+		gr.FillGradRect(0, ppt.albumArtShow && pref.libraryLayout === 'full_width' && displayLibrary ? ui.y + ui.h + (is_4k ? 0 : -1) : albumart_size.y + albumart_size.h + (is_4k ? 0 : -1),
 			pref.no_cdartBG && (!cdart || !pref.display_cdart) && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout_mode === 'default_mode' || pref.layout_mode !== 'default_mode' ? ww : albumart_size.x + albumart_size.w,
 			scaleForDisplay(5), 90, col.shadow, 0);
 	}
@@ -1012,7 +1012,7 @@ function draw_ui(gr) {
 				pref.themeStyleBlackAndWhite && noAlbumArtStub ? RGB(0, 0, 0) : pref.themeStyleBlackAndWhite2 ? !fb.IsPlaying ? RGB(0, 0, 0) : RGBA(0, 0, 0, 30) : pref.themeStyleRebornBlack ? !fb.IsPlaying ? RGB(0, 0, 0) : RGBA(0, 0, 0, 30) : col.shadow);
 		}
 		// Bottom shadow
-		gr.FillGradRect(displayBiography || pref.layout_mode !== 'default_mode' ? 0 : ww * 0.5, wh - geo.lower_bar_h + (is_4k ? 0 : - 1), ww, scaleForDisplay(5), 90, col.shadow, 0);
+		gr.FillGradRect(displayBiography || pref.layout_mode !== 'default_mode' ? 0 : ww * 0.5, wh - geo.lower_bar_h + (is_4k ? 0 : -1), ww, scaleForDisplay(5), 90, col.shadow, 0);
 	}
 
 	// MENUBAR
