@@ -194,6 +194,7 @@ pref.add_properties({
 	cdArtBlackStub:                     ['Georgia-ReBORN - Details: Art - Show CD art black placeholder', false], // Show cdArt black placeholder if no disc art exist
 	cdArtBlankStub:                     ['Georgia-ReBORN - Details: Art - Show CD art blank placeholder', false], // Show cdArt blank placeholder if no disc art exist
 	cdArtTransStub:                     ['Georgia-ReBORN - Details: Art - Show CD art transparent placeholder', false], // Show cdArt transparent placeholder if no disc art exist
+	cdArtCustomStub:                    ['Georgia-ReBORN - Details: Art - Show CD art custom placeholder', false], // Show cdArt custom placeholder if no disc art exist
 	vinylArtWhiteStub:                  ['Georgia-ReBORN - Details: Art - Show Vinyl art white placeholder', false], // Show vinylArt white placeholder if no disc art exist
 	vinylArtVoidStub:                   ['Georgia-ReBORN - Details: Art - Show Vinyl art void placeholder', false], // Show vinylArt void placeholder if no disc art exist
 	vinylArtColdFusionStub:             ['Georgia-ReBORN - Details: Art - Show Vinyl art cold fusion placeholder', false], // Show vinylArt cold fusion placeholder if no disc art exist
@@ -203,6 +204,7 @@ pref.add_properties({
 	vinylArtBlackHoleStub:              ['Georgia-ReBORN - Details: Art - Show Vinyl art black hole placeholder', false], // Show vinylArt black hole placeholder if no disc art exist
 	vinylArtEbonyStub:                  ['Georgia-ReBORN - Details: Art - Show Vinyl art ebony placeholder', false], // Show vinylArt ebony placeholder if no disc art exist
 	vinylArtTransStub:                  ['Georgia-ReBORN - Details: Art - Show Vinyl art transparent placeholder', false], // Show vinylArt transparent placeholder if no disc art exist
+	vinylArtCustomStub:                 ['Georgia-ReBORN - Details: Art - Show Vinyl art custom placeholder', false], // Show vinylArt custom placeholder if no disc art exist
 	cdart_ontop:                        ['Georgia-ReBORN - Details: Art - Show CD art above front cover', false], // true: Display cdArt above front cover
 	filterCdJpgsFromAlbumArt:           ['Georgia-ReBORN - Details: Art - Filter out cd/vinyl .jpgs from showing as artwork', false],
 	spinCdart:                          ['Georgia-ReBORN - Details: Art - Spin CD art', false], // true: cdArt will spin while the song plays

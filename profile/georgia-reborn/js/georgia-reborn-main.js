@@ -191,6 +191,7 @@ paths.cdArtWhiteStub = fb.ProfilePath + 'georgia-reborn/images/discart/cd-white.
 paths.cdArtBlackStub = fb.ProfilePath + 'georgia-reborn/images/discart/cd-black.png';
 paths.cdArtBlankStub = fb.ProfilePath + 'georgia-reborn/images/discart/cd-blank.png';
 paths.cdArtTransStub = fb.ProfilePath + 'georgia-reborn/images/discart/cd-transparent.png';
+paths.cdArtCustomStub = fb.ProfilePath + 'georgia-reborn/images/discart/cd-custom.png';
 paths.vinylArtWhiteStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-white.png';
 paths.vinylArtVoidStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-void.png';
 paths.vinylArtColdFusionStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-cold-fusion.png';
@@ -200,6 +201,7 @@ paths.vinylArtBlackStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-
 paths.vinylArtBlackHoleStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-black-hole.png';
 paths.vinylArtEbonyStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-ebony.png';
 paths.vinylArtTransStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-transparent.png';
+paths.vinylArtCustomStub = fb.ProfilePath + 'georgia-reborn/images/discart/vinyl-custom.png';
 paths.noAlbumArt = fb.ProfilePath + 'georgia-reborn/images/misc/no-cover.png';
 paths.lastFmImageRed = fb.ProfilePath + 'georgia-reborn/images/misc/last-fm-red-36.png';
 paths.lastFmImageWhite = fb.ProfilePath + 'georgia-reborn/images/misc/last-fm-36.png';
@@ -2552,6 +2554,7 @@ function onOptionsMenu(x, y) {
 		pref.cdArtBlackStub         = false;
 		pref.cdArtBlankStub         = false;
 		pref.cdArtTransStub         = false;
+		pref.cdArtCustomStub        = false;
 		pref.vinylArtWhiteStub      = false;
 		pref.vinylArtVoidStub       = false;
 		pref.vinylArtColdFusionStub = false;
@@ -2561,6 +2564,7 @@ function onOptionsMenu(x, y) {
 		pref.vinylArtBlackHoleStub  = false;
 		pref.vinylArtEbonyStub      = false;
 		pref.vinylArtTransStub      = false;
+		pref.vinylArtCustomStub     = false;
 	}
 
 	const cdArtMenu = new Menu('Disc art');
@@ -2593,6 +2597,12 @@ function onOptionsMenu(x, y) {
 	displayDiscArtMenu.addToggleItem('CD - Transparent', pref, 'cdArtTransStub', () => {
 		resetDiscArt();
 		pref.cdArtTransStub = true;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addToggleItem('CD - Custom', pref, 'cdArtCustomStub', () => {
+		resetDiscArt();
+		pref.cdArtCustomStub = true;
 		fetchNewArtwork(fb.GetNowPlaying());
 		RepaintWindow();
 	}, !pref.display_cdart);
@@ -2648,6 +2658,12 @@ function onOptionsMenu(x, y) {
 	displayDiscArtMenu.addToggleItem('Vinyl - Transparent', pref, 'vinylArtTransStub', () => {
 		resetDiscArt();
 		pref.vinylArtTransStub = true;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addToggleItem('Vinyl - Custom', pref, 'vinylArtCustomStub', () => {
+		resetDiscArt();
+		pref.vinylArtCustomStub = true;
 		fetchNewArtwork(fb.GetNowPlaying());
 		RepaintWindow();
 	}, !pref.display_cdart);
@@ -5114,6 +5130,9 @@ function fetchNewArtwork(metadb) {
 			else if (pref.cdArtTransStub) {
 				cdartPath = paths.cdArtTransStub; // Use transparent cdArt stub if enabled
 			}
+			else if (pref.cdArtCustomStub) {
+				cdartPath = paths.cdArtCustomStub; // Use custom cdArt stub if enabled
+			}
 			else if (pref.vinylArtWhiteStub) {
 				cdartPath = paths.vinylArtWhiteStub; // Use white vinylArt stub if enabled
 			}
@@ -5140,6 +5159,9 @@ function fetchNewArtwork(metadb) {
 			}
 			else if (pref.vinylArtTransStub) {
 				cdartPath = paths.vinylArtTransStub; // Use transparent vinylArt stub if enabled
+			}
+			else if (pref.vinylArtCustomStub) {
+				cdartPath = paths.vinylArtCustomStub; // Use custom vinylArt stub if enabled
 			}
 			else {
 				disc_art_exists = false;
