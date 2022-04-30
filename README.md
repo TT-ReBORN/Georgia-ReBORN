@@ -317,6 +317,13 @@ back.jpg/png, back2.jpg/png, back3.jpg/png etc...
 </details>
 
 <details>
+<summary>How can I add more of my own custom disc art placeholders?</summary>
+<br />
+Just follow all the steps in this tutorial <a href="https://github.com/TT-ReBORN/Georgia-ReBORN/commit/a54a6d76a4290610c79427d8c32a145c3cff7313" rel="nofollow">here</a>.
+<br />
+</details>
+
+<details>
 <summary>How can I set my own lyrics directory?</summary>
 <br />
 Open your foobar preferences ( File > Preferences ) and go to Tools > Lyric Show 3.<br />
