@@ -1597,6 +1597,7 @@ function LayoutModeHandler() {
 			pref.cdArtBlackStub = false;
 			pref.cdArtBlankStub = false;
 			pref.cdArtTransStub = false;
+			pref.cdArtCustomStub = false;
 			pref.vinylArtWhiteStub = false;
 			pref.vinylArtVoidStub = false;
 			pref.vinylArtColdFusionStub = false;
@@ -1606,6 +1607,7 @@ function LayoutModeHandler() {
 			pref.vinylArtBlackHoleStub = false;
 			pref.vinylArtEbonyStub = false;
 			pref.vinylArtTransStub = false;
+			pref.vinylArtCustomStub = false;
 			pref.cdart_ontop = false;
 			pref.filterCdJpgsFromAlbumArt = false;
 			pref.spinCdart = false;
