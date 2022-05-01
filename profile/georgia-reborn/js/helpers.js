@@ -1592,6 +1592,7 @@ function LayoutModeHandler() {
 			pref.invertedBand = false;
 			pref.invertedLabel = false;
 			pref.display_cdart = true;
+			pref.showDiscArtStub = false;
 			pref.noDiscArtStub = true;
 			pref.cdArtWhiteStub = false;
 			pref.cdArtBlackStub = false;

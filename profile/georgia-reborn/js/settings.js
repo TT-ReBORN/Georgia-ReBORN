@@ -189,6 +189,7 @@ pref.add_properties({
 	invertedBand:                       ['Georgia-ReBORN - Details: Invert band logos to black', false], // Manually invert band logos to black
 	invertedLabel:                      ['Georgia-ReBORN - Details: Invert label logos to black', false], // Manually invert label logos to black
 	display_cdart:                      ['Georgia-ReBORN - Details: Art - Display CD art', true], // true: Show CD artwork behind album artwork. This artwork is expected to be named cd.png and have transparent backgrounds (can be found at fanart.tv)
+	showDiscArtStub:                    ['Georgia-ReBORN - Details: Art - Show disc art placeholder if no disc art found', false], // Show disc art placeholder if no disc art found
 	noDiscArtStub:                      ['Georgia-ReBORN - Details: Art - No disc art placeholder', true], // Do not show disc art placeholder
 	cdArtWhiteStub:                     ['Georgia-ReBORN - Details: Art - Show CD art white placeholder', false], // Show cdArt white placeholder if no disc art exist
 	cdArtBlackStub:                     ['Georgia-ReBORN - Details: Art - Show CD art black placeholder', false], // Show cdArt black placeholder if no disc art exist
@@ -257,11 +258,6 @@ pref.add_properties({
 	// check_multich:		['Check for MultiChannel version', false],	// true: Search paths in tf.MultiCh_paths to see if there is a multichannel version of the current album available
 });
 
-// USING for creating foo_ui_columns.dll.cfg to set Georgia-ReBORN - First launch', true
-// For automatic 4k detection and pre-configured Georgia-ReBORN settings.
-// Always create a new foo_ui_columns.dll.cfg in FULL HD resolution when a new Georgia version was published or new settings/features were added.
-// Uncomment, save settings.js, start foobar and clear Panel Properties, close foobar. A new generated foo_ui_columns.dll.cfg was created in the configuration folder.
-// is_first_launch = window.SetProperty('Georgia-ReBORN - System: First launch', true);
 
 // Fixup properties
 (function() {

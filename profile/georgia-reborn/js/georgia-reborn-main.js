@@ -2569,9 +2569,17 @@ function onOptionsMenu(x, y) {
 
 	const cdArtMenu = new Menu('Disc art');
 	const displayDiscArtMenu = new Menu('Display disc art placeholder');
+	displayDiscArtMenu.addToggleItem('Show placeholder if no disc art found', pref, 'showDiscArtStub', () => {
+		pref.noDiscArtStub = false;
+		pref.vinylArtColdFusionStub = true; // Users can set their default here, e.g pref.cdArtCustomStub = true; or pref.vinylArtCustomStub = true;
+		fetchNewArtwork(fb.GetNowPlaying());
+		RepaintWindow();
+	}, !pref.display_cdart);
+	displayDiscArtMenu.addSeparator();
 	displayDiscArtMenu.addToggleItem('No placeholder', pref, 'noDiscArtStub', () => {
 		resetDiscArt();
 		pref.noDiscArtStub = true;
+		pref.showDiscArtStub = false;
 		fetchNewArtwork(fb.GetNowPlaying());
 		RepaintWindow();
 	}, !pref.display_cdart);
@@ -3151,6 +3159,13 @@ function onOptionsMenu(x, y) {
 		debugMenu.addToggleItem('Show debug timing (doesn\'t persist)', timings, 'showDebugTiming');
 		debugMenu.addToggleItem('Show RepaintRect areas (doesn\'t persist)', timings, 'drawRepaintRects', (val) => {
 			if (!val) { repaintRects = []; window.Repaint(); }
+		});
+		debugMenu.addSeparator();
+		debugMenu.addItem('Set system first launch to true', false, () => { // Used when creating new config files
+			window.SetProperty('Georgia-ReBORN - System: First launch', true);
+			g_properties.show_scrollbar = false;
+			pref.devTools = false;
+			settings.locked = true;
 		});
 		debugMenu.appendTo(menu);
 	}
@@ -5115,8 +5130,10 @@ function fetchNewArtwork(metadb) {
 			}
 		}
 
-		// Display custom disc art placeholders
-		if (!pref.noDiscArtStub) {
+		if (IsFile(cdartPath)) {
+			disc_art_exists = true;
+		}
+		else if (!pref.noDiscArtStub || pref.showDiscArtStub) { // Display custom disc art placeholders
 			disc_art_exists = true;
 			if (pref.cdArtWhiteStub) {
 				cdartPath = paths.cdArtWhiteStub; // Use white cdArt stub if enabled
