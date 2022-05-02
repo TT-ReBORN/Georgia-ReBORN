@@ -387,11 +387,13 @@ function draw_ui(gr) {
 	// Details background
 	if (fb.IsPlaying && (albumart || !cdart || !albumart && cdart) && ((!displayLibrary && !displayPlaylist) || !settings.hidePanelBgWhenCollapsed)) {
 		gr.SetSmoothingMode(SmoothingMode.None);
-		gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, pref.show_coloredGap_albumart ? col.detailsBg : !pref.show_coloredGap_albumart && ((displayPlaylist || displayLibrary) && pref.layout_mode === 'default_mode') ? g_pl_colors.background : col.detailsBg);
+		gr.FillSolidRect(0, albumart_size.y, albumart_size.x, albumart_size.h, pref.show_coloredGap_albumart ? col.detailsBg :
+			!pref.show_coloredGap_albumart && (((displayPlaylist || displayLibrary) && pref.layout_mode === 'default_mode') ||
+			((!displayPlaylist && !displayLibrary) && pref.layout_mode === 'artwork_mode')) ? g_pl_colors.background : col.detailsBg);
 
 		// Show full background when no disc art
 		if (pref.no_cdartBG && (!cdart || !pref.display_cdart) && albumart && (!displayLibrary && !displayPlaylist && !displayBiography)) {
-			gr.FillSolidRect(albumart_size.x + albumart_size.w - 1, albumart_size.y, albumart_size.x + 1, albumart_size.h, col.detailsBg);
+			gr.FillSolidRect(albumart_size.x + albumart_size.w - scaleForDisplay(1), albumart_size.y, albumart_size.x + scaleForDisplay(2), albumart_size.h, col.detailsBg);
 		}
 
 		if ((isStreaming && noArtwork || !albumart && noArtwork)) {
@@ -469,7 +471,7 @@ function draw_ui(gr) {
 			cdartArray = [];
 			cdart = null;
 
-			albumart_size.x = /* If player size is not proportional, album art sticks to playlist in default mode and is centered in artwork mode */
+			albumart_size.x =
 				pref.layout_mode === 'default_mode' ? displayPlaylist || displayLibrary ? ww * 0.5 - albumart_size.w : ww * 0.5 :
 				pref.layout_mode === 'artwork_mode' ? !displayPlaylist || pref.displayLyrics ? ww * 0.5 - albumart_size.w * 0.5 : ww : 0;
 
@@ -989,7 +991,7 @@ function draw_ui(gr) {
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 		// Top shadow
 		gr.FillGradRect(0, ppt.albumArtShow && pref.libraryLayout === 'full_width' && displayLibrary ? ui.y - (is_4k ? 10 : 6) : albumart_size.y - (is_4k ? 10 : 6),
-			pref.no_cdartBG && (!cdart || !pref.display_cdart) && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout_mode === 'default_mode' || pref.layout_mode !== 'default_mode' ? ww : albumart_size.x + albumart_size.w,
+			pref.no_cdartBG && (!cdart || !pref.display_cdart) && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout_mode === 'default_mode' || pref.layout_mode !== 'default_mode' && (!cdart || !pref.display_cdart) ? ww : albumart_size.x + albumart_size.w,
 			is_4k ? 10 : 6, 90, 0, col.shadow);
 
 		if ((!pref.no_cdartBG && (!cdart || !pref.display_cdart) || noAlbumArtStub && !isStreaming) && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout_mode === 'default_mode') {
@@ -999,7 +1001,7 @@ function draw_ui(gr) {
 		}
 		// Bottom shadow
 		gr.FillGradRect(0, ppt.albumArtShow && pref.libraryLayout === 'full_width' && displayLibrary ? ui.y + ui.h + (is_4k ? 0 : -1) : albumart_size.y + albumart_size.h + (is_4k ? 0 : -1),
-			pref.no_cdartBG && (!cdart || !pref.display_cdart) && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout_mode === 'default_mode' || pref.layout_mode !== 'default_mode' ? ww : albumart_size.x + albumart_size.w,
+			pref.no_cdartBG && (!cdart || !pref.display_cdart) && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout_mode === 'default_mode' || pref.layout_mode !== 'default_mode' && (!cdart || !pref.display_cdart) ? ww : albumart_size.x + albumart_size.w,
 			scaleForDisplay(5), 90, col.shadow, 0);
 	}
 	// Shadows for all panels
@@ -1009,9 +1011,13 @@ function draw_ui(gr) {
 		gr.FillGradRect(displayBiography || pref.layout_mode !== 'default_mode' ? 0 : ww * 0.5, geo.top_art_spacing - (is_4k ? 10 : 6), ww, is_4k ? 10 : 6, 90, 0, col.shadow);
 
 		if (pref.layout_mode === 'default_mode' && (!(ppt.albumArtShow && pref.libraryLayout === 'full_width' && displayLibrary || (pref.libraryDesign === 'flowMode' || pref.libraryDesign === 'albumCovers') && pref.libraryLayout === 'full_width' && displayLibrary))) {
-			// Middle shadow
+			// Middle shadow for playlist
 			gr.FillGradRect(ww * 0.5 - 4, geo.top_art_spacing, 4, wh - geo.top_art_spacing - geo.lower_bar_h, 0.5, 0,
 				pref.themeStyleBlackAndWhite && noAlbumArtStub ? RGB(0, 0, 0) : pref.themeStyleBlackAndWhite2 ? !fb.IsPlaying ? RGB(0, 0, 0) : RGBA(0, 0, 0, 30) : pref.themeStyleRebornBlack ? !fb.IsPlaying ? RGB(0, 0, 0) : RGBA(0, 0, 0, 30) : col.shadow);
+			// Middle shadow for album art
+			if (albumart && albumart_size.w !== ww * 0.5 && !displayBiography && !noAlbumArtStub) {
+				gr.FillGradRect(albumart_size.x + albumart_size.w, albumart_size.y, 4, albumart_size.h, 0.5, pref.themeStyleBlackAndWhite ? RGB(0, 0, 0) : col.shadow, 0);
+			}
 		}
 		// Bottom shadow
 		gr.FillGradRect(displayBiography || pref.layout_mode !== 'default_mode' ? 0 : ww * 0.5, wh - geo.lower_bar_h + (is_4k ? 0 : -1), ww, scaleForDisplay(5), 90, col.shadow, 0);
@@ -2117,6 +2123,33 @@ function onOptionsMenu(x, y) {
 
 	// Player controls options
 	const playerControlsMenu = new Menu('Player controls');
+
+	if (pref.layout_mode !== 'compact_mode') {
+		const playerControlsAlbumArtMenu = new Menu('Album art settings');
+		const playerControlsAlbumArtNotProportionalMenu = new Menu('When player size is not proportional');
+		if (pref.layout_mode === 'default_mode') {
+			playerControlsAlbumArtNotProportionalMenu.addRadioItems(['Align album art left', 'Align album art left (margin)', 'Align album art center', 'Align album art right'], pref.alignAlbumArt, ['left', 'leftMargin', 'center', 'right'], (pos) => {
+				pref.alignAlbumArt = pos;
+				ResizeArtwork(true);
+				RepaintWindow();
+			});
+			playerControlsAlbumArtNotProportionalMenu.addSeparator();
+		}
+		playerControlsAlbumArtNotProportionalMenu.addToggleItem('Show colored gap', pref, 'show_coloredGap_albumart', () => { RepaintWindow(); });
+		playerControlsAlbumArtNotProportionalMenu.appendTo(playerControlsAlbumArtMenu);
+		playerControlsAlbumArtMenu.addSeparator();
+		playerControlsAlbumArtMenu.addToggleItem('Cycle album artwork with mouse wheel', pref, 'cycleArtMWheel');
+		playerControlsAlbumArtMenu.addToggleItem(`Cycle album artwork (${settings.artworkDisplayTime}s delay)`, pref, 'cycleArt', () => {
+			if (!pref.cycleArt) {
+				clearTimeout(albumArtTimeout);
+				albumArtTimeout = 0;
+			} else {
+				displayNextImage();
+			}
+		});
+		playerControlsAlbumArtMenu.appendTo(playerControlsMenu);
+	}
+
 	const playerControlsScrollbarMenu = new Menu('Scrollbar settings');
 	const playerControlsScrollbarPlaylistMenu = new Menu('Playlist');
 	const playerControlsScrollbarPlaylistStepsMenu = new Menu('Mouse wheel scroll steps');
@@ -2196,6 +2229,35 @@ function onOptionsMenu(x, y) {
 	playerControlsBiographyMenu.appendTo(playerControlsScrollbarMenu);
 
 	playerControlsScrollbarMenu.appendTo(playerControlsMenu);
+
+	const playerControlsToolTipMenu = new Menu('Tooltip settings');
+	playerControlsToolTipMenu.addToggleItem('Enable tooltips', pref, 'show_tt', () => {
+		if (pref.show_tt) {
+			pref.show_tt = true;
+			pref.show_truncatedText_tt = true;
+			pref.show_timeline_tooltips = true;
+			ppt.tooltips = true;
+			but.tooltipLib.show = true;
+		} else {
+			pref.show_tt = false;
+			pref.show_truncatedText_tt = false;
+			pref.show_timeline_tooltips = false;
+			ppt.tooltips = false;
+			but.tooltipLib.show = false;
+		}
+	});
+	playerControlsToolTipMenu.addToggleItem('Enable tooltips on truncated text', pref, 'show_truncatedText_tt', () => {
+		if (pref.show_truncatedText_tt) {
+			pref.show_truncatedText_tt = true;
+			ppt.tooltips = true;
+		} else {
+			pref.show_truncatedText_tt = false;
+			ppt.tooltips = false;
+		}
+	});
+	playerControlsToolTipMenu.addToggleItem('Enable timeline tooltips', pref, 'show_timeline_tooltips');
+	playerControlsToolTipMenu.appendTo(playerControlsMenu);
+
 	playerControlsMenu.addSeparator();
 
 	const transportSizeMenu = new Menu('Transport button size');
@@ -2444,45 +2506,7 @@ function onOptionsMenu(x, y) {
 	});
 	playerControlsMenu.addToggleItem('Show pause on album cover', pref, 'show_pause', () => { RepaintWindow(); });
 	playerControlsMenu.addToggleItem('Show logo on startup', pref, 'show_logo', () => { RepaintWindow(); });
-	playerControlsMenu.addToggleItem('Show colored gap if player size is not proportional', pref, 'show_coloredGap_albumart', () => { RepaintWindow(); });
 	playerControlsMenu.addSeparator();
-
-	playerControlsMenu.addToggleItem('Enable tooltips', pref, 'show_tt', () => {
-		if (pref.show_tt) {
-			pref.show_tt = true;
-			pref.show_truncatedText_tt = true;
-			pref.show_timeline_tooltips = true;
-			ppt.tooltips = true;
-			but.tooltipLib.show = true;
-		} else {
-			pref.show_tt = false;
-			pref.show_truncatedText_tt = false;
-			pref.show_timeline_tooltips = false;
-			ppt.tooltips = false;
-			but.tooltipLib.show = false;
-		}
-	});
-	playerControlsMenu.addToggleItem('Enable tooltips on truncated text', pref, 'show_truncatedText_tt', () => {
-		if (pref.show_truncatedText_tt) {
-			pref.show_truncatedText_tt = true;
-			ppt.tooltips = true;
-		} else {
-			pref.show_truncatedText_tt = false;
-			ppt.tooltips = false;
-		}
-	});
-	playerControlsMenu.addToggleItem('Enable timeline tooltips', pref, 'show_timeline_tooltips');
-	playerControlsMenu.addSeparator();
-
-	playerControlsMenu.addToggleItem(`Cycle album artwork (${settings.artworkDisplayTime}s delay)`, pref, 'cycleArt', () => {
-		if (!pref.cycleArt) {
-			clearTimeout(albumArtTimeout);
-			albumArtTimeout = 0;
-		} else {
-			displayNextImage();
-		}
-	});
-	playerControlsMenu.addToggleItem('Cycle album artwork with mouse wheel', pref, 'cycleArtMWheel');
 	playerControlsMenu.addToggleItem('Update progress bar frequently (higher CPU)', pref, 'freq_update', () => {
 		SetProgressBarRefresh();
 	}, !pref.show_progressBar_default || !pref.show_progressBar_artwork || !pref.show_progressBar_compact);
@@ -4854,8 +4878,16 @@ function ResizeArtwork(resetCDPosition) {
 
 		albumart_size.w = Math.floor(albumart.Width * album_scale); // width
 		albumart_size.h = Math.floor(albumart.Height * album_scale); // height
-		albumart_size.x = /* If player size is not proportional, album art sticks to playlist in default mode and is centered in artwork mode */
-			pref.layout_mode === 'default_mode' ? displayPlaylist || displayLibrary ? ww * 0.5 - albumart_size.w : Math.floor(xCenter - 0.5 * albumart_size.w) :
+		albumart_size.x = /* When player size is not proportional, album art is aligned via setting 'pref.alignAlbumArt' in default mode and is centered in artwork mode */
+			pref.layout_mode === 'default_mode' ?
+				displayPlaylist || displayLibrary ?
+					UIHacks.FullScreen || UIHacks.MainWindowState == WindowState.Maximized ? ww * 0.5 - albumart_size.w :
+					pref.alignAlbumArt === 'left' ? 0 :
+					pref.alignAlbumArt === 'leftMargin' ? ww / wh > 1.8 ? scaleForDisplay(40) : 0 :
+					pref.alignAlbumArt === 'center' ? Math.floor(xCenter - 0.5 * albumart_size.w) :
+					pref.alignAlbumArt === 'right' ? ww * 0.5 - albumart_size.w :
+					ww * 0.5 - albumart_size.w :
+				Math.floor(xCenter - 0.5 * albumart_size.w) :
 			pref.layout_mode === 'artwork_mode' ? !displayPlaylist || pref.displayLyrics ? ww * 0.5 - albumart_size.w * 0.5 : ww : 0;
 
 		if (album_scale !== (wh - geo.top_art_spacing - lowerSpace) / albumart.Height) {
@@ -4940,7 +4972,7 @@ function ResizeArtwork(resetCDPosition) {
 		if (gLyrics) {
 			gLyrics.on_size(noAlbumArtStub ? 0 : albumart_size.x, noAlbumArtStub ? geo.top_art_spacing : albumart_size.y, noAlbumArtStub ? pref.layout_mode === 'artwork_mode' ? ww : ww * 0.5 : albumart_size.w, noAlbumArtStub ? wh - geo.top_art_spacing - geo.lower_bar_h : albumart_size.h);
 		}
-		if (cdart && pref.display_cdart && !displayPlaylist && !displayLibrary && (!pref.blackTheme || !pref.nblueTheme || !pref.ngreenTheme || !pref.nredTheme || !pref.ngoldTheme) && pref.layout_mode !== 'artwork_mode') {
+		if (cdart && pref.display_cdart && !displayPlaylist && !displayLibrary && (!pref.blackTheme && !pref.nblueTheme && !pref.ngreenTheme && !pref.nredTheme && !pref.ngoldTheme) && pref.layout_mode !== 'compact_mode') {
 			createDropShadow();
 		}
 	}

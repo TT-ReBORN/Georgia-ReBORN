@@ -125,12 +125,19 @@ pref.add_properties({
 	lyricsFontSize:                     ['Georgia-ReBORN - Font size: Lyrics', 20], // Lyrics font size
 
 	// Player controls
+	alignAlbumArt:                      ['Georgia-ReBORN - Player controls: When player size is not proportional align album art', 'right'], // right: Align album art in default mode when player size is not proportional
+	show_coloredGap_albumart:           ['Georgia-ReBORN - Player controls: When player size is not proportional show colored gap', true], // true: Show colored gap left of albumart when player size is not proportional
+	cycleArt:                           ['Georgia-ReBORN - Player controls: Cycle through all images', false], // true: Use glob, false: use albumart reader (front only)
+	cycleArtMWheel:                     ['Georgia-ReBORN - Player controls: Cycle through all images with mouse wheel', true], // true: Cycle through all images with mouse wheel
 	playlistAutoHideScrollbar:          ['Georgia-ReBORN - Player controls: Playlist - Auto hide scrollbar', true], // Playlist automatic scrollbar hide
 	smoothScrolling:                    ['Georgia-ReBORN - Player controls: Playlist - Smooth scrolling', true], // Playlist smooth scrolling
 	playlistWheelScrollSteps:           ['Georgia-ReBORN - Player controls: Playlist - Mouse wheel scroll steps', 2], // Playlist mouse wheel scroll steps
 	playlistWheelScrollDuration:        ['Georgia-ReBORN - Player controls: Playlist - Mouse wheel scroll smooth duration', 30], // Playlist mouse wheel scroll smooth duration in ms
 	libraryAutoHideScrollbar:           ['Georgia-ReBORN - Player controls: Library - Auto hide scrollbar', true], // Library automatic scrollbar hide
 	biographyAutoHideScrollbar:         ['Georgia-ReBORN - Player controls: Biography - Auto hide scrollbar', true], // Biography automatic scrollbar hide
+	show_tt:                            ['Georgia-ReBORN - Player controls: Show tooltips', false], // true: Show all tooltips
+	show_truncatedText_tt:              ['Georgia-ReBORN - Player controls: Show tooltips on truncated text', true], // true: Show tooltips when hovering over truncated text on lower bar, metadata grid and playlist
+	show_timeline_tooltips:             ['Georgia-ReBORN - Player controls: Show timeline tooltips', true], // true: Show tooltips when hovering over the timeline that show information on plays
 	autoHideVolumeBar:                  ['Georgia-ReBORN - Player controls: Auto hide volume bar', true], // Volume control bar hide
 	transport_buttons_size_default:     ['Georgia-ReBORN - Player controls: Default mode - Transport button size', 32], // Size in pixels of the buttons in Default mode
 	transport_buttons_spacing_default:  ['Georgia-ReBORN - Player controls: Default mode - Transport button spacing', 5], // Size in pixels of the spacing between buttons in Default mode
@@ -154,12 +161,6 @@ pref.add_properties({
 	show_flags_lowerbar:                ['Georgia-ReBORN - Player controls: Show country flags in lower bar', true], // true: Show the artist country flags in lower bar
 	show_pause:                         ['Georgia-ReBORN - Player controls: Show pause on album cover', true], // true: Show pause button on album cover
 	show_logo:                          ['Georgia-ReBORN - Player controls: Show logo on startup', true], // true: Show logo on foobar startup
-	show_coloredGap_albumart:           ['Georgia-ReBORN - Player controls: Show colored gap if player size is not proportional', true], // true: Show colored gap left of albumart if player size is not proportional
-	show_tt:                            ['Georgia-ReBORN - Player controls: Show tooltips', false], // true: Show all tooltips
-	show_truncatedText_tt:              ['Georgia-ReBORN - Player controls: Show tooltips on truncated text', true], // true: Show tooltips when hovering over truncated text on lower bar, metadata grid and playlist
-	show_timeline_tooltips:             ['Georgia-ReBORN - Player controls: Show timeline tooltips', true], // true: Show tooltips when hovering over the timeline that show information on plays
-	cycleArt:                           ['Georgia-ReBORN - Player controls: Cycle through all images', false], // true: Use glob, false: use albumart reader (front only)
-	cycleArtMWheel:                     ['Georgia-ReBORN - Player controls: Cycle through all images with mouse wheel', true], // true: Cycle through all images with mouse wheel
 	freq_update:                        ['Georgia-ReBORN - Player controls: Frequent progress bar updates', true], // true: Update progress bar multiple times a second. Smoother, but uses more CPU
 
 	// Playlist

@@ -1530,12 +1530,19 @@ function LayoutModeHandler() {
 			// Brightness
 			pref.themeBrightness = 'default';
 			// Player controls
+			pref.alignAlbumArt = 'right';
+			pref.show_coloredGap_albumart = true;
+			pref.cycleArt = false;
+			pref.cycleArtMWheel = true;
 			pref.playlistAutoHideScrollbar = true;
 			pref.smoothScrolling = true;
 			pref.playlistWheelScrollSteps = 2;
 			pref.playlistWheelScrollDuration = 30;
 			pref.libraryAutoHideScrollbar = true;
 			pref.biographyAutoHideScrollbar = true;
+			pref.show_tt = false;
+			pref.show_truncatedText_tt = true;
+			pref.show_timeline_tooltips = true;
 			pref.autoHideVolumeBar = true;
 			pref.transport_buttons_size_default = 32;
 			pref.transport_buttons_spacing_default = 5;
@@ -1559,12 +1566,6 @@ function LayoutModeHandler() {
 			pref.show_flags_lowerbar = true;
 			pref.show_pause = true;
 			pref.show_logo = true;
-			pref.show_coloredGap_albumart = true;
-			pref.show_tt = false;
-			pref.show_truncatedText_tt = true;
-			pref.show_timeline_tooltips = true;
-			pref.cycleArt = false;
-			pref.cycleArtMWheel = true;
 			pref.freq_update = true;
 			// Playlist
 			pref.autoHidePLM = true;
