@@ -1,4 +1,9 @@
-<p align="center"><img src="https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/logo.png" alt="Georgia-ReBORN logo"/></p>
+<p align="center">
+	<picture>
+		<source media="(prefers-color-scheme: dark)" srcset="https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/logo-black.png">
+		<img alt="Georgia-ReBORN logo" src="https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/logo.png">
+	</picture>
+</p>
 
 # A Clean, Full Dynamic Color Reborn foobar2000 Theme
 
