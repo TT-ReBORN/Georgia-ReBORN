@@ -181,7 +181,7 @@ function calcImageBrightness(image) {
 		return avgCol;
 
 	} catch (e) {
-		console.log(`<Error: GetColourSchemeJSON failed.>`);
+		if (!on_init) console.log(`<Error: GetColourSchemeJSON failed.>`);
 	}
 }
 
