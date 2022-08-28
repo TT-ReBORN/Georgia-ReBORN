@@ -67,9 +67,8 @@ and looks best if you switch to 'Normal' or a larger player size!
 
 These image packs are optional, they contain record labels and artist logos which will be displayed in 'Details'.<br />
 **[Download Record Labels](https://github.com/kbuffington/georgia-image-packs/raw/master/recordlabel.zip)** plus
-**[Download Artist Logos Part 1](https://github.com/kbuffington/georgia-image-packs/raw/master/artistlogos.zip)** and
-**[Download Artist Logos Part 2](https://github.com/kbuffington/georgia-image-packs/raw/master/artistlogos.z01)**.
-Extract them to foobar2000/profile/images
+**[Download Artist Logos](https://www.dropbox.com/s/4fwoeo7zlrxcj31/artistlogos.zip?dl=1)**.
+Extract them to foobar2000\profile\georgia-reborn\images
 
 ![Details](https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/06_Georgia_Reborn_Details_Animation.webp)
 
