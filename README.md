@@ -39,7 +39,7 @@ to the foobar player size.
 
 If you want to display artist photos in the library, you need to link your path to your biography directory.<br />
 Go to File > Preferences > Display and under Album art click on the Artist tab. Here you need to set<br />
-your full path, e.g: E:\PortableApps\foobar2000\profile\yttm\art_img\$cut(%artist%,1)\%artist%\*<br />
+your full path, e.g: E:\PortableApps\foobar2000\profile\yttm\art_img\$cut(%artist%,1)\%artist%\\*<br />
 If you now fetch the images from the biography, it will automatically update your library with the photos.<br />
 You can easily switch the view from albums to artists. If album art or flow mode is active, right click<br />
 in the library > Show artists, to go back to default view open again the context menu and choose Show albums.
