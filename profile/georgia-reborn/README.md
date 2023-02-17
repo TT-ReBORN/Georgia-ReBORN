@@ -1,7 +1,7 @@
 <p align="center">
 	<picture>
-		<source media="(prefers-color-scheme: dark)" srcset="https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/logo-black.png">
-		<img alt="Georgia-ReBORN logo" src="https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/logo.png">
+		<source media="(prefers-color-scheme: dark)" srcset="https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/logo-black.png">
+		<img alt="Georgia-ReBORN logo" src="https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/logo.png">
 	</picture>
 </p>
 
@@ -15,14 +15,14 @@ awesome dynamic color change feature, this theme will completely change it's app
 this means there are unlimited possibilities how the player will look like. Every new album you play will be<br />
 a new experience!
 
-![Themes](https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/01_Georgia_Reborn_Themes_Animation.webp)
+![Themes](https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/01_Georgia_Reborn_Themes_Animation.webp)
 
 If you want to change the active theme's default look, you can activate different theme styles ( Options > Style ).<br />
 Each column in the context menu can have one activated style, this means you can combine styles altogether.<br />
 It should be noted that some active themes have more or less and also different theme styles available,<br />
 you can spend hours in experimenting and achieving some pretty cool results.
 
-![ThemeStyles](https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/02_Georgia_Reborn_Theme_Styles_Animation.webp)
+![ThemeStyles](https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/02_Georgia_Reborn_Theme_Styles_Animation.webp)
 
 WilB's awesome library and biography script has been integrated and modified to fit the overall design.<br />
 You can choose the top menu > Options > Library to change various library options. Besides the 8 existing<br />
@@ -44,21 +44,21 @@ If you now fetch the images from the biography, it will automatically update you
 You can easily switch the view from albums to artists. If album art or flow mode is active, right click<br />
 in the library > Show artists, to go back to default view open again the context menu and choose Show albums.
 
-![Library](https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/03_Georgia_Reborn_Library_Animation.webp)
+![Library](https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/03_Georgia_Reborn_Library_Animation.webp)
 
 In the biography you can change options via top menu Options > Biography or you can use the context menu.<br />
 There are 4 different biography layouts to choose from, top is the default. There is also an automatic lyric fetcher<br />
 using the Lyric Show 3 ( by The vern ) and Multisource component ( by veksha ). Synced lyrics will be highlighted<br />
 with a theme color, unsynced lyrics have the default white text color.
 
-![BiographyLyrics](https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/04_Georgia_Reborn_Biography_And_Lyrics_Animation.webp)
+![BiographyLyrics](https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/04_Georgia_Reborn_Biography_And_Lyrics_Animation.webp)
 
 Georgia-ReBORN supports 4K resolutions and will adjust theme elements based on DPI and screen size.<br />
 Fullscreen mode is also supported! There are predefined sizes ( Options > Player size ) and each layout<br />
 has 3 different sizes. You can of course resize foobar to your liking, but it has minimum size restrictions<br />
 to prevent button and text overlapping. There are 3 different layouts to choose from ( Options > Layout ).<br />
 
-![Sizes](https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/05_Georgia_Reborn_Sizes_And_Layouts_Animation.webp)
+![Sizes](https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/05_Georgia_Reborn_Sizes_And_Layouts_Animation.webp)
 
 **NOTE:** Georgia-ReBORN starts in player size 'Small' as a failsafe player size for small res. monitor/laptop screens<br />
 and looks best if you switch to 'Normal' or a larger player size!
@@ -70,7 +70,7 @@ These image packs are optional, they contain record labels and artist logos whic
 **[Download Artist Logos](https://www.dropbox.com/s/4fwoeo7zlrxcj31/artistlogos.zip?dl=1)**.
 Extract them to foobar2000\profile\georgia-reborn\images
 
-![Details](https://github.com/TT-ReBORN/Georgia-ReBORN-images/blob/master/06_Georgia_Reborn_Details_Animation.webp)
+![Details](https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/06_Georgia_Reborn_Details_Animation.webp)
 
 **NOTE:** You need to download the disc art from https://fanart.tv. If you don't have any disc art, you can choose<br />
 between 13 self created placeholders: Options > Details > Disc art > Display disc art placeholder<br />
@@ -83,7 +83,7 @@ these resources, respectively templates that contain all Georgia-ReBORN logos pl
 Feel free to post your creations in the **[HydrogenAudio](https://hydrogenaud.io/index.php?topic=121047.0)** thread or
 start your own at **[Discussions](https://github.com/TT-ReBORN/Georgia-ReBORN/discussions)**. I would love to see<br />
 what you have created and I am sure other users feel the same!
-**[Download Resources](https://github.com/TT-ReBORN/Georgia-ReBORN-images/raw/master/Resources/Georgia-ReBORN_Resources.7z)**.
+**[Download Resources](https://github.com/TT-ReBORN/Georgia-ReBORN-resources/raw/master/Resources/Georgia-ReBORN_Resources.7z)**.
 
 ## Features
 
