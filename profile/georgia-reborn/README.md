@@ -115,6 +115,8 @@ what you have created and I am sure other users feel the same!
 
 ## Installation Instructions
 
+**[Compatible only with 32-bit foobar for now until components will be updated to 64-bit!](https://github.com/TT-ReBORN/Georgia-ReBORN/issues/102)**!
+
 <b>1.</b> Install foobar2000 as portable from the **[Official Website](https://www.foobar2000.org/download)**.
 
 <b>2.</b> Download the Georgia-ReBORN theme from this **[Github Page](https://github.com/TT-ReBORN/Georgia-ReBORN/archive/master.zip)**.
