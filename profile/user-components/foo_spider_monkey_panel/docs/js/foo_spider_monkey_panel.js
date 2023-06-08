@@ -1634,11 +1634,6 @@ let utils = {
     GetAlbumArtV2: function (handle, art_id, need_stub) { }, // (GdiBitmap) [, art_id][, need_stub]
 
     /**
-     * @return {string} Returns an empty string if clipboard contents are not text.
-     */
-    GetClipboardText: function () { },
-
-    /**
      * @param {string} path
      * @return {number} File size, in bytes
      */
@@ -1800,11 +1795,6 @@ let utils = {
      * let username = utils.ReadINI("e:\\my_file.ini", "Last.fm", "username");
      */
     ReadINI: function (filename, section, key, default_val) { }, // (string) [, default_val]
-
-    /**
-     * @param {string} text
-     */
-    SetClipboardText: function (text) { },
 
     /**
      * Displays an html dialog, rendered by IE engine.<br>

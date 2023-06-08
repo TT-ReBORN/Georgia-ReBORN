@@ -1,0 +1,9 @@
+﻿{
+  "author": "WilB",
+  "description": "Feature rich media library viewer for foobar2000.\r\n\r\n• Tree viewer\r\n• Album art browser\r\n• New facets\r\n• Statistics\r\n• Album art flow mode\r\n\r\nFor guidance on setting up new facets / multiple panel mode, see help on views tab\r\n\r\nCredits\r\n\r\n• Original Jscript library search (2013): thanhdat1710\r\n• Original JS smooth browser design (2015): Br3tt (aka falstaff)",
+  "enableDragDrop": true,
+  "id": "{E85C9EF0-778B-46DD-AF20-F4BE831360DD}",
+  "name": "Library Tree",
+  "shouldGrabFocus": true,
+  "version": "2.4.0"
+}

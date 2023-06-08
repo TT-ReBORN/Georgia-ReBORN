@@ -129,11 +129,11 @@ function on_mouse_rbtn_up(x, y) {
 		refresh();
 		break;
 	case 10004:
-		properties.background.set(utils.ColourPicker(window.ID, properties.background.value));
+		properties.background.value = utils.ColourPicker(window.ID, properties.background.value);
 		window.Repaint();
 		break;
 	case 10005:
-		properties.text.set(utils.ColourPicker(window.ID, properties.text.value));
+		properties.text.value = utils.ColourPicker(window.ID, properties.text.value);
 		window.Repaint();
 		break;
 	case 10010:

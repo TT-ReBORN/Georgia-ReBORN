@@ -1,5 +1,0 @@
-Georgia-ReBORN v2.0.3b, April 16, 2022 - https://github.com/TT-ReBORN/Georgia-ReBORN
-
----
-
-Updated to Georgia-2.0.3, Mar 21, 2022 - Commit 495 e4ed879

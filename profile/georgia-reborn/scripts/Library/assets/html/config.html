@@ -1,0 +1,1837 @@
+﻿<!DOCTYPE html>
+	<html>
+	<head>
+
+	<meta http-equiv="x-ua-compatible" content="IE=8" />
+    <link rel="stylesheet" type="text/css" href="styles10.css">
+    <style type="text/css">
+
+	body, html {height:100%; margin:0;}
+
+	.tablink {background-color:#e5e5e5; overflow:hidden; font:1em Arial;}
+	.tablink a {margin:0; background-color:#555; color:white; text-align:center; float:left; border:none; border-bottom:1px solid #d0d0d0; outline:none; cursor:pointer; padding:0.31em 2px; width:13%;}
+	.tablink a:hover {padding:0.31em 2px; background-color:#777;}
+	.tablink a:focus {padding:0.31em 2px; background-color:#777;}
+	.tablink a:focus a:hover {padding:0.31em 2px; background-color:#777;}
+	.tabcontent {display:none; padding:1px;}
+
+	input[type="checkbox"] {vertical-align:middle; position:relative; width:17px; height:15px; border:0; padding:2px 1px; margin:5px 0;}
+	input[type="checkbox"]:focus {border:1px solid #0078D7; padding:1px 0;}
+	input[type="checkbox"]:hover:focus {border:1px solid #0078D7; padding:1px 0;}
+	input[type="checkbox"]:hover {border:1px solid #000000; padding:1px 0;}
+	input[readonly] {background-color:#E1E1E1;}
+	.checkbox_label {padding:0; margin:0; vertical-align:middle; margin-left:0.31em;}
+
+	input[type="radio"] {vertical-align:middle; position:relative; width:17px; height:15px; border:0; padding:2px 1px; margin:5px 0;}
+	input[type="radio"]:focus {border:1px solid #0078D7; padding:1px 0;}
+	input[type="radio"]:hover:focus {border:1px solid #0078D7; padding:1px 0;}
+	input[type="radio"]:hover {border:1px solid #000000; padding:1px 0;}
+
+	.info1 {padding:0.7em 0 1.57em 0;}
+	.info2 {padding:0.7em 0 0;}
+	.info3 {margin:0 2% 0 0; padding:0;}
+	.info4 {padding:0 0 0.31em;}
+	.info4600 {padding:0 0 0.31em; font-weight:600;}
+	.info5 {padding:0.7em 0 0.31em;}
+	.info5600 {padding:0.7em 0 0.31em; font-weight:600;}
+	.info6 {padding:1.25em 0 0.7em;}
+	.info7 {padding:1em 0 0 0;}
+	.info8 {padding:1.25em 0 0;}
+	.info9 {padding:1.25em 20% 0 0;}
+
+	.info1, .info3,  .info2, .info3, .info4, info4600, .info5, .info5600, .info6, .info7, .info8, .info9 {
+		word-wrap:break-word; white-space:pre-wrap;
+	}
+
+	.input_cnt1 {padding-top:0.31em; padding-bottom:0.31em;}
+	.input_cnt2 {padding-top:0.7em; padding-bottom:0.31em;}
+	.input_cnt3 {padding-top:0.7em;}
+	.input_cnt4 {padding-bottom:0.44em;}
+	.input_cnt5 {margin:5px 0}
+	.input3 {width:3em;}
+	.input7 {width:7.5%;}
+	.input15 {width:15%;}
+	.input21 {display:inline-block; vertical-align:middle; width:21%; margin-left:2%; margin-right:0;}
+	.input35 {display:inline-block; vertical-align:middle; width:35%; margin-bottom:0.31em;}
+	.input40 {display:inline-block; vertical-align:middle; width:40%; margin-left:5%;}
+	.input70 {display:inline-block; vertical-align:middle; width:70%;}
+	.input71 {display:inline-block; vertical-align:middle; width:71%; margin-left:2%;}
+	.input75 {display:block; width:75%;}
+	.input98 {display:inline-block; vertical-align:middle; width:98%;}
+	.input99 {display:inline-block; vertical-align:middle; width:98%; border:none !important; background:none;}
+	.inputFull {display:block; width:35%;}
+	.inp_label1 {display:block; padding-top:0em; margin:0.31em 0;}
+	.inp_label2 {padding-left:0.46em;}
+
+	.btn_cnt {padding:0.7em 1em; position:absolute; bottom:0; right:0; left:0;}
+	#btn_cnt_right {background:#e5e5e5; border-top:1px solid #d0d0d0; text-align:right;}
+	#btn_cnt_left {text-align:left;}
+	#btn_cnt_center {text-align:center;}
+	#mainMargin {margin: 0 2%}
+
+	.alignLeftH {width:23%; margin-left:4%; padding:1.01em 0 0.31em; float:left;}
+	.alignRightH {padding:1.01em 0 0.31em; float:left;}
+	.div_text1 {padding:1.01em 0 0.31em;}
+	.div_text2 {padding:0.7em 0 0.31em;}
+	.div_text3 {padding:1.01em 0 0.7em 0;}
+	.div_text4 {padding:1.25em 0 0.7em;}
+	.div_text6 {padding:1.25em 0 0.31em;}
+	.div_text7 {padding:1.01em 0 0;}
+	.alignLeftH, .alignRightH, .div_text1, .div_text2, .div_text3, .div_text4, .div_text6, .div_text7 {
+		font:bold 1.15em Segoe UI; color:#0066cc; word-wrap:break-word; white-space:pre-wrap;
+	}
+
+	.dropbtn {white-space:nowrap; width:100%; background-color:#3e8e41; color:white; text-decoration:none; padding:0.13em 5px; border:none; cursor:pointer;}
+	.dropbtnLight {white-space:nowrap; width:100%; color:black; text-decoration:none; padding:0.13em 5px; border:none; cursor:pointer;}
+	.dropbtn:after {font-family: FontAwesome; content: "\f107"; padding-left:0.5em; padding-right:0.19em;}
+	.dropbtnLight:after {font-family: FontAwesome; content: "\f107"; padding-left:0.5em; padding-right:0.19em;}
+	.dropdown {margin-top: 10px; position:static; display:inline-block;}
+	.dropdown-content {display:none; position:absolute; background-color:#f9f9f9; min-width:10em; white-space:nowrap; box-shadow:0 8px 1.01em 0 rgba(0,0,0,0.2); z-index:1;}
+	.dropdown-content a {padding:0.13em 5px; color:black; text-decoration:none; display:block;}
+	.dropdown-content a:hover {background-color:#f1f1f1;}
+	.dropdown .dropdown-content {display:none;}
+	.dropdown:hover .dropbtn {background-color:#4CAF50;}
+	.dropdown:hover .dropbtnLight {background-color:Gainsboro;}
+
+	.dropArrow {display:inline-block; font-family: FontAwesome; padding-left:0.5em; padding-right:0.19em;}
+
+	.pad {height:1.57em;}
+	.stub {border:0; vertical-align:middle; margin-bottom:0.2em;}
+
+	table {width: 100%; text-align:center; border-collapse:collapse; border:1px solid Gainsboro; empty-cells:show;}
+	th {font:bold 100% Segoe UI; color:green; border:0;}
+	td {padding-right:5px; border:0;}
+	tr {border:0;}
+	.table77 {width:76.5%;}
+	.table98 {line-height:1.62em; text-align:left; vertical-align:top; border:1px solid Gainsboro;}
+
+	.column25 {width:25%;}
+	.column27 {width:27%;}
+	.column29 {width:29%;}
+	.column32 {width:32%;}
+	.column33 {width:33%;}
+	.column38 {width:38%;}
+	.column41 {width:41%;}
+	.column50 {width:50%;}
+	.column61 {width:61%;}
+	.column70 {width:66%;}
+
+	.column25, .column27, .column29, .column32, .column33, .column38, .column41, .column50, .column61, .column70 {
+		margin:0; padding:0; float:left;
+	}
+
+	.row:after {content:""; display:table; clear:both;}
+
+	ul {margin-top:0; margin-bottom:0;}
+
+	</style>
+	</head>
+	<body>
+		<div style="clear:both;"></div>
+		<div id="tablink" class="tablink">
+			<a onclick="openPage('views', this, 'red')" id="viewsCfg">Views</a>
+			<a onclick="openPage('filters', this, 'green')" id="filtersCfg">Filters</a>
+			<a onclick="openPage('behaviour', this, 'orange')" id="behaviourCfg">Behaviour</a>
+			<a onclick="openPage('display', this, 'blue')" id="displayCfg">Display</a>
+			<a onclick="openPage('albumArt', this, 'red')" id="albumArtCfg">Album Art</a>
+			<a onclick="openPage('custom', this, 'green')" id="customCfg">Custom</a>
+			<a onclick="openPage('advanced', this, 'orange')" id="advancedCfg">Advanced</a>
+		</div>
+<div id="mainMargin">
+		<div style="clear:both;"></div>
+		<div id='views' class="tabcontent">
+			<span class="alignLeftH">Name</span>
+			<span class="alignRightH">Pattern</span>
+			<div style="clear:both;"></div>
+			<div id="view"></div>
+			<div class="info1">
+Selected items will be displayed in the menu.
+		</div>
+		<p "><a href="https://wiki.hydrogenaud.io/index.php?title=Foobar2000:Title_Formatting_Reference" target=\"_blank\">Title format reference</a></p>
+		<button id="syntax_button" name="syntax_button" style="margin-left:0px;" type="button">New Facets / Multiple Panel Mode / Extended Syntax Help</button><div id="syntax_help" style="display: none;">
+<div class="info5"><b>New Facets / Multiple Panel Mode </b></div>
+			<div class="info5">
+Each panel can contain either a tree, album art or facet view. Panels needn't be contiguous. The example describes how to set-up New Facets with 3 facet panels: Genre, Artist & Album.</div>
+<div class="info5"><i>Set up</i><ul><li>Insert 3 spider monkey panels into the layout and add library tree to each</li><li>For each panel, use quicksetup and select 'Facet'</li><li>Set the view of the first panel to Genre, the second to Artist and the third to Album*</li><li>For each panel press shift + windows key, choose configure & on the scripts tab set the panel name of the first panel to Genre, the second to Artist and the third to Album</li><li><input class="input99" value="For the SECOND panel set menu > source to panel, then choose select panel source and enter Genre (it's case sensitive)"/></li><li><input class="input99" value="For the THIRD panel set the source to panel, then choose select panel source and enter Genre|Artist (it's case sensitive)"/></li></ul><i>Options</i><ul><li>Optionally change the second panel to show albumart if preferred and set the type to artist & may be circular style images</li><li>Optionally change the third panel to show albumart if preferred and set the type to front</li><li>Adjust albumart > group level if required</li><li>Optionally hide the top bar search, filter button & settings button for the second and third panels</li><li>It's recommended to leave enabled: remember state on exit and before search; filters auto-manage scroll</li></ul>
+* The default album view works best as a tree view; for a facet view, the following is better:<input class="input99" value="View by Albums // $if2(%album%,εXtra)|%album artist%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%"/>
+
+<b><i>Extra view patterns, compatible with both facet and tree styles</i></b>
+View by:
+<input class="input99" value="Track // [%tracknumber%. ]%title%"/>
+<input class="input99" value="Title // %title%"/>
+<input class="input99" value="Folder // $directory(%path%)"/>
+<input class="input99" value="Filename // %filename%"/>
+<input class="input99" value="Filename.ext // %filename_ext%"/>
+<input class="input99" value="Artist Initial // $cut(%artist%,1)|%artist%|$if2(%album%,εXtra)|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%"/>
+<input class="input99" value="Album Artist Initial // $cut(%album artist%,1)|%album artist%|$if2(%album%,εXtra)|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%"/>
+<input class="input99" value="Year - Album // [$year(%date%) - ]$if2(%album%,εXtra)|%album artist%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%"/>
+
+<b><i>Sorting</i></b>
+Facets works by using the top level of normal tree views. The remainder of the view is used for sorting, which should be sufficient. If extra sorting is required, a playlist sort can be used, e.g. one of the below.
+
+<input class="input99" value="%album artist%  $if2(%album%,εXtra)  [[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%"/><input class="input99" value="%artist%  $if2(%album%,εXtra)  [[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%">
+
+</div>
+<div class="info5"><b>Extended syntax</b></div>
+<table id="syntax" class="table98">
+<br>
+<colgroup>
+	<col span="1" style="width:20%">
+</colgroup>
+</table>
+<div class="info8" style="color:#0066cc;"><b>$colour{normal,hover,selected}</b></div>
+<div class="info7">
+Set different colours for parts of a line of text. All colours are optional: any undefined are set to default. Colours apply after the $colour code until either another $colour code is encountered or a splitter is reached (| or &#166 in the view pattern) or a reset code is reached: $colour{}
+
+Normal, hover & selected can either be r-g-b or a highlight or dim indicator, e.g.
+$colour{r-g-b,r-g-b,r-g-b} or $colour{-,++,+++}
+</div>
+<div class="info7" style="color:#0066cc;"><i>Hover effect requires that "Hover effect (foreground): Highlight text" is enabled (display tab).</i></div>
+<div class="info7">
+<i>Highlight & dim indicators:</i>
+- dim text
+-- dimmer text
+--- dimmest text
++ bright text
+++ brighter text
++++ brightest text
+
+Format, r-g-b & -/+ style, can be mixed in same $colour{} function.
+
+<i>Syntax examples:</i>
+$colour{} reset all colours to defaults.
+$colour{255-0-0} set normal text colour to red; set hover & selected text colours to defaults since undefined.
+$colour{,,+++} set selected text colour to brightest; set normal & hover text colours to defaults since undefined.
+$colour{0-255-0,++} set normal text colour to green & hover text colour to brighter; set selected text colour to default since undefined.
+$colour{255-0-0,0-255-0,0-255-255} set normal, hover and selected text colours to red, green & cyan, respectively.
+
+<i>Example pattern:</i></div>
+<div class="input_cnt3"><input class="input99" style="font:0.87em Segoe UI;" value="$colour{-}%artist%[$colour{+} - %album%][$colour{96-127-127} - '['%date%']'][$colour{111-132-138} - %genre%]$colour{--}|[$colour{--,++,0-192-192}%tracknumber%. ]$colour{-,++,0-228-228}%title%"/></div>
+<div class="info7">
+Item counts are a special case. They don't form part of the view pattern.
+Align right: drawn separately; not controlled by $colour codes; already dimmed.
+End of text: effected by $colour codes. Use $colour{} at the end of the line to reset or set to a different colour if desired ($colour{--} is used in the example above).
+</div>
+<div class="info7" style="color:#0066cc;"><b>String limitation</b></div>
+<div class="info7">
+$nodisplay & $colour are generally unsafe inside string manipulation functions that remove a part of a string or insert a substring by position. Instead, they should be put before the string function, e.g.
+
+Use $colour{255-0-0}$substr(str,from,to). Don't use $substr($colour{255-0-0}str,from,to).
+Use $colour{0-255-0}$swapbranchprefix{%&ltartist&gt%}. Don't use $swapbranchprefix{$colour{0-255-0}%&ltartist&gt%}.
+
+</div>
+		</div>
+		</div>
+		<div style="clear:both;"></div>
+		<div id='filters' class="tabcontent">
+			<span class="alignLeftH">Name</span>
+			<span class="alignRightH">Query</span>
+			<div style="clear:both;"></div>
+			<div id="filter"></div>
+			<div class="info1">
+Selected items will be displayed in the menu.
+		</div>
+		</div>
+		<div style="clear:both;"></div>
+		<div id="btn_cnt_right" class="btn_cnt">
+			<button id="btn_ok" >OK</button>
+			<button class="button_apply" id="btn_apply">Apply</button>
+			<button id="btn_cancel">Cancel</button>
+		</div>
+		<div id="btn_cnt_left" class="btn_cnt">
+			<button id="btn_reset" >Reset all</button>
+			<button id="btn_resetPage" >Reset page</button>
+		</div>
+		<div id="btn_cnt_center" class="btn_cnt">
+			<button id="btn_add" >Add new</button>
+			<button id="btn_up" >Up</button>
+			<button id="btn_down" >Down</button>
+			<button id="btn_delete" >Delete</button>
+		</div>
+
+		<div id="behaviour" class="tabcontent">
+		<div class="row">
+
+			<div class="column38" style="margin-right:1%;">
+				<div class="div_text1">Mode</div>
+				<div id="actionType"></div>
+				<div style="display:inline-block; padding-top:0.7em;"><a id="mode_help" href="#" onclick="showModeHelp();return false;">Mode help</a></div>
+				<div id="mode_text" style="display:none; padding:0.7em; background-color:Gainsboro;">
+<div class="info4600"><b>Default</b></div>
+<div class="info4">&#x2022; Choose options</div>
+<div class="info4600"><b>Browser</b></div>
+<div class="info4">
+&#x2022; Keeps playing playlist
+&#x2022; Easy to browse track lists, e.g. in album art or facet modes
+&#x2022; Works best with playback follows cursor OFF & playlist visible
+&#x2022; Double-click status bar etc to view playing playlist
+&#x2022; Presets shown in red are set if enabled</div>
+<div class="info4600"><b>Player</b></div>
+<div class="info4">&#x2022; Plays from playback queue
+&#x2022; Doesn't involve a playlist
+&#x2022; Optional display of queue & nowplaying indicators
+&#x2022; Max queue size: 256 (foobar2000 limit)
+&#x2022; Presets shown in red are set if enabled</div>
+</div>
+				<span class="info5600">Single-click:</span>
+				<span class="dropdown" style="margin-top:0"><a id="click_dropdown" class="dropbtn" href="#" onclick="toggle('click');"></a>
+				<span id="click" class="dropdown-content"></span>
+				</span>
+				<div style="clear:both;"></div>
+				<span class="info5600">Double-click:</span>
+				<span class="dropdown" style="margin-top:0;"><a id="dblClick_dropdown" class="dropbtn" href="#" onclick="toggle('dblClick');"></a>
+				<span id="dblClick" class="dropdown-content"></span>
+				</span>
+				<span class="info5600">Mbtn-click:</span>
+				<span class="dropdown" style="margin-top:0"><a id="mbtnClick_dropdown" class="dropbtn" href="#" onclick="toggle('mbtnClick');"></a>
+				<span id="mbtnClick" class="dropdown-content"></span>
+				</span>
+				<span class="info5600">Alt+click:</span>
+				<span class="dropdown" style="margin-top:0"><a id="altClick_dropdown" class="dropbtn" href="#" onclick="toggle('altClick');"></a>
+				<span id="altClick" class="dropdown-content"></span>
+				</span>
+				<div style="clear:both;"></div>
+				<span class="info5600">Keystroke:</span>
+				<span class="dropdown" style="margin-top:0"><a id="keystroke_dropdown" class="dropbtn" href="#" onclick="toggle('keystroke');"></a>
+				<span id="keystroke" class="dropdown-content"></span>
+				</span>
+				<div class="div_text6">Scroll</div>
+				<span class="info3">Bar:</span>
+				<span style="margin:0 0 0.31em;" class="dropdown"><a id="sbarShow_dropdown" class="dropbtn" href="#" onclick="toggle('sbarShow');"></a>
+				<span id="sbarShow" class="dropdown-content"></span>
+				</span>
+				<span style="margin:0 0 0.31em;" class="dropdown"><a id="sbarType_dropdown" class="dropbtn" href="#" onclick="toggle('sbarType');"></a>
+				<span id="sbarType" class="dropdown-content"></span>
+				</span>
+				<span style="margin:0 0 0.31em;" id="sbar_col_dropdown" class="dropdown"><a id="sbarCol_dropdown" class="dropbtn" href="#" onclick="toggle('sbarCol');"></a>
+				<span id="sbarCol" class="dropdown-content"></span>
+				</span>
+				<span style="margin:0 0 0.31em;" id="sbar_icon_dropdown" class="dropdown"><a id="sbarIcon_dropdown" class="dropbtn" href="#" onclick="toggle('sbarIcon');"></a>
+				<span id="sbarIcon" class="dropdown-content"></span>
+				</span>
+				<div id="scrolling"></div>
+			</div>
+
+			<div class="column29">
+				<div class="div_text1">Search</div>
+				<span class="dropdown"><a id="search_dropdown" class="dropbtn" href="#" onclick="toggle('search');"></a>
+				<span id="search" class="dropdown-content"></span>
+				</span>
+				<div id="searchEnter" style="padding-top:0.5em;"></div>
+				<div class="div_text2">Tree</div>
+				<div id="expand"></div>
+				<div id="expandLimit"></div>
+				<div class="div_text2">Remember state</div>
+				<div id="remember"></div>
+				<div class="div_text6">Selection</div>
+				<div id="selection"></div>
+				<div class="div_text1">Follow selection</div>
+				<div id="followCurrent"></div>
+				<div class="info9"><a id="setSize" style="text-decoration:none;" href="#" onclick="setWindowSize();return false;">Click to reset window size</a></div>
+			</div>
+
+			<div class="column32">
+				<div class="div_text1">Playlist</div>
+				<div id="playlist"></div>
+				<div class="info4">Use %view_name% for name of current view</div>
+				<div id="playlistSort"></div>
+				<div class="div_text4">Target playlist for send to playlist:</div>
+				<div id="targetPlaylist"></div>
+			</div>
+		</div>
+		</div>
+
+		<div id="display" class="tabcontent">
+		<div class="row">
+
+			<div class="column33">
+				<div class="div_text1">Top bar</b></div>
+				<div id="bar"></div>
+				<div style="padding-right:10%;" class="info4"><i>*If hidden, right click over filter or icon. If all hidden, use context menu.</i></div>
+				<div class="div_text2">Theme</div>
+				<span class="dropdown"><a id="theme_dropdown" class="dropbtn" href="#" onclick="toggle('themeBg');"></a>
+				<span id="themeBg" class="dropdown-content"></span>
+				</span>
+				<div id="themeStyle" style="padding-top:0.5em;"></div>
+				<div id="coverFormat"></div>
+				<div id="panelStyle"></div>
+				<div class="div_text2">Statistics</div>
+				<div id="labelStatistics"></div>
+				<div class="info5"><i>Title format for some can be set below</i></div>
+				<div id="statistics2"></div>
+			</div>
+
+			<div class="column33">
+				<div class="div_text1">Root</div>
+				<span class="dropdown"><a id="root_dropdown" class="dropbtn" href="#" onclick="toggle('root');"></a>
+				<span id="root" class="dropdown-content"></span>
+				</span>
+				<div id="rootStyle" style="padding-top:0.5em;"></div>
+				<div class="div_text2">Node style</div>
+				<span class="dropdown"><a id="node_dropdown" class="dropbtn" href="#" onclick="toggle('node');"></a>
+				<span id="node" class="dropdown-content"></span>
+				</span>
+				<div id="nodeLines" style="padding-top:0.5em;"></div>
+				<div class="div_text2">Item counts</div>
+				<span class="dropdown"><a id="itemCounts_dropdown" class="dropbtn" href="#" onclick="toggle('itemCounts');"></a>
+				<span id="itemCounts" class="dropdown-content"></span>
+				</span>
+				<div id="countsRight" style="padding-top:0.5em;"></div>
+				<div class="div_text2">Line style</div>
+				<div id="lines"></div>
+			</div>
+
+			<div class="column33">
+				<div class="div_text1">Hover effect (background)</div>
+				<span class="dropdown"><a id="showHl_dropdown" class="dropbtn" href="#" onclick="toggle('showHl');"></a>
+				<span id="showHl" class="dropdown-content"></span>
+				</span>
+				<div id="frameStyle" style="padding-top:0.5em;"></div>
+				<div class="div_text2">Hover effect (foreground)</div>
+				<div id="showH2"></div>
+				<div class="div_text2">Show</div>
+				<div id="show"></div>
+				<div class="div_text2">Layout metrics</div>
+				<div class="row">
+				<div class="column38">
+				<div id="metrics1"></div>
+				</div>
+				<div class="column61">
+				<div id="metrics2"></div>
+				</div>
+				</div>
+				<div id="metrics3"></div>
+			</div>
+		</div>
+		</div>
+
+		<div id="albumArt" class="tabcontent">
+		<div class="row">
+
+			<div class="column25">
+				<div class="div_text1">Labels</div>
+				<div id="labels"></div>
+				<div id="flip"></div>
+				<div class="div_text2">Overlay</div>
+				<span class="dropdown"><a id="overlay_dropdown" class="dropbtn" href="#" onclick="toggle('overlay');"></a>
+				<span id="overlay" class="dropdown-content"></span>
+				</span>
+				<div class="div_text2">Disk cache</div>
+				<div id="useCache"></div>
+				<button id="help_button" name="help_button" style="margin:2em 0 0;" type="button">Show Album Art Help</button>
+			</div>
+
+			<div class="column33">
+				<div class="div_text3">Style</div>
+				<table id="imageFormat" class="table77">
+					<colgroup>
+						<col span="5" style="width:15%">
+					</colgroup>
+				</table>
+				<div class="row">
+				<div class="column50">
+				<div class="div_text7">Thumbnail padding</div>
+				<div id="gap"></div>
+				<div style="padding:1.01em 0 0.31em;" class="div_text2">Flow mode</div>
+				<div id="flowMode"></div>
+				<div style="padding:1.01em 0 0.31em;" class="div_text2">Thumbnail drop shadow</div>
+				<div id="dropShadow"></div>
+				</div>
+				<div class="column50">
+				<div id="thumbNailSize" class="div_text7">Thumbnail Size</div>
+				<span class="dropdown"><a id="thumbSize_dropdown" class="dropbtn" href="#" onclick="toggle('thumbSize');"></a>
+				<span id="thumbSize" class="dropdown-content"></span>
+				</span>
+				<div class="div_text2">View</div>
+				<div id="sameAsTree"></div>
+			</div>
+			</div>
+				<div class="div_text2">Index</div>
+				<div id="indexLetter"></div>
+			</div>
+
+			<div class="column41">
+				<div class="div_text1">Stub</div>
+				<span style="margin:0 0 0.31em;" class="dropdown"><a id="rootStub_dropdown" class="dropbtnLight" href="#" onclick="toggle('rootStub');"></a>
+				<span id="rootStub" style="font:0.85em Segoe UI;" class="dropdown-content"></span>
+				</span>
+				<span style="margin:1em 0 0.31em 0;" class="dropdown"><a id="noCoverStub_dropdown" class="dropbtnLight" href="#" onclick="toggle('noCoverStub');"></a>
+				<span id="noCoverStub" style="font:0.85em Segoe UI;" class="dropdown-content"></span>
+				</span>
+				<span style="margin:1em 0 0.31em 0;" class="dropdown"><a id="noArtistStub_dropdown" class="dropbtnLight" href="#" onclick="toggle('noArtistStub');"></a>
+				<span id="noArtistStub" style="font:0.85em Segoe UI;" class="dropdown-content"></span>
+				</span>
+				<div class="info5"><i>Click dropdown items for full preview (provided visible in panel).</i></div>
+			</div>
+		</div>
+			<div id="help_text" style="display: none;">
+			<div class="info5"><b>Cache</b></div>
+			<div class="info5">
+Enable the disk cache for best performance. It contains resized images that facilitate faster loading and is built as images are initially loaded. Optimum performance will be achieved when the cache is fully built. If new images are obtained or images replaced, the cache copy can be refreshed from the refresh context menu item.
+
+Optionally cached images can be preloaded in the background. Preloading completes shortly after initialisation. After that images should always show immediately on scrolling, subject to memory available.</div>
+			<div class="info5"><b>Image and text size</b></div><div class="info5"><ul><li>Image size: hold Ctrl+Alt+<i>Shift</i> & rotate the mouse wheel</li><li>Text and image size: hold Ctrl+Alt & rotate the mouse wheel</li><li>Flow mode operates in a single column or row (labels right & size options not available)</li></ul></div>
+			<div class="info5"><b>Image sources</b></div>
+			<div class="info5">Album art is loaded from the file sources defined at Preferences: Display, and embedded images. Stub images are set above.
+Artist photos: if biography is used to obtain photos, the pattern below can be entered. To get ...*YOUR PATH*..., use biography > sources > open file location > image. Copy the part required from the windows explorer address bar.</div>
+			<div id="photoPath"></div>
+			<div class="info5"><b>Views</b></div>
+			<div class="info5">Any view can be used. The image loaded is that of the <i>first item in the group</i>, according to the type set (front cover, artist etc). Views starting with something like <i>%artist%|%album%... or %album artist%|%album%...</i> work well. Always use a full pattern so tracks etc sort properly. By default the number of group levels is automatically determined. Use of the same view for the tree and album art makes toggling between the two more straightforward. Since only one copy of the library is kept in memory, a library reload is also avoided.</div>
+			<div class="info5"><b>Follow selection</b></div>
+			<div class="info5">If enabled, the &quot;File>Preferences>Display>Selection viewers&quot; setting is used.</div>
+			<div class="info5"><b>Tree only mode</b></div>
+			<div class="info5">Switch off 'Show Album Art Options' on the display tab while in tree view. Album art loading, disk caching plus the album art tab and menu options are disabled. Switch the option back on to allow album art mode.</div>
+		</div>
+	</div>
+
+		<div id="custom" class="tabcontent">
+		<div class="row">
+			<div class="div_text1">Colours and fonts</div>
+			<div class="info5">
+User interface or theme settings are used by default. Enable & configure custom items if required.
+Ctrl+alt+wheel over most items can also be used to change their size (album art additionally requires shift) [reset zoom: menu\refresh].</div>
+			<div class="column50">
+				<div class="info2"><b>Fonts</b></div>
+				<div class="info5" style="margin-left:8.5%">Name,Size,Style(0-4)</div>
+				<div id="fonts"></div>
+				<div class="info5" style="margin-left:8.5%">Name,Style(0-4)</div>
+				<div id="albumArtFonts"></div>
+				<div class="info6"><b>Colours (R,G,B):</b></div>
+				<div id="colours1"></div>
+				<p "><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Colors/Color_picker_tool#ColorPicker_tool" target=\"_blank\">Colour picker</a></p>
+				<div class="info3">
+Selected colours and fonts will be used.
+Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
+		</div>
+			</div>
+
+			<div class="column50">
+				<div class="info6"><b>Colours (R,G,B or R,G,B,A):</b></div>
+				<div id="colours2"></div>
+				<div class="info1">
+<i>Colours</i>: flexible entry, e.g. 255,0,0 or 0-255-0 or rgba(255,0,0,64)
+<i>Alpha</i>: 0-255 or 0-1 scale
+<i>Transparent</i>: main background N/A; transparent fill can be used
+				</div>
+			</div>
+
+		</div>
+		</div>
+
+		<div id="advanced" class="tabcontent">
+		<div class="row">
+			<div class="column50">
+				<div class="div_text1">Scroll</div>
+				<div id="cusScroll"></div>
+				<div class="div_text1">Scrollbar</div>
+				<div id="scrollbar"></div>
+				<div class="info5" style="padding-right:20%;"><i>Select custom scrollbar icon in 'Behaviour Tab' under 'Scroll: Arrows' (N/A if windows scrollbar set). Set custom node icon in 'Display Tab' under 'Node style'. Ensure icons are supported by fonts.</i></div>
+			</div>
+
+			<div class="column50">
+				<div class="div_text1">Node</div>
+				<div id="cusNode"></div>
+				<div class="info5" style="padding-right:10%;"><i>Windows nodes do not support colours or hover effects.</i></div>
+				<div class="div_text1">Theme blur</div>
+				<div id="themeBlur"></div>
+				<div class="div_text1">Library</div>
+				<div id="load"></div>
+				<div id="prefixes"></div>
+				<div class="div_text1">Minimise on root collapse</div>
+				<div id="mode"></div>
+				<div id="modeInput"></div>
+				<div class="info5"><i>Requires a panel above or below library tree. N/A with panel stack splitter or if root node displayed in line.</i></div>
+		</div>
+
+		</div>
+		</div>
+	</div>
+	<div id="div" style="height:0; width:0;outline:none; border:none; padding:none; margin:none; box-sizing:content-box;"></div>
+		<script>
+			var em, i = 0, is_closed_manually = false, j = 0, height, left, top, window_h, window_w;
+
+			function getValue(id) {
+				var div = document.getElementById(id);
+				div.style.height = '1em';
+				return (em = Math.max(div.offsetHeight, 13.6));
+			}
+			getValue('div');
+
+			function setWindowSize() {
+				window_w = cur.def_w * em || screen.width * 0.67;
+				window_h = cur.def_h * em || screen.height * 0.85;
+				window_w = Math.min(window_w, screen.width * 0.67);
+				window_h = Math.min(window_h, screen.height * 0.85);
+				left = (screen.width - window_w) / 2;
+				top = (screen.height - window_h) / 2;
+				window.resizeTo(window_w, window_h);
+				window.moveTo(left, top);
+				height = document.documentElement.clientHeight || document.body.clientHeight;
+			}
+
+			function openPage(pageName,elmnt,color) {
+				cur.page = pageName;
+				var i, tabcontent, tablinks;
+				tabcontent = document.querySelectorAll(".tabcontent");
+				for (i = 0; i < tabcontent.length; i++) {
+					tabcontent[i].style.display = "none";
+				}
+				tablinks = document.getElementsByTagName("a");
+				for (i = 0; i < tablinks.length; i++) {
+					tablinks[i].style.backgroundColor = "";
+				}
+				document.getElementById(pageName).style.display = "block";
+				elmnt.style.backgroundColor = color;
+				document.getElementById(pageName).style.height = height - window.tablink.offsetHeight - window.btn_cnt_right.offsetHeight;
+				document.getElementById(pageName).style.overflow = "auto";
+				var btns = ["btn_add", "btn_up", "btn_down", "btn_delete"];
+				for (i = 0; i < btns.length; i++) {
+					document.getElementById(btns[i]).style.display = pageName == 'views' || pageName == 'filters' ? "inline-block" : "none";
+				}
+				document.getElementById("btn_ok").focus();
+			}
+
+			document.getElementsByTagName("BODY")[0].onresize = function() {
+				height = document.documentElement.clientHeight || document.body.clientHeight;
+				window_w = (document.documentElement.clientWidth || document.body.clientWidth) + widthOffset;
+				window_h = height + heightOffset;
+				cur.w = Math.round(window_w / em);
+				cur.h = Math.round(window_h / em);
+				checkWindowDefaultSize();
+			}
+
+			function checkWindowDefaultSize() {
+				var def_w = cur.def_w * em || screen.width * 0.67;
+				var def_h = cur.def_h * em || screen.height * 0.85;
+				def_w = Math.min(def_w, screen.width * 0.67);
+				def_h = Math.min(def_h, screen.height * 0.85);
+				window.setSize.disabled = window_w == def_w && window_h == def_h;
+			}
+
+			function close_window() {
+				is_closed_manually = true;
+				window.open('', '_self', '');
+				window.close();
+			}
+
+			function remove(n) {
+				n.parentNode && n.parentNode.removeChild(n);
+			}
+
+			function moveUp(element) {
+				if (element.previousSibling)
+					element.parentNode.insertBefore(element, element.previousSibling);
+			}
+			function moveDown(element) {
+				if (element.nextSibling && element.nextSibling.id != "view_cnt_folderView" && element.nextSibling.id != "filter_cnt_menuName")
+					element.parentNode.insertBefore(element.nextSibling, element);
+			}
+
+			function set_btn_add_state() {
+				switch (cur.page) {
+					case 'views':
+						var ln = document.getElementById("view").querySelectorAll("[id^='view_cnt']").length
+						document.getElementById("btn_add").disabled = ln > 98 ? true : false;
+						break;
+					case 'filters':
+						var ln = document.getElementById("filter").querySelectorAll("[id^='filter_cnt']").length
+						document.getElementById("btn_add").disabled = ln > 98 ? true : false;
+						break;
+				}
+			}
+
+			function set_btn_apply_state() {
+				getValues();
+
+				var id = document.activeElement.id;
+				if (/scrollbar_container6/.test(id)) {
+					window.scrollbar_container5.style.fontFamily = window.scrollbar_container6.value;
+				}
+
+				var needCustomCol = /colour_container/.test(id);
+				if (needCustomCol) setCustomColours('value');
+				document.getElementById("btn_apply").disabled = JSON.stringify(cfg) != parsed_args[0] || JSON.stringify(ppt) != parsed_args[1] ? false : true;
+			}
+
+			function set_btn_del_state() {
+				switch (cur.page) {
+					case 'views':
+						var ln = document.getElementById("view").querySelectorAll("[id^='view_cnt']").length
+						document.getElementById("btn_delete").disabled = ix.view != -1 && ln > 1 ? false : true;
+						break;
+					case 'filters':
+						var ln = document.getElementById("filter").querySelectorAll("[id^='filter_cnt']").length
+						document.getElementById("btn_delete").disabled = ix.filter != -1 && ln > 1 ? false : true;
+						break;
+				}
+			}
+
+			function set_btn_dn_state() {
+				switch (cur.page) {
+					case 'views':
+						var element = document.getElementById("view_cnt" + ix.view);
+						document.getElementById("btn_down").disabled = ix.view == -1 || element.nextSibling && element.nextSibling.id == "view_cnt_folderView" ? true : false;
+						break;
+					case 'filters':
+						var element = document.getElementById("filter_cnt" + ix.filter);
+						document.getElementById("btn_down").disabled = ix.filter == -1 || element.nextSibling && element.nextSibling.id == "filter_cnt_menuName" ? true : false;
+						break;
+				}
+			}
+
+			function set_btn_up_state() {
+				switch (cur.page) {
+					case 'views':
+						var element = document.getElementById("view_cnt" + ix.view);
+						document.getElementById("btn_up").disabled = ix.view == -1 || !element || !element.previousSibling ? true : false;
+						break;
+					case 'filters':
+						var element = document.getElementById("filter_cnt" + ix.filter);
+						document.getElementById("btn_up").disabled = ix.filter == -1 || !element || !element.previousSibling ? true : false;
+						break;
+				}
+			}
+
+			function assign(c, t) {
+				c = c.replace(/[^0-9.,-]/g, '').replace(/-/g, ',').split(',');
+				var cc = ''; if (c.length != 3 && c.length != 4) return [255, 255, 255];
+				for (i = 0; i < c.length; i++) {
+					c[i] = parseFloat(c[i]);
+					if (i < 3) c[i] = clamp(Math.round(c[i]), 0, 255);
+					else if (i == 3) {
+						if (c[i] <= 1) c[i] = Math.round(255 * c[i]);
+						else c[i] = clamp(Math.round(c[i]), 0, 255);
+					}
+				}
+				switch (t) {
+					case 0: cc = [c[0], c[1], c[2]]; break;
+					case 1: switch (c.length) {
+						case 3: cc = [c[0], c[1], c[2]]; break;
+						case 4: cc = RGBAtoRGB([c[0], c[1], c[2], c[3]], [255, 255, 255, 255]); break;
+					} break;}
+				return cc;
+			}
+
+			function clamp(num, min, max) {
+				num = num <= max ? num : max; num = num >= min ? num : min; return num;
+			}
+
+			function getSelCol(c) {
+				var cc = [], v = 1;
+				for (i = 0; i < c.length; i++) {
+					v = c[i] / 255;
+					cc.push(v <= 0.03928 ? v /= 12.92 : Math.pow(((v + 0.055 ) / 1.055), 2.4));
+				}
+				var L = 0.2126 * cc[0] + 0.7152 * cc[1] + 0.0722 * cc[2]; if (L > 0.31) return 'black'; else return 'white';
+			}
+
+			function RGBAtoRGB(c, bg) {
+				var r = c[0] / 255, g = c[1] / 255, b = c[2] / 255, a = c[3] / 255, bgr = bg[0] / 255, bgg = bg[1] / 255, bgb = bg[2] / 255; var nR = ((1 - a) * bgr) + (a * r), nG = ((1 - a) * bgg) + (a * g), nB = ((1 - a) * bgb) + (a * b); nR = clamp(Math.round(nR * 255), 0, 255); nG = clamp(Math.round(nG * 255), 0, 255); nB = clamp(Math.round(nB * 255), 0, 255); return [nR, nG, nB];
+			}
+
+			var callback;
+			var cbox_h = 15;
+			var cbox_w = 17;
+			var cfg = [];
+			var cur = {};
+			var ix = {filter: -1, view: -1}
+			var new_id = 100;
+			var parsed_args;
+			var props_callback
+			var ppt = {};
+			var sizes = [];
+
+			try {
+				parsed_args = window.external.dialogArguments.toArray();
+			}
+			catch(e) {}
+
+			if (parsed_args) {
+				cur = JSON.parse(parsed_args[2]);
+				document.title = 'Library Tree ' + cur.version + ': Panel Settings';
+				cfg = JSON.parse(parsed_args[0]);
+				ppt = JSON.parse(parsed_args[1]);
+				cbox_h = Math.round(Math.max(em, 13));
+				cbox_w = cbox_h + 2;
+				var cbox = "width:" + cbox_w + "px; height:" + cbox_h + "px;"
+				window_w = cur.w * em || screen.width * 0.67;
+				window_h = cur.h * em || screen.height * 0.85;
+				if (cur.w == cur.def_w) window_w = Math.min(window_w, screen.width * 0.67);
+				if (cur.h == cur.def_h) window_h = Math.min(window_h, screen.height * 0.85);
+				left = (screen.width - window_w) / 2;
+				top = (screen.height - window_h) / 2;
+				window.resizeTo(window_w, window_h);
+				window.moveTo(left, top);
+				height = document.documentElement.clientHeight || document.body.clientHeight;
+				var heightOffset = window_h - height;
+				var widthOffset = window_w - (document.documentElement.clientWidth || document.body.clientWidth);
+				checkWindowDefaultSize();
+				document.getElementById(cur.page + 'Cfg').click();
+
+				var actionTypeLabels = ['Default', 'Browser (keep playing playlist)', 'Player (play & manage without a playlist)'];
+				var albumArtGapLabels = ['Normal (0 = auto)', 'Compact'];
+				var albumArtLabels = ['None', 'Bottom', 'Right', 'Blend', 'Dark', 'Flip'];
+				var albumArtOverlayLabels = ['None', 'Track Count', 'Year'];
+				var altClickLabels = ['Add to default playlist', 'Add to current playlist', 'Add to playback queue (alt dblclk removes)'];
+				var barLabels = ['Search', 'Filter Button', 'Settings button*'];
+				var clickLabels = ppt['actionMode_internal'].value == 1 ? ['Send to playlist'] : ppt['actionMode_internal'].value == 2 ? ['Select'] : ['Select', 'Send to playlist', 'Send to playlist & play', 'Send to playlist & play [add if playing]'];
+				var colourLabels = ['Text', 'Text highlight', 'Text selection', 'Nowplaying text / sidemarker highlight', 'Text search', 'Buttons', 'Background', 'Background accent', 'Background selection', 'Frame hover', 'Frame selection', 'Counts & statistics', 'Node collapse', 'Node expand', 'Node hover', 'Node lines', 'Separators', 'Side marker', 'Transparent fill'];
+				var coverFormatLabels = ['Cover auto-fill', 'Cover opacity (%)'];
+				var cusNodeLabels = ['Custom icon expand|collapse', 'Custom icon font name', 'Custom icon padding (+/-)', 'Square nodes: use windows'];
+				var cusScrollLabels = ['Step (0 = page)', 'Smooth duration max (ms)', 'Touch duration max (ms)', 'Touch sensitivity 0-10'];
+				var dblClickLabels = ppt['actionMode_internal'].value == 1 ? ['Send to playlist & play'] : ppt['actionMode_internal'].value == 2 ? ['Send to playback queue and play'] : ['Send to playlist', 'Send to playlist & play', 'Expand / collapse (tree)', 'Send to playback queue and play'];
+				var diskCacheLabels = ['Enable', 'Preload cached images']
+				var followCurrentLabels = ['Standard mode', 'Album art flow mode'];
+				var fontLabels = ['Main', 'Album art group line 1', 'Album art group line 2', 'Album art statistics line'];
+				var highLightLabels = ['None', 'Side marker', 'Accent', 'Frame', 'Always pointer (no hand)', 'Highlight nodes', 'Highlight text'];
+				var indexLetterLabels = ['Show on scrollbar drag', 'Number of characters (0 = auto)', 'Auto-detect leading year (overrides above number)'];
+				var keystrokeLabels = ['Select', 'Send to playlist']
+				var itemCountsLabels = ['Hide', '# Tracks', '# Items', 'Align right (tree / text)'];
+				var metricsLabels = ['Margin', 'Tree indent', 'Line padding tree', 'Line padding album art', 'Margin overide top/bottom (no top bar)', 'Side marker width (0 = auto)'];
+				var mbtnClickLabels = ppt['actionMode_internal'].value == 2 ? ['Add to playback queue (middle dblclk removes)'] : ['Add to default playlist', 'Add to current playlist', 'Add to playback queue (middle dblclk removes)'];
+				var nodeLabels = ['Squares', 'Arrows', 'Arrows Light', 'Triangles', 'Triangles Light', 'Signs', 'Custom'];
+				var playlistLabels = ['Default', 'Activate when changed'];
+				var playlistSortLabels = ['Playlist sort order (empty = default)'];
+				var rememberLabels = ['On exit', 'All views', 'Before search'];
+				var rootLabels = ['Hide', 'All Music', 'View name', 'Summary item', 'Display in line (tree)', 'Show source'];
+				var sbarColLabels = ['Grey', 'Blend'];
+				var sbarIconLabels = ['Arrows', 'Triangles', 'Custom'];
+				var sbarShowLabels = ['Hide', 'Auto', 'Show'];
+				var sbarTypeLabels = ['Default', 'Styled', 'Windows'];
+				var scrollbarLabels = ['Bar Width', 'Narrow bar width (0 = auto)', 'Arrow width', 'Arrow padding (+/-)', 'Grip min height', 'Custom icon', 'Custom icon font name', 'Custom icon offset (%)', 'Prefer full height scrollbar'];
+				var scrollLabels = ['Use windows metrics', 'Smooth scroll', 'Touch control'];
+				var selectionLabels = ['Full line', 'Play on enter or send from menu'];
+				var searchLabels = ['Search only', 'Send results to playlist on enter','Auto-send results to playlist', 'Require enter to search'];
+				var showLabels = ['Row stripes', 'Nowplaying in highlight', 'Nowplaying sidemarker (tree / text)', 'Nowplaying indicator (tree / text)', 'Album art options', 'Facet view', 'Tracks (tree)'];
+				var statisticsLabels = ['Rating', 'Popularity', 'Date', '', 'Auto show labels', 'Auto show tooltips'];
+				var targetPlaylistLabels = ['Default', 'Current'];
+				var tfInput = ['Library View'];
+				var themeLabels = !ppt['themed_internal'].value ? ['User interface', 'Dark', 'Blend', 'Light', 'Random', 'Cover', 'Swap colours', 'Panel source: use received item image'] : ['N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set'];
+				var themeBlurLabels = ['Auto-fill', 'Level (%)', 'Opacity (%)', '%'];
+				var thumbNailGapLabels = ['Thumbnail gap'];
+				var thumbnailSizeLabels = ['Mini', 'Small', 'Regular', 'Medium', 'Large', 'XL', 'XXL', 'Max'];
+				var treeLabels = ['Auto-collapse', 'Expand single items', 'Expand if # tracks less than:'];
+				var loadLabels = ['Auto-sync with library changes', 'Prefixes to strip or swap (| separator)']
+				var modeLabels = ['Max height', 'Min height', 'Limit menu expand: 10-6000'];
+
+				function setNodeLabels() {
+					nodeLabels[0] = !ppt['winNode_internal'].value ? 'Squares' : 'Squares (windows)';
+					if (ppt['nodeStyle_internal'].value == 0 || ppt['nodeStyle_internal'].value == 7) window.node_dropdown.innerHTML = nodeLabels[0];
+					window.nodeNo0.innerHTML = nodeLabels[0];
+				}
+
+				var input = {
+					behaviour: {
+						name: ['autoExpandLimit', 'libPlaylist', 'customSort'],
+						type: ['int', 'text', 'text']
+					},
+					display: {
+						name: ['covAlpha', 'tfRating', 'tfPopularity', 'tfDate', 'margin', 'treeIndent', 'verticalPad', 'verticalAlbumArtPad', 'marginTopBottom', 'sideMarkerWidth'],
+						type: ['float', 'text', 'text', 'text', 'int', 'int', 'int', 'int', 'int', 'int']
+
+					},
+					albumArt: {
+						name: ['thumbNailGapStnd', 'thumbNailGapCompact', 'albumArtLetterNo'],
+						type: ['int', 'int', 'int']
+					},
+					custom: {
+						name: ['custFont', 'custAlbumArtGrpFont', 'custAlbumArtLotFont', 'custAlbumArtDurFont', 'text', 'text_h', 'textSel', 'nowp', 'search', 'txt_box', 'bg', 'bg_h', 'bgSel', 'frame', 'bgSelframe', 'counts', 'icon_c', 'icon_e', 'icon_h', 'line', 's_line', 'sideMarker', 'bgTrans'],
+						type : ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text']
+					},
+					advanced: {
+						name: ['scrollStep', 'durationScroll', 'durationTouchFlick', 'flickDistance', 'sbarWidth', 'narrowSbarWidth', 'sbarArrowWidth', 'sbarPad', 'sbarGripHeight', 'arrowSymbol', 'butCustIconFont', 'sbarButPad', 'iconCustom', 'custIconFont', 'iconVerticalPad', 'blurTemp', 'blurAlpha','prefix', 'pn_h_max', 'pn_h_min', 'treeExpandLimit'],
+						type : ['float', 'float', 'float', 'float', 'float', 'float', 'float', 'float', 'float', 'text', 'text', 'float', 'text', 'text', 'float', 'float', 'float', 'text', 'int', 'int', 'int']
+					},
+					all: {}
+				}
+				input.all.name = input.behaviour.name.concat(input.display.name, input.albumArt.name, input.custom.name, input.advanced.name);
+				input.all.type = input.behaviour.type.concat(input.display.type, input.albumArt.type, input.custom.type, input.advanced.type);
+				var box = {
+					behaviour: ['sbarWinMetrics', 'smooth', 'touchControl', 'searchEnter', 'autoCollapse', 'treeAutoExpandSingle', 'treeAutoExpand', 'rememberTree', 'rememberView', 'rememberPreSearch', 'fullLineSelection', 'autoPlay', 'stndModeFollowSelection', 'flowModeFollowSelection', 'activateOnChange'],
+					display: ['searchShow', 'filterShow', 'settingsShow', 'swapCol', 'autoFill', 'recItemImage', 'labelStatistics', 'tooltipStatistics', 'inlineRoot', 'showSource', 'nodeLines', 'countsRight', 'colLineDark', 'frameImage', 'mousePointerOnly', 'highLightNode', 'highLightText', 'rowStripes', 'highLightNowplaying', 'nowPlayingSidemarker', 'nowPlayingIndicator', 'albumArtOptionsShow', 'facetView', 'showTracks'],
+					albumArt: ['albumArtFlipLabels', 'albumArtDiskCache', 'albumArtPreLoad', 'albumArtFlowMode', 'albumArtDropShadow', 'artTreeSameView', 'albumArtLetter', 'albumArtYearAuto'],
+					custom: ['custFontUse', 'custAlbumArtGrpFontUse', 'custAlbumArtLotFontUse', 'custAlbumArtDurFontUse', 'textUse', 'text_hUse', 'textSelUse', 'nowpUse', 'searchUse', 'txt_boxUse', 'bgUse', 'bg_hUse', 'bgSelUse', 'frameUse', 'bgSelframeUse', 'countsUse', 'icon_cUse', 'icon_eUse', 'icon_hUse', 'lineUse', 's_lineUse', 'sideMarkerUse', 'bgTransUse'],
+					advanced: ['sbarFullHeight', 'winNode', 'blurAutofill', 'libAutoSync', 'pn_h_auto']
+				}
+				box.all = box.behaviour.concat(box.display, box.albumArt, box.custom, box.advanced);
+
+				var radio = {
+					views: [],
+					filters: [],
+					behaviour: ['actionMode', 'sendToCur'],
+					display: ['itemShowStatistics'],
+					albumArt: ['albumArtLabelType', 'imgStyleFront', 'imgStyleBack', 'imgStyleDisc', 'imgStyleIcon', 'imgStyleArtist'],
+					custom: [],
+					advanced: []
+				}
+				radio.all = radio.behaviour.concat(radio.display, radio.albumArt);
+				callback = parsed_args[3];
+				props_callback = parsed_args[4];
+
+				function setSbarShow(n) {
+					window.sbarShow_dropdown.innerHTML = sbarShowLabels[n];
+					ppt['sbarShow_internal'].value = n;
+					window.sbarShow.style.display = 'none';
+				}
+
+				function setsbarType(n) {
+					window.sbarType_dropdown.innerHTML = sbarTypeLabels[n];
+					ppt['sbarType_internal'].value = n;
+					sbar_col_dropdown.style.display = n != 2 ? "inline-block" : "none";
+					sbar_icon_dropdown.style.display = n != 2 ? "inline-block" : "none";
+					window.sbarType.style.display = 'none';
+				}
+
+				function setSbarCol(n) {
+					window.sbarCol_dropdown.innerHTML = sbarColLabels[n];
+					ppt['sbarCol_internal'].value = n;
+					window.sbarCol.style.display = 'none';
+				}
+
+				function setSbarIcon(n) {
+					window.sbarIcon_dropdown.innerHTML = sbarIconLabels[n];
+					ppt['sbarButType_internal'].value = n;
+					window.sbarIcon.style.display = 'none';
+				}
+
+				function setRootImage(n) {
+					window.rootStub_dropdown.innerHTML = '<b>Root:</b> <img src="'+rootStubLabels[n].path+'" width="'+ em +'" height="'+ em +'" class="stub"/> '+rootStubLabels[n].name+'<';
+					ppt.curRootImg_internal.value = n;
+					btn_apply.onclick();
+					window.rootStub.style.display = 'none';
+				}
+
+				function setNoArtistImage(n) {
+					window.noArtistStub_dropdown.innerHTML = '<b>No artist:</b> <img src="'+noArtistStubLabels[n].path+'" width="'+ em +'" height="'+ em +'" class="stub"/> '+noArtistStubLabels[n].name+'<';
+					ppt.curNoArtistImg_internal.value = n;
+					btn_apply.onclick();
+					window.noArtistStub.style.display = 'none';
+				}
+
+				function setNoCoverImage(n) {
+					window.noCoverStub_dropdown.innerHTML = '<b>No cover:</b> <img src="'+noCoverStubLabels[n].path+'" width="'+ em +'" height="'+ em +'" class="stub"/> '+noCoverStubLabels[n].name+'<';
+					ppt.curNoCoverImg_internal.value = n;
+					btn_apply.onclick();
+					window.noCoverStub.style.display = 'none';
+				}
+
+				function setRoot(n) {
+					window.root_dropdown.innerHTML = rootLabels[n];
+					ppt['rootNode_internal'].value = n;
+					window.root.style.display = 'none';
+				}
+
+				function setNode(n) {
+					setNodeLabels();
+					window.node_dropdown.innerHTML = nodeLabels[n];
+					ppt['nodeStyle_internal'].value = n;
+					window.node.style.display = 'none';
+				}
+
+				function setItemCounts(n) {
+					window.itemCounts_dropdown.innerHTML = itemCountsLabels[n];
+					ppt['nodeCounts_internal'].value = n;
+					window.itemCounts.style.display = 'none';
+				}
+
+				function setHoverBg(n) {
+					window.showHl_dropdown.innerHTML = highLightLabels[n];
+					ppt['highLightRow_internal'].value = n;
+					window.showHl.style.display = 'none';
+				}
+
+				function setOverlay(n) {
+					window.overlay_dropdown.innerHTML = albumArtOverlayLabels[n];
+					ppt['itemOverlayType_internal'].value = n;
+					window.overlay.style.display = 'none';
+				}
+
+				function setSearch(n) {
+					window.search_dropdown.innerHTML = searchLabels[n];
+					ppt['searchSend_internal'].value = n;
+					window.search.style.display = 'none';
+				}
+
+				function setTheme(n) {
+					window.theme_dropdown.innerHTML = themeLabels[n];
+					ppt['theme_internal'].value = n;
+					window.themeBg.style.display = 'none';
+				}
+
+				function setthumbSize(n) {
+					window.thumbSize_dropdown.innerHTML = thumbnailSizeLabels[n];
+					ppt['thumbNailSize_internal'].value = n;
+					window.thumbSize.style.display = 'none';
+				}
+
+				function setClickAction(n) {
+					window.click_dropdown.innerHTML = clickLabels[n];
+					ppt['clickAction_internal'].value = n;
+					window.click.style.display = 'none';
+				}
+
+				function setDblClickAction(n) {
+					window.dblClick_dropdown.innerHTML = dblClickLabels[n];
+					ppt['dblClickAction_internal'].value = n;
+					window.dblClick.style.display = 'none';
+				}
+
+				function setMbtnClickAction(n) {
+					window.mbtnClick_dropdown.innerHTML = mbtnClickLabels[n];
+					ppt['mbtnClickAction_internal'].value = n;
+					window.mbtnClick.style.display = 'none';
+				}
+
+				function setAltClickAction(n) {
+					window.altClick_dropdown.innerHTML = altClickLabels[n];
+					ppt['altClickAction_internal'].value = n;
+					window.altClick.style.display = 'none';
+				}
+
+				function setKeyAction(n) {
+					window.keystroke_dropdown.innerHTML = keystrokeLabels[n];
+					ppt['keyAction_internal'].value = n;
+					window.keystroke.style.display = 'none';
+				}
+
+				var imgTable = ['imgStyleFront', 'imgStyleBack', 'imgStyleDisc', 'imgStyleIcon', 'imgStyleArtist'];
+				var menuTable = ['buttonCol', 'searchCol', 'searchLnCol', 'nodeLineCol'];
+				function getTableData(id) {
+					var cells = [];
+					var headings = [];
+					var columnCount = 0;
+					switch (id) {
+						case 'imageFormat':
+							var headers = ['Front', 'Back', 'Disc', 'Icon', 'Artist', ''];
+							cells.push(headers);
+							var radioLabels = ['Regular', 'Auto-Fill', 'Circular'];
+							var items = [];
+							for (j = 0; j < 3; j++) {
+								items[j] = [];
+								for (i = 0; i < imgTable.length; i++) {
+									var n = imgTable[i];
+									var id = imgTable[i] + j;
+									items[j].push('<input id="'+id+'" name="'+n+'" style="'+cbox+'" type="radio" />');
+									if (i == 4) {
+										items[j].push('<div style="padding-left:0.46em; text-align:left">'+radioLabels[j]+'</div>');
+										cells.push(items[j]);
+									}
+								}
+							}
+							columnCount = 6;
+						break;
+						case 'syntax':
+							var headers = ['Syntax', 'Use\u00A0In\u00A0\u00A0\u00A0', 'Description'];
+							cells.push(headers);
+							var labels = [
+							['%&ltfield&gt%', 'Views', 'Split multiple values into separate items, e.g. use %&ltartist&gt%'],
+							['$stripbranchprefix{%&ltfield&gt%}', 'Views', 'Same as above, additionally removes prefixes (like leading "The" or "A") from each value, e.g. use $stripbranchprefix{%&ltartist&gt%}'],
+							['$swapbranchprefix{%&ltfield&gt%}', 'Views', 'Same as above, additionally moves prefixes (like leading "The" or "A") to end of each value, e.g. use $swapbranchprefix{%&ltartist&gt%}'],
+							['%field1%&#166%field2%&#166...', 'Views', '&#166 combines different fields into the same branch level, e.g. use %album artist%&#166%artist% or %&ltalbum artist&gt%&#166%&ltartist&gt%.'],
+							['$nodisplay{X}', 'Views', "Sorts & groups by X without display of X, e.g. the following sorts latest albums first & displays the date.<br><input class='input75' style='font:1em Segoe UI; border:none; background:none;' value='%artist%|$nodisplay{$sub(99999,%date%)}%album%[ &#39[&#39%date%&#39]&#39]|%tracknumber%. %title%'/>"],
+							['$nowplaying{X}', 'Filters', 'Returns value of X for the playing track, e.g. artist IS $nowplaying{$meta(artist,0)} Displays tracks by nowplaying artist.'],
+							['$selected{X}', 'Filters', 'Returns value of X for the selected track, e.g. artist IS $selected{$meta(artist,0)} Displays tracks by selected (focused) artist.'],
+							['$searchtext', 'Filters', 'Returns search text, e.g. enter following as a filter "genre HAS $searchtext", then type "rock" in search box: yields query "genre HAS rock"'],
+							['$colour{normal,hover,selected}', 'Views', 'Set different colours for parts of a line of text, see below for more info.']
+							];
+							var items = [];
+							for (j = 0; j < 8; j++) {
+								items[j] = [];
+								for (i = 0; i < labels[j].length; i++) {
+									items[j].push('<div class=info5;">'+labels[j][i]+'</div>');
+									if (i == 2) {
+										cells.push(items[j]);
+									}
+								}
+							}
+							columnCount = 3;
+						break;
+						case 'elementColour':
+							headers = ['Buttons', 'Search', 'Separators', 'Lines', ''];
+							cells.push(headers);
+							var labels = ['Default', 'Blend', 'Text', 'Highlight'];
+							var items = [];
+							for (j = 0; j < 4; j++) {
+								items[j] = [];
+								for (i = 0; i < menuTable.length; i++) {
+									var n = menuTable[i];
+									var id = n + j;
+									items[j].push('<input id="'+id+'" name="'+n+'" style="'+cbox+'" type="radio" />');
+									if (i == 3) {
+										items[j].push('<div style="padding-left:0.46em; text-align:left">'+labels[j]+'</div>');
+										cells.push(items[j]);
+									}
+								}
+							}
+							columnCount = 5;
+							break;
+							}
+						return [cells, headers.length, columnCount];
+				}
+
+				function generateTable(tb) {
+					var items = getTableData(tb);
+					var cells = items[0];
+					var headerCount = items[1];
+					var table = document.getElementById(tb);
+					var columnCount = items[2];
+
+					//Add the header row.
+					var row;
+					if (headerCount) {
+						row = table.insertRow(-1);
+						for (i = 0; i < headerCount; i++) {
+							var headerCell = document.createElement("TH");
+							headerCell.innerHTML = cells[0][i];
+							row.appendChild(headerCell);
+						}
+					}
+
+					//Add the data rows.
+					for (i = 1; i < cells.length; i++) {
+						row = table.insertRow(-1);
+						for (j = 0; j < columnCount; j++) {
+							var cell = row.insertCell(-1);
+							cell.innerHTML = cells[i][j];
+							if (tb != 'syntax' && i % 2 == 1) cell.style.background = '#E8E8E8';
+						}
+					}
+
+					if (tb == 'syntax') {
+						var els = document.getElementById(tb).getElementsByTagName("th");
+						for (i = 0;i <els.length;i++){
+							els[i].style.lineHeight = "1.62em";
+							els[i].style.textAlign = "left";
+							els[i].style.verticalAlign = "top";
+							els[i].style.border = "1px solid Gainsboro";
+						}
+						var els = document.getElementById(tb).getElementsByTagName("td");
+						for (i = 0;i <els.length;i++){
+							els[i].style.lineHeight = "1.62em";
+							els[i].style.textAlign = "left";
+							els[i].style.verticalAlign = "top";
+							els[i].style.border = "1px solid Gainsboro";
+						}
+					}
+				}
+
+				function setBehaviour() {
+					for (i = 0; i < 3; i++) {window.actionType.insertAdjacentHTML('beforeend', '<div><input id="actionMode'+i+'" name="actionMode" style="'+cbox+'" type="radio" /><label for="actionMode'+i+'" class="checkbox_label">'+actionTypeLabels[i]+'</label></div>');}
+					if (ppt['actionMode_internal'].value) {
+						window.click_dropdown.innerHTML = clickLabels[0];
+						window.click.insertAdjacentHTML('beforeend', '<a>PRESET</a>');
+						window.click_dropdown.style.background = 'rgb(244, 67, 54)';
+						window.dblClick_dropdown.innerHTML = dblClickLabels[0];
+						window.dblClick.insertAdjacentHTML('beforeend', '<a>PRESET</a>');
+						window.dblClick_dropdown.style.background = 'rgb(244, 67, 54)';
+					} else {
+						window.click_dropdown.innerHTML = clickLabels[ppt['clickAction_internal'].value];
+						for (i = 0; i < 4; i++) {window.click.insertAdjacentHTML('beforeend', '<a onclick="setClickAction(' + i + ');">'+clickLabels[i]+'</a>');}
+						window.dblClick_dropdown.innerHTML = dblClickLabels[ppt['dblClickAction_internal'].value];
+						for (i = 0; i < 4; i++) {window.dblClick.insertAdjacentHTML('beforeend', '<a onclick="setDblClickAction(' + i + ');">'+dblClickLabels[i]+'</a>');}
+					}
+
+					if (ppt['actionMode_internal'].value == 2) {
+						window.mbtnClick_dropdown.innerHTML = mbtnClickLabels[0];
+						window.mbtnClick.insertAdjacentHTML('beforeend', '<a>PRESET</a>');
+						window.mbtnClick_dropdown.style.background = 'rgb(244, 67, 54)';
+					} else {
+						window.mbtnClick_dropdown.innerHTML = mbtnClickLabels[ppt['mbtnClickAction_internal'].value];
+						for (i = 0; i < 3; i++) {window.mbtnClick.insertAdjacentHTML('beforeend', '<a onclick="setMbtnClickAction(' + i + ');">'+mbtnClickLabels[i]+'</a>');}
+					}
+
+					window.altClick_dropdown.innerHTML = altClickLabels[ppt['altClickAction_internal'].value];
+					for (i = 0; i < 3; i++) {window.altClick.insertAdjacentHTML('beforeend', '<a onclick="setAltClickAction(' + i + ');">'+altClickLabels[i]+'</a>');}
+
+					window.keystroke_dropdown.innerHTML = keystrokeLabels[ppt['keyAction_internal'].value];
+					for (i = 0; i < 2; i++) {window.keystroke.insertAdjacentHTML('beforeend', '<a onclick="setKeyAction(' + i + ');">'+keystrokeLabels[i]+'</a>');}
+
+					window.sbarShow_dropdown.innerHTML = sbarShowLabels[ppt['sbarShow_internal'].value];
+					for (i = 0; i < 3; i++) {window.sbarShow.insertAdjacentHTML('beforeend', '<a onclick="setSbarShow(' + i + ');" >'+sbarShowLabels[i]+'</a>');}
+					window.sbarType_dropdown.innerHTML = sbarTypeLabels[ppt['sbarType_internal'].value];
+					for (i = 0; i < 3; i++) {window.sbarType.insertAdjacentHTML('beforeend', '<a onclick="setsbarType(' + i + ');" >'+sbarTypeLabels[i]+'</a>');}
+					window.sbarCol_dropdown.innerHTML = sbarColLabels[ppt['sbarCol_internal'].value];
+					for (i = 0; i < 2; i++) {window.sbarCol.insertAdjacentHTML('beforeend', '<a onclick="setSbarCol(' + i + ');" >'+sbarColLabels[i]+'</a>');}
+					sbar_col_dropdown.style.display = ppt['sbarType_internal'].value != 2 ? "inline-block" : "none";
+					window.sbarIcon_dropdown.innerHTML = sbarIconLabels[ppt['sbarButType_internal'].value];
+					for (i = 0; i < 3; i++) {window.sbarIcon.insertAdjacentHTML('beforeend', '<a onclick="setSbarIcon(' + i + ');" >'+sbarIconLabels[i]+'</a>');}
+					sbar_icon_dropdown.style.display = ppt['sbarType_internal'].value != 2 ? "inline-block" : "none";
+					for (i = 0; i < 3; i++) {window.scrolling.insertAdjacentHTML('beforeend', '<div><input id="scroll_checkbox'+i+'" name="behaviour_checkbox" style="'+cbox+'" type="checkbox" /><label for="scroll_checkbox'+i+'" class="checkbox_label">'+scrollLabels[i]+'</label></div>');}
+
+					window.search_dropdown.innerHTML = searchLabels[ppt['searchSend_internal'].value];
+					for (i = 0; i < 3; i++) {window.search.insertAdjacentHTML('beforeend', '<a onclick="setSearch(' + i + ');">'+searchLabels[i]+'</a>');}
+					i = 3; window.searchEnter.insertAdjacentHTML('beforeend', '<div><input id="search_checkbox'+i+'" name="behaviour_checkbox" style="'+cbox+'" type="checkbox" /><label for="search_checkbox'+i+'" class="checkbox_label">'+searchLabels[i]+'</label></div>');
+					for (i = 0; i < 3; i++) {window.expand.insertAdjacentHTML('beforeend', '<div><input id="expand_checkbox'+i+'" name="behaviour_checkbox" style="'+cbox+'" type="checkbox" /><label for="expand_checkbox'+i+'" class="checkbox_label">'+treeLabels[i]+'</label></div>');}
+					i = 4; window.expandLimit.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="expand_container'+i+'" name="behaviour_input" class="input3" /></div>');
+					for (i = 0; i < 2; i++) {window.selection.insertAdjacentHTML('beforeend', '<div><input id="selection_checkbox'+i+'" name="behaviour_checkbox" style="'+cbox+'" type="checkbox" /><label for="selection_checkbox'+i+'" class="checkbox_label">'+selectionLabels[i]+'</label></div>');}
+					for (i = 0; i < 3; i++) {window.remember.insertAdjacentHTML('beforeend', '<div><input id="remember_checkbox'+i+'" name="behaviour_checkbox" style="'+cbox+'" type="checkbox" /><label for="remember_checkbox'+i+'" class="checkbox_label">'+rememberLabels[i]+'</label></div>');}
+					i = 0; window.playlist.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><label for="playlist_container'+i+'" class="inp_label1">'+playlistLabels[i]+'</label><input id="playlist_container'+i+'" name="behaviour_input" class="input75" /></div>');
+					i = 1; window.playlist.insertAdjacentHTML('beforeend', '<div><input id="playlist_checkbox'+i+'" name="behaviour_checkbox" style="'+cbox+'" type="checkbox" /><label for="playlist_checkbox'+i+'" class="checkbox_label">'+playlistLabels[i]+'</label></div>');
+					window.playlistSort.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><label for="playlistSort_container1" class="inp_label1">'+playlistSortLabels[0]+'</label><input id="playlistSort_container1" name="behaviour_input" class="input75" /></div>');
+					for (i = 0; i < 2; i++) {
+						window.targetPlaylist.insertAdjacentHTML('beforeend', '<div><input id="sendToCur'+i+'" name="sendToCur" style="'+cbox+'" type="radio" /><label for="sendToCur'+i+'" class="checkbox_label">'+targetPlaylistLabels[i]+'</label></div>');
+					}
+				}
+
+				function setDisplay() {
+					for (i = 0; i < 3; i++) {window.bar.insertAdjacentHTML('beforeend', '<div><input id="bar_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="bar_checkbox'+i+'" class="checkbox_label">'+barLabels[i]+'</label></div>');}
+
+					window.theme_dropdown.innerHTML = themeLabels[ppt['theme_internal'].value];
+					for (i = 0; i < 6; i++) {window.themeBg.insertAdjacentHTML('beforeend', '<a onclick="setTheme(' + i + ');">'+themeLabels[i]+'</a>');}
+					i = 6; window.themeStyle.insertAdjacentHTML('beforeend', '<div><input id="theme_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="theme_checkbox'+i+'" class="checkbox_label">'+themeLabels[i]+'</label></div>');
+					i = 0; window.coverFormat.insertAdjacentHTML('beforeend', '<div><input id="coverFormat_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="coverFormat_checkbox'+i+'" class="checkbox_label">'+coverFormatLabels[i]+'</label></div>');
+					i = 1; window.coverFormat.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="coverFormat_container'+i+'" name="display_input" class="input3" /><label for="coverFormat_container'+i+'" class="inp_label2">'+coverFormatLabels[i]+'</label></div>');
+					i = 7; window.panelStyle.insertAdjacentHTML('beforeend', '<div><input id="theme_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="theme_checkbox'+i+'" class="checkbox_label">'+themeLabels[i]+'</label></div>');
+					window.lines.insertAdjacentHTML('beforeend', '<div><input id="lines_checkbox" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="lines_checkbox" class="checkbox_label">Dark</label></div>');
+
+					for (i = 0; i < 2; i++) {window.metrics1.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="metrics_container'+i+'" name="display_input" style="padding:0; margin:0;" class="input3" /><label for="metrics_container'+i+'" class="inp_label2">'+metricsLabels[i]+'</label></div>');}
+					for (i = 2; i < 4; i++) {window.metrics2.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="metrics_container'+i+'" name="display_input" style="padding:0; margin:0;" class="input3" /><label for="metrics_container'+i+'" class="inp_label2">'+metricsLabels[i]+'</label></div>');}
+					for (i = 4; i < 6; i++) {window.metrics3.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="metrics_container'+i+'" name="display_input" style="padding:0; margin:0;" class="input3" /><label for="metrics_container'+i+'" class="inp_label2">'+metricsLabels[i]+'</label></div>')};
+
+					window.root_dropdown.innerHTML = rootLabels[ppt['rootNode_internal'].value];
+					for (i = 0; i < 4; i++) {window.root.insertAdjacentHTML('beforeend', '<a onclick="setRoot(' + i + ');">'+rootLabels[i]+'</a>');}
+					i = 4; window.rootStyle.insertAdjacentHTML('beforeend', '<div><input id="root_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="root_checkbox'+i+'" class="checkbox_label">'+rootLabels[i]+'</label></div>');
+					i = 5; window.rootStyle.insertAdjacentHTML('beforeend', '<div><input id="root_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="root_checkbox'+i+'" class="checkbox_label">'+rootLabels[i]+'</label></div>');
+
+					window.node_dropdown.innerHTML = ppt['nodeStyle_internal'].value != 7 ? nodeLabels[ppt['nodeStyle_internal'].value] : 'Squares (windows)';
+					for (i = 0; i < 7; i++) {window.node.insertAdjacentHTML('beforeend', '<a id="nodeNo'+i+'" onclick="setNode(' + i + ');">'+nodeLabels[i]+'</a>');}
+					i = 7; window.nodeLines.insertAdjacentHTML('beforeend', '<div><input id="node_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="node_checkbox'+i+'" class="checkbox_label">Show lines (squares only)</label></div>');
+
+					window.itemCounts_dropdown.innerHTML = itemCountsLabels[ppt['nodeCounts_internal'].value];
+					for (i = 0; i < 3; i++) {window.itemCounts.insertAdjacentHTML('beforeend', '<a onclick="setItemCounts(' + i + ');">'+itemCountsLabels[i]+'</a>');}
+					i = 3; window.countsRight.insertAdjacentHTML('beforeend', '<div><input id="itemCounts_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="itemCounts_checkbox'+i+'" class="checkbox_label">'+itemCountsLabels[i]+'</label></div>');
+					for (i = 0; i < 3; i++) {window.statistics2.insertAdjacentHTML('beforeend', '<div class="input_cnt5"><input id="statistics_container'+i+'" name="display_input" class="input70" /><label for="metrics_container'+i+'" class="inp_label2">'+statisticsLabels[i]+'</label></div>');}
+					for (i = 4; i < 6; i++) {window.labelStatistics.insertAdjacentHTML('beforeend', '<div><input id="itemCounts_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="itemCounts_checkbox'+i+'" class="checkbox_label">'+statisticsLabels[i]+'</label></div>')};
+					window.showHl_dropdown.innerHTML = highLightLabels[ppt['highLightRow_internal'].value];
+					for (i = 0; i < 4; i++) {window.showHl.insertAdjacentHTML('beforeend', '<a onclick="setHoverBg(' + i + ');">'+highLightLabels[i]+'</a>');}
+					i = 0; window.frameStyle.insertAdjacentHTML('beforeend', '<div><input id="frame_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="frame_checkbox'+i+'" class="checkbox_label">Frame style (album art): image border</label></div>');
+					for (i = 4; i < 7; i++) {window.showH2.insertAdjacentHTML('beforeend', '<div><input id="showH2_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="showH2_checkbox'+i+'" class="checkbox_label">'+highLightLabels[i]+'</label></div>');}
+					for (i = 0; i < 7; i++) {window.show.insertAdjacentHTML('beforeend', '<div><input id="show_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="show_checkbox'+i+'" class="checkbox_label">'+showLabels[i]+'</label></div>');}
+				}
+
+				var rootStubLabels = JSON.parse(ppt['rootImages_internal'].value) || [];
+				var root_ix = ppt['curRootImg_internal'].value;
+
+				var noArtistStubLabels = JSON.parse(ppt['noArtistImages_internal'].value) || [];
+				var noart_ix = ppt['curNoArtistImg_internal'].value;
+
+				var noCoverStubLabels = JSON.parse(ppt['noCoverImages_internal'].value) || [];
+				var nocov_ix = ppt['curNoCoverImg_internal'].value;
+
+				function setAlbumArt() {
+					for (i = 0; i < 5; i++) {window.labels.insertAdjacentHTML('beforeend', '<div><input id="albumArtLabelType'+i+'" name="albumArtLabelType" style="'+cbox+'" type="radio" /><label for="albumArtLabelType'+i+'" class="checkbox_label">'+albumArtLabels[i]+'</label></div>');}
+					i = 5; window.flip.insertAdjacentHTML('beforeend', '<div><input id="flip_checkbox'+i+'" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="flip_checkbox'+i+'" class="checkbox_label">'+albumArtLabels[i]+'</label></div>');
+
+					window.overlay_dropdown.innerHTML = albumArtOverlayLabels[ppt['itemOverlayType_internal'].value];
+					for (i = 0; i < 3; i++) {window.overlay.insertAdjacentHTML('beforeend', '<a onclick="setOverlay(' + i + ');">'+albumArtOverlayLabels[i]+'</a>');}
+
+					for (i = 0; i < 2; i++) {window.followCurrent.insertAdjacentHTML('beforeend', '<div><input id="selection_checkbox'+i+'" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="selection_checkbox'+i+'" class="checkbox_label">'+followCurrentLabels[i]+'</label></div>');}
+					for (i = 0; i < 2; i++) {window.useCache.insertAdjacentHTML('beforeend', '<div><input id="cache_checkbox" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="cache_checkbox" class="checkbox_label">'+diskCacheLabels[i]+'</label></div>');}
+					var pth = '...*YOUR PATH*...\\art_img\\$cut(%artist%,1)\\%artist%\\*    [CHANGE ...*YOUR PATH*... as required; pattern assumes biography is saving to default folder]';
+					window.photoPath.insertAdjacentHTML('beforeend', '<div class="input_cnt1" id="view_cnt_photoPath"><input name="photoPath_view" class="input98" readonly value="'+pth+'" /></div>')
+
+					window.rootStub_dropdown.innerHTML = '<b>Root:</b> <img src="'+rootStubLabels[root_ix].path +'" alt="'+rootStubLabels[root_ix].name+'" width="'+ em +'" height="'+ em +'" class="stub"/> '+rootStubLabels[root_ix].name+'<';
+					for (i = 0; i < rootStubLabels.length; i++) {window.rootStub.insertAdjacentHTML('beforeend', '<a onclick="setRootImage(' + i + ');"> <img src="'+rootStubLabels[i].path+'" alt="'+rootStubLabels[i].name+'" width="'+ em +'" height="'+ em +'" style="vertical-align:middle;"/> '+rootStubLabels[i].name+'</a>');}
+
+					window.noArtistStub_dropdown.innerHTML = '<b>No artist:</b> <img src="'+noArtistStubLabels[noart_ix].path +'" alt="'+noArtistStubLabels[noart_ix].name+'" width="'+ em +'" height="'+ em +'" class="stub"/> '+noArtistStubLabels[noart_ix].name+'<';
+					for (i = 0; i < noArtistStubLabels.length; i++) {window.noArtistStub.insertAdjacentHTML('beforeend', '<a onclick="setNoArtistImage(' + i + ');"> <img src="'+noArtistStubLabels[i].path+'" alt="'+noArtistStubLabels[i].name+'" width="'+ em +'" height="'+ em +'" style="vertical-align:middle;"/> '+noArtistStubLabels[i].name+'</a>');}
+
+					window.noCoverStub_dropdown.innerHTML = '<b>No cover:</b> <img src="'+noCoverStubLabels[nocov_ix].path +'" alt="'+noCoverStubLabels[nocov_ix].name+'" width="'+ em +'" height="'+ em +'" class="stub"/> '+noCoverStubLabels[nocov_ix].name+'<';
+					for (i = 0; i < noCoverStubLabels.length; i++) {window.noCoverStub.insertAdjacentHTML('beforeend', '<a onclick="setNoCoverImage(' + i + ');"> <img src="'+noCoverStubLabels[i].path+'" alt="'+noCoverStubLabels[i].name+'" width="'+ em +'" height="'+ em +'" style="vertical-align:middle;"/> '+noCoverStubLabels[i].name+'</a>');}
+					generateTable('imageFormat');
+					for (i = 0; i < 2; i++) {window.gap.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="gap_container'+i+'" name="albumart_input" style="padding:0; margin:0;" class="input15" /><label for="gap_container'+i+'" class="inp_label2">'+albumArtGapLabels[i]+'</label></div>');}
+					window.flowMode.insertAdjacentHTML('beforeend', '<div><input id="flowMode_checkbox" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="flowMode_checkbox" class="checkbox_label">Enable</label></div>');
+					window.dropShadow.insertAdjacentHTML('beforeend', '<div><input id="dropShadow_checkbox" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="dropShadow_checkbox" class="checkbox_label">Enable</label></div>');
+					window.sameAsTree.insertAdjacentHTML('beforeend', '<div><input id="sameAsTree_checkbox" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="sameAsTree_checkbox" class="checkbox_label">Same As Tree</label></div>');
+
+					window.thumbSize_dropdown.innerHTML = thumbnailSizeLabels[ppt['thumbNailSize_internal'].value];
+					for (i = 0; i < 8; i++) {window.thumbSize.insertAdjacentHTML('beforeend', '<a onclick="setthumbSize(' + i + ');">'+thumbnailSizeLabels[i]+'</a>');}
+
+					i = 0; window.indexLetter.insertAdjacentHTML('beforeend', '<div><input id="indexLetter_checkbox'+i+'" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="indexLetter_checkbox'+i+'" class="checkbox_label">'+indexLetterLabels[i]+'</label></div>');
+					i = 1; window.indexLetter.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="indexLetter_container'+i+'" name="albumart_input" class="input7" /><label for="indexLetter_container'+i+'" class="inp_label2">'+indexLetterLabels[i]+'</label></div>');
+					i = 2; window.indexLetter.insertAdjacentHTML('beforeend', '<div><input id="indexLetter_checkbox'+i+'" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="indexLetter_checkbox'+i+'" class="checkbox_label">'+indexLetterLabels[i]+'</label></div>');
+				}
+
+				var bg = [];
+				var fg = [];
+				function setCustomColours(value) {
+					var items = ['text', 'text_h', 'textSel', 'nowp', 'search', 'txt_box', 'bg', 'bg_h', 'bgSel', 'frame', 'bgSelframe', 'counts', 'icon_c', 'icon_e', 'icon_h', 'line', 's_line', 'sideMarker', 'bgTrans'];
+					for (var i= 0; i < items.length; i++) {
+						bg[i] = assign(ppt[items[i] + '_internal'][value], i < 6 ? 0 : 1);
+						fg[i] = getSelCol(bg[i]);
+						bg[i] = "rgb("+bg[i][0]+","+bg[i][1]+","+bg[i][2]+")";
+						var el = document.getElementById('colour_container'+i);
+						el.style.background = bg[i];
+						el.style.color = fg[i];
+					}
+				}
+
+				function setCustom() {
+					i = 0; window.fonts.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="font_checkbox'+i+'" name="custom_checkbox" style="'+cbox+'" type="checkbox" /><input id="font_container'+i+'" name="custom_input" class="input40" /><label for="font_container'+i+'" class="inp_label2">'+fontLabels[i]+'</label></div>');
+					for (i = 1; i < 4; i++) {window.albumArtFonts.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="font_checkbox'+i+'" name="custom_checkbox" style="'+cbox+'" type="checkbox" /><input id="font_container'+i+'" name="custom_input" class="input40" /><label for="font_container'+i+'" class="inp_label2">'+fontLabels[i]+'</label></div>');}
+					for (i = 0; i < 6; i++) {window.colours1.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="colour_checkbox'+i+'" name="custom_checkbox" style="'+cbox+'" type="checkbox" /><input id="colour_container'+i+'" name="custom_input" class="input40" /><label for="colour_container'+i+'" class="inp_label2">'+colourLabels[i]+'</label></div>');}
+					for (i = 6; i < 19; i++) {window.colours2.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="colour_checkbox'+i+'" name="custom_checkbox" style="'+cbox+'" type="checkbox" /><input id="colour_container'+i+'" name="custom_input" class="input40" /><label for="colour_container'+i+'" class="inp_label2">'+colourLabels[i]+'</label></div>');}
+				}
+
+				function setAdvanced() {
+					for (i = 0; i < 4; i++) {window.cusScroll.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="scroll_container'+i+'" name="advanced_input" class="input35" /><label for="scroll_container'+i+'" class="inp_label2">'+cusScrollLabels[i]+'</label></div>');}
+					for (i = 0; i < 5; i++) {window.scrollbar.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="scrollbar_container'+i+'" name="advanced_input" class="input35" /><label for="scrollbar_container'+i+'" class="inp_label2">'+scrollbarLabels[i]+'</label></div>');}
+					var fFamily = ppt['butCustIconFont_internal'].value;
+					i = 5; window.scrollbar.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="scrollbar_container'+i+'" name="advanced_input" class="input35" style="font-family:'+fFamily+'" /><label for="scrollbar_container'+i+'" class="inp_label2">'+scrollbarLabels[i]+'</label></div>');
+					for (i = 6; i < 8; i++) {window.scrollbar.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="scrollbar_container'+i+'" name="advanced_input" class="input35" /><label for="scrollbar_container'+i+'" class="inp_label2">'+scrollbarLabels[i]+'</label></div>');}
+					i = 8; window.scrollbar.insertAdjacentHTML('beforeend', '<div><input id="scrollbar_checkbox'+i+'" name="advanced_checkbox" style="'+cbox+'" type="checkbox" /><label for="scrollbar_checkbox'+i+'" class="checkbox_label">'+scrollbarLabels[i]+'</label></div>');
+					fFamily = ppt['custIconFont_internal'].value;
+					i = 0; window.cusNode.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="cusNode_container'+i+'" name="advanced_input" class="input35" style="font-family:'+fFamily+'" /><label for="cusNode_container'+i+'" class="inp_label2">'+cusNodeLabels[i]+'</label></div>');
+					for (i = 1; i < 3; i++) {window.cusNode.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="cusNode_container'+i+'" name="advanced_input" class="input35" /><label for="cusNode_container'+i+'" class="inp_label2">'+cusNodeLabels[i]+'</label></div>');}
+					i = 3; window.cusNode.insertAdjacentHTML('beforeend', '<div><input id="cusNode_checkbox'+i+'" name="advanced_checkbox" style="'+cbox+'" type="checkbox" /><label for="cusNode_checkbox'+i+'" class="checkbox_label">'+cusNodeLabels[i]+'</label></div>');
+					i = 0; window.themeBlur.insertAdjacentHTML('beforeend', '<div><input id="themeBlur_checkbox'+i+'" name="advanced_checkbox" style="'+cbox+'" type="checkbox" /><label for="themeBlur_checkbox'+i+'" class="checkbox_label">'+themeBlurLabels[i]+'</label></div>');
+					for (i = 1; i < 3; i++) {window.themeBlur.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="themeBlur_container'+i+'" name="advanced_input" class="input35" /><label for="themeBlur_container'+i+'" class="inp_label2">'+themeBlurLabels[i]+'</label></div>');}
+					i = 0; window.load.insertAdjacentHTML('beforeend', '<div><input id="load_checkbox'+i+'" name="advanced_checkbox" style="'+cbox+'" type="checkbox" /><label for="load_checkbox'+i+'" class="checkbox_label">'+loadLabels[i]+'</label></div>');
+					i = 1; window.prefixes.insertAdjacentHTML('beforeend', '<div class="input_cnt4"><label for="prefixes_container'+i+'" class="inp_label1">'+loadLabels[i]+'</label><input id="prefixes_container'+i+'" name="advanced_input" class="inputFull" /></div>');
+					i = 0; window.mode.insertAdjacentHTML('beforeend', '<div><input id="mode_checkbox'+i+'" name="advanced_checkbox" style="'+cbox+'" type="checkbox" /></div>');
+					for (i = 0; i < 2; i++) {window.modeInput.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="modeInput_container'+i+'" name="advanced_input" class="input35" /><label for="modeInput_container'+i+'" class="inp_label2">'+modeLabels[i]+'</label></div>');}
+				}
+
+				setViews();
+				setFilters();
+				setBehaviour();
+				setDisplay();
+				setAlbumArt();
+				setCustom();
+				setAdvanced();
+				setCustomColours('value');
+				setCheckboxes('all', 'value');
+				setInputs('all', 'value');
+				setRadioBtns('all', 'value');
+				generateTable('syntax');
+
+				document.getElementById("btn_delete").disabled = true;
+				document.getElementById("btn_down").disabled = true;
+				document.getElementById("btn_up").disabled = true;
+				document.getElementById("btn_apply").disabled = true;
+			}
+
+			function setCheckboxes(page, value) {
+				var checkboxes;
+				if (page == 'all' || page == 'views') {
+					checkboxes = document.getElementsByName('viewCheckbox');
+					for (i = 0; i < checkboxes.length; i++) {
+						checkboxes[i].checked = cfg[0][i].menu;
+					}
+				}
+				if (page == 'all' || page == 'filters') {
+					checkboxes = document.getElementsByName('filterCheckbox');
+					for (i = 0; i < checkboxes.length; i++) {
+						checkboxes[i].checked = cfg[1][i].menu;
+					}
+				}
+				var nm = page.toString()+'_checkbox', boxes = document.querySelectorAll(page == 'all' ? "[name$='_checkbox']" : "[name="+nm+"]");
+				for (i = 0; i < boxes.length; i++) {
+					boxes[i].checked = ppt[box[page][i] + '_internal'][value];
+				}
+
+				if (ppt['albumArtShow_internal'][value]) {
+					window.show_checkbox4.parentNode.disabled = true;
+				}
+				if (window.remember_checkbox1.checked || window.remember_checkbox2.checked) window.remember_checkbox0.checked = true;
+				window.remember_checkbox0.parentNode.disabled = window.remember_checkbox1.checked || window.remember_checkbox2.checked;
+				window.thumbSize_dropdown.style.visibility = window.flowMode_checkbox.checked ? 'hidden' : 'visible';
+				window.thumbNailSize.style.visibility = window.flowMode_checkbox.checked ? 'hidden' : 'visible';
+				window.checkbox_folderView.disabled = true;
+				window.checkbox_menuName.disabled = true;
+				document.getElementById("albumArtCfg").style.display = window.show_checkbox4.checked ? "block" : "none";
+				window.indexLetter_checkbox2.parentNode.disabled = ppt['albumArtLetterNo_internal'].value == 0;
+				window.metrics_container4.parentNode.style.display = !ppt['filterShow_internal'].value && !ppt['searchShow_internal'].value && !ppt['settingsShow_internal'].value ? "block" : "none";
+			}
+
+			function textChange(e) {
+				if (window.remember_checkbox1.checked || window.remember_checkbox2.checked) window.remember_checkbox0.checked = true;
+				window.remember_checkbox0.parentNode.disabled = window.remember_checkbox1.checked || window.remember_checkbox2.checked;
+				window.theme_checkbox7.parentNode.disabled = ppt['theme_internal'].value == 1 || ppt['theme_internal'].value == 4;
+				window.coverFormat_checkbox0.parentNode.disabled = ppt['theme_internal'].value != 5;
+				window.coverFormat_container1.parentNode.disabled = ppt['theme_internal'].value != 5;
+				window.frame_checkbox0.parentNode.disabled = ppt['highLightRow_internal'].value != 3;
+				window.node_checkbox7.parentNode.disabled = ppt['nodeStyle_internal'].value != 0 && ppt['nodeStyle_internal'].value != 7;
+				window.itemCounts_checkbox3.parentNode.disabled = ppt['itemShowStatistics_internal'].value;
+				setNodeLabels();
+				window.showH2_checkbox5.parentNode.disabled = window.cusNode_checkbox3.checked && (ppt['nodeStyle_internal'].value == 0 || ppt['nodeStyle_internal'].value == 7);
+				document.getElementById("albumArtCfg").style.display = window.show_checkbox4.checked ? "block" : "none";
+				window.albumArtLabelType2.parentNode.disabled = window.flowMode_checkbox.checked;
+				window.thumbSize_dropdown.style.visibility = window.flowMode_checkbox.checked ? 'hidden' : 'visible';
+				window.thumbNailSize.style.visibility = window.flowMode_checkbox.checked ? 'hidden' : 'visible';
+				window.metrics_container4.parentNode.style.display = !ppt['filterShow_internal'].value && !ppt['searchShow_internal'].value && !ppt['settingsShow_internal'].value ? "block" : "none";
+				clickLabels = ppt['actionMode_internal'].value == 1 ? ['Send to playlist'] : ppt['actionMode_internal'].value == 2 ? ['Select'] : ['Select', 'Send to playlist', 'Send to playlist & play', 'Send to playlist & play [add if playing]'];
+				dblClickLabels = ppt['actionMode_internal'].value == 1 ? ['Send to playlist & play'] : ppt['actionMode_internal'].value == 2 ? ['Send to playback queue and play'] : ['Send to playlist', 'Send to playlist & play', 'Expand / collapse (tree)', 'Send to playback queue and play'];
+				mbtnClickLabels = ppt['actionMode_internal'].value == 2 ? ['Add to playback queue (middle dblclk removes)'] : ['Add to default playlist', 'Add to current playlist', 'Add to playback queue (middle dblclk removes)'];
+
+				if (ppt['actionMode_internal'].value) {
+					window.click_dropdown.innerHTML = clickLabels[0];
+					window.click.innerHTML = '';
+					window.click.insertAdjacentHTML('beforeend', '<a>PRESET</a>');
+					window.click_dropdown.style.background = 'rgb(244, 67, 54)';
+					window.dblClick_dropdown.innerHTML = dblClickLabels[0];
+					window.dblClick.innerHTML = '';
+					window.dblClick.insertAdjacentHTML('beforeend', '<a>PRESET</a>');
+					window.dblClick_dropdown.style.background = 'rgb(244, 67, 54)';
+				} else {
+					window.click_dropdown.innerHTML = clickLabels[ppt['clickAction_internal'].value];
+					window.click.innerHTML = '';
+					for (i = 0; i < 4; i++) {window.click.insertAdjacentHTML('beforeend', '<a onclick="setClickAction(' + i + ');">'+clickLabels[i]+'</a>');}
+					window.click_dropdown.style.background = '#3e8e41';
+					window.dblClick_dropdown.innerHTML = dblClickLabels[ppt['dblClickAction_internal'].value];
+					window.dblClick.innerHTML = '';
+					for (i = 0; i < 4; i++) {window.dblClick.insertAdjacentHTML('beforeend', '<a onclick="setDblClickAction(' + i + ');">'+dblClickLabels[i]+'</a>');}
+					window.dblClick_dropdown.style.background = '#3e8e41';
+				}
+				if (ppt['actionMode_internal'].value == 2) {
+						window.mbtnClick_dropdown.innerHTML = mbtnClickLabels[0];
+						window.mbtnClick.innerHTML = '';
+						window.mbtnClick.insertAdjacentHTML('beforeend', '<a>PRESET</a>');
+						window.mbtnClick_dropdown.style.background = 'rgb(244, 67, 54)';
+				} else {
+					window.mbtnClick_dropdown.innerHTML = mbtnClickLabels[ppt['mbtnClickAction_internal'].value];
+					window.mbtnClick.innerHTML = '';
+					for (i = 0; i < 3; i++) {window.mbtnClick.insertAdjacentHTML('beforeend', '<a onclick="setMbtnClickAction(' + i + ');">'+mbtnClickLabels[i]+'</a>');}
+					window.mbtnClick_dropdown.style.background = '#3e8e41';
+				}
+			}
+
+			setInterval(inputChanged, 500);
+			function inputChanged() {
+				window.indexLetter_checkbox2.parentNode.disabled = ppt['albumArtLetterNo_internal'].value == 0;
+				set_btn_apply_state();
+			}
+
+			function setRadioBtns(page, value) {
+				var radios = radio[page];
+				for (i = 0; i < radios.length; i++) {
+					var radioBtns = document.getElementsByName(radios[i]);
+					var new_value = radios[i] == 'nodeStyle' && ppt[radios[i] + '_internal'][value] == 7 ? 0 : ppt[radios[i] + '_internal'][value];
+					for (j = 0; j < radioBtns.length; j++) {
+						if (j == new_value) {
+							radioBtns[j].checked = true;
+							radioBtns[j].value = j;
+						}
+					}
+				}
+				window.theme_checkbox7.parentNode.disabled = ppt['theme_internal'].value == 1 || ppt['theme_internal'].value == 4;
+				window.coverFormat_checkbox0.parentNode.disabled = ppt['theme_internal'].value != 5;
+				window.coverFormat_container1.parentNode.disabled = ppt['theme_internal'].value != 5;
+				if (ppt['themed_internal'].value) window.themeStyle.style.display = "none";
+				if (ppt['themed_internal'].value) window.coverFormat.style.display = "none";
+				if (ppt['themed_internal'].value) window.panelStyle.style.display = "none";
+				window.node_checkbox7.parentNode.disabled = ppt['nodeStyle_internal'].value != 0 && ppt['nodeStyle_internal'].value != 7;
+				window.showH2_checkbox5.parentNode.disabled = window.cusNode_checkbox3.checked && (ppt['nodeStyle_internal'].value == 0 || ppt['nodeStyle_internal'].value == 7);
+
+				window.albumArtLabelType2.parentNode.disabled = window.flowMode_checkbox.checked;
+			}
+
+			function setViews(clear) {
+				if (clear) document.getElementById("view").innerHTML = '';
+				for (i = 0; i < cfg[0].length; i++) {
+					var v = cfg[0][i];
+					if (i < cfg[0].length - 1) window.view.insertAdjacentHTML('beforeend', '<div class="input_cnt1" id="view_cnt'+i+'"><input name="viewCheckbox" style="'+cbox+'" type="checkbox" /><input id="view_container'+i+'" name="view_name" class="input21" /><input name="input_view" class="input71" /></div>')
+					else window.view.insertAdjacentHTML('beforeend', '<div class="input_cnt1" id="view_cnt_folderView"><input id="checkbox_folderView" name="viewCheckbox" style="'+cbox+'" type="checkbox" /><input id="view_container'+i+'" name="view_name" class="input21" /><input name="input_view" class="input71" readonly /></div>')
+				}
+			}
+
+
+			function setFilters(clear) {
+				if (clear) document.getElementById("filter").innerHTML = '';
+				for (i = 0; i < cfg[1].length; i++) {
+					var v = cfg[1][i];
+					if (i < cfg[1].length - 1) window.filter.insertAdjacentHTML('beforeend', '<div class="input_cnt1" id="filter_cnt'+i+'"><input name="filterCheckbox" style="'+cbox+'" type="checkbox" /><input id="filter_container'+i+'" name="filter_name" class="input21" /><input name="input_filter" class="input71" /></div>');
+					else window.filter.insertAdjacentHTML('beforeend', '<div class="input_cnt1" id="filter_cnt_menuName"><input id="checkbox_menuName" name="filterCheckbox" style="'+cbox+'" type="checkbox" /><input id="filter_container'+i+'" name="filter_name" class="input21" /><input name="input_filter" class="input71" readonly /></div>');
+				}
+			}
+
+			function getValues() {
+				var v = cfg[0] = [];
+				var inputs = document.getElementsByName('view_name');
+				for (i = 0; i < inputs.length; i++) {
+					v[i] = {}; v[i].name = inputs[i].value;
+				}
+
+				inputs = document.getElementsByName('input_view');
+				for (i = 0; i < inputs.length; i++) {
+					v[i].type = inputs[i].value;
+				}
+
+				var check = document.getElementsByName('viewCheckbox');
+				for (i = 0; i < check.length; i++) {
+					v[i].menu = check[i].checked;
+				}
+
+				v = cfg[1] = [];
+				inputs = document.getElementsByName('filter_name');
+				for (i = 0; i < inputs.length; i++) {
+					v[i] = {}; v[i].name = inputs[i].value;
+				}
+
+				inputs = document.getElementsByName('input_filter');
+				for (i = 0; i < inputs.length; i++) {
+					v[i].type = inputs[i].value;
+				}
+
+				check = document.getElementsByName('filterCheckbox');
+				for (i = 0; i < check.length; i++) {
+					v[i].menu = check[i].checked;
+				}
+
+				inputs = document.querySelectorAll("[name$='_input']");
+				for (i = 0; i < inputs.length; i++) {
+					(ppt[input.all.name[i] + '_internal'] || cfg[input.all.name[i] + '_internal']).value = input.all.type[i] == 'text' ? inputs[i].value : input.all.type[i] == 'int' ? parseInt(inputs[i].value) : parseFloat(inputs[i].value);
+				}
+
+				var boxes = document.querySelectorAll("[name$='_checkbox']");
+				for (i = 0; i < boxes.length; i++) {
+					(ppt[box.all[i] + '_internal'] || cfg[box.all[i] + '_internal']).value = boxes[i].checked;
+				}
+
+				for (i = 0; i < radio.all.length; i++) {
+					var radioBtns = document.getElementsByName(radio.all[i]);
+					for (j = 0; j < radioBtns.length; j++) {
+						if (radioBtns[j].checked) {
+							ppt[radio.all[i] + '_internal'].value = j;
+							break;
+						}
+					}
+				}
+			}
+
+			window.btn_ok.onclick = function () {
+				getValues();
+				var new_cfg = JSON.stringify(cfg);
+				var new_ppt = JSON.stringify(ppt);
+				var new_cur = JSON.stringify(cur);
+				if (new_cfg == parsed_args[0]) new_cfg = '';
+				if (new_ppt == parsed_args[1]) new_ppt = '';
+				if (new_cur == parsed_args[2]) new_cur = '';
+				if (new_cfg || new_ppt || new_cur) {
+					callback && callback(new_cfg, new_ppt, '' , new_cur);
+				} else {
+					if (new_cur) callback && callback('', '', '', new_cur);
+				}
+				close_window();
+			}
+
+			window.btn_apply.onclick = function () {
+				getValues();
+				var new_cfg = JSON.stringify(cfg);
+				var new_ppt = JSON.stringify(ppt);
+				if (new_cfg == parsed_args[0]) new_cfg = '';
+				else parsed_args[0] = new_cfg;
+				if (new_ppt == parsed_args[1]) new_ppt = '';
+				else parsed_args[1] = new_ppt;
+				if (new_cfg || new_ppt) {
+					callback && callback(new_cfg, new_ppt);
+				}
+			}
+
+			function showProperties() {
+				close_window();
+				props_callback && props_callback();
+			}
+
+			window.btn_add.onclick = function () {
+				new_id++;
+				switch (cur.page) {
+					case 'views':
+						var list = document.getElementById("view").querySelectorAll("[id^='view_cnt']");
+						if (list.length > 98) return; // no limited to 100
+						list[list.length - 1].insertAdjacentHTML("beforebegin", '<div class="input_cnt1" id="view_cnt'+new_id+'"><input id="viewCheckbox'+ new_id+'" name="viewCheckbox" style="'+cbox+'" type="checkbox" /><input id="view_container'+new_id+'" name="view_name" class="input21" value="" /><input name="input_view" class="input71" value="" /></div>');
+						document.getElementById("viewCheckbox" + new_id).checked = true;
+						document.getElementById("view_container" + new_id).focus();
+						break;
+					case 'filters':
+						var list = document.getElementById("filter").querySelectorAll("[id^='filter_cnt']");
+						if (list.length > 98) return; // no limited to 100
+						list[list.length - 1].insertAdjacentHTML("beforebegin", '<div class="input_cnt1" id="filter_cnt'+new_id+'"><input id="filterCheckbox'+ new_id+'" name="filterCheckbox" style="'+cbox+'" type="checkbox" /><input id="filter_container'+new_id+'" name="filter_name" class="input21" value="" /><input name="input_filter" class="input71" value="" /></div>');
+						document.getElementById("filterCheckbox" + new_id).checked = true;
+						document.getElementById("filter_container" + new_id).focus();
+						break;
+				}
+			}
+
+			window.btn_up.onclick = function () {
+				switch (cur.page) {
+					case 'views':
+						if (ix.view == -1) break;
+						var el = document.getElementById("view_cnt" + ix.view);
+						moveUp(el);
+						break;
+					case 'filters':
+						if (ix.filter == -1) break;
+						var el = document.getElementById("filter_cnt" + ix.filter);
+						moveUp(el);
+						break;
+				}
+			}
+
+			window.btn_down.onclick = function () {
+				switch (cur.page) {
+					case 'views':
+						if (ix.view == -1) break;
+						var el = document.getElementById("view_cnt" + ix.view);
+						moveDown(el);
+						break;
+					case 'filters':
+						if (ix.filter == -1) break;
+						var el = document.getElementById("filter_cnt" + ix.filter);
+						moveDown(el);
+						break;
+				}
+			}
+
+			window.btn_delete.onclick = function () {
+				switch (cur.page) {
+					case 'views':
+						if (ix.view == -1) break;
+						var next = document.getElementById("view_cnt" + ix.view).nextSibling;
+						if (next && next.id == "view_cnt_folderView") next = document.getElementById("view_cnt" + ix.view).previousSibling;
+						remove(document.getElementById("view_cnt" + ix.view));
+						if (next) ix.view = next.id.replace('view_cnt', '');
+						if (next) next.style["background"] = "lightgreen";
+						break;
+					case 'filters':
+						if (ix.filter == -1) break;
+						var next = document.getElementById("filter_cnt" + ix.filter).nextSibling;
+						if (next && next.id == "filter_cnt_menuName") next = document.getElementById("filter_cnt" + ix.filter).previousSibling;
+						remove(document.getElementById("filter_cnt" + ix.filter));
+						if (next) ix.filter = next.id.replace('filter_cnt', '');
+						if (next) next.style["background"] = "lightgreen";
+						break;
+				}
+			}
+
+			function setInputs(page, value) {
+				var inputs = [];
+				if (page == 'all' || page == 'views') {
+					inputs = document.getElementsByName('view_name');
+					for (i = 0; i < inputs.length; i++) {
+						inputs[i].value = cfg[0][i].name;
+					}
+					inputs = document.getElementsByName('input_view');
+					for (i = 0; i < inputs.length; i++) {
+						inputs[i].value = cfg[0][i].type;
+					}
+				}
+
+				if (page == 'all' || page == 'filters') {
+					inputs = document.getElementsByName('filter_name');
+					for (i = 0; i < inputs.length; i++) {
+						inputs[i].value = cfg[1][i].name;
+					}
+					inputs = document.getElementsByName('input_filter');
+					for (i = 0; i < inputs.length; i++) {
+						inputs[i].value = cfg[1][i].type;
+					}
+				}
+
+				var nm = page.toString()+'_input', inputs = document.querySelectorAll(page == 'all' ? "[name$='_input']" : "[name="+nm+"]");
+				for (i = 0; i < inputs.length; i++) {
+					inputs[i].value = ppt[input[page].name[i] + '_internal'][value];
+				}
+
+				window.coverFormat_container1.parentNode.disabled = ppt['theme_internal'].value != 4;
+			}
+
+			window.btn_resetPage.onclick = function () {
+				var v = '';
+				switch(cur.page) {
+					case 'views':
+						cfg[0] = [];
+						for (i = 0; i < cfg[2].length; i++) {v = cfg[2][i]; cfg[0][i] = {name:v.name, type:v.type, menu:v.menu}}
+						setViews(true);
+						break;
+					case 'filters':
+						cfg[1] = [];
+						for (i = 0; i < cfg[3].length; i++) {v = cfg[3][i]; cfg[1][i] = {name:v.name, type:v.type, menu:v.menu}}
+						setFilters(true);
+						break;
+				}
+				setCheckboxes(cur.page, 'default_value');
+				setInputs(cur.page, 'default_value');
+				setRadioBtns(cur.page, 'default_value');
+				if (cur.page == 'behaviour') {
+					setClickAction(ppt['clickAction_internal'].default_value);
+					setDblClickAction(ppt['dblClickAction_internal'].default_value);
+					setKeyAction(ppt['keyAction_internal'].default_value);
+
+					setRoot(ppt['rootNode_internal'].default_value);
+					setNode(ppt['nodeStyle_internal'].default_value);
+					setItemCounts(ppt['nodeCounts_internal'].default_value);
+					setHoverBg(ppt['highLightRow_internal'].default_value);
+
+					setSbarShow(ppt['sbarShow_internal'].default_value);
+					setsbarType(ppt['sbarType_internal'].default_value);
+					setSbarCol(ppt['sbarCol_internal'].default_value);
+					setSbarIcon(ppt['highLightRow_internal'].default_value);
+
+					setSearch(ppt['searchSend_internal'].default_value);
+				}
+				if (cur.page == 'display') {
+					setTheme(ppt['theme_internal'].default_value);
+				}
+				if (cur.page == 'albumArt') {
+					window.rootStub_dropdown.innerHTML = '<b>Root:</b> ' + ppt.curRootImg_internal.default_value;
+					ppt.curRootImg_internal.value = ppt.curRootImg_internal.default_value;
+					window.noArtistStub_dropdown.innerHTML = '<b>No artist:</b> ' + ppt.curNoArtistImg_internal.default_value;
+					ppt.curNoArtistImg_internal.value = ppt.curNoArtistImg_internal.default_value;
+					window.noCoverStub_dropdown.innerHTML = '<b>No cover:</b> ' + ppt.curNoCoverImg_internal.default_value;
+					ppt.curNoCoverImg_internal.value = ppt.curNoCoverImg_internal.default_value;
+					setOverlay(ppt['itemOverlayType_internal'].default_value);
+					setthumbSize(ppt['thumbNailSize_internal'].default_value);
+				}
+				if (cur.page == 'custom') setCustomColours('default_value');
+			}
+
+			window.btn_reset.onclick = function () {
+				var msg = 'This will reset all library tree settings to default; all your settings including \'Views\' and \Filters\' will be lost.\\n\\nSettings are stored in panel properties, which has back-up options, and which can be opened by shift+right click of library tree.\\n\\nContinue with reset?';
+				var r = window.confirm(msg);
+				if (r == true) {
+					var new_cur = JSON.stringify(cur);
+					if (new_cur == parsed_args[2]) new_cur = '';
+					close_window();
+					callback && callback('', '', 'reset', new_cur);
+				}
+			}
+
+			document.onkeydown = function () {
+				if (window.event.keyCode == 13 && window.btn_ok.onclick) {
+					window.btn_ok.onclick();
+				}
+			}
+
+			document.onkeyup = function () {
+				set_btn_apply_state();
+			}
+
+			document.onclick = function () {
+				var idx = document.activeElement.id;
+				var clickedButton = /btn_ok|btn_add|btn_delete|btn_down|btn_up/.test(idx);
+				if (!clickedButton) {
+					switch (cur.page) {
+						case 'views':
+							var list = document.getElementById("view").querySelectorAll("[id^='view_cnt']");
+							for (i= 0; i < list.length; i++) list[i].style["background"] = "none";
+							var par = document.activeElement.parentElement;
+							var activate = /view_cnt/.test(par.id) && !/folderView/.test(par.id);
+							if (!activate) ix.view = -1;
+							else {
+								ix.view = par.id.replace('view_cnt', '');
+								par.style["background"] = "lightgreen";
+							}
+							break;
+						case 'filters':
+							var list = document.getElementById("filter").querySelectorAll("[id^='filter_cnt']")
+							for (i= 0; i < list.length; i++) list[i].style["background"] = "none";
+							var par = document.activeElement.parentElement;
+							var activate = /filter_cnt/.test(par.id) && !/menuName/.test(par.id);
+							if (!activate) ix.filter = -1;
+							else {
+								ix.filter = par.id.replace('filter_cnt', '');
+								par.style["background"] = "lightgreen";
+							}
+							break;
+					}
+				}
+				set_btn_add_state();
+				set_btn_apply_state();
+				set_btn_del_state();
+				set_btn_dn_state();
+				set_btn_up_state();
+				textChange();
+				hide();
+			}
+
+			window.btn_cancel.onclick = function () {
+				var new_cur = JSON.stringify(cur);
+				if (new_cur == parsed_args[2]) new_cur = '';
+				callback && callback('', '', '', new_cur);
+				close_window();
+			}
+
+			var divToggleVis = document.getElementById('help_text');
+			var help_btn = document.getElementById('help_button');
+
+			help_btn.onclick = function() {
+				if (divToggleVis.style.display === 'none') {
+					divToggleVis.style.display = 'block';
+					help_btn.innerHTML = 'Hide Album Art Help';
+				} else {
+					divToggleVis.style.display = 'none';
+					help_btn.innerHTML = 'Show Album Art Help';
+				}
+			}
+
+			function showModeHelp() {
+				var divToggleMode = document.getElementById('mode_text');
+				if (divToggleMode.style.display === 'none') {
+					divToggleMode.style.display = 'block';
+					divToggleMode.scrollIntoView();
+				} else {
+					divToggleMode.style.display = 'none';
+				}
+			}
+
+			var divToggleSyn = document.getElementById('syntax_help');
+			var syntax_btn = document.getElementById('syntax_button');
+
+			syntax_btn.onclick = function() {
+				if (divToggleSyn.style.display === 'none') {
+					divToggleSyn.style.display = 'block';
+					syntax_btn.innerHTML = 'Hide Help';
+				} else {
+					divToggleSyn.style.display = 'none';
+					syntax_btn.innerHTML = 'Show New Facets & Extended Syntax Help';
+				}
+			}
+
+			function toggle(item) {
+				if (window[item].style.display != 'block') window[item].style.display = 'block'
+				else window[item].style.display = 'none';
+			}
+
+			var h = [
+				['altClick_dropdown', 'altClick'],
+				['click_dropdown', 'click'],
+				['dblClick_dropdown', 'dblClick'],
+				['itemCounts_dropdown', 'itemCounts'],
+				['mbtnClick_dropdown', 'mbtnClick'],
+				['keystroke_dropdown', 'keystroke'],
+				['noArtistStub_dropdown', 'noArtistStub'],
+				['noCoverStub_dropdown', 'noCoverStub'],
+				['node_dropdown', 'node'],
+				['overlay_dropdown', 'overlay'],
+				['root_dropdown', 'root'],
+				['rootStub_dropdown', 'rootStub'],
+				['sbarShow_dropdown', 'sbarShow'],
+				['sbarType_dropdown', 'sbarType'],
+				['sbarCol_dropdown', 'sbarCol'],
+				['sbarIcon_dropdown', 'sbarIcon'],
+				['search_dropdown', 'search'],
+				['showHl_dropdown', 'showHl'],
+				['theme_dropdown', 'themeBg'],
+				['thumbSize_dropdown', 'thumbSize']
+			];
+
+			function hide() {
+				var id = document.activeElement.id;
+				for (i = 0; i < h.length; i++) {
+					if (id != h[i][0]) window[h[i][1]].style.display = 'none';
+				}
+			}
+
+			window.onunload = function () {
+				if (!is_closed_manually) {
+					var new_cur = JSON.stringify(cur);
+					if (new_cur != parsed_args[2]) callback && callback('', '', '', new_cur);
+				}
+			}
+
+			window.document.body.focus();
+			document.getElementById("btn_ok").focus();
+		</script>
+	</body>
+	</html>

@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+	<html>
+	<head>
+		<meta http-equiv="x-ua-compatible" content="IE=8" />
+		<link rel="stylesheet" type="text/css" href="styles10.css">
+		<style type="text/css">
+		input[type="checkbox"] {vertical-align:middle; position:relative; width:17px; height:15px; border:0; padding:2px 1px; margin:5px 0;}
+		input[type="checkbox"]:focus {border:1px solid #0078D7; padding:1px 0;}
+		input[type="checkbox"]:hover:focus {border:1px solid #0078D7; padding:1px 0;}
+		input[type="checkbox"]:hover {border:1px solid #000000; padding:1px 0;}
+		.input_checkbox {position:relative; top:-1px; margin-right:1px;}
+		.cnt {padding:0.63em; word-wrap:break-word; white-space:pre-wrap;}
+		.bold {font:bold 1em Segoe UI; padding:0.63em 0.63em 0px 0.63em; word-wrap:break-word; white-space:pre-wrap;}
+		.boldItalic {font:italic bold 1em Segoe UI; padding:0.63em 0.63em 0px 0.63em; word-wrap:break-word; white-space:pre-wrap;}
+		.input_cnt {position:absolute; left:0.88em; bottom:0.94em;}
+		#btn_cnt {padding:0.7em 1em; position:absolute;bottom:0; right:0; left:0; text-align:right;}
+		</style>
+		<title>Panel and Playlist Sources</title>
+	</head>
+	<body>
+		<div id="usage" class="bold">Panel source</div>
+		<div id="div_text1" class="cnt">This enables a multiple panel mode that supports a New Facets style. Panels can also contain a tree view or album art.
+
+See help on the "Views" tab for setup guidance.</div>
+		<div id="playlist" class="bold">Playlist source</div>
+		<div id="div_text2" class="cnt"><i>Active playlist</i>
+The sort order of the playlist is used, except for multi-value tag or soft splitter views where sorting is necessary. Items are highlighted in the playlist, not sent.
+
+<i>Other playlists</i>
+These behave the same as the library source.</div>
+		<div id="input_cnt" class="input_cnt"></div>
+		<div id="btn_cnt"><button id="btn_ok">OK</button></div>
+		<div id="div" style="height:0; width:0;outline:none; border:none; padding:none; margin:none; box-sizing:content-box;"></div>
+		<script>
+			var em;
+			function getValue(id){
+				var div = document.getElementById(id);
+				div.style.height = '1em';
+				return ( em = div.offsetHeight );
+			}
+			getValue('div');
+			var is_closed_manually = false;
+			function close_window() {
+				is_closed_manually = true;
+				window.open('', '_self', '');
+				window.close();
+			}
+
+			var parsed_args;
+			var callback_fn;
+			var cbox_h = 15;
+			var cbox_w = 17;
+			try {
+				parsed_args = window.external.dialogArguments.toArray();
+			}
+			catch (e) {
+			}
+			if (parsed_args) {
+				callback_fn = parsed_args[0];
+				cbox_h = Math.round(Math.max(em, 13));
+				cbox_w = cbox_h + 2;
+				var cbox = "width:" + cbox_w + "px; height:" + cbox_h + "px;"
+				var cboxMargin = "width:" + cbox_w + "px; height:" + cbox_h + "px; margin-right:5px;"
+			}
+
+			window.input_cnt.insertAdjacentHTML('beforeend', '<input id="input_checkbox" style="'+cboxMargin+'" type="checkbox" /><label id="label_for_checkbox">Do not show this message again</label>')
+			var window_w = 600;
+
+			setTimeout(function() {
+				var window_h = 83 + window.usage.offsetHeight + window.div_text1.offsetHeight + window.div_text2.offsetHeight + window.playlist.offsetHeight + window.btn_ok.offsetHeight;
+				window_w = window_h * 1.5;
+				var left = (screen.width - window_w) / 2;
+				var top = (screen.height - window_h) / 2;
+				window.resizeTo(window_w, window_h);
+				window.moveTo(left, top);
+			}, 50);
+
+			window.input_checkbox.checked = false;
+
+			window.btn_ok.onclick = function () {
+				callback_fn && callback_fn("ok", window.input_checkbox.checked);
+				close_window();
+			};
+
+			window.onunload = function () {
+				if (!is_closed_manually) {
+					callback_fn && callback_fn("cancel", window.input_checkbox.checked);
+				}
+			};
+
+			window.document.body.focus();
+			window.btn_ok.focus();
+		</script>
+	</body>
+	</html>
