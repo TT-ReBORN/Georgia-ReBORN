@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-05-22                                          * //
+// * Last change:    2023-06-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -611,20 +611,14 @@ Object.assign(qwr_utils, {
 				cmac.append_item(displayLibrary && pref.libraryLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 					pref.libraryLayout = pref.libraryLayout === 'normal' ? 'full' : 'normal';
 					displayPlaylist = pref.libraryLayout === 'split';
-					repaintWindowRectAreas();
-					libraryLayoutFullPreset();
+					initLibraryLayout();
 					initButtonState();
 				});
 				if (pref.libraryLayout === 'normal') {
 					cmac.append_item(displayLibrary && pref.libraryLayout === 'normal' ? 'Change layout to split' : 'Change layout to normal', () => {
 						pref.libraryLayout = pref.libraryLayout === 'normal' ? 'split' : 'normal';
 						displayPlaylist = pref.libraryLayout === 'split';
-						repaintWindowRectAreas();
-						if (pref.libraryLayout === 'full') {
-							libraryLayoutFullPreset();
-						} else if (pref.libraryLayout === 'split') {
-							libraryLayoutSplitPreset();
-						}
+						initLibraryLayout();
 						initButtonState();
 					});
 					cmac.append_separator();

@@ -561,6 +561,107 @@ function initLibraryPanel() {
 }
 
 
+function initLibraryLayout() {
+	const libraryLayoutFull =
+		pref.libraryLayout === 'full'
+		&& pref.libraryLayoutFullPreset;
+
+	const libraryLayoutSplit =
+		pref.libraryLayout === 'split'
+		&& (pref.libraryLayoutSplitPreset
+		|| pref.libraryLayoutSplitPreset2
+		|| pref.libraryLayoutSplitPreset3
+		|| pref.libraryLayoutSplitPreset4);
+
+	if (libraryLayoutFull) {
+		pref.libraryDesign = 'reborn';
+		panel.imgView = ppt.albumArtShow = true;
+		pref.libraryThumbnailSize = 'auto';
+		ppt.thumbNailSize = pref.playerSize_HD_small && ppt.thumbNailSize === 'auto' ? 1 : 'auto';
+		ppt.albumArtLabelType = 1;
+		lib.logTree();
+		pop.clearTree();
+		ui.getFont(); // * Reset font size when pref.libraryLayoutSplitPreset4 was used
+		repaintWindowRectAreas();
+		ppt.toggle('albumArtShow');
+		panel.imgView = pref.libraryLayoutFullPreset && pref.layout === 'default' && pref.libraryLayout === 'full' ? ppt.albumArtShow = true : ppt.albumArtShow = pref.libraryLayoutRememberAlbumArtView;
+		men.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
+		autoThumbnailSize();
+	}
+	else if (libraryLayoutSplit) {
+		if (pref.layout !== 'default') return;
+
+		if (pref.playlistLayout === 'full') {
+			pref.playlistLayout = 'normal';
+		}
+
+		if (pref.libraryLayoutSplitPreset) {
+			pref.libraryDesign = 'reborn';
+			pref.libraryThumbnailSize = 'playlist';
+			panel.imgView = ppt.albumArtShow = false;
+			g_properties.show_header = true;
+			if (displayPlaylist && displayLibrary) {
+				g_properties.auto_collapse = true;
+				playlist.auto_collapse_header();
+			}
+			else {
+				g_properties.auto_collapse = false;
+				playlist.expand_header();
+			}
+		}
+		else if (pref.libraryLayoutSplitPreset2) {
+			pref.libraryDesign = 'reborn';
+			pref.libraryThumbnailSize = 'playlist';
+			panel.imgView = ppt.albumArtShow = false;
+			g_properties.auto_collapse = false;
+			g_properties.show_header = displayPlaylist && !displayLibrary && pref.libraryLayout === 'split';
+			updatePlaylist();
+		}
+		else if (pref.libraryLayoutSplitPreset3) {
+			pref.libraryDesign = 'reborn';
+			pref.libraryThumbnailSize = 'playlist';
+			panel.imgView = ppt.albumArtShow = true;
+			ppt.albumArtLabelType = 1;
+			g_properties.show_header = true;
+			if (displayPlaylist && displayLibrary) {
+				g_properties.auto_collapse = true;
+				playlist.auto_collapse_header();
+			}
+			else {
+				g_properties.auto_collapse = false;
+				playlist.expand_header();
+			}
+		}
+		else if (pref.libraryLayoutSplitPreset4) {
+			pref.libraryDesign = 'artistLabelsRight';
+			pref.libraryThumbnailSize = 'playlist';
+			panel.imgView = ppt.albumArtShow = true;
+			ppt.albumArtLabelType = 2;
+			g_properties.show_header = true;
+			if (displayPlaylist && displayLibrary) {
+				g_properties.auto_collapse = true;
+				playlist.auto_collapse_header();
+			}
+			else {
+				g_properties.auto_collapse = false;
+				playlist.expand_header();
+			}
+		}
+
+		if (!libraryInitialized) return;
+		lib.logTree();
+		pop.clearTree();
+		ui.getFont(); // * Set or reset font size when pref.libraryLayoutSplitPreset4 was used
+		men.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
+		playlist.on_size(ww, wh);
+	}
+
+	setLibrarySize();
+	initLibraryColors();
+	window.Repaint();
+}
+
+
 //////////////////////////
 // * CUSTOM CALLBACKS * //
 //////////////////////////
@@ -622,98 +723,6 @@ function autoThumbnailSize() {
 		}
 	}
 	img.sizeDebounce();
-}
-
-
-function libraryLayoutFullPreset() {
-	pref.libraryDesign = 'reborn';
-	panel.imgView = ppt.albumArtShow = true;
-	pref.libraryThumbnailSize = 'auto';
-	ppt.thumbNailSize = pref.playerSize_HD_small && ppt.thumbNailSize === 'auto' ? 1 : 'auto';
-	ppt.albumArtLabelType = 1;
-	lib.logTree();
-	pop.clearTree();
-	repaintWindowRectAreas();
-	ppt.toggle('albumArtShow');
-	panel.imgView = pref.libraryLayoutFullPreset && pref.layout === 'default' && pref.libraryLayout === 'full' ? ppt.albumArtShow = true : ppt.albumArtShow = !!pref.libraryLayoutRememberAlbumArtView;
-	men.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
-	autoThumbnailSize();
-	setLibrarySize();
-	initLibraryColors();
-	window.Repaint();
-}
-
-
-function libraryLayoutSplitPreset() {
-	if (pref.layout !== 'default') return;
-
-	if (pref.playlistLayout === 'full') {
-		pref.playlistLayout = 'normal';
-	}
-
-	if (pref.libraryLayoutSplitPreset) {
-		pref.libraryDesign = 'reborn';
-		pref.libraryThumbnailSize = 'playlist';
-		panel.imgView = ppt.albumArtShow = false;
-		g_properties.show_header = true;
-		if (displayPlaylist && displayLibrary) {
-			g_properties.auto_collapse = true;
-			playlist.auto_collapse_header();
-		}
-		else {
-			g_properties.auto_collapse = false;
-			playlist.expand_header();
-		}
-	}
-	else if (pref.libraryLayoutSplitPreset2) {
-		pref.libraryDesign = 'reborn';
-		pref.libraryThumbnailSize = 'playlist';
-		panel.imgView = ppt.albumArtShow = false;
-		g_properties.auto_collapse = false;
-		g_properties.show_header = displayPlaylist && !displayLibrary && pref.libraryLayout === 'split';
-		updatePlaylist();
-	}
-	else if (pref.libraryLayoutSplitPreset3) {
-		pref.libraryDesign = 'reborn';
-		pref.libraryThumbnailSize = 'playlist';
-		panel.imgView = ppt.albumArtShow = true;
-		// ppt.thumbNailSize = 1;
-		ppt.albumArtLabelType = 1;
-		g_properties.show_header = true;
-		if (displayPlaylist && displayLibrary) {
-			g_properties.auto_collapse = true;
-			playlist.auto_collapse_header();
-		}
-		else {
-			g_properties.auto_collapse = false;
-			playlist.expand_header();
-		}
-	}
-	else if (pref.libraryLayoutSplitPreset4) {
-		pref.libraryDesign = 'artistLabelsRight';
-		pref.libraryThumbnailSize = 'playlist';
-		panel.imgView = ppt.albumArtShow = true;
-		// ppt.thumbNailSize = 1;
-		ppt.albumArtLabelType = 2;
-		g_properties.show_header = true;
-		if (displayPlaylist && displayLibrary) {
-			g_properties.auto_collapse = true;
-			playlist.auto_collapse_header();
-		}
-		else {
-			g_properties.auto_collapse = false;
-			playlist.expand_header();
-		}
-	}
-
-	if (!libraryInitialized) return;
-	lib.logTree();
-	pop.clearTree();
-	men.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
-	setLibrarySize();
-	initLibraryColors();
-	playlist.on_size(ww, wh);
-	window.Repaint();
 }
 
 

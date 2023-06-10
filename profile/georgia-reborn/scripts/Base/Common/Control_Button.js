@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-07                                          * //
+// * Last change:    2023-06-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -319,9 +319,7 @@ function btnActionHandler(btn) {
 			} else if (pref.layout === 'default' && pref.libraryLayout === 'split') {
 				displayPlaylist = true;
 			}
-			if (pref.libraryLayout === 'split' && (pref.libraryLayoutSplitPreset || pref.libraryLayoutSplitPreset2 || pref.libraryLayoutSplitPreset3 || pref.libraryLayoutSplitPreset4)) {
-				libraryLayoutSplitPreset();
-			}
+			initLibraryLayout();
 
 			// Update Library nowPlaying state if song was played from the Playlist
 			lib.treeState(false, 2);

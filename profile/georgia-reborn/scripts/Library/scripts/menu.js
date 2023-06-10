@@ -182,7 +182,7 @@ class MenuItems {
 				displayPlaylist = pref.libraryLayout === 'split';
 				g_properties.auto_collapse = false;
 				playlist.expand_header();
-				libraryLayoutFullPreset();
+				initLibraryLayout();
 			},
 			hide: () => pref.layout === 'default' && pref.libraryDesign === 'flowMode' || pref.layout !== 'default'
 		});
@@ -191,11 +191,7 @@ class MenuItems {
 			func: () => {
 				pref.libraryLayout = pref.libraryLayout === 'split' ? 'full' : 'split';
 				displayPlaylist = pref.libraryLayout === 'split';
-				if (pref.libraryLayout === 'full') {
-					libraryLayoutFullPreset();
-				} else if (pref.libraryLayout === 'split') {
-					libraryLayoutSplitPreset();
-				}
+				initLibraryLayout();
 			},
 			separator: () => true,
 			hide: () => pref.layout === 'default' && pref.libraryDesign === 'flowMode' || pref.layout !== 'default'

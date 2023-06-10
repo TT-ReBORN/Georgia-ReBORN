@@ -637,35 +637,6 @@ class BiographyPanel {
 	}
 }
 
-function initBiographyPanel() {
-	if (biographyInitialized) return;
-	uiBio = new UserInterfaceBio();
-	vkBio = new VkeysBio();
-	panelBio = new PanelBio();
-	name = new Names();
-	alb_scrollbar = new ScrollbarBio();
-	art_scrollbar = new ScrollbarBio();
-	art_scroller = new ScrollbarBio();
-	cov_scroller = new ScrollbarBio();
-	butBio = new ButtonsBio();
-	popUpBoxBio = new PopUpBoxBio();
-	txt = new Text();
-	tagBio = new TaggerBio();
-	resize = new ResizeHandler();
-	libBio = new LibraryBio();
-	imgBio = new ImagesBio();
-	seeker = new Seeker();
-	filmStrip = new FilmStrip();
-	timerBio = new TimersBio();
-	menBio = new MenuItemsBio();
-	serverBio = new ServerBio();
-	infoboxBio = new InfoboxBio();
-	lyricsBio = new LyricsBio();
-	biographyPanel = new BiographyPanel();
-	biography = new BiographyCallbacks();
-	biographyInitialized = true;
-}
-
 
 ////////////////////////
 // * INIT CALLBACKS * //
@@ -709,15 +680,45 @@ this.on_playlists_changed = () => biography.on_playlists_changed();
 this.on_script_unload = () => biography.on_script_unload();
 
 
-//////////////////////////
-// * CUSTOM CALLBACKS * //
-//////////////////////////
-function biographyLayoutFullPreset() {
-	pptBio.style = pref.biographyLayoutFullPreset && pref.layout === 'default' && pref.biographyLayout === 'full' ? 3 : 0;
-	pptBio.showFilmStrip = false;
-	pptBio.filmStripPos = 3;
-	setBiographySize();
-	window.Repaint();
+function initBiographyPanel() {
+	if (biographyInitialized) return;
+	uiBio = new UserInterfaceBio();
+	vkBio = new VkeysBio();
+	panelBio = new PanelBio();
+	name = new Names();
+	alb_scrollbar = new ScrollbarBio();
+	art_scrollbar = new ScrollbarBio();
+	art_scroller = new ScrollbarBio();
+	cov_scroller = new ScrollbarBio();
+	butBio = new ButtonsBio();
+	popUpBoxBio = new PopUpBoxBio();
+	txt = new Text();
+	tagBio = new TaggerBio();
+	resize = new ResizeHandler();
+	libBio = new LibraryBio();
+	imgBio = new ImagesBio();
+	seeker = new Seeker();
+	filmStrip = new FilmStrip();
+	timerBio = new TimersBio();
+	menBio = new MenuItemsBio();
+	serverBio = new ServerBio();
+	infoboxBio = new InfoboxBio();
+	lyricsBio = new LyricsBio();
+	biographyPanel = new BiographyPanel();
+	biography = new BiographyCallbacks();
+	biographyInitialized = true;
 }
+
+
+function initBiographyLayout() {
+	if (pref.biographyLayoutFullPreset) {
+		pptBio.style = pref.biographyLayoutFullPreset && pref.layout === 'default' && pref.biographyLayout === 'full' ? 3 : 0;
+		pptBio.showFilmStrip = false;
+		pptBio.filmStripPos = 3;
+	}
+	repaintWindowRectAreas();
+	setBiographySize();
+}
+
 
 const windowMetricsPathBio = pref.customBiographyDir ? `${globals.customBiographyDir}cache\\biography\\themed\\windowMetrics.json` : `${fb.ProfilePath}cache\\biography\\themed\\windowMetrics.json`;

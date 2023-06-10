@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-07                                          * //
+// * Last change:    2023-06-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -22,6 +22,7 @@ let playlistDropIndex;
 let playlistScrollReady = true;
 let playlistFontsCreated = false;
 let playlistThumbSize = scaleForDisplay(64); // Default
+let libraryPlaylistDrag = false;
 let g_pl_fonts = {};
 const playlist_geo = {};
 const g_pl_colors = {};
@@ -713,7 +714,7 @@ class Playlist extends List {
 		this.w = w;
 		this.was_on_size_called = true;
 
-		if (g_properties.auto_collapse || g_properties.collapse_on_start) {
+		if (g_properties.show_header && (g_properties.auto_collapse || g_properties.collapse_on_start)) {
 			this.collapse_handler.collapse_all_but_now_playing();
 		}
 
@@ -939,9 +940,7 @@ class Playlist extends List {
 						playlist.on_size(ww, wh);
 						displayPlaylist = true;
 					}
-					biographyLayoutFullPreset();
-					setBiographySize();
-					window.Repaint();
+					initBiographyLayout();
 				});
 				cmm.append_separator();
 			}
@@ -1245,7 +1244,7 @@ class Playlist extends List {
 			this.initialize_and_repaint_list();
 		}
 
-		if (this.collapse_handler && (g_properties.auto_collapse || g_properties.collapse_on_start)) {
+		if (this.collapse_handler && g_properties.show_header && (g_properties.auto_collapse || g_properties.collapse_on_start)) {
 			this.collapse_handler.collapse_all_but_now_playing();
 		}
 	}
@@ -1257,7 +1256,7 @@ class Playlist extends List {
 
 		this.initialize_and_repaint_list();
 
-		if (this.collapse_handler && (g_properties.auto_collapse || g_properties.collapse_on_start)) {
+		if (this.collapse_handler && g_properties.show_header && (g_properties.auto_collapse || g_properties.collapse_on_start)) {
 			this.collapse_handler.collapse_all_but_now_playing();
 		}
 	}
@@ -1333,7 +1332,7 @@ class Playlist extends List {
 				this.playing_item.clear_title_text();
 			}
 
-			if (this.collapse_handler && (g_properties.auto_collapse || g_properties.collapse_on_start)) {
+			if (this.collapse_handler && g_properties.show_header && (g_properties.auto_collapse || g_properties.collapse_on_start)) {
 				this.selection_handler.clear_selection();
 				this.collapse_handler.collapse_all_but_now_playing();
 				this.scroll_to_now_playing();
@@ -1757,7 +1756,7 @@ class Playlist extends List {
 	}
 
 	auto_collapse_header() {
-		if (g_properties.auto_collapse) {
+		if (g_properties.show_header && g_properties.auto_collapse) {
 			this.collapse_handler.collapse_all_but_now_playing();
 			if (this.collapse_handler.changed && pref.playlistAutoScrollNowPlaying) {
 				this.scroll_to_now_playing_or_focused();
@@ -1860,14 +1859,14 @@ class Playlist extends List {
 				this.collapse_handler.on_content_change();
 			}
 
-			if (g_properties.auto_collapse) {
+			if (g_properties.show_header && g_properties.auto_collapse) {
 				this.collapse_header();
 			}
 
 			this.scrollbar.stopScrolling();
 
-			// ? Can we get away with this workaround? Prevents auto-expanding headers and scroll jump when dragging in split layout
-			if (!displayPlaylistLibrary()) {
+			// ? Can we get away with this workaround? Prevents auto-expanding headers when dropping items in library split layout
+			if (!g_properties.auto_collapse) {
 				this.on_list_items_change();
 			}
 		}
@@ -1880,7 +1879,7 @@ class Playlist extends List {
 
 		this.set_now_playing_hyperlink();
 
-		setTimeout(() => { playlistScrollReady = true; }, 200); // * Restore scrolling
+		setTimeout(() => { playlistScrollReady = true; libraryPlaylistDrag = false; }, 200); // * Restore scrolling
 
 		(true || trace_initialize_list_performance) && console.log(`Playlist initialized in ${profiler.Time}ms`);
 	}
@@ -2121,13 +2120,15 @@ class Playlist extends List {
 		parent_menu.append(ce);
 
 		ce.append_item('Collapse all', () => {
-			this.collapse_handler.collapse_all();
-			if (this.collapse_handler.changed) {
-				this.scroll_to_focused_or_now_playing();
+			if (g_properties.show_header) {
+				this.collapse_handler.collapse_all();
+				if (this.collapse_handler.changed) {
+					this.scroll_to_focused_or_now_playing();
+				}
 			}
 		});
 
-		if (plman.ActivePlaylist === plman.PlayingPlaylist) {
+		if (plman.ActivePlaylist === plman.PlayingPlaylist && g_properties.show_header) {
 			ce.append_item('Collapse all but now playing', () => {
 				this.collapse_handler.collapse_all_but_now_playing();
 				if (this.collapse_handler.changed) {
@@ -2137,9 +2138,11 @@ class Playlist extends List {
 		}
 
 		ce.append_item('Expand all', () => {
-			this.collapse_handler.expand_all();
-			if (this.collapse_handler.changed) {
-				this.scroll_to_focused_or_now_playing();
+			if (g_properties.show_header) {
+				this.collapse_handler.expand_all();
+				if (this.collapse_handler.changed) {
+					this.scroll_to_focused_or_now_playing();
+				}
 			}
 		});
 
@@ -2147,7 +2150,7 @@ class Playlist extends List {
 
 		ce.append_item('Auto', () => {
 			g_properties.auto_collapse = !g_properties.auto_collapse;
-			if (g_properties.auto_collapse) {
+			if (g_properties.show_header && g_properties.auto_collapse) {
 				this.collapse_handler.collapse_all_but_now_playing();
 				if (this.collapse_handler.changed) {
 					this.scroll_to_now_playing_or_focused();
@@ -3972,7 +3975,7 @@ class Header extends BaseHeader {
 			// * Need to apply text rendering AntiAliasGridFit when using style Blend or when using custom theme fonts with larger font sizes
 			grClip.SetTextRenderingHint(pref.styleBlend || pref.customThemeFonts && headerFontSize > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
 
-			if (this.is_collapsed && this.is_focused() || this.is_completely_selected() && g_properties.auto_collapse) {
+			if (this.is_collapsed && this.is_focused() || this.is_completely_selected() && g_properties.show_header && g_properties.auto_collapse) {
 				grClip.DrawRect(-1, 0, this.w + 1, this.h - 1, 1, line_color);
 				grClip.FillSolidRect(0, 0, scaleForDisplay(8), this.h, g_pl_colors.header_sideMarker);
 			}
@@ -5404,6 +5407,7 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	this.get_selected_items = () => selected_indexes;
 
 	this.perform_internal_drag_n_drop = function () {
+		playlistScrollReady = false;
 		this.enable_drag();
 		is_internal_drag_n_drop_active = true;
 
@@ -5881,7 +5885,7 @@ function CollapseHandler(cnt_arg) {
 		headers = cnt_arg.sub_items;
 		this.changed = false;
 
-		if (g_properties.collapse_on_playlist_switch) {
+		if (g_properties.show_header && g_properties.collapse_on_playlist_switch) {
 			if (g_properties.auto_collapse) {
 				this.collapse_all_but_now_playing();
 			}

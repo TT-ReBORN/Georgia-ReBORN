@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-03                                          * //
+// * Last change:    2023-06-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1184,11 +1184,7 @@ function fontSizeOptions(menu) {
 			// * Update Library
 			pop.createImages();
 			panel.zoomReset();
-			if (pref.libraryLayout === 'full') {
-				libraryLayoutFullPreset();
-			} else if (pref.libraryLayout === 'split') {
-				libraryLayoutSplitPreset();
-			}
+			initLibraryLayout();
 		}
 		window.Repaint();
 	});
@@ -2065,7 +2061,9 @@ function playlistOptions(menu, context_menu) {
 	playlistAlbumArtMenu.appendTo(playlistAlbumMenu);
 	playlistAlbumMenu.addSeparator();
 
-	playlistAlbumMenu.addToggleItem('Album header', g_properties, 'show_header', () => { updatePlaylist(); });
+	playlistAlbumMenu.addToggleItem('Album header', g_properties, 'show_header', () => {
+		updatePlaylist();
+	});
 	playlistAlbumMenu.addToggleItem('Compact header', g_properties, 'use_compact_header', () => {
 		createPlaylistFonts();
 		rescalePlaylist(true);
@@ -2160,7 +2158,7 @@ function detailsOptions(menu, context_menu) {
 			repaintWindow();
 		}, !pref.displayDiscArt);
 		displayDiscArtMenu.addSeparator();
-		displayDiscArtMenu.addRadioItems(['CD - White', 'CD - Black', 'CD - Blank', 'CD - Transparent'],
+		displayDiscArtMenu.addRadioItems(['CD - White', 'CD - Black', 'CD - Blank', 'CD - Transparent', 'CD - Custom'],
 			pref.discArtStub, ['cdWhite', 'cdBlack', 'cdBlank', 'cdTrans', 'cdCustom'], (discArt) => {
 			pref.discArtStub = discArt;
 			pref.noDiscArtStub = false;
@@ -2396,17 +2394,7 @@ function libraryOptions(menu, context_menu) {
 			if (pref.displayLyrics) pref.displayLyrics = false;
 			displayPlaylist = pref.libraryLayout === 'split';
 			resizeArtwork(true);
-			if (pref.libraryLayout === 'normal') {
-				panel.imgView = ppt.albumArtShow = false;
-				lib.logTree();
-				pop.clearTree();
-				men.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
-				setLibrarySize();
-			} else if (pref.libraryLayout === 'full') {
-				libraryLayoutFullPreset();
-			} else if (pref.libraryLayout === 'split') {
-				libraryLayoutSplitPreset();
-			}
+			initLibraryLayout();
 			initButtonState();
 			window.Repaint();
 		});
@@ -2417,25 +2405,33 @@ function libraryOptions(menu, context_menu) {
 			pref.libraryLayoutSplitPreset2 = false;
 			pref.libraryLayoutSplitPreset3 = false;
 			pref.libraryLayoutSplitPreset4 = false;
-			libraryLayoutSplitPreset();
+			initLibraryLayout();
+			initPlaylist();
+			playlist.on_size(ww, wh);
 		});
 		libraryLayoutMenu.addToggleItem('Use split preset (text)', pref, 'libraryLayoutSplitPreset2', () => {
 			pref.libraryLayoutSplitPreset = false;
 			pref.libraryLayoutSplitPreset3 = false;
 			pref.libraryLayoutSplitPreset4 = false;
-			libraryLayoutSplitPreset();
+			initLibraryLayout();
+			initPlaylist();
+			playlist.on_size(ww, wh);
 		});
 		libraryLayoutMenu.addToggleItem('Use split preset (art grid)', pref, 'libraryLayoutSplitPreset3', () => {
 			pref.libraryLayoutSplitPreset = false;
 			pref.libraryLayoutSplitPreset2 = false;
 			pref.libraryLayoutSplitPreset4 = false;
-			libraryLayoutSplitPreset();
+			initLibraryLayout();
+			initPlaylist();
+			playlist.on_size(ww, wh);
 		});
 		libraryLayoutMenu.addToggleItem('Use split preset (art header)', pref, 'libraryLayoutSplitPreset4', () => {
 			pref.libraryLayoutSplitPreset = false;
 			pref.libraryLayoutSplitPreset2 = false;
 			pref.libraryLayoutSplitPreset3 = false;
-			libraryLayoutSplitPreset();
+			initLibraryLayout();
+			initPlaylist();
+			playlist.on_size(ww, wh);
 		});
 		libraryLayoutMenu.addSeparator();
 		libraryLayoutMenu.addToggleItem('Remember album art view', pref, 'libraryLayoutRememberAlbumArtView', () => { repaintWindow(); }, pref.libraryLayoutFullPreset);
@@ -2737,10 +2733,8 @@ function biographyOptions(menu, context_menu) {
 			if (!displayBiography) displayBiography = true; displayPlaylist = false; displayLibrary = false;
 			if (pref.displayLyrics) pref.displayLyrics = false;
 			displayPlaylist = !displayPlaylist;
-			biographyLayoutFullPreset();
-			setBiographySize();
+			initBiographyLayout();
 			initButtonState();
-			window.Repaint();
 		});
 		biographyLayoutMenu.addSeparator();
 		biographyLayoutMenu.addToggleItem('Use full preset', pref, 'biographyLayoutFullPreset', () => { repaintWindow(); });

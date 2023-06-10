@@ -271,9 +271,7 @@ class MenuItemsBio {
 					playlist.on_size(ww, wh);
 					displayPlaylist = true;
 				}
-				biographyLayoutFullPreset();
-				setBiographySize();
-				window.Repaint();
+				initBiographyLayout();
 			},
 			separator: true,
 			hide: pref.layout !== 'default'

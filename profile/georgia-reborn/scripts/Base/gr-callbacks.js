@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-04                                          * //
+// * Last change:    2023-06-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -673,9 +673,7 @@ function initMain() {
 			lib.initialise();
 			panel.updateProp(1);
 			uiBio.updateProp(1);
-			if (pref.libraryLayout === 'split' && (pref.libraryLayoutSplitPreset || pref.libraryLayoutSplitPreset2 || pref.libraryLayoutSplitPreset3 || pref.libraryLayoutSplitPreset4)) {
-				libraryLayoutSplitPreset();
-			}
+			initLibraryLayout();
 			loadingThemeComplete = true;
 		}, 100);
 	}
@@ -728,11 +726,7 @@ function initPanels() {
 		panel.tree.y = panel.search.h;
 		pop.createImages();
 		panel.zoomReset();
-		if (pref.libraryLayout === 'full') {
-			libraryLayoutFullPreset();
-		} else if (pref.libraryLayout === 'split') {
-			libraryLayoutSplitPreset();
-		}
+		initLibraryLayout();
 
 		// * Update Biography
 		setBiographySize();
@@ -740,7 +734,7 @@ function initPanels() {
 		butBio.createImages();
 		butBio.resetZoom();
 		initBiographyColors();
-		biographyLayoutFullPreset();
+		initBiographyLayout();
 	}, loadingThemeComplete);
 }
 
@@ -1245,6 +1239,7 @@ function displayPanel(panel) {
 ////////////////////////////////////////
 /** Called when drag and drop items from Library to Playlist in split layout */
 function libraryPlaylistDragDrop() {
+	libraryPlaylistDrag = true;
 	const handleList = pop.getHandleList('newItems');
 	pop.sortIfNeeded(handleList);
 	fb.DoDragDrop(0, handleList, handleList.Count ? 1 | 4 : 0);
