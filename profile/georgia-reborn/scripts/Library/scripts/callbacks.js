@@ -563,7 +563,8 @@ function initLibraryPanel() {
 
 function initLibraryLayout() {
 	const libraryLayoutFull =
-		pref.libraryLayoutFullPreset;
+		pref.libraryLayout === 'full'
+		&& pref.libraryLayoutFullPreset;
 
 	const libraryLayoutSplit =
 		pref.libraryLayout === 'split'
