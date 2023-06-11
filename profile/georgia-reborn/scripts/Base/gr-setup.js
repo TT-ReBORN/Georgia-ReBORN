@@ -6,11 +6,20 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-04                                          * //
+// * Last change:    2023-06-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
+
+
+///////////////////////
+// * COMPATIBILITY * //
+///////////////////////
+let detectIE = false;
+detectIE = DetectIE();
+let detectWine = false;
+detectWine = DetectWine();
 
 
 ////////////////
@@ -243,7 +252,7 @@ const fontGridTitle      = pref.customThemeFonts ? customFont.fontGridTitle     
 const fontGridTitleBold  = pref.customThemeFonts ? customFont.fontGridTitleBold  : 'HelveticaNeueLT Pro 65 Md'; // Theme font used in metadata grid
 const fontGridAlbum      = pref.customThemeFonts ? customFont.fontGridAlbum      : 'HelveticaNeueLT Pro 65 Md'; // Theme font used in metadata grid
 const fontGridKey        = pref.customThemeFonts ? customFont.fontGridKey        :
-						   DetectWine()          ? 'HelveticaNeueLT Pro 65 Md'   : 'HelveticaNeueLT Pro 75 Bd'; // Theme font used in metadata grid
+						   detectWine            ? 'HelveticaNeueLT Pro 65 Md'   : 'HelveticaNeueLT Pro 75 Bd'; // Theme font used in metadata grid
 const fontGridValue      = pref.customThemeFonts ? customFont.fontGridValue      : 'HelveticaNeueLT Pro 45 Lt'; // Theme font used in metadata grid
 
 const fontLibrary        = pref.customThemeFonts ? customFont.fontLibrary        : 'Segoe UI'; // Library font

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-10                                          * //
+// * Last change:    2023-06-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -965,7 +965,7 @@ Object.assign(qwr_utils, {
 				const continue_confirmation = (status, confirmed) => {
 					if (confirmed) deleteWaveformBarCache();
 				};
-				if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+				if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 					continue_confirmation(false, 'Yes');
 				} else {
 					popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);

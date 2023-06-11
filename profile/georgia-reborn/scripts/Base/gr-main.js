@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-02                                          * //
+// * Last change:    2023-06-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -231,7 +231,7 @@ function drawDetailsMetadataGrid(gr) {
 			let gridTitleTxtRec;
 			let gridAlbumTxtRec;
 
-			function drawArtist(top) {
+			const drawArtist = (top) => {
 				if (!str.artist) return 0;
 
 				const flagSizeWhiteSpace =
@@ -282,7 +282,7 @@ function drawDetailsMetadataGrid(gr) {
 
 			gridTop -= scaleForDisplay(2);
 
-			function drawTitle(top) {
+			const drawTitle = (top) => {
 				if (!str.title) return 0;
 				gridTitleTxtRec = gr.MeasureString(isStreaming ? showGridTrackNum ? str.tracknum + str.title : str.title : str.tracknum === '' ? str.title : showGridTrackNum ? `${str.tracknum}\xa0${str.title}` : str.title, ft.grd_title, 0, 0, textWidth, wh);
 				const gridTitleNumLines = Math.min(2, gridTitleTxtRec.Lines);
@@ -298,7 +298,7 @@ function drawDetailsMetadataGrid(gr) {
 
 			gridTop -= scaleForDisplay(2);
 
-			function drawAlbumTitle(top, maxLines) {
+			const drawAlbumTitle = (top, maxLines) => {
 				if (!str.album) return 0;
 				gridAlbumTxtRec = gr.MeasureString(str.album, ft.grd_album, 0, 0, textWidth, wh);
 				const gridAlbumNumLines = Math.min(showGridArtist || showGridTitle ? 2 : 3, gridAlbumTxtRec.Lines);
@@ -398,7 +398,7 @@ function drawDetailsMetadataGrid(gr) {
 						const showCodecLogoOnly = pref.layout === 'artwork' ? pref.showGridCodecLogo_artwork === 'logo' : pref.showGridCodecLogo_default === 'logo';
 						const flag = showReleaseFlagOnly && key === 'Rel. Country';
 						const codec = showCodecLogoOnly && key === 'Codec';
-						const ratingLinux = DetectWine() && key === 'Rating';
+						const ratingLinux = detectWine && key === 'Rating';
 
 						// * Apply better anti-aliasing on smaller font sizes in HD res
 						gr.SetTextRenderingHint(!is_4k && (keyFontSize < 17 || valFontSize < 18) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);

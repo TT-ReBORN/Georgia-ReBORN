@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-10                                          * //
+// * Last change:    2023-06-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -190,7 +190,7 @@ function themeOptions(menu) {
 				setCurrentColorsToCustomTheme(theme);
 			}
 		};
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -390,7 +390,7 @@ function presetOptions(menu) {
 					setThemePresetSelection(true); // * Reactivate all
 					themePresetRandomPicker();
 				}
-				if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+				if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 					continue_confirmation(false, 'Yes');
 					fb.ShowPopupMessage('Default preset select mode activated:\n\nThe default preset select mode will automatically choose a random pick of 88 theme presets.\n\nDouble-click on the lower bar to choose another random theme preset.\n\nWhen random mode is activated,\nall themes and style options will be available.', 'Default preset select mode');
 				} else {
@@ -408,7 +408,7 @@ function presetOptions(menu) {
 					setThemePresetSelection(true); // * Reactivate all
 					themePresetRandomPicker();
 				}
-				if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+				if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 					continue_confirmation(false, 'Yes');
 					fb.ShowPopupMessage('Harmonic preset select mode activated:\n\nThe harmonic preset select mode will automatically choose the best visual experience of themes and styles based on album art.\n\nYou can also double-click on the lower bar to choose another random harmonic preset.\n\nWhen harmonic preset select mode is activated,\nall themes and almost all style options will be disabled.', 'Harmonic preset select mode');
 				} else {
@@ -426,7 +426,7 @@ function presetOptions(menu) {
 					setThemePresetSelection(false, true);
 					themePresetRandomPicker();
 				}
-				if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+				if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 					continue_confirmation(false, 'Yes');
 					fb.ShowPopupMessage('Theme preset select mode activated:\n\nThe theme preset select mode will automatically choose a random theme preset based on current active theme.\n\nYou can also double-click on the lower bar to choose another random theme preset.\n\nWhen theme preset select mode is activated,\nall themes and style options will be available', 'Theme preset select mode');
 				} else {
@@ -1373,7 +1373,18 @@ function playerControlsOptions(menu, m) {
 		playerControlsAlbumArtMenu.addToggleItem('Cycle album artwork with mouse wheel', pref, 'cycleArtMWheel');
 		playerControlsAlbumArtMenu.addSeparator();
 		// ! Due to using utils.GetAlbumArtV2 instead of gdi.LoadImageAsyncV2 we don't need this option now, remove this option once it has been tested enough.
-		// ! playerControlsAlbumArtMenu.addToggleItem('Load embedded album art first', pref, 'loadEmbeddedAlbumArtFirst');
+		// ! playerControlsAlbumArtMenu.addToggleItem('Load embedded album art first', pref, 'loadEmbeddedAlbumArtFirst', () => {
+		// 	const msg = 'Do you want to load embedded album art first?\n\nYou also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art\n\nContinue?\n\n\n';
+		// 	const continue_confirmation = (status, confirmed) => {
+		// 		if (!confirmed) pref.loadEmbeddedAlbumArtFirst = false;
+		// 	}
+		// 	if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		// 		continue_confirmation(false, 'Yes');
+		// 		fb.ShowPopupMessage('Embedded album art enabled:\n\nYou also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art.', 'Embedded album art');
+		// 	} else {
+		// 		popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
+		// 	}
+		// });
 		// ! playerControlsAlbumArtMenu.addSeparator();
 
 		const showHiResAudioLogoMenu = new Menu('Show hi-res audio badge on album cover');
@@ -2610,7 +2621,7 @@ function libraryOptions(menu, context_menu) {
 			}
 			updatePlaylist();
 			window.Repaint();
-			if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 				continue_confirmation(false, 'Yes');
 				fb.ShowPopupMessage('Library browser mode enabled:\n\nThis will act like a file browser to quickly see the content of the album.\nIt is not recommended for new users who don\'t know how the library works.', 'Library browser mode');
 			} else {
@@ -2625,7 +2636,7 @@ function libraryOptions(menu, context_menu) {
 				}
 			}
 			window.Repaint();
-			if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 				continue_confirmation(false, 'Yes');
 				fb.ShowPopupMessage('Library player mode enabled:\n\nThis will act like a like a playlist and will not automatically add content to the playlist.\nIt is recommended for new users who don\'t know how the library works.', 'Library player mode');
 			} else {
@@ -3094,7 +3105,7 @@ function settingsOptions(menu) {
 				}
 			}
 		};
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3121,7 +3132,7 @@ function settingsOptions(menu) {
 		const continue_confirmation = (status, confirmed) => {
 			if (confirmed) deleteLibraryCache();
 		};
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3134,7 +3145,7 @@ function settingsOptions(menu) {
 			pref.libraryAutoDelete = confirmed;
 		};
 		if (pref.libraryAutoDelete) {
-			if (DetectWine() || !DetectIE()) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			if (detectWine || !detectIE) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 				continue_confirmation(false, 'Yes');
 			} else {
 				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3163,7 +3174,7 @@ function settingsOptions(menu) {
 		const continue_confirmation = (status, confirmed) => {
 			if (confirmed) deleteBiographyCache();
 		};
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3176,7 +3187,7 @@ function settingsOptions(menu) {
 			pref.biographyAutoDelete = confirmed;
 		};
 		if (pref.biographyAutoDelete) {
-			if (DetectWine() || !DetectIE()) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			if (detectWine || !detectIE) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 				continue_confirmation(false, 'Yes');
 			} else {
 				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3201,7 +3212,7 @@ function settingsOptions(menu) {
 		const continue_confirmation = (status, confirmed) => {
 			if (confirmed) deleteLyrics();
 		};
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3214,7 +3225,7 @@ function settingsOptions(menu) {
 			pref.lyricsAutoDelete = confirmed;
 		};
 		if (pref.lyricsAutoDelete) {
-			if (DetectWine() || !DetectIE()) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			if (detectWine || !detectIE) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 				continue_confirmation(false, 'Yes');
 			} else {
 				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3239,7 +3250,7 @@ function settingsOptions(menu) {
 		const continue_confirmation = (status, confirmed) => {
 			if (confirmed) deleteWaveformBarCache();
 		};
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3252,7 +3263,7 @@ function settingsOptions(menu) {
 			pref.waveformBarAutoDelete = confirmed;
 		};
 		if (pref.waveformBarAutoDelete) {
-			if (DetectWine() || !DetectIE()) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			if (detectWine || !detectIE) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 				continue_confirmation(false, 'Yes');
 			} else {
 				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3270,7 +3281,7 @@ function settingsOptions(menu) {
 			pref.customThemeFonts = confirmed;
 		};
 		if (pref.customThemeFonts) {
-			if (DetectWine() || !DetectIE()) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			if (detectWine || !detectIE) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 				continue_confirmation(false, 'Yes');
 			} else {
 				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3345,7 +3356,7 @@ function settingsOptions(menu) {
 				console.log('\n>>> Georgia-ReBORN theme backup was not successfull <<<\n\n');
 			}
 		};
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 			fb.ShowPopupMessage(`You can find the Georgia-ReBORN theme backup in ${fb.ProfilePath}backup\n\nOn new fb2k installation, you can copy/paste and replace it with ${fb.ProfilePath}\n\nIf a backup already exist, you can use\nOptions > Settings > Theme backup > Restore backup`, 'Theme backup');
 		} else {
@@ -3409,7 +3420,7 @@ function settingsOptions(menu) {
 				console.log('\n>>> Georgia-ReBORN theme backup was not successfully restored <<<\n\n');
 			}
 		};
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3430,7 +3441,7 @@ function settingsOptions(menu) {
 			start();
 			console.log(`\n>>> Georgia-ReBORN theme settings have been successfully saved in ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc <<<\n\n`);
 		};
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3448,7 +3459,7 @@ function settingsOptions(menu) {
 			start();
 			console.log(`\n>>> Georgia-ReBORN theme settings have been successfully loaded from ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc <<<\n\n`);
 		};
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3467,7 +3478,7 @@ function settingsOptions(menu) {
 			start();
 			console.log('\n>>> Default Georgia-ReBORN theme settings have been successfully loaded <<<\n\n');
 		};
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3490,7 +3501,7 @@ function settingsOptions(menu) {
 				console.log(`\n>>> Georgia-ReBORN's ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc file has been successfully reset to default. <<<\n\n`);
 			} catch (e) { window.Reload(); }
 		};
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3515,7 +3526,7 @@ function settingsOptions(menu) {
 				fb.ShowPopupMessage('Something went wrong and Georgia-ReBORN has NOT been successfully reset, try again!', 'Resetting Georgia-ReBORN');
 			}
 		};
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3724,7 +3735,7 @@ function settingsOptions(menu) {
 			setThemePerformance(pref.themePerformance); // Then set
 			window.Reload();
 		}
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
@@ -3843,7 +3854,7 @@ function developerToolsOptions(menu) {
 			pref.disableRightClick = true;
 			console.log('\n>>> Georgia-ReBORN has been set to system first launch <<<\n\n');
 		}
-		if (DetectWine() || !DetectIE()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, 'Yes');
 		} else {
 			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
