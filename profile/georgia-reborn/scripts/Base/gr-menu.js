@@ -2488,6 +2488,7 @@ function libraryOptions(menu, context_menu) {
 	const libraryThumbnailSizeMenu = new Menu('Thumbnail size');
 	libraryThumbnailSizeMenu.addRadioItems(['Auto (default)', 'Playlist', 'Mini', 'Small', 'Regular', 'Medium', 'Large', 'XL', 'XXL', 'MAX'], pref.libraryThumbnailSize, ['auto', 'playlist', 0, 1, 2, 3, 4, 5, 6, 7], (thumbnailSize) => {
 		pref.libraryThumbnailSize = thumbnailSize;
+		pref.libraryThumbnailSizeSaved = pref.libraryThumbnailSize;
 		switch (pref.libraryThumbnailSize) {
 			case 0: ppt.thumbNailSize = 0; break;
 			case 1: ppt.thumbNailSize = 1; break;

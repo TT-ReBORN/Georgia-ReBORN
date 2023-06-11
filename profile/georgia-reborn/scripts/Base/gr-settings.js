@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-04                                          * //
+// * Last change:    2023-06-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -413,6 +413,7 @@ pref.add_properties({
 	libraryDesign:                      ['Georgia-ReBORN - 12. Library: Design', 'reborn'], // Library design - reborn (default), ultraModern, modern, traditional, facet, coversLabelsRight, coversLabelsBottom, coversLabelsBlend, flowMode
 	libraryTheme:                       ['Georgia-ReBORN - 12. Library: Theme', 0], // Library theme - 0 (reborn/default), 1 - 'Dark', 2 - 'Blend', 3 - 'Light', 4 - 'Random', 5 - 'Cover'
 	libraryThumbnailSize:               ['Georgia-ReBORN - 12. Library: Thumbnail size', 'auto'], // Library thumbnail size - auto (default)
+	libraryThumbnailSizeSaved:          ['Georgia-ReBORN - 12. Library: Thumbnail size saved', 'auto'], // Library thumbnail size saved setting, used to restore user setting when switching from library split layout to full layout
 	libraryThumbnailBorder:             ['Georgia-ReBORN - 12. Library: Thumbnail border', 'border'], // Library thumbnail border - border (default)
 	libraryPlaylistSwitch:              ['Georgia-ReBORN - 12. Library: Switch to playlist when adding songs', false], // When adding songs from Library auto-switch to Playlist
 	libraryRowHover:                    ['Georgia-ReBORN - 12. Library: Row mouse hover', true], // Enable library row mouse hover effect

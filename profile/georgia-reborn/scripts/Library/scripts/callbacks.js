@@ -576,6 +576,7 @@ function initLibraryLayout() {
 	if (libraryLayoutFull) {
 		pref.libraryDesign = 'reborn';
 		panel.imgView = ppt.albumArtShow = true;
+		pref.libraryThumbnailSize = pref.libraryThumbnailSizeSaved;
 		if (pref.playerSize_HD_small && (pref.libraryThumbnailSize === 'auto' || ppt.thumbNailSize === 'auto')) {
 			ppt.thumbNailSize = 1;
 		}
