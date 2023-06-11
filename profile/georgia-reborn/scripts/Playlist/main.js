@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-10                                          * //
+// * Last change:    2023-06-12                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2806,6 +2806,7 @@ class Playlist extends List {
 				let cur_marked_item;
 				if (key === 'up') {
 					this.scrollbar.shift_line(-1);
+					this.scrollbar.start_shift_timer(-1);
 
 					cur_marked_item = this.items_to_draw[0];
 					if (cur_marked_item instanceof BaseHeader) {
@@ -2822,6 +2823,7 @@ class Playlist extends List {
 				}
 				else if (key === 'down') {
 					this.scrollbar.shift_line(1);
+					this.scrollbar.start_shift_timer(1);
 
 					cur_marked_item = last(this.items_to_draw);
 					if (cur_marked_item instanceof BaseHeader) {
@@ -2857,8 +2859,8 @@ class Playlist extends List {
 
 		this.drag_scroll_timeout_timer = undefined;
 		this.drag_scroll_repeat_timer = undefined;
-
 		this.drag_scroll_in_progress = false;
+		this.scrollbar.stop_shift_timer();
 	}
 
 	/**
@@ -5407,7 +5409,6 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	this.get_selected_items = () => selected_indexes;
 
 	this.perform_internal_drag_n_drop = function () {
-		playlistScrollReady = false;
 		this.enable_drag();
 		is_internal_drag_n_drop_active = true;
 
