@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-11                                          * //
+// * Last change:    2023-06-12                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3301,25 +3301,24 @@ function settingsOptions(menu) {
 			try {
 				let libaryDir;
 				let playlistDir;
-				const libv14 = `${fb.ProfilePath}library-v1.4`;
-				const libv15 = `${fb.ProfilePath}library-v1.5`;
-				const libv16 = `${fb.ProfilePath}library-v1.6`;
-				const libv20 = `${fb.ProfilePath}library-v2.0`;
-				const plistv14 = `${fb.ProfilePath}playlists-v1.4`;
-				const plistv15 = `${fb.ProfilePath}playlists-v1.5`;
-				const plistv16 = `${fb.ProfilePath}playlists-v1.6`;
-				const plistv20 = `${fb.ProfilePath}playlists-v2.0`;
+				const libOld = `${fb.ProfilePath}library`;
+				const libNew = `${fb.ProfilePath}library-v2.0`;
+				const plistOld = `${fb.ProfilePath}playlists-v1.4`;
+				const plistNew = `${fb.ProfilePath}playlists-v2.0`;
 				let oldVersion = false;
 
+				// * Safeguard to prevent crash when directories do not exist
+				if ((!IsFolder(libOld) || !IsFolder(plistOld)) && (!IsFolder(libNew) || !IsFolder(plistNew)) ||
+					(!IsFolder(libNew) || !IsFolder(plistNew)) && (!IsFolder(libOld) || !IsFolder(plistOld))) {
+					fb.ShowPopupMessage(`>>> Georgia-ReBORN theme backup was aborted <<<\n\nlibrary or playlist directory does not exist in:\n${fb.ProfilePath}`, 'Theme backup');
+					return;
+				}
+
 				const checkFolders = async () => {
-					if      (IsFolder(libv14)) { libaryDir = libv14; oldVersion = true; }
-					else if (IsFolder(libv15)) { libaryDir = libv15; oldVersion = true; }
-					else if (IsFolder(libv16)) { libaryDir = libv16; oldVersion = true; }
-					else if (IsFolder(libv20)) { libaryDir = libv20; oldVersion = false; }
-					if      (IsFolder(plistv14)) { playlistDir = plistv14; oldVersion = true; }
-					else if (IsFolder(plistv15)) { playlistDir = plistv15; oldVersion = true; }
-					else if (IsFolder(plistv16)) { playlistDir = plistv16; oldVersion = true; }
-					else if (IsFolder(plistv20)) { playlistDir = plistv20; oldVersion = false; }
+					if      (IsFolder(libOld)) { libaryDir = libOld; oldVersion = true; }
+					else if (IsFolder(libNew)) { libaryDir = libNew; oldVersion = false; }
+					if      (IsFolder(plistOld)) { playlistDir = plistOld; oldVersion = true; }
+					else if (IsFolder(plistNew)) { playlistDir = plistNew; oldVersion = false; }
 				};
 				const createFolders = async () => {
 					const profilePath = `${fb.ProfilePath}backup\\profile\\`;
@@ -3372,25 +3371,24 @@ function settingsOptions(menu) {
 			try {
 				let libaryDir;
 				let playlistDir;
-				const libv14 = `${fb.ProfilePath}backup\\profile\\library-v1.4`;
-				const libv15 = `${fb.ProfilePath}backup\\profile\\library-v1.5`;
-				const libv16 = `${fb.ProfilePath}backup\\profile\\library-v1.6`;
-				const libv20 = `${fb.ProfilePath}backup\\profile\\library-v2.0`;
-				const plistv14 = `${fb.ProfilePath}backup\\profile\\playlists-v1.4`;
-				const plistv15 = `${fb.ProfilePath}backup\\profile\\playlists-v1.5`;
-				const plistv16 = `${fb.ProfilePath}backup\\profile\\playlists-v1.6`;
-				const plistv20 = `${fb.ProfilePath}backup\\profile\\playlists-v2.0`;
+				const libOld = `${fb.ProfilePath}backup\\profile\\library`;
+				const libNew = `${fb.ProfilePath}backup\\profile\\library-v2.0`;
+				const plistOld = `${fb.ProfilePath}backup\\profile\\playlists-v1.4`;
+				const plistNew = `${fb.ProfilePath}backup\\profile\\playlists-v2.0`;
 				let oldVersion = false;
 
+				// * Safeguard to prevent crash when directories do not exist
+				if ((!IsFolder(libOld) || !IsFolder(plistOld)) && (!IsFolder(libNew) || !IsFolder(plistNew)) ||
+					(!IsFolder(libNew) || !IsFolder(plistNew)) && (!IsFolder(libOld) || !IsFolder(plistOld))) {
+					fb.ShowPopupMessage(`>>> Georgia-ReBORN restore backup was aborted <<<\n\n"backup" directory does not exist in:\n${fb.ProfilePath}\n\nor\n\n"library" or "playlist" directory does not exist in:\n${fb.ProfilePath}backup`, 'Theme backup');
+					return;
+				}
+
 				const checkFolders = async () => {
-					if      (IsFolder(libv14)) { libaryDir = libv14; oldVersion = true; }
-					else if (IsFolder(libv15)) { libaryDir = libv15; oldVersion = true; }
-					else if (IsFolder(libv16)) { libaryDir = libv16; oldVersion = true; }
-					else if (IsFolder(libv20)) { libaryDir = libv20; oldVersion = false; }
-					if      (IsFolder(plistv14)) { playlistDir = plistv14; oldVersion = true; }
-					else if (IsFolder(plistv15)) { playlistDir = plistv15; oldVersion = true; }
-					else if (IsFolder(plistv16)) { playlistDir = plistv16; oldVersion = true; }
-					else if (IsFolder(plistv20)) { playlistDir = plistv20; oldVersion = false; }
+					if      (IsFolder(libOld)) { libaryDir = libOld; oldVersion = true; }
+					else if (IsFolder(libNew)) { libaryDir = libNew; oldVersion = false; }
+					if      (IsFolder(plistOld)) { playlistDir = plistOld; oldVersion = true; }
+					else if (IsFolder(plistNew)) { playlistDir = plistNew; oldVersion = false; }
 				};
 
 				const copyFolders = async () => {
