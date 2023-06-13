@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-03                                          * //
+// * Last change:    2023-06-13                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2835,7 +2835,7 @@ function playlistColorsCustomTheme() {
 function libraryColorsCustomTheme() {
 	try {
 		// * MAIN COLORS * //
-		ui.col.bg = HEXtoRGB(customColor.ui_col_bg);
+		ui.col.bg = pref.styleAlternative ? shadeColor(HEXtoRGB(customColor.ui_col_bg), 5) : pref.styleAlternative2 ? tintColor(HEXtoRGB(customColor.ui_col_bg), 5) : HEXtoRGB(customColor.ui_col_bg);
 		ui.col.rowStripes = pref.styleBlend ? HEXtoRGBA(customColor.ui_col_rowStripes, 130) : HEXtoRGB(customColor.ui_col_rowStripes);
 
 		// * ROW COLORS * //
@@ -2888,7 +2888,7 @@ function libraryColorsCustomTheme() {
 function biographyColorsCustomTheme() {
 	try {
 		// * MAIN COLORS * //
-		uiBio.col.bg = HEXtoRGB(customColor.uiBio_col_bg);
+		uiBio.col.bg = pref.styleAlternative ? shadeColor(HEXtoRGB(customColor.uiBio_col_bg), 5) : pref.styleAlternative2 ? tintColor(HEXtoRGB(customColor.uiBio_col_bg), 5) : HEXtoRGB(customColor.uiBio_col_bg);
 		uiBio.col.rowStripes = pref.styleBlend ? HEXtoRGBA(customColor.uiBio_col_rowStripes, 130) : HEXtoRGB(customColor.uiBio_col_rowStripes);
 
 		// * HEADER COLORS * //
