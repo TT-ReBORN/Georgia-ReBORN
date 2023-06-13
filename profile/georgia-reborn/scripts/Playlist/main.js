@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-12                                          * //
+// * Last change:    2023-06-13                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -4189,9 +4189,7 @@ class Header extends BaseHeader {
 
 				const info_text = this.getGroupInfoString(is_radio, genre_text_w > 0);
 				const info_text_w = Math.ceil(gr.MeasureString(info_text, g_pl_fonts.info, 0, 0, 0, 0).Width); // TODO: Mordred - should only call MeasureString once
-				if (genre_text_w) {
-					grClip.DrawString(info_text, g_pl_fonts.info, info_color, genreX + genre_text_w, info_y + 1, info_w - (genreX - info_x) - genre_text_w - scaleForDisplay(20), info_h, info_text_format);
-				}
+				grClip.DrawString(info_text, g_pl_fonts.info, info_color, genreX + (genre_text_w || 0), info_y + 1, info_w - (genreX - info_x) - (genre_text_w || 0) - scaleForDisplay(20), info_h, info_text_format);
 
 				// * Record labels
 				if (!this.hyperlinks.label0) {
