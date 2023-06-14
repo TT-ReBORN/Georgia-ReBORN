@@ -511,7 +511,7 @@ class Find {
 	}
 
 	on_char(code) {
-		if (panel.search.active) return;
+		if (panel.search.active || utils.IsKeyPressed(0x11)) return;
 		const text = String.fromCharCode(code);
 		switch (code) {
 			case vk.back:

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-06                                          * //
+// * Last change:    2023-06-14                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1047,7 +1047,7 @@ class JumpSearch {
 	// * CALLBACKS * //
 
 	on_char(code) {
-		if (panel.search.active) return;
+		if (panel.search.active || utils.IsKeyPressed(0x11)) return;
 		const text = String.fromCharCode(code);
 		switch (code) {
 			case vk.back:
