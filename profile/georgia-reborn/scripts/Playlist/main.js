@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-13                                          * //
+// * Last change:    2023-06-14                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -5355,6 +5355,9 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	 * @param {boolean=} [shift_pressed=false]
 	 */
 	this.update_selection = (item, ctrl_pressed, shift_pressed) => {
+		if (!item) {
+			return;
+		}
 		assert(item != null,
 			LogicError, 'update_selection was called with undefined item');
 
