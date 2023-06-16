@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-11                                          * //
+// * Last change:    2023-06-16                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -852,7 +852,7 @@ function drawLowerBar(gr) {
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 		let width = gr.CalcTextWidth(`  ${str.length}`, ft.lower_bar_length);
 		const lowerBarVersionW = gr.CalcTextWidth(`  ${str.time}`, ft.lower_bar_length);
-		const lowerBarVersionH = titleMeasurements.Height;
+		const lowerBarVersionH = Math.ceil(titleMeasurements.Height);
 		const lowerBarVersionX = ww - scaleForDisplay(pref.layout !== 'default' ? 20 : 40) - lowerBarVersionW;
 		const lowerBarVersionY = Math.round(lowerBarTop - lineCorrection - heightAdjustment);
 		const lowerBarLengthX = ww - scaleForDisplay(pref.layout !== 'default' ? 20 : 40) - width;
