@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-14                                          * //
+// * Last change:    2023-06-16                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2529,24 +2529,22 @@ class Playlist extends List {
 
 	// #region 'Scroll to' Methods
 	set_now_playing_hyperlink() {
-		if (!fb.IsPlaying || plman.GetPlaylistName(this.cur_playlist_idx) !== 'Search') {
+		if (!fb.GetNowPlaying() || plman.GetPlaylistName(this.cur_playlist_idx) !== 'Search') {
 			return;
 		}
 
 		const plIndex = plman.FindOrCreatePlaylist('Search', true);
+		const handles = plman.GetPlaylistItems(plIndex);
+		const index = handles.Find(fb.GetNowPlaying());
 
-		setTimeout(() => { // Wait for loadingThemeComplete && plIndex
-			const handles = plman.GetPlaylistItems(plIndex);
-			const index = handles.Find(fb.GetNowPlaying());
-
+		setTimeout(() => { // Wait for loadingThemeComplete
 			this.playing_item = this.cnt.rows[index];
 			if (this.playing_item) {
 				this.playing_item.is_playing = true;
 				this.playing_item.clear_title_text();
 			}
-
 			window.RepaintRect(this.x, this.y, this.w, this.h);
-		}, loadingThemeComplete && plIndex);
+		}, loadingThemeComplete);
 	}
 
 	show_now_playing() {
