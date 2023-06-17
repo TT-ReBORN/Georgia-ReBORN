@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-10                                          * //
+// * Last change:    2023-06-17                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -795,10 +795,6 @@ async function initTheme() {
 	createButtonImages();
 	createButtonObjects(ww, wh);
 
-	// * Pick a new random theme preset
-	if (pref.presetSelectMode === 'theme') setThemePresetSelection(false, true);
-	if (!['off', 'track', 'album', 'dblclick'].includes(pref.presetAutoRandomMode) && pref.presetSelectMode !== 'harmonic') themePresetRandomPicker();
-
 	initButtonState();
 	repaintWindow();
 
@@ -820,6 +816,102 @@ function initCustomTheme() {
 		case 'custom09': customColor = customTheme09; break;
 		case 'custom10': customColor = customTheme10; break;
 	}
+}
+
+
+/** Custom initialization function to check if music files have embedded %GR_THEME%, %GR_STYLE%, %GR_PRESET% tags and set them, called on_playback_new_track */
+function initCustomThemeStylePreset() {
+	const customTheme  = $('[%GR_THEME%]');
+	const customStyle  = $('[%GR_STYLE%]');
+	const customPreset = $('[%GR_PRESET%]');
+
+	// * Restore last theme state
+	if (pref.presetSelectMode === 'default' && themeRestoreState) {
+		debugLog('initCustomThemeStylePreset restore');
+		resetStyle('all');
+		resetTheme();
+		restoreSettings();
+		if (pref.savedPreset !== false) setThemePreset(pref.savedPreset);
+		themeRestoreState = false;
+	}
+
+	// * Skip also restore on next call
+	if (pref.theme === pref.savedTheme && !customTheme && !customStyle && !customPreset) {
+		debugLog('initCustomThemeStylePreset skipped');
+		themeRestoreState = false;
+		return;
+	}
+
+	// * 1. Set preset
+	if (customPreset.length) {
+		pref.preset = customPreset;
+		setThemePreset(customPreset);
+		themeRestoreState = true;
+	}
+	// * 2. Set theme
+	else if (customTheme.length) {
+		pref.theme = customTheme;
+		resetTheme();
+		themeRestoreState = true;
+	}
+	// * 3. Set styles
+	if (customStyle.length && !customPreset.length) {
+		resetStyle('all');
+		for (const style of customStyle.split(/(?:,|;| )+/)) {
+			switch (style) {
+				case 'bevel': pref.styleBevel = true; break;
+				case 'blend': pref.styleBlend = true; break;
+				case 'blend2': pref.styleBlend2 = true; break;
+				case 'gradient': pref.styleGradient = true; break;
+				case 'gradient2': pref.styleGradient2 = true; break;
+				case 'alternative': pref.styleAlternative = true; break;
+				case 'alternative2': pref.styleAlternative2 = true; break;
+				case 'blackAndWhite': pref.styleBlackAndWhite = true; break;
+				case 'blackAndWhite2': pref.styleBlackAndWhite2 = true; break;
+				case 'blackReborn': pref.styleBlackReborn = true; break;
+				case 'rebornWhite': pref.styleRebornWhite = true; break;
+				case 'rebornBlack': pref.styleRebornBlack = true; break;
+				case 'rebornFusion': pref.styleRebornFusion = true; break;
+				case 'rebornFusion2': pref.styleRebornFusion2 = true; break;
+				case 'randomPastel': pref.styleRandomPastel = true; break;
+				case 'randomDark': pref.styleRandomDark = true; break;
+				case 'rebornFusionAccent': pref.styleRebornFusionAccent = true; break;
+				case 'topMenuButtons=filled': pref.styleTopMenuButtons = 'filled'; break;
+				case 'topMenuButtons=bevel': pref.styleTopMenuButtons = 'bevel'; break;
+				case 'topMenuButtons=inner': pref.styleTopMenuButtons = 'inner'; break;
+				case 'topMenuButtons=emboss': pref.styleTopMenuButtons = 'emboss'; break;
+				case 'topMenuButtons=minimal': pref.styleTopMenuButtons = 'minimal'; break;
+				case 'transportButtons=bevel': pref.styleTransportButtons = 'bevel'; break;
+				case 'transportButtons=inner': pref.styleTransportButtons = 'inner'; break;
+				case 'transportButtons=emboss': pref.styleTransportButtons = 'emboss'; break;
+				case 'transportButtons=minimal': pref.styleTransportButtons = 'minimal'; break;
+				case 'progressBarDesign=rounded': pref.styleProgressBarDesign = 'rounded'; break;
+				case 'progressBarDesign=lines': pref.styleProgressBarDesign = 'lines'; break;
+				case 'progressBarDesign=blocks': pref.styleProgressBarDesign = 'blocks'; break;
+				case 'progressBarDesign=dots': pref.styleProgressBarDesign = 'dots'; break;
+				case 'progressBarDesign=thin': pref.styleProgressBarDesign = 'thin'; break;
+				case 'progressBarBg=bevel': pref.styleProgressBar = 'bevel'; break;
+				case 'progressBarBg=inner': pref.styleProgressBar = 'inner'; break;
+				case 'progressBarFill=bevel': pref.styleProgressBarFill = 'bevel'; break;
+				case 'progressBarFill=inner': pref.styleProgressBarFill = 'inner'; break;
+				case 'progressBarFill=blend': pref.styleProgressBarFill = 'blend'; break;
+				case 'volumeBarDesign=rounded': pref.styleVolumeBarDesign = 'rounded'; break;
+				case 'volumeBarBg=bevel': pref.styleVolumeBar = 'bevel'; break;
+				case 'volumeBarBg=inner': pref.styleVolumeBar = 'inner'; break;
+				case 'volumeBarFill=bevel': pref.styleVolumeBarFill = 'bevel'; break;
+				case 'volumeBarFill=inner': pref.styleVolumeBarFill = 'bevel'; break;
+			}
+		}
+		themeRestoreState = true;
+	}
+
+	// * 4. Update when using custom tags, otherwise not needed
+	if (customTheme || customStyle || customPreset) {
+		updateStyle();
+		debugLog('updateStyle -> initCustomThemeStylePreset');
+	}
+
+	themePresetMatchMode = false;
 }
 
 
@@ -1042,6 +1134,40 @@ function resetStyle(group) {
 	}
 }
 
+/** Called to restore theme, style, preset after custom [%GR_THEME%], [%GR_STYLE%], [%GR_PRESET%] usage. Used in initCustomThemeStylePreset() */
+function restoreSettings() {
+	pref.theme = pref.savedTheme;
+	pref.styleBevel = pref.savedStyleBevel;
+	pref.styleBlend = pref.savedStyleBlend;
+	pref.styleBlend2 = pref.savedStyleBlend2;
+	pref.styleGradient = pref.savedStyleGradient;
+	pref.styleGradient2 = pref.savedStyleGradient2;
+	pref.styleAlternative = pref.savedStyleAlternative;
+	pref.styleAlternative2 = pref.savedStyleAlternative2;
+	pref.styleBlackAndWhite = pref.savedStyleBlackAndWhite;
+	pref.styleBlackAndWhite2 = pref.savedStyleBlackAndWhite2;
+	pref.styleBlackAndWhiteReborn = pref.savedStyleBlackAndWhiteReborn;
+	pref.styleBlackReborn = pref.savedStyleBlackReborn;
+	pref.styleRebornWhite = pref.savedStyleRebornWhite;
+	pref.styleRebornBlack = pref.savedStyleRebornBlack;
+	pref.styleRebornFusion = pref.savedStyleRebornFusion;
+	pref.styleRebornFusion2 = pref.savedStyleRebornFusion2;
+	pref.styleRebornFusionAccent = pref.savedStyleRebornFusionAccent;
+	pref.styleRandomPastel = pref.savedStyleRandomPastel;
+	pref.styleRandomDark = pref.savedStyleRandomDark;
+	pref.styleRandomAutoColor = pref.savedStyleRandomAutoColor;
+	pref.styleTopMenuButtons = pref.savedStyleTopMenuButtons;
+	pref.styleTransportButtons = pref.savedStyleTransportButtons;
+	pref.styleProgressBarDesign = pref.savedStyleProgressBarDesign;
+	pref.styleProgressBar = pref.savedStyleProgressBar;
+	pref.styleProgressBarFill = pref.savedStyleProgressBarFill;
+	pref.styleVolumeBarDesign = pref.savedStyleVolumeBarDesign;
+	pref.styleVolumeBar = pref.savedStyleVolumeBar;
+	pref.styleVolumeBarFill = pref.savedStyleVolumeBarFill;
+	pref.themeBrightness = pref.savedThemeBrightness;
+	pref.preset = pref.savedPreset;
+}
+
 
 /** Called when changing styles, this will set the choosen style. Used in top menu Options > Style */
 function setStyle(style, state) {
@@ -1084,7 +1210,7 @@ function setThemePresetSelection(state, presetSelectModeTheme) {
 	pref.presetSelectCustom    = state;
 
 	if (presetSelectModeTheme) {
-		switch (pref.theme) {
+		switch (pref.savedTheme) {
 			case 'white': pref.presetSelectWhite = true; break;
 			case 'black': pref.presetSelectBlack = true; break;
 			case 'reborn': pref.presetSelectReborn = true; break;
@@ -1400,10 +1526,7 @@ function calcDateRatios(dontUpdateLastPlayed, currentLastPlayed) {
 	if (componentEnhancedPlaycount) {
 		const playedTimesJson = $('[%played_times_js%]', fb.GetNowPlaying());
 		const lastfmJson = $('[%lastfm_played_times_js%]', fb.GetNowPlaying());
-		let log = settings.showDebugLog;
-		if (playedTimesJson === playedTimesJsonLast && lastfmJson === lfmPlayedTimesJsonLast) {
-			log = false; // Cut down on spam
-		}
+		const log = ''; // ! Don't need this crap to flood the console // playedTimesJson === playedTimesJsonLast && lastfmJson === lfmPlayedTimesJsonLast ? false : settings.showDebugLog;
 		lfmPlayedTimesJsonLast = lastfmJson;
 		playedTimesJsonLast = playedTimesJson;
 		lfmPlayedTimes = parseJson(lastfmJson, 'lastfm: ', log);
@@ -1649,7 +1772,11 @@ function setPlaylistSortOrder() {
 
 /** Called when user activates show theme preset indicator */
 function showThemePresetIndicator(gr) {
-	if (!pref.presetIndicator || !['off', 'dblclick'].includes(pref.presetAutoRandomMode) || pref.presetSelectMode === 'harmonic' && !doubleClicked) return;
+	if (!pref.presetIndicator || !['off', 'dblclick'].includes(pref.presetAutoRandomMode) ||
+		['default', 'harmonic', 'theme'].includes(pref.presetSelectMode) && !doubleClicked ||
+		$('[%GR_THEME%]') || $('[%GR_STYLE%]') || $('[%GR_PRESET%]')) {
+		return; // * Do not show the preset indicator on these conditions to prevent popup annoyance
+	}
 
 	const match = themePresetMatchMode;
 	const text = 'Active styles matching:';
@@ -2645,6 +2772,7 @@ function on_playback_new_track(metadb) {
 	if (!metadb) return;	// Solve weird corner case
 	const newTrackProfiler = timings.showDebugTiming ? fb.CreateProfiler('on_playback_new_track') : null;
 	debugLog('in on_playback_new_track()');
+
 	lastLeftEdge = 0;
 	newTrackFetchingArtwork = true;
 	newTrackFetchingDone = false;
@@ -2679,8 +2807,14 @@ function on_playback_new_track(metadb) {
 		$('%album%') !== lastAlbum || $('$if2(%discnumber%,0)') !== lastDiscNumber || $(`$if2(${tf.vinyl_side},ZZ)`) !== lastVinylSide) {
 		clearPlaylistNowPlayingBg();
 		fetchNewArtwork(metadb);
-		// * Pick a new random theme preset on new album
-		if ((pref.presetAutoRandomMode === 'album' || pref.presetSelectMode === 'harmonic') && !doubleClicked) themePresetRandomPicker();
+		// * Pick a new random theme preset
+		if (pref.presetSelectMode === 'theme') setThemePresetSelection(false, true);
+		if ((!['off', 'track'].includes(pref.presetAutoRandomMode) && pref.presetSelectMode === 'harmonic' ||
+			pref.presetAutoRandomMode === 'dblclick' && pref.presetSelectMode === 'theme') && !doubleClicked) {
+			themePresetRandomPicker();
+		}
+		// * Init and set custom theme, style, preset
+		initCustomThemeStylePreset();
 	}
 	else if (pref.cycleArt && albumArtList.length > 1) {
 		// Need to do this here since we're no longer always fetching when albumArtList.length > 1
@@ -2688,6 +2822,13 @@ function on_playback_new_track(metadb) {
 			displayNextImage();
 		}, settings.artworkDisplayTime * 1000);
 	}
+
+	// * Pick a new random theme preset on new track
+	if (pref.presetAutoRandomMode === 'track' && !doubleClicked) themePresetRandomPicker();
+
+	// * Generate a new color in Random theme on new track
+	if (pref.styleRandomAutoColor === 'track' && !doubleClicked) randomThemeAutoColor();
+
 	if (discArt) {
 		setupRotationTimer();
 	}
@@ -2792,11 +2933,6 @@ function on_playback_new_track(metadb) {
 	if (pref.displayLyrics) { // No need to try retrieving them if we aren't going to display them now
 		initLyrics();
 	}
-	// * Pick a new random theme preset on new track
-	if (pref.presetAutoRandomMode === 'track' && !doubleClicked) themePresetRandomPicker();
-
-	// * Generate a new color in Random theme on new track
-	if (pref.styleRandomAutoColor === 'track' && !doubleClicked) randomThemeAutoColor();
 
 	// * Load finished, Playlist auto-scroll is ready
 	newTrackFetchingDone = true;
@@ -3067,7 +3203,7 @@ function on_mouse_lbtn_up(x, y, m) {
 
 	if (!volumeBtn.on_mouse_lbtn_up(x, y, m)) {
 		// Not handled by volumeBtn
-		if (displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) { // && playlist.mouse_in_this(x, y)) {
+		if (displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary() && !library.mouse_in_this(x, y)) {
 			trace_call && console.log('Playlist => on_mouse_lbtn_up');
 			if (displayCustomThemeMenu && displayBiography) return;
 			playlist.on_mouse_lbtn_up(x, y, m);

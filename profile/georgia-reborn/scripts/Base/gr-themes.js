@@ -5758,8 +5758,8 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 async function getThemeColors(image) {
 	let calculatedColor;
 	let calculatedColor2;
-	const val = $('[%THEMECOLOR%]');
-	const val2 = $('[%THEMECOLOR2%]');
+	const val = $('[%GR_THEMECOLOR%]');
+	const val2 = $('[%GR_THEMECOLOR2%]');
 
 	if (val.length) { // Color hardcoded in tags from music files
 		const themeRgb = val.match(/\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\)/);

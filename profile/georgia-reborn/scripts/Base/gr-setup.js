@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-11                                          * //
+// * Last change:    2023-06-17                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -518,7 +518,8 @@ let lyricsLayoutFullWidth; // Saves full width lyrics layout
 let doubleClicked = false;
 let isStreaming = false; // Is the song from a streaming source?
 let isPlayingCD = false; // Is the song playing from a CD?
-let themePresetMatchMode = false; // When active styles match any theme presets
+let themeRestoreState = false; // Used to restore theme state after custom [%GR_THEME%] or [%GR_STLYE%] or [%GR_PRESET%] usage
+let themePresetMatchMode = false; // When active styles match any theme presets, used for the notification popup in the showThemePresetIndicator
 let themePresetName = ''; // Name of the current theme preset
 let themeColorSet = false; // When no artwork, don't set themeColor every redraw
 let noArtwork = false; // Only use default theme when noArtwork was found

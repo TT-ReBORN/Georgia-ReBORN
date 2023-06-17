@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-11                                          * //
+// * Last change:    2023-06-16                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -95,12 +95,13 @@ pref.add_properties({
 
 	// * Theme
 	theme:                              ['Georgia-ReBORN - 01. Theme:', 'reborn'], // Use reborn theme as default
+	savedTheme:                         ['Georgia-ReBORN - 01. Theme_saved:', 'reborn'], // Saved active theme state - used to restore theme state after custom [%GR_THEME%] usage
 
 	// * Style
 	styleDefault:                       ['Georgia-ReBORN - 02. Style: Default', true], // Use default style
 	styleBevel:                         ['Georgia-ReBORN - 02. Style: Bevel', false], // Use bevel style
 	styleBlend:                         ['Georgia-ReBORN - 02. Style: Blend', false], // Use blend style
-	styleBlend2:                        ['Georgia-ReBORN - 02. Style: Blend2', false], // Use blend2 style
+	styleBlend2:                        ['Georgia-ReBORN - 02. Style: Blend 2', false], // Use blend2 style
 	styleGradient:                      ['Georgia-ReBORN - 02. Style: Gradient', false], // Use gradient style
 	styleGradient2:                     ['Georgia-ReBORN - 02. Style: Gradient 2', false], // Use gradient2 style
 	styleAlternative:                   ['Georgia-ReBORN - 02. Style: Alternative colors', false], // Use alternative colors style
@@ -116,7 +117,7 @@ pref.add_properties({
 	styleRebornFusionAccent:            ['Georgia-ReBORN - 02. Style: Reborn fusion accent', false], // Use Reborn fusion accent style
 	styleRandomPastel:                  ['Georgia-ReBORN - 02. Style: Random pastel', false], // Use Random pastel style
 	styleRandomDark:                    ['Georgia-ReBORN - 02. Style: Random dark', false], // Use Random dark style
-	styleRandomAutoColor:               ['Georgia-ReBORN - 02. Style: Random auto Color', 'off'], // Use auto color in Random theme
+	styleRandomAutoColor:               ['Georgia-ReBORN - 02. Style: Random auto color', 'off'], // Use auto color in Random theme
 	styleTopMenuButtons:                ['Georgia-ReBORN - 02. Style: Top menu buttons', 'default'], // default = flat, style of top menu buttons
 	styleTransportButtons:              ['Georgia-ReBORN - 02. Style: Transport buttons', 'default'], // default = flat, style of transport buttons
 	styleProgressBarDesign:             ['Georgia-ReBORN - 02. Style: Progress bar design', 'default'], // default = flat, progress bar design
@@ -125,6 +126,33 @@ pref.add_properties({
 	styleVolumeBarDesign:               ['Georgia-ReBORN - 02. Style: Volume bar design', 'default'], // default = flat, volume bar design
 	styleVolumeBar:                     ['Georgia-ReBORN - 02. Style: Volume bar', 'default'], // default = flat, style of volume bar
 	styleVolumeBarFill:                 ['Georgia-ReBORN - 02. Style: Volume bar fill', 'default'], // default = flat, style of volume bar fill
+	savedStyleBevel:                    ['Georgia-ReBORN - 02. Style_saved: Bevel', false], // Saved active bevel style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleBlend:                    ['Georgia-ReBORN - 02. Style_saved: Blend', false], // Saved active blend style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleBlend2:                   ['Georgia-ReBORN - 02. Style_saved: Blend 2', false], // Saved active blend 2 style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleGradient:                 ['Georgia-ReBORN - 02. Style_saved: Gradient', false], // Saved active gradient style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleGradient2:                ['Georgia-ReBORN - 02. Style_saved: Gradient 2', false], // Saved active gradient 2 style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleAlternative:              ['Georgia-ReBORN - 02. Style_saved: Alternative colors', false], // Saved active alternative style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleAlternative2:             ['Georgia-ReBORN - 02. Style_saved: Alternative colors 2', false], // Saved active alternative 2 style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleBlackAndWhite:            ['Georgia-ReBORN - 02. Style_saved: Black and white', false], // Saved active black and white style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleBlackAndWhite2:           ['Georgia-ReBORN - 02. Style_saved: Black and white 2', false], // Saved active black and white 2 style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleBlackAndWhiteReborn:      ['Georgia-ReBORN - 02. Style_saved: Black and white reborn', false], // Saved active black and white reborn style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleBlackReborn:              ['Georgia-ReBORN - 02. Style_saved: Black reborn', false], // Saved active black reborn style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRebornWhite:              ['Georgia-ReBORN - 02. Style_saved: Reborn white', false], // Saved active reborn white style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRebornBlack:              ['Georgia-ReBORN - 02. Style_saved: Reborn black', false], // Saved active reborn black style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRebornFusion:             ['Georgia-ReBORN - 02. Style_saved: Reborn fusion', false], // Saved active reborn fusion style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRebornFusion2:            ['Georgia-ReBORN - 02. Style_saved: Reborn fusion 2', false], // Saved active reborn fusion 2 style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRebornFusionAccent:       ['Georgia-ReBORN - 02. Style_saved: Reborn fusion accent', false], // Saved active reborn fusion accent style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRandomPastel:             ['Georgia-ReBORN - 02. Style_saved: Random pastel', false], // Saved active random pastel style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRandomDark:               ['Georgia-ReBORN - 02. Style_saved: Random dark', false], // Saved active random dark style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRandomAutoColor:          ['Georgia-ReBORN - 02. Style_saved: Random auto color', 'off'], // Saved active random auto color style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleTopMenuButtons:           ['Georgia-ReBORN - 02. Style_saved: Top menu buttons', 'default'], // Saved active top menu button style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleTransportButtons:         ['Georgia-ReBORN - 02. Style_saved: Transport buttons', 'default'], // Saved active transport button style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleProgressBarDesign:        ['Georgia-ReBORN - 02. Style_saved: Progress bar design', 'default'], // Saved active progress bar design style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleProgressBar:              ['Georgia-ReBORN - 02. Style_saved: Progress bar', 'default'], // Saved active progress bar style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleProgressBarFill:          ['Georgia-ReBORN - 02. Style_saved: Progress bar fill', 'default'], // Saved active progress bar fill style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleVolumeBarDesign:          ['Georgia-ReBORN - 02. Style_saved: Volume bar design', 'default'], // Saved active volume bar design style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleVolumeBar:                ['Georgia-ReBORN - 02. Style_saved: Volume bar', 'default'], // Saved active volume bar style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleVolumeBarFill:            ['Georgia-ReBORN - 02. Style_saved: Volume bar fill', 'default'], // Saved active volume bar fill style state - used to restore style state after custom [%GR_STYLE%] usage
 
 	// * Preset
 	preset:                             ['Georgia-ReBORN - 03. Preset: Active preset:', false], // Active preset
@@ -144,6 +172,7 @@ pref.add_properties({
 	presetSelectCustom:                 ['Georgia-ReBORN - 03. Preset: Select presets: Custom theme', true], // Include Custom theme presets when using the auto random presets timer
 	presetAutoRandomMode:               ['Georgia-ReBORN - 03. Preset: Auto random mode:', 'dblclick'], // Auto random mode
 	presetIndicator:                    ['Georgia-ReBORN - 03. Preset: Indicator:', true], // Preset indicator
+	savedPreset:                        ['Georgia-ReBORN - 03. Preset_saved: Active preset:', false], // Saved active preset state - used for custom [%GR_PRESET%]
 
 	// * Player size
 	playerSize:                         ['Georgia-ReBORN - 04. Player size:', 'small'], // Default player size
@@ -165,6 +194,7 @@ pref.add_properties({
 
 	// * Brightness
 	themeBrightness:                    ['Georgia-ReBORN - 07. Brightness', 'default'], // default: Theme brightness
+	savedThemeBrightness:               ['Georgia-ReBORN - 07. Saved_Brightness', 'default'], // Saved active theme brightness state - used to restore brightness after custom [%GR_PRESET%] usage
 
 	// * Font size
 	menuFontSize_default:               ['Georgia-ReBORN - 08. Font size: Top menu (Default)', 12], // Top menu font size in Default layout
