@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-04                                          * //
+// * Last change:    2023-06-17                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -129,7 +129,7 @@ const themeDefaults = {
 };
 
 const themesComments = {
-	theme: 'Values: "white", "black", "reborn", "random", "blue", "darkblue", "red", "cream", "nblue", "ngreen", "nred", "ngold", "custom" - Options > Theme'
+	theme: 'Values: "white", "black", "reborn", "random", "blue", "darkblue", "red", "cream", "nblue", "ngreen", "nred", "ngold", "custom01-custom10" - Options > Theme'
 };
 
 const themesSchema = new ConfigurationObjectSchema('theme', ConfigurationObjectType.Object, undefined,
@@ -216,7 +216,7 @@ const stylesSchema = new ConfigurationObjectSchema('style', ConfigurationObjectT
 	'* Basic style "alternative" and "alternative2" can not be used with special styles.                                                                                                                     ' +
 	'* Special style "blackAndWhite", "blackAndWhite2" and "blackAndWhiteReborn" can only be used with "white" theme.                                                                                        ' +
 	'* Special style "blackReborn" can only be used with "black" theme.                                                                                                                                      ' +
-	'* Special style "rebornWhite" and "rebornBlack" can only be used with "reborn" theme.                                                                                                                   ' +
+	'* Special style "rebornWhite", "rebornBlack", "rebornFusion", "rebornFusion2" and "rebornFusionAccent" can only be used with "reborn" theme.                                                            ' +
 	'* Special style "randomPastel", "randomDark" and "randomAutoColor" can only be used with "random" theme.                                                                                                ' +
 	'* Note: These settings will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                            ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
