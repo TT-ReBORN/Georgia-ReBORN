@@ -312,16 +312,19 @@ function btnActionHandler(btn) {
 			}
 
 			// * Library Playlist split layout
-			if (pref.layout === 'default' && pref.libraryLayout === 'split' && pref.playlistLayout === 'full') {
-				pref.playlistLayout = 'normal';
-				playlist.on_size(ww, wh);
-			}
 			if (displayPlaylistLibrary()) {
 				displayPlaylist = true;
 				playlist.on_size(ww, wh);
 				setLibrarySize();
 			} else if (pref.layout === 'default' && pref.libraryLayout === 'split') {
 				displayPlaylist = true;
+				initLibraryLayout();
+			}
+			if (pref.layout === 'default' && pref.libraryLayout !== 'split' &&
+				pref.libraryLayoutSplitPreset  || pref.libraryLayoutSplitPreset2 ||
+				pref.libraryLayoutSplitPreset3 || pref.libraryLayoutSplitPreset4) {
+				g_properties.auto_collapse = false;
+				playlist.expand_header();
 			}
 
 			// Update Library nowPlaying state if song was played from the Playlist
