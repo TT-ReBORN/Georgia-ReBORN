@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-17                                          * //
+// * Last change:    2023-06-18                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3423,17 +3423,15 @@ function on_mouse_rbtn_up(x, y, m) {
 /** Called when using the mouse wheel, also used to cycle through album artworks and control the seekbar */
 function on_mouse_wheel(delta) {
 	const showVolumeBtn = pref.layout === 'compact' ? pref.showVolumeBtn_compact : pref.layout === 'artwork' ? pref.showVolumeBtn_artwork : pref.showVolumeBtn_default;
+	const pBar = pref.seekbar === 'progressbar';
 
 	if (showVolumeBtn && volumeBtn.on_mouse_wheel(delta)) return;
 
-	if (pref.layout === 'default' && state.mouse_y > wh - 0.5 * geo.lowerBarHeight + 0.5 * geo.peakmeterBarHeight || pref.layout !== 'default' && state.mouse_y > wh - 0.5 * geo.lowerBarHeight - 1.5 * geo.peakmeterBarHeight) {
-		peakmeterBar.on_mouse_wheel(delta);
-		return;
-	}
-
-	if (pref.layout === 'default' && state.mouse_y > wh - 0.5 * geo.lowerBarHeight + 0.5 * geo.progBarHeight || pref.layout !== 'default' && state.mouse_y > wh - 0.5 * geo.lowerBarHeight - 1.5 * geo.progBarHeight) {
+	if (state.mouse_y >  wh - (pref.layout !== 'default' ? 0.6 : 0.5) * geo.lowerBarHeight - 0.5 * geo.progBarHeight &&
+		state.mouse_y <= wh - (pref.layout !== 'default' ? scaleForDisplay(pBar ? 60 : 55) : scaleForDisplay(pBar ? 35 : 20))) {
 		fb.PlaybackTime = fb.PlaybackTime - delta * pref.progressBarWheelSeekSpeed;
 		refreshSeekbar();
+		if (pref.seekbar === 'peakmeterbar') peakmeterBar.on_mouse_wheel(delta);
 		return;
 	}
 
