@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-17                                          * //
+// * Last change:    2023-06-18                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -170,8 +170,8 @@ function setGeometry() {
 	geo.topMenuHeight = scaleForDisplay(40);
 	geo.lowerBarHeight = scaleForDisplay(120);
 	geo.progBarHeight = scaleForDisplay(pref.layout !== 'default' && (pref.styleProgressBarDesign === 'default' || pref.styleProgressBarDesign === 'rounded') ? 10 : 12) + (ww > 1920 ? 2 : 0);
-	geo.waveformBarHeight = scaleForDisplay(pref.layout !== 'default' ? 16 : 26) + (ww > 1920 ? 2 : 0);
 	geo.peakmeterBarHeight = scaleForDisplay(pref.layout !== 'default' ? 16 : 26) + (ww > 1920 ? 2 : 0);
+	geo.waveformBarHeight = scaleForDisplay(pref.layout !== 'default' ? 16 : 26) + (ww > 1920 ? 2 : 0);
 	geo.timelineHeight = Math.round(geo.progBarHeight * 0.66);
 	geo.metadataGridTooltipHeight = scaleForDisplay(100);
 	geo.pauseSize = scaleForDisplay(100);

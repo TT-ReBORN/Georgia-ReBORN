@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-14                                          * //
+// * Last change:    2023-06-18                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1915,7 +1915,6 @@ class PeakmeterBar {
 
 		// * Text
 		this.textFont = gdi.Font('Segoe UI', is_4k ? 16 : 9, 1);
-		this.textFont2 = gdi.Font('Segoe UI', is_4k ? 20 : 11, 0);
 		this.textWidth = 0;
 		this.textHeight = 0;
 		this.tooltipText = '';
@@ -2473,16 +2472,6 @@ class PeakmeterBar {
 			}
 		}
 
-		// * Peakmeter bar tooltip
-		if (componentVUMeter && this.wheel) {
-			const DT_FORMAT  = DrawText.Center | DrawText.VCenter | DrawText.SingleLine | DrawText.WordEllipsis;
-			this.tooltipText = `${Math.round(this.VUMeter.Offset)} db`;
-			this.textHeight  = gr.CalcTextHeight(this.tooltipText, this.textFont2) + 2;
-			this.textWidth   = gr.CalcTextWidth(this.tooltipText, this.textFont2) + 10;
-			gr.FillSolidRect(this.pos_x - this.textWidth, this.pos_y - this.textHeight + 0, this.textWidth, this.textHeight, col.popupBg);
-			gr.GdiDrawText(this.tooltipText, this.textFont2, col.popupText, this.pos_x - this.textWidth, this.pos_y - this.textHeight + 0, this.textWidth, this.textHeight, DT_FORMAT);
-		}
-
 		// * Start animation
 		this.setAnimation();
 	}
@@ -2522,6 +2511,8 @@ class PeakmeterBar {
 		this.wheel = true;
 		if (componentVUMeter) {
 			this.VUMeter.Offset = this.VUMeter.Offset + step;
+			this.tooltipText = `${Math.round(this.VUMeter.Offset)} db`;
+			tt.showImmediate(this.tooltipText);
 		}
 		if (this.tooltipTimer) {
 			clearTimeout(this.tooltipTimer);
@@ -2530,6 +2521,8 @@ class PeakmeterBar {
 			this.wheel = false;
 			if (this.tooltipTimer) clearTimeout(this.tooltipTimer);
 			this.tooltipTimer = false;
+			this.tooltipText = '';
+			tt.stop();
 		}, 2000);
 	}
 
@@ -2568,7 +2561,6 @@ class PeakmeterBar {
 
 		this.progressMoved = true;
 		this.textFont = gdi.Font('Segoe UI', is_4k ? 16 : 9, 1);
-		this.textFont2 = gdi.Font('Segoe UI', is_4k ? 20 : 11, 0);
 	}
 }
 
