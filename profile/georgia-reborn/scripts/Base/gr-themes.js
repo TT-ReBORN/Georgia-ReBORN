@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-13                                          * //
+// * Last change:    2023-06-19                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2858,7 +2858,7 @@ function libraryColorsCustomTheme() {
 		ui.col.text = ppt.albumArtShow && img.labels.overlayDark ? tintColor(HEXtoRGB(customColor.ui_col_text), 40) : pref.styleBlend ? tintColor(HEXtoRGB(customColor.ui_col_text), 10) : HEXtoRGB(customColor.ui_col_text);
 		ui.col.text_h = ppt.albumArtShow && img.labels.overlayDark ? tintColor(HEXtoRGB(customColor.ui_col_text), 40) : HEXtoRGB(customColor.ui_col_text_h);
 		ui.col.text_nowp = HEXtoRGB(customColor.ui_col_text_nowp);
-		ui.col.textSel = ppt.albumArtShow ? ui.col.text_nowp : HEXtoRGB(customColor.ui_col_textSel);
+		ui.col.textSel = ppt.albumArtShow && ppt.albumArtLabelType === 1 ? ui.col.text_nowp : HEXtoRGB(customColor.ui_col_textSel);
 		ui.col.txt = HEXtoRGB(customColor.ui_col_txt);
 		ui.col.txt_h = HEXtoRGB(customColor.ui_col_txt_h);
 		ui.col.txt_box = pref.styleBlend ? tintColor(HEXtoRGB(customColor.ui_col_txt_box), 10) : HEXtoRGB(customColor.ui_col_txt_box);
