@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-16                                          * //
+// * Last change:    2023-06-19                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -439,7 +439,6 @@ pref.add_properties({
 	libraryLayoutSplitPreset2:          ['Georgia-ReBORN - 12. Library: Use split preset (text)', false], // Always use playlist without header art when displaying Library and auto-expand when displaying Playlist only
 	libraryLayoutSplitPreset3:          ['Georgia-ReBORN - 12. Library: Use split preset (art grid)', false], // Always use library art grid with playlist header auto-collapse when displaying Library and auto-expand when displaying Playlist only
 	libraryLayoutSplitPreset4:          ['Georgia-ReBORN - 12. Library: Use split preset (art header)', false], // Always use library art header with playlist header auto-collapse when displaying Library and auto-expand when displaying Playlist only
-	libraryLayoutRememberAlbumArtView:  ['Georgia-ReBORN - 12. Library: Remember album art view', false], // Always use album art view when not using library layout default presets
 	libraryDesign:                      ['Georgia-ReBORN - 12. Library: Design', 'reborn'], // Library design - reborn (default), ultraModern, modern, traditional, facet, coversLabelsRight, coversLabelsBottom, coversLabelsBlend, flowMode
 	libraryTheme:                       ['Georgia-ReBORN - 12. Library: Theme', 0], // Library theme - 0 (reborn/default), 1 - 'Dark', 2 - 'Blend', 3 - 'Light', 4 - 'Random', 5 - 'Cover'
 	libraryThumbnailSize:               ['Georgia-ReBORN - 12. Library: Thumbnail size', 'auto'], // Library thumbnail size - auto (default)
@@ -447,6 +446,8 @@ pref.add_properties({
 	libraryThumbnailBorder:             ['Georgia-ReBORN - 12. Library: Thumbnail border', 'border'], // Library thumbnail border - border (default)
 	libraryPlaylistSwitch:              ['Georgia-ReBORN - 12. Library: Switch to playlist when adding songs', false], // When adding songs from Library auto-switch to Playlist
 	libraryRowHover:                    ['Georgia-ReBORN - 12. Library: Row mouse hover', true], // Enable library row mouse hover effect
+	savedAlbumArtView:                  ['Georgia-ReBORN - 12. Library: Album art view saved', false], // Used to resume library view mode from split layout when not using library layout presets
+	savedAlbumArtLabelType:             ['Georgia-ReBORN - 12. Library: Album art label type saved', 1], // Used to resume album art label type from split layout when not using library layout presets
 
 	// * Biography
 	biographyLayout:                    ['Georgia-ReBORN - 13. Biography: Layout', 'normal'], // Biography layout - normal (default) or full
@@ -1184,7 +1185,6 @@ async function setThemeSettings(save) {
 		themeLibrary.libraryLayoutSplitPreset2 = pref.libraryLayoutSplitPreset2;
 		themeLibrary.libraryLayoutSplitPreset3 = pref.libraryLayoutSplitPreset3;
 		themeLibrary.libraryLayoutSplitPreset4 = pref.libraryLayoutSplitPreset4;
-		themeLibrary.libraryLayoutRememberAlbumArtView = pref.libraryLayoutRememberAlbumArtView;
 		themeLibrary.libraryDesign = pref.libraryDesign;
 		themeLibrary.libraryTheme = pref.libraryTheme;
 		themeLibrary.libraryThumbnailSize = pref.libraryThumbnailSize;
@@ -1232,7 +1232,6 @@ async function setThemeSettings(save) {
 		pref.libraryLayoutSplitPreset2 = custom ? themeLibrary.libraryLayoutSplitPreset2 : false;
 		pref.libraryLayoutSplitPreset3 = custom ? themeLibrary.libraryLayoutSplitPreset3 : false;
 		pref.libraryLayoutSplitPreset4 = custom ? themeLibrary.libraryLayoutSplitPreset4 : false;
-		pref.libraryLayoutRememberAlbumArtView = custom ? themeLibrary.libraryLayoutRememberAlbumArtView : false;
 
 		pref.libraryDesign = custom ? themeLibrary.libraryDesign : 'reborn';
 		switch (pref.libraryDesign) {

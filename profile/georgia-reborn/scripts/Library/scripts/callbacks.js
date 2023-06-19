@@ -562,34 +562,34 @@ function initLibraryPanel() {
 
 
 function initLibraryLayout() {
-	const libraryLayoutFull =
-		pref.libraryLayout === 'full'
-		&& pref.libraryLayoutFullPreset;
+	const libraryLayoutSplitPresets =
+		pref.libraryLayoutSplitPreset || pref.libraryLayoutSplitPreset2 || pref.libraryLayoutSplitPreset3 || pref.libraryLayoutSplitPreset4;
 
-	const libraryLayoutSplit =
-		pref.libraryLayout === 'split'
-		&& (pref.libraryLayoutSplitPreset
-		|| pref.libraryLayoutSplitPreset2
-		|| pref.libraryLayoutSplitPreset3
-		|| pref.libraryLayoutSplitPreset4);
+	const setLibraryView = () => {
+		lib.logTree();
+		pop.clearTree();
+		ui.getFont(); // * Reset font size when pref.libraryLayoutSplitPreset4 was used
+		repaintWindowRectAreas();
+		if (pref.libraryLayout !== 'split' && (!pref.libraryLayoutFullPreset || !libraryLayoutSplitPresets)) {
+			ppt.albumArtShow = pref.savedAlbumArtShow;
+			ppt.albumArtLabelType = pref.savedAlbumArtLabelType;
+		}
+		panel.imgView = pref.libraryLayout === 'normal' && pref.libraryLayoutFullPreset ? ppt.albumArtShow = false : ppt.albumArtShow;
+		men.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
+	}
 
-	if (libraryLayoutFull) {
+	// * Full layout preset
+	if (pref.libraryLayout === 'full' && pref.libraryLayoutFullPreset) {
 		pref.libraryDesign = 'reborn';
-		panel.imgView = ppt.albumArtShow = true;
 		pref.libraryThumbnailSize = pref.libraryThumbnailSizeSaved;
 		if (pref.playerSize_HD_small && (pref.libraryThumbnailSize === 'auto' || ppt.thumbNailSize === 'auto')) {
 			ppt.thumbNailSize = 1;
 		}
 		ppt.albumArtLabelType = 1;
-		lib.logTree();
-		pop.clearTree();
-		ui.getFont(); // * Reset font size when pref.libraryLayoutSplitPreset4 was used
-		repaintWindowRectAreas();
-		ppt.toggle('albumArtShow');
-		panel.imgView = pref.libraryLayoutFullPreset && pref.layout === 'default' && pref.libraryLayout === 'full' ? ppt.albumArtShow = true : ppt.albumArtShow = pref.libraryLayoutRememberAlbumArtView;
-		men.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
+		panel.imgView = ppt.albumArtShow = true;
 	}
-	else if (libraryLayoutSplit) {
+	// * Split layout presets
+	else if (pref.libraryLayout === 'split' && libraryLayoutSplitPresets) {
 		if (pref.layout !== 'default') return;
 
 		if (pref.playlistLayout === 'full') {
@@ -600,6 +600,7 @@ function initLibraryLayout() {
 			pref.libraryDesign = 'reborn';
 			pref.libraryThumbnailSize = 'playlist';
 			panel.imgView = ppt.albumArtShow = false;
+			ppt.albumArtLabelType = 1;
 			g_properties.show_header = true;
 			if (displayPlaylist && displayLibrary) {
 				g_properties.auto_collapse = true;
@@ -614,6 +615,7 @@ function initLibraryLayout() {
 			pref.libraryDesign = 'reborn';
 			pref.libraryThumbnailSize = 'playlist';
 			panel.imgView = ppt.albumArtShow = false;
+			ppt.albumArtLabelType = 1;
 			g_properties.auto_collapse = false;
 			g_properties.show_header = displayPlaylist && !displayLibrary && pref.libraryLayout === 'split';
 			updatePlaylist();
@@ -648,15 +650,11 @@ function initLibraryLayout() {
 				playlist.expand_header();
 			}
 		}
-
-		if (!libraryInitialized) return;
-		lib.logTree();
-		pop.clearTree();
-		ui.getFont(); // * Set or reset font size when pref.libraryLayoutSplitPreset4 was used
-		men.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
 		playlist.on_size(ww, wh);
 	}
 
+	if (!libraryInitialized) return;
+	setLibraryView();
 	setLibrarySize();
 	initLibraryColors();
 	window.Repaint();

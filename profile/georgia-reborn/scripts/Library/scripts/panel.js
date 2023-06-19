@@ -701,7 +701,7 @@ class Panel {
 								ppt.highLightNode = true;
 								ppt.verticalPad = 3;
 								ppt.rootNode = 0; // ppt.rootNode = 1;
-								panel.imgView = ppt.albumArtShow = false;
+								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = false;
 								ppt.albumArtLabelType = 1;
 								ppt.artId = 0;
 								ppt.albumArtFlowMode = false; // In default does not exist
@@ -737,7 +737,7 @@ class Panel {
 								ppt.highLightNode = true;
 								ppt.verticalPad = 5;
 								ppt.rootNode = 3;
-								panel.imgView = ppt.albumArtShow = false;
+								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = false;
 								ppt.albumArtLabelType = 1;
 								if (pref.libraryThumbnailSize === 'auto') ppt.thumbNailSize = 2; // In default the same
 								ppt.artId = 0;
@@ -774,7 +774,7 @@ class Panel {
 								ppt.highLightNode = true; // ppt.highLightNode = false;
 								ppt.verticalPad = 5;
 								ppt.rootNode = 3;
-								panel.imgView = ppt.albumArtShow = false;
+								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = false;
 								if (!ppt.presetLoadCurView) ppt.viewBy = 1;
 								ppt.albumArtFlowMode = false;
 								ppt.albumArtLabelType = 1;
@@ -814,7 +814,7 @@ class Panel {
 								ppt.highLightNode = true;
 								ppt.verticalPad = 5;
 								ppt.rootNode = 3;
-								panel.imgView = ppt.albumArtShow = false;
+								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = false;
 								pref.libraryLayout = ppt.albumArtShow ? 'full' : 'normal';
 								ppt.albumArtLabelType = 1;
 								if (pref.libraryThumbnailSize === 'auto') ppt.thumbNailSize = 2; // In default the same
@@ -841,7 +841,7 @@ class Panel {
 								ppt.autoCollapse = false;
 								ppt.treeAutoExpandSingle = false;
 								ppt.facetView = true;
-								panel.imgView = ppt.albumArtShow = false;
+								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = false;
 								ppt.albumArtLabelType = 1;
 								if (pref.libraryThumbnailSize === 'auto') ppt.thumbNailSize = 2; // In default the same
 								ppt.artId = 0;
@@ -884,7 +884,7 @@ class Panel {
 							ppt.verticalPad = 5;
 							ppt.rootNode = 3;
 							ppt.facetView = false;
-							panel.imgView = ppt.albumArtShow = true;
+							panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = true;
 							if (!ppt.presetLoadCurView) ppt.viewBy = 0; // ppt.viewBy = 1;
 							ppt.albumArtFlowMode = false;
 							ppt.albumArtLabelType = 2;
@@ -921,7 +921,7 @@ class Panel {
 								ppt.verticalPad = 5;
 								ppt.rootNode = 3;
 								ppt.facetView = false;
-								panel.imgView = ppt.albumArtShow = true;
+								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = true;
 								if (!ppt.presetLoadCurView) ppt.viewBy = 1; // ppt.viewBy = 1;
 								ppt.albumArtFlowMode = false;
 								ppt.albumArtLabelType = 1;
@@ -959,7 +959,7 @@ class Panel {
 								ppt.verticalPad = 5;
 								ppt.rootNode = 3;
 								ppt.facetView = false;
-								panel.imgView = ppt.albumArtShow = true;
+								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = true;
 								if (!ppt.presetLoadCurView) ppt.viewBy = 0; // if (!ppt.presetLoadCurView) ppt.viewBy = 1;
 								ppt.albumArtFlowMode = false;
 								ppt.albumArtLabelType = 4;
@@ -994,7 +994,7 @@ class Panel {
 								ppt.verticalPad = 5;
 								ppt.rootNode = 3;
 								ppt.facetView = false;
-								panel.imgView = ppt.albumArtShow = true;
+								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = true;
 								if (!ppt.presetLoadCurView) ppt.viewBy = 0;
 								ppt.albumArtFlowMode = false;
 								ppt.albumArtLabelType = 2;
@@ -1018,7 +1018,7 @@ class Panel {
 						// const continue_confirmation = (status, confirmed) => {
 						// 	if (confirmed) {
 								pref.libraryDesign = 'flowMode';
-								panel.imgView = ppt.albumArtShow = true;
+								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = true;
 								pref.libraryLayout = ppt.albumArtShow ? 'full' : 'normal';
 								if (pref.playerSize_HD_small && ppt.thumbNailSize === 'auto') ppt.thumbNailSize = 2;
 								ppt.highLightNowplaying = true; // In default does not exist
@@ -1070,7 +1070,7 @@ class Panel {
 								ppt.highLightNode = true;
 								ppt.verticalPad = 5;
 								ppt.rootNode = 3;
-								panel.imgView = ppt.albumArtShow = false;
+								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = false;
 								if (!ppt.presetLoadCurView) ppt.viewBy = 2;
 								ppt.albumArtLabelType = 1;
 								ppt.itemOverlayType = 0;

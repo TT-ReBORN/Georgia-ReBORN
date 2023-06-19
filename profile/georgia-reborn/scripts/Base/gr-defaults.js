@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-17                                          * //
+// * Last change:    2023-06-19                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -962,7 +962,6 @@ const themeLibraryDefaults = {
 	libraryLayoutSplitPreset2: false,
 	libraryLayoutSplitPreset3: false,
 	libraryLayoutSplitPreset4: false,
-	libraryLayoutRememberAlbumArtView: false,
 	libraryDesign: 'reborn',
 	libraryTheme: 0,
 	libraryThumbnailSize: 'auto',
@@ -1012,7 +1011,6 @@ const themeLibraryComments = {
 	libraryLayoutSplitPreset2: 'Values: true (only one split preset can be active), false - Options > Library > Layout > Use split preset (text)',
 	libraryLayoutSplitPreset3: 'Values: true (only one split preset can be active), false - Options > Library > Layout > Use split preset (art grid)',
 	libraryLayoutSplitPreset4: 'Values: true (only one split preset can be active), false - Options > Library > Layout > Use split preset (art header)',
-	libraryLayoutRememberAlbumArtView: 'Values: true, false - Options > Library > Layout > Remember album art view',
 	libraryDesign: 'Values: "reborn", "traditional", "modern", "ultraModern", "clean", "facet", "coversLabelsRight", "coversLabelsBottom", "coversLabelsBlend", "flowMode" - Options > Library > Design',
 	libraryTheme: 'Values: 0, 1, 2, 3, 4, 5 - Options > Library > Theme',
 	libraryThumbnailSize: 'Values: "auto", "playlist", 0, 1, 2, 3, 4, 5, 6, 7 - Options > Library > Album art > Thumbnail size',

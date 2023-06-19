@@ -703,7 +703,7 @@ class MenuItems {
 				lib.logTree();
 				pop.clearTree();
 				ppt.toggle('albumArtShow');
-				panel.imgView = ppt.albumArtShow;
+				panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow;
 				this.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
 
 				// Need continuous repaint when using style "Blend" and switching from normal to full width

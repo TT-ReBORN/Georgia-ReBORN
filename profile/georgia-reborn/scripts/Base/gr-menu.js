@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-17                                          * //
+// * Last change:    2023-06-19                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2270,7 +2270,7 @@ function libraryOptions(menu, context_menu) {
 			window.Repaint();
 		});
 		libraryLayoutMenu.addSeparator();
-		libraryLayoutMenu.addToggleItem('Use full preset', pref, 'libraryLayoutFullPreset', () => { pref.libraryLayoutRememberAlbumArtView = false; repaintWindow(); });
+		libraryLayoutMenu.addToggleItem('Use full preset', pref, 'libraryLayoutFullPreset', () => { repaintWindow(); });
 		libraryLayoutMenu.addSeparator();
 		libraryLayoutMenu.addToggleItem('Use split preset (collapse)', pref, 'libraryLayoutSplitPreset', () => {
 			pref.libraryLayoutSplitPreset2 = false;
@@ -2304,8 +2304,6 @@ function libraryOptions(menu, context_menu) {
 			initPlaylist();
 			playlist.on_size(ww, wh);
 		});
-		libraryLayoutMenu.addSeparator();
-		libraryLayoutMenu.addToggleItem('Remember album art view', pref, 'libraryLayoutRememberAlbumArtView', () => { repaintWindow(); }, pref.libraryLayoutFullPreset);
 		libraryLayoutMenu.appendTo(libraryMenu);
 	}
 
@@ -2446,7 +2444,7 @@ function libraryOptions(menu, context_menu) {
 
 	const libraryLabelsMenu = new Menu('Labels');
 	libraryLabelsMenu.addRadioItems(['Bottom (default)', 'Right', 'Blend', 'Dark', 'None'], ppt.albumArtLabelType, [1, 2, 3, 4, 0], (style) => {
-		ppt.albumArtLabelType = style;
+		pref.savedAlbumArtLabelType = ppt.albumArtLabelType = style;
 		panel.updateProp(1);
 	});
 	libraryLabelsMenu.addSeparator();
