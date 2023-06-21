@@ -813,7 +813,7 @@ function initThemeTags() {
 		debugLog('initThemeTags restore');
 		resetStyle('all');
 		resetTheme();
-		restoreSettings();
+		restoreThemeStylePreset();
 		if (pref.savedPreset !== false) setThemePreset(pref.savedPreset);
 		themeRestoreState = false;
 	}
@@ -1134,38 +1134,71 @@ function resetStyle(group) {
 	}
 }
 
-/** Called to restore theme, style, preset after custom %GR_THEME%, %GR_STYLE%, %GR_PRESET% usage. Used in initThemeTags() */
-function restoreSettings() {
-	pref.theme = pref.savedTheme;
-	pref.styleBevel = pref.savedStyleBevel;
-	pref.styleBlend = pref.savedStyleBlend;
-	pref.styleBlend2 = pref.savedStyleBlend2;
-	pref.styleGradient = pref.savedStyleGradient;
-	pref.styleGradient2 = pref.savedStyleGradient2;
-	pref.styleAlternative = pref.savedStyleAlternative;
-	pref.styleAlternative2 = pref.savedStyleAlternative2;
-	pref.styleBlackAndWhite = pref.savedStyleBlackAndWhite;
-	pref.styleBlackAndWhite2 = pref.savedStyleBlackAndWhite2;
-	pref.styleBlackAndWhiteReborn = pref.savedStyleBlackAndWhiteReborn;
-	pref.styleBlackReborn = pref.savedStyleBlackReborn;
-	pref.styleRebornWhite = pref.savedStyleRebornWhite;
-	pref.styleRebornBlack = pref.savedStyleRebornBlack;
-	pref.styleRebornFusion = pref.savedStyleRebornFusion;
-	pref.styleRebornFusion2 = pref.savedStyleRebornFusion2;
-	pref.styleRebornFusionAccent = pref.savedStyleRebornFusionAccent;
-	pref.styleRandomPastel = pref.savedStyleRandomPastel;
-	pref.styleRandomDark = pref.savedStyleRandomDark;
-	pref.styleRandomAutoColor = pref.savedStyleRandomAutoColor;
-	pref.styleTopMenuButtons = pref.savedStyleTopMenuButtons;
-	pref.styleTransportButtons = pref.savedStyleTransportButtons;
-	pref.styleProgressBarDesign = pref.savedStyleProgressBarDesign;
-	pref.styleProgressBar = pref.savedStyleProgressBar;
-	pref.styleProgressBarFill = pref.savedStyleProgressBarFill;
-	pref.styleVolumeBarDesign = pref.savedStyleVolumeBarDesign;
-	pref.styleVolumeBar = pref.savedStyleVolumeBar;
-	pref.styleVolumeBarFill = pref.savedStyleVolumeBarFill;
-	pref.themeBrightness = pref.savedThemeBrightness;
-	pref.preset = pref.savedPreset;
+/** Called to restore theme, style, preset after custom %GR_THEME%, %GR_STYLE%, %GR_PRESET% usage or in theme sandbox. Used in initThemeTags() and theme sandbox options */
+function restoreThemeStylePreset(reset) {
+	if (reset) {
+		pref.savedTheme = pref.theme;
+		pref.savedStyleBevel = pref.styleBevel;
+		pref.savedStyleBlend = pref.styleBlend;
+		pref.savedStyleBlend2 = pref.styleBlend2;
+		pref.savedStyleGradient = pref.styleGradient;
+		pref.savedStyleGradient2 = pref.styleGradient2;
+		pref.savedStyleAlternative = pref.styleAlternative;
+		pref.savedStyleAlternative2 = pref.styleAlternative2;
+		pref.savedStyleBlackAndWhite = pref.styleBlackAndWhite;
+		pref.savedStyleBlackAndWhite2 = pref.styleBlackAndWhite2;
+		pref.savedStyleBlackAndWhiteReborn = pref.styleBlackAndWhiteReborn;
+		pref.savedStyleBlackReborn = pref.styleBlackReborn;
+		pref.savedStyleRebornWhite = pref.styleRebornWhite;
+		pref.savedStyleRebornBlack = pref.styleRebornBlack;
+		pref.savedStyleRebornFusion = pref.styleRebornFusion;
+		pref.savedStyleRebornFusion2 = pref.styleRebornFusion2;
+		pref.savedStyleRebornFusionAccent = pref.styleRebornFusionAccent;
+		pref.savedStyleRandomPastel = pref.styleRandomPastel;
+		pref.savedStyleRandomDark = pref.styleRandomDark;
+		pref.savedStyleRandomAutoColor = pref.styleRandomAutoColor;
+		pref.savedStyleTopMenuButtons = pref.styleTopMenuButtons;
+		pref.savedStyleTransportButtons = pref.styleTransportButtons;
+		pref.savedStyleProgressBarDesign = pref.styleProgressBarDesign;
+		pref.savedStyleProgressBar = pref.styleProgressBar;
+		pref.savedStyleProgressBarFill = pref.styleProgressBarFill;
+		pref.savedStyleVolumeBarDesign = pref.styleVolumeBarDesign;
+		pref.savedStyleVolumeBar = pref.styleVolumeBar;
+		pref.savedStyleVolumeBarFill = pref.styleVolumeBarFill;
+		pref.savedThemeBrightness = pref.themeBrightness;
+		pref.savedPreset = pref.preset;
+	} else {
+		pref.theme = pref.savedTheme;
+		pref.styleBevel = pref.savedStyleBevel;
+		pref.styleBlend = pref.savedStyleBlend;
+		pref.styleBlend2 = pref.savedStyleBlend2;
+		pref.styleGradient = pref.savedStyleGradient;
+		pref.styleGradient2 = pref.savedStyleGradient2;
+		pref.styleAlternative = pref.savedStyleAlternative;
+		pref.styleAlternative2 = pref.savedStyleAlternative2;
+		pref.styleBlackAndWhite = pref.savedStyleBlackAndWhite;
+		pref.styleBlackAndWhite2 = pref.savedStyleBlackAndWhite2;
+		pref.styleBlackAndWhiteReborn = pref.savedStyleBlackAndWhiteReborn;
+		pref.styleBlackReborn = pref.savedStyleBlackReborn;
+		pref.styleRebornWhite = pref.savedStyleRebornWhite;
+		pref.styleRebornBlack = pref.savedStyleRebornBlack;
+		pref.styleRebornFusion = pref.savedStyleRebornFusion;
+		pref.styleRebornFusion2 = pref.savedStyleRebornFusion2;
+		pref.styleRebornFusionAccent = pref.savedStyleRebornFusionAccent;
+		pref.styleRandomPastel = pref.savedStyleRandomPastel;
+		pref.styleRandomDark = pref.savedStyleRandomDark;
+		pref.styleRandomAutoColor = pref.savedStyleRandomAutoColor;
+		pref.styleTopMenuButtons = pref.savedStyleTopMenuButtons;
+		pref.styleTransportButtons = pref.savedStyleTransportButtons;
+		pref.styleProgressBarDesign = pref.savedStyleProgressBarDesign;
+		pref.styleProgressBar = pref.savedStyleProgressBar;
+		pref.styleProgressBarFill = pref.savedStyleProgressBarFill;
+		pref.styleVolumeBarDesign = pref.savedStyleVolumeBarDesign;
+		pref.styleVolumeBar = pref.savedStyleVolumeBar;
+		pref.styleVolumeBarFill = pref.savedStyleVolumeBarFill;
+		pref.themeBrightness = pref.savedThemeBrightness;
+		pref.preset = pref.savedPreset;
+	}
 }
 
 

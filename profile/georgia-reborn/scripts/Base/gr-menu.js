@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-19                                          * //
+// * Last change:    2023-06-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -114,21 +114,21 @@ function onOptionsMenu(x, y, context_menu, playlist, details, library, biography
 function themeOptions(menu) {
 	const themeMenu = new Menu('Theme');
 	themeMenu.addRadioItems(['White', 'Black', 'Reborn', 'Random'], pref.theme, ['white', 'black', 'reborn', 'random'], (theme) => {
-		pref.savedTheme = pref.theme = theme;
+		if (!pref.themeSandbox) pref.savedTheme = pref.theme = theme; else pref.theme = theme;
 		resetTheme();
 		initTheme();
 		initThemePresetState();
 	});
 	themeMenu.addSeparator();
 	themeMenu.addRadioItems(['Blue', 'Dark blue', 'Red', 'Cream'], pref.theme, ['blue', 'darkblue', 'red', 'cream'], (theme) => {
-		pref.savedTheme = pref.theme = theme;
+		if (!pref.themeSandbox) pref.savedTheme = pref.theme = theme; else pref.theme = theme;
 		resetTheme();
 		initTheme();
 		initThemePresetState();
 	});
 	themeMenu.addSeparator();
 	themeMenu.addRadioItems(['Neon blue', 'Neon green', 'Neon red', 'Neon gold'], pref.theme, ['nblue', 'ngreen', 'nred', 'ngold'], (theme) => {
-		pref.savedTheme = pref.theme = theme;
+		if (!pref.themeSandbox) pref.savedTheme = pref.theme = theme; else pref.theme = theme;
 		resetTheme();
 		initTheme();
 		initThemePresetState();
@@ -150,7 +150,7 @@ function themeOptions(menu) {
 		customTheme10.name === '' ? 'Theme 10' : customTheme10.name];
 
 	customThemeMenu.addRadioItems(customThemes, pref.theme, ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'], (theme) => {
-		pref.savedTheme = pref.theme = theme;
+		if (!pref.themeSandbox) pref.savedTheme = pref.theme = theme; else pref.theme = theme;
 		resetTheme();
 		initCustomTheme();
 		initTheme();
@@ -217,33 +217,33 @@ function styleOptions(menu) {
 	});
 	styleMenu.addSeparator();
 	styleMenu.addToggleItem('Bevel', pref, 'styleBevel', () => {
-		pref.savedStyleBevel = pref.styleBevel;
+		if (!pref.themeSandbox) pref.savedStyleBevel = pref.styleBevel;
 		updateStyle();
 	});
 	styleMenu.addSeparator();
 
 	// * STYLES - GROUP ONE * //
 	styleMenu.addToggleItem('Blend', pref, 'styleBlend', () => {
-		pref.savedStyleBlend = pref.styleBlend;
+		if (!pref.themeSandbox) pref.savedStyleBlend = pref.styleBlend;
 		setStyle('blend', pref.styleBlend);
 		updateStyle();
 	});
 	styleMenu.addToggleItem('Blend 2', pref, 'styleBlend2', () => {
-		pref.savedStyleBlend2 = pref.styleBlend2;
+		if (!pref.themeSandbox) pref.savedStyleBlend2 = pref.styleBlend2;
 		setStyle('blend2', pref.styleBlend2);
 		updateStyle();
 	});
 	if (['reborn', 'random', 'blue', 'darkblue', 'red', 'custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
 		styleMenu.addToggleItem('Gradient', pref, 'styleGradient', () => {
-			pref.savedStyleGradient = pref.styleGradient;
+			if (!pref.themeSandbox) pref.savedStyleGradient = pref.styleGradient;
 			setStyle('gradient', pref.styleGradient);
 			updateStyle();
 		}, pref.styleRebornWhite);
 	}
 	if (['reborn', 'random', 'blue', 'darkblue', 'red', 'custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
 		styleMenu.addToggleItem('Gradient 2', pref, 'styleGradient2', () => {
-			pref.savedStyleGradient2 = pref.styleGradient2;
-			setStyle('gradient2', pref.styleGradient);
+			if (!pref.themeSandbox) pref.savedStyleGradient2 = pref.styleGradient2;
+			setStyle('gradient2', pref.styleGradient2);
 			updateStyle();
 		}, pref.styleRebornWhite);
 	}
@@ -251,74 +251,74 @@ function styleOptions(menu) {
 
 	// * STYLES - GROUP TWO * //
 	styleMenu.addToggleItem('Alternative', pref, 'styleAlternative', () => {
-		pref.savedStyleAlternative = pref.styleAlternative;
+		if (!pref.themeSandbox) pref.savedStyleAlternative = pref.styleAlternative;
 		setStyle('alternative', pref.styleAlternative);
 		updateStyle();
 	});
 	styleMenu.addToggleItem('Alternative 2', pref, 'styleAlternative2', () => {
-		pref.savedStyleAlternative2 = pref.styleAlternative2;
+		if (!pref.themeSandbox) pref.savedStyleAlternative2 = pref.styleAlternative2;
 		setStyle('alternative2', pref.styleAlternative2);
 		updateStyle();
 	});
 	if (pref.theme === 'white') {
 		styleMenu.addToggleItem('Black and white', pref, 'styleBlackAndWhite', () => {
-			pref.savedStyleBlackAndWhite = pref.styleBlackAndWhite;
+			if (!pref.themeSandbox) pref.savedStyleBlackAndWhite = pref.styleBlackAndWhite;
 			setStyle('blackAndWhite', pref.styleBlackAndWhite);
 			updateStyle();
 		}, pref.styleBlackAndWhiteReborn);
 		styleMenu.addToggleItem('Black and white 2', pref, 'styleBlackAndWhite2', () => {
-			pref.savedStyleBlackAndWhite2 = pref.styleBlackAndWhite2;
+			if (!pref.themeSandbox) pref.savedStyleBlackAndWhite2 = pref.styleBlackAndWhite2;
 			setStyle('blackAndWhite2', pref.styleBlackAndWhite2);
 			updateStyle();
 		}, pref.styleBlackAndWhiteReborn);
 		styleMenu.addToggleItem('Black and white reborn', pref, 'styleBlackAndWhiteReborn', () => {
-			pref.savedStyleBlackAndWhiteReborn = pref.styleBlackAndWhiteReborn;
+			if (!pref.themeSandbox) pref.savedStyleBlackAndWhiteReborn = pref.styleBlackAndWhiteReborn;
 			setStyle('blackAndWhiteReborn', pref.styleBlackAndWhiteReborn);
 			updateStyle();
 		});
 	}
 	if (pref.theme === 'black') {
 		styleMenu.addToggleItem('Black reborn', pref, 'styleBlackReborn', () => {
-			pref.savedStyleBlackReborn = pref.styleBlackReborn;
+			if (!pref.themeSandbox) pref.savedStyleBlackReborn = pref.styleBlackReborn;
 			setStyle('blackReborn', pref.styleBlackReborn);
 			updateStyle();
 		});
 	}
 	if (pref.theme === 'reborn') {
 		styleMenu.addToggleItem('Reborn white', pref, 'styleRebornWhite', () => {
-			pref.savedStyleRebornWhite = pref.styleRebornWhite;
+			if (!pref.themeSandbox) pref.savedStyleRebornWhite = pref.styleRebornWhite;
 			setStyle('rebornWhite', pref.styleRebornWhite);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Reborn black', pref, 'styleRebornBlack', () => {
-			pref.savedStyleRebornBlack = pref.styleRebornBlack;
+			if (!pref.themeSandbox) pref.savedStyleRebornBlack = pref.styleRebornBlack;
 			setStyle('rebornBlack', pref.styleRebornBlack);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Reborn fusion', pref, 'styleRebornFusion', () => {
-			pref.savedStyleRebornFusion = pref.styleRebornFusion;
+			if (!pref.themeSandbox) pref.savedStyleRebornFusion = pref.styleRebornFusion;
 			setStyle('rebornFusion', pref.styleRebornFusion);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Reborn fusion 2', pref, 'styleRebornFusion2', () => {
-			pref.savedStyleRebornFusion2 = pref.styleRebornFusion2;
+			if (!pref.themeSandbox) pref.savedStyleRebornFusion2 = pref.styleRebornFusion2;
 			setStyle('rebornFusion2', pref.styleRebornFusion2);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Reborn fusion accent', pref, 'styleRebornFusionAccent', () => {
-			pref.savedStyleRebornFusionAccent = pref.styleRebornFusionAccent;
+			if (!pref.themeSandbox) pref.savedStyleRebornFusionAccent = pref.styleRebornFusionAccent;
 			setStyle('rebornFusionAccent', pref.styleRebornFusionAccent);
 			updateStyle();
 		});
 	}
 	if (pref.theme === 'random') {
 		styleMenu.addToggleItem('Random pastel', pref, 'styleRandomPastel', () => {
-			pref.savedStyleRandomPastel = pref.styleRandomPastel;
+			if (!pref.themeSandbox) pref.savedStyleRandomPastel = pref.styleRandomPastel;
 			setStyle('randomPastel', pref.styleRandomPastel);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Random dark', pref, 'styleRandomDark', () => {
-			pref.savedStyleRandomDark = pref.styleRandomDark;
+			if (!pref.themeSandbox) pref.savedStyleRandomDark = pref.styleRandomDark;
 			setStyle('randomDark', pref.styleRandomDark);
 			updateStyle();
 		});
@@ -330,7 +330,7 @@ function styleOptions(menu) {
 		const styleAutoColorMenu = new Menu('Auto color');
 		styleAutoColorMenu.addRadioItems(['Off', '5 sec', '10 sec', '15 sec', '30 sec', '45 sec', '1 min', '2 min', '3 min', '4 min', '5 min', 'New track'], pref.styleRandomAutoColor,
 			['off', 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, 'track'], (timer) => {
-			pref.savedStyleRandomAutoColor = pref.styleRandomAutoColor = timer;
+			if (!pref.themeSandbox) pref.savedStyleRandomAutoColor = pref.styleRandomAutoColor = timer; else pref.styleRandomAutoColor = timer;
 			randomThemeAutoColor();
 		});
 		styleAutoColorMenu.appendTo(styleMenu);
@@ -341,13 +341,13 @@ function styleOptions(menu) {
 	const styleButtonsMenu = new Menu('Buttons');
 	const styleTopButtonsMenu = new Menu('Top menu');
 	styleTopButtonsMenu.addRadioItems(['Default', 'Filled', 'Bevel', 'Inner', 'Emboss', 'Minimal'], pref.styleTopMenuButtons, ['default', 'filled', 'bevel', 'inner', 'emboss', 'minimal'], (style) => {
-		pref.savedStyleTopMenuButtons = pref.styleTopMenuButtons = style;
+		if (!pref.themeSandbox) pref.styleTopMenuButtons = style; else pref.savedStyleTopMenuButtons = pref.styleTopMenuButtons = style;
 		updateStyle();
 	});
 	styleTopButtonsMenu.appendTo(styleButtonsMenu);
 	const styleTransportButtonsMenu = new Menu('Transport');
 	styleTransportButtonsMenu.addRadioItems(['Default', 'Bevel', 'Inner', 'Emboss', 'Minimal'], pref.styleTransportButtons, ['default', 'bevel', 'inner', 'emboss', 'minimal'], (style) => {
-		pref.savedStyleTransportButtons = pref.styleTransportButtons = style;
+		if (!pref.themeSandbox) pref.styleTransportButtons = style; else pref.savedStyleTransportButtons = pref.styleTransportButtons = style;
 		updateStyle();
 	});
 	styleTransportButtonsMenu.appendTo(styleButtonsMenu);
@@ -356,15 +356,15 @@ function styleOptions(menu) {
 	// * STYLES - PROGRESS BAR * //
 	const styleProgressBarMenu = new Menu('Progress bar');
 	styleProgressBarMenu.createRadioSubMenu('Design', ['Default', 'Rounded', 'Lines', 'Blocks', 'Dots', 'Thin'], pref.styleProgressBarDesign, ['default', 'rounded', 'lines', 'blocks', 'dots', 'thin'], (design) => {
-		pref.savedStyleProgressBarDesign = pref.styleProgressBarDesign = design;
+		if (!pref.themeSandbox) pref.styleProgressBarDesign = design; else pref.savedStyleProgressBarDesign = pref.styleProgressBarDesign = design;
 		updateStyle();
 	});
 	styleProgressBarMenu.createRadioSubMenu('Background', ['Default', 'Bevel', 'Inner'], pref.styleProgressBar, ['default', 'bevel', 'inner'], (style) => {
-		pref.savedStyleProgressBar = pref.styleProgressBar = style;
+		if (!pref.themeSandbox) pref.styleProgressBar = style; else pref.savedStyleProgressBar = pref.styleProgressBar = style;
 		updateStyle();
 	});
 	styleProgressBarMenu.createRadioSubMenu('Progress fill', ['Default', 'Bevel', 'Inner', 'Blend'], pref.styleProgressBarFill, ['default', 'bevel', 'inner', 'blend'], (style) => {
-		pref.savedStyleProgressBarFill = pref.styleProgressBarFill = style;
+		if (!pref.themeSandbox) pref.styleProgressBarFill = style; else pref.savedStyleProgressBarFill = pref.styleProgressBarFill = style;
 		updateStyle();
 	});
 	styleProgressBarMenu.appendTo(styleMenu);
@@ -372,15 +372,15 @@ function styleOptions(menu) {
 	// * STYLES - VOLUME BAR * //
 	const styleVolumeBarMenu = new Menu('Volume bar');
 	styleVolumeBarMenu.createRadioSubMenu('Design', ['Default', 'Rounded'], pref.styleVolumeBarDesign, ['default', 'rounded'], (design) => {
-		pref.savedStyleVolumeBarDesign = pref.styleVolumeBarDesign = design;
+		if (!pref.themeSandbox) pref.styleVolumeBarDesign = design; else pref.savedStyleVolumeBarDesign = pref.styleVolumeBarDesign = design;
 		updateStyle();
 	});
 	styleVolumeBarMenu.createRadioSubMenu('Background', ['Default', 'Bevel', 'Inner'], pref.styleVolumeBar, ['default', 'bevel', 'inner'], (style) => {
-		pref.savedStyleVolumeBar = pref.styleVolumeBar = style;
+		if (!pref.themeSandbox) pref.styleVolumeBar = style; else pref.savedStyleVolumeBar = pref.styleVolumeBar = style;
 		updateStyle();
 	});
 	styleVolumeBarMenu.createRadioSubMenu('Volume fill', ['Default', 'Bevel', 'Inner'], pref.styleVolumeBarFill, ['default', 'bevel', 'inner'], (style) => {
-		pref.savedStyleVolumeBarFill = pref.styleVolumeBarFill = style;
+		if (!pref.themeSandbox) pref.styleVolumeBarFill = style; else pref.savedStyleVolumeBarFill = pref.styleVolumeBarFill = style;
 		updateStyle();
 	});
 	styleVolumeBarMenu.appendTo(styleMenu);
@@ -410,7 +410,7 @@ function presetOptions(menu) {
 					setThemePresetSelection(true); // * Reactivate all
 					resetStyle('all');
 					resetTheme();
-					restoreSettings();
+					restoreThemeStylePreset();
 					if (pref.savedPreset !== false) setThemePreset(pref.savedPreset);
 					updateStyle();
 				}
@@ -479,7 +479,7 @@ function presetOptions(menu) {
 	const themePresetsWhiteMenu = new Menu('White');
 	themePresetsWhiteMenu.addRadioItems(['Beveled', 'Black and white', 'Black and white blended', 'Black and white 2', 'Black and white 2 blended', 'Black and white reborn', 'Black and white reborn blended', 'Minimalized'], pref.preset,
 		['whiteP01', 'whiteP02', 'whiteP03', 'whiteP04', 'whiteP05', 'whiteP06', 'whiteP07', 'whiteP08'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsWhiteMenu.appendTo(themePresetsMenu);
@@ -488,7 +488,7 @@ function presetOptions(menu) {
 	const themePresetsBlackMenu = new Menu('Black');
 	themePresetsBlackMenu.addRadioItems(['Beveled', 'Blended', 'Blended alternative', 'Blended alternative 2', 'Black reborn', 'Black reborn blended', 'Dark gray', 'Dark gray blended', 'Dark gray 2 blended', 'Minimalized'], pref.preset,
 		['blackP01', 'blackP02', 'blackP03', 'blackP04', 'blackP05', 'blackP06', 'blackP07', 'blackP08', 'blackP09', 'blackP10'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsBlackMenu.appendTo(themePresetsMenu);
@@ -497,37 +497,37 @@ function presetOptions(menu) {
 	const themePresetsRebornMenu = new Menu('Reborn');
 	themePresetsRebornMenu.addRadioItems(['Beveled', 'Blended', 'Blended 2', 'Gradiented', 'Gradiented 2', 'Minimalized', 'Minimalized blended'], pref.preset,
 		['rebornP01', 'rebornP02', 'rebornP03', 'rebornP04', 'rebornP05', 'rebornP06', 'rebornP07'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsRebornMenu.addSeparator();
 	themePresetsRebornMenu.addRadioItems(['Reborn white beveled', 'Reborn white blended', 'Reborn white blended 2'], pref.preset,
 		['rebornP08', 'rebornP09', 'rebornP10'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsRebornMenu.addSeparator();
 	themePresetsRebornMenu.addRadioItems(['Reborn black beveled', 'Reborn black blended', 'Reborn black blended 2', 'Reborn black gradiented', 'Reborn black gradiented 2'], pref.preset,
 		['rebornP11', 'rebornP12', 'rebornP13', 'rebornP14', 'rebornP15'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsRebornMenu.addSeparator();
 	themePresetsRebornMenu.addRadioItems(['Reborn fusion beveled', 'Reborn fusion blended', 'Reborn fusion blended 2', 'Reborn fusion gradiented', 'Reborn fusion gradiented 2'], pref.preset,
 		['rebornP16', 'rebornP17', 'rebornP18', 'rebornP19', 'rebornP20'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsRebornMenu.addSeparator();
 	themePresetsRebornMenu.addRadioItems(['Reborn fusion 2 beveled', 'Reborn fusion 2 blended', 'Reborn fusion 2 blended 2', 'Reborn fusion 2 gradiented', 'Reborn fusion 2 gradiented 2'], pref.preset,
 		['rebornP21', 'rebornP22', 'rebornP23', 'rebornP24', 'rebornP25'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsRebornMenu.addSeparator();
 	themePresetsRebornMenu.addRadioItems(['Reborn fusion accent beveled', 'Reborn fusion accent blended', 'Reborn fusion accent blended 2', 'Reborn fusion accent gradiented', 'Reborn fusion accent gradiented 2'], pref.preset,
 		['rebornP26', 'rebornP27', 'rebornP28', 'rebornP29', 'rebornP30'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsRebornMenu.appendTo(themePresetsMenu);
@@ -536,7 +536,7 @@ function presetOptions(menu) {
 	const themePresetsRandomMenu = new Menu('Random');
 	themePresetsRandomMenu.addRadioItems(['Beveled blended alternative', 'Beveled blended pastel', 'Beveled blended dark', 'Beveled blended auto dark', 'Beveled auto dark', 'Beveled dark', 'Gradiented', 'Gradiented 2', 'Minimalized', 'Minimalized blended'], pref.preset,
 		['randomP01', 'randomP02', 'randomP03', 'randomP04', 'randomP05', 'randomP06', 'randomP07', 'randomP08', 'randomP09', 'randomP10'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsRandomMenu.appendTo(themePresetsMenu);
@@ -546,7 +546,7 @@ function presetOptions(menu) {
 	const themePresetsBlueMenu = new Menu('Blue');
 	themePresetsBlueMenu.addRadioItems(['Beveled', 'Beveled 2', 'Gradiented', 'Gradiented 2', 'Minimalized'], pref.preset,
 		['blueP01', 'blueP02', 'blueP03', 'blueP04', 'blueP05'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsBlueMenu.appendTo(themePresetsMenu);
@@ -555,7 +555,7 @@ function presetOptions(menu) {
 	const themePresetsDarkblueMenu = new Menu('Dark blue');
 	themePresetsDarkblueMenu.addRadioItems(['Beveled', 'Beveled 2', 'Gradiented', 'Gradiented 2', 'Minimalized'], pref.preset,
 		['darkblueP01', 'darkblueP02', 'darkblueP03', 'darkblueP04', 'darkblueP05'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsDarkblueMenu.appendTo(themePresetsMenu);
@@ -564,7 +564,7 @@ function presetOptions(menu) {
 	const themePresetsRedMenu = new Menu('Red');
 	themePresetsRedMenu.addRadioItems(['Beveled', 'Beveled 2', 'Gradiented', 'Gradiented 2', 'Minimalized'], pref.preset,
 		['redP01', 'redP02', 'redP03', 'redP04', 'redP05'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsRedMenu.appendTo(themePresetsMenu);
@@ -573,7 +573,7 @@ function presetOptions(menu) {
 	const themePresetsCreamMenu = new Menu('Cream');
 	themePresetsCreamMenu.addRadioItems(['Beveled', 'Beveled 2', 'Alternative', 'Alternative 2', 'Minimalized'], pref.preset,
 		['creamP01', 'creamP02', 'creamP03', 'creamP04', 'creamP05'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsCreamMenu.appendTo(themePresetsMenu);
@@ -583,7 +583,7 @@ function presetOptions(menu) {
 	const themePresetsNblueMenu = new Menu('Neon blue');
 	themePresetsNblueMenu.addRadioItems(['Beveled', 'Beveled 2', 'Blended', 'Blended 2', 'Alternative', 'Alternative 2', 'Dark gray', 'Dark gray blended', 'Dark gray 2 blended', 'Minimalized'], pref.preset,
 		['nblueP01', 'nblueP02', 'nblueP03', 'nblueP04', 'nblueP05', 'nblueP06', 'nblueP07', 'nblueP08', 'nblueP09', 'nblueP10'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsNblueMenu.appendTo(themePresetsMenu);
@@ -592,7 +592,7 @@ function presetOptions(menu) {
 	const themePresetsNgreenMenu = new Menu('Neon green');
 	themePresetsNgreenMenu.addRadioItems(['Beveled', 'Beveled 2', 'Blended', 'Blended 2', 'Alternative', 'Alternative 2', 'Dark gray', 'Dark gray blended', 'Dark gray 2 blended', 'Minimalized'], pref.preset,
 		['ngreenP01', 'ngreenP02', 'ngreenP03', 'ngreenP04', 'ngreenP05', 'ngreenP06', 'ngreenP07', 'ngreenP08', 'ngreenP09', 'ngreenP10'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsNgreenMenu.appendTo(themePresetsMenu);
@@ -601,7 +601,7 @@ function presetOptions(menu) {
 	const themePresetsNredMenu = new Menu('Neon red');
 	themePresetsNredMenu.addRadioItems(['Beveled', 'Beveled 2', 'Blended', 'Blended 2', 'Alternative', 'Alternative 2', 'Dark gray', 'Dark gray blended', 'Dark gray 2 blended', 'Minimalized'], pref.preset,
 		['nredP01', 'nredP02', 'nredP03', 'nredP04', 'nredP05', 'nredP06', 'nredP07', 'nredP08', 'nredP09', 'nredP10'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsNredMenu.appendTo(themePresetsMenu);
@@ -610,7 +610,7 @@ function presetOptions(menu) {
 	const themePresetsNgoldMenu = new Menu('Neon gold');
 	themePresetsNgoldMenu.addRadioItems(['Beveled', 'Beveled 2', 'Blended', 'Blended 2', 'Alternative', 'Alternative 2', 'Dark gray', 'Dark gray blended', 'Dark gray 2 blended', 'Minimalized'], pref.preset,
 		['ngoldP01', 'ngoldP02', 'ngoldP03', 'ngoldP04', 'ngoldP05', 'ngoldP06', 'ngoldP07', 'ngoldP08', 'ngoldP09', 'ngoldP10'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsNgoldMenu.appendTo(themePresetsMenu);
@@ -620,7 +620,7 @@ function presetOptions(menu) {
 	const themePresetsCustomMenu = new Menu('Custom');
 	themePresetsCustomMenu.addRadioItems(['Beveled', 'Beveled 2', 'Blended', 'Blended 2', 'Gradiented', 'Gradiented 2', 'Alternative', 'Alternative 2', 'Minimalized', 'Minimalized blended'], pref.preset,
 		['customP01', 'customP02', 'customP03', 'customP04', 'customP05', 'customP06', 'customP07', 'customP08', 'customP09', 'customP10'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		setThemePreset(preset);
 	});
 	themePresetsCustomMenu.appendTo(themePresetsMenu);
@@ -629,7 +629,7 @@ function presetOptions(menu) {
 	// * CUSTOM USER THEME PRESET * //
 	const themePresetUserMenu = new Menu('User preset');
 	themePresetUserMenu.addRadioItems(['User settings'], pref.preset, ['user'], (preset) => {
-		pref.savedPreset = pref.preset = preset;
+		if (!pref.themeSandbox) pref.preset = preset; else pref.savedPreset = pref.preset = preset;
 		resetStyle('all');
 		resetTheme();
 		pref.theme = customStylePreset.theme;
@@ -829,7 +829,7 @@ function displayOptions(menu) {
 ////////////////////////////
 function brightnessOptions(menu) {
 	menu.createRadioSubMenu('Brightness', ['-25%', '-20%', '-15%', '-10%', '-5%', 'Default', '+5%', '+10%', '+15%', '+20%', '+25%'], pref.themeBrightness, [-25, -20, -15, -10, -5, 'default', 5, 10, 15, 20, 25], (percent) => {
-		pref.savedThemeBrightness = pref.themeBrightness = percent;
+		if (!pref.themeSandbox) pref.themeBrightness = percent; else pref.savedThemeBrightness = pref.themeBrightness = percent;
 		initThemeFull = true;
 		initTheme();
 	});
@@ -2936,6 +2936,61 @@ function lyricsOptions(menu, context_menu) {
 //////////////////////////
 function settingsOptions(menu) {
 	const settingsMenu = new Menu('Settings');
+
+	// * THEME SANDBOX * //
+	const themeSandboxMenu = new Menu('Theme sandbox');
+	const restoreThemeStylePresetSettings = (reset) => {
+		pref.presetAutoRandomMode = 'dblclick';
+		setThemePresetSelection(true); // * Reactivate all
+		resetTheme();
+		if (reset) restoreThemeStylePreset(true); else restoreThemeStylePreset();
+		if (pref.savedPreset !== false) setThemePreset(pref.savedPreset);
+		updateStyle();
+	}
+	themeSandboxMenu.addToggleItem('Enabled', pref, 'themeSandbox', () => {
+		if (!pref.themeSandbox) {
+			const msg = 'Do you want to restore\nor keep current theme settings?\n\nThis will restore previously used\ntheme, styles, preset\nor use the current active.\n\nContinue?\n\n\n';
+			const continue_confirmation = (status, confirmed) => {
+				if (confirmed) {
+					restoreThemeStylePresetSettings();
+				} else {
+					restoreThemeStylePresetSettings(true);
+				}
+			}
+			if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+				continue_confirmation(false, 'Restore');
+				fb.ShowPopupMessage('Theme settings restored:\n\nTheme, styles or preset have been restored.', 'Theme settings restored');
+			} else {
+				popUpBox.confirm('Georgia-ReBORN', msg, 'Restore', 'Keep', false, 'center', continue_confirmation);
+			}
+			return;
+		}
+		const msg = 'Do you want to activate the theme sandbox?\n\nThis mode is useful when trying out\nthemes, styles, presets or writing theme tags.\n\nAfter disabling the theme sandbox mode,\npreviously used theme settings can be restored.\n\nContinue?\n\n\n';
+		const continue_confirmation = (status, confirmed) => {
+			if (!confirmed) pref.themeSandbox = false;
+		}
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			continue_confirmation(false, 'Yes');
+			fb.ShowPopupMessage('Theme sandbox mode activated:\n\nThis mode is useful when trying out\nthemes, styles, presets or writing theme tags.\n\nAfter disabling the theme sandbox mode,\npreviously used theme settings will be restored.', 'Theme sandbox mode');
+		} else {
+			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
+		}
+	});
+	themeSandboxMenu.addSeparator();
+	themeSandboxMenu.addItem('Restore theme settings', false, () => {
+		const msg = 'Do you want to restore theme settings?\n\nThis will restore previously used\ntheme, styles, preset.\n\nContinue?\n\n\n';
+		const continue_confirmation = (status, confirmed) => {
+			if (!confirmed) return;
+			restoreThemeStylePresetSettings();
+		}
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			continue_confirmation(false, 'Yes');
+			fb.ShowPopupMessage('Theme settings restored:\n\nTheme, styles or preset have been restored.', 'Theme settings restored');
+		} else {
+			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
+		}
+	}, pref.themeSandbox);
+	themeSandboxMenu.appendTo(settingsMenu);
 
 	// * THEME DAY/NIGHT MODE * //
 	settingsMenu.createRadioSubMenu('Theme day/night mode', ['  Deactivated (default)', '  6am (day) -  6pm  (night)', '  7am (day) -  7pm  (night)', '  8am (day) -  8pm  (night)', '  9am (day) -  9pm  (night)', '10am (day) - 10pm (night)'], pref.themeDayNightMode, [false, 6, 7, 8, 9, 10], (time) => {

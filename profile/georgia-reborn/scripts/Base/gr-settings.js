@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-19                                          * //
+// * Last change:    2023-06-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -464,6 +464,7 @@ pref.add_properties({
 	displayLyrics:                      ['Georgia-ReBORN - 14. Lyrics: Show lyrics', false], // true: Shows lyrics, always set to false at startup unless lyricsRememberDisplay is true
 
 	// * Settings
+	themeSandbox:                       ['Georgia-ReBORN - 15. Settings: Theme sandbox', false], // false: Enables theme sandbox, useful when trying out themes, styles, presets or writing theme tags. After disabling, it will restore last previous theme settings
 	themeDayNightMode:                  ['Georgia-ReBORN - 15. Settings: Auto-day/night mode', false], // false: Controlled by OS clock and users set theSettings.themeDayNightMode value, changes the White, Black, Reborn & Random theme to white ( day ) or black ( night )
 	customLibraryDir:                   ['Georgia-ReBORN - 15. Settings: Use custom library directory', false], // false: Use custom library directory
 	libraryAutoDelete:                  ['Georgia-ReBORN - 15. Settings: Auto-delete library cache', false], // false: This will auto-delete cached library album art thumbnails on startup
