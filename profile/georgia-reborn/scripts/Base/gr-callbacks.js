@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-20                                          * //
+// * Last change:    2023-06-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -802,32 +802,15 @@ async function initTheme() {
 }
 
 
-/** Custom initialization function for custom themes */
-function initCustomTheme() {
-	switch (pref.theme) {
-		case 'custom01': customColor = customTheme01; break;
-		case 'custom02': customColor = customTheme02; break;
-		case 'custom03': customColor = customTheme03; break;
-		case 'custom04': customColor = customTheme04; break;
-		case 'custom05': customColor = customTheme05; break;
-		case 'custom06': customColor = customTheme06; break;
-		case 'custom07': customColor = customTheme07; break;
-		case 'custom08': customColor = customTheme08; break;
-		case 'custom09': customColor = customTheme09; break;
-		case 'custom10': customColor = customTheme10; break;
-	}
-}
-
-
 /** Custom initialization function to check if music files have embedded %GR_THEME%, %GR_STYLE%, %GR_PRESET% tags and set them, called on_playback_new_track */
-function initCustomThemeStylePreset() {
+function initThemeTags() {
 	const customTheme  = $('[%GR_THEME%]');
 	const customStyle  = $('[%GR_STYLE%]');
 	const customPreset = $('[%GR_PRESET%]');
 
 	// * Restore last theme state
 	if (pref.presetSelectMode === 'default' && themeRestoreState) {
-		debugLog('initCustomThemeStylePreset restore');
+		debugLog('initThemeTags restore');
 		resetStyle('all');
 		resetTheme();
 		restoreSettings();
@@ -837,7 +820,7 @@ function initCustomThemeStylePreset() {
 
 	// * Skip also restore on next call
 	if (pref.theme === pref.savedTheme && !customTheme && !customStyle && !customPreset) {
-		debugLog('initCustomThemeStylePreset skipped');
+		debugLog('initThemeTags skipped');
 		themeRestoreState = false;
 		return;
 	}
@@ -908,10 +891,27 @@ function initCustomThemeStylePreset() {
 	// * 4. Update when using custom tags, otherwise not needed
 	if (customTheme || customStyle || customPreset) {
 		updateStyle();
-		debugLog('updateStyle -> initCustomThemeStylePreset');
+		debugLog('updateStyle -> initThemeTags');
 	}
 
 	themePresetMatchMode = false;
+}
+
+
+/** Custom initialization function for custom themes */
+function initCustomTheme() {
+	switch (pref.theme) {
+		case 'custom01': customColor = customTheme01; break;
+		case 'custom02': customColor = customTheme02; break;
+		case 'custom03': customColor = customTheme03; break;
+		case 'custom04': customColor = customTheme04; break;
+		case 'custom05': customColor = customTheme05; break;
+		case 'custom06': customColor = customTheme06; break;
+		case 'custom07': customColor = customTheme07; break;
+		case 'custom08': customColor = customTheme08; break;
+		case 'custom09': customColor = customTheme09; break;
+		case 'custom10': customColor = customTheme10; break;
+	}
 }
 
 
@@ -1134,7 +1134,7 @@ function resetStyle(group) {
 	}
 }
 
-/** Called to restore theme, style, preset after custom [%GR_THEME%], [%GR_STYLE%], [%GR_PRESET%] usage. Used in initCustomThemeStylePreset() */
+/** Called to restore theme, style, preset after custom %GR_THEME%, %GR_STYLE%, %GR_PRESET% usage. Used in initThemeTags() */
 function restoreSettings() {
 	pref.theme = pref.savedTheme;
 	pref.styleBevel = pref.savedStyleBevel;
@@ -1340,6 +1340,71 @@ async function updateStyle() {
 	initStyleState();
 	initThemePresetState();
 	initButtonState();
+}
+
+
+/** Called when writing %GR_THEME%, %GR_STYLE%, %GR_PRESET% tags to music files via playlist or library context menu */
+function writeThemeTags() {
+	const grTags = [];
+	const plItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+	const libItems = new FbMetadbHandleList(pop.getHandleList('newItems'));
+	const items = displayLibrary && !displayPlaylist || displayPlaylistLibrary() && state.mouse_x < ww * 0.5 ? libItems : plItems;
+
+	if (!items) return;
+
+	for (let i = 0; i < items.Count; ++i) {
+		grTags.push({
+			GR_THEME: pref.preset === false ? pref.theme : '',
+
+			GR_STYLE: pref.preset === false ? [
+				pref.styleBevel ? 'bevel' : '',
+				pref.styleBlend ? 'blend' : '',
+				pref.styleBlend2 ? 'blend2' : '',
+				pref.styleGradient ? 'gradient' : '',
+				pref.styleGradient2 ? 'gradient2' : '',
+				pref.styleAlternative ? 'alternative' : '',
+				pref.styleAlternative2 ? 'alternative2' : '',
+				pref.styleBlackAndWhite ? 'blackAndWhite' : '',
+				pref.styleBlackAndWhite2 ? 'blackAndWhite2' : '',
+				pref.styleBlackReborn ? 'blackReborn' : '',
+				pref.styleRebornWhite ? 'rebornWhite' : '',
+				pref.styleRebornBlack ? 'rebornBlack' : '',
+				pref.styleRebornFusion ? 'rebornFusion' : '',
+				pref.styleRebornFusion2 ? 'rebornFusion2' : '',
+				pref.styleRandomPastel ? 'randomPastel' : '',
+				pref.styleRandomDark ? 'randomDark' : '',
+				pref.styleRebornFusionAccent ? 'rebornFusionAccent' : '',
+				pref.styleTopMenuButtons === 'filled' ? 'topMenuButtons=filled' : '',
+				pref.styleTopMenuButtons === 'bevel' ? 'topMenuButtons=bevel' : '',
+				pref.styleTopMenuButtons === 'inner' ? 'topMenuButtons=inner' : '',
+				pref.styleTopMenuButtons === 'emboss' ? 'topMenuButtons=emboss' : '',
+				pref.styleTopMenuButtons === 'minimal' ? 'topMenuButtons=minimal' : '',
+				pref.styleTransportButtons === 'bevel' ? 'transportButtons=bevel' : '',
+				pref.styleTransportButtons === 'inner' ? 'transportButtons=inner' : '',
+				pref.styleTransportButtons === 'emboss' ? 'transportButtons=emboss' : '',
+				pref.styleTransportButtons === 'minimal' ? 'transportButtons=minimal' : '',
+				pref.styleProgressBarDesign === 'rounded' ? 'progressBarDesign=rounded' : '',
+				pref.styleProgressBarDesign === 'lines' ? 'progressBarDesign=lines' : '',
+				pref.styleProgressBarDesign === 'blocks' ? 'progressBarDesign=blocks' : '',
+				pref.styleProgressBarDesign === 'dots' ? 'progressBarDesign=dots' : '',
+				pref.styleProgressBarDesign === 'thin' ? 'progressBarDesign=thin' : '',
+				pref.styleProgressBar === 'bevel' ? 'progressBarBg=bevel' : '',
+				pref.styleProgressBar === 'inner' ? 'progressBarBg=inner' : '',
+				pref.styleProgressBarFill === 'bevel' ? 'progressBarFill=bevel' : '',
+				pref.styleProgressBarFill === 'inner' ? 'progressBarFill=inner' : '',
+				pref.styleProgressBarFill === 'blend' ? 'progressBarFill=blend' : '',
+				pref.styleVolumeBarDesign === 'rounded' ? 'volumeBarDesign=rounded' : '',
+				pref.styleVolumeBar === 'bevel' ? 'volumeBarBg=bevel' : '',
+				pref.styleVolumeBar === 'inner' ? 'volumeBarBg=inner' : '',
+				pref.styleVolumeBarFill === 'bevel' ? 'volumeBarFill=bevel' : '',
+				pref.styleVolumeBarFill === 'bevel' ? 'volumeBarFill=inner' : ''
+			] : '',
+
+			GR_PRESET: pref.preset !== false ? pref.preset : ''
+		});
+	}
+
+	if (items.Count) items.UpdateFileInfoFromJSON(JSON.stringify(grTags));
 }
 
 
@@ -2813,8 +2878,8 @@ function on_playback_new_track(metadb) {
 			pref.presetAutoRandomMode === 'dblclick' && pref.presetSelectMode === 'theme') && !doubleClicked) {
 			themePresetRandomPicker();
 		}
-		// * Init and set custom theme, style, preset
-		initCustomThemeStylePreset();
+		// * Init and set theme tags
+		initThemeTags();
 	}
 	else if (pref.cycleArt && albumArtList.length > 1) {
 		// Need to do this here since we're no longer always fetching when albumArtList.length > 1

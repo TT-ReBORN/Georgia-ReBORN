@@ -256,7 +256,7 @@ class MenuItems {
 
 		const d = {};
 		this.getSortData(d);
-		menu.newMenu({ menuName: d.menuName, flags: d.sortType ? MF_STRING_LIB : MF_GRAYED_LIB, separator: !this.show_context });
+		menu.newMenu({ menuName: d.menuName, flags: d.sortType ? MF_STRING_LIB : MF_GRAYED_LIB, separator: this.show_context });
 		if (d.sortType) {
 			menu.newItem({
 				menuName: d.menuName,
@@ -274,6 +274,11 @@ class MenuItems {
 				separator: i == 0 || d.sortType == 2 && (i == 2 || i == 4)
 			}));
 		}
+
+		menu.newItem({
+			str: 'Write theme tags',
+			func: () => writeThemeTags()
+		});
 
 		menu.newItem({
 			menuName: 'Views',
