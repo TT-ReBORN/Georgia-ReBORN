@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-21                                          * //
+// * Last change:    2023-06-23                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1140,6 +1140,8 @@ class Playlist extends List {
 			if (this.collapse_handler) {
 				this.collapse_handler.expand(row.parent);
 				if (this.collapse_handler.changed) {
+					// * Fix to restore drag scroll to last row item at bottom when header is collapsed
+					this.scrollbar.is_scrolled_down = false;
 					this.repaint();
 				}
 			}
