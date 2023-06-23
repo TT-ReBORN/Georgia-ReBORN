@@ -4036,12 +4036,22 @@ class Header extends BaseHeader {
 
 					// * Used for Library thumbnail size
 					playlistThumbSize = art_box_w - 4;
-
 					grClip.DrawRect(art_box_x, art_box_y, art_box_w - 1, art_box_h - 1, 1, line_color);
-
 					left_pad += art_box_x + art_box_w;
-					this.hyperlinks.artist && this.hyperlinks.artist.set_xOffset(left_pad);
+
+					let i_ = 0;
+					let offset_ = 0;
+					while (this.hyperlinks['artist' + i_]) {
+						if (i_ === 0) {
+							offset_ = this.hyperlinks.artist0.x - left_pad;
+							if (!offset_) break;
+						}
+						this.hyperlinks['artist' + i_].x -= offset_;
+						i_++;
+					}
+
 					this.hyperlinks.album && this.hyperlinks.album.set_xOffset(left_pad);
+
 					let i = 0;
 					let offset = 0;
 					while (this.hyperlinks['genre' + i]) {
@@ -4054,7 +4064,7 @@ class Header extends BaseHeader {
 					}
 				}
 				else if (this.art === null && g_properties.auto_album_art) {
-					this.hyperlinks.artist && this.hyperlinks.artist.set_xOffset(left_pad);
+					this.hyperlinks.artist0 && this.hyperlinks.artist0.set_xOffset(left_pad);
 					this.hyperlinks.album && this.hyperlinks.album.set_xOffset(left_pad);
 					this.hyperlinks.genre0 && this.hyperlinks.genre0.set_xOffset(left_pad);
 				}
@@ -4096,12 +4106,12 @@ class Header extends BaseHeader {
 
 			// * ARTIST * //
 			if (this.grouping_handler.get_title_query()) {
-				let artist_text = $(this.grouping_handler.get_title_query(), this.metadb);
+				let artist_text = [];
 				if (!artist_text && is_radio) {
 					artist_text = 'Radio Stream';
 				}
 				if (artist_text) {
-					const artist_x = part1_cur_x;
+					let artist_x = part1_cur_x;
 					let artist_w = this.w - artist_x;
 					let artist_h = part_h;
 					if (!g_properties.show_group_info) {
@@ -4110,10 +4120,21 @@ class Header extends BaseHeader {
 					}
 
 					const artist_text_format = g_string_format.v_align_far | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
-					if (is_radio || !this.hyperlinks.artist)  {
+					if (is_radio || !this.hyperlinks.artist0)  {
 						grClip.DrawString(artist_text, artist_font, artist_color, artist_x, 0, artist_w, artist_h, artist_text_format);
 					} else {
-						this.hyperlinks.artist.draw(grClip, artist_color);
+						let i = 0;
+						let artist_hyperlink;
+						while (this.hyperlinks['artist' + i]) {
+							if (i > 0) {
+								grClip.DrawString(' \u2022 ', artist_font, artist_color, artist_hyperlink.x + artist_hyperlink.getWidth(), artist_h * 0.25, scaleForDisplay(20), artist_h);
+							}
+							artist_hyperlink = this.hyperlinks['artist' + i];
+							artist_hyperlink.draw(grClip, artist_color);
+							artist_x = artist_hyperlink.x;
+							artist_w = artist_hyperlink.getWidth();
+							i++;
+						}
 					}
 					// part1_cur_x += artist_w;
 				}
@@ -4181,7 +4202,7 @@ class Header extends BaseHeader {
 						let genre_hyperlink;
 						while (this.hyperlinks['genre' + i]) {
 							if (i > 0) {
-								grClip.DrawString(' \u2022 ', g_pl_fonts.info, info_color, genre_hyperlink.x + genre_hyperlink.getWidth(), info_y, scaleForDisplay(20), info_h);
+								grClip.DrawString(' \u2022 ', g_pl_fonts.info, info_color, genre_hyperlink.x + genre_hyperlink.getWidth() + scaleForDisplay(2), info_y, scaleForDisplay(20), info_h);
 							}
 							genre_hyperlink = this.hyperlinks['genre' + i];
 							genre_hyperlink.draw(grClip, info_color);
@@ -4467,6 +4488,9 @@ class Header extends BaseHeader {
 		const spacing = scaleForDisplay(2);
 		const art_box_size = this.art_max_size + spacing * 2;
 		const part_h = this.h / 3;
+		const separatorWidth = gr.MeasureString(' \u2020', g_pl_fonts.info, 0, 0, 0, 0).Width;
+		const bulletWidth = Math.ceil(gr.MeasureString('\u2020', g_pl_fonts.info, 0, 0, 0, 0).Width);
+		const spaceWidth = Math.ceil(separatorWidth - bulletWidth) + scaleForDisplay(1);
 		const right_edge = scaleForDisplay(20);
 		let left_pad = scaleForDisplay(10);
 		left_pad += this.art !== null && g_properties.show_album_art && !g_properties.auto_album_art ? art_box_x + art_box_size : left_pad;
@@ -4487,15 +4511,19 @@ class Header extends BaseHeader {
 		}
 
 		// * Artist
-		let artist_text;
-		if (!this.metadb.RawPath.startsWith('http')) {
-			// Don't create for radio
-			artist_text = $(this.grouping_handler.get_title_query(), this.metadb);
-			if (artist_text) {
-				const artist_x = left_pad;
-
-				this.hyperlinks.artist = new Hyperlink(artist_text, artist_font, 'artist', artist_x, scaleForDisplay(5 * (!g_properties.show_group_info ? 2 : 1)), this.hyperlinksMaxWidth, true);
+		let artist_text = [];
+		let artist_x = left_pad;
+		for (let i = 0; i < tf.artist.length; i++) {
+			artist_text.push(...getMetaValues(tf.artist, this.metadb));
+		}
+		artist_text = [...new Set(artist_text)];	// Remove duplicates
+		for (let i = 0; i < artist_text.length; i++) {
+			if (i > 0) {
+				artist_x += bulletWidth + spaceWidth * 3;   // Spacing between artists
 			}
+			const artist_w = gr.MeasureString(artist_text[i], artist_font, 0, 0, 0, 0).Width;
+			this.hyperlinks['artist' + i] = new Hyperlink(artist_text[i], artist_font, 'artist', artist_x, scaleForDisplay(5 * (!g_properties.show_group_info ? 2 : 1)), this.hyperlinksMaxWidth, true);
+			artist_x += artist_w;
 		}
 
 		// * Album
@@ -4506,10 +4534,6 @@ class Header extends BaseHeader {
 		}
 
 		// * Record labels
-		const separatorWidth = gr.MeasureString(' \u2020', g_pl_fonts.info, 0, 0, 0, 0).Width;
-		const bulletWidth = Math.ceil(gr.MeasureString('\u2020', g_pl_fonts.info, 0, 0, 0, 0).Width);
-		const spaceWidth = Math.ceil(separatorWidth - bulletWidth) + scaleForDisplay(1);
-
 		let labels = [];
 		for (let i = 0; i < tf.labels.length; i++) {
 			labels.push(...getMetaValues(tf.labels[i], this.metadb));
