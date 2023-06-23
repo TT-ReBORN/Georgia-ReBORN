@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-21                                          * //
+// * Last change:    2023-06-23                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3729,27 +3729,27 @@ function developerToolsOptions(menu) {
 		}
 	});
 	debugMenu.addSeparator();
-	debugMenu.addToggleItem('Show playlist calls', timings, 'showPlaylistTraceCall', () => {
-		if (timings.showPlaylistTraceCall) {
+	debugMenu.addToggleItem('Show panel calls', timings, 'showPanelTraceCall', () => {
+		if (timings.showPanelTraceCall) {
 			trace_call = true;
 		} else {
 			trace_call = false;
-			if (timings.showPlaylistTraceOnMove) {
+			if (timings.showPanelTraceOnMove) {
 				trace_on_move = false;
-				timings.showPlaylistTraceOnMove = false;
+				timings.showPanelTraceOnMove = false;
 			}
 		}
 	});
-	debugMenu.addToggleItem('Show playlist moves', timings, 'showPlaylistTraceOnMove', () => {
-		if (timings.showPlaylistTraceOnMove) {
+	debugMenu.addToggleItem('Show panel moves', timings, 'showPanelTraceOnMove', () => {
+		if (timings.showPanelTraceOnMove) {
 			trace_on_move = true;
 			trace_call = true;
-			timings.showPlaylistTraceCall = true;
+			timings.showPanelTraceCall = true;
 			return;
 		}
 		trace_on_move = false;
 		trace_call = false;
-		timings.showPlaylistTraceCall = false;
+		timings.showPanelTraceCall = false;
 	});
 	debugMenu.addToggleItem('Show playlist performance', timings, 'showPlaylistTraceListPerf', () => {
 		trace_initialize_list_performance = !trace_initialize_list_performance;

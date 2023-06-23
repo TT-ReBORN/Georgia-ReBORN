@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-18                                          * //
+// * Last change:    2023-06-23                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -636,7 +636,7 @@ const timings = {
 	showExtraDrawTiming: false,      // Spam console with every section of the draw code to determine bottlenecks
 	showRamUsage: false,             // Spam console with memory statistic
 	drawRepaintRects: false,         // Outline window.RepaintRect in red
-	showPlaylistTraceCall: false,    // Spam console with playlist trace call
-	showPlaylistTraceOnMove: false,  // Spam console with playlist trace on move
+	showPanelTraceCall: false,       // Spam console with panel trace call
+	showPanelTraceOnMove: false,     // Spam console with panel trace on move
 	showPlaylistTraceListPerf: false // Spam console with playlist list performance
 };
