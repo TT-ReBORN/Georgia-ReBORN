@@ -1779,7 +1779,7 @@ class Playlist extends List {
 			playlist.auto_collapse_header();
 			Header.prototype.clearCachedHeaderImg.apply(this);
 			Header.prototype.repaint.apply(this);
-		}, 600);
+		}, 1);
 	}
 
 	expand_header() {
@@ -1787,7 +1787,7 @@ class Playlist extends List {
 			this.collapse_handler.expand_all();
 			Header.prototype.clearCachedHeaderImg.apply(this);
 			Header.prototype.repaint.apply(this);
-		}, 600);
+		}, 1);
 	}
 
 	initialize_and_repaint_list(refocus) {
@@ -1886,7 +1886,11 @@ class Playlist extends List {
 
 		this.set_now_playing_hyperlink();
 
-		setTimeout(() => { playlistScrollReady = true; libraryPlaylistDrag = false; }, 200); // * Restore scrolling
+		setTimeout(() => { // * Restore scrolling
+			playlistScrollReady = true;
+			libraryPlaylistDrag = false;
+			this.update_scrollbar();
+		}, 200);
 
 		(true || trace_initialize_list_performance) && console.log(`Playlist initialized in ${profiler.Time}ms`);
 	}
