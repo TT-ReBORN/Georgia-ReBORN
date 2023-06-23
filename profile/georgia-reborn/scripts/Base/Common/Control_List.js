@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-10                                          * //
+// * Last change:    2023-06-23                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -103,6 +103,8 @@ class List {
 		this.is_scrollbar_visible = g_properties.show_scrollbar;
 		/** @protected {boolean} */
 		this.is_scrollbar_available = false;
+		/** @protected {boolean} */
+		this.needs_scrollbar_update = false;
 
 		// * Objects
 		/** @protected {?ScrollBar} */
@@ -173,10 +175,15 @@ class List {
 		if (pref.playlistAutoHideScrollbar) {
 			if (this.scrollbar.trace(x, y)) {
 				g_properties.show_scrollbar = true;
+				this.update_scrollbar();
+				this.needs_scrollbar_update = true;
 			} else if (!this.mouse_in || !this.scrollbar.trace(x, y)) {
 				g_properties.show_scrollbar = false;
+				if (this.needs_scrollbar_update) {
+					this.update_scrollbar();
+					this.needs_scrollbar_update = false;
+				}
 			}
-			this.update_scrollbar();
 		}
 		// * Update playlist row hover state or automatic scrollbar hide
 		if (pref.playlistRowHover || pref.playlistAutoHideScrollbar) {
