@@ -5576,7 +5576,7 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 		}
 
 		last_hover_row = hover_row;
-		playlistDropIndex = last_hover_row.idx;
+		playlistDropIndex = is_drop_bottom_selected ? hover_row.idx + 1 : hover_row.idx; // * Needed for libraryPlaylistDragDrop
 	};
 
 	/**
