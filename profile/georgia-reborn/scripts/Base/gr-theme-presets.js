@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-23                                          * //
+// * Last change:    2023-06-24                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -181,7 +181,9 @@ const customP10 = () => { customThemeSetup(); pref.styleBlend = true; pref.style
 // * SET THEME PRESET * //
 //////////////////////////
 function setThemePreset(preset) {
+	themePresetMatchMode = false;
 	resetStyle('all');
+
 	switch (preset) {
 		// * WHITE THEME PRESETS * //
 		case 'whiteP01': whiteP01(); break; // * Beveled
@@ -655,6 +657,7 @@ function themePresetRandomPicker() {
 		setRandomThemePreset();
 	}
 	else {
+		themePresetIndicator = false;
 		presetAutoRandomModeTimer = setInterval(() => {
 			if (activeMenu) return; // * Workaround that pauses when a context menu is active which partially blocks color initialization;
 			setRandomThemePreset();

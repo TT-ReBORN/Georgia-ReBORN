@@ -206,6 +206,7 @@ function themeOptions(menu) {
 ///////////////////////
 function styleOptions(menu) {
 	const styleMenu = new Menu('Style');
+	themePresetIndicator = true;
 	themePresetMatchMode = true;
 
 	// * STYLES * //

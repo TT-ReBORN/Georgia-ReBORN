@@ -808,6 +808,8 @@ function initThemeTags() {
 	const customStyle  = $('[%GR_STYLE%]');
 	const customPreset = $('[%GR_PRESET%]');
 
+	themePresetIndicator = false;
+
 	// * Restore last theme state
 	if (pref.presetSelectMode === 'default' && themeRestoreState) {
 		debugLog('initThemeTags restore');
@@ -895,8 +897,6 @@ function initThemeTags() {
 		updateStyle();
 		debugLog('updateStyle -> initThemeTags');
 	}
-
-	themePresetMatchMode = false;
 }
 
 
@@ -1873,10 +1873,8 @@ function setPlaylistSortOrder() {
 
 /** Called when user activates show theme preset indicator */
 function showThemePresetIndicator(gr) {
-	if (!pref.presetIndicator || !['off', 'dblclick'].includes(pref.presetAutoRandomMode) ||
-		['default', 'harmonic', 'theme'].includes(pref.presetSelectMode) && !doubleClicked ||
-		$('[%GR_THEME%]') || $('[%GR_STYLE%]') || $('[%GR_PRESET%]')) {
-		return; // * Do not show the preset indicator on these conditions to prevent popup annoyance
+	if (!pref.presetIndicator || !themePresetIndicator || !['off', 'dblclick'].includes(pref.presetAutoRandomMode)) {
+		return;
 	}
 
 	const match = themePresetMatchMode;
@@ -3193,6 +3191,7 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 		if (fb.IsPlaying && !mouseInControl && (state.mouse_x > 0 && state.mouse_x && state.mouse_y > wh - scaleForDisplay(120) && state.mouse_y)) {
 			// * Pick a new random theme preset
 			if (pref.presetAutoRandomMode === 'dblclick') {
+				themePresetIndicator = true;
 				themePresetRandomPicker();
 			}
 			// * Generate a new color in Random theme
