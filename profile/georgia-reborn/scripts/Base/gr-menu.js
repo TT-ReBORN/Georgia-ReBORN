@@ -705,6 +705,9 @@ function presetOptions(menu) {
 		pref.presetAutoRandomMode = timer;
 		if (!['off', 'track', 'album', 'dblclick'].includes(timer)) {
 			themePresetRandomPicker();
+		} else {
+			clearInterval(presetAutoRandomModeTimer);
+			presetAutoRandomModeTimer = null;
 		}
 	}, pref.presetSelectMode === 'harmonic');
 	themePresetAutoRandomModeMenu.appendTo(themePresetsMenu);
