@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-21                                          * //
+// * Last change:    2023-06-24                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -813,14 +813,16 @@ function initThemeTags() {
 		debugLog('initThemeTags restore');
 		resetStyle('all');
 		resetTheme();
-		restoreThemeStylePreset();
+		restoreThemeStylePreset(); // * Retore saved pref settings
 		if (pref.savedPreset !== false) setThemePreset(pref.savedPreset);
+		initStyleState();
 		themeRestoreState = false;
 	}
 
 	// * Skip also restore on next call
 	if (pref.theme === pref.savedTheme && !customTheme && !customStyle && !customPreset) {
 		debugLog('initThemeTags skipped');
+		restoreThemeStylePreset(true); // * Reset saved pref settings
 		themeRestoreState = false;
 		return;
 	}
@@ -1134,6 +1136,7 @@ function resetStyle(group) {
 	}
 }
 
+
 /** Called to restore theme, style, preset after custom %GR_THEME%, %GR_STYLE%, %GR_PRESET% usage or in theme sandbox. Used in initThemeTags() and theme sandbox options */
 function restoreThemeStylePreset(reset) {
 	if (reset) {
@@ -1166,7 +1169,7 @@ function restoreThemeStylePreset(reset) {
 		pref.savedStyleVolumeBar = pref.styleVolumeBar;
 		pref.savedStyleVolumeBarFill = pref.styleVolumeBarFill;
 		pref.savedThemeBrightness = pref.themeBrightness;
-		pref.savedPreset = pref.preset;
+		pref.savedPreset = false;
 	} else {
 		pref.theme = pref.savedTheme;
 		pref.styleBevel = pref.savedStyleBevel;
