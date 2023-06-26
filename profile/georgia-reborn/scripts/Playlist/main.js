@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-23                                          * //
+// * Last change:    2023-06-26                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -5191,7 +5191,9 @@ class Row extends ListItem {
 	}
 
 	update_title_color() {
-		this.title_color = pref.styleBlackAndWhite ? RGB(200, 200, 200) : pref.styleBlackAndWhite2 ? RGB(80, 80, 80) : g_pl_colors.row_title_normal;
+		const panelWhite = colBrightness > 210 && pref.styleRebornFusion || colBrightness2 > 210 && pref.styleRebornFusion2 || pref.styleBlackAndWhite2;
+		const panelBlack = colBrightness <  25 && pref.styleRebornFusion || colBrightness2 < 25  && pref.styleRebornFusion2 || pref.styleBlackAndWhite;
+		this.title_color = panelWhite ? RGB(80, 80, 80) : panelBlack ? RGB(200, 200, 200) : g_pl_colors.row_title_normal;
 	}
 }
 

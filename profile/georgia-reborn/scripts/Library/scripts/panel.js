@@ -1325,6 +1325,7 @@ class Panel {
 
 		if (img.labels.overlayDark) ui.getItemColours();
 		initLibraryColors();
+		themeColorAdjustments();
 
 		this.setRootName();
 		but.setSbarIcon();

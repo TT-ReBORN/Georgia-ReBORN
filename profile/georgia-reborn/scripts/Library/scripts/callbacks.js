@@ -657,6 +657,7 @@ function initLibraryLayout() {
 	setLibraryView();
 	setLibrarySize();
 	initLibraryColors();
+	themeColorAdjustments();
 	window.Repaint();
 }
 

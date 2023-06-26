@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-24                                          * //
+// * Last change:    2023-06-26                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2478,6 +2478,7 @@ function libraryOptions(menu, context_menu) {
 				men.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
 				setLibrarySize();
 				initLibraryColors();
+				themeColorAdjustments();
 				g_properties.show_header = true;
 				g_properties.auto_collapse = false;
 				displayPlaylist = true;

@@ -486,6 +486,7 @@ class MenuItems {
 	loadView(clearCache, view, sel) {
 		ui.getColours();
 		initLibraryColors();
+		themeColorAdjustments();
 		sbar.setCol();
 		but.createImages();
 		if (clearCache) img.clearCache();
@@ -720,6 +721,7 @@ class MenuItems {
 				autoThumbnailSize();
 				setLibrarySize();
 				initLibraryColors();
+				themeColorAdjustments();
 				if (pref.libraryDesign === 'traditional') pop.createImages();
 
 				blendedImgNeedsRepaint = false;

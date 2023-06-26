@@ -188,7 +188,7 @@ class ScrollbarBio {
 
 			let thumbColors = [uiBio.col.sbarNormalRGBA, uiBio.col.sbarHoveredRGBA, uiBio.col.sbarDragRGBA];
 
-			if (g_pl_colors.bg !== RGB(255, 255, 255)) {
+			if (g_pl_colors.bg !== RGB(255, 255, 255) && !pref.styleRebornFusion && !pref.styleRebornFusion2) {
 				if ((pref.theme === 'reborn' || pref.theme === 'random') && lightBg) {
 					thumbColors = [uiBio.col.darkAccentRGBA_75, uiBio.col.darkAccentRGBA_50, uiBio.col.lightAccentRGBA2_50];
 				}

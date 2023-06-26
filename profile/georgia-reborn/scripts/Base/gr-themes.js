@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-19                                          * //
+// * Last change:    2023-06-26                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3129,6 +3129,448 @@ function mainColorsCustomTheme() {
 }
 
 
+/////////////////////////////////////
+// * WHITE PANEL AND MAIN COLORS * //
+/////////////////////////////////////
+/** Mainly used for style Black and white 2 or theme color adjustments for style Reborn fusion 1 and 2 when panel bg is too light */
+function panelWhiteColors(lighterBg) {
+	// * PLAYLIST COLORS * //
+	g_pl_colors.bg = lighterBg ? RGB(255, 255, 255) : RGB(245, 245, 245);
+	g_pl_colors.plman_bg = g_pl_colors.bg;
+	g_pl_colors.plman_text_normal = pref.autoHidePlman ? g_pl_colors.bg : RGB(180, 180, 180);
+	g_pl_colors.plman_text_hovered = pref.autoHidePlman ? RGB(100, 100, 100) : RGB(240, 240, 240);
+	g_pl_colors.plman_text_pressed = pref.autoHidePlman ? RGB(100, 100, 100) : RGB(180, 180, 180);
+	g_pl_colors.header_nowplaying_bg = pref.styleBlend ? lighterBg ? RGBA(245, 245, 245, 130) : RGBA(255, 255, 255, 130) : lighterBg ? RGB(245, 245, 245) : RGB(255, 255, 255);
+	g_pl_colors.header_sideMarker = isStreaming ? RGB(207, 0, 5) : RGB(40, 40, 40);
+	g_pl_colors.header_artist_normal = RGB(80, 80, 80);
+	g_pl_colors.header_artist_playing = RGB(60, 60, 60);
+	g_pl_colors.header_album_normal = RGB(80, 80, 80);
+	g_pl_colors.header_album_playing = RGB(60, 60, 60);
+	g_pl_colors.header_info_normal = RGB(60, 60, 60);
+	g_pl_colors.header_info_playing = RGB(60, 60, 60);
+	g_pl_colors.header_date_normal = RGB(60, 60, 60);
+	g_pl_colors.header_date_playing = RGB(60, 60, 60);
+	g_pl_colors.header_line_normal = pref.styleBlend ? RGB(190, 190, 190) : RGB(215, 215, 215);
+	g_pl_colors.header_line_playing = pref.styleBlend ? RGB(200, 200, 200) : RGB(215, 215, 215);
+	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
+	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(25, 25, 25, 130) : RGB(25, 25, 25);
+	g_pl_colors.row_selection_bg = pref.styleBlend ? RGB(190, 190, 190) : RGB(215, 215, 215);
+	g_pl_colors.row_selection_frame = pref.styleBlend ? RGB(190, 190, 190) : g_pl_colors.row_selection_bg;
+	g_pl_colors.row_sideMarker = g_pl_colors.header_sideMarker;
+	g_pl_colors.row_title_normal = RGB(80, 80, 80);
+	g_pl_colors.row_title_playing = RGB(60, 60, 60);
+	g_pl_colors.row_title_selected = RGB(0, 0, 0);
+	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
+	g_pl_colors.row_rating_color = RGB(255, 190, 0);
+	g_pl_colors.row_disc_subheader_line = pref.styleBlend ? RGB(190, 190, 190) : RGB(215, 215, 215);
+	g_pl_colors.sbar_btn_normal = RGB(100, 100, 100);
+	g_pl_colors.sbar_btn_hovered = RGB(0, 0, 0);
+	g_pl_colors.sbar_thumb_normal = RGB(100, 100, 100);
+	g_pl_colors.sbar_thumb_hovered = RGB(40, 40, 40);
+	g_pl_colors.sbar_thumb_drag = g_pl_colors.sbar_thumb_hovered;
+
+	// * LIBRARY COLORS * //
+	ui.col.bg = g_pl_colors.bg;
+	ui.col.nowPlayingBg = g_pl_colors.row_nowplaying_bg;
+	ui.col.sideMarker = isStreaming ? RGB(207, 0, 5) : RGB(40, 40, 40);
+	ui.col.selectionFrame = pref.styleBlend ? RGB(190, 190, 190) : RGB(215, 215, 215);
+	ui.col.selectionFrame2 = ui.col.sideMarker;
+	ui.col.hoverFrame = ui.col.sideMarker;
+	ui.col.iconPlus = RGB(80, 80, 80);
+	ui.col.iconPlus_h = RGB(0, 0, 0);
+	ui.col.iconPlus_sel = RGB(0, 0, 0);
+	ui.col.iconPlusBg = pref.libraryDesign === 'traditional' ? RGB(255, 255, 255) : RGB(45, 45, 45);
+	ui.col.iconMinus_e = RGB(80, 80, 80);
+	ui.col.iconMinus_c = ui.col.iconMinus_e;
+	ui.col.iconMinus_h = RGB(0, 0, 0);
+	ui.col.text = ppt.albumArtShow && img.labels.overlayDark ? RGB(220, 220, 220) : RGB(80, 80, 80);
+	ui.col.text_h = ppt.albumArtShow && img.labels.overlayDark ? RGB(255, 255, 255) : RGB(0, 0, 0);
+	ui.col.text_nowp = RGB(0, 0, 0);
+	ui.col.textSel = RGB(0, 0, 0);
+	ui.col.txt = ui.col.text;
+	ui.col.txt_h = ui.col.text_h;
+	ui.col.txt_box = RGB(80, 80, 80);
+	ui.col.count = ui.col.text;
+	ui.col.search = RGB(80, 80, 80);
+	ui.col.searchBtn = RGB(0, 0, 0);
+	ui.col.crossBtn = RGB(0, 0, 0);
+	ui.col.filterBtn = RGB(80, 80, 80);
+	ui.col.settingsBtn = RGB(80, 80, 80);
+	ui.col.line = pref.styleBlend ? RGB(190, 190, 190) : RGB(215, 215, 215);
+	ui.col.s_line = ui.col.line;
+	ui.col.sbarBtns = RGB(60, 60, 60);
+	ui.col.sbarNormal = RGB(0, 0, 0);
+	ui.col.sbarHovered = RGB(40, 40, 40);
+	ui.col.sbarDrag = RGB(40, 40, 40);
+
+	// * BIOGRAPHY COLORS * //
+	uiBio.col.bg = g_pl_colors.bg;
+	uiBio.col.headingText = RGB(60, 60, 60);
+	uiBio.col.bottomLine = g_pl_colors.header_line_normal;
+	uiBio.col.centerLine = uiBio.col.bottomLine;
+	uiBio.col.text = g_pl_colors.row_title_normal;
+	uiBio.col.source = g_pl_colors.row_title_normal;
+	uiBio.col.sbarBtns = RGB(60, 60, 60);
+	uiBio.col.sbarNormal = RGB(0, 0, 0);
+	uiBio.col.sbarHovered = RGB(40, 40, 40);
+	uiBio.col.sbarDrag = RGB(40, 40, 40);
+	uiBio.col.noPhotoStubBg = RGB(25, 25, 25);
+	uiBio.col.noPhotoStubText = pref.theme === 'cream' ? RGB(120, 170, 130) : g_pl_colors.header_artist_playing;
+
+	// * DETAILS COLORS * //
+	col.detailsBg = g_pl_colors.bg;
+	col.detailsText = RGB(60, 60, 60);
+	col.timelineAdded = isStreaming ? RGB(207, 0, 5) : RGB(40, 40, 40);
+	col.timelinePlayed = isStreaming ? RGB(207, 0, 5) : RGB(80, 80, 80);
+	col.timelineUnplayed = isStreaming ? RGB(207, 0, 5) : RGB(120, 120, 120);
+	col.timelineFrame = col.detailsBg;
+	if (str.timeline) str.timeline.setColors(col.timelineAdded, col.timelinePlayed, col.timelineUnplayed);
+
+	// * POPUP COLORS * //
+	col.popupBg = g_pl_colors.row_nowplaying_bg;
+	col.popupText = g_pl_colors.row_title_playing;
+}
+
+
+/** Mainly used for style Black and white 1 or theme color adjustments for style Reborn fusion 1 and 2 when main bg is too light */
+function mainWhiteColors(lighterBg) {
+	// * MAIN COLORS * //
+	col.bg = lighterBg || pref.styleBevel ? RGB(255, 255, 255) : RGB(230, 230, 230);
+	col.uiHacksFrame = col.bg;
+	col.noAlbumArtStub = RGB(255, 255, 255);
+	col.lowerBarArtist = RGB(80, 80, 80);
+	col.lowerBarTitle = RGB(80, 80, 80);
+	col.lowerBarTime = col.lowerBarTitle;
+	col.lowerBarLength = col.lowerBarTitle;
+
+	// * TOP MENU BUTTON COLORS * //
+	col.menuBgColor = RGB(255, 255, 255);
+
+	col.menuStyleBg =
+		pref.styleTopMenuButtons === 'bevel' || pref.styleTopMenuButtons === 'inner' ? RGB(210, 210, 210) :
+		pref.styleTopMenuButtons === 'emboss' ? RGB(235, 235, 235) :
+		pref.styleBevel ? RGB(205, 205, 205) : RGB(220, 220, 220);
+
+	col.menuRectStyleEmbossTop = RGB(255, 255, 255);
+	col.menuRectStyleEmbossBottom = pref.styleBevel ? RGB(200, 200, 200) : RGB(195, 195, 195);
+
+	col.menuRectNormal =
+		pref.styleTopMenuButtons === 'filled' ? RGB(200, 200, 200) :
+		pref.styleBlend || pref.styleBlend2 ? pref.styleBevel ? RGB(140, 140, 140) : RGB(150, 150, 150) :
+		pref.styleBevel ? RGB(170, 170, 170) : RGB(180, 180, 180);
+
+	col.menuRectHovered =
+		pref.styleTopMenuButtons === 'filled' ? RGB(200, 200, 200) :
+		pref.styleTopMenuButtons === 'bevel' || pref.styleTopMenuButtons === 'inner' ? pref.styleBevel ? RGB(200, 200, 200) : RGB(205, 205, 205) :
+		pref.styleBlend || pref.styleBlend2 ? pref.styleBevel ? RGB(140, 140, 140) : RGB(150, 150, 150) :
+		pref.styleBevel ? RGB(170, 170, 170) : RGB(180, 180, 180);
+
+	col.menuRectDown = col.menuRectHovered;
+	col.menuTextNormal = RGB(80, 80, 80);
+	col.menuTextHovered = RGB(40, 40, 40);
+	col.menuTextDown = col.menuTextHovered;
+
+	// * LOWER BAR TRANSPORT BUTTON COLORS * //
+	col.transportEllipseBg = (pref.styleBlend || pref.styleBlend2) && fb.IsPlaying ? RGB(230, 230, 230) : RGB(255, 255, 255);
+	col.transportEllipseNormal =  pref.styleBlend || pref.styleBlend2 ? pref.styleBevel ? RGB(200, 200, 200) : RGB(210, 210, 210) : RGB(220, 220, 220);
+	col.transportEllipseHovered = pref.styleBlend || pref.styleBlend2 ? pref.styleBevel ? RGB(160, 160, 160) : RGB(170, 170, 170) : RGB(180, 180, 180);
+	col.transportEllipseDown = col.transportEllipseHovered;
+
+	col.transportStyleBg =
+		pref.styleTransportButtons === 'bevel'  ? pref.styleBevel ? RGB(200, 200, 200) : RGB(205, 205, 205) :
+		pref.styleTransportButtons === 'inner'  ? pref.styleBevel ? RGB(215, 215, 215) : RGB(205, 205, 205) :
+		pref.styleTransportButtons === 'emboss' ? pref.styleBevel ? RGB(230, 230, 230) : RGB(215, 215, 215) :
+		RGB(225, 225, 225);
+
+	col.transportStyleTop = RGB(255, 255, 255);
+
+	col.transportStyleBottom =
+		pref.styleTransportButtons === 'bevel' || pref.styleTransportButtons === 'inner' ?
+			pref.styleBlend || pref.styleBlend2 ? RGB(180, 180, 180) : pref.styleBevel ? RGB(200, 200, 200) : RGB(220, 220, 220) :
+		pref.styleTransportButtons === 'emboss' ?
+			pref.styleBlend || pref.styleBlend2 ? RGB(180, 180, 180) : pref.styleBevel ? RGB(215, 215, 215) : RGB(210, 210, 210) :
+		RGB(230, 230, 230);
+
+	// * PROGRESS BAR COLORS * //
+	col.progressBar =
+		pref.styleBlend || pref.styleBlend2 ? pref.styleBevel ? RGB(205, 205, 205) : RGB(215, 215, 215) :
+		pref.styleBevel ? RGB(195, 195, 195) : RGB(210, 210, 210);
+
+	col.progressBarFill = RGB(255, 255, 255);
+
+	// * PEAKMETER BAR COLORS * //
+	col.peakmeterBarProg          = col.progressBar;
+	col.peakmeterBarProgFill      = RGB(20, 20, 20);
+	col.peakmeterBarFillTop       = RGB(140, 140, 140);
+	col.peakmeterBarFillMiddle    = RGB(20, 20, 20);
+	col.peakmeterBarFillBack      = RGB(80, 80, 80);
+	col.peakmeterBarVertProgFill  = RGB(20, 20, 20);
+	col.peakmeterBarVertFill      = RGB(20, 20, 20);
+	col.peakmeterBarVertFillPeaks = RGB(120, 120, 120);
+	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
+
+	// * WAVEFORM BAR COLORS * //
+	col.waveformBarFillFront    = RGB(120, 120, 120);
+	col.waveformBarFillBack     = RGB(20, 20, 20);
+	col.waveformBarFillPreFront = RGB(160, 160, 160);
+	col.waveformBarFillPreBack  = RGB(120, 120, 120);
+	col.waveformBarIndicator    = RGB(255, 255, 255);
+
+	// * VOLUME BAR COLORS * //
+	col.volumeBar = RGB(255, 255, 255);
+	col.volumeBarFill = RGB(120, 120, 120);
+	col.volumeBarFrame = RGB(210, 210, 210);
+
+	// * STYLE COLORS * //
+	col.styleProgressBar =
+		pref.styleProgressBar === 'bevel' ? pref.styleBevel ? RGBA(0, 0, 0, 40) : RGBA(0, 0, 0, 30) :
+		pref.styleProgressBar === 'inner' ? pref.styleBevel ? RGBA(0, 0, 0, 35) : RGBA(0, 0, 0, 40) : '';
+
+	col.styleProgressBarLineTop =
+		pref.styleProgressBar === 'bevel' ? pref.styleProgressBarDesign === 'rounded' ? RGBA(0, 0, 0, 40) :
+											pref.styleBevel ? RGBA(255, 255, 255, 20) : RGBA(0, 0, 0, 0) :
+		pref.styleProgressBar === 'inner' ? pref.styleProgressBarDesign === 'rounded' ? RGBA(0, 0, 0, 50) :
+											RGBA(0, 0, 0, 20) : '';
+
+	col.styleProgressBarLineBottom =
+		pref.styleProgressBar === 'bevel' ? pref.styleProgressBarDesign === 'rounded' ? pref.styleBevel ? RGBA(255, 255, 255, 180) : RGBA(255, 255, 255, 255) :
+											pref.styleBevel ? RGBA(255, 255, 255, 160) : RGBA(255, 255, 255, 220) :
+		pref.styleProgressBar === 'inner' ? pref.styleProgressBarDesign === 'rounded' ? pref.styleBevel ? RGBA(255, 255, 255, 150) : RGBA(255, 255, 255, 255) :
+											pref.styleBevel ? RGBA(255, 255, 255, 120) : RGBA(255, 255, 255, 170) : '';
+
+	col.styleProgressBarFill =
+		pref.styleProgressBarFill === 'bevel' ? RGBA(0, 0, 0, pref.styleBevel ? 40 : 30) :
+		pref.styleProgressBarFill === 'inner' ? RGBA(0, 0, 0, pref.styleBevel ? 50 : 40) : '';
+
+	col.styleVolumeBar =
+		pref.styleVolumeBar === 'bevel' ? pref.styleBevel ? RGBA(0, 0, 0, 25) : RGBA(0, 0, 0, 30) :
+		pref.styleVolumeBar === 'inner' ? RGBA(0, 0, 0, 30) : '';
+
+	col.styleVolumeBarFill = pref.styleVolumeBarFill === 'bevel' || pref.styleVolumeBarFill === 'inner' ? RGBA(255, 255, 255, 90) : '';
+}
+
+
+/////////////////////////////////////
+// * BLACK PANEL AND MAIN COLORS * //
+/////////////////////////////////////
+/** Mainly used for style Black and white 1 or theme color adjustments for style Reborn fusion 1 and 2 when panel bg is too dark */
+function panelBlackColors(darkerBg) {
+	// * PLAYLIST COLORS * //
+	g_pl_colors.bg = darkerBg ? RGB(0, 0, 0) : RGB(20, 20, 20);
+	g_pl_colors.plman_bg = g_pl_colors.bg;
+	g_pl_colors.plman_text_normal = pref.autoHidePlman ? g_pl_colors.bg : RGB(180, 180, 180);
+	g_pl_colors.plman_text_hovered = pref.autoHidePlman ? RGB(200, 200, 200) : RGB(240, 240, 240);
+	g_pl_colors.plman_text_pressed = pref.autoHidePlman ? RGB(240, 240, 240) : RGB(180, 180, 180);
+	g_pl_colors.header_nowplaying_bg = pref.styleBlend ? RGBA(230, 230, 230, 200) : RGB(230, 230, 230);
+	g_pl_colors.header_sideMarker = isStreaming ? RGB(207, 0, 5) : RGB(255, 255, 255);
+	g_pl_colors.header_artist_normal = RGB(220, 220, 220);
+	g_pl_colors.header_artist_playing = RGB(25, 25, 25);
+	g_pl_colors.header_album_normal = RGB(200, 200, 200);
+	g_pl_colors.header_album_playing = RGB(25, 25, 25);
+	g_pl_colors.header_info_normal = RGB(200, 200, 200);
+	g_pl_colors.header_info_playing = RGB(25, 25, 25);
+	g_pl_colors.header_date_normal = RGB(220, 220, 220);
+	g_pl_colors.header_date_playing = RGB(25, 25, 25);
+	g_pl_colors.header_line_normal = pref.styleBlend ? RGB(80, 80, 80) : RGB(45, 45, 45);
+	g_pl_colors.header_line_playing = RGB(25, 25, 25);
+	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
+	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(25, 25, 25, 130) : RGB(25, 25, 25);
+	g_pl_colors.row_selection_bg = pref.styleBlend ? RGB(80, 80, 80) : RGB(45, 45, 45);
+	g_pl_colors.row_selection_frame = g_pl_colors.row_selection_bg;
+	g_pl_colors.row_sideMarker = g_pl_colors.header_sideMarker;
+	g_pl_colors.row_title_normal = RGB(200, 200, 200);
+	g_pl_colors.row_title_playing = RGB(25, 25, 25);
+	g_pl_colors.row_title_selected = RGB(255, 255, 255);
+	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
+	g_pl_colors.row_rating_color = RGB(255, 190, 0);
+	g_pl_colors.row_disc_subheader_line = pref.styleBlend ? RGB(80, 80, 80) : RGB(45, 45, 45);
+	g_pl_colors.sbar_btn_normal = RGB(200, 200, 200);
+	g_pl_colors.sbar_btn_hovered = RGB(255, 255, 255);
+	g_pl_colors.sbar_thumb_normal = RGB(180, 180, 180);
+	g_pl_colors.sbar_thumb_hovered = RGB(255, 255, 255);
+	g_pl_colors.sbar_thumb_drag = g_pl_colors.sbar_thumb_hovered;
+
+	// * LIBRARY COLORS * //
+	ui.col.bg = g_pl_colors.bg;
+	ui.col.nowPlayingBg = g_pl_colors.row_nowplaying_bg;
+	ui.col.sideMarker = isStreaming ? RGB(207, 0, 5) : RGB(255, 255, 255);
+	ui.col.selectionFrame = pref.styleBlend ? RGB(80, 80, 80) : RGB(45, 45, 45);
+	ui.col.selectionFrame2 = ui.col.sideMarker;
+	ui.col.hoverFrame = ui.col.sideMarker;
+	ui.col.iconPlus = RGB(220, 220, 220);
+	ui.col.iconPlus_h = RGB(255, 255, 255);
+	ui.col.iconPlus_sel = RGB(255, 255, 255);
+	ui.col.iconPlusBg = RGB(45, 45, 45);
+	ui.col.iconMinus_e = RGB(220, 220, 220);
+	ui.col.iconMinus_c = ui.col.iconMinus_e;
+	ui.col.iconMinus_h = RGB(255, 255, 255);
+	ui.col.text = RGB(200, 200, 200);
+	ui.col.text_h = !ppt.albumArtShow || ppt.albumArtShow && ppt.highLightRow !== 2 ? RGB(255, 255, 255) : RGB(0, 0, 0);
+	ui.col.text_nowp = RGB(0, 0, 0);
+	ui.col.textSel =
+		ppt.albumArtShow && !['coversLabelsRight', 'coversLabelsBottom', 'coversLabelsBlend'].includes(pref.libraryDesign) ||
+		pref.libraryDesign === 'traditional' ? RGB(0, 0, 0) : RGB(255, 255, 255);
+	ui.col.txt = ui.col.text;
+	ui.col.txt_h = ui.col.text_h;
+	ui.col.txt_box = RGB(200, 200, 200);
+	ui.col.count = ui.col.text;
+	ui.col.search = RGB(200, 200, 200);
+	ui.col.searchBtn = RGB(255, 255, 255);
+	ui.col.crossBtn = RGB(255, 255, 255);
+	ui.col.filterBtn = RGB(220, 220, 220);
+	ui.col.settingsBtn = RGB(220, 220, 220);
+	ui.col.line = pref.styleBlend ? RGB(80, 80, 80) : RGB(45, 45, 45);
+	ui.col.s_line = ui.col.line;
+	ui.col.sbarBtns = RGB(200, 200, 200);
+	ui.col.sbarNormal = RGB(255, 255, 255);
+	ui.col.sbarHovered = RGB(255, 255, 255);
+	ui.col.sbarDrag = RGB(255, 255, 255);
+
+	// * BIOGRAPHY COLORS * //
+	uiBio.col.bg = g_pl_colors.bg;
+	uiBio.col.headingText = RGB(230, 230, 230);
+	uiBio.col.bottomLine = g_pl_colors.header_line_normal;
+	uiBio.col.centerLine = uiBio.col.bottomLine;
+	uiBio.col.text = g_pl_colors.row_title_normal;
+	uiBio.col.source = g_pl_colors.row_title_normal;
+	uiBio.col.sbarBtns = RGB(200, 200, 200);
+	uiBio.col.sbarNormal = RGB(255, 255, 255);
+	uiBio.col.sbarHovered = RGB(255, 255, 255);
+	uiBio.col.sbarDrag = RGB(255, 255, 255);
+	uiBio.col.noPhotoStubBg = RGB(25, 25, 25);
+	uiBio.col.noPhotoStubText = pref.theme === 'cream' ? RGB(120, 170, 130) : g_pl_colors.header_artist_playing;
+
+	// * DETAILS COLORS * //
+	col.detailsBg = g_pl_colors.bg;
+	col.detailsText = RGB(220, 220, 220);
+	col.timelineAdded = isStreaming ? RGB(207, 0, 5) : RGB(230, 230, 230);
+	col.timelinePlayed = isStreaming ? RGB(207, 0, 5) : RGB(180, 180, 180);
+	col.timelineUnplayed = isStreaming ? RGB(207, 0, 5) : RGB(160, 160, 160);
+	col.timelineFrame = col.detailsBg;
+	if (str.timeline) str.timeline.setColors(col.timelineAdded, col.timelinePlayed, col.timelineUnplayed);
+
+	// * POPUP COLORS * //
+	col.popupBg = g_pl_colors.row_nowplaying_bg;
+	col.popupText = g_pl_colors.row_title_playing;
+}
+
+
+/** Mainly used for style Black and white 2 or theme color adjustments for style Reborn fusion 1 and 2 when main bg is too dark */
+function mainBlackColors(darkerBg) {
+	// * MAIN COLORS * //
+	col.bg = pref.styleBevel ? darkerBg ? RGB(25, 25, 25) : RGB(50, 50, 50) : darkerBg ? RGB(0, 0, 0) : RGB(25, 25, 25);
+	col.uiHacksFrame = col.bg;
+	col.shadow = isPlayingCD ? RGBA(0, 0, 0, 30) : col.shadow;
+	col.noAlbumArtStub = RGB(40, 40, 40);
+	col.lowerBarArtist = RGB(240, 240, 240);
+	col.lowerBarTitle = RGB(220, 220, 220);
+	col.lowerBarTime = col.lowerBarTitle;
+	col.lowerBarLength = col.lowerBarTitle;
+
+	// * TOP MENU BUTTONS COLORS * //
+	col.menuBgColor =
+		pref.styleTopMenuButtons === 'bevel'  ? pref.styleBevel ? RGB(40, 40, 40) : RGB(50, 50, 50) :
+		pref.styleTopMenuButtons === 'inner'  ? pref.styleBevel ? RGB(55, 55, 55) : RGB(50, 50, 50) :
+		pref.styleTopMenuButtons === 'emboss' ? RGB(45, 45, 45) :
+		RGB(35, 35, 35);
+
+	col.menuStyleBg =
+		pref.styleTopMenuButtons === 'inner'  ? RGB(20, 20, 20) :
+		pref.styleTopMenuButtons === 'emboss' ? pref.styleBevel ? RGB(45, 45, 45) : RGB(50, 50, 50) :
+		pref.styleBevel ? RGB(30, 30, 30) : RGB(20, 20, 20);
+
+	col.menuRectStyleEmbossTop = pref.styleBevel ? RGB(60, 60, 60) : RGB(70, 70, 70);
+	col.menuRectStyleEmbossBottom = RGB(0, 0, 0);
+
+	col.menuRectNormal =
+		pref.styleTopMenuButtons === 'filled' ? RGBA(60, 60, 60, 100) :
+		pref.styleTopMenuButtons === 'bevel'  ? RGB(0, 0, 0) :
+		RGB(60, 60, 60);
+
+	col.menuRectHovered =
+		pref.styleTopMenuButtons === 'filled' ? RGBA(120, 120, 120, 100) :
+		pref.styleTopMenuButtons === 'bevel' || pref.styleTopMenuButtons === 'inner' ? RGB(0, 0, 0) :
+		RGB(100, 100, 100);
+
+	col.menuRectDown = col.menuRectHovered;
+	col.menuTextNormal = pref.styleBlend || pref.styleBlend2 ? RGB(200, 200, 200) : RGB(180, 180, 180);
+	col.menuTextHovered = RGB(255, 255, 255);
+	col.menuTextDown = col.menuTextHovered;
+
+	// * LOWER BAR TRANSPORT BUTTON COLORS * //
+	col.transportEllipseBg = pref.styleBlend || pref.styleBlend2 ? RGB(60, 60, 60) : RGB(40, 40, 40);
+	col.transportEllipseNormal = RGB(50, 50, 50);
+	col.transportEllipseHovered = RGB(100, 100, 100);
+	col.transportEllipseDown = col.transportEllipseHovered;
+
+	col.transportStyleBg =
+		pref.styleTransportButtons === 'bevel' || pref.styleTransportButtons === 'inner' ? RGB(20, 20, 20) :
+		pref.styleTransportButtons === 'emboss' ? RGB(50, 50, 50) : '';
+
+	col.transportStyleTop =
+		pref.styleTransportButtons === 'bevel' || pref.styleTransportButtons === 'inner' ? RGB(50, 50, 50) :
+		pref.styleTransportButtons === 'emboss' ? pref.styleBevel ? RGBA(255, 255, 255, 30) : RGBA(255, 255, 255, 40) : '';
+
+	col.transportStyleBottom =
+		pref.styleTransportButtons === 'bevel' || pref.styleTransportButtons === 'inner' ? RGB(10, 10, 10) :
+		pref.styleTransportButtons === 'emboss' ? RGB(20, 20, 20) : '';
+
+	col.transportIconNormal = RGB(200, 200, 200);
+	col.transportIconHovered = RGB(255, 255, 255);
+	col.transportIconDown = col.transportIconHovered;
+
+	// * PROGRESS BAR COLORS * //
+	col.progressBar = RGB(50, 50, 50);
+	col.progressBarFill = RGB(210, 210, 210);
+
+	// * PEAKMETER BAR COLORS * //
+	col.peakmeterBarProg          = col.progressBar;
+	col.peakmeterBarProgFill      = RGB(200, 200, 200);
+	col.peakmeterBarFillTop       = RGB(120, 120, 120);
+	col.peakmeterBarFillMiddle    = RGB(160, 160, 160);
+	col.peakmeterBarFillBack      = RGB(80, 80, 80);
+	col.peakmeterBarVertProgFill  = col.progressBarFill;
+	col.peakmeterBarVertFill      = RGB(245, 245, 245);
+	col.peakmeterBarVertFillPeaks = RGB(200, 200, 200);
+	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
+
+	// * WAVEFORM BAR COLORS * //
+	col.waveformBarFillFront    = RGB(245, 245, 245);
+	col.waveformBarFillBack     = RGB(200, 200, 200);
+	col.waveformBarFillPreFront = RGB(160, 160, 160);
+	col.waveformBarFillPreBack  = RGB(120, 120, 120);
+	col.waveformBarIndicator    = RGB(255, 255, 255);
+
+	// * VOLUME BAR COLORS * //
+	col.volumeBar = col.progressBar;
+	col.volumeBarFill = col.progressBarFill;
+	col.volumeBarFrame = RGB(50, 50, 50);
+
+	// * STYLE COLORS * //
+	col.styleProgressBar =
+		pref.styleProgressBar === 'bevel' ? pref.styleBevel ? RGBA(0, 0, 0, 100) : RGBA(0, 0, 0, 80) :
+		pref.styleProgressBar === 'inner' ? RGBA(0, 0, 0, 100) : '';
+
+	col.styleProgressBarLineTop =
+		pref.styleProgressBar === 'bevel' ? pref.styleProgressBarDesign === 'rounded' ? pref.styleBevel ? RGBA(0, 0, 0, 60)  : RGBA(0, 0, 0, 255) :
+											RGBA(0, 0, 0, 255) :
+		pref.styleProgressBar === 'inner' ? pref.styleProgressBarDesign === 'rounded' ? pref.styleBevel ? RGBA(0, 0, 0, 255) : RGBA(0, 0, 0, 150) :
+											pref.styleBevel ? RGBA(0, 0, 0, 255) : RGBA(0, 0, 0, 100) : '';
+
+	col.styleProgressBarLineBottom =
+		pref.styleProgressBar === 'bevel' ? pref.styleProgressBarDesign === 'rounded' ? pref.styleBevel ? RGBA(255, 255, 255, 40) : RGBA(255, 255, 255, 30) :
+											pref.styleBevel ? RGBA(255, 255, 255, 30) : RGBA(255, 255, 255, 25) :
+		pref.styleProgressBar === 'inner' ? pref.styleProgressBarDesign === 'rounded' ? pref.styleBevel ? RGBA(255, 255, 255, 35) : RGBA(255, 255, 255, 30) :
+											pref.styleBevel ? RGBA(255, 255, 255, 45) : RGBA(255, 255, 255, 40) : '';
+
+	col.styleProgressBarFill = pref.styleProgressBarFill === 'bevel' || pref.styleProgressBarFill === 'inner' ? RGBA(0, 0, 0, 70) : '';
+
+	col.styleVolumeBar =
+		pref.styleVolumeBar === 'bevel' ? pref.styleBevel ? RGBA(0, 0, 0, 70) : RGBA(0, 0, 0, 80) :
+		pref.styleVolumeBar === 'inner' ? pref.styleBevel ? RGBA(0, 0, 0, 70) : RGBA(0, 0, 0, 80) : '';
+}
+
+
 //////////////////////////////
 // * LIBRARY THEME COLORS * //
 //////////////////////////////
@@ -3212,6 +3654,7 @@ function biographyThemeColors() {
 /////////////////////////////////
 function themeColorAdjustments() {
 	const cBRT = colBrightness;
+	const cBRT2 = colBrightness2;
 	const iBRT = imgBrightness;
 	const bevel = pref.styleBevel;
 	const blend = pref.styleBlend;
@@ -3229,7 +3672,7 @@ function themeColorAdjustments() {
 			case colorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) > 150: col.transportStyleBottom = RGB(185, 185, 185); break;
 			case colorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) >  75: col.transportStyleBottom = RGB(190, 190, 190); break;
 			case colorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) >  50: col.transportStyleBottom = RGB(195, 195, 195); break;
-			case colorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) >   0: col.transportStyleBottom = RGB(200, 200, 200); break;
+			case colorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) >=  0: col.transportStyleBottom = RGB(200, 200, 200); break;
 		}
 	}
 
@@ -3259,7 +3702,7 @@ function themeColorAdjustments() {
 			cBRT >  75 ? blend ? RGBtoRGBA(col.primary, bevel ? 180 : 200) : col.primary :
 			cBRT >  50 ? blend ? RGBtoRGBA(col.primary, bevel ? 180 : 200) : col.primary :
 			cBRT >  25 ? blend ? RGBtoRGBA(col.primary, bevel ? 180 : 200) : col.primary :
-			cBRT >   0 ? cBRT < 10 ? tintColor(col.primary, blend || blend2 ? 15 : 10) :
+			cBRT >=  0 ? cBRT < 10 ? tintColor(col.primary, blend || blend2 ? 15 : 10) :
 									 tintColor(col.primary, blend || blend2 ? 15 :  5) : '';
 
 		g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
@@ -3278,7 +3721,7 @@ function themeColorAdjustments() {
 			cBRT >  75 ? transpBtns === 'emboss' ? tintColor(col.transportStyleTop,  40) : shadeColor(col.transportStyleTop,  8) :
 			cBRT >  50 ? transpBtns === 'emboss' ? shadeColor(col.transportStyleTop, 10) : tintColor(col.transportStyleTop,   6) :
 			cBRT >  25 ? transpBtns === 'emboss' ? shadeColor(col.transportStyleTop, 20) : tintColor(col.transportStyleTop,   4) :
-			cBRT >   0 ? transpBtns === 'emboss' ? shadeColor(col.transportStyleTop, 20) : tintColor(col.transportStyleTop,   4) : '';
+			cBRT >=  0 ? transpBtns === 'emboss' ? shadeColor(col.transportStyleTop, 20) : tintColor(col.transportStyleTop,   4) : '';
 
 		col.transportStyleBottom =
 			cBRT > 200 ? tintColor(col.transportStyleBottom,   6) :
@@ -3289,7 +3732,7 @@ function themeColorAdjustments() {
 			cBRT >  75 ? shadeColor(col.transportStyleBottom, 12) :
 			cBRT >  50 ? tintColor(col.transportStyleBottom,   6) :
 			cBRT >  25 ? tintColor(col.transportStyleBottom,   4) :
-			cBRT >   0 ? tintColor(col.transportStyleBottom,   4) : '';
+			cBRT >=  0 ? tintColor(col.transportStyleBottom,   4) : '';
 
 		col.progressBar =
 			cBRT < 25 ? bevel ? tintColor(col.primary, cBRT < 10 ? blend2 ? 15 : 10 : 5) : shadeColor(col.primary, 30) :
@@ -3315,7 +3758,7 @@ function themeColorAdjustments() {
 			cBRT >  75 ? tintColor(col.progressBarFill, 30) :
 			cBRT >  50 ? tintColor(col.progressBarFill, 30) :
 			cBRT >  25 ? tintColor(col.primary, 25) :
-			cBRT >   0 ? tintColor(col.primary, 25) : '';
+			cBRT >=  0 ? tintColor(col.primary, 25) : '';
 
 		col.styleProgressBarFill =
 			cBRT > 200 ? progBarFillBevelInner ? RGBA(0, 0, 0, bevel ?  80 :  60) : '' :
@@ -3326,7 +3769,7 @@ function themeColorAdjustments() {
 			cBRT >  75 ? progBarFillBevelInner ? RGBA(0, 0, 0, bevel ? 100 :  90) : '' :
 			cBRT >  50 ? progBarFillBevelInner ? RGBA(0, 0, 0, bevel ? 110 : 100) : '' :
 			cBRT >  25 ? progBarFillBevelInner ? RGBA(0, 0, 0, bevel ? 130 : 120) : '' :
-			cBRT >   0 ? progBarFillBevelInner ? RGBA(0, 0, 0, bevel ? 130 : 120) : '' : '';
+			cBRT >=  0 ? progBarFillBevelInner ? RGBA(0, 0, 0, bevel ? 130 : 120) : '' : '';
 
 		col.shadow =
 			cBRT > 200 ? RGBA(0, 0, 0, alt ?  45 : 35) :
@@ -3337,7 +3780,7 @@ function themeColorAdjustments() {
 			cBRT >  75 ? RGBA(0, 0, 0, alt ?  75 : 50) :
 			cBRT >  50 ? RGBA(0, 0, 0, alt ? 100 : 55) :
 			cBRT >  25 ? RGBA(0, 0, 0, alt ? 120 : 70) :
-			cBRT >   0 ? RGBA(0, 0, 0, alt ? 140 : 90) : '';
+			cBRT >=  0 ? RGBA(0, 0, 0, alt ? 140 : 90) : '';
 	}
 
 	///////////////////////////////////////////////////////
@@ -3358,7 +3801,7 @@ function themeColorAdjustments() {
 			cBRT >  75 ? blend ? RGBtoRGBA(tintColor(primary,  8), 130) : tintColor(primary,  8) :
 			cBRT >  50 ? blend ? RGBtoRGBA(tintColor(primary,  6), 130) : tintColor(primary,  6) :
 			cBRT >  25 ? blend ? RGBtoRGBA(tintColor(primary,  6), 130) : tintColor(primary,  6) :
-			cBRT >   0 ? cBRT < 10 ? tintColor(primary, blend || blend2 ? 15 : 10) :
+			cBRT >=  0 ? cBRT < 10 ? tintColor(primary, blend || blend2 ? 15 : 10) :
 									 tintColor(primary, blend || blend2 ? 15 :  5) : '';
 
 		g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
@@ -3372,7 +3815,7 @@ function themeColorAdjustments() {
 			cBRT >  75 ? shadeColor(primary, 26) :
 			cBRT >  50 ? shadeColor(primary, 28) :
 			cBRT >  25 ? shadeColor(primary, 30) :
-			cBRT >   0 ? shadeColor(primary, 20) : '';
+			cBRT >=  0 ? tintColor(primary,  15) : '';
 
 		g_pl_colors.header_line_playing =
 			cBRT > 200 ? shadeColor(primary, 26) :
@@ -3383,7 +3826,7 @@ function themeColorAdjustments() {
 			cBRT >  75 ? shadeColor(primary, 36) :
 			cBRT >  50 ? shadeColor(primary, 38) :
 			cBRT >  25 ? shadeColor(primary, 40) :
-			cBRT >   0 ? shadeColor(primary, 30) : '';
+			cBRT >=  0 ? tintColor(primary,  20) : '';
 
 		g_pl_colors.row_selection_frame = g_pl_colors.header_line_normal;
 		g_pl_colors.row_disc_subheader_line = g_pl_colors.header_line_normal;
@@ -3402,7 +3845,7 @@ function themeColorAdjustments() {
 			cBRT >  75 ? shadeColor(primary, pref.styleRebornBlack ? 40 : 50) :
 			cBRT >  50 ? shadeColor(primary, pref.styleRebornBlack ? 35 : 55) :
 			cBRT >  25 ? shadeColor(primary, pref.styleRebornBlack ? 30 : 60) :
-			cBRT >   0 ? pref.styleRebornBlack ? tintColor(primary, 10) : shadeColor(primary, 25) : '';
+			cBRT >=  0 ? pref.styleRebornBlack ? tintColor(primary, 10) : shadeColor(primary, 25) : '';
 
 		col.styleGradient2 = col.styleGradient;
 
@@ -3421,7 +3864,7 @@ function themeColorAdjustments() {
 				cBRT >  75 ? blend || blend2 ? shadeColor(primary_alt, bevel ? 35 : 20) : shadeColor(primary_alt, bevel ? 30 : 15) :
 				cBRT >  50 ? blend || blend2 ? shadeColor(primary_alt, bevel ? 45 : 25) : shadeColor(primary_alt, bevel ? 30 : 15) :
 				cBRT >  25 ? blend || blend2 ? shadeColor(primary_alt, bevel ?  0 :  0) : shadeColor(primary_alt, bevel ? 40 : 15) :
-				cBRT >   0 ? blend || blend2 ? shadeColor(primary_alt, bevel ?  0 :  0) : shadeColor(primary_alt, bevel ? 40 : 10) : '';
+				cBRT >=  0 ? blend || blend2 ? shadeColor(primary_alt, bevel ?  0 :  0) : shadeColor(primary_alt, bevel ? 40 : 10) : '';
 		}
 
 		col.progressBarFill =
@@ -3437,7 +3880,7 @@ function themeColorAdjustments() {
 			cBRT >  75 ? progBarFillBevelInner ? RGBA(0, 0, 0, bevel ? 55 : 50) : '' :
 			cBRT >  50 ? progBarFillBevelInner ? RGBA(0, 0, 0, bevel ? 65 : 60) : '' :
 			cBRT >  25 ? progBarFillBevelInner ? RGBA(0, 0, 0, bevel ? 75 : 70) : '' :
-			cBRT >   0 ? progBarFillBevelInner ? RGBA(0, 0, 0, bevel ? 85 : 80) : '' :  '';
+			cBRT >=  0 ? progBarFillBevelInner ? RGBA(0, 0, 0, bevel ? 85 : 80) : '' :  '';
 
 		if (!pref.styleRebornWhite && !pref.styleRebornBlack) {
 			col.styleProgressBarLineTop =
@@ -3449,7 +3892,7 @@ function themeColorAdjustments() {
 				cBRT >  75 ? RGBA(0, 0, 0, bevel ? 45 : 40) :
 				cBRT >  50 ? RGBA(0, 0, 0, bevel ? 50 : 45) :
 				cBRT >  25 ? RGBA(0, 0, 0, bevel ? 55 : 50) :
-				cBRT >   0 ? RGBA(0, 0, 0, bevel ? 65 : 60) : '';
+				cBRT >=  0 ? RGBA(0, 0, 0, bevel ? 65 : 60) : '';
 
 			col.styleProgressBarLineBottom =
 				cBRT > 200 ? RGBA(255, 255, 255, bevel ? 45 : 50) :
@@ -3460,7 +3903,7 @@ function themeColorAdjustments() {
 				cBRT >  75 ? RGBA(255, 255, 255, bevel ? 20 : 25) :
 				cBRT >  50 ? RGBA(255, 255, 255, bevel ? 15 : 20) :
 				cBRT >  25 ? RGBA(255, 255, 255, bevel ? 10 : 15) :
-				cBRT >   0 ? RGBA(255, 255, 255, bevel ?  5 : 10) : '';
+				cBRT >=  0 ? RGBA(255, 255, 255, bevel ?  5 : 10) : '';
 		}
 
 		col.shadow =
@@ -3472,11 +3915,11 @@ function themeColorAdjustments() {
 			cBRT >  75 ? RGBA(0, 0, 0, alt ?  75 : 50) :
 			cBRT >  50 ? RGBA(0, 0, 0, alt ? 100 : 55) :
 			cBRT >  25 ? RGBA(0, 0, 0, alt ? 120 : 70) :
-			cBRT >   0 ? RGBA(0, 0, 0, alt ? 140 : 90) : '';
+			cBRT >=  0 ? RGBA(0, 0, 0, alt ? 140 : 90) : '';
 
 
 		// * REBORN/RANDOM THEME/STYLE REBORN WHITE/REBORN BLACK - Adjust colors primary color is almost pure white
-		const defaultRebornRandom = cBRT > 210 && (!blend && !blend2) && !pref.styleRebornWhite && !pref.styleRebornBlack && !pref.styleRandomDark;
+		const defaultRebornRandom = cBRT > 210 && (!blend && !blend2) && !pref.styleRebornWhite && !pref.styleRebornBlack && !pref.styleRebornFusion && !pref.styleRebornFusion2 && !pref.styleRandomDark;
 		const rebornWhiteBlack = cBRT > 210 && (pref.styleRebornWhite || pref.styleRebornBlack);
 
 		if (defaultRebornRandom || rebornWhiteBlack) {
@@ -3494,6 +3937,11 @@ function themeColorAdjustments() {
 			g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
 			g_pl_colors.row_sideMarker = g_pl_colors.header_sideMarker;
 			g_pl_colors.row_selection_frame = RGB(220, 220, 220);
+			g_pl_colors.sbar_btn_normal = RGB(90, 90, 90);
+			g_pl_colors.sbar_btn_hovered = RGB(0, 0, 0);
+			g_pl_colors.sbar_thumb_normal = RGB(235, 235, 235);
+			g_pl_colors.sbar_thumb_hovered = RGB(90, 90, 90);
+			g_pl_colors.sbar_thumb_drag = g_pl_colors.sbar_thumb_hovered;
 
 			// * LIBRARY COLORS * //
 			ui.col.bg = g_pl_colors.bg;
@@ -3501,9 +3949,17 @@ function themeColorAdjustments() {
 			ui.col.nowPlayingBg = g_pl_colors.header_nowplaying_bg;
 			ui.col.sideMarker = g_pl_colors.header_sideMarker;
 			ui.col.selectionFrame = g_pl_colors.row_selection_frame;
+			ui.col.sbarBtns = RGB(90, 90, 90);
+			ui.col.sbarNormal = RGB(210, 210, 210);
+			ui.col.sbarHovered = RGB(90, 90, 90);
+			ui.col.sbarDrag = RGB(90, 90, 90);
 
 			// * BIOGRAPHY COLORS * //
 			uiBio.col.bg = g_pl_colors.bg;
+			uiBio.col.sbarBtns = RGB(90, 90, 90);
+			uiBio.col.sbarNormal = RGB(210, 210, 210);
+			uiBio.col.sbarHovered = RGB(90, 90, 90);
+			uiBio.col.sbarDrag = RGB(90, 90, 90);
 
 			// * MAIN COLORS * //
 			col.bg = pref.styleRebornBlack ? RGB(0, 0, 0) : bevel ? RGB(255, 255, 255) : RGB(245, 245, 245);
@@ -3515,8 +3971,20 @@ function themeColorAdjustments() {
 			}
 
 			if (!pref.styleRebornBlack) {
+				// * LOWER BAR TRANSPORT BUTTON COLORS * //
+				col.transportEllipseBg =
+					(pref.styleBlend || pref.styleBlend2) && fb.IsPlaying ? RGB(230, 230, 230) :
+					pref.styleBevel ? RGB(240, 240, 240) : RGB(255, 255, 255);
+
 				// * PROGRESS BAR COLORS * //
-				col.progressBar = pref.styleRebornWhite ? col.lightAccent_7 : bevel ? tintColor(col.primary, 15) : col.lightAccent;
+				col.progressBar =
+					pref.styleProgressBar === 'bevel' ? pref.styleBevel ? RGB(245, 245, 245) : RGB(220, 220, 220) :
+					pref.styleBevel ? pref.styleBlend || pref.styleBlend2 ? RGB(235, 235, 235) : RGB(225, 225, 225) :
+					(pref.styleBlend || pref.styleBlend2) && fb.IsPlaying && !noAlbumArtStub ? RGB(240, 240, 240) :
+					RGB(220, 220, 220);
+
+				col.progressBarStreaming = RGB(207, 0, 5);
+				col.progressBarFrame = pref.styleBevel ? RGB(180, 180, 180) : col.bg;
 				col.progressBarFill = RGB(90, 90, 90);
 
 				// * VOLUME BAR COLORS * //
@@ -3553,6 +4021,29 @@ function themeColorAdjustments() {
 			col.transportEllipseBg     = cBRT < 150 ? col.lightAccent_80 : col.lightAccent_100;
 			col.progressBar            = cBRT < 150 ? col.lightAccent_7 : blend2 && iBRT > 240 ? col.lightAccent_35 : shadeColor(col.lightAccent_7, 5);
 			col.progressBarFill        = cBRT < 150 ? col.lightAccent_80 : col.lightAccent_100;
+		}
+
+		/////////////////////////////////////
+		// * STYLE REBORN FUSION 1 AND 2 * //
+		/////////////////////////////////////
+		// * ADJUST COLORS WHEN PANEL BG IS TOO LIGHT * //
+		if (cBRT > 210 && pref.styleRebornFusion || cBRT2 > 210 && pref.styleRebornFusion2) {
+			panelWhiteColors(true);
+		}
+
+		// * ADJUST COLORS WHEN MAIN BG IS TOO LIGHT * //
+		if (cBRT2 > 210 && pref.styleRebornFusion || cBRT > 210 && pref.styleRebornFusion2) {
+			mainWhiteColors();
+		}
+
+		// * ADJUST COLORS WHEN PANEL BG IS TOO DARK * //
+		if (cBRT < 25 && pref.styleRebornFusion || cBRT2 < 25 && pref.styleRebornFusion2) {
+			panelBlackColors(true);
+		}
+
+		// * ADJUST COLORS WHEN MAIN BG IS TOO DARK * //
+		if (cBRT2 < 25 && pref.styleRebornFusion || cBRT < 25 && pref.styleRebornFusion2) {
+			mainBlackColors();
 		}
 	}
 }
@@ -4051,210 +4542,9 @@ function styleAlternative2Colors() {
 // * STYLE BLACK AND WHITE * //
 ///////////////////////////////
 function styleBlackAndWhiteColors() {
-	// * SETUP col.primary * //
 	col.primary = RGB(255, 255, 255);
-
-	// * PLAYLIST COLORS * //
-	g_pl_colors.bg = RGB(20, 20, 20);
-	g_pl_colors.plman_bg = g_pl_colors.bg;
-	g_pl_colors.plman_text_normal = pref.autoHidePlman ? g_pl_colors.bg : RGB(180, 180, 180);
-	g_pl_colors.plman_text_hovered = pref.autoHidePlman ? RGB(200, 200, 200) : RGB(240, 240, 240);
-	g_pl_colors.plman_text_pressed = pref.autoHidePlman ? RGB(240, 240, 240) : RGB(180, 180, 180);
-	g_pl_colors.header_nowplaying_bg = pref.styleBlend ? RGBA(230, 230, 230, 200) : RGB(230, 230, 230);
-	g_pl_colors.header_sideMarker = isStreaming ? RGB(207, 0, 5) : RGB(255, 255, 255);
-	g_pl_colors.header_artist_normal = RGB(220, 220, 220);
-	g_pl_colors.header_artist_playing = RGB(25, 25, 25);
-	g_pl_colors.header_album_normal = RGB(200, 200, 200);
-	g_pl_colors.header_album_playing = RGB(25, 25, 25);
-	g_pl_colors.header_info_normal = RGB(200, 200, 200);
-	g_pl_colors.header_info_playing = RGB(25, 25, 25);
-	g_pl_colors.header_date_normal = RGB(220, 220, 220);
-	g_pl_colors.header_date_playing = RGB(25, 25, 25);
-	g_pl_colors.header_line_normal = pref.styleBlend ? RGB(80, 80, 80) : RGB(45, 45, 45);
-	g_pl_colors.header_line_playing = RGB(25, 25, 25);
-	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
-	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(25, 25, 25, 130) : RGB(25, 25, 25);
-	g_pl_colors.row_selection_bg = pref.styleBlend ? RGB(80, 80, 80) : RGB(45, 45, 45);
-	g_pl_colors.row_selection_frame = g_pl_colors.row_selection_bg;
-	g_pl_colors.row_sideMarker = g_pl_colors.header_sideMarker;
-	g_pl_colors.row_title_normal = RGB(200, 200, 200);
-	g_pl_colors.row_title_playing = RGB(25, 25, 25);
-	g_pl_colors.row_title_selected = RGB(255, 255, 255);
-	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
-	g_pl_colors.row_rating_color = RGB(255, 190, 0);
-	g_pl_colors.row_disc_subheader_line = pref.styleBlend ? RGB(80, 80, 80) : RGB(45, 45, 45);
-	g_pl_colors.sbar_btn_normal = RGB(200, 200, 200);
-	g_pl_colors.sbar_btn_hovered = RGB(255, 255, 255);
-	g_pl_colors.sbar_thumb_normal = RGB(180, 180, 180);
-	g_pl_colors.sbar_thumb_hovered = RGB(255, 255, 255);
-	g_pl_colors.sbar_thumb_drag = g_pl_colors.sbar_thumb_hovered;
-
-	// * LIBRARY COLORS * //
-	ui.col.bg = g_pl_colors.bg;
-	ui.col.nowPlayingBg = pref.styleBlend ? RGBA(255, 255, 255, 200) : RGB(230, 230, 230);
-	ui.col.sideMarker = isStreaming ? RGB(207, 0, 5) : RGB(255, 255, 255);
-	ui.col.selectionFrame = pref.styleBlend ? RGB(80, 80, 80) : RGB(45, 45, 45);
-	ui.col.selectionFrame2 = ui.col.sideMarker;
-	ui.col.hoverFrame = ui.col.sideMarker;
-	ui.col.iconPlus = RGB(220, 220, 220);
-	ui.col.iconPlus_h = RGB(255, 255, 255);
-	ui.col.iconPlus_sel = RGB(255, 255, 255);
-	ui.col.iconPlusBg = RGB(45, 45, 45);
-	ui.col.iconMinus_e = RGB(220, 220, 220);
-	ui.col.iconMinus_c = ui.col.iconMinus_e;
-	ui.col.iconMinus_h = RGB(255, 255, 255);
-	ui.col.text = RGB(200, 200, 200);
-	ui.col.text_h = !ppt.albumArtShow || ppt.albumArtShow && ppt.highLightRow !== 2 ? RGB(255, 255, 255) : RGB(0, 0, 0);
-	ui.col.text_nowp = RGB(0, 0, 0);
-	ui.col.textSel =
-		ppt.albumArtShow && !['coversLabelsRight', 'coversLabelsBottom', 'coversLabelsBlend'].includes(pref.libraryDesign) ||
-		pref.libraryDesign === 'traditional' ? RGB(0, 0, 0) : RGB(255, 255, 255);
-	ui.col.txt = ui.col.text;
-	ui.col.txt_h = ui.col.text_h;
-	ui.col.txt_box = RGB(200, 200, 200);
-	ui.col.count = ui.col.text;
-	ui.col.search = RGB(200, 200, 200);
-	ui.col.searchBtn = RGB(255, 255, 255);
-	ui.col.crossBtn = RGB(255, 255, 255);
-	ui.col.filterBtn = RGB(220, 220, 220);
-	ui.col.settingsBtn = RGB(220, 220, 220);
-	ui.col.line = pref.styleBlend ? RGB(80, 80, 80) : RGB(45, 45, 45);
-	ui.col.s_line = ui.col.line;
-	ui.col.sbarBtns = RGB(200, 200, 200);
-	ui.col.sbarNormal = RGB(255, 255, 255);
-	ui.col.sbarHovered = RGB(255, 255, 255);
-	ui.col.sbarDrag = RGB(255, 255, 255);
-
-	// * BIOGRAPHY COLORS * //
-	uiBio.col.bg = g_pl_colors.bg;
-	uiBio.col.headingText = RGB(230, 230, 230);
-	uiBio.col.bottomLine = g_pl_colors.header_line_normal;
-	uiBio.col.centerLine = uiBio.col.bottomLine;
-	uiBio.col.text = g_pl_colors.row_title_normal;
-	uiBio.col.source = g_pl_colors.row_title_normal;
-	uiBio.col.sbarBtns = RGB(200, 200, 200);
-	uiBio.col.sbarNormal = RGB(255, 255, 255);
-	uiBio.col.sbarHovered = RGB(255, 255, 255);
-	uiBio.col.sbarDrag = RGB(255, 255, 255);
-	uiBio.col.noPhotoStubBg = RGB(25, 25, 25);
-	uiBio.col.noPhotoStubText = pref.theme === 'cream' ? RGB(120, 170, 130) : g_pl_colors.header_artist_playing;
-
-	// * MAIN COLORS * //
-	col.bg = pref.styleBevel ? RGB(255, 255, 255) : RGB(230, 230, 230);
-	col.noAlbumArtStub = RGB(255, 255, 255);
-	col.lowerBarArtist = RGB(80, 80, 80);
-	col.lowerBarTitle = RGB(80, 80, 80);
-	col.lowerBarTime = col.lowerBarTitle;
-	col.lowerBarLength = col.lowerBarTitle;
-
-	// * DETAILS COLORS * //
-	col.detailsBg = g_pl_colors.bg;
-	col.detailsText = RGB(220, 220, 220);
-	col.timelineAdded = isStreaming ? RGB(207, 0, 5) : RGB(230, 230, 230);
-	col.timelinePlayed = isStreaming ? RGB(207, 0, 5) : RGB(180, 180, 180);
-	col.timelineUnplayed = isStreaming ? RGB(207, 0, 5) : RGB(160, 160, 160);
-	col.timelineFrame = col.detailsBg;
-	if (str.timeline) str.timeline.setColors(col.timelineAdded, col.timelinePlayed, col.timelineUnplayed);
-
-	// * TOP MENU BUTTON COLORS * //
-	col.menuBgColor = RGB(255, 255, 255);
-
-	col.menuStyleBg =
-		pref.styleTopMenuButtons === 'bevel' || pref.styleTopMenuButtons === 'inner' ? RGB(210, 210, 210) :
-		pref.styleTopMenuButtons === 'emboss' ? RGB(235, 235, 235) :
-		pref.styleBevel ? RGB(205, 205, 205) : RGB(220, 220, 220);
-
-	col.menuRectStyleEmbossTop = RGB(255, 255, 255);
-	col.menuRectStyleEmbossBottom = pref.styleBevel ? RGB(200, 200, 200) : RGB(195, 195, 195);
-
-	col.menuRectNormal =
-		pref.styleTopMenuButtons === 'filled' ? RGB(200, 200, 200) :
-		pref.styleBlend || pref.styleBlend2 ? pref.styleBevel ? RGB(140, 140, 140) : RGB(150, 150, 150) :
-		pref.styleBevel ? RGB(170, 170, 170) : RGB(180, 180, 180);
-
-	col.menuRectHovered =
-		pref.styleTopMenuButtons === 'filled' ? RGB(200, 200, 200) :
-		pref.styleTopMenuButtons === 'bevel' || pref.styleTopMenuButtons === 'inner' ? pref.styleBevel ? RGB(200, 200, 200) : RGB(205, 205, 205) :
-		pref.styleBlend || pref.styleBlend2 ? pref.styleBevel ? RGB(140, 140, 140) : RGB(150, 150, 150) :
-		pref.styleBevel ? RGB(170, 170, 170) : RGB(180, 180, 180);
-
-	col.menuRectDown = col.menuRectHovered;
-	col.menuTextNormal = RGB(80, 80, 80);
-	col.menuTextHovered = RGB(40, 40, 40);
-	col.menuTextDown = col.menuTextHovered;
-
-	// * LOWER BAR TRANSPORT BUTTON COLORS * //
-	col.transportStyleBg =
-		pref.styleTransportButtons === 'bevel'  ? pref.styleBevel ? RGB(200, 200, 200) : RGB(205, 205, 205) :
-		pref.styleTransportButtons === 'inner'  ? pref.styleBevel ? RGB(215, 215, 215) : RGB(205, 205, 205) :
-		pref.styleTransportButtons === 'emboss' ? pref.styleBevel ? RGB(230, 230, 230) : RGB(215, 215, 215) :
-		RGB(225, 225, 225);
-
-	col.transportStyleTop = RGB(255, 255, 255);
-
-	col.transportStyleBottom =
-		pref.styleTransportButtons === 'bevel' || pref.styleTransportButtons === 'inner' ?
-			pref.styleBlend || pref.styleBlend2 ? RGB(180, 180, 180) : pref.styleBevel ? RGB(200, 200, 200) : RGB(220, 220, 220) :
-		pref.styleTransportButtons === 'emboss' ?
-			pref.styleBlend || pref.styleBlend2 ? RGB(180, 180, 180) : pref.styleBevel ? RGB(215, 215, 215) : RGB(210, 210, 210) :
-		RGB(230, 230, 230);
-
-	// * PROGRESS BAR COLORS * //
-	col.progressBar =
-		pref.styleBlend || pref.styleBlend2 ? pref.styleBevel ? RGB(205, 205, 205) : RGB(215, 215, 215) :
-		pref.styleBevel ? RGB(195, 195, 195) : RGB(210, 210, 210);
-
-	col.progressBarFill = RGB(255, 255, 255);
-
-	// * PEAKMETER BAR COLORS * //
-	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = RGB(20, 20, 20);
-	col.peakmeterBarFillTop       = RGB(140, 140, 140);
-	col.peakmeterBarFillMiddle    = RGB(20, 20, 20);
-	col.peakmeterBarFillBack      = RGB(80, 80, 80);
-	col.peakmeterBarVertProgFill  = RGB(20, 20, 20);
-	col.peakmeterBarVertFill      = RGB(20, 20, 20);
-	col.peakmeterBarVertFillPeaks = RGB(120, 120, 120);
-	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
-
-	// * WAVEFORM BAR COLORS * //
-	col.waveformBarFillFront    = RGB(120, 120, 120);
-	col.waveformBarFillBack     = RGB(20, 20, 20);
-	col.waveformBarFillPreFront = RGB(160, 160, 160);
-	col.waveformBarFillPreBack  = RGB(120, 120, 120);
-	col.waveformBarIndicator    = RGB(255, 255, 255);
-
-	// * VOLUME BAR COLORS * //
-	col.volumeBar = RGB(255, 255, 255);
-	col.volumeBarFill = RGB(120, 120, 120);
-	col.volumeBarFrame = RGB(210, 210, 210);
-
-	// * STYLE COLORS * //
-	col.styleProgressBar =
-		pref.styleProgressBar === 'bevel' ? pref.styleBevel ? RGBA(0, 0, 0, 40) : RGBA(0, 0, 0, 30) :
-		pref.styleProgressBar === 'inner' ? pref.styleBevel ? RGBA(0, 0, 0, 35) : RGBA(0, 0, 0, 40) : '';
-
-	col.styleProgressBarLineTop =
-		pref.styleProgressBar === 'bevel' ? pref.styleProgressBarDesign === 'rounded' ? RGBA(0, 0, 0, 40) :
-											pref.styleBevel ? RGBA(255, 255, 255, 20) : RGBA(0, 0, 0, 0) :
-		pref.styleProgressBar === 'inner' ? pref.styleProgressBarDesign === 'rounded' ? RGBA(0, 0, 0, 50) :
-											RGBA(0, 0, 0, 20) : '';
-
-	col.styleProgressBarLineBottom =
-		pref.styleProgressBar === 'bevel' ? pref.styleProgressBarDesign === 'rounded' ? pref.styleBevel ? RGBA(255, 255, 255, 180) : RGBA(255, 255, 255, 255) :
-											pref.styleBevel ? RGBA(255, 255, 255, 160) : RGBA(255, 255, 255, 220) :
-		pref.styleProgressBar === 'inner' ? pref.styleProgressBarDesign === 'rounded' ? pref.styleBevel ? RGBA(255, 255, 255, 150) : RGBA(255, 255, 255, 255) :
-											pref.styleBevel ? RGBA(255, 255, 255, 120) : RGBA(255, 255, 255, 170) : '';
-
-	col.styleProgressBarFill =
-		pref.styleProgressBarFill === 'bevel' ? RGBA(0, 0, 0, pref.styleBevel ? 40 : 30) :
-		pref.styleProgressBarFill === 'inner' ? RGBA(0, 0, 0, pref.styleBevel ? 50 : 40) : '';
-
-	col.styleVolumeBar =
-		pref.styleVolumeBar === 'bevel' ? pref.styleBevel ? RGBA(0, 0, 0, 25) : RGBA(0, 0, 0, 30) :
-		pref.styleVolumeBar === 'inner' ? RGBA(0, 0, 0, 30) : '';
-
-	col.styleVolumeBarFill = pref.styleVolumeBarFill === 'bevel' || pref.styleVolumeBarFill === 'inner' ? RGBA(255, 255, 255, 90) : '';
+	panelBlackColors();
+	mainWhiteColors();
 }
 
 
@@ -4262,211 +4552,9 @@ function styleBlackAndWhiteColors() {
 // * STYLE BLACK AND WHITE 2 * //
 /////////////////////////////////
 function styleBlackAndWhite2Colors() {
-	// * SETUP col.primary * //
 	col.primary = RGB(255, 255, 255);
-
-	// * PLAYLIST COLORS * //
-	g_pl_colors.bg = RGB(245, 245, 245);
-	g_pl_colors.plman_bg = g_pl_colors.bg;
-	g_pl_colors.plman_text_normal = pref.autoHidePlman ? g_pl_colors.bg : RGB(180, 180, 180);
-	g_pl_colors.plman_text_hovered = pref.autoHidePlman ? RGB(100, 100, 100) : RGB(240, 240, 240);
-	g_pl_colors.plman_text_pressed = pref.autoHidePlman ? RGB(100, 100, 100) : RGB(180, 180, 180);
-	g_pl_colors.header_nowplaying_bg = pref.styleBlend ? RGBA(255, 255, 255, 130) : RGB(255, 255, 255);
-	g_pl_colors.header_sideMarker = isStreaming ? RGB(207, 0, 5) : RGB(40, 40, 40);
-	g_pl_colors.header_artist_normal = RGB(80, 80, 80);
-	g_pl_colors.header_artist_playing = RGB(60, 60, 60);
-	g_pl_colors.header_album_normal = RGB(80, 80, 80);
-	g_pl_colors.header_album_playing = RGB(60, 60, 60);
-	g_pl_colors.header_info_normal = RGB(60, 60, 60);
-	g_pl_colors.header_info_playing = RGB(60, 60, 60);
-	g_pl_colors.header_date_normal = RGB(60, 60, 60);
-	g_pl_colors.header_date_playing = RGB(60, 60, 60);
-	g_pl_colors.header_line_normal = pref.styleBlend ? RGB(190, 190, 190) : RGB(215, 215, 215);
-	g_pl_colors.header_line_playing = pref.styleBlend ? RGB(200, 200, 200) : RGB(215, 215, 215);
-	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
-	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(25, 25, 25, 130) : RGB(25, 25, 25);
-	g_pl_colors.row_selection_bg = pref.styleBlend ? RGB(190, 190, 190) : RGB(215, 215, 215);
-	g_pl_colors.row_selection_frame = pref.styleBlend ? RGB(190, 190, 190) : g_pl_colors.row_selection_bg;
-	g_pl_colors.row_sideMarker = g_pl_colors.header_sideMarker;
-	g_pl_colors.row_title_normal = RGB(80, 80, 80);
-	g_pl_colors.row_title_playing = RGB(60, 60, 60);
-	g_pl_colors.row_title_selected = RGB(0, 0, 0);
-	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
-	g_pl_colors.row_rating_color = RGB(255, 190, 0);
-	g_pl_colors.row_disc_subheader_line = pref.styleBlend ? RGB(190, 190, 190) : RGB(215, 215, 215);
-	g_pl_colors.sbar_btn_normal = RGB(100, 100, 100);
-	g_pl_colors.sbar_btn_hovered = RGB(0, 0, 0);
-	g_pl_colors.sbar_thumb_normal = RGB(100, 100, 100);
-	g_pl_colors.sbar_thumb_hovered = RGB(40, 40, 40);
-	g_pl_colors.sbar_thumb_drag = g_pl_colors.sbar_thumb_hovered;
-
-	// * LIBRARY COLORS * //
-	ui.col.bg = g_pl_colors.bg;
-	ui.col.nowPlayingBg = pref.styleBlend ? RGBA(255, 255, 255, 130) : RGB(255, 255, 255);
-	ui.col.sideMarker = isStreaming ? RGB(207, 0, 5) : RGB(40, 40, 40);
-	ui.col.selectionFrame = pref.styleBlend ? RGB(190, 190, 190) : RGB(215, 215, 215);
-	ui.col.selectionFrame2 = ui.col.sideMarker;
-	ui.col.hoverFrame = ui.col.sideMarker;
-	ui.col.iconPlus = RGB(80, 80, 80);
-	ui.col.iconPlus_h = RGB(0, 0, 0);
-	ui.col.iconPlus_sel = RGB(0, 0, 0);
-	ui.col.iconPlusBg = pref.libraryDesign === 'traditional' ? RGB(255, 255, 255) : RGB(45, 45, 45);
-	ui.col.iconMinus_e = RGB(80, 80, 80);
-	ui.col.iconMinus_c = ui.col.iconMinus_e;
-	ui.col.iconMinus_h = RGB(0, 0, 0);
-	ui.col.text = ppt.albumArtShow && img.labels.overlayDark ? RGB(220, 220, 220) : RGB(80, 80, 80);
-	ui.col.text_h = ppt.albumArtShow && img.labels.overlayDark ? RGB(255, 255, 255) : RGB(0, 0, 0);
-	ui.col.text_nowp = RGB(0, 0, 0);
-	ui.col.textSel = RGB(0, 0, 0);
-	ui.col.txt = ui.col.text;
-	ui.col.txt_h = ui.col.text_h;
-	ui.col.txt_box = RGB(80, 80, 80);
-	ui.col.count = ui.col.text;
-	ui.col.search = RGB(80, 80, 80);
-	ui.col.searchBtn = RGB(0, 0, 0);
-	ui.col.crossBtn = RGB(0, 0, 0);
-	ui.col.filterBtn = RGB(80, 80, 80);
-	ui.col.settingsBtn = RGB(80, 80, 80);
-	ui.col.line = pref.styleBlend ? RGB(190, 190, 190) : RGB(215, 215, 215);
-	ui.col.s_line = ui.col.line;
-	ui.col.sbarBtns = RGB(60, 60, 60);
-	ui.col.sbarNormal = RGB(0, 0, 0);
-	ui.col.sbarHovered = RGB(40, 40, 40);
-	ui.col.sbarDrag = RGB(40, 40, 40);
-
-	// * BIOGRAPHY COLORS * //
-	uiBio.col.bg = g_pl_colors.bg;
-	uiBio.col.headingText = RGB(60, 60, 60);
-	uiBio.col.bottomLine = g_pl_colors.header_line_normal;
-	uiBio.col.centerLine = uiBio.col.bottomLine;
-	uiBio.col.text = g_pl_colors.row_title_normal;
-	uiBio.col.source = g_pl_colors.row_title_normal;
-	uiBio.col.sbarBtns = RGB(60, 60, 60);
-	uiBio.col.sbarNormal = RGB(0, 0, 0);
-	uiBio.col.sbarHovered = RGB(40, 40, 40);
-	uiBio.col.sbarDrag = RGB(40, 40, 40);
-	uiBio.col.noPhotoStubBg = RGB(25, 25, 25);
-	uiBio.col.noPhotoStubText = pref.theme === 'cream' ? RGB(120, 170, 130) : g_pl_colors.header_artist_playing;
-
-	// * MAIN COLORS * //
-	col.bg = pref.styleBevel ? RGB(50, 50, 50) : RGB(25, 25, 25);
-	col.shadow = isPlayingCD ? RGBA(0, 0, 0, 30) : col.shadow;
-	col.noAlbumArtStub = RGB(40, 40, 40);
-	col.lowerBarArtist = RGB(240, 240, 240);
-	col.lowerBarTitle = RGB(220, 220, 220);
-	col.lowerBarTime = col.lowerBarTitle;
-	col.lowerBarLength = col.lowerBarTitle;
-
-	// * DETAILS COLORS * //
-	col.detailsBg = g_pl_colors.bg;
-	col.detailsText = RGB(60, 60, 60);
-	col.timelineAdded = isStreaming ? RGB(207, 0, 5) : RGB(40, 40, 40);
-	col.timelinePlayed = isStreaming ? RGB(207, 0, 5) : RGB(80, 80, 80);
-	col.timelineUnplayed = isStreaming ? RGB(207, 0, 5) : RGB(120, 120, 120);
-	col.timelineFrame = col.detailsBg;
-	if (str.timeline) str.timeline.setColors(col.timelineAdded, col.timelinePlayed, col.timelineUnplayed);
-
-	// * TOP MENU BUTTONS COLORS * //
-	col.menuBgColor =
-		pref.styleTopMenuButtons === 'bevel'  ? pref.styleBevel ? RGB(40, 40, 40) : RGB(50, 50, 50) :
-		pref.styleTopMenuButtons === 'inner'  ? pref.styleBevel ? RGB(55, 55, 55) : RGB(50, 50, 50) :
-		pref.styleTopMenuButtons === 'emboss' ? RGB(45, 45, 45) :
-		RGB(35, 35, 35);
-
-	col.menuStyleBg =
-		pref.styleTopMenuButtons === 'inner'  ? RGB(20, 20, 20) :
-		pref.styleTopMenuButtons === 'emboss' ? pref.styleBevel ? RGB(45, 45, 45) : RGB(50, 50, 50) :
-		pref.styleBevel ? RGB(30, 30, 30) : RGB(20, 20, 20);
-
-	col.menuRectStyleEmbossTop = pref.styleBevel ? RGB(60, 60, 60) : RGB(70, 70, 70);
-	col.menuRectStyleEmbossBottom = RGB(0, 0, 0);
-
-	col.menuRectNormal =
-		pref.styleTopMenuButtons === 'filled' ? RGBA(60, 60, 60, 100) :
-		pref.styleTopMenuButtons === 'bevel'  ? RGB(0, 0, 0) :
-		RGB(60, 60, 60);
-
-	col.menuRectHovered =
-		pref.styleTopMenuButtons === 'filled' ? RGBA(120, 120, 120, 100) :
-		pref.styleTopMenuButtons === 'bevel' || pref.styleTopMenuButtons === 'inner' ? RGB(0, 0, 0) :
-		RGB(100, 100, 100);
-
-	col.menuRectDown = col.menuRectHovered;
-	col.menuTextNormal = pref.styleBlend || pref.styleBlend2 ? RGB(200, 200, 200) : RGB(180, 180, 180);
-	col.menuTextHovered = RGB(255, 255, 255);
-	col.menuTextDown = col.menuTextHovered;
-
-	// * LOWER BAR TRANSPORT BUTTON COLORS * //
-	col.transportEllipseBg = pref.styleBlend || pref.styleBlend2 ? RGB(60, 60, 60) : RGB(40, 40, 40);
-	col.transportEllipseNormal = RGB(50, 50, 50);
-	col.transportEllipseHovered = RGB(100, 100, 100);
-	col.transportEllipseDown = col.transportEllipseHovered;
-
-	col.transportStyleBg =
-		pref.styleTransportButtons === 'bevel' || pref.styleTransportButtons === 'inner' ? RGB(20, 20, 20) :
-		pref.styleTransportButtons === 'emboss' ? RGB(50, 50, 50) : '';
-
-	col.transportStyleTop =
-		pref.styleTransportButtons === 'bevel' || pref.styleTransportButtons === 'inner' ? RGB(50, 50, 50) :
-		pref.styleTransportButtons === 'emboss' ? pref.styleBevel ? RGBA(255, 255, 255, 30) : RGBA(255, 255, 255, 40) : '';
-
-	col.transportStyleBottom =
-		pref.styleTransportButtons === 'bevel' || pref.styleTransportButtons === 'inner' ? RGB(10, 10, 10) :
-		pref.styleTransportButtons === 'emboss' ? RGB(20, 20, 20) : '';
-
-	col.transportIconNormal = RGB(200, 200, 200);
-	col.transportIconHovered = RGB(255, 255, 255);
-	col.transportIconDown = col.transportIconHovered;
-
-	// * PROGRESS BAR COLORS * //
-	col.progressBar = RGB(50, 50, 50);
-	col.progressBarFill = RGB(210, 210, 210);
-
-	// * PEAKMETER BAR COLORS * //
-	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = RGB(200, 200, 200);
-	col.peakmeterBarFillTop       = RGB(120, 120, 120);
-	col.peakmeterBarFillMiddle    = RGB(160, 160, 160);
-	col.peakmeterBarFillBack      = RGB(80, 80, 80);
-	col.peakmeterBarVertProgFill  = col.progressBarFill;
-	col.peakmeterBarVertFill      = RGB(245, 245, 245);
-	col.peakmeterBarVertFillPeaks = RGB(200, 200, 200);
-	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
-
-	// * WAVEFORM BAR COLORS * //
-	col.waveformBarFillFront    = RGB(245, 245, 245);
-	col.waveformBarFillBack     = RGB(200, 200, 200);
-	col.waveformBarFillPreFront = RGB(160, 160, 160);
-	col.waveformBarFillPreBack  = RGB(120, 120, 120);
-	col.waveformBarIndicator    = RGB(255, 255, 255);
-
-	// * VOLUME BAR COLORS * //
-	col.volumeBar = col.progressBar;
-	col.volumeBarFill = col.progressBarFill;
-	col.volumeBarFrame = RGB(50, 50, 50);
-
-	// * STYLE COLORS * //
-	col.styleProgressBar =
-		pref.styleProgressBar === 'bevel' ? pref.styleBevel ? RGBA(0, 0, 0, 100) : RGBA(0, 0, 0, 80) :
-		pref.styleProgressBar === 'inner' ? RGBA(0, 0, 0, 100) : '';
-
-	col.styleProgressBarLineTop =
-		pref.styleProgressBar === 'bevel' ? pref.styleProgressBarDesign === 'rounded' ? pref.styleBevel ? RGBA(0, 0, 0, 60)  : RGBA(0, 0, 0, 255) :
-											RGBA(0, 0, 0, 255) :
-		pref.styleProgressBar === 'inner' ? pref.styleProgressBarDesign === 'rounded' ? pref.styleBevel ? RGBA(0, 0, 0, 255) : RGBA(0, 0, 0, 150) :
-											pref.styleBevel ? RGBA(0, 0, 0, 255) : RGBA(0, 0, 0, 100) : '';
-
-	col.styleProgressBarLineBottom =
-		pref.styleProgressBar === 'bevel' ? pref.styleProgressBarDesign === 'rounded' ? pref.styleBevel ? RGBA(255, 255, 255, 40) : RGBA(255, 255, 255, 30) :
-											pref.styleBevel ? RGBA(255, 255, 255, 30) : RGBA(255, 255, 255, 25) :
-		pref.styleProgressBar === 'inner' ? pref.styleProgressBarDesign === 'rounded' ? pref.styleBevel ? RGBA(255, 255, 255, 35) : RGBA(255, 255, 255, 30) :
-											pref.styleBevel ? RGBA(255, 255, 255, 45) : RGBA(255, 255, 255, 40) : '';
-
-	col.styleProgressBarFill = pref.styleProgressBarFill === 'bevel' || pref.styleProgressBarFill === 'inner' ? RGBA(0, 0, 0, 70) : '';
-
-	col.styleVolumeBar =
-		pref.styleVolumeBar === 'bevel' ? pref.styleBevel ? RGBA(0, 0, 0, 70) : RGBA(0, 0, 0, 80) :
-		pref.styleVolumeBar === 'inner' ? pref.styleBevel ? RGBA(0, 0, 0, 70) : RGBA(0, 0, 0, 80) : '';
+	panelWhiteColors();
+	mainBlackColors();
 }
 
 
@@ -4964,10 +5052,99 @@ function styleRebornFusionAccentColors() {
 }
 
 
-/////////////////////////
-// * STYLE FUNCTIONS * //
-/////////////////////////
-/** Style Black And White Reborn - Dynamically change between style Black and white 1 and 2 */
+///////////////////////////
+// * INITIALIZE COLORS * //
+///////////////////////////
+/** Init all colors that are used in the Playlist, mostly called from initTheme() */
+function initPlaylistColors() {
+	switch (pref.theme) {
+		case 'white': playlistColorsWhiteTheme(); break;
+		case 'black': playlistColorsBlackTheme(); break;
+		case 'reborn': case 'random': playlistColorsRebornRandomTheme(); break;
+		case 'blue': playlistColorsBlueTheme(); break;
+		case 'darkblue': playlistColorsDarkblueTheme(); break;
+		case 'red': playlistColorsRedTheme(); break;
+		case 'cream': playlistColorsCreamTheme(); break;
+		case 'nblue': case 'ngreen': case 'nred': case 'ngold': playlistColorsNeonThemes(); break;
+		case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
+		case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
+		playlistColorsCustomTheme(); break;
+	}
+}
+
+
+/** Init all colors that are used in the Library, mostly called from initTheme() */
+function initLibraryColors() {
+	switch (pref.theme) {
+		case 'white': libraryColorsWhiteTheme(); break;
+		case 'black': libraryColorsBlackTheme(); break;
+		case 'reborn': case 'random': libraryColorsRebornRandomTheme(); break;
+		case 'blue': libraryColorsBlueTheme(); break;
+		case 'darkblue': libraryColorsDarkblueTheme(); break;
+		case 'red': libraryColorsRedTheme(); break;
+		case 'cream': libraryColorsCreamTheme(); break;
+		case 'nblue': case 'ngreen': case 'nred': case 'ngold': libraryColorsNeonThemes(); break;
+		case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
+		case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
+		libraryColorsCustomTheme(); break;
+	}
+	if (ppt.theme !== 0) libraryThemeColors();
+}
+
+
+/** Init all colors that are used in the Biography, mostly called from initTheme() */
+function initBiographyColors() {
+	switch (pref.theme) {
+		case 'white': biographyColorsWhiteTheme(); break;
+		case 'black': biographyColorsBlackTheme(); break;
+		case 'reborn': case 'random': biographyColorsRebornRandomTheme(); break;
+		case 'blue': biographyColorsBlueTheme(); break;
+		case 'darkblue': biographyColorsDarkblueTheme(); break;
+		case 'red': biographyColorsRedTheme(); break;
+		case 'cream': biographyColorsCreamTheme(); break;
+		case 'nblue': case 'ngreen': case 'nred': case 'ngold': biographyColorsNeonThemes(); break;
+		case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
+		case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
+		biographyColorsCustomTheme(); break;
+	}
+	if (pptBio.theme !== 0) biographyThemeColors();
+}
+
+
+/** Init all colors that are used in Georgia-ReBORN main, mostly called from initTheme() */
+function initMainColors() {
+	switch (pref.theme) {
+		case 'white': mainColorsWhiteTheme(); break;
+		case 'black': mainColorsBlackTheme(); break;
+		case 'reborn': case 'random': mainColorsRebornRandomTheme(); break;
+		case 'blue': mainColorsBlueTheme(); break;
+		case 'darkblue': mainColorsDarkblueTheme(); break;
+		case 'red': mainColorsRedTheme(); break;
+		case 'cream': mainColorsCreamTheme(); break;
+		case 'nblue': case 'ngreen': case 'nred': case 'ngold': mainColorsNeonThemes(); break;
+		case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
+		case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
+		mainColorsCustomTheme(); break;
+	}
+}
+
+
+/** Init all colors that are used in styles, mostly called from initTheme() */
+function initStyleColors() {
+	if      (pref.styleAlternative) styleAlternativeColors();
+	else if (pref.styleAlternative2) styleAlternative2Colors();
+	else if (pref.styleBlackAndWhite) styleBlackAndWhiteColors();
+	else if (pref.styleBlackAndWhite2) styleBlackAndWhite2Colors();
+	else if (pref.styleBlackReborn) styleBlackRebornColors();
+	else if (pref.styleRebornWhite) styleRebornWhiteColors();
+	else if (pref.styleRebornBlack) styleRebornBlackColors();
+	else if (pref.styleRebornFusion) styleRebornFusionColors();
+	else if (pref.styleRebornFusion2) styleRebornFusion2Colors();
+	else if (pref.styleRebornFusionAccent) styleRebornFusionAccentColors();
+}
+
+
+/** Init style Black And White Reborn - dynamically change between style Black and white 1 and 2 */
 function initBlackAndWhiteReborn() {
 	setImageBrightness();
 
@@ -4979,6 +5156,108 @@ function initBlackAndWhiteReborn() {
 		pref.styleBlackAndWhite = true; // Black background
 		pref.styleBlackAndWhite2 = false;
 	}
+}
+
+
+/** Init all colors that are used in the chronflow user-component, mostly called from initTheme() */
+function initChronflowColors() {
+	try {
+		const chron = new ActiveXObject('chron.IChronControl');
+		if (chron) {
+			let r_bg = 255;
+			let g_bg = 255;
+			let b_bg = 255;
+
+			if (g_pl_colors.bg !== RGB(255, 255, 255)) {
+				const bg_rgb = Math.abs(g_pl_colors.bg);
+
+				r_bg = getRed(bg_rgb);
+				g_bg = getGreen(bg_rgb);
+				b_bg = getBlue(bg_rgb);
+
+				r_bg = 255 - r_bg;
+				g_bg = 255 - g_bg;
+				b_bg = 255 - b_bg;
+			}
+			else {
+				r_bg = 255;
+				g_bg = 255;
+				b_bg = 255;
+			}
+
+			// * SetPanelColor
+			const bg = (b_bg << 16) | (g_bg << 8) | r_bg;
+			chron.SetPanelColor(bg, /*skip refresh*/ [0]);
+
+			// * SetTextColor
+			r_bg = getRed(col.lowerBarArtist);
+			g_bg = getGreen(col.lowerBarArtist);
+			b_bg = getBlue(col.lowerBarArtist);
+
+			let strhex = '0x';
+			const rgbtohex = RGBtoHEX(b_bg, g_bg, r_bg);
+			strhex = strhex.concat(rgbtohex);
+			chron.SetTextColor(strhex, /*refresh*/ [1]);
+		}
+	}
+	catch (e) {
+		// debugLog('Unable to create ActiveX chron.IChronControl object');
+	}
+}
+
+
+//////////////////////////
+// * SET THEME COLORS * //
+//////////////////////////
+function setBackgroundColorDefinition() {
+	const customThemes = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme);
+	colBrightness  = new Color(col.primary).brightness;
+	colBrightness2 = new Color(col.primary_alt).brightness;
+
+	// * STANDARD THEMES * //
+	if (['white', 'black', 'reborn', 'random', 'cream'].includes(pref.theme) && !pref.styleRebornFusion && !pref.styleRebornFusion2) {
+		lightBg =
+			noAlbumArtStub && (pref.theme === 'white' && !pref.styleBlackAndWhite || pref.theme === 'reborn' || pref.theme === 'random')
+			||
+			colBrightness + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) &&
+				((pref.theme === 'white' || pref.theme === 'black') && colBrightness > 150 || pref.theme === 'reborn' || pref.theme === 'random' && !pref.styleRandomDark)
+			||
+			colBrightness > 150 && !pref.styleBlend && !pref.styleBlend2 &&
+				(pref.theme === 'white' || pref.theme === 'black' || pref.theme === 'reborn' || pref.theme === 'random' && !pref.styleRandomDark)
+			||
+			pref.theme === 'cream';
+	}
+
+	// * REBORN FUSION AND CUSTOM THEMES * //
+	if (!(pref.styleRebornFusion || pref.styleRebornFusion2 || pref.styleRebornFusionAccent || customThemes)) {
+		return;
+	}
+
+	const mainBgColor      = new Color(pref.styleRebornFusion2 ? col.primary     : customThemes ? HEXtoRGB(customColor.col_bg)         : col.primary_alt).brightness;
+	const playlistBgColor  = new Color(pref.styleRebornFusion2 ? col.primary_alt : customThemes ? HEXtoRGB(customColor.g_pl_colors_bg) : col.primary).brightness;
+	const detailsBgColor   = new Color(pref.styleRebornFusion2 ? col.primary_alt : customThemes ? HEXtoRGB(customColor.col_detailsBg)  : col.primary).brightness;
+	const libraryBgColor   = new Color(pref.styleRebornFusion2 ? col.primary_alt : customThemes ? HEXtoRGB(customColor.ui_col_bg)      : col.primary).brightness;
+	const biographyBgColor = new Color(pref.styleRebornFusion2 ? col.primary_alt : customThemes ? HEXtoRGB(customColor.uiBio_col_bg)   : col.primary).brightness;
+
+	lightBgMain =
+	mainBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
+	mainBgColor > 150 && !pref.styleBlend && !pref.styleBlend2;
+
+	lightBgPlaylist =
+	playlistBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
+	playlistBgColor > 150 && (!pref.styleBlend && !pref.styleBlend2 || pref.styleBlend2 && pref.styleRebornFusion2);
+
+	lightBgDetails =
+	detailsBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
+	detailsBgColor > 150 && (!pref.styleBlend && !pref.styleBlend2 || pref.styleBlend2 && pref.styleRebornFusion2);
+
+	lightBgLibrary =
+	libraryBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
+	libraryBgColor > 150 && (!pref.styleBlend && !pref.styleBlend2 || pref.styleBlend2 && pref.styleRebornFusion2);
+
+	lightBgBiography =
+	biographyBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
+	biographyBgColor > 150 && (!pref.styleBlend && !pref.styleBlend2 || pref.styleBlend2 && pref.styleRebornFusion2);
 }
 
 
@@ -5076,198 +5355,6 @@ function setStyleBlend() {
 	blendedImg = setBlendedImg(albumArt, fb.GetNowPlaying());
 
 	if (timings.showDebugTiming) setStyleBlendProfiler.Print();
-}
-
-
-///////////////////////////
-// * INITIALIZE COLORS * //
-///////////////////////////
-/** Init all colors that are used in the Playlist, mostly called from initTheme() */
-function initPlaylistColors() {
-	switch (pref.theme) {
-		case 'white': playlistColorsWhiteTheme(); break;
-		case 'black': playlistColorsBlackTheme(); break;
-		case 'reborn': case 'random': playlistColorsRebornRandomTheme(); break;
-		case 'blue': playlistColorsBlueTheme(); break;
-		case 'darkblue': playlistColorsDarkblueTheme(); break;
-		case 'red': playlistColorsRedTheme(); break;
-		case 'cream': playlistColorsCreamTheme(); break;
-		case 'nblue': case 'ngreen': case 'nred': case 'ngold': playlistColorsNeonThemes(); break;
-		case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
-		case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
-		playlistColorsCustomTheme(); break;
-	}
-}
-
-
-/** Init all colors that are used in the Library, mostly called from initTheme() */
-function initLibraryColors() {
-	switch (pref.theme) {
-		case 'white': libraryColorsWhiteTheme(); break;
-		case 'black': libraryColorsBlackTheme(); break;
-		case 'reborn': case 'random': libraryColorsRebornRandomTheme(); break;
-		case 'blue': libraryColorsBlueTheme(); break;
-		case 'darkblue': libraryColorsDarkblueTheme(); break;
-		case 'red': libraryColorsRedTheme(); break;
-		case 'cream': libraryColorsCreamTheme(); break;
-		case 'nblue': case 'ngreen': case 'nred': case 'ngold': libraryColorsNeonThemes(); break;
-		case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
-		case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
-		libraryColorsCustomTheme(); break;
-	}
-	if (ppt.theme !== 0) libraryThemeColors();
-}
-
-
-/** Init all colors that are used in the Biography, mostly called from initTheme() */
-function initBiographyColors() {
-	switch (pref.theme) {
-		case 'white': biographyColorsWhiteTheme(); break;
-		case 'black': biographyColorsBlackTheme(); break;
-		case 'reborn': case 'random': biographyColorsRebornRandomTheme(); break;
-		case 'blue': biographyColorsBlueTheme(); break;
-		case 'darkblue': biographyColorsDarkblueTheme(); break;
-		case 'red': biographyColorsRedTheme(); break;
-		case 'cream': biographyColorsCreamTheme(); break;
-		case 'nblue': case 'ngreen': case 'nred': case 'ngold': biographyColorsNeonThemes(); break;
-		case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
-		case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
-		biographyColorsCustomTheme(); break;
-	}
-	if (pptBio.theme !== 0) biographyThemeColors();
-}
-
-
-/** Init all colors that are used in Georgia-ReBORN main, mostly called from initTheme() */
-function initMainColors() {
-	switch (pref.theme) {
-		case 'white': mainColorsWhiteTheme(); break;
-		case 'black': mainColorsBlackTheme(); break;
-		case 'reborn': case 'random': mainColorsRebornRandomTheme(); break;
-		case 'blue': mainColorsBlueTheme(); break;
-		case 'darkblue': mainColorsDarkblueTheme(); break;
-		case 'red': mainColorsRedTheme(); break;
-		case 'cream': mainColorsCreamTheme(); break;
-		case 'nblue': case 'ngreen': case 'nred': case 'ngold': mainColorsNeonThemes(); break;
-		case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
-		case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
-		mainColorsCustomTheme(); break;
-	}
-}
-
-
-/** Init all colors that are used in styles, mostly called from initTheme() */
-function initStyleColors() {
-	if      (pref.styleAlternative) styleAlternativeColors();
-	else if (pref.styleAlternative2) styleAlternative2Colors();
-	else if (pref.styleBlackAndWhite) styleBlackAndWhiteColors();
-	else if (pref.styleBlackAndWhite2) styleBlackAndWhite2Colors();
-	else if (pref.styleBlackReborn) styleBlackRebornColors();
-	else if (pref.styleRebornWhite) styleRebornWhiteColors();
-	else if (pref.styleRebornBlack) styleRebornBlackColors();
-	else if (pref.styleRebornFusion) styleRebornFusionColors();
-	else if (pref.styleRebornFusion2) styleRebornFusion2Colors();
-	else if (pref.styleRebornFusionAccent) styleRebornFusionAccentColors();
-}
-
-
-/** Init all colors that are used in the chronflow user-component, mostly called from initTheme() */
-function initChronflowColors() {
-	try {
-		const chron = new ActiveXObject('chron.IChronControl');
-		if (chron) {
-			let r_bg = 255;
-			let g_bg = 255;
-			let b_bg = 255;
-
-			if (g_pl_colors.bg !== RGB(255, 255, 255)) {
-				const bg_rgb = Math.abs(g_pl_colors.bg);
-
-				r_bg = getRed(bg_rgb);
-				g_bg = getGreen(bg_rgb);
-				b_bg = getBlue(bg_rgb);
-
-				r_bg = 255 - r_bg;
-				g_bg = 255 - g_bg;
-				b_bg = 255 - b_bg;
-			}
-			else {
-				r_bg = 255;
-				g_bg = 255;
-				b_bg = 255;
-			}
-
-			// * SetPanelColor
-			const bg = (b_bg << 16) | (g_bg << 8) | r_bg;
-			chron.SetPanelColor(bg, /*skip refresh*/ [0]);
-
-			// * SetTextColor
-			r_bg = getRed(col.lowerBarArtist);
-			g_bg = getGreen(col.lowerBarArtist);
-			b_bg = getBlue(col.lowerBarArtist);
-
-			let strhex = '0x';
-			const rgbtohex = RGBtoHEX(b_bg, g_bg, r_bg);
-			strhex = strhex.concat(rgbtohex);
-			chron.SetTextColor(strhex, /*refresh*/ [1]);
-		}
-	}
-	catch (e) {
-		// debugLog('Unable to create ActiveX chron.IChronControl object');
-	}
-}
-
-
-//////////////////////////
-// * SET THEME COLORS * //
-//////////////////////////
-function setBackgroundColorDefinition() {
-	const customThemes = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme);
-
-	if (['white', 'black', 'reborn', 'random', 'cream'].includes(pref.theme)) {
-		colBrightness  = new Color(col.primary).brightness;
-		colBrightness2 = new Color(col.primary_alt).brightness;
-
-		lightBg =
-			noAlbumArtStub && (pref.theme === 'white' && !pref.styleBlackAndWhite || pref.theme === 'reborn' || pref.theme === 'random')
-			||
-			colBrightness + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) &&
-				((pref.theme === 'white' || pref.theme === 'black') && colBrightness > 150 || pref.theme === 'reborn' || pref.theme === 'random' && !pref.styleRandomDark)
-			||
-			colBrightness > 150 && !pref.styleBlend && !pref.styleBlend2 &&
-				(pref.theme === 'white' || pref.theme === 'black' || pref.theme === 'reborn' || pref.theme === 'random' && !pref.styleRandomDark)
-			||
-			pref.theme === 'cream';
-	}
-
-	if (!(pref.styleRebornFusion || pref.styleRebornFusion2 || pref.styleRebornFusionAccent || customThemes)) {
-		return;
-	}
-	const mainBgColor      = new Color(pref.styleRebornFusion2 ? col.primary     : customThemes ? HEXtoRGB(customColor.col_bg)         : col.primary_alt).brightness;
-	const playlistBgColor  = new Color(pref.styleRebornFusion2 ? col.primary_alt : customThemes ? HEXtoRGB(customColor.g_pl_colors_bg) : col.primary).brightness;
-	const detailsBgColor   = new Color(pref.styleRebornFusion2 ? col.primary_alt : customThemes ? HEXtoRGB(customColor.col_detailsBg)  : col.primary).brightness;
-	const libraryBgColor   = new Color(pref.styleRebornFusion2 ? col.primary_alt : customThemes ? HEXtoRGB(customColor.ui_col_bg)      : col.primary).brightness;
-	const biographyBgColor = new Color(pref.styleRebornFusion2 ? col.primary_alt : customThemes ? HEXtoRGB(customColor.uiBio_col_bg)   : col.primary).brightness;
-
-	lightBgMain =
-	mainBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
-	mainBgColor > 150 && !pref.styleBlend && !pref.styleBlend2;
-
-	lightBgPlaylist =
-	playlistBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
-	playlistBgColor > 150 && (!pref.styleBlend && !pref.styleBlend2 || pref.styleBlend2 && pref.styleRebornFusion2);
-
-	lightBgDetails =
-	detailsBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
-	detailsBgColor > 150 && (!pref.styleBlend && !pref.styleBlend2 || pref.styleBlend2 && pref.styleRebornFusion2);
-
-	lightBgLibrary =
-	libraryBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
-	libraryBgColor > 150 && (!pref.styleBlend && !pref.styleBlend2 || pref.styleBlend2 && pref.styleRebornFusion2);
-
-	lightBgBiography =
-	biographyBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
-	biographyBgColor > 150 && (!pref.styleBlend && !pref.styleBlend2 || pref.styleBlend2 && pref.styleRebornFusion2);
 }
 
 
