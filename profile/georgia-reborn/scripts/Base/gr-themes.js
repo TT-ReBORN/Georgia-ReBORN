@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-26                                          * //
+// * Last change:    2023-06-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2131,6 +2131,7 @@ function playlistColorsCreamTheme() {
 
 	// * HEADER COLORS * //
 	g_pl_colors.header_nowplaying_bg = pref.styleBlend || pref.styleBlend2 ? RGB(65, 135, 80) : accentColor;
+	g_pl_colors.header_sideMarker = g_pl_colors.header_nowplaying_bg;
 	g_pl_colors.header_artist_normal = pref.styleBlend || pref.styleBlend2 ? RGB(65, 135, 80) : RGB(100, 150, 110);
 	g_pl_colors.header_artist_playing = RGB(255, 255, 255);
 	g_pl_colors.header_album_normal = pref.styleBlend ? RGB(80, 80, 80) : RGB(110, 110, 110);
@@ -2147,7 +2148,7 @@ function playlistColorsCreamTheme() {
 	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(255, 255, 255, 130) : RGB(255, 255, 255);
 	g_pl_colors.row_selection_bg = RGB(200, 200, 200);
 	g_pl_colors.row_selection_frame = g_pl_colors.row_selection_bg;
-	g_pl_colors.row_sideMarker = pref.styleBlend || pref.styleBlend2 ? RGB(65, 135, 80) : accentColor;
+	g_pl_colors.row_sideMarker = g_pl_colors.header_sideMarker;
 	g_pl_colors.row_title_normal = pref.styleBlend ? RGB(60, 60, 60) : RGB(90, 90, 90);
 	g_pl_colors.row_title_playing = RGB(245, 245, 245);
 	g_pl_colors.row_title_selected = RGB(0, 0, 0);
