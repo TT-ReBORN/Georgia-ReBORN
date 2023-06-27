@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-01                                          * //
+// * Last change:    2023-06-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1914,13 +1914,21 @@ function customPlaylistColors(x, y, w, h, playlist_section) {
 				controlList.push(new ColorPicker('pl_misc_03', customColor.g_pl_colors_row_disc_subheader_line, x + 2, y, () => {}));
 				controlList.push(new ColorMarker('pl_misc_03', customColor.g_pl_colors_row_disc_subheader_line, markerX, y, () => {}));
 				y += plColors.h + margin;
-				controlList.push(new StringInput('pl_misc_04', 'g_pl_colors.row_selection_frame', customColor.g_pl_colors_row_selection_frame, x, y, labelW, inputW));
-				controlList.push(new ColorPicker('pl_misc_04', customColor.g_pl_colors_row_selection_frame, x + 2, y, () => {}));
-				controlList.push(new ColorMarker('pl_misc_04', customColor.g_pl_colors_row_selection_frame, markerX, y, () => {}));
+				controlList.push(new StringInput('pl_misc_04', 'g_pl_colors.row_drag_line', customColor.g_pl_colors_row_drag_line, x, y, labelW, inputW));
+				controlList.push(new ColorPicker('pl_misc_04', customColor.g_pl_colors_row_drag_line, x + 2, y, () => {}));
+				controlList.push(new ColorMarker('pl_misc_04', customColor.g_pl_colors_row_drag_line, markerX, y, () => {}));
 				y += plColors.h + margin;
-				controlList.push(new StringInput('pl_misc_05', 'g_pl_colors.row_rating_color', customColor.g_pl_colors_row_rating_color, x, y, labelW, inputW));
-				controlList.push(new ColorPicker('pl_misc_05', customColor.g_pl_colors_row_rating_color, x + 2, y, () => {}));
-				controlList.push(new ColorMarker('pl_misc_05', customColor.g_pl_colors_row_rating_color, markerX, y, () => {}));
+				controlList.push(new StringInput('pl_misc_05', 'g_pl_colors.row_drag_line_reached', customColor.g_pl_colors_row_drag_line_reached, x, y, labelW, inputW));
+				controlList.push(new ColorPicker('pl_misc_05', customColor.g_pl_colors_row_drag_line_reached, x + 2, y, () => {}));
+				controlList.push(new ColorMarker('pl_misc_05', customColor.g_pl_colors_row_drag_line_reached, markerX, y, () => {}));
+				y += plColors.h + margin;
+				controlList.push(new StringInput('pl_misc_06', 'g_pl_colors.row_selection_frame', customColor.g_pl_colors_row_selection_frame, x, y, labelW, inputW));
+				controlList.push(new ColorPicker('pl_misc_06', customColor.g_pl_colors_row_selection_frame, x + 2, y, () => {}));
+				controlList.push(new ColorMarker('pl_misc_06', customColor.g_pl_colors_row_selection_frame, markerX, y, () => {}));
+				y += plColors.h + margin;
+				controlList.push(new StringInput('pl_misc_07', 'g_pl_colors.row_rating_color', customColor.g_pl_colors_row_rating_color, x, y, labelW, inputW));
+				controlList.push(new ColorPicker('pl_misc_07', customColor.g_pl_colors_row_rating_color, x + 2, y, () => {}));
+				controlList.push(new ColorMarker('pl_misc_07', customColor.g_pl_colors_row_rating_color, markerX, y, () => {}));
 			}
 			break;
 		case 'pl_btns':
@@ -2331,8 +2339,10 @@ function updateColorsFromConfig(id, value) {
 		case 'pl_misc_01': customColor.g_pl_colors_header_line_normal = value; break;
 		case 'pl_misc_02': customColor.g_pl_colors_header_line_playing = value; break;
 		case 'pl_misc_03': customColor.g_pl_colors_row_disc_subheader_line = value; break;
-		case 'pl_misc_04': customColor.g_pl_colors_row_selection_frame = value; break;
-		case 'pl_misc_05': customColor.g_pl_colors_row_rating_color = value; break;
+		case 'pl_misc_04': customColor.g_pl_colors_row_drag_line = value; break;
+		case 'pl_misc_05': customColor.g_pl_colors_row_drag_line_reached = value; break;
+		case 'pl_misc_06': customColor.g_pl_colors_row_selection_frame = value; break;
+		case 'pl_misc_07': customColor.g_pl_colors_row_rating_color = value; break;
 		// * PLAYLIST - BTNS * //
 		case 'pl_btns_01': customColor.g_pl_colors_sbar_btn_normal = value; break;
 		case 'pl_btns_02': customColor.g_pl_colors_sbar_btn_hovered = value; break;

@@ -63,6 +63,8 @@ function playlistColorsWhiteTheme() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = RGB(200, 200, 200);
+	g_pl_colors.row_drag_line = shadeColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
 	g_pl_colors.sbar_btn_normal = RGB(120, 120, 120);
@@ -385,6 +387,8 @@ function playlistColorsBlackTheme() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = pref.styleBlend ? RGB(65, 65, 65) : RGB(45, 45, 45);
+	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
 	g_pl_colors.sbar_btn_normal = RGB(100, 100, 100);
@@ -716,6 +720,8 @@ function playlistColorsRebornRandomTheme() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = isColored ? pref.styleBlend ? shadeColor(col.primary, 24) : col.accent : RGB(200, 200, 200);
+	g_pl_colors.row_drag_line = g_pl_colors.row_sideMarker;
+	g_pl_colors.row_drag_line_reached = lightBg ? shadeColor(g_pl_colors.row_sideMarker, 20) : tintColor(g_pl_colors.row_sideMarker, 40);
 
 	// * SCROLLBAR COLORS * //
 	g_pl_colors.sbar_btn_normal = RGB(120, 120, 120);
@@ -1324,6 +1330,8 @@ function playlistColorsBlueTheme() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = RGB(17, 100, 182);
+	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
 	g_pl_colors.sbar_btn_normal = RGB(220, 220, 220);
@@ -1606,6 +1614,8 @@ function playlistColorsDarkblueTheme() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = RGB(12, 21, 31);
+	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
 	g_pl_colors.sbar_btn_normal =  RGB(220, 220, 220);
@@ -1881,6 +1891,8 @@ function playlistColorsRedTheme() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = RGB(75, 18, 18);
+	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
 	g_pl_colors.sbar_btn_normal = RGB(220, 220, 220);
@@ -2155,6 +2167,8 @@ function playlistColorsCreamTheme() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = RGB(200, 200, 200);
+	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
 	g_pl_colors.sbar_btn_normal = accentColor;
@@ -2496,6 +2510,8 @@ function playlistColorsNeonThemes() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = RGB(45, 45, 45);
+	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
 	g_pl_colors.sbar_btn_normal = accentColor;
@@ -2818,6 +2834,8 @@ function playlistColorsCustomTheme() {
 		g_pl_colors.row_title_hovered = HEXtoRGB(customColor.g_pl_colors_row_title_hovered);
 		g_pl_colors.row_rating_color = HEXtoRGB(customColor.g_pl_colors_row_rating_color);
 		g_pl_colors.row_disc_subheader_line = HEXtoRGB(customColor.g_pl_colors_row_disc_subheader_line);
+		g_pl_colors.row_drag_line = HEXtoRGB(customColor.g_pl_colors_row_drag_line);
+		g_pl_colors.row_drag_line_reached = HEXtoRGB(customColor.g_pl_colors_row_drag_line_reached);
 
 		// * SCROLLBAR COLORS * //
 		g_pl_colors.sbar_btn_normal = HEXtoRGB(customColor.g_pl_colors_sbar_btn_normal);
@@ -3164,6 +3182,8 @@ function panelWhiteColors(lighterBg) {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = pref.styleBlend ? RGB(190, 190, 190) : RGB(215, 215, 215);
+	g_pl_colors.row_drag_line = shadeColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 	g_pl_colors.sbar_btn_normal = RGB(100, 100, 100);
 	g_pl_colors.sbar_btn_hovered = RGB(0, 0, 0);
 	g_pl_colors.sbar_thumb_normal = RGB(100, 100, 100);
@@ -3385,6 +3405,8 @@ function panelBlackColors(darkerBg) {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = pref.styleBlend ? RGB(80, 80, 80) : RGB(45, 45, 45);
+	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 	g_pl_colors.sbar_btn_normal = RGB(200, 200, 200);
 	g_pl_colors.sbar_btn_hovered = RGB(255, 255, 255);
 	g_pl_colors.sbar_thumb_normal = RGB(180, 180, 180);
@@ -3831,6 +3853,8 @@ function themeColorAdjustments() {
 
 		g_pl_colors.row_selection_frame = g_pl_colors.header_line_normal;
 		g_pl_colors.row_disc_subheader_line = g_pl_colors.header_line_normal;
+		g_pl_colors.row_drag_line = g_pl_colors.row_sideMarker;
+		g_pl_colors.row_drag_line_reached = cBRT > 175 ? shadeColor(g_pl_colors.row_sideMarker, 20) : tintColor(g_pl_colors.row_sideMarker, 40);
 
 		// * LIBRARY COLORS * //
 		ui.col.selectionFrame = g_pl_colors.header_line_normal;
@@ -4575,6 +4599,8 @@ function styleBlackRebornColors() {
 	g_pl_colors.header_line_playing = RGB(25, 25, 25);
 	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
 	g_pl_colors.row_disc_subheader_line = pref.styleBlend ? RGB(65, 65, 65) : RGB(45, 45, 45);
+	g_pl_colors.row_drag_line = lightBg ? shadeColor(g_pl_colors.row_selection_frame, 20) : tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * LIBRARY COLORS * //
 	ui.col.bg = g_pl_colors.bg;
@@ -5513,6 +5539,8 @@ function setCurrentColorsToCustomTheme(slot) {
 		g_pl_colors_row_title_hovered: RGBFtoHEX(g_pl_colors.row_title_hovered),
 		g_pl_colors_row_rating_color: RGBFtoHEX(g_pl_colors.row_rating_color),
 		g_pl_colors_row_disc_subheader_line: RGBFtoHEX(g_pl_colors.row_disc_subheader_line),
+		g_pl_colors_row_drag_line: RGBFtoHEX(g_pl_colors.row_drag_line),
+		g_pl_colors_row_drag_line_reached: RGBFtoHEX(g_pl_colors.row_drag_line_reached),
 		g_pl_colors_sbar_btn_normal: RGBFtoHEX(g_pl_colors.sbar_btn_normal),
 		g_pl_colors_sbar_btn_hovered: RGBFtoHEX(g_pl_colors.sbar_btn_hovered),
 		g_pl_colors_sbar_thumb_normal: RGBFtoHEX(g_pl_colors.sbar_thumb_normal),

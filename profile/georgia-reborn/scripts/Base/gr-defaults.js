@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-19                                          * //
+// * Last change:    2023-06-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1589,6 +1589,8 @@ const customThemeDefaults = {
 	g_pl_colors_row_title_hovered: 'ffffff',
 	g_pl_colors_row_rating_color: 'ebc841',
 	g_pl_colors_row_disc_subheader_line: '503782',
+	g_pl_colors_row_drag_line: '503782',
+	g_pl_colors_row_drag_line_reached: '3cfaa0',
 
 	// * SCROLLBAR COLORS * //
 	g_pl_colors_sbar_btn_normal: 'd2d2d2',
@@ -1811,6 +1813,8 @@ const customThemeComments = {
 	g_pl_colors_row_title_hovered: 'Playlist row title text color in hovered state',
 	g_pl_colors_row_rating_color: 'Playlist row rating color',
 	g_pl_colors_row_disc_subheader_line: 'Playlist row disc sub header line color',
+	g_pl_colors_row_drag_line: 'Playlist track reorder drag line color',
+	g_pl_colors_row_drag_line_reached: 'Playlist track reorder reached drag line color',
 
 	// * SCROLLBAR COLORS * //
 	g_pl_colors_sbar_btn_normal: 'Playlist scrollbar button color in normal state',

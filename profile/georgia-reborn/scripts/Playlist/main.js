@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-26                                          * //
+// * Last change:    2023-06-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -4899,10 +4899,10 @@ class Row extends ListItem {
 
 		//--->
 		if (this.is_drop_top_selected) {
-			gr.DrawLine(this.x, this.y + 1, this.x + this.w, this.y + 1, 2, this.is_drop_boundary_reached ? RGB(255, 165, 0) : RGB(140, 142, 144));
+			gr.DrawLine(this.x, this.y + 1, this.x + this.w, this.y + 1, 2, this.is_drop_boundary_reached ? g_pl_colors.row_drag_line_reached : g_pl_colors.row_drag_line);
 		}
 		if (this.is_drop_bottom_selected) {
-			gr.DrawLine(this.x, this.y + this.h - 1, this.x + this.w, this.y + this.h - 1, 2, this.is_drop_boundary_reached ? RGB(255, 165, 0) : RGB(140, 142, 144));
+			gr.DrawLine(this.x, this.y + this.h - 1, this.x + this.w, this.y + this.h - 1, 2, this.is_drop_boundary_reached ? g_pl_colors.row_drag_line_reached : g_pl_colors.row_drag_line);
 		}
 
 		////////////////////////////////////////////////////////////
