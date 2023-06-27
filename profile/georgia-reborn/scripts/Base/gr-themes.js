@@ -721,7 +721,7 @@ function playlistColorsRebornRandomTheme() {
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = isColored ? pref.styleBlend ? shadeColor(col.primary, 24) : col.accent : RGB(200, 200, 200);
 	g_pl_colors.row_drag_line = g_pl_colors.row_sideMarker;
-	g_pl_colors.row_drag_line_reached = lightBg ? shadeColor(g_pl_colors.row_sideMarker, 20) : tintColor(g_pl_colors.row_sideMarker, 40);
+	g_pl_colors.row_drag_line_reached = colBrightness > 210 ? shadeColor(g_pl_colors.row_sideMarker, 25) : tintColor(g_pl_colors.row_sideMarker, 50);
 
 	// * SCROLLBAR COLORS * //
 	g_pl_colors.sbar_btn_normal = RGB(120, 120, 120);
@@ -3854,7 +3854,7 @@ function themeColorAdjustments() {
 		g_pl_colors.row_selection_frame = g_pl_colors.header_line_normal;
 		g_pl_colors.row_disc_subheader_line = g_pl_colors.header_line_normal;
 		g_pl_colors.row_drag_line = g_pl_colors.row_sideMarker;
-		g_pl_colors.row_drag_line_reached = cBRT > 175 ? shadeColor(g_pl_colors.row_sideMarker, 20) : tintColor(g_pl_colors.row_sideMarker, 40);
+		g_pl_colors.row_drag_line_reached = cBRT > 210 ? shadeColor(g_pl_colors.row_sideMarker, 25) : tintColor(g_pl_colors.row_sideMarker, 50);
 
 		// * LIBRARY COLORS * //
 		ui.col.selectionFrame = g_pl_colors.header_line_normal;
