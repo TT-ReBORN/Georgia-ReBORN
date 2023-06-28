@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-27                                          * //
+// * Last change:    2023-06-28                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -732,7 +732,7 @@ function playlistColorsRebornRandomTheme() {
 
 	// * WHEN PLAYING * //
 	if (fb.IsPlaying && isColored) {
-		if (pref.styleRebornFusion || pref.styleRebornFusion2 ? lightBgPlaylist : lightBg) {
+		if (pref.styleGradient || pref.styleGradient2 || pref.styleRebornFusion || pref.styleRebornFusion2 ? lightBgPlaylist : lightBg) {
 			// * PLAYLIST MANAGER COLORS * //
 			g_pl_colors.plman_text_normal = pref.autoHidePlman ? col.primary : col.darkAccent_75;
 			g_pl_colors.plman_text_hovered = col.darkAccent_100;
@@ -849,7 +849,7 @@ function libraryColorsRebornRandomTheme() {
 
 	// * WHEN PLAYING * //
 	if (fb.IsPlaying && isColored) {
-		if (pref.styleRebornFusion || pref.styleRebornFusion2 ? lightBgLibrary : lightBg) {
+		if (pref.styleGradient || pref.styleGradient2 || pref.styleRebornFusion || pref.styleRebornFusion2 ? lightBgLibrary : lightBg) {
 			// * NODE COLORS * //
 			ui.col.iconPlus = col.darkAccent_75;
 			ui.col.iconPlus_h = col.darkAccent_100;
@@ -944,7 +944,7 @@ function biographyColorsRebornRandomTheme() {
 
 	// * WHEN PLAYING * //
 	if (fb.IsPlaying && isColored) {
-		if (pref.styleRebornFusion || pref.styleRebornFusion2 ? lightBgBiography : lightBg) {
+		if (pref.styleGradient || pref.styleGradient2 || pref.styleRebornFusion || pref.styleRebornFusion2 ? lightBgBiography : lightBg) {
 			// * HEADER COLORS * //
 			uiBio.col.headingText = col.darkAccent_75;
 			uiBio.col.source = col.darkAccent_75;
@@ -1201,7 +1201,7 @@ function mainColorsRebornRandomTheme() {
 
 	// * WHEN PLAYING * //
 	if (fb.IsPlaying && isColored) {
-		if (pref.styleRebornFusion || pref.styleRebornFusion2 ? lightBgMain : lightBg) {
+		if (pref.styleGradient || pref.styleGradient2 || pref.styleRebornFusion || pref.styleRebornFusion2 ? lightBgMain : lightBg) {
 			// * MAIN COLORS * //
 			col.noAlbumArtStub = RGB(90, 90, 90);
 			col.lowerBarArtist = col.darkAccent_75;
@@ -5237,9 +5237,11 @@ function initChronflowColors() {
 // * SET THEME COLORS * //
 //////////////////////////
 function setBackgroundColorDefinition() {
-	const customThemes = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme);
 	colBrightness  = new Color(col.primary).brightness;
 	colBrightness2 = new Color(col.primary_alt).brightness;
+	const colBrightnessGrad  = (pref.styleRebornFusion ? colBrightness2 : colBrightness) - (new Color(RGBAtoRGB(col.styleGradient)).brightness  * 0.5);
+	const colBrightnessGrad2 = (pref.styleRebornFusion ? colBrightness2 : colBrightness) - (new Color(RGBAtoRGB(col.styleGradient2)).brightness * 0.5);
+	const customThemes = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme);
 
 	// * STANDARD THEMES * //
 	if (['white', 'black', 'reborn', 'random', 'cream'].includes(pref.theme) && !pref.styleRebornFusion && !pref.styleRebornFusion2) {
@@ -5247,20 +5249,20 @@ function setBackgroundColorDefinition() {
 			noAlbumArtStub && (pref.theme === 'white' && !pref.styleBlackAndWhite || pref.theme === 'reborn' || pref.theme === 'random')
 			||
 			colBrightness + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) &&
-				((pref.theme === 'white' || pref.theme === 'black') && colBrightness > 150 || pref.theme === 'reborn' || pref.theme === 'random' && !pref.styleRandomDark)
+			((pref.theme === 'white' || pref.theme === 'black') && colBrightness > 150 || pref.theme === 'reborn' || pref.theme === 'random' && !pref.styleRandomDark)
 			||
-			colBrightness > 150 && !pref.styleBlend && !pref.styleBlend2 &&
-				(pref.theme === 'white' || pref.theme === 'black' || pref.theme === 'reborn' || pref.theme === 'random' && !pref.styleRandomDark)
+			colBrightness > 150 && !pref.styleBlend && !pref.styleBlend2 && !pref.styleRandomDark
 			||
 			pref.theme === 'cream';
 	}
 
-	// * REBORN FUSION AND CUSTOM THEMES * //
-	if (!(pref.styleRebornFusion || pref.styleRebornFusion2 || pref.styleRebornFusionAccent || customThemes)) {
+	// * GRADIENT STYLES, REBORN FUSION STYLES, CUSTOM THEMES * //
+	if (!(pref.styleGradient || pref.styleGradient2 || pref.styleRebornFusion || pref.styleRebornFusion2 || pref.styleRebornFusionAccent || customThemes)) {
 		return;
 	}
 
-	const mainBgColor      = new Color(pref.styleRebornFusion2 ? col.primary     : customThemes ? HEXtoRGB(customColor.col_bg)         : col.primary_alt).brightness;
+	const mainBgColor      = pref.styleGradient ? colBrightnessGrad : pref.styleGradient2 ? colBrightnessGrad2 :
+							 new Color(pref.styleRebornFusion2 ? col.primary     : customThemes ? HEXtoRGB(customColor.col_bg)         : col.primary_alt).brightness;
 	const playlistBgColor  = new Color(pref.styleRebornFusion2 ? col.primary_alt : customThemes ? HEXtoRGB(customColor.g_pl_colors_bg) : col.primary).brightness;
 	const detailsBgColor   = new Color(pref.styleRebornFusion2 ? col.primary_alt : customThemes ? HEXtoRGB(customColor.col_detailsBg)  : col.primary).brightness;
 	const libraryBgColor   = new Color(pref.styleRebornFusion2 ? col.primary_alt : customThemes ? HEXtoRGB(customColor.ui_col_bg)      : col.primary).brightness;
