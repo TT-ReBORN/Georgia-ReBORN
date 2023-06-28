@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-18                                          * //
+// * Last change:    2023-06-28                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -825,8 +825,8 @@ class Hyperlink {
 			case 'update': runCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/releases'); break;
 			case 'date':   query = pref.showPlaylistFullDate ? `"${tf.date}" IS ${this.text}` : `"$year(%date%)" IS ${this.text}`; break;
 			case 'artist': query = `Artist HAS "${this.text.replace(/"/g, '')}" OR Album Artist HAS "${this.text.replace(/"/g, '')}" OR ARTISTFILTER HAS "${this.text.replace(/"/g, '')}"`; break;
-			case 'album':
-			case 'label':  query = this.text; break;
+			case 'album':  query = `Album HAS "${this.text.replace(/"/g, '')}"`; break;
+			case 'label':  query = `Label HAS "${this.text.replace(/"/g, '')}" OR Publisher HAS "${this.text.replace(/"/g, '')}"`; break;
 			default:       query = `${this.type} IS "${this.text}"`; break;
 		}
 
