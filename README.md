@@ -185,6 +185,7 @@ Many thanks to **[TheQwertiest](https://github.com/TheQwertiest)** for his Spide
 Many thanks to **[WilB](https://github.com/Wil-B)** for his Biography and Library script!<br />
 Many thanks to **[regorxxx](https://github.com/regorxxx)** for his Waveform bar and help!<br />
 Many thanks to **[reupen](https://github.com/reupen)** for his Columns UI!<br />
+Many thanks to **[RevenantX](https://github.com/RevenantX)** for his CUE fixer component!<br />
 Many thanks to **[ohyeah](https://github.com/ESLyric)** for his ESLyric component!<br />
 Many thanks to **[gix](https://github.com/gix)** for his Last.fm scrobble component!<br />
 Many thanks to **[zeremy](https://github.com/smoralis)** for his automatic lyric save script!<br />
