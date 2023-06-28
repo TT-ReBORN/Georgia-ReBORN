@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-04-27                                          * //
+// * Last change:    2023-06-28                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -141,8 +141,11 @@ class Configuration {
 			return config;
 		}
 		catch (e) {
-			throw new ThemeError(`<ERROR: Could not read from ${this.path}, or JSON may be invalid. ` +
-				'If the config file exists, please delete or restore it from a backup.>');
+			throw new ThemeError(`Could not read config file:\n${this.path}\n\n` +
+				'JSON seems to be invalid, if have you edited the config file,\n' +
+				'be sure that your modified lines have the correct syntax and values.\n' +
+				'You can also delete or rename the config file and on next foobar startup\n' +
+				'a new default one will be created. Or replace your old config from a backup.');
 		}
 	}
 
