@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-23                                          * //
+// * Last change:    2023-06-28                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -153,6 +153,11 @@ class List {
 			this.x = x;
 			this.list_x = this.x + g_properties.list_left_pad;
 			this.on_w_size(w);
+		}
+
+		// * Makes sure to always hide scrollbar when auto-hide is enabled
+		if (pref.playlistAutoHideScrollbar && g_properties.show_scrollbar) {
+			g_properties.show_scrollbar = false;
 		}
 	}
 
