@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-01                                          * //
+// * Last change:    2023-06-30                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -142,6 +142,7 @@ const fileList = [
 	'scripts\\base\\gr-main-components.js',
 	'scripts\\base\\gr-lyrics.js',
 	'scripts\\base\\gr-callbacks.js',
+	'scripts\\base\\gr-methods.js',
 	'scripts\\base\\gr-menu.js',
 	'scripts\\base\\gr-menu-custom.js',
 	'scripts\\base\\gr-main.js'

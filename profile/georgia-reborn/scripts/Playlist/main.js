@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-27                                          * //
+// * Last change:    2023-06-30                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -7295,27 +7295,6 @@ function ArtImageCache(max_cache_size_arg) {
 }
 
 Header.art_cache = new ArtImageCache(200);
-
-
-/////////////////////////////////
-// * PLAYLIST INITIALIZATION * //
-/////////////////////////////////
-function initPlaylist() {
-	playlist = new PlaylistPanel(pref.layout === 'default' && (pref.playlistLayout === 'normal' || pref.playlistLayoutNormal && (displayBiography || pref.displayLyrics)) ? ww * 0.5 : 0, 0);
-	playlist.initialize();
-}
-
-
-/** Used to update the Playlist when content has changed via user activity, e.g adding/removing items or changing playlist */
-function updatePlaylist() {
-	debounce((playlistIndex) => {
-		trace_call && console.log('initPlaylistDebounced');
-		playlist.on_playlist_items_added(playlistIndex);
-	}, 100, {
-		leading: false,
-		trailing: true
-	})(plman.ActivePlaylist);
-}
 
 
 ///////////////

@@ -637,7 +637,6 @@ class BiographyPanel {
 	}
 }
 
-
 ////////////////////////
 // * INIT CALLBACKS * //
 ////////////////////////
@@ -645,6 +644,7 @@ class BiographyPanel {
 let biography = new BiographyCallbacks();
 /** @type {BiographyPanel} */
 let biographyPanel = new BiographyPanel();
+
 
 this.on_colours_changed = () => biography.on_colours_changed();
 this.on_font_changed = () => biography.on_font_changed();
@@ -678,47 +678,6 @@ this.on_playlist_items_removed = () => biography.on_playlist_items_removed();
 this.on_playlist_switch = () => biography.on_playlist_switch();
 this.on_playlists_changed = () => biography.on_playlists_changed();
 this.on_script_unload = () => biography.on_script_unload();
-
-
-function initBiographyPanel() {
-	if (biographyInitialized) return;
-	uiBio = new UserInterfaceBio();
-	vkBio = new VkeysBio();
-	panelBio = new PanelBio();
-	name = new Names();
-	alb_scrollbar = new ScrollbarBio();
-	art_scrollbar = new ScrollbarBio();
-	art_scroller = new ScrollbarBio();
-	cov_scroller = new ScrollbarBio();
-	butBio = new ButtonsBio();
-	popUpBoxBio = new PopUpBoxBio();
-	txt = new Text();
-	tagBio = new TaggerBio();
-	resize = new ResizeHandler();
-	libBio = new LibraryBio();
-	imgBio = new ImagesBio();
-	seeker = new Seeker();
-	filmStrip = new FilmStrip();
-	timerBio = new TimersBio();
-	menBio = new MenuItemsBio();
-	serverBio = new ServerBio();
-	infoboxBio = new InfoboxBio();
-	lyricsBio = new LyricsBio();
-	biographyPanel = new BiographyPanel();
-	biography = new BiographyCallbacks();
-	biographyInitialized = true;
-}
-
-
-function initBiographyLayout() {
-	if (pref.biographyLayoutFullPreset) {
-		pptBio.style = pref.biographyLayoutFullPreset && pref.layout === 'default' && pref.biographyLayout === 'full' ? 3 : 0;
-		pptBio.showFilmStrip = false;
-		pptBio.filmStripPos = 3;
-	}
-	repaintWindowRectAreas();
-	setBiographySize();
-}
 
 
 const windowMetricsPathBio = pref.customBiographyDir ? `${globals.customBiographyDir}cache\\biography\\themed\\windowMetrics.json` : `${fb.ProfilePath}cache\\biography\\themed\\windowMetrics.json`;
