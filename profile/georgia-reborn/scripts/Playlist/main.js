@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-30                                          * //
+// * Last change:    2023-07-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -4110,7 +4110,8 @@ class Header extends BaseHeader {
 
 			// * ARTIST * //
 			if (this.grouping_handler.get_title_query()) {
-				let artist_text = [];
+				const noAlbumArtist = $('$meta(album artist)', this.metadb) === '';
+				let artist_text = noAlbumArtist ? [] : $(this.grouping_handler.get_title_query(), this.metadb);
 				if (!artist_text && is_radio) {
 					artist_text = 'Radio Stream';
 				}
@@ -4124,20 +4125,24 @@ class Header extends BaseHeader {
 					}
 
 					const artist_text_format = g_string_format.v_align_far | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
-					if (is_radio || !this.hyperlinks.artist0)  {
+					if (is_radio || !this.hyperlinks.artist0) {
 						grClip.DrawString(artist_text, artist_font, artist_color, artist_x, 0, artist_w, artist_h, artist_text_format);
 					} else {
 						let i = 0;
 						let artist_hyperlink;
-						while (this.hyperlinks['artist' + i]) {
-							if (i > 0) {
-								grClip.DrawString(' \u2022 ', artist_font, artist_color, artist_hyperlink.x + artist_hyperlink.getWidth(), artist_h * 0.25, scaleForDisplay(20), artist_h);
+						if (noAlbumArtist) {
+							while (this.hyperlinks['artist' + i]) {
+								if (i > 0) {
+									grClip.DrawString(' \u2022 ', artist_font, artist_color, artist_hyperlink.x + artist_hyperlink.getWidth(), artist_h * 0.25, scaleForDisplay(20), artist_h);
+								}
+								artist_hyperlink = this.hyperlinks['artist' + i];
+								artist_hyperlink.draw(grClip, artist_color);
+								artist_x = artist_hyperlink.x;
+								artist_w = artist_hyperlink.getWidth();
+								i++;
 							}
-							artist_hyperlink = this.hyperlinks['artist' + i];
-							artist_hyperlink.draw(grClip, artist_color);
-							artist_x = artist_hyperlink.x;
-							artist_w = artist_hyperlink.getWidth();
-							i++;
+						} else {
+							this.hyperlinks.artist0.draw(grClip, artist_color);
 						}
 					}
 					// part1_cur_x += artist_w;
@@ -4515,19 +4520,24 @@ class Header extends BaseHeader {
 		}
 
 		// * Artist
-		let artist_text = [];
+		const noAlbumArtist = $('$meta(album artist)', this.metadb) === '';
+		let artist_text = noAlbumArtist ? [] : $(this.grouping_handler.get_title_query(), this.metadb);
 		let artist_x = left_pad;
-		for (let i = 0; i < tf.artist.length; i++) {
-			artist_text.push(...getMetaValues(tf.artist, this.metadb));
-		}
-		artist_text = [...new Set(artist_text)];	// Remove duplicates
-		for (let i = 0; i < artist_text.length; i++) {
-			if (i > 0) {
-				artist_x += bulletWidth + spaceWidth * 3;   // Spacing between artists
+		if (noAlbumArtist) {
+			for (let i = 0; i < tf.artist.length; i++) {
+				artist_text.push(...getMetaValues(tf.artist, this.metadb));
 			}
-			const artist_w = gr.MeasureString(artist_text[i], artist_font, 0, 0, 0, 0).Width;
-			this.hyperlinks['artist' + i] = new Hyperlink(artist_text[i], artist_font, 'artist', artist_x, scaleForDisplay(5 * (!g_properties.show_group_info ? 2 : 1)), this.hyperlinksMaxWidth, true);
-			artist_x += artist_w;
+			artist_text = [...new Set(artist_text)];	// Remove duplicates
+			for (let i = 0; i < artist_text.length; i++) {
+				if (i > 0) {
+					artist_x += bulletWidth + spaceWidth * 3;   // Spacing between artists
+				}
+				const artist_w = gr.MeasureString(artist_text[i], artist_font, 0, 0, 0, 0).Width;
+				this.hyperlinks['artist' + i] = new Hyperlink(artist_text[i], artist_font, 'artist', artist_x, scaleForDisplay(5 * (!g_properties.show_group_info ? 2 : 1)), this.hyperlinksMaxWidth, true);
+				artist_x += artist_w;
+			}
+		} else {
+			this.hyperlinks.artist0 = new Hyperlink(artist_text, artist_font, 'artist', artist_x, scaleForDisplay(5 * (!g_properties.show_group_info ? 2 : 1)), this.hyperlinksMaxWidth, true);
 		}
 
 		// * Album
