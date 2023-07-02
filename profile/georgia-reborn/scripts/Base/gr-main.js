@@ -425,10 +425,12 @@ function drawDetailsMetadataGrid(gr) {
 						}
 						// * Release flags
 						if (showReleaseFlagImage && releaseFlagImg) {
+							const sizeCorr = txtRec.Lines === 4 ? 4 : txtRec.Lines === 3 ? 3 : txtRec.Lines === 2 ? 2 : 1;
+							const yCorr = txtRec.Lines === 4 ? cellHeight / 4 : txtRec.Lines === 3 ? cellHeight / 3 : 0;
 							const heightRatio = (cellHeight) / releaseFlagImg.Height;
 							if ((!showReleaseFlagOnly ? txtRec.Width + scaleForDisplay(8) : 0) + Math.round(releaseFlagImg.Width * heightRatio) < col2Width) {
-								gr.DrawImage(releaseFlagImg, showReleaseFlagOnly && key === 'Rel. Country' ? col2Left : col2Left + txtRec.Width + scaleForDisplay(8), gridTop - 3,
-									Math.round(releaseFlagImg.Width * heightRatio * (txtRec.Lines === 2 ? 0.5 : 1)), cellHeight * (txtRec.Lines === 2 ? 0.5 : 1), 0, 0, releaseFlagImg.Width, releaseFlagImg.Height);
+								gr.DrawImage(releaseFlagImg, showReleaseFlagOnly && key === 'Rel. Country' ? col2Left : col2Left + txtRec.Width + scaleForDisplay(8), gridTop - 3 + yCorr,
+									Math.round(releaseFlagImg.Width * heightRatio / sizeCorr), cellHeight / sizeCorr, 0, 0, releaseFlagImg.Width, releaseFlagImg.Height);
 							}
 						}
 						// * Codec logo
