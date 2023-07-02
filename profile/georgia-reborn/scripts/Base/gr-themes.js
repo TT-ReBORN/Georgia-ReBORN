@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-28                                          * //
+// * Last change:    2023-07-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -932,7 +932,7 @@ function biographyColorsRebornRandomTheme() {
 
 	// * MISC COLORS * //
 	uiBio.col.lyricsNormal = uiBio.col.text;
-	uiBio.col.lyricsHighlight = RGB(220, 160, 40);
+	uiBio.col.lyricsHighlight = (lightBgBiography || lightBg) && colorDistance(RGB(255, 240, 150), uiBio.col.bg, true) < 200 ? RGB(220, 160, 40) : RGB(255, 240, 150);
 	uiBio.col.noPhotoStubBg = isColored ? col.lightAccent_7 : RGB(245, 245, 245);
 	uiBio.col.noPhotoStubText = g_pl_colors.header_artist_playing;
 
@@ -1010,7 +1010,7 @@ function mainColorsRebornRandomTheme() {
 	col.lowerBarTime = col.lowerBarTitle;
 	col.lowerBarLength = col.lowerBarTitle;
 	col.lyricsNormal = RGB(255, 255, 255);
-	col.lyricsHighlight = pref.lyricsAlbumArt ? RGB(255, 240, 150) : RGB(220, 160, 40);
+	col.lyricsHighlight = (lightBgMain || lightBg) && colorDistance(RGB(255, 240, 150), col.bg, true) < 200 ? RGB(220, 160, 40) : RGB(255, 240, 150);
 	col.lyricsShadow = RGB(0, 0, 0);
 
 	// * DETAILS COLORS * //

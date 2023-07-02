@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-30                                          * //
+// * Last change:    2023-07-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1017,7 +1017,7 @@ function on_mouse_wheel(delta) {
 	on_mouse_wheel_albumart = false;
 
 	if (pref.displayLyrics && state.mouse_x > albumArtSize.x && state.mouse_x <= albumArtSize.x + albumArtSize.w && state.mouse_y > albumArtSize.y && state.mouse_y <= albumArtSize.y + albumArtSize.h) {
-		gLyrics.on_mouse_wheel(delta);
+		lyrics.on_mouse_wheel(delta);
 	}
 	else if (displayBiography && state.mouse_x > uiBio.x && state.mouse_x <= uiBio.x + uiBio.w && state.mouse_y > uiBio.y && state.mouse_y <= uiBio.y + uiBio.h) {
 		trace_call && console.log('Biography => on_mouse_wheel');
@@ -1119,7 +1119,7 @@ function on_playback_pause(pausing) {
 	pauseBtn.repaint();
 
 	if ((albumArt || noAlbumArtStub) && pref.displayLyrics) { // If we are displaying lyrics we need to refresh all the lyrics to avoid tearing at the edges of the pause button
-		gLyrics.on_playback_pause(pausing);
+		lyrics.on_playback_pause(pausing);
 	}
 	if (displayPlaylist || displayPlaylistArtworkLayout) {
 		playlist.on_playback_pause(pausing);
@@ -1147,7 +1147,7 @@ function on_playback_seek() {
 	}
 
 	if (pref.displayLyrics) {
-		gLyrics.seek();
+		lyrics.seek();
 	}
 	else if (displayBiography) {
 		biography.on_playback_seek();
@@ -1203,8 +1203,8 @@ function on_playback_stop(reason) {
 	}
 	bandLogo = null;
 	invertedBandLogo = null;
-	if (pref.displayLyrics && gLyrics) {
-		gLyrics.on_playback_stop(reason);
+	if (pref.displayLyrics && lyrics) {
+		lyrics.on_playback_stop(reason);
 	}
 
 	flagImgs = [];

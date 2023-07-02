@@ -310,6 +310,7 @@ class LyricsBio {
 	}
 
 	repaintRect() {
+		if (!displayBiography) return;
 		window.RepaintRect(this.x + (this.w - this.maxLyrWidth) / 2, this.y, this.maxLyrWidth, this.h + this.lineHeight);
 		if (this.showOffset) window.RepaintRect(this.x, this.top, this.w, this.lineHeight + 1);
 	}

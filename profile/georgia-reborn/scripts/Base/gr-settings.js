@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-21                                          * //
+// * Last change:    2023-07-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -457,10 +457,15 @@ pref.add_properties({
 
 	// * Lyrics
 	lyricsLayout:                       ['Georgia-ReBORN - 14. Lyrics: Layout', 'normal'], // Lyrics layout - normal (default) or full
-	lyricsAlbumArt:                     ['Georgia-ReBORN - 14. Lyrics: Show album art under lyrics', true], // true: Show album art under lyrics
-	lyricsLargerCurrentSync:            ['Georgia-ReBORN - 14. Lyrics: Larger current sync', true], // true: Displays larger font on current synced lyric
+	lyricsDropShadowLevel:              ['Georgia-ReBORN - 14. Lyrics: Show drop shadow', 2], // 0 - 3 - Show drop shadow on lyrics text
+	lyricsFadeScroll:                   ['Georgia-ReBORN - 14. Lyrics: Show fade scroll', true], // true: Show lyrics fade scroll
+	lyricsLargerCurrentSync:            ['Georgia-ReBORN - 14. Lyrics: Show larger current sync', true], // true: Displays larger font on current synced lyric
+	lyricsAlbumArt:                     ['Georgia-ReBORN - 14. Lyrics: Show lyrics on album art', true], // true: Show lyrics on album art
 	lyricsRememberActiveState:          ['Georgia-ReBORN - 14. Lyrics: Remember lyrics active state', false], // true: Show active lyrics even when switching through panels
 	lyricsRememberPanelState:           ['Georgia-ReBORN - 14. Lyrics: Remember lyrics panel state', false], // true: Show lyrics on startup if they were displayed when theme last reloaded
+	lyricsScrollSpeed:                  ['Georgia-ReBORN - 14. Lyrics: Scroll speed', 'normal'], // 'fastest', 'fast', 'normal', 'slow', 'slowest' - lyrics scroll speed based on scroll average and maximum
+	lyricsScrollRateAvg:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed avg rate', 750], // 300, 500, 750, 1000, 1500 - average lyrics scroll in ms
+	lyricsScrollRateMax:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed max rate', 375], // average lyrics scroll / 2 = maximum lyrics scroll in ms
 	displayLyrics:                      ['Georgia-ReBORN - 14. Lyrics: Show lyrics', false], // true: Shows lyrics, always set to false at startup unless lyricsRememberDisplay is true
 
 	// * Settings
@@ -1393,17 +1398,27 @@ async function setThemeSettings(save) {
 	// * Lyrics
 	if (save) {
 		themeLyrics.lyricsLayout = pref.lyricsLayout;
-		themeLyrics.lyricsAlbumArt = pref.lyricsAlbumArt;
+		themeLyrics.lyricsDropShadowLevel = pref.lyricsDropShadowLevel;
+		themeLyrics.lyricsFadeScroll = pref.lyricsFadeScroll;
 		themeLyrics.lyricsLargerCurrentSync = pref.lyricsLargerCurrentSync;
+		themeLyrics.lyricsAlbumArt = pref.lyricsAlbumArt;
 		themeLyrics.lyricsRememberActiveState = pref.lyricsRememberActiveState;
 		themeLyrics.lyricsRememberPanelState = pref.lyricsRememberPanelState;
+		themeLyrics.lyricsScrollSpeed = pref.lyricsScrollSpeed;
+		themeLyrics.lyricsScrollRateAvg = pref.lyricsScrollRateAvg;
+		themeLyrics.lyricsScrollRateMax = pref.lyricsScrollRateMax;
 		themeLyrics.displayLyrics = pref.displayLyrics;
 	} else {
 		pref.lyricsLayout = custom ? themeLyrics.lyricsLayout : 'normal';
-		pref.lyricsAlbumArt = custom ? themeLyrics.lyricsAlbumArt : true;
+		pref.lyricsDropShadowLevel = custom ? themeLyrics.lyricsDropShadowLevel : 2;
+		pref.lyricsFadeScroll = custom ? themeLyrics.lyricsFadeScroll : true;
 		pref.lyricsLargerCurrentSync = custom ? themeLyrics.lyricsLargerCurrentSync : true;
+		pref.lyricsAlbumArt = custom ? themeLyrics.lyricsAlbumArt : true;
 		pref.lyricsRememberActiveState = custom ? themeLyrics.lyricsRememberActiveState : false;
 		pref.lyricsRememberPanelState = custom ? themeLyrics.lyricsRememberPanelState : false;
+		pref.lyricsScrollSpeed = custom ? themeLyrics.lyricsScrollSpeed : 'normal';
+		pref.lyricsScrollRateAvg = custom ? themeLyrics.lyricsScrollRateAvg : 750;
+		pref.lyricsScrollRateMax = custom ? themeLyrics.lyricsScrollRateMax : 375;
 		pref.displayLyrics = custom ? themeLyrics.displayLyrics : false;
 	}
 

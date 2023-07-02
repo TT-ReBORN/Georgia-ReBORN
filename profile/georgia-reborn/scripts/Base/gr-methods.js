@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-30                                          * //
+// * Last change:    2023-07-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -62,14 +62,6 @@ function initMain() {
 	setThemeColors();
 	themeColorSet = true;
 
-	if (!pref.lyricsRememberPanelState) {
-		pref.displayLyrics = false;
-	}
-	else if (pref.displayLyrics && pref.lyricsLayout === 'full') {
-		displayPlaylist = !displayPlaylist;
-		resizeArtwork(true);
-	}
-
 	if (pref.loadAsync) {
 		on_size();	// Needed when loading async, otherwise just needed in fb.IsPlaying conditional
 	}
@@ -102,6 +94,17 @@ function initMain() {
 			initLibraryLayout();
 			loadingThemeComplete = true;
 		}, 100);
+	}
+
+	if (!pref.lyricsRememberPanelState) {
+		pref.displayLyrics = false;
+	}
+	else if (pref.displayLyrics && pref.lyricsLayout === 'full') {
+		displayPlaylist = !displayPlaylist;
+		resizeArtwork(true);
+	}
+	if (pref.displayLyrics) {
+		displayLyrics();
 	}
 
 	if (pref.theme === 'random' && pref.randomThemeAutoColor !== 'off') {
@@ -665,13 +668,7 @@ function displayPanelOnStartup() {
 		displayBiography = true;
 	}
 	else if (pref.showPanelOnStartup === 'lyrics' && pref.layout !== 'compact') {
-		fb.Play();
-		displayPlaylist = pref.layout === 'default';
-		setTimeout(() => {
-			pref.displayLyrics = true;
-			initLyrics();
-			initButtonState();
-		}, 500);
+		displayLyrics();
 	}
 }
 
@@ -2068,9 +2065,9 @@ function resizeArtwork(resetDiscArtPosition) {
 		discArtSize = new ImageSize(0, 0, 0, 0);
 	}
 	if (hasArtwork || noAlbumArtStub) {
-		if (gLyrics) {
+		if (lyrics) {
 			const fullW = pref.layout === 'default' && pref.lyricsLayout === 'full' && pref.displayLyrics;
-			gLyrics.on_size(noAlbumArtStub ? fullW ? ww * 0.333 : 0 : albumArtSize.x, noAlbumArtStub ? geo.topMenuHeight : albumArtSize.y,
+			lyrics.on_size(noAlbumArtStub ? fullW ? ww * 0.333 : 0 : albumArtSize.x, noAlbumArtStub ? geo.topMenuHeight : albumArtSize.y,
 				noAlbumArtStub ? pref.layout === 'artwork' ? ww : fullW ? ww * 0.333 : ww * 0.5 : albumArtSize.w, noAlbumArtStub ? wh - geo.topMenuHeight - geo.lowerBarHeight : albumArtSize.h);
 		}
 		if (discArt && pref.displayDiscArt && !displayPlaylist && !displayLibrary && pref.layout !== 'compact') {
@@ -2800,4 +2797,27 @@ function setBiographySize() {
 	pptBio.gap   = scaleForDisplay(15);
 
 	biographyPanel.on_size(x, y, biographyWidth, biographyHeight);
+}
+
+
+/////////////////////////////////
+// * LYRICS - INITIALIZATION * //
+/////////////////////////////////
+/** Called when initializing lyrics of now playing song */
+function initLyrics() {
+	lyrics = new Lyrics();
+    lyrics.on_size(albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h);
+	lyrics.initLyrics();
+}
+
+
+/** Called when using lyrics panel on startup or remember lyrics panel state */
+function displayLyrics() {
+	fb.Play();
+	displayPlaylist = pref.layout === 'default';
+	setTimeout(() => {
+		pref.displayLyrics = true;
+		initLyrics();
+		initButtonState();
+	}, 500);
 }

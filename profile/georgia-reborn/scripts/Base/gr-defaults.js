@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-27                                          * //
+// * Last change:    2023-07-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1163,18 +1163,28 @@ const themeBiographySchema = new ConfigurationObjectSchema('themeBiography', Con
 ////////////////
 const themeLyricsDefaults = {
 	lyricsLayout: 'normal',
-	lyricsAlbumArt: true,
+	lyricsDropShadowLevel: 2,
+	lyricsFadeScroll: true,
 	lyricsLargerCurrentSync: true,
+	lyricsAlbumArt: true,
 	lyricsRememberActiveState: false,
-	lyricsRememberPanelState: false
+	lyricsRememberPanelState: false,
+	lyricsScrollSpeed: 'normal',
+	lyricsScrollRateAvg: 750,
+	lyricsScrollRateMax: 375
 };
 
 const themeLyricsComments = {
 	lyricsLayout: 'Values: "normal", "full" - Options > Lyrics > Layout',
-	lyricsAlbumArt: 'Values: true, false - Options > Lyrics > Display > Show album art on lyrics',
+	lyricsDropShadowLevel: 'Values: 0, 1, 2, 3 - Options > Lyrics > Display > Show drop shadow',
+	lyricsFadeScroll: 'Values: true, false - Options > Lyrics > Display > Show fade scroll',
 	lyricsLargerCurrentSync: 'Values: true, false - Options > Lyrics > Display > Larger current sync',
+	lyricsAlbumArt: 'Values: true, false - Options > Lyrics > Display > Show lyrics on album art',
 	lyricsRememberActiveState: 'Values: true, false - Options > Lyrics > Display > Remember active lyrics state',
-	lyricsRememberPanelState: 'Values: true, false - Options > Lyrics > Display > Remember lyrics panel state'
+	lyricsRememberPanelState: 'Values: true, false - Options > Lyrics > Display > Remember lyrics panel state',
+	lyricsScrollSpeed: 'Values: "fastest", "fast", "normal", "slow", "slowest" - Options > Lyrics > Scroll speed',
+	lyricsScrollRateAvg: 'Values: false, 300, 500, 750, 1000, 1500 - not in Options, set by lyricsScrollSpeed',
+	lyricsScrollRateMax: 'Values: false, 150, 250, 375, 500, 725 - not in Options, set by lyricsScrollSpeed'
 };
 
 const themeLyricsSchema = new ConfigurationObjectSchema('themeLyrics', ConfigurationObjectType.Object, undefined,

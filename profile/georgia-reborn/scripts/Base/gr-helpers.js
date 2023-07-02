@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-05-30                                          * //
+// * Last change:    2023-07-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -432,6 +432,25 @@ function deepAssign(options = { nonEnum: false, symbols: false, descriptors: fal
 }
 
 
+///////////////
+// * ARRAY * //
+///////////////
+function isArray(arr) {
+	return Array.isArray(arr);
+}
+
+
+function equal(arr1, arr2) {
+	if (!isArray(arr1) || !isArray(arr2)) return false;
+	let i = arr1.length;
+	if (i !== arr2.length) return false;
+	while (i--) {
+		if (arr1[i] !== arr2[i]) return false;
+	}
+	return true;
+}
+
+
 ////////////////
 // * COLORS * //
 ////////////////
@@ -511,6 +530,18 @@ function isHEX(hex) {
 
 function getAlpha(color) {
 	return ((color >> 24) & 0xff);
+}
+
+
+function getBlend(c1, c2, f) {
+	const nf = 1 - f;
+	c1 = toRGBA(c1);
+	c2 = toRGBA(c2);
+	const r = c1[0] * f + c2[0] * nf;
+	const g = c1[1] * f + c2[1] * nf;
+	const b = c1[2] * f + c2[2] * nf;
+	const a = c1[3] * f + c2[3] * nf;
+	return RGBA(Math.round(r), Math.round(g), Math.round(b), Math.round(a));
 }
 
 
@@ -682,6 +713,17 @@ class ImageSize {
 		this.w = w;
 		this.h = h;
 	}
+}
+
+
+function gr(w, h, im, func) {
+	if (isNaN(w) || isNaN(h)) return;
+	const i = gdi.CreateImage(Math.max(w, 2), Math.max(h, 2));
+	let g = i.GetGraphics();
+	func(g, i);
+	i.ReleaseGraphics(g);
+	g = null;
+	return im ? i : null;
 }
 
 

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-26                                          * //
+// * Last change:    2023-07-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2890,23 +2890,67 @@ function lyricsOptions(menu, context_menu) {
 			window.Repaint();
 		});
 	}
+
 	const lyricsDisplayMenu = new Menu('Display');
-	lyricsDisplayMenu.addToggleItem('Show album art on lyrics', pref, 'lyricsAlbumArt', () => {
-		initMainColors();
+	lyricsDisplayMenu.createRadioSubMenu('Show drop shadow', ['None', 'Small', 'Normal', 'Large'], pref.lyricsDropShadowLevel, [0, 1, 2, 3], (size) => {
+		pref.lyricsDropShadowLevel = size;
+		initLyrics();
 		repaintWindow();
 	});
-	lyricsDisplayMenu.addToggleItem('Larger current sync', pref, 'lyricsLargerCurrentSync', () => {
+	lyricsDisplayMenu.addToggleItem('Show fade scroll', pref, 'lyricsFadeScroll', () => {
+		initLyrics();
+		repaintWindow();
+	});
+	lyricsDisplayMenu.addToggleItem('Show larger current sync', pref, 'lyricsLargerCurrentSync', () => {
 		pptBio.largerSyncLyricLine = pref.lyricsLargerCurrentSync;
 		initLyrics();
 		uiBio.updateProp(1);
 		repaintWindow();
 	});
-	lyricsDisplayMenu.addToggleItem('Remember active lyrics state', pref, 'lyricsRememberActiveState', () => {
+	lyricsDisplayMenu.addToggleItem('Show lyrics on album art', pref, 'lyricsAlbumArt', () => {
+		initMainColors();
+		repaintWindow();
+	});
+	lyricsDisplayMenu.appendTo(lyricsMenu);
+
+	const lyricsControlsMenu = new Menu('Controls');
+	lyricsControlsMenu.addToggleItem('Remember active lyrics state', pref, 'lyricsRememberActiveState', () => {
 		if (pref.lyricsRememberActiveState) pref.displayLyrics = false;
 	});
-	lyricsDisplayMenu.addToggleItem('Remember lyrics panel state', pref, 'lyricsRememberPanelState');
-	lyricsDisplayMenu.appendTo(lyricsMenu);
+	lyricsControlsMenu.addToggleItem('Remember lyrics panel state', pref, 'lyricsRememberPanelState');
+	lyricsControlsMenu.appendTo(lyricsMenu);
+
+	const lyricsScrollSpeedMenu = new Menu('Scroll speed');
+	lyricsScrollSpeedMenu.addRadioItems(['Fastest (very slow CPU)', 'Fast', 'Normal', 'Slow', 'Slowest (very fast CPU)'], pref.lyricsScrollSpeed, ['fastest', 'fast', 'normal', 'slow', 'slowest'], (speed) => {
+		pref.lyricsScrollSpeed = speed;
+		switch (speed) {
+			case 'fast':
+				pref.lyricsScrollRateAvg = 300;
+				pref.lyricsScrollRateMax = 150;
+				break;
+			case 'faster':
+				pref.lyricsScrollRateAvg = 500;
+				pref.lyricsScrollRateMax = 250;
+				break;
+			case 'normal':
+				pref.lyricsScrollRateAvg = 750;
+				pref.lyricsScrollRateMax = 375;
+				break;
+			case 'slower':
+				pref.lyricsScrollRateAvg = 1000;
+				pref.lyricsScrollRateMax = 500;
+				break;
+			case 'slow':
+				pref.lyricsScrollRateAvg = 1500;
+				pref.lyricsScrollRateMax = 725;
+				break;
+		}
+		initLyrics();
+		repaintWindow();
+	});
+	lyricsScrollSpeedMenu.appendTo(lyricsMenu);
 	lyricsMenu.addSeparator();
+
 	lyricsMenu.addItem('Lyric information', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Lyric information'); });
 	lyricsMenu.addItem('Lyric search', false, () => { fb.RunMainMenuCommand('View/ESLyric/Search...'); });
 	lyricsMenu.addSeparator();
@@ -3504,8 +3548,6 @@ function settingsOptions(menu) {
 					pref.biographyTheme = 0;
 					pptBio.showFilmStrip = false;
 					cfg.photoNum = 10;
-					pref.lyricsAlbumArt = true;
-					pref.lyricsRememberActiveState = false;
 					ppt.albumArtDiskCache = true;
 					ppt.albumArtPreLoad = false;
 					pref.libraryAutoDelete = false;
@@ -3513,6 +3555,13 @@ function settingsOptions(menu) {
 					pref.lyricsAutoDelete = false;
 					pptBio.focusLoadRate = 1000;
 					pptBio.focusLoadImmediate = false;
+					pref.lyricsDropShadowLevel = 2;
+					pref.lyricsFadeScroll = true;
+					pref.lyricsAlbumArt = true;
+					pref.lyricsRememberActiveState = false;
+					pref.lyricsScrollSpeed = 'normal';
+					pref.lyricsScrollRateAvg = 750;
+					pref.lyricsScrollRateMax = 375;
 					break;
 				case 'lowestQuality':
 					pref.playerSize = 'small';
@@ -3559,11 +3608,16 @@ function settingsOptions(menu) {
 					pref.biographyTheme = 0;
 					pptBio.showFilmStrip = false;
 					cfg.photoNum = 1;
-					pref.lyricsAlbumArt = false;
-					pref.lyricsRememberActiveState = false;
 					ppt.albumArtDiskCache = true;
 					ppt.albumArtPreLoad = false;
 					pptBio.focusLoadRate = 3000;
+					pref.lyricsDropShadowLevel = 0;
+					pref.lyricsFadeScroll = false;
+					pref.lyricsAlbumArt = false;
+					pref.lyricsRememberActiveState = false;
+					pref.lyricsScrollSpeed = 'fastest';
+					pref.lyricsScrollRateAvg = 300;
+					pref.lyricsScrollRateMax = 150;
 					break;
 				case 'lowQuality':
 					pref.playerSize = 'small';
@@ -3594,6 +3648,10 @@ function settingsOptions(menu) {
 					ppt.albumArtDiskCache = true;
 					ppt.albumArtPreLoad = false;
 					pptBio.focusLoadRate = 2000;
+					pref.lyricsDropShadowLevel = 0;
+					pref.lyricsScrollSpeed = 'fast';
+					pref.lyricsScrollRateAvg = 500;
+					pref.lyricsScrollRateMax = 250;
 					break;
 				case 'highQuality':
 					pref.playerSize = 'normal';
@@ -3617,6 +3675,9 @@ function settingsOptions(menu) {
 					ppt.albumArtDiskCache = true;
 					ppt.albumArtPreLoad = true;
 					pptBio.focusLoadRate = 750;
+					pref.lyricsScrollSpeed = 'slow';
+					pref.lyricsScrollRateAvg = 1000;
+					pref.lyricsScrollRateMax = 500;
 					break;
 				case 'highestQuality':
 					pref.playerSize = 'large';
@@ -3641,6 +3702,9 @@ function settingsOptions(menu) {
 					ppt.albumArtDiskCache = true;
 					ppt.albumArtPreLoad = true;
 					pptBio.focusLoadRate = 500;
+					pref.lyricsScrollSpeed = 'slowest';
+					pref.lyricsScrollRateAvg = 1500;
+					pref.lyricsScrollRateMax = 725;
 					break;
 			}
 		}
