@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-02                                          * //
+// * Last change:    2023-07-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -19,10 +19,8 @@
 /** @type {PlaylistPanel} */
 let playlist;
 let playlistDropIndex;
-let playlistScrollReady = true;
 let playlistFontsCreated = false;
 let playlistThumbSize = scaleForDisplay(64); // Default
-let libraryPlaylistDrag = false;
 let g_pl_fonts = {};
 const playlist_geo = {};
 const g_pl_colors = {};
@@ -1230,7 +1228,7 @@ class Playlist extends List {
 		if (this.focused_item) {
 			const from_row = from_idx === -1 ? null : this.cnt.rows[from_idx];
 			const playing_item_location = plman.GetPlayingItemLocation();
-			if (!playing_item_location.IsValid) {
+			if (!playing_item_location.IsValid || this.on_playlist_items_removed) { // * Prevent scroll jump when removing items
 				return;
 			}
 			this.scroll_to_row(from_row, this.focused_item);
@@ -1278,7 +1276,7 @@ class Playlist extends List {
 			return;
 		}
 
-		this.scroll_to_row(null, row);
+		if (!displayPlaylistLibrary()) this.scroll_to_row(null, row); // * Prevent scroll to focused after drag and drop in split layout
 	}
 
 	on_playlist_items_added(playlist_idx) {
@@ -1294,7 +1292,7 @@ class Playlist extends List {
 		if (playlist_idx !== this.cur_playlist_idx) {
 			return;
 		}
-		playlistScrollReady = false; // * Don't scroll when reordering playlist items to prevent scroll jump
+
 		this.debounced_initialize_and_repaint_list(true);
 	}
 
@@ -1302,7 +1300,7 @@ class Playlist extends List {
 		if (playlist_idx !== this.cur_playlist_idx) {
 			return;
 		}
-		playlistScrollReady = false; // * Don't scroll when removing playlist items to prevent scroll jump
+
 		this.debounced_initialize_and_repaint_list();
 	}
 
@@ -1665,8 +1663,6 @@ class Playlist extends List {
 
 		key_handler.register_key_action(VK_DELETE,
 			(modifiers) => {
-				playlistScrollReady = false; // * Don't scroll when removing playlist items to prevent scroll jump
-
 				if (!this.selection_handler.has_selected_items() && this.focused_item) {
 					this.selection_handler.update_selection(this.focused_item);
 				}
@@ -1774,7 +1770,6 @@ class Playlist extends List {
 	}
 
 	collapse_header() {
-		playlistScrollReady = false; // * Don't scroll when collapsing header to prevent scroll jump
 		setTimeout(() => {
 			playlist.auto_collapse_header();
 			Header.prototype.clearCachedHeaderImg.apply(this);
@@ -1872,10 +1867,9 @@ class Playlist extends List {
 
 			this.scrollbar.stopScrolling();
 
-			// ? Can we get away with this workaround? Prevents auto-expanding headers when dropping items in library split layout
-			if (!g_properties.auto_collapse) {
+			setTimeout(() => { // * Prevents scroll jump when playlist headers are collapsed while using drag and drop in split layout
 				this.on_list_items_change();
-			}
+			}, 1);
 		}
 
 		// * Initialize other objects
@@ -1885,12 +1879,6 @@ class Playlist extends List {
 		this.selection_handler = new SelectionHandler(/** @type {PlaylistContent} */ this.cnt, this.cur_playlist_idx);
 
 		this.set_now_playing_hyperlink();
-
-		setTimeout(() => { // * Restore scrolling
-			playlistScrollReady = true;
-			libraryPlaylistDrag = false;
-			this.update_scrollbar();
-		}, 200);
 
 		(true || trace_initialize_list_performance) && console.log(`Playlist initialized in ${profiler.Time}ms`);
 	}
@@ -2117,7 +2105,6 @@ class Playlist extends List {
 			}
 
 			parent_menu.append_item('Remove', () => {
-				playlistScrollReady = false; // * Don't scroll when removing playlist items to prevent scroll jump
 				plman.RemovePlaylistSelection(this.cur_playlist_idx);
 			}, { is_grayed_out: is_playlist_locked });
 		}
@@ -2568,7 +2555,7 @@ class Playlist extends List {
 			plman.ActivePlaylist = playing_item_location.PlaylistIndex;
 			this.initialize_list();
 		}
-		else if (this.collapse_handler) {
+		else if (this.playing_item && this.collapse_handler) {
 			this.collapse_handler.expand(this.playing_item.parent);
 		}
 
@@ -2596,7 +2583,7 @@ class Playlist extends List {
 	}
 
 	scroll_to_focused() {
-		if (this.focused_item) {
+		if (this.focused_item && !displayPlaylistLibrary()) {
 			this.scroll_to_row(null, this.focused_item);
 		}
 	}
@@ -2612,7 +2599,7 @@ class Playlist extends List {
 	 * @param {Row} to_row
 	 */
 	scroll_to_row(from_row, to_row) {
-		if (!this.is_scrollbar_available || !playlistScrollReady) {
+		if (!this.is_scrollbar_available) {
 			return;
 		}
 
@@ -6280,7 +6267,7 @@ class PlaylistHistory {
 		// * Scroll to now playing when auto-scroll is active and playlist has now playing
 		const playing_item_location = plman.GetPlayingItemLocation();
 		const playlistNowPlaying = playing_item_location.PlaylistIndex === plman.ActivePlaylist;
-		if ((pref.playlistAutoScrollNowPlaying || fb.PlaybackFollowCursor || fb.CursorFollowPlayback) && playlistNowPlaying) {
+		if (playlistNowPlaying && (pref.playlistAutoScrollNowPlaying || fb.PlaybackFollowCursor || fb.CursorFollowPlayback)) {
 			setTimeout(() => { // * Wait until new album art / disc art loaded and other things finished for smoother auto-scrolling
 				playlist.show_now_playing();
 			}, newTrackFetchingDone + 200);

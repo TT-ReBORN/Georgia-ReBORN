@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-02                                          * //
+// * Last change:    2023-07-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -680,12 +680,12 @@ function UIHacksDragWindow(x, y) {
 	// * Disable mouse middle btn (wheel) to be able to use Library & Biography mouse middle actions
 	UIHacks.MoveStyle = displayLibrary && library.mouse_in_this(x, y) || displayBiography && biography.mouse_in_this(x, y) ? 0 : 3;
 	try {
-		if ((mouseInControl || downButton)) {
+		if (mouseInControl || downButton) {
 			UIHacks.SetPseudoCaption(0, 0, 0, 0);
 			if (UIHacks.FrameStyle === 3) UIHacks.DisableSizing = true;
 			pseudoCaption = false;
 		}
-		else if ((!pseudoCaption || pseudoCaptionWidth !== ww)) {
+		else if (!pseudoCaption || pseudoCaptionWidth !== ww) {
 			UIHacks.SetPseudoCaption(0, 0, ww, pref.layout !== 'default' ? geo.topMenuHeight + scaleForDisplay(5) : geo.topMenuHeight);
 			if (UIHacks.FrameStyle === 3 && !pref.lockPlayerSize) UIHacks.DisableSizing = false;
 			pseudoCaption = true;
@@ -2645,7 +2645,6 @@ function setLibrarySize() {
 ////////////////////////////
 /** Called to drag and drop items from Library to Playlist in split layout */
 function libraryPlaylistDragDrop() {
-	playlistScrollReady = false;
 	const handleList = pop.getHandleList('newItems');
 	pop.sortIfNeeded(handleList);
 	fb.DoDragDrop(0, handleList, handleList.Count ? 1 | 4 : 0);
@@ -2655,14 +2654,13 @@ function libraryPlaylistDragDrop() {
 
 	if (plman.IsPlaylistLocked(pl)) return; // Do nothing, it's locked or an auto-playlist
 
-	plman.InsertPlaylistItems(pl, drop_idx, handleList);
 	plman.ClearPlaylistSelection(pl);
 
 	setTimeout(() => {
 		plman.RemovePlaylistSelection(pl);
-		// playlist.collapse_header();
+		plman.InsertPlaylistItems(pl, drop_idx, handleList);
 		plman.SetPlaylistFocusItem(pl, drop_idx);
-	}, 0);
+	}, 1);
 }
 
 

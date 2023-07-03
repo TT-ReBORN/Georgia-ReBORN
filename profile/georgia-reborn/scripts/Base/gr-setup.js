@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-24                                          * //
+// * Last change:    2023-07-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -273,7 +273,7 @@ if (!fontList.every((fontName) => testFont(fontName))) {
 	fontsInstalled = false;
 	fb.ShowPopupMessage('Georgia-ReBORN WAS UNABLE TO LOAD SOME FONTS\n\n' +
 	'Be sure all fonts from\nfoobar2000\\profile\\georgia-reborn\\fonts\nare correctly installed in these directories:\n\n' +
-	'For Windows: C:\\Windows\\fonts\\\nFor Linux: /usr/share/fonts or ~/.local/share/fonts\n\n' +
+	'For Windows: C:\\Windows\\Fonts\\\nFor Linux: /usr/share/fonts or ~/.local/share/fonts\n\n' +
 	'If you use custom fonts, all your custom fonts need to have\nthe exact font name / font family name in your\n' +
 	'foobar\\profile\\georgia-reborn\\configs\\georgia-reborn-config.jsonc config file.\n\n' +
 	'You can also check foobar\'s console ( Top menu > View > Console ),\nit will show font errors with its wrong font names.', 'FONT ERROR WARNING');

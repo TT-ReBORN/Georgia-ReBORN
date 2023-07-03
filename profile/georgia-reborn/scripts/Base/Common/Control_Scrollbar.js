@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-05-25                                          * //
+// * Last change:    2023-07-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -426,7 +426,7 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 	this.scroll_to = (new_position, scroll_wo_redraw = false) => {
 		const s = Math.max(0, Math.min(new_position, this.scrollable_lines));
 		const invalidPos = (s || new_position) > this.scrollable_lines; // Prevent crash
-		if (!playlistScrollReady || s === this.scroll) return;
+		if (s === this.scroll) return;
 		this.scroll = invalidPos ? 0 : s;
 		this.thumb_y = this.btn_h + this.scroll * this.scrollbar_travel / this.scrollable_lines;
 		this.sb_parts.thumb.y = this.y + this.thumb_y;
