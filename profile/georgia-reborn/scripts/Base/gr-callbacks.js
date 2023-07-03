@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-02                                          * //
+// * Last change:    2023-07-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1239,7 +1239,9 @@ function on_playlist_item_ensure_visible(playlistIndex, playlistItemIndex) {
 
 /** Called when adding tracks to the playlist */
 function on_playlist_items_added(playlistIndex) {
-	playlistHistory.playlistAltered(PlaylistMutation.Added);
+	if (playlistHistory) {
+		playlistHistory.playlistAltered(PlaylistMutation.Added);
+	}
 	if (displayPlaylist || displayPlaylistArtworkLayout) {
 		trace_call && console.log('Playlist => on_playlist_items_added');
 		playlist.on_playlist_items_added(playlistIndex);
@@ -1257,7 +1259,9 @@ function on_playlist_items_added(playlistIndex) {
 
 /** Called when removing tracks from the playlist */
 function on_playlist_items_removed(playlistIndex) {
-	playlistHistory.playlistAltered(PlaylistMutation.Removed);
+	if (playlistHistory) {
+		playlistHistory.playlistAltered(PlaylistMutation.Removed);
+	}
 	if (displayPlaylist || displayPlaylistArtworkLayout) {
 		trace_call && console.log('Playlist => on_playlist_items_removed');
 		playlist.on_playlist_items_removed(playlistIndex);
@@ -1275,7 +1279,9 @@ function on_playlist_items_removed(playlistIndex) {
 
 /** Called when reordering tracks in the playlist, i.e by dragging them up or down */
 function on_playlist_items_reordered(playlistIndex) {
-	playlistHistory.playlistAltered(PlaylistMutation.Reordered);
+	if (playlistHistory) {
+		playlistHistory.playlistAltered(PlaylistMutation.Reordered);
+	}
 	if (displayPlaylist || displayPlaylistArtworkLayout) {
 		trace_call && console.log('Playlist => on_playlist_items_reordered');
 		playlist.on_playlist_items_reordered(playlistIndex);
@@ -1298,7 +1304,9 @@ function on_playlist_items_selection_change() {
 
 /** Called when switching the current active playlist to another */
 function on_playlist_switch() {
-	playlistHistory.playlistAltered(PlaylistMutation.Switch);
+	if (playlistHistory) {
+		playlistHistory.playlistAltered(PlaylistMutation.Switch);
+	}
 	if (displayPlaylist || displayPlaylistArtworkLayout) {
 		trace_call && console.log('Playlist => on_playlist_switch');
 		playlist.on_playlist_switch();
@@ -1316,7 +1324,9 @@ function on_playlist_switch() {
 
 /** Called when playlists are added/removed/reordered/renamed or a playlist's lock status changes */
 function on_playlists_changed() {
-	playlistHistory.reset(); // When playlists are changed, indexes no longer apply, and so we have to wipe history
+	if (playlistHistory) {
+		playlistHistory.reset(); // When playlists are changed, indexes no longer apply, and so we have to wipe history
+	}
 	if (displayPlaylist || displayPlaylistArtworkLayout) {
 		trace_call && console.log('Playlist => on_playlists_changed');
 		playlist.on_playlists_changed();
