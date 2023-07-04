@@ -268,8 +268,8 @@ class Images {
 			};
 		}
 		o = this.cache[key];
-		if (o && o.img === 'called') {
-			o.img = $Lib.gr(this.cellWidth * n, this.cellWidth * n, true, g => this.createCollage(g, this.cellWidth, this.cellWidth, n, n, cells));
+		o.img = $Lib.gr(this.cellWidth * n, this.cellWidth * n, true, g => this.createCollage(g, this.cellWidth, this.cellWidth, n, n, cells));
+		if (o.img) {
 			if (this.style.image == 2) this.circularMask(o.img, o.img.Width, o.img.Height);
 			o.img = o.img.Resize(this.im.w, this.im.w, 7);
 			if (ppt.albumArtLabelType == 3) this.fadeMask(o.img, o.img.Width, o.img.Height);
