@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-02                                          * //
+// * Last change:    2023-07-04                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2924,11 +2924,11 @@ function lyricsOptions(menu, context_menu) {
 	lyricsScrollSpeedMenu.addRadioItems(['Fastest (very slow CPU)', 'Fast', 'Normal', 'Slow', 'Slowest (very fast CPU)'], pref.lyricsScrollSpeed, ['fastest', 'fast', 'normal', 'slow', 'slowest'], (speed) => {
 		pref.lyricsScrollSpeed = speed;
 		switch (speed) {
-			case 'fast':
+			case 'fastest':
 				pref.lyricsScrollRateAvg = 300;
 				pref.lyricsScrollRateMax = 150;
 				break;
-			case 'faster':
+			case 'fast':
 				pref.lyricsScrollRateAvg = 500;
 				pref.lyricsScrollRateMax = 250;
 				break;
@@ -2936,11 +2936,11 @@ function lyricsOptions(menu, context_menu) {
 				pref.lyricsScrollRateAvg = 750;
 				pref.lyricsScrollRateMax = 375;
 				break;
-			case 'slower':
+			case 'slow':
 				pref.lyricsScrollRateAvg = 1000;
 				pref.lyricsScrollRateMax = 500;
 				break;
-			case 'slow':
+			case 'slowest':
 				pref.lyricsScrollRateAvg = 1500;
 				pref.lyricsScrollRateMax = 725;
 				break;
