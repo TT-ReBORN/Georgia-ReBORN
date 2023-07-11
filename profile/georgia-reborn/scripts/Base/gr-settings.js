@@ -866,7 +866,7 @@ async function setThemeSettings(save) {
 		themeControls.waveformBarSizeNormalize = pref.waveformBarSizeNormalize;
 		themeControls.waveformBarPaint = pref.waveformBarPaint;
 		themeControls.waveformBarPrepaint = pref.waveformBarPrepaint;
-		themeControls.waveformBarPrepaintFront = pref.waveformBarPrepaintFront;
+		themeControls.waveformBarPrepaintFront = pref.waveformBarPrepaintFront === Infinity ? 'Infinity' : pref.waveformBarPrepaintFront;
 		themeControls.waveformBarAnimate = pref.waveformBarAnimate;
 		themeControls.waveformBarBPM = pref.waveformBarBPM;
 		themeControls.waveformBarInvertHalfbars = pref.waveformBarInvertHalfbars;
