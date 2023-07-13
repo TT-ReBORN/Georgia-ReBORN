@@ -4120,7 +4120,7 @@ class Header extends BaseHeader {
 						let artist_hyperlink;
 						while (this.hyperlinks['artist' + i]) {
 							if (i > 0) {
-								grClip.DrawString(' \u2022 ', artist_font, artist_color, artist_hyperlink.x + artist_hyperlink.getWidth(), artist_h * 0.25, ScaleForDisplay(20), artist_h);
+								grClip.DrawString(' \u2022 ', artist_font, artist_color, artist_hyperlink.x + artist_hyperlink.getWidth(), artist_h * 0.25, scaleForDisplay(20), artist_h);
 							}
 							artist_hyperlink = this.hyperlinks['artist' + i];
 							artist_hyperlink.draw(grClip, artist_color);
@@ -4518,7 +4518,7 @@ class Header extends BaseHeader {
 					artist_x += bulletWidth + spaceWidth * 3; // Spacing between artists
 				}
 				const artist_w = gr.MeasureString(artist_text[i], artist_font, 0, 0, 0, 0).Width;
-				this.hyperlinks['artist' + i] = new Hyperlink(artist_text[i], artist_font, 'artist', artist_x, ScaleForDisplay(5 * (!g_properties.show_group_info ? 2 : 1)), this.hyperlinksMaxWidth, true);
+				this.hyperlinks['artist' + i] = new Hyperlink(artist_text[i], artist_font, 'artist', artist_x, scaleForDisplay(5 * (!g_properties.show_group_info ? 2 : 1)), this.hyperlinksMaxWidth, true);
 				artist_x += artist_w;
 			}
 		}
