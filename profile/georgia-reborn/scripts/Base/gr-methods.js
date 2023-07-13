@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-03                                          * //
+// * Last change:    2023-07-13                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -850,7 +850,7 @@ function repaintWindowRectAreas() {
 }
 
 
-/** Called when writing %GR_THEME%, %GR_STYLE%, %GR_PRESET% tags to music files via playlist or library context menu */
+/** Called when writing %GR_THEMECOLOR%, %GR_THEME%, %GR_STYLE%, %GR_PRESET% tags to music files via playlist or library context menu */
 function writeThemeTags() {
 	const grTags = [];
 	const plItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
@@ -861,7 +861,9 @@ function writeThemeTags() {
 
 	for (let i = 0; i < items.Count; ++i) {
 		grTags.push({
-			GR_THEME: pref.preset === false ? pref.theme : '',
+			GR_THEMECOLOR: pref.theme === 'random' ? colToRgb(col.primary) : '',
+
+			GR_THEME: pref.preset === false ? pref.theme === 'random' ? 'reborn' : pref.theme : '',
 
 			GR_STYLE: pref.preset === false ? [
 				pref.styleBevel ? 'bevel' : '',
