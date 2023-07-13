@@ -2376,8 +2376,6 @@ function loadCodecLogo() {
 
 	switch (true) {
 		case codec === 'aac'             || format === 'aac':  codecLogo = gdi.Image(paths.codecLogoAac); break;
-		case codec === 'ac3'             || format === 'ac3':
-		case codec === 'dts'             || format === 'dts':  codecLogo = gdi.Image(paths.codecLogoAc3Dts); break;
 		case codec === 'alac'            || format === 'alac': codecLogo = gdi.Image(paths.codecLogoAlac); break;
 		case codec === 'monkey\'s audio' || format === 'ape':  codecLogo = gdi.Image(paths.codecLogoApe); break;
 		case codec === 'flac'            || format === 'flac': codecLogo = gdi.Image(paths.codecLogoFlac); break;
@@ -2387,6 +2385,8 @@ function loadCodecLogo() {
 		case codec === 'opus'            || format === 'opus': codecLogo = gdi.Image(paths.codecLogoOpus); break;
 		case codec === 'wavpack'         || format === 'wv':   codecLogo = gdi.Image(paths.codecLogoWavpack); break;
 
+		case ['ac3', 'dts', 'dca (dts coherent acoustics)'].includes(codec) || ['ac3', 'dts'].includes(format):
+			codecLogo = gdi.Image(paths.codecLogoAc3Dts); break;
 		case ['dsd64', 'dsd128', 'dsd256', 'dsd512', 'dsd1024', 'dsd2048'].includes(codec):
 			codecLogo = gdi.Image(paths.codecLogoDsd); break;
 		case ['dxd64', 'dxd128', 'dxd256', 'dxd512', 'dxd1024', 'dxd2048'].includes(codec):

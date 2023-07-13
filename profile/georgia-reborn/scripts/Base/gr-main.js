@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-02                                          * //
+// * Last change:    2023-07-13                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -358,7 +358,7 @@ function drawDetailsMetadataGrid(gr) {
 
 			for (let k = 0; k < str.grid.length; k++) {
 				const key = str.grid[k].label;
-				const value = str.grid[k].val;
+				let value = str.grid[k].val;
 				let showLastFmImage = false;
 				let showReleaseFlagImage = false;
 				let showGridCodecLogoImage = false;
@@ -382,9 +382,14 @@ function drawDetailsMetadataGrid(gr) {
 						case 'Rel. Country':
 							showReleaseFlagImage = showGridReleaseFlags;
 							break;
-						case 'Codec':
+						case 'Codec': {
+							const codec = $('$lower($if2(%codec%,$ext(%path%)))');
+							if (['dts', 'dca (dts coherent acoustics)'].includes(codec)) {
+								value = 'DCA'; // * Show only DCA abbreviation if codec is DTS
+							}
 							showGridCodecLogoImage = showGridCodecLogo;
 							break;
+						}
 						default:
 							break;
 					}
