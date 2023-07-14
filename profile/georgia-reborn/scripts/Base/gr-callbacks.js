@@ -677,7 +677,9 @@ function on_mouse_lbtn_down(x, y, m) {
 	const showProgressBar = pref.layout === 'compact' ? pref.showProgressBar_compact : pref.layout === 'artwork' ? pref.showProgressBar_artwork : pref.showProgressBar_default;
 	window.SetCursor(32512); // Arrow
 
-	topMenu.on_mouse_lbtn_down(x, y, m);
+	if (topMenu) {
+		topMenu.on_mouse_lbtn_down(x, y, m);
+	}
 
 	if (pref.seekbar === 'progressbar' && progressBar.mouseInThis(x, y)) {
 		progressBar.on_mouse_lbtn_down(x, y);
@@ -746,7 +748,9 @@ function on_mouse_lbtn_down(x, y, m) {
 
 /** Called when left mouse button is released from pressed state */
 function on_mouse_lbtn_up(x, y, m) {
-	topMenu.on_mouse_lbtn_up(x, y, m);
+	if (topMenu) {
+		topMenu.on_mouse_lbtn_up(x, y, m);
+	}
 
 	if (pref.seekbar === 'progressbar') {
 		progressBar.on_mouse_lbtn_up(x, y);
@@ -843,7 +847,11 @@ function on_mouse_move(x, y, m) {
 
 	if (x !== state.mouse_x || y !== state.mouse_y) {
 		if (!librarySearchBox) window.SetCursor(32512); // Arrow
-		topMenu.on_mouse_move(x, y, m);
+
+		if (topMenu) {
+			topMenu.on_mouse_move(x, y, m);
+		}
+
 		if (pref.seekbar === 'progressbar') {
 			progressBar.on_mouse_move(x, y);
 		} else if (pref.seekbar === 'peakmeterbar') {
