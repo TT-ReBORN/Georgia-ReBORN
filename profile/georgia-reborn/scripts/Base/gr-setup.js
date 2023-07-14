@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-03                                          * //
+// * Last change:    2023-07-14                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -523,6 +523,7 @@ let themePresetMatchMode = false; // When active styles match any theme presets,
 let themePresetIndicator = true; // Used to hide theme preset indicator under certain conditions
 let themePresetName = ''; // Name of the current theme preset
 let themeColorSet = false; // When no artwork, don't set themeColor every redraw
+let getRandomThemeColorContextMenu = false; // State to override condition in getRandomThemeColor() when using "Generate new color" from context menu
 let noArtwork = false; // Only use default theme when noArtwork was found
 let newTrackFetchingArtwork = false; // Only load theme colors when newTrackFetchingArtwork = true
 let newTrackFetchingDone = false; // State when new album art / disc art loaded and other things finished, used for smoother Playlist auto-scrolling

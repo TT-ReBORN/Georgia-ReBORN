@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-13                                          * //
+// * Last change:    2023-07-14                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -108,7 +108,7 @@ function initMain() {
 	}
 
 	if (pref.theme === 'random' && pref.randomThemeAutoColor !== 'off') {
-		randomThemeAutoColor();
+		getRandomThemeAutoColor();
 	}
 	if (pref.themeDayNightMode) {
 		themeDayNightMode(new Date());
@@ -181,7 +181,7 @@ async function initTheme() {
 	// * Setup
 	setImageBrightness();
 	if (pref.styleBlackAndWhiteReborn) initBlackAndWhiteReborn();
-	if (pref.theme === 'random' && !isStreaming && !isPlayingCD) randomThemeColor();
+	if (pref.theme === 'random' && !isStreaming && !isPlayingCD) getRandomThemeColor();
 	if (noAlbumArtStub || isStreaming || isPlayingCD) setNoAlbumArtColors();
 	if ((pref.styleBlend || pref.styleBlend2 || pref.styleProgressBarFill === 'blend') && albumArt) setStyleBlend();
 	setBackgroundColorDefinition();
@@ -621,7 +621,7 @@ async function updateStyle() {
 	}
 	await initTheme();
 	debugLog('initTheme -> updateStyle');
-	if (pref.theme === 'random' && pref.randomThemeAutoColor !== 'off') randomThemeAutoColor();
+	if (pref.theme === 'random' && pref.randomThemeAutoColor !== 'off') getRandomThemeAutoColor();
 	initStyleState();
 	initThemePresetState();
 	initButtonState();
@@ -863,7 +863,7 @@ function writeThemeTags() {
 		grTags.push({
 			GR_THEMECOLOR: pref.theme === 'random' ? colToRgb(col.primary) : '',
 
-			GR_THEME: pref.preset === false ? pref.theme === 'random' ? 'reborn' : pref.theme : '',
+			GR_THEME: pref.preset === false ? pref.theme : '',
 
 			GR_STYLE: pref.preset === false ? [
 				pref.styleBevel ? 'bevel' : '',

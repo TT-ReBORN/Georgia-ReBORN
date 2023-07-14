@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-02                                          * //
+// * Last change:    2023-07-14                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -5734,7 +5734,9 @@ function setCurrentColorsToCustomTheme(slot) {
 // * RANDOM COLOR GENERATOR * //
 ////////////////////////////////
 /** Random theme color generator used for Random theme */
-function randomThemeColor() {
+function getRandomThemeColor() {
+	if (!getRandomThemeColorContextMenu && ($('[%GR_THEMECOLOR%]') || $('[%GR_THEMECOLOR2%]'))) return;
+
 	const generateRandomColor = () => {
 		const R = Math.floor((Math.random() * (pref.styleRandomPastel ? 127 : 27)) + (pref.styleRandomPastel ? 127 : 27));
 		const G = Math.floor((Math.random() * (pref.styleRandomPastel ? 127 : 27)) + (pref.styleRandomPastel ? 127 : 27));
@@ -5755,7 +5757,7 @@ function randomThemeColor() {
 
 
 /** Style Random theme auto color - auto creates new colors depending on time interval */
-function randomThemeAutoColor() {
+function getRandomThemeAutoColor() {
 	clearInterval(randomThemeAutoColorTimer);
 	randomThemeAutoColorTimer = null;
 
@@ -5767,7 +5769,7 @@ function randomThemeAutoColor() {
 	else if (pref.styleRandomAutoColor === 'track') {
 		initTheme();
 	}
-	debugLog('initTheme -> randomThemeAutoColor');
+	debugLog('initTheme -> getRandomThemeAutoColor');
 }
 
 

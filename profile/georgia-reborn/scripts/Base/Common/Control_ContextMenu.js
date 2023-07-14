@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-13                                          * //
+// * Last change:    2023-07-14                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -548,7 +548,9 @@ Object.assign(qwr_utils, {
 
 		if (pref.theme === 'random') {
 			cmac.append_item('Generate new color', () => {
+				getRandomThemeColorContextMenu = true;
 				initTheme();
+				setTimeout(() => { getRandomThemeColorContextMenu = false }, 200);
 			});
 			cmac.append_separator();
 		}

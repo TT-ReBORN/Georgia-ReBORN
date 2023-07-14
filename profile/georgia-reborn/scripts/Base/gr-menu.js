@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-04                                          * //
+// * Last change:    2023-07-14                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -333,7 +333,7 @@ function styleOptions(menu) {
 		styleAutoColorMenu.addRadioItems(['Off', '5 sec', '10 sec', '15 sec', '30 sec', '45 sec', '1 min', '2 min', '3 min', '4 min', '5 min', 'New track'], pref.styleRandomAutoColor,
 			['off', 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, 'track'], (timer) => {
 			if (!pref.themeSandbox) pref.savedStyleRandomAutoColor = pref.styleRandomAutoColor = timer; else pref.styleRandomAutoColor = timer;
-			randomThemeAutoColor();
+			getRandomThemeAutoColor();
 		});
 		styleAutoColorMenu.appendTo(styleMenu);
 		styleMenu.addSeparator();
