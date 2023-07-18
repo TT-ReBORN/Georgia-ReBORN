@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-14                                          * //
+// * Last change:    2023-07-18                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -4386,7 +4386,7 @@ function styleAlternativeColors() {
 		col.shadow + RGBA(0, 0, 0, 10);
 
 	col.detailsBg = g_pl_colors.bg;
-	col.detailsText = col.lowerBarTitle;
+	col.detailsText = g_pl_colors.row_title_normal;
 
 	// * LOWER BAR TRANSPORT BUTTONS * //
 	col.transportEllipseBg =
@@ -4507,7 +4507,7 @@ function styleAlternative2Colors() {
 		col.shadow + RGBA(0, 0, 0, 5);
 
 	col.detailsBg = g_pl_colors.bg;
-	col.detailsText = col.lowerBarTitle;
+	col.detailsText = g_pl_colors.row_title_normal;
 
 	// * LOWER BAR TRANSPORT BUTTONS * //
 	col.transportEllipseBg =
