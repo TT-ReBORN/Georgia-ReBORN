@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-14                                          * //
+// * Last change:    2023-07-19                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2957,13 +2957,12 @@ function lyricsOptions(menu, context_menu) {
 	lyricsMenu.addItem('Next lyric', false, () => {
 		fb.RunMainMenuCommand('View/ESLyric/Panels/Delete lyric');
 		const nextLyricSource = ((() => {
-			let src = 0;
 			const nextSrc = () => fb.RunMainMenuCommand('View/ESLyric/Panels/Select lyric/Next lyric');
 			return () => {
-				src++;
-				repeatFunc(() => { nextSrc(); }, src);
-				if (src > 9) src = 0;
-				return src;
+				lyricsSrc++;
+				repeatFunc(() => { nextSrc(); }, lyricsSrc);
+				if (lyricsSrc > 9) lyricsSrc = 0;
+				return lyricsSrc;
 			};
 		})());
 		nextLyricSource();
