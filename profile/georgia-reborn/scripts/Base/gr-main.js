@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-13                                          * //
+// * Last change:    2023-07-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,7 +16,10 @@
 ///////////////////////////////////
 // * MAIN USER INTERFACE PARTS * //
 ///////////////////////////////////
-/** Draws the Main and Details background */
+/**
+ * Draws the Main and Details background.
+ * @param {GdiGraphics} gr
+ */
 function drawBackgrounds(gr) {
 	gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 	gr.SetSmoothingMode(SmoothingMode.None);
@@ -45,7 +48,7 @@ function drawBackgrounds(gr) {
 
 		// Show full background when no disc art
 		if (pref.noDiscArtBg && (!discArt || !pref.displayDiscArt) && albumArt && (!displayLibrary && !displayPlaylist && !displayBiography) || pref.theme === 'reborn' && pref.styleBlend2 && (pref.styleRebornWhite || pref.styleRebornBlack) || pref.layout === 'artwork') {
-			gr.FillSolidRect(albumArtSize.x + albumArtSize.w - scaleForDisplay(1), albumArtSize.y, albumArtSize.x + scaleForDisplay(2), albumArtSize.h, col.detailsBg);
+			gr.FillSolidRect(albumArtSize.x + albumArtSize.w - SCALE(1), albumArtSize.y, albumArtSize.x + SCALE(2), albumArtSize.h, col.detailsBg);
 		}
 		if ((isStreaming && noArtwork || !albumArt && noArtwork)) {
 			gr.FillSolidRect(0, geo.topMenuHeight, ww, wh - geo.topMenuHeight - geo.lowerBarHeight, col.detailsBg);
@@ -55,7 +58,10 @@ function drawBackgrounds(gr) {
 }
 
 
-/** Draws the Playlist, Library and Biography panels, Playlist needs to be drawn the last to hide unwanted stuff in the middle */
+/**
+ * Draws the Playlist, Library and Biography panels.
+ * @param {GdiGraphics} gr
+ */
 function drawPanels(gr) {
 	if (pref.layout === 'default' || pref.layout === 'artwork') {
 		if (displayLibrary) {
@@ -82,14 +88,20 @@ function drawPanels(gr) {
 }
 
 
-/** Draws the jumpsearch on the right centered side */
+/**
+ * Draws the jump search on the right centered side.
+ * @param {GdiGraphics} gr
+ */
 function drawJumpSearch(gr) {
 	jumpSearch.setY(Math.round(wh * 0.5 - geo.topMenuHeight - geo.lowerBarHeight));
 	jumpSearch.draw(gr);
 }
 
 
-/** Draws the big album art on the left side */
+/**
+ * Draws the big album art on the left side.
+ * @param {GdiGraphics} gr
+ */
 function drawAlbumArt(gr) {
 	// * BIG ALBUM ART - NEEDS TO BE DRAWN AFTER ALL BLENDING IS DONE, I.E AFTER PLAYLIST * //
 	if (displayPlaylistLibrary()) return;
@@ -111,7 +123,7 @@ function drawAlbumArt(gr) {
 				artCache.clear();
 				discArt = null;
 				discArtArray = [];
-				const heightCorr = scaleForDisplay(14);
+				const heightCorr = SCALE(14);
 
 				// * Stub background
 				gr.FillSolidRect(0, geo.topMenuHeight, pref.lyricsLayout === 'full' && pref.displayLyrics || pref.layout === 'artwork' ? ww : ww * 0.5, wh - geo.topMenuHeight - geo.lowerBarHeight, g_pl_colors.bg);
@@ -157,7 +169,7 @@ function drawAlbumArt(gr) {
 		// * Hi-Res audio logo
 		if (pref.showHiResAudioBadge && pref.layout !== 'compact' && (Number($('$info(bitspersample)', fb.GetNowPlaying())) > 16 || Number($('$info(bitrate)', fb.GetNowPlaying())) > 1411)) {
 			const logoPath = `${fb.ProfilePath}georgia-reborn\\images\\misc\\`;
-			const plus4k = is_4k ? '4k-' : '';
+			const plus4k = RES_4K ? '4k-' : '';
 			const plusRound = pref.hiResAudioBadgeRound ? '-round' : '';
 
 			if      (pref.hiResAudioBadgeSize === 'small')  paths.hiResAudioImage = `${logoPath}${plus4k}hi-res-audio-small${plusRound}.png`;
@@ -167,14 +179,14 @@ function drawAlbumArt(gr) {
 			hiResAudioImg = gdi.Image(paths.hiResAudioImage);
 
 			const x =
-				pref.hiResAudioBadgePos === 'topleft' ? albumArtSize.x + scaleForDisplay(20) :
-				pref.hiResAudioBadgePos === 'topright' ? albumArtSize.x + albumArtSize.w - hiResAudioImg.Width - scaleForDisplay(20) :
-				pref.hiResAudioBadgePos === 'bottomleft' ? albumArtSize.x + scaleForDisplay(40) :
-				pref.hiResAudioBadgePos === 'bottomright' ? albumArtSize.x + albumArtSize.w - hiResAudioImg.Width - scaleForDisplay(40) : '';
+				pref.hiResAudioBadgePos === 'topleft' ? albumArtSize.x + SCALE(20) :
+				pref.hiResAudioBadgePos === 'topright' ? albumArtSize.x + albumArtSize.w - hiResAudioImg.Width - SCALE(20) :
+				pref.hiResAudioBadgePos === 'bottomleft' ? albumArtSize.x + SCALE(40) :
+				pref.hiResAudioBadgePos === 'bottomright' ? albumArtSize.x + albumArtSize.w - hiResAudioImg.Width - SCALE(40) : '';
 
 			const y =
-				pref.hiResAudioBadgePos === 'topleft' || pref.hiResAudioBadgePos === 'topright' ? albumArtSize.y + scaleForDisplay(20) :
-				albumArtSize.y + albumArtSize.h - hiResAudioImg.Height - scaleForDisplay(40);
+				pref.hiResAudioBadgePos === 'topleft' || pref.hiResAudioBadgePos === 'topright' ? albumArtSize.y + SCALE(20) :
+				albumArtSize.y + albumArtSize.h - hiResAudioImg.Height - SCALE(40);
 
 			gr.DrawImage(hiResAudioImg, x, y, hiResAudioImg.Width, hiResAudioImg.Height, 0, 0, hiResAudioImg.Width, hiResAudioImg.Height);
 		}
@@ -184,7 +196,28 @@ function drawAlbumArt(gr) {
 }
 
 
-/** Draws the pause button centered on album art */
+/**
+ * Draws the disc art in Details.
+ * @param {GdiGraphics} gr
+ */
+function drawDiscArt(gr) {
+	if (pref.layout === 'default' && pref.displayDiscArt && discArtSize.y >= albumArtSize.y && discArtSize.h <= albumArtSize.h) {
+		const drawDiscProfiler = timings.showExtraDrawTiming ? fb.CreateProfiler('discArt') : null;
+		const discArtImg = discArtArray[rotatedDiscArtIndex] || rotatedDiscArt;
+		gr.DrawImage(discArtImg, discArtSize.x, discArtSize.y, discArtSize.w, discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);
+		if (timings.showExtraDrawTiming) drawDiscProfiler.Print();
+	}
+	// Show full background when displaying the Lyrics panel and lyrics layout is in full width
+	if (pref.displayLyrics && pref.lyricsLayout === 'full' && pref.layout === 'default' && !displayLibrary && !displayPlaylist && !displayBiography) {
+		gr.FillSolidRect(albumArtSize.x + albumArtSize.w - SCALE(1), albumArtSize.y, albumArtSize.x + SCALE(2), albumArtSize.h, col.detailsBg);
+	}
+}
+
+
+/**
+ * Draws the pause button centered on album art.
+ * @param {GdiGraphics} gr
+ */
 function drawPauseBtn(gr) {
 	if (pref.showPause && fb.IsPaused && (!presetIndicatorTimer || !doubleClicked)
 		&&
@@ -197,13 +230,16 @@ function drawPauseBtn(gr) {
 }
 
 
-/** Draws the metadata grid on the left side in the Details panel */
+/**
+ * Draws the metadata grid on the left side in the Details panel.
+ * @param {GdiGraphics} gr
+ */
 function drawDetailsMetadataGrid(gr) {
 	gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 	gr.SetInterpolationMode(InterpolationMode.HighQualityBicubic);
 
 	const displayDetails = (pref.layout === 'artwork' ? !displayPlaylistArtworkLayout : !displayPlaylist) && !displayLibrary && !displayBiography;
-	const marginLeft = scaleForDisplay(pref.layout !== 'default' ? 20 : 40);
+	const marginLeft = SCALE(pref.layout !== 'default' ? 20 : 40);
 	gridTop = albumArtSize.y ? albumArtSize.y + marginLeft : geo.topMenuHeight + marginLeft;
 
 	// * DETAILS METADATA GRID * //
@@ -211,7 +247,7 @@ function drawDetailsMetadataGrid(gr) {
 		const drawTextGrid = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> textGrid') : null;
 
 		let gridSpace = 0;
-		const marginRight = scaleForDisplay(20);
+		const marginRight = SCALE(20);
 		gridSpace = Math.round((!albumArt && discArt ? discArtSize.x : albumArtSize.x) - geo.discArtShadow - marginLeft - marginRight);
 		const textWidth = gridSpace;
 
@@ -250,12 +286,12 @@ function drawDetailsMetadataGrid(gr) {
 				gridArtistFontSize === 10 ? ' '.repeat(flagImgs.length >= 6 ? 51 : flagImgs.length === 5 ? 43 : flagImgs.length === 4 ? 34 : flagImgs.length === 3 ? 26 : flagImgs.length === 2 ? 17 : 7) : '';
 
 				const flagSize =
-				flagImgs.length >=  6 ? scaleForDisplay(84 + gridArtistFontSize * 6) :
-				flagImgs.length === 5 ? scaleForDisplay(70 + gridArtistFontSize * 5) :
-				flagImgs.length === 4 ? scaleForDisplay(56 + gridArtistFontSize * 4) :
-				flagImgs.length === 3 ? scaleForDisplay(42 + gridArtistFontSize * 3) :
-				flagImgs.length === 2 ? scaleForDisplay(28 + gridArtistFontSize * 2) :
-				flagImgs.length === 1 ? scaleForDisplay(14 + gridArtistFontSize) : '';
+				flagImgs.length >=  6 ? SCALE(84 + gridArtistFontSize * 6) :
+				flagImgs.length === 5 ? SCALE(70 + gridArtistFontSize * 5) :
+				flagImgs.length === 4 ? SCALE(56 + gridArtistFontSize * 4) :
+				flagImgs.length === 3 ? SCALE(42 + gridArtistFontSize * 3) :
+				flagImgs.length === 2 ? SCALE(28 + gridArtistFontSize * 2) :
+				flagImgs.length === 1 ? SCALE(14 + gridArtistFontSize) : '';
 
 				gridArtistTxtRec = gr.MeasureString(str.artist, ft.grd_artist, 0, 0, showGridArtistFlags && flagImgs.length ? textWidth - flagSize : textWidth, wh);
 				const gridArtistNumLines  = Math.min(2, gridArtistTxtRec.Lines);
@@ -263,24 +299,24 @@ function drawDetailsMetadataGrid(gr) {
 				const gridArtistHeight    = gr.CalcTextHeight(str.artist, ft.grd_artist);
 
 				// * Apply better anti-aliasing on smaller font sizes in HD res
-				gr.SetTextRenderingHint(!is_4k && gridArtistFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
+				gr.SetTextRenderingHint(!RES_4K && gridArtistFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 				gr.DrawString(showGridArtistFlags && flagImgs.length ? flagSizeWhiteSpace + str.artist : str.artist, ft.grd_artist, ['white', 'black', 'reborn', 'random'].includes(pref.theme) ? col.detailsText : pref.theme === 'cream' ? g_pl_colors.header_artist_normal : g_pl_colors.header_artist_playing, marginLeft, Math.round(top), textWidth, gridArtistNumHeight, g_string_format.trim_ellipsis_char);
 
 				// * Artist flags
 				if (str.artist && flagImgs.length && showGridArtistFlags && displayDetails) {
 					let flagsLeft = marginLeft;
 					for (let i = 0; i < flagImgs.length; i++) {
-						gr.DrawImage(flagImgs[i], flagsLeft, Math.round(top - (flagImgs[i].Height / (gridArtistHeight + scaleForDisplay(2))) - (is_4k ? 1 : 0)), flagImgs[i].Width + scaleForDisplay(gridArtistFontSize) - scaleForDisplay(26), gridArtistHeight + scaleForDisplay(2), 0, 0, flagImgs[i].Width, flagImgs[i].Height);
-						flagsLeft += flagImgs[i].Width - scaleForDisplay(18) + scaleForDisplay(gridArtistFontSize);
+						gr.DrawImage(flagImgs[i], flagsLeft, Math.round(top - (flagImgs[i].Height / (gridArtistHeight + SCALE(2))) - (RES_4K ? 1 : 0)), flagImgs[i].Width + SCALE(gridArtistFontSize) - SCALE(26), gridArtistHeight + SCALE(2), 0, 0, flagImgs[i].Width, flagImgs[i].Height);
+						flagsLeft += flagImgs[i].Width - SCALE(18) + SCALE(gridArtistFontSize);
 						// Maximum 6 flags
 						if (i > 4) break;
 					}
 				}
 
-				return gridArtistNumHeight + (is_4k ? 17 : 9);
+				return gridArtistNumHeight + (RES_4K ? 17 : 9);
 			}
 
-			gridTop -= scaleForDisplay(2);
+			gridTop -= SCALE(2);
 
 			const drawTitle = (top) => {
 				if (!str.title) return 0;
@@ -290,13 +326,13 @@ function drawDetailsMetadataGrid(gr) {
 				const gridTitleFontSize = pref.layout === 'artwork' ? pref.gridTitleFontSize_artwork : pref.gridTitleFontSize_default;
 
 				// * Apply better anti-aliasing on smaller font sizes in HD res
-				gr.SetTextRenderingHint(!is_4k && gridTitleFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
+				gr.SetTextRenderingHint(!RES_4K && gridTitleFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 				gr.DrawString(isStreaming ? showGridTrackNum ? str.tracknum + str.title : str.title : str.tracknum === '' ? str.title : showGridTrackNum ? `${str.tracknum}\xa0${str.title}` : str.title, ft.grd_title, col.detailsText, marginLeft, Math.round(top), textWidth, gridTitleNumHeight, g_string_format.trim_ellipsis_char);
 
-				return gridTitleNumHeight + (is_4k ? 17 : 9);
+				return gridTitleNumHeight + (RES_4K ? 17 : 9);
 			}
 
-			gridTop -= scaleForDisplay(2);
+			gridTop -= SCALE(2);
 
 			const drawAlbumTitle = (top, maxLines) => {
 				if (!str.album) return 0;
@@ -306,10 +342,10 @@ function drawDetailsMetadataGrid(gr) {
 				const gridAlbumFontSize = pref.layout === 'artwork' ? pref.gridAlbumFontSize_artwork : pref.gridAlbumFontSize_default;
 
 				// * Apply better anti-aliasing on smaller font sizes in HD res
-				gr.SetTextRenderingHint(!is_4k && gridAlbumFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
+				gr.SetTextRenderingHint(!RES_4K && gridAlbumFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 				gr.DrawString(str.album, ft.grd_album, col.detailsText, marginLeft, Math.round(top), textWidth, gridAlbumNumHeight, g_string_format.trim_ellipsis_char);
 
-				return gridAlbumNumHeight + scaleForDisplay(13);
+				return gridAlbumNumHeight + SCALE(13);
 			}
 
 			if (showGridArtist) {
@@ -322,7 +358,7 @@ function drawDetailsMetadataGrid(gr) {
 			}
 			// * Timeline
 			if (showGridTimeline && str.timeline && fb.IsPlaying) {
-				str.timeline.setSize(marginLeft, gridTop + scaleForDisplay(4), albumArtSize.x - marginLeft * 2);
+				str.timeline.setSize(marginLeft, gridTop + SCALE(4), albumArtSize.x - marginLeft * 2);
 				str.timeline.draw(gr);
 			}
 			// * Tooltip
@@ -331,7 +367,7 @@ function drawDetailsMetadataGrid(gr) {
 				str.metadata_grid_tt.draw(gr);
 			}
 			if (showGridTimeline) {
-				gridTop += geo.timelineHeight + scaleForDisplay(20);
+				gridTop += geo.timelineHeight + SCALE(20);
 			}
 			if (showGridArtist || showGridTitle) {
 				gridTop += drawAlbumTitle(gridTop, 2);
@@ -343,7 +379,7 @@ function drawDetailsMetadataGrid(gr) {
 			let grid_key_ft = ft.grd_key;
 			str.grid.forEach((el) => {
 				if (font_array.length > 1) {	// Only check if there's more than one entry in font_array
-					grid_key_ft = chooseFontForWidth(gr, textWidth / 3, el, font_array);
+					grid_key_ft = ChooseFontForWidth(gr, textWidth / 3, el, font_array);
 					while (grid_key_ft !== font_array[0]) { // If font returned was first item in the array, then everything fits, otherwise pare down array
 						font_array.shift();
 						key_font_array.shift();
@@ -351,9 +387,9 @@ function drawDetailsMetadataGrid(gr) {
 				}
 			});
 			const grid_val_ft = key_font_array.shift();
-			const col1Width = calculateGridMaxTextWidth(gr, str.grid, grid_key_ft);
-			const columnMargin = scaleForDisplay(10);
-			const col2Width = textWidth - columnMargin - col1Width + scaleForDisplay(5);
+			const col1Width = CalcGridMaxTextWidth(gr, str.grid, grid_key_ft);
+			const columnMargin = SCALE(10);
+			const col2Width = textWidth - columnMargin - col1Width + SCALE(5);
 			const col2Left = marginLeft + col1Width + columnMargin;
 
 			for (let k = 0; k < str.grid.length; k++) {
@@ -395,10 +431,10 @@ function drawDetailsMetadataGrid(gr) {
 					}
 					txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, col2Width, wh);
 					if (gridTop + txtRec.Height < albumArtSize.y + albumArtSize.h) {
-						const borderWidth = scaleForDisplay(0.5);
+						const borderWidth = SCALE(0.5);
 						const cellHeight = txtRec.Height + 5;
 						const keyFontSize = pref.layout === 'artwork' ? pref.gridKeyFontSize_artwork : pref.gridKeyFontSize_default;
-						const valFontSize = pref.layout === 'artwork' ? pref.gridValueFontSize_artwork + scaleForDisplay(1) : pref.gridValueFontSize_default + scaleForDisplay(1);
+						const valFontSize = pref.layout === 'artwork' ? pref.gridValueFontSize_artwork + SCALE(1) : pref.gridValueFontSize_default + SCALE(1);
 						const showReleaseFlagOnly = pref.layout === 'artwork' ? pref.sshowGridReleaseFlags_artwork === 'logo' : pref.showGridReleaseFlags_default === 'logo';
 						const showCodecLogoOnly = pref.layout === 'artwork' ? pref.showGridCodecLogo_artwork === 'logo' : pref.showGridCodecLogo_default === 'logo';
 						const flag = showReleaseFlagOnly && key === 'Rel. Country';
@@ -406,25 +442,25 @@ function drawDetailsMetadataGrid(gr) {
 						const ratingLinux = detectWine && key === 'Rating';
 
 						// * Apply better anti-aliasing on smaller font sizes in HD res
-						gr.SetTextRenderingHint(!is_4k && (keyFontSize < 17 || valFontSize < 18) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
+						gr.SetTextRenderingHint(!RES_4K && (keyFontSize < 17 || valFontSize < 18) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 
 						if (dropShadow) {
-							gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left + borderWidth), Math.round(gridTop + borderWidth), col2Width + (ratingLinux ? scaleForDisplay(20) : 0), cellHeight, StringFormat(0, 0, 4));
-							gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left - borderWidth), Math.round(gridTop + borderWidth), col2Width + (ratingLinux ? scaleForDisplay(20) : 0), cellHeight, StringFormat(0, 0, 4));
-							gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left + borderWidth), Math.round(gridTop - borderWidth), col2Width + (ratingLinux ? scaleForDisplay(20) : 0), cellHeight, StringFormat(0, 0, 4));
-							gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left - borderWidth), Math.round(gridTop - borderWidth), col2Width + (ratingLinux ? scaleForDisplay(20) : 0), cellHeight, StringFormat(0, 0, 4));
+							gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left + borderWidth), Math.round(gridTop + borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
+							gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left - borderWidth), Math.round(gridTop + borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
+							gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left + borderWidth), Math.round(gridTop - borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
+							gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left - borderWidth), Math.round(gridTop - borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
 						}
 						gr.DrawString(key, grid_key_ft, col.detailsText, marginLeft, Math.round(gridTop), col1Width, cellHeight, g_string_format.trim_ellipsis_char);
-						gr.DrawString(flag || codec ? '' : value, grid_val_ft, grid_val_col, col2Left, Math.round(gridTop), col2Width + (ratingLinux ? scaleForDisplay(20) : 0), cellHeight, StringFormat(0, 0, 4));
+						gr.DrawString(flag || codec ? '' : value, grid_val_ft, grid_val_col, col2Left, Math.round(gridTop), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
 
 						// * Last.fm logo
 						if (playCountVerifiedByLastFm && showLastFmImage) {
 							const lastFmImg = gdi.Image(paths.lastFmImageRed);
 							const lastFmWhiteImg = gdi.Image(paths.lastFmImageWhite);
-							const lastFmLogo = colorDistance(col.primary, RGB(185, 0, 0), false) < 133 ? lastFmWhiteImg : lastFmImg;
+							const lastFmLogo = ColorDistance(col.primary, RGB(185, 0, 0), false) < 133 ? lastFmWhiteImg : lastFmImg;
 							const heightRatio = (cellHeight - 12) / lastFmLogo.Height;
-							if (txtRec.Width + scaleForDisplay(12) + Math.round(lastFmLogo.Width * heightRatio) < col2Width) {
-								gr.DrawImage(lastFmLogo, col2Left + txtRec.Width + scaleForDisplay(12), gridTop + 3,
+							if (txtRec.Width + SCALE(12) + Math.round(lastFmLogo.Width * heightRatio) < col2Width) {
+								gr.DrawImage(lastFmLogo, col2Left + txtRec.Width + SCALE(12), gridTop + 3,
 									Math.round(lastFmLogo.Width * heightRatio), cellHeight - 12, 0, 0, lastFmLogo.Width, lastFmLogo.Height);
 							}
 						}
@@ -433,8 +469,8 @@ function drawDetailsMetadataGrid(gr) {
 							const sizeCorr = txtRec.Lines === 4 ? 4 : txtRec.Lines === 3 ? 3 : txtRec.Lines === 2 ? 2 : 1;
 							const yCorr = txtRec.Lines === 4 ? cellHeight / 4 : txtRec.Lines === 3 ? cellHeight / 3 : 0;
 							const heightRatio = (cellHeight) / releaseFlagImg.Height;
-							if ((!showReleaseFlagOnly ? txtRec.Width + scaleForDisplay(8) : 0) + Math.round(releaseFlagImg.Width * heightRatio) < col2Width) {
-								gr.DrawImage(releaseFlagImg, showReleaseFlagOnly && key === 'Rel. Country' ? col2Left : col2Left + txtRec.Width + scaleForDisplay(8), gridTop - 3 + yCorr,
+							if ((!showReleaseFlagOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(releaseFlagImg.Width * heightRatio) < col2Width) {
+								gr.DrawImage(releaseFlagImg, showReleaseFlagOnly && key === 'Rel. Country' ? col2Left : col2Left + txtRec.Width + SCALE(8), gridTop - 3 + yCorr,
 									Math.round(releaseFlagImg.Width * heightRatio / sizeCorr), cellHeight / sizeCorr, 0, 0, releaseFlagImg.Width, releaseFlagImg.Height);
 							}
 						}
@@ -442,8 +478,8 @@ function drawDetailsMetadataGrid(gr) {
 						if (showGridCodecLogoImage) {
 							loadCodecLogo();
 							const heightRatio = codecLogo != null ? (cellHeight - 4) / codecLogo.Height : '';
-							if (codecLogo != null && (!showCodecLogoOnly ? txtRec.Width + scaleForDisplay(8) : 0) + Math.round(codecLogo.Width * heightRatio) < col2Width) {
-								gr.DrawImage(codecLogo, showCodecLogoOnly && key === 'Codec' ? col2Left : col2Left + txtRec.Width + scaleForDisplay(8), gridTop - 1,
+							if (codecLogo != null && (!showCodecLogoOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(codecLogo.Width * heightRatio) < col2Width) {
+								gr.DrawImage(codecLogo, showCodecLogoOnly && key === 'Codec' ? col2Left : col2Left + txtRec.Width + SCALE(8), gridTop - 1,
 									Math.round(codecLogo.Width * heightRatio), cellHeight - 4, 0, 0, codecLogo.Width, codecLogo.Height);
 							}
 						}
@@ -457,18 +493,21 @@ function drawDetailsMetadataGrid(gr) {
 }
 
 
-/** Draws the band logo on the bottom left side in the Details panel */
+/**
+ * Draws the band logo on the bottom left side in the Details panel.
+ * @param {GdiGraphics} gr
+ */
 function drawDetailsBandLogo(gr) {
 	if (fb.IsPlaying && albumArt && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout === 'default') {
 		const drawLogos = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> logos') : null;
-		const marginLeft = scaleForDisplay(pref.layout !== 'default' ? 20 : 40);
+		const marginLeft = SCALE(pref.layout !== 'default' ? 20 : 40);
 		const availableSpace = albumArtSize.y + albumArtSize.h - gridTop;
 		const lightBg = new Color(col.detailsText).brightness < 140;
 		const logo = lightBg || noAlbumArtStub ? (invertedBandLogo || bandLogo) : bandLogo;
 
 		if (logo && availableSpace > 75) {
 			// Max width we'll draw is 1/2 the full size because the HQ images are just so big
-			let logoWidth = Math.min(is_4k ? logo.Width : logo.Width / 2, albumArtSize.x - ww * 0.05);
+			let logoWidth = Math.min(RES_4K ? logo.Width : logo.Width / 2, albumArtSize.x - ww * 0.05);
 			let heightScale = logoWidth / logo.Width; // Width is fixed to logoWidth, so scale height accordingly
 			if (logo.Height * heightScale > availableSpace) {
 				// TODO: could probably do this calc just once, but the logic is complicated
@@ -476,10 +515,10 @@ function drawDetailsBandLogo(gr) {
 				logoWidth = logo.Width * heightScale;
 			}
 			let logoTop = Math.round(albumArtSize.y + albumArtSize.h - (heightScale * logo.Height)) - 4;
-			if (is_4k) {
+			if (RES_4K) {
 				logoTop -= 20;
 			}
-			gr.DrawImage(logo, Math.round(isStreaming ? scaleForDisplay(40) : albumArtSize.x / 2 - logoWidth / 2), logoTop, Math.round(logoWidth), Math.round(logo.Height * heightScale), 0, 0, logo.Width, logo.Height, 0);
+			gr.DrawImage(logo, Math.round(isStreaming ? SCALE(40) : albumArtSize.x / 2 - logoWidth / 2), logoTop, Math.round(logoWidth), Math.round(logo.Height * heightScale), 0, 0, logo.Width, logo.Height, 0);
 		}
 
 		if (timings.showExtraDrawTiming) drawLogos.Print();
@@ -487,7 +526,10 @@ function drawDetailsBandLogo(gr) {
 }
 
 
-/** Draws the label logo on the bottom right side in the Details panel */
+/**
+ * Draws the label logo on the bottom right side in the Details panel.
+ * @param {GdiGraphics} gr
+ */
 function drawDetailsLabelLogo(gr) {
 	if (fb.IsPlaying && albumArt && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout === 'default') {
 		const drawLogos = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> labels') : null;
@@ -497,9 +539,9 @@ function drawDetailsLabelLogo(gr) {
 			const labels = lightBg || noAlbumArtStub ? (recordLabelsInverted.length ? recordLabelsInverted : recordLabels) : recordLabels;
 			const rightSideGap = 20; // How close last label is to right edge
 			let labelSpacing = 0;
-			const leftEdgeGap = (artOffCenter ? 20 : 40) * (is_4k ? 1.8 : 1); // Space between art and label
-			const maxLabelWidth = scaleForDisplay(200);
-			const leftEdgeWidth = is_4k ? 45 : 30; // How far label background extends on left
+			const leftEdgeGap = (artOffCenter ? 20 : 40) * (RES_4K ? 1.8 : 1); // Space between art and label
+			const maxLabelWidth = SCALE(200);
+			const leftEdgeWidth = RES_4K ? 45 : 30; // How far label background extends on left
 			let totalLabelWidth = 0;
 			let labelAreaWidth = 0;
 			let leftEdge = 0;
@@ -512,11 +554,11 @@ function drawDetailsLabelLogo(gr) {
 				if (labels[i].Width > maxLabelWidth) {
 					totalLabelWidth += maxLabelWidth;
 				} else {
-					totalLabelWidth += is_4k && labels[i].Width < 200 ? labels[i].Width * 2 : labels[i].Width;
+					totalLabelWidth += RES_4K && labels[i].Width < 200 ? labels[i].Width * 2 : labels[i].Width;
 				}
 			}
 			if (!lastLeftEdge) { // We don't want to recalculate this every screen refresh
-				debugLog('recalculating lastLeftEdge');
+				DebugLog('recalculating lastLeftEdge');
 				labelShadowImg = null;
 				labelWidth = Math.round(totalLabelWidth / labels.length);
 				labelHeight = Math.round(labels[0].Height * labelWidth / labels[0].Width); // Might be recalc'd below
@@ -531,7 +573,7 @@ function drawDetailsLabelLogo(gr) {
 						while (true) {
 							const allLabelsWidth = Math.max(Math.min(Math.round((ww - leftEdge - rightSideGap) / labels.length), maxLabelWidth), 50);
 							//console.log("leftEdge = " + leftEdge + ", ww-leftEdge-10 = " + (ww-leftEdge-10) + ", allLabelsWidth=" + allLabelsWidth);
-							const maxWidth = is_4k && labels[0].Width < 200 ? labels[0].Width * 2 : labels[0].Width;
+							const maxWidth = RES_4K && labels[0].Width < 200 ? labels[0].Width * 2 : labels[0].Width;
 							labelWidth = (allLabelsWidth > maxWidth) ? maxWidth : allLabelsWidth;
 							labelHeight = Math.round(labels[0].Height * labelWidth / labels[0].Width); // Width is based on height scale
 							topEdge = Math.round(albumArtSize.y + albumArtSize.h - labelHeight);
@@ -559,7 +601,7 @@ function drawDetailsLabelLogo(gr) {
 				labelHeight = lastLabelHeight;
 				labelAreaWidth = ww - leftEdge - rightSideGap;
 			}
-			if (labelAreaWidth >= scaleForDisplay(50)) {
+			if (labelAreaWidth >= SCALE(50)) {
 				if (labels.length > 1) {
 					labelSpacing = Math.min(12, Math.max(3, Math.round((labelAreaWidth / (labels.length - 1)) * 0.048))); // Spacing should be proportional, and between 3 and 12 pixels
 				}
@@ -603,7 +645,7 @@ function drawDetailsLabelLogo(gr) {
 				}
 				for (let i = 0; i < labels.length; i++) {
 					// allLabelsWidth can never be greater than 200, so if a label image is 161 pixels wide, never draw it wider than 161
-					const maxWidth = is_4k && labels[i].Width < 200 ? labels[i].Width * 2 : labels[i].Width;
+					const maxWidth = RES_4K && labels[i].Width < 200 ? labels[i].Width * 2 : labels[i].Width;
 					labelWidth = (allLabelsWidth > maxWidth) ? maxWidth : allLabelsWidth;
 					labelHeight = Math.round(labels[i].Height * labelWidth / labels[i].Width); // Width is based on height scale
 
@@ -620,18 +662,27 @@ function drawDetailsLabelLogo(gr) {
 }
 
 
-/** Draws the lyrics on the album art in the Lyrics panel */
+/**
+ * Draws the lyrics on the album art in the Lyrics panel.
+ * @param {GdiGraphics} gr
+ */
 function drawLyrics(gr) {
-	if (pref.displayLyrics && fb.IsPlaying) {
-		gr.SetSmoothingMode(SmoothingMode.None);
-		const fullW = pref.layout === 'default' && pref.lyricsLayout === 'full' && pref.displayLyrics && noAlbumArtStub || pref.layout === 'artwork';
-		gr.FillSolidRect(fullW ? 0 : albumArtSize.x, fullW ? geo.topMenuHeight : albumArtSize.y, fullW ? ww : albumArtSize.w, fullW ? wh - geo.topMenuHeight - geo.lowerBarHeight : albumArtSize.h, pref.lyricsAlbumArt ? RGBA(0, 0, 0, 170) : g_pl_colors.bg);
-		if (lyrics) lyrics.drawLyrics(gr);
-	}
+	if (!pref.displayLyrics || !fb.IsPlaying) return;
+
+	const fullW = pref.layout === 'default' && pref.lyricsLayout === 'full' && pref.displayLyrics && noAlbumArtStub || pref.layout === 'artwork';
+	gr.SetSmoothingMode(SmoothingMode.None);
+	gr.FillSolidRect(fullW ? 0 : albumArtSize.x, fullW ? geo.topMenuHeight : albumArtSize.y,
+		fullW ? ww : albumArtSize.w, fullW ? wh - geo.topMenuHeight - geo.lowerBarHeight : albumArtSize.h,
+		pref.lyricsAlbumArt ? RGBA(0, 0, 0, 170) : g_pl_colors.bg);
+
+	if (lyrics) lyrics.drawLyrics(gr);
 }
 
 
-/** Draws activated styles from Options > Styles */
+/**
+ * Draws the activated styles from Options > Styles.
+ * @param {GdiGraphics} gr
+ */
 function drawStyles(gr) {
 	if (pref.styleBevel) {
 		gr.SetSmoothingMode(SmoothingMode.None);
@@ -663,7 +714,145 @@ function drawStyles(gr) {
 }
 
 
-/** Draws all the shadows for album art and panels */
+/**
+ * Draws the theme preset indicator as a popup when using theme presets or styles.
+ * @param {GdiGraphics} gr
+ */
+function drawThemePresetIndicator(gr) {
+	if (themePresetName === '' || !pref.presetIndicator || !themePresetIndicator || !['off', 'dblclick'].includes(pref.presetAutoRandomMode)) {
+		return;
+	}
+
+	const match = themePresetMatchMode;
+	const text  = 'Active styles matching:';
+	const text2 = themePresetName;
+	const arc   = SCALE(6);
+	const boxH  = gr.CalcTextHeight(text, ft.notification) * (match ? 2.5 : 0) + gr.CalcTextHeight(text2, ft.notification) * 2 + arc;
+	const w     = Math.max(gr.CalcTextWidth(text, ft.notification) + 50, gr.CalcTextWidth(text2, ft.notification) + 50);
+	const h     = gr.CalcTextHeight(text, ft.notification);
+
+	const fullW =
+		pref.layout === 'default'
+		&&
+		displayPlaylist && pref.playlistLayout === 'full'
+		||
+		displayLibrary && pref.libraryLayout  === 'full'
+		||
+		displayBiography && pref.biographyLayout === 'full'
+		||
+		pref.displayLyrics && pref.lyricsLayout === 'full';
+
+	const cover = fb.IsPlaying && albumArt && pref.layout !== 'compact' && !fullW;
+	const noCoverDefault = pref.layout === 'default' && !fullW;
+
+	const x = Math.round((cover ? albumArtSize.x + albumArtSize.w * 0.5 : noCoverDefault ? ww * 0.25 : ww * 0.5) - w * 0.5);
+	const y = Math.round((cover ? albumArtSize.h * 0.5 : wh * 0.5 - geo.lowerBarHeight * 0.5) - (match ? h : -h * 0.5));
+
+	gr.SetSmoothingMode(SmoothingMode.AntiAlias);
+	gr.FillRoundRect(x, y, w, boxH, arc, arc, col.popupBg);
+	gr.DrawRoundRect(x, y, w, boxH, arc, arc, SCALE(2), 0x64000000);
+	gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+	if (match) gr.DrawString(text, ft.notification, col.popupText, x, y + h, w, h, StringFormat(1, 1, 4));
+	gr.DrawString(text2, ft.notification, col.popupText, x, y + h * (match ? 2.5 : 0.66), w, h, StringFormat(1, 1, 4));
+}
+
+
+/**
+ * Draws the theme debug overlay in the album art area when "Enable theme debug overlay" is activated in dev tools.
+ * @param {GdiGraphics} gr
+ */
+function drawThemeDebugOverlay(gr) {
+	if (!settings.showThemeLogOverlay) return;
+
+	const x = albumArtSize.x + SCALE(pref.layout !== 'default' ? 20 : 40);
+	let y = albumArtSize.y;
+	const fullW = pref.layout === 'default' && pref.lyricsLayout === 'full' && pref.displayLyrics && noAlbumArtStub || pref.layout === 'artwork';
+	const titleWidth = albumArtSize.w - SCALE(80);
+	const titleHeight = gr.CalcTextHeight(' ', ft.popup);
+	const logColor = RGB(255, 255, 255);
+
+	const tsBlock1 = pref.styleBevel ? 'Bevel,' : '';
+
+	const tsBlock2 =
+		pref.styleBlend ? 'Blend,' : pref.styleBlend2 ? 'Blend 2,' :
+		pref.styleGradient ? 'Gradient,' : pref.styleGradient2 ? 'Gradient 2,' : '';
+
+	const tsBlock3 =
+		pref.styleAlternative ? 'Alternative' : pref.styleAlternative2 ? 'Alternative 2' :
+		pref.styleBlackAndWhite ? 'Black and white' : pref.styleBlackAndWhite2 ? 'Black and white 2' : pref.styleBlackAndWhiteReborn ? 'Black and white reborn' :
+		pref.styleBlackReborn ? 'Black reborn' :
+		pref.styleRebornWhite ? 'Reborn white' : pref.styleRebornBlack ? 'Reborn black' :
+		pref.styleRebornFusion ? 'Reborn fusion' :
+		pref.styleRebornFusion2 ? 'Reborn fusion 2' :
+		pref.styleRebornFusionAccent ? 'Reborn fusion accent' :
+		pref.styleRandomPastel ? 'Random pastel' : pref.styleRandomDark ? 'Random dark' : '';
+
+	const tsTopMenuButtons = pref.styleTopMenuButtons !== 'default' ? CapitalizeString(`${pref.styleTopMenuButtons}`) : '';
+	const tsTransportButtons = pref.styleTransportButtons !== 'default' ? CapitalizeString(`${pref.styleTransportButtons}`) : '';
+	const tsProgressBar1 = pref.styleProgressBarDesign === 'rounded' ? 'Rounded,' : '';
+	const tsProgressBar2 = pref.styleProgressBar !== 'default' ? `Bg: ${CapitalizeString(`${pref.styleProgressBar},`)}` : '';
+	const tsProgressBar3 = pref.styleProgressBarFill !== 'default' ? `Fill: ${CapitalizeString(`${pref.styleProgressBarFill}`)}` : '';
+	const tsVolumeBar1 = pref.styleVolumeBarDesign === 'rounded' ? 'Rounded,' : '';
+	const tsVolumeBar2 = pref.styleVolumeBar !== 'default' ? `Bg: ${CapitalizeString(`${pref.styleVolumeBar},`)}` : '';
+	const tsVolumeBar3 = pref.styleVolumeBarFill !== 'default' ? `Fill: ${CapitalizeString(`${pref.styleVolumeBarFill}`)}` : '';
+
+	gr.SetSmoothingMode(SmoothingMode.None);
+	gr.FillSolidRect(fullW ? 0 : albumArtSize.x, fullW ? geo.topMenuHeight : albumArtSize.y, fullW ? ww : albumArtSize.w, fullW ? wh - geo.topMenuHeight - geo.lowerBarHeight : albumArtSize.h, RGBA(0, 0, 0, 180));
+	gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+
+	y += titleHeight * 1.5;
+	gr.DrawString(`Primary color: ${selectedPrimaryColor}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	y += titleHeight * 1.5;
+	gr.DrawString(`Primary 2 color: ${selectedPrimaryColor2}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	y += titleHeight * 1.5;
+	gr.DrawString(`Primary color brightness: ${colBrightness}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	y += titleHeight * 1.5;
+	gr.DrawString(`Primary 2 color brightness: ${colBrightness2}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	y += titleHeight * 1.5;
+	gr.DrawString(`Image brightness: ${imgBrightness}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	y += titleHeight * 1.5;
+
+	if (pref.styleBlend || pref.styleBlend2) {
+		gr.DrawString(`Image blur: ${blendedImgBlur}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+		y += titleHeight * 1.5;
+		gr.DrawString(`Image alpha: ${blendedImgAlpha}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+		y += titleHeight * 1.5;
+	}
+	if (pref.preset) {
+		y += titleHeight * 1.5;
+		gr.DrawString(`Theme preset: ${pref.preset}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	}
+	if (pref.themeBrightness !== 'default') {
+		y += titleHeight * 1.5;
+		gr.DrawString(`Theme brightness: ${pref.themeBrightness}%`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	}
+	if (tsBlock1 || tsBlock2 || tsBlock3) {
+		y += titleHeight * 1.5;
+		gr.DrawString(`Styles: ${tsBlock1} ${tsBlock2} ${tsBlock3}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	}
+	if (tsTopMenuButtons) {
+		y += titleHeight * 1.5;
+		gr.DrawString(`Top menu button style: ${tsTopMenuButtons}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	}
+	if (tsTransportButtons) {
+		y += titleHeight * 1.5;
+		gr.DrawString(`Transport button style: ${tsTransportButtons}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	}
+	if (tsProgressBar1 || tsProgressBar2 || tsProgressBar3) {
+		y += titleHeight * 1.5;
+		gr.DrawString(tsProgressBar1 || tsProgressBar2 || tsProgressBar3 ? `Progressbar styles: ${tsProgressBar1} ${tsProgressBar2} ${tsProgressBar3}` : '', ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	}
+	if (tsVolumeBar1 || tsVolumeBar2 || tsVolumeBar3) {
+		y += titleHeight * 1.5;
+		gr.DrawString(`Volumebar styles: ${tsVolumeBar1} ${tsVolumeBar2} ${tsVolumeBar3}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	}
+}
+
+
+/**
+ * Draws all the shadows for album art and panels.
+ * @param {GdiGraphics} gr
+ */
 function drawPanelShadows(gr) {
 	// * SHADOWS FOR ALBUM ART, noAlbumArtStub AND DETAILS * //
 	if (fb.IsPlaying && (albumArt && albumArtScaled || noAlbumArtStub) && !displayPlaylistLibrary() &&
@@ -676,8 +865,8 @@ function drawPanelShadows(gr) {
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 
 		// Top shadow
-		gr.FillGradRect(0, ppt.albumArtShow && pref.libraryLayout === 'full' && displayLibrary ? ui.y - (is_4k ? 10 : 6) : albumArtSize.y - (is_4k ? 10 : 6),
-			displayDetails || noDefaultLayout ? ww : albumArtSize.x + albumArtSize.w, is_4k ? 10 : 6, 90, 0, col.shadow);
+		gr.FillGradRect(0, ppt.albumArtShow && pref.libraryLayout === 'full' && displayLibrary ? ui.y - (RES_4K ? 10 : 6) : albumArtSize.y - (RES_4K ? 10 : 6),
+			displayDetails || noDefaultLayout ? ww : albumArtSize.x + albumArtSize.w, RES_4K ? 10 : 6, 90, 0, col.shadow);
 
 		if (displayDetails && !pref.noDiscArtBg && !noAlbumArtStub) {
 			// Middle shadow
@@ -685,8 +874,8 @@ function drawPanelShadows(gr) {
 				noAlbumArtStub ? 0 : pref.styleBlackAndWhite ? RGB(0, 0, 0) : col.shadow, noAlbumArtStub ? pref.styleBlackAndWhite ? RGB(0, 0, 0) : col.shadow : 0);
 		}
 		// Bottom shadow
-		gr.FillGradRect(0, ppt.albumArtShow && pref.libraryLayout === 'full' && displayLibrary ? ui.y + ui.h + (is_4k ? 0 : -1) : albumArtSize.y + albumArtSize.h + (is_4k ? 0 : -1),
-			displayDetails || noDefaultLayout ? ww : albumArtSize.x + albumArtSize.w, scaleForDisplay(5), 90, col.shadow, 0);
+		gr.FillGradRect(0, ppt.albumArtShow && pref.libraryLayout === 'full' && displayLibrary ? ui.y + ui.h + (RES_4K ? 0 : -1) : albumArtSize.y + albumArtSize.h + (RES_4K ? 0 : -1),
+			displayDetails || noDefaultLayout ? ww : albumArtSize.x + albumArtSize.w, SCALE(5), 90, col.shadow, 0);
 	}
 
 	// * SHADOWS FOR ALL PANELS * //
@@ -697,7 +886,7 @@ function drawPanelShadows(gr) {
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 
 		// Top shadow
-		gr.FillGradRect(x, geo.topMenuHeight - (is_4k ? 10 : 6), ww, is_4k ? 10 : 6, 90, 0, col.shadow);
+		gr.FillGradRect(x, geo.topMenuHeight - (RES_4K ? 10 : 6), ww, RES_4K ? 10 : 6, 90, 0, col.shadow);
 
 		if (normalLayout) {
 			// Middle shadow for playlist
@@ -709,12 +898,15 @@ function drawPanelShadows(gr) {
 			}
 		}
 		// Bottom shadow
-		gr.FillGradRect(x, wh - geo.lowerBarHeight + (is_4k ? 0 : -1), ww, scaleForDisplay(5), 90, col.shadow, 0);
+		gr.FillGradRect(x, wh - geo.lowerBarHeight + (RES_4K ? 0 : -1), ww, SCALE(5), 90, col.shadow, 0);
 	}
 }
 
 
-/** Draws the top menu */
+/**
+ * Draws the top menu.
+ * @param {GdiGraphics} gr
+ */
 function drawMenuBar(gr) {
 	const drawMenuBar = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> menu bar') : null;
 
@@ -725,7 +917,9 @@ function drawMenuBar(gr) {
 		if ((i === 'back' || i === 'forward') && !displayPlaylist) {
 			continue;
 		}
+
 		const disabled = btn.isEnabled ? !btn.isEnabled() : false;
+
 		if (img) {
 			const alpha = disabled ? 140 : 255;
 			gr.DrawImage(img[0], x, y, w, h, 0, 0, w, h, 0, alpha); // Normal
@@ -741,11 +935,14 @@ function drawMenuBar(gr) {
 }
 
 
-/** Draws the lower bar */
+/**
+ * Draws the lower bar.
+ * @param {GdiGraphics} gr
+ */
 function drawLowerBar(gr) {
 	const drawLowerBarProfiler     = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> lower bar') : null;
-	const lowerBarTop              = wh - geo.lowerBarHeight + (pref.layout === 'default' ? (is_4k ? 65 : 35) : (is_4k ? 33 : 18));
-	const lowerMargin              = scaleForDisplay(pref.layout === 'compact' || pref.layout === 'artwork' ? 80 : pref.showTransportControls_default ? 80 : 120);
+	const lowerBarTop              = wh - geo.lowerBarHeight + (pref.layout === 'default' ? (RES_4K ? 65 : 35) : (RES_4K ? 33 : 18));
+	const lowerMargin              = SCALE(pref.layout === 'compact' || pref.layout === 'artwork' ? 80 : pref.showTransportControls_default ? 80 : 120);
 	const lowerBarFontSize         = pref.layout === 'compact' ? pref.lowerBarFontSize_compact        : pref.layout === 'artwork' ? pref.lowerBarFontSize_artwork        : pref.lowerBarFontSize_default;
 	const showLowerBarArtist       = pref.layout === 'compact' ? pref.showLowerBarArtist_compact      : pref.layout === 'artwork' ? pref.showLowerBarArtist_artwork      : pref.showLowerBarArtist_default;
 	const showLowerBarTrackNum     = pref.layout === 'compact' ? pref.showLowerBarTrackNum_compact    : pref.layout === 'artwork' ? pref.showLowerBarTrackNum_artwork    : pref.showLowerBarTrackNum_default;
@@ -756,13 +953,14 @@ function drawLowerBar(gr) {
 	const showProgressBar          = pref.layout === 'compact' ? pref.showProgressBar_compact         : pref.layout === 'artwork' ? pref.showProgressBar_artwork         : pref.showProgressBar_default;
 	const showWaveformBar          = pref.layout === 'compact' ? pref.showWaveformBar_compact         : pref.layout === 'artwork' ? pref.showWaveformBar_artwork         : pref.showWaveformBar_default;
 	const showPeakmeterBar         = pref.layout === 'compact' ? pref.showPeakmeterBar_compact        : pref.layout === 'artwork' ? pref.showPeakmeterBar_artwork        : pref.showPeakmeterBar_default;
+
 	const flagSize =
-	flagImgs.length >=  6 ? scaleForDisplay(84 + lowerBarFontSize * 6) :
-	flagImgs.length === 5 ? scaleForDisplay(70 + lowerBarFontSize * 5) :
-	flagImgs.length === 4 ? scaleForDisplay(56 + lowerBarFontSize * 4) :
-	flagImgs.length === 3 ? scaleForDisplay(42 + lowerBarFontSize * 3) :
-	flagImgs.length === 2 ? scaleForDisplay(28 + lowerBarFontSize * 2) :
-	flagImgs.length === 1 ? scaleForDisplay(14 + lowerBarFontSize) : '';
+	flagImgs.length >=  6 ? SCALE(84 + lowerBarFontSize * 6) :
+	flagImgs.length === 5 ? SCALE(70 + lowerBarFontSize * 5) :
+	flagImgs.length === 4 ? SCALE(56 + lowerBarFontSize * 4) :
+	flagImgs.length === 3 ? SCALE(42 + lowerBarFontSize * 3) :
+	flagImgs.length === 2 ? SCALE(28 + lowerBarFontSize * 2) :
+	flagImgs.length === 1 ? SCALE(14 + lowerBarFontSize) : '';
 	const availableFlags = showLowerBarArtistFlags && flagImgs.length ? flagSize : 0;
 
 	// * Calculate all transport buttons width
@@ -771,8 +969,8 @@ function drawLowerBar(gr) {
 	const showVolumeBtn        = pref.layout === 'compact' ? pref.showVolumeBtn_compact          : pref.layout === 'artwork' ? pref.showVolumeBtn_artwork          : pref.showVolumeBtn_default;
 	const transportBtnSize     = pref.layout === 'compact' ? pref.transportButtonSize_compact    : pref.layout === 'artwork' ? pref.transportButtonSize_artwork    : pref.transportButtonSize_default;
 	const transportBtnSpacing  = pref.layout === 'compact' ? pref.transportButtonSpacing_compact : pref.layout === 'artwork' ? pref.transportButtonSpacing_artwork : pref.transportButtonSpacing_default;
-	const buttonSize           = scaleForDisplay(transportBtnSize);
-	const buttonSpacing        = scaleForDisplay(transportBtnSpacing);
+	const buttonSize           = SCALE(transportBtnSize);
+	const buttonSpacing        = SCALE(transportBtnSpacing);
 	const buttonCount          = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
 
 	// * Setup time area width
@@ -793,20 +991,20 @@ function drawLowerBar(gr) {
 	const artistTitleWidth  = gr.MeasureString(str.artist, ft.lower_bar_artist, 0, 0, 0, 0).Width + trackNumWidth + gr.MeasureString(showLowerBarComposer ? str.title_lower + str.composer : str.title_lower, ft.lower_bar_title, 0, 0, 0, 0).Width + gr.MeasureString(str.original_artist, ft.lower_bar_title, 0, 0, 0, 0).Width;
 	const oneLine           = artistTitleWidth < availableWidth || !showLowerBarTitle;
 	const twoLines          = artistTitleWidth > availableWidth && showLowerBarTitle;
-	const lineCorrection    = scaleForDisplay(pref.customThemeFonts ? is_4k ? 0 : 4 : is_4k ? 0 : 2);
+	const lineCorrection    = SCALE(pref.customThemeFonts ? RES_4K ? 0 : 4 : RES_4K ? 0 : 2);
 
 	// * Adjustments
-	const flagWidth          = showLowerBarArtistFlags && flagImgs.length && str.tracknum < 100 ? scaleForDisplay(14) + scaleForDisplay(lowerBarFontSize) : trackNumWidth + scaleForDisplay(6);
-	const heightAdjustment   = pref.customThemeFonts ? 0 : ((lowerBarFontSize === 12 || lowerBarFontSize === 14) && !is_4k || (lowerBarFontSize === 16 || lowerBarFontSize === 18 || lowerBarFontSize === 20 || lowerBarFontSize === 22) && is_4k) ? 1 : 0;
+	const flagWidth          = showLowerBarArtistFlags && flagImgs.length && str.tracknum < 100 ? SCALE(14) + SCALE(lowerBarFontSize) : trackNumWidth + SCALE(6);
+	const heightAdjustment   = pref.customThemeFonts ? 0 : ((lowerBarFontSize === 12 || lowerBarFontSize === 14) && !RES_4K || (lowerBarFontSize === 16 || lowerBarFontSize === 18 || lowerBarFontSize === 20 || lowerBarFontSize === 22) && RES_4K) ? 1 : 0;
 	const trackNumAdjustment = gr.MeasureString('\u2013', ft.lower_bar_title, 0, 0, 0, 0).Width;
 	const titleAdjustment    = gr.MeasureString(pref.customThemeFonts ? '\u2013.' : 'M', ft.lower_bar_title, 0, 0, 0, 0).Width;
 	const titleAdjustment2   = gr.MeasureString('-', ft.lower_bar_title, 0, 0, 0, 0).Width;
 
 	// * Setup artist, track number and title
 	const artist = showLowerBarArtist ? str.artist : '';
-	const artistX =	twoLines ? progressBar.x + availableFlags :	Math.round(progressBar.x + availableFlags - (pref.layout === 'default' ? scaleForDisplay(1) : 0));
+	const artistX =	twoLines ? progressBar.x + availableFlags :	Math.round(progressBar.x + availableFlags - (pref.layout === 'default' ? SCALE(1) : 0));
 
-	const artistY =	twoLines ? Math.round(lowerBarTop - lineCorrection - artistHeight + (pref.customThemeFonts ? artistHeight * 0.125 : 0) + (lowerBarFontSize < 18 ? scaleForDisplay(-2) : lowerBarFontSize > 18 ? scaleForDisplay(is_QHD ? 1 : 3) : 0)) :
+	const artistY =	twoLines ? Math.round(lowerBarTop - lineCorrection - artistHeight + (pref.customThemeFonts ? artistHeight * 0.125 : 0) + (lowerBarFontSize < 18 ? SCALE(-2) : lowerBarFontSize > 18 ? SCALE(RES_QHD ? 1 : 3) : 0)) :
 		Math.round(lowerBarTop - lineCorrection);
 
 	const trackNum = twoLines ? showLowerBarTrackNum && showLowerBarTitle || !showLowerBarTitle && !fb.IsPlaying ? str.tracknum : '' :
@@ -836,7 +1034,7 @@ function drawLowerBar(gr) {
 	const titleY = trackNumY;
 
 	// * Apply better anti-aliasing on smaller font sizes in HD res
-	gr.SetTextRenderingHint(!is_4k && lowerBarFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
+	gr.SetTextRenderingHint(!RES_4K && lowerBarFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 
 	// * Artist, tracknum, title
 	if (oneLine || twoLines && pref.layout === 'default') gr.DrawString(artist, ft.lower_bar_artist, col.lowerBarArtist, artistX, artistY, availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
@@ -845,11 +1043,11 @@ function drawLowerBar(gr) {
 
 	// * Artist flags
 	if (showLowerBarArtist && showLowerBarArtistFlags && (pref.layout === 'default' || pref.layout !== 'default' && !twoLines)) {
-		const marginLeft = scaleForDisplay(pref.layout !== 'default' ? 20 : 40);
-		let flagsLeft = marginLeft - (is_4k ? 1 : 0);
+		const marginLeft = SCALE(pref.layout !== 'default' ? 20 : 40);
+		let flagsLeft = marginLeft - (RES_4K ? 1 : 0);
 		for (let i = 0; i < flagImgs.length; i++) {
-			gr.DrawImage(flagImgs[i], flagsLeft, Math.round(artistY - (flagImgs[i].Height / (artistHeight + scaleForDisplay(2))) - (is_4k ? 1 : 0)), flagImgs[i].Width + scaleForDisplay(lowerBarFontSize) - scaleForDisplay(26), artistHeight + scaleForDisplay(2), 0, 0, flagImgs[i].Width, flagImgs[i].Height);
-			flagsLeft += flagImgs[i].Width - scaleForDisplay(18) + scaleForDisplay(lowerBarFontSize);
+			gr.DrawImage(flagImgs[i], flagsLeft, Math.round(artistY - (flagImgs[i].Height / (artistHeight + SCALE(2))) - (RES_4K ? 1 : 0)), flagImgs[i].Width + SCALE(lowerBarFontSize) - SCALE(26), artistHeight + SCALE(2), 0, 0, flagImgs[i].Width, flagImgs[i].Height);
+			flagsLeft += flagImgs[i].Width - SCALE(18) + SCALE(lowerBarFontSize);
 			if (i > 4) break; // Maximum 6 flags
 		}
 	}
@@ -860,13 +1058,13 @@ function drawLowerBar(gr) {
 		let width = gr.CalcTextWidth(`  ${str.length}`, ft.lower_bar_length);
 		const lowerBarVersionW = gr.CalcTextWidth(`  ${str.time}`, ft.lower_bar_length);
 		const lowerBarVersionH = Math.ceil(titleMeasurements.Height);
-		const lowerBarVersionX = ww - scaleForDisplay(pref.layout !== 'default' ? 20 : 40) - lowerBarVersionW;
+		const lowerBarVersionX = ww - SCALE(pref.layout !== 'default' ? 20 : 40) - lowerBarVersionW;
 		const lowerBarVersionY = Math.round(lowerBarTop - lineCorrection - heightAdjustment);
-		const lowerBarLengthX = ww - scaleForDisplay(pref.layout !== 'default' ? 20 : 40) - width;
+		const lowerBarLengthX = ww - SCALE(pref.layout !== 'default' ? 20 : 40) - width;
 		const lowerBarLengthY = lowerBarVersionY;
 		const lowerBarLengthW = width;
 		const lowerBarLengthH = lowerBarVersionH;
-		lowerBarTimeX = ww - scaleForDisplay(pref.layout !== 'default' ? 20 : 40) - (isStreaming ? width : width * 2);
+		lowerBarTimeX = ww - SCALE(pref.layout !== 'default' ? 20 : 40) - (isStreaming ? width : width * 2);
 		lowerBarTimeY = Math.round(lowerBarTop - lineCorrection);
 		lowerBarTimeW = lowerBarLengthW;
 		lowerBarTimeH = lowerBarVersionH;
@@ -890,7 +1088,7 @@ function drawLowerBar(gr) {
 				offset = updateHyperlink.getWidth();
 				updateHyperlink.setContainerWidth(ww);
 				updateHyperlink.set_y(lowerBarTop);
-				updateHyperlink.set_xOffset(ww - offset - scaleForDisplay(pref.layout !== 'default' ? 20 : 40));
+				updateHyperlink.set_xOffset(ww - offset - SCALE(pref.layout !== 'default' ? 20 : 40));
 				updateHyperlink.draw(gr, col.lowerBarTitle);
 			}
 			if (showLowerBarPlaybackTime) {
@@ -898,7 +1096,7 @@ function drawLowerBar(gr) {
 			}
 		}
 		if (showLowerBarPlaybackTime && fb.IsPlaying) { // * Switch to playback time remaining
-			btns.playbackTime = new Button(ww - timeAreaWidth - scaleForDisplay(pref.layout !== 'default' ? 20 : 40), lowerBarTimeY,
+			btns.playbackTime = new Button(ww - timeAreaWidth - SCALE(pref.layout !== 'default' ? 20 : 40), lowerBarTimeY,
 			timeAreaWidth, lowerBarTimeH, showLowerBarPlaybackTime ? 'PlaybackTime' : '', '', showLowerBarPlaybackTime ? 'Switch playback time' : '');
 		}
 	}
@@ -936,50 +1134,55 @@ function drawLowerBar(gr) {
 }
 
 
-/** Draws activated styled tooltips, will make standard tooltips fancy */
+/**
+ * Draws styled tooltips that will make standard tooltips look fancy.
+ * @param {GdiGraphics} gr
+ */
 function drawStyledTooltips(gr) {
-	if (styledTooltipReady && pref.showStyledTooltips) {
-		const tooltipFontSize = pref.layout === 'artwork' ? pref.tooltipFontSize_artwork : pref.tooltipFontSize_default;
-		const offset = scaleForDisplay(30);
-		const padding = scaleForDisplay(15);
-		const edgeSpace = padding * 0.5;
-		const arc = scaleForDisplay(6);
-		const w = Math.min(gr.MeasureString(styledTooltipText, ft.tooltip, 0, 0, 0, 0).Width + padding, ww - (state.mouse_x > ww * 0.85 ? state.mouse_x - ww * 0.15 : state.mouse_x) - edgeSpace);
-		const h = Math.min(gr.MeasureString(styledTooltipText, ft.tooltip, 0, 0, w, wh).Height + padding, wh - (state.mouse_y > wh * 0.85 ? state.mouse_y - wh * 0.15 : state.mouse_y) - edgeSpace - offset);
-		const x = state.mouse_x > ww * 0.85 ? state.mouse_x - w : state.mouse_x; // * When tooltip is too close to the right edge, it will be drawn on the left side of the mouse cursor
-		const y = state.mouse_y > wh * 0.85 ? state.mouse_y - h : state.mouse_y + offset; // * When tooltip is too close to the bottom edge, it will be drawn on the top side of the mouse cursor
-		const throttleRepaintRect = _throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 50);
+	if (styledTooltipText === '' || !styledTooltipReady || !pref.showStyledTooltips) return;
 
-		if (styledTooltipText !== '') { // * Just in case, arc value can't be null
-			// * Apply better anti-aliasing on smaller font sizes in HD res
-			gr.SetTextRenderingHint(!is_4k && tooltipFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-			gr.FillRoundRect(x, y, w, h, arc, arc, RGBtoRGBA(col.popupBg, 220));
-			gr.DrawRoundRect(x, y, w, h, arc, arc, scaleForDisplay(2), 0x64000000);
-			gr.DrawString(styledTooltipText, ft.tooltip, col.popupText, x + padding * 0.5, y + padding * 0.5, w - padding, h - padding, StringFormat(0, 0, 4));
-			throttleRepaintRect(x - offset * 0.5, y - offset * 0.5, w + offset, h + offset);
-		}
-	}
+	const tooltipFontSize = pref.layout === 'artwork' ? pref.tooltipFontSize_artwork : pref.tooltipFontSize_default;
+	const offset = SCALE(30);
+	const padding = SCALE(15);
+	const edgeSpace = padding * 0.5;
+	const arc = SCALE(6);
+	const w = Math.min(gr.MeasureString(styledTooltipText, ft.tooltip, 0, 0, 0, 0).Width + padding, ww - (state.mouse_x > ww * 0.85 ? state.mouse_x - ww * 0.15 : state.mouse_x) - edgeSpace);
+	const h = Math.min(gr.MeasureString(styledTooltipText, ft.tooltip, 0, 0, w, wh).Height + padding, wh - (state.mouse_y > wh * 0.85 ? state.mouse_y - wh * 0.15 : state.mouse_y) - edgeSpace - offset);
+	const x = state.mouse_x > ww * 0.85 ? state.mouse_x - w : state.mouse_x; // * When tooltip is too close to the right edge, it will be drawn on the left side of the mouse cursor
+	const y = state.mouse_y > wh * 0.85 ? state.mouse_y - h : state.mouse_y + offset; // * When tooltip is too close to the bottom edge, it will be drawn on the top side of the mouse cursor
+	const throttleRepaintRect = _Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 50);
+
+	// * Apply better anti-aliasing on smaller font sizes in HD res
+	gr.SetTextRenderingHint(!RES_4K && tooltipFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
+	gr.FillRoundRect(x, y, w, h, arc, arc, RGBtoRGBA(col.popupBg, 220));
+	gr.DrawRoundRect(x, y, w, h, arc, arc, SCALE(2), 0x64000000);
+	gr.DrawString(styledTooltipText, ft.tooltip, col.popupText, x + padding * 0.5, y + padding * 0.5, w - padding, h - padding, StringFormat(0, 0, 4));
+	throttleRepaintRect(x - offset * 0.5, y - offset * 0.5, w + offset, h + offset);
 }
 
 
-/** Draws red rectangles for debugging to show all painted areas in the panels */
+/**
+ * Draws red rectangles for debugging to show all painted areas in the panels.
+ * @param {GdiGraphics} gr
+ */
 function drawDebugRectAreas(gr) {
-	if (repaintRects.length) {
-		try {
-			repaintRects.forEach(rect => gr.DrawRect(rect.x, rect.y, rect.w, rect.h, scaleForDisplay(2), RGBA(255, 0, 0, 200)));
-			repaintRects = [];
-		} catch (e) {}
-	}
+	if (!repaintRects.length) return;
+	try {
+		repaintRects.forEach(rect => gr.DrawRect(rect.x, rect.y, rect.w, rect.h, SCALE(2), RGBA(255, 0, 0, 200)));
+		repaintRects = [];
+	} catch (e) {}
 }
 
 
-/** Draws startup background to delay until everything in the theme is loaded */
+/**
+ * Draws the startup background until everything in the theme is loaded.
+ * Pseudo delay background logo mask when loading the theme, otherwise it will show ugly repaints when initializing since smp v1.6.1.
+ * @param {GdiGraphics} gr
+ */
 function drawStartupBackground(gr) {
-	// * PSEUDO DELAY BACKGROUND LOGO MASK WHEN LOADING THE THEME, OTHERWISE IT WILL SHOW UGLY REPAINTS WHEN INITIALIZING SINCE SMP V1.6.1 * //
-	if (fb.IsPlaying && !loadingThemeComplete) {
-		gr.FillSolidRect(0, 0, ww, wh, col.loadingThemeBg);
-		if (pref.showLogoOnStartup) drawLogo(gr);
-	}
+	if (loadingThemeComplete) return;
+	gr.FillSolidRect(0, 0, ww, wh, col.loadingThemeBg);
+	if (pref.showLogoOnStartup) drawLogo(gr);
 }
 
 
@@ -987,13 +1190,13 @@ function drawStartupBackground(gr) {
 // * MAIN USER INTERFACE * //
 /////////////////////////////
 /**
- * All main user interface parts put together in the right order
+ * Draws all main user interface parts in the correct order.
  * @param {GdiGraphics} gr
  */
 function drawMain(gr) {
 	drawBackgrounds(gr);
 
-	// * UIHacks aero glass shadow frame fix - needed for style Blend in Details
+	// * UIHacks aero glass shadow frame fix, needed for style Blend in Details
 	if (UIHacks.Aero.Effect === 2) gr.DrawLine(0, 0, ww, 0, 1, col.bg);
 
 	// * Style Blend applied in Details
@@ -1011,10 +1214,8 @@ function drawMain(gr) {
 	drawDetailsLabelLogo(gr);
 	drawLyrics(gr);
 	drawStyles(gr);
-
-	showThemePresetIndicator(gr);
-	showThemeLogOverlay(gr);
-
+	drawThemePresetIndicator(gr);
+	drawThemeDebugOverlay(gr);
 	drawPanelShadows(gr);
 	drawMenuBar(gr);
 	drawLowerBar(gr);
@@ -1024,7 +1225,7 @@ function drawMain(gr) {
 	drawDebugRectAreas(gr);
 	drawStartupBackground(gr);
 
-	// * UIHACKS AERO GLASS SHADOW FRAME FIX * //
+	// * UIHacks aero glass shadow frame fix
 	if (UIHacks.Aero.Effect === 2 && (!loadingThemeComplete && (pref.styleBlend || pref.styleBlend2)) || !pref.styleBlend && !pref.styleBlend2) {
 		gr.DrawLine(0, 0, ww, 0, 1, loadingThemeComplete ? col.uiHacksFrame : pref.styleBlackReborn ? RGB(25, 25, 25) : pref.styleRebornBlack && fb.IsPlaying ? RGB(245, 245, 245) : col.bg);
 		if (pref.styleDefault) gr.DrawLine(ww, wh - 1, 0, wh - 1, 1, loadingThemeComplete ? col.uiHacksFrame : col.bg);
@@ -1034,7 +1235,7 @@ function drawMain(gr) {
 		}
 	}
 
-	// * LAYOUT HANDLER - USED TO FIX AND FORCE WINDOW SIZE WHEN CHANGING, E.G 4K MODE IN HD DISPLAY RES * //
+	// * Layout handler - used to fix and force window size when changing, e.G 4k mode in hd display res
 	let hasNotified = false;
 	if (!hasNotified) {
 		// When on_paint is called all other panels are loaded and can receive notifications
@@ -1047,11 +1248,11 @@ function drawMain(gr) {
 		}
 	}
 
-	// * DEBUG * //
+	// * Debug
 	if (timings.showDrawTiming || timings.showExtraDrawTiming) {
 		const start = new Date();
 		const end = Date.now();
-		console.log(`${start.getHours()}:${leftPad(start.getMinutes(), 2, '0')}:${leftPad(start.getSeconds(), 2, '0')}.${leftPad(start.getMilliseconds(), 3, '0')}: ` +
+		console.log(`${start.getHours()}:${LeftPad(start.getMinutes(), 2, '0')}:${LeftPad(start.getSeconds(), 2, '0')}.${LeftPad(start.getMilliseconds(), 3, '0')}: ` +
 			`on_paint took ${end - start.getTime()}ms ${repaintRectCount > 1 ? `- ${repaintRectCount} repaintRect calls` : ''}`);
 	}
 	repaintRectCount = 0;
@@ -1059,7 +1260,7 @@ function drawMain(gr) {
 
 
 /**
- * Draw main user interface
+ * Draws the main user interface.
  * @param {GdiGraphics} gr
  */
 function on_paint(gr) {

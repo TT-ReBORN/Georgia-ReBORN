@@ -238,7 +238,7 @@ class PanelBio {
 		this.getStyleNames();
 	}
 
-	// Methods
+	// * METHODS * //
 
 	albumsSame() {
 		if (this.id.lookUp && this.alb.ix && this.alb.list.length && JSON.stringify(this.alb.init) === JSON.stringify(this.alb.list)) return true;
@@ -1286,7 +1286,7 @@ class PanelBio {
 	}
 
 	setStyle(bypass) {
-		this.sbar.offset = [scaleForDisplay(4) + uiBio.sbar.arrowPad, Math.max(Math.floor(uiBio.sbar.but_w * 0.2), 2) + uiBio.sbar.arrowPad * 2, 0][uiBio.sbar.type];
+		this.sbar.offset = [SCALE(4) + uiBio.sbar.arrowPad, Math.max(Math.floor(uiBio.sbar.but_w * 0.2), 2) + uiBio.sbar.arrowPad * 2, 0][uiBio.sbar.type];
 		this.sbar.top_corr = [this.sbar.offset - (uiBio.sbar.but_h - uiBio.sbar.but_w) / 2, this.sbar.offset, 0][uiBio.sbar.type];
 		const bot_corr = [(uiBio.sbar.but_h - uiBio.sbar.but_w) / 2 - this.sbar.offset, -this.sbar.offset, 0][uiBio.sbar.type];
 		this.clip = false;
@@ -1329,79 +1329,79 @@ class PanelBio {
 		const filmStripOverlay = pptBio.showFilmStrip && pptBio.artistView && pptBio.filmStripOverlay && !pptBio.text_only;
 		const filmStripNoOverlay = pptBio.showFilmStrip && pptBio.artistView && !pptBio.filmStripOverlay && !pptBio.text_only;
 		const filmStripOn = pptBio.showFilmStrip && pptBio.artistView && imgBio.art.images.length > 1 && pptBio.cycPhotoLocation !== 2;
-		const imageHeightCorr = filmStripOverlay && pptBio.filmStripPos === 2 ? scaleForDisplay(-10) : scaleForDisplay(-10);
-		const textHeightCorrStyle0 = filmStripOn && pptBio.filmStripPos === 2 ? scaleForDisplay(10) : scaleForDisplay(10);
-		const textHeightCorrStyle2 = filmStripOn && pptBio.filmStripPos === 2 && filmStripNoOverlay ? 0 : scaleForDisplay(40);
+		const imageHeightCorr = filmStripOverlay && pptBio.filmStripPos === 2 ? SCALE(-10) : SCALE(-10);
+		const textHeightCorrStyle0 = filmStripOn && pptBio.filmStripPos === 2 ? SCALE(10) : SCALE(10);
+		const textHeightCorrStyle2 = filmStripOn && pptBio.filmStripPos === 2 && filmStripNoOverlay ? 0 : SCALE(40);
 
 		const textWidthCorrStyle0 =
 			filmStripOn ?
-				pptBio.filmStripPos === 1 && filmStripNoOverlay || pptBio.filmStripPos === 1 && pptBio.text_only ? scaleForDisplay(-3) :
-				pptBio.filmStripPos === 3 && filmStripNoOverlay ? scaleForDisplay(50) :
-				scaleForDisplay(25) :
-			scaleForDisplay(pptBio.filmStripPos === 3 && pptBio.cycPhotoLocation === 2 && pptBio.showFilmStrip ? 50 : 25);
+				pptBio.filmStripPos === 1 && filmStripNoOverlay || pptBio.filmStripPos === 1 && pptBio.text_only ? SCALE(-3) :
+				pptBio.filmStripPos === 3 && filmStripNoOverlay ? SCALE(50) :
+				SCALE(25) :
+			SCALE(pptBio.filmStripPos === 3 && pptBio.cycPhotoLocation === 2 && pptBio.showFilmStrip ? 50 : 25);
 
 		const textWidthCorrStyle1 =
 			filmStripOn ?
 				pptBio.filmStripPos === 0 || pptBio.filmStripPos === 2 || pptBio.filmStripPos === 1 && filmStripOverlay || pptBio.filmStripPos === 3 && filmStripOverlay ? 0 :
-				scaleForDisplay(25) :
+				SCALE(25) :
 			0;
 
-		const textWidthCorrStyle2 = pptBio.filmStripPos === 1 && filmStripNoOverlay && pptBio.cycPhotoLocation !== 2 ? scaleForDisplay(-3) : scaleForDisplay(25);
+		const textWidthCorrStyle2 = pptBio.filmStripPos === 1 && filmStripNoOverlay && pptBio.cycPhotoLocation !== 2 ? SCALE(-3) : SCALE(25);
 
 		const textWidthCorrStyle3 =
 			filmStripOn ?
-				pptBio.filmStripPos === 0 || pptBio.filmStripPos === 2 ? scaleForDisplay(25) :
-				pptBio.filmStripPos === 1 && filmStripNoOverlay ? scaleForDisplay(-3) :
+				pptBio.filmStripPos === 0 || pptBio.filmStripPos === 2 ? SCALE(25) :
+				pptBio.filmStripPos === 1 && filmStripNoOverlay ? SCALE(-3) :
 				pptBio.filmStripPos === 3 && filmStripNoOverlay ? 0 :
-				scaleForDisplay(25) :
-			scaleForDisplay(25);
+				SCALE(25) :
+			SCALE(25);
 
 		const textWidthCorrStyle4 =
 			filmStripOn ?
-				pptBio.filmStripPos === 0 || pptBio.filmStripPos === 1 && filmStripOverlay || pptBio.filmStripPos === 2 || pptBio.filmStripPos === 3 ? scaleForDisplay(25) :
-				pptBio.filmStripPos === 1 && filmStripNoOverlay ? scaleForDisplay(-3) :
-				scaleForDisplay(50) :
-			scaleForDisplay(25);
+				pptBio.filmStripPos === 0 || pptBio.filmStripPos === 1 && filmStripOverlay || pptBio.filmStripPos === 2 || pptBio.filmStripPos === 3 ? SCALE(25) :
+				pptBio.filmStripPos === 1 && filmStripNoOverlay ? SCALE(-3) :
+				SCALE(50) :
+			SCALE(25);
 
-		const marginTxtOnlyT = scaleForDisplay(34);
+		const marginTxtOnlyT = SCALE(34);
 
 		const marginTxtCorrT =
-			pptBio.style === 0 || pptBio.style === 2 ? scaleForDisplay(36) :
-			pptBio.style === 1 || pptBio.style === 3 ? scaleForDisplay(34) :
+			pptBio.style === 0 || pptBio.style === 2 ? SCALE(36) :
+			pptBio.style === 1 || pptBio.style === 3 ? SCALE(34) :
 			pptBio.style  > 3 ? filmStripNoOverlay && pptBio.cycPhotoLocation !== 2 ?
-				pptBio.filmStripPos === 0 || pptBio.filmStripPos === 2 ? scaleForDisplay(49) : scaleForDisplay(9) :
-			pptBio.style === 4 ? scaleForDisplay(4) : scaleForDisplay(9) :
+				pptBio.filmStripPos === 0 || pptBio.filmStripPos === 2 ? SCALE(49) : SCALE(9) :
+			pptBio.style === 4 ? SCALE(4) : SCALE(9) :
 			0;
 
-		const marginTxtCorrR = filmStripNoOverlay ? pptBio.filmStripPos === 3 ? scaleForDisplay(25) : 0 : 0;
+		const marginTxtCorrR = filmStripNoOverlay ? pptBio.filmStripPos === 3 ? SCALE(25) : 0 : 0;
 
 		const marginTxtCorrL =
 			(pptBio.style === 0 || pptBio.style === 3) && pptBio.filmStripPos === 3 && filmStripNoOverlay
 			|| pptBio.style === 1 && pptBio.filmStripPos === 3 && filmStripNoOverlay
 			|| pptBio.style > 3 && pptBio.filmStripPos === 3 && filmStripNoOverlay
 			|| pptBio.text_only && pptBio.filmStripPos === 3 ?
-			filmStripOn ? scaleForDisplay(25) : 0 :
+			filmStripOn ? SCALE(25) : 0 :
 			0;
 
 		const marginImgCorrL =
-			pptBio.style === 1 && pptBio.filmStripPos === 1 && filmStripNoOverlay ? filmStripOn ? scaleForDisplay(25) : 0 :
+			pptBio.style === 1 && pptBio.filmStripPos === 1 && filmStripNoOverlay ? filmStripOn ? SCALE(25) : 0 :
 			pptBio.style === 1 && pptBio.filmStripPos === 2 ? 0 :
-			pptBio.style === 2 ? scaleForDisplay(25) :
-			pptBio.style === 3 && filmStripNoOverlay ? scaleForDisplay(23) :
-			pptBio.style === 3 && filmStripOverlay ? scaleForDisplay(92) :
+			pptBio.style === 2 ? SCALE(25) :
+			pptBio.style === 3 && filmStripNoOverlay ? SCALE(23) :
+			pptBio.style === 3 && filmStripOverlay ? SCALE(92) :
 			0;
 
 		const marginImgCorrT =
-			pptBio.style === 0 ? scaleForDisplay(9) :
-			pptBio.style === 1 || pptBio.style === 3 ? scaleForDisplay(36) :
+			pptBio.style === 0 ? SCALE(9) :
+			pptBio.style === 1 || pptBio.style === 3 ? SCALE(36) :
 			0;
 
 		const marginScrCorr =
-			pptBio.style === 1 ? scaleForDisplay(1) :
-			pptBio.style > 3 && pptBio.filmStripPos === 1 && filmStripNoOverlay && pptBio.cycPhotoLocation !== 2 ? scaleForDisplay(14) :
-			pptBio.borR - scaleForDisplay(1);
+			pptBio.style === 1 ? SCALE(1) :
+			pptBio.style > 3 && pptBio.filmStripPos === 1 && filmStripNoOverlay && pptBio.cycPhotoLocation !== 2 ? SCALE(14) :
+			pptBio.borR - SCALE(1);
 
-		const tboxCorr = scaleForDisplay(filmStripOn && filmStripNoOverlay && (pptBio.filmStripPos === 0 || pptBio.filmStripPos === 2) ? 70 : 30);
+		const tboxCorr = SCALE(filmStripOn && filmStripNoOverlay && (pptBio.filmStripPos === 0 || pptBio.filmStripPos === 2) ? 70 : 30);
 
 
 		switch (true) {
@@ -1455,7 +1455,7 @@ class PanelBio {
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
 				this.repaint.w = this.w - this.repaint.x - (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
-				this.repaint.h = this.h - this.repaint.y - (!pptBio.filmStripOverlay ? this.filmStripSize.b - scaleForDisplay(25) : 0) + textHeightCorrStyle0;
+				this.repaint.h = this.h - this.repaint.y - (!pptBio.filmStripOverlay ? this.filmStripSize.b - SCALE(25) : 0) + textHeightCorrStyle0;
 				break;
 			}
 			case pptBio.style == 1: { // right
@@ -1552,7 +1552,7 @@ class PanelBio {
 				const imB = Math.round(this.im.b * this.h) + (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
 
 				const showFilmStrip = filmStripOn && (pptBio.filmStripPos === 0 || pptBio.filmStripPos === 2);
-				const t_y = uiBio.y + marginTxtCorrT - (is_4k ? showFilmStrip ? 11 : -1 : showFilmStrip ? 3 : 4);
+				const t_y = uiBio.y + marginTxtCorrT - (RES_4K ? showFilmStrip ? 11 : -1 : showFilmStrip ? 3 : 4);
 				const txL = pptBio.style == 4 ? 0   : Math.round(this.tx.l * this.w) + (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0);
 				const txR = pptBio.style == 4 ? 0   : Math.round(this.tx.r * this.w) + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
 				const txT = pptBio.style == 4 ? t_y : Math.round(this.tx.t * this.h) + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0);

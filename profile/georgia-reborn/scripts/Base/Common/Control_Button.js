@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-18                                          * //
+// * Last change:    2023-07-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -26,20 +26,24 @@ let downButton;
 let lastOverButton = null;
 /** @type {Button[]} */
 const activatedBtns = [];
+/** @type {number} */
 let buttonTimer = null;
+/** @type {boolean} */
 let mainMenuOpen = false;
+/** @type {boolean} */
 let mouseInControl = false;
-let pbo = fb.PlaybackOrder;
 
+/** @enum {number} */
 const ButtonState = {
 	Default: 0,
 	Hovered: 1,
-	Down: 2,	// Happens on click
+	Down:    2, // Happens on click
 	Enabled: 3
 };
 
+/** @enum {number} */
 const WindowState = {
-	Normal: 0,
+	Normal:    0,
 	Minimized: 1,
 	Maximized: 2
 };
@@ -48,7 +52,22 @@ const WindowState = {
 ///////////////////////
 // * BUTTON OBJECT * //
 ///////////////////////
+/**
+ * The Button class represents a clickable element with an image, tooltip and state.
+ */
 class Button {
+	/**
+	 * Constructor for a clickable element with an image, tooltip, and state.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} w The width.
+	 * @param {number} h The height.
+	 * @param {string} id The id.
+	 * @param {GdiBitmap[]} img The image that will be displayed for the button.
+	 * @param {string} tip The tooltip text for the button.
+	 * @param {boolean} isEnabled A callback function that determines whether the button is enabled or disabled.
+	 * @class
+	 */
 	constructor(x, y, w, h, id, img, tip = undefined, isEnabled = undefined) {
 		this.x = x;
 		this.y = y;
@@ -60,14 +79,24 @@ class Button {
 		this.state = 0;
 		this.hoverAlpha = 0;
 		this.downAlpha = 0;
-		this.isEnabled = isEnabled; // Callback
+		this.isEnabled = isEnabled;
 		this.enabled = false;
 	}
 
+	/**
+	 * Checks if the mouse is within the boundaries of a button.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	mouseInThis(x, y) {
 		return (this.x <= x) && (x <= this.x + this.w) && (this.y <= y) && (y <= this.y + this.h);
 	}
 
+	/**
+	 * Sets the enabled state of a button and changes its state accordingly.
+	 * @param {boolean} val Whether the button should be enabled or disabled.
+	 */
 	set enable(val) {
 		this.enabled = val;
 		if (!val) {
@@ -77,22 +106,41 @@ class Button {
 		}
 	}
 
-	get enable() {}
+	/**
+	 * Gets the enabled state of a button.
+	 * @returns {boolean} True or false.
+	 */
+	get enable() {
+		return this.enabled;
+	}
 
+	/**
+	 * Repaints the button to update its state.
+	 */
 	repaint() {
 		window.RepaintRect(this.x, this.y, this.w, this.h);
 	}
 
+	/**
+	 * Updates the state of the button.
+	 * @param {number} state The new state to set for the button.
+	 */
 	changeState(state) {
 		this.state = state;
 		activatedBtns.push(this);
 		buttonAlphaTimer();
 	}
 
+	/**
+	 * Passes in the current button as an argument via the btnActionHandler.
+	 */
 	onClick() {
 		btnActionHandler(this);
 	}
 
+	/**
+	 * Currently does not have any functionality.
+	 */
 	onDblClick() {
 		// We don't do anything with dblClick currently
 	}
@@ -102,7 +150,17 @@ class Button {
 ///////////////////////
 // * EVENT HANDLER * //
 ///////////////////////
+/**
+ * Handles various mouse button events.
+ * @class
+ */
 class ButtonEventHandler {
+	/**
+	 * Handles mouse double click events on a button and changes its state.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 */
 	on_mouse_lbtn_dblclk(x, y, m) {
 		if (thisButton) {
 			thisButton.changeState(ButtonState.Down);
@@ -111,6 +169,12 @@ class ButtonEventHandler {
 		}
 	}
 
+	/**
+	 * Handles left mouse click down events on a button and changes its state.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 */
 	on_mouse_lbtn_down(x, y, m) {
 		if (thisButton) {
 			thisButton.changeState(ButtonState.Down);
@@ -118,6 +182,12 @@ class ButtonEventHandler {
 		}
 	}
 
+	/**
+	 * Handles left mouse click up events on a button and changes its state.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 */
 	on_mouse_lbtn_up(x, y, m) {
 		if (downButton) {
 			downButton.onClick();
@@ -137,6 +207,9 @@ class ButtonEventHandler {
 		}
 	}
 
+	/**
+	 * Handles mouse leave events on a button and changes its state to default.
+	 */
 	on_mouse_leave() {
 		oldButton = undefined;
 
@@ -149,6 +222,12 @@ class ButtonEventHandler {
 		}
 	}
 
+	/**
+	 * Handles mouse move tracking events on a button and changes its state.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 */
 	on_mouse_move(x, y, m) {
 		oldButton = thisButton;
 
@@ -195,10 +274,13 @@ class ButtonEventHandler {
 // * ACTION HANDLER * //
 ////////////////////////
 /**
- * @param {Button} btn
+ * Handles button action events based on menu, panel and button type.
+ * @param {Button} btn The instance of the button.
  */
 function btnActionHandler(btn) {
-	/** Used to restore lyrics layout to full width */
+	/**
+	 * Restores the Lyrics layout to full width.
+	 */
 	const restoreLyricsLayout = () => {
 		if (!pref.displayLyrics || !lyricsLayoutFullWidth) return;
 		if (!displayBiography) displayPlaylist = false;
@@ -208,7 +290,7 @@ function btnActionHandler(btn) {
 	switch (btn.id) {
 		// * TOP MENU COMPACT * //
 		case 'Menu':
-			onTopMenuCompact(btn.x, btn.y + btn.h);
+			onTopMenuCompact();
 			break;
 
 		// * TOP MENU DEFAULT FOOBAR2000 BUTTONS * //
@@ -267,7 +349,7 @@ function btnActionHandler(btn) {
 				reinitCustomThemeMenu();
 				customThemeMenuCall = false;
 			}
-			setupRotationTimer();	// Clear or start disc rotation if required
+			setDiscArtRotationTimer();
 			initButtonState();
 			window.Repaint();
 			break;
@@ -335,7 +417,7 @@ function btnActionHandler(btn) {
 			}
 
 			resizeArtwork(false);
-			setupRotationTimer();	// Clear or start disc rotation if required
+			setDiscArtRotationTimer();
 			initButtonState();
 			window.Repaint();
 			break;
@@ -365,7 +447,7 @@ function btnActionHandler(btn) {
 
 			biography.on_playback_new_track(); // Update Biography state
 			resizeArtwork(false);
-			setupRotationTimer();	// Clear or start disc rotation if required
+			setDiscArtRotationTimer();
 			initButtonState();
 			window.Repaint();
 			break;
@@ -487,10 +569,10 @@ function btnActionHandler(btn) {
 				case 4:	 fb.PlaybackOrder = PlaybackOrder.Default; break;
 				default: fb.PlaybackOrder = PlaybackOrder.RepeatTrack; break;
 			}
-			refreshPlaybackOrderButton();
+			updatePlaybackOrderButton();
 			break;
 		case 'Repeat':
-			switch (pbo) {
+			switch (fb.PlaybackOrder) {
 				case PlaybackOrder.Default:	fb.PlaybackOrder = PlaybackOrder.RepeatPlaylist; break;
 				case PlaybackOrder.RepeatPlaylist: fb.PlaybackOrder = PlaybackOrder.RepeatTrack; break;
 				case PlaybackOrder.RepeatTrack:	fb.PlaybackOrder = PlaybackOrder.Default; break;
@@ -498,7 +580,7 @@ function btnActionHandler(btn) {
 			}
 			break;
 		case 'Shuffle':
-			fb.PlaybackOrder = pbo !== PlaybackOrder.ShuffleTracks ? PlaybackOrder.ShuffleTracks : PlaybackOrder.Default;
+			fb.PlaybackOrder = fb.PlaybackOrder !== PlaybackOrder.ShuffleTracks ? PlaybackOrder.ShuffleTracks : PlaybackOrder.Default;
 			break;
 		case 'Reload':
 			window.Reload();
@@ -542,10 +624,15 @@ function btnActionHandler(btn) {
 	}
 }
 
+
 //////////////////////////
 // * TOP MENU COMPACT * //
 //////////////////////////
-function onTopMenuCompact(x, y, collapse) {
+/**
+ * Collapses the top menu to compact mode or expands it to normal.
+ * @param {boolean} collapse Wether the top menu should be collapsed or not.
+ */
+function onTopMenuCompact(collapse) {
 	pref.showTopMenuCompact = !pref.showTopMenuCompact;
 	if (collapse) {
 		if (topMenuCompactExpanded) return;
@@ -561,9 +648,18 @@ function onTopMenuCompact(x, y, collapse) {
 ////////////////////////////
 // * TOP MENU PLAYLISTS * //
 ////////////////////////////
+/**
+ * Creates a context menu for playlists allowing users to perform various actions such as
+ * creating new playlists, saving and loading playlists, locking and unlocking playlists,
+ * and creating auto playlists based on different criteria.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @returns {boolean} True or false.
+ */
 function onPlaylistsMenu(x, y) {
 	mainMenuOpen = true;
 	activeMenu = true;
+
 	const playlist_count = plman.PlaylistCount;
 	const playlistId = 21;
 	const cpm = window.CreatePopupMenu();
@@ -607,6 +703,7 @@ function onPlaylistsMenu(x, y) {
 
 	const id = cpm.TrackPopupMenu(x, y);
 	const playlist_idx = id - playlistId;
+
 	switch (id) {
 		case 1:
 			fb.RunMainMenuCommand('View/Playlist Manager');
@@ -693,9 +790,11 @@ function onPlaylistsMenu(x, y) {
 	if (playlist_idx < playlist_count && playlist_idx >= 0) {
 		plman.ActivePlaylist = playlist_idx;
 	}
+
 	for (let i = 0; i !== playlist_count; i++) {
 		if (id === (playlistId + i)) plman.ActivePlaylist = i; // Playlist switch
 	}
+
 	activeMenu = false;
 	return true;
 }
@@ -704,6 +803,12 @@ function onPlaylistsMenu(x, y) {
 ///////////////////////
 // * TOP MENU HELP * //
 ///////////////////////
+/**
+ * Opens the main menu and handles different menu options based on the provided name.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {string} name The name of the menu.
+ */
 function onMainMenu(x, y, name) {
 	mainMenuOpen = true;
 	activeMenu = true;
@@ -718,8 +823,8 @@ function onMainMenu(x, y, name) {
 			statusMenu.addItem('All fonts installed', fontsInstalled, undefined, true);
 			statusMenu.addItem('Artist logos found', IsFile(`${paths.artistlogos}Metallica.png`), undefined, true);
 			statusMenu.addItem('Record label logos found', IsFile(`${paths.labelsBase}Republic.png`), undefined, true);
-			statusMenu.addItem('Flag images found', IsFile(`${paths.flagsBase + (is_4k ? '64\\' : '32\\')}United-States.png`), undefined, true);
-			statusMenu.addItem('foo_enhanced_playcount installed', componentEnhancedPlaycount, () => { runCmd('https://www.foobar2000.org/components/view/foo_enhanced_playcount'); });
+			statusMenu.addItem('Flag images found', IsFile(`${paths.flagsBase + (RES_4K ? '64\\' : '32\\')}United-States.png`), undefined, true);
+			statusMenu.addItem('foo_enhanced_playcount installed', componentEnhancedPlaycount, () => { RunCmd('https://www.foobar2000.org/components/view/foo_enhanced_playcount'); });
 			statusMenu.appendTo(themeMenu);
 
 			const updatesMenu = new Menu('Updates');
@@ -727,9 +832,9 @@ function onMainMenu(x, y, name) {
 			updatesMenu.addItem('Check for latest theme update', false, () => { checkForUpdates(true); });
 			updatesMenu.appendTo(themeMenu);
 
-			themeMenu.addItem('Releases', false, () => { runCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/releases'); });
-			themeMenu.addItem('Changelog', false, () => { runCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/blob/master/profile/georgia-reborn/docs/CHANGELOG.md'); });
-			themeMenu.addItem('Bug tracker', false, () => { runCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/issues'); });
+			themeMenu.addItem('Releases', false, () => { RunCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/releases'); });
+			themeMenu.addItem('Changelog', false, () => { RunCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/blob/master/profile/georgia-reborn/docs/CHANGELOG.md'); });
+			themeMenu.addItem('Bug tracker', false, () => { RunCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/issues'); });
 			themeMenu.appendTo(menu);
 		}
 		menu.initFoobarMenu(name);
@@ -745,7 +850,11 @@ function onMainMenu(x, y, name) {
 //////////////////////
 // * BUTTON STATE * //
 //////////////////////
-/** Called when Library layout is in split mode, displaying Playlist and Library side by side */
+/**
+ * Displays the Playlist and Library side by side, called when Library layout is in split mode.
+ * @param {boolean} control Limits the area to the width and height of the playlist panel.
+ * @returns {boolean} True if Playlist and Library are being displayed.
+ */
 function displayPlaylistLibrary(control) {
 	return pref.layout === 'default' && pref.libraryLayout === 'split' && displayLibrary && displayPlaylist &&
 	(control ? state.mouse_x > playlist.x && state.mouse_x <= playlist.x + playlist.w &&
@@ -754,7 +863,7 @@ function displayPlaylistLibrary(control) {
 
 
 /**
- * Initiliaze and set top menu button state
+ * Initializes and sets the top menu button state.
  */
 function initButtonState() {
 	try {
@@ -815,42 +924,51 @@ function initButtonState() {
 }
 
 
-function refreshPlayButton() {
+/**
+ * Updates the play button image based on the current playback state.
+ */
+function updatePlayButton() {
 	const showTransportControls = pref.layout === 'compact' ? pref.showTransportControls_compact : pref.layout === 'artwork' ? pref.showTransportControls_artwork : pref.showTransportControls_default;
-	if (showTransportControls) {
-		btns.play.img = !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause;
-		btns.play.repaint();
-	}
+	if (!showTransportControls) return;
+	btns.play.img = !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause;
+	btns.play.repaint();
 }
 
 
-function refreshPlaybackOrderButton() {
-	const pbo = fb.PlaybackOrder;
+/**
+ * Updates the playback order button based on the current playback order.
+ */
+function updatePlaybackOrderButton() {
 	const showTransportControls = pref.layout === 'compact' ? pref.showTransportControls_compact : pref.layout === 'artwork' ? pref.showTransportControls_artwork : pref.showTransportControls_default;
-	if (showTransportControls) {
-		if (pbo === PlaybackOrder.Default) {
+	if (!showTransportControls) return;
+
+	switch (fb.PlaybackOrder) {
+		case PlaybackOrder.Default:
 			fb.RunMainMenuCommand('Playback/Order/Default');
 			pref.playbackOrder = 'Default';
 			btns.playbackOrder.img = btnImg.PlaybackDefault;
-		}
-		if (pbo === PlaybackOrder.RepeatTrack) {
+			break;
+		case PlaybackOrder.RepeatTrack:
 			fb.RunMainMenuCommand('Playback/Order/Repeat (track)');
 			pref.playbackOrder = 'Repeat';
 			btns.playbackOrder.img = btnImg.PlaybackReplay;
-		}
-		if (pbo === PlaybackOrder.ShuffleTracks) {
+			break;
+		case PlaybackOrder.ShuffleTracks:
 			fb.RunMainMenuCommand('Playback/Order/Shuffle (tracks)');
 			pref.playbackOrder = 'Shuffle';
 			btns.playbackOrder.img = btnImg.PlaybackShuffle;
-		}
-		btns.playbackOrder.repaint();
+			break;
 	}
+	btns.playbackOrder.repaint();
 }
 
 
+/**
+ * Returns a tooltip text based on the current playback order.
+ * @returns {string} The playback order name as a tooltip.
+ */
 function playbackOrderTooltip() {
-	const pbo = fb.PlaybackOrder;
-	switch (pbo) {
+	switch (fb.PlaybackOrder) {
 		case PlaybackOrder.Default:
 			return 'Default';
 		case PlaybackOrder.RepeatTrack:
@@ -867,9 +985,11 @@ function playbackOrderTooltip() {
 }
 
 
+/**
+ * Controls the alpha values of buttons during different states (hover, down) and repaints them accordingly.
+ */
 function buttonAlphaTimer() {
 	const trace = false;
-
 	const buttonHoverInStep = 40;
 	const buttonHoverOutStep = 15;
 	const buttonDownInStep = 100;

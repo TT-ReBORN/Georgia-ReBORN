@@ -6,7 +6,7 @@ class Names {
 		this.lfmUID = '_[a-f0-9]{32}\\.jpg$';
 	}
 
-	// Methods
+	// * METHODS * //
 
 	alb(focus) {
 		return $Bio.eval(`[$trim(${cfg.tf.album})]`, focus);

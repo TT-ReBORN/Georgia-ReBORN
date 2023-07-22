@@ -7,7 +7,7 @@ class PopUpBoxBio {
 		this.soFeat = { clipboard: true, gecko: true }
 	}
 
-	// Methods
+	// * METHODS * //
 
 	confirm(msg_title, msg_content, btn_yes_label, btn_no_label, height_adjust, h_center, confirm_callback) {
 		utils.ShowHtmlDialog(0, this.confirmHtmlCode, {

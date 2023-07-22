@@ -1,12 +1,12 @@
 /////////////////////////////////////////////////////////////////////////////
 // * Georgia-ReBORN: A Clean, Full Dynamic Color Reborn foobar2000 Theme * //
-// * Description:    Georgia-ReBORN Methods                              * //
+// * Description:    Georgia-ReBORN Main Functions                       * //
 // * Author:         TT                                                  * //
 // * Org. Author:    Mordred                                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-14                                          * //
+// * Last change:    2023-07-22                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,7 +16,9 @@
 ///////////////////////////////
 // * MAIN - INITIALIZATION * //
 ///////////////////////////////
-/** Called when clearing all current playing UI strings */
+/**
+ * Clears all now playing related UI strings.
+ */
 function clearUIVariables() {
 	const showLowerBarVersion = pref.layout === 'compact' ? pref.showLowerBarVersion_compact : pref.layout === 'artwork' ? pref.showLowerBarVersion_artwork : pref.showLowerBarVersion_default;
 	const margin = pref.layout !== 'default' ? '' : ' ';
@@ -26,12 +28,14 @@ function clearUIVariables() {
 		title_lower: showLowerBarVersion ? `${margin}${$(settings.stoppedString2, undefined, true)}` : ' ',
 		year: '',
 		grid: [],
-		time: showLowerBarVersion || updateAvailable ? stoppedTime : ' '
+		time: showLowerBarVersion || updateAvailable ? lowerBarStoppedTime : ' '
 	};
 }
 
 
-/** Called when initializing the theme on startup */
+/**
+ * Initializes the theme on startup or reload.
+ */
 function initMain() {
 	console.log('initMain()');
 	loadingTheme = true;
@@ -51,12 +55,20 @@ function initMain() {
 	waveformBar = new WaveformBar(ww, wh);
 	peakmeterBar = new PeakmeterBar(ww, wh);
 
+	// * Layout safety check
+	if (!['default', 'artwork', 'compact'].includes(pref.layout)) {
+		window.SetProperty('Georgia-ReBORN - 05. Layout', 'default');
+		pref.layout = 'default';
+		windowHandler.layoutDefault();
+	}
+
+	// * Do auto-delete cache if enabled
 	if (pref.libraryAutoDelete) deleteLibraryCache();
 	if (pref.biographyAutoDelete) deleteBiographyCache();
 	if (pref.lyricsAutoDelete) deleteLyrics();
 	if (pref.waveformBarAutoDelete) deleteWaveformBarCache();
 
-	lastFolder = '';
+	lastAlbumFolder = '';
 	lastPlaybackOrder = fb.PlaybackOrder;
 	displayPanelOnStartup();
 	setThemeColors();
@@ -118,12 +130,14 @@ function initMain() {
 	initThemeFull = true;
 	initCustomTheme();
 	initTheme();
-	debugLog('initTheme -> initMain');
+	DebugLog('initTheme -> initMain');
 	loadingTheme = false;
 }
 
 
-/** Called when updating everything necessary in all panels without the need of a window.Reload */
+/**
+ * Initializes everything necessary in all panels without the need of a reload.
+ */
 function initPanels() {
 	// * Update Main
 	createFonts();
@@ -168,7 +182,9 @@ function initPanels() {
 }
 
 
-/** Called when updating the theme */
+/**
+ * Initializes the theme when updating colors.
+ */
 async function initTheme() {
 	const themeProfiler = timings.showDebugTiming ? fb.CreateProfiler('initTheme') : null;
 
@@ -187,7 +203,7 @@ async function initTheme() {
 	setBackgroundColorDefinition();
 	// * Playlist
 	initPlaylistColors();
-	if (fullInit && pref.playlistRowHover) playlist.on_title_color_change();
+	if (fullInit && pref.playlistRowHover) playlist.title_color_change();
 	// * Library
 	initLibraryColors();
 	if (fullInit && img.labels.overlayDark) ui.getItemColours();
@@ -231,7 +247,9 @@ async function initTheme() {
 }
 
 
-/** Called when checking if music files have embedded %GR_THEME%, %GR_STYLE%, %GR_PRESET% tags and set them, used in on_playback_new_track */
+/**
+ * Initializes %GR_THEME%, %GR_STYLE%, %GR_PRESET% tags in music files and sets them, used in on_playback_new_track.
+ */
 function initThemeTags() {
 	const customTheme  = $('[%GR_THEME%]');
 	const customStyle  = $('[%GR_STYLE%]');
@@ -241,7 +259,7 @@ function initThemeTags() {
 
 	// * Restore last theme state
 	if (pref.presetSelectMode === 'default' && themeRestoreState) {
-		debugLog('initThemeTags restore');
+		DebugLog('initThemeTags restore');
 		resetStyle('all');
 		resetTheme();
 		restoreThemeStylePreset(); // * Retore saved pref settings
@@ -252,7 +270,7 @@ function initThemeTags() {
 
 	// * Skip also restore on next call
 	if (pref.theme === pref.savedTheme && !customTheme && !customStyle && !customPreset) {
-		debugLog('initThemeTags skipped');
+		DebugLog('initThemeTags skipped');
 		restoreThemeStylePreset(true); // * Reset saved pref settings
 		themeRestoreState = false;
 		return;
@@ -324,29 +342,37 @@ function initThemeTags() {
 	// * 4. Update when using custom tags, otherwise not needed
 	if (customTheme || customStyle || customPreset) {
 		updateStyle();
-		debugLog('updateStyle -> initThemeTags');
+		DebugLog('updateStyle -> initThemeTags');
 	}
 }
 
 
-/** Called when initializing custom themes */
+/**
+ * Initializes the custom themes to check if any are currently active.
+ */
 function initCustomTheme() {
-	switch (pref.theme) {
-		case 'custom01': customColor = customTheme01; break;
-		case 'custom02': customColor = customTheme02; break;
-		case 'custom03': customColor = customTheme03; break;
-		case 'custom04': customColor = customTheme04; break;
-		case 'custom05': customColor = customTheme05; break;
-		case 'custom06': customColor = customTheme06; break;
-		case 'custom07': customColor = customTheme07; break;
-		case 'custom08': customColor = customTheme08; break;
-		case 'custom09': customColor = customTheme09; break;
-		case 'custom10': customColor = customTheme10; break;
+	const customThemes = {
+		custom01: customTheme01,
+		custom02: customTheme02,
+		custom03: customTheme03,
+		custom04: customTheme04,
+		custom05: customTheme05,
+		custom06: customTheme06,
+		custom07: customTheme07,
+		custom08: customTheme08,
+		custom09: customTheme09,
+		custom10: customTheme10
+	};
+
+	if (pref.theme in customThemes) {
+		customColor = customThemes[pref.theme];
 	}
 }
 
 
-/** Called when checking if any styles are active, used in top menu Options > Style */
+/**
+ * Initializes styles to check if any are currently active, used in top menu Options > Style.
+ */
 function initStyleState() {
 	pref.styleDefault =
 	!(pref.styleBevel
@@ -378,7 +404,9 @@ function initStyleState() {
 }
 
 
-/** Called when resetting current player size, used in top menu Options > Player size */
+/**
+ * Resets the current player size, used in top menu Options > Player size.
+ */
 function resetPlayerSize() {
 	pref.playerSize_HD_small   = false;
 	pref.playerSize_HD_normal  = false;
@@ -392,7 +420,9 @@ function resetPlayerSize() {
 }
 
 
-/** Called when changing themes, used in top menu Options > Theme */
+/**
+ * Resets the theme when changing to a different one, used in top menu Options > Theme.
+ */
 function resetTheme() {
 	initThemeFull = true;
 	// * Themes that don't have these styles will be reset to default
@@ -408,7 +438,13 @@ function resetTheme() {
 }
 
 
-/** Called when changing styles, resets all styles or grouped styles. Used in top menu Options > Style */
+/**
+ * Resets all styles or grouped styles when changing styles. Used in top menu Options > Style.
+ * @param {string} group Specifies which group of styles to reset:
+ * - 'all'
+ * - 'group_one'
+ * - 'group_two'
+ */
 function resetStyle(group) {
 	if (group === 'all') {
 		initThemeFull                 = true;
@@ -466,7 +502,11 @@ function resetStyle(group) {
 }
 
 
-/** Called when restoring theme, style, preset after custom %GR_THEME%, %GR_STYLE%, %GR_PRESET% usage or in theme sandbox. Used in initThemeTags() and theme sandbox options */
+/**
+ * Restores theme, style, preset after custom %GR_THEME%, %GR_STYLE%, %GR_PRESET% usage or in theme sandbox.
+ * Used in initThemeTags() and theme sandbox options.
+ * @param {boolean} reset Determines whether to reset the theme style preset or restore it.
+ */
 function restoreThemeStylePreset(reset) {
 	if (reset) {
 		pref.savedTheme = pref.theme;
@@ -534,7 +574,11 @@ function restoreThemeStylePreset(reset) {
 }
 
 
-/** Called when changing styles, this will set the choosen style. Used in top menu Options > Style */
+/**
+ * Sets the chosen style based by its current state. Used when changing styles in top menu Options > Style.
+ * @param {string} style The selected style.
+ * @param {boolean} state The state of the selected style will be either activated or deactivated.
+ */
 function setStyle(style, state) {
 	switch (style) {
 		case 'blend': resetStyle('group_one'); pref.styleBlend = state; break;
@@ -558,7 +602,11 @@ function setStyle(style, state) {
 }
 
 
-/** Called when activating or deactivating all theme presets selection, used in top menu Options > Preset > Select presets */
+/**
+ * Activates or deactivates all theme presets selection, used in top menu Options > Preset > Select presets.
+ * @param {boolean} state The state of theme presets selection will be set to true or false.
+ * @param {boolean} presetSelectModeTheme The selection of theme specified presets.
+ */
 function setThemePresetSelection(state, presetSelectModeTheme) {
 	pref.presetSelectWhite     = state;
 	pref.presetSelectBlack     = state;
@@ -596,7 +644,9 @@ function setThemePresetSelection(state, presetSelectModeTheme) {
 }
 
 
-/** Called on the very first foobar start after installation or when resetting the theme */
+/**
+ * Sets the theme to a factory reset state, used on the very first foobar start after installation or when resetting the theme.
+ */
 async function systemFirstLaunch() {
 	if (!pref.systemFirstLaunch) return;
 
@@ -608,7 +658,9 @@ async function systemFirstLaunch() {
 }
 
 
-/** Called when changing styles, used in top menu Options > Style */
+/**
+ * Updates the theme when changing styles, used in top menu Options > Style.
+ */
 async function updateStyle() {
 	initThemeFull = true;
 	if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
@@ -620,7 +672,7 @@ async function updateStyle() {
 		}
 	}
 	await initTheme();
-	debugLog('initTheme -> updateStyle');
+	DebugLog('initTheme -> updateStyle');
 	if (pref.theme === 'random' && pref.randomThemeAutoColor !== 'off') getRandomThemeAutoColor();
 	initStyleState();
 	initThemePresetState();
@@ -631,21 +683,31 @@ async function updateStyle() {
 /////////////////////////
 // * MAIN - CONTROLS * //
 /////////////////////////
-/** Called when using the custom menu */
+/**
+ * Displays the panel, mostly used for the custom menu.
+ * @param {string} panel The panel to display:
+ * - 'playlist'
+ * - 'details'
+ * - 'library'
+ * - 'biography'
+ * - 'lyrics'
+ */
 function displayPanel(panel) {
 	switch (panel) {
 		case 'playlist':  displayPlaylist =  true; displayDetails = false; displayLibrary = false; displayBiography = false; pref.displayLyrics = false; break;
 		case 'details':   displayPlaylist = false; displayDetails =  true; displayLibrary = false; displayBiography = false; pref.displayLyrics = false; break;
 		case 'library':   displayPlaylist = false; displayDetails = false; displayLibrary =  true; displayBiography = false; pref.displayLyrics = false; break;
 		case 'biography': displayPlaylist = false; displayDetails = false; displayLibrary = false; displayBiography =  true; pref.displayLyrics = false; break;
-		case 'lyrics':    displayPlaylist =  true; displayDetails = false; displayLibrary = false; displayBiography =  true; pref.displayLyrics = true; break;
+		case 'lyrics':    displayPlaylist =  true; displayDetails = false; displayLibrary = false; displayBiography =  true; pref.displayLyrics = true;  break;
 	}
 	resizeArtwork(true);
 	initButtonState();
 }
 
 
-/** Called when starting foobar in initMain to display user set panel */
+/**
+ * Displays the set panel ( Options > Player controls > Panel > Show panel on startup ) when starting foobar, used in initMain().
+ */
 function displayPanelOnStartup() {
 	// * Added additional conditions to show Playlist and not Details in Compact layout if Playlist is not displayed on startup
 	// * while starting in Compact layout, this also fixes ugly switch from Default to Compact layout
@@ -673,12 +735,15 @@ function displayPanelOnStartup() {
 }
 
 
-/** Called when dragging foobar around, sets temporarily top menu caption for this action to work */
+/**
+ * Sets temporarily top menu caption to be able to drag foobar around.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ */
 function UIHacksDragWindow(x, y) {
-	if (!mouseInPanel) mouseInPanel = true;
 	if (!componentUIHacks) return;
 	// * Disable mouse middle btn (wheel) to be able to use Library & Biography mouse middle actions
-	UIHacks.MoveStyle = displayLibrary && library.mouse_in_this(x, y) || displayBiography && biography.mouse_in_this(x, y) ? 0 : 3;
+	UIHacks.MoveStyle = displayLibrary && mouseLibrary(x, y) || displayBiography && mouseBiography(x, y) ? 0 : 3;
 	try {
 		if (mouseInControl || downButton) {
 			UIHacks.SetPseudoCaption(0, 0, 0, 0);
@@ -686,7 +751,7 @@ function UIHacksDragWindow(x, y) {
 			pseudoCaption = false;
 		}
 		else if (!pseudoCaption || pseudoCaptionWidth !== ww) {
-			UIHacks.SetPseudoCaption(0, 0, ww, pref.layout !== 'default' ? geo.topMenuHeight + scaleForDisplay(5) : geo.topMenuHeight);
+			UIHacks.SetPseudoCaption(0, 0, ww, pref.layout !== 'default' ? geo.topMenuHeight + SCALE(5) : geo.topMenuHeight);
 			if (UIHacks.FrameStyle === 3 && !pref.lockPlayerSize) UIHacks.DisableSizing = false;
 			pseudoCaption = true;
 			pseudoCaptionWidth = ww;
@@ -698,28 +763,32 @@ function UIHacksDragWindow(x, y) {
 ///////////////////////
 // * MAIN - TIMERS * //
 ///////////////////////
-/** Called to repaint a rectangele on seekbar for real time update */
+/**
+ * Repaints rectangles on the seekbar for real time update.
+ */
 function refreshSeekbar() {
 	// * Time
 	window.RepaintRect(lowerBarTimeX, lowerBarTimeY, lowerBarTimeW, lowerBarTimeH, pref.spinDiscArt && !pref.displayLyrics);
 	// * Progress bar
 	if (pref.seekbar === 'progressbar' || pref.seekbar === 'peakmeterbar') {
-		const x = pref.layout !== 'default' ? scaleForDisplay(18) : scaleForDisplay(38);
-		const y = (pref.seekbar === 'peakmeterbar' ? peakmeterBarY - scaleForDisplay(4) : progressBarY) - scaleForDisplay(2);
-		const w = pref.layout !== 'default' ? ww - scaleForDisplay(36) : ww - scaleForDisplay(76);
-		const h = (pref.seekbar === 'peakmeterbar' ? geo.peakmeterBarHeight + scaleForDisplay(8) : geo.progBarHeight) + scaleForDisplay(4);
+		const x = pref.layout !== 'default' ? SCALE(18) : SCALE(38);
+		const y = (pref.seekbar === 'peakmeterbar' ? peakmeterBarY - SCALE(4) : progressBarY) - SCALE(2);
+		const w = pref.layout !== 'default' ? ww - SCALE(36) : ww - SCALE(76);
+		const h = (pref.seekbar === 'peakmeterbar' ? geo.peakmeterBarHeight + SCALE(8) : geo.progBarHeight) + SCALE(4);
 		window.RepaintRect(x, y, w, h, pref.spinDiscArt && !pref.displayLyrics);
 	}
 }
 
 
-/** Called to update the progress bar via timer interval */
+/**
+ * Sets a given timer interval to update the progress bar.
+ */
 function setProgressBarRefresh() {
-	debugLog('setProgressBarRefresh()');
+	DebugLog('setProgressBarRefresh()');
 	if (fb.PlaybackLength > 0) {
 		switch (pref.seekbar === 'peakmeterbar' ? pref.peakmeterBarRefreshRate : pref.progressBarRefreshRate) {
 			case 'variable':
-				progressBarTimerInterval = Math.abs(Math.ceil(1000 / ((ww - scaleForDisplay(80)) / fb.PlaybackLength))); // We want to update the progress bar for every pixel so divide total time by number of pixels in progress bar
+				progressBarTimerInterval = Math.abs(Math.ceil(1000 / ((ww - SCALE(80)) / fb.PlaybackLength))); // We want to update the progress bar for every pixel so divide total time by number of pixels in progress bar
 				while (progressBarTimerInterval > 500) { // We want even multiples of the base progressBarTimerInterval, so that the progress bar always updates as smoothly as possible
 					progressBarTimerInterval = Math.floor(progressBarTimerInterval / 2);
 				}
@@ -749,6 +818,7 @@ function setProgressBarRefresh() {
 
 	if (progressBarTimer) clearInterval(progressBarTimer);
 	progressBarTimer = null;
+
 	if (!fb.IsPaused) { // Only create progressTimer if actually playing
 		progressBarTimer = setInterval(() => {
 			refreshSeekbar();
@@ -757,7 +827,11 @@ function setProgressBarRefresh() {
 }
 
 
-/** Called when checking computer time, controlled by OS clock and user's set pref.themeDayNightMode value, changes the theme to white ( day ) or black ( night ) */
+/**
+ * Checks and changes the theme to white ( day ) or black ( night ), controlled by OS clock and pref.themeDayNightMode value.
+ * @param {Date} date The `Date` object that represents the current date and time.
+ * @returns {string} The current time in the format "hours:minutes am/pm".
+ */
 function themeDayNightMode(date) {
 	if (!pref.themeDayNightMode || ((pref.theme === 'reborn' && (pref.styleRebornWhite || pref.styleRebornBlack) || pref.theme === 'random')) ||
 		pref.styleBlackAndWhite || pref.styleBlackAndWhite2 || pref.styleBlackAndWhiteReborn) {
@@ -785,35 +859,71 @@ function themeDayNightMode(date) {
 ////////////////////////
 // * MAIN - HELPERS * //
 ////////////////////////
-/** Called when user auto or manual delete the Biography cache */
+/**
+ * Deletes the Biography cache on auto or manual usage.
+ */
 function deleteBiographyCache() {
 	try { fso.DeleteFolder(pref.customBiographyDir ? `${globals.customBiographyDir}\\*.*` : `${fb.ProfilePath}cache\\biography\\biography-cache`); }
 	catch (e) {}
 }
 
 
-/** Called when user auto or manual delete the Library cache */
+/**
+ * Deletes the Library cache on auto or manual usage.
+ */
 function deleteLibraryCache() {
 	try { fso.DeleteFolder(pref.customLibraryDir ? `${globals.customLibraryDir}\\*.*` : `${fb.ProfilePath}cache\\library\\library-tree-cache`); }
 	catch (e) {}
 }
 
 
-/** Called when user auto or manual delete the Lyrics */
+/**
+ * Deletes the Lyrics cache on auto or manual usage.
+ */
 function deleteLyrics() {
 	try { fso.DeleteFile(pref.customLyricsDir ? `${globals.customLyricsDir}\\*.*` : `${fb.ProfilePath}cache\\lyrics\\*.*`); }
 	catch (e) {}
 }
 
 
-/** Called when user auto or manual delete the Waveform bar cache */
+/**
+ * Deletes the Waveform bar cache on auto or manual usage.
+ */
 function deleteWaveformBarCache() {
 	try { fso.DeleteFolder(pref.customWaveformBarDir ? `${globals.customWaveformBarDir}\\*.*` : `${fb.ProfilePath}cache\\waveform\\*.*`); }
 	catch (e) {}
 }
 
 
-/** Called when activating "Draw areas" in dev tools to display red rectangles showing all redraw areas, used for debugging */
+/**
+ * Gets the meta values of a specified metadata field from a given metadb object.
+ * Will strip leading and trailing %'s from name.
+ * @param {string} name The name of the meta field.
+ * @param {FbMetadbHandle=} metadb
+ * @returns {Array<string>} An array of values of the meta field.
+ */
+function getMetaValues(name, metadb = undefined) {
+	let vals = [];
+	const searchName = name.replace(/%/g, '');
+	for (let i = 0; i < parseInt($(`$meta_num(${searchName})`, metadb)); i++) {
+		vals.push($(`$meta(${searchName},${i})`, metadb));
+	}
+	if (!vals.length) {
+		// This is a fallback in case the `name` property is a complex tf field and meta_num evaluates to 0.
+		// In that case we want to evaluate the entire field, after wrapping in brackets and split on commas.
+		const unsplit = $(`[${name}]`, metadb);
+		if (unsplit.length) {
+			vals = unsplit.split(', ');
+		}
+	}
+
+	return vals;
+}
+
+
+/**
+ * Displays red rectangles to show all repaint areas when activating "Draw areas" in dev tools, used for debugging.
+ */
 function repaintRectAreas() {
 	window.RepaintRect = (x, y, w, h, force = undefined) => {
 		if (timings.drawRepaintRects) {
@@ -827,16 +937,20 @@ function repaintRectAreas() {
 }
 
 
-/** Called to print logs for window.Repaint() in the console, used for debugging */
+/**
+ * Prints logs for window.Repaint() in the console, used for debugging.
+ */
 function repaintWindow() {
-	debugLog('Repainting from repaintWindow()');
+	DebugLog('Repainting from repaintWindow()');
 	window.Repaint();
 }
 
 
-/** Called when a continuous repaint for a short period of time ( 1 sec ) is needed, used when changing layout width */
+/**
+ * Continuously repaints rectangles for a short period of time ( 1 sec ), used when changing the layout width.
+ */
 function repaintWindowRectAreas() {
-	debugLog('Repainting from repaintWindowRectAreas()');
+	DebugLog('Repainting from repaintWindowRectAreas()');
 
 	window.RepaintRect = () => {
 		window.Repaint();
@@ -850,7 +964,9 @@ function repaintWindowRectAreas() {
 }
 
 
-/** Called when writing %GR_THEMECOLOR%, %GR_THEME%, %GR_STYLE%, %GR_PRESET% tags to music files via playlist or library context menu */
+/**
+ * Writes %GR_THEMECOLOR%, %GR_THEME%, %GR_STYLE%, %GR_PRESET% tags to music files via the Playlist or Library context menu.
+ */
 function writeThemeTags() {
 	const grTags = [];
 	const plItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
@@ -861,7 +977,7 @@ function writeThemeTags() {
 
 	for (let i = 0; i < items.Count; ++i) {
 		grTags.push({
-			GR_THEMECOLOR: pref.theme === 'random' ? colToRgb(col.primary) : '',
+			GR_THEMECOLOR: pref.theme === 'random' ? ColToRgb(col.primary) : '',
 
 			GR_THEME: pref.preset === false ? pref.theme : '',
 
@@ -920,7 +1036,9 @@ function writeThemeTags() {
 /////////////////////////
 // * MAIN - GRAPHICS * //
 /////////////////////////
-/** Called when creating top menu and lowerbar button images for button state 'Enabled', 'Hovered', 'Down' */
+/**
+ * Creates the top menu and lower bar button images for button state 'Enabled', 'Hovered', 'Down'.
+ */
 function createButtonImages() {
 	const createButtonProfiler = timings.showExtraDrawTiming ? fb.CreateProfiler('createButtonImages') : null;
 	const transportCircleSize = Math.round(pref.layout === 'compact' ? pref.transportButtonSize_compact * 0.93333 : pref.layout === 'artwork' ? pref.transportButtonSize_artwork * 0.93333 : pref.transportButtonSize_default * 0.93333);
@@ -1150,22 +1268,22 @@ function createButtonImages() {
 			const g = img.GetGraphics();
 			const measurements = g.MeasureString(btns[i].ico, btns[i].font, 0, 0, 0, 0);
 
-			btns[i].w = Math.ceil(measurements.Width + (is_4k ? 32 : 41));
+			btns[i].w = Math.ceil(measurements.Width + (RES_4K ? 32 : 41));
 			img.ReleaseGraphics(g);
-			btns[i].h = Math.ceil(measurements.Height + (is_4k ? -2 : 5));
+			btns[i].h = Math.ceil(measurements.Height + (RES_4K ? -2 : 5));
 		}
 
 		// const { x, y } = btns[i];
 		let { w, h } = btns[i];
-		const lineW = scaleForDisplay(2);
+		const lineW = SCALE(2);
 
-		if (is_4k && btns[i].type === 'transport') {
+		if (RES_4K && btns[i].type === 'transport') {
 			w *= 2;
 			h *= 2;
-		} else if (is_4k && btns[i].type !== 'menu') {
+		} else if (RES_4K && btns[i].type !== 'menu') {
 			w = Math.round(btns[i].w * 1.5);
 			h = Math.round(btns[i].h * 1.6);
-		} else if (is_4k) {
+		} else if (RES_4K) {
 			w += 20;
 			h += 10;
 		}
@@ -1238,8 +1356,8 @@ function createButtonImages() {
 						state && g.DrawRoundRect(Math.floor(lineW / 2) + 1, Math.floor(lineW / 2), w - lineW - 2, h - lineW - 1, 4, 4, 1, col.menuRectStyleEmbossBottom);
 					}
 					if (btn.type === 'compact') {
-						g.DrawString('\uf0c9', ft.top_menu_compact, menuTextColor, is_4k ? -39 : -19, 0, w, h, StringFormat(1, 1));
-						g.DrawString(btn.ico, btn.font, menuTextColor, is_4k ? 20 : 10, is_4k ? -1 : 0, w, h, StringFormat(1, 1));
+						g.DrawString('\uf0c9', ft.top_menu_compact, menuTextColor, RES_4K ? -39 : -19, 0, w, h, StringFormat(1, 1));
+						g.DrawString(btn.ico, btn.font, menuTextColor, RES_4K ? 20 : 10, RES_4K ? -1 : 0, w, h, StringFormat(1, 1));
 					} else {
 						g.DrawString(btn.ico, btn.font, menuTextColor, 0, 0, w, btn.type === 'window' ? h : h - 1, StringFormat(1, 1));
 					}
@@ -1284,7 +1402,11 @@ function createButtonImages() {
 }
 
 
-/** Called when creating top menu and lower bar transport button images for button state 'Enabled', 'Hovered', 'Down' */
+/**
+ * Creates the top menu and lower bar transport buttons.
+ * @param {number} ww window.Width.
+ * @param {number} wh window.Height.
+ */
 function createButtonObjects(ww, wh) {
 	btns = [];
 	const menuFontSize = pref.layout === 'compact' ? pref.menuFontSize_compact : pref.layout === 'artwork' ? pref.menuFontSize_artwork : pref.menuFontSize_default;
@@ -1302,24 +1424,24 @@ function createButtonObjects(ww, wh) {
 	let img = btnImg.File;
 	const w = img[0].Width;
 	const h = img[0].Height;
-	let   x = is_4k ? 18 : 8;
-	const y = Math.round(geo.topMenuHeight * 0.5 - h * 0.5 - scaleForDisplay(1));
+	let   x = RES_4K ? 18 : 8;
+	const y = Math.round(geo.topMenuHeight * 0.5 - h * 0.5 - SCALE(1));
 
 	// Top menu font size X-correction for Artwork and Compact layout
-	const xOffset = ww > scaleForDisplay(pref.layout === 'compact' ? 570 : 620) ? 0 :
-	menuFontSize === 13 && !is_QHD ? scaleForDisplay(3) :
-	menuFontSize === 14 && !is_QHD ? scaleForDisplay(5) :
-	menuFontSize === 16  ?  is_QHD ? 4 : scaleForDisplay(12) : 0;
+	const xOffset = ww > SCALE(pref.layout === 'compact' ? 570 : 620) ? 0 :
+	menuFontSize === 13 && !RES_QHD ? SCALE(3) :
+	menuFontSize === 14 && !RES_QHD ? SCALE(5) :
+	menuFontSize === 16  ?  RES_QHD ? 4 : SCALE(12) : 0;
 
 	const widthCorrection =
-		is_4k ? (pref.customThemeFonts && menuFontSize > 12 && ww < 1080) ? 12 : (pref.customThemeFonts && menuFontSize > 10 && ww < 1080) ? 6 : 3 :
+		RES_4K ? (pref.customThemeFonts && menuFontSize > 12 && ww < 1080) ? 12 : (pref.customThemeFonts && menuFontSize > 10 && ww < 1080) ? 6 : 3 :
 				(pref.customThemeFonts && menuFontSize > 12 && ww <  600) ?  6 : (pref.customThemeFonts && menuFontSize > 10 && ww <  600) ? 4 : 0;
 	const correction = widthCorrection + (pref.layout !== 'default' ? xOffset : 0);
 
 	// * Top menu compact
 	if (pref.showTopMenuCompact) {
 		img = btnImg.TopMenu;
-		btns[19] = new Button(x, y, w + scaleForDisplay(41), h, 'Menu', img, 'Open menu');
+		btns[19] = new Button(x, y, w + SCALE(41), h, 'Menu', img, 'Open menu');
 	}
 
 	// * Default foobar2000 buttons
@@ -1373,7 +1495,7 @@ function createButtonObjects(ww, wh) {
 
 	// These buttons are not available in Compact layout
 	if (pref.layout !== 'compact') {
-		if (pref.topMenuAlignment === 'center' && ww > scaleForDisplay(pref.layout === 'artwork' ? 600 : 1380) || pref.showTopMenuCompact) {
+		if (pref.topMenuAlignment === 'center' && ww > SCALE(pref.layout === 'artwork' ? 600 : 1380) || pref.showTopMenuCompact) {
 			const centerMenu = Math.ceil(w * (buttonCount + (pref.layout === 'artwork' && pref.topMenuCompact ? 0.5 : 0)) + (menuFontSize * buttonCount * buttonXCorr));
 			x = Math.round(ww * 0.5 - centerMenu);
 		}
@@ -1416,11 +1538,11 @@ function createButtonObjects(ww, wh) {
 	if (showingMinMaxButtons) {
 		const hideClose = UIHacks.FrameStyle === FrameStyle.SmallCaption && UIHacks.FullScreen !== true;
 
-		const w = scaleForDisplay(22);
+		const w = SCALE(22);
 		const h = w;
 		const p = 3;
-		const x = ww - w * (hideClose ? 2 : 3) - p * (hideClose ? 1 : 2) - (is_4k ? 21 : 14);
-		const y = Math.round(geo.topMenuHeight * 0.5 - h * 0.5 - scaleForDisplay(1));
+		const x = ww - w * (hideClose ? 2 : 3) - p * (hideClose ? 1 : 2) - (RES_4K ? 21 : 14);
+		const y = Math.round(geo.topMenuHeight * 0.5 - h * 0.5 - SCALE(1));
 
 		if (pref.layout === 'default') {
 			btns.Minimize = new Button(x, y, w, h, 'Minimize', btnImg.Minimize);
@@ -1448,11 +1570,11 @@ function createButtonObjects(ww, wh) {
 
 		let count = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
 
-		const buttonSize = scaleForDisplay(transportBtnSize);
-		const y = wh - buttonSize - scaleForDisplay(pref.layout !== 'default' ? 36 : 78) + scaleForDisplay(lowerBarFontSize);
+		const buttonSize = SCALE(transportBtnSize);
+		const y = wh - buttonSize - SCALE(pref.layout !== 'default' ? 36 : 78) + SCALE(lowerBarFontSize);
 		const w = buttonSize;
 		const h = w;
-		const p = scaleForDisplay(transportBtnSpacing); // Space between buttons
+		const p = SCALE(transportBtnSpacing); // Space between buttons
 		const x = (ww - w * count - p * (count - 1)) / 2;
 
 		const calcX = (index) => x + (w + p) * index;
@@ -1485,7 +1607,9 @@ function createButtonObjects(ww, wh) {
 }
 
 
-/** Called when loading country flags read from tags, displayed in the lower bar and Details */
+/**
+ * Loads country flags when defined in tags, displayed in the lower bar and Details.
+ */
 function loadCountryFlags() {
 	flagImgs = [];
 	getMetaValues(tf.artist_country).forEach(country => {
@@ -1495,156 +1619,33 @@ function loadCountryFlags() {
 }
 
 
-/** Called when loading flag images from directory */
+/**
+ * Loads flag images from the image directory based on the country name or ISO country code provided.
+ * @param {string} country The country for which we want to load the flag image.
+ * @returns {GdiBitmap} The flag image object.
+ */
 function loadFlagImage(country) {
-	const countryName = convertIsoCountryCodeToFull(country) || country;	// In case we have a 2-digit country code
-	const path = `${$(paths.flagsBase) + (is_4k ? '64\\' : '32\\') + countryName.trim().replace(/ /g, '-')}.png`;
+	const countryName = ConvertIsoCountryCodeToFull(country) || country; // In case we have a 2-digit country code
+	const path = `${$(paths.flagsBase) + (RES_4K ? '64\\' : '32\\') + countryName.trim().replace(/ /g, '-')}.png`;
 	return gdi.Image(path);
-}
-
-
-/** Called when user activates show theme preset indicator */
-function showThemePresetIndicator(gr) {
-	if (!pref.presetIndicator || !themePresetIndicator || !['off', 'dblclick'].includes(pref.presetAutoRandomMode)) {
-		return;
-	}
-
-	const match = themePresetMatchMode;
-	const text = 'Active styles matching:';
-	const text2 = themePresetName;
-	const arc = scaleForDisplay(6);
-	const boxH = gr.CalcTextHeight(text, ft.notification) * (match ? 2.5 : 0) + gr.CalcTextHeight(text2, ft.notification) * 2 + arc;
-	const w = Math.max(gr.CalcTextWidth(text, ft.notification) + 50, gr.CalcTextWidth(text2, ft.notification) + 50);
-	const h = gr.CalcTextHeight(text, ft.notification);
-
-	const fullW =
-		pref.layout === 'default'
-		&&
-		displayPlaylist && pref.playlistLayout === 'full'
-		||
-		displayLibrary && pref.libraryLayout  === 'full'
-		||
-		displayBiography && pref.biographyLayout === 'full'
-		||
-		pref.displayLyrics && pref.lyricsLayout === 'full';
-
-	const cover = fb.IsPlaying && albumArt && pref.layout !== 'compact' && !fullW;
-	const noCoverDefault = pref.layout === 'default' && !fullW;
-
-	const x = Math.round((cover ? albumArtSize.x + albumArtSize.w * 0.5 : noCoverDefault ? ww * 0.25 : ww * 0.5) - w * 0.5);
-	const y = Math.round((cover ? albumArtSize.h * 0.5 : wh * 0.5 - geo.lowerBarHeight * 0.5) - (match ? h : -h * 0.5));
-
-	if (themePresetName !== '') {
-		gr.SetSmoothingMode(SmoothingMode.AntiAlias);
-		gr.FillRoundRect(x, y, w, boxH, arc, arc, col.popupBg);
-		gr.DrawRoundRect(x, y, w, boxH, arc, arc, scaleForDisplay(2), 0x64000000);
-		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
-		if (match) gr.DrawString(text, ft.notification, col.popupText, x, y + h, w, h, StringFormat(1, 1, 4));
-		gr.DrawString(text2, ft.notification, col.popupText, x, y + h * (match ? 2.5 : 0.66), w, h, StringFormat(1, 1, 4));
-	}
-}
-
-
-/** Called when user activates "Enable theme debug overlay" in developer tools */
-function showThemeLogOverlay(gr) {
-	if (!settings.showThemeLogOverlay) return;
-
-	const x = albumArtSize.x + scaleForDisplay(pref.layout !== 'default' ? 20 : 40);
-	let y = albumArtSize.y;
-	const fullW = pref.layout === 'default' && pref.lyricsLayout === 'full' && pref.displayLyrics && noAlbumArtStub || pref.layout === 'artwork';
-	const titleWidth = albumArtSize.w - scaleForDisplay(80);
-	const titleHeight = gr.CalcTextHeight(' ', ft.popup);
-	const logColor = RGB(255, 255, 255);
-
-	const tsBlock1 = pref.styleBevel ? 'Bevel,' : '';
-	const tsBlock2 =
-		pref.styleBlend ? 'Blend,' : pref.styleBlend2 ? 'Blend 2,' :
-		pref.styleGradient ? 'Gradient,' : pref.styleGradient2 ? 'Gradient 2,' : '';
-	const tsBlock3 =
-		pref.styleAlternative ? 'Alternative' : pref.styleAlternative2 ? 'Alternative 2' :
-		pref.styleBlackAndWhite ? 'Black and white' : pref.styleBlackAndWhite2 ? 'Black and white 2' : pref.styleBlackAndWhiteReborn ? 'Black and white reborn' :
-		pref.styleBlackReborn ? 'Black reborn' :
-		pref.styleRebornWhite ? 'Reborn white' : pref.styleRebornBlack ? 'Reborn black' :
-		pref.styleRebornFusion ? 'Reborn fusion' :
-		pref.styleRebornFusion2 ? 'Reborn fusion 2' :
-		pref.styleRebornFusionAccent ? 'Reborn fusion accent' :
-		pref.styleRandomPastel ? 'Random pastel' : pref.styleRandomDark ? 'Random dark' : '';
-
-	const tsTopMenuButtons = pref.styleTopMenuButtons !== 'default' ? capitalize(`${pref.styleTopMenuButtons}`) : '';
-	const tsTransportButtons = pref.styleTransportButtons !== 'default' ? capitalize(`${pref.styleTransportButtons}`) : '';
-	const tsProgressBar1 = pref.styleProgressBarDesign === 'rounded' ? 'Rounded,' : '';
-	const tsProgressBar2 = pref.styleProgressBar !== 'default' ? `Bg: ${capitalize(`${pref.styleProgressBar},`)}` : '';
-	const tsProgressBar3 = pref.styleProgressBarFill !== 'default' ? `Fill: ${capitalize(`${pref.styleProgressBarFill}`)}` : '';
-	const tsVolumeBar1 = pref.styleVolumeBarDesign === 'rounded' ? 'Rounded,' : '';
-	const tsVolumeBar2 = pref.styleVolumeBar !== 'default' ? `Bg: ${capitalize(`${pref.styleVolumeBar},`)}` : '';
-	const tsVolumeBar3 = pref.styleVolumeBarFill !== 'default' ? `Fill: ${capitalize(`${pref.styleVolumeBarFill}`)}` : '';
-
-	gr.SetSmoothingMode(SmoothingMode.None);
-	gr.FillSolidRect(fullW ? 0 : albumArtSize.x, fullW ? geo.topMenuHeight : albumArtSize.y, fullW ? ww : albumArtSize.w, fullW ? wh - geo.topMenuHeight - geo.lowerBarHeight : albumArtSize.h, RGBA(0, 0, 0, 180));
-	gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
-
-	y += titleHeight * 1.5;
-	gr.DrawString(`Primary color: ${selectedPrimaryColor}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	y += titleHeight * 1.5;
-	gr.DrawString(`Primary 2 color: ${selectedPrimaryColor2}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	y += titleHeight * 1.5;
-	gr.DrawString(`Primary color brightness: ${colBrightness}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	y += titleHeight * 1.5;
-	gr.DrawString(`Primary 2 color brightness: ${colBrightness2}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	y += titleHeight * 1.5;
-	gr.DrawString(`Image brightness: ${imgBrightness}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	y += titleHeight * 1.5;
-
-	if (pref.styleBlend || pref.styleBlend2) {
-		gr.DrawString(`Image blur: ${blendedImgBlur}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-		y += titleHeight * 1.5;
-		gr.DrawString(`Image alpha: ${blendedImgAlpha}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-		y += titleHeight * 1.5;
-	}
-	if (pref.preset) {
-		y += titleHeight * 1.5;
-		gr.DrawString(`Theme preset: ${pref.preset}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
-	if (pref.themeBrightness !== 'default') {
-		y += titleHeight * 1.5;
-		gr.DrawString(`Theme brightness: ${pref.themeBrightness}%`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
-	if (tsBlock1 || tsBlock2 || tsBlock3) {
-		y += titleHeight * 1.5;
-		gr.DrawString(`Styles: ${tsBlock1} ${tsBlock2} ${tsBlock3}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
-	if (tsTopMenuButtons) {
-		y += titleHeight * 1.5;
-		gr.DrawString(`Top menu button style: ${tsTopMenuButtons}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
-	if (tsTransportButtons) {
-		y += titleHeight * 1.5;
-		gr.DrawString(`Transport button style: ${tsTransportButtons}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
-	if (tsProgressBar1 || tsProgressBar2 || tsProgressBar3) {
-		y += titleHeight * 1.5;
-		gr.DrawString(tsProgressBar1 || tsProgressBar2 || tsProgressBar3 ? `Progressbar styles: ${tsProgressBar1} ${tsProgressBar2} ${tsProgressBar3}` : '', ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
-	if (tsVolumeBar1 || tsVolumeBar2 || tsVolumeBar3) {
-		y += titleHeight * 1.5;
-		gr.DrawString(`Volumebar styles: ${tsVolumeBar1} ${tsVolumeBar2} ${tsVolumeBar3}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
 }
 
 
 //////////////////////////
 // * MAIN - ALBUM ART * //
 //////////////////////////
-/** Called when cycling through album artworks with a timed auto-feature or when using album art context menu */
+/**
+ * Displays the next artwork image when cycling through album artworks with a default 30 sec interval or when using album art context menu.
+ */
 function displayNextImage() {
-	debugLog(`Repainting in displayNextImage: ${albumArtIndex}`);
+	DebugLog(`Repainting in displayNextImage: ${albumArtIndex}`);
 	albumArtIndex = (albumArtIndex + 1) % albumArtList.length;
 	loadImageFromAlbumArtList(albumArtIndex);
 	if (pref.theme === 'reborn' || pref.theme === 'random' || pref.styleBlackAndWhiteReborn || pref.styleBlackReborn) {
 		newTrackFetchingArtwork = true;
 		getThemeColors(albumArt);
 		initTheme();
-		debugLog('initTheme -> displayNextImage');
+		DebugLog('initTheme -> displayNextImage');
 	}
 	lastLeftEdge = 0;
 	resizeArtwork(true); // Needed to readjust discArt shadow size if artwork size changes
@@ -1656,7 +1657,10 @@ function displayNextImage() {
 }
 
 
-/** Called when fetching new album/disc art when a new album is being played, disc art changed or cycling through album artworks */
+/**
+ * Fetches new album art/disc art when a new album is being played, disc art has changed or when cycling through album artworks.
+ * @param {FbMetadbHandle} metadb The metadb of the track.
+ */
 function fetchNewArtwork(metadb) {
 	if (pref.presetAutoRandomMode === 'album' || pref.presetSelectMode === 'harmonic') initThemeSkip = true;
 	const fetchArtworkProfiler = timings.showDebugTiming ? fb.CreateProfiler('fetchNewArtwork') : null;
@@ -1751,7 +1755,7 @@ function fetchNewArtwork(metadb) {
 				createRotatedDiscArtImage();
 				if (pref.spinDiscArt) {
 					discArtArray = [];	// Clear last image
-					setupRotationTimer();
+					setDiscArtRotationTimer();
 				}
 			} else {
 				gdi.LoadImageAsyncV2(window.ID, discArtPath).then(discArtImg => {
@@ -1761,7 +1765,7 @@ function fetchNewArtwork(metadb) {
 					createRotatedDiscArtImage();
 					if (pref.spinDiscArt) {
 						discArtArray = [];	// Clear last image
-						setupRotationTimer();
+						setDiscArtRotationTimer();
 					}
 					lastLeftEdge = 0; // Recalc label location
 					repaintWindow();
@@ -1786,7 +1790,7 @@ function fetchNewArtwork(metadb) {
 			shadowImg = null;
 		}
 		initTheme();
-		debugLog('initTheme -> fetchNewArtwork -> isStreaming || isPlayingCD');
+		DebugLog('initTheme -> fetchNewArtwork -> isStreaming || isPlayingCD');
 	}
 	else {
 		if (!pref.showGridTitle_default && pref.layout === 'default') pref.showGridTitle_default = false;
@@ -1818,7 +1822,7 @@ function fetchNewArtwork(metadb) {
 			noAlbumArtStub = false;
 			getThemeColors(albumArt);
 			if (!loadingTheme) initTheme(); // * Prevent incorrect theme brightness at startup/reload when using embedded art
-			debugLog('initTheme -> fetchNewArtwork -> embeddedArt');
+			DebugLog('initTheme -> fetchNewArtwork -> embeddedArt');
 			resizeArtwork(true);
 			embeddedArt = true;
 		}
@@ -1828,9 +1832,9 @@ function fetchNewArtwork(metadb) {
 			noAlbumArtStub = true;
 			albumArt = null;
 			initTheme();
-			debugLog('initTheme -> fetchNewArtwork -> noAlbumArtStub');
+			DebugLog('initTheme -> fetchNewArtwork -> noAlbumArtStub');
 			resizeArtwork(true);
-			debugLog('Repainting on_playback_new_track due to no cover image');
+			DebugLog('Repainting on_playback_new_track due to no cover image');
 			repaintWindow();
 		}
 	}
@@ -1840,8 +1844,8 @@ function fetchNewArtwork(metadb) {
 
 
 /**
- * Called when loading an image from the albumArtList array.
- * @param {number} index Index of albumArtList signifying which image to load
+ * Loads an image from the albumArtList array.
+ * @param {number} index The index of albumArtList signifying which image to load.
  */
 async function loadImageFromAlbumArtList(index) {
 	const metadb = fb.GetNowPlaying();
@@ -1854,7 +1858,7 @@ async function loadImageFromAlbumArtList(index) {
 			await getThemeColors(albumArt);
 			if (!initThemeSkip) {
 				await initTheme();
-				debugLog('initTheme -> loadImageFromAlbumArtList -> tempAlbumArt');
+				DebugLog('initTheme -> loadImageFromAlbumArtList -> tempAlbumArt');
 			}
 		}
 	}
@@ -1878,7 +1882,7 @@ async function loadImageFromAlbumArtList(index) {
 				}
 				getThemeColors(albumArt);
 				initTheme();
-				debugLog('initTheme -> loadImageFromAlbumArtList -> LoadImageAsyncV2');
+				DebugLog('initTheme -> loadImageFromAlbumArtList -> LoadImageAsyncV2');
 				newTrackFetchingArtwork = false;
 			}
 			resizeArtwork(true);
@@ -1907,7 +1911,7 @@ async function loadImageFromAlbumArtList(index) {
 				if (!initThemeSkip) await initTheme();
 			}
 
-			if (!initThemeSkip) debugLog('initTheme -> loadImageFromAlbumArtList -> GetAlbumArtV2');
+			if (!initThemeSkip) DebugLog('initTheme -> loadImageFromAlbumArtList -> GetAlbumArtV2');
 			newTrackFetchingArtwork = false;
 		}
 		resizeArtwork(true);
@@ -1925,9 +1929,12 @@ async function loadImageFromAlbumArtList(index) {
 }
 
 
-/** Called when resizing album art for better drawing performance */
+/**
+ * Resizes loaded album art to have better drawing performance.
+ * @param {boolean} resetDiscArtPosition Whether the position of the disc art should be reset.
+ */
 function resizeArtwork(resetDiscArtPosition) {
-	debugLog('Resizing artwork');
+	DebugLog('Resizing artwork');
 	let hasArtwork = false;
 	const lowerSpace = geo.lowerBarHeight;
 	if (albumArt && albumArt.Width && albumArt.Height) {
@@ -1944,8 +1951,8 @@ function resizeArtwork(resetDiscArtPosition) {
 		if (displayPlaylist || displayLibrary) {
 			xCenter =
 				pref.layout === 'artwork' ? 0 :
-				UIHacks.FullScreen ? is_4k ? 0.261 * ww : 0.23 * ww :
-				UIHacks.MainWindowState === WindowState.Maximized ? is_4k ? 0.267 * ww : 0.24 * ww :
+				UIHacks.FullScreen ? RES_4K ? 0.261 * ww : 0.23 * ww :
+				UIHacks.MainWindowState === WindowState.Maximized ? RES_4K ? 0.267 * ww : 0.24 * ww :
 				xCenter = 0.25 * ww;
 		}
 		else if (ww / wh < 1.40) { // When using a roughly 4:3 display the album art crowds, so move it slightly off center
@@ -1967,7 +1974,7 @@ function resizeArtwork(resetDiscArtPosition) {
 				displayPlaylist || displayLibrary ?
 					UIHacks.FullScreen || UIHacks.MainWindowState === WindowState.Maximized ? ww * 0.5 - albumArtSize.w :
 					pref.albumArtAlign === 'left' ? 0 :
-					pref.albumArtAlign === 'leftMargin' ? ww / wh > 1.8 ? scaleForDisplay(40) : 0 :
+					pref.albumArtAlign === 'leftMargin' ? ww / wh > 1.8 ? SCALE(40) : 0 :
 					pref.albumArtAlign === 'center' ? Math.floor(xCenter - 0.5 * albumArtSize.w) :
 					pref.albumArtAlign === 'right' ? ww * 0.5 - albumArtSize.w :
 					ww * 0.5 - albumArtSize.w :
@@ -1977,7 +1984,7 @@ function resizeArtwork(resetDiscArtPosition) {
 		if (albumScale !== (wh - geo.topMenuHeight - lowerSpace) / albumArt.Height) {
 			// Restricted by width
 			const y = Math.floor(((wh - geo.lowerBarHeight + geo.topMenuHeight) / 2) - albumArtSize.h / 2);
-			albumArtSize.y = Math.min(y, scaleForDisplay(150) + 10);	// 150 or 300 + 10? Not sure where 160 comes from
+			albumArtSize.y = Math.min(y, SCALE(150) + 10);	// 150 or 300 + 10? Not sure where 160 comes from
 		} else {
 			albumArtSize.y = geo.topMenuHeight;
 		}
@@ -2006,9 +2013,9 @@ function resizeArtwork(resetDiscArtPosition) {
 		albumArtSize = new ImageSize(0, geo.topMenuHeight, 0, 0);
 	}
 	if (discArt) {
-		const discArtSizeCorr = scaleForDisplay(4);
-		const discArtMargin = scaleForDisplay(2);
-		const discArtMarginRight = scaleForDisplay(36);
+		const discArtSizeCorr = SCALE(4);
+		const discArtMargin = SCALE(2);
+		const discArtMarginRight = SCALE(36);
 		if (hasArtwork) {
 			if (resetDiscArtPosition) {
 				discArtSize.x =
@@ -2034,7 +2041,7 @@ function resizeArtwork(resetDiscArtPosition) {
 			}
 		}
 		else { // * No album art so we need to calc size of disc
-			const discScale = Math.min(((displayPlaylist || displayLibrary) ? 0.5 * ww : 0.75 * ww) / discArt.Width, (wh - geo.topMenuHeight - lowerSpace - scaleForDisplay(16)) / discArt.Height);
+			const discScale = Math.min(((displayPlaylist || displayLibrary) ? 0.5 * ww : 0.75 * ww) / discArt.Width, (wh - geo.topMenuHeight - lowerSpace - SCALE(16)) / discArt.Height);
 			let xCenter = 0;
 			if (displayPlaylist || displayLibrary) {
 				xCenter = 0.25 * ww;
@@ -2052,9 +2059,9 @@ function resizeArtwork(resetDiscArtPosition) {
 			discArtSize.w = Math.floor(discArt.Width * discScale) - discArtSizeCorr; // Width
 			discArtSize.h = discArtSize.w; // height
 			discArtSize.x = Math.floor(xCenter - 0.5 * discArtSize.w); // Left
-			if (discScale !== (wh - geo.topMenuHeight - lowerSpace - scaleForDisplay(16)) / discArt.Height) {
+			if (discScale !== (wh - geo.topMenuHeight - lowerSpace - SCALE(16)) / discArt.Height) {
 				// Restricted by width
-				const y = geo.topMenuHeight + Math.floor(((wh - geo.topMenuHeight - lowerSpace - scaleForDisplay(16)) / 2) - discArtSize.h / 2);
+				const y = geo.topMenuHeight + Math.floor(((wh - geo.topMenuHeight - lowerSpace - SCALE(16)) / 2) - discArtSize.h / 2);
 				discArtSize.y = Math.min(y, 160);
 			} else {
 				discArtSize.y = geo.topMenuHeight + discArtMargin; // Top
@@ -2087,11 +2094,13 @@ function resizeArtwork(resetDiscArtPosition) {
 ////////////////////////////
 // * DETAILS - DISC ART * //
 ////////////////////////////
-/** Called when creating drop shadow for disc art in resizeArtwork */
+/**
+ * Creates the drop shadow for disc art.
+ */
 function createDropShadow() {
 	const shadowProfiler = timings.showDebugTiming ? fb.CreateProfiler('createDropShadow') : null;
 	if ((albumArt && albumArtSize.w > 0) || (discArt && pref.displayDiscArt && discArtSize.w > 0)) {
-		const discArtMargin = scaleForDisplay(2);
+		const discArtMargin = SCALE(2);
 		shadowImg = discArt && !displayPlaylist && !displayLibrary && pref.displayDiscArt ?
 			gdi.CreateImage(discArtSize.x + discArtSize.w + 2 * geo.discArtShadow, discArtSize.h + discArtMargin + 2 * geo.discArtShadow) :
 			gdi.CreateImage(albumArtSize.x + albumArtSize.w + 2 * geo.discArtShadow, albumArtSize.h + 2 * geo.discArtShadow);
@@ -2119,17 +2128,27 @@ function createDropShadow() {
 }
 
 
-/** Called when drawing the disc art rotation animation with rotateImg() */
-function createRotatedDiscArtImage() { // TODO: Once spinning art is done, scrap this and the rotation amount crap and just use indexes into the discArtArray when needed // IDEA: Smooth rotation to new position?
-	if (pref.displayDiscArt && (discArt && discArtSize.w > 0)) { // Drawing discArt rotated is slow, so first draw it rotated into the rotatedDiscArt image, and then draw rotatedDiscArt image unrotated in on_paint
+/**
+ * Creates the disc art rotation animation with RotateImg().
+ */
+function createRotatedDiscArtImage() {
+	// Drawing discArt rotated is slow, so first draw it rotated into the rotatedDiscArt image, and then draw rotatedDiscArt image unrotated in on_paint.
+	if (pref.displayDiscArt && (discArt && discArtSize.w > 0)) {
 		let tracknum = parseInt(fb.TitleFormat(`$num($if(${tf.vinyl_tracknum},$sub($mul(${tf.vinyl_tracknum},2),1),$if2(%tracknumber%,1)),1)`).Eval()) - 1;
 		if (!pref.rotateDiscArt || Number.isNaN(tracknum)) tracknum = 0; // Avoid NaN issues when changing tracks rapidly
-		rotatedDiscArt = rotateImg(discArt, discArtSize.w, discArtSize.h, tracknum * pref.rotationAmt);
+		rotatedDiscArt = RotateImg(discArt, discArtSize.w, discArtSize.h, tracknum * pref.rotationAmt);
 	}
+
+	// TODO: Once spinning art is done, scrap this and the rotation amount crap and just use indexes into the discArtArray when needed.
+	// ? IDEA: Smooth rotation to new position?
+	return rotatedDiscArt;
 }
 
 
-/** Called when disposing disc art image, i.e when changing or deactivating */
+/**
+ * Disposes the disc art image when changing or deactivating disc art.
+ * @param {GdiBitmap} discArtImg The loaded disc art image.
+ */
 function disposeDiscArtImg(discArtImg) {
 	discArtSize = new ImageSize(0, 0, 0, 0);
 	discArtImg = null;
@@ -2137,45 +2156,10 @@ function disposeDiscArtImg(discArtImg) {
 }
 
 
-/** Called when drawing the disc art */
-function drawDiscArt(gr) {
-	if (pref.layout === 'default' && pref.displayDiscArt && discArtSize.y >= albumArtSize.y && discArtSize.h <= albumArtSize.h) {
-		const drawDiscProfiler = timings.showExtraDrawTiming ? fb.CreateProfiler('discArt') : null;
-		const discArtImg = discArtArray[rotatedDiscArtIndex] || rotatedDiscArt;
-		gr.DrawImage(discArtImg, discArtSize.x, discArtSize.y, discArtSize.w, discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);
-		if (timings.showExtraDrawTiming) drawDiscProfiler.Print();
-	}
-	// Show full background when displaying the Lyrics panel and lyrics layout is in full width
-	if (pref.displayLyrics && pref.lyricsLayout === 'full' && pref.layout === 'default' && !displayLibrary && !displayPlaylist && !displayBiography) {
-		gr.FillSolidRect(albumArtSize.x + albumArtSize.w - scaleForDisplay(1), albumArtSize.y, albumArtSize.x + scaleForDisplay(2), albumArtSize.h, col.detailsBg);
-	}
-}
-
-
 /**
- * Called to create a rotated image for disc art
- * @param {GdiBitmap} img The source image
- * @param {number} w Width of image
- * @param {number} h Height of image
- * @param {number} degrees
+ * Sets the disc art timer with different set interval values for rotating the disc art.
  */
-function rotateImg(img, w, h, degrees) {
-	if (degrees === 0) {
-		return img.Clone(0, 0, img.Width, img.Height).Resize(w, h);
-	}
-
-	/** @type {GdiBitmap} */
-	const rotatedImg = gdi.CreateImage(w, h);
-	const gotGraphics = rotatedImg.GetGraphics();
-	gotGraphics.DrawImage(img, 0, 0, w, h, 0, 0, img.Width, img.Height, degrees);
-	rotatedImg.ReleaseGraphics(gotGraphics);
-
-	return rotatedImg;
-}
-
-
-/** Called as a timer with different user set interval values for rotating disc art  */
-function setupRotationTimer() {
+function setDiscArtRotationTimer() {
 	clearInterval(discArtRotationTimer);
 	if (pref.layout === 'default' && pref.displayDiscArt && discArt && fb.IsPlaying && !fb.IsPaused && pref.spinDiscArt && !displayPlaylist && !displayLibrary && !displayBiography) {
 		console.log(`creating ${pref.spinDiscArtImageCount} rotated disc images, shown every ${pref.spinDiscArtRedrawInterval}ms`);
@@ -2183,8 +2167,8 @@ function setupRotationTimer() {
 			rotatedDiscArtIndex++;
 			rotatedDiscArtIndex %= pref.spinDiscArtImageCount;
 			if (!discArtArray[rotatedDiscArtIndex] && discArt && discArtSize.w) {
-				debugLog(`creating discArtImg: ${rotatedDiscArtIndex} (${discArtSize.w}x${discArtSize.h}) with rotation: ${360 / pref.spinDiscArtImageCount * rotatedDiscArtIndex} degrees`);
-				discArtArray[rotatedDiscArtIndex] = rotateImg(discArt, discArtSize.w, discArtSize.h, 360 / pref.spinDiscArtImageCount * rotatedDiscArtIndex);
+				DebugLog(`creating discArtImg: ${rotatedDiscArtIndex} (${discArtSize.w}x${discArtSize.h}) with rotation: ${360 / pref.spinDiscArtImageCount * rotatedDiscArtIndex} degrees`);
+				discArtArray[rotatedDiscArtIndex] = RotateImg(discArt, discArtSize.w, discArtSize.h, 360 / pref.spinDiscArtImageCount * rotatedDiscArtIndex);
 			}
 			const discArtLeftEdge = pref.detailsAlbumArtOpacity !== 255 || pref.detailsAlbumArtDiscAreaOpacity !== 255 || pref.discArtOnTop ? discArtSize.x : albumArtSize.x + albumArtSize.w - 1; // The first line of discArtImg that will be drawn
 			window.RepaintRect(discArtLeftEdge, discArtSize.y, discArtSize.w - (discArtLeftEdge - discArtSize.x), discArtSize.h, !pref.discArtOnTop && !pref.displayLyrics);
@@ -2196,7 +2180,11 @@ function setupRotationTimer() {
 /////////////////////////////
 // * DETAILS - LABEL ART * //
 /////////////////////////////
-/** Called when drawing drop shadow for label images */
+/**
+ * Creates the drop shadow for label images in Details.
+ * @param {number} width The width.
+ * @param {number} height The height.
+ */
 function createShadowRect(width, height) {
 	const shadow = gdi.CreateImage(width + 2 * geo.discArtShadow, height + 2 * geo.discArtShadow);
 	const shimg = shadow.GetGraphics();
@@ -2208,11 +2196,15 @@ function createShadowRect(width, height) {
 }
 
 
-/** Called when loading label images in Details */
+/**
+ * Loads the label images in Details.
+ * @param {string} publisherString The name of a record label or publisher.
+ * @returns {GdiBitmap} The record label image as a gdi image object.
+ */
 function loadLabelImage(publisherString) {
 	let recordLabel = null;
 	const d = new Date();
-	let labelStr = replaceFileChars(publisherString);
+	let labelStr = ReplaceFileChars(publisherString);
 	if (labelStr) {
 		// * First check for record label folder
 		const lastSrchYear = d.getFullYear();
@@ -2238,7 +2230,7 @@ function loadLabelImage(publisherString) {
 			}
 		}
 		// * Actually load the label from either the directory we found above, or the base record label folder
-		labelStr = replaceFileChars(publisherString); // We need to start over with the original string when searching for the file, just to be safe
+		labelStr = ReplaceFileChars(publisherString); // We need to start over with the original string when searching for the file, just to be safe
 		let label = `${dir + labelStr}.png`;
 		if (IsFile(label)) {
 			recordLabel = gdi.Image(label);
@@ -2266,7 +2258,11 @@ function loadLabelImage(publisherString) {
 /////////////////////////////////
 // * DETAILS - METADATA GRID * //
 /////////////////////////////////
-/** Called when calculating played dates in timeline */
+/**
+ * Calculates date ratios based on various time-related properties of a music track, displayed on the timeline in Details.
+ * @param {boolean} dontUpdateLastPlayed Whether the last played date should be updated or not.
+ * @param {string} currentLastPlayed The current value of the last played time.
+ */
 function calcDateRatios(dontUpdateLastPlayed, currentLastPlayed) {
 	const newDate = new Date();
 	dontUpdateLastPlayed = dontUpdateLastPlayed || false;
@@ -2274,12 +2270,12 @@ function calcDateRatios(dontUpdateLastPlayed, currentLastPlayed) {
 	let lfmPlayedTimesJsonLast = '';
 	let playedTimesJsonLast = '';
 	let playedTimesRatios = [];
-	let added = toTime($('$if2(%added_enhanced%,%added%)'));
-	const firstPlayed = toTime($('$if2(%first_played_enhanced%,%first_played%)'));
-	let lastPlayed = toTime($('$if2(%last_played_enhanced%,%last_played%)'));
-	const today = dateToYMD(newDate);
-	if (dontUpdateLastPlayed && $date(lastPlayed) === today) {
-		lastPlayed = toTime(currentLastPlayed);
+	let added = ToTime($('$if2(%added_enhanced%,%added%)'));
+	const firstPlayed = ToTime($('$if2(%first_played_enhanced%,%first_played%)'));
+	let lastPlayed = ToTime($('$if2(%last_played_enhanced%,%last_played%)'));
+	const today = DateToYMD(newDate);
+	if (dontUpdateLastPlayed && $Date(lastPlayed) === today) {
+		lastPlayed = ToTime(currentLastPlayed);
 	}
 
 	let lfmPlayedTimes = [];
@@ -2290,8 +2286,8 @@ function calcDateRatios(dontUpdateLastPlayed, currentLastPlayed) {
 		const log = ''; // ! Don't need this crap to flood the console // playedTimesJson === playedTimesJsonLast && lastfmJson === lfmPlayedTimesJsonLast ? false : settings.showDebugLog;
 		lfmPlayedTimesJsonLast = lastfmJson;
 		playedTimesJsonLast = playedTimesJson;
-		lfmPlayedTimes = parseJson(lastfmJson, 'lastfm: ', log);
-		playedTimes = parseJson(playedTimesJson, 'foobar: ', log);
+		lfmPlayedTimes = ParseJson(lastfmJson, 'lastfm: ', log);
+		playedTimes = ParseJson(playedTimesJson, 'foobar: ', log);
 	}
 	else {
 		playedTimes.push(firstPlayed);
@@ -2302,10 +2298,10 @@ function calcDateRatios(dontUpdateLastPlayed, currentLastPlayed) {
 		if (!added) {
 			added = firstPlayed;
 		}
-		const age = calcAge(added);
+		const age = CalcAge(added);
 
-		timelineFirstPlayedRatio = calcAgeRatio(firstPlayed, age);
-		timelineLastPlayedRatio = calcAgeRatio(lastPlayed, age);
+		timelineFirstPlayedRatio = CalcAgeRatio(firstPlayed, age);
+		timelineLastPlayedRatio = CalcAgeRatio(lastPlayed, age);
 		if (timelineLastPlayedRatio < timelineFirstPlayedRatio) {
 			// Due to daylight savings time, if there's a single play before the time changed lastPlayed could be < firstPlayed
 			timelineLastPlayedRatio = timelineFirstPlayedRatio;
@@ -2313,7 +2309,7 @@ function calcDateRatios(dontUpdateLastPlayed, currentLastPlayed) {
 
 		if (playedTimes.length) {
 			for (let i = 0; i < playedTimes.length; i++) {
-				const ratio = calcAgeRatio(playedTimes[i], age);
+				const ratio = CalcAgeRatio(playedTimes[i], age);
 				playedTimesRatios.push(ratio);
 			}
 		} else {
@@ -2325,7 +2321,7 @@ function calcDateRatios(dontUpdateLastPlayed, currentLastPlayed) {
 		const tempPlayedTimesRatios = playedTimesRatios.slice();
 		tempPlayedTimesRatios.push(1.0001); // Pick up every last.fm time after lastPlayed fb knows about
 		for (let i = 0; i < tempPlayedTimesRatios.length; i++) {
-			const ratio = calcAgeRatio(lfmPlayedTimes[j], age);
+			const ratio = CalcAgeRatio(lfmPlayedTimes[j], age);
 			while (j < lfmPlayedTimes.length && ratio < tempPlayedTimesRatios[i]) {
 				playedTimesRatios.push(ratio);
 				playedTimes.push(lfmPlayedTimes[j]);
@@ -2350,7 +2346,9 @@ function calcDateRatios(dontUpdateLastPlayed, currentLastPlayed) {
 }
 
 
-/** Called when loading codec logo, displayed in the metadata grid in Details */
+/**
+ * Loads the codec logo of the now playing track, displayed in the metadata grid in Details.
+ */
 function loadCodecLogo() {
 	const codec = $('$lower($if2(%codec%,$ext(%path%)))');
 	const format = $('$lower($ext(%path%))', fb.GetNowPlaying());
@@ -2404,13 +2402,20 @@ function loadCodecLogo() {
 }
 
 
-/** Called when loading release country flags read from tags, displayed in Details */
+/**
+ * Loads the release country flags, displayed in the metadata grid in Details.
+ */
 function loadReleaseCountryFlag() {
 	releaseFlagImg = loadFlagImage($(tf.releaseCountry));
 }
 
 
-/** Called when updating the metadata grid in Details. Reuses last value for last played unless provided one */
+/**
+ * Updates the metadata grid in Details, reuses last value for last played unless provided one.
+ * @param {string} currentLastPlayed The current value of the "Last Played" metadata field.
+ * @param {string} currentPlayingPlaylist The current active playlist that is being played from.
+ * @returns {Array} The updated metadata grid, which is an array of objects with properties `label`, `val` and `age`.
+ */
 function updateMetadataGrid(currentLastPlayed, currentPlayingPlaylist) {
 	currentLastPlayed = (str && str.grid ? str.grid.find(value => value.label === 'Last Played') || {} : {}).val;
 	str.grid = [];
@@ -2419,7 +2424,7 @@ function updateMetadataGrid(currentLastPlayed, currentPlayingPlaylist) {
 		if (val && metadataGrid[k].label) {
 			if (metadataGrid[k].age) {
 				val = $(`$date(${val})`); // Never show time
-				const age = calcAgeDateString(val);
+				const age = CalcAgeDateString(val);
 				if (age) {
 					val += ` (${age})`;
 				}
@@ -2434,16 +2439,16 @@ function updateMetadataGrid(currentLastPlayed, currentPlayingPlaylist) {
 	if (typeof currentLastPlayed !== 'undefined') {
 		const lp = str.grid.find(value => value.label === 'Last Played');
 		if (lp) {
-			lp.val = $date(currentLastPlayed);
-			if (calcAgeDateString(lp.val)) {
-				lp.val += ` (${calcAgeDateString(lp.val)})`;
+			lp.val = $Date(currentLastPlayed);
+			if (CalcAgeDateString(lp.val)) {
+				lp.val += ` (${CalcAgeDateString(lp.val)})`;
 			}
 		}
 	}
 	if (typeof currentPlayingPlaylist !== 'undefined') {
 		const pl = str.grid.find(value => value.label === 'Playing List');
 		if (pl) {
-			pl.val = `${currentPlayingPlaylist}`;
+			pl.val = currentPlayingPlaylist;
 		}
 	}
 	return str.grid;
@@ -2453,7 +2458,9 @@ function updateMetadataGrid(currentLastPlayed, currentPlayingPlaylist) {
 ///////////////////////////////////
 // * PLAYLIST - INITIALIZATION * //
 ///////////////////////////////////
-/** Called when clearing current used color of header and row nowplaying bg to prevent flashing of old primary color */
+/**
+ * Clears current used color of header and row nowplaying bg to prevent flashing from old used primary color.
+ */
 function clearPlaylistNowPlayingBg() {
 	if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
 		g_pl_colors.header_nowplaying_bg = '';
@@ -2462,16 +2469,20 @@ function clearPlaylistNowPlayingBg() {
 }
 
 
-/** Called when initializing the Playlist */
+/**
+ * Initializes the Playlist.
+ */
 function initPlaylist() {
 	playlist = new PlaylistPanel(pref.layout === 'default' && (pref.playlistLayout === 'normal' || pref.playlistLayoutNormal && (displayBiography || pref.displayLyrics)) ? ww * 0.5 : 0, 0);
 	playlist.initialize();
 }
 
 
-/** Called to update the Playlist when content has changed via user activity, e.g adding/removing items or changing playlist */
+/**
+ * Updates the Playlist when content has changed, e.g when adding/removing items or changing the active playlist.
+ */
 function updatePlaylist() {
-	debounce((playlistIndex) => {
+	Debounce((playlistIndex) => {
 		trace_call && console.log('initPlaylistDebounced');
 		playlist.on_playlist_items_added(playlistIndex);
 	}, 100, {
@@ -2484,7 +2495,9 @@ function updatePlaylist() {
 /////////////////////////////
 // * PLAYLIST - CONTROLS * //
 /////////////////////////////
-/** Called when user sorts the Playlist, will sort by defined sort patterns from the config file */
+/**
+ * Sorts the Playlist by sort patterns defined in the config file.
+ */
 function setPlaylistSortOrder() {
 	plman.SortByFormat(plman.ActivePlaylist,
 		pref.playlistSortOrder === 'default' ? settings.playlistSortDefault :
@@ -2503,7 +2516,9 @@ function setPlaylistSortOrder() {
 //////////////////////////////////
 // * LIBRARY - INITIALIZATION * //
 //////////////////////////////////
-/** Called when initializing the Library panel */
+/**
+ * Initializes the Library.
+ */
 function initLibraryPanel() {
 	if (libraryInitialized) return;
 	ui = new UserInterface();
@@ -2524,7 +2539,9 @@ function initLibraryPanel() {
 }
 
 
-/** Called when initializing active Library layout presets */
+/**
+ * Initializes active Library layout presets.
+ */
 function initLibraryLayout() {
 	const libraryLayoutSplitPresets =
 		pref.libraryLayoutSplitPreset || pref.libraryLayoutSplitPreset2 || pref.libraryLayoutSplitPreset3 || pref.libraryLayoutSplitPreset4;
@@ -2626,7 +2643,9 @@ function initLibraryLayout() {
 }
 
 
-/** Called to set Library size and position */
+/**
+ * Sets the Library size and position.
+ */
 function setLibrarySize() {
 	if (!libraryInitialized) return;
 
@@ -2645,7 +2664,9 @@ function setLibrarySize() {
 ////////////////////////////
 // * LIBRARY - CONTROLS * //
 ////////////////////////////
-/** Called to drag and drop items from Library to Playlist in split layout */
+/**
+ * Drags and drops items from Library to Playlist in split layout.
+ */
 function libraryPlaylistDragDrop() {
 	const handleList = pop.getHandleList('newItems');
 	pop.sortIfNeeded(handleList);
@@ -2669,13 +2690,15 @@ function libraryPlaylistDragDrop() {
 /////////////////////////////
 // * LIBRARY - ALBUM ART * //
 /////////////////////////////
-/** Called to dynamically resize Library album cover thumbnails */
+/**
+ * Dynamically resizes Library album cover thumbnails based on the player size.
+ */
 function autoThumbnailSize() {
 	if (pref.libraryThumbnailSize !== 'auto') return;
 	const noStd = ['coversLabelsRight', 'artistLabelsRight'].includes(pref.libraryDesign) || ppt.albumArtLabelType === 2;
 	const fullW = pref.libraryLayout === 'full' && pref.layout === 'default';
 
-	if (!is_4k && !is_QHD) {
+	if (!RES_4K && !RES_QHD) {
 		if (pref.layout === 'default' && ww < 1600 && wh < 960 || pref.layout === 'artwork' && ww < 700 && wh < 860) {
 			ppt.thumbNailSize = noStd && fullW ? 1 : noStd && !fullW ? 0 : // Thumbnail size 'Small' or 'Mini'
 			pref.layout === 'artwork' ? 1 : 2; // Thumbnail size 'Small' or 'Regular'
@@ -2692,7 +2715,7 @@ function autoThumbnailSize() {
 			ppt.verticalAlbumArtPad = 2;
 		}
 	}
-	else if (is_QHD) {
+	else if (RES_QHD) {
 		if (pref.layout === 'default' && ww < 1802 && wh < 1061 || pref.layout === 'artwork' && ww < 901 && wh < 1061) {
 			ppt.thumbNailSize = noStd && fullW ? 1 : noStd && !fullW ? 0 : // Thumbnail size 'Small' or 'Mini'
 			pref.layout === 'artwork' ? 1 : 2; // Thumbnail size 'Small' or 'Regular'
@@ -2709,7 +2732,7 @@ function autoThumbnailSize() {
 			ppt.verticalAlbumArtPad = fullW ? 2 : 3;
 		}
 	}
-	else if (is_4k) {
+	else if (RES_4K) {
 		if (pref.layout === 'default' && ww < 2800 && wh < 1720 || pref.layout === 'artwork' && ww < 1400 && wh < 1720) {
 			ppt.thumbNailSize = noStd && fullW ? 1 : noStd && !fullW ? 0 : // Thumbnail size 'Small' or 'Mini'
 			fullW ? 2 : 1;  // Thumbnail size 'Small'
@@ -2733,7 +2756,9 @@ function autoThumbnailSize() {
 ////////////////////////////////////
 // * BIOGRAPHY - INITIALIZATION * //
 ////////////////////////////////////
-/** Called when initializing the Biography panel */
+/**
+ * Initializes the Biography.
+ */
 function initBiographyPanel() {
 	if (biographyInitialized) return;
 	uiBio = new UserInterfaceBio();
@@ -2764,7 +2789,9 @@ function initBiographyPanel() {
 }
 
 
-/** Called when initializing active Biography layout presets */
+/**
+ * Initializes active Biography layout presets.
+ */
 function initBiographyLayout() {
 	if (pref.biographyLayoutFullPreset) {
 		pptBio.style = pref.biographyLayoutFullPreset && pref.layout === 'default' && pref.biographyLayout === 'full' ? 3 : 0;
@@ -2776,7 +2803,9 @@ function initBiographyLayout() {
 }
 
 
-/** Called to set Biography size and position */
+/**
+ * Sets the Biography size and position.
+ */
 function setBiographySize() {
 	if (!biographyInitialized) return;
 
@@ -2786,15 +2815,15 @@ function setBiographySize() {
 	const biographyHeight = Math.max(0, wh - geo.lowerBarHeight - y);
 
 	// * Set guard for fixed Biography margin sizes in case user changed them in Biography options
-	pptBio.borT  = scaleForDisplay(30);
-	pptBio.borL  = scaleForDisplay(pref.layout === 'artwork' ? 30 : 40);
-	pptBio.borR  = scaleForDisplay(pref.layout === 'artwork' ? 30 : 40);
-	pptBio.borB  = scaleForDisplay(30);
-	pptBio.textT = scaleForDisplay(30);
-	pptBio.textL = scaleForDisplay(pref.layout === 'artwork' ? 30 : 40);
-	pptBio.textR = scaleForDisplay(pref.layout === 'artwork' ? 30 : 40);
-	pptBio.textB = scaleForDisplay(30);
-	pptBio.gap   = scaleForDisplay(15);
+	pptBio.borT  = SCALE(30);
+	pptBio.borL  = SCALE(pref.layout === 'artwork' ? 30 : 40);
+	pptBio.borR  = SCALE(pref.layout === 'artwork' ? 30 : 40);
+	pptBio.borB  = SCALE(30);
+	pptBio.textT = SCALE(30);
+	pptBio.textL = SCALE(pref.layout === 'artwork' ? 30 : 40);
+	pptBio.textR = SCALE(pref.layout === 'artwork' ? 30 : 40);
+	pptBio.textB = SCALE(30);
+	pptBio.gap   = SCALE(15);
 
 	biographyPanel.on_size(x, y, biographyWidth, biographyHeight);
 }
@@ -2803,7 +2832,9 @@ function setBiographySize() {
 /////////////////////////////////
 // * LYRICS - INITIALIZATION * //
 /////////////////////////////////
-/** Called when initializing lyrics of now playing song */
+/**
+ * Initializes Lyrics of the now playing song.
+ */
 function initLyrics() {
 	lyrics = new Lyrics();
     lyrics.on_size(albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h);
@@ -2811,7 +2842,9 @@ function initLyrics() {
 }
 
 
-/** Called when using lyrics panel on startup or remember lyrics panel state */
+/**
+ * Displays Lyrics on startup or when remembering the Lyrics panel state.
+ */
 function displayLyrics() {
 	fb.Play();
 	displayPlaylist = pref.layout === 'default';

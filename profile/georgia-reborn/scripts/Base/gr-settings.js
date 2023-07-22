@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-02                                          * //
+// * Last change:    2023-07-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,6 +16,29 @@
 ///////////////////
 // * VARIABLES * //
 ///////////////////
+/** @type {string} The Georgia-ReBORN config file path. */
+const configPath = `${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc`;
+/** @type {Configuration} The Georgia-ReBORN config object. */
+const config = new Configuration(configPath);
+/** @type {string} The Georgia-ReBORN custom config file path. */
+const configPathCustom = `${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc`;
+/** @type {Configuration} The Georgia-ReBORN custom config object. */
+const configCustom = new Configuration(configPathCustom);
+/** @type {string} The Georgia-ReBORN current version. */
+const currentVersion = '3.0-RC1';
+/** @type {string} The Georgia-ReBORN version will be overwritten when loaded from config file. */
+let configVersion = currentVersion;
+/** @type {string} The Georgia-ReBORN version will be shown on the right side of the lower bar when nothing is playing. */
+let lowerBarStoppedTime = `Georgia-ReBORN v${currentVersion}`;
+/** @type {boolean} The update state if a new update is available on Github releases page. */
+let updateAvailable = false;
+/** @type {Hyperlink} The update link will be shown on the right side of the lower bar. */
+let updateHyperlink;
+/** @type {number} The update retry, don't hammer the server if it's not working, used only in checkForUpdates(). */
+let updateRetryCount = 0;
+/** @type {number} The update timeout timer used only in scheduleUpdateCheck(). */
+let updateTimer;
+
 /** @type {*} */
 const pref = new PanelProperties();
 /** @type {*} */
@@ -53,7 +76,7 @@ let themeSettings = {};
 /** @type {MetadataGridEntry[]} */
 let metadataGrid;
 
-// * Custom
+// * Custom theme
 /** @type {*} */
 let customFont = {};
 /** @type {*} */
@@ -79,11 +102,6 @@ let customTheme09 = {};
 /** @type {*} */
 let customTheme10 = {};
 
-const currentVersion = '3.0-RC1';
-let configVersion = currentVersion; // Will be overwritten when loaded from config file
-let updateAvailable = false;
-let updateHyperlink;
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ! THEME PROPERTIES - AFTER INITIAL RUN, THESE VALUES ARE CHANGED IN OPTIONS MENU OR BY RIGHT CLICK >> PROPERTIES AND NOT HERE ! //
@@ -91,7 +109,7 @@ let updateHyperlink;
 pref.add_properties({
 	version: ['Georgia-ReBORN - #Version: Do not hand edit!', currentVersion],
 
-	// * Settings chronological ordered by Options top menu
+	// * Settings chronological ordered by top menu > Options
 
 	// * Theme
 	theme:                              ['Georgia-ReBORN - 01. Theme:', 'reborn'], // Use reborn theme as default
@@ -487,12 +505,12 @@ pref.add_properties({
 
 	// * System
 	savedLayout:                        ['Georgia-ReBORN - 16. System: Saved layout', 'default'], // Default saved layout
-	savedWidth_default:                 ['Georgia-ReBORN - 16. System: Saved width (Default)',  is_4k ? 2800 : is_QHD ? 1280 : 1140], // Default saved width for Default layout
-	savedHeight_default:                ['Georgia-ReBORN - 16. System: Saved height (Default)', is_4k ? 1720 : is_QHD ?  800 :  730], // Default saved height for Default layout
-	savedWidth_artwork:                 ['Georgia-ReBORN - 16. System: Saved width (Artwork)',  is_4k ? 1052 : is_QHD ?  640 :  526], // Default saved width for Artwork layout
-	savedHeight_artwork:                ['Georgia-ReBORN - 16. System: Saved height (Artwork)', is_4k ? 1372 : is_QHD ?  800 :  686], // Default saved height for Artwork layout
-	savedWidth_compact:                 ['Georgia-ReBORN - 16. System: Saved width (Compact)',  is_4k ?  964 : is_QHD ?  540 :  484], // Default saved width for Compact layout
-	savedHeight_compact:                ['Georgia-ReBORN - 16. System: Saved height (Compact)', is_4k ? 1720 : is_QHD ?  800 :  730], // Default saved height for Compact layout
+	savedWidth_default:                 ['Georgia-ReBORN - 16. System: Saved width (Default)',  RES_4K ? 2800 : RES_QHD ? 1280 : 1140], // Default saved width for Default layout
+	savedHeight_default:                ['Georgia-ReBORN - 16. System: Saved height (Default)', RES_4K ? 1720 : RES_QHD ?  800 :  730], // Default saved height for Default layout
+	savedWidth_artwork:                 ['Georgia-ReBORN - 16. System: Saved width (Artwork)',  RES_4K ? 1052 : RES_QHD ?  640 :  526], // Default saved width for Artwork layout
+	savedHeight_artwork:                ['Georgia-ReBORN - 16. System: Saved height (Artwork)', RES_4K ? 1372 : RES_QHD ?  800 :  686], // Default saved height for Artwork layout
+	savedWidth_compact:                 ['Georgia-ReBORN - 16. System: Saved width (Compact)',  RES_4K ?  964 : RES_QHD ?  540 :  484], // Default saved width for Compact layout
+	savedHeight_compact:                ['Georgia-ReBORN - 16. System: Saved height (Compact)', RES_4K ? 1720 : RES_QHD ?  800 :  730], // Default saved height for Compact layout
 	systemFirstLaunch:                  ['Georgia-ReBORN - 16. System: First launch', true], // true: Init and reset to theme factory settings
 	checkForUpdates:                    ['Georgia-ReBORN - 16. System: Check for Updates', true], // true: Check github repo to determine if updates exist
 	loadAsync:                          ['Georgia-ReBORN - 16. System: Load Theme Asynchronously', true] // Loads individual theme files asynchronously at startup to reduce risk of FSM throwing slow script error on startup
@@ -502,6 +520,7 @@ pref.add_properties({
 
 
 // * Fixup properties
+/** @type {string} */
 const savedLayout = pref.savedLayout;
 if (savedLayout !== 'default' || savedLayout !== 'artwork' || savedLayout !== 'compact') {
 	pref.savedLayout = 'default';
@@ -511,7 +530,11 @@ if (savedLayout !== 'default' || savedLayout !== 'artwork' || savedLayout !== 'c
 ////////////////////////
 // * THEME SETTINGS * //
 ////////////////////////
-/** Loads default theme settings when pref.customThemeSettings is false, otherwise it loads settings from the config file. When using with the parameter, it saves all settings to the config file. */
+/**
+ * Loads default theme settings when pref.customThemeSettings is false, otherwise it loads settings from the config file.
+ * When using with the parameter, it saves all settings to the config file.
+ * @param {boolean} save Saves current used theme settings to config file.
+ */
 async function setThemeSettings(save) {
 	const custom = pref.customThemeSettings;
 	libraryCanReload = false;
@@ -693,45 +716,45 @@ async function setThemeSettings(save) {
 		themeFontSize.lyricsFontSize_default = pref.lyricsFontSize_default;
 		themeFontSize.lyricsFontSize_artwork = pref.lyricsFontSize_artwork;
 	} else {
-		pref.menuFontSize_default = custom ? themeFontSize.menuFontSize_default : is_QHD ? 14 : 12;
-		pref.menuFontSize_artwork = custom ? themeFontSize.menuFontSize_artwork : is_QHD ? 14 : 12;
-		pref.menuFontSize_compact = custom ? themeFontSize.menuFontSize_compact : is_QHD ? 14 : 12;
-		pref.lowerBarFontSize_default = custom ? themeFontSize.lowerBarFontSize_default : is_QHD ? 20 : 18;
-		pref.lowerBarFontSize_artwork = custom ? themeFontSize.lowerBarFontSize_artwork : is_QHD ? 18 : 16;
-		pref.lowerBarFontSize_compact = custom ? themeFontSize.lowerBarFontSize_compact : is_QHD ? 18 : 16;
-		pref.notificationFontSize_default = custom ? themeFontSize.notificationFontSize_default : is_QHD ? 20 : 18;
-		pref.notificationFontSize_artwork = custom ? themeFontSize.notificationFontSize_artwork : is_QHD ? 18 : 16;
-		pref.notificationFontSize_compact = custom ? themeFontSize.notificationFontSize_compact : is_QHD ? 18 : 16;
-		pref.popupFontSize_default = custom ? themeFontSize.popupFontSize_default : is_QHD ? 18 : 16;
-		pref.popupFontSize_artwork = custom ? themeFontSize.popupFontSize_artwork : is_QHD ? 16 : 14;
-		pref.popupFontSize_compact = custom ? themeFontSize.popupFontSize_compact : is_QHD ? 16 : 14;
-		pref.tooltipFontSize_default = custom ? themeFontSize.tooltipFontSize_default : is_QHD ? 18 : 16;
-		pref.tooltipFontSize_artwork = custom ? themeFontSize.tooltipFontSize_artwork : is_QHD ? 16 : 14;
-		pref.tooltipFontSize_compact = custom ? themeFontSize.tooltipFontSize_compact : is_QHD ? 16 : 14;
-		pref.gridArtistFontSize_default = custom ? themeFontSize.gridArtistFontSize_default : is_QHD ? 20 : 18;
-		pref.gridArtistFontSize_artwork = custom ? themeFontSize.gridArtistFontSize_artwork : is_QHD ? 20 : 18;
-		pref.gridTrackNumFontSize_default = custom ? themeFontSize.gridTrackNumFontSize_default : is_QHD ? 20 : 18;
-		pref.gridTrackNumFontSize_artwork = custom ? themeFontSize.gridTrackNumFontSize_artwork : is_QHD ? 20 : 18;
-		pref.gridTitleFontSize_default = custom ? themeFontSize.gridTitleFontSize_default : is_QHD ? 20 : 18;
-		pref.gridTitleFontSize_artwork = custom ? themeFontSize.gridTitleFontSize_artwork : is_QHD ? 20 : 18;
-		pref.gridAlbumFontSize_default = custom ? themeFontSize.gridAlbumFontSize_default : is_QHD ? 20 : 18;
-		pref.gridAlbumFontSize_artwork = custom ? themeFontSize.gridAlbumFontSize_artwork : is_QHD ? 20 : 18;
-		pref.gridKeyFontSize_default = custom ? themeFontSize.gridKeyFontSize_default : is_QHD ? 19 : 17;
-		pref.gridKeyFontSize_artwork = custom ? themeFontSize.gridKeyFontSize_artwork : is_QHD ? 19 : 17;
-		pref.gridValueFontSize_default = custom ? themeFontSize.gridValueFontSize_default : is_QHD ? 19 : 17;
-		pref.gridValueFontSize_artwork = custom ? themeFontSize.gridValueFontSize_artwork : is_QHD ? 19 : 17;
-		pref.playlistHeaderFontSize_default = custom ? themeFontSize.playlistHeaderFontSize_default : is_QHD ? 17 : 15;
-		pref.playlistHeaderFontSize_artwork = custom ? themeFontSize.playlistHeaderFontSize_artwork : is_QHD ? 17 : 15;
-		pref.playlistHeaderFontSize_compact = custom ? themeFontSize.playlistHeaderFontSize_compact : is_QHD ? 17 : 15;
-		pref.playlistFontSize_default = custom ? themeFontSize.playlistFontSize_default : is_QHD ? 14 : 12;
-		pref.playlistFontSize_artwork = custom ? themeFontSize.playlistFontSize_artwork : is_QHD ? 14 : 12;
-		pref.playlistFontSize_compact = custom ? themeFontSize.playlistFontSize_compact : is_QHD ? 14 : 12;
-		pref.libraryFontSize_default = custom ? themeFontSize.libraryFontSize_default : is_4k ? 24 : is_QHD ? 14 : 12;
-		pref.libraryFontSize_artwork = custom ? themeFontSize.libraryFontSize_artwork : is_4k ? 24 : is_QHD ? 14 : 12;
-		pref.biographyFontSize_default = custom ? themeFontSize.biographyFontSize_default : is_4k ? 24 : is_QHD ? 14 : 12;
-		pref.biographyFontSize_artwork = custom ? themeFontSize.biographyFontSize_artwork : is_4k ? 24 : is_QHD ? 14 : 12;
-		pref.lyricsFontSize_default = custom ? themeFontSize.lyricsFontSize_default : is_QHD ? 22 : 20;
-		pref.lyricsFontSize_artwork = custom ? themeFontSize.lyricsFontSize_artwork : is_QHD ? 22 : 20;
+		pref.menuFontSize_default = custom ? themeFontSize.menuFontSize_default : RES_QHD ? 14 : 12;
+		pref.menuFontSize_artwork = custom ? themeFontSize.menuFontSize_artwork : RES_QHD ? 14 : 12;
+		pref.menuFontSize_compact = custom ? themeFontSize.menuFontSize_compact : RES_QHD ? 14 : 12;
+		pref.lowerBarFontSize_default = custom ? themeFontSize.lowerBarFontSize_default : RES_QHD ? 20 : 18;
+		pref.lowerBarFontSize_artwork = custom ? themeFontSize.lowerBarFontSize_artwork : RES_QHD ? 18 : 16;
+		pref.lowerBarFontSize_compact = custom ? themeFontSize.lowerBarFontSize_compact : RES_QHD ? 18 : 16;
+		pref.notificationFontSize_default = custom ? themeFontSize.notificationFontSize_default : RES_QHD ? 20 : 18;
+		pref.notificationFontSize_artwork = custom ? themeFontSize.notificationFontSize_artwork : RES_QHD ? 18 : 16;
+		pref.notificationFontSize_compact = custom ? themeFontSize.notificationFontSize_compact : RES_QHD ? 18 : 16;
+		pref.popupFontSize_default = custom ? themeFontSize.popupFontSize_default : RES_QHD ? 18 : 16;
+		pref.popupFontSize_artwork = custom ? themeFontSize.popupFontSize_artwork : RES_QHD ? 16 : 14;
+		pref.popupFontSize_compact = custom ? themeFontSize.popupFontSize_compact : RES_QHD ? 16 : 14;
+		pref.tooltipFontSize_default = custom ? themeFontSize.tooltipFontSize_default : RES_QHD ? 18 : 16;
+		pref.tooltipFontSize_artwork = custom ? themeFontSize.tooltipFontSize_artwork : RES_QHD ? 16 : 14;
+		pref.tooltipFontSize_compact = custom ? themeFontSize.tooltipFontSize_compact : RES_QHD ? 16 : 14;
+		pref.gridArtistFontSize_default = custom ? themeFontSize.gridArtistFontSize_default : RES_QHD ? 20 : 18;
+		pref.gridArtistFontSize_artwork = custom ? themeFontSize.gridArtistFontSize_artwork : RES_QHD ? 20 : 18;
+		pref.gridTrackNumFontSize_default = custom ? themeFontSize.gridTrackNumFontSize_default : RES_QHD ? 20 : 18;
+		pref.gridTrackNumFontSize_artwork = custom ? themeFontSize.gridTrackNumFontSize_artwork : RES_QHD ? 20 : 18;
+		pref.gridTitleFontSize_default = custom ? themeFontSize.gridTitleFontSize_default : RES_QHD ? 20 : 18;
+		pref.gridTitleFontSize_artwork = custom ? themeFontSize.gridTitleFontSize_artwork : RES_QHD ? 20 : 18;
+		pref.gridAlbumFontSize_default = custom ? themeFontSize.gridAlbumFontSize_default : RES_QHD ? 20 : 18;
+		pref.gridAlbumFontSize_artwork = custom ? themeFontSize.gridAlbumFontSize_artwork : RES_QHD ? 20 : 18;
+		pref.gridKeyFontSize_default = custom ? themeFontSize.gridKeyFontSize_default : RES_QHD ? 19 : 17;
+		pref.gridKeyFontSize_artwork = custom ? themeFontSize.gridKeyFontSize_artwork : RES_QHD ? 19 : 17;
+		pref.gridValueFontSize_default = custom ? themeFontSize.gridValueFontSize_default : RES_QHD ? 19 : 17;
+		pref.gridValueFontSize_artwork = custom ? themeFontSize.gridValueFontSize_artwork : RES_QHD ? 19 : 17;
+		pref.playlistHeaderFontSize_default = custom ? themeFontSize.playlistHeaderFontSize_default : RES_QHD ? 17 : 15;
+		pref.playlistHeaderFontSize_artwork = custom ? themeFontSize.playlistHeaderFontSize_artwork : RES_QHD ? 17 : 15;
+		pref.playlistHeaderFontSize_compact = custom ? themeFontSize.playlistHeaderFontSize_compact : RES_QHD ? 17 : 15;
+		pref.playlistFontSize_default = custom ? themeFontSize.playlistFontSize_default : RES_QHD ? 14 : 12;
+		pref.playlistFontSize_artwork = custom ? themeFontSize.playlistFontSize_artwork : RES_QHD ? 14 : 12;
+		pref.playlistFontSize_compact = custom ? themeFontSize.playlistFontSize_compact : RES_QHD ? 14 : 12;
+		pref.libraryFontSize_default = custom ? themeFontSize.libraryFontSize_default : RES_4K ? 24 : RES_QHD ? 14 : 12;
+		pref.libraryFontSize_artwork = custom ? themeFontSize.libraryFontSize_artwork : RES_4K ? 24 : RES_QHD ? 14 : 12;
+		pref.biographyFontSize_default = custom ? themeFontSize.biographyFontSize_default : RES_4K ? 24 : RES_QHD ? 14 : 12;
+		pref.biographyFontSize_artwork = custom ? themeFontSize.biographyFontSize_artwork : RES_4K ? 24 : RES_QHD ? 14 : 12;
+		pref.lyricsFontSize_default = custom ? themeFontSize.lyricsFontSize_default : RES_QHD ? 22 : 20;
+		pref.lyricsFontSize_artwork = custom ? themeFontSize.lyricsFontSize_artwork : RES_QHD ? 22 : 20;
 	}
 
 	// * Player controls
@@ -1457,7 +1480,7 @@ async function setThemeSettings(save) {
 		pref.disableRightClick = custom ? themeSettings.disableRightClick : true;
 	}
 
-	// * Not in cfg or options menu
+	// * Not in the config nor in the Options menu
 	ppt.albumArtDropShadow = pref.libraryThumbnailBorder === 'shadow';
 	pptBio.largerSyncLyricLine = pref.lyricsLargerCurrentSync;
 
@@ -1474,13 +1497,6 @@ async function setThemeSettings(save) {
 /////////////////////
 // * CONFIG FILE * //
 /////////////////////
-let stoppedTime = `Georgia-ReBORN v${currentVersion}`;
-const configPath = `${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc`;
-const config = new Configuration(configPath);
-const configPathCustom = `${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc`;
-const configCustom = new Configuration(configPathCustom);
-const titleformat = {};
-
 if (!config.fileExists) {
 	tf = config.addConfigurationObject(titleFormatSchema, defaultTitleFormatStrings, titleFormatComments);
 	config.addConfigurationObject(imgPathSchema, imgPathDefaults);
@@ -1568,7 +1584,7 @@ if (config.fileExists) {
 	themeSettings  = config.addConfigurationObject(themeSettingsSchema, Object.assign({}, themeSettingsDefaults, prefs.themeSettings), themeSettingsComments);
 	settings       = config.addConfigurationObject(settingsSchema, Object.assign({}, settingsDefaults, prefs.settings), settingsComments);
 
-	/* Safety checks. Fix up potentially bad vals from config */
+	// Safety checks. Fix up potentially bad vals from config
 	settings.discArtBasename = settings.discArtBasename && settings.discArtBasename.trim().length ? settings.discArtBasename.trim() : 'cd';
 	settings.artworkDisplayTime = Math.min(Math.max(settings.artworkDisplayTime, 5), 120);	// Ensure min of 5sec and max of 120sec
 
@@ -1688,12 +1704,17 @@ pref.cdart_path_scans        = `$directory_path(%path%)\\Scans\\${settings.discA
 ////////////////////////////
 // * THEME UPDATE CHECK * //
 ////////////////////////////
+/**
+ * Compares the latest version with the existing config version.
+ * @param {string} version The latest version.
+ * @param {string} storedVersion The config version.
+ */
 function migrateCheck(version, storedVersion) {
 	/**
-	 * Adds or Replaces value in the grid with updated string from defaults
-	 * @param {MetadataGridEntry[]} grid
-	 * @param {string} label Label of the value to add or replace
-	 * @param {number} position 0-based index of place to insert new value if existing entry not found
+	 * Adds or Replaces value in the metadata grid with updated string from defaults.
+	 * @param {MetadataGridEntry[]} grid Each element in the array is an object with a `label` property.
+	 * @param {string} label The label of the value to add or replace.
+	 * @param {number} position 0-based index of place to insert new value if existing entry not found.
 	 */
 	const replaceGridEntry = (grid, label, position) => {
 		const entryIdx = grid.findIndex(gridEntry => gridEntry && gridEntry.label.toLowerCase() === label.toLowerCase());
@@ -1733,21 +1754,24 @@ function migrateCheck(version, storedVersion) {
 }
 
 
-let retryCount = 0; // Don't hammer if it's not working
+/**
+ * Checks if there is a new update available, called in Options > Help > Theme > Updates > Check for latest theme update.
+ * @param {boolean} openUrl Opens the Georgia-ReBORN Github releases page when hyperlink is available.
+ */
 function checkForUpdates(openUrl) {
 	const url = 'https://api.github.com/repos/TT-ReBORN/Georgia-ReBORN/tags';
-	makeHttpRequest('GET', url, (resp) => {
+	MakeHttpRequest('GET', url, (resp) => {
 		try {
 			const respObj = JSON.parse(resp);
-			updateAvailable = isNewerVersion(currentVersion, respObj[0].name);
+			updateAvailable = IsNewerVersion(currentVersion, respObj[0].name);
 			console.log(`Current released version of Georgia-ReBORN: v${respObj[0].name}`);
 			if (updateAvailable) {
 				console.log('>>> Georgia-ReBORN new update available. Download it from here: https://github.com/TT-ReBORN/Georgia-ReBORN/releases');
 				updateHyperlink = new Hyperlink('New Update Available', ft.lower_bar_title, 'update', 0, 0, window.Width);
 				if (updateHyperlink) {
-					stoppedTime = '';
+					lowerBarStoppedTime = '';
 					if (!fb.IsPlaying) {
-						str.time = stoppedTime;
+						str.time = lowerBarStoppedTime;
 						repaintWindow();
 					}
 					if (openUrl) {
@@ -1758,9 +1782,9 @@ function checkForUpdates(openUrl) {
 				console.log('You are on the most current version of Georgia-ReBORN');
 			}
 		} catch (e) {
-			if (!updateHyperlink && retryCount < 3) {
+			if (!updateHyperlink && updateRetryCount < 3) {
 				// updateHyperlink failed to be created somehow. Let's check again after 1 minute.
-				retryCount++;
+				updateRetryCount++;
 				updateAvailable = false;
 				scheduleUpdateCheck(61000);
 			}
@@ -1770,10 +1794,9 @@ function checkForUpdates(openUrl) {
 
 
 /**
- * Schedule an update check. Set at startup and then typically every 24 hours after unless an update is found
- * @param {number} delay in milliseconds
+ * Schedules an update check. Sets at startup and then typically every 24 hours after unless an update is found.
+ * @param {number} delay In milliseconds.
  */
-let updateTimer;
 function scheduleUpdateCheck(delay) {
 	clearTimeout(updateTimer);
 	updateTimer = setTimeout(() => {

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-13                                          * //
+// * Last change:    2023-07-22                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,18 +16,32 @@
 ///////////////////
 // * VARIABLES * //
 ///////////////////
-/** @type {PlaylistPanel} */
+/** @type {PlaylistPanel} The playlist object. */
 let playlist;
+/** @type {number} The playlist drop index used for drag and drop in the split layout. */
 let playlistDropIndex;
+/** @type {boolean} The playlist fonts creation state. */
 let playlistFontsCreated = false;
-let playlistThumbSize = scaleForDisplay(64); // Default
-let g_pl_fonts = {};
-const playlist_geo = {};
-const g_pl_colors = {};
-const mouse_move_suppress = new qwr_utils.MouseMoveSuppress();
-const key_down_suppress = new qwr_utils.KeyModifiersSuppress();
+/** @type {number} The playlist thumbnail size defaults are 64 pixels in HD 128 in 4k. */
+let playlistThumbSize = SCALE(64);
+/** @type {FbMetadbHandle[]} The list of handles that we are loading artwork for. */
+const playlistThumbList = new Set();
 
-/** @enum{number} */
+/** @type {Object} The playlist geometry object. */
+const playlist_geo = {};
+/** @type {Object} The playlist colors object. */
+const g_pl_colors = {};
+/** @type {Object} The playlist fonts object. */
+let g_pl_fonts = {};
+/** @type {Object} The key down suppress utility handler. */
+const key_down_suppress = new qwr_utils.KeyModifiersSuppress();
+/** @type {Object} The mouse move suppress utility handler. */
+const mouse_move_suppress = new qwr_utils.MouseMoveSuppress();
+
+/**
+ * A set of drag and drop action settings.
+ * @enum {number}
+ */
 const g_drop_effect = {
 	none:   0,
 	copy:   1,
@@ -37,6 +51,29 @@ const g_drop_effect = {
 };
 
 /**
+ * A set of playlist history state settings.
+ * @enum {string}
+ */
+const PlaylistMutation = {
+	Added:     'Playlist added',
+	Init:      'Playlist initializing history',
+	Removed:   'Playlist removed',
+	Reordered: 'Playlist reordered',
+	Switch:    'Playlist switch'
+}
+
+/**
+ * A set of playlist row state settings.
+ * @enum {number}
+ */
+const rowState = {
+	normal:  0,
+	hovered: 1,
+	pressed: 2
+};
+
+/**
+ * A set of playlist item visibility state settings.
  * @enum {number}
  */
 const visibility_state = {
@@ -50,6 +87,10 @@ const visibility_state = {
 ////////////////////
 // * PROPERTIES * //
 ////////////////////
+/**
+ * Adds main playlist panel properties to the SMP properties.
+ * Default values for grouping data are set in it's class constructor.
+ */
 g_properties.add_properties(
 	{
 		rows_in_header:              ['Panel Playlist - User: Header.normal.row_count', 4],
@@ -74,7 +115,6 @@ g_properties.add_properties(
 		collapse_on_playlist_switch: ['Panel Playlist - User: Header.collapse.on_playlist_switch', false],
 		collapse_on_start:           ['Panel Playlist - User: Header.collapse.on_start', false],
 
-		// Default values for grouping data are set in it's class ctor
 		playlist_group_data:         ['Panel Playlist - System: Playlist.grouping.data_list', ''],
 		playlist_custom_group_data:  ['Panel Playlist - System: Playlist.grouping.custom_data_list', ''],
 		default_group_name:          ['Panel Playlist - System: Playlist.grouping.default_preset_name', ''],
@@ -83,9 +123,9 @@ g_properties.add_properties(
 );
 
 // * Fixup properties
-// Grouping data is validated in it's class ctor
 g_properties.rows_in_header = Math.max(0, g_properties.rows_in_header);
 g_properties.rows_in_compact_header = Math.max(0, g_properties.rows_in_compact_header);
+
 // * Fix playlist panel state at startup
 if (pref.libraryLayoutSplitPreset || pref.libraryLayoutSplitPreset3 || pref.libraryLayoutSplitPreset4) {
 	g_properties.auto_collapse = pref.showPanelOnStartup === 'library';
@@ -118,37 +158,36 @@ const coverFont       = pref.customThemeFonts ? customFont.playlistCover       :
 const playcountFont = pref.customThemeFonts ? customFont.playlistPlaycount : 'Segoe UI';
 
 
+/**
+ * Creates and assigns playlist fonts.
+ */
 function createPlaylistFonts() {
 	const headerFontSize = pref.layout === 'compact' ? pref.playlistHeaderFontSize_compact : pref.layout === 'artwork' ? pref.playlistHeaderFontSize_artwork : pref.playlistHeaderFontSize_default;
 	const rowFontSize    = pref.layout === 'compact' ? pref.playlistFontSize_compact       : pref.layout === 'artwork' ? pref.playlistFontSize_artwork       : pref.playlistFontSize_default;
 
-	function font(name, size, style) {
-		return gdi.Font(name, is_4k ? size * 2 : size, style);
-	}
 	g_pl_fonts = {
-		title_normal:   font(titleNormalFont, rowFontSize),
-		title_selected: font(titleSelectedFont, rowFontSize),
-		title_playing:  font(titlePlayingFont, rowFontSize),
+		title_normal:   Font(titleNormalFont, rowFontSize),
+		title_selected: Font(titleSelectedFont, rowFontSize),
+		title_playing:  Font(titlePlayingFont, rowFontSize),
 
-		artist_normal:          font(artistNormalFont, headerFontSize + 3, pref.customThemeFonts ? g_font_style.bold : 0),
-		artist_playing:         font(artistPlayingFont, headerFontSize + 3, pref.customThemeFonts ? g_font_style.bold : 0),
-		artist_normal_compact:  font(artistNormalCompactFont, headerFontSize),
-		artist_playing_compact: font(artistPlayingCompactFont, headerFontSize, g_font_style.underline),
+		artist_normal:          Font(artistNormalFont, headerFontSize + 3, pref.customThemeFonts ? g_font_style.bold : 0),
+		artist_playing:         Font(artistPlayingFont, headerFontSize + 3, pref.customThemeFonts ? g_font_style.bold : 0),
+		artist_normal_compact:  Font(artistNormalCompactFont, headerFontSize),
+		artist_playing_compact: Font(artistPlayingCompactFont, headerFontSize, g_font_style.underline),
 
-		album:          font(albumFont, headerFontSize),
-		date:           font(dateFont, headerFontSize + 3),
-		date_compact:   font(dateCompactFont, headerFontSize),
-		info:           font(infoFont, rowFontSize - 1),
-		cover:          font(coverFont, rowFontSize - 1),
+		album:          Font(albumFont, headerFontSize),
+		date:           Font(dateFont, headerFontSize + 3),
+		date_compact:   Font(dateCompactFont, headerFontSize),
+		info:           Font(infoFont, rowFontSize - 1),
+		cover:          Font(coverFont, rowFontSize - 1),
 
-		playcount:      font(playcountFont, rowFontSize - 3),
-		rating_not_set: font('Segoe UI Symbol', rowFontSize + 2),
-		rating_set:     font('Segoe UI Symbol', rowFontSize + 4),
-		scrollbar:      font('Segoe UI Symbol', headerFontSize),
+		playcount:      Font(playcountFont, rowFontSize - 3),
+		rating_not_set: Font('Segoe UI Symbol', rowFontSize + 2),
+		rating_set:     Font('Segoe UI Symbol', rowFontSize + 4),
+		scrollbar:      Font('Segoe UI Symbol', headerFontSize),
 
-		font_awesome:   font('FontAwesome', rowFontSize + 2),
-
-		dummy_text:     font(fontDefault, rowFontSize + 1)
+		font_awesome:   Font('FontAwesome', rowFontSize + 2),
+		dummy_text:     Font(fontDefault, rowFontSize + 1)
 	};
 	playlistFontsCreated = true;
 }
@@ -158,7 +197,8 @@ function createPlaylistFonts() {
 // * GEOMETRY * //
 //////////////////
 /**
- * @param {boolean=} forceRescale
+ * Rescales the playlist based on the font size settings and creates playlist fonts if they haven't been created already.
+ * @param {boolean=} forceRescale Whether the playlist should be rescaled even if the playlist fonts have already been created.
  * @returns
  */
 function rescalePlaylist(forceRescale) {
@@ -167,36 +207,52 @@ function rescalePlaylist(forceRescale) {
 	}
 	createPlaylistFonts();
 	g_properties.row_h = Math.round(pref.layout === 'compact' ? pref.playlistFontSize_compact * 1.667 : pref.layout === 'artwork' ? pref.playlistFontSize_artwork * 1.667 : pref.playlistFontSize_default * 1.667);
-	playlist_geo.row_h = scaleForDisplay(g_properties.row_h);
-	playlist_geo.scrollbar_w = g_properties.scrollbar_w;    // Don't scaleForDisplay
-	playlist_geo.scrollbar_right_pad = scaleForDisplay(g_properties.scrollbar_right_pad);
-	playlist_geo.scrollbar_top_pad = scaleForDisplay(g_properties.scrollbar_top_pad);
-	playlist_geo.scrollbar_bottom_pad = scaleForDisplay(g_properties.scrollbar_bottom_pad);
-	playlist_geo.list_bottom_pad = scaleForDisplay(g_properties.list_bottom_pad);
+	playlist_geo.row_h = SCALE(g_properties.row_h);
+	playlist_geo.scrollbar_w = g_properties.scrollbar_w; // Don't use SCALE()
+	playlist_geo.scrollbar_right_pad = SCALE(g_properties.scrollbar_right_pad);
+	playlist_geo.scrollbar_top_pad = SCALE(g_properties.scrollbar_top_pad);
+	playlist_geo.scrollbar_bottom_pad = SCALE(g_properties.scrollbar_bottom_pad);
+	playlist_geo.list_bottom_pad = SCALE(g_properties.list_bottom_pad);
 }
 
 
 ///////////////////////////////
 // * DRAG N DROP CALLBACKS * //
 ///////////////////////////////
+/**
+ * Called when mouse with content enters another window and determines if that window is a valid drop target.
+ * 1. Called first.
+ */
 function on_drag_enter(action, x, y, mask) {
 	trace_call && console.log('Playlist => on_drag_enter');
 	playlist.on_drag_enter(action, x, y, mask);
 }
 
 
+/**
+ * Called when content with mouse moves but stays within the same window.
+ * 2. called after on_drag_enter.
+ */
 function on_drag_over(action, x, y, mask) {
 	trace_call && console.log('Playlist => on_drag_over');
 	playlist.on_drag_over(action, x, y, mask);
 }
 
 
+/**
+ * Called when mouse with content is being dragged outside of window.
+ * 3. called after on_drag_over.
+ */
 function on_drag_leave() {
 	trace_call && console.log('Playlist => on_drag_leave');
 	playlist.on_drag_leave();
 }
 
 
+/**
+ * Called when mouse with content is being dropped.
+ * 4. called after on_drag_over.
+ */
 function on_drag_drop(action, x, y, mask) {
 	trace_call && console.log('Playlist => on_drag_drop');
 	playlist.on_drag_drop(action, x, y, mask);
@@ -207,9 +263,10 @@ function on_drag_drop(action, x, y, mask) {
 // * MAIN PANEL * //
 ////////////////////
 /**
- * @param {number} x
- * @param {number} y
- * @constructor
+ * Creates the playlist panel container and passes callbacks and methods to the playlist.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @class
  */
 function PlaylistPanel(x, y) {
 	this.x = x;
@@ -223,13 +280,13 @@ function PlaylistPanel(x, y) {
 	 * @const
 	 * @type {number}
 	 */
-	let playlist_info_h = scaleForDisplay(g_properties.row_h);
+	let playlist_info_h = SCALE(g_properties.row_h);
 
 	/**
 	 * @const
 	 * @type {number}
 	 */
-	const playlist_info_and_gap_h = playlist_info_h + scaleForDisplay(4);
+	const playlist_info_and_gap_h = playlist_info_h + SCALE(4);
 
 	let is_activated = window.IsVisible;
 
@@ -240,17 +297,23 @@ function PlaylistPanel(x, y) {
 	const playlist = new Playlist(that.x, that.y + (g_properties.show_playlist_info ? playlist_info_and_gap_h : 0));
 
 	/**
-	 * @param {boolean} show_playlist_info
+	 * Adjusts the size and position of a playlist based on whether or not the playlist info is being shown.
+	 * @param {boolean} show_playlist_info Whether to show the playlist information or not.
 	 */
-	function toggle_playlist_info(show_playlist_info) {
+	const toggle_playlist_info = (show_playlist_info) => {
 		playlist.y = that.y + (show_playlist_info ? (playlist_info_and_gap_h) : 0);
 		const new_playlist_h = show_playlist_info ? (playlist.h - playlist_info_and_gap_h) : (playlist.h + playlist_info_and_gap_h);
 		playlist.on_size(playlist.w, new_playlist_h, playlist.x, playlist.y);
 		// Easier to repaint everything
 		window.Repaint();
-	}
+	};
 
 	// #region Callback Implementation
+
+	/**
+	 * Draws the playlist and playlist manager.
+	 * @param {GdiGraphics} gr
+	 */
 	this.on_paint = function (gr) {
 		gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.bg); // Main bg
 		if (!is_activated) {
@@ -287,7 +350,11 @@ function PlaylistPanel(x, y) {
 		}
 	};
 
-	// * PlaylistPanel.on_size
+	/**
+	 * Callback to update size and position of the playlist when window is resized.
+	 * @param {number} w The width.
+	 * @param {number} h The height.
+	 */
 	this.on_size = function (w, h) {
 		rescalePlaylist();
 		const x = pref.layout === 'default' && (pref.playlistLayout === 'normal' || pref.playlistLayoutNormal && (displayBiography || pref.displayLyrics)) ? ww * 0.5 : 0;
@@ -301,13 +368,19 @@ function PlaylistPanel(x, y) {
 		this.x = x;
 		this.y = y;
 
-		playlist_info_h = scaleForDisplay(g_properties.row_h);
-		playlist.on_size(playlist_w, playlist_h - (playlist_info_h * 2), x, y + playlist_info_h + scaleForDisplay(4));
+		playlist_info_h = SCALE(g_properties.row_h);
+		playlist.on_size(playlist_w, playlist_h - (playlist_info_h * 2), x, y + playlist_info_h + SCALE(4));
 		playlist_info.set_xywh(x, y, showPlaylistManager ? this.w : 0); // Hide Playlist manager
 
 		is_activated = window.IsVisible;
 	};
 
+	/**
+	 * Callback for mouse move events.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {object} m The mouse mask.
+	 */
 	this.on_mouse_move = (x, y, m) => {
 		playlist.on_mouse_move(x, y, m);
 
@@ -316,6 +389,12 @@ function PlaylistPanel(x, y) {
 		}
 	};
 
+	/**
+	 * Callback for left mouse button down events.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {object} m The mouse mask.
+	 */
 	this.on_mouse_lbtn_down = (x, y, m) => {
 		playlist.on_mouse_lbtn_down(x, y, m);
 
@@ -324,10 +403,22 @@ function PlaylistPanel(x, y) {
 		}
 	};
 
+	/**
+	 * Callback for left mouse button double click events.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {object} m The mouse mask.
+	 */
 	this.on_mouse_lbtn_dblclk = (x, y, m) => {
 		playlist.on_mouse_lbtn_dblclk(x, y, m);
 	};
 
+	/**
+	 * Callback for left mouse button up events.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {object} m The mouse mask.
+	 */
 	this.on_mouse_lbtn_up = (x, y, m) => {
 		playlist.on_mouse_lbtn_up(x, y, m);
 
@@ -336,6 +427,12 @@ function PlaylistPanel(x, y) {
 		}
 	};
 
+	/**
+	 * Callback for right mouse button down events.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {object} m The mouse mask.
+	 */
 	this.on_mouse_rbtn_down = (x, y, m) => {
 		playlist.on_mouse_rbtn_down(x, y, m);
 
@@ -344,6 +441,12 @@ function PlaylistPanel(x, y) {
 		}
 	};
 
+	/**
+	 * Callback for right mouse button up events.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {object} m The mouse mask.
+	 */
 	this.on_mouse_rbtn_up = (x, y, m) => {
 		const was_playlist_info_displayed = g_properties.show_playlist_info;
 
@@ -362,10 +465,17 @@ function PlaylistPanel(x, y) {
 		return true;
 	};
 
-	this.on_mouse_wheel = (delta) => {
-		playlist.on_mouse_wheel(delta);
+	/**
+	 * Callback for mouse wheel events.
+	 * @param {number} step The amount of scrolling that occurred on the mouse wheel.
+	 */
+	this.on_mouse_wheel = (step) => {
+		playlist.on_mouse_wheel(step);
 	};
 
+	/**
+	 * Callback for mouse leave events.
+	 */
 	this.on_mouse_leave = () => {
 		playlist.on_mouse_leave();
 		if (g_properties.show_playlist_info) {
@@ -373,22 +483,50 @@ function PlaylistPanel(x, y) {
 		}
 	};
 
+	/**
+	 * Callback for drag enter events.
+	 * @param {string} action The drag action.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} mask The mouse mask.
+	 */
 	this.on_drag_enter = (action, x, y, mask) => {
 		playlist.on_drag_enter(action, x, y, mask);
 	};
 
+	/**
+	 * Callback for drag leave events.
+	 */
 	this.on_drag_leave = () => {
 		playlist.on_drag_leave();
 	};
 
+	/**
+	 * Callback for drag over events.
+	 * @param {string} action The drag action.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} mask The mouse mask.
+	 */
 	this.on_drag_over = (action, x, y, mask) => {
 		playlist.on_drag_over(action, x, y, mask);
 	};
 
+	/**
+	 * Callback for drag drop events.
+	 * @param {string} action The drag action.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} mask The mouse mask.
+	 */
 	this.on_drag_drop = (action, x, y, m) => {
 		playlist.on_drag_drop(action, x, y, m);
 	};
 
+	/**
+	 * Callback for key down events.
+	 * @param {number} vkey The virtual key code.
+	 */
 	this.on_key_down = (vkey) => {
 		playlist.on_key_down(vkey);
 
@@ -400,10 +538,20 @@ function PlaylistPanel(x, y) {
 		key_handler.invoke_key_action(vkey, modifiers);
 	};
 
+	/**
+	 * Callback for key up events.
+	 * @param {number} vkey The virtual key code.
+	 */
 	this.on_key_up = (vkey) => {
 		playlist.on_key_up(vkey);
 	};
 
+	/**
+	 * Callback for item focus change events.
+	 * @param {number} playlist_idx The index of the current playlist.
+	 * @param {number} from_idx The index of the item that lost focus.
+	 * @param {number} to_idx The index of the item that gained focus.
+	 */
 	this.on_item_focus_change = (playlist_idx, from_idx, to_idx) => {
 		if (!is_activated) {
 			return;
@@ -412,10 +560,16 @@ function PlaylistPanel(x, y) {
 		playlist.on_item_focus_change(playlist_idx, from_idx, to_idx);
 	};
 
+	/**
+	 * Callback for scrolling the playlist to the currently focused item.
+	 */
 	this.scroll_to_focused = () => {
 		playlist.scroll_to_focused();
 	};
 
+	/**
+	 * Callback for playlist change events.
+	 */
 	this.on_playlists_changed = () => {
 		if (!is_activated) {
 			return;
@@ -427,6 +581,9 @@ function PlaylistPanel(x, y) {
 		playlist.on_playlists_changed();
 	};
 
+	/**
+	 * Callback for playlist switch events.
+	 */
 	this.on_playlist_switch = () => {
 		if (!is_activated) {
 			return;
@@ -438,6 +595,11 @@ function PlaylistPanel(x, y) {
 		playlist.on_playlist_switch();
 	};
 
+	/**
+	 * Callback for playlist item ensure visible events.
+	 * @param {number} playlistIndex The index of the playlist.
+	 * @param {number} playlistItemIndex The index of the item.
+	 */
 	this.on_playlist_item_ensure_visible = (playlistIndex, playlistItemIndex) => {
 		if (!is_activated) {
 			return;
@@ -446,6 +608,10 @@ function PlaylistPanel(x, y) {
 		playlist.on_playlist_item_ensure_visible(playlistIndex, playlistItemIndex);
 	};
 
+	/**
+	 * Callback for playlist items added events.
+	 * @param {number} playlist_idx The index of the playlist.
+	 */
 	this.on_playlist_items_added = (playlist_idx) => {
 		if (!is_activated) {
 			return;
@@ -457,6 +623,10 @@ function PlaylistPanel(x, y) {
 		playlist.on_playlist_items_added(playlist_idx);
 	};
 
+	/**
+	 * Callback for playlist items reordered events.
+	 * @param {number} playlist_idx The index of the playlist.
+	 */
 	this.on_playlist_items_reordered = (playlist_idx) => {
 		if (!is_activated) {
 			return;
@@ -465,6 +635,10 @@ function PlaylistPanel(x, y) {
 		playlist.on_playlist_items_reordered(playlist_idx);
 	};
 
+	/**
+	 * Callback for playlist items removed events.
+	 * @param {number} playlist_idx The index of the playlist.
+	 */
 	this.on_playlist_items_removed = (playlist_idx) => {
 		if (!is_activated) {
 			return;
@@ -476,6 +650,9 @@ function PlaylistPanel(x, y) {
 		playlist.on_playlist_items_removed(playlist_idx);
 	};
 
+	/**
+	 * Callback for playlist items selection change events.
+	 */
 	this.on_playlist_items_selection_change = () => {
 		if (!is_activated) {
 			return;
@@ -487,6 +664,9 @@ function PlaylistPanel(x, y) {
 		}
 	};
 
+	/**
+	 * Callback for playback dynamic info track events.
+	 */
 	this.on_playback_dynamic_info_track = () => {
 		if (!is_activated) {
 			return;
@@ -495,6 +675,10 @@ function PlaylistPanel(x, y) {
 		playlist.on_playback_dynamic_info_track();
 	};
 
+	/**
+	 * Callback for playback new track events.
+	 * @param {FbMetadbHandle} metadb The metadb of the track.
+	 */
 	this.on_playback_new_track = (metadb) => {
 		if (!is_activated) {
 			return;
@@ -503,6 +687,10 @@ function PlaylistPanel(x, y) {
 		playlist.on_playback_new_track(metadb);
 	};
 
+	/**
+	 * Callback for playback pause events.
+	 * @param {boolean} state The new playback state.
+	 */
 	this.on_playback_pause = (state) => {
 		if (!is_activated) {
 			return;
@@ -511,6 +699,10 @@ function PlaylistPanel(x, y) {
 		playlist.on_playback_pause(state);
 	};
 
+	/**
+	 * Callback for playback queue change events.
+	 * @param {string} origin The origin of the change.
+	 */
 	this.on_playback_queue_changed = (origin) => {
 		if (!is_activated) {
 			return;
@@ -519,6 +711,10 @@ function PlaylistPanel(x, y) {
 		playlist.on_playback_queue_changed(origin);
 	};
 
+	/**
+	 * Callback for playback stop events.
+	 * @param {string} reason The reason for the stop.
+	 */
 	this.on_playback_stop = (reason) => {
 		if (!is_activated) {
 			return;
@@ -527,6 +723,10 @@ function PlaylistPanel(x, y) {
 		playlist.on_playback_stop(reason);
 	};
 
+	/**
+	 * Callback for focus events.
+	 * @param {boolean} is_focused Whether the playlist is focused.
+	 */
 	this.on_focus = (is_focused) => {
 		if (!is_activated) {
 			return;
@@ -535,6 +735,11 @@ function PlaylistPanel(x, y) {
 		playlist.on_focus(is_focused);
 	};
 
+	/**
+	 * Callback for metadb change events.
+	 * @param {Array<number>} handles The handles of the metadbs that changed.
+	 * @param {boolean} fromhook Whether the change was triggered by a hook.
+	 */
 	this.on_metadb_changed = (handles, fromhook) => {
 		if (!is_activated) {
 			return;
@@ -546,6 +751,13 @@ function PlaylistPanel(x, y) {
 		playlist.on_metadb_changed(handles, fromhook);
 	};
 
+	/**
+	 * Callback for get album art done events.
+	 * @param {FbMetadbHandleList} metadb The metadb of the tracks.
+	 * @param {number} art_id The id of the album art.
+	 * @param {GdiBitmap} image The album art image.
+	 * @param {string} image_path The path to the album art image.
+	 */
 	this.on_get_album_art_done = (metadb, art_id, image, image_path) => {
 		if (!is_activated) {
 			return;
@@ -554,27 +766,41 @@ function PlaylistPanel(x, y) {
 		playlist.on_get_album_art_done(metadb, art_id, image, image_path);
 	};
 
+	/**
+	 * Callback for notify data events.
+	 * @param {string} name The name of the data.
+	 * @param {Object} info The data.
+	 */
 	this.on_notify_data = (name, info) => {
 		playlist.on_notify_data(name, info);
 	};
+
 	// #endregion
 
-	this.on_title_color_change = () => {
-		playlist.on_title_color_change();
-	}
-
+	/**
+	 * Callback for playlist header auto-collapse events.
+	 */
 	this.auto_collapse_header = () => {
 		playlist.auto_collapse_header();
-	}
+	};
 
+	/**
+	 * Callback for playlist header collapse events.
+	 */
 	this.collapse_header = () => {
 		playlist.collapse_header();
-	}
+	};
 
+	/**
+	 * Callback for playlist header expand events.
+	 */
 	this.expand_header = () => {
 		playlist.expand_header();
-	}
+	};
 
+	/**
+	 * Callback for playlist init events.
+	 */
 	this.initialize = () => {
 		playlist.register_key_actions(key_handler);
 		playlist_info.register_key_actions(key_handler);
@@ -582,26 +808,39 @@ function PlaylistPanel(x, y) {
 		playlist.initialize_list();
 	};
 
+	/**
+	 * Callback for playlist scrollbar init events.
+	 */
 	this.initScrollbar = () => {
 		playlist.initScrollbar();
 	};
 
+	/**
+	 * Callback for setting now playing hyperlinks events.
+	 */
 	this.set_now_playing_hyperlink = () => {
 		playlist.set_now_playing_hyperlink();
 	};
 
+	/**
+	 * Callback for show now playing scroll events.
+	 */
 	this.show_now_playing = () => {
 		playlist.show_now_playing();
 	};
 
+	/**
+	 * Callback for stop dragging scroll events.
+	 */
 	this.stop_drag_scroll = () => {
 		playlist.stop_drag_scroll();
-	}
+	};
 
-	// TODO: Mordred - Do this elsewhere?
-	this.mouse_in_this = function (x, y) {
-		return (x >= this.x && x < this.x + this.w &&
-				y >= (pref.layout !== 'default' ? this.y - playlist_info_h : this.y) && y < this.y + this.h);
+	/**
+	 * Callback for update playlist title color events.
+	 */
+	this.title_color_change = () => {
+		playlist.title_color_change();
 	};
 }
 
@@ -609,10 +848,15 @@ function PlaylistPanel(x, y) {
 //////////////////
 // * PLAYLIST * //
 //////////////////
+/**
+ * Draws the playlist rows and manages them.
+ */
 class Playlist extends List {
 	/**
-	 * @param {number} x
-	 * @param {number} y
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @extends {List}
+	 * @class
 	 */
 	constructor(x, y) {
 		super(x, y, 0, 0, new PlaylistContent());
@@ -670,7 +914,7 @@ class Playlist extends List {
 		 */
 		this.cnt_helper = this.cnt.helper;
 
-		this.debounced_initialize_and_repaint_list = debounce((refocus) => {
+		this.debounced_initialize_and_repaint_list = Debounce((refocus) => {
 			// Debouncing this because when swapping out playlist content, initialize_and_repaint_list will be called
 			// three times, once for each add/remove/changed callback
 			this.initialize_and_repaint_list(refocus);
@@ -681,6 +925,11 @@ class Playlist extends List {
 	}
 
 	// #region Callback Implementation
+
+	/**
+	 * Draws the items in the playlist and a scrollbar if necessary.
+	 * @param {GdiGraphics} gr
+	 */
 	on_paint(gr) {
 		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 
@@ -702,7 +951,13 @@ class Playlist extends List {
 		}
 	}
 
-	// Playlist.on_size
+	/**
+	 * Handles resizing of the playlist and updating its size and position.
+	 * @param {number} w The width.
+	 * @param {number} h The height.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 */
 	on_size(w, h, x, y) {
 		List.prototype.on_size.apply(this, [w, h, x, y]);
 
@@ -721,12 +976,19 @@ class Playlist extends List {
 		}
 	}
 
+	/**
+	 * Handles mouse movement events and performs various actions based on the position of the mouse.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_move(x, y, m) {
 		if (List.prototype.on_mouse_move.apply(this, [x, y, m])) {
 			return true;
 		}
 
-		const right_spacing = scaleForDisplay(20);
+		const right_spacing = SCALE(20);
 		const item = this.get_item_under_mouse(x - right_spacing, y);
 
 		if (item instanceof Header) {
@@ -759,6 +1021,13 @@ class Playlist extends List {
 		return true;
 	}
 
+	/**
+	 * Handles left mouse button down events and performs various actions based on the mouse position and key presses.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_lbtn_down(x, y, m) {
 		if (List.prototype.on_mouse_lbtn_down.apply(this, [x, y, m])) {
 			return true;
@@ -803,6 +1072,13 @@ class Playlist extends List {
 		return true;
 	}
 
+	/**
+	 * Handles mouse double click events.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_lbtn_dblclk(x, y, m) {
 		if (List.prototype.on_mouse_lbtn_dblclk.apply(this, [x, y, m])) {
 			return true;
@@ -833,6 +1109,13 @@ class Playlist extends List {
 		return true;
 	}
 
+	/**
+	 * Handles mouse left button up events and updates the selection of an item.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_lbtn_up(x, y, m) {
 		const was_double_clicked = this.mouse_double_clicked;
 
@@ -869,6 +1152,13 @@ class Playlist extends List {
 		return true;
 	}
 
+	/**
+	 * Handles right mouse button down events and updates the selection.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_rbtn_down(x, y, m) {
 		if (!this.cnt.rows.length) {
 			return;
@@ -890,6 +1180,13 @@ class Playlist extends List {
 		this.repaint();
 	}
 
+	/**
+	 * Handles right mouse button up events and displays a context menu with various options.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_rbtn_up(x, y, m) {
 		if (List.prototype.on_mouse_rbtn_up.apply(this, [x, y, m])) {
 			return true;
@@ -1067,6 +1364,10 @@ class Playlist extends List {
 		return true;
 	}
 
+	/**
+	 * Handles mouse leave events and checks if an internal drag and drop operation is active.
+	 * @override
+	 */
 	on_mouse_leave() {
 		if (this.selection_handler.is_internal_drag_n_drop_active()
 			&& this.selection_handler.is_dragging()
@@ -1083,6 +1384,14 @@ class Playlist extends List {
 		List.prototype.on_mouse_leave.apply(this);
 	}
 
+	/**
+	 * Handles drag enter events and checks if the mouse is inside the element, sets the mouse down state,
+	 * enables dragging based on the action type, and determines the drop effect based on the trace list and selection handler.
+	 * @param {DropTargetAction} action The drag action that is being performed.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} mask The mouse mask.
+	 */
 	on_drag_enter(action, x, y, mask) {
 		this.mouse_in = true;
 		this.mouse_down = true;
@@ -1107,6 +1416,9 @@ class Playlist extends List {
 		}
 	}
 
+	/**
+	 * Handles drag leave events when the mouse leaves a draggable item.
+	 */
 	on_drag_leave() {
 		if (this.selection_handler.is_dragging()) {
 			this.stop_drag_scroll();
@@ -1120,6 +1432,14 @@ class Playlist extends List {
 		this.repaint();
 	}
 
+	/**
+	 * Handles drag over events and allows for dragging and dropping of rows.
+	 * @param {DropTargetAction} action The drag action that is being performed.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} mask The mouse mask.
+	 * @returns {number} The value of the `action.Effect` property.
+	 */
 	on_drag_over(action, x, y, mask) {
 		if (!this.selection_handler.can_drop()) {
 			action.Effect = g_drop_effect.none;
@@ -1169,6 +1489,13 @@ class Playlist extends List {
 		}
 	}
 
+	/**
+	 * Handles drag and drop events and checks if dragging is allowed. Also handles internal and external drops.
+	 * @param {DropTargetAction} action The drag action that is being performed.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} mask The mouse mask.
+	 */
 	on_drag_drop(action, x, y, m) {
 		this.mouse_down = false; ///< Because on_drag_drop suppresses on_mouse_lbtn_up call
 		this.stop_drag_scroll();
@@ -1199,14 +1526,28 @@ class Playlist extends List {
 		}
 	}
 
+	/**
+	 * Handles key down events when a key on the keyboard is pressed down.
+	 * @param {number} vkey
+	 */
 	on_key_down(vkey) {
 		this.key_down = true;
 	}
 
+	/**
+	 * Handles key up events when a key on the keyboard is pressed up.
+	 * @param {number} vkey
+	 */
 	on_key_up(vkey) {
 		this.key_down = false;
 	}
 
+	/**
+	 * Handles changes in focus between items in the playlist, updating the focused item and scrolling to it if necessary.
+	 * @param {number} playlist_idx The index of the playlist that the focus change event is occurring in.
+	 * @param {number} from_idx The index of the previously focused item in the playlist.
+	 * @param {number} to_idx The index of the item that is gaining focus in the playlist.
+	 */
 	on_item_focus_change(playlist_idx, from_idx, to_idx) {
 		if (playlist_idx !== this.cur_playlist_idx || this.focused_item && this.focused_item.idx === to_idx) {
 			return;
@@ -1237,6 +1578,9 @@ class Playlist extends List {
 		this.repaint();
 	}
 
+	/**
+	 * Handles changes in the playlists when content is added/removed/reordered/renamed.
+	 */
 	on_playlists_changed() {
 		if ((plman.ActivePlaylist > plman.PlaylistCount || plman.ActivePlaylist === -1) && plman.PlaylistCount > 0) {
 			plman.ActivePlaylist = plman.PlaylistCount - 1;
@@ -1254,6 +1598,9 @@ class Playlist extends List {
 		}
 	}
 
+	/**
+	 * Handles when active playlist changes to another playlist index.
+	 */
 	on_playlist_switch() {
 		if (this.cur_playlist_idx !== plman.ActivePlaylist) {
 			g_properties.scroll_pos = this.scroll_pos_list[plman.ActivePlaylist] == null ? 0 : this.scroll_pos_list[plman.ActivePlaylist];
@@ -1266,6 +1613,11 @@ class Playlist extends List {
 		}
 	}
 
+	/**
+	 * Handles and ensures that a playlist item is visible in the playlist if it is not already.
+	 * @param {number} playlist_idx The current playlist index.
+	 * @param {number} playlistItemIndex The playlist item index that needs to be ensured visible in the playlist.
+	 */
 	on_playlist_item_ensure_visible(playlist_idx, playlistItemIndex) {
 		if (playlist_idx !== this.cur_playlist_idx) {
 			return;
@@ -1279,6 +1631,10 @@ class Playlist extends List {
 		if (!displayPlaylistLibrary()) this.scroll_to_row(null, row); // * Prevent scroll to focused after drag and drop in split layout
 	}
 
+	/**
+	 * Handles when playlist items are added and sets the playlist sort order and updates the playlist.
+	 * @param {number} playlist_idx The current playlist index.
+	 */
 	on_playlist_items_added(playlist_idx) {
 		if (playlist_idx !== this.cur_playlist_idx) {
 			return;
@@ -1288,6 +1644,10 @@ class Playlist extends List {
 		this.debounced_initialize_and_repaint_list();
 	}
 
+	/**
+	 * Handles when playlist items are reordered and updates the playlist.
+	 * @param {number} playlist_idx The current playlist index.
+	 */
 	on_playlist_items_reordered(playlist_idx) {
 		if (playlist_idx !== this.cur_playlist_idx) {
 			return;
@@ -1296,6 +1656,10 @@ class Playlist extends List {
 		this.debounced_initialize_and_repaint_list(true);
 	}
 
+	/**
+	 * Handles when playlist items are removed and updates the playlist.
+	 * @param {number} playlist_idx The current playlist index.
+	 */
 	on_playlist_items_removed(playlist_idx) {
 		if (playlist_idx !== this.cur_playlist_idx) {
 			return;
@@ -1304,12 +1668,19 @@ class Playlist extends List {
 		this.debounced_initialize_and_repaint_list();
 	}
 
+	/**
+	 * Handles when playlist item selection has been changed and updates the selection.
+	 */
 	on_playlist_items_selection_change() {
 		if (!this.mouse_in && !this.key_down) {
 			this.selection_handler.initialize_selection();
 		}
 	}
 
+	/**
+	 * Handles when Per-track dynamic info (stream track titles etc) changes and resets queried data
+	 * and hyperlinks for each row and header, and then updates the playlist.
+	 */
 	on_playback_dynamic_info_track() {
 		this.cnt.rows.forEach((item) => {
 			item.reset_queried_data();
@@ -1322,6 +1693,11 @@ class Playlist extends List {
 		this.repaint();
 	}
 
+	/**
+	 * Updates the currently playing track in the playlist and performs actions such as clearing the title text,
+	 * setting the track as playing, collapsing the playlist if necessary, and scrolling to the currently playing track.
+	 * @param {FbMetadbHandle} metadb The metadb of the track.
+	 */
 	on_playback_new_track(metadb) {
 		if (this.playing_item) {
 			this.playing_item.is_playing = false;
@@ -1353,12 +1729,20 @@ class Playlist extends List {
 		this.repaint();
 	}
 
+	/**
+	 * Handles when playback pauses and repaints the currently playing item.
+	 * @param {boolean} state The new playback state.
+	 */
 	on_playback_pause(state) {
 		if (this.playing_item) {
 			this.playing_item.repaint();
 		}
 	}
 
+	/**
+	 * Handles when playback items are send in queue, initializes the queue handler and updates the playlist.
+	 * @param {number} origin The origin of the change.
+	 */
 	on_playback_queue_changed(origin) {
 		if (!this.queue_handler) {
 			return;
@@ -1368,6 +1752,10 @@ class Playlist extends List {
 		this.repaint();
 	}
 
+	/**
+	 * Handles playback stop events and clears the title text of the currently playing item and updates its track number.
+	 * @param {number} reason The type of playback stop.
+	 */
 	on_playback_stop(reason) {
 		if (this.playing_item) {
 			this.playing_item.clear_title_text(); // Mordred: need to regen tracknumber
@@ -1376,6 +1764,10 @@ class Playlist extends List {
 		}
 	}
 
+	/**
+	 * Updates the focus state of an item and triggers a repaint if necessary.
+	 * @param {boolean} is_focused Whether the playlist is focused.
+	 */
 	on_focus(is_focused) {
 		if (this.focused_item) {
 			this.focused_item.is_focused = is_focused;
@@ -1385,30 +1777,37 @@ class Playlist extends List {
 	}
 
 	/**
-	 * @param {FbMetadbHandleList} handles
-	 * @param {boolean} fromhook
+	 * Handles the metadb changed event and updates the header and queried data.
+	 * @param {FbMetadbHandleList} handles The metadb of the tracks.
+	 * @param {boolean} fromhook Whether the `on_metadb_changed` event was triggered by a hook or not.
 	 */
 	on_metadb_changed(handles, fromhook) {
 		handles.Sort();
-		const len = this.cnt.sub_items.length;
-		for (let i = 0; i < len; i++) {
-			const item = this.cnt.sub_items[i];
+		for (const item of this.cnt.sub_items) {
 			// Only need to update the header data if it's already been drawn/cached
 			if (item instanceof Header && (item.header_image || item.hyperlinks_initialized)) {
-				const metadb = item.get_first_row().metadb;
-				if (handles.BSearch(metadb) !== -1)  {
+				const index = handles.BSearch(item.get_first_row().metadb);
+				// If the item is in the array, update its header image and hyperlinks.
+				if (index !== -1) {
 					item.header_image = null;
 					item.reset_hyperlinks();
 				}
 			}
 		}
 
-		// ? Is there a more efficient way to do this?
 		this.cnt.rows.forEach((item) => {
+			// Reset the queried data for each row.
 			item.reset_queried_data();
 		});
 	}
 
+	/**
+	 * Assigns album art to a header item and repaints if the art is not already loaded.
+	 * @param {FbMetadbHandle} metadb The metadb of the track.
+	 * @param {number} art_id The id for the album art is used to associate the album art with the specific header.
+	 * @param {GdiBitmap} image The album art image that was retrieved.
+	 * @param {string} image_path The file path where the album art image is stored.
+	 */
 	on_get_album_art_done(metadb, art_id, image, image_path) {
 		if (!image) {
 			image = null;
@@ -1424,6 +1823,12 @@ class Playlist extends List {
 		});
 	}
 
+	/**
+	 * Handles notifications and synchronizes the state of a grouping handler.
+	 * Called in other panels after window.NotifyOthers is executed.
+	 * @param {string} name The name of the notification event that triggered the function.
+	 * @param {*} info The information about the state of the sync group.
+	 */
 	on_notify_data(name, info) {
 		if (name === 'sync_group_query_state') {
 			if (!window.IsVisible) {
@@ -1441,21 +1846,11 @@ class Playlist extends List {
 		}
 	}
 
-	/**
-	 * Used when updating title color in Reborn/Random theme
-	 */
-	on_title_color_change() {
-		const rows = this.cnt.rows.length;
-		for (let i = 0; i < rows; i++) {
-			const item = this.cnt.rows[i];
-			item.update_title_color();
-		}
-	}
-
 	// #endregion
 
 	/**
-	 * @param {KeyActionHandler} key_handler
+	 * Registers key actions and handles key presses.
+	 * @param {KeyActionHandler} key_handler The KeyActionHandler object.
 	 */
 	register_key_actions(key_handler) {
 		key_handler.register_key_action(VK_UP,
@@ -1626,7 +2021,7 @@ class Playlist extends List {
 
 				let new_focus_item;
 				if (this.is_scrollbar_available) {
-					new_focus_item = last(this.items_to_draw);
+					new_focus_item = Last(this.items_to_draw);
 					if (!this.cnt_helper.is_item_navigateable(new_focus_item)) {
 						new_focus_item = this.cnt_helper.get_navigateable_neighbour(new_focus_item, -1);
 					}
@@ -1635,14 +2030,14 @@ class Playlist extends List {
 					}
 					if (new_focus_item === this.focused_item) {
 						this.scrollbar.shift_page(1);
-						new_focus_item = last(this.items_to_draw);
+						new_focus_item = Last(this.items_to_draw);
 						if (!this.cnt_helper.is_item_navigateable(new_focus_item)) {
 							new_focus_item = this.cnt_helper.get_navigateable_neighbour(new_focus_item, -1);
 						}
 					}
 				}
 				else {
-					new_focus_item = last(this.items_to_draw);
+					new_focus_item = Last(this.items_to_draw);
 				}
 
 				this.selection_handler.update_selection(new_focus_item, undefined, modifiers.shift);
@@ -1657,7 +2052,7 @@ class Playlist extends List {
 
 		key_handler.register_key_action(VK_END,
 			(modifiers) => {
-				this.selection_handler.update_selection(last(this.cnt.rows), undefined, modifiers.shift);
+				this.selection_handler.update_selection(Last(this.cnt.rows), undefined, modifiers.shift);
 				this.scrollbar.scroll_to_end();
 			});
 
@@ -1758,6 +2153,9 @@ class Playlist extends List {
 			});
 	}
 
+	/**
+	 * Collapses or expands the playlist header.
+	 */
 	auto_collapse_header() {
 		if (g_properties.show_header && g_properties.auto_collapse) {
 			this.collapse_handler.collapse_all_but_now_playing();
@@ -1769,6 +2167,9 @@ class Playlist extends List {
 		}
 	}
 
+	/**
+	 * Collapses the playlist header.
+	 */
 	collapse_header() {
 		setTimeout(() => {
 			playlist.auto_collapse_header();
@@ -1777,6 +2178,9 @@ class Playlist extends List {
 		}, 1);
 	}
 
+	/**
+	 * Expands the playlist header.
+	 */
 	expand_header() {
 		setTimeout(() => {
 			this.collapse_handler.expand_all();
@@ -1785,6 +2189,10 @@ class Playlist extends List {
 		}, 1);
 	}
 
+	/**
+	 * Updates the playlist with the option to refocus on a specific playlist item.
+	 * @param {boolean} refocus Whether the playlist should be scrolled to the focused item after init.
+	 */
 	initialize_and_repaint_list(refocus) {
 		this.initialize_list();
 		if (refocus) {
@@ -1794,7 +2202,9 @@ class Playlist extends List {
 	}
 
 	/**
-	 * This method does not contain any redraw calls - it's purely back-end
+	 * Initializes and updates the playlist.
+	 * Clearing its contents, initializing rows and headers and setting up various objects and handlers.
+	 * This method does not contain any redraw calls, it's purely back-end.
 	 */
 	initialize_list() {
 		trace_call && console.log('initialize_list');
@@ -1884,8 +2294,8 @@ class Playlist extends List {
 	}
 
 	/**
-	 * Called to update scrollbar colors
-	 * {@link initTheme()}
+	 * Initializes and updates the scrollbar if it is visible.
+	 * Used to update scrollbar colors.
 	 */
 	initScrollbar() {
 		if (this.is_scrollbar_visible) {
@@ -1894,17 +2304,22 @@ class Playlist extends List {
 		}
 	}
 
+	/**
+	 * Reinitializes and updates the content of the playlist.
+	 */
 	reinitialize() {
 		if (this.cur_playlist_idx !== plman.ActivePlaylist) {
 			g_properties.scroll_pos = this.scroll_pos_list[plman.ActivePlaylist] == null ? 0 : this.scroll_pos_list[plman.ActivePlaylist];
 		}
-		this.row_h = scaleForDisplay(g_properties.row_h);
+		this.row_h = SCALE(g_properties.row_h);
 		this.header_h_in_rows = this.calcHeaderRows();
 		this.initialize_list();
 		this.scroll_to_focused();
 	}
 
 	/**
+	 * Handles when playlist content has changed, i.e playlist items were added, reordered or removed.
+	 * Sets the rows boundary status and fetches album art for playlist headers.
 	 * @protected
 	 * @override
 	 */
@@ -1913,11 +2328,12 @@ class Playlist extends List {
 		// @ts-ignore
 		List.prototype.on_content_to_draw_change.apply(this);
 		if (g_properties.show_album_art && !g_properties.use_compact_header) {
-			get_album_art(this.items_to_draw);
+			getAlbumArt(this.items_to_draw);
 		}
 	}
 
 	/**
+	 * Updates the scroll position of a playlist and redraws the scrollbar.
 	 * @protected
 	 * @override
 	 */
@@ -1927,12 +2343,24 @@ class Playlist extends List {
 		List.prototype.scrollbar_redraw_callback.apply(this);
 	}
 
+	/**
+	 * Iterates through all playlist rows and updates the title color of each item.
+	 * Used when updating title color in Reborn/Random theme.
+	 */
+	title_color_change() {
+		const rows = this.cnt.rows.length;
+		for (let i = 0; i < rows; i++) {
+			const item = this.cnt.rows[i];
+			item.update_title_color();
+		}
+	}
 
 	// private:
 
 	/**
-	 * @param {FbMetadbHandleList} playlist_items
-	 * @return {Array<Row>}
+	 * Initializes an array of rows based on the given playlist, where each row represents a playlist item.
+	 * @param {FbMetadbHandleList} playlist_items An object or array that can be converted to an array using the `Convert()` method.
+	 * @returns {Array<Row>} An array of row objects.
 	 */
 	initialize_rows(playlist_items) {
 		const playlist_items_array = playlist_items.Convert();
@@ -1949,17 +2377,21 @@ class Playlist extends List {
 	}
 
 	/**
-	 * @param {Array<Row>} rows
-	 * @param {FbMetadbHandleList} rows_metadb
-	 * @return {Array<Header>}
+	 * Creates headers for the playlist based on the provided rows and metadata.
+	 * @param {Array<Row>} rows The rows of the playlist
+	 * @param {FbMetadbHandleList} rows_metadb The metadb of the rows.
+	 * @returns {Array<Header>} The result of calling the `Header.create_headers` function with the provided arguments.
 	 */
 	create_headers(rows, rows_metadb) {
 		const prepared_rows = Header.prepare_initialization_data(rows, rows_metadb);
 		return Header.create_headers(/** @type {PlaylistContent} */ this.cnt, this.list_x, 0, this.list_w, this.row_h * this.header_h_in_rows, prepared_rows);
 	}
 
+	/**
+	 * Sets the status of the last row based on whether the scrollbar is available and scrolled down.
+	 */
 	set_rows_boundary_status() {
-		const last_row = last(this.cnt.rows);
+		const last_row = Last(this.cnt.rows);
 		if (last_row) {
 			last_row.is_cropped = this.is_scrollbar_available ? this.scrollbar.is_scrolled_down : false;
 		}
@@ -1968,7 +2400,8 @@ class Playlist extends List {
 	// #region Context Menu
 
 	/**
-	 * @param {ContextMenu} parent_menu
+	 * Appends the playlist tools menu to the parent menu.
+	 * @param {ContextMenu} parent_menu The parent menu to append to.
 	 */
 	append_pltools_menu_to(parent_menu) {
 		const pltools = new ContextMenu('Playlist tools');
@@ -2070,7 +2503,8 @@ class Playlist extends List {
 	}
 
 	/**
-	 * @param {ContextMenu} parent_menu
+	 * Appends the playlist edit menu to the parent menu based on the presence of selected items and data in the clipboard.
+	 * @param {ContextMenu} parent_menu The parent menu to append to.
 	 */
 	append_edit_menu_to(parent_menu) {
 		const has_selected_item = this.selection_handler.has_selected_items();
@@ -2111,7 +2545,8 @@ class Playlist extends List {
 	}
 
 	/**
-	 * @param {ContextMenu} parent_menu
+	 * Appends the playlist collapse menu to the parent menu.
+	 * @param {ContextMenu} parent_menu The parent menu to append to.
 	 */
 	append_collapse_menu_to(parent_menu) {
 		const ce = new ContextMenu('Collapse/Expand');
@@ -2168,7 +2603,8 @@ class Playlist extends List {
 	}
 
 	/**
-	 * @param {ContextMenu} parent_menu
+	 * Appends the playlist appearance menu to the parent menu allowing to customize the appearance of the playlist.
+	 * @param {ContextMenu} parent_menu The parent menu to append to.
 	 */
 	append_appearance_menu_to(parent_menu) {
 		const appear = new ContextMenu('Appearance');
@@ -2247,7 +2683,7 @@ class Playlist extends List {
 				art.append_item('Show', () => {
 					g_properties.show_album_art = !g_properties.show_album_art;
 					if (g_properties.show_album_art) {
-						get_album_art(this.items_to_draw);
+						getAlbumArt(this.items_to_draw);
 					}
 					this.initialize_list();
 					this.scroll_to_focused_or_now_playing();
@@ -2256,7 +2692,7 @@ class Playlist extends List {
 				art.append_item('Auto-hide when no cover', () => {
 					g_properties.auto_album_art = !g_properties.auto_album_art;
 					if (g_properties.show_album_art) {
-						get_album_art(this.items_to_draw);
+						getAlbumArt(this.items_to_draw);
 					}
 					this.initialize_list();
 					this.scroll_to_focused_or_now_playing();
@@ -2291,7 +2727,8 @@ class Playlist extends List {
 	}
 
 	/**
-	 * @param {ContextMenu} parent_menu
+	 * Appends the playlist sort menu to a parent menu allowing to sort items in the playlist.
+	 * @param {ContextMenu} parent_menu The parent menu to append to.
 	 */
 	append_sort_menu_to(parent_menu) {
 		const has_multiple_selected_items = this.selection_handler.selected_items_count() > 1;
@@ -2395,8 +2832,9 @@ class Playlist extends List {
 	}
 
 	/**
-	 * @param {ContextMenu} parent_menu
-	 * @param {FbMetadbHandle} metadb
+	 * Appends the playlist weblinks menu to the parent menu, allowing the user to open various websites.
+	 * @param {ContextMenu} parent_menu The parent menu to append to.
+	 * @param {FbMetadbHandle} metadb The metadb of the track.
 	 */
 	append_weblinks_menu_to(parent_menu, metadb) {
 		const web = new ContextMenu('Weblinks');
@@ -2419,7 +2857,8 @@ class Playlist extends List {
 	}
 
 	/**
-	 * @param {ContextMenu} parent_menu
+	 * Appends the "Send selection" menu to the parent menu, allowing to perform various actions on selected items in a playlist.
+	 * @param {ContextMenu} parent_menu The parent menu to append to.
 	 */
 	append_send_items_menu_to(parent_menu) {
 		const playlist_count = plman.PlaylistCount;
@@ -2467,9 +2906,10 @@ class Playlist extends List {
 	// #endregion
 
 	/**
-	 * @param {number} x
-	 * @param {number} y
-	 * @return {{row: ?Row, is_above: ?boolean}}
+	 * Determines the row and position (above or below) where an item should be dropped based on the mouse coordinates.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {{row: ?Row, is_above: ?boolean}}
 	 */
 	get_drop_row_info(x, y) {
 		const drop_info = {
@@ -2483,7 +2923,7 @@ class Playlist extends List {
 				return drop_info;
 			}
 
-			item = last(this.cnt.rows);
+			item = Last(this.cnt.rows);
 		}
 
 		const is_above = y < (item.y + item.h / 2);
@@ -2511,8 +2951,8 @@ class Playlist extends List {
 				drop_info.row = item;
 				drop_info.is_above = true;
 			}
-			else if (g_properties.show_header && item.idx === last(item.parent.sub_items).idx
-				|| item === last(this.cnt.rows)) {
+			else if (g_properties.show_header && item.idx === Last(item.parent.sub_items).idx
+				|| item === Last(this.cnt.rows)) {
 				drop_info.row = item;
 				drop_info.is_above = false;
 			}
@@ -2526,6 +2966,10 @@ class Playlist extends List {
 	}
 
 	// #region 'Scroll to' Methods
+
+	/**
+	 * Sets a hyperlink for the currently playing item if the current playlist index is "Search".
+	 */
 	set_now_playing_hyperlink() {
 		if (!fb.GetNowPlaying() || plman.GetPlaylistName(this.cur_playlist_idx) !== 'Search') {
 			return;
@@ -2545,6 +2989,9 @@ class Playlist extends List {
 		}, loadingThemeComplete);
 	}
 
+	/**
+	 * Scrolls the playlist to the current now playing track after some checks.
+	 */
 	show_now_playing() {
 		const playing_item_location = plman.GetPlayingItemLocation();
 		if (!playing_item_location.IsValid) {
@@ -2564,6 +3011,9 @@ class Playlist extends List {
 		this.scroll_to_now_playing();
 	}
 
+	/**
+	 * Scrolls the playlist to the current now playing track or focused item.
+	 */
 	scroll_to_now_playing_or_focused() {
 		if (this.playing_item) {
 			this.scroll_to_row(null, this.playing_item);
@@ -2573,6 +3023,9 @@ class Playlist extends List {
 		}
 	}
 
+	/**
+	 * Scrolls the playlist to the focused item or current now playing track.
+	 */
 	scroll_to_focused_or_now_playing() {
 		if (this.focused_item) {
 			this.scroll_to_row(null, this.focused_item);
@@ -2582,12 +3035,18 @@ class Playlist extends List {
 		}
 	}
 
+	/**
+	 * Scrolls the playlist to the focused item.
+	 */
 	scroll_to_focused() {
 		if (this.focused_item && !displayPlaylistLibrary()) {
 			this.scroll_to_row(null, this.focused_item);
 		}
 	}
 
+	/**
+	 * Scrolls the playlist to the current now playing track.
+	 */
 	scroll_to_now_playing() {
 		if (this.playing_item) {
 			this.scroll_to_row(null, this.playing_item);
@@ -2595,8 +3054,9 @@ class Playlist extends List {
 	}
 
 	/**
-	 * @param {?Row} from_row
-	 * @param {Row} to_row
+	 * Scrolls the playlist to a specific row, taking into account the visibility state of the row.
+	 * @param {?Row} from_row The starting row from which to scroll.
+	 * @param {Row} to_row The row index to which to scroll.
 	 */
 	scroll_to_row(from_row, to_row) {
 		if (!this.is_scrollbar_available) {
@@ -2692,8 +3152,9 @@ class Playlist extends List {
 	}
 
 	/**
+	 * Determines the visibility state and the amount of invisibility of a given item in the playlist.
 	 * @param {Row|BaseHeader} item_to_check
-	 * @return {{visibility: visibility_state, invisible_part: number}}
+	 * @returns {{visibility: visibility_state, invisible_part: number}}
 	 */
 	get_item_visibility_state(item_to_check) {
 		const item_state = {
@@ -2724,10 +3185,10 @@ class Playlist extends List {
 	}
 
 	/**
-	 * Note: at worst has O(playlist_size) complexity
-	 *
-	 * @param {Row|BaseHeader} target_item
-	 * @return {number}
+	 * Determines the row index of a target item in a drawn item list.
+	 * Note: at worst has O (playlist_size) complexity.
+	 * @param {Row|BaseHeader} target_item The item that you want to find the row index for. It can be either a `Row` object or a `BaseHeader` object.
+	 * @returns {number} The row index of the target item in the drawn item list.
 	 */
 	get_item_draw_row_idx(target_item) {
 		let cur_row = 0;
@@ -2780,7 +3241,8 @@ class Playlist extends List {
 	// #endregion
 
 	/**
-	 * @param {string} key 'up' or 'down'
+	 * Starts the drag scroll action when reordering playlist items.
+	 * @param {string} key The string value of 'up' or 'down'.
 	 */
 	start_drag_scroll(key) {
 		if (this.drag_scroll_timeout_timer) {
@@ -2821,7 +3283,7 @@ class Playlist extends List {
 					this.scrollbar.shift_line(1);
 					this.scrollbar.start_shift_timer(1);
 
-					cur_marked_item = last(this.items_to_draw);
+					cur_marked_item = Last(this.items_to_draw);
 					if (cur_marked_item instanceof BaseHeader) {
 						this.collapse_handler.expand(cur_marked_item);
 						if (this.collapse_handler.changed) {
@@ -2845,6 +3307,9 @@ class Playlist extends List {
 		}, 350);
 	}
 
+	/**
+	 * Stops the drag scroll action when dropping reordered playlist items.
+	 */
 	stop_drag_scroll() {
 		if (this.drag_scroll_repeat_timer) {
 			clearInterval(this.drag_scroll_repeat_timer);
@@ -2860,8 +3325,13 @@ class Playlist extends List {
 	}
 
 	/**
-	 * @param {number} effect
-	 * @return {number}
+	 * Filters a drop effect based on the modifiers (Ctrl, Shift, Alt) pressed during the event.
+	 * @param {number} effect A bitmask that represents the available drop effects for a drag-and-drop action.
+	 * @returns {number} Returns the filtered effect that can be one of the following:
+	 * - Only link effect if Ctrl and Shift are pressed together or Alt is pressed alone.
+	 * - Copy effect if Ctrl is pressed alone.
+	 * - Move effect if Shift is pressed alone.
+	 * - Move effect, then Copy effect, then Link effect if no modifiers are pressed.
 	 */
 	filter_effect_by_modifiers(effect) {
 		const ctrl_pressed = utils.IsKeyPressed(VK_CONTROL);
@@ -2888,6 +3358,10 @@ class Playlist extends List {
 		return (effect & g_drop_effect.move) || (effect & g_drop_effect.copy) || (effect & g_drop_effect.link);
 	}
 
+	/**
+	 * Calculates the number of header rows based on the layout and font size setting.
+	 * @returns {number} The number of rows to be displayed in the header section of the playlist.
+	 */
 	calcHeaderRows() {
 		const headerFontSize = pref.layout === 'compact' ? pref.playlistHeaderFontSize_compact : pref.layout === 'artwork' ? pref.playlistHeaderFontSize_artwork : pref.playlistHeaderFontSize_default;
 		const rowFontSize    = pref.layout === 'compact' ? pref.playlistFontSize_compact       : pref.layout === 'artwork' ? pref.playlistFontSize_artwork       : pref.playlistFontSize_default;
@@ -2905,82 +3379,23 @@ class Playlist extends List {
 }
 
 
-///////////////////////////////
-// * HEADER ARTWORK LOADER * //
-///////////////////////////////
-/**
- * @type {function}
- */
-const debounced_get_album_art = debounce((items) => {
-	getHeaderArtwork(items);
-}, 500, {
-	leading:  false,
-	trailing: true
-});
-
-
-/** @type {FbMetadbHandle[]} */
-let loadingArtList = [];	// List of handles that we are loading artwork for.
-
-/**
- * Loads artwork given a list of headers items. Typically called in a debounce.
- * @param {Header[]|Row[]} items
- */
-function getHeaderArtwork(items) {
-	items.forEach(item => {
-		if (!(item instanceof Header) || item.is_art_loaded()) {
-			return;
-		}
-
-		const metadb = item.get_first_row().metadb;
-		const cached_art = Header.art_cache.get_image_for_meta(metadb);
-
-		if (cached_art) {
-			item.assign_art(cached_art);
-		} else {
-			// TODO: Once this has been better tested, remove on_get_album_art_done callback from this file, and probably gr-main.js as well
-			// utils.GetAlbumArtAsync(window.ID, metadb, g_album_art_id.front);
-			if (!loadingArtList.find(handle => handle === metadb)) {
-				loadingArtList.push(metadb);
-				utils.GetAlbumArtAsyncV2(window.ID, metadb, g_album_art_id.front).then((artResult) => {
-					loadingArtList = loadingArtList.filter(handle => handle !== metadb);
-					if (!item.is_art_loaded()) {
-						item.assign_art(artResult.image);
-						item.repaint();
-					}
-				});
-			}
-		}
-	});
-}
-
-
-/**
- * @param {Array<Header>} items
- */
-function get_album_art(items) {
-	if (!g_properties.show_album_art || g_properties.use_compact_header) {
-		return;
-	}
-
-	debounced_get_album_art(items);
-}
-
-
 /////////////////
 // * CONTENT * //
 /////////////////
+/**
+ * Generates and manages items to draw in a playlist.
+ */
 class PlaylistContent extends ListRowContent {
 	/**
+	 * @extends {ListRowContent}
 	 * @final
-	 * @constructor
+	 * @class
 	 */
 	constructor() {
 		super();
 
 		/**
-		 * It is assumed that every sub_items array contains only items of the same single type
-		 *
+		 * It is assumed that every sub_items array contains only items of the same single type.
 		 * @type {Array<Header>}
 		 */
 		this.sub_items = [];
@@ -2988,7 +3403,16 @@ class PlaylistContent extends ListRowContent {
 		this.helper = new ContentNavigationHelper(this);
 	}
 
-	/** @override */
+	/**
+	 * Generates items to draw based on the given parameters and returns an array of items.
+	 * @param {number} wy The y-coordinate of the top edge of the visible area.
+	 * @param {number} wh The height of the viewport.
+	 * @param {number} row_shift The number of rows to shift the drawing position vertically.
+	 * @param {number} pixel_shift The number of pixels to shift the items vertically.
+	 * @param {number} row_h The height of each row in the drawing.
+	 * @returns {Array} An array of items to draw.
+	 * @override
+	 */
 	generate_items_to_draw(wy, wh, row_shift, pixel_shift, row_h) {
 		if (!this.rows.length) {
 			return [];
@@ -3002,7 +3426,11 @@ class PlaylistContent extends ListRowContent {
 		return this.generate_all_items_to_draw(wy, wh, first_item);
 	}
 
-	/** @override */
+	/**
+	 * Updates the size of items based on the given width, taking into account whether the header is shown or not.
+	 * @param {number} w The width.
+	 * @override
+	 */
 	update_items_w_size(w) {
 		if (!g_properties.show_header) {
 			ListRowContent.prototype.update_items_w_size.apply(this, [w]);
@@ -3014,7 +3442,10 @@ class PlaylistContent extends ListRowContent {
 		});
 	}
 
-	/** @override */
+	/**
+	 * Calculates the total height of rows in a playlist, taking into account sub-items and whether the header is shown.
+	 * @override
+	 */
 	calculate_total_h_in_rows() {
 		if (!g_properties.show_header) {
 			return ListRowContent.prototype.calculate_total_h_in_rows.apply(this);
@@ -3036,22 +3467,22 @@ class PlaylistContent extends ListRowContent {
 	}
 
 	/**
-	 * @param {number} wy
-	 * @param {number} wh
-	 * @param {number} row_shift
-	 * @param {number} pixel_shift
-	 * @param {number} row_h
-	 * @return {Row|BaseHeader}
+	 * Calculates the position of the first visible item to draw in the playlist.
+	 * @param {number} wy The y-coordinate of the top edge of the visible area.
+	 * @param {number} wh The height of the viewport.
+	 * @param {number} row_shift The number of rows to shift the drawing position vertically.
+	 * @param {number} pixel_shift The number of pixels to shift the items vertically.
+	 * @param {number} row_h The height of each row in the drawing.
+	 * @returns {Row|BaseHeader}
 	 */
 	generate_first_item_to_draw(wy, wh, row_shift, pixel_shift, row_h) {
 		const start_y = wy + pixel_shift;
 		let cur_row = 0;
 
 		/**
-		 * Searches sub_items for first visible item {@link ContentNavigationHelper.is_item_visible}
-		 *
+		 * Searches sub_items for first visible item. {@link ContentNavigationHelper.is_item_visible}
 		 * @param {Array<BaseHeader>|Array<Row>} sub_items
-		 * @return {?BaseHeader|?Row}
+		 * @returns {?BaseHeader|?Row}
 		 */
 		function iterate_level(sub_items) {
 			if (sub_items[0] instanceof BaseHeader) {
@@ -3106,10 +3537,11 @@ class PlaylistContent extends ListRowContent {
 	}
 
 	/**
-	 * @param {number} wy
-	 * @param {number} wh
-	 * @param {Row|BaseHeader} first_item
-	 * @return {Array<Row|BaseHeader>}
+	 * Generates an array of items to draw based on the given parameters and starting item.
+	 * @param {number} wy The y-coordinate of the top edge of the visible area.
+	 * @param {number} wh The height of the viewport.
+	 * @param {Row|BaseHeader} first_item The starting item from which the drawing of items will begin.
+	 * @returns {Array<Row|BaseHeader>}
 	 */
 	generate_all_items_to_draw(wy, wh, first_item) {
 		const items_to_draw = [first_item];
@@ -3119,7 +3551,7 @@ class PlaylistContent extends ListRowContent {
 		 *
 		 * @param {Array<BaseHeader>|Array<Row>} sub_items
 		 * @param {Row|BaseHeader} start_item
-		 * @return {boolean} true, if start_item was used
+		 * @returns {boolean} True if start_item was used.
 		 */
 		function iterate_level(sub_items, start_item) {
 			const is_cur_level_header = sub_items[0] instanceof BaseHeader;
@@ -3175,23 +3607,11 @@ class PlaylistContent extends ListRowContent {
 }
 
 
-function getItemType(item) {
-	if (!item) {
-		return 'Item is undefined or null';
-	}
-	else if (item instanceof Header) {
-		return 'Header';
-	}
-	else if (item instanceof DiscHeader) {
-		return 'DiscHeader';
-	}
-	else if (item instanceof Row) {
-		return 'Row';
-	}
-	return 'Unknown Item Type';
-}
-
-
+/**
+ * Provides methods for navigating and determining the visibility of items in a playlist content.
+ * @param {PlaylistContent} cnt_arg The content of a playlist.
+ * @class
+ */
 function ContentNavigationHelper(cnt_arg) {
 	/**
 	 * @const
@@ -3200,8 +3620,9 @@ function ContentNavigationHelper(cnt_arg) {
 	const cnt = cnt_arg;
 
 	/**
-	 * @param {Row|BaseHeader} item
-	 * @return {?BaseHeader}
+	 * Gets the visible parent of the given item.
+	 * @param {Row|BaseHeader} item The item to get the parent of.
+	 * @returns {?BaseHeader} The visible parent item, or null if the item is not visible.
 	 */
 	this.get_visible_parent = (item) => {
 		if (!item.parent || !(item.parent instanceof BaseHeader)) {
@@ -3217,10 +3638,9 @@ function ContentNavigationHelper(cnt_arg) {
 	};
 
 	/**
-	 * Returns true if item is not hidden by collapsed parent
-	 *
-	 * @param {Row|BaseHeader} item
-	 * @return {boolean}
+	 * Checks if the given item is visible.
+	 * @param {Row|BaseHeader} item The item to check.
+	 * @returns {boolean} True if item is not hidden by collapsed parent.
 	 */
 	this.is_item_visible = (item) => {
 		if (item.parent && item.parent instanceof BaseHeader) {
@@ -3231,19 +3651,18 @@ function ContentNavigationHelper(cnt_arg) {
 	};
 
 	/**
-	 * Returns true if item can be selected by arrow keys
-	 *
-	 * @param {Row|BaseHeader} item
-	 * @return {boolean}
+	 * Checks if the given item is navigable.
+	 * @param {Row|BaseHeader} item The item to check.
+	 * @returns {boolean} True if item can be selected by arrow keys.
 	 */
 	this.is_item_navigateable = (item) => item instanceof Row ? true : item.is_collapsed;
 
 	/**
+	 * Gets the navigable neighbour of the given item in the given direction.
 	 * {@link ContentNavigationHelper.is_item_navigateable}
-	 *
-	 * @param {Row|BaseHeader} item
-	 * @param {number} direction
-	 * @return {Row|BaseHeader|null}
+	 * @param {Row|BaseHeader} item The item to start from.
+	 * @param {number} direction The direction to search in.
+	 * @returns {Row|BaseHeader|null} The first navigable neighbour, or null if no neighbour is found.
 	 */
 	this.get_navigateable_neighbour = function (item, direction) {
 		let neighbour_item = item;
@@ -3255,37 +3674,40 @@ function ContentNavigationHelper(cnt_arg) {
 	};
 
 	/**
+	 * Gets the visible neighbour of the given item in the given direction.
 	 * {@link ContentNavigationHelper.is_item_visible}
-	 *
-	 * @param {Row|BaseHeader} item
-	 * @param {number} direction
-	 * @return {Row|BaseHeader|null}
+	 * @param {Row|BaseHeader} item The item to get the neighbour of.
+	 * @param {number} direction The direction to get the neighbour in.
+	 * @returns {Row|BaseHeader|null} The visible neighbour of the given item in the given direction.
 	 */
 	this.get_visible_neighbour = function (item, direction) {
 		return direction > 0 ? this.get_next_visible_item(item) : this.get_prev_visible_item(item);
 	};
 
 	/**
-	 * @param {Row|BaseHeader} item
-	 * @return {Row|BaseHeader|null}
+	 * Gets the previous visible item of the given item.
+	 * @param {Row|BaseHeader} item The item to get the previous visible item of.
+	 * @returns {Row|BaseHeader|null} The previous visible item in the list.
 	 */
 	this.get_prev_visible_item = (item) => {
 		/**
-		 * @param {BaseHeader} item
-		 * @return {BaseHeader|Row}
+		 * Get the last visible item in the list.
+		 * @param {BaseHeader} item The item to search for the last visible item in.
+		 * @returns {BaseHeader|Row} The last visible item in the given item.
 		 */
 		function get_last_visible_item(item) {
 			let last_item = item;
 			while (!(last_item instanceof Row) && !last_item.is_collapsed) {
-				last_item = last(last_item.sub_items);
+				last_item = Last(last_item.sub_items);
 			}
 
 			return last_item;
 		}
 
 		/**
-		 * @param {BaseHeader} header
-		 * @return {Row|BaseHeader|null}
+		 * Gets the previous item before the header.
+		 * @param {BaseHeader} header The header to search for the previous item before.
+		 * @returns {Row|BaseHeader|null} The previous item before the given header.
 		 */
 		function get_prev_item_before_header(header) {
 			if (header === header.parent.sub_items[0]) {
@@ -3297,8 +3719,9 @@ function ContentNavigationHelper(cnt_arg) {
 		}
 
 		/**
-		 * @param {Row} row
-		 * @return {Row|BaseHeader|null}
+		 * Gets the previous item before the given row.
+		 * @param {Row} row The row to search for the previous item before.
+		 * @returns {Row|BaseHeader|null} The previous item before the given row.
 		 */
 		function get_prev_item_before_row(row) {
 			if (row === row.parent.sub_items[0]) {
@@ -3325,13 +3748,15 @@ function ContentNavigationHelper(cnt_arg) {
 	};
 
 	/**
-	 * @param {Row|BaseHeader} item
-	 * @return {Row|BaseHeader|null}
+	 * Gets the next visible item in the list.
+	 * @param {Row|BaseHeader} item The current item.
+	 * @returns {Row|BaseHeader|null} The next visible item, or null if there is none.
 	 */
 	this.get_next_visible_item = (item) => {
 		/**
-		 * @param {Row|BaseHeader} item
-		 * @return {Row|BaseHeader|null}
+		 * Gets the next item in the list, or null if there is no next item.
+		 * @param {Row|BaseHeader} item The item to start searching from.
+		 * @returns {Row|BaseHeader|null} The next item, or null if there is no next item.
 		 */
 		function get_next_item(item) {
 			let next_item = item;
@@ -3340,7 +3765,7 @@ function ContentNavigationHelper(cnt_arg) {
 					return null;
 				}
 
-				if (next_item !== last(next_item.parent.sub_items)) {
+				if (next_item !== Last(next_item.parent.sub_items)) {
 					const next_item_idx = next_item instanceof Row ? next_item.idx_in_header : next_item.idx;
 					return next_item.parent.sub_items[next_item_idx + 1];
 				}
@@ -3352,7 +3777,7 @@ function ContentNavigationHelper(cnt_arg) {
 		}
 
 		if (!g_properties.show_header) {
-			if (item === last(cnt.rows)) {
+			if (item === Last(cnt.rows)) {
 				return null;
 			}
 
@@ -3369,20 +3794,46 @@ function ContentNavigationHelper(cnt_arg) {
 }
 
 
+/**
+ * Determines the type of an item based on its class.
+ * @param {Object} item Header, DiscHeader, Row.
+ * @returns {Object} Header, DiscHeader, Row, null.
+ */
+function getItemType(item) {
+	if (!item) {
+		return 'Item is undefined or null';
+	}
+	else if (item instanceof Header) {
+		return 'Header';
+	}
+	else if (item instanceof DiscHeader) {
+		return 'DiscHeader';
+	}
+	else if (item instanceof Row) {
+		return 'Row';
+	}
+	return 'Unknown Item Type';
+}
+
+
 /////////////////////
 // * BASE HEADER * //
 /////////////////////
+/**
+ * The base header in the playlist provides methods for initializing sub-items and drawing the headers.
+ */
 class BaseHeader extends ListItem {
 	/**
-	 * @param {ListContent|BaseHeader} parent
-	 * @param {number} x
-	 * @param {number} y
-	 * @param {number} w
-	 * @param {number} h
-	 * @param {number} idx
-	 *
+	 * Represents a header element in a parent container.
+	 * @param {ListContent|BaseHeader} parent The parent header.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} w The width.
+	 * @param {number} h The height.
+	 * @param {number} idx The index.
+	 * @extends {ListItem}
 	 * @abstract
-	 * @constructor
+	 * @class
 	 */
 	constructor(parent, x, y, w, h, idx) {
 		super(x, y, w, h);
@@ -3409,13 +3860,14 @@ class BaseHeader extends ListItem {
 		 */
 		this.row_count = 0;
 
-		/** @type{Array<Row>|Array<BaseHeader>} */
+		/** @type {Array<Row>|Array<BaseHeader>} */
 		this.sub_items = [];
 	}
 
 	/**
-	 * @param {Array<Row>|Array<BaseHeader>} items
-	 * @return {number} Number of processed items
+	 * Initializes the items in the header.
+	 * @param {Array<Row>|Array<BaseHeader>} items The items to initialize the contents with.
+	 * @returns {number} The number of processed items.
 	 * @abstract
 	 */
 	initialize_items(items) {
@@ -3423,6 +3875,7 @@ class BaseHeader extends ListItem {
 	}
 
 	/**
+	 * Draws the header.
 	 * @override
 	 * @abstract
 	 */
@@ -3431,7 +3884,11 @@ class BaseHeader extends ListItem {
 		throw new LogicError('draw not implemented');
 	}
 
-	/** @override */
+	/**
+	 * Sets the width of a ListItem and recursively sets the width of its sub-items.
+	 * @param {number} w The width.
+	 * @override
+	 */
 	set_w(w) {
 		ListItem.prototype.set_w.apply(this, [w]);
 
@@ -3441,7 +3898,8 @@ class BaseHeader extends ListItem {
 	}
 
 	/**
-	 * @returns {Row}
+	 * Gets the first row object from a list of sub-items.
+	 * @returns {Row} The first row, or null if there are no rows.
 	 */
 	get_first_row() {
 		if (!this.sub_items.length) {
@@ -3457,6 +3915,9 @@ class BaseHeader extends ListItem {
 		return item;
 	}
 
+	/**
+	 * Gets an array of row indexes by recursively iterating through sub_items.
+	 */
 	get_row_indexes() {
 		let row_indexes = [];
 
@@ -3475,7 +3936,8 @@ class BaseHeader extends ListItem {
 	}
 
 	/**
-	 * @return {number}
+	 * Calculates the total height of sub-items in rows, taking into account any nested sub-items.
+	 * @returns {number} The total height in rows.
 	 */
 	get_sub_items_total_h_in_rows() {
 		if (!this.sub_items.length) {
@@ -3497,33 +3959,56 @@ class BaseHeader extends ListItem {
 		return h_in_rows;
 	}
 
+	/**
+	 * Checks if any of the sub_items have been selected, taking into account whether the first sub_item is a header or not.
+	 * @returns {boolean} True or false.
+	 */
 	has_selected_items() {
 		// const is_function = typeof this.sub_items[0].has_selected_items === 'function';
 		const isHeader = this.sub_items[0] instanceof BaseHeader;
 		return this.sub_items.some(item => isHeader ? item.has_selected_items() : item.is_selected());
 	}
 
+	/**
+	 * Checks if all sub-items are completely selected, taking into account whether the first sub-item is a header or not.
+	 * @returns {boolean} True or false.
+	 */
 	is_completely_selected() {
 		const isHeader = this.sub_items[0] instanceof BaseHeader;
 		return this.sub_items.every(item => isHeader ? item.is_completely_selected() : item.is_selected());
 	}
 
+	/**
+	 * Checks if any of the sub_items are currently playing.
+	 * @returns {boolean} True or false.
+	 */
 	is_playing() {
 		const is_function = typeof this.sub_items[0].is_playing === 'function';
 		return this.sub_items.some(item => is_function ? item.is_playing() : item.is_playing);
 	}
 
+	/**
+	 * Checks if any of the sub_items are focused, taking into account whether the is_focused property is a function or a boolean value.
+	 * @returns {boolean} True or false.
+	 */
 	is_focused() {
 		const is_function = typeof this.sub_items[0].is_focused === 'function';
 		return this.sub_items.some(item => is_function ? item.is_focused() : item.is_focused);
 	}
 
+	/**
+	 * Handles mouse double click events on the playlist header.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 */
 	on_mouse_lbtn_dblclk(x, y, m) {
 		plman.ExecutePlaylistDefaultAction(plman.ActivePlaylist, this.get_first_row().idx);
 	}
 
 	/**
-	 * @return {number} float number
+	 * Calculates the total duration in seconds of a list of sub-items, recursively if the sub-items are not of type Row.
+	 * @returns {number} A float number.
 	 */
 	get_duration() {
 		let duration_in_seconds = 0;
@@ -3547,7 +4032,20 @@ class BaseHeader extends ListItem {
 /////////////////////
 // * DISC HEADER * //
 /////////////////////
+/**
+ * The disc header creates collapseable headers in the playlist row for music albums that have multiple CDs.
+ */
 class DiscHeader extends BaseHeader {
+	/**
+	 * @param {Object} parent The parent object or container that this object belongs to.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} w The width.
+	 * @param {number} h The height.
+	 * @param {number} idx The index to identify the instance of the object.
+	 * @extends {BaseHeader}
+	 * @class
+	 */
 	constructor(parent, x, y, w, h, idx) {
 		super(parent, x, y, w, h, idx);
 
@@ -3560,7 +4058,13 @@ class DiscHeader extends BaseHeader {
 		this.disc_title = '';
 	}
 
-	/** @override */
+	/**
+	 * Initializes sub_items with rows from rows_with_data that have the same value in the second column,
+	 * sets properties for each row, and returns the length of sub_items.
+	 * @param {Array} rows_with_data An array of arrays, where each inner array represents a row of data.
+	 * Each inner array contains two elements: the row object and the data value for that row.
+	 * @override
+	 */
 	initialize_items(rows_with_data) {
 		/** @type {Row[]} */
 		this.sub_items = [];
@@ -3591,6 +4095,13 @@ class DiscHeader extends BaseHeader {
 	}
 
 	// public:
+
+	/**
+	 * Draws the disc header in the rows when an album contains multiple CDs.
+	 * @param {GdiGraphics} gr
+	 * @param {number} top The top of the header.
+	 * @param {number} bottom The bottom of the header.
+	 */
 	draw(gr, top, bottom) {
 		gr.SetSmoothingMode(SmoothingMode.None);
 
@@ -3598,8 +4109,8 @@ class DiscHeader extends BaseHeader {
 			gr.FillSolidRect(this.x, this.y + 1, this.w, this.h - 1, g_pl_colors.row_stripes_bg);
 		}
 
-		const cur_x = this.x + scaleForDisplay(20);
-		const right_pad = scaleForDisplay(20);
+		const cur_x = this.x + SCALE(20);
+		const right_pad = SCALE(20);
 
 		let title_font = g_pl_fonts.title_normal;
 		let title_color = g_pl_colors.row_title_normal;
@@ -3607,7 +4118,7 @@ class DiscHeader extends BaseHeader {
 		if (this.is_selected()) {
 			title_color = g_pl_colors.row_title_selected;
 			title_font = g_pl_fonts.title_selected;
-			gr.FillSolidRect(this.x, this.y, scaleForDisplay(8), this.h - 1, g_pl_colors.row_sideMarker);
+			gr.FillSolidRect(this.x, this.y, SCALE(8), this.h - 1, g_pl_colors.row_sideMarker);
 		}
 
 		const disc_header_text_format = g_string_format.v_align_center | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
@@ -3623,15 +4134,22 @@ class DiscHeader extends BaseHeader {
 		gr.DrawString(tracks_text, title_font, title_color, tracks_x, this.y, tracks_w, this.h, g_string_format.v_align_center | g_string_format.h_align_far);
 
 		if (this.is_collapsed || !this.is_collapsed) {
-			const line_y = Math.round(this.y + this.h / 2) + scaleForDisplay(4);
-			gr.DrawLine(is_4k ? cur_x + disc_w + 5 : cur_x + disc_w - 5, line_y, is_4k ? this.x + this.w - tracks_w - 40 : this.x + this.w - tracks_w - 10, line_y, 1, g_pl_colors.row_disc_subheader_line);
+			const line_y = Math.round(this.y + this.h / 2) + SCALE(4);
+			gr.DrawLine(RES_4K ? cur_x + disc_w + 5 : cur_x + disc_w - 5, line_y, RES_4K ? this.x + this.w - tracks_w - 40 : this.x + this.w - tracks_w - 10, line_y, 1, g_pl_colors.row_disc_subheader_line);
 		}
 	}
 
+	/**
+	 * Checks if all sub_items are selected.
+	 * @returns {boolean} True or false.
+	 */
 	is_selected() {
 		return this.sub_items.every(row => row.is_selected());
 	}
 
+	/**
+	 * Toggles the state of the disc header.
+	 */
 	toggle_collapse() {
 		this.is_collapsed = !this.is_collapsed;
 
@@ -3639,12 +4157,18 @@ class DiscHeader extends BaseHeader {
 		// this.header.expand();
 	}
 
+	/**
+	 * Toggles the collapse state of the disc header when the left mouse button is double-clicked.
+	 * @param {CollapseHandler} collapse_handler The collapse handler to use.
+	 */
 	on_mouse_lbtn_dblclk(collapse_handler) {
 		collapse_handler.toggle_collapse(this);
 	}
 
-	/** @override
-	 * @return {number} float
+	/**
+	 * Calculates the total duration in seconds of a list of sub items.
+	 * @returns {number} A float number.
+	 * @override
 	 */
 	get_duration() {
 		let duration_in_seconds = 0;
@@ -3663,32 +4187,40 @@ class DiscHeader extends BaseHeader {
 
 
 /**
- * @param {Array<Row>} rows_to_process
- * @param {FbMetadbHandleList} rows_metadb
- * @return {Array<Array>} Has the following format Array<[row,row_data]>
+ * Prepares the initialization data for the disc header.
+ * @param {Array<Row>} rows_to_process The rows to process.
+ * @param {FbMetadbHandleList} rows_metadb The metadb of the rows to process.
+ * @returns {Array<Array>} Has the following format Array<[row,row_data]>
  */
 DiscHeader.prepare_initialization_data = (rows_to_process, rows_metadb) => {
 	const tfo = fb.TitleFormat(`$ifgreater(%totaldiscs%,1,[Disc %discnumber% $if(${tf.disc_subtitle}, \u2014 ,) ],)[${tf.disc_subtitle}]`);
 	const disc_data = tfo.EvalWithMetadbs(rows_metadb);
 
-	return zip(rows_to_process, disc_data);
+	return Zip(rows_to_process, disc_data);
 };
 
 
 /**
- * @param {BaseHeader} parent
- * @param {number} x
- * @param {number} y
- * @param {number} w
- * @param {number} h
- * @param {Array<Array>} prepared_rows Has the following format Array<[row,row_data]>
- * @param {number} rows_to_process_count
- * @return {Array<DiscHeader>}
+ * Creates a header for each disc.
+ * @param {BaseHeader} parent The parent element.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} w The width.
+ * @param {number} h The height.
+ * @param {Array<Array>} prepared_rows The rows of data. Has the following format Array<[row,row_data]>
+ * @param {number} rows_to_process_count The number of rows to process.
+ * @returns {Array<DiscHeader>}
  */
 DiscHeader.create_headers = (parent, x, y, w, h, prepared_rows, rows_to_process_count) => {
+	/**
+	 * Checks if the data in the rows is valid.
+	 * @param {Array} rows_with_data The rows of data.
+	 * @param {number} rows_to_check_count The number of rows to check.
+	 * @return {boolean} True if the data is valid, false otherwise.
+	 */
 	function has_valid_data(rows_with_data, rows_to_check_count) {
 		for (let i = 0; i < rows_to_check_count; ++i) {
-			if (!isEmpty(rows_with_data[i][1])) {
+			if (!IsEmpty(rows_with_data[i][1])) {
 				return true;
 			}
 		}
@@ -3696,7 +4228,7 @@ DiscHeader.create_headers = (parent, x, y, w, h, prepared_rows, rows_to_process_
 	}
 
 	if (!has_valid_data(prepared_rows, rows_to_process_count)) {
-		trimArray(prepared_rows, rows_to_process_count, true);
+		TrimArray(prepared_rows, rows_to_process_count, true);
 		return [];
 	}
 
@@ -3710,13 +4242,13 @@ DiscHeader.create_headers = (parent, x, y, w, h, prepared_rows, rows_to_process_
 		const header = new DiscHeader(parent, x, y, w, h, header_idx);
 		const processed_items = header.initialize_items(prepared_rows_copy);
 
-		trimArray(prepared_rows_copy, processed_items, true);
+		TrimArray(prepared_rows_copy, processed_items, true);
 
 		headers.push(header);
 		++header_idx;
 	}
 
-	trimArray(prepared_rows, rows_to_process_count, true);
+	TrimArray(prepared_rows, rows_to_process_count, true);
 
 	return headers;
 };
@@ -3726,18 +4258,20 @@ DiscHeader.create_headers = (parent, x, y, w, h, prepared_rows, rows_to_process_
 // * HEADER * //
 ////////////////
 /**
- * @param {ListContent|BaseHeader} parent
- * @param {number} x
- * @param {number} y
- * @param {number} w
- * @param {number} h
- * @param {number} idx
- *
- * @final
- * @constructor
- * @extends {BaseHeader}
+ * Creates and draws the playlist header and disc header.
  */
 class Header extends BaseHeader {
+	/**
+	 * @param {ListContent|BaseHeader} parent The parent object or container that this object belongs to.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} w The width.
+	 * @param {number} h The height.
+	 * @param {number} idx The index.
+	 * @extends {BaseHeader}
+	 * @final
+	 * @class
+	 */
 	constructor(parent, x, y, w, h, idx) {
 		super(parent, x, y, w, h, idx);
 
@@ -3745,7 +4279,7 @@ class Header extends BaseHeader {
 		 * @const
 		 * @type {number}
 		 */
-		this.art_max_size = this.h - scaleForDisplay(16);
+		this.art_max_size = this.h - SCALE(16);
 
 		/** @type {FbMetadbHandle} */
 		this.metadb = undefined;
@@ -3763,7 +4297,12 @@ class Header extends BaseHeader {
 		this.header_image = undefined;
 	}
 
-	/** @override */
+	/**
+	 * Initializes items by creating sub headers and assigning properties to each item.
+	 * @param {Array} rows_with_data The rows with data.
+	 * @returns {number} The length of the `owned_rows` array.
+	 * @override
+	 */
 	initialize_items(rows_with_data) {
 		this.sub_items = [];
 
@@ -3813,14 +4352,22 @@ class Header extends BaseHeader {
 	}
 
 	/**
-	 * @param {Array} prepared_rows
-	 * @param {number} rows_to_proccess_count
-	 * @return {Array<DiscHeader>}
+	 * Creates disc headers for the playlist based on the provided parameters.
+	 * @param {Array} prepared_rows The rows with data.
+	 * @param {number} rows_to_proccess_count The number of rows to process.
+	 * @returns {Array<DiscHeader>} The disc headers.
 	 */
 	create_disc_headers(prepared_rows, rows_to_proccess_count) {
 		return DiscHeader.create_headers(this, this.x, 0, this.w, playlist_geo.row_h, prepared_rows, rows_to_proccess_count);
 	}
 
+	/**
+	 * Returns a string containing information about a group of audio files,
+	 * including codec, sample rate, bit depth, track count, disc number, replay gain, genre tags and duration.
+	 * @param {boolean} is_radio If the playback source is from radio streaming.
+	 * @param {boolean} hasGenreTags If the group has genre tags or not.
+	 * @returns {string} The information about the group.
+	 */
 	getGroupInfoString(is_radio, hasGenreTags) {
 		const bitspersample = Number($('$info(bitspersample)', this.metadb));
 		const samplerate = Number($('$info(samplerate)', this.metadb));
@@ -3882,7 +4429,13 @@ class Header extends BaseHeader {
 		return info_text;
 	}
 
-	/** @override */
+	/**
+	 * Draws the playlist header either in normal or compact layout.
+	 * @param {GdiGraphics} gr
+	 * @param {number} top The y-coordinate of the top edge of the header area.
+	 * @param {number} bottom The y-coordinate of the bottom edge of the header.
+	 * @override
+	 */
 	draw(gr, top, bottom) {
 		if (this.w <= 0 || this.h <= 0) return;
 		// drawProfiler = fb.CreateProfiler('Header.draw items:' + this.sub_items.length);
@@ -3896,7 +4449,10 @@ class Header extends BaseHeader {
 	}
 
 	/**
+	 * Draws the playlist header in normal layout.
 	 * @param {GdiGraphics} gr
+	 * @param {number} top The y-coordinate of the top edge of the header area.
+	 * @param {number} bottom The y-coordinate of the bottom edge of the header.
 	 */
 	draw_normal_header(gr, top, bottom) {
 		let clipImg = gdi.CreateImage(this.w, this.h);
@@ -3957,16 +4513,16 @@ class Header extends BaseHeader {
 			// }
 
 			if (this.is_playing() && updatedNowpBg) {
-				const p = scaleForDisplay(6);  // From art below
+				const p = SCALE(6);  // From art below
 
 				if (pref.theme === 'white' && !pref.styleBlackAndWhite && !pref.styleBlackAndWhite2 && pref.layout === 'default' || (pref.theme === 'reborn' || pref.theme === 'random') && noAlbumArtStub) {
-					grClip.FillSolidRect(0, p, scaleForDisplay(8), this.h - p * 2, g_pl_colors.header_nowplaying_bg);
+					grClip.FillSolidRect(0, p, SCALE(8), this.h - p * 2, g_pl_colors.header_nowplaying_bg);
 				}
 				else {
-					grClip.FillSolidRect(0, 0, scrollbar ? this.w - scaleForDisplay(12) : this.w, this.h * 2, g_pl_colors.header_nowplaying_bg);
+					grClip.FillSolidRect(0, 0, scrollbar ? this.w - SCALE(12) : this.w, this.h * 2, g_pl_colors.header_nowplaying_bg);
 				}
 				if (pref.theme === 'white' && (pref.styleBlackAndWhite || pref.styleBlackAndWhite2) || !['white', 'black', 'cream'].includes(pref.theme)) {
-					grClip.FillSolidRect(0, 0, scaleForDisplay(8), this.h, g_pl_colors.header_sideMarker);
+					grClip.FillSolidRect(0, 0, SCALE(8), this.h, g_pl_colors.header_sideMarker);
 				}
 			}
 
@@ -3975,12 +4531,12 @@ class Header extends BaseHeader {
 
 			if (this.is_collapsed && this.is_focused() || this.is_completely_selected() && g_properties.show_header && g_properties.auto_collapse) {
 				grClip.DrawRect(-1, 0, this.w + 1, this.h - 1, 1, line_color);
-				grClip.FillSolidRect(0, 0, scaleForDisplay(8), this.h, g_pl_colors.header_sideMarker);
+				grClip.FillSolidRect(0, 0, SCALE(8), this.h, g_pl_colors.header_sideMarker);
 			}
 
 			//************************************************************//
 
-			let left_pad = scaleForDisplay(10) + (this.art === null && g_properties.auto_album_art || !g_properties.show_album_art ? scaleForDisplay(10) : 0);
+			let left_pad = SCALE(10) + (this.art === null && g_properties.auto_album_art || !g_properties.show_album_art ? SCALE(10) : 0);
 
 			// * ARTBOX * //
 			if (g_properties.show_album_art) {
@@ -3992,8 +4548,8 @@ class Header extends BaseHeader {
 				}
 
 				if (this.art !== null || !g_properties.auto_album_art) {
-					const p = scaleForDisplay(6);
-					const spacing = scaleForDisplay(2);
+					const p = SCALE(6);
+					const spacing = SCALE(2);
 
 					const art_box_size = this.art_max_size + spacing * 2;
 					const art_box_x = p * 3;
@@ -4120,7 +4676,7 @@ class Header extends BaseHeader {
 						let artist_hyperlink;
 						while (this.hyperlinks['artist' + i]) {
 							if (i > 0) {
-								grClip.DrawString(' \u2022 ', artist_font, artist_color, artist_hyperlink.x + artist_hyperlink.getWidth(), artist_h * 0.25, scaleForDisplay(20), artist_h);
+								grClip.DrawString(' \u2022 ', artist_font, artist_color, artist_hyperlink.x + artist_hyperlink.getWidth(), artist_h * 0.25, SCALE(20), artist_h);
 							}
 							artist_hyperlink = this.hyperlinks['artist' + i];
 							artist_hyperlink.draw(grClip, artist_color);
@@ -4176,14 +4732,14 @@ class Header extends BaseHeader {
 			// * INFO * //
 			if (g_properties.show_group_info) {
 				const info_x = part3_cur_x;
-				const info_y = 2 * part_h - (is_4k ? 5 : 0);
+				const info_y = 2 * part_h - (RES_4K ? 5 : 0);
 				const info_h = part_h; //row_h;
 				const info_w = this.w - info_x;
 				const info_text_format = g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
 
 				// * Genres
 				let genre_text_w = 0;
-				const extraGenreSpacing = 0; // Don't use scaleForDisplay due to font differences
+				const extraGenreSpacing = 0; // Don't use SCALE() due to font differences
 				let genreX = info_x;
 				if (!is_radio && this.grouping_handler.get_query_name() !== 'artist') {
 					if (!this.hyperlinks.genre0) {
@@ -4195,7 +4751,7 @@ class Header extends BaseHeader {
 						let genre_hyperlink;
 						while (this.hyperlinks['genre' + i]) {
 							if (i > 0) {
-								grClip.DrawString(' \u2022 ', g_pl_fonts.info, info_color, genre_hyperlink.x + genre_hyperlink.getWidth() + scaleForDisplay(2), info_y, scaleForDisplay(20), info_h);
+								grClip.DrawString(' \u2022 ', g_pl_fonts.info, info_color, genre_hyperlink.x + genre_hyperlink.getWidth() + SCALE(2), info_y, SCALE(20), info_h);
 							}
 							genre_hyperlink = this.hyperlinks['genre' + i];
 							genre_hyperlink.draw(grClip, info_color);
@@ -4208,7 +4764,7 @@ class Header extends BaseHeader {
 
 				const info_text = this.getGroupInfoString(is_radio, genre_text_w > 0);
 				const info_text_w = Math.ceil(gr.MeasureString(info_text, g_pl_fonts.info, 0, 0, 0, 0).Width); // TODO: Mordred - should only call MeasureString once
-				grClip.DrawString(info_text, g_pl_fonts.info, info_color, genreX + (genre_text_w || 0), info_y + 1, info_w - (genreX - info_x) - (genre_text_w || 0) - scaleForDisplay(20), info_h, info_text_format);
+				grClip.DrawString(info_text, g_pl_fonts.info, info_color, genreX + (genre_text_w || 0), info_y + 1, info_w - (genreX - info_x) - (genre_text_w || 0) - SCALE(20), info_h, info_text_format);
 
 				// * Record labels
 				if (!this.hyperlinks.label0) {
@@ -4225,7 +4781,7 @@ class Header extends BaseHeader {
 						const label_hyperlink = this.hyperlinks['label' + i];
 						if (label_hyperlink.x > genreX + genre_text_w + info_text_w) {
 							if (drawCount > 0) {
-								grClip.DrawString(' \u2022', g_pl_fonts.info, info_color, lastLabel.x + lastLabel.getWidth(), info_y, scaleForDisplay(20), info_h);
+								grClip.DrawString(' \u2022', g_pl_fonts.info, info_color, lastLabel.x + lastLabel.getWidth(), info_y, SCALE(20), info_h);
 							}
 							label_hyperlink.draw(grClip, info_color);
 							drawCount++;
@@ -4238,7 +4794,7 @@ class Header extends BaseHeader {
 				// * Info line
 				const info_text_h = Math.ceil(gr.MeasureString(info_text, g_pl_fonts.info, 0, 0, 0, 0).Height + 5);
 				const line_x1 = left_pad;
-				const line_x2 = this.w - scaleForDisplay(20);
+				const line_x2 = this.w - SCALE(20);
 				const line_y = info_y + info_text_h;
 				if (line_x2 - line_x1 > 0) {
 					grClip.DrawLine(line_x1, line_y, line_x2, line_y, 1, line_color);
@@ -4249,7 +4805,7 @@ class Header extends BaseHeader {
 			{
 				let line_x1 = part2_cur_x;
 				if (line_x1 !== left_pad) {
-					line_x1 += is_4k ? 20 : 9;
+					line_x1 += RES_4K ? 20 : 9;
 				}
 
 				const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
@@ -4257,22 +4813,22 @@ class Header extends BaseHeader {
 				const date_query = pref.showPlaylistFullDate ? tf.date : tf.year;
 				const date_text = $(date_query, this.metadb);
 				const date_height = gr.MeasureString(date_text, g_pl_fonts.date, 0, 0, 0, 0).Height;
-				const line_x2 = this.w - part2_right_pad - (date_text ? (is_4k ? 58 : 25) : scaleForDisplay(20));
+				const line_x2 = this.w - part2_right_pad - (date_text ? (RES_4K ? 58 : 25) : SCALE(20));
 				const line_y = !g_properties.show_group_info ? Math.round(this.h / 2) :
 					pref.customThemeFonts ? Math.floor(this.h / 2 + (date_height - album_height)) :
-					Math.round(this.h / 2) + scaleForDisplay(is_4k ? 7 : 6) +
+					Math.round(this.h / 2) + SCALE(RES_4K ? 7 : 6) +
 					// Y-corrections
-					(headerFontSize === 22  ? is_4k ? -4 : -1 :
-					 headerFontSize === 20  ? is_4k ? -5 :  0 :
-					 headerFontSize === 18  ? is_4k ? -5 : -1 :
-					 headerFontSize === 17  ? is_4k ? -4 :  1 :
-					 headerFontSize === 16  ? is_4k ? -3 : -1 :
-					 headerFontSize === 15  ? is_4k ? -4 :  0 :
-					 headerFontSize === 14 && is_4k ? -4 :
-					 headerFontSize === 13 && is_4k ? -3 :
-					 headerFontSize === 12 && is_4k ? -5 :
-					 headerFontSize === 10 && is_4k ? -2 :
-					 headerFontSize &&  !is_4k < 15 ? -1 :
+					(headerFontSize === 22  ? RES_4K ? -4 : -1 :
+					 headerFontSize === 20  ? RES_4K ? -5 :  0 :
+					 headerFontSize === 18  ? RES_4K ? -5 : -1 :
+					 headerFontSize === 17  ? RES_4K ? -4 :  1 :
+					 headerFontSize === 16  ? RES_4K ? -3 : -1 :
+					 headerFontSize === 15  ? RES_4K ? -4 :  0 :
+					 headerFontSize === 14 && RES_4K ? -4 :
+					 headerFontSize === 13 && RES_4K ? -3 :
+					 headerFontSize === 12 && RES_4K ? -5 :
+					 headerFontSize === 10 && RES_4K ? -2 :
+					 headerFontSize &&  !RES_4K < 15 ? -1 :
 					0);
 
 				if (line_x2 - line_x1 > 0) {
@@ -4299,13 +4855,14 @@ class Header extends BaseHeader {
 		gr.DrawImage(cache_header ? this.header_image : clipImg, this.x, y, this.w, h, 0, srcY, this.w, h);
 		if (this.is_completely_selected() && (pref.theme === 'white' || pref.theme === 'black')) {
 			gr.SetSmoothingMode(SmoothingMode.None);
-			gr.FillSolidRect(this.x, y + scaleForDisplay(6), 0, h, col.primary);
+			gr.FillSolidRect(this.x, y + SCALE(6), 0, h, col.primary);
 			gr.SetSmoothingMode(SmoothingMode.HighQuality);
 		}
 		clipImg = null;
 	}
 
 	/**
+	 * Draws the playlist header in compact layout.
 	 * @param {GdiGraphics} gr
 	 */
 	draw_compact_header(gr) {
@@ -4347,8 +4904,8 @@ class Header extends BaseHeader {
 		// }
 
 		if (this.is_playing() && updatedNowpBg) {
-			grClip.FillSolidRect(0, 0, scrollbar ? this.w - scaleForDisplay(12) : this.w, this.h, g_pl_colors.header_nowplaying_bg);
-			grClip.FillSolidRect(0, 0, ['white', 'black', 'cream'].includes(pref.theme) ? 0 : scaleForDisplay(8), this.h, g_pl_colors.header_sideMarker);
+			grClip.FillSolidRect(0, 0, scrollbar ? this.w - SCALE(12) : this.w, this.h, g_pl_colors.header_nowplaying_bg);
+			grClip.FillSolidRect(0, 0, ['white', 'black', 'cream'].includes(pref.theme) ? 0 : SCALE(8), this.h, g_pl_colors.header_sideMarker);
 		}
 
 		// * Need to apply text rendering AntiAliasGridFit when using style Blend or when using custom theme fonts with larger font sizes
@@ -4362,7 +4919,7 @@ class Header extends BaseHeader {
 
 		const is_radio = this.metadb.RawPath.startsWith('http');
 
-		const left_pad = scaleForDisplay(20);
+		const left_pad = SCALE(20);
 		let right_pad = 0;
 		let cur_x = left_pad;
 
@@ -4372,7 +4929,7 @@ class Header extends BaseHeader {
 			const date_text = $(date_query, this.metadb);
 			if (date_text) {
 				const date_w = Math.ceil(gr.MeasureString(date_text, date_font, 0, 0, 0, 0).Width + 5);
-				const date_x = this.w - date_w - scaleForDisplay(12);
+				const date_x = this.w - date_w - SCALE(12);
 				const date_y = 0;
 				const date_h = this.h;
 
@@ -4414,7 +4971,7 @@ class Header extends BaseHeader {
 
 				const album_h = this.h;
 				const album_x = cur_x;
-				const album_w = this.w - album_x - (right_pad + scaleForDisplay(40));
+				const album_w = this.w - album_x - (right_pad + SCALE(40));
 
 				const album_text_format = g_string_format.v_align_center | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
 				grClip.DrawString(album_text, g_pl_fonts.album, album_color, album_x, 0, album_w, album_h, album_text_format);
@@ -4428,13 +4985,14 @@ class Header extends BaseHeader {
 
 		// * Callbacks for headerTooltip
 		this.artist_w_compact = this.w - cur_x - (right_pad + 5);
-		this.album_w_compact = this.w - cur_x - (right_pad + scaleForDisplay(40));
+		this.album_w_compact = this.w - cur_x - (right_pad + SCALE(40));
 		this.artist_text_w_compact = gr.MeasureString($(this.grouping_handler.get_title_query(), this.metadb), artist_font, 0, 0, 0, 0).Width;
 		this.album_text_w_compact = gr.MeasureString($(this.grouping_handler.get_sub_title_query(), this.metadb), g_pl_fonts.album, 0, 0, 0, 0).Width;
 	}
 
 	/**
-	 * @param {GdiBitmap} image
+	 * Assigns and resizes an image to the "art" property, based on certain conditions and constraints.
+	 * @param {GdiBitmap} image The album art image that is being assigned to the `art` property.
 	 */
 	assign_art(image) {
 		if (!image || !g_properties.show_album_art) {
@@ -4468,37 +5026,42 @@ class Header extends BaseHeader {
 	}
 
 	/**
-	 * @return {boolean}
+	 * Checks if the album art was sucessfully loaded.
+	 * @returns {boolean} True or false.
 	 */
 	is_art_loaded() {
 		return this.art !== undefined;
 	}
 
+	/**
+	 * Initializes hyperlinks for various metadata fields such as date, artist, album, record labels, and genres.
+	 * @param {GdiGraphics} gr
+	 */
 	initialize_hyperlinks(gr) {
 		const date_font = g_pl_fonts.date;
 		const artist_font = g_pl_fonts.artist_normal;
-		const art_box_x = 3 * scaleForDisplay(6);
-		const spacing = scaleForDisplay(2);
+		const art_box_x = 3 * SCALE(6);
+		const spacing = SCALE(2);
 		const art_box_size = this.art_max_size + spacing * 2;
 		const part_h = this.h / 3;
 		const separatorWidth = gr.MeasureString(' \u2020', g_pl_fonts.info, 0, 0, 0, 0).Width;
 		const bulletWidth = Math.ceil(gr.MeasureString('\u2020', g_pl_fonts.info, 0, 0, 0, 0).Width);
-		const spaceWidth = Math.ceil(separatorWidth - bulletWidth) + scaleForDisplay(1);
-		const right_edge = scaleForDisplay(20);
-		let left_pad = scaleForDisplay(10);
+		const spaceWidth = Math.ceil(separatorWidth - bulletWidth) + SCALE(1);
+		const right_edge = SCALE(20);
+		let left_pad = SCALE(10);
 		left_pad += this.art !== null && g_properties.show_album_art && !g_properties.auto_album_art ? art_box_x + art_box_size : left_pad;
-		this.hyperlinksMaxWidth = pref.showPlaylistFullDate ? this.w - scaleForDisplay(320) : this.w - scaleForDisplay(240); // Max allowed container width of hyperlinks = width - largest size of date_w
+		this.hyperlinksMaxWidth = pref.showPlaylistFullDate ? this.w - SCALE(320) : this.w - SCALE(240); // Max allowed container width of hyperlinks = width - largest size of date_w
 
 		// * Date
 		const date_query = pref.showPlaylistFullDate ? tf.date : tf.year;
 		const date_text = $(date_query, this.metadb);
 		if (date_text) {
 			const date_w = Math.ceil(gr.MeasureString(date_text, date_font, 0, 0, 0, 0).Width + 5);
-			const date_x = -date_w - right_edge + (is_4k ? 5 : 7);
-			const date_y = !g_properties.show_group_info ? part_h : part_h - (is_4k ? pref.customThemeFonts ? 1 : 3 : pref.customThemeFonts ? -1 : 0) +
+			const date_x = -date_w - right_edge + (RES_4K ? 5 : 7);
+			const date_y = !g_properties.show_group_info ? part_h : part_h - (RES_4K ? pref.customThemeFonts ? 1 : 3 : pref.customThemeFonts ? -1 : 0) +
 			// Y-corrections
-			(is_4k && headerFontSize === 20 || is_4k && headerFontSize === 18 || is_4k && headerFontSize === 13 || is_4k && headerFontSize === 12 ? -1 : is_4k && headerFontSize === 16 ? 1 : 0) +
-			(!is_4k && headerFontSize < 15 ? 1 : 0) + (!is_4k && headerFontSize === 20 ? 2 : 0);
+			(RES_4K && headerFontSize === 20 || RES_4K && headerFontSize === 18 || RES_4K && headerFontSize === 13 || RES_4K && headerFontSize === 12 ? -1 : RES_4K && headerFontSize === 16 ? 1 : 0) +
+			(!RES_4K && headerFontSize < 15 ? 1 : 0) + (!RES_4K && headerFontSize === 20 ? 2 : 0);
 
 			this.hyperlinks.date = new Hyperlink(date_text, date_font, 'date', date_x, date_y, this.w, true);
 		}
@@ -4518,13 +5081,13 @@ class Header extends BaseHeader {
 					artist_x += bulletWidth + spaceWidth * 3; // Spacing between artists
 				}
 				const artist_w = gr.MeasureString(artist_text[i], artist_font, 0, 0, 0, 0).Width;
-				this.hyperlinks['artist' + i] = new Hyperlink(artist_text[i], artist_font, 'artist', artist_x, scaleForDisplay(5 * (!g_properties.show_group_info ? 2 : 1)), this.hyperlinksMaxWidth, true);
+				this.hyperlinks['artist' + i] = new Hyperlink(artist_text[i], artist_font, 'artist', artist_x, SCALE(5 * (!g_properties.show_group_info ? 2 : 1)), this.hyperlinksMaxWidth, true);
 				artist_x += artist_w;
 			}
 		}
 
 		// * Album
-		const album_y = part_h * (!g_properties.show_group_info ? 1.5 : 1) + ((is_4k || is_QHD && headerFontSize === 17 ? 5 : 4) * (!g_properties.show_group_info ? 2 : 1));
+		const album_y = part_h * (!g_properties.show_group_info ? 1.5 : 1) + ((RES_4K || RES_QHD && headerFontSize === 17 ? 5 : 4) * (!g_properties.show_group_info ? 2 : 1));
 		const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
 		if (album_text) {
 			this.hyperlinks.album = new Hyperlink(album_text, g_pl_fonts.album, 'album', left_pad, album_y, this.hyperlinksMaxWidth, true);
@@ -4536,8 +5099,8 @@ class Header extends BaseHeader {
 			labels.push(...getMetaValues(tf.labels[i], this.metadb));
 		}
 		labels = [...new Set(labels)];	// Remove duplicates
-		let label_left = -right_edge * 2 + (is_4k ? 42 : 20);
-		const label_y = Math.round(2 * this.h / 3) - (is_4k ? 4 : -1);
+		let label_left = -right_edge * 2 + (RES_4K ? 42 : 20);
+		const label_y = Math.round(2 * this.h / 3) - (RES_4K ? 4 : -1);
 		for (let i = labels.length - 1; i >= 0; --i) {
 			if (i !== labels.length - 1) {
 				label_left -= (bulletWidth + spaceWidth * 2);   // Spacing between labels
@@ -4571,6 +5134,13 @@ class Header extends BaseHeader {
 		this.hyperlinks_initialized = true;
 	}
 
+	/**
+	 * Handles mouse movement events and updates the state of hyperlinks based on the mouse position.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_move(x, y, m) {
 		let handled = false;
 		let needs_redraw = false;
@@ -4597,6 +5167,13 @@ class Header extends BaseHeader {
 		return handled;
 	}
 
+	/**
+	 * Checks if the mouse click is within the boundaries of any hyperlinks and triggers their click event.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_lbtn_down(x, y, m) {
 		for (const h in this.hyperlinks) {
 			if (this.hyperlinks[h].trace(x - this.x, y)) {
@@ -4607,10 +5184,18 @@ class Header extends BaseHeader {
 		return false;
 	}
 
+	/**
+	 * Sets the x-coordinate for the ListItem object.
+	 * @param {number} x The x-coordinate.
+	 */
 	set_x(x) {
 		ListItem.prototype.set_x.apply(this, [x]);
 	}
 
+	/**
+	 * Sets the y-coordinate for the ListItem object.
+	 * @param {number} y The y-coordinate.
+	 */
 	set_y(y) {
 		ListItem.prototype.set_y.apply(this, [y]);
 
@@ -4619,6 +5204,10 @@ class Header extends BaseHeader {
 		}
 	}
 
+	/**
+	 * Sets the width of a list item and its sub-items, as well as the container width of any hyperlinks within the item.
+	 * @param {number} w The width.
+	 */
 	set_w(w) {
 		ListItem.prototype.set_w.apply(this, [w]);
 
@@ -4631,16 +5220,24 @@ class Header extends BaseHeader {
 		}
 	}
 
+	/**
+	 * Resets the current hyperlinks.
+	 */
 	reset_hyperlinks() {
 		this.hyperlinks_initialized = false;
 		this.hyperlinks = {};
 	}
 
+	/**
+	 * Clears the playlist header background image.
+	 */
 	clearCachedHeaderImg() {
 		this.header_image = null;
 	}
 
-	// * Playlist group header truncated text tooltip
+	/**
+	 * Displays the playlist header tooltip when artist or album text is truncated.
+	 */
 	headerTooltip() {
 		if (pref.showTooltipMain || pref.showTooltipTruncated) {
 			if (displayCustomThemeMenu && displayBiography) return; // Overlayed by custom theme menu
@@ -4660,9 +5257,10 @@ class Header extends BaseHeader {
 
 
 /**
- * @param {Array<Row>} rows_to_process
- * @param {FbMetadbHandleList} rows_metadb
- * @return {Array} Has the following format [Array<[row,row_data]>, disc_header_prepared_data]
+ * Prepares the initialization data for the playlist header.
+ * @param {Array<Row>} rows_to_process The rows to process.
+ * @param {FbMetadbHandleList} rows_metadb The metadb of the rows to process.
+ * @returns {Array} An array of two elements, has the following format [Array<[row,row_data]>, disc_header_prepared_data].
  */
 Header.prepare_initialization_data = (rows_to_process, rows_metadb) => {
 	let query = Header.grouping_handler.get_query();
@@ -4675,18 +5273,19 @@ Header.prepare_initialization_data = (rows_to_process, rows_metadb) => {
 
 	const prepared_disc_data = g_properties.show_disc_header ? DiscHeader.prepare_initialization_data(rows_to_process, rows_metadb) : [];
 
-	return [zip(rows_to_process, rows_data), prepared_disc_data];
+	return [Zip(rows_to_process, rows_data), prepared_disc_data];
 };
 
 
 /**
- * @param {PlaylistContent} parent
- * @param {number} x
- * @param {number} y
- * @param {number} w
- * @param {number} h
- * @param {Array} prepared_rows Has the following format [Array<[row,row_data]>, disc_header_prepared_data]
- * @return {Array<Header>}
+ * Creates the playlist header for each item.
+ * @param {PlaylistContent} parent The parent element.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} w The width.
+ * @param {number} h The height.
+ * @param {Array} prepared_rows The prepared rows, has the following format [Array<[row,row_data]>, disc_header_prepared_data].
+ * @returns {Array<Header>} An array of headers.
  */
 Header.create_headers = (parent, x, y, w, h, prepared_rows) => {
 	const prepared_header_rows = prepared_rows[0];
@@ -4697,7 +5296,7 @@ Header.create_headers = (parent, x, y, w, h, prepared_rows) => {
 		const header = new Header(parent, x, y, w, h, header_idx);
 		const processed_rows_count = header.initialize_items(prepared_rows);
 
-		trimArray(prepared_header_rows, processed_rows_count, true);
+		TrimArray(prepared_header_rows, processed_rows_count, true);
 
 		headers.push(header);
 		++header_idx;
@@ -4707,21 +5306,176 @@ Header.create_headers = (parent, x, y, w, h, prepared_rows) => {
 };
 
 
+////////////////////////
+// * HEADER ARTWORK * //
+////////////////////////
+/**
+ * Debounces the getAlbumArtwork function.
+ * @type {function}
+ * @param {Array} items The items to get the album art for.
+ * @returns {Promise} A promise that resolves when the album art has been retrieved.
+ */
+const getAlbumArtDebounced = Debounce((items) => {
+	getHeaderArtwork(items);
+}, 500, {
+	leading:  false,
+	trailing: true
+});
+
+
+/**
+ * Gets album art for playlist headers and is only executed if certain conditions are met.
+ * @param {Array<Header>} items
+ */
+function getAlbumArt(items) {
+	if (!g_properties.show_album_art || g_properties.use_compact_header) {
+		return;
+	}
+
+	getAlbumArtDebounced(items);
+}
+
+
+/**
+ * Checks if the album art is loaded for each item in the given array, and if not,
+ * retrieves the artwork asynchronously and assigns it to the item. Typically called in a debounce.
+ * @param {Header[]|Row[]} items
+ */
+function getHeaderArtwork(items) {
+	const headers = items.reduce((acc, item) => item instanceof Header ? [...acc, item] : acc, []);
+	for (const header of headers) {
+		const { metadb } = header.get_first_row();
+		const isArtLoaded = header.is_art_loaded();
+		const cached_art = Header.art_cache.get_image_for_meta(metadb);
+
+		if (!isArtLoaded) {
+			if (cached_art) {
+				header.assign_art(cached_art);
+			} else {
+				// TODO: Once this has been better tested, remove on_get_album_art_done callback from this file, and probably gr-callbacks.js as well
+				// utils.GetAlbumArtAsync(window.ID, metadb, g_album_art_id.front);
+				if (!playlistThumbList.has(metadb)) {
+					playlistThumbList.add(metadb);
+					utils.GetAlbumArtAsyncV2(window.ID, metadb, g_album_art_id.front).then((artResult) => {
+						if (!header.is_art_loaded()) {
+							header.assign_art(artResult.image);
+							header.repaint();
+						}
+					});
+				}
+			}
+		}
+	}
+}
+
+
+/**
+ * Implements a cache for storing and retrieving images associated with metadata objects.
+ * @param {number} max_cache_size_arg The maximum number of images that can be stored in the cache.
+ * Once the cache reaches this size, the oldest images will be removed to make space for new ones.
+ * @class
+ */
+function ArtImageCache(max_cache_size_arg) {
+	/** @type {LinkedList<FbMetadbHandle>} */
+	const queue = new LinkedList();
+	/** @type {Object<string,CacheItem>} */
+	let cache = {};
+
+	/**
+	 * creates an object that stores metadata, an image, and a queue iterator.
+	 * @param {FbMetadbHandle} metadb The metadb of the track.
+	 * @param {GdiBitmap} img The loaded image to cache.
+	 * @param {LinkedList.Iterator<FbMetadbHandle>} queue_iterator A reference to an iterator object that is
+     * used to iterate over a queue of items. It is likely used to keep track of the current position in
+     * the queue and to provide methods for accessing the next item in the queue.
+	 * @class
+	 */
+	function CacheItem(metadb, img, queue_iterator) {
+		this.metadb = metadb;
+		this.img = img;
+		this.queue_iterator = queue_iterator;
+	}
+
+	/**
+	 * Gets the image from the cache.
+	 * @param {FbMetadbHandle} metadb The metadb of the track.
+	 * @returns {?GdiBitmap} The image for the given metadb.
+	 */
+	this.get_image_for_meta = (metadb) => {
+		const cache_item = cache[metadb.Path];
+		if (!cache_item) {
+			return undefined; // undefined means Not Loaded
+		}
+
+		const img = cache_item.img;
+		move_item_to_top(cache_item);
+
+		return img;
+	};
+
+	/**
+	 * Adds the image to the cache.
+	 * @param {GdiBitmap} img The image to add.
+	 * @param {FbMetadbHandle} metadb The metadb of the track.
+	 */
+	this.add_image_for_meta = (img, metadb) => {
+		const cache_item = cache[metadb.Path];
+		if (cache_item) {
+			cache_item.img = img;
+			move_item_to_top(cache_item);
+		}
+		else {
+			queue.push_front(metadb);
+			cache[metadb.Path] = new CacheItem(metadb, img, queue.begin());
+			if (queue.length() > max_cache_size_arg) {
+				delete cache[queue.back().Path];
+				queue.pop_back();
+			}
+		}
+	};
+
+	/**
+	 * Clears the cache and the queue.
+	 * @returns {void}
+	 */
+	this.clear = () => {
+		cache = {};
+		queue.clear();
+	};
+
+	/**
+	 * Moves an item to the top of the queue.
+	 * @param {CacheItem} cache_item The item to move to the top.
+	 */
+	function move_item_to_top(cache_item) {
+		queue.remove(cache_item.queue_iterator);
+		queue.push_front(cache_item.metadb);
+		cache_item.queue_iterator = queue.begin();
+	}
+}
+
+/** @type {ArtImageCache} */
+Header.art_cache = new ArtImageCache(200);
+
+
 /////////////
 // * ROW * //
 /////////////
 /**
- * @param {number} x
- * @param {number} y
- * @param {number} w
- * @param {number} h
- * @param {FbMetadbHandle} metadb
- * @param {number} idx
- * @param {number} cur_playlist_idx_arg
- * @constructor
- * @extends {ListItem}
+ * Creates and draws the playlist rows.
  */
 class Row extends ListItem {
+	/**
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} w The width.
+	 * @param {number} h The height.
+	 * @param {FbMetadbHandle} metadb The metadb of the track.
+	 * @param {number} idx The playlist row index.
+	 * @param {number} cur_playlist_idx_arg The current playlist index.
+	 * @extends {ListItem}
+	 * @class
+	 */
 	constructor(x, y, w, h, metadb, idx, cur_playlist_idx_arg) {
 		super(x, y, w, h);
 
@@ -4760,6 +5514,11 @@ class Row extends ListItem {
 		this.is_drop_top_selected = false;
 		this.is_cropped = false;
 
+		/**
+		 * Playlist title color for row hover.
+		 * @type {number}
+		 */
+		this.title_color = g_pl_colors.row_title_normal;
 
 		/**
 		 * @const
@@ -4788,49 +5547,14 @@ class Row extends ListItem {
 		this.length_text = undefined;
 
 		this.initialize_rating();
-
-		// * Playlist row hover
-		this.title_color = g_pl_colors.row_title_normal;
-
-		/** @enum {number} */
-		const rowState = {
-			normal:  0,
-			hovered: 1,
-			pressed: 2
-		};
-
-		/**
-		 * @param {rowState} item
-		 */
-		this.changeRowState = function (item) {
-			switch (item) {
-				case rowState.normal: {
-					this.title_color = g_pl_colors.row_title_normal;
-					break;
-				}
-				case rowState.hovered: {
-					this.title_color = g_pl_colors.row_title_hovered;
-					break;
-				}
-				case rowState.pressed: {
-					this.title_color = g_pl_colors.row_title_selected;
-					break;
-				}
-			}
-		};
-
-		this.trace = function (x, y) {
-			return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
-		};
-
-		this.on_mouse_move = function (x, y, m) {
-			if (pref.playlistRowHover && loadingThemeComplete) {
-				this.changeRowState(this.trace(x, y) ? rowState.hovered : rowState.normal);
-			}
-		};
 	}
 
 	// public:
+
+	/**
+	 * Draws the playlist rows, including the titles, artists, lengths, ratings, playcounts, and queue positions.
+	 * @param {GdiGraphics} gr
+	 */
 	draw(gr) {
 		gr.SetSmoothingMode(SmoothingMode.None);
 
@@ -4860,10 +5584,10 @@ class Row extends ListItem {
 			// 	gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.row_selection_bg);
 			// }
 			if (!this.is_playing) { // Do not draw selection on now playing to prevent 1px overlapping
-				gr.DrawRect(this.x, this.is_playing ? this.y - 1 : this.y, scrollbar ? this.w - (is_4k ? 25 : 13) : this.w, this.h, 1, g_pl_colors.row_selection_frame);
+				gr.DrawRect(this.x, this.is_playing ? this.y - 1 : this.y, scrollbar ? this.w - (RES_4K ? 25 : 13) : this.w, this.h, 1, g_pl_colors.row_selection_frame);
 				// Hide DrawRect 1px gaps when all songs are completely selected
-				gr.DrawRect(this.x, this.is_playing ? this.y - 1 : this.y, scaleForDisplay(7), this.h, 1, g_pl_colors.row_sideMarker);
-				gr.FillSolidRect(this.x, this.y, scaleForDisplay(8), this.h, g_pl_colors.row_sideMarker);
+				gr.DrawRect(this.x, this.is_playing ? this.y - 1 : this.y, SCALE(7), this.h, 1, g_pl_colors.row_sideMarker);
+				gr.FillSolidRect(this.x, this.y, SCALE(8), this.h, g_pl_colors.row_sideMarker);
 			}
 		}
 
@@ -4872,8 +5596,8 @@ class Row extends ListItem {
 			title_font = g_pl_fonts.title_playing;
 
 			const bg_color = g_pl_colors.row_nowplaying_bg;
-			gr.FillSolidRect(this.x, this.y, scrollbar ? this.w - scaleForDisplay(12) : this.w, this.h, bg_color);
-			if (colorDistance(bg_color, title_artist_color) < 195) {
+			gr.FillSolidRect(this.x, this.y, scrollbar ? this.w - SCALE(12) : this.w, this.h, bg_color);
+			if (ColorDistance(bg_color, title_artist_color) < 195) {
 				title_artist_color = this.title_color;
 			}
 
@@ -4886,7 +5610,7 @@ class Row extends ListItem {
 				title_artist_color = RGB(220, 220, 220);
 			}
 			if (pref.theme === 'white' && (pref.styleBlackAndWhite || pref.styleBlackAndWhite2) || !['white', 'black', 'cream'].includes(pref.theme)) {
-				gr.FillSolidRect(this.x, this.y, scaleForDisplay(8), this.h, g_pl_colors.row_sideMarker);
+				gr.FillSolidRect(this.x, this.y, SCALE(8), this.h, g_pl_colors.row_sideMarker);
 			}
 		}
 
@@ -4902,13 +5626,13 @@ class Row extends ListItem {
 
 		const is_radio = this.metadb.RawPath.startsWith('http');
 
-		const right_spacing = scaleForDisplay(20);
+		const right_spacing = SCALE(20);
 		let cur_x = this.x + right_spacing;
-		let right_pad = scaleForDisplay(20);
+		let right_pad = SCALE(20);
 		const testRect = false;
 
 		if ($('$ifgreater(%totaldiscs%,1,true,false)', this.metadb) !== 'false') {
-			cur_x += scaleForDisplay(0);
+			cur_x += SCALE(0);
 		}
 
 		// * LENGTH
@@ -4918,7 +5642,7 @@ class Row extends ListItem {
 			}
 			this.length_text = this.is_playing && pref.playlistTimeRemaining ? $('[-%playback_time_remaining%]') : $('[%length%]', this.metadb);
 
-			const length_w = scaleForDisplay(60);
+			const length_w = SCALE(60);
 			if (this.length_text) {
 				const length_x = this.x + this.w - length_w - right_pad;
 
@@ -5023,7 +5747,7 @@ class Row extends ListItem {
 
 		// * TITLE draw
 		{
-			const title_w = this.w - right_pad - scaleForDisplay(44);
+			const title_w = this.w - right_pad - SCALE(44);
 			const title_text_format = g_string_format.v_align_center | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
 			gr.DrawString(this.title_text, title_font, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
 			if (this.is_playing) {
@@ -5059,7 +5783,7 @@ class Row extends ListItem {
 			const queueTextFormat = g_string_format.v_align_center | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
 			let queueColor = this.title_color; // col.primary;
 
-			if (this.is_playing || colorDistance(queueColor, g_pl_colors.row_stripes_bg) < 165) {
+			if (this.is_playing || ColorDistance(queueColor, g_pl_colors.row_stripes_bg) < 165) {
 				queueColor = this.title_color;
 			}
 			gr.DrawString(queueText, title_font, queueColor, queueX, this.y, queueW, this.h, queueTextFormat);
@@ -5070,7 +5794,7 @@ class Row extends ListItem {
 		let timeRemainingTimer = null;
 		if (pref.playlistTimeRemaining && this.is_playing && fb.IsPlaying) {
 			timeRemainingTimer = setTimeout(() => {
-				const length_w = scaleForDisplay(60);
+				const length_w = SCALE(60);
 				const length_x = this.x + this.w - length_w;
 				window.RepaintRect(length_x + 5, this.y, length_w + 5, this.h);
 			}, 1000);
@@ -5082,28 +5806,43 @@ class Row extends ListItem {
 		this.title_color = g_pl_colors.row_title_normal;
 
 		// * Callbacks for titleTooltip
-		this.title_w = this.w - right_pad - scaleForDisplay(44);
+		this.title_w = this.w - right_pad - SCALE(44);
 		this.title_text_w = gr.MeasureString(this.title_text, title_font, 0, 0, 0, 0).Width;
 	}
 
-	/** @override */
+	/**
+	 * Sets the x-coordinate for the ListItem object and updates the x-coordinate for the rating property.
+	 * @param {number} x The x-coordinate.
+	 * @override
+	 */
 	set_x(x) {
 		ListItem.prototype.set_x.apply(this, [x]);
 		this.rating.x = x;
 	}
 
-	/** @override */
+	/**
+	 * Sets the y-coordinate for the ListItem object and updates the y-coordinatefor the rating property.
+	 * @param {number} y The y-coordinate.
+	 * @override
+	 */
 	set_y(y) {
 		ListItem.prototype.set_y.apply(this, [y]);
 		this.rating.y = y;
 	}
 
-	/** @override */
+	/**
+	 * Sets the width for the ListItem object and updates the width for the rating property.
+	 * @param {number} w The width.
+	 * @override
+	 */
 	set_w(w) {
 		ListItem.prototype.set_w.apply(this, [w]);
 		this.initialize_rating();
 	}
 
+	/**
+	 * Resets the queried data for title, title artist, count, and length.
+	 */
 	reset_queried_data() {
 		this.title_text = undefined;
 		this.title_artist_text = undefined;
@@ -5114,9 +5853,10 @@ class Row extends ListItem {
 	}
 
 	/**
-	 * @param {number} x
-	 * @param {number} y
-	 * @return {boolean}
+	 * Checks if the rating is being traced.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
 	 */
 	rating_trace(x, y) {
 		if (!g_properties.show_rating) {
@@ -5126,8 +5866,9 @@ class Row extends ListItem {
 	}
 
 	/**
-	 * @param {number} x
-	 * @param {number} y
+	 * Handles mouse click events on the rating.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
 	 */
 	rating_click(x, y) {
 		assert(g_properties.show_rating,
@@ -5137,22 +5878,74 @@ class Row extends ListItem {
 	}
 
 	/**
-	 * @return {boolean}
+	 * Checks if a playlist item is selected.
+	 * @returns {boolean} True or false.
 	 */
 	is_selected() {
 		return plman.IsPlaylistItemSelected(this.cur_playlist_idx, this.idx);
 	}
 
+	/**
+	 * Initializes the rating and sets its position within a given area.
+	 */
 	initialize_rating() {
 		this.rating = new Rating(0, this.y, this.w - this.rating_right_pad, this.h, this.metadb);
 		this.rating.x = this.x + this.w - (this.rating.w + this.rating_right_pad);
 	}
 
+	/**
+	 * Clears the title text from an item in the playlist row.
+	 */
 	clear_title_text() {
 		this.title_text = null;
 	}
 
-	// * Playlist row truncated text tooltip
+	/**
+	 * Changes the playlist row text state when playlist item is hovered or pressed.
+	 * @param {rowState} item The playlist row item.
+	 */
+	changeRowState(item) {
+		switch (item) {
+			case rowState.normal: {
+				this.title_color = g_pl_colors.row_title_normal;
+				break;
+			}
+			case rowState.hovered: {
+				this.title_color = g_pl_colors.row_title_hovered;
+				break;
+			}
+			case rowState.pressed: {
+				this.title_color = g_pl_colors.row_title_selected;
+				break;
+			}
+		}
+	};
+
+	/**
+	 * Checks if the mouse is on a playlist item.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
+	trace(x, y) {
+		return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
+	};
+
+	/**
+	 * Traces the mouse movement and changes the playlist text row state on an item.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 */
+	on_mouse_move(x, y, m) {
+		if (pref.playlistRowHover && loadingThemeComplete) {
+			this.changeRowState(this.trace(x, y) ? rowState.hovered : rowState.normal);
+		}
+	};
+
+	/**
+	 * Displays the playlist row tooltip when title text is truncated.
+	 */
 	titleTooltip() {
 		if ((pref.showTooltipMain || pref.showTooltipTruncated)) {
 			if (displayCustomThemeMenu && displayBiography) return; // Overlayed by custom theme menu
@@ -5183,6 +5976,9 @@ class Row extends ListItem {
 		}
 	}
 
+	/**
+	 * Updates and determines the color of the playlist row title text.
+	 */
 	update_title_color() {
 		const panelWhite = colBrightness > 210 && pref.styleRebornFusion || colBrightness2 > 210 && pref.styleRebornFusion2 || pref.styleBlackAndWhite2;
 		const panelBlack = colBrightness <  25 && pref.styleRebornFusion || colBrightness2 < 25  && pref.styleRebornFusion2 || pref.styleBlackAndWhite;
@@ -5195,13 +5991,13 @@ class Row extends ListItem {
 // * RATING * //
 ////////////////
 /**
- *
- * @param {number} x
- * @param {number} y
- * @param {number} max_w
- * @param {number} h
- * @param {FbMetadbHandle} metadb
- * @constructor
+ * Displays rating in the playlist rows.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} max_w The maximum width.
+ * @param {number} h The height.
+ * @param {FbMetadbHandle} metadb The metadb of the track.
+ * @class
  */
 function Rating(x, y, max_w, h, metadb) {
 	/**
@@ -5214,7 +6010,7 @@ function Rating(x, y, max_w, h, metadb) {
 	 * @const
 	 * @type {number}
 	 */
-	const btn_w = scaleForDisplay(rowFontSize + 2);
+	const btn_w = SCALE(rowFontSize + 2);
 
 	/**
 	 * @const
@@ -5241,13 +6037,14 @@ function Rating(x, y, max_w, h, metadb) {
 	let rating; // undefined
 
 	/**
+	 * Draws stars as rating in the playlist row.
 	 * @param {GdiGraphics} gr
-	 * @param {number} color
+	 * @param {number} color The color of the stars.
 	 */
 	this.draw = function (gr, color) {
 		const cur_rating = this.get_rating();
 		let cur_rating_x = this.x;
-		const y = this.y - (is_4k ? 3 : 1);
+		const y = this.y - (RES_4K ? 3 : 1);
 
 		for (let j = 0; j < 5; j++) {
 			if (j < cur_rating) {
@@ -5262,17 +6059,19 @@ function Rating(x, y, max_w, h, metadb) {
 	};
 
 	/**
-	 * @param {number} x
-	 * @param {number} y
-	 * @return {boolean}
+	 * Traces mouse movement and checks if mouse is within the boundaries of the clickable rating.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
 	 */
 	this.trace = function (x, y) {
 		return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
 	};
 
 	/**
-	 * @param {number} x
-	 * @param {number} y
+	 * Sets rating in the playlist row rating area when double clicked.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
 	 */
 	this.click = function (x, y) {
 		if (!this.trace(x, y)) {
@@ -5301,7 +6100,8 @@ function Rating(x, y, max_w, h, metadb) {
 	};
 
 	/**
-	 * @return {number}
+	 * Gets the current rating for the playlist row.
+	 * @returns {number} The rating of the current track.
 	 */
 	this.get_rating = () => {
 		if (rating == null) {
@@ -5319,6 +6119,9 @@ function Rating(x, y, max_w, h, metadb) {
 		return rating;
 	};
 
+	/**
+	 * Resets and clears the current rating.
+	 */
 	this.reset_queried_data = () => {
 		rating = undefined;
 	};
@@ -5329,9 +6132,10 @@ function Rating(x, y, max_w, h, metadb) {
 // * SELECTION HANDLER * //
 ///////////////////////////
 /**
- * @param {PlaylistContent} cnt_arg
- * @param {number} cur_playlist_idx_arg
- * @constructor
+ * Handles selection and manipulation of playlist items.
+ * @param {PlaylistContent} cnt_arg The playlist content.
+ * @param {number} cur_playlist_idx_arg The current playlist index.
+ * @class
  */
 function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	/**
@@ -5368,6 +6172,9 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	// private:
 	const that = this;
 
+	/**
+	 * Initializes the selection state.
+	 */
 	this.initialize_selection = () => {
 		selected_indexes = [];
 		rows.forEach((item, i) => {
@@ -5378,9 +6185,10 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	};
 
 	/**
-	 * @param {Row|BaseHeader} item
-	 * @param {boolean=} [ctrl_pressed=false]
-	 * @param {boolean=} [shift_pressed=false]
+	 * Updates the selection state.
+	 * @param {Row|BaseHeader} item The item to update the selection state for.
+	 * @param {boolean=} [ctrl_pressed=false] Whether CTRL key is pressed.
+	 * @param {boolean=} [shift_pressed=false] Whether SHIFT key is pressed.
 	 */
 	this.update_selection = (item, ctrl_pressed, shift_pressed) => {
 		if (!item) {
@@ -5405,17 +6213,23 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 		selected_indexes.sort(numeric_ascending_sort);
 	};
 
+	/**
+	 * Selects all playlist items.
+	 */
 	this.select_all = () => {
 		if (!rows.length) {
 			return;
 		}
 
-		selected_indexes = range(rows[0].idx, last(rows).idx + 1);
+		selected_indexes = Range(rows[0].idx, Last(rows).idx + 1);
 		last_single_selected_index = rows[0].idx;
 
 		plman.SetPlaylistSelection(cur_playlist_idx, selected_indexes, true);
 	};
 
+	/**
+	 * Clears current selection on the playlist item.
+	 */
 	this.clear_selection = () => {
 		if (!selected_indexes.length) {
 			return;
@@ -5426,17 +6240,26 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	};
 
 	/**
-	 * @return {boolean}
+	 * Whether there are any selected playlist items.
+	 * @returns {boolean} True if any items are selected.
 	 */
 	this.has_selected_items = () => !!selected_indexes.length;
 
 	/**
-	 * @return {number}
+	 * Gets the total number of selected playlist items.
+	 * @returns {number} The number of selected items.
 	 */
 	this.selected_items_count = () => selected_indexes.length;
 
+	/**
+	 * Gets the indexes of selected playlist items.
+	 * @returns {number} The indexes of the selected items.
+	 */
 	this.get_selected_items = () => selected_indexes;
 
+	/**
+	 * Performs internal drag and drop of the selected playlist items inside the panel, i.e when reordering.
+	 */
 	this.perform_internal_drag_n_drop = function () {
 		this.enable_drag();
 		is_internal_drag_n_drop_active = true;
@@ -5456,6 +6279,12 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 			return;
 		}
 
+		/**
+		 * Checks if two arrays are equal in terms of length and the values at each index.
+		 * @param {Array} a The first array.
+		 * @param {Array} b The second array.
+		 * @returns {boolean} True if the arrays are equal, false otherwise.
+		 */
 		function arraysEqual(a, b) {
 			if (a === b) return true;
 			if (a == null || b == null || a.length !== b.length) return false;
@@ -5466,6 +6295,11 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 			return true;
 		}
 
+		/**
+		 * Checks if the playlist is in the same state and if the selected indexes are equal.
+		 * This is necessary to ensure that we can handle the 'move drop' properly.
+		 * @returns {boolean} True or false.
+		 */
 		function can_handle_move_drop() {
 			// We can handle the 'move drop' properly only when playlist is still in the same state
 			return cur_playlist_size === plman.PlaylistItemCount(cur_playlist_idx)
@@ -5497,36 +6331,46 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 		}
 	};
 
+	/**
+	 * Enables dragging.
+	 */
 	this.enable_drag = () => {
 		clear_last_hover_row();
 		is_dragging = true;
 	};
 
+	/**
+	 * Disables dragging.
+	 */
 	this.disable_drag = () => {
 		clear_last_hover_row();
 		is_dragging = false;
 	};
 
+	/**
+	 * Enables external dragging.
+	 */
 	this.enable_external_drag = function () {
 		this.enable_drag();
 		is_internal_drag_n_drop_active = false;
 	};
 
 	/**
-	 * @return {boolean}
+	 * Checks whether dragging is active.
+	 * @returns {boolean} True or false.
 	 */
 	this.is_dragging = () => is_dragging;
 
 	/**
-	 * @return {boolean}
+	 * Checks whether the internal drag and drop is active.
+	 * @returns {boolean} True or false.
 	 */
 	this.is_internal_drag_n_drop_active = () => is_internal_drag_n_drop_active;
 
 	/**
-	 * Also calls repaint
-	 *
-	 * @param {?Row} hover_row
-	 * @param {boolean} is_above
+	 * Updates the hover row's drop state, also calls repaint.
+	 * @param {?Row} hover_row The hover row.
+	 * @param {boolean} is_above Whether the hover row is above the dragged item.
 	 */
 	this.drag = (hover_row, is_above, idx) => {
 		if (hover_row == null) {
@@ -5579,12 +6423,14 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	};
 
 	/**
-	 * @return {boolean}
+	 * Checks whether the playlist is in a state where it can accept a drop.
+	 * @returns {boolean} True or false.
 	 */
 	this.can_drop = () => !plman.IsPlaylistLocked(cur_playlist_idx);
 
 	/**
-	 * @param {boolean} copy_selection
+	 * Handles a drop event.
+	 * @param {boolean} copy_selection Whether to copy the selection instead of moving it.
 	 */
 	this.drop = (copy_selection) => {
 		if (!is_dragging) {
@@ -5622,7 +6468,8 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	};
 
 	/**
-	 * @param {DropTargetAction} action
+	 * Handles external drag and drop.
+	 * @param {DropTargetAction} action The drag and drop action.
 	 */
 	this.external_drop = function (action) {
 		plman.ClearPlaylistSelection(cur_playlist_idx);
@@ -5654,6 +6501,9 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 		this.disable_drag();
 	};
 
+	/**
+	 * Copies the selected playlist items to the clipboard.
+	 */
 	this.copy = () => {
 		if (!selected_indexes.length) {
 			return fb.CreateHandleList();
@@ -5663,6 +6513,9 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 		fb.CopyHandleListToClipboard(selected_items);
 	};
 
+	/**
+	 * Cuts the selected playlist items to the clipboard.
+	 */
 	this.cut = () => {
 		if (!selected_indexes.length) {
 			return fb.CreateHandleList();
@@ -5676,6 +6529,9 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 		}
 	};
 
+	/**
+	 * Pastes the contents of the clipboard to the playlist.
+	 */
 	this.paste = () => {
 		if (!fb.CheckClipboardContents()) {
 			return;
@@ -5688,7 +6544,7 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 
 		let insert_idx;
 		if (selected_indexes.length) {
-			insert_idx = is_selection_contiguous() ? last(selected_indexes) + 1 : plman.GetPlaylistFocusItemIndex(cur_playlist_idx) + 1;
+			insert_idx = is_selection_contiguous() ? Last(selected_indexes) + 1 : plman.GetPlaylistFocusItemIndex(cur_playlist_idx) + 1;
 		}
 		else {
 			const focused_idx = plman.GetPlaylistFocusItemIndex(cur_playlist_idx);
@@ -5702,7 +6558,8 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	};
 
 	/**
-	 * @param {number} playlist_idx
+	 * Sends the selected playlist items to the specified playlist.
+	 * @param {number} playlist_idx The current playlist index.
 	 */
 	this.send_to_playlist = (playlist_idx) => {
 		plman.UndoBackup(playlist_idx);
@@ -5710,6 +6567,9 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 		plman.InsertPlaylistItems(playlist_idx, plman.PlaylistItemCount(playlist_idx), plman.GetPlaylistSelectedItems(cur_playlist_idx), true);
 	};
 
+	/**
+	 * Moves the selection up one row.
+	 */
 	this.move_selection_up = () => {
 		if (!selected_indexes.length) {
 			return;
@@ -5718,18 +6578,22 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 		move_selection(Math.max(0, selected_indexes[0] - 1));
 	};
 
+	/**
+	 * Moves the selection down one row.
+	 */
 	this.move_selection_down = () => {
 		if (!selected_indexes.length) {
 			return;
 		}
 
-		move_selection(Math.min(rows.length, last(selected_indexes) + 2));
+		move_selection(Math.min(rows.length, Last(selected_indexes) + 2));
 	};
 
 	/**
-	 * @param {Row} row
-	 * @param {boolean} ctrl_pressed
-	 * @param {boolean} shift_pressed
+	 * Updates the selection state of the playlist according to the given row.
+	 * @param {Row} row The row to update the selection state for.
+	 * @param {boolean} ctrl_pressed Whether or not the Ctrl key is pressed.
+	 * @param {boolean} shift_pressed Whether or not the Shift key is pressed.
 	 */
 	function update_selection_with_row(row, ctrl_pressed, shift_pressed) {
 		if (shift_pressed) {
@@ -5764,24 +6628,25 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	}
 
 	/**
-	 * @param {BaseHeader} header
-	 * @param {boolean} ctrl_pressed
-	 * @param {boolean} shift_pressed
+	 * Updates the selection state of the playlist according to the given header.
+	 * @param {BaseHeader} header The header to update the selection state for.
+	 * @param {boolean} ctrl_pressed Whether or not the Ctrl key is pressed.
+	 * @param {boolean} shift_pressed Whether or not the Shift key is pressed.
 	 */
 	function update_selection_with_header(header, ctrl_pressed, shift_pressed) {
 		const row_indexes = header.get_row_indexes();
 
 		if (shift_pressed) {
-			selected_indexes = union(get_shift_selection(row_indexes[0]), row_indexes);
+			selected_indexes = Union(get_shift_selection(row_indexes[0]), row_indexes);
 		}
 		else {
 			if (ctrl_pressed) {
-				const is_selected = difference(row_indexes, selected_indexes).length === 0;
+				const is_selected = Difference(row_indexes, selected_indexes).length === 0;
 				if (is_selected) {
 					that.clear_selection();		// _.pullAll(selected_indexes, row_indexes);
 				}
 				else {
-					selected_indexes = union(selected_indexes, row_indexes);
+					selected_indexes = Union(selected_indexes, row_indexes);
 				}
 			}
 			else {
@@ -5798,7 +6663,9 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	}
 
 	/**
-	 * @param {number} selected_idx
+	 * Gets the indexes of the rows that should be selected when the Shift key is pressed.
+	 * @param {number} selected_idx The index of the row that was selected.
+	 * @returns {Range} The range of indexes that should be selected.
 	 */
 	function get_shift_selection(selected_idx) {
 		let a = 0;
@@ -5829,13 +6696,16 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 			}
 			else {
 				a = selected_idx;
-				b = last(last_selected_header.get_row_indexes());
+				b = Last(last_selected_header.get_row_indexes());
 			}
 		}
 
-		return range(a, b + 1);
+		return Range(a, b + 1);
 	}
 
+	/**
+	 * Clears the last hover row.
+	 */
 	function clear_last_hover_row() {
 		if (last_hover_row) {
 			last_hover_row.is_drop_bottom_selected = false;
@@ -5846,7 +6716,8 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	}
 
 	/**
-	 * @param {number} new_idx
+	 * Moves the selection to the given index.
+	 * @param {number} new_idx The new index of the selection.
 	 */
 	function move_selection(new_idx) {
 		plman.UndoBackup(cur_playlist_idx);
@@ -5855,7 +6726,7 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 		if (is_selection_contiguous()) {
 			const focus_idx = plman.GetPlaylistFocusItemIndex(cur_playlist_idx);
 
-			move_delta = new_idx < focus_idx ? -(selected_indexes[0] - new_idx) : new_idx - (last(selected_indexes) + 1);
+			move_delta = new_idx < focus_idx ? -(selected_indexes[0] - new_idx) : new_idx - (Last(selected_indexes) + 1);
 		}
 		else {
 			const item_count_before_drop_idx = selected_indexes.filter(idx => idx < new_idx).length;
@@ -5869,7 +6740,8 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	}
 
 	/**
-	 * @return {boolean}
+	 * Checks if the selection is contiguous.
+	 * @returns {boolean} True or false.
 	 */
 	function is_selection_contiguous() {
 		return selected_indexes.every((item, i) => {
@@ -5881,9 +6753,10 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	}
 
 	/**
-	 * @param {number} a
-	 * @param {number} b
-	 * @return {number}
+	 * Sorts an array of numbers in ascending order.
+	 * @param {number} a The first number to compare.
+	 * @param {number} b The second number to compare.
+	 * @returns {number} The difference between `a` and `b`.
 	 */
 	function numeric_ascending_sort(a, b) {
 		return (a - b);
@@ -5898,7 +6771,7 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 //////////////////////////
 /**
  * @param {PlaylistContent} cnt_arg
- * @constructor
+ * @class
  */
 function CollapseHandler(cnt_arg) {
 	/** @type {boolean} */
@@ -5911,6 +6784,10 @@ function CollapseHandler(cnt_arg) {
 	/** @type {?function} */
 	let on_collapse_change_callback; // undefined
 
+	/**
+	 * Callback for when the content changes.
+	 * @param {Object} cnt_arg The content argument.
+	 */
 	this.on_content_change = () => {
 		headers = cnt_arg.sub_items;
 		this.changed = false;
@@ -5926,7 +6803,8 @@ function CollapseHandler(cnt_arg) {
 	};
 
 	/**
-	 * @param {BaseHeader} item
+	 * Toggles the collapse state of a playlist item.
+	 * @param {BaseHeader} item The item to toggle.
 	 */
 	this.toggle_collapse = function (item) {
 		this.changed = true;
@@ -5936,7 +6814,8 @@ function CollapseHandler(cnt_arg) {
 	};
 
 	/**
-	 * @param {BaseHeader} item
+	 * Collapses a playlist item.
+	 * @param {BaseHeader} item The item to collapse.
 	 */
 	this.collapse = function (item) {
 		this.changed = set_collapsed_state_recursive(item, true);
@@ -5945,7 +6824,8 @@ function CollapseHandler(cnt_arg) {
 	};
 
 	/**
-	 * @param {BaseHeader} item
+	 * Expands a playlist item.
+	 * @param {BaseHeader} item The item to expand.
 	 */
 	this.expand = function (item) {
 		this.changed = set_collapsed_state_recursive(item, false);
@@ -5953,6 +6833,9 @@ function CollapseHandler(cnt_arg) {
 		trigger_callback();
 	};
 
+	/**
+	 * Collapses all playlist items.
+	 */
 	this.collapse_all = function () {
 		this.changed = false;
 		headers.forEach((item) => {
@@ -5962,6 +6845,9 @@ function CollapseHandler(cnt_arg) {
 		trigger_callback();
 	};
 
+	/**
+	 * Collapses all playlist items except the now playing track.
+	 */
 	this.collapse_all_but_now_playing = function () {
 		this.changed = false;
 		headers.forEach((item) => {
@@ -5975,6 +6861,9 @@ function CollapseHandler(cnt_arg) {
 		trigger_callback();
 	};
 
+	/**
+	 * Expands all playlist items.
+	 */
 	this.expand_all = function () {
 		this.changed = false;
 		headers.forEach((item) => {
@@ -5985,12 +6874,17 @@ function CollapseHandler(cnt_arg) {
 	};
 
 	/**
-	 * @param {function} on_collapse_change_callback_arg
+	 * Sets the callback that will be called when the collapse state of a playlist item changes.
+	 * @param {function} on_collapse_change_callback_arg The callback.
 	 */
 	this.set_callback = (on_collapse_change_callback_arg) => {
 		on_collapse_change_callback = on_collapse_change_callback_arg;
 	};
 
+	/**
+	 * Triggers the callback if the collapse state has changed.
+	 * @private
+	 */
 	function trigger_callback() {
 		if (that.changed && on_collapse_change_callback) {
 			on_collapse_change_callback();
@@ -5998,9 +6892,10 @@ function CollapseHandler(cnt_arg) {
 	}
 
 	/**
-	 * @param {BaseHeader} header
-	 * @param {boolean} is_collapsed
-	 * @return {boolean} true if changed, false - otherwise
+	 * Sets the collapsed state of the header and all its sub-items recursively.
+	 * @param {BaseHeader} header The header to set the collapsed state of.
+	 * @param {boolean} is_collapsed Whether the header should be collapsed or not.
+	 * @returns {boolean} Whether the collapsed state of any header was changed.
 	 */
 	function set_collapsed_state_recursive(header, is_collapsed) {
 		let changed = header.is_collapsed !== is_collapsed;
@@ -6023,11 +6918,14 @@ function CollapseHandler(cnt_arg) {
 ///////////////////////
 // * QUEUE HANDLER * //
 ///////////////////////
+/**
+ * Manages the playback queue for a playlist by adding, removing, and checking the status of queued items.
+ */
 class QueueHandler {
 	/**
 	 * @param {Array<Row>} rows_arg
 	 * @param {number} cur_playlist_idx_arg
-	 * @constructor
+	 * @class
 	 */
 	constructor(rows_arg, cur_playlist_idx_arg) {
 		/**
@@ -6047,6 +6945,9 @@ class QueueHandler {
 		this.initialize_queue();
 	}
 
+	/**
+	 * Initializes the playback queue contents and adding the queued items to the appropriate rows.
+	 */
 	initialize_queue() {
 		if (this.queued_rows.length) {
 			this.reset_queued_status();
@@ -6079,6 +6980,7 @@ class QueueHandler {
 	}
 
 	/**
+	 * Adds a playlist item to the playback queue.
 	 * @param {Row} row
 	 */
 	add_row(row) {
@@ -6090,6 +6992,7 @@ class QueueHandler {
 	}
 
 	/**
+	 * Removes a row from the playback queue.
 	 * @param {Row} row
 	 */
 	remove_row(row) {
@@ -6103,15 +7006,24 @@ class QueueHandler {
 		}
 	}
 
+	/**
+	 * Flushes the playback queue.
+	 */
 	flush() {
 		plman.FlushPlaybackQueue();
 	}
 
-
+	/**
+	 * Checks if there are any playlist items in the playback queue.
+	 * @returns {boolean} True or false.
+	 */
 	has_items() {
 		return !!plman.GetPlaybackQueueHandles().Count;
 	}
 
+	/**
+	 * Resets the queue indexes and count for each item in the `queued_rows` array and clears the array.
+	 */
 	reset_queued_status() {
 		if (!this.queued_rows.length) {
 			return;
@@ -6128,17 +7040,474 @@ class QueueHandler {
 
 
 //////////////////////////
-// * PLAYLIST HISTORY * //
+// * GROUPING HANDLER * //
 //////////////////////////
-const PlaylistMutation = {
-	Added: 'Playlist added',
-	Init: 'Playlist initializing history',
-	Removed: 'Playlist removed',
-	Reordered: 'Playlist reordered',
-	Switch: 'Playlist switch'
+/**
+ * Manages the grouping settings and behavior for playlists.
+ * @class
+ */
+function GroupingHandler() {
+	/**
+	 * @const
+	 * @type {GroupingHandler.Settings}
+	 */
+	const settings = new GroupingHandler.Settings();
+	/** @type {?Array<string>} */
+	let playlists = [];
+	/** @type {string} */
+	let cur_playlist_name = '';
+	/** @type {?GroupingHandler.Settings.Group} */
+	let cur_group; // undefined
+	/** @type {?Array<string>} */
+	let group_by_name;
+
+	/**
+	 * Callback for when the playlists have changed.
+	 * @private
+	 */
+	this.on_playlists_changed = () => {
+		const playlist_count = plman.PlaylistCount;
+		const new_playlists = [];
+		for (let i = 0; i < playlist_count; ++i) {
+			new_playlists.push(plman.GetPlaylistName(i));
+		}
+
+		let save_needed = false;
+
+		if (playlists.length > playlist_count) {
+			// Removed
+
+			const playlists_to_remove = Difference(playlists, new_playlists);
+			playlists_to_remove.forEach((playlist_name) => {
+				delete settings.playlist_group_data[playlist_name];
+				delete settings.playlist_custom_group_data[playlist_name];
+			});
+
+			save_needed = true;
+		}
+		else if (playlists.length === playlist_count) {
+			// May be renamed?
+
+			const playlist_difference_new = Difference(new_playlists, playlists);
+			const playlist_difference_old = Difference(playlists, new_playlists);
+			if (playlist_difference_old.length === 1) {
+				// playlist_difference_new.length > 0 and playlist_difference_old.length === 0 means that
+				// playlists contained multiple items of the same name (one of which was changed)
+				const old_name = playlist_difference_old[0];
+				const new_name = playlist_difference_new[0];
+
+				const group_name = settings.playlist_group_data[old_name];
+				const custom_group = settings.playlist_custom_group_data[old_name];
+
+				settings.playlist_group_data[new_name] = group_name;
+				if (custom_group) {
+					settings.playlist_custom_group_data[new_name] = custom_group;
+				}
+
+				delete settings.playlist_group_data[old_name];
+				delete settings.playlist_custom_group_data[old_name];
+
+				save_needed = true;
+			}
+		}
+
+		playlists = new_playlists;
+		if (save_needed) {
+			settings.save();
+		}
+	};
+
+	/**
+	 * Sets the active playlist.
+	 * @param {string} cur_playlist_name_arg The name of the playlist to make active.
+	 */
+	this.set_active_playlist = (cur_playlist_name_arg) => {
+		cur_playlist_name = cur_playlist_name_arg;
+		let group_name = settings.playlist_group_data[cur_playlist_name];
+
+		cur_group = null;
+		if (group_name) {
+			if (group_name === 'user_defined') {
+				cur_group = settings.playlist_custom_group_data[cur_playlist_name];
+			}
+			else if (group_by_name.includes(group_name)) {
+				cur_group = settings.group_presets[group_by_name.indexOf(group_name)];
+			}
+
+			if (!cur_group) {
+				delete settings.playlist_group_data[cur_playlist_name];
+				group_name = '';
+			}
+		}
+
+		if (!cur_group) {
+			group_name = settings.default_group_name;
+			cur_group = settings.group_presets[group_by_name.indexOf(group_name)];
+		}
+
+		assert(cur_group != null,
+			ArgumentError, 'group_name', group_name);
+	};
+
+	/**
+	 * Gets the query for the active playlist.
+	 * @returns {string} The query for the active playlist.
+	 */
+	this.get_query = () => cur_group.group_query;
+
+	/**
+	 * Gets the title query for the active playlist.
+	 * @returns {string} The title query for the active playlist.
+	 */
+	this.get_title_query = () => cur_group.title_query;
+
+	/**
+	 * Gets the sub-title query for the active playlist.
+	 * @returns {string} The sub-title query for the active playlist.
+	 */
+	this.get_sub_title_query = () => cur_group.sub_title_query;
+
+	/**
+	 * Gets the name of the current query.
+	 * @returns {string} The name of the current query.
+	 */
+	this.get_query_name = () => cur_group.name;
+
+	/**
+	 * Whether to show the disc for the current query.
+	 * @returns {boolean} True or false.
+	 */
+	this.show_disc = () => cur_group.show_disc;
+
+	/**
+	 * Whether to show the date for the current query.
+	 * @returns {boolean} True or false.
+	 */
+	this.show_date = () => cur_group.show_date;
+
+	/**
+	 * Appends the menu to the given parent menu.
+	 * @param {ContextMenu} parent_menu The parent menu to append to.
+	 * @param {function} on_execute_callback_fn The callback function to call when an item is executed.
+	 */
+	this.append_menu_to = (parent_menu, on_execute_callback_fn) => {
+		const group = new ContextMenu('Grouping');
+		parent_menu.append(group);
+
+		group.append_item('Manage presets', () => {
+			manage_groupings(on_execute_callback_fn);
+		});
+
+		group.append_separator();
+
+		group.append_item('Reset to default', () => {
+			delete settings.playlist_custom_group_data[cur_playlist_name];
+			delete settings.playlist_group_data[cur_playlist_name];
+
+			cur_group = settings.group_presets[group_by_name.indexOf(settings.default_group_name)];
+
+			settings.save();
+			settings.send_sync();
+
+			on_execute_callback_fn();
+		});
+
+		group.append_separator();
+
+		// let group_by_text = 'by...';
+		// if (cur_group.name === 'user_defined') {
+		// 	group_by_text += ' [' + this.get_query() + ']';
+		// }
+		// group.append_item(group_by_text, () => {
+		// 	request_user_query(on_execute_callback_fn);
+		// }, { is_radio_checked: cur_group.name === 'user_defined' });
+
+		settings.group_presets.forEach((group_item) => {
+			let group_by_text = group_item.description;
+			if (group_item.name === settings.default_group_name) {
+				group_by_text += ' [default]';
+			}
+
+			group.append_item(group_by_text, () => {
+				cur_group = group_item;
+
+				delete settings.playlist_custom_group_data[cur_playlist_name];
+
+				settings.playlist_group_data[cur_playlist_name] = group_item.name;
+				settings.save();
+				settings.send_sync();
+
+				on_execute_callback_fn();
+			}, { is_radio_checked: cur_group.name === group_item.name });
+		});
+	};
+
+	/**
+	 * Called when the sync state is changed.
+	 * Updates the settings object with the new state and reinitializes the name to preset map.
+     * It also sets the active playlist to the current playlist name.
+	 * @param {?} value The new sync state.
+	 */
+	this.sync_state = function (value) {
+		settings.receive_sync(value);
+		initalize_name_to_preset_map();
+		this.set_active_playlist(cur_playlist_name);
+	};
+
+	/**
+	 * Opens a dialog box that allows the user to enter a custom grouping query.
+	 * The function also takes a callback function that is called when the user clicks the OK button.
+	 * @param {function} on_execute_callback_fn The callback function to call when the user clicks the OK button.
+	 */
+	function request_user_query(on_execute_callback_fn) {
+		const on_ok_fn = (ret_val) => {
+			const custom_group = new GroupingHandler.Settings.Group('user_defined', '', ret_val[0], ret_val[1]);
+			cur_group = custom_group;
+
+			settings.playlist_group_data[cur_playlist_name] = 'user_defined';
+			settings.playlist_custom_group_data[cur_playlist_name] = custom_group;
+
+			settings.save();
+			settings.send_sync();
+
+			on_execute_callback_fn();
+		};
+
+		const parsed_query = cur_group.name === 'user_defined'
+			? [cur_group.group_query, cur_group.title_query]
+			: ['', '[%album artist%]'];
+
+		const htmlCode = qwr_utils.prepare_html_file(`${fb.ProfilePath}georgia-reborn\\scripts\\playlist\\assets\\html\\MsgBox.html`);
+		utils.ShowHtmlDialog(window.ID, htmlCode, { width: 650, height: 425, data: ['Foobar2000: Group by', ['Grouping Query', 'Title Query'], parsed_query, on_ok_fn] });
+	}
+
+	/**
+	 * Opens the group presets manager dialog.
+	 * @param {function} on_execute_callback_fn The function to call when the dialog is closed.
+	 */
+	function manage_groupings(on_execute_callback_fn) {
+		const on_ok_fn = (ret_val_json) => {
+			const ret_val = JSON.parse(ret_val_json);
+
+			settings.group_presets = ret_val[0];
+			settings.default_group_name = ret_val[2];
+			initalize_name_to_preset_map();
+
+			cur_group = settings.group_presets[group_by_name.indexOf(ret_val[1])];
+			settings.playlist_group_data[cur_playlist_name] = ret_val[1];
+
+			delete settings.playlist_custom_group_data[cur_playlist_name];
+
+			settings.save();
+			settings.send_sync();
+
+			on_execute_callback_fn();
+		};
+
+		const htmlCode = qwr_utils.prepare_html_file(`${fb.ProfilePath}georgia-reborn\\scripts\\playlist\\assets\\html\\GroupPresetsMngr.html`);
+		utils.ShowHtmlDialog(window.ID, htmlCode, { width: 650, height: 425, data: [JSON.stringify([settings.group_presets, cur_group.name, settings.default_group_name]), on_ok_fn] });
+	}
+
+	/**
+	 * Initializes the list of playlists.
+	 */
+	function initialize_playlists() {
+		playlists = [];
+		const playlist_count = plman.PlaylistCount;
+		for (let i = 0; i < playlist_count; ++i) {
+			playlists.push(plman.GetPlaylistName(i));
+		}
+	}
+
+	/**
+	 * Removes any playlists that are no longer present from the settings.
+	 */
+	function cleanup_settings() {
+		for (const i in settings.playlist_group_data) {
+			console.log(i);
+			if (!playlists.includes(i)) {
+				delete settings.playlist_group_data[i];
+			}
+		}
+
+		for (const i in settings.playlist_custom_group_data) {
+			if (!playlists.includes(i)) {
+				delete settings.playlist_custom_group_data[i];
+			}
+		}
+
+		settings.save();
+	}
+
+	/**
+	 * Initializes the map from group name to group object.
+	 */
+	function initalize_name_to_preset_map() {
+		group_by_name = settings.group_presets.map((item) => item.name);
+	}
+
+	initalize_name_to_preset_map();
+	initialize_playlists();
+	cleanup_settings();
 }
 
+
+/**
+ * Manages and manipulates settings related to grouping playlists.
+ * @class
+ */
+GroupingHandler.Settings = function () {
+	/** @typedef {GroupingHandler.Settings.Group} */
+	const CtorGroupData = GroupingHandler.Settings.Group;
+
+	/** @type {Object<string, string>} */
+	this.playlist_group_data = {};
+	/** @type {Object<string, GroupingHandler.Settings.Group>} */
+	this.playlist_custom_group_data = {};
+	/** @type {string} */
+	this.default_group_name = '';
+	/** @type {Array<GroupingHandler.Settings.Group>} */
+	this.group_presets = [];
+
+	/**
+	 * Loads settings from the properties object.
+	 */
+	this.load = function () {
+		this.playlist_group_data = JSON.parse(g_properties.playlist_group_data);
+		this.playlist_custom_group_data = JSON.parse(g_properties.playlist_custom_group_data);
+		this.default_group_name = g_properties.default_group_name;
+		this.group_presets = JSON.parse(g_properties.group_presets);
+	};
+
+	/**
+	 * Saves settings to the properties object.
+	 */
+	this.save = function () {
+		g_properties.playlist_group_data = JSON.stringify(this.playlist_group_data);
+		g_properties.playlist_custom_group_data = JSON.stringify(this.playlist_custom_group_data);
+		g_properties.default_group_name = this.default_group_name;
+		g_properties.group_presets = JSON.stringify(this.group_presets);
+	};
+
+	/**
+	 * Sends the sync data to the other clients.
+	 */
+	this.send_sync = () => {
+		const syncData = {
+			g_playlist_group_data:        g_properties.playlist_group_data,
+			g_playlist_custom_group_data: g_properties.playlist_custom_group_data,
+			g_default_group_name:         g_properties.default_group_name,
+			g_group_presets:              g_properties.group_presets
+		};
+
+		window.NotifyOthers('sync_group_query_state', syncData);
+	};
+
+	/**
+	 * Receives the sync data from the other clients.
+	 * @param {{g_playlist_group_data, g_playlist_custom_group_data, g_default_group_name, g_group_presets}} settings_data The sync data.
+	 */
+	this.receive_sync = function (settings_data) {
+		g_properties.playlist_group_data = settings_data.g_playlist_group_data;
+		g_properties.playlist_custom_group_data = settings_data.g_playlist_custom_group_data;
+		g_properties.default_group_name = settings_data.g_default_group_name;
+		g_properties.group_presets = settings_data.g_group_presets;
+
+		this.load();
+	};
+
+	/**
+	 * Checks and fixes the values of certain properties in the `g_properties` object.
+	 */
+	function fixup_g_properties() {
+		if (!g_properties.playlist_group_data || !IsObject(JSON.parse(g_properties.playlist_group_data))) {
+			g_properties.playlist_group_data = JSON.stringify({});
+		}
+
+		if (!g_properties.playlist_custom_group_data || !IsObject(JSON.parse(g_properties.playlist_custom_group_data))) {
+			g_properties.playlist_custom_group_data = JSON.stringify({});
+		}
+
+		if (!g_properties.group_presets || !Array.isArray(JSON.parse(g_properties.group_presets))) {
+			g_properties.group_presets = JSON.stringify([
+				new CtorGroupData('artist', 'by artist', '%album artist%', undefined, ''),
+				new CtorGroupData('artist_album', 'by artist / album', '%album artist%%album%', undefined, undefined, {
+					show_date: true
+				}),
+				new CtorGroupData('artist_album_disc', 'by artist / album / disc number', '%album artist%%album%%discnumber%', undefined, undefined, {
+					show_date: true,
+					show_disc:   true
+				}),
+				new CtorGroupData('artist_album_disc_edition', 'by artist / album / disc number / edition / codec', '%album artist%%album%%discnumber%%edition%%codec%', undefined, undefined, {
+					show_date: true,
+					show_disc:   true
+				}),
+				new CtorGroupData('path', 'by path', '$directory_path(%path%)', undefined, undefined, {
+					show_date: true
+				}),
+				new CtorGroupData('date', 'by date', '%date%', undefined, undefined, {
+					show_date: true
+				})
+			]);
+		}
+
+		if (!g_properties.default_group_name || !IsString(g_properties.default_group_name)) {
+			g_properties.default_group_name = 'artist_album_disc_edition';
+		}
+	}
+
+	fixup_g_properties();
+	this.load();
+};
+
+
+/**
+ * A constructor function called `Group` in the `GroupingHandler.Settings` namespace.
+ * @param {string} name
+ * @param {string} description
+ * @param {?string=} [group_query='']
+ * @param {?string=} [title_query='[%album artist%]']
+ * @param {?string=} [sub_title_query="[%album%[ '('%albumsubtitle%')']][ - '['%edition%']']"]
+ * @param {object}  [options={}]
+ * @param {boolean=} [options.show_date=false]
+ * @param {boolean=} [options.show_disc=false]
+ * @class
+ * @struct
+ */
+GroupingHandler.Settings.Group = function (name, description, group_query, title_query, sub_title_query, options) {
+	/** @type {string} */
+	this.name = name;
+	/** @type {string} */
+	this.description = description;
+	/** @type {string} */
+	this.group_query = group_query || '';
+	/** @type {string} */
+	this.title_query = title_query || '[%album artist%]';
+	/** @type {string} */
+	this.sub_title_query = sub_title_query || '[%album%[ \'(\'%albumsubtitle%\')\']][ - \'[\'%edition%\']\']';
+	/** @type {boolean} */
+	this.show_date = !!(options && options.show_date);
+	/** @type {boolean} */
+	this.show_disc = !!(options && options.show_disc);
+};
+
+/** @type {GroupingHandler} */
+Header.grouping_handler = new GroupingHandler();
+
+
+//////////////////////////
+// * PLAYLIST HISTORY * //
+//////////////////////////
+/**
+ * Manages the history of playlist states, allowing users to navigate back and forward
+ * between previous states and updates the playlist accordingly.
+ */
 class PlaylistHistory {
+	/**
+	 * Initializes a playlist with a maximum number of states.
+	 * @param {number} maxStates The maximum number of states that can be stored in the history array.
+	 * @class
+	 */
 	constructor(maxStates = 10) {
 		this.maxStates = maxStates;
 		/** @private PlaylistState[] */ this.history = [];
@@ -6148,16 +7517,36 @@ class PlaylistHistory {
 		this.playlistAltered(PlaylistMutation.Init);
 	}
 
+	/**
+	 * Gets the length of the playlist history.
+	 * @returns {number} The length of the "history" array.
+	 */
 	get length() {
 		return this.history.length;
 	}
 
+	/**
+	 * Checks if there is a previous state in the playlist history.
+	 * @returns {boolean} True or false.
+	 */
 	canBack() {
 		return this.stateIndex > 0;
 	}
 
+	/**
+	 * Checks if there is a next state available to navigate forward to.
+	 * @returns {boolean} True or false.
+	 */
 	canForward() {
 		return this.stateIndex < this.length - 1;
+	}
+
+	/**
+	 * Gets whether the history should ignore upcoming mutations and changes to the playlist.
+	 * @returns {boolean} Whether to ignore playlist mutations.
+	 */
+	get ignorePlaylistMutations() {
+		return this.ignorePlaylistMutations;
 	}
 
 	/**
@@ -6166,7 +7555,7 @@ class PlaylistHistory {
 	 * Playlist updates are synchronous, but notifications are async. If setting to false, we
 	 * update that value async as well to hopefully happen after all callbacks have called,
 	 * and then manually call playlistAltered in case the playlist state has changed.
-	 * @param {boolean} ignore
+	 * @param {boolean} ignore Whether to ignore playlist mutations.
 	 */
 	set ignorePlaylistMutations(ignore) {
 		if (!ignore) {
@@ -6179,26 +7568,33 @@ class PlaylistHistory {
 		}
 	}
 
+	/**
+	 * Decreases the state index and sets the playlist state accordingly.
+	 */
 	back() {
 		this.stateIndex--;
 		if (this.stateIndex <= 0) {
 			this.stateIndex = 0;
 		}
-		debugLog('playlistHistory back =>', this.stateIndex);
+		DebugLog('playlistHistory back =>', this.stateIndex);
 		this.setPlaylistState();
 	}
 
+	/**
+	 * Increments the state index and sets the playlist state, ensuring that the state index
+	 * does not exceed the length of the playlist.
+	 */
 	forward() {
 		this.stateIndex++;
 		if (this.stateIndex >= this.length) {
 			this.stateIndex = this.length - 1;
 		}
-		debugLog('playlistHistory forward =>', this.stateIndex);
+		DebugLog('playlistHistory forward =>', this.stateIndex);
 		this.setPlaylistState();
 	}
 
 	/**
-	 * Call this to clear the history. Should always be called from on_playlists_changed
+	 * Clears the playlist history. Should always be called from on_playlists_changed
 	 * because all saved playlistIds have been invalidated.
 	 */
 	reset() {
@@ -6206,11 +7602,14 @@ class PlaylistHistory {
 		this.playlistAltered(PlaylistMutation.Init);
 	}
 
-	/** @private */
+	/**
+	 * Sets and updates the state of a playlist by adding or removing items based on the current playback state.
+	 * @private
+	 */
 	setPlaylistState() {
 		playlistHistoryUsed = true;
 		this.updatingPlaylist = true;
-		/** @type PlaylistState */ const activeState = this.history[this.stateIndex];
+		/** @type {PlaylistState} */ const activeState = this.history[this.stateIndex];
 		const pbQueue = plman.GetPlaybackQueueContents();
 		const playingItem = plman.GetPlayingItemLocation();
 		const plIndex = activeState.playlistId
@@ -6271,8 +7670,10 @@ class PlaylistHistory {
 	}
 
 	/**
-	 * @private Attempts to re-mark playbackQueue items after setting playlist state
-	 * @param {FbPlaybackQueueItem[]} pbQueue
+	 * Restores a playback queue by adding items to the queue based on their playlist and index,
+	 * or by adding them directly if no playlist or index is specified.
+	 * @param {FbPlaybackQueueItem[]} pbQueue The playback queue state to restore.
+	 * @private Attempts to re-mark playbackQueue items after setting playlist state.
 	 */
 	restorePlaybackQueue(pbQueue) {
 		plman.FlushPlaybackQueue();
@@ -6302,8 +7703,9 @@ class PlaylistHistory {
 	}
 
 	/**
+	 * Logs the type of playlist mutation and checks if the playlist should be added to the history of playlist states.
 	 * Notify the PlaylistHistory that a playlist was altered.
-	 * @param {string} mutationType
+	 * @param {string} mutationType The type of mutation that occurred.
 	 */
 	playlistAltered(mutationType) {
 		// ignore playlist alterations when changing states
@@ -6323,17 +7725,18 @@ class PlaylistHistory {
 					btns.back.repaint();
 					btns.forward.repaint();
 				}
-				debugLog('stateIndex:', this.stateIndex, ' new items count:', plItems.Count, this.stateIndex);
+				DebugLog('stateIndex:', this.stateIndex, ' new items count:', plItems.Count, this.stateIndex);
 			}
 		}
 	}
 
 	/**
-	 * @private Determine if a new state should be added to the playlistHistory
-	 * @param {number} playlistId
-	 * @param {FbMetadbHandleList} newItems List of handles of playlist items
-	 * @param {string} mutationType currently unused
-	 * @returns {boolean}
+	 * Checks if a new playlist state should be added to the history based on the playlist ID, new items, and mutation type.
+	 * @param {number} playlistId The playlist id.
+	 * @param {FbMetadbHandleList} newItems The list of handles of playlist items.
+	 * @param {string} mutationType The type of mutation that occurred.
+	 * @returns {boolean} True or false.
+	 * @private
 	 */
 	shouldAddState(playlistId, newItems, mutationType) {
 		const start = Date.now();
@@ -6358,21 +7761,22 @@ class PlaylistHistory {
 				return true;
 			}
 		}
-		debugLog(`Checking for duplicate playlist states took: ${Date.now() - start}ms`);
+		DebugLog(`Checking for duplicate playlist states took: ${Date.now() - start}ms`);
 		return false;
 	}
 }
 
 
 /**
- * @class
- * @constructor
- * @public
+ * Manages the state of an active playlist, including its ID, lock status,
+ * and a list of playlist entries if it is not locked.
  */
 class PlaylistState {
 	/**
-	 * @param {number} playlistId
-	 * @param {FbMetadbHandleList} plItems
+	 * @param {number} playlistId The ID of the playlist.
+	 * @param {FbMetadbHandleList} plItems The playlist items in the current playlist.
+	 * @public
+	 * @class
 	 */
 	constructor(playlistId, plItems) {
 		/**
@@ -6397,7 +7801,12 @@ class PlaylistState {
 // * PLAYLIST MANAGER * //
 //////////////////////////
 /**
- * @constructor
+ * The playlist manager at the top of the panel acts like a drop down menu that contains various options.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} w The width.
+ * @param {number} h The height.
+ * @class
  */
 function PlaylistManager(x, y, w, h) {
 	// public:
@@ -6424,7 +7833,16 @@ function PlaylistManager(x, y, w, h) {
 	/** @type {?string} */
 	let info_text; // undefined
 
-	const _alpha_timer = function(items_arg, hover_predicate_arg) {
+	const throttled_repaint = Throttle(() => {
+		window.RepaintRect(this.x, this.y, this.w, this.h);
+	}, 1000 / 60);
+
+	/**
+	 * Animates the alpha of the playlist manager text button at the top.
+	 * @param {Array<PlaylistItem>} items_arg The list of items to animate.
+	 * @param {function(PlaylistItem): boolean} hover_predicate_arg The predicate to determine if an item is hovered.
+	 */
+	const _alpha_timer = function (items_arg, hover_predicate_arg) {
 		let alpha_timer_internal = null;
 
 		this.start = function () {
@@ -6451,6 +7869,9 @@ function PlaylistManager(x, y, w, h) {
 			}
 		};
 
+		/**
+		 * Stops the animation of the button.
+		 */
 		this.stop = () => {
 			if (alpha_timer_internal) {
 				clearInterval(alpha_timer_internal);
@@ -6459,6 +7880,9 @@ function PlaylistManager(x, y, w, h) {
 		};
 	};
 
+	/**
+	 * The animation timer for the playlist manager text button.
+	 */
 	const alpha_timer = new _alpha_timer([this], (item) => item.panel_state === state.hovered);
 
 	/** @type {?GdiBitmap} */
@@ -6469,6 +7893,11 @@ function PlaylistManager(x, y, w, h) {
 	let cur_playlist_idx; // undefined
 
 	// #region Callback Implementation
+
+	/**
+	 * Draws the playlist manager text button at the top.
+	 * @param {GdiGraphics} gr
+	 */
 	this.on_paint = function (gr) {
 		if (!info_text || cur_playlist_idx !== plman.ActivePlaylist) {
 			cur_playlist_idx = plman.ActivePlaylist;
@@ -6542,11 +7971,20 @@ function PlaylistManager(x, y, w, h) {
 		}
 	};
 
+	/**
+	 * Handles playlist modified events and clears the button name.
+	 */
 	this.on_playlist_modified = function () {
 		info_text = undefined;
 		this.repaint();
 	};
 
+	/**
+	 * Handles the button state of the playlist manager text button.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 */
 	this.on_mouse_move = function (x, y, m) {
 		if (this.panel_state === state.pressed) {
 			return;
@@ -6555,6 +7993,13 @@ function PlaylistManager(x, y, w, h) {
 		change_state(this.trace(x, y) ? state.hovered : state.normal);
 	};
 
+	/**
+	 * Handles left mouse button down events and changes the playlist manager text button state.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	this.on_mouse_lbtn_down = function (x, y, m) {
 		if (btns.back && btns.back.mouseInThis(x, y) || btns.forward && btns.forward.mouseInThis(x, y)) {
 			return; // Handled in back forward buttons
@@ -6566,6 +8011,13 @@ function PlaylistManager(x, y, w, h) {
 		change_state(state.pressed);
 	};
 
+	/**
+	 * Handles left mouse button up events and opens the playlist manager drop down list menu.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	this.on_mouse_lbtn_up = function (x, y, m) {
 		const was_pressed = this.panel_state === state.pressed;
 
@@ -6588,6 +8040,13 @@ function PlaylistManager(x, y, w, h) {
 		this.repaint();
 	};
 
+	/**
+	 * Handles right mouse button down events and changes the playlist manager text button state.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	this.on_mouse_rbtn_down = function (x, y, m) {
 		if (!this.trace(x, y)) {
 			return true;
@@ -6596,6 +8055,13 @@ function PlaylistManager(x, y, w, h) {
 		change_state(state.pressed);
 	};
 
+	/**
+	 * Handles right mouse button up events and opens the playlist manager.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	this.on_mouse_rbtn_up = function (x, y, m) {
 		const was_pressed = this.panel_state === state.pressed;
 
@@ -6625,35 +8091,59 @@ function PlaylistManager(x, y, w, h) {
 		return true;
 	};
 
+	/**
+	 * Handles mouse leave events and resets the playlist manager text button state.
+	 * @override
+	 */
 	this.on_mouse_leave = () => {
 		change_state(state.normal);
 	};
 
 	// #endregion
 
+	/**
+	 * Reinitializes the playlist manager text button state.
+	 */
 	this.reinitialize = function () {
 		info_text = undefined;
 		this.panel_state = state.normal;
 		this.hover_alpha = 0;
 	};
 
+	/**
+	 * Sets the width of the playlist manager text button.
+	 * @param {number} w The width of the button.
+	 */
 	this.set_w = function (w) {
 		this.w = w;
 	};
 
+	/**
+	 * Sets the size and position of the playlist manager text button.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} w The width of the button.
+	 */
 	this.set_xywh = function (x, y, w) {
 		this.x = x;
 		this.y = y;
 		this.w = w;
-		this.h = scaleForDisplay(g_properties.row_h + 4);
+		this.h = SCALE(g_properties.row_h + 4);
 	};
 
+	/**
+	 * Traces mouse movement and checks when mouse is within the boundaries of the playlist manager text button.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	this.trace = function (x, y) {
 		return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
 	};
 
 	/**
-	 * @param {KeyActionHandler} key_handler
+	 * Registers key actions and handles key presses.
+	 * @param {KeyActionHandler} key_handler The KeyActionHandler object.
 	 */
 	this.register_key_actions = (key_handler) => {
 		key_handler.register_key_action(VK_KEY_N,
@@ -6672,20 +8162,21 @@ function PlaylistManager(x, y, w, h) {
 			});
 	};
 
-	const throttled_repaint = throttle(() => {
-		window.RepaintRect(this.x, this.y, this.w, this.h);
-	}, 1000 / 60);
+	/**
+	 * Updates the playlist manager text button state via repaint.
+	 */
 	this.repaint = () => {
 		throttled_repaint();
 	};
 
 	/**
+	 * Draws the playlist manager text button and defines its states.
 	 * @param {GdiGraphics} gr
-	 * @param {number} x
-	 * @param {number} y
-	 * @param {number} w
-	 * @param {number} h
-	 * @param {state} panel_state
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} w The width.
+	 * @param {number} h The height.
+	 * @param {state} panel_state The state of the playlist manager text button.
 	 */
 	function draw_on_image(gr, x, y, w, h, panel_state) {
 		let text_color;
@@ -6717,7 +8208,7 @@ function PlaylistManager(x, y, w, h) {
 		if (plman.ActivePlaylist !== -1 && plman.IsPlaylistLocked(plman.ActivePlaylist)) {
 			// Position above scrollbar for eye candy
 			// const sbar_x = x + w - playlist_geo.scrollbar_w - playlist_geo.scrollbar_right_pad;
-			const lock_x = ww - scaleForDisplay(29);
+			const lock_x = ww - SCALE(29);
 			const lock_text = '\uf023';
 			const lock_w = Math.ceil(
 				/** @type {!number} */
@@ -6733,16 +8224,16 @@ function PlaylistManager(x, y, w, h) {
 
 		// * Playlist history buttons
 		const yCorr =
-			headerFontSize === 22 ? is_4k ? 14 :  7 :
-			headerFontSize === 20 ? is_4k ? 12 :  5 :
-			headerFontSize === 18 ? is_4k ? 10 :  3 :
-			headerFontSize === 17 ? is_4k ?  8 :  2 :
-			headerFontSize === 16 ? is_4k ?  7 :  1 :
-			headerFontSize === 15 ? is_4k ?  4 :  0 :
-			headerFontSize === 14 ? is_4k ?  4 :  0 :
-			headerFontSize === 13 ? is_4k ?  2 : -1 :
-			headerFontSize === 12 ? is_4k ?  2 : -1 :
-			headerFontSize === 10 ? is_4k ? -2 : -3 : '';
+			headerFontSize === 22 ? RES_4K ? 14 :  7 :
+			headerFontSize === 20 ? RES_4K ? 12 :  5 :
+			headerFontSize === 18 ? RES_4K ? 10 :  3 :
+			headerFontSize === 17 ? RES_4K ?  8 :  2 :
+			headerFontSize === 16 ? RES_4K ?  7 :  1 :
+			headerFontSize === 15 ? RES_4K ?  4 :  0 :
+			headerFontSize === 14 ? RES_4K ?  4 :  0 :
+			headerFontSize === 13 ? RES_4K ?  2 : -1 :
+			headerFontSize === 12 ? RES_4K ?  2 : -1 :
+			headerFontSize === 10 ? RES_4K ? -2 : -3 : '';
 
 		const info_w = gr.CalcTextWidth(info_text, g_pl_fonts.title_selected);
 		const btn_x = Math.round((pref.playlistLayout === 'normal' ? ww * 0.5 : 0) + (w - info_w) * 0.5);
@@ -6754,12 +8245,13 @@ function PlaylistManager(x, y, w, h) {
 
 		if (pref.showPlaylistHistory && hasPlaylistHistory && showPlaylistManager) {
 			btns.back = new Button(showBtns ? btn_x - btns_w : 9999, btn_y, h, h, 'Back', btnImg.Back, null, playlistHistory.canBack.bind(playlistHistory));
-			btns.forward = new Button(showBtns ? btn_x + info_w + btns_w * scaleForDisplay(0.15) : 9999, btn_y, h, h, 'Forward', btnImg.Forward, null, playlistHistory.canForward.bind(playlistHistory));
+			btns.forward = new Button(showBtns ? btn_x + info_w + btns_w * SCALE(0.15) : 9999, btn_y, h, h, 'Forward', btnImg.Forward, null, playlistHistory.canForward.bind(playlistHistory));
 		}
 	}
 
 	/**
-	 * @param {state} new_state
+	 * Changes the state of the playlist manager text button.
+	 * @param {state} new_state The new state of the button.
 	 */
 	function change_state(new_state) {
 		if (that.panel_state === new_state) {
@@ -6783,7 +8275,9 @@ function PlaylistManager(x, y, w, h) {
 
 
 /**
- * @param {ContextMenu} parent_menu
+ * Appends a context menu item to the given parent menu that allows the user
+ * to toggle the visibility of the playlist manager text button.
+ * @param {ContextMenu} parent_menu The parent menu to append the item to.
  */
 PlaylistManager.append_playlist_info_visibility_context_menu_to = (parent_menu) => {
 	const showPlaylistManager = pref.layout === 'compact' ? pref.showPlaylistManager_compact : pref.layout === 'artwork' ? pref.showPlaylistManager_artwork : pref.showPlaylistManager_default;
@@ -6799,495 +8293,6 @@ PlaylistManager.append_playlist_info_visibility_context_menu_to = (parent_menu) 
 		playlist.on_size(ww, wh);
 	}, { is_checked: showPlaylistManager });
 };
-
-
-//////////////////////////
-// * GROUPING HANDLER * //
-//////////////////////////
-/**
- * @constructor
- */
-function GroupingHandler() {
-	/**
-	 * @const
-	 * @type {GroupingHandler.Settings}
-	 */
-	const settings = new GroupingHandler.Settings();
-	/** @type {?Array<string>} */
-	let playlists = [];
-	/** @type {string} */
-	let cur_playlist_name = '';
-	/** @type {?GroupingHandler.Settings.Group} */
-	let cur_group; // undefined
-	/** @type {?Array<string>} */
-	let group_by_name;
-
-	this.on_playlists_changed = () => {
-		const playlist_count = plman.PlaylistCount;
-		const new_playlists = [];
-		for (let i = 0; i < playlist_count; ++i) {
-			new_playlists.push(plman.GetPlaylistName(i));
-		}
-
-		let save_needed = false;
-
-		if (playlists.length > playlist_count) {
-			// Removed
-
-			const playlists_to_remove = difference(playlists, new_playlists);
-			playlists_to_remove.forEach((playlist_name) => {
-				delete settings.playlist_group_data[playlist_name];
-				delete settings.playlist_custom_group_data[playlist_name];
-			});
-
-			save_needed = true;
-		}
-		else if (playlists.length === playlist_count) {
-			// May be renamed?
-
-			const playlist_difference_new = difference(new_playlists, playlists);
-			const playlist_difference_old = difference(playlists, new_playlists);
-			if (playlist_difference_old.length === 1) {
-				// playlist_difference_new.length > 0 and playlist_difference_old.length === 0 means that
-				// playlists contained multiple items of the same name (one of which was changed)
-				const old_name = playlist_difference_old[0];
-				const new_name = playlist_difference_new[0];
-
-				const group_name = settings.playlist_group_data[old_name];
-				const custom_group = settings.playlist_custom_group_data[old_name];
-
-				settings.playlist_group_data[new_name] = group_name;
-				if (custom_group) {
-					settings.playlist_custom_group_data[new_name] = custom_group;
-				}
-
-				delete settings.playlist_group_data[old_name];
-				delete settings.playlist_custom_group_data[old_name];
-
-				save_needed = true;
-			}
-		}
-
-		playlists = new_playlists;
-		if (save_needed) {
-			settings.save();
-		}
-	};
-
-	/**
-	 * @param {string} cur_playlist_name_arg
-	 */
-	this.set_active_playlist = (cur_playlist_name_arg) => {
-		cur_playlist_name = cur_playlist_name_arg;
-		let group_name = settings.playlist_group_data[cur_playlist_name];
-
-		cur_group = null;
-		if (group_name) {
-			if (group_name === 'user_defined') {
-				cur_group = settings.playlist_custom_group_data[cur_playlist_name];
-			}
-			else if (group_by_name.includes(group_name)) {
-				cur_group = settings.group_presets[group_by_name.indexOf(group_name)];
-			}
-
-			if (!cur_group) {
-				delete settings.playlist_group_data[cur_playlist_name];
-				group_name = '';
-			}
-		}
-
-		if (!cur_group) {
-			group_name = settings.default_group_name;
-			cur_group = settings.group_presets[group_by_name.indexOf(group_name)];
-		}
-
-		assert(cur_group != null,
-			ArgumentError, 'group_name', group_name);
-	};
-
-	/**
-	 * @return {string}
-	 */
-	this.get_query = () => cur_group.group_query;
-
-	/**
-	 * @return {string}
-	 */
-	this.get_title_query = () => cur_group.title_query;
-
-	/**
-	 * @return {string}
-	 */
-	this.get_sub_title_query = () => cur_group.sub_title_query;
-
-	/**
-	 * @return {string}
-	 */
-	this.get_query_name = () => cur_group.name;
-
-	/**
-	 * @return {boolean}
-	 */
-	this.show_disc = () => cur_group.show_disc;
-
-	/**
-	 * @return {boolean}
-	 */
-	this.show_date = () => cur_group.show_date;
-
-	/**
-	 * @param {ContextMenu} parent_menu
-	 * @param {function} on_execute_callback_fn
-	 */
-	this.append_menu_to = (parent_menu, on_execute_callback_fn) => {
-		const group = new ContextMenu('Grouping');
-		parent_menu.append(group);
-
-		group.append_item('Manage presets', () => {
-			manage_groupings(on_execute_callback_fn);
-		});
-
-		group.append_separator();
-
-		group.append_item('Reset to default', () => {
-			delete settings.playlist_custom_group_data[cur_playlist_name];
-			delete settings.playlist_group_data[cur_playlist_name];
-
-			cur_group = settings.group_presets[group_by_name.indexOf(settings.default_group_name)];
-
-			settings.save();
-			settings.send_sync();
-
-			on_execute_callback_fn();
-		});
-
-		group.append_separator();
-
-		// let group_by_text = 'by...';
-		// if (cur_group.name === 'user_defined') {
-		// 	group_by_text += ' [' + this.get_query() + ']';
-		// }
-		// group.append_item(group_by_text, () => {
-		// 	request_user_query(on_execute_callback_fn);
-		// }, { is_radio_checked: cur_group.name === 'user_defined' });
-
-		settings.group_presets.forEach((group_item) => {
-			let group_by_text = group_item.description;
-			if (group_item.name === settings.default_group_name) {
-				group_by_text += ' [default]';
-			}
-
-			group.append_item(group_by_text, () => {
-				cur_group = group_item;
-
-				delete settings.playlist_custom_group_data[cur_playlist_name];
-
-				settings.playlist_group_data[cur_playlist_name] = group_item.name;
-				settings.save();
-				settings.send_sync();
-
-				on_execute_callback_fn();
-			}, { is_radio_checked: cur_group.name === group_item.name });
-		});
-	};
-
-	/** @param {?} value */
-	this.sync_state = function (value) {
-		settings.receive_sync(value);
-		initalize_name_to_preset_map();
-		this.set_active_playlist(cur_playlist_name);
-	};
-
-	/**
-	 * @param {function} on_execute_callback_fn
-	 */
-	function request_user_query(on_execute_callback_fn) {
-		const on_ok_fn = (ret_val) => {
-			const custom_group = new GroupingHandler.Settings.Group('user_defined', '', ret_val[0], ret_val[1]);
-			cur_group = custom_group;
-
-			settings.playlist_group_data[cur_playlist_name] = 'user_defined';
-			settings.playlist_custom_group_data[cur_playlist_name] = custom_group;
-
-			settings.save();
-			settings.send_sync();
-
-			on_execute_callback_fn();
-		};
-
-		const parsed_query = cur_group.name === 'user_defined'
-			? [cur_group.group_query, cur_group.title_query]
-			: ['', '[%album artist%]'];
-
-		const htmlCode = qwr_utils.prepare_html_file(`${fb.ProfilePath}georgia-reborn\\scripts\\playlist\\assets\\html\\MsgBox.html`);
-		utils.ShowHtmlDialog(window.ID, htmlCode, { width: 650, height: 425, data: ['Foobar2000: Group by', ['Grouping Query', 'Title Query'], parsed_query, on_ok_fn] });
-	}
-
-	/**
-	 * @param {function} on_execute_callback_fn
-	 */
-	function manage_groupings(on_execute_callback_fn) {
-		const on_ok_fn = (ret_val_json) => {
-			const ret_val = JSON.parse(ret_val_json);
-
-			settings.group_presets = ret_val[0];
-			settings.default_group_name = ret_val[2];
-			initalize_name_to_preset_map();
-
-			cur_group = settings.group_presets[group_by_name.indexOf(ret_val[1])];
-			settings.playlist_group_data[cur_playlist_name] = ret_val[1];
-
-			delete settings.playlist_custom_group_data[cur_playlist_name];
-
-			settings.save();
-			settings.send_sync();
-
-			on_execute_callback_fn();
-		};
-
-		const htmlCode = qwr_utils.prepare_html_file(`${fb.ProfilePath}georgia-reborn\\scripts\\playlist\\assets\\html\\GroupPresetsMngr.html`);
-		utils.ShowHtmlDialog(window.ID, htmlCode, { width: 650, height: 425, data: [JSON.stringify([settings.group_presets, cur_group.name, settings.default_group_name]), on_ok_fn] });
-	}
-
-	function initialize_playlists() {
-		playlists = [];
-		const playlist_count = plman.PlaylistCount;
-		for (let i = 0; i < playlist_count; ++i) {
-			playlists.push(plman.GetPlaylistName(i));
-		}
-	}
-
-	function cleanup_settings() {
-		for (const i in settings.playlist_group_data) {
-			console.log(i);
-			if (!playlists.includes(i)) {
-				delete settings.playlist_group_data[i];
-			}
-		}
-
-		for (const i in settings.playlist_custom_group_data) {
-			if (!playlists.includes(i)) {
-				delete settings.playlist_custom_group_data[i];
-			}
-		}
-
-		settings.save();
-	}
-
-	function initalize_name_to_preset_map() {
-		group_by_name = settings.group_presets.map((item) => item.name);
-	}
-
-	initalize_name_to_preset_map();
-	initialize_playlists();
-	cleanup_settings();
-}
-
-
-/**
- * @constructor
- */
-GroupingHandler.Settings = function () {
-	/** @typedef {GroupingHandler.Settings.Group} */
-	const CtorGroupData = GroupingHandler.Settings.Group;
-
-	/** @type {Object<string, string>} */
-	this.playlist_group_data = {};
-	/** @type {Object<string, GroupingHandler.Settings.Group>} */
-	this.playlist_custom_group_data = {};
-	/** @type {string} */
-	this.default_group_name = '';
-	/** @type {Array<GroupingHandler.Settings.Group>} */
-	this.group_presets = [];
-
-	this.load = function () {
-		this.playlist_group_data = JSON.parse(g_properties.playlist_group_data);
-		this.playlist_custom_group_data = JSON.parse(g_properties.playlist_custom_group_data);
-		this.default_group_name = g_properties.default_group_name;
-		this.group_presets = JSON.parse(g_properties.group_presets);
-	};
-
-	this.save = function () {
-		g_properties.playlist_group_data = JSON.stringify(this.playlist_group_data);
-		g_properties.playlist_custom_group_data = JSON.stringify(this.playlist_custom_group_data);
-		g_properties.default_group_name = this.default_group_name;
-		g_properties.group_presets = JSON.stringify(this.group_presets);
-	};
-
-	this.send_sync = () => {
-		const syncData = {
-			g_playlist_group_data:        g_properties.playlist_group_data,
-			g_playlist_custom_group_data: g_properties.playlist_custom_group_data,
-			g_default_group_name:         g_properties.default_group_name,
-			g_group_presets:              g_properties.group_presets
-		};
-
-		window.NotifyOthers('sync_group_query_state', syncData);
-	};
-
-	/**
-	 * @param {{g_playlist_group_data, g_playlist_custom_group_data, g_default_group_name, g_group_presets}} settings_data
-	 */
-	this.receive_sync = function (settings_data) {
-		g_properties.playlist_group_data = settings_data.g_playlist_group_data;
-		g_properties.playlist_custom_group_data = settings_data.g_playlist_custom_group_data;
-		g_properties.default_group_name = settings_data.g_default_group_name;
-		g_properties.group_presets = settings_data.g_group_presets;
-
-		this.load();
-	};
-
-	function fixup_g_properties() {
-		if (!g_properties.playlist_group_data || !isObject(JSON.parse(g_properties.playlist_group_data))) {
-			g_properties.playlist_group_data = JSON.stringify({});
-		}
-
-		if (!g_properties.playlist_custom_group_data || !isObject(JSON.parse(g_properties.playlist_custom_group_data))) {
-			g_properties.playlist_custom_group_data = JSON.stringify({});
-		}
-
-		if (!g_properties.group_presets || !Array.isArray(JSON.parse(g_properties.group_presets))) {
-			g_properties.group_presets = JSON.stringify([
-				new CtorGroupData('artist', 'by artist', '%album artist%', undefined, ''),
-				new CtorGroupData('artist_album', 'by artist / album', '%album artist%%album%', undefined, undefined, {
-					show_date: true
-				}),
-				new CtorGroupData('artist_album_disc', 'by artist / album / disc number', '%album artist%%album%%discnumber%', undefined, undefined, {
-					show_date: true,
-					show_disc:   true
-				}),
-				new CtorGroupData('artist_album_disc_edition', 'by artist / album / disc number / edition / codec', '%album artist%%album%%discnumber%%edition%%codec%', undefined, undefined, {
-					show_date: true,
-					show_disc:   true
-				}),
-				new CtorGroupData('path', 'by path', '$directory_path(%path%)', undefined, undefined, {
-					show_date: true
-				}),
-				new CtorGroupData('date', 'by date', '%date%', undefined, undefined, {
-					show_date: true
-				})
-			]);
-		}
-
-		if (!g_properties.default_group_name || !isString(g_properties.default_group_name)) {
-			g_properties.default_group_name = 'artist_album_disc_edition';
-		}
-	}
-
-	fixup_g_properties();
-	this.load();
-};
-
-
-/**
- * @param {string} name
- * @param {string} description
- * @param {?string=} [group_query='']
- * @param {?string=} [title_query='[%album artist%]']
- * @param {?string=} [sub_title_query="[%album%[ '('%albumsubtitle%')']][ - '['%edition%']']"]
- * @param {object}  [options={}]
- * @param {boolean=} [options.show_date=false]
- * @param {boolean=} [options.show_disc=false]
- * @constructor
- * @struct
- */
-GroupingHandler.Settings.Group = function (name, description, group_query, title_query, sub_title_query, options) {
-	/** @type {string} */
-	this.name = name;
-	/** @type {string} */
-	this.description = description;
-	/** @type {string} */
-	this.group_query = group_query || '';
-	/** @type {string} */
-	this.title_query = title_query || '[%album artist%]';
-	/** @type {string} */
-	this.sub_title_query = sub_title_query || '[%album%[ \'(\'%albumsubtitle%\')\']][ - \'[\'%edition%\']\']';
-	/** @type {boolean} */
-	this.show_date = !!(options && options.show_date);
-	/** @type {boolean} */
-	this.show_disc = !!(options && options.show_disc);
-};
-
-Header.grouping_handler = new GroupingHandler();
-
-
-///////////////////////
-// * IMAGE CACHING * //
-///////////////////////
-/**
- * @param{number} max_cache_size_arg
- * @constructor
- */
-function ArtImageCache(max_cache_size_arg) {
-	/** @type {LinkedList<FbMetadbHandle>} */
-	const queue = new LinkedList();
-	/** @type {Object<string,CacheItem>} */
-	let cache = {};
-
-	/**
-	 * @param {FbMetadbHandle} metadb
-	 * @param {GdiBitmap} img
-	 * @param {LinkedList.Iterator<FbMetadbHandle>} queue_iterator
-	 * @constructor
-	 */
-	function CacheItem(metadb, img, queue_iterator) {
-		this.metadb = metadb;
-		this.img = img;
-		this.queue_iterator = queue_iterator;
-	}
-
-	/**
-	 * @param {FbMetadbHandle} metadb
-	 * @return {?GdiBitmap}
-	 */
-	this.get_image_for_meta = (metadb) => {
-		const cache_item = cache[metadb.Path];
-		if (!cache_item) {
-			return undefined; // undefined means Not Loaded
-		}
-
-		const img = cache_item.img;
-		move_item_to_top(cache_item);
-
-		return img;
-	};
-
-	/**
-	 * @param {GdiBitmap} img
-	 * @param {FbMetadbHandle} metadb
-	 */
-	this.add_image_for_meta = (img, metadb) => {
-		const cache_item = cache[metadb.Path];
-		if (cache_item) {
-			cache_item.img = img;
-			move_item_to_top(cache_item);
-		}
-		else {
-			queue.push_front(metadb);
-			cache[metadb.Path] = new CacheItem(metadb, img, queue.begin());
-			if (queue.length() > max_cache_size_arg) {
-				delete cache[queue.back().Path];
-				queue.pop_back();
-			}
-		}
-	};
-
-	this.clear = () => {
-		cache = {};
-		queue.clear();
-	};
-
-	/**
-	 * @param {CacheItem} cache_item
-	 */
-	function move_item_to_top(cache_item) {
-		queue.remove(cache_item.queue_iterator);
-		queue.push_front(cache_item.metadb);
-		cache_item.queue_iterator = queue.begin();
-	}
-}
-
-Header.art_cache = new ArtImageCache(200);
 
 
 ///////////////

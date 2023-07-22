@@ -7,7 +7,7 @@ class Timers {
 		});
 	}
 
-	// Methods
+	// * METHODS * //
 
 	clear(timer) {
 		if (timer) clearTimeout(timer.id);

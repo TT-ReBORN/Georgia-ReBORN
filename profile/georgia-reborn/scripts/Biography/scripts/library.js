@@ -6,7 +6,7 @@ class LibraryBio {
 		this.update = true;
 	}
 
-	// Methods
+	// * METHODS * //
 
 	getLibItems() {
 		if (!this.update) return this.db_lib;

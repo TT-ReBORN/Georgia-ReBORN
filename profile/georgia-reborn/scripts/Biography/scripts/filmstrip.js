@@ -87,7 +87,7 @@ class FilmStrip {
 		}, 100);
 	}
 
-	// Methods
+	// * METHODS * //
 
 	async load_image_async(image_path) {
 		const image = await gdi.LoadImageAsyncV2(0, image_path);
@@ -578,9 +578,9 @@ class FilmStrip {
 			b: 0,
 			l: 0
 		} : {
-			t: pptBio.filmStripPos == 0 ? this.y + this.h - scaleForDisplay(55) : 0,
+			t: pptBio.filmStripPos == 0 ? this.y + this.h - SCALE(55) : 0,
 			r: pptBio.filmStripPos == 1 ? panelBio.w - this.x : 0,
-			b: pptBio.filmStripPos == 2 ? panelBio.h - this.y + scaleForDisplay(25) : 0,
+			b: pptBio.filmStripPos == 2 ? panelBio.h - this.y + SCALE(25) : 0,
 			l: pptBio.filmStripPos == 3 ? this.x + this.w : 0
 		};
 	}
@@ -630,7 +630,7 @@ class FilmStrip {
 			}
 		}
 
-		const marginT = scaleForDisplay(pptBio.style === 1 || pptBio.style === 3 || pptBio.text_only ? 4 : 5);
+		const marginT = SCALE(pptBio.style === 1 || pptBio.style === 3 || pptBio.text_only ? 4 : 5);
 		const filmStripCorrY =
 			pptBio.img_only ? (pptBio.filmStripPos === 1 || pptBio.filmStripPos === 3) && !filmStripOverlay ? geo.topMenuHeight + uiBio.y : pptBio.filmStripPos === 2 && !filmStripOverlay ? 0 : geo.topMenuHeight :
 			(pptBio.filmStripPos === 1 || pptBio.filmStripPos === 3) && !pptBio.heading ? uiBio.y + pptBio.borT - marginT :
@@ -707,7 +707,7 @@ class FilmStrip {
 					this.blockSize = Math.min(this.blockSize, this.max_sz);
 					this.h = this.blockSize;
 				}
-				this.y = (!filmStripOverlay ? panelBio.h - this.h - pad_b + scaleForDisplay(40) : pptBio.style == 0 || pptBio.style == 2 ? panelBio.img.t + panelBio.style.imgSize - this.h - bor : pptBio.style > 3 ? (panelBio.clip ? panelBio.ibox.t + panelBio.style.imgSize - this.h : panelBio.h - panelBio.img.b - this.h - bor) : panelBio.h - panelBio.img.b - this.h - bor) + filmStripCorrY;
+				this.y = (!filmStripOverlay ? panelBio.h - this.h - pad_b + SCALE(40) : pptBio.style == 0 || pptBio.style == 2 ? panelBio.img.t + panelBio.style.imgSize - this.h - bor : pptBio.style > 3 ? (panelBio.clip ? panelBio.ibox.t + panelBio.style.imgSize - this.h : panelBio.h - panelBio.img.b - this.h - bor) : panelBio.h - panelBio.img.b - this.h - bor) + filmStripCorrY;
 				this.style.horizontal = true;
 				this.repaint = {
 					x: 0,

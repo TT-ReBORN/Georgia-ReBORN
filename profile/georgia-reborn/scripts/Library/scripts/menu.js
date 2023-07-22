@@ -15,7 +15,7 @@ class MenuManager {
 		this.name = name;
 	}
 
-	// Methods
+	// * METHODS * //
 
 	addItem(v) {
 		if (v.separator && !v.str) {
@@ -148,7 +148,7 @@ class MenuItems {
 		this.validItem = false;
 	}
 
-	// Methods
+	// * METHODS * //
 
 	mainMenu() {
 		menu.newMenu({ hide: !this.settingsBtnDn && ppt.settingsShow && this.validItem });

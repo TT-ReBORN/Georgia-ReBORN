@@ -93,7 +93,7 @@ class Populate {
 		this.setValues();
 	}
 
-	// Methods
+	// * METHODS * //
 
 	activateTooltip(value) {
 		if (!pref.showTooltipLibrary && !pref.showTooltipTruncated || tooltipLib.Text == value) return;
@@ -957,7 +957,7 @@ class Populate {
 					sel_w = Math.min(item.name_w + ui.sz.sel * 2, ui.x + panel.tree.w - sel_x - item.count_w - 1);
 					if (this.fullLineSelection) {
 						sel_x = ui.x;
-						sel_w = sbar.w ? ui.w - scaleForDisplay(42) : ui.w + 1;
+						sel_w = sbar.w ? ui.w - SCALE(42) : ui.w + 1;
 					}
 					if (!nowp_c.includes(i)) {
 						if (this.fullLineSelection && this.sbarShow === 1 && ui.sbar.type === 2 && (this.highlight.row || !this.fullLineSelection)) {
@@ -968,7 +968,7 @@ class Populate {
 					}
 					// * Now playing bg selection
 					else if (this.highlight.nowPlaying && updatedNowpBg) {
-						gr.FillSolidRect(pref.libraryDesign === 'traditional' ? item_x - scaleForDisplay(2) : ui.x, item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : pref.libraryDesign === 'traditional' && !this.fullLineSelection ? sel_w + sel_x - item_x + scaleForDisplay(2) : !this.fullLineSelection ? sel_w + ui.sz.margin + sel_x - ui.x - ui.sz.sideMarker : sel_w, ui.row.h, ui.col.nowPlayingBg);
+						gr.FillSolidRect(pref.libraryDesign === 'traditional' ? item_x - SCALE(2) : ui.x, item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : pref.libraryDesign === 'traditional' && !this.fullLineSelection ? sel_w + sel_x - item_x + SCALE(2) : !this.fullLineSelection ? sel_w + ui.sz.margin + sel_x - ui.x - ui.sz.sideMarker : sel_w, ui.row.h, ui.col.nowPlayingBg);
 
 						if (pref.libraryDesign !== 'traditional') {
 							gr.FillSolidRect(ui.x, item_y, ui.sz.sideMarker, ui.row.h, ui.col.sideMarker);
@@ -981,12 +981,12 @@ class Populate {
 							gr.FillSolidRect(ui.x, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? item_y + 1 : item_y, ui.sz.sideMarker, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? ui.row.h - 1 : ui.row.h + 1, ui.col.sideMarker);
 						}
 						else if (pref.libraryDesign === 'traditional') {
-							gr.FillSolidRect(item_x - scaleForDisplay(2), item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : sel_w, ui.row.h, ui.col.nowPlayingBg);
+							gr.FillSolidRect(item_x - SCALE(2), item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : sel_w, ui.row.h, ui.col.nowPlayingBg);
 						}
 					}
 					// * Marker selection with now playing deactivated
 					if (item.sel && !this.highlight.nowPlaying && updatedNowpBg) {
-						gr.FillSolidRect(pref.libraryDesign === 'traditional' && this.fullLineSelection ? item_x - scaleForDisplay(2) : sel_x, item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : sel_w, ui.row.h, ui.col.nowPlayingBg);
+						gr.FillSolidRect(pref.libraryDesign === 'traditional' && this.fullLineSelection ? item_x - SCALE(2) : sel_x, item_y, pref.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - ui.sz.margin - ui.sz.node + ui.l.w : sel_w, ui.row.h, ui.col.nowPlayingBg);
 
 						if (pref.libraryDesign !== 'traditional') {
 							gr.FillSolidRect(ui.x, item_y, ui.w, ui.row.h, ui.col.nowPlayingBg);
@@ -1013,7 +1013,7 @@ class Populate {
 					sel_w = Math.min(item.name_w + ui.sz.sel * 2, ui.x + panel.tree.w - sel_x - item.count_w - 1);
 					if (this.fullLineSelection) {
 						sel_x = ui.x;
-						sel_w = sbar.w ? ui.w - scaleForDisplay(42) : ui.w + 1;
+						sel_w = sbar.w ? ui.w - SCALE(42) : ui.w + 1;
 					}
 					if (this.highlight.row == 3 && (this.fullLineSelection && this.sbarShow == 1 && ui.sbar.type == 2)) {
 						gr.DrawLine(sel_x, item_y, sel_w, item_y, ui.l.w, ui.col.frame);
@@ -1069,7 +1069,7 @@ class Populate {
 				const w = ui.x + panel.tree.w - item_x - ui.sz.sel - item.count_w;
 				this.checkTooltip(item, item_x, item_y, item.name_w, w);
 				if (this.fullLineSelection && item.id != this.id) {
-					item.w = ui.x + panel.tree.w - item_x - (is_4k ? 45 : 25);
+					item.w = ui.x + panel.tree.w - item_x - (RES_4K ? 45 : 25);
 					item.id = this.id;
 				}
 				if (item.np && this.highlight.nowPlayingSidemarker) {
@@ -1086,8 +1086,8 @@ class Populate {
 
 				!panel.colMarker ? gr.GdiDrawText(nm[i], ui.font.main, txt_c, item_x, item_y, w, ui.row.h, panel.lc) : this.cusCol(gr, nm[i], item, item_x, item_y, w, ui.row.h, type, np, ui.font.main, ui.font.mainEllipsisSpace, 'text');
 				if (this.countsRight || this.statisticsShow) {
-					const scrollbar = sbar.w === scaleForDisplay(12) && sbar.scrollable_lines > 0;
-					const x = panel.tree.w - item_x + (pref.libraryLayout === 'split' ? 0 : ui.x) - (scrollbar ? is_4k ? 45 : 24 : 0);
+					const scrollbar = sbar.w === SCALE(12) && sbar.scrollable_lines > 0;
+					const x = panel.tree.w - item_x + (pref.libraryLayout === 'split' ? 0 : ui.x) - (scrollbar ? RES_4K ? 45 : 24 : 0);
 					gr.GdiDrawText(!this.statisticsShow ? item.count : item.statistics, !item.root || !this.label ?  ui.font.small : ui.font.label, txt_c, item_x, item_y, x, ui.row.h, panel.rc);
 				}
 			}
@@ -1146,12 +1146,12 @@ class Populate {
 			case 5: // * Custom node - Georgia-ReBORN design ( Clean +|- )
 				if (parent) { // Plus
 					if (hover) {
-						gr.DrawString(ui.icon.expand, ui.icon.font, icon_c, x, y2 - (is_4k ? -1 : 1), ui.x + panel.tree.w - x, ui.row.h, panel.s_lc);
-						gr.DrawString(ui.icon.expand, ui.icon.font, icon_c, x, y2 - (is_4k ? -1 : 1), ui.x + panel.tree.w - x + 2, ui.row.h + 2, panel.s_lc);
-					} else gr.DrawString(ui.icon.expand, ui.icon.font, icon_c, x, y2 - (DetectWine ? (is_4k ? -1 : 0) : (is_4k ? -1 : 1)), ui.x + panel.tree.w - x, ui.row.h, panel.s_lc);
+						gr.DrawString(ui.icon.expand, ui.icon.font, icon_c, x, y2 - (RES_4K ? -1 : 1), ui.x + panel.tree.w - x, ui.row.h, panel.s_lc);
+						gr.DrawString(ui.icon.expand, ui.icon.font, icon_c, x, y2 - (RES_4K ? -1 : 1), ui.x + panel.tree.w - x + 2, ui.row.h + 2, panel.s_lc);
+					} else gr.DrawString(ui.icon.expand, ui.icon.font, icon_c, x, y2 - (DetectWine ? (RES_4K ? -1 : 0) : (RES_4K ? -1 : 1)), ui.x + panel.tree.w - x, ui.row.h, panel.s_lc);
 				} else { // Minus
-					gr.DrawString(ui.icon.collapse, ui.icon.font, icon_c, x - ui.icon.offset, y2 - (DetectWine ? (is_4k ? -1 : 1) : (is_4k ? 0 : 1)), ui.x + panel.tree.w - x, ui.row.h, panel.s_lc);
-					gr.DrawString(ui.icon.collapse, ui.icon.font, icon_c, x - ui.icon.offset, y2 - (is_4k ? -1 : 1), ui.x + panel.tree.w - x, ui.row.h + 2, panel.s_lc);
+					gr.DrawString(ui.icon.collapse, ui.icon.font, icon_c, x - ui.icon.offset, y2 - (DetectWine ? (RES_4K ? -1 : 1) : (RES_4K ? 0 : 1)), ui.x + panel.tree.w - x, ui.row.h, panel.s_lc);
+					gr.DrawString(ui.icon.collapse, ui.icon.font, icon_c, x - ui.icon.offset, y2 - (RES_4K ? -1 : 1), ui.x + panel.tree.w - x, ui.row.h + 2, panel.s_lc);
 				}
 				break;
 			case 7:

@@ -7,7 +7,7 @@ class PopUpBox {
 		this.soFeat = { clipboard: true, gecko: true }
 	}
 
-	// Methods
+	// * METHODS * //
 
 	config(cfg, ppt, cfgWindow, ok_callback) {
 		utils.ShowHtmlDialog(0, this.configHtmlCode, {

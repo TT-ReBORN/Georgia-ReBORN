@@ -7,7 +7,7 @@ class PanelPropertyLib {
 		this.value = ppt.get(this.name, default_value);
 	}
 
-	// Methods
+	// * METHODS * //
 
 	get() {
 		return this.value;
@@ -26,7 +26,7 @@ class PanelPropertiesLib {
 		// this.name_list = {}; debug
 	}
 
-	// Methods
+	// * METHODS * //
 
 	init(type, properties, thisArg) {
 		switch (type) {
@@ -217,7 +217,7 @@ let properties = [
 	['Panel Library - Limit Tree Auto Expand: 10-1000', 350, 'autoExpandLimit'],
 	['Panel Library - Line Padding', 5, 'verticalPad'],
 	['Panel Library - Line Padding Album Art', 2, 'verticalAlbumArtPad'],
-	['Panel Library - Margin', Math.round(scaleForDisplay(20) * $Lib.scale), 'margin'],
+	['Panel Library - Margin', Math.round(SCALE(20) * $Lib.scale), 'margin'],
 	['Panel Library - Margin Override Top/Bottom (No Top Bar)', Math.round(8 * $Lib.scale), 'marginTopBottom'],
 	['Panel Library - Middle-Click Action', 1, 'mbtnClickAction'],
 	['Panel Library - Mouse: Always Pointer (no hand)', true, 'mousePointerOnly'],
@@ -269,7 +269,7 @@ let properties = [
 	['Panel Library - Scrollbar Arrow Width', Math.round(11 * $Lib.scale), 'sbarArrowWidth'],
 	['Panel Library - Scrollbar Button Type', 0, 'sbarButType'],
 	['Panel Library - Scrollbar Colour Grey-0 Blend-1', 1, 'sbarCol'],
-	['Panel Library - Scrollbar Grip MinHeight', Math.round(scaleForDisplay(20) * $Lib.scale), 'sbarGripHeight'],
+	['Panel Library - Scrollbar Grip MinHeight', Math.round(SCALE(20) * $Lib.scale), 'sbarGripHeight'],
 	['Panel Library - Scrollbar Height Prefer Full', true, 'sbarFullHeight'],
 	['Panel Library - Scrollbar Narrow Bar Width (0 = Auto)', 0, 'narrowSbarWidth'],
 	['Panel Library - Scrollbar Padding', 0, 'sbarPad'],

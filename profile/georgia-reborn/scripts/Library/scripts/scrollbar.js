@@ -133,7 +133,7 @@ class Scrollbar {
 		this.setCol();
 	}
 
-	// Methods
+	// * METHODS * //
 
 	but(dir) {
 		this.checkScroll(Math.round((this.scroll + dir * -this.row.h) / this.row.h) * this.row.h, 'step');
@@ -224,10 +224,10 @@ class Scrollbar {
 				case 0:
 					if (ppt.rowStripes && ppt.sbarShow == 2 && !this.vertical) gr.FillSolidRect(this.x, this.y, this.w, this.h, ui.col.rowStripes /*ui.col.bg1*/);
 					if (this.vertical) {
-						gr.FillSolidRect(sbar_x + (this.narrow.show ? ui.sbar.narrowWidth - scaleForDisplay(1) : is_4k ? 0 : -1), this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
+						gr.FillSolidRect(sbar_x + (this.narrow.show ? ui.sbar.narrowWidth - SCALE(1) : RES_4K ? 0 : -1), this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
 					}
 					else {
-						gr.FillSolidRect(this.x + this.bar.x, sbar_y + (this.narrow.show ? ui.sbar.narrowWidth - scaleForDisplay(1) : 0), this.bar.h, sbar_h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
+						gr.FillSolidRect(this.x + this.bar.x, sbar_y + (this.narrow.show ? ui.sbar.narrowWidth - SCALE(1) : 0), this.bar.h, sbar_h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
 						if (!this.narrow.show || ppt.sbarShow != 1) {
 							gr.FillSolidRect(this.x + this.bar.x, sbar_y, this.bar.h, sbar_h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
 						}
@@ -252,18 +252,18 @@ class Scrollbar {
 				case 2:
 					if (this.vertical) {
 						ui.theme.SetPartAndStateID(6, 1);
-						gr.FillSolidRect(sbar_x - scaleForDisplay(12), this.y - scaleForDisplay(8), this.w + scaleForDisplay(50), this.h + scaleForDisplay(g_properties.row_h) * 2 - scaleForDisplay(6), ui.col.bg);
+						gr.FillSolidRect(sbar_x - SCALE(12), this.y - SCALE(8), this.w + SCALE(50), this.h + SCALE(g_properties.row_h) * 2 - SCALE(6), ui.col.bg);
 						if (!this.narrow.show || ppt.sbarShow != 1) ui.theme.DrawThemeBackground(gr, sbar_x, this.y, sbar_w, this.h);
 						ui.theme.SetPartAndStateID(3, this.narrow.show ? 2 : !this.hover && !this.bar.isDragging ? 1 : this.hover && !this.bar.isDragging ? 2 : 3);
-						ui.theme.DrawThemeBackground(gr, sbar_x + (this.narrow.show ? ui.sbar.narrowWidth - scaleForDisplay(1) : 0), this.y + this.bar.y, sbar_w, this.bar.h);
+						ui.theme.DrawThemeBackground(gr, sbar_x + (this.narrow.show ? ui.sbar.narrowWidth - SCALE(1) : 0), this.y + this.bar.y, sbar_w, this.bar.h);
 						if (pref.styleBlend && albumArt && blendedImg) {
-							gr.DrawImage(blendedImg, sbar_x - scaleForDisplay(12), this.y - scaleForDisplay(8), ww, wh, sbar_x - scaleForDisplay(12), this.y - scaleForDisplay(6), blendedImg.Width, blendedImg.Height);
+							gr.DrawImage(blendedImg, sbar_x - SCALE(12), this.y - SCALE(8), ww, wh, sbar_x - SCALE(12), this.y - SCALE(6), blendedImg.Width, blendedImg.Height);
 						}
 					} else {
 						ui.theme.SetPartAndStateID(4, 1);
 						if (!this.narrow.show || ppt.sbarShow != 1) ui.theme.DrawThemeBackground(gr, this.x, sbar_y, this.w, sbar_h);
 						ui.theme.SetPartAndStateID(2, this.narrow.show ? 2 : !this.hover && !this.bar.isDragging ? 1 : this.hover && !this.bar.isDragging ? 2 : 3);
-						ui.theme.DrawThemeBackground(gr, this.x + this.bar.x, sbar_y + (this.narrow.show ? ui.sbar.narrowWidth - scaleForDisplay(1) : 0), this.bar.h, sbar_h);
+						ui.theme.DrawThemeBackground(gr, this.x + this.bar.x, sbar_y + (this.narrow.show ? ui.sbar.narrowWidth - SCALE(1) : 0), this.bar.h, sbar_h);
 					}
 					break;
 			}
@@ -406,15 +406,15 @@ class Scrollbar {
 			this.y = Math.round(y);
 			this.w = w;
 			this.h = h;
-			sbar.w = pref.libraryAutoHideScrollbar && ppt.sbarShow === 1 ? 0 : scaleForDisplay(12);
-			ui.sbar.but_w = scaleForDisplay(12);
+			sbar.w = pref.libraryAutoHideScrollbar && ppt.sbarShow === 1 ? 0 : SCALE(12);
+			ui.sbar.but_w = SCALE(12);
 		} else {
-			this.x = scaleForDisplay(40);
-			this.y = ui.y + ui.h - scaleForDisplay(32);
-			this.w = w - scaleForDisplay(40);
+			this.x = SCALE(40);
+			this.y = ui.y + ui.h - SCALE(32);
+			this.w = w - SCALE(40);
 			this.h = h;
-			sbar.h = pref.libraryAutoHideScrollbar && ppt.sbarShow === 1 ? 0 : scaleForDisplay(12);
-			ui.sbar.but_w = scaleForDisplay(12);
+			sbar.h = pref.libraryAutoHideScrollbar && ppt.sbarShow === 1 ? 0 : SCALE(12);
+			ui.sbar.but_w = SCALE(12);
 		}
 		this.rows_drawn = rows_drawn;
 		this.row.h = row_h;
@@ -445,7 +445,7 @@ class Scrollbar {
 
 		pop.id = ui.id.tree + ppt.fullLineSelection + panel.tree.w + panel.imgView + ppt.albumArtLabelType + ppt.albumArtFlipLabels + ppt.albumArtFlowMode;
 		panel.tree.stripe.w = ppt.sbarShow == 2 && this.scrollable_lines > 0 ? ui.w - ui.sbar.sp - ui.sz.pad : ui.w;
-		panel.tree.sel.w = sbar.w ? ui.w - scaleForDisplay(42) : ui.w; // ppt.sbarShow == 2 && this.scrollable_lines > 0 ? ui.w - ui.sbar.sp - ui.sz.pad * 2 : ui.w - ui.sz.pad * 2;
+		panel.tree.sel.w = sbar.w ? ui.w - SCALE(42) : ui.w; // ppt.sbarShow == 2 && this.scrollable_lines > 0 ? ui.w - ui.sbar.sp - ui.sz.pad * 2 : ui.w - ui.sz.pad * 2;
 		this.max_scroll = this.scrollable_lines * this.row.h;
 		if (panel.imgView && this.vertical && this.row.h > ui.h - panel.search.h - (ui.style.topBarShow ? 0 : ui.sz.margin)) this.max_scroll -= this.row.h; // if (panel.imgView && this.vertical && this.row.h > ui.h - img.panel.h) this.max_scroll -= this.row.h;
 		if (panel.imgView && !this.vertical && this.row.h > ui.w) this.max_scroll -= this.row.h;
@@ -454,7 +454,7 @@ class Scrollbar {
 
 	move(p_x, p_y) {
 		this.active = true;
-		if (p_x > this.x - scaleForDisplay(25) && p_x < this.x + scaleForDisplay(25) && (sbar.vertical ? p_y > this.y : p_y > this.y - scaleForDisplay(20) && p_y < this.y + scaleForDisplay(30))) {
+		if (p_x > this.x - SCALE(25) && p_x < this.x + SCALE(25) && (sbar.vertical ? p_y > this.y : p_y > this.y - SCALE(20) && p_y < this.y + SCALE(30))) {
 			this.scrollbar.zone = true;
 			this.narrow.show = false;
 			if (ppt.sbarShow == 1 && this.scrollbar.zone != this.scrollbar.cur_zone) {
@@ -462,8 +462,8 @@ class Scrollbar {
 				this.scrollbar.cur_zone = this.scrollbar.zone;
 			}
 			// * Automatic Scrollbar Hide - show
-			if (sbar.vertical && this.scrollable_lines > 0) sbar.w = scaleForDisplay(12);
-			if (!sbar.vertical && this.scrollable_lines > 0) sbar.h = scaleForDisplay(12);
+			if (sbar.vertical && this.scrollable_lines > 0) sbar.w = SCALE(12);
+			if (!sbar.vertical && this.scrollable_lines > 0) sbar.h = SCALE(12);
 		}
 		else if (ppt.sbarShow === 1 && !this.bar.isDragging) { // * Automatic Scrollbar Hide - hide
 			if (pref.libraryAutoHideScrollbar && this.scrollable_lines > 0 && sbar.vertical) sbar.w = 0;
@@ -523,7 +523,7 @@ class Scrollbar {
 		this.bar.timer = null;
 		this.bar.timer = setInterval(() => {
 			this.alpha = this.hover ? Math.min(this.alpha += this.inStep, this.alpha2) : Math.max(this.alpha -= 12, this.alpha1);
-			window.RepaintRect(this.x - scaleForDisplay(2), this.y, this.w + scaleForDisplay(4), this.h);
+			window.RepaintRect(this.x - SCALE(2), this.y, this.w + SCALE(4), this.h);
 			if (this.hover && this.alpha == this.alpha2 || !this.hover && this.alpha == this.alpha1) {
 				this.cur_hover = this.hover;
 				clearTimeout(this.bar.timer);

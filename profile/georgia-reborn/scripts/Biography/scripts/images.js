@@ -237,7 +237,7 @@ class ImagesBio {
 		this.cov.selFiltered = this.cov.selection.filter(v => v != -1);
 	}
 
-	// Methods
+	// * METHODS * //
 
 	artImages(v) {
 		if (!$Bio.file(v)) return false;
@@ -355,17 +355,17 @@ class ImagesBio {
 					const iSmall = image.Resize(Math.max(panelBio.w * uiBio.blur.level / 100, 1), Math.max(panelBio.h * uiBio.blur.level / 100, 2, 1), 2);
 					const iFull = iSmall.Resize(panelBio.w, panelBio.h, 2);
 					const offset = 90 - uiBio.blur.level;
-					g.DrawImage(iFull, uiBio.x - offset, uiBio.y - scaleForDisplay(40), panelBio.w + offset * 2, panelBio.h + offset * 2, 0, 0, iFull.Width, iFull.Height, 0, uiBio.blur.blendAlpha);
-				} else g.DrawImage(image, uiBio.x, uiBio.y - scaleForDisplay(40), panelBio.w, panelBio.h, 0, 0, image.Width, image.Height, 0, uiBio.blur.blendAlpha); // no blur
+					g.DrawImage(iFull, uiBio.x - offset, uiBio.y - SCALE(40), panelBio.w + offset * 2, panelBio.h + offset * 2, 0, 0, iFull.Width, iFull.Height, 0, uiBio.blur.blendAlpha);
+				} else g.DrawImage(image, uiBio.x, uiBio.y - SCALE(40), panelBio.w, panelBio.h, 0, 0, image.Width, image.Height, 0, uiBio.blur.blendAlpha); // no blur
 			} else {
 				if (pptBio.theme == 1 || pptBio.theme == 3) {
-					g.DrawImage(image, uiBio.x, uiBio.y - scaleForDisplay(40), panelBio.w, panelBio.h, 0, 0, image.Width, image.Height);
+					g.DrawImage(image, uiBio.x, uiBio.y - SCALE(40), panelBio.w, panelBio.h, 0, 0, image.Width, image.Height);
 					if (uiBio.blur.level > 1) gi.StackBlur(uiBio.blur.level);
-					g.FillSolidRect(uiBio.x, uiBio.y - scaleForDisplay(40), panelBio.w, panelBio.h, this.isImageLight(gi) ? uiBio.col.bg_light : uiBio.col.bg_dark);
+					g.FillSolidRect(uiBio.x, uiBio.y - SCALE(40), panelBio.w, panelBio.h, this.isImageLight(gi) ? uiBio.col.bg_light : uiBio.col.bg_dark);
 				}
 				if (pptBio.theme == 4) {
-					g.FillSolidRect(uiBio.x, uiBio.y - scaleForDisplay(40), panelBio.w, panelBio.h, this.getRandomCol());
-					g.DrawImage(image, uiBio.x, uiBio.y - scaleForDisplay(40), panelBio.w, panelBio.h, 0, 0, image.Width, image.Height, 0, this.getImgAlpha(image));
+					g.FillSolidRect(uiBio.x, uiBio.y - SCALE(40), panelBio.w, panelBio.h, this.getRandomCol());
+					g.DrawImage(image, uiBio.x, uiBio.y - SCALE(40), panelBio.w, panelBio.h, 0, 0, image.Width, image.Height, 0, this.getImgAlpha(image));
 					if (uiBio.blur.level > 1) gi.StackBlur(uiBio.blur.level);
 				}
 			}
@@ -1704,7 +1704,7 @@ class ImageCache {
 		this.type = type;
 	}
 
-	// Methods
+	// * METHODS * //
 
 	checkCache() {
 		let keys = Object.keys(this.cache);

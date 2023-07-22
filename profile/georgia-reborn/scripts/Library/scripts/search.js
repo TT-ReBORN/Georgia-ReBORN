@@ -36,7 +36,7 @@ class Search {
 		}, 3000);
 	}
 
-	// Methods
+	// * METHODS * //
 
 	calcText() {
 		$Lib.gr(1, 1, false, g => this.txt_w = g.CalcTextWidth(panel.search.txt.substr(this.offset), ui.font.main, true));
@@ -491,7 +491,7 @@ class Find {
 		this.initials = null;
 	}
 
-	// Methods
+	// * METHODS * //
 
 	draw(gr) {
 		if (this.jSearch) {

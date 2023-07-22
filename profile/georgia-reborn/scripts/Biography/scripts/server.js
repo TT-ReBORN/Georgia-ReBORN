@@ -65,7 +65,7 @@ class ServerBio {
 		this.setLanguage();
 	}
 
-	// Methods
+	// * METHODS * //
 
 	checkNotFound() {
 		if (!$Bio.file(this.notFound)) {

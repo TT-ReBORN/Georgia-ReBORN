@@ -1,10 +1,6 @@
 ﻿'use strict';
 
 class BiographyCallbacks {
-	mouse_in_this(x, y) {
-		return (x >= uiBio.x && x < uiBio.x + uiBio.w && y >= uiBio.y && y < uiBio.y + uiBio.h);
-	}
-
 	on_colours_changed() {
 		uiBio.getColours();
 		alb_scrollbar.setCol();

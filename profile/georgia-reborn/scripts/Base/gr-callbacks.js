@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-14                                          * //
+// * Last change:    2023-07-22                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,7 +16,13 @@
 ////////////////////////
 // * MAIN CALLBACKS * //
 ////////////////////////
-/** Called when album art is retrieved from GetAlbumArtAsync */
+/**
+ * Called when thread created by utils.GetAlbumArtAsync is done.
+ * @param {FbMetadbHandle} metadb The metadb of the track.
+ * @param {number} art_id See Flags.js > AlbumArtId.
+ * @param {GdiBitmap} image Null on failure.
+ * @param {string} image_path The path to image file (or music file if image is embedded).
+ */
 function on_get_album_art_done(metadb, art_id, image, image_path) {
 	if (displayPlaylist || displayPlaylistArtworkLayout) {
 		trace_call && console.log('Playlist => on_get_album_art_done');
@@ -33,7 +39,12 @@ function on_get_album_art_done(metadb, art_id, image, image_path) {
 }
 
 
-/** Called when thread created by gdi.LoadImageAsync is done. */
+/**
+ * Called when thread created by gdi.LoadImageAsync is done.
+ * @param {number} cookie The return value from the gdi.LoadImageAsync call.
+ * @param {GdiBitmap} imagenullable Null on failure (invalid path/not an image).
+ * @param {string} image_path The path that was originally supplied to gdi.LoadImageAsync.
+ */
 function on_load_image_done(cookie, imagenullable, image_path) {
 	trace_call && console.log('Biography => on_load_image_done');
 	biography.on_load_image_done(cookie, imagenullable, image_path);
@@ -41,9 +52,9 @@ function on_load_image_done(cookie, imagenullable, image_path) {
 
 
 /**
- * Called when metadb contents change, i.e tag or database updates
- * @param {FbMetadbHandleList=} handle_list Can be undefined when called manually from on_playback_new_track
- * @param {boolean=} fromhook
+ * Called when metadb contents change, i.e tag or database updates.
+ * @param {FbMetadbHandleList=} handle_list Can be undefined when called manually from on_playback_new_track.
+ * @param {boolean=} fromhook True if notification is not from tag update, but a component that provides tag-like data from a database.
  */
 function on_metadb_changed(handle_list, fromhook) {
 	console.log(`on_metadb_changed(): ${handle_list ? handle_list.Count : '0'} handles, fromhook: ${fromhook}`);
@@ -116,11 +127,11 @@ function on_metadb_changed(handle_list, fromhook) {
 			if (str.timeline) { // TODO: figure out why this is null for foo_input_spotify
 				str.timeline.setColors(col.timelineAdded, col.timelinePlayed, col.timelineUnplayed);
 				// No need to call calcDateRatios if str.timeline is undefined
-				calcDateRatios($date(currentLastPlayed) !== $date(lastPlayed), currentLastPlayed); // lastPlayed has probably changed and we want to update the date bar
+				calcDateRatios($Date(currentLastPlayed) !== $Date(lastPlayed), currentLastPlayed); // lastPlayed has probably changed and we want to update the date bar
 			}
 			if (lastPlayed.length) {
-				const today = dateToYMD(new Date());
-				if (!currentLastPlayed.length || $date(lastPlayed) !== today) {
+				const today = DateToYMD(new Date());
+				if (!currentLastPlayed.length || $Date(lastPlayed) !== today) {
 					currentLastPlayed = lastPlayed;
 				}
 			}
@@ -159,23 +170,23 @@ function on_metadb_changed(handle_list, fromhook) {
 
 
 /**
- * Called when playing a new track
- * @param {FbMetadbHandle} metadb
+ * Called when playing a new track.
+ * @param {FbMetadbHandle} metadb The metadb of the track.
  */
 function on_playback_new_track(metadb) {
 	if (!metadb) return;	// Solve weird corner case
 	const newTrackProfiler = timings.showDebugTiming ? fb.CreateProfiler('on_playback_new_track') : null;
-	debugLog('in on_playback_new_track()');
+	DebugLog('in on_playback_new_track()');
 
 	lastLeftEdge = 0;
 	newTrackFetchingArtwork = true;
 	newTrackFetchingDone = false;
 	themeColorSet = true;
 	initThemeFull = false;
-	updateTimezoneOffset();
+	UpdateTimezoneOffset();
 	isPlayingCD = metadb ? metadb.RawPath.startsWith('cdda://') : false;
 	isStreaming = metadb ? metadb.RawPath.startsWith('http://') : false;
-	currentFolder = !isStreaming ? metadb.Path.substring(0, metadb.Path.lastIndexOf('\\')) : '';
+	currentAlbumFolder = !isStreaming ? metadb.Path.substring(0, metadb.Path.lastIndexOf('\\')) : '';
 
 	setProgressBarRefresh();
 
@@ -183,7 +194,7 @@ function on_playback_new_track(metadb) {
 		themeDayNightModeTimer = setInterval(() => {
 			themeDayNightMode(new Date());
 			initTheme();
-			debugLog('initTheme -> fetchNewArtwork -> on_playback_new_track -> themeDayNightModeTimer');
+			DebugLog('initTheme -> fetchNewArtwork -> on_playback_new_track -> themeDayNightModeTimer');
 		}, 600000);
 	}
 
@@ -197,8 +208,8 @@ function on_playback_new_track(metadb) {
 	str.lowerBar_tt = new LowerBarTooltip();
 
 	// * Fetch new albumArt
-	if ((pref.cycleArt && albumArtIndex !== 0) || isStreaming || embeddedArt || currentFolder !== lastFolder ||	albumArt == null ||
-		$('%album%') !== lastAlbum || $('$if2(%discnumber%,0)') !== lastDiscNumber || $(`$if2(${tf.vinyl_side},ZZ)`) !== lastVinylSide) {
+	if ((pref.cycleArt && albumArtIndex !== 0) || isStreaming || embeddedArt || currentAlbumFolder !== lastAlbumFolder || albumArt == null ||
+		$('%album%') !== lastAlbumFolderTag || $('$if2(%discnumber%,0)') !== lastAlbumDiscNumber || $(`$if2(${tf.vinyl_side},ZZ)`) !== lastAlbumVinylSide) {
 		clearPlaylistNowPlayingBg();
 		fetchNewArtwork(metadb);
 		// * Pick a new random theme preset
@@ -224,7 +235,7 @@ function on_playback_new_track(metadb) {
 	if (pref.styleRandomAutoColor === 'track' && !doubleClicked) getRandomThemeAutoColor();
 
 	if (discArt) {
-		setupRotationTimer();
+		setDiscArtRotationTimer();
 	}
 	if (pref.rotateDiscArt && !pref.spinDiscArt) {
 		createRotatedDiscArtImage(); // We need to always setup the rotated image because it rotates on every track
@@ -267,11 +278,11 @@ function on_playback_new_track(metadb) {
 
 	// * Code to retrieve band logo
 	let tryArtistList = [
-		...getMetaValues('%album artist%').map(artist => replaceFileChars(artist)),
-		...getMetaValues('%album artist%').map(artist => replaceFileChars(artist).replace(/^[Tt]he /, '')),
-		replaceFileChars($('[%track artist%]')),
-		...getMetaValues('%artist%').map(artist => replaceFileChars(artist)),
-		...getMetaValues('%artist%').map(artist => replaceFileChars(artist).replace(/^[Tt]he /, ''))
+		...getMetaValues('%album artist%').map(artist => ReplaceFileChars(artist)),
+		...getMetaValues('%album artist%').map(artist => ReplaceFileChars(artist).replace(/^[Tt]he /, '')),
+		ReplaceFileChars($('[%track artist%]')),
+		...getMetaValues('%artist%').map(artist => ReplaceFileChars(artist)),
+		...getMetaValues('%artist%').map(artist => ReplaceFileChars(artist).replace(/^[Tt]he /, ''))
 	];
 	tryArtistList = [...new Set(tryArtistList)];
 
@@ -297,10 +308,10 @@ function on_playback_new_track(metadb) {
 		}
 	}
 
-	lastFolder = currentFolder; // For art caching purposes
-	lastAlbum = $('%album%'); // For art caching purposes
-	lastDiscNumber = $('$if2(%discnumber%,0)'); // For art caching purposes
-	lastVinylSide = $(`$if2(${tf.vinyl_side},ZZ)`);
+	lastAlbumFolder = currentAlbumFolder;
+	lastAlbumFolderTag = $('%album%');
+	lastAlbumDiscNumber = $('$if2(%discnumber%,0)');
+	lastAlbumVinylSide = $(`$if2(${tf.vinyl_side},ZZ)`);
 	currentLastPlayed = $(tf.last_played);
 	playingPlaylist = pref.showGridPlayingPlaylist ? $(tf.playing_playlist = plman.GetPlaylistName(plman.PlayingPlaylist)) : '';
 
@@ -344,7 +355,11 @@ function on_playback_new_track(metadb) {
 }
 
 
-/** Called when panel is being resized */
+/**
+ * Called when window is being resized.
+ *
+ * !IMPORTANT: Do NOT call window.Repaint from this callback!
+ */
 function on_size() {
 	ww = window.Width;
 	wh = window.Height;
@@ -408,7 +423,13 @@ function on_size() {
 /////////////////////////////////
 // * USER ACTIVITY CALLBACKS * //
 /////////////////////////////////
-/** Called when using letter keystrokes from keyboard */
+/**
+ * Called when using letter keystrokes from keyboard.
+ *
+ * Note: in order to use this callback, use window.DlgCode(DLGC_WANTCHARS).
+ * See Flags.js > DLGC_WANTCHARS.
+ * @param {number} code
+ */
 function on_char(code) {
 	if (displayCustomThemeMenu || displayMetadataGridMenu) {
 		customMenu.on_char(code);
@@ -432,7 +453,17 @@ function on_char(code) {
 }
 
 
-/** Called when mouse with content enters another window and determines if that window is a valid drop target, 1. fires first */
+/**
+ * Called when mouse with content enters another window and determines if that window is a valid drop target.
+ *
+ * 1. Called first.
+ *
+ * See fb.DoDragDrop documentation and samples/basic/DragnDrop.txt
+ * @param {DropTargetAction} action
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} mask The mouse mask.
+ */
 function on_drag_enter(action, x, y, mask) {
 	if (displayPlaylist || displayPlaylistArtworkLayout) {
 		trace_call && console.log('Playlist => on_drag_enter');
@@ -441,7 +472,17 @@ function on_drag_enter(action, x, y, mask) {
 }
 
 
-/** Called when content with mouse moves but stays within the same window, 2. fires after on_drag_enter */
+/**
+ * Called when content with mouse moves but stays within the same window.
+ *
+ * 2. Called after on_drag_enter.
+ *
+ * See fb.DoDragDrop documentation and samples/basic/DragnDrop.txt
+ * @param {DropTargetAction} action
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} mask The mouse mask.
+ */
 function on_drag_over(action, x, y, mask) {
 	if (displayPlaylist || displayPlaylistArtworkLayout) {
 		trace_call && console.log('Playlist => on_drag_over');
@@ -450,7 +491,13 @@ function on_drag_over(action, x, y, mask) {
 }
 
 
-/** Called when mouse with content is being dragged outside of window, 3. fires after on_drag_over */
+/**
+ * Called when mouse with content is being dragged outside of window.
+ *
+ * 3. Called after on_drag_over.
+ *
+ * See fb.DoDragDrop documentation and samples/basic/DragnDrop.txt
+ */
 function on_drag_leave() {
 	if (displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) {
 		trace_call && console.log('Playlist => on_drag_leave');
@@ -459,7 +506,17 @@ function on_drag_leave() {
 }
 
 
-/** Called when mouse with content is being dropped, 4. fires after on_drag_over */
+/**
+ * Called when mouse with content is being dropped.
+ *
+ * 4. Called after on_drag_over.
+ *
+ * See fb.DoDragDrop documentation and samples/basic/DragnDrop.txt
+ * @param {DropTargetAction} action
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} mask The mouse mask.
+ */
 function on_drag_drop(action, x, y, mask) {
 	if (displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) {
 		trace_call && console.log('Playlist => on_drag_drop');
@@ -468,7 +525,10 @@ function on_drag_drop(action, x, y, mask) {
 }
 
 
-/** Called when the panel gets or loses focus */
+/**
+ * Called when the panel gets or loses focus.
+ * @param {boolean} is_focused
+ */
 function on_focus(is_focused) {
 	if (displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) {
 		trace_call && console.log('Playlist => on_focus');
@@ -490,11 +550,16 @@ function on_focus(is_focused) {
 }
 
 
-/** Called when focused item in playlist has been changed */
-function on_item_focus_change(playlist_arg, from, to) {
+/**
+ * Called when focused item in playlist has been changed.
+ * @param {number} playlistIndex
+ * @param {number} from
+ * @param {number} to
+ */
+function on_item_focus_change(playlistIndex, from, to) {
 	if (displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) {
 		trace_call && console.log('Playlist => on_item_focus_change');
-		playlist.on_item_focus_change(playlist_arg, from, to);
+		playlist.on_item_focus_change(playlistIndex, from, to);
 	}
 	else if (displayLibrary) {
 		trace_call && console.log('Library => on_item_focus_change');
@@ -507,7 +572,16 @@ function on_item_focus_change(playlist_arg, from, to) {
 }
 
 
-/** Called when pressing down keyboard keys */
+/**
+ * Called when pressing down keyboard keys.
+ *
+ * Requires "Grab focus" enabled in the Configuration window.
+ *
+ * In order to use arrow keys, use window.DlgCode(DLGC_WANTARROWS) (see Flags.js > DLGC_WANTARROWS).
+ *
+ * Note: keyboard shortcuts defined in the main preferences are always executed first and are not passed to the callback.
+ * @param {number} vkey
+ */
 function on_key_down(vkey) {
 	const CtrlKeyPressed = utils.IsKeyPressed(VK_CONTROL);
 	const ShiftKeyPressed = utils.IsKeyPressed(VK_SHIFT);
@@ -567,7 +641,14 @@ function on_key_down(vkey) {
 }
 
 
-/** Called when releasing keyboard keys from pressed state */
+/**
+ * Called when releasing keyboard keys from pressed state.
+ *
+ * Requires "Grab focus" enabled in the Configuration window.
+ *
+ * In order to use arrow keys, use window.DlgCode(DLGC_WANTARROWS) (see Flags.js > DLGC_WANTARROWS).
+ * @param {number} vkey
+ */
 function on_key_up(vkey) {
 	if (displayLibrary) {
 		trace_call && console.log('Library => on_key_up');
@@ -580,7 +661,10 @@ function on_key_up(vkey) {
 }
 
 
-/** Called when adding new songs to the media library index */
+/**
+ * Called when adding new songs to the media library index.
+ * @param {FbMetadbHandleList} handle_list
+ */
 function on_library_items_added(handle_list) {
 	if (displayLibrary) {
 		trace_call && console.log('Library => on_library_items_added');
@@ -593,7 +677,10 @@ function on_library_items_added(handle_list) {
 }
 
 
-/** Called when media library is being changed, i.e updated by removing/adding tracks */
+/**
+ * Called when media library is being changed, i.e updated by removing/adding tracks.
+ * @param {FbMetadbHandleList} handle_list
+ */
 function on_library_items_changed(handle_list) {
 	if (displayLibrary) {
 		trace_call && console.log('Library => on_library_items_changed');
@@ -606,7 +693,10 @@ function on_library_items_changed(handle_list) {
 }
 
 
-/** Called when removing songs from the media library index */
+/**
+ * Called when removing songs from the media library index.
+ * @param {FbMetadbHandleList} handle_list
+ */
 function on_library_items_removed(handle_list) {
 	if (displayLibrary) {
 		trace_call && console.log('Library => on_library_items_removed');
@@ -619,25 +709,32 @@ function on_library_items_removed(handle_list) {
 }
 
 
-/** Refresh playback time plus playback time remaining every second */
+/**
+ * Refresh playback time plus playback time remaining every second.
+ */
 function on_playback_time() {
 	str.time = pref.switchPlaybackTime ? $('-%playback_time_remaining%') : $('%playback_time%');
 	waveformBar.on_playback_time(fb.PlaybackTime);
 }
 
 
-/** Called when double clicking the left mouse button */
+/**
+ * Called when double clicking the left mouse button.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} m The mouse mask.
+ */
 function on_mouse_lbtn_dblclk(x, y, m) {
-	if ((displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) && playlist.mouse_in_this(x, y)) {
+	if ((displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) && mousePlaylist(x, y)) {
 		trace_call && console.log('Playlist => on_mouse_lbtn_dblclk');
 		if (displayCustomThemeMenu && pref.displayLyrics) return;
 		playlist.on_mouse_lbtn_dblclk(x, y, m);
 	}
-	else if (displayLibrary && library.mouse_in_this(x, y)) {
+	else if (displayLibrary && mouseLibrary(x, y)) {
 		trace_call && console.log('Library => on_mouse_lbtn_dblclk');
 		library.on_mouse_lbtn_dblclk(x, y, m);
 	}
-	else if (displayBiography && biography.mouse_in_this(x, y)) {
+	else if (displayBiography && mouseBiography(x, y)) {
 		trace_call && console.log('Biography => on_mouse_lbtn_dblclk');
 		biography.on_mouse_lbtn_dblclk(x, y, m);
 	}
@@ -647,7 +744,7 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 			presetIndicatorTimer = null;
 		}
 		doubleClicked = true;
-		if (fb.IsPlaying && !mouseInControl && (state.mouse_x > 0 && state.mouse_x && state.mouse_y > wh - scaleForDisplay(120) && state.mouse_y)) {
+		if (fb.IsPlaying && !mouseInControl && (state.mouse_x > 0 && state.mouse_x && state.mouse_y > wh - SCALE(120) && state.mouse_y)) {
 			// * Pick a new random theme preset
 			if (pref.presetAutoRandomMode === 'dblclick') {
 				themePresetIndicator = true;
@@ -656,7 +753,7 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 			// * Generate a new color in Random theme
 			else if (pref.theme === 'random') {
 				initTheme();
-				debugLog('initTheme -> on_mouse_lbtn_dblclk -> random theme');
+				DebugLog('initTheme -> on_mouse_lbtn_dblclk -> random theme');
 			}
 			// * Refresh theme
 			else if (settings.doubleClickRefresh) {
@@ -672,7 +769,12 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 }
 
 
-/** Called when left mouse button is pressed */
+/**
+ * Called when left mouse button is pressed.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} m The mouse mask.
+ */
 function on_mouse_lbtn_down(x, y, m) {
 	const showProgressBar = pref.layout === 'compact' ? pref.showProgressBar_compact : pref.layout === 'artwork' ? pref.showProgressBar_artwork : pref.showProgressBar_default;
 	window.SetCursor(32512); // Arrow
@@ -691,7 +793,7 @@ function on_mouse_lbtn_down(x, y, m) {
 		// Not handled by volumeBtn
 
 		// * Clicking on progress bar
-		if (showProgressBar && y >= wh - 0.5 * geo.lowerBarHeight && y <= wh - 0.5 * geo.lowerBarHeight + geo.progBarHeight - scaleForDisplay(20) && x >= 0.025 * ww && x < 0.975 * ww) {
+		if (showProgressBar && y >= wh - 0.5 * geo.lowerBarHeight && y <= wh - 0.5 * geo.lowerBarHeight + geo.progBarHeight - SCALE(20) && x >= 0.025 * ww && x < 0.975 * ww) {
 			let v = (x - 0.025 * ww) / (0.95 * ww);
 			v = (v < 0) ? 0 : (v < 1) ? v : 1;
 			if (fb.PlaybackTime !== v * fb.PlaybackLength) fb.PlaybackTime = v * fb.PlaybackLength;
@@ -706,16 +808,16 @@ function on_mouse_lbtn_down(x, y, m) {
 			updateHyperlink.click();
 		}
 
-		if ((displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) && playlist.mouse_in_this(x, y)) {
+		if ((displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) && mousePlaylist(x, y)) {
 			trace_call && console.log('Playlist => on_mouse_lbtn_down');
 			if (displayCustomThemeMenu && displayBiography) return;
 			playlist.on_mouse_lbtn_down(x, y, m);
 		}
-		else if (displayLibrary && library.mouse_in_this(x, y)) {
+		else if (displayLibrary && mouseLibrary(x, y)) {
 			trace_call && console.log('Library => on_mouse_lbtn_down');
 			library.on_mouse_lbtn_down(x, y, m);
 		}
-		if (displayBiography && biography.mouse_in_this(x, y)) {
+		if (displayBiography && mouseBiography(x, y)) {
 			trace_call && console.log('Biography => on_mouse_lbtn_down');
 			biography.on_mouse_lbtn_down(x, y, m);
 		}
@@ -746,7 +848,12 @@ function on_mouse_lbtn_down(x, y, m) {
 }
 
 
-/** Called when left mouse button is released from pressed state */
+/**
+ * Called when left mouse button is released from pressed state.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} m The mouse mask.
+ */
 function on_mouse_lbtn_up(x, y, m) {
 	if (topMenu) {
 		topMenu.on_mouse_lbtn_up(x, y, m);
@@ -766,19 +873,18 @@ function on_mouse_lbtn_up(x, y, m) {
 
 	if (!volumeBtn.on_mouse_lbtn_up(x, y, m)) {
 		// Not handled by volumeBtn
-		if (displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary() && !library.mouse_in_this(x, y)) {
+		if (displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary() && mousePlaylist(x, y)) {
 			trace_call && console.log('Playlist => on_mouse_lbtn_up');
 			if (displayCustomThemeMenu && displayBiography) return;
 			playlist.on_mouse_lbtn_up(x, y, m);
 
 			if (!pref.lockPlayerSize) qwr_utils.EnableSizing(m);
 		}
-		else if (displayLibrary) { // && library.mouse_in_this(x, y)) {
+		else if (displayLibrary && mouseLibrary(x, y)) {
 			trace_call && console.log('Library => on_mouse_lbtn_up');
 			library.on_mouse_lbtn_up(x, y, m);
 		}
-		if (displayBiography && state.mouse_x > uiBio.x && state.mouse_x <= uiBio.x + uiBio.w &&
-			state.mouse_y > uiBio.y && state.mouse_y <= uiBio.y + uiBio.h) {
+		if (displayBiography && mouseBiography(x, y)) {
 			trace_call && console.log('Biography => on_mouse_lbtn_up');
 			biography.on_mouse_lbtn_up(x, y, m);
 		}
@@ -792,7 +898,9 @@ function on_mouse_lbtn_up(x, y, m) {
 }
 
 
-/** Called when mouse leaves the window */
+/**
+ * Called when mouse leaves the window.
+ */
 function on_mouse_leave() {
 	const showVolumeBtn = pref.layout === 'compact' ? pref.showVolumeBtn_compact : pref.layout === 'artwork' ? pref.showVolumeBtn_artwork : pref.showVolumeBtn_default;
 
@@ -811,7 +919,12 @@ function on_mouse_leave() {
 }
 
 
-/** Called when middle mouse (wheel) button is double clicked */
+/**
+ * Called when middle mouse (wheel) button is double clicked.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} m The mouse mask.
+ */
 function on_mouse_mbtn_dblclk(x, y, m) {
 	if (displayLibrary) {
 		library.on_mouse_mbtn_dblclk(x, y, m);
@@ -819,7 +932,12 @@ function on_mouse_mbtn_dblclk(x, y, m) {
 }
 
 
-/** Called when middle mouse (wheel) button is pressed */
+/**
+ * Called when middle mouse (wheel) button is pressed.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} m The mouse mask.
+ */
 function on_mouse_mbtn_down(x, y, m) {
 	if (displayLibrary) {
 		library.on_mouse_mbtn_down(x, y, m);
@@ -827,7 +945,12 @@ function on_mouse_mbtn_down(x, y, m) {
 }
 
 
-/** Called when middle mouse (wheel) button is released from pressed state */
+/**
+ * Called when middle mouse (wheel) button is released from pressed state.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} m The mouse mask.
+ */
 function on_mouse_mbtn_up(x, y, m) {
 	if (displayLibrary) {
 		library.on_mouse_mbtn_up(x, y, m);
@@ -838,7 +961,12 @@ function on_mouse_mbtn_up(x, y, m) {
 }
 
 
-/** Called when mouse moves in the panel */
+/**
+ * Called when mouse moves in the panel.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} m The mouse mask.
+ */
 function on_mouse_move(x, y, m) {
 	const showGridTimeline      = pref.layout === 'artwork' ? pref.showGridTimeline_artwork      : pref.showGridTimeline_default;
 	const showTransportControls = pref.layout === 'compact' ? pref.showTransportControls_compact : pref.layout === 'artwork' ? pref.showTransportControls_artwork : pref.showTransportControls_default;
@@ -852,11 +980,11 @@ function on_mouse_move(x, y, m) {
 			topMenu.on_mouse_move(x, y, m);
 		}
 
-		if (pref.seekbar === 'progressbar') {
+		if (progressBar && pref.seekbar === 'progressbar') {
 			progressBar.on_mouse_move(x, y);
-		} else if (pref.seekbar === 'peakmeterbar') {
+		} else if (peakmeterBar && pref.seekbar === 'peakmeterbar') {
 			peakmeterBar.on_mouse_move(x, y, m);
-		} else if (pref.seekbar === 'waveformbar') {
+		} else if (waveformBar && pref.seekbar === 'waveformbar') {
 			waveformBar.on_mouse_move(x, y, m);
 		}
 
@@ -867,7 +995,7 @@ function on_mouse_move(x, y, m) {
 		if (pref.topMenuCompact && !pref.showTopMenuCompact && state.mouse_y > geo.topMenuHeight * 2) { // Start collapse
 			pref.showTopMenuCompact = true;
 			setTimeout(() => {
-				onTopMenuCompact(x, y, true);
+				onTopMenuCompact(true);
 				topMenuCompactExpanded = false;
 			}, 2000);
 		}
@@ -891,7 +1019,7 @@ function on_mouse_move(x, y, m) {
 
 		if (updateHyperlink) hyperlinks_on_mouse_move(updateHyperlink, x, y);
 
-		if ((displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) && playlist.mouse_in_this(x, y)) {
+		if ((displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) && mousePlaylist(x, y)) {
 			trace_call && trace_on_move && console.log('Playlist => on_mouse_move');
 
 			if (mouse_move_suppress.is_supressed(x, y, m)) {
@@ -901,11 +1029,11 @@ function on_mouse_move(x, y, m) {
 			qwr_utils.DisableSizing(m);
 			playlist.on_mouse_move(x, y, m);
 		}
-		else if (displayLibrary && library.mouse_in_this(x, y)) {
+		else if (displayLibrary && mouseLibrary(x, y)) {
 			trace_call && trace_on_move && console.log('Library => on_mouse_move');
 			library.on_mouse_move(x, y, m);
 		}
-		else if (displayBiography && biography.mouse_in_this(x, y)) {
+		else if (displayBiography && mouseBiography(x, y)) {
 			trace_call && trace_on_move && console.log('Biography => on_mouse_move');
 			biography.on_mouse_move(x, y, m);
 		}
@@ -928,9 +1056,14 @@ function on_mouse_move(x, y, m) {
 }
 
 
-/** Called when right mouse button is pressed */
+/**
+ * Called when right mouse button is pressed.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} m The mouse mask.
+ */
 function on_mouse_rbtn_down(x, y, m) {
-	if ((displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) && playlist.mouse_in_this(x, y)) {
+	if ((displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) && mousePlaylist(x, y)) {
 		trace_call && console.log('Playlist => on_mouse_rbtn_down');
 		if (displayCustomThemeMenu && displayBiography) return;
 		playlist.on_mouse_rbtn_down(x, y, m);
@@ -938,7 +1071,16 @@ function on_mouse_rbtn_down(x, y, m) {
 }
 
 
-/** Called when right mouse button is released from pressed state */
+/**
+ * Called when right mouse button is released from pressed state.
+ *
+ * You must return true, if you want to suppress the default context menu.
+ *
+ * Note: left shift + left windows key will bypass this callback and will open default context menu.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} m The mouse mask.
+ */
 function on_mouse_rbtn_up(x, y, m) {
 	if ((fb.IsPlaying && !displayBiography && (pref.layout === 'default' || !displayPlaylistArtworkLayout && !displayLibrary && pref.layout === 'artwork')) &&
 		state.mouse_x > 0 && state.mouse_x <= ((isStreaming || !albumArt && noArtwork || albumArt) && (displayPlaylist || displayLibrary) && pref.layout === 'default' ? ww * 0.5 : !displayPlaylist && !displayLibrary ? ww : albumArtSize.w) &&
@@ -957,7 +1099,7 @@ function on_mouse_rbtn_up(x, y, m) {
 			return true;
 		}
 	}
-	if (fb.IsPlaying && state.mouse_x > 0 && state.mouse_x && state.mouse_y > wh - scaleForDisplay(120) && state.mouse_y) {
+	if (fb.IsPlaying && state.mouse_x > 0 && state.mouse_x && state.mouse_y > wh - SCALE(120) && state.mouse_y) {
 		trace_call && console.log('Lower bar => on_mouse_rbtn_up');
 		const cmac = new ContextMainMenu();
 		qwr_utils.append_lower_bar_context_menu_to(cmac);
@@ -968,16 +1110,16 @@ function on_mouse_rbtn_up(x, y, m) {
 
 		return true;
 	}
-	if ((displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) && playlist.mouse_in_this(x, y)) {
+	if ((displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) && mousePlaylist(x, y)) {
 		trace_call && console.log('Playlist => on_mouse_rbtn_up');
 		if (displayCustomThemeMenu && displayBiography) return;
 		return playlist.on_mouse_rbtn_up(x, y, m);
 	}
-	else if (displayLibrary && library.mouse_in_this(x, y)) {
+	else if (displayLibrary && mouseLibrary(x, y)) {
 		trace_call && console.log('Library => on_mouse_rbtn_up');
 		return library.on_mouse_rbtn_up(x, y, m);
 	}
-	else if (displayBiography && biography.mouse_in_this(x, y)) {
+	else if (displayBiography && mouseBiography(x, y)) {
 		trace_call && console.log('Biography => on_mouse_rbtn_up');
 		return biography.on_mouse_rbtn_up(x, y, m);
 	}
@@ -987,25 +1129,28 @@ function on_mouse_rbtn_up(x, y, m) {
 }
 
 
-/** Called when using the mouse wheel, also used to cycle through album artworks and control the seekbar */
-function on_mouse_wheel(delta) {
+/**
+ * Called when using the mouse wheel, also used to cycle through album artworks and control the seekbar.
+ * @param {number} step The scroll direction: -1 or 1.
+ */
+function on_mouse_wheel(step) {
 	const showVolumeBtn = pref.layout === 'compact' ? pref.showVolumeBtn_compact : pref.layout === 'artwork' ? pref.showVolumeBtn_artwork : pref.showVolumeBtn_default;
 	const pBar = pref.seekbar === 'progressbar';
 
-	if (showVolumeBtn && volumeBtn.on_mouse_wheel(delta)) return;
+	if (showVolumeBtn && volumeBtn.on_mouse_wheel(step)) return;
 
 	if (state.mouse_y >  wh - (pref.layout !== 'default' ? 0.6 : 0.5) * geo.lowerBarHeight - 0.5 * geo.progBarHeight &&
-		state.mouse_y <= wh - (pref.layout !== 'default' ? scaleForDisplay(pBar ? 60 : 55) : scaleForDisplay(pBar ? 35 : 20))) {
-		fb.PlaybackTime = fb.PlaybackTime - delta * pref.progressBarWheelSeekSpeed;
+		state.mouse_y <= wh - (pref.layout !== 'default' ? SCALE(pBar ? 60 : 55) : SCALE(pBar ? 35 : 20))) {
+		fb.PlaybackTime = fb.PlaybackTime - step * pref.progressBarWheelSeekSpeed;
 		refreshSeekbar();
-		if (pref.seekbar === 'peakmeterbar') peakmeterBar.on_mouse_wheel(delta);
+		if (pref.seekbar === 'peakmeterbar') peakmeterBar.on_mouse_wheel(step);
 		return;
 	}
 
 	if (pref.cycleArtMWheel && albumArtList.length > 1 && pref.layout !== 'compact' && !pref.displayLyrics && !displayBiography && !displayLibrary && !displayPlaylistArtworkLayout &&
 		state.mouse_x > albumArtSize.x && state.mouse_x <= albumArtSize.x + albumArtSize.w && state.mouse_y > albumArtSize.y && state.mouse_y <= albumArtSize.y + albumArtSize.h) {
 		on_mouse_wheel_albumart = true;
-		if (delta > 0) { // Prev album art image
+		if (step > 0) { // Prev album art image
 			if (albumArtIndex !== 0) albumArtIndex = (albumArtIndex - 1) % albumArtList.length;
 		} else {		 // Next album art image
 			if (albumArtIndex !== albumArtList.length - 1) albumArtIndex = (albumArtIndex + 1) % albumArtList.length;
@@ -1015,7 +1160,7 @@ function on_mouse_wheel(delta) {
 			newTrackFetchingArtwork = true;
 			getThemeColors(albumArt);
 			initTheme();
-			debugLog('initTheme -> on_mouse_wheel');
+			DebugLog('initTheme -> on_mouse_wheel');
 		}
 		resizeArtwork(true); // Needed to readjust discArt shadow size if artwork size changes
 		lastLeftEdge = 0;
@@ -1025,24 +1170,28 @@ function on_mouse_wheel(delta) {
 	on_mouse_wheel_albumart = false;
 
 	if (pref.displayLyrics && state.mouse_x > albumArtSize.x && state.mouse_x <= albumArtSize.x + albumArtSize.w && state.mouse_y > albumArtSize.y && state.mouse_y <= albumArtSize.y + albumArtSize.h) {
-		lyrics.on_mouse_wheel(delta);
+		lyrics.on_mouse_wheel(step);
 	}
 	else if (displayBiography && state.mouse_x > uiBio.x && state.mouse_x <= uiBio.x + uiBio.w && state.mouse_y > uiBio.y && state.mouse_y <= uiBio.y + uiBio.h) {
 		trace_call && console.log('Biography => on_mouse_wheel');
-		biography.on_mouse_wheel(delta);
+		biography.on_mouse_wheel(step);
 	}
 	else if ((displayPlaylist && !displayLibrary || displayPlaylistArtworkLayout || displayPlaylistLibrary(true)) && state.mouse_y > playlist.y && state.mouse_y <= playlist.y + playlist.h) {
 		trace_call && console.log('Playlist => on_mouse_wheel');
-		playlist.on_mouse_wheel(delta);
+		playlist.on_mouse_wheel(step);
 	}
 	else if (displayLibrary && state.mouse_y > ui.y && state.mouse_y <= ui.y + ui.h) {
 		trace_call && console.log('Library => on_mouse_wheel');
-		library.on_mouse_wheel(delta);
+		library.on_mouse_wheel(step);
 	}
 }
 
 
-/** Called in other panels after window.NotifyOthers is executed */
+/**
+ * Called in other panels after window.NotifyOthers is executed.
+ * @param {string} name
+ * @param {*} info
+ */
 function on_notify_data(name, info) {
 	if (displayPlaylist || displayPlaylistArtworkLayout) {
 		trace_call && console.log('Playlist => on_notify_data');
@@ -1059,7 +1208,11 @@ function on_notify_data(name, info) {
 }
 
 
-/** Called when Per-track dynamic info (stream track titles etc) changes. Happens less often than on_playback_dynamic_info */
+/**
+ * Called when Per-track dynamic info (stream track titles etc) changes.
+ *
+ * Happens less often than on_playback_dynamic_info.
+ */
 function on_playback_dynamic_info_track() {
 	// How frequently does this get called?
 	const metadb = fb.IsPlaying ? fb.GetNowPlaying() : null;
@@ -1077,20 +1230,28 @@ function on_playback_dynamic_info_track() {
 }
 
 
-/** Called when playback order is changed via the transport playback order button or foobar's playback menu */
-function on_playback_order_changed(thisPlaybackOrder) {
+/**
+ * Called when playback order is changed via the transport playback order button or foobar's playback menu.
+ * @param {*} pbo The playback order has following settings:
+ * - 0 - Default.
+ * - 1 - Repeat (Playlist).
+ * - 2 - Repeat (Track).
+ * - 3 - Random, 4 Shuffle (tracks).
+ * - 5 - Shuffle (albums).
+ * - 6 - Shuffle (folders).
+ */
+function on_playback_order_changed(pbo) {
 	// Repaint playback order
-	if (thisPlaybackOrder !== lastPlaybackOrder) {
-		debugLog('Repainting on_playback_order_changed');
+	if (pbo !== lastPlaybackOrder) {
+		DebugLog('Repainting on_playback_order_changed');
 		window.RepaintRect(0.5 * ww, wh - geo.lowerBarHeight, 0.5 * ww, geo.lowerBarHeight);
 	}
-	lastPlaybackOrder = thisPlaybackOrder;
+	lastPlaybackOrder = pbo;
 
 	// Link foobar's playback order menu functions with playback order button
 	const showTransportControls = pref.layout === 'compact' ? pref.showTransportControls_compact : pref.layout === 'artwork' ? pref.showTransportControls_artwork : pref.showTransportControls_default;
 	const showPlaybackOrderBtn  = pref.layout === 'compact' ? pref.showPlaybackOrderBtn_compact  : pref.layout === 'artwork' ? pref.showPlaybackOrderBtn_artwork  : pref.showPlaybackOrderBtn_default;
 	const showBtns = showTransportControls && showPlaybackOrderBtn;
-	pbo = thisPlaybackOrder;
 
 	if (pbo === PlaybackOrder.Default) {
 		pref.playbackOrder = 'Default';
@@ -1107,38 +1268,47 @@ function on_playback_order_changed(thisPlaybackOrder) {
 }
 
 
-/** Called when pausing current playing track */
-function on_playback_pause(pausing) {
-	refreshPlayButton();
-	if (pausing || fb.PlaybackLength < 0) {
+/**
+ * Called when pausing current playing track.
+ * @param {boolean} state
+ */
+function on_playback_pause(state) {
+	updatePlayButton();
+	if (state || fb.PlaybackLength < 0) {
 		clearInterval(progressBarTimer);
 		clearInterval(discArtRotationTimer);
-		window.RepaintRect(0, geo.topMenuHeight, Math.max(albumArtSize.x, scaleForDisplay(40)), wh - geo.topMenuHeight - geo.lowerBarHeight);
+		window.RepaintRect(0, geo.topMenuHeight, Math.max(albumArtSize.x, SCALE(40)), wh - geo.topMenuHeight - geo.lowerBarHeight);
 	}
 	else { // Unpausing
 		clearInterval(progressBarTimer); // Clear to avoid multiple progressTimers which can happen depending on the playback state when theme is loaded
-		debugLog(`on_playback_pause: creating refreshSeekbar() interval with delay = ${progressBarTimerInterval}`);
+		DebugLog(`on_playback_pause: creating refreshSeekbar() interval with delay = ${progressBarTimerInterval}`);
 		progressBarTimer = setInterval(() => {
 			refreshSeekbar();
 		}, progressBarTimerInterval || 1000);
-		if (discArt && pref.spinDiscArt) setupRotationTimer();
+		if (discArt && pref.spinDiscArt) setDiscArtRotationTimer();
 	}
 
 	pauseBtn.repaint();
 
 	if ((albumArt || noAlbumArtStub) && pref.displayLyrics) { // If we are displaying lyrics we need to refresh all the lyrics to avoid tearing at the edges of the pause button
-		lyrics.on_playback_pause(pausing);
+		lyrics.on_playback_pause(state);
 	}
 	if (displayPlaylist || displayPlaylistArtworkLayout) {
-		playlist.on_playback_pause(pausing);
+		playlist.on_playback_pause(state);
 	}
 	if (displayBiography) {
-		biography.on_playback_pause(pausing);
+		biography.on_playback_pause(state);
 	}
 }
 
 
-/** Called when adding new playlist tracks in queue */
+/**
+ * Called when adding new playlist tracks in queue.
+ * @param {number} origin The parameter has following settings:
+ * - 0 - User added.
+ * - 1 - User removed.
+ * - 2 - Playback advance.
+ */
 function on_playback_queue_changed(origin) {
 	trace_call && console.log('Playlist => on_playback_queue_changed');
 	playlist.on_playback_queue_changed(origin);
@@ -1146,7 +1316,9 @@ function on_playback_queue_changed(origin) {
 }
 
 
-/** Called when playback time is being seeked, float value in seconds */
+/**
+ * Called when playback time is being seeked, float value in seconds.
+ */
 function on_playback_seek() {
 	if (pref.seekbar === 'progressbar') {
 		progressBar.progressMoved = true;
@@ -1165,36 +1337,54 @@ function on_playback_seek() {
 }
 
 
-/** Called when playback process is being initialized, on_playback_new_track should be called soon after this when first file is successfully opened for decoding */
+/**
+ * Called when playback process is being initialized, on_playback_new_track should be called soon after this when first file is successfully opened for decoding.
+ * @param {number} cmd The command has following settings:
+ * - 0 - Default.
+ * - 1 - Play.
+ * - 2 - Plays the next track from the current playlist according to the current playback order.
+ * - 3 - Plays the previous track from the current playlist according to the current playback order.
+ * - 4 - settrack (internal fb2k value).
+ * - 5 - Plays a random track from the current playlist.
+ * - 6 - resume (internal fb2k value).
+ * @param {boolean} is_paused
+ */
 function on_playback_starting(cmd, is_paused) {
 	if (settings.hideCursor) {
 		window.SetCursor(-1); // Hide cursor
 	}
-	refreshPlayButton();
+	updatePlayButton();
 }
 
 
-/** Called when playback is stopped */
+/**
+ * Called when playback is stopped.
+ * @param {number} reason The playback stop has following settings:
+ * - 0 - Invoked by user.
+ * - 1 - End of file.
+ * - 2 - Starting another track.
+ * - 3 - Fb2k is shutting down.
+ */
 function on_playback_stop(reason) {
-	if (reason !== 2) { // 2 = Starting_another
+	if (reason !== 2) {
 		// Clear all variables and repaint
 		str = clearUIVariables();
-		debugLog('Repainting on_playback_stop:', reason);
+		DebugLog('Repainting on_playback_stop:', reason);
 		repaintWindow();
 		isPlayingCD = false;
 		isStreaming = false;
-		lastFolder = '';
+		lastAlbumFolder = '';
 		btns.playbackTime = '';
-		lastDiscNumber = '0';
+		lastAlbumDiscNumber = '0';
 		recordLabels = [];
 		recordLabelsInverted = [];
-		refreshPlayButton();
+		updatePlayButton();
 		// * Keep Reborn/Random colors when they are not too bright or too dark otherwise reset colors to default
 		if (['reborn', 'random'].includes(pref.theme) && ((colBrightness < 20 || imgBrightness < 20) || (colBrightness > 240 || imgBrightness > 240)) ||
 			!['reborn', 'random'].includes(pref.theme)) {
 			setThemeColors();
 			initTheme();
-			debugLog('initTheme -> on_playback_stop');
+			DebugLog('initTheme -> on_playback_stop');
 		}
 	}
 
@@ -1204,8 +1394,8 @@ function on_playback_stop(reason) {
 	clearInterval(progressBarTimer);
 	clearTimeout(albumArtTimeout);
 
-	if (albumArt && ((pref.cycleArt && albumArtIndex !== 0) || lastFolder === '')) {
-		debugLog('disposing artwork');
+	if (albumArt && ((pref.cycleArt && albumArtIndex !== 0) || lastAlbumFolder === '')) {
+		DebugLog('disposing artwork');
 		albumArt = null;
 		albumArtScaled = null;
 	}
@@ -1236,7 +1426,11 @@ function on_playback_stop(reason) {
 }
 
 
-/** Called when clicking on playlist items that are visible in the playlist panel */
+/**
+ * Called when clicking on playlist items that are visible in the playlist panel.
+ * @param {number} playlistIndex
+ * @param {number} playlistItemIndex
+ */
 function on_playlist_item_ensure_visible(playlistIndex, playlistItemIndex) {
 	if (displayPlaylist || displayPlaylistArtworkLayout) {
 		trace_call && console.log('Playlist => on_playlist_item_ensure_visible');
@@ -1245,7 +1439,10 @@ function on_playlist_item_ensure_visible(playlistIndex, playlistItemIndex) {
 }
 
 
-/** Called when adding tracks to the playlist */
+/**
+ * Called when adding tracks to the playlist.
+ * @param {number} playlistIndex
+ */
 function on_playlist_items_added(playlistIndex) {
 	if (playlistHistory) {
 		playlistHistory.playlistAltered(PlaylistMutation.Added);
@@ -1265,7 +1462,10 @@ function on_playlist_items_added(playlistIndex) {
 }
 
 
-/** Called when removing tracks from the playlist */
+/**
+ * Called when removing tracks from the playlist.
+ * @param {number} playlistIndex
+ */
 function on_playlist_items_removed(playlistIndex) {
 	if (playlistHistory) {
 		playlistHistory.playlistAltered(PlaylistMutation.Removed);
@@ -1285,7 +1485,11 @@ function on_playlist_items_removed(playlistIndex) {
 }
 
 
-/** Called when reordering tracks in the playlist, i.e by dragging them up or down */
+/**
+ * Called when reordering tracks in the playlist, i.e by dragging them up or down.
+ * Changes selection too. Doesn't actually change the set of items that are selected or item having focus, just changes their order.
+ * @param {number} playlistIndex
+ */
 function on_playlist_items_reordered(playlistIndex) {
 	if (playlistHistory) {
 		playlistHistory.playlistAltered(PlaylistMutation.Reordered);
@@ -1301,7 +1505,9 @@ function on_playlist_items_reordered(playlistIndex) {
 }
 
 
-/** Called as a workaround for some 3rd party playlist viewers not working with on_selection_changed */
+/**
+ * Called as a workaround for some 3rd party playlist viewers not working with on_selection_changed.
+ */
 function on_playlist_items_selection_change() {
 	if (displayPlaylist || displayPlaylistArtworkLayout) {
 		trace_call && console.log('Playlist => on_playlist_items_selection_change');
@@ -1310,7 +1516,9 @@ function on_playlist_items_selection_change() {
 }
 
 
-/** Called when switching the current active playlist to another */
+/**
+ * Called when switching the current active playlist to another.
+ */
 function on_playlist_switch() {
 	if (playlistHistory) {
 		playlistHistory.playlistAltered(PlaylistMutation.Switch);
@@ -1330,7 +1538,9 @@ function on_playlist_switch() {
 }
 
 
-/** Called when playlists are added/removed/reordered/renamed or a playlist's lock status changes */
+/**
+ * Called when playlists are added/removed/reordered/renamed or a playlist's lock status changes.
+ */
 function on_playlists_changed() {
 	if (playlistHistory) {
 		playlistHistory.reset(); // When playlists are changed, indexes no longer apply, and so we have to wipe history
@@ -1350,7 +1560,9 @@ function on_playlists_changed() {
 }
 
 
-/** Called when script is reloaded via context menu > Reload or script is changed via panel menu > Configure or fb2k is exiting normally */
+/**
+ * Called when script is reloaded via context menu > Reload or script is changed via panel menu > Configure or fb2k is exiting normally.
+ */
 function on_script_unload() {
 	console.log('Unloading Script');
 	waveformBar.on_script_unload();
@@ -1365,8 +1577,57 @@ function on_script_unload() {
 }
 
 
-/** Called when volume changes, i.e the volume bar in the volume button */
+/**
+ * Called when volume changes, i.e the volume bar in the volume button.
+ * @param {float} val The volume level in dB. Minimum is -100. Maximum is 0.
+ */
 function on_volume_change(val) {
 	trace_call && console.log('Volume bar => on_volume_change');
 	volumeBtn.on_volume_change(val);
+}
+
+
+//////////////////////////
+// * CUSTOM CALLBACKS * //
+//////////////////////////
+/**
+ * Checks if the mouse is within the boundaries of the Playlist.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @returns {boolean} True or false.
+ */
+function mousePlaylist(x, y) {
+	if (x >= playlist.x && x < playlist.x + playlist.w &&
+		y >= (pref.layout !== 'default' ? playlist.y - SCALE(g_properties.row_h) : playlist.y) && y < playlist.y + playlist.h) {
+		trace_call && trace_on_move && console.log('Playlist => mousePlaylist');
+		return true;
+	}
+}
+
+
+/**
+ * Checks if the mouse is within the boundaries of the Library.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @returns {boolean} True or false.
+ */
+function mouseLibrary(x, y) {
+	if (x >= ui.x && x < ui.x + ui.w && y >= ui.y && y < ui.y + ui.h) {
+		trace_call && trace_on_move && console.log('Library => mouseLibrary');
+		return true;
+	}
+}
+
+
+/**
+ * Checks if the mouse is within the boundaries of the Biography.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @returns {boolean} True or false.
+ */
+function mouseBiography(x, y) {
+	if (x >= uiBio.x && x < uiBio.x + uiBio.w && y >= uiBio.y && y < uiBio.y + uiBio.h) {
+		trace_call && trace_on_move && console.log('Biography => mouseBiography');
+		return true;
+	}
 }

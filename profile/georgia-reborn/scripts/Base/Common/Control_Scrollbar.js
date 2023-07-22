@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-03                                          * //
+// * Last change:    2023-07-22                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,6 +16,9 @@
 /////////////////////////////
 // * PLAYLIST PROPERTIES * //
 /////////////////////////////
+/**
+ * Adds additional system playlist panel properties to the SMP properties.
+ */
 g_properties.add_properties(
 	{
 		wheel_scroll_page: ['Panel Playlist - User: Scrollbar.wheel_whole_page', false]
@@ -26,11 +29,166 @@ g_properties.add_properties(
 ////////////////////////////
 // * PLAYLIST SCROLLBAR * //
 ////////////////////////////
-/** @constructor */
+/**
+ * Creates the scrollbar with the ScrollBarPart object and handles scrollbar events.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} w The width.
+ * @param {number} h The height.
+ * @param {number} row_h The height of the row that this scrollbar occupies.
+ * @param {boolean} fn_redraw Called to redraw the list on the next draw.
+ * @returns {ScrollBar} An instance of the ScrollBar.
+ * @class
+ */
 function ScrollBar(x, y, w, h, row_h, fn_redraw) {
-	this.paint = function (gr) {
-		gr.SetSmoothingMode(SmoothingMode.None); // Disable antialiasing, otherwise there will be an ugly 1px outline in style blending
+	// * CONSTRUCTOR * //
+	// Public:
+	this.x = x;
+	this.y = y;
+	this.w = w;
+	this.h = h;
 
+	this.row_h = row_h;
+	this.rows_drawn = 0; // Visible list size in rows (might be float)
+	this.row_count = 0; // All rows in associated list
+
+	this.fn_redraw = fn_redraw; // Callback for list redraw
+	this.draw_timer = false;
+	this.sb_parts = {};
+
+	// Buttons
+	this.btn_h = 0;
+
+	// Thumb
+	this.thumb_h = 0;
+	this.thumb_y = 0; // Upper y
+
+	this.in_sbar = false;
+
+	this.b_is_dragging = false;
+	this.is_scrolled_down = false;
+	this.is_scrolled_up = true;
+	this.drag_distance_per_row = 0; // How far should the thumb move, when the list shifts by one row
+	this.initial_drag_y = 0; // Dragging
+
+	this.scroll = 0; // Lines shifted in list (float)
+	/** @type {number} */ this.desiredScrollPosition = undefined;
+	/** @type {number} */ this.lastScrollPosition = undefined;
+
+	this.wheel_scroll_page = g_properties.wheel_scroll_page;
+
+	this.scrollbar_h = 0; // space between sb_parts (arrows)
+	this.scrollable_lines = 0; // not visible rows (row_count - rows_drawn)
+	this.scrollbar_travel = 0; // space for thumb to travel (scrollbar_h - thumb_h)
+
+	// private:
+	const that = this;
+
+	let scrollbar_images = {};
+
+	let cur_part_key = null;
+
+	// Timers
+	let throttled_scroll_y = 0;
+	let timer_shift;
+	let timer_shift_count;
+	let timer_stop_y = -1;
+	/** @type {number} */
+	let smoothScrollTimer = null;
+
+	// Helpers
+
+	/**
+	 * Applies an easing effect to a given value.
+	 * @param {number} x The absolute progress of the animation in the bounds of 0 (beginning of the animation) and 1 (end of animation).
+	 * @returns {number} The interpolated value.
+	 */
+	const easeOut = (x) => 1 - Math.pow(1 - x, 3);
+
+	/**
+	 * Scrolls to the specified scroll position throttled.
+	 */
+	const throttled_scroll_to = Throttle(() => {
+		this.smooth_scroll_to((throttled_scroll_y - this.btn_h) / this.drag_distance_per_row);
+	}, 1000 / 60);
+
+	/**
+	 * The alpha timer is used to animate the alpha values for hover effects of the scrollbar parts.
+	 */
+	const alpha_timer = new function () {
+		/**
+		 * Starts the alpha timer.
+		 */
+		this.start = function () {
+			const hoverInStep = 50;
+			const hoverOutStep = 15;
+			const downOutStep = 50;
+
+			if (!alpha_timer_internal) {
+				alpha_timer_internal = setInterval(() => {
+					for (const part in that.sb_parts) {
+						const item = that.sb_parts[part];
+						switch (item.state) {
+							case 'normal':
+								item.hover_alpha = Math.max(0, item.hover_alpha -= hoverOutStep);
+								item.hot_alpha = Math.max(0, item.hot_alpha -= hoverOutStep);
+								item.pressed_alpha = part === 'thumb' ? Math.max(0, item.pressed_alpha -= hoverOutStep) : Math.max(0, item.pressed_alpha -= downOutStep);
+								break;
+							case 'hover':
+								item.hover_alpha = Math.min(255, item.hover_alpha += hoverInStep);
+								item.hot_alpha = Math.max(0, item.hot_alpha -= hoverOutStep);
+								item.pressed_alpha = Math.max(0, item.pressed_alpha -= downOutStep);
+								break;
+							case 'pressed':
+								item.hover_alpha = 0;
+								item.hot_alpha = 0;
+								item.pressed_alpha = 255;
+								break;
+							case 'hot':
+								item.hover_alpha = Math.max(0, item.hover_alpha -= hoverOutStep);
+								item.hot_alpha = Math.min(255, item.hot_alpha += hoverInStep);
+								item.pressed_alpha = Math.max(0, item.pressed_alpha -= downOutStep);
+								break;
+						}
+						// console.log(i, item.state, item.hover_alpha , item.pressed_alpha , item.hot_alpha);
+						// item.repaint();
+					}
+
+					that.repaint();
+
+					const alpha_in_progress = Object.values(that.sb_parts).some((item) =>
+						(item.hover_alpha > 0 && item.hover_alpha < 255)
+						|| (item.pressed_alpha > 0 && item.pressed_alpha < 255)
+						|| (item.hot_alpha > 0 && item.hot_alpha < 255));
+
+					if (!alpha_in_progress) {
+						this.stop();
+					}
+				}, 25);
+			}
+		};
+
+		/**
+		 * Stops and clears the alpha timer.
+		 */
+		this.stop = () => {
+			if (alpha_timer_internal) {
+				clearInterval(alpha_timer_internal);
+				alpha_timer_internal = null;
+			}
+		};
+
+		let alpha_timer_internal = null;
+	}();
+
+	// * METHODS * //
+
+	/**
+	 * Draws the scrollbar.
+	 * @param {GdiGraphics} gr
+	 */
+	this.paint = function (gr) {
+		gr.SetSmoothingMode(SmoothingMode.None); // Disable anti-aliasing, otherwise there will be an ugly 1px outline in style blending
 
 		for (const part in this.sb_parts) {
 			const item = this.sb_parts[part];
@@ -53,10 +211,16 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		}
 	};
 
+	/**
+     * Updates the scrollbar via repaint.
+     */
 	this.repaint = function () {
-		window.RepaintRect(this.x - (is_4k ? 13 : 6), this.y, this.w, this.h);
+		window.RepaintRect(this.x - (RES_4K ? 13 : 6), this.y, this.w, this.h);
 	};
 
+	/**
+	 * Flushes the scrollbar position.
+	 */
 	this.flush = () => {
 		if (this.desiredScrollPosition !== undefined) {
 			this.scroll_to(this.desiredScrollPosition);
@@ -64,6 +228,9 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		}
 	};
 
+	/**
+	 * Resets the current scroll of scrollbar.
+	 */
 	this.reset = () => {
 		this.flush(); // throttled_scroll_to.flush();
 		alpha_timer.stop();
@@ -73,10 +240,21 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		this.calc_params();
 	};
 
+	/**
+	 * Checks if the mouse is within the boundaries of the scrollbar.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @return {boolean} True or false.
+	 */
 	this.trace = function (x, y) {
-		return x + scaleForDisplay(10) > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
+		return x + SCALE(10) > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
 	};
 
+	/**
+	 * Sets the window parameters for the scrollbar.
+	 * @param {number} rows_drawn The number of rows drawn.
+	 * @param {number} row_count The total number of rows.
+	 */
 	this.set_window_param = (rows_drawn, row_count) => {
 		this.rows_drawn = rows_drawn;
 		this.row_count = row_count;
@@ -84,11 +262,14 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		this.create_parts();
 	};
 
+	/**
+	 * Calculates the scrollbar parameters.
+	 */
 	this.calc_params = () => {
 		this.btn_h = this.w;
 		// * Draw info
 		this.scrollbar_h = this.h - this.btn_h * 2;
-		this.thumb_h = Math.max(Math.round(this.scrollbar_h * this.rows_drawn / this.row_count), is_4k ? 45 : 30);
+		this.thumb_h = Math.max(Math.round(this.scrollbar_h * this.rows_drawn / this.row_count), RES_4K ? 45 : 30);
 		this.scrollbar_travel = this.scrollbar_h - this.thumb_h;
 		// * Scrolling info
 		this.scrollable_lines = this.row_count - this.rows_drawn;
@@ -96,20 +277,25 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		this.drag_distance_per_row = this.scrollbar_travel / this.scrollable_lines;
 	};
 
+	/**
+	 * Creates the button and thumb scrollbar parts.
+	 */
 	this.create_parts = () => {
 		create_dynamic_scrollbar_images(this.w, this.thumb_h);
 
 		const { x, y, w, h } = this;
 
 		this.sb_parts = {
-			lineUp:   new ScrollBarPart(x - (is_4k ? 13 : 6), y, w, this.btn_h, scrollbar_images.lineUp),
-			thumb:    new ScrollBarPart(x, y + this.thumb_y, w - scaleForDisplay(14), this.thumb_h, scrollbar_images.thumb),
-			lineDown: new ScrollBarPart(x - (is_4k ? 13 : 6), y + h - this.btn_h, w, this.btn_h, scrollbar_images.lineDown)
+			lineUp:   new ScrollBarPart(x - (RES_4K ? 13 : 6), y, w, this.btn_h, scrollbar_images.lineUp),
+			thumb:    new ScrollBarPart(x, y + this.thumb_y, w - SCALE(14), this.thumb_h, scrollbar_images.thumb),
+			lineDown: new ScrollBarPart(x - (RES_4K ? 13 : 6), y + h - this.btn_h, w, this.btn_h, scrollbar_images.lineDown)
 		};
 	};
 
-	/** @type {number} */ this.desiredScrollPosition = undefined;
-	/** @type {number} */ this.lastScrollPosition = undefined;
+	/**
+	 * Handles mouse wheel scrolling events.
+	 * @param {number} wheel_direction The up or down wheel direction.
+	 */
 	this.wheel = (wheel_direction) => {
 		const direction = -wheel_direction;
 
@@ -135,6 +321,9 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		}
 	};
 
+	/**
+	 * Handles mouse leaving events over each scrollbar part.
+	 */
 	this.parts_leave = () => {
 		this.in_sbar = false;
 		cur_part_key = null;
@@ -145,6 +334,9 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		alpha_timer.start();
 	};
 
+	/**
+	 * Handles mouse leaving events of the scrollbar.
+	 */
 	this.leave = function () {
 		if (this.b_is_dragging) {
 			return;
@@ -153,8 +345,14 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		this.parts_leave();
 	};
 
+	/**
+	 * Handles mouse movement of the scrollbar parts.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @return {string}
+	 */
 	this.parts_move = (x, y) => {
-		const hover_part_key = findKey(this.sb_parts, (item) => item.trace(x, y));
+		const hover_part_key = FindKey(this.sb_parts, (item) => item.trace(x, y));
 
 		const changeHotStatus = this.trace(x, y) !== this.in_sbar;
 		if (changeHotStatus) {
@@ -207,6 +405,12 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		return cur_part_key;
 	};
 
+	/**
+	 * Handles mouse moving events over the scrollbar.
+	 * @param {number} p_x The x-coordinate.
+	 * @param {number} p_y The y-coordinate.
+	 * @return {string}
+	 */
 	this.move = function (p_x, p_y) {
 		if (this.b_is_dragging) {
 			throttled_scroll_y = p_y - this.y - this.initial_drag_y;
@@ -218,6 +422,9 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		this.parts_move(p_x, p_y);
 	};
 
+	/**
+	 * Handles left mouse button down events on the scrollbar.
+	 */
 	this.parts_lbtn_down = function () {
 		if (cur_part_key) {
 			this.sb_parts[cur_part_key].cs('pressed');
@@ -225,6 +432,11 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		}
 	};
 
+	/**
+	 * Handles left mouse button up events on the scrollbar.
+	 * @param {number} p_x The x-coordinate.
+	 * @param {number} p_y The y-coordinate.
+	 */
 	this.lbtn_dn = (p_x, p_y) => {
 		if (!this.trace(p_x, p_y) || this.row_count <= this.rows_drawn) {
 			return;
@@ -258,6 +470,11 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		}
 	};
 
+	/**
+	 * Handles left mouse button down events on the scrollbar parts.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 */
 	this.parts_lbtn_up = function (x, y) {
 		if (!cur_part_key || this.sb_parts[cur_part_key].state !== 'pressed') {
 			return false;
@@ -271,6 +488,11 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		return true;
 	};
 
+	/**
+	 * Handles left mouse button up events on the scrollbar.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 */
 	this.lbtn_up = (x, y) => {
 		this.parts_lbtn_up(x, y);
 		if (this.b_is_dragging) {
@@ -282,28 +504,42 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		this.stop_shift_timer();
 	};
 
+	/**
+	 * Scrolls to the start of the list.
+	 */
 	this.scroll_to_start = function () {
 		this.smooth_scroll_to(0);
 	};
 
+	/**
+	 * Scrolls one line up or down.
+	 * @param {number} direction The up or down scroll direction.
+	 */
 	this.shift_line = function (direction) {
 		const newScroll = this.nearestScroll(direction);
 		this.smooth_scroll_to(newScroll);
 	};
 
+	/**
+	 * Scrolls one page up or down.
+	 * @param {number} direction The up or down scroll direction.
+	 */
 	this.shift_page = function (direction) {
 		const newScroll = this.nearestScroll(direction);
 		this.smooth_scroll_to(newScroll + direction * Math.floor(Math.max(this.rows_drawn - 1, 1)));
 	};
 
+	/**
+	 * Scrolls to the end of the list.
+	 */
 	this.scroll_to_end = function () {
 		this.smooth_scroll_to(this.scrollable_lines);
 	};
 
 	/**
-	 * This method inserts a delay (8x45ms) when holding the mouse btn down before scrolling starts,
-	 * after the first scroll event happens.
-	 * @param {number} shift_amount number of rows to shift
+	 * Starts a timer to shift the scrollbar. This method inserts a delay (8x45ms) when holding
+	 * the mouse btn down before scrolling starts, after the first scroll event happens.
+	 * @param {number} shift_amount The number of rows to shift.
 	 */
 	this.start_shift_timer = (shift_amount) => {
 		if (timer_shift == null) {
@@ -337,6 +573,9 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		}
 	};
 
+	/**
+	 * Stops the timer that is shifting the scrollbar.
+	 */
 	this.stop_shift_timer = () => {
 		if (timer_shift != null) {
 			clearInterval(timer_shift);
@@ -345,6 +584,11 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		timer_stop_y = -1;
 	};
 
+	/**
+	 * Calculates the nearest scroll position to the current position.
+	 * @param {number} direction The direction of the scroll.
+	 * @returns {number} The nearest scroll position.
+	 */
 	this.nearestScroll = function (direction) {
 		const scrollShift = this.scroll - Math.floor(this.scroll);
 		const drawnShift = 1 - (this.rows_drawn - Math.floor(this.rows_drawn));
@@ -362,29 +606,18 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		return newScroll;
 	};
 
-	// TODO: remove after compatibility fixes
-	// this.check_scroll = function (new_scroll, set_scroll_only) {
-	// 	this.scroll_to(new_scroll, set_scroll_only);
-	// };
-
 	/**
-	 * @param {number} x represents the absolute progress of the animation in the bounds of 0 (beginning of the animation) and 1 (end of animation).
-	 * @returns {number}
+	 * Stops the scrollbar scroll and clears the timer.
 	 */
-	const easeOut = (x) => 1 - Math.pow(1 - x, 3);
-
-	let smoothScrollTimer = null;
-
 	this.stopScrolling = () => {
 		clearInterval(smoothScrollTimer);
 		smoothScrollTimer = null;
 	};
 
 	/**
-	 * Scrolls to desired row over 400ms. Can be called repeatedly (during wheel or holding down arrows)
-	 * to update desired position.
-	 * @param {number} newPosition row position to scroll to
-	 * @returns
+	 * Scrolls to desired row over 400ms. Can be called repeatedly (during wheel or holding down arrows) to update the desired position.
+	 * @param {number} newPosition The new row position to scroll to.
+	 * @returns {number} The new scroll position.
 	 */
 	this.smooth_scroll_to = (newPosition) => {
 		if (!pref.playlistSmoothScrolling) {
@@ -423,6 +656,11 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		scrollFunc();   // Want to immediately start scroll
 	};
 
+	/**
+	 * Scrolls to the specified scroll position.
+	 * @param {number} new_position The new row position to scroll to.
+	 * @param {boolean} scroll_wo_redraw Calls a redraw to update the scrollbar.
+	 */
 	this.scroll_to = (new_position, scroll_wo_redraw = false) => {
 		const s = Math.max(0, Math.min(new_position, this.scrollable_lines));
 		const invalidPos = (s || new_position) > this.scrollable_lines; // Prevent crash
@@ -439,6 +677,10 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		}
 	};
 
+	/**
+	 * Sets the x-coordinate of the scrollbar.
+	 * @param {number} x The x-coordinate.
+	 */
 	this.set_x = (x) => {
 		this.x = x;
 		for (const part in this.sb_parts) {
@@ -447,10 +689,10 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 	};
 
 	// private:
-	const throttled_scroll_to = throttle(() => {
-		this.smooth_scroll_to((throttled_scroll_y - this.btn_h) / this.drag_distance_per_row);
-	}, 1000 / 60);
 
+	/**
+	 * Creates images for the scrollbar up and down buttons.
+	 */
 	function create_scrollbar_images() {
 		if (scrollbar_images.length > 0) {
 			return;
@@ -518,7 +760,7 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 
 				const btn_format = g_string_format.h_align_center | g_string_format.v_align_far;
 				if (i === 'lineDown') {
-					grClip.DrawString(item.ico, item.font, icoColor, 0, is_4k ? -25 : -12, w, h, btn_format);
+					grClip.DrawString(item.ico, item.font, icoColor, 0, RES_4K ? -25 : -12, w, h, btn_format);
 				}
 				else if (i === 'lineUp') {
 					grClip.DrawString(item.ico, item.font, icoColor, 0, 0, w, h, btn_format);
@@ -538,6 +780,11 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 		}
 	}
 
+	/**
+	 * Creates images for the scrollbar thumb.
+	 * @param {number} thumb_w The width of the scrollbar thumb.
+	 * @param {number} thumb_h The height of the scrollbar thumb.
+	 */
 	function create_dynamic_scrollbar_images(thumb_w, thumb_h) {
 		const thumb_colors =
 			[
@@ -570,118 +817,6 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 			};
 	}
 
-	// public:
-	this.x = x;
-	this.y = y;
-	this.w = w;
-	this.h = h;
-
-	this.row_h = row_h;
-	this.rows_drawn = 0; // Visible list size in rows (might be float)
-	this.row_count = 0; // All rows in associated list
-
-	this.fn_redraw = fn_redraw; // Callback for list redraw
-
-	this.draw_timer = false;
-
-	this.sb_parts = {};
-
-	// * Btns
-	this.btn_h = 0;
-
-	// * Thumb
-	this.thumb_h = 0;
-	this.thumb_y = 0; // Upper y
-
-	this.in_sbar = false;
-
-	this.b_is_dragging = false;
-	this.is_scrolled_down = false;
-	this.is_scrolled_up = true;
-	this.drag_distance_per_row = 0; // How far should the thumb move, when the list shifts by one row
-	this.initial_drag_y = 0; // Dragging
-
-	this.scroll = 0; // Lines shifted in list (float)
-
-	this.wheel_scroll_page = g_properties.wheel_scroll_page;
-
-	this.scrollbar_h = 0; // space between sb_parts (arrows)
-	this.scrollable_lines = 0; // not visible rows (row_count - rows_drawn)
-	this.scrollbar_travel = 0; // space for thumb to travel (scrollbar_h - thumb_h)
-
-	// private:
-	const that = this;
-
-	let scrollbar_images = {};
-
-	let cur_part_key = null;
-
-	// * Timers
-	let throttled_scroll_y = 0;
-	let timer_shift;
-	let timer_shift_count;
-	let timer_stop_y = -1;
-
-	const alpha_timer = new function () {
-		this.start = function () {
-			const hoverInStep = 50;
-			const hoverOutStep = 15;
-			const downOutStep = 50;
-
-			if (!alpha_timer_internal) {
-				alpha_timer_internal = setInterval(() => {
-					for (const part in that.sb_parts) {
-						const item = that.sb_parts[part];
-						switch (item.state) {
-							case 'normal':
-								item.hover_alpha = Math.max(0, item.hover_alpha -= hoverOutStep);
-								item.hot_alpha = Math.max(0, item.hot_alpha -= hoverOutStep);
-								item.pressed_alpha = part === 'thumb' ? Math.max(0, item.pressed_alpha -= hoverOutStep) : Math.max(0, item.pressed_alpha -= downOutStep);
-								break;
-							case 'hover':
-								item.hover_alpha = Math.min(255, item.hover_alpha += hoverInStep);
-								item.hot_alpha = Math.max(0, item.hot_alpha -= hoverOutStep);
-								item.pressed_alpha = Math.max(0, item.pressed_alpha -= downOutStep);
-								break;
-							case 'pressed':
-								item.hover_alpha = 0;
-								item.hot_alpha = 0;
-								item.pressed_alpha = 255;
-								break;
-							case 'hot':
-								item.hover_alpha = Math.max(0, item.hover_alpha -= hoverOutStep);
-								item.hot_alpha = Math.min(255, item.hot_alpha += hoverInStep);
-								item.pressed_alpha = Math.max(0, item.pressed_alpha -= downOutStep);
-								break;
-						}
-						// console.log(i, item.state, item.hover_alpha , item.pressed_alpha , item.hot_alpha);
-						// item.repaint();
-					}
-
-					that.repaint();
-
-					const alpha_in_progress = Object.values(that.sb_parts).some((item) =>
-						(item.hover_alpha > 0 && item.hover_alpha < 255)
-						|| (item.pressed_alpha > 0 && item.pressed_alpha < 255)
-						|| (item.hot_alpha > 0 && item.hot_alpha < 255));
-
-					if (!alpha_in_progress) {
-						this.stop();
-					}
-				}, 25);
-			}
-		};
-
-		this.stop = () => {
-			if (alpha_timer_internal) {
-				clearInterval(alpha_timer_internal);
-				alpha_timer_internal = null;
-			}
-		};
-
-		let alpha_timer_internal = null;
-	}();
-
 	create_scrollbar_images();
 }
 
@@ -689,34 +824,18 @@ function ScrollBar(x, y, w, h, row_h, fn_redraw) {
 /////////////////////////////////
 // * PLAYLIST SCROLLBAR PART * //
 /////////////////////////////////
-/** @constructor */
+/**
+ * Creates scrollbar parts with specified dimensions and images.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} w The width.
+ * @param {number} h The height.
+ * @param {GdiBitmap} img_src The image sources for different states of the scrollbar part.
+ * @returns {ScrollBarPart} The part of the scrollbar that is about to be drawn.
+ * @class
+ */
 function ScrollBarPart(x, y, w, h, img_src) {
-	this.repaint = function () {
-		window.RepaintRect(this.x, this.y, this.w, this.h);
-	};
-
-	this.trace = function (x, y) {
-		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
-	};
-
-	this.cs = (s) => {
-		this.state = s;
-		this.repaint();
-	};
-
-	this.assign_imgs = function (imgs) {
-		this.img_normal = this.img_hover = this.img_hover = this.img_hover = null;
-
-		if (imgs === undefined) {
-			return;
-		}
-
-		this.img_normal = imgs.normal;
-		this.img_hover = imgs.hover ? imgs.hover : this.img_normal;
-		this.img_pressed = imgs.pressed ? imgs.pressed : this.img_normal;
-		this.img_hot = imgs.hot ? imgs.hot : this.img_normal;
-	};
-
+	// * CONSTRUCTOR * //
 	this.x = x;
 	this.y = y;
 	this.w = w;
@@ -729,6 +848,51 @@ function ScrollBarPart(x, y, w, h, img_src) {
 	this.hot_alpha = 0;
 	this.pressed_alpha = 0;
 	this.state = 'normal';
+
+	// * METHODS * //
+
+	/**
+     * Updates the scrollbar part via repaint.
+     */
+	this.repaint = function () {
+		window.RepaintRect(this.x, this.y, this.w, this.h);
+	};
+
+	/**
+	 * Checks if the mouse is within the boundaries of the scrollbar part.
+	 * @param {number} x The x coordinate.
+	 * @param {number} y The y coordinate.
+	 * @returns {boolean} True if the coordinates are inside the scrollbar part.
+	 */
+	this.trace = function (x, y) {
+		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
+	};
+
+	/**
+	 * Sets the state of the scrollbar part.
+	 * @param {string} s The state.
+	 */
+	this.cs = (s) => {
+		this.state = s;
+		this.repaint();
+	};
+
+	/**
+	 * Assigns the images to the scrollbar part.
+	 * @param {Object} imgs The images.
+	 */
+	this.assign_imgs = function (imgs) {
+		this.img_normal = this.img_hover = this.img_hover = this.img_hover = null;
+
+		if (imgs === undefined) {
+			return;
+		}
+
+		this.img_normal = imgs.normal;
+		this.img_hover = imgs.hover ? imgs.hover : this.img_normal;
+		this.img_pressed = imgs.pressed ? imgs.pressed : this.img_normal;
+		this.img_hot = imgs.hot ? imgs.hot : this.img_normal;
+	};
 
 	this.assign_imgs(img_src);
 }

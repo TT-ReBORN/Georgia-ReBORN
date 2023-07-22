@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-28                                          * //
+// * Last change:    2023-07-20                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,10 +16,11 @@
 ///////////////////////
 // * CONFIGURATION * //
 ///////////////////////
+/** @type {Object} Creates a config object. */
 const ConfigurationObjectType = {
-	Array: 'array',
+	Array:  'array',
 	Object: 'object',
-	Value: 'value'	// Not currently handled
+	Value:  'value' // Not currently handled
 };
 
 /**
@@ -28,12 +29,16 @@ const ConfigurationObjectType = {
  * @property {boolean=} optional
  */
 
+/**
+ * Defines the structure and properties of an object in a config file.
+ */
 class ConfigurationObjectSchema {
 	/**
-	 * @param {string} name The name to be used for the object in the configuration file. i.e. if the object is `grid: {}`, then name should be `'grid'`
+	 * @param {string} name The name for the object in the config file. i.e. if the object is `grid: {}`, then name should be `'grid'`.
 	 * @param {string} container The type of container for the object. Should be of ConfigurationObjectType.
 	 * @param {Array<FieldDefinition>=} fields The fields for each entry in the object. If undefined, uses key/value pairs for objects, or comma separated values for arrays.
 	 * @param {string=} comment Adds a '//' field as first entry in the object. Used for explaining things to the user.
+	 * @class
 	 */
 	constructor(name, container, fields = undefined, comment = undefined) {
 		this.name = name;
@@ -51,12 +56,13 @@ class ConfigurationObjectSchema {
  */
 
 /**
- * Read/write theme configuration to a JSON file
+ * Reads and writes the theme config to a JSON file.
  */
 class Configuration {
 	/**
-	 * Instantiate Configuration object and specify file to read from
-	 * @param {string} configurationPath Path to the config file
+	 * Instantiates a Configuration object and specifies a file to read from.
+	 * @param {string} configurationPath The path to the config file.
+	 * @class
 	 */
 	constructor(configurationPath) {
 		this.path = configurationPath;
@@ -71,17 +77,20 @@ class Configuration {
 		this._configuration = [];
 	}
 
-	/** @returns {boolean} */
+	/**
+	 * Checks if the config file exists.
+	 * @returns {boolean} True or false.
+	 */
 	get fileExists() {
 		return IsFile(this.path);
 	}
 
 	/**
-	 *
-	 * @param {ConfigurationObjectSchema} objectDefinition
-	 * @param {*} values
-	 * @param {*} comments
-	 * @returns {ThemeSettings} Provides getters and setters to automatically update config file when config val changes
+	 * Adds a config object to an array, replacing an existing object if it already exists.
+	 * @param {ConfigurationObjectSchema} objectDefinition The description of the object.
+	 * @param {*} values The values that will be written.
+	 * @param {*} comments The comment for the entry.
+	 * @returns {ThemeSettings} Provides getters and setters to automatically update the config file when config value changes.
 	 */
 	addConfigurationObject(objectDefinition, values, comments = []) {
 		/** @type {ConfigurationObject} */
@@ -97,9 +106,9 @@ class Configuration {
 	}
 
 	/**
-	 *
-	 * @param {String} name
-	 * @returns {ThemeSettings}
+	 * Gets a config by theme name.
+	 * @param {String} name The theme config name.
+	 * @returns {ThemeSettings} The config.
 	 */
 	getConfigObject(name) {
 		const obj = this._configuration.find(c => c.definition.name === name);
@@ -107,10 +116,10 @@ class Configuration {
 	}
 
 	/**
-	 * Replace the stored values for the object
-	 * @param {String} objectName The name to be used for the object in the configuration file. i.e. if the object is `grid: {}`, then objectName should be `'grid'`
-	 * @param {*} values
-	 * @param {boolean} writeConfig
+	 * Updates the values of the config for the given theme name.
+	 * @param {String} objectName The theme config name.
+	 * @param {*} values The values that will be written.
+	 * @param {boolean} writeConfig Whether to write the config to disk.
 	 */
 	updateConfigObjValues(objectName, values, writeConfig = false) {
 		const configObj = this._configuration.find(c => c.definition.name === objectName);
@@ -129,13 +138,14 @@ class Configuration {
 	}
 
 	/**
-	 * @returns {Object} An object containing
+	 * Reads the config from disk.
+	 * @returns {Object} An object containing.
 	 */
 	readConfiguration() {
 		try {
 			const f = fso.GetFile(this.path);
 			const p = f.OpenAsTextStream(FileMode.Read, FileType.Unicode);
-			const jsonString = stripJsonComments(p.ReadAll());
+			const jsonString = StripJsonComments(p.ReadAll());
 			const config = JSON.parse(jsonString);
 			p.Close();
 			return config;
@@ -150,9 +160,10 @@ class Configuration {
 	}
 
 	/**
-	 * Writes the configuration file to the path specified when Configuration was instantiated.
+	 * Writes the config file to the path specified when Configuration was instantiated.
+	 *
 	 * Only needs to be called manually the very first time, or if not calling updateConfigObjValues.
-	 * ( Only happens if not using a ThemeSettings object received from addConfigurationObject )
+	 * ( Only happens if not using a ThemeSettings object received from addConfigurationObject ).
 	 */
 	writeConfiguration() {
 		const p = fso.CreateTextFile(this.path, true, true);
@@ -237,10 +248,17 @@ class Configuration {
 		p.Close();
 	}
 
+	/**
+	 * Gets the path to the config file
+	 * @returns {string} The path to the config file.
+	 */
 	getPath() {
 		return this.path;
 	}
 
+	/**
+	 * Resets the config to the default values.
+	 */
 	resetConfiguration() {
 		fso.DeleteFile(this.path);
 		setTimeout(() => {
@@ -250,102 +268,18 @@ class Configuration {
 }
 
 
-//////////////
-// * JSON * //
-//////////////
-const singleComment = Symbol('singleComment');
-const multiComment = Symbol('multiComment');
-const stripWithoutWhitespace = () => '';
-const stripWithWhitespace = (string, start, end) => string.slice(start, end).replace(/\S/g, ' ');
-
-const isEscaped = (jsonString, quotePosition) => {
-	let index = quotePosition - 1;
-	let backslashCount = 0;
-
-	while (jsonString[index] === '\\') {
-		index--;
-		backslashCount++;
-	}
-
-	return Boolean(backslashCount % 2);
-};
-
-
-/** https://github.com/sindresorhus/strip-json-comments/blob/master/index.js */
-function stripJsonComments(jsonString, options = { whitespace: false }) {
-	if (typeof jsonString !== 'string') {
-		throw new TypeError(`Expected argument \`jsonString\` to be a \`string\`, got \`${typeof jsonString}\``);
-	}
-
-	const strip = options.whitespace === false ? stripWithoutWhitespace : stripWithWhitespace;
-
-	let insideString;
-	let insideComment;
-	let offset = 0;
-	let result = '';
-
-	for (let i = 0; i < jsonString.length; i++) {
-		const currentCharacter = jsonString[i];
-		const nextCharacter = jsonString[i + 1];
-
-		if (!insideComment && currentCharacter === '"') {
-			const escaped = isEscaped(jsonString, i);
-			if (!escaped) {
-				insideString = !insideString;
-			}
-		}
-
-		if (insideString) {
-			continue;
-		}
-
-		if (!insideComment && currentCharacter + nextCharacter === '//') {
-			result += jsonString.slice(offset, i);
-			offset = i;
-			insideComment = singleComment;
-			i++;
-		}
-		else if (insideComment === singleComment && currentCharacter + nextCharacter === '\r\n') {
-			i++;
-			insideComment = false;
-			result += strip(jsonString, offset, i);
-			offset = i;
-			continue;
-		}
-		else if (insideComment === singleComment && currentCharacter === '\n') {
-			insideComment = false;
-			result += strip(jsonString, offset, i);
-			offset = i;
-		}
-		else if (!insideComment && currentCharacter + nextCharacter === '/*') {
-			result += jsonString.slice(offset, i);
-			offset = i;
-			insideComment = multiComment;
-			i++;
-			continue;
-		}
-		else if (insideComment === multiComment && currentCharacter + nextCharacter === '*/') {
-			i++;
-			insideComment = false;
-			result += strip(jsonString, offset, i + 1);
-			offset = i + 1;
-			continue;
-		}
-	}
-
-	return result + (insideComment ? strip(jsonString.slice(offset)) : jsonString.slice(offset));
-}
-
-
 ////////////////////////
 // * THEME SETTINGS * //
 ////////////////////////
 /**
- * @param {string} name
- * @param {*} settingVal
- * @constructor
+ * Provides methods to get and set the value of the config.
  */
 class ThemeSetting {
+	/**
+	 * @param {string} name The name of the setting.
+	 * @param {*} settingVal The value of the setting.
+	 * @class
+	 */
 	constructor(name, settingVal) {
 		/** @const {string} */
 		this.name = name;
@@ -353,14 +287,16 @@ class ThemeSetting {
 	}
 
 	/**
-	 * @return {*}
+	 * Gets the value of the config.
+	 * @returns {*} The config.
 	 */
 	get() {
 		return this.value;
 	}
 
 	/**
-	 * @param {*} new_value
+	 * Sets the value of the config.
+	 * @param {*} new_value The new value of the config.
 	 */
 	set(new_value) {
 		if (this.value !== new_value) {
@@ -370,12 +306,15 @@ class ThemeSetting {
 }
 
 
+/**
+ * Creates and manages config settings for a theme.
+ */
 class ThemeSettings {
 	/**
-	 *
-	 * @param {Configuration} config
-	 * @param {String} objName
-	 * @param {ConfigurationObject} properties
+	 * @param {Configuration} config The config.
+	 * @param {String} objName The name of the config.
+	 * @param {ConfigurationObject} properties The properties to add to the config.
+	 * @class
 	 */
 	constructor(config, objName, properties = undefined) {
 		/** @protected */
@@ -390,7 +329,8 @@ class ThemeSettings {
 	}
 
 	/**
-	 * @param {ConfigurationObject|*} properties Each item in array is an array of objects }
+	 * Adds a set of properties to the config.
+	 * @param {ConfigurationObject|*} properties Each item in array is an array of objects
 	 */
 	add_properties(properties) {
 		Object.keys(properties).forEach(key => {
@@ -401,11 +341,13 @@ class ThemeSettings {
 
 	/**
 	 * TODO: validation for item?
-	 * @param {*} item
-	 * @param {String} item_id
+	 *
+	 * Validates a config item throwing an InvalidTypeError if it's not valid when added to the config.
+	 * @param {*} item The config item to validate.
+	 * @param {String} item_id The id of the config item.
 	 */
 	validate_config_item(item, item_id) {
-		// if (!Array.isArray(item) || item.length !== 2 || !isString(item[0])) {
+		// if (!Array.isArray(item) || item.length !== 2 || !IsString(item[0])) {
 		// 	throw new InvalidTypeError('property', typeof item, '{ string, [string, any] }', 'Usage: add_properties({\n  property_id: [property_name, property_default_value]\n})');
 		// }
 		if (item_id === 'add_properties') {
@@ -416,6 +358,11 @@ class ThemeSettings {
 		}
 	}
 
+	/**
+	 * Adds a new item to a config object with getter and setter methods for accessing and updating the item's value.
+	 * @param {Array} setting An array with two elements: the name of the setting and its default value.
+	 * @param {string} item_id A unique identifier for the config item used to create a property on the object with the same name.
+	 */
 	add_config_item(setting, item_id) {
 		this._properties_name_list[setting[0]] = 1;
 

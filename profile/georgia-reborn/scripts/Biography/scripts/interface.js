@@ -110,7 +110,7 @@ class UserInterfaceBio {
 		this.setSbar();
 	}
 
-	// Methods
+	// * METHODS * //
 
 	assignColours() {
 		const prop = ['text', 'text_h', 'headingBtn', 'headingText', 'stars', 'summary', 'rectOv', 'rectOvBor', 'line', 'bg', 'frame', 'bgTrans'];
@@ -734,8 +734,8 @@ class UserInterfaceBio {
 			this.sbar.but_w = this.sbar.w;
 		}
 		else if (pptBio.sbarWidth) {
-			this.sbar.w = is_4k ? 26 : 12;
-			this.sbar.but_w = is_4k ? 26 : 12;
+			this.sbar.w = RES_4K ? 26 : 12;
+			this.sbar.but_w = RES_4K ? 26 : 12;
 		}
 		if (!pptBio.sbarWinMetrics && this.sbar.type == 2) this.sbar.w = Math.max(this.sbar.w, 12);
 		if (!pptBio.sbarShow) this.sbar.w = 0;

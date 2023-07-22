@@ -102,8 +102,8 @@ class ButtonsBio {
 
 		this.lookUp.zoomSize = Math.max(Math.round(this.lookUp.baseSize * pptBio.zoomLookUpBtn / 100), 7);
 		this.lookUp.scale = Math.round(this.lookUp.zoomSize / this.lookUp.baseSize * 100);
-		this.lookUp.font = gdi.Font('FontAwesome', scaleForDisplay(18) * this.lookUp.scale / 100, 0);
-		this.lookUp.fontLock = gdi.Font('FontAwesome', scaleForDisplay(17) * this.lookUp.scale / 100, 0);
+		this.lookUp.font = gdi.Font('FontAwesome', SCALE(18) * this.lookUp.scale / 100, 0);
+		this.lookUp.fontLock = gdi.Font('FontAwesome', SCALE(17) * this.lookUp.scale / 100, 0);
 
 		this.scr.btns = this.scr.albBtns.concat(this.scr.artBtns);
 		this.src.iconFont = this.src.font;
@@ -115,7 +115,7 @@ class ButtonsBio {
 		this.createImages('all');
 	}
 
-	// Methods
+	// * METHODS * //
 
 	check(refresh) {
 		if (!refresh) {
@@ -238,7 +238,7 @@ class ButtonsBio {
 	createStars(force) {
 		this.src.icon = uiBio.show.btnLabel == 2 ? 1 : 0;
 		const hs = uiBio.font.heading.Size;
-		const fs = uiBio.stars != 1 ? (this.src.icon ? (this.src.bahnInstalled ? 12 : 11) : 10) * $Bio.scale : (is_4k ? 26 : 14);
+		const fs = uiBio.stars != 1 ? (this.src.icon ? (this.src.bahnInstalled ? 12 : 11) : 10) * $Bio.scale : (RES_4K ? 26 : 14);
 		const srcFontSize = this.src.fontSize;
 		const biographyFontSize = pref.layout === 'artwork' ? pptBio.baseFontSizeBio_artwork : pptBio.baseFontSizeBio_default;
 		this.src.fontSize = $Bio.clamp(Math.round(hs * 1.0) + (pptBio.zoomHeadBtn - 100) / 10, Math.min(fs, hs), Math.max(fs, hs));
@@ -523,8 +523,8 @@ class ButtonsBio {
 		pptBio.zoomHead = 115;
 		this.lookUp.zoomSize = this.lookUp.baseSize;
 		this.lookUp.scale = pptBio.zoomLookUpBtn = 100;
-		this.lookUp.font = gdi.Font('FontAwesome', scaleForDisplay(18) * this.lookUp.scale / 100, 0);
-		this.lookUp.fontLock = gdi.Font('FontAwesome', scaleForDisplay(17) * this.lookUp.scale / 100, 0);
+		this.lookUp.font = gdi.Font('FontAwesome', SCALE(18) * this.lookUp.scale / 100, 0);
+		this.lookUp.fontLock = gdi.Font('FontAwesome', SCALE(17) * this.lookUp.scale / 100, 0);
 		pptBio.zoomHeadBtn = 100;
 		pptBio.zoomTooltip = 100;
 		uiBio.getFont();
@@ -536,7 +536,7 @@ class ButtonsBio {
 		const n = pptBio.artistView ? 'bio' : 'rev';
 		if (txt[n].loaded.txt && txt.reader[n].lyrics) txt.getText();
 		initTheme();
-		debugLog('initTheme -> Biography -> resetZoom');
+		DebugLog('initTheme -> Biography -> resetZoom');
 	}
 
 	scrollAlb() {
@@ -660,7 +660,7 @@ class ButtonsBio {
 
 	setSrcFontSize(step) {
 		this.src.fontSize += step;
-		const fs = uiBio.stars != 1 ? (this.src.icon ? (this.src.bahnInstalled ? 12 : 11) : 10) * $Bio.scale : (is_4k ? 26 : 14);
+		const fs = uiBio.stars != 1 ? (this.src.icon ? (this.src.bahnInstalled ? 12 : 11) : 10) * $Bio.scale : (RES_4K ? 26 : 14);
 		const hs = uiBio.font.heading.Size;
 		this.src.fontSize = $Bio.clamp(this.src.fontSize, Math.min(fs, hs), Math.max(fs, hs));
 		pptBio.zoomHeadBtn = (this.src.fontSize - Math.round(uiBio.font.heading.Size * 0.47)) * 10 + 100;
@@ -689,7 +689,7 @@ class ButtonsBio {
 	tt(n, force) {
 		if (tooltipBio.Text !== n || force) {
 			tooltipBio.Text = n;
-			tooltipBio.SetMaxWidth(scaleForDisplay(pref.layout !== 'default' ? 600 : 800));
+			tooltipBio.SetMaxWidth(SCALE(pref.layout !== 'default' ? 600 : 800));
 			tooltipBio.Activate();
 		}
 	}
@@ -701,8 +701,8 @@ class ButtonsBio {
 		const o = this.btns.lookUp;
 		window.RepaintRect(0, o.y, panelBio.w, o.h);
 		this.lookUp.scale = Math.round(this.lookUp.zoomSize / this.lookUp.baseSize * 100);
-		this.lookUp.font = gdi.Font('FontAwesome', scaleForDisplay(18) * this.lookUp.scale / 100, 0);
-		this.lookUp.fontLock = gdi.Font('FontAwesome', scaleForDisplay(17) * this.lookUp.scale / 100, 0);
+		this.lookUp.font = gdi.Font('FontAwesome', SCALE(18) * this.lookUp.scale / 100, 0);
+		this.lookUp.fontLock = gdi.Font('FontAwesome', SCALE(17) * this.lookUp.scale / 100, 0);
 		this.createImages('lookUp');
 		this.refresh(true);
 		pptBio.zoomLookUpBtn = this.lookUp.scale;
@@ -731,7 +731,7 @@ class BtnBio {
 		this.state = 'normal';
 	}
 
-	// Methods
+	// * METHODS * //
 
 	cs(state) {
 		this.state = state;
@@ -858,7 +858,7 @@ class BtnBio {
 		if (butBio.rating.show) {
 			const rating = txt.rev.loaded.am ? txt.rating.am : txt.rating.lfm;
 			const ratingImg = !uiBio.show.btnRedLastfm || txt.rev.loaded.am ? butBio.rating.images[rating] : butBio.rating.imagesLfm[rating];
-			if (ratingImg) gr.DrawImage(ratingImg, !pptBio.hdPos ? this.x + this.w - spacer - butBio.rating.w2 - (uiBio.show.btnBg ? butBio.src.item_w.space : 0) + scaleForDisplay(4) : dx2 + butBio.src.name_w, this.p1 + (Math.round(butBio.src.h - butBio.rating.h2) / 2), butBio.rating.w2, butBio.rating.h2, 0, 0, butBio.rating.w1, butBio.rating.h1, 0, 255);
+			if (ratingImg) gr.DrawImage(ratingImg, !pptBio.hdPos ? this.x + this.w - spacer - butBio.rating.w2 - (uiBio.show.btnBg ? butBio.src.item_w.space : 0) + SCALE(4) : dx2 + butBio.src.name_w, this.p1 + (Math.round(butBio.src.h - butBio.rating.h2) / 2), butBio.rating.w2, butBio.rating.h2, 0, 0, butBio.rating.w1, butBio.rating.h1, 0, 255);
 		}
 	}
 
@@ -867,9 +867,9 @@ class BtnBio {
 		const col = uiBio.col.headingText;
 		gr.SetTextRenderingHint(3); // AntiAliasGridFit
 		if (!panelBio.lock) {
-			gr.DrawString(!panelBio.style.moreTags || !pptBio.artistView ? '\uF107' : '\uF107', butBio.lookUp.font, col, this.x - (is_4k ? 1 : 0), this.y + scaleForDisplay(1), this.p1, this.p2, StringFormat(2, 0));
-			gr.DrawString(!panelBio.style.moreTags || !pptBio.artistView ? '\uF107' : '\uF107', butBio.lookUp.font, col, this.x - (is_4k ? 1 : 0), this.y + scaleForDisplay(1), this.p1, this.p2, StringFormat(2, 0));
-			if (this.state == 'hover') gr.DrawString(!panelBio.style.moreTags || !pptBio.artistView ? '\uF107' : '\uF107', butBio.lookUp.font, col, this.x, this.y + scaleForDisplay(1), this.p1, this.p2, StringFormat(2, 0));
+			gr.DrawString(!panelBio.style.moreTags || !pptBio.artistView ? '\uF107' : '\uF107', butBio.lookUp.font, col, this.x - (RES_4K ? 1 : 0), this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
+			gr.DrawString(!panelBio.style.moreTags || !pptBio.artistView ? '\uF107' : '\uF107', butBio.lookUp.font, col, this.x - (RES_4K ? 1 : 0), this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
+			if (this.state == 'hover') gr.DrawString(!panelBio.style.moreTags || !pptBio.artistView ? '\uF107' : '\uF107', butBio.lookUp.font, col, this.x, this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
 		} else {
 			gr.DrawString('\uF023', butBio.lookUp.fontLock, col, this.x, this.y + 2 * $Bio.scale, this.p1, this.p2, StringFormat(2, 0));
 		}
@@ -910,7 +910,7 @@ class TooltipBio {
 		this.tt_timer = new TooltipTimerBio();
 	}
 
-	// Methods
+	// * METHODS * //
 
 	clear() {
 		styledTooltipReady = false;
@@ -953,7 +953,7 @@ class TooltipTimerBio {
 		this.tt_caller = undefined;
 	}
 
-	// Methods
+	// * METHODS * //
 
 	forceStop() {
 		butBio.tt('');
@@ -994,7 +994,7 @@ class TransitionBio {
 		this.transition_timer = null;
 	}
 
-	// Methods
+	// * METHODS * //
 
 	start() {
 		const hover_in_step = 0.2;

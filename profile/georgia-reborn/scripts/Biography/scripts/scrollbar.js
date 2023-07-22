@@ -167,7 +167,7 @@ class ScrollbarBio {
 			let sbar_w = this.w;
 			if (pptBio.sbarShow == 1) {
 				sbar_x = !this.narrow.show ? this.x : this.narrow.x;
-				sbar_w = !this.narrow.show ? this.w : uiBio.sbar.type == 1 ? 0 : scaleForDisplay(uiBio.narrowSbarWidth);
+				sbar_w = !this.narrow.show ? this.w : uiBio.sbar.type == 1 ? 0 : SCALE(uiBio.narrowSbarWidth);
 			}
 
 			// Non-Reborn/Random theme scrollbar colors
@@ -204,7 +204,7 @@ class ScrollbarBio {
 
 			switch (uiBio.sbar.type) {
 				case 0:
-					gr.FillSolidRect(sbar_x + (this.narrow.show ? uiBio.sbar.narrowWidth + (is_4k ? -4 : 1) : 0), this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
+					gr.FillSolidRect(sbar_x + (this.narrow.show ? uiBio.sbar.narrowWidth + (RES_4K ? -4 : 1) : 0), this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
 					break;
 				case 1:
 					gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
@@ -216,7 +216,7 @@ class ScrollbarBio {
 					uiBio.theme.SetPartAndStateID(6, 1);
 					if (!this.narrow.show || pptBio.sbarShow != 1) uiBio.theme.DrawThemeBackground(gr, sbar_x, this.y, sbar_w, this.h);
 					uiBio.theme.SetPartAndStateID(3, this.narrow.show ? 2 : !this.hover && !this.bar.isDragging ? 1 : this.hover && !this.bar.isDragging ? 2 : 3);
-					uiBio.theme.DrawThemeBackground(gr, sbar_x + (this.narrow.show ? uiBio.sbar.narrowWidth + (is_4k ? -4 : 1) : 0), this.y + this.bar.y, sbar_w, this.bar.h);
+					uiBio.theme.DrawThemeBackground(gr, sbar_x + (this.narrow.show ? uiBio.sbar.narrowWidth + (RES_4K ? -4 : 1) : 0), this.y + this.bar.y, sbar_w, this.bar.h);
 					break;
 			}
 		}
@@ -380,7 +380,7 @@ class ScrollbarBio {
 	}
 
 	paint() {
-		window.RepaintRect(this.x - scaleForDisplay(2), this.y, this.w + scaleForDisplay(4), this.h);
+		window.RepaintRect(this.x - SCALE(2), this.y, this.w + SCALE(4), this.h);
 	}
 
 	position(Start, End, Elapsed, Duration, Event) {

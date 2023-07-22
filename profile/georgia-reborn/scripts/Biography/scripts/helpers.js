@@ -34,7 +34,7 @@ class Helpers {
 		this.createDiacriticsMap();
 	}
 
-	// Methods
+	// * METHODS * //
 
 	abbreviate(n) {
 		let abb = '';

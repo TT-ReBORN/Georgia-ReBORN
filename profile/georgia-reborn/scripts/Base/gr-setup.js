@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-14                                          * //
+// * Last change:    2023-07-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,8 +16,27 @@
 ///////////////////////
 // * COMPATIBILITY * //
 ///////////////////////
+/**
+ * Detects if user has Internet Explorer installed, needed to render HTML popups.
+ * @returns {boolean} Returns `true` if IE installed, otherwise `false`.
+ * @type {Function}
+ */
 let detectIE = false;
 detectIE = DetectIE();
+
+/**
+ * Detects if the user's system is running on Windows 64 bit.
+ * @returns {boolean} Returns `true` if Windows is 64 bit, otherwise `false`.
+ * @type {Function}
+ */
+let detectWin64 = false;
+detectWin64 = DetectWin64();
+
+/**
+ * Detects if the user's system is running Wine on Linux or MacOs.
+ * @returns {boolean} Returns `true` if Wine is running, otherwise `false`.
+ * @type {Function}
+ */
 let detectWine = false;
 detectWine = DetectWine();
 
@@ -26,32 +45,30 @@ detectWine = DetectWine();
 // * COLORS * //
 ////////////////
 /**
- * @typedef {Object} ColorsObj
- * @property {number=} darkAccent Primary color shaded by 30%
- * @property {number=} darkAccent_alt Secondary primary color shaded by 30%
- * @property {number=} accent Primary color shaded by 15%
- * @property {number=} accent_alt Secondary primary color shaded by 15%
- * @property {number=} primary Primary theme color generated from artwork
- * @property {number=} primary_alt Secondary primary theme color generated from artwork
- * @property {number=} lightAccent Primary color tinted by 20%
- * @property {number=} lightAccent_alt Secondary primary color tinted by 20%
- * @property {number=} artist Color of artist text on background
- * @property {number=} now_playing Color of the lower bar text, including tracknum, title, elapsed and remaining time
- * @property {number=} info_text Default color of text in metadatagrid
- * @property {number=} bg Background of the entire panel
- * @property {number=} rating Color of rating stars in metadatagrid
- * @property {number=} hotness Color of hotness text in metadatagrid
- * @property {number=} timelineAdded Background color for timeline block in Details from added to first played
- * @property {number=} timelinePlayed Background color for timeline block in Details from first played to last played
- * @property {number=} timelineUnplayed Background color for timeline block in Details from last played to present time
- * @property {number=} progressBar The background of the progress bar. Fill will be col.primary
- * @property {number=} shadow Color of the shadow
+ * @typedef  {Object} ColorsObj
+ * @property {number=} darkAccent The primary color shaded by 30%.
+ * @property {number=} darkAccent_alt The secondary primary color shaded by 30%.
+ * @property {number=} accent The primary color shaded by 15%.
+ * @property {number=} accent_alt The secondary primary color shaded by 15%.
+ * @property {number=} primary The primary theme color generated from artwork.
+ * @property {number=} primary_alt The secondary primary theme color generated from artwork.
+ * @property {number=} lightAccent The primary color tinted by 20%.
+ * @property {number=} lightAccent_alt The secondary primary color tinted by 20%.
+ * @property {number=} artist The color of artist text on background.
+ * @property {number=} now_playing The color of the lower bar text, including tracknum, title, elapsed and remaining time.
+ * @property {number=} info_text The default color of text in metadata grid.
+ * @property {number=} bg The background of the entire panel.
+ * @property {number=} rating The color of rating stars in metadata grid.
+ * @property {number=} hotness The color of hotness text in metadat agrid.
+ * @property {number=} timelineAdded The background color for timeline block in Details from added to first played.
+ * @property {number=} timelinePlayed The background color for timeline block in Details from first played to last played.
+ * @property {number=} timelineUnplayed The background color for timeline block in Details from last played to present time.
+ * @property {number=} progressBar The background of the progress bar. Fill will be col.primary.
+ * @property {number=} shadow The color of the shadow.
  */
-/** @type ColorsObj */
-const col = {}; // Colors
 
-/** Used in Reborn/Random theme when init on start or when noAlbumArtStub displayed */
-let isColored;
+/** @type {ColorsObj} Colors */
+const col = {};
 
 /**
  * Calculated primary color brightness used in:
@@ -59,14 +76,16 @@ let isColored;
  * - pref.theme === 'black'
  * - pref.theme === 'reborn'
  * - pref.theme === 'random'
+ * @type {number}
  */
 let colBrightness;
 
 /**
- * Calculated secondary primary color brightness used in:
+ * Calculated secondary color brightness used in:
  * - pref.styleRebornFusion
  * - pref.styleRebornFusion2
  * - pref.styleRebornFusionAccent
+ * @type {number}
  */
 let colBrightness2;
 
@@ -77,15 +96,22 @@ let colBrightness2;
  * - pref.styleBlackAndWhite
  * - pref.styleBlackAndWhite2
  * - pref.styleBlackAndWhiteReborn
- * @type {GdiBitmap}
+ * @type {number}
  */
 let imgBrightness;
 
 /**
- * Blended image from setStyleBlend()
+ * Blended image from setStyleBlend().
  * @type {GdiBitmap}
  */
 let blendedImg;
+
+/**
+ * Checks if background color is not full white RGB(255, 255, 255).
+ * Used in Reborn/Random theme when init on start or when noAlbumArtStub displayed.
+ * @type {boolean}
+ */
+let isColored;
 
 /**
  * Color definition when to switch text and logos to white or black, used in:
@@ -95,55 +121,63 @@ let blendedImg;
  * - pref.theme === 'random'
  * - pref.styleBlend
  * - pref.styleBlend2
+ * @type {boolean}
  */
 let lightBg;
 
 /**
  * Color definition when to switch text and logos to white or black, used in:
- * - ppt.theme == 1
- * - ppt.theme == 2
- * - ppt.theme == 3
- * - ppt.theme == 4
- * - ppt.theme == 5
+ * - ppt.theme === 1
+ * - ppt.theme === 2
+ * - ppt.theme === 3
+ * - ppt.theme === 4
+ * - ppt.theme === 5
+ * @type {boolean}
  */
 let lightBgLib;
 
 /**
  * Color definition when to switch text and logos to white or black, used in:
- * - pptBio.theme == 1
- * - pptBio.theme == 2
- * - pptBio.theme == 3
- * - pptBio.theme == 4
+ * - pptBio.theme === 1
+ * - pptBio.theme === 2
+ * - pptBio.theme === 3
+ * - pptBio.theme === 4
+ * @type {boolean}
  */
 let lightBgBio;
 
 /**
- * Color definition for col.bg when to shade or lighten custom theme colors:
+ * Color definition for col.bg when to lighten or darken custom theme colors:
  * - pref.theme === 'custom01' - 'custom10'
+ * @type {boolean}
  */
 let lightBgMain;
 
 /**
- * Color definition for g_pl_colors.bg when to shade or lighten custom theme colors:
+ * Color definition for g_pl_colors.bg when to lighten or darken custom theme colors:
  * - pref.theme === 'custom01' - 'custom10'
+ * @type {boolean}
  */
 let lightBgPlaylist;
 
 /**
- * Color definition for col.detailsBg) when to shade or lighten custom theme colors:
+ * Color definition for col.detailsBg) when to lighten or darken custom theme colors:
  * - pref.theme === 'custom01' - 'custom10'
+ * @type {boolean}
  */
 let lightBgDetails;
 
 /**
- * Color definition for ui.col.bg when to shade or lighten custom theme colors:
+ * Color definition for ui.col.bg when to lighten or darken custom theme colors:
  * - pref.theme === 'custom01' - 'custom10'
+ * @type {boolean}
  */
 let lightBgLibrary;
 
 /**
- * Color definition for uiBio.col.bg when to shade or lighten custom theme colors:
+ * Color definition for uiBio.col.bg when to lighten or darken custom theme colors:
  * - pref.theme === 'custom01' - 'custom10'
+ * @type {boolean}
  */
 let lightBgBiography;
 
@@ -152,112 +186,161 @@ let lightBgBiography;
 // * GEOMETRY * //
 //////////////////
 /**
- * @typedef {Object} GeometryObj
- * @property {number=} topMenuHeight Height of the top menu
- * @property {number=} lowerBarHeight Height of the song title and time + progress bar area
- * @property {number=} progBarHeight Height of the progress bar
- * @property {number=} waveformBarHeight Height of the waveform bar
- * @property {number=} peakmeterBarHeight Height of the peakmeter bar
- * @property {number=} timelineHeight Height of the timeline
- * @property {number=} metadataGridTooltipHeight Height of the metadata grid tooltip area
- * @property {number=} pauseSize Width and height of the pause button
- * @property {number=} discArtShadow Size of the disc art shadow
+ * @typedef  {Object} GeometryObj
+ * @property {number} topMenuHeight The height of the top menu.
+ * @property {number} lowerBarHeight The height of the song title and time + progress bar area.
+ * @property {number} progBarHeight The height of the progress bar.
+ * @property {number} waveformBarHeight The height of the waveform bar.
+ * @property {number} peakmeterBarHeight The height of the peakmeter bar.
+ * @property {number} timelineHeight The height of the timeline.
+ * @property {number} metadataGridTooltipHeight The height of the metadata grid tooltip area.
+ * @property {number} pauseSize The width and height of the pause button.
+ * @property {number} discArtShadow The size of the disc art shadow.
  */
-/** @type GeometryObj */
+
+/** @type {GeometryObj} */
 const geo = {};
 
+/**
+ * Sets the sizes for various UI elements.
+ */
 function setGeometry() {
-	geo.topMenuHeight = scaleForDisplay(40);
-	geo.lowerBarHeight = scaleForDisplay(120);
-	geo.progBarHeight = scaleForDisplay(pref.layout !== 'default' && (pref.styleProgressBarDesign === 'default' || pref.styleProgressBarDesign === 'rounded') ? 10 : 12) + (ww > 1920 ? 2 : 0);
-	geo.peakmeterBarHeight = scaleForDisplay(pref.layout !== 'default' ? 16 : 26) + (ww > 1920 ? 2 : 0);
-	geo.waveformBarHeight = scaleForDisplay(pref.layout !== 'default' ? 16 : 26) + (ww > 1920 ? 2 : 0);
+	geo.topMenuHeight  = SCALE(40);
+	geo.lowerBarHeight = SCALE(120);
+	geo.progBarHeight  = SCALE(pref.layout !== 'default' && (pref.styleProgressBarDesign === 'default' || pref.styleProgressBarDesign === 'rounded') ? 10 : 12) + (ww > 1920 ? 2 : 0);
+	geo.peakmeterBarHeight = SCALE(pref.layout !== 'default' ? 16 : 26) + (ww > 1920 ? 2 : 0);
+	geo.waveformBarHeight  = SCALE(pref.layout !== 'default' ? 16 : 26) + (ww > 1920 ? 2 : 0);
 	geo.timelineHeight = Math.round(geo.progBarHeight * 0.66);
-	geo.metadataGridTooltipHeight = scaleForDisplay(100);
-	geo.pauseSize = scaleForDisplay(100);
-	geo.discArtShadow = scaleForDisplay(6);
+	geo.metadataGridTooltipHeight = SCALE(100);
+	geo.pauseSize = SCALE(100);
+	geo.discArtShadow = SCALE(6);
 }
 
 
 //////////////////
 // * POSITION * //
 //////////////////
-let lowerBarTimeX;
-let lowerBarTimeY;
+/** @type {number} The width of time string in the lower bar. */
 let lowerBarTimeW;
+/** @type {number} The height of time string in the lower bar. */
 let lowerBarTimeH;
+/** @type {number} The x-position of the time string in the lower bar. */
+let lowerBarTimeX;
+/** @type {number} The y-position of the time string in the lower bar. */
+let lowerBarTimeY;
+/** @type {number} The y-position of the progress bar in the lower bar. */
 let progressBarY;
-let waveformBarY;
+/** @type {number} The y-position of the peakmeter bar in the lower bar. */
 let peakmeterBarY;
+/** @type {number} The y-position of the waveform bar in the lower bar. */
+let waveformBarY;
 
 
 ///////////////////////
 // * STRING OBJECT * //
 ///////////////////////
 /**
- * @typedef {Object} MetadataGridObj
- * @property {boolean=} age Should the age of the field also be calculated (i.e. add the "(3y 5m 11d)" to `val`)
- * @property {string} label Grid label
- * @property {string} val Grid value. If `val.trim().length === 0`. The grid entry will not be shown.
+ * @typedef  {Object} MetadataGridObj
+ * @property {boolean=} age Should the age of the field also be calculated (i.e. add the "(3y 5m 11d)" to `val`).
+ * @property {string} label The metadata grid label.
+ * @property {string} val The metadata grid value. If `val.trim().length === 0`. The grid entry will not be shown.
  */
+
 /**
- * @typedef {Object} StringsObj Collection of strings and other objects to be displayed throughout UI
- * @property {string=} artist
- * @property {string=} composer
- * @property {string=} album
- * @property {string=} album_subtitle
- * @property {string=} disc By default this string is displayed if there is more than one total disc. Formated like: "CD1/2"
+ * @typedef  {Object} StringsObj A collection of strings and other objects to be displayed throughout UI.
+ * @property {string=} artist The artist will be shown in Details and in the lower bar.
+ * @property {string=} composer The composer will be shown in the lower bar if it exist and enabled.
+ * @property {string=} album The album will be shown in Details.
+ * @property {string=} album_subtitle Currently not used in the theme.
+ * @property {string=} disc By default, this string is displayed in the lower bar if there is more than one total disc. Formatted like: "CD1/2".
  * @property {Array<MetadataGridObj>=} grid
- * @property {string=} length Length of the song in MM:SS format
- * @property {string=} original_artist
- * @property {string=} time Current time of the song in MM:SS format
- * @property {string=} title Title of the song
- * @property {string=} title_lower Title of the song to be displayed above the progress bar. Can include more information such as translation, original artist, etc.
- * @property {string=} tracknum
- * @property {*=} trackInfo The piece of text shown in the upper right corner under the year
- * @property {string=} year
- * @property {Timeline=} timeline Timeline object
- * @property {MetadataGridTooltip=} metadata_grid_tt Metadata grid tooltip object
- * @property {LowerBarTooltip=} lowerBar_tt Lower bar tooltip object
+ * @property {string=} length The length of the song in MM:SS format.
+ * @property {string=} original_artist If %original artist% exist it will be displayed by the right side of the title in the lower bar.
+ * @property {string=} time The current time of the song in MM:SS format in the lower bar.
+ * @property {string=} title The title of the song.
+ * @property {string=} title_lower The title of the song to be displayed above the progress bar. Can include more information such as translation, original artist, etc.
+ * @property {string=} tracknum The Tracknumber of the song.
+ * @property {*=} trackInfo Currently not used in the theme.
+ * @property {string=} year Currently not used in the theme.
+ * @property {Timeline=} timeline The timeline object.
+ * @property {MetadataGridTooltip=} metadata_grid_tt The metadata grid tooltip object.
+ * @property {LowerBarTooltip=} lowerBar_tt The lower bar tooltip object.
  */
-/** @type StringsObj */
+
+/** @type {StringsObj} */
 let str = {};
 
 
 ///////////////
 // * FONTS * //
 ///////////////
-/** @type Fonts */
+/**
+ * @typedef  {Object} GdiFont
+ * @property {GdiFont} top_menu Theme font 'Segoe UI Semibold' used for top menu buttons.
+ * @property {GdiFont} top_menu_caption Theme font 'Marlett' used for top menu 🗕 🗖 ✖ caption buttons.
+ * @property {GdiFont} top_menu_compact Theme font 'FontAwesome' used for the top menu compact button.
+ * @property {GdiFont} lower_bar_artist Theme artist font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
+ * @property {GdiFont} lower_bar_title Theme title font 'HelveticaNeueLT Pro 45 Lt' used in lower bar.
+ * @property {GdiFont} lower_bar_disc Theme disc font 'HelveticaNeueLT Pro 45 Lt' used in lower bar.
+ * @property {GdiFont} lower_bar_time Theme time font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
+ * @property {GdiFont} lower_bar_length Theme length font 'HelveticaNeueLT Pro 45 Lt' used in lower bar.
+ * @property {GdiFont} lower_bar_wave Theme waveform bar font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
+ * @property {GdiFont} guifx Theme font 'Guifx v2 Transports' used for the lower bar transport/playback buttons.
+ * @property {GdiFont} playback_order_default Theme font 'Guifx v2 Transports' used for the lower bar transport playback order button.
+ * @property {GdiFont} playback_order_replay Theme font 'FontAwesome' used for the lower bar transport playback order button.
+ * @property {GdiFont} playback_order_shuffle Theme font 'Guifx v2 Transports' used for the lower bar transport playback order button.
+ * @property {GdiFont} guifx_reload Theme font 'Guifx v2 Transports' used for the lower bar transport reload button.
+ * @property {GdiFont} guifx_volume Theme font 'Guifx v2 Transports' used for the lower bar transport volume button.
+ * @property {GdiFont} no_album_art_stub Theme font 'FontAwesome' used for no album art music note symbol.
+ * @property {GdiFont} symbol Panel font 'Segoe UI Symbol' used for special chars, scrollbar buttons, etc.
+ * @property {GdiFont} notification Theme font 'HelveticaNeueLT Pro 65 Md' used for notifications.
+ * @property {GdiFont} popup Theme font 'Segoe UI' used for popups.
+ * @property {GdiFont} tooltip Theme font 'HelveticaNeueLT Pro 65 Md' used for styled tooltips.
+ * @property {GdiFont} grd_artist Theme font 'HelveticaNeueLT Pro 65 Md' used for metadata grid artist.
+ * @property {GdiFont} grd_tracknum Theme font 'HelveticaNeueLT Pro 45 Lt' or 'HelveticaNeueLT Pro 65 Md' used for metadata grid track number.
+ * @property {GdiFont} grd_title Theme font 'HelveticaNeueLT Pro 45 Lt' or 'HelveticaNeueLT Pro 65 Md' used for metadata grid title.
+ * @property {GdiFont} grd_album Theme font 'HelveticaNeueLT Pro 65 Md' used for metadata grid album.
+ * @property {GdiFont} grd_key Theme font 'HelveticaNeueLT Pro 75 Bd' or 'HelveticaNeueLT Pro 65 Md' used for metadata grid key.
+ * @property {GdiFont} grd_val Theme font 'HelveticaNeueLT Pro 45 Lt' used for metadata grid value.
+ * @property {GdiFont} library Panel font 'Segoe UI' used in the Library.
+ * @property {GdiFont} biography Panel font 'Segoe UI' used in the Biography.
+ * @property {GdiFont} lyrics Panel font 'Segoe UI' used in the Lyrics.
+ * @property {GdiFont} lyricsHighlight Panel font 'Segoe UI' used in Lyrics for synced lines.
+ */
+
+/** @type {GdiFont} */
 const ft = {};
-const fontDefault        = pref.customThemeFonts ? customFont.fontDefault : 'Segoe UI'; // Panel font used as default and panel related elements in Playlist, Library and Biography
-const fontSegoeUISymbol  = 'Segoe UI Symbol'; // Panel font used for special chars, scrollbar buttons, etc
-const fontTopMenu        = pref.customThemeFonts ? customFont.fontTopMenu : 'Segoe UI Semibold'; // Theme font used for top menu buttons
-const fontTopMenuCaption = 'Marlett'; // Theme font used for top menu 🗕 🗖 ✖ caption buttons
 
-const fontGuiFx          = 'Guifx v2 Transports'; // Theme font used for lower bar transport/playback buttons
-const fontAwesome        = 'FontAwesome';         // Theme font used for lower bar transport/playback buttons
-const fontLowerBarArtist = pref.customThemeFonts ? customFont.fontLowerBarArtist : 'HelveticaNeueLT Pro 65 Md'; // Theme artist font used in lower bar
-const fontLowerBarTitle  = pref.customThemeFonts ? customFont.fontLowerBarTitle  : 'HelveticaNeueLT Pro 45 Lt'; // Theme title font used in lower bar
-const fontLowerBarDisc   = pref.customThemeFonts ? customFont.fontLowerBarDisc   : 'HelveticaNeueLT Pro 45 Lt'; // Theme disc font used in lower bar
-const fontLowerBarTime   = pref.customThemeFonts ? customFont.fontLowerBarTime   : 'HelveticaNeueLT Pro 65 Md'; // Theme time font used in lower bar
-const fontLowerBarLength = pref.customThemeFonts ? customFont.fontLowerBarLength : 'HelveticaNeueLT Pro 45 Lt'; // Theme length font used in lower bar
-const fontLowerBarWave   = pref.customThemeFonts ? customFont.fontLowerBarWave   : 'HelveticaNeueLT Pro 65 Md'; // Theme waveform bar font used in lower bar
+/** Panel font used as default and panel related elements in Playlist, Library and Biography. */
+const fontDefault        = pref.customThemeFonts ? customFont.fontDefault : 'Segoe UI';
+const fontSegoeUISymbol  = 'Segoe UI Symbol';
+const fontTopMenu        = pref.customThemeFonts ? customFont.fontTopMenu : 'Segoe UI Semibold';
+const fontTopMenuCaption = 'Marlett';
 
-const fontNotification   = pref.customThemeFonts ? customFont.fontNotification   : 'HelveticaNeueLT Pro 65 Md'; // Theme notification font
-const fontPopup          = pref.customThemeFonts ? customFont.fontPopup          : 'Segoe UI'; // Theme popup font
-const fontTooltip        = pref.customThemeFonts ? customFont.fontTooltip        : 'HelveticaNeueLT Pro 65 Md'; // Theme tooltip font
+const fontGuiFx          = 'Guifx v2 Transports';
+const fontAwesome        = 'FontAwesome';
+const fontLowerBarArtist = pref.customThemeFonts ? customFont.fontLowerBarArtist : 'HelveticaNeueLT Pro 65 Md';
+const fontLowerBarTitle  = pref.customThemeFonts ? customFont.fontLowerBarTitle  : 'HelveticaNeueLT Pro 45 Lt';
+const fontLowerBarDisc   = pref.customThemeFonts ? customFont.fontLowerBarDisc   : 'HelveticaNeueLT Pro 45 Lt';
+const fontLowerBarTime   = pref.customThemeFonts ? customFont.fontLowerBarTime   : 'HelveticaNeueLT Pro 65 Md';
+const fontLowerBarLength = pref.customThemeFonts ? customFont.fontLowerBarLength : 'HelveticaNeueLT Pro 45 Lt';
+const fontLowerBarWave   = pref.customThemeFonts ? customFont.fontLowerBarWave   : 'HelveticaNeueLT Pro 65 Md';
 
-const fontGridArtist     = pref.customThemeFonts ? customFont.fontGridArtist     : 'HelveticaNeueLT Pro 65 Md'; // Theme font used in metadata grid
-const fontGridTitle      = pref.customThemeFonts ? customFont.fontGridTitle      : 'HelveticaNeueLT Pro 45 Lt'; // Theme font used in metadata grid
-const fontGridTitleBold  = pref.customThemeFonts ? customFont.fontGridTitleBold  : 'HelveticaNeueLT Pro 65 Md'; // Theme font used in metadata grid
-const fontGridAlbum      = pref.customThemeFonts ? customFont.fontGridAlbum      : 'HelveticaNeueLT Pro 65 Md'; // Theme font used in metadata grid
+const fontNotification   = pref.customThemeFonts ? customFont.fontNotification   : 'HelveticaNeueLT Pro 65 Md';
+const fontPopup          = pref.customThemeFonts ? customFont.fontPopup          : 'Segoe UI';
+const fontTooltip        = pref.customThemeFonts ? customFont.fontTooltip        : 'HelveticaNeueLT Pro 65 Md';
+
+const fontGridArtist     = pref.customThemeFonts ? customFont.fontGridArtist     : 'HelveticaNeueLT Pro 65 Md';
+const fontGridTitle      = pref.customThemeFonts ? customFont.fontGridTitle      : 'HelveticaNeueLT Pro 45 Lt';
+const fontGridTitleBold  = pref.customThemeFonts ? customFont.fontGridTitleBold  : 'HelveticaNeueLT Pro 65 Md';
+const fontGridAlbum      = pref.customThemeFonts ? customFont.fontGridAlbum      : 'HelveticaNeueLT Pro 65 Md';
 const fontGridKey        = pref.customThemeFonts ? customFont.fontGridKey        :
-						   detectWine            ? 'HelveticaNeueLT Pro 65 Md'   : 'HelveticaNeueLT Pro 75 Bd'; // Theme font used in metadata grid
-const fontGridValue      = pref.customThemeFonts ? customFont.fontGridValue      : 'HelveticaNeueLT Pro 45 Lt'; // Theme font used in metadata grid
+						   detectWine            ? 'HelveticaNeueLT Pro 65 Md'   : 'HelveticaNeueLT Pro 75 Bd';
+const fontGridValue      = pref.customThemeFonts ? customFont.fontGridValue      : 'HelveticaNeueLT Pro 45 Lt';
 
-const fontLibrary        = pref.customThemeFonts ? customFont.fontLibrary        : 'Segoe UI'; // Library font
-const fontBiography      = pref.customThemeFonts ? customFont.fontBiography      : 'Segoe UI'; // Biography font
-const fontLyrics         = pref.customThemeFonts ? customFont.fontLyrics         : 'Segoe UI'; // Lyrics font
+const fontLibrary        = pref.customThemeFonts ? customFont.fontLibrary        : 'Segoe UI';
+const fontBiography      = pref.customThemeFonts ? customFont.fontBiography      : 'Segoe UI';
+const fontLyrics         = pref.customThemeFonts ? customFont.fontLyrics         : 'Segoe UI';
 
 const fontList = [
 	fontDefault, fontSegoeUISymbol, fontTopMenu, fontTopMenuCaption,
@@ -267,9 +350,10 @@ const fontList = [
 	fontLibrary, fontBiography, fontLyrics
 ];
 
+/** @type {boolean} The state of installed fonts on system, will return false if one is missing. */
 let fontsInstalled = true;
 
-if (!fontList.every((fontName) => testFont(fontName))) {
+if (!fontList.every((fontName) => TestFont(fontName))) {
 	fontsInstalled = false;
 	fb.ShowPopupMessage('Georgia-ReBORN WAS UNABLE TO LOAD SOME FONTS\n\n' +
 	'Be sure all fonts from\nfoobar2000\\profile\\georgia-reborn\\fonts\nare correctly installed in these directories:\n\n' +
@@ -278,7 +362,6 @@ if (!fontList.every((fontName) => testFont(fontName))) {
 	'foobar\\profile\\georgia-reborn\\configs\\georgia-reborn-config.jsonc config file.\n\n' +
 	'You can also check foobar\'s console ( Top menu > View > Console ),\nit will show font errors with its wrong font names.', 'FONT ERROR WARNING');
 }
-
 
 if (pref.customThemeFonts) {
 	console.log('\nUser\'s set custom fonts are being used:\n\n'
@@ -318,12 +401,15 @@ if (pref.customThemeFonts) {
 	);
 }
 
+/**
+ * Creates and sets all theme fonts.
+ */
 function createFonts() {
 	g_tooltip = window.Tooltip;
 	if (g_tooltip) {
-		g_tooltip.Text = '';	// Just in case
-		g_tooltip.SetFont(fontDefault, scaleForDisplay(15));
-		g_tooltip.SetMaxWidth(scaleForDisplay(pref.layout !== 'default' ? 600 : 800));
+		g_tooltip.Text = ''; // Just in case
+		g_tooltip.SetFont(fontDefault, SCALE(15));
+		g_tooltip.SetMaxWidth(SCALE(pref.layout !== 'default' ? 600 : 800));
 	}
 
 	// * FONT SIZES * //
@@ -357,60 +443,62 @@ function createFonts() {
 	const artistTitle = pref.showGridArtist_default && pref.showGridTitle_default || pref.showGridArtist_artwork && pref.showGridTitle_artwork;
 
 	// * TOP MENU BUTTONS * //
-	ft.top_menu         = font(fontTopMenu, menuFontSize, 0);
-	ft.top_menu_caption = font(fontTopMenuCaption, menuCaptionFontSize, 0);
-	ft.top_menu_compact = font(fontAwesome, menuFontSize, 0);
+	ft.top_menu         = Font(fontTopMenu, menuFontSize, 0);
+	ft.top_menu_caption = Font(fontTopMenuCaption, menuCaptionFontSize, 0);
+	ft.top_menu_compact = Font(fontAwesome, menuFontSize, 0);
 
 	// * LOWER BAR * //
-	ft.lower_bar_artist = font(fontLowerBarArtist, lowerBarFontSize, pref.customThemeFonts ? g_font_style.bold : 0);
-	ft.lower_bar_title  = font(fontLowerBarTitle,  lowerBarFontSize, 0);
-	ft.lower_bar_disc   = font(fontLowerBarDisc,   lowerBarFontSize, 0);
-	ft.lower_bar_time   = font(fontLowerBarTime,   lowerBarFontSize, pref.customThemeFonts ? g_font_style.bold : 0);
-	ft.lower_bar_length = font(fontLowerBarLength, lowerBarFontSize, 0);
-	ft.lower_bar_wave   = font(fontLowerBarWave,   lowerBarFontSize - 6, pref.customThemeFonts ? g_font_style.bold : 0);
+	ft.lower_bar_artist = Font(fontLowerBarArtist, lowerBarFontSize, pref.customThemeFonts ? g_font_style.bold : 0);
+	ft.lower_bar_title  = Font(fontLowerBarTitle,  lowerBarFontSize, 0);
+	ft.lower_bar_disc   = Font(fontLowerBarDisc,   lowerBarFontSize, 0);
+	ft.lower_bar_time   = Font(fontLowerBarTime,   lowerBarFontSize, pref.customThemeFonts ? g_font_style.bold : 0);
+	ft.lower_bar_length = Font(fontLowerBarLength, lowerBarFontSize, 0);
+	ft.lower_bar_wave   = Font(fontLowerBarWave,   lowerBarFontSize - 6, pref.customThemeFonts ? g_font_style.bold : 0);
 
 	if (updateHyperlink) updateHyperlink.setFont(ft.lower_bar_title);
 
 	// * LOWER BAR TRANSPORT BUTTONS * //
-	ft.guifx                  = font(fontGuiFx,   Math.floor(guiFxBtnFontSize), 0);
-	ft.playback_order_default = font(fontGuiFx,   Math.floor(pboDefaultBtnFontSize), 0);
-	ft.playback_order_replay  = font(fontAwesome, Math.floor(pboReplayBtnFontSize), 0);
-	ft.playback_order_shuffle = font(fontGuiFx,   Math.floor(pboShuffleBtnFontSize), 0);
-	ft.guifx_reload           = font(fontGuiFx,   Math.floor(reloadBtnFontSize), 0);
-	ft.guifx_volume           = font(fontGuiFx,   Math.floor(volumeBtnFontSize), 0);
+	ft.guifx                  = Font(fontGuiFx,   Math.floor(guiFxBtnFontSize), 0);
+	ft.playback_order_default = Font(fontGuiFx,   Math.floor(pboDefaultBtnFontSize), 0);
+	ft.playback_order_replay  = Font(fontAwesome, Math.floor(pboReplayBtnFontSize), 0);
+	ft.playback_order_shuffle = Font(fontGuiFx,   Math.floor(pboShuffleBtnFontSize), 0);
+	ft.guifx_reload           = Font(fontGuiFx,   Math.floor(reloadBtnFontSize), 0);
+	ft.guifx_volume           = Font(fontGuiFx,   Math.floor(volumeBtnFontSize), 0);
 
 	// * MISC * //
-	ft.no_album_art_stub = font(fontAwesome, 160, 0);
-	ft.symbol            = font(fontSegoeUISymbol, playlistFontSize, 0);
-	ft.notification      = font(fontNotification, notificationFontSize, 0);
-	ft.popup             = font(fontPopup, popupFontSize, 0);
-	ft.tooltip           = font(fontTooltip, tooltipFontSize, 0);
+	ft.no_album_art_stub = Font(fontAwesome, 160, 0);
+	ft.symbol            = Font(fontSegoeUISymbol, playlistFontSize, 0);
+	ft.notification      = Font(fontNotification, notificationFontSize, 0);
+	ft.popup             = Font(fontPopup, popupFontSize, 0);
+	ft.tooltip           = Font(fontTooltip, tooltipFontSize, 0);
 
 	// * DETAILS METADATA GRID * //
-	ft.grd_artist   = font(fontGridArtist, gridArtistFontSize, pref.customThemeFonts ? g_font_style.bold : 0);
-	ft.grd_tracknum = font(artistTitle ? fontGridTitle : fontGridTitleBold, gridTrackNumFontSize, 0);
-	ft.grd_title    = font(artistTitle ? fontGridTitle : fontGridTitleBold, gridTitleFontSize, 0);
-	ft.grd_album    = font(fontGridAlbum, gridAlbumFontSize, pref.customThemeFonts ? g_font_style.bold : 0);
-	ft.grd_key      = font(fontGridKey, gridKeyFontSize, 0);
-	ft.grd_val      = font(fontGridValue, gridValueFontSize, 0);
+	ft.grd_artist   = Font(fontGridArtist, gridArtistFontSize, pref.customThemeFonts ? g_font_style.bold : 0);
+	ft.grd_tracknum = Font(artistTitle ? fontGridTitle : fontGridTitleBold, gridTrackNumFontSize, 0);
+	ft.grd_title    = Font(artistTitle ? fontGridTitle : fontGridTitleBold, gridTitleFontSize, 0);
+	ft.grd_album    = Font(fontGridAlbum, gridAlbumFontSize, pref.customThemeFonts ? g_font_style.bold : 0);
+	ft.grd_key      = Font(fontGridKey, gridKeyFontSize, 0);
+	ft.grd_val      = Font(fontGridValue, gridValueFontSize, 0);
 
 	// * LIBRARY * //
-	ft.library = font(fontLibrary, libraryFontSize, 0);
+	ft.library = Font(fontLibrary, libraryFontSize, 0);
 
 	// * BIOGRAPHY * //
-	ft.biography = font(fontBiography, biographyFontSize, 0);
+	ft.biography = Font(fontBiography, biographyFontSize, 0);
 
 	// * LYRICS * //
-	ft.lyrics          = font(fontLyrics, lyricsFontSize, 1);
-	ft.lyricsHighlight = font(fontLyrics, lyricsFontSize * 1.5, 1);
+	ft.lyrics          = Font(fontLyrics, lyricsFontSize, 1);
+	ft.lyricsHighlight = Font(fontLyrics, lyricsFontSize * 1.5, 1);
 }
 
 
 ///////////////
 // * PATHS * //
 ///////////////
+/** @type {Object} The Georgia-ReBORN images path object. */
 const paths = {};
-const imagesPath             = `${fb.ProfilePath}georgia-reborn/images/`;
+/** @type {string} The Georgia-ReBORN images path shortcut. */
+const imagesPath = `${fb.ProfilePath}georgia-reborn/images/`;
 
 // * CDART STUBS * //
 paths.cdArtWhiteStub         = `${imagesPath}discart/cd-white.png`;
@@ -445,200 +533,315 @@ paths.lastFmImageWhite       = `${imagesPath}misc/last-fm-36.png`;
 /////////////////
 // * ARTWORK * //
 /////////////////
-/** @type {ArtCache} */
+/** @type {ArtCache} The cached images from album art. */
 let artCache;
-let albumArt = null; // Album art image
-let albumArtSize = new ImageSize(0, 0, 0, 0); // Position ( big image )
-/** @type {GdiBitmap} */
-let albumArtScaled = null; // Pre-scaled album art to speed up drawing considerably
-let artOffCenter = false; // If true, album art has been shifted 40 pixels to the right
-let embeddedArt = false; // When artwork displayed is embedded and not loaded from a file
-let loadFromCache = true; // Always load art from cache unless this is set
-let noAlbumArtStub = false; // No album art stub
-let discArt = null; // Disc art image
-/** @type {GdiBitmap[]} */
-let discArtArray = [];
-let discArtSize = new ImageSize(0, 0, 0, 0); // Disc art position ( offset from albumArtSize )
-let rotatedDiscArt = null; // Drawing discArt rotated is slow, so first draw it rotated into the rotatedDiscArt image, and then draw rotatedDiscArt image unrotated
-let rotatedDiscArtIndex = 0; // Global index of current discArtArray img to draw
-let recordLabels = []; // Array of record label images
-let recordLabelsInverted = []; // Array of inverted record label images
-let bandLogo = null; // Band logo image
-let invertedBandLogo = null; // Inverted band logo image
-let flagImgs = []; // Array of flag images
-let releaseFlagImg = null; // Release country flag
-let codecLogo = null; // Codec logo image
-let hiResAudioImg = null; // Hi-Res Audio badge image
-let playCountVerifiedByLastFm = false; // Show Last.fm image when we %lastfm_play_count% > 0
-let labelShadowImg = null; // Shadow behind labels
-let shadowImg = null; // Shadow behind the artwork + discart
-
-
-////////////////
-// * STATUS * //
-////////////////
-/** @param {number} width - window.Width */
-let ww = 0;
-/** @param {number} height - window.Height */
-let wh = 0;
-/** @param {number} top - metadataGrid top */
-let gridTop = 0;
-/** @type ProgressBar */
-let progressBar = null;
-/** @type WaveformBar */
-let waveformBar = null;
-/** @type PeakmeterBar */
-let peakmeterBar = null;
-/** @type JumpSearch */
-let jumpSearch = null;
-/** @type {PlaylistHistory} */
-let playlistHistory;
-let playlistHistoryUsed; // Used for playlist scroll
-let state = {}; // Panel state
-let displayPlaylist = false;
-let displayPlaylistArtworkLayout = false;
-let displayDetails = pref.showPanelOnStartup === 'details';
-let displayLibrary = false;
-let displayBiography = false;
+/** @type {GdiBitmap} The big album art image displayed on the left side. */
+let albumArt = null;
+/** @type {array} The album art list array containing album and disc art images. */
 let albumArtList = [];
-let albumArtIndex = 0; // Index of currently displayed album art if more than 1
-let lastLeftEdge = 0; // The left edge of the record labels. Saved so we don't have to recalculate every on every on_paint unless size has changed
+/** @type {number} The index of currently displayed album art if more than 1. */
+let albumArtIndex = 0;
+/** @type {Object} The album art position ( big image ). */
+let albumArtSize = new ImageSize(0, 0, 0, 0);
+/** @type {GdiBitmap} The pre-scaled album art to speed up drawing considerably. */
+let albumArtScaled = null;
+/** @type {boolean} The off-center position of the album art, if true, it will shift 40 pixels to the right. */
+let artOffCenter = false;
+/** @type {boolean} The state when artwork displayed is embedded and not loaded from a file. */
+let embeddedArt = false;
+/** @type {boolean} The state to always load art from cache unless this is set. */
+let loadFromCache = true;
+/** @type {boolean} The "no album art stub" when no album cover was found. */
+let noAlbumArtStub = false;
+/** @type {GdiBitmap} The disc art image used in Details. */
+let discArt = null;
+/** @type {GdiBitmap[]} The array of disc art images used in Details. */
+let discArtArray = [];
+/** @type {Object} The disc art position used in Details ( offset from albumArtSize ). */
+let discArtSize = new ImageSize(0, 0, 0, 0);
+/** @type {GdiBitmap} The rotated disc art from the RotateImg helper used in Details. */
+let rotatedDiscArt = null;
+/** @type {number} The global index of current discArtArray img to draw used in Details. */
+let rotatedDiscArtIndex = 0;
+/** @type {GdiBitmap[]} The array of record label images used in Details. */
+let recordLabels = [];
+/** @type {GdiBitmap[]} The array of inverted record label images used in Details. */
+let recordLabelsInverted = [];
+/** @type {GdiBitmap} The band logo image used in Details. */
+let bandLogo = null;
+/** @type {GdiBitmap} The inverted band logo image shown in Details. */
+let invertedBandLogo = null;
+/** @type {GdiBitmap[]} The array of flag images shown in Details and in the lower bar. */
+let flagImgs = [];
+/** @type {GdiBitmap} The release country flag image shown in the metadata grid in Details. */
+let releaseFlagImg = null;
+/** @type {GdiBitmap} The codec logo image shown in the metadata grid in Details. */
+let codecLogo = null;
+/** @type {GdiBitmap} The Hi-Res Audio badge logo image shown on album art when enabled. */
+let hiResAudioImg = null;
+/** @type {boolean} The last.fm logo image displayed when we %lastfm_play_count% > 0, shown in the metadata grid in Details. */
+let playCountVerifiedByLastFm = false;
+/** @type {GdiBitmap} The shadow behind labels used in Details. */
+let labelShadowImg = null;
+/** @type {GdiBitmap} The shadow behind the artwork + discart used in Details. */
+let shadowImg = null;
+
+
+///////////////
+// * STATE * //
+///////////////
+/** @param {number} width window.Width. */
+let ww = 0;
+/** @param {number} height window.Height. */
+let wh = 0;
+/** @param {number} top The metadata grid top position. */
+let gridTop = 0;
+/** @type {ProgressBar} Creates the progress bar object. */
+let progressBar = null;
+/** @type {WaveformBar} Creates the waveform bar object. */
+let waveformBar = null;
+/** @type {PeakmeterBar} Creates the peakmeter bar object. */
+let peakmeterBar = null;
+/** @type {JumpSearch} Creates the jump search object. */
+let jumpSearch = null;
+/** @type {PlaylistHistory} Creates the playlist history object. */
+let playlistHistory;
+/** @type {boolean} The Playlist history state, used for playlist scroll. */
+let playlistHistoryUsed;
+/** @type {boolean} The display state of the Playlist panel. */
+let displayPlaylist = false;
+/** @type {boolean} The display state of the Playlist panel in Artwork layout. */
+let displayPlaylistArtworkLayout = false;
+/** @type {boolean} The display state of the Details panel. */
+let displayDetails = pref.showPanelOnStartup === 'details';
+/** @type {boolean} The display state of the Library panel. */
+let displayLibrary = false;
+/** @type {boolean} The display state of the Biography panel. */
+let displayBiography = false;
+/** @type {number} The left edge of the record labels in Details. Saved so we don't have to recalculate every on every on_paint unless size has changed. */
+let lastLeftEdge = 0;
+/** @type {number} The last label height of the record labels in Details. Saved so we don't have to recalculate every on every on_paint unless size has changed. */
 let lastLabelHeight = 0;
+/** @type {number} The first played ratio used on the timeline in Details. */
 let timelineFirstPlayedRatio = 0;
+/** @type {number} The last played ratio used on the timeline in Details. */
 let timelineLastPlayedRatio = 0;
-let currentFolder;
-let lastFolder;
-let lastAlbum;
-let lastDiscNumber;
-let lastVinylSide;
+/** @type {string} The path of the current playing album directory, used for art caching purposes on_playback_new_track. */
+let currentAlbumFolder;
+/** @type {string} The path of the last played album directory, used for art caching purposes on_playback_new_track. */
+let lastAlbumFolder;
+/** @type {string} %album% tag of the current playing album, used for art caching purposes on_playback_new_track. */
+let lastAlbumFolderTag;
+/** @type {string} The disc number of the last played album directory, used for art caching purposes on_playback_new_track. */
+let lastAlbumDiscNumber;
+/** @type {string} The vinyl side of the last played album, used for art caching purposes on_playback_new_track. */
+let lastAlbumVinylSide;
+/** @type {string} The date and time of the current last played album, used for art caching purposes on_playback_new_track. */
 let currentLastPlayed = '';
+/** @type {string} Displays the active playlist of the current playing track in the metadata grid in Details. */
 let playingPlaylist = '';
-let lastPlaybackOrder; // Saves last playback order
-let lyricsLayoutFullWidth; // Saves full width lyrics layout
-let doubleClicked = false;
-let isStreaming = false; // Is the song from a streaming source?
-let isPlayingCD = false; // Is the song playing from a CD?
-let themeRestoreState = false; // Used to restore theme state after custom [%GR_THEME%] or [%GR_STLYE%] or [%GR_PRESET%] usage
-let themePresetMatchMode = false; // When active styles match any theme presets, used for the notification popup in the showThemePresetIndicator
-let themePresetIndicator = true; // Used to hide theme preset indicator under certain conditions
-let themePresetName = ''; // Name of the current theme preset
-let themeColorSet = false; // When no artwork, don't set themeColor every redraw
-let getRandomThemeColorContextMenu = false; // State to override condition in getRandomThemeColor() when using "Generate new color" from context menu
-let noArtwork = false; // Only use default theme when noArtwork was found
-let newTrackFetchingArtwork = false; // Only load theme colors when newTrackFetchingArtwork = true
-let newTrackFetchingDone = false; // State when new album art / disc art loaded and other things finished, used for smoother Playlist auto-scrolling
-let libraryCanReload = true; // State when Library should not call window.Reload() from panel.set() -> panel.load(), i.e when saving theme settings or restoring theme backup
-let initThemeFull = false; // State if initTheme() needs to be fully executed to save performance
-let initThemeSkip = false; // State to skip most initTheme() and get getThemeColors(albumArt), mostly used for theme presets to prevent double inits
-let loadingTheme = false; // State when the theme is loading on startup or reload
-let loadingThemeComplete = false; // State when the theme has completely loaded, used for pseudo delay background logo mask on startup or reload
+/** @type {number} Saves last playback order. */
+let lastPlaybackOrder;
+/** @type {boolean} Saves active full width lyrics layout via pref.lyricsLayout. */
+let lyricsLayoutFullWidth;
+/** @type {boolean} Is the song from a streaming source? */
+let isStreaming = false;
+/** @type {boolean} Is the song playing from a CD? */
+let isPlayingCD = false;
+/** @type {boolean} Used to restore theme state after custom [%GR_THEME%] or [%GR_STYLE%] or [%GR_PRESET%] usage. */
+let themeRestoreState = false;
+/** @type {boolean} When active styles match any theme presets, used for the notification popup in the showThemePresetIndicator. */
+let themePresetMatchMode = false;
+/** @type {boolean} Used to hide theme preset indicator under certain conditions. */
+let themePresetIndicator = true;
+/** @type {string} The name of the current theme preset. */
+let themePresetName = '';
+/** @type {boolean} When no artwork, don't set themeColor every redraw. */
+let themeColorSet = false;
+/** @type {boolean} The state to override condition in getRandomThemeColor() when using "Generate new color" from context menu. */
+let getRandomThemeColorContextMenu = false;
+/** @type {boolean} Only use default theme when noArtwork was found. */
+let noArtwork = false;
+/** @type {boolean} Only load theme colors when newTrackFetchingArtwork = true. */
+let newTrackFetchingArtwork = false;
+/** @type {boolean} The state when new album art / disc art loaded and other things finished, used for smoother Playlist auto-scrolling. */
+let newTrackFetchingDone = false;
+/** @type {boolean} The state when Library should not call window.Reload() from panel.set() -> panel.load(), i.e when saving theme settings or restoring theme backup. */
+let libraryCanReload = true;
+/** @type {boolean} The state if initTheme() needs to be fully executed to save performance. */
+let initThemeFull = false;
+/** @type {boolean} The state to skip most initTheme() and get getThemeColors(albumArt), mostly used for theme presets to prevent double inits. */
+let initThemeSkip = false;
+/** @type {boolean} The state when the theme is loading on startup or reload. */
+let loadingTheme = false;
+/** @type {boolean} The state when the theme has completely loaded, used for pseudo delay background logo mask on startup or reload. */
+let loadingThemeComplete = false;
 
 
 //////////////
 // * MENU * //
 //////////////
-const menuStartIndex = 100; // Can be anything except 0
+/** @type {number} The menu start index, can be anything except 0. */
+const menuStartIndex = 100;
+/** @type {Menu} The menu item index. */
 let _MenuItemIndex = menuStartIndex;
-let _MenuCallbacks = []; // SMP does not yet have support for "fields" and so we cannot create static members shared across all classes.
-let _MenuVariables = []; // We must use these ugly shared globals instead
+/** @type {Menu} SMP does not yet have support for "fields" and so we cannot create static members shared across all classes. */
+let _MenuCallbacks = [];
+/** @type {Menu} We must use these ugly shared globals instead. */
+let _MenuVariables = [];
 
 
 /////////////////////
 // * CUSTOM MENU * //
 /////////////////////
+/** @type {BaseControl} The customMenu object. */
 let customMenu;
-let customThemeMenuCall; // Used only when customThemeMenu Biography button was used and then top menu Details button
-let customColor = customTheme01; // Used to change prefix and switch colors between custom theme 1-5
-let displayCustomThemeMenu = false; // Display custom theme menu
-let displayMetadataGridMenu = false; // Display metadata grid menu
+/** @type {boolean} The custom theme menu was called, used only when customThemeMenu Biography button was used and then top menu Details button. */
+let customThemeMenuCall;
+/** @type {Object} Used to change prefix and switch colors between custom theme 1-10. */
+let customColor = customTheme01;
+/** @type {boolean} The display state of custom theme menu when using Options > Theme > Edit custom theme. */
+let displayCustomThemeMenu = false;
+/** @type {boolean} The display state of the metadata grid menu. */
+let displayMetadataGridMenu = false;
+/** @type {Object} The control list object used in custom theme menu. */
 let controlList = [];
+/** @type {Object} The active control object used in custom theme menu. */
 let activeControl;
+/** @type {Object} The hovered control object used in custom theme menu. */
 let hoveredControl;
+/** @type {boolean} The mouse button pressed state, used in custom theme menu. */
 let mouseDown = false;
 
 
 /////////////////////////
 // * BUTTONS & MOUSE * //
 /////////////////////////
-/** @type ButtonEventHandler */
+/** @type {ButtonEventHandler} The topMenu object. */
 let topMenu;
-/** Used to cancel top menu compact collapse when mouse is again in top menu area */
+/** @type {boolean} The top menu compact state, used to cancel top menu compact collapse when mouse is again in top menu area. */
 let topMenuCompactExpanded = false;
-/** @type PauseBtn */
+/** @type {PauseButton} The album art pause button. */
 let pauseBtn;
-/** @type VolumeBtn */
+/** @type {VolumeBtn} The lower bar volume button. */
 let volumeBtn;
+/** @type {Object} The theme button object. */
 let btns = {};
+/** @type {GdiGraphics} The theme button images. */
 let btnImg;
+/** @type {boolean} The top menu and contextual menu state, is it open ( active ) or not. */
 let activeMenu = false;
-let mouseInPanel = false;
+/** @type {boolean} The double click mouse state. */
+let doubleClicked = false;
+/** @type {Object} The mouse move position state. */
+let state = {};
+/** @type {boolean} The album art mouse wheel scroll state when scrolling through album art image array, used in loadImageFromAlbumArtList(). */
 let on_mouse_wheel_albumart = false;
 
 
 /////////////////
 // * UIHACKS * //
 /////////////////
+/** @type {boolean} UIHacks pseudo caption state, used in UIHacksDragWindow. */
 let pseudoCaption;
+/** @type {number} UIHacks sets pseudo caption width when dragging foobar, used in UIHacksDragWindow. */
 let pseudoCaptionWidth;
+/** Preferences > Display > Main Window > Frame style: No border. */
 UIHacks.FrameStyle = 3;
+/** Preferences > Display > Main Window > Move with: Any method. */
 UIHacks.MoveStyle = 3;
+/** Preferences > Display > Main Window > Aero effects: Glass frame. */
 UIHacks.Aero.Effect = 2;
+/** Preferences > Display > Main Window > Aero top: 1 px fix for window drop shadow. */
 UIHacks.Aero.Top = 1;
+/** Preferences > Display > Main Window > Constraints: Disable window maximization. */
 UIHacks.BlockMaximize = false;
 
 
 ////////////////
 // * TIMERS * //
 ////////////////
-let albumArtTimeout; // setTimeout ID for rotating album art
-let discArtRotationTimer; // Timer when disc art spins while song is playing
-let hideCursorTimeout; // setTimeout ID for hiding cursor
-let progressBarTimer; // 40 ms repaint of progress bar
-let progressBarTimerInterval; // Milliseconds between progress bar updates
-let presetAutoRandomModeTimer; // Timer for style auto random preset
-let presetIndicatorTimer; // Timer for theme preset indicator
-let randomThemeAutoColorTimer; // Timer for style auto color in Random theme
-let themeDayNightModeTimer; // 10 minute timer check for theme day/night mode
+/** @type {number} The setTimeout ID for cycling album art. */
+let albumArtTimeout;
+/** @type {number} The timer when disc art spins while song is playing. */
+let discArtRotationTimer;
+/** @type {number} The setTimeout ID for hiding cursor. */
+let hideCursorTimeout;
+/** @type {number} The timer of progress bar. */
+let progressBarTimer;
+/** @type {number} The timer interval between progress bar updates. */
+let progressBarTimerInterval;
+/** @type {number} The timer for style auto random preset. */
+let presetAutoRandomModeTimer;
+/** @type {number} The timer for theme preset indicator. */
+let presetIndicatorTimer;
+/** @type {number} The timer for style auto color in Random theme. */
+let randomThemeAutoColorTimer;
+/** @type {number} The 10 minute timer for theme day/night mode. */
+let themeDayNightModeTimer;
 
 
 /////////////////
 // * TOOLTIP * //
 /////////////////
-/** @type {FbTooltip} */
+/** @type {FbTooltip} The tooltip object. */
 let g_tooltip;
-/** @type {TooltipTimer} */
+/** @type {TooltipTimer} The tooltip timer. */
 let g_tooltip_timer;
-/** @type {TooltipHandler} */
+/** @type {TooltipHandler} The tooltip object. */
 let tt;
-/** Passed tooltip handler text for styled tooltip */
+/** @type {string} The tooltip text handler for styled tooltip. */
 let styledTooltipText;
-/** Draw state of styled tooltip */
+/** @type {boolean} The draw state of styled tooltip. */
 let styledTooltipReady;
 
 
 ///////////////
 // * DEBUG * //
 ///////////////
+/** @type {number} Shows the image alpha in showThemeDebugOverlay. */
 let blendedImgAlpha;
+/** @type {number} Shows the image blur in showThemeDebugOverlay. */
 let blendedImgBlur;
+/** @type {string} Shows the col.primary in showThemeDebugOverlay. */
 let selectedPrimaryColor;
+/** @type {string} Shows the col.primary_alt in showThemeDebugOverlay. */
 let selectedPrimaryColor2;
+/** @type {array} Used in drawDebugRectAreas(). */
 let repaintRects = [];
-let repaintRectCount = 0;                       // Used in repaintRectAreas();
-let trace_call = false;                         // DO NOT CHANGE, can be activated via top menu Options > Developer tools
-let trace_on_paint = false;                     // DO NOT CHANGE, can be activated via top menu Options > Developer tools
-let trace_on_move = false;                      // DO NOT CHANGE, can be activated via top menu Options > Developer tools
-let trace_initialize_list_performance = false;  // DO NOT CHANGE, can be activated via top menu Options > Developer tools
+/** @type {number} Used in repaintRectAreas(). */
+let repaintRectCount = 0;
+/** @type {boolean} DO NOT CHANGE, can be activated via Options > Developer tools. */
+let trace_call = false;
+/** @type {boolean} DO NOT CHANGE, can be activated via Options > Developer tools. */
+let trace_on_paint = false;
+/** @type {boolean} DO NOT CHANGE, can be activated via Options > Developer tools. */
+let trace_on_move = false;
+/** @type {boolean} DO NOT CHANGE, can be activated via Options > Developer tools. */
+let trace_initialize_list_performance = false;
 
 window.oldRepaintRect = window.RepaintRect;
 
+/**
+ * @typedef  {Object} TimingsObj
+ * @property {boolean} showDebugTiming Spams the console with debug timings.
+ * @property {boolean} showDrawTiming Spams the console with draw times.
+ * @property {boolean} showExtraDrawTiming Spams the console with every section of the draw code to determine bottlenecks.
+ * @property {boolean} showRamUsage Spams the console with memory statistic.
+ * @property {boolean} drawRepaintRects Draws all window.RepaintRect as red outlines in the theme.
+ * @property {boolean} showPanelTraceCall Spams the console with panel trace call.
+ * @property {boolean} showPanelTraceOnMove Spams the console with panel trace on move.
+ * @property {boolean} showPlaylistTraceListPerf Spams the console with playlist list performance.
+ */
+
+/** @type {TimingsObj} */
 const timings = {
-	showDebugTiming: false,          // Spam console with debug timings
-	showDrawTiming: false,           // Spam console with draw times
-	showExtraDrawTiming: false,      // Spam console with every section of the draw code to determine bottlenecks
-	showRamUsage: false,             // Spam console with memory statistic
-	drawRepaintRects: false,         // Outline window.RepaintRect in red
-	showPanelTraceCall: false,       // Spam console with panel trace call
-	showPanelTraceOnMove: false,     // Spam console with panel trace on move
-	showPlaylistTraceListPerf: false // Spam console with playlist list performance
+	showDebugTiming: false,
+	showDrawTiming: false,
+	showExtraDrawTiming: false,
+	showRamUsage: false,
+	drawRepaintRects: false,
+	showPanelTraceCall: false,
+	showPanelTraceOnMove: false,
+	showPlaylistTraceListPerf: false
 };

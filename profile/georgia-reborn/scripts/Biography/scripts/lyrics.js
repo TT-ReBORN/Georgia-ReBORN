@@ -12,7 +12,7 @@ class LyricsBio {
 		this.timestamps = /(\s*)\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}])(\s*)/g;
 	}
 
-	// Methods
+	// * METHODS * //
 
 	advanceHighLighted() {
 		this.newHighlighted = true;

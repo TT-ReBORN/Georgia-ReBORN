@@ -6,339 +6,2211 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-24                                          * //
+// * Last change:    2023-07-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
 
 
-///////////////////////
-// * THEME PRESETS * //
-///////////////////////
-
+/////////////////////////////
 // * WHITE THEME PRESETS * //
-const whiteP01 = () => { pref.theme = 'white'; pref.styleBevel = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBarFill = 'bevel'; };
-const whiteP02 = () => { pref.theme = 'white'; pref.styleBevel = true; pref.styleBlackAndWhite = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'default'; pref.styleVolumeBar = 'inner'; };
-const whiteP03 = () => { pref.theme = 'white'; pref.styleBevel = true; pref.styleBlend = true; pref.styleBlackAndWhite = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const whiteP04 = () => { pref.theme = 'white'; pref.styleBevel = true; pref.styleBlackAndWhite2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const whiteP05 = () => { pref.theme = 'white'; pref.styleBevel = true; pref.styleBlend = true; pref.styleBlackAndWhite2 = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const whiteP06 = () => { pref.theme = 'white'; pref.styleBevel = true; pref.styleBlackAndWhiteReborn = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const whiteP07 = () => { pref.theme = 'white'; pref.styleBevel = true; pref.styleBlend = true; pref.styleBlackAndWhiteReborn = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const whiteP08 = () => { pref.theme = 'white'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'minimal'; pref.styleTransportButtons = 'minimal'; };
+/////////////////////////////
+/**
+ * White theme preset -> Options > Preset > White > Beveled.
+ * @returns {string|boolean}
+ */
+const whiteP01 = () => {
+	pref.theme = 'white';
+	pref.styleBevel = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBarFill = 'bevel';
+};
 
+/**
+ * White theme preset -> Options > Preset > White > Black and white.
+ * @returns {string|boolean}
+ */
+const whiteP02 = () => {
+	pref.theme = 'white';
+	pref.styleBevel = true;
+	pref.styleBlackAndWhite = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'default';
+	pref.styleVolumeBar = 'inner';
+};
+
+/**
+ * White theme preset -> Options > Preset > White > Black and white blended.
+ * @returns {string|boolean}
+ */
+const whiteP03 = () => {
+	pref.theme = 'white';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleBlackAndWhite = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * White theme preset -> Options > Preset > White > Black and white 2.
+ * @returns {string|boolean}
+ */
+const whiteP04 = () => {
+	pref.theme = 'white';
+	pref.styleBevel = true;
+	pref.styleBlackAndWhite2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * White theme preset -> Options > Preset > White > Black and white 2 blended.
+ * @returns {string|boolean}
+ */
+const whiteP05 = () => {
+	pref.theme = 'white';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleBlackAndWhite2 = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * White theme preset -> Options > Preset > White > Black and white reborn.
+ * @returns {string|boolean}
+ */
+const whiteP06 = () => {
+	pref.theme = 'white';
+	pref.styleBevel = true;
+	pref.styleBlackAndWhiteReborn = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * White theme preset -> Options > Preset > White > Black and white reborn blended.
+ * @returns {string|boolean}
+ */
+const whiteP07 = () => {
+	pref.theme = 'white';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleBlackAndWhiteReborn = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * White theme preset -> Options > Preset > White > Minimalized.
+ * @returns {string|boolean}
+ */
+const whiteP08 = () => {
+	pref.theme = 'white';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'minimal';
+	pref.styleTransportButtons = 'minimal';
+};
+
+
+/////////////////////////////
 // * BLACK THEME PRESETS * //
-const blackP01 = () => { pref.theme = 'black'; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'bevel'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'bevel'; pref.styleVolumeBarFill = 'bevel'; };
-const blackP02 = () => { pref.theme = 'black'; pref.styleBevel = true; pref.styleBlend = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const blackP03 = () => { pref.theme = 'black'; pref.styleBlend = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const blackP04 = () => { pref.theme = 'black'; pref.styleBlend = true; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const blackP05 = () => { pref.theme = 'black'; pref.styleBevel = true; pref.styleBlackReborn = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const blackP06 = () => { pref.theme = 'black'; pref.styleBevel = true; pref.styleBlend = true; pref.styleBlackReborn = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const blackP07 = () => { pref.theme = 'black'; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; pref.themeBrightness = 10; };
-const blackP08 = () => { pref.theme = 'black'; pref.styleBlend = true; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; pref.themeBrightness = 10; };
-const blackP09 = () => { pref.theme = 'black'; pref.styleBevel = true; pref.styleBlend2 = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; pref.themeBrightness = 10; };
-const blackP10 = () => { pref.theme = 'black'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'minimal'; pref.styleTransportButtons = 'minimal'; };
+/////////////////////////////
+/**
+ * Black theme preset -> Options > Preset > Black > Beveled.
+ * @returns {string|boolean}
+ */
+const blackP01 = () => {
+	pref.theme = 'black';
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'bevel';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'bevel';
+	pref.styleVolumeBarFill = 'bevel';
+};
 
+/**
+ * Black theme preset -> Options > Preset > Black > Blended.
+ * @returns {string|boolean}
+ */
+const blackP02 = () => {
+	pref.theme = 'black';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Black theme preset -> Options > Preset > Black > Blended alternative.
+ * @returns {string|boolean}
+ */
+const blackP03 = () => {
+	pref.theme = 'black';
+	pref.styleBlend = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Black theme preset -> Options > Preset > Black > Blended alternative 2.
+ * @returns {string|boolean}
+ */
+const blackP04 = () => {
+	pref.theme = 'black';
+	pref.styleBlend = true;
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Black theme preset -> Options > Preset > Black > Black reborn.
+ * @returns {string|boolean}
+ */
+const blackP05 = () => {
+	pref.theme = 'black';
+	pref.styleBevel = true;
+	pref.styleBlackReborn = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Black theme preset -> Options > Preset > Black > Black reborn blended.
+ * @returns {string|boolean}
+ */
+const blackP06 = () => {
+	pref.theme = 'black';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleBlackReborn = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Black theme preset -> Options > Preset > Black > Dark gray.
+ * @returns {string|boolean|number}
+ */
+const blackP07 = () => {
+	pref.theme = 'black';
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Black theme preset -> Options > Preset > Black > Dark gray blended.
+ * @returns {string|boolean|number}
+ */
+const blackP08 = () => {
+	pref.theme = 'black';
+	pref.styleBlend = true;
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Black theme preset -> Options > Preset > Black > Dark gray 2 blended.
+ * @returns {string|boolean|number}
+ */
+const blackP09 = () => {
+	pref.theme = 'black';
+	pref.styleBevel = true;
+	pref.styleBlend2 = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Black theme preset -> Options > Preset > Black > Minimalized.
+ * @returns {string|boolean}
+ */
+const blackP10 = () => {
+	pref.theme = 'black';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'minimal';
+	pref.styleTransportButtons = 'minimal';
+};
+
+
+//////////////////////////////
 // * REBORN THEME PRESETS * //
-const rebornP01 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP02 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleBlend = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP03 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleBlend2 = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP04 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleGradient = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP05 = () => { pref.theme = 'reborn'; pref.styleGradient2 = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP06 = () => { pref.theme = 'reborn'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'minimal'; };
-const rebornP07 = () => { pref.theme = 'reborn'; pref.styleBlend = true; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'minimal'; pref.styleTransportButtons = 'minimal'; };
-const rebornP08 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleRebornWhite = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP09 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleBlend = true; pref.styleRebornWhite = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP10 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleBlend2 = true; pref.styleRebornWhite = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP11 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleRebornBlack = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'bevel'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'bevel'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP12 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleBlend = true; pref.styleRebornBlack = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP13 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleBlend2 = true; pref.styleRebornBlack = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP14 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleGradient = true; pref.styleRebornBlack = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP15 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleGradient2 = true; pref.styleRebornBlack = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP16 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleRebornFusion = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP17 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleBlend = true; pref.styleRebornFusion = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP18 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleBlend2 = true; pref.styleRebornFusion = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP19 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleGradient = true; pref.styleRebornFusion = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP20 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleGradient2 = true; pref.styleRebornFusion = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP21 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleRebornFusion2 = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP22 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleBlend = true; pref.styleRebornFusion2 = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP23 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleBlend2 = true; pref.styleRebornFusion2 = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP24 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleGradient = true; pref.styleRebornFusion2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP25 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleGradient2 = true; pref.styleRebornFusion2 = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP26 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleRebornFusionAccent = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP27 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleBlend = true; pref.styleRebornFusionAccent = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP28 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleBlend2 = true; pref.styleRebornFusionAccent = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP29 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleGradient = true; pref.styleRebornFusionAccent = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const rebornP30 = () => { pref.theme = 'reborn'; pref.styleBevel = true; pref.styleGradient2 = true; pref.styleRebornFusionAccent = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
+//////////////////////////////
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Beveled.
+ * @returns {string|boolean}
+ */
+const rebornP01 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
 
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Blended.
+ * @returns {string|boolean}
+ */
+const rebornP02 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Blended 2.
+ * @returns {string|boolean}
+ */
+const rebornP03 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleBlend2 = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Gradiented.
+ * @returns {string|boolean}
+ */
+const rebornP04 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleGradient = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Gradiented 2.
+ * @returns {string|boolean}
+ */
+const rebornP05 = () => {
+	pref.theme = 'reborn';
+	pref.styleGradient2 = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Minimalized.
+ * @returns {string|boolean}
+ */
+const rebornP06 = () => {
+	pref.theme = 'reborn';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'minimal';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Minimalized blended.
+ * @returns {string|boolean}
+ */
+const rebornP07 = () => {
+	pref.theme = 'reborn';
+	pref.styleBlend = true;
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'minimal';
+	pref.styleTransportButtons = 'minimal';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn white beveled.
+ * @returns {string|boolean}
+ */
+const rebornP08 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleRebornWhite = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn white blended.
+ * @returns {string|boolean}
+ */
+const rebornP09 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleRebornWhite = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn white blended 2.
+ * @returns {string|boolean}
+ */
+const rebornP10 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleBlend2 = true;
+	pref.styleRebornWhite = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn black beveled.
+ * @returns {string|boolean}
+ */
+const rebornP11 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleRebornBlack = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'bevel';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'bevel';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn black blended.
+ * @returns {string|boolean}
+ */
+const rebornP12 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleRebornBlack = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn black blended 2.
+ * @returns {string|boolean}
+ */
+const rebornP13 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleBlend2 = true;
+	pref.styleRebornBlack = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn black gradiented.
+ * @returns {string|boolean}
+ */
+const rebornP14 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleGradient = true;
+	pref.styleRebornBlack = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn black gradiented 2.
+ * @returns {string|boolean}
+ */
+const rebornP15 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleGradient2 = true;
+	pref.styleRebornBlack = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion beveled.
+ * @returns {string|boolean}
+ */
+const rebornP16 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleRebornFusion = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion blended.
+ * @returns {string|boolean}
+ */
+const rebornP17 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleRebornFusion = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion blended 2.
+ * @returns {string|boolean}
+ */
+const rebornP18 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleBlend2 = true;
+	pref.styleRebornFusion = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion gradiented.
+ * @returns {string|boolean}
+ */
+const rebornP19 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleGradient = true;
+	pref.styleRebornFusion = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion gradiented 2.
+ * @returns {string|boolean}
+ */
+const rebornP20 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleGradient2 = true;
+	pref.styleRebornFusion = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion 2 beveled.
+ * @returns {string|boolean}
+ */
+const rebornP21 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleRebornFusion2 = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion 2 blended.
+ * @returns {string|boolean}
+ */
+const rebornP22 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleRebornFusion2 = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion 2 blended 2.
+ * @returns {string|boolean}
+ */
+const rebornP23 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleBlend2 = true;
+	pref.styleRebornFusion2 = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion 2 gradiented.
+ * @returns {string|boolean}
+ */
+const rebornP24 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleGradient = true;
+	pref.styleRebornFusion2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion 2 gradiented 2.
+ * @returns {string|boolean}
+ */
+const rebornP25 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleGradient2 = true;
+	pref.styleRebornFusion2 = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion accent beveled.
+ * @returns {string|boolean}
+ */
+const rebornP26 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleRebornFusionAccent = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion accent blended.
+ * @returns {string|boolean}
+ */
+const rebornP27 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleRebornFusionAccent = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion accent blended 2.
+ * @returns {string|boolean}
+ */
+const rebornP28 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleBlend2 = true;
+	pref.styleRebornFusionAccent = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion accent gradiented.
+ * @returns {string|boolean}
+ */
+const rebornP29 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleGradient = true;
+	pref.styleRebornFusionAccent = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Reborn theme preset -> Options > Preset > Reborn > Reborn fusion accent gradiented 2.
+ * @returns {string|boolean}
+ */
+const rebornP30 = () => {
+	pref.theme = 'reborn';
+	pref.styleBevel = true;
+	pref.styleGradient2 = true;
+	pref.styleRebornFusionAccent = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+
+//////////////////////////////
 // * RANDOM THEME PRESETS * //
-const randomP01 = () => { pref.theme = 'random'; pref.styleBevel = true; pref.styleBlend = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const randomP02 = () => { pref.theme = 'random'; pref.styleBevel = true; pref.styleBlend = true; pref.styleRandomPastel = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const randomP03 = () => { pref.theme = 'random'; pref.styleBevel = true; pref.styleBlend = true; pref.styleRandomDark = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'bevel'; pref.styleVolumeBarFill = 'bevel'; };
-const randomP04 = () => { pref.theme = 'random'; pref.styleBevel = true; pref.styleBlend = true; pref.styleRandomDark = true; pref.styleRandomAutoColor = 'track'; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'bevel'; pref.styleVolumeBarFill = 'bevel'; };
-const randomP05 = () => { pref.theme = 'random'; pref.styleBevel = true; pref.styleRandomDark = true; pref.styleRandomAutoColor = 'track'; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'bevel'; pref.styleVolumeBarFill = 'bevel'; };
-const randomP06 = () => { pref.theme = 'random'; pref.styleBevel = true; pref.styleRandomDark = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'bevel'; pref.styleVolumeBarFill = 'bevel'; };
-const randomP07 = () => { pref.theme = 'random'; pref.styleGradient = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'bevel'; pref.styleVolumeBarFill = 'bevel'; };
-const randomP08 = () => { pref.theme = 'random'; pref.styleGradient2 = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'bevel'; pref.styleVolumeBarFill = 'bevel'; };
-const randomP09 = () => { pref.theme = 'random'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'minimal'; };
-const randomP10 = () => { pref.theme = 'random'; pref.styleBlend = true; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'minimal'; pref.styleTransportButtons = 'minimal'; };
+//////////////////////////////
+/**
+ * Random theme preset -> Options > Preset > Random > Beveled blended alternative.
+ * @returns {string|boolean}
+ */
+const randomP01 = () => {
+	pref.theme = 'random';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
 
+/**
+ * Random theme preset -> Options > Preset > Random > Beveled blended pastel.
+ * @returns {string|boolean}
+ */
+const randomP02 = () => {
+	pref.theme = 'random';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleRandomPastel = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Random theme preset -> Options > Preset > Random > Beveled blended dark.
+ * @returns {string|boolean}
+ */
+const randomP03 = () => {
+	pref.theme = 'random';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleRandomDark = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'bevel';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Random theme preset -> Options > Preset > Random > Beveled blended auto dark.
+ * @returns {string|boolean}
+ */
+const randomP04 = () => {
+	pref.theme = 'random';
+	pref.styleBevel = true;
+	pref.styleBlend = true;
+	pref.styleRandomDark = true;
+	pref.styleRandomAutoColor = 'track';
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'bevel';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Random theme preset -> Options > Preset > Random > Beveled auto dark.
+ * @returns {string|boolean}
+ */
+const randomP05 = () => {
+	pref.theme = 'random';
+	pref.styleBevel = true;
+	pref.styleRandomDark = true;
+	pref.styleRandomAutoColor = 'track';
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'bevel';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Random theme preset -> Options > Preset > Random > Beveled dark.
+ * @returns {string|boolean}
+ */
+const randomP06 = () => {
+	pref.theme = 'random';
+	pref.styleBevel = true;
+	pref.styleRandomDark = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'bevel';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Random theme preset -> Options > Preset > Random > Gradiented.
+ * @returns {string|boolean}
+ */
+const randomP07 = () => {
+	pref.theme = 'random';
+	pref.styleGradient = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'bevel';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Random theme preset -> Options > Preset > Random > Gradiented 2.
+ * @returns {string|boolean}
+ */
+const randomP08 = () => {
+	pref.theme = 'random';
+	pref.styleGradient2 = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'bevel';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Random theme preset -> Options > Preset > Random > Minimalized.
+ * @returns {string|boolean}
+ */
+const randomP09 = () => {
+	pref.theme = 'random';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'minimal';
+};
+
+/**
+ * Random theme preset -> Options > Preset > Random > Minimalized blended.
+ * @returns {string|boolean}
+ */
+const randomP10 = () => {
+	pref.theme = 'random';
+	pref.styleBlend = true;
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'minimal';
+	pref.styleTransportButtons = 'minimal';
+};
+
+
+////////////////////////////
 // * BLUE THEME PRESETS * //
-const blueP01 = () => { pref.theme = 'blue'; pref.styleBevel = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const blueP02 = () => { pref.theme = 'blue'; pref.styleBevel = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const blueP03 = () => { pref.theme = 'blue'; pref.styleGradient = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const blueP04 = () => { pref.theme = 'blue'; pref.styleGradient2 = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'bevel'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'bevel'; pref.styleVolumeBarFill = 'inner'; };
-const blueP05 = () => { pref.theme = 'blue'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'minimal'; };
+////////////////////////////
+/**
+ * Blue theme preset -> Options > Preset > Blue > Beveled.
+ * @returns {string|boolean}
+ */
+const blueP01 = () => {
+	pref.theme = 'blue';
+	pref.styleBevel = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
 
+/**
+ * Blue theme preset -> Options > Preset > Blue > Beveled 2.
+ * @returns {string|boolean}
+ */
+const blueP02 = () => {
+	pref.theme = 'blue';
+	pref.styleBevel = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Blue theme preset -> Options > Preset > Blue > Gradiented.
+ * @returns {string|boolean}
+ */
+const blueP03 = () => {
+	pref.theme = 'blue';
+	pref.styleGradient = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Blue theme preset -> Options > Preset > Blue > Gradiented 2.
+ * @returns {string|boolean}
+ */
+const blueP04 = () => {
+	pref.theme = 'blue';
+	pref.styleGradient2 = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'bevel';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'bevel';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Blue theme preset -> Options > Preset > Blue > Minimalized.
+ * @returns {string|boolean}
+ */
+const blueP05 = () => {
+	pref.theme = 'blue';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'minimal';
+};
+
+
+/////////////////////////////////
 // * DARK BLUE THEME PRESETS * //
-const darkblueP01 = () => { pref.theme = 'darkblue'; pref.styleBevel = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const darkblueP02 = () => { pref.theme = 'darkblue'; pref.styleBevel = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const darkblueP03 = () => { pref.theme = 'darkblue'; pref.styleGradient = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const darkblueP04 = () => { pref.theme = 'darkblue'; pref.styleGradient2 = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'bevel'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'bevel'; pref.styleVolumeBarFill = 'inner'; };
-const darkblueP05 = () => { pref.theme = 'darkblue'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'minimal'; };
+/////////////////////////////////
+/**
+ * Dark blue theme preset -> Options > Preset > Dark blue > Beveled.
+ * @returns {string|boolean}
+ */
+const darkblueP01 = () => {
+	pref.theme = 'darkblue';
+	pref.styleBevel = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
 
+/**
+ * Dark blue theme preset -> Options > Preset > Dark blue > Beveled 2.
+ * @returns {string|boolean}
+ */
+const darkblueP02 = () => {
+	pref.theme = 'darkblue';
+	pref.styleBevel = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Dark blue theme preset -> Options > Preset > Dark blue > Gradiented.
+ * @returns {string|boolean}
+ */
+const darkblueP03 = () => {
+	pref.theme = 'darkblue';
+	pref.styleGradient = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Dark blue theme preset -> Options > Preset > Dark blue > Gradiented 2.
+ * @returns {string|boolean}
+ */
+const darkblueP04 = () => {
+	pref.theme = 'darkblue';
+	pref.styleGradient2 = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'bevel';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'bevel';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Dark blue theme preset -> Options > Preset > Dark blue > Minimalized.
+ * @returns {string|boolean}
+ */
+const darkblueP05 = () => {
+	pref.theme = 'darkblue';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'minimal';
+};
+
+
+///////////////////////////
 // * RED THEME PRESETS * //
-const redP01 = () => { pref.theme = 'red'; pref.styleBevel = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const redP02 = () => { pref.theme = 'red'; pref.styleBevel = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const redP03 = () => { pref.theme = 'red'; pref.styleGradient = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const redP04 = () => { pref.theme = 'red'; pref.styleGradient2 = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'bevel'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'bevel'; pref.styleVolumeBarFill = 'inner'; };
-const redP05 = () => { pref.theme = 'red'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'minimal'; };
+///////////////////////////
+/**
+ * Red theme preset -> Options > Preset > Red > Beveled.
+ * @returns {string|boolean}
+ */
+const redP01 = () => {
+	pref.theme = 'red';
+	pref.styleBevel = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
 
+/**
+ * Red theme preset -> Options > Preset > Red > Beveled 2.
+ * @returns {string|boolean}
+ */
+const redP02 = () => {
+	pref.theme = 'red';
+	pref.styleBevel = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Red theme preset -> Options > Preset > Red > Gradiented.
+ * @returns {string|boolean}
+ */
+const redP03 = () => {
+	pref.theme = 'red';
+	pref.styleGradient = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Red theme preset -> Options > Preset > Red > Gradiented 2.
+ * @returns {string|boolean}
+ */
+const redP04 = () => {
+	pref.theme = 'red';
+	pref.styleGradient2 = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'bevel';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'bevel';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Red theme preset -> Options > Preset > Red > Minimalized.
+ * @returns {string|boolean}
+ */
+const redP05 = () => {
+	pref.theme = 'red';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'minimal';
+};
+
+
+/////////////////////////////
 // * CREAM THEME PRESETS * //
-const creamP01 = () => { pref.theme = 'cream'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const creamP02 = () => { pref.theme = 'cream'; pref.styleBevel = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const creamP03 = () => { pref.theme = 'cream'; pref.styleBevel = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'bevel'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const creamP04 = () => { pref.theme = 'cream'; pref.styleBevel = true; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'bevel'; pref.styleVolumeBarFill = 'bevel'; };
-const creamP05 = () => { pref.theme = 'cream'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'minimal'; };
+/////////////////////////////
+/**
+ * Cream theme preset -> Options > Preset > Cream > Beveled.
+ * @returns {string|boolean}
+ */
+const creamP01 = () => {
+	pref.theme = 'cream';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
 
+/**
+ * Cream theme preset -> Options > Preset > Cream > Beveled 2.
+ * @returns {string|boolean}
+ */
+const creamP02 = () => {
+	pref.theme = 'cream';
+	pref.styleBevel = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Cream theme preset -> Options > Preset > Cream > Alternative.
+ * @returns {string|boolean}
+ */
+const creamP03 = () => {
+	pref.theme = 'cream';
+	pref.styleBevel = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'bevel';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Cream theme preset -> Options > Preset > Cream > Alternative 2.
+ * @returns {string|boolean}
+ */
+const creamP04 = () => {
+	pref.theme = 'cream';
+	pref.styleBevel = true;
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'bevel';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Cream theme preset -> Options > Preset > Cream > Minimalized.
+ * @returns {string|boolean}
+ */
+const creamP05 = () => {
+	pref.theme = 'cream';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'minimal';
+};
+
+
+/////////////////////////////////
 // * NEON BLUE THEME PRESETS * //
-const nblueP01 = () => { pref.theme = 'nblue'; pref.styleBevel = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const nblueP02 = () => { pref.theme = 'nblue'; pref.styleBevel = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const nblueP03 = () => { pref.theme = 'nblue'; pref.styleBlend = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const nblueP04 = () => { pref.theme = 'nblue'; pref.styleBlend2 = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const nblueP05 = () => { pref.theme = 'nblue'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const nblueP06 = () => { pref.theme = 'nblue'; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const nblueP07 = () => { pref.theme = 'nblue'; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; pref.themeBrightness = 10; };
-const nblueP08 = () => { pref.theme = 'nblue'; pref.styleBlend = true; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; pref.themeBrightness = 10; };
-const nblueP09 = () => { pref.theme = 'nblue'; pref.styleBevel = true; pref.styleBlend2 = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; pref.themeBrightness = 10; };
-const nblueP10 = () => { pref.theme = 'nblue'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'minimal'; pref.styleTransportButtons = 'minimal'; };
+/////////////////////////////////
+/**
+ * Neon blue theme preset -> Options > Preset > Neon blue > Beveled.
+ * @returns {string|boolean}
+ */
+const nblueP01 = () => {
+	pref.theme = 'nblue';
+	pref.styleBevel = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
 
+/**
+ * Neon blue theme preset -> Options > Preset > Neon blue > Beveled 2.
+ * @returns {string|boolean}
+ */
+const nblueP02 = () => {
+	pref.theme = 'nblue';
+	pref.styleBevel = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Neon blue theme preset -> Options > Preset > Neon blue > Blended.
+ * @returns {string|boolean}
+ */
+const nblueP03 = () => {
+	pref.theme = 'nblue';
+	pref.styleBlend = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Neon blue theme preset -> Options > Preset > Neon blue > Blended 2.
+ * @returns {string|boolean}
+ */
+const nblueP04 = () => {
+	pref.theme = 'nblue';
+	pref.styleBlend2 = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Neon blue theme preset -> Options > Preset > Neon blue > Alternative.
+ * @returns {string|boolean}
+ */
+const nblueP05 = () => {
+	pref.theme = 'nblue';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Neon blue theme preset -> Options > Preset > Neon blue > Alternative 2.
+ * @returns {string|boolean}
+ */
+const nblueP06 = () => {
+	pref.theme = 'nblue';
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Neon blue theme preset -> Options > Preset > Neon blue > Dark gray.
+ * @returns {string|boolean|number}
+ */
+const nblueP07 = () => {
+	pref.theme = 'nblue';
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Neon blue theme preset -> Options > Preset > Neon blue > Dark gray blended.
+ * @returns {string|boolean|number}
+ */
+const nblueP08 = () => {
+	pref.theme = 'nblue';
+	pref.styleBlend = true;
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Neon blue theme preset -> Options > Preset > Neon blue > Dark gray 2 blended.
+ * @returns {string|boolean|number}
+ */
+const nblueP09 = () => {
+	pref.theme = 'nblue';
+	pref.styleBevel = true;
+	pref.styleBlend2 = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Neon blue theme preset -> Options > Preset > Neon blue > Minimalized.
+ * @returns {string|boolean}
+ */
+const nblueP10 = () => {
+	pref.theme = 'nblue';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'minimal';
+	pref.styleTransportButtons = 'minimal';
+};
+
+
+//////////////////////////////////
 // * NEON GREEN THEME PRESETS * //
-const ngreenP01 = () => { pref.theme = 'ngreen'; pref.styleBevel = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const ngreenP02 = () => { pref.theme = 'ngreen'; pref.styleBevel = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const ngreenP03 = () => { pref.theme = 'ngreen'; pref.styleBlend = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const ngreenP04 = () => { pref.theme = 'ngreen'; pref.styleBlend2 = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const ngreenP05 = () => { pref.theme = 'ngreen'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const ngreenP06 = () => { pref.theme = 'ngreen'; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const ngreenP07 = () => { pref.theme = 'ngreen'; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; pref.themeBrightness = 10; };
-const ngreenP08 = () => { pref.theme = 'ngreen'; pref.styleBlend = true; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; pref.themeBrightness = 10; };
-const ngreenP09 = () => { pref.theme = 'ngreen'; pref.styleBevel = true; pref.styleBlend2 = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; pref.themeBrightness = 10; };
-const ngreenP10 = () => { pref.theme = 'ngreen'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'minimal'; pref.styleTransportButtons = 'minimal'; };
+//////////////////////////////////
+/**
+ * Neon green theme preset -> Options > Preset > Neon green > Beveled.
+ * @returns {string|boolean}
+ */
+const ngreenP01 = () => {
+	pref.theme = 'ngreen';
+	pref.styleBevel = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
 
+/**
+ * Neon green theme preset -> Options > Preset > Neon green > Beveled 2.
+ * @returns {string|boolean}
+ */
+const ngreenP02 = () => {
+	pref.theme = 'ngreen';
+	pref.styleBevel = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Neon green theme preset -> Options > Preset > Neon green > Blended.
+ * @returns {string|boolean}
+ */
+const ngreenP03 = () => {
+	pref.theme = 'ngreen';
+	pref.styleBlend = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Neon green theme preset -> Options > Preset > Neon green > Blended 2.
+ * @returns {string|boolean}
+ */
+const ngreenP04 = () => {
+	pref.theme = 'ngreen';
+	pref.styleBlend2 = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Neon green theme preset -> Options > Preset > Neon green > Alternative.
+ * @returns {string|boolean}
+ */
+const ngreenP05 = () => {
+	pref.theme = 'ngreen';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Neon green theme preset -> Options > Preset > Neon green > Alternative 2.
+ * @returns {string|boolean}
+ */
+const ngreenP06 = () => {
+	pref.theme = 'ngreen';
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Neon green theme preset -> Options > Preset > Neon green > Dark gray.
+ * @returns {string|boolean|number}
+ */
+const ngreenP07 = () => {
+	pref.theme = 'ngreen';
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Neon green theme preset -> Options > Preset > Neon green > Dark gray blended.
+ * @returns {string|boolean|number}
+ */
+const ngreenP08 = () => {
+	pref.theme = 'ngreen';
+	pref.styleBlend = true;
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Neon green theme preset -> Options > Preset > Neon green > Dark gray 2 blended.
+ * @returns {string|boolean|number}
+ */
+const ngreenP09 = () => {
+	pref.theme = 'ngreen';
+	pref.styleBevel = true;
+	pref.styleBlend2 = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Neon green theme preset -> Options > Preset > Neon green > Minimalized.
+ * @returns {string|boolean}
+ */
+const ngreenP10 = () => {
+	pref.theme = 'ngreen';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'minimal';
+	pref.styleTransportButtons = 'minimal';
+};
+
+
+////////////////////////////////
 // * NEON RED THEME PRESETS * //
-const nredP01 = () => { pref.theme = 'nred'; pref.styleBevel = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const nredP02 = () => { pref.theme = 'nred'; pref.styleBevel = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const nredP03 = () => { pref.theme = 'nred'; pref.styleBlend = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const nredP04 = () => { pref.theme = 'nred'; pref.styleBlend2 = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const nredP05 = () => { pref.theme = 'nred'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const nredP06 = () => { pref.theme = 'nred'; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const nredP07 = () => { pref.theme = 'nred'; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; pref.themeBrightness = 10; };
-const nredP08 = () => { pref.theme = 'nred'; pref.styleBlend = true; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; pref.themeBrightness = 10; };
-const nredP09 = () => { pref.theme = 'nred'; pref.styleBevel = true; pref.styleBlend2 = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; pref.themeBrightness = 10; };
-const nredP10 = () => { pref.theme = 'nred'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'minimal'; pref.styleTransportButtons = 'minimal'; };
+////////////////////////////////
+/**
+ * Neon red theme preset -> Options > Preset > Neon red > Beveled.
+ * @returns {string|boolean}
+ */
+const nredP01 = () => {
+	pref.theme = 'nred';
+	pref.styleBevel = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
 
+/**
+ * Neon red theme preset -> Options > Preset > Neon red > Beveled 2.
+ * @returns {string|boolean}
+ */
+const nredP02 = () => {
+	pref.theme = 'nred';
+	pref.styleBevel = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Neon red theme preset -> Options > Preset > Neon red > Blended.
+ * @returns {string|boolean}
+ */
+const nredP03 = () => {
+	pref.theme = 'nred';
+	pref.styleBlend = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Neon red theme preset -> Options > Preset > Neon red > Blended 2.
+ * @returns {string|boolean}
+ */
+const nredP04 = () => {
+	pref.theme = 'nred';
+	pref.styleBlend2 = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Neon red theme preset -> Options > Preset > Neon red > Alternative.
+ * @returns {string|boolean}
+ */
+const nredP05 = () => {
+	pref.theme = 'nred';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Neon red theme preset -> Options > Preset > Neon red > Alternative 2.
+ * @returns {string|boolean}
+ */
+const nredP06 = () => {
+	pref.theme = 'nred';
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Neon red theme preset -> Options > Preset > Neon red > Dark gray.
+ * @returns {string|boolean|number}
+ */
+const nredP07 = () => {
+	pref.theme = 'nred';
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Neon red theme preset -> Options > Preset > Neon red > Dark gray blended.
+ * @returns {string|boolean|number}
+ */
+const nredP08 = () => {
+	pref.theme = 'nred';
+	pref.styleBlend = true;
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Neon red theme preset -> Options > Preset > Neon red > Dark gray 2 blended.
+ * @returns {string|boolean|number}
+ */
+const nredP09 = () => {
+	pref.theme = 'nred';
+	pref.styleBevel = true;
+	pref.styleBlend2 = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Neon red theme preset -> Options > Preset > Neon red > Minimalized.
+ * @returns {string|boolean}
+ */
+const nredP10 = () => {
+	pref.theme = 'nred';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'minimal';
+	pref.styleTransportButtons = 'minimal';
+};
+
+
+/////////////////////////////////
 // * NEON GOLD THEME PRESETS * //
-const ngoldP01 = () => { pref.theme = 'ngold'; pref.styleBevel = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const ngoldP02 = () => { pref.theme = 'ngold'; pref.styleBevel = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const ngoldP03 = () => { pref.theme = 'ngold'; pref.styleBlend = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const ngoldP04 = () => { pref.theme = 'ngold'; pref.styleBlend2 = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const ngoldP05 = () => { pref.theme = 'ngold'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const ngoldP06 = () => { pref.theme = 'ngold'; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const ngoldP07 = () => { pref.theme = 'ngold'; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; pref.themeBrightness = 10; };
-const ngoldP08 = () => { pref.theme = 'ngold'; pref.styleBlend = true; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; pref.themeBrightness = 10; };
-const ngoldP09 = () => { pref.theme = 'ngold'; pref.styleBevel = true; pref.styleBlend2 = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; pref.themeBrightness = 10; };
-const ngoldP10 = () => { pref.theme = 'ngold'; pref.styleAlternative = true; pref.styleTopMenuButtons = 'minimal'; pref.styleTransportButtons = 'minimal'; };
+/////////////////////////////////
+/**
+ * Neon gold theme preset -> Options > Preset > Neon gold > Beveled.
+ * @returns {string|boolean}
+ */
+const ngoldP01 = () => {
+	pref.theme = 'ngold';
+	pref.styleBevel = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
 
+/**
+ * Neon gold theme preset -> Options > Preset > Neon gold > Beveled 2.
+ * @returns {string|boolean}
+ */
+const ngoldP02 = () => {
+	pref.theme = 'ngold';
+	pref.styleBevel = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Neon gold theme preset -> Options > Preset > Neon gold > Blended.
+ * @returns {string|boolean}
+ */
+const ngoldP03 = () => {
+	pref.theme = 'ngold';
+	pref.styleBlend = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Neon gold theme preset -> Options > Preset > Neon gold > Blended 2.
+ * @returns {string|boolean}
+ */
+const ngoldP04 = () => {
+	pref.theme = 'ngold';
+	pref.styleBlend2 = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Neon gold theme preset -> Options > Preset > Neon gold > Alternative.
+ * @returns {string|boolean}
+ */
+const ngoldP05 = () => {
+	pref.theme = 'ngold';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Neon gold theme preset -> Options > Preset > Neon gold > Alternative 2.
+ * @returns {string|boolean}
+ */
+const ngoldP06 = () => {
+	pref.theme = 'ngold';
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Neon gold theme preset -> Options > Preset > Neon gold > Dark gray.
+ * @returns {string|boolean|number}
+ */
+const ngoldP07 = () => {
+	pref.theme = 'ngold';
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Neon gold theme preset -> Options > Preset > Neon gold > Dark gray blended.
+ * @returns {string|boolean|number}
+ */
+const ngoldP08 = () => {
+	pref.theme = 'ngold';
+	pref.styleBlend = true;
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Neon gold theme preset -> Options > Preset > Neon gold > Dark gray 2 blended.
+ * @returns {string|boolean|number}
+ */
+const ngoldP09 = () => {
+	pref.theme = 'ngold';
+	pref.styleBevel = true;
+	pref.styleBlend2 = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+	pref.themeBrightness = 10;
+};
+
+/**
+ * Neon gold theme preset -> Options > Preset > Neon gold > Minimalized.
+ * @returns {string|boolean}
+ */
+const ngoldP10 = () => {
+	pref.theme = 'ngold';
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'minimal';
+	pref.styleTransportButtons = 'minimal';
+};
+
+
+//////////////////////////////
 // * CUSTOM THEME PRESETS * //
+//////////////////////////////
+/**
+ * Initializes the custom theme and if no custom theme is currently active, select one randomly from the list.
+ * @returns {string}
+ */
 const customThemeSetup = () => {
 	const customTheme = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'];
 	if (!customTheme.includes(pref.theme)) pref.theme = customTheme[Math.floor(Math.random() * customTheme.length)]; // If no custom theme active, pick a random one
 	initCustomTheme();
 };
-const customP01 = () => { customThemeSetup(); pref.styleBevel = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const customP02 = () => { customThemeSetup(); pref.styleBevel = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'bevel'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const customP03 = () => { customThemeSetup(); pref.styleBlend = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const customP04 = () => { customThemeSetup(); pref.styleBlend2 = true; pref.styleTopMenuButtons = 'emboss'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'inner'; };
-const customP05 = () => { customThemeSetup(); pref.styleGradient = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'emboss'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const customP06 = () => { customThemeSetup(); pref.styleGradient2 = true; pref.styleAlternative = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'bevel'; pref.styleProgressBar = 'bevel'; pref.styleProgressBarFill = 'inner'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'bevel'; pref.styleVolumeBarFill = 'inner'; };
-const customP07 = () => { customThemeSetup(); pref.styleAlternative = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const customP08 = () => { customThemeSetup(); pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'inner'; pref.styleTransportButtons = 'inner'; pref.styleProgressBarDesign = 'rounded'; pref.styleProgressBar = 'inner'; pref.styleProgressBarFill = 'bevel'; pref.styleVolumeBarDesign = 'rounded'; pref.styleVolumeBar = 'inner'; pref.styleVolumeBarFill = 'bevel'; };
-const customP09 = () => { customThemeSetup(); pref.styleAlternative = true; pref.styleTopMenuButtons = 'filled'; pref.styleTransportButtons = 'minimal'; };
-const customP10 = () => { customThemeSetup(); pref.styleBlend = true; pref.styleAlternative2 = true; pref.styleTopMenuButtons = 'minimal'; pref.styleTransportButtons = 'minimal'; };
+
+/**
+ * Custom theme preset -> Options > Preset > Custom > Beveled.
+ * @returns {string|boolean}
+ */
+const customP01 = () => {
+	customThemeSetup();
+	pref.styleBevel = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Custom theme preset -> Options > Preset > Custom > Beveled 2.
+ * @returns {string|boolean}
+ */
+const customP02 = () => {
+	customThemeSetup();
+	pref.styleBevel = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'bevel';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Custom theme preset -> Options > Preset > Custom > Blended.
+ * @returns {string|boolean}
+ */
+const customP03 = () => {
+	customThemeSetup();
+	pref.styleBlend = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Custom theme preset -> Options > Preset > Custom > Blended 2.
+ * @returns {string|boolean}
+ */
+const customP04 = () => {
+	customThemeSetup();
+	pref.styleBlend2 = true;
+	pref.styleTopMenuButtons = 'emboss';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Custom theme preset -> Options > Preset > Custom > Gradiented.
+ * @returns {string|boolean}
+ */
+const customP05 = () => {
+	customThemeSetup();
+	pref.styleGradient = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'emboss';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Custom theme preset -> Options > Preset > Custom > Gradiented 2.
+ * @returns {string|boolean}
+ */
+const customP06 = () => {
+	customThemeSetup();
+	pref.styleGradient2 = true;
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'bevel';
+	pref.styleProgressBar = 'bevel';
+	pref.styleProgressBarFill = 'inner';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'bevel';
+	pref.styleVolumeBarFill = 'inner';
+};
+
+/**
+ * Custom theme preset -> Options > Preset > Custom > Alternative.
+ * @returns {string|boolean}
+ */
+const customP07 = () => {
+	customThemeSetup();
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Custom theme preset -> Options > Preset > Custom > Alternative 2.
+ * @returns {string|boolean}
+ */
+const customP08 = () => {
+	customThemeSetup();
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'inner';
+	pref.styleTransportButtons = 'inner';
+	pref.styleProgressBarDesign = 'rounded';
+	pref.styleProgressBar = 'inner';
+	pref.styleProgressBarFill = 'bevel';
+	pref.styleVolumeBarDesign = 'rounded';
+	pref.styleVolumeBar = 'inner';
+	pref.styleVolumeBarFill = 'bevel';
+};
+
+/**
+ * Custom theme preset -> Options > Preset > Custom > Minimalized.
+ * @returns {string|boolean}
+ */
+const customP09 = () => {
+	customThemeSetup();
+	pref.styleAlternative = true;
+	pref.styleTopMenuButtons = 'filled';
+	pref.styleTransportButtons = 'minimal';
+};
+
+/**
+ * Custom theme preset -> Options > Preset > Custom > Minimalized blended.
+ * @returns {string|boolean}
+ */
+const customP10 = () => {
+	customThemeSetup();
+	pref.styleBlend = true;
+	pref.styleAlternative2 = true;
+	pref.styleTopMenuButtons = 'minimal';
+	pref.styleTransportButtons = 'minimal';
+};
 
 
 //////////////////////////
 // * SET THEME PRESET * //
 //////////////////////////
+/**
+ * Sets chosen theme preset when using Options > Preset
+ * @param {string} preset The name of the theme preset.
+ */
 function setThemePreset(preset) {
+	// eslint-disable-next-line
+	const applyPreset = new Function(`${preset}()`);
 	themePresetMatchMode = false;
 	resetStyle('all');
-
-	switch (preset) {
-		// * WHITE THEME PRESETS * //
-		case 'whiteP01': whiteP01(); break; // * Beveled
-		case 'whiteP02': whiteP02(); break; // * Black and white
-		case 'whiteP03': whiteP03(); break; // * Black and white blended
-		case 'whiteP04': whiteP04(); break; // * Black and white 2
-		case 'whiteP05': whiteP05(); break; // * Black and white 2 blended
-		case 'whiteP06': whiteP06(); break; // * Black and white reborn
-		case 'whiteP07': whiteP07(); break; // * Black and white reborn blended
-		case 'whiteP08': whiteP08(); break; // * Minimalized
-
-		// * BLACK THEME PRESETS * //
-		case 'blackP01': blackP01(); break; // * Beveled
-		case 'blackP02': blackP02(); break; // * Blended
-		case 'blackP03': blackP03(); break; // * Blended alternative
-		case 'blackP04': blackP04(); break; // * Blended alternative 2
-		case 'blackP05': blackP05(); break; // * Black reborn
-		case 'blackP06': blackP06(); break; // * Black reborn blended
-		case 'blackP07': blackP07(); break; // * Dark gray
-		case 'blackP08': blackP08(); break; // * Dark gray blended
-		case 'blackP09': blackP09(); break; // * Dark gray 2 blended
-		case 'blackP10': blackP10(); break; // * Minimalized
-
-		// * REBORN THEME PRESETS * //
-		case 'rebornP01': rebornP01(); break; // * Beveled
-		case 'rebornP02': rebornP02(); break; // * Blended
-		case 'rebornP03': rebornP03(); break; // * Blended 2
-		case 'rebornP04': rebornP04(); break; // * Gradiented
-		case 'rebornP05': rebornP05(); break; // * Gradiented 2
-		case 'rebornP06': rebornP06(); break; // * Minimalized
-		case 'rebornP07': rebornP07(); break; // * Minimalized blended
-		case 'rebornP08': rebornP08(); break; // * Reborn white beveled
-		case 'rebornP09': rebornP09(); break; // * Reborn white blended
-		case 'rebornP10': rebornP10(); break; // * Reborn white blended 2
-		case 'rebornP11': rebornP11(); break; // * Reborn black beveled
-		case 'rebornP12': rebornP12(); break; // * Reborn black blended
-		case 'rebornP13': rebornP13(); break; // * Reborn black blended 2
-		case 'rebornP14': rebornP14(); break; // * Reborn black gradiented
-		case 'rebornP15': rebornP15(); break; // * Reborn black gradiented 2
-		case 'rebornP16': rebornP16(); break; // * Reborn fusion beveled
-		case 'rebornP17': rebornP17(); break; // * Reborn fusion blended
-		case 'rebornP18': rebornP18(); break; // * Reborn fusion blended 2
-		case 'rebornP19': rebornP19(); break; // * Reborn fusion gradiented
-		case 'rebornP20': rebornP20(); break; // * Reborn fusion gradiented 2
-		case 'rebornP21': rebornP21(); break; // * Reborn fusion 2 beveled
-		case 'rebornP22': rebornP22(); break; // * Reborn fusion 2 blended
-		case 'rebornP23': rebornP23(); break; // * Reborn fusion 2 blended 2
-		case 'rebornP24': rebornP24(); break; // * Reborn fusion 2 gradiented
-		case 'rebornP25': rebornP25(); break; // * Reborn fusion 2 gradiented 2
-		case 'rebornP26': rebornP26(); break; // * Reborn fusion accent beveled
-		case 'rebornP27': rebornP27(); break; // * Reborn fusion accent blended
-		case 'rebornP28': rebornP28(); break; // * Reborn fusion accent blended 2
-		case 'rebornP29': rebornP29(); break; // * Reborn fusion accent gradiented
-		case 'rebornP30': rebornP30(); break; // * Reborn fusion accent gradiented 2
-
-		// * RANDOM THEME PRESETS * //
-		case 'randomP01': randomP01(); break; // * Beveled blended alternative
-		case 'randomP02': randomP02(); break; // * Beveled blended pastel
-		case 'randomP03': randomP03(); break; // * Beveled blended dark
-		case 'randomP04': randomP04(); break; // * Beveled blended auto dark
-		case 'randomP05': randomP05(); break; // * Beveled auto dark
-		case 'randomP06': randomP06(); break; // * Beveled dark
-		case 'randomP07': randomP07(); break; // * Gradiented
-		case 'randomP08': randomP08(); break; // * Gradiented 2
-		case 'randomP09': randomP09(); break; // * Minimalized
-		case 'randomP10': randomP10(); break; // * Minimalized blended
-
-		// * BLUE THEME PRESETS * //
-		case 'blueP01': blueP01(); break; // * Beveled
-		case 'blueP02': blueP02(); break; // * Beveled 2
-		case 'blueP03': blueP03(); break; // * Gradiented
-		case 'blueP04': blueP04(); break; // * Gradiented 2
-		case 'blueP05': blueP05(); break; // * Minimalized
-
-		// * DARK BLUE THEME PRESETS * //
-		case 'darkblueP01': darkblueP01(); break; // * Beveled
-		case 'darkblueP02': darkblueP02(); break; // * Beveled 2
-		case 'darkblueP03': darkblueP03(); break; // * Gradiented
-		case 'darkblueP04': darkblueP04(); break; // * Gradiented 2
-		case 'darkblueP05': darkblueP05(); break; // * Minimalized
-
-		// * RED THEME PRESETS * //
-		case 'redP01': redP01(); break; // * Beveled
-		case 'redP02': redP02(); break; // * Beveled 2
-		case 'redP03': redP03(); break; // * Gradiented
-		case 'redP04': redP04(); break; // * Gradiented 2
-		case 'redP05': redP05(); break; // * Minimalized
-
-		// * CREAM THEME PRESETS * //
-		case 'creamP01': creamP01(); break; // * Beveled
-		case 'creamP02': creamP02(); break; // * Beveled 2
-		case 'creamP03': creamP03(); break; // * Alternative
-		case 'creamP04': creamP04(); break; // * Alternative 2
-		case 'creamP05': creamP05(); break; // * Minimalized
-
-		// * NEON BLUE THEME PRESETS * //
-		case 'nblueP01': nblueP01(); break; // * Beveled
-		case 'nblueP02': nblueP02(); break; // * Beveled 2
-		case 'nblueP03': nblueP03(); break; // * Blended
-		case 'nblueP04': nblueP04(); break; // * Blended 2
-		case 'nblueP05': nblueP05(); break; // * Alternative
-		case 'nblueP06': nblueP06(); break; // * Alternative 2
-		case 'nblueP07': nblueP07(); break; // * Dark gray
-		case 'nblueP08': nblueP08(); break; // * Dark gray blended
-		case 'nblueP09': nblueP09(); break; // * Dark gray 2 blended
-		case 'nblueP10': nblueP10(); break; // * Minimalized
-
-		// * NEON GREEN THEME PRESETS * //
-		case 'ngreenP01': ngreenP01(); break; // * Beveled
-		case 'ngreenP02': ngreenP02(); break; // * Beveled 2
-		case 'ngreenP03': ngreenP03(); break; // * Blended
-		case 'ngreenP04': ngreenP04(); break; // * Blended 2
-		case 'ngreenP05': ngreenP05(); break; // * Alternative
-		case 'ngreenP06': ngreenP06(); break; // * Alternative 2
-		case 'ngreenP07': ngreenP07(); break; // * Dark gray
-		case 'ngreenP08': ngreenP08(); break; // * Dark gray blended
-		case 'ngreenP09': ngreenP09(); break; // * Dark gray 2 blended
-		case 'ngreenP10': ngreenP10(); break; // * Minimalized
-
-		// * NEON RED THEME PRESETS * //
-		case 'nredP01': nredP01(); break; // * Beveled
-		case 'nredP02': nredP02(); break; // * Beveled 2
-		case 'nredP03': nredP03(); break; // * Blended
-		case 'nredP04': nredP04(); break; // * Blended 2
-		case 'nredP05': nredP05(); break; // * Alternative
-		case 'nredP06': nredP06(); break; // * Alternative 2
-		case 'nredP07': nredP07(); break; // * Dark gray
-		case 'nredP08': nredP08(); break; // * Dark gray blended
-		case 'nredP09': nredP09(); break; // * Dark gray 2 blended
-		case 'nredP10': nredP10(); break; // * Minimalized
-
-		// * NEON GOLD THEME PRESETS * //
-		case 'ngoldP01': ngoldP01(); break; // * Beveled
-		case 'ngoldP02': ngoldP02(); break; // * Beveled 2
-		case 'ngoldP03': ngoldP03(); break; // * Blended
-		case 'ngoldP04': ngoldP04(); break; // * Blended 2
-		case 'ngoldP05': ngoldP05(); break; // * Alternative
-		case 'ngoldP06': ngoldP06(); break; // * Alternative 2
-		case 'ngoldP07': ngoldP07(); break; // * Dark gray
-		case 'ngoldP08': ngoldP08(); break; // * Dark gray blended
-		case 'ngoldP09': ngoldP09(); break; // * Dark gray 2 blended
-		case 'ngoldP10': ngoldP10(); break; // * Minimalized
-
-		// * CUSTOM THEME PRESETS * //
-		case 'customP01': customP01(); break; // * Beveled
-		case 'customP02': customP02(); break; // * Beveled 2
-		case 'customP03': customP03(); break; // * Blended
-		case 'customP04': customP04(); break; // * Blended 2
-		case 'customP05': customP05(); break; // * Gradiented
-		case 'customP06': customP06(); break; // * Gradiented 2
-		case 'customP07': customP07(); break; // * Alternative
-		case 'customP08': customP08(); break; // * Alternative 2
-		case 'customP09': customP09(); break; // * Minimalized
-		case 'customP10': customP10(); break; // * Minimalized blended
-	}
+	applyPreset();
 	updateStyle();
 }
 
@@ -346,7 +2218,9 @@ function setThemePreset(preset) {
 ///////////////////////////////
 // * THEME PRESET MATCHING * //
 ///////////////////////////////
-/** Theme preset initialization to determine if active styles match any theme presets, used in top menu Options > Preset */
+/**
+ * Theme preset initialization to determine if active styles match any theme presets, checks when user uses top menu Options > Style.
+ */
 function initThemePresetState() {
 	const THEME  = pref.theme;
 	const BEVEL  = pref.styleBevel;
@@ -563,7 +2437,9 @@ function initThemePresetState() {
 /////////////////////////////
 // * THEME PRESET PICKER * //
 /////////////////////////////
-/** Auto random theme preset picker */
+/**
+ * Randomly chooses a theme preset, used in Options > Preset > Auto random.
+ */
 function themePresetRandomPicker() {
 	clearInterval(presetAutoRandomModeTimer);
 	presetAutoRandomModeTimer = null;
@@ -615,7 +2491,7 @@ function themePresetRandomPicker() {
 		if (pref.presetSelectMode === 'harmonic') {
 			colBrightness  = new Color(col.primary).brightness;
 			colBrightness2 = new Color(col.primary_alt).brightness;
-			imgBrightness = calcImgBrightness(albumArt);
+			imgBrightness = CalcImgBrightness(albumArt);
 
 			if (colBrightness > 200 || imgBrightness > 180) { // * Light
 				while ((randomThemePreset = Math.floor(Math.random() * themePresetsLight.length)) === lastIndex);
@@ -623,7 +2499,7 @@ function themePresetRandomPicker() {
 				console.log('themePresetsLight');
 			}
 			else if (colBrightness < 200 && colBrightness > 50 || imgBrightness < 180 && imgBrightness > 130) { // * Middle
-				if (colorDistance(col.primary, col.primary_alt) > 200) { // * Reborn fusion
+				if (ColorDistance(col.primary, col.primary_alt) > 200) { // * Reborn fusion
 					while ((randomThemePreset = Math.floor(Math.random() * themePresetsFusion.length)) === lastIndex);
 					themePresetsFusion[(lastIndex = randomThemePreset)]();
 					console.log('themePresetsFusion');

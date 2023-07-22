@@ -133,7 +133,7 @@ class UserInterface {
 		ppt.zoomImg = Math.round($Lib.clamp(ppt.zoomImg, 10, 500));
 	}
 
-	// Methods
+	// * METHODS * //
 
 	assignColours() {
 		const prop = ['text', 'text_h', 'textSel', 'nowp', 'search', 'txt_box', 'bg', 'bg_h', 'bgSel', 'frame', 'bgSelframe', 'counts', 'icon_c', 'icon_e', 'icon_h', 'line', 's_line', 'sideMarker', 'bgTrans'];
@@ -192,10 +192,10 @@ class UserInterface {
 		$Lib.gr(1, 1, false, g => {
 			if (!this.id.local) this.row.h = Math.max(Math.round(g.CalcTextHeight('String', this.font.main)) + ppt.verticalPad, 2);
 			if (this.style.squareNode) {
-				this.sz.node = Math.round(scaleForDisplay(11) * $Lib.scale); // Prevent node size growing in traditional tree // Math.round($Lib.clamp(this.sz.node, 7, this.row.h - 2));
+				this.sz.node = Math.round(SCALE(11) * $Lib.scale); // Prevent node size growing in traditional tree // Math.round($Lib.clamp(this.sz.node, 7, this.row.h - 2));
 				ppt.zoomNode = Math.round(this.sz.node / this.sz.node_base * 100);
 			} else {
-				this.sz.node = ppt.nodeStyle === 5 ? Math.round((is_4k ? 12 : 7) * $Lib.scale) : Math.round($Lib.clamp(this.sz.node, 7, this.row.h * 1.15));
+				this.sz.node = ppt.nodeStyle === 5 ? Math.round((RES_4K ? 12 : 7) * $Lib.scale) : Math.round($Lib.clamp(this.sz.node, 7, this.row.h * 1.15));
 				const mod = ppt.nodeStyle < 3 && this.sz.node > 15 ? (this.sz.node % 2) - 1 : 0;
 				this.icon.font = gdi.Font(this.icon.fontName, this.sz.node + mod, ppt.nodeStyle != 6 ? 0 : this.icon.fontStyle);
 				ppt.zoomNode = Math.round(this.sz.node / libraryFontSize * 100);
@@ -259,7 +259,7 @@ class UserInterface {
 
 	draw(gr) {
 		gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing for sharp edges on top and bottom bg
-		if (this.style.bg) gr.FillSolidRect(this.x, this.y, this.w + (pref.libraryLayout === 'split' ? 0 : is_4k ? 35 : 17), this.h, this.col.bg);
+		if (this.style.bg) gr.FillSolidRect(this.x, this.y, this.w + (pref.libraryLayout === 'split' ? 0 : RES_4K ? 35 : 17), this.h, this.col.bg);
 		if (pref.styleBlend && albumArt && blendedImg) gr.DrawImage(blendedImg, 0, 0, ww, wh, 0, 0, blendedImg.Width, blendedImg.Height);
 		if (this.img.isBlur || this.img.bg) {
 			this.getImgFallback();
@@ -269,7 +269,7 @@ class UserInterface {
 
 	drawLine(gr) {
 		if (!this.style.topBarShow) return;
-		if (this.style.pen == 1) gr.DrawLine(this.x + (ppt.nodeStyle === 0 ? ui.sz.margin : panel.ln.x + ui.sz.margin), ui.y - scaleForDisplay(10) + panel.search.sp, this.x + (ppt.nodeStyle === 0 ? panel.ln.w : panel.ln.w - ui.sz.margin), ui.y - scaleForDisplay(10) + panel.search.sp, this.l.w, this.col.s_line);
+		if (this.style.pen == 1) gr.DrawLine(this.x + (ppt.nodeStyle === 0 ? ui.sz.margin : panel.ln.x + ui.sz.margin), ui.y - SCALE(10) + panel.search.sp, this.x + (ppt.nodeStyle === 0 ? panel.ln.w : panel.ln.w - ui.sz.margin), ui.y - SCALE(10) + panel.search.sp, this.l.w, this.col.s_line);
 		if (!ppt.searchShow || !ppt.filterShow) return;
 		// const l_x = panel.filter.x - this.l.wc;
 		// const l_h = ui.row.h / 2;
@@ -514,7 +514,7 @@ class UserInterface {
 		this.font.label = gdi.Font(this.font.main.Name, !ppt.treeAutoExpand || ppt.libSource != 2 ? Math.round(this.font.main.Size * 11 / 14) : this.font.main.Size, this.font.main.Style);
 		this.font.small = gdi.Font(this.font.main.Name, !ppt.treeAutoExpand || ppt.libSource != 2 ? Math.round(this.font.main.Size * 12 / 14) : this.font.main.Size, this.font.main.Style);
 		this.font.tracks = gdi.Font('Arial', Math.round(this.font.main.Size * 12 / 14), 2);
-		this.sz.sideMarker = scaleForDisplay(8); // ppt.sideMarkerWidth ? Math.max(ppt.sideMarkerWidth, 1) : 4 * this.l.w;
+		this.sz.sideMarker = SCALE(8); // ppt.sideMarkerWidth ? Math.max(ppt.sideMarkerWidth, 1) : 4 * this.l.w;
 		this.sbar.narrowWidth = ppt.narrowSbarWidth == 0 ? $Lib.clamp(Math.floor(this.font.zoomSize / 7), 2, 10) : ppt.narrowSbarWidth;
 
 		// * Only used for pref.libraryLayoutSplitPreset4, synchronizes artist & album font sizes with Playlist
@@ -1098,7 +1098,7 @@ class Vkeys {
 		this.collapseAll = 109;
 	}
 
-	// Methods
+	// * METHODS * //
 
 	k(n) {
 		switch (n) {

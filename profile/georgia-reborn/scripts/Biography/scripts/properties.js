@@ -7,7 +7,7 @@ class PanelPropertyBio {
 		this.value = pptBio.get(this.name, default_value);
 	}
 
-	// Methods
+	// * METHODS * //
 
 	get() {
 		return this.value;
@@ -25,7 +25,7 @@ class PanelPropertiesBio {
 	constructor() { // this.name_list = {}; debug
 	}
 
-	// Methods
+	// * METHODS * //
 
 	init(type, properties, thisArg) {
 		switch (type) {
@@ -236,15 +236,15 @@ let propertiesBio = [
 	['Panel Biography - Layout Bio Mode', 0, 'bioMode'],
 	['Panel Biography - Layout Bio', 0, 'bioStyle'],
 	['Panel Biography - Layout Image Size 0-1', 0.65, 'rel_imgs'],
-	['Panel Biography - Layout Margin Between Image & Text', scaleForDisplay(15), 'gap'],
-	['Panel Biography - Layout Margin Image Left', scaleForDisplay(40), 'borL'],
-	['Panel Biography - Layout Margin Image Right', scaleForDisplay(40), 'borR'],
-	['Panel Biography - Layout Margin Image Top', scaleForDisplay(30), 'borT'],
-	['Panel Biography - Layout Margin Image Bottom', scaleForDisplay(30), 'borB'],
-	['Panel Biography - Layout Margin Text Left', scaleForDisplay(40), 'textL'],
-	['Panel Biography - Layout Margin Text Right', scaleForDisplay(40), 'textR'],
-	['Panel Biography - Layout Margin Text Top', scaleForDisplay(30), 'textT'],
-	['Panel Biography - Layout Margin Text Bottom', scaleForDisplay(30), 'textB'],
+	['Panel Biography - Layout Margin Between Image & Text', SCALE(15), 'gap'],
+	['Panel Biography - Layout Margin Image Left', SCALE(40), 'borL'],
+	['Panel Biography - Layout Margin Image Right', SCALE(40), 'borR'],
+	['Panel Biography - Layout Margin Image Top', SCALE(30), 'borT'],
+	['Panel Biography - Layout Margin Image Bottom', SCALE(30), 'borB'],
+	['Panel Biography - Layout Margin Text Left', SCALE(40), 'textL'],
+	['Panel Biography - Layout Margin Text Right', SCALE(40), 'textR'],
+	['Panel Biography - Layout Margin Text Top', SCALE(30), 'textT'],
+	['Panel Biography - Layout Margin Text Bottom', SCALE(30), 'textB'],
 	['Panel Biography - Layout Padding Between Thumbnails', 0, 'thumbNailGap'],
 	['Panel Biography - Layout Rev Mode', 0, 'revMode'],
 	['Panel Biography - Layout Rev', 0, 'revStyle'],

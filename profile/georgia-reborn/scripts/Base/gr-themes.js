@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-18                                          * //
+// * Last change:    2023-07-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,6 +16,9 @@
 ////////////////////////////
 // * WHITE THEME COLORS * //
 ////////////////////////////
+/**
+ * The default colors for White theme used in Options > Theme > White.
+ */
 const whiteTheme = {
 	name: 'white',
 	colors: {
@@ -27,6 +30,9 @@ const whiteTheme = {
 };
 
 
+/**
+ * The Playlist colors for White theme used in Options > Theme > White.
+ */
 function playlistColorsWhiteTheme() {
 	// * MAIN COLORS * //
 	g_pl_colors.bg = RGB(255, 255, 255);
@@ -63,7 +69,7 @@ function playlistColorsWhiteTheme() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = RGB(200, 200, 200);
-	g_pl_colors.row_drag_line = shadeColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line = ShadeColor(g_pl_colors.row_selection_frame, 20);
 	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
@@ -75,6 +81,9 @@ function playlistColorsWhiteTheme() {
 }
 
 
+/**
+ * The Library colors for White theme used in Options > Theme > White.
+ */
 function libraryColorsWhiteTheme() {
 	// * MAIN COLORS * //
 	ui.col.bg = g_pl_colors.bg;
@@ -145,6 +154,9 @@ function libraryColorsWhiteTheme() {
 }
 
 
+/**
+ * The Biography colors for White theme used in Options > Theme > White.
+ */
 function biographyColorsWhiteTheme() {
 	// * MAIN COLORS * //
 	uiBio.col.bg = g_pl_colors.bg;
@@ -185,6 +197,9 @@ function biographyColorsWhiteTheme() {
 }
 
 
+/**
+ * The Main colors for White theme used in Options > Theme > White.
+ */
 function mainColorsWhiteTheme() {
 	// * MAIN COLORS * //
 	col.bg = pref.styleBevel ? RGB(255, 255, 255) : RGB(245, 245, 245);
@@ -209,9 +224,9 @@ function mainColorsWhiteTheme() {
 	col.detailsText = isStreaming || isPlayingCD || !albumArt ? RGB(120, 120, 120) : lightBg ? RGB(55, 55, 55) : RGB(255, 255, 255);
 	col.detailsRating = RGB(255, 170, 32);
 	col.detailsHotness = col.detailsRating;
-	col.timelineAdded = isStreaming ? RGB(207, 0, 5) : lightBg ? shadeColor(col.primary, pref.styleBlend ? 50 : 40) : col.lightAccent_50;
-	col.timelinePlayed = isStreaming ? RGB(207, 0, 5) : lightBg ? shadeColor(col.primary, pref.styleBlend ? 35 : 25) : col.lightAccent_35;
-	col.timelineUnplayed = isStreaming ? RGB(207, 0, 5) : lightBg ? shadeColor(col.primary, pref.styleBlend ? 20 : 10) : col.lightAccent;
+	col.timelineAdded = isStreaming ? RGB(207, 0, 5) : lightBg ? ShadeColor(col.primary, pref.styleBlend ? 50 : 40) : col.lightAccent_50;
+	col.timelinePlayed = isStreaming ? RGB(207, 0, 5) : lightBg ? ShadeColor(col.primary, pref.styleBlend ? 35 : 25) : col.lightAccent_35;
+	col.timelineUnplayed = isStreaming ? RGB(207, 0, 5) : lightBg ? ShadeColor(col.primary, pref.styleBlend ? 20 : 10) : col.lightAccent;
 	col.timelineFrame = col.detailsBg;
 	if (str.timeline) str.timeline.setColors(col.timelineAdded, col.timelinePlayed, col.timelineUnplayed);
 
@@ -281,25 +296,25 @@ function mainColorsWhiteTheme() {
 
 	col.progressBarStreaming = RGB(207, 0, 5);
 	col.progressBarFrame = pref.styleBevel ? RGB(180, 180, 180) : col.bg;
-	col.progressBarFill = pref.styleBevel ? shadeColor(col.primary, 5) : col.primary;
+	col.progressBarFill = pref.styleBevel ? ShadeColor(col.primary, 5) : col.primary;
 
 	// * PEAKMETER BAR COLORS * //
 	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = colBrightness < 75 ? tintColor(col.primary, 40) : shadeColor(col.primary, 40);
-	col.peakmeterBarFillTop       = tintColor(col.primary,  10);
-	col.peakmeterBarFillMiddle    = tintColor(col.primary,  30);
-	col.peakmeterBarFillBack      = tintColor(col.primary,  50);
+	col.peakmeterBarProgFill      = colBrightness < 75 ? TintColor(col.primary, 40) : ShadeColor(col.primary, 40);
+	col.peakmeterBarFillTop       = TintColor(col.primary,  10);
+	col.peakmeterBarFillMiddle    = TintColor(col.primary,  30);
+	col.peakmeterBarFillBack      = TintColor(col.primary,  50);
 	col.peakmeterBarVertProgFill  = col.progressBarFill;
-	col.peakmeterBarVertFill      = shadeColor(col.primary, 10);
-	col.peakmeterBarVertFillPeaks = tintColor(col.primary,  20);
+	col.peakmeterBarVertFill      = ShadeColor(col.primary, 10);
+	col.peakmeterBarVertFillPeaks = TintColor(col.primary,  20);
 	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 	// * WAVEFORM BAR COLORS * //
 	col.waveformBarFillFront    = col.primary;
-	col.waveformBarFillBack     = shadeColor(col.primary, 20);
+	col.waveformBarFillBack     = ShadeColor(col.primary, 20);
 	col.waveformBarFillPreFront = pref.styleBevel || pref.styleBlend ? RGB(140, 140, 140) : RGB(180, 180, 180);
 	col.waveformBarFillPreBack  = pref.styleBevel || pref.styleBlend ? RGB(120, 120, 120) : RGB(160, 160, 160);
-	col.waveformBarIndicator    = colBrightness > 200 ? RGB(0, 0, 0) : tintColor(col.primary, 30);
+	col.waveformBarIndicator    = colBrightness > 200 ? RGB(0, 0, 0) : TintColor(col.primary, 30);
 
 	// * VOLUME BAR COLORS * //
 	col.volumeBar = RGB(255, 255, 255);
@@ -340,6 +355,9 @@ function mainColorsWhiteTheme() {
 ////////////////////////////
 // * BLACK THEME COLORS * //
 ////////////////////////////
+/**
+ * The default colors for Black theme used in Options > Theme > Black.
+ */
 const blackTheme = {
 	name: 'black',
 	colors: {
@@ -351,6 +369,9 @@ const blackTheme = {
 };
 
 
+/**
+ * The Playlist colors for Black theme used in Options > Theme > Black.
+ */
 function playlistColorsBlackTheme() {
 	// * MAIN COLORS * //
 	g_pl_colors.bg = RGB(20, 20, 20);
@@ -387,7 +408,7 @@ function playlistColorsBlackTheme() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = pref.styleBlend ? RGB(65, 65, 65) : RGB(45, 45, 45);
-	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line = TintColor(g_pl_colors.row_selection_frame, 20);
 	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
@@ -399,6 +420,9 @@ function playlistColorsBlackTheme() {
 }
 
 
+/**
+ * The Library colors for Black theme used in Options > Theme > Black.
+ */
 function libraryColorsBlackTheme() {
 	// * MAIN COLORS * //
 	ui.col.bg = g_pl_colors.bg;
@@ -458,6 +482,9 @@ function libraryColorsBlackTheme() {
 }
 
 
+/**
+ * The Biography colors for Black theme used in Options > Theme > Black.
+ */
 function biographyColorsBlackTheme() {
 	// * MAIN COLORS * //
 	uiBio.col.bg = g_pl_colors.bg;
@@ -493,6 +520,9 @@ function biographyColorsBlackTheme() {
 }
 
 
+/**
+ * The Main colors for Black theme used in Options > Theme > Black.
+ */
 function mainColorsBlackTheme() {
 	// * MAIN COLORS * //
 	col.bg = pref.styleBevel ? RGB(40, 40, 40) : RGB(25, 25, 25);
@@ -518,9 +548,9 @@ function mainColorsBlackTheme() {
 	col.detailsText = isStreaming || isPlayingCD || !albumArt ? RGB(255, 255, 255) : lightBg ? col.darkAccent_75 : !albumArt ? RGB(120, 120, 120) : col.lightAccent_100;
 	col.detailsRating = RGB(255, 170, 32);
 	col.detailsHotness = col.detailsRating;
-	col.timelineAdded = isStreaming ? RGB(207, 0, 5) : lightBg ? shadeColor(col.primary, pref.styleBlend ? 50 : 40) : col.lightAccent_50;
-	col.timelinePlayed = isStreaming ? RGB(207, 0, 5) : lightBg ? shadeColor(col.primary, pref.styleBlend ? 35 : 25) : col.lightAccent_35;
-	col.timelineUnplayed = isStreaming ? RGB(207, 0, 5) : lightBg ? shadeColor(col.primary, pref.styleBlend ? 20 : 10) : col.lightAccent;
+	col.timelineAdded = isStreaming ? RGB(207, 0, 5) : lightBg ? ShadeColor(col.primary, pref.styleBlend ? 50 : 40) : col.lightAccent_50;
+	col.timelinePlayed = isStreaming ? RGB(207, 0, 5) : lightBg ? ShadeColor(col.primary, pref.styleBlend ? 35 : 25) : col.lightAccent_35;
+	col.timelineUnplayed = isStreaming ? RGB(207, 0, 5) : lightBg ? ShadeColor(col.primary, pref.styleBlend ? 20 : 10) : col.lightAccent;
 	col.timelineFrame = col.detailsBg;
 	if (str.timeline) str.timeline.setColors(col.timelineAdded, col.timelinePlayed, col.timelineUnplayed);
 
@@ -592,22 +622,22 @@ function mainColorsBlackTheme() {
 
 	col.progressBarStreaming = RGB(207, 0, 5);
 	col.progressBarFrame = pref.styleBevel ? RGB(0, 0, 0) : col.bg;
-	col.progressBarFill = colBrightness < 25 ? tintColor(col.primary, 25) : colBrightness < 50 ? col.lightAccent_7 : col.primary;
+	col.progressBarFill = colBrightness < 25 ? TintColor(col.primary, 25) : colBrightness < 50 ? col.lightAccent_7 : col.primary;
 
 	// * PEAKMETER BAR COLORS * //
 	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = colBrightness > 200 ? shadeColor(col.primary, 40) : colBrightness < 50 ? tintColor(col.primary, 50) : tintColor(col.primary, 40);
-	col.peakmeterBarFillTop       = colBrightness <  50 ? tintColor(col.primary,  20) : tintColor(col.primary,  10);
-	col.peakmeterBarFillMiddle    = colBrightness <  50 ? tintColor(col.primary,  40) : tintColor(col.primary,  30);
-	col.peakmeterBarFillBack      = colBrightness <  50 ? tintColor(col.primary,  30) : shadeColor(col.primary, 15);
+	col.peakmeterBarProgFill      = colBrightness > 200 ? ShadeColor(col.primary, 40) : colBrightness < 50 ? TintColor(col.primary, 50) : TintColor(col.primary, 40);
+	col.peakmeterBarFillTop       = colBrightness <  50 ? TintColor(col.primary,  20) : TintColor(col.primary,  10);
+	col.peakmeterBarFillMiddle    = colBrightness <  50 ? TintColor(col.primary,  40) : TintColor(col.primary,  30);
+	col.peakmeterBarFillBack      = colBrightness <  50 ? TintColor(col.primary,  30) : ShadeColor(col.primary, 15);
 	col.peakmeterBarVertProgFill  = col.progressBarFill;
-	col.peakmeterBarVertFill      = colBrightness <  50 ? tintColor(col.primary,  20) : shadeColor(col.primary, 10);
-	col.peakmeterBarVertFillPeaks = colBrightness <  50 ? tintColor(col.primary,  30) : tintColor(col.primary,  20);
+	col.peakmeterBarVertFill      = colBrightness <  50 ? TintColor(col.primary,  20) : ShadeColor(col.primary, 10);
+	col.peakmeterBarVertFillPeaks = colBrightness <  50 ? TintColor(col.primary,  30) : TintColor(col.primary,  20);
 	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 	// * WAVEFORM BAR COLORS * //
-	col.waveformBarFillFront    = colBrightness < 50 ? tintColor(col.primary, 40) : colBrightness < 100 ? tintColor(col.primary, 20) : col.primary;
-	col.waveformBarFillBack     = colBrightness < 50 ? tintColor(col.primary, 20) : colBrightness < 100 ? col.primary : shadeColor(col.primary, 20);
+	col.waveformBarFillFront    = colBrightness < 50 ? TintColor(col.primary, 40) : colBrightness < 100 ? TintColor(col.primary, 20) : col.primary;
+	col.waveformBarFillBack     = colBrightness < 50 ? TintColor(col.primary, 20) : colBrightness < 100 ? col.primary : ShadeColor(col.primary, 20);
 	col.waveformBarFillPreFront = RGB(100, 100, 100);
 	col.waveformBarFillPreBack  = RGB(80, 80, 80);
 	col.waveformBarIndicator    = colBrightness > 200 ? RGB(255, 255, 255) : RGB(220, 220, 220);
@@ -651,6 +681,9 @@ function mainColorsBlackTheme() {
 ////////////////////////////////////
 // * REBORN/RANDOM THEME COLORS * //
 ////////////////////////////////////
+/**
+ * The default colors for Reborn theme used in Options > Theme > Reborn.
+ */
 const rebornTheme = {
 	name: 'reborn',
 	colors: {
@@ -662,6 +695,10 @@ const rebornTheme = {
 	}
 };
 
+
+/**
+ * The default colors for Random theme used in Options > Theme > Random.
+ */
 const randomTheme = {
 	name: 'random',
 	colors: {
@@ -673,6 +710,9 @@ const randomTheme = {
 };
 
 
+/**
+ * The Playlist colors for Reborn/Random theme used in Options > Theme > Reborn/Random.
+ */
 function playlistColorsRebornRandomTheme() {
 	// * MAIN COLORS * //
 	g_pl_colors.bg =
@@ -693,7 +733,7 @@ function playlistColorsRebornRandomTheme() {
 	g_pl_colors.header_nowplaying_bg =
 		pref.theme === 'reborn' ? isColored ? pref.styleBlend ? RGBtoRGBA(col.lightAccent_7, 130) : col.lightAccent_7 :
 			col.primary :
-		pref.theme === 'random' ? isColored ? pref.styleBlend ? RGBtoRGBA(col.lightAccent_10, 130) : lightBg ? shadeColor(col.primary, 5) : col.lightAccent_10 :
+		pref.theme === 'random' ? isColored ? pref.styleBlend ? RGBtoRGBA(col.lightAccent_10, 130) : lightBg ? ShadeColor(col.primary, 5) : col.lightAccent_10 :
 			col.primary : '';
 
 	g_pl_colors.header_sideMarker = isColored ? col.lightAccent_50 : col.primary;
@@ -705,13 +745,13 @@ function playlistColorsRebornRandomTheme() {
 	g_pl_colors.header_info_playing = g_pl_colors.header_info_normal;
 	g_pl_colors.header_date_normal = RGB(120, 120, 120);
 	g_pl_colors.header_date_playing = g_pl_colors.header_date_normal;
-	g_pl_colors.header_line_normal = isColored ? pref.styleBlend ? shadeColor(col.primary, 24) : col.accent : RGB(200, 200, 200);
-	g_pl_colors.header_line_playing = isColored ? pref.styleBlend ? shadeColor(col.primary, 24) : col.accent : RGB(200, 200, 200);
+	g_pl_colors.header_line_normal = isColored ? pref.styleBlend ? ShadeColor(col.primary, 24) : col.accent : RGB(200, 200, 200);
+	g_pl_colors.header_line_playing = isColored ? pref.styleBlend ? ShadeColor(col.primary, 24) : col.accent : RGB(200, 200, 200);
 
 	// * ROW COLORS * //
 	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
 	g_pl_colors.row_stripes_bg = isColored ? pref.styleBlend ? RGBtoRGBA(col.lightAccent_7, 130) : col.lightAccent_2 : RGB(245, 245, 245);
-	g_pl_colors.row_selection_bg = isColored ? pref.styleBlend ? shadeColor(col.primary, 24) : col.accent : RGB(200, 200, 200);
+	g_pl_colors.row_selection_bg = isColored ? pref.styleBlend ? ShadeColor(col.primary, 24) : col.accent : RGB(200, 200, 200);
 	g_pl_colors.row_selection_frame = g_pl_colors.row_selection_bg;
 	g_pl_colors.row_sideMarker = g_pl_colors.header_sideMarker;
 	g_pl_colors.row_title_normal = RGB(100, 100, 100);
@@ -719,9 +759,9 @@ function playlistColorsRebornRandomTheme() {
 	g_pl_colors.row_title_selected = RGB(0, 0, 0);
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
-	g_pl_colors.row_disc_subheader_line = isColored ? pref.styleBlend ? shadeColor(col.primary, 24) : col.accent : RGB(200, 200, 200);
+	g_pl_colors.row_disc_subheader_line = isColored ? pref.styleBlend ? ShadeColor(col.primary, 24) : col.accent : RGB(200, 200, 200);
 	g_pl_colors.row_drag_line = g_pl_colors.row_sideMarker;
-	g_pl_colors.row_drag_line_reached = colBrightness > 210 ? shadeColor(g_pl_colors.row_sideMarker, 25) : tintColor(g_pl_colors.row_sideMarker, 50);
+	g_pl_colors.row_drag_line_reached = colBrightness > 210 ? ShadeColor(g_pl_colors.row_sideMarker, 25) : TintColor(g_pl_colors.row_sideMarker, 50);
 
 	// * SCROLLBAR COLORS * //
 	g_pl_colors.sbar_btn_normal = RGB(120, 120, 120);
@@ -794,13 +834,16 @@ function playlistColorsRebornRandomTheme() {
 }
 
 
+/**
+ * The Library colors for Reborn/Random theme used in Options > Theme > Reborn/Random.
+ */
 function libraryColorsRebornRandomTheme() {
 	// * MAIN COLORS * //
 	ui.col.bg = g_pl_colors.bg;
 	ui.col.rowStripes = g_pl_colors.row_stripes_bg;
 
 	// * ROW COLORS * //
-	ui.col.nowPlayingBg = ppt.albumArtShow ? tintColor(g_pl_colors.row_nowplaying_bg, 7) : g_pl_colors.row_nowplaying_bg;
+	ui.col.nowPlayingBg = ppt.albumArtShow ? TintColor(g_pl_colors.row_nowplaying_bg, 7) : g_pl_colors.row_nowplaying_bg;
 	ui.col.sideMarker = g_pl_colors.row_sideMarker;
 	ui.col.selectionFrame = g_pl_colors.row_selection_frame;
 	ui.col.selectionFrame2 = ui.col.sideMarker;
@@ -838,7 +881,7 @@ function libraryColorsRebornRandomTheme() {
 	ui.col.crossBtn = RGB(80, 80, 80);
 	ui.col.filterBtn = RGB(120, 120, 120);
 	ui.col.settingsBtn = RGB(120, 120, 120);
-	ui.col.line = isColored ? pref.styleBlend ? shadeColor(col.primary, 24) : col.accent : RGB(200, 200, 200);
+	ui.col.line = isColored ? pref.styleBlend ? ShadeColor(col.primary, 24) : col.accent : RGB(200, 200, 200);
 	ui.col.s_line = ui.col.line;
 
 	// * SCROLLBAR COLORS * //
@@ -913,6 +956,9 @@ function libraryColorsRebornRandomTheme() {
 }
 
 
+/**
+ * The Biography colors for Reborn/Random theme used in Options > Theme > Reborn/Random.
+ */
 function biographyColorsRebornRandomTheme() {
 	// * MAIN COLORS * //
 	uiBio.col.bg = g_pl_colors.bg;
@@ -932,7 +978,7 @@ function biographyColorsRebornRandomTheme() {
 
 	// * MISC COLORS * //
 	uiBio.col.lyricsNormal = uiBio.col.text;
-	uiBio.col.lyricsHighlight = (lightBgBiography || lightBg) && colorDistance(RGB(255, 240, 150), uiBio.col.bg, true) < 200 ? RGB(220, 160, 40) : RGB(255, 240, 150);
+	uiBio.col.lyricsHighlight = (lightBgBiography || lightBg) && ColorDistance(RGB(255, 240, 150), uiBio.col.bg, true) < 200 ? RGB(220, 160, 40) : RGB(255, 240, 150);
 	uiBio.col.noPhotoStubBg = isColored ? col.lightAccent_7 : RGB(245, 245, 245);
 	uiBio.col.noPhotoStubText = g_pl_colors.header_artist_playing;
 
@@ -992,6 +1038,9 @@ function biographyColorsRebornRandomTheme() {
 }
 
 
+/**
+ * The Main colors for Reborn/Random theme used in Options > Theme > Reborn/Random.
+ */
 function mainColorsRebornRandomTheme() {
 	// * MAIN COLORS * //
 	col.bg = isColored ? col.primary : RGB(245, 245, 245);
@@ -1010,7 +1059,7 @@ function mainColorsRebornRandomTheme() {
 	col.lowerBarTime = col.lowerBarTitle;
 	col.lowerBarLength = col.lowerBarTitle;
 	col.lyricsNormal = RGB(255, 255, 255);
-	col.lyricsHighlight = (lightBgMain || lightBg) && colorDistance(RGB(255, 240, 150), col.bg, true) < 200 ? RGB(220, 160, 40) : RGB(255, 240, 150);
+	col.lyricsHighlight = (lightBgMain || lightBg) && ColorDistance(RGB(255, 240, 150), col.bg, true) < 200 ? RGB(220, 160, 40) : RGB(255, 240, 150);
 	col.lyricsShadow = RGB(0, 0, 0);
 
 	// * DETAILS COLORS * //
@@ -1021,9 +1070,9 @@ function mainColorsRebornRandomTheme() {
 		RGB(255, 255, 255);
 	col.detailsRating = RGB(255, 170, 32);
 	col.detailsHotness = col.detailsRating;
-	col.timelineAdded = isStreaming ? RGB(207, 0, 5) : lightBg ? shadeColor(col.primary, pref.styleBlend ? 50 : 40) : col.lightAccent_50;
-	col.timelinePlayed = isStreaming ? RGB(207, 0, 5) : lightBg ? shadeColor(col.primary, pref.styleBlend ? 35 : 25) : col.lightAccent_35;
-	col.timelineUnplayed = isStreaming ? RGB(207, 0, 5) : lightBg ? shadeColor(col.primary, pref.styleBlend ? 20 : 10) : col.lightAccent;
+	col.timelineAdded = isStreaming ? RGB(207, 0, 5) : lightBg ? ShadeColor(col.primary, pref.styleBlend ? 50 : 40) : col.lightAccent_50;
+	col.timelinePlayed = isStreaming ? RGB(207, 0, 5) : lightBg ? ShadeColor(col.primary, pref.styleBlend ? 35 : 25) : col.lightAccent_35;
+	col.timelineUnplayed = isStreaming ? RGB(207, 0, 5) : lightBg ? ShadeColor(col.primary, pref.styleBlend ? 20 : 10) : col.lightAccent;
 	col.timelineFrame = col.detailsBg;
 	if (str.timeline) str.timeline.setColors(col.timelineAdded, col.timelinePlayed, col.timelineUnplayed);
 
@@ -1140,27 +1189,27 @@ function mainColorsRebornRandomTheme() {
 	col.transportIconDown = col.transportIconHovered;
 
 	// * PROGRESS BAR COLORS * //
-	col.progressBar = isColored ? pref.styleBevel ? shadeColor(col.primary, 28) : col.accent : RGB(220, 220, 220);
+	col.progressBar = isColored ? pref.styleBevel ? ShadeColor(col.primary, 28) : col.accent : RGB(220, 220, 220);
 	col.progressBarStreaming = RGB(207, 0, 5);
 	col.progressBarFrame = col.bg;
 	col.progressBarFill = isColored ? col.lightAccent_50 : col.primary;
 
 	// * PEAKMETER BAR COLORS * //
 	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = colBrightness > 200 || colBrightness < 75 ? tintColor(col.primary,  100) : shadeColor(col.primary, 100);
-	col.peakmeterBarFillTop       = colBrightness > 200 ? shadeColor(col.primary, 10) : tintColor(col.primary, 40);
-	col.peakmeterBarFillMiddle    = colBrightness > 200 ? shadeColor(col.primary, 20) : tintColor(col.primary, 60);
-	col.peakmeterBarFillBack      = colBrightness > 200 ? shadeColor(col.primary, 40) : tintColor(col.primary, 80);
-	col.peakmeterBarVertProgFill  = colBrightness > 200 ? shadeColor(col.primary, 50) : col.progressBarFill;
-	col.peakmeterBarVertFill      = colBrightness > 200 ? shadeColor(col.primary, 50) : tintColor(col.primary, 40);
-	col.peakmeterBarVertFillPeaks = colBrightness > 200 ? shadeColor(col.primary, 20) : tintColor(col.primary, 60);
+	col.peakmeterBarProgFill      = colBrightness > 200 || colBrightness < 75 ? TintColor(col.primary,  100) : ShadeColor(col.primary, 100);
+	col.peakmeterBarFillTop       = colBrightness > 200 ? ShadeColor(col.primary, 10) : TintColor(col.primary, 40);
+	col.peakmeterBarFillMiddle    = colBrightness > 200 ? ShadeColor(col.primary, 20) : TintColor(col.primary, 60);
+	col.peakmeterBarFillBack      = colBrightness > 200 ? ShadeColor(col.primary, 40) : TintColor(col.primary, 80);
+	col.peakmeterBarVertProgFill  = colBrightness > 200 ? ShadeColor(col.primary, 50) : col.progressBarFill;
+	col.peakmeterBarVertFill      = colBrightness > 200 ? ShadeColor(col.primary, 50) : TintColor(col.primary, 40);
+	col.peakmeterBarVertFillPeaks = colBrightness > 200 ? ShadeColor(col.primary, 20) : TintColor(col.primary, 60);
 	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 	// * WAVEFORM BAR COLORS * //
-	col.waveformBarFillFront    = colBrightness > 200 || noAlbumArtStub ? shadeColor(col.primary, 80) : tintColor(col.primary, 90);
-	col.waveformBarFillBack     = colBrightness > 200 || noAlbumArtStub ? shadeColor(col.primary, 40) : tintColor(col.primary, 45);
-	col.waveformBarFillPreFront = colBrightness > 150 ? shadeColor(col.primary, pref.styleBevel || pref.styleBlend ? 60 : 40) : tintColor(col.primary, 50);
-	col.waveformBarFillPreBack  = colBrightness > 150 ? shadeColor(col.primary, pref.styleBevel || pref.styleBlend ? 10 : 20) : tintColor(col.primary, 25);
+	col.waveformBarFillFront    = colBrightness > 200 || noAlbumArtStub ? ShadeColor(col.primary, 80) : TintColor(col.primary, 90);
+	col.waveformBarFillBack     = colBrightness > 200 || noAlbumArtStub ? ShadeColor(col.primary, 40) : TintColor(col.primary, 45);
+	col.waveformBarFillPreFront = colBrightness > 150 ? ShadeColor(col.primary, pref.styleBevel || pref.styleBlend ? 60 : 40) : TintColor(col.primary, 50);
+	col.waveformBarFillPreBack  = colBrightness > 150 ? ShadeColor(col.primary, pref.styleBevel || pref.styleBlend ? 10 : 20) : TintColor(col.primary, 25);
 	col.waveformBarIndicator    = colBrightness > 200 || noAlbumArtStub ? RGB(0, 0, 0) : RGB(255, 255, 255);
 
 	// * VOLUME BAR COLORS * //
@@ -1184,12 +1233,12 @@ function mainColorsRebornRandomTheme() {
 			pref.styleBevel ? RGBtoRGBA(col.darkAccent_75, 50) : RGBtoRGBA(col.darkAccent_75, 60) : '';
 
 	col.styleProgressBarLineTop =
-		pref.styleProgressBar === 'bevel' ? pref.styleBevel ? shadeColor(col.bg,  5) : tintColor(col.bg,  100) :
-		pref.styleProgressBar === 'inner' ? pref.styleBevel ? shadeColor(col.bg, 10) : shadeColor(col.bg,  25) : '';
+		pref.styleProgressBar === 'bevel' ? pref.styleBevel ? ShadeColor(col.bg,  5) : TintColor(col.bg,  100) :
+		pref.styleProgressBar === 'inner' ? pref.styleBevel ? ShadeColor(col.bg, 10) : ShadeColor(col.bg,  25) : '';
 
 	col.styleProgressBarLineBottom =
-		pref.styleProgressBar === 'bevel' ? pref.styleBevel ? shadeColor(col.bg, 10) : shadeColor(col.bg,  25) :
-		pref.styleProgressBar === 'inner' ? pref.styleBevel ? tintColor(col.bg,  10) : tintColor(col.bg,  100) : '';
+		pref.styleProgressBar === 'bevel' ? pref.styleBevel ? ShadeColor(col.bg, 10) : ShadeColor(col.bg,  25) :
+		pref.styleProgressBar === 'inner' ? pref.styleBevel ? TintColor(col.bg,  10) : TintColor(col.bg,  100) : '';
 
 	col.styleProgressBarFill = isColored ? pref.styleProgressBarFill === 'bevel' || pref.styleProgressBarFill === 'inner' ? RGBA(0, 0, 0, 80) : '' : col.primary;
 
@@ -1282,6 +1331,9 @@ function mainColorsRebornRandomTheme() {
 ///////////////////////////
 // * BLUE THEME COLORS * //
 ///////////////////////////
+/**
+ * The default colors for Blue theme used in Options > Theme > Blue.
+ */
 const blueTheme = {
 	name: 'blue',
 	colors: {
@@ -1293,6 +1345,9 @@ const blueTheme = {
 };
 
 
+/**
+ * The Playlist colors for Blue theme used in Options > Theme > Blue.
+ */
 function playlistColorsBlueTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(242, 230, 170);
@@ -1330,7 +1385,7 @@ function playlistColorsBlueTheme() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = RGB(17, 100, 182);
-	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line = TintColor(g_pl_colors.row_selection_frame, 20);
 	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
@@ -1342,6 +1397,9 @@ function playlistColorsBlueTheme() {
 }
 
 
+/**
+ * The Library colors for Blue theme used in Options > Theme > Blue.
+ */
 function libraryColorsBlueTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(242, 230, 170);
@@ -1391,6 +1449,9 @@ function libraryColorsBlueTheme() {
 }
 
 
+/**
+ * The Biography colors for Blue theme used in Options > Theme > Blue.
+ */
 function biographyColorsBlueTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(242, 230, 170);
@@ -1423,6 +1484,9 @@ function biographyColorsBlueTheme() {
 }
 
 
+/**
+ * The Main colors for Blue theme used in Options > Theme > Blue.
+ */
 function mainColorsBlueTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(242, 230, 170);
@@ -1513,18 +1577,18 @@ function mainColorsBlueTheme() {
 
 	// * PEAKMETER BAR COLORS * //
 	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = tintColor(accentColor,  40);
-	col.peakmeterBarFillTop       = tintColor(accentColor,  10);
-	col.peakmeterBarFillMiddle    = tintColor(accentColor,  20);
-	col.peakmeterBarFillBack      = shadeColor(accentColor, 15);
+	col.peakmeterBarProgFill      = TintColor(accentColor,  40);
+	col.peakmeterBarFillTop       = TintColor(accentColor,  10);
+	col.peakmeterBarFillMiddle    = TintColor(accentColor,  20);
+	col.peakmeterBarFillBack      = ShadeColor(accentColor, 15);
 	col.peakmeterBarVertProgFill  = col.progressBarFill;
 	col.peakmeterBarVertFill      = accentColor;
-	col.peakmeterBarVertFillPeaks = tintColor(accentColor,  80);
+	col.peakmeterBarVertFillPeaks = TintColor(accentColor,  80);
 	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 	// * WAVEFORM BAR COLORS * //
 	col.waveformBarFillFront    = accentColor;
-	col.waveformBarFillBack     = shadeColor(accentColor, 20);
+	col.waveformBarFillBack     = ShadeColor(accentColor, 20);
 	col.waveformBarFillPreFront = RGB(75, 175, 255);
 	col.waveformBarFillPreBack  = RGB(10, 145, 255);
 	col.waveformBarIndicator    = RGB(255, 255, 255);
@@ -1563,9 +1627,12 @@ function mainColorsBlueTheme() {
 }
 
 
-///////////////////////////////
-// * DARKBLUE THEME COLORS * //
-///////////////////////////////
+////////////////////////////////
+// * DARK BLUE THEME COLORS * //
+////////////////////////////////
+/**
+ * The default colors for Dark blue theme used in Options > Theme > Dark blue.
+ */
 const darkblueTheme = {
 	name: 'darkBlue',
 	colors: {
@@ -1577,6 +1644,9 @@ const darkblueTheme = {
 };
 
 
+/**
+ * The Playlist colors for Dark blue theme used in Options > Theme > Dark blue.
+ */
 function playlistColorsDarkblueTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(255, 202, 128);
@@ -1614,7 +1684,7 @@ function playlistColorsDarkblueTheme() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = RGB(12, 21, 31);
-	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line = TintColor(g_pl_colors.row_selection_frame, 20);
 	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
@@ -1626,6 +1696,9 @@ function playlistColorsDarkblueTheme() {
 }
 
 
+/**
+ * The Library colors for Dark blue theme used in Options > Theme > Dark blue.
+ */
 function libraryColorsDarkblueTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(255, 202, 128);
@@ -1675,6 +1748,9 @@ function libraryColorsDarkblueTheme() {
 }
 
 
+/**
+ * The Biography colors for Dark blue theme used in Options > Theme > Dark blue.
+ */
 function biographyColorsDarkblueTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(255, 202, 128);
@@ -1707,6 +1783,9 @@ function biographyColorsDarkblueTheme() {
 }
 
 
+/**
+ * The Main colors for Dark blue theme used in Options > Theme > Dark blue.
+ */
 function mainColorsDarkblueTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(255, 202, 128);
@@ -1791,18 +1870,18 @@ function mainColorsDarkblueTheme() {
 
 	// * PEAKMETER BAR COLORS * //
 	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = tintColor(accentColor,  40);
-	col.peakmeterBarFillTop       = tintColor(accentColor,  10);
-	col.peakmeterBarFillMiddle    = tintColor(accentColor,  20);
-	col.peakmeterBarFillBack      = shadeColor(accentColor, 15);
+	col.peakmeterBarProgFill      = TintColor(accentColor,  40);
+	col.peakmeterBarFillTop       = TintColor(accentColor,  10);
+	col.peakmeterBarFillMiddle    = TintColor(accentColor,  20);
+	col.peakmeterBarFillBack      = ShadeColor(accentColor, 15);
 	col.peakmeterBarVertProgFill  = col.progressBarFill;
 	col.peakmeterBarVertFill      = accentColor;
-	col.peakmeterBarVertFillPeaks = tintColor(accentColor,  80);
+	col.peakmeterBarVertFillPeaks = TintColor(accentColor,  80);
 	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 	// * WAVEFORM BAR COLORS * //
 	col.waveformBarFillFront    = accentColor;
-	col.waveformBarFillBack     = shadeColor(accentColor, 20);
+	col.waveformBarFillBack     = ShadeColor(accentColor, 20);
 	col.waveformBarFillPreFront = RGB(65, 110, 180);
 	col.waveformBarFillPreBack  = RGB(45, 80, 130);
 	col.waveformBarIndicator    = RGB(255, 255, 255);
@@ -1843,6 +1922,9 @@ function mainColorsDarkblueTheme() {
 //////////////////////////
 // * RED THEME COLORS * //
 //////////////////////////
+/**
+ * The default colors for Red theme used in Options > Theme > Red.
+ */
 const redTheme = {
 	name: 'red',
 	colors: {
@@ -1854,6 +1936,9 @@ const redTheme = {
 };
 
 
+/**
+ * The Playlist colors for Red theme used in Options > Theme > Red.
+ */
 function playlistColorsRedTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(245, 212, 165);
@@ -1891,7 +1976,7 @@ function playlistColorsRedTheme() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = RGB(75, 18, 18);
-	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line = TintColor(g_pl_colors.row_selection_frame, 20);
 	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
@@ -1903,6 +1988,9 @@ function playlistColorsRedTheme() {
 }
 
 
+/**
+ * The Library colors for Red theme used in Options > Theme > Red.
+ */
 function libraryColorsRedTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(245, 212, 165);
@@ -1952,6 +2040,9 @@ function libraryColorsRedTheme() {
 }
 
 
+/**
+ * The Biography colors for Red theme used in Options > Theme > Red.
+ */
 function biographyColorsRedTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(245, 212, 165);
@@ -1984,6 +2075,9 @@ function biographyColorsRedTheme() {
 }
 
 
+/**
+ * The Main colors for Red theme used in Options > Theme > Red.
+ */
 function mainColorsRedTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(245, 212, 165);
@@ -2067,18 +2161,18 @@ function mainColorsRedTheme() {
 
 	// * PEAKMETER BAR COLORS * //
 	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = tintColor(accentColor,  40);
-	col.peakmeterBarFillTop       = tintColor(accentColor,  10);
-	col.peakmeterBarFillMiddle    = tintColor(accentColor,  20);
-	col.peakmeterBarFillBack      = shadeColor(accentColor, 15);
+	col.peakmeterBarProgFill      = TintColor(accentColor,  40);
+	col.peakmeterBarFillTop       = TintColor(accentColor,  10);
+	col.peakmeterBarFillMiddle    = TintColor(accentColor,  20);
+	col.peakmeterBarFillBack      = ShadeColor(accentColor, 15);
 	col.peakmeterBarVertProgFill  = col.progressBarFill;
 	col.peakmeterBarVertFill      = accentColor;
-	col.peakmeterBarVertFillPeaks = tintColor(accentColor,  80);
+	col.peakmeterBarVertFillPeaks = TintColor(accentColor,  80);
 	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 	// * WAVEFORM BAR COLORS * //
 	col.waveformBarFillFront    = accentColor;
-	col.waveformBarFillBack     = shadeColor(accentColor, 20);
+	col.waveformBarFillBack     = ShadeColor(accentColor, 20);
 	col.waveformBarFillPreFront = RGB(230, 45, 45);
 	col.waveformBarFillPreBack  = RGB(180, 35, 35);
 	col.waveformBarIndicator    = RGB(255, 255, 255);
@@ -2119,6 +2213,9 @@ function mainColorsRedTheme() {
 ////////////////////////////
 // * CREAM THEME COLORS * //
 ////////////////////////////
+/**
+ * The default colors for Cream theme used in Options > Theme > Cream.
+ */
 const creamTheme = {
 	name: 'cream',
 	colors: {
@@ -2130,6 +2227,9 @@ const creamTheme = {
 };
 
 
+/**
+ * The Playlist colors for Cream theme used in Options > Theme > Cream.
+ */
 function playlistColorsCreamTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(120, 170, 130);
@@ -2167,7 +2267,7 @@ function playlistColorsCreamTheme() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = RGB(200, 200, 200);
-	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line = TintColor(g_pl_colors.row_selection_frame, 20);
 	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
@@ -2179,6 +2279,9 @@ function playlistColorsCreamTheme() {
 }
 
 
+/**
+ * The Library colors for Cream theme used in Options > Theme > Cream.
+ */
 function libraryColorsCreamTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(120, 170, 130);
@@ -2242,6 +2345,9 @@ function libraryColorsCreamTheme() {
 }
 
 
+/**
+ * The Biography colors for Cream theme used in Options > Theme > Cream.
+ */
 function biographyColorsCreamTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(120, 170, 130);
@@ -2274,6 +2380,9 @@ function biographyColorsCreamTheme() {
 }
 
 
+/**
+ * The Main colors for Cream theme used in Options > Theme > Cream.
+ */
 function mainColorsCreamTheme() {
 	// * MAIN COLORS * //
 	const accentColor = RGB(120, 170, 130);
@@ -2366,18 +2475,18 @@ function mainColorsCreamTheme() {
 
 	// * PEAKMETER BAR COLORS * //
 	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = tintColor(accentColor,  40);
-	col.peakmeterBarFillTop       = tintColor(accentColor,  10);
-	col.peakmeterBarFillMiddle    = tintColor(accentColor,  20);
-	col.peakmeterBarFillBack      = shadeColor(accentColor, 15);
+	col.peakmeterBarProgFill      = TintColor(accentColor,  40);
+	col.peakmeterBarFillTop       = TintColor(accentColor,  10);
+	col.peakmeterBarFillMiddle    = TintColor(accentColor,  20);
+	col.peakmeterBarFillBack      = ShadeColor(accentColor, 15);
 	col.peakmeterBarVertProgFill  = col.progressBarFill;
 	col.peakmeterBarVertFill      = accentColor;
-	col.peakmeterBarVertFillPeaks = shadeColor(accentColor, 20);
+	col.peakmeterBarVertFillPeaks = ShadeColor(accentColor, 20);
 	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 	// * WAVEFORM BAR COLORS * //
-	col.waveformBarFillFront    = pref.styleBevel || pref.styleBlend ? tintColor(accentColor, 10) : accentColor;
-	col.waveformBarFillBack     = pref.styleBevel || pref.styleBlend ? shadeColor(accentColor, 30) : shadeColor(accentColor, 20);
+	col.waveformBarFillFront    = pref.styleBevel || pref.styleBlend ? TintColor(accentColor, 10) : accentColor;
+	col.waveformBarFillBack     = pref.styleBevel || pref.styleBlend ? ShadeColor(accentColor, 30) : ShadeColor(accentColor, 20);
 	col.waveformBarFillPreFront = pref.styleBevel || pref.styleBlend ? RGB(205, 200, 190) : RGB(180, 175, 165);
 	col.waveformBarFillPreBack  = pref.styleBevel || pref.styleBlend ? RGB(115, 110, 105) : RGB(140, 135, 130);
 	col.waveformBarIndicator    = RGB(60, 60, 60);
@@ -2421,6 +2530,9 @@ function mainColorsCreamTheme() {
 ///////////////////////////
 // * NEON THEME COLORS * //
 ///////////////////////////
+/**
+ * The default colors for Neon blue theme used in Options > Theme > Neon blue.
+ */
 const nblueTheme = {
 	name: 'neon blue',
 	colors: {
@@ -2431,6 +2543,10 @@ const nblueTheme = {
 	}
 };
 
+
+/**
+ * The default colors for Neon green theme used in Options > Theme > Neon green.
+ */
 const ngreenTheme = {
 	name: 'neon green',
 	colors: {
@@ -2441,6 +2557,10 @@ const ngreenTheme = {
 	}
 };
 
+
+/**
+ * The default colors for Neon red theme used in Options > Theme > Neon red.
+ */
 const nredTheme = {
 	name: 'neon red',
 	colors: {
@@ -2451,6 +2571,10 @@ const nredTheme = {
 	}
 };
 
+
+/**
+ * The default colors for Neon gold theme used in Options > Theme > Neon gold.
+ */
 const ngoldTheme = {
 	name: 'neon gold',
 	colors: {
@@ -2462,6 +2586,9 @@ const ngoldTheme = {
 };
 
 
+/**
+ * The Playlist colors for Neon blue/green/red/gold theme used in Options > Theme > Neon blue/green/red/gold.
+ */
 function playlistColorsNeonThemes() {
 	// * MAIN COLORS * //
 	const accentColor =
@@ -2510,7 +2637,7 @@ function playlistColorsNeonThemes() {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = RGB(45, 45, 45);
-	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line = TintColor(g_pl_colors.row_selection_frame, 20);
 	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * SCROLLBAR COLORS * //
@@ -2522,6 +2649,9 @@ function playlistColorsNeonThemes() {
 }
 
 
+/**
+ * The Library colors for Neon blue/green/red/gold theme used in Options > Theme > Neon blue/green/red/gold.
+ */
 function libraryColorsNeonThemes() {
 	// * MAIN COLORS * //
 	const accentColor =
@@ -2540,7 +2670,7 @@ function libraryColorsNeonThemes() {
 	ui.col.rowStripes = g_pl_colors.row_stripes_bg;
 
 	// * ROW COLORS * //
-	ui.col.nowPlayingBg = ppt.albumArtShow ? tintColor(g_pl_colors.row_nowplaying_bg, 7) : g_pl_colors.row_nowplaying_bg;
+	ui.col.nowPlayingBg = ppt.albumArtShow ? TintColor(g_pl_colors.row_nowplaying_bg, 7) : g_pl_colors.row_nowplaying_bg;
 	ui.col.sideMarker = g_pl_colors.row_sideMarker;
 	ui.col.selectionFrame = g_pl_colors.row_selection_frame;
 	ui.col.selectionFrame2 = ui.col.sideMarker;
@@ -2582,6 +2712,9 @@ function libraryColorsNeonThemes() {
 }
 
 
+/**
+ * The Biography colors for Neon blue/green/red/gold theme used in Options > Theme > Neon blue/green/red/gold.
+ */
 function biographyColorsNeonThemes() {
 	// * MAIN COLORS * //
 	const accentColor =
@@ -2625,6 +2758,9 @@ function biographyColorsNeonThemes() {
 }
 
 
+/**
+ * The Main colors for Neon blue/green/red/gold theme used in Options > Theme > Neon blue/green/red/gold.
+ */
 function mainColorsNeonThemes() {
 	// * MAIN COLORS * //
 	const accentColor =
@@ -2734,18 +2870,18 @@ function mainColorsNeonThemes() {
 
 	// * PEAKMETER BAR COLORS * //
 	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = tintColor(accentColor,  40);
-	col.peakmeterBarFillTop       = tintColor(accentColor,  10);
-	col.peakmeterBarFillMiddle    = tintColor(accentColor,  20);
-	col.peakmeterBarFillBack      = shadeColor(accentColor, 15);
+	col.peakmeterBarProgFill      = TintColor(accentColor,  40);
+	col.peakmeterBarFillTop       = TintColor(accentColor,  10);
+	col.peakmeterBarFillMiddle    = TintColor(accentColor,  20);
+	col.peakmeterBarFillBack      = ShadeColor(accentColor, 15);
 	col.peakmeterBarVertProgFill  = col.progressBarFill;
 	col.peakmeterBarVertFill      = accentColor;
-	col.peakmeterBarVertFillPeaks = tintColor(accentColor,  60);
+	col.peakmeterBarVertFillPeaks = TintColor(accentColor,  60);
 	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 	// * WAVEFORM BAR COLORS * //
 	col.waveformBarFillFront    = accentColor;
-	col.waveformBarFillBack     = shadeColor(accentColor, 20);
+	col.waveformBarFillBack     = ShadeColor(accentColor, 20);
 	col.waveformBarFillPreFront = RGB(100, 100, 100);
 	col.waveformBarFillPreBack  = RGB(80, 80, 80);
 	col.waveformBarIndicator    = RGB(255, 255, 255);
@@ -2787,6 +2923,9 @@ function mainColorsNeonThemes() {
 /////////////////////////////
 // * CUSTOM THEME COLORS * //
 /////////////////////////////
+/**
+ * The default colors for Custom theme used in Options > Theme > Custom.
+ */
 const customTheme = {
 	name: 'custom',
 	colors: {
@@ -2798,6 +2937,9 @@ const customTheme = {
 };
 
 
+/**
+ * The Playlist colors for Custom theme used in Options > Theme > Custom.
+ */
 function playlistColorsCustomTheme() {
 	try {
 		// * MAIN COLORS * //
@@ -2828,7 +2970,7 @@ function playlistColorsCustomTheme() {
 		g_pl_colors.row_stripes_bg = pref.styleBlend ? HEXtoRGBA(customColor.g_pl_colors_row_stripes_bg, 130) : HEXtoRGB(customColor.g_pl_colors_row_stripes_bg);
 		g_pl_colors.row_selection_frame = HEXtoRGB(customColor.g_pl_colors_row_selection_frame);
 		g_pl_colors.row_sideMarker = HEXtoRGB(customColor.g_pl_colors_row_sideMarker);
-		g_pl_colors.row_title_normal = pref.styleBlend ? shadeColor(HEXtoRGB(customColor.g_pl_colors_row_title_normal), 10) : HEXtoRGB(customColor.g_pl_colors_row_title_normal);
+		g_pl_colors.row_title_normal = pref.styleBlend ? ShadeColor(HEXtoRGB(customColor.g_pl_colors_row_title_normal), 10) : HEXtoRGB(customColor.g_pl_colors_row_title_normal);
 		g_pl_colors.row_title_playing = HEXtoRGB(customColor.g_pl_colors_row_title_playing);
 		g_pl_colors.row_title_selected = HEXtoRGB(customColor.g_pl_colors_row_title_selected);
 		g_pl_colors.row_title_hovered = HEXtoRGB(customColor.g_pl_colors_row_title_hovered);
@@ -2851,10 +2993,13 @@ function playlistColorsCustomTheme() {
 }
 
 
+/**
+ * The Library colors for Custom theme used in Options > Theme > Custom.
+ */
 function libraryColorsCustomTheme() {
 	try {
 		// * MAIN COLORS * //
-		ui.col.bg = pref.styleAlternative ? shadeColor(HEXtoRGB(customColor.ui_col_bg), 5) : pref.styleAlternative2 ? tintColor(HEXtoRGB(customColor.ui_col_bg), 5) : HEXtoRGB(customColor.ui_col_bg);
+		ui.col.bg = pref.styleAlternative ? ShadeColor(HEXtoRGB(customColor.ui_col_bg), 5) : pref.styleAlternative2 ? TintColor(HEXtoRGB(customColor.ui_col_bg), 5) : HEXtoRGB(customColor.ui_col_bg);
 		ui.col.rowStripes = pref.styleBlend ? HEXtoRGBA(customColor.ui_col_rowStripes, 130) : HEXtoRGB(customColor.ui_col_rowStripes);
 
 		// * ROW COLORS * //
@@ -2865,29 +3010,29 @@ function libraryColorsCustomTheme() {
 		ui.col.hoverFrame = HEXtoRGB(customColor.ui_col_hoverFrame);
 
 		// * NODE COLORS * //
-		ui.col.iconPlus = pref.styleBlend ? shadeColor(HEXtoRGB(customColor.ui_col_iconPlus), 10) : HEXtoRGB(customColor.ui_col_iconPlus);
+		ui.col.iconPlus = pref.styleBlend ? ShadeColor(HEXtoRGB(customColor.ui_col_iconPlus), 10) : HEXtoRGB(customColor.ui_col_iconPlus);
 		ui.col.iconPlus_h = HEXtoRGB(customColor.ui_col_iconPlus_h);
 		ui.col.iconPlus_sel = HEXtoRGB(customColor.ui_col_iconPlus_sel);
 		ui.col.iconPlusBg = HEXtoRGB(customColor.ui_col_iconPlusBg);
-		ui.col.iconMinus_e = pref.styleBlend ? shadeColor(HEXtoRGB(customColor.ui_col_iconMinus_e), 10) : HEXtoRGB(customColor.ui_col_iconMinus_e);
+		ui.col.iconMinus_e = pref.styleBlend ? ShadeColor(HEXtoRGB(customColor.ui_col_iconMinus_e), 10) : HEXtoRGB(customColor.ui_col_iconMinus_e);
 		ui.col.iconMinus_c = HEXtoRGB(customColor.ui_col_iconMinus_c);
 		ui.col.iconMinus_h = HEXtoRGB(customColor.ui_col_iconMinus_h);
 
 		// * TEXT COLORS * //
-		ui.col.text = ppt.albumArtShow && img.labels.overlayDark ? tintColor(HEXtoRGB(customColor.ui_col_text), 40) : pref.styleBlend ? tintColor(HEXtoRGB(customColor.ui_col_text), 10) : HEXtoRGB(customColor.ui_col_text);
-		ui.col.text_h = ppt.albumArtShow && img.labels.overlayDark ? tintColor(HEXtoRGB(customColor.ui_col_text), 40) : HEXtoRGB(customColor.ui_col_text_h);
+		ui.col.text = ppt.albumArtShow && img.labels.overlayDark ? TintColor(HEXtoRGB(customColor.ui_col_text), 40) : pref.styleBlend ? TintColor(HEXtoRGB(customColor.ui_col_text), 10) : HEXtoRGB(customColor.ui_col_text);
+		ui.col.text_h = ppt.albumArtShow && img.labels.overlayDark ? TintColor(HEXtoRGB(customColor.ui_col_text), 40) : HEXtoRGB(customColor.ui_col_text_h);
 		ui.col.text_nowp = HEXtoRGB(customColor.ui_col_text_nowp);
 		ui.col.textSel = ppt.albumArtShow && ppt.albumArtLabelType === 1 ? ui.col.text_nowp : HEXtoRGB(customColor.ui_col_textSel);
 		ui.col.txt = HEXtoRGB(customColor.ui_col_txt);
 		ui.col.txt_h = HEXtoRGB(customColor.ui_col_txt_h);
-		ui.col.txt_box = pref.styleBlend ? tintColor(HEXtoRGB(customColor.ui_col_txt_box), 10) : HEXtoRGB(customColor.ui_col_txt_box);
-		ui.col.search = pref.styleBlend ? tintColor(HEXtoRGB(customColor.ui_col_search), 10) : HEXtoRGB(customColor.ui_col_search);
+		ui.col.txt_box = pref.styleBlend ? TintColor(HEXtoRGB(customColor.ui_col_txt_box), 10) : HEXtoRGB(customColor.ui_col_txt_box);
+		ui.col.search = pref.styleBlend ? TintColor(HEXtoRGB(customColor.ui_col_search), 10) : HEXtoRGB(customColor.ui_col_search);
 
 		// * BUTTON COLORS * //
 		ui.col.searchBtn = HEXtoRGB(customColor.ui_col_searchBtn);
-		ui.col.crossBtn = pref.styleBlend ? tintColor(HEXtoRGB(customColor.ui_col_crossBtn), 10) : HEXtoRGB(customColor.ui_col_crossBtn);
-		ui.col.filterBtn = pref.styleBlend ? tintColor(HEXtoRGB(customColor.ui_col_filterBtn), 10) : HEXtoRGB(customColor.ui_col_filterBtn);
-		ui.col.settingsBtn = pref.styleBlend ? tintColor(HEXtoRGB(customColor.ui_col_settingsBtn), 10) : HEXtoRGB(customColor.ui_col_settingsBtn);
+		ui.col.crossBtn = pref.styleBlend ? TintColor(HEXtoRGB(customColor.ui_col_crossBtn), 10) : HEXtoRGB(customColor.ui_col_crossBtn);
+		ui.col.filterBtn = pref.styleBlend ? TintColor(HEXtoRGB(customColor.ui_col_filterBtn), 10) : HEXtoRGB(customColor.ui_col_filterBtn);
+		ui.col.settingsBtn = pref.styleBlend ? TintColor(HEXtoRGB(customColor.ui_col_settingsBtn), 10) : HEXtoRGB(customColor.ui_col_settingsBtn);
 		ui.col.line = HEXtoRGB(customColor.ui_col_line);
 		ui.col.s_line = HEXtoRGB(customColor.ui_col_s_line);
 
@@ -2904,23 +3049,26 @@ function libraryColorsCustomTheme() {
 }
 
 
+/**
+ * The Biography colors for Custom theme used in Options > Theme > Custom.
+ */
 function biographyColorsCustomTheme() {
 	try {
 		// * MAIN COLORS * //
-		uiBio.col.bg = pref.styleAlternative ? shadeColor(HEXtoRGB(customColor.uiBio_col_bg), 5) : pref.styleAlternative2 ? tintColor(HEXtoRGB(customColor.uiBio_col_bg), 5) : HEXtoRGB(customColor.uiBio_col_bg);
+		uiBio.col.bg = pref.styleAlternative ? ShadeColor(HEXtoRGB(customColor.uiBio_col_bg), 5) : pref.styleAlternative2 ? TintColor(HEXtoRGB(customColor.uiBio_col_bg), 5) : HEXtoRGB(customColor.uiBio_col_bg);
 		uiBio.col.rowStripes = pref.styleBlend ? HEXtoRGBA(customColor.uiBio_col_rowStripes, 130) : HEXtoRGB(customColor.uiBio_col_rowStripes);
 
 		// * HEADER COLORS * //
-		uiBio.col.headingText = pref.styleBlend ? tintColor(HEXtoRGB(customColor.uiBio_col_headingText), 10) : HEXtoRGB(customColor.uiBio_col_headingText);
-		uiBio.col.bottomLine = (uiBio.blur.blend || uiBio.blur.light) ? shadeColor(HEXtoRGB(customColor.uiBio_col_bottomLine), 25) : HEXtoRGB(customColor.uiBio_col_bottomLine);
+		uiBio.col.headingText = pref.styleBlend ? TintColor(HEXtoRGB(customColor.uiBio_col_headingText), 10) : HEXtoRGB(customColor.uiBio_col_headingText);
+		uiBio.col.bottomLine = (uiBio.blur.blend || uiBio.blur.light) ? ShadeColor(HEXtoRGB(customColor.uiBio_col_bottomLine), 25) : HEXtoRGB(customColor.uiBio_col_bottomLine);
 		uiBio.col.centerLine = HEXtoRGB(customColor.uiBio_col_centerLine);
 		uiBio.col.sectionLine = HEXtoRGB(customColor.uiBio_col_sectionLine);
 
 		// * TEXT COLORS * //
-		uiBio.col.text = pref.styleBlend ? tintColor(HEXtoRGB(customColor.uiBio_col_text), 10) : HEXtoRGB(customColor.uiBio_col_text);
-		uiBio.col.source = pref.styleBlend ? tintColor(HEXtoRGB(customColor.uiBio_col_source), 10) : HEXtoRGB(customColor.uiBio_col_source);
-		uiBio.col.accent = pref.styleBlend ? tintColor(HEXtoRGB(customColor.uiBio_col_accent), 10) : HEXtoRGB(customColor.uiBio_col_accent);
-		uiBio.col.summary = pref.styleBlend ? tintColor(HEXtoRGB(customColor.uiBio_col_summary), 10) : HEXtoRGB(customColor.uiBio_col_summary);
+		uiBio.col.text = pref.styleBlend ? TintColor(HEXtoRGB(customColor.uiBio_col_text), 10) : HEXtoRGB(customColor.uiBio_col_text);
+		uiBio.col.source = pref.styleBlend ? TintColor(HEXtoRGB(customColor.uiBio_col_source), 10) : HEXtoRGB(customColor.uiBio_col_source);
+		uiBio.col.accent = pref.styleBlend ? TintColor(HEXtoRGB(customColor.uiBio_col_accent), 10) : HEXtoRGB(customColor.uiBio_col_accent);
+		uiBio.col.summary = pref.styleBlend ? TintColor(HEXtoRGB(customColor.uiBio_col_summary), 10) : HEXtoRGB(customColor.uiBio_col_summary);
 
 		// * MISC COLORS * //
 		uiBio.col.lyricsNormal = HEXtoRGB(customColor.uiBio_col_lyricsNormal);
@@ -2941,6 +3089,9 @@ function biographyColorsCustomTheme() {
 }
 
 
+/**
+ * The Main colors for Custom theme used in Options > Theme > Custom.
+ */
 function mainColorsCustomTheme() {
 	try {
 		const lightImg = imgBrightness > 180;
@@ -2948,14 +3099,14 @@ function mainColorsCustomTheme() {
 		const darkBg = new Color(HEXtoRGB(customColor.col_bg)).brightness < 50;
 
 		// * MAIN COLORS * //
-		col.bg = pref.styleBevel ? tintColor(HEXtoRGB(customColor.col_bg), lightBgMain ? 80 : 0) : HEXtoRGB(customColor.col_bg);
+		col.bg = pref.styleBevel ? TintColor(HEXtoRGB(customColor.col_bg), lightBgMain ? 80 : 0) : HEXtoRGB(customColor.col_bg);
 		col.loadingThemeBg = RGB(255, 255, 255);
 		col.uiHacksFrame = col.bg;
 		col.shadow = HEXtoRGBA(customColor.col_shadow, lightBgMain ? 50 : 75);
 		col.discArtShadow = HEXtoRGBA(customColor.col_discArtShadow, lightBgMain ? 50 : 75);
 		col.noAlbumArtStub = HEXtoRGB(customColor.col_noAlbumArtStub);
-		col.lowerBarArtist = pref.styleBlend || pref.styleBlend2 ? tintColor(HEXtoRGB(customColor.col_lowerBarArtist), 10) : HEXtoRGB(customColor.col_lowerBarArtist);
-		col.lowerBarTitle = pref.styleBlend || pref.styleBlend2 ? tintColor(HEXtoRGB(customColor.col_lowerBarTitle), 10) : HEXtoRGB(customColor.col_lowerBarTitle);
+		col.lowerBarArtist = pref.styleBlend || pref.styleBlend2 ? TintColor(HEXtoRGB(customColor.col_lowerBarArtist), 10) : HEXtoRGB(customColor.col_lowerBarArtist);
+		col.lowerBarTitle = pref.styleBlend || pref.styleBlend2 ? TintColor(HEXtoRGB(customColor.col_lowerBarTitle), 10) : HEXtoRGB(customColor.col_lowerBarTitle);
 		col.lowerBarTime = HEXtoRGB(customColor.col_lowerBarTime);
 		col.lowerBarLength = HEXtoRGB(customColor.col_lowerBarLength);
 		col.lyricsNormal = HEXtoRGB(customColor.col_lyricsNormal);
@@ -2970,17 +3121,17 @@ function mainColorsCustomTheme() {
 
 		col.timelineAdded =
 			isStreaming ? RGB(207, 0, 5) :
-			lightBgDetails ? shadeColor(HEXtoRGB(customColor.col_timelinePlayed), pref.styleBlend ? 35 : 0) :
+			lightBgDetails ? ShadeColor(HEXtoRGB(customColor.col_timelinePlayed), pref.styleBlend ? 35 : 0) :
 			HEXtoRGB(customColor.col_timelineAdded);
 
 		col.timelinePlayed =
 			isStreaming ? RGB(207, 0, 5) :
-			lightBgDetails ? shadeColor(HEXtoRGB(customColor.col_timelinePlayed), pref.styleBlend ? 35 : 0) :
+			lightBgDetails ? ShadeColor(HEXtoRGB(customColor.col_timelinePlayed), pref.styleBlend ? 35 : 0) :
 			HEXtoRGB(customColor.col_timelinePlayed);
 
 		col.timelineUnplayed =
 			isStreaming ? RGB(207, 0, 5) :
-			lightBgDetails ? shadeColor(HEXtoRGB(customColor.col_timelineUnplayed), pref.styleBlend ? 20 : 0) :
+			lightBgDetails ? ShadeColor(HEXtoRGB(customColor.col_timelineUnplayed), pref.styleBlend ? 20 : 0) :
 			HEXtoRGB(customColor.col_timelineUnplayed);
 
 		col.timelineFrame = HEXtoRGB(customColor.col_timelineFrame);
@@ -2993,121 +3144,121 @@ function mainColorsCustomTheme() {
 		// * TOP MENU BUTTON COLORS * //
 		col.menuBgColor =
 			pref.styleBlend || pref.styleBlend2 ?
-				lightBgMain ? shadeColor(HEXtoRGB(customColor.col_menuBgColor), 10) : tintColor(HEXtoRGB(customColor.col_menuBgColor), 10) :
+				lightBgMain ? ShadeColor(HEXtoRGB(customColor.col_menuBgColor), 10) : TintColor(HEXtoRGB(customColor.col_menuBgColor), 10) :
 			HEXtoRGB(customColor.col_menuBgColor);
 
 		col.menuStyleBg =
 			pref.styleTopMenuButtons === 'bevel' || pref.styleTopMenuButtons === 'inner' ?
-				pref.styleBevel ? lightBgMain ? shadeColor(HEXtoRGB(customColor.col_menuStyleBg), 10) : tintColor(HEXtoRGB(customColor.col_menuStyleBg), 10) : HEXtoRGB(customColor.col_menuStyleBg) :
+				pref.styleBevel ? lightBgMain ? ShadeColor(HEXtoRGB(customColor.col_menuStyleBg), 10) : TintColor(HEXtoRGB(customColor.col_menuStyleBg), 10) : HEXtoRGB(customColor.col_menuStyleBg) :
 			pref.styleTopMenuButtons === 'emboss' ?
-				lightBgMain ? shadeColor(HEXtoRGB(customColor.col_menuStyleBg), 10) : tintColor(HEXtoRGB(customColor.col_menuStyleBg), 10) : '';
+				lightBgMain ? ShadeColor(HEXtoRGB(customColor.col_menuStyleBg), 10) : TintColor(HEXtoRGB(customColor.col_menuStyleBg), 10) : '';
 
 		col.menuRectStyleEmbossTop = HEXtoRGB(customColor.col_menuRectStyleEmbossTop);
-		col.menuRectStyleEmbossBottom = pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_menuRectStyleEmbossBottom), 10) : HEXtoRGB(customColor.col_menuRectStyleEmbossBottom);
+		col.menuRectStyleEmbossBottom = pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_menuRectStyleEmbossBottom), 10) : HEXtoRGB(customColor.col_menuRectStyleEmbossBottom);
 
 		col.menuRectNormal =
-			pref.styleBlend || pref.styleBlend2 ? pref.styleBevel ? tintColor(HEXtoRGB(customColor.col_menuRectNormal), 10) : HEXtoRGB(customColor.col_menuRectNormal) :
-			pref.styleAlternative2 ? tintColor(HEXtoRGB(customColor.col_menuRectNormal), 10) :
+			pref.styleBlend || pref.styleBlend2 ? pref.styleBevel ? TintColor(HEXtoRGB(customColor.col_menuRectNormal), 10) : HEXtoRGB(customColor.col_menuRectNormal) :
+			pref.styleAlternative2 ? TintColor(HEXtoRGB(customColor.col_menuRectNormal), 10) :
 			HEXtoRGB(customColor.col_menuRectNormal);
 
 		col.menuRectHovered =
 			pref.styleTopMenuButtons === 'bevel' || pref.styleTopMenuButtons === 'inner' ?
-				pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_menuRectHovered), 15) : shadeColor(HEXtoRGB(customColor.col_menuRectHovered), 5) :
+				pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_menuRectHovered), 15) : ShadeColor(HEXtoRGB(customColor.col_menuRectHovered), 5) :
 			pref.styleBlend || pref.styleBlend2 ?
-				pref.styleBevel ? tintColor(HEXtoRGB(customColor.col_menuRectHovered), 10) : tintColor(HEXtoRGB(customColor.col_menuRectHovered), 5) :
-			pref.styleAlternative2 ? tintColor(HEXtoRGB(customColor.col_menuRectHovered), 10) :
+				pref.styleBevel ? TintColor(HEXtoRGB(customColor.col_menuRectHovered), 10) : TintColor(HEXtoRGB(customColor.col_menuRectHovered), 5) :
+			pref.styleAlternative2 ? TintColor(HEXtoRGB(customColor.col_menuRectHovered), 10) :
 			HEXtoRGB(customColor.col_menuRectHovered);
 
 		col.menuRectDown = HEXtoRGB(customColor.col_menuRectDown);
-		col.menuTextNormal = pref.styleBlend || pref.styleBlend2 ? tintColor(HEXtoRGB(customColor.col_menuTextNormal), 10) : HEXtoRGB(customColor.col_menuTextNormal);
+		col.menuTextNormal = pref.styleBlend || pref.styleBlend2 ? TintColor(HEXtoRGB(customColor.col_menuTextNormal), 10) : HEXtoRGB(customColor.col_menuTextNormal);
 		col.menuTextHovered = HEXtoRGB(customColor.col_menuTextHovered);
 		col.menuTextDown = HEXtoRGB(customColor.col_menuTextDown);
 
 		// * LOWER BAR TRANSPORT BUTTON COLORS * //
 		col.transportEllipseBg =
 			pref.styleBlend || pref.styleBlend2 ?
-				lightImg || lightBgMain ? shadeColor(HEXtoRGB(customColor.col_transportEllipseBg), 5) : tintColor(HEXtoRGB(customColor.col_transportEllipseBg), 10) :
-			darkBg && pref.styleTransportButtons === 'emboss' ? tintColor(HEXtoRGB(customColor.col_transportEllipseBg), 15) : HEXtoRGB(customColor.col_transportEllipseBg);
+				lightImg || lightBgMain ? ShadeColor(HEXtoRGB(customColor.col_transportEllipseBg), 5) : TintColor(HEXtoRGB(customColor.col_transportEllipseBg), 10) :
+			darkBg && pref.styleTransportButtons === 'emboss' ? TintColor(HEXtoRGB(customColor.col_transportEllipseBg), 15) : HEXtoRGB(customColor.col_transportEllipseBg);
 
 		col.transportEllipseNormal =
 			pref.styleBlend || pref.styleBlend2 ?
-				pref.styleBevel ? tintColor(HEXtoRGB(customColor.col_transportEllipseNormal), 5) : tintColor(HEXtoRGB(customColor.col_transportEllipseNormal), 10) :
+				pref.styleBevel ? TintColor(HEXtoRGB(customColor.col_transportEllipseNormal), 5) : TintColor(HEXtoRGB(customColor.col_transportEllipseNormal), 10) :
 			HEXtoRGB(customColor.col_transportEllipseNormal);
 
 		col.transportEllipseHovered =
 			pref.styleBlend || pref.styleBlend2 ?
-				pref.styleBevel ? tintColor(HEXtoRGB(customColor.col_transportEllipseHovered), 5) : tintColor(HEXtoRGB(customColor.col_transportEllipseHovered), 10) :
+				pref.styleBevel ? TintColor(HEXtoRGB(customColor.col_transportEllipseHovered), 5) : TintColor(HEXtoRGB(customColor.col_transportEllipseHovered), 10) :
 			HEXtoRGB(customColor.col_transportEllipseHovered);
 
 		col.transportEllipseDown = HEXtoRGB(customColor.col_transportEllipseDown);
 
 		col.transportStyleBg =
 			pref.styleTransportButtons === 'bevel' || pref.styleTransportButtons === 'inner' ?
-				shadeColor(HEXtoRGB(customColor.col_transportStyleBg), 0) :
+				ShadeColor(HEXtoRGB(customColor.col_transportStyleBg), 0) :
 			pref.styleTransportButtons === 'emboss' ?
-			pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_transportStyleBottom), 5) : tintColor(HEXtoRGB(customColor.col_transportStyleBg), 0) : '';
+			pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_transportStyleBottom), 5) : TintColor(HEXtoRGB(customColor.col_transportStyleBg), 0) : '';
 
 		col.transportStyleTop =
 			pref.styleTransportButtons === 'bevel' || pref.styleTransportButtons === 'inner' ?
-				tintColor(HEXtoRGB(customColor.col_transportStyleTop), 0) :
+				TintColor(HEXtoRGB(customColor.col_transportStyleTop), 0) :
 			pref.styleTransportButtons === 'emboss' ?
-				lightImg || lightBgMain ? tintColor(HEXtoRGB(customColor.col_transportStyleTop), 0) :
-				tintColor(HEXtoRGB(customColor.col_transportStyleTop), 15) : '';
+				lightImg || lightBgMain ? TintColor(HEXtoRGB(customColor.col_transportStyleTop), 0) :
+				TintColor(HEXtoRGB(customColor.col_transportStyleTop), 15) : '';
 
 		col.transportStyleBottom =
 			pref.styleTransportButtons === 'bevel' || pref.styleTransportButtons === 'inner' ?
-				shadeColor(HEXtoRGB(customColor.col_transportStyleBottom), 0) :
+				ShadeColor(HEXtoRGB(customColor.col_transportStyleBottom), 0) :
 			pref.styleTransportButtons === 'emboss' ?
-				darkBg ? shadeColor(HEXtoRGB(customColor.col_transportStyleBottom), 20) :
-				tintColor(HEXtoRGB(customColor.col_transportStyleBottom), 10) : '';
+				darkBg ? ShadeColor(HEXtoRGB(customColor.col_transportStyleBottom), 20) :
+				TintColor(HEXtoRGB(customColor.col_transportStyleBottom), 10) : '';
 
 		col.transportIconNormal =
-			pref.styleBlend || pref.styleBlend2 ? tintColor(HEXtoRGB(customColor.col_transportIconNormal), 10) : HEXtoRGB(customColor.col_transportIconNormal);
+			pref.styleBlend || pref.styleBlend2 ? TintColor(HEXtoRGB(customColor.col_transportIconNormal), 10) : HEXtoRGB(customColor.col_transportIconNormal);
 
 		col.transportIconHovered =
-			pref.styleBlend || pref.styleBlend2 ? tintColor(HEXtoRGB(customColor.col_transportIconHovered), 10) : HEXtoRGB(customColor.col_transportIconHovered);
+			pref.styleBlend || pref.styleBlend2 ? TintColor(HEXtoRGB(customColor.col_transportIconHovered), 10) : HEXtoRGB(customColor.col_transportIconHovered);
 
 		col.transportIconDown = HEXtoRGB(customColor.col_transportIconDown);
 
 		// * PROGRESS BAR COLORS * //
 		col.progressBar =
 			pref.styleProgressBar === 'bevel' ?
-				pref.styleBlend || pref.styleBlend2 ? lightImg || lightBgMain ? shadeColor(HEXtoRGB(customColor.col_progressBar), 5) : tintColor(HEXtoRGB(customColor.col_progressBar), 10) :
-				pref.styleBevel ? HEXtoRGB(customColor.col_progressBar) : tintColor(HEXtoRGB(customColor.col_progressBar), 10) :
+				pref.styleBlend || pref.styleBlend2 ? lightImg || lightBgMain ? ShadeColor(HEXtoRGB(customColor.col_progressBar), 5) : TintColor(HEXtoRGB(customColor.col_progressBar), 10) :
+				pref.styleBevel ? HEXtoRGB(customColor.col_progressBar) : TintColor(HEXtoRGB(customColor.col_progressBar), 10) :
 			pref.styleProgressBar === 'inner' ?
-				pref.styleBlend || pref.styleBlend2 ? lightImg || lightBgMain ? tintColor(HEXtoRGB(customColor.col_progressBar), 10) : tintColor(HEXtoRGB(customColor.col_progressBar), 5) :
-				pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_progressBar), 5) : HEXtoRGB(customColor.col_progressBar) :
-			pref.styleBlend || pref.styleBlend2 ? lightBgMain ? tintColor(HEXtoRGB(customColor.col_progressBar), 10) : tintColor(HEXtoRGB(customColor.col_progressBar), 5) :
-			pref.styleBevel ? lightBgMain ? shadeColor(HEXtoRGB(customColor.col_progressBar), 5) : tintColor(HEXtoRGB(customColor.col_progressBar), 5) :
+				pref.styleBlend || pref.styleBlend2 ? lightImg || lightBgMain ? TintColor(HEXtoRGB(customColor.col_progressBar), 10) : TintColor(HEXtoRGB(customColor.col_progressBar), 5) :
+				pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_progressBar), 5) : HEXtoRGB(customColor.col_progressBar) :
+			pref.styleBlend || pref.styleBlend2 ? lightBgMain ? TintColor(HEXtoRGB(customColor.col_progressBar), 10) : TintColor(HEXtoRGB(customColor.col_progressBar), 5) :
+			pref.styleBevel ? lightBgMain ? ShadeColor(HEXtoRGB(customColor.col_progressBar), 5) : TintColor(HEXtoRGB(customColor.col_progressBar), 5) :
 			HEXtoRGB(customColor.col_progressBar);
 
 		col.progressBarStreaming = HEXtoRGB(customColor.col_progressBarStreaming);
-		col.progressBarFrame = pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_progressBarFrame), 5) : HEXtoRGB(customColor.col_progressBarFrame);
-		col.progressBarFill = pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_progressBarFill), 5) : HEXtoRGB(customColor.col_progressBarFill);
+		col.progressBarFrame = pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_progressBarFrame), 5) : HEXtoRGB(customColor.col_progressBarFrame);
+		col.progressBarFill = pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_progressBarFill), 5) : HEXtoRGB(customColor.col_progressBarFill);
 
 		// * PEAKMETER BAR COLORS * //
-		col.peakmeterBarProg          = pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_peakmeterBarProg), 5) : HEXtoRGB(customColor.col_peakmeterBarProg);
-		col.peakmeterBarProgFill      = pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_peakmeterBarProgFill), 5) : HEXtoRGB(customColor.col_peakmeterBarProgFill);
-		col.peakmeterBarFillTop       = pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_peakmeterBarFillTop), 5) : HEXtoRGB(customColor.col_peakmeterBarFillTop);
-		col.peakmeterBarFillMiddle    = pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_peakmeterBarFillMiddle), 5) : HEXtoRGB(customColor.col_peakmeterBarFillMiddle);
-		col.peakmeterBarFillBack      = pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_peakmeterBarFillBack), 5) : HEXtoRGB(customColor.col_peakmeterBarFillBack);
-		col.peakmeterBarVertProgFill  = pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_peakmeterBarVertProgFill), 5) : HEXtoRGB(customColor.col_peakmeterBarVertProgFill);
-		col.peakmeterBarVertFill      = pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_peakmeterBarVertFill), 5) : HEXtoRGB(customColor.col_peakmeterBarVertFill);
-		col.peakmeterBarVertFillPeaks = pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_peakmeterBarVertFillPeaks), 5) : HEXtoRGB(customColor.col_peakmeterBarVertFillPeaks);
+		col.peakmeterBarProg          = pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_peakmeterBarProg), 5) : HEXtoRGB(customColor.col_peakmeterBarProg);
+		col.peakmeterBarProgFill      = pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_peakmeterBarProgFill), 5) : HEXtoRGB(customColor.col_peakmeterBarProgFill);
+		col.peakmeterBarFillTop       = pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_peakmeterBarFillTop), 5) : HEXtoRGB(customColor.col_peakmeterBarFillTop);
+		col.peakmeterBarFillMiddle    = pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_peakmeterBarFillMiddle), 5) : HEXtoRGB(customColor.col_peakmeterBarFillMiddle);
+		col.peakmeterBarFillBack      = pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_peakmeterBarFillBack), 5) : HEXtoRGB(customColor.col_peakmeterBarFillBack);
+		col.peakmeterBarVertProgFill  = pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_peakmeterBarVertProgFill), 5) : HEXtoRGB(customColor.col_peakmeterBarVertProgFill);
+		col.peakmeterBarVertFill      = pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_peakmeterBarVertFill), 5) : HEXtoRGB(customColor.col_peakmeterBarVertFill);
+		col.peakmeterBarVertFillPeaks = pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_peakmeterBarVertFillPeaks), 5) : HEXtoRGB(customColor.col_peakmeterBarVertFillPeaks);
 		if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
-		col.waveformBarFillFront    = lightBg && (pref.styleBevel || pref.styleBlend) ? shadeColor(HEXtoRGB(customColor.col_waveformBarFillFront), 5) : HEXtoRGB(customColor.col_waveformBarFillFront);
-		col.waveformBarFillBack     = lightBg && (pref.styleBevel || pref.styleBlend) ? shadeColor(HEXtoRGB(customColor.col_waveformBarFillBack), 5) : HEXtoRGB(customColor.col_waveformBarFillBack);
-		col.waveformBarFillPreFront = lightBg && (pref.styleBevel || pref.styleBlend) ? shadeColor(HEXtoRGB(customColor.col_waveformBarFillPreFront), 10) : HEXtoRGB(customColor.col_waveformBarFillPreFront);
-		col.waveformBarFillPreBack  = lightBg && (pref.styleBevel || pref.styleBlend) ? shadeColor(HEXtoRGB(customColor.col_waveformBarFillPreBack), 5) : HEXtoRGB(customColor.col_waveformBarFillPreBack);
+		col.waveformBarFillFront    = lightBg && (pref.styleBevel || pref.styleBlend) ? ShadeColor(HEXtoRGB(customColor.col_waveformBarFillFront), 5) : HEXtoRGB(customColor.col_waveformBarFillFront);
+		col.waveformBarFillBack     = lightBg && (pref.styleBevel || pref.styleBlend) ? ShadeColor(HEXtoRGB(customColor.col_waveformBarFillBack), 5) : HEXtoRGB(customColor.col_waveformBarFillBack);
+		col.waveformBarFillPreFront = lightBg && (pref.styleBevel || pref.styleBlend) ? ShadeColor(HEXtoRGB(customColor.col_waveformBarFillPreFront), 10) : HEXtoRGB(customColor.col_waveformBarFillPreFront);
+		col.waveformBarFillPreBack  = lightBg && (pref.styleBevel || pref.styleBlend) ? ShadeColor(HEXtoRGB(customColor.col_waveformBarFillPreBack), 5) : HEXtoRGB(customColor.col_waveformBarFillPreBack);
 		col.waveformBarIndicator    = HEXtoRGB(customColor.col_waveformBarIndicator);
 
 		// * VOLUME BAR COLORS * //
 		col.volumeBar = HEXtoRGB(customColor.col_volumeBar);
 
 		col.volumeBarFrame =
-			pref.styleVolumeBar === 'bevel' || pref.styleVolumeBar === 'inner' ? tintColor(HEXtoRGB(customColor.col_volumeBarFrame), 5) :
+			pref.styleVolumeBar === 'bevel' || pref.styleVolumeBar === 'inner' ? TintColor(HEXtoRGB(customColor.col_volumeBarFrame), 5) :
 			HEXtoRGB(customColor.col_volumeBarFrame);
 
 		col.volumeBarFill = HEXtoRGB(customColor.col_volumeBarFill);
@@ -3118,27 +3269,27 @@ function mainColorsCustomTheme() {
 		col.styleGradient2 = HEXtoRGB(customColor.col_styleGradient2);
 
 		col.styleProgressBar =
-			pref.styleProgressBar === 'bevel' ? pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_styleProgressBar), lightBg ? 5 : 10) : HEXtoRGB(customColor.col_styleProgressBar) :
-			pref.styleProgressBar === 'inner' ? pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_styleProgressBar), lightBg ? 5 : 10) : HEXtoRGB(customColor.col_styleProgressBar) : '';
+			pref.styleProgressBar === 'bevel' ? pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_styleProgressBar), lightBg ? 5 : 10) : HEXtoRGB(customColor.col_styleProgressBar) :
+			pref.styleProgressBar === 'inner' ? pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_styleProgressBar), lightBg ? 5 : 10) : HEXtoRGB(customColor.col_styleProgressBar) : '';
 
 		col.styleProgressBarLineTop =
-			pref.styleProgressBar === 'bevel' ? pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_styleProgressBarLineTop), darkBg ? 40 : lightBg ? 0 : 10) : HEXtoRGB(customColor.col_styleProgressBarLineTop) :
-			pref.styleProgressBar === 'inner' ? pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_styleProgressBarLineTop), darkBg ? 20 : lightBg ? 5 : 10) : HEXtoRGB(customColor.col_styleProgressBarLineTop) : '';
+			pref.styleProgressBar === 'bevel' ? pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_styleProgressBarLineTop), darkBg ? 40 : lightBg ? 0 : 10) : HEXtoRGB(customColor.col_styleProgressBarLineTop) :
+			pref.styleProgressBar === 'inner' ? pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_styleProgressBarLineTop), darkBg ? 20 : lightBg ? 5 : 10) : HEXtoRGB(customColor.col_styleProgressBarLineTop) : '';
 
 		col.styleProgressBarLineBottom =
-			pref.styleProgressBar === 'bevel' ? pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_styleProgressBarLineBottom), darkBg ? 30 : lightBg ? 30 : 20) : HEXtoRGB(customColor.col_styleProgressBarLineBottom) :
-			pref.styleProgressBar === 'inner' ? pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_styleProgressBarLineBottom), darkBg ? 25 : lightBg ? 15 : 20) : HEXtoRGB(customColor.col_styleProgressBarLineBottom) : '';
+			pref.styleProgressBar === 'bevel' ? pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_styleProgressBarLineBottom), darkBg ? 30 : lightBg ? 30 : 20) : HEXtoRGB(customColor.col_styleProgressBarLineBottom) :
+			pref.styleProgressBar === 'inner' ? pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_styleProgressBarLineBottom), darkBg ? 25 : lightBg ? 15 : 20) : HEXtoRGB(customColor.col_styleProgressBarLineBottom) : '';
 
 		col.styleProgressBarFill =
-			pref.styleProgressBarFill === 'bevel' || pref.styleProgressBarFill === 'inner' ? shadeColor(HEXtoRGB(customColor.col_styleProgressBarFill), 15) :
+			pref.styleProgressBarFill === 'bevel' || pref.styleProgressBarFill === 'inner' ? ShadeColor(HEXtoRGB(customColor.col_styleProgressBarFill), 15) :
 			HEXtoRGB(customColor.col_styleProgressBarFill);
 
 		col.styleVolumeBar =
-			pref.styleVolumeBar === 'bevel' ? pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_styleVolumeBar), 10) : HEXtoRGB(customColor.col_styleVolumeBar) :
-			pref.styleVolumeBar === 'inner' ? pref.styleBevel ? shadeColor(HEXtoRGB(customColor.col_styleVolumeBar), 10) : HEXtoRGB(customColor.col_styleVolumeBar) : '';
+			pref.styleVolumeBar === 'bevel' ? pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_styleVolumeBar), 10) : HEXtoRGB(customColor.col_styleVolumeBar) :
+			pref.styleVolumeBar === 'inner' ? pref.styleBevel ? ShadeColor(HEXtoRGB(customColor.col_styleVolumeBar), 10) : HEXtoRGB(customColor.col_styleVolumeBar) : '';
 
 		col.styleVolumeBarFill =
-			pref.styleVolumeBarFill === 'bevel' || pref.styleVolumeBarFill === 'inner' ? shadeColor(HEXtoRGB(customColor.col_styleVolumeBarFill), 15) :
+			pref.styleVolumeBarFill === 'bevel' || pref.styleVolumeBarFill === 'inner' ? ShadeColor(HEXtoRGB(customColor.col_styleVolumeBarFill), 15) :
 			HEXtoRGB(customColor.col_styleVolumeBarFill);
 	}
 	catch (e) {
@@ -3151,7 +3302,10 @@ function mainColorsCustomTheme() {
 /////////////////////////////////////
 // * WHITE PANEL AND MAIN COLORS * //
 /////////////////////////////////////
-/** Mainly used for style Black and white 2 or theme color adjustments for style Reborn fusion 1 and 2 when panel bg is too light */
+/**
+ * Mainly used for style Black and white 2 or theme color adjustments for style Reborn fusion 1 and 2 when panel bg is too light.
+ * @param {boolean} lighterBg If true, lightens the panel background color.
+ */
 function panelWhiteColors(lighterBg) {
 	// * PLAYLIST COLORS * //
 	g_pl_colors.bg = lighterBg ? RGB(255, 255, 255) : RGB(245, 245, 245);
@@ -3182,7 +3336,7 @@ function panelWhiteColors(lighterBg) {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = pref.styleBlend ? RGB(190, 190, 190) : RGB(215, 215, 215);
-	g_pl_colors.row_drag_line = shadeColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line = ShadeColor(g_pl_colors.row_selection_frame, 20);
 	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 	g_pl_colors.sbar_btn_normal = RGB(100, 100, 100);
 	g_pl_colors.sbar_btn_hovered = RGB(0, 0, 0);
@@ -3253,7 +3407,10 @@ function panelWhiteColors(lighterBg) {
 }
 
 
-/** Mainly used for style Black and white 1 or theme color adjustments for style Reborn fusion 1 and 2 when main bg is too light */
+/**
+ * Mainly used for style Black and white 1 or theme color adjustments for style Reborn fusion 1 and 2 when main bg is too light.
+ * @param {boolean} lighterBg If true, lightens the main background color.
+ */
 function mainWhiteColors(lighterBg) {
 	// * MAIN COLORS * //
 	col.bg = lighterBg || pref.styleBevel ? RGB(255, 255, 255) : RGB(230, 230, 230);
@@ -3374,7 +3531,10 @@ function mainWhiteColors(lighterBg) {
 /////////////////////////////////////
 // * BLACK PANEL AND MAIN COLORS * //
 /////////////////////////////////////
-/** Mainly used for style Black and white 1 or theme color adjustments for style Reborn fusion 1 and 2 when panel bg is too dark */
+/**
+ * Mainly used for style Black and white 1 or theme color adjustments for style Reborn fusion 1 and 2 when panel bg is too dark.
+ * @param {boolean} darkerBg If true, darkens the panel background color.
+ */
 function panelBlackColors(darkerBg) {
 	// * PLAYLIST COLORS * //
 	g_pl_colors.bg = darkerBg ? RGB(0, 0, 0) : RGB(20, 20, 20);
@@ -3405,7 +3565,7 @@ function panelBlackColors(darkerBg) {
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
 	g_pl_colors.row_disc_subheader_line = pref.styleBlend ? RGB(80, 80, 80) : RGB(45, 45, 45);
-	g_pl_colors.row_drag_line = tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line = TintColor(g_pl_colors.row_selection_frame, 20);
 	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 	g_pl_colors.sbar_btn_normal = RGB(200, 200, 200);
 	g_pl_colors.sbar_btn_hovered = RGB(255, 255, 255);
@@ -3478,7 +3638,10 @@ function panelBlackColors(darkerBg) {
 }
 
 
-/** Mainly used for style Black and white 2 or theme color adjustments for style Reborn fusion 1 and 2 when main bg is too dark */
+/**
+ * Mainly used for style Black and white 2 or theme color adjustments for style Reborn fusion 1 and 2 when main bg is too dark.
+ * @param {boolean} darkerBg If true, darkens the main background color.
+ */
 function mainBlackColors(darkerBg) {
 	// * MAIN COLORS * //
 	col.bg = pref.styleBevel ? darkerBg ? RGB(25, 25, 25) : RGB(50, 50, 50) : darkerBg ? RGB(0, 0, 0) : RGB(25, 25, 25);
@@ -3597,6 +3760,9 @@ function mainBlackColors(darkerBg) {
 //////////////////////////////
 // * LIBRARY THEME COLORS * //
 //////////////////////////////
+/**
+ * The Library theme colors used in Options > Library > Theme.
+ */
 function libraryThemeColors() {
 	// * SETUP COLORS * //
 	const colBrightness = new Color(ui.col.bg).brightness;
@@ -3643,6 +3809,9 @@ function libraryThemeColors() {
 ////////////////////////////////
 // * BIOGRAPHY THEME COLORS * //
 ////////////////////////////////
+/**
+ * The Biography theme colors used in Options > Biography > Theme.
+ */
 function biographyThemeColors() {
 	// * SETUP COLORS * //
 	const colBrightness = new Color(uiBio.col.bg).brightness;
@@ -3675,6 +3844,9 @@ function biographyThemeColors() {
 /////////////////////////////////
 // * THEME COLOR ADJUSTMENTS * //
 /////////////////////////////////
+/**
+ * Post init color adjustments, used for White, Black, Reborn and Random theme.
+ */
 function themeColorAdjustments() {
 	const cBRT = colBrightness;
 	const cBRT2 = colBrightness2;
@@ -3690,24 +3862,24 @@ function themeColorAdjustments() {
 	// * WHITE THEME/REBORN WHITE WITH STYLE BLEND - dynamically adjust transport buttons styles
 	if (((pref.theme === 'white' && !pref.styleBlackAndWhite2 || pref.styleRebornWhite) && (blend || blend2)) && fb.IsPlaying && !isStreaming && !isPlayingCD) {
 		switch (true) {
-			case colorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) > 500: col.transportStyleBottom = RGB(175, 175, 175); break;
-			case colorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) > 300: col.transportStyleBottom = RGB(180, 180, 180); break;
-			case colorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) > 150: col.transportStyleBottom = RGB(185, 185, 185); break;
-			case colorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) >  75: col.transportStyleBottom = RGB(190, 190, 190); break;
-			case colorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) >  50: col.transportStyleBottom = RGB(195, 195, 195); break;
-			case colorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) >=  0: col.transportStyleBottom = RGB(200, 200, 200); break;
+			case ColorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) > 500: col.transportStyleBottom = RGB(175, 175, 175); break;
+			case ColorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) > 300: col.transportStyleBottom = RGB(180, 180, 180); break;
+			case ColorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) > 150: col.transportStyleBottom = RGB(185, 185, 185); break;
+			case ColorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) >  75: col.transportStyleBottom = RGB(190, 190, 190); break;
+			case ColorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) >  50: col.transportStyleBottom = RGB(195, 195, 195); break;
+			case ColorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) >=  0: col.transportStyleBottom = RGB(200, 200, 200); break;
 		}
 	}
 
 	// * WHITE THEME/REBORN WHITE WITH STYLE BLEND - dynamically adjust progress bar background color
 	if ((pref.theme === 'white' || pref.styleRebornWhite) && (blend || blend2) && fb.IsPlaying) {
-		if (colorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) < 180) {
+		if (ColorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) < 180) {
 			if (settings.showThemeLog) console.log('>>> Blended album art image is too close to col.bg. Adjusting progress bar');
-			col.progressBar = bevel ? tintColor(col.progressBar, 10) : shadeColor(col.progressBar, 10);
+			col.progressBar = bevel ? TintColor(col.progressBar, 10) : ShadeColor(col.progressBar, 10);
 		}
-		if (!pref.styleBlackAndWhiteReborn && colorDistance(col.progressBarFill, col.progressBar, true) < 150) {
+		if (!pref.styleBlackAndWhiteReborn && ColorDistance(col.progressBarFill, col.progressBar, true) < 150) {
 			if (settings.showThemeLog) console.log('>>> Progress bar fill color is too close to progress bar background. Adjusting progress bar fill');
-			col.progressBarFill = bevel ? shadeColor(col.progressBarFill, 20) : shadeColor(col.progressBarFill, 10);
+			col.progressBarFill = bevel ? ShadeColor(col.progressBarFill, 20) : ShadeColor(col.progressBarFill, 10);
 		}
 	}
 
@@ -3725,40 +3897,40 @@ function themeColorAdjustments() {
 			cBRT >  75 ? blend ? RGBtoRGBA(col.primary, bevel ? 180 : 200) : col.primary :
 			cBRT >  50 ? blend ? RGBtoRGBA(col.primary, bevel ? 180 : 200) : col.primary :
 			cBRT >  25 ? blend ? RGBtoRGBA(col.primary, bevel ? 180 : 200) : col.primary :
-			cBRT >=  0 ? cBRT < 10 ? tintColor(col.primary, blend || blend2 ? 15 : 10) :
-									 tintColor(col.primary, blend || blend2 ? 15 :  5) : '';
+			cBRT >=  0 ? cBRT < 10 ? TintColor(col.primary, blend || blend2 ? 15 : 10) :
+									 TintColor(col.primary, blend || blend2 ? 15 :  5) : '';
 
 		g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
 
 		// * MAIN COLORS * //
 		col.transportEllipseBg =
-			cBRT > 150 ? transpBtns === 'emboss' ? tintColor(col.transportEllipseBg, 10) : col.transportEllipseBg :
+			cBRT > 150 ? transpBtns === 'emboss' ? TintColor(col.transportEllipseBg, 10) : col.transportEllipseBg :
 			col.transportEllipseBg;
 
 		col.transportStyleTop =
-			cBRT > 200 ? transpBtns === 'emboss' ? tintColor(col.transportStyleTop,  30) : tintColor(col.transportStyleTop,  10) :
-			cBRT > 175 ? transpBtns === 'emboss' ? tintColor(col.transportStyleTop,  30) : tintColor(col.transportStyleTop,  10) :
-			cBRT > 150 ? transpBtns === 'emboss' ? tintColor(col.transportStyleTop,  30) : tintColor(col.transportStyleTop,  10) :
-			cBRT > 125 ? transpBtns === 'emboss' ? tintColor(col.transportStyleTop,  30) : tintColor(col.transportStyleTop,  15) :
-			cBRT > 100 ? transpBtns === 'emboss' ? tintColor(col.transportStyleTop,  40) : shadeColor(col.transportStyleTop, 10) :
-			cBRT >  75 ? transpBtns === 'emboss' ? tintColor(col.transportStyleTop,  40) : shadeColor(col.transportStyleTop,  8) :
-			cBRT >  50 ? transpBtns === 'emboss' ? shadeColor(col.transportStyleTop, 10) : tintColor(col.transportStyleTop,   6) :
-			cBRT >  25 ? transpBtns === 'emboss' ? shadeColor(col.transportStyleTop, 20) : tintColor(col.transportStyleTop,   4) :
-			cBRT >=  0 ? transpBtns === 'emboss' ? shadeColor(col.transportStyleTop, 20) : tintColor(col.transportStyleTop,   4) : '';
+			cBRT > 200 ? transpBtns === 'emboss' ? TintColor(col.transportStyleTop,  30) : TintColor(col.transportStyleTop,  10) :
+			cBRT > 175 ? transpBtns === 'emboss' ? TintColor(col.transportStyleTop,  30) : TintColor(col.transportStyleTop,  10) :
+			cBRT > 150 ? transpBtns === 'emboss' ? TintColor(col.transportStyleTop,  30) : TintColor(col.transportStyleTop,  10) :
+			cBRT > 125 ? transpBtns === 'emboss' ? TintColor(col.transportStyleTop,  30) : TintColor(col.transportStyleTop,  15) :
+			cBRT > 100 ? transpBtns === 'emboss' ? TintColor(col.transportStyleTop,  40) : ShadeColor(col.transportStyleTop, 10) :
+			cBRT >  75 ? transpBtns === 'emboss' ? TintColor(col.transportStyleTop,  40) : ShadeColor(col.transportStyleTop,  8) :
+			cBRT >  50 ? transpBtns === 'emboss' ? ShadeColor(col.transportStyleTop, 10) : TintColor(col.transportStyleTop,   6) :
+			cBRT >  25 ? transpBtns === 'emboss' ? ShadeColor(col.transportStyleTop, 20) : TintColor(col.transportStyleTop,   4) :
+			cBRT >=  0 ? transpBtns === 'emboss' ? ShadeColor(col.transportStyleTop, 20) : TintColor(col.transportStyleTop,   4) : '';
 
 		col.transportStyleBottom =
-			cBRT > 200 ? tintColor(col.transportStyleBottom,   6) :
-			cBRT > 175 ? tintColor(col.transportStyleBottom,   6) :
-			cBRT > 150 ? tintColor(col.transportStyleBottom,   6) :
-			cBRT > 125 ? tintColor(col.transportStyleBottom,   6) :
-			cBRT > 100 ? shadeColor(col.transportStyleBottom,  6) :
-			cBRT >  75 ? shadeColor(col.transportStyleBottom, 12) :
-			cBRT >  50 ? tintColor(col.transportStyleBottom,   6) :
-			cBRT >  25 ? tintColor(col.transportStyleBottom,   4) :
-			cBRT >=  0 ? tintColor(col.transportStyleBottom,   4) : '';
+			cBRT > 200 ? TintColor(col.transportStyleBottom,   6) :
+			cBRT > 175 ? TintColor(col.transportStyleBottom,   6) :
+			cBRT > 150 ? TintColor(col.transportStyleBottom,   6) :
+			cBRT > 125 ? TintColor(col.transportStyleBottom,   6) :
+			cBRT > 100 ? ShadeColor(col.transportStyleBottom,  6) :
+			cBRT >  75 ? ShadeColor(col.transportStyleBottom, 12) :
+			cBRT >  50 ? TintColor(col.transportStyleBottom,   6) :
+			cBRT >  25 ? TintColor(col.transportStyleBottom,   4) :
+			cBRT >=  0 ? TintColor(col.transportStyleBottom,   4) : '';
 
 		col.progressBar =
-			cBRT < 25 ? bevel ? tintColor(col.primary, cBRT < 10 ? blend2 ? 15 : 10 : 5) : shadeColor(col.primary, 30) :
+			cBRT < 25 ? bevel ? TintColor(col.primary, cBRT < 10 ? blend2 ? 15 : 10 : 5) : ShadeColor(col.primary, 30) :
 			cBRT < 50 ? RGB(0, 0, 0) : g_pl_colors.bg;
 
 		col.styleProgressBar =
@@ -3773,15 +3945,15 @@ function themeColorAdjustments() {
 			col.styleProgressBar;
 
 		col.progressBarFill =
-			cBRT > 200 ? bevel ? tintColor(col.progressBarFill, 10) : shadeColor(col.progressBarFill, 15) :
-			cBRT > 175 ? bevel ? tintColor(col.progressBarFill,  5) : shadeColor(col.progressBarFill, blend ? 5 : 15) :
-			cBRT > 150 ? bevel ? tintColor(col.progressBarFill, 10) : shadeColor(col.progressBarFill, 20) :
-			cBRT > 125 ? bevel ? tintColor(col.progressBarFill, 10) : shadeColor(col.progressBarFill, 20) :
-			cBRT > 100 ? bevel ? tintColor(col.progressBarFill, 15) : shadeColor(col.progressBarFill, 30) :
-			cBRT >  75 ? tintColor(col.progressBarFill, 30) :
-			cBRT >  50 ? tintColor(col.progressBarFill, 30) :
-			cBRT >  25 ? tintColor(col.primary, 25) :
-			cBRT >=  0 ? tintColor(col.primary, 25) : '';
+			cBRT > 200 ? bevel ? TintColor(col.progressBarFill, 10) : ShadeColor(col.progressBarFill, 15) :
+			cBRT > 175 ? bevel ? TintColor(col.progressBarFill,  5) : ShadeColor(col.progressBarFill, blend ? 5 : 15) :
+			cBRT > 150 ? bevel ? TintColor(col.progressBarFill, 10) : ShadeColor(col.progressBarFill, 20) :
+			cBRT > 125 ? bevel ? TintColor(col.progressBarFill, 10) : ShadeColor(col.progressBarFill, 20) :
+			cBRT > 100 ? bevel ? TintColor(col.progressBarFill, 15) : ShadeColor(col.progressBarFill, 30) :
+			cBRT >  75 ? TintColor(col.progressBarFill, 30) :
+			cBRT >  50 ? TintColor(col.progressBarFill, 30) :
+			cBRT >  25 ? TintColor(col.primary, 25) :
+			cBRT >=  0 ? TintColor(col.primary, 25) : '';
 
 		col.styleProgressBarFill =
 			cBRT > 200 ? progBarFillBevelInner ? RGBA(0, 0, 0, bevel ?  80 :  60) : '' :
@@ -3816,45 +3988,45 @@ function themeColorAdjustments() {
 
 		// * PLAYLIST COLORS * //
 		g_pl_colors.header_nowplaying_bg =
-			cBRT > 200 ? blend ? RGBtoRGBA(tintColor(primary, 20), 130) : tintColor(primary, 20) :
-			cBRT > 175 ? blend ? RGBtoRGBA(tintColor(primary, 12), 130) : tintColor(primary, 12) :
-			cBRT > 150 ? blend ? RGBtoRGBA(tintColor(primary, 12), 130) : tintColor(primary, 12) :
-			cBRT > 125 ? blend ? RGBtoRGBA(tintColor(primary, 10), 130) : tintColor(primary, 10) :
-			cBRT > 100 ? blend ? RGBtoRGBA(tintColor(primary, 10), 130) : tintColor(primary, 10) :
-			cBRT >  75 ? blend ? RGBtoRGBA(tintColor(primary,  8), 130) : tintColor(primary,  8) :
-			cBRT >  50 ? blend ? RGBtoRGBA(tintColor(primary,  6), 130) : tintColor(primary,  6) :
-			cBRT >  25 ? blend ? RGBtoRGBA(tintColor(primary,  6), 130) : tintColor(primary,  6) :
-			cBRT >=  0 ? cBRT < 10 ? tintColor(primary, blend || blend2 ? 15 : 10) :
-									 tintColor(primary, blend || blend2 ? 15 :  5) : '';
+			cBRT > 200 ? blend ? RGBtoRGBA(TintColor(primary, 20), 130) : TintColor(primary, 20) :
+			cBRT > 175 ? blend ? RGBtoRGBA(TintColor(primary, 12), 130) : TintColor(primary, 12) :
+			cBRT > 150 ? blend ? RGBtoRGBA(TintColor(primary, 12), 130) : TintColor(primary, 12) :
+			cBRT > 125 ? blend ? RGBtoRGBA(TintColor(primary, 10), 130) : TintColor(primary, 10) :
+			cBRT > 100 ? blend ? RGBtoRGBA(TintColor(primary, 10), 130) : TintColor(primary, 10) :
+			cBRT >  75 ? blend ? RGBtoRGBA(TintColor(primary,  8), 130) : TintColor(primary,  8) :
+			cBRT >  50 ? blend ? RGBtoRGBA(TintColor(primary,  6), 130) : TintColor(primary,  6) :
+			cBRT >  25 ? blend ? RGBtoRGBA(TintColor(primary,  6), 130) : TintColor(primary,  6) :
+			cBRT >=  0 ? cBRT < 10 ? TintColor(primary, blend || blend2 ? 15 : 10) :
+									 TintColor(primary, blend || blend2 ? 15 :  5) : '';
 
 		g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
 
 		g_pl_colors.header_line_normal =
-			cBRT > 200 ? shadeColor(primary, 16) :
-			cBRT > 175 ? shadeColor(primary, 18) :
-			cBRT > 150 ? shadeColor(primary, 20) :
-			cBRT > 125 ? shadeColor(primary, 22) :
-			cBRT > 100 ? shadeColor(primary, 24) :
-			cBRT >  75 ? shadeColor(primary, 26) :
-			cBRT >  50 ? shadeColor(primary, 28) :
-			cBRT >  25 ? shadeColor(primary, 30) :
-			cBRT >=  0 ? tintColor(primary,  15) : '';
+			cBRT > 200 ? ShadeColor(primary, 16) :
+			cBRT > 175 ? ShadeColor(primary, 18) :
+			cBRT > 150 ? ShadeColor(primary, 20) :
+			cBRT > 125 ? ShadeColor(primary, 22) :
+			cBRT > 100 ? ShadeColor(primary, 24) :
+			cBRT >  75 ? ShadeColor(primary, 26) :
+			cBRT >  50 ? ShadeColor(primary, 28) :
+			cBRT >  25 ? ShadeColor(primary, 30) :
+			cBRT >=  0 ? TintColor(primary,  15) : '';
 
 		g_pl_colors.header_line_playing =
-			cBRT > 200 ? shadeColor(primary, 26) :
-			cBRT > 175 ? shadeColor(primary, 28) :
-			cBRT > 150 ? shadeColor(primary, 30) :
-			cBRT > 125 ? shadeColor(primary, 32) :
-			cBRT > 100 ? shadeColor(primary, 34) :
-			cBRT >  75 ? shadeColor(primary, 36) :
-			cBRT >  50 ? shadeColor(primary, 38) :
-			cBRT >  25 ? shadeColor(primary, 40) :
-			cBRT >=  0 ? tintColor(primary,  20) : '';
+			cBRT > 200 ? ShadeColor(primary, 26) :
+			cBRT > 175 ? ShadeColor(primary, 28) :
+			cBRT > 150 ? ShadeColor(primary, 30) :
+			cBRT > 125 ? ShadeColor(primary, 32) :
+			cBRT > 100 ? ShadeColor(primary, 34) :
+			cBRT >  75 ? ShadeColor(primary, 36) :
+			cBRT >  50 ? ShadeColor(primary, 38) :
+			cBRT >  25 ? ShadeColor(primary, 40) :
+			cBRT >=  0 ? TintColor(primary,  20) : '';
 
 		g_pl_colors.row_selection_frame = g_pl_colors.header_line_normal;
 		g_pl_colors.row_disc_subheader_line = g_pl_colors.header_line_normal;
 		g_pl_colors.row_drag_line = g_pl_colors.row_sideMarker;
-		g_pl_colors.row_drag_line_reached = cBRT > 210 ? shadeColor(g_pl_colors.row_sideMarker, 25) : tintColor(g_pl_colors.row_sideMarker, 50);
+		g_pl_colors.row_drag_line_reached = cBRT > 210 ? ShadeColor(g_pl_colors.row_sideMarker, 25) : TintColor(g_pl_colors.row_sideMarker, 50);
 
 		// * LIBRARY COLORS * //
 		ui.col.selectionFrame = g_pl_colors.header_line_normal;
@@ -3862,38 +4034,38 @@ function themeColorAdjustments() {
 
 		// * MAIN COLORS * //
 		col.styleGradient =
-			cBRT > 200 ? shadeColor(primary, pref.styleRebornBlack ? 65 : 25) :
-			cBRT > 175 ? shadeColor(primary, pref.styleRebornBlack ? 60 : 30) :
-			cBRT > 150 ? shadeColor(primary, pref.styleRebornBlack ? 55 : 35) :
-			cBRT > 125 ? shadeColor(primary, pref.styleRebornBlack ? 50 : 40) :
-			cBRT > 100 ? shadeColor(primary, pref.styleRebornBlack ? 45 : 45) :
-			cBRT >  75 ? shadeColor(primary, pref.styleRebornBlack ? 40 : 50) :
-			cBRT >  50 ? shadeColor(primary, pref.styleRebornBlack ? 35 : 55) :
-			cBRT >  25 ? shadeColor(primary, pref.styleRebornBlack ? 30 : 60) :
-			cBRT >=  0 ? pref.styleRebornBlack ? tintColor(primary, 10) : shadeColor(primary, 25) : '';
+			cBRT > 200 ? ShadeColor(primary, pref.styleRebornBlack ? 65 : 25) :
+			cBRT > 175 ? ShadeColor(primary, pref.styleRebornBlack ? 60 : 30) :
+			cBRT > 150 ? ShadeColor(primary, pref.styleRebornBlack ? 55 : 35) :
+			cBRT > 125 ? ShadeColor(primary, pref.styleRebornBlack ? 50 : 40) :
+			cBRT > 100 ? ShadeColor(primary, pref.styleRebornBlack ? 45 : 45) :
+			cBRT >  75 ? ShadeColor(primary, pref.styleRebornBlack ? 40 : 50) :
+			cBRT >  50 ? ShadeColor(primary, pref.styleRebornBlack ? 35 : 55) :
+			cBRT >  25 ? ShadeColor(primary, pref.styleRebornBlack ? 30 : 60) :
+			cBRT >=  0 ? pref.styleRebornBlack ? TintColor(primary, 10) : ShadeColor(primary, 25) : '';
 
 		col.styleGradient2 = col.styleGradient;
 
 		if (!pref.styleRebornWhite && !pref.styleRebornBlack && !pref.styleRebornFusion) {
 			col.bg =
-				cBRT < 10 ? tintColor(primary_alt, blend || blend2 ? 15 : 10) :
-				cBRT < 25 ? tintColor(primary_alt, blend || blend2 ? 15 :  5) :
+				cBRT < 10 ? TintColor(primary_alt, blend || blend2 ? 15 : 10) :
+				cBRT < 25 ? TintColor(primary_alt, blend || blend2 ? 15 :  5) :
 				col.bg;
 
 			col.progressBar =
-				cBRT > 200 ? blend || blend2 ? shadeColor(primary_alt, bevel ? 20 : 10) : shadeColor(primary_alt, bevel ? 30 : 15) :
-				cBRT > 175 ? blend || blend2 ? shadeColor(primary_alt, bevel ? 25 : 10) : shadeColor(primary_alt, bevel ? 30 : 15) :
-				cBRT > 150 ? blend || blend2 ? shadeColor(primary_alt, bevel ? 25 : 10) : shadeColor(primary_alt, bevel ? 30 : 15) :
-				cBRT > 125 ? blend || blend2 ? shadeColor(primary_alt, bevel ? 30 : 15) : shadeColor(primary_alt, bevel ? 30 : 15) :
-				cBRT > 100 ? blend || blend2 ? shadeColor(primary_alt, bevel ? 30 : 15) : shadeColor(primary_alt, bevel ? 30 : 15) :
-				cBRT >  75 ? blend || blend2 ? shadeColor(primary_alt, bevel ? 35 : 20) : shadeColor(primary_alt, bevel ? 30 : 15) :
-				cBRT >  50 ? blend || blend2 ? shadeColor(primary_alt, bevel ? 45 : 25) : shadeColor(primary_alt, bevel ? 30 : 15) :
-				cBRT >  25 ? blend || blend2 ? shadeColor(primary_alt, bevel ?  0 :  0) : shadeColor(primary_alt, bevel ? 40 : 15) :
-				cBRT >=  0 ? blend || blend2 ? shadeColor(primary_alt, bevel ?  0 :  0) : shadeColor(primary_alt, bevel ? 40 : 10) : '';
+				cBRT > 200 ? blend || blend2 ? ShadeColor(primary_alt, bevel ? 20 : 10) : ShadeColor(primary_alt, bevel ? 30 : 15) :
+				cBRT > 175 ? blend || blend2 ? ShadeColor(primary_alt, bevel ? 25 : 10) : ShadeColor(primary_alt, bevel ? 30 : 15) :
+				cBRT > 150 ? blend || blend2 ? ShadeColor(primary_alt, bevel ? 25 : 10) : ShadeColor(primary_alt, bevel ? 30 : 15) :
+				cBRT > 125 ? blend || blend2 ? ShadeColor(primary_alt, bevel ? 30 : 15) : ShadeColor(primary_alt, bevel ? 30 : 15) :
+				cBRT > 100 ? blend || blend2 ? ShadeColor(primary_alt, bevel ? 30 : 15) : ShadeColor(primary_alt, bevel ? 30 : 15) :
+				cBRT >  75 ? blend || blend2 ? ShadeColor(primary_alt, bevel ? 35 : 20) : ShadeColor(primary_alt, bevel ? 30 : 15) :
+				cBRT >  50 ? blend || blend2 ? ShadeColor(primary_alt, bevel ? 45 : 25) : ShadeColor(primary_alt, bevel ? 30 : 15) :
+				cBRT >  25 ? blend || blend2 ? ShadeColor(primary_alt, bevel ?  0 :  0) : ShadeColor(primary_alt, bevel ? 40 : 15) :
+				cBRT >=  0 ? blend || blend2 ? ShadeColor(primary_alt, bevel ?  0 :  0) : ShadeColor(primary_alt, bevel ? 40 : 10) : '';
 		}
 
 		col.progressBarFill =
-			cBRT < 175 > 125 ? progBarFillBevelInner ? tintColor(col.progressBarFill, 10) : col.progressBarFill :
+			cBRT < 175 > 125 ? progBarFillBevelInner ? TintColor(col.progressBarFill, 10) : col.progressBarFill :
 			col.progressBarFill;
 
 		col.styleProgressBarFill =
@@ -3992,7 +4164,7 @@ function themeColorAdjustments() {
 
 			if (pref.styleBlackReborn || pref.styleRebornWhite || pref.styleRebornBlack) {
 				col.transportEllipseBg = col.lightAccent_100;
-				col.transportEllipseNormal = shadeColor(col.lightAccent_7, 10);
+				col.transportEllipseNormal = ShadeColor(col.lightAccent_7, 10);
 			}
 
 			if (!pref.styleRebornBlack) {
@@ -4026,7 +4198,7 @@ function themeColorAdjustments() {
 
 		// * REBORN/RANDOM THEME - Adjust colors when using style blend and album art is almost pure white
 		if (iBRT > 210 && (blend || blend2) && !pref.styleRebornWhite && !pref.styleRebornBlack && !pref.styleRandomDark) {
-			col.primary = tintColor(col.primary, 15);
+			col.primary = TintColor(col.primary, 15);
 
 			// * PLAYLIST COLORS * //
 			g_pl_colors.header_nowplaying_bg =
@@ -4042,9 +4214,9 @@ function themeColorAdjustments() {
 			ui.col.sideMarker = cBRT < 150 ? col.lightAccent_80 : col.lightAccent_100;
 
 			// * MAIN COLORS * //
-			col.transportEllipseNormal = cBRT < 150 ? col.transportEllipseNormal : shadeColor(col.lightAccent_7, 10);
+			col.transportEllipseNormal = cBRT < 150 ? col.transportEllipseNormal : ShadeColor(col.lightAccent_7, 10);
 			col.transportEllipseBg     = cBRT < 150 ? col.lightAccent_80 : col.lightAccent_100;
-			col.progressBar            = cBRT < 150 ? col.lightAccent_7 : blend2 && iBRT > 240 ? col.lightAccent_35 : shadeColor(col.lightAccent_7, 5);
+			col.progressBar            = cBRT < 150 ? col.lightAccent_7 : blend2 && iBRT > 240 ? col.lightAccent_35 : ShadeColor(col.lightAccent_7, 5);
 			col.progressBarFill        = cBRT < 150 ? col.lightAccent_80 : col.lightAccent_100;
 		}
 
@@ -4077,255 +4249,258 @@ function themeColorAdjustments() {
 //////////////////////////
 // * THEME BRIGHTNESS * //
 //////////////////////////
-/** Lightens or darkens the theme based on pref.themeBrightness value */
+/**
+ * Lightens or darkens the theme based on pref.themeBrightness value, used in Options > Brightness
+ * @param {number} percent The percentage number for lightening or darkening all colors in the theme.
+ */
 function adjustThemeBrightness(percent) {
 	if (percent < 0) percent = Math.abs(percent); // Negative passed values need to be converted to positives
 
 	if (pref.themeBrightness < 0) { // * Darken
 		// * PLAYLIST COLORS * //
-		g_pl_colors.bg = shadeColor(g_pl_colors.bg, percent);
-		g_pl_colors.plman_bg = shadeColor(g_pl_colors.plman_bg, percent);
-		g_pl_colors.plman_text_normal = shadeColor(g_pl_colors.plman_text_normal, percent);
-		g_pl_colors.header_nowplaying_bg = shadeColor(g_pl_colors.header_nowplaying_bg, percent);
-		g_pl_colors.header_sideMarker = shadeColor(g_pl_colors.header_sideMarker, percent);
-		g_pl_colors.header_line_normal = shadeColor(g_pl_colors.header_line_normal, percent);
-		g_pl_colors.header_line_playing = shadeColor(g_pl_colors.header_line_playing, percent);
-		g_pl_colors.row_nowplaying_bg = shadeColor(g_pl_colors.row_nowplaying_bg, percent);
-		g_pl_colors.row_stripes_bg = shadeColor(g_pl_colors.row_stripes_bg, percent);
-		g_pl_colors.row_selection_bg = shadeColor(g_pl_colors.row_selection_bg, percent);
-		g_pl_colors.row_selection_frame = shadeColor(g_pl_colors.row_selection_frame, percent);
-		g_pl_colors.row_sideMarker = shadeColor(g_pl_colors.row_sideMarker, percent);
-		g_pl_colors.row_disc_subheader_line = shadeColor(g_pl_colors.row_disc_subheader_line, percent);
-		g_pl_colors.sbar_btn_normal = shadeColor(g_pl_colors.sbar_btn_normal, percent);
-		g_pl_colors.sbar_btn_hovered = shadeColor(g_pl_colors.sbar_btn_hovered, percent);
-		g_pl_colors.sbar_thumb_normal = shadeColor(g_pl_colors.sbar_thumb_normal, percent);
-		g_pl_colors.sbar_thumb_hovered = shadeColor(g_pl_colors.sbar_thumb_hovered, percent);
-		g_pl_colors.sbar_thumb_drag = shadeColor(g_pl_colors.sbar_thumb_drag, percent);
+		g_pl_colors.bg = ShadeColor(g_pl_colors.bg, percent);
+		g_pl_colors.plman_bg = ShadeColor(g_pl_colors.plman_bg, percent);
+		g_pl_colors.plman_text_normal = ShadeColor(g_pl_colors.plman_text_normal, percent);
+		g_pl_colors.header_nowplaying_bg = ShadeColor(g_pl_colors.header_nowplaying_bg, percent);
+		g_pl_colors.header_sideMarker = ShadeColor(g_pl_colors.header_sideMarker, percent);
+		g_pl_colors.header_line_normal = ShadeColor(g_pl_colors.header_line_normal, percent);
+		g_pl_colors.header_line_playing = ShadeColor(g_pl_colors.header_line_playing, percent);
+		g_pl_colors.row_nowplaying_bg = ShadeColor(g_pl_colors.row_nowplaying_bg, percent);
+		g_pl_colors.row_stripes_bg = ShadeColor(g_pl_colors.row_stripes_bg, percent);
+		g_pl_colors.row_selection_bg = ShadeColor(g_pl_colors.row_selection_bg, percent);
+		g_pl_colors.row_selection_frame = ShadeColor(g_pl_colors.row_selection_frame, percent);
+		g_pl_colors.row_sideMarker = ShadeColor(g_pl_colors.row_sideMarker, percent);
+		g_pl_colors.row_disc_subheader_line = ShadeColor(g_pl_colors.row_disc_subheader_line, percent);
+		g_pl_colors.sbar_btn_normal = ShadeColor(g_pl_colors.sbar_btn_normal, percent);
+		g_pl_colors.sbar_btn_hovered = ShadeColor(g_pl_colors.sbar_btn_hovered, percent);
+		g_pl_colors.sbar_thumb_normal = ShadeColor(g_pl_colors.sbar_thumb_normal, percent);
+		g_pl_colors.sbar_thumb_hovered = ShadeColor(g_pl_colors.sbar_thumb_hovered, percent);
+		g_pl_colors.sbar_thumb_drag = ShadeColor(g_pl_colors.sbar_thumb_drag, percent);
 
 		// * LIBRARY COLORS * //
 		ui.col.bg = g_pl_colors.bg;
-		ui.col.line = shadeColor(ui.col.line, percent);
-		ui.col.s_line = shadeColor(ui.col.s_line, percent);
-		ui.col.nowPlayingBg = shadeColor(ui.col.nowPlayingBg, percent - 5);
-		ui.col.sideMarker = shadeColor(ui.col.sideMarker, percent);
-		ui.col.sideMarker_nobw = shadeColor(ui.col.sideMarker_nobw, percent);
-		ui.col.selectionFrame = shadeColor(ui.col.selectionFrame, percent - 10);
-		ui.col.sbarBtns = shadeColor(ui.col.sbarBtns, percent - 10);
-		ui.col.sbarNormal = shadeColor(ui.col.sbarNormal, percent - 10);
-		ui.col.sbarHovered = shadeColor(ui.col.sbarHovered, percent - 10);
-		ui.col.sbarDrag = shadeColor(ui.col.sbarDrag, percent - 10);
+		ui.col.line = ShadeColor(ui.col.line, percent);
+		ui.col.s_line = ShadeColor(ui.col.s_line, percent);
+		ui.col.nowPlayingBg = ShadeColor(ui.col.nowPlayingBg, percent - 5);
+		ui.col.sideMarker = ShadeColor(ui.col.sideMarker, percent);
+		ui.col.sideMarker_nobw = ShadeColor(ui.col.sideMarker_nobw, percent);
+		ui.col.selectionFrame = ShadeColor(ui.col.selectionFrame, percent - 10);
+		ui.col.sbarBtns = ShadeColor(ui.col.sbarBtns, percent - 10);
+		ui.col.sbarNormal = ShadeColor(ui.col.sbarNormal, percent - 10);
+		ui.col.sbarHovered = ShadeColor(ui.col.sbarHovered, percent - 10);
+		ui.col.sbarDrag = ShadeColor(ui.col.sbarDrag, percent - 10);
 
 		// * BIOGRAPHY COLORS * //
 		uiBio.col.bg = g_pl_colors.bg;
 		uiBio.col.bottomLine = g_pl_colors.header_line_normal;
 		uiBio.col.centerLine = g_pl_colors.header_line_normal;
-		uiBio.col.sbarBtns = shadeColor(uiBio.col.sbarBtns, percent - 10);
-		uiBio.col.sbarNormal = shadeColor(uiBio.col.sbarNormal, percent - 10);
-		uiBio.col.sbarHovered = shadeColor(uiBio.col.sbarHovered, percent - 10);
-		uiBio.col.sbarDrag = shadeColor(uiBio.col.sbarDrag, percent - 10);
+		uiBio.col.sbarBtns = ShadeColor(uiBio.col.sbarBtns, percent - 10);
+		uiBio.col.sbarNormal = ShadeColor(uiBio.col.sbarNormal, percent - 10);
+		uiBio.col.sbarHovered = ShadeColor(uiBio.col.sbarHovered, percent - 10);
+		uiBio.col.sbarDrag = ShadeColor(uiBio.col.sbarDrag, percent - 10);
 
 		// * MAIN COLORS * //
-		col.bg = shadeColor(col.bg, percent);
-		col.uiHacksFrame = shadeColor(col.uiHacksFrame, percent);
-		col.shadow = shadeColor(col.shadow, percent);
-		col.detailsBg = shadeColor(col.detailsBg, percent);
-		col.timelineAdded = shadeColor(col.timelineAdded, percent);
-		col.timelinePlayed = shadeColor(col.timelinePlayed, percent);
-		col.timelineUnplayed = shadeColor(col.timelineUnplayed, percent);
-		col.timelineFrame = shadeColor(col.timelineFrame, percent);
-		col.popupBg = shadeColor(col.popupBg, percent);
+		col.bg = ShadeColor(col.bg, percent);
+		col.uiHacksFrame = ShadeColor(col.uiHacksFrame, percent);
+		col.shadow = ShadeColor(col.shadow, percent);
+		col.detailsBg = ShadeColor(col.detailsBg, percent);
+		col.timelineAdded = ShadeColor(col.timelineAdded, percent);
+		col.timelinePlayed = ShadeColor(col.timelinePlayed, percent);
+		col.timelineUnplayed = ShadeColor(col.timelineUnplayed, percent);
+		col.timelineFrame = ShadeColor(col.timelineFrame, percent);
+		col.popupBg = ShadeColor(col.popupBg, percent);
 
 		// * TOP MENU BUTTON COLORS * //
-		col.menuBgColor = shadeColor(col.menuBgColor, percent);
-		col.menuStyleBg = shadeColor(col.menuStyleBg, percent);
-		col.menuRectStyleEmbossTop = shadeColor(col.menuRectStyleEmbossTop, percent);
-		col.menuRectStyleEmbossBottom = shadeColor(col.menuRectStyleEmbossBottom, percent);
-		col.menuRectNormal = shadeColor(col.menuRectNormal, percent);
-		col.menuRectHovered = shadeColor(col.menuRectHovered, percent);
+		col.menuBgColor = ShadeColor(col.menuBgColor, percent);
+		col.menuStyleBg = ShadeColor(col.menuStyleBg, percent);
+		col.menuRectStyleEmbossTop = ShadeColor(col.menuRectStyleEmbossTop, percent);
+		col.menuRectStyleEmbossBottom = ShadeColor(col.menuRectStyleEmbossBottom, percent);
+		col.menuRectNormal = ShadeColor(col.menuRectNormal, percent);
+		col.menuRectHovered = ShadeColor(col.menuRectHovered, percent);
 		col.menuRectDown = col.menuRectHovered;
 
 		// * LOWER BAR TRANSPORT BUTTON COLORS * //
-		col.transportEllipseBg = shadeColor(col.transportEllipseBg, percent);
-		col.transportEllipseNormal = shadeColor(col.transportEllipseNormal, percent);
-		col.transportEllipseHovered = shadeColor(col.transportEllipseHovered, percent);
+		col.transportEllipseBg = ShadeColor(col.transportEllipseBg, percent);
+		col.transportEllipseNormal = ShadeColor(col.transportEllipseNormal, percent);
+		col.transportEllipseHovered = ShadeColor(col.transportEllipseHovered, percent);
 		col.transportEllipseDown = col.transportEllipseHovered;
-		col.transportStyleBg = shadeColor(col.transportStyleBg, percent);
-		col.transportStyleTop = shadeColor(col.transportStyleTop, percent);
-		col.transportStyleBottom = shadeColor(col.transportStyleBottom, percent);
+		col.transportStyleBg = ShadeColor(col.transportStyleBg, percent);
+		col.transportStyleTop = ShadeColor(col.transportStyleTop, percent);
+		col.transportStyleBottom = ShadeColor(col.transportStyleBottom, percent);
 
 		// * PROGRESS BAR COLORS * //
-		col.progressBar = shadeColor(col.progressBar, percent);
-		col.progressBarStreaming = shadeColor(col.progressBarStreaming, percent);
-		col.progressBarFrame = shadeColor(col.progressBarFrame, percent);
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) col.progressBarFill = shadeColor(col.progressBarFill, percent - 3);
+		col.progressBar = ShadeColor(col.progressBar, percent);
+		col.progressBarStreaming = ShadeColor(col.progressBarStreaming, percent);
+		col.progressBarFrame = ShadeColor(col.progressBarFrame, percent);
+		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) col.progressBarFill = ShadeColor(col.progressBarFill, percent - 3);
 
 		// * PEAKMETER BAR COLORS * //
-		col.peakmeterBarProg = shadeColor(col.peakmeterBarProg, percent);
-		col.peakmeterBarProgFill = shadeColor(col.peakmeterBarProgFill, percent);
-		col.peakmeterBarFillTop = shadeColor(col.peakmeterBarFillTop, percent);
-		col.peakmeterBarFillMiddle = shadeColor(col.peakmeterBarFillMiddle, percent);
-		col.peakmeterBarFillBack = shadeColor(col.peakmeterBarFillBack, percent);
-		col.peakmeterBarVertProgFill = shadeColor(col.peakmeterBarVertProgFill, percent);
-		col.peakmeterBarVertFill = shadeColor(col.peakmeterBarVertFill, percent);
-		col.peakmeterBarVertFillPeaks = shadeColor(col.peakmeterBarVertFillPeaks, percent);
+		col.peakmeterBarProg = ShadeColor(col.peakmeterBarProg, percent);
+		col.peakmeterBarProgFill = ShadeColor(col.peakmeterBarProgFill, percent);
+		col.peakmeterBarFillTop = ShadeColor(col.peakmeterBarFillTop, percent);
+		col.peakmeterBarFillMiddle = ShadeColor(col.peakmeterBarFillMiddle, percent);
+		col.peakmeterBarFillBack = ShadeColor(col.peakmeterBarFillBack, percent);
+		col.peakmeterBarVertProgFill = ShadeColor(col.peakmeterBarVertProgFill, percent);
+		col.peakmeterBarVertFill = ShadeColor(col.peakmeterBarVertFill, percent);
+		col.peakmeterBarVertFillPeaks = ShadeColor(col.peakmeterBarVertFillPeaks, percent);
 		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
-			col.peakmeterBarProg = shadeColor(col.peakmeterBarProg, percent - 3);
-			col.peakmeterBarProgFill = shadeColor(col.peakmeterBarProgFill, percent - 3);
-			col.peakmeterBarFillTop = shadeColor(col.peakmeterBarFillTop, percent - 3);
-			col.peakmeterBarFillMiddle = shadeColor(col.peakmeterBarFillMiddle, percent - 3);
-			col.peakmeterBarFillBack = shadeColor(col.peakmeterBarFillBack, percent - 3);
-			col.peakmeterBarVertProgFill = shadeColor(col.peakmeterBarVertProgFill, percent - 3);
-			col.peakmeterBarVertFill = shadeColor(col.peakmeterBarVertFill, percent - 3);
-			col.peakmeterBarVertFillPeaks = shadeColor(col.peakmeterBarVertFillPeaks, percent - 3);
+			col.peakmeterBarProg = ShadeColor(col.peakmeterBarProg, percent - 3);
+			col.peakmeterBarProgFill = ShadeColor(col.peakmeterBarProgFill, percent - 3);
+			col.peakmeterBarFillTop = ShadeColor(col.peakmeterBarFillTop, percent - 3);
+			col.peakmeterBarFillMiddle = ShadeColor(col.peakmeterBarFillMiddle, percent - 3);
+			col.peakmeterBarFillBack = ShadeColor(col.peakmeterBarFillBack, percent - 3);
+			col.peakmeterBarVertProgFill = ShadeColor(col.peakmeterBarVertProgFill, percent - 3);
+			col.peakmeterBarVertFill = ShadeColor(col.peakmeterBarVertFill, percent - 3);
+			col.peakmeterBarVertFillPeaks = ShadeColor(col.peakmeterBarVertFillPeaks, percent - 3);
 		}
 
 		// * WAVEFORM BAR COLORS * //
-		col.waveformBarFillFront = shadeColor(col.waveformBarFillFront, percent);
-		col.waveformBarFillBack  = shadeColor(col.waveformBarFillBack, percent);
-		col.waveformBarFillPreFront = shadeColor(col.waveformBarFillPreFront, percent);
-		col.waveformBarFillPreBack = shadeColor(col.waveformBarFillPreBack, percent);
-		col.waveformBarIndicator = shadeColor(col.waveformBarIndicator, percent);
+		col.waveformBarFillFront = ShadeColor(col.waveformBarFillFront, percent);
+		col.waveformBarFillBack  = ShadeColor(col.waveformBarFillBack, percent);
+		col.waveformBarFillPreFront = ShadeColor(col.waveformBarFillPreFront, percent);
+		col.waveformBarFillPreBack = ShadeColor(col.waveformBarFillPreBack, percent);
+		col.waveformBarIndicator = ShadeColor(col.waveformBarIndicator, percent);
 		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
-			col.waveformBarFillFront = shadeColor(col.waveformBarFillFront, percent - 3);
-			col.waveformBarFillBack  = shadeColor(col.waveformBarFillBack,  percent - 3);
-			col.waveformBarFillPreFront = shadeColor(col.waveformBarFillPreFront, percent - 3);
-			col.waveformBarFillPreBack = shadeColor(col.waveformBarFillPreBack, percent - 3);
-			col.waveformBarIndicator = shadeColor(col.waveformBarIndicator, percent - 3);
+			col.waveformBarFillFront = ShadeColor(col.waveformBarFillFront, percent - 3);
+			col.waveformBarFillBack  = ShadeColor(col.waveformBarFillBack,  percent - 3);
+			col.waveformBarFillPreFront = ShadeColor(col.waveformBarFillPreFront, percent - 3);
+			col.waveformBarFillPreBack = ShadeColor(col.waveformBarFillPreBack, percent - 3);
+			col.waveformBarIndicator = ShadeColor(col.waveformBarIndicator, percent - 3);
 		}
 
 		// * VOLUME BAR COLORS * //
-		col.volumeBar = shadeColor(col.volumeBar, percent);
-		col.volumeBarFrame = shadeColor(col.volumeBarFrame, percent);
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) col.volumeBarFill = shadeColor(col.volumeBarFill, percent - 3);
+		col.volumeBar = ShadeColor(col.volumeBar, percent);
+		col.volumeBarFrame = ShadeColor(col.volumeBarFrame, percent);
+		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) col.volumeBarFill = ShadeColor(col.volumeBarFill, percent - 3);
 
 		// * STYLE COLORS * //
-		col.styleProgressBar = shadeColor(col.styleProgressBar, percent);
-		col.styleProgressBarLineTop = shadeColor(col.styleProgressBarLineTop, percent);
-		col.styleProgressBarLineBottom = shadeColor(col.styleProgressBarLineBottom, percent);
-		col.styleVolumeBar = shadeColor(col.styleVolumeBar, percent);
+		col.styleProgressBar = ShadeColor(col.styleProgressBar, percent);
+		col.styleProgressBarLineTop = ShadeColor(col.styleProgressBarLineTop, percent);
+		col.styleProgressBarLineBottom = ShadeColor(col.styleProgressBarLineBottom, percent);
+		col.styleVolumeBar = ShadeColor(col.styleVolumeBar, percent);
 	}
 	else if (pref.themeBrightness > 0) { // * Lighten
 		// * PLAYLIST COLORS * //
-		g_pl_colors.bg = tintColor(g_pl_colors.bg, percent);
-		g_pl_colors.plman_bg = tintColor(g_pl_colors.plman_bg, percent);
-		g_pl_colors.plman_text_normal = tintColor(g_pl_colors.plman_text_normal, percent);
-		g_pl_colors.header_nowplaying_bg = tintColor(g_pl_colors.header_nowplaying_bg, percent);
-		g_pl_colors.header_sideMarker = tintColor(g_pl_colors.header_sideMarker, percent);
-		g_pl_colors.header_line_normal = tintColor(g_pl_colors.header_line_normal, percent);
-		g_pl_colors.header_line_playing = tintColor(g_pl_colors.header_line_playing, percent);
-		g_pl_colors.row_nowplaying_bg = tintColor(g_pl_colors.row_nowplaying_bg, percent);
-		g_pl_colors.row_stripes_bg = tintColor(g_pl_colors.row_stripes_bg, percent);
-		g_pl_colors.row_selection_bg = tintColor(g_pl_colors.row_selection_bg, percent);
-		g_pl_colors.row_selection_frame = tintColor(g_pl_colors.row_selection_frame, percent);
-		g_pl_colors.row_sideMarker = tintColor(g_pl_colors.row_sideMarker, percent);
-		g_pl_colors.row_disc_subheader_line = tintColor(g_pl_colors.row_disc_subheader_line, percent);
-		g_pl_colors.sbar_btn_normal = tintColor(g_pl_colors.sbar_btn_normal, percent);
-		g_pl_colors.sbar_btn_hovered = tintColor(g_pl_colors.sbar_btn_hovered, percent);
-		g_pl_colors.sbar_thumb_normal = tintColor(g_pl_colors.sbar_thumb_normal, percent);
-		g_pl_colors.sbar_thumb_hovered = tintColor(g_pl_colors.sbar_thumb_hovered, percent);
-		g_pl_colors.sbar_thumb_drag = tintColor(g_pl_colors.sbar_thumb_drag, percent);
+		g_pl_colors.bg = TintColor(g_pl_colors.bg, percent);
+		g_pl_colors.plman_bg = TintColor(g_pl_colors.plman_bg, percent);
+		g_pl_colors.plman_text_normal = TintColor(g_pl_colors.plman_text_normal, percent);
+		g_pl_colors.header_nowplaying_bg = TintColor(g_pl_colors.header_nowplaying_bg, percent);
+		g_pl_colors.header_sideMarker = TintColor(g_pl_colors.header_sideMarker, percent);
+		g_pl_colors.header_line_normal = TintColor(g_pl_colors.header_line_normal, percent);
+		g_pl_colors.header_line_playing = TintColor(g_pl_colors.header_line_playing, percent);
+		g_pl_colors.row_nowplaying_bg = TintColor(g_pl_colors.row_nowplaying_bg, percent);
+		g_pl_colors.row_stripes_bg = TintColor(g_pl_colors.row_stripes_bg, percent);
+		g_pl_colors.row_selection_bg = TintColor(g_pl_colors.row_selection_bg, percent);
+		g_pl_colors.row_selection_frame = TintColor(g_pl_colors.row_selection_frame, percent);
+		g_pl_colors.row_sideMarker = TintColor(g_pl_colors.row_sideMarker, percent);
+		g_pl_colors.row_disc_subheader_line = TintColor(g_pl_colors.row_disc_subheader_line, percent);
+		g_pl_colors.sbar_btn_normal = TintColor(g_pl_colors.sbar_btn_normal, percent);
+		g_pl_colors.sbar_btn_hovered = TintColor(g_pl_colors.sbar_btn_hovered, percent);
+		g_pl_colors.sbar_thumb_normal = TintColor(g_pl_colors.sbar_thumb_normal, percent);
+		g_pl_colors.sbar_thumb_hovered = TintColor(g_pl_colors.sbar_thumb_hovered, percent);
+		g_pl_colors.sbar_thumb_drag = TintColor(g_pl_colors.sbar_thumb_drag, percent);
 
 		// * LIBRARY COLORS * //
 		ui.col.bg = g_pl_colors.bg;
-		ui.col.line = tintColor(ui.col.line, percent);
-		ui.col.s_line = tintColor(ui.col.s_line, percent);
-		ui.col.nowPlayingBg = tintColor(ui.col.nowPlayingBg, percent - 3);
-		ui.col.sideMarker = tintColor(ui.col.sideMarker, percent);
-		ui.col.sideMarker_nobw = tintColor(ui.col.sideMarker_nobw, percent);
-		ui.col.selectionFrame = tintColor(ui.col.selectionFrame, percent);
-		ui.col.sbarBtns = tintColor(ui.col.sbarBtns, percent - 5);
-		ui.col.sbarNormal = tintColor(ui.col.sbarNormal, percent - 5);
-		ui.col.sbarHovered = tintColor(ui.col.sbarHovered, percent - 5);
-		ui.col.sbarDrag = tintColor(ui.col.sbarDrag, percent - 5);
+		ui.col.line = TintColor(ui.col.line, percent);
+		ui.col.s_line = TintColor(ui.col.s_line, percent);
+		ui.col.nowPlayingBg = TintColor(ui.col.nowPlayingBg, percent - 3);
+		ui.col.sideMarker = TintColor(ui.col.sideMarker, percent);
+		ui.col.sideMarker_nobw = TintColor(ui.col.sideMarker_nobw, percent);
+		ui.col.selectionFrame = TintColor(ui.col.selectionFrame, percent);
+		ui.col.sbarBtns = TintColor(ui.col.sbarBtns, percent - 5);
+		ui.col.sbarNormal = TintColor(ui.col.sbarNormal, percent - 5);
+		ui.col.sbarHovered = TintColor(ui.col.sbarHovered, percent - 5);
+		ui.col.sbarDrag = TintColor(ui.col.sbarDrag, percent - 5);
 
 		// * BIOGRAPHY COLORS * //
 		uiBio.col.bg = g_pl_colors.bg;
 		uiBio.col.bottomLine = g_pl_colors.header_line_normal;
 		uiBio.col.centerLine = g_pl_colors.header_line_normal;
-		uiBio.col.sbarBtns = tintColor(uiBio.col.sbarBtns, percent - 5);
-		uiBio.col.sbarNormal = tintColor(uiBio.col.sbarNormal, percent - 5);
-		uiBio.col.sbarHovered = tintColor(uiBio.col.sbarHovered, percent - 5);
-		uiBio.col.sbarDrag = tintColor(uiBio.col.sbarDrag, percent - 5);
+		uiBio.col.sbarBtns = TintColor(uiBio.col.sbarBtns, percent - 5);
+		uiBio.col.sbarNormal = TintColor(uiBio.col.sbarNormal, percent - 5);
+		uiBio.col.sbarHovered = TintColor(uiBio.col.sbarHovered, percent - 5);
+		uiBio.col.sbarDrag = TintColor(uiBio.col.sbarDrag, percent - 5);
 
 		// * MAIN COLORS * //
-		col.bg = tintColor(col.bg, percent);
-		col.uiHacksFrame = tintColor(col.uiHacksFrame, percent);
-		col.shadow = tintColor(col.shadow, percent);
-		col.detailsBg = tintColor(col.detailsBg, percent);
-		col.timelineAdded = tintColor(col.timelineAdded, percent);
-		col.timelinePlayed = tintColor(col.timelinePlayed, percent);
-		col.timelineUnplayed = tintColor(col.timelineUnplayed, percent);
-		col.timelineFrame = tintColor(col.timelineFrame, percent);
-		col.popupBg = tintColor(col.popupBg, percent);
+		col.bg = TintColor(col.bg, percent);
+		col.uiHacksFrame = TintColor(col.uiHacksFrame, percent);
+		col.shadow = TintColor(col.shadow, percent);
+		col.detailsBg = TintColor(col.detailsBg, percent);
+		col.timelineAdded = TintColor(col.timelineAdded, percent);
+		col.timelinePlayed = TintColor(col.timelinePlayed, percent);
+		col.timelineUnplayed = TintColor(col.timelineUnplayed, percent);
+		col.timelineFrame = TintColor(col.timelineFrame, percent);
+		col.popupBg = TintColor(col.popupBg, percent);
 
 		// * TOP MENU BUTTON COLORS * //
-		col.menuBgColor = tintColor(col.menuBgColor, percent);
-		col.menuStyleBg = tintColor(col.menuStyleBg, percent);
-		col.menuRectStyleEmbossTop = tintColor(col.menuRectStyleEmbossTop, percent);
-		col.menuRectStyleEmbossBottom = tintColor(col.menuRectStyleEmbossBottom, percent);
-		col.menuRectNormal = tintColor(col.menuRectNormal, percent);
-		col.menuRectHovered = tintColor(col.menuRectHovered, percent);
+		col.menuBgColor = TintColor(col.menuBgColor, percent);
+		col.menuStyleBg = TintColor(col.menuStyleBg, percent);
+		col.menuRectStyleEmbossTop = TintColor(col.menuRectStyleEmbossTop, percent);
+		col.menuRectStyleEmbossBottom = TintColor(col.menuRectStyleEmbossBottom, percent);
+		col.menuRectNormal = TintColor(col.menuRectNormal, percent);
+		col.menuRectHovered = TintColor(col.menuRectHovered, percent);
 		col.menuRectDown = col.menuRectHovered;
 
 		// * LOWER BAR TRANSPORT BUTTON COLORS * //
-		col.transportEllipseBg = tintColor(col.transportEllipseBg, percent);
-		col.transportEllipseNormal = tintColor(col.transportEllipseNormal, percent);
-		col.transportEllipseHovered = tintColor(col.transportEllipseHovered, percent);
+		col.transportEllipseBg = TintColor(col.transportEllipseBg, percent);
+		col.transportEllipseNormal = TintColor(col.transportEllipseNormal, percent);
+		col.transportEllipseHovered = TintColor(col.transportEllipseHovered, percent);
 		col.transportEllipseDown = col.transportEllipseHovered;
-		col.transportStyleBg = tintColor(col.transportStyleBg, percent);
-		col.transportStyleTop = tintColor(col.transportStyleTop, percent);
-		col.transportStyleBottom = tintColor(col.transportStyleBottom, percent);
+		col.transportStyleBg = TintColor(col.transportStyleBg, percent);
+		col.transportStyleTop = TintColor(col.transportStyleTop, percent);
+		col.transportStyleBottom = TintColor(col.transportStyleBottom, percent);
 
 		// * PROGRESS BAR COLORS * //
-		col.progressBar = tintColor(col.progressBar, percent);
-		col.progressBarStreaming = tintColor(col.progressBarStreaming, percent);
-		col.progressBarFrame = tintColor(col.progressBarFrame, percent);
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) col.progressBarFill = tintColor(col.progressBarFill, percent - 3);
+		col.progressBar = TintColor(col.progressBar, percent);
+		col.progressBarStreaming = TintColor(col.progressBarStreaming, percent);
+		col.progressBarFrame = TintColor(col.progressBarFrame, percent);
+		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) col.progressBarFill = TintColor(col.progressBarFill, percent - 3);
 
 		// * PEAKMETER BAR COLORS * //
-		col.peakmeterBarProg = tintColor(col.peakmeterBarProg, percent);
-		col.peakmeterBarProgFill = tintColor(col.peakmeterBarProgFill, percent);
-		col.peakmeterBarFillTop = tintColor(col.peakmeterBarFillTop, percent);
-		col.peakmeterBarFillMiddle = tintColor(col.peakmeterBarFillMiddle, percent);
-		col.peakmeterBarFillBack = tintColor(col.peakmeterBarFillBack, percent);
-		col.peakmeterBarVertProgFill  = tintColor(col.peakmeterBarVertProgFill, percent);
-		col.peakmeterBarVertFill = tintColor(col.peakmeterBarVertFill, percent);
-		col.peakmeterBarVertFillPeaks = tintColor(col.peakmeterBarVertFillPeaks, percent);
+		col.peakmeterBarProg = TintColor(col.peakmeterBarProg, percent);
+		col.peakmeterBarProgFill = TintColor(col.peakmeterBarProgFill, percent);
+		col.peakmeterBarFillTop = TintColor(col.peakmeterBarFillTop, percent);
+		col.peakmeterBarFillMiddle = TintColor(col.peakmeterBarFillMiddle, percent);
+		col.peakmeterBarFillBack = TintColor(col.peakmeterBarFillBack, percent);
+		col.peakmeterBarVertProgFill  = TintColor(col.peakmeterBarVertProgFill, percent);
+		col.peakmeterBarVertFill = TintColor(col.peakmeterBarVertFill, percent);
+		col.peakmeterBarVertFillPeaks = TintColor(col.peakmeterBarVertFillPeaks, percent);
 		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
-			col.peakmeterBarProg = tintColor(col.peakmeterBarProg, percent - 3);
-			col.peakmeterBarProgFill = tintColor(col.peakmeterBarProgFill, percent - 3);
-			col.peakmeterBarFillTop = tintColor(col.peakmeterBarFillTop, percent - 3);
-			col.peakmeterBarFillMiddle = tintColor(col.peakmeterBarFillMiddle, percent - 3);
-			col.peakmeterBarFillBack = tintColor(col.peakmeterBarFillBack, percent - 3);
-			col.peakmeterBarVertProgFill  = tintColor(col.peakmeterBarVertProgFill, percent - 3);
-			col.peakmeterBarVertFill = tintColor(col.peakmeterBarVertFill, percent - 3);
-			col.peakmeterBarVertFillPeaks = tintColor(col.peakmeterBarVertFillPeaks, percent - 3);
+			col.peakmeterBarProg = TintColor(col.peakmeterBarProg, percent - 3);
+			col.peakmeterBarProgFill = TintColor(col.peakmeterBarProgFill, percent - 3);
+			col.peakmeterBarFillTop = TintColor(col.peakmeterBarFillTop, percent - 3);
+			col.peakmeterBarFillMiddle = TintColor(col.peakmeterBarFillMiddle, percent - 3);
+			col.peakmeterBarFillBack = TintColor(col.peakmeterBarFillBack, percent - 3);
+			col.peakmeterBarVertProgFill  = TintColor(col.peakmeterBarVertProgFill, percent - 3);
+			col.peakmeterBarVertFill = TintColor(col.peakmeterBarVertFill, percent - 3);
+			col.peakmeterBarVertFillPeaks = TintColor(col.peakmeterBarVertFillPeaks, percent - 3);
 		}
 
 		// * WAVEFORM BAR COLORS * //
-		col.waveformBarFillFront = tintColor(col.waveformBarFillFront, percent);
-		col.waveformBarFillBack  = tintColor(col.waveformBarFillBack, percent);
-		col.waveformBarFillPreFront = tintColor(col.waveformBarFillPreFront, percent);
-		col.waveformBarFillPreBack = tintColor(col.waveformBarFillPreBack, percent);
-		col.waveformBarIndicator = tintColor(col.waveformBarIndicator, percent);
+		col.waveformBarFillFront = TintColor(col.waveformBarFillFront, percent);
+		col.waveformBarFillBack  = TintColor(col.waveformBarFillBack, percent);
+		col.waveformBarFillPreFront = TintColor(col.waveformBarFillPreFront, percent);
+		col.waveformBarFillPreBack = TintColor(col.waveformBarFillPreBack, percent);
+		col.waveformBarIndicator = TintColor(col.waveformBarIndicator, percent);
 		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
-			col.waveformBarFillFront = tintColor(col.waveformBarFillFront, percent - 3);
-			col.waveformBarFillBack = tintColor(col.waveformBarFillBack,  percent - 3);
-			col.waveformBarFillPreFront = tintColor(col.waveformBarFillPreFront, percent - 3);
-			col.waveformBarFillPreBack = tintColor(col.waveformBarFillPreBack, percent - 3);
-			col.waveformBarIndicator = tintColor(col.waveformBarIndicator, percent - 3);
+			col.waveformBarFillFront = TintColor(col.waveformBarFillFront, percent - 3);
+			col.waveformBarFillBack = TintColor(col.waveformBarFillBack,  percent - 3);
+			col.waveformBarFillPreFront = TintColor(col.waveformBarFillPreFront, percent - 3);
+			col.waveformBarFillPreBack = TintColor(col.waveformBarFillPreBack, percent - 3);
+			col.waveformBarIndicator = TintColor(col.waveformBarIndicator, percent - 3);
 		}
 
 		// * VOLUME BAR COLORS * //
-		col.volumeBar = tintColor(col.volumeBar, percent);
-		col.volumeBarFrame = tintColor(col.volumeBarFrame, percent);
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) col.volumeBarFill = tintColor(col.volumeBarFill, percent - 3);
+		col.volumeBar = TintColor(col.volumeBar, percent);
+		col.volumeBarFrame = TintColor(col.volumeBarFrame, percent);
+		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) col.volumeBarFill = TintColor(col.volumeBarFill, percent - 3);
 
 		// * STYLE COLORS * //
-		col.styleProgressBar = tintColor(col.styleProgressBar, percent);
-		col.styleProgressBarLineTop = tintColor(col.styleProgressBarLineTop, percent);
-		col.styleProgressBarLineBottom = tintColor(col.styleProgressBarLineBottom, percent);
-		col.styleVolumeBar = tintColor(col.styleVolumeBar, percent);
+		col.styleProgressBar = TintColor(col.styleProgressBar, percent);
+		col.styleProgressBarLineTop = TintColor(col.styleProgressBarLineTop, percent);
+		col.styleProgressBarLineBottom = TintColor(col.styleProgressBarLineBottom, percent);
+		col.styleVolumeBar = TintColor(col.styleVolumeBar, percent);
 	}
 }
 
@@ -4333,18 +4508,21 @@ function adjustThemeBrightness(percent) {
 ///////////////////////////
 // * STYLE ALTERNATIVE * //
 ///////////////////////////
+/**
+ * Any active theme used in Options > Style > Alternative.
+ */
 function styleAlternativeColors() {
 	// * PLAYLIST * //
 	g_pl_colors.bg =
 		pref.theme === 'white' ? RGB(245, 245, 245) :
-		pref.theme === 'black' ? tintColor(g_pl_colors.bg, 6) :
-		pref.theme === 'reborn' || pref.theme === 'random' ? shadeColor(g_pl_colors.bg, 5) :
+		pref.theme === 'black' ? TintColor(g_pl_colors.bg, 6) :
+		pref.theme === 'reborn' || pref.theme === 'random' ? ShadeColor(g_pl_colors.bg, 5) :
 		pref.theme === 'blue' ? RGB(8, 110, 190) :
 		pref.theme === 'darkblue' ? RGB(17, 35, 57) :
 		pref.theme === 'red' ? RGB(106, 18, 18) :
 		pref.theme === 'cream' ? RGB(255, 247, 240) :
-		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? tintColor(g_pl_colors.bg, 8) :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? shadeColor(g_pl_colors.bg, 5) : '';
+		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? TintColor(g_pl_colors.bg, 8) :
+		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? ShadeColor(g_pl_colors.bg, 5) : '';
 
 	g_pl_colors.plman_bg = g_pl_colors.bg;
 	g_pl_colors.plman_text_normal = g_pl_colors.bg;
@@ -4368,14 +4546,14 @@ function styleAlternativeColors() {
 	// * MAIN * //
 	col.bg =
 		pref.theme === 'white' ? RGB(255, 255, 255) :
-		pref.theme === 'black' ? tintColor(col.bg, 4) :
-		pref.theme === 'reborn' || pref.theme === 'random' ? tintColor(col.bg, 8) :
+		pref.theme === 'black' ? TintColor(col.bg, 4) :
+		pref.theme === 'reborn' || pref.theme === 'random' ? TintColor(col.bg, 8) :
 		pref.theme === 'blue' ? RGB(20, 120, 205) :
 		pref.theme === 'darkblue' ? RGB(18, 42, 70) :
 		pref.theme === 'red' ? RGB(130, 25, 25) :
 		pref.theme === 'cream' ? RGB(255, 255, 255) :
 		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? RGB(30, 30, 30) :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? tintColor(col.bg, 8) : '';
+		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? TintColor(col.bg, 8) : '';
 
 	col.uiHacksFrame = col.bg;
 
@@ -4390,59 +4568,59 @@ function styleAlternativeColors() {
 
 	// * LOWER BAR TRANSPORT BUTTONS * //
 	col.transportEllipseBg =
-		pref.theme === 'white' ? tintColor(col.transportEllipseBg, 100) :
-		pref.theme === 'black' ? tintColor(col.transportEllipseBg, 4) :
-		pref.theme === 'reborn' || pref.theme === 'random' ? tintColor(col.transportEllipseBg, 0) :
-		pref.theme === 'blue' ? tintColor(col.transportEllipseBg, 6) :
-		pref.theme === 'darkblue' ? tintColor(col.transportEllipseBg, 0) :
+		pref.theme === 'white' ? TintColor(col.transportEllipseBg, 100) :
+		pref.theme === 'black' ? TintColor(col.transportEllipseBg, 4) :
+		pref.theme === 'reborn' || pref.theme === 'random' ? TintColor(col.transportEllipseBg, 0) :
+		pref.theme === 'blue' ? TintColor(col.transportEllipseBg, 6) :
+		pref.theme === 'darkblue' ? TintColor(col.transportEllipseBg, 0) :
 		pref.theme === 'red' ? RGB(158, 30, 30) :
 		pref.theme === 'cream' ? g_pl_colors.bg :
-		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? shadeColor(col.transportEllipseBg, 20) :
-		shadeColor(col.transportEllipseBg, 10);
+		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? ShadeColor(col.transportEllipseBg, 20) :
+		ShadeColor(col.transportEllipseBg, 10);
 
 	col.transportEllipseNormal =
-		pref.theme === 'black' ? shadeColor(col.transportEllipseNormal, 6) :
+		pref.theme === 'black' ? ShadeColor(col.transportEllipseNormal, 6) :
 		pref.theme === 'red' ? RGB(106, 18, 18) :
-		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? shadeColor(col.transportEllipseNormal, 90) :
-		tintColor(col.transportEllipseNormal, 6);
+		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? ShadeColor(col.transportEllipseNormal, 90) :
+		TintColor(col.transportEllipseNormal, 6);
 
-	col.transportEllipseHovered = tintColor(col.transportEllipseHovered, 6);
+	col.transportEllipseHovered = TintColor(col.transportEllipseHovered, 6);
 	col.transportEllipseDown = col.transportEllipseHovered;
 
 	col.transportStyleBg =
-		pref.theme === 'black' ? tintColor(col.transportStyleBg, 4) :
-		pref.theme === 'blue' ? tintColor(col.transportStyleBg, 6) :
-		pref.theme === 'darkblue' ? tintColor(col.transportStyleBg, 0) :
-		pref.theme === 'red' ? tintColor(col.transportStyleBg, 2) :
-		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? shadeColor(col.transportStyleBg, 6) :
-		tintColor(col.transportStyleBg, 6);
+		pref.theme === 'black' ? TintColor(col.transportStyleBg, 4) :
+		pref.theme === 'blue' ? TintColor(col.transportStyleBg, 6) :
+		pref.theme === 'darkblue' ? TintColor(col.transportStyleBg, 0) :
+		pref.theme === 'red' ? TintColor(col.transportStyleBg, 2) :
+		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? ShadeColor(col.transportStyleBg, 6) :
+		TintColor(col.transportStyleBg, 6);
 
 	col.transportStyleTop =
-		pref.theme === 'black' ? shadeColor(col.transportStyleTop, 6) :
-		pref.theme === 'blue' ? shadeColor(col.transportStyleTop, 6) :
-		pref.theme === 'darkblue' ? shadeColor(col.transportStyleTop, 0) :
-		pref.theme === 'red' ? tintColor(col.transportStyleTop, pref.styleTransportButtons === 'emboss' ? 6 : 2) :
-		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? shadeColor(col.transportStyleTop, 6) :
-		tintColor(col.transportStyleTop, 6);
+		pref.theme === 'black' ? ShadeColor(col.transportStyleTop, 6) :
+		pref.theme === 'blue' ? ShadeColor(col.transportStyleTop, 6) :
+		pref.theme === 'darkblue' ? ShadeColor(col.transportStyleTop, 0) :
+		pref.theme === 'red' ? TintColor(col.transportStyleTop, pref.styleTransportButtons === 'emboss' ? 6 : 2) :
+		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? ShadeColor(col.transportStyleTop, 6) :
+		TintColor(col.transportStyleTop, 6);
 
 	col.transportStyleBottom =
-		pref.theme === 'black' ? shadeColor(col.transportStyleBottom, 0) :
-		pref.theme === 'blue' ? shadeColor(col.transportStyleBottom, 6) :
-		pref.theme === 'darkblue' ? shadeColor(col.transportStyleBottom, 0) :
-		pref.theme === 'red' ? tintColor(col.transportStyleBottom, pref.styleTransportButtons === 'emboss' ? 6 : 2) :
-		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? shadeColor(col.transportStyleBottom, 6) :
-		tintColor(col.transportStyleBottom, 6);
+		pref.theme === 'black' ? ShadeColor(col.transportStyleBottom, 0) :
+		pref.theme === 'blue' ? ShadeColor(col.transportStyleBottom, 6) :
+		pref.theme === 'darkblue' ? ShadeColor(col.transportStyleBottom, 0) :
+		pref.theme === 'red' ? TintColor(col.transportStyleBottom, pref.styleTransportButtons === 'emboss' ? 6 : 2) :
+		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? ShadeColor(col.transportStyleBottom, 6) :
+		TintColor(col.transportStyleBottom, 6);
 
 	// * PROGRESS BAR * //
 	col.progressBar =
-		pref.theme === 'white' ? pref.styleBevel ? tintColor(col.progressBar, 60) : tintColor(col.progressBar, 40) :
-		pref.theme === 'black' ? tintColor(col.progressBar, 2) :
-		pref.theme === 'reborn' || pref.theme === 'random' ? colBrightness < 25 ? tintColor(col.primary, 12) : fb.IsPlaying && !noAlbumArtStub ? g_pl_colors.bg : col.progressBar :
-		pref.theme === 'blue' ? tintColor(col.progressBar, 2) :
-		pref.theme === 'darkblue' ? tintColor(col.progressBar, 0) :
+		pref.theme === 'white' ? pref.styleBevel ? TintColor(col.progressBar, 60) : TintColor(col.progressBar, 40) :
+		pref.theme === 'black' ? TintColor(col.progressBar, 2) :
+		pref.theme === 'reborn' || pref.theme === 'random' ? colBrightness < 25 ? TintColor(col.primary, 12) : fb.IsPlaying && !noAlbumArtStub ? g_pl_colors.bg : col.progressBar :
+		pref.theme === 'blue' ? TintColor(col.progressBar, 2) :
+		pref.theme === 'darkblue' ? TintColor(col.progressBar, 0) :
 		pref.theme === 'red' ? RGB(158, 30, 30) :
-		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? pref.styleBevel ? shadeColor(col.progressBar, 60) : shadeColor(col.progressBar, 35) :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? shadeColor(col.progressBar, 5) :
+		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? pref.styleBevel ? ShadeColor(col.progressBar, 60) : ShadeColor(col.progressBar, 35) :
+		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? ShadeColor(col.progressBar, 5) :
 		g_pl_colors.bg;
 
 	// * VOLUME BAR * //
@@ -4454,27 +4632,30 @@ function styleAlternativeColors() {
 /////////////////////////////
 // * STYLE ALTERNATIVE 2 * //
 /////////////////////////////
+/**
+ * Any active theme used in Options > Style > Alternative 2.
+ */
 function styleAlternative2Colors() {
 	// * PLAYLIST * //
 	g_pl_colors.bg =
-		pref.theme === 'white' ? tintColor(g_pl_colors.bg, 4) :
-		pref.theme === 'black' ? tintColor(g_pl_colors.bg, 3) :
-		pref.theme === 'reborn' || pref.theme === 'random' ? tintColor(g_pl_colors.bg, 5) :
+		pref.theme === 'white' ? TintColor(g_pl_colors.bg, 4) :
+		pref.theme === 'black' ? TintColor(g_pl_colors.bg, 3) :
+		pref.theme === 'reborn' || pref.theme === 'random' ? TintColor(g_pl_colors.bg, 5) :
 		pref.theme === 'blue' ? RGB(20, 120, 205) :
 		pref.theme === 'darkblue' ? RGB(18, 42, 70) :
 		pref.theme === 'red' ? RGB(120, 22, 22) :
 		pref.theme === 'cream' ? RGB(255, 255, 255) :
-		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? tintColor(g_pl_colors.bg, 6) :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? tintColor(g_pl_colors.bg, 5) : '';
+		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? TintColor(g_pl_colors.bg, 6) :
+		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? TintColor(g_pl_colors.bg, 5) : '';
 
 	g_pl_colors.plman_bg = g_pl_colors.bg;
 	g_pl_colors.plman_text_normal = g_pl_colors.bg;
 
 	g_pl_colors.header_nowplaying_bg =
-		pref.theme === 'black' && colBrightness < 25 ? tintColor(col.primary, 15) :
+		pref.theme === 'black' && colBrightness < 25 ? TintColor(col.primary, 15) :
 		pref.theme === 'reborn' || pref.theme === 'random' ? pref.styleBlend ? RGBtoRGBA(col.darkAccent, 60) : RGBtoRGBA(col.darkAccent, 40) :
 		pref.theme === 'red' ? RGB(140, 25, 25) :
-		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? tintColor(g_pl_colors.header_nowplaying_bg, 6) :
+		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? TintColor(g_pl_colors.header_nowplaying_bg, 6) :
 		g_pl_colors.header_nowplaying_bg;
 
 	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
@@ -4489,15 +4670,15 @@ function styleAlternative2Colors() {
 
 	// * MAIN * //
 	col.bg =
-		pref.theme === 'white' ? shadeColor(col.bg, 6) :
-		pref.theme === 'black' ? tintColor(col.bg, 10) :
-		pref.theme === 'reborn' || pref.theme === 'random' ? shadeColor(col.bg, 8) :
+		pref.theme === 'white' ? ShadeColor(col.bg, 6) :
+		pref.theme === 'black' ? TintColor(col.bg, 10) :
+		pref.theme === 'reborn' || pref.theme === 'random' ? ShadeColor(col.bg, 8) :
 		pref.theme === 'blue' ? RGB(8, 102, 180) :
 		pref.theme === 'darkblue' ? RGB(17, 35, 57) :
 		pref.theme === 'red' ? RGB(95, 15, 15) :
 		pref.theme === 'cream' ? RGB(255, 247, 240) :
 		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? RGB(25, 25, 25) :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? shadeColor(col.bg, 8) : '';
+		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? ShadeColor(col.bg, 8) : '';
 
 	col.uiHacksFrame = col.bg;
 
@@ -4511,50 +4692,50 @@ function styleAlternative2Colors() {
 
 	// * LOWER BAR TRANSPORT BUTTONS * //
 	col.transportEllipseBg =
-		pref.theme === 'white' ? tintColor(col.transportEllipseBg, 100) :
-		pref.theme === 'black' ? shadeColor(col.transportEllipseBg, 6) :
-		pref.theme === 'darkblue' ? tintColor(col.transportEllipseBg, 0) :
+		pref.theme === 'white' ? TintColor(col.transportEllipseBg, 100) :
+		pref.theme === 'black' ? ShadeColor(col.transportEllipseBg, 6) :
+		pref.theme === 'darkblue' ? TintColor(col.transportEllipseBg, 0) :
 		pref.theme === 'red' ? RGB(140, 25, 25) :
-		tintColor(col.transportEllipseBg, 6);
+		TintColor(col.transportEllipseBg, 6);
 
 	col.transportEllipseNormal =
-		pref.theme === 'black' ? shadeColor(col.transportEllipseNormal, 60) :
-		tintColor(col.transportEllipseNormal, 6);
+		pref.theme === 'black' ? ShadeColor(col.transportEllipseNormal, 60) :
+		TintColor(col.transportEllipseNormal, 6);
 
-	col.transportEllipseHovered = tintColor(col.transportEllipseHovered, 6);
+	col.transportEllipseHovered = TintColor(col.transportEllipseHovered, 6);
 	col.transportEllipseDown = col.transportEllipseHovered;
 
 	col.transportStyleBg =
-		pref.theme === 'white' ? pref.styleBevel ? shadeColor(col.transportStyleBg, 10) : shadeColor(col.transportStyleBg, 7) :
-		pref.theme === 'darkblue' ? tintColor(col.transportStyleBg, 0) :
-		pref.theme === 'red' ? tintColor(col.transportStyleBg, 2) :
+		pref.theme === 'white' ? pref.styleBevel ? ShadeColor(col.transportStyleBg, 10) : ShadeColor(col.transportStyleBg, 7) :
+		pref.theme === 'darkblue' ? TintColor(col.transportStyleBg, 0) :
+		pref.theme === 'red' ? TintColor(col.transportStyleBg, 2) :
 		pref.theme === 'cream' ? RGB(230, 230, 230) :
-		tintColor(col.transportStyleBg, 6);
+		TintColor(col.transportStyleBg, 6);
 
 	col.transportStyleTop =
-		pref.theme === 'white' ? shadeColor(col.transportStyleTop, 6) :
-		pref.theme === 'blue' ? tintColor(col.transportStyleTop, 12) :
-		pref.theme === 'darkblue' ? tintColor(col.transportStyleTop, 0) :
-		pref.theme === 'red' ? tintColor(col.transportStyleTop, 2) :
-		tintColor(col.transportStyleTop, 6);
+		pref.theme === 'white' ? ShadeColor(col.transportStyleTop, 6) :
+		pref.theme === 'blue' ? TintColor(col.transportStyleTop, 12) :
+		pref.theme === 'darkblue' ? TintColor(col.transportStyleTop, 0) :
+		pref.theme === 'red' ? TintColor(col.transportStyleTop, 2) :
+		TintColor(col.transportStyleTop, 6);
 
 	col.transportStyleBottom =
-		pref.theme === 'white' ? shadeColor(col.transportStyleBottom, 6) :
-		pref.theme === 'blue' ? shadeColor(col.transportStyleBottom, 10) :
-		pref.theme === 'darkblue' ? tintColor(col.transportStyleBottom, 0) :
-		pref.theme === 'red' ? tintColor(col.transportStyleBottom, 2) :
-		tintColor(col.transportStyleBottom, 6);
+		pref.theme === 'white' ? ShadeColor(col.transportStyleBottom, 6) :
+		pref.theme === 'blue' ? ShadeColor(col.transportStyleBottom, 10) :
+		pref.theme === 'darkblue' ? TintColor(col.transportStyleBottom, 0) :
+		pref.theme === 'red' ? TintColor(col.transportStyleBottom, 2) :
+		TintColor(col.transportStyleBottom, 6);
 
 	// * PROGRESS BAR * //
 	col.progressBar =
-		pref.theme === 'white' ? pref.styleBevel ? tintColor(col.progressBar, 60) : tintColor(col.progressBar, 100) :
-		pref.theme === 'black' ? shadeColor(col.progressBar, 16) :
-		pref.theme === 'reborn' || pref.theme === 'random' ? colBrightness < 25 ? tintColor(col.primary, 12) : g_pl_colors.bg :
+		pref.theme === 'white' ? pref.styleBevel ? TintColor(col.progressBar, 60) : TintColor(col.progressBar, 100) :
+		pref.theme === 'black' ? ShadeColor(col.progressBar, 16) :
+		pref.theme === 'reborn' || pref.theme === 'random' ? colBrightness < 25 ? TintColor(col.primary, 12) : g_pl_colors.bg :
 		pref.theme === 'blue' ? g_pl_colors.bg :
 		pref.theme === 'darkblue' ? g_pl_colors.row_nowplaying_bg :
-		pref.theme === 'red' ? tintColor(col.progressBar, 0) :
-		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? tintColor(col.progressBar, 3) :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? shadeColor(col.progressBar, 2) :
+		pref.theme === 'red' ? TintColor(col.progressBar, 0) :
+		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? TintColor(col.progressBar, 3) :
+		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? ShadeColor(col.progressBar, 2) :
 		g_pl_colors.bg;
 
 	// * VOLUME BAR * //
@@ -4566,6 +4747,9 @@ function styleAlternative2Colors() {
 ///////////////////////////////
 // * STYLE BLACK AND WHITE * //
 ///////////////////////////////
+/**
+ * Active White theme used in Options > Style > Black and white.
+ */
 function styleBlackAndWhiteColors() {
 	col.primary = RGB(255, 255, 255);
 	panelBlackColors();
@@ -4576,6 +4760,9 @@ function styleBlackAndWhiteColors() {
 /////////////////////////////////
 // * STYLE BLACK AND WHITE 2 * //
 /////////////////////////////////
+/**
+ * Active White theme used in Options > Style > Black and white 2.
+ */
 function styleBlackAndWhite2Colors() {
 	col.primary = RGB(255, 255, 255);
 	panelWhiteColors();
@@ -4586,6 +4773,9 @@ function styleBlackAndWhite2Colors() {
 ////////////////////////////
 // * STYLE BLACK REBORN * //
 ////////////////////////////
+/**
+ * Active Black theme used in Options > Style > Black reborn.
+ */
 function styleBlackRebornColors() {
 	if (!fb.IsPlaying || !albumArt && !noAlbumArtStub) col.primary = RGB(25, 25, 25);
 	if (isStreaming || isPlayingCD) setNoAlbumArtColors();
@@ -4594,12 +4784,12 @@ function styleBlackRebornColors() {
 	g_pl_colors.bg = RGB(20, 20, 20);
 	g_pl_colors.plman_bg = g_pl_colors.bg;
 	g_pl_colors.plman_text_normal = g_pl_colors.bg;
-	g_pl_colors.header_nowplaying_bg = colBrightness < 25 ? col.lightAccent : pref.styleBevel ? shadeColor(col.primary, 10) : col.primary;
+	g_pl_colors.header_nowplaying_bg = colBrightness < 25 ? col.lightAccent : pref.styleBevel ? ShadeColor(col.primary, 10) : col.primary;
 	g_pl_colors.header_line_normal = pref.styleBlend ? RGB(65, 65, 65) : RGB(45, 45, 45);
 	g_pl_colors.header_line_playing = RGB(25, 25, 25);
 	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
 	g_pl_colors.row_disc_subheader_line = pref.styleBlend ? RGB(65, 65, 65) : RGB(45, 45, 45);
-	g_pl_colors.row_drag_line = lightBg ? shadeColor(g_pl_colors.row_selection_frame, 20) : tintColor(g_pl_colors.row_selection_frame, 20);
+	g_pl_colors.row_drag_line = lightBg ? ShadeColor(g_pl_colors.row_selection_frame, 20) : TintColor(g_pl_colors.row_selection_frame, 20);
 	g_pl_colors.row_drag_line_reached = g_pl_colors.row_sideMarker;
 
 	// * LIBRARY COLORS * //
@@ -4717,20 +4907,20 @@ function styleBlackRebornColors() {
 
 	// * PEAKMETER BAR COLORS * //
 	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = colBrightness > 200 || colBrightness < 75 ? tintColor(col.primary,  100) : shadeColor(col.primary, 100);
-	col.peakmeterBarFillTop       = colBrightness > 200 ? shadeColor(col.primary, 10) : tintColor(col.primary, 40);
-	col.peakmeterBarFillMiddle    = colBrightness > 200 ? shadeColor(col.primary, 20) : tintColor(col.primary, 60);
-	col.peakmeterBarFillBack      = colBrightness > 200 ? shadeColor(col.primary, 40) : tintColor(col.primary, 80);
-	col.peakmeterBarVertProgFill  = colBrightness > 200 ? shadeColor(col.primary, 25) : col.progressBarFill;
-	col.peakmeterBarVertFill      = colBrightness > 200 ? shadeColor(col.primary, 15) : tintColor(col.primary, 40);
-	col.peakmeterBarVertFillPeaks = colBrightness > 200 ? shadeColor(col.primary, 25) : tintColor(col.primary, 60);
+	col.peakmeterBarProgFill      = colBrightness > 200 || colBrightness < 75 ? TintColor(col.primary,  100) : ShadeColor(col.primary, 100);
+	col.peakmeterBarFillTop       = colBrightness > 200 ? ShadeColor(col.primary, 10) : TintColor(col.primary, 40);
+	col.peakmeterBarFillMiddle    = colBrightness > 200 ? ShadeColor(col.primary, 20) : TintColor(col.primary, 60);
+	col.peakmeterBarFillBack      = colBrightness > 200 ? ShadeColor(col.primary, 40) : TintColor(col.primary, 80);
+	col.peakmeterBarVertProgFill  = colBrightness > 200 ? ShadeColor(col.primary, 25) : col.progressBarFill;
+	col.peakmeterBarVertFill      = colBrightness > 200 ? ShadeColor(col.primary, 15) : TintColor(col.primary, 40);
+	col.peakmeterBarVertFillPeaks = colBrightness > 200 ? ShadeColor(col.primary, 25) : TintColor(col.primary, 60);
 	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 	// * WAVEFORM BAR COLORS * //
-	col.waveformBarFillFront    = colBrightness > 200 ? shadeColor(col.primary, 80) : tintColor(col.primary, 90);
-	col.waveformBarFillBack     = colBrightness > 200 ? shadeColor(col.primary, 40) : tintColor(col.primary, 45);
-	col.waveformBarFillPreFront = colBrightness > 150 ? shadeColor(col.primary, 40) : tintColor(col.primary, 50);
-	col.waveformBarFillPreBack  = colBrightness > 150 ? shadeColor(col.primary, 20) : tintColor(col.primary, 25);
+	col.waveformBarFillFront    = colBrightness > 200 ? ShadeColor(col.primary, 80) : TintColor(col.primary, 90);
+	col.waveformBarFillBack     = colBrightness > 200 ? ShadeColor(col.primary, 40) : TintColor(col.primary, 45);
+	col.waveformBarFillPreFront = colBrightness > 150 ? ShadeColor(col.primary, 40) : TintColor(col.primary, 50);
+	col.waveformBarFillPreBack  = colBrightness > 150 ? ShadeColor(col.primary, 20) : TintColor(col.primary, 25);
 	col.waveformBarIndicator    = colBrightness > 200 ? RGB(0, 0, 0) : RGB(255, 255, 255);
 
 	// * VOLUME BAR COLORS * //
@@ -4749,6 +4939,9 @@ function styleBlackRebornColors() {
 ///////////////////////////////////
 // * STYLE REBORN WHITE COLORS * //
 ///////////////////////////////////
+/**
+ * Active Reborn theme used in Options > Style > Reborn white.
+ */
 function styleRebornWhiteColors() {
 	// * PLAYLIST COLORS * //
 	g_pl_colors.bg = !fb.IsPlaying ? RGB(255, 255, 255) : g_pl_colors.bg;
@@ -4794,25 +4987,25 @@ function styleRebornWhiteColors() {
 
 	// * PROGRESS BAR COLORS * //
 	col.progressBar = pref.styleBevel ? RGB(225, 225, 225) : RGB(220, 220, 220);
-	col.progressBarFill = shadeColor(col.primary, 5);
+	col.progressBarFill = ShadeColor(col.primary, 5);
 
 	// * PEAKMETER BAR COLORS * //
 	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = colBrightness < 75 ? tintColor(col.primary, 40) : shadeColor(col.primary, 40);
-	col.peakmeterBarFillTop       = tintColor(col.primary,  10);
-	col.peakmeterBarFillMiddle    = tintColor(col.primary,  30);
-	col.peakmeterBarFillBack      = tintColor(col.primary,  50);
+	col.peakmeterBarProgFill      = colBrightness < 75 ? TintColor(col.primary, 40) : ShadeColor(col.primary, 40);
+	col.peakmeterBarFillTop       = TintColor(col.primary,  10);
+	col.peakmeterBarFillMiddle    = TintColor(col.primary,  30);
+	col.peakmeterBarFillBack      = TintColor(col.primary,  50);
 	col.peakmeterBarVertProgFill  = col.progressBarFill;
-	col.peakmeterBarVertFill      = shadeColor(col.primary, 10);
-	col.peakmeterBarVertFillPeaks = tintColor(col.primary,  20);
+	col.peakmeterBarVertFill      = ShadeColor(col.primary, 10);
+	col.peakmeterBarVertFillPeaks = TintColor(col.primary,  20);
 	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 	// * WAVEFORM BAR COLORS * //
 	col.waveformBarFillFront    = col.primary;
-	col.waveformBarFillBack     = shadeColor(col.primary, 20);
+	col.waveformBarFillBack     = ShadeColor(col.primary, 20);
 	col.waveformBarFillPreFront = RGB(180, 180, 180);
 	col.waveformBarFillPreBack  = RGB(160, 160, 160);
-	col.waveformBarIndicator    = colBrightness > 200 ? RGB(0, 0, 0) : tintColor(col.primary, 30);
+	col.waveformBarIndicator    = colBrightness > 200 ? RGB(0, 0, 0) : TintColor(col.primary, 30);
 
 	// * VOLUME BAR COLORS * //
 	col.volumeBar = RGB(255, 255, 255);
@@ -4839,6 +5032,9 @@ function styleRebornWhiteColors() {
 ///////////////////////////////////
 // * STYLE REBORN BLACK COLORS * //
 ///////////////////////////////////
+/**
+ * Active Reborn theme used in Options > Style > Reborn black.
+ */
 function styleRebornBlackColors() {
 	// * MAIN COLORS * //
 	col.bg = pref.styleBevel ? RGB(40, 40, 40) : RGB(20, 20, 20);
@@ -4903,18 +5099,18 @@ function styleRebornBlackColors() {
 
 	// * PEAKMETER BAR COLORS * //
 	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = colBrightness > 200 ? shadeColor(col.primary, 40) : colBrightness < 50 ? tintColor(col.primary, 50) : tintColor(col.primary, 40);
-	col.peakmeterBarFillTop       = colBrightness <  50 ? tintColor(col.primary,  20) : tintColor(col.primary,  10);
-	col.peakmeterBarFillMiddle    = colBrightness <  50 ? tintColor(col.primary,  40) : tintColor(col.primary,  30);
-	col.peakmeterBarFillBack      = colBrightness <  50 ? tintColor(col.primary,  30) : shadeColor(col.primary, 15);
+	col.peakmeterBarProgFill      = colBrightness > 200 ? ShadeColor(col.primary, 40) : colBrightness < 50 ? TintColor(col.primary, 50) : TintColor(col.primary, 40);
+	col.peakmeterBarFillTop       = colBrightness <  50 ? TintColor(col.primary,  20) : TintColor(col.primary,  10);
+	col.peakmeterBarFillMiddle    = colBrightness <  50 ? TintColor(col.primary,  40) : TintColor(col.primary,  30);
+	col.peakmeterBarFillBack      = colBrightness <  50 ? TintColor(col.primary,  30) : ShadeColor(col.primary, 15);
 	col.peakmeterBarVertProgFill  = col.progressBarFill;
-	col.peakmeterBarVertFill      = colBrightness <  50 ? tintColor(col.primary,  20) : shadeColor(col.primary, 10);
-	col.peakmeterBarVertFillPeaks = colBrightness <  50 ? tintColor(col.primary,  30) : tintColor(col.primary,  20);
+	col.peakmeterBarVertFill      = colBrightness <  50 ? TintColor(col.primary,  20) : ShadeColor(col.primary, 10);
+	col.peakmeterBarVertFillPeaks = colBrightness <  50 ? TintColor(col.primary,  30) : TintColor(col.primary,  20);
 	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 	// * WAVEFORM BAR COLORS * //
-	col.waveformBarFillFront    = colBrightness < 50 ? tintColor(col.primary, 40) : colBrightness < 100 ? tintColor(col.primary, 20) : col.primary;
-	col.waveformBarFillBack     = colBrightness < 50 ? tintColor(col.primary, 20) : colBrightness < 100 ? col.primary : shadeColor(col.primary, 20);
+	col.waveformBarFillFront    = colBrightness < 50 ? TintColor(col.primary, 40) : colBrightness < 100 ? TintColor(col.primary, 20) : col.primary;
+	col.waveformBarFillBack     = colBrightness < 50 ? TintColor(col.primary, 20) : colBrightness < 100 ? col.primary : ShadeColor(col.primary, 20);
 	col.waveformBarFillPreFront = RGB(100, 100, 100);
 	col.waveformBarFillPreBack  = RGB(80, 80, 80);
 	col.waveformBarIndicator    = colBrightness > 200 ? RGB(255, 255, 255) : RGB(220, 220, 220);
@@ -4943,9 +5139,12 @@ function styleRebornBlackColors() {
 ////////////////////////////////////
 // * STYLE REBORN FUSION COLORS * //
 ////////////////////////////////////
+/**
+ * Active Reborn theme used in Options > Style > Reborn fusion.
+ */
 function styleRebornFusionColors() {
 	if (!(fb.IsPlaying && isColored)) return;
-	const smallColDiff = colorDistance(col.primary, col.primary_alt) < 100;
+	const smallColDiff = ColorDistance(col.primary, col.primary_alt) < 100;
 
 	// * PLAYLIST COLORS * //
 	g_pl_colors.header_nowplaying_bg = pref.styleBlend ? RGBtoRGBA(col.lightAccent_7_alt, 130) : col.lightAccent_7_alt;
@@ -4966,20 +5165,20 @@ function styleRebornFusionColors() {
 
 	// * PEAKMETER BAR COLORS * //
 	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = colBrightness2 > 200 ? shadeColor(col.primary_alt, 100) : colBrightness2 < 75 ? tintColor(col.primary_alt, 100) : tintColor(col.primary_alt, 40);
-	col.peakmeterBarFillTop       = colBrightness2 > 200 ? shadeColor(col.primary_alt,  10) : tintColor(col.primary_alt, 40);
-	col.peakmeterBarFillMiddle    = colBrightness2 > 200 ? shadeColor(col.primary_alt,  20) : tintColor(col.primary_alt, 60);
-	col.peakmeterBarFillBack      = colBrightness2 > 200 ? shadeColor(col.primary_alt,  40) : tintColor(col.primary_alt, 80);
+	col.peakmeterBarProgFill      = colBrightness2 > 200 ? ShadeColor(col.primary_alt, 100) : colBrightness2 < 75 ? TintColor(col.primary_alt, 100) : TintColor(col.primary_alt, 40);
+	col.peakmeterBarFillTop       = colBrightness2 > 200 ? ShadeColor(col.primary_alt,  10) : TintColor(col.primary_alt, 40);
+	col.peakmeterBarFillMiddle    = colBrightness2 > 200 ? ShadeColor(col.primary_alt,  20) : TintColor(col.primary_alt, 60);
+	col.peakmeterBarFillBack      = colBrightness2 > 200 ? ShadeColor(col.primary_alt,  40) : TintColor(col.primary_alt, 80);
 	col.peakmeterBarVertProgFill  = col.progressBarFill;
 	col.peakmeterBarVertFill      = smallColDiff ? col.lightAccent_50 : col.primary;
-	col.peakmeterBarVertFillPeaks = tintColor(col.primary, 60);
+	col.peakmeterBarVertFillPeaks = TintColor(col.primary, 60);
 	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 	// * WAVEFORM BAR COLORS * //
-	col.waveformBarFillFront    = colBrightness2 > 200 || noAlbumArtStub ? shadeColor(col.primary_alt, 80) : tintColor(col.primary_alt, 90);
-	col.waveformBarFillBack     = colBrightness2 > 200 || noAlbumArtStub ? shadeColor(col.primary_alt, 40) : tintColor(col.primary_alt, 45);
-	col.waveformBarFillPreFront = colBrightness2 > 150 ? shadeColor(col.primary_alt, 40) : tintColor(col.primary_alt, 50);
-	col.waveformBarFillPreBack  = colBrightness2 > 150 ? shadeColor(col.primary_alt, 20) : tintColor(col.primary_alt, 25);
+	col.waveformBarFillFront    = colBrightness2 > 200 || noAlbumArtStub ? ShadeColor(col.primary_alt, 80) : TintColor(col.primary_alt, 90);
+	col.waveformBarFillBack     = colBrightness2 > 200 || noAlbumArtStub ? ShadeColor(col.primary_alt, 40) : TintColor(col.primary_alt, 45);
+	col.waveformBarFillPreFront = colBrightness2 > 150 ? ShadeColor(col.primary_alt, 40) : TintColor(col.primary_alt, 50);
+	col.waveformBarFillPreBack  = colBrightness2 > 150 ? ShadeColor(col.primary_alt, 20) : TintColor(col.primary_alt, 25);
 	col.waveformBarIndicator    = colBrightness2 > 200 || noAlbumArtStub ? RGB(0, 0, 0) : RGB(255, 255, 255);
 
 	// * VOLUME BAR COLORS * //
@@ -4992,15 +5191,18 @@ function styleRebornFusionColors() {
 //////////////////////////////////////
 // * STYLE REBORN FUSION 2 COLORS * //
 //////////////////////////////////////
+/**
+ * Active Reborn theme used in Options > Style > Reborn fusion 2.
+ */
 function styleRebornFusion2Colors() {
 	if (!(fb.IsPlaying && isColored)) return;
-	const smallColDiff = colorDistance(col.primary, col.primary_alt) < 100;
+	const smallColDiff = ColorDistance(col.primary, col.primary_alt) < 100;
 
 	// * PLAYLIST COLORS * //
 	g_pl_colors.bg = col.primary_alt;
 	g_pl_colors.plman_bg = g_pl_colors.bg;
 	g_pl_colors.plman_text_normal = g_pl_colors.bg;
-	g_pl_colors.header_nowplaying_bg = pref.styleBlend ? RGBtoRGBA(col.lightAccent_7, 130) : tintColor(col.primary_alt, 10);
+	g_pl_colors.header_nowplaying_bg = pref.styleBlend ? RGBtoRGBA(col.lightAccent_7, 130) : TintColor(col.primary_alt, 10);
 	g_pl_colors.header_sideMarker = smallColDiff ? col.lightAccent_35 : col.primary;
 	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
 	g_pl_colors.row_sideMarker = smallColDiff ? col.lightAccent_35 : col.primary;
@@ -5008,7 +5210,7 @@ function styleRebornFusion2Colors() {
 	// * LIBRARY COLORS * //
 	ui.col.bg = g_pl_colors.bg;
 	ui.col.rowStripes = g_pl_colors.row_stripes_bg;
-	ui.col.nowPlayingBg = ppt.albumArtShow ? tintColor(g_pl_colors.row_nowplaying_bg, 7) : g_pl_colors.row_nowplaying_bg;
+	ui.col.nowPlayingBg = ppt.albumArtShow ? TintColor(g_pl_colors.row_nowplaying_bg, 7) : g_pl_colors.row_nowplaying_bg;
 	ui.col.sideMarker = g_pl_colors.row_sideMarker;
 	ui.col.selectionFrame = g_pl_colors.row_selection_frame;
 	ui.col.selectionFrame2 = ui.col.sideMarker;
@@ -5031,7 +5233,7 @@ function styleRebornFusion2Colors() {
 	col.transportEllipseHovered = col.lightAccent_50;
 	col.transportEllipseDown = col.transportEllipseHovered;
 
-	col.progressBar = pref.styleBevel ? shadeColor(col.primary_alt, 5) : col.lightAccent;
+	col.progressBar = pref.styleBevel ? ShadeColor(col.primary_alt, 5) : col.lightAccent;
 	col.progressBarFill = smallColDiff ? col.lightAccent_35 : col.primary_alt;
 	col.volumeBar = col.transportEllipseBg;
 	col.volumeBarFrame = col.volumeBar;
@@ -5042,9 +5244,12 @@ function styleRebornFusion2Colors() {
 ///////////////////////////////////////////
 // * STYLE REBORN FUSION ACCENT COLORS * //
 ///////////////////////////////////////////
+/**
+ * Active Reborn theme used in Options > Style > Reborn fusion accent.
+ */
 function styleRebornFusionAccentColors() {
 	if (!(fb.IsPlaying && isColored)) return;
-	const smallColDiff = colorDistance(col.primary, col.primary_alt) < 100;
+	const smallColDiff = ColorDistance(col.primary, col.primary_alt) < 100;
 
 	g_pl_colors.header_nowplaying_bg = smallColDiff ? colBrightness > 150 ? col.darkAccent_50_alt : col.lightAccent_50_alt : col.primary_alt;
 	g_pl_colors.header_sideMarker = g_pl_colors.header_nowplaying_bg;
@@ -5056,20 +5261,20 @@ function styleRebornFusionAccentColors() {
 
 	// * PEAKMETER BAR COLORS * //
 	col.peakmeterBarProg          = col.progressBar;
-	col.peakmeterBarProgFill      = colBrightness > 150 ? shadeColor(col.primary_alt, smallColDiff ? 80 : 50) : tintColor(col.primary_alt, smallColDiff ? 80 : 50);
-	col.peakmeterBarFillTop       = colBrightness > 150 ? shadeColor(col.primary_alt, smallColDiff ? 40 : 10) : tintColor(col.primary_alt, smallColDiff ? 40 : 10);
-	col.peakmeterBarFillMiddle    = colBrightness > 150 ? shadeColor(col.primary_alt, smallColDiff ? 30 :  0) : tintColor(col.primary_alt, smallColDiff ? 30 :  0);
-	col.peakmeterBarFillBack      = colBrightness > 150 ? shadeColor(col.primary_alt, smallColDiff ? 60 : 30) : tintColor(col.primary_alt, smallColDiff ? 60 : 30);
+	col.peakmeterBarProgFill      = colBrightness > 150 ? ShadeColor(col.primary_alt, smallColDiff ? 80 : 50) : TintColor(col.primary_alt, smallColDiff ? 80 : 50);
+	col.peakmeterBarFillTop       = colBrightness > 150 ? ShadeColor(col.primary_alt, smallColDiff ? 40 : 10) : TintColor(col.primary_alt, smallColDiff ? 40 : 10);
+	col.peakmeterBarFillMiddle    = colBrightness > 150 ? ShadeColor(col.primary_alt, smallColDiff ? 30 :  0) : TintColor(col.primary_alt, smallColDiff ? 30 :  0);
+	col.peakmeterBarFillBack      = colBrightness > 150 ? ShadeColor(col.primary_alt, smallColDiff ? 60 : 30) : TintColor(col.primary_alt, smallColDiff ? 60 : 30);
 	col.peakmeterBarVertProgFill  = col.progressBarFill;
 	col.peakmeterBarVertFill      = col.progressBarFill;
-	col.peakmeterBarVertFillPeaks = tintColor(col.primary_alt, 60);
+	col.peakmeterBarVertFillPeaks = TintColor(col.primary_alt, 60);
 	if (peakmeterBar) peakmeterBar.setColors(fb.GetNowPlaying());
 
 	// * WAVEFORM BAR COLORS * //
-	col.waveformBarFillFront    = colBrightness > 150 ? shadeColor(col.primary_alt, smallColDiff || colBrightness > 200 || noAlbumArtStub ? 60 : 10) : tintColor(col.primary_alt, smallColDiff ? 60 : 10);
-	col.waveformBarFillBack     = colBrightness > 150 ? shadeColor(col.primary_alt, smallColDiff || colBrightness > 200 || noAlbumArtStub ? 80 : 20) : tintColor(col.primary_alt, smallColDiff ? 80 : 20);
-	col.waveformBarFillPreFront = colBrightness > 150 ? shadeColor(col.primary, 20) : tintColor(col.primary, 30);
-	col.waveformBarFillPreBack  = colBrightness > 150 ? shadeColor(col.primary, 30) : tintColor(col.primary, 40);
+	col.waveformBarFillFront    = colBrightness > 150 ? ShadeColor(col.primary_alt, smallColDiff || colBrightness > 200 || noAlbumArtStub ? 60 : 10) : TintColor(col.primary_alt, smallColDiff ? 60 : 10);
+	col.waveformBarFillBack     = colBrightness > 150 ? ShadeColor(col.primary_alt, smallColDiff || colBrightness > 200 || noAlbumArtStub ? 80 : 20) : TintColor(col.primary_alt, smallColDiff ? 80 : 20);
+	col.waveformBarFillPreFront = colBrightness > 150 ? ShadeColor(col.primary, 20) : TintColor(col.primary, 30);
+	col.waveformBarFillPreBack  = colBrightness > 150 ? ShadeColor(col.primary, 30) : TintColor(col.primary, 40);
 	col.waveformBarIndicator    = colBrightness > 200 || noAlbumArtStub ? RGB(0, 0, 0) : RGB(255, 255, 255);
 
 	// * VOLUME BAR COLORS * //
@@ -5082,7 +5287,9 @@ function styleRebornFusionAccentColors() {
 ///////////////////////////
 // * INITIALIZE COLORS * //
 ///////////////////////////
-/** Init all colors that are used in the Playlist, mostly called from initTheme() */
+/**
+ * Init all colors that are used in the Playlist, mostly called from initTheme().
+ */
 function initPlaylistColors() {
 	switch (pref.theme) {
 		case 'white': playlistColorsWhiteTheme(); break;
@@ -5100,7 +5307,9 @@ function initPlaylistColors() {
 }
 
 
-/** Init all colors that are used in the Library, mostly called from initTheme() */
+/**
+ * Init all colors that are used in the Library, mostly called from initTheme().
+ */
 function initLibraryColors() {
 	switch (pref.theme) {
 		case 'white': libraryColorsWhiteTheme(); break;
@@ -5119,7 +5328,9 @@ function initLibraryColors() {
 }
 
 
-/** Init all colors that are used in the Biography, mostly called from initTheme() */
+/**
+ * Init all colors that are used in the Biography, mostly called from initTheme().
+ */
 function initBiographyColors() {
 	switch (pref.theme) {
 		case 'white': biographyColorsWhiteTheme(); break;
@@ -5138,7 +5349,9 @@ function initBiographyColors() {
 }
 
 
-/** Init all colors that are used in Georgia-ReBORN main, mostly called from initTheme() */
+/**
+ * Init all colors that are used in Georgia-ReBORN main, mostly called from initTheme().
+ */
 function initMainColors() {
 	switch (pref.theme) {
 		case 'white': mainColorsWhiteTheme(); break;
@@ -5156,7 +5369,9 @@ function initMainColors() {
 }
 
 
-/** Init all colors that are used in styles, mostly called from initTheme() */
+/**
+ * Init all colors that are used in styles, mostly called from initTheme().
+ */
 function initStyleColors() {
 	if      (pref.styleAlternative) styleAlternativeColors();
 	else if (pref.styleAlternative2) styleAlternative2Colors();
@@ -5171,7 +5386,9 @@ function initStyleColors() {
 }
 
 
-/** Init style Black And White Reborn - dynamically change between style Black and white 1 and 2 */
+/**
+ * Init style Black And White Reborn, dynamically change between style Black and white 1 and 2.
+ */
 function initBlackAndWhiteReborn() {
 	setImageBrightness();
 
@@ -5186,7 +5403,9 @@ function initBlackAndWhiteReborn() {
 }
 
 
-/** Init all colors that are used in the chronflow user-component, mostly called from initTheme() */
+/**
+ * Init all colors that are used in the chronflow user-component, mostly called from initTheme().
+ */
 function initChronflowColors() {
 	try {
 		const chron = new ActiveXObject('chron.IChronControl');
@@ -5198,9 +5417,9 @@ function initChronflowColors() {
 			if (g_pl_colors.bg !== RGB(255, 255, 255)) {
 				const bg_rgb = Math.abs(g_pl_colors.bg);
 
-				r_bg = getRed(bg_rgb);
-				g_bg = getGreen(bg_rgb);
-				b_bg = getBlue(bg_rgb);
+				r_bg = GetRed(bg_rgb);
+				g_bg = GetGreen(bg_rgb);
+				b_bg = GetBlue(bg_rgb);
 
 				r_bg = 255 - r_bg;
 				g_bg = 255 - g_bg;
@@ -5217,9 +5436,9 @@ function initChronflowColors() {
 			chron.SetPanelColor(bg, /*skip refresh*/ [0]);
 
 			// * SetTextColor
-			r_bg = getRed(col.lowerBarArtist);
-			g_bg = getGreen(col.lowerBarArtist);
-			b_bg = getBlue(col.lowerBarArtist);
+			r_bg = GetRed(col.lowerBarArtist);
+			g_bg = GetGreen(col.lowerBarArtist);
+			b_bg = GetBlue(col.lowerBarArtist);
 
 			let strhex = '0x';
 			const rgbtohex = RGBtoHEX(b_bg, g_bg, r_bg);
@@ -5228,7 +5447,7 @@ function initChronflowColors() {
 		}
 	}
 	catch (e) {
-		// debugLog('Unable to create ActiveX chron.IChronControl object');
+		// DebugLog('Unable to create ActiveX chron.IChronControl object');
 	}
 }
 
@@ -5236,6 +5455,11 @@ function initChronflowColors() {
 //////////////////////////
 // * SET THEME COLORS * //
 //////////////////////////
+/**
+ * Sets Main, Playlist, Details, Library and Biography background color brightness rules.
+ * Based on background color and image brightness, text colors in theme will change accordingly to black or white.
+ * Used in White, Black, Reborn, Random and Custom themes.
+ */
 function setBackgroundColorDefinition() {
 	colBrightness  = new Color(col.primary).brightness;
 	colBrightness2 = new Color(col.primary_alt).brightness;
@@ -5290,7 +5514,9 @@ function setBackgroundColorDefinition() {
 }
 
 
-/** Style Blend - blurs and blends album art image in the background */
+/**
+ * Sets style Blend 1 and 2, blurs and blends album art image in the background.
+ */
 function setStyleBlend() {
 	const setStyleBlendProfiler = timings.showDebugTiming ? fb.CreateProfiler('setStyleBlend') : null;
 
@@ -5387,14 +5613,19 @@ function setStyleBlend() {
 }
 
 
+/**
+ * Sets calculated image brightness from album art, mainly used when using style Blend 1 and 2 or style Black and white reborn.
+ */
 function setImageBrightness() {
 	if (albumArt && (ppt.theme !== 0 || pref.styleBlend || pref.styleBlend2 || pref.styleBlackAndWhite || pref.styleBlackAndWhite2 || pref.styleBlackAndWhiteReborn)) {
-		imgBrightness = calcImgBrightness(albumArt);
+		imgBrightness = CalcImgBrightness(albumArt);
 	}
 }
 
 
-/** Change col.primary when streaming, reset to default when playing from CD or using noAlbumArtStub */
+/**
+ * Sets noAlbumArtColors, change col.primary when streaming, reset to default when playing from CD or using noAlbumArtStub.
+ */
 function setNoAlbumArtColors() {
 	if (isStreaming && (['white', 'black', 'reborn', 'random'].includes(pref.theme))) {
 		col.primary = RGB(207, 0, 5);
@@ -5406,28 +5637,33 @@ function setNoAlbumArtColors() {
 }
 
 
+/**
+ * Sets primary and optional secondary theme color as well as accents.
+ * @param {number} color The primary color.
+ * @param {number} color2 The secondary color.
+ */
 function setTheme(color, color2) {
 	if (color2 === undefined) color2 = color;
 	let themeCol = new Color(color.primary);
 	const customThemes = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme);
 
-	if (colorDistance(color.primary, col.bg, true) < (themeCol.isCloseToGreyscale ? 60 : 45)) {
+	if (ColorDistance(color.primary, col.bg, true) < (themeCol.isCloseToGreyscale ? 60 : 45)) {
 		if (pref.theme !== 'reborn' && pref.theme !== 'random' && (pref.theme !== 'black' && !pref.styleBlackReborn) && !customThemes) {
 			if (settings.showThemeLog) console.log('>>> Theme primary color is too close to bg color. Tinting theme color.');
-			color.primary = tintColor(color.primary, 15);
-			color.accent = tintColor(color.primary, 10);
+			color.primary = TintColor(color.primary, 15);
+			color.accent = TintColor(color.primary, 10);
 			themeCol = new Color(color.primary);
 		}
 		else if (pref.theme !== 'reborn' && pref.theme !== 'random' && (pref.theme !== 'black' && !pref.styleBlackReborn) && !customThemes && !pref.systemFirstLaunch) { // * Prevent crash when clearing Panel Properties
 			if (settings.showThemeLog) console.log('>>> Theme primary color is too close to bg color. Shading theme color.');
-			color.primary = shadeColor(color.primary, 5);
+			color.primary = ShadeColor(color.primary, 5);
 			themeCol = new Color(color.primary);
 		}
 	}
 	col.primary = color.primary;
 	col.primary_alt = color2.primary_alt;
 
-	if (colorDistance(color.primary, col.progressBar, true) < (themeCol.isCloseToGreyscale ? 60 : 45)) {
+	if (ColorDistance(color.primary, col.progressBar, true) < (themeCol.isCloseToGreyscale ? 60 : 45)) {
 		// Progress bar fill is too close in color to bg
 		if (settings.showThemeLog) console.log('>>> Theme primary color is too close to progress bar. Adjusting progressBar');
 		if (pref.theme === 'white' && themeCol.brightness < 125) {
@@ -5443,53 +5679,55 @@ function setTheme(color, color2) {
 	col.primary_alt = color2.primary_alt;
 
 	// * Reborn/Random theme main tone palette
-	col.darkAccent_100     = shadeColor(color.primary, 100);
-	col.darkAccent_100_alt = shadeColor(color2.primary_alt, 100);
-	col.darkAccent_75      = shadeColor(color.primary, 75);
-	col.darkAccent_75_alt  = shadeColor(color2.primary_alt, 75);
-	col.darkAccent_65      = shadeColor(color.primary, 65);
-	col.darkAccent_65_alt  = shadeColor(color2.primary_alt, 65);
-	col.darkAccent_50      = shadeColor(color.primary, 50);
-	col.darkAccent_50_alt  = shadeColor(color2.primary_alt, 50);
+	col.darkAccent_100     = ShadeColor(color.primary, 100);
+	col.darkAccent_100_alt = ShadeColor(color2.primary_alt, 100);
+	col.darkAccent_75      = ShadeColor(color.primary, 75);
+	col.darkAccent_75_alt  = ShadeColor(color2.primary_alt, 75);
+	col.darkAccent_65      = ShadeColor(color.primary, 65);
+	col.darkAccent_65_alt  = ShadeColor(color2.primary_alt, 65);
+	col.darkAccent_50      = ShadeColor(color.primary, 50);
+	col.darkAccent_50_alt  = ShadeColor(color2.primary_alt, 50);
 	col.darkAccent         = color.darkAccent;
 	col.darkAccent_alt     = color2.darkAccent_alt;
 	col.accent             = color.accent;
 	col.accent_alt         = color2.accent_alt;
 
-	col.lightAccent_2      = tintColor(color.primary, 2);
-	col.lightAccent_2_alt  = tintColor(color2.primary_alt, 2);
-	col.lightAccent_7      = tintColor(color.primary, 7);
-	col.lightAccent_7_alt  = tintColor(color2.primary_alt, 7);
-	col.lightAccent_10     = tintColor(color.primary, 10);
-	col.lightAccent_10_alt = tintColor(color2.primary_alt, 10);
+	col.lightAccent_2      = TintColor(color.primary, 2);
+	col.lightAccent_2_alt  = TintColor(color2.primary_alt, 2);
+	col.lightAccent_7      = TintColor(color.primary, 7);
+	col.lightAccent_7_alt  = TintColor(color2.primary_alt, 7);
+	col.lightAccent_10     = TintColor(color.primary, 10);
+	col.lightAccent_10_alt = TintColor(color2.primary_alt, 10);
 
 	col.lightAccent         = color.lightAccent;
 	col.lightAccent_alt     = color2.lightAccent_alt;
-	col.lightAccent_35      = tintColor(color.primary, 35);
-	col.lightAccent_35_alt  = tintColor(color2.primary_alt, 35);
-	col.lightAccent_50      = tintColor(color.primary, 50);
-	col.lightAccent_50_alt  = tintColor(color2.primary_alt, 50);
-	col.lightAccent_65      = tintColor(color.primary, 65);
-	col.lightAccent_65_alt  = tintColor(color2.primary_alt, 65);
-	col.lightAccent_80      = tintColor(color.primary, 80);
-	col.lightAccent_80_alt  = tintColor(color2.primary_alt, 80);
-	col.lightAccent_100     = tintColor(color.primary, 100);
-	col.lightAccent_100_alt = tintColor(color2.primary_alt, 100);
+	col.lightAccent_35      = TintColor(color.primary, 35);
+	col.lightAccent_35_alt  = TintColor(color2.primary_alt, 35);
+	col.lightAccent_50      = TintColor(color.primary, 50);
+	col.lightAccent_50_alt  = TintColor(color2.primary_alt, 50);
+	col.lightAccent_65      = TintColor(color.primary, 65);
+	col.lightAccent_65_alt  = TintColor(color2.primary_alt, 65);
+	col.lightAccent_80      = TintColor(color.primary, 80);
+	col.lightAccent_80_alt  = TintColor(color2.primary_alt, 80);
+	col.lightAccent_100     = TintColor(color.primary, 100);
+	col.lightAccent_100_alt = TintColor(color2.primary_alt, 100);
 
 	// * Change col.primary if too bright or too dark
-	if (pref.theme === 'white' && (colorDistance(col.primary, col.progressBar)) < 60) {
+	if (pref.theme === 'white' && (ColorDistance(col.primary, col.progressBar)) < 60) {
 		col.primary = col.darkAccent;
 	}
-	// else if (pref.theme === 'black' && !pref.styleBlackReborn && (colorDistance(col.primary, col.bg)) < 50) {
+	// else if (pref.theme === 'black' && !pref.styleBlackReborn && (ColorDistance(col.primary, col.bg)) < 50) {
 	// 	col.primary = RGB(175, 205, 225);
 	// }
-	// else if (colorDistance(col.primary, col.bg) < 60) {
+	// else if (ColorDistance(col.primary, col.bg) < 60) {
 	// 	col.primary = col.darkAccent;
 	// }
 }
 
 
-/** Sets default theme colors, used on startup when nothing has been played or using noAlbumArtStub */
+/**
+ * Sets default theme colors, used on startup when nothing has been played or using noAlbumArtStub.
+ */
 function setThemeColors() {
 	switch (pref.theme) {
 		case 'white': setTheme(whiteTheme.colors); break;
@@ -5511,7 +5749,10 @@ function setThemeColors() {
 }
 
 
-/** Sets and saves currently used colors, used when transfering colors to a custom theme */
+/**
+ * Sets and saves currently used colors, used when transferring colors to a custom theme.
+ * @param {string} slot The custom theme slot in which to save.
+ */
 function setCurrentColorsToCustomTheme(slot) {
 	const currentColors = {
 		// * PLAYLIST COLORS * //
@@ -5733,7 +5974,9 @@ function setCurrentColorsToCustomTheme(slot) {
 ////////////////////////////////
 // * RANDOM COLOR GENERATOR * //
 ////////////////////////////////
-/** Random theme color generator used for Random theme */
+/**
+ * Generates a random theme color, used in Random theme.
+ */
 function getRandomThemeColor() {
 	if (!getRandomThemeColorContextMenu && ($('[%GR_THEMECOLOR%]') || $('[%GR_THEMECOLOR2%]'))) return;
 
@@ -5756,7 +5999,9 @@ function getRandomThemeColor() {
 }
 
 
-/** Style Random theme auto color - auto creates new colors depending on time interval */
+/**
+ * Auto generates new colors depending on time interval, used in style Random theme auto color.
+ */
 function getRandomThemeAutoColor() {
 	clearInterval(randomThemeAutoColorTimer);
 	randomThemeAutoColorTimer = null;
@@ -5769,7 +6014,7 @@ function getRandomThemeAutoColor() {
 	else if (pref.styleRandomAutoColor === 'track') {
 		initTheme();
 	}
-	debugLog('initTheme -> getRandomThemeAutoColor');
+	DebugLog('initTheme -> getRandomThemeAutoColor');
 }
 
 
@@ -5777,8 +6022,56 @@ function getRandomThemeAutoColor() {
 // * ALBUM ART COLOR GENERATOR * //
 ///////////////////////////////////
 /**
- * @param {GdiBitmap} image
- * @param {number} maxColorsToPull
+ * Creates the color objects.
+ * @param {number} color The primary color.
+ * @param {number=} color2 The secondary color.
+ */
+function createThemeColorObject(color, color2) {
+	if (color2 === undefined) color2 = color;
+	const themeObj = {
+		primary: color.val,
+		primary_alt: color2.val,
+		darkAccent: ShadeColor(color.val, 30),
+		darkAccent_alt: ShadeColor(color2.val, 30),
+		accent: ShadeColor(color.val, 15),
+		accent_alt: ShadeColor(color2.val, 15),
+		lightAccent: TintColor(color.val, 20),
+		lightAccent_alt: TintColor(color2.val, 20)
+	};
+	if (color.brightness < 18) {
+		// Hard code these values otherwise darkAccent and accent can be very hard to see on background
+		themeObj.darkAccent = RGB(32, 32, 32);
+		themeObj.darkAccent_alt = RGB(32, 32, 32);
+		themeObj.accent = RGB(56, 56, 56);
+		themeObj.accent_alt = RGB(56, 56, 56);
+		themeObj.lightAccent = RGB(78, 78, 78);
+		themeObj.lightAccent_alt = RGB(78, 78, 78);
+	}
+	else if (color.brightness < 40) {
+		themeObj.darkAccent = ShadeColor(color.val, 35);
+		themeObj.darkAccent_alt = ShadeColor(color2.val, 35);
+		themeObj.accent = TintColor(color.val, 10);
+		themeObj.accent_alt = TintColor(color2.val, 10);
+		themeObj.lightAccent = TintColor(color.val, 20);
+		themeObj.lightAccent_alt = TintColor(color2.val, 20);
+	}
+	else if (color.brightness > 210) {
+		themeObj.darkAccent = ShadeColor(color.val, 30);
+		themeObj.darkAccent_alt = ShadeColor(color2.val, 30);
+		themeObj.accent = ShadeColor(color.val, 20);
+		themeObj.accent_alt = ShadeColor(color2.val, 20);
+		themeObj.lightAccent = ShadeColor(color.val, 10);
+		themeObj.lightAccent_alt = ShadeColor(color2.val, 10);
+	}
+	return themeObj;
+}
+
+
+/**
+ * Extracts the primary and optional secondary color from an image.
+ * @param {GdiBitmap} image The image to extract the colors from.
+ * @param {number} maxColorsToPull The max number of colors in the palette.
+ * @param {number=} secondaryColor The secondary picked color, used in Reborn fusion.
  */
 function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 	const minFrequency = 0.015;
@@ -5802,15 +6095,14 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 
 		colorsWeighted.forEach((c, i) => {
 			const col = c.col;
-			const randomMinMaxNum = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 			const midBrightness = 127 - Math.abs(127 - col.brightness); // Favors colors with a brightness around 127
-			const midBrightness2 = randomMinMaxNum(60, 120) - Math.abs(randomMinMaxNum(60, 120) - col.brightness); // Favors colors with a random brightness from 60 - 120
+			const midBrightness2 = RandomMinMax(60, 120) - Math.abs(RandomMinMax(60, 120) - col.brightness); // Favors colors with a random brightness from 60 - 120
 			c.weight = c.freq * midBrightness * 10; // Multiply by 10 so numbers are easier to compare
 			c.weight2 = c.freq * midBrightness2 * 10; // Multiply by 10 so numbers are easier to compare
 
 			if (c.freq >= minFrequency && !col.isCloseToGreyscale && col.brightness < maxBrightness) {
 				if (settings.showThemeLog) {
-					console.log(leftPad(i, 2), col.getRGB(true, true), leftPad(col.brightness, 4), ' ', `${leftPad((c.freq * 100).toFixed(2), 5)}%`, leftPad(c.weight.toFixed(2), 7));
+					console.log(LeftPad(i, 2), col.getRGB(true, true), LeftPad(col.brightness, 4), ' ', `${LeftPad((c.freq * 100).toFixed(2), 5)}%`, LeftPad(c.weight.toFixed(2), 7));
 				}
 				if (c.weight > maxWeight) {
 					maxWeight = c.weight;
@@ -5822,7 +6114,7 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 				}
 			}
 			else if (settings.showThemeLog) {
-				console.log(' -', col.getRGB(true, true), leftPad(col.brightness, 4), ' ', `${leftPad((c.freq * 100).toFixed(2), 5)}%`, col.isCloseToGreyscale ? '   grey' : (c.freq < minFrequency) ? '   freq' : ' bright');
+				console.log(' -', col.getRGB(true, true), LeftPad(col.brightness, 4), ' ', `${LeftPad((c.freq * 100).toFixed(2), 5)}%`, col.isCloseToGreyscale ? '   grey' : (c.freq < minFrequency) ? '   freq' : ' bright');
 			}
 		});
 
@@ -5875,6 +6167,10 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 }
 
 
+/**
+ * Sets the primary or secondary color from the value of getThemeColorsJson or from the custom GR-tag.
+ * @param {GdiBitmap} image The image from which the colors will be picked.
+ */
 async function getThemeColors(image) {
 	let calculatedColor;
 	let calculatedColor2;
@@ -5896,14 +6192,14 @@ async function getThemeColors(image) {
 		let color2 = new Color(calculatedColor2);
 
 		while (pref.theme !== 'black' && color.brightness > 220) {
-			calculatedColor = shadeColor(calculatedColor, pref.theme === 'white' ? 12 : 3);
-			if (settings.showThemeLog) console.log(' >> Shading: ', colToRgb(calculatedColor), ' - brightness: ', color.brightness);
+			calculatedColor = ShadeColor(calculatedColor, pref.theme === 'white' ? 12 : 3);
+			if (settings.showThemeLog) console.log(' >> Shading: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
 			color = new Color(calculatedColor);
 			color2 = new Color(calculatedColor2);
 		}
 		while (!color.isGreyscale && color.brightness <= 17) {
-			calculatedColor = tintColor(calculatedColor, 3);
-			if (settings.showThemeLog) console.log(' >> Tinting: ', colToRgb(calculatedColor), ' - brightness: ', color.brightness);
+			calculatedColor = TintColor(calculatedColor, 3);
+			if (settings.showThemeLog) console.log(' >> Tinting: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
 			color = new Color(calculatedColor);
 			color2 = new Color(calculatedColor2);
 		}
@@ -5919,45 +6215,4 @@ async function getThemeColors(image) {
 		if (settings.showThemeLog) console.log('Primary color brightness:', color.brightness);
 		if (settings.showThemeLog) console.log('Primary color 2 brightness:', color2.brightness);
 	}
-}
-
-
-function createThemeColorObject(color, color2) {
-	if (color2 === undefined) color2 = color;
-	const themeObj = {
-		primary: color.val,
-		primary_alt: color2.val,
-		darkAccent: shadeColor(color.val, 30),
-		darkAccent_alt: shadeColor(color2.val, 30),
-		accent: shadeColor(color.val, 15),
-		accent_alt: shadeColor(color2.val, 15),
-		lightAccent: tintColor(color.val, 20),
-		lightAccent_alt: tintColor(color2.val, 20)
-	};
-	if (color.brightness < 18) {
-		// Hard code these values otherwise darkAccent and accent can be very hard to see on background
-		themeObj.darkAccent = RGB(32, 32, 32);
-		themeObj.darkAccent_alt = RGB(32, 32, 32);
-		themeObj.accent = RGB(56, 56, 56);
-		themeObj.accent_alt = RGB(56, 56, 56);
-		themeObj.lightAccent = RGB(78, 78, 78);
-		themeObj.lightAccent_alt = RGB(78, 78, 78);
-	}
-	else if (color.brightness < 40) {
-		themeObj.darkAccent = shadeColor(color.val, 35);
-		themeObj.darkAccent_alt = shadeColor(color2.val, 35);
-		themeObj.accent = tintColor(color.val, 10);
-		themeObj.accent_alt = tintColor(color2.val, 10);
-		themeObj.lightAccent = tintColor(color.val, 20);
-		themeObj.lightAccent_alt = tintColor(color2.val, 20);
-	}
-	else if (color.brightness > 210) {
-		themeObj.darkAccent = shadeColor(color.val, 30);
-		themeObj.darkAccent_alt = shadeColor(color2.val, 30);
-		themeObj.accent = shadeColor(color.val, 20);
-		themeObj.accent_alt = shadeColor(color2.val, 20);
-		themeObj.lightAccent = shadeColor(color.val, 10);
-		themeObj.lightAccent_alt = shadeColor(color2.val, 10);
-	}
-	return themeObj;
 }

@@ -6,8 +6,100 @@
 ## Updated to Biography v1.4.1
 <br>
 
-## Update v3.0 - June ??, 2023
+
+## Update v3.0 - August ??, 2023
 <br>
+
+
+## Update v3.0-RC2 - July ??, 2023
+### Added:
+- Implemented special unique feature to use custom theme, styles, preset for every album via custom gr-tags usage
+  * See in the FAQ under Customization section: "How can I set custom theme, styles, preset for music albums?"
+- Implemented auto-write of theme tags to music files via Playlist/Library's context menu
+- Added new theme sandbox mode via top menu Options > Settings > Theme sandbox
+  * This mode is useful when trying out themes, styles, presets or writing theme tags.
+    After disabling the theme sandbox mode, previously used theme settings can be restored.
+- Added support for multi-artist hyperlinks in the playlist header
+- Added new lyrics options based on new lyrics code
+  * Top menu Options > Lyrics > Display > Show drop shadow
+  * Top menu Options > Lyrics > Display > Show fade scroll
+  * Top menu Options > Lyrics > Scroll speed
+- Added foo_cuefixer to the official Georgia-ReBORN user-components
+
+### Changed:
+- Removed library auto thumbnail size setting from library full preset
+  * You can manually change thumbnail size when using the library layout full preset
+- Moved lyric options "Remember active lyrics state" and "Remember lyrics panel state"
+  to Top menu Options > Lyrics > Controls
+
+### Improved:
+#### Main:
+  * Rewritten lyrics code based on WilB's with improved changes - thx @Wil-B =)
+  * Improved main UI black and white text color change on gradiented background when using gradient styles
+  * Improved behavior of the theme preset style indicator
+  * Big cleanup with improved code structure
+    * Separated all functions ( Main, Playlist, Library and Biography ) from all callbacks and put them
+      into a new file ( gr-main-functions.js )
+    * Reordered and cleaned main functions ( Main, Details, Playlist, Library and Biography )
+    * Reordered and cleaned gr-callbacks
+    * Added missing descriptions
+#### Playlist:
+  * Improved playlist smooth drag scroll when reordering items
+  * Improved playlist scroll performance when using the default auto-hide scrollbar feature
+  * Improved playlist drag line color according to themes
+#### Library & Biography:
+  * Restored last library view mode from library split layout when not using the library full layout preset
+  * Refactored library and biography layout switcher
+#### Misc:
+  * Improved Reborn theme lyrics text color in Biography and Lyrics panel when background is light/similar color
+  * Full code documentation and huge cleanup
+
+### Removed:
+- Removed now obsolete option "Remember album art view" in Options > Library > Layout
+  * Used when not using the library layout full preset, using album art view and switching
+    between library normal to full layout. It now works without the need to activate that setting.
+
+### Fixed:
+#### Fixed - Main:
+  * Fixed Details heavy performance issue
+  * Fixed Details release country flag size and position on multi-lines
+  * Fixed metadata grid text color switch on some bg colors when using alternative styles
+  * Fixed Reborn theme & Reborn fusion style colors when background is too light or too dark
+  * Fixed crash when using theme backup & restore for old fb2k versions
+  * Fixed crash when applying the theme performance presets and saving to config
+  * Fixed rare crash when topMenu was not properly initialized
+  * Fixed jump search when CTRL key is pressed ( should not be activated )
+  * Fixed seekbar issue on mouse wheel playback seeking
+  * Fixed peakmeter bar tooltip repaint issue
+  * Fixed crash when using playlist header collapse features and playlist group header is deactivated
+  * Fixed behavior of the theme preset style indicator
+  * Fixed clearing auto random preset timer when switching back to non-timed settings
+  * Fixed cosmetic logo issue on foobar startup/reload sometimes not updating to the active theme
+  * Fixed DTS codec logo display issue in the metadata grid
+  * Fixed cycling through next lyrics sources
+  * Fixed correct description of values for custom themes and add missing reborn fusion styles description
+    in the georgia-reborn-config.jsonc
+#### Fixed - Playlist:
+  * Fixed playlist crash when updating selection and no items exist
+  * Fixed playlist history crash when it is not properly initialized
+  * Fixed playlist hyperlink show now playing crash when handle is not ready
+  * Fixed playlist hyperlink label issue
+  * Fixed playlist info text being hidden when no genre exist
+  * Fixed playlist scrollbar dragging issue in split layout when clicking outside the playlist
+  * Fixed playlist bottom drag scroll when playlist headers are collapsed
+  * Fixed missing side marker color for Cream theme when using playlist collapsed headers
+#### Fixed - Library:
+  * Fixed library unnecessary album art/tree initialization
+  * Fixed library album art/tree view issue when not using the library full preset
+  * Fixed library split presets where not properly updated
+  * Fixed library selection color when using custom themes and different album art label types
+  * Fixed rare library crash when initializing album art root image thumbnail
+  * Fixed other issues when using the library split layout
+
+### Updated:
+- Updated foo_playcount component to v3.1.5
+<br>
+
 
 ## First public release v3.0-RC1 - June 08, 2023
 ### Added:

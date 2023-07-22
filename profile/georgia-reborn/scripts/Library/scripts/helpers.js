@@ -24,7 +24,7 @@ class HelpersLib {
 		this.scale = this.getDpi();
 	}
 
-	// Methods
+	// * METHODS * //
 
 	average(arr) {
 		return arr.reduce((a, b) => a + b, 0) / arr.length;

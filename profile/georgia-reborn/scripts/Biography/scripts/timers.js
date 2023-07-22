@@ -9,7 +9,7 @@ class TimersBio {
 		this.times = [1000, 1000, 1000, 1000, 2000, 4000, 5000, 6000, 7000];
 	}
 
-	// Methods
+	// * METHODS * //
 
 	clear(timer) {
 		if (timer) clearTimeout(timer.id);

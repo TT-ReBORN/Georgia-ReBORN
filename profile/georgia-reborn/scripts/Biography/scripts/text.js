@@ -316,7 +316,7 @@ class Text {
 		this.loadReader();
 	}
 
-	// Methods
+	// * METHODS * //
 
 	add(items, text) {
 		items.forEach(v => text = text && v ? `${text}\r\n\r\n${v}` : text || v);
@@ -841,7 +841,7 @@ class Text {
 				this.bio.drawn = 0;
 				for (let i = b; i < f; i++) {
 					const item = this.bio.arr[i];
-					const item_y = item.h1 * i + item.y - art_scrollbar.delta + scaleForDisplay(2);
+					const item_y = item.h1 * i + item.y - art_scrollbar.delta + SCALE(2);
 					if (item_y < panelBio.style.max_y) {
 						this.bio.drawn++;
 						const iy = Math.round(item_y + uiBio.font.main_h / 2);
@@ -880,7 +880,7 @@ class Text {
 				this.rev.drawn = 0;
 				for (let i = b; i < f; i++) {
 					const item = this.rev.arr[i];
-					const item_y = item.h1 * i + item.y - alb_scrollbar.delta + scaleForDisplay(2);
+					const item_y = item.h1 * i + item.y - alb_scrollbar.delta + SCALE(2);
 					if (item_y < panelBio.style.max_y) {
 						this.rev.drawn++;
 						const iy = Math.round(item_y + uiBio.font.main_h / 2);

@@ -10,8 +10,11 @@ let panelBio = new PanelBio();
 let name = new Names();
 /** @type {ScrollbarBio} */
 let alb_scrollbar = new ScrollbarBio();
+/** @type {ScrollbarBio} */
 let art_scrollbar = new ScrollbarBio();
+/** @type {ScrollbarBio} */
 let art_scroller = new ScrollbarBio();
+/** @type {ScrollbarBio} */
 let cov_scroller = new ScrollbarBio();
 /** @type {ButtonsBio} */
 let butBio = new ButtonsBio();

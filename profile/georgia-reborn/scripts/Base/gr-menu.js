@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-19                                          * //
+// * Last change:    2023-07-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,6 +16,11 @@
 /////////////////////
 // * RATING MENU * //
 /////////////////////
+/**
+ * Top menu > Rating.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ */
 function onRatingMenu(x, y) {
 	const handle = new FbMetadbHandleList();
 	const metadb = fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem(); if (!metadb) return;
@@ -52,9 +57,20 @@ function onRatingMenu(x, y) {
 }
 
 
-//////////////////////////
-// * TOP MENU OPTIONS * //
-//////////////////////////
+//////////////////
+// * TOP MENU * //
+//////////////////
+/**
+ * All top menus, also used to append menus in panel context menus.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {boolean} context_menu Appends panel related menus to the context menu.
+ * @param {boolean} playlist Appends main Playlist menu to the Playlist context menu.
+ * @param {boolean} details Appends main Details menu to the Details context menu.
+ * @param {boolean} library Appends main Library menu to the Library context menu.
+ * @param {boolean} biography Appends main Biography menu to the Biography context menu.
+ * @param {boolean} lyrics Appends main Lyrics menu to the Lyrics context menu.
+ */
 function onOptionsMenu(x, y, context_menu, playlist, details, library, biography, lyrics) {
 	activeMenu = true;
 	state.mouse_x = x;
@@ -111,6 +127,10 @@ function onOptionsMenu(x, y, context_menu, playlist, details, library, biography
 ///////////////////////
 // * THEME OPTIONS * //
 ///////////////////////
+/**
+ * Top menu > Options > Theme.
+ * @param {Menu} menu Creates the Theme menu via a new Menu instance.
+ */
 function themeOptions(menu) {
 	const themeMenu = new Menu('Theme');
 	themeMenu.addRadioItems(['White', 'Black', 'Reborn', 'Random'], pref.theme, ['white', 'black', 'reborn', 'random'], (theme) => {
@@ -147,7 +167,8 @@ function themeOptions(menu) {
 		customTheme07.name === '' ? 'Theme 07' : customTheme07.name,
 		customTheme08.name === '' ? 'Theme 08' : customTheme08.name,
 		customTheme09.name === '' ? 'Theme 09' : customTheme09.name,
-		customTheme10.name === '' ? 'Theme 10' : customTheme10.name];
+		customTheme10.name === '' ? 'Theme 10' : customTheme10.name
+	];
 
 	customThemeMenu.addRadioItems(customThemes, pref.theme, ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'], (theme) => {
 		if (!pref.themeSandbox) pref.savedTheme = pref.theme = theme; else pref.theme = theme;
@@ -204,6 +225,10 @@ function themeOptions(menu) {
 ///////////////////////
 // * STYLE OPTIONS * //
 ///////////////////////
+/**
+ * Top menu > Options > Style.
+ * @param {Menu} menu Creates the Style menu via a new Menu instance.
+ */
 function styleOptions(menu) {
 	const styleMenu = new Menu('Style');
 	themePresetIndicator = true;
@@ -394,6 +419,10 @@ function styleOptions(menu) {
 ////////////////////////
 // * PRESET OPTIONS * //
 ////////////////////////
+/**
+ * Top menu > Options > Preset.
+ * @param {Menu} menu Creates the Preset menu via a new Menu instance.
+ */
 function presetOptions(menu) {
 	const themePresetsMenu = new Menu('Preset');
 	const themePresetSelectModeMenu = new Menu('Select mode');
@@ -722,42 +751,46 @@ function presetOptions(menu) {
 /////////////////////////////
 // * PLAYER SIZE OPTIONS * //
 /////////////////////////////
+/**
+ * Top menu > Options > Player size.
+ * @param {Menu} menu Creates the Player size menu via a new Menu instance.
+ */
 function playerSizeOptions(menu) {
 	menu.createRadioSubMenu('Player size', ['Small', 'Normal', 'Large'], pref.playerSize, ['small', 'normal', 'large'], (size) => {
 		pref.playerSize = size;
 		resetPlayerSize();
 		if (size === 'small') {
-			if (!is_4k && !is_QHD) {
+			if (!RES_4K && !RES_QHD) {
 				pref.playerSize_HD_small = true;
 				windowHandler.playerSize_HD_small();
-			} else if (is_QHD) {
+			} else if (RES_QHD) {
 				pref.playerSize_QHD_small = true;
 				windowHandler.playerSize_QHD_small();
-			} else if (is_4k) {
+			} else if (RES_4K) {
 				pref.playerSize_4k_small = true;
 				windowHandler.playerSize_4k_small();
 			}
 		}
 		if (size === 'normal') {
-			if (!is_4k && !is_QHD) {
+			if (!RES_4K && !RES_QHD) {
 				pref.playerSize_HD_normal = true;
 				windowHandler.playerSize_HD_normal();
-			} else if (is_QHD) {
+			} else if (RES_QHD) {
 				pref.playerSize_QHD_normal = true;
 				windowHandler.playerSize_QHD_normal();
-			} else if (is_4k) {
+			} else if (RES_4K) {
 				pref.playerSize_4k_normal = true;
 				windowHandler.playerSize_4k_normal();
 			}
 		}
 		if (size === 'large') {
-			if (!is_4k && !is_QHD) {
+			if (!RES_4K && !RES_QHD) {
 				pref.playerSize_HD_large = true;
 				windowHandler.playerSize_HD_large();
-			} else if (is_QHD) {
+			} else if (RES_QHD) {
 				pref.playerSize_QHD_large = true;
 				windowHandler.playerSize_QHD_large();
-			} else if (is_4k) {
+			} else if (RES_4K) {
 				pref.playerSize_4k_large = true;
 				windowHandler.playerSize_4k_large();
 			}
@@ -770,6 +803,10 @@ function playerSizeOptions(menu) {
 ////////////////////////
 // * LAYOUT OPTIONS * //
 ////////////////////////
+/**
+ * Top menu > Options > Layout.
+ * @param {Menu} menu Creates the Layout menu via a new Menu instance.
+ */
 function layoutOptions(menu) {
 	menu.createRadioSubMenu('Layout', ['Default', 'Artwork', 'Compact'], pref.layout, ['default', 'artwork', 'compact'], (layout) => {
 		pref.layout = layout;
@@ -801,6 +838,10 @@ function layoutOptions(menu) {
 /////////////////////////
 // * DISPLAY OPTIONS * //
 /////////////////////////
+/**
+ * Top menu > Options > Display.
+ * @param {Menu} menu Creates the Display menu via a new Menu instance.
+ */
 function displayOptions(menu) {
 	const displayResMenu = new Menu('Display');
 
@@ -832,6 +873,10 @@ function displayOptions(menu) {
 ////////////////////////////
 // * BRIGHTNESS OPTIONS * //
 ////////////////////////////
+/**
+ * Top menu > Options > Brightness.
+ * @param {Menu} menu Creates the Brightness menu via a new Menu instance.
+ */
 function brightnessOptions(menu) {
 	menu.createRadioSubMenu('Brightness', ['-25%', '-20%', '-15%', '-10%', '-5%', 'Default', '+5%', '+10%', '+15%', '+20%', '+25%'], pref.themeBrightness, [-25, -20, -15, -10, -5, 'default', 5, 10, 15, 20, 25], (percent) => {
 		if (!pref.themeSandbox) pref.savedThemeBrightness = pref.themeBrightness = percent; else pref.themeBrightness = percent;
@@ -844,6 +889,10 @@ function brightnessOptions(menu) {
 ///////////////////////////
 // * FONT SIZE OPTIONS * //
 ///////////////////////////
+/**
+ * Top menu > Options > Font size.
+ * @param {Menu} menu Creates the Font size menu via a new Menu instance.
+ */
 function fontSizeOptions(menu) {
 	const menuFontSize           = pref.layout === 'compact' ? pref.menuFontSize_compact           : pref.layout === 'artwork' ? pref.menuFontSize_artwork         : pref.menuFontSize_default;
 	const lowerBarFontSize       = pref.layout === 'compact' ? pref.lowerBarFontSize_compact       : pref.layout === 'artwork' ? pref.lowerBarFontSize_artwork     : pref.lowerBarFontSize_default;
@@ -867,7 +916,7 @@ function fontSizeOptions(menu) {
 	const mainFontSizeMenu = new Menu('Main');
 
 	// * MAIN - TOP MENU * //
-	mainFontSizeMenu.createRadioSubMenu('Top menu', ['  8px', '10px', '11px', is_QHD ? '12px' : '12px (default)', '13px', is_QHD ? '14px (default)' : '14px', '16px'], menuFontSize, [8, 10, 11, 12, 13, 14, 16], (size) => {
+	mainFontSizeMenu.createRadioSubMenu('Top menu', ['  8px', '10px', '11px', RES_QHD ? '12px' : '12px (default)', '13px', RES_QHD ? '14px (default)' : '14px', '16px'], menuFontSize, [8, 10, 11, 12, 13, 14, 16], (size) => {
 		if (pref.layout === 'default') {
 			pref.menuFontSize_default = size;
 		}
@@ -877,17 +926,15 @@ function fontSizeOptions(menu) {
 		else if (pref.layout === 'compact') {
 			pref.menuFontSize_compact = size;
 		}
-		ft.top_menu         = gdi.Font(fontTopMenu, scaleForDisplay(size), 0);
-		ft.top_menu_caption = gdi.Font(fontTopMenuCaption, scaleForDisplay(size + 1), 0);
-		ft.top_menu_compact = gdi.Font(fontAwesome, scaleForDisplay(size), 0);
+		createFonts();
 		createButtonImages();
 		createButtonObjects(ww, wh);
 		window.Repaint();
 	});
 
 	// * MAIN - LOWER BAR * //
-	mainFontSizeMenu.createRadioSubMenu('Lower bar', pref.layout !== 'default' ? ['10px', '12px', '14px', is_QHD ? '16px' : '16px (default)', is_QHD ? '18px (default)' : '18px', '20px', '22px', '24px', '26px'] :
-		['10px', '12px', '14px', '16px', is_QHD ? '18px' : '18px (default)', is_QHD ? '20px (default)' : '20px', '22px', '24px', '26px'], lowerBarFontSize, [10, 12, 14, 16, 18, 20, 22, 24, 26], (size) => {
+	mainFontSizeMenu.createRadioSubMenu('Lower bar', pref.layout !== 'default' ? ['10px', '12px', '14px', RES_QHD ? '16px' : '16px (default)', RES_QHD ? '18px (default)' : '18px', '20px', '22px', '24px', '26px'] :
+		['10px', '12px', '14px', '16px', RES_QHD ? '18px' : '18px (default)', RES_QHD ? '20px (default)' : '20px', '22px', '24px', '26px'], lowerBarFontSize, [10, 12, 14, 16, 18, 20, 22, 24, 26], (size) => {
 		if (pref.layout === 'default') {
 			pref.lowerBarFontSize_default = size;
 		}
@@ -905,7 +952,7 @@ function fontSizeOptions(menu) {
 	mainFontSizeMenu.appendTo(changeFontSizeMenu);
 
 	// * MAIN - NOTIFICATION * //
-	mainFontSizeMenu.createRadioSubMenu('Notification', ['12px', '14px', '16px', is_QHD ? '18px' : '18px (default)', is_QHD ? '20px (default)' : '20px', '22px', '24px'], notificationFontSize,
+	mainFontSizeMenu.createRadioSubMenu('Notification', ['12px', '14px', '16px', RES_QHD ? '18px' : '18px (default)', RES_QHD ? '20px (default)' : '20px', '22px', '24px'], notificationFontSize,
 		[12, 14, 16, 18, 20, 22, 24], (size) => {
 		if      (pref.layout === 'default') { pref.notificationFontSize_default = size; }
 		else if (pref.layout === 'artwork') { pref.notificationFontSize_artwork = size; }
@@ -916,7 +963,7 @@ function fontSizeOptions(menu) {
 	});
 
 	// * MAIN - POPUP * //
-	mainFontSizeMenu.createRadioSubMenu('Popup', ['12px', '14px', is_QHD ? '16px' : '16px (default)', is_QHD ? '18px (default)' : '18px', '20px', '22px', '24px'], popupFontSize,
+	mainFontSizeMenu.createRadioSubMenu('Popup', ['12px', '14px', RES_QHD ? '16px' : '16px (default)', RES_QHD ? '18px (default)' : '18px', '20px', '22px', '24px'], popupFontSize,
 		[12, 14, 16, 18, 20, 22, 24], (size) => {
 		if      (pref.layout === 'default') { pref.popupFontSize_default = size; }
 		else if (pref.layout === 'artwork') { pref.popupFontSize_artwork = size; }
@@ -929,7 +976,7 @@ function fontSizeOptions(menu) {
 	});
 
 	// * MAIN - TOOLTIP * //
-	mainFontSizeMenu.createRadioSubMenu('Tooltip', ['12px', '14px', is_QHD ? '16px' : '16px (default)', is_QHD ? '18px (default)' : '18px', '20px', '22px', '24px'], tooltipFontSize,
+	mainFontSizeMenu.createRadioSubMenu('Tooltip', ['12px', '14px', RES_QHD ? '16px' : '16px (default)', RES_QHD ? '18px (default)' : '18px', '20px', '22px', '24px'], tooltipFontSize,
 		[12, 14, 16, 18, 20, 22, 24], (size) => {
 		if      (pref.layout === 'default') { pref.tooltipFontSize_default = size; }
 		else if (pref.layout === 'artwork') { pref.tooltipFontSize_artwork = size; }
@@ -941,7 +988,7 @@ function fontSizeOptions(menu) {
 
 	// * DETAILS - ARTIST * //
 	const detailsFontSizeMenu = new Menu('Details');
-	detailsFontSizeMenu.createRadioSubMenu('Artist', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', is_QHD ? '18px' : '18px (default)', '19px', is_QHD ? '20px (default)' : '20px', '22px', '24px'], gridArtistFontSize,
+	detailsFontSizeMenu.createRadioSubMenu('Artist', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', RES_QHD ? '18px' : '18px (default)', '19px', RES_QHD ? '20px (default)' : '20px', '22px', '24px'], gridArtistFontSize,
 		[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
 		if (pref.layout === 'default') {
 			pref.gridArtistFontSize_default = size;
@@ -949,13 +996,12 @@ function fontSizeOptions(menu) {
 		else if (pref.layout === 'artwork') {
 			pref.gridArtistFontSize_artwork = size;
 		}
-		ft.grd_artist = gdi.Font(fontGridArtist, scaleForDisplay(size), 0);
 		createFonts();
 		window.Repaint();
 	});
 
 	// * DETAILS - TITLE * //
-	detailsFontSizeMenu.createRadioSubMenu('Title', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', is_QHD ? '18px' : '18px (default)', '19px', is_QHD ? '20px (default)' : '20px', '22px', '24px'], gridTrackNumFontSize && gridTitleFontSize,
+	detailsFontSizeMenu.createRadioSubMenu('Title', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', RES_QHD ? '18px' : '18px (default)', '19px', RES_QHD ? '20px (default)' : '20px', '22px', '24px'], gridTrackNumFontSize && gridTitleFontSize,
 		[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
 		if (pref.layout === 'default') {
 			pref.gridTrackNumFontSize_default = size;
@@ -965,15 +1011,12 @@ function fontSizeOptions(menu) {
 			pref.gridTrackNumFontSize_artwork = size;
 			pref.gridTitleFontSize_artwork = size;
 		}
-		const artistTitle = pref.showGridArtist_default && pref.showGridTitle_default || pref.showGridArtist_artwork && pref.showGridTitle_artwork;
-		ft.grd_tracknum   = gdi.Font(artistTitle ? fontGridTitle : fontGridTitleBold, scaleForDisplay(size), 0);
-		ft.grd_title      = gdi.Font(artistTitle ? fontGridTitle : fontGridTitleBold, scaleForDisplay(size), 0);
 		createFonts();
 		window.Repaint();
 	});
 
 	// * DETAILS - ALBUM * //
-	detailsFontSizeMenu.createRadioSubMenu('Album', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', is_QHD ? '18px' : '18px (default)', '19px', is_QHD ? '20px (default)' : '20px', '22px', '24px'], gridAlbumFontSize,
+	detailsFontSizeMenu.createRadioSubMenu('Album', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', RES_QHD ? '18px' : '18px (default)', '19px', RES_QHD ? '20px (default)' : '20px', '22px', '24px'], gridAlbumFontSize,
 		[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
 		if (pref.layout === 'default') {
 			pref.gridAlbumFontSize_default = size;
@@ -981,13 +1024,12 @@ function fontSizeOptions(menu) {
 		else if (pref.layout === 'artwork') {
 			pref.gridAlbumFontSize_artwork = size;
 		}
-		ft.grd_album = gdi.Font(fontGridAlbum, scaleForDisplay(size), 0);
 		createFonts();
 		window.Repaint();
 	});
 
 	// * DETAILS - TAG NAME * //
-	detailsFontSizeMenu.createRadioSubMenu('Tag name', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', is_QHD ? '17px' : '17px (default)', '18px', is_QHD ? '19px (default)' : '19px', '20px', '22px', '24px'], gridKeyFontSize,
+	detailsFontSizeMenu.createRadioSubMenu('Tag name', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', RES_QHD ? '17px' : '17px (default)', '18px', RES_QHD ? '19px (default)' : '19px', '20px', '22px', '24px'], gridKeyFontSize,
 		[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
 		if (pref.layout === 'default') {
 			pref.gridKeyFontSize_default = size;
@@ -995,13 +1037,12 @@ function fontSizeOptions(menu) {
 		else if (pref.layout === 'artwork') {
 			pref.gridKeyFontSize_artwork = size;
 		}
-		ft.grd_key = gdi.Font(fontGridKey, scaleForDisplay(size), 0);
 		createFonts();
 		window.Repaint();
 	});
 
 	// * DETAILS - TAG VALUE * //
-	detailsFontSizeMenu.createRadioSubMenu('Tag value', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', is_QHD ? '17px' : '17px (default)', '18px', is_QHD ? '19px (default)' : '19px', '20px', '22px', '24px'], gridValueFontSize,
+	detailsFontSizeMenu.createRadioSubMenu('Tag value', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', RES_QHD ? '17px' : '17px (default)', '18px', RES_QHD ? '19px (default)' : '19px', '20px', '22px', '24px'], gridValueFontSize,
 		[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
 		if (pref.layout === 'default') {
 			pref.gridValueFontSize_default = size;
@@ -1009,7 +1050,6 @@ function fontSizeOptions(menu) {
 		else if (pref.layout === 'artwork') {
 			pref.gridValueFontSize_artwork = size;
 		}
-		ft.grd_val = gdi.Font(fontGridValue, scaleForDisplay(size), 0);
 		createFonts();
 		window.Repaint();
 	});
@@ -1017,10 +1057,10 @@ function fontSizeOptions(menu) {
 
 	// * PLAYLIST * //
 	changeFontSizeMenu.createRadioSubMenu('Playlist', pref.layout === 'default' ?
-		is_QHD ? ['-1', '10px', '12px', '13px', '14px', '15px', '16px', '17px (default)', '18px', '20px', '22px', '+1'] : ['-1', '10px', '12px', '13px', '14px', '15px (default)', '16px', '18px', '20px', '22px', '+1'] :
-		is_QHD ? ['10px', '12px', '13px', '14px', '15px', '16px', '17px (default)', '18px'] : ['10px', '12px', '13px', '14px', '15px (default)', '16px', '18px'], playlistHeaderFontSize, pref.layout === 'default' ?
-		is_QHD ? [-1, 10, 12, 13, 14, 15, 16, 17, 18, 20, 22, 999] : [-1, 10, 12, 13, 14, 15, 16, 18, 20, 22, 999] :
-		is_QHD ? [10, 12, 13, 14, 15, 16, 17, 18] : [10, 12, 13, 14, 15, 16, 18], (size) => {
+		RES_QHD ? ['-1', '10px', '12px', '13px', '14px', '15px', '16px', '17px (default)', '18px', '20px', '22px', '+1'] : ['-1', '10px', '12px', '13px', '14px', '15px (default)', '16px', '18px', '20px', '22px', '+1'] :
+		RES_QHD ? ['10px', '12px', '13px', '14px', '15px', '16px', '17px (default)', '18px'] : ['10px', '12px', '13px', '14px', '15px (default)', '16px', '18px'], playlistHeaderFontSize, pref.layout === 'default' ?
+		RES_QHD ? [-1, 10, 12, 13, 14, 15, 16, 17, 18, 20, 22, 999] : [-1, 10, 12, 13, 14, 15, 16, 18, 20, 22, 999] :
+		RES_QHD ? [10, 12, 13, 14, 15, 16, 17, 18] : [10, 12, 13, 14, 15, 16, 18], (size) => {
 		if (size === -1) {
 			if      (pref.layout === 'default') { pref.playlistHeaderFontSize_default--; pref.playlistFontSize_default--; }
 			else if (pref.layout === 'artwork') { pref.playlistHeaderFontSize_artwork--; pref.playlistFontSize_artwork--; }
@@ -1055,8 +1095,8 @@ function fontSizeOptions(menu) {
 	});
 
 	// * LIBRARY * //
-	changeFontSizeMenu.createRadioSubMenu('Library', ['-1', '  8px', '10px', '11px', is_QHD ? '12px' : '12px (default)', '13px', is_QHD ? '14px (default)' : '14px', '16px', '18px', '+1'], libraryFontSize,
-		[-1, is_4k ? 8 * 1.5 : 8, is_4k ? 10 * 1.5 : 10, is_4k ? 11 * 1.5 : 11, is_4k ? 12 * 1.5 : 12, is_4k ? 13 * 1.5 : 13, is_4k ? 14 * 1.5 : 14, is_4k ? 16 * 1.5 : 16, is_4k ? 18 * 1.5 : 18, 999], (size) => {
+	changeFontSizeMenu.createRadioSubMenu('Library', ['-1', '  8px', '10px', '11px', RES_QHD ? '12px' : '12px (default)', '13px', RES_QHD ? '14px (default)' : '14px', '16px', '18px', '+1'], libraryFontSize,
+		[-1, RES_4K ? 8 * 1.5 : 8, RES_4K ? 10 * 1.5 : 10, RES_4K ? 11 * 1.5 : 11, RES_4K ? 12 * 1.5 : 12, RES_4K ? 13 * 1.5 : 13, RES_4K ? 14 * 1.5 : 14, RES_4K ? 16 * 1.5 : 16, RES_4K ? 18 * 1.5 : 18, 999], (size) => {
 		if (size === -1) {
 			if      (pref.layout === 'default') { ppt.baseFontSize_default--; }
 			else if (pref.layout === 'artwork') { ppt.baseFontSize_artwork--; }
@@ -1075,8 +1115,8 @@ function fontSizeOptions(menu) {
 	});
 
 	// * BIOGRAPHY * //
-	changeFontSizeMenu.createRadioSubMenu('Biography', ['-1', '  8px', '10px', '11px', is_QHD ? '12px' : '12px (default)', '13px', is_QHD ? '14px (default)' : '14px', '16px', '18px', '+1'], biographyFontSize,
-		[-1, is_4k ? 8 * 1.5 : 8, is_4k ? 10 * 2 : 10, is_4k ? 11 * 2 : 11, is_4k ? 12 * 2 : 12, is_4k ? 13 * 2 : 13, is_4k ? 14 * 2 : 14, is_4k ? 16 * 2 : 16, is_4k ? 18 * 2 : 18, 999], (size) => {
+	changeFontSizeMenu.createRadioSubMenu('Biography', ['-1', '  8px', '10px', '11px', RES_QHD ? '12px' : '12px (default)', '13px', RES_QHD ? '14px (default)' : '14px', '16px', '18px', '+1'], biographyFontSize,
+		[-1, RES_4K ? 8 * 1.5 : 8, RES_4K ? 10 * 2 : 10, RES_4K ? 11 * 2 : 11, RES_4K ? 12 * 2 : 12, RES_4K ? 13 * 2 : 13, RES_4K ? 14 * 2 : 14, RES_4K ? 16 * 2 : 16, RES_4K ? 18 * 2 : 18, 999], (size) => {
 		if (size === -1) {
 			if      (pref.layout === 'default') { pptBio.baseFontSizeBio_default--; }
 			else if (pref.layout === 'artwork') { pptBio.baseFontSizeBio_artwork--; }
@@ -1095,7 +1135,7 @@ function fontSizeOptions(menu) {
 	});
 
 	// * LYRICS * //
-	changeFontSizeMenu.createRadioSubMenu('Lyrics', ['-1', '10px', '12px', '14px', '16px', '18px', is_QHD ? '20px' : '20px (default)', is_QHD ? '22px (default)' : '22px', '24px', '26px', '28px', '30px', '+1'], lyricsFontSize,
+	changeFontSizeMenu.createRadioSubMenu('Lyrics', ['-1', '10px', '12px', '14px', '16px', '18px', RES_QHD ? '20px' : '20px (default)', RES_QHD ? '22px (default)' : '22px', '24px', '26px', '28px', '30px', '+1'], lyricsFontSize,
 		[-1, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 999], (size) => {
 		if (size === -1) {
 			if      (pref.layout === 'default') { pref.lyricsFontSize_default--; }
@@ -1122,7 +1162,11 @@ function fontSizeOptions(menu) {
 /////////////////////////////////
 // * PLAYER CONTROLS OPTIONS * //
 /////////////////////////////////
-function playerControlsOptions(menu, m) {
+/**
+ * Top menu > Options > Player controls.
+ * @param {Menu} menu Creates the Player controls menu via a new Menu instance.
+ */
+function playerControlsOptions(menu) {
 	const playerControlsMenu = new Menu('Player controls');
 
 	const playlistCallback = () => {
@@ -1410,12 +1454,6 @@ function playerControlsOptions(menu, m) {
 		} else {
 			pref.transportButtonSize_default = size;
 		}
-		ft.guifx                  = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_default /   2)),  0);
-		ft.playback_order_default = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_default / 1.6)),  0);
-		ft.playback_order_replay  = gdi.Font(fontAwesome, Math.floor(scaleForDisplay(pref.transportButtonSize_default /   2)),  0);
-		ft.playback_order_shuffle = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_default / 1.65)), 0);
-		ft.guifx_volume           = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_default / 1.33)), 0);
-		ft.guifx_reload           = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_default / 1.5)),  0);
 		createFonts();
 		createButtonImages();
 		createButtonObjects(ww, wh);
@@ -1433,12 +1471,6 @@ function playerControlsOptions(menu, m) {
 		} else {
 			pref.transportButtonSize_artwork = size;
 		}
-		ft.guifx                  = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_artwork /   2)),  0);
-		ft.playback_order_default = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_artwork / 1.6)),  0);
-		ft.playback_order_replay  = gdi.Font(fontAwesome, Math.floor(scaleForDisplay(pref.transportButtonSize_artwork /   2)),  0);
-		ft.playback_order_shuffle = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_artwork / 1.65)), 0);
-		ft.guifx_volume           = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_artwork / 1.33)), 0);
-		ft.guifx_reload           = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_artwork / 1.5)),  0);
 		createFonts();
 		createButtonImages();
 		createButtonObjects(ww, wh);
@@ -1456,12 +1488,6 @@ function playerControlsOptions(menu, m) {
 		} else {
 			pref.transportButtonSize_compact = size;
 		}
-		ft.guifx                  = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_compact /   2)),  0);
-		ft.playback_order_default = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_compact / 1.6)),  0);
-		ft.playback_order_replay  = gdi.Font(fontAwesome, Math.floor(scaleForDisplay(pref.transportButtonSize_compact /   2)),  0);
-		ft.playback_order_shuffle = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_compact / 1.65)), 0);
-		ft.guifx_volume           = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_compact / 1.33)), 0);
-		ft.guifx_reload           = gdi.Font(fontGuiFx,   Math.floor(scaleForDisplay(pref.transportButtonSize_compact / 1.5)),  0);
 		createFonts();
 		createButtonImages();
 		createButtonObjects(ww, wh);
@@ -1893,6 +1919,11 @@ function playerControlsOptions(menu, m) {
 //////////////////////////
 // * PLAYLIST OPTIONS * //
 //////////////////////////
+/**
+ * Top menu > Options > Playlist.
+ * @param {Menu} menu Creates the Playlist panel menu via a new Menu instance.
+ * @param {boolean} context_menu Appends Playlist panel options to context menu.
+ */
 function playlistOptions(menu, context_menu) {
 	const playlistMenu = context_menu ? menu : new Menu('Playlist');
 
@@ -2013,6 +2044,11 @@ function playlistOptions(menu, context_menu) {
 /////////////////////////
 // * DETAILS OPTIONS * //
 /////////////////////////
+/**
+ * Top menu > Options > Details.
+ * @param {Menu} menu Creates the Details panel menu via a new Menu instance.
+ * @param {boolean} context_menu Appends Details panel options to context menu.
+ */
 function detailsOptions(menu, context_menu) {
 	if (pref.layout === 'compact') return;
 	const detailsMenu = context_menu ? menu : new Menu('Details');
@@ -2067,7 +2103,7 @@ function detailsOptions(menu, context_menu) {
 		discArtMenu.addSeparator();
 		discArtMenu.addToggleItem('Spin disc art while songs play (increases memory and CPU)', pref, 'spinDiscArt', () => {
 			if (pref.spinDiscArt) {
-				setupRotationTimer();
+				setDiscArtRotationTimer();
 			} else {
 				clearInterval(discArtRotationTimer);
 				discArtArray = [];
@@ -2081,7 +2117,7 @@ function detailsOptions(menu, context_menu) {
 		}, !pref.spinDiscArt);
 		discArtMenu.createRadioSubMenu('Spinning disc art redraw speed', ['250ms (very slow CPU)', '200ms', '150ms', '125ms', '100ms', '  75ms (default)', '  50ms', '  40ms', '  30ms', '  20ms', '  10ms (very fast CPU)'], pref.spinDiscArtRedrawInterval, [250, 200, 150, 125, 100, 75, 50, 40, 30, 20, 10], interval => {
 			pref.spinDiscArtRedrawInterval = interval;
-			setupRotationTimer();
+			setDiscArtRotationTimer();
 		}, !pref.spinDiscArt);
 		discArtMenu.addSeparator();
 		discArtMenu.addToggleItem('Rotate disc art as tracks change', pref, 'rotateDiscArt', () => { repaintWindow(); }, !pref.displayDiscArt || pref.spinDiscArt);
@@ -2257,6 +2293,11 @@ function detailsOptions(menu, context_menu) {
 /////////////////////////
 // * LIBRARY OPTIONS * //
 /////////////////////////
+/**
+ * Top menu > Options > Library.
+ * @param {Menu} menu Creates the Library panel menu via a new Menu instance.
+ * @param {boolean} context_menu Appends Library options to context menu.
+ */
 function libraryOptions(menu, context_menu) {
 	if (pref.layout === 'compact') return;
 	const libraryMenu = context_menu ? menu : new Menu('Library');
@@ -2597,6 +2638,11 @@ function libraryOptions(menu, context_menu) {
 ///////////////////////////
 // * BIOGRAPHY OPTIONS * //
 ///////////////////////////
+/**
+ * Top menu > Options > Biography.
+ * @param {Menu} menu Creates the Biography panel menu via a new Menu instance.
+ * @param {boolean} context_menu Appends Biography panel options to context menu.
+ */
 function biographyOptions(menu, context_menu) {
 	if (pref.layout === 'compact') return;
 	const biographyMenu = context_menu ? menu : new Menu('Biography');
@@ -2863,6 +2909,11 @@ function biographyOptions(menu, context_menu) {
 ////////////////////////
 // * LYRICS OPTIONS * //
 ////////////////////////
+/**
+ * Top menu > Options > Lyrics.
+ * @param {Menu} menu Creates the Lyrics panel menu via a new Menu instance.
+ * @param {boolean} context_menu Appends Lyrics panel options to context menu.
+ */
 function lyricsOptions(menu, context_menu) {
 	if (pref.layout === 'compact') return;
 	const lyricsMenu = context_menu ? menu : new Menu('Lyrics');
@@ -2960,7 +3011,7 @@ function lyricsOptions(menu, context_menu) {
 			const nextSrc = () => fb.RunMainMenuCommand('View/ESLyric/Panels/Select lyric/Next lyric');
 			return () => {
 				lyricsSrc++;
-				repeatFunc(() => { nextSrc(); }, lyricsSrc);
+				RepeatFunc(() => { nextSrc(); }, lyricsSrc);
 				if (lyricsSrc > 9) lyricsSrc = 0;
 				return lyricsSrc;
 			};
@@ -2983,6 +3034,10 @@ function lyricsOptions(menu, context_menu) {
 //////////////////////////
 // * SETTINGS OPTIONS * //
 //////////////////////////
+/**
+ * Top menu > Options > Settings.
+ * @param {Menu} menu Creates the Settings menu via a new Menu instance.
+ */
 function settingsOptions(menu) {
 	const settingsMenu = new Menu('Settings');
 
@@ -3397,7 +3452,7 @@ function settingsOptions(menu) {
 			if (!confirmed) return;
 			const start = async () => {
 				await setThemeSettings(true);
-				await window.Reload();
+				//await window.Reload();
 			};
 			start();
 			console.log(`\n>>> Georgia-ReBORN theme settings have been successfully saved in ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc <<<\n\n`);
@@ -3446,12 +3501,23 @@ function settingsOptions(menu) {
 		}
 	});
 	themeConfigMenu.addSeparator();
-	themeConfigMenu.addItem('Edit configuration file', false, () => {
-		// runCmd(config.getPath()); // Not working in Wine/Linux
-		OpenExplorer(`explorer /select, "${config.getPath()}"`, false);
+	themeConfigMenu.addItem('Edit main configuration file', false, () => {
+		try {
+			OpenFile(`${config.getPath()}`);
+		} catch (e) {
+			OpenExplorer(`explorer /select, "${config.getPath()}"`, false);
+		}
 	});
-	themeConfigMenu.addItem('Reset configuration file', false, () => {
-		const msg = 'Do you want to reset the config file to default?\n\nThis will set all settings to default.\nYou should probably make a backup first.\n\nContinue?\n\n\n';
+	themeConfigMenu.addItem('Edit custom configuration file', false, () => {
+		try {
+			OpenFile(`${configCustom.getPath()}`);
+		} catch (e) {
+			OpenExplorer(`explorer /select, "${configCustom.getPath()}"`, false);
+		}
+	});
+	themeConfigMenu.addSeparator();
+	themeConfigMenu.addItem('Reset main configuration file', false, () => {
+		const msg = 'Do you want to reset the config file to default?\n\n!!! WARNING !!!\n\nThis will set all settings to default.\nYou should probably make a backup first.\n\nContinue?\n\n\n';
 		const continue_confirmation = (status, confirmed) => {
 			if (!confirmed) return;
 			try { // Needed to prevent crash when there is no config file
@@ -3460,6 +3526,22 @@ function settingsOptions(menu) {
 				setThemeSettings();
 				windowHandler.layoutDefault();
 				console.log(`\n>>> Georgia-ReBORN's ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc file has been successfully reset to default. <<<\n\n`);
+			} catch (e) { window.Reload(); }
+		};
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			continue_confirmation(false, 'Yes');
+		} else {
+			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
+		}
+	});
+	themeConfigMenu.addItem('Reset custom configuration file', false, () => {
+		const msg = 'Do you want to reset the custom config file to default?\n\n!!! WARNING !!!\n\nThis will delete and replace all custom themes\nto the default custom theme template.\nYou should definitely make a backup first.\n\nContinue?\n\n\n';
+		const continue_confirmation = (status, confirmed) => {
+			if (!confirmed) return;
+			try { // Needed to prevent crash when there is no config file
+				pref.customThemeSettings = false;
+				configCustom.resetConfiguration();
+				console.log(`\n>>> Georgia-ReBORN's ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc file has been successfully reset to default. <<<\n\n`);
 			} catch (e) { window.Reload(); }
 		};
 		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
@@ -3666,7 +3748,7 @@ function settingsOptions(menu) {
 					pref.spinDiscArt = true;
 					pref.spinDiscArtImageCount = 120;
 					pref.spinDiscArtRedrawInterval = 40;
-					setupRotationTimer();
+					setDiscArtRotationTimer();
 					pref.libraryLayout = 'full';
 					ppt.albumArtShow = true;
 					pref.biographyLayout = 'full';
@@ -3692,7 +3774,7 @@ function settingsOptions(menu) {
 					pref.spinDiscArt = true;
 					pref.spinDiscArtImageCount = 180;
 					pref.spinDiscArtRedrawInterval = 10;
-					setupRotationTimer();
+					setDiscArtRotationTimer();
 					pref.detailsAlbumArtDiscAreaOpacity = 178;
 					pref.libraryLayout = 'full';
 					ppt.albumArtShow = true;
@@ -3708,7 +3790,7 @@ function settingsOptions(menu) {
 			}
 		}
 
-		const msg = 'Do you want to change the theme performance?\n\nThese presets will change various theme settings!\nIt is recommended to save current theme settings\nto the config file. You should also make a backup\nof your playlists to be on the safe side!\n\n!!!WARNING!!!\n"High quality" and especially "Highest Quality"\ncan freeze foobar, depending how fast your CPU performs.\nIt does not matter if you are using a multi-core CPU,\nonly single-core CPU performance counts!\nIf your foobar is unresponsive, restart\nand change to a lighter preset.\n\nContinue?';
+		const msg = 'Do you want to change the theme performance?\n\nThese presets will change various theme settings!\nIt is recommended to save current theme settings\nto the config file. You should also make a backup\nof your playlists to be on the safe side!\n\n!!! WARNING !!!\n"High quality" and especially "Highest Quality"\ncan freeze foobar, depending how fast your CPU performs.\nIt does not matter if you are using a multi-core CPU,\nonly single-core CPU performance counts!\nIf your foobar is unresponsive, restart\nand change to a lighter preset.\n\nContinue?';
 		const continue_confirmation = (status, confirmed) => {
 			if (!confirmed) return;
 			pref.themePerformance = perf;
@@ -3760,6 +3842,10 @@ function settingsOptions(menu) {
 /////////////////////////////////
 // * DEVELOPER TOOLS OPTIONS * //
 /////////////////////////////////
+/**
+ * Top menu > Options > Developer tools.
+ * @param {Menu} menu Creates Developer tools menu via a new Menu instance.
+ */
 function developerToolsOptions(menu) {
 	if (!pref.devTools) return;
 	const debugMenu = new Menu('Developer tools');
@@ -3849,6 +3935,19 @@ function developerToolsOptions(menu) {
 ///////////////////
 // * INPUT BOX * //
 ///////////////////
+/**
+ * An input box that is used for various custom user settings.
+ * @param {string} option The parameter has following options:
+ * - 'renameCustomTheme' - renames the name of the custom theme.
+ * - 'playlistCustomHeaderInfo' - sets custom playlist header info via pattern.
+ * - 'playlistCustomTrackRow' - sets custom playlist track row via pattern.
+ * - 'playlistSortCustom' - sets custom playlist sort order via pattern.
+ * - 'customLibraryDir' - sets the custom Library cache directory.
+ * - 'customBiographyDir' - sets the custom Biography cache directory.
+ * - 'customLyricsDir' - sets the custom Lyrics cache directory.
+ * - 'customWaveformBarDir' - sets the custom Waveform bar cache directory.
+ * @return {*} The input box.
+ */
 function inputBox(option) {
 	const customTheme =
 		pref.theme === 'custom01' ? 'customTheme01' :

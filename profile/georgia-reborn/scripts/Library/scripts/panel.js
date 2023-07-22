@@ -114,7 +114,7 @@ class Panel {
 		this.getFields(ppt.viewBy, ppt.filterBy);
 	}
 
-	// Methods
+	// * METHODS * //
 
 	calcText() {
 		ui.style.topBarShow = ppt.filterShow || ppt.searchShow || ppt.settingsShow;
@@ -559,7 +559,7 @@ class Panel {
 		this.calcText();
 		this.ln.x = ppt.countsRight || ppt.itemShowStatistics || ppt.rowStripes || ppt.fullLineSelection || pop.inlineRoot ? 0 : ui.sz.marginSearch;
 		this.ln.w = ui.w - this.ln.x - 1;
-		this.search.h = ui.style.topBarShow ? ui.row.h + (!ui.id.local ? ln_sp * 2 + ui.sz.margin + scaleForDisplay(7) : 0) : ppt.marginTopBottom;
+		this.search.h = ui.style.topBarShow ? ui.row.h + (!ui.id.local ? ln_sp * 2 + ui.sz.margin + SCALE(7) : 0) : ppt.marginTopBottom;
 		this.search.sp = this.search.h - ln_sp;
 		let sp = ui.h - this.search.h - (ui.style.topBarShow ? ui.sz.margin / 2 : ppt.marginTopBottom);
 		this.rows = sp / ui.row.h;
@@ -576,7 +576,7 @@ class Panel {
 		const vertical = !ppt.albumArtFlowMode || ui.h - this.search.h > ui.w - ui.sbar.w;
 		switch (true) {
 			case !this.imgView || vertical: {
-				this.sbar_x = ui.x + ui.w - ui.sbar.sp - (is_4k ? 48 : 18);
+				this.sbar_x = ui.x + ui.w - ui.sbar.sp - (RES_4K ? 48 : 18);
 				const top_corr = [this.sbar_o - (ui.sbar.but_h - ui.sbar.but_w) / 2, this.sbar_o, 0][ui.sbar.type];
 				const bot_corr = [(ui.sbar.but_h - ui.sbar.but_w) / 2 - this.sbar_o, -this.sbar_o, 0][ui.sbar.type];
 				let sbar_y = ui.y + (ui.sbar.type < sbarStyle || ui.style.topBarShow ? this.search.sp + 1 : 0) + sbar_top + top_corr;

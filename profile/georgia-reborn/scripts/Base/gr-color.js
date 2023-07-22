@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-01-07                                          * //
+// * Last change:    2023-07-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,6 +16,21 @@
 //////////////////////////
 // * COLOR DEFINITION * //
 //////////////////////////
+/**
+ * The Color function is a constructor that creates a color object and initializes it with a given value.
+ *
+ * The value of the color can be in various formats such as:
+ * - RGB
+ * - HEX
+ * - HSL
+ * - HSV
+ * - INT
+ *
+ * The `Color` function is responsible for parsing this initial value and setting up event listeners for different color update events.
+ * @class
+ * @type {Function}
+ * @returns The parsed color.
+ */
 const Color = (() => {
 	const Events = {
 		RGB_UPDATED: 'RGBUpdated',
@@ -28,20 +43,40 @@ const Color = (() => {
 	};
 
 	// * Helpers
-	const absround = (number) => (0.5 + number) << 0;
+	/**
+	 * Rounds a number to the nearest integer using the "round half up" method.
+	 * @param {number} number The number that will be round to the nearest whole number (integer) using the absolute value method.
+	 */
+	const AbsRound = (number) => (0.5 + number) << 0;
 
-	const padZeroes = (num) => (`   ${num}`).substr(-3, 3);
+	/**
+	 * Takes a number as input and returns a string representation of that number with leading zeroes added if necessary.
+	 * @param {number} num The number that we want to pad with zeroes.
+	 */
+	const PadZeroes = (num) => (`   ${num}`).substr(-3, 3);
 
-	const hue2rgb = (a, b, c) => { // http://www.w3.org/TR/css3-color/#hsl-color
-		if (c < 0) c += 1;
-		if (c > 1) c -= 1;
+	/**
+	 * Converts a hue value to its corresponding RGB value.
+	 * http://www.w3.org/TR/css3-color/#hsl-color
+	 * @param {number} a The starting value of the color component (e.g., red, green, or blue) in the RGB color model.
+	 * @param {number} b The middle value in the range of colors. It is used to calculate the RGB value based on the given hue value.
+	 * @param {number} c The hue value in the HSL color model. It is a value between 0 and 1, where 0 represents red, 1/3 represents green, and 2/3 represents blue.
+	 * @returns {number} The specific value that is returned depends on the value of `c` and follows a series of conditional statements.
+	 */
+	const HUEtoRGB = (a, b, c) => {
+		if (c < 0) c++;
+		if (c > 1) c--;
 		if (c < 1 / 6) return a + (b - a) * 6 * c;
 		if (c < 1 / 2) return b;
 		if (c < 2 / 3) return a + (b - a) * (2 / 3 - c) * 6;
 		return a;
 	};
 
-	const p2v = (p) => isPercent.test(p) ? absround(parseInt(p) * 2.55) : parseInt(p);
+	/**
+	 * Converts a percentage value to a value between 0 and 255.
+	 * @param {number} p The percentage number.
+	 */
+	const PerToVal = (p) => isPercent.test(p) ? AbsRound(parseInt(p) * 2.55) : parseInt(p);
 
 	// * Patterns
 	const isHex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i;
@@ -57,10 +92,10 @@ const Color = (() => {
 
 	/**
 	 * Color instance - get, update and output a Color between structures.
-	 * @constructor
+	 * @class
 	 * @param {*} value Accepts any valid CSS color value e.g., #FF9900, RGB(255, 153, 0), RGBA(100%, 40%, 0%, 0.8);
 	 * a hash with properties mapped to the Color instance e.g., red, green, saturation, brightness;
-	 * another Color instance; a numeric color value; a named CSS color
+	 * another Color instance; a numeric color value; a named CSS color.
 	 * @class Instances of the Color class serve as abstract representations of the color itself, and don't need to be
 	 * transformed from one format to another. A single Color instance can have any component (red, green, blue, hue, saturation, lightness, brightness,
 	 * alpha) updated regardless of the source. Further, all other components will be normalized automatically. If a Color is instanced using a hex value,
@@ -69,6 +104,7 @@ const Color = (() => {
 	 * actual transformations. They are not required for use or translation. The standard component parts are available as instance methods - passing a value
 	 * argument to set, and each return the value as well (with or without setter arguments). These components perform transformations and dispatch events,
 	 * and can be used without any sugar to manage the Color instance.
+	 *
 	 * Component methods include:
 	 * .red()
 	 * .green()
@@ -79,9 +115,9 @@ const Color = (() => {
 	 * .brightness()
 	 * .hex()
 	 * .decimal()
-	 * </ul>
+	 *
 	 * @example
-	 * // instancing...
+	 * // Instancing...
 	 * new Color();
 	 * new Color('#FF9900');
 	 * new Color(element.style.color);
@@ -89,7 +125,8 @@ const Color = (() => {
 	 * new Color(123456);
 	 * new Color({ red: 255, green: 100, blue: 0 });
 	 * new Color(colorInstance);
-	 * // usage...
+	 *
+	 * // Usage...
 	 * const color = new Color('#FF9900');
 	 * color.brightness(20);
 	 * element.style.backgroundColor = color;
@@ -119,6 +156,7 @@ const Color = (() => {
 		_lightness: 0,      // 0 - 100
 		_brightness: 0,     // 0 - 100
 		_alpha: 255,        // 0 - 255
+
 		get r() {
 			return this._red;
 		},
@@ -144,8 +182,8 @@ const Color = (() => {
 			return Math.round(Math.sqrt(0.299 * this.r * this.r + 0.587 * this.g * this.g + 0.114 * this.b * this.b));
 		},
 		/**
-		 * If all 3 RGB values are identical, returns true
-		 * @returns boolean
+		 * If all 3 RGB values are identical it will return true.
+		 * @returns {boolean} True or false.
 		 */
 		get isGreyscale() {
 			return this._red === this._green && this._red === this._blue;
@@ -157,9 +195,9 @@ const Color = (() => {
 			return this._decimal;
 		},
 		/**
-		 * Checks if a color value is almost greyscale. Finds the average of the RGB values, and then compares
-		 * each color to see if it is more than +/- 6 away from the average. If not, returns true;
-		 * @returns boolean
+		 * Checks if a color value is almost greyscale. Finds the average of the RGB values,
+		 * and then compares each color to see if it is more than +/- 6 away from the average. If not, returns true;
+		 * @returns {boolean} True or false.
 		 * @example
 		 * const color = new Color(100,102,104);
 		 * color.isCloseToGreyscale() => true
@@ -174,9 +212,9 @@ const Color = (() => {
 		},
 
 		/**
-		 * Set the hue component value of the color, updates all other components, and dispatches Event.UPDATED
-		 * @param {number} value 0 - 360 hue component value to set
-		 * @returns Number
+		 * Sets the hue component value of the color, updates all other components, and dispatches Event.UPDATED.
+		 * @param {number} value 0 - 360 hue component value to set.
+		 * @returns {number}
 		 * @example
 		 * const color = new Color();
 		 * color.hue = 280;
@@ -185,9 +223,9 @@ const Color = (() => {
 			this._handle('_hue', value, Events.HSL_UPDATED);
 		},
 		/**
-		 * Set the saturation component value of the color, updates all other components, and dispatches Event.UPDATED
-		 * @param {number} value 0 - 100 saturation component value to set
-		 * @returns Number
+		 * Sets the saturation component value of the color, updates all other components, and dispatches Event.UPDATED.
+		 * @param {number} value 0 - 100 saturation component value to set.
+		 * @returns {number}
 		 * @example
 		 * const color = new Color();
 		 * color.saturation = 280;
@@ -196,9 +234,9 @@ const Color = (() => {
 			this._handle('_saturation', value, Events.HSL_UPDATED);
 		},
 		/**
-		 * Set the lightness component value of the color, updates all other components, and dispatches Event.UPDATED
-		 * @param {number} value 0 - 100 lightness component value to set
-		 * @returns Number
+		 * Sets the lightness component value of the color, updates all other components, and dispatches Event.UPDATED.
+		 * @param {number} value 0 - 100 lightness component value to set.
+		 * @returns {number}
 		 * @example
 		 * const color = new Color();
 		 * color.lightness = 80;
@@ -210,11 +248,11 @@ const Color = (() => {
 
 
 	/**
-	 * Convert mixed variable to Color component properties, and adopt those properties.
+	 * Converts mixed variable to Color component properties, and adopt those properties.
 	 * @function
 	 * @param {*} value Accepts any valid CSS color value e.g., #FF9900, RGB(255, 153, 0), RGBA(100%, 40%, 0%, 0.8);
 	 * a hash with properties mapped to the Color instance e.g., red, green, saturation, brightness;
-	 * another Color instance; a numeric color value; a named CSS color
+	 * another Color instance; a numeric color value; a named CSS color.
 	 * @returns this
 	 * @example
 	 * const color = new Color();
@@ -261,9 +299,9 @@ const Color = (() => {
 							}
 							case isRGB.test(value): {
 								const partsRGB = value.match(matchRGB);
-								this.red(p2v(partsRGB[1]));
-								this.green(p2v(partsRGB[2]));
-								this.blue(p2v(partsRGB[3]));
+								this.red(PerToVal(partsRGB[1]));
+								this.green(PerToVal(partsRGB[2]));
+								this.blue(PerToVal(partsRGB[3]));
 								let alphaRGB = parseFloat(partsRGB[5]);
 								if (isNaN(alphaRGB)) alphaRGB = 1;
 								this.alpha(alphaRGB);
@@ -290,18 +328,18 @@ const Color = (() => {
 	};
 
 	/**
-	 * Create a duplicate of this Color instance
+	 * Creates a duplicate of this Color instance.
 	 * @function
-	 * @returns Color
+	 * @returns {Color}
 	 */
 	Color.prototype.clone = function () {
 		return new Color(this.decimal()).alpha(this.alpha());
 	};
 
 	/**
-	 * Copy values from another Color instance
+	 * Copies values from another Color instance.
 	 * @function
-	 * @param {Color} color Color instance to copy values from
+	 * @param {Color} color Color instance to copy values from.
 	 * @returns this
 	 */
 	Color.prototype.copy = function (color) {
@@ -309,10 +347,10 @@ const Color = (() => {
 	};
 
 	/**
-	 * Set a color component value
+	 * Sets a color component value.
 	 * @function
-	 * @param {string|object|number} key Name of the color component to defined, or a hash of key:value pairs, or a single numeric value
-	 * @param {?string|number} value - Value of the color component to be set
+	 * @param {string|object|number} key Name of the color component to defined, or a hash of key:value pairs, or a single numeric value.
+	 * @param {?string|number} value Value of the color component to be set
 	 * @returns this
 	 * @example
 	 * const color = new Color();
@@ -338,9 +376,9 @@ const Color = (() => {
 	};
 
 	/**
-	 * sets the invoking Color instance component values to a point between the original value and the destination Color instance component value, multiplied by the factor
+	 * Sets the invoking Color instance component values to a point between the original value and the destination Color instance component value, multiplied by the factor.
 	 * @function
-	 * @param {Color} destination Color instance to serve as the termination of the interpolation
+	 * @param {Color} destination Color instance to serve as the termination of the interpolation.
 	 * @param {number} factor 0-1, where 0 is the origin Color and 1 is the destination Color, and 0.5 is halfway between.  This method will "blend" the colors.
 	 * @returns this
 	 * @example
@@ -352,10 +390,10 @@ const Color = (() => {
 		if (!(destination instanceof Color)) {
 			destination = new Color(destination);
 		}
-		this._red = absround(+(this._red) + (destination._red - this._red) * factor);
-		this._green = absround(+(this._green) + (destination._green - this._green) * factor);
-		this._blue = absround(+(this._blue) + (destination._blue - this._blue) * factor);
-		this._alpha = absround(+(this._alpha) + (destination._alpha - this._alpha) * factor);
+		this._red = AbsRound(+(this._red) + (destination._red - this._red) * factor);
+		this._green = AbsRound(+(this._green) + (destination._green - this._green) * factor);
+		this._blue = AbsRound(+(this._blue) + (destination._blue - this._blue) * factor);
+		this._alpha = AbsRound(+(this._alpha) + (destination._alpha - this._alpha) * factor);
 		this.broadcast(Events.RGB_UPDATED);
 		this.broadcast(Events.UPDATED);
 		return this;
@@ -374,8 +412,8 @@ const Color = (() => {
 		if (max === min) {
 			this._hue = 0;
 			this._saturation = 0;
-			this._lightness = absround(l * 100);
-			this._brightness = absround(v * 100);
+			this._lightness = AbsRound(l * 100);
+			this._brightness = AbsRound(v * 100);
 			return;
 		}
 
@@ -387,20 +425,20 @@ const Color = (() => {
 			? ((b - r) / d + 2)
 			: ((r - g) / d + 4)) / 6;
 
-		this._hue = absround(h * 360);
-		this._saturation = absround(s * 100);
-		this._lightness = absround(l * 100);
-		this._brightness = absround(v * 100);
+		this._hue = AbsRound(h * 360);
+		this._saturation = AbsRound(s * 100);
+		this._lightness = AbsRound(l * 100);
+		this._brightness = AbsRound(v * 100);
 	};
 	Color.prototype._HSL2RGB = function () {
 		const h = this._hue / 360;
 		const s = this._saturation / 100;
 		const l = this._lightness / 100;
-		const q = l < 0.5	? l * (1 + s) : (l + s - l * s);
+		const q = l < 0.5 ? l * (1 + s) : (l + s - l * s);
 		const p = 2 * l - q;
-		this._red = absround(hue2rgb(p, q, h + 1 / 3) * 255);
-		this._green = absround(hue2rgb(p, q, h) * 255);
-		this._blue = absround(hue2rgb(p, q, h - 1 / 3) * 255);
+		this._red = AbsRound(HUEtoRGB(p, q, h + 1 / 3) * 255);
+		this._green = AbsRound(HUEtoRGB(p, q, h) * 255);
+		this._blue = AbsRound(HUEtoRGB(p, q, h - 1 / 3) * 255);
 	};
 	Color.prototype._HSV2RGB = function () { // http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
 		const h = this._hue / 360;
@@ -422,9 +460,9 @@ const Color = (() => {
 			case 4:	r = t; g = p; b = v; break;
 			case 5:	r = v; g = p; b = q; break;
 		}
-		this._red = absround(r * 255);
-		this._green = absround(g * 255);
-		this._blue = absround(b * 255);
+		this._red = AbsRound(r * 255);
+		this._green = AbsRound(g * 255);
+		this._blue = AbsRound(b * 255);
 	};
 	Color.prototype._INT2HEX = function () {
 		let x = this._decimal.toString(16);
@@ -475,10 +513,10 @@ const Color = (() => {
 	};
 
 	/**
-	 * Set the decimal value of the color, updates all other components, and dispatches Event.UPDATED
+	 * Sets the decimal value of the color, updates all other components, and dispatches Event.UPDATED.
 	 * @function
-	 * @param {?number} value 0 (black) to 16777215 (white) - the decimal value to set
-	 * @returns Number
+	 * @param {?number} value 0 (black) to 16777215 (white) - the decimal value to set.
+	 * @returns {number}
 	 * @example
 	 * const color = new Color();
 	 * color.decimal(123456);
@@ -488,10 +526,10 @@ const Color = (() => {
 	};
 
 	/**
-	 * Set the hex value of the color, updates all other components, and dispatches Event.UPDATED
+	 * Sets the hex value of the color, updates all other components, and dispatches Event.UPDATED.
 	 * @function
-	 * @param {string} value Hex value to be set
-	 * @returns String
+	 * @param {string} value The hex value to be set.
+	 * @returns {String}
 	 * @example
 	 * const color = new Color();
 	 * color.hex('#FF9900');
@@ -502,10 +540,10 @@ const Color = (() => {
 	};
 
 	/**
-	 * Set the red component value of the color, updates all other components, and dispatches Event.UPDATED
+	 * Sets the red component value of the color, updates all other components, and dispatches Event.UPDATED.
 	 * @function
-	 * @param {number} value 0 - 255 red component value to set
-	 * @returns Number
+	 * @param {number} value 0 - 255 red component value to set.
+	 * @returns {Number}
 	 * @example
 	 * const color = new Color();
 	 * color.red(125);
@@ -515,10 +553,10 @@ const Color = (() => {
 	};
 
 	/**
-	 * Set the green component value of the color, updates all other components, and dispatches Event.UPDATED
+	 * Sets the green component value of the color, updates all other components, and dispatches Event.UPDATED.
 	 * @function
-	 * @param {number} value 0 - 255 green component value to set
-	 * @returns Number
+	 * @param {number} value 0 - 255 green component value to set.
+	 * @returns {number}
 	 * @example
 	 * const color = new Color();
 	 * color.green(125);
@@ -526,11 +564,12 @@ const Color = (() => {
 	Color.prototype.green = function (value) {
 		return this._handle('_green', value, Events.RGB_UPDATED);
 	};
+
 	/**
-	 * Set the blue component value of the color, updates all other components, and dispatches Event.UPDATED
+	 * Sets the blue component value of the color, updates all other components, and dispatches Event.UPDATED.
 	 * @function
 	 * @param {number} value 0 - 255 blue component value to set
-	 * @returns Number
+	 * @returns {number}
 	 * @example
 	 * const color = new Color();
 	 * color.blue(125);
@@ -540,10 +579,10 @@ const Color = (() => {
 	};
 
 	/**
-	 * Set the brightness component value of the color, updates all other components, and dispatches Event.UPDATED
+	 * Sets the brightness component value of the color, updates all other components, and dispatches Event.UPDATED.
 	 * @function
-	 * @param {number} value 0 - 100 brightness component value to set
-	 * @returns Number
+	 * @param {number} value 0 - 100 brightness component value to set.
+	 * @returns {number}
 	 * @example
 	 * const color = new Color();
 	 * color.brightness(80);
@@ -553,10 +592,10 @@ const Color = (() => {
 	// };
 
 	/**
-	 * Set the opacity value of the color, updates all other components, and dispatches Event.UPDATED
+	 * Sets the opacity value of the color, updates all other components, and dispatches Event.UPDATED.
 	 * @function
-	 * @param {?number} value 0 - 1 opacity component value to set
-	 * @returns Number
+	 * @param {?number} value 0 - 1 opacity component value to set.
+	 * @returns {number}
 	 * @example
 	 * const color = new Color();
 	 * color.alpha(0.5);
@@ -579,9 +618,9 @@ const Color = (() => {
 	};
 
 	/**
-	 * Returns a CSS-formatted hex string [e.g., #FF9900] from the Color's component values
+	 * Returns a CSS-formatted hex string [e.g., #FF9900] from the Color's component values.
 	 * @function
-	 * @returns String
+	 * @returns {string}
 	 * @example
 	 * const color = new Color();
 	 * element.style.backgroundColor = color.getHex();
@@ -589,11 +628,12 @@ const Color = (() => {
 	Color.prototype.getHex = function () {
 		return this._hex;
 	};
+
 	/**
-	 * Returns a CSS-formatted RGB string [e.g., RGB(255, 153, 0)] from the Color's component values
-	 * @param {?boolean} showPrefix should the return string start with "rgb"
-	 * @param {?boolean} threeDigitColors should color values be left padded with zeroes? e.g. "004"
-	 * @returns {String}
+	 * Returns a CSS-formatted RGB string [e.g., RGB(255, 153, 0)] from the Color's component values.
+	 * @param {?boolean} showPrefix Should the return string start with "rgb".
+	 * @param {?boolean} threeDigitColors Should color values be left padded with zeroes? e.g. "004".
+	 * @returns {string}
 	 * @example
 	 * const color = new Color();
 	 * element.style.backgroundColor = color.getRGB();
@@ -609,42 +649,44 @@ const Color = (() => {
 		}
 		components =
 			typeof threeDigitColors === 'undefined' || threeDigitColors === false ? [this._red, this._green, this._blue, this._alpha] :
-			[padZeroes(this._red), padZeroes(this._green), padZeroes(this._blue), padZeroes(this._alpha)];
+			[PadZeroes(this._red), PadZeroes(this._green), PadZeroes(this._blue), PadZeroes(this._alpha)];
 
 		if (this._alpha === 255) {
 			components.pop();
 		}
 		return `${prefix}(${components.join(', ')})`;
 	};
+
 	/**
-	 * Returns a CSS-formatted HSL string [e.g., hsl(360, 100%, 100%)] from the Color's component values
+	 * Returns a CSS-formatted HSL string [e.g., hsl(360, 100%, 100%)] from the Color's component values.
 	 * @function
-	 * @returns String
+	 * @returns {string}
 	 * @example
 	 * const color = new Color();
 	 * element.style.backgroundColor = color.getHSL();
 	 */
 	Color.prototype.getHSL = function () {
-		const components = [absround(this._hue), `${absround(this._saturation)}%`, `${absround(this._lightness)}%`];
+		const components = [AbsRound(this._hue), `${AbsRound(this._saturation)}%`, `${AbsRound(this._lightness)}%`];
 		return `hsl(${components.join(', ')})`;
 	};
+
 	/**
-	 * Returns a CSS-formatted HSLA string [e.g., hsl(360, 100%, 100%, 0.5)] from the Color's component values
+	 * Returns a CSS-formatted HSLA string [e.g., hsl(360, 100%, 100%, 0.5)] from the Color's component values.
 	 * @function
-	 * @returns String
+	 * @returns {string}
 	 * @example
 	 * const color = new Color();
 	 * element.style.backgroundColor = color.getHSLA();
 	 */
 	Color.prototype.getHSLA = function () {
-		const components = [absround(this._hue), `${absround(this._saturation)}%`, `${absround(this._lightness)}%`, this._alpha];
+		const components = [AbsRound(this._hue), `${AbsRound(this._saturation)}%`, `${AbsRound(this._lightness)}%`, this._alpha];
 		return `hsla(${components.join(', ')})`;
 	};
 
 	/**
-	 * Returns a tokenized string from the Color's component values
+	 * Returns a tokenized string from the Color's component values.
 	 * @function
-	 * @param {string} string The string to return, with tokens expressed as %token% that are replaced with component values.  Tokens are as follows:
+	 * @param {string} string The string to return, with tokens expressed as %token% that are replaced with component values. Tokens are as follows:
 	 * r: red
 	 * g: green
 	 * b: blue
@@ -655,7 +697,7 @@ const Color = (() => {
 	 * a: alpha
 	 * x: hex
 	 * i: value
-	 * @returns String
+	 * @returns {string}
 	 * @example
 	 * const color = new Color('#FF9900');
 	 * console.log(color.format('red=%r%, green=%g%, blue=%b%));
@@ -680,7 +722,7 @@ const Color = (() => {
 	};
 
 	/**
-	 * Sets the format used by the native toString method
+	 * Sets the format used by the native toString method.
 	 * Color.HEX outputs #FF9900
 	 * Color.RGB outputs RGB(255, 153, 0)
 	 * Color.PRGB outputs RGB(100%, 50%, 0)
@@ -714,9 +756,9 @@ const Color = (() => {
 	};
 
 	/**
-	 * Returns the ideal foreground color (black or white) for text with the Color as background
+	 * Returns the ideal foreground color (black or white) for text with the Color as background.
 	 * @function
-	 * @returns Color
+	 * @returns {Color}
 	 * @example
 	 * const color = new Color();
 	 * element.style.backgroundColor = color.getRGB();
@@ -732,10 +774,11 @@ const Color = (() => {
 	Color.prototype._isSubscribed = function (type) {
 		return this._listeners[type] != null;
 	};
+
 	/**
 	 * @function
-	 * @param {string} type Event type to listen for
-	 * @param {function} callback listener to register to the event
+	 * @param {string} type Event type to listen for.
+	 * @param {function} callback Listener to register to the event.
 	 * @example
 	 * const color = new Color();
 	 * color.subscribe(Color.Event.UPDATED, function() {
@@ -752,8 +795,8 @@ const Color = (() => {
 
 	/**
 	 * @function
-	 * @param {string} type Event type to remove the listener from
-	 * @param {function} callback listener to unregister from the event
+	 * @param {string} type Event type to remove the listener from.
+	 * @param {function} callback Listener to unregister from the event.
 	 * @example
 	 * const color = new Color();
 	 * const handler = function () {
@@ -779,8 +822,8 @@ const Color = (() => {
 
 	/**
 	 * @function
-	 * @param {string} type Event type to dispatch
-	 * @param {array} params Array of arguments to pass to listener
+	 * @param {string} type Event type to dispatch.
+	 * @param {array} params Array of arguments to pass to listener.
 	 * @example
 	 * const color = new Color();
 	 * const handler = function (a, b) {
@@ -801,13 +844,13 @@ const Color = (() => {
 	};
 
 	/**
-	 * [static] Returns a Color instance of a random color
+	 * [static] Returns a Color instance of a random color.
 	 * @function
-	 * @returns Color
+	 * @returns {Color}
 	 * @example
 	 * const gray = Color.interpolate('#FFFFFF', '#000000', 0.5);
 	 */
-	Color.random = () => new Color(absround(Math.random() * 16777215));
+	Color.random = () => new Color(AbsRound(Math.random() * 16777215));
 
 	Color.Events = Events;
 

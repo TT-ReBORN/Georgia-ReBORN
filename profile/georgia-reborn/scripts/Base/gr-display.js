@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-03                                          * //
+// * Last change:    2023-07-22                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,32 +16,55 @@
 ///////////////////
 // * VARIABLES * //
 ///////////////////
+/** @type {number} Default display dots per inch setting. */
 let DPI = 96;
-let is_4k = false;
-let is_QHD = false;
-let sizeInitialized = false; // Setup variable for 4k check
-let lastSize; // Setup variable for 4k check
+/** @type {boolean} State variable for 4k resolution. */
+let RES_4K = false;
+/** @type {boolean} State variable for QHD resolution. */
+let RES_QHD = false;
+/** @type {boolean} Setup variable for 4k check. */
+let sizeInitialized = false;
+/** @type {boolean} Setup variable for 4k check. */
+let lastSize;
 
-const scale = (size) => Math.round(size * DPI / 72);
-
-/**
- * Scales the value based on 4k mode or not. TODO: Use scale() instead of is_4k.
- * @param {number} val
- * @return {number}
- */
-const scaleForDisplay = (val) => is_4k ? val * 2 : val;
-
+// * Check and set the actual display DPI number via reading the Windows registry value.
 try { DPI = WshShell.RegRead('HKCU\\Control Panel\\Desktop\\WindowMetrics\\AppliedDPI'); } catch (e) {}
 
 
-///////////////////
-// * FUNCTIONS * //
-///////////////////
-/** Display auto-detection used for the very first foobar startup or when factory resetting the theme and in top menu Options > Display */
+/////////////////
+// * HELPERS * //
+/////////////////
+/**
+ * NOT USED AT THE MOMENT.
+ * Converts a size value from points to pixels using the DPI value.
+ * @param {number} size The size in pixels.
+ * @returns {number} The size in points.
+ */
+function Scale(size) {
+	return Math.round(size * DPI / 72);
+}
+
+
+/**
+ * Scales the value based on 4k mode or not.
+ * @param {number} val The value that needs to be scaled for 4K resolution.
+ * @returns {number} The value doubled.
+ */
+function SCALE(val) {
+	return RES_4K ? val * 2 : val;
+}
+
+
+/////////////////
+// * DISPLAY * //
+/////////////////
+/**
+ * Display auto-detection used in Options > Display or for the very first foobar startup and when factory resetting the theme.
+ */
 async function autoDetectRes() {
 	const resetSize = async () => {
-		is_4k = false;
-		is_QHD = false;
+		RES_4K = false;
+		RES_QHD = false;
 		setSizesFor4KorHD();
 		pref.displayRes = 'HD';
 		pref.playerSize_4k_small = false;
@@ -52,7 +75,7 @@ async function autoDetectRes() {
 	const check4k = async () => {
 		setWindowSize(2800, 1720); // Check if player size 'Normal' for 4k can be attained
 		if (ww > 2560 && wh > 1600) {
-			is_4k = true;
+			RES_4K = true;
 			setSizesFor4KorHD();
 			pref.displayRes = '4k';
 			pref.playerSize_4k_normal = 'playerSize_4k_normal';
@@ -68,7 +91,7 @@ async function autoDetectRes() {
 				resetSize();
 			}
 			else { // Set to QHD mode
-				is_QHD = true;
+				RES_QHD = true;
 				setSizesForQHD();
 				pref.displayRes = 'QHD';
 				pref.playerSize_4k_normal = false;
@@ -102,11 +125,15 @@ async function autoDetectRes() {
 }
 
 
-/** Called when checking the display resolution */
+/**
+ * Checks the current used monitor resolution.
+ * @param {number} w
+ * @param {number} h
+ */
 function checkForRes(w, h) {
 	if (pref.displayRes === '4k') {
-		is_4k = true;
-		is_QHD = false;
+		RES_4K = true;
+		RES_QHD = false;
 		pref.savedWidth_default  = window.SetProperty('Georgia-ReBORN - 16. System: Saved width (Default)',  2800);
 		pref.savedHeight_default = window.SetProperty('Georgia-ReBORN - 16. System: Saved height (Default)', 1720);
 		pref.savedWidth_artwork  = window.SetProperty('Georgia-ReBORN - 16. System: Saved width (Artwork)',  1052);
@@ -115,8 +142,8 @@ function checkForRes(w, h) {
 		pref.savedHeight_compact = window.SetProperty('Georgia-ReBORN - 16. System: Saved height (Compact)', 1720);
 	}
 	else if (pref.displayRes === 'QHD') {
-		is_4k = false;
-		is_QHD = true;
+		RES_4K = false;
+		RES_QHD = true;
 		pref.savedWidth_default  = window.SetProperty('Georgia-ReBORN - 16. System: Saved width (Default)',  1280);
 		pref.savedHeight_default = window.SetProperty('Georgia-ReBORN - 16. System: Saved height (Default)',  800);
 		pref.savedWidth_artwork  = window.SetProperty('Georgia-ReBORN - 16. System: Saved width (Artwork)',   640);
@@ -125,8 +152,8 @@ function checkForRes(w, h) {
 		pref.savedHeight_compact = window.SetProperty('Georgia-ReBORN - 16. System: Saved height (Compact)',  800);
 	}
 	else if (pref.displayRes === 'HD') {
-		is_4k = false;
-		is_QHD = false;
+		RES_4K = false;
+		RES_QHD = false;
 		pref.savedWidth_default  = window.SetProperty('Georgia-ReBORN - 16. System: Saved width (Default)', 1140);
 		pref.savedHeight_default = window.SetProperty('Georgia-ReBORN - 16. System: Saved height (Default)', 730);
 		pref.savedWidth_artwork  = window.SetProperty('Georgia-ReBORN - 16. System: Saved width (Artwork)',  526);
@@ -134,26 +161,28 @@ function checkForRes(w, h) {
 		pref.savedWidth_compact  = window.SetProperty('Georgia-ReBORN - 16. System: Saved width (Compact)',  484);
 		pref.savedHeight_compact = window.SetProperty('Georgia-ReBORN - 16. System: Saved height (Compact)', 730);
 	}
-	if (lastSize !== is_4k) {
+	if (lastSize !== RES_4K) {
 		sizeInitialized = false;
-		lastSize = is_4k;
+		lastSize = RES_4K;
 	}
 }
 
 
-/** Called in on_size() and used as an indicator for top menu Options > Player size */
+/**
+ * Checks the player size and called from on_size(), used as an indicator for top menu Options > Player size.
+ */
 function checkForPlayerSize() {
-	if (!is_4k && !is_QHD) {
+	if (!RES_4K && !RES_QHD) {
 		if (pref.layout === 'default' && ww === 1140 && wh ===  730 || pref.layout === 'artwork' && ww ===  526 && wh ===  686 || pref.layout === 'compact' && ww ===  484 && wh ===  730) { pref.playerSize = 'small';  pref.playerSize_HD_small   = true; } else { pref.playerSize_HD_small   = false; }
 		if (pref.layout === 'default' && ww === 1600 && wh ===  960 || pref.layout === 'artwork' && ww ===  700 && wh ===  860 || pref.layout === 'compact' && ww ===  484 && wh ===  960) { pref.playerSize = 'normal'; pref.playerSize_HD_normal  = true; } else { pref.playerSize_HD_normal  = false; }
 		if (pref.layout === 'default' && ww === 1802 && wh === 1061 || pref.layout === 'artwork' && ww ===  901 && wh === 1062 || pref.layout === 'compact' && ww === 1600 && wh ===  960) { pref.playerSize = 'large';  pref.playerSize_HD_large   = true; } else { pref.playerSize_HD_large   = false; }
 	}
-	if (is_QHD) {
+	if (RES_QHD) {
 		if (pref.layout === 'default' && ww === 1280 && wh ===  800 || pref.layout === 'artwork' && ww ===  640 && wh ===  800 || pref.layout === 'compact' && ww ===  540 && wh ===  800) { pref.playerSize = 'small';  pref.playerSize_QHD_small  = true; } else { pref.playerSize_QHD_small  = false; }
 		if (pref.layout === 'default' && ww === 1802 && wh === 1061 || pref.layout === 'artwork' && ww ===  901 && wh === 1061 || pref.layout === 'compact' && ww ===  540 && wh === 1061) { pref.playerSize = 'normal'; pref.playerSize_QHD_normal = true; } else { pref.playerSize_QHD_normal = false; }
 		if (pref.layout === 'default' && ww === 2280 && wh === 1300 || pref.layout === 'artwork' && ww === 1140 && wh === 1300 || pref.layout === 'compact' && ww === 2080 && wh === 1300) { pref.playerSize = 'large';  pref.playerSize_QHD_large  = true; } else { pref.playerSize_QHD_large  = false; }
 	}
-	if (is_4k) {
+	if (RES_4K) {
 		if (pref.layout === 'default' && ww === 2300 && wh === 1470 || pref.layout === 'artwork' && ww === 1052 && wh === 1372 || pref.layout === 'compact' && ww ===  964 && wh === 1470) { pref.playerSize = 'small';  pref.playerSize_4k_small   = true; } else { pref.playerSize_4k_small   = false; }
 		if (pref.layout === 'default' && ww === 2800 && wh === 1720 || pref.layout === 'artwork' && ww === 1400 && wh === 1720 || pref.layout === 'compact' && ww ===  964 && wh === 1720) { pref.playerSize = 'normal'; pref.playerSize_4k_normal  = true; } else { pref.playerSize_4k_normal  = false; }
 		if (pref.layout === 'default' && ww === 3400 && wh === 2020 || pref.layout === 'artwork' && ww === 1699 && wh === 2020 || pref.layout === 'compact' && ww === 2800 && wh === 1720) { pref.playerSize = 'large';  pref.playerSize_4k_large   = true; } else { pref.playerSize_4k_large   = false; }
@@ -166,9 +195,11 @@ function checkForPlayerSize() {
 }
 
 
-/** Sets font and button sizes for 4k and HD display resolution */
+/**
+ * Sets the font and button sizes for 4k and HD display resolution.
+ */
 function setSizesFor4KorHD() {
-	is_QHD = false;
+	RES_QHD = false;
 
 	// * Main
 	pref.menuFontSize_default = 12;
@@ -203,7 +234,7 @@ function setSizesFor4KorHD() {
 	pref.playlistFontSize_artwork = 12;
 	pref.playlistFontSize_compact = 12;
 
-	if (is_4k) {
+	if (RES_4K) {
 		ppt.baseFontSize_default = 24; // * Library
 		ppt.baseFontSize_artwork = 24; // * Library
 		pptBio.baseFontSizeBio_default = 24; // * Biography
@@ -221,10 +252,12 @@ function setSizesFor4KorHD() {
 }
 
 
-/** Sets font and button sizes for QHD display resolution */
+/**
+ * Sets the font and button sizes for QHD display resolution.
+ */
 function setSizesForQHD() {
-	is_4k = false;
-	is_QHD = true;
+	RES_4K = false;
+	RES_QHD = true;
 	pref.playerSize_4k_normal = false;
 	pref.playerSize_QHD_small = 'playerSize_QHD_small';
 	pref.playerSize_HD_small  = false;
@@ -276,10 +309,71 @@ function setSizesForQHD() {
 }
 
 
-/////////////////////////
-// * LAYOUT HANDLER * ///
-/////////////////////////
-const layoutHandler = new function() {
+/**
+ * Sets the window size via UIHacks.
+ * @param {number} width
+ * @param {number} height
+ */
+function setWindowSize(width, height) {
+	// * Avoid resizing bugs, when the window is bigger\smaller than the saved one.
+	UIHacks.MinSize.Enabled = false;
+	UIHacks.MaxSize.Enabled = false;
+	UIHacks.MinSize.Width   = width;
+	UIHacks.MinSize.Height  = height;
+	UIHacks.MaxSize.Width   = width;
+	UIHacks.MaxSize.Height  = height;
+
+	UIHacks.MaxSize.Enabled = true;
+	UIHacks.MaxSize.Enabled = false;
+	UIHacks.MinSize.Enabled = true;
+	UIHacks.MinSize.Enabled = false;
+
+	window.NotifyOthers('layout_state_size', layoutHandler.layout.state);
+}
+
+
+/**
+ * Sets the minimum and maximum sizes of the window based on different screen resolutions.
+ * @param {number} min_w_4k
+ * @param {number} max_w_4k
+ * @param {number} min_h_4k
+ * @param {number} max_h_4k
+ * @param {number} min_w_QHD
+ * @param {number} max_w_QHD
+ * @param {number} min_h_QHD
+ * @param {number} max_h_QHD
+ * @param {number} min_w_HD
+ * @param {number} max_w_HD
+ * @param {number} min_h_HD
+ * @param {number} max_h_HD
+ */
+function setWindowSizeLimits(min_w_4k, max_w_4k, min_h_4k, max_h_4k, min_w_QHD, max_w_QHD, min_h_QHD, max_h_QHD, min_w_HD, max_w_HD, min_h_HD, max_h_HD) {
+	UIHacks.MinSize.Enabled = !!min_w_4k || !!min_w_QHD || !!min_w_HD;
+	UIHacks.MinSize.Width   =   min_w_4k ||   min_w_QHD ||   min_w_HD;
+
+	UIHacks.MaxSize.Enabled = !!max_w_4k || !!max_w_QHD || !!max_w_HD;
+	UIHacks.MaxSize.Width   =   max_w_4k ||   max_w_QHD ||   max_w_HD;
+
+	UIHacks.MinSize.Enabled = !!min_h_4k || !!min_h_QHD || !!min_h_HD;
+	UIHacks.MinSize.Height  =   min_h_4k ||   min_h_QHD ||   min_h_HD;
+
+	UIHacks.MaxSize.Enabled = !!max_h_4k || !!max_h_QHD || !!max_h_HD;
+	UIHacks.MaxSize.Height  =   max_h_4k ||   max_h_QHD ||   max_h_HD;
+}
+
+
+////////////////////////
+// * LAYOUT HANDLER * //
+////////////////////////
+/** @type {Object} Creates the layout handler object. */
+const layoutHandler = new LayoutHandler();
+
+/**
+ * Saves and reads the layout and playerSize property of the current layout and playerSize state.
+ * @type {Object} Creates a StateObject class that is used to read and write state files.
+ * @class
+ */
+function LayoutHandler() {
 	// private:
 	const statePath = `${fb.ProfilePath}georgia-reborn\\configs\\`;
 	CreateFolder(statePath, true);
@@ -289,7 +383,11 @@ const layoutHandler = new function() {
 	this.playerSize = new StateObject('_state_player_size_cache', ['playerSize_HD_small', 'playerSize_HD_normal', 'playerSize_HD_large', 'playerSize_QHD_small', 'playerSize_QHD_normal', 'playerSize_QHD_large', 'playerSize_4k_small', 'playerSize_4k_normal', 'playerSize_4k_large'], 'playerSize_HD_small');
 
 	/**
-	 * @constructor
+	 * Reads and writes state files.
+	 * @param {string} name The name of the state, must be unique in the file system.
+	 * @param {Array<string>} states_list The list of states that can be read and written.
+	 * @param {string} default_state The default state for the object.
+	 * @class
 	 */
 	function StateObject(name, states_list, default_state) {
 		let curState;
@@ -350,7 +448,7 @@ const layoutHandler = new function() {
 		// public:
 		Object.defineProperty(this, 'state', {
 			/**
-			 * @return {string}
+			 * @returns {string}
 			 */
 			get() {
 				return curState;
@@ -365,23 +463,35 @@ const layoutHandler = new function() {
 			}
 		});
 
+		/**
+		 * Refreshes the state.
+		 */
 		this.refresh = () => {
 			writeState(curState);
 		};
 
 		initialize();
 	}
-}();
+};
 
 
-///////////////////////////////
-// * LAYOUT WINDOW HANDLER * //
-///////////////////////////////
+////////////////////////
+// * WINDOW HANDLER * //
+////////////////////////
+/** @type {Object} Creates the window handler object. */
 const windowHandler = new WindowHandler();
 
+/**
+ * Manages and sets the window size based on active display resolution, layout setting and player size.
+ * @type {Object} Sets the windows size via UIHacks.
+ * @class
+ */
 function WindowHandler() {
 	let fbHandle;
 
+	/**
+	 * Sets the Default layout -> Options > Layout > Default.
+	 */
 	this.layoutDefault = () => {
 		const newLayoutState = 'default';
 		if (newLayoutState === 'default') {
@@ -423,6 +533,9 @@ function WindowHandler() {
 		}
 	};
 
+	/**
+	 * Sets the Artwork layout -> Options > Layout > Artwork.
+	 */
 	this.layoutArtwork = () => {
 		const newLayoutState = 'artwork';
 		if (newLayoutState === 'artwork') {
@@ -455,6 +568,9 @@ function WindowHandler() {
 		}
 	};
 
+	/**
+	 * Sets the Compact layout -> Options > Layout > Compact.
+	 */
 	this.layoutCompact = () => {
 		const newLayoutState = 'compact';
 		if (newLayoutState === 'compact') {
@@ -487,6 +603,9 @@ function WindowHandler() {
 		}
 	};
 
+	/**
+	 * Sets the player size Small for HD res -> Options > Player size > Small.
+	 */
 	this.playerSize_HD_small = () => {
 		const newPlayerSizeState = 'playerSize_HD_small';
 		if (newPlayerSizeState === 'playerSize_HD_small') {
@@ -516,6 +635,9 @@ function WindowHandler() {
 		}
 	};
 
+	/**
+	 * Sets the player size Normal for HD res -> Options > Player size > Normal.
+	 */
 	this.playerSize_HD_normal = () => {
 		const newPlayerSizeState = 'playerSize_HD_normal';
 		if (newPlayerSizeState === 'playerSize_HD_normal') {
@@ -545,6 +667,9 @@ function WindowHandler() {
 		}
 	};
 
+	/**
+	 * Sets the player size Large for HD res -> Options > Player size > Large.
+	 */
 	this.playerSize_HD_large = () => {
 		const newPlayerSizeState = 'playerSize_HD_large';
 		if (newPlayerSizeState === 'playerSize_HD_large') {
@@ -574,6 +699,9 @@ function WindowHandler() {
 		}
 	};
 
+	/**
+	 * Sets the player size Small for QHD res -> Options > Player size > Small.
+	 */
 	this.playerSize_QHD_small = () => {
 		const newPlayerSizeState = 'playerSize_QHD_small';
 		if (newPlayerSizeState === 'playerSize_QHD_small') {
@@ -603,6 +731,9 @@ function WindowHandler() {
 		}
 	};
 
+	/**
+	 * Sets the player size Normal for QHD res -> Options > Player size > Normal.
+	 */
 	this.playerSize_QHD_normal = () => {
 		const newPlayerSizeState = 'playerSize_QHD_normal';
 		if (newPlayerSizeState === 'playerSize_QHD_normal') {
@@ -632,6 +763,9 @@ function WindowHandler() {
 		}
 	};
 
+	/**
+	 * Sets the player size Large for QHD res -> Options > Player size > Large.
+	 */
 	this.playerSize_QHD_large = () => {
 		const newPlayerSizeState = 'playerSize_QHD_large';
 		if (newPlayerSizeState === 'playerSize_QHD_large') {
@@ -661,6 +795,9 @@ function WindowHandler() {
 		}
 	};
 
+	/**
+	 * Sets the player size Small for 4K res -> Options > Player size > Small.
+	 */
 	this.playerSize_4k_small = () => {
 		const newPlayerSizeState = 'playerSize_4k_small';
 		if (newPlayerSizeState === 'playerSize_4k_small') {
@@ -690,6 +827,9 @@ function WindowHandler() {
 		}
 	};
 
+	/**
+	 * Sets the player size Normal for 4K res -> Options > Player size > Normal.
+	 */
 	this.playerSize_4k_normal = () => {
 		const newPlayerSizeState = 'playerSize_4k_normal';
 		if (newPlayerSizeState === 'playerSize_4k_normal') {
@@ -719,6 +859,9 @@ function WindowHandler() {
 		}
 	};
 
+	/**
+	 * Sets the player size Large for 4K res -> Options > Player size > Large.
+	 */
 	this.playerSize_4k_large = () => {
 		const newPlayerSizeState = 'playerSize_4k_large';
 		if (newPlayerSizeState === 'playerSize_4k_large') {
@@ -748,43 +891,47 @@ function WindowHandler() {
 		}
 	};
 
+	/**
+	 * Sets the window size limits for each layout.
+	 * @param {string} layout The three available layouts -> Options > Layout.
+	 */
 	this.setWindowSizeLimitsForLayouts = (layout) => {
 		let min_w_4k  = 0; const max_w_4k  = 0; let min_h_4k  = 0; const max_h_4k  = 0;
 		let min_w_QHD = 0; const max_w_QHD = 0; let min_h_QHD = 0; const max_h_QHD = 0;
 		let min_w_HD  = 0; const max_w_HD  = 0; let min_h_HD  = 0; const max_h_HD  = 0;
 
 		if (layout === 'default') {
-			if (is_4k) {
+			if (RES_4K) {
 				min_w_4k = 2300;
 				min_h_4k = 1470;
-			} else if (is_QHD) {
+			} else if (RES_QHD) {
 				min_w_QHD = 1280;
 				min_h_QHD = 800;
-			} else if (!is_4k && !is_QHD) {
+			} else if (!RES_4K && !RES_QHD) {
 				min_w_HD = 1140;
 				min_h_HD = 730;
 			}
 		}
 		else if (layout === 'artwork') {
-			if (is_4k) {
+			if (RES_4K) {
 				min_w_4k = 1052;
 				min_h_4k = 1372;
-			} else if (is_QHD) {
+			} else if (RES_QHD) {
 				min_w_QHD = 640;
 				min_h_QHD = 800;
-			} else if (!is_4k && !is_QHD) {
+			} else if (!RES_4K && !RES_QHD) {
 				min_w_HD = 526;
 				min_h_HD = 686;
 			}
 		}
 		else if (layout === 'compact') {
-			if (is_4k) {
+			if (RES_4K) {
 				min_w_4k = 964;
 				min_h_4k = 1470;
-			} else if (is_QHD) {
+			} else if (RES_QHD) {
 				min_w_QHD = 540;
 				min_h_QHD = 800;
-			} else if (!is_4k && !is_QHD) {
+			} else if (!RES_4K && !RES_QHD) {
 				min_w_HD = 484;
 				min_h_HD = 730;
 			}
@@ -793,8 +940,11 @@ function WindowHandler() {
 		setWindowSizeLimits(min_w_4k, max_w_4k, min_h_4k, max_h_4k, min_w_QHD, max_w_QHD, min_h_QHD, max_h_QHD, min_w_HD, max_w_HD, min_h_HD, max_h_HD);
 	};
 
+	/**
+	 * Fixes window size for messed up settings or properties.
+	 * @return {boolean} Whether the window size needs to be fixed.
+	 */
 	this.fixWindowSize = function () {
-		// * Workaround for messed up settings or properties
 		this.setWindowSizeLimitsForLayouts(layoutHandler.layout.state);
 
 		const lastW = fbHandle ? fbHandle.Width : '';
@@ -803,37 +953,4 @@ function WindowHandler() {
 
 		return fbHandle ? lastW !== fbHandle.Width || lastH !== fbHandle.Height : systemFirstLaunch;
 	};
-}
-
-
-function setWindowSize(width, height) {
-	// * To avoid resizing bugs, when the window is bigger\smaller than the saved one.
-	UIHacks.MinSize.Enabled = false;
-	UIHacks.MaxSize.Enabled = false;
-	UIHacks.MinSize.Width   = width;
-	UIHacks.MinSize.Height  = height;
-	UIHacks.MaxSize.Width   = width;
-	UIHacks.MaxSize.Height  = height;
-
-	UIHacks.MaxSize.Enabled = true;
-	UIHacks.MaxSize.Enabled = false;
-	UIHacks.MinSize.Enabled = true;
-	UIHacks.MinSize.Enabled = false;
-
-	window.NotifyOthers('layout_state_size', layoutHandler.layout.state);
-}
-
-
-function setWindowSizeLimits(min_w_4k, max_w_4k, min_h_4k, max_h_4k, min_w_QHD, max_w_QHD, min_h_QHD, max_h_QHD, min_w_HD, max_w_HD, min_h_HD, max_h_HD) {
-	UIHacks.MinSize.Enabled = !!min_w_4k || !!min_w_QHD || !!min_w_HD;
-	UIHacks.MinSize.Width   =   min_w_4k ||   min_w_QHD ||   min_w_HD;
-
-	UIHacks.MaxSize.Enabled = !!max_w_4k || !!max_w_QHD || !!max_w_HD;
-	UIHacks.MaxSize.Width   =   max_w_4k ||   max_w_QHD ||   max_w_HD;
-
-	UIHacks.MinSize.Enabled = !!min_h_4k || !!min_h_QHD || !!min_h_HD;
-	UIHacks.MinSize.Height  =   min_h_4k ||   min_h_QHD ||   min_h_HD;
-
-	UIHacks.MaxSize.Enabled = !!max_h_4k || !!max_h_QHD || !!max_h_HD;
-	UIHacks.MaxSize.Height  =   max_h_4k ||   max_h_QHD ||   max_h_HD;
 }

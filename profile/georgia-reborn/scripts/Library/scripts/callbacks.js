@@ -1,10 +1,6 @@
 ﻿'use strict';
 
 class LibraryCallbacks {
-	mouse_in_this(x, y) {
-		return (x >= ui.x && x < ui.x + ui.w && y >= ui.y && y < ui.y + ui.h);
-	}
-
 	on_colours_changed(keepCache) {
 		ui.getColours();
 
@@ -373,7 +369,7 @@ class LibraryCallbacks {
 	// 	if (!ui.w || !ui.h) return;
 
 	// 	pop.deactivateTooltip();
-	// 	tooltipLib.SetMaxWidth(Math.max(ui.w, scaleForDisplay(pref.layout !== 'default' ? 600 : 800)));
+	// 	tooltipLib.SetMaxWidth(Math.max(ui.w, SCALE(pref.layout !== 'default' ? 600 : 800)));
 	// 	ui.blurReset();
 	// 	ui.calcText(true)
 
@@ -436,11 +432,11 @@ class LibraryPanel {
 		find.draw(gr);
 
 		if (ppt.albumArtFlowMode && panel.imgView) {
-			gr.FillSolidRect(this.x, this.y, scaleForDisplay(20), this.h, ui.col.bg); // Margin left and masking for horizontal flow mode
-			gr.FillSolidRect(this.x + this.w - scaleForDisplay(20), this.y, scaleForDisplay(20), this.h, ui.col.bg); // Margin right and masking for horizontal flow mode
+			gr.FillSolidRect(this.x, this.y, SCALE(20), this.h, ui.col.bg); // Margin left and masking for horizontal flow mode
+			gr.FillSolidRect(this.x + this.w - SCALE(20), this.y, SCALE(20), this.h, ui.col.bg); // Margin right and masking for horizontal flow mode
 			if (pref.styleBlend && albumArt && blendedImg) {
-				gr.DrawImage(blendedImg, this.x - this.w + scaleForDisplay(20), this.y, ww, wh, this.x - this.w + scaleForDisplay(20), this.y, blendedImg.Width, blendedImg.Height);
-				gr.DrawImage(blendedImg, this.x + this.w - scaleForDisplay(20), this.y, ww, wh, this.x + this.w - scaleForDisplay(20), this.y, blendedImg.Width, blendedImg.Height);
+				gr.DrawImage(blendedImg, this.x - this.w + SCALE(20), this.y, ww, wh, this.x - this.w + SCALE(20), this.y, blendedImg.Width, blendedImg.Height);
+				gr.DrawImage(blendedImg, this.x + this.w - SCALE(20), this.y, ww, wh, this.x + this.w - SCALE(20), this.y, blendedImg.Width, blendedImg.Height);
 			}
 		}
 
@@ -463,12 +459,12 @@ class LibraryPanel {
 		ui.y = y;
 		ui.w = width;
 		ui.h = height;
-		ppt.margin = scaleForDisplay(20);
+		ppt.margin = SCALE(20);
 		ppt.verticalPad = 5; // Setup default line padding value needed, otherwise 0 on reset
 		if (!ui.w || !ui.h) return;
 
 		pop.deactivateTooltip();
-		tooltipLib.SetMaxWidth(Math.max(ui.w, scaleForDisplay(pref.layout !== 'default' ? 600 : 800)));
+		tooltipLib.SetMaxWidth(Math.max(ui.w, SCALE(pref.layout !== 'default' ? 600 : 800)));
 		ui.blurReset();
 		ui.calcText(true);
 

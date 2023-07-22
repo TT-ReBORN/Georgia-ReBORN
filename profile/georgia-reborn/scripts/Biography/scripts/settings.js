@@ -9,7 +9,7 @@ class SettingBio {
 		this.value = cfg.get(this.key, this.default_value, this.type);
 	}
 
-	// Methods
+	// * METHODS * //
 
 	get() {
 		return this.value;
@@ -85,7 +85,7 @@ class SettingsBio {
 		};
 	}
 
-	// Methods
+	// * METHODS * //
 
 	init(settings) {
 		const update = this.checkCfg();

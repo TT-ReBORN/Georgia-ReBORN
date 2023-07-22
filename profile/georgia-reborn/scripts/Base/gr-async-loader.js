@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-06-30                                          * //
+// * Last change:    2023-07-20                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,70 +16,21 @@
 ///////////////////
 // * VARIABLES * //
 ///////////////////
+/** @type {*} */
 const panelVersion = window.GetProperty('Georgia-ReBORN - #Version: Do not hand edit!', '3.0-RC1');
+/** @type {*} */
 window.DefineScript('Georgia-ReBORN', { author: 'TT', version: panelVersion, features: { drag_n_drop: true } });
 
-const basePath                 = `${fb.ProfilePath}georgia-reborn\\`;
-const pref_theme               = window.GetProperty('Georgia-ReBORN - 01. Theme:');
-const pref_styleBlackAndWhite  = window.GetProperty('Georgia-ReBORN - 02. Style: Black And White');
-const pref_styleBlackAndWhite2 = window.GetProperty('Georgia-ReBORN - 02. Style: Black And White 2');
-const pref_styleBlackReborn    = window.GetProperty('Georgia-ReBORN - 02. Style: Black Reborn');
-
-
-////////////////////////
-// * LAYOUT CHECKER * //
-////////////////////////
-function getThemeLayout() {
-	const pref_layout = window.GetProperty('Georgia-ReBORN - 05. Layout', '<not_set>');
-	if (pref_layout === '<not_set>') {
-		window.SetProperty('Georgia-ReBORN - 05. Layout', 'default');
-	}
-	return pref_layout;
-}
-getThemeLayout(); // Check immediately
-
-
-///////////////////////////
-// * ASYNC FILE LOADER * //
-///////////////////////////
-function loadAsyncFile(filePath) {
-	return new Promise(resolve => {
-		setTimeout(() => {
-			include(filePath);
-			resolve();
-		}, 0);
-	});
-}
-
+/** @type {string} */
+const basePath = `${fb.ProfilePath}georgia-reborn\\`;
+/** @type {*} */
 const loadAsync = window.GetProperty('Georgia-ReBORN - 16. System: Load Theme Asynchronously', true);
-
-async function includeFiles(fileList) {
-	if (loadAsync) {
-		let startTime = Date.now();
-		const refreshTime = 16; // ~60Hz
-		for (let i = 0; i < fileList.length; i++) {
-			loadStrs.fileName = `${fileList[i]} ...`;
-			loadStrs.fileIndex = i;
-			const currentTime = Date.now();
-			if (currentTime - startTime > refreshTime) {
-				startTime = currentTime;
-				window.Repaint();
-			}
-			await loadAsyncFile(basePath + fileList[i]);
-		}
-	} else {
-		fileList.forEach(filePath => include(filePath));
-	}
-}
-
-const loadStrs = {
-	loading: 'Loading:',
-	fileName: '',
-	fileIndex: 0
-};
-
+/** @type {Object} */
+const loadStrs = { loading: 'Loading:', fileName: '', fileIndex: 0 };
+/** @type {number} */
 const startTime = Date.now();
 
+/** @type {string} */
 const fileList = [
 	'scripts\\base\\common\\Common.js',
 	'scripts\\base\\common\\Control_ContextMenu.js',
@@ -142,12 +93,60 @@ const fileList = [
 	'scripts\\base\\gr-main-components.js',
 	'scripts\\base\\gr-lyrics.js',
 	'scripts\\base\\gr-callbacks.js',
-	'scripts\\base\\gr-methods.js',
+	'scripts\\base\\gr-main-functions.js',
 	'scripts\\base\\gr-menu.js',
 	'scripts\\base\\gr-menu-custom.js',
 	'scripts\\base\\gr-main.js'
 ];
 
+
+///////////////////////////
+// * ASYNC FILE LOADER * //
+///////////////////////////
+/**
+ * Loads script files asynchronously on foobar startup or reload.
+ * @param {string} filePath The path to the file to load.
+ * @returns {Promise} A promise that resolves when the file has been loaded.
+ */
+function loadAsyncFile(filePath) {
+	return new Promise(resolve => {
+		setTimeout(() => {
+			include(filePath);
+			resolve();
+		}, 0);
+	});
+}
+
+
+/**
+ * Loads a list of files.
+ *
+ * If loadAsync is true, the files will be loaded asynchronously.
+ * @param {string} fileList The list of files to load.
+ */
+async function includeFiles(fileList) {
+	if (loadAsync) {
+		let startTime = Date.now();
+		const refreshTime = 16; // ~60Hz
+		for (let i = 0; i < fileList.length; i++) {
+			loadStrs.fileName = `${fileList[i]} ...`;
+			loadStrs.fileIndex = i;
+			const currentTime = Date.now();
+			if (currentTime - startTime > refreshTime) {
+				startTime = currentTime;
+				window.Repaint();
+			}
+			await loadAsyncFile(basePath + fileList[i]);
+		}
+		return;
+	}
+	fileList.forEach(filePath => include(filePath));
+}
+
+
+/**
+ * Start loading all Georgia-ReBORN scripts from fileList and schedule an update check.
+ */
 includeFiles(fileList).then(() => {
 	console.log(`Georgia-ReBORN loaded in ${Date.now() - startTime}ms`);
 
@@ -157,25 +156,41 @@ includeFiles(fileList).then(() => {
 });
 
 
-///////////////////////////////////////////////////////////////////////////
-// * PRELOADER - THIS FUNCTION WILL BE OVERRIDDEN ONCE THE THEME LOADS * //
-///////////////////////////////////////////////////////////////////////////
+///////////////////
+// * PRELOADER * //
+///////////////////
+/**
+ * Draws the preloader on foobar startup or reload.
+ *
+ * This callback will be overridden by the main UI once the theme loads.
+ * @param {GdiGraphics} gr
+ */
 function on_paint(gr) {
-	const RGB = (r, g, b)   => (0xff000000 | (r << 16) | (g << 8) | (b));
-	const scaleForDisplay   = (number) => is_4k ? number * 2 : number;
-	const displayRes        = window.GetProperty('Georgia-ReBORN - 06. Display', '<not_set>');
-	const systemFirstLaunch = window.GetProperty('Georgia-ReBORN - 16. System: First launch', '<not_set>');
-	const pref_layout       = window.GetProperty('Georgia-ReBORN - 05. Layout', ['default', 'artwork', 'compact']);
-	const showLogoOnStartup = window.GetProperty('Georgia-ReBORN - 09. Player controls: Show logo on startup', true);
-	const ww                = window.Width;
-	const wh                = window.Height;
-	const col               = {};
-	const is_4k             = displayRes === '4k' || (ww > 3000 || wh > 1300);
+	// * PROPERTIES * //
+	const pref_theme                    = window.GetProperty('Georgia-ReBORN - 01. Theme:');
+	const pref_styleBlackAndWhite       = window.GetProperty('Georgia-ReBORN - 02. Style: Black and white');
+	const pref_styleBlackAndWhite2      = window.GetProperty('Georgia-ReBORN - 02. Style: Black and white 2');
+	const pref_layout                   = window.GetProperty('Georgia-ReBORN - 05. Layout');
+	const pref_displayRes               = window.GetProperty('Georgia-ReBORN - 06. Display');
+	const pref_lowerBarFontSize_default = window.GetProperty('Georgia-ReBORN - 08. Font size: Lower bar (Default)');
+	const pref_lowerBarFontSize_artwork = window.GetProperty('Georgia-ReBORN - 08. Font size: Lower bar (Artwork)');
+	const pref_lowerBarFontSize_compact = window.GetProperty('Georgia-ReBORN - 08. Font size: Lower bar (Compact)');
+	const pref_showLogoOnStartup        = window.GetProperty('Georgia-ReBORN - 09. Player controls: Show logo on startup');
+	const pref_systemFirstLaunch        = window.GetProperty('Georgia-ReBORN - 16. System: First launch');
 
-	const font = (name, size, style) => {
+	// * SYSTEM * //
+	const RGB = (r, g, b) => (0xff000000 | (r << 16) | (g << 8) | (b));
+	const SCALE = (number) => RES_4K ? number * 2 : number;
+	const ww = window.Width;
+	const wh = window.Height;
+	const col = {};
+	const RES_4K = pref_displayRes === '4k' || (ww > 3000 || wh > 1300);
+
+	// * FONTS * //
+	const Font = (name, size, style) => {
 		let font;
 		try {
-			font = gdi.Font(name, Math.round(scaleForDisplay(size)), style);
+			font = gdi.Font(name, Math.round(SCALE(size)), style);
 		} catch (e) {
 			console.log('Failed to load font >>>', name, size, style);
 		}
@@ -184,33 +199,31 @@ function on_paint(gr) {
 
 	const fontLight = 'HelveticaNeueLT Pro 45 Lt';
 	const fontBold  = 'HelveticaNeueLT Pro 65 Md';
-	const lowerBarFontSize_default = window.GetProperty('Georgia-ReBORN - 08. Font size: Lower bar (Default)');
-	const lowerBarFontSize_artwork = window.GetProperty('Georgia-ReBORN - 08. Font size: Lower bar (Artwork)');
-	const lowerBarFontSize_compact = window.GetProperty('Georgia-ReBORN - 08. Font size: Lower bar (Compact)');
 
-	const ft_lower_bar = font(fontLight,
-		pref_layout === 'compact' ? lowerBarFontSize_compact || 16 :
-		pref_layout === 'artwork' ? lowerBarFontSize_artwork || 16 :
-		lowerBarFontSize_default || 18, 0);
+	const ft_lower_bar = Font(fontLight,
+		pref_layout === 'compact' ? pref_lowerBarFontSize_compact || 16 :
+		pref_layout === 'artwork' ? pref_lowerBarFontSize_artwork || 16 :
+		pref_lowerBarFontSize_default || 18, 0);
 
-	const ft_lower_bar_bold = font(fontBold,
-		pref_layout === 'compact' ? lowerBarFontSize_compact || 16 :
-		pref_layout === 'artwork' ? lowerBarFontSize_artwork || 16 :
-		lowerBarFontSize_default || 18, 0);
+	const ft_lower_bar_bold = Font(fontBold,
+		pref_layout === 'compact' ? pref_lowerBarFontSize_compact || 16 :
+		pref_layout === 'artwork' ? pref_lowerBarFontSize_artwork || 16 :
+		pref_lowerBarFontSize_default || 18, 0);
 
-	const lowerBarHeight = scaleForDisplay(120);
-	const lowerBarTop = pref_layout !== 'default' ? wh - lowerBarHeight + (is_4k ? 33 : 18) : wh - lowerBarHeight + (is_4k ? 65 : 35);
+	// * GEOMETRY * //
+	const lowerBarHeight = SCALE(120);
+	const lowerBarTop = pref_layout !== 'default' ? wh - lowerBarHeight + (RES_4K ? 33 : 18) : wh - lowerBarHeight + (RES_4K ? 65 : 35);
 	const loadingWidth = Math.ceil(gr.MeasureString(loadStrs.loading, ft_lower_bar, 0, 0, 0, 0).Width);
 	const titleMeasurements = gr.MeasureString(loadStrs.fileName, ft_lower_bar, 0, 0, 0, 0);
 
 	const progressBar = {
-		x: pref_layout !== 'default' ? scaleForDisplay(20) : scaleForDisplay(40),
-		y: pref_layout !== 'default' ? Math.round(lowerBarTop + titleMeasurements.Height + scaleForDisplay(10) + (ww > 1920 ? 2 : 0)) : Math.round(lowerBarTop + titleMeasurements.Height + scaleForDisplay(12) + (ww > 1920 ? 2 : 0)),
-		w: pref_layout !== 'default' ? ww - scaleForDisplay(40) : ww - scaleForDisplay(80),
-		h: pref_layout !== 'default' ? scaleForDisplay(10) + (ww > 1920 ? 2 : 0) : scaleForDisplay(12) + (ww > 1920 ? 2 : 0)
+		x: pref_layout !== 'default' ? SCALE(20) : SCALE(40),
+		y: pref_layout !== 'default' ? Math.round(lowerBarTop + titleMeasurements.Height + SCALE(10) + (ww > 1920 ? 2 : 0)) : Math.round(lowerBarTop + titleMeasurements.Height + SCALE(12) + (ww > 1920 ? 2 : 0)),
+		w: pref_layout !== 'default' ? ww - SCALE(40) : ww - SCALE(80),
+		h: pref_layout !== 'default' ? SCALE(10) + (ww > 1920 ? 2 : 0) : SCALE(12) + (ww > 1920 ? 2 : 0)
 	};
 
-	// * PRELOADER COLORS * //
+	// * COLORS * //
 	col.bg =
 		pref_theme === 'white' ? pref_styleBlackAndWhite ? RGB(230, 230, 230) : pref_styleBlackAndWhite2 ? RGB(25, 25, 25) : RGB(245, 245, 245) :
 		pref_theme === 'black' ? RGB(25, 25, 25) :
@@ -283,17 +296,17 @@ function on_paint(gr) {
 	gr.DrawLine(ww, wh - 1, 0, wh - 1, 1, col.uiHacksFrame);
 
 	// * LOGO/TEXT * //
-	if (showLogoOnStartup) {
+	if (pref_showLogoOnStartup) {
 		drawLogo(gr);
 	} else {
 		gr.DrawString(loadStrs.loading, ft_lower_bar_bold, col.lowerBarTitle, progressBar.x, lowerBarTop, progressBar.w, titleMeasurements.Height);
-		gr.DrawString(loadStrs.fileName, ft_lower_bar, col.lowerBarTitle, progressBar.x + loadingWidth + scaleForDisplay(20), lowerBarTop, progressBar.w - loadingWidth - scaleForDisplay(20), titleMeasurements.Height);
+		gr.DrawString(loadStrs.fileName, ft_lower_bar, col.lowerBarTitle, progressBar.x + loadingWidth + SCALE(20), lowerBarTop, progressBar.w - loadingWidth - SCALE(20), titleMeasurements.Height);
 	}
 
 	// * PROGRESS BAR * //
 	gr.FillSolidRect(progressBar.x, progressBar.y, progressBar.w, progressBar.h, col.progressBar);
 	gr.FillSolidRect(progressBar.x, progressBar.y, progressBar.w * (loadStrs.fileIndex + 1) / fileList.length, progressBar.h, col.progressBarFill);
-	if ((['blue', 'darkblue', 'red', 'cream'].includes(pref_theme)) && !systemFirstLaunch) {
+	if ((['blue', 'darkblue', 'red', 'cream'].includes(pref_theme)) && !pref_systemFirstLaunch) {
 		gr.DrawRect(progressBar.x - 2, progressBar.y - 2, progressBar.w + 3, progressBar.h + 3, 1, col.progressBarFrame);
 	}
 }
@@ -302,14 +315,27 @@ function on_paint(gr) {
 /////////////////////////
 // * PRELOADER LOGOS * //
 /////////////////////////
+/**
+ * Draws the logo in the preloader.
+ * @param {GdiGraphics} gr
+ */
 function drawLogo(gr) {
-	const displayRes = window.GetProperty('Georgia-ReBORN - 06. Display', '<not_set>');
-	const ww         = window.Width;
-	const wh         = window.Height;
-	const is_4k      = displayRes === '4k' || (ww > 3000 || wh > 1300);
-	const plus4k     = is_4k ? '4k-' : '';
-	const paths      = {};
-	const logoPath   = `${fb.ProfilePath}georgia-reborn/images/logo/`;
+	// * PROPERTIES * //
+	const pref_theme               = window.GetProperty('Georgia-ReBORN - 01. Theme:');
+	const pref_styleBlackAndWhite  = window.GetProperty('Georgia-ReBORN - 02. Style: Black and white');
+	const pref_styleBlackAndWhite2 = window.GetProperty('Georgia-ReBORN - 02. Style: Black and white 2');
+	const pref_styleBlackReborn    = window.GetProperty('Georgia-ReBORN - 02. Style: Black reborn');
+	const pref_displayRes          = window.GetProperty('Georgia-ReBORN - 06. Display');
+
+	// * SYSTEM * //
+	const ww     = window.Width;
+	const wh     = window.Height;
+	const RES_4K = pref_displayRes === '4k' || (ww > 3000 || wh > 1300);
+	const plus4k = RES_4K ? '4k-' : '';
+
+	// * PATHS * //
+	const paths    = {};
+	const logoPath = `${fb.ProfilePath}georgia-reborn/images/logo/`;
 
 	paths.logoWhite          = `${logoPath}${plus4k}logo-white.png`;
 	paths.logoBlack          = `${logoPath}${plus4k}logo-black.png`;
@@ -328,6 +354,7 @@ function drawLogo(gr) {
 	paths.logoBlackAndWhite2 = `${logoPath}${plus4k}logo-black-white2.png`;
 	paths.logoBlackReborn    = `${logoPath}${plus4k}logo-black-reborn.png`;
 
+	// * IMAGES * //
 	const logoWhite          = gdi.Image(paths.logoWhite);
 	const logoBlack          = gdi.Image(paths.logoBlack);
 	const logoReborn         = gdi.Image(paths.logoReborn);
@@ -345,7 +372,8 @@ function drawLogo(gr) {
 	const logoBlackAndWhite2 = gdi.Image(paths.logoBlackAndWhite2);
 	const logoBlackReborn    = gdi.Image(paths.logoBlackReborn);
 
-	const logos =
+	// * LOGO * //
+	const logo =
 		pref_theme === 'white'    ? pref_styleBlackAndWhite ? logoBlackAndWhite : pref_styleBlackAndWhite2 ? logoBlackAndWhite2 : logoWhite :
 		pref_theme === 'black'    ? pref_styleBlackReborn   ? logoBlackReborn   : logoBlack :
 		pref_theme === 'reborn'   ? logoReborn :
@@ -360,5 +388,5 @@ function drawLogo(gr) {
 		pref_theme === 'ngold'    ? logoNgold :
 		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref_theme) ? logoCustom : logoReborn;
 
-	gr.DrawImage(logos, window.Width * 0.5 - logos.Width * 0.5, window.Height * 0.5 - logos.Height * 0.5, logos.Width, logos.Height, 0, 0, logos.Width, logos.Height);
+	gr.DrawImage(logo, window.Width * 0.5 - logo.Width * 0.5, window.Height * 0.5 - logo.Height * 0.5, logo.Width, logo.Height, 0, 0, logo.Width, logo.Height);
 }

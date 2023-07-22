@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-14                                          * //
+// * Last change:    2023-07-22                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,9 +16,13 @@
 /////////////////////
 // * BASE OBJECT * //
 /////////////////////
+/**
+ * The base object for creating context menus.
+ */
 class ContextBaseObject {
 	/**
-	 * @param{string} text_arg
+	 * @param {string} text_arg The text value that will be assigned to the `text` property of the object.
+	 * @class
 	 */
 	constructor(text_arg) {
 		/** @const {string} */
@@ -29,8 +33,8 @@ class ContextBaseObject {
 	}
 
 	/**
-	 * @param{number} start_idx
-	 * @return{number} end_idx
+	 * @param {number} start_idx The index at which the menu should start initializing.
+	 * @returns {number} The end_idx.
 	 * @protected
 	 * @abstract
 	 */
@@ -39,7 +43,7 @@ class ContextBaseObject {
 	}
 
 	/**
-	 * @param{ContextMenu} parent_menu
+	 * @param {ContextMenu} parent_menu The parent of the menu being initialized.
 	 * @protected
 	 * @abstract
 	 */
@@ -48,8 +52,8 @@ class ContextBaseObject {
 	}
 
 	/**
-	 * @param{number} idx
-	 * @return{boolean}
+	 * @param {number} idx The index of the menu option that needs to be executed.
+	 * @returns {boolean} True or false.
 	 * @protected
 	 * @abstract
 	 */
@@ -62,13 +66,18 @@ class ContextBaseObject {
 //////////////////////
 // * CONTEXT MENU * //
 //////////////////////
+/**
+ * Provides methods for adding items to the context menu and handling user interactions.
+ */
 class ContextMenu extends ContextBaseObject {
 	/**
-	 * @param {string} text_arg
-	 * @param {object} [optional_args={}]
-	 * @param {boolean=} [optional_args.is_grayed_out=false]
-	 * @param {boolean=} [optional_args.is_checked=false]
-	 * @constructor
+	 * Initializes properties and creates a context menu.
+	 * @param {string} text_arg The text value for the constructor.
+	 * @param {object} [optional_args={}] Additional parameters that can be passed to the constructor.
+	 * @param {boolean=} [optional_args.is_grayed_out=false] The item will be grayed out.
+	 * @param {boolean=} [optional_args.is_checked=false] The item will be checked.
+	 * @extends {ContextBaseObject}
+	 * @class
 	 */
 	constructor(text_arg, optional_args) {
 		super(text_arg);
@@ -85,7 +94,8 @@ class ContextMenu extends ContextBaseObject {
 	// public:
 
 	/**
-	 * @param{ContextBaseObject} item
+	 * Adds an item to the "menu_items" array.
+	 * @param {ContextBaseObject} item The item to be append to the "menu_items" array.
 	 */
 	append(item) {
 		if (!(item instanceof ContextBaseObject)) {
@@ -96,24 +106,29 @@ class ContextMenu extends ContextBaseObject {
 	}
 
 	/**
-	 * @param {string} text_arg
-	 * @param {function} callback_fn_arg
-	 * @param {object} [optional_args={}]
-	 * @param {boolean=} [optional_args.is_grayed_out=false]
-	 * @param {boolean=} [optional_args.is_checked=false]
-	 * @param {boolean=} [optional_args.is_radio_checked=false]
+	 * Appends a new ContextItem object to the current context.
+	 * @param {string} text_arg The text content of the item to be append.
+	 * @param {function} callback_fn_arg A function that will be called when the appended item is clicked or activated.
+	 * @param {object} [optional_args={}] Additional parameters that can be passed to the function.
+	 * @param {boolean=} [optional_args.is_grayed_out=false] The item will be grayed out.
+	 * @param {boolean=} [optional_args.is_checked=false] The item will be checked.
+	 * @param {boolean=} [optional_args.is_radio_checked=false] The item will be radio checked.
 	 */
 	append_item(text_arg, callback_fn_arg, optional_args) {
 		this.append(new ContextItem(text_arg, callback_fn_arg, optional_args));
 	}
 
+	/**
+	 * Appends a menu separator to the current context menu.
+	 */
 	append_separator() {
 		this.append(new ContextSeparator());
 	}
 
 	/**
-	 * @param{number} start_idx
-	 * @param{number} check_idx
+	 * Checks a specific item in a menu and sets it to a radio checked state.
+	 * @param {number} start_idx The starting index of the menu_items array where the radio_check should begin checking.
+	 * @param {number} check_idx The index of the menu item that you want to perform a radio check on.
 	 */
 	radio_check(start_idx, check_idx) {
 		const item = this.menu_items[start_idx + check_idx];
@@ -133,12 +148,16 @@ class ContextMenu extends ContextBaseObject {
 	}
 
 	/**
-	 * @return {boolean}
+	 * Checks if the menu_items array is empty.
+	 * @returns {boolean} True or false.
 	 */
 	is_empty() {
-		return isEmpty(this.menu_items);
+		return IsEmpty(this.menu_items);
 	}
 
+	/**
+	 * Disposes of each item in the menu_items array and sets the menu_items property to null.
+	 */
 	dispose() {
 		this.cm = null;
 
@@ -154,8 +173,9 @@ class ContextMenu extends ContextBaseObject {
 	}
 
 	/**
-	 * @param{number} start_idx
-	 * @return{number} end_idx
+	 * Initializes the menu index for each menu item recursively, starting from a given index.
+	 * @param {number} start_idx The index at which the menu should start initializing.
+	 * @returns {number} The end_idx.
 	 * @protected
 	 */
 	initialize_menu_idx(start_idx) {
@@ -173,7 +193,8 @@ class ContextMenu extends ContextBaseObject {
 	}
 
 	/**
-	 * @param{ContextMenu} parent_menu
+	 * Initializes a menu by appending menu items to it and setting their properties based on the state of the parent menu.
+	 * @param {ContextMenu} parent_menu The menu to which the current menu will be appended.
 	 * @protected
 	 */
 	initialize_menu(parent_menu) {
@@ -185,8 +206,9 @@ class ContextMenu extends ContextBaseObject {
 	}
 
 	/**
-	 * @param{number} idx
-	 * @return{boolean}
+	 * Executes a menu item based on the given index.
+	 * @param {number} idx The index of the menu item that needs to be executed.
+	 * @returns {boolean} The result of calling the `execute_menu` method on the menu item that matches the given index (`idx`).
 	 * @protected
 	 */
 	execute_menu(idx) {
@@ -206,15 +228,20 @@ class ContextMenu extends ContextBaseObject {
 //////////////
 // * ITEM * //
 //////////////
+/**
+ * Context menu items with various properties and methods for customization and interaction.
+ */
 class ContextItem extends ContextBaseObject {
 	/**
-	 * @param {string} text_arg
-	 * @param {function} callback_fn_arg
-	 * @param {object} [optional_args={}]
-	 * @param {boolean=} [optional_args.is_grayed_out=false]
-	 * @param {boolean=} [optional_args.is_checked=false]
-	 * @param {boolean=} [optional_args.is_radio_checked=false]
-	 * @constructor
+	 * Initializes properties and creates a menu item.
+	 * @param {string} text_arg The text value for the constructor.
+	 * @param {function} callback_fn_arg A callback function that will be assigned to the`callback_fn` property.
+	 * @param {object} [optional_args={}] Additional parameters that can be passed to the constructor.
+	 * @param {boolean=} [optional_args.is_grayed_out=false] The item will be grayed out.
+	 * @param {boolean=} [optional_args.is_checked=false] The item will be checked.
+	 * @param {boolean=} [optional_args.is_radio_checked=false] The ratio item will be checked.
+	 * @extends {ContextBaseObject}
+	 * @class
 	 */
 	constructor(text_arg, callback_fn_arg, optional_args) {
 		super(text_arg);
@@ -233,14 +260,16 @@ class ContextItem extends ContextBaseObject {
 	// public:
 
 	/**
-	 * @param{boolean} is_checked_arg
+	 * Sets the state of the check mark ✓ in menu items.
+	 * @param {boolean} is_checked_arg Whether something is checked or not.
 	 */
 	check(is_checked_arg) {
 		this.is_checked = is_checked_arg;
 	}
 
 	/**
-	 * @param{boolean} is_checked_arg
+	 * Sets the state of the radio mark 🔘 in menu items.
+	 * @param {boolean} is_checked_arg Whether something is checked or not.
 	 */
 	radio_check(is_checked_arg) {
 		this.is_radio_checked = is_checked_arg;
@@ -249,8 +278,9 @@ class ContextItem extends ContextBaseObject {
 	// protected:
 
 	/**
-	 * @param{number} start_idx
-	 * @return{number} end_idx
+	 * Initializes a menu index and returns the incremented value.
+	 * @param {number} start_idx The initial value for the menu index.
+	 * @returns {number} The end_idx.
 	 * @protected
 	 */
 	initialize_menu_idx(start_idx) {
@@ -259,7 +289,8 @@ class ContextItem extends ContextBaseObject {
 	}
 
 	/**
-	 * @param {ContextMenu} parent_menu
+	 * Initializes a menu item by appending it to a parent menu and setting its properties such as grayed out, checked, or radio checked.
+	 * @param {ContextMenu} parent_menu The menu object that the current menu item belongs to.
 	 * @protected
 	 */
 	initialize_menu(parent_menu) {
@@ -273,8 +304,9 @@ class ContextItem extends ContextBaseObject {
 	}
 
 	/**
-	 * @param{number} idx
-	 * @return{boolean}
+	 * Executes a menu item's callback function if the provided index matches the stored index.
+	 * @param {number} idx The index of the menu item that needs to be executed.
+	 * @returns {boolean} True or false.
 	 * @protected
 	 */
 	execute_menu(idx) {
@@ -289,20 +321,24 @@ class ContextItem extends ContextBaseObject {
 
 
 ///////////////////
-// * SEPERATOR * //
+// * SEPARATOR * //
 ///////////////////
 /**
- * @constructor
- * @extends {ContextBaseObject}
+ * Handles a separator in a context menu.
  */
 class ContextSeparator extends ContextBaseObject {
-	constructor () {
+	/**
+	 * @extends {ContextBaseObject}
+	 * @class
+	 */
+	constructor() {
 		super('');
 	}
 
 	/**
-	 * @param{number} start_idx
-	 * @return{number} end_idx
+	 * Initializes a menu index and returns the incremented value.
+	 * @param {number} start_idx The initial value for the menu index.
+	 * @returns {number} The end_idx.
 	 * @protected
 	 */
 	initialize_menu_idx(start_idx) {
@@ -311,7 +347,8 @@ class ContextSeparator extends ContextBaseObject {
 	}
 
 	/**
-	 * @param{ContextMenu} parent_menu
+	 * Initializes a menu by appending a separator to the parent menu.
+	 * @param {ContextMenu} parent_menu The menu to which the new menu item will be added as a child.
 	 * @protected
 	 */
 	initialize_menu(parent_menu) {
@@ -319,8 +356,9 @@ class ContextSeparator extends ContextBaseObject {
 	}
 
 	/**
-	 * @param{number} idx
-	 * @return{boolean}
+	 * Execute menu returns false.
+	 * @param {number} idx The index of the menu item to execute.
+	 * @returns {boolean} False if the menu item was executed successfully, true otherwise.
 	 * @protected
 	 */
 	execute_menu(idx) {
@@ -333,12 +371,16 @@ class ContextSeparator extends ContextBaseObject {
 // * FOOBAR MENU * //
 /////////////////////
 /**
- * @param {FbMetadbHandleList} metadb_handles_arg
- * @constructor
- * @extends {ContextBaseObject}
+ * Provides methods for initializing and executing the foobar2000 context menu.
  */
 class ContextFoobarMenu extends ContextBaseObject {
-	constructor (metadb_handles_arg) {
+	/**
+	 * Initializes a context menu manager.
+	 * @param {FbMetadbHandleList} metadb_handles_arg An array of media database handles.
+	 * @extends {ContextBaseObject}
+	 * @class
+	 */
+	constructor(metadb_handles_arg) {
 		super('');
 
 		/** @private {IContextMenuManager} */
@@ -347,13 +389,17 @@ class ContextFoobarMenu extends ContextBaseObject {
 		this.metadb_handles = metadb_handles_arg;
 	}
 
+	/**
+	 * Disposes the foobar menu.
+	 */
 	dispose() {
 		this.cm = null;
 	}
 
 	/**
-	 * @param {number} start_idx
-	 * @return {number} end_idx
+	 * Initializes a menu index and returns the index plus 5000.
+	 * @param {number} start_idx The initial value for the menu index.
+	 * @returns {number} The end_idx.
 	 * @protected
 	 */
 	initialize_menu_idx(start_idx) {
@@ -362,7 +408,8 @@ class ContextFoobarMenu extends ContextBaseObject {
 	}
 
 	/**
-	 * @param {ContextMenu} parent_menu
+	 * Initializes a menu by initializing the context and building the menu items.
+	 * @param {ContextMenu} parent_menu The parent menu to which the new menu will be added as a child.
 	 * @protected
 	 */
 	initialize_menu(parent_menu) {
@@ -371,8 +418,9 @@ class ContextFoobarMenu extends ContextBaseObject {
 	}
 
 	/**
-	 * @param {number} idx
-	 * @return {boolean}
+	 * Executes a menu item based on its index.
+	 * @param {number} idx The index of the menu that needs to be executed.
+	 * @returns {boolean} The result of executing the command with the specified id.
 	 * @protected
 	 */
 	execute_menu(idx) {
@@ -384,10 +432,14 @@ class ContextFoobarMenu extends ContextBaseObject {
 ///////////////////
 // * MAIN MENU * //
 ///////////////////
+/**
+ * The main context menu with multiple items that can be executed when clicked.
+ */
 class ContextMainMenu extends ContextMenu {
 	/**
+	 * @extends {ContextMenu}
 	 * @final
-	 * @constructor
+	 * @class
 	 */
 	constructor() {
 		super('');
@@ -395,7 +447,12 @@ class ContextMainMenu extends ContextMenu {
 
 	// public:
 
-	/** @return{boolean} true, if some item was clicked*/
+	/**
+	 * Executes a menu by initializing it, displaying it and executing the selected menu item.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True if some item was clicked.
+	 */
 	execute(x, y) {
 		// Initialize menu
 		let cur_idx = 1;
@@ -424,9 +481,13 @@ class ContextMainMenu extends ContextMenu {
 //////////////////////////////
 // * DEFAULT CONTEXT MENU * //
 //////////////////////////////
+/**
+ * Contains some basic and SMP related options.
+ * Displayed when shift right clicking in playlist panel or playlist manager.
+ */
 Object.assign(qwr_utils, {
 	/**
-	 * @param {ContextMenu} cm
+	 * @param {ContextMenu} cm The context menu object.
 	 */
 	append_default_context_menu_to(cm) {
 		if (!cm) {
@@ -451,20 +512,6 @@ Object.assign(qwr_utils, {
 
 		cm.append_separator();
 
-		const edit = new ContextMenu('Edit panel scripts');
-		cm.append(edit);
-
-		const edit_fn = (script_path) => {
-			if (!runCmd(`notepad++.exe ${script_path}`, undefined, true)) {
-				runCmd(`notepad.exe ${script_path}`, undefined, true);
-			}
-		};
-
-		g_script_list.forEach((filename) => {
-			const script_path = g_pl_colors.script_folder + filename;
-			edit.append_item(filename, edit_fn.bind(null, script_path), { is_grayed_out: IsFile(script_path) });
-		});
-
 		cm.append_item('Configure panel...', () => {
 			window.ShowConfigure();
 		});
@@ -479,9 +526,13 @@ Object.assign(qwr_utils, {
 ////////////////////////////////
 // * ALBUM ART CONTEXT MENU * //
 ////////////////////////////////
+/**
+ * Contains some options not find in top menu "Options" and append panel related top menu "Options" for quick access.
+ * Displayed when right clicking on the big album art on the left side.
+ */
 Object.assign(qwr_utils, {
 	/**
-	 * @param {ContextMenu} cmac
+	 * @param {ContextMenu} cmac The context menu object.
 	 */
 	append_album_cover_context_menu_to(cmac) {
 		if (!pref.showTransportControls_default) {
@@ -521,7 +572,7 @@ Object.assign(qwr_utils, {
 			cmac.append_separator();
 		}
 
-		// * Top menu options Playlist, Details, Library, Lyrics submenu
+		// * Top menu options - Playlist, Details, Library, Lyrics - context menu
 		const showPlaylist = pref.layout === 'artwork' ? displayPlaylistArtworkLayout && !pref.displayLyrics : displayPlaylist && !pref.displayLyrics;
 
 		const showDetails = pref.layout === 'artwork' ? displayPlaylist && !displayPlaylistArtworkLayout && !displayLibrary && !displayBiography && !pref.displayLyrics :
@@ -687,7 +738,7 @@ Object.assign(qwr_utils, {
 						newTrackFetchingArtwork = true;
 						getThemeColors(albumArt);
 						initTheme();
-						debugLog('initTheme -> Album cover context menu -> Display next/previous artwork');
+						DebugLog('initTheme -> Album cover context menu -> Display next/previous artwork');
 					}
 					window.Repaint();
 				}, !activeMenu);
@@ -710,7 +761,7 @@ Object.assign(qwr_utils, {
 
 		const query = $('$if3(%album artist%, %artist, %composer%)', fb.GetNowPlaying()).replace(/ /g, '%20');
 		cmac.append_item('Get disc art', () => {
-			runCmd(`https://fanart.tv/?s=${query}&sect=2`);
+			RunCmd(`https://fanart.tv/?s=${query}&sect=2`);
 		});
 
 		const discArtMenu = new ContextMenu('Disc art placeholder');
@@ -787,9 +838,13 @@ Object.assign(qwr_utils, {
 ////////////////////////////////
 // * LOWER BAR CONTEXT MENU * //
 ////////////////////////////////
+/**
+ * Contains all seekbar ( progress bar, peakmeter bar and waveform bar ) top menu "Options" for quick access.
+ * Displayed when right clicking on the lower bar.
+ */
 Object.assign(qwr_utils, {
 	/**
-	 * @param {ContextMenu} cmac
+	 * @param {ContextMenu} cmac The context menu object.
 	 */
 	append_lower_bar_context_menu_to(cmac) {
 		const seekbar = [['Progress bar', 'progressbar'], ['Peakmeter bar', 'peakmeterbar'], ['Waveform bar', 'waveformbar']];

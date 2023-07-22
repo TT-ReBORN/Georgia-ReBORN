@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-05                                          * //
+// * Last change:    2023-07-22                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -21,11 +21,16 @@
  * @property {GdiBitmap} image
  * @property {number} filesize
  */
+
+/**
+ * Caches album art and playlist thumbnail images.
+ */
 class ArtCache {
 	/**
-	 * Create ArtCache. ArtCache is a Least-Recently Used cache meaning that each cache hit
-	 * will bump that image to be the last image to be removed from the cache (if maxCacheSize is exceeded).
-	 * @param {number} maxCacheSize Maximum number of images to keep in the cache.
+	 * Creates ArtCache. ArtCache is a Least-Recently Used cache meaning that each cache hit will bump
+	 * that image to be the last image to be removed from the cache (if maxCacheSize is exceeded).
+	 * @param {number} maxCacheSize The maximum number of images to keep in the cache.
+	 * @class
 	 */
 	constructor(maxCacheSize) {
 		/** @private @type {Object.<string, ArtCacheObj>} */
@@ -33,14 +38,14 @@ class ArtCache {
 		/** @private @type {string[]} */
 		this.cacheIndexes = [];
 		/** @private */ this.cacheMaxSize = maxCacheSize;
-		/** @private */ this.imgMaxWidth = scaleForDisplay(1440); // * These are the maximum width and height an image can be displayed in Georgia-ReBORN
-		/** @private */ this.imgMaxHeight = scaleForDisplay(872);
+		/** @private */ this.imgMaxWidth = SCALE(1440); // * These are the maximum width and height an image can be displayed in Georgia-ReBORN
+		/** @private */ this.imgMaxHeight = SCALE(872);
 	}
 
 	/**
-	 * Get cached image if it exists under the location string. If image is found, move it's index to the end of the cacheIndexes.
-	 * @param {string} location String value to check if image is cached under.
-	 * @return {GdiBitmap}
+	 * Gets cached image if it exists under the location string. If image is found, move it's index to the end of the cacheIndexes.
+	 * @param {string} location The string value to check if image is cached under.
+	 * @returns {GdiBitmap}
 	 */
 	getImage(location) {
 		if (this.cache[location]) {
@@ -50,11 +55,11 @@ class ArtCache {
 
 			if (!f || f.Size === this.cache[location].filesize) {
 				this.cacheIndexes.push(location);
-				debugLog('cache hit:', location);
+				DebugLog('cache hit:', location);
 				return this.cache[location].image;
 			}
 			// Size of file on disk has changed
-			debugLog(`cache entry was stale: ${location} [old size: ${this.cache[location].filesize}, new size: ${f.Size}]`);
+			DebugLog(`cache entry was stale: ${location} [old size: ${this.cache[location].filesize}, new size: ${f.Size}]`);
 			delete this.cache[location]; // Was removed from cacheIndexes already
 		}
 		return null;
@@ -62,9 +67,10 @@ class ArtCache {
 
 	/**
 	 * Adds a rescaled image to the cache under string `location` and returns the cached image.
-	 * @param {GdiBitmap} img
-	 * @param {string} location String value to cache image under. Does not need to be a path.
-	 * @return {GdiBitmap}
+	 * @param {GdiBitmap} img The image object to cache.
+	 * @param {string} location The string value to cache image under. Does not need to be a path.
+	 * @returns {GdiBitmap} The image stored in the cache at the specified location.
+	 * If there is no image in the cache at that location, it returns the original image passed as a parameter.
 	 */
 	encache(img, location) {
 		try {
@@ -89,7 +95,7 @@ class ArtCache {
 			this.cacheIndexes.push(location);
 			if (this.cacheIndexes.length > this.cacheMaxSize) {
 				const remove = this.cacheIndexes.shift();
-				debugLog('Removing img from cache:', remove);
+				DebugLog('Removing img from cache:', remove);
 				delete this.cache[remove];
 			}
 		} catch (e) {
@@ -103,7 +109,7 @@ class ArtCache {
 	}
 
 	/**
-	 * Completely clear all cached entries and release memory held by scaled bitmaps.
+	 * Completely clears all cached entries and releases memory held by scaled bitmaps.
 	 */
 	clear() {
 		while (this.cacheIndexes.length) {
@@ -118,10 +124,13 @@ class ArtCache {
 //////////////
 // * MENU * //
 //////////////
-/** Helper class for creating Menus, submenus, radio groups, toggle items, etc. */
+/**
+ * Creates menus, submenus, radio groups, toggle items, etc.
+ */
 class Menu {
 	/**
-	 * @param {string=} title Title of the menu. If this is the parent menu, should be undefined.
+	 * @param {string=} title The title of the menu item. It is optional and defaults to an empty string if not provided.
+	 * @class
 	 */
 	constructor(title = '') {
 		_MenuItemIndex++;
@@ -132,16 +141,15 @@ class Menu {
 	}
 
 	/**
-	 * Creates default foobar menu corresponding to `name`.
-	 * @param {string} name
+	 * Creates the default foobar menu corresponding to `name`.
+	 * @param {string} name The name of the menu.
 	 */
 	initFoobarMenu(name) {
-		if (name) {
-			this.systemMenu = true;
-			this.menuManager = fb.CreateMainMenuManager();
-			this.menuManager.Init(name);
-			this.menuManager.BuildMenu(this.menu, 1, 1000);
-		}
+		if (!name) return;
+		this.systemMenu = true;
+		this.menuManager = fb.CreateMainMenuManager();
+		this.menuManager.Init(name);
+		this.menuManager.BuildMenu(this.menu, 1, 1000);
 	}
 
 	/**
@@ -152,25 +160,23 @@ class Menu {
 	}
 
 	/**
-	 *
-	 * @param {string} label
-	 * @param {boolean} checked Should the menu item be checked
-	 * @param {Function} callback
-	 * @param {boolean=} [disabled=false]
+	 * Adds an item with a label, checked status, callback function, and optional disabled status.
+	 * @param {string} label The label for the item.
+	 * @param {boolean} checked Whether the menu item should be checked.
+	 * @param {Function} callback A function that will be executed when the item is clicked.
+	 * @param {boolean=} [disabled=false] Whether the item should be disabled or not.
 	 */
 	addItem(label, checked, callback, disabled = false) {
 		this.addItemWithVariable(label, checked, undefined, callback, disabled);
 	}
 
 	/**
-	 * Similar to addItem, but takes an object and property name which will automatically be set when the callback is called,
-	 * before calling any user specified callback. If the property you wish to toggle is options.repeat, then propertiesObj
-	 * is options, and the propertyName must be "repeat" as a string.
-	 * @param {string} label
-	 * @param {object} propertiesObj An object which contains propertyName
-	 * @param {string} propertyName The name of the property to toggle on/off
-	 * @param {?Function} callback
-	 * @param {?boolean=} [disabled=false]
+	 * Adds a toggle item to a list with a label, properties object, property name, callback function, and disabled state.
+	 * @param {string} label The label for the item.
+	 * @param {object} propertiesObj An object which contains propertyName.
+	 * @param {string} propertyName The name of the property to toggle on/off.
+	 * @param {?Function} callback A function that will be executed when the item is clicked.
+	 * @param {?boolean=} [disabled=false] Whether the item should be disabled or not.
 	 */
 	addToggleItem(label, propertiesObj, propertyName, callback = () => { }, disabled = false) {
 		this.addItem(label, propertiesObj[propertyName], () => {
@@ -182,11 +188,11 @@ class Menu {
 	}
 
 	/**
-	 * Creates a set of radio items and checks the value specified
-	 * @param {string[]} labels Array of strings which corresponds to each radio item
-	 * @param {*} selectedValue Value of the radio item to be checked
-	 * @param {*[]} variables Array of values which correspond to each radio entry. `selectedValue` will be checked against these values.
-	 * @param {Function} callback
+	 * Creates a set of radio items and checks the value specified.
+	 * @param {string[]} labels The label for each radio item.
+	 * @param {*} selectedValue The value of the radio item to be checked.
+	 * @param {*[]} variables An array of values which correspond to each radio entry.
+	 * @param {Function} callback A function that will be executed when the item is clicked.
 	 */
 	addRadioItems(labels, selectedValue, variables, callback = () => { }, disabled = false) {
 		const startIndex = _MenuItemIndex;
@@ -206,13 +212,13 @@ class Menu {
 	}
 
 	/**
-	 * Creates a submenu consisting of radio items
-	 * @param {string} subMenuName
-	 * @param {string[]} labels Array of strings which corresponds to each radio item
-	 * @param {*} selectedValue Value of the radio item to be checked
-	 * @param {*[]} variables Array of values which correspond to each radio entry. `selectedValue` will be checked against these values.
-	 * @param {Function} callback
-	 * @param {boolean=} [disabled=false]
+	 * Creates a submenu consisting of radio items.
+	 * @param {string} subMenuName The name of the sub menu.
+	 * @param {string[]} labels The label for each radio item.
+	 * @param {*} selectedValue The value of the radio item to be checked.
+	 * @param {*[]} variables An array of values which correspond to each radio entry.
+	 * @param {Function} callback A function that will be executed when the menu item is clicked.
+	 * @param {boolean=} [disabled=false] Whether the item should be disabled or not.
 	 */
 	createRadioSubMenu(subMenuName, labels, selectedValue, variables, callback, disabled = false) {
 		const subMenu = new Menu(subMenuName);
@@ -221,11 +227,12 @@ class Menu {
 	}
 
 	/**
-	 * @param {string} label
-	 * @param {boolean} checked Should the menu item be checked
-	 * @param {*} variable Variable which will be passed to callback when item is clicked
-	 * @param {Function} callback
-	 * @param {boolean} disabled
+	 * Adds a menu item with a label, checked state, callback function, and optional variable to a menu.
+	 * @param {string} label The text that will be displayed for the menu item.
+	 * @param {boolean} checked Whether the menu item should be checked.
+	 * @param {*} variable A variable which will be passed to callback when item is clicked
+	 * @param {Function} callback A function that will be executed when the menu item is clicked.
+	 * @param {boolean} disabled Whether the item should be disabled or not.
 	 */
 	addItemWithVariable(label, checked, variable, callback, disabled) {
 		this.menu.AppendMenuItem(MF_STRING | (disabled ? MF_DISABLED | MF_GRAYED : 0), _MenuItemIndex, label);
@@ -238,17 +245,17 @@ class Menu {
 	}
 
 	/**
-	 * Appends menu to a parent menu
-	 * @param {Menu} parentMenu The Menu to append the subMenu to
-	 * @param {boolean=} [disabled=false]
+	 * Appends a menu to a parent menu.
+	 * @param {Menu} parentMenu The menu to append the submenu to.
+	 * @param {boolean=} [disabled=false] Whether the menu items should be disabled or not.
 	 */
 	appendTo(parentMenu, disabled = false) {
 		this.menu.AppendTo(parentMenu.menu, MF_STRING | (disabled ? MF_DISABLED | MF_GRAYED : 0), this.title);
 	}
 
 	/**
-	 * Handles callback and automatically disposes menu
-	 * @param {number} idx Value of the menu item's callback to call. Comes from menu.trackPopupMenu(x, y).
+	 * Handles callback and automatically disposes the menu.
+	 * @param {number} idx The value of the menu item's callback to call. Comes from menu.trackPopupMenu(x, y).
 	 */
 	doCallback(idx) {
 		if (idx > menuStartIndex && _MenuCallbacks[idx]) {
@@ -265,7 +272,7 @@ class Menu {
 	}
 
 	/**
-	 * @return {number} Index of the menu item clicked on
+	 * @returns {number} The index of the menu item clicked on.
 	 */
 	trackPopupMenu(x, y) {
 		return this.menu.TrackPopupMenu(x, y);
@@ -276,12 +283,23 @@ class Menu {
 /////////////////
 // * TOOLTIP * //
 /////////////////
+/**
+ * Creates or stops the tooltip timer.
+ */
 class TooltipTimer {
+	/**
+	 * @class
+	 */
 	constructor() {
 		this.tooltip_timer = undefined;
 		this.tt_caller = undefined;
 	}
 
+	/**
+	 * Starts a tooltip.
+	 * @param {number} id The id of the caller.
+	 * @param {string} text The text to show in the tooltip.
+	 */
 	start(id, text) {
 		const old_caller = this.tt_caller;
 		this.tt_caller = id;
@@ -303,12 +321,19 @@ class TooltipTimer {
 		}
 	}
 
+	/**
+	 * Stops a tooltip.
+	 * @param {number} id The id of the caller.
+	 */
 	stop(id) {
 		if (this.tt_caller === id) { // Do not stop other callers
 			this.forceStop();
 		}
 	}
 
+	/**
+	 * Forces the tooltip to stop.
+	 */
 	forceStop() {
 		this.tt('');
 		if (this.tooltip_timer) {
@@ -319,9 +344,9 @@ class TooltipTimer {
 	}
 
 	/**
-	 * Actually displays the tooltip
-	 * @param {string} text The text to show in the tooltip
-	 * @param {boolean=} force Activate the tooltip whether or not text has changed
+	 * Actually displays the tooltip.
+	 * @param {string} text The text to show in the tooltip.
+	 * @param {boolean=} force Activates the tooltip whether or not text has changed.
 	 */
 	tt(text, force) {
 		if (g_tooltip.Text !== text.toString() || force) {
@@ -332,15 +357,21 @@ class TooltipTimer {
 }
 
 
+/**
+ * Creates or clears the tooltip text for normal and styled tooltips.
+ */
 class TooltipHandler {
+	/**
+	 * @class
+	 */
 	constructor() {
 		this.id = Math.ceil(Math.random() * 10000);
 		this.timer = g_tooltip_timer;
 	}
 
 	/**
-	 * Show tooltip after delay (300ms)
-	 * @param {string} text
+	 * Shows tooltip after delay (300ms).
+	 * @param {string} text The text to show in the tooltip.
 	 */
 	showDelayed(text) {
 		styledTooltipText = text;
@@ -351,8 +382,8 @@ class TooltipHandler {
 	}
 
 	/**
-	 * Show tooltip now
-	 * @param {string} text
+	 * Shows the tooltip immediately.
+	 * @param {string} text The text to show in the tooltip.
 	 */
 	showImmediate(text) {
 		styledTooltipText = text;
@@ -364,7 +395,7 @@ class TooltipHandler {
 	}
 
 	/**
-	 * Clear this tooltip if this handler created it
+	 * Clears this tooltip if this handler created it.
 	 */
 	clear() {
 		styledTooltipReady = false;
@@ -372,7 +403,7 @@ class TooltipHandler {
 	}
 
 	/**
-	 * Clear tooltip regardless of which handler created it
+	 * Clears the tooltip regardless of which handler created it.
 	 */
 	stop() {
 		styledTooltipReady = false;
@@ -384,7 +415,14 @@ class TooltipHandler {
 ///////////////////////////////////////
 // * DETAILS METADATA GRID TOOLTIP * //
 ///////////////////////////////////////
+/**
+ * Creates tooltips on the metadata grid in Details when artist, title or album is truncated.
+ */
 class MetadataGridTooltip {
+	/**
+	 * @param {number} height The height.
+	 * @class
+	 */
 	constructor(height) {
 		this.x = 0;
 		this.y = 0;
@@ -395,6 +433,12 @@ class MetadataGridTooltip {
 
 	// * METHODS * //
 
+	/**
+	 * Sets the width and position of the metadata grid tooltip area.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} width The width.
+	 */
 	setSize(x, y, width) {
 		if (this.x !== x || this.y !== y || this.w !== width) {
 			this.x = x;
@@ -403,29 +447,38 @@ class MetadataGridTooltip {
 		}
 	}
 
+	/**
+	 * Sets the height of the metadata grid tooltip area.
+	 * @param {number} height The height.
+	 */
 	setHeight(height) {
 		this.h = height;
 	}
 
+	/**
+	 * Draws the metadata grid tooltip.
+	 * @param {GdiGraphics} gr
+	 */
 	draw(gr) {
 		const showGridArtist      = pref.layout === 'artwork' ? pref.showGridArtist_artwork      : pref.showGridArtist_default;
 		const showGridTitle       = pref.layout === 'artwork' ? pref.showGridTitle_artwork       : pref.showGridTitle_default;
 		const showGridTimeline    = pref.layout === 'artwork' ? pref.showGridTimeline_artwork    : pref.showGridTimeline_default;
 		const showGridArtistFlags = pref.layout === 'artwork' ? pref.showGridArtistFlags_artwork : pref.showGridArtistFlags_default;
-		const textLeft            = scaleForDisplay(pref.layout !== 'default' ? 20 : 40);
-		const textRight           = scaleForDisplay(20);
-		const lineSpacing         = scaleForDisplay(8);
-		const trackNumSpacing     = scaleForDisplay(8);
-		const timelineHeight      = showGridTimeline ? scaleForDisplay(55) : scaleForDisplay(20);
+		const textLeft            = SCALE(pref.layout !== 'default' ? 20 : 40);
+		const textRight           = SCALE(20);
+		const lineSpacing         = SCALE(8);
+		const trackNumSpacing     = SCALE(8);
+		const timelineHeight      = showGridTimeline ? SCALE(55) : SCALE(20);
 		const top                 = albumArtSize.y ? albumArtSize.y + textLeft : geo.topMenuHeight + textLeft;
 		const gridAlbumFontSize   = pref.layout === 'artwork' ? pref.gridAlbumFontSize_artwork : pref.gridAlbumFontSize_default;
+
 		const flagSize =
-		flagImgs.length >=  6 ? scaleForDisplay(84 + gridAlbumFontSize * 6) :
-		flagImgs.length === 5 ? scaleForDisplay(70 + gridAlbumFontSize * 5) :
-		flagImgs.length === 4 ? scaleForDisplay(56 + gridAlbumFontSize * 4) :
-		flagImgs.length === 3 ? scaleForDisplay(42 + gridAlbumFontSize * 3) :
-		flagImgs.length === 2 ? scaleForDisplay(28 + gridAlbumFontSize * 2) :
-		flagImgs.length === 1 ? scaleForDisplay(14 + gridAlbumFontSize) : '';
+		flagImgs.length >=  6 ? SCALE(84 + gridAlbumFontSize * 6) :
+		flagImgs.length === 5 ? SCALE(70 + gridAlbumFontSize * 5) :
+		flagImgs.length === 4 ? SCALE(56 + gridAlbumFontSize * 4) :
+		flagImgs.length === 3 ? SCALE(42 + gridAlbumFontSize * 3) :
+		flagImgs.length === 2 ? SCALE(28 + gridAlbumFontSize * 2) :
+		flagImgs.length === 1 ? SCALE(14 + gridAlbumFontSize) : '';
 		const availableFlags = showGridArtistFlags && flagImgs.length ? flagSize : 0;
 
 		this.gridSpace = Math.floor((!albumArt && discArt ? discArtSize.x : albumArtSize.x) - geo.discArtShadow - textLeft - textRight);
@@ -519,6 +572,9 @@ class MetadataGridTooltip {
 		}
 	}
 
+	/**
+	 * Clears the metadata grid tooltip.
+	 */
 	clearTooltip() {
 		this.tooltipText = '';
 		tt.stop();
@@ -526,6 +582,12 @@ class MetadataGridTooltip {
 
 	// * CALLBACKS * //
 
+	/**
+	 * Checks if the mouse is over the metadata grid tooltip area.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @return {boolean} True or false.
+	 */
 	mouseInThis(x, y) {
 		this.metadataGridTooltipArtist = x >= this.x && x < this.x + this.w && y >= this.topArtist && y < this.topArtist + this.artistNumLinesHeight;
 		this.metadataGridTooltipTitle  = x >= this.x && x < this.x + this.w && y >= this.topTitle  && y < this.topTitle  + this.titleNumLinesHeight;
@@ -538,6 +600,12 @@ class MetadataGridTooltip {
 		return this.metadataGridTooltipAll;
 	}
 
+	/**
+	 * Handles the tooltip when the mouse is in the metadata grid tooltip area.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 */
 	on_mouse_move(x, y, m) {
 		if (pref.showTooltipMain || pref.showTooltipTruncated) {
 			let tooltip = '';
@@ -574,13 +642,23 @@ class MetadataGridTooltip {
 ///////////////////////////
 // * LOWER BAR TOOLTIP * //
 ///////////////////////////
+/**
+ * Creates tooltips on the lower bar when artist or title is truncated.
+ */
 class LowerBarTooltip {
+	/**
+	 * @class
+	 */
 	constructor() {
 		this.tooltipText = '';
 	}
 
 	// * METHODS * //
 
+	/**
+	 * Draws the tooltip at the left lower bar area.
+	 * @param {GdiGraphics} gr
+	 */
 	draw(gr) {
 		const lowerBarFontSize        = pref.layout === 'compact' ? pref.lowerBarFontSize_compact        : pref.layout === 'artwork' ? pref.lowerBarFontSize_artwork        : pref.lowerBarFontSize_default;
 		const showLowerBarComposer    = pref.layout === 'compact' ? pref.showLowerBarComposer_compact    : pref.layout === 'artwork' ? pref.showLowerBarComposer_artwork    : pref.showLowerBarComposer_default;
@@ -590,23 +668,24 @@ class LowerBarTooltip {
 		const showVolumeBtn           = pref.layout === 'compact' ? pref.showVolumeBtn_compact           : pref.layout === 'artwork' ? pref.showVolumeBtn_artwork           : pref.showVolumeBtn_default;
 		const transportBtnSize        = pref.layout === 'compact' ? pref.transportButtonSize_compact     : pref.layout === 'artwork' ? pref.transportButtonSize_artwork     : pref.transportButtonSize_default;
 		const transportBtnSpacing     = pref.layout === 'compact' ? pref.transportButtonSpacing_compact  : pref.layout === 'artwork' ? pref.transportButtonSpacing_artwork  : pref.transportButtonSpacing_default;
+
 		const flagSize =
-		flagImgs.length >=  6 ? scaleForDisplay(84 + lowerBarFontSize * 6) :
-		flagImgs.length === 5 ? scaleForDisplay(70 + lowerBarFontSize * 5) :
-		flagImgs.length === 4 ? scaleForDisplay(56 + lowerBarFontSize * 4) :
-		flagImgs.length === 3 ? scaleForDisplay(42 + lowerBarFontSize * 3) :
-		flagImgs.length === 2 ? scaleForDisplay(28 + lowerBarFontSize * 2) :
-		flagImgs.length === 1 ? scaleForDisplay(14 + lowerBarFontSize) : '';
+		flagImgs.length >=  6 ? SCALE(84 + lowerBarFontSize * 6) :
+		flagImgs.length === 5 ? SCALE(70 + lowerBarFontSize * 5) :
+		flagImgs.length === 4 ? SCALE(56 + lowerBarFontSize * 4) :
+		flagImgs.length === 3 ? SCALE(42 + lowerBarFontSize * 3) :
+		flagImgs.length === 2 ? SCALE(28 + lowerBarFontSize * 2) :
+		flagImgs.length === 1 ? SCALE(14 + lowerBarFontSize) : '';
 		const availableFlags = showLowerBarArtistFlags && flagImgs.length ? flagSize : 0;
 		const playbackTime   = pref.layout === 'compact' ? pref.showPlaybackTime_compact : pref.showPlaybackTime_artwork;
 
 		this.timeAreaWidth = str.disc !== '' && pref.layout === 'default' ? gr.CalcTextWidth(`${str.disc}   ${str.time}   ${str.length}`, ft.lower_bar_title) : gr.CalcTextWidth(` ${str.time}   ${str.length}`, ft.lower_bar_title);
-		this.lowerMargin   = scaleForDisplay((pref.layout === 'compact' || pref.layout === 'artwork' ? 60 : pref.showTransportControls_default ? 60 : 100) + (!playbackTime ? -this.timeAreaWidth : 0));
+		this.lowerMargin   = SCALE((pref.layout === 'compact' || pref.layout === 'artwork' ? 60 : pref.showTransportControls_default ? 60 : 100) + (!playbackTime ? -this.timeAreaWidth : 0));
 
 		// * Calculate all transport buttons width
-		const buttonSize    = scaleForDisplay(transportBtnSize);
+		const buttonSize    = SCALE(transportBtnSize);
 		const buttonCount   = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
-		const buttonSpacing = scaleForDisplay(transportBtnSpacing);
+		const buttonSpacing = SCALE(transportBtnSpacing);
 
 		// * Setup width for artist and song title
 		this.availableWidth                = pref.layout === 'default' && pref.showTransportControls_default && (pref.showLowerBarArtist_default || pref.showLowerBarTitle_default) ? Math.round(ww * 0.5 - this.lowerMargin - ((buttonSize * buttonCount + buttonSpacing * buttonCount) / 2)) : Math.round(ww - this.lowerMargin - (playbackTime ? this.timeAreaWidth : 0));
@@ -619,6 +698,9 @@ class LowerBarTooltip {
 		this.titleOnlyMaxWidth_no_default  = ww - (this.trackNumWidth + this.timeAreaWidth + this.lowerMargin);
 	}
 
+	/**
+	 * Clears the lower bar tooltip.
+	 */
 	clearTooltip() {
 		this.tooltipText = '';
 		tt.stop();
@@ -626,9 +708,15 @@ class LowerBarTooltip {
 
 	// * CALLBACKS * //
 
+	/**
+	 * Checks if the mouse is over the lower bar tooltip area.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @return {boolean} True or false.
+	 */
 	mouseInThis(x, y) {
-		const zoneX = scaleForDisplay(pref.layout !== 'default' ? 20 : 40);
-		const zoneY = wh - geo.lowerBarHeight + scaleForDisplay(15);
+		const zoneX = SCALE(pref.layout !== 'default' ? 20 : 40);
+		const zoneY = wh - geo.lowerBarHeight + SCALE(15);
 		const zoneW = pref.layout === 'compact' || pref.layout === 'artwork' ? ww - this.lowerMargin - this.timeAreaWidth : this.availableWidth;
 		const zoneH = geo.lowerBarHeight * 0.33;
 		const zone = zoneX <= x && zoneY <= y && zoneX + zoneW >= x && zoneY + zoneH >= y;
@@ -639,6 +727,11 @@ class LowerBarTooltip {
 		return zone;
 	}
 
+	/**
+	 * Handles the tooltip if the mouse is in the lower bar tooltip area.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 */
 	on_mouse_move(x, y) {
 		let tooltip = '';
 		const showLowerBarArtist   = pref.layout === 'compact' ? pref.showLowerBarArtist_compact   : pref.layout === 'artwork' ? pref.showLowerBarArtist_artwork   : pref.showLowerBarArtist_default;
@@ -666,14 +759,20 @@ class LowerBarTooltip {
 //////////////////////////////
 // * INTERFACE HYPERLINKS * //
 //////////////////////////////
+/** @enum {number} */
 const HyperlinkStates = {
 	Normal: 0,
 	Hovered: 1
 };
 
-
-/** For every Hyperlink not created in Playlist */
-function hyperlinks_on_mouse_move (hyperlink, x, y) {
+/**
+ * Sets mouse hover state for every hyperlink not created in Playlist.
+ * @param {Object} hyperlink The hyperlink object.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @returns {boolean} True or false.
+ */
+function hyperlinks_on_mouse_move(hyperlink, x, y) {
 	if (hyperlink.trace(x, y)) {
 		if (hyperlink.state !== HyperlinkStates.Hovered) {
 			hyperlink.state = HyperlinkStates.Hovered;
@@ -689,18 +788,22 @@ function hyperlinks_on_mouse_move (hyperlink, x, y) {
 }
 
 
+/**
+ * Creates clickable hyperlinks in the Playlist header and in the lower bar.
+ */
 class Hyperlink {
 	/**
-	 *
-	 * @param {string} text The text that will be displayed in the hyperlink
-	 * @param {GdiFont} font
+	 * Initializes properties for the text element in the playlist.
+	 * @param {string} text The text that will be displayed in the hyperlink.
+	 * @param {GdiFont} font The font to use.
 	 * @param {string} type The field name which will be searched when clicking on the hyperlink
-	 * @param {number} xOffset x-offset of the hyperlink. Negative values will be subtracted from the containerWidth to right justify.
-	 * @param {number} yOffset y-offset of the hyperlink.
+	 * @param {number} xOffset The x-offset of the hyperlink. Negative values will be subtracted from the containerWidth to right justify.
+	 * @param {number} yOffset The y-offset of the hyperlink.
 	 * @param {number} containerWidth The width of the container the hyperlink will be in. Used for right justification purposes.
-	 * @param {boolean} [inPlaylist=false] If the hyperlink is drawing in a scrolling container like a playlist, then it is drawn differently
+	 * @param {boolean} [inPlaylist=false] If the hyperlink is drawing in a scrolling container like a playlist, then it is drawn differently.
+	 * @class
 	 */
-	constructor (text, font, type, xOffset, yOffset, containerWidth, inPlaylist = false) {
+	constructor(text, font, type, xOffset, yOffset, containerWidth, inPlaylist = false) {
 		this.text = text;
 		this.type = type;
 		this.x_offset = xOffset;
@@ -717,17 +820,26 @@ class Hyperlink {
 	// * METHODS * //
 
 	/**
-	 * Set the xOffset of the hyperlink after it has been created
-	 * @param {number} xOffset x-offset of the hyperlink. Negative values will be subtracted from the containerWidth to right justify.
+	 * Sets the xOffset of the hyperlink after it has been created.
+	 * @param {number} xOffset The x-offset of the hyperlink. Negative values will be subtracted from the containerWidth to right justify.
 	 */
 	set_xOffset(xOffset) {
 		this.x = xOffset < 0 ? this.container_w + xOffset : xOffset;
 	}
 
+	/**
+	 * Sets the vertical position of the hyperlink.
+	 * The playlist requires subtracting 2 additional pixels from y for some reason.
+	 * @param {number} y The y-coordinate.
+	 */
 	set_y(y) {
-		this.y = y + this.y_offset + (-2);	// Playlist requires subtracting 2 additional pixels from y for some reason
+		this.y = y + this.y_offset + (-2);
 	}
 
+	/**
+	 * Sets the font for the hyperlink.
+	 * @param {GdiFont} font The font that will be used.
+	 */
 	setFont(font) {
 		this.font = font;
 		this.hoverFont = gdi.Font(font.Name, font.Size, font.Style | g_font_style.underline);
@@ -735,23 +847,23 @@ class Hyperlink {
 	}
 
 	/**
-	 * Set the width of the container the hyperlink will be placed in.
+	 * Sets the width of the container the hyperlink will be placed in.
 	 * If hyperlink width is smaller than the container, it will be truncated.
 	 * If the the xOffset is negative, the position will be adjusted as the container width changes.
-	 * @param {number} w
+	 * @param {number} w The width.
 	 */
 	setContainerWidth(w) {
 		if (this.x_offset < 0) {
 			this.x = w + this.x_offset; // Add because offset is negative
 		}
-		this.container_w = pref.showPlaylistFullDate ? w - scaleForDisplay(320) : w - scaleForDisplay(240);
+		this.container_w = pref.showPlaylistFullDate ? w - SCALE(320) : w - SCALE(240);
 		this.link_dimensions = this.updateDimensions();
 		this.w = Math.ceil(Math.min(this.container_w, this.link_dimensions.Width + 1));
 	}
 
 	/**
-	 * Gets the width of the hyperlink
-	 * @return {number} The width of the hyperlink
+	 * Gets the width of the hyperlink.
+	 * @returns {number} The width of the link in pixels.
 	 */
 	getWidth() {
 		try {
@@ -759,6 +871,10 @@ class Hyperlink {
 		} catch (e) {}
 	}
 
+	/**
+	 * Updates the width and height of the hyperlinks.
+	 * @returns {number} The dimensions of the text.
+	 */
 	updateDimensions() {
 		if (ww <= 0 || wh <= 0) return;
 		const measureStringScratchImg = gdi.CreateImage(1000, 200);
@@ -770,6 +886,9 @@ class Hyperlink {
 		return dimensions;
 	}
 
+	/**
+	 * Updates the hyperlink state.
+	 */
 	repaint() {
 		try {
 			window.RepaintRect(this.x, this.y, this.w, this.h);
@@ -778,9 +897,12 @@ class Hyperlink {
 		}
 	}
 
+	/**
+	 * Populates the result of artist, album, date or label in the "Search" playlist when a hyperlink was clicked.
+	 */
 	click() {
 		const populatePlaylist = (query) => {
-			debugLog(query);
+			DebugLog(query);
 			try {
 				const handle_list = fb.GetQueryItems(fb.GetLibraryItems(), query);
 				if (handle_list.Count) {
@@ -822,7 +944,7 @@ class Hyperlink {
 		/** @type {string} */
 		let query;
 		switch (this.type) {
-			case 'update': runCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/releases'); break;
+			case 'update': RunCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/releases'); break;
 			case 'date':   query = pref.showPlaylistFullDate ? `"${tf.date}" IS ${this.text}` : `"$year(%date%)" IS ${this.text}`; break;
 			case 'artist': query = `Artist HAS "${this.text.replace(/"/g, '')}" OR Album Artist HAS "${this.text.replace(/"/g, '')}" OR ARTISTFILTER HAS "${this.text.replace(/"/g, '')}"`; break;
 			case 'album':  query = `Album HAS "${this.text.replace(/"/g, '')}"`; break;
@@ -842,15 +964,21 @@ class Hyperlink {
 	/**
 	 * Draws the hyperlink. When drawing in a playlist, we draw from the y-offset instead of y, because the playlist scrolls.
 	 * @param {GdiGraphics} gr
-	 * @param {*} color
+	 * @param {*} color The color of the hyperlink.
 	 */
 	draw(gr, color) {
 		const font = this.state === HyperlinkStates.Hovered ? this.hoverFont : this.font;
-		gr.DrawString(this.text, font, color, this.x, this.inPlaylist ? this.y_offset : this.y, this.w + scaleForDisplay(1), this.h, g_string_format.trim_ellipsis_char);
+		gr.DrawString(this.text, font, color, this.x, this.inPlaylist ? this.y_offset : this.y, this.w + SCALE(1), this.h, g_string_format.trim_ellipsis_char);
 	}
 
 	// * CALLBACKS * //
 
+	/**
+	 * Checks if the mouse is within the boundaries of a hyperlink.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	trace(x, y) {
 		return (this.x <= x) && (x <= this.x + this.w) && (this.y <= y) && (y <= this.y + this.h);
 	}
@@ -860,9 +988,16 @@ class Hyperlink {
 //////////////////////////
 // * DETAILS TIMELINE * //
 //////////////////////////
+/**
+ * Creates the timeline above the metadata grid in Details.
+ */
 class Timeline {
+	/**
+	 * @param {number} height The height of the timeline.
+	 * @class
+	 */
 	constructor(height) {
-		this.marginLeft = scaleForDisplay(pref.layout !== 'default' ? 20 : 40);
+		this.marginLeft = SCALE(pref.layout !== 'default' ? 20 : 40);
 		this.x = this.marginLeft;
 		this.y = 0;
 		this.w = albumArtSize.x - this.marginLeft * 2;
@@ -875,41 +1010,68 @@ class Timeline {
 		/** @private */ this.playedTimesPercents = [];
 		/** @private */ this.playedTimes = [];
 
-		// Recalc'd in setSize
-		/** @private */ this.lineWidth = is_4k ? 3 : 2;
-		/** @private */ this.extraLeftSpace = scaleForDisplay(3); // Add a little space to the left so songs that were played a long time ago show more in the "added" stage
+		// Recalculated in setSize
+		/** @private */ this.lineWidth = RES_4K ? 3 : 2;
+		/** @private */ this.extraLeftSpace = SCALE(3); // Add a little space to the left so songs that were played a long time ago show more in the "added" stage
 		/** @private */ this.drawWidth = Math.floor(this.w - this.extraLeftSpace - 1 - this.lineWidth / 2); // Area that the timeline percents can be drawn in
-		/** @private */ this.leeway = (1 / this.drawWidth) * (this.lineWidth + scaleForDisplay(2)) / 2; // Percent of timeline that we use to determine if mouse is over a playline. Equals half line with + 1 or 2 pixels on either side
+		/** @private */ this.leeway = (1 / this.drawWidth) * (this.lineWidth + SCALE(2)) / 2; // Percent of timeline that we use to determine if mouse is over a playline. Equals half line with + 1 or 2 pixels on either side
 
 		this.tooltipText = '';
 	}
 
 	// * METHODS * //
 
+	/**
+	 * Sets the width and position of the timeline.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} width The width of the timeline.
+	 */
 	setSize(x, y, width) {
-		if (this.x !== x || this.y !== y || this.w !== width) {
-			this.x = x;
-			this.y = y;
-			this.w = width;
-
-			// Recalc these values
-			this.lineWidth = is_4k ? 3 : 2;
-			this.extraLeftSpace = scaleForDisplay(3); // Add a little space to the left so songs that were played a long time ago show more in the "added" stage
-			this.drawWidth = Math.floor(this.w - this.extraLeftSpace - 1 - this.lineWidth / 2);
-			this.leeway = (1 / this.drawWidth) * (this.lineWidth + scaleForDisplay(2)) / 2;
+		if (this.x === x && this.y === y && this.w === width) {
+			return;
 		}
+
+		this.x = x;
+		this.y = y;
+		this.w = width;
+
+		// Recalculate these values
+		this.lineWidth = RES_4K ? 3 : 2;
+		this.extraLeftSpace = SCALE(3); // Add a little space to the left so songs that were played a long time ago show more in the "added" stage
+		this.drawWidth = Math.floor(this.w - this.extraLeftSpace - 1 - this.lineWidth / 2);
+		this.leeway = (1 / this.drawWidth) * (this.lineWidth + SCALE(2)) / 2;
 	}
 
+	/**
+	 * Sets the height of the timeline.
+	 * @param {number} height The height of the timeline.
+	 */
 	setHeight(height) {
 		this.h = height;
 	}
 
+	/**
+	 * Sets the colors of the three timeline bars.
+	 * @param {number} addedCol The color for the added bar.
+	 * @param {number} playedCol The color for the played bar.
+	 * @param {number} unplayedCol The color for the unplayed bar.
+	 */
 	setColors(addedCol, playedCol, unplayedCol) {
 		this.addedCol = addedCol;
 		this.playedCol = playedCol;
 		this.unplayedCol = unplayedCol;
 	}
 
+	/**
+	 * Sets the first and last played percentages, as well as the played time ratios and values.
+	 * @param {number} firstPlayed The percentage of the total play time that represents the first time the item was played.
+	 * @param {number} lastPlayed The percentage of the total play time that represents the last time the item was played.
+	 * @param {number} playedTimeRatios The percentage of time played for each playedTimesValues.
+	 * @param {number} playedTimesValues Contains the actual played times for each interval.
+	 * For example, if the intervals are divided into 5 parts, playedTimesValues would be an
+	 * array of 5 numbers representing the played times for each interval.
+	 */
 	setPlayTimes(firstPlayed, lastPlayed, playedTimeRatios, playedTimesValues) {
 		this.firstPlayedPercent = firstPlayed;
 		this.lastPlayedPercent = lastPlayed;
@@ -917,11 +1079,18 @@ class Timeline {
 		this.playedTimes = playedTimesValues;
 	}
 
+	/**
+	 * Clears the timeline tooltip.
+	 */
 	clearTooltip() {
 		this.tooltipText = '';
 		tt.stop();
 	}
 
+	/**
+	 * Draws the timeline above the metadata grid in Details.
+	 * @param {GdiGraphics} gr
+	 */
 	draw(gr) {
 		if (this.addedCol && this.playedCol && this.unplayedCol) {
 			gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing
@@ -950,8 +1119,14 @@ class Timeline {
 
 	// * CALLBACKS * //
 
+	/**
+	 * Checks if the mouse is within the boundaries of the timeline.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	mouseInThis(x, y) {
-		const zone = scaleForDisplay(10);
+		const zone = SCALE(10);
 		const inTimeline = x >= this.x && x < this.x + this.w && y >= this.y - zone && y < this.y + this.h + zone;
 		if (!inTimeline && this.tooltipText.length) {
 			this.clearTooltip();
@@ -965,48 +1140,57 @@ class Timeline {
 		return inTimeline;
 	}
 
+	/**
+	 * Displays the timeline tooltip with the date and time when the mouse is moved over an element.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 */
 	on_mouse_move(x, y, m) {
-		if (pref.showTooltipTimeline) {
-			let tooltip = '';
-			const percent = toFixed((x + this.x - this.marginLeft * 2 - this.extraLeftSpace) / this.drawWidth, 3);
+		if (!pref.showTooltipTimeline || this.playedTimesPercents.length === 0) return;
 
-			// TODO: is this really slow with hundreds of plays?
-			for (let i = 0; i < this.playedTimesPercents.length; i++) {
-				if (percent >= this.playedTimesPercents[i] - this.leeway && percent < this.playedTimesPercents[i] + this.leeway) {
-					const date = new Date(this.playedTimes[i]);
-					if (tooltip.length) {
-						tooltip += '\n';
-					}
-					tooltip += date.toLocaleString();
-				}
-				else if (percent < this.playedTimesPercents[i]) {
-					// The list is sorted so we can abort early
-					if (!tooltip.length) {
-						if (i === 0) {
-							const added = dateDiff($date('[%added%]'), this.playedTimes[0]);
-							tooltip = added ? `First played after ${added}` : '';
-						} else {
-							tooltip = `No plays for ${dateDiff(new Date(this.playedTimes[i - 1]).toISOString(), this.playedTimes[i])}`;
-						}
-					}
-					break;
-				}
+		let tooltip = '';
+		const tooltipArray = [];
+		const percent = ToFixed((x + this.x - this.marginLeft * 2 - this.extraLeftSpace) / this.drawWidth, 3);
+		const playedTimesPercentsCache = [...this.playedTimesPercents];
+
+		for (let i = 0; i < playedTimesPercentsCache.length; i++) {
+			if (percent >= playedTimesPercentsCache[i] - this.leeway && percent < playedTimesPercentsCache[i] + this.leeway) {
+				const date = new Date(this.playedTimes[i]);
+				tooltipArray.push(date.toLocaleString());
 			}
-			if (tooltip.length) {
-				this.tooltipText = tooltip;
-				tt.showImmediate(this.tooltipText);
-			} else {
-				this.clearTooltip();
+			else if (percent < playedTimesPercentsCache[i]) {
+				if (i === 0) {
+					const added = DateDiff($Date('[%added%]'), this.playedTimes[0]);
+					tooltipArray.push(added ? `First played after ${added}` : '');
+				} else {
+					tooltipArray.push(`No plays for ${DateDiff(new Date(this.playedTimes[i - 1]).toISOString(), this.playedTimes[i])}`);
+				}
+				break;
 			}
+		}
+
+		if (tooltipArray.length) {
+			tooltip = tooltipArray.join('\n');
+			this.tooltipText = tooltip;
+			tt.showImmediate(this.tooltipText);
+		} else {
+			this.clearTooltip();
 		}
 	}
 }
 
 
-////////////////////
-// * JUMPSEARCH * //
-////////////////////
+/////////////////////
+// * JUMP SEARCH * //
+/////////////////////
+/**
+ * Creates the jump search when using keystrokes, searches in the active Playlist first and if nothing found it tries in the Library.
+ */
 class JumpSearch {
+	/**
+	 * @class
+	 */
 	constructor() {
 		this.arc1 = 5;
 		this.arc2 = 4;
@@ -1023,29 +1207,36 @@ class JumpSearch {
 
 	// * METHODS * //
 
+	/**
+	 * Sets the vertical position of the jump search.
+	 * @param {number} y The y-coordinate.
+	 */
 	setY(y) {
 		this.y = y;
 	}
 
+	/**
+	 * Draws the jump search on the playlist panel.
+	 * @param {GdiGraphics} gr
+	 */
 	draw(gr) {
-		if (this.jSearch) {
-			gr.SetSmoothingMode(4);
-			this.j.w = gr.CalcTextWidth(this.jSearch, ft.notification) + 25;
-			gr.FillRoundRect(this.j.x - this.j.w / 2, this.j.y, this.j.w, this.j.h, this.arc1, this.arc1, RGBtoRGBA(col.popupBg, 220));
-			gr.DrawRoundRect(this.j.x - this.j.w / 2, this.j.y, this.j.w, this.j.h, this.arc1, this.arc1, 1, 0x64000000);
-			gr.DrawRoundRect(this.j.x - this.j.w / 2 + 1, this.j.y + 1, this.j.w - 2, this.j.h - 2, this.arc2, this.arc2, 1, 0x28ffffff);
-			// gr.GdiDrawText(this.jSearch, ft.notification, RGB(0, 0, 0), this.j.x - this.j.w / 2 + 1, this.j.y + 1, this.j.w, this.j.h, panel.cc); // Drop shadow not needed
-			gr.GdiDrawText(this.jSearch, ft.notification, this.jump_search ? col.popupText : 0xffff4646, this.j.x - this.j.w / 2, this.j.y, this.j.w, this.j.h, panel.cc);
-			gr.SetSmoothingMode(0);
-		}
-	}
-
-	allEqual(str) {
-		return str.split('').every(char => char === str[0]);
+		if (!this.jSearch) return;
+		gr.SetSmoothingMode(4);
+		this.j.w = gr.CalcTextWidth(this.jSearch, ft.notification) + 25;
+		gr.FillRoundRect(this.j.x - this.j.w / 2, this.j.y, this.j.w, this.j.h, this.arc1, this.arc1, RGBtoRGBA(col.popupBg, 220));
+		gr.DrawRoundRect(this.j.x - this.j.w / 2, this.j.y, this.j.w, this.j.h, this.arc1, this.arc1, 1, 0x64000000);
+		gr.DrawRoundRect(this.j.x - this.j.w / 2 + 1, this.j.y + 1, this.j.w - 2, this.j.h - 2, this.arc2, this.arc2, 1, 0x28ffffff);
+		// gr.GdiDrawText(this.jSearch, ft.notification, RGB(0, 0, 0), this.j.x - this.j.w / 2 + 1, this.j.y + 1, this.j.w, this.j.h, panel.cc); // Drop shadow not needed
+		gr.GdiDrawText(this.jSearch, ft.notification, this.jump_search ? col.popupText : 0xffff4646, this.j.x - this.j.w / 2, this.j.y, this.j.w, this.j.h, panel.cc);
+		gr.SetSmoothingMode(0);
 	}
 
 	// * CALLBACKS * //
 
+	/**
+	 * Handles key pressed events and activates the jump search.
+	 * @param {number} code An UTF16 encoded character.
+	 */
 	on_char(code) {
 		if (panel.search.active || utils.IsKeyPressed(0x11)) return;
 		const text = String.fromCharCode(code);
@@ -1070,7 +1261,7 @@ class JumpSearch {
 		// * Playlist advance
 		if (focusIndex >= 0 && focusIndex < search.length && (displayPlaylist || displayPlaylistLibrary(true))) {
 			const char = search[focusIndex].replace(/@!#.*?@!#/g, '').charAt(0).toLowerCase();
-			if (char === text && this.allEqual(this.jSearch)) {
+			if (char === text && AllEqual(this.jSearch)) {
 				this.jSearch = this.jSearch.slice(0, 1);
 				advance = true;
 			}
@@ -1078,7 +1269,7 @@ class JumpSearch {
 		// * Library advance
 		else if (panel.pos >= 0 && panel.pos < pop.tree.length && !displayPlaylistLibrary(true)) {
 			const char = pop.tree[panel.pos].name.replace(/@!#.*?@!#/g, '').charAt(0).toLowerCase();
-			if (pop.tree[panel.pos].sel && char === text && this.allEqual(this.jSearch)) {
+			if (pop.tree[panel.pos].sel && char === text && AllEqual(this.jSearch)) {
 				this.jSearch = this.jSearch.slice(0, 1);
 				advance = true;
 			}
@@ -1266,6 +1457,9 @@ class JumpSearch {
 		}
 	}
 
+	/**
+	 * Sets the size and position of the jump search and updates them on window resizing.
+	 */
 	on_size() {
 		this.j.x = Math.round(pref.playlistLayout === 'full' || pref.layout !== 'default' ? ww * 0.5 : ww * 0.5 + ww * 0.25);
 		this.j.h = Math.round(playlist_geo.row_h * 1.5);
@@ -1279,7 +1473,13 @@ class JumpSearch {
 //////////////////////
 // * PAUSE BUTTON * //
 //////////////////////
+/**
+ * Creates a pause button on the album art when playback is being paused.
+ */
 class PauseButton {
+	/**
+	 * @class
+	 */
 	constructor() {
 		this.xCenter = 0;
 		this.yCenter = 0;
@@ -1290,9 +1490,9 @@ class PauseButton {
 	// * METHODS * //
 
 	/**
-	 * Set the coordinates of the center point of the pause button
-	 * @param {number} xCenter The x-coordinate of the center of the pause button
-	 * @param {number} yCenter The y-coordinate of the center of the pause button
+	 * Sets the coordinates of the center point of the pause button.
+	 * @param {number} xCenter The centered x-coordinate.
+	 * @param {number} yCenter The centered y-coordinate.
 	 */
 	setCoords(xCenter, yCenter) {
 		this.xCenter = xCenter;
@@ -1301,12 +1501,19 @@ class PauseButton {
 		this.left = Math.round(this.xCenter - geo.pauseSize / 2);
 	}
 
+	/**
+	 * Updates the pause button state.
+	 */
 	repaint() {
 		window.RepaintRect(this.left - 1, this.top - 1, geo.pauseSize + 2, geo.pauseSize + 2);
 	}
 
+	/**
+	 * Draws the pause button on the album art cover.
+	 * @param {GdiGraphics} gr
+	 */
 	draw(gr) {
-		const pauseBorderWidth = scaleForDisplay(2);
+		const pauseBorderWidth = SCALE(2);
 		const halfBorderWidth = Math.floor(pauseBorderWidth / 2);
 
 		gr.SetSmoothingMode(SmoothingMode.AntiAlias); // Smooth edges
@@ -1323,17 +1530,33 @@ class PauseButton {
 
 	// * CALLBACKS * //
 
+	/**
+	 * Checks if the mouse is within the boundaries of the pause button.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	mouseInThis(x, y) {
 		return (x >= this.left && y >= this.top && x < this.left + geo.pauseSize + 1 && y <= this.top + geo.pauseSize + 1);
 	}
 }
 
 
-////////////////////////
-// * VOLUME CONTROL * //
-////////////////////////
+///////////////////////
+// * VOLUME BUTTON * //
+///////////////////////
+/**
+ * Creates basic volume controls.
+ */
 class Volume {
-	constructor (x, y, w, h) {
+	/**
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} w The width.
+	 * @param {number} h The height.
+	 * @class
+	 */
+	constructor(x, y, w, h) {
 		this.x = x;
 		this.y = y;
 		this.w = w;
@@ -1347,32 +1570,45 @@ class Volume {
 		this.tt = new TooltipHandler();
 
 		/**
-		 *
-		 * @param {number} volume value between 0 and 1 where 1 is full volume
-		 * @returns {number} a decibel value between -100 and 0, to pass to fb.Volume. 0 is max volume, -100 is min.
+		 * Calculates the decibel (dB) value of the given volume.
+		 * @param {number} volume A value between 0 and 1 where 1 is full volume.
+		 * @returns {number} A decibel value between -100 and 0, to pass to fb.Volume. 0 is max volume, -100 is min.
 		 */
 		this.toDb = (volume) => (50 * Math.log(0.99 * volume + 0.01)) / Math.LN10;
 	}
 
 	/**
-	 * Returns the size in pixels of the fill portion of the volume bar, based on current volume
-	 * @param {string} type Either 'h' or 'w' for vertical or horizontal volume bars
+	 * Calculates the size of the fill portion of the volume bar based on current volume.
+	 * @param {string} type Either 'h' or 'w' for vertical or horizontal volume bars.
+	 * @returns {number} The calculated size based on the type parameter.
 	 */
 	fillSize(type) {
 		return Math.ceil((type === 'w' ? this.w : this.h) * (10 ** (fb.Volume / 50) - 0.01) / 0.99);
 	}
 
+	/**
+	 * Checks if the given coordinates are within the boundaries of the volume button on left mouse down click.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	lbtn_down(x, y) {
 		if (this.trace(x, y)) {
 			this.clickX = x;
 			this.clickY = y;
-			this.move(x, y);    // Force volume to update without needing to move or release lbtn
+			this.move(x, y); // Force volume to update without needing to move or release lbtn
 			return true;
 		} else {
 			return false;
 		}
 	}
 
+	/**
+	 * Checks if the left mouse click is within the boundaries of the volume bar and adjusts the volume accordingly.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	lbtn_up(x, y) {
 		this.clickX = 0;
 		this.clickY = 0;
@@ -1390,10 +1626,19 @@ class Volume {
 		return inVolumeSlider;
 	}
 
+	/**
+	 * Releases volume drag when mouse is out of the boundaries of the volume bar.
+	 */
 	leave() {
 		this.drag = false;
 	}
 
+	/**
+	 * Handles mouse move events on the volume bar, i.e when dragging the bar.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	move(x, y) {
 		this.mx = x;
 		this.my = y;
@@ -1425,9 +1670,10 @@ class Volume {
 	}
 
 	/**
-	 * Determines if a point is "inside" the bounds of the volume control.
-	 * @param {number} x
-	 * @param {number} y
+	 * Checks if the mouse is within the boundaries of the volume bar.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
 	 */
 	trace(x, y) {
 		const margin = 5; // The area the mouse can go outside physical bounds of the volume control
@@ -1435,7 +1681,8 @@ class Volume {
 	}
 
 	/**
-	 * @param {number} scrollAmt
+	 * Handles mouse wheel events and adjusts the volume.
+	 * @param {number} scrollAmt The amount of scrolling that has occurred.
 	 */
 	wheel(scrollAmt) {
 		if (!this.trace(this.mx, this.my)) {
@@ -1453,10 +1700,13 @@ class Volume {
 }
 
 
-///////////////////////
-// * VOLUME BUTTON * //
-///////////////////////
+/**
+ * Creates the volume button in the lower bar next to its other playback transport buttons.
+ */
 class VolumeBtn {
+	/**
+	 * @class
+	 */
 	constructor() {
 		// * Calculate all transport buttons width
 		const showPlaybackOrderBtn = pref.layout === 'compact' ? pref.showPlaybackOrderBtn_compact   : pref.layout === 'artwork' ? pref.showPlaybackOrderBtn_artwork   : pref.showPlaybackOrderBtn_default;
@@ -1464,15 +1714,15 @@ class VolumeBtn {
 		const showVolumeBtn        = pref.layout === 'compact' ? pref.showVolumeBtn_compact          : pref.layout === 'artwork' ? pref.showVolumeBtn_artwork          : pref.showVolumeBtn_default;
 		const transportBtnSize     = pref.layout === 'compact' ? pref.transportButtonSize_compact    : pref.layout === 'artwork' ? pref.transportButtonSize_artwork    : pref.transportButtonSize_default;
 		const transportBtnSpacing  = pref.layout === 'compact' ? pref.transportButtonSpacing_compact : pref.layout === 'artwork' ? pref.transportButtonSpacing_artwork : pref.transportButtonSpacing_default;
-		const buttonSize           = scaleForDisplay(transportBtnSize);
-		const buttonSpacing        = scaleForDisplay(transportBtnSpacing);
+		const buttonSize           = SCALE(transportBtnSize);
+		const buttonSpacing        = SCALE(transportBtnSpacing);
 		const buttonCount          = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
-		const volumeBarWidth       = Math.ceil((ww - (buttonSize * buttonCount + buttonSpacing * buttonCount)) / 2 - scaleForDisplay(40));
+		const volumeBarWidth       = Math.ceil((ww - (buttonSize * buttonCount + buttonSpacing * buttonCount)) / 2 - SCALE(40));
 
 		this.x = 0;
 		this.y = 0;
-		this.w = scaleForDisplay(ww < 600 ? volumeBarWidth : 100);
-		this.h = scaleForDisplay(12);
+		this.w = SCALE(ww < 600 ? volumeBarWidth : 100);
+		this.h = SCALE(12);
 
 		this.inThisPadding = this.w * 0.5;
 
@@ -1485,28 +1735,98 @@ class VolumeBtn {
 		this.volumeBar = undefined;
 
 		/**
-		 *
-		 * @param {number} volume value between 0 and 1 where 1 is full volume
-		 * @returns {number} a percentage value between 0% and 100%, to pass to fb.Volume.
+		 * Calculates the corresponding percentage value from decibel.
+		 * @param {number} volume A value between 0 and 1 where 1 is full volume.
+		 * @returns {number} A percentage value between 0% and 100%, to pass to fb.Volume.
 		 */
 		this.toPercent = (volume) => (10 ** (volume / 50) - 0.01) / 0.99;
 	}
 
 	// * METHODS * //
 
+	/**
+	 * Sets the position of the volume bar.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} btnWidth The width.
+	 */
 	setPosition(x, y, btnWidth) {
 		const wh = window.Height;
-		const buttonSize_default = scaleForDisplay(pref.transportButtonSize_default);
-		const buttonSize_artwork = scaleForDisplay(pref.transportButtonSize_artwork);
-		const buttonSize_compact = scaleForDisplay(pref.transportButtonSize_compact);
-		const center_default = Math.floor(buttonSize_default / 2 + scaleForDisplay(4));
-		const center_artwork = Math.floor(buttonSize_artwork / 2 + scaleForDisplay(4));
-		const center_compact = Math.floor(buttonSize_compact / 2 + scaleForDisplay(4));
-		this.x = x + (pref.layout === 'compact' ? pref.transportButtonSize_compact * scaleForDisplay(1.25) : pref.layout === 'artwork' ? pref.transportButtonSize_artwork * scaleForDisplay(1.25) : pref.transportButtonSize_default * scaleForDisplay(1.25));
+		const buttonSize_default = SCALE(pref.transportButtonSize_default);
+		const buttonSize_artwork = SCALE(pref.transportButtonSize_artwork);
+		const buttonSize_compact = SCALE(pref.transportButtonSize_compact);
+		const center_default = Math.floor(buttonSize_default / 2 + SCALE(4));
+		const center_artwork = Math.floor(buttonSize_artwork / 2 + SCALE(4));
+		const center_compact = Math.floor(buttonSize_compact / 2 + SCALE(4));
+		this.x = x + (pref.layout === 'compact' ? pref.transportButtonSize_compact * SCALE(1.25) : pref.layout === 'artwork' ? pref.transportButtonSize_artwork * SCALE(1.25) : pref.transportButtonSize_default * SCALE(1.25));
 		this.y = y + (pref.layout === 'compact' ? center_compact : pref.layout === 'artwork' ? center_artwork : center_default) - this.h;
 		this.volumeBar = new Volume(this.x, this.y, this.w, Math.min(wh - this.y, this.h));
 	}
 
+	/**
+	 * Draws the volume bar.
+	 * @param {GdiGraphics} gr
+	 */
+	draw(gr) {
+		if (!this.displayVolumeBar) return;
+
+		const { x, y, w, h } = this;
+		const p = 2;
+		const fillWidth = this.volumeBar && this.volumeBar.fillSize('w');
+
+		gr.SetSmoothingMode(pref.styleVolumeBarDesign === 'rounded' ? SmoothingMode.AntiAlias : SmoothingMode.None);
+
+		// * Default background
+		if (pref.styleVolumeBarDesign === 'rounded' && pref.styleTransportButtons !== 'minimal') {
+			gr.FillRoundRect(x - SCALE(2), y + (RES_4K ? p + 1 : p), w + SCALE(2), h, SCALE(5), SCALE(5), col.volumeBar);
+			gr.DrawRoundRect(x - (RES_4K ? 5 : this.showReloadBtn ? 3 : 2), y + SCALE(1), w + (RES_4K ? 5 : 3), h + 2, SCALE(6), SCALE(6), 1, col.volumeBarFrame);
+		}
+		else if (pref.styleVolumeBarDesign !== 'rounded' && pref.styleTransportButtons !== 'minimal') {
+			gr.FillSolidRect(x - SCALE(2), y + (RES_4K ? p + 1 : p), w + SCALE(2), h, col.volumeBar);
+			gr.DrawRect(x - (RES_4K ? 5 : this.showReloadBtn ? 3 : 2), y + SCALE(1), w + (RES_4K ? 5 : 3), h + 1, 1, col.volumeBarFrame);
+		}
+		// * Style background
+		if ((pref.styleVolumeBar === 'bevel' || pref.styleVolumeBar === 'inner') && pref.styleTransportButtons !== 'minimal') {
+			if (pref.styleVolumeBarDesign === 'rounded') {
+				FillGradRoundRect(gr, x - SCALE(2), y + (RES_4K ? p + 1 : p) - (pref.styleVolumeBar === 'inner' ? 1 : 0), w + SCALE(5), h + SCALE(4), SCALE(6), SCALE(6),
+				pref.styleVolumeBar === 'inner' ? -89 : 89, pref.styleVolumeBar === 'inner' ? col.styleVolumeBar : 0, pref.styleVolumeBar === 'inner' ? 0 : col.styleVolumeBar, pref.styleVolumeBar === 'inner' ? 0 : 1);
+			} else {
+				gr.FillGradRect(x - SCALE(2), y + (RES_4K ? p + (pref.styleVolumeBar === 'inner' ? 0 : 2) : p), w + SCALE(2), h, pref.styleVolumeBar === 'inner' ? -90 : 90, 0, col.styleVolumeBar);
+			}
+		}
+		// * Default fill
+		if (pref.styleVolumeBarDesign === 'rounded') {
+			try { gr.FillRoundRect(x + 1, y + (RES_4K ? 7 : 4), fillWidth - SCALE(3), h - SCALE(4), SCALE(3), SCALE(3), col.volumeBarFill); } catch (e) {}
+		} else {
+			gr.FillSolidRect(x, y + (RES_4K ? 7 : 4), fillWidth - SCALE(2), h - SCALE(4), col.volumeBarFill);
+		}
+		// * Style fill
+		if (pref.styleVolumeBarFill === 'bevel' || pref.styleVolumeBarFill === 'inner') {
+			try {
+				if (pref.styleVolumeBarDesign === 'rounded') {
+					FillGradRoundRect(gr, x + 1, y + (RES_4K ? 7 : 4), fillWidth - SCALE(0.5), h - SCALE(2), SCALE(3), SCALE(3), pref.styleVolumeBarFill === 'inner' ? -89 : 89, 0, col.styleVolumeBarFill, 1);
+				} else {
+					gr.FillGradRect(x, y + (RES_4K ? 7 : 4), fillWidth - SCALE(2), h - SCALE(3), pref.styleVolumeBarFill === 'inner' ? -90 : 90, pref.styleBlackAndWhite ? col.styleVolumeBarFill : 0, pref.styleBlackAndWhite ? 0 : col.styleVolumeBarFill);
+				}
+			} catch (e) {}
+		}
+	}
+
+	/**
+	 * Updates the volume bar state.
+	 */
+	repaint() {
+		if (!this.volumeBar) return;
+		const xyPadding = SCALE(3);
+		const whPadding = xyPadding * 2;
+		window.RepaintRect(this.x - xyPadding, this.volumeBar.y, this.volumeBar.w + whPadding, this.volumeBar.h + whPadding);
+	}
+
+	/**
+	 * Shows or hides the volume bar and stops a tooltip if it is shown.
+	 * @param {boolean} show Whether to show or hide the volume bar.
+	 * @returns {boolean} If the `volumeBar` property is not defined, the function will return undefined.
+	 */
 	showVolumeBar(show) {
 		if (!this.volumeBar) return;
 
@@ -1517,67 +1837,21 @@ class VolumeBtn {
 		}
 	}
 
+	/**
+	 * Toggles the display state of the volume bar.
+	 */
 	toggleVolumeBar() {
 		this.showVolumeBar(!this.displayVolumeBar);
 	}
 
-	repaint() {
-		if (!this.volumeBar) return;
-		const xyPadding = scaleForDisplay(3);
-		const whPadding = xyPadding * 2;
-		window.RepaintRect(this.x - xyPadding, this.volumeBar.y, this.volumeBar.w + whPadding, this.volumeBar.h + whPadding);
-	}
-
-	/**
-	 * @param {GdiGraphics} gr
-	 */
-	draw(gr) {
-		if (this.displayVolumeBar) {
-			const { x, y, w, h } = this;
-			const p = 2;
-			const fillWidth = this.volumeBar && this.volumeBar.fillSize('w');
-
-			gr.SetSmoothingMode(pref.styleVolumeBarDesign === 'rounded' ? SmoothingMode.AntiAlias : SmoothingMode.None);
-
-			// * Default background
-			if (pref.styleVolumeBarDesign === 'rounded' && pref.styleTransportButtons !== 'minimal') {
-				gr.FillRoundRect(x - scaleForDisplay(2), y + (is_4k ? p + 1 : p), w + scaleForDisplay(2), h, scaleForDisplay(5), scaleForDisplay(5), col.volumeBar);
-				gr.DrawRoundRect(x - (is_4k ? 5 : this.showReloadBtn ? 3 : 2), y + scaleForDisplay(1), w + (is_4k ? 5 : 3), h + 2, scaleForDisplay(6), scaleForDisplay(6), 1, col.volumeBarFrame);
-			}
-			else if (pref.styleVolumeBarDesign !== 'rounded' && pref.styleTransportButtons !== 'minimal') {
-				gr.FillSolidRect(x - scaleForDisplay(2), y + (is_4k ? p + 1 : p), w + scaleForDisplay(2), h, col.volumeBar);
-				gr.DrawRect(x - (is_4k ? 5 : this.showReloadBtn ? 3 : 2), y + scaleForDisplay(1), w + (is_4k ? 5 : 3), h + 1, 1, col.volumeBarFrame);
-			}
-			// * Style background
-			if ((pref.styleVolumeBar === 'bevel' || pref.styleVolumeBar === 'inner') && pref.styleTransportButtons !== 'minimal') {
-				if (pref.styleVolumeBarDesign === 'rounded') {
-					FillGradRoundRect(gr, x - scaleForDisplay(2), y + (is_4k ? p + 1 : p) - (pref.styleVolumeBar === 'inner' ? 1 : 0), w + scaleForDisplay(5), h + scaleForDisplay(4), scaleForDisplay(6), scaleForDisplay(6),
-					pref.styleVolumeBar === 'inner' ? -89 : 89, pref.styleVolumeBar === 'inner' ? col.styleVolumeBar : 0, pref.styleVolumeBar === 'inner' ? 0 : col.styleVolumeBar, pref.styleVolumeBar === 'inner' ? 0 : 1);
-				} else {
-					gr.FillGradRect(x - scaleForDisplay(2), y + (is_4k ? p + (pref.styleVolumeBar === 'inner' ? 0 : 2) : p), w + scaleForDisplay(2), h, pref.styleVolumeBar === 'inner' ? -90 : 90, 0, col.styleVolumeBar);
-				}
-			}
-			// * Default fill
-			if (pref.styleVolumeBarDesign === 'rounded') {
-				try { gr.FillRoundRect(x + 1, y + (is_4k ? 7 : 4), fillWidth - scaleForDisplay(3), h - scaleForDisplay(4), scaleForDisplay(3), scaleForDisplay(3), col.volumeBarFill); } catch (e) {}
-			} else {
-				gr.FillSolidRect(x, y + (is_4k ? 7 : 4), fillWidth - scaleForDisplay(2), h - scaleForDisplay(4), col.volumeBarFill);
-			}
-			// * Style fill
-			if (pref.styleVolumeBarFill === 'bevel' || pref.styleVolumeBarFill === 'inner') {
-				try {
-					if (pref.styleVolumeBarDesign === 'rounded') {
-						FillGradRoundRect(gr, x + 1, y + (is_4k ? 7 : 4), fillWidth - scaleForDisplay(0.5), h - scaleForDisplay(2), scaleForDisplay(3), scaleForDisplay(3), pref.styleVolumeBarFill === 'inner' ? -89 : 89, 0, col.styleVolumeBarFill, 1);
-					} else {
-						gr.FillGradRect(x, y + (is_4k ? 7 : 4), fillWidth - scaleForDisplay(2), h - scaleForDisplay(3), pref.styleVolumeBarFill === 'inner' ? -90 : 90, pref.styleBlackAndWhite ? col.styleVolumeBarFill : 0, pref.styleBlackAndWhite ? 0 : col.styleVolumeBarFill);
-					}
-				} catch (e) {}
-			}
-		}
-	}
-
 	// * CALLBACKS * //
 
+	/**
+	 * Checks if the mouse is within the boundaries of the volume button.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	mouseInThis(x, y) {
 		const padding = this.inThisPadding;
 		if (x >  this.x - padding &&
@@ -1589,6 +1863,13 @@ class VolumeBtn {
 		return false;
 	}
 
+	/**
+	 * Handles left mouse button down click events and calls the lbtn_down method.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_lbtn_down(x, y, m) {
 		if (!this.volumeBar) return;
 
@@ -1598,6 +1879,13 @@ class VolumeBtn {
 		return false;
 	}
 
+	/**
+	 * Handles left mouse button up click events and calls the lbtn_up method.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_lbtn_up(x, y, m) {
 		if (!this.volumeBar) return;
 
@@ -1608,6 +1896,29 @@ class VolumeBtn {
 		}
 	}
 
+	/**
+	 * Handles mouse leave events and performs actions such as hiding the volume bar if necessary.
+	 */
+	on_mouse_leave() {
+		if (!this.volumeBar || this.volumeBar.drag) return;
+
+		this.mouseInPanel = false;
+
+		if (this.displayVolumeBar && pref.autoHideVolumeBar) {
+			this.showVolumeBar(false);
+			this.repaint();
+		}
+		if (pref.autoHideVolumeBar) {
+			this.volumeBar.leave();
+		}
+	}
+
+	/**
+	 * Handles mouse movement events and performs actions related to the volume bar display.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 */
 	on_mouse_move(x, y, m) {
 		if (!this.volumeBar || !this.displayVolumeBar) return;
 
@@ -1635,24 +1946,15 @@ class VolumeBtn {
 		}
 	}
 
-	on_mouse_leave() {
-		if (!this.volumeBar || this.volumeBar.drag) return;
-
-		this.mouseInPanel = false;
-
-		if (this.displayVolumeBar && pref.autoHideVolumeBar) {
-			this.showVolumeBar(false);
-			this.repaint();
-		}
-		if (pref.autoHideVolumeBar) {
-			this.volumeBar.leave();
-		}
-	}
-
-	on_mouse_wheel(delta) {
+	/**
+	 * Handles mouse wheel events and controls the volume on the volume bar.
+	 * @param {number} step The wheel scroll direction.
+	 * @returns {boolean} True or false.
+	 */
+	on_mouse_wheel(step) {
 		if (this.mouseInPanel) {
-			if (!this.displayVolumeBar || !this.volumeBar.wheel(delta)) {
-				if (delta > 0) {
+			if (!this.displayVolumeBar || !this.volumeBar.wheel(step)) {
+				if (step > 0) {
 					fb.VolumeUp();
 				}
 				else {
@@ -1664,6 +1966,10 @@ class VolumeBtn {
 		return false;
 	}
 
+	/**
+	 * Updates the volume bar and displays a tooltip with the current volume in either percentage or decibels.
+	 * @param {float} val
+	 */
 	on_volume_change(val) {
 		if (this.displayVolumeBar) {
 			this.repaint();
@@ -1677,14 +1983,18 @@ class VolumeBtn {
 //////////////////////
 // * PROGRESS BAR * //
 //////////////////////
+/**
+ * Creates the progress bar in the lower bar when enabled, quick access via right click on lower bar.
+ */
 class ProgressBar {
 	/**
 	 * @param {number} ww window.Width
 	 * @param {number} wh window.Height
+	 * @class
 	 */
 	constructor(ww, wh) {
-		this.x = scaleForDisplay(pref.layout !== 'default' ? 20 : 40);
-		this.w = ww - scaleForDisplay(pref.layout !== 'default' ? 40 : 80);
+		this.x = SCALE(pref.layout !== 'default' ? 20 : 40);
+		this.w = ww - SCALE(pref.layout !== 'default' ? 40 : 80);
 		this.y = 0;
 		this.h = geo.progBarHeight;
 		this.progressLength = 0; // Fixing jumpiness in progressBar
@@ -1696,12 +2006,18 @@ class ProgressBar {
 
 	// * METHODS * //
 
+	/**
+	 * Sets the vertical progress bar position.
+	 * @param {number} y The y-coordinate.
+	 */
 	setY(y) {
 		this.y = y;
 	}
 
-	/** @private
-	 * @param {number} x
+	/**
+	 * Sets the playback time of the progress bar.
+	 * @param {number} x The x-coordinate.
+	 * @private
 	 */
 	setPlaybackTime(x) {
 		let v = (x - this.x) / this.w;
@@ -1711,17 +2027,14 @@ class ProgressBar {
 		}
 	}
 
-	repaint() {
-		window.RepaintRect(this.x, this.y, this.w, this.h);
-	}
-
 	/**
+	 * Draws the progress bar with various progress bar styles.
 	 * @param {GdiGraphics} gr
 	 */
 	draw(gr) {
 		if (pref.showProgressBar_default || pref.showProgressBar_artwork || pref.showProgressBar_compact) {
 			gr.SetSmoothingMode(pref.styleProgressBarDesign === 'rounded' ? SmoothingMode.AntiAlias : SmoothingMode.None);
-			const arc = scaleForDisplay(pref.layout !== 'default' ? 5 : 6);
+			const arc = SCALE(pref.layout !== 'default' ? 5 : 6);
 
 			try {
 				// * Progress bar background
@@ -1736,19 +2049,19 @@ class ProgressBar {
 				}
 				if (!['dots', 'thin'].includes(pref.styleProgressBarDesign) && (pref.styleProgressBar === 'bevel' || pref.styleProgressBar === 'inner')) {
 					if (pref.styleProgressBarDesign === 'rounded') {
-						FillGradRoundRect(gr, this.x, this.y, this.w + scaleForDisplay(2), this.h + scaleForDisplay(2.5), arc, arc,
+						FillGradRoundRect(gr, this.x, this.y, this.w + SCALE(2), this.h + SCALE(2.5), arc, arc,
 							pref.styleProgressBar === 'inner' ? pref.styleBlackReborn && fb.IsPlaying ? 90 : -90 : pref.styleBlackReborn && fb.IsPlaying ? -90 : 90, 0, col.styleProgressBar, 1);
 					} else {
 						gr.FillGradRect(this.x, this.y, this.w, this.h, pref.styleProgressBar === 'inner' ? pref.styleBlackReborn && fb.IsPlaying ? 90 : -90 : pref.styleBlackReborn && fb.IsPlaying ? -90 : 90, 0, col.styleProgressBar);
 					}
 					if (pref.styleProgressBarDesign === 'rounded') { // Smooth top and bottom line edges
-						gr.FillGradRect(this.x + scaleForDisplay(3), this.y - 0.5, scaleForDisplay(9), 1, 179, col.styleProgressBarLineTop, 0); // Top left
-						gr.FillGradRect(this.x + scaleForDisplay(3), this.y + this.h - 0.5, scaleForDisplay(9), 1, 179, col.styleProgressBarLineBottom, 0); // Bottom left
-						gr.FillGradRect(this.w + this.x - scaleForDisplay(12), this.y - 0.5, scaleForDisplay(9), 1, 179, 0, col.styleProgressBarLineTop); // Top right
-						gr.FillGradRect(this.w + this.x - scaleForDisplay(12), this.y + this.h - 0.5, scaleForDisplay(9), 1, 179, 0, col.styleProgressBarLineBottom); // Bottom right
+						gr.FillGradRect(this.x + SCALE(3), this.y - 0.5, SCALE(9), 1, 179, col.styleProgressBarLineTop, 0); // Top left
+						gr.FillGradRect(this.x + SCALE(3), this.y + this.h - 0.5, SCALE(9), 1, 179, col.styleProgressBarLineBottom, 0); // Bottom left
+						gr.FillGradRect(this.w + this.x - SCALE(12), this.y - 0.5, SCALE(9), 1, 179, 0, col.styleProgressBarLineTop); // Top right
+						gr.FillGradRect(this.w + this.x - SCALE(12), this.y + this.h - 0.5, SCALE(9), 1, 179, 0, col.styleProgressBarLineBottom); // Bottom right
 					}
-					gr.DrawLine(this.x + (pref.styleProgressBarDesign === 'rounded' ? scaleForDisplay(12) : 0), this.y, this.x + this.w - (pref.styleProgressBarDesign === 'rounded' ? scaleForDisplay(12) : 1), this.y, 1, col.styleProgressBarLineTop);
-					gr.DrawLine(this.x + (pref.styleProgressBarDesign === 'rounded' ? scaleForDisplay(12) : 0), this.y + this.h, this.x + this.w - (pref.styleProgressBarDesign === 'rounded' ? scaleForDisplay(12) : 1), this.y + this.h, 1, col.styleProgressBarLineBottom);
+					gr.DrawLine(this.x + (pref.styleProgressBarDesign === 'rounded' ? SCALE(12) : 0), this.y, this.x + this.w - (pref.styleProgressBarDesign === 'rounded' ? SCALE(12) : 1), this.y, 1, col.styleProgressBarLineTop);
+					gr.DrawLine(this.x + (pref.styleProgressBarDesign === 'rounded' ? SCALE(12) : 0), this.y + this.h, this.x + this.w - (pref.styleProgressBarDesign === 'rounded' ? SCALE(12) : 1), this.y + this.h, 1, col.styleProgressBarLineBottom);
 				}
 
 				// * Progress bar fill
@@ -1772,18 +2085,18 @@ class ProgressBar {
 					else if (pref.styleProgressBarDesign === 'lines') {
 						let progressLine = 0;
 						if (progressLine < this.progressLength) {
-							gr.FillSolidRect(this.x + this.progressLength, this.y, scaleForDisplay(2), geo.progBarHeight, col.progressBarFill);
+							gr.FillSolidRect(this.x + this.progressLength, this.y, SCALE(2), geo.progBarHeight, col.progressBarFill);
 						}
 						while (progressLine < this.progressLength) {
-							gr.DrawLine(this.x + progressLine + scaleForDisplay(2), this.y, this.x + progressLine + scaleForDisplay(2), this.y + this.h, scaleForDisplay(2), col.progressBarFill);
-							progressLine += scaleForDisplay(4);
+							gr.DrawLine(this.x + progressLine + SCALE(2), this.y, this.x + progressLine + SCALE(2), this.y + this.h, SCALE(2), col.progressBarFill);
+							progressLine += SCALE(4);
 						}
 					}
 					else if (pref.styleProgressBarDesign === 'blocks') {
 						let progressLine = 0;
 						while (progressLine < this.progressLength) {
-							gr.FillSolidRect(this.x + progressLine, this.y + scaleForDisplay(2), geo.progBarHeight, geo.progBarHeight - scaleForDisplay(4), col.progressBarFill);
-							progressLine += geo.progBarHeight + scaleForDisplay(2);
+							gr.FillSolidRect(this.x + progressLine, this.y + SCALE(2), geo.progBarHeight, geo.progBarHeight - SCALE(4), col.progressBarFill);
+							progressLine += geo.progBarHeight + SCALE(2);
 						}
 						gr.FillSolidRect(this.x + this.progressLength, this.y + 1, geo.progBarHeight, geo.progBarHeight - 1, col.progressBar);
 						gr.FillGradRect(this.x + this.progressLength,  this.y + 1, geo.progBarHeight, geo.progBarHeight - 1, pref.styleProgressBar === 'inner' ? pref.styleBlackReborn && fb.IsPlaying ? 88 : -88 : pref.styleBlackReborn && fb.IsPlaying ? -88 : 88, 0, col.styleProgressBar);
@@ -1791,32 +2104,32 @@ class ProgressBar {
 					else if (pref.styleProgressBarDesign === 'dots') {
 						let progressLine = 0;
 						while (progressLine < this.progressLength) {
-							gr.DrawLine(this.x + this.progressLength + scaleForDisplay(10), this.y + this.h * 0.5, this.x + this.w, this.y + this.h * 0.5, scaleForDisplay(1), col.progressBar);
+							gr.DrawLine(this.x + this.progressLength + SCALE(10), this.y + this.h * 0.5, this.x + this.w, this.y + this.h * 0.5, SCALE(1), col.progressBar);
 							gr.SetSmoothingMode(SmoothingMode.AntiAlias);
-							gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - scaleForDisplay(1), scaleForDisplay(2), scaleForDisplay(2), scaleForDisplay(2), col.progressBarFill);
-							progressLine += scaleForDisplay(8);
+							gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - SCALE(1), SCALE(2), SCALE(2), SCALE(2), col.progressBarFill);
+							progressLine += SCALE(8);
 						}
-						const posFix = is_4k ? pref.layout !== 'default' ? 6 : 7 : 3;
-						gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - geo.progBarHeight * 0.5 + scaleForDisplay(2), geo.progBarHeight - scaleForDisplay(4), geo.progBarHeight - scaleForDisplay(4), scaleForDisplay(2), col.progressBarFill); // Knob outline
-						gr.DrawEllipse(this.x + progressLine + posFix, this.y + this.h * 0.5 - scaleForDisplay(1), scaleForDisplay(2), scaleForDisplay(2), scaleForDisplay(2), col.transportIconHovered); // Knob inner
+						const posFix = RES_4K ? pref.layout !== 'default' ? 6 : 7 : 3;
+						gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - geo.progBarHeight * 0.5 + SCALE(2), geo.progBarHeight - SCALE(4), geo.progBarHeight - SCALE(4), SCALE(2), col.progressBarFill); // Knob outline
+						gr.DrawEllipse(this.x + progressLine + posFix, this.y + this.h * 0.5 - SCALE(1), SCALE(2), SCALE(2), SCALE(2), col.transportIconHovered); // Knob inner
 					}
 					else if (pref.styleProgressBarDesign === 'thin') {
-						gr.DrawLine(this.x, this.y + this.h * 0.5, this.x + this.w, this.y + this.h * 0.5, scaleForDisplay(1), col.progressBar);
+						gr.DrawLine(this.x, this.y + this.h * 0.5, this.x + this.w, this.y + this.h * 0.5, SCALE(1), col.progressBar);
 						gr.SetSmoothingMode(SmoothingMode.AntiAlias);
-						gr.FillSolidRect(this.x, this.y + this.h * 0.5 - scaleForDisplay(2), this.progressLength, scaleForDisplay(4), col.progressBarFill);
-						gr.FillSolidRect(this.x + this.progressLength, this.y + this.h * 0.5 - scaleForDisplay(3), scaleForDisplay(6), scaleForDisplay(6), col.progressBarFill);
+						gr.FillSolidRect(this.x, this.y + this.h * 0.5 - SCALE(2), this.progressLength, SCALE(4), col.progressBarFill);
+						gr.FillSolidRect(this.x + this.progressLength, this.y + this.h * 0.5 - SCALE(3), SCALE(6), SCALE(6), col.progressBarFill);
 					}
 
 					if (!['dots', 'thin'].includes(pref.styleProgressBarDesign) && fb.IsPlaying && (pref.styleProgressBarFill === 'bevel' || pref.styleProgressBarFill === 'inner')) {
 						if (pref.styleProgressBarDesign === 'rounded') {
-							FillGradRoundRect(gr, this.x, this.y, this.progressLength + scaleForDisplay(2), this.h + scaleForDisplay(2.5), arc, arc, pref.styleProgressBarFill === 'inner' ? -88 : 88, col.styleProgressBarFill, 0);
+							FillGradRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2.5), arc, arc, pref.styleProgressBarFill === 'inner' ? -88 : 88, col.styleProgressBarFill, 0);
 						} else {
 							gr.FillGradRect(this.x, this.y, this.progressLength, this.h, pref.styleProgressBarFill === 'inner' ? -90 : 89, 0, col.styleProgressBarFill);
 						}
 					}
 					else if (fb.IsPlaying && pref.styleProgressBarFill === 'blend' && albumArt && blendedImg) {
 						if (pref.styleProgressBarDesign === 'rounded') {
-							FillBlendedRoundRect(gr, this.x, this.y, this.progressLength + scaleForDisplay(2), this.h + scaleForDisplay(2.5), arc, arc, 88, blendedImg, 0);
+							FillBlendedRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2.5), arc, arc, 88, blendedImg, 0);
 						} else {
 							gr.DrawImage(blendedImg, this.x, this.y, this.progressLength, this.h, 0, this.h, blendedImg.Width, blendedImg.Height);
 						}
@@ -1826,16 +2139,41 @@ class ProgressBar {
 		}
 	}
 
+	/**
+	 * Updates the progress bar state.
+	 */
+	repaint() {
+		window.RepaintRect(this.x, this.y, this.w, this.h);
+	}
+
 	// * CALLBACKS * //
 
+	/**
+	 * Checks if the mouse is within the boundaries of the progress bar.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	mouseInThis(x, y) {
 		return (x >= this.x && y >= this.y && x < this.x + this.w && y <= this.y + this.h);
 	}
 
+	/**
+	 * Handles left mouse button down click events and enables dragging.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_lbtn_down(x, y) {
 		this.drag = true;
 	}
 
+	/**
+	 * Handles left mouse button up click events and disables dragging and updates the playback time.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_lbtn_up(x, y) {
 		this.drag = false;
 		if (this.mouseInThis(x, y)) {
@@ -1843,16 +2181,24 @@ class ProgressBar {
 		}
 	}
 
+	/**
+	 * Handles mouse movement events and updates the playback time based on the mouse movement if a drag event is occurring.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 */
 	on_mouse_move(x, y) {
 		if (this.drag) {
 			this.setPlaybackTime(x);
 		}
 	}
 
+	/**
+	 * Sets the size and position of the progress bar and updates them on window resizing.
+	 */
 	on_size(w, h) {
-		this.x = scaleForDisplay(pref.layout !== 'default' ? 20 : 40);
+		this.x = SCALE(pref.layout !== 'default' ? 20 : 40);
 		this.y = 0;
-		this.w = w - scaleForDisplay(pref.layout !== 'default' ? 40 : 80);
+		this.w = w - SCALE(pref.layout !== 'default' ? 40 : 80);
 		this.h = geo.progBarHeight;
 		this.progressMoved = true;
 	}
@@ -1862,16 +2208,25 @@ class ProgressBar {
 ///////////////////////
 // * PEAKMETER BAR * //
 ///////////////////////
+/**
+ * Creates the peakmeter bar in the lower bar when enabled, quick access via right click on lower bar.
+ */
 class PeakmeterBar {
+	/**
+	 * @param {number} ww window.Width
+	 * @param {number} wh window.Height
+	 * @class
+	 */
 	constructor(ww, wh) {
 		if (componentVUMeter) this.VUMeter = new ActiveXObject('VUMeter');
+
 		// * Geometry - Style Horizontal
-		this.x = scaleForDisplay(pref.layout !== 'default' ? 20 : 40);
+		this.x = SCALE(pref.layout !== 'default' ? 20 : 40);
 		this.y = 0;
-		this.w = ww - scaleForDisplay(pref.layout !== 'default' ? 40 : 80);
+		this.w = ww - SCALE(pref.layout !== 'default' ? 40 : 80);
 		this.w2 = 0;
 		this.h = geo.peakmeterBarHeight;
-		this.bar_h = pref.layout !== 'default' ? scaleForDisplay(2) : scaleForDisplay(4);
+		this.bar_h = pref.layout !== 'default' ? SCALE(2) : SCALE(4);
 		this.offset = 0;
 		this.middleOffset = 0;
 		this.middle_w = 0;
@@ -1914,7 +2269,7 @@ class PeakmeterBar {
 		this.wheel = false;
 
 		// * Text
-		this.textFont = gdi.Font('Segoe UI', is_4k ? 16 : 9, 1);
+		this.textFont = gdi.Font('Segoe UI', RES_4K ? 16 : 9, 1);
 		this.textWidth = 0;
 		this.textHeight = 0;
 		this.tooltipText = '';
@@ -1967,19 +2322,27 @@ class PeakmeterBar {
 
 	// * METHODS * //
 
-	setY(y) { // * Bars ordered from top to bottom
+	/**
+	 * Sets all vertical peakmeter bar positions.
+	 * Bars are ordered from top to bottom.
+	 * @param {number} y The y-coordinate.
+	 */
+	setY(y) {
 		this.y = y;
 		this.overLeft_y    = this.y;
 		this.outerLeft_y   = this.overLeft_y    + this.bar_h * 0.5;
 		this.mainLeft_y    = this.outerLeft_y   + this.bar_h;
-		this.middleLeft_y  = this.mainLeft_y    + this.bar_h + scaleForDisplay(1);
+		this.middleLeft_y  = this.mainLeft_y    + this.bar_h + SCALE(1);
 		this.middleRight_y = this.middleLeft_y  + this.bar_h * 0.5;
-		this.mainRight_y   = this.middleRight_y + this.bar_h * 0.5 + scaleForDisplay(1);
+		this.mainRight_y   = this.middleRight_y + this.bar_h * 0.5 + SCALE(1);
 		this.outerRight_y  = this.mainRight_y   + this.bar_h;
 		this.overRight_y   = this.outerRight_y  + this.bar_h;
 		this.text_y        = this.outerRight_y  + this.bar_h * 2;
 	}
 
+	/**
+	 * Monitors volume levels and peaks and sets horizontal or vertical animations based on peakmeterBarDesign.
+	 */
 	setAnimation() {
 		// * Set and monitor volume level/peaks from VUMeter
 		this.leftLevel  = this.toDb(this.VUMeter.LeftLevel);
@@ -1988,8 +2351,8 @@ class PeakmeterBar {
 		this.rightPeak  = this.toDb(this.VUMeter.RightPeak);
 
 		// * Debug stuff
-		// console.log('LEFT PEAKS: ',  this.leftPeak,   '      RIGHT PEAKS: ',  this.rightPeak);
-		// console.log('LEFT LEVEL:  ', this.leftLevel,  '      RIGHT LEVEL:  ', this.rightLevel, '\n\n');
+		DebugLog('LEFT PEAKS: ',  this.leftPeak,   '      RIGHT PEAKS: ',  this.rightPeak);
+		DebugLog('LEFT LEVEL:  ', this.leftLevel,  '      RIGHT LEVEL:  ', this.rightLevel, '\n\n');
 
 		// * Set horizontal animation
 		if (pref.peakmeterBarDesign === 'horizontal' || pref.peakmeterBarDesign === 'horizontal_center') {
@@ -2052,6 +2415,10 @@ class PeakmeterBar {
 		}
 	}
 
+	/**
+	 * Sets the peakmeter bar colors.
+	 * @param {FbMetadbHandle} metadb The metadb of the track.
+	 */
 	setColors(metadb) {
 		let img = gdi.CreateImage(1, 1);
 		const g = img.GetGraphics();
@@ -2073,12 +2440,15 @@ class PeakmeterBar {
 		this.color1 = [this.c2, this.c3];
 		this.color2 = [this.c3, this.c1];
 
-		for (let j = 0; j < this.sep1; j++) this.combinedColor1.push(combineColors(this.color1[0], this.color1[1], j / this.sep1));
-		for (let j = 0; j < this.sep2; j++) this.combinedColor2.push(combineColors(this.color2[0], this.color2[1], j / this.sep2));
+		for (let j = 0; j < this.sep1; j++) this.combinedColor1.push(CombineColors(this.color1[0], this.color1[1], j / this.sep1));
+		for (let j = 0; j < this.sep2; j++) this.combinedColor2.push(CombineColors(this.color2[0], this.color2[1], j / this.sep2));
 
 		this.color = this.combinedColor1.concat(this.combinedColor2);
 	}
 
+	/**
+	 * Sets the default peakmeter bar colors.
+	 */
 	setDefaultColors() {
 		this.c1 = col.peakmeterBarFillMiddle; // RGB(0, 200, 255);
 		this.c2 = col.peakmeterBarFillTop; // RGB(255, 255, 0);
@@ -2087,6 +2457,11 @@ class PeakmeterBar {
 		this.color2 = [this.c2, this.c3];
 	}
 
+	/**
+	 * Sets the playback time of the progress bar.
+	 * @param {number} x The x-coordinate.
+	 * @private
+	 */
 	setPlaybackTime(x) {
 		let v = (x - this.x) / this.w;
 		v = (v < 0) ? 0 : (v < 1) ? v : 1;
@@ -2095,6 +2470,10 @@ class PeakmeterBar {
 		}
 	}
 
+	/**
+	 * Draws the peakmeter bar with various peakmeter bar styles.
+	 * @param {GdiGraphics} gr
+	 */
 	draw(gr) {
 		// * Style Horizontal
 		if (pref.peakmeterBarDesign === 'horizontal' && fb.IsPlaying) {
@@ -2144,7 +2523,7 @@ class PeakmeterBar {
 						gr.FillSolidRect(this.x + this.mainLeftAnim_x + this.offset, this.mainLeft_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
 
 						// * Main left top peaks
-						const x = clamp(this.x + this.mainLeftAnim2_x + this.offset + this.w2 * 0.66, this.x, this.x + this.w - this.w2 * 0.33); // Don't extend right edge of bar
+						const x = Clamp(this.x + this.mainLeftAnim2_x + this.offset + this.w2 * 0.66, this.x, this.x + this.w - this.w2 * 0.33); // Don't extend right edge of bar
 						const w = x > this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend right edge of bar
 						gr.FillSolidRect(x, this.mainLeft_y, w, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
 					}
@@ -2163,7 +2542,7 @@ class PeakmeterBar {
 						gr.FillSolidRect(this.x + this.mainRightAnim_x + this.offset, this.mainRight_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
 
 						// * Main right top peaks
-						const x = clamp(this.x + this.mainRightAnim2_x + this.offset + this.w2 * 0.66, this.x, this.x + this.w - this.w2 * 0.33); // Don't extend right edge of bar
+						const x = Clamp(this.x + this.mainRightAnim2_x + this.offset + this.w2 * 0.66, this.x, this.x + this.w - this.w2 * 0.33); // Don't extend right edge of bar
 						const w = x >= this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend right edge of bar
 						gr.FillSolidRect(x, this.mainRight_y, w, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
 					}
@@ -2181,7 +2560,7 @@ class PeakmeterBar {
 
 					// * Outer left peaks
 					if (pref.peakmeterBarOuterPeaks) {
-						const x = clamp(this.x + this.outerLeftAnim_x, this.x, this.x + this.w - this.outerLeftAnim_w); // Don't extend right edge of bar
+						const x = Clamp(this.x + this.outerLeftAnim_x, this.x, this.x + this.w - this.outerLeftAnim_w); // Don't extend right edge of bar
 						gr.FillSolidRect(x, this.outerLeft_y, this.outerLeftAnim_w <= 0 ? 2 : this.outerLeftAnim_w, this.bar_h, this.color[1]);
 					}
 				}
@@ -2196,7 +2575,7 @@ class PeakmeterBar {
 
 					// * Outer right peaks
 					if (pref.peakmeterBarOuterPeaks) {
-						const x = clamp(this.x + this.outerRightAnim_x, this.x, this.x + this.w - this.outerRightAnim_w); // Don't extend right edge of bar
+						const x = Clamp(this.x + this.outerRightAnim_x, this.x, this.x + this.w - this.outerRightAnim_w); // Don't extend right edge of bar
 						gr.FillSolidRect(x, this.outerRight_y, this.outerRightAnim_w <= 0 ? 2 : this.outerRightAnim_w, this.bar_h, this.color[1]);
 					}
 				}
@@ -2315,16 +2694,16 @@ class PeakmeterBar {
 						this.outerLeft_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.leftLevel - this.db[i]) - this.x;
 					}
 					if (pref.peakmeterBarOuterBars) {
-						const xLeft  = clamp(this.x + this.w * 0.5 - this.outerLeft_w, this.x, this.w * 0.5);
+						const xLeft  = Clamp(this.x + this.w * 0.5 - this.outerLeft_w, this.x, this.w * 0.5);
 						const xRight = this.x + this.w * 0.5;
-						const w      = clamp(this.outerLeft_w, 0, this.w * 0.5);
+						const w      = Clamp(this.outerLeft_w, 0, this.w * 0.5);
 						gr.FillSolidRect(xLeft,  this.outerLeft_y, w, this.bar_h, this.color[1]);
 						gr.FillSolidRect(xRight, this.outerLeft_y, w, this.bar_h, this.color[1]);
 					}
 
 					// * Outer left peaks
 					if (pref.peakmeterBarOuterPeaks) {
-						const clamped_x = clamp(this.x + this.outerLeftAnim_x, this.x, this.x + this.w * 0.5 - this.outerLeftAnim_w); // Don't extend left edge of bar
+						const clamped_x = Clamp(this.x + this.outerLeftAnim_x, this.x, this.x + this.w * 0.5 - this.outerLeftAnim_w); // Don't extend left edge of bar
 						const w = this.outerLeftAnim_w <= 0 ? 2 : this.outerLeftAnim_w;
 						const xLeft  = this.w * 0.5 + this.x * 2 - clamped_x - w;
 						const xRight = this.w * 0.5 + clamped_x;
@@ -2338,16 +2717,16 @@ class PeakmeterBar {
 						this.outerRight_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.rightLevel - this.db[i]) - this.x;
 					}
 					if (pref.peakmeterBarOuterBars) {
-						const xLeft  = clamp(this.x + this.w * 0.5 - this.outerRight_w, this.x, this.w * 0.5);
+						const xLeft  = Clamp(this.x + this.w * 0.5 - this.outerRight_w, this.x, this.w * 0.5);
 						const xRight = this.x + this.w * 0.5;
-						const w      = clamp(this.outerRight_w, 0, this.w * 0.5);
+						const w      = Clamp(this.outerRight_w, 0, this.w * 0.5);
 						gr.FillSolidRect(xLeft,  this.outerRight_y, w, this.bar_h, this.color[1]);
 						gr.FillSolidRect(xRight, this.outerRight_y, w, this.bar_h, this.color[1]);
 					}
 
 					// * Outer right peaks
 					if (pref.peakmeterBarOuterPeaks) {
-						const clamped_x = clamp(this.x + this.outerRightAnim_x, this.x, this.x + this.w * 0.5 - this.outerRightAnim_w); // Don't extend right edge of bar
+						const clamped_x = Clamp(this.x + this.outerRightAnim_x, this.x, this.x + this.w * 0.5 - this.outerRightAnim_w); // Don't extend right edge of bar
 						const w = this.outerRightAnim_w <= 0 ? 2 : this.outerRightAnim_w;
 						const xLeftPeaks  = this.w * 0.5 + this.x * 2 - clamped_x - w;
 						const xRightPeaks = this.w * 0.5 + clamped_x;
@@ -2363,8 +2742,8 @@ class PeakmeterBar {
 
 					const xLeft   = this.w - overLeft  - this.x;
 					const xRight  = this.w - overRight - this.x;
-					const xLeft2  = clamp(this.w * 0.5 - overLeft  - this.outerLeftAnim_x  - this.outerLeftAnim_w,  this.x, this.w * 0.5);
-					const xRight2 = clamp(this.w * 0.5 - overRight - this.outerRightAnim_x - this.outerRightAnim_w, this.x, this.w * 0.5);
+					const xLeft2  = Clamp(this.w * 0.5 - overLeft  - this.outerLeftAnim_x  - this.outerLeftAnim_w,  this.x, this.w * 0.5);
+					const xRight2 = Clamp(this.w * 0.5 - overRight - this.outerRightAnim_x - this.outerRightAnim_w, this.x, this.w * 0.5);
 
 					const wLeft   = this.w - xLeft  + this.x;
 					const wRight  = this.w - xRight + this.x;
@@ -2478,14 +2857,32 @@ class PeakmeterBar {
 
 	// * CALLBACKS * //
 
+	/**
+	 * Checks if the mouse is within the boundaries of the peakmeter bar.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	mouseInThis(x, y) {
 		return (x >= this.x && y >= this.y && x < this.x + this.w && y <= this.y + this.h);
 	}
 
+	/**
+	 * Handles left mouse button down click events and enables dragging.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_lbtn_down(x, y) {
 		this.drag = true;
 	}
 
+	/**
+	 * Handles left mouse button up click events and disables dragging and updates the playback time.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_lbtn_up(x, y) {
 		this.drag = false;
 		if (this.on_mouse && this.mouseInThis(x, y)) {
@@ -2493,11 +2890,19 @@ class PeakmeterBar {
 		}
 	}
 
+	/**
+	 * Handle mouse leave events.
+	 */
 	on_mouse_leave() {
 		this.drag = false;
 		this.on_mouse = false;
 	}
 
+	/**
+	 * Handles mouse movement events and updates the playback time based on the mouse movement if a drag event is occurring.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 */
 	on_mouse_move(x, y) {
 		this.on_mouse = true;
 		this.pos_x = x <= this.textWidth ? this.x + this.textWidth : this.x + x;
@@ -2507,6 +2912,11 @@ class PeakmeterBar {
 		}
 	}
 
+	/**
+	 * Handles mouse wheel events and controls the volume offset.
+	 * @param {number} step The wheel scroll direction.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_wheel(step) {
 		this.wheel = true;
 		if (componentVUMeter) {
@@ -2526,17 +2936,25 @@ class PeakmeterBar {
 		}, 2000);
 	}
 
+	/**
+	 * Updates peakmeter bar colors when playing a new track.
+	 * @param {FbMetadbHandle} metadb The metadb of the track.
+	 * @returns {boolean} True or false.
+	 */
 	on_playback_new_track(metadb) {
 		if (!metadb) return;
 		this.setColors(metadb);
 	}
 
+	/**
+	 * Sets the size and position of the peakmeter bar and updates them on window resizing.
+	 */
 	on_size(w, h) {
-		this.x = scaleForDisplay(pref.layout !== 'default' ? 20 : 40);
+		this.x = SCALE(pref.layout !== 'default' ? 20 : 40);
 		this.y = 0;
-		this.w = w - scaleForDisplay(pref.layout !== 'default' ? 40 : 80);
+		this.w = w - SCALE(pref.layout !== 'default' ? 40 : 80);
 		this.h = geo.peakmeterBarHeight;
-		this.bar_h = pref.layout !== 'default' ? scaleForDisplay(2) : scaleForDisplay(4);
+		this.bar_h = pref.layout !== 'default' ? SCALE(2) : SCALE(4);
 
 		this.offset        = (pref.peakmeterBarDesign === 'horizontal_center' ? this.w * 0.5 : this.w) / this.points;
 		this.middleOffset  = (pref.peakmeterBarDesign === 'horizontal_center' ? this.w * 0.5 : this.w) / this.points_middle;
@@ -2546,9 +2964,9 @@ class PeakmeterBar {
 		this.overLeft_y    = this.y;
 		this.outerLeft_y   = this.overLeft_y    + this.bar_h * 0.5;
 		this.mainLeft_y    = this.outerLeft_y   + this.bar_h;
-		this.middleLeft_y  = this.mainLeft_y    + this.bar_h + scaleForDisplay(1);
+		this.middleLeft_y  = this.mainLeft_y    + this.bar_h + SCALE(1);
 		this.middleRight_y = this.middleLeft_y  + this.bar_h * 0.5;
-		this.mainRight_y   = this.middleRight_y + this.bar_h * 0.5 + scaleForDisplay(1);
+		this.mainRight_y   = this.middleRight_y + this.bar_h * 0.5 + SCALE(1);
 		this.outerRight_y  = this.mainRight_y   + this.bar_h;
 		this.overRight_y   = this.outerRight_y  + this.bar_h;
 		this.text_y        = this.outerRight_y  + this.bar_h * 2;
@@ -2560,7 +2978,7 @@ class PeakmeterBar {
 		this.vertRight_x = this.vertLeft_x + this.vertBar_offset * this.points_vert;
 
 		this.progressMoved = true;
-		this.textFont = gdi.Font('Segoe UI', is_4k ? 16 : 9, 1);
+		this.textFont = gdi.Font('Segoe UI', RES_4K ? 16 : 9, 1);
 	}
 }
 
@@ -2568,10 +2986,14 @@ class PeakmeterBar {
 //////////////////////
 // * WAVEFORM BAR * //
 //////////////////////
+/**
+ * Creates the waveform bar in the lower bar when enabled, quick access via right click on lower bar.
+ */
 class WaveformBar {
 	/**
 	 * @param {number} ww window.Width
 	 * @param {number} wh window.Height
+	 * @class
 	 */
 	constructor(ww, wh) {
 		// * Dependencies
@@ -2579,7 +3001,7 @@ class WaveformBar {
 		include(`${fb.ProfilePath}georgia-reborn\\externals\\lz-utf8\\lzutf8.js`); // For string compression
 		include(`${fb.ProfilePath}georgia-reborn\\externals\\lz-string\\lz-string.min.js`); // For string compression
 
-		const arch = DetectWin64() ? '' : '_32';
+		const arch = detectWin64 ? '' : '_32';
 		this.matchPattern = '$lower([%ALBUM ARTIST%]\\[%ALBUM%]\\%TRACKNUMBER% - %TITLE%)'; // Used to create folder path
 		this.debug = false;
 		this.profile = false;
@@ -2619,9 +3041,9 @@ class WaveformBar {
 		};
 
 		// * Easy access
-		this.x = scaleForDisplay(pref.layout !== 'default' ? 20 : 40);
+		this.x = SCALE(pref.layout !== 'default' ? 20 : 40);
 		this.y = 0;
-		this.w = ww - scaleForDisplay(pref.layout !== 'default' ? 40 : 80);
+		this.w = ww - SCALE(pref.layout !== 'default' ? 40 : 80);
 		this.h = geo.waveformBarHeight;
 
 		// * Internals
@@ -2667,27 +3089,38 @@ class WaveformBar {
 		// * Check
 		this.checkConfig();
 		this.defaultSteps();
-		if (!IsFolder(this.cacheDir)) { _createFolder(this.cacheDir); }
+		if (!IsFolder(this.cacheDir)) { _CreateFolder(this.cacheDir); }
 
-		this.throttlePaint = _throttle((force = false) => window.RepaintRect(
-			this.x - scaleForDisplay(2), this.y - this.h * 0.5 - scaleForDisplay(4),
-			this.w + scaleForDisplay(4), this.h + scaleForDisplay(8), force), this.ui.refreshRate);
-		this.throttlePaintRect = _throttle((x, y, w, h, force = false) => window.RepaintRect(
-			x - scaleForDisplay(2), y - h * 0.5 - scaleForDisplay(4),
-			w + scaleForDisplay(4), h + scaleForDisplay(8), force), this.ui.refreshRate);
+		this.throttlePaint = _Throttle((force = false) => window.RepaintRect(
+			this.x - SCALE(2), this.y - this.h * 0.5 - SCALE(4),
+			this.w + SCALE(4), this.h + SCALE(8), force), this.ui.refreshRate);
+		this.throttlePaintRect = _Throttle((x, y, w, h, force = false) => window.RepaintRect(
+			x - SCALE(2), y - h * 0.5 - SCALE(4),
+			w + SCALE(4), h + SCALE(8), force), this.ui.refreshRate);
 	}
 
 	// * METHODS * //
 
+	/**
+	 * Sets the vertical waveform bar position.
+	 * @param {number} y The y-coordinate.
+	 */
 	setY(y) {
 		this.y = y;
 	}
 
+	/**
+	 * Checks if the current file is allowed to be played, i.e not corrupted.
+	 * @param {Object} handle The current file handle.
+	 */
 	checkAllowedFile(handle = fb.GetNowPlaying()) {
 		this.isAllowedFile = this.analysis.binaryMode !== 'visualizer' && handle.SubSong === 0 && this.compatibleFiles[this.analysis.binaryMode].test(handle.Path);
 		this.isFallback = !this.isAllowedFile && this.analysis.visualizerFallback;
 	};
 
+	/**
+	 * Checks the configuration for validity and throws an error if not, called from the constructor.
+	 */
 	checkConfig() {
 		if (!Object.prototype.hasOwnProperty.call(this.binaries, this.analysis.binaryMode)) {
 			throw new Error(`Binary mode not recognized or path not set: ${this.analysis.binaryMode}`);
@@ -2700,9 +3133,13 @@ class WaveformBar {
 		}
 	};
 
-	updateConfig(newConfig) { // Ensures the UI is being updated properly after changing settings.
+	/**
+	 * Updates the config and ensures the UI is being updated properly after changing settings.
+	 * @param {Object} newConfig
+	 */
+	updateConfig(newConfig) {
 		if (newConfig) {
-			deepAssign()(this, newConfig);
+			DeepAssign()(this, newConfig);
 		}
 		this.checkConfig();
 		let recalculate = false;
@@ -2722,12 +3159,12 @@ class WaveformBar {
 		if (newConfig.ui) {
 			if (Object.prototype.hasOwnProperty.call(newConfig.ui, 'refreshRate')) {
 				this.ui.refreshRateOpt = this.ui.refreshRate;
-				this.throttlePaint = _throttle((force = false) => window.RepaintRect(
-					this.x - scaleForDisplay(2), this.y - this.h * 0.5 - scaleForDisplay(4),
-					this.w + scaleForDisplay(4), this.h + scaleForDisplay(8), force), this.ui.refreshRate);
-				this.throttlePaintRect = _throttle((x, y, w, h, force = false) => window.RepaintRect(
-					x - scaleForDisplay(2), y - h * 0.5 - scaleForDisplay(4),
-					w + scaleForDisplay(4), h + scaleForDisplay(8), force), this.ui.refreshRate);
+				this.throttlePaint = _Throttle((force = false) => window.RepaintRect(
+					this.x - SCALE(2), this.y - this.h * 0.5 - SCALE(4),
+					this.w + SCALE(4), this.h + SCALE(8), force), this.ui.refreshRate);
+				this.throttlePaintRect = _Throttle((x, y, w, h, force = false) => window.RepaintRect(
+					x - SCALE(2), y - h * 0.5 - SCALE(4),
+					w + SCALE(4), h + SCALE(8), force), this.ui.refreshRate);
 			}
 			if (Object.prototype.hasOwnProperty.call(newConfig.ui, 'sizeNormalizeWidth') ||  Object.prototype.hasOwnProperty.call(newConfig.ui, 'normalizeWidth')) {
 				recalculate = true;
@@ -2744,28 +3181,45 @@ class WaveformBar {
 		}
 	};
 
+	/**
+	 * Updates the waveform bar with the current track information, playback time and size.
+	 * @param {boolean} current Whether the current track has changed or not.
+	 */
 	updateBar(current) {
 		if (!current) this.on_playback_new_track(fb.GetNowPlaying());
 		this.on_playback_time(fb.PlaybackTime);
 		this.on_size(ww, wh);
 	}
 
+	/**
+	 * Gets ffprobe for Windows or Linux.
+	 */
 	getFFprobe() {
-		const url = DetectWin64() ?
+		const url = detectWin64 ?
 			'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip' :
 			'https://github.com/sudo-nautilus/FFmpeg-Builds-Win32/releases/download/latest/ffmpeg-master-latest-win32-gpl.zip';
-		runCmd(url);
+		RunCmd(url);
 		fb.ShowPopupMessage(`Accept download, extract ffprobe.exe from bin to ${this.binaries.ffprobe}\nand restart foobar.`, 'FFprobe');
 	}
 
+	/**
+	 * Gets the paths to the waveform bar cache folder and file.
+	 * @param {Object} handle The handle of the track.
+	 * @returns {Object} The paths to the waveform bar cache folder and file.
+	 */
 	getPaths(handle) {
-		const id = sanitizePath(this.Tf.EvalWithMetadb(handle)); // Ensures paths are valid!
+		const id = SanitizePath(this.Tf.EvalWithMetadb(handle)); // Ensures paths are valid!
 		const fileName = id.split('\\').pop();
 		const waveformBarFolder = this.cacheDir + id.replace(fileName, '');
 		const waveformBarFile = this.cacheDir + id;
 		return { waveformBarFolder, waveformBarFile };
 	};
 
+	/**
+	 * Sets the max step based on the BPM of the track.
+	 * @param {Object} handle The handle of the track.
+	 * @returns {Number} The max steps.
+	 */
 	bpmSteps(handle = fb.GetNowPlaying()) {
 		// Don't allow anything faster than 2 steps or slower than 10 (scaled to 200 ms refresh rate) and consider setting tracks having 100 BPM as default.
 		if (!handle) { return this.defaultSteps(); }
@@ -2774,11 +3228,19 @@ class WaveformBar {
 		return this.maxStep;
 	};
 
+	/**
+	 * Sets the max step to a default value.
+	 * @returns {Number} The max steps.
+	 */
 	defaultSteps() {
 		this.maxStep = Math.round(4 * (200 / this.ui.refreshRate) ** (1 / 2));
 		return this.maxStep;
 	};
 
+	/**
+	 * Normalizes points to ensure all points are on the same scale to prevent distortion of the waveform.
+	 * @param {boolean} normalizeWidth
+	 */
 	normalizePoints(normalizeWidth = false) {
 		if (this.current.length) {
 			let upper = 0;
@@ -2927,35 +3389,41 @@ class WaveformBar {
 		}
 	};
 
+	/**
+	 * Analyzes data of the given handle and saves the results in the waveform bar cache directory.
+	 * @param {FbMetadbHandle} handle The handle to analyze.
+	 * @param {string} waveformBarFolder The folder where the waveform bar data should be saved.
+	 * @param {string} waveformBarFile The name of the waveform bar file.
+	 * @returns {Promise} A promise that resolves when the analysis is finished.
+	 */
 	async analyzeData(handle, waveformBarFolder, waveformBarFile) {
-		if (!IsFolder(waveformBarFolder)) { _createFolder(waveformBarFolder); }
+		if (!IsFolder(waveformBarFolder)) { _CreateFolder(waveformBarFolder); }
 		let profiler;
 		let cmd;
 		// Change to track folder since ffprobe has stupid escape rules which are impossible to apply right with amovie input mode.
 		let handleFileName = handle.Path.split('\\').pop();
 		const handleFolder = handle.Path.replace(handleFileName, '');
-		const _q = (value) => `"${value}"`;
 
 		if (this.isAllowedFile && !this.fallbackMode.analysis && this.analysis.binaryMode === 'audiowaveform') {
 			if (this.profile) {
 				profiler = new FbProfiler('audiowaveform');
 			}
 			const extension = handleFileName.match(/(?:\.)(\w+$)/i)[1];
-			cmd = `CMD /C PUSHD ${_q(handleFolder)} && ` +
-				_q(this.binaries.audiowaveform) + ' -i ' + _q(handleFileName) +
+			cmd = `CMD /C PUSHD ${Quotes(handleFolder)} && ` +
+				Quotes(this.binaries.audiowaveform) + ' -i ' + Quotes(handleFileName) +
 				' --pixels-per-second ' + (Math.round(this.analysis.resolution) || 1) + ' --input-format ' + extension + ' --bits 8' +
-				' -o ' + _q(`${waveformBarFolder}data.json`);
+				' -o ' + Quotes(`${waveformBarFolder}data.json`);
 		}
 		else if (this.isAllowedFile && !this.fallbackMode.analysis && this.analysis.binaryMode === 'ffprobe') {
 			if (this.profile) {
 				profiler = new FbProfiler('ffprobe');
 			}
 			handleFileName = handleFileName.replace(/[,:%.*+?^${}()|[\]\\]/g, '\\$&').replace(/'/g, '\\\\\\\''); // And here we go again...
-			cmd = `CMD /C PUSHD ${_q(handleFolder)} && ` +
-				_q(this.binaries.ffprobe) + ' -hide_banner -v panic -f lavfi -i amovie=' + _q(handleFileName) +
+			cmd = `CMD /C PUSHD ${Quotes(handleFolder)} && ` +
+				Quotes(this.binaries.ffprobe) + ' -hide_banner -v panic -f lavfi -i amovie=' + Quotes(handleFileName) +
 				(this.analysis.resolution > 1 ? `,aresample=${Math.round((this.analysis.resolution || 1) * 100)},asetnsamples=${Math.round((this.analysis.resolution / 10) ** 2)}` : '') +
 				',astats=metadata=1:reset=1 -show_entries frame=pkt_pts_time:frame_tags=lavfi.astats.Overall.Peak_level,lavfi.astats.Overall.RMS_level,lavfi.astats.Overall.RMS_peak -print_format json > ' +
-				_q(`${waveformBarFolder}data.json`);
+				Quotes(`${waveformBarFolder}data.json`);
 		}
 		else if (this.isFallback || this.analysis.binaryMode === 'visualizer' || this.fallbackMode.analysis) {
 			profiler = new FbProfiler('visualizer');
@@ -2963,7 +3431,7 @@ class WaveformBar {
 
 		if (this.debug && cmd) { console.log(cmd); }
 
-		let processed = cmd ? runCmd(cmd, false) : true;
+		let processed = cmd ? RunCmd(cmd, false) : true;
 		processed = processed && (await new Promise((resolve) => {
 			if (this.isFallback || this.analysis.binaryMode === 'visualizer' || this.fallbackMode.analysis) {
 				resolve(true);
@@ -2972,7 +3440,7 @@ class WaveformBar {
 			const id = setInterval(() => {
 				if (IsFile(`${waveformBarFolder}data.json`)) {
 					// ffmpeg writes sequentially, wait until job is done.
-					if (this.analysis.binaryMode === 'ffprobe' && _jsonParseFile(`${waveformBarFolder}data.json`, this.codePage)) {
+					if (this.analysis.binaryMode === 'ffprobe' && _JsonParseFile(`${waveformBarFolder}data.json`, this.codePage)) {
 						clearInterval(id); resolve(true);
 					} else if (this.analysis.binaryMode !== 'ffprobe') {
 						clearInterval(id); resolve(true);
@@ -2984,7 +3452,7 @@ class WaveformBar {
 			}, 300);
 		}));
 		if (processed) {
-			const data = cmd ? _jsonParseFile(`${waveformBarFolder}data.json`, this.codePage) : this.visualizerData(handle);
+			const data = cmd ? _JsonParseFile(`${waveformBarFolder}data.json`, this.codePage) : this.visualizerData(handle);
 			DeleteFile(`${waveformBarFolder}data.json`);
 			if (data) {
 				if (!this.isFallback && !this.fallbackMode.analysis && this.analysis.binaryMode === 'ffprobe' && data.frames && data.frames.length) {
@@ -2992,15 +3460,15 @@ class WaveformBar {
 					data.frames.forEach((frame) => {
 						// Save values as array to compress file as much as possible, also round decimals...
 						const rms = frame.tags['lavfi.astats.Overall.RMS_level'] === '-inf'	? -Infinity :
-							round(Number(frame.tags['lavfi.astats.Overall.RMS_level']), 1);
+							Round(Number(frame.tags['lavfi.astats.Overall.RMS_level']), 1);
 
 						const rmsPeak = frame.tags['lavfi.astats.Overall.RMS_peak'] === '-inf' ? -Infinity :
-							round(Number(frame.tags['lavfi.astats.Overall.RMS_peak']), 1);
+							Round(Number(frame.tags['lavfi.astats.Overall.RMS_peak']), 1);
 
 						const peak = frame.tags['lavfi.astats.Overall.Peak_level'] === '-inf' ? -Infinity :
-							round(Number(frame.tags['lavfi.astats.Overall.Peak_level']), 1);
+							Round(Number(frame.tags['lavfi.astats.Overall.Peak_level']), 1);
 
-						const time = round(Number(frame.pkt_pts_time), 2);
+						const time = Round(Number(frame.pkt_pts_time), 2);
 						processedData.push([time, rms, rmsPeak, peak]);
 					});
 					this.current = processedData;
@@ -3010,16 +3478,16 @@ class WaveformBar {
 						// FSO is needed in order to save UTF16-LE files:
 						// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
 						const compressed = LZString.compressToUTF16(str);
-						_saveFSO(`${waveformBarFile}.ff.lz16`, compressed, true);
+						SaveFSO(`${waveformBarFile}.ff.lz16`, compressed, true);
 					}
 					else if (this.analysis.compressionMode === 'utf-8') {
 						// Only Base64 strings can be saved in UTF8 files:
 						// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
 						const compressed = LZUTF8.compress(str, { outputEncoding: 'Base64' });
-						_save(`${waveformBarFile}.ff.lz`, compressed);
+						Save(`${waveformBarFile}.ff.lz`, compressed);
 					}
 					else {
-						_save(`${waveformBarFile}.ff.json`, str);
+						Save(`${waveformBarFile}.ff.json`, str);
 					}
 				}
 				else if (!this.isFallback && !this.fallbackMode.analysis && this.analysis.binaryMode === 'audiowaveform' && data.data && data.data.length) {
@@ -3029,16 +3497,16 @@ class WaveformBar {
 						// FSO is needed in order to save UTF16-LE files:
 						// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
 						const compressed = LZString.compressToUTF16(str);
-						_saveFSO(`${waveformBarFile}.aw.lz16`, compressed, true);
+						SaveFSO(`${waveformBarFile}.aw.lz16`, compressed, true);
 					}
 					else if (this.analysis.compressionMode === 'utf-8') {
 						// Only Base64 strings can be saved in UTF8 files:
 						// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
 						const compressed = LZUTF8.compress(str, { outputEncoding: 'Base64' });
-						_save(`${waveformBarFile}.aw.lz`, compressed);
+						Save(`${waveformBarFile}.aw.lz`, compressed);
 					}
 					else {
-						_save(`${waveformBarFile}.aw.json`, str);
+						Save(`${waveformBarFile}.aw.json`, str);
 					}
 				}
 				else if ((this.isFallback || this.analysis.binaryMode === 'visualizer' || this.fallbackMode.analysis) && data.length) {
@@ -3062,10 +3530,17 @@ class WaveformBar {
 		}
 	};
 
+	/**
+	 * Generates data for the visualizer.
+	 * @param {FbMetadbHandle} handle The handle to analyze.
+	 * @param {string} preset The preset to use for the visualizer.
+	 * @param {boolean} variableLen Whether the length of the data should be variable.
+	 * @returns {Array} The data for the visualizer bar.
+	 */
 	visualizerData(handle, preset = 'classic spectrum analyzer', variableLen = false) {
 		const samples =
 			variableLen ? handle.Length * (this.analysis.resolution || 1) :
-			this.w / scaleForDisplay(5) * (this.analysis.resolution || 1);
+			this.w / SCALE(5) * (this.analysis.resolution || 1);
 
 		const data = [];
 
@@ -3088,6 +3563,10 @@ class WaveformBar {
 		return data;
 	};
 
+	/**
+	 * Checks if the processed data is valid.
+	 * @returns {boolean} Ture if the data is valid.
+	 */
 	isDataValid() {
 		// When iterating too many tracks in a short ammount of time, weird things may happen without this check
 		if (!Array.isArray(this.current) || !this.current.length) return false;
@@ -3099,18 +3578,25 @@ class WaveformBar {
 		: this.current.every((frame) => (frame >= -128 && frame <= 127));
 	};
 
-	verifyData(handle, file, bIsRetry = false) {
+	/**
+	 * Verifies if the processed data is valid.
+	 * @param {FbMetadbHandle} handle The handle to analyze.
+	 * @param {string} file The file to analyze.
+	 * @param {boolean} isRetry Whether the data is being retried.
+	 * @returns {boolean} True if the data is valid.
+	 */
+	verifyData(handle, file, isRetry = false) {
 		if (!this.isDataValid()) {
-			if (bIsRetry) {
+			if (isRetry) {
 				console.log('File was not sucessfully analyzed after retrying.');
-				if (file) _deleteFile(file);
+				if (file) _DeleteFile(file);
 				this.isAllowedFile = false;
 				this.isFallback = this.analysis.visualizerFallback;
 				this.isError = true;
 				this.current = [];
 			}  else {
 				console.log(`Seekbar file not valid. Creating new one${file ? `: ${file}` : '.'}`);
-				if (file) _deleteFile(file);
+				if (file) _DeleteFile(file);
 				this.on_playback_new_track(handle, true);
 			}
 			return false;
@@ -3118,10 +3604,16 @@ class WaveformBar {
 		return true;
 	};
 
+	/**
+	 * Deletes the waveform bar cache diretory with its processed data.
+	 */
 	removeData() {
 		DeleteFolder(this.cacheDir);
 	};
 
+	/**
+	 * Resets the state of the waveform bar.
+	 */
 	reset() {
 		this.current = [];
 		this.cache = null;
@@ -3137,12 +3629,19 @@ class WaveformBar {
 		if (this.queueId) clearTimeout(this.queueId);
 	};
 
+	/**
+	 * Resets the state of the waveform bar animation.
+	 */
 	resetAnimation() {
 		this.step = 0;
 		this.offset = [];
 		this.defaultSteps();
 	};
 
+	/**
+	 * This method is currently not used.
+	 * @param {boolean} enable
+	 */
 	switch(enable = !this.active) {
 		const wasActive = this.active;
 		this.active = enable;
@@ -3160,6 +3659,10 @@ class WaveformBar {
 		}
 	};
 
+	/**
+	 * Draws the waveform bar with various waveform bar styles.
+	 * @param {GdiGraphics} gr
+	 */
 	draw(gr) {
 		this.profilerPaint.Reset();
 		if (!fb.IsPlaying) { this.reset(); } // In case paint has been delayed after playback has stopped...
@@ -3204,8 +3707,8 @@ class WaveformBar {
 						this.offset[n] += (prepaint && isPrepaint && this.preset.animate || visualizer ? -Math.sign(scale) * Math.random() * scaledSize / 10 * this.step / this.maxStep : 0); // Add movement when pre-painting
 						const rand = Math.sign(scale) * this.offset[n];
 						const y = scaledSize > 0 ? Math.max(scaledSize + rand, 1) : Math.min(scaledSize + rand, -1);
-						const colorBack = prepaint && isPrepaint ? shadeColor(col.waveformBarFillBack, 40) : col.waveformBarFillBack; // Back
-						const colorFront = prepaint && isPrepaint ? shadeColor(col.waveformBarFillFront, 20) : col.waveformBarFillFront; // Front
+						const colorBack = prepaint && isPrepaint ? ShadeColor(col.waveformBarFillBack, 40) : col.waveformBarFillBack; // Back
+						const colorFront = prepaint && isPrepaint ? ShadeColor(col.waveformBarFillFront, 20) : col.waveformBarFillFront; // Front
 						let z = visualizer ? Math.abs(y) : y;
 
 						if (z > 0) { // * Top
@@ -3262,8 +3765,8 @@ class WaveformBar {
 						this.offset[n] += (prepaint && isPrepaint && this.preset.animate || visualizer ? -Math.sign(scale) * Math.random() * scaledSize / 10 * this.step / this.maxStep : 0); // Add movement when pre-painting
 						const rand = Math.sign(scale) * this.offset[n];
 						const y = scaledSize > 0 ? Math.max(scaledSize + rand, 1) : Math.min(scaledSize + rand, -1);
-						let colorBack = prepaint && isPrepaint ? shadeColor(col.waveformBarFillBack, 40) : col.waveformBarFillBack; // Back
-						let colorFront = prepaint && isPrepaint ? shadeColor(col.waveformBarFillFront, 20) : col.waveformBarFillFront; // Front
+						let colorBack = prepaint && isPrepaint ? ShadeColor(col.waveformBarFillBack, 40) : col.waveformBarFillBack; // Back
+						let colorFront = prepaint && isPrepaint ? ShadeColor(col.waveformBarFillFront, 20) : col.waveformBarFillFront; // Front
 						const x = this.x + barW * n;
 
 						// * Current position
@@ -3292,8 +3795,8 @@ class WaveformBar {
 					else if (this.preset.barDesign === 'dots') {
 						const scaledSize = this.h / 2 * scale;
 						const y = scaledSize > 0 ? Math.max(scaledSize, 1) : Math.min(scaledSize, -1);
-						const colorBack = prepaint && isPrepaint ? shadeColor(col.waveformBarFillBack, 40) : col.waveformBarFillBack; // Back
-						const colorFront = prepaint && isPrepaint ? shadeColor(col.waveformBarFillFront, 20) : col.waveformBarFillFront; // Front
+						const colorBack = prepaint && isPrepaint ? ShadeColor(col.waveformBarFillBack, 40) : col.waveformBarFillBack; // Back
+						const colorFront = prepaint && isPrepaint ? ShadeColor(col.waveformBarFillFront, 20) : col.waveformBarFillFront; // Front
 						this.offset[n] += (prepaint && isPrepaint && this.preset.animate || visualizer ? Math.random() * Math.abs(this.step / this.maxStep) : 0); // Add movement when pre-painting
 						const rand = this.offset[n];
 						const step = Math.max(this.h / 80, 5) + (rand || 1) // Point density
@@ -3340,7 +3843,7 @@ class WaveformBar {
 			// * Progress line
 			if (this.preset.indicator || this.mouseDown) {
 				gr.SetSmoothingMode(0);
-				const minBarW = Math.round(Math.max(barW, scaleForDisplay(1)));
+				const minBarW = Math.round(Math.max(barW, SCALE(1)));
 				if (this.analysis.binaryMode === 'ffprobe') {
 					gr.DrawLine(currX, this.y - this.h * 0.5, currX, this.y + this.h * 0.5, minBarW, currPosColor);
 				} else if (this.preset.barDesign === 'waveform' || this.preset.barDesign === 'dots') {
@@ -3383,12 +3886,12 @@ class WaveformBar {
 				this.throttlePaint();
 			}
 			else if (prepaint && this.preset.animate && frames) {
-				const barW = Math.ceil(Math.max(this.w / frames, scaleForDisplay(2)));
-				this.throttlePaintRect(currX - scaleForDisplay(40), this.y, this.w + scaleForDisplay(40), this.h);
+				const barW = Math.ceil(Math.max(this.w / frames, SCALE(2)));
+				this.throttlePaintRect(currX - SCALE(40), this.y, this.w + SCALE(40), this.h);
 			}
 			else if (this.preset.indicator && frames) {
-				const barW = Math.ceil(Math.max(this.w / frames, scaleForDisplay(2)));
-				this.throttlePaintRect(currX - scaleForDisplay(40), this.y, 4 * barW + scaleForDisplay(40), this.h);
+				const barW = Math.ceil(Math.max(this.w / frames, SCALE(2)));
+				this.throttlePaintRect(currX - SCALE(40), this.y, 4 * barW + SCALE(40), this.h);
 			}
 			if (this.ui.refreshRateVar) {
 				if (this.profilerPaint.Time > this.ui.refreshRate) {
@@ -3403,6 +3906,13 @@ class WaveformBar {
 
 	// * CALLBACKS * //
 
+	/**
+	 * Handles left mouse button up click events and disables dragging and updates the playback time.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} mask The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
 	on_mouse_lbtn_up(x, y, mask) {
 		if (['progressbar', 'peakmeterbar'].includes(pref.seekbar)) return;
 		this.mouseDown = false;
@@ -3423,6 +3933,12 @@ class WaveformBar {
 		return false;
 	};
 
+	/**
+	 * Handles mouse movement events on the waveform bar.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} mask The mouse mask.
+	 */
 	on_mouse_move(x, y, mask) {
 		if (['progressbar', 'peakmeterbar'].includes(pref.seekbar)) return;
 		if (mask === MK_LBUTTON && this.on_mouse_lbtn_up(x, y, mask)) {
@@ -3430,6 +3946,10 @@ class WaveformBar {
 		}
 	};
 
+	/**
+	 * Resets the current waveform and processes new data for the new current playing track.
+	 * @param {FbMetadbHandle} handle The handle of the new track.
+	 */
 	async on_playback_new_track(handle = fb.GetNowPlaying(), isRetry = false) {
 		if (['progressbar', 'peakmeterbar'].includes(pref.seekbar) || !this.active) { return; }
 		this.reset();
@@ -3439,33 +3959,33 @@ class WaveformBar {
 			const { waveformBarFolder, waveformBarFile } = this.getPaths(handle);
 			// Uncompressed file -> Compressed UTF8 file -> Compressed UTF16 file -> Analyze
 			if (this.analysis.binaryMode === 'ffprobe' && IsFile(`${waveformBarFile}.ff.json`)) {
-				this.current = _jsonParseFile(`${waveformBarFile}.ff.json`, this.codePage) || [];
+				this.current = _JsonParseFile(`${waveformBarFile}.ff.json`, this.codePage) || [];
 				if (!this.verifyData(handle, `${waveformBarFile}.ff.json`, isRetry)) { return; };
 			}
 			else if (this.analysis.binaryMode === 'ffprobe' && IsFile(`${waveformBarFile}.ff.lz`)) {
-				let str = _open(`${waveformBarFile}.ff.lz`, this.codePage) || '';
+				let str = Open(`${waveformBarFile}.ff.lz`, this.codePage) || '';
 				str = LZUTF8.decompress(str, { inputEncoding: 'Base64' }) || null;
 				this.current = str ? JSON.parse(str) || [] : [];
 				if (!this.verifyData(handle, `${waveformBarFile}.ff.lz`, isRetry)) { return; };
 			}
 			else if (this.analysis.binaryMode === 'ffprobe' && IsFile(`${waveformBarFile}.ff.lz16`)) {
-				let str = _open(`${waveformBarFile}.ff.lz16`, this.codePageV2) || '';
+				let str = Open(`${waveformBarFile}.ff.lz16`, this.codePageV2) || '';
 				str = LZString.decompressFromUTF16(str) || null;
 				this.current = str ? JSON.parse(str) || [] : [];
 				if (!this.verifyData(handle, `${waveformBarFile}.ff.lz16`, isRetry)) { return; };
 			}
 			else if (this.analysis.binaryMode === 'audiowaveform' && IsFile(`${waveformBarFile}.aw.json`)) {
-				this.current = _jsonParseFile(`${waveformBarFile}.aw.json`, this.codePage) || [];
+				this.current = _JsonParseFile(`${waveformBarFile}.aw.json`, this.codePage) || [];
 				if (!this.verifyData(handle, `${waveformBarFile}.aw.json`, isRetry)) { return; };
 			}
 			else if (this.analysis.binaryMode === 'audiowaveform' && IsFile(`${waveformBarFile}.aw.lz`)) {
-				let str = _open(`${waveformBarFile}.aw.lz`, this.codePage) || '';
+				let str = Open(`${waveformBarFile}.aw.lz`, this.codePage) || '';
 				str = LZUTF8.decompress(str, { inputEncoding: 'Base64' }) || null;
 				this.current = str ? JSON.parse(str) || [] : [];
 				if (!this.verifyData(handle, `${waveformBarFile}.aw.lz`, isRetry)) { return; };
 			}
 			else if (this.analysis.binaryMode === 'audiowaveform' && IsFile(`${waveformBarFile}.aw.lz16`)) {
-				let str = _open(`${waveformBarFile}.aw.lz16`, this.codePageV2) || '';
+				let str = Open(`${waveformBarFile}.aw.lz16`, this.codePageV2) || '';
 				str = LZString.decompressFromUTF16(str) || null;
 				this.current = str ? JSON.parse(str) || [] : [];
 				if (!this.verifyData(handle, `${waveformBarFile}.aw.lz16`, isRetry)) { return; };
@@ -3503,6 +4023,11 @@ class WaveformBar {
 		this.throttlePaint();
 	};
 
+	/**
+	 * Queues the `on_playback_new_track` event to be fired after a given delay.
+	 * This is useful for debouncing the event, so that it is only fired once after a series of track changes.
+	 * @param {number} ms The delay in milliseconds.
+	 */
 	on_playback_new_track_queue() {
 		if (this.queueId) clearTimeout(this.queueId);
 		this.queueId = setTimeout(() => {
@@ -3510,12 +4035,20 @@ class WaveformBar {
 		}, this.queueMs);
 	};
 
+	/**
+	 * Resets the waveform bar on playback stop.
+	 * @param {number} reason The type of playback stop.
+	 */
 	on_playback_stop(reason = -1) { // -1 Invoked by JS | 0 Invoked by user | 1 End of file | 2 Starting another track | 3 Fb2k is shutting down
 		if (['progressbar', 'peakmeterbar'].includes(pref.seekbar) || reason !== -1 && !this.active) { return; }
 		this.reset();
 		if (reason !== 2) { this.throttlePaint(); }
 	};
 
+	/**
+	 * Updates the waveform bar with throttled repaints.
+	 * @param {number} time The current playback time.
+	 */
 	on_playback_time(time) {
 		if (['progressbar', 'peakmeterbar'].includes(pref.seekbar) || !this.active) { return; }
 		this.time = time;
@@ -3532,31 +4065,43 @@ class WaveformBar {
 		}
 		else if (this.preset.paintMode === 'partial' && this.preset.prepaint) {
 			const currX = this.x + this.w * fb.PlaybackTime / fb.PlaybackLength;
-			const barW = Math.round(Math.max(this.w / this.current.length, scaleForDisplay(2)));
+			const barW = Math.round(Math.max(this.w / this.current.length, SCALE(2)));
 			this.throttlePaintRect(currX - 2 * barW, this.y, this.w, this.h);
 		}
 		else if (this.preset.indicator || this.preset.paintMode === 'partial') {
 			const currX = this.x + this.w * fb.PlaybackTime / fb.PlaybackLength;
-			const barW = Math.round(Math.max(this.w / this.current.length, scaleForDisplay(2)));
+			const barW = Math.round(Math.max(this.w / this.current.length, SCALE(2)));
 			this.throttlePaintRect(currX - 2 * barW, this.y, 4 * barW, this.h);
 		}
 	};
 
+	/**
+	 * Handles the waveform bar state when reloading the theme.
+	 */
 	on_script_unload() {
 		if (['progressbar', 'peakmeterbar'].includes(pref.seekbar)) return;
-		if (this.analysis.autoDelete) {
-			this.removeData();
-		}
+		if (this.analysis.autoDelete) this.removeData();
 	};
 
+	/**
+	 * Sets the size and position of the waveform bar and updates them on window resizing.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 */
 	on_size(w, h) {
 		if (['progressbar', 'peakmeterbar'].includes(pref.seekbar)) return;
-		this.x = scaleForDisplay(pref.layout !== 'default' ? 20 : 40);
+		this.x = SCALE(pref.layout !== 'default' ? 20 : 40);
 		this.y = 0;
-		this.w = w - scaleForDisplay(pref.layout !== 'default' ? 40 : 80);
+		this.w = w - SCALE(pref.layout !== 'default' ? 40 : 80);
 		this.h = geo.waveformBarHeight;
 	};
 
+	/**
+	 * Checks if the mouse is within the boundaries of the waveform bar.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
 	trace(x, y) {
 		return (x >= this.x && y >= this.y && x <= this.x + this.w && y <= this.y + this.h);
 	};

@@ -15,7 +15,7 @@ class MenuManagerBio {
 		this.name = name;
 	}
 
-	// Methods
+	// * METHODS * //
 
 	addItem(v) {
 		if (v.separator && !v.str) {
@@ -171,7 +171,7 @@ class MenuItemsBio {
 		this.playlists_changed();
 	}
 
-	// Methods
+	// * METHODS * //
 
 	buttonMenu() {
 		bMenu.newMenu({});

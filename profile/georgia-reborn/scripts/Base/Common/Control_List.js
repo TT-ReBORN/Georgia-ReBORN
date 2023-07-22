@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-03                                          * //
+// * Last change:    2023-07-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,6 +16,9 @@
 /////////////////////////////
 // * PLAYLIST PROPERTIES * //
 /////////////////////////////
+/**
+ * Adds additional system playlist panel properties to the SMP properties.
+ */
 g_properties.add_properties(
 	{
 		list_left_pad:        ['Panel Playlist - Padding left', 0],
@@ -40,18 +43,21 @@ g_properties.row_h = Math.max(10, g_properties.row_h);
 // * BASIC LIST * //
 ////////////////////
 /**
- * Basic list with a scrollbar.
- * By default each item is a row of a fixed size.
- * @param {number} x
- * @param {number} y
- * @param {number} w
- * @param {number} h
- * @param {ListContent} content Content container
- * @constructor
+ * A basic list with items to display and a scrollbar.
+ * Also handles mouse and keyboard events.
  */
 class List {
-	constructor (x, y, w, h, content) {
-	// public:
+	/**
+	 * By default each item is a row of a fixed size.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} w The width.
+	 * @param {number} h The height.
+	 * @param {ListContent} content The content container.
+	 * @class
+	 */
+	constructor(x, y, w, h, content) {
+		// public:
 
 		/** @type {number} */
 		this.x = x;
@@ -63,7 +69,7 @@ class List {
 		this.h = h;
 
 		/** @const {number}*/
-		this.row_h = scaleForDisplay(g_properties.row_h);   // Also see playlist.reinitialize
+		this.row_h = SCALE(g_properties.row_h); // Also see playlist.reinitialize
 
 		/** @protected {number} */
 		this.list_x = this.x + g_properties.list_left_pad;
@@ -90,12 +96,12 @@ class List {
 
 		// * Scrollbar props
 		/**
-		 * Row shift is always non-negative
+		 * Row shift is always non-negative.
 		 * @protected {number}
 		 */
 		this.row_shift = 0;
 		/**
-		 * Pixel shift is always non-positive
+		 * Pixel shift is always non-positive.
 		 * @protected {number}
 		 */
 		this.pixel_shift = 0;
@@ -116,11 +122,15 @@ class List {
 		 * @private
 		 * @function
 		 */
-		this.throttled_repaint = throttle(() => {
+		this.throttled_repaint = Throttle(() => {
 			window.RepaintRect(this.x - 1, playlist.y, this.w + 1, playlist.h);
 		}, 1000 / 60);
 	}
 
+	/**
+	 * Draws the list items with a scrollbar if necessary.
+	 * @param {GdiGraphics} gr
+	 */
 	on_paint(gr) {
 		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 
@@ -139,7 +149,14 @@ class List {
 		}
 	}
 
-	// TODO: Mordred - override this elsewhere
+	/**
+	 * Adjusts the size and position of an element based on the provided parameters.
+	 * Also handles hiding the scrollbar if auto-hide is enabled.
+	 * @param {number} w The width.
+	 * @param {number} h The height.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 */
 	on_size(w, h, x, y) {
 		const w_changed = this.w !== w || this.x !== x;
 		const h_changed = this.h !== h || this.y !== y;
@@ -162,10 +179,12 @@ class List {
 	}
 
 	/**
-	 * @param {number} x
-	 * @param {number} y
-	 * @param {number} m
-	 * @return {boolean} true, if handled
+	 * Handles mouse movement events and updates the scrollbar position,
+	 * hides the scrollbar automatically, and updates the playlist row hover state.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {string} m The mouse mask.
+	 * @returns {boolean} True or false.
 	 */
 	on_mouse_move(x, y, m) {
 		if (this.is_scrollbar_visible) {
@@ -201,10 +220,11 @@ class List {
 	}
 
 	/**
-	 * @param {number} x
-	 * @param {number} y
-	 * @param {number} m
-	 * @return {boolean} true, if handled
+	 * Handles left mouse button down events and performs different actions based on the mouse position and other conditions.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {string} m The mouse mask.
+	 * @returns {boolean} True or false.
 	 */
 	on_mouse_lbtn_down(x, y, m) {
 		this.mouse_down = true;
@@ -222,10 +242,11 @@ class List {
 	}
 
 	/**
-	 * @param {number} x
-	 * @param {number} y
-	 * @param {number} m
-	 * @return {boolean} true, if handled
+	 * Handles mouse double click events.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {string} m The mouse mask.
+	 * @returns {boolean} True or false.
 	 */
 	on_mouse_lbtn_dblclk(x, y, m) {
 		this.mouse_down = true;
@@ -240,10 +261,11 @@ class List {
 	}
 
 	/**
-	 * @param {number} x
-	 * @param {number} y
-	 * @param {number} m
-	 * @return {boolean} true, if handled
+	 * Handles left mouse button up events and checks if the scrollbar is visible and if it was being dragged.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
 	 */
 	on_mouse_lbtn_up(x, y, m) {
 		if (!this.mouse_down) {
@@ -265,13 +287,12 @@ class List {
 	}
 
 	/**
-	 * Shows context menu on scrollbar if available.
+	 * Handles right mouse button up events and shows the context menu on scrollbar if available.
 	 * Also handles the case when mouse is out of the list.
-	 *
-	 * @param {number} x
-	 * @param {number} y
-	 * @param {number} m
-	 * @return {boolean} true, if handled
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} m The mouse mask.
+	 * @returns {boolean} True or false.
 	 */
 	on_mouse_rbtn_up(x, y, m) {
 		if (!this.trace(x, y)) {
@@ -301,12 +322,19 @@ class List {
 		return true;
 	}
 
-	on_mouse_wheel(delta) {
+	/**
+	 * Handles mouse wheel events and checks if a scrollbar is available.
+	 * @param {number} step The amount of scrolling that occurred on the mouse wheel.
+	 */
+	on_mouse_wheel(step) {
 		if (this.is_scrollbar_available) {
-			this.scrollbar.wheel(delta);
+			this.scrollbar.wheel(step);
 		}
 	}
 
+	/**
+	 * Handles mouse leave events and performs actions related to scrollbar and mouse state.
+	 */
 	on_mouse_leave() {
 		if (this.is_scrollbar_available) {
 			this.scrollbar.leave();
@@ -315,18 +343,37 @@ class List {
 		this.mouse_in = false;
 	}
 
+	/**
+	 * Checks if a given point (x, y) is within the boundaries of an list item.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True if the given x and y coordinates are within the boundaries.
+	 */
 	trace(x, y) {
 		return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
 	}
 
+	/**
+	 * Checks if a given point (x, y) is within the boundaries of the list.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True if the given x and y coordinates are within the boundaries.
+	 */
 	trace_list(x, y) {
 		return x >= this.list_x && x < this.list_x + this.list_w && y >= this.list_y && y < this.list_y + this.list_h;
 	}
 
+	/**
+	 * Invokes a throttled repaint.
+	 */
 	repaint() {
 		this.throttled_repaint();
 	}
 
+	/**
+	 * Appends a context menu item to a parent menu that toggles the visibility of a scrollbar in the playlist.
+	 * @param {string} parent_menu The menu to which the scrollbar visibility context menu item will be appended.
+	 */
 	append_scrollbar_visibility_context_menu_to(parent_menu) {
 		parent_menu.append_item('Scrollbar auto-hide', () => {
 			pref.playlistAutoHideScrollbar = !pref.playlistAutoHideScrollbar;
@@ -336,7 +383,8 @@ class List {
 	}
 
 	/**
-	 * @param {number} h
+	 * Updates the height size of the list.
+	 * @param {number} h The height.
 	 * @protected
 	 */
 	on_h_size(h) {
@@ -345,7 +393,8 @@ class List {
 	}
 
 	/**
-	 * @param {number} w
+	 * Updates the width size of the list.
+	 * @param {number} w The width.
 	 * @protected
 	 */
 	on_w_size(w) {
@@ -354,7 +403,7 @@ class List {
 	}
 
 	/**
-	 * Called when data in Content is changed.
+	 * Called when playlist data in content is changed and updates the scrollbar.
 	 * @protected
 	 */
 	on_list_items_change() {
@@ -363,9 +412,10 @@ class List {
 	}
 
 	/**
-	 * @param {number} x
-	 * @param {number} y
-	 * @return {ListItem}
+	 * Gets the item from an array that intersects with the given mouse coordinates.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {ListItem} The item that is found under the mouse coordinates.
 	 * @protected
 	 */
 	get_item_under_mouse(x, y) {
@@ -373,6 +423,7 @@ class List {
 	}
 
 	/**
+	 * Calculates shift parameters and generates a list of items to draw.
 	 * @protected
 	 */
 	on_content_to_draw_change() {
@@ -381,6 +432,7 @@ class List {
 	}
 
 	/**
+	 * The scrollbar callback to update the scroll position and content.
 	 * @protected
 	 */
 	scrollbar_redraw_callback() {
@@ -391,15 +443,16 @@ class List {
 	}
 
 	/**
+	 * Initializes the scrollbar with specific dimensions and a callback for redrawing.
 	 * @private
 	 */
 	initialize_scrollbar() {
 		this.is_scrollbar_available = false;
 
-		const scrollbar_x = this.x - scaleForDisplay(32) + this.w - playlist_geo.scrollbar_w - playlist_geo.scrollbar_right_pad;
-		const scrollbar_y = this.y + playlist_geo.scrollbar_top_pad - (is_4k ? 12 : 5);
-		const scrollbar_w = scaleForDisplay(28);
-		const scrollbar_h = this.h - (playlist_geo.scrollbar_bottom_pad + playlist_geo.scrollbar_top_pad) + (is_4k ? 14 : 5);
+		const scrollbar_x = this.x - SCALE(32) + this.w - playlist_geo.scrollbar_w - playlist_geo.scrollbar_right_pad;
+		const scrollbar_y = this.y + playlist_geo.scrollbar_top_pad - (RES_4K ? 12 : 5);
+		const scrollbar_w = SCALE(28);
+		const scrollbar_h = this.h - (playlist_geo.scrollbar_bottom_pad + playlist_geo.scrollbar_top_pad) + (RES_4K ? 14 : 5);
 
 		if (this.scrollbar) {
 			this.scrollbar.reset();
@@ -409,6 +462,7 @@ class List {
 	}
 
 	/**
+	 * Checks if the scrollbar should be displayed based on the total height of the content and updates the scrollbar accordingly.
 	 * @private
 	 */
 	update_scrollbar() {
@@ -432,6 +486,8 @@ class List {
 	}
 
 	/**
+	 * Updates the size of the list when visibility of the scrollbar changes.
+	 * @param {boolean} is_visible The state if the scrollbar is currently visible or not.
 	 * @private
 	 */
 	on_scrollbar_visibility_change(is_visible) {
@@ -442,6 +498,7 @@ class List {
 	}
 
 	/**
+	 * Updates the size and position of the list and also the scrollbar.
 	 * @private
 	 */
 	update_list_h_size() {
@@ -456,6 +513,7 @@ class List {
 	}
 
 	/**
+	 * Updates the width of the list and its scrollbar.
 	 * @private
 	 */
 	update_list_w_size() {
@@ -477,6 +535,7 @@ class List {
 	}
 
 	/**
+	 * Calculates the shift parameters for scrolling.
 	 * @private
 	 */
 	calculate_shift_params() {
@@ -489,20 +548,25 @@ class List {
 ////////////////////////
 // * ITEM CONTAINER * //
 ////////////////////////
+/**
+ * The item container represents a rectangular item with position and size properties,
+ * and provides methods for drawing, repainting, and tracing.
+ */
 class ListItem {
 	/**
-	 * @param {number} x
-	 * @param {number} y
-	 * @param {number} w
-	 * @param {number} h
-	 * @constructor
+	 * Initializes the size and position of the object.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @param {number} w The width.
+	 * @param {number} h The height.
+	 * @class
 	 */
 	constructor(x, y, w, h) {
 		/**
 		 * @private
 		 * @function
 		 */
-		this.throttled_repaint = throttle(() => {
+		this.throttled_repaint = Throttle(() => {
 			window.RepaintRect(this.x, this.y, this.w, this.h);
 		}, 1000 / 60);
 
@@ -513,6 +577,7 @@ class ListItem {
 	}
 
 	/**
+	 * Nothing to draw here.
 	 * @param {GdiGraphics} gr
 	 * @abstract
 	 */
@@ -520,35 +585,42 @@ class ListItem {
 		throw new LogicError('draw not implemented');
 	}
 
+	/**
+	 * Invokes a throttled repaint.
+	 */
 	repaint() {
 		this.throttled_repaint();
 	}
 
 	/**
-	 * @param {number} x
-	 * @param {number} y
-	 * @return {boolean}
+	 * Checks if a given point (x, y) is within the boundaries of an list item.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
 	 */
 	trace(x, y) {
 		return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
 	}
 
 	/**
-	 * @param {number} x
+	 * Sets the x-coordinate for the list item.
+	 * @param {number} x The x-coordinate.
 	 */
 	set_x(x) {
 		this.x = x;
 	}
 
 	/**
-	 * @param {number} y
+	 * Sets the y-coordinate for the list item.
+	 * @param {number} y The y-coordinate.
 	 */
 	set_y(y) {
 		this.y = y;
 	}
 
 	/**
-	 * @param {number} w
+	 * Sets the width for the list item.
+	 * @param {number} w The width.
 	 */
 	set_w(w) {
 		this.w = w;
@@ -556,26 +628,27 @@ class ListItem {
 }
 
 
-////////////////////////////
-// * CONTENT CONTAINERS * //
-////////////////////////////
+///////////////////////////
+// * CONTENT CONTAINER * //
+///////////////////////////
 /**
- * Content container
- * @constructor
+ * A content container that provides methods for generating and updating item lists,
+ * as well as calculating the total height of the list in rows.
+ * @class
  */
 class ListContent {
 	/**
-	 * Generates item list to draw
+	 * Generates the item list to draw.
 	 * Called in three cases:
-	 * 1. Window vertical size changed
-	 * 2. Scroll position changed
-	 * 3. List cnt changed
-	 * @param {number} wy List Y coordinate
-	 * @param {number} wh List height
-	 * @param {number} row_shift List shift in rows (shift_in_pixels/row_h)
-	 * @param {number} pixel_shift List shift in pixels (shift_in_pixels - row_shift)
-	 * @param {number} row_h Row height
-	 * @return {Array<ListItem>}
+	 * - 1. Window vertical size changed.
+	 * - 2. Scroll position changed.
+	 * - 3. List cnt changed.
+	 * @param {number} wy The y-coordinate of the list.
+	 * @param {number} wh The height of the list.
+	 * @param {number} row_shift The shift in rows (shift_in_pixels/row_h) in the list.
+	 * @param {number} pixel_shift The shift in pixels (shift_in_pixels - row_shift) in the list.
+	 * @param {number} row_h The row height in the list.
+	 * @returns {Array<ListItem>}
 	 * @abstract
 	 */
 	generate_items_to_draw(wy, wh, row_shift, pixel_shift, row_h) {
@@ -583,8 +656,8 @@ class ListContent {
 	}
 
 	/**
-	 * Sets new width of the items
-	 * @param {number} w
+	 * Sets a new width for the items.
+	 * @param {number} w The width.
 	 * @abstract
 	 */
 	update_items_w_size(w) {
@@ -592,7 +665,8 @@ class ListContent {
 	}
 
 	/**
-	 * @return {number} Total cnt height in rows, i.e. total_h/row_h
+	 * Calculates the total height in rows.
+	 * @returns {number} Total cnt height in rows, i.e. total_h/row_h.
 	 * @abstract
 	 */
 	calculate_total_h_in_rows() {
@@ -602,11 +676,15 @@ class ListContent {
 
 
 /**
- * Basic cnt container, which may contain only Items with height of row_h
- * @constructor
- * @extend {ListContent}
+ * A Basic content container and a subclass of ListContent that represents a list of rows and provides methods
+ * for generating and updating the items to draw, as well as calculating the total height in rows.
+ * May contain only Items with height of row_h.
  */
 class ListRowContent extends ListContent {
+	/**
+	 * @extends {ListContent}
+	 * @class
+	 */
 	constructor() {
 		super();
 
@@ -614,6 +692,15 @@ class ListRowContent extends ListContent {
 		this.rows = [];
 	}
 
+	/**
+	 * Generates a list of items to draw based on the given parameters.
+	 * @param {number} wy The starting y-coordinate of the drawing area.
+	 * @param {number} wh The height of the list where the items will be drawn.
+	 * @param {number} row_shift The index of the first row to start drawing from.
+	 * @param {number} pixel_shift The number of pixels to shift the starting position of the items to draw vertically.
+	 * @param {number} row_h The height of each row in pixels.
+	 * @returns {Array} An array called `items_to_draw`.
+	 */
 	generate_items_to_draw(wy, wh, row_shift, pixel_shift, row_h) {
 		if (!this.rows.length) {
 			return [];
@@ -636,12 +723,20 @@ class ListRowContent extends ListContent {
 		return items_to_draw;
 	}
 
+	/**
+	 * Updates the width of each item in a list of rows.
+	 * @param {number} w The width.
+	 */
 	update_items_w_size(w) {
 		this.rows.forEach(item => {
 			item.set_w(w);
 		});
 	}
 
+	/**
+	 * Calculates the total number of rows in the list.
+	 * @returns {number} The number of rows in the list.
+	 */
 	calculate_total_h_in_rows() {
 		return this.rows.length;
 	}

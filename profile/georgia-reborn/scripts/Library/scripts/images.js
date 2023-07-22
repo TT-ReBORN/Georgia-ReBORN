@@ -125,7 +125,7 @@ class Images {
 		this.setNoCover();
 	}
 
-	// Methods
+	// * METHODS * //
 
 	async get_album_art_async(handle, art_id, key, ix) {
 		const result = await utils.GetAlbumArtAsyncV2(0, handle, art_id, false);
@@ -387,7 +387,7 @@ class Images {
 		this.column = 0;
 		for (let i = this.start; i < this.end; i++) {
 			const row = this.style.vertical ? Math.floor(i / this.columns) : 0;
-			box_x = this.style.vertical ? Math.floor(ui.x + this.panel.x + this.column * this.columnWidth + this.bor.side) : Math.floor(ui.x + this.panel.x + i * this.columnWidth + this.bor.side - sbar.delta + (ppt.albumArtFlowMode ? scaleForDisplay(18) : 0));
+			box_x = this.style.vertical ? Math.floor(ui.x + this.panel.x + this.column * this.columnWidth + this.bor.side) : Math.floor(ui.x + this.panel.x + i * this.columnWidth + this.bor.side - sbar.delta + (ppt.albumArtFlowMode ? SCALE(18) : 0));
 			box_y = this.style.vertical ? Math.floor(ui.y + this.panel.y + row * this.row.h - sbar.delta) : ui.y + this.style.y;
 			if (box_y >= 0 - this.row.h && box_y < this.panel.y + this.panel.h) {
 				const item = pop.tree[i];
@@ -414,17 +414,17 @@ class Images {
 				}
 				// * Now playing bg selection with now playing deactivated
 				if (!pop.highlight.nowPlaying && item.sel && coversRightBottom && updatedNowpBg) {
-					gr.FillSolidRect(ui.x, box_y, sbar.w ? ui.w - scaleForDisplay(42) : ui.w, this.box.h, ui.col.nowPlayingBg);
+					gr.FillSolidRect(ui.x, box_y, sbar.w ? ui.w - SCALE(42) : ui.w, this.box.h, ui.col.nowPlayingBg);
 					gr.FillSolidRect(ui.x, box_y, ui.sz.sideMarker, this.box.h, ui.col.sideMarker);
 				}
 				// * Marker selection with now playing active
 				if (pop.highlight.nowPlaying && item.sel && pref.libraryDesign !== 'flowMode') {
-					gr.DrawRect(ui.x, box_y, sbar.w ? ui.w - scaleForDisplay(42) - 1 : ui.w, this.box.h, 1, ui.col.selectionFrame);
+					gr.DrawRect(ui.x, box_y, sbar.w ? ui.w - SCALE(42) - 1 : ui.w, this.box.h, 1, ui.col.selectionFrame);
 					gr.FillSolidRect(ui.x, box_y, ui.sz.sideMarker, this.box.h + 1, ui.col.sideMarker);
 				}
 				// * Hide DrawRect gaps when all songs are completely selected and mask lines when selecting now playing
 				if ((['white', 'black', 'cream'].includes(pref.theme) && !pref.styleBlackAndWhite2) && (pop.highlight.nowPlaying && item.sel && !item.root && pop.inRange(pop.nowp, item.item) && coversRightBottom) && updatedNowpBg) {
-					gr.DrawRect(ui.x, box_y, pop.fullLineSelection ? sbar.w ? ui.w - scaleForDisplay(42) : ui.w : ui.w + ui.sz.margin + box_x - ui.x - ui.sz.sideMarker, this.box.h, 1, ui.col.nowPlayingBg);
+					gr.DrawRect(ui.x, box_y, pop.fullLineSelection ? sbar.w ? ui.w - SCALE(42) : ui.w : ui.w + ui.sz.margin + box_x - ui.x - ui.sz.sideMarker, this.box.h, 1, ui.col.nowPlayingBg);
 				}
 
 				this.im.y = this.labels.overlay ? this.im.offset + box_y + ppt.thumbNailGapCompact / 2 : this.im.offset + box_y;
@@ -687,7 +687,7 @@ class Images {
 		y = this.labels.overlay ? box_y + (cur_img ? ppt.thumbNailGapCompact / 2 + this.im.w - cur_img.Height + 1 : ppt.thumbNailGapCompact / 2 + 2) : box_y + (!this.labels.right ? 1 : 1);
 		const coversRight = pref.libraryDesign === 'coversLabelsRight' || ppt.albumArtLabelType === 2;
 
-		gr.FillSolidRect(x, coversRight ? y - 1 : y, w - (sbar.w && coversRight ? scaleForDisplay(42) : 0), coversRight ? h + 2 : h, ui.col.nowPlayingBg);
+		gr.FillSolidRect(x, coversRight ? y - 1 : y, w - (sbar.w && coversRight ? SCALE(42) : 0), coversRight ? h + 2 : h, ui.col.nowPlayingBg);
 
 		if ((pref.theme !== 'white' && pref.theme !== 'black') && (!ppt.albumArtShow || ppt.albumArtShow && coversRight) ||
 			(pref.styleBlackAndWhite || pref.styleBlackAndWhite2) && ppt.albumArtShow && coversRight) {
@@ -1073,8 +1073,8 @@ class Images {
 				}
 
 				const margin = ppt.margin;
-				this.panel.x = (ppt.sbarShow != 2 ? Math.max(margin, ui.sbar.w) : margin) + ui.l.w - scaleForDisplay(3);
-				this.panel.w = ui.w - ui.l.w * 2 - (ui.sbar.type == 0 || ppt.sbarShow != 2 ? Math.max(margin, ui.sbar.w) * 2 + scaleForDisplay(20) : (margin * 2 + ui.sbar.w) + scaleForDisplay(20));
+				this.panel.x = (ppt.sbarShow != 2 ? Math.max(margin, ui.sbar.w) : margin) + ui.l.w - SCALE(3);
+				this.panel.w = ui.w - ui.l.w * 2 - (ui.sbar.type == 0 || ppt.sbarShow != 2 ? Math.max(margin, ui.sbar.w) * 2 + SCALE(20) : (margin * 2 + ui.sbar.w) + SCALE(20));
 				this.panel.h = ui.h - this.panel.y;
 
 				this.blockWidth = pref.libraryThumbnailSize === 'playlist' ? playlistThumbSize + (this.bor.side * 2 + this.bor.cov * 2) :
@@ -1139,8 +1139,8 @@ class Images {
 				}
 				this.panel.x = 0;
 				const spacer = this.letter.show ? (this.labels.bottom ? this.text.h * 0.5 - this.bor.pad / 4 : this.text.h * 0.75) : (this.labels.bottom ? 0 : Math.round(this.bor.pad / 2));
-				this.panel.y = panel.search.h + spacer - scaleForDisplay(3);
-				this.panel.h = ui.h - this.panel.y - ui.l.w * 3 - spacer - ui.sbar.w - scaleForDisplay(34);
+				this.panel.y = panel.search.h + spacer - SCALE(3);
+				this.panel.h = ui.h - this.panel.y - ui.l.w * 3 - spacer - ui.sbar.w - SCALE(34);
 
 				this.panel.w = ui.w;
 				if (!this.labels.hide && !this.labels.overlay) {

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-02                                          * //
+// * Last change:    2023-07-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,17 +16,17 @@
 ////////////////////////////////////////
 // ! GEORGIA-REBORN-CONFIG DEFAULTS ! //
 ////////////////////////////////////////
+// * This file contains the various definitions, default values, and schemas for the objects that will be written to the configuration file.
+// * Any value defined here will be written to the config ( although some of these objects will be modified in gr-settings.js with values that are not saved ).
+// ! DO NOT EDIT: Editing these values will likely not provide you with the results you expect as they will probably not be stored in the configs.
+// ! NOTE: If you wish to make changes to this, edit it in your georgia-reborn-config.jsonc and georgia-reborn-custom.jsonc file and NOT here.
+
 
 //////////////////////////
 // * TITLE FORMATTING * //
 //////////////////////////
-
-// * This file contains the various definitions, default values, and schemas for the objects that will be written to the configuration file.
-// * Any value defined here will be written to the config ( although some of these objects will be modified in gr-settings.js with values that are not saved ).
-// ! DO NOT EDIT: Editing these values will likely not provide you with the results you expect as they will probably not be stored in the configs.
-
 /** @type {*} Title formatting strings used throughout the UI */
-let tf = {}; // Defining each entry separately for auto-complete purposes
+let tf = {};
 tf.album_subtitle = '%albumsubtitle%';
 tf.album_translation = '%albumtranslation%';
 tf.artist_country = '%artistcountry%';
@@ -46,8 +46,11 @@ tf.vinyl_side = '%vinyl side%';
 tf.vinyl_tracknum = '%vinyl tracknumber%';
 tf.year = '[$year($if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,))]';
 tf.playing_playlist = 'Do not change this value as it is handled by the theme itself';
+
+/** @type {Object} Assigning the title formatting strings. */
 const defaultTitleFormatStrings = Object.assign({}, tf);
 
+/** @type {Object} Title formatting config name description. */
 const titleFormatComments = {
 	artist_country: 'Only used for displaying artist flags.',
 	date: 'The full date stored for the track',
@@ -59,6 +62,7 @@ const titleFormatComments = {
 	year: 'Just the year portion of any stored date.'
 };
 
+/** @type {Object} Title formatting config header description. */
 const titleFormatSchema = new ConfigurationObjectSchema('title_format_strings', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* TITLE FORMATTING STRINGS:                                                                                                                                                                             ' +
@@ -67,10 +71,11 @@ const titleFormatSchema = new ConfigurationObjectSchema('title_format_strings', 
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
 
-///////////////////////
-// * ARTWORK PATHS * //
-///////////////////////
-const imgPathDefaults = [ // Image load order - simply add, change or re-order entries as needed
+/////////////////////////////
+// * ARTWORK IMAGE PATHS * //
+/////////////////////////////
+/** @type {array} Artwork image paths load order - add, change or re-order entries as needed. */
+const imgPathDefaults = [
 	// * File names with formats
 	'$replace(%path%,%filename_ext%,)folder*',
 	'$replace(%path%,%filename_ext%,)cover*',
@@ -112,6 +117,7 @@ const imgPathDefaults = [ // Image load order - simply add, change or re-order e
 	'$replace(%path%\\Scans\\,%filename_ext%,)*.*'
 ];
 
+/** @type {Object} Artwork image paths config header description. */
 const imgPathSchema = new ConfigurationObjectSchema('imgPaths', ConfigurationObjectType.Array, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* ARTWORK IMAGE PATHS:                                                                                                                                                                                  ' +
@@ -124,14 +130,17 @@ const imgPathSchema = new ConfigurationObjectSchema('imgPaths', ConfigurationObj
 ///////////////
 // * THEME * //
 ///////////////
+/** @type {Object} Options > Theme settings with default value. */
 const themeDefaults = {
 	theme: 'reborn'
 };
 
+/** @type {Object} Options > Theme settings config name description. */
 const themesComments = {
 	theme: 'Values: "white", "black", "reborn", "random", "blue", "darkblue", "red", "cream", "nblue", "ngreen", "nred", "ngold", "custom01-custom10" - Options > Theme'
 };
 
+/** @type {Object} Options > Theme settings config header description. */
 const themesSchema = new ConfigurationObjectSchema('theme', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* THEME:                                                                                                                                                                                                ' +
@@ -142,9 +151,10 @@ const themesSchema = new ConfigurationObjectSchema('theme', ConfigurationObjectT
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
 
-////////////////
-// * STYLES * //
-////////////////
+///////////////
+// * STYLE * //
+///////////////
+/** @type {Object} Options > Style settings with default values */
 const stylesDefaults = {
 	default: true,
 	bevel: false,
@@ -176,6 +186,7 @@ const stylesDefaults = {
 	volumeBarFill: 'default'
 };
 
+/** @type {Object} Options > Style settings config name description. */
 const stylesComments = {
 	default: 'Values: true, false - can be used in all themes',
 	bevel: 'Values: true, false - can be used in all themes',
@@ -207,6 +218,7 @@ const stylesComments = {
 	volumeBarFill: 'Values: "default", "bevel", "inner"'
 };
 
+/** @type {Object} Options > Style settings config header description. */
 const stylesSchema = new ConfigurationObjectSchema('style', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* STYLES:                                                                                                                                                                                               ' +
@@ -225,6 +237,7 @@ const stylesSchema = new ConfigurationObjectSchema('style', ConfigurationObjectT
 ////////////////
 // * PRESET * //
 ////////////////
+/** @type {Object} Options > Preset settings with default values. */
 const presetDefaults = {
 	selectMode: 'default',
 	selectWhitePresets: true,
@@ -244,6 +257,7 @@ const presetDefaults = {
 	indicator: true
 };
 
+/** @type {Object} Options > Preset settings config name description. */
 const presetComments = {
 	selectMode: 'Values: "default", "harmonic", "theme" - Options > Preset > Select mode',
 	selectWhitePresets: 'Values: true, false - Options > Preset > Select presets > White',
@@ -263,6 +277,7 @@ const presetComments = {
 	indicator: 'Values: true, false - Options > Preset > Indicator'
 };
 
+/** @type {Object} Options > Preset settings config header description. */
 const presetSchema = new ConfigurationObjectSchema('preset', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* PRESET:                                                                                                                                                                                               ' +
@@ -277,14 +292,17 @@ const presetSchema = new ConfigurationObjectSchema('preset', ConfigurationObject
 /////////////////////
 // * PLAYER SIZE * //
 /////////////////////
+/** @type {Object} Options > Player size settings with default value. */
 const themePlayerSizeDefaults = {
 	playerSize: 'small'
 };
 
+/** @type {Object} Options > Player size settings config name description. */
 const themePlayerSizeComments = {
 	playerSize: 'Values: "small", "normal", "large" - Options > Player size'
 };
 
+/** @type {Object} Options > Player size settings config header description. */
 const themePlayerSizeSchema = new ConfigurationObjectSchema('themePlayerSize', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* PLAYER SIZE:                                                                                                                                                                                          ' +
@@ -297,14 +315,17 @@ const themePlayerSizeSchema = new ConfigurationObjectSchema('themePlayerSize', C
 ////////////////
 // * LAYOUT * //
 ////////////////
+/** @type {Object} Options > Layout settings with default value. */
 const themeLayoutDefaults = {
 	layout: 'default'
 };
 
+/** @type {Object} Options > Layout settings config name description. */
 const themeLayoutComments = {
 	layout: 'Values: "default", "artwork", "compact" - Options > Layout'
 };
 
+/** @type {Object} Options > Layout settings config header description. */
 const themeLayoutSchema = new ConfigurationObjectSchema('themeLayout', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* LAYOUT:                                                                                                                                                                                               ' +
@@ -314,17 +335,20 @@ const themeLayoutSchema = new ConfigurationObjectSchema('themeLayout', Configura
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
 
-//////////////////////////
-// * THEME BRIGHTNESS * //
-//////////////////////////
+////////////////////
+// * BRIGHTNESS * //
+////////////////////
+/** @type {Object} Options > Brightness settings with default value. */
 const themeBrightnessDefaults = {
 	themeBrightness: 'default'
 };
 
+/** @type {Object} Options > Brightness settings config name description. */
 const themeBrightnessComments = {
 	themeBrightness: 'Values: -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25 - Options > Brightness'
 };
 
+/** @type {Object} Options > Brightness settings config header description. */
 const themeBrightnessSchema = new ConfigurationObjectSchema('themeBrightness', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* THEME BRIGHTNESS:                                                                                                                                                                                     ' +
@@ -337,48 +361,50 @@ const themeBrightnessSchema = new ConfigurationObjectSchema('themeBrightness', C
 ///////////////////
 // * FONT SIZE * //
 ///////////////////
+/** @type {Object} Options > Font size settings with default values. */
 const themeFontSizesDefaults = {
-	menuFontSize_default: is_QHD ? 14 : 12,
-	menuFontSize_artwork: is_QHD ? 14 : 12,
-	menuFontSize_compact: is_QHD ? 14 : 12,
-	lowerBarFontSize_default: is_QHD ? 20 : 18,
-	lowerBarFontSize_artwork: is_QHD ? 18 : 16,
-	lowerBarFontSize_compact: is_QHD ? 18 : 16,
-	notificationFontSize_default: is_QHD ? 20 : 18,
-	notificationFontSize_artwork: is_QHD ? 18 : 16,
-	notificationFontSize_compact: is_QHD ? 18 : 16,
-	popupFontSize_default: is_QHD ? 18 : 16,
-	popupFontSize_artwork: is_QHD ? 16 : 14,
-	popupFontSize_compact: is_QHD ? 16 : 14,
-	tooltipFontSize_default: is_QHD ? 18 : 16,
-	tooltipFontSize_artwork: is_QHD ? 16 : 14,
-	tooltipFontSize_compact: is_QHD ? 16 : 14,
-	gridArtistFontSize_default: is_QHD ? 20 : 18,
-	gridArtistFontSize_artwork: is_QHD ? 20 : 18,
-	gridTrackNumFontSize_default: is_QHD ? 20 : 18,
-	gridTrackNumFontSize_artwork: is_QHD ? 20 : 18,
-	gridTitleFontSize_default: is_QHD ? 20 : 18,
-	gridTitleFontSize_artwork: is_QHD ? 20 : 18,
-	gridAlbumFontSize_default: is_QHD ? 20 : 18,
-	gridAlbumFontSize_artwork: is_QHD ? 20 : 18,
-	gridKeyFontSize_default: is_QHD ? 19 : 17,
-	gridKeyFontSize_artwork: is_QHD ? 19 : 17,
-	gridValueFontSize_default: is_QHD ? 19 : 17,
-	gridValueFontSize_artwork: is_QHD ? 19 : 17,
-	playlistHeaderFontSize_default: is_QHD ? 17 : 15,
-	playlistHeaderFontSize_artwork: is_QHD ? 17 : 15,
-	playlistHeaderFontSize_compact: is_QHD ? 17 : 15,
-	playlistFontSize_default: is_QHD ? 14 : 12,
-	playlistFontSize_artwork: is_QHD ? 14 : 12,
-	playlistFontSize_compact: is_QHD ? 14 : 12,
-	libraryFontSize_default: is_4k ? 24 : is_QHD ? 14 : 12,
-	libraryFontSize_artwork: is_4k ? 24 : is_QHD ? 14 : 12,
-	biographyFontSize_default: is_4k ? 24 : is_QHD ? 14 : 12,
-	biographyFontSize_artwork: is_4k ? 24 : is_QHD ? 14 : 12,
-	lyricsFontSize_default: is_QHD ? 22 : 20,
-	lyricsFontSize_artwork: is_QHD ? 22 : 20
+	menuFontSize_default: RES_QHD ? 14 : 12,
+	menuFontSize_artwork: RES_QHD ? 14 : 12,
+	menuFontSize_compact: RES_QHD ? 14 : 12,
+	lowerBarFontSize_default: RES_QHD ? 20 : 18,
+	lowerBarFontSize_artwork: RES_QHD ? 18 : 16,
+	lowerBarFontSize_compact: RES_QHD ? 18 : 16,
+	notificationFontSize_default: RES_QHD ? 20 : 18,
+	notificationFontSize_artwork: RES_QHD ? 18 : 16,
+	notificationFontSize_compact: RES_QHD ? 18 : 16,
+	popupFontSize_default: RES_QHD ? 18 : 16,
+	popupFontSize_artwork: RES_QHD ? 16 : 14,
+	popupFontSize_compact: RES_QHD ? 16 : 14,
+	tooltipFontSize_default: RES_QHD ? 18 : 16,
+	tooltipFontSize_artwork: RES_QHD ? 16 : 14,
+	tooltipFontSize_compact: RES_QHD ? 16 : 14,
+	gridArtistFontSize_default: RES_QHD ? 20 : 18,
+	gridArtistFontSize_artwork: RES_QHD ? 20 : 18,
+	gridTrackNumFontSize_default: RES_QHD ? 20 : 18,
+	gridTrackNumFontSize_artwork: RES_QHD ? 20 : 18,
+	gridTitleFontSize_default: RES_QHD ? 20 : 18,
+	gridTitleFontSize_artwork: RES_QHD ? 20 : 18,
+	gridAlbumFontSize_default: RES_QHD ? 20 : 18,
+	gridAlbumFontSize_artwork: RES_QHD ? 20 : 18,
+	gridKeyFontSize_default: RES_QHD ? 19 : 17,
+	gridKeyFontSize_artwork: RES_QHD ? 19 : 17,
+	gridValueFontSize_default: RES_QHD ? 19 : 17,
+	gridValueFontSize_artwork: RES_QHD ? 19 : 17,
+	playlistHeaderFontSize_default: RES_QHD ? 17 : 15,
+	playlistHeaderFontSize_artwork: RES_QHD ? 17 : 15,
+	playlistHeaderFontSize_compact: RES_QHD ? 17 : 15,
+	playlistFontSize_default: RES_QHD ? 14 : 12,
+	playlistFontSize_artwork: RES_QHD ? 14 : 12,
+	playlistFontSize_compact: RES_QHD ? 14 : 12,
+	libraryFontSize_default: RES_4K ? 24 : RES_QHD ? 14 : 12,
+	libraryFontSize_artwork: RES_4K ? 24 : RES_QHD ? 14 : 12,
+	biographyFontSize_default: RES_4K ? 24 : RES_QHD ? 14 : 12,
+	biographyFontSize_artwork: RES_4K ? 24 : RES_QHD ? 14 : 12,
+	lyricsFontSize_default: RES_QHD ? 22 : 20,
+	lyricsFontSize_artwork: RES_QHD ? 22 : 20
 };
 
+/** @type {Object} Options > Font size settings config name description. */
 const themeFontSizesComments = {
 	menuFontSize_default: 'Values: 8, 10, 11, 12, 13, 14, 16 - Options > Font size > Main > Top menu - when Default layout is active',
 	menuFontSize_artwork: 'Values: 8, 10, 11, 12, 13, 14, 16 - Options > Font size > Main > Top menu - when Artwork layout is active',
@@ -421,6 +447,7 @@ const themeFontSizesComments = {
 	lyricsFontSize_artwork: 'Values: 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30 - Options > Font size > Lyrics - when Artwork layout is active'
 };
 
+/** @type {Object} Options > Font size settings config header description. */
 const themeFontSizesSchema = new ConfigurationObjectSchema('themeFontSize', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* FONT SIZES:                                                                                                                                                                                           ' +
@@ -433,6 +460,7 @@ const themeFontSizesSchema = new ConfigurationObjectSchema('themeFontSize', Conf
 /////////////////////////
 // * PLAYER CONTROLS * //
 /////////////////////////
+/** @type {Object} Options > Player controls settings with default values. */
 const themePlayerControlsDefaults = {
 	showPanelDetails_default: true,
 	showPanelDetails_artwork: true,
@@ -577,6 +605,7 @@ const themePlayerControlsDefaults = {
 	playbackOrder: 'Default'
 };
 
+/** @type {Object} Options > Player controls settings config name description. */
 const themePlayerControlsComments = {
 	showPanelDetails_default: 'Values: true, false - Options > Player controls > Top menu > Default > Details',
 	showPanelDetails_artwork: 'Values: true, false - Options > Player controls > Top menu > Artwork > Details',
@@ -720,6 +749,7 @@ const themePlayerControlsComments = {
 	playbackOrder: 'Values: "Default", "Repeat", "Shuffle" - not in Options - playback order state button'
 };
 
+/** @type {Object} Options > Player controls settings config header description. */
 const themePlayerControlsSchema = new ConfigurationObjectSchema('themeControls', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* PLAYER CONTROLS:                                                                                                                                                                                      ' +
@@ -732,6 +762,7 @@ const themePlayerControlsSchema = new ConfigurationObjectSchema('themeControls',
 //////////////////
 // * PLAYLIST * //
 //////////////////
+/** @type {Object} Options > Playlist settings with default values. */
 const themePlaylistDefaults = {
 	playlistLayout: 'normal',
 	showPlaylistManager_default: true,
@@ -768,6 +799,7 @@ const themePlaylistDefaults = {
 	playlistSortOrder: ''
 };
 
+/** @type {Object} Options > Playlist settings config name description. */
 const themePlaylistComments = {
 	playlistLayout: 'Values: "normal", "full" - Options > Playlist > Layout',
 	showPlaylistManager_default: 'Values: true, false - Options > Playlist > Playlist manager > Show playlist manager > Default',
@@ -804,6 +836,7 @@ const themePlaylistComments = {
 	playlistSortOrder: 'Values: "", default, artistDateAsc, artistDateDesc, album, title, tracknum, yearAsc, yearDesc, filePath, custom - Options > Playlist > Sort order'
 };
 
+/** @type {Object} Options > Playlist settings config header description. */
 const themePlaylistSchema = new ConfigurationObjectSchema('themePlaylist', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* PLAYLIST:                                                                                                                                                                                             ' +
@@ -816,6 +849,7 @@ const themePlaylistSchema = new ConfigurationObjectSchema('themePlaylist', Confi
 /////////////////
 // * DETAILS * //
 /////////////////
+/** @type {Object} Options > Details settings with default values. */
 const themeDetailsDefaults = {
 	showDiscArtStub: false,
 	noDiscArtStub: true,
@@ -851,6 +885,7 @@ const themeDetailsDefaults = {
 	labelArtOnBg: false
 };
 
+/** @type {Object} Options > Details settings config name description. */
 const themeDetailsComments = {
 	showDiscArtStub: 'Values: true, false - Options > Details > Disc art > Disc art placeholder > Show placeholder if no disc art found',
 	noDiscArtStub: 'Values: true, false - Options > Details > Disc art > Disc art placeholder > No placeholder',
@@ -886,6 +921,7 @@ const themeDetailsComments = {
 	labelArtOnBg: 'Values: true, false - Options > Details > Background > Show label art on background'
 };
 
+/** @type {Object} Options > Details settings config header description. */
 const themeDetailsSchema = new ConfigurationObjectSchema('themeDetails', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* DETAILS:                                                                                                                                                                                              ' +
@@ -896,14 +932,13 @@ const themeDetailsSchema = new ConfigurationObjectSchema('themeDetails', Configu
 
 /**
  * @typedef {Object} MetadataGridEntry
- * @property {string} label Text that shows in the left column of the metadata grid
+ * @property {string} label Text that shows in the left column of the metadata grid.
  * @property {string} val Evaluated text in the right column. If this evaluates to an empty string, the entry is not shown.
- * @property {boolean=} age If True, appends the "(1y 10, 23d)" style text to the evaluated val. Only valid for date strings
+ * @property {boolean=} age If True, appends the "(1y 10, 23d)" style text to the evaluated val. Only valid for date strings.
  * @property {string=} comment Optional comment for the .jsonc file.
  */
-// * Info grid visible when a song is playing.
-// ! NOTE: If you wish to make changes to this, edit it in your georgia-reborn-config.jsonc file and NOT here.
-/** @type {MetadataGridEntry[]} */
+
+/** @type {MetadataGridEntry[]} Metadata grid default entries and values. */
 const defaultMetadataGrid = [
 	{ label: 'Disc',            val: `$if(${tf.disc_subtitle},[Disc %discnumber% \u2013 ]${tf.disc_subtitle})` },
 	{ label: 'Rel. Type',       val: '$if($stricmp(%releasetype%,Album),,[%releasetype%])' },
@@ -939,9 +974,10 @@ const defaultMetadataGrid = [
 	{ label: 'Blank 08',        val: '' }
 ];
 
+/** @type {Object} Metadata grid config header description. */
 const gridSchema = new ConfigurationObjectSchema('metadataGrid', ConfigurationObjectType.Array, [
 	{ name: 'label' },
-	{ name: 'val' },	// TODO: change this to 'value'?
+	{ name: 'val' },
 	{ name: 'age', optional: true }],
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* DETAILS METADATA GRID:                                                                                                                                                                                ' +
@@ -955,6 +991,7 @@ const gridSchema = new ConfigurationObjectSchema('metadataGrid', ConfigurationOb
 /////////////////
 // * LIBRARY * //
 /////////////////
+/** @type {Object} Options > Library settings with default values. */
 const themeLibraryDefaults = {
 	libraryLayout: 'normal',
 	libraryLayoutFullPreset: true,
@@ -1004,6 +1041,7 @@ const themeLibraryDefaults = {
 	yearBeforeAlbum: true
 };
 
+/** @type {Object} Options > Library settings config name dscription. */
 const themeLibraryComments = {
 	libraryLayout: 'Values: "normal", "full", "split" - Options > Library > Layout',
 	libraryLayoutFullPreset: 'Values: true, false - Options > Library > Layout > Use full preset',
@@ -1053,6 +1091,7 @@ const themeLibraryComments = {
 	yearBeforeAlbum: 'Values: true, false - Options > Library > Sort order'
 };
 
+/** @type {Object} Options > Library settings config header dscription. */
 const themeLibrarySchema = new ConfigurationObjectSchema('themeLibrary', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* LIBRARY:                                                                                                                                                                                              ' +
@@ -1065,6 +1104,7 @@ const themeLibrarySchema = new ConfigurationObjectSchema('themeLibrary', Configu
 ///////////////////
 // * BIOGRAPHY * //
 ///////////////////
+/** @type {Object} Options > Biography settings with default values. */
 const themeBiographyDefaults = {
 	biographyLayout: 'normal',
 	biographyLayoutFullPreset: true,
@@ -1107,6 +1147,7 @@ const themeBiographyDefaults = {
 	cycTimePic: 15
 };
 
+/** @type {Object} Options > Biography settings config name description. */
 const themeBiographyComments = {
 	biographyLayout: 'Values: "normal", "full" - Options > Biography > Layout',
 	biographyLayoutFullPreset: 'Values: true, false - Options > Biography > Layout > Use full preset',
@@ -1149,6 +1190,7 @@ const themeBiographyComments = {
 	cycTimePic: 'Values: 5, 10, 15, 30, 60 - Options > Biography > Image > Auto cycle'
 };
 
+/** @type {Object} Options > Biography settings config header description. */
 const themeBiographySchema = new ConfigurationObjectSchema('themeBiography', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* BIOGRAPHY:                                                                                                                                                                                            ' +
@@ -1161,6 +1203,7 @@ const themeBiographySchema = new ConfigurationObjectSchema('themeBiography', Con
 ////////////////
 // * LYRICS * //
 ////////////////
+/** @type {Object} Options > Lyrics settings with default values. */
 const themeLyricsDefaults = {
 	lyricsLayout: 'normal',
 	lyricsDropShadowLevel: 2,
@@ -1174,6 +1217,7 @@ const themeLyricsDefaults = {
 	lyricsScrollRateMax: 375
 };
 
+/** @type {Object} Options > Lyrics settings config name dscription. */
 const themeLyricsComments = {
 	lyricsLayout: 'Values: "normal", "full" - Options > Lyrics > Layout',
 	lyricsDropShadowLevel: 'Values: 0, 1, 2, 3 - Options > Lyrics > Display > Show drop shadow',
@@ -1187,6 +1231,7 @@ const themeLyricsComments = {
 	lyricsScrollRateMax: 'Values: false, 150, 250, 375, 500, 725 - not in Options, set by lyricsScrollSpeed'
 };
 
+/** @type {Object} Options > Lyrics settings config header dscription. */
 const themeLyricsSchema = new ConfigurationObjectSchema('themeLyrics', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* LYRICS:                                                                                                                                                                                               ' +
@@ -1195,6 +1240,7 @@ const themeLyricsSchema = new ConfigurationObjectSchema('themeLyrics', Configura
 	'* Note: These settings will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                            ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
+/** @type {array} Lyrics filename defaults. */
 const lyricFilenamesDefaults = [
 	'%title%',
 	'%artist% - %title%',
@@ -1203,6 +1249,7 @@ const lyricFilenamesDefaults = [
 	'%tracknumber% - %artist% - %title%'
 ];
 
+/** @type {Object} Lyrics filename config header description. */
 const lyricFilenamesSchema = new ConfigurationObjectSchema('lyricFilenamePatterns', ConfigurationObjectType.Array, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* LYRICS TITLE FORMATTING:                                                                                                                                                                              ' +
@@ -1215,6 +1262,7 @@ const lyricFilenamesSchema = new ConfigurationObjectSchema('lyricFilenamePattern
 //////////////////
 // * SETTINGS * //
 //////////////////
+/** @type {Object} Options > Settings with default values. */
 const themeSettingsDefaults = {
 	themeDayNightMode: false,
 	albumArtDiskCache: true,
@@ -1233,6 +1281,7 @@ const themeSettingsDefaults = {
 	disableRightClick: true
 };
 
+/** @type {Object} Options > Settings config name description. */
 const themeSettingsComments = {
 	themeDayNightMode: 'Values: false, 6, 7, 8, 9, 10 - Options > Settings > Theme day/night mode',
 	albumArtDiskCache: 'Values: true, false - Options > Settings > Theme cache > Library > Image disk cache enabled',
@@ -1251,6 +1300,7 @@ const themeSettingsComments = {
 	disableRightClick: 'Values: true, false - Options > Settings > Disable right-click'
 };
 
+/** @type {Object} Options > Settings config header description. */
 const themeSettingsSchema = new ConfigurationObjectSchema('themeSettings', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* SETTINGS:                                                                                                                                                                                             ' +
@@ -1259,6 +1309,7 @@ const themeSettingsSchema = new ConfigurationObjectSchema('themeSettings', Confi
 	'* Note: These settings will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                            ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
+/** @type {Object} General settings with default values. */
 const settingsDefaults = {
 	artworkDisplayTime: 30,
 	discArtBasename: 'cd',
@@ -1288,6 +1339,7 @@ const settingsDefaults = {
 	stoppedString2: '$replace(%_foobar2000_version%,foobar2000 ,)'
 };
 
+/** @type {Object} General settings config name description. */
 const settingsComments = {
 	artworkDisplayTime: 'Number of seconds to show each image if more than one is found and "Cycle through all artwork" option is enabled. (Min: 5, Max: 120)',
 	discArtBasename: 'Do not include extension. Example: "discart", if the image provider uses that name for saving discArt and you want those filtered from showing up as albumArt. Would also filter out discart1.png, etc.',
@@ -1316,7 +1368,8 @@ const settingsComments = {
 	stoppedString2: 'The second (non-bold) portion of text shown above the progress bar when nothing is playing'
 };
 
-const settingsSchema = new ConfigurationObjectSchema('settings', ConfigurationObjectType.Object,  /* Will display as key/val pairs with comments attached */ undefined,
+/** @type {Object} General settings config header description. */
+const settingsSchema = new ConfigurationObjectSchema('settings', ConfigurationObjectType.Object, /* Will display as key/val pairs with comments attached. */ undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* GENERAL SETTINGS:                                                                                                                                                                                     ' +
 	'* These settings are not in the top menu options.                                                                                                                                                       ' +
@@ -1332,10 +1385,12 @@ const settingsSchema = new ConfigurationObjectSchema('settings', ConfigurationOb
 //////////////////////////////////
 // * CUSTOM LIBRARY DIRECTORY * //
 //////////////////////////////////
+/** @type {array} Custom library cache directory. */
 const customLibraryDirDefaults = [
 	'C:\\Replace_this_path_to_your_new_library\\Directory\\'
 ];
 
+/** @type {Object} Custom library cache directory config header description. */
 const customLibraryDirSchema = new ConfigurationObjectSchema('customLibraryDir', ConfigurationObjectType.Array, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM LIBRARY DIRECTORY:                                                                                                                                                                             ' +
@@ -1348,10 +1403,12 @@ const customLibraryDirSchema = new ConfigurationObjectSchema('customLibraryDir',
 ////////////////////////////////////
 // * CUSTOM BIOGRAPHY DIRECTORY * //
 ////////////////////////////////////
+/** @type {array} Custom biography cache directory. */
 const customBiographyDirDefaults = [
 	'C:\\Replace_this_path_to_your_new_biography\\Directory\\'
 ];
 
+/** @type {Object} Custom biography cache directory config header description. */
 const customBiographyDirSchema = new ConfigurationObjectSchema('customBiographyDir', ConfigurationObjectType.Array, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM BIOGRAPHY DIRECTORY:                                                                                                                                                                           ' +
@@ -1364,10 +1421,12 @@ const customBiographyDirSchema = new ConfigurationObjectSchema('customBiographyD
 /////////////////////////////////
 // * CUSTOM LYRICS DIRECTORY * //
 /////////////////////////////////
+/** @type {array} Custom lyrics cache directory. */
 const customLyricsDirDefaults = [
 	'C:\\Replace_this_path_to_your_new_lyrics\\Directory\\'
 ];
 
+/** @type {Object} Custom lyrics cache directory config header description. */
 const customLyricsDirSchema = new ConfigurationObjectSchema('customLyricsDir', ConfigurationObjectType.Array, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM LYRICS DIRECTORY:                                                                                                                                                                              ' +
@@ -1381,10 +1440,12 @@ const customLyricsDirSchema = new ConfigurationObjectSchema('customLyricsDir', C
 ///////////////////////////////////////
 // * CUSTOM WAVEFORM BAR DIRECTORY * //
 ///////////////////////////////////////
+/** @type {array} Custom waveform bar cache directory. */
 const customWaveformBarDirDefaults = [
 	'C:\\Replace_this_path_to_your_new_waveform\\Directory\\'
 ];
 
+/** @type {Object} Custom waveform bar cache directory config header description. */
 const customWaveformBarDirSchema = new ConfigurationObjectSchema('customWaveformBarDir', ConfigurationObjectType.Array, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM WAVEFORM BAR DIRECTORY:                                                                                                                                                                        ' +
@@ -1397,6 +1458,7 @@ const customWaveformBarDirSchema = new ConfigurationObjectSchema('customWaveform
 ////////////////////////////
 // * CUSTOM THEME FONTS * //
 ////////////////////////////
+/** @type {Object} Custom fonts with default Open Sans type. */
 const customFontsDefaults = {
 	fontDefault: 'Open Sans',
 	fontTopMenu: 'Open Sans SemiBold',
@@ -1433,6 +1495,7 @@ const customFontsDefaults = {
 	fontLyrics: 'Open Sans'
 };
 
+/** @type {Object} Custom fonts config name description. */
 const customFontsComments = {
 	fontDefault: 'Default font: Segoe UI - panel font used as default and panel related elements in Playlist, Library, Biography',
 	fontTopMenu: 'Default font: Segoe UI Semibold - theme font used for top menu buttons',
@@ -1469,6 +1532,7 @@ const customFontsComments = {
 	fontLyrics: 'Default font: Segoe UI - lyrics font'
 };
 
+/** @type {Object} Custom fonts config header description. */
 const customFontsSchema = new ConfigurationObjectSchema('customFont', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM THEME FONTS:                                                                                                                                                                                   ' +
@@ -1484,6 +1548,7 @@ const customFontsSchema = new ConfigurationObjectSchema('customFont', Configurat
 /////////////////////////////
 // * CUSTOM STYLE PRESET * //
 /////////////////////////////
+/** @type {Object} Custom style preset with default values. */
 const customStylePresetDefaults = {
 	theme: 'white',
 	bevel: false,
@@ -1513,6 +1578,7 @@ const customStylePresetDefaults = {
 	themeBrightness: 'default'
 };
 
+/** @type {Object} Custom style preset config name description. */
 const customStylePresetComments = {
 	theme: 'Values: "white", "black", "reborn", "random", "blue", "darkblue", "red", "cream", "nblue", "ngreen", "nred", "ngold"',
 	bevel: 'Values: true, false - can be used in all themes',
@@ -1542,6 +1608,7 @@ const customStylePresetComments = {
 	themeBrightness: 'Values: -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25'
 };
 
+/** @type {Object} Custom style preset config header description. */
 const customStylePresetSchema = new ConfigurationObjectSchema('customStylePreset', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM STYLE PRESET:                                                                                                                                                                                  ' +
@@ -1559,6 +1626,7 @@ const customStylePresetSchema = new ConfigurationObjectSchema('customStylePreset
 //////////////////////
 // * CUSTOM THEME * //
 //////////////////////
+/** @type {Object} Custom theme with default HEX color values. */
 const customThemeDefaults = {
 	name: '',
 
@@ -1783,6 +1851,7 @@ const customThemeDefaults = {
 	col_styleVolumeBarFill: '19826e'
 };
 
+/** @type {Object} Custom theme config name description. */
 const customThemeComments = {
 	name: 'Custom theme name will be displayed in the options theme menu',
 
@@ -2007,6 +2076,7 @@ const customThemeComments = {
 	col_styleVolumeBarFill: 'Style volume bar fill color'
 };
 
+/** @type {Object} Custom theme 01 config header description. */
 const customTheme01Schema = new ConfigurationObjectSchema('customTheme01', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM THEME 01:                                                                                                                                                                                      ' +
@@ -2015,6 +2085,7 @@ const customTheme01Schema = new ConfigurationObjectSchema('customTheme01', Confi
 	'* Note: All colors will be automatically saved here if you do live editing with top menu Options > Theme > Custom > Edit custom theme                                                                   ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
+/** @type {Object} Custom theme 02 config header description. */
 const customTheme02Schema = new ConfigurationObjectSchema('customTheme02', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM THEME 02:                                                                                                                                                                                      ' +
@@ -2023,6 +2094,7 @@ const customTheme02Schema = new ConfigurationObjectSchema('customTheme02', Confi
 	'* Note: All colors will be automatically saved here if you do live editing with top menu Options > Theme > Custom > Edit custom theme                                                                   ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
+/** @type {Object} Custom theme 03 config header description. */
 const customTheme03Schema = new ConfigurationObjectSchema('customTheme03', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM THEME 03:                                                                                                                                                                                      ' +
@@ -2031,6 +2103,7 @@ const customTheme03Schema = new ConfigurationObjectSchema('customTheme03', Confi
 	'* Note: All colors will be automatically saved here if you do live editing with top menu Options > Theme > Custom > Edit custom theme                                                                   ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
+/** @type {Object} Custom theme 04 config header description. */
 const customTheme04Schema = new ConfigurationObjectSchema('customTheme04', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM THEME 04:                                                                                                                                                                                      ' +
@@ -2039,6 +2112,7 @@ const customTheme04Schema = new ConfigurationObjectSchema('customTheme04', Confi
 	'* Note: All colors will be automatically saved here if you do live editing with top menu Options > Theme > Custom > Edit custom theme                                                                   ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
+/** @type {Object} Custom theme 05 config header description. */
 const customTheme05Schema = new ConfigurationObjectSchema('customTheme05', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM THEME 05:                                                                                                                                                                                      ' +
@@ -2047,6 +2121,7 @@ const customTheme05Schema = new ConfigurationObjectSchema('customTheme05', Confi
 	'* Note: All colors will be automatically saved here if you do live editing with top menu Options > Theme > Custom > Edit custom theme                                                                   ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
+/** @type {Object} Custom theme 06 config header description. */
 const customTheme06Schema = new ConfigurationObjectSchema('customTheme06', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM THEME 06:                                                                                                                                                                                      ' +
@@ -2055,6 +2130,7 @@ const customTheme06Schema = new ConfigurationObjectSchema('customTheme06', Confi
 	'* Note: All colors will be automatically saved here if you do live editing with top menu Options > Theme > Custom > Edit custom theme                                                                   ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
+/** @type {Object} Custom theme 07 config header description. */
 const customTheme07Schema = new ConfigurationObjectSchema('customTheme07', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM THEME 07:                                                                                                                                                                                      ' +
@@ -2063,6 +2139,7 @@ const customTheme07Schema = new ConfigurationObjectSchema('customTheme07', Confi
 	'* Note: All colors will be automatically saved here if you do live editing with top menu Options > Theme > Custom > Edit custom theme                                                                   ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
+/** @type {Object} Custom theme 08 config header description. */
 const customTheme08Schema = new ConfigurationObjectSchema('customTheme08', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM THEME 08:                                                                                                                                                                                      ' +
@@ -2071,6 +2148,7 @@ const customTheme08Schema = new ConfigurationObjectSchema('customTheme08', Confi
 	'* Note: All colors will be automatically saved here if you do live editing with top menu Options > Theme > Custom > Edit custom theme                                                                   ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
+/** @type {Object} Custom theme 09 config header description. */
 const customTheme09Schema = new ConfigurationObjectSchema('customTheme09', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM THEME 09:                                                                                                                                                                                      ' +
@@ -2079,6 +2157,7 @@ const customTheme09Schema = new ConfigurationObjectSchema('customTheme09', Confi
 	'* Note: All colors will be automatically saved here if you do live editing with top menu Options > Theme > Custom > Edit custom theme                                                                   ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
+/** @type {Object} Custom theme 10 config header description. */
 const customTheme10Schema = new ConfigurationObjectSchema('customTheme10', ConfigurationObjectType.Object, undefined,
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* CUSTOM THEME 10:                                                                                                                                                                                      ' +

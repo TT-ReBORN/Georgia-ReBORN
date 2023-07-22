@@ -30,7 +30,7 @@ class ResizeHandler {
 		};
 	}
 
-	// Methods
+	// * METHODS * //
 
 	drawEd(gr) {
 		if (vkBio.k('ctrl') && this.focus && panelBio.m.y != -1 || panelBio.style.new) {

@@ -46,7 +46,7 @@ class Buttons {
 		this.createImages();
 	}
 
-	// Methods
+	// * METHODS * //
 
 	checkScrollBtns(x, y, hover_btn) {
 		if (sbar.timer_but) {
@@ -268,7 +268,7 @@ class Buttons {
 			this.vertical = !panel.imgView || img.style.vertical;
 			switch (true) {
 				case this.vertical:
-					this.scr.x1 = panel.sbar_x + (is_4k ? 6 : 0);
+					this.scr.x1 = panel.sbar_x + (RES_4K ? 6 : 0);
 					this.scr.yUp1 = sbar.y;
 					this.scr.yDn1 = sbar.y + sbar.h - ui.sbar.but_h;
 					if (ui.sbar.type != 2) {
@@ -324,12 +324,12 @@ class Buttons {
 							}, ppt.sbarShow == 1 && sbar.narrow.show || sbar.scrollable_lines < 1, () => sbar.but(-1), '', '', false, 'scrollDn');
 							break;
 						case !this.vertical:
-							this.btns.scrollUp = new Btn(ui.x + this.scr.xLeft1, this.scr.y1 - (is_4k ? 46 : 19), ui.sbar.but_h, ui.sbar.but_h, 3, '', '', '', {
+							this.btns.scrollUp = new Btn(ui.x + this.scr.xLeft1, this.scr.y1 - (RES_4K ? 46 : 19), ui.sbar.but_h, ui.sbar.but_h, 3, '', '', '', {
 								normal: 9,
 								hover: 10,
 								down: 11
 							}, ppt.sbarShow == 1 && sbar.narrow.show || sbar.scrollable_lines < 1, () => sbar.but(1), '', '', false, 'scrollUp');
-							this.btns.scrollDn = new Btn(this.scr.xRight1, this.scr.y1 - (is_4k ? 46 : 19), ui.sbar.but_h, ui.sbar.but_h, 3, '', '', '', {
+							this.btns.scrollDn = new Btn(this.scr.xRight1, this.scr.y1 - (RES_4K ? 46 : 19), ui.sbar.but_h, ui.sbar.but_h, 3, '', '', '', {
 								normal: 13,
 								hover: 14,
 								down: 15
@@ -344,8 +344,8 @@ class Buttons {
 							this.btns.scrollDn = new Btn(this.scr.x1, this.scr.yDn1, ui.sbar.but_h, ui.sbar.but_h, 2, this.scr.x2, this.scr.yDn2, ui.sbar.but_w, '', ppt.sbarShow == 1 && sbar.narrow.show || sbar.scrollable_lines < 1, () => sbar.but(-1), '', '', false, 'scrollDn');
 							break;
 						case !this.vertical:
-							this.btns.scrollUp = new Btn(this.scr.xLeft1 - this.scr.hotOffset + scaleForDisplay(40), this.scr.y1 - (is_4k ? 46 : 19), ui.sbar.but_h, ui.sbar.but_h + this.scr.hotOffset, 1, this.scr.y2, this.scr.xLeft2, ui.sbar.but_w, '', ppt.sbarShow == 1 && sbar.narrow.show || sbar.scrollable_lines < 1, () => sbar.but(1), '', '', false, 'scrollUp');
-							this.btns.scrollDn = new Btn(this.scr.xRight1, this.scr.y1 - (is_4k ? 46 : 19), ui.sbar.but_h, ui.sbar.but_h + this.scr.hotOffset, 2, this.scr.y2, this.scr.xRight2, ui.sbar.but_w, '', ppt.sbarShow == 1 && sbar.narrow.show || sbar.scrollable_lines < 1, () => sbar.but(-1), '', '', false, 'scrollDn');
+							this.btns.scrollUp = new Btn(this.scr.xLeft1 - this.scr.hotOffset + SCALE(40), this.scr.y1 - (RES_4K ? 46 : 19), ui.sbar.but_h, ui.sbar.but_h + this.scr.hotOffset, 1, this.scr.y2, this.scr.xLeft2, ui.sbar.but_w, '', ppt.sbarShow == 1 && sbar.narrow.show || sbar.scrollable_lines < 1, () => sbar.but(1), '', '', false, 'scrollUp');
+							this.btns.scrollDn = new Btn(this.scr.xRight1, this.scr.y1 - (RES_4K ? 46 : 19), ui.sbar.but_h, ui.sbar.but_h + this.scr.hotOffset, 2, this.scr.y2, this.scr.xRight2, ui.sbar.but_w, '', ppt.sbarShow == 1 && sbar.narrow.show || sbar.scrollable_lines < 1, () => sbar.but(-1), '', '', false, 'scrollDn');
 							break;
 					}
 					break;
@@ -354,7 +354,7 @@ class Buttons {
 		this.transition = new Transition(this.btns, v => v.state !== 'normal');
 		this.btns.s_img = new Btn(this.q.x - this.margin / 2, ui.y + this.hoverArea, this.q.h + this.margin, this.hot_h, 4, this.q.x, this.q.y, this.q.h, {
 			normal: this.q.s_img
-		}, false, '', () => sMenu.load(this.q.x - this.margin / 2 - (is_4k ? 22 : 9), ui.y + panel.search.h - scaleForDisplay(12)), () => 'History and query syntax help. Ctrl+E focuses search', true, 's_img');
+		}, false, '', () => sMenu.load(this.q.x - this.margin / 2 - (RES_4K ? 22 : 9), ui.y + panel.search.h - SCALE(12)), () => 'History and query syntax help. Ctrl+E focuses search', true, 's_img');
 
 		this.btns.cross2 = new Btn(this.q.x - this.margin / 2, ui.y + this.hoverArea, this.q.h + this.margin, this.hot_h, 5, this.q.x, this.b.y, this.b.h, {
 			normal: this.cross.normal,
@@ -363,12 +363,12 @@ class Buttons {
 		this.btns.filter = new Btn(ppt.searchShow ? panel.filter.x + this.margin / 2 : panel.filter.x - this.margin / 2, ui.y, ppt.searchShow ? panel.filter.w - this.margin : panel.filter.w + this.margin, panel.search.sp, 6, panel.filter.x, ppt.searchShow ? panel.cc : panel.lc, panel.filter.w, {
 			normal: ui.col.txt_box,
 			hover: !ui.id.local ? (!ui.img.blurDark ? ui.col.txt_box_h : ui.col.text) : ui.col.txt_box
-		}, !ppt.filterShow, '', () => fMenu.load(panel.filter.x - (is_4k ? -29 : 5), ui.y + panel.search.h - scaleForDisplay(12)), () => 'Filter', true, 'filter');
+		}, !ppt.filterShow, '', () => fMenu.load(panel.filter.x - (RES_4K ? -29 : 5), ui.y + panel.search.h - SCALE(12)), () => 'Filter', true, 'filter');
 
 		this.btns.settings = new Btn(ui.x + this.s.x, ui.y + panel.settings.offset, this.s.w1, panel.search.sp, 7, this.s.w2, panel.search.sp, panel.settings.y, {
 			normal: ui.col.txt_box,
 			hover: !ui.id.local ? (!ui.img.blurDark ? ui.col.txt_box_h : ui.col.text) : ui.col.txt_box
-		}, !ppt.settingsShow, '', () => men.rbtn_up(ui.x + this.s.x - (is_4k ? 21 : 28), ui.y + panel.search.h - scaleForDisplay(12), true), () => 'Settings', true, 'settings');
+		}, !ppt.settingsShow, '', () => men.rbtn_up(ui.x + this.s.x - (RES_4K ? 21 : 28), ui.y + panel.search.h - SCALE(12), true), () => 'Settings', true, 'settings');
 
 		this.btns.cross1 = new Btn(this.b.x - this.margin / 2, ui.y + this.hoverArea, this.q.h + this.margin, this.hot_h, 5, this.b.x, this.b.y, this.b.h, {
 			normal: this.cross.normal,
@@ -412,7 +412,7 @@ class Btn {
 		this.state = 'normal';
 	}
 
-	// Methods
+	// * METHODS * //
 
 	cs(state) {
 		this.state = state;
@@ -453,7 +453,7 @@ class Btn {
 		// gr.FillRoundRect(this.x, this.y, this.w, this.h, but.arc, but.arc, colRect); // Hover effect
 		gr.SetSmoothingMode(0);
 		gr.SetInterpolationMode(2);
-		if (crossIm) gr.DrawImage(crossIm, this.p1, this.p2 - scaleForDisplay(2), this.p3, this.p3, 0, 0, crossIm.Width, crossIm.Height, 0, a);
+		if (crossIm) gr.DrawImage(crossIm, this.p1, this.p2 - SCALE(2), this.p3, this.p3, 0, 0, crossIm.Width, crossIm.Height, 0, a);
 		gr.SetInterpolationMode(0);
 	}
 
@@ -463,10 +463,10 @@ class Btn {
 		gr.SetSmoothingMode(2);
 		// gr.FillRoundRect(this.x, ui.y + but.hoverArea, this.w, but.hot_h, but.arc, but.arc, colRect); // Hover effect
 		gr.SetSmoothingMode(0);
-		if (!ui.img.blurDark) gr.GdiDrawText(panel.filter.mode[ppt.filterBy].name, panel.filter.font, ui.col.filterBtn, this.p1 + (is_4k ? 22 : 9), ui.y, this.p3, this.h, this.p2);
+		if (!ui.img.blurDark) gr.GdiDrawText(panel.filter.mode[ppt.filterBy].name, panel.filter.font, ui.col.filterBtn, this.p1 + (RES_4K ? 22 : 9), ui.y, this.p3, this.h, this.p2);
 		else {
 			gr.SetTextRenderingHint(5);
-			gr.DrawString(panel.filter.mode[ppt.filterBy].name, panel.filter.font, ui.col.filterBtn, this.p1 + (is_4k ? 21 : 8), ui.y - 1, this.p3, this.h, StringFormat(1, 1));
+			gr.DrawString(panel.filter.mode[ppt.filterBy].name, panel.filter.font, ui.col.filterBtn, this.p1 + (RES_4K ? 21 : 8), ui.y - 1, this.p3, this.h, StringFormat(1, 1));
 		}
 	}
 
@@ -490,10 +490,10 @@ class Btn {
 		const a = !ui.id.local ? (this.state !== 'down' ? Math.min(255 + (240 - 180) * this.transition_factor, 240) : 240) : 255;
 		// const colRect = this.state !== 'down' ? ui.getBlend(ui.col.bg4, ui.col.bg5, this.transition_factor, true) : ui.col.bg4;
 		// gr.SetSmoothingMode(2);
-		// gr.FillRoundRect(this.x, ui.y + scaleForDisplay(6), this.w, this.h, but.arc, but.arc, colRect); // Hover effect
+		// gr.FillRoundRect(this.x, ui.y + SCALE(6), this.w, this.h, but.arc, but.arc, colRect); // Hover effect
 		// gr.SetSmoothingMode(0);
 		gr.SetInterpolationMode(2);
-		if (this.item.normal) gr.DrawImage(this.item.normal, this.p1, ui.y + scaleForDisplay(18), this.p3, this.p3, 0, 0, this.item.normal.Width, this.item.normal.Height, 0, a);
+		if (this.item.normal) gr.DrawImage(this.item.normal, this.p1, ui.y + SCALE(18), this.p3, this.p3, 0, 0, this.item.normal.Width, this.item.normal.Height, 0, a);
 		// gr.SetInterpolationMode(0); // Causes ugly rendering of lower bar flags when switching to Library
 	}
 
@@ -503,10 +503,10 @@ class Btn {
 		gr.SetSmoothingMode(2);
 		// gr.FillRoundRect(this.x, ui.y + but.hoverArea, this.w, but.hot_h, but.arc, but.arc, colRect); // Hover effect
 		gr.SetSmoothingMode(0);
-		if (!ui.img.blurDark) gr.GdiDrawText(panel.settings.icon, panel.settings.font, ui.col.settingsBtn, ui.x + (is_4k ? 1 : 0), ui.y + scaleForDisplay(2), this.p1, this.p2, panel.rc);
+		if (!ui.img.blurDark) gr.GdiDrawText(panel.settings.icon, panel.settings.font, ui.col.settingsBtn, ui.x + (RES_4K ? 1 : 0), ui.y + SCALE(2), this.p1, this.p2, panel.rc);
 		else {
 			gr.SetTextRenderingHint(5);
-			gr.DrawString(panel.settings.icon, panel.settings.font, ui.col.settingsBtn, ui.x + (is_4k ? 1 : 0), ui.y + scaleForDisplay(2) - 1, this.p1, this.p2, StringFormat(2, 1));
+			gr.DrawString(panel.settings.icon, panel.settings.font, ui.col.settingsBtn, ui.x + (RES_4K ? 1 : 0), ui.y + SCALE(2) - 1, this.p1, this.p2, StringFormat(2, 1));
 		}
 	}
 
@@ -537,7 +537,7 @@ class Tooltip {
 		this.tt_timer = new TooltipTimerLib();
 	}
 
-	// Methods
+	// * METHODS * //
 
 	clear() {
 		styledTooltipReady = false;
@@ -580,7 +580,7 @@ class TooltipTimerLib {
 		this.tt_caller = undefined;
 	}
 
-	// Methods
+	// * METHODS * //
 
 	forceStop() {
 		but.tooltipLib.delay = true;
@@ -622,7 +622,7 @@ class Transition {
 		this.transition_timer = null;
 	}
 
-	// Methods
+	// * METHODS * //
 
 	start() {
 		const hover_in_step = 0.2;

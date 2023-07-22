@@ -37,7 +37,7 @@ class TaggerBio {
 		};
 	}
 
-	// Methods
+	// * METHODS * //
 
 	check(handles) {
 		if (!handles) return;

@@ -78,7 +78,7 @@ class Library {
 		this.readTreeState(true);
 	}
 
-	// Methods
+	// * METHODS * //
 
 	added(handleList) {
 		let i;
