@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-22                                          * //
+// * Last change:    2023-07-26                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -49,6 +49,11 @@ class ArtCache {
 	 */
 	getImage(location) {
 		if (this.cache[location]) {
+			if (!fso.FileExists(location)) {
+				// If image in location does not exist, return to prevent crash.
+				return;
+			}
+
 			const f = fso.GetFile(location);
 			const pathIndex = this.cacheIndexes.indexOf(location);
 			this.cacheIndexes.splice(pathIndex, 1);
@@ -58,6 +63,7 @@ class ArtCache {
 				DebugLog('cache hit:', location);
 				return this.cache[location].image;
 			}
+
 			// Size of file on disk has changed
 			DebugLog(`cache entry was stale: ${location} [old size: ${this.cache[location].filesize}, new size: ${f.Size}]`);
 			delete this.cache[location]; // Was removed from cacheIndexes already
