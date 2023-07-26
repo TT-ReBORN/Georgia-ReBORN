@@ -1000,6 +1000,7 @@ class Images {
 		}
 
 		if (ppt.rootNode) {
+			if (!pop.tree[0]) return;
 			if (!this.groupField) this.groupField = 'Item';
 			const plurals = this.groupField.split(' ').map(v => pluralize(v));
 			const pluralField = plurals.join(' ').replace(/(album|artist|top|track)s\s/gi, '$1 ').replace(/(similar artist)\s/gi, '$1s ').replace(/years - albums/gi, 'Year - Albums');
