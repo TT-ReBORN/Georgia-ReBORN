@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-29                                          * //
+// * Last change:    2023-07-30                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2344,6 +2344,8 @@ class Playlist extends List {
 	 * @override
 	 */
 	on_content_to_draw_change() {
+		const invalidPos = (g_properties.scroll_pos || this.scrollbar.scroll) > this.scrollbar.scrollable_lines; // Prevent scroll crash
+		g_properties.scroll_pos = invalidPos ? 0 : this.scrollbar.scroll;
 		this.set_rows_boundary_status();
 		// @ts-ignore
 		List.prototype.on_content_to_draw_change.apply(this);
@@ -3551,7 +3553,11 @@ class PlaylistContent extends ListRowContent {
 		}
 
 		const first_item = iterate_level(this.sub_items);
-		assert(first_item != null, LogicError, 'first_item_to_draw can\'t be null!');
+
+		if (first_item === null) {
+			g_properties.scroll_pos = 0; // Additional safe guard for invalid scroll positions to break error loop
+			assert(first_item != null, LogicError, 'first_item_to_draw can\'t be null!');
+		}
 
 		return first_item;
 	}

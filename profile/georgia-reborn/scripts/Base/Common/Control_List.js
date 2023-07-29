@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-22                                          * //
+// * Last change:    2023-07-30                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -436,7 +436,7 @@ class List {
 	 * @protected
 	 */
 	scrollbar_redraw_callback() {
-		const invalidPos = this.scrollbar.scroll > this.scrollbar.scrollable_lines; // Prevent crash
+		const invalidPos = (g_properties.scroll_pos || this.scrollbar.scroll) > this.scrollbar.scrollable_lines; // Prevent scroll crash
 		g_properties.scroll_pos = invalidPos ? 0 : this.scrollbar.scroll;
 		this.on_content_to_draw_change();
 		this.repaint();
@@ -477,7 +477,7 @@ class List {
 			this.scrollbar.set_window_param(this.rows_to_draw_precise, total_height_in_rows);
 			this.scrollbar.scroll_to(g_properties.scroll_pos, true);
 
-			const invalidPos = this.scrollbar.scroll > this.scrollbar.scrollable_lines; // Prevent crash
+			const invalidPos = (g_properties.scroll_pos || this.scrollbar.scroll) > this.scrollbar.scrollable_lines; // Prevent scroll crash
 			g_properties.scroll_pos = invalidPos ? 0 : this.scrollbar.scroll;
 
 			this.is_scrollbar_available = true;
