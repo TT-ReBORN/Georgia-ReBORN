@@ -188,7 +188,7 @@ class UserInterface {
 	}
 
 	calcText(refreshImg) {
-		const libraryFontSize = pref.layout === 'artwork' ? ppt.baseFontSize_artwork : ppt.baseFontSize_default;
+		const libraryFontSize = ppt[`baseFontSize_${pref.layout}`] || 14;
 		$Lib.gr(1, 1, false, g => {
 			if (!this.id.local) this.row.h = Math.max(Math.round(g.CalcTextHeight('String', this.font.main)) + ppt.verticalPad, 2);
 			if (this.style.squareNode) {
@@ -466,7 +466,7 @@ class UserInterface {
 	}
 
 	getFont(init) {
-		const libraryFontSize = pref.layout === 'artwork' ? ppt.baseFontSize_artwork : ppt.baseFontSize_default;
+		const libraryFontSize = ppt[`baseFontSize_${pref.layout}`] || 14;
 
 		if (pref.customThemeFonts) this.font.main = ft.library;
 		else if (ppt.custFontUse && ppt.custFont.length) {
@@ -518,8 +518,8 @@ class UserInterface {
 		this.sbar.narrowWidth = ppt.narrowSbarWidth == 0 ? $Lib.clamp(Math.floor(this.font.zoomSize / 7), 2, 10) : ppt.narrowSbarWidth;
 
 		// * Only used for pref.libraryLayoutSplitPreset4, synchronizes artist & album font sizes with Playlist
-		const headerFontSize = pref.layout === 'compact' ? pref.playlistHeaderFontSize_compact : pref.layout === 'artwork' ? pref.playlistHeaderFontSize_artwork : pref.playlistHeaderFontSize_default;
-		const rowFontSize    = pref.layout === 'compact' ? pref.playlistFontSize_compact       : pref.layout === 'artwork' ? pref.playlistFontSize_artwork       : pref.playlistFontSize_default;
+		const headerFontSize = pref[`playlistHeaderFontSize_${pref.layout}`];
+		const rowFontSize    = pref[`playlistFontSize_${pref.layout}`];
 		const libraryLayoutSplitPreset4 = ppt.albumArtLabelType === 2 && displayPlaylistLibrary();
 
 		if (ppt.custAlbumArtGrpFontUse && ppt.custAlbumArtGrpFont.length) {
@@ -1045,7 +1045,7 @@ class UserInterface {
 
 		const fnm = this.font.main.Name;
 		const fst = this.font.main.Style;
-		const libraryFontSize = pref.layout === 'artwork' ? ppt.baseFontSize_artwork : ppt.baseFontSize_default;
+		const libraryFontSize = ppt[`baseFontSize_${pref.layout}`] || 14;
 		this.font.main = gdi.Font(fnm, this.font.zoomSize, fst);
 		this.font.search = gdi.Font(fnm, this.font.zoomSize, 0);
 		this.font.find = gdi.Font(fnm, this.font.zoomSize * 1.5, 1);

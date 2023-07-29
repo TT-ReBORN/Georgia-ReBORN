@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-21                                          * //
+// * Last change:    2023-07-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -812,7 +812,7 @@ function layoutOptions(menu) {
 		pref.layout = layout;
 		if (pref.layout === 'default') {
 			displayPlaylist = pref.showPanelOnStartup === 'playlist'; // Switch back to Playlist from Artwork layout to Default layout
-			displayPlaylistArtworkLayout = false;
+			displayPlaylistArtwork = false;
 			displayBiography = false;
 			pref.displayLyrics = false;
 			windowHandler.layoutDefault();
@@ -894,23 +894,23 @@ function brightnessOptions(menu) {
  * @param {Menu} menu Creates the Font size menu via a new Menu instance.
  */
 function fontSizeOptions(menu) {
-	const menuFontSize           = pref.layout === 'compact' ? pref.menuFontSize_compact           : pref.layout === 'artwork' ? pref.menuFontSize_artwork         : pref.menuFontSize_default;
-	const lowerBarFontSize       = pref.layout === 'compact' ? pref.lowerBarFontSize_compact       : pref.layout === 'artwork' ? pref.lowerBarFontSize_artwork     : pref.lowerBarFontSize_default;
-	const notificationFontSize   = pref.layout === 'compact' ? pref.notificationFontSize_compact   : pref.layout === 'artwork' ? pref.notificationFontSize_artwork : pref.notificationFontSize_default;
-	const popupFontSize          = pref.layout === 'compact' ? pref.popupFontSize_compact          : pref.layout === 'artwork' ? pref.popupFontSize_artwork        : pref.popupFontSize_default;
-	const tooltipFontSize        = pref.layout === 'compact' ? pref.tooltipFontSize_compact        : pref.layout === 'artwork' ? pref.tooltipFontSize_artwork      : pref.tooltipFontSize_default;
+	const menuFontSize           = pref[`menuFontSize_${pref.layout}`];
+	const lowerBarFontSize       = pref[`lowerBarFontSize_${pref.layout}`];
+	const notificationFontSize   = pref[`notificationFontSize_${pref.layout}`];
+	const popupFontSize          = pref[`popupFontSize_${pref.layout}`];
+	const tooltipFontSize        = pref[`tooltipFontSize_${pref.layout}`];
 
-	const gridArtistFontSize     = pref.layout === 'artwork' ? pref.gridArtistFontSize_artwork     : pref.gridArtistFontSize_default;
-	const gridTrackNumFontSize   = pref.layout === 'artwork' ? pref.gridTrackNumFontSize_artwork   : pref.gridTrackNumFontSize_default;
-	const gridTitleFontSize      = pref.layout === 'artwork' ? pref.gridTitleFontSize_artwork      : pref.gridTitleFontSize_default;
-	const gridAlbumFontSize      = pref.layout === 'artwork' ? pref.gridAlbumFontSize_artwork      : pref.gridAlbumFontSize_default;
-	const gridKeyFontSize        = pref.layout === 'artwork' ? pref.gridKeyFontSize_artwork        : pref.gridKeyFontSize_default;
-	const gridValueFontSize      = pref.layout === 'artwork' ? pref.gridValueFontSize_artwork      : pref.gridValueFontSize_default;
+	const gridArtistFontSize     = pref[`gridArtistFontSize_${pref.layout}`];
+	const gridTrackNumFontSize   = pref[`gridTrackNumFontSize_${pref.layout}`];
+	const gridTitleFontSize      = pref[`gridTitleFontSize_${pref.layout}`];
+	const gridAlbumFontSize      = pref[`gridAlbumFontSize_${pref.layout}`];
+	const gridKeyFontSize        = pref[`gridKeyFontSize_${pref.layout}`];
+	const gridValueFontSize      = pref[`gridValueFontSize_${pref.layout}`];
 
-	const playlistHeaderFontSize = pref.layout === 'compact' ? pref.playlistHeaderFontSize_compact : pref.layout === 'artwork' ? pref.playlistHeaderFontSize_artwork : pref.playlistHeaderFontSize_default;
-	const libraryFontSize        = pref.layout === 'artwork' ? ppt.baseFontSize_artwork            : ppt.baseFontSize_default;
-	const biographyFontSize      = pref.layout === 'artwork' ? pptBio.baseFontSizeBio_artwork      : pptBio.baseFontSizeBio_default;
-	const lyricsFontSize         = pref.layout === 'artwork' ? pref.lyricsFontSize_artwork         : pref.lyricsFontSize_default;
+	const playlistHeaderFontSize = pref[`playlistHeaderFontSize_${pref.layout}`];
+	const libraryFontSize        = ppt[`baseFontSize_${pref.layout}`];
+	const biographyFontSize      = pptBio[`baseFontSizeBio_${pref.layout}`];
+	const lyricsFontSize         = pref[`lyricsFontSize_${pref.layout}`];
 
 	const changeFontSizeMenu = new Menu('Font size');
 	const mainFontSizeMenu = new Menu('Main');
@@ -1250,17 +1250,20 @@ function playerControlsOptions(menu) {
 	// * ALBUM ART * //
 	if (pref.layout !== 'compact') {
 		const playerControlsAlbumArtMenu = new Menu('Album art');
-		const playerControlsAlbumArtNotProportionalMenu = new Menu('When player size is not proportional');
+		const playerControlsAlbumArtNotPropMenu = new Menu('When player size is not proportional');
 		if (pref.layout === 'default') {
-			playerControlsAlbumArtNotProportionalMenu.addRadioItems(['Align album art left', 'Align album art left (margin)', 'Align album art center', 'Align album art right'], pref.albumArtAlign, ['left', 'leftMargin', 'center', 'right'], (pos) => {
+			playerControlsAlbumArtNotPropMenu.addRadioItems(['Align album art left', 'Align album art left (margin)', 'Align album art center', 'Align album art right'], pref.albumArtAlign, ['left', 'leftMargin', 'center', 'right'], (pos) => {
 				pref.albumArtAlign = pos;
 				resizeArtwork(true);
+				playlist.on_size(ww, wh);
+				setLibrarySize();
+				setBiographySize();
 				repaintWindow();
 			});
-			playerControlsAlbumArtNotProportionalMenu.addSeparator();
+			playerControlsAlbumArtNotPropMenu.addSeparator();
 		}
-		playerControlsAlbumArtNotProportionalMenu.addToggleItem('Show colored gap', pref, 'albumArtColoredGap', () => { repaintWindow(); });
-		playerControlsAlbumArtNotProportionalMenu.appendTo(playerControlsAlbumArtMenu);
+		playerControlsAlbumArtNotPropMenu.addToggleItem('Show colored gap', pref, 'albumArtColoredGap', () => { repaintWindow(); });
+		playerControlsAlbumArtNotPropMenu.appendTo(playerControlsAlbumArtMenu);
 		const playerControlsAlbumArtScaleMenu = new Menu('When player size is maximized/fullscreen');
 		if (pref.layout === 'default') {
 			playerControlsAlbumArtScaleMenu.addRadioItems(['Scale album art filled', 'Scale album art proportional'], pref.albumArtScale, ['filled', 'proportional'], (scale) => {
@@ -1425,6 +1428,16 @@ function playerControlsOptions(menu) {
 
 	// * PANEL MENU * //
 	const playerControlsPanelMenu = new Menu('Panel');
+	const playerControlsPanelNotPropMenu = new Menu('Width');
+	playerControlsPanelNotPropMenu.addToggleItem('Use auto panel width', pref, 'panelWidthAuto', () => {
+		resizeArtwork(true);
+		playlist.on_size(ww, wh);
+		setLibrarySize();
+		setBiographySize();
+		repaintWindow();
+	});
+	playerControlsPanelNotPropMenu.appendTo(playerControlsPanelMenu);
+	playerControlsPanelMenu.addSeparator();
 	if (pref.layout !== 'compact') {
 		const showPanelOnStartupMenu = new Menu('Show panel on startup');
 		showPanelOnStartupMenu.addRadioItems(pref.layout === 'artwork' ? ['Cover', 'Playlist', 'Details', 'Library', 'Biography', 'Lyrics'] : ['Playlist', 'Details', 'Library', 'Biography', 'Lyrics'],

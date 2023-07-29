@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-21                                          * //
+// * Last change:    2023-07-29                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -386,13 +386,13 @@ function playlistColorsBlackTheme() {
 	g_pl_colors.header_nowplaying_bg = colBrightness < 25 ? col.lightAccent : col.primary;
 	g_pl_colors.header_sideMarker = g_pl_colors.header_nowplaying_bg;
 	g_pl_colors.header_artist_normal = RGB(220, 220, 220);
-	g_pl_colors.header_artist_playing = RGB(255, 255, 255);
+	g_pl_colors.header_artist_playing = noAlbumArtStub && (pref.styleBlend || pref.styleBlend2) ? RGB(20, 20, 20) : RGB(255, 255, 255);
 	g_pl_colors.header_album_normal = RGB(200, 200, 200);
-	g_pl_colors.header_album_playing = RGB(245, 245, 245);
+	g_pl_colors.header_album_playing = noAlbumArtStub && (pref.styleBlend || pref.styleBlend2) ? RGB(20, 20, 20) : RGB(245, 245, 245);
 	g_pl_colors.header_info_normal = RGB(200, 200, 200);
-	g_pl_colors.header_info_playing = RGB(245, 245, 245);
+	g_pl_colors.header_info_playing = noAlbumArtStub && (pref.styleBlend || pref.styleBlend2) ? RGB(20, 20, 20) : RGB(245, 245, 245);
 	g_pl_colors.header_date_normal = RGB(220, 220, 220);
-	g_pl_colors.header_date_playing = RGB(245, 245, 245);
+	g_pl_colors.header_date_playing = noAlbumArtStub && (pref.styleBlend || pref.styleBlend2) ? RGB(20, 20, 20) : RGB(245, 245, 245);
 	g_pl_colors.header_line_normal = pref.styleBlend ? RGB(65, 65, 65) : RGB(45, 45, 45);
 	g_pl_colors.header_line_playing =  RGB(25, 25, 25);
 
@@ -403,7 +403,7 @@ function playlistColorsBlackTheme() {
 	g_pl_colors.row_selection_frame = g_pl_colors.row_selection_bg;
 	g_pl_colors.row_sideMarker = colBrightness < 25 ? col.lightAccent_35 : col.primary;
 	g_pl_colors.row_title_normal = RGB(200, 200, 200);
-	g_pl_colors.row_title_playing = RGB(245, 245, 245);
+	g_pl_colors.row_title_playing = noAlbumArtStub && (pref.styleBlend || pref.styleBlend2) ? RGB(20, 20, 20) : RGB(245, 245, 245);
 	g_pl_colors.row_title_selected = RGB(255, 255, 255);
 	g_pl_colors.row_title_hovered = g_pl_colors.row_title_selected;
 	g_pl_colors.row_rating_color = RGB(255, 190, 0);
@@ -4522,7 +4522,7 @@ function styleAlternativeColors() {
 		pref.theme === 'red' ? RGB(106, 18, 18) :
 		pref.theme === 'cream' ? RGB(255, 247, 240) :
 		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? TintColor(g_pl_colors.bg, 8) :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? ShadeColor(g_pl_colors.bg, 5) : '';
+		pref.theme.startsWith('custom') ? ShadeColor(g_pl_colors.bg, 5) : '';
 
 	g_pl_colors.plman_bg = g_pl_colors.bg;
 	g_pl_colors.plman_text_normal = g_pl_colors.bg;
@@ -4553,7 +4553,7 @@ function styleAlternativeColors() {
 		pref.theme === 'red' ? RGB(130, 25, 25) :
 		pref.theme === 'cream' ? RGB(255, 255, 255) :
 		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? RGB(30, 30, 30) :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? TintColor(col.bg, 8) : '';
+		pref.theme.startsWith('custom') ? TintColor(col.bg, 8) : '';
 
 	col.uiHacksFrame = col.bg;
 
@@ -4620,7 +4620,7 @@ function styleAlternativeColors() {
 		pref.theme === 'darkblue' ? TintColor(col.progressBar, 0) :
 		pref.theme === 'red' ? RGB(158, 30, 30) :
 		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? pref.styleBevel ? ShadeColor(col.progressBar, 60) : ShadeColor(col.progressBar, 35) :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? ShadeColor(col.progressBar, 5) :
+		pref.theme.startsWith('custom') ? ShadeColor(col.progressBar, 5) :
 		g_pl_colors.bg;
 
 	// * VOLUME BAR * //
@@ -4646,7 +4646,7 @@ function styleAlternative2Colors() {
 		pref.theme === 'red' ? RGB(120, 22, 22) :
 		pref.theme === 'cream' ? RGB(255, 255, 255) :
 		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? TintColor(g_pl_colors.bg, 6) :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? TintColor(g_pl_colors.bg, 5) : '';
+		pref.theme.startsWith('custom') ? TintColor(g_pl_colors.bg, 5) : '';
 
 	g_pl_colors.plman_bg = g_pl_colors.bg;
 	g_pl_colors.plman_text_normal = g_pl_colors.bg;
@@ -4678,7 +4678,7 @@ function styleAlternative2Colors() {
 		pref.theme === 'red' ? RGB(95, 15, 15) :
 		pref.theme === 'cream' ? RGB(255, 247, 240) :
 		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? RGB(25, 25, 25) :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? ShadeColor(col.bg, 8) : '';
+		pref.theme.startsWith('custom') ? ShadeColor(col.bg, 8) : '';
 
 	col.uiHacksFrame = col.bg;
 
@@ -4735,7 +4735,7 @@ function styleAlternative2Colors() {
 		pref.theme === 'darkblue' ? g_pl_colors.row_nowplaying_bg :
 		pref.theme === 'red' ? TintColor(col.progressBar, 0) :
 		['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? TintColor(col.progressBar, 3) :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? ShadeColor(col.progressBar, 2) :
+		pref.theme.startsWith('custom') ? ShadeColor(col.progressBar, 2) :
 		g_pl_colors.bg;
 
 	// * VOLUME BAR * //
@@ -5465,7 +5465,7 @@ function setBackgroundColorDefinition() {
 	colBrightness2 = new Color(col.primary_alt).brightness;
 	const colBrightnessGrad  = (pref.styleRebornFusion ? colBrightness2 : colBrightness) - (new Color(RGBAtoRGB(col.styleGradient)).brightness  * 0.5);
 	const colBrightnessGrad2 = (pref.styleRebornFusion ? colBrightness2 : colBrightness) - (new Color(RGBAtoRGB(col.styleGradient2)).brightness * 0.5);
-	const customThemes = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme);
+	const customThemes = pref.theme.startsWith('custom');
 
 	// * STANDARD THEMES * //
 	if (['white', 'black', 'reborn', 'random', 'cream'].includes(pref.theme) && !pref.styleRebornFusion && !pref.styleRebornFusion2) {
@@ -5492,25 +5492,15 @@ function setBackgroundColorDefinition() {
 	const libraryBgColor   = new Color(pref.styleRebornFusion2 ? col.primary_alt : customThemes ? HEXtoRGB(customColor.ui_col_bg)      : col.primary).brightness;
 	const biographyBgColor = new Color(pref.styleRebornFusion2 ? col.primary_alt : customThemes ? HEXtoRGB(customColor.uiBio_col_bg)   : col.primary).brightness;
 
-	lightBgMain =
-	mainBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
-	mainBgColor > 150 && !pref.styleBlend && !pref.styleBlend2;
+	const isLightBg = (color, brightness) =>
+		color + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
+		color > 150 && (!pref.styleBlend && !pref.styleBlend2 || pref.styleBlend2 && pref.styleRebornFusion2);
 
-	lightBgPlaylist =
-	playlistBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
-	playlistBgColor > 150 && (!pref.styleBlend && !pref.styleBlend2 || pref.styleBlend2 && pref.styleRebornFusion2);
-
-	lightBgDetails =
-	detailsBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
-	detailsBgColor > 150 && (!pref.styleBlend && !pref.styleBlend2 || pref.styleBlend2 && pref.styleRebornFusion2);
-
-	lightBgLibrary =
-	libraryBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
-	libraryBgColor > 150 && (!pref.styleBlend && !pref.styleBlend2 || pref.styleBlend2 && pref.styleRebornFusion2);
-
-	lightBgBiography =
-	biographyBgColor + imgBrightness > 285 && (pref.styleBlend || pref.styleBlend2) ||
-	biographyBgColor > 150 && (!pref.styleBlend && !pref.styleBlend2 || pref.styleBlend2 && pref.styleRebornFusion2);
+	lightBgMain      = isLightBg(mainBgColor,      imgBrightness);
+	lightBgPlaylist  = isLightBg(playlistBgColor,  imgBrightness);
+	lightBgDetails   = isLightBg(detailsBgColor,   imgBrightness);
+	lightBgLibrary   = isLightBg(libraryBgColor,   imgBrightness);
+	lightBgBiography = isLightBg(biographyBgColor, imgBrightness);
 }
 
 
@@ -5535,11 +5525,7 @@ function setStyleBlend() {
 				}
 				break;
 
-			case 'blue': case 'darkblue': case 'red': case 'cream':
-			case 'nblue': case 'ngreen': case 'nred': case 'ngold':
-			case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
-			case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
-			blurLevel = 250; break;
+			default: blurLevel = 250; break;
 		}
 
 		image.StackBlur(blurLevel);
@@ -5586,10 +5572,10 @@ function setStyleBlend() {
 			case 'darkblue': alpha = 70; break;
 			case 'red':      alpha = 50; break;
 			case 'cream':    alpha = 70; break;
+
 			case 'nblue': case 'ngreen': case 'nred': case 'ngold': alpha = 50; break;
-			case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
-			case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
-			alpha = 70; break;
+
+			default: alpha = 70; break;
 		}
 
 		try { // * Prevent crash if album art is corrupt, file format is not supported or has a unusual ICC profile embedded
@@ -5598,7 +5584,7 @@ function setStyleBlend() {
 			console.log('<Error: Image blending failed, album art could not be properly parsed! Maybe it is corrupt, file format is not supported or has a unusual ICC profile embedded>');
 		}
 		tempImg.ReleaseGraphics(g);
-		tempImg = blurImage(tempImg, 0, 0, tempImg.Width, tempImg.Height, 0, 0, tempImg.Width, tempImg.Height);
+		tempImg = blurImage(tempImg);
 
 		if (settings.showThemeLog) console.log(`Blended image alpha: ${alpha}\nTheme brightness: ${pref.themeBrightness}`);
 		if (settings.showThemeLogOverlay) blendedImgAlpha = alpha;
@@ -5606,8 +5592,7 @@ function setStyleBlend() {
 		return tempImg;
 	}
 
-	const setBlendedImg = () => formatBlendedImg(albumArt, ww, wh, 100);
-	blendedImg = setBlendedImg(albumArt, fb.GetNowPlaying());
+	blendedImg = formatBlendedImg(albumArt, ww, wh, 100, fb.GetNowPlaying());
 
 	if (timings.showDebugTiming) setStyleBlendProfiler.Print();
 }
@@ -5645,7 +5630,7 @@ function setNoAlbumArtColors() {
 function setTheme(color, color2) {
 	if (color2 === undefined) color2 = color;
 	let themeCol = new Color(color.primary);
-	const customThemes = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme);
+	const customThemes = pref.theme.startsWith('custom');
 
 	if (ColorDistance(color.primary, col.bg, true) < (themeCol.isCloseToGreyscale ? 60 : 45)) {
 		if (pref.theme !== 'reborn' && pref.theme !== 'random' && (pref.theme !== 'black' && !pref.styleBlackReborn) && !customThemes) {
@@ -6176,6 +6161,7 @@ async function getThemeColors(image) {
 	let calculatedColor2;
 	const val = $('[%GR_THEMECOLOR%]');
 	const val2 = $('[%GR_THEMECOLOR2%]');
+	const rebornFusion = pref.theme === 'reborn' && (pref.styleRebornFusion || pref.styleRebornFusion2 || pref.styleRebornFusionAccent);
 
 	if (val.length) { // Color hardcoded in tags from music files
 		const themeRgb = val.match(/\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\)/);
@@ -6183,36 +6169,38 @@ async function getThemeColors(image) {
 		calculatedColor = themeRgb ? RGB(parseInt(themeRgb[1]), parseInt(themeRgb[2]), parseInt(themeRgb[3])) : 0xff000000 | parseInt(val, 16);
 		calculatedColor2 = themeRgb2 ? RGB(parseInt(themeRgb2[1]), parseInt(themeRgb2[2]), parseInt(themeRgb2[3])) : 0xff000000 | parseInt(val2, 16);
 	} else {
-		calculatedColor = getThemeColorsJson(image, 14);
-		calculatedColor2 = getThemeColorsJson(image, 14, true);
+		calculatedColor = await getThemeColorsJson(image, 14);
+		calculatedColor2 = rebornFusion ? await getThemeColorsJson(image, 14, true) : undefined;
 	}
 
-	if (!isNaN(calculatedColor)) {
-		let color = new Color(calculatedColor);
-		let color2 = new Color(calculatedColor2);
+	if (isNaN(calculatedColor)) return;
 
-		while (pref.theme !== 'black' && color.brightness > 220) {
-			calculatedColor = ShadeColor(calculatedColor, pref.theme === 'white' ? 12 : 3);
-			if (settings.showThemeLog) console.log(' >> Shading: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
-			color = new Color(calculatedColor);
-			color2 = new Color(calculatedColor2);
-		}
-		while (!color.isGreyscale && color.brightness <= 17) {
-			calculatedColor = TintColor(calculatedColor, 3);
-			if (settings.showThemeLog) console.log(' >> Tinting: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
-			color = new Color(calculatedColor);
-			color2 = new Color(calculatedColor2);
-		}
+	let color = new Color(calculatedColor);
+	let color2 = calculatedColor2 ? new Color(calculatedColor2) : undefined;
 
-		const tObj = createThemeColorObject(color);
+	while (pref.theme !== 'black' && color.brightness > 220) {
+		calculatedColor = ShadeColor(calculatedColor, pref.theme === 'white' ? 12 : 3);
+		if (settings.showThemeLog) console.log(' >> Shading: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
+		color = new Color(calculatedColor);
+		if (rebornFusion) color2 = new Color(calculatedColor2);
+	}
+	while (!color.isGreyscale && color.brightness <= 17) {
+		calculatedColor = TintColor(calculatedColor, 3);
+		if (settings.showThemeLog) console.log(' >> Tinting: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
+		color = new Color(calculatedColor);
+		if (rebornFusion) color2 = new Color(calculatedColor2);
+	}
+
+	const tObj = createThemeColorObject(color);
+	if (rebornFusion) {
 		const tObj2 = createThemeColorObject(color, color2);
-		if (pref.theme === 'reborn') {
-			setTheme(tObj, tObj2);
-		} else {
-			setTheme(tObj);
-		}
-
-		if (settings.showThemeLog) console.log('Primary color brightness:', color.brightness);
-		if (settings.showThemeLog) console.log('Primary color 2 brightness:', color2.brightness);
+		setTheme(tObj, tObj2);
+	} else {
+		setTheme(tObj);
 	}
+
+	if (settings.showThemeLog) {
+		console.log('Primary color brightness:', color.brightness);
+		console.log('Primary color 2 brightness:', color2.brightness);
+	  }
 }

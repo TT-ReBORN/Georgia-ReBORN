@@ -19,6 +19,14 @@
 - Added new theme sandbox mode via top menu Options > Settings > Theme sandbox
   * This mode is useful when trying out themes, styles, presets or writing theme tags.
     After disabling the theme sandbox mode, previously used theme settings can be restored.
+- Implemented auto panel width feature, it is a new layout design.
+  * Can be activated via top menu Options > Player controls > Panel > Width > Use auto panel width
+  * This feature will auto adjust all widths of all panels when player size is not proportinal,
+    e.g when manually resizing the width of the player, it is very nice for QHD/WQHD and other panorama monitor resolutions
+    and not only that, it also looks cool for HD and 4K usage.
+  * When using the auto panel width feature, be sure to choose between top menu
+    Options > Player controls > Album art > When player size is not proportional.
+    Align album art left or with margin is recommended.
 - Added support for multi-artist hyperlinks in the playlist header
 - Added new lyrics options based on new lyrics code
   * Top menu Options > Lyrics > Display > Show drop shadow
@@ -52,7 +60,7 @@
   * Refactored library and biography layout switcher
 #### Misc:
   * Improved Reborn theme lyrics text color in Biography and Lyrics panel when background is light/similar color
-  * Full code documentation and huge cleanup
+  * Full code documentation
 
 ### Removed:
 - Removed now obsolete option "Remember album art view" in Options > Library > Layout
@@ -65,6 +73,7 @@
   * Fixed Details release country flag size and position on multi-lines
   * Fixed metadata grid text color switch on some bg colors when using alternative styles
   * Fixed Reborn theme & Reborn fusion style colors when background is too light or too dark
+  * Fixed crash when album art image location does not exist ( i.e was moved to another location by user while it previously existed )
   * Fixed crash when using theme backup & restore for old fb2k versions
   * Fixed crash when applying the theme performance presets and saving to config
   * Fixed rare crash when topMenu was not properly initialized
@@ -81,6 +90,7 @@
     in the georgia-reborn-config.jsonc
 #### Fixed - Playlist:
   * Fixed playlist crash when updating selection and no items exist
+  * Fixed playlist crash when queueing playlist items and it is not properly initialized
   * Fixed playlist history crash when it is not properly initialized
   * Fixed playlist hyperlink show now playing crash when handle is not ready
   * Fixed playlist hyperlink label issue

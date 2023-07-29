@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-21                                          * //
+// * Last change:    2023-07-29                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -162,11 +162,10 @@ class ButtonEventHandler {
 	 * @param {number} m The mouse mask.
 	 */
 	on_mouse_lbtn_dblclk(x, y, m) {
-		if (thisButton) {
-			thisButton.changeState(ButtonState.Down);
-			downButton = thisButton;
-			downButton.onDblClick();
-		}
+		if (!thisButton) return;
+		thisButton.changeState(ButtonState.Down);
+		downButton = thisButton;
+		downButton.onDblClick();
 	}
 
 	/**
@@ -176,10 +175,9 @@ class ButtonEventHandler {
 	 * @param {number} m The mouse mask.
 	 */
 	on_mouse_lbtn_down(x, y, m) {
-		if (thisButton) {
-			thisButton.changeState(ButtonState.Down);
-			downButton = thisButton;
-		}
+		if (!thisButton) return;
+		thisButton.changeState(ButtonState.Down);
+		downButton = thisButton;
 	}
 
 	/**
@@ -189,22 +187,23 @@ class ButtonEventHandler {
 	 * @param {number} m The mouse mask.
 	 */
 	on_mouse_lbtn_up(x, y, m) {
-		if (downButton) {
-			downButton.onClick();
+		if (!downButton) return;
 
-			if (mainMenuOpen) {
-				thisButton = undefined;
-				mainMenuOpen = false;
-			}
+		downButton.onClick();
 
-			if (thisButton) {
-				thisButton.changeState(ButtonState.Hovered);
-			}
-			else if (downButton && downButton === thisButton) {
-				downButton.changeState(ButtonState.Default);
-			}
-			thisButton = downButton;
+		if (mainMenuOpen) {
+			thisButton = undefined;
+			mainMenuOpen = false;
 		}
+
+		if (thisButton) {
+			thisButton.changeState(ButtonState.Hovered);
+		}
+		else if (downButton && downButton === thisButton) {
+			downButton.changeState(ButtonState.Default);
+		}
+
+		thisButton = downButton;
 	}
 
 	/**
@@ -321,10 +320,11 @@ function btnActionHandler(btn) {
 			if (displayPlaylist) {
 				if (pref.layout === 'artwork') {
 					if (pref.lyricsActiveState) pref.displayLyrics = false;
-					displayPlaylistArtworkLayout = false;
+					displayPlaylistArtwork = false;
 					playlist.x = ww; // Move hidden Playlist offscreen to disable Playlist mouse functions in Details
 					resizeArtwork(true);
 				} else {
+					if (pref.panelWidthAuto) resizeArtwork(true);
 					playlist.on_size(ww, wh);
 				}
 			}
@@ -355,11 +355,11 @@ function btnActionHandler(btn) {
 			break;
 
 		case 'PlaylistArtworkLayout':
-			displayPlaylistArtworkLayout = !displayPlaylistArtworkLayout;
+			displayPlaylistArtwork = !displayPlaylistArtwork;
 			displayPlaylist = false;
 			displayLibrary = false;
 			displayBiography = false;
-			pref.displayLyrics = pref.lyricsActiveState && !displayPlaylistArtworkLayout;
+			pref.displayLyrics = pref.lyricsActiveState && !displayPlaylistArtwork;
 
 			playlist.on_size(ww, wh);
 			resizeArtwork(false);
@@ -379,7 +379,7 @@ function btnActionHandler(btn) {
 					displayPlaylist = true;
 				}
 				else if (pref.layout === 'artwork') {
-					displayPlaylistArtworkLayout = false;
+					displayPlaylistArtwork = false;
 					pref.displayLyrics = false;
 					resizeArtwork(true);
 				}
@@ -439,8 +439,8 @@ function btnActionHandler(btn) {
 				// Switch playlist to normal width to prevent panel overlaying
 				pref.playlistLayoutNormal = pref.playlistLayout === 'full' && pref.displayLyrics;
 			}
-			if (displayBiography && pref.biographyLayout === 'full') {
-				playlist.x = ww; // Move hidden Playlist offscreen to disable Playlist mouse functions
+			if (displayBiography && (pref.biographyLayout === 'full' || pref.layout === 'artwork')) {
+				pref.layout === 'artwork' ? displayPlaylistArtwork = false : displayPlaylist = false;
 			} else {
 				playlist.on_size(ww, wh);
 			}
@@ -454,7 +454,7 @@ function btnActionHandler(btn) {
 
 		case 'Lyrics':
 			displayPlaylist = pref.layout === 'default';
-			displayPlaylistArtworkLayout = false;
+			displayPlaylistArtwork = false;
 			displayLibrary = false;
 			displayBiography = false;
 			pref.displayLyrics = !pref.displayLyrics;
@@ -468,8 +468,8 @@ function btnActionHandler(btn) {
 
 			if (pref.lyricsLayout === 'full' && pref.displayLyrics) {
 				displayPlaylist = false;
-				resizeArtwork(true);
-			} else {
+				if (!pref.panelWidthAuto) resizeArtwork(true);
+			} else if (!pref.panelWidthAuto) {
 				playlist.on_size(ww, wh);
 			}
 
@@ -513,21 +513,21 @@ function btnActionHandler(btn) {
 						break;
 					case 'details':
 						displayPlaylist = pref.layout === 'artwork';
-						displayPlaylistArtworkLayout = false;
+						displayPlaylistArtwork = false;
 						displayLibrary = false;
 						displayBiography = false;
 						pref.displayLyrics = false;
 						break;
 					case 'library':
 						displayPlaylist = false;
-						displayPlaylistArtworkLayout = false;
+						displayPlaylistArtwork = false;
 						displayLibrary = true;
 						displayBiography = false;
 						pref.displayLyrics = false;
 						break;
 					case 'biography':
 						displayPlaylist = true;
-						displayPlaylistArtworkLayout = false;
+						displayPlaylistArtwork = false;
 						displayLibrary = true;
 						displayBiography = true;
 						pref.displayLyrics = false;
@@ -535,7 +535,7 @@ function btnActionHandler(btn) {
 						break;
 					case 'lyrics':
 						displayPlaylist = true;
-						displayPlaylistArtworkLayout = false;
+						displayPlaylistArtwork = false;
 						displayLibrary = false;
 						displayBiography = false;
 						pref.displayLyrics = true;
@@ -543,7 +543,7 @@ function btnActionHandler(btn) {
 						break;
 					case 'cover': // Artwork layout
 						displayPlaylist = false;
-						displayPlaylistArtworkLayout = false;
+						displayPlaylistArtwork = false;
 						displayLibrary = false;
 						displayBiography = false;
 						pref.displayLyrics = false;
@@ -889,7 +889,7 @@ function initButtonState() {
 		else if (displayPlaylist && !displayLibrary && !displayBiography && !pref.displayLyrics && pref.layout === 'artwork') {
 			btns.details.enabled = true;
 			btns.details.changeState(ButtonState.Down);
-			if (displayPlaylistArtworkLayout) {
+			if (displayPlaylistArtwork) {
 				displayPlaylist = false;
 				btns.details.enabled = false;
 				btns.details.changeState(ButtonState.Default);
@@ -897,7 +897,7 @@ function initButtonState() {
 				btns.playlistArtworkLayout.changeState(ButtonState.Down);
 			}
 		}
-		else if (displayPlaylistArtworkLayout && !displayLibrary && !displayBiography && !pref.displayLyrics && pref.layout === 'artwork') {
+		else if (displayPlaylistArtwork && !displayLibrary && !displayBiography && !pref.displayLyrics && pref.layout === 'artwork') {
 			btns.playlistArtworkLayout.enabled = true;
 			btns.playlistArtworkLayout.changeState(ButtonState.Down);
 		}
@@ -928,7 +928,7 @@ function initButtonState() {
  * Updates the play button image based on the current playback state.
  */
 function updatePlayButton() {
-	const showTransportControls = pref.layout === 'compact' ? pref.showTransportControls_compact : pref.layout === 'artwork' ? pref.showTransportControls_artwork : pref.showTransportControls_default;
+	const showTransportControls = pref[`showTransportControls_${pref.layout}`];
 	if (!showTransportControls) return;
 	btns.play.img = !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause;
 	btns.play.repaint();
@@ -939,7 +939,7 @@ function updatePlayButton() {
  * Updates the playback order button based on the current playback order.
  */
 function updatePlaybackOrderButton() {
-	const showTransportControls = pref.layout === 'compact' ? pref.showTransportControls_compact : pref.layout === 'artwork' ? pref.showTransportControls_artwork : pref.showTransportControls_default;
+	const showTransportControls = pref[`showTransportControls_${pref.layout}`];
 	if (!showTransportControls) return;
 
 	switch (fb.PlaybackOrder) {

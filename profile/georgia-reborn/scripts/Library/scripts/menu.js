@@ -162,7 +162,7 @@ class MenuItems {
 			separator: () => true
 		});
 
-		if (pref.layout === 'default' && ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
+		if (pref.layout === 'default' && pref.theme.startsWith('custom')) {
 			menu.newItem({
 				str: 'Edit custom theme',
 				func: () => {

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-21                                          * //
+// * Last change:    2023-07-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -43,6 +43,7 @@ const Color = (() => {
 	};
 
 	// * Helpers
+
 	/**
 	 * Rounds a number to the nearest integer using the "round half up" method.
 	 * @param {number} number The number that will be round to the nearest whole number (integer) using the absolute value method.

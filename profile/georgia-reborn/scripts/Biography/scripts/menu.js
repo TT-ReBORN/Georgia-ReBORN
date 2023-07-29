@@ -248,7 +248,7 @@ class MenuItemsBio {
 		const n = b.toLowerCase();
 		const separator = !pptBio.artistView && (pptBio.showTrackRevOptions || txt.isCompositionLoaded()) || !panelBio.stndItem();
 
-		if (pref.layout === 'default' && ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
+		if (pref.layout === 'default' && pref.theme.startsWith('custom')) {
 			menuBio.newItem({
 				str: 'Edit custom theme',
 				func: () => {
@@ -265,10 +265,9 @@ class MenuItemsBio {
 			func: () => {
 				if (pref.biographyLayout === 'normal') {
 					pref.biographyLayout = 'full';
-					playlist.x = ww; // Move hidden Playlist off screen to disable Playlist mouse functions
+					displayPlaylist = false;
 				} else {
 					pref.biographyLayout = 'normal';
-					playlist.on_size(ww, wh);
 					displayPlaylist = true;
 				}
 				initBiographyLayout();

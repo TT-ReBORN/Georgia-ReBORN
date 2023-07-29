@@ -240,7 +240,7 @@ class ButtonsBio {
 		const hs = uiBio.font.heading.Size;
 		const fs = uiBio.stars != 1 ? (this.src.icon ? (this.src.bahnInstalled ? 12 : 11) : 10) * $Bio.scale : (RES_4K ? 26 : 14);
 		const srcFontSize = this.src.fontSize;
-		const biographyFontSize = pref.layout === 'artwork' ? pptBio.baseFontSizeBio_artwork : pptBio.baseFontSizeBio_default;
+		const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`] || 14;
 		this.src.fontSize = $Bio.clamp(Math.round(hs * 1.0) + (pptBio.zoomHeadBtn - 100) / 10, Math.min(fs, hs), Math.max(fs, hs));
 		if (this.src.fontSize != srcFontSize || force) this.src.font = gdi.Font('Segoe UI', this.src.fontSize, 1);
 		$Bio.gr(1, 1, false, g => {

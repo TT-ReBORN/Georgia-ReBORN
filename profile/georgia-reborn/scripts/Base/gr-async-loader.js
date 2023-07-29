@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-20                                          * //
+// * Last change:    2023-07-29                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -267,7 +267,7 @@ function on_paint(gr) {
 		pref_theme === 'ngreen' ? RGB(0, 200, 0) :
 		pref_theme === 'nred' ? RGB(229, 7, 44) :
 		pref_theme === 'ngold' ? RGB(254, 204, 3) :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref_theme) ? RGB(50, 25, 70) :
+		pref_theme.startsWith('custom') ? RGB(50, 25, 70) :
 		RGB(90, 90, 90);
 
 	col.progressBarFrame =
@@ -321,72 +321,31 @@ function on_paint(gr) {
  */
 function drawLogo(gr) {
 	// * PROPERTIES * //
-	const pref_theme               = window.GetProperty('Georgia-ReBORN - 01. Theme:');
-	const pref_styleBlackAndWhite  = window.GetProperty('Georgia-ReBORN - 02. Style: Black and white');
+	const pref_theme = window.GetProperty('Georgia-ReBORN - 01. Theme:');
+	const pref_styleBlackAndWhite = window.GetProperty('Georgia-ReBORN - 02. Style: Black and white');
 	const pref_styleBlackAndWhite2 = window.GetProperty('Georgia-ReBORN - 02. Style: Black and white 2');
-	const pref_styleBlackReborn    = window.GetProperty('Georgia-ReBORN - 02. Style: Black reborn');
-	const pref_displayRes          = window.GetProperty('Georgia-ReBORN - 06. Display');
+	const pref_styleBlackReborn = window.GetProperty('Georgia-ReBORN - 02. Style: Black reborn');
+	const pref_displayRes = window.GetProperty('Georgia-ReBORN - 06. Display');
+	const pref_theme_custom = pref_theme.startsWith('custom');
 
 	// * SYSTEM * //
-	const ww     = window.Width;
-	const wh     = window.Height;
+	const ww = window.Width;
+	const wh = window.Height;
 	const RES_4K = pref_displayRes === '4k' || (ww > 3000 || wh > 1300);
 	const plus4k = RES_4K ? '4k-' : '';
 
 	// * PATHS * //
-	const paths    = {};
+	const paths = {};
 	const logoPath = `${fb.ProfilePath}georgia-reborn/images/logo/`;
-
-	paths.logoWhite          = `${logoPath}${plus4k}logo-white.png`;
-	paths.logoBlack          = `${logoPath}${plus4k}logo-black.png`;
-	paths.logoReborn         = `${logoPath}${plus4k}logo-reborn.png`;
-	paths.logoRandom         = `${logoPath}${plus4k}logo-random.png`;
-	paths.logoBlue           = `${logoPath}${plus4k}logo-blue.png`;
-	paths.logoDarkblue       = `${logoPath}${plus4k}logo-dark-blue.png`;
-	paths.logoRed            = `${logoPath}${plus4k}logo-red.png`;
-	paths.logoCream          = `${logoPath}${plus4k}logo-cream.png`;
-	paths.logoNblue          = `${logoPath}${plus4k}logo-neon-blue.png`;
-	paths.logoNgreen         = `${logoPath}${plus4k}logo-neon-green.png`;
-	paths.logoNred           = `${logoPath}${plus4k}logo-neon-red.png`;
-	paths.logoNgold          = `${logoPath}${plus4k}logo-neon-gold.png`;
-	paths.logoCustom         = `${logoPath}${plus4k}logo-custom.png`;
-	paths.logoBlackAndWhite  = `${logoPath}${plus4k}logo-black-white.png`;
-	paths.logoBlackAndWhite2 = `${logoPath}${plus4k}logo-black-white2.png`;
-	paths.logoBlackReborn    = `${logoPath}${plus4k}logo-black-reborn.png`;
-
-	// * IMAGES * //
-	const logoWhite          = gdi.Image(paths.logoWhite);
-	const logoBlack          = gdi.Image(paths.logoBlack);
-	const logoReborn         = gdi.Image(paths.logoReborn);
-	const logoRandom         = gdi.Image(paths.logoRandom);
-	const logoBlue           = gdi.Image(paths.logoBlue);
-	const logoDarkblue       = gdi.Image(paths.logoDarkblue);
-	const logoRed            = gdi.Image(paths.logoRed);
-	const logoCream          = gdi.Image(paths.logoCream);
-	const logoNblue          = gdi.Image(paths.logoNblue);
-	const logoNgreen         = gdi.Image(paths.logoNgreen);
-	const logoNred           = gdi.Image(paths.logoNred);
-	const logoNgold          = gdi.Image(paths.logoNgold);
-	const logoCustom         = gdi.Image(paths.logoCustom);
-	const logoBlackAndWhite  = gdi.Image(paths.logoBlackAndWhite);
-	const logoBlackAndWhite2 = gdi.Image(paths.logoBlackAndWhite2);
-	const logoBlackReborn    = gdi.Image(paths.logoBlackReborn);
+	switch (true) {
+		case pref_styleBlackAndWhite:  paths.logo = `${logoPath}${plus4k}logo-black-white.png`;   break;
+		case pref_styleBlackAndWhite2: paths.logo = `${logoPath}${plus4k}logo-black-white2.png`;  break;
+		case pref_styleBlackReborn:    paths.logo = `${logoPath}${plus4k}logo-black-reborn.png`;  break;
+		case pref_theme_custom:        paths.logo = `${logoPath}${plus4k}logo-custom.png`;        break;
+		default:                       paths.logo = `${logoPath}${plus4k}logo-${pref_theme}.png`; break;
+	}
 
 	// * LOGO * //
-	const logo =
-		pref_theme === 'white'    ? pref_styleBlackAndWhite ? logoBlackAndWhite : pref_styleBlackAndWhite2 ? logoBlackAndWhite2 : logoWhite :
-		pref_theme === 'black'    ? pref_styleBlackReborn   ? logoBlackReborn   : logoBlack :
-		pref_theme === 'reborn'   ? logoReborn :
-		pref_theme === 'random'   ? logoRandom :
-		pref_theme === 'blue'     ? logoBlue :
-		pref_theme === 'darkblue' ? logoDarkblue :
-		pref_theme === 'red'      ? logoRed :
-		pref_theme === 'cream'    ? logoCream :
-		pref_theme === 'nblue'    ? logoNblue :
-		pref_theme === 'ngreen'   ? logoNgreen :
-		pref_theme === 'nred'     ? logoNred :
-		pref_theme === 'ngold'    ? logoNgold :
-		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref_theme) ? logoCustom : logoReborn;
-
+	const logo = gdi.Image(paths.logo);
 	gr.DrawImage(logo, window.Width * 0.5 - logo.Width * 0.5, window.Height * 0.5 - logo.Height * 0.5, logo.Width, logo.Height, 0, 0, logo.Width, logo.Height);
 }

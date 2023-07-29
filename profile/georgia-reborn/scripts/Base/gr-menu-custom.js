@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-22                                          * //
+// * Last change:    2023-07-28                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -42,7 +42,7 @@ class BaseControl {
 		this.disabled = false;
 		this._hovered = false;
 		this.font = ft.popup;
-		this.popupFontSize = pref.layout === 'compact' ? pref.popupFontSize_compact : pref.layout === 'artwork' ? pref.popupFontSize_artwork : pref.popupFontSize_default;
+		this.popupFontSize = pref[`popupFontSize_${pref.layout}`];
 		this.closeBtn = this.label === '\u2715';
 		/** @protected */ this.g = undefined;
 		if (!getImage) {
@@ -121,7 +121,7 @@ class BaseControl {
 	/**
 	 * A placeholder that handles letter keystrokes events.
 	 * These aren't really virtually, just stubbed so that not every child needs to create one if it wants to ignore these events.
-	 * @param {number} code The character code of a key that was pressed on the keyboard.
+	 * @param {number} code The character code.
 	 * @virtual
 	 */
 	onChar(code) {}
@@ -129,7 +129,7 @@ class BaseControl {
 	/**
 	 * A placeholder that handles keyboard events.
 	 * These aren't really virtually, just stubbed so that not every child needs to create one if it wants to ignore these events.
-	 * @param {string} vkey The virtual key code of a key that is pressed on the keyboard.
+	 * @param {number} vkey The virtual key code.
 	 * @virtual
 	 */
 	onKey(vkey) {}
@@ -138,7 +138,7 @@ class BaseControl {
 
 	/**
 	 * Handles character input events for an active control.
-	 * @param {number} code The character code of the key that was pressed.
+	 * @param {number} code The character code.
 	 */
 	on_char(code) {
 		if (activeControl) {
@@ -148,7 +148,7 @@ class BaseControl {
 
 	/**
 	 * Handles key down events and calls the onKey method.
-	 * @param {number} vkey The virtual key code of the key that was pressed.
+	 * @param {number} vkey The virtual key code.
 	 */
 	on_key_down(vkey) {
 		if (activeControl) {
@@ -205,32 +205,34 @@ class BaseControl {
 	 * @param {number} y The y-coordinate.
 	 */
 	on_mouse_move(x, y) {
-		if (x !== this.state.mouse_x || y !== this.state.mouse_y) {
-			this.state.mouse_x = x;
-			this.state.mouse_y = y;
-			let found = false;
-			const setHovered = (control) => {
-				if (hoveredControl && hoveredControl !== control) hoveredControl.hovered = false; // Clear last hovered control
-				hoveredControl = control;
-				hoveredControl.hovered = true;
-				found = true;
-			};
-			if (activeControl && activeControl instanceof DropDownMenu && activeControl.isSelectUp && activeControl.mouseInThis(x, y)) {  // handles z-index stuff in a janky way
-				setHovered(activeControl);
-			}
-			for (let i = controlList.length - 1; i >= 0; i--) { // Traverse list in reverse order to better handle z-index issues
-				if (controlList[i].mouseInThis(x, y)) {
-					setHovered(controlList[i]);
-					if (mouseDown) {
-						controlList[i].mouseDown(x, y);
-					}
-					break;
+		if (x === this.state.mouse_x && y === this.state.mouse_y) return;
+
+		this.state.mouse_x = x;
+		this.state.mouse_y = y;
+		let found = false;
+
+		const setHovered = (control) => {
+			if (hoveredControl && hoveredControl !== control) hoveredControl.hovered = false; // Clear last hovered control
+			hoveredControl = control;
+			hoveredControl.hovered = true;
+			found = true;
+		};
+
+		if (activeControl && activeControl instanceof DropDownMenu && activeControl.isSelectUp && activeControl.mouseInThis(x, y)) {  // handles z-index stuff in a janky way
+			setHovered(activeControl);
+		}
+		for (let i = controlList.length - 1; i >= 0; i--) { // Traverse list in reverse order to better handle z-index issues
+			if (controlList[i].mouseInThis(x, y)) {
+				setHovered(controlList[i]);
+				if (mouseDown) {
+					controlList[i].mouseDown(x, y);
 				}
+				break;
 			}
-			if (!found && hoveredControl) {
-				hoveredControl.hovered = false;
-				hoveredControl = null;
-			}
+		}
+		if (!found && hoveredControl) {
+			hoveredControl.hovered = false;
+			hoveredControl = null;
 		}
 	}
 
@@ -433,7 +435,7 @@ class DropDownMenu extends BaseControl {
 
 	/**
 	 * Handles keyboard events and performs different actions based on the key pressed.
-	 * @param {number} vkey The virtual key code of the key that was pressed.
+	 * @param {number} vkey The virtual key code.
 	 */
 	onKey(vkey) {
 		switch (vkey) {
@@ -715,7 +717,7 @@ class StringInput extends BaseControl {
 
 	/**
 	 * Handles various keyboard inputs and performs corresponding actions on the text value.
-	 * @param {number} code The character code of the key that was pressed.
+	 * @param {number} code The character code.
 	 */
 	onChar(code) {
 		let clearSelection = true;
@@ -792,7 +794,7 @@ class StringInput extends BaseControl {
 
 	/**
 	 * Handles keyboard events and performs different actions based on the key pressed.
-	 * @param {number} vkey The virtual key code of the key that was pressed.
+	 * @param {number} vkey The virtual key code.
 	 */
 	onKey(vkey) {
 		const CtrlKeyPressed = utils.IsKeyPressed(VK_CONTROL);
@@ -1128,7 +1130,7 @@ class StringInput2 extends BaseControl {
 
 	/**
 	 * Handles various keyboard inputs and performs corresponding actions on the text value.
-	 * @param {number} code The character code of the key that was pressed.
+	 * @param {number} code The character code.
 	 */
 	onChar(code) {
 		let clearSelection = true;
@@ -1204,7 +1206,7 @@ class StringInput2 extends BaseControl {
 
 	/**
 	 * Handles keyboard events and performs different actions based on the key pressed.
-	 * @param {number} vkey The virtual key code of the key that was pressed.
+	 * @param {number} vkey The virtual key code.
 	 */
 	onKey(vkey) {
 		const CtrlKeyPressed = utils.IsKeyPressed(VK_CONTROL);
@@ -1707,13 +1709,12 @@ function initCustomThemeMenu(playlist_section, main_section, library_section, bi
  * Reinitializes the custom theme menu.
  */
 function reinitCustomThemeMenu() {
-	if (displayCustomThemeMenu) {
-		if (displayPlaylist)    initCustomThemeMenu('pl_bg');
-		if (displayDetails)     initCustomThemeMenu(false, 'main_bg');
-		if (displayLibrary)     initCustomThemeMenu(false, false, 'lib_bg');
-		if (displayBiography)   initCustomThemeMenu(false, false, false, 'bio_bg');
-		if (pref.displayLyrics) initCustomThemeMenu(false, 'main_text');
-	}
+	if (!displayCustomThemeMenu) return;
+	if (displayPlaylist)    initCustomThemeMenu('pl_bg');
+	if (displayDetails)     initCustomThemeMenu(false, 'main_bg');
+	if (displayLibrary)     initCustomThemeMenu(false, false, 'lib_bg');
+	if (displayBiography)   initCustomThemeMenu(false, false, false, 'bio_bg');
+	if (pref.displayLyrics) initCustomThemeMenu(false, 'main_text');
 }
 
 
@@ -1726,7 +1727,7 @@ function reinitCustomThemeMenu() {
  * @param {string} main_section The main color page to be opened.
  */
 function customMainColors(x, y, w, h, main_section) {
-	const popupFontSize = pref.layout === 'compact' ? pref.popupFontSize_compact : pref.layout === 'artwork' ? pref.popupFontSize_artwork : pref.popupFontSize_default;
+	const popupFontSize = pref[`popupFontSize_${pref.layout}`];
 	const margin = SCALE(20);
 	const labelW = SCALE(300) + popupFontSize;
 	const inputW = SCALE(80)  + popupFontSize;
@@ -2054,7 +2055,7 @@ function customMainColors(x, y, w, h, main_section) {
  * @param {string} playlist_section The playlist color page to be opened.
  */
 function customPlaylistColors(x, y, w, h, playlist_section) {
-	const popupFontSize = pref.layout === 'compact' ? pref.popupFontSize_compact : pref.layout === 'artwork' ? pref.popupFontSize_artwork : pref.popupFontSize_default;
+	const popupFontSize = pref[`popupFontSize_${pref.layout}`];
 	const margin = SCALE(20);
 	const labelW = SCALE(300) + popupFontSize;
 	const inputW = SCALE(80)  + popupFontSize;
@@ -2226,7 +2227,7 @@ function customPlaylistColors(x, y, w, h, playlist_section) {
  * @param {string} library_section The library color page to be opened.
  */
 function customLibraryColors(x, y, w, h, library_section) {
-	const popupFontSize = pref.layout === 'compact' ? pref.popupFontSize_compact : pref.layout === 'artwork' ? pref.popupFontSize_artwork : pref.popupFontSize_default;
+	const popupFontSize = pref[`popupFontSize_${pref.layout}`];
 	const margin = SCALE(20);
 	const labelW = SCALE(300) + popupFontSize;
 	const inputW = SCALE(80)  + popupFontSize;
@@ -2393,7 +2394,7 @@ function customLibraryColors(x, y, w, h, library_section) {
  * @param {string} biography_section The biography color page to be opened.
  */
 function customBiographyColors(x, y, w, h, biography_section) {
-	const popupFontSize = pref.layout === 'compact' ? pref.popupFontSize_compact : pref.layout === 'artwork' ? pref.popupFontSize_artwork : pref.popupFontSize_default;
+	const popupFontSize = pref[`popupFontSize_${pref.layout}`];
 	const margin = SCALE(20);
 	const labelW = SCALE(300) + popupFontSize;
 	const inputW = SCALE(80)  + popupFontSize;
@@ -2840,7 +2841,7 @@ function initMetadataGridMenu(page, info) {
  */
 function metadataGridPage(x, y, w, h, page) {
 	const prefs = config.readConfiguration();
-	const popupFontSize = pref.layout === 'compact' ? pref.popupFontSize_compact : pref.layout === 'artwork' ? pref.popupFontSize_artwork : pref.popupFontSize_default;
+	const popupFontSize = pref[`popupFontSize_${pref.layout}`];
 	const margin = SCALE(20);
 	const inputW = SCALE(80) + popupFontSize;
 	const start  = page === 1 ? 0 : page === 2 ?  8 : page === 3 ? 16 : page === 4 ? 24 : 0;
@@ -2892,10 +2893,12 @@ function updateMetadataGridFromConfig(id, value1, value2) {
 	const prefs = config.readConfiguration();
 	const metadataGrid = prefs.metadataGrid;
 	const index = metadataGrid.findIndex(x => x.label === id);
+
 	if (index > -1) {
 		if (value1) metadataGrid[index].label = value1;
 		else if (value2) metadataGrid[index].val = value2;
 	}
+
 	config.updateConfigObjValues('metadataGrid', metadataGrid, true);
 	updateMetadataGrid();
 	window.Repaint();
@@ -2908,10 +2911,12 @@ function updateMetadataGridFromConfig(id, value1, value2) {
 function resetMetadataGrid() {
 	const prefs = config.readConfiguration();
 	const metadataGrid = prefs.metadataGrid;
+
 	for (let i = 0; i < metadataGrid.length; i++) {
 		metadataGrid[i].label = defaultMetadataGrid[i].label;
 		metadataGrid[i].val = defaultMetadataGrid[i].val;
 	}
+
 	config.updateConfigObjValues('metadataGrid', metadataGrid, true);
 	updateMetadataGrid();
 	window.Repaint();

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-21                                          * //
+// * Last change:    2023-07-28                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -299,6 +299,7 @@ pref.add_properties({
 	showTooltipLibrary:                 ['Georgia-ReBORN - 09. Player controls: Show library tooltips', false], // true: Show library tooltips
 	showTooltipBiography:               ['Georgia-ReBORN - 09. Player controls: Show biography tooltips', false], // true: Show biography tooltips
 	showStyledTooltips:                 ['Georgia-ReBORN - 09. Player controls: Show styled tooltips', true], // true: Show styled tooltips
+	panelWidthAuto:                     ['Georgia-ReBORN - 09. Player controls: Use auto panel width', false], // true: Use auto panel width when player size is not proportional
 	showPanelOnStartup:                 ['Georgia-ReBORN - 09. Player controls: Show panel on startup', 'playlist'], // "cover", "playlist", "details", "library", "biography", "lyrics" - show panel on foobar startup
 	showLogoOnStartup:                  ['Georgia-ReBORN - 09. Player controls: Show logo on startup', true], // true: Show logo on foobar startup
 	returnToHomeOnPlaybackStop:         ['Georgia-ReBORN - 09. Player controls: Return to home on playback stop', true], // true: Return to home on playback stop
@@ -807,6 +808,7 @@ async function setThemeSettings(save) {
 		themeControls.showTooltipLibrary = pref.showTooltipLibrary;
 		themeControls.showTooltipBiography = pref.showTooltipBiography;
 		themeControls.showStyledTooltips = pref.showStyledTooltips;
+		themeControls.panelWidthAuto = pref.panelWidthAuto;
 		themeControls.showPanelOnStartup = pref.showPanelOnStartup;
 		themeControls.showLogoOnStartup = pref.showLogoOnStartup;
 		themeControls.returnToHomeOnPlaybackStop = pref.returnToHomeOnPlaybackStop;
@@ -948,6 +950,7 @@ async function setThemeSettings(save) {
 		pref.showTooltipLibrary = custom ? themeControls.showTooltipLibrary : false;
 		pref.showTooltipBiography = custom ? themeControls.showTooltipBiography : false;
 		pref.showStyledTooltips = custom ? themeControls.showStyledTooltips : true;
+		pref.panelWidthAuto = custom ? themeControls.panelWidthAuto : false;
 		pref.showPanelOnStartup = custom ? themeControls.showPanelOnStartup : 'playlist';
 		pref.showLogoOnStartup = custom ? themeControls.showLogoOnStartup : true;
 		pref.returnToHomeOnPlaybackStop = custom ? themeControls.returnToHomeOnPlaybackStop : true;

@@ -2339,7 +2339,7 @@ class Populate {
 	}
 
 	treeTooltipFont() {
-		const libraryFontSize = pref.layout === 'artwork' ? ppt.baseFontSize_artwork : ppt.baseFontSize_default;
+		const libraryFontSize = ppt[`baseFontSize_${pref.layout}`] || 14;
 		return !panel.imgView ? [ui.font.main.Name, /* ui.font.main.Size */ libraryFontSize + 3, ui.font.main.Style] : [ui.font.group.Name, /* ui.font.group.Size */ libraryFontSize + 3, ui.font.group.Style];
 	}
 

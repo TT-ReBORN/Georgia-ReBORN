@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-21                                          * //
+// * Last change:    2023-07-28                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -503,7 +503,7 @@ function OpenFile(filePath) {
 
 
 /**
- * Sanitize illegal chars in the file path but skips drive.
+ * Sanitizes illegal chars in the file path but skips drive.
  * @param {string} value The value to sanitize. Must be a string of space - separated UTF-8 characters.
  * @returns {string} The sanitized path string.
  */
@@ -1311,6 +1311,26 @@ function RotateImg(img, w, h, degrees) {
 }
 
 
+/**
+ * Creates a drop shadow rectangle.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {number} w The width.
+ * @param {number} h The height.
+ * @param {number} radius The shadow radius.
+ * @param {number} color The shadow color.
+ */
+function ShadowRect(x, y, w, h, radius, color) {
+	const shadow = gdi.CreateImage(w + 2 * radius, h + 2 * radius);
+	const shimg = shadow.GetGraphics();
+	shimg.FillRoundRect(x, y, w, h, 0.5 * radius, 0.5 * radius, color);
+	shadow.ReleaseGraphics(shimg);
+	shadow.StackBlur(radius);
+
+	return shadow;
+}
+
+
 ///////////////
 // * FONTS * //
 ///////////////
@@ -1324,8 +1344,7 @@ function RotateImg(img, w, h, degrees) {
  * @param {number} maxLines The maximum number of lines the text should be.
  * @returns {GdiFont|null} The font that fits the given width, or null if no font fits.
  */
-function ChooseFontForWidth(gr, availableWidth, text, fontList, maxLines) {
-	maxLines = (typeof maxLines !== 'undefined') ? maxLines : 1;
+function ChooseFontForWidth(gr, availableWidth, text, fontList, maxLines = 1) {
 	let fontIndex;
 	for (let i = 0; i < fontList.length; i++) {
 		fontIndex = i;
@@ -1408,12 +1427,11 @@ function CalcGridMaxTextWidth(gr, gridArray, font) {
  * @param {number} [maxLines=2] The max number of lines to attempt to draw text1 & text2 in. If text doesn't fit, ellipses will be added.
  * @returns {number} The height of the drawn text.
  */
-function DrawMultipleLines(gr, availableWidth, left, top, color, text1, fontList1, text2, fontList2, maxLines) {
-	maxLines = (typeof maxLines !== 'undefined') ? maxLines : 2;
+function DrawMultipleLines(gr, availableWidth, left, top, color, text1, fontList1, text2, fontList2, maxLines = 2) {
 	let textArray;
 	let lineHeight;
 	let continuation;
-	for (let fontIndex = 0; fontIndex < fontList1.length && (!text2 || fontIndex < fontList2.length); fontIndex++) {
+	for (let fontIndex = 0; fontIndex < fontList1.length && (fontIndex < fontList2.length); fontIndex++) {
 		textArray = [];
 		lineHeight = Math.max(gr.CalcTextHeight(text1, fontList1[fontIndex]), (text2 ? gr.CalcTextHeight(text2, fontList2[fontIndex]) : 0));
 		continuation = false; // Does font change on same line

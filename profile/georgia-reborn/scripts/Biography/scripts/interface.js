@@ -190,14 +190,14 @@ class UserInterfaceBio {
 	draw(gr) {
 		if (this.style.bg) gr.FillSolidRect(this.x - pptBio.borL, this.y, panelBio.w + pptBio.borR, panelBio.h, this.col.bg);
 		if (pref.styleBlend && albumArt && blendedImg) {
-			gr.FillSolidRect(0, 0, pref.layout === 'artwork' || pref.biographyLayout === 'full' ? ww : ww * 0.5, geo.topMenuHeight, col.bg); // Hide alpha overlapping at the top
+			gr.FillSolidRect(0, 0, pref.layout === 'artwork' || pref.biographyLayout === 'full' ? ww : pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww * 0.5, geo.topMenuHeight, col.bg); // Hide alpha overlapping at the top
 			if (pref.layout === 'artwork') gr.FillSolidRect(0, this.y + this.h, ww, geo.lowerBarHeight, col.bg); // Hide alpha overlapping at the bottom
-			if (UIHacks.Aero.Effect === 2) gr.DrawLine(0, 0, pref.layout === 'artwork' || pref.biographyLayout === 'full' ? ww : ww * 0.5 - 1, 0, 1, col.bg); // UIHacks aero glass shadow frame fix - needed for style Blend
+			if (UIHacks.Aero.Effect === 2) gr.DrawLine(0, 0, pref.layout === 'artwork' || pref.biographyLayout === 'full' ? ww : pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww * 0.5 - 1, 0, 1, col.bg); // UIHacks aero glass shadow frame fix - needed for style Blend
 			if (pref.layout === 'default' && pref.biographyLayout === 'full') {
-				gr.DrawImage(blendedImg, 0, this.h - panelBio.h - geo.lowerBarHeight, ww, wh, 0, this.h - panelBio.h - geo.lowerBarHeight, blendedImg.Width, blendedImg.Height);
+				gr.DrawImage(blendedImg, 0, 0, ww, wh, 0, 0, blendedImg.Width, blendedImg.Height);
 			} else {
-				gr.DrawImage(blendedImg, pref.layout === 'artwork' ? 0 : this.x - this.w, pref.layout === 'artwork' ? this.h - panelBio.h : this.h - panelBio.h - geo.lowerBarHeight,
-				ww, wh, pref.layout === 'artwork' ? 0 : this.x - this.w, pref.layout === 'artwork' ? this.h - panelBio.h : this.h - panelBio.h - geo.lowerBarHeight, blendedImg.Width, blendedImg.Height);
+				gr.DrawImage(blendedImg, pref.panelWidthAuto || pref.layout === 'artwork' ? 0 : this.x - this.w, pref.layout === 'artwork' ? this.h - panelBio.h : this.h - panelBio.h - geo.lowerBarHeight, pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww, wh,
+					pref.panelWidthAuto || pref.layout === 'artwork' ? 0 : this.x - this.w, pref.layout === 'artwork' ? this.h - panelBio.h : this.h - panelBio.h - geo.lowerBarHeight, pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : blendedImg.Width, blendedImg.Height);
 			}
 		}
 	}
@@ -297,7 +297,7 @@ class UserInterfaceBio {
 				} catch (e) { return false; }
 			});
 		}
-		const biographyFontSize = pref.layout === 'artwork' ? pptBio.baseFontSizeBio_artwork : pptBio.baseFontSizeBio_default;
+		const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`] || 14;
 
 		if (pref.customThemeFonts) this.font.main = ft.biography;
 		else if (pptBio.custFontUse && pptBio.custFont.length) {
@@ -768,7 +768,7 @@ class UserInterfaceBio {
 	}
 
 	wheel(step) {
-		const biographyFontSize = pref.layout === 'artwork' ? pptBio.baseFontSizeBio_artwork : pptBio.baseFontSizeBio_default;
+		const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`] || 14;
 		if (!panelBio || butBio.trace('lookUp', panelBio.m.x, panelBio.m.y)) return;
 		if (vkBio.k('ctrl')) {
 			if (butBio.trace('heading', panelBio.m.x, panelBio.m.y)) {

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2022-07-22                                          * //
+// * Last change:    2022-07-29                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -913,27 +913,30 @@ const qwr_utils = {
 	/**
 	 * Checks if a mouse movement event should be suppressed or not.
 	 */
-	MouseMoveSuppress: function () {
+	MouseMoveSuppress() {
 		let saved_x;
 		let saved_y;
 		let saved_m;
 
-		/**
-		 * @param {number} X The x-coordinate.
-		 * @param {number} y The y-coordinate.
-		 * @param {number} m The mouse mask.
-		 * @returns {boolean} True or false.
-		 */
-		this.is_supressed = (x, y, m) => {
-			if (saved_x === x && saved_y === y && saved_m === m) {
-				return true;
+		return {
+			/**
+			 * Checks if the mouse movement is suppressed.
+			 * @param {number} x The x-coordinate.
+			 * @param {number} y The y-coordinate.
+			 * @param {number} m The mouse mask.
+			 * @returns {boolean} True or false.
+			 */
+			is_supressed: (x, y, m) => {
+				if (saved_x === x && saved_y === y && saved_m === m) {
+					return true;
+				}
+
+				saved_x = x;
+				saved_y = y;
+				saved_m = m;
+
+				return false;
 			}
-
-			saved_x = x;
-			saved_y = y;
-			saved_m = m;
-
-			return false;
 		};
 	},
 
@@ -955,21 +958,24 @@ const qwr_utils = {
 	 * Suppresses certain key modifiers (SHIFT, CONTROL, and MENU) in order
 	 * to prevent them from being triggered multiple times in quick succession.
 	 */
-	KeyModifiersSuppress: function () {
+	KeyModifiersSuppress() {
 		let saved_key;
 
-		/**
-		 * @param {string|number} key
-		 * @returns {boolean} True or false.
-		 */
-		this.is_supressed = (key) => {
-			if ((VK_SHIFT === key || VK_CONTROL === key || VK_MENU === key) && saved_key === key) {
-				return true;
+		return {
+			/**
+			 * Checks if the key modifiers are suppressed.
+			 * @param {string|number} key The keyboard key.
+			 * @returns {boolean} True or false.
+			 */
+			is_supressed: (key) => {
+				if ((VK_SHIFT === key || VK_CONTROL === key || VK_MENU === key) && saved_key === key) {
+					return true;
+				}
+
+				saved_key = key;
+
+				return false;
 			}
-
-			saved_key = key;
-
-			return false;
 		};
 	},
 
@@ -1138,7 +1144,7 @@ class PanelProperties {
 			return true;
 		}
 		return false;
-	};
+	}
 
 	/**
 	 * Validates a property item and throws appropriate errors if any validation fails.

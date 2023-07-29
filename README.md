@@ -52,9 +52,8 @@ in the library > Show artists, to go back to default view open again the context
 ![Library](https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/03_Georgia_Reborn_Library_Animation.webp)
 
 In the biography you can change options via top menu Options > Biography or you can use the context menu.<br />
-There are 4 different biography layouts to choose from, top is the default. There is also an automatic lyric fetcher<br />
-using the Lyric Show 3 ( by The vern ) and Multisource component ( by veksha ). Synced lyrics will be highlighted<br />
-with a theme color, unsynced lyrics have the default white text color.
+There are 4 different biography layouts to choose from, top is the default. There is also an automatic lyric fetcher.<br />
+Synced lyrics will be highlighted with a theme color, unsynced lyrics have the default white text color.<br />
 
 ![BiographyLyrics](https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/04_Georgia_Reborn_Biography_And_Lyrics_Animation.webp)
 

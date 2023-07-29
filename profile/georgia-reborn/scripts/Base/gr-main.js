@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-21                                          * //
+// * Last change:    2023-07-29                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -26,13 +26,8 @@ function drawBackgrounds(gr) {
 
 	// * MAIN BACKGROUND * //
 	if (!albumArt && noArtwork) { // We use noArtwork to prevent flashing of blue default theme
-		albumArtSize.x =
-			pref.layout === 'default' &&  displayCustomThemeMenu && !displayPlaylist && !displayLibrary && !displayBiography ? ww * 0.3 :
-			pref.layout === 'default' && !displayCustomThemeMenu && !displayPlaylist && !displayLibrary && !displayBiography ||
-			pref.layout === 'artwork' &&  displayPlaylist ? ww : 0;
-		albumArtSize.w = ww * 0.5;
-		albumArtSize.y = geo.topMenuHeight;
-		albumArtSize.h = wh - geo.topMenuHeight - geo.lowerBarHeight;
+		initNoAlbumArtSize();
+
 		if (!themeColorSet) {
 			setThemeColors();
 			themeColorSet = true;
@@ -43,11 +38,13 @@ function drawBackgrounds(gr) {
 	// * DETAILS BACKGROUND * //
 	if (fb.IsPlaying && (albumArt || !discArt || !albumArt && discArt) && ((!displayLibrary && !displayPlaylist) || !settings.hidePanelBgWhenCollapsed)) {
 		gr.SetSmoothingMode(SmoothingMode.None);
-		gr.FillSolidRect(0, albumArtSize.y, albumArtSize.x, albumArtSize.h, !pref.albumArtColoredGap && (((displayPlaylist || displayLibrary) && pref.layout === 'default') ||
+		gr.FillSolidRect(0, albumArtSize.y, albumArtSize.x, albumArtSize.h,
+			!pref.albumArtColoredGap && (((displayPlaylist || displayLibrary) && pref.layout === 'default') ||
 			((!displayPlaylist && !displayLibrary) && pref.layout === 'artwork')) ? g_pl_colors.bg : col.detailsBg);
 
 		// Show full background when no disc art
-		if (pref.noDiscArtBg && (!discArt || !pref.displayDiscArt) && albumArt && (!displayLibrary && !displayPlaylist && !displayBiography) || pref.theme === 'reborn' && pref.styleBlend2 && (pref.styleRebornWhite || pref.styleRebornBlack) || pref.layout === 'artwork') {
+		if (pref.noDiscArtBg && albumArt && (!discArt || !pref.displayDiscArt) && (!displayPlaylist && !displayLibrary && !displayBiography) ||
+			pref.theme === 'reborn' && pref.styleBlend2 && (pref.styleRebornWhite || pref.styleRebornBlack) || pref.layout === 'artwork') {
 			gr.FillSolidRect(albumArtSize.x + albumArtSize.w - SCALE(1), albumArtSize.y, albumArtSize.x + SCALE(2), albumArtSize.h, col.detailsBg);
 		}
 		if ((isStreaming && noArtwork || !albumArt && noArtwork)) {
@@ -69,7 +66,7 @@ function drawPanels(gr) {
 			libraryPanel.on_paint(gr);
 			drawLibraryProfiler && drawLibraryProfiler.Print();
 		}
-		if (pref.layout === 'default' && displayPlaylist || pref.layout === 'artwork' && displayPlaylistArtworkLayout || displayPlaylistLibrary()) {
+		if (pref.layout === 'default' && displayPlaylist || pref.layout === 'artwork' && displayPlaylistArtwork || displayPlaylistLibrary()) {
 			const drawPlaylistProfiler = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> playlist') : null;
 			playlist.on_paint(gr);
 			timings.showExtraDrawTiming && drawPlaylistProfiler.Print();
@@ -89,109 +86,103 @@ function drawPanels(gr) {
 
 
 /**
- * Draws the jump search on the right centered side.
- * @param {GdiGraphics} gr
- */
-function drawJumpSearch(gr) {
-	jumpSearch.setY(Math.round(wh * 0.5 - geo.topMenuHeight - geo.lowerBarHeight));
-	jumpSearch.draw(gr);
-}
-
-
-/**
  * Draws the big album art on the left side.
  * @param {GdiGraphics} gr
  */
 function drawAlbumArt(gr) {
+	const displayAlbumArt =
+		pref.layout === 'default' && (pref.playlistLayout !== 'full' && displayPlaylist && !displayBiography
+		|| pref.libraryLayout === 'normal' && displayLibrary || pref.displayLyrics)
+		|| !displayPlaylist && !displayPlaylistArtwork && !displayLibrary && !displayBiography;
+
+	const displayDetails = (pref.layout === 'artwork' ? !displayPlaylistArtwork : !displayPlaylist) && !displayLibrary && !displayBiography;
+
+	if (!fb.IsPlaying || !displayAlbumArt || displayPlaylistLibrary()) return;
+
+	const drawArt = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> artwork') : null;
+
 	// * BIG ALBUM ART - NEEDS TO BE DRAWN AFTER ALL BLENDING IS DONE, I.E AFTER PLAYLIST * //
-	if (displayPlaylistLibrary()) return;
-
-	if (pref.layout === 'default' && fb.IsPlaying && (displayPlaylist && pref.playlistLayout !== 'full' && !displayBiography || displayLibrary && pref.libraryLayout === 'normal' || pref.displayLyrics) ||
-		!displayPlaylist && !displayPlaylistArtworkLayout && !displayLibrary && !displayBiography) {
-		const drawArt = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> artwork') : null;
-		const displayDetails = (pref.layout === 'artwork' ? !displayPlaylistArtworkLayout : !displayPlaylist) && !displayLibrary && !displayBiography;
-
-		// * noAlbumArtStub if no album cover exist * //
-		if (!albumArt && noArtwork && fb.IsPlaying) {
-			if (pref.layout === 'default' && fb.IsPlaying && (displayPlaylist && pref.playlistLayout !== 'full' && !displayBiography || displayLibrary && pref.libraryLayout === 'normal') ||
-				pref.layout === 'default' && !displayPlaylist && !displayPlaylistArtworkLayout && !displayLibrary && !displayBiography && pref.displayLyrics ||
-				pref.layout === 'artwork' && !displayPlaylist && !displayPlaylistArtworkLayout && !displayLibrary && !displayBiography) {
-
-				// * Clear previous artwork related stuff
-				noAlbumArtStub = true;
-				albumArt = null;
-				artCache.clear();
-				discArt = null;
-				discArtArray = [];
-				const heightCorr = SCALE(14);
-
-				// * Stub background
-				gr.FillSolidRect(0, geo.topMenuHeight, pref.lyricsLayout === 'full' && pref.displayLyrics || pref.layout === 'artwork' ? ww : ww * 0.5, wh - geo.topMenuHeight - geo.lowerBarHeight, g_pl_colors.bg);
-				if (!pref.displayLyrics) {
-					gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
-					gr.DrawString('\uf001', ft.no_album_art_stub, col.noAlbumArtStub, 0, 0, pref.layout === 'artwork' ? ww : ww * 0.5, wh - geo.topMenuHeight - geo.lowerBarHeight + ft.no_album_art_stub.Height * 0.5 - heightCorr, StringFormat(1, 1));
+	if (!noAlbumArtStub) {
+		if (discArt && !rotatedDiscArt && !displayPlaylist && !displayLibrary && pref.displayDiscArt) {
+			createRotatedDiscArtImage();
+		}
+		if (albumArt && (albumArtScaled || rotatedDiscArt) && !displayBiography && !displayPlaylistArtwork &&
+			(discArt && pref.displayDiscArt && !displayPlaylist && !displayLibrary)) {
+			shadowImg && gr.DrawImage(shadowImg, -geo.discArtShadow, albumArtSize.y - geo.discArtShadow, shadowImg.Width, shadowImg.Height, 0, 0, shadowImg.Width, shadowImg.Height);
+			// gr.DrawRect(-geo.discArtShadow, albumArtSize.y - geo.discArtShadow, shadowImg.Width, shadowImg.Height, 1, RGBA(0,0,255,125)); // Viewing border line
+		}
+		if (albumArt && albumArtScaled) {
+			if (!pref.discArtOnTop || pref.displayLyrics) {
+				if (rotatedDiscArt && !displayPlaylist && !displayLibrary) {
+					drawDiscArt(gr);
+				}
+				if (rotatedDiscArt && !displayPlaylist && !displayLibrary && pref.detailsAlbumArtDiscAreaOpacity !== 255) { // Do not use opacity if image is a booklet, i.e albumArtSize.w > ww * 0.66
+					MaskAlbumArtDiscArea(gr, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height, 0, displayDetails && albumArtSize.w < ww * 0.66 ? pref.detailsAlbumArtDiscAreaOpacity : 255);
+				} else {
+					gr.DrawImage(albumArtScaled, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height, 0, displayDetails && albumArtSize.w < ww * 0.66 ? pref.detailsAlbumArtOpacity : 255);
+				}
+			} else { // Draw discArt on top of front cover
+				gr.DrawImage(albumArtScaled, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height);
+				if (rotatedDiscArt && !displayPlaylist && !displayLibrary) {
+					drawDiscArt(gr);
 				}
 			}
-		} else { noAlbumArtStub = false; }
+		} else if (rotatedDiscArt && pref.displayDiscArt && !displayPlaylist && !displayLibrary && !displayBiography && !pref.displayLyrics) {
+			// Disc art, but no album art
+			drawDiscArt(gr);
+		}
+	}
 
-		if (!noAlbumArtStub) {
-			if (discArt && !rotatedDiscArt && !displayPlaylist && !displayLibrary && pref.displayDiscArt) {
-				createRotatedDiscArtImage();
-			}
-			if (albumArt && (albumArtScaled || rotatedDiscArt) && !displayBiography && !displayPlaylistArtworkLayout) {
-				if (discArt && pref.displayDiscArt && !displayPlaylist && !displayLibrary) {
-					shadowImg && gr.DrawImage(shadowImg, -geo.discArtShadow, albumArtSize.y - geo.discArtShadow, shadowImg.Width, shadowImg.Height, 0, 0, shadowImg.Width, shadowImg.Height);
-					// gr.DrawRect(-geo.discArtShadow, albumArtSize.y - geo.discArtShadow, shadowImg.Width, shadowImg.Height, 1, RGBA(0,0,255,125)); // Viewing border line
-				}
-			}
-			if (albumArt && albumArtScaled) {
-				if (!pref.discArtOnTop || pref.displayLyrics) {
-					if (rotatedDiscArt && !displayPlaylist && !displayLibrary) {
-						drawDiscArt(gr);
-					}
-					if (rotatedDiscArt && !displayPlaylist && !displayLibrary && pref.detailsAlbumArtDiscAreaOpacity !== 255) { // Do not use opacity if image is a booklet, i.e albumArtSize.w > ww * 0.66
-						MaskAlbumArtDiscArea(gr, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height, 0, displayDetails && albumArtSize.w < ww * 0.66 ? pref.detailsAlbumArtDiscAreaOpacity : 255);
-					} else {
-						gr.DrawImage(albumArtScaled, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height, 0, displayDetails && albumArtSize.w < ww * 0.66 ? pref.detailsAlbumArtOpacity : 255);
-					}
-				} else { // Draw discArt on top of front cover
-					gr.DrawImage(albumArtScaled, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height);
-					if (rotatedDiscArt && !displayPlaylist && !displayLibrary) {
-						drawDiscArt(gr);
-					}
-				}
-			} else if (rotatedDiscArt && pref.displayDiscArt && !displayPlaylist && !displayLibrary && !displayBiography && !pref.displayLyrics) {
-				// Disc art, but no album art
-				drawDiscArt(gr);
+	if (timings.showExtraDrawTiming) drawArt.Print();
+}
+
+
+/**
+ * Draws the no album art stub when no album cover exists.
+ * @param {GdiGraphics} gr
+ */
+function drawNoAlbumArt(gr) {
+	const noAlbumArtLayoutDefault =
+		pref.layout === 'default' && (displayPlaylist && pref.playlistLayout !== 'full' && !displayBiography || displayLibrary && pref.libraryLayout === 'normal');
+
+	const noAlbumArtLayoutArtwork =
+		pref.layout === 'artwork' && !displayPlaylist && !displayPlaylistArtwork && !displayLibrary && !displayBiography;
+
+	if (!albumArt && noArtwork && fb.IsPlaying) {
+		if (noAlbumArtLayoutDefault || noAlbumArtLayoutArtwork) {
+			// * Clear previous artwork related stuff
+			noAlbumArtStub = true;
+			albumArt = null;
+			artCache.clear();
+			discArt = null;
+			discArtArray = [];
+
+			const noAlbumArtSize = wh - geo.topMenuHeight - geo.lowerBarHeight;
+
+			const bgWidth =
+				pref.lyricsLayout === 'full' && pref.displayLyrics || pref.layout === 'artwork' ? ww :
+				pref.panelWidthAuto ? noAlbumArtSize :
+				ww * 0.5;
+
+			const bgHeight = noAlbumArtSize;
+
+			const noteWidth =
+				pref.layout === 'artwork' ? ww :
+				pref.panelWidthAuto ? noAlbumArtSize :
+				ww * 0.5;
+
+			const noteHeight = noAlbumArtSize + ft.no_album_art_stub.Height * 0.5 - SCALE(14);
+
+			// * Stub background
+			gr.FillSolidRect(0, geo.topMenuHeight, albumArtSize.x, bgHeight, !pref.albumArtColoredGap ? g_pl_colors.bg : col.bg);
+			gr.FillSolidRect(albumArtSize.x, geo.topMenuHeight, bgWidth, bgHeight, g_pl_colors.bg);
+			if (!pref.displayLyrics) {
+				gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
+				gr.DrawString('\uf001', ft.no_album_art_stub, col.noAlbumArtStub, albumArtSize.x, 0, noteWidth, noteHeight, StringFormat(1, 1));
 			}
 		}
-
-		// * Hi-Res audio logo
-		if (pref.showHiResAudioBadge && pref.layout !== 'compact' && (Number($('$info(bitspersample)', fb.GetNowPlaying())) > 16 || Number($('$info(bitrate)', fb.GetNowPlaying())) > 1411)) {
-			const logoPath = `${fb.ProfilePath}georgia-reborn\\images\\misc\\`;
-			const plus4k = RES_4K ? '4k-' : '';
-			const plusRound = pref.hiResAudioBadgeRound ? '-round' : '';
-
-			if      (pref.hiResAudioBadgeSize === 'small')  paths.hiResAudioImage = `${logoPath}${plus4k}hi-res-audio-small${plusRound}.png`;
-			else if (pref.hiResAudioBadgeSize === 'normal') paths.hiResAudioImage = `${logoPath}${plus4k}hi-res-audio-normal${plusRound}.png`;
-			else if (pref.hiResAudioBadgeSize === 'large')  paths.hiResAudioImage = `${logoPath}${plus4k}hi-res-audio-large${plusRound}.png`;
-
-			hiResAudioImg = gdi.Image(paths.hiResAudioImage);
-
-			const x =
-				pref.hiResAudioBadgePos === 'topleft' ? albumArtSize.x + SCALE(20) :
-				pref.hiResAudioBadgePos === 'topright' ? albumArtSize.x + albumArtSize.w - hiResAudioImg.Width - SCALE(20) :
-				pref.hiResAudioBadgePos === 'bottomleft' ? albumArtSize.x + SCALE(40) :
-				pref.hiResAudioBadgePos === 'bottomright' ? albumArtSize.x + albumArtSize.w - hiResAudioImg.Width - SCALE(40) : '';
-
-			const y =
-				pref.hiResAudioBadgePos === 'topleft' || pref.hiResAudioBadgePos === 'topright' ? albumArtSize.y + SCALE(20) :
-				albumArtSize.y + albumArtSize.h - hiResAudioImg.Height - SCALE(40);
-
-			gr.DrawImage(hiResAudioImg, x, y, hiResAudioImg.Width, hiResAudioImg.Height, 0, 0, hiResAudioImg.Width, hiResAudioImg.Height);
-		}
-
-		if (timings.showExtraDrawTiming) drawArt.Print();
+	} else {
+		noAlbumArtStub = false;
 	}
 }
 
@@ -215,6 +206,40 @@ function drawDiscArt(gr) {
 
 
 /**
+ * Draws the Hi-Res Audio logo on album art.
+ * @param {GdiGraphics} gr
+ */
+function drawHiResAudioLogo(gr) {
+	const displayHiResAudioLogo = pref.showHiResAudioBadge && pref.layout !== 'compact' &&
+		(Number($('$info(bitspersample)', fb.GetNowPlaying())) > 16 || Number($('$info(bitrate)', fb.GetNowPlaying())) > 1411);
+
+	if (!displayHiResAudioLogo)  return;
+
+	const logoPath = `${fb.ProfilePath}georgia-reborn\\images\\misc\\`;
+	const plus4k = RES_4K ? '4k-' : '';
+	const plusRound = pref.hiResAudioBadgeRound ? '-round' : '';
+
+	if      (pref.hiResAudioBadgeSize === 'small')  paths.hiResAudioImage = `${logoPath}${plus4k}hi-res-audio-small${plusRound}.png`;
+	else if (pref.hiResAudioBadgeSize === 'normal') paths.hiResAudioImage = `${logoPath}${plus4k}hi-res-audio-normal${plusRound}.png`;
+	else if (pref.hiResAudioBadgeSize === 'large')  paths.hiResAudioImage = `${logoPath}${plus4k}hi-res-audio-large${plusRound}.png`;
+
+	hiResAudioImg = gdi.Image(paths.hiResAudioImage);
+
+	const x =
+		pref.hiResAudioBadgePos === 'topleft' ? albumArtSize.x + SCALE(20) :
+		pref.hiResAudioBadgePos === 'topright' ? albumArtSize.x + albumArtSize.w - hiResAudioImg.Width - SCALE(20) :
+		pref.hiResAudioBadgePos === 'bottomleft' ? albumArtSize.x + SCALE(40) :
+		pref.hiResAudioBadgePos === 'bottomright' ? albumArtSize.x + albumArtSize.w - hiResAudioImg.Width - SCALE(40) : '';
+
+	const y =
+		pref.hiResAudioBadgePos === 'topleft' || pref.hiResAudioBadgePos === 'topright' ? albumArtSize.y + SCALE(20) :
+		albumArtSize.y + albumArtSize.h - hiResAudioImg.Height - SCALE(40);
+
+	gr.DrawImage(hiResAudioImg, x, y, hiResAudioImg.Width, hiResAudioImg.Height, 0, 0, hiResAudioImg.Width, hiResAudioImg.Height);
+}
+
+
+/**
  * Draws the pause button centered on album art.
  * @param {GdiGraphics} gr
  */
@@ -224,9 +249,19 @@ function drawPauseBtn(gr) {
 		(pref.layout === 'default' && (displayPlaylist && pref.playlistLayout !== 'full' && !displayLibrary && !displayBiography ||
 		displayLibrary && pref.libraryLayout === 'normal' && !displayPlaylist || !displayPlaylist && !displayLibrary && !displayBiography)
 		||
-		pref.layout === 'artwork' && !displayPlaylist && !displayPlaylistArtworkLayout && !displayLibrary && !displayBiography)) {
+		pref.layout === 'artwork' && !displayPlaylist && !displayPlaylistArtwork && !displayLibrary && !displayBiography)) {
 		pauseBtn.draw(gr);
 	}
+}
+
+
+/**
+ * Draws the jump search on the right centered side.
+ * @param {GdiGraphics} gr
+ */
+function drawJumpSearch(gr) {
+	jumpSearch.setY(Math.round(wh * 0.5 - geo.topMenuHeight - geo.lowerBarHeight));
+	jumpSearch.draw(gr);
 }
 
 
@@ -238,54 +273,66 @@ function drawDetailsMetadataGrid(gr) {
 	gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 	gr.SetInterpolationMode(InterpolationMode.HighQualityBicubic);
 
-	const displayDetails = (pref.layout === 'artwork' ? !displayPlaylistArtworkLayout : !displayPlaylist) && !displayLibrary && !displayBiography;
+	const displayDetails = (pref.layout === 'artwork' ? !displayPlaylistArtwork : !displayPlaylist) && !displayLibrary && !displayBiography;
+	if (!displayDetails || pref.lyricsLayout === 'full' && pref.displayLyrics) return;
+
+	const drawTextGrid = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> textGrid') : null;
+
 	const marginLeft = SCALE(pref.layout !== 'default' ? 20 : 40);
+	const marginRight = SCALE(20);
+	let gridSpace = 0;
 	gridTop = albumArtSize.y ? albumArtSize.y + marginLeft : geo.topMenuHeight + marginLeft;
+	gridSpace = Math.round((!albumArt && discArt ? discArtSize.x : albumArtSize.x) - geo.discArtShadow - marginLeft - marginRight);
+	const textWidth = gridSpace;
+
+	const gridArtistFontSize   = pref[`gridArtistFontSize_${pref.layout}`];
+	const showGridArtist       = pref[`showGridArtist_${pref.layout}`];
+	const showGridTrackNum     = pref[`showGridTrackNum_${pref.layout}`];
+	const showGridTitle        = pref[`showGridTitle_${pref.layout}`];
+	const showGridTimeline     = pref[`showGridTimeline_${pref.layout}`];
+	const showGridArtistFlags  = pref[`showGridArtistFlags_${pref.layout}`];
+	const showGridReleaseFlags = pref[`showGridReleaseFlags_${pref.layout}`];
+	const showGridCodecLogo    = pref[`showGridCodecLogo_${pref.layout}`];
 
 	// * DETAILS METADATA GRID * //
-	if (displayDetails && (pref.lyricsLayout !== 'full' || pref.lyricsLayout === 'full' && !pref.displayLyrics)) {
-		const drawTextGrid = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> textGrid') : null;
+	if (gridSpace > 150) {
+		/** @type {MeasureStringInfo} */
+		let txtRec;
+		let gridArtistTxtRec;
+		let gridTitleTxtRec;
+		let gridAlbumTxtRec;
 
-		let gridSpace = 0;
-		const marginRight = SCALE(20);
-		gridSpace = Math.round((!albumArt && discArt ? discArtSize.x : albumArtSize.x) - geo.discArtShadow - marginLeft - marginRight);
-		const textWidth = gridSpace;
+		const drawArtist = (top) => {
+			if (!str.artist) return 0;
 
-		const gridArtistFontSize   = pref.layout === 'artwork' ? pref.gridArtistFontSize_artwork   : pref.gridArtistFontSize_default;
-		const showGridArtist       = pref.layout === 'artwork' ? pref.showGridArtist_artwork       : pref.showGridArtist_default;
-		const showGridTrackNum     = pref.layout === 'artwork' ? pref.showGridTrackNum_artwork     : pref.showGridTrackNum_default;
-		const showGridTitle        = pref.layout === 'artwork' ? pref.showGridTitle_artwork        : pref.showGridTitle_default;
-		const showGridTimeline     = pref.layout === 'artwork' ? pref.showGridTimeline_artwork     : pref.showGridTimeline_default;
-		const showGridArtistFlags  = pref.layout === 'artwork' ? pref.showGridArtistFlags_artwork  : pref.showGridArtistFlags_default;
-		const showGridReleaseFlags = pref.layout === 'artwork' ? pref.showGridReleaseFlags_artwork : pref.showGridReleaseFlags_default;
-		const showGridCodecLogo    = pref.layout === 'artwork' ? pref.showGridCodecLogo_artwork    : pref.showGridCodecLogo_default;
+			const flagSizeWhiteSpaceTable = {
+				24: [35, 29, 24, 18, 12, 6],
+				22: [36, 30, 25, 19, 12, 6],
+				20: [37, 31, 26, 20, 12, 6],
+				19: [38, 32, 26, 20, 12, 6],
+				18: [39, 32, 26, 20, 13, 6],
+				17: [40, 33, 27, 20, 13, 6],
+				16: [41, 34, 28, 21, 13, 6],
+				15: [42, 35, 29, 22, 14, 6],
+				14: [44, 36, 29, 22, 14, 6],
+				13: [45, 37, 30, 23, 15, 6],
+				12: [47, 39, 31, 24, 15, 7],
+				11: [49, 41, 32, 25, 16, 7],
+				10: [51, 43, 34, 26, 17, 7]
+			};
 
-		if (gridSpace > 150) {
-			/** @type {MeasureStringInfo} */
-			let txtRec;
-			let gridArtistTxtRec;
-			let gridTitleTxtRec;
-			let gridAlbumTxtRec;
+			const flagSizeWhiteSpace = ' '.repeat(
+				flagSizeWhiteSpaceTable[gridArtistFontSize][
+					flagImgs.length >=  6 ? 0 :
+					flagImgs.length === 5 ? 1 :
+					flagImgs.length === 4 ? 2 :
+					flagImgs.length === 3 ? 3 :
+					flagImgs.length === 2 ? 4 :
+					5
+				]
+			);
 
-			const drawArtist = (top) => {
-				if (!str.artist) return 0;
-
-				const flagSizeWhiteSpace =
-				gridArtistFontSize === 24 ? ' '.repeat(flagImgs.length >= 6 ? 35 : flagImgs.length === 5 ? 29 : flagImgs.length === 4 ? 24 : flagImgs.length === 3 ? 18 : flagImgs.length === 2 ? 12 : 6) :
-				gridArtistFontSize === 22 ? ' '.repeat(flagImgs.length >= 6 ? 36 : flagImgs.length === 5 ? 30 : flagImgs.length === 4 ? 25 : flagImgs.length === 3 ? 19 : flagImgs.length === 2 ? 12 : 6) :
-				gridArtistFontSize === 20 ? ' '.repeat(flagImgs.length >= 6 ? 37 : flagImgs.length === 5 ? 31 : flagImgs.length === 4 ? 26 : flagImgs.length === 3 ? 20 : flagImgs.length === 2 ? 12 : 6) :
-				gridArtistFontSize === 19 ? ' '.repeat(flagImgs.length >= 6 ? 38 : flagImgs.length === 5 ? 32 : flagImgs.length === 4 ? 26 : flagImgs.length === 3 ? 20 : flagImgs.length === 2 ? 12 : 6) :
-				gridArtistFontSize === 18 ? ' '.repeat(flagImgs.length >= 6 ? 39 : flagImgs.length === 5 ? 32 : flagImgs.length === 4 ? 26 : flagImgs.length === 3 ? 20 : flagImgs.length === 2 ? 13 : 6) :
-				gridArtistFontSize === 17 ? ' '.repeat(flagImgs.length >= 6 ? 40 : flagImgs.length === 5 ? 33 : flagImgs.length === 4 ? 27 : flagImgs.length === 3 ? 20 : flagImgs.length === 2 ? 13 : 6) :
-				gridArtistFontSize === 16 ? ' '.repeat(flagImgs.length >= 6 ? 41 : flagImgs.length === 5 ? 34 : flagImgs.length === 4 ? 28 : flagImgs.length === 3 ? 21 : flagImgs.length === 2 ? 13 : 6) :
-				gridArtistFontSize === 15 ? ' '.repeat(flagImgs.length >= 6 ? 42 : flagImgs.length === 5 ? 35 : flagImgs.length === 4 ? 29 : flagImgs.length === 3 ? 22 : flagImgs.length === 2 ? 14 : 6) :
-				gridArtistFontSize === 14 ? ' '.repeat(flagImgs.length >= 6 ? 44 : flagImgs.length === 5 ? 36 : flagImgs.length === 4 ? 29 : flagImgs.length === 3 ? 22 : flagImgs.length === 2 ? 14 : 6) :
-				gridArtistFontSize === 13 ? ' '.repeat(flagImgs.length >= 6 ? 45 : flagImgs.length === 5 ? 37 : flagImgs.length === 4 ? 30 : flagImgs.length === 3 ? 23 : flagImgs.length === 2 ? 15 : 6) :
-				gridArtistFontSize === 12 ? ' '.repeat(flagImgs.length >= 6 ? 47 : flagImgs.length === 5 ? 39 : flagImgs.length === 4 ? 31 : flagImgs.length === 3 ? 24 : flagImgs.length === 2 ? 15 : 7) :
-				gridArtistFontSize === 11 ? ' '.repeat(flagImgs.length >= 6 ? 49 : flagImgs.length === 5 ? 41 : flagImgs.length === 4 ? 32 : flagImgs.length === 3 ? 25 : flagImgs.length === 2 ? 16 : 7) :
-				gridArtistFontSize === 10 ? ' '.repeat(flagImgs.length >= 6 ? 51 : flagImgs.length === 5 ? 43 : flagImgs.length === 4 ? 34 : flagImgs.length === 3 ? 26 : flagImgs.length === 2 ? 17 : 7) : '';
-
-				const flagSize =
+			const flagSize =
 				flagImgs.length >=  6 ? SCALE(84 + gridArtistFontSize * 6) :
 				flagImgs.length === 5 ? SCALE(70 + gridArtistFontSize * 5) :
 				flagImgs.length === 4 ? SCALE(56 + gridArtistFontSize * 4) :
@@ -293,203 +340,202 @@ function drawDetailsMetadataGrid(gr) {
 				flagImgs.length === 2 ? SCALE(28 + gridArtistFontSize * 2) :
 				flagImgs.length === 1 ? SCALE(14 + gridArtistFontSize) : '';
 
-				gridArtistTxtRec = gr.MeasureString(str.artist, ft.grd_artist, 0, 0, showGridArtistFlags && flagImgs.length ? textWidth - flagSize : textWidth, wh);
-				const gridArtistNumLines  = Math.min(2, gridArtistTxtRec.Lines);
-				const gridArtistNumHeight = gr.CalcTextHeight(str.artist, ft.grd_artist) * gridArtistNumLines + 3;
-				const gridArtistHeight    = gr.CalcTextHeight(str.artist, ft.grd_artist);
+			gridArtistTxtRec = gr.MeasureString(str.artist, ft.grd_artist, 0, 0, showGridArtistFlags && flagImgs.length ? textWidth - flagSize : textWidth, wh);
+			const gridArtistNumLines  = Math.min(2, gridArtistTxtRec.Lines);
+			const gridArtistNumHeight = gr.CalcTextHeight(str.artist, ft.grd_artist) * gridArtistNumLines + 3;
+			const gridArtistHeight    = gr.CalcTextHeight(str.artist, ft.grd_artist);
 
-				// * Apply better anti-aliasing on smaller font sizes in HD res
-				gr.SetTextRenderingHint(!RES_4K && gridArtistFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-				gr.DrawString(showGridArtistFlags && flagImgs.length ? flagSizeWhiteSpace + str.artist : str.artist, ft.grd_artist, ['white', 'black', 'reborn', 'random'].includes(pref.theme) ? col.detailsText : pref.theme === 'cream' ? g_pl_colors.header_artist_normal : g_pl_colors.header_artist_playing, marginLeft, Math.round(top), textWidth, gridArtistNumHeight, g_string_format.trim_ellipsis_char);
+			// * Apply better anti-aliasing on smaller font sizes in HD res
+			gr.SetTextRenderingHint(!RES_4K && gridArtistFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
+			gr.DrawString(showGridArtistFlags && flagImgs.length ? flagSizeWhiteSpace + str.artist : str.artist, ft.grd_artist, ['white', 'black', 'reborn', 'random'].includes(pref.theme) ? col.detailsText : pref.theme === 'cream' ? g_pl_colors.header_artist_normal : g_pl_colors.header_artist_playing, marginLeft, Math.round(top), textWidth, gridArtistNumHeight, g_string_format.trim_ellipsis_char);
 
-				// * Artist flags
-				if (str.artist && flagImgs.length && showGridArtistFlags && displayDetails) {
-					let flagsLeft = marginLeft;
-					for (let i = 0; i < flagImgs.length; i++) {
-						gr.DrawImage(flagImgs[i], flagsLeft, Math.round(top - (flagImgs[i].Height / (gridArtistHeight + SCALE(2))) - (RES_4K ? 1 : 0)), flagImgs[i].Width + SCALE(gridArtistFontSize) - SCALE(26), gridArtistHeight + SCALE(2), 0, 0, flagImgs[i].Width, flagImgs[i].Height);
-						flagsLeft += flagImgs[i].Width - SCALE(18) + SCALE(gridArtistFontSize);
-						// Maximum 6 flags
-						if (i > 4) break;
-					}
+			// * Artist flags
+			if (str.artist && flagImgs.length && showGridArtistFlags && displayDetails) {
+				let flagsLeft = marginLeft;
+				for (let i = 0; i < flagImgs.length; i++) {
+					gr.DrawImage(flagImgs[i], flagsLeft, Math.round(top - (flagImgs[i].Height / (gridArtistHeight + SCALE(2))) - (RES_4K ? 1 : 0)), flagImgs[i].Width + SCALE(gridArtistFontSize) - SCALE(26), gridArtistHeight + SCALE(2), 0, 0, flagImgs[i].Width, flagImgs[i].Height);
+					flagsLeft += flagImgs[i].Width - SCALE(18) + SCALE(gridArtistFontSize);
+					// Maximum 6 flags
+					if (i > 4) break;
 				}
-
-				return gridArtistNumHeight + (RES_4K ? 17 : 9);
 			}
 
-			gridTop -= SCALE(2);
+			return gridArtistNumHeight + (RES_4K ? 17 : 9);
+		}
 
-			const drawTitle = (top) => {
-				if (!str.title) return 0;
-				gridTitleTxtRec = gr.MeasureString(isStreaming ? showGridTrackNum ? str.tracknum + str.title : str.title : str.tracknum === '' ? str.title : showGridTrackNum ? `${str.tracknum}\xa0${str.title}` : str.title, ft.grd_title, 0, 0, textWidth, wh);
-				const gridTitleNumLines = Math.min(2, gridTitleTxtRec.Lines);
-				const gridTitleNumHeight = gr.CalcTextHeight(str.title, ft.grd_title) * gridTitleNumLines + 3;
-				const gridTitleFontSize = pref.layout === 'artwork' ? pref.gridTitleFontSize_artwork : pref.gridTitleFontSize_default;
+		gridTop -= SCALE(2);
 
-				// * Apply better anti-aliasing on smaller font sizes in HD res
-				gr.SetTextRenderingHint(!RES_4K && gridTitleFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-				gr.DrawString(isStreaming ? showGridTrackNum ? str.tracknum + str.title : str.title : str.tracknum === '' ? str.title : showGridTrackNum ? `${str.tracknum}\xa0${str.title}` : str.title, ft.grd_title, col.detailsText, marginLeft, Math.round(top), textWidth, gridTitleNumHeight, g_string_format.trim_ellipsis_char);
+		const drawTitle = (top) => {
+			if (!str.title) return 0;
+			gridTitleTxtRec = gr.MeasureString(isStreaming ? showGridTrackNum ? str.tracknum + str.title : str.title : str.tracknum === '' ? str.title : showGridTrackNum ? `${str.tracknum}\xa0${str.title}` : str.title, ft.grd_title, 0, 0, textWidth, wh);
+			const gridTitleNumLines = Math.min(2, gridTitleTxtRec.Lines);
+			const gridTitleNumHeight = gr.CalcTextHeight(str.title, ft.grd_title) * gridTitleNumLines + 3;
+			const gridTitleFontSize = pref[`gridTitleFontSize_${pref.layout}`];
 
-				return gridTitleNumHeight + (RES_4K ? 17 : 9);
-			}
+			// * Apply better anti-aliasing on smaller font sizes in HD res
+			gr.SetTextRenderingHint(!RES_4K && gridTitleFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
+			gr.DrawString(isStreaming ? showGridTrackNum ? str.tracknum + str.title : str.title : str.tracknum === '' ? str.title : showGridTrackNum ? `${str.tracknum}\xa0${str.title}` : str.title, ft.grd_title, col.detailsText, marginLeft, Math.round(top), textWidth, gridTitleNumHeight, g_string_format.trim_ellipsis_char);
 
-			gridTop -= SCALE(2);
+			return gridTitleNumHeight + (RES_4K ? 17 : 9);
+		}
 
-			const drawAlbumTitle = (top, maxLines) => {
-				if (!str.album) return 0;
-				gridAlbumTxtRec = gr.MeasureString(str.album, ft.grd_album, 0, 0, textWidth, wh);
-				const gridAlbumNumLines = Math.min(showGridArtist || showGridTitle ? 2 : 3, gridAlbumTxtRec.Lines);
-				const gridAlbumNumHeight = gr.CalcTextHeight(str.album, ft.grd_album) * gridAlbumNumLines + 3;
-				const gridAlbumFontSize = pref.layout === 'artwork' ? pref.gridAlbumFontSize_artwork : pref.gridAlbumFontSize_default;
+		gridTop -= SCALE(2);
 
-				// * Apply better anti-aliasing on smaller font sizes in HD res
-				gr.SetTextRenderingHint(!RES_4K && gridAlbumFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-				gr.DrawString(str.album, ft.grd_album, col.detailsText, marginLeft, Math.round(top), textWidth, gridAlbumNumHeight, g_string_format.trim_ellipsis_char);
+		const drawAlbumTitle = (top, maxLines) => {
+			if (!str.album) return 0;
+			gridAlbumTxtRec = gr.MeasureString(str.album, ft.grd_album, 0, 0, textWidth, wh);
+			const gridAlbumNumLines = Math.min(showGridArtist || showGridTitle ? 2 : 3, gridAlbumTxtRec.Lines);
+			const gridAlbumNumHeight = gr.CalcTextHeight(str.album, ft.grd_album) * gridAlbumNumLines + 3;
+			const gridAlbumFontSize = pref[`gridAlbumFontSize_${pref.layout}`];
 
-				return gridAlbumNumHeight + SCALE(13);
-			}
+			// * Apply better anti-aliasing on smaller font sizes in HD res
+			gr.SetTextRenderingHint(!RES_4K && gridAlbumFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
+			gr.DrawString(str.album, ft.grd_album, col.detailsText, marginLeft, Math.round(top), textWidth, gridAlbumNumHeight, g_string_format.trim_ellipsis_char);
 
-			if (showGridArtist) {
-				gridTop += drawArtist(gridTop);
-			}
-			if (showGridTitle) {
-				gridTop += drawTitle(gridTop);
-			} else if (!showGridArtist) {
-				gridTop += drawAlbumTitle(gridTop, 3);
-			}
-			// * Timeline
-			if (showGridTimeline && str.timeline && fb.IsPlaying) {
-				str.timeline.setSize(marginLeft, gridTop + SCALE(4), albumArtSize.x - marginLeft * 2);
-				str.timeline.draw(gr);
-			}
-			// * Tooltip
-			if (str.metadata_grid_tt && fb.IsPlaying) {
-				str.metadata_grid_tt.setSize(marginLeft, geo.topMenuHeight, albumArtSize.x - marginLeft * 2);
-				str.metadata_grid_tt.draw(gr);
-			}
-			if (showGridTimeline) {
-				gridTop += geo.timelineHeight + SCALE(20);
-			}
-			if (showGridArtist || showGridTitle) {
-				gridTop += drawAlbumTitle(gridTop, 2);
-			}
+			return gridAlbumNumHeight + SCALE(13);
+		}
 
-			// * Tags
-			const font_array = [ft.grd_key];
-			const key_font_array = [ft.grd_val];
-			let grid_key_ft = ft.grd_key;
-			str.grid.forEach((el) => {
-				if (font_array.length > 1) {	// Only check if there's more than one entry in font_array
-					grid_key_ft = ChooseFontForWidth(gr, textWidth / 3, el, font_array);
-					while (grid_key_ft !== font_array[0]) { // If font returned was first item in the array, then everything fits, otherwise pare down array
-						font_array.shift();
-						key_font_array.shift();
-					}
+		if (showGridArtist) {
+			gridTop += drawArtist(gridTop);
+		}
+		if (showGridTitle) {
+			gridTop += drawTitle(gridTop);
+		} else if (!showGridArtist) {
+			gridTop += drawAlbumTitle(gridTop, 3);
+		}
+		// * Timeline
+		if (showGridTimeline && str.timeline && fb.IsPlaying) {
+			str.timeline.setSize(marginLeft, gridTop + SCALE(4), albumArtSize.x - marginLeft * 2);
+			str.timeline.draw(gr);
+		}
+		// * Tooltip
+		if (str.metadata_grid_tt && fb.IsPlaying) {
+			str.metadata_grid_tt.setSize(marginLeft, geo.topMenuHeight, albumArtSize.x - marginLeft * 2);
+			str.metadata_grid_tt.draw(gr);
+		}
+		if (showGridTimeline) {
+			gridTop += geo.timelineHeight + SCALE(20);
+		}
+		if (showGridArtist || showGridTitle) {
+			gridTop += drawAlbumTitle(gridTop, 2);
+		}
+
+		// * Tags
+		const font_array = [ft.grd_key];
+		const key_font_array = [ft.grd_val];
+		let grid_key_ft = ft.grd_key;
+		str.grid.forEach((el) => {
+			if (font_array.length > 1) { // Only check if there's more than one entry in font_array
+				grid_key_ft = ChooseFontForWidth(gr, textWidth / 3, el, font_array);
+				while (grid_key_ft !== font_array[0]) { // If font returned was first item in the array, then everything fits, otherwise pare down array
+					font_array.shift();
+					key_font_array.shift();
 				}
-			});
-			const grid_val_ft = key_font_array.shift();
-			const col1Width = CalcGridMaxTextWidth(gr, str.grid, grid_key_ft);
-			const columnMargin = SCALE(10);
-			const col2Width = textWidth - columnMargin - col1Width + SCALE(5);
-			const col2Left = marginLeft + col1Width + columnMargin;
+			}
+		});
+		const grid_val_ft = key_font_array.shift();
+		const col1Width = CalcGridMaxTextWidth(gr, str.grid, grid_key_ft);
+		const columnMargin = SCALE(10);
+		const col2Width = textWidth - columnMargin - col1Width + SCALE(5);
+		const col2Left = marginLeft + col1Width + columnMargin;
 
-			for (let k = 0; k < str.grid.length; k++) {
-				const key = str.grid[k].label;
-				let value = str.grid[k].val;
-				let showLastFmImage = false;
-				let showReleaseFlagImage = false;
-				let showGridCodecLogoImage = false;
-				let dropShadow = false;
-				let grid_val_col = col.detailsText;
+		for (let k = 0; k < str.grid.length; k++) {
+			const key = str.grid[k].label;
+			let value = str.grid[k].val;
+			let showLastFmImage = false;
+			let showReleaseFlagImage = false;
+			let showGridCodecLogoImage = false;
+			let dropShadow = false;
+			let grid_val_col = col.detailsText;
 
-				if (value.length) {
-					switch (key) {
-						case 'Rating':
-							grid_val_col = col.detailsRating;
-							dropShadow = true;
-							break;
-						case 'Hotness':
-							grid_val_col = col.detailsHotness;
-							dropShadow = true;
-							break;
-						case 'Play Count':
-							showLastFmImage = true;
-							break;
-						case 'Catalog #':
-						case 'Rel. Country':
-							showReleaseFlagImage = showGridReleaseFlags;
-							break;
-						case 'Codec': {
-							const codec = $('$lower($if2(%codec%,$ext(%path%)))');
-							if (['dts', 'dca (dts coherent acoustics)'].includes(codec)) {
-								value = 'DCA'; // * Show only DCA abbreviation if codec is DTS
-							}
-							showGridCodecLogoImage = showGridCodecLogo;
-							break;
+			if (value.length) {
+				switch (key) {
+					case 'Rating':
+						grid_val_col = col.detailsRating;
+						dropShadow = true;
+						break;
+					case 'Hotness':
+						grid_val_col = col.detailsHotness;
+						dropShadow = true;
+						break;
+					case 'Play Count':
+						showLastFmImage = true;
+						break;
+					case 'Catalog #':
+					case 'Rel. Country':
+						showReleaseFlagImage = showGridReleaseFlags;
+						break;
+					case 'Codec': {
+						const codec = $('$lower($if2(%codec%,$ext(%path%)))');
+						if (['dts', 'dca (dts coherent acoustics)'].includes(codec)) {
+							value = 'DCA'; // * Show only DCA abbreviation if codec is DTS
 						}
-						default:
-							break;
+						showGridCodecLogoImage = showGridCodecLogo;
+						break;
 					}
-					txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, col2Width, wh);
-					if (gridTop + txtRec.Height < albumArtSize.y + albumArtSize.h) {
-						const borderWidth = SCALE(0.5);
-						const cellHeight = txtRec.Height + 5;
-						const keyFontSize = pref.layout === 'artwork' ? pref.gridKeyFontSize_artwork : pref.gridKeyFontSize_default;
-						const valFontSize = pref.layout === 'artwork' ? pref.gridValueFontSize_artwork + SCALE(1) : pref.gridValueFontSize_default + SCALE(1);
-						const showReleaseFlagOnly = pref.layout === 'artwork' ? pref.sshowGridReleaseFlags_artwork === 'logo' : pref.showGridReleaseFlags_default === 'logo';
-						const showCodecLogoOnly = pref.layout === 'artwork' ? pref.showGridCodecLogo_artwork === 'logo' : pref.showGridCodecLogo_default === 'logo';
-						const flag = showReleaseFlagOnly && key === 'Rel. Country';
-						const codec = showCodecLogoOnly && key === 'Codec';
-						const ratingLinux = detectWine && key === 'Rating';
+					default:
+						break;
+				}
+				txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, col2Width, wh);
+				if (gridTop + txtRec.Height < albumArtSize.y + albumArtSize.h) {
+					const borderWidth = SCALE(0.5);
+					const cellHeight = txtRec.Height + 5;
+					const keyFontSize = pref[`gridKeyFontSize_${pref.layout}`];
+					const valFontSize = pref[`gridValueFontSize_${pref.layout}`] + SCALE(1);
+					const showReleaseFlagOnly = pref[`showGridReleaseFlags_${pref.layout}`] === 'logo';
+					const showCodecLogoOnly = pref[`showGridCodecLogo_${pref.layout}`] === 'logo';
+					const flag = showReleaseFlagOnly && key === 'Rel. Country';
+					const codec = showCodecLogoOnly && key === 'Codec';
+					const ratingLinux = detectWine && key === 'Rating';
 
-						// * Apply better anti-aliasing on smaller font sizes in HD res
-						gr.SetTextRenderingHint(!RES_4K && (keyFontSize < 17 || valFontSize < 18) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
+					// * Apply better anti-aliasing on smaller font sizes in HD res
+					gr.SetTextRenderingHint(!RES_4K && (keyFontSize < 17 || valFontSize < 18) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 
-						if (dropShadow) {
-							gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left + borderWidth), Math.round(gridTop + borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
-							gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left - borderWidth), Math.round(gridTop + borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
-							gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left + borderWidth), Math.round(gridTop - borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
-							gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left - borderWidth), Math.round(gridTop - borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
-						}
-						gr.DrawString(key, grid_key_ft, col.detailsText, marginLeft, Math.round(gridTop), col1Width, cellHeight, g_string_format.trim_ellipsis_char);
-						gr.DrawString(flag || codec ? '' : value, grid_val_ft, grid_val_col, col2Left, Math.round(gridTop), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
-
-						// * Last.fm logo
-						if (playCountVerifiedByLastFm && showLastFmImage) {
-							const lastFmImg = gdi.Image(paths.lastFmImageRed);
-							const lastFmWhiteImg = gdi.Image(paths.lastFmImageWhite);
-							const lastFmLogo = ColorDistance(col.primary, RGB(185, 0, 0), false) < 133 ? lastFmWhiteImg : lastFmImg;
-							const heightRatio = (cellHeight - 12) / lastFmLogo.Height;
-							if (txtRec.Width + SCALE(12) + Math.round(lastFmLogo.Width * heightRatio) < col2Width) {
-								gr.DrawImage(lastFmLogo, col2Left + txtRec.Width + SCALE(12), gridTop + 3,
-									Math.round(lastFmLogo.Width * heightRatio), cellHeight - 12, 0, 0, lastFmLogo.Width, lastFmLogo.Height);
-							}
-						}
-						// * Release flags
-						if (showReleaseFlagImage && releaseFlagImg) {
-							const sizeCorr = txtRec.Lines === 4 ? 4 : txtRec.Lines === 3 ? 3 : txtRec.Lines === 2 ? 2 : 1;
-							const yCorr = txtRec.Lines === 4 ? cellHeight / 4 : txtRec.Lines === 3 ? cellHeight / 3 : 0;
-							const heightRatio = (cellHeight) / releaseFlagImg.Height;
-							if ((!showReleaseFlagOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(releaseFlagImg.Width * heightRatio) < col2Width) {
-								gr.DrawImage(releaseFlagImg, showReleaseFlagOnly && key === 'Rel. Country' ? col2Left : col2Left + txtRec.Width + SCALE(8), gridTop - 3 + yCorr,
-									Math.round(releaseFlagImg.Width * heightRatio / sizeCorr), cellHeight / sizeCorr, 0, 0, releaseFlagImg.Width, releaseFlagImg.Height);
-							}
-						}
-						// * Codec logo
-						if (showGridCodecLogoImage) {
-							loadCodecLogo();
-							const heightRatio = codecLogo != null ? (cellHeight - 4) / codecLogo.Height : '';
-							if (codecLogo != null && (!showCodecLogoOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(codecLogo.Width * heightRatio) < col2Width) {
-								gr.DrawImage(codecLogo, showCodecLogoOnly && key === 'Codec' ? col2Left : col2Left + txtRec.Width + SCALE(8), gridTop - 1,
-									Math.round(codecLogo.Width * heightRatio), cellHeight - 4, 0, 0, codecLogo.Width, codecLogo.Height);
-							}
-						}
-						gridTop += cellHeight + 5;
+					if (dropShadow) {
+						gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left + borderWidth), Math.round(gridTop + borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
+						gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left - borderWidth), Math.round(gridTop + borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
+						gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left + borderWidth), Math.round(gridTop - borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
+						gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left - borderWidth), Math.round(gridTop - borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
 					}
+					gr.DrawString(key, grid_key_ft, col.detailsText, marginLeft, Math.round(gridTop), col1Width, cellHeight, g_string_format.trim_ellipsis_char);
+					gr.DrawString(flag || codec ? '' : value, grid_val_ft, grid_val_col, col2Left, Math.round(gridTop), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
+
+					// * Last.fm logo
+					if (playCountVerifiedByLastFm && showLastFmImage) {
+						const lastFmImg = gdi.Image(paths.lastFmImageRed);
+						const lastFmWhiteImg = gdi.Image(paths.lastFmImageWhite);
+						const lastFmLogo = ColorDistance(col.primary, RGB(185, 0, 0), false) < 133 ? lastFmWhiteImg : lastFmImg;
+						const heightRatio = (cellHeight - 12) / lastFmLogo.Height;
+						if (txtRec.Width + SCALE(12) + Math.round(lastFmLogo.Width * heightRatio) < col2Width) {
+							gr.DrawImage(lastFmLogo, col2Left + txtRec.Width + SCALE(12), gridTop + 3,
+								Math.round(lastFmLogo.Width * heightRatio), cellHeight - 12, 0, 0, lastFmLogo.Width, lastFmLogo.Height);
+						}
+					}
+					// * Release flags
+					if (showReleaseFlagImage && releaseFlagImg) {
+						const sizeCorr = txtRec.Lines === 4 ? 4 : txtRec.Lines === 3 ? 3 : txtRec.Lines === 2 ? 2 : 1;
+						const yCorr = txtRec.Lines === 4 ? cellHeight / 4 : txtRec.Lines === 3 ? cellHeight / 3 : 0;
+						const heightRatio = (cellHeight) / releaseFlagImg.Height;
+						if ((!showReleaseFlagOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(releaseFlagImg.Width * heightRatio) < col2Width) {
+							gr.DrawImage(releaseFlagImg, showReleaseFlagOnly && key === 'Rel. Country' ? col2Left : col2Left + txtRec.Width + SCALE(8), gridTop - 3 + yCorr,
+								Math.round(releaseFlagImg.Width * heightRatio / sizeCorr), cellHeight / sizeCorr, 0, 0, releaseFlagImg.Width, releaseFlagImg.Height);
+						}
+					}
+					// * Codec logo
+					if (showGridCodecLogoImage) {
+						loadCodecLogo();
+						const heightRatio = codecLogo != null ? (cellHeight - 4) / codecLogo.Height : '';
+						if (codecLogo != null && (!showCodecLogoOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(codecLogo.Width * heightRatio) < col2Width) {
+							gr.DrawImage(codecLogo, showCodecLogoOnly && key === 'Codec' ? col2Left : col2Left + txtRec.Width + SCALE(8), gridTop - 1,
+								Math.round(codecLogo.Width * heightRatio), cellHeight - 4, 0, 0, codecLogo.Width, codecLogo.Height);
+						}
+					}
+					gridTop += cellHeight + 5;
 				}
 			}
 		}
-		if (timings.showExtraDrawTiming) drawTextGrid.Print();
 	}
+	if (timings.showExtraDrawTiming) drawTextGrid.Print();
 }
 
 
@@ -498,31 +544,31 @@ function drawDetailsMetadataGrid(gr) {
  * @param {GdiGraphics} gr
  */
 function drawDetailsBandLogo(gr) {
-	if (fb.IsPlaying && albumArt && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout === 'default') {
-		const drawLogos = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> logos') : null;
-		const marginLeft = SCALE(pref.layout !== 'default' ? 20 : 40);
-		const availableSpace = albumArtSize.y + albumArtSize.h - gridTop;
-		const lightBg = new Color(col.detailsText).brightness < 140;
-		const logo = lightBg || noAlbumArtStub ? (invertedBandLogo || bandLogo) : bandLogo;
+	const displayDetails = pref.layout === 'default' && !displayPlaylist && !displayLibrary && !displayBiography;
+	if (!fb.IsPlaying || !albumArt || !displayDetails) return;
 
-		if (logo && availableSpace > 75) {
-			// Max width we'll draw is 1/2 the full size because the HQ images are just so big
-			let logoWidth = Math.min(RES_4K ? logo.Width : logo.Width / 2, albumArtSize.x - ww * 0.05);
-			let heightScale = logoWidth / logo.Width; // Width is fixed to logoWidth, so scale height accordingly
-			if (logo.Height * heightScale > availableSpace) {
-				// TODO: could probably do this calc just once, but the logic is complicated
-				heightScale = availableSpace / logo.Height;
-				logoWidth = logo.Width * heightScale;
-			}
-			let logoTop = Math.round(albumArtSize.y + albumArtSize.h - (heightScale * logo.Height)) - 4;
-			if (RES_4K) {
-				logoTop -= 20;
-			}
-			gr.DrawImage(logo, Math.round(isStreaming ? SCALE(40) : albumArtSize.x / 2 - logoWidth / 2), logoTop, Math.round(logoWidth), Math.round(logo.Height * heightScale), 0, 0, logo.Width, logo.Height, 0);
+	const drawLogos = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> logos') : null;
+	const availableSpace = albumArtSize.y + albumArtSize.h - gridTop;
+	const lightBg = new Color(col.detailsText).brightness < 140;
+	const logo = lightBg || noAlbumArtStub ? (invertedBandLogo || bandLogo) : bandLogo;
+
+	if (logo && availableSpace > 75) {
+		// Max width we'll draw is 1/2 the full size because the HQ images are just so big
+		let logoWidth = Math.min(RES_4K ? logo.Width : logo.Width / 2, albumArtSize.x - ww * 0.05);
+		let heightScale = logoWidth / logo.Width; // Width is fixed to logoWidth, so scale height accordingly
+		if (logo.Height * heightScale > availableSpace) {
+			// TODO: could probably do this calc just once, but the logic is complicated
+			heightScale = availableSpace / logo.Height;
+			logoWidth = logo.Width * heightScale;
 		}
-
-		if (timings.showExtraDrawTiming) drawLogos.Print();
+		let logoTop = Math.round(albumArtSize.y + albumArtSize.h - (heightScale * logo.Height)) - 4;
+		if (RES_4K) {
+			logoTop -= 20;
+		}
+		gr.DrawImage(logo, Math.round(isStreaming ? SCALE(40) : albumArtSize.x / 2 - logoWidth / 2), logoTop, Math.round(logoWidth), Math.round(logo.Height * heightScale), 0, 0, logo.Width, logo.Height, 0);
 	}
+
+	if (timings.showExtraDrawTiming) drawLogos.Print();
 }
 
 
@@ -531,134 +577,132 @@ function drawDetailsBandLogo(gr) {
  * @param {GdiGraphics} gr
  */
 function drawDetailsLabelLogo(gr) {
-	if (fb.IsPlaying && albumArt && !displayPlaylist && !displayLibrary && !displayBiography && pref.layout === 'default') {
-		const drawLogos = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> labels') : null;
+	const displayDetails = pref.layout === 'default' && !displayPlaylist && !displayLibrary && !displayBiography;
+	const drawLogos = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> labels') : null;
+	if (!fb.IsPlaying || !albumArt || !displayDetails) return;
 
-		if (recordLabels.length > 0) {
-			const lightBg = pref.labelArtOnBg ? new Color(col.bg).brightness > 140 : new Color(col.detailsText).brightness < 140;
-			const labels = lightBg || noAlbumArtStub ? (recordLabelsInverted.length ? recordLabelsInverted : recordLabels) : recordLabels;
-			const rightSideGap = 20; // How close last label is to right edge
-			let labelSpacing = 0;
-			const leftEdgeGap = (artOffCenter ? 20 : 40) * (RES_4K ? 1.8 : 1); // Space between art and label
-			const maxLabelWidth = SCALE(200);
-			const leftEdgeWidth = RES_4K ? 45 : 30; // How far label background extends on left
-			let totalLabelWidth = 0;
-			let labelAreaWidth = 0;
-			let leftEdge = 0;
-			let topEdge = 0;
-			let labelWidth;
-			let labelHeight;
-			// const drawLabelTime = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> record labels') : null;
+	if (recordLabels.length > 0) {
+		const lightBg = pref.labelArtOnBg ? new Color(col.bg).brightness > 140 : new Color(col.detailsText).brightness < 140;
+		const labels = lightBg || noAlbumArtStub ? (recordLabelsInverted.length ? recordLabelsInverted : recordLabels) : recordLabels;
+		const rightSideGap = 20; // How close last label is to right edge
+		const leftEdgeGap = (artOffCenter ? 20 : 40) * (RES_4K ? 1.8 : 1); // Space between art and label
+		const leftEdgeWidth = RES_4K ? 45 : 30; // How far label background extends on left
+		const maxLabelWidth = SCALE(200);
+		let leftEdge = 0;
+		let topEdge = 0;
+		let totalLabelWidth = 0;
+		let labelAreaWidth = 0;
+		let labelSpacing = 0;
+		let labelWidth;
+		let labelHeight;
+		// const drawLabelTime = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> record labels') : null;
 
-			for (let i = 0; i < labels.length; i++) {
-				if (labels[i].Width > maxLabelWidth) {
-					totalLabelWidth += maxLabelWidth;
-				} else {
-					totalLabelWidth += RES_4K && labels[i].Width < 200 ? labels[i].Width * 2 : labels[i].Width;
-				}
+		for (let i = 0; i < labels.length; i++) {
+			if (labels[i].Width > maxLabelWidth) {
+				totalLabelWidth += maxLabelWidth;
+			} else {
+				totalLabelWidth += RES_4K && labels[i].Width < 200 ? labels[i].Width * 2 : labels[i].Width;
 			}
-			if (!lastLeftEdge) { // We don't want to recalculate this every screen refresh
-				DebugLog('recalculating lastLeftEdge');
-				labelShadowImg = null;
-				labelWidth = Math.round(totalLabelWidth / labels.length);
-				labelHeight = Math.round(labels[0].Height * labelWidth / labels[0].Width); // Might be recalc'd below
-				if (albumArt) {
-					if (discArt && pref.displayDiscArt) {
-						leftEdge = Math.round(Math.max(albumArtSize.x + albumArtScaled.Width + 5, ww * 0.975 - totalLabelWidth + 1));
-						const discCenter = {};
-						discCenter.x = Math.round(discArtSize.x + discArtSize.w / 2);
-						discCenter.y = Math.round(discArtSize.y + discArtSize.h / 2);
-						const radius = discCenter.y - discArtSize.y;
+		}
+		if (!lastLeftEdge) { // We don't want to recalculate this every screen refresh
+			DebugLog('recalculating lastLeftEdge');
+			labelShadowImg = null;
+			labelWidth = Math.round(totalLabelWidth / labels.length);
+			labelHeight = Math.round(labels[0].Height * labelWidth / labels[0].Width); // Might be recalc'd below
+			if (albumArt) {
+				if (discArt && pref.displayDiscArt) {
+					leftEdge = Math.round(Math.max(albumArtSize.x + albumArtScaled.Width + 5, ww * 0.975 - totalLabelWidth + 1));
+					const discCenter = {};
+					discCenter.x = Math.round(discArtSize.x + discArtSize.w / 2);
+					discCenter.y = Math.round(discArtSize.y + discArtSize.h / 2);
+					const radius = discCenter.y - discArtSize.y;
 
-						while (true) {
-							const allLabelsWidth = Math.max(Math.min(Math.round((ww - leftEdge - rightSideGap) / labels.length), maxLabelWidth), 50);
-							//console.log("leftEdge = " + leftEdge + ", ww-leftEdge-10 = " + (ww-leftEdge-10) + ", allLabelsWidth=" + allLabelsWidth);
-							const maxWidth = RES_4K && labels[0].Width < 200 ? labels[0].Width * 2 : labels[0].Width;
-							labelWidth = (allLabelsWidth > maxWidth) ? maxWidth : allLabelsWidth;
-							labelHeight = Math.round(labels[0].Height * labelWidth / labels[0].Width); // Width is based on height scale
-							topEdge = Math.round(albumArtSize.y + albumArtSize.h - labelHeight);
+					while (true) {
+						const allLabelsWidth = Math.max(Math.min(Math.round((ww - leftEdge - rightSideGap) / labels.length), maxLabelWidth), 50);
+						//console.log("leftEdge = " + leftEdge + ", ww-leftEdge-10 = " + (ww-leftEdge-10) + ", allLabelsWidth=" + allLabelsWidth);
+						const maxWidth = RES_4K && labels[0].Width < 200 ? labels[0].Width * 2 : labels[0].Width;
+						labelWidth = (allLabelsWidth > maxWidth) ? maxWidth : allLabelsWidth;
+						labelHeight = Math.round(labels[0].Height * labelWidth / labels[0].Width); // Width is based on height scale
+						topEdge = Math.round(albumArtSize.y + albumArtSize.h - labelHeight);
 
-							const a = topEdge - discCenter.y + 1; // Adding 1 to a and b so that the border just touches the edge of the discArt
-							const b = leftEdge - discCenter.x + 1;
+						const a = topEdge - discCenter.y + 1; // Adding 1 to a and b so that the border just touches the edge of the discArt
+						const b = leftEdge - discCenter.x + 1;
 
-							if ((a * a + b * b) > radius * radius) {
-								break;
-							}
-							leftEdge += 4;
+						if ((a * a + b * b) > radius * radius) {
+							break;
 						}
-					} else {
-						leftEdge = Math.round(Math.max(albumArtSize.x + albumArtSize.w + leftEdgeWidth + leftEdgeGap, ww * 0.975 - totalLabelWidth + 1));
+						leftEdge += 4;
 					}
 				} else {
-					leftEdge = Math.round(ww * 0.975 - totalLabelWidth);
+					leftEdge = Math.round(Math.max(albumArtSize.x + albumArtSize.w + leftEdgeWidth + leftEdgeGap, ww * 0.975 - totalLabelWidth + 1));
 				}
-				labelAreaWidth = ww - leftEdge - rightSideGap;
-				lastLeftEdge = leftEdge;
-				lastLabelHeight = labelHeight;
+			} else {
+				leftEdge = Math.round(ww * 0.975 - totalLabelWidth);
 			}
-			else { // Already calculated
-				leftEdge = lastLeftEdge;
-				labelHeight = lastLabelHeight;
-				labelAreaWidth = ww - leftEdge - rightSideGap;
+			labelAreaWidth = ww - leftEdge - rightSideGap;
+			lastLeftEdge = leftEdge;
+			lastLabelHeight = labelHeight;
+		}
+		else { // Already calculated
+			leftEdge = lastLeftEdge;
+			labelHeight = lastLabelHeight;
+			labelAreaWidth = ww - leftEdge - rightSideGap;
+		}
+		if (labelAreaWidth >= SCALE(50)) {
+			if (labels.length > 1) {
+				labelSpacing = Math.min(12, Math.max(3, Math.round((labelAreaWidth / (labels.length - 1)) * 0.048))); // Spacing should be proportional, and between 3 and 12 pixels
 			}
-			if (labelAreaWidth >= SCALE(50)) {
-				if (labels.length > 1) {
-					labelSpacing = Math.min(12, Math.max(3, Math.round((labelAreaWidth / (labels.length - 1)) * 0.048))); // Spacing should be proportional, and between 3 and 12 pixels
-				}
-				// console.log('labelAreaWidth = ' + labelAreaWidth + ", labelSpacing = " + labelSpacing);
-				const allLabelsWidth = Math.max(Math.min(Math.round((labelAreaWidth - (labelSpacing * (labels.length - 1))) / labels.length), maxLabelWidth), 50); // allLabelsWidth must be between 50 and 200 pixels wide
-				let labelX = leftEdge;
-				topEdge = albumArtSize.y + albumArtSize.h - labelHeight - 20;
-				const origLabelHeight = labelHeight;
+			// console.log('labelAreaWidth = ' + labelAreaWidth + ", labelSpacing = " + labelSpacing);
+			const allLabelsWidth = Math.max(Math.min(Math.round((labelAreaWidth - (labelSpacing * (labels.length - 1))) / labels.length), maxLabelWidth), 50); // allLabelsWidth must be between 50 and 200 pixels wide
+			const origLabelHeight = labelHeight;
+			let labelX = leftEdge;
+			topEdge = albumArtSize.y + albumArtSize.h - labelHeight - 20;
 
-				if (!pref.labelArtOnBg) {
-					if (!pref.noDiscArtBg) {
-						if (!['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme)) {
-							if (!labelShadowImg) {
-								labelShadowImg = createShadowRect(ww - labelX + leftEdgeWidth, labelHeight + 40);
-							}
-							gr.DrawImage(labelShadowImg, labelX - leftEdgeWidth - geo.discArtShadow, topEdge - 20 - geo.discArtShadow, ww - labelX + leftEdgeWidth + 2 * geo.discArtShadow, labelHeight + 40 + 2 * geo.discArtShadow,
-								0, 0, labelShadowImg.Width, labelShadowImg.Height);
-						}
-						gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing
-						gr.FillSolidRect(labelX - leftEdgeWidth, topEdge - 20, ww - labelX + leftEdgeWidth, labelHeight + 40, col.detailsBg);
-						gr.DrawRect(labelX - leftEdgeWidth, topEdge - 20, ww - labelX + leftEdgeWidth, labelHeight + 40 - 1, 1, col.shadow);
-						gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
+			if (!pref.labelArtOnBg && !pref.noDiscArtBg) {
+				if (!['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme)) {
+					if (!labelShadowImg) {
+						labelShadowImg = ShadowRect(geo.discArtShadow, geo.discArtShadow, ww - labelX + leftEdgeWidth, labelHeight + 40, geo.discArtShadow, col.shadow);
 					}
-				}
-				else if (pref.noDiscArtBg && !pref.displayDiscArt) {
 					gr.DrawImage(labelShadowImg, labelX - leftEdgeWidth - geo.discArtShadow, topEdge - 20 - geo.discArtShadow, ww - labelX + leftEdgeWidth + 2 * geo.discArtShadow, labelHeight + 40 + 2 * geo.discArtShadow,
 						0, 0, labelShadowImg.Width, labelShadowImg.Height);
 				}
-				if (pref.noDiscArtBg && pref.displayDiscArt && discArt) {
-					if (!['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme)) {
-						if (!labelShadowImg) {
-							labelShadowImg = createShadowRect(ww - labelX + leftEdgeWidth, labelHeight + 40);
-						}
-						gr.DrawImage(labelShadowImg, labelX - leftEdgeWidth - geo.discArtShadow, topEdge - 20 - geo.discArtShadow, ww - labelX + leftEdgeWidth + 2 * geo.discArtShadow, labelHeight + 40 + 2 * geo.discArtShadow,
-							0, 0, labelShadowImg.Width, labelShadowImg.Height);
-					}
-					gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing
-					gr.FillSolidRect(labelX - leftEdgeWidth, topEdge - 20, ww - labelX + leftEdgeWidth, labelHeight + 40, col.detailsBg);
-					gr.DrawRect(labelX - leftEdgeWidth, topEdge - 20, ww - labelX + leftEdgeWidth, labelHeight + 40 - 1, 1, col.shadow);
-					gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
-				}
-				for (let i = 0; i < labels.length; i++) {
-					// allLabelsWidth can never be greater than 200, so if a label image is 161 pixels wide, never draw it wider than 161
-					const maxWidth = RES_4K && labels[i].Width < 200 ? labels[i].Width * 2 : labels[i].Width;
-					labelWidth = (allLabelsWidth > maxWidth) ? maxWidth : allLabelsWidth;
-					labelHeight = Math.round(labels[i].Height * labelWidth / labels[i].Width); // Width is based on height scale
-
-					gr.DrawImage(labels[i], labelX, Math.round(topEdge + origLabelHeight / 2 - labelHeight / 2), labelWidth, labelHeight, 0, 0, recordLabels[i].Width, recordLabels[i].Height);
-					// gr.DrawRect(labelX, topEdge, labelWidth, labelHeight, 1, RGB(255,0,0));	// Shows bounding rect of record labels
-					labelX += labelWidth + labelSpacing;
-				}
-				labelHeight = origLabelHeight; // Restore
+				gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing
+				gr.FillSolidRect(labelX - leftEdgeWidth, topEdge - 20, ww - labelX + leftEdgeWidth, labelHeight + 40, col.detailsBg);
+				gr.DrawRect(labelX - leftEdgeWidth, topEdge - 20, ww - labelX + leftEdgeWidth, labelHeight + 40 - 1, 1, col.shadow);
+				gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 			}
-			// if (timings.showExtraDrawTiming) drawLabelTime.Print();
+			else if (pref.noDiscArtBg && !pref.displayDiscArt) {
+				gr.DrawImage(labelShadowImg, labelX - leftEdgeWidth - geo.discArtShadow, topEdge - 20 - geo.discArtShadow, ww - labelX + leftEdgeWidth + 2 * geo.discArtShadow, labelHeight + 40 + 2 * geo.discArtShadow,
+					0, 0, labelShadowImg.Width, labelShadowImg.Height);
+			}
+			if (pref.noDiscArtBg && pref.displayDiscArt && discArt) {
+				if (!['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme)) {
+					if (!labelShadowImg) {
+						labelShadowImg = ShadowRect(geo.discArtShadow, geo.discArtShadow, ww - labelX + leftEdgeWidth, labelHeight + 40, geo.discArtShadow, col.shadow);
+					}
+					gr.DrawImage(labelShadowImg, labelX - leftEdgeWidth - geo.discArtShadow, topEdge - 20 - geo.discArtShadow, ww - labelX + leftEdgeWidth + 2 * geo.discArtShadow, labelHeight + 40 + 2 * geo.discArtShadow,
+						0, 0, labelShadowImg.Width, labelShadowImg.Height);
+				}
+				gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing
+				gr.FillSolidRect(labelX - leftEdgeWidth, topEdge - 20, ww - labelX + leftEdgeWidth, labelHeight + 40, col.detailsBg);
+				gr.DrawRect(labelX - leftEdgeWidth, topEdge - 20, ww - labelX + leftEdgeWidth, labelHeight + 40 - 1, 1, col.shadow);
+				gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
+			}
+			for (let i = 0; i < labels.length; i++) {
+				// allLabelsWidth can never be greater than 200, so if a label image is 161 pixels wide, never draw it wider than 161
+				const maxWidth = RES_4K && labels[i].Width < 200 ? labels[i].Width * 2 : labels[i].Width;
+				labelWidth = (allLabelsWidth > maxWidth) ? maxWidth : allLabelsWidth;
+				labelHeight = Math.round(labels[i].Height * labelWidth / labels[i].Width); // Width is based on height scale
+
+				gr.DrawImage(labels[i], labelX, Math.round(topEdge + origLabelHeight / 2 - labelHeight / 2), labelWidth, labelHeight, 0, 0, recordLabels[i].Width, recordLabels[i].Height);
+				// gr.DrawRect(labelX, topEdge, labelWidth, labelHeight, 1, RGB(255,0,0));	// Shows bounding rect of record labels
+				labelX += labelWidth + labelSpacing;
+			}
+			labelHeight = origLabelHeight; // Restore
 		}
-		if (timings.showExtraDrawTiming) drawLogos.Print();
+		// if (timings.showExtraDrawTiming) drawLabelTime.Print();
 	}
+	if (timings.showExtraDrawTiming) drawLogos.Print();
 }
 
 
@@ -670,6 +714,7 @@ function drawLyrics(gr) {
 	if (!pref.displayLyrics || !fb.IsPlaying) return;
 
 	const fullW = pref.layout === 'default' && pref.lyricsLayout === 'full' && pref.displayLyrics && noAlbumArtStub || pref.layout === 'artwork';
+
 	gr.SetSmoothingMode(SmoothingMode.None);
 	gr.FillSolidRect(fullW ? 0 : albumArtSize.x, fullW ? geo.topMenuHeight : albumArtSize.y,
 		fullW ? ww : albumArtSize.w, fullW ? wh - geo.topMenuHeight - geo.lowerBarHeight : albumArtSize.h,
@@ -686,12 +731,13 @@ function drawLyrics(gr) {
 function drawStyles(gr) {
 	if (pref.styleBevel) {
 		gr.SetSmoothingMode(SmoothingMode.None);
-		if (fb.IsPlaying && ((displayPlaylist || displayLibrary) && !displayBiography && pref.layout === 'default' || (!displayPlaylistArtworkLayout && !displayLibrary && !displayBiography) && pref.layout === 'artwork')) {
+		if ((pref.layout === 'default' && (displayPlaylist || displayLibrary) && !displayBiography ||
+			 pref.layout === 'artwork' && (!displayPlaylistArtwork && !displayLibrary && !displayBiography)) && fb.IsPlaying) {
 			// Fill gap when album art or player size is not proportional
 			gr.FillSolidRect(-1, geo.topMenuHeight, pref.layout === 'default' ? ww * 0.5 + 1 : ww + 1, (displayLibrary && pref.libraryLayout === 'full' ? 0 : albumArtSize.y) - geo.topMenuHeight - 1, RGBtoRGBA(col.styleBevel, 40));
 		}
 		if (!['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) && !pref.styleBlackAndWhite2 && !pref.styleRebornBlack) {
-			const customThemes = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme);
+			const customThemes = pref.theme.startsWith('custom');
 			gr.FillGradRect(-1, 0, ww + 1, geo.topMenuHeight, 90, 0, RGBtoRGBA(col.styleBevel, customThemes ? 255 : 40)); // Top
 			gr.FillGradRect(-1, wh - geo.lowerBarHeight - 1, ww + 1, geo.lowerBarHeight + 1, -88, RGBtoRGBA(col.styleBevel, customThemes ? 255 : 80), 0); // Bottom
 		} else {
@@ -764,28 +810,42 @@ function drawThemePresetIndicator(gr) {
 function drawThemeDebugOverlay(gr) {
 	if (!settings.showThemeLogOverlay) return;
 
-	const x = albumArtSize.x + SCALE(pref.layout !== 'default' ? 20 : 40);
-	let y = albumArtSize.y;
 	const fullW = pref.layout === 'default' && pref.lyricsLayout === 'full' && pref.displayLyrics && noAlbumArtStub || pref.layout === 'artwork';
 	const titleWidth = albumArtSize.w - SCALE(80);
 	const titleHeight = gr.CalcTextHeight(' ', ft.popup);
+	const lineSpacing = titleHeight * 1.5;
 	const logColor = RGB(255, 255, 255);
+	const x = albumArtSize.x + SCALE(pref.layout !== 'default' ? 20 : 40);
+	let y = albumArtSize.y;
 
-	const tsBlock1 = pref.styleBevel ? 'Bevel,' : '';
+	const createBlock = (obj) => Object.keys(obj).find(key => obj[key]) || '';
 
-	const tsBlock2 =
-		pref.styleBlend ? 'Blend,' : pref.styleBlend2 ? 'Blend 2,' :
-		pref.styleGradient ? 'Gradient,' : pref.styleGradient2 ? 'Gradient 2,' : '';
+	const tsBlock1 = createBlock({
+		'Bevel,': pref.styleBevel
+	});
 
-	const tsBlock3 =
-		pref.styleAlternative ? 'Alternative' : pref.styleAlternative2 ? 'Alternative 2' :
-		pref.styleBlackAndWhite ? 'Black and white' : pref.styleBlackAndWhite2 ? 'Black and white 2' : pref.styleBlackAndWhiteReborn ? 'Black and white reborn' :
-		pref.styleBlackReborn ? 'Black reborn' :
-		pref.styleRebornWhite ? 'Reborn white' : pref.styleRebornBlack ? 'Reborn black' :
-		pref.styleRebornFusion ? 'Reborn fusion' :
-		pref.styleRebornFusion2 ? 'Reborn fusion 2' :
-		pref.styleRebornFusionAccent ? 'Reborn fusion accent' :
-		pref.styleRandomPastel ? 'Random pastel' : pref.styleRandomDark ? 'Random dark' : '';
+	const tsBlock2 = createBlock({
+		'Blend,': pref.styleBlend,
+		'Blend 2,': pref.styleBlend2,
+		'Gradient,': pref.styleGradient,
+		'Gradient 2,': pref.styleGradient2
+	});
+
+	const tsBlock3 = createBlock({
+		'Alternative ': pref.styleAlternative,
+		'Alternative 2': pref.styleAlternative2,
+		'Black and white': pref.styleBlackAndWhite,
+		'Black and white 2': pref.styleBlackAndWhite2,
+		'Black and white reborn': pref.styleBlackAndWhiteReborn,
+		'Black reborn': pref.styleBlackReborn,
+		'Reborn white': pref.styleRebornWhite,
+		'Reborn black': pref.styleRebornBlack,
+		'Reborn fusion': pref.styleRebornFusion,
+		'Reborn fusion 2': pref.styleRebornFusion2,
+		'Reborn fusion accent': pref.styleRebornFusionAccent,
+		'Random pastel': pref.styleRandomPastel,
+		'Random dark': pref.styleRandomDark
+	});
 
 	const tsTopMenuButtons = pref.styleTopMenuButtons !== 'default' ? CapitalizeString(`${pref.styleTopMenuButtons}`) : '';
 	const tsTransportButtons = pref.styleTransportButtons !== 'default' ? CapitalizeString(`${pref.styleTransportButtons}`) : '';
@@ -796,56 +856,36 @@ function drawThemeDebugOverlay(gr) {
 	const tsVolumeBar2 = pref.styleVolumeBar !== 'default' ? `Bg: ${CapitalizeString(`${pref.styleVolumeBar},`)}` : '';
 	const tsVolumeBar3 = pref.styleVolumeBarFill !== 'default' ? `Fill: ${CapitalizeString(`${pref.styleVolumeBarFill}`)}` : '';
 
+	const propertiesLog = [
+		{ prop: selectedPrimaryColor, log: `Primary color: ${selectedPrimaryColor}` },
+		{ prop: selectedPrimaryColor2, log: `Primary 2 color: ${selectedPrimaryColor2}` },
+		{ prop: colBrightness, log: `Primary color brightness: ${colBrightness}` },
+		{ prop: colBrightness2, log: `Primary 2 color brightness: ${colBrightness2}` },
+		{ prop: imgBrightness, log: `Image brightness: ${imgBrightness}` },
+		{ prop: pref.styleBlend || pref.styleBlend2, log: `Image blur: ${blendedImgBlur}` },
+		{ prop: pref.styleBlend || pref.styleBlend2, log: `Image alpha: ${blendedImgAlpha}` },
+		{ prop: pref.preset, log: `Theme preset: ${pref.preset}` },
+		{ prop: pref.themeBrightness !== 'default', log: `Theme brightness: ${pref.themeBrightness}%` },
+		{ prop: tsBlock1 || tsBlock2 || tsBlock3, log: `Styles: ${tsBlock1} ${tsBlock2} ${tsBlock3}` },
+		{ prop: tsTopMenuButtons, log: `Top menu button style: ${tsTopMenuButtons}` },
+		{ prop: tsTransportButtons, log: `Transport button style: ${tsTransportButtons}` },
+		{ prop: tsProgressBar1 || tsProgressBar2 || tsProgressBar3, log: tsProgressBar1 || tsProgressBar2 || tsProgressBar3 ? `Progressbar styles: ${tsProgressBar1} ${tsProgressBar2} ${tsProgressBar3}` : '' },
+		{ prop: tsVolumeBar1 || tsVolumeBar2 || tsVolumeBar3, log: `Volumebar styles: ${tsVolumeBar1} ${tsVolumeBar2} ${tsVolumeBar3}` }
+	];
+
 	gr.SetSmoothingMode(SmoothingMode.None);
 	gr.FillSolidRect(fullW ? 0 : albumArtSize.x, fullW ? geo.topMenuHeight : albumArtSize.y, fullW ? ww : albumArtSize.w, fullW ? wh - geo.topMenuHeight - geo.lowerBarHeight : albumArtSize.h, RGBA(0, 0, 0, 180));
 	gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 
-	y += titleHeight * 1.5;
-	gr.DrawString(`Primary color: ${selectedPrimaryColor}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	y += titleHeight * 1.5;
-	gr.DrawString(`Primary 2 color: ${selectedPrimaryColor2}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	y += titleHeight * 1.5;
-	gr.DrawString(`Primary color brightness: ${colBrightness}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	y += titleHeight * 1.5;
-	gr.DrawString(`Primary 2 color brightness: ${colBrightness2}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	y += titleHeight * 1.5;
-	gr.DrawString(`Image brightness: ${imgBrightness}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	y += titleHeight * 1.5;
+	const drawString = (str) => {
+		y += lineSpacing;
+		gr.DrawString(str, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	};
 
-	if (pref.styleBlend || pref.styleBlend2) {
-		gr.DrawString(`Image blur: ${blendedImgBlur}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-		y += titleHeight * 1.5;
-		gr.DrawString(`Image alpha: ${blendedImgAlpha}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-		y += titleHeight * 1.5;
-	}
-	if (pref.preset) {
-		y += titleHeight * 1.5;
-		gr.DrawString(`Theme preset: ${pref.preset}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
-	if (pref.themeBrightness !== 'default') {
-		y += titleHeight * 1.5;
-		gr.DrawString(`Theme brightness: ${pref.themeBrightness}%`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
-	if (tsBlock1 || tsBlock2 || tsBlock3) {
-		y += titleHeight * 1.5;
-		gr.DrawString(`Styles: ${tsBlock1} ${tsBlock2} ${tsBlock3}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
-	if (tsTopMenuButtons) {
-		y += titleHeight * 1.5;
-		gr.DrawString(`Top menu button style: ${tsTopMenuButtons}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
-	if (tsTransportButtons) {
-		y += titleHeight * 1.5;
-		gr.DrawString(`Transport button style: ${tsTransportButtons}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
-	if (tsProgressBar1 || tsProgressBar2 || tsProgressBar3) {
-		y += titleHeight * 1.5;
-		gr.DrawString(tsProgressBar1 || tsProgressBar2 || tsProgressBar3 ? `Progressbar styles: ${tsProgressBar1} ${tsProgressBar2} ${tsProgressBar3}` : '', ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
-	if (tsVolumeBar1 || tsVolumeBar2 || tsVolumeBar3) {
-		y += titleHeight * 1.5;
-		gr.DrawString(`Volumebar styles: ${tsVolumeBar1} ${tsVolumeBar2} ${tsVolumeBar3}`, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	}
+	propertiesLog.forEach(({ prop, log }) => {
+		if (prop) drawString(log);
+		if (prop === imgBrightness) y += lineSpacing;
+	});
 }
 
 
@@ -855,46 +895,65 @@ function drawThemeDebugOverlay(gr) {
  */
 function drawPanelShadows(gr) {
 	// * SHADOWS FOR ALBUM ART, noAlbumArtStub AND DETAILS * //
-	if (fb.IsPlaying && (albumArt && albumArtScaled || noAlbumArtStub) && !displayPlaylistLibrary() &&
-		(pref.layout === 'default' && !displayPlaylist && !displayLibrary && !displayBiography ||
-		 pref.layout === 'default' && !displayBiography && (pref.playlistLayout !== 'full' && displayPlaylist || pref.libraryLayout === 'normal' && displayLibrary) ||
-		 pref.layout === 'artwork' && !displayPlaylistArtworkLayout && !displayLibrary && !displayBiography)) {
+	const layoutDefault = pref.layout === 'default' &&
+		(!displayPlaylist && !displayLibrary && !displayBiography ||
+		!displayBiography && (pref.playlistLayout !== 'full' && displayPlaylist || pref.libraryLayout === 'normal' && displayLibrary));
 
-		const displayDetails = (pref.layout === 'artwork' ? !displayPlaylistArtworkLayout : !displayPlaylist) && !displayLibrary && !displayBiography && pref.noDiscArtBg && (!discArt || !pref.displayDiscArt);
-		const noDefaultLayout = pref.layout !== 'default';
+	const layoutArtwork = pref.layout === 'artwork' && !displayPlaylistArtwork && !displayLibrary && !displayBiography;
+
+	const displayAlbumArtDetailsShadows = fb.IsPlaying &&
+		(albumArt && albumArtScaled || noAlbumArtStub) && !displayPlaylistLibrary() && (layoutDefault || layoutArtwork);
+
+	const displayDetails = (!discArt || !pref.displayDiscArt) &&
+		(pref.layout === 'artwork' ? !displayPlaylistArtwork : !displayPlaylist) && !displayLibrary && !displayBiography;
+
+	const noDefaultLayout = pref.layout !== 'default';
+
+	if (displayAlbumArtDetailsShadows) {
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 
 		// Top shadow
 		gr.FillGradRect(0, ppt.albumArtShow && pref.libraryLayout === 'full' && displayLibrary ? ui.y - (RES_4K ? 10 : 6) : albumArtSize.y - (RES_4K ? 10 : 6),
-			displayDetails || noDefaultLayout ? ww : albumArtSize.x + albumArtSize.w, RES_4K ? 10 : 6, 90, 0, col.shadow);
+			displayDetails && pref.noDiscArtBg || noDefaultLayout ? ww : albumArtSize.x + albumArtSize.w, RES_4K ? 10 : 6, 90, 0, col.shadow);
 
 		if (displayDetails && !pref.noDiscArtBg && !noAlbumArtStub) {
 			// Middle shadow
-			gr.FillGradRect(noAlbumArtStub ? ww * 0.5 - 4 : albumArtSize.x + albumArtSize.w, noAlbumArtStub ? geo.topMenuHeight : albumArtSize.y - 3, 4, noAlbumArtStub ? wh - geo.topMenuHeight - geo.lowerBarHeight : albumArtSize.h + 5, 0.5,
+			gr.FillGradRect(noAlbumArtStub ? ww * 0.5 - 4 : albumArtSize.x + albumArtSize.w, noAlbumArtStub ? geo.topMenuHeight : albumArtSize.y - 3,
+				4, noAlbumArtStub ? wh - geo.topMenuHeight - geo.lowerBarHeight : albumArtSize.h + 5, 0.5,
 				noAlbumArtStub ? 0 : pref.styleBlackAndWhite ? RGB(0, 0, 0) : col.shadow, noAlbumArtStub ? pref.styleBlackAndWhite ? RGB(0, 0, 0) : col.shadow : 0);
 		}
 		// Bottom shadow
 		gr.FillGradRect(0, ppt.albumArtShow && pref.libraryLayout === 'full' && displayLibrary ? ui.y + ui.h + (RES_4K ? 0 : -1) : albumArtSize.y + albumArtSize.h + (RES_4K ? 0 : -1),
-			displayDetails || noDefaultLayout ? ww : albumArtSize.x + albumArtSize.w, SCALE(5), 90, col.shadow, 0);
+			displayDetails && pref.noDiscArtBg || noDefaultLayout ? ww : albumArtSize.x + albumArtSize.w, SCALE(5), 90, col.shadow, 0);
 	}
 
 	// * SHADOWS FOR ALL PANELS * //
-	if (displayPlaylist && pref.layout !== 'artwork' || displayPlaylistArtworkLayout || displayLibrary || displayBiography || displayCustomThemeMenu && !fb.IsPlaying) {
+	const panelLayoutNormal = pref.layout === 'default' &&
+		(pref.playlistLayout  === 'normal' && displayPlaylist && !displayBiography ||
+		 pref.libraryLayout   === 'normal' && displayLibrary   ||
+		 pref.biographyLayout === 'normal' && displayBiography ||
+		 displayPlaylistLibrary());
 
-		const normalLayout = pref.layout === 'default' && (pref.playlistLayout === 'normal' && displayPlaylist && !displayBiography || pref.libraryLayout === 'normal' && displayLibrary || pref.biographyLayout === 'normal' && displayBiography || displayPlaylistLibrary());
-		const x = displayPlaylistLibrary() || displayBiography || displayCustomThemeMenu && !fb.IsPlaying || pref.layout !== 'default' || !normalLayout ? 0 : ww * 0.5;
+	const displayPanelShadows =
+		pref.layout !== 'artwork' && displayPlaylist || displayPlaylistArtwork || displayLibrary || displayBiography || displayCustomThemeMenu && !fb.IsPlaying;
+
+	if (displayPanelShadows) {
+		const x =
+			displayPlaylistLibrary() || displayBiography || displayCustomThemeMenu && !fb.IsPlaying || pref.layout !== 'default' || !panelLayoutNormal ? 0 :
+			pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww * 0.5;
+
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 
 		// Top shadow
 		gr.FillGradRect(x, geo.topMenuHeight - (RES_4K ? 10 : 6), ww, RES_4K ? 10 : 6, 90, 0, col.shadow);
 
-		if (normalLayout) {
+		if (panelLayoutNormal) {
 			// Middle shadow for playlist
-			gr.FillGradRect(ww * 0.5 - 4, geo.topMenuHeight, 4, wh - geo.topMenuHeight - geo.lowerBarHeight, 0.5, 0,
+			gr.FillGradRect(pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w - 4 : ww * 0.5 - 4, geo.topMenuHeight, 4, wh - geo.topMenuHeight - geo.lowerBarHeight, 0.5, 0,
 				pref.styleBlackAndWhite && noAlbumArtStub ? RGB(0, 0, 0) : pref.styleBlackAndWhite2 || pref.styleRebornBlack ? RGBA(0, 0, 0, 30) : col.shadow);
 			// Middle shadow for album art
-			if (albumArt && albumArtSize.w !== ww * 0.5 && !displayBiography && !noAlbumArtStub) {
-				gr.FillGradRect(albumArtSize.x + albumArtSize.w, albumArtSize.y, 4, albumArtSize.h, 0.5, pref.styleBlackAndWhite ? RGB(0, 0, 0) : col.shadow, 0);
+			if (albumArt && albumArtSize.w !== ww * 0.5 && !displayPlaylistLibrary() && !displayBiography && !noAlbumArtStub) {
+				gr.FillGradRect(albumArtSize.x + albumArtSize.w - 2, albumArtSize.y, 4, albumArtSize.h, 0.5, pref.styleBlackAndWhite ? RGB(0, 0, 0) : col.shadow, 0);
 			}
 		}
 		// Bottom shadow
@@ -904,11 +963,11 @@ function drawPanelShadows(gr) {
 
 
 /**
- * Draws the top menu.
+ * Draws the top menu bar.
  * @param {GdiGraphics} gr
  */
-function drawMenuBar(gr) {
-	const drawMenuBar = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> menu bar') : null;
+function drawTopMenuBar(gr) {
+	const drawTopMenuBar = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> top menu bar') : null;
 
 	for (const i in btns) { // Can't replace for..in until non-numeric indexes are removed
 		const btn = btns[i];
@@ -931,7 +990,7 @@ function drawMenuBar(gr) {
 		}
 	}
 
-	timings.showExtraDrawTiming && drawMenuBar.Print();
+	timings.showExtraDrawTiming && drawTopMenuBar.Print();
 }
 
 
@@ -943,16 +1002,16 @@ function drawLowerBar(gr) {
 	const drawLowerBarProfiler     = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> lower bar') : null;
 	const lowerBarTop              = wh - geo.lowerBarHeight + (pref.layout === 'default' ? (RES_4K ? 65 : 35) : (RES_4K ? 33 : 18));
 	const lowerMargin              = SCALE(pref.layout === 'compact' || pref.layout === 'artwork' ? 80 : pref.showTransportControls_default ? 80 : 120);
-	const lowerBarFontSize         = pref.layout === 'compact' ? pref.lowerBarFontSize_compact        : pref.layout === 'artwork' ? pref.lowerBarFontSize_artwork        : pref.lowerBarFontSize_default;
-	const showLowerBarArtist       = pref.layout === 'compact' ? pref.showLowerBarArtist_compact      : pref.layout === 'artwork' ? pref.showLowerBarArtist_artwork      : pref.showLowerBarArtist_default;
-	const showLowerBarTrackNum     = pref.layout === 'compact' ? pref.showLowerBarTrackNum_compact    : pref.layout === 'artwork' ? pref.showLowerBarTrackNum_artwork    : pref.showLowerBarTrackNum_default;
-	const showLowerBarTitle        = pref.layout === 'compact' ? pref.showLowerBarTitle_compact       : pref.layout === 'artwork' ? pref.showLowerBarTitle_artwork       : pref.showLowerBarTitle_default;
-	const showLowerBarComposer     = pref.layout === 'compact' ? pref.showLowerBarComposer_compact    : pref.layout === 'artwork' ? pref.showLowerBarComposer_artwork    : pref.showLowerBarComposer_default;
-	const showLowerBarArtistFlags  = pref.layout === 'compact' ? pref.showLowerBarArtistFlags_compact : pref.layout === 'artwork' ? pref.showLowerBarArtistFlags_artwork : pref.showLowerBarArtistFlags_default;
-	const showLowerBarPlaybackTime = pref.layout === 'compact' ? pref.showPlaybackTime_compact        : pref.layout === 'artwork' ? pref.showPlaybackTime_artwork        : pref.showPlaybackTime_default;
-	const showProgressBar          = pref.layout === 'compact' ? pref.showProgressBar_compact         : pref.layout === 'artwork' ? pref.showProgressBar_artwork         : pref.showProgressBar_default;
-	const showWaveformBar          = pref.layout === 'compact' ? pref.showWaveformBar_compact         : pref.layout === 'artwork' ? pref.showWaveformBar_artwork         : pref.showWaveformBar_default;
-	const showPeakmeterBar         = pref.layout === 'compact' ? pref.showPeakmeterBar_compact        : pref.layout === 'artwork' ? pref.showPeakmeterBar_artwork        : pref.showPeakmeterBar_default;
+	const lowerBarFontSize         = pref[`lowerBarFontSize_${pref.layout}`];
+	const showLowerBarArtist       = pref[`showLowerBarArtist_${pref.layout}`];
+	const showLowerBarTrackNum     = pref[`showLowerBarTrackNum_${pref.layout}`];
+	const showLowerBarTitle        = pref[`showLowerBarTitle_${pref.layout}`];
+	const showLowerBarComposer     = pref[`showLowerBarComposer_${pref.layout}`];
+	const showLowerBarArtistFlags  = pref[`showLowerBarArtistFlags_${pref.layout}`];
+	const showLowerBarPlaybackTime = pref[`showPlaybackTime_${pref.layout}`];
+	const showProgressBar          = pref[`showProgressBar_${pref.layout}`];
+	const showWaveformBar          = pref[`showWaveformBar_${pref.layout}`];
+	const showPeakmeterBar         = pref[`showPeakmeterBar_${pref.layout}`];
 
 	const flagSize =
 	flagImgs.length >=  6 ? SCALE(84 + lowerBarFontSize * 6) :
@@ -964,11 +1023,11 @@ function drawLowerBar(gr) {
 	const availableFlags = showLowerBarArtistFlags && flagImgs.length ? flagSize : 0;
 
 	// * Calculate all transport buttons width
-	const showPlaybackOrderBtn = pref.layout === 'compact' ? pref.showPlaybackOrderBtn_compact   : pref.layout === 'artwork' ? pref.showPlaybackOrderBtn_artwork   : pref.showPlaybackOrderBtn_default;
-	const showReloadBtn        = pref.layout === 'compact' ? pref.showReloadBtn_compact          : pref.layout === 'artwork' ? pref.showReloadBtn_artwork          : pref.showReloadBtn_default;
-	const showVolumeBtn        = pref.layout === 'compact' ? pref.showVolumeBtn_compact          : pref.layout === 'artwork' ? pref.showVolumeBtn_artwork          : pref.showVolumeBtn_default;
-	const transportBtnSize     = pref.layout === 'compact' ? pref.transportButtonSize_compact    : pref.layout === 'artwork' ? pref.transportButtonSize_artwork    : pref.transportButtonSize_default;
-	const transportBtnSpacing  = pref.layout === 'compact' ? pref.transportButtonSpacing_compact : pref.layout === 'artwork' ? pref.transportButtonSpacing_artwork : pref.transportButtonSpacing_default;
+	const showPlaybackOrderBtn = pref[`showPlaybackOrderBtn_${pref.layout}`];
+	const showReloadBtn        = pref[`showReloadBtn_${pref.layout}`];
+	const showVolumeBtn        = pref[`showVolumeBtn_${pref.layout}`];
+	const transportBtnSize     = pref[`transportButtonSize_${pref.layout}`];
+	const transportBtnSpacing  = pref[`transportButtonSpacing_${pref.layout}`];
 	const buttonSize           = SCALE(transportBtnSize);
 	const buttonSpacing        = SCALE(transportBtnSpacing);
 	const buttonCount          = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
@@ -977,7 +1036,7 @@ function drawLowerBar(gr) {
 	const timeAreaWidth = ww > 400 ? str.disc !== '' && pref.layout === 'default' ? gr.CalcTextWidth(`${str.disc}   ${str.time}   ${str.length}`, ft.lower_bar_title) : gr.CalcTextWidth(` ${str.time}   ${str.length}`, ft.lower_bar_title) : 0;
 
 	// * Setup width for artist and song title
-	const playbackTime   = pref.layout === 'compact' ? pref.showPlaybackTime_compact : pref.showPlaybackTime_artwork;
+	const playbackTime   = pref[`showPlaybackTime_${pref.layout}`];
 	const availableWidth = pref.layout === 'default' && pref.showTransportControls_default && (pref.showLowerBarArtist_default || pref.showLowerBarTitle_default) ?
 		Math.round(ww * 0.5 - lowerMargin - availableFlags - ((buttonSize * buttonCount + buttonSpacing * buttonCount) / 2)) : Math.round(ww - lowerMargin - availableFlags - (playbackTime ? timeAreaWidth : 0));
 
@@ -1141,7 +1200,7 @@ function drawLowerBar(gr) {
 function drawStyledTooltips(gr) {
 	if (styledTooltipText === '' || !styledTooltipReady || !pref.showStyledTooltips) return;
 
-	const tooltipFontSize = pref.layout === 'artwork' ? pref.tooltipFontSize_artwork : pref.tooltipFontSize_default;
+	const tooltipFontSize = pref[`tooltipFontSize_${pref.layout}`];
 	const offset = SCALE(30);
 	const padding = SCALE(15);
 	const edgeSpace = padding * 0.5;
@@ -1201,14 +1260,16 @@ function drawMain(gr) {
 
 	// * Style Blend applied in Details
 	if (pref.styleBlend && albumArt && blendedImg && (!displayPlaylist && !displayLibrary && !displayBiography && pref.layout === 'default' ||
-		!displayPlaylistArtworkLayout && !displayLibrary && pref.layout === 'artwork')) {
+		!displayPlaylistArtwork && !displayLibrary && pref.layout === 'artwork')) {
 		gr.DrawImage(blendedImg, 0, 0, ww, wh, 0, 0, blendedImg.Width, blendedImg.Height);
 	}
 
 	drawPanels(gr);
-	drawJumpSearch(gr);
 	drawAlbumArt(gr);
+	drawNoAlbumArt(gr)
+	drawHiResAudioLogo(gr);
 	drawPauseBtn(gr);
+	drawJumpSearch(gr);
 	drawDetailsMetadataGrid(gr);
 	drawDetailsBandLogo(gr);
 	drawDetailsLabelLogo(gr);
@@ -1217,7 +1278,7 @@ function drawMain(gr) {
 	drawThemePresetIndicator(gr);
 	drawThemeDebugOverlay(gr);
 	drawPanelShadows(gr);
-	drawMenuBar(gr);
+	drawTopMenuBar(gr);
 	drawLowerBar(gr);
 	drawCustomThemeMenu(gr);
 	drawMetadataGridMenu(gr);
@@ -1235,7 +1296,7 @@ function drawMain(gr) {
 		}
 	}
 
-	// * Layout handler - used to fix and force window size when changing, e.G 4k mode in hd display res
+	// * Layout handler - used to fix and force window size when changing, e.g 4K mode in HD display res
 	let hasNotified = false;
 	if (!hasNotified) {
 		// When on_paint is called all other panels are loaded and can receive notifications

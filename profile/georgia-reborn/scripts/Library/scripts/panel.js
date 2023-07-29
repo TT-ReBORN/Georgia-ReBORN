@@ -1202,7 +1202,7 @@ class Panel {
 
 	setTopBar() {
 		const sz = Math.round(12 * $Lib.scale * this.zoomFilter);
-		const libraryFontSize = pref.layout === 'artwork' ? ppt.baseFontSize_artwork : ppt.baseFontSize_default;
+		const libraryFontSize = ppt[`baseFontSize_${pref.layout}`] || 14;
 		const mod = sz > 15 ? (sz % 2) - 1 : 0;
 		this.filter.font = gdi.Font(fontDefault, this.zoomFilter > 1.05 ? Math.floor(libraryFontSize /*11 * $Lib.scale * this.zoomFilter*/) : Math.max((libraryFontSize) /*11 * $Lib.scale * this.zoomFilter*/, 9), 1);
 		this.settings.font = gdi.Font('Segoe UI Symbol', libraryFontSize /*sz + mod*/, 0);

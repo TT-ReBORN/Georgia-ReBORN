@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-21                                          * //
+// * Last change:    2023-07-22                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -510,6 +510,7 @@ const themePlayerControlsDefaults = {
 	showTooltipLibrary: false,
 	showTooltipBiography: false,
 	showStyledTooltips: true,
+	panelWidthAuto: false,
 	showPanelOnStartup: 'playlist',
 	showLogoOnStartup: true,
 	returnToHomeOnPlaybackStop: true,
@@ -655,6 +656,7 @@ const themePlayerControlsComments = {
 	showTooltipLibrary: 'Values: true, false - Options > Player controls > Tooltip > Show library tooltips',
 	showTooltipBiography: 'Values: true, false - Options > Player controls > Tooltip > Show biography tooltips',
 	showStyledTooltips: 'Values: true, false - Options > Player controls > Tooltip > Show styled tooltips',
+	panelWidthAuto: 'Values: true, false - Options > Player controls > Panel > Width > Use auto panel width',
 	showPanelOnStartup: 'Values: "cover", "playlist", "details", "library", "biography", "lyrics" - Options > Player controls > Panel > Show panel on startup',
 	showLogoOnStartup: 'Values: true, false - Options > Player controls > Panel > Show logo on startup',
 	returnToHomeOnPlaybackStop: 'Values: true, false - Options > Player controls > Panel > Return to home on playback stop',

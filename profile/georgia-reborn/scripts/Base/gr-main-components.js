@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-26                                          * //
+// * Last change:    2023-07-29                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -45,7 +45,7 @@ class ArtCache {
 	/**
 	 * Gets cached image if it exists under the location string. If image is found, move it's index to the end of the cacheIndexes.
 	 * @param {string} location The string value to check if image is cached under.
-	 * @returns {GdiBitmap}
+	 * @returns {GdiBitmap} The cached image.
 	 */
 	getImage(location) {
 		if (this.cache[location]) {
@@ -342,11 +342,10 @@ class TooltipTimer {
 	 */
 	forceStop() {
 		this.tt('');
-		if (this.tooltip_timer) {
-			clearTimeout(this.tooltip_timer);
-			this.tooltip_timer = null;
-			this.tt_caller = null;
-		}
+		if (!this.tooltip_timer) return;
+		clearTimeout(this.tooltip_timer);
+		this.tooltip_timer = null;
+		this.tt_caller = null;
 	}
 
 	/**
@@ -446,11 +445,10 @@ class MetadataGridTooltip {
 	 * @param {number} width The width.
 	 */
 	setSize(x, y, width) {
-		if (this.x !== x || this.y !== y || this.w !== width) {
-			this.x = x;
-			this.y = y;
-			this.w = width;
-		}
+		if (this.x === x && this.y === y && this.w === width) return;
+		this.x = x;
+		this.y = y;
+		this.w = width;
 	}
 
 	/**
@@ -466,17 +464,17 @@ class MetadataGridTooltip {
 	 * @param {GdiGraphics} gr
 	 */
 	draw(gr) {
-		const showGridArtist      = pref.layout === 'artwork' ? pref.showGridArtist_artwork      : pref.showGridArtist_default;
-		const showGridTitle       = pref.layout === 'artwork' ? pref.showGridTitle_artwork       : pref.showGridTitle_default;
-		const showGridTimeline    = pref.layout === 'artwork' ? pref.showGridTimeline_artwork    : pref.showGridTimeline_default;
-		const showGridArtistFlags = pref.layout === 'artwork' ? pref.showGridArtistFlags_artwork : pref.showGridArtistFlags_default;
+		const showGridArtist      = pref[`showGridArtist_${pref.layout}`];
+		const showGridTitle       = pref[`showGridTitle_${pref.layout}`];
+		const showGridTimeline    = pref[`showGridTimeline_${pref.layout}`];
+		const showGridArtistFlags = pref[`showGridArtistFlags_${pref.layout}`];
+		const gridAlbumFontSize   = pref[`gridAlbumFontSize_${pref.layout}`];
 		const textLeft            = SCALE(pref.layout !== 'default' ? 20 : 40);
 		const textRight           = SCALE(20);
 		const lineSpacing         = SCALE(8);
 		const trackNumSpacing     = SCALE(8);
 		const timelineHeight      = showGridTimeline ? SCALE(55) : SCALE(20);
 		const top                 = albumArtSize.y ? albumArtSize.y + textLeft : geo.topMenuHeight + textLeft;
-		const gridAlbumFontSize   = pref.layout === 'artwork' ? pref.gridAlbumFontSize_artwork : pref.gridAlbumFontSize_default;
 
 		const flagSize =
 		flagImgs.length >=  6 ? SCALE(84 + gridAlbumFontSize * 6) :
@@ -613,33 +611,33 @@ class MetadataGridTooltip {
 	 * @param {number} m The mouse mask.
 	 */
 	on_mouse_move(x, y, m) {
-		if (pref.showTooltipMain || pref.showTooltipTruncated) {
-			let tooltip = '';
-			const showGridArtist       = pref.layout === 'artwork' ? pref.showGridArtist_artwork       : pref.showGridArtist_default;
-			const showGridTitle        = pref.layout === 'artwork' ? pref.showGridTitle_artwork        : pref.showGridTitle_default;
-			const showLowerBarComposer = pref.layout === 'compact' ? pref.showLowerBarComposer_compact : pref.layout === 'artwork' ? pref.showLowerBarComposer_artwork : pref.showLowerBarComposer_default;
+		if (!pref.showTooltipMain && !pref.showTooltipTruncated) return;
 
-			// * Artist
-			if (showGridArtist && this.metadataGridTooltipArtist && (this.artistNumLines === 2 && this.artistWidth > this.gridSpace || this.artistNumLines > 2)) {
-				tooltip = str.artist;
-			}
-			// * Title
-			if (showGridTitle && this.metadataGridTooltipTitle && (this.titleNumLines === 2 && this.titleWidth > this.gridSpace || this.titleNumLines > 2)) {
-				tooltip = `${str.tracknum} ${str.title}${showLowerBarComposer ? str.composer : ''}`;
-			}
-			// * Album
-			if (!showGridArtist && !showGridTitle && this.metadataGridTooltipAlbum && this.albumNumLines > 3 ||
-				(showGridArtist || showGridTitle) && this.metadataGridTooltipAlbum && this.albumNumLines > 2) {
-				tooltip = str.album + (showLowerBarComposer ? str.composer : '');
-			}
+		let tooltip = '';
+		const showGridArtist       = pref[`showGridArtist_${pref.layout}`];
+		const showGridTitle        = pref[`showGridTitle_${pref.layout}`];
+		const showLowerBarComposer = pref[`showLowerBarComposer_${pref.layout}`];
 
-			if (tooltip.length) {
-				this.tooltipText = tooltip;
-				tt.showDelayed(this.tooltipText);
-			}
-			else if (!this.metadataGridTooltipAll) {
-				this.clearTooltip();
-			}
+		// * Artist
+		if (showGridArtist && this.metadataGridTooltipArtist && (this.artistNumLines === 2 && this.artistWidth > this.gridSpace || this.artistNumLines > 2)) {
+			tooltip = str.artist;
+		}
+		// * Title
+		if (showGridTitle && this.metadataGridTooltipTitle && (this.titleNumLines === 2 && this.titleWidth > this.gridSpace || this.titleNumLines > 2)) {
+			tooltip = `${str.tracknum} ${str.title}${showLowerBarComposer ? str.composer : ''}`;
+		}
+		// * Album
+		if (!showGridArtist && !showGridTitle && this.metadataGridTooltipAlbum && this.albumNumLines > 3 ||
+			(showGridArtist || showGridTitle) && this.metadataGridTooltipAlbum && this.albumNumLines > 2) {
+			tooltip = str.album + (showLowerBarComposer ? str.composer : '');
+		}
+
+		if (tooltip.length) {
+			this.tooltipText = tooltip;
+			tt.showDelayed(this.tooltipText);
+		}
+		else if (!this.metadataGridTooltipAll) {
+			this.clearTooltip();
 		}
 	}
 }
@@ -666,14 +664,14 @@ class LowerBarTooltip {
 	 * @param {GdiGraphics} gr
 	 */
 	draw(gr) {
-		const lowerBarFontSize        = pref.layout === 'compact' ? pref.lowerBarFontSize_compact        : pref.layout === 'artwork' ? pref.lowerBarFontSize_artwork        : pref.lowerBarFontSize_default;
-		const showLowerBarComposer    = pref.layout === 'compact' ? pref.showLowerBarComposer_compact    : pref.layout === 'artwork' ? pref.showLowerBarComposer_artwork    : pref.showLowerBarComposer_default;
-		const showLowerBarArtistFlags = pref.layout === 'compact' ? pref.showLowerBarArtistFlags_compact : pref.layout === 'artwork' ? pref.showLowerBarArtistFlags_artwork : pref.showLowerBarArtistFlags_default;
-		const showPlaybackOrderBtn    = pref.layout === 'compact' ? pref.showPlaybackOrderBtn_compact    : pref.layout === 'artwork' ? pref.showPlaybackOrderBtn_artwork    : pref.showPlaybackOrderBtn_default;
-		const showReloadBtn           = pref.layout === 'compact' ? pref.showReloadBtn_compact           : pref.layout === 'artwork' ? pref.showReloadBtn_artwork           : pref.showReloadBtn_default;
-		const showVolumeBtn           = pref.layout === 'compact' ? pref.showVolumeBtn_compact           : pref.layout === 'artwork' ? pref.showVolumeBtn_artwork           : pref.showVolumeBtn_default;
-		const transportBtnSize        = pref.layout === 'compact' ? pref.transportButtonSize_compact     : pref.layout === 'artwork' ? pref.transportButtonSize_artwork     : pref.transportButtonSize_default;
-		const transportBtnSpacing     = pref.layout === 'compact' ? pref.transportButtonSpacing_compact  : pref.layout === 'artwork' ? pref.transportButtonSpacing_artwork  : pref.transportButtonSpacing_default;
+		const lowerBarFontSize        = pref[`lowerBarFontSize_${pref.layout}`];
+		const showLowerBarComposer    = pref[`showLowerBarComposer_${pref.layout}`];
+		const showLowerBarArtistFlags = pref[`showLowerBarArtistFlags_${pref.layout}`];
+		const showPlaybackOrderBtn    = pref[`showPlaybackOrderBtn_${pref.layout}`];
+		const showReloadBtn           = pref[`showReloadBtn_${pref.layout}`];
+		const showVolumeBtn           = pref[`showVolumeBtn_${pref.layout}`];
+		const transportBtnSize        = pref[`transportButtonSize_${pref.layout}`];
+		const transportBtnSpacing     = pref[`transportButtonSpacing_${pref.layout}`];
 
 		const flagSize =
 		flagImgs.length >=  6 ? SCALE(84 + lowerBarFontSize * 6) :
@@ -683,7 +681,7 @@ class LowerBarTooltip {
 		flagImgs.length === 2 ? SCALE(28 + lowerBarFontSize * 2) :
 		flagImgs.length === 1 ? SCALE(14 + lowerBarFontSize) : '';
 		const availableFlags = showLowerBarArtistFlags && flagImgs.length ? flagSize : 0;
-		const playbackTime   = pref.layout === 'compact' ? pref.showPlaybackTime_compact : pref.showPlaybackTime_artwork;
+		const playbackTime   = pref[`showPlaybackTime_${pref.layout}`];
 
 		this.timeAreaWidth = str.disc !== '' && pref.layout === 'default' ? gr.CalcTextWidth(`${str.disc}   ${str.time}   ${str.length}`, ft.lower_bar_title) : gr.CalcTextWidth(` ${str.time}   ${str.length}`, ft.lower_bar_title);
 		this.lowerMargin   = SCALE((pref.layout === 'compact' || pref.layout === 'artwork' ? 60 : pref.showTransportControls_default ? 60 : 100) + (!playbackTime ? -this.timeAreaWidth : 0));
@@ -740,9 +738,9 @@ class LowerBarTooltip {
 	 */
 	on_mouse_move(x, y) {
 		let tooltip = '';
-		const showLowerBarArtist   = pref.layout === 'compact' ? pref.showLowerBarArtist_compact   : pref.layout === 'artwork' ? pref.showLowerBarArtist_artwork   : pref.showLowerBarArtist_default;
-		const showLowerBarTitle    = pref.layout === 'compact' ? pref.showLowerBarTitle_compact    : pref.layout === 'artwork' ? pref.showLowerBarTitle_artwork    : pref.showLowerBarTitle_default;
-		const showLowerBarComposer = pref.layout === 'compact' ? pref.showLowerBarComposer_compact : pref.layout === 'artwork' ? pref.showLowerBarComposer_artwork : pref.showLowerBarComposer_default;
+		const showLowerBarArtist   = pref[`showLowerBarArtist_${pref.layout}`];
+		const showLowerBarTitle    = pref[`showLowerBarTitle_${pref.layout}`];
+		const showLowerBarComposer = pref[`showLowerBarComposer_${pref.layout}`];
 
 		if (pref.layout === 'default' && (this.artistWidth > this.availableWidth || this.titleWidth > this.availableWidth)) {
 			tooltip = (`${str.artist}\n${str.tracknum === '' ? '' : `${str.tracknum} `}${str.title}${showLowerBarComposer ? str.composer : ''}`);
@@ -1006,7 +1004,7 @@ class Timeline {
 		this.marginLeft = SCALE(pref.layout !== 'default' ? 20 : 40);
 		this.x = this.marginLeft;
 		this.y = 0;
-		this.w = albumArtSize.x - this.marginLeft * 2;
+		this.w = albumArtSize.x - 1;
 		this.h = height;
 
 		this.playCol = RGBA(255, 255, 255, 150);
@@ -1098,29 +1096,30 @@ class Timeline {
 	 * @param {GdiGraphics} gr
 	 */
 	draw(gr) {
-		if (this.addedCol && this.playedCol && this.unplayedCol) {
-			gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing
-			gr.FillSolidRect(this.marginLeft, this.y, this.drawWidth + this.extraLeftSpace + this.lineWidth, this.h, this.addedCol);
-			if (['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
-				gr.DrawRect(this.x - 2, this.y - 2, this.w + 3, this.h + 3, 1, col.timelineFrame);
-			}
+		if (!this.addedCol && !this.playedCol && !this.unplayedCol) return;
 
-			if (this.firstPlayedPercent >= 0 && this.lastPlayedPercent >= 0) {
-				const x1 = Math.floor(this.drawWidth * this.firstPlayedPercent) + this.extraLeftSpace;
-				const x2 = Math.floor(this.drawWidth * this.lastPlayedPercent) + this.extraLeftSpace;
-				gr.FillSolidRect(x1 + this.marginLeft, this.y, this.drawWidth - x1 + this.extraLeftSpace, this.h, this.playedCol);
-				gr.FillSolidRect(x2 + this.marginLeft, this.y, this.drawWidth - x2 + this.extraLeftSpace + this.lineWidth, this.h, this.unplayedCol);
-			}
-			for (let i = 0; i < this.playedTimesPercents.length; i++) {
-				const x = Math.floor(this.drawWidth * this.playedTimesPercents[i]) + this.extraLeftSpace;
-				if (!isNaN(x) && x <= this.w) {
-					gr.DrawLine(x + this.marginLeft, this.y, x + this.marginLeft, this.y + this.h, this.lineWidth, this.playCol);
-				} else {
-					// console.log('Played Times Error! ratio: ' + this.playedTimesPercents[i], 'x: ' + x);
-				}
-			}
-			gr.SetSmoothingMode(SmoothingMode.AntiAlias);
+		gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing
+		gr.FillSolidRect(this.marginLeft, this.y, this.drawWidth + this.extraLeftSpace + this.lineWidth, this.h, this.addedCol);
+		if (pref.theme.startsWith('custom')) {
+			gr.DrawRect(this.x - 2, this.y - 2, this.w + 3, this.h + 3, 1, col.timelineFrame);
 		}
+
+		if (this.firstPlayedPercent >= 0 && this.lastPlayedPercent >= 0) {
+			const x1 = Math.floor(this.drawWidth * this.firstPlayedPercent) + this.extraLeftSpace;
+			const x2 = Math.floor(this.drawWidth * this.lastPlayedPercent)  + this.extraLeftSpace;
+			gr.FillSolidRect(x1 + this.marginLeft, this.y, this.drawWidth - x1 + this.extraLeftSpace, this.h, this.playedCol);
+			gr.FillSolidRect(x2 + this.marginLeft, this.y, this.drawWidth - x2 + this.extraLeftSpace + this.lineWidth, this.h, this.unplayedCol);
+		}
+		for (let i = 0; i < this.playedTimesPercents.length; i++) {
+			const x = Math.floor(this.drawWidth * this.playedTimesPercents[i]) + this.marginLeft + this.extraLeftSpace;
+			if (!Number.isNaN(x) && x <= this.w + this.marginLeft * 2) {
+				const linePos = Math.max(this.marginLeft, Math.min(x, x));
+				gr.DrawLine(linePos, this.y, linePos, this.y + this.h, this.lineWidth, this.playCol);
+			} else {
+				// console.log('Played Times Error! ratio: ' + this.playedTimesPercents[i], 'x: ' + x);
+			}
+		}
+		gr.SetSmoothingMode(SmoothingMode.AntiAlias);
 	}
 
 	// * CALLBACKS * //
@@ -1241,7 +1240,7 @@ class JumpSearch {
 
 	/**
 	 * Handles key pressed events and activates the jump search.
-	 * @param {number} code An UTF16 encoded character.
+	 * @param {number} code The character code.
 	 */
 	on_char(code) {
 		if (panel.search.active || utils.IsKeyPressed(0x11)) return;
@@ -1715,11 +1714,11 @@ class VolumeBtn {
 	 */
 	constructor() {
 		// * Calculate all transport buttons width
-		const showPlaybackOrderBtn = pref.layout === 'compact' ? pref.showPlaybackOrderBtn_compact   : pref.layout === 'artwork' ? pref.showPlaybackOrderBtn_artwork   : pref.showPlaybackOrderBtn_default;
-		const showReloadBtn        = pref.layout === 'compact' ? pref.showReloadBtn_compact          : pref.layout === 'artwork' ? pref.showReloadBtn_artwork          : pref.showReloadBtn_default;
-		const showVolumeBtn        = pref.layout === 'compact' ? pref.showVolumeBtn_compact          : pref.layout === 'artwork' ? pref.showVolumeBtn_artwork          : pref.showVolumeBtn_default;
-		const transportBtnSize     = pref.layout === 'compact' ? pref.transportButtonSize_compact    : pref.layout === 'artwork' ? pref.transportButtonSize_artwork    : pref.transportButtonSize_default;
-		const transportBtnSpacing  = pref.layout === 'compact' ? pref.transportButtonSpacing_compact : pref.layout === 'artwork' ? pref.transportButtonSpacing_artwork : pref.transportButtonSpacing_default;
+		const showPlaybackOrderBtn = pref[`showPlaybackOrderBtn_${pref.layout}`];
+		const showReloadBtn        = pref[`showReloadBtn_${pref.layout}`];
+		const showVolumeBtn        = pref[`showVolumeBtn_${pref.layout}`];
+		const transportBtnSize     = pref[`transportButtonSize_${pref.layout}`];
+		const transportBtnSpacing  = pref[`transportButtonSpacing_${pref.layout}`];
 		const buttonSize           = SCALE(transportBtnSize);
 		const buttonSpacing        = SCALE(transportBtnSpacing);
 		const buttonCount          = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
@@ -1764,7 +1763,7 @@ class VolumeBtn {
 		const center_default = Math.floor(buttonSize_default / 2 + SCALE(4));
 		const center_artwork = Math.floor(buttonSize_artwork / 2 + SCALE(4));
 		const center_compact = Math.floor(buttonSize_compact / 2 + SCALE(4));
-		this.x = x + (pref.layout === 'compact' ? pref.transportButtonSize_compact * SCALE(1.25) : pref.layout === 'artwork' ? pref.transportButtonSize_artwork * SCALE(1.25) : pref.transportButtonSize_default * SCALE(1.25));
+		this.x = x + (pref[`transportButtonSize_${pref.layout}`] * SCALE(1.25));
 		this.y = y + (pref.layout === 'compact' ? center_compact : pref.layout === 'artwork' ? center_artwork : center_default) - this.h;
 		this.volumeBar = new Volume(this.x, this.y, this.w, Math.min(wh - this.y, this.h));
 	}
@@ -1779,6 +1778,8 @@ class VolumeBtn {
 		const { x, y, w, h } = this;
 		const p = 2;
 		const fillWidth = this.volumeBar && this.volumeBar.fillSize('w');
+		const arc = SCALE(3);
+		const arcIsValid = fillWidth > arc * 3; // * Needed when dragging volume to prevent invalid arc value crash
 
 		gr.SetSmoothingMode(pref.styleVolumeBarDesign === 'rounded' ? SmoothingMode.AntiAlias : SmoothingMode.None);
 
@@ -1801,20 +1802,18 @@ class VolumeBtn {
 			}
 		}
 		// * Default fill
-		if (pref.styleVolumeBarDesign === 'rounded') {
-			try { gr.FillRoundRect(x + 1, y + (RES_4K ? 7 : 4), fillWidth - SCALE(3), h - SCALE(4), SCALE(3), SCALE(3), col.volumeBarFill); } catch (e) {}
+		if (pref.styleVolumeBarDesign === 'rounded' && arcIsValid) {
+			 gr.FillRoundRect(x + 1, y + (RES_4K ? 7 : 4), fillWidth - SCALE(3), h - SCALE(4), arc, arc, col.volumeBarFill);
 		} else {
 			gr.FillSolidRect(x, y + (RES_4K ? 7 : 4), fillWidth - SCALE(2), h - SCALE(4), col.volumeBarFill);
 		}
 		// * Style fill
-		if (pref.styleVolumeBarFill === 'bevel' || pref.styleVolumeBarFill === 'inner') {
-			try {
-				if (pref.styleVolumeBarDesign === 'rounded') {
-					FillGradRoundRect(gr, x + 1, y + (RES_4K ? 7 : 4), fillWidth - SCALE(0.5), h - SCALE(2), SCALE(3), SCALE(3), pref.styleVolumeBarFill === 'inner' ? -89 : 89, 0, col.styleVolumeBarFill, 1);
-				} else {
-					gr.FillGradRect(x, y + (RES_4K ? 7 : 4), fillWidth - SCALE(2), h - SCALE(3), pref.styleVolumeBarFill === 'inner' ? -90 : 90, pref.styleBlackAndWhite ? col.styleVolumeBarFill : 0, pref.styleBlackAndWhite ? 0 : col.styleVolumeBarFill);
-				}
-			} catch (e) {}
+		if ((pref.styleVolumeBarFill === 'bevel' || pref.styleVolumeBarFill === 'inner') && arcIsValid) {
+			if (pref.styleVolumeBarDesign === 'rounded') {
+				FillGradRoundRect(gr, x + 1, y + (RES_4K ? 7 : 4), fillWidth - SCALE(0.5), h - SCALE(2), arc, arc, pref.styleVolumeBarFill === 'inner' ? -89 : 89, 0, col.styleVolumeBarFill, 1);
+			} else {
+				gr.FillGradRect(x, y + (RES_4K ? 7 : 4), fillWidth - SCALE(2), h - SCALE(3), pref.styleVolumeBarFill === 'inner' ? -90 : 90, pref.styleBlackAndWhite ? col.styleVolumeBarFill : 0, pref.styleBlackAndWhite ? 0 : col.styleVolumeBarFill);
+			}
 		}
 	}
 
@@ -1823,6 +1822,7 @@ class VolumeBtn {
 	 */
 	repaint() {
 		if (!this.volumeBar) return;
+
 		const xyPadding = SCALE(3);
 		const whPadding = xyPadding * 2;
 		window.RepaintRect(this.x - xyPadding, this.volumeBar.y, this.volumeBar.w + whPadding, this.volumeBar.h + whPadding);
@@ -2038,110 +2038,110 @@ class ProgressBar {
 	 * @param {GdiGraphics} gr
 	 */
 	draw(gr) {
-		if (pref.showProgressBar_default || pref.showProgressBar_artwork || pref.showProgressBar_compact) {
-			gr.SetSmoothingMode(pref.styleProgressBarDesign === 'rounded' ? SmoothingMode.AntiAlias : SmoothingMode.None);
-			const arc = SCALE(pref.layout !== 'default' ? 5 : 6);
+		if (!pref.showProgressBar_default && !pref.showProgressBar_artwork && !pref.showProgressBar_compact) return;
 
-			try {
-				// * Progress bar background
-				if (pref.styleProgressBarDesign === 'rounded') {
-					gr.FillRoundRect(this.x, this.y, this.w, this.h, arc, arc, isStreaming && fb.IsPlaying ? col.progressBarStreaming : col.progressBar);
-				} else if (!['dots', 'thin'].includes(pref.styleProgressBarDesign)) {
-					gr.FillSolidRect(this.x, this.y, this.w, this.h, isStreaming && fb.IsPlaying ? col.progressBarStreaming : col.progressBar);
-				}
-				if (pref.styleDefault && (['blue', 'darkblue', 'red', 'cream', 'custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) ||
-					(pref.theme === 'cream' && (pref.styleAlternative || pref.styleAlternative2) && (!pref.styleBevel && !pref.styleBlend && !pref.styleBlend2 && pref.styleProgressBarDesign !== 'rounded')) && !pref.systemFirstLaunch) {
-					gr.DrawRect(this.x - 2, this.y - 2, this.w + 3, this.h + 3, 1, col.progressBarFrame);
-				}
-				if (!['dots', 'thin'].includes(pref.styleProgressBarDesign) && (pref.styleProgressBar === 'bevel' || pref.styleProgressBar === 'inner')) {
-					if (pref.styleProgressBarDesign === 'rounded') {
-						FillGradRoundRect(gr, this.x, this.y, this.w + SCALE(2), this.h + SCALE(2.5), arc, arc,
-							pref.styleProgressBar === 'inner' ? pref.styleBlackReborn && fb.IsPlaying ? 90 : -90 : pref.styleBlackReborn && fb.IsPlaying ? -90 : 90, 0, col.styleProgressBar, 1);
-					} else {
-						gr.FillGradRect(this.x, this.y, this.w, this.h, pref.styleProgressBar === 'inner' ? pref.styleBlackReborn && fb.IsPlaying ? 90 : -90 : pref.styleBlackReborn && fb.IsPlaying ? -90 : 90, 0, col.styleProgressBar);
-					}
-					if (pref.styleProgressBarDesign === 'rounded') { // Smooth top and bottom line edges
-						gr.FillGradRect(this.x + SCALE(3), this.y - 0.5, SCALE(9), 1, 179, col.styleProgressBarLineTop, 0); // Top left
-						gr.FillGradRect(this.x + SCALE(3), this.y + this.h - 0.5, SCALE(9), 1, 179, col.styleProgressBarLineBottom, 0); // Bottom left
-						gr.FillGradRect(this.w + this.x - SCALE(12), this.y - 0.5, SCALE(9), 1, 179, 0, col.styleProgressBarLineTop); // Top right
-						gr.FillGradRect(this.w + this.x - SCALE(12), this.y + this.h - 0.5, SCALE(9), 1, 179, 0, col.styleProgressBarLineBottom); // Bottom right
-					}
-					gr.DrawLine(this.x + (pref.styleProgressBarDesign === 'rounded' ? SCALE(12) : 0), this.y, this.x + this.w - (pref.styleProgressBarDesign === 'rounded' ? SCALE(12) : 1), this.y, 1, col.styleProgressBarLineTop);
-					gr.DrawLine(this.x + (pref.styleProgressBarDesign === 'rounded' ? SCALE(12) : 0), this.y + this.h, this.x + this.w - (pref.styleProgressBarDesign === 'rounded' ? SCALE(12) : 1), this.y + this.h, 1, col.styleProgressBarLineBottom);
-				}
+		gr.SetSmoothingMode(pref.styleProgressBarDesign === 'rounded' ? SmoothingMode.AntiAlias : SmoothingMode.None);
+		const arc = Math.min(this.w, this.h) / 2;
+		const arcIsValid = this.h > arc; // * Needed when bg changes to prevent invalid arc value crash
 
-				// * Progress bar fill
-				if (fb.PlaybackLength) {
-					let progressStationary = false;
-					/* In some cases the progress bar would move backwards at the end of a song while buffering/streaming was occurring.
-						This created strange looking jitter so now the progress bar can only increase unless the user seeked in the track. */
-					if (this.progressMoved || Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
-						this.progressLength = Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength));
-					} else {
-						progressStationary = true;
-					}
-					this.progressMoved = false;
+		// * Progress bar background
+		if (pref.styleProgressBarDesign === 'rounded' && arcIsValid) {
+			gr.FillRoundRect(this.x, this.y, this.w, this.h, arc, arc, isStreaming && fb.IsPlaying ? col.progressBarStreaming : col.progressBar);
+		} else if (!['dots', 'thin'].includes(pref.styleProgressBarDesign)) {
+			gr.FillSolidRect(this.x, this.y, this.w, this.h, isStreaming && fb.IsPlaying ? col.progressBarStreaming : col.progressBar);
+		}
+		if (pref.styleDefault && (['blue', 'darkblue', 'red', 'cream', 'custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) ||
+			(pref.theme === 'cream' && (pref.styleAlternative || pref.styleAlternative2) && (!pref.styleBevel && !pref.styleBlend && !pref.styleBlend2 && pref.styleProgressBarDesign !== 'rounded')) && !pref.systemFirstLaunch) {
+			gr.DrawRect(this.x - 2, this.y - 2, this.w + 3, this.h + 3, 1, col.progressBarFrame);
+		}
+		if (!['dots', 'thin'].includes(pref.styleProgressBarDesign) && (pref.styleProgressBar === 'bevel' || pref.styleProgressBar === 'inner') && arcIsValid) {
+			if (pref.styleProgressBarDesign === 'rounded') {
+				FillGradRoundRect(gr, this.x, this.y, this.w + SCALE(2), this.h + SCALE(2.5), arc, arc,
+					pref.styleProgressBar === 'inner' ? pref.styleBlackReborn && fb.IsPlaying ? 90 : -90 : pref.styleBlackReborn && fb.IsPlaying ? -90 : 90, 0, col.styleProgressBar, 1);
+			} else {
+				gr.FillGradRect(this.x, this.y, this.w, this.h, pref.styleProgressBar === 'inner' ? pref.styleBlackReborn && fb.IsPlaying ? 90 : -90 : pref.styleBlackReborn && fb.IsPlaying ? -90 : 90, 0, col.styleProgressBar);
+			}
+			if (pref.styleProgressBarDesign === 'rounded') { // Smooth top and bottom line edges
+				gr.FillGradRect(this.x + SCALE(3), this.y - 0.5, SCALE(9), 1, 179, col.styleProgressBarLineTop, 0); // Top left
+				gr.FillGradRect(this.x + SCALE(3), this.y + this.h - 0.5, SCALE(9), 1, 179, col.styleProgressBarLineBottom, 0); // Bottom left
+				gr.FillGradRect(this.w + this.x - SCALE(12), this.y - 0.5, SCALE(9), 1, 179, 0, col.styleProgressBarLineTop); // Top right
+				gr.FillGradRect(this.w + this.x - SCALE(12), this.y + this.h - 0.5, SCALE(9), 1, 179, 0, col.styleProgressBarLineBottom); // Bottom right
+			}
+			gr.DrawLine(this.x + (pref.styleProgressBarDesign === 'rounded' ? SCALE(12) : 0), this.y, this.x + this.w - (pref.styleProgressBarDesign === 'rounded' ? SCALE(12) : 1), this.y, 1, col.styleProgressBarLineTop);
+			gr.DrawLine(this.x + (pref.styleProgressBarDesign === 'rounded' ? SCALE(12) : 0), this.y + this.h, this.x + this.w - (pref.styleProgressBarDesign === 'rounded' ? SCALE(12) : 1), this.y + this.h, 1, col.styleProgressBarLineBottom);
+		}
 
-					if (pref.styleProgressBarDesign === 'default') {
-						gr.FillSolidRect(this.x, this.y, this.progressLength, this.h, col.progressBarFill);
-					}
-					else if (pref.styleProgressBarDesign === 'rounded') {
-						gr.FillRoundRect(this.x, this.y, this.progressLength, this.h, arc, arc, col.progressBarFill);
-					}
-					else if (pref.styleProgressBarDesign === 'lines') {
-						let progressLine = 0;
-						if (progressLine < this.progressLength) {
-							gr.FillSolidRect(this.x + this.progressLength, this.y, SCALE(2), geo.progBarHeight, col.progressBarFill);
-						}
-						while (progressLine < this.progressLength) {
-							gr.DrawLine(this.x + progressLine + SCALE(2), this.y, this.x + progressLine + SCALE(2), this.y + this.h, SCALE(2), col.progressBarFill);
-							progressLine += SCALE(4);
-						}
-					}
-					else if (pref.styleProgressBarDesign === 'blocks') {
-						let progressLine = 0;
-						while (progressLine < this.progressLength) {
-							gr.FillSolidRect(this.x + progressLine, this.y + SCALE(2), geo.progBarHeight, geo.progBarHeight - SCALE(4), col.progressBarFill);
-							progressLine += geo.progBarHeight + SCALE(2);
-						}
-						gr.FillSolidRect(this.x + this.progressLength, this.y + 1, geo.progBarHeight, geo.progBarHeight - 1, col.progressBar);
-						gr.FillGradRect(this.x + this.progressLength,  this.y + 1, geo.progBarHeight, geo.progBarHeight - 1, pref.styleProgressBar === 'inner' ? pref.styleBlackReborn && fb.IsPlaying ? 88 : -88 : pref.styleBlackReborn && fb.IsPlaying ? -88 : 88, 0, col.styleProgressBar);
-					}
-					else if (pref.styleProgressBarDesign === 'dots') {
-						let progressLine = 0;
-						while (progressLine < this.progressLength) {
-							gr.DrawLine(this.x + this.progressLength + SCALE(10), this.y + this.h * 0.5, this.x + this.w, this.y + this.h * 0.5, SCALE(1), col.progressBar);
-							gr.SetSmoothingMode(SmoothingMode.AntiAlias);
-							gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - SCALE(1), SCALE(2), SCALE(2), SCALE(2), col.progressBarFill);
-							progressLine += SCALE(8);
-						}
-						const posFix = RES_4K ? pref.layout !== 'default' ? 6 : 7 : 3;
-						gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - geo.progBarHeight * 0.5 + SCALE(2), geo.progBarHeight - SCALE(4), geo.progBarHeight - SCALE(4), SCALE(2), col.progressBarFill); // Knob outline
-						gr.DrawEllipse(this.x + progressLine + posFix, this.y + this.h * 0.5 - SCALE(1), SCALE(2), SCALE(2), SCALE(2), col.transportIconHovered); // Knob inner
-					}
-					else if (pref.styleProgressBarDesign === 'thin') {
-						gr.DrawLine(this.x, this.y + this.h * 0.5, this.x + this.w, this.y + this.h * 0.5, SCALE(1), col.progressBar);
-						gr.SetSmoothingMode(SmoothingMode.AntiAlias);
-						gr.FillSolidRect(this.x, this.y + this.h * 0.5 - SCALE(2), this.progressLength, SCALE(4), col.progressBarFill);
-						gr.FillSolidRect(this.x + this.progressLength, this.y + this.h * 0.5 - SCALE(3), SCALE(6), SCALE(6), col.progressBarFill);
-					}
+		// * Progress bar fill
+		if (!fb.PlaybackLength) return;
+		let progressStationary = false;
+		/* In some cases the progress bar would move backwards at the end of a song while buffering/streaming was occurring.
+			This created strange looking jitter so now the progress bar can only increase unless the user seeked in the track. */
+		if (this.progressMoved || Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
+			this.progressLength = Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength));
+		} else {
+			progressStationary = true;
+		}
+		this.progressMoved = false;
 
-					if (!['dots', 'thin'].includes(pref.styleProgressBarDesign) && fb.IsPlaying && (pref.styleProgressBarFill === 'bevel' || pref.styleProgressBarFill === 'inner')) {
-						if (pref.styleProgressBarDesign === 'rounded') {
-							FillGradRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2.5), arc, arc, pref.styleProgressBarFill === 'inner' ? -88 : 88, col.styleProgressBarFill, 0);
-						} else {
-							gr.FillGradRect(this.x, this.y, this.progressLength, this.h, pref.styleProgressBarFill === 'inner' ? -90 : 89, 0, col.styleProgressBarFill);
-						}
-					}
-					else if (fb.IsPlaying && pref.styleProgressBarFill === 'blend' && albumArt && blendedImg) {
-						if (pref.styleProgressBarDesign === 'rounded') {
-							FillBlendedRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2.5), arc, arc, 88, blendedImg, 0);
-						} else {
-							gr.DrawImage(blendedImg, this.x, this.y, this.progressLength, this.h, 0, this.h, blendedImg.Width, blendedImg.Height);
-						}
-					}
-				}
-			} catch (e) {}
+		const arcIsValid2 = this.progressLength > arc * 2; // * Needed when playback starts to prevent invalid arc value crash
+
+		if (pref.styleProgressBarDesign === 'default') {
+			gr.FillSolidRect(this.x, this.y, this.progressLength, this.h, col.progressBarFill);
+		}
+		else if (pref.styleProgressBarDesign === 'rounded' && arcIsValid2) {
+			gr.FillRoundRect(this.x, this.y, this.progressLength, this.h, arc, arc, col.progressBarFill);
+		}
+		else if (pref.styleProgressBarDesign === 'lines') {
+			let progressLine = 0;
+			if (progressLine < this.progressLength) {
+				gr.FillSolidRect(this.x + this.progressLength, this.y, SCALE(2), geo.progBarHeight, col.progressBarFill);
+			}
+			while (progressLine < this.progressLength) {
+				gr.DrawLine(this.x + progressLine + SCALE(2), this.y, this.x + progressLine + SCALE(2), this.y + this.h, SCALE(2), col.progressBarFill);
+				progressLine += SCALE(4);
+			}
+		}
+		else if (pref.styleProgressBarDesign === 'blocks' && arcIsValid2) {
+			let progressLine = 0;
+			while (progressLine < this.progressLength) {
+				gr.FillSolidRect(this.x + progressLine, this.y + SCALE(2), geo.progBarHeight, geo.progBarHeight - SCALE(4), col.progressBarFill);
+				progressLine += geo.progBarHeight + SCALE(2);
+			}
+			gr.FillSolidRect(this.x + this.progressLength, this.y + 1, geo.progBarHeight, geo.progBarHeight - 1, col.progressBar);
+			gr.FillGradRect(this.x + this.progressLength,  this.y + 1, geo.progBarHeight, geo.progBarHeight - 1, pref.styleProgressBar === 'inner' ? pref.styleBlackReborn && fb.IsPlaying ? 88 : -88 : pref.styleBlackReborn && fb.IsPlaying ? -88 : 88, 0, col.styleProgressBar);
+		}
+		else if (pref.styleProgressBarDesign === 'dots') {
+			let progressLine = 0;
+			while (progressLine < this.progressLength) {
+				gr.DrawLine(this.x + this.progressLength + SCALE(10), this.y + this.h * 0.5, this.x + this.w, this.y + this.h * 0.5, SCALE(1), col.progressBar);
+				gr.SetSmoothingMode(SmoothingMode.AntiAlias);
+				gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - SCALE(1), SCALE(2), SCALE(2), SCALE(2), col.progressBarFill);
+				progressLine += SCALE(8);
+			}
+			const posFix = RES_4K ? pref.layout !== 'default' ? 6 : 7 : 3;
+			gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - geo.progBarHeight * 0.5 + SCALE(2), geo.progBarHeight - SCALE(4), geo.progBarHeight - SCALE(4), SCALE(2), col.progressBarFill); // Knob outline
+			gr.DrawEllipse(this.x + progressLine + posFix, this.y + this.h * 0.5 - SCALE(1), SCALE(2), SCALE(2), SCALE(2), col.transportIconHovered); // Knob inner
+		}
+		else if (pref.styleProgressBarDesign === 'thin') {
+			gr.DrawLine(this.x, this.y + this.h * 0.5, this.x + this.w, this.y + this.h * 0.5, SCALE(1), col.progressBar);
+			gr.SetSmoothingMode(SmoothingMode.AntiAlias);
+			gr.FillSolidRect(this.x, this.y + this.h * 0.5 - SCALE(2), this.progressLength, SCALE(4), col.progressBarFill);
+			gr.FillSolidRect(this.x + this.progressLength, this.y + this.h * 0.5 - SCALE(3), SCALE(6), SCALE(6), col.progressBarFill);
+		}
+
+		if (!['dots', 'thin'].includes(pref.styleProgressBarDesign) && (pref.styleProgressBarFill === 'bevel' || pref.styleProgressBarFill === 'inner') && fb.IsPlaying && arcIsValid2) {
+			if (pref.styleProgressBarDesign === 'rounded') {
+				FillGradRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2.5), arc, arc, pref.styleProgressBarFill === 'inner' ? -88 : 88, col.styleProgressBarFill, 0);
+			} else {
+				gr.FillGradRect(this.x, this.y, this.progressLength, this.h, pref.styleProgressBarFill === 'inner' ? -90 : 89, 0, col.styleProgressBarFill);
+			}
+		}
+		else if (pref.styleProgressBarFill === 'blend' && fb.IsPlaying && albumArt && blendedImg && arcIsValid2) {
+			if (pref.styleProgressBarDesign === 'rounded') {
+				FillBlendedRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2.5), arc, arc, 88, blendedImg, 0);
+			} else {
+				gr.DrawImage(blendedImg, this.x, this.y, this.progressLength, this.h, 0, this.h, blendedImg.Width, blendedImg.Height);
+			}
 		}
 	}
 
@@ -2477,388 +2477,418 @@ class PeakmeterBar {
 	}
 
 	/**
-	 * Draws the peakmeter bar with various peakmeter bar styles.
+	 * Draws the peakmeter bar in horizontal design.
+	 * @param {GdiGraphics} gr
+	 */
+	drawPeakmeterBarHorizontal(gr) {
+		// * Progress Bar
+		if (pref.peakmeterBarProgBar && fb.PlaybackLength) {
+			let progressStationary = false;
+			if (this.progressMoved || Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
+				this.progressLength = Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength));
+			} else {
+				progressStationary = true;
+			}
+			this.progressMoved = false;
+
+			gr.FillSolidRect(this.x, this.middleLeft_y, this.w, this.bar_h, col.peakmeterBarProg);
+			gr.FillSolidRect(this.x, this.middleLeft_y, this.progressLength, this.bar_h, col.peakmeterBarProgFill);
+		}
+		// * Middle bars
+		else if (pref.peakmeterBarMiddleBars) {
+			for (let i = 0; i <= this.points_middle; i++) {
+				if (this.leftPeak > this.db_middle[i]) {
+					gr.FillSolidRect(this.x + i * this.middleOffset, this.middleLeft_y, this.middle_w, this.bar_h * 0.5, col.peakmeterBarProgFill);
+				}
+				if (this.rightPeak > this.db_middle[i]) {
+					gr.FillSolidRect(this.x + i * this.middleOffset, this.middleRight_y, this.middle_w, this.bar_h * 0.5, col.peakmeterBarProgFill);
+				}
+			}
+		}
+		// * Grid
+		if (pref.peakmeterBarGrid) {
+			gr.FillSolidRect(this.x, this.y, this.w, this.bar_h, col.peakmeterBarProg);
+			gr.FillSolidRect(this.x, this.outerRight_y, this.w, this.bar_h, col.peakmeterBarProg);
+		}
+
+		for (let i = 0; i <= this.points; i++) {
+			// * MAIN BARS * //
+			if (this.leftPeak > this.db[i]) {
+				if (pref.peakmeterBarMainBars) {
+					// * Main left bars
+					gr.FillSolidRect(this.x + i * this.offset, this.mainLeft_y, this.w2, this.bar_h, this.color[i]);
+				}
+
+				// * Main left middle peaks
+				if (this.leftPeak < this.db[i + 1]) {
+					this.mainLeft_x = i * this.offset;
+				};
+				if (pref.peakmeterBarMainPeaks) {
+					gr.FillSolidRect(this.x + this.mainLeftAnim_x + this.offset, this.mainLeft_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
+
+					// * Main left top peaks
+					const x = Clamp(this.x + this.mainLeftAnim2_x + this.offset + this.w2 * 0.66, this.x, this.x + this.w - this.w2 * 0.33); // Don't extend right edge of bar
+					const w = x > this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend right edge of bar
+					gr.FillSolidRect(x, this.mainLeft_y, w, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
+				}
+			}
+			if (this.rightPeak > this.db[i]) {
+				if (pref.peakmeterBarMainBars) {
+					// * Main right bars
+					gr.FillSolidRect(this.x + i * this.offset, this.mainRight_y, this.w2, this.bar_h, this.color[i]);
+				}
+
+				// * Main right middle peaks
+				if (this.rightPeak < this.db[i + 1]) {
+					this.mainRight_x = i * this.offset;
+				};
+				if (pref.peakmeterBarMainPeaks) {
+					gr.FillSolidRect(this.x + this.mainRightAnim_x + this.offset, this.mainRight_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
+
+					// * Main right top peaks
+					const x = Clamp(this.x + this.mainRightAnim2_x + this.offset + this.w2 * 0.66, this.x, this.x + this.w - this.w2 * 0.33); // Don't extend right edge of bar
+					const w = x >= this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend right edge of bar
+					gr.FillSolidRect(x, this.mainRight_y, w, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
+				}
+			}
+
+			// * OUTER BARS * //
+			if (this.leftLevel > this.db[i]) {
+				// * Outer left bars
+				if (this.leftLevel < this.db[i + 1]) {
+					this.outerLeft_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.leftLevel - this.db[i]) - this.x;
+				}
+				if (pref.peakmeterBarOuterBars) {
+					gr.FillSolidRect(this.x, this.outerLeft_y, this.outerLeft_w, this.bar_h, this.color[1]);
+				}
+
+				// * Outer left peaks
+				if (pref.peakmeterBarOuterPeaks) {
+					const x = Clamp(this.x + this.outerLeftAnim_x, this.x, this.x + this.w - this.outerLeftAnim_w); // Don't extend right edge of bar
+					gr.FillSolidRect(x, this.outerLeft_y, this.outerLeftAnim_w <= 0 ? 2 : this.outerLeftAnim_w, this.bar_h, this.color[1]);
+				}
+			}
+			if (this.rightLevel > this.db[i]) {
+				// * Outer right bars
+				if (this.rightLevel < this.db[i + 1]) {
+					this.outerRight_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.rightLevel - this.db[i]) - this.x;
+				}
+				if (pref.peakmeterBarOuterBars) {
+					gr.FillSolidRect(this.x, this.outerRight_y, this.outerRight_w, this.bar_h, this.color[1]);
+				}
+
+				// * Outer right peaks
+				if (pref.peakmeterBarOuterPeaks) {
+					const x = Clamp(this.x + this.outerRightAnim_x, this.x, this.x + this.w - this.outerRightAnim_w); // Don't extend right edge of bar
+					gr.FillSolidRect(x, this.outerRight_y, this.outerRightAnim_w <= 0 ? 2 : this.outerRightAnim_w, this.bar_h, this.color[1]);
+				}
+			}
+
+			// * OUTER OVER BARS * //
+			if (pref.peakmeterBarOverBars) {
+				const overLeft  = this.outerLeftAnim_x  + this.outerLeftAnim_w  - this.w;
+				const overRight = this.outerRightAnim_x + this.outerRightAnim_w - this.w;
+				const xLeft     = this.w - overLeft  - this.x;
+				const xRight    = this.w - overRight - this.x;
+				const wLeft     = this.w - xLeft  + this.x;
+				const wRight    = this.w - xRight + this.x;
+				if (overLeft  > 0) gr.FillSolidRect(xLeft,  this.overLeft_y,   wLeft, this.bar_h * 0.5, this.color[10]);
+				if (overRight > 0) gr.FillSolidRect(xRight, this.overRight_y, wRight, this.bar_h * 0.5, this.color[10]);
+			}
+		}
+
+		this.setAnimation();
+	}
+
+	/**
+	 * Draws the peakmeter bar in horizontal center design.
+	 * @param {GdiGraphics} gr
+	 */
+	drawPeakmeterBarCenter(gr) {
+		// * Progress Bar
+		if (pref.peakmeterBarProgBar && fb.PlaybackLength) {
+			let progressStationary = false;
+			if (this.progressMoved || Math.floor(this.w * 0.5 * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
+				this.progressLength = Math.floor(this.w * 0.5 * (fb.PlaybackTime / fb.PlaybackLength));
+			} else {
+				progressStationary = true;
+			}
+			this.progressMoved = false;
+
+			gr.FillSolidRect(this.x, this.middleLeft_y, this.w, this.bar_h, col.peakmeterBarProg);
+			gr.FillSolidRect(this.x + this.w * 0.5 - this.progressLength, this.middleLeft_y, this.progressLength, this.bar_h, col.peakmeterBarProgFill);
+			gr.FillSolidRect(this.x + this.w * 0.5, this.middleLeft_y, this.progressLength, this.bar_h, col.peakmeterBarProgFill);
+		}
+		// * Middle bars
+		else if (pref.peakmeterBarMiddleBars) {
+			for (let i = 0; i <= this.points_middle; i++) {
+				if (this.leftPeak > this.db_middle[i]) {
+					gr.FillSolidRect(this.x * 0.5 + this.w * 0.5 - i * this.middleOffset + 1, this.middleLeft_y, this.middle_w, this.bar_h * 0.5, col.peakmeterBarProgFill);
+					gr.FillSolidRect(this.x + this.w * 0.5 + i * this.middleOffset - 1, this.middleLeft_y, this.middle_w, this.bar_h * 0.5, col.peakmeterBarProgFill);
+				}
+				if (this.rightPeak > this.db_middle[i]) {
+					gr.FillSolidRect(this.x * 0.5 + this.w * 0.5 - i * this.middleOffset + 1, this.middleRight_y, this.middle_w, this.bar_h * 0.5, col.peakmeterBarProgFill);
+					gr.FillSolidRect(this.x + this.w * 0.5 + i * this.middleOffset - 1, this.middleRight_y, this.middle_w, this.bar_h * 0.5, col.peakmeterBarProgFill);
+				}
+			}
+		}
+		// * Grid
+		if (pref.peakmeterBarGrid) {
+			gr.FillSolidRect(this.x, this.y, this.w, this.bar_h, col.peakmeterBarProg);
+			gr.FillSolidRect(this.x, this.outerRight_y, this.w, this.bar_h, col.peakmeterBarProg);
+		}
+
+		for (let i = 0; i <= this.points; i++) {
+			// * MAIN BARS * //
+			if (this.leftPeak > this.db[i]) {
+				if (pref.peakmeterBarMainBars) {
+					// * Main left bars
+					const xLeft  = this.x * 0.5 + this.w * 0.5 - i * this.offset + 1;
+					const xRight = this.x + i * this.offset + this.w * 0.5 - 1;
+					gr.FillSolidRect(xLeft,  this.mainLeft_y, this.w2, this.bar_h, this.color[i]);
+					gr.FillSolidRect(xRight, this.mainLeft_y, this.w2, this.bar_h, this.color[i]);
+				}
+
+				// * Main left middle peaks
+				if (this.leftPeak < this.db[i + 1]) {
+					this.mainLeft_x = i * this.offset;
+				};
+				if (pref.peakmeterBarMainPeaks) {
+					const xLeft  = this.x * 0.5 + this.w * 0.5 - (this.mainLeftAnim_x + this.offset) + this.w2 * 0.33;
+					const xRight = this.w * 0.5 + this.x + this.mainLeftAnim_x + this.offset;
+					gr.FillSolidRect(xLeft,  this.mainLeft_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
+					gr.FillSolidRect(xRight, this.mainLeft_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
+
+					// * Main left top peaks
+					const xLeftPeaks  = this.x + this.w * 0.5 - this.mainLeftAnim2_x - this.offset - this.w2 * 0.66;
+					const wLeftPeaks  = xLeftPeaks < this.x + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend left edge of bar
+					const xRightPeaks = this.x + this.w * 0.5 + this.mainLeftAnim2_x + this.offset + this.w2 * 0.66;
+					const wRightPeaks = xRightPeaks > this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend left edge of bar
+					gr.FillSolidRect(xLeftPeaks,  this.mainLeft_y, wLeftPeaks,  this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
+					gr.FillSolidRect(xRightPeaks, this.mainLeft_y, wRightPeaks, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
+				}
+			}
+			if (this.rightPeak > this.db[i]) {
+				if (pref.peakmeterBarMainBars) {
+					// * Main right bars
+					const xLeft  = this.x * 0.5 + this.w * 0.5 - i * this.offset + 1;
+					const xRight = this.x + i * this.offset + this.w * 0.5 - 1;
+					gr.FillSolidRect(xLeft,  this.mainRight_y, this.w2, this.bar_h, this.color[i]);
+					gr.FillSolidRect(xRight, this.mainRight_y, this.w2, this.bar_h, this.color[i]);
+				}
+
+				// * Main right middle peaks
+				if (this.rightPeak < this.db[i + 1]) {
+					this.mainRight_x = i * this.offset;
+				};
+				if (pref.peakmeterBarMainPeaks) {
+					const xLeft  = this.x * 0.5 + this.w * 0.5 - (this.mainRightAnim_x + this.offset) + this.w2 * 0.33;
+					const xRight = this.x + this.mainRightAnim_x + this.offset + this.w * 0.5;
+					gr.FillSolidRect(xLeft,  this.mainRight_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
+					gr.FillSolidRect(xRight, this.mainRight_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
+
+					// * Main right top peaks
+					const xLeftPeaks  = this.x + this.w * 0.5 - this.mainRightAnim2_x - this.offset - this.w2 * 0.66;
+					const wLeftPeaks  = xLeftPeaks < this.x + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend left edge of bar
+					const xRightPeaks = this.x + this.w * 0.5 + this.mainRightAnim2_x + this.offset + this.w2 * 0.66;
+					const wRightPeaks = xRightPeaks > this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend left edge of bar
+					gr.FillSolidRect(xLeftPeaks,  this.mainRight_y, wLeftPeaks,  this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
+					gr.FillSolidRect(xRightPeaks, this.mainRight_y, wRightPeaks, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
+				}
+			}
+
+			// * OUTER BARS * //
+			if (this.leftLevel > this.db[i]) {
+				// * Outer left bars
+				if (this.leftLevel < this.db[i + 1]) {
+					this.outerLeft_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.leftLevel - this.db[i]) - this.x;
+				}
+				if (pref.peakmeterBarOuterBars) {
+					const xLeft  = Clamp(this.x + this.w * 0.5 - this.outerLeft_w, this.x, this.w * 0.5);
+					const xRight = this.x + this.w * 0.5;
+					const w      = Clamp(this.outerLeft_w, 0, this.w * 0.5);
+					gr.FillSolidRect(xLeft,  this.outerLeft_y, w, this.bar_h, this.color[1]);
+					gr.FillSolidRect(xRight, this.outerLeft_y, w, this.bar_h, this.color[1]);
+				}
+
+				// * Outer left peaks
+				if (pref.peakmeterBarOuterPeaks) {
+					const clamped_x = Clamp(this.x + this.outerLeftAnim_x, this.x, this.x + this.w * 0.5 - this.outerLeftAnim_w); // Don't extend left edge of bar
+					const w = this.outerLeftAnim_w <= 0 ? 2 : this.outerLeftAnim_w;
+					const xLeft  = this.w * 0.5 + this.x * 2 - clamped_x - w;
+					const xRight = this.w * 0.5 + clamped_x;
+					gr.FillSolidRect(xLeft,  this.outerLeft_y, w, this.bar_h, this.color[1]);
+					gr.FillSolidRect(xRight, this.outerLeft_y, w, this.bar_h, this.color[1]);
+				}
+			}
+			if (this.rightLevel > this.db[i]) {
+				// * Outer right bars
+				if (this.rightLevel < this.db[i + 1]) {
+					this.outerRight_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.rightLevel - this.db[i]) - this.x;
+				}
+				if (pref.peakmeterBarOuterBars) {
+					const xLeft  = Clamp(this.x + this.w * 0.5 - this.outerRight_w, this.x, this.w * 0.5);
+					const xRight = this.x + this.w * 0.5;
+					const w      = Clamp(this.outerRight_w, 0, this.w * 0.5);
+					gr.FillSolidRect(xLeft,  this.outerRight_y, w, this.bar_h, this.color[1]);
+					gr.FillSolidRect(xRight, this.outerRight_y, w, this.bar_h, this.color[1]);
+				}
+
+				// * Outer right peaks
+				if (pref.peakmeterBarOuterPeaks) {
+					const clamped_x = Clamp(this.x + this.outerRightAnim_x, this.x, this.x + this.w * 0.5 - this.outerRightAnim_w); // Don't extend right edge of bar
+					const w = this.outerRightAnim_w <= 0 ? 2 : this.outerRightAnim_w;
+					const xLeftPeaks  = this.w * 0.5 + this.x * 2 - clamped_x - w;
+					const xRightPeaks = this.w * 0.5 + clamped_x;
+					gr.FillSolidRect(xLeftPeaks,  this.outerRight_y, w, this.bar_h, this.color[1]);
+					gr.FillSolidRect(xRightPeaks, this.outerRight_y, w, this.bar_h, this.color[1]);
+				}
+			}
+
+			// * OUTER OVER BARS * //
+			if (pref.peakmeterBarOverBars) {
+				const overLeft  = this.outerLeftAnim_x  + this.outerLeftAnim_w  - this.w * 0.5;
+				const overRight = this.outerRightAnim_x + this.outerRightAnim_w - this.w * 0.5;
+
+				const xLeft   = this.w - overLeft  - this.x;
+				const xRight  = this.w - overRight - this.x;
+				const xLeft2  = Clamp(this.w * 0.5 - overLeft  - this.outerLeftAnim_x  - this.outerLeftAnim_w,  this.x, this.w * 0.5);
+				const xRight2 = Clamp(this.w * 0.5 - overRight - this.outerRightAnim_x - this.outerRightAnim_w, this.x, this.w * 0.5);
+
+				const wLeft   = this.w - xLeft  + this.x;
+				const wRight  = this.w - xRight + this.x;
+				const wLeft2  = this.w - xLeft  + this.outerLeftAnim_x  * 0.5  - this.outerLeftAnim_w  * 0.5;
+				const wRight2 = this.w - xRight + this.outerRightAnim_x * 0.5  - this.outerRightAnim_w * 0.5;
+
+				if (overLeft  > 0) { // Top
+					gr.FillSolidRect(xLeft,  this.overLeft_y, wLeft,  this.bar_h * 0.5, this.color[10]);
+					gr.FillSolidRect(xLeft2, this.overLeft_y, wLeft2, this.bar_h * 0.5, this.color[10]);
+				}
+				if (overRight > 0) { // Bottom
+					gr.FillSolidRect(xRight,  this.overRight_y, wRight,  this.bar_h * 0.5, this.color[10]);
+					gr.FillSolidRect(xRight2, this.overRight_y, wRight2, this.bar_h * 0.5, this.color[10]);
+				}
+			}
+		}
+
+		this.setAnimation();
+	}
+
+	/**
+	 * Draws the peakmeter bar in vertical design.
+	 * @param {GdiGraphics} gr
+	 */
+	drawPeakmeterBarVertical(gr) {
+		for (let i = 0; i < this.points_vert; i++) {
+			// * Left Peaks
+			if (Math.round(this.leftPeak) === this.db_vert[i]) {
+				this.leftPeaks_s[i] = this.vertBar_h * 1.5; // Max height of bars
+			}
+			if (this.leftPeaks_s[i] <= this.h) {
+				const x = this.vertLeft_x + this.vertBar_offset * i;
+				const y = this.y + this.leftPeaks_s[i] - this.vertBar_h;
+				const h = this.leftPeaks_s[i] <= this.vertBar_h ? this.h : this.h - this.leftPeaks_s[i];
+				gr.FillSolidRect(x, y, this.vertBar_w, h, col.peakmeterBarVertFill);
+			}
+			if (pref.peakmeterBarVertPeaks && this.leftPeaks_s[i] >= 0) {
+				const x = this.vertLeft_x + this.vertBar_offset * i;
+				const y = this.y + this.leftPeaks_s[i] - this.vertBar_h;
+				gr.FillSolidRect(x, y, this.vertBar_w, this.vertBar_h, col.peakmeterBarVertFillPeaks);
+			}
+
+			// * Right Peaks
+			if (Math.round(this.rightPeak) === this.db_vert[this.points_vert - 1 - i]) {
+				this.rightPeaks_s[i] = this.vertBar_h * 1.5; // Max height of bars
+			}
+			if (this.rightPeaks_s[i] <= this.h) {
+				const x = this.vertRight_x + this.vertBar_offset * i;
+				const y = this.y + this.rightPeaks_s[i] - this.vertBar_h;
+				const h = this.rightPeaks_s[i] <= this.vertBar_h ? this.h : this.h - this.rightPeaks_s[i];
+				gr.FillSolidRect(x, y, this.vertBar_w, h, col.peakmeterBarVertFill);
+			}
+			if (pref.peakmeterBarVertPeaks && this.rightPeaks_s[i] >= 0) {
+				const x = this.vertRight_x + this.vertBar_offset * i;
+				const y = this.y + this.rightPeaks_s[i] - this.vertBar_h;
+				gr.FillSolidRect(x, y, this.vertBar_w, this.vertBar_h, col.peakmeterBarVertFillPeaks);
+			}
+		}
+		// * Progress Bar
+		if (pref.peakmeterBarProgBar && fb.PlaybackLength) {
+			let progressStationary = false;
+			if (this.progressMoved || Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
+				this.progressLength = Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength));
+			} else {
+				progressStationary = true;
+			}
+			this.progressMoved = false;
+
+			gr.FillSolidRect(this.x, this.y + this.h - this.vertBar_h, this.w, Math.round(this.bar_h), col.peakmeterBarProg);
+			gr.FillSolidRect(this.x, this.y + this.h - this.vertBar_h, this.progressLength, Math.round(this.bar_h), col.peakmeterBarVertProgFill);
+		}
+		else if (pref.peakmeterBarVertBaseline) {
+			gr.FillSolidRect(this.x, this.y + this.h - this.vertBar_h, this.w, this.vertBar_h, col.peakmeterBarProg);
+		}
+
+		this.setAnimation();
+	}
+
+	/**
+	 * Draws the peakmeter bar info.
+	 * @param {GdiGraphics} gr
+	 */
+	drawPeakmeterBarInfo(gr) {
+		const infoTextColor = col.lowerBarArtist;
+		if (pref.peakmeterBarDesign === 'horizontal') {
+			for (let i = 0; i <= this.points; i = i + 2) {
+				const text_w = gr.CalcTextWidth(this.db[i], this.textFont);
+				if (i > 2) {
+					gr.GdiDrawText(this.db[i], this.textFont, infoTextColor, this.x + this.offset * i - text_w * 0.5, this.text_y, this.w, this.h);
+				}
+			}
+			const text_w = gr.CalcTextWidth('db', this.textFont);
+			gr.GdiDrawText('db', this.textFont, infoTextColor, this.x + this.offset * 2 - text_w, this.text_y, this.w, this.h);
+		}
+		else if (pref.peakmeterBarDesign === 'horizontal_center') {
+			for (let i = 0; i <= this.points; i = i + 2) {
+				const textRight_w = gr.CalcTextWidth(this.db[i], this.textFont);
+				const textLeft_w2 = gr.CalcTextWidth(`${this.db[this.points + 3 - i]}-`, this.textFont);
+				if (i > 2) {
+					gr.GdiDrawText(this.db[i], this.textFont, infoTextColor, this.w * 0.5 + this.offset * i - textRight_w * 0.5, this.text_y, this.w, this.h);
+					gr.GdiDrawText(this.db[this.points + 3 - i], this.textFont, infoTextColor, this.x + this.offset * i - textLeft_w2 * 1.5, this.text_y, this.w, this.h);
+				}
+			}
+			const text_w = gr.CalcTextWidth('db', this.textFont);
+			gr.GdiDrawText('db', this.textFont, infoTextColor, this.w * 0.5 + this.offset * 2 - text_w * 0.5, this.text_y, this.w, this.h);
+		}
+		else if (pref.peakmeterBarDesign === 'vertical') {
+			for (let  i = 0; i <= this.points_vert; i++) {
+				const textWidthLeft  = gr.CalcTextWidth(`${this.db_vert[i]}--`, this.textFont);
+				const textWidthRight = gr.CalcTextWidth(`${this.db_vert[this.points_vert - 1 - i]}--`, this.textFont);
+				const textLeft_x     = this.vertLeft_x  + this.vertBar_offset * i - textWidthLeft  / 2 + (this.vertBar_offset - this.vertBar_w);
+				const textRight_x    = this.vertRight_x + this.vertBar_offset * i - textWidthRight / 2 + (this.vertBar_offset - this.vertBar_w);
+				gr.GdiDrawText(this.db_vert[i] % 2 === 0 ? this.db_vert[i] : '', this.textFont, infoTextColor, textLeft_x, this.y, ww, wh);
+				gr.GdiDrawText(this.db_vert[this.points_vert - 1 - i] % 2 === 0 ? this.db_vert[this.points_vert - 1 - i] : '', this.textFont, infoTextColor, textRight_x, this.y, ww, wh);
+			}
+		}
+	}
+
+	/**
+	 * Draws the peakmeter bar in various peakmeter bar designs.
 	 * @param {GdiGraphics} gr
 	 */
 	draw(gr) {
-		// * Style Horizontal
-		if (pref.peakmeterBarDesign === 'horizontal' && fb.IsPlaying) {
-			// * Progress Bar
-			if (pref.peakmeterBarProgBar && fb.PlaybackLength) {
-				let progressStationary = false;
-				if (this.progressMoved || Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
-					this.progressLength = Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength));
-				} else {
-					progressStationary = true;
-				}
-				this.progressMoved = false;
-
-				gr.FillSolidRect(this.x, this.middleLeft_y, this.w, this.bar_h, col.peakmeterBarProg);
-				gr.FillSolidRect(this.x, this.middleLeft_y, this.progressLength, this.bar_h, col.peakmeterBarProgFill);
-			}
-			// * Middle bars
-			else if (pref.peakmeterBarMiddleBars) {
-				for (let i = 0; i <= this.points_middle; i++) {
-					if (this.leftPeak > this.db_middle[i]) {
-						gr.FillSolidRect(this.x + i * this.middleOffset, this.middleLeft_y, this.middle_w, this.bar_h * 0.5, col.peakmeterBarProgFill);
-					}
-					if (this.rightPeak > this.db_middle[i]) {
-						gr.FillSolidRect(this.x + i * this.middleOffset, this.middleRight_y, this.middle_w, this.bar_h * 0.5, col.peakmeterBarProgFill);
-					}
-				}
-			}
-			// * Grid
-			if (pref.peakmeterBarGrid) {
-				gr.FillSolidRect(this.x, this.y, this.w, this.bar_h, col.peakmeterBarProg);
-				gr.FillSolidRect(this.x, this.outerRight_y, this.w, this.bar_h, col.peakmeterBarProg);
-			}
-
-			for (let i = 0; i <= this.points; i++) {
-				// * MAIN BARS * //
-				if (this.leftPeak > this.db[i]) {
-					if (pref.peakmeterBarMainBars) {
-						// * Main left bars
-						gr.FillSolidRect(this.x + i * this.offset, this.mainLeft_y, this.w2, this.bar_h, this.color[i]);
-					}
-
-					// * Main left middle peaks
-					if (this.leftPeak < this.db[i + 1]) {
-						this.mainLeft_x = i * this.offset;
-					};
-					if (pref.peakmeterBarMainPeaks) {
-						gr.FillSolidRect(this.x + this.mainLeftAnim_x + this.offset, this.mainLeft_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-
-						// * Main left top peaks
-						const x = Clamp(this.x + this.mainLeftAnim2_x + this.offset + this.w2 * 0.66, this.x, this.x + this.w - this.w2 * 0.33); // Don't extend right edge of bar
-						const w = x > this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend right edge of bar
-						gr.FillSolidRect(x, this.mainLeft_y, w, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-					}
-				}
-				if (this.rightPeak > this.db[i]) {
-					if (pref.peakmeterBarMainBars) {
-						// * Main right bars
-						gr.FillSolidRect(this.x + i * this.offset, this.mainRight_y, this.w2, this.bar_h, this.color[i]);
-					}
-
-					// * Main right middle peaks
-					if (this.rightPeak < this.db[i + 1]) {
-						this.mainRight_x = i * this.offset;
-					};
-					if (pref.peakmeterBarMainPeaks) {
-						gr.FillSolidRect(this.x + this.mainRightAnim_x + this.offset, this.mainRight_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
-
-						// * Main right top peaks
-						const x = Clamp(this.x + this.mainRightAnim2_x + this.offset + this.w2 * 0.66, this.x, this.x + this.w - this.w2 * 0.33); // Don't extend right edge of bar
-						const w = x >= this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend right edge of bar
-						gr.FillSolidRect(x, this.mainRight_y, w, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
-					}
-				}
-
-				// * OUTER BARS * //
-				if (this.leftLevel > this.db[i]) {
-					// * Outer left bars
-					if (this.leftLevel < this.db[i + 1]) {
-						this.outerLeft_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.leftLevel - this.db[i]) - this.x;
-					}
-					if (pref.peakmeterBarOuterBars) {
-						gr.FillSolidRect(this.x, this.outerLeft_y, this.outerLeft_w, this.bar_h, this.color[1]);
-					}
-
-					// * Outer left peaks
-					if (pref.peakmeterBarOuterPeaks) {
-						const x = Clamp(this.x + this.outerLeftAnim_x, this.x, this.x + this.w - this.outerLeftAnim_w); // Don't extend right edge of bar
-						gr.FillSolidRect(x, this.outerLeft_y, this.outerLeftAnim_w <= 0 ? 2 : this.outerLeftAnim_w, this.bar_h, this.color[1]);
-					}
-				}
-				if (this.rightLevel > this.db[i]) {
-					// * Outer right bars
-					if (this.rightLevel < this.db[i + 1]) {
-						this.outerRight_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.rightLevel - this.db[i]) - this.x;
-					}
-					if (pref.peakmeterBarOuterBars) {
-						gr.FillSolidRect(this.x, this.outerRight_y, this.outerRight_w, this.bar_h, this.color[1]);
-					}
-
-					// * Outer right peaks
-					if (pref.peakmeterBarOuterPeaks) {
-						const x = Clamp(this.x + this.outerRightAnim_x, this.x, this.x + this.w - this.outerRightAnim_w); // Don't extend right edge of bar
-						gr.FillSolidRect(x, this.outerRight_y, this.outerRightAnim_w <= 0 ? 2 : this.outerRightAnim_w, this.bar_h, this.color[1]);
-					}
-				}
-
-				// * OUTER OVER BARS * //
-				if (pref.peakmeterBarOverBars) {
-					const overLeft  = this.outerLeftAnim_x  + this.outerLeftAnim_w  - this.w;
-					const overRight = this.outerRightAnim_x + this.outerRightAnim_w - this.w;
-					const xLeft     = this.w - overLeft  - this.x;
-					const xRight    = this.w - overRight - this.x;
-					const wLeft     = this.w - xLeft  + this.x;
-					const wRight    = this.w - xRight + this.x;
-					if (overLeft  > 0) gr.FillSolidRect(xLeft,  this.overLeft_y,   wLeft, this.bar_h * 0.5, this.color[10]);
-					if (overRight > 0) gr.FillSolidRect(xRight, this.overRight_y, wRight, this.bar_h * 0.5, this.color[10]);
-				}
-			}
+		if (pref.peakmeterBarDesign === 'horizontal') {
+			this.drawPeakmeterBarHorizontal(gr);
 		}
-		// * Style Horizontal center
-		else if (pref.peakmeterBarDesign === 'horizontal_center' && fb.IsPlaying) {
-			// * Progress Bar
-			if (pref.peakmeterBarProgBar && fb.PlaybackLength) {
-				let progressStationary = false;
-				if (this.progressMoved || Math.floor(this.w * 0.5 * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
-					this.progressLength = Math.floor(this.w * 0.5 * (fb.PlaybackTime / fb.PlaybackLength));
-				} else {
-					progressStationary = true;
-				}
-				this.progressMoved = false;
-
-				gr.FillSolidRect(this.x, this.middleLeft_y, this.w, this.bar_h, col.peakmeterBarProg);
-				gr.FillSolidRect(this.x + this.w * 0.5 - this.progressLength, this.middleLeft_y, this.progressLength, this.bar_h, col.peakmeterBarProgFill);
-				gr.FillSolidRect(this.x + this.w * 0.5, this.middleLeft_y, this.progressLength, this.bar_h, col.peakmeterBarProgFill);
-			}
-			// * Middle bars
-			else if (pref.peakmeterBarMiddleBars) {
-				for (let i = 0; i <= this.points_middle; i++) {
-					if (this.leftPeak > this.db_middle[i]) {
-						gr.FillSolidRect(this.x * 0.5 + this.w * 0.5 - i * this.middleOffset + 1, this.middleLeft_y, this.middle_w, this.bar_h * 0.5, col.peakmeterBarProgFill);
-						gr.FillSolidRect(this.x + this.w * 0.5 + i * this.middleOffset - 1, this.middleLeft_y, this.middle_w, this.bar_h * 0.5, col.peakmeterBarProgFill);
-					}
-					if (this.rightPeak > this.db_middle[i]) {
-						gr.FillSolidRect(this.x * 0.5 + this.w * 0.5 - i * this.middleOffset + 1, this.middleRight_y, this.middle_w, this.bar_h * 0.5, col.peakmeterBarProgFill);
-						gr.FillSolidRect(this.x + this.w * 0.5 + i * this.middleOffset - 1, this.middleRight_y, this.middle_w, this.bar_h * 0.5, col.peakmeterBarProgFill);
-					}
-				}
-			}
-			// * Grid
-			if (pref.peakmeterBarGrid) {
-				gr.FillSolidRect(this.x, this.y, this.w, this.bar_h, col.peakmeterBarProg);
-				gr.FillSolidRect(this.x, this.outerRight_y, this.w, this.bar_h, col.peakmeterBarProg);
-			}
-
-			for (let i = 0; i <= this.points; i++) {
-				// * MAIN BARS * //
-				if (this.leftPeak > this.db[i]) {
-					if (pref.peakmeterBarMainBars) {
-						// * Main left bars
-						const xLeft  = this.x * 0.5 + this.w * 0.5 - i * this.offset + 1;
-						const xRight = this.x + i * this.offset + this.w * 0.5 - 1;
-						gr.FillSolidRect(xLeft,  this.mainLeft_y, this.w2, this.bar_h, this.color[i]);
-						gr.FillSolidRect(xRight, this.mainLeft_y, this.w2, this.bar_h, this.color[i]);
-					}
-
-					// * Main left middle peaks
-					if (this.leftPeak < this.db[i + 1]) {
-						this.mainLeft_x = i * this.offset;
-					};
-					if (pref.peakmeterBarMainPeaks) {
-						const xLeft  = this.x * 0.5 + this.w * 0.5 - (this.mainLeftAnim_x + this.offset) + this.w2 * 0.33;
-						const xRight = this.w * 0.5 + this.x + this.mainLeftAnim_x + this.offset;
-						gr.FillSolidRect(xLeft,  this.mainLeft_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-						gr.FillSolidRect(xRight, this.mainLeft_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-
-						// * Main left top peaks
-						const xLeftPeaks  = this.x + this.w * 0.5 - this.mainLeftAnim2_x - this.offset - this.w2 * 0.66;
-						const wLeftPeaks  = xLeftPeaks < this.x + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend left edge of bar
-						const xRightPeaks = this.x + this.w * 0.5 + this.mainLeftAnim2_x + this.offset + this.w2 * 0.66;
-						const wRightPeaks = xRightPeaks > this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend left edge of bar
-						gr.FillSolidRect(xLeftPeaks,  this.mainLeft_y, wLeftPeaks,  this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-						gr.FillSolidRect(xRightPeaks, this.mainLeft_y, wRightPeaks, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-					}
-				}
-				if (this.rightPeak > this.db[i]) {
-					if (pref.peakmeterBarMainBars) {
-						// * Main right bars
-						const xLeft  = this.x * 0.5 + this.w * 0.5 - i * this.offset + 1;
-						const xRight = this.x + i * this.offset + this.w * 0.5 - 1;
-						gr.FillSolidRect(xLeft,  this.mainRight_y, this.w2, this.bar_h, this.color[i]);
-						gr.FillSolidRect(xRight, this.mainRight_y, this.w2, this.bar_h, this.color[i]);
-					}
-
-					// * Main right middle peaks
-					if (this.rightPeak < this.db[i + 1]) {
-						this.mainRight_x = i * this.offset;
-					};
-					if (pref.peakmeterBarMainPeaks) {
-						const xLeft  = this.x * 0.5 + this.w * 0.5 - (this.mainRightAnim_x + this.offset) + this.w2 * 0.33;
-						const xRight = this.x + this.mainRightAnim_x + this.offset + this.w * 0.5;
-						gr.FillSolidRect(xLeft,  this.mainRight_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
-						gr.FillSolidRect(xRight, this.mainRight_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
-
-						// * Main right top peaks
-						const xLeftPeaks  = this.x + this.w * 0.5 - this.mainRightAnim2_x - this.offset - this.w2 * 0.66;
-						const wLeftPeaks  = xLeftPeaks < this.x + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend left edge of bar
-						const xRightPeaks = this.x + this.w * 0.5 + this.mainRightAnim2_x + this.offset + this.w2 * 0.66;
-						const wRightPeaks = xRightPeaks > this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend left edge of bar
-						gr.FillSolidRect(xLeftPeaks,  this.mainRight_y, wLeftPeaks,  this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-						gr.FillSolidRect(xRightPeaks, this.mainRight_y, wRightPeaks, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-					}
-				}
-
-				// * OUTER BARS * //
-				if (this.leftLevel > this.db[i]) {
-					// * Outer left bars
-					if (this.leftLevel < this.db[i + 1]) {
-						this.outerLeft_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.leftLevel - this.db[i]) - this.x;
-					}
-					if (pref.peakmeterBarOuterBars) {
-						const xLeft  = Clamp(this.x + this.w * 0.5 - this.outerLeft_w, this.x, this.w * 0.5);
-						const xRight = this.x + this.w * 0.5;
-						const w      = Clamp(this.outerLeft_w, 0, this.w * 0.5);
-						gr.FillSolidRect(xLeft,  this.outerLeft_y, w, this.bar_h, this.color[1]);
-						gr.FillSolidRect(xRight, this.outerLeft_y, w, this.bar_h, this.color[1]);
-					}
-
-					// * Outer left peaks
-					if (pref.peakmeterBarOuterPeaks) {
-						const clamped_x = Clamp(this.x + this.outerLeftAnim_x, this.x, this.x + this.w * 0.5 - this.outerLeftAnim_w); // Don't extend left edge of bar
-						const w = this.outerLeftAnim_w <= 0 ? 2 : this.outerLeftAnim_w;
-						const xLeft  = this.w * 0.5 + this.x * 2 - clamped_x - w;
-						const xRight = this.w * 0.5 + clamped_x;
-						gr.FillSolidRect(xLeft,  this.outerLeft_y, w, this.bar_h, this.color[1]);
-						gr.FillSolidRect(xRight, this.outerLeft_y, w, this.bar_h, this.color[1]);
-					}
-				}
-				if (this.rightLevel > this.db[i]) {
-					// * Outer right bars
-					if (this.rightLevel < this.db[i + 1]) {
-						this.outerRight_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.rightLevel - this.db[i]) - this.x;
-					}
-					if (pref.peakmeterBarOuterBars) {
-						const xLeft  = Clamp(this.x + this.w * 0.5 - this.outerRight_w, this.x, this.w * 0.5);
-						const xRight = this.x + this.w * 0.5;
-						const w      = Clamp(this.outerRight_w, 0, this.w * 0.5);
-						gr.FillSolidRect(xLeft,  this.outerRight_y, w, this.bar_h, this.color[1]);
-						gr.FillSolidRect(xRight, this.outerRight_y, w, this.bar_h, this.color[1]);
-					}
-
-					// * Outer right peaks
-					if (pref.peakmeterBarOuterPeaks) {
-						const clamped_x = Clamp(this.x + this.outerRightAnim_x, this.x, this.x + this.w * 0.5 - this.outerRightAnim_w); // Don't extend right edge of bar
-						const w = this.outerRightAnim_w <= 0 ? 2 : this.outerRightAnim_w;
-						const xLeftPeaks  = this.w * 0.5 + this.x * 2 - clamped_x - w;
-						const xRightPeaks = this.w * 0.5 + clamped_x;
-						gr.FillSolidRect(xLeftPeaks,  this.outerRight_y, w, this.bar_h, this.color[1]);
-						gr.FillSolidRect(xRightPeaks, this.outerRight_y, w, this.bar_h, this.color[1]);
-					}
-				}
-
-				// * OUTER OVER BARS * //
-				if (pref.peakmeterBarOverBars) {
-					const overLeft  = this.outerLeftAnim_x  + this.outerLeftAnim_w  - this.w * 0.5;
-					const overRight = this.outerRightAnim_x + this.outerRightAnim_w - this.w * 0.5;
-
-					const xLeft   = this.w - overLeft  - this.x;
-					const xRight  = this.w - overRight - this.x;
-					const xLeft2  = Clamp(this.w * 0.5 - overLeft  - this.outerLeftAnim_x  - this.outerLeftAnim_w,  this.x, this.w * 0.5);
-					const xRight2 = Clamp(this.w * 0.5 - overRight - this.outerRightAnim_x - this.outerRightAnim_w, this.x, this.w * 0.5);
-
-					const wLeft   = this.w - xLeft  + this.x;
-					const wRight  = this.w - xRight + this.x;
-					const wLeft2  = this.w - xLeft  + this.outerLeftAnim_x  * 0.5  - this.outerLeftAnim_w  * 0.5;
-					const wRight2 = this.w - xRight + this.outerRightAnim_x * 0.5  - this.outerRightAnim_w * 0.5;
-
-					if (overLeft  > 0) { // Top
-						gr.FillSolidRect(xLeft,  this.overLeft_y, wLeft,  this.bar_h * 0.5, this.color[10]);
-						gr.FillSolidRect(xLeft2, this.overLeft_y, wLeft2, this.bar_h * 0.5, this.color[10]);
-					}
-					if (overRight > 0) { // Bottom
-						gr.FillSolidRect(xRight,  this.overRight_y, wRight,  this.bar_h * 0.5, this.color[10]);
-						gr.FillSolidRect(xRight2, this.overRight_y, wRight2, this.bar_h * 0.5, this.color[10]);
-					}
-				}
-			}
+		else if (pref.peakmeterBarDesign === 'horizontal_center') {
+			this.drawPeakmeterBarCenter(gr);
 		}
-		// * Style Vertical
-		else if (pref.peakmeterBarDesign === 'vertical' && fb.IsPlaying) {
-			for (let i = 0; i < this.points_vert; i++) {
-				// * Left Peaks
-				if (Math.round(this.leftPeak) === this.db_vert[i]) {
-					this.leftPeaks_s[i] = this.vertBar_h * 1.5; // Max height of bars
-				}
-				if (this.leftPeaks_s[i] <= this.h) {
-					const x = this.vertLeft_x + this.vertBar_offset * i;
-					const y = this.y + this.leftPeaks_s[i] - this.vertBar_h;
-					const h = this.leftPeaks_s[i] <= this.vertBar_h ? this.h : this.h - this.leftPeaks_s[i];
-					gr.FillSolidRect(x, y, this.vertBar_w, h, col.peakmeterBarVertFill);
-				}
-				if (pref.peakmeterBarVertPeaks && this.leftPeaks_s[i] >= 0) {
-					const x = this.vertLeft_x + this.vertBar_offset * i;
-					const y = this.y + this.leftPeaks_s[i] - this.vertBar_h;
-					gr.FillSolidRect(x, y, this.vertBar_w, this.vertBar_h, col.peakmeterBarVertFillPeaks);
-				}
-
-				// * Right Peaks
-				if (Math.round(this.rightPeak) === this.db_vert[this.points_vert - 1 - i]) {
-					this.rightPeaks_s[i] = this.vertBar_h * 1.5; // Max height of bars
-				}
-				if (this.rightPeaks_s[i] <= this.h) {
-					const x = this.vertRight_x + this.vertBar_offset * i;
-					const y = this.y + this.rightPeaks_s[i] - this.vertBar_h;
-					const h = this.rightPeaks_s[i] <= this.vertBar_h ? this.h : this.h - this.rightPeaks_s[i];
-					gr.FillSolidRect(x, y, this.vertBar_w, h, col.peakmeterBarVertFill);
-				}
-				if (pref.peakmeterBarVertPeaks && this.rightPeaks_s[i] >= 0) {
-					const x = this.vertRight_x + this.vertBar_offset * i;
-					const y = this.y + this.rightPeaks_s[i] - this.vertBar_h;
-					gr.FillSolidRect(x, y, this.vertBar_w, this.vertBar_h, col.peakmeterBarVertFillPeaks);
-				}
-			}
-			// * Progress Bar
-			if (pref.peakmeterBarProgBar && fb.PlaybackLength) {
-				let progressStationary = false;
-				if (this.progressMoved || Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
-					this.progressLength = Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength));
-				} else {
-					progressStationary = true;
-				}
-				this.progressMoved = false;
-
-				gr.FillSolidRect(this.x, this.y + this.h - this.vertBar_h, this.w, Math.round(this.bar_h), col.peakmeterBarProg);
-				gr.FillSolidRect(this.x, this.y + this.h - this.vertBar_h, this.progressLength, Math.round(this.bar_h), col.peakmeterBarVertProgFill);
-			}
-			else if (pref.peakmeterBarVertBaseline) {
-				gr.FillSolidRect(this.x, this.y + this.h - this.vertBar_h, this.w, this.vertBar_h, col.peakmeterBarProg);
-			}
+		else if (pref.peakmeterBarDesign === 'vertical') {
+			this.drawPeakmeterBarVertical(gr);
 		}
-
-		// * Peakmeter bar info
-		if (pref.peakmeterBarInfo && pref.layout === 'default') {
-			const infoTextColor = col.lowerBarArtist;
-			if (pref.peakmeterBarDesign === 'horizontal') {
-				for (let i = 0; i <= this.points; i = i + 2) {
-					const text_w = gr.CalcTextWidth(this.db[i], this.textFont);
-					if (i > 2) {
-						gr.GdiDrawText(this.db[i], this.textFont, infoTextColor, this.x + this.offset * i - text_w * 0.5, this.text_y, this.w, this.h);
-					}
-				}
-				const text_w = gr.CalcTextWidth('db', this.textFont);
-				gr.GdiDrawText('db', this.textFont, infoTextColor, this.x + this.offset * 2 - text_w, this.text_y, this.w, this.h);
-			}
-			else if (pref.peakmeterBarDesign === 'horizontal_center') {
-				for (let i = 0; i <= this.points; i = i + 2) {
-					const textRight_w = gr.CalcTextWidth(this.db[i], this.textFont);
-					const textLeft_w2 = gr.CalcTextWidth(`${this.db[this.points + 3 - i]}-`, this.textFont);
-					if (i > 2) {
-						gr.GdiDrawText(this.db[i], this.textFont, infoTextColor, this.w * 0.5 + this.offset * i - textRight_w * 0.5, this.text_y, this.w, this.h);
-						gr.GdiDrawText(this.db[this.points + 3 - i], this.textFont, infoTextColor, this.x + this.offset * i - textLeft_w2 * 1.5, this.text_y, this.w, this.h);
-					}
-				}
-				const text_w = gr.CalcTextWidth('db', this.textFont);
-				gr.GdiDrawText('db', this.textFont, infoTextColor, this.w * 0.5 + this.offset * 2 - text_w * 0.5, this.text_y, this.w, this.h);
-			}
-			else if (pref.peakmeterBarDesign === 'vertical') {
-				for (let  i = 0; i <= this.points_vert; i++) {
-					const textWidthLeft  = gr.CalcTextWidth(`${this.db_vert[i]}--`, this.textFont);
-					const textWidthRight = gr.CalcTextWidth(`${this.db_vert[this.points_vert - 1 - i]}--`, this.textFont);
-					const textLeft_x     = this.vertLeft_x  + this.vertBar_offset * i - textWidthLeft  / 2 + (this.vertBar_offset - this.vertBar_w);
-					const textRight_x    = this.vertRight_x + this.vertBar_offset * i - textWidthRight / 2 + (this.vertBar_offset - this.vertBar_w);
-					gr.GdiDrawText(this.db_vert[i] % 2 === 0 ? this.db_vert[i] : '', this.textFont, infoTextColor, textLeft_x, this.y, ww, wh);
-					gr.GdiDrawText(this.db_vert[this.points_vert - 1 - i] % 2 === 0 ? this.db_vert[this.points_vert - 1 - i] : '', this.textFont, infoTextColor, textRight_x, this.y, ww, wh);
-				}
-			}
+		if (pref.peakmeterBarInfo) {
+			this.drawPeakmeterBarInfo(gr);
 		}
-
-		// * Start animation
-		this.setAnimation();
 	}
 
 	// * CALLBACKS * //
@@ -3248,148 +3278,147 @@ class WaveformBar {
 	 * @param {boolean} normalizeWidth
 	 */
 	normalizePoints(normalizeWidth = false) {
-		if (this.current.length) {
-			let upper = 0;
-			let lower = 0;
-			if (!this.isFallback && !this.fallbackMode.paint && this.analysis.binaryMode === 'ffprobe') {
-				// Calculate max values
-				const { pos } = this.ffprobeMode[this.preset.analysisMode];
-				let max = 0;
-				this.current.forEach((frame) => {
-					// After parsing JSON, restore infinity values
-					if (frame[pos] === null) { frame[pos] = -Infinity; }
-					const val = frame[pos];
-					max = Math.min(max, isFinite(val) ? val : 0);
+		if (!this.current.length) return;
+		let upper = 0;
+		let lower = 0;
+		if (!this.isFallback && !this.fallbackMode.paint && this.analysis.binaryMode === 'ffprobe') {
+			// Calculate max values
+			const { pos } = this.ffprobeMode[this.preset.analysisMode];
+			let max = 0;
+			this.current.forEach((frame) => {
+				// After parsing JSON, restore infinity values
+				if (frame[pos] === null) { frame[pos] = -Infinity; }
+				const val = frame[pos];
+				max = Math.min(max, isFinite(val) ? val : 0);
+			});
+			// Calculate point scale
+			let maxVal = 1;
+			if (this.preset.analysisMode !== 'rms_level') {
+				this.current.forEach((frame, n) => {
+					if (frame.length === 5) { frame.length = 4; }
+					frame.push(isFinite(frame[pos]) ? Math.abs(1 - (Math.log(Math.abs(max)) + Math.log(Math.abs(frame[pos]))) / Math.log(Math.abs(max))) : 1);
+					if (!isFinite(frame[4])) { frame[4] = 0; }
+					maxVal = Math.min(maxVal, frame[4]);
 				});
-				// Calculate point scale
-				let maxVal = 1;
-				if (this.preset.analysisMode !== 'rms_level') {
-					this.current.forEach((frame, n) => {
-						if (frame.length === 5) { frame.length = 4; }
-						frame.push(isFinite(frame[pos]) ? Math.abs(1 - (Math.log(Math.abs(max)) + Math.log(Math.abs(frame[pos]))) / Math.log(Math.abs(max))) : 1);
-						if (!isFinite(frame[4])) { frame[4] = 0; }
-						maxVal = Math.min(maxVal, frame[4]);
-					});
+			}
+			else {
+				this.current.forEach((frame) => {
+					frame.push(isFinite(frame[pos]) ? 1 - Math.abs((frame[pos] - max) / max) : 1);
+					maxVal = Math.min(maxVal, frame[4]);
+				});
+			}
+			// Normalize
+			if (maxVal !== 0) {
+				this.current.forEach((frame) => {
+					if (frame[4] !== 1) { frame[4] = frame[4] - maxVal; }
+				});
+			}
+			// Flat data
+			this.current = this.current.map((x, i) => Math.sign((0.5 - i % 2)) * (1 - x[4]));
+			// Calculate max values
+			this.current.forEach((frame) => {
+				upper = Math.max(upper, frame);
+				lower = Math.min(lower, frame);
+			});
+			max = Math.max(Math.abs(upper), Math.abs(lower));
+		}
+		else if (this.analysis.binaryMode === 'audiowaveform' || this.analysis.binaryMode === 'visualizer' || this.isFallback || this.fallbackMode.paint) {
+			// Calculate max values
+			let max = 0;
+			this.current.forEach((frame) => {
+				upper = Math.max(upper, frame);
+				lower = Math.min(lower, frame);
+			});
+			max = Math.max(Math.abs(upper), Math.abs(lower));
+			// Calculate point scale
+			this.current = this.current.map((frame) => frame / max);
+		}
+		// Adjust num of frames to window size
+		if (normalizeWidth) {
+			const barW =
+				this.preset.barDesign === 'waveform' ? this.ui.sizeWave :
+				this.preset.barDesign === 'bars'     ? this.ui.sizeBars :
+				this.preset.barDesign === 'dots'     ? this.ui.sizeDots :
+				this.preset.barDesign === 'halfbars' ? this.ui.sizeHalf : 1;
+
+			const frames = this.current.length;
+			const newFrames = Math.floor(this.w / barW);
+
+			let data;
+			if (newFrames !== frames) {
+				if (newFrames < frames) {
+					const scale = frames / newFrames;
+					data = Array(newFrames).fill(null).map((_) => ({ val: 0, count: 0 }));
+					let j = 0;
+					let h = 0;
+					let frame;
+					for (let i = 0; i < frames; i++) {
+						frame = this.current[i];
+						if (h >= scale) {
+							const w = (h - scale);
+							if (i % 2 === 0) {
+								if ((j + 1) >= newFrames) { break; }
+								data[j + 1].val += frame * w;
+								data[j + 1].count += w;
+							} else {
+								data[j].val += frame * w;
+								data[j].count += w;
+							}
+							j += 2;
+							h = 0;
+							data[j].val += frame * (1 - w);
+							data[j].count += (1 - w);
+						}
+						else if (i % 2 === 0) {
+							if ((j + 1) >= newFrames) { break; }
+							data[j + 1].val += frame;
+							data[j + 1].count++;
+						}
+						else {
+							data[j].val += frame;
+							data[j].count++;
+							h++;
+						}
+					}
 				}
 				else {
-					this.current.forEach((frame) => {
-						frame.push(isFinite(frame[pos]) ? 1 - Math.abs((frame[pos] - max) / max) : 1);
-						maxVal = Math.min(maxVal, frame[4]);
-					});
-				}
-				// Normalize
-				if (maxVal !== 0) {
-					this.current.forEach((frame) => {
-						if (frame[4] !== 1) { frame[4] = frame[4] - maxVal; }
-					});
-				}
-				// Flat data
-				this.current = this.current.map((x, i) => Math.sign((0.5 - i % 2)) * (1 - x[4]));
-				// Calculate max values
-				this.current.forEach((frame) => {
-					upper = Math.max(upper, frame);
-					lower = Math.min(lower, frame);
-				});
-				max = Math.max(Math.abs(upper), Math.abs(lower));
-			}
-			else if (this.analysis.binaryMode === 'audiowaveform' || this.analysis.binaryMode === 'visualizer' || this.isFallback || this.fallbackMode.paint) {
-				// Calculate max values
-				let max = 0;
-				this.current.forEach((frame) => {
-					upper = Math.max(upper, frame);
-					lower = Math.min(lower, frame);
-				});
-				max = Math.max(Math.abs(upper), Math.abs(lower));
-				// Calculate point scale
-				this.current = this.current.map((frame) => frame / max);
-			}
-			// Adjust num of frames to window size
-			if (normalizeWidth) {
-				const barW =
-					this.preset.barDesign === 'waveform' ? this.ui.sizeWave :
-					this.preset.barDesign === 'bars'     ? this.ui.sizeBars :
-					this.preset.barDesign === 'dots'     ? this.ui.sizeDots :
-					this.preset.barDesign === 'halfbars' ? this.ui.sizeHalf : 1;
-
-				const frames = this.current.length;
-				const newFrames = Math.floor(this.w / barW);
-
-				let data;
-				if (newFrames !== frames) {
-					if (newFrames < frames) {
-						const scale = frames / newFrames;
-						data = Array(newFrames).fill(null).map((_) => ({ val: 0, count: 0 }));
-						let j = 0;
-						let h = 0;
-						let frame;
-						for (let i = 0; i < frames; i++) {
-							frame = this.current[i];
-							if (h >= scale) {
-								const w = (h - scale);
-								if (i % 2 === 0) {
-									if ((j + 1) >= newFrames) { break; }
-									data[j + 1].val += frame * w;
-									data[j + 1].count += w;
-								} else {
-									data[j].val += frame * w;
-									data[j].count += w;
-								}
-								j += 2;
-								h = 0;
-								data[j].val += frame * (1 - w);
-								data[j].count += (1 - w);
-							}
-							else if (i % 2 === 0) {
-								if ((j + 1) >= newFrames) { break; }
-								data[j + 1].val += frame;
-								data[j + 1].count++;
-							}
-							else {
-								data[j].val += frame;
-								data[j].count++;
-								h++;
-							}
-						}
-					}
-					else {
-						const scale = newFrames / frames;
-						data = Array(newFrames).fill(null).map((_) => ({ val: 0, count: 0 }));
-						let j = 0;
-						let h = 0;
-						let frame;
-						for (let i = 0; i < frames; i++) {
-							frame = this.current[i];
-							while (h < scale) {
-								data[j].val += frame;
-								data[j].count++;
-								h++;
-								j++;
-								if (j >= newFrames) { break; }
-							}
-							h = (h - scale);
+					const scale = newFrames / frames;
+					data = Array(newFrames).fill(null).map((_) => ({ val: 0, count: 0 }));
+					let j = 0;
+					let h = 0;
+					let frame;
+					for (let i = 0; i < frames; i++) {
+						frame = this.current[i];
+						while (h < scale) {
+							data[j].val += frame;
+							data[j].count++;
+							h++;
+							j++;
 							if (j >= newFrames) { break; }
 						}
+						h = (h - scale);
+						if (j >= newFrames) { break; }
 					}
-					// Filter non valid values
-					let len = data.length;
-					while (data[len - 1].count === 0) { data.pop(); len--; }
-					// Normalize
-					this.current = data.map((el) => el.val / el.count);
-					// Some combinations of bar widths and number of points may affect the bias to the upper or lower part of the waveform
-					// Lower or upper side can be normalized to the max value of the other side to account for this
-					const bias = Math.abs(upper / lower);
-					upper = lower = 0;
-					this.current.forEach((frame) => {
-						upper = Math.max(upper, frame);
-						lower = Math.min(lower, frame);
-					});
-					const newBias = Math.abs(upper / lower);
-					const diff = bias - newBias;
-					if (diff > 0.1) {
-						const distort = bias / newBias;
-						const sign = Math.sign(diff);
-						this.current = this.current.map((frame) => sign === 1 && frame > 0 || sign !== 1 && frame < 0 ? frame * distort : frame);
-					}
+				}
+				// Filter non valid values
+				let len = data.length;
+				while (data[len - 1].count === 0) { data.pop(); len--; }
+				// Normalize
+				this.current = data.map((el) => el.val / el.count);
+				// Some combinations of bar widths and number of points may affect the bias to the upper or lower part of the waveform
+				// Lower or upper side can be normalized to the max value of the other side to account for this
+				const bias = Math.abs(upper / lower);
+				upper = lower = 0;
+				this.current.forEach((frame) => {
+					upper = Math.max(upper, frame);
+					lower = Math.min(lower, frame);
+				});
+				const newBias = Math.abs(upper / lower);
+				const diff = bias - newBias;
+				if (diff > 0.1) {
+					const distort = bias / newBias;
+					const sign = Math.sign(diff);
+					this.current = this.current.map((frame) => sign === 1 && frame > 0 || sign !== 1 && frame < 0 ? frame * distort : frame);
 				}
 			}
 		}

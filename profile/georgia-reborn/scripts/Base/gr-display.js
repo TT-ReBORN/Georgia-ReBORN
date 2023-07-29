@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-22                                          * //
+// * Last change:    2023-07-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -29,6 +29,69 @@ let lastSize;
 
 // * Check and set the actual display DPI number via reading the Windows registry value.
 try { DPI = WshShell.RegRead('HKCU\\Control Panel\\Desktop\\WindowMetrics\\AppliedDPI'); } catch (e) {}
+
+/**
+ * All predefined HD res player sizes ( Options > Player size ) for each layout ( Options > Layout ).
+ */
+const playerSizesHD = {
+	default: {
+		'1140x730': 'small',
+		'1600x960': 'normal',
+		'1802x1061': 'large'
+	},
+	artwork: {
+		'526x686': 'small',
+		'700x860': 'normal',
+		'901x1062': 'large'
+	},
+	compact: {
+		'484x730': 'small',
+		'484x960': 'normal',
+		'1600x960': 'large'
+	}
+};
+
+/**
+ * All predefined QHD res player sizes ( Options > Player size ) for each layout ( Options > Layout ).
+ */
+const playerSizesQHD = {
+	default: {
+		'1280x800': 'small',
+		'1802x1061': 'normal',
+		'2280x1300': 'large'
+	},
+	artwork: {
+		'640x800': 'small',
+		'901x1061': 'normal',
+		'1140x1300': 'large'
+	},
+	compact: {
+		'540x800': 'small',
+		'540x1061': 'normal',
+		'2080x1300': 'large'
+	}
+};
+
+/**
+ * All predefined 4K res player sizes ( Options > Player size ) for each layout ( Options > Layout ).
+ */
+const playerSizes4K = {
+	default: {
+		'2300x1470': 'small',
+		'2800x1720': 'normal',
+		'3400x2020': 'large'
+	},
+	artwork: {
+		'1052x1372': 'small',
+		'1400x1720': 'normal',
+		'1699x2020': 'large'
+	},
+	compact: {
+		'964x1470': 'small',
+		'964x1720': 'normal',
+		'2800x1720': 'large'
+	}
+};
 
 
 /////////////////
@@ -172,25 +235,14 @@ function checkForRes(w, h) {
  * Checks the player size and called from on_size(), used as an indicator for top menu Options > Player size.
  */
 function checkForPlayerSize() {
+	const res = `${ww}x${wh}`;
+
 	if (!RES_4K && !RES_QHD) {
-		if (pref.layout === 'default' && ww === 1140 && wh ===  730 || pref.layout === 'artwork' && ww ===  526 && wh ===  686 || pref.layout === 'compact' && ww ===  484 && wh ===  730) { pref.playerSize = 'small';  pref.playerSize_HD_small   = true; } else { pref.playerSize_HD_small   = false; }
-		if (pref.layout === 'default' && ww === 1600 && wh ===  960 || pref.layout === 'artwork' && ww ===  700 && wh ===  860 || pref.layout === 'compact' && ww ===  484 && wh ===  960) { pref.playerSize = 'normal'; pref.playerSize_HD_normal  = true; } else { pref.playerSize_HD_normal  = false; }
-		if (pref.layout === 'default' && ww === 1802 && wh === 1061 || pref.layout === 'artwork' && ww ===  901 && wh === 1062 || pref.layout === 'compact' && ww === 1600 && wh ===  960) { pref.playerSize = 'large';  pref.playerSize_HD_large   = true; } else { pref.playerSize_HD_large   = false; }
-	}
-	if (RES_QHD) {
-		if (pref.layout === 'default' && ww === 1280 && wh ===  800 || pref.layout === 'artwork' && ww ===  640 && wh ===  800 || pref.layout === 'compact' && ww ===  540 && wh ===  800) { pref.playerSize = 'small';  pref.playerSize_QHD_small  = true; } else { pref.playerSize_QHD_small  = false; }
-		if (pref.layout === 'default' && ww === 1802 && wh === 1061 || pref.layout === 'artwork' && ww ===  901 && wh === 1061 || pref.layout === 'compact' && ww ===  540 && wh === 1061) { pref.playerSize = 'normal'; pref.playerSize_QHD_normal = true; } else { pref.playerSize_QHD_normal = false; }
-		if (pref.layout === 'default' && ww === 2280 && wh === 1300 || pref.layout === 'artwork' && ww === 1140 && wh === 1300 || pref.layout === 'compact' && ww === 2080 && wh === 1300) { pref.playerSize = 'large';  pref.playerSize_QHD_large  = true; } else { pref.playerSize_QHD_large  = false; }
-	}
-	if (RES_4K) {
-		if (pref.layout === 'default' && ww === 2300 && wh === 1470 || pref.layout === 'artwork' && ww === 1052 && wh === 1372 || pref.layout === 'compact' && ww ===  964 && wh === 1470) { pref.playerSize = 'small';  pref.playerSize_4k_small   = true; } else { pref.playerSize_4k_small   = false; }
-		if (pref.layout === 'default' && ww === 2800 && wh === 1720 || pref.layout === 'artwork' && ww === 1400 && wh === 1720 || pref.layout === 'compact' && ww ===  964 && wh === 1720) { pref.playerSize = 'normal'; pref.playerSize_4k_normal  = true; } else { pref.playerSize_4k_normal  = false; }
-		if (pref.layout === 'default' && ww === 3400 && wh === 2020 || pref.layout === 'artwork' && ww === 1699 && wh === 2020 || pref.layout === 'compact' && ww === 2800 && wh === 1720) { pref.playerSize = 'large';  pref.playerSize_4k_large   = true; } else { pref.playerSize_4k_large   = false; }
-	}
-	if (!(pref.playerSize_HD_small || pref.playerSize_HD_normal  || pref.playerSize_HD_large  ||
-		pref.playerSize_QHD_small  || pref.playerSize_QHD_normal || pref.playerSize_QHD_large ||
-		pref.playerSize_4k_small   || pref.playerSize_4k_normal  || pref.playerSize_4k_large)) {
-		pref.playerSize = 'custom';
+		pref.playerSize = playerSizesHD[pref.layout][res] || 'custom';
+	} else if (RES_QHD) {
+		pref.playerSize = playerSizesQHD[pref.layout][res] || 'custom';
+	} else if (RES_4K) {
+		pref.playerSize = playerSizes4K[pref.layout][res] || 'custom';
 	}
 }
 
@@ -494,42 +546,43 @@ function WindowHandler() {
 	 */
 	this.layoutDefault = () => {
 		const newLayoutState = 'default';
-		if (newLayoutState === 'default') {
-			if (UIHacks.FullScreen) {
-				UIHacks.FullScreen = false;
-			}
-			else if (fbHandle) {
-				pref.savedWidth_default = fbHandle.Width;
-				pref.savedHeight_default = fbHandle.Height;
-			}
-			layoutHandler.layout.state = newLayoutState;
-			if (pref.displayRes === '4k') {
-				pref.playerSize_4k_normal = 'playerSize_4k_normal';
-				pref.playerSize_QHD_small = false;
-				pref.playerSize_HD_small  = false;
-				UIHacks.MinSize.Width   = 2300;
-				UIHacks.MinSize.Height  = 1470;
-				UIHacks.MinSize.Enabled = true;
-				setWindowSize(2800, 1720);
-			}
-			else if (pref.displayRes === 'QHD') {
-				pref.playerSize_4k_normal = false;
-				pref.playerSize_QHD_small = 'playerSize_QHD_small';
-				pref.playerSize_HD_small  = false;
-				UIHacks.MinSize.Width   = 1280;
-				UIHacks.MinSize.Height  = 800;
-				UIHacks.MinSize.Enabled = true;
-				setWindowSize(1280, 800);
-			}
-			else if (pref.displayRes === 'HD') {
-				pref.playerSize_4k_normal = false;
-				pref.playerSize_QHD_small = false;
-				pref.playerSize_HD_small  = 'playerSize_HD_small';
-				UIHacks.MinSize.Width   = 1140;
-				UIHacks.MinSize.Height  = 730;
-				UIHacks.MinSize.Enabled = true;
-				setWindowSize(1140, 730);
-			}
+		if (newLayoutState !== 'default') return;
+
+		if (UIHacks.FullScreen) {
+			UIHacks.FullScreen = false;
+		}
+		else if (fbHandle) {
+			pref.savedWidth_default = fbHandle.Width;
+			pref.savedHeight_default = fbHandle.Height;
+		}
+		layoutHandler.layout.state = newLayoutState;
+
+		if (pref.displayRes === '4k') {
+			pref.playerSize_4k_normal = 'playerSize_4k_normal';
+			pref.playerSize_QHD_small = false;
+			pref.playerSize_HD_small  = false;
+			UIHacks.MinSize.Width   = 2300;
+			UIHacks.MinSize.Height  = 1470;
+			UIHacks.MinSize.Enabled = true;
+			setWindowSize(2800, 1720);
+		}
+		else if (pref.displayRes === 'QHD') {
+			pref.playerSize_4k_normal = false;
+			pref.playerSize_QHD_small = 'playerSize_QHD_small';
+			pref.playerSize_HD_small  = false;
+			UIHacks.MinSize.Width   = 1280;
+			UIHacks.MinSize.Height  = 800;
+			UIHacks.MinSize.Enabled = true;
+			setWindowSize(1280, 800);
+		}
+		else if (pref.displayRes === 'HD') {
+			pref.playerSize_4k_normal = false;
+			pref.playerSize_QHD_small = false;
+			pref.playerSize_HD_small  = 'playerSize_HD_small';
+			UIHacks.MinSize.Width   = 1140;
+			UIHacks.MinSize.Height  = 730;
+			UIHacks.MinSize.Enabled = true;
+			setWindowSize(1140, 730);
 		}
 	};
 
@@ -538,33 +591,34 @@ function WindowHandler() {
 	 */
 	this.layoutArtwork = () => {
 		const newLayoutState = 'artwork';
-		if (newLayoutState === 'artwork') {
-			if (UIHacks.FullScreen) {
-				UIHacks.FullScreen = false;
-			}
-			else if (fbHandle) {
-				pref.savedWidth_artwork = fbHandle.Width;
-				pref.savedHeight_artwork = fbHandle.Height;
-			}
-			layoutHandler.layout.state = newLayoutState;
-			if (pref.displayRes === '4k') {
-				pref.playerSize_4k_small  = 'playerSize_4k_small';
-				pref.playerSize_QHD_small = false;
-				pref.playerSize_HD_small  = false;
-				setWindowSize(1052, 1372);
-			}
-			else if (pref.displayRes === 'QHD') {
-				pref.playerSize_4k_normal = false;
-				pref.playerSize_QHD_small = 'playerSize_QHD_small';
-				pref.playerSize_HD_small  = false;
-				setWindowSize(640, 800);
-			}
-			else if (pref.displayRes === 'HD') {
-				pref.playerSize_4k_normal = false;
-				pref.playerSize_QHD_small = false;
-				pref.playerSize_HD_small  = 'playerSize_HD_small';
-				setWindowSize(526, 686);
-			}
+		if (newLayoutState !== 'artwork') return;
+
+		if (UIHacks.FullScreen) {
+			UIHacks.FullScreen = false;
+		}
+		else if (fbHandle) {
+			pref.savedWidth_artwork = fbHandle.Width;
+			pref.savedHeight_artwork = fbHandle.Height;
+		}
+		layoutHandler.layout.state = newLayoutState;
+
+		if (pref.displayRes === '4k') {
+			pref.playerSize_4k_small  = 'playerSize_4k_small';
+			pref.playerSize_QHD_small = false;
+			pref.playerSize_HD_small  = false;
+			setWindowSize(1052, 1372);
+		}
+		else if (pref.displayRes === 'QHD') {
+			pref.playerSize_4k_normal = false;
+			pref.playerSize_QHD_small = 'playerSize_QHD_small';
+			pref.playerSize_HD_small  = false;
+			setWindowSize(640, 800);
+		}
+		else if (pref.displayRes === 'HD') {
+			pref.playerSize_4k_normal = false;
+			pref.playerSize_QHD_small = false;
+			pref.playerSize_HD_small  = 'playerSize_HD_small';
+			setWindowSize(526, 686);
 		}
 	};
 
@@ -573,33 +627,34 @@ function WindowHandler() {
 	 */
 	this.layoutCompact = () => {
 		const newLayoutState = 'compact';
-		if (newLayoutState === 'compact') {
-			if (UIHacks.FullScreen) {
-				UIHacks.FullScreen = false;
-			}
-			else if (fbHandle) {
-				pref.savedWidth_compact = fbHandle.Width;
-				pref.savedHeight_compact = fbHandle.Height;
-			}
-			layoutHandler.layout.state = newLayoutState;
-			if (pref.displayRes === '4k') {
-				pref.playerSize_4k_normal = 'playerSize_4k_normal';
-				pref.playerSize_QHD_small = false;
-				pref.playerSize_HD_small  = false;
-				setWindowSize(964, 1720);
-			}
-			else if (pref.displayRes === 'QHD') {
-				pref.playerSize_4k_normal = false;
-				pref.playerSize_QHD_small = 'playerSize_QHD_small';
-				pref.playerSize_HD_small  = false;
-				setWindowSize(540, 800);
-			}
-			else if (pref.displayRes === 'HD') {
-				pref.playerSize_4k_normal = false;
-				pref.playerSize_QHD_small = false;
-				pref.playerSize_HD_small  = 'playerSize_HD_small';
-				setWindowSize(484, 730);
-			}
+		if (newLayoutState !== 'compact') return;
+
+		if (UIHacks.FullScreen) {
+			UIHacks.FullScreen = false;
+		}
+		else if (fbHandle) {
+			pref.savedWidth_compact = fbHandle.Width;
+			pref.savedHeight_compact = fbHandle.Height;
+		}
+		layoutHandler.layout.state = newLayoutState;
+
+		if (pref.displayRes === '4k') {
+			pref.playerSize_4k_normal = 'playerSize_4k_normal';
+			pref.playerSize_QHD_small = false;
+			pref.playerSize_HD_small  = false;
+			setWindowSize(964, 1720);
+		}
+		else if (pref.displayRes === 'QHD') {
+			pref.playerSize_4k_normal = false;
+			pref.playerSize_QHD_small = 'playerSize_QHD_small';
+			pref.playerSize_HD_small  = false;
+			setWindowSize(540, 800);
+		}
+		else if (pref.displayRes === 'HD') {
+			pref.playerSize_4k_normal = false;
+			pref.playerSize_QHD_small = false;
+			pref.playerSize_HD_small  = 'playerSize_HD_small';
+			setWindowSize(484, 730);
 		}
 	};
 

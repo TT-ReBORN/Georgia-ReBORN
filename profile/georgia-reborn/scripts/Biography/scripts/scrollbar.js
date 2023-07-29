@@ -208,7 +208,7 @@ class ScrollbarBio {
 					break;
 				case 1:
 					gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
-					if (['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
+					if (pref.theme.startsWith('custom')) {
 						gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, uiBio.col.sbarHoveredRGBA);
 					}
 					break;
@@ -440,7 +440,7 @@ class ScrollbarBio {
 	setCol() { // not called by film type
 		this.alpha =
 			!uiBio.sbar.col ? 75 :
-			['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? 0 :
+			pref.theme.startsWith('custom') ? 0 :
 			['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? 220 :
 			pref.styleBlackAndWhite ? 175 :
 			pref.styleBlackAndWhite2 ? 152 :

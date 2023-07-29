@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-22                                          * //
+// * Last change:    2023-07-29                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -34,9 +34,9 @@ const g_pl_colors = {};
 /** @type {Object} The playlist fonts object. */
 let g_pl_fonts = {};
 /** @type {Object} The key down suppress utility handler. */
-const key_down_suppress = new qwr_utils.KeyModifiersSuppress();
+const key_down_suppress = qwr_utils.KeyModifiersSuppress();
 /** @type {Object} The mouse move suppress utility handler. */
-const mouse_move_suppress = new qwr_utils.MouseMoveSuppress();
+const mouse_move_suppress = qwr_utils.MouseMoveSuppress();
 
 /**
  * A set of drag and drop action settings.
@@ -137,8 +137,8 @@ if (pref.libraryLayoutSplitPreset || pref.libraryLayoutSplitPreset3 || pref.libr
 ///////////////
 // * FONTS * //
 ///////////////
-const headerFontSize = pref.layout === 'compact' ? pref.playlistHeaderFontSize_compact : pref.layout === 'artwork' ? pref.playlistHeaderFontSize_artwork : pref.playlistHeaderFontSize_default;
-const rowFontSize    = pref.layout === 'compact' ? pref.playlistFontSize_compact       : pref.layout === 'artwork' ? pref.playlistFontSize_artwork       : pref.playlistFontSize_default;
+const headerFontSize = pref[`playlistHeaderFontSize_${pref.layout}`];
+const rowFontSize    = pref[`playlistFontSize_${pref.layout}`];
 
 const titleNormalFont   = pref.customThemeFonts ? customFont.playlistTitleNormal   : 'Segoe UI';
 const titleSelectedFont = pref.customThemeFonts ? customFont.playlistTitleSelected : 'Segoe UI';
@@ -162,8 +162,8 @@ const playcountFont = pref.customThemeFonts ? customFont.playlistPlaycount : 'Se
  * Creates and assigns playlist fonts.
  */
 function createPlaylistFonts() {
-	const headerFontSize = pref.layout === 'compact' ? pref.playlistHeaderFontSize_compact : pref.layout === 'artwork' ? pref.playlistHeaderFontSize_artwork : pref.playlistHeaderFontSize_default;
-	const rowFontSize    = pref.layout === 'compact' ? pref.playlistFontSize_compact       : pref.layout === 'artwork' ? pref.playlistFontSize_artwork       : pref.playlistFontSize_default;
+	const headerFontSize = pref[`playlistHeaderFontSize_${pref.layout}`];
+	const rowFontSize    = pref[`playlistFontSize_${pref.layout}`];
 
 	g_pl_fonts = {
 		title_normal:   Font(titleNormalFont, rowFontSize),
@@ -206,7 +206,7 @@ function rescalePlaylist(forceRescale) {
 		return; // Don't redo fonts
 	}
 	createPlaylistFonts();
-	g_properties.row_h = Math.round(pref.layout === 'compact' ? pref.playlistFontSize_compact * 1.667 : pref.layout === 'artwork' ? pref.playlistFontSize_artwork * 1.667 : pref.playlistFontSize_default * 1.667);
+	g_properties.row_h = Math.round(pref[`playlistFontSize_${pref.layout}`] * 1.667);
 	playlist_geo.row_h = SCALE(g_properties.row_h);
 	playlist_geo.scrollbar_w = g_properties.scrollbar_w; // Don't use SCALE()
 	playlist_geo.scrollbar_right_pad = SCALE(g_properties.scrollbar_right_pad);
@@ -216,8 +216,24 @@ function rescalePlaylist(forceRescale) {
 }
 
 
+//////////////////
+// * POSITION * //
+//////////////////
+/**
+ * Sets and updates the playlist x-coordinate when resizing or changing the playlist layout.
+ * @returns {number} The playlist x-coordinate.
+ */
+function setPlaylistX() {
+	return pref.layout === 'default' && (pref.playlistLayout === 'normal' ||
+		pref.playlistLayoutNormal && (displayBiography || pref.displayLyrics)) ?
+		pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w :
+		ww * 0.5 :
+	0;
+}
+
+
 ///////////////////////////////
-// * DRAG N DROP CALLBACKS * //
+// * DRAG & DROP CALLBACKS * //
 ///////////////////////////////
 /**
  * Called when mouse with content enters another window and determines if that window is a valid drop target.
@@ -325,8 +341,8 @@ function PlaylistPanel(x, y) {
 			playlist.reinitialize();
 		}
 
-		if (pref.styleBlend && albumArt && blendedImg && (displayPlaylist || displayPlaylistArtworkLayout)) {
-			gr.DrawImage(blendedImg, displayPlaylistLibrary() ? ww * 0.5 : 0, 0, ww, wh, displayPlaylistLibrary() ? ww * 0.5 : 0, 0, blendedImg.Width, blendedImg.Height);
+		if (pref.styleBlend && albumArt && blendedImg && (displayPlaylist || displayPlaylistArtwork)) {
+			gr.DrawImage(blendedImg, displayPlaylistLibrary() ? pref.panelWidthAuto ? this.x : ww * 0.5 : 0, 0, ww, wh, displayPlaylistLibrary() ? pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww * 0.5 : 0, 0, blendedImg.Width, blendedImg.Height);
 		}
 
 		playlist.on_paint(gr);
@@ -357,11 +373,16 @@ function PlaylistPanel(x, y) {
 	 */
 	this.on_size = function (w, h) {
 		rescalePlaylist();
-		const x = pref.layout === 'default' && (pref.playlistLayout === 'normal' || pref.playlistLayoutNormal && (displayBiography || pref.displayLyrics)) ? ww * 0.5 : 0;
+
+		if (pref.panelWidthAuto && noAlbumArtStub) {
+			initNoAlbumArtSize(); // * Needed for noAlbumArtStub
+		}
+
+		const x = setPlaylistX();
 		const y = geo.topMenuHeight;
 		const playlist_w = w - x;
 		const playlist_h = Math.max(0, h - geo.lowerBarHeight - y);
-		const showPlaylistManager = pref.layout === 'compact' ? pref.showPlaylistManager_compact : pref.layout === 'artwork' ? pref.showPlaylistManager_artwork : pref.showPlaylistManager_default;
+		const showPlaylistManager = pref[`showPlaylistManager_${pref.layout}`];
 
 		this.h = playlist_h;
 		this.w = playlist_w;
@@ -1199,13 +1220,13 @@ class Playlist extends List {
 
 		// * Top menu options Playlist submenu
 		cmm.append_item('Playlist options menu', () => {
-			if (displayPlaylist || displayPlaylistArtworkLayout) {
+			if (displayPlaylist || displayPlaylistArtwork) {
 				onOptionsMenu(state.mouse_x, state.mouse_y, true, true);
 			}
 		});
 		cmm.append_separator();
 
-		if (pref.layout === 'default' && ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
+		if (pref.layout === 'default' && pref.theme.startsWith('custom')) {
 			cmm.append_item('Edit custom theme', () => {
 				displayCustomThemeMenu = true;
 				displayPanel('playlist');
@@ -1229,10 +1250,9 @@ class Playlist extends List {
 				cmm.append_item(displayPlaylist && displayBiography && pref.biographyLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 					if (pref.biographyLayout === 'normal') {
 						pref.biographyLayout = 'full';
-						playlist.x = ww; // Move hidden Playlist off screen to disable Playlist mouse functions
+						displayPlaylist = false;
 					} else {
 						pref.biographyLayout = 'normal';
-						playlist.on_size(ww, wh);
 						displayPlaylist = true;
 					}
 					initBiographyLayout();
@@ -1528,7 +1548,7 @@ class Playlist extends List {
 
 	/**
 	 * Handles key down events when a key on the keyboard is pressed down.
-	 * @param {number} vkey
+	 * @param {number} vkey The virtual key code.
 	 */
 	on_key_down(vkey) {
 		this.key_down = true;
@@ -1536,7 +1556,7 @@ class Playlist extends List {
 
 	/**
 	 * Handles key up events when a key on the keyboard is pressed up.
-	 * @param {number} vkey
+	 * @param {number} vkey The virtual key code.
 	 */
 	on_key_up(vkey) {
 		this.key_down = false;
@@ -3363,8 +3383,8 @@ class Playlist extends List {
 	 * @returns {number} The number of rows to be displayed in the header section of the playlist.
 	 */
 	calcHeaderRows() {
-		const headerFontSize = pref.layout === 'compact' ? pref.playlistHeaderFontSize_compact : pref.layout === 'artwork' ? pref.playlistHeaderFontSize_artwork : pref.playlistHeaderFontSize_default;
-		const rowFontSize    = pref.layout === 'compact' ? pref.playlistFontSize_compact       : pref.layout === 'artwork' ? pref.playlistFontSize_artwork       : pref.playlistFontSize_default;
+		const headerFontSize = pref[`playlistHeaderFontSize_${pref.layout}`];
+		const rowFontSize    = pref[`playlistFontSize_${pref.layout}`];
 		let numRows;
 		if (g_properties.use_compact_header) {
 			numRows = g_properties.rows_in_compact_header;
@@ -3493,7 +3513,7 @@ class PlaylistContent extends ListRowContent {
 					// @ts-ignore
 					const header = sub_items[i];
 					if (cur_row + header_h_in_rows - 1 >= row_shift /*&& !header.dont_draw*/) {
-						header.set_x(pref.layout === 'default' && (pref.playlistLayout === 'normal' || pref.playlistLayoutNormal && (displayBiography || pref.displayLyrics)) ? ww * 0.5 : 0);
+						header.set_x(setPlaylistX());
 						header.set_y(start_y + (cur_row - row_shift) * row_h);
 						return header;
 					}
@@ -3518,7 +3538,7 @@ class PlaylistContent extends ListRowContent {
 					cur_row += row_start_idx;
 
 					const row = sub_items[row_start_idx];
-					row.set_x(pref.layout === 'default' && (pref.playlistLayout === 'normal' || pref.playlistLayoutNormal && (displayBiography || pref.displayLyrics)) ? ww * 0.5 : 0);
+					row.set_x(setPlaylistX());
 					row.set_y(start_y + (cur_row - row_shift) * row_h);
 
 					return row;
@@ -3567,7 +3587,7 @@ class PlaylistContent extends ListRowContent {
 			for (let i = start_idx; i < sub_items.length; ++i) {
 				const item = sub_items[i];
 				if (start_item_used /* && !item.dont_draw*/) {
-					item.set_x(pref.layout === 'default' && (pref.playlistLayout === 'normal' || pref.playlistLayoutNormal && (displayBiography || pref.displayLyrics)) ? ww * 0.5 : 0);
+					item.set_x(setPlaylistX());
 					item.set_y(cur_y);
 
 					items_to_draw.push(item);
@@ -4508,7 +4528,7 @@ class Header extends BaseHeader {
 
 			if (!pref.styleBlend) grClip.FillSolidRect(0, 0, this.w, this.h, g_pl_colors.bg); // Solid background for ClearTypeGridFit text rendering
 
-			// if (this.hasSelection && ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
+			// if (this.hasSelection && pref.theme.startsWith('custom')) {
 			// 	grClip.FillSolidRect(0, 0, this.w, this.h, g_pl_colors.row_selection_bg);
 			// }
 
@@ -4899,7 +4919,7 @@ class Header extends BaseHeader {
 
 		//--->
 		if (!pref.styleBlend) grClip.FillSolidRect(0, 0, this.w, this.h, g_pl_colors.bg); // Solid background for ClearTypeGridFit text rendering
-		// if (this.has_selected_items() && ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
+		// if (this.has_selected_items() && pref.theme.startsWith('custom')) {
 		// 	grClip.FillSolidRect(0, 0, this.w, this.h, g_pl_colors.row_selection_bg);
 		// }
 
@@ -5344,9 +5364,9 @@ function getAlbumArt(items) {
 function getHeaderArtwork(items) {
 	const headers = items.reduce((acc, item) => item instanceof Header ? [...acc, item] : acc, []);
 	for (const header of headers) {
-		const { metadb } = header.get_first_row();
+		const { metadb }  = header.get_first_row();
 		const isArtLoaded = header.is_art_loaded();
-		const cached_art = Header.art_cache.get_image_for_meta(metadb);
+		const cached_art  = Header.art_cache.get_image_for_meta(metadb);
 
 		if (!isArtLoaded) {
 			if (cached_art) {
@@ -5580,7 +5600,7 @@ class Row extends ListItem {
 			// 	gr.DrawRect(this.x, this.y, this.w, rect_h, 1, g_pl_colors.row_selection_frame_cropped);
 			// }
 
-			// if (['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
+			// if (pref.theme.startsWith('custom')) {
 			// 	gr.FillSolidRect(this.x, this.y, this.w, this.h, g_pl_colors.row_selection_bg);
 			// }
 			if (!this.is_playing) { // Do not draw selection on now playing to prevent 1px overlapping
@@ -5919,7 +5939,7 @@ class Row extends ListItem {
 				break;
 			}
 		}
-	};
+	}
 
 	/**
 	 * Checks if the mouse is on a playlist item.
@@ -5929,7 +5949,7 @@ class Row extends ListItem {
 	 */
 	trace(x, y) {
 		return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
-	};
+	}
 
 	/**
 	 * Traces the mouse movement and changes the playlist text row state on an item.
@@ -5941,7 +5961,7 @@ class Row extends ListItem {
 		if (pref.playlistRowHover && loadingThemeComplete) {
 			this.changeRowState(this.trace(x, y) ? rowState.hovered : rowState.normal);
 		}
-	};
+	}
 
 	/**
 	 * Displays the playlist row tooltip when title text is truncated.
@@ -6004,7 +6024,7 @@ function Rating(x, y, max_w, h, metadb) {
 	 * @const
 	 * @type {number}
 	 */
-	const rowFontSize = pref.layout === 'compact' ? pref.playlistFontSize_compact : pref.layout === 'artwork' ? pref.playlistFontSize_artwork : pref.playlistFontSize_default;
+	const rowFontSize = pref[`playlistFontSize_${pref.layout}`];
 
 	/**
 	 * @const
@@ -6964,6 +6984,7 @@ class QueueHandler {
 			}
 
 			const cur_queued_row = this.rows[queued_item.PlaylistItemIndex];
+			if (!cur_queued_row) return;
 			const has_row = this.queued_rows.find(queued_row => queued_row.idx === cur_queued_row.idx);
 
 			if (!has_row) {
@@ -8202,7 +8223,7 @@ function PlaylistManager(x, y, w, h) {
 
 		if (!pref.styleBlend) gr.FillSolidRect(x, y, w, h, bg_color); // Playlist Manager Hide Top Rows that shouldn't be visible
 		// * Need to apply text rendering AntiAliasGridFit when using style Blend or when using custom theme fonts with larger font sizes
-		const headerFontSize = pref.layout === 'compact' ? pref.playlistHeaderFontSize_compact : pref.layout === 'artwork' ? pref.playlistHeaderFontSize_artwork : pref.playlistHeaderFontSize_default;
+		const headerFontSize = pref[`playlistHeaderFontSize_${pref.layout}`];
 		gr.SetTextRenderingHint(pref.styleBlend || pref.customThemeFonts && headerFontSize > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
 
 		if (plman.ActivePlaylist !== -1 && plman.IsPlaylistLocked(plman.ActivePlaylist)) {
@@ -8236,11 +8257,11 @@ function PlaylistManager(x, y, w, h) {
 			headerFontSize === 10 ? RES_4K ? -2 : -3 : '';
 
 		const info_w = gr.CalcTextWidth(info_text, g_pl_fonts.title_selected);
-		const btn_x = Math.round((pref.playlistLayout === 'normal' ? ww * 0.5 : 0) + (w - info_w) * 0.5);
+		const btn_x = Math.round((pref.playlistLayout === 'normal' ? pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww * 0.5 : 0) + (w - info_w) * 0.5);
 		const btn_y = geo.topMenuHeight + yCorr;
 		const btns_w = Math.round(h);
 		const hasPlaylistHistory = playlistHistory.canBack() || playlistHistory.canForward();
-		const showPlaylistManager = pref.layout === 'compact' ? pref.showPlaylistManager_compact : pref.layout === 'artwork' ? pref.showPlaylistManager_artwork : pref.showPlaylistManager_default;
+		const showPlaylistManager = pref[`showPlaylistManager_${pref.layout}`];
 		const showBtns = (pref.autoHidePlman && (panel_state !== state.normal) || !pref.autoHidePlman);
 
 		if (pref.showPlaylistHistory && hasPlaylistHistory && showPlaylistManager) {
@@ -8280,7 +8301,7 @@ function PlaylistManager(x, y, w, h) {
  * @param {ContextMenu} parent_menu The parent menu to append the item to.
  */
 PlaylistManager.append_playlist_info_visibility_context_menu_to = (parent_menu) => {
-	const showPlaylistManager = pref.layout === 'compact' ? pref.showPlaylistManager_compact : pref.layout === 'artwork' ? pref.showPlaylistManager_artwork : pref.showPlaylistManager_default;
+	const showPlaylistManager = pref[`showPlaylistManager_${pref.layout}`];
 	parent_menu.append_item('Show playlist manager', () => {
 		// g_properties.show_playlist_info = !g_properties.show_playlist_info;
 		if (pref.layout === 'compact') {

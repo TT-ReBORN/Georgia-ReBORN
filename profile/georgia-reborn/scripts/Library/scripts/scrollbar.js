@@ -237,14 +237,14 @@ class Scrollbar {
 					if (this.vertical) {
 						if (!this.narrow.show || ppt.sbarShow != 1) {
 							gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
-							if (['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
+							if (pref.theme.startsWith('custom')) {
 								gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, ui.col.sbarHoveredRGBA);
 							}
 						}
 					}
 					else if (!this.narrow.show || ppt.sbarShow != 1) {
 						gr.FillSolidRect(this.x + this.bar.x, sbar_y, this.bar.h, sbar_h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
-						if (['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
+						if (pref.theme.startsWith('custom')) {
 							gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, ui.col.sbarHoveredRGBA);
 						}
 					}
@@ -633,7 +633,7 @@ class Scrollbar {
 		const opaque = ui.getOpaque();
 		this.alpha =
 			!ui.sbar.col ? 75 :
-			['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme) ? 0 :
+			pref.theme.startsWith('custom') ? 0 :
 			['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? 220 :
 			pref.styleBlackAndWhite ? 175 :
 			pref.styleBlackAndWhite2 ? 152 :

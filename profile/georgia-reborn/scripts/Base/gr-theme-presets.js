@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-21                                          * //
+// * Last change:    2023-07-29                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2032,7 +2032,7 @@ const ngoldP10 = () => {
  * @returns {string}
  */
 const customThemeSetup = () => {
-	const customTheme = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'];
+	const customTheme = pref.theme.startsWith('custom');
 	if (!customTheme.includes(pref.theme)) pref.theme = customTheme[Math.floor(Math.random() * customTheme.length)]; // If no custom theme active, pick a random one
 	initCustomTheme();
 };
@@ -2251,8 +2251,7 @@ function initThemePresetState() {
 	const VB     = pref.styleVolumeBar;
 	const VBF    = pref.styleVolumeBarFill;
 	const BRT    = pref.themeBrightness;
-
-	const CTHEME = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme);
+	const CTHEME = pref.theme.startsWith('custom');
 
 	const themePresets = [
 		// * White theme presets settings

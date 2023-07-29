@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-22                                          * //
+// * Last change:    2023-07-29                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -573,12 +573,12 @@ Object.assign(qwr_utils, {
 		}
 
 		// * Top menu options - Playlist, Details, Library, Lyrics - context menu
-		const showPlaylist = pref.layout === 'artwork' ? displayPlaylistArtworkLayout && !pref.displayLyrics : displayPlaylist && !pref.displayLyrics;
+		const showPlaylist = pref.layout === 'artwork' ? displayPlaylistArtwork && !pref.displayLyrics : displayPlaylist && !pref.displayLyrics;
 
-		const showDetails = pref.layout === 'artwork' ? displayPlaylist && !displayPlaylistArtworkLayout && !displayLibrary && !displayBiography && !pref.displayLyrics :
-			!displayPlaylist && !displayPlaylistArtworkLayout && !displayLibrary && !displayBiography && !pref.displayLyrics;
+		const showDetails = pref.layout === 'artwork' ? displayPlaylist && !displayPlaylistArtwork && !displayLibrary && !displayBiography && !pref.displayLyrics :
+			!displayPlaylist && !displayPlaylistArtwork && !displayLibrary && !displayBiography && !pref.displayLyrics;
 
-		const showArtworkLayoutAlbumArt = pref.layout === 'artwork' && !displayPlaylist && !displayPlaylistArtworkLayout && !displayLibrary && !displayBiography && !pref.displayLyrics;
+		const showArtworkLayoutAlbumArt = pref.layout === 'artwork' && !displayPlaylist && !displayPlaylistArtwork && !displayLibrary && !displayBiography && !pref.displayLyrics;
 
 		if (!showArtworkLayoutAlbumArt) {
 			cmac.append_item(showPlaylist ? 'Playlist options menu' : showDetails ? 'Details options menu' : displayLibrary ? 'Library options menu' : 'Lyrics options menu', () => {
@@ -606,7 +606,7 @@ Object.assign(qwr_utils, {
 			cmac.append_separator();
 		}
 
-		if (pref.layout === 'default' && ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
+		if (pref.layout === 'default' && pref.theme.startsWith('custom')) {
 			cmac.append_separator();
 			cmac.append_item('Edit custom theme', () => {
 				displayCustomThemeMenu = true;
@@ -704,7 +704,7 @@ Object.assign(qwr_utils, {
 			}
 			else if (pref.layout === 'artwork') {
 				btns.playlistArtworkLayout.onClick();
-				if (displayPlaylistArtworkLayout) pref.displayLyrics = false;
+				if (displayPlaylistArtwork) pref.displayLyrics = false;
 			}
 			playlist.on_size(ww, wh);
 			resizeArtwork(true);

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-22                                          * //
+// * Last change:    2023-07-28                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -20,7 +20,7 @@
  * Clears all now playing related UI strings.
  */
 function clearUIVariables() {
-	const showLowerBarVersion = pref.layout === 'compact' ? pref.showLowerBarVersion_compact : pref.layout === 'artwork' ? pref.showLowerBarVersion_artwork : pref.showLowerBarVersion_default;
+	const showLowerBarVersion = pref[`showLowerBarVersion_${pref.layout}`];
 	const margin = pref.layout !== 'default' ? '' : ' ';
 	return {
 		artist: '',
@@ -90,6 +90,10 @@ function initMain() {
 	// * when the panel has focus and a dedicated playlist viewer doesn't.
 	plman.SetActivePlaylistContext(); // Once on startup
 
+	if (pref.panelWidthAuto) {
+		resizeArtwork(true);
+		playlist.on_size(ww, wh);
+	}
 	if (!libraryInitialized) {
 		initLibraryPanel();
 		setLibrarySize();
@@ -132,6 +136,33 @@ function initMain() {
 	initTheme();
 	DebugLog('initTheme -> initMain');
 	loadingTheme = false;
+}
+
+
+/**
+ * Initializes size and position when noAlbumArtStub is being displayed.
+ */
+function initNoAlbumArtSize() {
+	const noAlbumArtSize = wh - geo.topMenuHeight - geo.lowerBarHeight;
+
+	albumArtSize.x =
+		pref.layout === 'default' &&  displayCustomThemeMenu && !displayPlaylist && !displayLibrary && !displayBiography ? ww * 0.3 :
+		pref.layout === 'default' && !displayCustomThemeMenu && !displayPlaylist && !displayLibrary && !displayBiography ||
+		pref.layout === 'artwork' &&  displayPlaylist ? ww :
+		pref.panelWidthAuto ?
+			pref.albumArtAlign === 'left' ? 0 :
+			pref.albumArtAlign === 'leftMargin' ? ww / wh > 1.8 ? SCALE(40) : 0 :
+			pref.albumArtAlign === 'center' ? Math.floor(ww * 0.25 - noAlbumArtSize * 0.5) :
+			Math.floor(ww * 0.5 - noAlbumArtSize) :
+		0;
+
+	albumArtSize.y = geo.topMenuHeight;
+
+	albumArtSize.w =
+		pref.panelWidthAuto && noAlbumArtStub ? !fb.IsPlaying ? 0 : noAlbumArtSize :
+		ww * 0.5;
+
+	albumArtSize.h = noAlbumArtSize;
 }
 
 
@@ -183,6 +214,17 @@ function initPanels() {
 
 
 /**
+ * Initializes size and position of the current panel when using pref.panelWidthAuto.
+ */
+function initPanelWidthAuto() {
+	resizeArtwork(true);
+	playlist.on_size(ww, wh);
+	setLibrarySize();
+	setBiographySize();
+}
+
+
+/**
  * Initializes the theme when updating colors.
  */
 async function initTheme() {
@@ -194,53 +236,46 @@ async function initTheme() {
 		pref.theme === 'reborn' || pref.theme === 'random' ||
 		pref.styleBlackAndWhiteReborn || pref.styleBlackReborn;
 
-	// * Setup
+	// * SETUP COLORS * //
 	setImageBrightness();
 	if (pref.styleBlackAndWhiteReborn) initBlackAndWhiteReborn();
 	if (pref.theme === 'random' && !isStreaming && !isPlayingCD) getRandomThemeColor();
 	if (noAlbumArtStub || isStreaming || isPlayingCD) setNoAlbumArtColors();
 	if ((pref.styleBlend || pref.styleBlend2 || pref.styleProgressBarFill === 'blend') && albumArt) setStyleBlend();
 	setBackgroundColorDefinition();
-	// * Playlist
+
+	// * INIT COLORS * //
 	initPlaylistColors();
 	if (fullInit && pref.playlistRowHover) playlist.title_color_change();
-	// * Library
 	initLibraryColors();
-	if (fullInit && img.labels.overlayDark) ui.getItemColours();
-	// * Biography
-	if (fullInit) uiBio.getColours();
+	if (fullInit && img.labels.overlayDark) ui.getItemColours(); // Library
+	if (fullInit) uiBio.getColours(); // Library
 	initBiographyColors();
-	if (fullInit) txt.getText(true);
-	// * Main
+	if (fullInit) txt.getText(true); // Biography
 	initMainColors();
-	// * Styles
 	initStyleColors();
-	// * Chronflow
 	initChronflowColors();
-	// * Adjustments
+
+	// * POST-INIT COLOR ADJUSTMENTS * //
 	themeColorAdjustments();
-
 	if (pref.themeBrightness !== 'default') adjustThemeBrightness(pref.themeBrightness);
-	if (str.timeline) str.timeline.setColors(col.timelineAdded, col.timelinePlayed, col.timelineUnplayed);
 
+	// * UPDATE BUTTONS * //
 	if (!fullInit) return;
-	// * Update Playlist scrollbar buttons
 	playlist.initScrollbar();
-	// * Update Library buttons
-	sbar.setCol();
-	pop.createImages();
-	but.createImages();
-	but.refresh(true);
-	// * Update Biography buttons
-	alb_scrollbar.setCol();
-	art_scrollbar.setCol();
-	butBio.createImages('all');
-	imgBio.createImages();
-	// * Update main buttons
-	createButtonImages();
-	createButtonObjects(ww, wh);
+	sbar.setCol(); // Library
+	pop.createImages(); // Library
+	but.createImages(); // Library
+	but.refresh(true); // Library
+	alb_scrollbar.setCol(); // Biography
+	art_scrollbar.setCol(); // Biography
+	butBio.createImages('all'); // Biography
+	imgBio.createImages(); // Biography
+	createButtonImages(); // Main
+	createButtonObjects(ww, wh); // Main
+	initButtonState(); // Main
 
-	initButtonState();
+	// * REFRESH * //
 	repaintWindow();
 
 	if (timings.showDebugTiming) themeProfiler.Print();
@@ -374,33 +409,36 @@ function initCustomTheme() {
  * Initializes styles to check if any are currently active, used in top menu Options > Style.
  */
 function initStyleState() {
-	pref.styleDefault =
-	!(pref.styleBevel
-	|| pref.styleBlend
-	|| pref.styleBlend2
-	|| pref.styleGradient
-	|| pref.styleGradient2
-	|| pref.styleAlternative
-	|| pref.styleAlternative2
-	|| pref.styleBlackAndWhite
-	|| pref.styleBlackAndWhite2
-	|| pref.styleBlackAndWhiteReborn
-	|| pref.styleBlackReborn
-	|| pref.styleRebornWhite
-	|| pref.styleRebornBlack
-	|| pref.styleRebornFusion
-	|| pref.styleRebornFusion2
-	|| pref.styleRebornFusionAccent
-	|| pref.styleRandomPastel
-	|| pref.styleRandomDark
-	|| pref.styleTopMenuButtons !== 'default'
-	|| pref.styleTransportButtons !== 'default'
-	|| pref.styleProgressBarDesign !== 'default'
-	|| pref.styleProgressBar !== 'default'
-	|| pref.styleProgressBarFill !== 'default'
-	|| pref.styleVolumeBarDesign !== 'default'
-	|| pref.styleVolumeBar !== 'default'
-	|| pref.styleVolumeBarFill !== 'default');
+	const styles = [
+		pref.styleBevel,
+		pref.styleBlend,
+		pref.styleBlend2,
+		pref.styleGradient,
+		pref.styleGradient2,
+		pref.styleAlternative,
+		pref.styleAlternative2,
+		pref.styleBlackAndWhite,
+		pref.styleBlackAndWhite2,
+		pref.styleBlackAndWhiteReborn,
+		pref.styleBlackReborn,
+		pref.styleRebornWhite,
+		pref.styleRebornBlack,
+		pref.styleRebornFusion,
+		pref.styleRebornFusion2,
+		pref.styleRebornFusionAccent,
+		pref.styleRandomPastel,
+		pref.styleRandomDark,
+		pref.styleTopMenuButtons !== 'default',
+		pref.styleTransportButtons !== 'default',
+		pref.styleProgressBarDesign !== 'default',
+		pref.styleProgressBar !== 'default',
+		pref.styleProgressBarFill !== 'default',
+		pref.styleVolumeBarDesign !== 'default',
+		pref.styleVolumeBar !== 'default',
+		pref.styleVolumeBarFill !== 'default'
+	];
+
+	pref.styleDefault = !styles.some(style => style);
 }
 
 
@@ -715,7 +753,7 @@ function displayPanelOnStartup() {
 		displayPlaylist = false;
 	}
 	else if (pref.showPanelOnStartup === 'playlist' || pref.layout === 'compact') {
-		if (pref.layout === 'artwork') displayPlaylistArtworkLayout = true;
+		if (pref.layout === 'artwork') displayPlaylistArtwork = true;
 		else displayPlaylist = true;
 	}
 	else if (pref.showPanelOnStartup === 'details' && pref.layout !== 'compact') {
@@ -743,7 +781,7 @@ function displayPanelOnStartup() {
 function UIHacksDragWindow(x, y) {
 	if (!componentUIHacks) return;
 	// * Disable mouse middle btn (wheel) to be able to use Library & Biography mouse middle actions
-	UIHacks.MoveStyle = displayLibrary && mouseLibrary(x, y) || displayBiography && mouseBiography(x, y) ? 0 : 3;
+	UIHacks.MoveStyle = displayLibrary && mouseInLibrary(x, y) || displayBiography && mouseInBiography(x, y) ? 0 : 3;
 	try {
 		if (mouseInControl || downButton) {
 			UIHacks.SetPseudoCaption(0, 0, 0, 0);
@@ -769,14 +807,15 @@ function UIHacksDragWindow(x, y) {
 function refreshSeekbar() {
 	// * Time
 	window.RepaintRect(lowerBarTimeX, lowerBarTimeY, lowerBarTimeW, lowerBarTimeH, pref.spinDiscArt && !pref.displayLyrics);
+
+	if (pref.seekbar === 'waveformbar') return;
+
 	// * Progress bar
-	if (pref.seekbar === 'progressbar' || pref.seekbar === 'peakmeterbar') {
-		const x = pref.layout !== 'default' ? SCALE(18) : SCALE(38);
-		const y = (pref.seekbar === 'peakmeterbar' ? peakmeterBarY - SCALE(4) : progressBarY) - SCALE(2);
-		const w = pref.layout !== 'default' ? ww - SCALE(36) : ww - SCALE(76);
-		const h = (pref.seekbar === 'peakmeterbar' ? geo.peakmeterBarHeight + SCALE(8) : geo.progBarHeight) + SCALE(4);
-		window.RepaintRect(x, y, w, h, pref.spinDiscArt && !pref.displayLyrics);
-	}
+	const x = pref.layout !== 'default' ? SCALE(18) : SCALE(38);
+	const y = (pref.seekbar === 'peakmeterbar' ? peakmeterBarY - SCALE(4) : progressBarY) - SCALE(2);
+	const w = pref.layout !== 'default' ? ww - SCALE(36) : ww - SCALE(76);
+	const h = (pref.seekbar === 'peakmeterbar' ? geo.peakmeterBarHeight + SCALE(8) : geo.progBarHeight) + SCALE(4);
+	window.RepaintRect(x, y, w, h, pref.spinDiscArt && !pref.displayLyrics);
 }
 
 
@@ -903,7 +942,7 @@ function deleteWaveformBarCache() {
  * @returns {Array<string>} An array of values of the meta field.
  */
 function getMetaValues(name, metadb = undefined) {
-	let vals = [];
+	const vals = [];
 	const searchName = name.replace(/%/g, '');
 	for (let i = 0; i < parseInt($(`$meta_num(${searchName})`, metadb)); i++) {
 		vals.push($(`$meta(${searchName},${i})`, metadb));
@@ -913,7 +952,7 @@ function getMetaValues(name, metadb = undefined) {
 		// In that case we want to evaluate the entire field, after wrapping in brackets and split on commas.
 		const unsplit = $(`[${name}]`, metadb);
 		if (unsplit.length) {
-			vals = unsplit.split(', ');
+			return unsplit.split(', ');
 		}
 	}
 
@@ -1041,7 +1080,7 @@ function writeThemeTags() {
  */
 function createButtonImages() {
 	const createButtonProfiler = timings.showExtraDrawTiming ? fb.CreateProfiler('createButtonImages') : null;
-	const transportCircleSize = Math.round(pref.layout === 'compact' ? pref.transportButtonSize_compact * 0.93333 : pref.layout === 'artwork' ? pref.transportButtonSize_artwork * 0.93333 : pref.transportButtonSize_default * 0.93333);
+	const transportCircleSize = Math.round(pref[`transportButtonSize_${pref.layout}`] * 0.93333);
 	let btns = {};
 
 	try {
@@ -1409,9 +1448,9 @@ function createButtonImages() {
  */
 function createButtonObjects(ww, wh) {
 	btns = [];
-	const menuFontSize = pref.layout === 'compact' ? pref.menuFontSize_compact : pref.layout === 'artwork' ? pref.menuFontSize_artwork : pref.menuFontSize_default;
+	const menuFontSize = pref[`menuFontSize_${pref.layout}`];
 	const showingMinMaxButtons = !!((UIHacks && UIHacks.FrameStyle));
-	const showTransportControls = pref.layout === 'compact' ? pref.showTransportControls_compact : pref.layout === 'artwork' ? pref.showTransportControls_artwork : pref.showTransportControls_default;
+	const showTransportControls = pref[`showTransportControls_${pref.layout}`];
 
 	if (ww <= 0 || wh <= 0) {
 		return;
@@ -1478,11 +1517,11 @@ function createButtonObjects(ww, wh) {
 	}
 
 	// * Theme buttons
-	const showPanelDetails   = pref.layout === 'artwork' ? pref.showPanelDetails_artwork   : pref.showPanelDetails_default;
-	const showPanelLibrary   = pref.layout === 'artwork' ? pref.showPanelLibrary_artwork   : pref.showPanelLibrary_default;
-	const showPanelBiography = pref.layout === 'artwork' ? pref.showPanelBiography_artwork : pref.showPanelBiography_default;
-	const showPanelLyrics    = pref.layout === 'artwork' ? pref.showPanelLyrics_artwork    : pref.showPanelLyrics_default;
-	const showPanelRating    = pref.layout === 'artwork' ? pref.showPanelRating_artwork    : pref.showPanelRating_default;
+	const showPanelDetails   = pref[`showPanelDetails_${pref.layout}`];
+	const showPanelLibrary   = pref[`showPanelLibrary_${pref.layout}`];
+	const showPanelBiography = pref[`showPanelBiography_${pref.layout}`];
+	const showPanelLyrics    = pref[`showPanelLyrics_${pref.layout}`];
+	const showPanelRating    = pref[`showPanelRating_${pref.layout}`];
 
 	const buttonCount = (showPanelDetails ? 1 : 0) + (showPanelLibrary ? 1 : 0) + (showPanelBiography ? 1 : 0) + (showPanelLyrics ? 1 : 0) + (showPanelRating ? 1 : 0);
 	const buttonXCorr = 0.33 + (buttonCount === 5 ? 0 : buttonCount === 4 ? 0.3 : buttonCount === 3 ? 0.6 : buttonCount === 2 ? 1.5 : buttonCount === 1 ? 4 : 0);
@@ -1561,12 +1600,12 @@ function createButtonObjects(ww, wh) {
 
 	// * LOWER BAR TRANSPORT BUTTONS * //
 	if (showTransportControls) {
-		const lowerBarFontSize     = pref.layout === 'compact' ? pref.lowerBarFontSize_compact       : pref.layout === 'artwork' ? pref.lowerBarFontSize_artwork       : pref.lowerBarFontSize_default;
-		const showPlaybackOrderBtn = pref.layout === 'compact' ? pref.showPlaybackOrderBtn_compact   : pref.layout === 'artwork' ? pref.showPlaybackOrderBtn_artwork   : pref.showPlaybackOrderBtn_default;
-		const showReloadBtn        = pref.layout === 'compact' ? pref.showReloadBtn_compact          : pref.layout === 'artwork' ? pref.showReloadBtn_artwork          : pref.showReloadBtn_default;
-		const showVolumeBtn        = pref.layout === 'compact' ? pref.showVolumeBtn_compact          : pref.layout === 'artwork' ? pref.showVolumeBtn_artwork          : pref.showVolumeBtn_default;
-		const transportBtnSize     = pref.layout === 'compact' ? pref.transportButtonSize_compact    : pref.layout === 'artwork' ? pref.transportButtonSize_artwork    : pref.transportButtonSize_default;
-		const transportBtnSpacing  = pref.layout === 'compact' ? pref.transportButtonSpacing_compact : pref.layout === 'artwork' ? pref.transportButtonSpacing_artwork : pref.transportButtonSpacing_default;
+		const lowerBarFontSize     = pref[`lowerBarFontSize_${pref.layout}`];
+		const showPlaybackOrderBtn = pref[`showPlaybackOrderBtn_${pref.layout}`];
+		const showReloadBtn        = pref[`showReloadBtn_${pref.layout}`];
+		const showVolumeBtn        = pref[`showVolumeBtn_${pref.layout}`];
+		const transportBtnSize     = pref[`transportButtonSize_${pref.layout}`];
+		const transportBtnSpacing  = pref[`transportButtonSpacing_${pref.layout}`];
 
 		let count = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
 
@@ -1658,127 +1697,15 @@ function displayNextImage() {
 
 
 /**
- * Fetches new album art/disc art when a new album is being played, disc art has changed or when cycling through album artworks.
+ * Fetches new album art when a new album is being played or when cycling through album artworks.
  * @param {FbMetadbHandle} metadb The metadb of the track.
  */
-function fetchNewArtwork(metadb) {
-	if (pref.presetAutoRandomMode === 'album' || pref.presetSelectMode === 'harmonic') initThemeSkip = true;
-	const fetchArtworkProfiler = timings.showDebugTiming ? fb.CreateProfiler('fetchNewArtwork') : null;
+function fetchAlbumArt(metadb) {
+	const fetchAlbumArtProfiler = timings.showDebugTiming ? fb.CreateProfiler('fetchNewAlbumArt') : null;
 	albumArtList = [];
-	let discArtExists = true;
-	let discArtPath;
-
-	// * Vinyl disc art search paths
-	const v01 = $(pref.vinylside_path);              // Root -> vinyl side
-	const v02 = $(pref.vinylside_path_artwork_root); // Root Artwork -> vinyl%vinyl disc%.png
-	const v03 = $(pref.vinylside_path_images_root);  // Root Images -> vinyl%vinyl disc%.png
-	const v04 = $(pref.vinylside_path_scans_root);   // Root Scans -> vinyl%vinyl disc%.png
-	const v05 = $(pref.vinylside_path_artwork);      // Subfolder Artwork -> vinyl%vinyl disc%.png
-	const v06 = $(pref.vinylside_path_images);       // Subfolder Images -> vinyl%vinyl disc%.png
-	const v07 = $(pref.vinylside_path_scans);        // Subfolder Scans -> vinyl%vinyl disc%.png
-	const v08 = $(pref.vinyl_path);                  // Root -> vinyl.png
-	const v09 = $(pref.vinyl_path_artwork_root);     // Root Artwork -> vinyl.png
-	const v10 = $(pref.vinyl_path_images_root);      // Root Images -> vinyl.png
-	const v11 = $(pref.vinyl_path_scans_root);       // Root Scans -> vinyl.png
-	const v12 = $(pref.vinyl_path_artwork);          // Subfolder Artwork -> vinyl.png
-	const v13 = $(pref.vinyl_path_images);           // Subfolder Images -> vinyl.png
-	const v14 = $(pref.vinyl_path_scans);            // Subfolder Scans -> vinyl.png
-
-	// * CD disc art search paths
-	const c01 = $(pref.cdartdisc_path);              // Root -> cd%discnumber%.png
-	const c02 = $(pref.cdartdisc_path_artwork_root); // Root Artwork -> cd%discnumber%.png
-	const c03 = $(pref.cdartdisc_path_images_root);  // Root Images -> cd%discnumber%.png
-	const c04 = $(pref.cdartdisc_path_scans_root);   // Root Scans -> cd%discnumber%.png
-	const c05 = $(pref.cdartdisc_path_artwork);      // Subfolder Artwork -> cd%discnumber%.png
-	const c06 = $(pref.cdartdisc_path_images);       // Subfolder Images -> cd%discnumber%.png
-	const c07 = $(pref.cdartdisc_path_scans);        // Subfolder Scans -> cd%discnumber%.png
-	const c08 = $(pref.cdart_path);                  // Root -> cd.png
-	const c09 = $(pref.cdart_path_artwork_root);     // Root Artwork -> cd.png
-	const c10 = $(pref.cdart_path_images_root);      // Root Images -> cd.png
-	const c11 = $(pref.cdart_path_scans_root);       // Root Scans -> cd.png
-	const c12 = $(pref.cdart_path_artwork);          // Subfolder Artwork -> cd.png
-	const c13 = $(pref.cdart_path_images);           // Subfolder Images -> cd.png
-	const c14 = $(pref.cdart_path_scans);            // Subfolder Scans -> cd.png
-
-	const discArtAllPaths = [
-		v01, v02, v03, v04, v05, v06, v07, v08, v09, v10, v11, v12, v13, v14,
-		c01, c02, c03, c04, c05, c06, c07, c08, c09, c10, c11, c12, c13, c14
-	];
-
-	if (pref.displayDiscArt && !isStreaming) { // We must attempt to load CD/vinyl art first so that the shadow is drawn correctly
-		if (pref.noDiscArtStub || pref.showDiscArtStub) {
-			for (let i = 0; i < discArtAllPaths.length; i++) {
-				const found = IsFile(discArtAllPaths[i]);
-				if (found) {
-					discArtPath = discArtAllPaths[i];
-					discArtExists = true;
-				}
-				// Didn't find anything
-				else if (!noAlbumArtStub && pref.noDiscArtStub) discArtExists = false;
-			}
-		}
-
-		if (IsFile(discArtPath)) {
-			discArtExists = true;
-		}
-		// * Display custom disc art placeholders
-		else if (!pref.noDiscArtStub || pref.showDiscArtStub) {
-			discArtExists = true;
-			switch (pref.discArtStub) {
-				case 'cdWhite':         discArtPath = paths.cdArtWhiteStub;	break;
-				case 'cdBlack':         discArtPath = paths.cdArtBlackStub;	break;
-				case 'cdBlank':         discArtPath = paths.cdArtBlankStub;	break;
-				case 'cdTrans':         discArtPath = paths.cdArtTransStub;	break;
-				case 'cdCustom':        discArtPath = paths.cdArtCustomStub; break;
-				case 'vinylWhite':      discArtPath = paths.vinylArtWhiteStub; break;
-				case 'vinylVoid':       discArtPath = paths.vinylArtVoidStub; break;
-				case 'vinylColdFusion': discArtPath = paths.vinylArtColdFusionStub;	break;
-				case 'vinylRingOfFire': discArtPath = paths.vinylArtRingOfFireStub;	break;
-				case 'vinylMaple':      discArtPath = paths.vinylArtMapleStub; break;
-				case 'vinylBlack':      discArtPath = paths.vinylArtBlackStub; break;
-				case 'vinylBlackHole':  discArtPath = paths.vinylArtBlackHoleStub; break;
-				case 'vinylEbony':      discArtPath = paths.vinylArtEbonyStub; break;
-				case 'vinylTrans':      discArtPath = paths.vinylArtTransStub; break;
-				case 'vinylCustom':     discArtPath = paths.vinylArtCustomStub;	break;
-			}
-		}
-
-		if (discArtExists) {
-			let tempDiscArt;
-			if (loadFromCache) {
-				tempDiscArt = artCache.getImage(discArtPath);
-			}
-			if (tempDiscArt) {
-				disposeDiscArtImg(discArt);
-				discArt = tempDiscArt;
-				resizeArtwork(true);
-				createRotatedDiscArtImage();
-				if (pref.spinDiscArt) {
-					discArtArray = [];	// Clear last image
-					setDiscArtRotationTimer();
-				}
-			} else {
-				gdi.LoadImageAsyncV2(window.ID, discArtPath).then(discArtImg => {
-					disposeDiscArtImg(discArt); // Delay disposal so we don't get flashing
-					discArt = artCache.encache(discArtImg, discArtPath);
-					resizeArtwork(true);
-					createRotatedDiscArtImage();
-					if (pref.spinDiscArt) {
-						discArtArray = [];	// Clear last image
-						setDiscArtRotationTimer();
-					}
-					lastLeftEdge = 0; // Recalc label location
-					repaintWindow();
-				});
-			}
-		}
-		else {
-			discArt = disposeDiscArtImg(discArt);
-		}
-	}
 
 	if (isStreaming || isPlayingCD) {
-		discArt = disposeDiscArtImg(discArt);
+		discArt = disposeDiscArtImage(discArt);
 		albumArt = utils.GetAlbumArtV2(metadb);
 		pref.showGridTitle_default = true;
 		pref.showGridTitle_artwork = true;
@@ -1839,7 +1766,18 @@ function fetchNewArtwork(metadb) {
 		}
 	}
 
-	if (timings.showDebugTiming) fetchArtworkProfiler.Print();
+	if (timings.showDebugTiming) fetchAlbumArtProfiler.Print();
+}
+
+
+/**
+ * Fetches new album art/disc art when a new album is being played, disc art has changed or when cycling through album artworks.
+ * @param {FbMetadbHandle} metadb The metadb of the track.
+ */
+function fetchNewArtwork(metadb) {
+	if (pref.presetAutoRandomMode === 'album' || pref.presetSelectMode === 'harmonic') initThemeSkip = true;
+	fetchAlbumArt(metadb);
+	fetchDiscArt();
 }
 
 
@@ -1930,29 +1868,40 @@ async function loadImageFromAlbumArtList(index) {
 
 
 /**
- * Resizes loaded album art to have better drawing performance.
+ * Resizes loaded artwork to have better drawing performance and resets its position.
+ * Also resets the size and position of the pause button and lyrics.
  * @param {boolean} resetDiscArtPosition Whether the position of the disc art should be reset.
  */
 function resizeArtwork(resetDiscArtPosition) {
 	DebugLog('Resizing artwork');
-	let hasArtwork = false;
-	const lowerSpace = geo.lowerBarHeight;
+	hasArtwork = false;
+	resizeAlbumArt();
+	resizeDiscArt(resetDiscArtPosition);
+	resetPausePosition();
+	resetLyricsPosition();
+}
+
+
+/**
+ * Resizes and resets the size and position of the album art.
+ */
+function resizeAlbumArt() {
 	if (albumArt && albumArt.Width && albumArt.Height) {
 		// * Size for big albumArt
 		let xCenter = 0;
 		const albumScale =
-			pref.layout === 'artwork' ? Math.min(ww / albumArt.Width, (wh - lowerSpace - geo.topMenuHeight) / albumArt.Height) :
+			pref.layout === 'artwork' ? Math.min(ww / albumArt.Width, (wh - geo.topMenuHeight - geo.lowerBarHeight) / albumArt.Height) :
 			Math.min(((displayPlaylist || displayLibrary) ?
 				UIHacks.FullScreen ? pref.albumArtScale === 'filled' ? 0.545 * ww : 0.5 * ww :
 				UIHacks.MainWindowState === WindowState.Maximized ? pref.albumArtScale === 'filled' ? 0.55 * ww : 0.5 * ww :
 				0.5 * ww :
-			0.75 * ww) / albumArt.Width, (wh - lowerSpace - geo.topMenuHeight) / albumArt.Height);
+			0.75 * ww) / albumArt.Width, (wh - geo.topMenuHeight - geo.lowerBarHeight) / albumArt.Height);
 
 		if (displayPlaylist || displayLibrary) {
 			xCenter =
 				pref.layout === 'artwork' ? 0 :
-				UIHacks.FullScreen ? RES_4K ? 0.261 * ww : 0.23 * ww :
-				UIHacks.MainWindowState === WindowState.Maximized ? RES_4K ? 0.267 * ww : 0.24 * ww :
+				UIHacks.FullScreen && !pref.panelWidthAuto ? RES_4K ? 0.261 * ww : 0.23 * ww :
+				UIHacks.MainWindowState === WindowState.Maximized && !pref.panelWidthAuto ? RES_4K ? 0.267 * ww : 0.24 * ww :
 				xCenter = 0.25 * ww;
 		}
 		else if (ww / wh < 1.40) { // When using a roughly 4:3 display the album art crowds, so move it slightly off center
@@ -1972,16 +1921,15 @@ function resizeArtwork(resetDiscArtPosition) {
 		albumArtSize.x = // * When player size is not proportional, album art is aligned via setting 'pref.albumArtAlign' in Default layout and is centered in Artwork layout */
 			pref.layout === 'default' ?
 				displayPlaylist || displayLibrary ?
-					UIHacks.FullScreen || UIHacks.MainWindowState === WindowState.Maximized ? ww * 0.5 - albumArtSize.w :
 					pref.albumArtAlign === 'left' ? 0 :
 					pref.albumArtAlign === 'leftMargin' ? ww / wh > 1.8 ? SCALE(40) : 0 :
 					pref.albumArtAlign === 'center' ? Math.floor(xCenter - 0.5 * albumArtSize.w) :
-					pref.albumArtAlign === 'right' ? ww * 0.5 - albumArtSize.w :
 					ww * 0.5 - albumArtSize.w :
 				Math.floor(xCenter - 0.5 * albumArtSize.w) :
-			pref.layout === 'artwork' ? !displayPlaylist || pref.displayLyrics ? ww * 0.5 - albumArtSize.w * 0.5 : ww : 0;
+			pref.layout === 'artwork' ?
+				!displayPlaylist || pref.displayLyrics ? ww * 0.5 - albumArtSize.w * 0.5 : ww : 0;
 
-		if (albumScale !== (wh - geo.topMenuHeight - lowerSpace) / albumArt.Height) {
+		if (albumScale !== (wh - geo.topMenuHeight - geo.lowerBarHeight) / albumArt.Height) {
 			// Restricted by width
 			const y = Math.floor(((wh - geo.lowerBarHeight + geo.topMenuHeight) / 2) - albumArtSize.h / 2);
 			albumArtSize.y = Math.min(y, SCALE(150) + 10);	// 150 or 300 + 10? Not sure where 160 comes from
@@ -2006,88 +1954,35 @@ function resizeArtwork(resetDiscArtPosition) {
 			albumArtSize = new ImageSize(0, geo.topMenuHeight, 0, 0);
 			console.log('<Error: Album art could not be scaled! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>');
 		}
-		pauseBtn.setCoords(albumArtSize.x + albumArtSize.w / 2, albumArtSize.y + albumArtSize.h / 2);
 		hasArtwork = true;
 	}
 	else {
 		albumArtSize = new ImageSize(0, geo.topMenuHeight, 0, 0);
 	}
-	if (discArt) {
-		const discArtSizeCorr = SCALE(4);
-		const discArtMargin = SCALE(2);
-		const discArtMarginRight = SCALE(36);
-		if (hasArtwork) {
-			if (resetDiscArtPosition) {
-				discArtSize.x =
-					ww - (albumArtSize.x + albumArtSize.w) < albumArtSize.h * pref.discArtDisplayAmount ? Math.floor(ww - albumArtSize.h - discArtMarginRight) :
-					pref.discArtDisplayAmount === 1 ? Math.floor(ww - albumArtSize.h - discArtMarginRight) :
-					pref.discArtDisplayAmount === 0.5 ? Math.floor(Math.min(ww - albumArtSize.h - discArtMarginRight,
-						albumArtSize.x + albumArtSize.w - (albumArtSize.h - 4) * (1 - pref.discArtDisplayAmount) - (pref.discArtDisplayAmount === 1 || pref.discArtDisplayAmount === 0.5 ? 0 : discArtMarginRight))) :
-					Math.floor(albumArtSize.x + albumArtSize.w - (albumArtSize.h - discArtSizeCorr) * (1 - pref.discArtDisplayAmount) - discArtMarginRight);
+}
 
-				discArtSize.y = albumArtSize.y + discArtMargin;
-				discArtSize.w = albumArtSize.h - discArtSizeCorr; // Disc art must be square so use the height of album art for width of discArt
-				discArtSize.h = discArtSize.w;
-			} else { // When disc art moves because folder images are different sizes we want to push it outwards, but not move it back in so it jumps around less
-				discArtSize.x = Math.max(discArtSize.x, Math.floor(Math.min(ww - albumArtSize.h - discArtMarginRight,
-					albumArtSize.x + albumArtSize.w - (albumArtSize.h - 4) * (1 - pref.discArtDisplayAmount) - (pref.discArtDisplayAmount === 1 || pref.discArtDisplayAmount === 0.5 ? 0 : discArtMarginRight))));
 
-				discArtSize.y = discArtSize.y > 0 ? Math.min(discArtSize.y, albumArtSize.y + discArtMargin) : albumArtSize.y + discArtMargin;
-				discArtSize.w = Math.max(discArtSize.w, albumArtSize.h - discArtSizeCorr);
-				discArtSize.h = discArtSize.w;
-				if (discArtSize.x + discArtSize.w > ww) {
-					discArtSize.x = ww - discArtSize.w - discArtMarginRight;
-				}
-			}
-		}
-		else { // * No album art so we need to calc size of disc
-			const discScale = Math.min(((displayPlaylist || displayLibrary) ? 0.5 * ww : 0.75 * ww) / discArt.Width, (wh - geo.topMenuHeight - lowerSpace - SCALE(16)) / discArt.Height);
-			let xCenter = 0;
-			if (displayPlaylist || displayLibrary) {
-				xCenter = 0.25 * ww;
-			} else if (ww / wh < 1.40) { // When using a roughly 4:3 display the album art crowds, so move it slightly off center
-				xCenter = 0.56 * ww; // TODO: check if this is still needed?
-			} else {
-				xCenter = 0.5 * ww;
-				artOffCenter = false;
-				if (discScale === 0.75 * ww / discArt.Width) {
-					xCenter += 0.1 * ww;
-					artOffCenter = true; // TODO: We should probably suppress labels in this case
-				}
-			}
-			// Need to -4 from height and add 2 to y to avoid skipping discArt drawing - not sure this is needed
-			discArtSize.w = Math.floor(discArt.Width * discScale) - discArtSizeCorr; // Width
-			discArtSize.h = discArtSize.w; // height
-			discArtSize.x = Math.floor(xCenter - 0.5 * discArtSize.w); // Left
-			if (discScale !== (wh - geo.topMenuHeight - lowerSpace - SCALE(16)) / discArt.Height) {
-				// Restricted by width
-				const y = geo.topMenuHeight + Math.floor(((wh - geo.topMenuHeight - lowerSpace - SCALE(16)) / 2) - discArtSize.h / 2);
-				discArtSize.y = Math.min(y, 160);
-			} else {
-				discArtSize.y = geo.topMenuHeight + discArtMargin; // Top
-			}
-			pauseBtn.setCoords(discArtSize.x + discArtSize.w / 2, discArtSize.y + discArtSize.h / 2);
-			hasArtwork = true;
-		}
-	}
-	else {
-		discArtSize = new ImageSize(0, 0, 0, 0);
-	}
-	if (hasArtwork || noAlbumArtStub) {
-		if (lyrics) {
-			const fullW = pref.layout === 'default' && pref.lyricsLayout === 'full' && pref.displayLyrics;
-			lyrics.on_size(noAlbumArtStub ? fullW ? ww * 0.333 : 0 : albumArtSize.x, noAlbumArtStub ? geo.topMenuHeight : albumArtSize.y,
-				noAlbumArtStub ? pref.layout === 'artwork' ? ww : fullW ? ww * 0.333 : ww * 0.5 : albumArtSize.w, noAlbumArtStub ? wh - geo.topMenuHeight - geo.lowerBarHeight : albumArtSize.h);
-		}
-		if (discArt && pref.displayDiscArt && !displayPlaylist && !displayLibrary && pref.layout !== 'compact') {
-			createDropShadow();
-		}
-	}
-	if ((displayLibrary || displayPlaylist) && pref.layout !== 'artwork') {
-		pauseBtn.setCoords(ww * 0.25, wh * 0.5 - geo.topMenuHeight);
-	} else {
-		pauseBtn.setCoords(ww * 0.5, wh * 0.5 - geo.topMenuHeight);
-	}
+/**
+ * Resets the size and position of the pause button.
+ */
+function resetPausePosition() {
+	const noAlbumArtSize = wh - geo.topMenuHeight - geo.lowerBarHeight;
+
+	const pauseBtnX =
+		!pref.panelWidthAuto && pref.layout !== 'artwork' && !noAlbumArtStub && (displayLibrary || displayPlaylist) ||
+			displayDetails || pref.lyricsLayout === 'full' && pref.displayLyrics ? ww * 0.5 :
+		pref.panelWidthAuto ?
+			pref.albumArtAlign === 'left' ? noAlbumArtSize * 0.5 :
+			pref.albumArtAlign === 'leftMargin' ? ww / wh > 1.8 ? noAlbumArtSize * 0.5 + SCALE(40) : 0 :
+			pref.albumArtAlign === 'center' ? Math.floor(ww * 0.5 - noAlbumArtSize * 0.5 - (ww * 0.25 - noAlbumArtSize * 0.5)) :
+			ww * 0.5 - noAlbumArtSize * 0.5 :
+		ww * 0.25;
+
+	const pauseBtnY = wh * 0.5 - geo.topMenuHeight;
+
+	if (albumArt)pauseBtn.setCoords(albumArtSize.x + albumArtSize.w / 2, albumArtSize.y + albumArtSize.h / 2);
+	else if (discArt) pauseBtn.setCoords(discArtSize.x + discArtSize.w / 2, discArtSize.y + discArtSize.h / 2);
+	else if (noAlbumArtStub) pauseBtn.setCoords(pauseBtnX, pauseBtnY);
 }
 
 
@@ -2097,8 +1992,8 @@ function resizeArtwork(resetDiscArtPosition) {
 /**
  * Creates the drop shadow for disc art.
  */
-function createDropShadow() {
-	const shadowProfiler = timings.showDebugTiming ? fb.CreateProfiler('createDropShadow') : null;
+function createDiscArtShadow() {
+	const shadowProfiler = timings.showDebugTiming ? fb.CreateProfiler('createDiscArtShadow') : null;
 	if ((albumArt && albumArtSize.w > 0) || (discArt && pref.displayDiscArt && discArtSize.w > 0)) {
 		const discArtMargin = SCALE(2);
 		shadowImg = discArt && !displayPlaylist && !displayLibrary && pref.displayDiscArt ?
@@ -2149,10 +2044,205 @@ function createRotatedDiscArtImage() {
  * Disposes the disc art image when changing or deactivating disc art.
  * @param {GdiBitmap} discArtImg The loaded disc art image.
  */
-function disposeDiscArtImg(discArtImg) {
+function disposeDiscArtImage(discArtImg) {
 	discArtSize = new ImageSize(0, 0, 0, 0);
 	discArtImg = null;
 	return null;
+}
+
+
+/**
+ * Fetches new disc art when a new album is being played.
+ */
+function fetchDiscArt() {
+	const fetchDiscArtProfiler = timings.showDebugTiming ? fb.CreateProfiler('fetchNewDiscArt') : null;
+	let discArtExists = true;
+	let discArtPath;
+
+	// * Vinyl disc art search paths
+	const v01 = $(pref.vinylside_path);              // Root -> vinyl side
+	const v02 = $(pref.vinylside_path_artwork_root); // Root Artwork -> vinyl%vinyl disc%.png
+	const v03 = $(pref.vinylside_path_images_root);  // Root Images -> vinyl%vinyl disc%.png
+	const v04 = $(pref.vinylside_path_scans_root);   // Root Scans -> vinyl%vinyl disc%.png
+	const v05 = $(pref.vinylside_path_artwork);      // Subfolder Artwork -> vinyl%vinyl disc%.png
+	const v06 = $(pref.vinylside_path_images);       // Subfolder Images -> vinyl%vinyl disc%.png
+	const v07 = $(pref.vinylside_path_scans);        // Subfolder Scans -> vinyl%vinyl disc%.png
+	const v08 = $(pref.vinyl_path);                  // Root -> vinyl.png
+	const v09 = $(pref.vinyl_path_artwork_root);     // Root Artwork -> vinyl.png
+	const v10 = $(pref.vinyl_path_images_root);      // Root Images -> vinyl.png
+	const v11 = $(pref.vinyl_path_scans_root);       // Root Scans -> vinyl.png
+	const v12 = $(pref.vinyl_path_artwork);          // Subfolder Artwork -> vinyl.png
+	const v13 = $(pref.vinyl_path_images);           // Subfolder Images -> vinyl.png
+	const v14 = $(pref.vinyl_path_scans);            // Subfolder Scans -> vinyl.png
+
+	// * CD disc art search paths
+	const c01 = $(pref.cdartdisc_path);              // Root -> cd%discnumber%.png
+	const c02 = $(pref.cdartdisc_path_artwork_root); // Root Artwork -> cd%discnumber%.png
+	const c03 = $(pref.cdartdisc_path_images_root);  // Root Images -> cd%discnumber%.png
+	const c04 = $(pref.cdartdisc_path_scans_root);   // Root Scans -> cd%discnumber%.png
+	const c05 = $(pref.cdartdisc_path_artwork);      // Subfolder Artwork -> cd%discnumber%.png
+	const c06 = $(pref.cdartdisc_path_images);       // Subfolder Images -> cd%discnumber%.png
+	const c07 = $(pref.cdartdisc_path_scans);        // Subfolder Scans -> cd%discnumber%.png
+	const c08 = $(pref.cdart_path);                  // Root -> cd.png
+	const c09 = $(pref.cdart_path_artwork_root);     // Root Artwork -> cd.png
+	const c10 = $(pref.cdart_path_images_root);      // Root Images -> cd.png
+	const c11 = $(pref.cdart_path_scans_root);       // Root Scans -> cd.png
+	const c12 = $(pref.cdart_path_artwork);          // Subfolder Artwork -> cd.png
+	const c13 = $(pref.cdart_path_images);           // Subfolder Images -> cd.png
+	const c14 = $(pref.cdart_path_scans);            // Subfolder Scans -> cd.png
+
+	const discArtAllPaths = [
+		v01, v02, v03, v04, v05, v06, v07, v08, v09, v10, v11, v12, v13, v14,
+		c01, c02, c03, c04, c05, c06, c07, c08, c09, c10, c11, c12, c13, c14
+	];
+
+	const discArtStubPaths = {
+		cdWhite: paths.cdArtWhiteStub,
+		cdBlack: paths.cdArtBlackStub,
+		cdBlank: paths.cdArtBlankStub,
+		cdTrans: paths.cdArtTransStub,
+		cdCustom: paths.cdArtCustomStub,
+		vinylWhite: paths.vinylArtWhiteStub,
+		vinylVoid: paths.vinylArtVoidStub,
+		vinylColdFusion: paths.vinylArtColdFusionStub,
+		vinylRingOfFire: paths.vinylArtRingOfFireStub,
+		vinylMaple: paths.vinylArtMapleStub,
+		vinylBlack: paths.vinylArtBlackStub,
+		vinylBlackHole: paths.vinylArtBlackHoleStub,
+		vinylEbony: paths.vinylArtEbonyStub,
+		vinylTrans: paths.vinylArtTransStub,
+		vinylCustom: paths.vinylArtCustomStub
+	};
+
+	if (pref.displayDiscArt && !isStreaming) { // We must attempt to load CD/vinyl art first so that the shadow is drawn correctly
+		if (pref.noDiscArtStub || pref.showDiscArtStub) {
+			for (let i = 0; i < discArtAllPaths.length; i++) {
+				const found = IsFile(discArtAllPaths[i]);
+				if (found) {
+					discArtPath = discArtAllPaths[i];
+					discArtExists = true;
+				}
+				// Didn't find anything
+				else if (!noAlbumArtStub && pref.noDiscArtStub) discArtExists = false;
+			}
+		}
+
+		if (IsFile(discArtPath)) {
+			discArtExists = true;
+		}
+		// * Display custom disc art placeholders
+		else if (!pref.noDiscArtStub || pref.showDiscArtStub) {
+			discArtExists = true;
+			discArtPath = discArtStubPaths[pref.discArtStub];
+		}
+
+		if (discArtExists) {
+			let tempDiscArt;
+			if (loadFromCache) {
+				tempDiscArt = artCache.getImage(discArtPath);
+			}
+			if (tempDiscArt) {
+				disposeDiscArtImage(discArt);
+				discArt = tempDiscArt;
+				resizeArtwork(true);
+				createRotatedDiscArtImage();
+				if (pref.spinDiscArt) {
+					discArtArray = [];	// Clear last image
+					setDiscArtRotationTimer();
+				}
+			} else {
+				gdi.LoadImageAsyncV2(window.ID, discArtPath).then(discArtImg => {
+					disposeDiscArtImage(discArt); // Delay disposal so we don't get flashing
+					discArt = artCache.encache(discArtImg, discArtPath);
+					resizeArtwork(true);
+					createRotatedDiscArtImage();
+					if (pref.spinDiscArt) {
+						discArtArray = [];	// Clear last image
+						setDiscArtRotationTimer();
+					}
+					lastLeftEdge = 0; // Recalc label location
+					repaintWindow();
+				});
+			}
+		}
+		else {
+			discArt = disposeDiscArtImage(discArt);
+		}
+	}
+
+	if (timings.showDebugTiming) fetchDiscArtProfiler.Print();
+}
+
+
+/**
+ * Resizes and resets the size and position of the disc art.
+ * @param {boolean} resetDiscArtPosition Whether the position of the disc art should be reset.
+ */
+function resizeDiscArt(resetDiscArtPosition) {
+	if (discArt) {
+		const discArtSizeCorr = SCALE(4);
+		const discArtMargin = SCALE(2);
+		const discArtMarginRight = SCALE(36);
+		if (hasArtwork) {
+			if (resetDiscArtPosition) {
+				discArtSize.x =
+					ww - (albumArtSize.x + albumArtSize.w) < albumArtSize.h * pref.discArtDisplayAmount ? Math.floor(ww - albumArtSize.h - discArtMarginRight) :
+					pref.discArtDisplayAmount === 1 ? Math.floor(ww - albumArtSize.h - discArtMarginRight) :
+					pref.discArtDisplayAmount === 0.5 ? Math.floor(Math.min(ww - albumArtSize.h - discArtMarginRight,
+						albumArtSize.x + albumArtSize.w - (albumArtSize.h - 4) * (1 - pref.discArtDisplayAmount) - (pref.discArtDisplayAmount === 1 || pref.discArtDisplayAmount === 0.5 ? 0 : discArtMarginRight))) :
+					Math.floor(albumArtSize.x + albumArtSize.w - (albumArtSize.h - discArtSizeCorr) * (1 - pref.discArtDisplayAmount) - discArtMarginRight);
+
+				discArtSize.y = albumArtSize.y + discArtMargin;
+				discArtSize.w = albumArtSize.h - discArtSizeCorr; // Disc art must be square so use the height of album art for width of discArt
+				discArtSize.h = discArtSize.w;
+			} else { // When disc art moves because folder images are different sizes we want to push it outwards, but not move it back in so it jumps around less
+				discArtSize.x = Math.max(discArtSize.x, Math.floor(Math.min(ww - albumArtSize.h - discArtMarginRight,
+					albumArtSize.x + albumArtSize.w - (albumArtSize.h - 4) * (1 - pref.discArtDisplayAmount) - (pref.discArtDisplayAmount === 1 || pref.discArtDisplayAmount === 0.5 ? 0 : discArtMarginRight))));
+
+				discArtSize.y = discArtSize.y > 0 ? Math.min(discArtSize.y, albumArtSize.y + discArtMargin) : albumArtSize.y + discArtMargin;
+				discArtSize.w = Math.max(discArtSize.w, albumArtSize.h - discArtSizeCorr);
+				discArtSize.h = discArtSize.w;
+				if (discArtSize.x + discArtSize.w > ww) {
+					discArtSize.x = ww - discArtSize.w - discArtMarginRight;
+				}
+			}
+		}
+		else { // * No album art so we need to calc size of disc
+			const discScale = Math.min(((displayPlaylist || displayLibrary) ? 0.5 * ww : 0.75 * ww) / discArt.Width, (wh - geo.topMenuHeight - geo.lowerBarHeight - SCALE(16)) / discArt.Height);
+			let xCenter = 0;
+			if (displayPlaylist || displayLibrary) {
+				xCenter = 0.25 * ww;
+			} else if (ww / wh < 1.40) { // When using a roughly 4:3 display the album art crowds, so move it slightly off center
+				xCenter = 0.56 * ww; // TODO: check if this is still needed?
+			} else {
+				xCenter = 0.5 * ww;
+				artOffCenter = false;
+				if (discScale === 0.75 * ww / discArt.Width) {
+					xCenter += 0.1 * ww;
+					artOffCenter = true; // TODO: We should probably suppress labels in this case
+				}
+			}
+			// Need to -4 from height and add 2 to y to avoid skipping discArt drawing - not sure this is needed
+			discArtSize.w = Math.floor(discArt.Width * discScale) - discArtSizeCorr; // Width
+			discArtSize.h = discArtSize.w; // height
+			discArtSize.x = Math.floor(xCenter - 0.5 * discArtSize.w); // Left
+			if (discScale !== (wh - geo.topMenuHeight - geo.lowerBarHeight - SCALE(16)) / discArt.Height) {
+				// Restricted by width
+				const y = geo.topMenuHeight + Math.floor(((wh - geo.topMenuHeight - geo.lowerBarHeight - SCALE(16)) / 2) - discArtSize.h / 2);
+				discArtSize.y = Math.min(y, 160);
+			} else {
+				discArtSize.y = geo.topMenuHeight + discArtMargin; // Top
+			}
+			hasArtwork = true;
+		}
+	}
+	else {
+		discArtSize = new ImageSize(0, 0, 0, 0);
+	}
+
+	if ((hasArtwork || noAlbumArtStub) && (discArt && pref.displayDiscArt && !displayPlaylist && !displayLibrary && pref.layout !== 'compact')) {
+		createDiscArtShadow();
+	}
 }
 
 
@@ -2161,7 +2251,7 @@ function disposeDiscArtImg(discArtImg) {
  */
 function setDiscArtRotationTimer() {
 	clearInterval(discArtRotationTimer);
-	if (pref.layout === 'default' && pref.displayDiscArt && discArt && fb.IsPlaying && !fb.IsPaused && pref.spinDiscArt && !displayPlaylist && !displayLibrary && !displayBiography) {
+	if (pref.layout === 'default' && discArt && fb.IsPlaying && !fb.IsPaused && pref.displayDiscArt && pref.spinDiscArt && !displayPlaylist && !displayLibrary && !displayBiography) {
 		console.log(`creating ${pref.spinDiscArtImageCount} rotated disc images, shown every ${pref.spinDiscArtRedrawInterval}ms`);
 		discArtRotationTimer = setInterval(() => {
 			rotatedDiscArtIndex++;
@@ -2177,78 +2267,151 @@ function setDiscArtRotationTimer() {
 }
 
 
-/////////////////////////////
-// * DETAILS - LABEL ART * //
-/////////////////////////////
+/////////////////////////////////////
+// * DETAILS - BAND & LABEL LOGO * //
+/////////////////////////////////////
 /**
- * Creates the drop shadow for label images in Details.
- * @param {number} width The width.
- * @param {number} height The height.
+ * Checks if a band logo exists at various paths.
+ * @param {string} bandStr The name of the band.
+ * @returns {string} The path of the band logo if it exists.
  */
-function createShadowRect(width, height) {
-	const shadow = gdi.CreateImage(width + 2 * geo.discArtShadow, height + 2 * geo.discArtShadow);
-	const shimg = shadow.GetGraphics();
-	shimg.FillRoundRect(geo.discArtShadow, geo.discArtShadow, width, height, 0.5 * geo.discArtShadow, 0.5 * geo.discArtShadow, col.shadow);
-	shadow.ReleaseGraphics(shimg);
-	shadow.StackBlur(geo.discArtShadow);
+function checkBandLogo(bandStr) {
+	// See if artist logo exists at various paths
+	const testBandLogoPath = (imgDir, name) => {
+		if (name) {
+			const logoPath = `${imgDir + name}.png`;
+			if (IsFile(logoPath)) {
+				console.log(`Found band logo: ${logoPath}`);
+				return logoPath;
+			}
+		}
+		return false;
+	};
 
-	return shadow;
+	return testBandLogoPath(paths.artistlogos, bandStr) || // Try 800x310 white
+		testBandLogoPath(paths.artistlogosColor, bandStr); // Try 800x310 color
 }
 
 
 /**
- * Loads the label images in Details.
- * @param {string} publisherString The name of a record label or publisher.
- * @returns {GdiBitmap} The record label image as a gdi image object.
+ * Gets the band logo and its inverted version based on the current playing album artist in Details.
  */
-function loadLabelImage(publisherString) {
-	let recordLabel = null;
+function getBandLogo() {
+	bandLogo = null;
+	invertedBandLogo = null;
+	let path;
+	let tryArtistList = [
+		...getMetaValues('%album artist%').map(artist => ReplaceFileChars(artist)),
+		...getMetaValues('%album artist%').map(artist => ReplaceFileChars(artist).replace(/^[Tt]he /, '')),
+		ReplaceFileChars($('[%track artist%]')),
+		...getMetaValues('%artist%').map(artist => ReplaceFileChars(artist)),
+		...getMetaValues('%artist%').map(artist => ReplaceFileChars(artist).replace(/^[Tt]he /, ''))
+	];
+
+	tryArtistList = [...new Set(tryArtistList)];
+	tryArtistList.some(artistString => {
+		path = checkBandLogo(artistString);
+		return path;
+	});
+
+	if (!path) return;
+
+	bandLogo = artCache.getImage(path);
+	if (!bandLogo) {
+		const logo = gdi.Image(path);
+		if (logo) {
+			bandLogo = artCache.encache(logo, path);
+			invertedBandLogo = artCache.encache(logo.InvertColours(), `${path}-inv`);
+		}
+	}
+
+	invertedBandLogo = artCache.getImage(`${path}-inv`);
+	if (!invertedBandLogo && bandLogo) {
+		invertedBandLogo = artCache.encache(bandLogo.InvertColours(), `${path}-inv`);
+	}
+}
+
+
+/**
+ * Gets label logos based on current playing album artist in Details.
+ * @param {FbMetadbHandle} metadb The metadb of the track.
+ */
+function getLabelLogo(metadb) {
+	let labelStrings = [];
+	recordLabels = [];	// Will free memory from earlier loaded record label images
+	recordLabelsInverted = [];
+
+	for (let i = 0; i < tf.labels.length; i++) {
+		labelStrings.push(...getMetaValues(tf.labels[i], metadb));
+	}
+	labelStrings = [...new Set(labelStrings)];
+
+	for (let i = 0; i < labelStrings.length; i++) {
+		const addLabel = loadLabelLogo(labelStrings[i]);
+		if (addLabel != null) {
+			recordLabels.push(addLabel);
+			try {
+				recordLabelsInverted.push(addLabel.InvertColours());
+			} catch (e) {}
+		}
+	}
+}
+
+
+/**
+ * Loads the label logo in Details.
+ * @param {string} publisherString The name of a record label or publisher.
+ * @returns {GdiBitmap} The record label logo as a gdi image object.
+ */
+function loadLabelLogo(publisherString) {
 	const d = new Date();
+	const lastSrchYear = d.getFullYear();
+	let dir = paths.labelsBase;
+	let recordLabel = null;
 	let labelStr = ReplaceFileChars(publisherString);
+
 	if (labelStr) {
 		// * First check for record label folder
-		const lastSrchYear = d.getFullYear();
-		let dir = paths.labelsBase; // Also used below
 		if (IsFolder(dir + labelStr) ||
-			IsFolder(dir + (labelStr = labelStr.replace(/ Records$/, '')
+			IsFolder(dir + (labelStr =
+			labelStr.replace(/ Records$/, '')
 					.replace(/ Recordings$/, '')
 					.replace(/ Music$/, '')
 					.replace(/\.$/, '')
 					.replace(/[\u2010\u2013\u2014]/g, '-')))) { // Hyphen, endash, emdash
-			let year = parseInt($('$year(%date%)'));
-			for (; year <= lastSrchYear; year++) {
-				const yearFolder = `${dir + labelStr}\\${year}`;
-				if (IsFolder(yearFolder)) {
-					console.log(`Found folder for ${labelStr} for year ${year}.`);
-					dir += `${labelStr}\\${year}\\`;
-					break;
-				}
-			}
-			if (year > lastSrchYear) {
-				dir += `${labelStr}\\`; // We didn't find a year folder so use the "default" logo in the root
-				console.log(`Found folder for ${labelStr} and using latest logo.`);
-			}
-		}
+						let year = parseInt($('$year(%date%)'));
+						for (; year <= lastSrchYear; year++) {
+							const yearFolder = `${dir + labelStr}\\${year}`;
+							if (IsFolder(yearFolder)) {
+								console.log(`Found folder for ${labelStr} for year ${year}.`);
+								dir += `${labelStr}\\${year}\\`;
+								break;
+							}
+						}
+						if (year > lastSrchYear) {
+							dir += `${labelStr}\\`; // We didn't find a year folder so use the "default" logo in the root
+							console.log(`Found folder for ${labelStr} and using latest logo.`);
+						}
+					}
 		// * Actually load the label from either the directory we found above, or the base record label folder
 		labelStr = ReplaceFileChars(publisherString); // We need to start over with the original string when searching for the file, just to be safe
 		let label = `${dir + labelStr}.png`;
+
 		if (IsFile(label)) {
 			recordLabel = gdi.Image(label);
 			console.log('Found Record label:', label, !recordLabel ? '<COULD NOT LOAD>' : '');
-		} else {
-			labelStr = labelStr.replace(/ Records$/, '')
-			.replace(/ Recordings$/, '')
-			.replace(/ Music$/, '')
-			.replace(/[\u2010\u2013\u2014]/g, '-'); // Hyphen, endash, emdash
+		}
+		else {
+			labelStr =
+				labelStr.replace(/ Records$/, '')
+						.replace(/ Recordings$/, '')
+						.replace(/ Music$/, '')
+						.replace(/[\u2010\u2013\u2014]/g, '-'); // Hyphen, endash, emdash
+
 			label = `${dir + labelStr}.png`;
-			if (IsFile(label)) {
-				recordLabel = gdi.Image(label);
-			} else {
-				label = `${dir + labelStr} Records.png`;
-				if (IsFile(label)) {
-					recordLabel = gdi.Image(label);
-				}
-			}
+			if (IsFile(label)) return gdi.Image(label);
+			label = `${dir + labelStr} Records.png`;
+			if (IsFile(label)) return gdi.Image(label);
 		}
 	}
 	return recordLabel;
@@ -2270,16 +2433,17 @@ function calcDateRatios(dontUpdateLastPlayed, currentLastPlayed) {
 	let lfmPlayedTimesJsonLast = '';
 	let playedTimesJsonLast = '';
 	let playedTimesRatios = [];
+	let lfmPlayedTimes = [];
+	let playedTimes = [];
 	let added = ToTime($('$if2(%added_enhanced%,%added%)'));
-	const firstPlayed = ToTime($('$if2(%first_played_enhanced%,%first_played%)'));
 	let lastPlayed = ToTime($('$if2(%last_played_enhanced%,%last_played%)'));
+	const firstPlayed = ToTime($('$if2(%first_played_enhanced%,%first_played%)'));
 	const today = DateToYMD(newDate);
+
 	if (dontUpdateLastPlayed && $Date(lastPlayed) === today) {
 		lastPlayed = ToTime(currentLastPlayed);
 	}
 
-	let lfmPlayedTimes = [];
-	let playedTimes = [];
 	if (componentEnhancedPlaycount) {
 		const playedTimesJson = $('[%played_times_js%]', fb.GetNowPlaying());
 		const lastfmJson = $('[%lastfm_played_times_js%]', fb.GetNowPlaying());
@@ -2473,7 +2637,7 @@ function clearPlaylistNowPlayingBg() {
  * Initializes the Playlist.
  */
 function initPlaylist() {
-	playlist = new PlaylistPanel(pref.layout === 'default' && (pref.playlistLayout === 'normal' || pref.playlistLayoutNormal && (displayBiography || pref.displayLyrics)) ? ww * 0.5 : 0, 0);
+	playlist = new PlaylistPanel(setPlaylistX(), 0);
 	playlist.initialize();
 }
 
@@ -2649,9 +2813,18 @@ function initLibraryLayout() {
 function setLibrarySize() {
 	if (!libraryInitialized) return;
 
-	const x = pref.layout === 'artwork' || pref.libraryLayout !== 'normal' ? 0 : ww * 0.5;
+	const x =
+		pref.layout === 'artwork' || pref.libraryLayout !== 'normal' ? 0 :
+		pref.panelWidthAuto ? !fb.IsPlaying ? 0 : albumArtSize.x + albumArtSize.w :
+		ww * 0.5;
+
 	const y = geo.topMenuHeight;
-	const libraryWidth = pref.layout === 'artwork' || pref.libraryLayout === 'full' ? ww : ww * 0.5;
+
+	const libraryWidth =
+		pref.layout === 'artwork' || pref.libraryLayout === 'full' ? ww :
+		pref.panelWidthAuto ? !fb.IsPlaying ? ww : displayPlaylistLibrary() ? albumArtSize.x + albumArtSize.w : ww - (albumArtSize.x + albumArtSize.w) :
+		ww * 0.5;
+
 	const libraryHeight = Math.max(0, wh - geo.lowerBarHeight - y);
 
 	ppt.zoomNode = 100; // Sets correct node zoom value, i.e when switching to 4k
@@ -2695,6 +2868,7 @@ function libraryPlaylistDragDrop() {
  */
 function autoThumbnailSize() {
 	if (pref.libraryThumbnailSize !== 'auto') return;
+
 	const noStd = ['coversLabelsRight', 'artistLabelsRight'].includes(pref.libraryDesign) || ppt.albumArtLabelType === 2;
 	const fullW = pref.libraryLayout === 'full' && pref.layout === 'default';
 
@@ -2811,7 +2985,12 @@ function setBiographySize() {
 
 	const x = 0;
 	const y = geo.topMenuHeight;
-	const biographyWidth = pref.layout === 'artwork' || pref.biographyLayout === 'full' ? ww : ww * 0.5;
+
+	const biographyWidth =
+		pref.layout === 'artwork' || pref.biographyLayout === 'full' ? ww :
+		pref.panelWidthAuto ? (!albumArt && !noAlbumArtStub || !fb.IsPlaying) ? ww : albumArtSize.x + albumArtSize.w :
+		ww * 0.5;
+
 	const biographyHeight = Math.max(0, wh - geo.lowerBarHeight - y);
 
 	// * Set guard for fixed Biography margin sizes in case user changed them in Biography options
@@ -2853,4 +3032,35 @@ function displayLyrics() {
 		initLyrics();
 		initButtonState();
 	}, 500);
+}
+
+
+/**
+ * Resets the size and position of the lyrics.
+ */
+function resetLyricsPosition() {
+	const fullW = pref.layout === 'default' && pref.lyricsLayout === 'full' && pref.displayLyrics;
+	const noAlbumArtSize = wh - geo.topMenuHeight - geo.lowerBarHeight;
+
+	const lyricsX =
+		noAlbumArtStub ?
+			fullW ? pref.panelWidthAuto && pref.lyricsLayout === 'normal' ? noAlbumArtSize * 0.5 : ww * 0.333 :
+			pref.panelWidthAuto ? albumArtSize.x : 0 :
+		albumArtSize.x;
+
+	const lyricsY = noAlbumArtStub ? geo.topMenuHeight : albumArtSize.y;
+
+	const lyricsW =
+		noAlbumArtStub ?
+			pref.layout === 'artwork' ? ww :
+			fullW ? ww * 0.333 :
+			pref.panelWidthAuto ? noAlbumArtSize :
+			ww * 0.5 :
+		albumArtSize.w;
+
+	const lyricsH = noAlbumArtStub ? wh - geo.topMenuHeight - geo.lowerBarHeight : albumArtSize.h;
+
+	if (lyrics) {
+		lyrics.on_size(lyricsX, lyricsY, lyricsW, lyricsH);
+	}
 }

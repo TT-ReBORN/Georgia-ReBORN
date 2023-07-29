@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-21                                          * //
+// * Last change:    2023-07-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -413,31 +413,31 @@ function createFonts() {
 	}
 
 	// * FONT SIZES * //
-	const menuFontSize         = pref.layout === 'compact' ? pref.menuFontSize_compact         : pref.layout === 'artwork' ? pref.menuFontSize_artwork         : pref.menuFontSize_default;
-	const menuCaptionFontSize  = pref.layout === 'compact' ? pref.menuFontSize_compact + 1     : pref.layout === 'artwork' ? pref.menuFontSize_artwork + 1     : pref.menuFontSize_default + 1;
-	const lowerBarFontSize     = pref.layout === 'compact' ? pref.lowerBarFontSize_compact     : pref.layout === 'artwork' ? pref.lowerBarFontSize_artwork     : pref.lowerBarFontSize_default;
-	const notificationFontSize = pref.layout === 'compact' ? pref.notificationFontSize_compact : pref.layout === 'artwork' ? pref.notificationFontSize_artwork : pref.notificationFontSize_default;
-	const popupFontSize        = pref.layout === 'compact' ? pref.popupFontSize_compact        : pref.layout === 'artwork' ? pref.popupFontSize_artwork        : pref.popupFontSize_default;
-	const tooltipFontSize      = pref.layout === 'compact' ? pref.tooltipFontSize_compact      : pref.layout === 'artwork' ? pref.tooltipFontSize_artwork      : pref.tooltipFontSize_default;
+	const menuFontSize          = pref[`menuFontSize_${pref.layout}`];
+	const menuCaptionFontSize   = pref[`menuFontSize_${pref.layout}`] + 1;
+	const lowerBarFontSize      = pref[`lowerBarFontSize_${pref.layout}`];
+	const notificationFontSize  = pref[`notificationFontSize_${pref.layout}`];
+	const popupFontSize         = pref[`popupFontSize_${pref.layout}`];
+	const tooltipFontSize       = pref[`tooltipFontSize_${pref.layout}`];
 
-	const guiFxBtnFontSize      = pref.layout === 'compact' ? pref.transportButtonSize_compact / 2    : pref.layout === 'artwork' ? pref.transportButtonSize_artwork / 2    : pref.transportButtonSize_default /    2;
-	const pboDefaultBtnFontSize = pref.layout === 'compact' ? pref.transportButtonSize_compact / 1.6  : pref.layout === 'artwork' ? pref.transportButtonSize_artwork / 1.6  : pref.transportButtonSize_default /  1.6;
-	const pboReplayBtnFontSize  = pref.layout === 'compact' ? pref.transportButtonSize_compact / 2    : pref.layout === 'artwork' ? pref.transportButtonSize_artwork / 2    : pref.transportButtonSize_default /    2;
-	const pboShuffleBtnFontSize = pref.layout === 'compact' ? pref.transportButtonSize_compact / 1.65 : pref.layout === 'artwork' ? pref.transportButtonSize_artwork / 1.65 : pref.transportButtonSize_default / 1.65;
-	const reloadBtnFontSize     = pref.layout === 'compact' ? pref.transportButtonSize_compact / 1.5  : pref.layout === 'artwork' ? pref.transportButtonSize_artwork / 1.5  : pref.transportButtonSize_default /  1.5;
-	const volumeBtnFontSize     = pref.layout === 'compact' ? pref.transportButtonSize_compact / 1.33 : pref.layout === 'artwork' ? pref.transportButtonSize_artwork / 1.33 : pref.transportButtonSize_default / 1.33;
+	const guiFxBtnFontSize      = pref[`transportButtonSize_${pref.layout}`] / 2;
+	const pboDefaultBtnFontSize = pref[`transportButtonSize_${pref.layout}`] / 1.6;
+	const pboReplayBtnFontSize  = pref[`transportButtonSize_${pref.layout}`] / 2;
+	const pboShuffleBtnFontSize = pref[`transportButtonSize_${pref.layout}`] / 1.65;
+	const reloadBtnFontSize     = pref[`transportButtonSize_${pref.layout}`] / 1.5;
+	const volumeBtnFontSize     = pref[`transportButtonSize_${pref.layout}`] / 1.33;
 
-	const gridArtistFontSize   = pref.layout === 'artwork' ? pref.gridArtistFontSize_artwork    : pref.gridArtistFontSize_default;
-	const gridTrackNumFontSize = pref.layout === 'artwork' ? pref.gridTrackNumFontSize_artwork  : pref.gridTrackNumFontSize_default;
-	const gridTitleFontSize    = pref.layout === 'artwork' ? pref.gridTitleFontSize_artwork     : pref.gridTitleFontSize_default;
-	const gridAlbumFontSize    = pref.layout === 'artwork' ? pref.gridAlbumFontSize_artwork     : pref.gridAlbumFontSize_default;
-	const gridKeyFontSize      = pref.layout === 'artwork' ? pref.gridKeyFontSize_artwork       : pref.gridKeyFontSize_default;
-	const gridValueFontSize    = pref.layout === 'artwork' ? pref.gridValueFontSize_artwork + 1 : pref.gridValueFontSize_default + 1;
+	const gridArtistFontSize    = pref[`gridArtistFontSize_${pref.layout}`];
+	const gridTrackNumFontSize  = pref[`gridTrackNumFontSize_${pref.layout}`];
+	const gridTitleFontSize     = pref[`gridTitleFontSize_${pref.layout}`];
+	const gridAlbumFontSize     = pref[`gridAlbumFontSize_${pref.layout}`];
+	const gridKeyFontSize       = pref[`gridKeyFontSize_${pref.layout}`];
+	const gridValueFontSize     = pref[`gridValueFontSize_${pref.layout}`] + 1;
 
-	const playlistFontSize  = pref.layout === 'compact' ? pref.playlistFontSize_compact  : pref.layout === 'artwork' ? pref.playlistFontSize_artwork : pref.playlistFontSize_default;
-	const libraryFontSize   = pref.layout === 'artwork' ? ppt.baseFontSize_artwork       : ppt.baseFontSize_default;
-	const biographyFontSize = pref.layout === 'artwork' ? pptBio.baseFontSizeBio_artwork : pptBio.baseFontSizeBio_default;
-	const lyricsFontSize    = pref.layout === 'artwork' ? pref.lyricsFontSize_artwork    : pref.lyricsFontSize_default || 20;
+	const playlistFontSize      = pref[`playlistFontSize_${pref.layout}`];
+	const libraryFontSize       = ppt[`baseFontSize_${pref.layout}`];
+	const biographyFontSize     = pptBio[`baseFontSizeBio_${pref.layout}`];
+	const lyricsFontSize        = pref[`lyricsFontSize_${pref.layout}`];
 
 	// * STYLE CHANGE * //
 	const artistTitle = pref.showGridArtist_default && pref.showGridTitle_default || pref.showGridArtist_artwork && pref.showGridTitle_artwork;
@@ -551,6 +551,8 @@ let artOffCenter = false;
 let embeddedArt = false;
 /** @type {boolean} The state to always load art from cache unless this is set. */
 let loadFromCache = true;
+/** @type {boolean} The state when album art or disc art has artwork loaded. */
+let hasArtwork = false;
 /** @type {boolean} The "no album art stub" when no album cover was found. */
 let noAlbumArtStub = false;
 /** @type {GdiBitmap} The disc art image used in Details. */
@@ -611,7 +613,7 @@ let playlistHistoryUsed;
 /** @type {boolean} The display state of the Playlist panel. */
 let displayPlaylist = false;
 /** @type {boolean} The display state of the Playlist panel in Artwork layout. */
-let displayPlaylistArtworkLayout = false;
+let displayPlaylistArtwork = false;
 /** @type {boolean} The display state of the Details panel. */
 let displayDetails = pref.showPanelOnStartup === 'details';
 /** @type {boolean} The display state of the Library panel. */
