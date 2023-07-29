@@ -267,7 +267,7 @@ function on_paint(gr) {
 		pref_theme === 'ngreen' ? RGB(0, 200, 0) :
 		pref_theme === 'nred' ? RGB(229, 7, 44) :
 		pref_theme === 'ngold' ? RGB(254, 204, 3) :
-		pref_theme.startsWith('custom') ? RGB(50, 25, 70) :
+		['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref_theme) ? RGB(50, 25, 70) :
 		RGB(90, 90, 90);
 
 	col.progressBarFrame =
@@ -326,7 +326,7 @@ function drawLogo(gr) {
 	const pref_styleBlackAndWhite2 = window.GetProperty('Georgia-ReBORN - 02. Style: Black and white 2');
 	const pref_styleBlackReborn = window.GetProperty('Georgia-ReBORN - 02. Style: Black reborn');
 	const pref_displayRes = window.GetProperty('Georgia-ReBORN - 06. Display');
-	const pref_theme_custom = pref_theme.startsWith('custom');
+	const pref_theme_custom = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref_theme);
 
 	// * SYSTEM * //
 	const ww = window.Width;

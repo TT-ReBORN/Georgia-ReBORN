@@ -2032,7 +2032,7 @@ const ngoldP10 = () => {
  * @returns {string}
  */
 const customThemeSetup = () => {
-	const customTheme = pref.theme.startsWith('custom');
+	const customTheme = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'];
 	if (!customTheme.includes(pref.theme)) pref.theme = customTheme[Math.floor(Math.random() * customTheme.length)]; // If no custom theme active, pick a random one
 	initCustomTheme();
 };
