@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-30                                          * //
+// * Last change:    2023-07-31                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2296,6 +2296,7 @@ class Playlist extends List {
 			}
 
 			this.scrollbar.stopScrolling();
+			this.update_scrollbar();
 
 			setTimeout(() => { // * Prevents scroll jump when playlist headers are collapsed while using drag and drop in split layout
 				this.on_list_items_change();
