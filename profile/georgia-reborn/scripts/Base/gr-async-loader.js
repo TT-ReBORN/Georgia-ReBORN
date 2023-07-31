@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-29                                          * //
+// * Last change:    2023-08-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -321,12 +321,12 @@ function on_paint(gr) {
  */
 function drawLogo(gr) {
 	// * PROPERTIES * //
-	const pref_theme = window.GetProperty('Georgia-ReBORN - 01. Theme:');
-	const pref_styleBlackAndWhite = window.GetProperty('Georgia-ReBORN - 02. Style: Black and white');
+	const pref_theme               = window.GetProperty('Georgia-ReBORN - 01. Theme:');
+	const pref_styleBlackAndWhite  = window.GetProperty('Georgia-ReBORN - 02. Style: Black and white');
 	const pref_styleBlackAndWhite2 = window.GetProperty('Georgia-ReBORN - 02. Style: Black and white 2');
-	const pref_styleBlackReborn = window.GetProperty('Georgia-ReBORN - 02. Style: Black reborn');
-	const pref_displayRes = window.GetProperty('Georgia-ReBORN - 06. Display');
-	const pref_theme_custom = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref_theme);
+	const pref_styleBlackReborn    = window.GetProperty('Georgia-ReBORN - 02. Style: Black reborn');
+	const pref_displayRes          = window.GetProperty('Georgia-ReBORN - 06. Display');
+	const pref_theme_custom        = ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref_theme);
 
 	// * SYSTEM * //
 	const ww = window.Width;
@@ -338,11 +338,22 @@ function drawLogo(gr) {
 	const paths = {};
 	const logoPath = `${fb.ProfilePath}georgia-reborn/images/logo/`;
 	switch (true) {
-		case pref_styleBlackAndWhite:  paths.logo = `${logoPath}${plus4k}logo-black-white.png`;   break;
-		case pref_styleBlackAndWhite2: paths.logo = `${logoPath}${plus4k}logo-black-white2.png`;  break;
-		case pref_styleBlackReborn:    paths.logo = `${logoPath}${plus4k}logo-black-reborn.png`;  break;
-		case pref_theme_custom:        paths.logo = `${logoPath}${plus4k}logo-custom.png`;        break;
-		default:                       paths.logo = `${logoPath}${plus4k}logo-${pref_theme}.png`; break;
+		case pref_styleBlackAndWhite:   paths.logo = `${logoPath}${plus4k}logo-black-white.png`;  break;
+		case pref_styleBlackAndWhite2:  paths.logo = `${logoPath}${plus4k}logo-black-white2.png`; break;
+		case pref_styleBlackReborn:     paths.logo = `${logoPath}${plus4k}logo-black-reborn.png`; break;
+		case pref_theme === 'white':    paths.logo = `${logoPath}${plus4k}logo-white.png`;        break;
+		case pref_theme === 'black':    paths.logo = `${logoPath}${plus4k}logo-black.png`;        break;
+		case pref_theme === 'reborn':   paths.logo = `${logoPath}${plus4k}logo-reborn.png`;       break;
+		case pref_theme === 'random':   paths.logo = `${logoPath}${plus4k}logo-random.png`;       break;
+		case pref_theme === 'blue':     paths.logo = `${logoPath}${plus4k}logo-blue.png`;         break;
+		case pref_theme === 'darkblue': paths.logo = `${logoPath}${plus4k}logo-dark-blue.png`;    break;
+		case pref_theme === 'red':      paths.logo = `${logoPath}${plus4k}logo-red.png`;          break;
+		case pref_theme === 'cream':    paths.logo = `${logoPath}${plus4k}logo-cream.png`;        break;
+		case pref_theme === 'nblue':    paths.logo = `${logoPath}${plus4k}logo-neon-blue.png`;    break;
+		case pref_theme === 'ngreen':   paths.logo = `${logoPath}${plus4k}logo-neon-green.png`;   break;
+		case pref_theme === 'nred':     paths.logo = `${logoPath}${plus4k}logo-neon-red.png`;     break;
+		case pref_theme === 'ngold':    paths.logo = `${logoPath}${plus4k}logo-neon-gold.png`;    break;
+		case pref_theme_custom:         paths.logo = `${logoPath}${plus4k}logo-custom.png`;       break;
 	}
 
 	// * LOGO * //
