@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-29                                          * //
+// * Last change:    2023-07-31                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -210,10 +210,16 @@ function drawDiscArt(gr) {
  * @param {GdiGraphics} gr
  */
 function drawHiResAudioLogo(gr) {
-	const displayHiResAudioLogo = pref.showHiResAudioBadge && pref.layout !== 'compact' &&
+	const trackIsHiRes =
 		(Number($('$info(bitspersample)', fb.GetNowPlaying())) > 16 || Number($('$info(bitrate)', fb.GetNowPlaying())) > 1411);
 
-	if (!displayHiResAudioLogo)  return;
+	const displayHiResAudioLogo =
+		trackIsHiRes && pref.showHiResAudioBadge && pref.layout !== 'compact' &&
+		(displayPlaylist && !displayPlaylistArtwork && !displayPlaylistLibrary() && !displayBiography ||
+		!displayPlaylist && !displayPlaylistArtwork && !displayLibrary && !displayBiography ||
+		displayLibrary && pref.libraryLayout === 'normal' && pref.layout === 'default');
+
+	if (!displayHiResAudioLogo) return;
 
 	const logoPath = `${fb.ProfilePath}georgia-reborn\\images\\misc\\`;
 	const plus4k = RES_4K ? '4k-' : '';
