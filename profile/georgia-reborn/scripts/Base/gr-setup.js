@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-27                                          * //
+// * Last change:    2023-07-30                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -500,14 +500,52 @@ const paths = {};
 /** @type {string} The Georgia-ReBORN images path shortcut. */
 const imagesPath = `${fb.ProfilePath}georgia-reborn/images/`;
 
-// * CDART STUBS * //
+// We expect disc art will be in .png with transparent background, best found at fanart.tv.
+
+// * CD ART PATHS ( named cd1.png, cd2.png, etc. ) * //
+pref.cdartdisc_path              = `$directory_path(%path%)\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Root -> cd%discnumber%.png
+pref.cdartdisc_path_artwork_root = `$directory_path(%path%)\\..\\Artwork\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Root Artwork -> cd%discnumber%.png
+pref.cdartdisc_path_images_root  = `$directory_path(%path%)\\..\\Images\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Root Images -> cd%discnumber%.png
+pref.cdartdisc_path_scans_root   = `$directory_path(%path%)\\..\\Scans\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Root Scans -> cd%discnumber%.png
+pref.cdartdisc_path_artwork      = `$directory_path(%path%)\\Artwork\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Subfolder Artwork -> cd%discnumber%.png
+pref.cdartdisc_path_images       = `$directory_path(%path%)\\Images\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Subfolder Images -> cd%discnumber%.png
+pref.cdartdisc_path_scans        = `$directory_path(%path%)\\Scans\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Subfolder Scans -> cd%discnumber%.png
+
+// * CD ART PATHS ( named cd.png (or whatever custom value was specified). This is the most common single disc case. ) * //
+pref.cdart_path                  = `$directory_path(%path%)\\${settings.discArtBasename}.png`; // Root -> cd.png
+pref.cdart_path_artwork_root     = `$directory_path(%path%)\\..\\Artwork\\${settings.discArtBasename}.png`; // Root Artwork -> cd.png
+pref.cdart_path_images_root      = `$directory_path(%path%)\\..\\Images\\${settings.discArtBasename}.png`; // Root Images -> cd.png
+pref.cdart_path_scans_root       = `$directory_path(%path%)\\..\\Scans\\${settings.discArtBasename}.png`; // Root Scans -> cd.png
+pref.cdart_path_artwork          = `$directory_path(%path%)\\Artwork\\${settings.discArtBasename}.png`; // Subfolder Artwork -> cd.png
+pref.cdart_path_images           = `$directory_path(%path%)\\Images\\${settings.discArtBasename}.png`; // Subfolder Images -> cd.png
+pref.cdart_path_scans            = `$directory_path(%path%)\\Scans\\${settings.discArtBasename}.png`; // Subfolder Scans -> cd.png
+
+// * VINYL DISC ART ( named vinylA.png, vinylB.png, etc. ) * //
+pref.vinylside_path              = `$directory_path(%path%)\\vinyl$if2(${tf.vinyl_side},).png`; // Root -> vinyl side
+pref.vinylside_path_artwork_root = `$directory_path(%path%)\\..\\Artwork\\vinyl$if2(${tf.vinyl_side},).png`; // Root Artwork -> vinyl%vinyl disc%.png
+pref.vinylside_path_images_root  = `$directory_path(%path%)\\..\\Images\\vinyl$if2(${tf.vinyl_side},).png`; // Root Images -> vinyl%vinyl disc%.png
+pref.vinylside_path_scans_root   = `$directory_path(%path%)\\..\\Scans\\vinyl$if2(${tf.vinyl_side},).png`; // Root Scans -> vinyl%vinyl disc%.png
+pref.vinylside_path_artwork      = `$directory_path(%path%)\\Artwork\\vinyl$if2(${tf.vinyl_side},).png`; // Subfolder Artwork -> vinyl%vinyl disc%.png
+pref.vinylside_path_images       = `$directory_path(%path%)\\Images\\vinyl$if2(${tf.vinyl_side},).png`; // Subfolder Images -> vinyl%vinyl disc%.png
+pref.vinylside_path_scans        = `$directory_path(%path%)\\Scans\\vinyl$if2(${tf.vinyl_side},).png`; // Subfolder Scans -> vinyl%vinyl disc%.png
+
+// * VINYL DISC ART ( named vinylA.png, vinylB.png, etc. ) * //
+pref.vinyl_path                  = '$directory_path(%path%)\\vinyl.png'; // Root -> vinyl.png
+pref.vinyl_path_artwork_root     = '$directory_path(%path%)\\..\\Artwork\\vinyl.png'; // Root Artwork -> vinyl.png
+pref.vinyl_path_images_root      = '$directory_path(%path%)\\..\\Images\\vinyl.png'; // Root Images -> vinyl.png
+pref.vinyl_path_scans_root       = '$directory_path(%path%)\\..\\Scans\\vinyl.png'; // Root Scans -> vinyl.png
+pref.vinyl_path_artwork          = '$directory_path(%path%)\\Artwork\\vinyl.png'; // Subfolder Artwork -> vinyl.png
+pref.vinyl_path_images           = '$directory_path(%path%)\\Images\\vinyl.png'; // Subfolder Images -> vinyl.png
+pref.vinyl_path_scans            = '$directory_path(%path%)\\Scans\\vinyl.png'; // Subfolder Scans -> vinyl.png
+
+// * CD ART STUBS * //
 paths.cdArtWhiteStub         = `${imagesPath}discart/cd-white.png`;
 paths.cdArtBlackStub         = `${imagesPath}discart/cd-black.png`;
 paths.cdArtBlankStub         = `${imagesPath}discart/cd-blank.png`;
 paths.cdArtTransStub         = `${imagesPath}discart/cd-transparent.png`;
 paths.cdArtCustomStub        = `${imagesPath}discart/cd-custom.png`;
 
-// * VINYLART STUBS * //
+// * VINYL ART STUBS * //
 paths.vinylArtWhiteStub      = `${imagesPath}discart/vinyl-white.png`;
 paths.vinylArtVoidStub       = `${imagesPath}discart/vinyl-void.png`;
 paths.vinylArtColdFusionStub = `${imagesPath}discart/vinyl-cold-fusion.png`;
@@ -520,14 +558,14 @@ paths.vinylArtTransStub      = `${imagesPath}discart/vinyl-transparent.png`;
 paths.vinylArtCustomStub     = `${imagesPath}discart/vinyl-custom.png`;
 
 // * ARTIST & LABEL LOGOS * //
-paths.artistlogos            = `${imagesPath}artistlogos/`;
-paths.artistlogosColor       = `${imagesPath}artistlogos color/`;
-paths.labelsBase             = `${imagesPath}recordlabel/`;
+paths.artistlogos      = `${imagesPath}artistlogos/`;
+paths.artistlogosColor = `${imagesPath}artistlogos color/`;
+paths.labelsBase       = `${imagesPath}recordlabel/`;
 
 // * MISC * //
-paths.flagsBase              = `${imagesPath}flags/`;
-paths.lastFmImageRed         = `${imagesPath}misc/last-fm-red-36.png`;
-paths.lastFmImageWhite       = `${imagesPath}misc/last-fm-36.png`;
+paths.flagsBase        = `${imagesPath}flags/`;
+paths.lastFmImageRed   = `${imagesPath}misc/last-fm-red-36.png`;
+paths.lastFmImageWhite = `${imagesPath}misc/last-fm-36.png`;
 
 
 /////////////////

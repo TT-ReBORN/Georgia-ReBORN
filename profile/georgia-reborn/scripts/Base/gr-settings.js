@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-28                                          * //
+// * Last change:    2023-07-30                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1651,45 +1651,6 @@ tf.labels = [ // Array of fields to test for publisher. Add, change or re-order 
 ///////////////////////////
 // * DISC ART SETTINGS * //
 ///////////////////////////
-// We expect disc art will be in .png with transparent background, best found at fanart.tv.
-
-// * Vinyl discArt named vinylA.png, vinylB.png, etc.
-pref.vinylside_path              = `$directory_path(%path%)\\vinyl$if2(${tf.vinyl_side},).png`; // Root
-pref.vinylside_path_artwork_root = `$directory_path(%path%)\\..\\Artwork\\vinyl$if2(${tf.vinyl_side},).png`; // Root Artwork
-pref.vinylside_path_images_root  = `$directory_path(%path%)\\..\\Images\\vinyl$if2(${tf.vinyl_side},).png`; // Root Images
-pref.vinylside_path_scans_root   = `$directory_path(%path%)\\..\\Scans\\vinyl$if2(${tf.vinyl_side},).png`; // Root Scans
-pref.vinylside_path_artwork      = `$directory_path(%path%)\\Artwork\\vinyl$if2(${tf.vinyl_side},).png`; // Subfolder Artwork
-pref.vinylside_path_images       = `$directory_path(%path%)\\Images\\vinyl$if2(${tf.vinyl_side},).png`; // Subfolder Images
-pref.vinylside_path_scans        = `$directory_path(%path%)\\Scans\\vinyl$if2(${tf.vinyl_side},).png`; // Subfolder Scans
-
-// * Vinyl discArt named vinylA.png, vinylB.png, etc.
-pref.vinyl_path              = '$directory_path(%path%)\\vinyl.png'; // Root
-pref.vinyl_path_artwork_root = '$directory_path(%path%)\\..\\Artwork\\vinyl.png'; // Root Artwork
-pref.vinyl_path_images_root  = '$directory_path(%path%)\\..\\Images\\vinyl.png'; // Root Images
-pref.vinyl_path_scans_root   = '$directory_path(%path%)\\..\\Scans\\vinyl.png'; // Root Scans
-pref.vinyl_path_artwork      = '$directory_path(%path%)\\Artwork\\vinyl.png'; // Subfolder Artwork
-pref.vinyl_path_images       = '$directory_path(%path%)\\Images\\vinyl.png'; // Subfolder Images
-pref.vinyl_path_scans        = '$directory_path(%path%)\\Scans\\vinyl.png'; // Subfolder Scans
-
-// * CD art named cd1.png, cd2.png, etc.
-pref.cdartdisc_path              = `$directory_path(%path%)\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Root
-pref.cdartdisc_path_artwork_root = `$directory_path(%path%)\\..\\Artwork\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Root Artwork
-pref.cdartdisc_path_images_root  = `$directory_path(%path%)\\..\\Images\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Root Images
-pref.cdartdisc_path_scans_root   = `$directory_path(%path%)\\..\\Scans\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Root Scans
-pref.cdartdisc_path_artwork      = `$directory_path(%path%)\\Artwork\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Subfolder Artwork
-pref.cdartdisc_path_images       = `$directory_path(%path%)\\Images\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Subfolder Images
-pref.cdartdisc_path_scans        = `$directory_path(%path%)\\Scans\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Subfolder Scans
-
-// * CD art named cd.png (or whatever custom value was specified). This is the most common single disc case.
-pref.cdart_path              = `$directory_path(%path%)\\${settings.discArtBasename}.png`; // Root
-pref.cdart_path_artwork_root = `$directory_path(%path%)\\..\\Artwork\\${settings.discArtBasename}.png`; // Root Artwork
-pref.cdart_path_images_root  = `$directory_path(%path%)\\..\\Images\\${settings.discArtBasename}.png`; // Root Images
-pref.cdart_path_scans_root   = `$directory_path(%path%)\\..\\Scans\\${settings.discArtBasename}.png`; // Root Scans
-pref.cdart_path_artwork      = `$directory_path(%path%)\\Artwork\\${settings.discArtBasename}.png`; // Subfolder Artwork
-pref.cdart_path_images       = `$directory_path(%path%)\\Images\\${settings.discArtBasename}.png`; // Subfolder Images
-pref.cdart_path_scans        = `$directory_path(%path%)\\Scans\\${settings.discArtBasename}.png`; // Subfolder Scans
-
-
 {
 	let count = Number(pref.spinDiscArtImageCount);
 	if (Number.isNaN(count)) { // Check if NaN

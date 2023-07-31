@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-28                                          * //
+// * Last change:    2023-07-30                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2059,63 +2059,58 @@ function fetchDiscArt() {
 	let discArtExists = true;
 	let discArtPath;
 
-	// * Vinyl disc art search paths
-	const v01 = $(pref.vinylside_path);              // Root -> vinyl side
-	const v02 = $(pref.vinylside_path_artwork_root); // Root Artwork -> vinyl%vinyl disc%.png
-	const v03 = $(pref.vinylside_path_images_root);  // Root Images -> vinyl%vinyl disc%.png
-	const v04 = $(pref.vinylside_path_scans_root);   // Root Scans -> vinyl%vinyl disc%.png
-	const v05 = $(pref.vinylside_path_artwork);      // Subfolder Artwork -> vinyl%vinyl disc%.png
-	const v06 = $(pref.vinylside_path_images);       // Subfolder Images -> vinyl%vinyl disc%.png
-	const v07 = $(pref.vinylside_path_scans);        // Subfolder Scans -> vinyl%vinyl disc%.png
-	const v08 = $(pref.vinyl_path);                  // Root -> vinyl.png
-	const v09 = $(pref.vinyl_path_artwork_root);     // Root Artwork -> vinyl.png
-	const v10 = $(pref.vinyl_path_images_root);      // Root Images -> vinyl.png
-	const v11 = $(pref.vinyl_path_scans_root);       // Root Scans -> vinyl.png
-	const v12 = $(pref.vinyl_path_artwork);          // Subfolder Artwork -> vinyl.png
-	const v13 = $(pref.vinyl_path_images);           // Subfolder Images -> vinyl.png
-	const v14 = $(pref.vinyl_path_scans);            // Subfolder Scans -> vinyl.png
-
-	// * CD disc art search paths
-	const c01 = $(pref.cdartdisc_path);              // Root -> cd%discnumber%.png
-	const c02 = $(pref.cdartdisc_path_artwork_root); // Root Artwork -> cd%discnumber%.png
-	const c03 = $(pref.cdartdisc_path_images_root);  // Root Images -> cd%discnumber%.png
-	const c04 = $(pref.cdartdisc_path_scans_root);   // Root Scans -> cd%discnumber%.png
-	const c05 = $(pref.cdartdisc_path_artwork);      // Subfolder Artwork -> cd%discnumber%.png
-	const c06 = $(pref.cdartdisc_path_images);       // Subfolder Images -> cd%discnumber%.png
-	const c07 = $(pref.cdartdisc_path_scans);        // Subfolder Scans -> cd%discnumber%.png
-	const c08 = $(pref.cdart_path);                  // Root -> cd.png
-	const c09 = $(pref.cdart_path_artwork_root);     // Root Artwork -> cd.png
-	const c10 = $(pref.cdart_path_images_root);      // Root Images -> cd.png
-	const c11 = $(pref.cdart_path_scans_root);       // Root Scans -> cd.png
-	const c12 = $(pref.cdart_path_artwork);          // Subfolder Artwork -> cd.png
-	const c13 = $(pref.cdart_path_images);           // Subfolder Images -> cd.png
-	const c14 = $(pref.cdart_path_scans);            // Subfolder Scans -> cd.png
-
 	const discArtAllPaths = [
-		v01, v02, v03, v04, v05, v06, v07, v08, v09, v10, v11, v12, v13, v14,
-		c01, c02, c03, c04, c05, c06, c07, c08, c09, c10, c11, c12, c13, c14
+		$(pref.cdartdisc_path),              // Root -> cd%discnumber%.png
+		$(pref.cdartdisc_path_artwork_root), // Root Artwork -> cd%discnumber%.png
+		$(pref.cdartdisc_path_images_root),  // Root Images -> cd%discnumber%.png
+		$(pref.cdartdisc_path_scans_root),   // Root Scans -> cd%discnumber%.png
+		$(pref.cdartdisc_path_artwork),      // Subfolder Artwork -> cd%discnumber%.png
+		$(pref.cdartdisc_path_images),       // Subfolder Images -> cd%discnumber%.png
+		$(pref.cdartdisc_path_scans),        // Subfolder Scans -> cd%discnumber%.png
+		$(pref.cdart_path),                  // Root -> cd.png
+		$(pref.cdart_path_artwork_root),     // Root Artwork -> cd.png
+		$(pref.cdart_path_images_root),      // Root Images -> cd.png
+		$(pref.cdart_path_scans_root),       // Root Scans -> cd.png
+		$(pref.cdart_path_artwork),          // Subfolder Artwork -> cd.png
+		$(pref.cdart_path_images),           // Subfolder Images -> cd.png
+		$(pref.cdart_path_scans),            // Subfolder Scans -> cd.png
+		$(pref.vinylside_path),              // Root -> vinyl side
+		$(pref.vinylside_path_artwork_root), // Root Artwork -> vinyl%vinyl disc%.png
+		$(pref.vinylside_path_images_root),  // Root Images -> vinyl%vinyl disc%.png
+		$(pref.vinylside_path_scans_root),   // Root Scans -> vinyl%vinyl disc%.png
+		$(pref.vinylside_path_artwork),      // Subfolder Artwork -> vinyl%vinyl disc%.png
+		$(pref.vinylside_path_images),       // Subfolder Images -> vinyl%vinyl disc%.png
+		$(pref.vinylside_path_scans),        // Subfolder Scans -> vinyl%vinyl disc%.png
+		$(pref.vinyl_path),                  // Root -> vinyl.png
+		$(pref.vinyl_path_artwork_root),     // Root Artwork -> vinyl.png
+		$(pref.vinyl_path_images_root),      // Root Images -> vinyl.png
+		$(pref.vinyl_path_scans_root),       // Root Scans -> vinyl.png
+		$(pref.vinyl_path_artwork),          // Subfolder Artwork -> vinyl.png
+		$(pref.vinyl_path_images),           // Subfolder Images -> vinyl.png
+		$(pref.vinyl_path_scans)             // Subfolder Scans -> vinyl.png
 	];
 
 	const discArtStubPaths = {
-		cdWhite: paths.cdArtWhiteStub,
-		cdBlack: paths.cdArtBlackStub,
-		cdBlank: paths.cdArtBlankStub,
-		cdTrans: paths.cdArtTransStub,
-		cdCustom: paths.cdArtCustomStub,
-		vinylWhite: paths.vinylArtWhiteStub,
-		vinylVoid: paths.vinylArtVoidStub,
+		cdWhite:         paths.cdArtWhiteStub,
+		cdBlack:         paths.cdArtBlackStub,
+		cdBlank:         paths.cdArtBlankStub,
+		cdTrans:         paths.cdArtTransStub,
+		cdCustom:        paths.cdArtCustomStub,
+		vinylWhite:      paths.vinylArtWhiteStub,
+		vinylVoid:       paths.vinylArtVoidStub,
 		vinylColdFusion: paths.vinylArtColdFusionStub,
 		vinylRingOfFire: paths.vinylArtRingOfFireStub,
-		vinylMaple: paths.vinylArtMapleStub,
-		vinylBlack: paths.vinylArtBlackStub,
-		vinylBlackHole: paths.vinylArtBlackHoleStub,
-		vinylEbony: paths.vinylArtEbonyStub,
-		vinylTrans: paths.vinylArtTransStub,
-		vinylCustom: paths.vinylArtCustomStub
+		vinylMaple:      paths.vinylArtMapleStub,
+		vinylBlack:      paths.vinylArtBlackStub,
+		vinylBlackHole:  paths.vinylArtBlackHoleStub,
+		vinylEbony:      paths.vinylArtEbonyStub,
+		vinylTrans:      paths.vinylArtTransStub,
+		vinylCustom:     paths.vinylArtCustomStub
 	};
 
 	if (pref.displayDiscArt && !isStreaming) { // We must attempt to load CD/vinyl art first so that the shadow is drawn correctly
 		if (pref.noDiscArtStub || pref.showDiscArtStub) {
+			// * Search for disc art
 			for (let i = 0; i < discArtAllPaths.length; i++) {
 				const found = IsFile(discArtAllPaths[i]);
 				if (found) {
@@ -2127,15 +2122,17 @@ function fetchDiscArt() {
 			}
 		}
 
+		// * Disc art found
 		if (IsFile(discArtPath)) {
 			discArtExists = true;
 		}
-		// * Display custom disc art placeholders
+		// * No disc art found, display custom disc art stubs
 		else if (!pref.noDiscArtStub || pref.showDiscArtStub) {
 			discArtExists = true;
 			discArtPath = discArtStubPaths[pref.discArtStub];
 		}
 
+		// * Load disc art
 		if (discArtExists) {
 			let tempDiscArt;
 			if (loadFromCache) {
@@ -2183,6 +2180,7 @@ function resizeDiscArt(resetDiscArtPosition) {
 		const discArtSizeCorr = SCALE(4);
 		const discArtMargin = SCALE(2);
 		const discArtMarginRight = SCALE(36);
+
 		if (hasArtwork) {
 			if (resetDiscArtPosition) {
 				discArtSize.x =
@@ -2210,6 +2208,7 @@ function resizeDiscArt(resetDiscArtPosition) {
 		else { // * No album art so we need to calc size of disc
 			const discScale = Math.min(((displayPlaylist || displayLibrary) ? 0.5 * ww : 0.75 * ww) / discArt.Width, (wh - geo.topMenuHeight - geo.lowerBarHeight - SCALE(16)) / discArt.Height);
 			let xCenter = 0;
+
 			if (displayPlaylist || displayLibrary) {
 				xCenter = 0.25 * ww;
 			} else if (ww / wh < 1.40) { // When using a roughly 4:3 display the album art crowds, so move it slightly off center
@@ -2222,10 +2221,12 @@ function resizeDiscArt(resetDiscArtPosition) {
 					artOffCenter = true; // TODO: We should probably suppress labels in this case
 				}
 			}
+
 			// Need to -4 from height and add 2 to y to avoid skipping discArt drawing - not sure this is needed
 			discArtSize.w = Math.floor(discArt.Width * discScale) - discArtSizeCorr; // Width
 			discArtSize.h = discArtSize.w; // height
 			discArtSize.x = Math.floor(xCenter - 0.5 * discArtSize.w); // Left
+
 			if (discScale !== (wh - geo.topMenuHeight - geo.lowerBarHeight - SCALE(16)) / discArt.Height) {
 				// Restricted by width
 				const y = geo.topMenuHeight + Math.floor(((wh - geo.topMenuHeight - geo.lowerBarHeight - SCALE(16)) / 2) - discArtSize.h / 2);
