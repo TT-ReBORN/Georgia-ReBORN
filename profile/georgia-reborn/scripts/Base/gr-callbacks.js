@@ -901,7 +901,7 @@ function on_mouse_move(x, y, m) {
 
 	if (x === state.mouse_x && y === state.mouse_y) return;
 
-	if (!mouseInLibrarySearch) window.SetCursor(32512); // Arrow
+	if (!mouseInLibrarySearch(x, y)) window.SetCursor(32512); // Arrow
 
 	if (topMenu) {
 		topMenu.on_mouse_move(x, y, m);
