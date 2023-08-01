@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-29                                          * //
+// * Last change:    2023-08-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -882,7 +882,7 @@ function brightnessOptions(menu) {
 		if (!pref.themeSandbox) pref.savedThemeBrightness = pref.themeBrightness = percent; else pref.themeBrightness = percent;
 		initThemeFull = true;
 		initTheme();
-	});
+	}, pref.presetSelectMode === 'harmonic');
 }
 
 
