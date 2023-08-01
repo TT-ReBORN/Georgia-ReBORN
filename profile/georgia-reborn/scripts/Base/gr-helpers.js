@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-28                                          * //
+// * Last change:    2023-08-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -182,6 +182,32 @@ function PrintColorObj(obj) {
 /////////////////
 // * PARSING * //
 /////////////////
+/**
+ * Gets the meta values of a specified metadata field from a given metadb object.
+ * Will strip leading and trailing %'s from name.
+ * @param {string} name The name of the meta field.
+ * @param {FbMetadbHandle=} metadb The handle to evaluate string with.
+ * @returns {Array<string>} An array of values of the meta field.
+ */
+function getMetaValues(name, metadb = undefined) {
+	const vals = [];
+	const searchName = name.replace(/%/g, '');
+	for (let i = 0; i < parseInt($(`$meta_num(${searchName})`, metadb)); i++) {
+		vals.push($(`$meta(${searchName},${i})`, metadb));
+	}
+	if (!vals.length) {
+		// This is a fallback in case the `name` property is a complex tf field and meta_num evaluates to 0.
+		// In that case we want to evaluate the entire field, after wrapping in brackets and split on commas.
+		const unsplit = $(`[${name}]`, metadb);
+		if (unsplit.length) {
+			return unsplit.split(', ');
+		}
+	}
+
+	return vals;
+}
+
+
 /**
  * Parses a JSON string into a JavaScript object.
  * @param {<Array<string>} value The string to parse.

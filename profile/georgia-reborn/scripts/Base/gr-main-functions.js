@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-31                                          * //
+// * Last change:    2023-08-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -935,28 +935,106 @@ function deleteWaveformBarCache() {
 
 
 /**
- * Gets the meta values of a specified metadata field from a given metadb object.
- * Will strip leading and trailing %'s from name.
- * @param {string} name The name of the meta field.
- * @param {FbMetadbHandle=} metadb
- * @returns {Array<string>} An array of values of the meta field.
+ * Makes or restores a theme backup.
+ * @param {boolean} make Should a theme backup be made.
+ * @param {boolean} restore Should a theme backup be restored.
  */
-function getMetaValues(name, metadb = undefined) {
-	const vals = [];
-	const searchName = name.replace(/%/g, '');
-	for (let i = 0; i < parseInt($(`$meta_num(${searchName})`, metadb)); i++) {
-		vals.push($(`$meta(${searchName},${i})`, metadb));
-	}
-	if (!vals.length) {
-		// This is a fallback in case the `name` property is a complex tf field and meta_num evaluates to 0.
-		// In that case we want to evaluate the entire field, after wrapping in brackets and split on commas.
-		const unsplit = $(`[${name}]`, metadb);
-		if (unsplit.length) {
-			return unsplit.split(', ');
+function manageBackup(make, restore) {
+	const libOld   = make ? `${fb.ProfilePath}library`        : `${fb.ProfilePath}backup\\profile\\library`;
+	const libNew   = make ? `${fb.ProfilePath}library-v2.0`   : `${fb.ProfilePath}backup\\profile\\library-v2.0`;
+	const plistOld = make ? `${fb.ProfilePath}playlists-v1.4` : `${fb.ProfilePath}backup\\profile\\playlists-v1.4`;
+	const plistNew = make ? `${fb.ProfilePath}playlists-v2.0` : `${fb.ProfilePath}backup\\profile\\playlists-v2.0`;
+
+	let libaryDir;
+	let playlistDir;
+	let oldVersion = false;
+
+	const noFolders = (make, restore) => {
+		// * Safeguard to prevent crash when directories do not exist
+		if ((!IsFolder(libOld) || !IsFolder(plistOld)) && (!IsFolder(libNew) || !IsFolder(plistNew)) ||
+			(!IsFolder(libNew) || !IsFolder(plistNew)) && (!IsFolder(libOld) || !IsFolder(plistOld))) {
+			if (make) {
+				fb.ShowPopupMessage(`>>> Georgia-ReBORN theme backup was aborted <<<\n\nlibrary or playlist directory does not exist in:\n${fb.ProfilePath}`, 'Theme backup');
+			} else {
+				fb.ShowPopupMessage(`>>> Georgia-ReBORN restore backup was aborted <<<\n\n"backup" directory does not exist in:\n${fb.ProfilePath}\n\nor\n\n"library" or "playlist" directory does not exist in:\n${fb.ProfilePath}backup`, 'Theme backup');
+			}
+			return true;
 		}
 	}
 
-	return vals;
+	const checkFolders = async () => {
+		if      (IsFolder(libOld)) { libaryDir = libOld; oldVersion = true; }
+		else if (IsFolder(libNew)) { libaryDir = libNew; oldVersion = false; }
+		if      (IsFolder(plistOld)) { playlistDir = plistOld; oldVersion = true; }
+		else if (IsFolder(plistNew)) { playlistDir = plistNew; oldVersion = false; }
+	};
+
+	const createFolders = async () => {
+		const themePath = `${fb.ProfilePath}backup\\profile\\georgia-reborn\\`;
+		const indexDataPath = `${fb.ProfilePath}backup\\profile\\index-data\\`;
+		CreateFolder(themePath, true);
+		if (oldVersion) CreateFolder(indexDataPath, true);
+	};
+
+	const copyFolders = async () => {
+		const backup    = new ActiveXObject('Scripting.FileSystemObject');
+		const library   = backup.GetFolder(libaryDir);
+		const playlists = backup.GetFolder(playlistDir);
+		const configs   = backup.GetFolder(make ? `${fb.ProfilePath}georgia-reborn\\configs\\` : `${fb.ProfilePath}backup\\profile\\georgia-reborn\\configs\\`);
+
+		library.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
+		playlists.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
+		configs.Copy(make ? `${fb.ProfilePath}backup\\profile\\georgia-reborn\\` : `${fb.ProfilePath}georgia-reborn\\configs`, true);
+
+		if (oldVersion) {
+			const indexData = backup.GetFolder(make ? `${fb.ProfilePath}index-data` : `${fb.ProfilePath}backup\\profile\\index-data`);
+			indexData.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
+		}
+		else {
+			const dspPresets = backup.GetFolder(make ? `${fb.ProfilePath}dsp-presets\\` : `${fb.ProfilePath}backup\\profile\\dsp-presets\\`);
+			const dspConfig = backup.GetFile(make ? `${fb.ProfilePath}config.fb2k-dsp` : `${fb.ProfilePath}backup\\profile\\config.fb2k-dsp`);
+			const fbConfig = backup.GetFile(make ? `${fb.ProfilePath}config.sqlite` : `${fb.ProfilePath}backup\\profile\\config.sqlite`);
+			const metadb = backup.GetFile(make ? `${fb.ProfilePath}metadb.sqlite` : `${fb.ProfilePath}backup\\profile\\metadb.sqlite`);
+			dspPresets.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
+			dspConfig.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
+			fbConfig.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
+			metadb.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
+		}
+	};
+
+	const makeBackup = async () => {
+		await setThemeSettings(true);
+		await checkFolders();
+		await createFolders();
+		await copyFolders();
+		await console.log(`\n>>> Georgia-ReBORN theme backup has been successfully saved in ${fb.ProfilePath}backup\\ <<<\n\n`);
+	};
+
+	const restoreBackup = async () => {
+		await checkFolders();
+		await copyFolders();
+		await setThemeSettings();
+		await console.log('\n>>> Georgia-ReBORN theme backup has been successfully restored <<<\n\n');
+		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
+	};
+
+	try {
+		if (noFolders()) {
+			return;
+		}
+		if (make) {
+			makeBackup();
+		} else {
+			restoreBackup();
+		}
+	}
+	catch (e) {
+		if (make) {
+			console.log('\n>>> Georgia-ReBORN theme backup was not successfull <<<\n\n');
+		} else {
+			console.log('\n>>> Georgia-ReBORN theme backup was not successfully restored <<<\n\n');
+		}
+	}
 }
 
 
