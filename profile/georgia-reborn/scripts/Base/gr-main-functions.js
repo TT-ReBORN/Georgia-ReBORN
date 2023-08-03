@@ -1478,7 +1478,7 @@ function createButtonImages() {
 				g.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 			}
 			// * Positions some top menu buttons weirdly when using custom theme fonts on AntiAliasGridFit and vertical/horizontal centered font alignment, i.e StringFormat(1, 1);
-			else if (btns[i].type === 'menu' && pref.customThemeFonts || btns[i].type === 'transport') {
+			else if ((btns[i].type === 'menu' || btn.type === 'compact') && pref.customThemeFonts || btns[i].type === 'transport') {
 				g.SetTextRenderingHint(TextRenderingHint.AntiAlias);
 			}
 
@@ -1613,7 +1613,7 @@ function createButtonObjects(ww, wh) {
 
 	const widthCorrection =
 		RES_4K ? (pref.customThemeFonts && menuFontSize > 12 && ww < 1080) ? 12 : (pref.customThemeFonts && menuFontSize > 10 && ww < 1080) ? 6 : 3 :
-				(pref.customThemeFonts && menuFontSize > 12 && ww <  600) ?  6 : (pref.customThemeFonts && menuFontSize > 10 && ww <  600) ? 4 : 0;
+				 (pref.customThemeFonts && menuFontSize > 12 && ww <  600) ?  6 : (pref.customThemeFonts && menuFontSize > 10 && ww <  600) ? 4 : 0;
 	const correction = widthCorrection + (pref.layout !== 'default' ? xOffset : 0);
 
 	// * Top menu compact
