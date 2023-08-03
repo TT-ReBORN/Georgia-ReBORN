@@ -648,20 +648,6 @@ function setStyle(style, state) {
 
 
 /**
- * Sets a new random theme preset.
- */
-function setThemePreset() {
-	if (pref.presetSelectMode === 'theme') {
-		setThemePresetSelection(false, true);
-	}
-	if ((!['off', 'track'].includes(pref.presetAutoRandomMode) && pref.presetSelectMode === 'harmonic' ||
-		pref.presetAutoRandomMode === 'dblclick' && pref.presetSelectMode === 'theme') && !doubleClicked) {
-		getRandomThemePreset();
-	}
-}
-
-
-/**
  * Activates or deactivates all theme presets selection, used in top menu Options > Preset > Select presets.
  * @param {boolean} state The state of theme presets selection will be set to true or false.
  * @param {boolean} presetSelectModeTheme The selection of theme specified presets.
