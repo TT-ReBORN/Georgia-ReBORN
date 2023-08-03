@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-01                                          * //
+// * Last change:    2023-08-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3823,7 +3823,7 @@ function developerToolsOptions(menu) {
 		const msg = 'Do you really want to set system to first launch?\n\nContinue?\n\n\n';
 		const continue_confirmation = (status, confirmed) => {
 			if (!confirmed) return;
-			window.SetProperty('Georgia-ReBORN - 16. System: First launch', true);
+			window.SetProperty('Georgia-ReBORN - 16. System: System first launch', true);
 			g_properties.show_scrollbar = false;
 			pref.showTopMenuCompact = true;
 			pref.devTools = false;

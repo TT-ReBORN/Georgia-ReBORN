@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-01                                          * //
+// * Last change:    2023-08-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -176,7 +176,7 @@ function on_paint(gr) {
 	const pref_lowerBarFontSize_artwork = window.GetProperty('Georgia-ReBORN - 08. Font size: Lower bar (Artwork)');
 	const pref_lowerBarFontSize_compact = window.GetProperty('Georgia-ReBORN - 08. Font size: Lower bar (Compact)');
 	const pref_showLogoOnStartup        = window.GetProperty('Georgia-ReBORN - 09. Player controls: Show logo on startup');
-	const pref_systemFirstLaunch        = window.GetProperty('Georgia-ReBORN - 16. System: First launch');
+	const pref_systemFirstLaunch        = window.GetProperty('Georgia-ReBORN - 16. System: System first launch');
 
 	// * SYSTEM * //
 	const RGB = (r, g, b) => (0xff000000 | (r << 16) | (g << 8) | (b));

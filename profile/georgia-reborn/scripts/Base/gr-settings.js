@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-30                                          * //
+// * Last change:    2023-08-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -505,6 +505,9 @@ pref.add_properties({
 	disableRightClick:                  ['Georgia-ReBORN - 15. Settings: Disable right-click', true], // true: Disables right-clicking on the background from bringing up the SMP context menu
 
 	// * System
+	checkForUpdates:                    ['Georgia-ReBORN - 16. System: Check for Updates', true], // true: Check github repo to determine if updates exist
+	loadAsync:                          ['Georgia-ReBORN - 16. System: Load Theme Asynchronously', true], // Loads individual theme files asynchronously at startup to reduce risk of FSM throwing slow script error on startup
+	restoreBackupPlaylist:              ['Georgia-ReBORN - 16. System: Restore backup playlist', false], // false: Used to copy playlist files again after fb2k installation
 	savedLayout:                        ['Georgia-ReBORN - 16. System: Saved layout', 'default'], // Default saved layout
 	savedWidth_default:                 ['Georgia-ReBORN - 16. System: Saved width (Default)',  RES_4K ? 2800 : RES_QHD ? 1280 : 1140], // Default saved width for Default layout
 	savedHeight_default:                ['Georgia-ReBORN - 16. System: Saved height (Default)', RES_4K ? 1720 : RES_QHD ?  800 :  730], // Default saved height for Default layout
@@ -512,9 +515,7 @@ pref.add_properties({
 	savedHeight_artwork:                ['Georgia-ReBORN - 16. System: Saved height (Artwork)', RES_4K ? 1372 : RES_QHD ?  800 :  686], // Default saved height for Artwork layout
 	savedWidth_compact:                 ['Georgia-ReBORN - 16. System: Saved width (Compact)',  RES_4K ?  964 : RES_QHD ?  540 :  484], // Default saved width for Compact layout
 	savedHeight_compact:                ['Georgia-ReBORN - 16. System: Saved height (Compact)', RES_4K ? 1720 : RES_QHD ?  800 :  730], // Default saved height for Compact layout
-	systemFirstLaunch:                  ['Georgia-ReBORN - 16. System: First launch', true], // true: Init and reset to theme factory settings
-	checkForUpdates:                    ['Georgia-ReBORN - 16. System: Check for Updates', true], // true: Check github repo to determine if updates exist
-	loadAsync:                          ['Georgia-ReBORN - 16. System: Load Theme Asynchronously', true] // Loads individual theme files asynchronously at startup to reduce risk of FSM throwing slow script error on startup
+	systemFirstLaunch:                  ['Georgia-ReBORN - 16. System: System first launch', true] // true: Init and reset to theme factory settings
 
 	// check_multich:                      ['Check for MultiChannel version', false] // true: Search paths in tf.MultiCh_paths to see if there is a multichannel version of the current album available
 });

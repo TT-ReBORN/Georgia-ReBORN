@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-01                                          * //
+// * Last change:    2023-08-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -136,6 +136,13 @@ function initMain() {
 	initTheme();
 	DebugLog('initTheme -> initMain');
 	loadingTheme = false;
+
+	// * Restore backup workaround to successfully restore playlist files after foobar installation
+	if (pref.restoreBackupPlaylist) {
+		setTimeout(() => {
+			restoreBackupPlaylist();
+		}, !loadingTheme);
+	}
 }
 
 
@@ -949,7 +956,7 @@ function manageBackup(make, restore) {
 	let playlistDir;
 	let oldVersion = false;
 
-	const noFolders = (make, restore) => {
+	const noFolders = (make) => {
 		// * Safeguard to prevent crash when directories do not exist
 		if ((!IsFolder(libOld) || !IsFolder(plistOld)) && (!IsFolder(libNew) || !IsFolder(plistNew)) ||
 			(!IsFolder(libNew) || !IsFolder(plistNew)) && (!IsFolder(libOld) || !IsFolder(plistOld))) {
@@ -1011,6 +1018,8 @@ function manageBackup(make, restore) {
 	};
 
 	const restoreBackup = async () => {
+		pref.restoreBackupPlaylist = true;
+		pref.systemFirstLaunch = true;
 		await checkFolders();
 		await copyFolders();
 		await setThemeSettings();
@@ -1034,6 +1043,58 @@ function manageBackup(make, restore) {
 		} else {
 			console.log('\n>>> Georgia-ReBORN theme backup was not successfully restored <<<\n\n');
 		}
+	}
+}
+
+
+/**
+ * Restores the backup playlist directory with its playlists.
+ * This is a foobar workaround fix when user has installed and launched foobar for the very first time after installation.
+ * If theme backup has been successfully restored, foobar automatically deletes all restored playlist files in the playlist directory.
+ * On the next foobar restart and initialization, foobar adds crap playlist files in the playlist directory making them useless.
+ * To fix this issue, all playlist files from the backup directory will be copied and restored again.
+ */
+function restoreBackupPlaylist() {
+	const plistOld = `${fb.ProfilePath}backup\\profile\\playlists-v1.4`;
+	const plistNew = `${fb.ProfilePath}backup\\profile\\playlists-v2.0`;
+	let playlistDir;
+	let oldVersion = false;
+
+	const noFolders = () => {
+		// * Safeguard to prevent crash when directories do not exist
+		if (!IsFolder(plistOld) && !IsFolder(plistNew)) {
+			fb.ShowPopupMessage(`>>> Georgia-ReBORN restore backup was aborted <<<\n\n"backup" directory does not exist in:\n${fb.ProfilePath}\n\nor\n\n"playlist" directory does not exist in:\n${fb.ProfilePath}backup`, 'Theme backup');
+			return true;
+		}
+	}
+
+	const checkFolders = async () => {
+		if      (IsFolder(plistOld)) { playlistDir = plistOld; oldVersion = true; }
+		else if (IsFolder(plistNew)) { playlistDir = plistNew; oldVersion = false; }
+	};
+
+	const copyFolders = async () => {
+		const backup    = new ActiveXObject('Scripting.FileSystemObject');
+		const playlists = backup.GetFolder(playlistDir);
+		playlists.Copy(`${fb.ProfilePath}`, true);
+	};
+
+	const restoreBackup = async () => {
+		pref.restoreBackupPlaylist = false;
+		await checkFolders();
+		await copyFolders();
+		await console.log('\n>>> Playlist backup has been successfully restored <<<\n\n');
+		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
+	};
+
+	try {
+		if (noFolders()) {
+			return;
+		}
+		restoreBackup();
+	}
+	catch (e) {
+		console.log('\n>>> Playlist backup was not successfully restored <<<\n\n');
 	}
 }
 
