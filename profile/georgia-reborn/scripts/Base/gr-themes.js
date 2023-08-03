@@ -6156,7 +6156,7 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
  * Sets the primary or secondary color from the value of getThemeColorsJson or from the custom GR-tag.
  * @param {GdiBitmap} image The image from which the colors will be picked.
  */
-async function getThemeColors(image) {
+function getThemeColors(image) {
 	let calculatedColor;
 	let calculatedColor2;
 	const val = $('[%GR_THEMECOLOR%]');
@@ -6169,8 +6169,8 @@ async function getThemeColors(image) {
 		calculatedColor = themeRgb ? RGB(parseInt(themeRgb[1]), parseInt(themeRgb[2]), parseInt(themeRgb[3])) : 0xff000000 | parseInt(val, 16);
 		calculatedColor2 = themeRgb2 ? RGB(parseInt(themeRgb2[1]), parseInt(themeRgb2[2]), parseInt(themeRgb2[3])) : 0xff000000 | parseInt(val2, 16);
 	} else {
-		calculatedColor = await getThemeColorsJson(image, 14);
-		calculatedColor2 = rebornFusion ? await getThemeColorsJson(image, 14, true) : undefined;
+		calculatedColor = getThemeColorsJson(image, 14);
+		calculatedColor2 = rebornFusion ? getThemeColorsJson(image, 14, true) : undefined;
 	}
 
 	if (isNaN(calculatedColor)) return;

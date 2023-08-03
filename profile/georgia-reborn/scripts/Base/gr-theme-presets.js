@@ -2445,7 +2445,7 @@ function getRandomThemePreset() {
 
 	if ($('[%GR_THEME%]') || $('[%GR_STYLE%]') || $('[%GR_PRESET%]')) return;
 
-	const pickRandomThemePreset = () => {
+	const pickRandomPreset = () => {
 		let randomThemePreset;
 		let lastIndex;
 
@@ -2521,21 +2521,21 @@ function getRandomThemePreset() {
 		}
 	}
 
-	const setRandomThemePreset = () => {
+	const setRandomPreset = () => {
 		resetStyle('all');
-		pickRandomThemePreset();
+		pickRandomPreset();
 		updateStyle();
 		themePresetMatchMode = false;
 	}
 
 	if (['off', 'track', 'album', 'dblclick'].includes(pref.presetAutoRandomMode)) {
-		setRandomThemePreset();
+		setRandomPreset();
 	}
 	else {
 		themePresetIndicator = false;
 		presetAutoRandomModeTimer = setInterval(() => {
 			if (activeMenu) return; // * Workaround that pauses when a context menu is active which partially blocks color initialization;
-			setRandomThemePreset();
+			setRandomPreset();
 		}, pref.presetAutoRandomMode);
 	}
 

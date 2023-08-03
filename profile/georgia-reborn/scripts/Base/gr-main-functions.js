@@ -234,7 +234,7 @@ function initPanelWidthAuto() {
 /**
  * Initializes the theme when updating colors.
  */
-async function initTheme() {
+function initTheme() {
 	const themeProfiler = timings.showDebugTiming ? fb.CreateProfiler('initTheme') : null;
 
 	const fullInit =
@@ -648,6 +648,20 @@ function setStyle(style, state) {
 
 
 /**
+ * Sets a new random theme preset.
+ */
+function setRandomThemePreset() {
+	if (pref.presetSelectMode === 'theme') {
+		setThemePresetSelection(false, true);
+	}
+	if ((!['off', 'track'].includes(pref.presetAutoRandomMode) && pref.presetSelectMode === 'harmonic' ||
+		pref.presetAutoRandomMode === 'dblclick' && pref.presetSelectMode === 'theme') && !doubleClicked) {
+		getRandomThemePreset();
+	}
+}
+
+
+/**
  * Activates or deactivates all theme presets selection, used in top menu Options > Preset > Select presets.
  * @param {boolean} state The state of theme presets selection will be set to true or false.
  * @param {boolean} presetSelectModeTheme The selection of theme specified presets.
@@ -706,17 +720,17 @@ async function systemFirstLaunch() {
 /**
  * Updates the theme when changing styles, used in top menu Options > Style.
  */
-async function updateStyle() {
+function updateStyle() {
 	initThemeFull = true;
 	if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
 		// * Update col.primary for dynamic themes
 		if (fb.IsPlaying) {
-			await getThemeColors(albumArt);
+			getThemeColors(albumArt);
 		} else {
-			await setThemeColors();
+			setThemeColors();
 		}
 	}
-	await initTheme();
+	initTheme();
 	DebugLog('initTheme -> updateStyle');
 	if (pref.theme === 'random' && pref.randomThemeAutoColor !== 'off') getRandomThemeAutoColor();
 	initStyleState();
@@ -1840,8 +1854,13 @@ function displayNextImage() {
  * @param {FbMetadbHandle} metadb The metadb of the track.
  */
 function fetchAlbumArt(metadb) {
-	const fetchAlbumArtProfiler = timings.showDebugTiming ? fb.CreateProfiler('fetchNewAlbumArt') : null;
 	albumArtList = [];
+
+	const fetchAlbumArtProfiler = timings.showDebugTiming ? fb.CreateProfiler('fetchNewAlbumArt') : null;
+
+	const autoRandomPreset =
+		(!['off', 'track'].includes(pref.presetAutoRandomMode) && pref.presetSelectMode === 'harmonic' ||
+		pref.presetAutoRandomMode === 'dblclick' && pref.presetSelectMode === 'theme') && !doubleClicked;
 
 	if (isStreaming || isPlayingCD) {
 		discArt = disposeDiscArtImage(discArt);
@@ -1886,9 +1905,14 @@ function fetchAlbumArt(metadb) {
 		else if (metadb && (albumArt = utils.GetAlbumArtV2(metadb))) {
 			noArtwork = false;
 			noAlbumArtStub = false;
-			getThemeColors(albumArt);
-			if (!loadingTheme) initTheme(); // * Prevent incorrect theme brightness at startup/reload when using embedded art
-			DebugLog('initTheme -> fetchNewArtwork -> embeddedArt');
+			if (autoRandomPreset) { // * Prevent double initialization and save performance, getThemeColors() and initTheme() handled in getRandomThemePreset()
+				setRandomThemePreset();
+				initThemeTags();
+			} else {
+				getThemeColors(albumArt);
+				if (!loadingTheme) initTheme(); // * Prevent incorrect theme brightness at startup/reload when using embedded art
+				DebugLog('initTheme -> fetchNewArtwork -> embeddedArt');
+			}
 			resizeArtwork(true);
 			embeddedArt = true;
 		}
@@ -1924,85 +1948,77 @@ function fetchNewArtwork(metadb) {
  * Loads an image from the albumArtList array.
  * @param {number} index The index of albumArtList signifying which image to load.
  */
-async function loadImageFromAlbumArtList(index) {
+function loadImageFromAlbumArtList(index) {
 	const metadb = fb.GetNowPlaying();
 	const tempAlbumArt = artCache && artCache.getImage(albumArtList[index]);
 
+	const autoRandomPreset =
+		(!['off', 'track'].includes(pref.presetAutoRandomMode) && pref.presetSelectMode === 'harmonic' ||
+		pref.presetAutoRandomMode === 'dblclick' && pref.presetSelectMode === 'theme') && !doubleClicked;
+
 	if (tempAlbumArt) {
 		albumArt = tempAlbumArt;
-		if (index === 0 && newTrackFetchingArtwork) {
-			newTrackFetchingArtwork = false;
-			await getThemeColors(albumArt);
+		if (index !== 0 && !newTrackFetchingArtwork) return;
+		newTrackFetchingArtwork = false;
+
+		// * Prevent double initialization and save performance, getThemeColors() and initTheme() handled in getRandomThemePreset()
+		if (autoRandomPreset) {
+			setRandomThemePreset();
+			initThemeTags();
+		} else {
+			getThemeColors(albumArt);
 			if (!initThemeSkip) {
-				await initTheme();
+				initTheme();
 				DebugLog('initTheme -> loadImageFromAlbumArtList -> tempAlbumArt');
 			}
 		}
 	}
-	else if (on_mouse_wheel_albumart) {
-		// ! gdi.LoadImageAsyncV2 only used when cycling through album art via mouse wheel
-		// ! Otherwise use utils.GetAlbumArtV2 when loading the first image
+	else {
 		gdi.LoadImageAsyncV2(window.ID, albumArtList[index]).then(coverImage => {
 			albumArt = artCache.encache(coverImage, albumArtList[index]);
 			if (newTrackFetchingArtwork) {
-				if (!albumArt && fb.IsPlaying) { // * Use noAlbumArtStub if album art could not be properly parsed
-					if (metadb && (albumArt = utils.GetAlbumArtV2(metadb))) { // * But first try embedded artwork from music file
+				if (!albumArt && fb.IsPlaying) {
+					// * If no album art on disk can be found, try embedded artwork from music file
+					if (metadb && (albumArt = utils.GetAlbumArtV2(metadb))) {
 						noArtwork = false;
 						noAlbumArtStub = false;
 						embeddedArt = true;
-					} else {
+					}
+					// * Use noAlbumArtStub if album art could not be properly parsed
+					else {
 						noArtwork = true;
 						noAlbumArtStub = true;
 						embeddedArt = false;
 						console.log('<Error GetAlbumArtV2: Album art could not be properly parsed! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>');
 					}
 				}
-				getThemeColors(albumArt);
-				initTheme();
-				DebugLog('initTheme -> loadImageFromAlbumArtList -> LoadImageAsyncV2');
+				// * Prevent double initialization and save performance, getThemeColors() and initTheme() handled in getRandomThemePreset()
+				if (!autoRandomPreset) {
+					getThemeColors(albumArt);
+					initTheme();
+					DebugLog('initTheme -> loadImageFromAlbumArtList -> LoadImageAsyncV2');
+				}
 				newTrackFetchingArtwork = false;
 			}
-			resizeArtwork(true);
+
+			setRandomThemePreset();
+			initThemeTags();
+
+			// * Init panel width only when playlist is in full width ( i.e on startup or on_playback_stop ) to save performance
+			if (pref.panelWidthAuto && playlist.x === 0) {
+				initPanelWidthAuto();
+			} else {
+				resizeArtwork(true);
+			}
+
 			if (discArt) createRotatedDiscArtImage();
 			lastLeftEdge = 0; // Recalc label location
 			repaintWindow();
 		});
 	}
-	else {
-		// ! We use the older utils.GetAlbumArtV2 method to display the first image because
-		// ! gdi.LoadImageAsyncV2, utils.GetAlbumArtAsyncV2 and promises are being blocked in the SMP pipe while context menu is being active.
-		const image = utils.GetAlbumArtV2(metadb);
-		albumArt = artCache.encache(image, albumArtList[index]);
-		if (newTrackFetchingArtwork) {
-			if (!albumArt && fb.IsPlaying) { // * Use noAlbumArtStub if album art could not be properly parsed
-				noArtwork = true;
-				noAlbumArtStub = true;
-				embeddedArt = false;
-				console.log('<Error GetAlbumArtV2: Album art could not be properly parsed! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>');
-			}
-			if (activeMenu) {
-				getThemeColors(albumArt);
-				if (!initThemeSkip) initTheme();
-			} else {
-				await getThemeColors(albumArt);
-				if (!initThemeSkip) await initTheme();
-			}
-
-			if (!initThemeSkip) DebugLog('initTheme -> loadImageFromAlbumArtList -> GetAlbumArtV2');
-			newTrackFetchingArtwork = false;
-		}
-		resizeArtwork(true);
-		if (discArt) createRotatedDiscArtImage();
-		lastLeftEdge = 0; // Recalc label location
-		repaintWindow();
-		initThemeSkip = false;
-	}
 
 	resizeArtwork(false); // Recalculate image positions
-
-	if (discArt) {
-		createRotatedDiscArtImage();
-	}
+	if (discArt) createRotatedDiscArtImage();
 }
 
 

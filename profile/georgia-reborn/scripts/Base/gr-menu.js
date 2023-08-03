@@ -1253,20 +1253,19 @@ function playerControlsOptions(menu) {
 		});
 		playerControlsAlbumArtMenu.addToggleItem('Cycle album artwork with mouse wheel', pref, 'cycleArtMWheel');
 		playerControlsAlbumArtMenu.addSeparator();
-		// ! Due to using utils.GetAlbumArtV2 instead of gdi.LoadImageAsyncV2 we don't need this option now, remove this option once it has been tested enough.
-		// ! playerControlsAlbumArtMenu.addToggleItem('Load embedded album art first', pref, 'loadEmbeddedAlbumArtFirst', () => {
-		// 	const msg = 'Do you want to load embedded album art first?\n\nYou also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art\n\nContinue?\n\n\n';
-		// 	const continue_confirmation = (status, confirmed) => {
-		// 		if (!confirmed) pref.loadEmbeddedAlbumArtFirst = false;
-		// 	}
-		// 	if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-		// 		continue_confirmation(false, 'Yes');
-		// 		fb.ShowPopupMessage('Embedded album art enabled:\n\nYou also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art.', 'Embedded album art');
-		// 	} else {
-		// 		popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		// 	}
-		// });
-		// ! playerControlsAlbumArtMenu.addSeparator();
+		playerControlsAlbumArtMenu.addToggleItem('Load embedded album art first', pref, 'loadEmbeddedAlbumArtFirst', () => {
+			const msg = 'Do you want to load embedded album art first?\n\nYou also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art\n\nContinue?\n\n\n';
+			const continue_confirmation = (status, confirmed) => {
+				if (!confirmed) pref.loadEmbeddedAlbumArtFirst = false;
+			}
+			if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+				continue_confirmation(false, 'Yes');
+				fb.ShowPopupMessage('Embedded album art enabled:\n\nYou also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art.', 'Embedded album art');
+			} else {
+				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
+			}
+		});
+		playerControlsAlbumArtMenu.addSeparator();
 
 		const showHiResAudioLogoMenu = new Menu('Show hi-res audio badge on album cover');
 		showHiResAudioLogoMenu.addToggleItem('Enabled', pref, 'showHiResAudioBadge', () => { repaintWindow(); });

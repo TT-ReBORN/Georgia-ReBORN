@@ -212,14 +212,6 @@ function on_playback_new_track(metadb) {
 		$('%album%') !== lastAlbumFolderTag || $('$if2(%discnumber%,0)') !== lastAlbumDiscNumber || $(`$if2(${tf.vinyl_side},ZZ)`) !== lastAlbumVinylSide) {
 		clearPlaylistNowPlayingBg();
 		fetchNewArtwork(metadb);
-		// * Pick a new random theme preset
-		if (pref.presetSelectMode === 'theme') setThemePresetSelection(false, true);
-		if ((!['off', 'track'].includes(pref.presetAutoRandomMode) && pref.presetSelectMode === 'harmonic' ||
-			pref.presetAutoRandomMode === 'dblclick' && pref.presetSelectMode === 'theme') && !doubleClicked) {
-			getRandomThemePreset();
-		}
-		// * Init and set theme tags
-		initThemeTags();
 	}
 	else if (pref.cycleArt && albumArtList.length > 1) {
 		// Need to do this here since we're no longer always fetching when albumArtList.length > 1
@@ -1080,7 +1072,6 @@ function on_mouse_wheel(step) {
 
 	// * Cycling through album artwork
 	if (pref.cycleArtMWheel && albumArtList.length > 1 && displayAlbumArt && mouseInAlbumArt()) {
-		on_mouse_wheel_albumart = true;
 		if (step > 0) { // Prev album art image
 			if (albumArtIndex !== 0) albumArtIndex = (albumArtIndex - 1) % albumArtList.length;
 		} else {		 // Next album art image
@@ -1101,7 +1092,6 @@ function on_mouse_wheel(step) {
 		repaintWindow();
 		return;
 	}
-	on_mouse_wheel_albumart = false;
 
 	if (pref.displayLyrics && mouseInAlbumArt()) {
 		lyrics.on_mouse_wheel(step);
@@ -1345,6 +1335,7 @@ function on_playback_stop(reason) {
 	}
 	bandLogo = null;
 	invertedBandLogo = null;
+
 	if (pref.displayLyrics && lyrics) {
 		lyrics.on_playback_stop(reason);
 	}
@@ -1353,12 +1344,13 @@ function on_playback_stop(reason) {
 	rotatedDiscArt = null;
 	albumArtTimeout = 0;
 
+	if (pref.panelWidthAuto) {
+		initPanelWidthAuto();
+	}
+
 	if (reason === 0 || reason === 1) { // Stop or end of playlist
 		discArt = disposeDiscArtImage(discArt);
 		discArtArray = [];	// Clear Images
-		if (pref.panelWidthAuto) {
-			initPanelWidthAuto();
-		}
 		window.Repaint();
 	}
 	if (displayPlaylist || displayPlaylistArtwork) {
