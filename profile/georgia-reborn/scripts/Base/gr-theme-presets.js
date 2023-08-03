@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-29                                          * //
+// * Last change:    2023-08-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2437,15 +2437,15 @@ function initThemePresetState() {
 // * THEME PRESET PICKER * //
 /////////////////////////////
 /**
- * Randomly chooses a theme preset, used in Options > Preset > Auto random.
+ * Gets a random theme preset, used in Options > Preset > Auto random.
  */
-function themePresetRandomPicker() {
+function getRandomThemePreset() {
 	clearInterval(presetAutoRandomModeTimer);
 	presetAutoRandomModeTimer = null;
 
 	if ($('[%GR_THEME%]') || $('[%GR_STYLE%]') || $('[%GR_PRESET%]')) return;
 
-	const getRandomThemePreset = () => {
+	const pickRandomThemePreset = () => {
 		let randomThemePreset;
 		let lastIndex;
 
@@ -2523,7 +2523,7 @@ function themePresetRandomPicker() {
 
 	const setRandomThemePreset = () => {
 		resetStyle('all');
-		getRandomThemePreset();
+		pickRandomThemePreset();
 		updateStyle();
 		themePresetMatchMode = false;
 	}

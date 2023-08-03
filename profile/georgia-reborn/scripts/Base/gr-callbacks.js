@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-31                                          * //
+// * Last change:    2023-08-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -216,7 +216,7 @@ function on_playback_new_track(metadb) {
 		if (pref.presetSelectMode === 'theme') setThemePresetSelection(false, true);
 		if ((!['off', 'track'].includes(pref.presetAutoRandomMode) && pref.presetSelectMode === 'harmonic' ||
 			pref.presetAutoRandomMode === 'dblclick' && pref.presetSelectMode === 'theme') && !doubleClicked) {
-			themePresetRandomPicker();
+			getRandomThemePreset();
 		}
 		// * Init and set theme tags
 		initThemeTags();
@@ -229,7 +229,7 @@ function on_playback_new_track(metadb) {
 	}
 
 	// * Pick a new random theme preset on new track
-	if (pref.presetAutoRandomMode === 'track' && !doubleClicked) themePresetRandomPicker();
+	if (pref.presetAutoRandomMode === 'track' && !doubleClicked) getRandomThemePreset();
 
 	// * Generate a new color in Random theme on new track
 	if (pref.styleRandomAutoColor === 'track' && !doubleClicked) getRandomThemeAutoColor();
@@ -693,7 +693,7 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 			// * Pick a new random theme preset
 			if (pref.presetAutoRandomMode === 'dblclick') {
 				themePresetIndicator = true;
-				themePresetRandomPicker();
+				getRandomThemePreset();
 			}
 			// * Generate a new color in Random theme
 			else if (pref.theme === 'random') {
@@ -1009,29 +1009,38 @@ function on_mouse_rbtn_down(x, y, m) {
  * @param {number} m The mouse mask.
  */
 function on_mouse_rbtn_up(x, y, m) {
-	if (fb.IsPlaying && mouseInAlbumArt(x, y)) {
-		// * Do not show album cover context menu when Playlist/Library layout is in full width or when using Library's flow mode
+	const cmm = new ContextMainMenu();
+	const handleContextMenu = (x, y) => {
+		activeMenu = true;
+		cmm.execute(x, y);
+		activeMenu = false;
+	}
+
+	if (mouseInTopMenu(x, y)) {
+		trace_call && console.log('Top menu => on_mouse_rbtn_up');
+		qwr_utils.append_top_menu_context_menu_to(cmm);
+		handleContextMenu(x, y);
+		return true;
+	}
+	else if (mouseInAlbumArt(x, y) && fb.IsPlaying) {
 		trace_call && console.log('Album art => on_mouse_rbtn_up');
-		const cmac = new ContextMainMenu();
-		qwr_utils.append_album_cover_context_menu_to(cmac);
-
-		activeMenu = true;
-		cmac.execute(x, y);
-		activeMenu = false;
-
+		qwr_utils.append_album_cover_context_menu_to(cmm);
+		handleContextMenu(x, y);
 		return true;
 	}
-	if (fb.IsPlaying && mouseInLowerBar(x, y)) {
+	else if (mouseInLowerBar(x, y) && !mouseInSeekbar(x, y)) {
 		trace_call && console.log('Lower bar => on_mouse_rbtn_up');
-		const cmac = new ContextMainMenu();
-		qwr_utils.append_lower_bar_context_menu_to(cmac);
-
-		activeMenu = true;
-		cmac.execute(x, y);
-		activeMenu = false;
-
+		qwr_utils.append_lower_bar_context_menu_to(cmm);
+		handleContextMenu(x, y);
 		return true;
 	}
+	else if (mouseInSeekbar(x, y)) {
+		trace_call && console.log('Seekbar => on_mouse_rbtn_up');
+		qwr_utils.append_seekbar_context_menu_to(cmm);
+		handleContextMenu(x, y);
+		return true;
+	}
+
 	if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true)) && mouseInPlaylist(x, y)) {
 		trace_call && console.log('Playlist => on_mouse_rbtn_up');
 		if (displayCustomThemeMenu && displayBiography) return;
@@ -1529,6 +1538,22 @@ function on_volume_change(val) {
 // * CUSTOM CALLBACKS * //
 //////////////////////////
 /**
+ * Checks if the mouse is within the boundaries of the top menu.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @returns {boolean} True or false.
+ */
+function mouseInTopMenu(x, y) {
+	if (x < ww - SCALE(100) && y < geo.topMenuHeight) {
+		trace_call && trace_on_move && console.log('mouseInTopMenu');
+		return true;
+	}
+
+	return false;
+}
+
+
+/**
  * Checks if the mouse is within the boundaries of the album art.
  * @param {number} x The x-coordinate.
  * @param {number} y The y-coordinate.
@@ -1553,6 +1578,7 @@ function mouseInAlbumArt(x, y) {
 		trace_call && trace_on_move && console.log('mouseInAlbumArt');
 		return true;
 	}
+
 	return false;
 }
 
@@ -1586,6 +1612,7 @@ function mouseInPause(x, y) {
 		trace_call && trace_on_move && console.log('mouseInPause');
 		return true;
 	}
+
 	return false;
 }
 
@@ -1597,10 +1624,11 @@ function mouseInPause(x, y) {
  * @returns {boolean} True or false.
  */
 function mouseInLowerBar(x, y) {
-	if (state.mouse_x > 0 && state.mouse_x && state.mouse_y > wh - SCALE(120) && state.mouse_y) {
+	if (y > wh - SCALE(120)) {
 		trace_call && trace_on_move && console.log('mouseInLowerBar');
 		return true;
 	}
+
 	return false;
 }
 
@@ -1615,12 +1643,14 @@ function mouseInSeekbar(x, y) {
 	const seekX = x || state.mouse_x;
 	const seekY = y || state.mouse_y;
 	const pBar = pref.seekbar === 'progressbar';
+
 	if (seekX >= SCALE(40) && seekX < ww - SCALE(40) &&
 		seekY >= wh - (pref.layout !== 'default' ? 0.6 : 0.5) * geo.lowerBarHeight - 0.5 * geo.progBarHeight &&
 		seekY <= wh - (pref.layout !== 'default' ? SCALE(pBar ? 60 : 55) : SCALE(pBar ? 35 : 20))) {
 		trace_call && trace_on_move && console.log('mouseInSeekbar');
 		return true;
 	}
+
 	return false;
 }
 
@@ -1636,6 +1666,7 @@ function mouseInPanel(x, y) {
 		trace_call && trace_on_move && console.log('mouseInPanel');
 		return true;
 	}
+
 	return false;
 }
 
@@ -1649,11 +1680,13 @@ function mouseInPanel(x, y) {
 function mouseInPlaylist(x, y) {
 	const plistX = x || state.mouse_x;
 	const plistY = y || state.mouse_y;
+
 	if (plistX >= playlist.x && plistX < playlist.x + playlist.w &&
 		plistY >= (pref.layout !== 'default' ? playlist.y - SCALE(g_properties.row_h) : playlist.y) && plistY < playlist.y + playlist.h) {
 		trace_call && trace_on_move && console.log('Playlist => mouseInPlaylist');
 		return true;
 	}
+
 	return false;
 }
 
@@ -1667,10 +1700,12 @@ function mouseInPlaylist(x, y) {
 function mouseInLibrary(x, y) {
 	const libX = x || state.mouse_x;
 	const libY = y || state.mouse_y;
+
 	if (libX >= ui.x && libX < ui.x + ui.w && libY >= ui.y && libY < ui.y + ui.h) {
 		trace_call && trace_on_move && console.log('Library => mouseInLibrary');
 		return true;
 	}
+
 	return false;
 }
 
@@ -1687,6 +1722,7 @@ function mouseInLibrarySearch(x, y) {
 		trace_call && trace_on_move && console.log('Library => mouseInLibrarySearch');
 		return true;
 	}
+
 	return false;
 }
 
@@ -1700,9 +1736,11 @@ function mouseInLibrarySearch(x, y) {
 function mouseInBiography(x, y) {
 	const bioX = x || state.mouse_x;
 	const bioY = y || state.mouse_y;
+
 	if (bioX >= uiBio.x && bioX < uiBio.x + uiBio.w && bioY >= uiBio.y && bioY < uiBio.y + uiBio.h) {
 		trace_call && trace_on_move && console.log('Biography => mouseInBiography');
 		return true;
 	}
+
 	return false;
 }

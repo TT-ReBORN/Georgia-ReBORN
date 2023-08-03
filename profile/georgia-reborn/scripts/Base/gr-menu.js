@@ -461,7 +461,7 @@ function presetOptions(menu) {
 					}
 					pref.presetAutoRandomMode = 'dblclick';
 					setThemePresetSelection(true); // * Reactivate all
-					themePresetRandomPicker();
+					getRandomThemePreset();
 				}
 				if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 					continue_confirmation(false, 'Yes');
@@ -479,7 +479,7 @@ function presetOptions(menu) {
 					}
 					pref.presetAutoRandomMode = 'dblclick';
 					setThemePresetSelection(false, true);
-					themePresetRandomPicker();
+					getRandomThemePreset();
 				}
 				if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 					continue_confirmation(false, 'Yes');
@@ -734,7 +734,7 @@ function presetOptions(menu) {
 		pref.presetAutoRandomMode, ['off', 5000, 10000, 15000, 30000, 60000, 300000, 600000, 900000, 1800000, 3600000, 'track', 'album', 'dblclick'], (timer) => {
 		pref.presetAutoRandomMode = timer;
 		if (!['off', 'track', 'album', 'dblclick'].includes(timer)) {
-			themePresetRandomPicker();
+			getRandomThemePreset();
 		} else {
 			clearInterval(presetAutoRandomModeTimer);
 			presetAutoRandomModeTimer = null;
@@ -929,7 +929,7 @@ function fontSizeOptions(menu) {
 		createFonts();
 		createButtonImages();
 		createButtonObjects(ww, wh);
-		window.Repaint();
+		repaintWindow();
 	});
 
 	// * MAIN - LOWER BAR * //
@@ -947,7 +947,7 @@ function fontSizeOptions(menu) {
 		createFonts();
 		createButtonImages();
 		createButtonObjects(ww, wh);
-		window.Repaint();
+		repaintWindow();
 	});
 	mainFontSizeMenu.appendTo(changeFontSizeMenu);
 
@@ -959,7 +959,7 @@ function fontSizeOptions(menu) {
 		else if (pref.layout === 'compact') { pref.notificationFontSize_compact = size; }
 
 		createFonts();
-		window.Repaint();
+		repaintWindow();
 	});
 
 	// * MAIN - POPUP * //
@@ -972,7 +972,7 @@ function fontSizeOptions(menu) {
 		createFonts();
 		if      (displayCustomThemeMenu)  initCustomThemeMenu('pl_bg');
 		else if (displayMetadataGridMenu) initMetadataGridMenu();
-		window.Repaint();
+		repaintWindow();
 	});
 
 	// * MAIN - TOOLTIP * //
@@ -983,7 +983,7 @@ function fontSizeOptions(menu) {
 		else if (pref.layout === 'compact') { pref.tooltipFontSize_compact = size; }
 
 		createFonts();
-		window.Repaint();
+		repaintWindow();
 	});
 
 	// * DETAILS - ARTIST * //
@@ -997,7 +997,7 @@ function fontSizeOptions(menu) {
 			pref.gridArtistFontSize_artwork = size;
 		}
 		createFonts();
-		window.Repaint();
+		repaintWindow();
 	});
 
 	// * DETAILS - TITLE * //
@@ -1012,7 +1012,7 @@ function fontSizeOptions(menu) {
 			pref.gridTitleFontSize_artwork = size;
 		}
 		createFonts();
-		window.Repaint();
+		repaintWindow();
 	});
 
 	// * DETAILS - ALBUM * //
@@ -1025,7 +1025,7 @@ function fontSizeOptions(menu) {
 			pref.gridAlbumFontSize_artwork = size;
 		}
 		createFonts();
-		window.Repaint();
+		repaintWindow();
 	});
 
 	// * DETAILS - TAG NAME * //
@@ -1038,7 +1038,7 @@ function fontSizeOptions(menu) {
 			pref.gridKeyFontSize_artwork = size;
 		}
 		createFonts();
-		window.Repaint();
+		repaintWindow();
 	});
 
 	// * DETAILS - TAG VALUE * //
@@ -1051,7 +1051,7 @@ function fontSizeOptions(menu) {
 			pref.gridValueFontSize_artwork = size;
 		}
 		createFonts();
-		window.Repaint();
+		repaintWindow();
 	});
 	detailsFontSizeMenu.appendTo(changeFontSizeMenu);
 
@@ -1091,7 +1091,7 @@ function fontSizeOptions(menu) {
 			panel.zoomReset();
 			initLibraryLayout();
 		}
-		window.Repaint();
+		repaintWindow();
 	});
 
 	// * LIBRARY * //
@@ -1111,7 +1111,7 @@ function fontSizeOptions(menu) {
 		setLibrarySize();
 		panel.zoomReset();
 		pop.createImages();
-		window.Repaint();
+		repaintWindow();
 	});
 
 	// * BIOGRAPHY * //
@@ -1131,7 +1131,7 @@ function fontSizeOptions(menu) {
 		setBiographySize();
 		butBio.resetZoom();
 		butBio.createImages();
-		window.Repaint();
+		repaintWindow();
 	});
 
 	// * LYRICS * //
@@ -1171,79 +1171,48 @@ function playerControlsOptions(menu) {
 
 	const playlistCallback = () => {
 		playlist.on_size(ww, wh);
-		window.Repaint();
+		repaintWindow();
+	};
+
+	const updateButtons = () => {
+		createButtonImages();
+		createButtonObjects(ww, wh);
+		repaintWindow();
+	};
+
+	const updateSeekbar = () => {
+		setGeometry();
+		resizeArtwork(true);
+		repaintWindow();
 	};
 
 	// * TOP MENU * //
 	const playerControlsTopMenu = new Menu('Top menu');
 	const playerControlsTopMenuDefault = new Menu('Default');
-	playerControlsTopMenuDefault.addToggleItem('Details', pref, 'showPanelDetails_default', () => {
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
-	});
-	playerControlsTopMenuDefault.addToggleItem('Library', pref, 'showPanelLibrary_default', () => {
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
-	});
-	playerControlsTopMenuDefault.addToggleItem('Biography', pref, 'showPanelBiography_default', () => {
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
-	});
-	playerControlsTopMenuDefault.addToggleItem('Lyrics', pref, 'showPanelLyrics_default', () => {
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
-	});
-	playerControlsTopMenuDefault.addToggleItem('Rating', pref, 'showPanelRating_default', () => {
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
-	});
+	playerControlsTopMenuDefault.addToggleItem('Details', pref, 'showPanelDetails_default', () => { updateButtons(); });
+	playerControlsTopMenuDefault.addToggleItem('Library', pref, 'showPanelLibrary_default', () => { updateButtons(); });
+	playerControlsTopMenuDefault.addToggleItem('Biography', pref, 'showPanelBiography_default', () => { updateButtons(); });
+	playerControlsTopMenuDefault.addToggleItem('Lyrics', pref, 'showPanelLyrics_default', () => { updateButtons(); });
+	playerControlsTopMenuDefault.addToggleItem('Rating', pref, 'showPanelRating_default', () => { updateButtons(); });
 	playerControlsTopMenuDefault.appendTo(playerControlsTopMenu);
 
 	const playerControlsTopMenuArtwork = new Menu('Artwork');
-	playerControlsTopMenuArtwork.addToggleItem('Details', pref, 'showPanelDetails_artwork', () => {
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
-	});
-	playerControlsTopMenuArtwork.addToggleItem('Library', pref, 'showPanelLibrary_artwork', () => {
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
-	});
-	playerControlsTopMenuArtwork.addToggleItem('Biography', pref, 'showPanelBiography_artwork', () => {
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
-	});
-	playerControlsTopMenuArtwork.addToggleItem('Lyrics', pref, 'showPanelLyrics_artwork', () => {
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
-	});
-	playerControlsTopMenuArtwork.addToggleItem('Rating', pref, 'showPanelRating_artwork', () => {
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
-	});
+	playerControlsTopMenuArtwork.addToggleItem('Details', pref, 'showPanelDetails_artwork', () => { updateButtons(); });
+	playerControlsTopMenuArtwork.addToggleItem('Library', pref, 'showPanelLibrary_artwork', () => { updateButtons(); });
+	playerControlsTopMenuArtwork.addToggleItem('Biography', pref, 'showPanelBiography_artwork', () => { updateButtons(); });
+	playerControlsTopMenuArtwork.addToggleItem('Lyrics', pref, 'showPanelLyrics_artwork', () => { updateButtons(); });
+	playerControlsTopMenuArtwork.addToggleItem('Rating', pref, 'showPanelRating_artwork', () => { updateButtons(); });
 	playerControlsTopMenuArtwork.appendTo(playerControlsTopMenu);
 	playerControlsTopMenu.addSeparator();
+
 	playerControlsTopMenu.addRadioItems(['Align left', 'Align center'], pref.topMenuAlignment, ['left', 'center'], (align) => {
 		pref.topMenuAlignment = align;
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	});
 	playerControlsTopMenu.addSeparator();
 	playerControlsTopMenu.addToggleItem('Compact top menu', pref, 'topMenuCompact', () => {
 		pref.showTopMenuCompact = pref.topMenuCompact;
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	});
 	playerControlsTopMenu.appendTo(playerControlsMenu);
 
@@ -1469,10 +1438,8 @@ function playerControlsOptions(menu) {
 			pref.transportButtonSize_default = size;
 		}
 		createFonts();
-		createButtonImages();
-		createButtonObjects(ww, wh);
 		resizeArtwork(true);
-		repaintWindow();
+		updateButtons();
 	});
 	transportSizeMenuDefault.appendTo(transportSizeMenu);
 
@@ -1486,10 +1453,8 @@ function playerControlsOptions(menu) {
 			pref.transportButtonSize_artwork = size;
 		}
 		createFonts();
-		createButtonImages();
-		createButtonObjects(ww, wh);
 		resizeArtwork(true);
-		repaintWindow();
+		updateButtons();
 	});
 	transportSizeMenuArtwork.appendTo(transportSizeMenu);
 
@@ -1503,10 +1468,8 @@ function playerControlsOptions(menu) {
 			pref.transportButtonSize_compact = size;
 		}
 		createFonts();
-		createButtonImages();
-		createButtonObjects(ww, wh);
 		resizeArtwork(true);
-		repaintWindow();
+		updateButtons();
 	});
 	transportSizeMenuCompact.appendTo(transportSizeMenu);
 	transportSizeMenu.appendTo(playerControlsLowerBarMenu);
@@ -1522,9 +1485,7 @@ function playerControlsOptions(menu) {
 		} else {
 			pref.transportButtonSpacing_default = size;
 		}
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	});
 	transportSpacingMenuDefault.appendTo(transportSpacingMenu);
 
@@ -1537,9 +1498,7 @@ function playerControlsOptions(menu) {
 		} else {
 			pref.transportButtonSpacing_artwork = size;
 		}
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	});
 	transportSpacingMenuArtwork.appendTo(transportSpacingMenu);
 
@@ -1552,9 +1511,7 @@ function playerControlsOptions(menu) {
 		} else {
 			pref.transportButtonSpacing_compact = size;
 		}
-		createButtonImages();
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	});
 	transportSpacingMenuCompact.appendTo(transportSpacingMenu);
 	transportSpacingMenu.appendTo(playerControlsLowerBarMenu);
@@ -1563,38 +1520,29 @@ function playerControlsOptions(menu) {
 	// * SHOW TRANSPORT CONTROLS * //
 	const transportControlsMenu = new Menu('Show transport controls');
 	transportControlsMenu.addToggleItem('Default', pref, 'showTransportControls_default', () => {
-		createButtonImages();
-		createButtonObjects(ww, wh);
 		resizeArtwork(true);
-		repaintWindow();
+		updateButtons();
 	});
 	transportControlsMenu.addToggleItem('Artwork', pref, 'showTransportControls_artwork', () => {
-		createButtonImages();
-		createButtonObjects(ww, wh);
 		resizeArtwork(true);
-		repaintWindow();
+		updateButtons();
 	});
 	transportControlsMenu.addToggleItem('Compact', pref, 'showTransportControls_compact', () => {
-		createButtonImages();
-		createButtonObjects(ww, wh);
 		resizeArtwork(true);
-		repaintWindow();
+		updateButtons();
 	});
 	transportControlsMenu.appendTo(playerControlsLowerBarMenu);
 
 	// * SHOW PLAYBACK ORDER BUTTON * //
 	const playbackOrderBtnMenu = new Menu('Show playback order button');
 	playbackOrderBtnMenu.addToggleItem('Default', pref, 'showPlaybackOrderBtn_default', () => {
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	}, !pref.showTransportControls_default);
 	playbackOrderBtnMenu.addToggleItem('Artwork', pref, 'showPlaybackOrderBtn_artwork', () => {
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	}, !pref.showTransportControls_artwork);
 	playbackOrderBtnMenu.addToggleItem('Compact', pref, 'showPlaybackOrderBtn_compact', () => {
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	}, !pref.showTransportControls_compact);
 	playbackOrderBtnMenu.appendTo(playerControlsLowerBarMenu);
 
@@ -1602,157 +1550,113 @@ function playerControlsOptions(menu) {
 	const reloadBtnMenu = new Menu('Show reload button');
 	reloadBtnMenu.addToggleItem('Default', pref, 'showReloadBtn_default', () => {
 		volumeBtn = new VolumeBtn(); // create new volume btn for new width size
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	}, !pref.showTransportControls_default);
 	reloadBtnMenu.addToggleItem('Artwork', pref, 'showReloadBtn_artwork', () => {
 		volumeBtn = new VolumeBtn(); // create new volume btn for new width size
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	}, !pref.showTransportControls_artwork);
 	reloadBtnMenu.addToggleItem('Compact', pref, 'showReloadBtn_compact', () => {
 		volumeBtn = new VolumeBtn(); // create new volume btn for new width size
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	}, !pref.showTransportControls_compact);
 	reloadBtnMenu.appendTo(playerControlsLowerBarMenu);
 
 	// * SHOW VOLUME BUTTON * //
 	const volumeBtnMenu = new Menu('Show volume button');
 	volumeBtnMenu.addToggleItem('Default', pref, 'showVolumeBtn_default', () => {
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	}, !pref.showTransportControls_default);
 	volumeBtnMenu.addToggleItem('Artwork', pref, 'showVolumeBtn_artwork', () => {
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	}, !pref.showTransportControls_artwork);
 	volumeBtnMenu.addToggleItem('Compact', pref, 'showVolumeBtn_compact', () => {
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	}, !pref.showTransportControls_compact);
 	volumeBtnMenu.addSeparator();
 	volumeBtnMenu.addToggleItem('Auto-hide bar', pref, 'autoHideVolumeBar', () => {
 		volumeBtn.toggleVolumeBar();
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	});
 	volumeBtnMenu.appendTo(playerControlsLowerBarMenu);
-
-	// * SHOW PROGRESS BAR * //
-	const progressBarMenu = new Menu('Show progress bar');
-	progressBarMenu.addToggleItem('Default', pref, 'showProgressBar_default', () => {
-		setGeometry();
-		resizeArtwork(true);
-		repaintWindow();
-	});
-	progressBarMenu.addToggleItem('Artwork', pref, 'showProgressBar_artwork', () => {
-		setGeometry();
-		resizeArtwork(true);
-		repaintWindow();
-	});
-	progressBarMenu.addToggleItem('Compact', pref, 'showProgressBar_compact', () => {
-		setGeometry();
-		resizeArtwork(true);
-		repaintWindow();
-	});
-	progressBarMenu.appendTo(playerControlsLowerBarMenu);
-
-	// * SHOW PEAKMETER BAR * //
-	const peakmeterBarMenu = new Menu('Show peakmeter bar');
-	peakmeterBarMenu.addToggleItem('Default', pref, 'showPeakmeterBar_default', () => {
-		setGeometry();
-		resizeArtwork(true);
-		repaintWindow();
-	});
-	peakmeterBarMenu.addToggleItem('Artwork', pref, 'showPeakmeterBar_artwork', () => {
-		setGeometry();
-		resizeArtwork(true);
-		repaintWindow();
-	});
-	peakmeterBarMenu.addToggleItem('Compact', pref, 'showPeakmeterBar_compact', () => {
-		setGeometry();
-		resizeArtwork(true);
-		repaintWindow();
-	});
-	peakmeterBarMenu.appendTo(playerControlsLowerBarMenu);
-
-	// * SHOW WAVEFORM BAR * //
-	const waveformBarMenu = new Menu('Show waveform bar');
-	waveformBarMenu.addToggleItem('Default', pref, 'showWaveformBar_default', () => {
-		setGeometry();
-		resizeArtwork(true);
-		repaintWindow();
-	});
-	waveformBarMenu.addToggleItem('Artwork', pref, 'showWaveformBar_artwork', () => {
-		setGeometry();
-		resizeArtwork(true);
-		repaintWindow();
-	});
-	waveformBarMenu.addToggleItem('Compact', pref, 'showWaveformBar_compact', () => {
-		setGeometry();
-		resizeArtwork(true);
-		repaintWindow();
-	});
-	waveformBarMenu.appendTo(playerControlsLowerBarMenu);
+	playerControlsLowerBarMenu.addSeparator();
 
 	// * SHOW PLAYBACK TIME IN LOWER BAR * //
-	const playbackTimeMenu = new Menu('Show playback time in lower bar');
+	const playbackTimeMenu = new Menu('Show playback time');
 	playbackTimeMenu.addToggleItem('Default', pref, 'showPlaybackTime_default', () => {
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	});
 	playbackTimeMenu.addToggleItem('Artwork', pref, 'showPlaybackTime_artwork', () => {
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	});
 	playbackTimeMenu.addToggleItem('Compact', pref, 'showPlaybackTime_compact', () => {
-		createButtonObjects(ww, wh);
-		repaintWindow();
+		updateButtons();
 	});
 	playbackTimeMenu.appendTo(playerControlsLowerBarMenu);
 
 	// * SHOW ARTIST IN LOWER BAR * //
-	const showArtistMenu = new Menu('Show artist in lower bar');
+	const showArtistMenu = new Menu('Show artist');
 	showArtistMenu.addToggleItem('Default', pref, 'showLowerBarArtist_default', () => { repaintWindow(); });
 	showArtistMenu.addToggleItem('Artwork', pref, 'showLowerBarArtist_artwork', () => { repaintWindow(); });
 	showArtistMenu.addToggleItem('Compact', pref, 'showLowerBarArtist_compact', () => { repaintWindow(); });
 	showArtistMenu.appendTo(playerControlsLowerBarMenu);
 
 	// * SHOW TRACK NUMBER IN LOWER BAR * //
-	const showTrackNumberMenu = new Menu('Show track number in lower bar');
+	const showTrackNumberMenu = new Menu('Show track number');
 	showTrackNumberMenu.addToggleItem('Default', pref, 'showLowerBarTrackNum_default', () => { on_metadb_changed(); repaintWindow(); });
 	showTrackNumberMenu.addToggleItem('Artwork', pref, 'showLowerBarTrackNum_artwork', () => { on_metadb_changed(); repaintWindow(); });
 	showTrackNumberMenu.addToggleItem('Compact', pref, 'showLowerBarTrackNum_compact', () => { on_metadb_changed(); repaintWindow(); });
 	showTrackNumberMenu.appendTo(playerControlsLowerBarMenu);
 
 	// * SHOW SONG TITLE IN LOWER BAR * //
-	const showTitleMenu = new Menu('Show song title in lower bar');
+	const showTitleMenu = new Menu('Show song title');
 	showTitleMenu.addToggleItem('Default', pref, 'showLowerBarTitle_default', () => { repaintWindow(); });
 	showTitleMenu.addToggleItem('Artwork', pref, 'showLowerBarTitle_artwork', () => { repaintWindow(); });
 	showTitleMenu.addToggleItem('Compact', pref, 'showLowerBarTitle_compact', () => { repaintWindow(); });
 	showTitleMenu.appendTo(playerControlsLowerBarMenu);
 
 	// * SHOW COMPOSER IN LOWER BAR * //
-	const showComposerMenu = new Menu('Show composer in lower bar');
+	const showComposerMenu = new Menu('Show composer');
 	showComposerMenu.addToggleItem('Default', pref, 'showLowerBarComposer_default', () => { repaintWindow(); });
 	showComposerMenu.addToggleItem('Artwork', pref, 'showLowerBarComposer_artwork', () => { repaintWindow(); });
 	showComposerMenu.addToggleItem('Compact', pref, 'showLowerBarComposer_compact', () => { repaintWindow(); });
 	showComposerMenu.appendTo(playerControlsLowerBarMenu);
 
 	// * SHOW ARTIST COUNTRY FLAGS IN LOWER BAR * //
-	const showArtistFlagsMenu = new Menu('Show artist country flags in lower bar');
+	const showArtistFlagsMenu = new Menu('Show artist country flags');
 	showArtistFlagsMenu.addToggleItem('Default', pref, 'showLowerBarArtistFlags_default', () => { loadCountryFlags(); repaintWindow(); });
 	showArtistFlagsMenu.addToggleItem('Artwork', pref, 'showLowerBarArtistFlags_artwork', () => { loadCountryFlags(); repaintWindow(); });
 	showArtistFlagsMenu.addToggleItem('Compact', pref, 'showLowerBarArtistFlags_compact', () => { loadCountryFlags(); repaintWindow(); });
 	showArtistFlagsMenu.appendTo(playerControlsLowerBarMenu);
 
 	// * SHOW SOFTWARE VERSION IN LOWER BAR * //
-	const showSoftwareVersionMenu = new Menu('Show software version in lower bar');
+	const showSoftwareVersionMenu = new Menu('Show software version');
 	showSoftwareVersionMenu.addToggleItem('Default', pref, 'showLowerBarVersion_default', () => { initMain(); });
 	showSoftwareVersionMenu.addToggleItem('Artwork', pref, 'showLowerBarVersion_artwork', () => { initMain(); });
 	showSoftwareVersionMenu.addToggleItem('Compact', pref, 'showLowerBarVersion_compact', () => { initMain(); });
 	showSoftwareVersionMenu.appendTo(playerControlsLowerBarMenu);
+	playerControlsLowerBarMenu.addSeparator();
+
+	// * SHOW PROGRESS BAR * //
+	const progressBarMenu = new Menu('Show progress bar');
+	progressBarMenu.addToggleItem('Default', pref, 'showProgressBar_default', () => { updateSeekbar(); });
+	progressBarMenu.addToggleItem('Artwork', pref, 'showProgressBar_artwork', () => { updateSeekbar(); });
+	progressBarMenu.addToggleItem('Compact', pref, 'showProgressBar_compact', () => { updateSeekbar(); });
+	progressBarMenu.appendTo(playerControlsLowerBarMenu);
+
+	// * SHOW PEAKMETER BAR * //
+	const peakmeterBarMenu = new Menu('Show peakmeter bar');
+	peakmeterBarMenu.addToggleItem('Default', pref, 'showPeakmeterBar_default', () => { updateSeekbar(); });
+	peakmeterBarMenu.addToggleItem('Artwork', pref, 'showPeakmeterBar_artwork', () => { updateSeekbar(); });
+	peakmeterBarMenu.addToggleItem('Compact', pref, 'showPeakmeterBar_compact', () => { updateSeekbar(); });
+	peakmeterBarMenu.appendTo(playerControlsLowerBarMenu);
+
+	// * SHOW WAVEFORM BAR * //
+	const waveformBarMenu = new Menu('Show waveform bar');
+	waveformBarMenu.addToggleItem('Default', pref, 'showWaveformBar_default', () => { updateSeekbar(); });
+	waveformBarMenu.addToggleItem('Artwork', pref, 'showWaveformBar_artwork', () => { updateSeekbar(); });
+	waveformBarMenu.addToggleItem('Compact', pref, 'showWaveformBar_compact', () => { updateSeekbar(); });
+	waveformBarMenu.appendTo(playerControlsLowerBarMenu);
 
 	playerControlsLowerBarMenu.appendTo(playerControlsMenu);
 
@@ -1943,7 +1847,7 @@ function playlistOptions(menu, context_menu) {
 
 	const playlistCallback = () => {
 		playlist.on_size(ww, wh);
-		window.Repaint();
+		repaintWindow();
 	};
 
 	// * LAYOUT * //
@@ -1956,7 +1860,7 @@ function playlistOptions(menu, context_menu) {
 			playlist.on_size(ww, wh);
 			jumpSearch.on_size();
 			initButtonState();
-			window.Repaint();
+			repaintWindow();
 		});
 	}
 
@@ -2327,7 +2231,7 @@ function libraryOptions(menu, context_menu) {
 			resizeArtwork(true);
 			initLibraryLayout();
 			initButtonState();
-			window.Repaint();
+			repaintWindow();
 		});
 		libraryLayoutMenu.addSeparator();
 		libraryLayoutMenu.addToggleItem('Use full preset', pref, 'libraryLayoutFullPreset', () => { repaintWindow(); });
@@ -2418,7 +2322,7 @@ function libraryOptions(menu, context_menu) {
 			case 7: ppt.thumbNailSize = 7; break;
 		}
 		setLibrarySize();
-		window.Repaint();
+		repaintWindow();
 	});
 	libraryThumbnailSizeMenu.appendTo(libraryAlbumArtMenu);
 
@@ -2540,7 +2444,7 @@ function libraryOptions(menu, context_menu) {
 				displayLibrary = true;
 			}
 			updatePlaylist();
-			window.Repaint();
+			repaintWindow();
 			if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 				continue_confirmation(false, 'Yes');
 				fb.ShowPopupMessage('Library browser mode enabled:\n\nThis will act like a file browser to quickly see the content of the album.\nIt is not recommended for new users who don\'t know how the library works.', 'Library browser mode');
@@ -2555,7 +2459,7 @@ function libraryOptions(menu, context_menu) {
 					ppt.actionMode = 0;
 				}
 			}
-			window.Repaint();
+			repaintWindow();
 			if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 				continue_confirmation(false, 'Yes');
 				fb.ShowPopupMessage('Library player mode enabled:\n\nThis will act like a like a playlist and will not automatically add content to the playlist.\nIt is recommended for new users who don\'t know how the library works.', 'Library player mode');
@@ -2952,7 +2856,7 @@ function lyricsOptions(menu, context_menu) {
 			on_playback_seek();
 			resizeArtwork(true);
 			initButtonState();
-			window.Repaint();
+			repaintWindow();
 		});
 	}
 
@@ -3133,7 +3037,7 @@ function settingsOptions(menu) {
 				pref.themeDayNightMode = false;
 				if (pref.presetAutoRandomMode !== 'off') {
 					pref.presetAutoRandomMode = 'dblclick';
-					themePresetRandomPicker();
+					getRandomThemePreset();
 				}
 			}
 		};

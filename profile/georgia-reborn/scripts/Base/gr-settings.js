@@ -304,7 +304,6 @@ pref.add_properties({
 	showLogoOnStartup:                  ['Georgia-ReBORN - 09. Player controls: Show logo on startup', true], // true: Show logo on foobar startup
 	returnToHomeOnPlaybackStop:         ['Georgia-ReBORN - 09. Player controls: Return to home on playback stop', true], // true: Return to home on playback stop
 	lockPlayerSize:                     ['Georgia-ReBORN - 09. Player controls: Lock player size', false], // false: Locks the player size
-	autoHideVolumeBar:                  ['Georgia-ReBORN - 09. Player controls: Auto-hide volume bar', true], // Volume control bar hide
 	transportButtonSize_default:        ['Georgia-ReBORN - 09. Player controls: Transport button size (Default)', 32], // Size in pixels of the buttons in Default layout
 	transportButtonSize_artwork:        ['Georgia-ReBORN - 09. Player controls: Transport button size (Artwork)', 32], // Size in pixels of the buttons in Artwork layout
 	transportButtonSize_compact:        ['Georgia-ReBORN - 09. Player controls: Transport button size (Compact)', 32], // Size in pixels of the buttons in Compact layout
@@ -323,15 +322,7 @@ pref.add_properties({
 	showVolumeBtn_default:              ['Georgia-ReBORN - 09. Player controls: Show volume button (Default)', true], // true: Show volume button in lower bar in Default layout
 	showVolumeBtn_artwork:              ['Georgia-ReBORN - 09. Player controls: Show volume button (Artwork)', true], // true: Show volume button in lower bar in Artwork layout
 	showVolumeBtn_compact:              ['Georgia-ReBORN - 09. Player controls: Show volume button (Compact)', true], // true: Show volume button in lower bar in Compact layout
-	showProgressBar_default:            ['Georgia-ReBORN - 09. Player controls: Show progress bar (Default)', true], // true: Show progress bar in Default layout, otherwise hide it (useful is using another panel for this)
-	showProgressBar_artwork:            ['Georgia-ReBORN - 09. Player controls: Show progress bar (Artwork)', true], // true: Show progress bar in Artwork layout, otherwise hide it (useful is using another panel for this)
-	showProgressBar_compact:            ['Georgia-ReBORN - 09. Player controls: Show progress bar (Compact)', true], // true: Show progress bar in Compact layout, otherwise hide it (useful is using another panel for this)
-	showPeakmeterBar_default:           ['Georgia-ReBORN - 09. Player controls: Show peakmeter bar (Default)', true], // true: Show peakmeter bar in Default layout, otherwise hide it (useful is using another panel for this)
-	showPeakmeterBar_artwork:           ['Georgia-ReBORN - 09. Player controls: Show peakmeter bar (Artwork)', true], // true: Show peakmeter bar in Artwork layout, otherwise hide it (useful is using another panel for this)
-	showPeakmeterBar_compact:           ['Georgia-ReBORN - 09. Player controls: Show peakmeter bar (Compact)', true], // true: Show peakmeter bar in Compact layout, otherwise hide it (useful is using another panel for this)
-	showWaveformBar_default:            ['Georgia-ReBORN - 09. Player controls: Show waveform bar (Default)', true], // true: Show waveform bar in Default layout, otherwise hide it (useful is using another panel for this)
-	showWaveformBar_artwork:            ['Georgia-ReBORN - 09. Player controls: Show waveform bar (Artwork)', true], // true: Show waveform bar in Artwork layout, otherwise hide it (useful is using another panel for this)
-	showWaveformBar_compact:            ['Georgia-ReBORN - 09. Player controls: Show waveform bar (Compact)', true], // true: Show waveform bar in Compact layout, otherwise hide it (useful is using another panel for this)
+	autoHideVolumeBar:                  ['Georgia-ReBORN - 09. Player controls: Auto-hide volume bar', true], // Volume control bar hide
 	showPlaybackTime_default:           ['Georgia-ReBORN - 09. Player controls: Show playback time in lower bar (Default)', true], // Show playback time in lower bar in Default layout
 	showPlaybackTime_artwork:           ['Georgia-ReBORN - 09. Player controls: Show playback time in lower bar (Artwork)', true], // Show playback time in lower bar in Artwork layout
 	showPlaybackTime_compact:           ['Georgia-ReBORN - 09. Player controls: Show playback time in lower bar (Compact)', true], // Show playback time in lower bar in Compact layout
@@ -353,6 +344,15 @@ pref.add_properties({
 	showLowerBarVersion_default:        ['Georgia-ReBORN - 09. Player controls: Show software version in lower bar (Default)', true], // true: Show software version in lower bar in Default layout
 	showLowerBarVersion_artwork:        ['Georgia-ReBORN - 09. Player controls: Show software version in lower bar (Artwork)', true], // true: Show software version in lower bar in Artwork layout
 	showLowerBarVersion_compact:        ['Georgia-ReBORN - 09. Player controls: Show software version in lower bar (Compact)', true], // true: Show software version in lower bar in Compact layout
+	showProgressBar_default:            ['Georgia-ReBORN - 09. Player controls: Show progress bar (Default)', true], // true: Show progress bar in Default layout, otherwise hide it (useful is using another panel for this)
+	showProgressBar_artwork:            ['Georgia-ReBORN - 09. Player controls: Show progress bar (Artwork)', true], // true: Show progress bar in Artwork layout, otherwise hide it (useful is using another panel for this)
+	showProgressBar_compact:            ['Georgia-ReBORN - 09. Player controls: Show progress bar (Compact)', true], // true: Show progress bar in Compact layout, otherwise hide it (useful is using another panel for this)
+	showPeakmeterBar_default:           ['Georgia-ReBORN - 09. Player controls: Show peakmeter bar (Default)', true], // true: Show peakmeter bar in Default layout, otherwise hide it (useful is using another panel for this)
+	showPeakmeterBar_artwork:           ['Georgia-ReBORN - 09. Player controls: Show peakmeter bar (Artwork)', true], // true: Show peakmeter bar in Artwork layout, otherwise hide it (useful is using another panel for this)
+	showPeakmeterBar_compact:           ['Georgia-ReBORN - 09. Player controls: Show peakmeter bar (Compact)', true], // true: Show peakmeter bar in Compact layout, otherwise hide it (useful is using another panel for this)
+	showWaveformBar_default:            ['Georgia-ReBORN - 09. Player controls: Show waveform bar (Default)', true], // true: Show waveform bar in Default layout, otherwise hide it (useful is using another panel for this)
+	showWaveformBar_artwork:            ['Georgia-ReBORN - 09. Player controls: Show waveform bar (Artwork)', true], // true: Show waveform bar in Artwork layout, otherwise hide it (useful is using another panel for this)
+	showWaveformBar_compact:            ['Georgia-ReBORN - 09. Player controls: Show waveform bar (Compact)', true], // true: Show waveform bar in Compact layout, otherwise hide it (useful is using another panel for this)
 	seekbar:                            ['Georgia-ReBORN - 09. Player controls: Seekbar', 'progressbar'], // 'progressbar', 'peakmeterbar', 'waveformbar' - Seekbar type
 	progressBarWheelSeekSpeed:          ['Georgia-ReBORN - 09. Player controls: Progress bar mouse wheel seek speed', 5], // Progress bar mouse wheel seeking speed, seconds per wheel step
 	progressBarRefreshRate:             ['Georgia-ReBORN - 09. Player controls: Progress bar refresh rate', 'variable'], // variable - default: Update progress bar multiple times a second. Smoother, but uses more CPU
@@ -814,7 +814,6 @@ async function setThemeSettings(save) {
 		themeControls.showLogoOnStartup = pref.showLogoOnStartup;
 		themeControls.returnToHomeOnPlaybackStop = pref.returnToHomeOnPlaybackStop;
 		themeControls.lockPlayerSize = pref.lockPlayerSize;
-		themeControls.autoHideVolumeBar = pref.autoHideVolumeBar;
 		themeControls.transportButtonSize_default = pref.transportButtonSize_default;
 		themeControls.transportButtonSize_artwork = pref.transportButtonSize_artwork;
 		themeControls.transportButtonSize_compact = pref.transportButtonSize_compact;
@@ -833,15 +832,7 @@ async function setThemeSettings(save) {
 		themeControls.showVolumeBtn_default = pref.showVolumeBtn_default;
 		themeControls.showVolumeBtn_artwork = pref.showVolumeBtn_artwork;
 		themeControls.showVolumeBtn_compact = pref.showVolumeBtn_compact;
-		themeControls.showProgressBar_default = pref.showProgressBar_default;
-		themeControls.showProgressBar_artwork = pref.showProgressBar_artwork;
-		themeControls.showProgressBar_compact = pref.showProgressBar_compact;
-		themeControls.showPeakmeterBar_default = pref.showPeakmeterBar_default;
-		themeControls.showPeakmeterBar_artwork = pref.showPeakmeterBar_artwork;
-		themeControls.showPeakmeterBar_compact = pref.showPeakmeterBar_compact;
-		themeControls.showWaveformBar_default = pref.showWaveformBar_default;
-		themeControls.showWaveformBar_artwork = pref.showWaveformBar_artwork;
-		themeControls.showWaveformBar_compact = pref.showWaveformBar_compact;
+		themeControls.autoHideVolumeBar = pref.autoHideVolumeBar;
 		themeControls.showPlaybackTime_default = pref.showPlaybackTime_default;
 		themeControls.showPlaybackTime_artwork = pref.showPlaybackTime_artwork;
 		themeControls.showPlaybackTime_compact = pref.showPlaybackTime_compact;
@@ -863,6 +854,15 @@ async function setThemeSettings(save) {
 		themeControls.showLowerBarVersion_default = pref.showLowerBarVersion_default;
 		themeControls.showLowerBarVersion_artwork = pref.showLowerBarVersion_artwork;
 		themeControls.showLowerBarVersion_compact = pref.showLowerBarVersion_compact;
+		themeControls.showProgressBar_default = pref.showProgressBar_default;
+		themeControls.showProgressBar_artwork = pref.showProgressBar_artwork;
+		themeControls.showProgressBar_compact = pref.showProgressBar_compact;
+		themeControls.showPeakmeterBar_default = pref.showPeakmeterBar_default;
+		themeControls.showPeakmeterBar_artwork = pref.showPeakmeterBar_artwork;
+		themeControls.showPeakmeterBar_compact = pref.showPeakmeterBar_compact;
+		themeControls.showWaveformBar_default = pref.showWaveformBar_default;
+		themeControls.showWaveformBar_artwork = pref.showWaveformBar_artwork;
+		themeControls.showWaveformBar_compact = pref.showWaveformBar_compact;
 		themeControls.seekbar = pref.seekbar;
 		themeControls.progressBarWheelSeekSpeed = pref.progressBarWheelSeekSpeed;
 		themeControls.progressBarRefreshRate = pref.progressBarRefreshRate;
@@ -956,7 +956,6 @@ async function setThemeSettings(save) {
 		pref.showLogoOnStartup = custom ? themeControls.showLogoOnStartup : true;
 		pref.returnToHomeOnPlaybackStop = custom ? themeControls.returnToHomeOnPlaybackStop : true;
 		pref.lockPlayerSize = custom ? themeControls.lockPlayerSize : false;
-		pref.autoHideVolumeBar = custom ? themeControls.autoHideVolumeBar : true;
 		pref.transportButtonSize_default = custom ? themeControls.transportButtonSize_default : 32;
 		pref.transportButtonSize_artwork = custom ? themeControls.transportButtonSize_artwork : 32;
 		pref.transportButtonSize_compact = custom ? themeControls.transportButtonSize_compact : 32;
@@ -975,15 +974,7 @@ async function setThemeSettings(save) {
 		pref.showVolumeBtn_default = custom ? themeControls.showVolumeBtn_default : true;
 		pref.showVolumeBtn_artwork = custom ? themeControls.showVolumeBtn_artwork : true;
 		pref.showVolumeBtn_compact = custom ? themeControls.showVolumeBtn_compact : true;
-		pref.showProgressBar_default = custom ? themeControls.showProgressBar_default : true;
-		pref.showProgressBar_artwork = custom ? themeControls.showProgressBar_artwork : true;
-		pref.showProgressBar_compact = custom ? themeControls.showProgressBar_compact : true;
-		pref.showPeakmeterBar_default = custom ? themeControls.showPeakmeterBar_default : true;
-		pref.showPeakmeterBar_artwork = custom ? themeControls.showPeakmeterBar_artwork : true;
-		pref.showPeakmeterBar_compact = custom ? themeControls.showPeakmeterBar_compact : true;
-		pref.showWaveformBar_default = custom ? themeControls.showWaveformBar_default : true;
-		pref.showWaveformBar_artwork = custom ? themeControls.showWaveformBar_artwork : true;
-		pref.showWaveformBar_compact = custom ? themeControls.showWaveformBar_compact : true;
+		pref.autoHideVolumeBar = custom ? themeControls.autoHideVolumeBar : true;
 		pref.showPlaybackTime_default = custom ? themeControls.showPlaybackTime_default : true;
 		pref.showPlaybackTime_artwork = custom ? themeControls.showPlaybackTime_artwork : true;
 		pref.showPlaybackTime_compact = custom ? themeControls.showPlaybackTime_compact : true;
@@ -1005,6 +996,15 @@ async function setThemeSettings(save) {
 		pref.showLowerBarVersion_default = custom ? themeControls.showLowerBarVersion_default : true;
 		pref.showLowerBarVersion_artwork = custom ? themeControls.showLowerBarVersion_artwork : true;
 		pref.showLowerBarVersion_compact = custom ? themeControls.showLowerBarVersion_compact : true;
+		pref.showProgressBar_default = custom ? themeControls.showProgressBar_default : true;
+		pref.showProgressBar_artwork = custom ? themeControls.showProgressBar_artwork : true;
+		pref.showProgressBar_compact = custom ? themeControls.showProgressBar_compact : true;
+		pref.showPeakmeterBar_default = custom ? themeControls.showPeakmeterBar_default : true;
+		pref.showPeakmeterBar_artwork = custom ? themeControls.showPeakmeterBar_artwork : true;
+		pref.showPeakmeterBar_compact = custom ? themeControls.showPeakmeterBar_compact : true;
+		pref.showWaveformBar_default = custom ? themeControls.showWaveformBar_default : true;
+		pref.showWaveformBar_artwork = custom ? themeControls.showWaveformBar_artwork : true;
+		pref.showWaveformBar_compact = custom ? themeControls.showWaveformBar_compact : true;
 		pref.seekbar = custom ? themeControls.seekbar : 'progressbar';
 		pref.progressBarWheelSeekSpeed = custom ? themeControls.progressBarWheelSeekSpeed : 5;
 		pref.progressBarRefreshRate = custom ? themeControls.progressBarRefreshRate : 'variable';

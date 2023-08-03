@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-29                                          * //
+// * Last change:    2023-08-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -523,6 +523,112 @@ Object.assign(qwr_utils, {
 });
 
 
+///////////////////////////////
+// * TOP MENU CONTEXT MENU * //
+///////////////////////////////
+Object.assign(qwr_utils, {
+	/**
+	 * @param {ContextMenu} cmac The context menu object.
+	 */
+	append_top_menu_context_menu_to(cmac) {
+		const updateButtons = () => {
+			createButtonImages();
+			createButtonObjects(ww, wh);
+			repaintWindow();
+		};
+
+		const topMenuDisplayMenu = new ContextMenu('Display');
+
+		// * DISPLAY - SHOW TOP MENU BUTTONS - DEFAULT * //
+		const topMenuDisplayMenuDefault = new ContextMenu('Default');
+		topMenuDisplayMenuDefault.append_item('Details', () => {
+			pref.showPanelDetails_default = !pref.showPanelDetails_default;
+			updateButtons();
+		}, { is_checked: pref.showPanelDetails_default });
+		topMenuDisplayMenuDefault.append_item('Library', () => {
+			pref.showPanelLibrary_default = !pref.showPanelLibrary_default;
+			updateButtons();
+		}, { is_checked: pref.showPanelLibrary_default });
+		topMenuDisplayMenuDefault.append_item('Biography', () => {
+			pref.showPanelBiography_default = !pref.showPanelBiography_default;
+			updateButtons();
+		}, { is_checked: pref.showPanelBiography_default });
+		topMenuDisplayMenuDefault.append_item('Lyrics', () => {
+			pref.showPanelLyrics_default = !pref.showPanelLyrics_default;
+			updateButtons();
+		}, { is_checked: pref.showPanelLyrics_default });
+		topMenuDisplayMenuDefault.append_item('Rating', () => {
+			pref.showPanelRating_default = !pref.showPanelRating_default;
+			updateButtons();
+		}, { is_checked: pref.showPanelRating_default });
+		topMenuDisplayMenu.append(topMenuDisplayMenuDefault);
+
+		// * DISPLAY - SHOW TOP MENU BUTTONS - ARTWORK * //
+		const topMenuDisplayMenuArtwork = new ContextMenu('Artwork');
+		topMenuDisplayMenuArtwork.append_item('Details', () => {
+			pref.showPanelDetails_artwork = !pref.showPanelDetails_artwork;
+			updateButtons();
+		}, { is_checked: pref.showPanelDetails_artwork });
+		topMenuDisplayMenuArtwork.append_item('Library', () => {
+			pref.showPanelLibrary_artwork = !pref.showPanelLibrary_artwork;
+			updateButtons();
+		}, { is_checked: pref.showPanelLibrary_artwork });
+		topMenuDisplayMenuArtwork.append_item('Biography', () => {
+			pref.showPanelBiography_artwork = !pref.showPanelBiography_artwork;
+			updateButtons();
+		}, { is_checked: pref.showPanelBiography_artwork });
+		topMenuDisplayMenuArtwork.append_item('Lyrics', () => {
+			pref.showPanelLyrics_artwork = !pref.showPanelLyrics_artwork;
+			updateButtons();
+		}, { is_checked: pref.showPanelLyrics_artwork });
+		topMenuDisplayMenuArtwork.append_item('Rating', () => {
+			pref.showPanelRating_artwork = !pref.showPanelRating_artwork;
+			updateButtons();
+		}, { is_checked: pref.showPanelRating_artwork });
+		topMenuDisplayMenu.append(topMenuDisplayMenuArtwork);
+		topMenuDisplayMenu.append_separator();
+
+		// * DISPLAY - ALIGN TOP MENU BUTTONS * //
+		const topMenuDisplayAlign = [['Align left', 'left'], ['Align center', 'center']];
+		topMenuDisplayAlign.forEach((align) => {
+			topMenuDisplayMenu.append_item(align[0], function (align) {
+				pref.topMenuAlignment = align;
+				updateButtons();
+			}.bind(null, align[1]), { is_radio_checked: align[1] === pref.topMenuAlignment });
+		});
+		topMenuDisplayMenu.append_separator();
+		topMenuDisplayMenu.append_item('Compact top menu', () => {
+			pref.topMenuCompact = !pref.topMenuCompact;
+			if (!pref.topMenuCompact) {
+				onTopMenuCompact(false);
+				topMenuCompactExpanded = false;
+			}
+		}, { is_checked: pref.topMenuCompact });
+
+		cmac.append(topMenuDisplayMenu);
+
+		// * STYLE - TOP MENU BUTTONS * //
+		const topMenuStyleMenu = new ContextMenu('Style');
+		const topMenuButtonStyle = [
+			['Default', 'default'],
+			['Filled', 'filled'],
+			['Bevel', 'bevel'],
+			['Inner', 'inner'],
+			['Emboss', 'emboss'],
+			['Minimal', 'minimal']
+		];
+		topMenuButtonStyle.forEach((style) => {
+			topMenuStyleMenu.append_item(style[0], function (style) {
+				pref.styleTopMenuButtons = style;
+				if (!pref.themeSandbox) pref.savedStyleTopMenuButtons = pref.styleTopMenuButtons = style; else pref.styleTopMenuButtons = style;
+				updateStyle();
+			}.bind(null, style[1]), { is_radio_checked: style[1] === pref.styleTopMenuButtons });
+		});
+		cmac.append(topMenuStyleMenu);
+	}
+});
+
+
 ////////////////////////////////
 // * ALBUM ART CONTEXT MENU * //
 ////////////////////////////////
@@ -847,6 +953,457 @@ Object.assign(qwr_utils, {
 	 * @param {ContextMenu} cmac The context menu object.
 	 */
 	append_lower_bar_context_menu_to(cmac) {
+		const updateButtons = () => {
+			createButtonImages();
+			createButtonObjects(ww, wh);
+			repaintWindow();
+		};
+
+		const updateSeekbar = () => {
+			setGeometry();
+			resizeArtwork(true);
+			repaintWindow();
+		};
+
+		// * TRANSPORT BUTTON SIZE * //
+		const transportSizeMenu = new ContextMenu('Transport button size');
+		const transportSizeMenuDefault = new ContextMenu('Default');
+		const transportSizeDefault = [['28px', 28], ['30px', 30], ['32px (default)', 32], ['34px', 34], ['36px', 36], ['38px', 38], ['40px', 40], ['42px', 42]];
+		transportSizeDefault.forEach((size) => {
+			transportSizeMenuDefault.append_item(size[0], function (size) {
+				pref.transportButtonSize_default = size;
+				if (size === -1) {
+					pref.transportButtonSize_default -= 2;
+				} else if (size === 999) {
+					pref.transportButtonSize_default += 2;
+				} else {
+					pref.transportButtonSize_default = size;
+				}
+				createFonts();
+				resizeArtwork(true);
+				updateButtons();
+			}.bind(null, size[1]), { is_radio_checked: size[1] === pref.transportButtonSize_default });
+		});
+		transportSizeMenu.append(transportSizeMenuDefault);
+
+		const transportSizeMenuArtwork = new ContextMenu('Artwork');
+		const transportSizeArtwork = [['28px', 28], ['30px', 30], ['32px (default)', 32], ['34px', 34], ['36px', 36], ['38px', 38], ['40px', 40], ['42px', 42]];
+		transportSizeArtwork.forEach((size) => {
+			transportSizeMenuArtwork.append_item(size[0], function (size) {
+				pref.transportButtonSize_artwork = size;
+				if (size === -1) {
+					pref.transportButtonSize_artwork -= 2;
+				} else if (size === 999) {
+					pref.transportButtonSize_artwork += 2;
+				} else {
+					pref.transportButtonSize_artwork = size;
+				}
+				createFonts();
+				resizeArtwork(true);
+				updateButtons();
+			}.bind(null, size[1]), { is_radio_checked: size[1] === pref.transportButtonSize_artwork });
+		});
+		transportSizeMenu.append(transportSizeMenuArtwork);
+
+		const transportSizeMenuCompact = new ContextMenu('Compact');
+		const transportSizeCompact = [['28px', 28], ['30px', 30], ['32px (default)', 32], ['34px', 34], ['36px', 36], ['38px', 38], ['40px', 40], ['42px', 42]];
+		transportSizeCompact.forEach((size) => {
+			transportSizeMenuCompact.append_item(size[0], function (size) {
+				pref.transportButtonSize_compact = size;
+				if (size === -1) {
+					pref.transportButtonSize_compact -= 2;
+				} else if (size === 999) {
+					pref.transportButtonSize_compact += 2;
+				} else {
+					pref.transportButtonSize_compact = size;
+				}
+				createFonts();
+				resizeArtwork(true);
+				updateButtons();
+			}.bind(null, size[1]), { is_radio_checked: size[1] === pref.transportButtonSize_compact });
+		});
+		transportSizeMenu.append(transportSizeMenuCompact);
+		cmac.append(transportSizeMenu);
+
+		// * TRANSPORT BUTTON SPACING * //
+		const transportSpacingMenu = new ContextMenu('Transport button spacing');
+		const transportSpacingMenuDefault = new ContextMenu('Default');
+		const transportSpacingDefault = [['-2', -1], ['3px', 3], ['5px (default)', 5], ['7px', 7], ['10px', 10], ['15px', 15], ['+2', 999]];
+		transportSpacingDefault.forEach((spacing) => {
+			transportSpacingMenuDefault.append_item(spacing[0], function (spacing) {
+				pref.transportButtonSpacing_default = spacing;
+				if (spacing === -1) {
+					pref.transportButtonSpacing_default -= 2;
+				} else if (spacing === 999) {
+					pref.transportButtonSpacing_default += 2;
+				} else {
+					pref.transportButtonSpacing_default = spacing;
+				}
+				updateStyle();
+			}.bind(null, spacing[1]), { is_radio_checked: spacing[1] === pref.transportButtonSpacing_default });
+		});
+		transportSpacingMenu.append(transportSpacingMenuDefault);
+
+		const transportSpacingMenuArtwork = new ContextMenu('Artwork');
+		const transportSpacingArtwork = [['-2', -1], ['3px', 3], ['5px (default)', 5], ['7px', 7], ['10px', 10], ['15px', 15], ['+2', 999]];
+		transportSpacingArtwork.forEach((spacing) => {
+			transportSpacingMenuArtwork.append_item(spacing[0], function (spacing) {
+				pref.transportButtonSpacing_artwork = spacing;
+				if (spacing === -1) {
+					pref.transportButtonSpacing_artwork -= 2;
+				} else if (spacing === 999) {
+					pref.transportButtonSpacing_artwork += 2;
+				} else {
+					pref.transportButtonSpacing_artwork = spacing;
+				}
+				updateStyle();
+			}.bind(null, spacing[1]), { is_radio_checked: spacing[1] === pref.transportButtonSpacing_artwork });
+		});
+		transportSpacingMenu.append(transportSpacingMenuArtwork);
+
+		const transportSpacingMenuCompact = new ContextMenu('Compact');
+		const transportSpacingCompact = [['-2', -1], ['3px', 3], ['5px (default)', 5], ['7px', 7], ['10px', 10], ['15px', 15], ['+2', 999]];
+		transportSpacingCompact.forEach((spacing) => {
+			transportSpacingMenuCompact.append_item(spacing[0], function (spacing) {
+				pref.transportButtonSpacing_compact = spacing;
+				if (spacing === -1) {
+					pref.transportButtonSpacing_compact -= 2;
+				} else if (spacing === 999) {
+					pref.transportButtonSpacing_compact += 2;
+				} else {
+					pref.transportButtonSpacing_compact = spacing;
+				}
+				updateStyle();
+			}.bind(null, spacing[1]), { is_radio_checked: spacing[1] === pref.transportButtonSpacing_compact });
+		});
+		transportSpacingMenu.append(transportSpacingMenuCompact);
+		cmac.append(transportSpacingMenu);
+
+		cmac.append_separator();
+		const transportButtonDisplayMenu = new ContextMenu('Display');
+
+		// * SHOW TRANSPORT CONTROLS * //
+		const transportControlsMenu = new ContextMenu('Show transport controls');
+		transportControlsMenu.append_item('Default', () => {
+			pref.showTransportControls_default = !pref.showTransportControls_default;
+			resizeArtwork(true);
+			updateButtons();
+		}, { is_checked: pref.showTransportControls_default });
+		transportControlsMenu.append_item('Artwork', () => {
+			pref.showTransportControls_artwork = !pref.showTransportControls_artwork;
+			resizeArtwork(true);
+			updateButtons();
+		}, { is_checked: pref.showTransportControls_artwork });
+		transportControlsMenu.append_item('Compact', () => {
+			pref.showTransportControls_compact = !pref.showTransportControls_compact;
+			resizeArtwork(true);
+			updateButtons();
+		}, { is_checked: pref.showTransportControls_compact });
+		transportButtonDisplayMenu.append(transportControlsMenu);
+
+		// * SHOW PLAYBACK ORDER BUTTON * //
+		const playbackOrderBtnMenu = new ContextMenu('Show playback order button');
+		playbackOrderBtnMenu.append_item('Default', () => {
+			pref.showPlaybackOrderBtn_default = !pref.showPlaybackOrderBtn_default;
+			resizeArtwork(true);
+			updateButtons();
+		}, { is_checked: pref.showPlaybackOrderBtn_default });
+		playbackOrderBtnMenu.append_item('Artwork', () => {
+			pref.showPlaybackOrderBtn_artwork = !pref.showPlaybackOrderBtn_artwork;
+			resizeArtwork(true);
+			updateButtons();
+		}, { is_checked: pref.showPlaybackOrderBtn_artwork });
+		playbackOrderBtnMenu.append_item('Compact', () => {
+			pref.showPlaybackOrderBtn_compact = !pref.showPlaybackOrderBtn_compact;
+			resizeArtwork(true);
+			updateButtons();
+		}, { is_checked: pref.showPlaybackOrderBtn_compact });
+		transportButtonDisplayMenu.append(playbackOrderBtnMenu);
+
+		// * SHOW RELOAD BUTTON * //
+		const reloadBtnMenu = new ContextMenu('Show reload button');
+		reloadBtnMenu.append_item('Default', () => {
+			pref.showReloadBtn_default = !pref.showReloadBtn_default;
+			resizeArtwork(true);
+			updateButtons();
+		}, { is_checked: pref.showReloadBtn_default });
+		reloadBtnMenu.append_item('Artwork', () => {
+			pref.showReloadBtn_artwork = !pref.showReloadBtn_artwork;
+			resizeArtwork(true);
+			updateButtons();
+		}, { is_checked: pref.showReloadBtn_artwork });
+		reloadBtnMenu.append_item('Compact', () => {
+			pref.showReloadBtn_compact = !pref.showReloadBtn_compact;
+			resizeArtwork(true);
+			updateButtons();
+		}, { is_checked: pref.showReloadBtn_compact });
+		transportButtonDisplayMenu.append(reloadBtnMenu);
+
+		// * SHOW VOLUME BUTTON * //
+		const volumeBtnMenu = new ContextMenu('Show volume button');
+		volumeBtnMenu.append_item('Default', () => {
+			pref.showVolumeBtn_default = !pref.showVolumeBtn_default;
+			resizeArtwork(true);
+			updateButtons();
+		}, { is_checked: pref.showVolumeBtn_default });
+		volumeBtnMenu.append_item('Artwork', () => {
+			pref.showVolumeBtn_artwork = !pref.showVolumeBtn_artwork;
+			resizeArtwork(true);
+			updateButtons();
+		}, { is_checked: pref.showVolumeBtn_artwork });
+		volumeBtnMenu.append_item('Compact', () => {
+			pref.showVolumeBtn_compact = !pref.showVolumeBtn_compact;
+			resizeArtwork(true);
+			updateButtons();
+		}, { is_checked: pref.showVolumeBtn_compact });
+		volumeBtnMenu.append_separator();
+		volumeBtnMenu.append_item('Auto-hide bar', () => {
+			pref.autoHideVolumeBar = !pref.autoHideVolumeBar;
+			resizeArtwork(true);
+			updateButtons();
+		}, { is_checked: pref.autoHideVolumeBar });
+		transportButtonDisplayMenu.append(volumeBtnMenu);
+		transportButtonDisplayMenu.append_separator();
+
+		// * SHOW PLAYBACK TIME IN LOWER BAR * //
+		const playbackTimeMenu = new ContextMenu('Show playback time');
+		playbackTimeMenu.append_item('Default', () => {
+			pref.showPlaybackTime_default = !pref.showPlaybackTime_default;
+			updateButtons();
+		}, { is_checked: pref.showPlaybackTime_default });
+		playbackTimeMenu.append_item('Artwork', () => {
+			pref.showPlaybackTime_artwork = !pref.showPlaybackTime_artwork;
+			updateButtons();
+		}, { is_checked: pref.showPlaybackTime_artwork });
+		playbackTimeMenu.append_item('Compact', () => {
+			pref.showPlaybackTime_compact = !pref.showPlaybackTime_compact;
+			updateButtons();
+		}, { is_checked: pref.showPlaybackTime_compact });
+		transportButtonDisplayMenu.append(playbackTimeMenu);
+
+		// * SHOW ARTIST IN LOWER BAR * //
+		const showArtistMenu = new ContextMenu('Show artist');
+		showArtistMenu.append_item('Default', () => {
+			pref.showLowerBarArtist_default = !pref.showLowerBarArtist_default;
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarArtist_default });
+		showArtistMenu.append_item('Artwork', () => {
+			pref.showLowerBarArtist_artwork = !pref.showLowerBarArtist_artwork;
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarArtist_artwork });
+		showArtistMenu.append_item('Compact', () => {
+			pref.showLowerBarArtist_compact = !pref.showLowerBarArtist_compact;
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarArtist_compact });
+		transportButtonDisplayMenu.append(showArtistMenu);
+
+		// * SHOW TRACK NUMBER IN LOWER BAR * //
+		const showTrackNumberMenu = new ContextMenu('Show track number');
+		showTrackNumberMenu.append_item('Default', () => {
+			pref.showLowerBarTrackNum_default = !pref.showLowerBarTrackNum_default;
+			on_metadb_changed();
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarTrackNum_default });
+		showTrackNumberMenu.append_item('Artwork', () => {
+			pref.showLowerBarTrackNum_artwork = !pref.showLowerBarTrackNum_artwork;
+			on_metadb_changed();
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarTrackNum_artwork });
+		showTrackNumberMenu.append_item('Compact', () => {
+			pref.showLowerBarTrackNum_compact = !pref.showLowerBarTrackNum_compact;
+			on_metadb_changed();
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarTrackNum_compact });
+		transportButtonDisplayMenu.append(showTrackNumberMenu);
+
+		// * SHOW SONG TITLE IN LOWER BAR * //
+		const showTitleMenu = new ContextMenu('Show song title');
+		showTitleMenu.append_item('Default', () => {
+			pref.showLowerBarTitle_default = !pref.showLowerBarTitle_default;
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarTitle_default });
+		showTitleMenu.append_item('Artwork', () => {
+			pref.showLowerBarTitle_artwork = !pref.showLowerBarTitle_artwork;
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarTitle_artwork });
+		showTitleMenu.append_item('Compact', () => {
+			pref.showLowerBarTitle_compact = !pref.showLowerBarTitle_compact;
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarTitle_compact });
+		transportButtonDisplayMenu.append(showTitleMenu);
+
+		// * SHOW COMPOSER IN LOWER BAR * //
+		const showComposerMenu = new ContextMenu('Show composer');
+		showComposerMenu.append_item('Default', () => {
+			pref.showLowerBarComposer_default = !pref.showLowerBarComposer_default;
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarComposer_default });
+		showComposerMenu.append_item('Artwork', () => {
+			pref.showLowerBarComposer_artwork = !pref.showLowerBarComposer_artwork;
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarComposer_artwork });
+		showComposerMenu.append_item('Compact', () => {
+			pref.showLowerBarComposer_compact = !pref.showLowerBarComposer_compact;
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarComposer_compact });
+		transportButtonDisplayMenu.append(showComposerMenu);
+
+		// * SHOW ARTIST COUNTRY FLAGS IN LOWER BAR * //
+		const showArtistFlagsMenu = new ContextMenu('Show artist country flags');
+		showArtistFlagsMenu.append_item('Default', () => {
+			pref.showLowerBarArtistFlags_default = !pref.showLowerBarArtistFlags_default;
+			loadCountryFlags();
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarArtistFlags_default });
+		showArtistFlagsMenu.append_item('Artwork', () => {
+			pref.showLowerBarArtistFlags_artwork = !pref.showLowerBarArtistFlags_artwork;
+			loadCountryFlags();
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarArtistFlags_artwork });
+		showArtistFlagsMenu.append_item('Compact', () => {
+			pref.showLowerBarArtistFlags_compact = !pref.showLowerBarArtistFlags_compact;
+			loadCountryFlags();
+			repaintWindow();
+		}, { is_checked: pref.showLowerBarArtistFlags_compact });
+		transportButtonDisplayMenu.append(showArtistFlagsMenu);
+
+		// * SHOW SOFTWARE VERSION IN LOWER BAR * //
+		const showSoftwareVersionMenu = new ContextMenu('Show software version');
+		showSoftwareVersionMenu.append_item('Default', () => {
+			pref.showLowerBarVersion_default = !pref.showLowerBarVersion_default;
+			initMain();
+		}, { is_checked: pref.showLowerBarVersion_default });
+		showSoftwareVersionMenu.append_item('Artwork', () => {
+			pref.showLowerBarVersion_artwork = !pref.showLowerBarVersion_artwork;
+			initMain();
+		}, { is_checked: pref.showLowerBarVersion_artwork });
+		showSoftwareVersionMenu.append_item('Compact', () => {
+			pref.showLowerBarVersion_compact = !pref.showLowerBarVersion_compact;
+			initMain();
+		}, { is_checked: pref.showLowerBarVersion_compact });
+		transportButtonDisplayMenu.append(showSoftwareVersionMenu);
+		transportButtonDisplayMenu.append_separator();
+
+		// * SHOW PROGRESS BAR * //
+		const progressBarMenu = new ContextMenu('Show progress bar');
+		progressBarMenu.append_item('Default', () => {
+			pref.showProgressBar_default = !pref.showProgressBar_default;
+			updateSeekbar();
+		}, { is_checked: pref.showProgressBar_default });
+		progressBarMenu.append_item('Artwork', () => {
+			pref.showProgressBar_artwork = !pref.showProgressBar_artwork;
+			updateSeekbar();
+		}, { is_checked: pref.showProgressBar_artwork });
+		progressBarMenu.append_item('Compact', () => {
+			pref.showProgressBar_compact = !pref.showProgressBar_compact;
+			updateSeekbar();
+		}, { is_checked: pref.showProgressBar_compact });
+		transportButtonDisplayMenu.append(progressBarMenu);
+
+		// * SHOW PEAKMETER BAR * //
+		const peakmeterBarMenu = new ContextMenu('Show peakmeter bar');
+		peakmeterBarMenu.append_item('Default', () => {
+			pref.showPeakmeterBar_default = !pref.showPeakmeterBar_default;
+			updateSeekbar();
+		}, { is_checked: pref.showPeakmeterBar_default });
+		peakmeterBarMenu.append_item('Artwork', () => {
+			pref.showPeakmeterBar_artwork = !pref.showPeakmeterBar_artwork;
+			updateSeekbar();
+		}, { is_checked: pref.showPeakmeterBar_artwork });
+		peakmeterBarMenu.append_item('Compact', () => {
+			pref.showPeakmeterBar_compact = !pref.showPeakmeterBar_compact;
+			updateSeekbar();
+		}, { is_checked: pref.showPeakmeterBar_compact });
+		transportButtonDisplayMenu.append(peakmeterBarMenu);
+
+		// * SHOW WAVEFORM BAR * //
+		const waveformBarMenu = new ContextMenu('Show waveform bar');
+		waveformBarMenu.append_item('Default', () => {
+			pref.showWaveformBar_default = !pref.showWaveformBar_default;
+			updateSeekbar();
+		}, { is_checked: pref.showWaveformBar_default });
+		waveformBarMenu.append_item('Artwork', () => {
+			pref.showWaveformBar_artwork = !pref.showWaveformBar_artwork;
+			updateSeekbar();
+		}, { is_checked: pref.showWaveformBar_artwork });
+		waveformBarMenu.append_item('Compact', () => {
+			pref.showWaveformBar_compact = !pref.showWaveformBar_compact;
+			updateSeekbar();
+		}, { is_checked: pref.showWaveformBar_compact });
+		transportButtonDisplayMenu.append(waveformBarMenu);
+
+		cmac.append(transportButtonDisplayMenu);
+		cmac.append_separator();
+
+		// * STYLES - TRANSPORT BUTTONS * //
+		const transportButtonStyleMenu = new ContextMenu('Style buttons');
+		const transportButtonStyles = [
+			['Default', 'default'],
+			['Bevel', 'bevel'],
+			['Inner', 'inner'],
+			['Emboss', 'emboss'],
+			['Minimal', 'minimal']
+		];
+		transportButtonStyles.forEach((style) => {
+			transportButtonStyleMenu.append_item(style[0], function (style) {
+				pref.styleTransportButtons = style;
+				if (!pref.themeSandbox) pref.savedStyleTransportButtons = pref.styleTransportButtons = style; else pref.styleTransportButtons = style;
+				updateStyle();
+			}.bind(null, style[1]), { is_radio_checked: style[1] === pref.styleTransportButtons });
+		});
+		cmac.append(transportButtonStyleMenu);
+
+		// * STYLES - VOLUME BAR * //
+		const transportVolumeBarStyleMenu = new ContextMenu('Style volume bar');
+		const transportVolumeBarStylesDesignMenu = new ContextMenu('Design');
+		const transportVolumeBarStylesDesign = [['Default', 'default'], ['Rounded', 'rounded']];
+		transportVolumeBarStylesDesign.forEach((design) => {
+			transportVolumeBarStylesDesignMenu.append_item(design[0], function (design) {
+				pref.styleVolumeBarDesign = design;
+				if (!pref.themeSandbox) pref.savedStyleVolumeBarDesign = pref.styleVolumeBarDesign = design; else pref.styleVolumeBarDesign = design;
+				updateStyle();
+			}.bind(null, design[1]), { is_radio_checked: design[1] === pref.styleVolumeBarDesign });
+		});
+		transportVolumeBarStyleMenu.append(transportVolumeBarStylesDesignMenu);
+
+		const transportVolumeBarStylesBgMenu = new ContextMenu('Background');
+		const transportVolumeBarStylesBg = [['Default', 'default'], ['Bevel', 'bevel'], ['Inner', 'inner']];
+		transportVolumeBarStylesBg.forEach((style) => {
+			transportVolumeBarStylesBgMenu.append_item(style[0], function (style) {
+				pref.styleVolumeBar = style;
+				if (!pref.themeSandbox) pref.savedStyleVolumeBar = pref.styleVolumeBar = style; else pref.styleVolumeBar = style;
+				updateStyle();
+			}.bind(null, style[1]), { is_radio_checked: style[1] === pref.styleVolumeBar });
+		});
+		transportVolumeBarStyleMenu.append(transportVolumeBarStylesBgMenu);
+
+		const transportVolumeBarStylesFillMenu = new ContextMenu('Fill');
+		const transportVolumeBarStylesFill = [['Default', 'default'], ['Bevel', 'bevel'], ['Inner', 'inner']];
+		transportVolumeBarStylesFill.forEach((style) => {
+			transportVolumeBarStylesFillMenu.append_item(style[0], function (style) {
+				pref.styleVolumeBarFill = style;
+				if (!pref.themeSandbox) pref.savedStyleVolumeBarFill = pref.styleVolumeBarFill = style; else pref.styleVolumeBarFill = style;
+				updateStyle();
+			}.bind(null, style[1]), { is_radio_checked: style[1] === pref.styleVolumeBarFill });
+		});
+		transportVolumeBarStyleMenu.append(transportVolumeBarStylesFillMenu);
+		cmac.append(transportVolumeBarStyleMenu);
+	}
+});
+
+
+//////////////////////////////
+// * SEEKBAR CONTEXT MENU * //
+//////////////////////////////
+/**
+ * Contains all seekbar ( progress bar, peakmeter bar and waveform bar ) top menu "Options" for quick access.
+ * Displayed when right clicking on the lower bar.
+ */
+Object.assign(qwr_utils, {
+	/**
+	 * @param {ContextMenu} cmac The context menu object.
+	 */
+	append_seekbar_context_menu_to(cmac) {
 		const seekbar = [['Progress bar', 'progressbar'], ['Peakmeter bar', 'peakmeterbar'], ['Waveform bar', 'waveformbar']];
 		seekbar.forEach((type) => {
 			cmac.append_item(type[0], () => {

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-31                                          * //
+// * Last change:    2023-08-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -132,7 +132,7 @@ async function autoDetectRes() {
 		pref.displayRes = 'HD';
 		pref.playerSize_4k_small = false;
 		pref.playerSize_QHD_small = false;
-		pref.playerSize_HD_small = 'playerSize_HD_small';
+		pref.playerSize_HD_small = true;
 	};
 
 	const check4k = async () => {
@@ -141,7 +141,7 @@ async function autoDetectRes() {
 			RES_4K = true;
 			setSizesFor4KorHD();
 			pref.displayRes = '4k';
-			pref.playerSize_4k_normal = 'playerSize_4k_normal';
+			pref.playerSize_4k_normal = true;
 			pref.playerSize_QHD_small = false;
 			pref.playerSize_HD_small = false;
 		}
@@ -158,7 +158,7 @@ async function autoDetectRes() {
 				setSizesForQHD();
 				pref.displayRes = 'QHD';
 				pref.playerSize_4k_normal = false;
-				pref.playerSize_QHD_small = 'playerSize_QHD_small';
+				pref.playerSize_QHD_small = true;
 				pref.playerSize_HD_small = false;
 			}
 		}
@@ -311,7 +311,7 @@ function setSizesForQHD() {
 	RES_4K = false;
 	RES_QHD = true;
 	pref.playerSize_4k_normal = false;
-	pref.playerSize_QHD_small = 'playerSize_QHD_small';
+	pref.playerSize_QHD_small = true;
 	pref.playerSize_HD_small  = false;
 
 	// * Main
@@ -558,7 +558,7 @@ function WindowHandler() {
 		layoutHandler.layout.state = newLayoutState;
 
 		if (pref.displayRes === '4k') {
-			pref.playerSize_4k_normal = 'playerSize_4k_normal';
+			pref.playerSize_4k_normal = true;
 			pref.playerSize_QHD_small = false;
 			pref.playerSize_HD_small  = false;
 			UIHacks.MinSize.Width   = 2300;
@@ -568,7 +568,7 @@ function WindowHandler() {
 		}
 		else if (pref.displayRes === 'QHD') {
 			pref.playerSize_4k_normal = false;
-			pref.playerSize_QHD_small = 'playerSize_QHD_small';
+			pref.playerSize_QHD_small = true;
 			pref.playerSize_HD_small  = false;
 			UIHacks.MinSize.Width   = 1280;
 			UIHacks.MinSize.Height  = 800;
@@ -578,7 +578,7 @@ function WindowHandler() {
 		else if (pref.displayRes === 'HD') {
 			pref.playerSize_4k_normal = false;
 			pref.playerSize_QHD_small = false;
-			pref.playerSize_HD_small  = 'playerSize_HD_small';
+			pref.playerSize_HD_small  = true;
 			UIHacks.MinSize.Width   = 1140;
 			UIHacks.MinSize.Height  = 730;
 			UIHacks.MinSize.Enabled = true;
@@ -603,21 +603,21 @@ function WindowHandler() {
 		layoutHandler.layout.state = newLayoutState;
 
 		if (pref.displayRes === '4k') {
-			pref.playerSize_4k_small  = 'playerSize_4k_small';
+			pref.playerSize_4k_small  = true;
 			pref.playerSize_QHD_small = false;
 			pref.playerSize_HD_small  = false;
 			setWindowSize(1052, 1372);
 		}
 		else if (pref.displayRes === 'QHD') {
 			pref.playerSize_4k_normal = false;
-			pref.playerSize_QHD_small = 'playerSize_QHD_small';
+			pref.playerSize_QHD_small = true;
 			pref.playerSize_HD_small  = false;
 			setWindowSize(640, 800);
 		}
 		else if (pref.displayRes === 'HD') {
 			pref.playerSize_4k_normal = false;
 			pref.playerSize_QHD_small = false;
-			pref.playerSize_HD_small  = 'playerSize_HD_small';
+			pref.playerSize_HD_small  = true;
 			setWindowSize(526, 686);
 		}
 	};
@@ -639,21 +639,21 @@ function WindowHandler() {
 		layoutHandler.layout.state = newLayoutState;
 
 		if (pref.displayRes === '4k') {
-			pref.playerSize_4k_normal = 'playerSize_4k_normal';
+			pref.playerSize_4k_normal = true;
 			pref.playerSize_QHD_small = false;
 			pref.playerSize_HD_small  = false;
 			setWindowSize(964, 1720);
 		}
 		else if (pref.displayRes === 'QHD') {
 			pref.playerSize_4k_normal = false;
-			pref.playerSize_QHD_small = 'playerSize_QHD_small';
+			pref.playerSize_QHD_small = true;
 			pref.playerSize_HD_small  = false;
 			setWindowSize(540, 800);
 		}
 		else if (pref.displayRes === 'HD') {
 			pref.playerSize_4k_normal = false;
 			pref.playerSize_QHD_small = false;
-			pref.playerSize_HD_small  = 'playerSize_HD_small';
+			pref.playerSize_HD_small  = true;
 			setWindowSize(484, 730);
 		}
 	};
