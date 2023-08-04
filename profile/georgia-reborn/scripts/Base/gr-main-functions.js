@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-03                                          * //
+// * Last change:    2023-08-04                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -961,29 +961,22 @@ function deleteWaveformBarCache() {
  * @param {boolean} restore Should a theme backup be restored.
  */
 function manageBackup(make, restore) {
-	const libOld   = make ? `${fb.ProfilePath}library`        : `${fb.ProfilePath}backup\\profile\\library`;
-	const libNew   = make ? `${fb.ProfilePath}library-v2.0`   : `${fb.ProfilePath}backup\\profile\\library-v2.0`;
-	const plistOld = make ? `${fb.ProfilePath}playlists-v1.4` : `${fb.ProfilePath}backup\\profile\\playlists-v1.4`;
-	const plistNew = make ? `${fb.ProfilePath}playlists-v2.0` : `${fb.ProfilePath}backup\\profile\\playlists-v2.0`;
+	const backupPath    = `${fb.ProfilePath}backup\\profile\\`;
+	const dspPathFb     = `${fb.ProfilePath}dsp-presets`;
+	const dspPathBp     = `${backupPath}dsp-presets`;
+	const indexDataPath = `${backupPath}index-data`;
+	const themePath     = `${backupPath}georgia-reborn`;
+
+	const libOld   = make ? `${fb.ProfilePath}library`        : `${backupPath}library`;
+	const libNew   = make ? `${fb.ProfilePath}library-v2.0`   : `${backupPath}library-v2.0`;
+	const plistOld = make ? `${fb.ProfilePath}playlists-v1.4` : `${backupPath}playlists-v1.4`;
+	const plistNew = make ? `${fb.ProfilePath}playlists-v2.0` : `${backupPath}playlists-v2.0`;
 
 	let libaryDir;
 	let playlistDir;
 	let oldVersion = false;
 
-	const noFolders = (make) => {
-		// * Safeguard to prevent crash when directories do not exist
-		if ((!IsFolder(libOld) || !IsFolder(plistOld)) && (!IsFolder(libNew) || !IsFolder(plistNew)) ||
-			(!IsFolder(libNew) || !IsFolder(plistNew)) && (!IsFolder(libOld) || !IsFolder(plistOld))) {
-			if (make) {
-				fb.ShowPopupMessage(`>>> Georgia-ReBORN theme backup was aborted <<<\n\nlibrary or playlist directory does not exist in:\n${fb.ProfilePath}`, 'Theme backup');
-			} else {
-				fb.ShowPopupMessage(`>>> Georgia-ReBORN restore backup was aborted <<<\n\n"backup" directory does not exist in:\n${fb.ProfilePath}\n\nor\n\n"library" or "playlist" directory does not exist in:\n${fb.ProfilePath}backup`, 'Theme backup');
-			}
-			return true;
-		}
-	}
-
-	const checkFolders = async () => {
+	const checkVersion = async () => {
 		if      (IsFolder(libOld)) { libaryDir = libOld; oldVersion = true; }
 		else if (IsFolder(libNew)) { libaryDir = libNew; oldVersion = false; }
 		if      (IsFolder(plistOld)) { playlistDir = plistOld; oldVersion = true; }
@@ -991,50 +984,79 @@ function manageBackup(make, restore) {
 	};
 
 	const createFolders = async () => {
-		const themePath = `${fb.ProfilePath}backup\\profile\\georgia-reborn\\`;
-		const indexDataPath = `${fb.ProfilePath}backup\\profile\\index-data\\`;
 		CreateFolder(themePath, true);
+		CreateFolder(dspPathFb, true);
+		CreateFolder(dspPathBp, true);
 		if (oldVersion) CreateFolder(indexDataPath, true);
+	};
+
+	const checkFolders = () => {
+		// * Safeguard to prevent crash when directories do not exist
+		const foldersExist =
+			((IsFolder(libOld) && IsFolder(plistOld)) || IsFolder(libNew) && IsFolder(plistNew))
+			&&
+			(IsFolder(themePath) && IsFolder(dspPathFb) && IsFolder(dspPathBp));
+
+		if (foldersExist) {
+			return true;
+		}
+		else {
+			if (make) {
+				fb.ShowPopupMessage(`>>> Georgia-ReBORN theme backup was aborted <<<\n\n"dsp-presets" or "georgia-reborn" or "library" or "playlist" directory\ndoes not exist in:\n${fb.ProfilePath}`, 'Theme backup');
+			} else {
+				fb.ShowPopupMessage(`>>> Georgia-ReBORN restore backup was aborted <<<\n\n"backup" directory does not exist in:\n${fb.ProfilePath}\n\nor\n\n"dsp-presets" or "georgia-reborn" or "library" or "playlist" directory\ndoes not exist in:\n${fb.ProfilePath}backup`, 'Theme backup');
+			}
+			return false;
+		}
 	};
 
 	const copyFolders = async () => {
 		const backup    = new ActiveXObject('Scripting.FileSystemObject');
 		const library   = backup.GetFolder(libaryDir);
 		const playlists = backup.GetFolder(playlistDir);
-		const configs   = backup.GetFolder(make ? `${fb.ProfilePath}georgia-reborn\\configs\\` : `${fb.ProfilePath}backup\\profile\\georgia-reborn\\configs\\`);
+		const configs   = backup.GetFolder(make ? `${fb.ProfilePath}georgia-reborn\\configs` : `${backupPath}georgia-reborn\\configs`);
 
-		library.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
-		playlists.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
-		configs.Copy(make ? `${fb.ProfilePath}backup\\profile\\georgia-reborn\\` : `${fb.ProfilePath}georgia-reborn\\configs`, true);
+		// * If old or new version, copy the library, playlist and theme config files
+		library.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		playlists.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		configs.Copy(make ? `${backupPath}georgia-reborn\\configs` : `${fb.ProfilePath}georgia-reborn\\configs`, true);
 
+		// * If old version, copy the old library data files
 		if (oldVersion) {
-			const indexData = backup.GetFolder(make ? `${fb.ProfilePath}index-data` : `${fb.ProfilePath}backup\\profile\\index-data`);
-			indexData.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
+			const indexData  = backup.GetFolder(make ? `${fb.ProfilePath}index-data` : `${backupPath}index-data`);
+			indexData.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+			return;
 		}
-		else {
-			const dspPresets = backup.GetFolder(make ? `${fb.ProfilePath}dsp-presets\\` : `${fb.ProfilePath}backup\\profile\\dsp-presets\\`);
-			const dspConfig = backup.GetFile(make ? `${fb.ProfilePath}config.fb2k-dsp` : `${fb.ProfilePath}backup\\profile\\config.fb2k-dsp`);
-			const fbConfig = backup.GetFile(make ? `${fb.ProfilePath}config.sqlite` : `${fb.ProfilePath}backup\\profile\\config.sqlite`);
-			const metadb = backup.GetFile(make ? `${fb.ProfilePath}metadb.sqlite` : `${fb.ProfilePath}backup\\profile\\metadb.sqlite`);
-			dspPresets.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
-			dspConfig.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
-			fbConfig.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
-			metadb.Copy(make ? `${fb.ProfilePath}backup\\profile\\` : `${fb.ProfilePath}`, true);
-		}
+
+		// * If new version, copy the new fb2k v2 files
+		const dspPresets = backup.GetFolder(make ? `${fb.ProfilePath}dsp-presets`     : `${backupPath}dsp-presets`);
+		const dspConfig  = backup.GetFile(make   ? `${fb.ProfilePath}config.fb2k-dsp` : `${backupPath}config.fb2k-dsp`);
+		const fbConfig   = backup.GetFile(make   ? `${fb.ProfilePath}config.sqlite`   : `${backupPath}config.sqlite`);
+		const metadb     = backup.GetFile(make   ? `${fb.ProfilePath}metadb.sqlite`   : `${backupPath}metadb.sqlite`);
+		dspPresets.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		dspConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		fbConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		metadb.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
 	};
 
 	const makeBackup = async () => {
-		await setThemeSettings(true);
-		await checkFolders();
+		await checkVersion();
 		await createFolders();
+
+		if (!checkFolders()) return;
+
+		await setThemeSettings(true);
 		await copyFolders();
-		await console.log(`\n>>> Georgia-ReBORN theme backup has been successfully saved in ${fb.ProfilePath}backup\\ <<<\n\n`);
+		await fb.ShowPopupMessage(`>>> Georgia-ReBORN theme backup has been successfully saved <<<\n\n${fb.ProfilePath}backup`, 'Theme backup');
 	};
 
 	const restoreBackup = async () => {
+		if (!checkFolders()) return;
+
 		pref.restoreBackupPlaylist = true;
 		pref.systemFirstLaunch = true;
-		await checkFolders();
+
+		await checkVersion();
 		await copyFolders();
 		await setThemeSettings();
 		await console.log('\n>>> Georgia-ReBORN theme backup has been successfully restored <<<\n\n');
@@ -1042,9 +1064,6 @@ function manageBackup(make, restore) {
 	};
 
 	try {
-		if (noFolders()) {
-			return;
-		}
 		if (make) {
 			makeBackup();
 		} else {
@@ -1071,20 +1090,26 @@ function manageBackup(make, restore) {
 function restoreBackupPlaylist() {
 	const plistOld = `${fb.ProfilePath}backup\\profile\\playlists-v1.4`;
 	const plistNew = `${fb.ProfilePath}backup\\profile\\playlists-v2.0`;
+
 	let playlistDir;
 	let oldVersion = false;
 
-	const noFolders = () => {
-		// * Safeguard to prevent crash when directories do not exist
-		if (!IsFolder(plistOld) && !IsFolder(plistNew)) {
-			fb.ShowPopupMessage(`>>> Georgia-ReBORN restore backup was aborted <<<\n\n"backup" directory does not exist in:\n${fb.ProfilePath}\n\nor\n\n"playlist" directory does not exist in:\n${fb.ProfilePath}backup`, 'Theme backup');
-			return true;
-		}
-	}
-
-	const checkFolders = async () => {
+	const checkVersion = async () => {
 		if      (IsFolder(plistOld)) { playlistDir = plistOld; oldVersion = true; }
 		else if (IsFolder(plistNew)) { playlistDir = plistNew; oldVersion = false; }
+	};
+
+	const checkFolders = () => {
+		// * Safeguard to prevent crash when directories do not exist
+		const foldersExist = IsFolder(plistOld) || IsFolder(plistNew);
+
+		if (foldersExist) {
+			return true;
+		}
+		else {
+			fb.ShowPopupMessage(`>>> Georgia-ReBORN restore backup was aborted <<<\n\n"playlist" directory does not exist in:\n${fb.ProfilePath}backup`, 'Theme backup');
+			return false;
+		}
 	};
 
 	const copyFolders = async () => {
@@ -1094,17 +1119,17 @@ function restoreBackupPlaylist() {
 	};
 
 	const restoreBackup = async () => {
+		if (!checkFolders()) return;
+
 		pref.restoreBackupPlaylist = false;
-		await checkFolders();
+
+		await checkVersion();
 		await copyFolders();
 		await console.log('\n>>> Playlist backup has been successfully restored <<<\n\n');
 		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
 	};
 
 	try {
-		if (noFolders()) {
-			return;
-		}
 		restoreBackup();
 	}
 	catch (e) {
