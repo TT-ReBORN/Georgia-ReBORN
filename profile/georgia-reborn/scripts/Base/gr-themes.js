@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-29                                          * //
+// * Last change:    2023-08-04                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -5632,18 +5632,12 @@ function setTheme(color, color2) {
 	let themeCol = new Color(color.primary);
 	const customThemes = pref.theme.startsWith('custom');
 
-	if (ColorDistance(color.primary, col.bg, true) < (themeCol.isCloseToGreyscale ? 60 : 45)) {
-		if (pref.theme !== 'reborn' && pref.theme !== 'random' && (pref.theme !== 'black' && !pref.styleBlackReborn) && !customThemes) {
-			if (settings.showThemeLog) console.log('>>> Theme primary color is too close to bg color. Tinting theme color.');
-			color.primary = TintColor(color.primary, 15);
-			color.accent = TintColor(color.primary, 10);
-			themeCol = new Color(color.primary);
-		}
-		else if (pref.theme !== 'reborn' && pref.theme !== 'random' && (pref.theme !== 'black' && !pref.styleBlackReborn) && !customThemes && !pref.systemFirstLaunch) { // * Prevent crash when clearing Panel Properties
-			if (settings.showThemeLog) console.log('>>> Theme primary color is too close to bg color. Shading theme color.');
-			color.primary = ShadeColor(color.primary, 5);
-			themeCol = new Color(color.primary);
-		}
+	if (ColorDistance(color.primary, col.bg, true) < (themeCol.isCloseToGreyscale ? 60 : 45) &&
+		(pref.theme !== 'reborn' && pref.theme !== 'random' && (pref.theme !== 'black' && !pref.styleBlackReborn) && !customThemes)) {
+		if (settings.showThemeLog) console.log('>>> Theme primary color is too close to bg color. Tinting theme color.');
+		color.primary = TintColor(color.primary, 15);
+		color.accent = TintColor(color.primary, 10);
+		themeCol = new Color(color.primary);
 	}
 	col.primary = color.primary;
 	col.primary_alt = color2.primary_alt;

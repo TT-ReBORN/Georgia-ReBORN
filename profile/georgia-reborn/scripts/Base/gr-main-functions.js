@@ -1063,19 +1063,10 @@ function manageBackup(make, restore) {
 		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
 	};
 
-	try {
-		if (make) {
-			makeBackup();
-		} else {
-			restoreBackup();
-		}
-	}
-	catch (e) {
-		if (make) {
-			console.log('\n>>> Georgia-ReBORN theme backup was not successfull <<<\n\n');
-		} else {
-			console.log('\n>>> Georgia-ReBORN theme backup was not successfully restored <<<\n\n');
-		}
+	if (make) {
+		makeBackup();
+	} else {
+		restoreBackup();
 	}
 }
 
@@ -1129,12 +1120,7 @@ function restoreBackupPlaylist() {
 		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
 	};
 
-	try {
-		restoreBackup();
-	}
-	catch (e) {
-		console.log('\n>>> Playlist backup was not successfully restored <<<\n\n');
-	}
+	restoreBackup();
 }
 
 
