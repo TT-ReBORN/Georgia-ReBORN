@@ -412,7 +412,7 @@ class Library {
 		});
 	}
 
-	eval(n) {
+	eval(n, type) {
 		let handle;
 		let tfo;
 		switch (type) {
