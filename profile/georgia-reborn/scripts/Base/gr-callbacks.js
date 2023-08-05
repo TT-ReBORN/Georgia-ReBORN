@@ -549,22 +549,25 @@ function on_key_down(vkey) {
 	switch (vkey) {
 		case VK_ADD:
 		case VK_SUBTRACT:
-		if (CtrlKeyPressed && ShiftKeyPressed) {
-			const action = vkey === VK_ADD ? '+' : '-';
-			const metadb = fb.GetNowPlaying();
-			if (fb.IsPlaying) {
-				fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadb);
-			}
-			else if (!metadb && (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true))) {
-				const metadbList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
-				if (metadbList.Count === 1) {
-					fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadbList[0]);
-				} else {
-					console.log('Won\'t change rating with more than one selected item');
+			if (CtrlKeyPressed && ShiftKeyPressed) {
+				const action = vkey === VK_ADD ? '+' : '-';
+				const metadb = fb.GetNowPlaying();
+				if (fb.IsPlaying) {
+					fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadb);
+				}
+				else if (!metadb && (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true))) {
+					const metadbList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+					if (metadbList.Count === 1) {
+						fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadbList[0]);
+					} else {
+						console.log('Won\'t change rating with more than one selected item');
+					}
 				}
 			}
-		}
-		break;
+			break;
+		case CtrlKeyPressed && VK_KEY_Z:
+			fb.RunMainMenuCommand('Edit/Undo');
+			break;
 	}
 
 	// * F11 shortcut for going into/out fullscreen mode, disabled in Artwork layout

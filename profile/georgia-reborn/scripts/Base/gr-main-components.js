@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-29                                          * //
+// * Last change:    2023-08-05                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1244,7 +1244,15 @@ class JumpSearch {
 	 */
 	on_char(code) {
 		if (panel.search.active || utils.IsKeyPressed(VK_CONTROL)) return;
+
 		const text = String.fromCharCode(code);
+		const playlistItems = plman.GetPlaylistItems(plman.ActivePlaylist);
+		const search = fb.TitleFormat(pref.jumpSearchComposerOnly ? '%composer%' : '$if2(%album artist%, %artist%)').EvalWithMetadbs(playlistItems);
+		let focusIndex = plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist);
+		let advance = false;
+		let foundInPlaylist = false;
+		let foundInLibrary = false;
+
 		switch (code) {
 			case vk.back:
 				this.jSearch = this.jSearch.substr(0, this.jSearch.length - 1);
@@ -1256,12 +1264,6 @@ class JumpSearch {
 				this.jSearch += text;
 				break;
 		}
-		const playlistItems = plman.GetPlaylistItems(plman.ActivePlaylist);
-		const search = fb.TitleFormat(pref.jumpSearchComposerOnly ? '%composer%' : '$if2(%album artist%, %artist%)').EvalWithMetadbs(playlistItems);
-		let focusIndex = plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist);
-		let advance = false;
-		let foundInPlaylist = false;
-		let foundInLibrary = false;
 
 		// * Playlist advance
 		if (focusIndex >= 0 && focusIndex < search.length && (displayPlaylist || displayPlaylistLibrary(true))) {
