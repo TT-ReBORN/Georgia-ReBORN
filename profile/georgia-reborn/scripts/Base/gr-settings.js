@@ -465,7 +465,7 @@ pref.add_properties({
 	libraryThumbnailBorder:             ['Georgia-ReBORN - 12. Library: Thumbnail border', 'border'], // Library thumbnail border - border (default)
 	libraryPlaylistSwitch:              ['Georgia-ReBORN - 12. Library: Switch to playlist when adding songs', false], // When adding songs from Library auto-switch to Playlist
 	libraryRowHover:                    ['Georgia-ReBORN - 12. Library: Row mouse hover', true], // Enable library row mouse hover effect
-	savedAlbumArtView:                  ['Georgia-ReBORN - 12. Library: Album art view saved', false], // Used to resume library view mode from split layout when not using library layout presets
+	savedAlbumArtShow:                  ['Georgia-ReBORN - 12. Library: Album art view saved', false], // Used to resume library view mode from split layout when not using library layout presets
 	savedAlbumArtLabelType:             ['Georgia-ReBORN - 12. Library: Album art label type saved', 1], // Used to resume album art label type from split layout when not using library layout presets
 
 	// * Biography
