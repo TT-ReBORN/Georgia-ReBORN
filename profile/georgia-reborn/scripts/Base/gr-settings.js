@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-03                                          * //
+// * Last change:    2023-08-05                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -711,10 +711,10 @@ async function setThemeSettings(save) {
 		themeFontSize.playlistFontSize_default = pref.playlistFontSize_default;
 		themeFontSize.playlistFontSize_artwork = pref.playlistFontSize_artwork;
 		themeFontSize.playlistFontSize_compact = pref.playlistFontSize_compact;
-		themeFontSize.libraryFontSize_default = pref.libraryFontSize_default;
-		themeFontSize.libraryFontSize_artwork = pref.libraryFontSize_artwork;
-		themeFontSize.biographyFontSize_default = pref.biographyFontSize_default;
-		themeFontSize.biographyFontSize_artwork = pref.biographyFontSize_artwork;
+		themeFontSize.libraryFontSize_default = ppt.baseFontSize_default;
+		themeFontSize.libraryFontSize_artwork = ppt.baseFontSize_artwork;
+		themeFontSize.biographyFontSize_default = pptBio.baseFontSizeBio_default;
+		themeFontSize.biographyFontSize_artwork = pptBio.baseFontSizeBio_artwork;
 		themeFontSize.lyricsFontSize_default = pref.lyricsFontSize_default;
 		themeFontSize.lyricsFontSize_artwork = pref.lyricsFontSize_artwork;
 	} else {
@@ -751,10 +751,10 @@ async function setThemeSettings(save) {
 		pref.playlistFontSize_default = custom ? themeFontSize.playlistFontSize_default : RES_QHD ? 14 : 12;
 		pref.playlistFontSize_artwork = custom ? themeFontSize.playlistFontSize_artwork : RES_QHD ? 14 : 12;
 		pref.playlistFontSize_compact = custom ? themeFontSize.playlistFontSize_compact : RES_QHD ? 14 : 12;
-		pref.libraryFontSize_default = custom ? themeFontSize.libraryFontSize_default : RES_4K ? 24 : RES_QHD ? 14 : 12;
-		pref.libraryFontSize_artwork = custom ? themeFontSize.libraryFontSize_artwork : RES_4K ? 24 : RES_QHD ? 14 : 12;
-		pref.biographyFontSize_default = custom ? themeFontSize.biographyFontSize_default : RES_4K ? 24 : RES_QHD ? 14 : 12;
-		pref.biographyFontSize_artwork = custom ? themeFontSize.biographyFontSize_artwork : RES_4K ? 24 : RES_QHD ? 14 : 12;
+		ppt.baseFontSize_default = custom ? themeFontSize.libraryFontSize_default : RES_4K ? 24 : RES_QHD ? 14 : 12;
+		ppt.baseFontSize_artwork = custom ? themeFontSize.libraryFontSize_artwork : RES_4K ? 24 : RES_QHD ? 14 : 12;
+		pptBio.baseFontSizeBio_default = custom ? themeFontSize.biographyFontSize_default : RES_4K ? 24 : RES_QHD ? 14 : 12;
+		pptBio.baseFontSizeBio_artwork = custom ? themeFontSize.biographyFontSize_artwork : RES_4K ? 24 : RES_QHD ? 14 : 12;
 		pref.lyricsFontSize_default = custom ? themeFontSize.lyricsFontSize_default : RES_QHD ? 22 : 20;
 		pref.lyricsFontSize_artwork = custom ? themeFontSize.lyricsFontSize_artwork : RES_QHD ? 22 : 20;
 	}
@@ -1256,8 +1256,11 @@ async function setThemeSettings(save) {
 		themeLibrary.rowStripes = ppt.rowStripes;
 		themeLibrary.fullLineSelection = ppt.fullLineSelection;
 		themeLibrary.libraryRowHover = pref.libraryRowHover;
+		themeLibrary.filterBy = ppt.filterBy;
 		themeLibrary.sortOrder = ppt.sortOrder;
 		themeLibrary.yearBeforeAlbum = ppt.yearBeforeAlbum;
+		themeLibrary.albumArtViewBy = ppt.albumArtViewBy;
+		themeLibrary.treeViewBy = ppt.treeViewBy;
 	} else {
 		pref.libraryLayout = custom ? themeLibrary.libraryLayout : 'normal';
 		pref.libraryLayoutFullPreset = custom ? themeLibrary.libraryLayoutFullPreset : true;
@@ -1318,8 +1321,11 @@ async function setThemeSettings(save) {
 		ppt.rowStripes = custom ? themeLibrary.rowStripes : false;
 		ppt.fullLineSelection = custom ? themeLibrary.fullLineSelection : true;
 		pref.libraryRowHover = custom ? themeLibrary.libraryRowHover : true;
+		ppt.filterBy = custom ? themeLibrary.filterBy : 0;
 		ppt.sortOrder = custom ? themeLibrary.sortOrder : 'default';
 		ppt.yearBeforeAlbum = custom ? themeLibrary.yearBeforeAlbum : true;
+		ppt.albumArtViewBy = custom ? themeLibrary.albumArtViewBy : 0;
+		ppt.treeViewBy = custom ? themeLibrary.treeViewBy : 0;
 	}
 
 	// * Biography
@@ -1374,7 +1380,6 @@ async function setThemeSettings(save) {
 		pref.biographyDisplay = custom ? themeBiography.biographyDisplay : 'Image+text';
 		switch (pref.biographyDisplay) {
 			case 'Image+text':
-				pptBio.style = 0;
 				pptBio.img_only = false;
 				pptBio.text_only = false;
 				break;

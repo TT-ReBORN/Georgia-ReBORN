@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-03                                          * //
+// * Last change:    2023-08-05                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1039,8 +1039,11 @@ const themeLibraryDefaults = {
 	rowStripes: false,
 	fullLineSelection: true,
 	libraryRowHover: true,
+	filterBy: 0,
 	sortOrder: 'default',
-	yearBeforeAlbum: true
+	yearBeforeAlbum: true,
+	albumArtViewBy: 0,
+	treeViewBy: 0
 };
 
 /** @type {Object} Options > Library settings config name dscription. */
@@ -1089,8 +1092,11 @@ const themeLibraryComments = {
 	rowStripes: 'Values: true, false - Options > Library > Track row > Show row stripes',
 	fullLineSelection: 'Values: true, false - Options > Library > Track row > Row fully clickable',
 	libraryRowHover: 'Values: true, false - Options > Library > Track row > Row mouse hover',
+	filterBy: 'Values: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 - Options > Library > Filter order',
 	sortOrder: 'Values: 0, 1, 2, 3, 4 - Options > Library > Sort order',
-	yearBeforeAlbum: 'Values: true, false - Options > Library > Sort order'
+	yearBeforeAlbum: 'Values: true, false - Options > Library > Sort order',
+	albumArtViewBy: 'Values: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Library > View order',
+	treeViewBy: 'Values: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Library > View order'
 };
 
 /** @type {Object} Options > Library settings config header dscription. */

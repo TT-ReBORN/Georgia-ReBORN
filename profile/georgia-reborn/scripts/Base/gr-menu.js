@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-03                                          * //
+// * Last change:    2023-08-05                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1108,6 +1108,9 @@ function fontSizeOptions(menu) {
 		else if (pref.layout === 'default') { ppt.baseFontSize_default = size; }
 		else if (pref.layout === 'artwork') { ppt.baseFontSize_artwork = size; }
 
+		pref.libraryFontSize_default = ppt.baseFontSize_default;
+		pref.libraryFontSize_artwork = ppt.baseFontSize_artwork;
+
 		setLibrarySize();
 		panel.zoomReset();
 		pop.createImages();
@@ -1127,6 +1130,9 @@ function fontSizeOptions(menu) {
 		}
 		else if (pref.layout === 'default') { pptBio.baseFontSizeBio_default = size; }
 		else if (pref.layout === 'artwork') { pptBio.baseFontSizeBio_artwork = size; }
+
+		pref.biographyFontSize_default = pptBio.baseFontSizeBio_default;
+		pref.biographyFontSize_artwork = pptBio.baseFontSizeBio_artwork;
 
 		setBiographySize();
 		butBio.resetZoom();
@@ -2534,6 +2540,14 @@ function libraryOptions(menu, context_menu) {
 	libraryTrackRowMenu.addToggleItem('Row mouse hover', pref, 'libraryRowHover', () => { repaintWindow(); });
 	libraryTrackRowMenu.appendTo(libraryMenu);
 
+	// * FILTER ORDER * //
+	const libraryFilterOrderMenu = new Menu('Filter order');
+	libraryFilterOrderMenu.addRadioItems(['No filter', 'Lossless', 'Lossy', 'Missing replaygain', 'Never played', 'Played often', 'Recently added', 'Recently played', 'Top rated', 'Nowplaying artist'], ppt.filterBy, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], (order) => {
+		ppt.filterBy = order;
+		panel.set('Filter', order);
+	});
+	libraryFilterOrderMenu.appendTo(libraryMenu);
+
 	// * SORT ORDER * //
 	const librarySortOrderMenu = new Menu('Sort order');
 	librarySortOrderMenu.addRadioItems(['Default', 'Ascending (hide year)', 'Ascending (show year)', 'Descending (hide year)', 'Descending (show year)'], ppt.sortOrder, [0, 1, 2, 3, 4], (order) => {
@@ -2547,6 +2561,20 @@ function libraryOptions(menu, context_menu) {
 		ppt.yearBeforeAlbum = year;
 	});
 	librarySortOrderMenu.appendTo(libraryMenu);
+
+	// * VIEW ORDER * //
+	const libraryViewOrderMenu = new Menu('View order');
+	libraryViewOrderMenu.addRadioItems(['Artist', 'Album artist', 'Album artist | album', 'Album', 'Composer', 'Country', 'Country | Genre', 'Genre', 'Label', 'Year', 'Folder structure'], panel.imgView ? ppt.albumArtViewBy : ppt.treeViewBy, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (order) => {
+		if (ppt.albumArtShow) {
+			ppt.albumArtViewBy = order;
+		} else {
+			ppt.treeViewBy = order;
+		}
+		lib.logTree();
+		pop.clearTree();
+		men.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
+	});
+	libraryViewOrderMenu.appendTo(libraryMenu);
 
 	if (!context_menu) libraryMenu.appendTo(menu);
 }

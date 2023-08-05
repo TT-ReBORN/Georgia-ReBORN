@@ -1053,8 +1053,8 @@ function manageBackup(make, restore) {
 	const restoreBackup = async () => {
 		if (!checkFolders()) return;
 
+		pref.customThemeSettings = true;
 		pref.restoreBackupPlaylist = true;
-		pref.systemFirstLaunch = true;
 
 		await checkVersion();
 		await copyFolders();
