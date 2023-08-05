@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-03                                          * //
+// * Last change:    2023-08-05                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -547,10 +547,10 @@ function on_key_down(vkey) {
 	}
 
 	switch (vkey) {
-		case 0x6B: // VK_ADD ??
-		case 0x6D: // VK_SUBTRACT ??
+		case VK_ADD:
+		case VK_SUBTRACT:
 		if (CtrlKeyPressed && ShiftKeyPressed) {
-			const action = vkey === 0x6B ? '+' : '-';
+			const action = vkey === VK_ADD ? '+' : '-';
 			const metadb = fb.GetNowPlaying();
 			if (fb.IsPlaying) {
 				fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadb);

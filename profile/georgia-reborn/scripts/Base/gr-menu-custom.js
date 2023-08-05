@@ -6,21 +6,38 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-28                                          * //
+// * Last change:    2023-08-05                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
 
 
+///////////////////////////////
+// * CUSTOM MENU VARIABLES * //
+///////////////////////////////
+/** @type {number} The virtual key code for the "Copy" command. */
+const VK_COPY = 0x03;
+
+/** @type {number} The virtual key code for the "Cut" command. */
+const VK_CUT = 0x18;
+
+/** @type {number} The virtual key code for the "Paste" command. */
+const VK_PASTE = 0x16;
+
+/** @type {number} The virtual key code for the "Select All" command. */
+const VK_SELECT_ALL = 0x01;
+
+/** @type {GdiBitmap} The GDI image object for getGraphics. */
+let getImage;
+
+/** @type {GdiGraphics} The GDI graphics object to calculate text widths. */
+let getGraphics;
+
+
 //////////////////////////////
 // * CUSTOM MENU CONTROLS * //
 //////////////////////////////
-/** @type {GdiBitmap} Creates a GDI image for getGraphics. */
-let getImage;
-/** @type {GdiGraphics} Creates GDI graphics to calculate text widths. */
-let getGraphics;
-
 /**
  * Base control for mouse and keyboard events of the custom menu.
  */
@@ -439,7 +456,7 @@ class DropDownMenu extends BaseControl {
 	 */
 	onKey(vkey) {
 		switch (vkey) {
-			case VK_ENTER:
+			case VK_RETURN:
 			case VK_SPACE:
 				if (!this.selectUp) {
 					this.clicked();
@@ -732,7 +749,7 @@ class StringInput extends BaseControl {
 				if (displayMetadataGridMenu) this.updateMetadata();
 				this.clearFocus();
 				break;
-			case VK_BACKSPACE:
+			case VK_BACK:
 				if (this.hasSelection) {
 					this.value = this.value.substring(0, start) + this.value.substring(end);
 					this.cursorPos = start;
@@ -797,7 +814,6 @@ class StringInput extends BaseControl {
 	 * @param {number} vkey The virtual key code.
 	 */
 	onKey(vkey) {
-		const CtrlKeyPressed = utils.IsKeyPressed(VK_CONTROL);
 		const ShiftKeyPressed = utils.IsKeyPressed(VK_SHIFT);
 		switch (vkey) {
 			case VK_LEFT:
@@ -1144,7 +1160,7 @@ class StringInput2 extends BaseControl {
 				this.updateMetadata();
 				this.clearFocus();
 				break;
-			case VK_BACKSPACE:
+			case VK_BACK:
 				if (this.hasSelection) {
 					this.value2 = this.value2.substring(0, start) + this.value2.substring(end);
 					this.cursorPos = start;
@@ -1209,7 +1225,6 @@ class StringInput2 extends BaseControl {
 	 * @param {number} vkey The virtual key code.
 	 */
 	onKey(vkey) {
-		const CtrlKeyPressed = utils.IsKeyPressed(VK_CONTROL);
 		const ShiftKeyPressed = utils.IsKeyPressed(VK_SHIFT);
 		switch (vkey) {
 			case VK_LEFT:

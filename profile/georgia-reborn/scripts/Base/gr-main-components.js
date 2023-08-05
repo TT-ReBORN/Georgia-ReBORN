@@ -1243,7 +1243,7 @@ class JumpSearch {
 	 * @param {number} code The character code.
 	 */
 	on_char(code) {
-		if (panel.search.active || utils.IsKeyPressed(0x11)) return;
+		if (panel.search.active || utils.IsKeyPressed(VK_CONTROL)) return;
 		const text = String.fromCharCode(code);
 		switch (code) {
 			case vk.back:
@@ -1282,7 +1282,7 @@ class JumpSearch {
 
 		switch (true) {
 			case advance: {
-				if (utils.IsKeyPressed(0x0A) || utils.IsKeyPressed(0x08) ||  utils.IsKeyPressed(0x09) || utils.IsKeyPressed(0x11) || utils.IsKeyPressed(0x1B) || utils.IsKeyPressed(0x6A) || utils.IsKeyPressed(0x6D)) return;
+				if (utils.IsKeyPressed(0x0A) || utils.IsKeyPressed(VK_BACK) ||  utils.IsKeyPressed(VK_TAB) || utils.IsKeyPressed(VK_CONTROL) || utils.IsKeyPressed(VK_ESCAPE) || utils.IsKeyPressed(VK_MULTIPLY) || utils.IsKeyPressed(VK_SUBTRACT)) return;
 				let init = '';
 				let cur = 'currentArr';
 				if (!this.initials) { // reset in buildTree
@@ -1380,7 +1380,7 @@ class JumpSearch {
 			break;
 
 		case !advance:
-			if (utils.IsKeyPressed(0x09) || utils.IsKeyPressed(0x11) || utils.IsKeyPressed(0x1B) || utils.IsKeyPressed(0x6A) || utils.IsKeyPressed(0x6D)) return;
+			if (utils.IsKeyPressed(VK_TAB) || utils.IsKeyPressed(VK_CONTROL) || utils.IsKeyPressed(VK_ESCAPE) || utils.IsKeyPressed(VK_MULTIPLY) || utils.IsKeyPressed(VK_SUBTRACT)) return;
 			if (!panel.search.active) {
 				let pos = -1;
 				pop.clearSelected();

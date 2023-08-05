@@ -82,7 +82,7 @@
         <button class="normal_button button_apply" id="btn_apply" disabled>Apply</button>
         <script>
             // consts
-            var VK_BACKSPACE = 0x08;
+            var VK_BACK = 0x08;
             var VK_DELETE = 0x2E;
 
             // helpers
@@ -207,7 +207,7 @@
             }
 
             function on_input_key_down() {
-                if (window.event.keyCode === VK_BACKSPACE || window.event.keyCode === VK_DELETE) {
+                if (window.event.keyCode === VK_BACK || window.event.keyCode === VK_DELETE) {
                     on_input_change();
                 }
             }
