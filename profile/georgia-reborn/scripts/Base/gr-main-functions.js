@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-04                                          * //
+// * Last change:    2023-08-06                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -134,7 +134,7 @@ function initMain() {
 	initThemeFull = true;
 	initCustomTheme();
 	initTheme();
-	DebugLog('initTheme -> initMain');
+	DebugLog('\n>>> initTheme -> initMain <<<');
 	loadingTheme = false;
 
 	// * Restore backup workaround to successfully restore playlist files after foobar installation
@@ -283,7 +283,7 @@ function initTheme() {
 	initButtonState(); // Main
 
 	// * REFRESH * //
-	repaintWindow();
+	window.Repaint();
 
 	if (timings.showDebugTiming) themeProfiler.Print();
 }
@@ -301,7 +301,7 @@ function initThemeTags() {
 
 	// * Restore last theme state
 	if (pref.presetSelectMode === 'default' && themeRestoreState) {
-		DebugLog('initThemeTags restore');
+		DebugLog('\n>>> initThemeTags restore <<<');
 		resetStyle('all');
 		resetTheme();
 		restoreThemeStylePreset(); // * Retore saved pref settings
@@ -312,7 +312,7 @@ function initThemeTags() {
 
 	// * Skip also restore on next call
 	if (pref.theme === pref.savedTheme && !customTheme && !customStyle && !customPreset) {
-		DebugLog('initThemeTags skipped');
+		DebugLog('\n>>> initThemeTags skipped <<<');
 		restoreThemeStylePreset(true); // * Reset saved pref settings
 		themeRestoreState = false;
 		return;
@@ -320,18 +320,21 @@ function initThemeTags() {
 
 	// * 1. Set preset
 	if (customPreset.length) {
+		DebugLog('\n>>> initThemeTags -> %GR_PRESET% loaded <<<');
 		pref.preset = customPreset;
 		setThemePreset(customPreset);
 		themeRestoreState = true;
 	}
 	// * 2. Set theme
 	else if (customTheme.length) {
+		DebugLog('\n>>> initThemeTags -> %GR_THEME% loaded <<<');
 		pref.theme = customTheme;
 		resetTheme();
 		themeRestoreState = true;
 	}
 	// * 3. Set styles
 	if (customStyle.length && !customPreset.length) {
+		DebugLog('\n>>> initThemeTags -> %GR_STYLE% loaded <<<');
 		resetStyle('all');
 		for (const style of customStyle.split(/(?:,|;| )+/)) {
 			switch (style) {
@@ -381,10 +384,9 @@ function initThemeTags() {
 		themeRestoreState = true;
 	}
 
-	// * 4. Update when using custom tags, otherwise not needed
-	if (customTheme || customStyle || customPreset) {
+	// * 4. Update theme
+	if (!customPreset.length) { // Prevent double initialization for theme presets to save performance, updateStyle() already handled in setThemePreset()
 		updateStyle();
-		DebugLog('updateStyle -> initThemeTags');
 	}
 }
 
@@ -722,6 +724,7 @@ async function systemFirstLaunch() {
  */
 function updateStyle() {
 	initThemeFull = true;
+
 	if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
 		// * Update col.primary for dynamic themes
 		if (fb.IsPlaying) {
@@ -730,8 +733,9 @@ function updateStyle() {
 			setThemeColors();
 		}
 	}
+
 	initTheme();
-	DebugLog('initTheme -> updateStyle');
+	DebugLog('\n>>> initTheme -> updateStyle <<<\n');
 	if (pref.theme === 'random' && pref.randomThemeAutoColor !== 'off') getRandomThemeAutoColor();
 	initStyleState();
 	initThemePresetState();
@@ -1848,7 +1852,7 @@ function displayNextImage() {
 		newTrackFetchingArtwork = true;
 		getThemeColors(albumArt);
 		initTheme();
-		DebugLog('initTheme -> displayNextImage');
+		DebugLog('\n>>> initTheme -> displayNextImage <<<');
 	}
 	lastLeftEdge = 0;
 	resizeArtwork(true); // Needed to readjust discArt shadow size if artwork size changes
@@ -1886,7 +1890,7 @@ function fetchAlbumArt(metadb) {
 			shadowImg = null;
 		}
 		initTheme();
-		DebugLog('initTheme -> fetchNewArtwork -> isStreaming || isPlayingCD');
+		DebugLog('\n>>> initTheme -> fetchNewArtwork -> isStreaming || isPlayingCD <<<');
 	}
 	else {
 		if (!pref.showGridTitle_default && pref.layout === 'default') pref.showGridTitle_default = false;
@@ -1916,13 +1920,15 @@ function fetchAlbumArt(metadb) {
 		else if (metadb && (albumArt = utils.GetAlbumArtV2(metadb))) {
 			noArtwork = false;
 			noAlbumArtStub = false;
-			if (autoRandomPreset) { // * Prevent double initialization and save performance, getThemeColors() and initTheme() handled in getRandomThemePreset()
+			if (autoRandomPreset) { // Prevent double initialization for theme presets to save performance, getThemeColors() and initTheme() already handled in getRandomThemePreset()
 				setRandomThemePreset();
-				initThemeTags();
 			} else {
+				initThemeTags();
 				getThemeColors(albumArt);
-				if (!loadingTheme) initTheme(); // * Prevent incorrect theme brightness at startup/reload when using embedded art
-				DebugLog('initTheme -> fetchNewArtwork -> embeddedArt');
+				if (!loadingTheme) {
+					initTheme(); // * Prevent incorrect theme brightness at startup/reload when using embedded art
+					DebugLog('\n>>> initTheme -> fetchNewArtwork -> embeddedArt <<<');
+				}
 			}
 			resizeArtwork(true);
 			embeddedArt = true;
@@ -1933,7 +1939,7 @@ function fetchAlbumArt(metadb) {
 			noAlbumArtStub = true;
 			albumArt = null;
 			initTheme();
-			DebugLog('initTheme -> fetchNewArtwork -> noAlbumArtStub');
+			DebugLog('\n>>> initTheme -> fetchNewArtwork -> noAlbumArtStub <<<');
 			resizeArtwork(true);
 			DebugLog('Repainting on_playback_new_track due to no cover image');
 			repaintWindow();
@@ -1967,20 +1973,21 @@ function loadImageFromAlbumArtList(index) {
 		(!['off', 'track'].includes(pref.presetAutoRandomMode) && pref.presetSelectMode === 'harmonic' ||
 		pref.presetAutoRandomMode === 'dblclick' && pref.presetSelectMode === 'theme') && !doubleClicked;
 
+	const hasThemeTags = $('[%GR_THEME%]') || $('[%GR_STYLE%]') || $('[%GR_PRESET%]');
+
 	if (tempAlbumArt) {
 		albumArt = tempAlbumArt;
 		if (index !== 0 && !newTrackFetchingArtwork) return;
 		newTrackFetchingArtwork = false;
 
-		// * Prevent double initialization and save performance, getThemeColors() and initTheme() handled in getRandomThemePreset()
-		if (autoRandomPreset) {
+		if (autoRandomPreset) { // Prevent double initialization for theme presets to save performance, getThemeColors() and initTheme() already handled in getRandomThemePreset()
 			setRandomThemePreset();
-			initThemeTags();
 		} else {
+			initThemeTags();
 			getThemeColors(albumArt);
-			if (!initThemeSkip) {
+			if (!initThemeSkip && !hasThemeTags) {
 				initTheme();
-				DebugLog('initTheme -> loadImageFromAlbumArtList -> tempAlbumArt');
+				DebugLog('\n>>> initTheme -> loadImageFromAlbumArtList -> tempAlbumArt <<<\n');
 			}
 		}
 	}
@@ -2000,20 +2007,23 @@ function loadImageFromAlbumArtList(index) {
 						noArtwork = true;
 						noAlbumArtStub = true;
 						embeddedArt = false;
-						console.log('<Error GetAlbumArtV2: Album art could not be properly parsed! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>');
+						console.log('\n<Error GetAlbumArtV2: Album art could not be properly parsed! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>\n');
 					}
 				}
-				// * Prevent double initialization and save performance, getThemeColors() and initTheme() handled in getRandomThemePreset()
-				if (!autoRandomPreset) {
+
+				if (autoRandomPreset) { // Prevent double initialization for theme presets to save performance, getThemeColors() and initTheme() already handled in getRandomThemePreset()
+					setRandomThemePreset();
+				} else {
+					initThemeTags();
 					getThemeColors(albumArt);
-					initTheme();
-					DebugLog('initTheme -> loadImageFromAlbumArtList -> LoadImageAsyncV2');
+					if (!hasThemeTags) {
+						initTheme();
+						DebugLog('\n>>> initTheme -> loadImageFromAlbumArtList -> LoadImageAsyncV2 <<<\n');
+					}
 				}
+
 				newTrackFetchingArtwork = false;
 			}
-
-			setRandomThemePreset();
-			initThemeTags();
 
 			// * Init panel width only when playlist is in full width ( i.e on startup or on_playback_stop ) to save performance
 			if (pref.panelWidthAuto && playlist.x === 0) {
@@ -2118,7 +2128,7 @@ function resizeAlbumArt() {
 			albumArt = null;
 			noAlbumArtStub = true;
 			albumArtSize = new ImageSize(0, geo.topMenuHeight, 0, 0);
-			console.log('<Error: Album art could not be scaled! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>');
+			console.log('\n<Error: Album art could not be scaled! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>\n');
 		}
 		hasArtwork = true;
 	}
@@ -2146,7 +2156,7 @@ function resetPausePosition() {
 
 	const pauseBtnY = wh * 0.5 - geo.topMenuHeight;
 
-	if (albumArt)pauseBtn.setCoords(albumArtSize.x + albumArtSize.w / 2, albumArtSize.y + albumArtSize.h / 2);
+	if (albumArt) pauseBtn.setCoords(albumArtSize.x + albumArtSize.w / 2, albumArtSize.y + albumArtSize.h / 2);
 	else if (discArt) pauseBtn.setCoords(discArtSize.x + discArtSize.w / 2, discArtSize.y + discArtSize.h / 2);
 	else if (noAlbumArtStub) pauseBtn.setCoords(pauseBtnX, pauseBtnY);
 }

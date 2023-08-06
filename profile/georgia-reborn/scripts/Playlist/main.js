@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-01                                          * //
+// * Last change:    2023-08-06                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -5043,7 +5043,7 @@ class Header extends BaseHeader {
 			try { // Prevent crash if album art is corrupt, file format is not supported or has an unusual ICC profile embedded
 				this.art = image.Resize(art_w, art_h);
 			} catch (e) {
-				console.log('<Error: Album art in Playlist could not be scaled! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>');
+				console.log('\n<Error: Album art in Playlist could not be scaled! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>\n');
 			}
 		}
 

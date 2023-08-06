@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-05                                          * //
+// * Last change:    2023-08-06                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -106,7 +106,7 @@ class ArtCache {
 			}
 		} catch (e) {
 			// Do not console.log inverted band logo and label images in the process of being created
-			if (invertedBandLogo) console.log(`<Error: Image could not be properly parsed: ${location}>`);
+			if (invertedBandLogo) console.log(`\n<Error: Image could not be properly parsed: ${location}>\n`);
 		}
 		if (this.cache[location]) {
 			return this.cache[location].image;

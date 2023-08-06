@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-04                                          * //
+// * Last change:    2023-08-06                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -5581,7 +5581,7 @@ function setStyleBlend() {
 		try { // * Prevent crash if album art is corrupt, file format is not supported or has a unusual ICC profile embedded
 			g.DrawImage(image, 0, 0, ww, wh, 0, 0, image.Width, image.Height, angle, alpha);
 		} catch (e) {
-			console.log('<Error: Image blending failed, album art could not be properly parsed! Maybe it is corrupt, file format is not supported or has a unusual ICC profile embedded>');
+			console.log('\n<Error: Image blending failed, album art could not be properly parsed! Maybe it is corrupt, file format is not supported or has a unusual ICC profile embedded>\n');
 		}
 		tempImg.ReleaseGraphics(g);
 		tempImg = blurImage(tempImg);
@@ -5993,7 +5993,7 @@ function getRandomThemeAutoColor() {
 	else if (pref.styleRandomAutoColor === 'track') {
 		initTheme();
 	}
-	DebugLog('initTheme -> getRandomThemeAutoColor');
+	DebugLog('\n>>> initTheme -> getRandomThemeAutoColor <<<');
 }
 
 
@@ -6141,7 +6141,7 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 		return secondaryColor ? selectedColor2.val : selectedColor.val;
 	}
 	catch (e) {
-		console.log('<Error: GetColourSchemeJSON failed.>');
+		console.log('\n<Error: GetColourSchemeJSON failed.>\n');
 	}
 }
 
