@@ -536,7 +536,7 @@ class ButtonsBio {
 		const n = pptBio.artistView ? 'bio' : 'rev';
 		if (txt[n].loaded.txt && txt.reader[n].lyrics) txt.getText();
 		initTheme();
-		DebugLog('\n>>> initTheme -> Biography -> resetZoom <<<');
+		DebugLog('\n>>> initTheme -> Biography -> resetZoom <<<\n');
 	}
 
 	scrollAlb() {

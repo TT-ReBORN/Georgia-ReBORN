@@ -844,7 +844,7 @@ Object.assign(qwr_utils, {
 						newTrackFetchingArtwork = true;
 						getThemeColors(albumArt);
 						initTheme();
-						DebugLog('\n>>> initTheme -> Album cover context menu -> Display next/previous artwork <<<');
+						DebugLog('\n>>> initTheme -> Album cover context menu -> Display next/previous artwork <<<\n');
 					}
 					window.Repaint();
 				}, !activeMenu);

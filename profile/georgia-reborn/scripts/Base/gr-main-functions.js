@@ -134,7 +134,7 @@ function initMain() {
 	initThemeFull = true;
 	initCustomTheme();
 	initTheme();
-	DebugLog('\n>>> initTheme -> initMain <<<');
+	DebugLog('\n>>> initTheme -> initMain <<<\n');
 	loadingTheme = false;
 
 	// * Restore backup workaround to successfully restore playlist files after foobar installation
@@ -301,7 +301,7 @@ function initThemeTags() {
 
 	// * Restore last theme state
 	if (pref.presetSelectMode === 'default' && themeRestoreState) {
-		DebugLog('\n>>> initThemeTags restore <<<');
+		DebugLog('\n>>> initThemeTags restore <<<\n');
 		resetStyle('all');
 		resetTheme();
 		restoreThemeStylePreset(); // * Retore saved pref settings
@@ -312,7 +312,7 @@ function initThemeTags() {
 
 	// * Skip also restore on next call
 	if (pref.theme === pref.savedTheme && !customTheme && !customStyle && !customPreset) {
-		DebugLog('\n>>> initThemeTags skipped <<<');
+		DebugLog('\n>>> initThemeTags skipped <<<\n');
 		restoreThemeStylePreset(true); // * Reset saved pref settings
 		themeRestoreState = false;
 		return;
@@ -1852,7 +1852,7 @@ function displayNextImage() {
 		newTrackFetchingArtwork = true;
 		getThemeColors(albumArt);
 		initTheme();
-		DebugLog('\n>>> initTheme -> displayNextImage <<<');
+		DebugLog('\n>>> initTheme -> displayNextImage <<<\n');
 	}
 	lastLeftEdge = 0;
 	resizeArtwork(true); // Needed to readjust discArt shadow size if artwork size changes
@@ -1890,7 +1890,7 @@ function fetchAlbumArt(metadb) {
 			shadowImg = null;
 		}
 		initTheme();
-		DebugLog('\n>>> initTheme -> fetchNewArtwork -> isStreaming || isPlayingCD <<<');
+		DebugLog('\n>>> initTheme -> fetchNewArtwork -> isStreaming || isPlayingCD <<<\n');
 	}
 	else {
 		if (!pref.showGridTitle_default && pref.layout === 'default') pref.showGridTitle_default = false;
@@ -1927,7 +1927,7 @@ function fetchAlbumArt(metadb) {
 				getThemeColors(albumArt);
 				if (!loadingTheme) {
 					initTheme(); // * Prevent incorrect theme brightness at startup/reload when using embedded art
-					DebugLog('\n>>> initTheme -> fetchNewArtwork -> embeddedArt <<<');
+					DebugLog('\n>>> initTheme -> fetchNewArtwork -> embeddedArt <<<\n');
 				}
 			}
 			resizeArtwork(true);
@@ -1939,7 +1939,7 @@ function fetchAlbumArt(metadb) {
 			noAlbumArtStub = true;
 			albumArt = null;
 			initTheme();
-			DebugLog('\n>>> initTheme -> fetchNewArtwork -> noAlbumArtStub <<<');
+			DebugLog('\n>>> initTheme -> fetchNewArtwork -> noAlbumArtStub <<<\n');
 			resizeArtwork(true);
 			DebugLog('Repainting on_playback_new_track due to no cover image');
 			repaintWindow();

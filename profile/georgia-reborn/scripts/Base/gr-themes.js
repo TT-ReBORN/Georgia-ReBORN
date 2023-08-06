@@ -5993,7 +5993,7 @@ function getRandomThemeAutoColor() {
 	else if (pref.styleRandomAutoColor === 'track') {
 		initTheme();
 	}
-	DebugLog('\n>>> initTheme -> getRandomThemeAutoColor <<<');
+	DebugLog('\n>>> initTheme -> getRandomThemeAutoColor <<<\n');
 }
 
 

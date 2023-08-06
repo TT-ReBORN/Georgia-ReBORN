@@ -194,7 +194,7 @@ function on_playback_new_track(metadb) {
 		themeDayNightModeTimer = setInterval(() => {
 			themeDayNightMode(new Date());
 			initTheme();
-			DebugLog('\n>>> initTheme -> fetchNewArtwork -> on_playback_new_track -> themeDayNightModeTimer <<<');
+			DebugLog('\n>>> initTheme -> fetchNewArtwork -> on_playback_new_track -> themeDayNightModeTimer <<<\n');
 		}, 600000);
 	}
 
@@ -693,7 +693,7 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 			// * Generate a new color in Random theme
 			else if (pref.theme === 'random') {
 				initTheme();
-				DebugLog('\n>>> initTheme -> on_mouse_lbtn_dblclk -> random theme <<<');
+				DebugLog('\n>>> initTheme -> on_mouse_lbtn_dblclk -> random theme <<<\n');
 			}
 			// * Refresh theme
 			else if (settings.doubleClickRefresh) {
@@ -1085,7 +1085,7 @@ function on_mouse_wheel(step) {
 			newTrackFetchingArtwork = true;
 			getThemeColors(albumArt);
 			initTheme();
-			DebugLog('\n>>> initTheme -> on_mouse_wheel <<<');
+			DebugLog('\n>>> initTheme -> on_mouse_wheel <<<\n');
 		}
 		resizeArtwork(true); // Re-adjust discArt shadow size if artwork size changes
 		if (pref.panelWidthAuto && albumArtSize.w !== albumArtSize.h) { // Re-adjust playlist if artwork size changes
@@ -1321,7 +1321,7 @@ function on_playback_stop(reason) {
 			!['reborn', 'random'].includes(pref.theme)) {
 			setThemeColors();
 			initTheme();
-			DebugLog('\n>>> initTheme -> on_playback_stop <<<');
+			DebugLog('\n>>> initTheme -> on_playback_stop <<<\n');
 		}
 	}
 
