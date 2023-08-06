@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-05                                          * //
+// * Last change:    2023-08-06                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3292,7 +3292,7 @@ function settingsOptions(menu) {
 			if (!confirmed) return;
 			const start = async () => {
 				await setThemeSettings(true);
-				//await window.Reload();
+				await window.Reload();
 			};
 			start();
 			console.log(`\n>>> Georgia-ReBORN theme settings have been successfully saved in ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc <<<\n\n`);

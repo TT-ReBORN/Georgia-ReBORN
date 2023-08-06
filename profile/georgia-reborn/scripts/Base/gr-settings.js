@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-05                                          * //
+// * Last change:    2023-08-06                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -795,11 +795,11 @@ async function setThemeSettings(save) {
 		themeControls.scrollStepLib = ppt.scrollStep;
 		themeControls.durationScrollLib = ppt.durationScroll;
 		themeControls.libraryAutoScrollNowPlaying = pref.libraryAutoScrollNowPlaying;
-		themeControls.libraryAutoHideScrollbar = pref.libraryAutoHideScrollbar;
+		themeControls.libraryAutoHideScrollbar = ppt.sbarShow;
 		themeControls.smoothLib = ppt.smooth;
 		themeControls.scrollStepBio = pptBio.scrollStep;
 		themeControls.durationScrollBio = pptBio.durationScroll;
-		themeControls.biographyAutoHideScrollbar = pref.biographyAutoHideScrollbar;
+		themeControls.biographyAutoHideScrollbar = pptBio.sbarShow;
 		themeControls.smoothBio = pptBio.smooth;
 		themeControls.showTooltipTruncated = pref.showTooltipTruncated;
 		themeControls.showTooltipTimeline = pref.showTooltipTimeline;
@@ -937,11 +937,11 @@ async function setThemeSettings(save) {
 		ppt.scrollStep = custom ? themeControls.scrollStepLib : 3;
 		ppt.durationScroll = custom ? themeControls.durationScrollLib : 500;
 		pref.libraryAutoScrollNowPlaying = custom ? themeControls.libraryAutoScrollNowPlaying : false;
-		pref.libraryAutoHideScrollbar = custom ? themeControls.libraryAutoHideScrollbar : true;
+		ppt.sbarShow = custom ? themeControls.libraryAutoHideScrollbar : true;
 		ppt.smooth = custom ? themeControls.smoothLib : true;
 		pptBio.scrollStep = custom ? themeControls.scrollStepBio : 3;
 		pptBio.durationScroll = custom ? themeControls.durationScrollBio : 500;
-		pref.biographyAutoHideScrollbar = custom ? themeControls.biographyAutoHideScrollbar : true;
+		pptBio.sbarShow = custom ? themeControls.biographyAutoHideScrollbar : true;
 		pptBio.smooth = custom ? themeControls.smoothBio : true;
 		pref.showTooltipTruncated = custom ? themeControls.showTooltipTruncated : true;
 		pref.showTooltipTimeline = custom ? themeControls.showTooltipTimeline : true;

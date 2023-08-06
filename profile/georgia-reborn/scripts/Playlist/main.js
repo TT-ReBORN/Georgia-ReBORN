@@ -125,6 +125,9 @@ g_properties.add_properties(
 // * Fixup properties
 g_properties.rows_in_header = Math.max(0, g_properties.rows_in_header);
 g_properties.rows_in_compact_header = Math.max(0, g_properties.rows_in_compact_header);
+if (!pref.playlistAutoHideScrollbar && !g_properties.show_scrollbar) {
+	g_properties.show_scrollbar = true;
+}
 
 // * Fix playlist panel state at startup
 if (pref.libraryLayoutSplitPreset || pref.libraryLayoutSplitPreset3 || pref.libraryLayoutSplitPreset4) {
