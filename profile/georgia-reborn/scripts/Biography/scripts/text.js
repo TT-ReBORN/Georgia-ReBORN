@@ -318,15 +318,15 @@ class Text {
 
 	// * METHODS * //
 
-	add(items, text) {
-		items.forEach(v => text = text && v ? `${text}\r\n\r\n${v}` : text || v);
-		return text;
-	}
-
 	activateTooltip(value, type) {
 		if (tooltipBio.Text == value && [this.rev.ix == this.rev.cur_ix, this.bio.ix == this.bio.cur_ix][type]) return;
 		tooltipBio.Text = value;
 		tooltipBio.Activate();
+	}
+
+	add(items, text) {
+		items.forEach(v => text = text && v ? `${text}\r\n\r\n${v}` : text || v);
+		return text;
 	}
 
 	albCalc() {
