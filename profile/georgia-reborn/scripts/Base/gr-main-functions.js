@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-06                                          * //
+// * Last change:    2023-08-07                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1051,7 +1051,13 @@ function manageBackup(make, restore) {
 
 		await setThemeSettings(true);
 		await copyFolders();
-		await fb.ShowPopupMessage(`>>> Georgia-ReBORN theme backup has been successfully saved <<<\n\n${fb.ProfilePath}backup`, 'Theme backup');
+
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			await fb.ShowPopupMessage(`>>> Theme backup has been successfully saved <<<\n\n${fb.ProfilePath}backup`, 'Theme backup');
+		} else {
+			const msg = `Theme backup has been successfully saved:\n\n${fb.ProfilePath}backup\n\n\n`;
+			await popUpBox.confirm('Georgia-ReBORN', msg, 'OK', false, false, 'center', false);
+		}
 	};
 
 	const restoreBackup = async () => {
@@ -1063,7 +1069,6 @@ function manageBackup(make, restore) {
 		await checkVersion();
 		await copyFolders();
 		await setThemeSettings();
-		await console.log('\n>>> Georgia-ReBORN theme backup has been successfully restored <<<\n\n');
 		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
 	};
 
@@ -1120,7 +1125,7 @@ function restoreBackupPlaylist() {
 
 		await checkVersion();
 		await copyFolders();
-		await console.log('\n>>> Playlist backup has been successfully restored <<<\n\n');
+		await console.log('\n>>> Georgia-ReBORN theme backup has been successfully restored <<<\n\n');
 		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
 	};
 
