@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-06                                          * //
+// * Last change:    2023-08-08                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -33,6 +33,8 @@ const WshShell = new ActiveXObject('WScript.Shell');
 ////////////////////
 // * COMPONENTS * //
 ////////////////////
+/** @type {*} Checks if the foo_chronflow component is installed. */
+const componentChronFlow = utils.CheckComponent('foo_chronflow') || utils.CheckComponent('foo_chronflow_mod');
 /** @type {*} Checks if the foo_enhanced_playcount component is installed. */
 const componentEnhancedPlaycount = utils.CheckComponent('foo_enhanced_playcount');
 /** @type {*} Checks if the foo_uie_eslyric component is installed. */

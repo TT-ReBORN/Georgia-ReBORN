@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-06                                          * //
+// * Last change:    2023-08-08                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -5407,6 +5407,7 @@ function initBlackAndWhiteReborn() {
  * Init all colors that are used in the chronflow user-component, mostly called from initTheme().
  */
 function initChronflowColors() {
+	if (!componentChronFlow) return;
 	try {
 		const chron = new ActiveXObject('chron.IChronControl');
 		if (chron) {

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-07                                          * //
+// * Last change:    2023-08-08                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -256,7 +256,7 @@ function initTheme() {
 	if (fullInit && pref.playlistRowHover) playlist.title_color_change();
 	initLibraryColors();
 	if (fullInit && img.labels.overlayDark) ui.getItemColours(); // Library
-	if (fullInit) uiBio.getColours(); // Library
+	if (fullInit) uiBio.getColours(); // Biography
 	initBiographyColors();
 	if (fullInit) txt.getText(true); // Biography
 	initMainColors();
@@ -1876,7 +1876,7 @@ function displayNextImage() {
 function fetchAlbumArt(metadb) {
 	albumArtList = [];
 
-	const fetchAlbumArtProfiler = timings.showDebugTiming ? fb.CreateProfiler('fetchNewAlbumArt') : null;
+	const fetchAlbumArtProfiler = timings.showDebugTiming ? fb.CreateProfiler('fetchAlbumArt') : null;
 
 	const autoRandomPreset =
 		(!['off', 'track'].includes(pref.presetAutoRandomMode) && pref.presetSelectMode === 'harmonic' ||
@@ -2236,7 +2236,7 @@ function disposeDiscArtImage(discArtImg) {
  * Fetches new disc art when a new album is being played.
  */
 function fetchDiscArt() {
-	const fetchDiscArtProfiler = timings.showDebugTiming ? fb.CreateProfiler('fetchNewDiscArt') : null;
+	const fetchDiscArtProfiler = timings.showDebugTiming ? fb.CreateProfiler('fetchDiscArt') : null;
 	let discArtExists = true;
 	let discArtPath;
 
