@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-08                                          * //
+// * Last change:    2023-08-19                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -225,9 +225,9 @@ function initPanels() {
  */
 function initPanelWidthAuto() {
 	resizeArtwork(true);
-	playlist.on_size(ww, wh);
-	setLibrarySize();
-	setBiographySize();
+	if (displayPlaylist) playlist.on_size(ww, wh);
+	if (displayLibrary) setLibrarySize();
+	if (displayBiography) setBiographySize();
 }
 
 
@@ -1794,7 +1794,7 @@ function createButtonObjects(ww, wh) {
 		count = 0;
 		btns.stop = new Button(x, y, w, h, 'Stop', btnImg.Stop, 'Stop');
 		btns.prev = new Button(calcX(++count), y, w, h, 'Previous', btnImg.Previous, 'Previous');
-		btns.play = new Button(calcX(++count), y, w, h, 'Play/Pause', !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause, 'Play');
+		btns.play = new Button(calcX(++count), y, w, h, 'PlayPause', !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause, 'Play');
 		btns.next = new Button(calcX(++count), y, w, h, 'Next', btnImg.Next, 'Next');
 
 		if (showPlaybackOrderBtn) {
@@ -2918,6 +2918,8 @@ function initLibraryLayout() {
 	// * Split layout presets
 	else if (pref.libraryLayout === 'split' && libraryLayoutSplitPresets) {
 		if (pref.layout !== 'default') return;
+
+		if (!g_properties.show_header) updatePlaylist();
 
 		if (pref.playlistLayout === 'full') {
 			pref.playlistLayout = 'normal';

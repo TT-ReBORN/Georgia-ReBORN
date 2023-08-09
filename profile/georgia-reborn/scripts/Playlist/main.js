@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-06                                          * //
+// * Last change:    2023-08-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1224,7 +1224,7 @@ class Playlist extends List {
 		// * Top menu options Playlist submenu
 		cmm.append_item('Playlist options menu', () => {
 			if (displayPlaylist || displayPlaylistArtwork) {
-				onOptionsMenu(state.mouse_x, state.mouse_y, true, true);
+				topMenuOptions(state.mouse_x, state.mouse_y, true, true);
 			}
 		});
 		cmm.append_separator();
@@ -1243,6 +1243,9 @@ class Playlist extends List {
 			if (displayPlaylist && !displayBiography && !pref.displayLyrics) {
 				cmm.append_item(displayPlaylist && pref.playlistLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 					pref.playlistLayout = pref.playlistLayout === 'normal' ? 'full' : 'normal';
+					if (pref.panelWidthAuto) {
+						initPanelWidthAuto();
+					}
 					playlist.on_size(ww, wh);
 					jumpSearch.on_size();
 					window.Repaint();
@@ -1258,6 +1261,9 @@ class Playlist extends List {
 						pref.biographyLayout = 'normal';
 						displayPlaylist = true;
 					}
+					if (pref.panelWidthAuto) {
+						initPanelWidthAuto();
+					}
 					initBiographyLayout();
 				});
 				cmm.append_separator();
@@ -1266,6 +1272,9 @@ class Playlist extends List {
 				cmm.append_item(pref.displayLyrics && pref.lyricsLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 					pref.lyricsLayout = pref.lyricsLayout === 'normal' ? 'full' : 'normal';
 					displayPlaylist = !displayPlaylist;
+					if (pref.panelWidthAuto) {
+						initPanelWidthAuto();
+					}
 					resizeArtwork(true);
 					window.Repaint();
 				});
@@ -2194,22 +2203,14 @@ class Playlist extends List {
 	 * Collapses the playlist header.
 	 */
 	collapse_header() {
-		setTimeout(() => {
-			playlist.auto_collapse_header();
-			Header.prototype.clearCachedHeaderImg.apply(this);
-			Header.prototype.repaint.apply(this);
-		}, 1);
+		playlist.auto_collapse_header();
 	}
 
 	/**
 	 * Expands the playlist header.
 	 */
 	expand_header() {
-		setTimeout(() => {
-			this.collapse_handler.expand_all();
-			Header.prototype.clearCachedHeaderImg.apply(this);
-			Header.prototype.repaint.apply(this);
-		}, 1);
+		this.collapse_handler.expand_all();
 	}
 
 	/**
@@ -2670,7 +2671,7 @@ class Playlist extends List {
 			}
 			else {
 				this.collapse_handler.expand_all();
-				this.collapse_handler = null;
+				// this.collapse_handler = null;
 			}
 
 			this.initialize_list();
@@ -5584,6 +5585,10 @@ class Row extends ListItem {
 	 * @param {GdiGraphics} gr
 	 */
 	draw(gr) {
+		if (pref.panelWidthAuto && !g_properties.show_header) {
+			this.x = playlist.x;
+		}
+
 		gr.SetSmoothingMode(SmoothingMode.None);
 
 		if (this.is_odd && g_properties.show_row_stripes) {
@@ -8064,7 +8069,7 @@ function PlaylistManager(x, y, w, h) {
 			}
 		}
 
-		onPlaylistsMenu(x, y);
+		topMenuPlaylists(x, y);
 
 		this.repaint();
 	};

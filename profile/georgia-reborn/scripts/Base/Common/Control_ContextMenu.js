@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-06                                          * //
+// * Last change:    2023-08-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -600,7 +600,7 @@ Object.assign(qwr_utils, {
 		topMenuDisplayMenu.append_item('Compact top menu', () => {
 			pref.topMenuCompact = !pref.topMenuCompact;
 			if (!pref.topMenuCompact) {
-				onTopMenuCompact(false);
+				topMenuCompact(false);
 				topMenuCompactExpanded = false;
 			}
 		}, { is_checked: pref.topMenuCompact });
@@ -689,16 +689,16 @@ Object.assign(qwr_utils, {
 		if (!showArtworkLayoutAlbumArt) {
 			cmac.append_item(showPlaylist ? 'Playlist options menu' : showDetails ? 'Details options menu' : displayLibrary ? 'Library options menu' : 'Lyrics options menu', () => {
 				if (showPlaylist) {
-					onOptionsMenu(displayBiography ? state.mouse_x * 2 : state.mouse_x, state.mouse_y, true, true);
+					topMenuOptions(displayBiography ? state.mouse_x * 2 : state.mouse_x, state.mouse_y, true, true);
 				}
 				else if (showDetails) {
-					onOptionsMenu(state.mouse_x, state.mouse_y, true, false, true);
+					topMenuOptions(state.mouse_x, state.mouse_y, true, false, true);
 				}
 				else if (displayLibrary) {
-					onOptionsMenu(state.mouse_x, state.mouse_y, true, false, false, true);
+					topMenuOptions(state.mouse_x, state.mouse_y, true, false, false, true);
 				}
 				else if (pref.displayLyrics) {
-					onOptionsMenu(state.mouse_x, state.mouse_y, true, false, false, false, false, true);
+					topMenuOptions(state.mouse_x, state.mouse_y, true, false, false, false, false, true);
 				}
 			});
 		}
@@ -763,6 +763,9 @@ Object.assign(qwr_utils, {
 			if (displayPlaylist && !displayBiography && !pref.displayLyrics) {
 				cmac.append_item(displayPlaylist && pref.playlistLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 					pref.playlistLayout = pref.playlistLayout === 'normal' ? 'full' : 'normal';
+					if (pref.panelWidthAuto) {
+						initPanelWidthAuto();
+					}
 					repaintWindowRectAreas();
 					g_properties.auto_collapse = false;
 					playlist.expand_header();
@@ -777,6 +780,9 @@ Object.assign(qwr_utils, {
 				cmac.append_item(displayLibrary && pref.libraryLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 					pref.libraryLayout = pref.libraryLayout === 'normal' ? 'full' : 'normal';
 					displayPlaylist = pref.libraryLayout === 'split';
+					if (pref.panelWidthAuto) {
+						initPanelWidthAuto();
+					}
 					initLibraryLayout();
 					initButtonState();
 				});
@@ -784,6 +790,9 @@ Object.assign(qwr_utils, {
 					cmac.append_item(displayLibrary && pref.libraryLayout === 'normal' ? 'Change layout to split' : 'Change layout to normal', () => {
 						pref.libraryLayout = pref.libraryLayout === 'normal' ? 'split' : 'normal';
 						displayPlaylist = pref.libraryLayout === 'split';
+						if (pref.panelWidthAuto) {
+							initPanelWidthAuto();
+						}
 						initLibraryLayout();
 						initButtonState();
 					});
@@ -795,6 +804,9 @@ Object.assign(qwr_utils, {
 					pref.lyricsLayout = pref.lyricsLayout === 'normal' ? 'full' : 'normal';
 					displayPlaylist = !displayPlaylist;
 					lyricsLayoutFullWidth = pref.lyricsLayout === 'full';
+					if (pref.panelWidthAuto) {
+						initPanelWidthAuto();
+					}
 					repaintWindowRectAreas();
 					resizeArtwork(true);
 					initButtonState();

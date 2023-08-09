@@ -157,7 +157,7 @@ class MenuItems {
 		menu.newItem({
 			str: 'Library options menu',
 			func: () => {
-				onOptionsMenu(state.mouse_x, state.mouse_y, true, false, false, true);
+				topMenuOptions(state.mouse_x, state.mouse_y, true, false, false, true);
 			},
 			separator: () => true
 		});
@@ -182,6 +182,9 @@ class MenuItems {
 				displayPlaylist = pref.libraryLayout === 'split';
 				g_properties.auto_collapse = false;
 				playlist.expand_header();
+				if (pref.panelWidthAuto) {
+					initPanelWidthAuto();
+				}
 				initLibraryLayout();
 			},
 			hide: () => pref.layout === 'default' && pref.libraryDesign === 'flowMode' || pref.layout !== 'default'
@@ -191,6 +194,9 @@ class MenuItems {
 			func: () => {
 				pref.libraryLayout = pref.libraryLayout === 'split' ? 'full' : 'split';
 				displayPlaylist = pref.libraryLayout === 'split';
+				if (pref.panelWidthAuto) {
+					initPanelWidthAuto();
+				}
 				initLibraryLayout();
 			},
 			separator: () => true,

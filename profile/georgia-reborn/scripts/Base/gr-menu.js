@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-06                                          * //
+// * Last change:    2023-08-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -21,7 +21,7 @@
  * @param {number} x The x-coordinate.
  * @param {number} y The y-coordinate.
  */
-function onRatingMenu(x, y) {
+function topMenuRating(x, y) {
 	const handle = new FbMetadbHandleList();
 	const metadb = fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem(); if (!metadb) return;
 	const noStream = !metadb.RawPath.startsWith('http');
@@ -71,7 +71,7 @@ function onRatingMenu(x, y) {
  * @param {boolean} biography Appends main Biography menu to the Biography context menu.
  * @param {boolean} lyrics Appends main Lyrics menu to the Lyrics context menu.
  */
-function onOptionsMenu(x, y, context_menu, playlist, details, library, biography, lyrics) {
+function topMenuOptions(x, y, context_menu, playlist, details, library, biography, lyrics) {
 	activeMenu = true;
 	state.mouse_x = x;
 	state.mouse_y = y;

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-07-31                                          * //
+// * Last change:    2023-08-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -84,13 +84,11 @@ class Button {
 	}
 
 	/**
-	 * Checks if the mouse is within the boundaries of a button.
-	 * @param {number} x The x-coordinate.
-	 * @param {number} y The y-coordinate.
+	 * Gets the enabled state of a button.
 	 * @returns {boolean} True or false.
 	 */
-	mouseInThis(x, y) {
-		return (this.x <= x) && (x <= this.x + this.w) && (this.y <= y) && (y <= this.y + this.h);
+	get enable() {
+		return this.enabled;
 	}
 
 	/**
@@ -107,18 +105,55 @@ class Button {
 	}
 
 	/**
-	 * Gets the enabled state of a button.
-	 * @returns {boolean} True or false.
+	 * Controls the alpha values of buttons during different states (hover, down) and repaints them accordingly.
 	 */
-	get enable() {
-		return this.enabled;
-	}
+	btnAlphaTimer() {
+		const trace = false;
+		const buttonHoverInStep = 40;
+		const buttonHoverOutStep = 15;
+		const buttonDownInStep = 100;
+		const buttonDownOutStep = 50;
+		const buttonTimerDelay = 25;
 
-	/**
-	 * Repaints the button to update its state.
-	 */
-	repaint() {
-		window.RepaintRect(this.x, this.y, this.w, this.h);
+		if (!buttonTimer) {
+			buttonTimer = setInterval(() => {
+				for (const i in activatedBtns) {
+					switch (activatedBtns[i].state) {
+						case 0:
+							activatedBtns[i].hoverAlpha = Math.max(0, activatedBtns[i].hoverAlpha -= buttonHoverOutStep);
+							activatedBtns[i].downAlpha = Math.max(0, activatedBtns[i].downAlpha -= Math.max(0, buttonDownOutStep));
+							activatedBtns[i].repaint();
+							break;
+						case 1:
+							activatedBtns[i].hoverAlpha = Math.min(255, activatedBtns[i].hoverAlpha += buttonHoverInStep);
+							activatedBtns[i].downAlpha = Math.max(0, activatedBtns[i].downAlpha -= buttonDownOutStep);
+							activatedBtns[i].repaint();
+							break;
+						case 2:
+							activatedBtns[i].downAlpha = Math.min(255, activatedBtns[i].downAlpha += buttonDownInStep);
+							activatedBtns[i].hoverAlpha = Math.max(0, activatedBtns[i].hoverAlpha -= buttonDownInStep);
+							activatedBtns[i].repaint();
+							break;
+					}
+				}
+
+				// Test button alpha values and turn button timer off when it's not required;
+				for (let i = activatedBtns.length - 1; i >= 0; i--) {
+					if ((!activatedBtns[i].hoverAlpha && !activatedBtns[i].downAlpha) ||
+						activatedBtns[i].hoverAlpha === 255 || activatedBtns[i].downAlpha === 255) {
+						activatedBtns.splice(i, 1);
+					}
+				}
+
+				if (!activatedBtns.length) {
+					clearInterval(buttonTimer);
+					buttonTimer = null;
+					trace && console.log('buttonTimerStarted = false');
+				}
+			}, buttonTimerDelay);
+
+			trace && console.log('buttonTimerStarted = true');
+		}
 	}
 
 	/**
@@ -128,14 +163,14 @@ class Button {
 	changeState(state) {
 		this.state = state;
 		activatedBtns.push(this);
-		buttonAlphaTimer();
+		this.btnAlphaTimer();
 	}
 
 	/**
 	 * Passes in the current button as an argument via the btnActionHandler.
 	 */
 	onClick() {
-		btnActionHandler(this);
+		buttonActionHandler(this);
 	}
 
 	/**
@@ -144,15 +179,31 @@ class Button {
 	onDblClick() {
 		// We don't do anything with dblClick currently
 	}
+
+	/**
+	 * Checks if the mouse is within the boundaries of a button.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
+	mouseInThis(x, y) {
+		return (this.x <= x) && (x <= this.x + this.w) && (this.y <= y) && (y <= this.y + this.h);
+	}
+
+	/**
+	 * Repaints the button to update its state.
+	 */
+	repaint() {
+		window.RepaintRect(this.x, this.y, this.w, this.h);
+	}
 }
 
 
-///////////////////////
-// * EVENT HANDLER * //
-///////////////////////
+//////////////////////////////
+// * BUTTON EVENT HANDLER * //
+//////////////////////////////
 /**
  * Handles various mouse button events.
- * @class
  */
 class ButtonEventHandler {
 	/**
@@ -262,366 +313,63 @@ class ButtonEventHandler {
 				tt.showDelayed(`${fb.Volume.toFixed(2)} dB`);
 			}
 			else if (lastOverButton.id === 'PlaybackOrder') {
-				tt.showDelayed(playbackOrderTooltip());
+				tt.showDelayed(fb.PlaybackOrder === undefined ? 'Playback order' : btnPlaybackOrder(true));
 			}
 		}
 	}
 }
 
 
-////////////////////////
-// * ACTION HANDLER * //
-////////////////////////
+///////////////////////////////
+// * BUTTON ACTION HANDLER * //
+///////////////////////////////
 /**
  * Handles button action events based on menu, panel and button type.
  * @param {Button} btn The instance of the button.
  */
-function btnActionHandler(btn) {
-	/**
-	 * Restores the Lyrics layout to full width.
-	 */
-	const restoreLyricsLayout = () => {
-		if (!pref.displayLyrics || !lyricsLayoutFullWidth) return;
-		if (!displayBiography) displayPlaylist = false;
-		pref.lyricsLayout = 'full';
-	};
-
+function buttonActionHandler(btn) {
 	switch (btn.id) {
 		// * TOP MENU COMPACT * //
-		case 'Menu':
-			onTopMenuCompact();
-			break;
+		case 'Menu': topMenuCompact(); break;
 
-		// * TOP MENU DEFAULT FOOBAR2000 BUTTONS * //
+		// * TOP MENU MAIN - DEFAULT FOOBAR2000 * //
 		case 'File':
 		case 'Edit':
 		case 'View':
 		case 'Playback':
 		case 'Library':
 		case 'Help':
-			onMainMenu(btn.x, btn.y + btn.h, btn.id);
+			topMenuMain(btn.x, btn.y + btn.h, btn.id);
 			break;
-		case 'Playlists':
-			onPlaylistsMenu(btn.x, btn.y + btn.h);
-			break;
+		case 'Playlists': topMenuPlaylists(btn.x, btn.y + btn.h); break;
 
 		// * TOP MENU THEME BUTTONS * //
-		case 'Options':
-			onOptionsMenu(btn.x, btn.y + btn.h);
-			break;
-
-		case 'Details':
-			displayPlaylist = !displayPlaylist;
-			displayDetails = pref.layout === 'artwork' ? displayPlaylist : !displayPlaylist;
-			displayBiography = false;
-			if (pref.lyricsLayout !== 'full') pref.displayLyrics = false;
-			if (pref.lyricsActiveState) { pref.displayLyrics = true; initLyrics(); }
-
-			if (displayPlaylist) {
-				if (pref.layout === 'artwork') {
-					if (pref.lyricsActiveState) pref.displayLyrics = false;
-					displayPlaylistArtwork = false;
-					playlist.x = ww; // Move hidden Playlist offscreen to disable Playlist mouse functions in Details
-					resizeArtwork(true);
-				} else {
-					if (pref.panelWidthAuto) resizeArtwork(true);
-					playlist.on_size(ww, wh);
-				}
-			}
-			if (displayLibrary) {
-				displayLibrary = false;
-				if (pref.layout === 'default') {
-					displayPlaylist = pref.libraryLayout === 'split' ? false : !displayPlaylist; // * Library Playlist split layout
-					displayDetails = pref.layout === 'artwork' ? displayPlaylist : !displayPlaylist;
-				}
-			}
-			if (pref.lyricsLayout === 'full' && pref.displayLyrics) {
-				if (pref.lyricsActiveState) pref.lyricsLayout = 'normal';
-				if (!pref.lyricsActiveState) pref.displayLyrics = false;
-				if (pref.layout === 'default' && displayPlaylist) displayPlaylist = !displayPlaylist;
-			} else {
-				restoreLyricsLayout();
-			}
-
-			resizeArtwork(false);
-			if (displayCustomThemeMenu) {
-				if (customThemeMenuCall) displayPanel('details');
-				reinitCustomThemeMenu();
-				customThemeMenuCall = false;
-			}
-			setDiscArtRotationTimer();
-			initButtonState();
-			window.Repaint();
-			break;
-
-		case 'PlaylistArtworkLayout':
-			displayPlaylistArtwork = !displayPlaylistArtwork;
-			displayPlaylist = false;
-			displayLibrary = false;
-			displayBiography = false;
-			pref.displayLyrics = pref.lyricsActiveState && !displayPlaylistArtwork;
-
-			playlist.on_size(ww, wh);
-			resizeArtwork(false);
-			initButtonState();
-			window.Repaint();
-			break;
-
-		case 'library':
-			displayLibrary = !displayLibrary;
-			displayBiography = false;
-			pref.displayLyrics = pref.lyricsActiveState;
-
-			if (displayCustomThemeMenu) reinitCustomThemeMenu();
-
-			if (displayLibrary) {
-				if (pref.layout === 'default') {
-					displayPlaylist = true;
-				}
-				else if (pref.layout === 'artwork') {
-					displayPlaylistArtwork = false;
-					pref.displayLyrics = false;
-					resizeArtwork(true);
-				}
-			}
-			if (displayPlaylist) {
-				displayPlaylist = false;
-			}
-			else if (pref.layout === 'default') {
-				displayPlaylist = true;
-				playlist.on_size(ww, wh);
-				restoreLyricsLayout();
-			}
-
-			// * Library Playlist split layout
-			if (displayPlaylistLibrary()) {
-				displayPlaylist = true;
-				playlist.on_size(ww, wh);
-				setLibrarySize();
-			} else if (pref.layout === 'default' && pref.libraryLayout === 'split') {
-				displayPlaylist = true;
-				initLibraryLayout();
-			}
-			if (pref.layout === 'default' && pref.libraryLayout !== 'split' &&
-				pref.libraryLayoutSplitPreset  || pref.libraryLayoutSplitPreset2 ||
-				pref.libraryLayoutSplitPreset3 || pref.libraryLayoutSplitPreset4) {
-				g_properties.auto_collapse = false;
-				playlist.expand_header();
-			}
-
-			// Update Library nowPlaying state if song was played from the Playlist
-			lib.treeState(false, 2);
-			if (pref.libraryAutoScrollNowPlaying) {
-				pop.getNowplaying();
-				pop.nowPlayingShow();
-			}
-
-			resizeArtwork(false);
-			setDiscArtRotationTimer();
-			initButtonState();
-			window.Repaint();
-			break;
-
-		case 'Biography':
-			displayPlaylist = pref.layout === 'default';
-			displayLibrary = false;
-			displayBiography = !displayBiography;
-			pref.displayLyrics = false;
-
-			if (displayCustomThemeMenu) reinitCustomThemeMenu();
-
-			// Switch playlist to normal width to prevent panel overlaying
-			pref.playlistLayoutNormal = pref.playlistLayout === 'full' && displayBiography;
-
-			if (!displayBiography && pref.lyricsActiveState) {
-				pref.displayLyrics = true;
-				restoreLyricsLayout();
-				// Switch playlist to normal width to prevent panel overlaying
-				pref.playlistLayoutNormal = pref.playlistLayout === 'full' && pref.displayLyrics;
-			}
-			if (displayBiography && (pref.biographyLayout === 'full' || pref.layout === 'artwork')) {
-				pref.layout === 'artwork' ? displayPlaylistArtwork = false : displayPlaylist = false;
-			} else {
-				if (pref.panelWidthAuto) resizeArtwork(true);
-				playlist.on_size(ww, wh);
-			}
-
-			biography.on_playback_new_track(); // Update Biography state
-			resizeArtwork(false);
-			setDiscArtRotationTimer();
-			initButtonState();
-			window.Repaint();
-			break;
-
-		case 'Lyrics':
-			displayPlaylist = pref.layout === 'default';
-			displayPlaylistArtwork = false;
-			displayLibrary = false;
-			displayBiography = false;
-			pref.displayLyrics = !pref.displayLyrics;
-
-			if (displayCustomThemeMenu) reinitCustomThemeMenu();
-
-			// Switch playlist to normal width to prevent panel overlaying
-			pref.playlistLayoutNormal = pref.playlistLayout === 'full' && pref.displayLyrics;
-			// Save lyric active state
-			pref.lyricsActiveState = pref.displayLyrics && pref.lyricsRememberActiveState;
-
-			if (pref.lyricsLayout === 'full' && pref.displayLyrics) {
-				displayPlaylist = false;
-				if (!pref.panelWidthAuto) resizeArtwork(true);
-			} else if (!pref.panelWidthAuto) {
-				playlist.on_size(ww, wh);
-			}
-
-			initLyrics();
-			resizeArtwork(pref.layout === 'artwork');
-			initButtonState();
-			window.Repaint();
-			break;
-
-		case 'Rating':
-			onRatingMenu(btn.x, btn.y + btn.h);
-			break;
+		case 'Options':	topMenuOptions(btn.x, btn.y + btn.h); break;
+		case 'Details':	btnDetails(); break;
+		case 'PlaylistArtworkLayout': btnPlaylistArtwork(); break;
+		case 'library':	btnLibrary(); break;
+		case 'Biography': btnBiography(); break;
+		case 'Lyrics': btnLyrics(); break;
+		case 'Rating': topMenuRating(btn.x, btn.y + btn.h); break;
 
 		// * TOP MENU 🗕 🗖 ✖ CAPTION BUTTONS * //
-		case 'Minimize':
-			fb.RunMainMenuCommand('View/Hide');
-			break;
-		case 'Maximize': {
-			if (pref.maximizeToFullscreen) { // F11 shortcut ( on_key_down() ) for going into/out fullscreen mode, disabled/not supported in Artwork layout, ESC also exits fullscreen mode
-				UIHacks.FullScreen = !UIHacks.FullScreen;
-			} else {
-				UIHacks.MainWindowState = UIHacks.MainWindowState === WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
-			}
-			break;
-		}
-		case 'Close':
-			fb.Exit();
-			break;
+		case 'Minimize': fb.RunMainMenuCommand('View/Hide'); break;
+		case 'Maximize': btnMaximize(); break;
+		case 'Close': fb.Exit(); break;
 
 		// * LOWER BAR TRANSPORT BUTTONS * //
-		case 'Stop':
-			fb.Stop();
-			if (pref.returnToHomeOnPlaybackStop && pref.layout !== 'compact') {
-				switch (pref.showPanelOnStartup) {
-					case 'playlist':
-						displayPlaylist = true;
-						displayLibrary = false;
-						displayBiography = false;
-						pref.displayLyrics = false;
-						playlist.on_size(ww, wh);
-						break;
-					case 'details':
-						displayPlaylist = pref.layout === 'artwork';
-						displayPlaylistArtwork = false;
-						displayLibrary = false;
-						displayBiography = false;
-						pref.displayLyrics = false;
-						break;
-					case 'library':
-						displayPlaylist = false;
-						displayPlaylistArtwork = false;
-						displayLibrary = true;
-						displayBiography = false;
-						pref.displayLyrics = false;
-						break;
-					case 'biography':
-						displayPlaylist = true;
-						displayPlaylistArtwork = false;
-						displayLibrary = true;
-						displayBiography = true;
-						pref.displayLyrics = false;
-						playlist.on_size(ww, wh);
-						break;
-					case 'lyrics':
-						displayPlaylist = true;
-						displayPlaylistArtwork = false;
-						displayLibrary = false;
-						displayBiography = false;
-						pref.displayLyrics = true;
-						playlist.on_size(ww, wh);
-						break;
-					case 'cover': // Artwork layout
-						displayPlaylist = false;
-						displayPlaylistArtwork = false;
-						displayLibrary = false;
-						displayBiography = false;
-						pref.displayLyrics = false;
-						break;
-				}
-			}
-			window.Repaint();
-			initButtonState();
-			break;
-		case 'Previous':
-			fb.Prev();
-			break;
-		case 'Play/Pause':
-			fb.PlayOrPause();
-			break;
-		case 'Next':
-			fb.Next();
-			break;
-		case 'PlaybackOrder':
-			switch (plman.PlaybackOrder) {
-				case 0:	 fb.PlaybackOrder = PlaybackOrder.RepeatTrack; break;
-				case 2:	 fb.PlaybackOrder = PlaybackOrder.ShuffleTracks; break;
-				case 4:	 fb.PlaybackOrder = PlaybackOrder.Default; break;
-				default: fb.PlaybackOrder = PlaybackOrder.RepeatTrack; break;
-			}
-			updatePlaybackOrderButton();
-			break;
-		case 'Repeat':
-			switch (fb.PlaybackOrder) {
-				case PlaybackOrder.Default:	fb.PlaybackOrder = PlaybackOrder.RepeatPlaylist; break;
-				case PlaybackOrder.RepeatPlaylist: fb.PlaybackOrder = PlaybackOrder.RepeatTrack; break;
-				case PlaybackOrder.RepeatTrack:	fb.PlaybackOrder = PlaybackOrder.Default; break;
-				default: fb.PlaybackOrder = PlaybackOrder.RepeatPlaylist; break;
-			}
-			break;
-		case 'Shuffle':
-			fb.PlaybackOrder = fb.PlaybackOrder !== PlaybackOrder.ShuffleTracks ? PlaybackOrder.ShuffleTracks : PlaybackOrder.Default;
-			break;
-		case 'Reload':
-			window.Reload();
-			break;
-		case 'Volume':
-			if (pref.autoHideVolumeBar) {
-				volumeBtn.toggleVolumeBar();
-			} else {
-				fb.VolumeMute();
-			}
-			break;
-		case 'Mute':
-			fb.VolumeMute();
-			break;
-		case 'PlaybackTime':
-			pref.switchPlaybackTime = !pref.switchPlaybackTime;
-			on_playback_time();
-			break;
-
-		// * MISC * //
-		case 'Console':
-			fb.RunMainMenuCommand('View/Console');
-			break;
-		case 'Settings':
-			fb.ShowPreferences();
-			break;
-		case 'Properties':
-			fb.RunContextCommand('Properties');
-			break;
+		case 'Stop': fb.Stop(); btnStop(); break;
+		case 'Previous': fb.Prev();	break;
+		case 'PlayPause': fb.PlayOrPause(); break;
+		case 'Next': fb.Next();	break;
+		case 'PlaybackOrder': btnPlaybackOrder(); break;
+		case 'Reload': window.Reload(); break;
+		case 'Volume': btnVolume(); break;
+		case 'Mute': fb.VolumeMute(); break;
+		case 'PlaybackTime': btnPlaybackTime(); break;
 
 		// * PLAYLIST HISTORY BUTTONS * //
-		case 'Back': case 'Forward':
-			if (btn.isEnabled && btn.isEnabled()) {
-				if (btn.id === 'Back') {
-					playlistHistory.back();
-				} else {
-					playlistHistory.forward();
-				}
-			}
-			break;
+		case 'Back': case 'Forward': btnPlaylistHistory(btn); break;
 	}
 }
 
@@ -633,7 +381,7 @@ function btnActionHandler(btn) {
  * Collapses the top menu to compact mode or expands it to normal.
  * @param {boolean} collapse Wether the top menu should be collapsed or not.
  */
-function onTopMenuCompact(collapse) {
+function topMenuCompact(collapse) {
 	pref.showTopMenuCompact = !pref.showTopMenuCompact;
 	if (collapse) {
 		if (topMenuCompactExpanded) return;
@@ -643,6 +391,53 @@ function onTopMenuCompact(collapse) {
 	createButtonObjects(ww, wh);
 	initButtonState();
 	repaintWindow();
+}
+
+
+////////////////////////////
+// * TOP MENU MAIN MENU * //
+////////////////////////////
+/**
+ * Opens the main menu and handles different menu options based on the provided name.
+ * @param {number} x The x-coordinate.
+ * @param {number} y The y-coordinate.
+ * @param {string} name The name of the menu.
+ */
+function topMenuMain(x, y, name) {
+	mainMenuOpen = true;
+	activeMenu = true;
+
+	if (name) {
+		const menu = new Menu(name);
+
+		if (name === 'Help') {
+			const themeMenu = new Menu('Theme');
+
+			const statusMenu = new Menu('Status');
+			statusMenu.addItem('All fonts installed', fontsInstalled, undefined, true);
+			statusMenu.addItem('Artist logos found', IsFile(`${paths.artistlogos}Metallica.png`), undefined, true);
+			statusMenu.addItem('Record label logos found', IsFile(`${paths.labelsBase}Republic.png`), undefined, true);
+			statusMenu.addItem('Flag images found', IsFile(`${paths.flagsBase + (RES_4K ? '64\\' : '32\\')}United-States.png`), undefined, true);
+			statusMenu.addItem('foo_enhanced_playcount installed', componentEnhancedPlaycount, () => { RunCmd('https://www.foobar2000.org/components/view/foo_enhanced_playcount'); });
+			statusMenu.appendTo(themeMenu);
+
+			const updatesMenu = new Menu('Updates');
+			updatesMenu.addToggleItem('Auto-check for theme updates', pref, 'checkForUpdates', () => { scheduleUpdateCheck(1000); });
+			updatesMenu.addItem('Check for latest theme update', false, () => { checkForUpdates(true); });
+			updatesMenu.appendTo(themeMenu);
+
+			themeMenu.addItem('Releases', false, () => { RunCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/releases'); });
+			themeMenu.addItem('Changelog', false, () => { RunCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/blob/master/profile/georgia-reborn/docs/CHANGELOG.md'); });
+			themeMenu.addItem('Bug tracker', false, () => { RunCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/issues'); });
+			themeMenu.appendTo(menu);
+		}
+		menu.initFoobarMenu(name);
+
+		const ret = menu.trackPopupMenu(x, y);
+		menu.doCallback(ret);
+	}
+
+	activeMenu = false;
 }
 
 
@@ -657,7 +452,7 @@ function onTopMenuCompact(collapse) {
  * @param {number} y The y-coordinate.
  * @returns {boolean} True or false.
  */
-function onPlaylistsMenu(x, y) {
+function topMenuPlaylists(x, y) {
 	mainMenuOpen = true;
 	activeMenu = true;
 
@@ -801,56 +596,392 @@ function onPlaylistsMenu(x, y) {
 }
 
 
-///////////////////////
-// * TOP MENU HELP * //
-///////////////////////
+//////////////////////////
+// * TOP MENU BUTTONS * //
+//////////////////////////
 /**
- * Opens the main menu and handles different menu options based on the provided name.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {string} name The name of the menu.
+ * Handles the Details panel button action in the top menu.
  */
-function onMainMenu(x, y, name) {
-	mainMenuOpen = true;
-	activeMenu = true;
+function btnDetails() {
+	displayPlaylist = !displayPlaylist;
+	displayDetails = pref.layout === 'artwork' ? displayPlaylist : !displayPlaylist;
+	displayBiography = false;
+	if (pref.lyricsLayout !== 'full') pref.displayLyrics = false;
+	if (pref.lyricsActiveState) { pref.displayLyrics = true; initLyrics(); }
 
-	if (name) {
-		const menu = new Menu(name);
-
-		if (name === 'Help') {
-			const themeMenu = new Menu('Theme');
-
-			const statusMenu = new Menu('Status');
-			statusMenu.addItem('All fonts installed', fontsInstalled, undefined, true);
-			statusMenu.addItem('Artist logos found', IsFile(`${paths.artistlogos}Metallica.png`), undefined, true);
-			statusMenu.addItem('Record label logos found', IsFile(`${paths.labelsBase}Republic.png`), undefined, true);
-			statusMenu.addItem('Flag images found', IsFile(`${paths.flagsBase + (RES_4K ? '64\\' : '32\\')}United-States.png`), undefined, true);
-			statusMenu.addItem('foo_enhanced_playcount installed', componentEnhancedPlaycount, () => { RunCmd('https://www.foobar2000.org/components/view/foo_enhanced_playcount'); });
-			statusMenu.appendTo(themeMenu);
-
-			const updatesMenu = new Menu('Updates');
-			updatesMenu.addToggleItem('Auto-check for theme updates', pref, 'checkForUpdates', () => { scheduleUpdateCheck(1000); });
-			updatesMenu.addItem('Check for latest theme update', false, () => { checkForUpdates(true); });
-			updatesMenu.appendTo(themeMenu);
-
-			themeMenu.addItem('Releases', false, () => { RunCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/releases'); });
-			themeMenu.addItem('Changelog', false, () => { RunCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/blob/master/profile/georgia-reborn/docs/CHANGELOG.md'); });
-			themeMenu.addItem('Bug tracker', false, () => { RunCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/issues'); });
-			themeMenu.appendTo(menu);
+	if (displayPlaylist) {
+		if (pref.layout === 'artwork') {
+			if (pref.lyricsActiveState) pref.displayLyrics = false;
+			displayPlaylistArtwork = false;
+			playlist.x = ww; // Move hidden Playlist offscreen to disable Playlist mouse functions in Details
+			resizeArtwork(true);
+		} else {
+			if (pref.panelWidthAuto) {
+				initPanelWidthAuto();
+			}
+			playlist.on_size(ww, wh);
 		}
-		menu.initFoobarMenu(name);
-
-		const ret = menu.trackPopupMenu(x, y);
-		menu.doCallback(ret);
 	}
 
-	activeMenu = false;
+	if (displayLibrary) {
+		displayLibrary = false;
+		if (pref.layout === 'default') {
+			displayPlaylist = pref.libraryLayout === 'split' ? false : !displayPlaylist; // * Library Playlist split layout
+			displayDetails = pref.layout === 'artwork' ? displayPlaylist : !displayPlaylist;
+		}
+	}
+
+	if (pref.lyricsLayout === 'full' && pref.displayLyrics) {
+		if (pref.lyricsActiveState) pref.lyricsLayout = 'normal';
+		if (!pref.lyricsActiveState) pref.displayLyrics = false;
+		if (pref.layout === 'default' && displayPlaylist) displayPlaylist = !displayPlaylist;
+	} else {
+		restoreLyricsLayout();
+	}
+
+	resizeArtwork(false);
+	if (displayCustomThemeMenu) {
+		if (customThemeMenuCall) displayPanel('details');
+		reinitCustomThemeMenu();
+		customThemeMenuCall = false;
+	}
+	setDiscArtRotationTimer();
+	initButtonState();
+	window.Repaint();
 }
 
 
-//////////////////////
-// * BUTTON STATE * //
-//////////////////////
+/**
+ * Handles the Playlist panel button action for artwork layout in the top menu.
+ */
+function btnPlaylistArtwork() {
+	displayPlaylistArtwork = !displayPlaylistArtwork;
+	displayPlaylist = false;
+	displayLibrary = false;
+	displayBiography = false;
+	pref.displayLyrics = pref.lyricsActiveState && !displayPlaylistArtwork;
+
+	playlist.on_size(ww, wh);
+	resizeArtwork(false);
+	initButtonState();
+	window.Repaint();
+}
+
+
+/**
+ * Handles the Library panel button action in the top menu.
+ */
+function btnLibrary() {
+	displayLibrary = !displayLibrary;
+	displayBiography = false;
+	pref.displayLyrics = pref.lyricsActiveState;
+
+	if (displayCustomThemeMenu) reinitCustomThemeMenu();
+
+	if (displayLibrary) {
+		if (pref.layout === 'default') {
+			displayPlaylist = true;
+		}
+		else if (pref.layout === 'artwork') {
+			displayPlaylistArtwork = false;
+			pref.displayLyrics = false;
+			resizeArtwork(true);
+		}
+		if (pref.panelWidthAuto) {
+			initPanelWidthAuto();
+			window.Repaint();
+		}
+	}
+
+	if (displayPlaylist) {
+		displayPlaylist = false;
+	} else if (pref.layout === 'default') {
+		displayPlaylist = true;
+		playlist.on_size(ww, wh);
+		restoreLyricsLayout();
+	}
+
+	// * Library Playlist split layout
+	if (displayPlaylistLibrary()) {
+		displayPlaylist = true;
+		playlist.on_size(ww, wh);
+		setLibrarySize();
+	} else if (pref.layout === 'default' && pref.libraryLayout === 'split') {
+		displayPlaylist = true;
+		initLibraryLayout();
+	}
+
+	if (pref.layout === 'default' && pref.libraryLayout !== 'split' &&
+		pref.libraryLayoutSplitPreset  || pref.libraryLayoutSplitPreset2 ||
+		pref.libraryLayoutSplitPreset3 || pref.libraryLayoutSplitPreset4) {
+		g_properties.auto_collapse = false;
+		playlist.expand_header();
+	}
+
+	// Update Library nowPlaying state if song was played from the Playlist
+	lib.treeState(false, 2);
+	if (pref.libraryAutoScrollNowPlaying) {
+		pop.getNowplaying();
+		pop.nowPlayingShow();
+	}
+
+	resizeArtwork(false);
+	setDiscArtRotationTimer();
+	initButtonState();
+	window.Repaint();
+}
+
+
+/**
+ * Handles the Biography panel button action in the top menu.
+ */
+function btnBiography() {
+	displayPlaylist = pref.layout === 'default';
+	displayLibrary = false;
+	displayBiography = !displayBiography;
+	pref.displayLyrics = false;
+
+	if (displayCustomThemeMenu) reinitCustomThemeMenu();
+
+	// Switch playlist to normal width to prevent panel overlaying
+	pref.playlistLayoutNormal = pref.playlistLayout === 'full' && displayBiography;
+
+	if (!displayBiography && pref.lyricsActiveState) {
+		pref.displayLyrics = true;
+		restoreLyricsLayout();
+		// Switch playlist to normal width to prevent panel overlaying
+		pref.playlistLayoutNormal = pref.playlistLayout === 'full' && pref.displayLyrics;
+	}
+
+	if (displayBiography && (pref.biographyLayout === 'full' || pref.layout === 'artwork')) {
+		pref.layout === 'artwork' ? displayPlaylistArtwork = false : displayPlaylist = false;
+	} else {
+		if (pref.panelWidthAuto) {
+			initPanelWidthAuto();
+		}
+		playlist.on_size(ww, wh);
+	}
+
+	biography.on_playback_new_track(); // Update Biography state
+	resizeArtwork(false);
+	setDiscArtRotationTimer();
+	initButtonState();
+	window.Repaint();
+}
+
+
+/**
+ * Handles the Lyrics panel button action in the top menu.
+ */
+function btnLyrics() {
+	displayPlaylist = pref.layout === 'default';
+	displayPlaylistArtwork = false;
+	displayLibrary = false;
+	displayBiography = false;
+	pref.displayLyrics = !pref.displayLyrics;
+
+	if (displayCustomThemeMenu) reinitCustomThemeMenu();
+
+	// Switch playlist to normal width to prevent panel overlaying
+	pref.playlistLayoutNormal = pref.playlistLayout === 'full' && pref.displayLyrics;
+	// Save lyric active state
+	pref.lyricsActiveState = pref.displayLyrics && pref.lyricsRememberActiveState;
+
+	if (pref.lyricsLayout === 'full' && pref.displayLyrics) {
+		displayPlaylist = false;
+		resizeArtwork(true);
+	} else {
+		playlist.on_size(ww, wh);
+	}
+
+	if (pref.panelWidthAuto) {
+		initPanelWidthAuto();
+	}
+
+	initLyrics();
+	resizeArtwork(pref.layout === 'artwork');
+	initButtonState();
+	window.Repaint();
+}
+
+
+/**
+ * Handles the maximize button action in the top menu, player goes into fullscreen and resumes player size.
+ */
+function btnMaximize() {
+	if (pref.maximizeToFullscreen) { // F11 shortcut ( on_key_down() ) for going into/out fullscreen mode, disabled/not supported in Artwork layout, ESC also exits fullscreen mode
+		UIHacks.FullScreen = !UIHacks.FullScreen;
+	} else {
+		UIHacks.MainWindowState = UIHacks.MainWindowState === WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+	}
+}
+
+
+///////////////////////////
+// * LOWER BAR BUTTONS * //
+///////////////////////////
+/**
+ * Handles the stop button action in the lower bar, displays the set panel based on pref.showPanelOnStartup when playback stops.
+ */
+function btnStop() {
+	if (pref.returnToHomeOnPlaybackStop && pref.layout !== 'compact') {
+		switch (pref.showPanelOnStartup) {
+			case 'playlist':
+				displayPlaylist = true;
+				displayLibrary = false;
+				displayBiography = false;
+				pref.displayLyrics = false;
+				playlist.on_size(ww, wh);
+				break;
+			case 'details':
+				displayPlaylist = pref.layout === 'artwork';
+				displayPlaylistArtwork = false;
+				displayLibrary = false;
+				displayBiography = false;
+				pref.displayLyrics = false;
+				break;
+			case 'library':
+				displayPlaylist = false;
+				displayPlaylistArtwork = false;
+				displayLibrary = true;
+				displayBiography = false;
+				pref.displayLyrics = false;
+				break;
+			case 'biography':
+				displayPlaylist = true;
+				displayPlaylistArtwork = false;
+				displayLibrary = true;
+				displayBiography = true;
+				pref.displayLyrics = false;
+				playlist.on_size(ww, wh);
+				break;
+			case 'lyrics':
+				displayPlaylist = true;
+				displayPlaylistArtwork = false;
+				displayLibrary = false;
+				displayBiography = false;
+				pref.displayLyrics = true;
+				playlist.on_size(ww, wh);
+				break;
+			case 'cover': // Artwork layout
+				displayPlaylist = false;
+				displayPlaylistArtwork = false;
+				displayLibrary = false;
+				displayBiography = false;
+				pref.displayLyrics = false;
+				break;
+		}
+	}
+
+	window.Repaint();
+	initButtonState();
+}
+
+
+/**
+ * Handles the play button action in the lower bar, toggles between playback play or pause state.
+ */
+function btnPlayPause() {
+	const showTransportControls = pref[`showTransportControls_${pref.layout}`];
+	if (!showTransportControls) return;
+	btns.play.img = !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause;
+	btns.play.repaint();
+}
+
+
+/**
+ * Handles the playback order button action in the lower bar, toggles the current playback order.
+ * @param {boolean} tooltip Shows the playback order tooltip.
+ */
+function btnPlaybackOrder(tooltip) {
+	const showTransportControls = pref[`showTransportControls_${pref.layout}`];
+	if (!showTransportControls) return;
+
+	/**
+	 * Sets the button image, playback order preference, and foobar2000 playback order.
+	 * @param {GdiBitmap} imgValue The value of btnImg.PlaybackDefault, btnImg.PlaybackReplay, or btnImg.PlaybackShuffle.
+	 * @param {string} prefValue The value of 'Default', 'Repeat', or 'Shuffle'.
+	 * @param {string} fbValue The value of PlaybackOrder.Default, PlaybackOrder.RepeatTrack, or PlaybackOrder.ShuffleTracks.
+	 * @param {string} cmd The value of top menu Playback > Order.
+	 */
+	const setPlaybackOrder = (imgValue, prefValue, fbValue, cmd) => {
+		btns.playbackOrder.img = imgValue;
+		pref.playbackOrder = prefValue;
+		fb.PlaybackOrder = fbValue;
+		fb.RunMainMenuCommand(`Playback/Order/${cmd}`);
+	}
+
+	switch (plman.PlaybackOrder) {
+		case PlaybackOrder.Default:
+			if (tooltip) return 'Default';
+			setPlaybackOrder(btnImg.PlaybackReplay, 'Repeat', PlaybackOrder.RepeatTrack, 'Repeat (track)');
+			break;
+
+		case PlaybackOrder.RepeatPlaylist:
+			if (tooltip) return 'Repeat (playlist)'; /* falls through */
+		case PlaybackOrder.RepeatTrack:
+			if (tooltip) return 'Repeat (track)';
+			setPlaybackOrder(btnImg.PlaybackShuffle, 'Shuffle', PlaybackOrder.ShuffleTracks, 'Shuffle (tracks)');
+			break;
+
+		case PlaybackOrder.Random:
+			if (tooltip) return 'Random'; /* falls through */
+		case PlaybackOrder.ShuffleTracks:
+			if (tooltip) return 'Shuffle (tracks)'; /* falls through */
+		case PlaybackOrder.ShuffleAlbums:
+			if (tooltip) return 'Shuffle (albums)'; /* falls through */
+		case PlaybackOrder.ShuffleFolders:
+			if (tooltip) return 'Shuffle (folders)';
+			setPlaybackOrder(btnImg.PlaybackDefault, 'Default', PlaybackOrder.Default, 'Default');
+			break;
+	}
+
+	btns.playbackOrder.repaint();
+}
+
+
+/**
+ * Handles the volume button action in the lower bar, toggles the volume bar.
+ */
+function btnVolume() {
+	if (pref.autoHideVolumeBar) {
+		volumeBtn.toggleVolumeBar();
+	} else {
+		fb.VolumeMute();
+	}
+}
+
+
+/**
+ * Handles the playback time button action in the lower bar, toggles the playback time to remaining or normal.
+ */
+function btnPlaybackTime() {
+	pref.switchPlaybackTime = !pref.switchPlaybackTime;
+	on_playback_time();
+}
+
+
+//////////////////////////////////
+// * PLAYLIST HISTORY BUTTONS * //
+//////////////////////////////////
+/**
+ * Handles the playlist history button action in the playlist manager bar.
+ * @param {string} btn The playlist history back or forward button.
+ */
+function btnPlaylistHistory(btn) {
+	if (btn.isEnabled && btn.isEnabled()) {
+		if (btn.id === 'Back') {
+			playlistHistory.back();
+		} else {
+			playlistHistory.forward();
+		}
+	}
+}
+
+
+//////////////////////////////
+// * BUTTON & PANEL STATE * //
+//////////////////////////////
 /**
  * Displays the Playlist and Library side by side, called when Library layout is in split mode.
  * @param {boolean} control Limits the area to the width and height of the playlist panel.
@@ -921,119 +1052,16 @@ function initButtonState() {
 			btns.details.enabled = true;
 			btns.details.changeState(ButtonState.Down);
 		}
-	} catch (e) {}
-}
-
-
-/**
- * Updates the play button image based on the current playback state.
- */
-function updatePlayButton() {
-	const showTransportControls = pref[`showTransportControls_${pref.layout}`];
-	if (!showTransportControls) return;
-	btns.play.img = !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause;
-	btns.play.repaint();
-}
-
-
-/**
- * Updates the playback order button based on the current playback order.
- */
-function updatePlaybackOrderButton() {
-	const showTransportControls = pref[`showTransportControls_${pref.layout}`];
-	if (!showTransportControls) return;
-
-	switch (fb.PlaybackOrder) {
-		case PlaybackOrder.Default:
-			fb.RunMainMenuCommand('Playback/Order/Default');
-			pref.playbackOrder = 'Default';
-			btns.playbackOrder.img = btnImg.PlaybackDefault;
-			break;
-		case PlaybackOrder.RepeatTrack:
-			fb.RunMainMenuCommand('Playback/Order/Repeat (track)');
-			pref.playbackOrder = 'Repeat';
-			btns.playbackOrder.img = btnImg.PlaybackReplay;
-			break;
-		case PlaybackOrder.ShuffleTracks:
-			fb.RunMainMenuCommand('Playback/Order/Shuffle (tracks)');
-			pref.playbackOrder = 'Shuffle';
-			btns.playbackOrder.img = btnImg.PlaybackShuffle;
-			break;
 	}
-	btns.playbackOrder.repaint();
+	catch (e) {}
 }
 
 
 /**
- * Returns a tooltip text based on the current playback order.
- * @returns {string} The playback order name as a tooltip.
+ * Restores the Lyrics layout to full width.
  */
-function playbackOrderTooltip() {
-	switch (fb.PlaybackOrder) {
-		case PlaybackOrder.Default:
-			return 'Default';
-		case PlaybackOrder.RepeatTrack:
-		case PlaybackOrder.RepeatPlaylist:
-			return 'Repeat';
-		case PlaybackOrder.ShuffleTracks:
-		case PlaybackOrder.ShuffleAlbums:
-		case PlaybackOrder.ShuffleFolders:
-		case PlaybackOrder.Random:
-			return 'Shuffle';
-		default:
-			return 'Playback Order';
-	}
-}
-
-
-/**
- * Controls the alpha values of buttons during different states (hover, down) and repaints them accordingly.
- */
-function buttonAlphaTimer() {
-	const trace = false;
-	const buttonHoverInStep = 40;
-	const buttonHoverOutStep = 15;
-	const buttonDownInStep = 100;
-	const buttonDownOutStep = 50;
-	const buttonTimerDelay = 25;
-
-	if (!buttonTimer) {
-		buttonTimer = setInterval(() => {
-			for (const i in activatedBtns) {
-				switch (activatedBtns[i].state) {
-					case 0:
-						activatedBtns[i].hoverAlpha = Math.max(0, activatedBtns[i].hoverAlpha -= buttonHoverOutStep);
-						activatedBtns[i].downAlpha = Math.max(0, activatedBtns[i].downAlpha -= Math.max(0, buttonDownOutStep));
-						activatedBtns[i].repaint();
-						break;
-					case 1:
-						activatedBtns[i].hoverAlpha = Math.min(255, activatedBtns[i].hoverAlpha += buttonHoverInStep);
-						activatedBtns[i].downAlpha = Math.max(0, activatedBtns[i].downAlpha -= buttonDownOutStep);
-						activatedBtns[i].repaint();
-						break;
-					case 2:
-						activatedBtns[i].downAlpha = Math.min(255, activatedBtns[i].downAlpha += buttonDownInStep);
-						activatedBtns[i].hoverAlpha = Math.max(0, activatedBtns[i].hoverAlpha -= buttonDownInStep);
-						activatedBtns[i].repaint();
-						break;
-				}
-			}
-
-			// Test button alpha values and turn button timer off when it's not required;
-			for (let i = activatedBtns.length - 1; i >= 0; i--) {
-				if ((!activatedBtns[i].hoverAlpha && !activatedBtns[i].downAlpha) ||
-					activatedBtns[i].hoverAlpha === 255 || activatedBtns[i].downAlpha === 255) {
-					activatedBtns.splice(i, 1);
-				}
-			}
-
-			if (!activatedBtns.length) {
-				clearInterval(buttonTimer);
-				buttonTimer = null;
-				trace && console.log('buttonTimerStarted = false');
-			}
-		}, buttonTimerDelay);
-
-		trace && console.log('buttonTimerStarted = true');
-	}
+function restoreLyricsLayout() {
+	if (!pref.displayLyrics || !lyricsLayoutFullWidth) return;
+	if (!displayBiography) displayPlaylist = false;
+	pref.lyricsLayout = 'full';
 }

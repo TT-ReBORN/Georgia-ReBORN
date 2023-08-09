@@ -270,6 +270,9 @@ class MenuItemsBio {
 					pref.biographyLayout = 'normal';
 					displayPlaylist = true;
 				}
+				if (pref.panelWidthAuto) {
+					initPanelWidthAuto();
+				}
 				initBiographyLayout();
 			},
 			separator: true,
