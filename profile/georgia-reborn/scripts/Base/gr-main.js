@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-03                                          * //
+// * Last change:    2023-08-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -283,7 +283,7 @@ function drawDetailsMetadataGrid(gr) {
 	gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 	gr.SetInterpolationMode(InterpolationMode.HighQualityBicubic);
 
-	const displayDetails = (pref.layout === 'artwork' ? !displayPlaylistArtwork : !displayPlaylist) && !displayLibrary && !displayBiography;
+	const displayDetails = (pref.layout === 'artwork' ? !displayPlaylistArtwork && displayPlaylist : !displayPlaylist) && !displayLibrary && !displayBiography;
 	if (!displayDetails || pref.lyricsLayout === 'full' && pref.displayLyrics) return;
 
 	const drawTextGrid = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> textGrid') : null;
