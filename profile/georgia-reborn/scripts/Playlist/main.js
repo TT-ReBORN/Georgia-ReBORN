@@ -6459,7 +6459,21 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 	 * Checks whether the playlist is in a state where it can accept a drop.
 	 * @returns {boolean} True or false.
 	 */
-	this.can_drop = () => !plman.IsPlaylistLocked(cur_playlist_idx);
+	this.can_drop = () => {
+		let playlistIndex = false;
+		return () => {
+			if (plman.PlaylistCount > 0 && cur_playlist_idx >= 0 && cur_playlist_idx < plman.PlaylistCount && !plman.IsPlaylistLocked(cur_playlist_idx)) {
+				return true;
+			} else {
+				if (!playlistIndex) { // If no playlist exists, create a new one.
+					const playlist_idx = plman.CreatePlaylist(0, 'Default');
+					plman.ActivePlaylist = playlist_idx;
+					playlistIndex = true;
+				}
+				return false;
+			}
+		};
+	};
 
 	/**
 	 * Handles a drop event.
@@ -8213,12 +8227,14 @@ function PlaylistManager(x, y, w, h) {
 	 * @param {state} panel_state The state of the playlist manager text button.
 	 */
 	function draw_on_image(gr, x, y, w, h, panel_state) {
+		const headerFontSize      = pref[`playlistHeaderFontSize_${pref.layout}`];
+		const showPlaylistManager = pref[`showPlaylistManager_${pref.layout}`];
 		let text_color;
 		let bg_color;
 
 		switch (panel_state) {
 			case state.normal: {
-				text_color = pref.styleBlend && pref.autoHidePlman ? '' : g_pl_colors.plman_text_normal;
+				text_color = pref.styleBlend && pref.autoHidePlman || !showPlaylistManager ? '' : g_pl_colors.plman_text_normal;
 				bg_color = g_pl_colors.plman_bg;
 				break;
 			}
@@ -8236,7 +8252,6 @@ function PlaylistManager(x, y, w, h) {
 
 		if (!pref.styleBlend) gr.FillSolidRect(x, y, w, h, bg_color); // Playlist Manager Hide Top Rows that shouldn't be visible
 		// * Need to apply text rendering AntiAliasGridFit when using style Blend or when using custom theme fonts with larger font sizes
-		const headerFontSize = pref[`playlistHeaderFontSize_${pref.layout}`];
 		gr.SetTextRenderingHint(pref.styleBlend || pref.customThemeFonts && headerFontSize > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
 
 		if (plman.ActivePlaylist !== -1 && plman.IsPlaylistLocked(plman.ActivePlaylist)) {
@@ -8274,7 +8289,6 @@ function PlaylistManager(x, y, w, h) {
 		const btn_y = geo.topMenuHeight + yCorr;
 		const btns_w = Math.round(h);
 		const hasPlaylistHistory = playlistHistory.canBack() || playlistHistory.canForward();
-		const showPlaylistManager = pref[`showPlaylistManager_${pref.layout}`];
 		const showBtns = (pref.autoHidePlman && (panel_state !== state.normal) || !pref.autoHidePlman);
 
 		if (pref.showPlaylistHistory && hasPlaylistHistory && showPlaylistManager) {

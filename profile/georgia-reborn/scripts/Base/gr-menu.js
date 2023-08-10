@@ -1877,10 +1877,7 @@ function playlistOptions(menu, context_menu) {
 	playlistManagerShowMenu.addToggleItem('Compact', pref, 'showPlaylistManager_compact', playlistCallback);
 	playlistManagerShowMenu.appendTo(playlistManagerMenu);
 	playlistManagerMenu.addToggleItem('Show playlist history', pref, 'showPlaylistHistory',  () => { repaintWindow(); });
-	playlistManagerMenu.addToggleItem('Auto-hide', pref, 'autoHidePlman',  () => {
-		initPlaylistColors();
-		repaintWindow();
-	});
+	playlistManagerMenu.addToggleItem('Auto-hide', pref, 'autoHidePlman',  () => { initTheme(); });
 	playlistManagerMenu.appendTo(playlistMenu);
 
 	// * ALBUM HEADER * //
