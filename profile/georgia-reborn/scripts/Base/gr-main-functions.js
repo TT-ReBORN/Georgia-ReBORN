@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-13                                          * //
+// * Last change:    2023-08-14                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -89,10 +89,6 @@ function initMain() {
 	// * when the panel has focus and a dedicated playlist viewer doesn't.
 	plman.SetActivePlaylistContext(); // Once on startup
 
-	if (pref.panelWidthAuto) {
-		resizeArtwork(true);
-		playlist.on_size(ww, wh);
-	}
 	if (!libraryInitialized) {
 		initLibraryPanel();
 		setLibrarySize();
@@ -109,6 +105,9 @@ function initMain() {
 			initLibraryLayout();
 			loadingThemeComplete = true;
 		}, 100);
+	}
+	if (pref.panelWidthAuto) {
+		initPanelWidthAuto();
 	}
 
 	if (!pref.lyricsRememberPanelState) {
@@ -1970,6 +1969,10 @@ function loadImageFromAlbumArtList(index) {
 		if (index !== 0 && !newTrackFetchingArtwork) return;
 		newTrackFetchingArtwork = false;
 
+		if (pref.panelWidthAuto) {
+			initPanelWidthAuto();
+		}
+
 		if (autoRandomPreset) { // Prevent double initialization for theme presets to save performance, getThemeColors() and initTheme() already handled in getRandomThemePreset()
 			setRandomThemePreset();
 		} else {
@@ -2015,8 +2018,7 @@ function loadImageFromAlbumArtList(index) {
 				newTrackFetchingArtwork = false;
 			}
 
-			// * Init panel width only when playlist is in full width ( i.e on startup or on_playback_stop ) to save performance
-			if (pref.panelWidthAuto && playlist.x === 0) {
+			if (pref.panelWidthAuto) {
 				initPanelWidthAuto();
 			} else {
 				resizeArtwork(true);

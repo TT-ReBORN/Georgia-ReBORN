@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-12                                          * //
+// * Last change:    2023-08-14                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -242,11 +242,6 @@ function on_playback_new_track(metadb) {
 	lastAlbumVinylSide = $(`$if2(${tf.vinyl_side},ZZ)`);
 	currentLastPlayed = $(tf.last_played);
 	playingPlaylist = pref.showGridPlayingPlaylist ? $(tf.playing_playlist = plman.GetPlaylistName(plman.PlayingPlaylist)) : '';
-
-	// * Init panel width only when playlist is in full width ( i.e on startup or on_playback_stop ) to save performance
-	if (pref.panelWidthAuto && playlist.x === 0) {
-		initPanelWidthAuto();
-	}
 
 	if (fb.GetNowPlaying()) {
 		on_metadb_changed(); // Refresh panel
