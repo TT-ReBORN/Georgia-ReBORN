@@ -1104,12 +1104,12 @@ function restoreBackupPlaylist() {
 	};
 
 	const restoreBackup = async () => {
-		if (!checkFolders()) return;
-
 		pref.restoreBackupPlaylist = false;
+		if (!checkFolders()) return;
 
 		await checkVersion();
 		await copyFolders();
+		await setThemeSettings();
 		await console.log('\n>>> Georgia-ReBORN theme backup has been successfully restored <<<\n\n');
 		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
 	};
