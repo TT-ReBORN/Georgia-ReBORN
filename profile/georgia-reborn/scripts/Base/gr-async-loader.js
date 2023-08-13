@@ -184,7 +184,7 @@ function on_paint(gr) {
 	const ww = window.Width;
 	const wh = window.Height;
 	const col = {};
-	const RES_4K = pref_displayRes === '4k' || (ww > 3000 || wh > 1300);
+	const RES_4K = pref_displayRes === '4K' || (ww > 3000 || wh > 1300);
 
 	// * FONTS * //
 	const Font = (name, size, style) => {
@@ -331,8 +331,8 @@ function drawLogo(gr) {
 	// * SYSTEM * //
 	const ww = window.Width;
 	const wh = window.Height;
-	const RES_4K = pref_displayRes === '4k' || (ww > 3000 || wh > 1300);
-	const plus4k = RES_4K ? '4k-' : '';
+	const RES_4K = pref_displayRes === '4K' || (ww > 3000 || wh > 1300);
+	const plus4k = RES_4K ? '4K-' : '';
 
 	// * PATHS * //
 	const paths = {};

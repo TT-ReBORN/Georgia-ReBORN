@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-10                                          * //
+// * Last change:    2023-08-12                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -762,37 +762,37 @@ function playerSizeOptions(menu) {
 		if (size === 'small') {
 			if (!RES_4K && !RES_QHD) {
 				pref.playerSize_HD_small = true;
-				windowHandler.playerSize_HD_small();
+				display.playerSize_HD_small();
 			} else if (RES_QHD) {
 				pref.playerSize_QHD_small = true;
-				windowHandler.playerSize_QHD_small();
+				display.playerSize_QHD_small();
 			} else if (RES_4K) {
-				pref.playerSize_4k_small = true;
-				windowHandler.playerSize_4k_small();
+				pref.playerSize_4K_small = true;
+				display.playerSize_4K_small();
 			}
 		}
 		if (size === 'normal') {
 			if (!RES_4K && !RES_QHD) {
 				pref.playerSize_HD_normal = true;
-				windowHandler.playerSize_HD_normal();
+				display.playerSize_HD_normal();
 			} else if (RES_QHD) {
 				pref.playerSize_QHD_normal = true;
-				windowHandler.playerSize_QHD_normal();
+				display.playerSize_QHD_normal();
 			} else if (RES_4K) {
-				pref.playerSize_4k_normal = true;
-				windowHandler.playerSize_4k_normal();
+				pref.playerSize_4K_normal = true;
+				display.playerSize_4K_normal();
 			}
 		}
 		if (size === 'large') {
 			if (!RES_4K && !RES_QHD) {
 				pref.playerSize_HD_large = true;
-				windowHandler.playerSize_HD_large();
+				display.playerSize_HD_large();
 			} else if (RES_QHD) {
 				pref.playerSize_QHD_large = true;
-				windowHandler.playerSize_QHD_large();
+				display.playerSize_QHD_large();
 			} else if (RES_4K) {
-				pref.playerSize_4k_large = true;
-				windowHandler.playerSize_4k_large();
+				pref.playerSize_4K_large = true;
+				display.playerSize_4K_large();
 			}
 		}
 		repaintWindow();
@@ -815,20 +815,20 @@ function layoutOptions(menu) {
 			displayPlaylistArtwork = false;
 			displayBiography = false;
 			pref.displayLyrics = false;
-			windowHandler.layoutDefault();
+			display.layoutDefault();
 		}
 		if (pref.layout === 'artwork') {
 			displayPlaylist = false;
 			displayLibrary = false;
 			displayBiography = false;
-			windowHandler.layoutArtwork();
+			display.layoutArtwork();
 		}
 		if (pref.layout === 'compact') {
 			displayPlaylist = true;
 			displayLibrary = false;
 			displayBiography = false;
 			pref.displayLyrics = false;
-			windowHandler.layoutCompact();
+			display.layoutCompact();
 		}
 		initPanels();
 	}, pref.lockPlayerSize);
@@ -845,23 +845,23 @@ function layoutOptions(menu) {
 function displayOptions(menu) {
 	const displayResMenu = new Menu('Display');
 
-	displayResMenu.addItem('Auto-detect', false, () => { autoDetectRes(); });
+	displayResMenu.addItem('Auto-detect', false, () => { display.autoDetectRes(); });
 	displayResMenu.addSeparator();
-	displayResMenu.addRadioItems(['4K', 'QHD', 'HD'], pref.displayRes, ['4k', 'QHD', 'HD'], (res) => {
+	displayResMenu.addRadioItems(['4K', 'QHD', 'HD'], pref.displayRes, ['4K', 'QHD', 'HD'], (res) => {
 		pref.displayRes = res;
 		if (pref.layout === 'default') {
-			windowHandler.layoutDefault();
+			display.layoutDefault();
 		}
 		else if (pref.layout === 'artwork') {
-			windowHandler.layoutArtwork();
+			display.layoutArtwork();
 		}
 		else if (pref.layout === 'compact') {
-			windowHandler.layoutCompact();
+			display.layoutCompact();
 		}
-		if (pref.displayRes === '4k' || pref.displayRes === 'HD') {
-			setSizesFor4KorHD();
+		if (pref.displayRes === '4K' || pref.displayRes === 'HD') {
+			display.setSizesFor4KorHD();
 		} else if (pref.displayRes === 'QHD') {
-			setSizesForQHD();
+			display.setSizesForQHD();
 		}
 		initPanels();
 	});
@@ -2277,30 +2277,12 @@ function libraryOptions(menu, context_menu) {
 	libraryMenu.createRadioSubMenu('Design', ['Georgia-ReBORN', 'Traditional', 'Modern', 'Ultra-modern', 'Clean', 'List view', 'Covers (labels right)', 'Covers (labels bottom)', 'Covers (labels blend)', 'Flow mode'], pref.libraryDesign,
 		['reborn', 'traditional', 'modern', 'ultraModern', 'clean', 'facet', 'coversLabelsRight', 'coversLabelsBottom', 'coversLabelsBlend', 'flowMode'], (design) => {
 		pref.libraryDesign = design;
-		switch (pref.libraryDesign) {
-			case 'traditional':        panel.set('quickSetup',  0); break;
-			case 'modern':             panel.set('quickSetup',  1); break;
-			case 'ultraModern':        panel.set('quickSetup',  2); break;
-			case 'clean':              panel.set('quickSetup',  3); break;
-			case 'facet':              panel.set('quickSetup',  4); break;
-			case 'coversLabelsRight':  panel.set('quickSetup',  5); break;
-			case 'coversLabelsBottom': panel.set('quickSetup',  6); break;
-			case 'coversLabelsBlend':  panel.set('quickSetup',  7); break;
-			case 'artistLabelsRight':  panel.set('quickSetup',  8); break;
-			case 'flowMode':           panel.set('quickSetup', 11); pref.libraryLayout = 'full'; break;
-			case 'reborn':             panel.set('quickSetup', 12); break;
-		}
+		setLibraryDesign();
 	});
 
 	// * THEME * //
 	libraryMenu.createRadioSubMenu('Theme', ['Georgia-ReBORN', 'Dark', 'Blend', 'Light', 'Random', 'Cover'], pref.libraryTheme, [0, 1, 2, 3, 4, 5], (theme) => {
-		pref.libraryTheme = theme;
-		if      (pref.libraryTheme === 0) ppt.theme = 0;
-		else if (pref.libraryTheme === 1) ppt.theme = 1;
-		else if (pref.libraryTheme === 2) ppt.theme = 2;
-		else if (pref.libraryTheme === 3) ppt.theme = 3;
-		else if (pref.libraryTheme === 4) ppt.theme = 4;
-		else if (pref.libraryTheme === 5) ppt.theme = 5;
+		ppt.theme = pref.libraryTheme = theme;
 		initTheme();
 		library.on_colours_changed();
 		panel.updateProp(1);
@@ -2311,18 +2293,7 @@ function libraryOptions(menu, context_menu) {
 	const libraryAlbumArtMenu = new Menu('Album art');
 	const libraryThumbnailSizeMenu = new Menu('Thumbnail size');
 	libraryThumbnailSizeMenu.addRadioItems(['Auto (default)', 'Playlist', 'Mini', 'Small', 'Regular', 'Medium', 'Large', 'XL', 'XXL', 'MAX'], pref.libraryThumbnailSize, ['auto', 'playlist', 0, 1, 2, 3, 4, 5, 6, 7], (thumbnailSize) => {
-		pref.libraryThumbnailSize = thumbnailSize;
-		pref.libraryThumbnailSizeSaved = pref.libraryThumbnailSize;
-		switch (pref.libraryThumbnailSize) {
-			case 0: ppt.thumbNailSize = 0; break;
-			case 1: ppt.thumbNailSize = 1; break;
-			case 2: ppt.thumbNailSize = 2; break;
-			case 3: ppt.thumbNailSize = 3; break;
-			case 4: ppt.thumbNailSize = 4; break;
-			case 5: ppt.thumbNailSize = 5; break;
-			case 6: ppt.thumbNailSize = 6; break;
-			case 7: ppt.thumbNailSize = 7; break;
-		}
+		pref.libraryThumbnailSizeSaved = ppt.thumbNailSize = pref.libraryThumbnailSize = thumbnailSize;
 		setLibrarySize();
 		repaintWindow();
 	});
@@ -2623,12 +2594,7 @@ function biographyOptions(menu, context_menu) {
 	const biographyThemeMenu = new Menu('Theme');
 	biographyThemeMenu.addRadioItems(['Georgia-ReBORN', 'Dark', 'Blend', 'Light'], pref.biographyTheme, [0, 1, 2, 3], (theme) => {
 		pref.biographyTheme = theme;
-		switch (pref.biographyTheme) {
-			case 0: pptBio.theme = 0; break; // * User interface ( Default )
-			case 1: pptBio.theme = 1; break; // * Dark
-			case 2: pptBio.theme = 2; break; // * Blend
-			case 3: pptBio.theme = 3; break; // * Light
-		}
+		pptBio.theme = pref.biographyTheme;
 		initTheme();
 		biography.on_colours_changed();
 		uiBio.updateProp(1);
@@ -2640,21 +2606,7 @@ function biographyOptions(menu, context_menu) {
 	const biographyDisplayMenu = new Menu('Display');
 	biographyDisplayMenu.addRadioItems(['Image + text', 'Image', 'Text'], pref.biographyDisplay, ['Image+text', 'Image', 'Text'], (display) => {
 		pref.biographyDisplay = display;
-		switch (pref.biographyDisplay) {
-			case 'Image+text':
-				pptBio.style = 0;
-				pptBio.img_only = false;
-				pptBio.text_only = false;
-				break;
-			case 'Image':
-				pptBio.img_only = true;
-				pptBio.text_only = false;
-				break;
-			case 'Text':
-				pptBio.img_only = false;
-				pptBio.text_only = true;
-				break;
-		}
+		setBiographyDisplay();
 		uiBio.updateProp(1);
 	});
 	biographyDisplayMenu.addSeparator();
@@ -3361,7 +3313,7 @@ function settingsOptions(menu) {
 				pref.customThemeSettings = false;
 				config.resetConfiguration();
 				setThemeSettings();
-				windowHandler.layoutDefault();
+				display.layoutDefault();
 				console.log(`\n>>> Georgia-ReBORN's ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc file has been successfully reset to default. <<<\n\n`);
 			} catch (e) { window.Reload(); }
 		};
@@ -3421,7 +3373,7 @@ function settingsOptions(menu) {
 			switch (preset) {
 				case 'balanced': // Default
 					pref.playerSize = 'small';
-					autoDetectRes();
+					display.autoDetectRes();
 					pref.styleDefault = true;
 					pref.playlistAutoScrollNowPlaying = false;
 					pref.playlistSmoothScrolling = true;
@@ -3484,7 +3436,7 @@ function settingsOptions(menu) {
 				case 'lowestQuality':
 					pref.playerSize = 'small';
 					pref.playerSize_HD_small = true;
-					windowHandler.playerSize_HD_small();
+					display.playerSize_HD_small();
 					pref.styleDefault = true;
 					pref.displayRes = 'HD';
 					pref.playlistAutoScrollNowPlaying = false;

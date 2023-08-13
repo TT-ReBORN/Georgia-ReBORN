@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-10                                          * //
+// * Last change:    2023-08-12                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -226,7 +226,7 @@ function drawHiResAudioLogo(gr) {
 	if (!displayHiResAudioLogo) return;
 
 	const logoPath = `${fb.ProfilePath}georgia-reborn\\images\\misc\\`;
-	const plus4k = RES_4K ? '4k-' : '';
+	const plus4k = RES_4K ? '4K-' : '';
 	const plusRound = pref.hiResAudioBadgeRound ? '-round' : '';
 
 	if      (pref.hiResAudioBadgeSize === 'small')  paths.hiResAudioImage = `${logoPath}${plus4k}hi-res-audio-small${plusRound}.png`;
@@ -1303,19 +1303,6 @@ function drawMain(gr) {
 		else if (pref.styleGradient || pref.styleGradient2) {
 			gr.DrawLine(0, 0, ww, 0, 1, col.bg);
 			gr.FillGradRect(-0.5, 0, ww, 1, pref.styleGradient2 ? -200 : 0, pref.styleGradient2 ? 0 : col.styleGradient, pref.styleGradient2 ? col.styleGradient2 : 0, 0.5);
-		}
-	}
-
-	// * Layout handler - used to fix and force window size when changing, e.g 4K mode in HD display res
-	let hasNotified = false;
-	if (!hasNotified) {
-		// When on_paint is called all other panels are loaded and can receive notifications
-		window.NotifyOthers('layout_state', layoutHandler.layout.state);
-		hasNotified = true;
-		// Dirty, dirty hack to adjust window size
-		if (windowHandler.fixWindowSize()) {
-			// Size has changed, waiting for on_size
-			window.Repaint();
 		}
 	}
 

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-07                                          * //
+// * Last change:    2023-08-12                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -55,6 +55,8 @@ let preset = {};
 let themePlayerSize = {};
 /** @type {*} */
 let themeLayout = {};
+/** @type {*} */
+let themeDisplay = {};
 /** @type {*} */
 let themeBrightness = {};
 /** @type {*} */
@@ -194,9 +196,9 @@ pref.add_properties({
 
 	// * Player size
 	playerSize:                         ['Georgia-ReBORN - 04. Player size:', 'small'], // Default player size
-	playerSize_4k_small:                ['Georgia-ReBORN - 04. Player size: 4K Small',   false], // Player size Small 4K
-	playerSize_4k_normal:               ['Georgia-ReBORN - 04. Player size: 4K Normal',  false], // Player size Normal 4K
-	playerSize_4k_large:                ['Georgia-ReBORN - 04. Player size: 4K Large',   false], // Player size Large 4K
+	playerSize_4K_small:                ['Georgia-ReBORN - 04. Player size: 4K Small',   false], // Player size Small 4K
+	playerSize_4K_normal:               ['Georgia-ReBORN - 04. Player size: 4K Normal',  false], // Player size Normal 4K
+	playerSize_4K_large:                ['Georgia-ReBORN - 04. Player size: 4K Large',   false], // Player size Large 4K
 	playerSize_QHD_small:               ['Georgia-ReBORN - 04. Player size: QHD Small',  false], // Player size Small QHD
 	playerSize_QHD_normal:              ['Georgia-ReBORN - 04. Player size: QHD Normal', false], // Player size Normal QHD
 	playerSize_QHD_large:               ['Georgia-ReBORN - 04. Player size: QHD Large',  false], // Player size Large QHD
@@ -208,7 +210,7 @@ pref.add_properties({
 	layout:                             ['Georgia-ReBORN - 05. Layout', 'default'], // Default layout
 
 	// * Display resolution
-	displayRes:                         ['Georgia-ReBORN - 06. Display', '<not_set>'], // 4k: Switch to 4K res, QHD: switch to QHD res, HD: switch to HD res
+	displayRes:                         ['Georgia-ReBORN - 06. Display', '<not_set>'], // 4K: Switch to 4K res, QHD: switch to QHD res, HD: switch to HD res
 
 	// * Brightness
 	themeBrightness:                    ['Georgia-ReBORN - 07. Brightness', 'default'], // default: Theme brightness
@@ -509,12 +511,12 @@ pref.add_properties({
 	loadAsync:                          ['Georgia-ReBORN - 16. System: Load Theme Asynchronously', true], // Loads individual theme files asynchronously at startup to reduce risk of FSM throwing slow script error on startup
 	restoreBackupPlaylist:              ['Georgia-ReBORN - 16. System: Restore backup playlist', false], // false: Used to copy playlist files again after fb2k installation
 	savedLayout:                        ['Georgia-ReBORN - 16. System: Saved layout', 'default'], // Default saved layout
-	savedWidth_default:                 ['Georgia-ReBORN - 16. System: Saved width (Default)',  RES_4K ? 2800 : RES_QHD ? 1280 : 1140], // Default saved width for Default layout
-	savedHeight_default:                ['Georgia-ReBORN - 16. System: Saved height (Default)', RES_4K ? 1720 : RES_QHD ?  800 :  730], // Default saved height for Default layout
-	savedWidth_artwork:                 ['Georgia-ReBORN - 16. System: Saved width (Artwork)',  RES_4K ? 1052 : RES_QHD ?  640 :  526], // Default saved width for Artwork layout
-	savedHeight_artwork:                ['Georgia-ReBORN - 16. System: Saved height (Artwork)', RES_4K ? 1372 : RES_QHD ?  800 :  686], // Default saved height for Artwork layout
-	savedWidth_compact:                 ['Georgia-ReBORN - 16. System: Saved width (Compact)',  RES_4K ?  964 : RES_QHD ?  540 :  484], // Default saved width for Compact layout
-	savedHeight_compact:                ['Georgia-ReBORN - 16. System: Saved height (Compact)', RES_4K ? 1720 : RES_QHD ?  800 :  730], // Default saved height for Compact layout
+	savedWidth_default:                 ['Georgia-ReBORN - 16. System: Saved width (Default)',  1140], // Default saved width for Default layout
+	savedHeight_default:                ['Georgia-ReBORN - 16. System: Saved height (Default)', 730], // Default saved height for Default layout
+	savedWidth_artwork:                 ['Georgia-ReBORN - 16. System: Saved width (Artwork)',  526], // Default saved width for Artwork layout
+	savedHeight_artwork:                ['Georgia-ReBORN - 16. System: Saved height (Artwork)', 686], // Default saved height for Artwork layout
+	savedWidth_compact:                 ['Georgia-ReBORN - 16. System: Saved width (Compact)',  484], // Default saved width for Compact layout
+	savedHeight_compact:                ['Georgia-ReBORN - 16. System: Saved height (Compact)', 730], // Default saved height for Compact layout
 	systemFirstLaunch:                  ['Georgia-ReBORN - 16. System: System first launch', true] // true: Init and reset to theme factory settings
 
 	// check_multich:                      ['Check for MultiChannel version', false] // true: Search paths in tf.MultiCh_paths to see if there is a multichannel version of the current album available
@@ -649,11 +651,23 @@ async function setThemeSettings(save) {
 	// * Player size
 	if (save) {
 		themePlayerSize.playerSize = pref.playerSize;
+		themePlayerSize.savedWidth_default = pref.savedWidth_default;
+		themePlayerSize.savedHeight_default = pref.savedHeight_default;
+		themePlayerSize.savedWidth_artwork = pref.savedWidth_artwork;
+		themePlayerSize.savedHeight_artwork = pref.savedHeight_artwork;
+		themePlayerSize.savedWidth_compact = pref.savedWidth_compact;
+		themePlayerSize.savedHeight_compact = pref.savedHeight_compact;
 	} else {
 		pref.playerSize = custom ? themePlayerSize.playerSize : 'small';
-		pref.playerSize_4k_small = false;   // ! System setting, not configurable for users
-		pref.playerSize_4k_normal = false;  // ! System setting, not configurable for users
-		pref.playerSize_4k_large = false;   // ! System setting, not configurable for users
+		pref.savedWidth_default = custom ? themePlayerSize.savedWidth_default : 1140;
+		pref.savedHeight_default = custom ? themePlayerSize.savedHeight_default : 730;
+		pref.savedWidth_artwork = custom ? themePlayerSize.savedWidth_artwork : 526;
+		pref.savedHeight_artwork = custom ? themePlayerSize.savedHeight_artwork : 686;
+		pref.savedWidth_compact = custom ? themePlayerSize.savedWidth_compact : 484;
+		pref.savedHeight_compact = custom ? themePlayerSize.savedHeight_compact : 730;
+		pref.playerSize_4K_small = false;   // ! System setting, not configurable for users
+		pref.playerSize_4K_normal = false;  // ! System setting, not configurable for users
+		pref.playerSize_4K_large = false;   // ! System setting, not configurable for users
 		pref.playerSize_QHD_small = false;  // ! System setting, not configurable for users
 		pref.playerSize_QHD_normal = false; // ! System setting, not configurable for users
 		pref.playerSize_QHD_large = false;  // ! System setting, not configurable for users
@@ -667,6 +681,13 @@ async function setThemeSettings(save) {
 		themeLayout.layout = pref.layout;
 	} else {
 		pref.layout = custom ? themeLayout.layout : 'default';
+	}
+
+	// * Display
+	if (save) {
+		themeDisplay.resolution = pref.displayRes;
+	} else {
+		pref.displayRes = custom ? themeDisplay.resolution : 'HD';
 	}
 
 	// * Brightness
@@ -1264,30 +1285,17 @@ async function setThemeSettings(save) {
 		themeLibrary.albumArtViewBy = ppt.albumArtViewBy;
 		themeLibrary.treeViewBy = ppt.treeViewBy;
 	} else {
-		pref.libraryLayout = custom ? themeLibrary.libraryLayout : 'normal';
+		pref.libraryDesign = custom ? themeLibrary.libraryDesign : 'reborn';
+		setLibraryDesign();
+
+		pref.libraryLayout = pref.libraryDesign === 'flowMode' ? 'full' : custom ? themeLibrary.libraryLayout : 'normal';
 		pref.libraryLayoutFullPreset = custom ? themeLibrary.libraryLayoutFullPreset : true;
 		pref.libraryLayoutSplitPreset = custom ? themeLibrary.libraryLayoutSplitPreset : true;
 		pref.libraryLayoutSplitPreset2 = custom ? themeLibrary.libraryLayoutSplitPreset2 : false;
 		pref.libraryLayoutSplitPreset3 = custom ? themeLibrary.libraryLayoutSplitPreset3 : false;
 		pref.libraryLayoutSplitPreset4 = custom ? themeLibrary.libraryLayoutSplitPreset4 : false;
-
-		pref.libraryDesign = custom ? themeLibrary.libraryDesign : 'reborn';
-		switch (pref.libraryDesign) {
-			case 'traditional':        panel.set('quickSetup',  0); break;
-			case 'modern':             panel.set('quickSetup',  1); break;
-			case 'ultraModern':        panel.set('quickSetup',  2); break;
-			case 'clean':              panel.set('quickSetup',  3); break;
-			case 'facet':              panel.set('quickSetup',  4); break;
-			case 'coversLabelsRight':  panel.set('quickSetup',  5); break;
-			case 'coversLabelsBottom': panel.set('quickSetup',  6); break;
-			case 'coversLabelsBlend':  panel.set('quickSetup',  7); break;
-			case 'artistLabelsRight':  panel.set('quickSetup',  8); break;
-			case 'flowMode':           panel.set('quickSetup', 11); pref.libraryLayout = 'full'; break;
-			case 'reborn':             panel.set('quickSetup', 12); break;
-		}
-
 		ppt.theme = pref.libraryTheme = custom ? themeLibrary.libraryTheme : 0;
-		ppt.thumbNailSize = pref.libraryThumbnailSize = custom ? themeLibrary.libraryThumbnailSize : 'auto';
+		pref.libraryThumbnailSizeSaved = ppt.thumbNailSize = pref.libraryThumbnailSize = custom ? themeLibrary.libraryThumbnailSize : 'auto';
 		pref.libraryThumbnailBorder = custom ? themeLibrary.libraryThumbnailBorder : 'border';
 		ppt.albumArtShow = custom ? themeLibrary.albumArtShow : false;
 		ppt.itemOverlayType = custom ? themeLibrary.itemOverlayType : 0;
@@ -1380,20 +1388,7 @@ async function setThemeSettings(save) {
 		pptBio.theme = pref.biographyTheme = custom ? themeBiography.biographyTheme : 0;
 
 		pref.biographyDisplay = custom ? themeBiography.biographyDisplay : 'Image+text';
-		switch (pref.biographyDisplay) {
-			case 'Image+text':
-				pptBio.img_only = false;
-				pptBio.text_only = false;
-				break;
-			case 'Image':
-				pptBio.img_only = true;
-				pptBio.text_only = false;
-				break;
-			case 'Text':
-				pptBio.img_only = false;
-				pptBio.text_only = true;
-				break;
-		}
+		setBiographyDisplay();
 
 		pptBio.showFilmStrip = custom ? themeBiography.showFilmStrip : false;
 		pptBio.imgSeekerShow = custom ? themeBiography.imgSeekerShow : 0;
@@ -1492,6 +1487,7 @@ async function setThemeSettings(save) {
 	}
 
 	// * Not in the config nor in the Options menu
+	pref.savedAlbumArtShow = ppt.albumArtShow;
 	ppt.albumArtDropShadow = pref.libraryThumbnailBorder === 'shadow';
 	pptBio.largerSyncLyricLine = pref.lyricsLargerCurrentSync;
 
@@ -1500,6 +1496,9 @@ async function setThemeSettings(save) {
 
 	// * Reinitialize theme presets when user has reset style settings by clicking on "Default" and reloading the config file
 	initThemePresetState();
+
+	// * Reinitialize the saved player size
+	await display.initPlayerSize();
 
 	libraryCanReload = true;
 }
@@ -1517,6 +1516,7 @@ if (!config.fileExists) {
 	preset           = config.addConfigurationObject(presetSchema, presetDefaults, presetComments);
 	themePlayerSize  = config.addConfigurationObject(themePlayerSizeSchema, themePlayerSizeDefaults, themePlayerSizeComments);
 	themeLayout      = config.addConfigurationObject(themeLayoutSchema, themeLayoutDefaults, themeLayoutComments);
+	themeDisplay     = config.addConfigurationObject(themeDisplaySchema, themeDisplayDefaults, themeDisplayComments);
 	themeBrightness  = config.addConfigurationObject(themeBrightnessSchema, themeBrightnessDefaults, themeBrightnessComments);
 	themeFontSize    = config.addConfigurationObject(themeFontSizesSchema, themeFontSizesDefaults, themeFontSizesComments);
 	themeControls    = config.addConfigurationObject(themePlayerControlsSchema, themePlayerControlsDefaults, themePlayerControlsComments);
@@ -1573,6 +1573,7 @@ if (config.fileExists) {
 	preset           = config.addConfigurationObject(presetSchema, Object.assign({}, presetDefaults, prefs.preset), presetComments);
 	themePlayerSize  = config.addConfigurationObject(themePlayerSizeSchema, Object.assign({}, themePlayerSizeDefaults, prefs.themePlayerSize), themePlayerSizeComments);
 	themeLayout      = config.addConfigurationObject(themeLayoutSchema, Object.assign({}, themeLayoutDefaults, prefs.themeLayout), themeLayoutComments);
+	themeDisplay     = config.addConfigurationObject(themeDisplaySchema, Object.assign({}, themeDisplayDefaults, prefs.themeDisplay), themeDisplayComments);
 	themeBrightness  = config.addConfigurationObject(themeBrightnessSchema, Object.assign({}, themeBrightnessDefaults, prefs.themeBrightness), themeBrightnessComments);
 	themeFontSize    = config.addConfigurationObject(themeFontSizesSchema, Object.assign({}, themeFontSizesDefaults, prefs.themeFontSize), themeFontSizesComments);
 	themeControls    = config.addConfigurationObject(themePlayerControlsSchema, Object.assign({}, themePlayerControlsDefaults, prefs.themeControls), themePlayerControlsComments);

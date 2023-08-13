@@ -22,7 +22,7 @@ let playlist;
 let playlistDropIndex;
 /** @type {boolean} The playlist fonts creation state. */
 let playlistFontsCreated = false;
-/** @type {number} The playlist thumbnail size defaults are 64 pixels in HD 128 in 4k. */
+/** @type {number} The playlist thumbnail size defaults are 64 pixels in HD 128 in 4K. */
 let playlistThumbSize = SCALE(64);
 /** @type {FbMetadbHandle[]} The list of handles that we are loading artwork for. */
 const playlistThumbList = new Set();

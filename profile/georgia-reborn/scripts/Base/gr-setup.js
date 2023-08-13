@@ -780,9 +780,9 @@ let state = {};
 /////////////////
 // * UIHACKS * //
 /////////////////
-/** @type {boolean} UIHacks pseudo caption state, used in UIHacksDragWindow. */
+/** @type {boolean} UIHacks pseudo caption state, used in setWindowDrag. */
 let pseudoCaption;
-/** @type {number} UIHacks sets pseudo caption width when dragging foobar, used in UIHacksDragWindow. */
+/** @type {number} UIHacks sets pseudo caption width when dragging foobar, used in setWindowDrag. */
 let pseudoCaptionWidth;
 /** Preferences > Display > Main Window > Frame style: No border. */
 UIHacks.FrameStyle = 3;

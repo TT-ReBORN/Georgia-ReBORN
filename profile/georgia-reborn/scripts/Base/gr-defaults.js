@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-05                                          * //
+// * Last change:    2023-08-12                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -294,12 +294,24 @@ const presetSchema = new ConfigurationObjectSchema('preset', ConfigurationObject
 /////////////////////
 /** @type {Object} Options > Player size settings with default value. */
 const themePlayerSizeDefaults = {
-	playerSize: 'small'
+	playerSize: 'small',
+	savedWidth_default: 1140,
+	savedHeight_default: 730,
+	savedWidth_artwork: 526,
+	savedHeight_artwork: 686,
+	savedWidth_compact: 484,
+	savedHeight_compact: 730
 };
 
 /** @type {Object} Options > Player size settings config name description. */
 const themePlayerSizeComments = {
-	playerSize: 'Values: "small", "normal", "large" - Options > Player size'
+	playerSize: 'Values: "small", "normal", "large" - Options > Player size',
+	savedWidth_default: 'The saved player width for the Default layout - Options > Layout > Default',
+	savedHeight_default: 'The saved player height for the Default layout - Options > Layout > Default',
+	savedWidth_artwork: 'The saved player width for the Artwork layout - Options > Layout > Artwork',
+	savedHeight_artwork: 'The saved player height for the Artwork layout - Options > Layout > Artwork',
+	savedWidth_compact: 'The saved player width for the Compact layout - Options > Layout > Compact',
+	savedHeight_compact: 'The saved player height for the Compact layout - Options > Layout > Compact'
 };
 
 /** @type {Object} Options > Player size settings config header description. */
@@ -331,6 +343,29 @@ const themeLayoutSchema = new ConfigurationObjectSchema('themeLayout', Configura
 	'* LAYOUT:                                                                                                                                                                                               ' +
 	'* Top menu Options > Layout                                                                                                                                                                             ' +
 	'* You can set and select between the 3 available layouts that will be used.                                                                                                                             ' +
+	'* Note: This setting will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                              ' +
+	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
+
+
+/////////////////
+// * DISPLAY * //
+/////////////////
+/** @type {Object} Options > Display settings with default value. */
+const themeDisplayDefaults = {
+	resolution: 'HD'
+};
+
+/** @type {Object} Options > Display settings config name description. */
+const themeDisplayComments = {
+	resolution: 'Values: "4K", "QHD", "HD" - Options > Display'
+};
+
+/** @type {Object} Options > Display settings config header description. */
+const themeDisplaySchema = new ConfigurationObjectSchema('themeDisplay', ConfigurationObjectType.Object, undefined,
+	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
+	'* DISPLAY:                                                                                                                                                                                              ' +
+	'* Top menu Options > Display                                                                                                                                                                            ' +
+	'* You can set and select between the 3 available resolution that will be used.                                                                                                                          ' +
 	'* Note: This setting will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                              ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 

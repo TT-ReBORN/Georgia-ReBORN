@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-10                                          * //
+// * Last change:    2023-08-12                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -304,14 +304,13 @@ function on_size() {
 
 	if (ww <= 0 || wh <= 0) return;
 
-	checkForRes(ww, wh);
-	checkForPlayerSize();
+	display.checkRes();
 
 	if (!sizeInitialized) {
 		createFonts();
 		setGeometry();
 		if (fb.IsPlaying) {
-			loadCountryFlags(); // Wrong size flag gets loaded on 4k systems
+			loadCountryFlags(); // Wrong size flag gets loaded on 4K systems
 		}
 		rescalePlaylist(true);
 		initPlaylist();
@@ -900,6 +899,8 @@ function on_mouse_move(x, y, m) {
 
 	if (x === state.mouse_x && y === state.mouse_y) return;
 
+	display.setWindowDrag(x, y);
+
 	if (!mouseInLibrarySearch(x, y)) window.SetCursor(32512); // Arrow
 
 	if (topMenu) {
@@ -977,8 +978,6 @@ function on_mouse_move(x, y, m) {
 	else if (showTransportControls && showVolumeBtn && volumeBtn) {
 		volumeBtn.on_mouse_move(x, y, m);
 	}
-
-	UIHacksDragWindow(x, y);
 }
 
 

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-10                                          * //
+// * Last change:    2023-08-13                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -21,11 +21,10 @@
  */
 function clearUIVariables() {
 	const showLowerBarVersion = pref[`showLowerBarVersion_${pref.layout}`];
-	const margin = pref.layout !== 'default' ? '' : ' ';
 	return {
 		artist: '',
 		tracknum: $(showLowerBarVersion ? pref.layout !== 'default' ? settings.stoppedString1acr : settings.stoppedString1 : ' ', undefined, true),
-		title_lower: showLowerBarVersion ? `${margin}${$(settings.stoppedString2, undefined, true)}` : ' ',
+		title_lower: showLowerBarVersion ? ` ${$(settings.stoppedString2, undefined, true)}` : ' ',
 		year: '',
 		grid: [],
 		time: showLowerBarVersion || updateAvailable ? lowerBarStoppedTime : ' '
@@ -59,7 +58,7 @@ function initMain() {
 	if (!['default', 'artwork', 'compact'].includes(pref.layout)) {
 		window.SetProperty('Georgia-ReBORN - 05. Layout', 'default');
 		pref.layout = 'default';
-		windowHandler.layoutDefault();
+		display.layoutDefault();
 	}
 
 	// * Do auto-delete cache if enabled
@@ -461,9 +460,9 @@ function resetPlayerSize() {
 	pref.playerSize_QHD_small  = false;
 	pref.playerSize_QHD_normal = false;
 	pref.playerSize_QHD_large  = false;
-	pref.playerSize_4k_small   = false;
-	pref.playerSize_4k_normal  = false;
-	pref.playerSize_4k_large   = false;
+	pref.playerSize_4K_small   = false;
+	pref.playerSize_4K_normal  = false;
+	pref.playerSize_4K_large   = false;
 }
 
 
@@ -711,9 +710,10 @@ function setThemePresetSelection(state, presetSelectModeTheme) {
 async function systemFirstLaunch() {
 	if (!pref.systemFirstLaunch) return;
 
+	await initMain();
 	await setThemeSettings();
 	await initMain();
-	await autoDetectRes();
+	await display.autoDetectRes();
 
 	pref.systemFirstLaunch = false;
 }
@@ -798,31 +798,6 @@ function displayPanelOnStartup() {
 }
 
 
-/**
- * Sets temporarily top menu caption to be able to drag foobar around.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- */
-function UIHacksDragWindow(x, y) {
-	if (!componentUIHacks) return;
-	// * Disable mouse middle btn (wheel) to be able to use Library & Biography mouse middle actions
-	UIHacks.MoveStyle = displayLibrary && mouseInLibrary(x, y) || displayBiography && mouseInBiography(x, y) ? 0 : 3;
-	try {
-		if (mouseInControl || downButton) {
-			UIHacks.SetPseudoCaption(0, 0, 0, 0);
-			if (UIHacks.FrameStyle === 3) UIHacks.DisableSizing = true;
-			pseudoCaption = false;
-		}
-		else if (!pseudoCaption || pseudoCaptionWidth !== ww) {
-			UIHacks.SetPseudoCaption(0, 0, ww, pref.layout !== 'default' ? geo.topMenuHeight + SCALE(5) : geo.topMenuHeight);
-			if (UIHacks.FrameStyle === 3 && !pref.lockPlayerSize) UIHacks.DisableSizing = false;
-			pseudoCaption = true;
-			pseudoCaptionWidth = ww;
-		}
-	} catch (e) {}
-}
-
-
 ///////////////////////
 // * MAIN - TIMERS * //
 ///////////////////////
@@ -850,31 +825,34 @@ function refreshSeekbar() {
 function setProgressBarRefresh() {
 	DebugLog('setProgressBarRefresh()');
 	if (fb.PlaybackLength > 0) {
-		switch (pref.seekbar === 'peakmeterbar' ? pref.peakmeterBarRefreshRate : pref.progressBarRefreshRate) {
-			case 'variable':
-				progressBarTimerInterval = Math.abs(Math.ceil(1000 / ((ww - SCALE(80)) / fb.PlaybackLength))); // We want to update the progress bar for every pixel so divide total time by number of pixels in progress bar
-				while (progressBarTimerInterval > 500) { // We want even multiples of the base progressBarTimerInterval, so that the progress bar always updates as smoothly as possible
-					progressBarTimerInterval = Math.floor(progressBarTimerInterval / 2);
-				}
-				while (progressBarTimerInterval < 32) { // Roughly 30fps
-					progressBarTimerInterval *= 2;
-				}
-			break;
+		const refreshRate = {
+			// We want to update the progress bar for every pixel so divide total time by number of pixels in progress bar
+			variable: Math.abs(Math.ceil(1000 / ((ww - SCALE(80)) / fb.PlaybackLength))),
+			1000: 1000,
+			500: 500,
+			333: 333,
+			250: 250,
+			200: 200,
+			150: 150,
+			120: 120,
+			100: 100,
+			80: 80,
+			60: 60,
+			30: 30
+		};
 
-			case 1000: progressBarTimerInterval = 1000; break;
-			case  500: progressBarTimerInterval =  500; break;
-			case  333: progressBarTimerInterval =  333; break;
-			case  250: progressBarTimerInterval =  250; break;
-			case  200: progressBarTimerInterval =  200; break;
-			case  150: progressBarTimerInterval =  150; break;
-			case  120: progressBarTimerInterval =  120; break;
-			case  100: progressBarTimerInterval =  100; break;
-			case   80: progressBarTimerInterval =   80; break;
-			case   60: progressBarTimerInterval =   60; break;
-			case   30: progressBarTimerInterval =   30; break;
+		progressBarTimerInterval = refreshRate[pref.seekbar === 'peakmeterbar' ? pref.peakmeterBarRefreshRate : pref.progressBarRefreshRate];
+
+		if (pref.progressBarRefreshRate === 'variable') {
+			while (progressBarTimerInterval > 500) { // We want even multiples of the base progressBarTimerInterval, so that the progress bar always updates as smoothly as possible
+				progressBarTimerInterval = Math.floor(progressBarTimerInterval / 2);
+			}
+			while (progressBarTimerInterval < 32) { // Roughly 30fps
+				progressBarTimerInterval *= 2;
+			}
 		}
 	}
-	else {
+	else { // * Radio streaming
 		progressBarTimerInterval = 1000;
 	}
 
@@ -883,7 +861,7 @@ function setProgressBarRefresh() {
 	if (progressBarTimer) clearInterval(progressBarTimer);
 	progressBarTimer = null;
 
-	if (!fb.IsPaused) { // Only create progressTimer if actually playing
+	if (!fb.IsPaused) {
 		progressBarTimer = setInterval(() => {
 			refreshSeekbar();
 		}, progressBarTimerInterval || 1000);
@@ -965,11 +943,12 @@ function deleteWaveformBarCache() {
  * @param {boolean} restore Should a theme backup be restored.
  */
 function manageBackup(make, restore) {
-	const backupPath    = `${fb.ProfilePath}backup\\profile\\`;
-	const dspPathFb     = `${fb.ProfilePath}dsp-presets`;
-	const dspPathBp     = `${backupPath}dsp-presets`;
-	const indexDataPath = `${backupPath}index-data`;
-	const themePath     = `${backupPath}georgia-reborn`;
+	const backupPath = `${fb.ProfilePath}backup\\profile\\`;
+	const cfgPathFb  = `${fb.ProfilePath}configuration`;
+	const dspPathFb  = `${fb.ProfilePath}dsp-presets`;
+	const dspPathBp  = `${backupPath}dsp-presets`;
+	const indexPath  = `${backupPath}index-data`;
+	const themePath  = `${backupPath}georgia-reborn`;
 
 	const libOld   = make ? `${fb.ProfilePath}library`        : `${backupPath}library`;
 	const libNew   = make ? `${fb.ProfilePath}library-v2.0`   : `${backupPath}library-v2.0`;
@@ -989,9 +968,10 @@ function manageBackup(make, restore) {
 
 	const createFolders = async () => {
 		CreateFolder(themePath, true);
+		CreateFolder(cfgPathFb, true);
 		CreateFolder(dspPathFb, true);
 		CreateFolder(dspPathBp, true);
-		if (oldVersion) CreateFolder(indexDataPath, true);
+		if (oldVersion) CreateFolder(indexPath, true);
 	};
 
 	const checkFolders = () => {
@@ -999,16 +979,16 @@ function manageBackup(make, restore) {
 		const foldersExist =
 			((IsFolder(libOld) && IsFolder(plistOld)) || IsFolder(libNew) && IsFolder(plistNew))
 			&&
-			(IsFolder(themePath) && IsFolder(dspPathFb) && IsFolder(dspPathBp));
+			(IsFolder(themePath) && IsFolder(dspPathFb) && IsFolder(dspPathBp) && IsFolder(cfgPathFb));
 
 		if (foldersExist) {
 			return true;
 		}
 		else {
 			if (make) {
-				fb.ShowPopupMessage(`>>> Georgia-ReBORN theme backup was aborted <<<\n\n"dsp-presets" or "georgia-reborn" or "library" or "playlist" directory\ndoes not exist in:\n${fb.ProfilePath}`, 'Theme backup');
+				fb.ShowPopupMessage(`>>> Georgia-ReBORN theme backup was aborted <<<\n\n"configuration" or "dsp-presets" or "georgia-reborn" or "library" or "playlist" directory\ndoes not exist in:\n${fb.ProfilePath}`, 'Theme backup');
 			} else {
-				fb.ShowPopupMessage(`>>> Georgia-ReBORN restore backup was aborted <<<\n\n"backup" directory does not exist in:\n${fb.ProfilePath}\n\nor\n\n"dsp-presets" or "georgia-reborn" or "library" or "playlist" directory\ndoes not exist in:\n${fb.ProfilePath}backup`, 'Theme backup');
+				fb.ShowPopupMessage(`>>> Georgia-ReBORN restore backup was aborted <<<\n\n"backup" directory does not exist in:\n${fb.ProfilePath}\n\nor\n\n"configuration" or "dsp-presets" or "georgia-reborn" or "library" or "playlist" directory\ndoes not exist in:\n${fb.ProfilePath}backup`, 'Theme backup');
 			}
 			return false;
 		}
@@ -1019,24 +999,29 @@ function manageBackup(make, restore) {
 		const library   = backup.GetFolder(libaryDir);
 		const playlists = backup.GetFolder(playlistDir);
 		const configs   = backup.GetFolder(make ? `${fb.ProfilePath}georgia-reborn\\configs` : `${backupPath}georgia-reborn\\configs`);
+		const cfg       = backup.GetFolder(make ? cfgPathFb : `${backupPath}configuration`);
 
-		// * If old or new version, copy the library, playlist and theme config files
+		// * If old or new version, copy the library, playlist and config files
 		library.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
 		playlists.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
 		configs.Copy(make ? `${backupPath}georgia-reborn\\configs` : `${fb.ProfilePath}georgia-reborn\\configs`, true);
+		cfg.Copy(make ? `${backupPath}configuration` : cfgPathFb, true);
+
+		// * Delete user's foo_ui_columns.dll.cfg, we use the clean cfg file from the zip
+		try { backup.DeleteFile(`${backupPath}configuration\\foo_ui_columns.dll.cfg`, true); } catch (e) {}
 
 		// * If old version, copy the old library data files
 		if (oldVersion) {
-			const indexData  = backup.GetFolder(make ? `${fb.ProfilePath}index-data` : `${backupPath}index-data`);
+			const indexData = backup.GetFolder(make ? `${fb.ProfilePath}index-data` : indexPath);
 			indexData.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
 			return;
 		}
 
 		// * If new version, copy the new fb2k v2 files
-		const dspPresets = backup.GetFolder(make ? `${fb.ProfilePath}dsp-presets`     : `${backupPath}dsp-presets`);
-		const dspConfig  = backup.GetFile(make   ? `${fb.ProfilePath}config.fb2k-dsp` : `${backupPath}config.fb2k-dsp`);
-		const fbConfig   = backup.GetFile(make   ? `${fb.ProfilePath}config.sqlite`   : `${backupPath}config.sqlite`);
-		const metadb     = backup.GetFile(make   ? `${fb.ProfilePath}metadb.sqlite`   : `${backupPath}metadb.sqlite`);
+		const dspPresets = backup.GetFolder(make ? dspPathFb : dspPathBp);
+		const dspConfig = backup.GetFile(make ? `${fb.ProfilePath}config.fb2k-dsp` : `${backupPath}config.fb2k-dsp`);
+		const fbConfig = backup.GetFile(make ? `${fb.ProfilePath}config.sqlite` : `${backupPath}config.sqlite`);
+		const metadb = backup.GetFile(make ? `${fb.ProfilePath}metadb.sqlite` : `${backupPath}metadb.sqlite`);
 		dspPresets.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
 		dspConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
 		fbConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
@@ -1113,7 +1098,7 @@ function restoreBackupPlaylist() {
 	};
 
 	const copyFolders = async () => {
-		const backup    = new ActiveXObject('Scripting.FileSystemObject');
+		const backup = new ActiveXObject('Scripting.FileSystemObject');
 		const playlists = backup.GetFolder(playlistDir);
 		playlists.Copy(`${fb.ProfilePath}`, true);
 	};
@@ -2992,6 +2977,26 @@ function initLibraryLayout() {
 
 
 /**
+ * Sets the Library design.
+ */
+function setLibraryDesign() {
+	switch (pref.libraryDesign) {
+		case 'traditional':        panel.set('quickSetup',  0); break;
+		case 'modern':             panel.set('quickSetup',  1); break;
+		case 'ultraModern':        panel.set('quickSetup',  2); break;
+		case 'clean':              panel.set('quickSetup',  3); break;
+		case 'facet':              panel.set('quickSetup',  4); break;
+		case 'coversLabelsRight':  panel.set('quickSetup',  5); break;
+		case 'coversLabelsBottom': panel.set('quickSetup',  6); break;
+		case 'coversLabelsBlend':  panel.set('quickSetup',  7); break;
+		case 'artistLabelsRight':  panel.set('quickSetup',  8); break;
+		case 'flowMode':           panel.set('quickSetup', 11); pref.libraryLayout = 'full'; break;
+		case 'reborn':             panel.set('quickSetup', 12); break;
+	}
+}
+
+
+/**
  * Sets the Library size and position.
  */
 function setLibrarySize() {
@@ -3011,7 +3016,7 @@ function setLibrarySize() {
 
 	const libraryHeight = Math.max(0, wh - geo.lowerBarHeight - y);
 
-	ppt.zoomNode = 100; // Sets correct node zoom value, i.e when switching to 4k
+	ppt.zoomNode = 100; // Sets correct node zoom value, i.e when switching to 4K
 	panel.setTopBar();	// Resets filter font in case the zoom was reset, also needed when changing font size
 
 	libraryPanel.on_size(x, y, libraryWidth, libraryHeight);
@@ -3158,6 +3163,27 @@ function initBiographyLayout() {
 	}
 	repaintWindowRectAreas();
 	setBiographySize();
+}
+
+
+/**
+ * Sets the Biography display layout.
+ */
+function setBiographyDisplay() {
+	switch (pref.biographyDisplay) {
+		case 'Image+text':
+			pptBio.img_only = false;
+			pptBio.text_only = false;
+			break;
+		case 'Image':
+			pptBio.img_only = true;
+			pptBio.text_only = false;
+			break;
+		case 'Text':
+			pptBio.img_only = false;
+			pptBio.text_only = true;
+			break;
+	}
 }
 
 
