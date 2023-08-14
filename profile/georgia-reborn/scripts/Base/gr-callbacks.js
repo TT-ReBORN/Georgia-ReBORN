@@ -154,15 +154,15 @@ function on_metadb_changed(handle_list, fromhook) {
 	if (handle_list) {
 		if (displayPlaylist || displayPlaylistArtwork || !displayPlaylist) {
 			trace_call && console.log('Playlist => on_metadb_changed');
-			playlist.on_metadb_changed(handle_list, fromhook);
+			playlist && playlist.on_metadb_changed(handle_list, fromhook);
 		}
 		if (displayLibrary) {
 			trace_call && console.log('Library => on_metadb_changed');
-			library.on_metadb_changed(handle_list, fromhook);
+			library && library.on_metadb_changed(handle_list, fromhook);
 		}
 		if (displayBiography) {
 			trace_call && console.log('Biography => on_metadb_changed');
-			biography.on_metadb_changed(handle_list, fromhook);
+			biography && biography.on_metadb_changed(handle_list, fromhook);
 		}
 	}
 	repaintWindow();

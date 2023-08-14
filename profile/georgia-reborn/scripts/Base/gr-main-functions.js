@@ -945,6 +945,7 @@ function manageBackup(make, restore) {
 	const backupPath = `${fb.ProfilePath}backup\\profile\\`;
 	const cfgPathFb  = `${fb.ProfilePath}configuration`;
 	const dspPathFb  = `${fb.ProfilePath}dsp-presets`;
+	const cfgPathBp  = `${backupPath}configuration`;
 	const dspPathBp  = `${backupPath}dsp-presets`;
 	const indexPath  = `${backupPath}index-data`;
 	const themePath  = `${backupPath}georgia-reborn`;
@@ -968,6 +969,7 @@ function manageBackup(make, restore) {
 	const createFolders = async () => {
 		CreateFolder(themePath, true);
 		CreateFolder(cfgPathFb, true);
+		CreateFolder(cfgPathBp, true);
 		CreateFolder(dspPathFb, true);
 		CreateFolder(dspPathBp, true);
 		if (oldVersion) CreateFolder(indexPath, true);
@@ -978,7 +980,7 @@ function manageBackup(make, restore) {
 		const foldersExist =
 			((IsFolder(libOld) && IsFolder(plistOld)) || IsFolder(libNew) && IsFolder(plistNew))
 			&&
-			(IsFolder(themePath) && IsFolder(dspPathFb) && IsFolder(dspPathBp) && IsFolder(cfgPathFb));
+			(IsFolder(themePath) && IsFolder(dspPathFb) && IsFolder(dspPathBp) && IsFolder(cfgPathFb) && IsFolder(cfgPathBp));
 
 		if (foldersExist) {
 			return true;
