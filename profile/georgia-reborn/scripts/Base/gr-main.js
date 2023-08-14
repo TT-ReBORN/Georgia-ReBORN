@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-12                                          * //
+// * Last change:    2023-08-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -799,7 +799,7 @@ function drawThemePresetIndicator(gr) {
 		pref.displayLyrics && pref.lyricsLayout === 'full';
 
 	const cover = fb.IsPlaying && albumArt && pref.layout !== 'compact' && !fullW;
-	const noCoverDefault = pref.layout === 'default' && !fullW;
+	const noCoverDefault = pref.layout === 'default' && !fullW && !pref.panelWidthAuto;
 
 	const x = Math.round((cover ? albumArtSize.x + albumArtSize.w * 0.5 : noCoverDefault ? ww * 0.25 : ww * 0.5) - w * 0.5);
 	const y = Math.round((cover ? albumArtSize.h * 0.5 : wh * 0.5 - geo.lowerBarHeight * 0.5) - (match ? h : -h * 0.5));
