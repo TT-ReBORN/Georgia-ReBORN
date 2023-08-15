@@ -996,40 +996,37 @@ function manageBackup(make, restore) {
 	};
 
 	const copyFolders = async () => {
-		try {
-			const backup    = new ActiveXObject('Scripting.FileSystemObject');
-			const library   = backup.GetFolder(libaryDir);
-			const playlists = backup.GetFolder(playlistDir);
-			const configs   = backup.GetFolder(make ? `${fb.ProfilePath}georgia-reborn\\configs` : `${backupPath}georgia-reborn\\configs`);
-			const cfg       = backup.GetFolder(make ? cfgPathFb : `${backupPath}configuration`);
+		const backup    = new ActiveXObject('Scripting.FileSystemObject');
+		const library   = backup.GetFolder(libaryDir);
+		const playlists = backup.GetFolder(playlistDir);
+		const configs   = backup.GetFolder(make ? `${fb.ProfilePath}georgia-reborn\\configs` : `${backupPath}georgia-reborn\\configs`);
+		const cfg       = backup.GetFolder(make ? cfgPathFb : `${backupPath}configuration`);
 
-			// * If old or new version, copy the library, playlist and config files
-			library.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-			playlists.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-			configs.Copy(make ? `${backupPath}georgia-reborn\\configs` : `${fb.ProfilePath}georgia-reborn\\configs`, true);
-			cfg.Copy(make ? `${backupPath}configuration` : cfgPathFb, true);
+		// * If old or new version, copy the library, playlist and config files
+		library.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		playlists.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		configs.Copy(make ? `${backupPath}georgia-reborn\\configs` : `${fb.ProfilePath}georgia-reborn\\configs`, true);
+		try { cfg.Copy(make ? `${backupPath}configuration` : cfgPathFb, true); } catch (e) {}
 
-			// * Delete user's foo_ui_columns.dll.cfg, we use the clean cfg file from the zip
-			backup.DeleteFile(`${backupPath}configuration\\foo_ui_columns.dll.cfg`, true);
+		// * Delete user's foo_ui_columns.dll.cfg, we use the clean cfg file from the zip
+		try { backup.DeleteFile(`${backupPath}configuration\\foo_ui_columns.dll.cfg`, true); } catch (e) {}
 
-			// * If old version, copy the old library data files
-			if (oldVersion) {
-				const indexData = backup.GetFolder(make ? `${fb.ProfilePath}index-data` : indexPath);
-				indexData.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-				return;
-			}
-
-			// * If new version, copy the new fb2k v2 files
-			const dspPresets = backup.GetFolder(make ? dspPathFb : dspPathBp);
-			const dspConfig = backup.GetFile(make ? `${fb.ProfilePath}config.fb2k-dsp` : `${backupPath}config.fb2k-dsp`);
-			const fbConfig = backup.GetFile(make ? `${fb.ProfilePath}config.sqlite` : `${backupPath}config.sqlite`);
-			const metadb = backup.GetFile(make ? `${fb.ProfilePath}metadb.sqlite` : `${backupPath}metadb.sqlite`);
-			dspPresets.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-			dspConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-			fbConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-			metadb.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		// * If old version, copy the old library data files
+		if (oldVersion) {
+			const indexData = backup.GetFolder(make ? `${fb.ProfilePath}index-data` : indexPath);
+			indexData.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+			return;
 		}
-		catch (e) {}
+
+		// * If new version, copy the new fb2k v2 files
+		const dspPresets = backup.GetFolder(make ? dspPathFb : dspPathBp);
+		const dspConfig = backup.GetFile(make ? `${fb.ProfilePath}config.fb2k-dsp` : `${backupPath}config.fb2k-dsp`);
+		const fbConfig = backup.GetFile(make ? `${fb.ProfilePath}config.sqlite` : `${backupPath}config.sqlite`);
+		const metadb = backup.GetFile(make ? `${fb.ProfilePath}metadb.sqlite` : `${backupPath}metadb.sqlite`);
+		dspPresets.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		dspConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		fbConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		metadb.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
 	};
 
 	const makeBackup = async () => {
