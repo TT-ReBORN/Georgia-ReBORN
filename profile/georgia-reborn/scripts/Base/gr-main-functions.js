@@ -223,9 +223,16 @@ function initPanels() {
  */
 function initPanelWidthAuto() {
 	resizeArtwork(true);
-	if (displayPlaylist) playlist.on_size(ww, wh);
-	if (displayLibrary) setLibrarySize();
-	if (displayBiography) setBiographySize();
+
+	if (displayPlaylist && (noAlbumArtStub || playlist.x !== (albumArtSize.x + albumArtSize.w))) {
+		playlist.on_size(ww, wh);
+	}
+	if (displayLibrary && (noAlbumArtStub || ui.x !== (albumArtSize.x + albumArtSize.w))) {
+		setLibrarySize();
+	}
+	if (displayBiography && (noAlbumArtStub || uiBio.x !== (albumArtSize.x + albumArtSize.w))) {
+		setBiographySize();
+	}
 }
 
 
@@ -1931,7 +1938,11 @@ function fetchAlbumArt(metadb) {
 			albumArt = null;
 			initTheme();
 			DebugLog('\n>>> initTheme -> fetchNewArtwork -> noAlbumArtStub <<<\n');
-			resizeArtwork(true);
+			if (pref.panelWidthAuto) {
+				initPanelWidthAuto();
+			} else {
+				resizeArtwork(true);
+			}
 			DebugLog('Repainting on_playback_new_track due to no cover image');
 			repaintWindow();
 		}
