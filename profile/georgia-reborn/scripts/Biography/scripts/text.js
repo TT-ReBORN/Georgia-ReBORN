@@ -1436,6 +1436,7 @@ class Text {
 	}
 
 	getNowplaying(item, n) {
+		if (!item || typeof item !== 'string') return;
 		item = item.replace(/\r\n|\r|\n/g, '');
 		this.reader[n].perSec = /%playback_time|%bitrate%|\$progress/i.test(item);
 		item = fb.IsPlaying ? (!this.reader[n].perSec ? $Bio.eval(`[$trim(${item})]`, false) : FbTitleFormat(item).Eval()) : $Bio.eval(`[$trim(${item})]`, panelBio.id.focus);

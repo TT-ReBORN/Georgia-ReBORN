@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-06                                          * //
+// * Last change:    2023-08-18                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -880,14 +880,17 @@ class Hyperlink {
 	 * @returns {number} The dimensions of the text.
 	 */
 	updateDimensions() {
-		if (ww <= 0 || wh <= 0) return;
-		const measureStringScratchImg = gdi.CreateImage(1000, 200);
-		const gr = measureStringScratchImg.GetGraphics();
-		const dimensions = gr.MeasureString(this.text, this.font, 0, 0, 0, 0);
-		this.h = Math.ceil(dimensions.Height) + 1;
-		this.w = Math.min(Math.ceil(dimensions.Width) + 1, this.container_w);
-		measureStringScratchImg.ReleaseGraphics(gr);
-		return dimensions;
+		try {
+			const measureStringScratchImg = gdi.CreateImage(1000, 200);
+			const gr = measureStringScratchImg.GetGraphics();
+			const dimensions = gr.MeasureString(this.text, this.font, 0, 0, 0, 0);
+			this.h = Math.ceil(dimensions.Height) + 1;
+			this.w = Math.min(Math.ceil(dimensions.Width) + 1, this.container_w);
+			measureStringScratchImg.ReleaseGraphics(gr);
+			return dimensions;
+		} catch (e) {
+			// Probably some invalid parameters on init
+		}
 	}
 
 	/**
