@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-08                                          * //
+// * Last change:    2023-08-20                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -59,7 +59,7 @@ function playlistColorsWhiteTheme() {
 
 	// * ROW COLORS * //
 	g_pl_colors.row_nowplaying_bg = col.primary;
-	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(245, 245, 245, 130) : RGB(245, 245, 245);
+	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(245, 245, 245, 130) : pref.styleAlternative ? RGB(255, 255, 255) : RGB(245, 245, 245);
 	g_pl_colors.row_selection_bg = RGB(200, 200, 200);
 	g_pl_colors.row_selection_frame = g_pl_colors.row_selection_bg;
 	g_pl_colors.row_sideMarker = col.primary;
@@ -398,7 +398,7 @@ function playlistColorsBlackTheme() {
 
 	// * ROW COLORS * //
 	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
-	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(25, 25, 25, 130) : RGB(25, 25, 25);
+	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(25, 25, 25, 130) : pref.styleAlternative2 ? RGB(35, 35, 35) : RGB(25, 25, 25);
 	g_pl_colors.row_selection_bg = pref.styleBlend ? RGB(65, 65, 65) : RGB(45, 45, 45);
 	g_pl_colors.row_selection_frame = g_pl_colors.row_selection_bg;
 	g_pl_colors.row_sideMarker = colBrightness < 25 ? col.lightAccent_35 : col.primary;
@@ -731,7 +731,7 @@ function playlistColorsRebornRandomTheme() {
 
 	// * HEADER COLORS * //
 	g_pl_colors.header_nowplaying_bg =
-		pref.theme === 'reborn' ? isColored ? pref.styleBlend ? RGBtoRGBA(col.lightAccent_7, 130) : col.lightAccent_7 :
+		pref.theme === 'reborn' ? isColored ? pref.styleBlend ? RGBtoRGBA(col.lightAccent_10, 130) : col.lightAccent_10 :
 			col.primary :
 		pref.theme === 'random' ? isColored ? pref.styleBlend ? RGBtoRGBA(col.lightAccent_10, 130) : lightBg ? ShadeColor(col.primary, 5) : col.lightAccent_10 :
 			col.primary : '';
@@ -750,7 +750,7 @@ function playlistColorsRebornRandomTheme() {
 
 	// * ROW COLORS * //
 	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
-	g_pl_colors.row_stripes_bg = isColored ? pref.styleBlend ? RGBtoRGBA(col.lightAccent_7, 130) : col.lightAccent_2 : RGB(245, 245, 245);
+	g_pl_colors.row_stripes_bg = isColored ? pref.styleBlend ? RGBtoRGBA(col.lightAccent_10, 130) : TintColor(col.primary, pref.styleAlternative2 ? 0 : 5) : RGB(245, 245, 245);
 	g_pl_colors.row_selection_bg = isColored ? pref.styleBlend ? ShadeColor(col.primary, 24) : col.accent : RGB(200, 200, 200);
 	g_pl_colors.row_selection_frame = g_pl_colors.row_selection_bg;
 	g_pl_colors.row_sideMarker = g_pl_colors.header_sideMarker;
@@ -1375,7 +1375,7 @@ function playlistColorsBlueTheme() {
 
 	// * ROW COLORS * //
 	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
-	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(5, 110, 195, 130) : RGB(5, 110, 195);
+	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(5, 110, 195, 130) : pref.styleAlternative ? RGB(20, 120, 205) : RGB(5, 110, 195);
 	g_pl_colors.row_selection_bg = RGB(10, 115, 200);
 	g_pl_colors.row_selection_frame = RGB(10, 135, 230);
 	g_pl_colors.row_sideMarker = g_pl_colors.header_sideMarker;
@@ -1674,7 +1674,7 @@ function playlistColorsDarkblueTheme() {
 
 	// * ROW COLORS * //
 	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
-	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(22, 40, 63, 130) : RGB(22, 40, 63);
+	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(22, 40, 63, 130) : pref.styleAlternative ? RGB(18, 42, 70) : pref.styleAlternative2 ? RGB(17, 35, 57) : RGB(22, 40, 63);
 	g_pl_colors.row_selection_bg = RGB(21, 37, 56);
 	g_pl_colors.row_selection_frame = RGB(27, 55, 90);
 	g_pl_colors.row_sideMarker = g_pl_colors.header_sideMarker;
@@ -1966,7 +1966,7 @@ function playlistColorsRedTheme() {
 
 	// * ROW COLORS * //
 	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
-	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(100, 20, 20, 130) : RGB(100, 20, 20);
+	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(100, 20, 20, 130) : pref.styleAlternative ? RGB(130, 25, 25) : RGB(100, 20, 20);
 	g_pl_colors.row_selection_bg = RGB(110, 20, 20);
 	g_pl_colors.row_selection_frame = RGB(145, 25, 25);
 	g_pl_colors.row_sideMarker = g_pl_colors.header_sideMarker;
@@ -2257,7 +2257,7 @@ function playlistColorsCreamTheme() {
 
 	// * ROW COLORS * //
 	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
-	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(255, 255, 255, 130) : RGB(255, 255, 255);
+	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(255, 255, 255, 130) : pref.styleAlternative2 ? RGB(255, 247, 240) : RGB(255, 255, 255);
 	g_pl_colors.row_selection_bg = RGB(200, 200, 200);
 	g_pl_colors.row_selection_frame = g_pl_colors.row_selection_bg;
 	g_pl_colors.row_sideMarker = g_pl_colors.header_sideMarker;
@@ -2627,7 +2627,7 @@ function playlistColorsNeonThemes() {
 
 	// * ROW COLORS * //
 	g_pl_colors.row_nowplaying_bg = g_pl_colors.header_nowplaying_bg;
-	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(20, 20, 20, 130) : RGB(20, 20, 20);
+	g_pl_colors.row_stripes_bg = pref.styleBlend ? RGBA(20, 20, 20, 130) : pref.styleAlternative2 ? RGB(35, 35, 35) : RGB(20, 20, 20);
 	g_pl_colors.row_selection_bg = RGB(10, 10, 10);
 	g_pl_colors.row_selection_frame = RGB(40, 40, 40);
 	g_pl_colors.row_sideMarker = g_pl_colors.header_sideMarker;
