@@ -263,7 +263,7 @@ class FilmStrip {
 	}
 
 	draw(gr) {
-		if (!panelBio.style.showFilmStrip || panelBio.block()) return;
+		if (!panelBio.style.showFilmStrip || pptBio.style === 4 && pptBio.filmStripOverlay || panelBio.block()) return;
 		const imgStyle = this.style.image[Number(pptBio.artistView)];
 		let box_x;
 		let box_y;
@@ -596,7 +596,7 @@ class FilmStrip {
 				break;
 			case 5: {
 				const continue_confirmation = (status, confirmed) => {
-					if (confirmed) pptBio.filmStripSize = pptBio.filmStripOverlay && !pptBio.text_only ? 0.09 : 0.05;
+					if (confirmed) pptBio.filmStripSize = pptBio.filmStripOverlay && !pptBio.text_only && pptBio.style !== 4 ? 0.09 : 0.05;
 				};
 				const caption = 'Reset Filmstrip To Default Size';
 				const prompt = 'Continue?';
@@ -605,7 +605,7 @@ class FilmStrip {
 				break;
 			}
 		}
-		pptBio.filmStripSize = pptBio.filmStripOverlay && !pptBio.text_only ? 0.09 : 0.05;
+		pptBio.filmStripSize = pptBio.filmStripOverlay && !pptBio.text_only && pptBio.style !== 4 ? 0.09 : 0.05;
 		filmStrip.logScrollPos();
 		imgBio.mask.reset = true;
 		this.clearCache();
@@ -630,12 +630,17 @@ class FilmStrip {
 			}
 		}
 
-		const marginT = SCALE(pptBio.style === 1 || pptBio.style === 3 || pptBio.text_only ? 4 : 5);
+		const marginT = uiBio.heading.linePad * (RES_4K ? 1.5 : 0.5);
+		const marginTopCorr = pref.layout === 'artwork' ? RES_4K ? -12 : -4 : RES_4K ? -7 : -1;
+		const marginTopCorr2 = pref.layout === 'artwork' ? RES_4K ? -7 : -4 : RES_4K ? -2 : -1;
+		const filmStripLeftRight = pptBio.filmStripPos === 1 || pptBio.filmStripPos === 3;
 		const filmStripCorrY =
-			pptBio.img_only ? (pptBio.filmStripPos === 1 || pptBio.filmStripPos === 3) && !filmStripOverlay ? geo.topMenuHeight + uiBio.y : pptBio.filmStripPos === 2 && !filmStripOverlay ? 0 : geo.topMenuHeight :
-			(pptBio.filmStripPos === 1 || pptBio.filmStripPos === 3) && !pptBio.heading ? uiBio.y + pptBio.borT - marginT :
+			pptBio.img_only ? filmStripLeftRight && !filmStripOverlay ? uiBio.y + pptBio.borT : pptBio.filmStripPos === 2 && !filmStripOverlay ? 0 : uiBio.y :
+			filmStripLeftRight && !pptBio.heading ? uiBio.y + pptBio.borT :
+			pptBio.showFilmStrip && pptBio.filmStripPos === 2 && !filmStripOverlay ? marginTopCorr :
+			pptBio.style === 4 && pptBio.filmStripPos === 0 && filmStripOverlay ? uiBio.y - pptBio.gap - marginTopCorr2 :
 			pptBio.filmStripPos !== 0 && !filmStripOverlay ? 0 :
-			geo.topMenuHeight;
+			uiBio.y;
 
 		let max_h = panelBio.h;
 		let max_w = panelBio.w;
@@ -643,7 +648,7 @@ class FilmStrip {
 		this.text_y = !panelBio.style.fullWidthHeading || pptBio.img_only ? 0 : panelBio.text.t;
 		switch (pptBio.filmStripPos) {
 			case 0: // top
-				this.y = (!filmStripOverlay ? (pptBio.filmStripMargin == 2 ? pptBio.borT : pptBio.filmStripMargin == 4 ? pptBio.textT : spacer) : panelBio.img.t + bor) + filmStripCorrY;
+				/** MOD */ this.y = (!filmStripOverlay ? (pptBio.filmStripMargin == 2 ? pptBio.borT : pptBio.filmStripMargin == 4 ? pptBio.textT : spacer) : panelBio.img.t + bor) + filmStripCorrY;
 				max_h = !filmStripOverlay ? panelBio.h - this.y : pptBio.style == 0 || pptBio.style == 2 ? panelBio.style.imgSize : panelBio.h - panelBio.img.t - panelBio.img.b - bor * 2;
 				this.x = !filmStripOverlay ? (pptBio.filmStripMargin == 1 || pptBio.filmStripMargin == 2 ? pptBio.borL : pptBio.filmStripMargin == 3 || pptBio.filmStripMargin == 4 ? pptBio.textL : spacer) : panelBio.img.l + bor;
 				this.w = !filmStripOverlay ? (panelBio.w - this.x - (pptBio.filmStripMargin == 1 || pptBio.filmStripMargin == 2 ? pptBio.borR : pptBio.filmStripMargin == 3 || pptBio.filmStripMargin == 4 ? pptBio.textR : spacer)) : pptBio.style == 0 || pptBio.style == 2 || pptBio.style > 3 || pptBio.img_only ? panelBio.w - panelBio.img.l - panelBio.img.r - bor * 2 : panelBio.style.imgSize - bor * 2;
@@ -669,10 +674,10 @@ class FilmStrip {
 			case 1: { // right
 				const pad_r = pptBio.filmStripMargin == 2 ? pptBio.borR : pptBio.filmStripMargin == 4 ? pptBio.textR : spacer;
 				max_w = !filmStripOverlay ? panelBio.w - pad_r : pptBio.style == 0 || pptBio.style == 2 || pptBio.style > 3 ? panelBio.w - panelBio.img.l - panelBio.img.r - bor * 2 : panelBio.style.imgSize - bor * 2;
-				this.y = (!filmStripOverlay ? (this.text_y + marginT || (pptBio.filmStripMargin == 1 || pptBio.filmStripMargin == 2 ? pptBio.borT : pptBio.filmStripMargin == 3 || pptBio.filmStripMargin == 4 ? pptBio.textT : spacer)) : panelBio.img.t + bor) + filmStripCorrY;
+				/** MOD */ this.y = (!filmStripOverlay ? (this.text_y + marginT || (pptBio.filmStripMargin == 1 || pptBio.filmStripMargin == 2 ? pptBio.borT : pptBio.filmStripMargin == 3 || pptBio.filmStripMargin == 4 ? pptBio.textT : spacer)) : panelBio.img.t + bor) + filmStripCorrY;
 				this.h = !filmStripOverlay ? (panelBio.h - this.y - (pptBio.filmStripMargin == 1 || pptBio.filmStripMargin == 2 ? pptBio.borB : pptBio.filmStripMargin == 3 || pptBio.filmStripMargin == 4 ? pptBio.textB : spacer)) : pptBio.style == 0 || pptBio.style == 2 ? panelBio.style.imgSize - bor * 2 : pptBio.style > 3 ? (panelBio.clip ? panelBio.style.imgSize - pptBio.borT : panelBio.h - panelBio.img.t - panelBio.img.b - bor * 2) : panelBio.h - panelBio.img.t - panelBio.img.b - bor * 2;
 				this.max_sz = Math.min(max_w - 5, this.h);
-				this.blockSize = Math.round(pptBio.filmStripSize * panelBio.w);
+				/** MOD */ this.blockSize = Math.round(pptBio.filmStripSize * panelBio.h);
 				if (this.style.fit) {
 					this.blockSize = Math.floor(this.h / Math.max(Math.round(this.h / this.blockSize)), 1);
 					this.w = this.blockSize = Math.min(this.blockSize, this.max_sz);
@@ -707,7 +712,7 @@ class FilmStrip {
 					this.blockSize = Math.min(this.blockSize, this.max_sz);
 					this.h = this.blockSize;
 				}
-				this.y = (!filmStripOverlay ? panelBio.h - this.h - pad_b + SCALE(40) : pptBio.style == 0 || pptBio.style == 2 ? panelBio.img.t + panelBio.style.imgSize - this.h - bor : pptBio.style > 3 ? (panelBio.clip ? panelBio.ibox.t + panelBio.style.imgSize - this.h : panelBio.h - panelBio.img.b - this.h - bor) : panelBio.h - panelBio.img.b - this.h - bor) + filmStripCorrY;
+				/** MOD */ this.y = (!filmStripOverlay ? panelBio.h - this.h - pad_b + SCALE(40) : pptBio.style == 0 || pptBio.style == 2 ? panelBio.img.t + panelBio.style.imgSize - this.h - bor : pptBio.style > 3 ? (panelBio.clip ? panelBio.ibox.t + panelBio.style.imgSize - this.h : panelBio.h - panelBio.img.b - this.h - bor) : panelBio.h - panelBio.img.b - this.h - bor) + filmStripCorrY;
 				this.style.horizontal = true;
 				this.repaint = {
 					x: 0,
@@ -721,10 +726,10 @@ class FilmStrip {
 			case 3: // left
 				this.x = !filmStripOverlay ? (pptBio.filmStripMargin == 2 ? pptBio.borL : pptBio.filmStripMargin == 4 ? pptBio.textL : spacer) : panelBio.img.l + bor;
 				max_w = !filmStripOverlay ? panelBio.w - this.x : pptBio.style == 0 || pptBio.style == 2 || pptBio.style > 3 ? panelBio.w - panelBio.img.l - panelBio.img.r - bor * 2 : panelBio.style.imgSize - bor * 2;
-				this.y = (!filmStripOverlay ? (this.text_y + marginT || (pptBio.filmStripMargin == 1 || pptBio.filmStripMargin == 2 ? pptBio.borT : pptBio.filmStripMargin == 3 || pptBio.filmStripMargin == 4 ? pptBio.textT : spacer)) : panelBio.img.t + bor) + filmStripCorrY;
+				/** MOD */ this.y = (!filmStripOverlay ? (this.text_y + marginT || (pptBio.filmStripMargin == 1 || pptBio.filmStripMargin == 2 ? pptBio.borT : pptBio.filmStripMargin == 3 || pptBio.filmStripMargin == 4 ? pptBio.textT : spacer)) : panelBio.img.t + bor) + filmStripCorrY;
 				this.h = !filmStripOverlay ? (panelBio.h - this.y - (pptBio.filmStripMargin == 1 || pptBio.filmStripMargin == 2 ? pptBio.borB : pptBio.filmStripMargin == 3 || pptBio.filmStripMargin == 4 ? pptBio.textB : spacer)) : pptBio.style == 0 || pptBio.style == 2 ? panelBio.style.imgSize - bor * 2 : pptBio.style > 3 ? (panelBio.clip ? panelBio.style.imgSize - pptBio.borT : panelBio.h - panelBio.img.t - panelBio.img.b - bor * 2) : panelBio.h - panelBio.img.t - panelBio.img.b - bor * 2;
 				this.max_sz = Math.min(max_w - 5, this.h);
-				this.blockSize = Math.round(pptBio.filmStripSize * panelBio.w);
+				/** MOD */ this.blockSize = Math.round(pptBio.filmStripSize * panelBio.h);
 				if (this.style.fit) {
 					this.blockSize = Math.floor(this.h / Math.max(Math.round(this.h / this.blockSize)), 1);
 					this.w = this.blockSize = Math.min(this.blockSize, this.max_sz);

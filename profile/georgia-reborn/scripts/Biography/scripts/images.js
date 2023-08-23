@@ -559,7 +559,7 @@ class ImagesBio {
 		}
 		if (this.get) return this.getImgFallback();
 		if (!pptBio.text_only && this.cur) {
-			gr.DrawImage(this.cur, this.x, pptBio.img_only ? geo.topMenuHeight + uiBio.h * 0.5 - this.cur.Height * 0.5 : geo.topMenuHeight + this.y, this.cur.Width, pptBio.img_only ? this.cur.Height : this.cur.Height, 0, 0, this.cur.Width, this.cur.Height, 0, this.style.alpha);
+			gr.DrawImage(this.cur, this.x - (pptBio.img_only ? SCALE(2) : 0), pptBio.img_only ? geo.topMenuHeight + uiBio.h * 0.5 - this.cur.Height * 0.5 : geo.topMenuHeight + this.y, this.cur.Width + (pptBio.img_only ? SCALE(4) : 0), this.cur.Height, 0, 0, this.cur.Width, this.cur.Height, 0, this.style.alpha);
 		}
 	}
 

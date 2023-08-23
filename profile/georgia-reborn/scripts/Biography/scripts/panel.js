@@ -632,13 +632,13 @@ class PanelBio {
 		this.logo.w = scale[0];
 		this.logo.h = scale[1];
 		this.logo.x = (this.w - this.logo.w) / 2;
-		this.logo.y =  hAvail - this.logo.h + versionHeight + hAvail * 0.145;
+		this.logo.y = hAvail - this.logo.h + versionHeight + hAvail * 0.145 + uiBio.y + pptBio.borT;
 
 		gr.SetInterpolationMode(7);
 		if (this.logo.img) gr.DrawImage(this.logo.img, this.logo.x, this.logo.y, this.logo.w, this.logo.h, 0, 0, this.logo.img.Width, this.logo.img.Height);
 		gr.SetInterpolationMode(0);
-		gr.GdiDrawText(version, uiBio.font.small, textCol_h, 0, 0, this.w, this.h, 0x00000800);
-		gr.GdiDrawText(str, font, textCol, 10, this.h - txtSp, this.w - 20, txtSp, txt.ncc);
+		// gr.GdiDrawText(version, uiBio.font.small, textCol, 10, pptBio.borT * 0.5 + this.h - txtSp, this.w - 20, txtSp, txt.ncc);
+		gr.GdiDrawText(str, font, textCol, 10, uiBio.y + this.h - txtSp, this.w - 20, txtSp, txt.ncc);
 	}
 
 	exportStyle(n) {
@@ -1286,17 +1286,17 @@ class PanelBio {
 	}
 
 	setStyle(bypass) {
-		this.sbar.offset = [SCALE(4) + uiBio.sbar.arrowPad, Math.max(Math.floor(uiBio.sbar.but_w * 0.2), 2) + uiBio.sbar.arrowPad * 2, 0][uiBio.sbar.type];
+		this.sbar.offset = [2 + uiBio.sbar.arrowPad, Math.max(Math.floor(uiBio.sbar.but_w * 0.2), 2) + uiBio.sbar.arrowPad * 2, 0][uiBio.sbar.type];
 		this.sbar.top_corr = [this.sbar.offset - (uiBio.sbar.but_h - uiBio.sbar.but_w) / 2, this.sbar.offset, 0][uiBio.sbar.type];
 		const bot_corr = [(uiBio.sbar.but_h - uiBio.sbar.but_w) / 2 - this.sbar.offset, -this.sbar.offset, 0][uiBio.sbar.type];
 		this.clip = false;
 		if (!pptBio.sameStyle) {
 			switch (true) {
 				case pptBio.artistView:
-					if (pptBio.bioMode == 1) {
+					if (pptBio.bioMode === 1) {
 						pptBio.img_only = true;
 						pptBio.text_only = false;
-					} else if (pptBio.bioMode == 2) {
+					} else if (pptBio.bioMode === 2) {
 						pptBio.img_only = false;
 						pptBio.text_only = true;
 					} else {
@@ -1306,10 +1306,10 @@ class PanelBio {
 					}
 					break;
 				case !pptBio.artistView:
-					if (pptBio.revMode == 1) {
+					if (pptBio.revMode === 1) {
 						pptBio.img_only = true;
 						pptBio.text_only = false;
-					} else if (pptBio.revMode == 2) {
+					} else if (pptBio.revMode === 2) {
 						pptBio.img_only = false;
 						pptBio.text_only = true;
 					} else {
@@ -1322,87 +1322,12 @@ class PanelBio {
 			if (pptBio.text_only) seeker.upd(true);
 		}
 
-		const sp1 = 10 * $Bio.scale;
-		const sp2 = sp1 + (this.filmStripSize.r && !pptBio.filmStripOverlay ? 9 * $Bio.scale : 0);
-
-		// Corrections
-		const filmStripOverlay = pptBio.showFilmStrip && pptBio.artistView && pptBio.filmStripOverlay && !pptBio.text_only;
-		const filmStripNoOverlay = pptBio.showFilmStrip && pptBio.artistView && !pptBio.filmStripOverlay && !pptBio.text_only;
-		const filmStripOn = pptBio.showFilmStrip && pptBio.artistView && imgBio.art.images.length > 1 && pptBio.cycPhotoLocation !== 2;
-		const imageHeightCorr = filmStripOverlay && pptBio.filmStripPos === 2 ? SCALE(-10) : SCALE(-10);
-		const textHeightCorrStyle0 = filmStripOn && pptBio.filmStripPos === 2 ? SCALE(10) : SCALE(10);
-		const textHeightCorrStyle2 = filmStripOn && pptBio.filmStripPos === 2 && filmStripNoOverlay ? 0 : SCALE(40);
-
-		const textWidthCorrStyle0 =
-			filmStripOn ?
-				pptBio.filmStripPos === 1 && filmStripNoOverlay || pptBio.filmStripPos === 1 && pptBio.text_only ? SCALE(-3) :
-				pptBio.filmStripPos === 3 && filmStripNoOverlay ? SCALE(50) :
-				SCALE(25) :
-			SCALE(pptBio.filmStripPos === 3 && pptBio.cycPhotoLocation === 2 && pptBio.showFilmStrip ? 50 : 25);
-
-		const textWidthCorrStyle1 =
-			filmStripOn ?
-				pptBio.filmStripPos === 0 || pptBio.filmStripPos === 2 || pptBio.filmStripPos === 1 && filmStripOverlay || pptBio.filmStripPos === 3 && filmStripOverlay ? 0 :
-				SCALE(25) :
-			0;
-
-		const textWidthCorrStyle2 = pptBio.filmStripPos === 1 && filmStripNoOverlay && pptBio.cycPhotoLocation !== 2 ? SCALE(-3) : SCALE(25);
-
-		const textWidthCorrStyle3 =
-			filmStripOn ?
-				pptBio.filmStripPos === 0 || pptBio.filmStripPos === 2 ? SCALE(25) :
-				pptBio.filmStripPos === 1 && filmStripNoOverlay ? SCALE(-3) :
-				pptBio.filmStripPos === 3 && filmStripNoOverlay ? 0 :
-				SCALE(25) :
-			SCALE(25);
-
-		const textWidthCorrStyle4 =
-			filmStripOn ?
-				pptBio.filmStripPos === 0 || pptBio.filmStripPos === 1 && filmStripOverlay || pptBio.filmStripPos === 2 || pptBio.filmStripPos === 3 ? SCALE(25) :
-				pptBio.filmStripPos === 1 && filmStripNoOverlay ? SCALE(-3) :
-				SCALE(50) :
-			SCALE(25);
-
-		const marginTxtOnlyT = SCALE(34);
-
-		const marginTxtCorrT =
-			pptBio.style === 0 || pptBio.style === 2 ? SCALE(36) :
-			pptBio.style === 1 || pptBio.style === 3 ? SCALE(34) :
-			pptBio.style  > 3 ? filmStripNoOverlay && pptBio.cycPhotoLocation !== 2 ?
-				pptBio.filmStripPos === 0 || pptBio.filmStripPos === 2 ? SCALE(49) : SCALE(9) :
-			pptBio.style === 4 ? SCALE(4) : SCALE(9) :
-			0;
-
-		const marginTxtCorrR = filmStripNoOverlay ? pptBio.filmStripPos === 3 ? SCALE(25) : 0 : 0;
-
-		const marginTxtCorrL =
-			(pptBio.style === 0 || pptBio.style === 3) && pptBio.filmStripPos === 3 && filmStripNoOverlay
-			|| pptBio.style === 1 && pptBio.filmStripPos === 3 && filmStripNoOverlay
-			|| pptBio.style > 3 && pptBio.filmStripPos === 3 && filmStripNoOverlay
-			|| pptBio.text_only && pptBio.filmStripPos === 3 ?
-			filmStripOn ? SCALE(25) : 0 :
-			0;
-
-		const marginImgCorrL =
-			pptBio.style === 1 && pptBio.filmStripPos === 1 && filmStripNoOverlay ? filmStripOn ? SCALE(25) : 0 :
-			pptBio.style === 1 && pptBio.filmStripPos === 2 ? 0 :
-			pptBio.style === 2 ? SCALE(25) :
-			pptBio.style === 3 && filmStripNoOverlay ? SCALE(23) :
-			pptBio.style === 3 && filmStripOverlay ? SCALE(92) :
-			0;
-
-		const marginImgCorrT =
-			pptBio.style === 0 ? SCALE(9) :
-			pptBio.style === 1 || pptBio.style === 3 ? SCALE(36) :
-			0;
-
-		const marginScrCorr =
-			pptBio.style === 1 ? SCALE(1) :
-			pptBio.style > 3 && pptBio.filmStripPos === 1 && filmStripNoOverlay && pptBio.cycPhotoLocation !== 2 ? SCALE(14) :
-			pptBio.borR - SCALE(1);
-
-		const tboxCorr = SCALE(filmStripOn && filmStripNoOverlay && (pptBio.filmStripPos === 0 || pptBio.filmStripPos === 2) ? 70 : 30);
-
+		const sp1 = SCALE(10 * $Bio.scale);
+		const sp2 = sp1 + (this.filmStripSize.r && !pptBio.filmStripOverlay ? ((SCALE(pref.layout === 'artwork' ? 12 : 9) * $Bio.scale)) : 0);
+		const filmStripRight = pptBio.artistView && pptBio.showFilmStrip && pptBio.filmStripPos === 1;
+		const filmStripLeft = pptBio.artistView && pptBio.showFilmStrip && pptBio.filmStripPos === 3;
+		const RES_4K_Corr = RES_4K ? uiBio.heading.linePad * 0.5 : 0;
+		const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`];
 
 		switch (true) {
 			case pptBio.img_only: { // img_only
@@ -1416,126 +1341,150 @@ class PanelBio {
 				break;
 			}
 
-			case pptBio.text_only: // text_only
+			case pptBio.text_only: { // text_only
+				const textWidthCorr  = filmStripRight ? pptBio.filmStripOverlay ? this.text.r + this.filmStripSize.r * 0.5 - this.style.gap : this.text.r : this.text.r * 2;
+				const textWidthCorr2 = filmStripLeft  ? this.text.r - this.style.gap - RES_4K_Corr : 0;
+				const sbarScrollCorr = filmStripRight ? pptBio.filmStripOverlay ? this.text.r - (this.filmStripSize.r + this.style.gap) : 0 : 0;
+
 				this.lines_drawn = Math.max(Math.floor((this.h - pptBio.textT - pptBio.textB - uiBio.heading.h - this.filmStripSize.t - this.filmStripSize.b) / uiBio.font.main_h), 0);
-				this.text.l = pptBio.textL + this.filmStripSize.l - marginTxtCorrL;
+				this.text.l = pptBio.textL + this.filmStripSize.l - textWidthCorr2;
 				this.text.r = (pptBio.sbarShow ? Math.max(pptBio.textR, uiBio.sbar.sp + sp2) : pptBio.textR) + this.filmStripSize.r;
-				this.text.t = !pptBio.topAlign ? pptBio.textT + marginTxtOnlyT + (this.h - pptBio.textT + this.filmStripSize.t - pptBio.textB - this.filmStripSize.b - this.lines_drawn * uiBio.font.main_h + uiBio.heading.h) / 2 : pptBio.textT + uiBio.heading.h + this.filmStripSize.t;
-				this.text.w = this.w - this.text.l - this.text.r - textWidthCorrStyle0;
+				/** MOD */ this.text.t = !pptBio.topAlign ? uiBio.y + pptBio.textT + (this.h - pptBio.textT + this.filmStripSize.t - pptBio.textB - this.filmStripSize.b - this.lines_drawn * uiBio.font.main_h + uiBio.heading.h) / 2 : pptBio.textT + uiBio.heading.h + this.filmStripSize.t;
+				/** MOD */ this.text.w = this.w - this.text.l - textWidthCorr;
 				this.text.h = this.lines_drawn * uiBio.font.main_h;
 				this.heading.x = !this.style.fullWidthHeading ? this.text.l : pptBio.textL;
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - pptBio.textR;
 				if (pptBio.sbarShow) {
-					this.sbar.x = !this.filmStripSize.r ? this.w - uiBio.sbar.sp - pptBio.borR : this.text.l + this.text.w + sp1;
+					/** MOD */ this.sbar.x = (!this.filmStripSize.r || pptBio.filmStripOverlay ? this.w - uiBio.sbar.sp - this.text.r : this.text.l + this.text.w + sp1) + sbarScrollCorr;
 					this.sbar.y = (uiBio.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.r || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;
 					this.sbar.h = (uiBio.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.r || this.filmStripSize.b ? uiBio.font.main_h * this.lines_drawn + bot_corr : this.h - this.sbar.y) + bot_corr;
 				}
 				this.repaint.x = this.text.l;
-				this.repaint.y = this.text.t;
+				this.repaint.y = 0;
 				this.repaint.w = this.w - this.repaint.x - this.filmStripSize.r;
-				this.repaint.h = this.h - this.filmStripSize.b - uiBio.y - marginTxtOnlyT;
+				this.repaint.h = this.h - this.filmStripSize.b;
 				break;
+			}
 
-			case pptBio.style == 0: { // top
+			case pptBio.style === 0: { // top
+				const textWidthCorr  = filmStripRight && !pptBio.filmStripOverlay ? this.text.r + RES_4K_Corr : this.text.r * 2;
+				const textWidthCorr2 = filmStripLeft  && !pptBio.filmStripOverlay ? this.filmStripSize.l - this.text.r + this.style.gap + RES_4K_Corr : 0;
+
 				$Bio.key.forEach(v => this.img[v] = this.bor[v] + (v != 'b' ? (!pptBio.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
-				let txt_h = Math.round((this.h - this.img.t - pptBio.textB - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0)) * (1 - pptBio.rel_imgs) - textHeightCorrStyle0);
-				this.lines_drawn = Math.max(Math.floor(txt_h / uiBio.font.main_h), 0);
-				this.text.h = this.lines_drawn * uiBio.font.main_h;
+				/** MOD */ let txt_h = Math.round((this.h - this.img.t - pptBio.textB - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0)) * (1 - pptBio.rel_imgs) + biographyFontSize);
+				this.lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0);
+				this.text.h = this.lines_drawn * uiBio.font.main_h + biographyFontSize;
 				txt_h = this.text.h + this.style.gap;
-				this.style.imgSize = Math.max(this.h - txt_h - this.img.t - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) - pptBio.textB - uiBio.heading.h, 10) - imageHeightCorr;
-				this.text.l = pptBio.textL + (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) - marginTxtCorrL;
-				this.text.r = (pptBio.sbarShow ? Math.max(pptBio.textR, uiBio.sbar.sp + sp2) : pptBio.textR) + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0) - marginTxtCorrR;
-				this.text.t = this.img.t + this.style.imgSize + this.style.gap + uiBio.heading.h + marginTxtCorrT;
-				this.text.w = this.w - this.text.l - this.text.r - textWidthCorrStyle0;
+				/** MOD */ this.style.imgSize = Math.max(this.h - txt_h - this.img.t - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) - pptBio.textB - uiBio.heading.h * 0.75, 10);
+				/** MOD */ this.text.l = pptBio.textL + textWidthCorr2;
+				this.text.r = (pptBio.sbarShow ? Math.max(pptBio.textR, uiBio.sbar.sp + sp2) : pptBio.textR) + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
+				/** MOD */ this.text.t = this.img.t + this.style.imgSize + this.style.gap + uiBio.heading.h * 2;
+				/** MOD */ this.text.w = this.w - this.text.l - textWidthCorr;
 				this.heading.x = (!this.style.fullWidthHeading ? this.text.l : pptBio.textL);
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - pptBio.textL - pptBio.textR;
-				this.sbar.x = !this.filmStripSize.r ? this.w - uiBio.sbar.sp - marginScrCorr : this.text.l + this.text.w + sp1;
+				/** MOD */ this.sbar.x = (!this.filmStripSize.r || pptBio.filmStripOverlay ? this.w - uiBio.sbar.sp - this.text.r : this.text.l + this.text.w + sp1);
 				this.sbar.y = (uiBio.sbar.type < this.sbar.style || pptBio.heading || this.filmStripSize.b ? this.text.t : this.img.t + this.style.imgSize) + this.sbar.top_corr;
 				this.sbar.h = (uiBio.sbar.type < this.sbar.style || this.filmStripSize.b ? uiBio.font.main_h * this.lines_drawn + bot_corr : this.h - this.sbar.y) + bot_corr;
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
-				this.repaint.w = this.w - this.repaint.x - (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
-				this.repaint.h = this.h - this.repaint.y - (!pptBio.filmStripOverlay ? this.filmStripSize.b - SCALE(25) : 0) + textHeightCorrStyle0;
+				/** MOD */ this.repaint.w = this.w - this.repaint.x - (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0) - (pptBio.filmStripPos === 1 ? 0 : this.text.r);
+				/** MOD */ this.repaint.h = this.h - this.repaint.y - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) + uiBio.y;
 				break;
 			}
-			case pptBio.style == 1: { // right
+
+			case pptBio.style === 1: { // right
+				const textWidthCorr1 = filmStripLeft  && !pptBio.filmStripOverlay ? this.style.gap + SCALE(uiBio.heading.linePad) - SCALE(pref.layout === 'artwork' ? 10 : 0) : 0;
+				const textWidthCorr2 = filmStripRight && !pptBio.filmStripOverlay ? this.style.gap + SCALE(uiBio.heading.linePad) - SCALE(pref.layout === 'artwork' ? 10 : 0) : 0;
+
 				$Bio.key.forEach(v => this.img[v] = this.bor[v] + (v != 'l' ? (!pptBio.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
 				let txt_sp = Math.round((this.w - pptBio.textL - (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) - this.img.r) * (1 - pptBio.rel_imgs));
 				const txt_h = this.h - pptBio.textT - pptBio.textB - (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
 				this.lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0);
 				this.style.imgSize = Math.max(this.w - txt_sp - this.img.r - pptBio.textL - (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) - this.style.gap, 10);
 				if (pptBio.sbarShow) txt_sp -= (uiBio.sbar.sp + sp1);
-				this.text.l = pptBio.textL - marginTxtCorrL + (!pptBio.filmStripOverlay ? (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) : 0);
+				/** MOD */ this.text.l = pptBio.textL + (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) - textWidthCorr1;
 				this.text.r = pptBio.sbarShow ? Math.max(pptBio.textR + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0), uiBio.sbar.sp + sp1) : pptBio.textR + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
-				this.text.t = !pptBio.topAlign ? pptBio.textT + marginTxtCorrT + (this.h - pptBio.textT - pptBio.textB + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) - this.lines_drawn * uiBio.font.main_h + uiBio.heading.h) / 2 : pptBio.textT + uiBio.heading.h + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0);
-				this.text.w = txt_sp + textWidthCorrStyle1;
+				/** MOD */ this.text.t = !pptBio.topAlign ? uiBio.y + pptBio.textT + (this.h - pptBio.textT - pptBio.textB + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) - this.lines_drawn * uiBio.font.main_h + uiBio.heading.h) / 2 : pptBio.textT + uiBio.heading.h + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0);
+				/** MOD */ this.text.w = txt_sp + textWidthCorr1 + textWidthCorr2;
 				this.text.h = this.lines_drawn * uiBio.font.main_h;
 				this.heading.x = !this.style.fullWidthHeading ? this.text.l : pptBio.textL;
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - this.bor.r;
-				if (this.style.fullWidthHeading) this.img.t = this.text.t - marginImgCorrT;
-				this.img.l = pptBio.textL + txt_sp + (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) + this.style.gap + (pptBio.sbarShow ? uiBio.sbar.sp + sp1 : 0) + marginImgCorrL;
-				this.sbar.x = this.text.l + this.text.w + sp1 + marginScrCorr;
+				/** MOD */ if (this.style.fullWidthHeading) this.img.t = this.text.t - uiBio.y + (RES_4K ? uiBio.heading.linePad * 1.5 : uiBio.heading.linePad * 0.5);
+				/** MOD */ this.img.l = pptBio.textL + txt_sp + (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) + this.style.gap + (pptBio.sbarShow ? uiBio.sbar.sp + sp1 : 0) + textWidthCorr2;
+				/** MOD */ this.sbar.x = this.text.l + this.text.w + sp1 - RES_4K_Corr;
 				this.sbar.y = (uiBio.sbar.type < this.sbar.style || pptBio.heading || this.filmStripSize.t || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;
 				this.sbar.h = uiBio.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.b ? uiBio.font.main_h * this.lines_drawn + bot_corr * 2 : this.h - this.sbar.y + bot_corr;
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
-				this.repaint.w = this.img.l - this.repaint.x - this.style.gap + marginScrCorr;
-				this.repaint.h = this.h - this.repaint.y - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
+				this.repaint.w = this.img.l - this.repaint.x - this.style.gap;
+				/** MOD */ this.repaint.h = this.h - this.repaint.y - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) + uiBio.y;
 				break;
 			}
 
-			case pptBio.style == 2: { // bottom
+			case pptBio.style === 2: { // bottom
+				const textWidthCorr  = filmStripRight && !pptBio.filmStripOverlay ? this.text.r + RES_4K_Corr : this.text.r * 2;
+				const textWidthCorr2 = filmStripLeft  && !pptBio.filmStripOverlay ? this.filmStripSize.l - this.text.r + this.style.gap + RES_4K_Corr : 0;
+
 				$Bio.key.forEach(v => this.img[v] = this.bor[v] + (v != 't' && v != 'b' ? (!pptBio.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
-				let txt_h = Math.round((this.h - pptBio.textT - this.img.b - (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0)) * (1 - pptBio.rel_imgs));
-				this.lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h + textHeightCorrStyle2) / uiBio.font.main_h), 0);
+				/** MOD */ let txt_h = Math.round((this.h - pptBio.textT - this.img.b - (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0)) * (1 - pptBio.rel_imgs) + biographyFontSize);
+				this.lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0);
 				this.text.h = this.lines_drawn * uiBio.font.main_h;
 				txt_h = this.text.h + this.style.gap;
 				this.style.imgSize = Math.max(this.h - txt_h - pptBio.textT - this.img.b - (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) - uiBio.heading.h, 10);
 				this.img.t = this.h - this.bor.b - this.style.imgSize - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
-				this.text.l = pptBio.textL + (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0);
+				/** MOD */ this.img.l = this.text.l;
+				/** MOD */ this.text.l = pptBio.textL + textWidthCorr2;
 				this.text.r = (pptBio.sbarShow ? Math.max(pptBio.textR, uiBio.sbar.sp + sp2) : pptBio.textR) + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
-				this.text.t = this.img.t - txt_h + marginTxtCorrT;
-				this.text.w = this.w - this.text.l - this.text.r - textWidthCorrStyle2;
+				/** MOD */ this.text.t = uiBio.y + this.img.t - txt_h;
+				/** MOD */ this.text.w = this.w - this.text.l - textWidthCorr;
 				this.heading.x = (!this.style.fullWidthHeading ? this.text.l : pptBio.textL);
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - pptBio.textL - pptBio.textR;
-				this.sbar.x = !this.filmStripSize.r ? this.w - uiBio.sbar.sp - marginScrCorr : this.text.l + this.text.w + sp1;
+				/** MOD */ this.sbar.x = (!this.filmStripSize.r || pptBio.filmStripOverlay ? this.w - uiBio.sbar.sp - this.text.r : this.text.l + this.text.w + sp1);
 				this.sbar.y = (uiBio.sbar.type < this.sbar.style || pptBio.heading ? this.text.t : 0) + this.sbar.top_corr;
 				this.sbar.h = uiBio.sbar.type < this.sbar.style ? uiBio.font.main_h * this.lines_drawn + bot_corr * 2 : this.img.t - this.sbar.y + bot_corr;
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
-				this.repaint.w = this.w - this.repaint.x - (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
-				this.repaint.h = this.img.t - this.repaint.y + marginTxtCorrT;
+				/** MOD */ this.repaint.w = this.w - this.repaint.x - (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0) - (pptBio.filmStripPos === 1 ? 0 : this.text.r);
+				/** MOD */ this.repaint.h = this.img.t - this.repaint.y + uiBio.y;
 				break;
 			}
 
-			case pptBio.style == 3: { // left
+			case pptBio.style === 3: { // left
+				const textWidthCorr1 = filmStripLeft && !pptBio.filmStripOverlay ? this.style.gap - (pref.layout === 'artwork' ? RES_4K_Corr * 2 : RES_4K ? -uiBio.heading.linePad * 1.5 : -uiBio.heading.linePad) : -RES_4K_Corr;
+				const textWidthCorr2 = filmStripLeft && !pptBio.filmStripOverlay ? this.text.r - this.style.gap - RES_4K_Corr : 0;
+				const textWidthCorr3 = pptBio.artistView && pptBio.showFilmStrip && !pptBio.filmStripOverlay ? pptBio.filmStripPos === 1 ? RES_4K_Corr * 2 : pptBio.filmStripPos === 3 ? this.style.gap : this.text.r : this.text.r;
+
 				$Bio.key.forEach(v => this.img[v] = this.bor[v] + (v != 'r' ? (!pptBio.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
 				this.text.r = (pptBio.sbarShow ? Math.max(pptBio.textR, uiBio.sbar.sp + sp2) : pptBio.textR) + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
 				const txt_sp = Math.round((this.w - this.img.l - this.text.r) * (1 - pptBio.rel_imgs));
 				const txt_h = this.h - pptBio.textT - pptBio.textB - (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
 				this.lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0);
 				this.style.imgSize = Math.max(this.w - txt_sp - this.img.l - this.text.r - this.style.gap, 10);
-				this.text.l = this.img.l + this.style.imgSize + this.style.gap - marginTxtCorrL;
-				this.text.t = !pptBio.topAlign ? pptBio.textT + marginTxtCorrT + (this.h - pptBio.textT - pptBio.textB + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) - this.lines_drawn * uiBio.font.main_h + uiBio.heading.h) / 2 : pptBio.textT + uiBio.heading.h + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0);
-				this.text.w = txt_sp - textWidthCorrStyle3;
+				/** MOD */ this.text.l = this.img.l + this.style.imgSize + this.style.gap - textWidthCorr1;
+				/** MOD */ this.text.t = !pptBio.topAlign ? uiBio.y + pptBio.textT + (this.h - pptBio.textT - pptBio.textB + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) - this.lines_drawn * uiBio.font.main_h + uiBio.heading.h) / 2 : pptBio.textT + uiBio.heading.h + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0);
+				/** MOD */ this.text.w = txt_sp - textWidthCorr3;
 				this.text.h = this.lines_drawn * uiBio.font.main_h;
 				this.heading.x = !this.style.fullWidthHeading ? this.text.l : this.bor.l;
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - pptBio.textR;
-				if (this.style.fullWidthHeading) this.img.t = this.text.t - marginImgCorrT;
-				this.img.l = pptBio.filmStripPos == 3 ? pptBio.showFilmStrip && pptBio.artistView && pptBio.cycPhotoLocation !== 2 ? pref.biographyLayout === 'full' ? pptBio.filmStripOverlay ? pptBio.borL : this.filmStripSize.l + this.style.gap : txt_sp - pptBio.borL - marginImgCorrL : pptBio.borL : pptBio.borL;
-				this.sbar.x = !this.filmStripSize.r ? this.w - uiBio.sbar.sp - marginScrCorr : this.text.l + this.text.w + sp1;
+				/** MOD */ if (this.style.fullWidthHeading) this.img.t = this.text.t - uiBio.y + (RES_4K ? uiBio.heading.linePad * 1.5 : uiBio.heading.linePad * 0.5);
+				/** MOD */ this.img.l -= textWidthCorr2;
+				/** MOD */ this.sbar.x = (!this.filmStripSize.r || pptBio.filmStripOverlay ? this.w - uiBio.sbar.sp - this.text.r : this.text.l + this.text.w + sp1);
 				this.sbar.y = (uiBio.sbar.type < this.sbar.style || pptBio.heading || this.filmStripSize.t || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;
 				this.sbar.h = uiBio.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.b ? uiBio.font.main_h * this.lines_drawn + bot_corr * 2 : this.h - this.sbar.y + bot_corr;
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
-				this.repaint.w = this.w - this.repaint.x - (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
-				this.repaint.h = this.h - this.repaint.y - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
+				/** MOD */ this.repaint.w = this.w - this.repaint.x - (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0) - (pptBio.showFilmStrip ? 0 : this.text.r);
+				/** MOD */ this.repaint.h = this.h - this.repaint.y - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) + uiBio.y;
 				break;
 			}
 
 			case pptBio.style > 3: {
+				const textWidthCorr  = filmStripRight ? pptBio.filmStripOverlay && pptBio.style === 4 ? this.text.r + this.filmStripSize.r * 0.5 : pptBio.filmStripOverlay && pptBio.style === 5 ? this.text.r * 2 : this.text.r + this.style.gap + RES_4K_Corr : this.text.r * 2;
+				const textWidthCorr2 = filmStripLeft  ? pptBio.filmStripOverlay && pptBio.style === 4 ? this.filmStripSize.l : pptBio.filmStripOverlay && pptBio.style === 5 ? 0 : this.text.r - this.style.gap - RES_4K_Corr : 0;
+				const sbarScrollCorr = filmStripRight ? pptBio.filmStripOverlay ? 0 : pptBio.style === 4 ? this.text.r - this.filmStripSize.r - this.style.gap - RES_4K_Corr : pptBio.style === 5 ? this.text.r - this.style.gap - RES_4K_Corr : 0 : 0;
+
 				if (pptBio.style - 6 >= this.style.free.length) this.getStyleFallback();
-				const obj = pptBio.style == 4 || pptBio.style == 5 ? this.style.overlay : this.style.free[pptBio.style - 6];
+				const obj = pptBio.style === 4 || pptBio.style === 5 ? this.style.overlay : this.style.free[pptBio.style - 6];
 				if (!bypass) {
 					this.im.l = $Bio.clamp(obj.imL, 0, 1);
 					this.im.r = $Bio.clamp(obj.imR, 0, 1);
@@ -1550,63 +1499,56 @@ class PanelBio {
 				const imR = Math.round(this.im.r * this.w) + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
 				const imT = Math.round(this.im.t * this.h) + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0);
 				const imB = Math.round(this.im.b * this.h) + (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
-
-				const showFilmStrip = filmStripOn && (pptBio.filmStripPos === 0 || pptBio.filmStripPos === 2);
-				const t_y = uiBio.y + marginTxtCorrT - (RES_4K ? showFilmStrip ? 11 : -1 : showFilmStrip ? 3 : 4);
-				const txL = pptBio.style == 4 ? 0   : Math.round(this.tx.l * this.w) + (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0);
-				const txR = pptBio.style == 4 ? 0   : Math.round(this.tx.r * this.w) + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
-				const txT = pptBio.style == 4 ? t_y : Math.round(this.tx.t * this.h) + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0);
-				const txB = pptBio.style == 4 ? 0   : Math.round(this.tx.b * this.h) + (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
-
+				const txL = pptBio.style === 4 ? 0 : Math.round(this.tx.l * this.w) + (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0);
+				const txR = pptBio.style === 4 ? 0 : Math.round(this.tx.r * this.w) + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
+				/** MOD */ const txT = pptBio.style === 4 ? uiBio.y : Math.round(this.tx.t * this.h) + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0);
+				const txB = pptBio.style === 4 ? 0 : Math.round(this.tx.b * this.h) + (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
 				this.ibox.l = Math.max(imL, 0);
 				this.ibox.t = Math.max(imT, 0);
 				this.ibox.w = this.w - imL - imR;
 				this.ibox.h = this.h - imT - imB;
-				this.img.l = pptBio.borL; // pptBio.style == 4 ? 0 : imL + this.bor.l;
-				this.img.r = pptBio.borR; // pptBio.style == 4 ? 0 : imR + this.bor.r;
-				this.img.t = imT + this.bor.t + (pptBio.style == 4 ? uiBio.heading.h - this.style.gap * 0.5 : 0);
-				this.img.b = imB + this.bor.b;
-				const t_l = (pptBio.style == 4 ? this.filmStripSize.l : 0) + pptBio.textL + uiBio.overlay.borderWidth;
-				const t_t = (pptBio.style == 4 ? this.filmStripSize.t : 0) + pptBio.textT + uiBio.overlay.borderWidth;
-				let t_r = (pptBio.style == 4 ? this.filmStripSize.r : 0) + pptBio.textR + uiBio.overlay.borderWidth;
-				let t_b = (pptBio.style == 4 ? this.filmStripSize.b : 0) + pptBio.textB + uiBio.overlay.borderWidth;
-				if ((pptBio.typeOverlay == 2 || pptBio.typeOverlay == 4) && pptBio.style != 4) {
+				/** MOD */ this.img.l = pptBio.style === 4 ? 0 : this.bor.l; // this.img.l = pptBio.style === 4 ? 0 : imL + this.bor.l;
+				/** MOD */ this.img.r = pptBio.style === 4 ? 0 : this.bor.r; // this.img.r = pptBio.style === 4 ? 0 : imR + this.bor.r;
+				this.img.t = pptBio.style === 4 ? 0 : imT + this.bor.t;
+				this.img.b = pptBio.style === 4 ? 0 : imB + this.bor.b;
+				const t_l = (pptBio.style === 4 ? this.filmStripSize.l : 0) + pptBio.textL + uiBio.overlay.borderWidth;
+				const t_t = (pptBio.style === 4 ? this.filmStripSize.t : 0) + pptBio.textT + uiBio.overlay.borderWidth;
+				let t_r = (pptBio.style === 4 ? this.filmStripSize.r : 0) + pptBio.textR + uiBio.overlay.borderWidth;
+				let t_b = (pptBio.style === 4 ? this.filmStripSize.b : 0) + pptBio.textB + uiBio.overlay.borderWidth;
+				if ((pptBio.typeOverlay === 2 || pptBio.typeOverlay === 4) && pptBio.style !== 4) {
 					t_r += 1;
 					t_b += 1;
 				}
 
-				const txt_h = pptBio.style == 4 ?  Math.round(this.h - this.img.t - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0)) : Math.round((this.h - this.img.t - pptBio.textB - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0)) * (1 - pptBio.rel_imgs));
-				this.lines_drawn = pptBio.style == 4 ? Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0) : Math.max(Math.floor(txt_h / uiBio.font.main_h), 0);
-				// txt_h = this.lines_drawn * uiBio.font.main_h + this.style.gap;
-				// let txt_h = Math.round((this.h - txT - txB - t_t - t_b));
-				// this.lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0);
-				this.text.l = txL + t_l - marginTxtCorrL;
+				/** MOD */ const txt_h = Math.round((this.h - txT - txB - t_t - t_b) + uiBio.heading.h);
+				this.lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0);
+				/** MOD */ this.text.l = txL + t_l - textWidthCorr2;
 				this.text.r = txR + (pptBio.sbarShow ? Math.max(t_r, uiBio.sbar.sp + sp1) : t_r);
-				this.text.t = txT + uiBio.heading.h + t_t - marginTxtCorrT;
-				this.text.w = this.w - this.text.l - this.text.r - textWidthCorrStyle4;
+				/** MOD */ this.text.t = uiBio.y + txT + t_t;
+				/** MOD */ this.text.w = this.w - this.text.l - textWidthCorr;
 				this.text.h = this.lines_drawn * uiBio.font.main_h;
-				this.heading.x = !this.style.fullWidthHeading ? this.text.l : pptBio.style == 4 ? pptBio.textL : Math.min(this.img.l, this.text.l, (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) ? filmStrip.x : this.w);
-				this.heading.w = !this.style.fullWidthHeading ? this.text.w : pptBio.style == 4 ? this.w - this.heading.x * 2 : this.w - this.heading.x - Math.min(this.img.r, this.text.r, (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0) ? this.w - filmStrip.x - filmStrip.w : this.w);
+				/** MOD */ this.heading.x = !this.style.fullWidthHeading ? this.text.l : pptBio.style === 4 ? pptBio.textL : Math.min(this.img.l, this.text.l, (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) ? filmStrip.x : this.w);
+				/** MOD */ this.heading.w = !this.style.fullWidthHeading ? this.text.w : pptBio.style === 4 ? this.w - this.heading.x * 2 : this.w - this.heading.x - Math.min(this.img.r, this.text.r, (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0) ? this.w - filmStrip.x - filmStrip.w : this.w);
 				this.tbox.l = Math.max(txL, 0);
-				this.tbox.t = Math.max(txT, 0) - tboxCorr;
+				/** MOD */ this.tbox.t = pptBio.style === 4 ? 0 : Math.max(txT, 0) - uiBio.heading.h * 0.5;
 				this.tbox.w = this.w - Math.max(txL, 0) - Math.max(txR, 0);
 				this.tbox.h = this.h - Math.max(txT, 0) - Math.max(txB, 0);
 				this.style.minH = uiBio.font.main_h + uiBio.heading.h + t_t + t_b;
-				if (pptBio.typeOverlay == 2 && pptBio.style != 4) uiBio.overlay.borderWidth = Math.max(Math.min(uiBio.overlay.borderWidth, this.tbox.w / 3, this.tbox.h / 3), 1);
-				if (pptBio.typeOverlay && pptBio.style != 4) this.arc = Math.max(Math.min(uiBio.font.main_h / 1.5, this.tbox.w / 3, this.tbox.h / 3), 1);
+				if (pptBio.typeOverlay === 2 && pptBio.style !== 4) uiBio.overlay.borderWidth = Math.max(Math.min(uiBio.overlay.borderWidth, this.tbox.w / 3, this.tbox.h / 3), 1);
+				if (pptBio.typeOverlay && pptBio.style !== 4) this.arc = Math.max(Math.min(uiBio.font.main_h / 1.5, this.tbox.w / 3, this.tbox.h / 3), 1);
 				this.clip = this.ibox.t + 100 < this.tbox.t && this.tbox.t < this.ibox.t + this.ibox.h && (this.tbox.l < this.ibox.l + this.ibox.w || this.tbox.l + this.tbox.w < this.ibox.l + this.ibox.w);
 				this.style.imgSize = this.clip ? this.tbox.t - this.ibox.t : Math.min(this.h - imT - imB - this.bor.t - this.bor.b, this.w - imL - imR - this.bor.l - this.bor.r);
-				this.sbar.x = this.tbox.l + this.tbox.w - uiBio.sbar.sp - uiBio.overlay.borderWidth - marginScrCorr;
+				/** MOD */ this.sbar.x = this.tbox.l + this.tbox.w - uiBio.sbar.sp - uiBio.overlay.borderWidth - this.text.r + (pptBio.style === 4 && pptBio.showFilmStrip && pptBio.filmStripOverlay ? this.filmStripSize.r : sbarScrollCorr);
 				this.sbar.y = this.text.t + this.sbar.top_corr;
 				this.sbar.h = uiBio.font.main_h * this.lines_drawn + bot_corr * 2;
 				this.repaint.x = this.tbox.l;
-				this.repaint.y = this.tbox.t + tboxCorr;
+				/** MOD */ this.repaint.y = this.tbox.t + uiBio.y;
 				this.repaint.w = this.tbox.w;
-				this.repaint.h = this.tbox.h + uiBio.y;
+				this.repaint.h = this.tbox.h;
 				break;
 			}
 		}
-		if (uiBio.sbar.type == 2) {
+		if (uiBio.sbar.type === 2) {
 			this.sbar.y += 1;
 			this.sbar.h -= 2;
 		}

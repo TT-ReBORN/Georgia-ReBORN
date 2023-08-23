@@ -3223,10 +3223,10 @@ function setBiographySize() {
 	pptBio.borL  = SCALE(pref.layout === 'artwork' ? 30 : 40);
 	pptBio.borR  = SCALE(pref.layout === 'artwork' ? 30 : 40);
 	pptBio.borB  = SCALE(30);
-	pptBio.textT = SCALE(30);
-	pptBio.textL = SCALE(pref.layout === 'artwork' ? 30 : 40);
-	pptBio.textR = SCALE(pref.layout === 'artwork' ? 30 : 40);
-	pptBio.textB = SCALE(30);
+	pptBio.textT = pptBio.borT;
+	pptBio.textL = pptBio.borL;
+	pptBio.textR = pptBio.borR;
+	pptBio.textB = pptBio.borB;
 	pptBio.gap   = SCALE(15);
 
 	biographyPanel.on_size(x, y, biographyWidth, biographyHeight);
