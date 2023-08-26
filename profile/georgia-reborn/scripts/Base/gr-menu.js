@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-12                                          * //
+// * Last change:    2023-08-25                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1911,6 +1911,8 @@ function playlistOptions(menu, context_menu) {
 	playlistAlbumMenu.addToggleItem('Show weblinks in context menu', pref, 'showWeblinks');
 	playlistAlbumMenu.addToggleItem('Show long release date (YYYY-MM-DD)', pref, 'showPlaylistFullDate', () => { updatePlaylist(); });
 	playlistAlbumMenu.addSeparator();
+	playlistAlbumMenu.addToggleItem('Show PLR value', g_properties, 'show_PLR_header', () => { updatePlaylist(); });
+	playlistAlbumMenu.addSeparator();
 	playlistAlbumMenu.addItem('Customize header info', false, () => { inputBox('playlistCustomHeaderInfo'); updatePlaylist(); });
 	playlistAlbumMenu.appendTo(playlistMenu);
 
@@ -1924,6 +1926,8 @@ function playlistOptions(menu, context_menu) {
 	rowsMenu.addToggleItem('Show rating', g_properties, 'show_rating', playlistCallback);
 	rowsMenu.addToggleItem('Show rating from tags', g_properties, 'use_rating_from_tags', () => { updatePlaylist(); });
 	rowsMenu.addToggleItem('Show rating grid', pref, 'showPlaylistRatingGrid', playlistCallback);
+	rowsMenu.addSeparator();
+	rowsMenu.addToggleItem('Show PLR value', g_properties, 'show_PLR', playlistCallback);
 	rowsMenu.addSeparator();
 	rowsMenu.addToggleItem('Show track numbers', pref, 'showPlaylistTrackNumbers', () => { pref.showPlaylistIndexNumbers = false; updatePlaylist(); });
 	rowsMenu.addToggleItem('Show index numbers', pref, 'showPlaylistIndexNumbers', () => { pref.showPlaylistTrackNumbers = false; updatePlaylist(); });
@@ -3278,6 +3282,7 @@ function settingsOptions(menu) {
 			const start = async () => {
 				pref.customThemeSettings = false;
 				await setThemeSettings();
+				await display.autoDetectRes();
 				await window.Reload();
 			};
 			start();
