@@ -4483,7 +4483,7 @@ class Header extends BaseHeader {
 				track_count + (track_count === 1 ? ' Track' : ' Tracks');
 		let plr_album = '';
 		// Album PLR have sense write to 3rd line if album haven't more than 1 disc in header and !g_properties.show_disc_header
-		// If album have more than one disc, PLR value is written in sub-header line when DiscHeader.draw() and shoved if g_properties.show_disc_header
+		// If album have more than one disc, PLR value is written in sub-header line when DiscHeader.draw() and showed if g_properties.show_disc_header
 		if (g_properties.show_PLR_header && !has_discs) {
 			plr_album = calculate_PLR($('%replaygain_album_gain%', this.metadb),$('%replaygain_album_peak_db%', this.metadb)); 
 			plr_album ? plr_album = ' | ' + plr_album + ' LU' : '';	
