@@ -12,6 +12,7 @@ evalLib('querystring/querystring.min.js');
 
 const iv = crypto.enc.Latin1.parse('0102030405060708');
 const linuxapiKey = crypto.enc.Latin1.parse('rFgB&h#%2?^eDg:Q');
+const anonymousToken = "bf8bfeabb1aa84f9c8c3906c04a04fb864322804c83f5d607e91a04eae463c9436bd1a17ec353cf780b396507a3f7464e8a60f4bbc019437993166e004087dd32d1490298caf655c2353e58daa0bc13cc7d5c198250968580b12c1b8817e3f5c807e650dd04abd3fb8130b7ae43fcc5b";
 
 const aesEncrypt = (buffer, mode, key, iv) => {
     const cipher = crypto.AES.encrypt(buffer, key, { mode: mode, iv: iv })
@@ -39,6 +40,7 @@ const doRequest = (method, url, data, options) => {
                 params: data
             });
             headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36';
+            headers['Cookie'] = `MUSIC_A=${anonymousToken}`;
             url = 'https://music.163.com/api/linux/forward';
         } else {
             reject();
@@ -72,7 +74,7 @@ const procKeywords = (str) => {
 
 export function getConfig(config) {
     config.name = "网易云音乐";
-    config.version = "0.2";
+    config.version = "0.3";
     config.author = "ohyeah";
 }
 

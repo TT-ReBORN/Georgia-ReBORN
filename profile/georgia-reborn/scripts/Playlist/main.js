@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-14                                          * //
+// * Last change:    2023-08-25                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3290,7 +3290,7 @@ class Playlist extends List {
 		};
 
 		if (!iterate_level(g_properties.show_header ? this.cnt.sub_items : this.cnt.rows, target_item)) {
-			throw new LogicError('Could not find item in drawn item list');
+			return 0; // throw new LogicError('Could not find item in drawn item list');
 		}
 
 		return cur_row;
