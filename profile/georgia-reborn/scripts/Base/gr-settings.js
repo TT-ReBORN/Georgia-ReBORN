@@ -1080,6 +1080,7 @@ async function setThemeSettings(save) {
 		themePlaylist.show_album_art = g_properties.show_album_art;
 		themePlaylist.auto_album_art = g_properties.auto_album_art;
 		themePlaylist.show_header = g_properties.show_header;
+		themePlaylist.show_PLR_header = g_properties.show_PLR_header;
 		themePlaylist.use_compact_header = g_properties.use_compact_header;
 		themePlaylist.auto_collapse = g_properties.auto_collapse;
 		themePlaylist.hyperlinksCtrlClick = pref.hyperlinksCtrlClick;
@@ -1093,6 +1094,7 @@ async function setThemeSettings(save) {
 		themePlaylist.show_rating = g_properties.show_rating;
 		themePlaylist.use_rating_from_tags = g_properties.use_rating_from_tags;
 		themePlaylist.showPlaylistRatingGrid = pref.showPlaylistRatingGrid;
+		themePlaylist.show_PLR = g_properties.show_PLR;
 		themePlaylist.showPlaylistTrackNumbers = pref.showPlaylistTrackNumbers;
 		themePlaylist.showPlaylistIndexNumbers = pref.showPlaylistIndexNumbers;
 		themePlaylist.showDifferentArtist = pref.showDifferentArtist;
@@ -1115,6 +1117,7 @@ async function setThemeSettings(save) {
 		g_properties.show_album_art = custom ? themePlaylist.show_album_art : true;
 		g_properties.auto_album_art = custom ? themePlaylist.auto_album_art : false;
 		g_properties.show_header = custom ? themePlaylist.show_header : true;
+		g_properties.show_PLR_header = custom ? themePlaylist.show_PLR_header : false;
 		g_properties.use_compact_header = custom ? themePlaylist.use_compact_header : false;
 		g_properties.auto_collapse = custom ? themePlaylist.auto_collapse : false;
 		pref.hyperlinksCtrlClick = custom ? themePlaylist.hyperlinksCtrlClick : false;
@@ -1127,6 +1130,7 @@ async function setThemeSettings(save) {
 		g_properties.show_queue_position = custom ? themePlaylist.show_queue_position : true;
 		g_properties.show_rating = custom ? themePlaylist.show_rating : true;
 		g_properties.use_rating_from_tags = custom ? themePlaylist.use_rating_from_tags : false;
+		g_properties.show_PLR = custom ? themePlaylist.show_PLR : false;
 		pref.showPlaylistRatingGrid = custom ? themePlaylist.showPlaylistRatingGrid : false;
 		pref.showPlaylistTrackNumbers = custom ? themePlaylist.showPlaylistTrackNumbers : true;
 		pref.showPlaylistIndexNumbers = custom ? themePlaylist.showPlaylistIndexNumbers : false;
