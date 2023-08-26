@@ -104,9 +104,11 @@ g_properties.add_properties(
 		auto_album_art:              ['Panel Playlist - User: Header.this.art.auto', false],
 		show_group_info:             ['Panel Playlist - User: Header.info.show', true],
 		show_disc_header:            ['Panel Playlist - User: Header.disc_header.show', true],
+		show_PLR_header:             ['Panel Playlist - User: Header.peak_loudness_ratio.show', false],
 
 		show_row_stripes:            ['Panel Playlist - User: Row.stripes.show', false],
 		show_playcount:              ['Panel Playlist - User: Row.play_count.show', true],
+		show_PLR:              		 ['Panel Playlist - User: Row.peak_loudness_ratio.show', false],
 		show_rating:                 ['Panel Playlist - User: Row.rating.show', true],
 		use_rating_from_tags:        ['Panel Playlist - User: Row.rating.from_tags', false],
 		show_queue_position:         ['Panel Playlist - User: Row.queue_position.show', true],
@@ -185,6 +187,7 @@ function createPlaylistFonts() {
 		cover:          Font(coverFont, rowFontSize - 1),
 
 		playcount:      Font(playcountFont, rowFontSize - 3),
+		plr_track:      Font(playcountFont, rowFontSize - 3),
 		rating_not_set: Font('Segoe UI Symbol', rowFontSize + 2),
 		rating_set:     Font('Segoe UI Symbol', rowFontSize + 4),
 		scrollbar:      Font('Segoe UI Symbol', headerFontSize),
@@ -195,6 +198,27 @@ function createPlaylistFonts() {
 	playlistFontsCreated = true;
 }
 
+/**
+ * Calculate Peak Loudness Ratio keeping in mind replayGain 2.0 as implemented in Foobar2000
+ * @param {string=} gain replayGainValue for track %replaygain_track_gain% | for album %replaygain_album_gain%
+ * @param {string=} gaindb TruePeakValue for track %replaygain_track_peak_db% | for album %replaygain_album_peak_db%
+ * @returns {string=} Peak Loudness Ratio 
+ */
+function calculate_PLR(gain,gaindb) {
+
+	// Reference value in Foobar 2000 is set on -18 LUFS in order to maintain backwards compatibility with RG1, RG2
+	// EBU R 128 reference is -23 LUFS
+
+    
+    const lufs = -2300 - (gain.replace(/[^0-9+-]/g,'') - 500) ;
+    const tpfs = gaindb.replace(/[^0-9+-]/g,'');
+    let plr = tpfs - lufs;
+
+    let plr_value = plr.toString().substring(plr.toString().length -2) > 49 ? plr += 100 : plr;
+    plr_value = plr.toString().substring(0,plr.toString().length -2);
+    
+	return plr_value;
+}
 
 //////////////////
 // * GEOMETRY * //
@@ -2694,6 +2718,12 @@ class Playlist extends List {
 				this.scroll_to_focused_or_now_playing();
 			}, { is_checked: g_properties.show_disc_header });
 
+			appear_header.append_item('Show PLR value', () => {
+				g_properties.show_PLR_header = !g_properties.show_PLR_header;
+				this.initialize_list();
+				this.scroll_to_focused_or_now_playing();
+			}, { is_checked: g_properties.show_PLR_header });
+
 			if (!g_properties.use_compact_header) {
 				appear_header.append_item('Show group info', () => {
 					g_properties.show_group_info = !g_properties.show_group_info;
@@ -2748,6 +2778,10 @@ class Playlist extends List {
 		appear_row.append_item('Show rating', () => {
 			g_properties.show_rating = !g_properties.show_rating;
 		}, { is_checked: g_properties.show_rating });
+
+		appear_row.append_item('Show PLR value', () => {
+			g_properties.show_PLR = !g_properties.show_PLR;
+		}, { is_checked: g_properties.show_PLR });
 	}
 
 	/**
@@ -4153,8 +4187,14 @@ class DiscHeader extends BaseHeader {
 		const disc_text = this.disc_title; // $('[Disc %discnumber% $if('+ tf.disc_subtitle+', \u2014 ,) ]['+ tf.disc_subtitle +']', that.sub_items[0].metadb);
 		gr.DrawString(disc_text, title_font, title_color, cur_x, this.y, this.w, this.h, disc_header_text_format);
 		const disc_w = Math.ceil(gr.MeasureString(disc_text, title_font, 0, 0, 0, 0).Width + 14);
+		
+		let subheader_PLR_album = '';
+		if (g_properties.show_PLR_header) {
+			subheader_PLR_album = calculate_PLR($('%replaygain_album_gain%', this.sub_items[0].metadb),$('%replaygain_album_peak_db%', this.sub_items[0].metadb));
+			subheader_PLR_album ? subheader_PLR_album = subheader_PLR_album + ' LU - ' : '';
+		}
 
-		const tracks_text = `${this.sub_items.length} Track${this.sub_items.length > 1 ? 's' : ''} - ${utils.FormatDuration(this.get_duration())}`;
+		const tracks_text = `${(subheader_PLR_album)}${this.sub_items.length} Track${this.sub_items.length > 1 ? 's' : ''} - ${utils.FormatDuration(this.get_duration())}`;
 
 		const tracks_w = Math.ceil(gr.MeasureString(tracks_text, title_font, 0, 0, 0, 0).Width + 20);
 		const tracks_x = this.x + this.w - tracks_w - right_pad;
@@ -4435,12 +4475,21 @@ class Header extends BaseHeader {
 				track_count += discHeader.sub_items.length;
 			});
 		}
-
-		const disc_number = (!this.grouping_handler.show_disc() && $('[%totaldiscs%]', this.metadb) !== '1') ? $('[ | Disc: %discnumber%[/%totaldiscs%]]', this.metadb) : '';
+		
+		// const disc_number = (!g_properties.show_disc_header && $('[%totaldiscs%]', this.metadb) !== '1') ? $('[ | Disc: %discnumber%[/%totaldiscs%]]', this.metadb) : '';
+		const disc_number = (this.grouping_handler.show_disc() && $('[%totaldiscs%]', this.metadb) !== '1') ? $('[ | Disc: %discnumber%[/%totaldiscs%]]', this.metadb) : '';
 		const track_text = is_radio ? '' : ' | ' +
 				(this.grouping_handler.show_disc() && has_discs ? this.sub_items.length + ' Discs - ' : '') +
 				track_count + (track_count === 1 ? ' Track' : ' Tracks');
-		let info_text = $(codec + disc_number + '[ | %replaygain_album_gain%]', this.metadb) + track_text;
+		let plr_album = '';
+		// Album PLR have sense write to 3rd line if album haven't more than 1 disc in header and !g_properties.show_disc_header
+		// If album have more than one disc, PLR value is written in sub-header line when DiscHeader.draw() and shoved if g_properties.show_disc_header
+		if (g_properties.show_PLR_header && !has_discs) {
+			plr_album = calculate_PLR($('%replaygain_album_gain%', this.metadb),$('%replaygain_album_peak_db%', this.metadb)); 
+			plr_album ? plr_album = ' | ' + plr_album + ' LU' : '';	
+		}				
+		
+		let info_text = $(codec + disc_number + '[ | %replaygain_album_gain%]', this.metadb) + plr_album + track_text;
 		if (hasGenreTags) {
 			info_text = ` | ${info_text}`;
 		}
@@ -5693,6 +5742,33 @@ class Row extends ListItem {
 
 			right_pad += this.rating.w + this.rating_right_pad + this.rating_left_pad;
 		}
+
+        //---> PLR
+        if (g_properties.show_PLR) {
+            
+            if ($('[%replaygain_track_gain%]', this.metadb) && $('[%replaygain_track_peak_db%]', this.metadb)) {
+                this.plr_track = calculate_PLR($('%replaygain_track_gain%', this.metadb),$('%replaygain_track_peak_db%', this.metadb))
+            }
+
+            if (this.plr_track) {
+                if (this.plr_track < 10) {
+                    this.plr_track = '  ' + this.plr_track
+                }
+                this.plr_track += ' LU |'
+               
+                const plr_track_w = Math.ceil(
+                    /** @type {!number} */
+                    gr.MeasureString(this.plr_track, g_pl_fonts.plr_track, 0, 0, 0, 0).Width
+                );
+                const plr_track_x = this.x + this.w - plr_track_w - right_pad;
+
+				gr.DrawString(this.plr_track, g_pl_fonts.plr_track, this.title_color, plr_track_x, this.y, plr_track_w, this.h, g_string_format.align_center);
+                testRect && gr.DrawRect(plr_track_x, this.y - 1, plr_track_w, this.h, 1, _RGBA(155, 155, 255, 250));
+
+                right_pad = this.w - (plr_track_x - this.x) + 5;
+            }
+        }
+
 
 		// * COUNT
 		if (g_properties.show_playcount) {
