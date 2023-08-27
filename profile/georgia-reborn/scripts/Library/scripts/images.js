@@ -978,6 +978,7 @@ class Images {
 	}
 
 	load() {
+		if (!pop.tree[0]) return;
 		const albumArtGrpNames = $Lib.jsonParse(ppt.albumArtGrpNames, {});
 		const fields = [];
 		const mod = pop.tree.length < 1000 ? 1 : pop.tree.length < 3500 ? Math.round(pop.tree.length / 1000) : 3;
@@ -1000,7 +1001,6 @@ class Images {
 		}
 
 		if (ppt.rootNode) {
-			if (!pop.tree[0]) return;
 			if (!this.groupField) this.groupField = 'Item';
 			const plurals = this.groupField.split(' ').map(v => pluralize(v));
 			const pluralField = plurals.join(' ').replace(/(album|artist|top|track)s\s/gi, '$1 ').replace(/(similar artist)\s/gi, '$1s ').replace(/years - albums/gi, 'Year - Albums');
