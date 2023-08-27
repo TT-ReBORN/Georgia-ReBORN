@@ -985,7 +985,9 @@ class Images {
 		this.groupField = albumArtGrpNames[`${panel.grp[ppt.viewBy].type.trim()}${panel.lines}`];
 
 		pop.tree.forEach((v, i) => {
-			const handle = panel.list[v.item[0].start];
+			const item = v.item[0].start;
+			if (item >= panel.list.Count) return;
+			const handle = panel.list[item];
 			v.handle = handle;
 			const arr = pop.tree[i].name.split('^@^');
 			v.grp = panel.lines == 1 || !ppt.albumArtFlipLabels ? arr[0] : arr[1];
