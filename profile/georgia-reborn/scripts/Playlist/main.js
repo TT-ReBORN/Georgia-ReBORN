@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-25                                          * //
+// * Last change:    2023-08-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -227,12 +227,13 @@ function rescalePlaylist(forceRescale) {
  * @returns {number} The playlist x-coordinate.
  */
 function setPlaylistX() {
-	if (pref.panelWidthAuto && noAlbumArtStub) {
-		initNoAlbumArtSize();
-	}
+	const noAlbumArtSize = wh - geo.topMenuHeight - geo.lowerBarHeight;
+
+	if (pref.panelWidthAuto && noAlbumArtStub) initNoAlbumArtSize();
+
 	return pref.layout === 'default' && (pref.playlistLayout === 'normal' ||
 		pref.playlistLayoutNormal && (displayBiography || pref.displayLyrics)) ?
-		pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w :
+		pref.panelWidthAuto ? !fb.IsPlaying && displayPlaylistLibrary() ? noAlbumArtSize : albumArtSize.x + albumArtSize.w :
 		ww * 0.5 :
 	0;
 }

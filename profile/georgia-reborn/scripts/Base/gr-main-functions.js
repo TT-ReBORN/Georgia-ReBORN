@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-14                                          * //
+// * Last change:    2023-08-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2043,7 +2043,7 @@ function loadImageFromAlbumArtList(index) {
 		});
 	}
 
-	resizeArtwork(false); // Recalculate image positions
+	if (!displayPlaylistLibrary()) resizeArtwork(false); // Recalculate image positions
 	if (discArt) createRotatedDiscArtImage();
 }
 
@@ -3017,6 +3017,8 @@ function setLibraryDesign() {
 function setLibrarySize() {
 	if (!libraryInitialized) return;
 
+	const noAlbumArtSize = wh - geo.topMenuHeight - geo.lowerBarHeight;
+
 	const x =
 		pref.layout === 'artwork' || pref.libraryLayout !== 'normal' ? 0 :
 		pref.panelWidthAuto ? !fb.IsPlaying ? 0 : albumArtSize.x + albumArtSize.w :
@@ -3026,7 +3028,7 @@ function setLibrarySize() {
 
 	const libraryWidth =
 		pref.layout === 'artwork' || pref.libraryLayout === 'full' ? ww :
-		pref.panelWidthAuto ? !fb.IsPlaying ? ww : displayPlaylistLibrary() ? albumArtSize.x + albumArtSize.w : ww - (albumArtSize.x + albumArtSize.w) :
+		pref.panelWidthAuto ? !fb.IsPlaying ? displayPlaylistLibrary() ? noAlbumArtSize : ww : displayPlaylistLibrary() ? albumArtSize.x + albumArtSize.w : ww - (albumArtSize.x + albumArtSize.w) :
 		ww * 0.5;
 
 	const libraryHeight = Math.max(0, wh - geo.lowerBarHeight - y);
