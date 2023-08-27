@@ -4184,17 +4184,13 @@ class DiscHeader extends BaseHeader {
 		}
 
 		const disc_header_text_format = g_string_format.v_align_center | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
-		const disc_text = this.disc_title; // $('[Disc %discnumber% $if('+ tf.disc_subtitle+', \u2014 ,) ]['+ tf.disc_subtitle +']', that.sub_items[0].metadb);
+		const disc_text = this.disc_title; // $('[Disc %discnumber% $if('+ tf.disc_subtitle+', \u2014 ,) ]['+ tf.disc_subtitle +']', that.sub_items[0].metadb)
 		gr.DrawString(disc_text, title_font, title_color, cur_x, this.y, this.w, this.h, disc_header_text_format);
 		const disc_w = Math.ceil(gr.MeasureString(disc_text, title_font, 0, 0, 0, 0).Width + 14);
 		
-		let subheader_PLR_album = '';
-		if (g_properties.show_PLR_header) {
-			subheader_PLR_album = calculate_PLR($('%replaygain_album_gain%', this.sub_items[0].metadb),$('%replaygain_album_peak_db%', this.sub_items[0].metadb));
-			subheader_PLR_album ? subheader_PLR_album = subheader_PLR_album + ' LU - ' : '';
-		}
-
-		const tracks_text = `${(subheader_PLR_album)}${this.sub_items.length} Track${this.sub_items.length > 1 ? 's' : ''} - ${utils.FormatDuration(this.get_duration())}`;
+		const subheader_PLR_album = (g_properties.show_PLR_header && $('[%totaldiscs%]', this.sub_items[0].metadb) > 1) ? calculate_PLR($('%replaygain_album_gain%', this.sub_items[0].metadb),$('%replaygain_album_peak_db%', this.sub_items[0].metadb)) + ' LU | ' : '';
+		const replainGain = ($('[%totaldiscs%]', this.sub_items[0].metadb) > 1) ? $('[%replaygain_album_gain% | ]', this.sub_items[0].metadb) : '';
+		const tracks_text = `${(replainGain)}${(subheader_PLR_album)}${this.sub_items.length} Track${this.sub_items.length > 1 ? 's' : ''} - ${utils.FormatDuration(this.get_duration())}`;
 
 		const tracks_w = Math.ceil(gr.MeasureString(tracks_text, title_font, 0, 0, 0, 0).Width + 20);
 		const tracks_x = this.x + this.w - tracks_w - right_pad;
@@ -4475,21 +4471,16 @@ class Header extends BaseHeader {
 				track_count += discHeader.sub_items.length;
 			});
 		}
-		
-		// const disc_number = (!g_properties.show_disc_header && $('[%totaldiscs%]', this.metadb) !== '1') ? $('[ | Disc: %discnumber%[/%totaldiscs%]]', this.metadb) : '';
-		const disc_number = (this.grouping_handler.show_disc() && $('[%totaldiscs%]', this.metadb) !== '1') ? $('[ | Disc: %discnumber%[/%totaldiscs%]]', this.metadb) : '';
+
+		const disc_number = (!g_properties.show_disc_header && $('[%totaldiscs%]', this.metadb) !== '1') ? $('[ | Disc: %discnumber%[/%totaldiscs%]]', this.metadb) : '';
 		const track_text = is_radio ? '' : ' | ' +
-				(this.grouping_handler.show_disc() && has_discs ? this.sub_items.length + ' Discs - ' : '') +
+				// (this.grouping_handler.show_disc() && has_discs ? this.sub_items.length + ' Discs - ' : '') +
+				(this.grouping_handler.show_disc() && has_discs && ($('[%totaldiscs%]', this.metadb) > 1) ? this.sub_items.length + ' Discs - ' : '') +
 				track_count + (track_count === 1 ? ' Track' : ' Tracks');
-		let plr_album = '';
-		// Album PLR have sense write to 3rd line if album haven't more than 1 disc in header and !g_properties.show_disc_header
-		// If album have more than one disc, PLR value is written in sub-header line when DiscHeader.draw() and showed if g_properties.show_disc_header
-		if (g_properties.show_PLR_header && !has_discs) {
-			plr_album = calculate_PLR($('%replaygain_album_gain%', this.metadb),$('%replaygain_album_peak_db%', this.metadb)); 
-			plr_album ? plr_album = ' | ' + plr_album + ' LU' : '';	
-		}				
-		
-		let info_text = $(codec + disc_number + '[ | %replaygain_album_gain%]', this.metadb) + plr_album + track_text;
+		const replaygain = (this.grouping_handler.show_disc() && (!has_discs || $('[%totaldiscs%]', this.metadb) === '')) ? $('[ | %replaygain_album_gain%]', this.metadb) : '';
+		const plr_album = (g_properties.show_PLR_header && this.grouping_handler.show_disc() && (!has_discs || $('[%totaldiscs%]', this.metadb) === '')) ? " | " + calculate_PLR($('%replaygain_album_gain%', this.metadb),$('%replaygain_album_peak_db%', this.metadb)) + ' LU' : '';
+		let info_text = codec + disc_number + replaygain + plr_album + track_text;
+
 		if (hasGenreTags) {
 			info_text = ` | ${info_text}`;
 		}
@@ -4728,7 +4719,7 @@ class Header extends BaseHeader {
 				}
 			}
 
-			// * ARTIST * //
+			// * ARTIST * //	
 			if (this.grouping_handler.get_title_query()) {
 				const artist_text_format = g_string_format.v_align_far | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
 				let artist_text = $(this.grouping_handler.get_title_query(), this.metadb);
@@ -4768,7 +4759,10 @@ class Header extends BaseHeader {
 
 			// * ALBUM * //
 			if (this.grouping_handler.get_sub_title_query()) {
-				const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+				// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+				let album_text;
+				g_properties.show_disc_header ? album_text = $('[%album%]', this.metadb) : album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+
 				if (album_text) {
 					const album_h = part_h;
 					let album_y = part_h;
@@ -4885,7 +4879,9 @@ class Header extends BaseHeader {
 					line_x1 += RES_4K ? 20 : 9;
 				}
 
-				const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+				// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+				let album_text;
+				g_properties.show_disc_header ? album_text = $('[%album%]', this.metadb) : album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
 				const album_height = gr.MeasureString(album_text, g_pl_fonts.album, 0, 0, 0, 0).Height;
 				const date_query = pref.showPlaylistFullDate ? tf.date : tf.year;
 				const date_text = $(date_query, this.metadb);
@@ -5042,7 +5038,10 @@ class Header extends BaseHeader {
 
 		// * Album
 		if (this.grouping_handler.get_sub_title_query()) {
-			let album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+			// let album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+			let album_text;
+			g_properties.show_disc_header ? album_text = $('[%album%]', this.metadb) : album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+
 			if (album_text) {
 				album_text = ` - ${album_text}`;
 
@@ -5165,7 +5164,9 @@ class Header extends BaseHeader {
 
 		// * Album
 		const album_y = part_h * (!g_properties.show_group_info ? 1.5 : 1) + ((RES_4K || RES_QHD && headerFontSize === 17 ? 5 : 4) * (!g_properties.show_group_info ? 2 : 1));
-		const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+		// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+		let album_text;
+		g_properties.show_disc_header ? album_text = $('[%album%]', this.metadb) : album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
 		if (album_text) {
 			this.hyperlinks.album = new Hyperlink(album_text, g_pl_fonts.album, 'album', left_pad, album_y, this.hyperlinksMaxWidth, true);
 		}
@@ -5320,7 +5321,9 @@ class Header extends BaseHeader {
 			if (displayCustomThemeMenu && displayBiography) return; // Overlayed by custom theme menu
 
 			const artist_text = $(this.grouping_handler.get_title_query(), this.metadb);
-			const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+			// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+			let album_text;
+			g_properties.show_disc_header ? album_text = $('[%album%]', this.metadb) : album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
 
 			if (this.artist_text_w > this.hyperlinksMaxWidth || this.album_text_w > this.hyperlinksMaxWidth ||
 				g_properties.use_compact_header && (this.artist_text_w_compact > this.artist_w_compact || this.album_text_w_compact > this.album_w_compact)) {
