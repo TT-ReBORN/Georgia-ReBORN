@@ -233,7 +233,7 @@ function setPlaylistX() {
 
 	return pref.layout === 'default' && (pref.playlistLayout === 'normal' ||
 		pref.playlistLayoutNormal && (displayBiography || pref.displayLyrics)) ?
-		pref.panelWidthAuto ? !fb.IsPlaying && displayPlaylistLibrary() ? noAlbumArtSize : albumArtSize.x + albumArtSize.w :
+		pref.panelWidthAuto ? !fb.IsPlaying && displayLibrarySplit() ? noAlbumArtSize : albumArtSize.x + albumArtSize.w :
 		ww * 0.5 :
 	0;
 }
@@ -349,7 +349,7 @@ function PlaylistPanel(x, y) {
 		}
 
 		if (pref.styleBlend && albumArt && blendedImg && (displayPlaylist || displayPlaylistArtwork)) {
-			gr.DrawImage(blendedImg, displayPlaylistLibrary() ? pref.panelWidthAuto ? this.x : ww * 0.5 : 0, 0, ww, wh, displayPlaylistLibrary() ? pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww * 0.5 : 0, 0, blendedImg.Width, blendedImg.Height);
+			gr.DrawImage(blendedImg, displayLibrarySplit() ? pref.panelWidthAuto ? this.x : ww * 0.5 : 0, 0, ww, wh, displayLibrarySplit() ? pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww * 0.5 : 0, 0, blendedImg.Width, blendedImg.Height);
 		}
 
 		playlist.on_paint(gr);
@@ -1239,7 +1239,7 @@ class Playlist extends List {
 			cmm.append_separator();
 		}
 
-		if (pref.layout === 'default' && !displayPlaylistLibrary()) {
+		if (pref.layout === 'default' && !displayLibrarySplit()) {
 			if (displayPlaylist && !displayBiography && !pref.displayLyrics) {
 				cmm.append_item(displayPlaylist && pref.playlistLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 					pref.playlistLayout = pref.playlistLayout === 'normal' ? 'full' : 'normal';
@@ -1660,7 +1660,7 @@ class Playlist extends List {
 			return;
 		}
 
-		if (!displayPlaylistLibrary()) this.scroll_to_row(null, row); // * Prevent scroll to focused after drag and drop in split layout
+		if (!displayLibrarySplit()) this.scroll_to_row(null, row); // * Prevent scroll to focused after drag and drop in split layout
 	}
 
 	/**
@@ -3064,7 +3064,7 @@ class Playlist extends List {
 	 * Scrolls the playlist to the focused item.
 	 */
 	scroll_to_focused() {
-		if (this.focused_item && !displayPlaylistLibrary()) {
+		if (this.focused_item && !displayLibrarySplit()) {
 			this.scroll_to_row(null, this.focused_item);
 		}
 	}
@@ -6452,7 +6452,7 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 		}
 
 		last_hover_row = hover_row;
-		playlistDropIndex = is_drop_bottom_selected ? hover_row.idx + 1 : hover_row.idx; // * Needed for libraryPlaylistDragDrop
+		playlistDropIndex = is_drop_bottom_selected ? hover_row.idx + 1 : hover_row.idx; // * Needed for librarySplitDragDrop
 	};
 
 	/**

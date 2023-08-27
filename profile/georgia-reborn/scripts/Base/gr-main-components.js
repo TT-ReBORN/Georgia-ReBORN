@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-18                                          * //
+// * Last change:    2023-08-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1269,7 +1269,7 @@ class JumpSearch {
 		}
 
 		// * Playlist advance
-		if (focusIndex >= 0 && focusIndex < search.length && (displayPlaylist || displayPlaylistLibrary(true))) {
+		if (focusIndex >= 0 && focusIndex < search.length && (displayPlaylist || displayLibrarySplit(true))) {
 			const char = search[focusIndex].replace(/@!#.*?@!#/g, '').charAt(0).toLowerCase();
 			if (char === text && AllEqual(this.jSearch)) {
 				this.jSearch = this.jSearch.slice(0, 1);
@@ -1277,7 +1277,7 @@ class JumpSearch {
 			}
 		}
 		// * Library advance
-		else if (panel.pos >= 0 && panel.pos < pop.tree.length && !displayPlaylistLibrary(true)) {
+		else if (panel.pos >= 0 && panel.pos < pop.tree.length && !displayLibrarySplit(true)) {
 			const char = pop.tree[panel.pos].name.replace(/@!#.*?@!#/g, '').charAt(0).toLowerCase();
 			if (pop.tree[panel.pos].sel && char === text && AllEqual(this.jSearch)) {
 				this.jSearch = this.jSearch.slice(0, 1);
@@ -1293,7 +1293,7 @@ class JumpSearch {
 				if (!this.initials) { // reset in buildTree
 					this.initials = {}
 					// * Playlist advance
-					if (displayPlaylist || displayPlaylistLibrary(true)) {
+					if (displayPlaylist || displayLibrarySplit(true)) {
 						playlistItems.Convert().forEach((v, i) => {
 							const name = search[i].replace(/@!#.*?@!#/g, '');
 							init = name.charAt().toLowerCase();
@@ -1326,7 +1326,7 @@ class JumpSearch {
 				this.jump_search = false;
 
 				// * Playlist advance
-				if (focusIndex >= 0 && focusIndex < search.length && (displayPlaylist || displayPlaylistLibrary(true))) {
+				if (focusIndex >= 0 && focusIndex < search.length && (displayPlaylist || displayLibrarySplit(true))) {
 					this.matches = this.initials[text];
 					console.log('Playlist advance results', this.matches); // Debug
 					this.ix = this.matches.indexOf(focusIndex);
@@ -1336,7 +1336,7 @@ class JumpSearch {
 					this.jump_search = true;
 				}
 				// * Library advance
-				else if (panel.pos >= 0 && panel.pos < pop.tree.length && !displayPlaylistLibrary(true)) {
+				else if (panel.pos >= 0 && panel.pos < pop.tree.length && !displayLibrarySplit(true)) {
 					this.matches = this.initials[text];
 					console.log('Library advance results', this.matches); // Debug, can remove this soon
 					this.ix = this.matches.indexOf(panel.pos);
@@ -1347,14 +1347,14 @@ class JumpSearch {
 				}
 
 				// * Playlist advance
-				if (this.jump_search && (displayPlaylist || displayPlaylistLibrary(true))) {
+				if (this.jump_search && (displayPlaylist || displayLibrarySplit(true))) {
 					plman.ClearPlaylistSelection(plman.ActivePlaylist);
 					plman.SetPlaylistFocusItem(plman.ActivePlaylist, focusIndex);
 					plman.SetPlaylistSelectionSingle(plman.ActivePlaylist, focusIndex, true);
 					window.Repaint();
 				}
 				// * Library advance
-				else if (this.jump_search && !displayPlaylistLibrary(true)) {
+				else if (this.jump_search && !displayLibrarySplit(true)) {
 					pop.clearSelected();
 					pop.sel_items = [];
 					pop.tree[panel.pos].sel = true;

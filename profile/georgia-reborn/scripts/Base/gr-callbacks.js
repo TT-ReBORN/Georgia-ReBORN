@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-14                                          * //
+// * Last change:    2023-08-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -368,7 +368,7 @@ function on_char(code) {
 	if (displayCustomThemeMenu || displayMetadataGridMenu) {
 		customMenu.on_char(code);
 	}
-	else if (displayPlaylist && !displayLibrary || !displayPlaylist && !displayLibrary || displayPlaylistLibrary(true)) {
+	else if (displayPlaylist && !displayLibrary || !displayPlaylist && !displayLibrary || displayLibrarySplit(true)) {
 		trace_call && console.log('Playlist => on_char');
 		jumpSearch.on_char(code);
 
@@ -433,7 +433,7 @@ function on_drag_over(action, x, y, mask) {
  * See fb.DoDragDrop documentation and samples/basic/DragnDrop.txt
  */
 function on_drag_leave() {
-	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true)) {
+	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) {
 		trace_call && console.log('Playlist => on_drag_leave');
 		playlist.on_drag_leave();
 	}
@@ -452,7 +452,7 @@ function on_drag_leave() {
  * @param {number} mask The mouse mask.
  */
 function on_drag_drop(action, x, y, mask) {
-	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true)) {
+	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) {
 		trace_call && console.log('Playlist => on_drag_drop');
 		playlist.on_drag_drop(action, x, y, mask);
 	}
@@ -464,7 +464,7 @@ function on_drag_drop(action, x, y, mask) {
  * @param {boolean} is_focused Whether the panel is focused.
  */
 function on_focus(is_focused) {
-	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true)) {
+	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) {
 		trace_call && console.log('Playlist => on_focus');
 		playlist.on_focus(is_focused);
 	}
@@ -491,7 +491,7 @@ function on_focus(is_focused) {
  * @param {number} to The index of the item that is gaining focus.
  */
 function on_item_focus_change(playlistIndex, from, to) {
-	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true)) {
+	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) {
 		trace_call && console.log('Playlist => on_item_focus_change');
 		playlist.on_item_focus_change(playlistIndex, from, to);
 	}
@@ -524,7 +524,7 @@ function on_key_down(vkey) {
 		customMenu.on_key_down(vkey);
 	}
 	else {
-		if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true)) {
+		if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) {
 			trace_call && console.log('Playlist => on_key_down');
 
 			if (key_down_suppress.is_supressed(vkey)) {
@@ -552,7 +552,7 @@ function on_key_down(vkey) {
 				if (fb.IsPlaying) {
 					fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadb);
 				}
-				else if (!metadb && (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true))) {
+				else if (!metadb && (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true))) {
 					const metadbList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 					if (metadbList.Count === 1) {
 						fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadbList[0]);
@@ -663,7 +663,7 @@ function on_playback_time() {
  * @param {number} m The mouse mask.
  */
 function on_mouse_lbtn_dblclk(x, y, m) {
-	if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true)) && mouseInPlaylist(x, y)) {
+	if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
 		trace_call && console.log('Playlist => on_mouse_lbtn_dblclk');
 		if (displayCustomThemeMenu && pref.displayLyrics) return;
 		playlist.on_mouse_lbtn_dblclk(x, y, m);
@@ -746,7 +746,7 @@ function on_mouse_lbtn_down(x, y, m) {
 			updateHyperlink.click();
 		}
 
-		if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true)) && mouseInPlaylist(x, y)) {
+		if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
 			trace_call && console.log('Playlist => on_mouse_lbtn_down');
 			if (displayCustomThemeMenu && displayBiography) return;
 			playlist.on_mouse_lbtn_down(x, y, m);
@@ -794,7 +794,7 @@ function on_mouse_lbtn_up(x, y, m) {
 	if (volumeBtn.on_mouse_lbtn_up(x, y, m)) return;
 
 	// Not handled by volumeBtn
-	if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary()) && mouseInPlaylist(x, y)) {
+	if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit()) && mouseInPlaylist(x, y)) {
 		trace_call && console.log('Playlist => on_mouse_lbtn_up');
 		if (displayCustomThemeMenu && displayBiography) return;
 		playlist.on_mouse_lbtn_up(x, y, m);
@@ -827,7 +827,7 @@ function on_mouse_leave() {
 	if (showVolumeBtn && volumeBtn) {
 		volumeBtn.on_mouse_leave();
 	}
-	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true)) {
+	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) {
 		playlist.on_mouse_leave();
 	}
 	else if (displayLibrary) {
@@ -941,7 +941,7 @@ function on_mouse_move(x, y, m) {
 
 	if (updateHyperlink) hyperlinks_on_mouse_move(updateHyperlink, x, y);
 
-	if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true)) && mouseInPlaylist(x, y)) {
+	if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
 		trace_call && trace_on_move && console.log('Playlist => on_mouse_move');
 
 		if (mouse_move_suppress.is_supressed(x, y, m)) {
@@ -983,7 +983,7 @@ function on_mouse_move(x, y, m) {
  * @param {number} m The mouse mask.
  */
 function on_mouse_rbtn_down(x, y, m) {
-    if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true)) && mouseInPlaylist(x, y) &&
+    if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) && mouseInPlaylist(x, y) &&
         !(displayCustomThemeMenu && displayBiography)) {
         trace_call && console.log('Playlist => on_mouse_rbtn_down');
         playlist.on_mouse_rbtn_down(x, y, m);
@@ -1034,7 +1034,7 @@ function on_mouse_rbtn_up(x, y, m) {
 		return true;
 	}
 
-	if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true)) && mouseInPlaylist(x, y)) {
+	if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
 		trace_call && console.log('Playlist => on_mouse_rbtn_up');
 		if (displayCustomThemeMenu && displayBiography) return;
 		return playlist.on_mouse_rbtn_up(x, y, m);
@@ -1101,7 +1101,7 @@ function on_mouse_wheel(step) {
 		trace_call && console.log('Biography => on_mouse_wheel');
 		biography.on_mouse_wheel(step);
 	}
-	else if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayPlaylistLibrary(true)) && mouseInPlaylist()) {
+	else if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) && mouseInPlaylist()) {
 		trace_call && console.log('Playlist => on_mouse_wheel');
 		playlist.on_mouse_wheel(step);
 	}
@@ -1391,7 +1391,7 @@ function on_playlist_items_added(playlistIndex) {
 		trace_call && console.log('Playlist => on_playlist_items_added');
 		playlist.on_playlist_items_added(playlistIndex);
 	}
-	if (displayLibrary || displayPlaylistLibrary()) {
+	if (displayLibrary || displayLibrarySplit()) {
 		trace_call && console.log('Library => on_playlist_items_added');
 		library.on_playlist_items_added(playlistIndex);
 	}

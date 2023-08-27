@@ -1176,7 +1176,7 @@ function writeThemeTags() {
 	const grTags = [];
 	const plItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 	const libItems = new FbMetadbHandleList(pop.getHandleList('newItems'));
-	const items = displayLibrary && !displayPlaylist || displayPlaylistLibrary() && state.mouse_x < ww * 0.5 ? libItems : plItems;
+	const items = displayLibrary && !displayPlaylist || displayLibrarySplit() && state.mouse_x < ww * 0.5 ? libItems : plItems;
 
 	if (!items) return;
 
@@ -2043,7 +2043,7 @@ function loadImageFromAlbumArtList(index) {
 		});
 	}
 
-	if (!displayPlaylistLibrary()) resizeArtwork(false); // Recalculate image positions
+	if (!displayLibrarySplit()) resizeArtwork(false); // Recalculate image positions
 	if (discArt) createRotatedDiscArtImage();
 }
 
@@ -3028,7 +3028,7 @@ function setLibrarySize() {
 
 	const libraryWidth =
 		pref.layout === 'artwork' || pref.libraryLayout === 'full' ? ww :
-		pref.panelWidthAuto ? !fb.IsPlaying ? displayPlaylistLibrary() ? noAlbumArtSize : ww : displayPlaylistLibrary() ? albumArtSize.x + albumArtSize.w : ww - (albumArtSize.x + albumArtSize.w) :
+		pref.panelWidthAuto ? !fb.IsPlaying ? displayLibrarySplit() ? noAlbumArtSize : ww : displayLibrarySplit() ? albumArtSize.x + albumArtSize.w : ww - (albumArtSize.x + albumArtSize.w) :
 		ww * 0.5;
 
 	const libraryHeight = Math.max(0, wh - geo.lowerBarHeight - y);
@@ -3046,7 +3046,7 @@ function setLibrarySize() {
 /**
  * Drags and drops items from Library to Playlist in split layout.
  */
-function libraryPlaylistDragDrop() {
+function librarySplitDragDrop() {
 	const handleList = pop.getHandleList('newItems');
 	pop.sortIfNeeded(handleList);
 	fb.DoDragDrop(0, handleList, handleList.Count ? 1 | 4 : 0);
