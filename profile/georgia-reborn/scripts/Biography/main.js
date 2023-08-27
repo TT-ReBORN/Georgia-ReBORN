@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        1.4.1                                               * //
 // * Dev. started:   2016-10-18                                          * //
-// * Last change:    2023-05-19 (Mod change 2023-08-23)                  * //
+// * Last change:    2023-05-19 (Mod change 2023-08-27)                  * //
 /////////////////////////////////////////////////////////////////////////////
 
 

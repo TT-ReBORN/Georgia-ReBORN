@@ -1479,7 +1479,7 @@ class PanelBio {
 			}
 
 			case pptBio.style > 3: {
-				const textWidthCorr  = filmStripRight ? pptBio.filmStripOverlay && pptBio.style === 4 ? this.text.r + this.filmStripSize.r * 0.5 : pptBio.filmStripOverlay && pptBio.style === 5 ? this.text.r * 2 : this.text.r + this.style.gap + RES_4K_Corr : this.text.r * 2;
+				const textWidthCorr  = filmStripRight && !pptBio.filmStripOverlay ? this.text.r + this.style.gap + RES_4K_Corr : this.text.r * 2;
 				const textWidthCorr2 = filmStripLeft  ? pptBio.filmStripOverlay && pptBio.style === 4 ? this.filmStripSize.l : pptBio.filmStripOverlay && pptBio.style === 5 ? 0 : this.text.r - this.style.gap - RES_4K_Corr : 0;
 				const sbarScrollCorr = filmStripRight ? pptBio.filmStripOverlay ? 0 : pptBio.style === 4 ? this.text.r - this.filmStripSize.r - this.style.gap - RES_4K_Corr : pptBio.style === 5 ? this.text.r - this.style.gap - RES_4K_Corr : 0 : 0;
 
