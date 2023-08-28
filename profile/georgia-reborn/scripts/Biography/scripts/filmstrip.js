@@ -165,6 +165,8 @@ class FilmStrip {
 			this.images = [];
 			this.items = [];
 			switch (true) {
+				case pptBio.style == 4 && pptBio.filmStripOverlay:
+					break;
 				case !this.style.auto:
 					panelBio.style.showFilmStrip = true;
 					switch (true) {
@@ -263,7 +265,7 @@ class FilmStrip {
 	}
 
 	draw(gr) {
-		if (!panelBio.style.showFilmStrip || pptBio.style === 4 && pptBio.filmStripOverlay || panelBio.block()) return;
+		if (!panelBio.style.showFilmStrip || panelBio.block()) return;
 		const imgStyle = this.style.image[Number(pptBio.artistView)];
 		let box_x;
 		let box_y;

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-10                                          * //
+// * Last change:    2023-08-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -702,7 +702,7 @@ function btnLibrary() {
 	}
 
 	// * Library Playlist split layout
-	if (displayPlaylistLibrary()) {
+	if (displayLibrarySplit()) {
 		displayPlaylist = true;
 		playlist.on_size(ww, wh);
 		setLibrarySize();
@@ -828,7 +828,7 @@ function btnStop() {
 		switch (pref.showPanelOnStartup) {
 			case 'playlist':
 				displayPlaylist = true;
-				displayLibrary = false;
+				displayLibrary = displayLibrarySplit();
 				displayBiography = false;
 				pref.displayLyrics = false;
 				playlist.on_size(ww, wh);
@@ -841,7 +841,7 @@ function btnStop() {
 				pref.displayLyrics = false;
 				break;
 			case 'library':
-				displayPlaylist = false;
+				displayPlaylist = displayLibrarySplit();
 				displayPlaylistArtwork = false;
 				displayLibrary = true;
 				displayBiography = false;
@@ -983,11 +983,11 @@ function btnPlaylistHistory(btn) {
 // * BUTTON & PANEL STATE * //
 //////////////////////////////
 /**
- * Displays the Playlist and Library side by side, called when Library layout is in split mode.
+ * Displays the Library and Playlist side by side, called when Library layout is in split mode.
  * @param {boolean} control Limits the area to the width and height of the playlist panel.
- * @returns {boolean} True if Playlist and Library are being displayed.
+ * @returns {boolean} True if Library and Playlist are being displayed.
  */
-function displayPlaylistLibrary(control) {
+function displayLibrarySplit(control) {
 	return pref.layout === 'default' && pref.libraryLayout === 'split' && displayLibrary && displayPlaylist &&
 	(control ? state.mouse_x > playlist.x && state.mouse_x <= playlist.x + playlist.w &&
 			   state.mouse_y > playlist.y && state.mouse_y <= playlist.y + playlist.h : ww);
@@ -1034,7 +1034,7 @@ function initButtonState() {
 			btns.playlistArtworkLayout.changeState(ButtonState.Down);
 		}
 		else if (displayLibrary) {
-			if (!displayPlaylist || displayPlaylistLibrary()) { // Fixes active library button state when switching from Artwork layout to Default layout and pref.showPanelOnStartup === 'playlist' is active
+			if (!displayPlaylist || displayLibrarySplit()) { // Fixes active library button state when switching from Artwork layout to Default layout and pref.showPanelOnStartup === 'playlist' is active
 				btns.library.enabled = true;
 				btns.library.changeState(ButtonState.Down);
 			}

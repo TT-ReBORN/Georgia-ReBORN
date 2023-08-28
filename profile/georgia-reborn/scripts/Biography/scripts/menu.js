@@ -466,7 +466,7 @@ class MenuItemsBio {
 			str: v,
 			func: () => {
 				if (i == 4) pptBio.toggle('filmStripOverlay');
-				filmStrip.set(i == 4 ? pptBio.filmStripPos : i)
+				if (i != 4 || pptBio.showFilmStrip) filmStrip.set(i == 4 ? pptBio.filmStripPos : i);
 			},
 			flags: i != 4 || pptBio.style != 4 ? MF_STRING_BIO : MF_GRAYED_BIO,
 			checkItem: i == 4 && (pptBio.filmStripOverlay || (pptBio.style == 4 && !pptBio.text_only && !pptBio.img_only)),

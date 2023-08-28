@@ -540,7 +540,7 @@ class Find {
 			}
 		}
 		// * Playlist advance
-		else if (focusIndex >= 0 && focusIndex < search.length && (displayPlaylist || displayPlaylistLibrary(true))) {
+		else if (focusIndex >= 0 && focusIndex < search.length && (displayPlaylist || displayLibrarySplit(true))) {
 			const char = search[focusIndex].replace(/@!#.*?@!#/g, '').charAt(0).toLowerCase();
 			if (char === text && this.allEqual(this.jSearch)) {
 				this.jSearch = this.jSearch.slice(0, 1);
@@ -556,7 +556,7 @@ class Find {
 				if (!this.initials) { // reset in buildTree
 					this.initials = {}
 					// * Library advance
-					if (!displayPlaylist || !displayPlaylistLibrary(true)) {
+					if (!displayPlaylist || !displayLibrarySplit(true)) {
 						pop.tree.forEach((v, i) => {
 							if (!v.root) {
 								const nm = v.name.replace(/@!#.*?@!#/g, '');
@@ -598,7 +598,7 @@ class Find {
 					this.jump_search = true;
 				}
 				// * Playlist advance
-				else if (focusIndex >= 0 && focusIndex < search.length && (displayPlaylist || displayPlaylistLibrary(true))) {
+				else if (focusIndex >= 0 && focusIndex < search.length && (displayPlaylist || displayLibrarySplit(true))) {
 					this.matches = this.initials[text];
 					console.log('Playlist advance results', this.matches); // Debug
 					this.ix = this.matches.indexOf(focusIndex);
@@ -609,7 +609,7 @@ class Find {
 				}
 
 				// * Library advance
-				if (this.jump_search && !displayPlaylistLibrary(true)) {
+				if (this.jump_search && !displayLibrarySplit(true)) {
 					pop.clearSelected();
 					pop.sel_items = [];
 					pop.tree[panel.pos].sel = true;
@@ -628,7 +628,7 @@ class Find {
 					} else if (panel.pos >= 0 && panel.pos < pop.tree.length) pop.setPlaylistSelection(panel.pos, pop.tree[panel.pos]);
 				}
 				// * Playlist advance
-				else if (this.jump_search && (displayPlaylist || displayPlaylistLibrary(true))) {
+				else if (this.jump_search && (displayPlaylist || displayLibrarySplit(true))) {
 					plman.ClearPlaylistSelection(plman.ActivePlaylist);
 					plman.SetPlaylistFocusItem(plman.ActivePlaylist, focusIndex);
 					plman.SetPlaylistSelectionSingle(plman.ActivePlaylist, focusIndex, true);

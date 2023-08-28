@@ -889,8 +889,8 @@ class Populate {
 			const handleList = this.getHandleList('newItems');
 			this.sortIfNeeded(handleList);
 
-			if (displayPlaylistLibrary()) { // * Drag and drop action from Library to Playlist in split layout
-				libraryPlaylistDragDrop();
+			if (displayLibrarySplit()) { // * Drag and drop action from Library to Playlist in split layout
+				librarySplitDragDrop();
 			} else {
 				fb.DoDragDrop(0, handleList, handleList.Count ? 1 | 4 : 0);
 			}

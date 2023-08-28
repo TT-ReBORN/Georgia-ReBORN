@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-20                                          * //
+// * Last change:    2023-08-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -66,7 +66,7 @@ function drawPanels(gr) {
 			libraryPanel.on_paint(gr);
 			drawLibraryProfiler && drawLibraryProfiler.Print();
 		}
-		if (pref.layout === 'default' && displayPlaylist || pref.layout === 'artwork' && displayPlaylistArtwork || displayPlaylistLibrary()) {
+		if (pref.layout === 'default' && displayPlaylist || pref.layout === 'artwork' && displayPlaylistArtwork || displayLibrarySplit()) {
 			const drawPlaylistProfiler = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> playlist') : null;
 			playlist.on_paint(gr);
 			timings.showExtraDrawTiming && drawPlaylistProfiler.Print();
@@ -97,7 +97,7 @@ function drawAlbumArt(gr) {
 
 	const displayDetails = (pref.layout === 'artwork' ? !displayPlaylistArtwork : !displayPlaylist) && !displayLibrary && !displayBiography;
 
-	if (!fb.IsPlaying || !displayAlbumArt || displayPlaylistLibrary()) return;
+	if (!fb.IsPlaying || !displayAlbumArt || displayLibrarySplit()) return;
 
 	const drawArt = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> artwork') : null;
 
@@ -143,7 +143,7 @@ function drawAlbumArt(gr) {
  */
 function drawNoAlbumArt(gr) {
 	const noAlbumArtLayoutDefault =
-		pref.layout === 'default' && !displayPlaylistLibrary() && (displayPlaylist && pref.playlistLayout !== 'full' && !displayBiography || displayLibrary && pref.libraryLayout === 'normal');
+		pref.layout === 'default' && !displayLibrarySplit() && (displayPlaylist && pref.playlistLayout !== 'full' && !displayBiography || displayLibrary && pref.libraryLayout === 'normal');
 
 	const noAlbumArtLayoutArtwork =
 		pref.layout === 'artwork' && !displayPlaylist && !displayPlaylistArtwork && !displayLibrary && !displayBiography;
@@ -153,7 +153,6 @@ function drawNoAlbumArt(gr) {
 			// * Clear previous artwork related stuff
 			noAlbumArtStub = true;
 			albumArt = null;
-			artCache.clear();
 			discArt = null;
 			discArtArray = [];
 
@@ -219,7 +218,7 @@ function drawHiResAudioLogo(gr) {
 
 	const displayHiResAudioLogo =
 		trackIsHiRes && pref.showHiResAudioBadge && pref.layout !== 'compact' &&
-		(displayPlaylist && !displayPlaylistArtwork && !displayPlaylistLibrary() && !displayBiography && (pref.playlistLayout === 'normal' || pref.displayLyrics) ||
+		(displayPlaylist && !displayPlaylistArtwork && !displayLibrarySplit() && !displayBiography && (pref.playlistLayout === 'normal' || pref.displayLyrics) ||
 		!displayPlaylist && !displayPlaylistArtwork && !displayLibrary && !displayBiography ||
 		displayLibrary && pref.libraryLayout === 'normal' && pref.layout === 'default');
 
@@ -912,7 +911,7 @@ function drawPanelShadows(gr) {
 	const layoutArtwork = pref.layout === 'artwork' && !displayPlaylistArtwork && !displayLibrary && !displayBiography;
 
 	const displayAlbumArtDetailsShadows = fb.IsPlaying &&
-		(albumArt && albumArtScaled || noAlbumArtStub) && !displayPlaylistLibrary() && (layoutDefault || layoutArtwork);
+		(albumArt && albumArtScaled || noAlbumArtStub) && !displayLibrarySplit() && (layoutDefault || layoutArtwork);
 
 	const displayDetails = (!discArt || !pref.displayDiscArt) &&
 		(pref.layout === 'artwork' ? !displayPlaylistArtwork : !displayPlaylist) && !displayLibrary && !displayBiography;
@@ -942,14 +941,14 @@ function drawPanelShadows(gr) {
 		(pref.playlistLayout  === 'normal' && displayPlaylist && !displayBiography ||
 		 pref.libraryLayout   === 'normal' && displayLibrary   ||
 		 pref.biographyLayout === 'normal' && displayBiography ||
-		 displayPlaylistLibrary());
+		 displayLibrarySplit());
 
 	const displayPanelShadows =
 		pref.layout !== 'artwork' && displayPlaylist || displayPlaylistArtwork || displayLibrary || displayBiography || displayCustomThemeMenu && !fb.IsPlaying;
 
 	if (displayPanelShadows) {
 		const x =
-			displayPlaylistLibrary() || displayBiography || displayCustomThemeMenu && !fb.IsPlaying || pref.layout !== 'default' || !panelLayoutNormal ? 0 :
+			displayLibrarySplit() || displayBiography || displayCustomThemeMenu && !fb.IsPlaying || pref.layout !== 'default' || !panelLayoutNormal ? 0 :
 			pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww * 0.5;
 
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
@@ -962,7 +961,7 @@ function drawPanelShadows(gr) {
 			gr.FillGradRect(pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w - 4 : ww * 0.5 - 4, geo.topMenuHeight, 4, wh - geo.topMenuHeight - geo.lowerBarHeight, 0.5, 0,
 				pref.styleBlackAndWhite && noAlbumArtStub ? RGB(0, 0, 0) : pref.styleBlackAndWhite2 || pref.styleRebornBlack ? RGBA(0, 0, 0, 30) : col.shadow);
 			// Middle shadow for album art
-			if (albumArt && albumArtSize.w !== ww * 0.5 && !displayPlaylistLibrary() && !displayBiography && !noAlbumArtStub) {
+			if (albumArt && albumArtSize.w !== ww * 0.5 && !displayLibrarySplit() && !displayBiography && !noAlbumArtStub) {
 				gr.FillGradRect(albumArtSize.x + albumArtSize.w - 2, albumArtSize.y, 4, albumArtSize.h, 0.5, pref.styleBlackAndWhite ? RGB(0, 0, 0) : col.shadow, 0);
 			}
 		}
