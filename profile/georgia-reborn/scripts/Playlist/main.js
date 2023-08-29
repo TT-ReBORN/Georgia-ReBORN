@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-27                                          * //
+// * Last change:    2023-08-29                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -707,6 +707,8 @@ function PlaylistPanel(x, y) {
 		if (!is_activated) {
 			return;
 		}
+
+		playlist_info.hover_alpha = 0; // * Prevent Playlist manager bg flashing when bg color changes
 
 		playlist.on_playback_new_track(metadb);
 	};
