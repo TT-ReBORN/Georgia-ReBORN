@@ -1687,7 +1687,7 @@ function migrateCheck(version, storedVersion) {
 	 * Renames an entry in the metadata grid with a new label name.
 	 * @param {MetadataGridEntry[]} grid Each element in the array is an object with a `label` property.
 	 * @param {string} oldLabel The old label name to rename.
-	 * @param {number} newLabel The new label name that will be replaced in the config file.
+	 * @param {string} newLabel The new label name that will be replaced in the config file.
 	 */
 	const renameGridEntry = (grid, oldLabel, newLabel) => {
 		const entryIdx = grid.findIndex(gridEntry => gridEntry && gridEntry.label.toLowerCase() === oldLabel.toLowerCase());
