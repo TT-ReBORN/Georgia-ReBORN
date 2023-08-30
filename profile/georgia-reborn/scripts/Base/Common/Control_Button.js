@@ -828,7 +828,7 @@ function btnStop() {
 		switch (pref.showPanelOnStartup) {
 			case 'playlist':
 				displayPlaylist = true;
-				displayLibrary = displayLibrarySplit();
+				displayLibrary = false;
 				displayBiography = false;
 				pref.displayLyrics = false;
 				playlist.on_size(ww, wh);

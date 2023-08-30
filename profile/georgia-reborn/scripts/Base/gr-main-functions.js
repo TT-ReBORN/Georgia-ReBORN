@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-27                                          * //
+// * Last change:    2023-08-29                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -224,13 +224,18 @@ function initPanels() {
 function initPanelWidthAuto() {
 	resizeArtwork(true);
 
-	if (displayPlaylist && (noAlbumArtStub || playlist.x !== (albumArtSize.x + albumArtSize.w))) {
+	if (displayLibrarySplit() || displayLibrary && pref.libraryLayout === 'full') return;
+
+	if (displayPlaylist && (noAlbumArtStub || playlist.x !== albumArtSize.x + albumArtSize.w)) {
+		DebugLog('initPanelWidthAuto -> Playlist');
 		playlist.on_size(ww, wh);
 	}
-	if (displayLibrary && (noAlbumArtStub || ui.x !== (albumArtSize.x + albumArtSize.w))) {
+	if (displayLibrary && (noAlbumArtStub || ui.x !== albumArtSize.x + albumArtSize.w)) {
+		DebugLog('initPanelWidthAuto -> Library');
 		setLibrarySize();
 	}
-	if (displayBiography && (noAlbumArtStub || uiBio.x !== (albumArtSize.x + albumArtSize.w))) {
+	if (displayBiography && (noAlbumArtStub || uiBio.x + uiBio.w !== albumArtSize.x + albumArtSize.w)) {
+		DebugLog('initPanelWidthAuto -> Biography');
 		setBiographySize();
 	}
 }
@@ -1979,12 +1984,11 @@ function loadImageFromAlbumArtList(index) {
 
 	if (tempAlbumArt) {
 		albumArt = tempAlbumArt;
-		if (index !== 0 && !newTrackFetchingArtwork) return;
-		newTrackFetchingArtwork = false;
-
 		if (pref.panelWidthAuto) {
 			initPanelWidthAuto();
 		}
+		if (index !== 0 && !newTrackFetchingArtwork) return;
+		newTrackFetchingArtwork = false;
 
 		if (autoRandomPreset) { // Prevent double initialization for theme presets to save performance, getThemeColors() and initTheme() already handled in getRandomThemePreset()
 			setRandomThemePreset();
@@ -3021,20 +3025,17 @@ function setLibrarySize() {
 
 	const x =
 		pref.layout === 'artwork' || pref.libraryLayout !== 'normal' ? 0 :
-		pref.panelWidthAuto ? !fb.IsPlaying ? 0 : albumArtSize.x + albumArtSize.w :
+		pref.panelWidthAuto ? displayLibrarySplit() || !fb.IsPlaying ? 0 : noAlbumArtStub ? noAlbumArtSize : albumArtSize.x + albumArtSize.w :
 		ww * 0.5;
 
 	const y = geo.topMenuHeight;
 
 	const libraryWidth =
 		pref.layout === 'artwork' || pref.libraryLayout === 'full' ? ww :
-		pref.panelWidthAuto ? !fb.IsPlaying ? displayLibrarySplit() ? noAlbumArtSize : ww : displayLibrarySplit() ? albumArtSize.x + albumArtSize.w : ww - (albumArtSize.x + albumArtSize.w) :
+		pref.panelWidthAuto ? displayLibrarySplit() ? noAlbumArtSize : !fb.IsPlaying ? ww : ww - (noAlbumArtStub ? noAlbumArtSize : albumArtSize.x + albumArtSize.w) :
 		ww * 0.5;
 
 	const libraryHeight = Math.max(0, wh - geo.lowerBarHeight - y);
-
-	ppt.zoomNode = 100; // Sets correct node zoom value, i.e when switching to 4K
-	panel.setTopBar();	// Resets filter font in case the zoom was reset, also needed when changing font size
 
 	libraryPanel.on_size(x, y, libraryWidth, libraryHeight);
 }
@@ -3129,7 +3130,6 @@ function autoThumbnailSize() {
 			ppt.verticalAlbumArtPad = 2;
 		}
 	}
-	img.sizeDebounce();
 }
 
 
@@ -3219,17 +3219,6 @@ function setBiographySize() {
 		ww * 0.5;
 
 	const biographyHeight = Math.max(0, wh - geo.lowerBarHeight - y);
-
-	// * Set guard for fixed Biography margin sizes in case user changed them in Biography options
-	pptBio.borT  = SCALE(30);
-	pptBio.borL  = SCALE(pref.layout === 'artwork' ? 30 : 40);
-	pptBio.borR  = SCALE(pref.layout === 'artwork' ? 30 : 40);
-	pptBio.borB  = SCALE(30);
-	pptBio.textT = pptBio.borT;
-	pptBio.textL = pptBio.borL;
-	pptBio.textR = pptBio.borR;
-	pptBio.textB = pptBio.borB;
-	pptBio.gap   = SCALE(15);
 
 	biographyPanel.on_size(x, y, biographyWidth, biographyHeight);
 }

@@ -724,7 +724,6 @@ class MenuItems {
 					repaintWindowRectAreas();
 				}
 
-				autoThumbnailSize();
 				setLibrarySize();
 				initLibraryColors();
 				themeColorAdjustments();

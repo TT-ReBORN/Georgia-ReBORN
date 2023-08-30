@@ -956,9 +956,9 @@ function drawPanelShadows(gr) {
 		// Top shadow
 		gr.FillGradRect(x, geo.topMenuHeight - (RES_4K ? 10 : 6), ww, RES_4K ? 10 : 6, 90, 0, col.shadow);
 
-		if (panelLayoutNormal) {
+		if (panelLayoutNormal && playlist.x !== 0) {
 			// Middle shadow for playlist
-			gr.FillGradRect(pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w - 4 : ww * 0.5 - 4, geo.topMenuHeight, 4, wh - geo.topMenuHeight - geo.lowerBarHeight, 0.5, 0,
+			gr.FillGradRect(pref.panelWidthAuto ? displayLibrarySplit() ? wh - geo.topMenuHeight - geo.lowerBarHeight - 4 : albumArtSize.x + albumArtSize.w - 4 : ww * 0.5 - 4, geo.topMenuHeight, 4, wh - geo.topMenuHeight - geo.lowerBarHeight, 0.5, 0,
 				pref.styleBlackAndWhite && noAlbumArtStub ? RGB(0, 0, 0) : pref.styleBlackAndWhite2 || pref.styleRebornBlack ? RGBA(0, 0, 0, 30) : col.shadow);
 			// Middle shadow for album art
 			if (albumArt && albumArtSize.w !== ww * 0.5 && !displayLibrarySplit() && !displayBiography && !noAlbumArtStub) {

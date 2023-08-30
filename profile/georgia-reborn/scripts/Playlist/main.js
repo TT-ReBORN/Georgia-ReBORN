@@ -233,7 +233,7 @@ function setPlaylistX() {
 
 	return pref.layout === 'default' && (pref.playlistLayout === 'normal' ||
 		pref.playlistLayoutNormal && (displayBiography || pref.displayLyrics)) ?
-		pref.panelWidthAuto ? !fb.IsPlaying && displayLibrarySplit() ? noAlbumArtSize : albumArtSize.x + albumArtSize.w :
+		pref.panelWidthAuto ? displayLibrarySplit() ? noAlbumArtSize : !fb.IsPlaying ? 0 : albumArtSize.x + albumArtSize.w :
 		ww * 0.5 :
 	0;
 }
@@ -8286,8 +8286,9 @@ function PlaylistManager(x, y, w, h) {
 			headerFontSize === 12 ? RES_4K ?  2 : -1 :
 			headerFontSize === 10 ? RES_4K ? -2 : -3 : '';
 
+		const noAlbumArtSize = wh - geo.topMenuHeight - geo.lowerBarHeight;
 		const info_w = gr.CalcTextWidth(info_text, g_pl_fonts.title_selected);
-		const btn_x = Math.round((pref.playlistLayout === 'normal' ? pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww * 0.5 : 0) + (w - info_w) * 0.5);
+		const btn_x = Math.round((pref.playlistLayout === 'normal' ? pref.panelWidthAuto ? displayLibrarySplit() ? noAlbumArtSize : albumArtSize.x + albumArtSize.w : ww * 0.5 : 0) + (w - info_w) * 0.5);
 		const btn_y = geo.topMenuHeight + yCorr;
 		const btns_w = Math.round(h);
 		const hasPlaylistHistory = playlistHistory.canBack() || playlistHistory.canForward();

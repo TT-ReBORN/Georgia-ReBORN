@@ -459,9 +459,15 @@ class LibraryPanel {
 		ui.y = y;
 		ui.w = width;
 		ui.h = height;
+
+		if (!ui.w || !ui.h) return;
+		if (panel.imgView) autoThumbnailSize();
+
+		// * Set guard for fixed Library margin sizes in case user changed them in Library options
 		ppt.margin = SCALE(20);
 		ppt.verticalPad = 5; // Setup default line padding value needed, otherwise 0 on reset
-		if (!ui.w || !ui.h) return;
+		ppt.zoomNode = 100; // Sets correct node zoom value, i.e when switching to 4K
+		panel.setTopBar();	// Resets filter font in case the zoom was reset, also needed when changing font size
 
 		pop.deactivateTooltip();
 		tooltipLib.SetMaxWidth(Math.max(ui.w, SCALE(pref.layout !== 'default' ? 600 : 800)));

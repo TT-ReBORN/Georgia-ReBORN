@@ -610,6 +610,17 @@ class BiographyPanel {
 		uiBio.w = width;
 		uiBio.h = height;
 
+		// * Set guard for fixed Biography margin sizes in case user changed them in Biography options
+		pptBio.borT  = SCALE(30);
+		pptBio.borL  = SCALE(pref.layout === 'artwork' ? 30 : 40);
+		pptBio.borR  = SCALE(pref.layout === 'artwork' ? 30 : 40);
+		pptBio.borB  = SCALE(30);
+		pptBio.textT = pptBio.borT;
+		pptBio.textL = pptBio.borL;
+		pptBio.textR = pptBio.borR;
+		pptBio.textB = pptBio.borB;
+		pptBio.gap   = SCALE(15);
+
 		txt.repaint = false;
 		panelBio.w = width;
 		panelBio.h = height;

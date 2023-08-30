@@ -606,8 +606,6 @@ class Panel {
 			if (this.init) img.sizeDebounce();
 			else if (sbar.scroll > sbar.max_scroll) sbar.checkScroll(sbar.max_scroll);
 		}
-
-		autoThumbnailSize();
 	}
 
 	open(page) {
