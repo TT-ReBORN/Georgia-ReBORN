@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-12                                          * //
+// * Last change:    2023-08-30                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1684,7 +1684,20 @@ tf.labels = [ // Array of fields to test for publisher. Add, change or re-order 
  */
 function migrateCheck(version, storedVersion) {
 	/**
-	 * Adds or Replaces value in the metadata grid with updated string from defaults.
+	 * Renames an entry in the metadata grid with a new label name.
+	 * @param {MetadataGridEntry[]} grid Each element in the array is an object with a `label` property.
+	 * @param {string} oldLabel The old label name to rename.
+	 * @param {number} newLabel The new label name that will be replaced in the config file.
+	 */
+	const renameGridEntry = (grid, oldLabel, newLabel) => {
+		const entryIdx = grid.findIndex(gridEntry => gridEntry && gridEntry.label.toLowerCase() === oldLabel.toLowerCase());
+		if (entryIdx >= 0) {
+			grid[entryIdx].label = newLabel;
+		}
+	};
+
+	/**
+	 * Adds or Replaces values in the metadata grid with updated string from defaults.
 	 * @param {MetadataGridEntry[]} grid Each element in the array is an object with a `label` property.
 	 * @param {string} label The label of the value to add or replace.
 	 * @param {number} position 0-based index of place to insert new value if existing entry not found.
@@ -1709,7 +1722,11 @@ function migrateCheck(version, storedVersion) {
 
 		// This function clears default values which have changed
 		switch (storedVersion) {
-			case '2.3.0':
+			case '3.0-RC1':
+				renameGridEntry(grid, 'Catalog #', 'Catalog');
+				config.addConfigurationObject(gridSchema, grid);
+				break;
+			case '3.0-RC2':
 				// This block should appear after all previous versions have fallen through
 				console.log('> Upgrading Georgia-ReBORN theme settings from', storedVersion);
 				console.log(`> Backing up Georgia-ReBORN configuration file to ${fileName}`);
