@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-29                                          * //
+// * Last change:    2023-08-30                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -108,7 +108,7 @@ g_properties.add_properties(
 
 		show_row_stripes:            ['Panel Playlist - User: Row.stripes.show', false],
 		show_playcount:              ['Panel Playlist - User: Row.play_count.show', true],
-		show_PLR:              		 ['Panel Playlist - User: Row.peak_loudness_ratio.show', false],
+		show_PLR:                    ['Panel Playlist - User: Row.peak_loudness_ratio.show', false],
 		show_rating:                 ['Panel Playlist - User: Row.rating.show', true],
 		use_rating_from_tags:        ['Panel Playlist - User: Row.rating.from_tags', false],
 		show_queue_position:         ['Panel Playlist - User: Row.queue_position.show', true],
@@ -162,7 +162,6 @@ const coverFont       = pref.customThemeFonts ? customFont.playlistCover       :
 
 const playcountFont = pref.customThemeFonts ? customFont.playlistPlaycount : 'Segoe UI';
 
-
 /**
  * Creates and assigns playlist fonts.
  */
@@ -198,27 +197,6 @@ function createPlaylistFonts() {
 	playlistFontsCreated = true;
 }
 
-/**
- * Calculate Peak Loudness Ratio keeping in mind replayGain 2.0 as implemented in Foobar2000
- * @param {string=} gain replayGainValue for track %replaygain_track_gain% | for album %replaygain_album_gain%
- * @param {string=} gaindb TruePeakValue for track %replaygain_track_peak_db% | for album %replaygain_album_peak_db%
- * @returns {string=} Peak Loudness Ratio 
- */
-function calculate_PLR(gain,gaindb) {
-
-	// Reference value in Foobar 2000 is set on -18 LUFS in order to maintain backwards compatibility with RG1, RG2
-	// EBU R 128 reference is -23 LUFS
-
-    
-    const lufs = -2300 - (gain.replace(/[^0-9+-]/g,'') - 500) ;
-    const tpfs = gaindb.replace(/[^0-9+-]/g,'');
-    let plr = tpfs - lufs;
-
-    let plr_value = plr.toString().substring(plr.toString().length -2) > 49 ? plr += 100 : plr;
-    plr_value = plr.toString().substring(0,plr.toString().length -2);
-    
-	return plr_value;
-}
 
 //////////////////
 // * GEOMETRY * //
@@ -260,6 +238,27 @@ function setPlaylistX() {
 		pref.panelWidthAuto ? displayLibrarySplit() ? noAlbumArtSize : !fb.IsPlaying ? 0 : albumArtSize.x + albumArtSize.w :
 		ww * 0.5 :
 	0;
+}
+
+
+/////////////////////
+// * CALCULATION * //
+/////////////////////
+/**
+ * Calculate Peak Loudness Ratio keeping in mind replayGain 2.0 is implemented in Foobar2000.
+ * Reference value in Foobar 2000 is set on -18 LUFS in order to maintain backwards compatibility with RG1, RG2.
+ * EBU R 128 reference is -23 LUFS.
+ * @param {string=} gain replayGainValue for track %replaygain_track_gain% | for album %replaygain_album_gain%
+ * @param {string=} gaindb TruePeakValue for track %replaygain_track_peak_db% | for album %replaygain_album_peak_db%
+ * @returns {string=} Peak Loudness Ratio
+ */
+function calculate_PLR(gain, gaindb) {
+	const lufs = -2300 - (Number(gain.replace(/[^0-9+-]/g, '')) - 500);
+	const tpfs = Number(gaindb.replace(/[^0-9+-]/g, ''));
+	const plr = tpfs - lufs;
+	const plr_value = plr % 100 > 49 ? plr + 100 : plr;
+
+	return Math.floor(plr_value / 100);
 }
 
 
@@ -4187,11 +4186,11 @@ class DiscHeader extends BaseHeader {
 		}
 
 		const disc_header_text_format = g_string_format.v_align_center | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
-		const disc_text = this.disc_title; // $('[Disc %discnumber% $if('+ tf.disc_subtitle+', \u2014 ,) ]['+ tf.disc_subtitle +']', that.sub_items[0].metadb)
+		const disc_text = this.disc_title; // $('[Disc %discnumber% $if('+ tf.disc_subtitle+', \u2014 ,) ]['+ tf.disc_subtitle +']', that.sub_items[0].metadb);
 		gr.DrawString(disc_text, title_font, title_color, cur_x, this.y, this.w, this.h, disc_header_text_format);
 		const disc_w = Math.ceil(gr.MeasureString(disc_text, title_font, 0, 0, 0, 0).Width + 14);
-		
-		const subheader_PLR_album = (g_properties.show_PLR_header && $('[%totaldiscs%]', this.sub_items[0].metadb) > 1) ? calculate_PLR($('%replaygain_album_gain%', this.sub_items[0].metadb),$('%replaygain_album_peak_db%', this.sub_items[0].metadb)) + ' LU | ' : '';
+
+		const subheader_PLR_album = (g_properties.show_PLR_header && $('[%totaldiscs%]', this.sub_items[0].metadb) > 1) ? `${calculate_PLR($('%replaygain_album_gain%', this.sub_items[0].metadb), $('%replaygain_album_peak_db%', this.sub_items[0].metadb))} LU | ` : '';
 		const replainGain = ($('[%totaldiscs%]', this.sub_items[0].metadb) > 1) ? $('[%replaygain_album_gain% | ]', this.sub_items[0].metadb) : '';
 		const tracks_text = `${(replainGain)}${(subheader_PLR_album)}${this.sub_items.length} Track${this.sub_items.length > 1 ? 's' : ''} - ${utils.FormatDuration(this.get_duration())}`;
 
@@ -4477,11 +4476,11 @@ class Header extends BaseHeader {
 
 		const disc_number = (!g_properties.show_disc_header && $('[%totaldiscs%]', this.metadb) !== '1') ? $('[ | Disc: %discnumber%[/%totaldiscs%]]', this.metadb) : '';
 		const track_text = is_radio ? '' : ' | ' +
-				// (this.grouping_handler.show_disc() && has_discs ? this.sub_items.length + ' Discs - ' : '') +
-				(this.grouping_handler.show_disc() && has_discs && ($('[%totaldiscs%]', this.metadb) > 1) ? this.sub_items.length + ' Discs - ' : '') +
-				track_count + (track_count === 1 ? ' Track' : ' Tracks');
+			// (this.grouping_handler.show_disc() && has_discs ? this.sub_items.length + ' Discs - ' : '') +
+			(this.grouping_handler.show_disc() && has_discs && ($('[%totaldiscs%]', this.metadb) > 1) ? `${this.sub_items.length} Discs - ` : '') +
+			track_count + (track_count === 1 ? ' Track' : ' Tracks');
 		const replaygain = (this.grouping_handler.show_disc() && (!has_discs || $('[%totaldiscs%]', this.metadb) === '')) ? $('[ | %replaygain_album_gain%]', this.metadb) : '';
-		const plr_album = (g_properties.show_PLR_header && this.grouping_handler.show_disc() && (!has_discs || $('[%totaldiscs%]', this.metadb) === '')) ? " | " + calculate_PLR($('%replaygain_album_gain%', this.metadb),$('%replaygain_album_peak_db%', this.metadb)) + ' LU' : '';
+		const plr_album = (g_properties.show_PLR_header && this.grouping_handler.show_disc() && (!has_discs || $('[%totaldiscs%]', this.metadb) === '')) ? ` | ${calculate_PLR($('%replaygain_album_gain%', this.metadb), $('%replaygain_album_peak_db%', this.metadb))} LU` : '';
 		let info_text = codec + disc_number + replaygain + plr_album + track_text;
 
 		if (hasGenreTags) {
@@ -4722,7 +4721,7 @@ class Header extends BaseHeader {
 				}
 			}
 
-			// * ARTIST * //	
+			// * ARTIST * //
 			if (this.grouping_handler.get_title_query()) {
 				const artist_text_format = g_string_format.v_align_far | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
 				let artist_text = $(this.grouping_handler.get_title_query(), this.metadb);
@@ -4763,8 +4762,7 @@ class Header extends BaseHeader {
 			// * ALBUM * //
 			if (this.grouping_handler.get_sub_title_query()) {
 				// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
-				let album_text;
-				g_properties.show_disc_header ? album_text = $('[%album%]', this.metadb) : album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+				const album_text = g_properties.show_disc_header ? $('[%album%]', this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
 
 				if (album_text) {
 					const album_h = part_h;
@@ -4883,8 +4881,7 @@ class Header extends BaseHeader {
 				}
 
 				// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
-				let album_text;
-				g_properties.show_disc_header ? album_text = $('[%album%]', this.metadb) : album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+				const album_text = g_properties.show_disc_header ? $('[%album%]', this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
 				const album_height = gr.MeasureString(album_text, g_pl_fonts.album, 0, 0, 0, 0).Height;
 				const date_query = pref.showPlaylistFullDate ? tf.date : tf.year;
 				const date_text = $(date_query, this.metadb);
@@ -5042,8 +5039,7 @@ class Header extends BaseHeader {
 		// * Album
 		if (this.grouping_handler.get_sub_title_query()) {
 			// let album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
-			let album_text;
-			g_properties.show_disc_header ? album_text = $('[%album%]', this.metadb) : album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+			let album_text = g_properties.show_disc_header ? $('[%album%]', this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
 
 			if (album_text) {
 				album_text = ` - ${album_text}`;
@@ -5168,8 +5164,7 @@ class Header extends BaseHeader {
 		// * Album
 		const album_y = part_h * (!g_properties.show_group_info ? 1.5 : 1) + ((RES_4K || RES_QHD && headerFontSize === 17 ? 5 : 4) * (!g_properties.show_group_info ? 2 : 1));
 		// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
-		let album_text;
-		g_properties.show_disc_header ? album_text = $('[%album%]', this.metadb) : album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+		const album_text = g_properties.show_disc_header ? $('[%album%]', this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
 		if (album_text) {
 			this.hyperlinks.album = new Hyperlink(album_text, g_pl_fonts.album, 'album', left_pad, album_y, this.hyperlinksMaxWidth, true);
 		}
@@ -5320,20 +5315,19 @@ class Header extends BaseHeader {
 	 * Displays the playlist header tooltip when artist or album text is truncated.
 	 */
 	headerTooltip() {
-		if (pref.showTooltipMain || pref.showTooltipTruncated) {
-			if (displayCustomThemeMenu && displayBiography) return; // Overlayed by custom theme menu
+		if (!pref.showTooltipMain && !pref.showTooltipTruncated || displayCustomThemeMenu && displayBiography) {
+			return;
+		}
 
-			const artist_text = $(this.grouping_handler.get_title_query(), this.metadb);
-			// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
-			let album_text;
-			g_properties.show_disc_header ? album_text = $('[%album%]', this.metadb) : album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+		const artist_text = $(this.grouping_handler.get_title_query(), this.metadb);
+		// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+		const album_text = g_properties.show_disc_header ? $('[%album%]', this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
 
-			if (this.artist_text_w > this.hyperlinksMaxWidth || this.album_text_w > this.hyperlinksMaxWidth ||
-				g_properties.use_compact_header && (this.artist_text_w_compact > this.artist_w_compact || this.album_text_w_compact > this.album_w_compact)) {
-				tt.showDelayed(`${artist_text}\n${album_text}`);
-			} else {
-				tt.stop();
-			}
+		if (this.artist_text_w > this.hyperlinksMaxWidth || this.album_text_w > this.hyperlinksMaxWidth ||
+			g_properties.use_compact_header && (this.artist_text_w_compact > this.artist_w_compact || this.album_text_w_compact > this.album_w_compact)) {
+			tt.showDelayed(`${artist_text}\n${album_text}`);
+		} else {
+			tt.stop();
 		}
 	}
 }
@@ -5749,32 +5743,27 @@ class Row extends ListItem {
 			right_pad += this.rating.w + this.rating_right_pad + this.rating_left_pad;
 		}
 
-        //---> PLR
-        if (g_properties.show_PLR) {
-            
-            if ($('[%replaygain_track_gain%]', this.metadb) && $('[%replaygain_track_peak_db%]', this.metadb)) {
-                this.plr_track = calculate_PLR($('%replaygain_track_gain%', this.metadb),$('%replaygain_track_peak_db%', this.metadb))
-            }
+		// * PLR
+		if (g_properties.show_PLR) {
+			if ($('[%replaygain_track_gain%]', this.metadb) && $('[%replaygain_track_peak_db%]', this.metadb)) {
+				this.plr_track = calculate_PLR($('%replaygain_track_gain%', this.metadb), $('%replaygain_track_peak_db%', this.metadb))
+			}
 
-            if (this.plr_track) {
-                if (this.plr_track < 10) {
-                    this.plr_track = '  ' + this.plr_track
-                }
-                this.plr_track += ' LU |'
-               
-                const plr_track_w = Math.ceil(
-                    /** @type {!number} */
-                    gr.MeasureString(this.plr_track, g_pl_fonts.plr_track, 0, 0, 0, 0).Width
-                );
-                const plr_track_x = this.x + this.w - plr_track_w - right_pad;
+			if (this.plr_track) {
+				if (this.plr_track < 10) {
+					this.plr_track = `  ${this.plr_track}`
+				}
+				this.plr_track += ' LU |';
+
+				const plr_track_w = Math.ceil(gr.MeasureString(this.plr_track, g_pl_fonts.plr_track, 0, 0, 0, 0).Width);
+				const plr_track_x = this.x + this.w - plr_track_w - right_pad;
 
 				gr.DrawString(this.plr_track, g_pl_fonts.plr_track, this.title_color, plr_track_x, this.y, plr_track_w, this.h, g_string_format.align_center);
-                testRect && gr.DrawRect(plr_track_x, this.y - 1, plr_track_w, this.h, 1, _RGBA(155, 155, 255, 250));
+				testRect && gr.DrawRect(plr_track_x, this.y - 1, plr_track_w, this.h, 1, RGBA(155, 155, 255, 250));
 
-                right_pad = this.w - (plr_track_x - this.x) + 5;
-            }
-        }
-
+				right_pad = this.w - (plr_track_x - this.x) + 5;
+			}
+		}
 
 		// * COUNT
 		if (g_properties.show_playcount) {
@@ -6061,32 +6050,28 @@ class Row extends ListItem {
 	 * Displays the playlist row tooltip when title text is truncated.
 	 */
 	titleTooltip() {
-		if ((pref.showTooltipMain || pref.showTooltipTruncated)) {
-			if (displayCustomThemeMenu && displayBiography) return; // Overlayed by custom theme menu
+		if (!pref.showTooltipMain && !pref.showTooltipTruncated || displayCustomThemeMenu && displayBiography) {
+			return;
+		}
 
-			const is_radio = this.metadb.RawPath.startsWith('http');
-			const margin = !pref.showPlaylistTrackNumbers && !pref.showPlaylistIndexNumbers ? '' : ' ';
-			const indexNumbers = this.idx < 9 ? `0${this.idx + 1}. ` : `${this.idx + 1}. `;
-			const trackNumbers = pref.showPlaylistIndexNumbers ? indexNumbers : `$if2(%tracknumber%,$pad_right(${this.idx_in_header + 1},2,0)). `;
-			let track_num_query = trackNumbers;
+		const is_radio = this.metadb.RawPath.startsWith('http');
+		const margin = !pref.showPlaylistTrackNumbers && !pref.showPlaylistIndexNumbers ? '' : ' ';
+		const indexNumbers = this.idx < 9 ? `0${this.idx + 1}. ` : `${this.idx + 1}. `;
+		const trackNumbers = pref.showPlaylistIndexNumbers ? indexNumbers : `$if2(%tracknumber%,$pad_right(${this.idx_in_header + 1},2,0)). `;
+		const track_num_query = pref.showVinylNums ? pref.showPlaylistIndexNumbers ? indexNumbers : tf.vinyl_track : trackNumbers;
 
-			if (pref.showVinylNums) {
-				track_num_query = pref.showPlaylistIndexNumbers ? indexNumbers : tf.vinyl_track;
-			}
+		const title_query = g_properties.show_header ? (pref.showPlaylistTrackNumbers || pref.showPlaylistIndexNumbers ? track_num_query : '') +
+			(pref.showArtistPlaylistRows && pref.showAlbumPlaylistRows ? `${margin}%artist% - %album% -  %title%[ '('%original artist%' cover)']` :
+			 pref.showArtistPlaylistRows ? `${margin}%artist% -  %title%[ '('%original artist%' cover)']` :
+			 pref.showAlbumPlaylistRows  ? `${margin}%album% -  %title%[ '('%original artist%' cover)']` :
+		`${margin}%title%[ '('%original artist%' cover)']`) : `%artist%$crlf()%album%$crlf()${track_num_query} %title%[ '('%original artist%' cover)']`;
 
-			const title_query = g_properties.show_header ? (pref.showPlaylistTrackNumbers || pref.showPlaylistIndexNumbers ? track_num_query : '') +
-				(pref.showArtistPlaylistRows && pref.showAlbumPlaylistRows ? `${margin}%artist% - %album% -  %title%[ '('%original artist%' cover)']` :
-				 pref.showArtistPlaylistRows ? `${margin}%artist% -  %title%[ '('%original artist%' cover)']` :
-				 pref.showAlbumPlaylistRows  ? `${margin}%album% -  %title%[ '('%original artist%' cover)']` :
-			`${margin}%title%[ '('%original artist%' cover)']`) : `%artist%$crlf()%album%$crlf()${track_num_query} %title%[ '('%original artist%' cover)']`;
+		const title_text = (fb.IsPlaying && this.is_playing && is_radio) ? $(title_query) : $(title_query, this.metadb);
 
-			const title_text = (fb.IsPlaying && this.is_playing && is_radio) ? $(title_query) : $(title_query, this.metadb);
-
-			if (this.title_text_w > this.title_w) {
-				tt.showDelayed(title_text);
-			} else {
-				tt.stop();
-			}
+		if (this.title_text_w > this.title_w) {
+			tt.showDelayed(title_text);
+		} else {
+			tt.stop();
 		}
 	}
 
