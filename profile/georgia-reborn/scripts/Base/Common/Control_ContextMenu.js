@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-10                                          * //
+// * Last change:    2023-09-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -898,6 +898,7 @@ Object.assign(qwr_utils, {
 		}, { is_checked: pref.noDiscArtStub });
 		discArtMenu.append_separator();
 		const displayCdArtMenu = [
+			['CD - Album cover', 'cdAlbumCover'],
 			['CD - White', 'cdWhite'],
 			['CD - Black', 'cdBlack'],
 			['CD - Blank', 'cdBlank'],
@@ -908,12 +909,15 @@ Object.assign(qwr_utils, {
 			discArtMenu.append_item(cdArt[0], function (cdArt) {
 				pref.discArtStub = cdArt;
 				pref.noDiscArtStub = false;
+				discArtCover = disposeDiscArt(discArtCover);
+				discArtArrayCover = [];
 				fetchNewArtwork(fb.GetNowPlaying());
 				repaintWindow();
 			}.bind(null, cdArt[1]), { is_radio_checked: cdArt[1] === pref.discArtStub });
 		});
 		discArtMenu.append_separator();
 		const displayVinylArtMenu = [
+			['Vinyl - Album cover', 'vinylAlbumCover'],
 			['Vinyl - White', 'vinylWhite'],
 			['Vinyl - Void', 'vinylVoid'],
 			['Vinyl - Cold fusion', 'vinylColdFusion'],
@@ -929,6 +933,8 @@ Object.assign(qwr_utils, {
 			discArtMenu.append_item(vinylArt[0], function (vinylArt) {
 				pref.discArtStub = vinylArt;
 				pref.noDiscArtStub = false;
+				discArtCover = disposeDiscArt(discArtCover);
+				discArtArrayCover = [];
 				fetchNewArtwork(fb.GetNowPlaying());
 				repaintWindow();
 			}.bind(null, vinylArt[1]), { is_radio_checked: vinylArt[1] === pref.discArtStub });

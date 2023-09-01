@@ -103,33 +103,33 @@ function drawAlbumArt(gr) {
 
 	// * BIG ALBUM ART - NEEDS TO BE DRAWN AFTER ALL BLENDING IS DONE, I.E AFTER PLAYLIST * //
 	if (!noAlbumArtStub) {
-		if (discArt && !rotatedDiscArt && !displayPlaylist && !displayLibrary && pref.displayDiscArt) {
-			createRotatedDiscArtImage();
+		if (discArt && !discArtRotation && !displayPlaylist && !displayLibrary && pref.displayDiscArt) {
+			createDiscArtRotation();
 		}
-		if (albumArt && (albumArtScaled || rotatedDiscArt) && !displayBiography && !displayPlaylistArtwork &&
+		if (albumArt && (albumArtScaled || discArtRotation) && !displayBiography && !displayPlaylistArtwork &&
 			(discArt && pref.displayDiscArt && !displayPlaylist && !displayLibrary)) {
 			shadowImg && gr.DrawImage(shadowImg, -geo.discArtShadow, albumArtSize.y - geo.discArtShadow, shadowImg.Width, shadowImg.Height, 0, 0, shadowImg.Width, shadowImg.Height);
 			// gr.DrawRect(-geo.discArtShadow, albumArtSize.y - geo.discArtShadow, shadowImg.Width, shadowImg.Height, 1, RGBA(0,0,255,125)); // Viewing border line
 		}
 		if (albumArt && albumArtScaled) {
 			if (!pref.discArtOnTop || pref.displayLyrics) {
-				if (rotatedDiscArt && !displayPlaylist && !displayLibrary) {
+				if (discArtRotation && !displayPlaylist && !displayLibrary) {
 					drawDiscArt(gr);
 				}
-				if (rotatedDiscArt && !displayPlaylist && !displayLibrary && pref.detailsAlbumArtDiscAreaOpacity !== 255) { // Do not use opacity if image is a booklet, i.e albumArtSize.w > ww * 0.66
-					MaskAlbumArtDiscArea(gr, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height, 0, displayDetails && albumArtSize.w < ww * 0.66 ? pref.detailsAlbumArtDiscAreaOpacity : 255);
+				if (discArtRotation && !displayPlaylist && !displayLibrary && pref.detailsAlbumArtDiscAreaOpacity !== 255) { // Do not use opacity if image is a booklet, i.e albumArtSize.w > ww * 0.66
+					createDiscArtAlbumArtMask(gr, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height, 0, displayDetails && albumArtSize.w < ww * 0.66 ? pref.detailsAlbumArtDiscAreaOpacity : 255);
 				} else {
 					gr.DrawImage(albumArtScaled, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height, 0, displayDetails && albumArtSize.w < ww * 0.66 ? pref.detailsAlbumArtOpacity : 255);
 				}
 			} else { // Draw discArt on top of front cover
 				gr.DrawImage(albumArtScaled, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height);
-				if (rotatedDiscArt && !displayPlaylist && !displayLibrary) {
+				if (discArtRotation && !displayPlaylist && !displayLibrary) {
 					drawDiscArt(gr);
 				}
 			}
-		} else if (rotatedDiscArt && pref.displayDiscArt && !displayPlaylist && !displayLibrary && !displayBiography && !pref.displayLyrics) {
-			// Disc art, but no album art
-			drawDiscArt(gr);
+		}
+		else if (discArtRotation && pref.displayDiscArt && !displayPlaylist && !displayLibrary && !displayBiography && !pref.displayLyrics) {
+			drawDiscArt(gr); // Disc art, but no album art
 		}
 	}
 
@@ -154,7 +154,9 @@ function drawNoAlbumArt(gr) {
 			noAlbumArtStub = true;
 			albumArt = null;
 			discArt = null;
+			discArtCover = null;
 			discArtArray = [];
+			discArtArrayCover = [];
 
 			const noAlbumArtSize = wh - geo.topMenuHeight - geo.lowerBarHeight;
 
@@ -197,10 +199,17 @@ function drawNoAlbumArt(gr) {
 function drawDiscArt(gr) {
 	if (pref.layout === 'default' && pref.displayDiscArt && discArtSize.y >= albumArtSize.y && discArtSize.h <= albumArtSize.h) {
 		const drawDiscProfiler = timings.showExtraDrawTiming ? fb.CreateProfiler('discArt') : null;
-		const discArtImg = discArtArray[rotatedDiscArtIndex] || rotatedDiscArt;
+		const discArtImg = discArtArray[discArtRotationIndex] || discArtRotation;
 		gr.DrawImage(discArtImg, discArtSize.x, discArtSize.y, discArtSize.w, discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);
+
+		if (['cdAlbumCover', 'vinylAlbumCover'].includes(pref.discArtStub) && discArtCover && !discArtFound && (!pref.noDiscArtStub || pref.showDiscArtStub)) {
+			const discArtImgCover = discArtArrayCover[discArtRotationIndexCover] || discArtRotationCover;
+			gr.DrawImage(discArtImgCover, discArtSize.x, discArtSize.y, discArtSize.w, discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);
+		}
+
 		if (timings.showExtraDrawTiming) drawDiscProfiler.Print();
 	}
+
 	// Show full background when displaying the Lyrics panel and lyrics layout is in full width
 	if (pref.displayLyrics && pref.lyricsLayout === 'full' && pref.layout === 'default' && !displayLibrary && !displayPlaylist && !displayBiography) {
 		gr.FillSolidRect(albumArtSize.x + albumArtSize.w - SCALE(1), albumArtSize.y, albumArtSize.x + SCALE(2), albumArtSize.h, col.detailsBg);

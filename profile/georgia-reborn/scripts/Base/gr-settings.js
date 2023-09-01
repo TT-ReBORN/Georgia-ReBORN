@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-30                                          * //
+// * Last change:    2023-09-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -420,9 +420,9 @@ pref.add_properties({
 	playlistSortOrder:                  ['Georgia-ReBORN - 10. Playlist: Sort order', ''], // Playlist sort order
 
 	// * Details
-	showDiscArtStub:                    ['Georgia-ReBORN - 11. Details: Show disc art placeholder if no disc art found', false], // Show disc art placeholder if no disc art found
-	noDiscArtStub:                      ['Georgia-ReBORN - 11. Details: No disc art placeholder', true], // Do not show disc art placeholder
-	discArtStub:                        ['Georgia-ReBORN - 11. Details: Disc art placeholder', 'vinylColdFusion'], // Displays the disc art placeholder
+	showDiscArtStub:                    ['Georgia-ReBORN - 11. Details: Show disc art placeholder if no disc art found', true], // Show disc art placeholder if no disc art found
+	noDiscArtStub:                      ['Georgia-ReBORN - 11. Details: No disc art placeholder', false], // Do not show disc art placeholder
+	discArtStub:                        ['Georgia-ReBORN - 11. Details: Disc art placeholder', 'cdAlbumCover'], // Displays the disc art placeholder
 	displayDiscArt:                     ['Georgia-ReBORN - 11. Details: Display disc art', true], // true: Show disc artwork behind album artwork. This artwork is expected to be named cd.png and have transparent backgrounds (can be found at fanart.tv)
 	discArtOnTop:                       ['Georgia-ReBORN - 11. Details: Show disc art above front cover', false], // true: Display discArt above front cover
 	filterDiscJpgsFromAlbumArt:         ['Georgia-ReBORN - 11. Details: Filter out cd/disc/vinyl .jpgs from showing as artwork', true],
@@ -1203,9 +1203,9 @@ async function setThemeSettings(save) {
 		themeDetails.noDiscArtBg = pref.noDiscArtBg;
 		themeDetails.labelArtOnBg = pref.labelArtOnBg;
 	} else {
-		pref.showDiscArtStub = custom ? themeDetails.showDiscArtStub : false;
-		pref.noDiscArtStub = custom ? themeDetails.noDiscArtStub : true;
-		pref.discArtStub = custom ? themeDetails.discArtStub : 'vinylColdFusion';
+		pref.showDiscArtStub = custom ? themeDetails.showDiscArtStub : true;
+		pref.noDiscArtStub = custom ? themeDetails.noDiscArtStub : false;
+		pref.discArtStub = custom ? themeDetails.discArtStub : 'cdAlbumCover';
 		pref.displayDiscArt = custom ? themeDetails.displayDiscArt : true;
 		pref.discArtOnTop = custom ? themeDetails.discArtOnTop : false;
 		pref.filterDiscJpgsFromAlbumArt = custom ? themeDetails.filterDiscJpgsFromAlbumArt : true;
@@ -1505,6 +1505,224 @@ async function setThemeSettings(save) {
 	await display.initPlayerSize();
 
 	libraryCanReload = true;
+}
+
+
+/**
+ * Loads theme performance presets with various theme settings that affect overall performance.
+ * The 'balanced' preset settings will be also applied in 'highQuality' and 'highestQuality'.
+ * Used in Options > Settings > Theme performance.
+ * @param {string} preset The theme performance preset to load.
+ */
+function setThemePerformance(preset) {
+	switch (preset) {
+		case 'balanced': // Default
+			pref.playerSize = 'small';
+			display.autoDetectRes();
+			pref.styleDefault = true;
+			pref.playlistAutoScrollNowPlaying = false;
+			pref.playlistSmoothScrolling = true;
+			pref.libraryAutoScrollNowPlaying = false;
+			ppt.smooth = true;
+			pptBio.smooth = true;
+			pref.showStyledTooltips = true;
+			pref.showLogoOnStartup = true;
+			pref.showHiResAudioBadge = false;
+			pref.showPause = true;
+			pref.seekbar = 'progressbar';
+			pref.progressBarRefreshRate = 'variable';
+			pref.peakmeterBarRefreshRate = 80;
+			pref.waveformBarPaint = 'partial';
+			pref.waveformBarPrepaint = true;
+			pref.waveformBarPrepaintFront = Infinity;
+			pref.waveformBarAnimate = true;
+			pref.waveformBarBPM = true;
+			pref.waveformBarRefreshRate = 200;
+			pref.playlistLayout = 'normal';
+			g_properties.show_album_art = true;
+			pref.playlistTimeRemaining = false;
+			pref.playlistRowHover = true;
+			pref.showDiscArtStub = true;
+			pref.noDiscArtStub = false;
+			pref.discArtStub = 'cdAlbumCover';
+			pref.displayDiscArt = true;
+			pref.spinDiscArt = false;
+			pref.spinDiscArtImageCount = 72;
+			pref.spinDiscArtRedrawInterval = 75;
+			clearInterval(discArtRotationTimer);
+			discArtArray = [];
+			pref.detailsAlbumArtOpacity = 255;
+			pref.detailsAlbumArtDiscAreaOpacity = 255;
+			pref.showGridTimeline_default = true;
+			pref.showGridTimeline_artwork = true;
+			pref.libraryLayout = 'normal';
+			pref.libraryDesign = 'reborn';
+			pref.libraryTheme = 0;
+			ppt.albumArtShow = false;
+			pref.libraryRowHover = true;
+			pref.biographyLayout = 'normal';
+			pref.biographyTheme = 0;
+			pptBio.showFilmStrip = false;
+			cfg.photoNum = 10;
+			ppt.albumArtDiskCache = true;
+			ppt.albumArtPreLoad = false;
+			pref.libraryAutoDelete = false;
+			pref.biographyAutoDelete = false;
+			pref.lyricsAutoDelete = false;
+			pptBio.focusLoadRate = 1000;
+			pptBio.focusLoadImmediate = false;
+			pref.lyricsDropShadowLevel = 2;
+			pref.lyricsFadeScroll = true;
+			pref.lyricsAlbumArt = true;
+			pref.lyricsRememberActiveState = false;
+			pref.lyricsScrollSpeed = 'normal';
+			pref.lyricsScrollRateAvg = 750;
+			pref.lyricsScrollRateMax = 375;
+			break;
+
+		case 'lowestQuality':
+			pref.playerSize = 'small';
+			pref.playerSize_HD_small = true;
+			display.playerSize_HD_small();
+			pref.styleDefault = true;
+			pref.displayRes = 'HD';
+			pref.playlistAutoScrollNowPlaying = false;
+			pref.playlistSmoothScrolling = false;
+			pref.libraryAutoScrollNowPlaying = false;
+			ppt.smooth = false;
+			pptBio.smooth = false;
+			pref.showStyledTooltips = false;
+			pref.showLogoOnStartup = false;
+			pref.showHiResAudioBadge = false;
+			pref.showPause = false;
+			pref.seekbar = 'progressbar';
+			pref.progressBarRefreshRate = 1000;
+			pref.peakmeterBarRefreshRate = 200;
+			pref.waveformBarPaint = 'full';
+			pref.waveformBarPrepaint = false;
+			pref.waveformBarPrepaintFront = 2;
+			pref.waveformBarAnimate = false;
+			pref.waveformBarBPM = false;
+			pref.waveformBarRefreshRate = 1000;
+			pref.playlistLayout = 'normal';
+			g_properties.show_album_art = false;
+			pref.playlistTimeRemaining = false;
+			pref.playlistRowHover = false;
+			pref.showDiscArtStub = false;
+			pref.noDiscArtStub = true;
+			pref.displayDiscArt = false;
+			pref.spinDiscArt = false;
+			pref.spinDiscArtImageCount = 36;
+			pref.spinDiscArtRedrawInterval = 250;
+			pref.showGridTimeline_default = false;
+			pref.showGridTimeline_artwork = false;
+			pref.libraryLayout = 'normal';
+			pref.libraryDesign = 'reborn';
+			pref.libraryTheme = 0;
+			ppt.albumArtShow = false;
+			pref.libraryRowHover = false;
+			pref.biographyLayout = 'normal';
+			pref.biographyTheme = 0;
+			pptBio.showFilmStrip = false;
+			cfg.photoNum = 1;
+			ppt.albumArtDiskCache = true;
+			ppt.albumArtPreLoad = false;
+			pptBio.focusLoadRate = 3000;
+			pref.lyricsDropShadowLevel = 0;
+			pref.lyricsFadeScroll = false;
+			pref.lyricsAlbumArt = false;
+			pref.lyricsRememberActiveState = false;
+			pref.lyricsScrollSpeed = 'fastest';
+			pref.lyricsScrollRateAvg = 300;
+			pref.lyricsScrollRateMax = 150;
+			break;
+
+		case 'lowQuality':
+			pref.playerSize = 'small';
+			pref.styleDefault = true;
+			pref.displayRes = 'HD';
+			pref.showStyledTooltips = false;
+			pref.seekbar = 'progressbar';
+			pref.progressBarRefreshRate = 500;
+			pref.peakmeterBarRefreshRate = 120;
+			pref.waveformBarPaint = 'full';
+			pref.waveformBarPrepaint = false;
+			pref.waveformBarPrepaintFront = 2;
+			pref.waveformBarAnimate = false;
+			pref.waveformBarBPM = false;
+			pref.waveformBarRefreshRate = 500;
+			pref.playlistTimeRemaining = false;
+			pref.showDiscArtStub = false;
+			pref.noDiscArtStub = true;
+			pref.displayDiscArt = false;
+			pref.spinDiscArt = false;
+			pref.spinDiscArtImageCount = 45;
+			pref.spinDiscArtRedrawInterval = 125;
+			pref.libraryTheme = 0;
+			ppt.albumArtShow = false;
+			pref.biographyTheme = 0;
+			pptBio.showFilmStrip = false;
+			cfg.photoNum = 5;
+			ppt.albumArtDiskCache = true;
+			ppt.albumArtPreLoad = false;
+			pptBio.focusLoadRate = 2000;
+			pref.lyricsDropShadowLevel = 0;
+			pref.lyricsScrollSpeed = 'fast';
+			pref.lyricsScrollRateAvg = 500;
+			pref.lyricsScrollRateMax = 250;
+			break;
+
+		case 'highQuality':
+			pref.playerSize = 'normal';
+			pref.progressBarRefreshRate = 100;
+			pref.peakmeterBarRefreshRate = 60;
+			pref.waveformBarPaint = 'partial';
+			pref.waveformBarPrepaint = true;
+			pref.waveformBarPrepaintFront = Infinity;
+			pref.waveformBarRefreshRate = 100;
+			pref.waveformBarRefreshRateVar = false;
+			pref.spinDiscArt = true;
+			pref.spinDiscArtImageCount = 120;
+			pref.spinDiscArtRedrawInterval = 40;
+			setDiscArtRotationTimer();
+			pref.libraryLayout = 'full';
+			ppt.albumArtShow = true;
+			pref.biographyLayout = 'full';
+			cfg.photoNum = 15;
+			ppt.albumArtDiskCache = true;
+			ppt.albumArtPreLoad = true;
+			pptBio.focusLoadRate = 750;
+			pref.lyricsScrollSpeed = 'slow';
+			pref.lyricsScrollRateAvg = 1000;
+			pref.lyricsScrollRateMax = 500;
+			break;
+
+		case 'highestQuality':
+			pref.playerSize = 'large';
+			pref.progressBarRefreshRate = 30;
+			pref.peakmeterBarRefreshRate = 30;
+			pref.waveformBarPaint = 'partial';
+			pref.waveformBarPrepaint = true;
+			pref.waveformBarPrepaintFront = Infinity;
+			pref.waveformBarRefreshRate = 30;
+			pref.waveformBarRefreshRateVar = false;
+			pref.spinDiscArt = true;
+			pref.spinDiscArtImageCount = 180;
+			pref.spinDiscArtRedrawInterval = 10;
+			setDiscArtRotationTimer();
+			pref.detailsAlbumArtDiscAreaOpacity = 178;
+			pref.libraryLayout = 'full';
+			ppt.albumArtShow = true;
+			pref.biographyLayout = 'full';
+			cfg.photoNum = 20;
+			ppt.albumArtDiskCache = true;
+			ppt.albumArtPreLoad = true;
+			pptBio.focusLoadRate = 500;
+			pref.lyricsScrollSpeed = 'slowest';
+			pref.lyricsScrollRateAvg = 1500;
+			pref.lyricsScrollRateMax = 725;
+			break;
+	}
 }
 
 

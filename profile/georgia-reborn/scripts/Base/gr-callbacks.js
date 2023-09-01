@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-29                                          * //
+// * Last change:    2023-08-31                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -230,7 +230,7 @@ function on_playback_new_track(metadb) {
 		setDiscArtRotationTimer();
 	}
 	if (pref.rotateDiscArt && !pref.spinDiscArt) {
-		createRotatedDiscArtImage(); // We need to always setup the rotated image because it rotates on every track
+		createDiscArtRotation(); // We need to always setup the rotated image because it rotates on every track
 	}
 
 	getBandLogo();
@@ -698,7 +698,9 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 				albumArt = null;
 				artCache.clear();
 				discArtArray = [];
+				discArtArrayCover = [];
 				discArt = null;
+				discArtCover = null;
 				repaintWindow();
 				on_playback_new_track(fb.GetNowPlaying());
 			}
@@ -1343,7 +1345,8 @@ function on_playback_stop(reason) {
 	}
 
 	flagImgs = [];
-	rotatedDiscArt = null;
+	discArtRotation = null;
+	discArtRotationCover = null;
 	albumArtTimeout = 0;
 
 	if (pref.panelWidthAuto) {
@@ -1351,8 +1354,10 @@ function on_playback_stop(reason) {
 	}
 
 	if (reason === 0 || reason === 1) { // Stop or end of playlist
-		discArt = disposeDiscArtImage(discArt);
-		discArtArray = [];	// Clear Images
+		discArt = disposeDiscArt(discArt);
+		discArtCover = disposeDiscArt(discArtCover);
+		discArtArray = []; // Clear Images
+		discArtArrayCover = []; // Clear Images
 		window.Repaint();
 	}
 	if (displayPlaylist || displayPlaylistArtwork) {

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-29                                          * //
+// * Last change:    2023-08-31                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1881,7 +1881,8 @@ function fetchAlbumArt(metadb) {
 		pref.presetAutoRandomMode === 'dblclick' && pref.presetSelectMode === 'theme') && !doubleClicked;
 
 	if (isStreaming || isPlayingCD) {
-		discArt = disposeDiscArtImage(discArt);
+		discArt = disposeDiscArt(discArt);
+		discArtCover = disposeDiscArt(discArtCover);
 		albumArt = utils.GetAlbumArtV2(metadb);
 		pref.showGridTitle_default = true;
 		pref.showGridTitle_artwork = true;
@@ -1921,6 +1922,7 @@ function fetchAlbumArt(metadb) {
 		}
 		// * If not found, try embedded artwork from music file
 		else if (metadb && (albumArt = utils.GetAlbumArtV2(metadb))) {
+			discArtCover = artCache.encache(utils.GetAlbumArtV2(metadb), albumArtList[metadb], 2);
 			noArtwork = false;
 			noAlbumArtStub = false;
 			if (autoRandomPreset) { // Prevent double initialization for theme presets to save performance, getThemeColors() and initTheme() already handled in getRandomThemePreset()
@@ -1941,6 +1943,7 @@ function fetchAlbumArt(metadb) {
 			noArtwork = true;
 			noAlbumArtStub = true;
 			albumArt = null;
+			discArtCover = null;
 			initTheme();
 			DebugLog('\n>>> initTheme -> fetchNewArtwork -> noAlbumArtStub <<<\n');
 			if (pref.panelWidthAuto) {
@@ -1975,6 +1978,7 @@ function fetchNewArtwork(metadb) {
 function loadImageFromAlbumArtList(index) {
 	const metadb = fb.GetNowPlaying();
 	const tempAlbumArt = artCache && artCache.getImage(albumArtList[index]);
+	const tempDiscArtCover = artCache && artCache.getImage(albumArtList[index], 2);
 
 	const autoRandomPreset =
 		(!['off', 'track'].includes(pref.presetAutoRandomMode) && pref.presetSelectMode === 'harmonic' ||
@@ -1984,6 +1988,7 @@ function loadImageFromAlbumArtList(index) {
 
 	if (tempAlbumArt) {
 		albumArt = tempAlbumArt;
+		discArtCover = tempDiscArtCover;
 		if (pref.panelWidthAuto) {
 			initPanelWidthAuto();
 		}
@@ -2004,10 +2009,12 @@ function loadImageFromAlbumArtList(index) {
 	else {
 		gdi.LoadImageAsyncV2(window.ID, albumArtList[index]).then(coverImage => {
 			albumArt = artCache.encache(coverImage, albumArtList[index]);
+			discArtCover = artCache.encache(coverImage, albumArtList[index], 2);
 			if (newTrackFetchingArtwork) {
 				if (!albumArt && fb.IsPlaying) {
 					// * If no album art on disk can be found, try embedded artwork from music file
 					if (metadb && (albumArt = utils.GetAlbumArtV2(metadb))) {
+						discArtCover = artCache.encache(utils.GetAlbumArtV2(metadb), albumArtList[index], 2);
 						noArtwork = false;
 						noAlbumArtStub = false;
 						embeddedArt = true;
@@ -2041,14 +2048,14 @@ function loadImageFromAlbumArtList(index) {
 				resizeArtwork(true);
 			}
 
-			if (discArt) createRotatedDiscArtImage();
+			if (discArt) createDiscArtRotation();
 			lastLeftEdge = 0; // Recalc label location
 			repaintWindow();
 		});
 	}
 
 	if (!displayLibrarySplit()) resizeArtwork(false); // Recalculate image positions
-	if (discArt) createRotatedDiscArtImage();
+	if (discArt) createDiscArtRotation();
 }
 
 
@@ -2175,6 +2182,91 @@ function resetPausePosition() {
 // * DETAILS - DISC ART * //
 ////////////////////////////
 /**
+ * Creates and masks an image to the disc art.
+ * @param {GdiGraphics} gr
+ * @param {number} x The X-coordinate of the disc area.
+ * @param {number} y The Y-coordinate of the disc area.
+ * @param {number} w The width of the mask.
+ * @param {number} h The height of the mask.
+ * @param {number} srcX The X-coordinate of the source image.
+ * @param {number} srcY The Y-coordinate of the source image.
+ * @param {number} srcW The width of the source image.
+ * @param {number} srcH The height of the source image.
+ * @param {float=} angle The angle of the mask in degrees. Default 0.
+ * @param {number=} alpha The alpha of the mask. Values 0-255.
+ * @returns {GdiGraphics} The rounded masked image.
+ */
+function createDiscArtAlbumArtMask(gr, x, y, w, h, srcX, srcY, srcW, srcH, angle, alpha) {
+	// * First draw album art in the background
+	gr.DrawImage(albumArtScaled, x, y, w, h, 0, 0, w, h, 0, alpha);
+
+	// * Mask
+	const maskImg = gdi.CreateImage(w, h);
+	let g = maskImg.GetGraphics();
+	g.FillEllipse(discArtSize.x - albumArtSize.x + geo.discArtShadow - SCALE(4), discArtSize.y - albumArtSize.y + SCALE(2),
+				  discArtSize.w - geo.discArtShadow + SCALE(4), discArtSize.h - geo.discArtShadow + SCALE(2), 0xffffffff);
+	maskImg.ReleaseGraphics(g);
+
+	// * Album art
+	const albumArtImg = gdi.CreateImage(w, h);
+	g = albumArtImg.GetGraphics();
+	g.DrawImage(albumArtScaled, 0, 0, w, h, 0, 0, albumArtScaled.Width, albumArtScaled.Height);
+	albumArtImg.ReleaseGraphics(g);
+
+	const mask = maskImg.Resize(w, h);
+	albumArtImg.ApplyMask(mask);
+
+	gr.DrawImage(albumArtImg, x, y, w, h, 0, 0, w, h, 0, 255);
+}
+
+
+/**
+ * Creates the album cover mask for the disc art stub.
+ * @param {GdiBitmap} img The image to apply the mask to.
+ * @param {number} w The width of the mask.
+ * @param {number} h The height of the mask.
+ */
+function createDiscArtCoverMask(img, w, h) {
+	const mask = GR(discArtSize.w, discArtSize.h, true, g => {
+		const lw = SCALE(25);
+		const centerX = (discArtSize.w / 2 + lw) / 2;
+		const centerY = discArtSize.h / 2;
+		const radiusX = discArtSize.w / 6;
+		const radiusY = discArtSize.h / 6;
+
+		g.SetSmoothingMode(SmoothingMode.AntiAlias);
+		g.FillSolidRect(0, 0, discArtSize.w, discArtSize.h, RGB(255, 255, 255));
+		g.FillEllipse(lw / 2, lw / 2, discArtSize.w - lw, discArtSize.h - lw, RGB(0, 0, 0)); // Outer ring
+		g.FillEllipse(centerX + lw * 1.25, centerY - radiusY, radiusX * 2, radiusY * 2, RGB(255, 255, 255)); // Inner ring
+	});
+
+	img.ApplyMask(mask.Resize(w, h));
+}
+
+
+/**
+ * Creates the disc art rotation animation with RotateImg().
+ */
+function createDiscArtRotation() {
+	// Drawing discArt rotated is slow, so first draw it rotated into the discArtRotation image, and then draw discArtRotation image unrotated in on_paint.
+	if (pref.displayDiscArt && (discArt && discArtSize.w > 0)) {
+		let tracknum = parseInt(fb.TitleFormat(`$num($if(${tf.vinyl_tracknum},$sub($mul(${tf.vinyl_tracknum},2),1),$if2(%tracknumber%,1)),1)`).Eval()) - 1;
+		if (!pref.rotateDiscArt || Number.isNaN(tracknum)) tracknum = 0; // Avoid NaN issues when changing tracks rapidly
+
+		discArtRotation = RotateImg(discArt, discArtSize.w, discArtSize.h, tracknum * pref.rotationAmt);
+		if (['cdAlbumCover', 'vinylAlbumCover'].includes(pref.discArtStub) && discArtCover && (!pref.noDiscArtStub || pref.showDiscArtStub)) {
+			createDiscArtCoverMask(discArtCover, discArtCover.Width, discArtCover.Height);
+			discArtRotationCover = RotateImg(discArtCover, discArtSize.w, discArtSize.h, tracknum * pref.rotationAmt);
+		}
+	}
+
+	// TODO: Once spinning art is done, scrap this and the rotation amount crap and just use indexes into the discArtArray when needed.
+	// ? IDEA: Smooth rotation to new position?
+	return discArtRotation;
+}
+
+
+/**
  * Creates the drop shadow for disc art.
  */
 function createDiscArtShadow() {
@@ -2209,27 +2301,10 @@ function createDiscArtShadow() {
 
 
 /**
- * Creates the disc art rotation animation with RotateImg().
- */
-function createRotatedDiscArtImage() {
-	// Drawing discArt rotated is slow, so first draw it rotated into the rotatedDiscArt image, and then draw rotatedDiscArt image unrotated in on_paint.
-	if (pref.displayDiscArt && (discArt && discArtSize.w > 0)) {
-		let tracknum = parseInt(fb.TitleFormat(`$num($if(${tf.vinyl_tracknum},$sub($mul(${tf.vinyl_tracknum},2),1),$if2(%tracknumber%,1)),1)`).Eval()) - 1;
-		if (!pref.rotateDiscArt || Number.isNaN(tracknum)) tracknum = 0; // Avoid NaN issues when changing tracks rapidly
-		rotatedDiscArt = RotateImg(discArt, discArtSize.w, discArtSize.h, tracknum * pref.rotationAmt);
-	}
-
-	// TODO: Once spinning art is done, scrap this and the rotation amount crap and just use indexes into the discArtArray when needed.
-	// ? IDEA: Smooth rotation to new position?
-	return rotatedDiscArt;
-}
-
-
-/**
  * Disposes the disc art image when changing or deactivating disc art.
  * @param {GdiBitmap} discArtImg The loaded disc art image.
  */
-function disposeDiscArtImage(discArtImg) {
+function disposeDiscArt(discArtImg) {
 	discArtSize = new ImageSize(0, 0, 0, 0);
 	discArtImg = null;
 	return null;
@@ -2241,8 +2316,6 @@ function disposeDiscArtImage(discArtImg) {
  */
 function fetchDiscArt() {
 	const fetchDiscArtProfiler = timings.showDebugTiming ? fb.CreateProfiler('fetchDiscArt') : null;
-	let discArtExists = true;
-	let discArtPath;
 
 	const discArtAllPaths = [
 		$(pref.cdartdisc_path),              // Root -> cd%discnumber%.png
@@ -2276,11 +2349,13 @@ function fetchDiscArt() {
 	];
 
 	const discArtStubPaths = {
+		cdAlbumCover:    paths.cdArtTransStub,
 		cdWhite:         paths.cdArtWhiteStub,
 		cdBlack:         paths.cdArtBlackStub,
 		cdBlank:         paths.cdArtBlankStub,
 		cdTrans:         paths.cdArtTransStub,
 		cdCustom:        paths.cdArtCustomStub,
+		vinylAlbumCover: paths.vinylArtBlackHoleStub,
 		vinylWhite:      paths.vinylArtWhiteStub,
 		vinylVoid:       paths.vinylArtVoidStub,
 		vinylColdFusion: paths.vinylArtColdFusionStub,
@@ -2293,62 +2368,53 @@ function fetchDiscArt() {
 		vinylCustom:     paths.vinylArtCustomStub
 	};
 
+	let discArtPath;
+	let tempDiscArt;
+
 	if (pref.displayDiscArt && !isStreaming) { // We must attempt to load CD/vinyl art first so that the shadow is drawn correctly
 		if (pref.noDiscArtStub || pref.showDiscArtStub) {
 			// * Search for disc art
 			for (let i = 0; i < discArtAllPaths.length; i++) {
-				const found = IsFile(discArtAllPaths[i]);
-				if (found) {
+				if (IsFile(discArtAllPaths[i])) {
+					discArtFound = true;
 					discArtPath = discArtAllPaths[i];
-					discArtExists = true;
 				}
-				// Didn't find anything
-				else if (!noAlbumArtStub && pref.noDiscArtStub) discArtExists = false;
 			}
 		}
 
-		// * Disc art found
-		if (IsFile(discArtPath)) {
-			discArtExists = true;
-		}
 		// * No disc art found, display custom disc art stubs
-		else if (!pref.noDiscArtStub || pref.showDiscArtStub) {
-			discArtExists = true;
+		if (!discArtPath && (!pref.noDiscArtStub || pref.showDiscArtStub)) {
+			discArtFound = false;
 			discArtPath = discArtStubPaths[pref.discArtStub];
 		}
 
 		// * Load disc art
-		if (discArtExists) {
-			let tempDiscArt;
-			if (loadFromCache) {
-				tempDiscArt = artCache.getImage(discArtPath);
-			}
-			if (tempDiscArt) {
-				disposeDiscArtImage(discArt);
-				discArt = tempDiscArt;
-				resizeArtwork(true);
-				createRotatedDiscArtImage();
-				if (pref.spinDiscArt) {
-					discArtArray = [];	// Clear last image
-					setDiscArtRotationTimer();
-				}
-			} else {
-				gdi.LoadImageAsyncV2(window.ID, discArtPath).then(discArtImg => {
-					disposeDiscArtImage(discArt); // Delay disposal so we don't get flashing
-					discArt = artCache.encache(discArtImg, discArtPath);
-					resizeArtwork(true);
-					createRotatedDiscArtImage();
-					if (pref.spinDiscArt) {
-						discArtArray = [];	// Clear last image
-						setDiscArtRotationTimer();
-					}
-					lastLeftEdge = 0; // Recalc label location
-					repaintWindow();
-				});
+		if (loadFromCache) {
+			tempDiscArt = artCache.getImage(discArtPath);
+		}
+		if (tempDiscArt) {
+			disposeDiscArt(discArt);
+			discArt = tempDiscArt;
+			resizeArtwork(true);
+			createDiscArtRotation();
+			if (pref.spinDiscArt) {
+				discArtArray = []; // Clear last image
+				setDiscArtRotationTimer();
 			}
 		}
 		else {
-			discArt = disposeDiscArtImage(discArt);
+			gdi.LoadImageAsyncV2(window.ID, discArtPath).then(discArtImg => {
+				disposeDiscArt(discArt); // Delay disposal so we don't get flashing
+				discArt = artCache.encache(discArtImg, discArtPath);
+				resizeArtwork(true);
+				createDiscArtRotation();
+				if (pref.spinDiscArt) {
+					discArtArray = []; // Clear last image
+					setDiscArtRotationTimer();
+				}
+				lastLeftEdge = 0; // Recalc label location
+				repaintWindow();
+			});
 		}
 	}
 
@@ -2361,7 +2427,7 @@ function fetchDiscArt() {
  * @param {boolean} resetDiscArtPosition Whether the position of the disc art should be reset.
  */
 function resizeDiscArt(resetDiscArtPosition) {
-	if (discArt) {
+	if (discArt || discArtCover) {
 		const discArtSizeCorr = SCALE(4);
 		const discArtMargin = SCALE(2);
 		const discArtMarginRight = SCALE(36);
@@ -2440,13 +2506,21 @@ function setDiscArtRotationTimer() {
 	if (pref.layout === 'default' && discArt && fb.IsPlaying && !fb.IsPaused && pref.displayDiscArt && pref.spinDiscArt && !displayPlaylist && !displayLibrary && !displayBiography) {
 		console.log(`creating ${pref.spinDiscArtImageCount} rotated disc images, shown every ${pref.spinDiscArtRedrawInterval}ms`);
 		discArtRotationTimer = setInterval(() => {
-			rotatedDiscArtIndex++;
-			rotatedDiscArtIndex %= pref.spinDiscArtImageCount;
-			if (!discArtArray[rotatedDiscArtIndex] && discArt && discArtSize.w) {
-				DebugLog(`creating discArtImg: ${rotatedDiscArtIndex} (${discArtSize.w}x${discArtSize.h}) with rotation: ${360 / pref.spinDiscArtImageCount * rotatedDiscArtIndex} degrees`);
-				discArtArray[rotatedDiscArtIndex] = RotateImg(discArt, discArtSize.w, discArtSize.h, 360 / pref.spinDiscArtImageCount * rotatedDiscArtIndex);
+			discArtRotationIndex++;
+			discArtRotationIndex %= pref.spinDiscArtImageCount;
+			discArtRotationIndexCover++;
+			discArtRotationIndexCover %= pref.spinDiscArtImageCount;
+
+			if (!discArtArray[discArtRotationIndex] && discArt && discArtSize.w) {
+				DebugLog(`creating discArtImg: ${discArtRotationIndex} (${discArtSize.w}x${discArtSize.h}) with rotation: ${360 / pref.spinDiscArtImageCount * discArtRotationIndex} degrees`);
+				discArtArray[discArtRotationIndex] = RotateImg(discArt, discArtSize.w, discArtSize.h, 360 / pref.spinDiscArtImageCount * discArtRotationIndex);
+				if (['cdAlbumCover', 'vinylAlbumCover'].includes(pref.discArtStub) && discArtCover && (!pref.noDiscArtStub || pref.showDiscArtStub)) {
+					discArtArrayCover[discArtRotationIndexCover] = RotateImg(discArtCover, discArtSize.w, discArtSize.h, 360 / pref.spinDiscArtImageCount * discArtRotationIndexCover);
+				}
 			}
-			const discArtLeftEdge = pref.detailsAlbumArtOpacity !== 255 || pref.detailsAlbumArtDiscAreaOpacity !== 255 || pref.discArtOnTop ? discArtSize.x : albumArtSize.x + albumArtSize.w - 1; // The first line of discArtImg that will be drawn
+
+			// The first line of discArtImg that will be drawn
+			const discArtLeftEdge = pref.detailsAlbumArtOpacity !== 255 || pref.detailsAlbumArtDiscAreaOpacity !== 255 || pref.discArtOnTop ? discArtSize.x : albumArtSize.x + albumArtSize.w - 1;
 			window.RepaintRect(discArtLeftEdge, discArtSize.y, discArtSize.w - (discArtLeftEdge - discArtSize.x), discArtSize.h, !pref.discArtOnTop && !pref.displayLyrics);
 		}, pref.spinDiscArtRedrawInterval);
 	}

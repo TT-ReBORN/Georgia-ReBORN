@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-30                                          * //
+// * Last change:    2023-09-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -892,9 +892,9 @@ const themePlaylistSchema = new ConfigurationObjectSchema('themePlaylist', Confi
 /////////////////
 /** @type {Object} Options > Details settings with default values. */
 const themeDetailsDefaults = {
-	showDiscArtStub: false,
-	noDiscArtStub: true,
-	discArtStub: 'vinylColdFusion',
+	showDiscArtStub: true,
+	noDiscArtStub: false,
+	discArtStub: 'cdAlbumCover',
 	displayDiscArt: true,
 	discArtOnTop: false,
 	filterDiscJpgsFromAlbumArt: true,
@@ -930,7 +930,7 @@ const themeDetailsDefaults = {
 const themeDetailsComments = {
 	showDiscArtStub: 'Values: true, false - Options > Details > Disc art > Disc art placeholder > Show placeholder if no disc art found',
 	noDiscArtStub: 'Values: true, false - Options > Details > Disc art > Disc art placeholder > No placeholder',
-	discArtStub: 'Values: "cdWhite", "cdBlack", "cdBlank", "cdTrans", "cdCustom", "vinylWhite", "vinylVoid", "vinylColdFusion", "vinylRingOfFire", "vinylMaple", "vinylBlack", "vinylBlackHole", "vinylEbony", "vinylTrans", "vinylCustom" - Options > Details > Disc art > Disc art placeholder',
+	discArtStub: 'Values: "cdAlbumCover", "cdWhite", "cdBlack", "cdBlank", "cdTrans", "cdCustom", "vinylAlbumCover", "vinylWhite", "vinylVoid", "vinylColdFusion", "vinylRingOfFire", "vinylMaple", "vinylBlack", "vinylBlackHole", "vinylEbony", "vinylTrans", "vinylCustom" - Options > Details > Disc art > Disc art placeholder',
 	displayDiscArt: 'Values: true, false - Options > Details > Disc art > Display disc art if found',
 	discArtOnTop: 'Values: true, false - Options > Details > Disc art > Display disc art above cover',
 	filterDiscJpgsFromAlbumArt: 'Values: true, false - Options > Details > Disc art > Filter cd/disc/vinyl .jpgs from artwork',

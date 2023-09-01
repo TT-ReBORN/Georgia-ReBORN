@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-27                                          * //
+// * Last change:    2023-09-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -40,34 +40,46 @@ class ArtCache {
 		/** @private */ this.cacheMaxSize = maxCacheSize;
 		/** @private */ this.imgMaxWidth = SCALE(1440); // * These are the maximum width and height an image can be displayed in Georgia-ReBORN
 		/** @private */ this.imgMaxHeight = SCALE(872);
+
+		// The second cache, mainly used for discArtCover to prevent ovewrite albumArt with the masked image
+		/** @private @type {Object.<string, ArtCacheObj>} */
+		this.cache2 = {};
+		/** @private @type {string[]} */
+		this.cacheIndexes2 = [];
+		/** @private */ this.cacheMaxSize2 = maxCacheSize;
 	}
 
 	/**
 	 * Gets cached image if it exists under the location string. If image is found, move it's index to the end of the cacheIndexes.
 	 * @param {string} location The string value to check if image is cached under.
+	 * @param {number} cacheIndex The first or second index of the cache to check.
 	 * @returns {GdiBitmap} The cached image.
 	 */
-	getImage(location) {
-		if (this.cache[location]) {
+	getImage(location, cacheIndex = 1) {
+		const cache = cacheIndex === 1 ? this.cache : this.cache2;
+		const cacheIndexes = cacheIndex === 1 ? this.cacheIndexes : this.cacheIndexes2;
+
+		if (cache[location]) {
 			if (!fso.FileExists(location)) {
 				// If image in location does not exist, return to prevent crash.
 				return;
 			}
 
 			const f = fso.GetFile(location);
-			const pathIndex = this.cacheIndexes.indexOf(location);
-			this.cacheIndexes.splice(pathIndex, 1);
+			const pathIndex = cacheIndexes.indexOf(location);
+			cacheIndexes.splice(pathIndex, 1);
 
-			if (!f || f.Size === this.cache[location].filesize) {
-				this.cacheIndexes.push(location);
+			if (!f || f.Size === cache[location].filesize) {
+				cacheIndexes.push(location);
 				DebugLog('cache hit:', location);
-				return this.cache[location].image;
+				return cache[location].image;
 			}
 
 			// Size of file on disk has changed
-			DebugLog(`cache entry was stale: ${location} [old size: ${this.cache[location].filesize}, new size: ${f.Size}]`);
-			delete this.cache[location]; // Was removed from cacheIndexes already
+			DebugLog(`cache entry was stale: ${location} [old size: ${cache[location].filesize}, new size: ${f.Size}]`);
+			delete cache[location]; // Was removed from cacheIndexes already
 		}
+
 		return null;
 	}
 
@@ -75,10 +87,15 @@ class ArtCache {
 	 * Adds a rescaled image to the cache under string `location` and returns the cached image.
 	 * @param {GdiBitmap} img The image object to cache.
 	 * @param {string} location The string value to cache image under. Does not need to be a path.
+	 * @param {number} cacheIndex The first or second index of the cache to check.
 	 * @returns {GdiBitmap} The image stored in the cache at the specified location.
 	 * If there is no image in the cache at that location, it returns the original image passed as a parameter.
 	 */
-	encache(img, location) {
+	encache(img, location, cacheIndex = 1) {
+		const cache = cacheIndex === 1 ? this.cache : this.cache2;
+		const cacheIndexes = cacheIndex === 1 ? this.cacheIndexes : this.cacheIndexes2;
+		const cacheMaxSize = cacheIndex === 1 ? this.cacheMaxSize : this.cacheMaxSize2;
+
 		try {
 			let h = img.Height;
 			let w = img.Width;
@@ -91,26 +108,28 @@ class ArtCache {
 				w = Math.min(w / scaleFactor);
 			}
 			const f = fso.GetFile(location);
-			this.cache[location] = { image: img.Resize(w, h), filesize: f.Size };
+			cache[location] = { image: img.Resize(w, h), filesize: f.Size };
 			img = null;
-			const pathIndex = this.cacheIndexes.indexOf(location);
+			const pathIndex = cacheIndexes.indexOf(location);
 			if (pathIndex !== -1) {
 				// Remove from middle of cache and put on end
-				this.cacheIndexes.splice(pathIndex, 1);
+				cacheIndexes.splice(pathIndex, 1);
 			}
-			this.cacheIndexes.push(location);
-			if (this.cacheIndexes.length > this.cacheMaxSize) {
-				const remove = this.cacheIndexes.shift();
+			cacheIndexes.push(location);
+			if (cacheIndexes.length > cacheMaxSize) {
+				const remove = cacheIndexes.shift();
 				DebugLog('Removing img from cache:', remove);
-				delete this.cache[remove];
+				delete cache[remove];
 			}
 		} catch (e) {
 			// Do not console.log inverted band logo and label images in the process of being created
 			if (invertedBandLogo) console.log(`\n<Error: Image could not be properly parsed: ${location}>\n`);
 		}
-		if (this.cache[location]) {
-			return this.cache[location].image;
+
+		if (cache[location]) {
+			return cache[location].image;
 		}
+
 		return img;
 	}
 
@@ -122,6 +141,12 @@ class ArtCache {
 			const remove = this.cacheIndexes.shift();
 			this.cache[remove] = null;
 			delete this.cache[remove];
+		}
+
+		while (this.cacheIndexes2.length) {
+			const remove = this.cacheIndexes2.shift();
+			this.cache2[remove] = null;
+			delete this.cache2[remove];
 		}
 	}
 }

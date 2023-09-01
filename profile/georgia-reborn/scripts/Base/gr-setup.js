@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-03                                          * //
+// * Last change:    2023-09-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -595,14 +595,24 @@ let hasArtwork = false;
 let noAlbumArtStub = false;
 /** @type {GdiBitmap} The disc art image used in Details. */
 let discArt = null;
+/** @type {GdiBitmap} The disc art album cover image used in Details. */
+let discArtCover = null;
 /** @type {GdiBitmap[]} The array of disc art images used in Details. */
 let discArtArray = [];
+/** @type {GdiBitmap[]} The array of disc art album cover images used in Details. */
+let discArtArrayCover = [];
+/** @type {boolean} The state when disc art was found on hard drive used in Details. */
+let discArtFound = false;
 /** @type {Object} The disc art position used in Details ( offset from albumArtSize ). */
 let discArtSize = new ImageSize(0, 0, 0, 0);
 /** @type {GdiBitmap} The rotated disc art from the RotateImg helper used in Details. */
-let rotatedDiscArt = null;
+let discArtRotation = null;
+/** @type {GdiBitmap} The rotated disc art album cover from the RotateImg helper used in Details. */
+let discArtRotationCover = null;
 /** @type {number} The global index of current discArtArray img to draw used in Details. */
-let rotatedDiscArtIndex = 0;
+let discArtRotationIndex = 0;
+/** @type {number} The global index of current discArtArrayCover img to draw used in Details. */
+let discArtRotationIndexCover = 0;
 /** @type {GdiBitmap[]} The array of record label images used in Details. */
 let recordLabels = [];
 /** @type {GdiBitmap[]} The array of inverted record label images used in Details. */

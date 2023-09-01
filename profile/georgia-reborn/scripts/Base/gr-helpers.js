@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-08                                          * //
+// * Last change:    2023-09-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1276,45 +1276,6 @@ function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1,
 	gradRectImg.ApplyMask(mask);
 
 	gr.DrawImage(gradRectImg, x, y, w - SCALE(1), h - SCALE(1), 0, 0, w, h, 0, 255);
-}
-
-
-/**
- * Creates and masks an image to the disc art, a custom mask method.
- * @param {GdiGraphics} gr
- * @param {number} x The X-coordinate of the disc area.
- * @param {number} y The Y-coordinate of the disc area.
- * @param {number} w The width of the mask.
- * @param {number} h The height of the mask.
- * @param {number} srcX The X-coordinate of the source image.
- * @param {number} srcY The Y-coordinate of the source image.
- * @param {number} srcW The width of the source image.
- * @param {number} srcH The height of the source image.
- * @param {float=} angle The angle of the mask in degrees. Default 0.
- * @param {number=} alpha The alpha of the mask. Values 0-255.
- * @returns {GdiGraphics} The rounded masked image.
- */
-function MaskAlbumArtDiscArea(gr, x, y, w, h, srcX, srcY, srcW, srcH, angle, alpha) {
-	// * First draw album art in the background
-	gr.DrawImage(albumArtScaled, x, y, w, h, 0, 0, w, h, 0, alpha);
-
-	// * Mask
-	const maskImg = gdi.CreateImage(w, h);
-	let g = maskImg.GetGraphics();
-	g.FillEllipse(discArtSize.x - albumArtSize.x + geo.discArtShadow - SCALE(4), discArtSize.y - albumArtSize.y + SCALE(2),
-				  discArtSize.w - geo.discArtShadow + SCALE(4), discArtSize.h - geo.discArtShadow + SCALE(2), 0xffffffff);
-	maskImg.ReleaseGraphics(g);
-
-	// * Album art
-	const albumArtImg = gdi.CreateImage(w, h);
-	g = albumArtImg.GetGraphics();
-	g.DrawImage(albumArtScaled, 0, 0, w, h, 0, 0, albumArtScaled.Width, albumArtScaled.Height);
-	albumArtImg.ReleaseGraphics(g);
-
-	const mask = maskImg.Resize(w, h);
-	albumArtImg.ApplyMask(mask);
-
-	gr.DrawImage(albumArtImg, x, y, w, h, 0, 0, w, h, 0, 255);
 }
 
 

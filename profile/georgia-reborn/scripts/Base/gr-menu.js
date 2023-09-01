@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-25                                          * //
+// * Last change:    2023-09-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1990,22 +1990,28 @@ function detailsOptions(menu, context_menu) {
 		displayDiscArtMenu.addSeparator();
 		displayDiscArtMenu.addToggleItem('No placeholder', pref, 'noDiscArtStub', () => {
 			pref.showDiscArtStub = false;
+			discArtCover = disposeDiscArt(discArtCover);
+			discArtArrayCover = [];
 			fetchNewArtwork(fb.GetNowPlaying());
 			repaintWindow();
 		}, !pref.displayDiscArt);
 		displayDiscArtMenu.addSeparator();
-		displayDiscArtMenu.addRadioItems(['CD - White', 'CD - Black', 'CD - Blank', 'CD - Transparent', 'CD - Custom'],
-			pref.discArtStub, ['cdWhite', 'cdBlack', 'cdBlank', 'cdTrans', 'cdCustom'], (discArt) => {
+		displayDiscArtMenu.addRadioItems(['CD - Album cover', 'CD - White', 'CD - Black', 'CD - Blank', 'CD - Transparent', 'CD - Custom'],
+			pref.discArtStub, ['cdAlbumCover', 'cdWhite', 'cdBlack', 'cdBlank', 'cdTrans', 'cdCustom'], (discArt) => {
 			pref.discArtStub = discArt;
 			pref.noDiscArtStub = false;
+			discArtCover = disposeDiscArt(discArtCover);
+			discArtArrayCover = [];
 			fetchNewArtwork(fb.GetNowPlaying());
 			repaintWindow();
 		}, !pref.displayDiscArt);
 		displayDiscArtMenu.addSeparator();
-		displayDiscArtMenu.addRadioItems(['Vinyl - White', 'Vinyl - Void', 'Vinyl - Cold fusion', 'Vinyl - Ring of fire', 'Vinyl - Maple', 'Vinyl - Black', 'Vinyl - Black hole', 'Vinyl - Ebony', 'Vinyl - Transparent', 'Vinyl - Custom'],
-			pref.discArtStub, ['vinylWhite', 'vinylVoid', 'vinylColdFusion', 'vinylRingOfFire', 'vinylMaple', 'vinylBlack', 'vinylBlackHole', 'vinylEbony', 'vinylTrans', 'vinylCustom'], (discArt) => {
+		displayDiscArtMenu.addRadioItems(['Vinyl - Album cover', 'Vinyl - White', 'Vinyl - Void', 'Vinyl - Cold fusion', 'Vinyl - Ring of fire', 'Vinyl - Maple', 'Vinyl - Black', 'Vinyl - Black hole', 'Vinyl - Ebony', 'Vinyl - Transparent', 'Vinyl - Custom'],
+			pref.discArtStub, ['vinylAlbumCover', 'vinylWhite', 'vinylVoid', 'vinylColdFusion', 'vinylRingOfFire', 'vinylMaple', 'vinylBlack', 'vinylBlackHole', 'vinylEbony', 'vinylTrans', 'vinylCustom'], (discArt) => {
 			pref.discArtStub = discArt;
 			pref.noDiscArtStub = false;
+			discArtCover = disposeDiscArt(discArtCover);
+			discArtArrayCover = [];
 			fetchNewArtwork(fb.GetNowPlaying());
 			repaintWindow();
 		}, !pref.displayDiscArt);
@@ -2031,12 +2037,15 @@ function detailsOptions(menu, context_menu) {
 			} else {
 				clearInterval(discArtRotationTimer);
 				discArtArray = [];
+				discArtArrayCover = [];
 			}
 		});
 		discArtMenu.createRadioSubMenu('# Rotation images (memory usage/rotational speed)', ['  36 (10 degrees)', '  45 (8 degrees)', '  60 (6 degrees)', '  72 (5 degrees) (default)', '  90 (4 degrees)', '120 (3 degrees)', '180 (2 degrees)'], pref.spinDiscArtImageCount, [36, 45, 60, 72, 90, 120, 180], (count) => {
 			pref.spinDiscArtImageCount = count;
-			rotatedDiscArtIndex = 0;
+			discArtRotationIndex = 0;
+			discArtRotationIndexCover = 0;
 			discArtArray = [];
+			discArtArrayCover = [];
 			repaintWindow();
 		}, !pref.spinDiscArt);
 		discArtMenu.createRadioSubMenu('Spinning disc art redraw speed', ['250ms (very slow CPU)', '200ms', '150ms', '125ms', '100ms', '  75ms (default)', '  50ms', '  40ms', '  30ms', '  20ms', '  10ms (very fast CPU)'], pref.spinDiscArtRedrawInterval, [250, 200, 150, 125, 100, 75, 50, 40, 30, 20, 10], interval => {
@@ -2047,7 +2056,7 @@ function detailsOptions(menu, context_menu) {
 		discArtMenu.addToggleItem('Rotate disc art as tracks change', pref, 'rotateDiscArt', () => { repaintWindow(); }, !pref.displayDiscArt || pref.spinDiscArt);
 		discArtMenu.createRadioSubMenu('Disc art rotation amount', ['2 degrees', '3 degrees', '4 degrees', '5 degrees'], parseInt(pref.rotationAmt), [2, 3, 4, 5], (rot) => {
 			pref.rotationAmt = rot;
-			createRotatedDiscArtImage();
+			createDiscArtRotation();
 			repaintWindow();
 		}, !pref.rotateDiscArt || pref.spinDiscArt);
 		discArtMenu.appendTo(detailsMenu);
@@ -3374,216 +3383,6 @@ function settingsOptions(menu) {
 	// * THEME PERFORMANCE * //
 	settingsMenu.createRadioSubMenu('Theme performance', ['Lowest quality (fastest speed - very slow CPU)', 'Low quality', 'Balanced (Default)', 'High quality', 'Highest quality (slowest speed - very fast CPU)'], pref.themePerformance,
 		['lowestQuality', 'lowQuality', 'balanced', 'highQuality', 'highestQuality'], (perf) => {
-		function setThemePerformance(preset) {
-			switch (preset) {
-				case 'balanced': // Default
-					pref.playerSize = 'small';
-					display.autoDetectRes();
-					pref.styleDefault = true;
-					pref.playlistAutoScrollNowPlaying = false;
-					pref.playlistSmoothScrolling = true;
-					pref.libraryAutoScrollNowPlaying = false;
-					ppt.smooth = true;
-					pptBio.smooth = true;
-					pref.showStyledTooltips = true;
-					pref.showLogoOnStartup = true;
-					pref.showHiResAudioBadge = false;
-					pref.showPause = true;
-					pref.seekbar = 'progressbar';
-					pref.progressBarRefreshRate = 'variable';
-					pref.peakmeterBarRefreshRate = 80;
-					pref.waveformBarPaint = 'partial';
-					pref.waveformBarPrepaint = true;
-					pref.waveformBarPrepaintFront = Infinity;
-					pref.waveformBarAnimate = true;
-					pref.waveformBarBPM = true;
-					pref.waveformBarRefreshRate = 200;
-					pref.playlistLayout = 'normal';
-					g_properties.show_album_art = true;
-					pref.playlistTimeRemaining = false;
-					pref.playlistRowHover = true;
-					pref.showDiscArtStub = false;
-					pref.noDiscArtStub = true;
-					pref.displayDiscArt = true;
-					pref.spinDiscArt = false;
-					pref.spinDiscArtImageCount = 72;
-					pref.spinDiscArtRedrawInterval = 75;
-					clearInterval(discArtRotationTimer);
-					discArtArray = [];
-					pref.detailsAlbumArtOpacity = 255;
-					pref.detailsAlbumArtDiscAreaOpacity = 255;
-					pref.showGridTimeline_default = true;
-					pref.showGridTimeline_artwork = true;
-					pref.libraryLayout = 'normal';
-					pref.libraryDesign = 'reborn';
-					pref.libraryTheme = 0;
-					ppt.albumArtShow = false;
-					pref.libraryRowHover = true;
-					pref.biographyLayout = 'normal';
-					pref.biographyTheme = 0;
-					pptBio.showFilmStrip = false;
-					cfg.photoNum = 10;
-					ppt.albumArtDiskCache = true;
-					ppt.albumArtPreLoad = false;
-					pref.libraryAutoDelete = false;
-					pref.biographyAutoDelete = false;
-					pref.lyricsAutoDelete = false;
-					pptBio.focusLoadRate = 1000;
-					pptBio.focusLoadImmediate = false;
-					pref.lyricsDropShadowLevel = 2;
-					pref.lyricsFadeScroll = true;
-					pref.lyricsAlbumArt = true;
-					pref.lyricsRememberActiveState = false;
-					pref.lyricsScrollSpeed = 'normal';
-					pref.lyricsScrollRateAvg = 750;
-					pref.lyricsScrollRateMax = 375;
-					break;
-				case 'lowestQuality':
-					pref.playerSize = 'small';
-					pref.playerSize_HD_small = true;
-					display.playerSize_HD_small();
-					pref.styleDefault = true;
-					pref.displayRes = 'HD';
-					pref.playlistAutoScrollNowPlaying = false;
-					pref.playlistSmoothScrolling = false;
-					pref.libraryAutoScrollNowPlaying = false;
-					ppt.smooth = false;
-					pptBio.smooth = false;
-					pref.showStyledTooltips = false;
-					pref.showLogoOnStartup = false;
-					pref.showHiResAudioBadge = false;
-					pref.showPause = false;
-					pref.seekbar = 'progressbar';
-					pref.progressBarRefreshRate = 1000;
-					pref.peakmeterBarRefreshRate = 200;
-					pref.waveformBarPaint = 'full';
-					pref.waveformBarPrepaint = false;
-					pref.waveformBarPrepaintFront = 2;
-					pref.waveformBarAnimate = false;
-					pref.waveformBarBPM = false;
-					pref.waveformBarRefreshRate = 1000;
-					pref.playlistLayout = 'normal';
-					g_properties.show_album_art = false;
-					pref.playlistTimeRemaining = false;
-					pref.playlistRowHover = false;
-					pref.showDiscArtStub = false;
-					pref.noDiscArtStub = false;
-					pref.displayDiscArt = false;
-					pref.spinDiscArt = false;
-					pref.spinDiscArtImageCount = 36;
-					pref.spinDiscArtRedrawInterval = 250;
-					pref.showGridTimeline_default = false;
-					pref.showGridTimeline_artwork = false;
-					pref.libraryLayout = 'normal';
-					pref.libraryDesign = 'reborn';
-					pref.libraryTheme = 0;
-					ppt.albumArtShow = false;
-					pref.libraryRowHover = false;
-					pref.biographyLayout = 'normal';
-					pref.biographyTheme = 0;
-					pptBio.showFilmStrip = false;
-					cfg.photoNum = 1;
-					ppt.albumArtDiskCache = true;
-					ppt.albumArtPreLoad = false;
-					pptBio.focusLoadRate = 3000;
-					pref.lyricsDropShadowLevel = 0;
-					pref.lyricsFadeScroll = false;
-					pref.lyricsAlbumArt = false;
-					pref.lyricsRememberActiveState = false;
-					pref.lyricsScrollSpeed = 'fastest';
-					pref.lyricsScrollRateAvg = 300;
-					pref.lyricsScrollRateMax = 150;
-					break;
-				case 'lowQuality':
-					pref.playerSize = 'small';
-					pref.styleDefault = true;
-					pref.displayRes = 'HD';
-					pref.showStyledTooltips = false;
-					pref.seekbar = 'progressbar';
-					pref.progressBarRefreshRate = 500;
-					pref.peakmeterBarRefreshRate = 120;
-					pref.waveformBarPaint = 'full';
-					pref.waveformBarPrepaint = false;
-					pref.waveformBarPrepaintFront = 2;
-					pref.waveformBarAnimate = false;
-					pref.waveformBarBPM = false;
-					pref.waveformBarRefreshRate = 500;
-					pref.playlistTimeRemaining = false;
-					pref.showDiscArtStub = false;
-					pref.noDiscArtStub = false;
-					pref.displayDiscArt = false;
-					pref.spinDiscArt = false;
-					pref.spinDiscArtImageCount = 45;
-					pref.spinDiscArtRedrawInterval = 125;
-					pref.libraryTheme = 0;
-					ppt.albumArtShow = false;
-					pref.biographyTheme = 0;
-					pptBio.showFilmStrip = false;
-					cfg.photoNum = 5;
-					ppt.albumArtDiskCache = true;
-					ppt.albumArtPreLoad = false;
-					pptBio.focusLoadRate = 2000;
-					pref.lyricsDropShadowLevel = 0;
-					pref.lyricsScrollSpeed = 'fast';
-					pref.lyricsScrollRateAvg = 500;
-					pref.lyricsScrollRateMax = 250;
-					break;
-				case 'highQuality':
-					pref.playerSize = 'normal';
-					pref.progressBarRefreshRate = 100;
-					pref.peakmeterBarRefreshRate = 60;
-					pref.waveformBarPaint = 'partial';
-					pref.waveformBarPrepaint = true;
-					pref.waveformBarPrepaintFront = Infinity;
-					pref.waveformBarRefreshRate = 100;
-					pref.waveformBarRefreshRateVar = false;
-					pref.showDiscArtStub = true;
-					pref.discArtStub = 'vinylBlack';
-					pref.spinDiscArt = true;
-					pref.spinDiscArtImageCount = 120;
-					pref.spinDiscArtRedrawInterval = 40;
-					setDiscArtRotationTimer();
-					pref.libraryLayout = 'full';
-					ppt.albumArtShow = true;
-					pref.biographyLayout = 'full';
-					cfg.photoNum = 15;
-					ppt.albumArtDiskCache = true;
-					ppt.albumArtPreLoad = true;
-					pptBio.focusLoadRate = 750;
-					pref.lyricsScrollSpeed = 'slow';
-					pref.lyricsScrollRateAvg = 1000;
-					pref.lyricsScrollRateMax = 500;
-					break;
-				case 'highestQuality':
-					pref.playerSize = 'large';
-					pref.progressBarRefreshRate = 30;
-					pref.peakmeterBarRefreshRate = 30;
-					pref.waveformBarPaint = 'partial';
-					pref.waveformBarPrepaint = true;
-					pref.waveformBarPrepaintFront = Infinity;
-					pref.waveformBarRefreshRate = 30;
-					pref.waveformBarRefreshRateVar = false;
-					pref.showDiscArtStub = true;
-					pref.discArtStub = 'vinylTrans';
-					pref.spinDiscArt = true;
-					pref.spinDiscArtImageCount = 180;
-					pref.spinDiscArtRedrawInterval = 10;
-					setDiscArtRotationTimer();
-					pref.detailsAlbumArtDiscAreaOpacity = 178;
-					pref.libraryLayout = 'full';
-					ppt.albumArtShow = true;
-					pref.biographyLayout = 'full';
-					cfg.photoNum = 20;
-					ppt.albumArtDiskCache = true;
-					ppt.albumArtPreLoad = true;
-					pptBio.focusLoadRate = 500;
-					pref.lyricsScrollSpeed = 'slowest';
-					pref.lyricsScrollRateAvg = 1500;
-					pref.lyricsScrollRateMax = 725;
-					break;
-			}
-		}
-
 		const msg = 'Do you want to change the theme performance?\n\nThese presets will change various theme settings!\nIt is recommended to save current theme settings\nto the config file. You should also make a backup\nof your playlists to be on the safe side!\n\n!!! WARNING !!!\n"High quality" and especially "Highest Quality"\ncan freeze foobar, depending how fast your CPU performs.\nIt does not matter if you are using a multi-core CPU,\nonly single-core CPU performance counts!\nIf your foobar is unresponsive, restart\nand change to a lighter preset.\n\nContinue?';
 		const continue_confirmation = (status, confirmed) => {
 			if (!confirmed) return;
