@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-30                                          * //
+// * Last change:    2023-09-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -667,24 +667,7 @@ function drawDetailsLabelLogo(gr) {
 			let labelX = leftEdge;
 			topEdge = albumArtSize.y + albumArtSize.h - labelHeight - 20;
 
-			if (!pref.labelArtOnBg && !pref.noDiscArtBg) {
-				if (!['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme)) {
-					if (!labelShadowImg) {
-						labelShadowImg = ShadowRect(geo.discArtShadow, geo.discArtShadow, ww - labelX + leftEdgeWidth, labelHeight + 40, geo.discArtShadow, col.shadow);
-					}
-					gr.DrawImage(labelShadowImg, labelX - leftEdgeWidth - geo.discArtShadow, topEdge - 20 - geo.discArtShadow, ww - labelX + leftEdgeWidth + 2 * geo.discArtShadow, labelHeight + 40 + 2 * geo.discArtShadow,
-						0, 0, labelShadowImg.Width, labelShadowImg.Height);
-				}
-				gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing
-				gr.FillSolidRect(labelX - leftEdgeWidth, topEdge - 20, ww - labelX + leftEdgeWidth, labelHeight + 40, col.detailsBg);
-				gr.DrawRect(labelX - leftEdgeWidth, topEdge - 20, ww - labelX + leftEdgeWidth, labelHeight + 40 - 1, 1, col.shadow);
-				gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
-			}
-			else if (pref.noDiscArtBg && !pref.displayDiscArt) {
-				gr.DrawImage(labelShadowImg, labelX - leftEdgeWidth - geo.discArtShadow, topEdge - 20 - geo.discArtShadow, ww - labelX + leftEdgeWidth + 2 * geo.discArtShadow, labelHeight + 40 + 2 * geo.discArtShadow,
-					0, 0, labelShadowImg.Width, labelShadowImg.Height);
-			}
-			if (pref.noDiscArtBg && pref.displayDiscArt && discArt) {
+			if (!pref.labelArtOnBg && !pref.noDiscArtBg || pref.noDiscArtBg && pref.displayDiscArt && discArt) {
 				if (!['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme)) {
 					if (!labelShadowImg) {
 						labelShadowImg = ShadowRect(geo.discArtShadow, geo.discArtShadow, ww - labelX + leftEdgeWidth, labelHeight + 40, geo.discArtShadow, col.shadow);
