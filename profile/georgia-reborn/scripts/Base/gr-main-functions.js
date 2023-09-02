@@ -1293,21 +1293,28 @@ function createButtonImages() {
 			},
 			PlaybackDefault: {
 				ico: g_guifx.right,
-				font: ft.playback_order_default,
+				font: ft.pbo_default,
 				type: 'transport',
 				w: transportCircleSize,
 				h: transportCircleSize
 			},
-			PlaybackReplay: {
+			PlaybackRepeatPlaylist: {
+				ico: '\uf01e',
+				font: ft.pbo_repeat_playlist,
+				type: 'transport',
+				w: transportCircleSize,
+				h: transportCircleSize
+			},
+			PlaybackRepeatTrack: {
 				ico: '\uf021',
-				font: ft.playback_order_replay,
+				font: ft.pbo_repeat_track,
 				type: 'transport',
 				w: transportCircleSize,
 				h: transportCircleSize
 			},
 			PlaybackShuffle: {
 				ico: g_guifx.shuffle,
-				font: ft.playback_order_shuffle,
+				font: ft.pbo_shuffle,
 				type: 'transport',
 				w: transportCircleSize,
 				h: transportCircleSize
@@ -1796,14 +1803,19 @@ function createButtonObjects(ww, wh) {
 		btns.next = new Button(calcX(++count), y, w, h, 'Next', btnImg.Next, 'Next');
 
 		if (showPlaybackOrderBtn) {
-			if (plman.PlaybackOrder === 0) {
-				btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackDefault);
-			}
-			else if (plman.PlaybackOrder === 1 || plman.PlaybackOrder === 2) {
-				btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackReplay);
-			}
-			else if (plman.PlaybackOrder === 3 || plman.PlaybackOrder === 4 || plman.PlaybackOrder === 5 || plman.PlaybackOrder === 6) {
-				btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackShuffle);
+			switch (plman.PlaybackOrder) {
+				case 0:
+					btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackDefault);
+					break;
+				case 1:
+					btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackRepeatPlaylist);
+					break;
+				case 2:
+					btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackRepeatTrack);
+					break;
+				case 3:	case 4:	case 5: case 6:
+					btns.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', btnImg.PlaybackShuffle);
+					break;
 			}
 		}
 		if (showReloadBtn) {

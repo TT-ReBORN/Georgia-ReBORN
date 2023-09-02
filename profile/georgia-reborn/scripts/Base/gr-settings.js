@@ -393,7 +393,7 @@ pref.add_properties({
 	waveformBarRefreshRateVar:          ['Georgia-ReBORN - 09. Player controls: Waveform bar refresh rate variable', false], // false: Should the waveform bar use variable refresh rate
 	maximizeToFullscreen:               ['Georgia-ReBORN - 09. Player controls: Maximize to fullscreen', true], // Maximize function
 	switchPlaybackTime:                 ['Georgia-ReBORN - 09. Player controls: Switch to playback time remaining', false], // Switch the playback time from time elapsed to time remaining
-	playbackOrder:                      ['Georgia-ReBORN - 09. Player controls: Playback order', 'Default'], // Playback order 'Default' for context plus foobar menu when no transport controls are displayed
+	playbackOrder:                      ['Georgia-ReBORN - 09. Player controls: Playback order', 'default'], // Playback order 'default' for context plus foobar menu when no transport controls are displayed
 
 	// * Playlist
 	playlistLayout:                     ['Georgia-ReBORN - 10. Playlist: Layout', 'normal'], // Playlist layout - normal (default) or full
@@ -1066,7 +1066,7 @@ async function setThemeSettings(save) {
 		pref.waveformBarRefreshRateVar = custom ? themeControls.waveformBarRefreshRateVar : false;
 		pref.maximizeToFullscreen = custom ? themeControls.maximizeToFullscreen : true;
 		pref.switchPlaybackTime = custom ? themeControls.switchPlaybackTime : false;
-		pref.playbackOrder = custom ? themeControls.playbackOrder : 'Default';
+		pref.playbackOrder = custom ? themeControls.playbackOrder : 'default';
 	}
 
 	// * Playlist

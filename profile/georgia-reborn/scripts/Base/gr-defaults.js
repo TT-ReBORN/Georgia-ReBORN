@@ -638,7 +638,7 @@ const themePlayerControlsDefaults = {
 	waveformBarRefreshRate: 200,
 	waveformBarRefreshRateVar: false,
 	waveformBarAutoDelete: false,
-	playbackOrder: 'Default'
+	playbackOrder: 'default'
 };
 
 /** @type {Object} Options > Player controls settings config name description. */
@@ -783,7 +783,7 @@ const themePlayerControlsComments = {
 	waveformBarIndicator: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Display > Show indicator',
 	waveformBarRefreshRate: 'Values: 1000, 500, 200, 100, 80, 60, 30, - Options > Player controls > Seekbar > Waveform bar > Refresh rate',
 	waveformBarRefreshRateVar: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Refresh rate > Variable',
-	playbackOrder: 'Values: "Default", "Repeat", "Shuffle" - not in Options - playback order state button'
+	playbackOrder: 'Values: "default", "repeatPlaylist", "repeatTrack", "shuffle" - not in Options - playback order state button'
 };
 
 /** @type {Object} Options > Player controls settings config header description. */

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-27                                          * //
+// * Last change:    2023-09-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -899,9 +899,9 @@ function btnPlaybackOrder(tooltip) {
 
 	/**
 	 * Sets the button image, playback order preference, and foobar2000 playback order.
-	 * @param {GdiBitmap} imgValue The value of btnImg.PlaybackDefault, btnImg.PlaybackReplay, or btnImg.PlaybackShuffle.
-	 * @param {string} prefValue The value of 'Default', 'Repeat', or 'Shuffle'.
-	 * @param {string} fbValue The value of PlaybackOrder.Default, PlaybackOrder.RepeatTrack, or PlaybackOrder.ShuffleTracks.
+	 * @param {GdiBitmap} imgValue The value of btnImg.PlaybackDefault, btnImg.PlaybackRepeatTrack, or btnImg.PlaybackShuffle.
+	 * @param {string} prefValue The value of 'default', 'repeatPlaylist', 'repeatTrack', or 'shuffle'.
+	 * @param {string} fbValue The value of PlaybackOrder.Default, PlaybackOrder.RepeatPlaylist, PlaybackOrder.RepeatTrack, or PlaybackOrder.ShuffleTracks.
 	 * @param {string} cmd The value of top menu Playback > Order.
 	 */
 	const setPlaybackOrder = (imgValue, prefValue, fbValue, cmd) => {
@@ -914,14 +914,16 @@ function btnPlaybackOrder(tooltip) {
 	switch (plman.PlaybackOrder) {
 		case PlaybackOrder.Default:
 			if (tooltip) return 'Default';
-			setPlaybackOrder(btnImg.PlaybackReplay, 'Repeat', PlaybackOrder.RepeatTrack, 'Repeat (track)');
+			setPlaybackOrder(btnImg.PlaybackRepeatPlaylist, 'repeatPlaylist', PlaybackOrder.RepeatPlaylist, 'Repeat (playlist)');
 			break;
 
 		case PlaybackOrder.RepeatPlaylist:
-			if (tooltip) return 'Repeat (playlist)'; /* falls through */
+			if (tooltip) return 'Repeat (playlist)';
+			setPlaybackOrder(btnImg.PlaybackRepeatTrack, 'repeatTrack', PlaybackOrder.RepeatTrack, 'Repeat (track)');
+			break;
 		case PlaybackOrder.RepeatTrack:
 			if (tooltip) return 'Repeat (track)';
-			setPlaybackOrder(btnImg.PlaybackShuffle, 'Shuffle', PlaybackOrder.ShuffleTracks, 'Shuffle (tracks)');
+			setPlaybackOrder(btnImg.PlaybackShuffle, 'shuffle', PlaybackOrder.ShuffleTracks, 'Shuffle (tracks)');
 			break;
 
 		case PlaybackOrder.Random:
@@ -932,7 +934,7 @@ function btnPlaybackOrder(tooltip) {
 			if (tooltip) return 'Shuffle (albums)'; /* falls through */
 		case PlaybackOrder.ShuffleFolders:
 			if (tooltip) return 'Shuffle (folders)';
-			setPlaybackOrder(btnImg.PlaybackDefault, 'Default', PlaybackOrder.Default, 'Default');
+			setPlaybackOrder(btnImg.PlaybackDefault, 'default', PlaybackOrder.Default, 'Default');
 			break;
 	}
 

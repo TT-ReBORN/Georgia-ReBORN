@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-31                                          * //
+// * Last change:    2023-09-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1192,17 +1192,28 @@ function on_playback_order_changed(pbo) {
 	const showPlaybackOrderBtn  = pref[`showPlaybackOrderBtn_${pref.layout}`];
 	const showBtns = showTransportControls && showPlaybackOrderBtn;
 
-	if (pbo === PlaybackOrder.Default) {
-		pref.playbackOrder = 'Default';
-		if (showBtns) btns.playbackOrder.img = btnImg.PlaybackDefault;
-	}
-	else if (pbo === PlaybackOrder.RepeatTrack || pbo === PlaybackOrder.RepeatPlaylist) {
-		pref.playbackOrder = 'Repeat';
-		if (showBtns) btns.playbackOrder.img = btnImg.PlaybackReplay;
-	}
-	else if (pbo === PlaybackOrder.ShuffleTracks || pbo === PlaybackOrder.ShuffleAlbums || pbo === PlaybackOrder.ShuffleFolders || pbo === PlaybackOrder.Random) {
-		pref.playbackOrder = 'Shuffle';
-		if (showBtns) btns.playbackOrder.img = btnImg.PlaybackShuffle;
+	switch (pbo) {
+		case PlaybackOrder.Default:
+			pref.playbackOrder = 'default';
+			if (showBtns) btns.playbackOrder.img = btnImg.PlaybackDefault;
+			break;
+
+		case PlaybackOrder.RepeatPlaylist:
+			pref.playbackOrder = 'repeatPlaylist';
+			if (showBtns) btns.playbackOrder.img = btnImg.PlaybackRepeatPlaylist;
+			break;
+		case PlaybackOrder.RepeatTrack:
+			pref.playbackOrder = 'repeatTrack';
+			if (showBtns) btns.playbackOrder.img = btnImg.PlaybackRepeatTrack;
+			break;
+
+		case PlaybackOrder.Random:
+		case PlaybackOrder.ShuffleTracks:
+		case PlaybackOrder.ShuffleAlbums:
+		case PlaybackOrder.ShuffleFolders:
+			pref.playbackOrder = 'shuffle';
+			if (showBtns) btns.playbackOrder.img = btnImg.PlaybackShuffle;
+			break;
 	}
 }
 

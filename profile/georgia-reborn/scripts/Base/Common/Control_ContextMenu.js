@@ -657,20 +657,26 @@ Object.assign(qwr_utils, {
 			cmac.append_separator();
 
 			const playbackOrderMenu = new ContextMenu('Playback order');
-			const playbackOrderModes = ['Default', 'Repeat', 'Shuffle'];
+			const playbackOrderModes = ['default', 'repeatPlaylist', 'repeatTrack', 'shuffle'];
 			playbackOrderModes.forEach((playbackOrder) => {
 				playbackOrderMenu.append_item(playbackOrder, () => {
-					if (playbackOrder === 'Default') {
-						pref.playbackOrder = 'Default';
-						fb.RunMainMenuCommand('Playback/Order/Default');
-					}
-					if (playbackOrder === 'Repeat') {
-						pref.playbackOrder = 'Repeat';
-						fb.RunMainMenuCommand('Playback/Order/Repeat (track)');
-					}
-					if (playbackOrder === 'Shuffle') {
-						pref.playbackOrder = 'Shuffle';
-						fb.RunMainMenuCommand('Playback/Order/Shuffle (tracks)');
+					switch (playbackOrder) {
+						case 'default':
+							pref.playbackOrder = 'default';
+							fb.RunMainMenuCommand('Playback/Order/Default');
+							break;
+						case 'repeatPlaylist':
+							pref.playbackOrder = 'repeatPlaylist';
+							fb.RunMainMenuCommand('Playback/Order/Repeat (playlist)');
+							break;
+						case 'repeatTrack':
+							pref.playbackOrder = 'repeatTrack';
+							fb.RunMainMenuCommand('Playback/Order/Repeat (track)');
+							break;
+						case 'shuffle':
+							pref.playbackOrder = 'shuffle';
+							fb.RunMainMenuCommand('Playback/Order/Shuffle (tracks)');
+							break;
 					}
 				}, { is_radio_checked: playbackOrder === pref.playbackOrder });
 			});

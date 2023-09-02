@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-01                                          * //
+// * Last change:    2023-09-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -286,9 +286,10 @@ let str = {};
  * @property {GdiFont} lower_bar_length Theme length font 'HelveticaNeueLT Pro 45 Lt' used in lower bar.
  * @property {GdiFont} lower_bar_wave Theme waveform bar font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
  * @property {GdiFont} guifx Theme font 'Guifx v2 Transports' used for the lower bar transport/playback buttons.
- * @property {GdiFont} playback_order_default Theme font 'Guifx v2 Transports' used for the lower bar transport playback order button.
- * @property {GdiFont} playback_order_replay Theme font 'FontAwesome' used for the lower bar transport playback order button.
- * @property {GdiFont} playback_order_shuffle Theme font 'Guifx v2 Transports' used for the lower bar transport playback order button.
+ * @property {GdiFont} pbo_default Theme font 'Guifx v2 Transports' used for the lower bar transport playback order button.
+ * @property {GdiFont} pbo_repeat_playlist Theme font 'FontAwesome' used for the lower bar transport playback order button.
+ * @property {GdiFont} pbo_repeat_track Theme font 'FontAwesome' used for the lower bar transport playback order button.
+ * @property {GdiFont} pbo_shuffle Theme font 'Guifx v2 Transports' used for the lower bar transport playback order button.
  * @property {GdiFont} guifx_reload Theme font 'Guifx v2 Transports' used for the lower bar transport reload button.
  * @property {GdiFont} guifx_volume Theme font 'Guifx v2 Transports' used for the lower bar transport volume button.
  * @property {GdiFont} no_album_art_stub Theme font 'FontAwesome' used for no album art music note symbol.
@@ -458,12 +459,13 @@ function createFonts() {
 	if (updateHyperlink) updateHyperlink.setFont(ft.lower_bar_title);
 
 	// * LOWER BAR TRANSPORT BUTTONS * //
-	ft.guifx                  = Font(fontGuiFx,   Math.floor(guiFxBtnFontSize), 0);
-	ft.playback_order_default = Font(fontGuiFx,   Math.floor(pboDefaultBtnFontSize), 0);
-	ft.playback_order_replay  = Font(fontAwesome, Math.floor(pboReplayBtnFontSize), 0);
-	ft.playback_order_shuffle = Font(fontGuiFx,   Math.floor(pboShuffleBtnFontSize), 0);
-	ft.guifx_reload           = Font(fontGuiFx,   Math.floor(reloadBtnFontSize), 0);
-	ft.guifx_volume           = Font(fontGuiFx,   Math.floor(volumeBtnFontSize), 0);
+	ft.guifx               = Font(fontGuiFx,   Math.floor(guiFxBtnFontSize), 0);
+	ft.pbo_default         = Font(fontGuiFx,   Math.floor(pboDefaultBtnFontSize), 0);
+	ft.pbo_repeat_playlist = Font(fontAwesome, Math.floor(pboReplayBtnFontSize), 0);
+	ft.pbo_repeat_track    = Font(fontAwesome, Math.floor(pboReplayBtnFontSize), 0);
+	ft.pbo_shuffle         = Font(fontGuiFx,   Math.floor(pboShuffleBtnFontSize), 0);
+	ft.guifx_reload        = Font(fontGuiFx,   Math.floor(reloadBtnFontSize), 0);
+	ft.guifx_volume        = Font(fontGuiFx,   Math.floor(volumeBtnFontSize), 0);
 
 	// * MISC * //
 	ft.no_album_art_stub = Font(fontAwesome, 160, 0);
