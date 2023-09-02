@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-02                                          * //
+// * Last change:    2023-09-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -310,10 +310,10 @@ class ButtonEventHandler {
 				tt.showDelayed(lastOverButton.tooltip);
 			}
 			else if (lastOverButton.id === 'Volume' && !volumeBtn.show_volume_bar) {
-				tt.showDelayed(`${fb.Volume.toFixed(2)} dB`);
+				tt.showDelayed(btnTransportTooltip('volume'));
 			}
 			else if (lastOverButton.id === 'PlaybackOrder') {
-				tt.showDelayed(fb.PlaybackOrder === undefined ? 'Playback order' : btnPlaybackOrder(true));
+				tt.showDelayed(btnTransportTooltip('pbo'));
 			}
 		}
 	}
@@ -891,9 +891,8 @@ function btnPlayPause() {
 
 /**
  * Handles the playback order button action in the lower bar, toggles the current playback order.
- * @param {boolean} tooltip Shows the playback order tooltip.
  */
-function btnPlaybackOrder(tooltip) {
+function btnPlaybackOrder() {
 	const showTransportControls = pref[`showTransportControls_${pref.layout}`];
 	if (!showTransportControls) return;
 
@@ -913,27 +912,20 @@ function btnPlaybackOrder(tooltip) {
 
 	switch (plman.PlaybackOrder) {
 		case PlaybackOrder.Default:
-			if (tooltip) return 'Default';
 			setPlaybackOrder(btnImg.PlaybackRepeatPlaylist, 'repeatPlaylist', PlaybackOrder.RepeatPlaylist, 'Repeat (playlist)');
 			break;
 
 		case PlaybackOrder.RepeatPlaylist:
-			if (tooltip) return 'Repeat (playlist)';
 			setPlaybackOrder(btnImg.PlaybackRepeatTrack, 'repeatTrack', PlaybackOrder.RepeatTrack, 'Repeat (track)');
 			break;
 		case PlaybackOrder.RepeatTrack:
-			if (tooltip) return 'Repeat (track)';
 			setPlaybackOrder(btnImg.PlaybackShuffle, 'shuffle', PlaybackOrder.ShuffleTracks, 'Shuffle (tracks)');
 			break;
 
 		case PlaybackOrder.Random:
-			if (tooltip) return 'Random'; /* falls through */
 		case PlaybackOrder.ShuffleTracks:
-			if (tooltip) return 'Shuffle (tracks)'; /* falls through */
 		case PlaybackOrder.ShuffleAlbums:
-			if (tooltip) return 'Shuffle (albums)'; /* falls through */
 		case PlaybackOrder.ShuffleFolders:
-			if (tooltip) return 'Shuffle (folders)';
 			setPlaybackOrder(btnImg.PlaybackDefault, 'default', PlaybackOrder.Default, 'Default');
 			break;
 	}
@@ -960,6 +952,36 @@ function btnVolume() {
 function btnPlaybackTime() {
 	pref.switchPlaybackTime = !pref.switchPlaybackTime;
 	on_playback_time();
+}
+
+
+/**
+ * Handles the lower bar playback transport button tooltips.
+ * @param {string} btn The playback transport button.
+ */
+function btnTransportTooltip(btn) {
+	const pbModeTooltipText =
+		(fb.StopAfterCurrent ? 'Stop after current\n' : '') +
+		(fb.PlaybackFollowCursor ? 'Playback follows cursor\n' : '') +
+		(fb.CursorFollowPlayback ? 'Cursor follows playback\n' : '');
+
+	const pboTooltipText =
+		plman.PlaybackOrder === PlaybackOrder.Default ? 'Default' :
+		plman.PlaybackOrder === PlaybackOrder.RepeatPlaylist ? 'Repeat (playlist)' :
+		plman.PlaybackOrder === PlaybackOrder.RepeatTrack ? 'Repeat (track)' :
+		plman.PlaybackOrder === PlaybackOrder.ShuffleTracks ? 'Shuffle (tracks)' : '';
+
+	const volumeTooltipText = `${fb.Volume.toFixed(2)} dB`;
+
+	switch (btn) {
+		case 'stop':   return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\nStop` : 'Stop';
+		case 'prev':   return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\nPrevious` : 'Previous';
+		case 'play':   return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\nPlay` : 'Play';
+		case 'next':   return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\nNext` : 'Next';
+		case 'pbo':    return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\nPlayback order: ${pboTooltipText}` : `Playback order: ${pboTooltipText}`;
+		case 'reload': return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\nReload` : 'Reload';
+		case 'volume': return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\n${volumeTooltipText}` : volumeTooltipText;
+	}
 }
 
 

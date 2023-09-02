@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-02                                          * //
+// * Last change:    2023-09-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1797,10 +1797,10 @@ function createButtonObjects(ww, wh) {
 		const calcX = (index) => x + (w + p) * index;
 
 		count = 0;
-		btns.stop = new Button(x, y, w, h, 'Stop', btnImg.Stop, 'Stop');
-		btns.prev = new Button(calcX(++count), y, w, h, 'Previous', btnImg.Previous, 'Previous');
-		btns.play = new Button(calcX(++count), y, w, h, 'PlayPause', !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause, 'Play');
-		btns.next = new Button(calcX(++count), y, w, h, 'Next', btnImg.Next, 'Next');
+		btns.stop = new Button(x, y, w, h, 'Stop', btnImg.Stop, btnTransportTooltip('stop'));
+		btns.prev = new Button(calcX(++count), y, w, h, 'Previous', btnImg.Previous, btnTransportTooltip('prev'));
+		btns.play = new Button(calcX(++count), y, w, h, 'PlayPause', !fb.IsPlaying || fb.IsPaused ? btnImg.Play : btnImg.Pause, btnTransportTooltip('play'));
+		btns.next = new Button(calcX(++count), y, w, h, 'Next', btnImg.Next, btnTransportTooltip('next'));
 
 		if (showPlaybackOrderBtn) {
 			switch (plman.PlaybackOrder) {
@@ -1819,7 +1819,7 @@ function createButtonObjects(ww, wh) {
 			}
 		}
 		if (showReloadBtn) {
-			btns.reload = new Button(calcX(++count), y, w, h, 'Reload', btnImg.Reload, 'Reload');
+			btns.reload = new Button(calcX(++count), y, w, h, 'Reload', btnImg.Reload, btnTransportTooltip('reload'));
 		}
 		if (showVolumeBtn) {
 			btns.volume = new Button(calcX(++count), y, w, h, 'Volume', btnImg.ShowVolume);
