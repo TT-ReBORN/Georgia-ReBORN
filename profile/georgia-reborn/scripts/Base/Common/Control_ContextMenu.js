@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-01                                          * //
+// * Last change:    2023-09-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -893,7 +893,11 @@ Object.assign(qwr_utils, {
 		discArtMenu.append_item('No placeholder', () => {
 			pref.noDiscArtStub = !pref.noDiscArtStub;
 			pref.showDiscArtStub = false;
-			fetchNewArtwork(fb.GetNowPlaying());
+			discArt = disposeDiscArt(discArt);
+			discArtCover = disposeDiscArt(discArtCover);
+			discArtArray = [];
+			discArtArrayCover = [];
+			if (!pref.noDiscArtStub) fetchNewArtwork(fb.GetNowPlaying());
 			repaintWindow();
 		}, { is_checked: pref.noDiscArtStub });
 		discArtMenu.append_separator();

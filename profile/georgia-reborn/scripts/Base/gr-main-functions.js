@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-31                                          * //
+// * Last change:    2023-09-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2229,15 +2229,16 @@ function createDiscArtAlbumArtMask(gr, x, y, w, h, srcX, srcY, srcW, srcH, angle
 function createDiscArtCoverMask(img, w, h) {
 	const mask = GR(discArtSize.w, discArtSize.h, true, g => {
 		const lw = SCALE(25);
-		const centerX = (discArtSize.w / 2 + lw) / 2;
-		const centerY = discArtSize.h / 2;
-		const radiusX = discArtSize.w / 6;
-		const radiusY = discArtSize.h / 6;
+		const innerRingSize = Math.round(discArtSize.h * 0.666 + lw * 0.5);
+		const innerCenterX  = Math.round(discArtSize.w * 0.5);
+		const innerCenterY  = Math.round(discArtSize.h * 0.5);
+		const innerRadiusX  = Math.round(discArtSize.w * 0.5 - innerRingSize * 0.5);
+		const innerRadiusY  = Math.round(discArtSize.h * 0.5 - innerRingSize * 0.5);
 
 		g.SetSmoothingMode(SmoothingMode.AntiAlias);
 		g.FillSolidRect(0, 0, discArtSize.w, discArtSize.h, RGB(255, 255, 255));
-		g.FillEllipse(lw / 2, lw / 2, discArtSize.w - lw, discArtSize.h - lw, RGB(0, 0, 0)); // Outer ring
-		g.FillEllipse(centerX + lw * 1.25, centerY - radiusY, radiusX * 2, radiusY * 2, RGB(255, 255, 255)); // Inner ring
+		g.FillEllipse(lw * 0.5, lw * 0.5, discArtSize.w - lw, discArtSize.h - lw, RGB(0, 0, 0)); // Outer ring
+		g.FillEllipse(innerCenterX - innerRadiusX, innerCenterY - innerRadiusY, innerRadiusX * 2, innerRadiusY * 2, RGB(255, 255, 255)); // Inner ring
 	});
 
 	img.ApplyMask(mask.Resize(w, h));
