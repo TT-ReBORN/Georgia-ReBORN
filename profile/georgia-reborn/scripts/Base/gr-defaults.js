@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-02                                          * //
+// * Last change:    2023-09-07                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -510,7 +510,7 @@ const themePlayerControlsDefaults = {
 	topMenuAlignment: 'center',
 	topMenuCompact: true,
 	albumArtAlign: 'right',
-	albumArtColoredGap: true,
+	albumArtBg: 'left',
 	albumArtScale: 'filled',
 	cycleArt: false,
 	cycleArtMWheel: true,
@@ -656,7 +656,7 @@ const themePlayerControlsComments = {
 	topMenuAlignment: 'Values: left, center - Options > Player controls > Top menu',
 	topMenuCompact: 'Values: true, false - Options > Player controls > Top menu > Compact top menu',
 	albumArtAlign: 'Values: "left", "leftMargin", "center", "right" - Options > Player controls > Album art > When player size is not proportional',
-	albumArtColoredGap: 'Values: true, false - Options > Player controls > Album art > When player size is not proportional > Show colored gap',
+	albumArtBg: 'Values: "left", "full", "none" - Options > Player controls > Album art > When player size is not proportional',
 	albumArtScale: 'Values: "filled, proportional" - Options > Player controls > Album art > When player size is maximized/fullscreen',
 	cycleArt: 'Values: min: 5, max: 120 in seconds - Options > Player controls > Album art > Cycle album artwork',
 	cycleArtMWheel: 'Values: true, false - Options > Player controls > Album art > Cycle album artwork with mouse wheel',

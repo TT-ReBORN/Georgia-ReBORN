@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-02                                          * //
+// * Last change:    2023-09-07                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -272,7 +272,7 @@ pref.add_properties({
 	showTopMenuCompact:                 ['Georgia-ReBORN - 09. Player controls: Show top menu compact', true], // true: will display the top menu will be displayed as a hamburger menu
 	topMenuCompact:                     ['Georgia-ReBORN - 09. Player controls: Top menu compact', true], // true: top menu will be displayed as a hamburger menu
 	albumArtAlign:                      ['Georgia-ReBORN - 09. Player controls: Album art alignment', 'right'], // right: Align album art in Default layout when player size is not proportional
-	albumArtColoredGap:                 ['Georgia-ReBORN - 09. Player controls: Album art show colored gap', true], // true: Show colored gap left of albumArt when player size is not proportional
+	albumArtBg:                         ['Georgia-ReBORN - 09. Player controls: Album art background', 'left'], // 'left': Show album art background when player size is not proportional
 	albumArtScale:                      ['Georgia-ReBORN - 09. Player controls: Album art scale fullscreen', 'filled'], // filled: Scale album art in Default layout when player size is maximized/fullscreen
 	cycleArt:                           ['Georgia-ReBORN - 09. Player controls: Cycle through all images', false], // true: Use glob, false: use albumArt reader (front only)
 	cycleArtMWheel:                     ['Georgia-ReBORN - 09. Player controls: Cycle through all images with mouse wheel', true], // true: Cycle through all images with mouse wheel
@@ -795,7 +795,7 @@ async function setThemeSettings(save) {
 		themeControls.topMenuAlignment = pref.topMenuAlignment;
 		themeControls.topMenuCompact = pref.topMenuCompact;
 		themeControls.albumArtAlign = pref.albumArtAlign;
-		themeControls.albumArtColoredGap = pref.albumArtColoredGap;
+		themeControls.albumArtBg = pref.albumArtBg;
 		themeControls.albumArtScale = pref.albumArtScale;
 		themeControls.cycleArt = pref.cycleArt;
 		themeControls.cycleArtMWheel = pref.cycleArtMWheel;
@@ -937,7 +937,7 @@ async function setThemeSettings(save) {
 		pref.topMenuAlignment = custom ? themeControls.topMenuAlignment : 'center';
 		pref.topMenuCompact = custom ? themeControls.topMenuCompact : true;
 		pref.albumArtAlign = custom ? themeControls.albumArtAlign : 'right';
-		pref.albumArtColoredGap = custom ? themeControls.albumArtColoredGap : true;
+		pref.albumArtBg = custom ? themeControls.albumArtBg : 'left';
 		pref.albumArtScale = custom ? themeControls.albumArtScale : 'filled';
 		pref.cycleArt = custom ? themeControls.cycleArt : false;
 		pref.cycleArtMWheel = custom ? themeControls.cycleArtMWheel : true;

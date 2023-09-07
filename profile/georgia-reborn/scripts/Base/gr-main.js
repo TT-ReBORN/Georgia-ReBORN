@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-01                                          * //
+// * Last change:    2023-09-07                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -21,6 +21,7 @@
  * @param {GdiGraphics} gr
  */
 function drawBackgrounds(gr) {
+	const displayDetails = (pref.layout === 'artwork' ? displayPlaylist : !displayPlaylist) && !displayLibrary && !displayBiography;
 	gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 	gr.SetSmoothingMode(SmoothingMode.None);
 
@@ -35,23 +36,21 @@ function drawBackgrounds(gr) {
 	}
 	gr.FillSolidRect(0, 0, ww, wh, col.bg);
 
-	// * DETAILS BACKGROUND * //
-	if (fb.IsPlaying && (albumArt || !discArt || !albumArt && discArt) && ((!displayLibrary && !displayPlaylist) || !settings.hidePanelBgWhenCollapsed)) {
-		gr.SetSmoothingMode(SmoothingMode.None);
-		gr.FillSolidRect(0, albumArtSize.y, albumArtSize.x, albumArtSize.h,
-			!pref.albumArtColoredGap && (((displayPlaylist || displayLibrary) && pref.layout === 'default') ||
-			((!displayPlaylist && !displayLibrary) && pref.layout === 'artwork')) ? g_pl_colors.bg : col.detailsBg);
+	// * ALBUM ART BACKGROUND * //
+	if (pref.albumArtBg !== 'none' && !displayDetails) {
+		gr.FillSolidRect(0, albumArtSize.y, pref.albumArtBg === 'full' || pref.layout === 'artwork' ? ww : albumArtSize.x, albumArtSize.h, col.detailsBg);
+	}
 
-		// Show full background when no disc art
-		if (pref.noDiscArtBg && albumArt && (!discArt || !pref.displayDiscArt) && (!displayPlaylist && !displayLibrary && !displayBiography) ||
-			pref.theme === 'reborn' && pref.styleBlend2 && (pref.styleRebornWhite || pref.styleRebornBlack) || pref.layout === 'artwork') {
-			gr.FillSolidRect(albumArtSize.x + albumArtSize.w - SCALE(1), albumArtSize.y, albumArtSize.x + SCALE(2), albumArtSize.h, col.detailsBg);
-		}
+	// * DETAILS BACKGROUND * //
+	if (fb.IsPlaying && albumArt && displayDetails) {
 		if ((isStreaming && noArtwork || !albumArt && noArtwork)) {
 			gr.FillSolidRect(0, geo.topMenuHeight, ww, wh - geo.topMenuHeight - geo.lowerBarHeight, col.detailsBg);
+		} else {
+			gr.FillSolidRect(0, albumArtSize.y, pref.noDiscArtBg && !discArt ? ww : albumArtSize.x, albumArtSize.h, col.detailsBg);
 		}
-		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 	}
+
+	gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 }
 
 
@@ -175,7 +174,7 @@ function drawNoAlbumArt(gr) {
 			const noteHeight = noAlbumArtSize + ft.no_album_art_stub.Height * 0.5 - SCALE(14);
 
 			// * Stub background
-			gr.FillSolidRect(0, geo.topMenuHeight, albumArtSize.x, bgHeight, !pref.albumArtColoredGap ? g_pl_colors.bg : col.bg);
+			gr.FillSolidRect(0, geo.topMenuHeight, albumArtSize.x, bgHeight, !pref.albumArtBg ? g_pl_colors.bg : col.bg);
 			gr.FillSolidRect(albumArtSize.x, geo.topMenuHeight, bgWidth, bgHeight, g_pl_colors.bg);
 			if (!pref.displayLyrics) {
 				gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
