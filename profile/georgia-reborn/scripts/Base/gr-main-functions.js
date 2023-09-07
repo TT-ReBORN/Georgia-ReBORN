@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-03                                          * //
+// * Last change:    2023-09-07                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2793,7 +2793,8 @@ function loadCodecLogo() {
 	const bw = lightBg ? 'black' : 'white';
 
 	paths.codecLogoAac     = `${imagesPath}codec/aac-${bw}.png`;
-	paths.codecLogoAc3Dts  = `${imagesPath}codec/ac3_dts-${bw}.png`;
+	paths.codecLogoAc3     = `${imagesPath}codec/ac3-${bw}.png`;
+	paths.codecLogoDts     = `${imagesPath}codec/dts-${bw}.png`;
 	paths.codecLogoAlac    = `${imagesPath}codec/alac-${bw}.png`;
 	paths.codecLogoApe     = `${imagesPath}codec/ape-${bw}.png`;
 	paths.codecLogoDsd     = `${imagesPath}codec/dsd-${bw}.png`;
@@ -2808,20 +2809,29 @@ function loadCodecLogo() {
 	paths.codecLogoPcmAiff = `${imagesPath}codec/pcm-aiff-${bw}.png`;
 	paths.codecLogoPcmWav  = `${imagesPath}codec/pcm-wav-${bw}.png`;
 	paths.codecLogoWavpack = `${imagesPath}codec/wavpack-${bw}.png`;
+	paths.codecLogoTak     = `${imagesPath}codec/tak-${bw}.png`;
+	paths.codecLogoTta     = `${imagesPath}codec/tta-${bw}.png`;
+	paths.codecLogoMlp     = `${imagesPath}codec/mlp-${bw}.png`;
+	paths.codecLogoWma     = `${imagesPath}codec/wma-${bw}.png`;
 
 	switch (true) {
-		case codec === 'aac'             || format === 'aac':  codecLogo = gdi.Image(paths.codecLogoAac); break;
-		case codec === 'alac'            || format === 'alac': codecLogo = gdi.Image(paths.codecLogoAlac); break;
-		case codec === 'monkey\'s audio' || format === 'ape':  codecLogo = gdi.Image(paths.codecLogoApe); break;
-		case codec === 'flac'            || format === 'flac': codecLogo = gdi.Image(paths.codecLogoFlac); break;
-		case codec === 'mp3'             || format === 'mp3':  codecLogo = gdi.Image(paths.codecLogoMp3); break;
-		case codec === 'musepack'        || format === 'mpc':  codecLogo = gdi.Image(paths.codecLogoMpc); break;
-		case codec === 'vorbis'          || format === 'ogg':  codecLogo = gdi.Image(paths.codecLogoOgg); break;
-		case codec === 'opus'            || format === 'opus': codecLogo = gdi.Image(paths.codecLogoOpus); break;
-		case codec === 'wavpack'         || format === 'wv':   codecLogo = gdi.Image(paths.codecLogoWavpack); break;
+		case codec === 'aac'                          || format === 'aac':  codecLogo = gdi.Image(paths.codecLogoAac); break;
+		case codec === 'atsc a/52'                    || format === 'ac3':  codecLogo = gdi.Image(paths.codecLogoAc3); break;
+		case codec === 'dts'                          || format === 'dts':
+		case codec === 'dca (dts coherent acoustics)' || format === 'dca (dts coherent acoustics)': codecLogo = gdi.Image(paths.codecLogoDts); break;
+		case codec === 'alac'                         || format === 'alac': codecLogo = gdi.Image(paths.codecLogoAlac); break;
+		case codec === 'monkey\'s audio'              || format === 'ape':  codecLogo = gdi.Image(paths.codecLogoApe); break;
+		case codec === 'flac'                         || format === 'flac': codecLogo = gdi.Image(paths.codecLogoFlac); break;
+		case codec === 'mp3'                          || format === 'mp3':  codecLogo = gdi.Image(paths.codecLogoMp3); break;
+		case codec === 'musepack'                     || format === 'mpc':  codecLogo = gdi.Image(paths.codecLogoMpc); break;
+		case codec === 'vorbis'                       || format === 'ogg':  codecLogo = gdi.Image(paths.codecLogoOgg); break;
+		case codec === 'opus'                         || format === 'opus': codecLogo = gdi.Image(paths.codecLogoOpus); break;
+		case codec === 'wavpack'                      || format === 'wv':   codecLogo = gdi.Image(paths.codecLogoWavpack); break;
+		case codec === 'tak'                          || format === 'tak':  codecLogo = gdi.Image(paths.codecLogoTak); break;
+		case codec === 'true audio'                   || format === 'tta':  codecLogo = gdi.Image(paths.codecLogoTta); break;
+		case codec === 'mlp'                          || format === 'mlp':  codecLogo = gdi.Image(paths.codecLogoMlp); break;
+		case codec === 'wma'                          || format === 'wma':  codecLogo = gdi.Image(paths.codecLogoWma); break;
 
-		case ['ac3', 'dts', 'dca (dts coherent acoustics)'].includes(codec) || ['ac3', 'dts'].includes(format):
-			codecLogo = gdi.Image(paths.codecLogoAc3Dts); break;
 		case ['dsd64', 'dsd128', 'dsd256', 'dsd512', 'dsd1024', 'dsd2048'].includes(codec):
 			codecLogo = gdi.Image(paths.codecLogoDsd); break;
 		case ['dxd64', 'dxd128', 'dxd256', 'dxd512', 'dxd1024', 'dxd2048'].includes(codec):
