@@ -305,6 +305,7 @@ pref.add_properties({
 	showPanelOnStartup:                 ['Georgia-ReBORN - 09. Player controls: Show panel on startup', 'playlist'], // "cover", "playlist", "details", "library", "biography", "lyrics" - show panel on foobar startup
 	showLogoOnStartup:                  ['Georgia-ReBORN - 09. Player controls: Show logo on startup', true], // true: Show logo on foobar startup
 	returnToHomeOnPlaybackStop:         ['Georgia-ReBORN - 09. Player controls: Return to home on playback stop', true], // true: Return to home on playback stop
+	hideMiddlePanelShadow:              ['Georgia-ReBORN - 09. Player controls: Hide middle panel shadow', false], // false: Hides the middle panel shadow
 	lockPlayerSize:                     ['Georgia-ReBORN - 09. Player controls: Lock player size', false], // false: Locks the player size
 	transportButtonSize_default:        ['Georgia-ReBORN - 09. Player controls: Transport button size (Default)', 32], // Size in pixels of the buttons in Default layout
 	transportButtonSize_artwork:        ['Georgia-ReBORN - 09. Player controls: Transport button size (Artwork)', 32], // Size in pixels of the buttons in Artwork layout
@@ -834,6 +835,7 @@ async function setThemeSettings(save) {
 		themeControls.showPanelOnStartup = pref.showPanelOnStartup;
 		themeControls.showLogoOnStartup = pref.showLogoOnStartup;
 		themeControls.returnToHomeOnPlaybackStop = pref.returnToHomeOnPlaybackStop;
+		themeControls.hideMiddlePanelShadow = pref.hideMiddlePanelShadow;
 		themeControls.lockPlayerSize = pref.lockPlayerSize;
 		themeControls.transportButtonSize_default = pref.transportButtonSize_default;
 		themeControls.transportButtonSize_artwork = pref.transportButtonSize_artwork;
@@ -978,6 +980,7 @@ async function setThemeSettings(save) {
 		pref.showPanelOnStartup = custom ? themeControls.showPanelOnStartup : 'playlist';
 		pref.showLogoOnStartup = custom ? themeControls.showLogoOnStartup : true;
 		pref.returnToHomeOnPlaybackStop = custom ? themeControls.returnToHomeOnPlaybackStop : true;
+		pref.hideMiddlePanelShadow = custom ? themeControls.hideMiddlePanelShadow : false;
 		pref.lockPlayerSize = custom ? themeControls.lockPlayerSize : false;
 		pref.transportButtonSize_default = custom ? themeControls.transportButtonSize_default : 32;
 		pref.transportButtonSize_artwork = custom ? themeControls.transportButtonSize_artwork : 32;

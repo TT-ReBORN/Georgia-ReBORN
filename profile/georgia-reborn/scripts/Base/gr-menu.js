@@ -1429,6 +1429,8 @@ function playerControlsOptions(menu) {
 	playerControlsPanelMenu.addSeparator();
 	playerControlsPanelMenu.addToggleItem('Return to home on playback stop', pref, 'returnToHomeOnPlaybackStop');
 	playerControlsPanelMenu.addSeparator();
+	playerControlsPanelMenu.addToggleItem('Hide middle panel shadow', pref, 'hideMiddlePanelShadow', () => { repaintWindow(); });
+	playerControlsPanelMenu.addSeparator();
 	playerControlsPanelMenu.addToggleItem('Lock player size', pref, 'lockPlayerSize', () => { UIHacks.DisableSizing = true; });
 	playerControlsPanelMenu.appendTo(playerControlsMenu);
 
