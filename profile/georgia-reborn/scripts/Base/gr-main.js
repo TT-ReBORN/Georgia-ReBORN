@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-07                                          * //
+// * Last change:    2023-09-08                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -562,7 +562,7 @@ function drawDetailsMetadataGrid(gr) {
  */
 function drawDetailsBandLogo(gr) {
 	const displayDetails = pref.layout === 'default' && !displayPlaylist && !displayLibrary && !displayBiography;
-	if (!fb.IsPlaying || !albumArt || !displayDetails) return;
+	if (!fb.IsPlaying || !albumArt || !displayDetails || pref.lyricsLayout === 'full' && pref.displayLyrics) return;
 
 	const drawLogos = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> logos') : null;
 	const availableSpace = albumArtSize.y + albumArtSize.h - gridTop;
@@ -596,7 +596,7 @@ function drawDetailsBandLogo(gr) {
 function drawDetailsLabelLogo(gr) {
 	const displayDetails = pref.layout === 'default' && !displayPlaylist && !displayLibrary && !displayBiography;
 	const drawLogos = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> labels') : null;
-	if (!fb.IsPlaying || !albumArt || !displayDetails) return;
+	if (!fb.IsPlaying || !albumArt || !displayDetails || pref.lyricsLayout === 'full' && pref.displayLyrics) return;
 
 	if (recordLabels.length > 0) {
 		const lightBg = pref.labelArtOnBg ? new Color(col.bg).brightness > 140 : new Color(col.detailsText).brightness < 140;
