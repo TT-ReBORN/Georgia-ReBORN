@@ -116,9 +116,9 @@ function drawAlbumArt(gr) {
 					drawDiscArt(gr);
 				}
 				if (discArtRotation && !displayPlaylist && !displayLibrary && pref.detailsAlbumArtDiscAreaOpacity !== 255) { // Do not use opacity if image is a booklet, i.e albumArtSize.w > ww * 0.66
-					createDiscArtAlbumArtMask(gr, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height, 0, displayDetails && albumArtSize.w < ww * 0.66 ? pref.detailsAlbumArtDiscAreaOpacity : 255);
+					createDiscArtAlbumArtMask(gr, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height, 0, displayDetails && !pref.displayLyrics && albumArtSize.w < ww * 0.66 ? pref.detailsAlbumArtDiscAreaOpacity : 255);
 				} else {
-					gr.DrawImage(albumArtScaled, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height, 0, displayDetails && albumArtSize.w < ww * 0.66 ? pref.detailsAlbumArtOpacity : 255);
+					gr.DrawImage(albumArtScaled, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height, 0, displayDetails && !pref.displayLyrics && albumArtSize.w < ww * 0.66 ? pref.detailsAlbumArtOpacity : 255);
 				}
 			} else { // Draw discArt on top of front cover
 				gr.DrawImage(albumArtScaled, albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h, 0, 0, albumArtScaled.Width, albumArtScaled.Height);
