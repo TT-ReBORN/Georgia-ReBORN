@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-07                                          * //
+// * Last change:    2023-09-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2440,7 +2440,7 @@ function fetchDiscArt() {
  * @param {boolean} resetDiscArtPosition Whether the position of the disc art should be reset.
  */
 function resizeDiscArt(resetDiscArtPosition) {
-	if (discArt || discArtCover) {
+	if (discArt) {
 		const discArtSizeCorr = SCALE(4);
 		const discArtMargin = SCALE(2);
 		const discArtMarginRight = SCALE(36);
