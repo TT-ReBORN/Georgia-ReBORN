@@ -1946,7 +1946,7 @@ function ReplaceChars(rawString) {
 	.replace(/\uFF1A/g, ':')
 	.replace(/\uFF08/g, '(')
 	.replace(/\uFF09/g, ')')
-	.replace(/\u00E2\u20AC\u2122|\u2019|\uFF07|[\u0060\u00B4]|â€™(;|)|â€˜(;|)|(&#(?:039|8216|8217|8220|8221|8222|8223|x27);|&apos;)/g, "'") // Apostrophe variants
+	.replace(/\u00E2\u20AC\u2122|\u2019|\uFF07|[\u0060\u00B4]|â€™(;|)|â€˜(;|)|&apos(;|)|&#39(;|)|(&#(?:039|8216|8217|8220|8221|8222|8223|x27);)/g, "'") // Apostrophe variants
 	.replace(/[\u2000-\u200F\u2028-\u202F\u205F-\u206F\u3000\uFEFF]/g, ' ') // Whitespace variants
 	.replace(/(\s*)<(\d{1,2}:|)\d{1,2}:\d{2}(>|\.\d{1,3}>)(\s*)/g, '$1$4'); // Fix enhanced LRC format
 }
