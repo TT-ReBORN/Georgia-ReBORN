@@ -65,7 +65,7 @@ const doRequest = (method, url, data, options) => new Promise((resolve, reject) 
 }).catch(error => console.log(error.message));
 
 export function getConfig(config) {
-	config.name = 'NetEase 网易云音乐 - Chinese (Synced)';
+	config.name = 'NetEase 网易云音乐 - English (Synced)';
 	config.version = '0.4';
 	config.author = 'ohyeah & TT';
 }
@@ -151,6 +151,8 @@ function parseLyricResponse(item, man, body) {
 			lyricText += lyricObj.tlyric.lyric || '';
 		}
 
+		lyricText = removeAsianChars(lyricText);
+
 		const meta = man.createLyric();
 		meta.title = item.title;
 		meta.artist = item.artist;
@@ -227,4 +229,14 @@ function formatTime(time) {
 	const ms = t - s;
 
 	return `${(h ? `${zpad(h)}:` : '') + zpad(m)}:${zpad(s)}.${zpad(Math.floor(ms * 100))}`;
+}
+
+function removeAsianChars(text) {
+	return text.trim()
+		.replace(/\[\d+:\d+\.\d+\].*[\u2E80-\u2FFF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF].*/g, '') // Chinese chars
+		.replace(/\[\d+:\d+\.\d+\].*[\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF\u3200-\u32FF\u3300-\u33FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF66-\uFF9F].*/g, '') // Japanese chars
+		.replace(/\[\d+:\d+\.\d+\].*[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uAC00-\uD7A3\uFFA0-\uFFDC\uD7B0-\uD7FF].*/g, '') // Korean chars
+		.replace(/\[\d+:\d+\.\d+\].*(?:\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}|\p{Script=Hangul})/gu, '') // All CJK chars combined, just in case
+		.replace(/^\[.*\]$/gm, '') // Brackets
+		.replace(/^\s*[\r\n]/gm, ''); // Empty lines
 }

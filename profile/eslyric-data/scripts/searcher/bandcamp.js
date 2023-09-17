@@ -1,11 +1,11 @@
-﻿import { parse } from 'himalaya/src/index.js';
+import { parse } from 'himalaya/src/index.js';
 
 const lyricContainerElements = [];
 
 export function getConfig(cfg) {
-	cfg.name = 'AZLyrics (Unsynced)';
-	cfg.version = '0.2';
-	cfg.author = 'ohyeah & TT';
+	cfg.name = 'Bandcamp (Unsynced)';
+	cfg.version = '0.1';
+	cfg.author = 'TT';
 	cfg.useRawMeta = false;
 }
 
@@ -15,18 +15,29 @@ export function getLyrics(meta, man) {
 		.replace(/[^a-z0-9\- ]/g, '')
 		.replace(/@/g, 'at')
 		.replace(/&/g, 'and')
-		.replace(/ /g, '_') // AZLyrics formatting - identify
-		.replace(/a_/g, '') // AZLyrics formatting - capture
-		.replace(/the_/g, '') // AZLyrics formatting - capture
-		.replace(/_/g, ''); // AZLyrics formatting - clean up
+		.replace(/ /g, '-'); // Bandcamp formatting
 
 	const artist = Clean(meta.artist);
 	const title = Clean(meta.title);
-	const url = `https://azlyrics.com/lyrics/${artist}/${title}.html`;
+
+	// ! Tell ohyeah to implement meta.comment ( %comment% ), meta.label ( %label% ) and meta.publisher ( %publisher% ),
+	// ! then we can use this to improve bandcamp search results:
+	// const commentUrl = getUrlFromTags(meta.comment);
+	// const labelUrl = getUrlFromTags(meta.label);
+	// const publisherUrl = getUrlFromTags(meta.publisher);
+
+	// const url =
+	// 	commentUrl !== '' ? `https://${commentUrl.replace(/-/g, '')}.bandcamp.com/track/${title}` :
+	// 	labelUrl !== '' ? `https://${labelUrl.replace(/-/g, '')}.bandcamp.com/track/${title}` :
+	// 	publisherUrl !== '' ? `https://${publisherUrl.replace(/-/g, '')}.bandcamp.com/track/${title}` :
+	// 	`https://${artist.replace(/-/g, '')}.bandcamp.com/track/${title}`;
+
+	const url = `https://${artist.replace(/-/g, '')}.bandcamp.com/track/${title}`; // Bandcamp formatting, most bands do not have a - in their artist name but titles do
+	const settings = { url, timeout: 5000 };
 
 	if (artist === '' || title === '') return;
 
-	request(url, (err, res, body) => {
+	request(settings, (err, res, body) => {
 		if (err || res.statusCode !== 200) return;
 
 		const jsonElement = parse(body);
@@ -37,40 +48,12 @@ export function getLyrics(meta, man) {
 		if (!bodyElement) return;
 
 		let lyricText = '';
-
-		if (findLyrics(htmlElement, bodyElement)) {
-			let findTarget = false;
-			const children = lyricContainerElements[0].children || [];
-
-			for (const child of children) {
-				const tag = child.tagName || '';
-				if (!findTarget) {
-					if (tag === '__AZL_TARGET_TAG__') findTarget = true;
-					continue;
-				}
-
-				const type = child.type || '';
-				if (type !== 'element' && tag !== 'div') {
-					continue;
-				}
-
-				let hasClass = false;
-				const attributes = child.attributes || [];
-				for (const attri of attributes) {
-					const key = attri.key || '';
-					if (key === 'class') {
-						hasClass = true;
-						break;
-					}
-				}
-
-				if (hasClass) continue;
-				if (lyricText.length > 0) break;
-				lyricText = parseLyrics(child, lyricText);
+		if (findLyrics(bodyElement)) {
+			for (const element of lyricContainerElements) {
+				lyricText = parseLyrics(element, lyricText);
 			}
+			if (lyricText === '') return;
 		}
-
-		if (lyricText.length <= 0) return;
 
 		const lyricMeta = man.createLyric();
 		lyricMeta.title = meta.title;
@@ -81,28 +64,42 @@ export function getLyrics(meta, man) {
 	});
 }
 
-function findLyrics(parentElement, element) {
-	const type = element.type || '';
-	const children = element.children || [];
-	const attributes = element.attributes || [];
+function getUrlFromTag(tag) {
+	const searchQuery = tag.split(' ');
+
+	for (const word of searchQuery) {
+		if ((word.startsWith('http://') || word.startsWith('https://')) && word.endsWith('.bandcamp.com')) { // Get subdomain name
+			const urlRegex = /\/\/([^./]+)/;
+			const match = word.match(urlRegex);
+
+			if (match) {
+				const domain = match[1];
+				return domain.replace(/-/g, ''); // Bandcamp formatting, most bands do not have a - in their artist name
+			}
+		}
+	}
+
+	return '';
+}
+
+function findLyrics(rootElement) {
+	const type = rootElement.type || '';
+	const children = rootElement.children || [];
+	const attributes = rootElement.attributes || [];
 
 	if (type !== 'element' || !children || children.length === 0) {
 		return false;
 	}
 
 	for (const attribute of attributes) {
-		const key = attribute.key || '';
-		const value = attribute.value || '';
-
-		if (key === 'class' && value.startsWith('lyricsh')) {
-			element.tagName = '__AZL_TARGET_TAG__';
-			lyricContainerElements.push(parentElement);
+		if (attribute.key === 'class' && attribute.value === 'tralbumData lyricsText') {
+			lyricContainerElements.push(rootElement);
 			return true;
 		}
 	}
 
 	for (const child of children) {
-		if (findLyrics(element, child)) {
+		if (findLyrics(child)) {
 			return true;
 		}
 	}
@@ -130,16 +127,12 @@ function parseLyrics(element, lyricText) {
 	const children = element.children || [];
 	const content = element.content || '';
 
-	if (tag === 'script' || tag === 'b') {
-		return lyricText;
-	}
-
-	if (tag === 'br') { // AZLyrics formatting
-		return lyricText.replace(/<br>/gi, '');
-	}
-
 	if (type === 'text') {
 		return lyricText + content;
+	}
+
+	if (tag === 'br') { // Bandcamp formatting
+		return lyricText.replace(/<br>/gi, '');
 	}
 
 	for (const child of children) {

@@ -1,11 +1,11 @@
-﻿import { parse } from 'himalaya/src/index.js';
+import { parse } from 'himalaya/src/index.js';
 
 const lyricContainerElements = [];
 
 export function getConfig(cfg) {
-	cfg.name = 'Genius (Unsynced)';
-	cfg.version = '0.2';
-	cfg.author = 'ohyeah & TT';
+	cfg.name = 'eLyrics (Unsynced)';
+	cfg.version = '0.1';
+	cfg.author = 'TT';
 	cfg.useRawMeta = false;
 }
 
@@ -15,11 +15,68 @@ export function getLyrics(meta, man) {
 		.replace(/[^a-z0-9\- ]/g, '')
 		.replace(/@/g, 'at')
 		.replace(/&/g, 'and')
-		.replace(/ /g, '-'); // Genius formatting
+		.replace(/ /g, '-'); // eLyrics formatting
 
-	const artist = Clean(meta.artist);
-	const title = Clean(meta.title);
-	const url = `https://genius.com/${artist}-${title}-lyrics`;
+	const Num2Word = (number) => {
+		const numWords = {
+			0: 'zero',
+			1: 'one',
+			2: 'two',
+			3: 'three',
+			4: 'four',
+			5: 'five',
+			6: 'six',
+			7: 'seven',
+			8: 'eight',
+			9: 'nine',
+			10: 'ten',
+			11: 'eleven',
+			12: 'twelve',
+			13: 'thirteen',
+			14: 'fourteen',
+			15: 'fifteen',
+			16: 'sixteen',
+			17: 'seventeen',
+			18: 'eighteen',
+			19: 'nineteen',
+			20: 'twenty',
+			30: 'thirty',
+			40: 'forty',
+			50: 'fifty',
+			60: 'sixty',
+			70: 'seventy',
+			80: 'eighty',
+			90: 'ninety'
+		};
+
+		let words = '';
+
+		if (number >= 100) {
+			words += `${Num2Word(Math.floor(number / 100))}hundred`;
+			number %= 100;
+		}
+
+		if (number > 0) {
+			if (words !== '') {
+				words += '-and-';
+			}
+			if (number < 20) {
+				words += numWords[number];
+			} else {
+				words += numWords[Math.floor(number / 10) * 10];
+				if (number % 10 > 0) {
+					words += `-${numWords[number % 10]}`;
+				}
+			}
+		}
+
+		return words;
+	};
+
+	const artist = Clean(meta.artist).replaceAll('the-', '').trim(); // eLyrics formatting
+	const artistLetter = !isNaN(artist.charAt(0)) ? '0-9' : artist.charAt(0); // eLyrics formatting
+	const title = Clean(meta.title).replace(/\d+/g, (match) => Num2Word(match)); // eLyrics formatting - title name containing numbers are converted to words
+	const url = `https://www.elyrics.net/read/${artistLetter}/${artist}-lyrics/${title}-lyrics.html`;
 	const settings = { url, timeout: 5000 };
 
 	if (artist === '' || title === '') return;
@@ -36,9 +93,9 @@ export function getLyrics(meta, man) {
 
 		let lyricText = '';
 		if (findLyrics(bodyElement)) {
-			lyricContainerElements.forEach(element => {
+			for (const element of lyricContainerElements) {
 				lyricText = parseLyrics(element, lyricText);
-			});
+			}
 			if (lyricText === '') return;
 		}
 
@@ -61,11 +118,7 @@ function findLyrics(rootElement) {
 	}
 
 	for (const attribute of attributes) {
-		if (attribute.key === 'data-lyrics-container' && attribute.value === 'true') {
-			lyricContainerElements.push(rootElement);
-			return true;
-		}
-		if (attribute.key === 'class' && attribute.value.startsWith('Lyrics__Container')) {
+		if (attribute.key === 'id' && attribute.value === 'inlyr') {
 			lyricContainerElements.push(rootElement);
 			return true;
 		}
@@ -104,11 +157,14 @@ function parseLyrics(element, lyricText) {
 		return lyricText + content;
 	}
 
-	if (tag === 'br') {
-		return `${lyricText}\r\n`;
+	if (tag === 'br') { // eLyrics formatting
+		return lyricText.replace(/<br>/gi, '');
 	}
 
 	for (const child of children) {
+		if (tag === 'script') {  // eLyrics formatting
+			return lyricText;
+		}
 		lyricText = parseLyrics(child, lyricText);
 	}
 
