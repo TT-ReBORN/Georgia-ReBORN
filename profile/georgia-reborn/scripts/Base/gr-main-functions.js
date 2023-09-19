@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-09                                          * //
+// * Last change:    2023-09-19                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2703,6 +2703,7 @@ function calcDateRatios(dontUpdateLastPlayed, currentLastPlayed) {
 	const newDate = new Date();
 	dontUpdateLastPlayed = dontUpdateLastPlayed || false;
 
+	let ratio;
 	let lfmPlayedTimesJsonLast = '';
 	let playedTimesJsonLast = '';
 	let playedTimesRatios = [];
@@ -2746,7 +2747,7 @@ function calcDateRatios(dontUpdateLastPlayed, currentLastPlayed) {
 
 		if (playedTimes.length) {
 			for (let i = 0; i < playedTimes.length; i++) {
-				const ratio = CalcAgeRatio(playedTimes[i], age);
+				ratio = CalcAgeRatio(playedTimes[i], age);
 				playedTimesRatios.push(ratio);
 			}
 		} else {
@@ -2758,8 +2759,7 @@ function calcDateRatios(dontUpdateLastPlayed, currentLastPlayed) {
 		const tempPlayedTimesRatios = playedTimesRatios.slice();
 		tempPlayedTimesRatios.push(1.0001); // Pick up every last.fm time after lastPlayed fb knows about
 		for (let i = 0; i < tempPlayedTimesRatios.length; i++) {
-			const ratio = CalcAgeRatio(lfmPlayedTimes[j], age);
-			while (j < lfmPlayedTimes.length && ratio < tempPlayedTimesRatios[i]) {
+			while (j < lfmPlayedTimes.length && (ratio = CalcAgeRatio(lfmPlayedTimes[j], age)) < tempPlayedTimesRatios[i]) {
 				playedTimesRatios.push(ratio);
 				playedTimes.push(lfmPlayedTimes[j]);
 				j++;
