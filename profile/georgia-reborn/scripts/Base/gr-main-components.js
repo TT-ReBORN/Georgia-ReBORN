@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-01                                          * //
+// * Last change:    2023-09-20                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1181,32 +1181,26 @@ class Timeline {
 	 */
 	on_mouse_move(x, y, m) {
 		if (!pref.showTooltipTimeline || this.playedTimesPercents.length === 0) return;
-
 		let tooltip = '';
-		const tooltipArray = [];
 		const percent = ToFixed((x + this.x - this.marginLeft * 2 - this.extraLeftSpace) / this.drawWidth, 3);
-		const playedTimesPercentsCache = [...this.playedTimesPercents];
 
-		for (let i = 0; i < playedTimesPercentsCache.length; i++) {
-			if (percent >= playedTimesPercentsCache[i] - this.leeway && percent < playedTimesPercentsCache[i] + this.leeway) {
+		for (let i = 0; i < this.playedTimesPercents.length; i++) {
+			if (Math.abs(percent - this.playedTimesPercents[i]) <= this.leeway) {
 				const date = new Date(this.playedTimes[i]);
-				tooltipArray.push(date.toLocaleString());
+				tooltip += tooltip.length ? '\n' : '';
+				tooltip += date.toLocaleString();
 			}
-			else if (percent < playedTimesPercentsCache[i]) {
-				if (i === 0) {
-					const added = DateDiff($Date('[%added%]'), this.playedTimes[0]);
-					tooltipArray.push(added ? `First played after ${added}` : '');
-				} else {
-					tooltipArray.push(`No plays for ${DateDiff(new Date(this.playedTimes[i - 1]).toISOString(), this.playedTimes[i])}`);
+			else if (percent < this.playedTimesPercents[i]) {
+				if (!tooltip.length) {
+					const added = i === 0 ? DateDiff($Date('[%added%]'), this.playedTimes[0]) : DateDiff(new Date(this.playedTimes[i - 1]).toISOString(), this.playedTimes[i]);
+					tooltip = added ? (i === 0 ? `First played after ${added}` : `No plays for ${added}`) : '';
 				}
 				break;
 			}
 		}
 
-		if (tooltipArray.length) {
-			tooltip = tooltipArray.join('\n');
-			this.tooltipText = tooltip;
-			tt.showImmediate(this.tooltipText);
+		if (tooltip.length) {
+			tt.showImmediate(tooltip);
 		} else {
 			this.clearTooltip();
 		}
