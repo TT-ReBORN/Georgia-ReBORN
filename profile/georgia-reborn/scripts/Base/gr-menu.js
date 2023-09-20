@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-07                                          * //
+// * Last change:    2023-09-20                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2919,21 +2919,7 @@ function lyricsOptions(menu, context_menu) {
 	lyricsMenu.addItem('Lyric information', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Lyric information'); });
 	lyricsMenu.addItem('Lyric search', false, () => { fb.RunMainMenuCommand('View/ESLyric/Search...'); });
 	lyricsMenu.addSeparator();
-	lyricsMenu.addItem('Next lyric', false, () => {
-		fb.RunMainMenuCommand('View/ESLyric/Panels/Delete lyric');
-		const nextLyricSource = ((() => {
-			const nextSrc = () => fb.RunMainMenuCommand('View/ESLyric/Panels/Select lyric/Next lyric');
-			return () => {
-				lyricsSrc++;
-				RepeatFunc(() => { nextSrc(); }, lyricsSrc);
-				if (lyricsSrc > 9) lyricsSrc = 0;
-				return lyricsSrc;
-			};
-		})());
-		nextLyricSource();
-		setTimeout(() => { fb.RunMainMenuCommand('View/ESLyric/Panels/Save lyric'); }, 1000);
-		setTimeout(() => { initLyrics(); on_playback_seek(); }, 1000);
-	});
+	lyricsMenu.addItem('Next lyric', false, () => { lyrics.nextLyrics(); });
 	lyricsMenu.addItem('Edit lyric', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Edit lyric'); });
 	lyricsMenu.addItem('Delete lyric', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Delete lyric'); });
 	lyricsMenu.addSeparator();

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-07                                          * //
+// * Last change:    2023-09-20                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -18,8 +18,12 @@
 ///////////////////
 /** @type {Lyrics} */
 let lyrics;
+/** @type {<Array<string>>} */
+let lyricSource;
 /** @type {number} */
-let lyricsSrc = 0;
+let lyricsSourceQueue = 0;
+/** @type {string} */
+let lyricType;
 
 
 ///////////////////////
@@ -65,15 +69,20 @@ class Lyrics {
 
 		this.clear();
 
-		const esl = new ActiveXObject('eslyric');
 		/** Changes current lyrics when changing the lyrics source, only used for ESLyric "Lyric search". */
-		const changeLyrics = () => {
-			fb.RunMainMenuCommand('View/ESLyric/Panels/Save lyric');
-			setTimeout(() => {
-				initLyrics();
-				on_playback_seek();
-			}, 1000);
-		}
+		const changeLyrics = (meta) => {
+			this.clear();
+			if (!meta) return;
+
+			lyricSource = [meta.lyricText];
+			lyricSource = lyricSource.map(line => line.split('\n')).flat();
+
+			const timestamps = /\[\d{2}:\d{2}\.\d{2}\]/;
+			lyricType = timestamps.test(lyricSource) ? 'lrc' : 'txt';
+
+			this.loadLyrics(lyricSource);
+		};
+		const esl = new ActiveXObject('eslyric');
 		esl.SetPlayingLyricChangedCallback(changeLyrics); // Start ESLyric callback listener when lyrics change
 	}
 
@@ -149,21 +158,21 @@ class Lyrics {
 
 	/**
 	 * Checks if the lyrics file exists at path+filename and sets this.fileName if it does.
-	 * @param {string} path
-	 * @param {string} filename
+	 * @param {string} path The lyric file path
+	 * @param {string} filename The lyric file name
 	 */
 	checkLyrics(path, filename) {
-		let found = true;
-		if (IsFile(`${path + filename}.lrc`)) {
-			this.fileName = `${path + filename}.lrc`;
+		const types = [lyricType, 'lrc', 'txt'];
+
+		for (const type of types) {
+			const currentFile = `${path + filename}.${type}`;
+			if (IsFile(currentFile)) {
+				this.fileName = currentFile;
+				return true;
+			}
 		}
-		else if (IsFile(`${path + filename}.txt`)) {
-			this.fileName = `${path + filename}.txt`;
-		}
-		else {
-			found = false;
-		}
-		return found;
+
+		return false;
 	}
 
 	/**
@@ -181,6 +190,30 @@ class Lyrics {
 			}
 			clearInterval(this.lyricsSearchTimer);
 		}, 60000);
+	}
+
+	nextLyrics() {
+		const nextSrc = (meta) => {
+			fb.RunMainMenuCommand('View/ESLyric/Panels/Delete lyric');
+			lyricsSourceQueue++;
+
+			RepeatFunc(() => {
+				fb.RunMainMenuCommand('View/ESLyric/Panels/Select lyric/Next lyric');
+				if (!meta) return;
+
+				lyricSource = [meta.lyricText];
+				lyricSource = lyricSource.map(line => line.split('\n')).flat();
+
+				const timestamps = /\[\d{2}:\d{2}\.\d{2}\]/;
+				lyricType = timestamps.test(lyricSource) ? 'lrc' : 'txt';
+			}, lyricsSourceQueue);
+
+			return lyricsSourceQueue;
+		};
+
+		nextSrc();
+		setTimeout(() => { fb.RunMainMenuCommand('View/ESLyric/Panels/Save lyric'); }, 1000);
+		setTimeout(() => { initLyrics(); }, 1000);
 	}
 
 	/**
