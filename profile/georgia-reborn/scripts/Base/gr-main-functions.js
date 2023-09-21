@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-19                                          * //
+// * Last change:    2023-09-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -192,6 +192,10 @@ function initPanels() {
 	createButtonObjects(ww, wh);
 	resizeArtwork(true);
 	initButtonState();
+
+	if (fb.GetNowPlaying()) {
+		on_metadb_changed(); // Refresh panel
+	}
 
 	// * Update Playlist
 	createPlaylistFonts();
