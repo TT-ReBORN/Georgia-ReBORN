@@ -197,13 +197,13 @@ function initPanels() {
 		on_metadb_changed(); // Refresh panel
 	}
 
-	// * Update Playlist
-	createPlaylistFonts();
-	rescalePlaylist(true);
-	initPlaylist();
-	playlist.on_size(ww, wh);
-
 	setTimeout(() => {
+		// * Update Playlist
+		createPlaylistFonts();
+		rescalePlaylist(true);
+		initPlaylist();
+		playlist.on_size(ww, wh);
+
 		// * Update Library
 		setLibrarySize();
 		panel.tree.y = panel.search.h;

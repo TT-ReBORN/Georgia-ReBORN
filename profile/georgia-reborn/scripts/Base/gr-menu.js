@@ -816,6 +816,7 @@ function layoutOptions(menu) {
 			displayLibrary = false;
 			displayBiography = false;
 			pref.displayLyrics = false;
+			createFonts(); // Needed when pref.showPanelOnStartup === 'details' and changing from Compact to Default layout to prevent crash
 			display.layoutDefault();
 		}
 		if (pref.layout === 'artwork') {

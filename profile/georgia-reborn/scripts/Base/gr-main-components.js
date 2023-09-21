@@ -379,7 +379,7 @@ class TooltipTimer {
 	 * @param {boolean=} force Activates the tooltip whether or not text has changed.
 	 */
 	tt(text, force) {
-		if (g_tooltip.Text !== text.toString() || force) {
+		if (g_tooltip && (g_tooltip.Text !== text.toString() || force)) {
 			g_tooltip.Text = text;
 			g_tooltip.Activate();
 		}
