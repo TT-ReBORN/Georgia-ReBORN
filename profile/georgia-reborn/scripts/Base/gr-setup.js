@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-02                                          * //
+// * Last change:    2023-09-22                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -473,6 +473,8 @@ function createFonts() {
 	ft.notification      = Font(fontNotification, notificationFontSize, 0);
 	ft.popup             = Font(fontPopup, popupFontSize, 0);
 	ft.tooltip           = Font(fontTooltip, tooltipFontSize, 0);
+
+	if (pref.layout === 'compact') return; // These fonts below are not available in Compact layout, so skip these to prevent errors
 
 	// * DETAILS METADATA GRID * //
 	ft.grd_artist   = Font(fontGridArtist, gridArtistFontSize, pref.customThemeFonts ? g_font_style.bold : 0);
