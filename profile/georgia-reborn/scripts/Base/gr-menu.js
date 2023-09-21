@@ -813,6 +813,7 @@ function layoutOptions(menu) {
 		if (pref.layout === 'default') {
 			displayPlaylist = pref.showPanelOnStartup === 'playlist'; // Switch back to Playlist from Artwork layout to Default layout
 			displayPlaylistArtwork = false;
+			displayLibrary = false;
 			displayBiography = false;
 			pref.displayLyrics = false;
 			display.layoutDefault();
