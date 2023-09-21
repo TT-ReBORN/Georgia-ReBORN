@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-13                                          * //
+// * Last change:    2023-09-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -84,12 +84,12 @@ class Display {
 					normal: { name: 'normal', size: '2800x1720', width: 2800, height: 1720 },
 					large:  { name: 'large',  size: '3400x2020', width: 3400, height: 2020 }
 				},
-				QHD: {
+				'QHD': {
 					small:  { name: 'small',  size: '1280x800',  width: 1280, height: 800  },
 					normal: { name: 'normal', size: '1802x1061', width: 1802, height: 1061 },
 					large:  { name: 'large',  size: '2280x1300', width: 2280, height: 1300 }
 				},
-				HD: {
+				'HD': {
 					small:  { name: 'small',  size: '1140x730',  width: 1140, height: 730  },
 					normal: { name: 'normal', size: '1600x960',  width: 1600, height: 960  },
 					large:  { name: 'large',  size: '1802x1061', width: 1802, height: 1061 }
@@ -101,12 +101,12 @@ class Display {
 					normal: { name: 'normal', size: '1400x1720', width: 1400, height: 1720 },
 					large:  { name: 'large',  size: '1699x2020', width: 1699, height: 2020 }
 				},
-				QHD: {
+				'QHD': {
 					small:  { name: 'small',  size: '640x800',   width: 640,  height: 800  },
 					normal: { name: 'normal', size: '901x1061',  width: 901,  height: 1061 },
 					large:  { name: 'large',  size: '1140x1300', width: 1140, height: 1300 }
 				},
-				HD: {
+				'HD': {
 					small:  { name: 'small',  size: '526x686',  width: 526, height: 686  },
 					normal: { name: 'normal', size: '700x860',  width: 700, height: 860  },
 					large:  { name: 'large',  size: '901x1062', width: 901, height: 1062 }
@@ -118,12 +118,12 @@ class Display {
 					normal: { name: 'normal', size: '964x1720',  width: 964,  height: 1720 },
 					large:  { name: 'large',  size: '2800x1720', width: 2800, height: 1720 }
 				},
-				QHD: {
+				'QHD': {
 					small:  { name: 'small',  size: '540x800',   width: 540,  height: 800  },
 					normal: { name: 'normal', size: '540x1061',  width: 540,  height: 1061 },
 					large:  { name: 'large',  size: '2080x1300', width: 2080, height: 1300 }
 				},
-				HD: {
+				'HD': {
 					small:  { name: 'small',  size: '484x730',  width: 484,  height: 730 },
 					normal: { name: 'normal', size: '484x960',  width: 484,  height: 960 },
 					large:  { name: 'large',  size: '1600x960', width: 1600, height: 960 }
