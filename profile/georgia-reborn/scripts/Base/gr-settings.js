@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-07                                          * //
+// * Last change:    2023-09-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1947,12 +1947,12 @@ function migrateCheck(version, storedVersion) {
 
 		// This function clears default values which have changed
 		switch (storedVersion) {
+			/* eslint-disable no-fallthrough */
 			case '3.0-RC1':
 				renameGridEntry(grid, 'Catalog #', 'Catalog');
 				config.addConfigurationObject(gridSchema, grid);
-				break;
 			case '3.0-RC2':
-				// This block should appear after all previous versions have fallen through
+				// This default block ( latest version ) should appear after all previous versions have fallen through
 				console.log('> Upgrading Georgia-ReBORN theme settings from', storedVersion);
 				console.log(`> Backing up Georgia-ReBORN configuration file to ${fileName}`);
 				fso.CopyFile(configPath, fb.ProfilePath + fileName);
