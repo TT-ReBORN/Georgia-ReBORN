@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-RC1                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-20                                          * //
+// * Last change:    2023-09-22                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -192,6 +192,9 @@ class Lyrics {
 		}, 60000);
 	}
 
+	/**
+	 * Cycles through the next lyric source in the search results, used for ESLyric's "Next lyric" feature.
+	 */
 	nextLyrics() {
 		const nextSrc = (meta) => {
 			fb.RunMainMenuCommand('View/ESLyric/Panels/Delete lyric');
