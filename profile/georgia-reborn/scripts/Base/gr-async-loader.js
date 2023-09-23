@@ -4,9 +4,9 @@
 // * Author:         TT                                                  * //
 // * Org. Author:    Mordred                                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
-// * Version:        3.0-RC1                                             * //
+// * Version:        3.0-RC2                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-08-03                                          * //
+// * Last change:    2023-09-24                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -17,7 +17,7 @@
 // * VARIABLES * //
 ///////////////////
 /** @type {*} */
-const panelVersion = window.GetProperty('Georgia-ReBORN - #Version: Do not hand edit!', '3.0-RC1');
+const panelVersion = window.GetProperty('Georgia-ReBORN - #Version: Do not hand edit!', '3.0-RC2');
 /** @type {*} */
 window.DefineScript('Georgia-ReBORN', { author: 'TT', version: panelVersion, features: { drag_n_drop: true } });
 

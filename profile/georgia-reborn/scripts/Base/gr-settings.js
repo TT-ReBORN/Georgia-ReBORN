@@ -4,9 +4,9 @@
 // * Author:         TT                                                  * //
 // * Org. Author:    Mordred                                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
-// * Version:        3.0-RC1                                             * //
+// * Version:        3.0-RC2                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-21                                          * //
+// * Last change:    2023-09-24                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -25,7 +25,7 @@ const configPathCustom = `${fb.ProfilePath}georgia-reborn\\configs\\georgia-rebo
 /** @type {Configuration} The Georgia-ReBORN custom config object. */
 const configCustom = new Configuration(configPathCustom);
 /** @type {string} The Georgia-ReBORN current version. */
-const currentVersion = '3.0-RC1';
+const currentVersion = '3.0-RC2';
 /** @type {string} The Georgia-ReBORN version will be overwritten when loaded from config file. */
 let configVersion = currentVersion;
 /** @type {string} The Georgia-ReBORN version will be shown on the right side of the lower bar when nothing is playing. */
