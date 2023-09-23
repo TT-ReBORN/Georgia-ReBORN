@@ -7,11 +7,11 @@
 <br>
 
 
-## Update v3.0 - August ??, 2023
+## Update v3.0 - October ??, 2023
 <br>
 
 
-## Update v3.0-RC2 - July ??, 2023
+## Update v3.0-RC2 - September 24, 2023
 ### Added:
 - Implemented special unique feature to use custom theme, styles, preset for every album via custom gr-tags usage
   * See in the FAQ under Customization section: "How can I set custom theme, styles, preset for music albums?"
@@ -27,87 +27,160 @@
   * When using the auto panel width feature, be sure to choose between top menu
     Options > Player controls > Album art > When player size is not proportional.
     Align album art left or with margin is recommended.
+- Implemented disc art album cover placeholder feature
+  * You can activate this feature via top menu Options > Details > Disc art > Disc art placeholder > CD - Album cover/Vinyl - Album cover
+    or via when right clicking on the big album art cover > Disc art placeholder > CD - Album cover/Vinyl - Album cover
+  * It will load the current displayed album cover into the cd or vinyl placeholder.
+  * Changed default theme settings to display the new disc art album cover placeholder feature when no disc art was found
+- Implemented new playback order "Repeat playlist" mode
+- Implemented Peak Loudness Ratio into the playlist, thx @RobyOne77 for the contribution =)
+  * Can be activated via Options > Playlist > Album header > Show PLR value and Options > Playlist > Track row > Show PLR
+  * The albums/tracks need to be scanned via replay gain and have its metadata stored
+  * More information can be found here: https://github.com/TT-ReBORN/Georgia-ReBORN/pull/143
 - Added support for multi-artist hyperlinks in the playlist header
 - Added new lyrics options based on new lyrics code
   * Top menu Options > Lyrics > Display > Show drop shadow
   * Top menu Options > Lyrics > Display > Show fade scroll
   * Top menu Options > Lyrics > Scroll speed
+- Added playback mode indicator as lower bar transport button tooltips
+  * Displays "Stop after current", "Playback follows cursor" and "Cursor follows playback" when main tooltips are enabled
+    via top menu Options > Player controls > Tooltip > Show main tooltips
+- Added new right click context menus for top menu and lower bar with all available options
+  * There are two different context menus when you right click in the lower bar:
+    * When you right click somewhere not near the seekbar that will open the lower bar context menu
+    * When you right click somewhere in the seekbar that will open the seekbar context menu
+- Added option to hide the middle panel shadow
+  * Can be found in top menu Options > Player controls > Panel > Hide middle panel shadow
+- Added "Filter order" and "View order" options to top menu Options > Library
+- Added undo action support ( CTRL + Z )
+- Added mouse wheel cycling through album artworks in Library
+- Added more codec logos for the metadata grid, thanks @风里尘 =)
 - Added foo_cuefixer to the official Georgia-ReBORN user-components
+- Added new ESLyric sources
+  * Absolutelyrics
+  * Bandcamp
+  * Chartlyrics
+  * Darklyrics
+  * elyrics
+  * Letras
+  * Lyrical Nonsense (Japanese)
+  * Lyrical Nonsense (English)
+  * LyricsMania
+  * LyricsMode
+  * LyricsTranslate
+  * NetEase (English)
+  * Oldielyrics
+  * Plyrics
+  * Songlyrics
+  * STlyrics
 
 ### Changed:
+- Restored previous used async album art fetching
+- Restored top menu Option > Player controls > Album art > Load embedded album art first
 - Removed library auto thumbnail size setting from library full preset
   * You can manually change thumbnail size when using the library layout full preset
 - Moved lyric options "Remember active lyrics state" and "Remember lyrics panel state"
   to Top menu Options > Lyrics > Controls
+- Renamed "Show colored gap" feature to album art background
+  * Options > Player controls > Album art > When player size is not proportional:
+    'Left album art bg', 'Full album art bg', 'No album art bg'
 
 ### Improved:
 #### Main:
-  * Rewritten lyrics code based on WilB's with improved changes - thx @Wil-B =)
-  * Improved main UI black and white text color change on gradiented background when using gradient styles
-  * Improved behavior of the theme preset style indicator
-  * Big cleanup with improved code structure
-    * Separated all functions ( Main, Playlist, Library and Biography ) from all callbacks and put them
-      into a new file ( gr-main-functions.js )
+- Rewritten lyrics code based on WilB's with improved changes - thx @Wil-B =)
+- ESLyric's "Lyric search" popup now changes lyrics immediately when a different lyircs source has been selected
+- Improved theme preset and custom theme tags performance by 100%
+- Improved main UI black and white text color change on gradiented background when using gradient styles
+- Improved behavior of the theme preset style indicator
+- Improved album art background feature when player size is not proportional with additional full setting
+  * Options > Player controls > Album art > When player size is not proportional > Full album art bg
+- Big cleanup with improved code structure
+  * Separated all functions ( Main, Playlist, Library and Biography ) from all callbacks and put them
+    into a new file ( gr-main-functions.js )
     * Reordered and cleaned main functions ( Main, Details, Playlist, Library and Biography )
     * Reordered and cleaned gr-callbacks
     * Added missing descriptions
 #### Playlist:
-  * Improved playlist smooth drag scroll when reordering items
-  * Improved playlist scroll performance when using the default auto-hide scrollbar feature
-  * Improved playlist drag line color according to themes
+- Improved playlist smooth drag scroll when reordering items
+- Improved playlist scroll performance when using the default auto-hide scrollbar feature
+- Improved playlist row stripes colors
+- Improved playlist drag line color according to themes
 #### Library & Biography:
-  * Restored last library view mode from library split layout when not using the library full layout preset
-  * Refactored library and biography layout switcher
+- Restored last library view mode from library split layout when not using the library full layout preset
+- Refactored library and biography layout switcher
+#### Lyrics:
+- Improved Reborn theme lyrics text color in Biography and Lyrics panel when background is light/similar color
+- Improved lyric search behavior, will display lyrics immediately on the first found search result
 #### Misc:
-  * Improved Reborn theme lyrics text color in Biography and Lyrics panel when background is light/similar color
-  * Full code documentation
+- Improved theme backup that also now saves and restores foobar config and dsp settings
+- Full code documentation
 
 ### Removed:
 - Removed now obsolete option "Remember album art view" in Options > Library > Layout
   * Used when not using the library layout full preset, using album art view and switching
     between library normal to full layout. It now works without the need to activate that setting.
+- Removed top menu Options > View > Layout > Default ( prevents user to break the Georgia-ReBORN layout in UI Columns )
 
 ### Fixed:
 #### Fixed - Main:
-  * Fixed Details heavy performance issue
-  * Fixed Details release country flag size and position on multi-lines
-  * Fixed metadata grid text color switch on some bg colors when using alternative styles
-  * Fixed Reborn theme & Reborn fusion style colors when background is too light or too dark
-  * Fixed crash when album art image location does not exist ( i.e was moved to another location by user while it previously existed )
-  * Fixed crash when using theme backup & restore for old fb2k versions
-  * Fixed crash when applying the theme performance presets and saving to config
-  * Fixed rare crash when topMenu was not properly initialized
-  * Fixed jump search when CTRL key is pressed ( should not be activated )
-  * Fixed seekbar issue on mouse wheel playback seeking
-  * Fixed peakmeter bar tooltip repaint issue
-  * Fixed crash when using playlist header collapse features and playlist group header is deactivated
-  * Fixed behavior of the theme preset style indicator
-  * Fixed clearing auto random preset timer when switching back to non-timed settings
-  * Fixed cosmetic logo issue on foobar startup/reload sometimes not updating to the active theme
-  * Fixed DTS codec logo display issue in the metadata grid
-  * Fixed cycling through next lyrics sources
-  * Fixed correct description of values for custom themes and add missing reborn fusion styles description
-    in the georgia-reborn-config.jsonc
+- Fixed Reborn theme & Reborn fusion style colors when background is too light or too dark
+- Fixed crash when album art image location does not exist ( i.e was moved to another location by user while it previously existed )
+- Fixed crash when using theme backup & restore for old fb2k versions
+- Fixed crash when applying the theme performance presets and saving to config
+- Fixed crash when home panel is set to "Details" while switching from Compact to Default layout
+- Fixed rare crash when topMenu was not properly initialized
+- Fixed rare art cache crash on startup
+- Fixed jump search when CTRL key is pressed ( should not be activated )
+- Fixed seekbar issue on mouse wheel playback seeking
+- Fixed peakmeter bar tooltip repaint issue
+- Fixed crash when using playlist header collapse features and playlist group header is deactivated
+- Fixed behavior of the theme preset style indicator
+- Fixed clearing auto random preset timer when switching back to non-timed settings
+- Fixed cosmetic logo issue on foobar startup/reload sometimes not updating to the active theme
+- Fixed top menu compact anti-aliasing issue when using custom theme fonts
+- Fixed theme backup restore when using after fresh foobar installation
+- Fixed an issue when migrate check updates to the latest version
+- Fixed correct description of lower bar display settings and values for custom themes,
+  add missing reborn fusion styles description in the georgia-reborn-config.jsonc
+#### Fixed - Details:
+- Fixed heavy performance issue
+- Fixed release country flag size and position on multi-lines
+- Fixed label crash when using full background and deactivating disc art
+- Fixed incorrect timeline playcount population & tooltip issue
+- Fixed metadata grid text color switch on some bg colors when using alternative styles
+- Fixed metadata grid text color switch on some bg colors when using alternative styles
+- Fixed DTS codec logo display issue in the metadata grid
 #### Fixed - Playlist:
-  * Fixed playlist crash when updating selection and no items exist
-  * Fixed playlist crash when queueing playlist items and it is not properly initialized
-  * Fixed playlist history crash when it is not properly initialized
-  * Fixed playlist hyperlink show now playing crash when handle is not ready
-  * Fixed playlist hyperlink label issue
-  * Fixed playlist info text being hidden when no genre exist
-  * Fixed playlist scrollbar dragging issue in split layout when clicking outside the playlist
-  * Fixed playlist bottom drag scroll when playlist headers are collapsed
-  * Fixed missing side marker color for Cream theme when using playlist collapsed headers
+- Fixed playlist crash when updating selection and no items exist
+- Fixed playlist crash when drag and drop files and no playlist exists
+- Fixed playlist crash when queueing playlist items and it is not properly initialized
+- Fixed playlist history crash when it is not properly initialized
+- Fixed playlist hyperlink crashes
+- Fixed playlist hyperlink label issue
+- Fixed playlist manager text being hidden when no genre exist
+- Fixed playlist manager text button display issues when auto-hide is deactivated
+- Fixed playlist manager bg flashing when bg color changes
+- Fixed playlist scrollbar dragging issue in split layout when clicking outside the playlist
+- Fixed playlist bottom drag scroll when playlist headers are collapsed
+- Fixed missing side marker color for Cream theme when using playlist collapsed headers
 #### Fixed - Library:
-  * Fixed library unnecessary album art/tree initialization
-  * Fixed library album art/tree view issue when not using the library full preset
-  * Fixed library split presets where not properly updated
-  * Fixed library selection color when using custom themes and different album art label types
-  * Fixed rare library crash when initializing album art root image thumbnail
-  * Fixed other issues when using the library split layout
+- Fixed library unnecessary album art/tree initialization
+- Fixed library album art/tree view issue when not using the library full preset
+- Fixed library split presets where not properly updated
+- Fixed library selection color when using custom themes and different album art label types
+- Fixed library filter options "nowplaying" and "selected"
+- Fixed rare library crash when initializing album art root image thumbnail
+- Fixed other issues when using the library split layout
+#### Fixed - Biography:
+- Fixed biography lyrics and nowplaying init issues
+- Fixed some position issues with overlay layout
+#### Fixed - Lyrics:
+- Fixed artwork and disc opacity issues when lyrics layout is in full width while displaying lyrics
+- Fixed Lyric search and Next lyric features to work now properly - thx @ESLyric =)
 
 ### Updated:
 - Updated foo_playcount component to v3.1.5
+- Updated foo_uie_eslyric component to v0.5.4.1008
 <br>
 
 
@@ -840,14 +913,14 @@ Rolls up all changes from the betas below plus
 - Random now actually randomizes playlist
 - Fixed volume control issues
 - Improved tooltip handling for buttons
-- Fixed issues with expanded volume bar disappearing and it's appearance in 4k mode
+- Fixed issues with expanded volume bar disappearing and it's appearance in 4K mode
 - Fixed crash when deleting last playlist
 - CD Rotation values were bogus
 - Refactored all menus using new `Menu` helper class, which cut menu code length in half and made adding new options much easier
 - Fixed crash when using weblinks
 - Playlist row and header fonts are scalable through Options >> Playlist settings
 - Option to move transport controls below artwork
-- Visual improvements in 4k mode (ensuring spacing between elements is scaled correctly)
+- Visual improvements in 4K mode (ensuring spacing between elements is scaled correctly)
 - Adding Georgia entries to "Help" menu to quickly debug if the theme is installed correctly
 - Added tooltips on hovering over timeline
 - Adjust menu font sizes through options menu
@@ -893,8 +966,8 @@ Rolls up all changes from the betas below plus
 
 ### v1.1.0 - 2019-08-10
 - Dark mode (new default)! Switch between the two in the options menu
-- A ton more 4k fixes
-- reiniting playlist when 4k mode switches to avoid scrollbar issues
+- A ton more 4K fixes
+- reiniting playlist when 4K mode switches to avoid scrollbar issues
 - accurate date difference code based on human accepted norms of what a date difference is (i.e. 1 month ago)
 - correctly handling forbidden characters when attempting to find artwork/files
 - better sorting of results when clicking on hyperlinks
@@ -904,7 +977,7 @@ Rolls up all changes from the betas below plus
 - Drastically reduced console spam
 
 ### v1.0.1 - 2019-01-23
-- Fix some 4k scaling issues
+- Fix some 4K scaling issues
 - auto load library 10s after startup for better response time
 - fix crash in jscript 2.2.0+
 - variable font sizing for artist string
