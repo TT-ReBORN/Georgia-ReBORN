@@ -180,7 +180,7 @@
 
 ### Updated:
 - Updated foo_playcount component to v3.1.5
-- Updated foo_uie_eslyric component to v0.5.4.1008
+- Updated foo_uie_eslyric component to v0.5.4.1011
 <br>
 
 
