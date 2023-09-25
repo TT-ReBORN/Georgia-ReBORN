@@ -4,9 +4,9 @@
 // * Author:         TT                                                  * //
 // * Org. Author:    Mordred                                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
-// * Version:        3.0-RC2                                             * //
+// * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-24                                          * //
+// * Last change:    2023-09-25                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -25,7 +25,7 @@ const configPathCustom = `${fb.ProfilePath}georgia-reborn\\configs\\georgia-rebo
 /** @type {Configuration} The Georgia-ReBORN custom config object. */
 const configCustom = new Configuration(configPathCustom);
 /** @type {string} The Georgia-ReBORN current version. */
-const currentVersion = '3.0-RC2';
+const currentVersion = '3.0-DEV';
 /** @type {string} The Georgia-ReBORN version will be overwritten when loaded from config file. */
 let configVersion = currentVersion;
 /** @type {string} The Georgia-ReBORN version will be shown on the right side of the lower bar when nothing is playing. */
@@ -1970,15 +1970,17 @@ function migrateCheck(version, storedVersion) {
 
 
 /**
- * Checks if there is a new update available, called in Options > Help > Theme > Updates > Check for latest theme update.
+ * Checks if there is a new update available, also called in Options > Help > Theme > Updates > Check for latest theme update.
  * @param {boolean} openUrl Opens the Georgia-ReBORN Github releases page when hyperlink is available.
  */
 function checkForUpdates(openUrl) {
 	const url = 'https://api.github.com/repos/TT-ReBORN/Georgia-ReBORN/tags';
 	MakeHttpRequest('GET', url, (resp) => {
 		try {
+			/** @type {boolean} The current Github master version, used to prevent notifying users for new update when in development state. */
+			const developVersion = currentVersion.endsWith('DEV');
 			const respObj = JSON.parse(resp);
-			updateAvailable = IsNewerVersion(currentVersion, respObj[0].name);
+			updateAvailable = developVersion ? false : IsNewerVersion(currentVersion, respObj[0].name);
 			console.log(`Current released version of Georgia-ReBORN: v${respObj[0].name}`);
 			if (updateAvailable) {
 				console.log('>>> Georgia-ReBORN new update available. Download it from here: https://github.com/TT-ReBORN/Georgia-ReBORN/releases');
