@@ -1832,7 +1832,11 @@ if (config.fileExists) {
 	// When adding new objects to the config file, add them in the version check below
 
 	// Safe guard when playlist grouping presets or metadata grid do not exist in the config
-	if (!prefs.themePlaylistGroupingPresets || !prefs.metadataGrid) config.writeConfiguration();
+	if (!prefs.themePlaylistGroupingPresets || !prefs.metadataGrid) {
+		const fileName = 'georgia-reborn\\configs\\georgia-reborn-config-backup.jsonc';
+		fso.CopyFile(configPath, fb.ProfilePath + fileName);
+		config.writeConfiguration();
+	}
 }
 
 if (configCustom.fileExists) {
@@ -1949,12 +1953,15 @@ function migrateCheck(version, storedVersion) {
 		const grid = configFile.metadataGrid;
 
 		// This function clears default values which have changed
+		// This function clears default values which have changed
 		switch (storedVersion) {
 			/* eslint-disable no-fallthrough */
 			case '3.0-RC1':
 				renameGridEntry(grid, 'Catalog #', 'Catalog');
 				config.addConfigurationObject(gridSchema, grid);
 			case '3.0-RC2':
+				config.addConfigurationObject(themePlaylistGroupingPresetsSchema, themePlaylistGroupingPresets);
+			case '3.0-DEV':
 				// This default block ( latest version ) should appear after all previous versions have fallen through
 				console.log('> Upgrading Georgia-ReBORN theme settings from', storedVersion);
 				console.log(`> Backing up Georgia-ReBORN configuration file to ${fileName}`);

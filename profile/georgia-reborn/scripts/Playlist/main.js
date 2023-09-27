@@ -7502,7 +7502,7 @@ GroupingHandler.Settings = function () {
 		this.playlist_group_data = JSON.parse(g_properties.playlist_group_data);
 		this.playlist_custom_group_data = JSON.parse(g_properties.playlist_custom_group_data);
 		this.default_group_name = g_properties.default_group_name;
-		this.group_presets = prefs.themePlaylistGroupingPresets; // JSON.parse(g_properties.group_presets);
+		this.group_presets = prefs.themePlaylistGroupingPresets || JSON.parse(g_properties.group_presets);
 	};
 
 	/**
