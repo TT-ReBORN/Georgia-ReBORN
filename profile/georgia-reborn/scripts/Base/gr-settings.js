@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-09-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1166,10 +1166,6 @@ async function setThemeSettings(save) {
 	g_properties.show_playlist_info = true;
 	g_properties.collapse_on_playlist_switch = false;
 	g_properties.collapse_on_start = false;
-	g_properties.playlist_group_data = '';
-	g_properties.playlist_custom_group_data = '';
-	g_properties.default_group_name = '';
-	g_properties.group_presets = '';
 
 	// * Details
 	if (save) {
@@ -1745,9 +1741,11 @@ if (!config.fileExists) {
 	themeBrightness  = config.addConfigurationObject(themeBrightnessSchema, themeBrightnessDefaults, themeBrightnessComments);
 	themeFontSize    = config.addConfigurationObject(themeFontSizesSchema, themeFontSizesDefaults, themeFontSizesComments);
 	themeControls    = config.addConfigurationObject(themePlayerControlsSchema, themePlayerControlsDefaults, themePlayerControlsComments);
-	themePlaylist    = config.addConfigurationObject(themePlaylistSchema, themePlaylistDefaults, themePlaylistComments);
-	themeDetails     = config.addConfigurationObject(themeDetailsSchema, themeDetailsDefaults, themeDetailsComments);
 
+	themePlaylist    = config.addConfigurationObject(themePlaylistSchema, themePlaylistDefaults, themePlaylistComments);
+	config.addConfigurationObject(themePlaylistGroupingPresetsSchema, themePlaylistGroupingPresets);
+
+	themeDetails     = config.addConfigurationObject(themeDetailsSchema, themeDetailsDefaults, themeDetailsComments);
 	config.addConfigurationObject(gridSchema, defaultMetadataGrid); // We don't assign an object here because these aren't key/value pairs and thus can't use the get/setters
 
 	themeLibrary     = config.addConfigurationObject(themeLibrarySchema, themeLibraryDefaults, themeLibraryComments);
@@ -1802,17 +1800,19 @@ if (config.fileExists) {
 	themeBrightness  = config.addConfigurationObject(themeBrightnessSchema, Object.assign({}, themeBrightnessDefaults, prefs.themeBrightness), themeBrightnessComments);
 	themeFontSize    = config.addConfigurationObject(themeFontSizesSchema, Object.assign({}, themeFontSizesDefaults, prefs.themeFontSize), themeFontSizesComments);
 	themeControls    = config.addConfigurationObject(themePlayerControlsSchema, Object.assign({}, themePlayerControlsDefaults, prefs.themeControls), themePlayerControlsComments);
-	themePlaylist    = config.addConfigurationObject(themePlaylistSchema, Object.assign({}, themePlaylistDefaults, prefs.themePlaylist), themePlaylistComments);
-	themeDetails     = config.addConfigurationObject(themeDetailsSchema, Object.assign({}, themeDetailsDefaults, prefs.themeDetails), themeDetailsComments);
 
-	prefs.metadataGrid.forEach(entry => {
+	themePlaylist    = config.addConfigurationObject(themePlaylistSchema, Object.assign({}, themePlaylistDefaults, prefs.themePlaylist), themePlaylistComments);
+	config.addConfigurationObject(themePlaylistGroupingPresetsSchema, prefs.themePlaylistGroupingPresets || themePlaylistGroupingPresets);
+
+	themeDetails     = config.addConfigurationObject(themeDetailsSchema, Object.assign({}, themeDetailsDefaults, prefs.themeDetails), themeDetailsComments);
+	prefs.metadataGrid && prefs.metadataGrid.forEach(entry => {
 		// Copy comments over to existing object so they aren't lost
 		const gridEntryDefinition = defaultMetadataGrid.find(gridDefItem => gridDefItem.label === entry.label);
 		if (gridEntryDefinition && gridEntryDefinition.comment) {
 			entry.comment = gridEntryDefinition.comment;
 		}
 	});
-	config.addConfigurationObject(gridSchema, prefs.metadataGrid);	// Can't Object.assign here to add new fields. Add new fields in the upgrade section of migrateCheck
+	config.addConfigurationObject(gridSchema, prefs.metadataGrid || defaultMetadataGrid); // Can't Object.assign here to add new fields. Add new fields in the upgrade section of migrateCheck
 
 	themeLibrary   = config.addConfigurationObject(themeLibrarySchema, Object.assign({}, themeLibraryDefaults, prefs.themeLibrary), themeLibraryComments);
 	themeBiography = config.addConfigurationObject(themeBiographySchema, Object.assign({}, themeBiographyDefaults, prefs.themeBiography), themeBiographyComments);
@@ -1830,6 +1830,9 @@ if (config.fileExists) {
 	metadataGrid = prefs.metadataGrid;
 	configVersion = prefs.configVersion || prefs.version;
 	// When adding new objects to the config file, add them in the version check below
+
+	// Safe guard when playlist grouping presets or metadata grid do not exist in the config
+	if (!prefs.themePlaylistGroupingPresets || !prefs.metadataGrid) config.writeConfiguration();
 }
 
 if (configCustom.fileExists) {

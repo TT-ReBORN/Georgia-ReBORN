@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-09-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -888,6 +888,81 @@ const themePlaylistSchema = new ConfigurationObjectSchema('themePlaylist', Confi
 	'* Note: These settings will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                            ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 
+/** @type {PlaylistGroupingPresets[]} Playlist grouping presets with default entries and values. */
+const themePlaylistGroupingPresets = [
+	{
+		name: 'artist',
+		description: 'by artist',
+		group_query: '%album artist%',
+		title_query: '[%album artist%]',
+		sub_title_query: "[%album%[ '('%albumsubtitle%')']][ - '['%edition%']']",
+		show_date: false,
+		show_disc: false
+	},
+	{
+		name: 'artist_album',
+		description: 'by artist / album',
+		group_query: '%album artist%%album%',
+		title_query: '[%album artist%]',
+		sub_title_query: "[%album%[ '('%albumsubtitle%')']][ - '['%edition%']']",
+		show_date: true,
+		show_disc: false
+	},
+	{
+		name: 'artist_album_disc',
+		description: 'by artist / album / disc number',
+		group_query: '%album artist%%album%%discnumber%',
+		title_query: '[%album artist%]',
+		sub_title_query: "[%album%[ '('%albumsubtitle%')']][ - '['%edition%']']",
+		show_date: true,
+		show_disc: true
+	},
+	{
+		name: 'artist_album_disc_edition',
+		description: 'by artist / album / disc number / edition / codec',
+		group_query: '%album artist%%album%%discnumber%%edition%%codec%',
+		title_query: '[%album artist%]',
+		sub_title_query: "[%album%[ '('%albumsubtitle%')']][ - '['%edition%']']",
+		show_date: true,
+		show_disc: true
+	},
+	{
+		name: 'path',
+		description: 'by path',
+		group_query: '$directory_path(%path%)',
+		title_query: '[%album artist%]',
+		sub_title_query: "[%album%[ '('%albumsubtitle%')']][ - '['%edition%']']",
+		show_date: true,
+		show_disc: false
+	},
+	{
+		name: 'date',
+		description: 'by date',
+		group_query: '%date%',
+		title_query: '[%album artist%]',
+		sub_title_query: "[%album%[ '('%albumsubtitle%')']][ - '['%edition%']']",
+		show_date: true,
+		show_disc: false
+	}
+];
+
+/** @type {Object} Playlist grouping presets config header description. */
+const themePlaylistGroupingPresetsSchema = new ConfigurationObjectSchema('themePlaylistGroupingPresets', ConfigurationObjectType.Array, [
+	{ name: 'name' },
+	{ name: 'description' },
+	{ name: 'group_query' },
+	{ name: 'title_query' },
+	{ name: 'sub_title_query' },
+	{ name: 'show_date' },
+	{ name: 'show_disc' }],
+	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
+	'* PLAYLIST GROUPING PRESETS:                                                                                                                                                                            ' +
+	'* You can add new entries with grouping patterns or reorder entries that will be displayed in the Playlist grouping manager.                                                                            ' +
+	'* The playlist grouping manager can be accessed via right clicking in the Playlist > Grouping > Manage presets.                                                                                         ' +
+	'* Changes will be saved to the config file after reload when creating new grouping presets or modifications in the Playlist grouping manager.                                                           ' +
+	'* Note: These settings will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                        ' +
+	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
+
 
 /////////////////
 // * DETAILS * //
@@ -1024,7 +1099,7 @@ const gridSchema = new ConfigurationObjectSchema('metadataGrid', ConfigurationOb
 	{ name: 'age', optional: true }],
 	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 	'* DETAILS METADATA GRID:                                                                                                                                                                                ' +
-	'* You can add new tags or reorder entries the will be displayed in the metadata grid in top menu Details.                                                                                               ' +
+	'* You can add new tags or reorder entries that will be displayed in the metadata grid in top menu Details.                                                                                              ' +
 	'* If there are too many entries and no space available in Details, tags will be hidden. You can change to a larger player size.                                                                         ' +
 	'* Entries that evaluate to an empty string will not be shown in the grid.                                                                                                                               ' +
 	'* Note: These settings will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                        ' +

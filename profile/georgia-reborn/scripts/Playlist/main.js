@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-09-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -7166,6 +7166,7 @@ function GroupingHandler() {
 	 * @type {GroupingHandler.Settings}
 	 */
 	const settings = new GroupingHandler.Settings();
+
 	/** @type {?Array<string>} */
 	let playlists = [];
 	/** @type {string} */
@@ -7323,6 +7324,9 @@ function GroupingHandler() {
 			settings.save();
 			settings.send_sync();
 
+			config.addConfigurationObject(themePlaylistGroupingPresetsSchema, themePlaylistGroupingPresets);
+			config.writeConfiguration();
+
 			on_execute_callback_fn();
 		});
 
@@ -7415,6 +7419,9 @@ function GroupingHandler() {
 			settings.save();
 			settings.send_sync();
 
+			config.addConfigurationObject(themePlaylistGroupingPresetsSchema, settings.group_presets);
+			config.writeConfiguration();
+
 			on_execute_callback_fn();
 		};
 
@@ -7473,6 +7480,11 @@ function GroupingHandler() {
 GroupingHandler.Settings = function () {
 	/** @typedef {GroupingHandler.Settings.Group} */
 	const CtorGroupData = GroupingHandler.Settings.Group;
+	/**
+	 * Reads the configuration from the `config` object and assigns it to the `prefs` variable.
+	 * @type {ReturnType<typeof config.readConfiguration>}
+	 */
+	const prefs = config.readConfiguration();
 
 	/** @type {Object<string, string>} */
 	this.playlist_group_data = {};
@@ -7490,7 +7502,7 @@ GroupingHandler.Settings = function () {
 		this.playlist_group_data = JSON.parse(g_properties.playlist_group_data);
 		this.playlist_custom_group_data = JSON.parse(g_properties.playlist_custom_group_data);
 		this.default_group_name = g_properties.default_group_name;
-		this.group_presets = JSON.parse(g_properties.group_presets);
+		this.group_presets = prefs.themePlaylistGroupingPresets; // JSON.parse(g_properties.group_presets);
 	};
 
 	/**
