@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-09-28                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1466,6 +1466,26 @@ function DrawMultipleLines(gr, availableWidth, left, top, color, text1, fontList
 		yOffset += lineHeight;
 	}
 	return linesDrawn * lineHeight;
+}
+
+
+/**
+ * Enhances the original SMP DrawString method to render fonts correctly when text strings contain special symbols.
+ * Should be only used for artist, track, album or other metadata text strings.
+ * @param {GdiGraphics} gr
+ * @param {string} str The text string to draw. Can be any string but only UTF-8 is supported.
+ * @param {GdiFont} font The font to use. Can be any font supported by GDI.
+ * @param {number} color The X-position to start measuring.
+ * @param {number} x The X-position of the text.
+ * @param {number} y The y-position of the text.
+ * @param {number} w The width of the text.
+ * @param {number} h The height of the text.
+ * @param {number=} flags The text string format flags.
+ * @returns {GdiGraphics} The drawn text string with replaced Segoe UI Symbol font as fallback when the string contains special symbols.
+ */
+function DrawString(gr, str, font, color, x, y, w, h, flags) {
+	const specialSymbolsRegex = /[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/;
+	gr.DrawString(str, specialSymbolsRegex.test(str) ? gdi.Font('Segoe UI Symbol', font.Size, font.Style) : font, color, x, y, w, h, flags);
 }
 
 

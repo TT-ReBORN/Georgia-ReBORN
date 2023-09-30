@@ -1953,7 +1953,6 @@ function migrateCheck(version, storedVersion) {
 		const grid = configFile.metadataGrid;
 
 		// This function clears default values which have changed
-		// This function clears default values which have changed
 		switch (storedVersion) {
 			/* eslint-disable no-fallthrough */
 			case '3.0-RC1':

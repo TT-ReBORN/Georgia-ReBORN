@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-09-28                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1000,7 +1000,7 @@ class Hyperlink {
 	 */
 	draw(gr, color) {
 		const font = this.state === HyperlinkStates.Hovered ? this.hoverFont : this.font;
-		gr.DrawString(this.text, font, color, this.x, this.inPlaylist ? this.y_offset : this.y, this.w + SCALE(1), this.h, g_string_format.trim_ellipsis_char);
+		DrawString(gr, this.text, font, color, this.x, this.inPlaylist ? this.y_offset : this.y, this.w + SCALE(1), this.h, g_string_format.trim_ellipsis_char);
 	}
 
 	// * CALLBACKS * //

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-09-28                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -364,7 +364,7 @@ function drawDetailsMetadataGrid(gr) {
 
 			// * Apply better anti-aliasing on smaller font sizes in HD res
 			gr.SetTextRenderingHint(!RES_4K && gridArtistFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-			gr.DrawString(showGridArtistFlags && flagImgs.length ? flagSizeWhiteSpace + str.artist : str.artist, ft.grd_artist, ['white', 'black', 'reborn', 'random'].includes(pref.theme) ? col.detailsText : pref.theme === 'cream' ? g_pl_colors.header_artist_normal : g_pl_colors.header_artist_playing, marginLeft, Math.round(top), textWidth, gridArtistNumHeight, g_string_format.trim_ellipsis_char);
+			DrawString(gr, showGridArtistFlags && flagImgs.length ? flagSizeWhiteSpace + str.artist : str.artist, ft.grd_artist, ['white', 'black', 'reborn', 'random'].includes(pref.theme) ? col.detailsText : pref.theme === 'cream' ? g_pl_colors.header_artist_normal : g_pl_colors.header_artist_playing, marginLeft, Math.round(top), textWidth, gridArtistNumHeight, g_string_format.trim_ellipsis_char);
 
 			// * Artist flags
 			if (str.artist && flagImgs.length && showGridArtistFlags && displayDetails) {
@@ -391,7 +391,7 @@ function drawDetailsMetadataGrid(gr) {
 
 			// * Apply better anti-aliasing on smaller font sizes in HD res
 			gr.SetTextRenderingHint(!RES_4K && gridTitleFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-			gr.DrawString(isStreaming ? showGridTrackNum ? str.tracknum + str.title : str.title : str.tracknum === '' ? str.title : showGridTrackNum ? `${str.tracknum}\xa0${str.title}` : str.title, ft.grd_title, col.detailsText, marginLeft, Math.round(top), textWidth, gridTitleNumHeight, g_string_format.trim_ellipsis_char);
+			DrawString(gr, isStreaming ? showGridTrackNum ? str.tracknum + str.title : str.title : str.tracknum === '' ? str.title : showGridTrackNum ? `${str.tracknum}\xa0${str.title}` : str.title, ft.grd_title, col.detailsText, marginLeft, Math.round(top), textWidth, gridTitleNumHeight, g_string_format.trim_ellipsis_char);
 
 			return gridTitleNumHeight + (RES_4K ? 17 : 9);
 		}
@@ -407,7 +407,7 @@ function drawDetailsMetadataGrid(gr) {
 
 			// * Apply better anti-aliasing on smaller font sizes in HD res
 			gr.SetTextRenderingHint(!RES_4K && gridAlbumFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-			gr.DrawString(str.album, ft.grd_album, col.detailsText, marginLeft, Math.round(top), textWidth, gridAlbumNumHeight, g_string_format.trim_ellipsis_char);
+			DrawString(gr, str.album, ft.grd_album, col.detailsText, marginLeft, Math.round(top), textWidth, gridAlbumNumHeight, g_string_format.trim_ellipsis_char);
 
 			return gridAlbumNumHeight + SCALE(13);
 		}
@@ -1096,9 +1096,9 @@ function drawLowerBar(gr) {
 	gr.SetTextRenderingHint(!RES_4K && lowerBarFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 
 	// * Artist, tracknum, title
-	if (oneLine || twoLines && pref.layout === 'default') gr.DrawString(artist, ft.lower_bar_artist, col.lowerBarArtist, artistX, artistY, availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
+	if (oneLine || twoLines && pref.layout === 'default') DrawString(gr, artist, ft.lower_bar_artist, col.lowerBarArtist, artistX, artistY, availableWidth, artistHeight, g_string_format.trim_ellipsis_char);
 	gr.DrawString(trackNum, ft.lower_bar_title, col.lowerBarTitle, trackNumX, trackNumY, trackNumWidth - timeAreaWidth, titleHeight, StringFormat(0, 0, 4, 0x00001000));
-	gr.DrawString(title, ft.lower_bar_title, col.lowerBarTitle, titleX, titleY, fb.IsPlaying ? availableWidth + (twoLines ? availableFlags : 0) : ww, titleHeight, g_string_format.trim_ellipsis_char);
+	DrawString(gr, title, ft.lower_bar_title, col.lowerBarTitle, titleX, titleY, fb.IsPlaying ? availableWidth + (twoLines ? availableFlags : 0) : ww, titleHeight, g_string_format.trim_ellipsis_char);
 
 	// * Artist flags
 	if (showLowerBarArtist && showLowerBarArtistFlags && (pref.layout === 'default' || pref.layout !== 'default' && !twoLines)) {

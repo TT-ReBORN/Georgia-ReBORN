@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-27                                          * //
+// * Last change:    2023-09-28                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -5852,9 +5852,9 @@ class Row extends ListItem {
 		{
 			const title_w = this.w - right_pad - SCALE(44);
 			const title_text_format = g_string_format.v_align_center | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
-			gr.DrawString(this.title_text, title_font, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
+			DrawString(gr, this.title_text, title_font, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
 			if (this.is_playing) {
-				gr.DrawString(fb.IsPaused ? g_guifx.pause : g_guifx.play, ft.guifx, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
+				DrawString(gr, fb.IsPaused ? g_guifx.pause : g_guifx.play, ft.guifx, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
 			}
 
 			testRect && gr.DrawRect(this.x, this.y - 1, title_w, this.h, 1, RGBA(155, 155, 255, 250));
@@ -5872,7 +5872,7 @@ class Row extends ListItem {
 			const title_artist_text_format = g_string_format.v_align_center | g_string_format.trim_ellipsis_char | g_string_format.no_wrap;
 
 			if (pref.showDifferentArtist) {
-				gr.DrawString(this.title_artist_text, title_artist_font, this.title_color, title_artist_x, this.y, title_artist_w, this.h, title_artist_text_format);
+				DrawString(gr, this.title_artist_text, title_artist_font, this.title_color, title_artist_x, this.y, title_artist_w, this.h, title_artist_text_format);
 			}
 			cur_x += Math.ceil(
 				/** @type {!number} */
