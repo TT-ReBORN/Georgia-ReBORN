@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-27                                          * //
+// * Last change:    2023-10-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -470,6 +470,9 @@ pref.add_properties({
 	libraryRowHover:                    ['Georgia-ReBORN - 12. Library: Row mouse hover', true], // Enable library row mouse hover effect
 	savedAlbumArtShow:                  ['Georgia-ReBORN - 12. Library: Album art view saved', false], // Used to resume library view mode from split layout when not using library layout presets
 	savedAlbumArtLabelType:             ['Georgia-ReBORN - 12. Library: Album art label type saved', 1], // Used to resume album art label type from split layout when not using library layout presets
+	librarySource:                      ['Georgia-ReBORN - 12. Library: Source', 1], // Library source, 0 - Active playlist, 1 - Library (default)
+	librarySourceFixedPlaylist:         ['Georgia-ReBORN - 12. Library: Source fixed playlist', false], // Library source fixed playlist - true or false - used when using Library source selected playlist
+	librarySourceFixedPlaylistName:     ['Georgia-ReBORN - 12. Library: Source fixed playlist name', ''], // Library source fixed playlist name - Selected playlist name - used when using Library source selected playlist
 
 	// * Biography
 	biographyLayout:                    ['Georgia-ReBORN - 13. Biography: Layout', 'normal'], // Biography layout - normal (default) or full
@@ -1287,6 +1290,9 @@ async function setThemeSettings(save) {
 		themeLibrary.yearBeforeAlbum = ppt.yearBeforeAlbum;
 		themeLibrary.albumArtViewBy = ppt.albumArtViewBy;
 		themeLibrary.treeViewBy = ppt.treeViewBy;
+		themeLibrary.librarySource = ppt.libSource;
+		themeLibrary.librarySourceFixedPlaylist = ppt.fixedPlaylist;
+		themeLibrary.librarySourceFixedPlaylistName = ppt.fixedPlaylistName;
 	} else {
 		pref.libraryDesign = custom ? themeLibrary.libraryDesign : 'reborn';
 		setLibraryDesign();
@@ -1339,6 +1345,9 @@ async function setThemeSettings(save) {
 		ppt.yearBeforeAlbum = custom ? themeLibrary.yearBeforeAlbum : true;
 		ppt.albumArtViewBy = custom ? themeLibrary.albumArtViewBy : 0;
 		ppt.treeViewBy = custom ? themeLibrary.treeViewBy : 0;
+		ppt.libSource = pref.librarySource = custom ? themeLibrary.librarySource : 1;
+		ppt.fixedPlaylist = pref.librarySourceFixedPlaylist = custom ? themeLibrary.librarySourceFixedPlaylist : false;
+		ppt.fixedPlaylistName = pref.librarySourceFixedPlaylistName = custom ? themeLibrary.librarySourceFixedPlaylistName : '';
 	}
 
 	// * Biography

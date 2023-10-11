@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-10-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2565,6 +2565,34 @@ function libraryOptions(menu, context_menu) {
 		men.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
 	});
 	libraryViewOrderMenu.appendTo(libraryMenu);
+
+	// * SOURCE * //
+	const librarySourceMenu = new Menu('Source');
+	librarySourceMenu.addRadioItems(['Library'], ppt.fixedPlaylist ? '' : ppt.libSource, [1], (src) => {
+		men.setSource(0);
+	});
+	const libraryPlaylistSourceMenu = new Menu('Playlist');
+	libraryPlaylistSourceMenu.addRadioItems(['Active playlist'], ppt.fixedPlaylist ? '' : ppt.libSource, [0], (src) => {
+		men.setSource(2);
+		men.setActivePlaylist();
+	});
+	libraryPlaylistSourceMenu.addSeparator();
+	const pl_no = Math.ceil(men.pl.length / 30);
+	const pl_ix = ppt.fixedPlaylist ? plman.FindPlaylist(ppt.fixedPlaylistName) : -1;
+	for (let j = 0; j < pl_no; j++) {
+		const n = `# ${j * 30 + 1} - ${Math.min(men.pl.length, 30 + j * 30)}${30 + j * 30 > pl_ix && ((j * 30) - 1) < pl_ix ? '  >>>' : ''}`;
+		const libraryPlaylistSourceItems = new Menu(n);
+
+			for (let i = j * 30; i < Math.min(men.pl.length, 30 + j * 30); i++) {
+				libraryPlaylistSourceItems.addRadioItems([men.pl[i].menuName], ppt.fixedPlaylist ? men.pl[pl_ix].menuName : '', [men.pl[i].menuName], () => {
+					men.setSource(2);
+					men.setFixedPlaylist(i);
+				});
+			}
+			libraryPlaylistSourceItems.appendTo(libraryPlaylistSourceMenu);
+	}
+	libraryPlaylistSourceMenu.appendTo(librarySourceMenu);
+	librarySourceMenu.appendTo(libraryMenu);
 
 	if (!context_menu) libraryMenu.appendTo(menu);
 }

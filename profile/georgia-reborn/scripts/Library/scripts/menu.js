@@ -339,47 +339,47 @@ class MenuItems {
 			}));
 		}
 
-		// ! Source feature is not supported in a single panel/one library i.e in Georgia/Georgia-ReBORN
-		// menu.newMenu({ menuName: 'Source', appendTo: mainMenu(), separator: true });
-		// ['Library', 'Panel', 'Playlist'].forEach((v, i) => menu.newItem({
-		// 	menuName: 'Source',
-		// 	str: v,
-		// 	func: () => this.setSource(i),
-		// 	checkRadio: i == (ppt.libSource - 1 < 0 || ppt.fixedPlaylist ? 2 : ppt.libSource - 1),
-		// 	separator: i == 2
-		// }));
+		// ! Source panel and playlist feature is not supported in a single panel/one library i.e in Georgia/Georgia-ReBORN
+		menu.newMenu({ menuName: 'Source', appendTo: mainMenu(), separator: true });
+		['Library'/*, 'Panel', 'Playlist' */].forEach((v, i) => menu.newItem({
+			menuName: 'Source',
+			str: v,
+			func: () => this.setSource(i),
+			checkRadio: i == (ppt.libSource - 1 < 0 || ppt.fixedPlaylist ? 2 : ppt.libSource - 1),
+			separator: i == 2
+		}));
 
 		// menu.newItem({
 		// 	menuName: 'Source',
 		// 	str: 'Select source panel',
 		// 	func: () => this.setSourcePanel(),
-		// 	flags: ppt.libSource != 2 ? MF_GRAYED : MF_STRING,
+		// 	flags: ppt.libSource != 2 ? MF_GRAYED_LIB : MF_STRING_LIB,
 		// 	separator: true
 		// });
 
-		// menu.newMenu({ menuName: 'Select playlist', appendTo: 'Source' });
-		// menu.newItem({
-		// 	menuName: 'Select playlist',
-		// 	str: 'Active playlist',
-		// 	func: () => this.setActivePlaylist(),
-		// 	checkRadio: ppt.libSource == 0,
-		// 	separator: true
-		// });
+		menu.newMenu({ menuName: 'Playlist', appendTo: 'Source' });
+		menu.newItem({
+			menuName: 'Playlist',
+			str: 'Active playlist',
+			func: () => { this.setActivePlaylist(); this.setSource(2) },
+			checkRadio: ppt.libSource == 0,
+			separator: true
+		});
 
-		// const pl_no = Math.ceil(this.pl.length / 30);
-		// const pl_ix = ppt.fixedPlaylist ? plman.FindPlaylist(ppt.fixedPlaylistName) : -1;
-		// for (let j = 0; j < pl_no; j++) {
-		// 	const n = '# ' + (j * 30 + 1 + ' - ' + Math.min(this.pl.length, 30 + j * 30) + (30 + j * 30 > pl_ix && ((j * 30) - 1) < pl_ix ? '  >>>' : ''));
-		// 	menu.newMenu({ menuName: n, appendTo: 'Select playlist' });
-		// 	for (let i = j * 30; i < Math.min(this.pl.length, 30 + j * 30); i++) {
-		// 		menu.newItem({
-		// 			menuName: n,
-		// 			str: this.pl[i].menuName,
-		// 			func: () => this.setFixedPlaylist(i),
-		// 			checkRadio: i == pl_ix
-		// 		});
-		// 	}
-		// }
+		const pl_no = Math.ceil(this.pl.length / 30);
+		const pl_ix = ppt.fixedPlaylist ? plman.FindPlaylist(ppt.fixedPlaylistName) : -1;
+		for (let j = 0; j < pl_no; j++) {
+			const n = `# ${j * 30 + 1} - ${Math.min(this.pl.length, 30 + j * 30)}${30 + j * 30 > pl_ix && ((j * 30) - 1) < pl_ix ? '  >>>' : ''}`;
+			menu.newMenu({ menuName: n, appendTo: 'Playlist' });
+			for (let i = j * 30; i < Math.min(this.pl.length, 30 + j * 30); i++) {
+				menu.newItem({
+					menuName: n,
+					str: this.pl[i].menuName,
+					func: () => { this.setFixedPlaylist(i); this.setSource(2) },
+					checkRadio: i == pl_ix && ppt.libSource != 0
+				});
+			}
+		}
 
 		menu.newMenu({ menuName: 'Refresh', appendTo: mainMenu(), separator: true });
 		for (let i = 0; i < 5; i++) { menu.newItem({
@@ -772,13 +772,13 @@ class MenuItems {
 			case 1:
 				ppt.libSource = 2;
 				ppt.fixedPlaylist = false;
-				if (ppt.panelSourceMsg && popUpBox.isHtmlDialogSupported()) popUpBox.message();
+				// if (ppt.panelSourceMsg && popUpBox.isHtmlDialogSupported()) popUpBox.message(); // Deactivated popup, let's not confuse the user since panel source is deactivated
 				break;
 			case 2: {
 				const fixedPlaylistIndex = plman.FindPlaylist(ppt.fixedPlaylistName);
 				if (fixedPlaylistIndex != -1) ppt.fixedPlaylist = true;
 				ppt.libSource = ppt.fixedPlaylist ? 1 : 0;
-				if (ppt.panelSourceMsg && popUpBox.isHtmlDialogSupported()) popUpBox.message();
+				// if (ppt.panelSourceMsg && popUpBox.isHtmlDialogSupported()) popUpBox.message(); // Deactivated popup, let's not confuse the user since panel source is deactivated
 				break;
 			}
 		}
@@ -786,6 +786,10 @@ class MenuItems {
 		lib.searchCache = {};
 		if (ppt.showSource) panel.setRootName();
 		lib.treeState(false, 2);
+
+		pref.librarySource = ppt.libSource;
+		pref.libraryFixedPlaylist = ppt.fixedPlaylist;
+		pref.libraryFixedPlaylistName = ppt.fixedPlaylistName;
 	}
 
 	setSourcePanel() {

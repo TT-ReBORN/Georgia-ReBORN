@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-27                                          * //
+// * Last change:    2023-10-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1159,7 +1159,10 @@ const themeLibraryDefaults = {
 	sortOrder: 'default',
 	yearBeforeAlbum: true,
 	albumArtViewBy: 0,
-	treeViewBy: 0
+	treeViewBy: 0,
+	librarySource: 1,
+	librarySourceFixedPlaylist: false,
+	librarySourceFixedPlaylistName: ''
 };
 
 /** @type {Object} Options > Library settings config name dscription. */
@@ -1212,7 +1215,10 @@ const themeLibraryComments = {
 	sortOrder: 'Values: 0, 1, 2, 3, 4 - Options > Library > Sort order',
 	yearBeforeAlbum: 'Values: true, false - Options > Library > Sort order',
 	albumArtViewBy: 'Values: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Library > View order',
-	treeViewBy: 'Values: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Library > View order'
+	treeViewBy: 'Values: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Library > View order',
+	librarySource: 'Values: 0, 1 - Options > Library > Source',
+	librarySourceFixedPlaylist: 'Values: true, false - not in Options, managed by Library source menu',
+	librarySourceFixedPlaylistName: 'Values: "selected playlist name" - not in Options, managed by Library source menu'
 };
 
 /** @type {Object} Options > Library settings config header dscription. */
