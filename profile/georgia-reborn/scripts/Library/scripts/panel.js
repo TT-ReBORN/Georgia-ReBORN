@@ -144,11 +144,11 @@ class Panel {
 	clear(type) {
 		if (type == 'views' || type == 'both') {
 			for (let i = 0; i < 100; i++) {
-				ppt.set(`View ${$Lib.padNumber(i, 2)}: Name // Pattern`, null);
+				ppt.set(`Panel Library - View ${$Lib.padNumber(i, 2)}: Name // Pattern`, null);
 			}
 		}
 		if (type == 'filters' || type == 'both') {
-			for (let i = 0; i < 100; i++) ppt.set(`Filter ${$Lib.padNumber(i, 2)}: Name // Query`, null);
+			for (let i = 0; i < 100; i++) ppt.set(`Panel Library - Filter ${$Lib.padNumber(i, 2)}: Name // Query`, null);
 		}
 	}
 
@@ -383,11 +383,13 @@ class Panel {
 				if (!defValid) ppt.set(v[0], v[1]);
 				pptNo++;
 			}
-			else if (prop) {
-				if (prop.includes('//') || prop.includes('/hide/')) dialogFilters.push(prop);
-				if (prop.includes('//')) this.filter_ppt.push(prop);
+			else {
+				if (prop) {
+					if (prop.includes('//') || prop.includes('/hide/')) dialogFilters.push(prop);
+					if (prop.includes('//')) this.filter_ppt.push(prop);
+				}
+				if (prop || prop === null) pptNo++;
 			}
-			if (prop || prop === null) pptNo++;
 		}
 
 		pt = undefined;

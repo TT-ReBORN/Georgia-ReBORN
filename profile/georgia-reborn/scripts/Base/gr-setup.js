@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-10-12                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -506,7 +506,7 @@ const imagesPath = `${fb.ProfilePath}georgia-reborn/images/`;
 
 // We expect disc art will be in .png with transparent background, best found at fanart.tv.
 
-// * CD ART PATHS ( named cd1.png, cd2.png, etc. ) * //
+// * CD ART ( named cd1.png, cd2.png, etc. ) * //
 pref.cdartdisc_path              = `$directory_path(%path%)\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Root -> cd%discnumber%.png
 pref.cdartdisc_path_artwork_root = `$directory_path(%path%)\\..\\Artwork\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Root Artwork -> cd%discnumber%.png
 pref.cdartdisc_path_images_root  = `$directory_path(%path%)\\..\\Images\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Root Images -> cd%discnumber%.png
@@ -515,7 +515,7 @@ pref.cdartdisc_path_artwork      = `$directory_path(%path%)\\Artwork\\${settings
 pref.cdartdisc_path_images       = `$directory_path(%path%)\\Images\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Subfolder Images -> cd%discnumber%.png
 pref.cdartdisc_path_scans        = `$directory_path(%path%)\\Scans\\${settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`; // Subfolder Scans -> cd%discnumber%.png
 
-// * CD ART PATHS ( named cd.png (or whatever custom value was specified). This is the most common single disc case. ) * //
+// * CD ART ( named cd.png (or whatever custom value was specified). This is the most common single disc case. ) * //
 pref.cdart_path                  = `$directory_path(%path%)\\${settings.discArtBasename}.png`; // Root -> cd.png
 pref.cdart_path_artwork_root     = `$directory_path(%path%)\\..\\Artwork\\${settings.discArtBasename}.png`; // Root Artwork -> cd.png
 pref.cdart_path_images_root      = `$directory_path(%path%)\\..\\Images\\${settings.discArtBasename}.png`; // Root Images -> cd.png
