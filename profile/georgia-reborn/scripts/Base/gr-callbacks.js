@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-10-12                                          * //
+// * Last change:    2023-10-16                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1076,18 +1076,33 @@ function on_mouse_wheel(step) {
 
 	// * Cycling through album artwork
 	if (pref.cycleArtMWheel && albumArtList.length > 1 && displayAlbumArt && mouseInAlbumArt()) {
-		if (step > 0) { // Prev album art image
-			if (albumArtIndex !== 0) albumArtIndex = (albumArtIndex - 1) % albumArtList.length;
-		} else {		 // Next album art image
-			if (albumArtIndex !== albumArtList.length - 1) albumArtIndex = (albumArtIndex + 1) % albumArtList.length;
+		// Prev album art image
+		if (step > 0) {
+			if (albumArtIndex !== 0) {
+				albumArtIndex = (albumArtIndex - 1) % albumArtList.length;
+			}
+		}
+		// Next album art image
+		else if (albumArtIndex !== albumArtList.length - 1) {
+			albumArtIndex = (albumArtIndex + 1) % albumArtList.length;
 		}
 		loadImageFromAlbumArtList(albumArtIndex);
-		if (pref.theme === 'reborn' || pref.theme === 'random' || pref.styleBlackAndWhiteReborn || pref.styleBlackReborn) {
+		// Display embedded album art image
+		if (pref.loadEmbeddedAlbumArtFirst && albumArtIndex === 0) {
+			albumArt = utils.GetAlbumArtV2(fb.GetNowPlaying());
+			albumArtList.unshift(albumArt);
+			albumArtIndex = 0;
+		}
+
+		// Update colors for dynamic themes
+		if (['white', 'black', 'reborn', 'random'].includes(pref.theme) || pref.styleBlackAndWhiteReborn || pref.styleBlackReborn) {
 			newTrackFetchingArtwork = true;
 			getThemeColors(albumArt);
 			initTheme();
 			DebugLog('\n>>> initTheme -> on_mouse_wheel <<<\n');
 		}
+
+		// Update positions
 		resizeArtwork(true); // Re-adjust discArt shadow size if artwork size changes
 		if (pref.panelWidthAuto && albumArtSize.w !== albumArtSize.h) { // Re-adjust playlist if artwork size changes
 			playlist.on_size(ww, wh);
