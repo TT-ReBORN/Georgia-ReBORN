@@ -1095,7 +1095,7 @@ function on_mouse_wheel(step) {
 		}
 
 		// Update colors for dynamic themes
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme) || pref.styleBlackAndWhiteReborn || pref.styleBlackReborn) {
+		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
 			newTrackFetchingArtwork = true;
 			getThemeColors(albumArt);
 			initTheme();
