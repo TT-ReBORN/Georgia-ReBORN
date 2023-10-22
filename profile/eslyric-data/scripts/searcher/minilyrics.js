@@ -8,7 +8,7 @@ import crypto from 'crypto-es/lib/index.js';
 
 export function getConfig(cfg) {
 	cfg.name = 'MiniLyrics (Synced)';
-	cfg.version = '0.3';
+	cfg.version = '0.4';
 	cfg.author = 'ohyeah & TT';
 	cfg.useRawMeta = false;
 }
@@ -139,14 +139,16 @@ function concatTypedArray(ResultConstructor, ...arrays) {
 	let offset = 0;
 	const result = new ResultConstructor(totalLength);
 
-	for (const arr of arrays) {
-		totalLength += arr.length;
-	}
+	try {
+		for (const arr of arrays) {
+			totalLength += arr.length;
+		}
 
-	for (const arr of arrays) {
-		result.set(arr, offset);
-		offset += arr.length;
-	}
+		for (const arr of arrays) {
+			result.set(arr, offset);
+			offset += arr.length;
+		}
+	} catch (e) {}
 
 	// console.log(buf2hex(result));
 	return result;
