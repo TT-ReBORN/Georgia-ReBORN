@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-10-16                                          * //
+// * Last change:    2023-10-23                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -140,7 +140,7 @@ function on_metadb_changed(handle_list, fromhook) {
 
 			const showGridArtistFlags     = pref[`showGridArtistFlags_${pref.layout}`];
 			const showGridReleaseFlags    = pref[`showGridReleaseFlags_${pref.layout}`];
-			const showLowerBarArtistFlags = pref[`showLowerBarArtistFlags__${pref.layout}`];
+			const showLowerBarArtistFlags = pref[`showLowerBarArtistFlags_${pref.layout}`];
 
 			if (showGridArtistFlags || showLowerBarArtistFlags) {
 				loadCountryFlags();
