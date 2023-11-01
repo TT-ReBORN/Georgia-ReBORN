@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-11-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -36,12 +36,14 @@ function clearUIVariables() {
  * Initializes the theme on startup or reload.
  */
 function initMain() {
+	// * Init variables
 	console.log('initMain()');
 	loadingTheme = true;
 	str = clearUIVariables();
 	ww = window.Width;
 	wh = window.Height;
 
+	// * Init components
 	artCache = new ArtCache(15);
 	g_tooltip_timer = new TooltipTimer();
 	tt = new TooltipHandler();
@@ -83,28 +85,19 @@ function initMain() {
 		on_playback_new_track(fb.GetNowPlaying());
 	}
 
-	window.Repaint();	// Needed when loading async, otherwise superfluous
-
 	// * Workaround so we can use the Edit menu or run fb.RunMainMenuCommand("Edit/Something...")
 	// * when the panel has focus and a dedicated playlist viewer doesn't.
 	plman.SetActivePlaylistContext(); // Once on startup
 
+	// * Init panels
 	if (!libraryInitialized) {
 		initLibraryPanel();
 		setLibrarySize();
+		initLibraryLayout();
 	}
 	if (!biographyInitialized) {
 		initBiographyPanel();
 		setBiographySize();
-	}
-	if (libraryInitialized && biographyInitialized) {
-		setTimeout(() => {
-			lib.initialise();
-			panel.updateProp(1);
-			uiBio.updateProp(1);
-			initLibraryLayout();
-			loadingThemeComplete = true;
-		}, 100);
 	}
 	if (pref.panelWidthAuto) {
 		initPanelWidthAuto();
@@ -121,6 +114,7 @@ function initMain() {
 		displayLyrics();
 	}
 
+	// * Init colors
 	if (pref.theme === 'random' && pref.randomThemeAutoColor !== 'off') {
 		getRandomThemeAutoColor();
 	}
@@ -141,6 +135,12 @@ function initMain() {
 			restoreBackupPlaylist();
 		}, !loadingTheme);
 	}
+
+	// * Hide loading screen
+	setTimeout(() => {
+		loadingThemeComplete = true;
+		window.Repaint();
+	}, 100);
 }
 
 
@@ -252,9 +252,12 @@ function initTheme() {
 	const themeProfiler = timings.showDebugTiming ? fb.CreateProfiler('initTheme') : null;
 
 	const fullInit =
-		initThemeFull ||
-		ppt.theme !== 0 || pptBio.theme !== 0 ||
-		pref.theme === 'reborn' || pref.theme === 'random' ||
+		initThemeFull || pref.themeBrightness !== 'default'
+		||
+		ppt.theme !== 0 || pptBio.theme !== 0
+		||
+		pref.theme === 'reborn' || pref.theme === 'random'
+		||
 		pref.styleBlackAndWhiteReborn || pref.styleBlackReborn;
 
 	// * SETUP COLORS * //
@@ -267,22 +270,21 @@ function initTheme() {
 
 	// * INIT COLORS * //
 	initPlaylistColors();
-	if (fullInit && pref.playlistRowHover) playlist.title_color_change();
 	initLibraryColors();
-	if (fullInit && img.labels.overlayDark) ui.getItemColours(); // Library
-	if (fullInit) uiBio.getColours(); // Biography
 	initBiographyColors();
-	if (fullInit) txt.getText(true); // Biography
 	initMainColors();
 	initStyleColors();
 	initChronflowColors();
 
 	// * POST-INIT COLOR ADJUSTMENTS * //
 	themeColorAdjustments();
+	if (!fullInit) return;
 	if (pref.themeBrightness !== 'default') adjustThemeBrightness(pref.themeBrightness);
+	if (pref.playlistRowHover) playlist.title_color_change();
+	if (img.labels.overlayDark) ui.getItemColours(); // Refresh Library
+	txt.artCalc(); txt.albCalc(); // Refresh Biography
 
 	// * UPDATE BUTTONS * //
-	if (!fullInit) return;
 	playlist.initScrollbar();
 	sbar.setCol(); // Library
 	pop.createImages(); // Library

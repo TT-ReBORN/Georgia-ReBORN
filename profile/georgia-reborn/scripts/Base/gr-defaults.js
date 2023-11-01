@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-10-11                                          * //
+// * Last change:    2023-11-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -380,7 +380,7 @@ const themeBrightnessDefaults = {
 
 /** @type {Object} Options > Brightness settings config name description. */
 const themeBrightnessComments = {
-	themeBrightness: 'Values: -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25 - Options > Brightness'
+	themeBrightness: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness'
 };
 
 /** @type {Object} Options > Brightness settings config header description. */
@@ -1735,7 +1735,7 @@ const customStylePresetComments = {
 	volumeBarDesign: 'Values: "default", "rounded"',
 	volumeBar: 'Values: "default", "bevel", "inner"',
 	volumeBarFill: 'Values: "default", "bevel", "inner"',
-	themeBrightness: 'Values: -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25'
+	themeBrightness: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50'
 };
 
 /** @type {Object} Custom style preset config header description. */

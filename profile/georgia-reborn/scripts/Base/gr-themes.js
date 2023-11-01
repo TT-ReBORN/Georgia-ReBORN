@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-11-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -774,7 +774,7 @@ function playlistColorsRebornRandomTheme() {
 	if (fb.IsPlaying && isColored) {
 		if (pref.styleGradient || pref.styleGradient2 || pref.styleRebornFusion || pref.styleRebornFusion2 ? lightBgPlaylist : lightBg) {
 			// * PLAYLIST MANAGER COLORS * //
-			g_pl_colors.plman_text_normal = pref.autoHidePlman ? col.primary : col.darkAccent_75;
+			g_pl_colors.plman_text_normal = pref.autoHidePlman ? g_pl_colors.bg : col.darkAccent_75;
 			g_pl_colors.plman_text_hovered = col.darkAccent_100;
 			g_pl_colors.plman_text_pressed = col.darkAccent_100;
 
@@ -803,7 +803,7 @@ function playlistColorsRebornRandomTheme() {
 		}
 		else {
 			// * PLAYLIST MANAGER COLORS * //
-			g_pl_colors.plman_text_normal = pref.autoHidePlman ? col.primary : col.lightAccent_80;
+			g_pl_colors.plman_text_normal = pref.autoHidePlman ? g_pl_colors.bg : col.lightAccent_80;
 			g_pl_colors.plman_text_hovered = col.lightAccent_100;
 			g_pl_colors.plman_text_pressed = col.lightAccent_100;
 
@@ -4281,23 +4281,23 @@ function adjustThemeBrightness(percent) {
 		ui.col.bg = g_pl_colors.bg;
 		ui.col.line = ShadeColor(ui.col.line, percent);
 		ui.col.s_line = ShadeColor(ui.col.s_line, percent);
-		ui.col.nowPlayingBg = ShadeColor(ui.col.nowPlayingBg, percent - 5);
+		ui.col.nowPlayingBg = ShadeColor(ui.col.nowPlayingBg, percent);
 		ui.col.sideMarker = ShadeColor(ui.col.sideMarker, percent);
 		ui.col.sideMarker_nobw = ShadeColor(ui.col.sideMarker_nobw, percent);
-		ui.col.selectionFrame = ShadeColor(ui.col.selectionFrame, percent - 10);
-		ui.col.sbarBtns = ShadeColor(ui.col.sbarBtns, percent - 10);
-		ui.col.sbarNormal = ShadeColor(ui.col.sbarNormal, percent - 10);
-		ui.col.sbarHovered = ShadeColor(ui.col.sbarHovered, percent - 10);
-		ui.col.sbarDrag = ShadeColor(ui.col.sbarDrag, percent - 10);
+		ui.col.selectionFrame = ShadeColor(ui.col.selectionFrame, percent);
+		ui.col.sbarBtns = ShadeColor(ui.col.sbarBtns, percent);
+		ui.col.sbarNormal = ShadeColor(ui.col.sbarNormal, percent);
+		ui.col.sbarHovered = ShadeColor(ui.col.sbarHovered, percent);
+		ui.col.sbarDrag = ShadeColor(ui.col.sbarDrag, percent);
 
 		// * BIOGRAPHY COLORS * //
 		uiBio.col.bg = g_pl_colors.bg;
 		uiBio.col.bottomLine = g_pl_colors.header_line_normal;
 		uiBio.col.centerLine = g_pl_colors.header_line_normal;
-		uiBio.col.sbarBtns = ShadeColor(uiBio.col.sbarBtns, percent - 10);
-		uiBio.col.sbarNormal = ShadeColor(uiBio.col.sbarNormal, percent - 10);
-		uiBio.col.sbarHovered = ShadeColor(uiBio.col.sbarHovered, percent - 10);
-		uiBio.col.sbarDrag = ShadeColor(uiBio.col.sbarDrag, percent - 10);
+		uiBio.col.sbarBtns = ShadeColor(uiBio.col.sbarBtns, percent);
+		uiBio.col.sbarNormal = ShadeColor(uiBio.col.sbarNormal, percent);
+		uiBio.col.sbarHovered = ShadeColor(uiBio.col.sbarHovered, percent);
+		uiBio.col.sbarDrag = ShadeColor(uiBio.col.sbarDrag, percent);
 
 		// * MAIN COLORS * //
 		col.bg = ShadeColor(col.bg, percent);
@@ -4309,6 +4309,7 @@ function adjustThemeBrightness(percent) {
 		col.timelineUnplayed = ShadeColor(col.timelineUnplayed, percent);
 		col.timelineFrame = ShadeColor(col.timelineFrame, percent);
 		col.popupBg = ShadeColor(col.popupBg, percent);
+		if (str.timeline) str.timeline.setColors(col.timelineAdded, col.timelinePlayed, col.timelineUnplayed);
 
 		// * TOP MENU BUTTON COLORS * //
 		col.menuBgColor = ShadeColor(col.menuBgColor, percent);
@@ -4332,7 +4333,7 @@ function adjustThemeBrightness(percent) {
 		col.progressBar = ShadeColor(col.progressBar, percent);
 		col.progressBarStreaming = ShadeColor(col.progressBarStreaming, percent);
 		col.progressBarFrame = ShadeColor(col.progressBarFrame, percent);
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) col.progressBarFill = ShadeColor(col.progressBarFill, percent - 3);
+		col.progressBarFill = ShadeColor(col.progressBarFill, percent);
 
 		// * PEAKMETER BAR COLORS * //
 		col.peakmeterBarProg = ShadeColor(col.peakmeterBarProg, percent);
@@ -4343,16 +4344,6 @@ function adjustThemeBrightness(percent) {
 		col.peakmeterBarVertProgFill = ShadeColor(col.peakmeterBarVertProgFill, percent);
 		col.peakmeterBarVertFill = ShadeColor(col.peakmeterBarVertFill, percent);
 		col.peakmeterBarVertFillPeaks = ShadeColor(col.peakmeterBarVertFillPeaks, percent);
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
-			col.peakmeterBarProg = ShadeColor(col.peakmeterBarProg, percent - 3);
-			col.peakmeterBarProgFill = ShadeColor(col.peakmeterBarProgFill, percent - 3);
-			col.peakmeterBarFillTop = ShadeColor(col.peakmeterBarFillTop, percent - 3);
-			col.peakmeterBarFillMiddle = ShadeColor(col.peakmeterBarFillMiddle, percent - 3);
-			col.peakmeterBarFillBack = ShadeColor(col.peakmeterBarFillBack, percent - 3);
-			col.peakmeterBarVertProgFill = ShadeColor(col.peakmeterBarVertProgFill, percent - 3);
-			col.peakmeterBarVertFill = ShadeColor(col.peakmeterBarVertFill, percent - 3);
-			col.peakmeterBarVertFillPeaks = ShadeColor(col.peakmeterBarVertFillPeaks, percent - 3);
-		}
 
 		// * WAVEFORM BAR COLORS * //
 		col.waveformBarFillFront = ShadeColor(col.waveformBarFillFront, percent);
@@ -4360,24 +4351,24 @@ function adjustThemeBrightness(percent) {
 		col.waveformBarFillPreFront = ShadeColor(col.waveformBarFillPreFront, percent);
 		col.waveformBarFillPreBack = ShadeColor(col.waveformBarFillPreBack, percent);
 		col.waveformBarIndicator = ShadeColor(col.waveformBarIndicator, percent);
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
-			col.waveformBarFillFront = ShadeColor(col.waveformBarFillFront, percent - 3);
-			col.waveformBarFillBack  = ShadeColor(col.waveformBarFillBack,  percent - 3);
-			col.waveformBarFillPreFront = ShadeColor(col.waveformBarFillPreFront, percent - 3);
-			col.waveformBarFillPreBack = ShadeColor(col.waveformBarFillPreBack, percent - 3);
-			col.waveformBarIndicator = ShadeColor(col.waveformBarIndicator, percent - 3);
-		}
 
 		// * VOLUME BAR COLORS * //
 		col.volumeBar = ShadeColor(col.volumeBar, percent);
 		col.volumeBarFrame = ShadeColor(col.volumeBarFrame, percent);
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) col.volumeBarFill = ShadeColor(col.volumeBarFill, percent - 3);
+		col.volumeBarFill = ShadeColor(col.volumeBarFill, percent);
 
 		// * STYLE COLORS * //
 		col.styleProgressBar = ShadeColor(col.styleProgressBar, percent);
 		col.styleProgressBarLineTop = ShadeColor(col.styleProgressBarLineTop, percent);
 		col.styleProgressBarLineBottom = ShadeColor(col.styleProgressBarLineBottom, percent);
 		col.styleVolumeBar = ShadeColor(col.styleVolumeBar, percent);
+
+		// * ONLY DARKEN BLACK TEXT AND BUTTON COLORS BUT NOT WHITE TEXT COLORS * //
+		const bgColBrightness = new Color(col.bg).brightness;
+		const txtColBrightness = new Color(g_pl_colors.row_title_normal).brightness;
+		if (bgColBrightness < 200 && txtColBrightness < 150) {
+			adjustTextButtonColors(true, false, false, false);
+		}
 	}
 	else if (pref.themeBrightness > 0) { // * Lighten
 		// * PLAYLIST COLORS * //
@@ -4404,23 +4395,23 @@ function adjustThemeBrightness(percent) {
 		ui.col.bg = g_pl_colors.bg;
 		ui.col.line = TintColor(ui.col.line, percent);
 		ui.col.s_line = TintColor(ui.col.s_line, percent);
-		ui.col.nowPlayingBg = TintColor(ui.col.nowPlayingBg, percent - 3);
+		ui.col.nowPlayingBg = TintColor(ui.col.nowPlayingBg, percent);
 		ui.col.sideMarker = TintColor(ui.col.sideMarker, percent);
 		ui.col.sideMarker_nobw = TintColor(ui.col.sideMarker_nobw, percent);
 		ui.col.selectionFrame = TintColor(ui.col.selectionFrame, percent);
-		ui.col.sbarBtns = TintColor(ui.col.sbarBtns, percent - 5);
-		ui.col.sbarNormal = TintColor(ui.col.sbarNormal, percent - 5);
-		ui.col.sbarHovered = TintColor(ui.col.sbarHovered, percent - 5);
-		ui.col.sbarDrag = TintColor(ui.col.sbarDrag, percent - 5);
+		ui.col.sbarBtns = TintColor(ui.col.sbarBtns, percent);
+		ui.col.sbarNormal = TintColor(ui.col.sbarNormal, percent);
+		ui.col.sbarHovered = TintColor(ui.col.sbarHovered, percent);
+		ui.col.sbarDrag = TintColor(ui.col.sbarDrag, percent);
 
 		// * BIOGRAPHY COLORS * //
 		uiBio.col.bg = g_pl_colors.bg;
 		uiBio.col.bottomLine = g_pl_colors.header_line_normal;
 		uiBio.col.centerLine = g_pl_colors.header_line_normal;
-		uiBio.col.sbarBtns = TintColor(uiBio.col.sbarBtns, percent - 5);
-		uiBio.col.sbarNormal = TintColor(uiBio.col.sbarNormal, percent - 5);
-		uiBio.col.sbarHovered = TintColor(uiBio.col.sbarHovered, percent - 5);
-		uiBio.col.sbarDrag = TintColor(uiBio.col.sbarDrag, percent - 5);
+		uiBio.col.sbarBtns = TintColor(uiBio.col.sbarBtns, percent);
+		uiBio.col.sbarNormal = TintColor(uiBio.col.sbarNormal, percent);
+		uiBio.col.sbarHovered = TintColor(uiBio.col.sbarHovered, percent);
+		uiBio.col.sbarDrag = TintColor(uiBio.col.sbarDrag, percent);
 
 		// * MAIN COLORS * //
 		col.bg = TintColor(col.bg, percent);
@@ -4432,6 +4423,7 @@ function adjustThemeBrightness(percent) {
 		col.timelineUnplayed = TintColor(col.timelineUnplayed, percent);
 		col.timelineFrame = TintColor(col.timelineFrame, percent);
 		col.popupBg = TintColor(col.popupBg, percent);
+		if (str.timeline) str.timeline.setColors(col.timelineAdded, col.timelinePlayed, col.timelineUnplayed);
 
 		// * TOP MENU BUTTON COLORS * //
 		col.menuBgColor = TintColor(col.menuBgColor, percent);
@@ -4455,7 +4447,7 @@ function adjustThemeBrightness(percent) {
 		col.progressBar = TintColor(col.progressBar, percent);
 		col.progressBarStreaming = TintColor(col.progressBarStreaming, percent);
 		col.progressBarFrame = TintColor(col.progressBarFrame, percent);
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) col.progressBarFill = TintColor(col.progressBarFill, percent - 3);
+		col.progressBarFill = TintColor(col.progressBarFill, percent);
 
 		// * PEAKMETER BAR COLORS * //
 		col.peakmeterBarProg = TintColor(col.peakmeterBarProg, percent);
@@ -4463,19 +4455,9 @@ function adjustThemeBrightness(percent) {
 		col.peakmeterBarFillTop = TintColor(col.peakmeterBarFillTop, percent);
 		col.peakmeterBarFillMiddle = TintColor(col.peakmeterBarFillMiddle, percent);
 		col.peakmeterBarFillBack = TintColor(col.peakmeterBarFillBack, percent);
-		col.peakmeterBarVertProgFill  = TintColor(col.peakmeterBarVertProgFill, percent);
+		col.peakmeterBarVertProgFill = TintColor(col.peakmeterBarVertProgFill, percent);
 		col.peakmeterBarVertFill = TintColor(col.peakmeterBarVertFill, percent);
 		col.peakmeterBarVertFillPeaks = TintColor(col.peakmeterBarVertFillPeaks, percent);
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
-			col.peakmeterBarProg = TintColor(col.peakmeterBarProg, percent - 3);
-			col.peakmeterBarProgFill = TintColor(col.peakmeterBarProgFill, percent - 3);
-			col.peakmeterBarFillTop = TintColor(col.peakmeterBarFillTop, percent - 3);
-			col.peakmeterBarFillMiddle = TintColor(col.peakmeterBarFillMiddle, percent - 3);
-			col.peakmeterBarFillBack = TintColor(col.peakmeterBarFillBack, percent - 3);
-			col.peakmeterBarVertProgFill  = TintColor(col.peakmeterBarVertProgFill, percent - 3);
-			col.peakmeterBarVertFill = TintColor(col.peakmeterBarVertFill, percent - 3);
-			col.peakmeterBarVertFillPeaks = TintColor(col.peakmeterBarVertFillPeaks, percent - 3);
-		}
 
 		// * WAVEFORM BAR COLORS * //
 		col.waveformBarFillFront = TintColor(col.waveformBarFillFront, percent);
@@ -4483,24 +4465,132 @@ function adjustThemeBrightness(percent) {
 		col.waveformBarFillPreFront = TintColor(col.waveformBarFillPreFront, percent);
 		col.waveformBarFillPreBack = TintColor(col.waveformBarFillPreBack, percent);
 		col.waveformBarIndicator = TintColor(col.waveformBarIndicator, percent);
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
-			col.waveformBarFillFront = TintColor(col.waveformBarFillFront, percent - 3);
-			col.waveformBarFillBack = TintColor(col.waveformBarFillBack,  percent - 3);
-			col.waveformBarFillPreFront = TintColor(col.waveformBarFillPreFront, percent - 3);
-			col.waveformBarFillPreBack = TintColor(col.waveformBarFillPreBack, percent - 3);
-			col.waveformBarIndicator = TintColor(col.waveformBarIndicator, percent - 3);
-		}
 
 		// * VOLUME BAR COLORS * //
 		col.volumeBar = TintColor(col.volumeBar, percent);
 		col.volumeBarFrame = TintColor(col.volumeBarFrame, percent);
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) col.volumeBarFill = TintColor(col.volumeBarFill, percent - 3);
+		col.volumeBarFill = TintColor(col.volumeBarFill, percent);
 
 		// * STYLE COLORS * //
 		col.styleProgressBar = TintColor(col.styleProgressBar, percent);
 		col.styleProgressBarLineTop = TintColor(col.styleProgressBarLineTop, percent);
 		col.styleProgressBarLineBottom = TintColor(col.styleProgressBarLineBottom, percent);
 		col.styleVolumeBar = TintColor(col.styleVolumeBar, percent);
+
+		// * LIGHTEN TEXT AND BUTTON COLORS * //
+		const bgColBrightness = new Color(col.bg).brightness;
+		if (bgColBrightness < 150 && bgColBrightness > 50) {
+			adjustTextButtonColors(false, false, true, false);
+		}
+	}
+
+	// * ADJUST TEXT AND BUTTONS WHEN BRIGHTNESS IS TOO BRIGHT OR TOO DARK * //
+	function adjustTextButtonColors(darken, darkenMax, lighten, lightenMax) {
+		const SetColor = (color, boost, soften) => {
+			switch (true) {
+				case darken:
+					return ShadeColor(color, percent * (boost ? 1.75 : soften ? 1.25 : 1.5));
+				case darkenMax:
+					return ShadeColor(color, boost ? 100 : soften ? 60 : 85);
+				case lighten:
+					return TintColor(color, percent * (boost ? 1.75 : soften ? 1.25 : 1.5));
+				case lightenMax:
+					return TintColor(color, boost ? 100 : soften ? 60 : 85);
+			}
+		};
+
+		const playlistColors = {
+			plman_text_normal: pref.autoHidePlman ? g_pl_colors.bg : SetColor(g_pl_colors.plman_text_normal),
+			plman_text_hovered: SetColor(g_pl_colors.plman_text_hovered, true),
+			plman_text_pressed: SetColor(g_pl_colors.plman_text_pressed, true),
+			header_artist_normal: SetColor(g_pl_colors.header_artist_normal),
+			header_artist_playing: SetColor(g_pl_colors.header_artist_playing, true),
+			header_album_normal: SetColor(g_pl_colors.header_album_normal),
+			header_album_playing: SetColor(g_pl_colors.header_album_playing, true),
+			header_info_normal: SetColor(g_pl_colors.header_info_normal, true),
+			header_info_playing: SetColor(g_pl_colors.header_info_playing, true),
+			header_date_normal: SetColor(g_pl_colors.header_date_normal),
+			header_date_playing: SetColor(g_pl_colors.header_date_playing, true),
+			row_title_normal: SetColor(g_pl_colors.row_title_normal),
+			row_title_playing: SetColor(g_pl_colors.row_title_playing, true),
+			row_title_selected: SetColor(g_pl_colors.row_title_selected, true),
+			row_title_hovered: SetColor(g_pl_colors.row_title_hovered, true),
+			sbar_btn_normal: SetColor(g_pl_colors.sbar_btn_normal),
+			sbar_btn_hovered: SetColor(g_pl_colors.sbar_btn_hovered, true),
+			sbar_thumb_normal: SetColor(g_pl_colors.sbar_thumb_normal, false, true),
+			sbar_thumb_hovered: SetColor(g_pl_colors.sbar_thumb_hovered, true),
+			sbar_thumb_drag: SetColor(g_pl_colors.sbar_thumb_drag, true)
+		};
+		Object.assign(g_pl_colors, playlistColors);
+
+		const libraryColors = {
+			iconPlus: SetColor(ui.col.iconPlus),
+			iconPlus_h: SetColor(ui.col.iconPlus_h, true),
+			iconPlus_sel: SetColor(ui.col.iconPlus_sel, true),
+			iconPlusBg: SetColor(ui.col.iconPlusBg),
+			iconMinus_e: SetColor(ui.col.iconMinus_e),
+			iconMinus_h: SetColor(ui.col.iconMinus_h, true),
+			text: SetColor(ui.col.text),
+			text_h: SetColor(ui.col.text_h, true),
+			text_nowp: SetColor(ui.col.text_nowp, true),
+			textSel: SetColor(ui.col.textSel, true),
+			txt_box: SetColor(ui.col.txt_box),
+			search: SetColor(ui.colsearch),
+			searchBtn: SetColor(ui.col.searchBtn),
+			crossBtn: SetColor(ui.col.crossBtn),
+			filterBtn: SetColor(ui.col.filterBtn),
+			settingsBtn: SetColor(ui.col.settingsBtn),
+			line: SetColor(ui.col.line),
+			sbarBtns: SetColor(ui.col.sbarBtns),
+			sbarNormal: SetColor(ui.col.sbarNormal),
+			sbarHovered: SetColor(ui.col.sbarHovered, true),
+			sbarDrag: SetColor(ui.col.sbarDrag, true)
+		};
+		Object.assign(ui.col, libraryColors);
+
+		const biographyColors = {
+			headingText: SetColor(uiBio.col.headingText),
+			iconMinus_e: SetColor(uiBio.col.iconMinus_e),
+			iconMinus_h: SetColor(uiBio.col.iconMinus_h),
+			text: SetColor(uiBio.col.text),
+			source: SetColor(uiBio.col.source),
+			accent: SetColor(uiBio.col.accent),
+			summary: SetColor(uiBio.col.summary),
+			sbarBtns: SetColor(uiBio.col.sbarBtns),
+			sbarNormal: SetColor(uiBio.sbarNormal),
+			sbarHovered: SetColor(uiBio.col.sbarHovered, true),
+			sbarDrag: SetColor(uiBio.col.sbarDrag, true)
+		};
+		Object.assign(uiBio.col, biographyColors);
+
+		const mainColors = {
+			detailsText: SetColor(col.detailsText),
+			popupText: SetColor(col.popupText),
+			noAlbumArtStub: SetColor(col.noAlbumArtStub),
+			lowerBarArtist: SetColor(col.lowerBarArtist),
+			lowerBarTitle: SetColor(col.lowerBarTitle),
+			lowerBarTime: SetColor(col.lowerBarTime),
+			lowerBarLength: SetColor(col.lowerBarLength),
+			menuTextNormal: SetColor(col.menuTextNormal),
+			menuTextHovered: SetColor(col.menuTextHovered, true),
+			menuTextDown: SetColor(col.menuTextDown, true),
+			transportIconNormal: !['reborn', 'random'].includes(pref.theme) ? SetColor(col.transportIconNormal) : col.transportIconNormal,
+			transportIconHovered: !['reborn', 'random'].includes(pref.theme) ? SetColor(col.transportIconHovered, true) : col.transportIconHovered,
+			transportIconDown: !['reborn', 'random'].includes(pref.theme) ? SetColor(col.transportIconDown, true) : col.transportIconDown
+		};
+		Object.assign(col, mainColors);
+
+		window.Repaint();
+	}
+
+	const bgColBrightness = new Color(col.bg).brightness;
+	if (pref.themeBrightness > 20 && bgColBrightness < 200 && bgColBrightness > 125) {
+		lightBg = false;
+		adjustTextButtonColors(false, true, false, false);
+	}
+	else if (pref.themeBrightness < -20 && bgColBrightness < 150 && bgColBrightness > 50) {
+		lightBg = false;
+		adjustTextButtonColors(false, false, false, true);
 	}
 }
 

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-10-11                                          * //
+// * Last change:    2023-11-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -879,9 +879,9 @@ function displayOptions(menu) {
  * @param {Menu} menu Creates the Brightness menu via a new Menu instance.
  */
 function brightnessOptions(menu) {
-	menu.createRadioSubMenu('Brightness', ['-25%', '-20%', '-15%', '-10%', '-5%', 'Default', '+5%', '+10%', '+15%', '+20%', '+25%'], pref.themeBrightness, [-25, -20, -15, -10, -5, 'default', 5, 10, 15, 20, 25], (percent) => {
+	menu.createRadioSubMenu('Brightness', ['   -50%', '   -40%', '   -30%', '   -25%', '   -20%', '   -15%', '   -10%', '     -5%', 'Default', '     +5%', '   +10%', '   +15%', '   +20%', '   +25%', '   +30%', '   +40%', '   +50%'],
+		pref.themeBrightness, [-50, -40, -30, -25, -20, -15, -10, -5, 'default', 5, 10, 15, 20, 25, 30, 40, 50], (percent) => {
 		if (!pref.themeSandbox) pref.savedThemeBrightness = pref.themeBrightness = percent; else pref.themeBrightness = percent;
-		initThemeFull = true;
 		initTheme();
 	}, pref.presetSelectMode === 'harmonic');
 }
