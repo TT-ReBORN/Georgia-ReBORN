@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-10-23                                          * //
+// * Last change:    2023-11-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -696,7 +696,7 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 			// * Refresh theme
 			else if (settings.doubleClickRefresh) {
 				albumArt = null;
-				artCache.clear();
+				artCache && artCache.clear();
 				discArtArray = [];
 				discArtArrayCover = [];
 				discArt = null;
