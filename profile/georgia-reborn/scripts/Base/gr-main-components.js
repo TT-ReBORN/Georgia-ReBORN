@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-28                                          * //
+// * Last change:    2023-11-05                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -216,6 +216,25 @@ class Menu {
 				callback();
 			}
 		}, disabled);
+	}
+
+	/**
+	 * Creates a set of toggled items and checks the value specified.
+	 * @param {string[]} labels The label for each item.
+	 * @param {*} selectedValue The value of the item to be checked.
+	 * @param {*[]} variables An array of values which correspond to each entry.
+	 * @param {Function} callback A function that will be executed when the item is clicked.
+	 */
+	addToggleItems(labels, selectedValues, variables, callback = () => { }, disabled = false) {
+		for (let i = 0; i < labels.length; i++) {
+			this.menu.AppendMenuItem(MF_STRING | (disabled ? MF_DISABLED | MF_GRAYED : 0), _MenuItemIndex, labels[i]);
+			_MenuCallbacks[_MenuItemIndex] = callback;
+			_MenuVariables[_MenuItemIndex] = variables[i];
+			if (selectedValues.includes(variables[i])) {
+				this.menu.CheckMenuItem(_MenuItemIndex, true);
+			}
+			_MenuItemIndex++;
+		}
 	}
 
 	/**

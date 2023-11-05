@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-01                                          * //
+// * Last change:    2023-11-05                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2724,18 +2724,36 @@ function biographyOptions(menu, context_menu) {
 	});
 
 	const biographySourcesCoverMenu = new Menu('Cover');
-	biographySourcesCoverMenu.addRadioItems(['Front', 'Back', 'Disc', 'Icon', 'Artist'], pptBio.covType, [0, 1, 2, 3, 4], (cycle) => {
-		pptBio.covType = cycle;
-		uiBio.updateProp(1);
-	}, !pptBio.loadCovAllFb);
+	if (!pptBio.loadCovAllFb && !pptBio.loadCovFolder) {
+		biographySourcesCoverMenu.addRadioItems(['Front', 'Back', 'Disc', 'Icon', 'Artist'], pptBio.covType, [0, 1, 2, 3, 4], (type) => {
+			pptBio.covType = type;
+			imgBio.cov.selection = [0, -1, -1, -1, -1];
+			imgBio.cov.selFiltered = [0];
+			imgBio.getImages();
+		}, pptBio.loadCovFolder);
+	} else {
+		biographySourcesCoverMenu.addToggleItems(['Front', 'Back', 'Disc', 'Icon', 'Artist'], imgBio.cov.selection, [0, 1, 2, 3, 4], (type) => {
+			!pptBio.loadCovAllFb ? pptBio.covType = type : imgBio.cov.selection[type] = imgBio.cov.selection[type] === -1 ? type : -1;
+			imgBio.cov.selFiltered = imgBio.cov.selection.filter(v => v !== -1);
+			if (!imgBio.cov.selFiltered.length) {
+				imgBio.cov.selection = [0, -1, -1, -1, -1];
+				imgBio.cov.selFiltered = [0];
+			}
+			pptBio.loadCovSelFb = JSON.stringify(imgBio.cov.selection);
+			!pptBio.loadCovAllFb ? imgBio.getImages() : imgBio.check();
+		}, !pptBio.loadCovAllFb && pptBio.loadCovFolder);
+	}
 	biographySourcesCoverMenu.addSeparator();
 	biographySourcesCoverMenu.addToggleItem('Cycle above', pptBio, 'loadCovAllFb', () => {
-		uiBio.updateProp(1);
+		pptBio.loadCovAllFb = !pptBio.loadCovAllFb;
+		imgBio.toggle('loadCovAllFb');
 	});
 	biographySourcesCoverMenu.addToggleItem('Cycle from download folder', pptBio, 'loadCovFolder', () => {
-		pptBio.toggle(['cycPhoto', 'cycPhoto']);
-		fb.ShowPopupMessage("Enter folder in options: \"Server Settings\"\\Cover\\Covers: cycle folder.\n\nDefault: artist photo folder.\n\nImages are updated when the album changes. Any images arriving after choosing the current album aren't included.", 'Biography: load folder for cover cycling');
-		uiBio.updateProp(1);
+		pptBio.loadCovFolder = !pptBio.loadCovFolder;
+		imgBio.toggle('loadCovFolder');
+		if (pptBio.loadCovFolder) {
+			fb.ShowPopupMessage("Enter folder in options: \"Server Settings\"\\Cover\\Covers: cycle folder.\n\nDefault: artist photo folder.\n\nImages are updated when the album changes. Any images arriving after choosing the current album aren't included.", 'Biography: load folder for cover cycling');
+		}
 	});
 	biographySourcesCoverMenu.appendTo(biographySourcesMenu);
 
