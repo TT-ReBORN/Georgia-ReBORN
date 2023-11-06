@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-05                                          * //
+// * Last change:    2023-11-06                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -904,7 +904,7 @@ class Hyperlink {
 		if (this.x_offset < 0) {
 			this.x = w + this.x_offset; // Add because offset is negative
 		}
-		this.container_w = pref.showPlaylistFullDate ? w - SCALE(320) : w - SCALE(240);
+		this.container_w = w;
 		this.link_dimensions = this.updateDimensions();
 		this.w = Math.ceil(Math.min(this.container_w, this.link_dimensions.Width + 1));
 	}

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-28                                          * //
+// * Last change:    2023-11-06                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -4731,7 +4731,7 @@ class Header extends BaseHeader {
 				}
 				if (artist_text) {
 					let artist_x = part1_cur_x;
-					let artist_w = this.w - artist_x;
+					let artist_w = this.w - artist_x * 2;
 					let artist_h = part_h;
 					if (!g_properties.show_group_info) {
 						artist_w -= part2_right_pad + 5;
@@ -5118,14 +5118,12 @@ class Header extends BaseHeader {
 		const art_box_x = 3 * SCALE(6);
 		const spacing = SCALE(2);
 		const art_box_size = this.art_max_size + spacing * 2;
+		const left_pad = SCALE(10) + (this.art !== null && g_properties.show_album_art && !g_properties.auto_album_art ? art_box_x + art_box_size : 0);
+		const right_edge = SCALE(20);
 		const part_h = this.h / 3;
 		const separatorWidth = gr.MeasureString(' \u2020', g_pl_fonts.info, 0, 0, 0, 0).Width;
 		const bulletWidth = Math.ceil(gr.MeasureString('\u2020', g_pl_fonts.info, 0, 0, 0, 0).Width);
 		const spaceWidth = Math.ceil(separatorWidth - bulletWidth) + SCALE(1);
-		const right_edge = SCALE(20);
-		let left_pad = SCALE(10);
-		left_pad += this.art !== null && g_properties.show_album_art && !g_properties.auto_album_art ? art_box_x + art_box_size : left_pad;
-		this.hyperlinksMaxWidth = pref.showPlaylistFullDate ? this.w - SCALE(320) : this.w - SCALE(240); // Max allowed container width of hyperlinks = width - largest size of date_w
 
 		// * Date
 		const date_query = pref.showPlaylistFullDate ? tf.date : tf.year;
@@ -5144,8 +5142,11 @@ class Header extends BaseHeader {
 		// * Artist
 		const albumArtist = '%album artist%';
 		const is_radio = this.metadb.RawPath.startsWith('http');
-		let artist_text =  [];
+		let artist_text = [];
 		let artist_x = left_pad;
+		let artist_w;
+		let multi_artist_spacing_w = 0;
+		let multi_artist = false;
 		if (!is_radio) {
 			for (let i = 0; i < albumArtist.length; i++) {
 				artist_text.push(...getMetaValues(albumArtist, this.metadb));
@@ -5153,10 +5154,29 @@ class Header extends BaseHeader {
 			artist_text = [...new Set(artist_text)]; // Remove duplicates
 			for (let i = 0; i < artist_text.length; i++) {
 				if (i > 0) {
-					artist_x += bulletWidth + spaceWidth * 3; // Spacing between artists
+					artist_x += bulletWidth + spaceWidth * 3; // Spacing between multi artists
+					multi_artist_spacing_w = bulletWidth + spaceWidth * 3 * i; // Total spacing width
 				}
-				const artist_w = gr.MeasureString(artist_text[i], artist_font, 0, 0, 0, 0).Width;
-				this.hyperlinks['artist' + i] = new Hyperlink(artist_text[i], artist_font, 'artist', artist_x, SCALE(5 * (!g_properties.show_group_info ? 2 : 1)), this.hyperlinksMaxWidth, true);
+				const single_artist_w = this.w - left_pad * 2;
+				const multi_artist_w = this.w - left_pad - artist_x;
+				const ellipsis_w = gr.MeasureString('...', artist_font, 0, 0, 0, 0).Width;
+				artist_w = gr.MeasureString(artist_text[i], artist_font, 0, 0, 0, 0).Width;
+				if (artist_text.length > 1) {
+					multi_artist = true;
+					if (artist_w > multi_artist_w) {
+						while (artist_w + ellipsis_w > multi_artist_w && artist_text[i].length > 0) {
+							artist_text[i] = artist_text[i].substring(0, artist_text[i].length - 1);
+							artist_w = gr.MeasureString(artist_text[i], artist_font, 0, 0, 0, 0).Width;
+						}
+						if (artist_text[i].length > 0) {
+							artist_text[i] += '...';
+							artist_w += ellipsis_w;
+						}
+					}
+				} else {
+					artist_w = single_artist_w;
+				}
+				this.hyperlinks['artist' + i] = new Hyperlink(artist_text[i], artist_font, 'artist', artist_x, SCALE(5 * (!g_properties.show_group_info ? 2 : 1)), artist_w, true);
 				artist_x += artist_w;
 			}
 		}
@@ -5166,7 +5186,7 @@ class Header extends BaseHeader {
 		// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
 		const album_text = g_properties.show_disc_header ? $('[%album%]', this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
 		if (album_text) {
-			this.hyperlinks.album = new Hyperlink(album_text, g_pl_fonts.album, 'album', left_pad, album_y, this.hyperlinksMaxWidth, true);
+			this.hyperlinks.album = new Hyperlink(album_text, g_pl_fonts.album, 'album', left_pad, album_y, this.w - left_pad * 2, true);
 		}
 
 		// * Record labels
@@ -5179,7 +5199,7 @@ class Header extends BaseHeader {
 		const label_y = Math.round(2 * this.h / 3) - (RES_4K ? 4 : -1);
 		for (let i = labels.length - 1; i >= 0; --i) {
 			if (i !== labels.length - 1) {
-				label_left -= (bulletWidth + spaceWidth * 2);   // Spacing between labels
+				label_left -= (bulletWidth + spaceWidth * 2); // Spacing between labels
 			}
 			const label_w = gr.MeasureString(labels[i], g_pl_fonts.info, 0, 0, 0, 0).Width;
 			label_left -= label_w;
@@ -5192,7 +5212,7 @@ class Header extends BaseHeader {
 		const genre_y = label_y;
 		for (let i = 0; i < genres.length; i++) {
 			if (i > 0) {
-				genre_left += bulletWidth + spaceWidth * 2;   // Spacing between genres
+				genre_left += bulletWidth + spaceWidth * 2; // Spacing between genres
 			}
 			const genre_w = gr.MeasureString(genres[i], g_pl_fonts.info, 0, 0, 0, 0).Width;
 			this.hyperlinks['genre' + i] = new Hyperlink(genres[i], g_pl_fonts.info, 'genre', genre_left, genre_y, this.w, true);
@@ -5204,9 +5224,11 @@ class Header extends BaseHeader {
 		}
 
 		// * Callbacks for headerTooltip
-		this.artist_text_w = gr.MeasureString(artist_text, artist_font, 0, 0, 0, 0).Width;
+		this.artist_text_w = gr.MeasureString(artist_text, artist_font, 0, 0, 0, 0).Width + (multi_artist ? multi_artist_spacing_w : 0);
 		this.album_text_w = gr.MeasureString(album_text, g_pl_fonts.album, 0, 0, 0, 0).Width;
+		this.max_w = this.w - left_pad * 2;
 
+		// * Hyperlinks init done
 		this.hyperlinks_initialized = true;
 	}
 
@@ -5285,6 +5307,7 @@ class Header extends BaseHeader {
 	 * @param {number} w The width.
 	 */
 	set_w(w) {
+		this.reset_hyperlinks(); // Update hyperlinks container width when this.list_w changes, i.e when auto-hide scrollbar visiblity state changes
 		ListItem.prototype.set_w.apply(this, [w]);
 
 		this.sub_items.forEach((item) => {
@@ -5323,7 +5346,7 @@ class Header extends BaseHeader {
 		// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
 		const album_text = g_properties.show_disc_header ? $('[%album%]', this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
 
-		if (this.artist_text_w > this.hyperlinksMaxWidth || this.album_text_w > this.hyperlinksMaxWidth ||
+		if (this.artist_text_w > this.max_w || this.album_text_w > this.max_w ||
 			g_properties.use_compact_header && (this.artist_text_w_compact > this.artist_w_compact || this.album_text_w_compact > this.album_w_compact)) {
 			tt.showDelayed(`${artist_text}\n${album_text}`);
 		} else {
