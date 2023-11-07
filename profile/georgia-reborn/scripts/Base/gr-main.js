@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-01                                          * //
+// * Last change:    2023-11-07                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -368,12 +368,11 @@ function drawDetailsMetadataGrid(gr) {
 
 			// * Artist flags
 			if (str.artist && flagImgs.length && showGridArtistFlags && displayDetails) {
+				const maxFlags = Math.min(flagImgs.length, 6);
 				let flagsLeft = marginLeft;
-				for (let i = 0; i < flagImgs.length; i++) {
+				for (let i = 0; i < maxFlags; i++) {
 					gr.DrawImage(flagImgs[i], flagsLeft, Math.round(top - (flagImgs[i].Height / (gridArtistHeight + SCALE(2))) - (RES_4K ? 1 : 0)), flagImgs[i].Width + SCALE(gridArtistFontSize) - SCALE(26), gridArtistHeight + SCALE(2), 0, 0, flagImgs[i].Width, flagImgs[i].Height);
 					flagsLeft += flagImgs[i].Width - SCALE(18) + SCALE(gridArtistFontSize);
-					// Maximum 6 flags
-					if (i > 4) break;
 				}
 			}
 
@@ -1102,12 +1101,12 @@ function drawLowerBar(gr) {
 
 	// * Artist flags
 	if (showLowerBarArtist && showLowerBarArtistFlags && (pref.layout === 'default' || pref.layout !== 'default' && !twoLines)) {
+		const maxFlags = Math.min(flagImgs.length, 6);
 		const marginLeft = SCALE(pref.layout !== 'default' ? 20 : 40);
 		let flagsLeft = marginLeft - (RES_4K ? 1 : 0);
-		for (let i = 0; i < flagImgs.length; i++) {
+		for (let i = 0; i < maxFlags; i++) {
 			gr.DrawImage(flagImgs[i], flagsLeft, Math.round(artistY - (flagImgs[i].Height / (artistHeight + SCALE(2))) - (RES_4K ? 1 : 0)), flagImgs[i].Width + SCALE(lowerBarFontSize) - SCALE(26), artistHeight + SCALE(2), 0, 0, flagImgs[i].Width, flagImgs[i].Height);
 			flagsLeft += flagImgs[i].Width - SCALE(18) + SCALE(lowerBarFontSize);
-			if (i > 4) break; // Maximum 6 flags
 		}
 	}
 

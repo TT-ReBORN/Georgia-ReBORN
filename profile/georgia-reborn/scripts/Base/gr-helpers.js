@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-28                                          * //
+// * Last change:    2023-11-07                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1878,6 +1878,25 @@ function AllEqual(str) {
  */
 function CapitalizeString(s) {
 	return s && s[0].toUpperCase() + s.slice(1);
+}
+
+
+/**
+ * Converts a full country name to its ISO country code.
+ * @param {string} name The full country name.
+ * @returns {string} The country ISO code.
+ */
+function ConvertFullCountryToIso(name) {
+	if (Array.isArray(name)) name = name[0];
+	if (typeof name !== 'string') return null;
+
+	for (const code in countryCodes) {
+		if (Object.prototype.hasOwnProperty.call(countryCodes, code) &&
+			countryCodes[code].toLowerCase() === name.toLowerCase()) {
+			return code;
+		}
+	}
+	return null;
 }
 
 

@@ -760,6 +760,7 @@ class BtnBio {
 	drawHeading(gr) {
 		const n = pptBio.artistView ? 'bio' : 'rev';
 		const flag = txt[n].flag;
+		const countryMetaFlag = txt.countryFlagMeta.length > 0;
 		let dh;
 		let dx1;
 		let dx2;
@@ -805,19 +806,32 @@ class BtnBio {
 				}
 				break;
 		}
-		if (flag) {
+		if (flag || countryMetaFlag) {
 			gr.SetInterpolationMode(7);
 			if (!pptBio.hdPos) {
 				const w = uiBio.style.l_w;
 				const o = Math.floor(w / 2);
-				gr.DrawImage(flag, butBio.flag.x, butBio.flag.y, butBio.flag.w, butBio.flag.h, 0, 0, flag.Width, flag.Height, '', 212);
+				if (countryMetaFlag) {
+					const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`];
+					const maxFlags = Math.min(flagImgs.length, 6);
+					butBio.flag.x = this.x;
+					butBio.flag.sp = 0;
+					for (let i = 0; i < maxFlags; i++) {
+						gr.DrawImage(flagImgs[i], butBio.flag.x, Math.round(butBio.flag.y - butBio.flag.h * 0.3), flagImgs[i].Width + SCALE(biographyFontSize) - SCALE(26), Math.round(butBio.flag.h * 1.5), 0, 0, flagImgs[i].Width, flagImgs[i].Height);
+						butBio.flag.x += flagImgs[i].Width - SCALE(18) + SCALE(biographyFontSize);
+						butBio.flag.sp += flagImgs[i].Width - SCALE(18) + SCALE(biographyFontSize);
+					}
+				}
+				else if (flag) {
+					gr.DrawImage(flag, butBio.flag.x, butBio.flag.y, butBio.flag.w, butBio.flag.h, 0, 0, flag.Width, flag.Height, '', 212);
+				}
 				// gr.DrawRect(butBio.flag.x + o, butBio.flag.y + o, butBio.flag.w - w, butBio.flag.h - w + 1, w, uiBio.col.imgBor);
 			}
 			gr.SetInterpolationMode(2);
 			const h_x = (pptBio.hdPos != 2 ? dx1 : this.x) + butBio.flag.sp;
 			const h_w = (pptBio.hdPos != 2 ? this.w - spacer - butBio.src.w - (!pptBio.hdPos ? 10 : 0) : this.w - spacer) - butBio.flag.sp;
 			gr.GdiDrawText(dh, uiBio.font.heading, uiBio.col.headingText, h_x, this.y, h_w, this.h, pptBio.hdPos != 2 ? txt.c[pptBio.hdPos] : txt.cc);
-			butBio.tooltipBio.name = gr.CalcTextWidth(dh, uiBio.font.heading) > h_w ? dh : '';
+			butBio.tooltipBio.name = gr.CalcTextWidth(dh, uiBio.font.heading) > h_w ? dh : pref.showTooltipBiography ? countryMetaFlag ? txt.countryTooltipMeta : txt.countryTooltip : '';
 			butBio.tooltipBio.x = h_x;
 			butBio.tooltipBio.w = h_w;
 		} else {
