@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-07                                          * //
+// * Last change:    2023-11-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -372,7 +372,7 @@ function drawDetailsMetadataGrid(gr) {
 				let flagsLeft = marginLeft;
 				for (let i = 0; i < maxFlags; i++) {
 					gr.DrawImage(flagImgs[i], flagsLeft, Math.round(top - (flagImgs[i].Height / (gridArtistHeight + SCALE(2))) - (RES_4K ? 1 : 0)), flagImgs[i].Width + SCALE(gridArtistFontSize) - SCALE(26), gridArtistHeight + SCALE(2), 0, 0, flagImgs[i].Width, flagImgs[i].Height);
-					flagsLeft += flagImgs[i].Width - SCALE(18) + SCALE(gridArtistFontSize);
+					flagsLeft += flagImgs[i].Width + SCALE(gridArtistFontSize) - SCALE(18);
 				}
 			}
 
@@ -1106,7 +1106,7 @@ function drawLowerBar(gr) {
 		let flagsLeft = marginLeft - (RES_4K ? 1 : 0);
 		for (let i = 0; i < maxFlags; i++) {
 			gr.DrawImage(flagImgs[i], flagsLeft, Math.round(artistY - (flagImgs[i].Height / (artistHeight + SCALE(2))) - (RES_4K ? 1 : 0)), flagImgs[i].Width + SCALE(lowerBarFontSize) - SCALE(26), artistHeight + SCALE(2), 0, 0, flagImgs[i].Width, flagImgs[i].Height);
-			flagsLeft += flagImgs[i].Width - SCALE(18) + SCALE(lowerBarFontSize);
+			flagsLeft += flagImgs[i].Width + SCALE(lowerBarFontSize) - SCALE(18);
 		}
 	}
 
@@ -1204,7 +1204,7 @@ function drawStyledTooltips(gr) {
 	const padding = SCALE(15);
 	const edgeSpace = padding * 0.5;
 	const arc = SCALE(6);
-	const w = Math.min(gr.MeasureString(styledTooltipText, ft.tooltip, 0, 0, 0, 0).Width + padding, ww - (state.mouse_x > ww * 0.85 ? state.mouse_x - ww * 0.15 : state.mouse_x) - edgeSpace);
+	const w = Math.min(gr.MeasureString(styledTooltipText, ft.tooltip, 0, 0, 0, 0).Width + padding + 1, ww - (state.mouse_x > ww * 0.85 ? state.mouse_x - ww * 0.15 : state.mouse_x) - edgeSpace);
 	const h = Math.min(gr.MeasureString(styledTooltipText, ft.tooltip, 0, 0, w, wh).Height + padding, wh - (state.mouse_y > wh * 0.85 ? state.mouse_y - wh * 0.15 : state.mouse_y) - edgeSpace - offset);
 	const x = state.mouse_x > ww * 0.85 ? state.mouse_x - w : state.mouse_x; // * When tooltip is too close to the right edge, it will be drawn on the left side of the mouse cursor
 	const y = state.mouse_y > wh * 0.85 ? state.mouse_y - h : state.mouse_y + offset; // * When tooltip is too close to the bottom edge, it will be drawn on the top side of the mouse cursor

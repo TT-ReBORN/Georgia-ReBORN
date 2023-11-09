@@ -814,12 +814,12 @@ class BtnBio {
 				if (countryMetaFlag) {
 					const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`];
 					const maxFlags = Math.min(flagImgs.length, 6);
-					butBio.flag.x = this.x;
+					butBio.flag.x  = this.x;
 					butBio.flag.sp = 0;
 					for (let i = 0; i < maxFlags; i++) {
-						gr.DrawImage(flagImgs[i], butBio.flag.x, Math.round(butBio.flag.y - butBio.flag.h * 0.3), flagImgs[i].Width + SCALE(biographyFontSize) - SCALE(26), Math.round(butBio.flag.h * 1.5), 0, 0, flagImgs[i].Width, flagImgs[i].Height);
-						butBio.flag.x += flagImgs[i].Width - SCALE(18) + SCALE(biographyFontSize);
-						butBio.flag.sp += flagImgs[i].Width - SCALE(18) + SCALE(biographyFontSize);
+						gr.DrawImage(flagImgs[i], butBio.flag.x, butBio.flag.y - butBio.flag.h * 0.33, flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 76 : 26), butBio.flag.h * 1.66, 0, 0, flagImgs[i].Width, flagImgs[i].Height);
+						butBio.flag.x  += flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 60 : 18);
+						butBio.flag.sp += flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 60 : 18);
 					}
 				}
 				else if (flag) {
