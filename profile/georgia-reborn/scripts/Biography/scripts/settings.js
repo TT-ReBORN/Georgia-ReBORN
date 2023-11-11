@@ -417,7 +417,7 @@ class SettingsBio {
 		tfItems.forEach(v => this.tf[v] = this.substituteTf(this.tf[v]));
 
 		items.forEach((v, i) => {
-			this.pth[v] = !this.autoCache || i > 7 ? this[v] : this.remap[v] = this[`${v}_internal`].default_value.replace('%profile%\\biography\\', this.cachePath);
+			this.pth[v] = !this.autoCache || i > 7 ? this[v] : this.remap[v] = this[`${v}_internal`].default_value.replace('%profile%\\biography\\', $Bio.tfEscape(this.cachePath));
 			this.pth[v] = this.substituteTf(this.pth[v]);
 		});
 
@@ -469,7 +469,7 @@ class SettingsBio {
 		this.tagEnabled13 = $Bio.clamp(this.tagEnabled13, 1, 6);
 
 		if (this.autoCache) {
-			this.remap.foImgRev = this.foImgRev_internal.default_value.replace('%profile%\\biography\\', this.cachePath);
+			this.remap.foImgRev = this.foImgRev_internal.default_value.replace('%profile%\\biography\\', $Bio.tfEscape(this.cachePath));
 		} else {
 			bioRevItems.forEach(v => {
 				this.remap[v] = this[v];
