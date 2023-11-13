@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-07                                          * //
+// * Last change:    2023-11-13                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1288,7 +1288,8 @@ function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1,
  * @returns {GdiBitmap} The rotated image.
  */
 function RotateImg(img, w, h, degrees) {
-	if (degrees !== 0) {
+	if (w <= 0 || h <= 0) return img;
+	else if (degrees !== 0) {
 		/** @type {GdiBitmap} */
 		const rotatedImg = gdi.CreateImage(w, h);
 		const gotGraphics = rotatedImg.GetGraphics();
