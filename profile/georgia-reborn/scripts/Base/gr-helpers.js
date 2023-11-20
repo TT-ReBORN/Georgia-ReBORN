@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-13                                          * //
+// * Last change:    2023-11-20                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1288,8 +1288,16 @@ function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1,
  * @returns {GdiBitmap} The rotated image.
  */
 function RotateImg(img, w, h, degrees) {
-	if (w <= 0 || h <= 0) return img;
-	else if (degrees !== 0) {
+	/**
+	 * Because foobar x86 can allocate only 4 gigs memory, we must limit disc art res for 4K when using
+	 * high pref.spinDiscArtImageCount, i.e 90 (4 degrees), 120 (3 degrees), 180 (2 degrees) to prevent crash.
+	 * When SMP has x64 support, we could try to increase this limit w (1836px max possible res for 4K).
+	 */
+	const imgMaxRes = ({ 90: 1400, 120: 1200, 180: 1000 })[pref.spinDiscArtImageCount] || w;
+	w = Math.min(w, imgMaxRes);
+	h = Math.min(h, imgMaxRes);
+
+	if (degrees !== 0) {
 		/** @type {GdiBitmap} */
 		const rotatedImg = gdi.CreateImage(w, h);
 		const gotGraphics = rotatedImg.GetGraphics();
