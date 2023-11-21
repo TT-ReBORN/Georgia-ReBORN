@@ -8,7 +8,7 @@ import crypto from 'crypto-es/lib/index.js';
 
 export function getConfig(cfg) {
 	cfg.name = 'MiniLyrics (Synced)';
-	cfg.version = '0.4';
+	cfg.version = '0.5';
 	cfg.author = 'ohyeah & TT';
 	cfg.useRawMeta = false;
 }
@@ -137,13 +137,14 @@ function wordToU8Array(wordArray) {
 function concatTypedArray(ResultConstructor, ...arrays) {
 	let totalLength = 0;
 	let offset = 0;
+
+	for (const arr of arrays) {
+		totalLength += arr.length;
+	}
+
 	const result = new ResultConstructor(totalLength);
 
 	try {
-		for (const arr of arrays) {
-			totalLength += arr.length;
-		}
-
 		for (const arr of arrays) {
 			result.set(arr, offset);
 			offset += arr.length;
