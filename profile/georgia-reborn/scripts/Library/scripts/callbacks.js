@@ -320,6 +320,7 @@ class LibraryCallbacks {
 			lib.playlist_update(playlistIndex);
 		}
 
+		if (!playlist) return; // Abort if Playlist was not initialized
 		if (pref.playlistSortOrderAuto) setPlaylistSortOrder();
 		initPlaylist(); // Update Playlist when adding items from Library
 		playlist.on_size(ww, wh);

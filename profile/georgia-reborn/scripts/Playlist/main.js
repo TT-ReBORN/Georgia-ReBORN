@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-06                                          * //
+// * Last change:    2023-11-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -271,7 +271,7 @@ function calculate_PLR(gain, gaindb) {
  */
 function on_drag_enter(action, x, y, mask) {
 	trace_call && console.log('Playlist => on_drag_enter');
-	playlist.on_drag_enter(action, x, y, mask);
+	playlist && playlist.on_drag_enter(action, x, y, mask);
 }
 
 
@@ -281,7 +281,7 @@ function on_drag_enter(action, x, y, mask) {
  */
 function on_drag_over(action, x, y, mask) {
 	trace_call && console.log('Playlist => on_drag_over');
-	playlist.on_drag_over(action, x, y, mask);
+	playlist && playlist.on_drag_over(action, x, y, mask);
 }
 
 
@@ -291,7 +291,7 @@ function on_drag_over(action, x, y, mask) {
  */
 function on_drag_leave() {
 	trace_call && console.log('Playlist => on_drag_leave');
-	playlist.on_drag_leave();
+	playlist && playlist.on_drag_leave();
 }
 
 
@@ -301,7 +301,7 @@ function on_drag_leave() {
  */
 function on_drag_drop(action, x, y, mask) {
 	trace_call && console.log('Playlist => on_drag_drop');
-	playlist.on_drag_drop(action, x, y, mask);
+	playlist && playlist.on_drag_drop(action, x, y, mask);
 }
 
 
