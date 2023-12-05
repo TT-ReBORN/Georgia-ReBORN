@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-12-06                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -138,7 +138,7 @@ class Lyrics {
 		const lyricPaths = pref.customLyricsDir ? globals.customLyricsDir : tf.lyr_path;
 
 		lyricPaths.forEach(path => {
-			tpath.push($(path));
+			tpath.push($($Escape(path)));
 		});
 		globals.lyricFilenamePatterns.forEach(filename => {
 			tfilename.push(stripReservedChars($(filename)));
@@ -248,6 +248,12 @@ class Lyrics {
 			this.userOffset = 0;
 		}
 
+		this.x = albumArtSize.x + SCALE(40);
+		this.y = albumArtSize.y + SCALE(40);
+		this.w = albumArtSize.w - SCALE(80);
+		this.h = albumArtSize.h - SCALE(80);
+		if (noAlbumArtStub) resetLyricsPosition();
+
 		this.alignCenter = StringFormat(1, 1);
 		this.alignRight = StringFormat(2, 1);
 		this.init = true;
@@ -284,10 +290,6 @@ class Lyrics {
 		this.locusOffset = this.h / 2 - (oddNumLines ? this.lineHeight / 2 : this.lineHeight);
 		this.top = this.locusOffset - this.lineHeight * (Math.floor(linesDrawn / 2) - (oddNumLines ? 1 : 2)) + this.y - this.lineHeight;
 		this.bot = this.top + this.lineHeight * (linesDrawn - 3);
-		this.x = albumArtSize.x + SCALE(40);
-		this.y = albumArtSize.y + SCALE(40);
-		this.w = albumArtSize.w - SCALE(80);
-		this.h = albumArtSize.h - SCALE(80);
 
 		this.parseLyrics(lyr);
 	}

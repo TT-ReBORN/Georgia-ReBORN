@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-20                                          * //
+// * Last change:    2023-12-06                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1867,6 +1867,20 @@ function $(titleFormatString, metadb = undefined, force = false) {
 	} catch (e) {
 		return `${e} (Invalid metadb!)`;
 	}
+}
+
+
+/**
+ * Escapes special characters in a string for use in title formatting expressions.
+ * This includes escaping single quotes, parentheses, square brackets, commas, percent signs, and dollar signs.
+ * @param {string} string - The string to be escaped.
+ * @returns {string} The escaped string, safe for use in title formatting expressions.
+ */
+function $Escape(string) {
+	return string
+		.replace(/'/g, "''")
+		.replace(/[()[\],%]/g, "'$&'")
+		.replace(/\$/g, "'$$$$'");
 }
 
 
