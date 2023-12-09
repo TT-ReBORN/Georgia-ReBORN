@@ -359,7 +359,7 @@ class Text {
 							l = g.EstimateLineWrap(v, font, panelBio.text.w);
 							for (let i = 0; i < l.length; i += 2) arr.push({ text: l[i].trim() });
 						}
-					} else if (!this.lyricsArr('rev')) {
+					} else if (!this.isLyricsArr('rev', v)) {
 						arr = arr.concat(JSON.parse(JSON.stringify(v)));
 					}
 				} else {
@@ -631,7 +631,7 @@ class Text {
 							l = g.EstimateLineWrap(v, font, panelBio.text.w);
 							for (let i = 0; i < l.length; i += 2) arr.push({ text: l[i].trim() });
 						}
-					} else if (!this.lyricsArr('bio')) {
+					} else if (!this.isLyricsArr('bio', v)) {
 						arr = arr.concat(JSON.parse(JSON.stringify(v)));
 					}
 				} else {
@@ -2051,13 +2051,13 @@ class Text {
 		});
 	}
 
-	lyricsArr(n) {
-		return this.reader[n].lyrics && !this.reader[n].txtLyrics;
+	isLyricsArr(n, v) {
+		return this.reader[n].lyrics && !this.reader[n].txtLyrics || v.some(w => w.text === undefined);
 	}
 
 	lyricsDisplayed() {
 		const n = pptBio.artistView ? 'bio' : 'rev';
-		return this[n].loaded.txt && this.lyricsArr(n) && !pptBio.img_only;
+		return this[n].loaded.txt && this.reader[n].lyrics && !this.reader[n].txtLyrics && !pptBio.img_only;
 	}
 
 	lyricsSave() {
