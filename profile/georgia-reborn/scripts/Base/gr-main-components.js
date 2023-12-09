@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-06                                          * //
+// * Last change:    2023-12-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -224,6 +224,7 @@ class Menu {
 	 * @param {*} selectedValue The value of the item to be checked.
 	 * @param {*[]} variables An array of values which correspond to each entry.
 	 * @param {Function} callback A function that will be executed when the item is clicked.
+	 * @param {boolean} [disabled=false] Whether the item should be disabled or not.
 	 */
 	addToggleItems(labels, selectedValues, variables, callback = () => { }, disabled = false) {
 		for (let i = 0; i < labels.length; i++) {
@@ -243,8 +244,10 @@ class Menu {
 	 * @param {*} selectedValue The value of the radio item to be checked.
 	 * @param {*[]} variables An array of values which correspond to each radio entry.
 	 * @param {Function} callback A function that will be executed when the item is clicked.
+	 * @param {boolean} [disabled=false] Whether the item should be disabled or not.
+ 	 * @param {boolean} [disableCheckMarking=false] Whether the radio check marking should be disabled or not.
 	 */
-	addRadioItems(labels, selectedValue, variables, callback = () => { }, disabled = false) {
+	addRadioItems(labels, selectedValue, variables, callback = () => { }, disabled = false, disableCheckMarking = false) {
 		const startIndex = _MenuItemIndex;
 		let selectedIndex;
 		for (let i = 0; i < labels.length; i++) {
@@ -256,7 +259,7 @@ class Menu {
 			}
 			_MenuItemIndex++;
 		}
-		if (selectedIndex) {
+		if (!disableCheckMarking && selectedIndex) {
 			this.menu.CheckMenuRadioItem(startIndex, _MenuItemIndex - 1, selectedIndex);
 		}
 	}
@@ -269,10 +272,11 @@ class Menu {
 	 * @param {*[]} variables An array of values which correspond to each radio entry.
 	 * @param {Function} callback A function that will be executed when the menu item is clicked.
 	 * @param {boolean=} [disabled=false] Whether the item should be disabled or not.
+	 * @param {boolean} [disableCheckMarking=false] Whether the radio check marking should be disabled or not.
 	 */
-	createRadioSubMenu(subMenuName, labels, selectedValue, variables, callback, disabled = false) {
+	createRadioSubMenu(subMenuName, labels, selectedValue, variables, callback, disabled = false, disableCheckMarking = false) {
 		const subMenu = new Menu(subMenuName);
-		subMenu.addRadioItems(labels, selectedValue, variables, callback);
+		subMenu.addRadioItems(labels, selectedValue, variables, callback, disabled, disableCheckMarking);
 		subMenu.appendTo(this, disabled);
 	}
 

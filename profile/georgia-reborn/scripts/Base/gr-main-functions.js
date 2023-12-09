@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-02                                          * //
+// * Last change:    2023-12-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2953,17 +2953,38 @@ function updatePlaylist() {
  * Sorts the Playlist by sort patterns defined in the config file.
  */
 function setPlaylistSortOrder() {
-	plman.SortByFormat(plman.ActivePlaylist,
-		pref.playlistSortOrder === 'default' ? settings.playlistSortDefault :
-		pref.playlistSortOrder === 'artistDateAsc' ? settings.playlistSortArtistDateAsc :
-		pref.playlistSortOrder === 'artistDateDesc' ? settings.playlistSortArtistDateDesc :
-		pref.playlistSortOrder === 'album' ? settings.playlistSortAlbum :
-		pref.playlistSortOrder === 'title' ? settings.playlistSortTitle :
-		pref.playlistSortOrder === 'tracknum' ? settings.playlistSortTracknum :
-		pref.playlistSortOrder === 'yearAsc' ? settings.playlistSortArtistYearAsc :
-		pref.playlistSortOrder === 'yearDesc' ? settings.playlistSortArtistYearDesc :
-		pref.playlistSortOrder === 'filePath' ? settings.playlistSortFilePath :
-		pref.playlistSortOrder === 'custom' ? settings.playlistSortCustom : '');
+	const sortOrder = {
+		default: settings.playlistSortDefault,
+		artistDate_asc: settings.playlistSortArtistDate_asc,
+		artistDate_dsc: settings.playlistSortArtistDate_dsc,
+		albumTitle: settings.playlistSortAlbumTitle,
+		albumRating_asc: settings.playlistSortAlbumRating_asc,
+		albumRating_dsc: settings.playlistSortAlbumRating_dsc,
+		albumPlaycount_asc: settings.playlistSortAlbumPlaycount_asc,
+		albumPlaycount_dsc: settings.playlistSortAlbumPlaycount_dsc,
+		trackTitle: settings.playlistSortTrackTitle,
+		trackNumber: settings.playlistSortTrackNumber,
+		trackRating_asc: settings.playlistSortTrackRating_asc,
+		trackRating_dsc: settings.playlistSortTrackRating_dsc,
+		trackPlaycount_asc: settings.playlistSortTrackPlaycount_asc,
+		trackPlaycount_dsc: settings.playlistSortTrackPlaycount_dsc,
+		year_asc: settings.playlistSortYear_asc,
+		year_dsc: settings.playlistSortYear_dsc,
+		genre_asc: settings.playlistSortGenre,
+		genre_dsc: settings.playlistSortGenre,
+		label_asc: settings.playlistSortLabel,
+		label_dsc: settings.playlistSortLabel,
+		country_asc: settings.playlistSortCountry,
+		country_dsc: settings.playlistSortCountry,
+		filePath: settings.playlistSortFilePath,
+		custom: settings.playlistSortCustom
+	};
+
+	if (['genre_dsc', 'label_dsc', 'country_dsc'].includes(pref.playlistSortOrder)) {
+		plman.SortByFormatV2(plman.ActivePlaylist, sortOrder[pref.playlistSortOrder], -1);
+	} else {
+		plman.SortByFormat(plman.ActivePlaylist, sortOrder[pref.playlistSortOrder] || '');
+	}
 }
 
 
@@ -3336,7 +3357,7 @@ function setBiographySize() {
  */
 function initLyrics() {
 	lyrics = new Lyrics();
-    lyrics.on_size(albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h);
+	lyrics.on_size(albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h);
 	lyrics.initLyrics();
 }
 

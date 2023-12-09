@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-05                                          * //
+// * Last change:    2023-12-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -23,31 +23,41 @@
  */
 function topMenuRating(x, y) {
 	const handle = new FbMetadbHandleList();
-	const metadb = fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem(); if (!metadb) return;
-	const noStream = !metadb.RawPath.startsWith('http');
+	const metadb = fb.GetFocusItem();
 	const fileInfo = metadb.GetFileInfo();
 	const ratingMetaIdx = fileInfo.MetaFind('RATING');
 	const ratingMeta = ratingMetaIdx === -1 ? 0 : fileInfo.MetaValue(ratingMetaIdx, 0);
 	const ratingTags = g_properties.use_rating_from_tags;
-	const rating = ratingTags ? ratingMeta : fb.TitleFormat('$if2(%rating%,0)').Eval();
+	const rating = ratingTags ? ratingMeta : $('$if2(%rating%,0)', metadb);
+	const selectedItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 	const menu = new Menu();
 	activeMenu = true;
 
 	menu.addRadioItems(['No rating', '1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'], parseInt(rating), [0, 1, 2, 3, 4, 5], (rating) => {
-		if (rating === 0) {
-			if (ratingTags && noStream) {
-				handle.Add(metadb);
-				handle.UpdateFileInfoFromJSON(JSON.stringify({ RATING: '' }));
-			} else {
-				fb.RunContextCommand('Playback Statistics/Rating/<not set>');
+		playlistAlbumRatings = new Map();
+
+		for (let i = 0; i < selectedItems.Count; i++) {
+			const metadb = selectedItems[i];
+			const noStream = !metadb.RawPath.startsWith('http');
+
+			if (rating === 0) {
+				if (ratingTags && noStream) {
+					handle.Add(metadb);
+					handle.UpdateFileInfoFromJSON(JSON.stringify({ RATING: '' }));
+				} else {
+					fb.RunContextCommandWithMetadb('Playback Statistics/Rating/<not set>', metadb);
+				}
 			}
-		}
-		else if (ratingTags && noStream) {
-			handle.Add(metadb);
-			handle.UpdateFileInfoFromJSON(JSON.stringify({ RATING: rating }));
-		}
-		else {
-			fb.RunContextCommand(`Playback Statistics/Rating/${rating}`);
+			else if (ratingTags && noStream) {
+				handle.Add(metadb);
+				handle.UpdateFileInfoFromJSON(JSON.stringify({ RATING: rating }));
+			}
+			else {
+				fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${rating}`, metadb);
+			}
+
+			const trackId = $('%rating%', metadb);
+			playlistTrackRatings.set(trackId, rating);
 		}
 	});
 
@@ -1917,6 +1927,7 @@ function playlistOptions(menu, context_menu) {
 	playlistAlbumMenu.addToggleItem('Show weblinks in context menu', pref, 'showWeblinks');
 	playlistAlbumMenu.addToggleItem('Show long release date (YYYY-MM-DD)', pref, 'showPlaylistFullDate', () => { updatePlaylist(); });
 	playlistAlbumMenu.addSeparator();
+	playlistAlbumMenu.addToggleItem('Show rating', g_properties, 'show_rating_header', () => { updatePlaylist(); });
 	playlistAlbumMenu.addToggleItem('Show PLR value', g_properties, 'show_PLR_header', () => { updatePlaylist(); });
 	playlistAlbumMenu.addSeparator();
 	playlistAlbumMenu.addItem('Customize header info', false, () => { inputBox('playlistCustomHeaderInfo'); updatePlaylist(); });
@@ -1952,19 +1963,50 @@ function playlistOptions(menu, context_menu) {
 
 	// * SORT ORDER * //
 	const playlistSortOrderMenu = new Menu('Sort order');
-	playlistSortOrderMenu.addToggleItem('Always auto-sort', pref, 'playlistSortOrderAuto', () => {
-		if (!pref.playlistSortOrderAuto) pref.playlistSortOrder = ''; // Hide checked radio item
-	});
+	playlistSortOrderMenu.addToggleItem('Always auto-sort', pref, 'playlistSortOrderAuto');
 	playlistSortOrderMenu.addSeparator();
-	playlistSortOrderMenu.addRadioItems(['Default', 'Artist | date ascending', 'Artist | date descending', 'Album', 'Title', 'Track number', 'Year ascending', 'Year descending', 'File path', 'Custom'], pref.playlistSortOrder,
-		['default', 'artistDateAsc', 'artistDateDesc', 'album', 'title', 'tracknum', 'yearAsc', 'yearDesc', 'filePath', 'custom'], (order) => {
-		pref.playlistSortOrder = order;
-		if (pref.playlistSortOrder === 'custom') inputBox('playlistSortCustom');
+	playlistSortOrderMenu.addItem('Sort by...', false, () => { fb.RunMainMenuCommand('Edit/Sort/Sort by...'); updatePlaylist(); });
+	playlistSortOrderMenu.addSeparator();
+
+	const setSorting = () => {
 		setPlaylistSortOrder();
 		playlist.on_size(ww, wh);
-		if (!pref.playlistSortOrderAuto) pref.playlistSortOrder = ''; // Hide checked radio item
 		repaintWindow();
-	});
+	};
+
+	const sortOrderWithDirection = ['artistDate', 'albumRating', 'albumPlaycount', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country'];
+
+	/** @type {string} Holds the current sort order preference without any direction suffix ('_asc' or '_dsc'). */
+	let savedOrder = pref.playlistSortOrder;
+	/** @type {boolean} Indicaties if the current sort order (`savedOrder`) requires a direction. */
+	let savedOrderWithDirection = sortOrderWithDirection.includes(savedOrder.slice(0, -4));
+	// Remove direction from saved order for radio item checking
+	if (savedOrderWithDirection) savedOrder = savedOrder.slice(0, -4);
+
+	playlistSortOrderMenu.addRadioItems(['Order by ascending', 'Order by descending'], pref.playlistSortOrderDirection, ['_asc', '_dsc'], (direction) => {
+		pref.playlistSortOrder = `${savedOrder}${savedOrderWithDirection ? direction : ''}`;
+		setSorting();
+	}, !savedOrderWithDirection);
+
+	playlistSortOrderMenu.addSeparator();
+
+	playlistSortOrderMenu.addRadioItems(['Default', 'Artist | date', 'Album', 'Album rating', 'Album playcount', 'Track', 'Track number', 'Track rating', 'Track playcount', 'Year', 'Genre', 'Label', 'Country', 'File path', 'Custom'], savedOrder,
+		['default', 'artistDate', 'albumTitle', 'albumRating', 'albumPlaycount', 'trackTitle', 'trackNumber', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country', 'filePath', 'custom'], (order) => {
+		savedOrderWithDirection = sortOrderWithDirection.includes(order);
+		savedOrder = order;
+		pref.playlistSortOrder = `${order}${savedOrderWithDirection ? pref.playlistSortOrderDirection : ''}`;
+		if (order === 'custom') inputBox('playlistSortCustom');
+		setSorting();
+	}, false, !pref.playlistSortOrderAuto);
+	playlistSortOrderMenu.addSeparator();
+
+	playlistSortOrderMenu.addItem('Randomize', false, () => { fb.RunMainMenuCommand('Edit/Sort/Randomize'); updatePlaylist(); });
+	playlistSortOrderMenu.addItem('Reverse', false, () => { fb.RunMainMenuCommand('Edit/Sort/Reverse'); updatePlaylist(); });
+	playlistSortOrderMenu.addSeparator();
+	playlistSortOrderMenu.addItem('Save', false, () => { fb.RunMainMenuCommand('File/Save playlist...'); updatePlaylist(); });
+	playlistSortOrderMenu.addItem('Load', false, () => { fb.RunMainMenuCommand('File/Load playlist...'); updatePlaylist(); });
+	playlistSortOrderMenu.addItem('Undo', false, () => { fb.RunMainMenuCommand('Edit/Undo'); updatePlaylist(); });
+
 	playlistSortOrderMenu.appendTo(playlistMenu);
 
 	if (!context_menu) playlistMenu.appendTo(menu);

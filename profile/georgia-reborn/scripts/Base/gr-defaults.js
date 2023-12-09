@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-01                                          * //
+// * Last change:    2023-12-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -812,6 +812,7 @@ const themePlaylistDefaults = {
 	show_album_art: true,
 	auto_album_art: false,
 	show_header: true,
+	show_rating_header: true,
 	show_PLR_header: false,
 	use_compact_header: false,
 	auto_collapse: false,
@@ -837,7 +838,18 @@ const themePlaylistDefaults = {
 	lastFmScrobblesFallback: true,
 	playlistRowHover: true,
 	playlistSortOrderAuto: false,
-	playlistSortOrder: ''
+	playlistSortOrder: '',
+	playlistSortOrderDirection: '_asc',
+	playlist_stats_include_artist: true,
+	playlist_stats_include_album : true,
+	playlist_stats_include_track: true,
+	playlist_stats_include_year: false,
+	playlist_stats_include_genre: false,
+	playlist_stats_include_label: false,
+	playlist_stats_include_country: false,
+	playlist_stats_include_stats: true,
+	playlist_stats_sort_by: '',
+	playlist_stats_sort_direction: '_dsc'
 };
 
 /** @type {Object} Options > Playlist settings config name description. */
@@ -851,6 +863,7 @@ const themePlaylistComments = {
 	show_album_art: 'Values: true, false - Options > Playlist > Album header > Album art > Show',
 	auto_album_art: 'Values: true, false - Options > Playlist > Album header > Album art > Auto-hide when no cover',
 	show_header: 'Values: true, false - Options > Playlist > Album header > Album header',
+	show_rating_header: 'Values: true, false - Options > Playlist > Album Header > Show rating',
 	show_PLR_header: 'Values: true, false - Options > Playlist > Album Header > Show PLR value',
 	use_compact_header: 'Values: true, false - Options > Playlist > Album header > Compact header',
 	auto_collapse: 'Values: true, false - Options > Playlist > Album header > Auto collapse and expand',
@@ -876,7 +889,18 @@ const themePlaylistComments = {
 	lastFmScrobblesFallback: 'Values: true, false - Options > Playlist > Track row > Show last.fm scrobbles on no local plays',
 	playlistRowHover: 'Values: true, false - Options > Playlist > Track row > Row mouse hover',
 	playlistSortOrderAuto: 'Values: true, false - Options > Playlist > Sort order > Always auto-sort',
-	playlistSortOrder: 'Values: "", default, artistDateAsc, artistDateDesc, album, title, tracknum, yearAsc, yearDesc, filePath, custom - Options > Playlist > Sort order'
+	playlistSortOrder: 'Values: "", "default", "artistDate_asc", "artistDate_dsc", "album", "title", "trackNumber", "year_asc", "year_dsc", "filePath", "custom" - Options > Playlist > Sort order',
+	playlistSortOrderDirection: 'Values: "_asc", "_dsc" - Options > Playlist > Sort order',
+	playlist_stats_include_artist: 'Values: true, false - Playlist context menu > Write playlist statistics to list > Include artist',
+	playlist_stats_include_album: 'Values: true, false - Playlist context menu > Write playlist statistics to list > Include album',
+	playlist_stats_include_track: 'Values: true, false - Playlist context menu > Write playlist statistics to list > Include track',
+	playlist_stats_include_year: 'Values: true, false - Playlist context menu > Write playlist statistics to list > Include year',
+	playlist_stats_include_genre: 'Values: true, false - Playlist context menu > Write playlist statistics to list > Include genre',
+	playlist_stats_include_label: 'Values: true, false - Playlist context menu > Write playlist statistics to list > Include label',
+	playlist_stats_include_country: 'Values: true, false - Playlist context menu > Write playlist statistics to list > Include country',
+	playlist_stats_include_stats: 'Values: true, false - Playlist context menu > Write playlist statistics to list > Include stats',
+	playlist_stats_sort_by: 'Values: "", "artist", "albumTitle", "year", "genre" - playlist context menu - Write playlist statistics to text',
+	playlist_stats_sort_direction: 'Values: "_asc", "_dsc" - playlist context menu - Write playlist statistics to text'
 };
 
 /** @type {Object} Options > Playlist settings config header description. */
@@ -1447,13 +1471,24 @@ const settingsDefaults = {
 	playlistCustomTitle: '',
 	playlistCustomTitleNoHeader: '',
 	playlistSortDefault: '$if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
-	playlistSortArtistDateAsc: '$if2(%artist sort order%,%album artist%) $if3(%album sort order%,%original release date%,%originaldate%,%date%) %album% %edition% %codec% %discnumber% %tracknumber%',
-	playlistSortArtistDateDesc: '$if2(%artist sort order%,%album artist%) $if3(%album sort order%,$sub(99999,%original release date%),$sub(99999,%originaldate%),$sub(99999,%date%)) %album% %edition% %codec% %discnumber% %tracknumber%',
-	playlistSortAlbum: '%album% $if3(%original release date%,%originaldate%,%date%) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
-	playlistSortTitle: '%title% $if3(%original release date%,%originaldate%,%date%) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
-	playlistSortTracknum: '%tracknumber% $if3(%original release date%,%originaldate%,%date%) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
-	playlistSortArtistYearAsc: '%year% $if3(%original release date%,%originaldate%,%date%) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
-	playlistSortArtistYearDesc: '%year% $if3($sub(99999,%original release date%),$sub(99999,%originaldate%),$sub(99999,%date%)) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortArtistDate_asc: '$if2(%artist sort order%,%album artist%) $if3(%album sort order%,%original release date%,%originaldate%,%date%) %album% %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortArtistDate_dsc: '$if2(%artist sort order%,%album artist%) $if3(%album sort order%,$sub(99999,%original release date%),$sub(99999,%originaldate%),$sub(99999,%date%)) %album% %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortAlbumTitle: '%album% $if3(%original release date%,%originaldate%,%date%) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortAlbumRating_asc: '%albumrating% $if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortAlbumRating_dsc: '$sub(99999,%albumrating%) $if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortAlbumPlaycount_asc: '%albumplaycount% $if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortAlbumPlaycount_dsc: '$sub(99999,%albumplaycount%) $if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortTrackTitle: '%title% $if3(%original release date%,%originaldate%,%date%) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortTrackNumber: '%tracknumber% $if3(%original release date%,%originaldate%,%date%) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortTrackRating_asc: '%rating% $if3(%original release date%,%originaldate%,%date%) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortTrackRating_dsc: '$sub(99999,%rating%) $if3(%original release date%,%originaldate%,%date%) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortTrackPlaycount_asc: '%play_count% $if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortTrackPlaycount_dsc: '$sub(99999,%play_count%) $if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortYear_asc: '%year% $if3(%original release date%,%originaldate%,%date%) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortYear_dsc: '$sub(99999,%year%) $if3($sub(99999,%original release date%),$sub(99999,%originaldate%),$sub(99999,%date%)) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortGenre: '%genre% %artist% %album% %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortLabel: '%label% %artist% %album% %edition% %codec% %discnumber% %tracknumber%',
+	playlistSortCountry: '%artistcountry% %artist% %album% %edition% %codec% %discnumber% %tracknumber%',
 	playlistSortFilePath: '%path_sort% $if3(%original release date%,%originaldate%,%date%) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
 	playlistSortCustom: '$if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
 	playlistShowBitSampleAlways: false,
@@ -1477,13 +1512,24 @@ const settingsComments = {
 	playlistCustomTitle: 'You can use your own custom title pattern for the playlist row',
 	playlistCustomTitleNoHeader: 'You can use your own custom title pattern for the playlist row - when playlist header is not being displayed',
 	playlistSortDefault: 'Options > Playlist > Sort order > Default - sort pattern to sort playlists generated from Library selections or clicking on hyperlinks in the Playlist',
-	playlistSortArtistDateAsc: 'Options > Playlist > Sort order > Artist | date ascending',
-	playlistSortArtistDateDesc: 'Options > Playlist > Sort order > Artist | date descending',
-	playlistSortAlbum: 'Options > Playlist > Sort order > Album',
-	playlistSortTitle: 'Options > Playlist > Sort order > Title',
-	playlistSortTracknum: 'Options > Playlist > Sort order > Tracknumber',
-	playlistSortArtistYearAsc: 'Options > Playlist > Sort order > Year ascending',
-	playlistSortArtistYearDesc: 'Options > Playlist > Sort order > Year descending',
+	playlistSortArtistDate_asc: 'Options > Playlist > Sort order > Artist | date ascending',
+	playlistSortArtistDate_dsc: 'Options > Playlist > Sort order > Artist | date descending',
+	playlistSortAlbumTitle: 'Options > Playlist > Sort order > Album',
+	playlistSortAlbumRating_asc: 'Options > Playlist > Sort order > Album rating | ascending',
+	playlistSortAlbumRating_dsc: 'Options > Playlist > Sort order > Album rating | descending',
+	playlistSortAlbumPlaycount_asc: 'Options > Playlist > Sort order > Album playcount | ascending',
+	playlistSortAlbumPlaycount_dsc: 'Options > Playlist > Sort order > Album playcount | descending',
+	playlistSortTrackTitle: 'Options > Playlist > Sort order > Track',
+	playlistSortTrackNumber: 'Options > Playlist > Sort order > Track number',
+	playlistSortTrackRating_asc: 'Options > Playlist > Sort order > Track rating | ascending',
+	playlistSortTrackRating_dsc: 'Options > Playlist > Sort order > Track rating | descending',
+	playlistSortTrackPlaycount_asc: 'Options > Playlist > Sort order > Track playcount | ascending',
+	playlistSortTrackPlaycount_dsc: 'Options > Playlist > Sort order > Track playcount | descending',
+	playlistSortYear_asc: 'Options > Playlist > Sort order > Year | ascending',
+	playlistSortYear_dsc: 'Options > Playlist > Sort order > Year | descending',
+	playlistSortGenre: 'Options > Playlist > Sort order > Genre',
+	playlistSortLabel: 'Options > Playlist > Sort order > Label',
+	playlistSortCountry: 'Options > Playlist > Sort order > Country',
 	playlistSortFilePath: 'Options > Playlist > Sort order > File path',
 	playlistSortCustom: 'Options > Playlist > Sort order > Custom',
 	playlistShowBitSampleAlways: 'Always show the bit depth and sample rate in the playlist header.',

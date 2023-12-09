@@ -282,8 +282,14 @@ class MenuItems {
 		}
 
 		menu.newItem({
-			str: 'Write theme tags',
+			str: 'Write theme to tags',
 			func: () => writeThemeTags()
+		});
+
+		const meta_handler = new MetaHandler();
+		menu.newItem({
+			str: 'Write album statistics to tags',
+			func: () => meta_handler.write_album_stats_to_tags()
 		});
 
 		menu.newItem({

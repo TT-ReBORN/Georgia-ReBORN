@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-10-11                                          * //
+// * Last change:    2023-12-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -419,6 +419,7 @@ pref.add_properties({
 	playlistRowHover:                   ['Georgia-ReBORN - 10. Playlist: Row mouse hover', true], // Enable playlist row mouse hover effect
 	playlistSortOrderAuto:              ['Georgia-ReBORN - 10. Playlist: Sort order Auto', false], // Playlist auto sort order
 	playlistSortOrder:                  ['Georgia-ReBORN - 10. Playlist: Sort order', ''], // Playlist sort order
+	playlistSortOrderDirection:         ['Georgia-ReBORN - 10. Playlist: Sort order direction', '_asc'], // '_asc' or '_dsc' - Playlist sort order direction
 
 	// * Details
 	showDiscArtStub:                    ['Georgia-ReBORN - 11. Details: Show disc art placeholder if no disc art found', true], // Show disc art placeholder if no disc art found
@@ -1086,6 +1087,7 @@ async function setThemeSettings(save) {
 		themePlaylist.show_album_art = g_properties.show_album_art;
 		themePlaylist.auto_album_art = g_properties.auto_album_art;
 		themePlaylist.show_header = g_properties.show_header;
+		themePlaylist.show_rating_header = g_properties.show_rating_header;
 		themePlaylist.show_PLR_header = g_properties.show_PLR_header;
 		themePlaylist.use_compact_header = g_properties.use_compact_header;
 		themePlaylist.auto_collapse = g_properties.auto_collapse;
@@ -1112,6 +1114,17 @@ async function setThemeSettings(save) {
 		themePlaylist.playlistRowHover = pref.playlistRowHover;
 		themePlaylist.playlistSortOrderAuto = pref.playlistSortOrderAuto;
 		themePlaylist.playlistSortOrder = pref.playlistSortOrder;
+		themePlaylist.playlistSortOrderDirection = pref.playlistSortOrderDirection;
+		themePlaylist.playlist_stats_include_artist = g_properties.playlist_stats_include_artist;
+		themePlaylist.playlist_stats_include_album = g_properties.playlist_stats_include_album;
+		themePlaylist.playlist_stats_include_track = g_properties.playlist_stats_include_track;
+		themePlaylist.playlist_stats_include_year = g_properties.playlist_stats_include_year;
+		themePlaylist.playlist_stats_include_genre = g_properties.playlist_stats_include_genre;
+		themePlaylist.playlist_stats_include_label = g_properties.playlist_stats_include_label;
+		themePlaylist.playlist_stats_include_country = g_properties.playlist_stats_include_country;
+		themePlaylist.playlist_stats_include_stats = g_properties.playlist_stats_include_stats;
+		themePlaylist.playlist_stats_sort_by = g_properties.playlist_stats_sort_by;
+		themePlaylist.playlist_stats_sort_direction = g_properties.playlist_stats_sort_direction;
 	} else {
 		pref.playlistLayout = custom ? themePlaylist.playlistLayout : 'normal';
 		pref.playlistLayoutNormal = true;
@@ -1123,6 +1136,7 @@ async function setThemeSettings(save) {
 		g_properties.show_album_art = custom ? themePlaylist.show_album_art : true;
 		g_properties.auto_album_art = custom ? themePlaylist.auto_album_art : false;
 		g_properties.show_header = custom ? themePlaylist.show_header : true;
+		g_properties.show_rating_header = custom ? themePlaylist.show_rating_header : true;
 		g_properties.show_PLR_header = custom ? themePlaylist.show_PLR_header : false;
 		g_properties.use_compact_header = custom ? themePlaylist.use_compact_header : false;
 		g_properties.auto_collapse = custom ? themePlaylist.auto_collapse : false;
@@ -1149,6 +1163,17 @@ async function setThemeSettings(save) {
 		pref.playlistRowHover = custom ? themePlaylist.playlistRowHover : true;
 		pref.playlistSortOrderAuto = custom ? themePlaylist.playlistSortOrderAuto : false;
 		pref.playlistSortOrder = custom ? themePlaylist.playlistSortOrder : '';
+		pref.playlistSortOrderDirection = custom ? themePlaylist.playlistSortOrderDirection : '_asc';
+		g_properties.playlist_stats_include_artist = custom ? themePlaylist.playlist_stats_include_artist : true;
+		g_properties.playlist_stats_include_album = custom ? themePlaylist.playlist_stats_include_album : true;
+		g_properties.playlist_stats_include_track = custom ? themePlaylist.playlist_stats_include_track : true;
+		g_properties.playlist_stats_include_year = custom ? themePlaylist.playlist_stats_include_year : false;
+		g_properties.playlist_stats_include_genre = custom ? themePlaylist.playlist_stats_include_genre : false;
+		g_properties.playlist_stats_include_label = custom ? themePlaylist.playlist_stats_include_label : false;
+		g_properties.playlist_stats_include_country = custom ? themePlaylist.playlist_stats_include_country : false;
+		g_properties.playlist_stats_include_stats = custom ? themePlaylist.playlist_stats_include_stats : true;
+		g_properties.playlist_stats_sort_by = custom ? themePlaylist.playlist_stats_sort_by : '';
+		g_properties.playlist_stats_sort_direction = custom ? themePlaylist.playlist_stats_sort_direction : '_dsc';
 	}
 
 	// * Playlist properties
@@ -1925,12 +1950,31 @@ tf.labels = [ // Array of fields to test for publisher. Add, change or re-order 
  */
 function migrateCheck(version, storedVersion) {
 	/**
+	 * Checks if settings exist in the configuration file.
+	 * @param {object} settings The settings object from the configuration file.
+	 * @param {...string} settingNames The names of the settings to check.
+	 * @returns {boolean} Returns true if all specified settings exist, otherwise false.
+	 */
+	const CheckSettings = (settings, ...settingNames) => settingNames.every(settingName => Object.prototype.hasOwnProperty.call(settings, settingName));
+
+	/**
+	 * Deletes settings from the configuration file.
+	 * @param {object} settings The settings object from the configuration file.
+	 * @param {...string} settingNames The names of the settings to remove.
+	 */
+	const DeleteSettings = (settings, ...settingNames) => {
+		settingNames.forEach(settingName => {
+			delete settings[settingName];
+		});
+	};
+
+	/**
 	 * Renames an entry in the metadata grid with a new label name.
 	 * @param {MetadataGridEntry[]} grid Each element in the array is an object with a `label` property.
 	 * @param {string} oldLabel The old label name to rename.
 	 * @param {string} newLabel The new label name that will be replaced in the config file.
 	 */
-	const renameGridEntry = (grid, oldLabel, newLabel) => {
+	const RenameGridEntry = (grid, oldLabel, newLabel) => {
 		const entryIdx = grid.findIndex(gridEntry => gridEntry && gridEntry.label.toLowerCase() === oldLabel.toLowerCase());
 		if (entryIdx >= 0) {
 			grid[entryIdx].label = newLabel;
@@ -1943,7 +1987,7 @@ function migrateCheck(version, storedVersion) {
 	 * @param {string} label The label of the value to add or replace.
 	 * @param {number} position 0-based index of place to insert new value if existing entry not found.
 	 */
-	const replaceGridEntry = (grid, label, position) => {
+	const ReplaceGridEntry = (grid, label, position) => {
 		const entryIdx = grid.findIndex(gridEntry => gridEntry && gridEntry.label.toLowerCase() === label.toLowerCase());
 		const newVal = defaultMetadataGrid[defaultMetadataGrid.findIndex(e => e && e.label.toLowerCase() === label.toLowerCase())];
 		if (entryIdx >= 0) {
@@ -1953,20 +1997,29 @@ function migrateCheck(version, storedVersion) {
 		}
 	};
 
-	if (version !== storedVersion) {
-		const configFile = config.readConfiguration();
-		const fileName = `georgia-reborn\\configs\\georgia-reborn-config-${storedVersion}.jsonc`;
-		const configFileCustom = configCustom.readConfiguration();
-		const fileNameCustom = `georgia-reborn\\configs\\georgia-reborn-custom-${storedVersion}.jsonc`;
-		/** @type {MetadataGridEntry[]} */
-		const grid = configFile.metadataGrid;
+	const configFile = config.readConfiguration();
+	const configFileCustom = configCustom.readConfiguration();
+	const fileName = `georgia-reborn\\configs\\georgia-reborn-config-${storedVersion}.jsonc`;
+	const fileNameCustom = `georgia-reborn\\configs\\georgia-reborn-custom-${storedVersion}.jsonc`;
 
-		// This function clears default values which have changed
+	// * Remove old settings from the config file and add the new settings
+	const oldSettings = ['playlistSortArtistDateAsc', 'playlistSortArtistDateDesc', 'playlistSortAlbum', 'playlistSortTitle', 'playlistSortTracknum', 'playlistSortArtistYearAsc', 'playlistSortArtistYearDesc'];
+	if (CheckSettings(configFile.settings, ...oldSettings)) {
+		fso.CopyFile(configPath, fb.ProfilePath + fileName);
+		config.writeConfiguration();
+		DeleteSettings(configFile.settings, ...oldSettings);
+		config.addConfigurationObject(settingsSchema, configFile.settings);
+		config.addConfigurationObject(settingsSchema, settingsDefaults, settingsComments);
+		config.writeConfiguration(configFile.settings);
+	}
+
+	// * Update config settings which have changed since last update
+	if (version !== storedVersion) {
 		switch (storedVersion) {
 			/* eslint-disable no-fallthrough */
 			case '3.0-RC1':
-				renameGridEntry(grid, 'Catalog #', 'Catalog');
-				config.addConfigurationObject(gridSchema, grid);
+				RenameGridEntry(configFile.metadataGrid, 'Catalog #', 'Catalog');
+				config.addConfigurationObject(gridSchema, configFile.metadataGrid);
 			case '3.0-RC2':
 				config.addConfigurationObject(themePlaylistGroupingPresetsSchema, themePlaylistGroupingPresets);
 			case '3.0-DEV':
@@ -1983,7 +2036,7 @@ function migrateCheck(version, storedVersion) {
 		}
 	}
 
-	pref.version = currentVersion;	// Always update the version panel property
+	pref.version = currentVersion; // Always update the version panel property
 }
 
 

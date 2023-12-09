@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-06                                          * //
+// * Last change:    2023-12-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1517,6 +1517,20 @@ function MeasureString(text, font, x, y, width, height) {
 }
 
 
+/**
+ * Writes a fancy header string with a given title, decorated with slashes and asterisks.
+ * @param {string} title The title to be included in the header.
+ * @returns {string} A string that represents a fancy header:
+ * ///////////////
+ * // * TITLE * //
+ * ///////////////
+ */
+function WriteFancyHeader(title) {
+	const line = '/'.repeat(title.length + 10);
+	return `${line}\n// * ${title.toUpperCase()} * //\n${line}`;
+}
+
+
 /////////////////
 // * OBJECTS * //
 /////////////////
@@ -2068,6 +2082,96 @@ function StringFormat(h_align, v_align, trimming, flags) {
  */
 function ToPaddedHexString(num, len) {
 	return PadNumber(num, len, 16);
+}
+
+
+
+/////////////////////
+// * COMPARISONS * //
+/////////////////////
+/**
+ * Compares two values, providing a safe comparison for strings and numbers.
+ * If both values are strings, it uses the localeCompare function and returns -1, 0, or 1.
+ * If not, it subtracts b from a (considering undefined or null as 0), and returns the subtraction result, which could be any number.
+ * @param {string|number} a The first value to compare.
+ * @param {string|number} b The second value to compare.
+ * @returns {number} The result of the comparison.
+ * When comparing strings, -1 if a < b, 0 if a = b, 1 if a > b.
+ * When comparing numbers, the result of (a - b).
+ */
+function compareValues(a, b) {
+	return typeof a === 'string' && typeof b === 'string' ? a.localeCompare(b) : (a || 0) - (b || 0);
+}
+
+
+/**
+ * Returns the key from `sumObj` and `countObj` with the highest average value.
+ * @param {(Object|Map)} sumObj The object or map containing sum values, where each key represents a unique category.
+ * @param {(Object|Map)} countObj The object or map containing count values, where each key should match a key in `sumObj`.
+ * @returns {(string|undefined)} The key associated with the highest average value.
+ * Returns `undefined` if `sumObj` and `countObj` do not have any matching keys, or if any value in `countObj` is zero (to avoid division by zero).
+ */
+function GetKeyByHighestAvg(sumObj, countObj) {
+	let highestAverage = -Infinity;
+	let highestKey;
+	const keys = sumObj instanceof Map ? sumObj.keys() : Object.keys(sumObj);
+
+	for (const key of keys) {
+		if (sumObj instanceof Map ? countObj.has(key) : Object.prototype.hasOwnProperty.call(countObj, key)) {
+			const sumValue = sumObj instanceof Map ? sumObj.get(key) : sumObj[key];
+			const countValue = sumObj instanceof Map ? countObj.get(key) : countObj[key];
+			const average = sumValue / countValue;
+
+			if (average > highestAverage) {
+				highestAverage = average;
+				highestKey = key;
+			}
+		}
+	}
+	return highestKey;
+}
+
+
+/**
+ * Returns the first key associated with the highest value in an object or map.
+ * @param {(Object|Map)} obj The input object or map whose key-value pairs are examined.
+ * @returns {(string|null)} The first key associated with the highest value, or null if the object or map is empty.
+ */
+function GetKeyByHighestVal(obj) {
+	const entries = obj instanceof Map ? obj.entries() : Object.entries(obj);
+	const highestEntry = [...entries].reduce(([keyA, valA], [keyB, valB]) => valA >= valB ? [keyA, valA] : [keyB, valB], [null, -Infinity]);
+	return highestEntry[0];
+}
+
+
+/**
+ * Sorts the keys of an object or map in descending order based on the average of their corresponding values in two different objects or Maps.
+ * @param {(Object|Map)} sumObj The object or map whose keys are to be sorted. The values are summed values for each key.
+ * @param {(Object|Map)} countObj The object or map with the same keys as sumObj. The values are the count of occurrences for each key.
+ * @returns {Array} An array of keys from `sumObj` and `countObj`, sorted in descending order of their corresponding average values (sum / count).
+ */
+function SortKeyValuesByAvg(sumObj, countObj) {
+	const averages = new Map();
+	const keys = sumObj instanceof Map ? sumObj.keys() : Object.keys(sumObj);
+
+	for (const key of keys) {
+		const sumValue = sumObj instanceof Map ? sumObj.get(key) : sumObj[key];
+		const countValue = sumObj instanceof Map ? countObj.get(key) : countObj[key];
+		averages.set(key, sumValue / countValue);
+	}
+
+	return [...averages.entries()].sort((a, b) => b[1] - a[1]).map(entry => entry[0]);
+}
+
+
+/**
+ * Sorts the keys of an object or map in descending order based on their corresponding values.
+ * @param {(Object|Map)} obj The object or map whose keys are to be sorted.
+ * @returns {Array} An array of keys from `obj`, sorted in descending order of their corresponding values.
+ */
+function SortKeyValuesByDsc(obj) {
+	const entries = obj instanceof Map ? obj.entries() : Object.entries(obj);
+	return [...entries].sort((a, b) => b[1] - a[1]).map(entry => entry[0]);
 }
 
 

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-27                                          * //
+// * Last change:    2023-12-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -26,6 +26,10 @@ let playlistFontsCreated = false;
 let playlistThumbSize = SCALE(64);
 /** @type {FbMetadbHandle[]} The list of handles that we are loading artwork for. */
 const playlistThumbList = new Set();
+/** @type {Map} The playlist track ratings cached. */
+const playlistTrackRatings = new Map();
+/** @type {Map} The playlist album ratings cached. */
+let playlistAlbumRatings = new Map();
 
 /** @type {Object} The playlist geometry object. */
 const playlist_geo = {};
@@ -93,34 +97,44 @@ const visibility_state = {
  */
 g_properties.add_properties(
 	{
-		rows_in_header:              ['Panel Playlist - User: Header.normal.row_count', 4],
-		rows_in_compact_header:      ['Panel Playlist - User: Header.compact.row_count', 3],
+		show_playlist_info:             ['Panel Playlist - User: Playlist_info.show', true],
 
-		show_playlist_info:          ['Panel Playlist - User: Playlist_info.show', true],
+		rows_in_header:                 ['Panel Playlist - User: Header.normal.row_count', 4],
+		rows_in_compact_header:         ['Panel Playlist - User: Header.compact.row_count', 3],
+		show_header:                    ['Panel Playlist - User: Header.show', true],
+		use_compact_header:             ['Panel Playlist - User: Header.use_compact', false],
+		show_album_art:                 ['Panel Playlist - User: Header.this.art.show', true],
+		auto_album_art:                 ['Panel Playlist - User: Header.this.art.auto', false],
+		show_group_info:                ['Panel Playlist - User: Header.info.show', true],
+		show_disc_header:               ['Panel Playlist - User: Header.disc_header.show', true],
+		show_rating_header:             ['Panel Playlist - User: Header.rating.show', true],
+		show_PLR_header:                ['Panel Playlist - User: Header.peak_loudness_ratio.show', false],
+		auto_collapse:                  ['Panel Playlist - User: Header.collapse.auto', false],
+		collapse_on_playlist_switch:    ['Panel Playlist - User: Header.collapse.on_playlist_switch', false],
+		collapse_on_start:              ['Panel Playlist - User: Header.collapse.on_start', false],
 
-		show_header:                 ['Panel Playlist - User: Header.show', true],
-		use_compact_header:          ['Panel Playlist - User: Header.use_compact', false],
-		show_album_art:              ['Panel Playlist - User: Header.this.art.show', true],
-		auto_album_art:              ['Panel Playlist - User: Header.this.art.auto', false],
-		show_group_info:             ['Panel Playlist - User: Header.info.show', true],
-		show_disc_header:            ['Panel Playlist - User: Header.disc_header.show', true],
-		show_PLR_header:             ['Panel Playlist - User: Header.peak_loudness_ratio.show', false],
+		show_row_stripes:               ['Panel Playlist - User: Row.stripes.show', false],
+		show_playcount:                 ['Panel Playlist - User: Row.play_count.show', true],
+		show_PLR:                       ['Panel Playlist - User: Row.peak_loudness_ratio.show', false],
+		show_rating:                    ['Panel Playlist - User: Row.rating.show', true],
+		use_rating_from_tags:           ['Panel Playlist - User: Row.rating.from_tags', false],
+		show_queue_position:            ['Panel Playlist - User: Row.queue_position.show', true],
 
-		show_row_stripes:            ['Panel Playlist - User: Row.stripes.show', false],
-		show_playcount:              ['Panel Playlist - User: Row.play_count.show', true],
-		show_PLR:                    ['Panel Playlist - User: Row.peak_loudness_ratio.show', false],
-		show_rating:                 ['Panel Playlist - User: Row.rating.show', true],
-		use_rating_from_tags:        ['Panel Playlist - User: Row.rating.from_tags', false],
-		show_queue_position:         ['Panel Playlist - User: Row.queue_position.show', true],
+		playlist_stats_include_artist:  ['Panel Playlist - User: Misc.playlist_stats_include_artist', true],
+		playlist_stats_include_album:   ['Panel Playlist - User: Misc.playlist_stats_include_album', true],
+		playlist_stats_include_track:   ['Panel Playlist - User: Misc.playlist_stats_include_track', true],
+		playlist_stats_include_year:    ['Panel Playlist - User: Misc.playlist_stats_include_year', false],
+		playlist_stats_include_genre:   ['Panel Playlist - User: Misc.playlist_stats_include_genre', false],
+		playlist_stats_include_label:   ['Panel Playlist - User: Misc.playlist_stats_include_label', false],
+		playlist_stats_include_country: ['Panel Playlist - User: Misc.playlist_stats_include_country', false],
+		playlist_stats_include_stats:   ['Panel Playlist - User: Misc.playlist_stats_include_stats', true],
+		playlist_stats_sort_by:         ['Panel Playlist - User: Misc.playlist_stats_sort_by', ''],
+		playlist_stats_sort_direction:  ['Panel Playlist - User: Misc.playlist_stats_sort_direction', '_dsc'],
 
-		auto_collapse:               ['Panel Playlist - User: Header.collapse.auto', false],
-		collapse_on_playlist_switch: ['Panel Playlist - User: Header.collapse.on_playlist_switch', false],
-		collapse_on_start:           ['Panel Playlist - User: Header.collapse.on_start', false],
-
-		playlist_group_data:         ['Panel Playlist - System: Playlist.grouping.data_list', ''],
-		playlist_custom_group_data:  ['Panel Playlist - System: Playlist.grouping.custom_data_list', ''],
-		default_group_name:          ['Panel Playlist - System: Playlist.grouping.default_preset_name', ''],
-		group_presets:               ['Panel Playlist - System: Playlist.grouping.presets', '']
+		playlist_group_data:            ['Panel Playlist - System: Playlist.grouping.data_list', ''],
+		playlist_custom_group_data:     ['Panel Playlist - System: Playlist.grouping.custom_data_list', ''],
+		default_group_name:             ['Panel Playlist - System: Playlist.grouping.default_preset_name', ''],
+		group_presets:                  ['Panel Playlist - System: Playlist.grouping.presets', '']
 	}
 );
 
@@ -238,27 +252,6 @@ function setPlaylistX() {
 		pref.panelWidthAuto ? displayLibrarySplit() ? noAlbumArtSize : !fb.IsPlaying ? 0 : albumArtSize.x + albumArtSize.w :
 		ww * 0.5 :
 	0;
-}
-
-
-/////////////////////
-// * CALCULATION * //
-/////////////////////
-/**
- * Calculate Peak Loudness Ratio keeping in mind replayGain 2.0 is implemented in Foobar2000.
- * Reference value in Foobar 2000 is set on -18 LUFS in order to maintain backwards compatibility with RG1, RG2.
- * EBU R 128 reference is -23 LUFS.
- * @param {string=} gain replayGainValue for track %replaygain_track_gain% | for album %replaygain_album_gain%
- * @param {string=} gaindb TruePeakValue for track %replaygain_track_peak_db% | for album %replaygain_album_peak_db%
- * @returns {string=} Peak Loudness Ratio
- */
-function calculate_PLR(gain, gaindb) {
-	const lufs = -2300 - (Number(gain.replace(/[^0-9+-]/g, '')) - 500);
-	const tpfs = Number(gaindb.replace(/[^0-9+-]/g, ''));
-	const plr = tpfs - lufs;
-	const plr_value = plr % 100 > 49 ? plr + 100 : plr;
-
-	return Math.floor(plr_value / 100);
 }
 
 
@@ -957,6 +950,8 @@ class Playlist extends List {
 		this.queue_handler = undefined;
 		/** @type {?CollapseHandler} */
 		this.collapse_handler = undefined;
+		/** @type {MetaHandler} */
+		this.meta_handler = new MetaHandler();
 		/**
 		 * @const
 		 * @type {ContentNavigationHelper}
@@ -1372,9 +1367,13 @@ class Playlist extends List {
 				this.append_send_items_menu_to(cmm);
 
 				cmm.append_separator();
-				cmm.append_item('Write theme tags', () => {
+				cmm.append_item('Write theme to tags', () => {
 					writeThemeTags();
 				});
+				cmm.append_item('Write album statistics to tags', () => {
+					this.meta_handler.write_album_stats_to_tags();
+				});
+				this.append_write_playlist_stats_list_menu_to(cmm);
 			}
 		}
 		else {
@@ -2720,6 +2719,12 @@ class Playlist extends List {
 				this.scroll_to_focused_or_now_playing();
 			}, { is_checked: g_properties.show_disc_header });
 
+			appear_header.append_item('Show rating', () => {
+				g_properties.show_rating_header = !g_properties.show_rating_header;
+				this.initialize_list();
+				this.scroll_to_focused_or_now_playing();
+			}, { is_checked: g_properties.show_rating_header });
+
 			appear_header.append_item('Show PLR value', () => {
 				g_properties.show_PLR_header = !g_properties.show_PLR_header;
 				this.initialize_list();
@@ -2799,7 +2804,12 @@ class Playlist extends List {
 		);
 		parent_menu.append(sort);
 
-		sort.append_item('by...', () => {
+		sort.append_item('Always auto-sort', () => {
+			pref.playlistSortOrderAuto = !pref.playlistSortOrderAuto;
+		}, { is_checked: pref.playlistSortOrderAuto });
+		sort.append_separator();
+
+		sort.append_item('Sort by...', () => {
 			if (has_multiple_selected_items) {
 				fb.RunMainMenuCommand('Edit/Selection/Sort/Sort by...');
 			}
@@ -2808,69 +2818,67 @@ class Playlist extends List {
 			}
 		});
 
-		sort.append_item('by album', () => {
-			if (has_multiple_selected_items) {
-				fb.RunMainMenuCommand('Edit/Selection/Sort/Sort by album');
-			}
-			else {
-				fb.RunMainMenuCommand('Edit/Sort/Sort by album');
-			}
-		});
+		sort.append_separator();
 
-		sort.append_item('by artist', () => {
-			if (has_multiple_selected_items) {
-				fb.RunMainMenuCommand('Edit/Selection/Sort/Sort by artist');
-			}
-			else {
-				fb.RunMainMenuCommand('Edit/Sort/Sort by artist');
-			}
-		});
+		const sortOrder = [
+			['Default', 'default'],
+			['Artist | date', 'artistDate'],
+			['Album', 'albumTitle'],
+			['Album rating', 'albumRating'],
+			['Album playcount', 'albumPlaycount'],
+			['Track', 'trackTitle'],
+			['Track number', 'trackNumber'],
+			['Track rating', 'trackRating'],
+			['Track playcount', 'trackPlaycount'],
+			['Year', 'year'],
+			['Genre', 'genre'],
+			['Label', 'label'],
+			['Country', 'country'],
+			['File path', 'filePath'],
+			['Custom', 'custom']
+		];
 
-		sort.append_item('by file path', () => {
-			if (has_multiple_selected_items) {
-				fb.RunMainMenuCommand('Edit/Selection/Sort/Sort by file path');
-			}
-			else {
-				fb.RunMainMenuCommand('Edit/Sort/Sort by file path');
-			}
-		});
+		const sortOrderDirection = [
+			['Order by ascending',  '_asc'],
+			['Order by descending', '_dsc']
+		];
 
-		sort.append_item('by title', () => {
-			if (has_multiple_selected_items) {
-				fb.RunMainMenuCommand('Edit/Selection/Sort/Sort by title');
-			}
-			else {
-				fb.RunMainMenuCommand('Edit/Sort/Sort by title');
-			}
-		});
+		const setSorting = () => {
+			setPlaylistSortOrder();
+			playlist.on_size(ww, wh);
+			repaintWindow();
+		};
 
-		sort.append_item('by track number', () => {
-			if (has_multiple_selected_items) {
-				fb.RunMainMenuCommand('Edit/Selection/Sort/Sort by track number');
-			}
-			else {
-				fb.RunMainMenuCommand('Edit/Sort/Sort by track number');
-			}
-		});
-
-		sort.append_item('by date', () => {
-			plman.UndoBackup(this.cur_playlist_idx);
-			plman.SortByFormat(this.cur_playlist_idx, '$if3(%original release date%, %originaldate%, %date%) %album% %edition% %codec% %discnumber% %tracknumber%', has_multiple_selected_items);
+		sortOrderDirection.forEach((direction) => {
+			const savedOrder = pref.playlistSortOrder.slice(0, -4);
+			const sortOrderWithDirection = ['artistDate', 'albumRating', 'albumPlaycount', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country'].includes(savedOrder);
+			sort.append_item(direction[0], () => {
+				pref.playlistSortOrderDirection = direction[1];
+				pref.playlistSortOrder = sortOrderWithDirection ? `${savedOrder}${pref.playlistSortOrderDirection}` : savedOrder;
+				setSorting();
+			}, {
+				is_radio_checked: pref.playlistSortOrderDirection === direction[1],
+				is_grayed_out: !sortOrderWithDirection
+			});
 		});
 
 		sort.append_separator();
 
-		sort.append_item('Save', () => {
-			fb.RunMainMenuCommand('File/Save playlist...');
+		sortOrder.forEach((item) => {
+			const sortOrderWithDirection = ['artistDate', 'albumRating', 'albumPlaycount', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country'].includes(item[1]);
+			sort.append_item(item[0], function (order) {
+				const savedDirection = pref.playlistSortOrderDirection;
+				pref.playlistSortOrder = sortOrderWithDirection ? `${order}${savedDirection}` : order;
+				if (pref.playlistSortOrder === 'custom') inputBox('playlistSortCustom');
+				setSorting();
+			}.bind(null, item[1]), {
+				is_radio_checked: pref.playlistSortOrderAuto &&
+				(sortOrderWithDirection && item[1] === pref.playlistSortOrder.slice(0, -4) ||
+				!sortOrderWithDirection && item[1] === pref.playlistSortOrder)
+			});
 		});
 
-		sort.append_item('Load', () => {
-			fb.RunMainMenuCommand('File/Load playlist...');
-		});
-
-		sort.append_item('Undo', () => {
-			fb.RunMainMenuCommand('Edit/Undo');
-		});
+		sort.append_separator();
 
 		sort.append_item('Randomize', () => {
 			if (has_multiple_selected_items) {
@@ -2888,6 +2896,20 @@ class Playlist extends List {
 			else {
 				fb.RunMainMenuCommand('Edit/Sort/Reverse');
 			}
+		});
+
+		sort.append_separator();
+
+		sort.append_item('Save', () => {
+			fb.RunMainMenuCommand('File/Save playlist...');
+		});
+
+		sort.append_item('Load', () => {
+			fb.RunMainMenuCommand('File/Load playlist...');
+		});
+
+		sort.append_item('Undo', () => {
+			fb.RunMainMenuCommand('Edit/Undo');
 		});
 	}
 
@@ -2963,6 +2985,141 @@ class Playlist extends List {
 		}
 	}
 
+	/**
+	 * Appends the playlist "write playlist stats list" menu to the parent menu.
+	 * @param {ContextMenu} parent_menu The parent menu to append to.
+	 */
+	append_write_playlist_stats_list_menu_to(parent_menu) {
+		// * Set up metadata and playlist stats settings
+		const metadata = Array.from(this.meta_handler.get_metadata().values());
+		const playlistName = plman.GetPlaylistName(plman.ActivePlaylist);
+		const playlistStatsMenu = new ContextMenu('Write playlist statistics to list');
+		const sortBy = g_properties.playlist_stats_sort_by;
+		const sortDirection = g_properties.playlist_stats_sort_direction;
+
+		// * Set up playlist stats option menu items
+		const sortByMenu = [
+			['Sort by artist', 'artist'],
+			['Sort by album', 'albumTitle'],
+			['Sort by track', 'trackTitle'],
+			['Sort by year', 'year'],
+			['Sort by genre', 'genre'],
+			['Sort by label', 'label'],
+			['Sort by country', 'country'],
+			['Sort by stats', '']
+		];
+
+		const sortDirectionMenu = [
+			['Order by ascending',  '_asc'],
+			['Order by descending', '_dsc']
+		];
+
+		const statsTypeMenu = [
+			['Album rating', 'albumRating'],
+			['Album playcount', 'albumPlaycount'],
+			['Album playcount total', 'albumPlaycountTotal'],
+			['Album track rating', 'albumTrackRating'],
+			['Album track playcount', 'albumTrackPlaycount'],
+			['Track rating', 'trackRating'],
+			['Track playcount', 'trackPlaycount'],
+			['Top rated', 'topRated'],
+			['Top played', 'topPlayed']
+		];
+
+		// * Create playlist stats settings menu
+		playlistStatsMenu.append_item('Include artist', () => {
+			g_properties.playlist_stats_include_artist = !g_properties.playlist_stats_include_artist;
+		}, { is_checked: g_properties.playlist_stats_include_artist });
+		playlistStatsMenu.append_item('Include album', () => {
+			g_properties.playlist_stats_include_album = !g_properties.playlist_stats_include_album;
+		}, { is_checked: g_properties.playlist_stats_include_album });
+		playlistStatsMenu.append_item('Include track', () => {
+			g_properties.playlist_stats_include_track = !g_properties.playlist_stats_include_track;
+		}, { is_checked: g_properties.playlist_stats_include_track });
+		playlistStatsMenu.append_item('Include year', () => {
+			g_properties.playlist_stats_include_year = !g_properties.playlist_stats_include_year;
+		}, { is_checked: g_properties.playlist_stats_include_year });
+		playlistStatsMenu.append_item('Include genre', () => {
+			g_properties.playlist_stats_include_genre = !g_properties.playlist_stats_include_genre;
+		}, { is_checked: g_properties.playlist_stats_include_genre });
+		playlistStatsMenu.append_item('Include label', () => {
+			g_properties.playlist_stats_include_label = !g_properties.playlist_stats_include_label;
+		}, { is_checked: g_properties.playlist_stats_include_label });
+		playlistStatsMenu.append_item('Include country', () => {
+			g_properties.playlist_stats_include_country = !g_properties.playlist_stats_include_country;
+		}, { is_checked: g_properties.playlist_stats_include_country });
+		playlistStatsMenu.append_item('Include stats', () => {
+			g_properties.playlist_stats_include_stats = !g_properties.playlist_stats_include_stats;
+		}, { is_checked: g_properties.playlist_stats_include_stats });
+
+		playlistStatsMenu.append_separator();
+
+		sortByMenu.forEach((sortBy) => {
+			playlistStatsMenu.append_item(sortBy[0], () => {
+				g_properties.playlist_stats_sort_by = sortBy[1];
+			}, { is_radio_checked: g_properties.playlist_stats_sort_by === sortBy[1] });
+		});
+
+		playlistStatsMenu.append_separator();
+
+		sortDirectionMenu.forEach((direction) => {
+			playlistStatsMenu.append_item(direction[0], () => {
+				g_properties.playlist_stats_sort_direction = direction[1];
+			}, { is_radio_checked: g_properties.playlist_stats_sort_direction === direction[1] });
+		});
+
+		playlistStatsMenu.append_separator();
+
+		playlistStatsMenu.append_item('Reset settings', () => {
+			g_properties.playlist_stats_include_artist = true;
+			g_properties.playlist_stats_include_album = true;
+			g_properties.playlist_stats_include_track = true;
+			g_properties.playlist_stats_include_year = false;
+			g_properties.playlist_stats_include_genre = false;
+			g_properties.playlist_stats_include_label = false;
+			g_properties.playlist_stats_include_country = false;
+			g_properties.playlist_stats_include_stats = true;
+			g_properties.playlist_stats_sort_direction = '_dsc';
+			g_properties.playlist_stats_sort_by = '';
+		});
+
+		playlistStatsMenu.append_separator();
+
+		// * Create playlist stats list menu
+		statsTypeMenu.forEach((item) => {
+			const statsTypeAlbums = item[1].startsWith('album');
+			const statsTypeTracks = statsTypeAlbums && g_properties.playlist_stats_sort_by.startsWith('track');
+
+			playlistStatsMenu.append_item(item[0], function (statsType) {
+				const newStatsType = sortBy ? `${sortBy}${sortDirection}_${statsType}` : `${statsType}${sortDirection}`;
+				const metadataType =
+					item[1].startsWith('track') ? 'track' :
+					item[1].startsWith('album') ? 'album' :
+					item[1].endsWith('topRated') ? 'topRated' :
+					item[1].endsWith('topPlayed') ? 'topPlayed' :
+					'album';
+
+				const statsName = item[0];
+				const filePath = `${fb.ProfilePath}cache\\playlist\\${playlistName}_${statsName}${statsType.startsWith('top') ? '_statistics' : `_[${newStatsType}]`}.txt`;
+
+				const ratingType =
+					statsType === 'albumRating' ? 'albumAverage' :
+					statsType === 'albumRatingTotal' ? 'albumTotal' :
+					statsType === 'albumTrackRating' ? 'albumTracks' :
+					false;
+				const playcountType =
+					statsType === 'albumPlaycount' ? 'albumAverage' :
+					statsType === 'albumPlaycountTotal' ? 'albumTotal' :
+					statsType === 'albumTrackPlaycount' ? 'albumTracks' :
+					false;
+
+				this.meta_handler.write_stats_to_text_file(metadata, metadataType, filePath, statsName, newStatsType, ratingType, playcountType);
+				fb.ShowPopupMessage(`${statsName} list was saved in:\n\n${filePath}`, `${statsName} list`);
+			}.bind(this, item[1]), { is_grayed_out: statsTypeTracks });
+		});
+
+		parent_menu.append(playlistStatsMenu);
+	}
 	// #endregion
 
 	/**
@@ -3926,6 +4083,9 @@ class BaseHeader extends ListItem {
 
 		/** @type {Array<Row>|Array<BaseHeader>} */
 		this.sub_items = [];
+
+		/** @type {MetaHandler} */
+		this.meta_handler = new MetaHandler();
 	}
 
 	/**
@@ -4190,7 +4350,7 @@ class DiscHeader extends BaseHeader {
 		gr.DrawString(disc_text, title_font, title_color, cur_x, this.y, this.w, this.h, disc_header_text_format);
 		const disc_w = Math.ceil(gr.MeasureString(disc_text, title_font, 0, 0, 0, 0).Width + 14);
 
-		const subheader_PLR_album = (g_properties.show_PLR_header && $('[%totaldiscs%]', this.sub_items[0].metadb) > 1) ? `${calculate_PLR($('%replaygain_album_gain%', this.sub_items[0].metadb), $('%replaygain_album_peak_db%', this.sub_items[0].metadb))} LU | ` : '';
+		const subheader_PLR_album = (g_properties.show_PLR_header && $('[%totaldiscs%]', this.sub_items[0].metadb) > 1) ? `${this.meta_handler.get_PLR($('%replaygain_album_gain%', this.sub_items[0].metadb), $('%replaygain_album_peak_db%', this.sub_items[0].metadb))} LU | ` : '';
 		const replainGain = ($('[%totaldiscs%]', this.sub_items[0].metadb) > 1) ? $('[%replaygain_album_gain% | ]', this.sub_items[0].metadb) : '';
 		const tracks_text = `${(replainGain)}${(subheader_PLR_album)}${this.sub_items.length} Track${this.sub_items.length > 1 ? 's' : ''} - ${utils.FormatDuration(this.get_duration())}`;
 
@@ -4360,7 +4520,20 @@ class Header extends BaseHeader {
 		this.hyperlinks_initialized = false;
 		this.was_playing = undefined; // Last value of this.is_playing() updated each draw cycle
 
+		/**
+		 * @type {number}
+		 */
+		this.rating_left_pad = 0;
+		/**
+		 * @type {number}
+		 */
+		this.rating_right_pad = 10;
+		/** @type {?Rating} */
+		this.rating = undefined;
+
 		this.header_image = undefined;
+
+		this.initialize_rating();
 	}
 
 	/**
@@ -4415,6 +4588,14 @@ class Header extends BaseHeader {
 		}
 
 		return owned_rows.length;
+	}
+
+	/**
+	 * Initializes the rating and sets its position within a given area.
+	 */
+	initialize_rating() {
+		this.rating = new Rating(0, this.y, this.w - this.rating_right_pad, this.h, this.metadb);
+		this.rating.x = this.x + this.w - (this.rating.w + this.rating_right_pad);
 	}
 
 	/**
@@ -4480,7 +4661,7 @@ class Header extends BaseHeader {
 			(this.grouping_handler.show_disc() && has_discs && ($('[%totaldiscs%]', this.metadb) > 1) ? `${this.sub_items.length} Discs - ` : '') +
 			track_count + (track_count === 1 ? ' Track' : ' Tracks');
 		const replaygain = (this.grouping_handler.show_disc() && (!has_discs || $('[%totaldiscs%]', this.metadb) === '')) ? $('[ | %replaygain_album_gain%]', this.metadb) : '';
-		const plr_album = (g_properties.show_PLR_header && this.grouping_handler.show_disc() && (!has_discs || $('[%totaldiscs%]', this.metadb) === '')) ? ` | ${calculate_PLR($('%replaygain_album_gain%', this.metadb), $('%replaygain_album_peak_db%', this.metadb))} LU` : '';
+		const plr_album = (g_properties.show_PLR_header && this.grouping_handler.show_disc() && (!has_discs || $('[%totaldiscs%]', this.metadb) === '')) ? ` | ${this.meta_handler.get_PLR($('%replaygain_album_gain%', this.metadb), $('%replaygain_album_peak_db%', this.metadb))} LU` : '';
 		let info_text = codec + disc_number + replaygain + plr_album + track_text;
 
 		if (hasGenreTags) {
@@ -4488,6 +4669,15 @@ class Header extends BaseHeader {
 		}
 		if (this.get_duration()) {
 			info_text += ` | Time: ${utils.FormatDuration(this.get_duration())}`;
+		}
+
+		if (g_properties.show_rating_header && $('%rating%', this.metadb) !== '') {
+			const albumName = $('%album%', this.metadb);
+			const albumRating = this.rating.get_album_rating().get(albumName);
+
+			if (albumRating !== undefined) {
+				info_text += ` | Rating: ${albumRating}`;
+			}
 		}
 
 		// * Use custom playlist header info if pattern was defined in the config file
@@ -5317,6 +5507,8 @@ class Header extends BaseHeader {
 		for (const h in this.hyperlinks) {
 			this.hyperlinks[h].setContainerWidth(w);
 		}
+
+		this.initialize_rating();
 	}
 
 	/**
@@ -5486,8 +5678,8 @@ function ArtImageCache(max_cache_size_arg) {
 	 * @param {FbMetadbHandle} metadb The metadb of the track.
 	 * @param {GdiBitmap} img The loaded image to cache.
 	 * @param {LinkedList.Iterator<FbMetadbHandle>} queue_iterator A reference to an iterator object that is
-     * used to iterate over a queue of items. It is likely used to keep track of the current position in
-     * the queue and to provide methods for accessing the next item in the queue.
+	 * used to iterate over a queue of items. It is likely used to keep track of the current position in
+	 * the queue and to provide methods for accessing the next item in the queue.
 	 * @class
 	 */
 	function CacheItem(metadb, img, queue_iterator) {
@@ -5637,6 +5829,9 @@ class Row extends ListItem {
 		/** @type {?Rating} */
 		this.rating = undefined;
 
+		/** @type {MetaHandler} */
+		this.meta_handler = new MetaHandler();
+
 		/** @type {?string} */
 		this.title_text = undefined;
 		/** @type {?string} */
@@ -5769,7 +5964,7 @@ class Row extends ListItem {
 		// * PLR
 		if (g_properties.show_PLR) {
 			if ($('[%replaygain_track_gain%]', this.metadb) && $('[%replaygain_track_peak_db%]', this.metadb)) {
-				this.plr_track = calculate_PLR($('%replaygain_track_gain%', this.metadb), $('%replaygain_track_peak_db%', this.metadb))
+				this.plr_track = this.meta_handler.get_PLR($('%replaygain_track_gain%', this.metadb), $('%replaygain_track_peak_db%', this.metadb))
 			}
 
 			if (this.plr_track) {
@@ -6200,6 +6395,7 @@ function Rating(x, y, max_w, h, metadb) {
 			return;
 		}
 
+		playlistAlbumRatings = new Map();
 		const new_rating = Math.floor((x - this.x) / btn_w) + 1;
 		const current_rating = this.get_rating();
 
@@ -6222,23 +6418,75 @@ function Rating(x, y, max_w, h, metadb) {
 	};
 
 	/**
-	 * Gets the current rating for the playlist row.
-	 * @returns {number} The rating of the current track.
+	 * Gets the rating for the current track.
+	 * If no rating has been fetched yet, it fetches the rating using the get_track_rating method.
+	 * @returns {number|null} The rating of the current track, or null if no rating.
 	 */
 	this.get_rating = () => {
-		if (rating == null) {
-			let current_rating;
-			if (g_properties.use_rating_from_tags) {
-				const file_info = this.metadb.GetFileInfo();
-				const rating_meta_idx = file_info.MetaFind('RATING');
-				current_rating = rating_meta_idx !== -1 ? file_info.MetaValue(rating_meta_idx, 0) : 0;
-			}
-			else {
-				current_rating = $('%rating%', this.metadb);
-			}
-			return Number(current_rating);
+		const trackId = $('%rating%', this.metadb);
+		let rating = playlistTrackRatings.get(trackId);
+
+		if (rating === undefined) {
+			rating = this.get_track_rating(this.metadb);
+			playlistTrackRatings.set(trackId, rating);
 		}
+
 		return rating;
+	};
+
+	/**
+	 * Gets the rating for a given track.
+	 * If no track is provided, it defaults to the current playlist row.
+	 * @param {FbMetadbHandle} [track=this.metadb] The track to get the rating for.
+	 * @returns {number|null} The rating of the provided or default track, or null if no rating.
+	 */
+	this.get_track_rating = (track = this.metadb) => {
+		let currentRating;
+
+		if (g_properties.use_rating_from_tags) {
+			const fileInfo = track.GetFileInfo();
+			const ratingIdx = fileInfo.MetaFind('RATING');
+			currentRating = ratingIdx !== -1 ? fileInfo.MetaValue(ratingIdx, 0) : 0;
+		} else {
+			currentRating = $('%rating%', track);
+		}
+		return currentRating === '' ? null : Number(currentRating);
+	}
+
+	/**
+	 * Gets the average rating for an album.
+	 * @returns {number} The average rating of all tracks in the album.
+	 */
+	this.get_album_rating = () => {
+		// Return cached results if available
+		if (playlistAlbumRatings.size !== 0) {
+			return playlistAlbumRatings;
+		}
+
+		const albums = new Map();
+		const playlistItems = plman.GetPlaylistItems(plman.ActivePlaylist).Convert();
+
+		// Group tracks by album
+		for (let i = 0; i < playlistItems.length; ++i) {
+			const albumName  = $('%album%', playlistItems[i]);
+			const rating = this.get_track_rating(playlistItems[i]);
+
+			const albumData = albums.get(albumName);
+			if (albumData === undefined) {
+				albums.set(albumName, { albumTotalRating: rating, albumTrackCount: 1 });
+			} else {
+				albumData.albumTotalRating += rating;
+				albumData.albumTrackCount++;
+			}
+		}
+
+		// Calculate average rating for each album
+		for (const [albumName, albumData] of albums) {
+			const albumAverageRating = Number((albumData.albumTotalRating / albumData.albumTrackCount).toFixed(2));
+			playlistAlbumRatings.set(albumName, albumAverageRating);
+		}
+
+		return playlistAlbumRatings;
 	};
 
 	/**
@@ -6246,6 +6494,788 @@ function Rating(x, y, max_w, h, metadb) {
 	 */
 	this.reset_queried_data = () => {
 		rating = undefined;
+	};
+}
+
+
+//////////////////////
+// * META HANDLER * //
+//////////////////////
+/**
+ * Handles metadata operations including retrieving album metadata, and writing meta tags or playlist stats to a file.
+ */
+class MetaHandler {
+	/**
+	 * @param {FbMetadbHandle} metadb The metadb of the track.
+	 * @class
+	 */
+	constructor(metadb) {
+		this.metadb = metadb;
+	}
+
+	/**
+	 * Calculate Peak Loudness Ratio keeping in mind replayGain 2.0 is implemented in Foobar2000.
+	 * Reference value in Foobar 2000 is set on -18 LUFS in order to maintain backwards compatibility with RG1, RG2.
+	 * EBU R 128 reference is -23 LUFS.
+	 * @param {string=} gain The ReplayGain gain value for track %replaygain_track_gain% | for album %replaygain_album_gain%
+	 * @param {string=} peak The ReplayGain peak value for track %replaygain_track_peak_db% | for album %replaygain_album_peak_db%
+	 * @returns {string=} Peak Loudness Ratio
+	 */
+	get_PLR(gain, peak) {
+		const lufs = -2300 - (Number(gain.replace(/[^0-9+-]/g, '')) - 500);
+		const tpfs = Number(peak.replace(/[^0-9+-]/g, ''));
+		const plr = tpfs - lufs;
+		const plr_value = plr % 100 > 49 ? plr + 100 : plr;
+
+		return Math.floor(plr_value / 100);
+	}
+
+	/**
+	 * Gets the playcount for a given track.
+	 * If no track is provided, it defaults to the current playlist row.
+	 * @param {FbMetadbHandle} [track=this.metadb] The track to get the playcount for.
+	 * @returns {number} The playcount of the provided or default track.
+	 */
+	get_track_playcount(track = this.metadb) {
+		let currentPlaycount;
+
+		if (g_properties.use_rating_from_tags) {
+			const fileInfo = track.GetFileInfo();
+			const ratingIdx = fileInfo.MetaFind('PLAY COUNT');
+			currentPlaycount = ratingIdx !== -1 ? fileInfo.MetaValue(ratingIdx, 0) : 0;
+		} else {
+			currentPlaycount = $('%play_count%', track);
+		}
+		return currentPlaycount === '' ? null : Number(currentPlaycount);
+	};
+
+	/**
+	 * Iterates through the current active playlist and builds metadata for each album.
+	 * @returns {Map} A map where keys are album names and values are objects with properties:
+	 * - artist: The name of the artist of the album.
+	 * - album: The name of the album.
+	 * - year: The year of the album.
+	 * - genre: The genre of the album.
+	 * - label: The label the artist is signed to.
+	 * - country: The country the artist is from.
+	 * - albumTrackCount: The total number of tracks on the album.
+	 * - albumTotalRating: The calculated total rating of all tracks on the album.
+	 * - albumTotalPlaycount: The calculated total playcount of all tracks on the album.
+	 * - albumAverageRating: The calculated average album rating.
+	 * - albumAveragePlaycount: The calculated average album playcount.
+	 * - tracks: An array of track objects, each with properties:
+	 *   - track: The track object from the playlist.
+	 *   - trackNumber: The track number.
+	 *   - title: The title of the track.
+	 *   - rating: The rating of the track.
+	 *   - playcount: The playcount of the track.
+	 */
+	get_metadata() {
+		const metadata = new Map();
+		const getRating = new Rating();
+		const playlistItems = plman.GetPlaylistItems(plman.ActivePlaylist).Convert();
+
+		for (let i = 0; i < playlistItems.length; ++i) {
+			const currentItem = playlistItems[i];
+			const artist = $('$if2(%album artist%,[%artist%])', currentItem);
+			const album = $('%album%', currentItem);
+			const trackNumber = $('%tracknumber%', currentItem);
+			const title = $('%title%', currentItem);
+			const year = $('$if2(%year%,[%date%])', currentItem);
+			const genre = $('%genre%', currentItem);
+			const label = $('$if2(%label%,[%publisher%])', currentItem);
+			const country = $('$if2(%artistcountry%,[%country%])', currentItem);
+			const rating = getRating.get_track_rating(currentItem) || 0;
+			const playcount = this.get_track_playcount(currentItem) || 0;
+
+			let albumData = metadata.get(album);
+			if (!albumData) {
+				albumData = {
+					artist,
+					album,
+					year,
+					genre,
+					label,
+					country,
+					albumTrackCount: 0,
+					albumTotalRating: 0,
+					albumTotalPlaycount: 0,
+					albumAverageRating: 0,
+					albumAveragePlaycount: 0,
+					tracks: []
+				};
+				metadata.set(album, albumData);
+			}
+
+			albumData.albumTrackCount += 1;
+			albumData.albumTotalRating += rating;
+			albumData.albumTotalPlaycount += playcount;
+
+			albumData.tracks.push({
+				track: currentItem,
+				trackNumber,
+				title,
+				rating,
+				playcount
+			});
+		}
+
+		// * Calculate the averages after processing all tracks
+		metadata.forEach(albumData => {
+			albumData.albumAverageRating = albumData.albumTrackCount > 0 ? Number((albumData.albumTotalRating / albumData.albumTrackCount).toFixed(2)) : 0;
+			albumData.albumAveragePlaycount = albumData.albumTrackCount > 0 ? Math.round(albumData.albumTotalPlaycount / albumData.albumTrackCount) : 0;
+		});
+
+		return metadata;
+	}
+
+	/**
+	 * Gets metadata statistics for artists, albums, and tracks from the current active playlist.
+	 * Sets default values where data is missing, computes various stats like ratings, counts, playcounts,
+	 * and sorts them to find top rated and most played entries.
+	 * @param {Object[]} metadata An array of metadata objects for various music entities.
+	 * Each object contains artist, album, year, genre, label, country, and tracks information.
+	 * @returns {Object} An object with aggregated metadata statistics, including:
+	 * - Mappings of artists to genres, countries, and their ratings, counts, and playcounts.
+	 * - Mappings of albums to artists, years, genres, labels, countries, and their ratings, counts, and playcounts.
+	 * - Mappings of tracks to artists, albums, years, genres, labels, and their ratings, counts.
+	 * - Sorted lists of top rated and most played artists, albums, tracks, genres, labels, and countries.
+	 * - Total play counts for artists, albums, tracks, genres, labels, and countries.
+	 */
+	get_metadata_stats(metadata) {
+		const artistGenre = new Map();
+		const artistCountry = new Map();
+
+		const albumArtist = new Map();
+		const albumYear = new Map();
+		const albumGenre = new Map();
+		const albumLabel = new Map();
+		const albumCountry = new Map();
+
+		const trackArtist = new Map();
+		const trackAlbum = new Map();
+		const trackYear = new Map();
+		const trackGenre = new Map();
+		const trackLabel = new Map();
+
+		const artistRatings = new Map();
+		const albumRatings = new Map();
+		const trackRatings = new Map();
+		const artistCounts = new Map();
+		const albumCounts = new Map();
+		const trackCounts = new Map();
+
+		const artistPlaycounts = new Map();
+		const albumPlaycounts = new Map();
+		const trackPlaycounts = new Map();
+		const genrePlaycounts = new Map();
+		const labelPlaycounts = new Map();
+		const countryPlaycounts = new Map();
+
+		const SetDefaultStringValue = (value, defaultValue) => (value && value !== '?') ? value : defaultValue;
+		const SetDefaultStringList  = (value, defaultValue) => (value && value !== '?') ? value.split(',').map(item => item.trim()) : [defaultValue];
+		const SetDefaultSet = (map, key) => map.has(key) || map.set(key, new Set());
+		const SetDefaultVal = (map, key, value) => map.has(key) || map.set(key, value);
+		const SetDefaultNum = (map, key) => map.has(key) || map.set(key, 0);
+
+		metadata.forEach(data => {
+			// * Set defaults
+			const artist  = SetDefaultStringValue(data.artist, 'NO ARTIST');
+			const album   = SetDefaultStringValue(data.album, 'NO ALBUM');
+			const year    = SetDefaultStringValue(data.year, 'NO YEAR');
+			const genre   = SetDefaultStringList(data.genre, 'NO GENRE');
+			const label   = SetDefaultStringList(data.label, 'NO LABEL');
+			const country = SetDefaultStringList(data.country, 'NO COUNTRY');
+
+			// * Set maps have entries for artist and album
+			SetDefaultSet(artistGenre, artist);
+			SetDefaultSet(artistCountry, artist);
+			SetDefaultVal(albumArtist, album, artist);
+			SetDefaultVal(albumYear, album, year);
+			SetDefaultSet(albumGenre, album);
+			SetDefaultSet(albumLabel, album);
+			SetDefaultSet(albumCountry, album);
+
+			// * Set ratings, counts, and playcounts to 0 if they don't exist
+			SetDefaultNum(artistRatings, artist);
+			SetDefaultNum(albumRatings, album);
+			SetDefaultNum(artistCounts, artist);
+			SetDefaultNum(albumCounts, album);
+			SetDefaultNum(artistPlaycounts, artist);
+			SetDefaultNum(albumPlaycounts, album);
+			SetDefaultNum(labelPlaycounts, label);
+			SetDefaultNum(countryPlaycounts, country);
+
+			// * Add genres to artist/album, labels to album, and countries to artist/album sets
+			genre.forEach(genreItem => {
+				artistGenre.get(artist).add(genreItem);
+				albumGenre.get(album).add(genreItem);
+			});
+			label.forEach(labelItem => {
+				albumLabel.get(album).add(labelItem);
+			});
+			country.forEach(countryItem => {
+				artistCountry.get(artist).add(countryItem);
+				albumCountry.get(album).add(countryItem);
+			});
+
+			// * Update all ratings, counts and playcounts
+			data.tracks.forEach(trackItem => {
+				const track = SetDefaultStringValue(trackItem.title, 'NO TRACK');
+				SetDefaultVal(trackArtist, track, artist);
+				SetDefaultVal(trackAlbum, track, album);
+				SetDefaultVal(trackYear, track, year);
+				SetDefaultSet(trackGenre, track, genre);
+				SetDefaultSet(trackLabel, track, label);
+				SetDefaultNum(trackRatings, track);
+				SetDefaultNum(trackCounts, track);
+
+				artistRatings.set(artist, artistRatings.get(artist) + trackItem.rating);
+				albumRatings.set(album, albumRatings.get(album) + trackItem.rating);
+				trackRatings.set(track, (trackRatings.get(track) || 0) + trackItem.rating);
+
+				artistCounts.set(artist, artistCounts.get(artist) + 1);
+				albumCounts.set(album, albumCounts.get(album) + 1);
+				trackCounts.set(track, (trackCounts.get(track) || 0) + 1);
+
+				artistPlaycounts.set(artist, artistPlaycounts.get(artist) + trackItem.playcount);
+				albumPlaycounts.set(album, albumPlaycounts.get(album) + trackItem.playcount);
+				trackPlaycounts.set(track, (trackPlaycounts.get(track) || 0) + trackItem.playcount);
+
+				if (genre.length === 0 || (genre.length === 1 && genre[0] === 'NO GENRE')) {
+					trackGenre.get(track).add('NO GENRE');
+				} else {
+					genre.forEach(genreItem => {
+						trackGenre.get(track).add(genreItem);
+						genrePlaycounts.set(genreItem, (genrePlaycounts.get(genreItem) || 0) + trackItem.playcount);
+					});
+				}
+				if (label.length === 0 || (label.length === 1 && label[0] === 'NO LABEL')) {
+					trackLabel.get(track).add('NO LABEL');
+				} else {
+					label.forEach(labelItem => {
+						trackLabel.get(track).add(labelItem);
+						labelPlaycounts.set(labelItem, (labelPlaycounts.get(labelItem) || 0) + trackItem.playcount);
+					});
+				}
+				country.forEach(countryItem => {
+					if (countryItem !== 'NO COUNTRY') {
+						countryPlaycounts.set(countryItem, (countryPlaycounts.get(countryItem) || 0) + trackItem.playcount);
+					}
+				});
+			});
+		});
+
+		// * Set top rated stats
+		const topRatedArtists = SortKeyValuesByAvg(artistRatings, artistCounts);
+		const topRatedAlbums  = SortKeyValuesByAvg(albumRatings, albumCounts);
+		const topRatedTracks  = SortKeyValuesByAvg(trackRatings, trackCounts);
+
+		// * Set top played stats
+		const topPlayedArtists   = SortKeyValuesByDsc(artistPlaycounts);
+		const topPlayedAlbums    = SortKeyValuesByDsc(albumPlaycounts);
+		const topPlayedTracks    = SortKeyValuesByDsc(trackPlaycounts);
+		const topPlayedGenres    = SortKeyValuesByDsc(genrePlaycounts);
+		const topPlayedLabels    = SortKeyValuesByDsc(labelPlaycounts);
+		const topPlayedCountries = SortKeyValuesByDsc(countryPlaycounts);
+
+		// * Set total stats
+		const totalArtists = new Set(metadata.map(data => data.artist)).size;
+		const totalAlbums = new Set(metadata.map(data => data.album)).size;
+		const totalTracks = metadata.reduce((sum, data) => sum + data.tracks.length, 0);
+		const totalYears = new Set(metadata.map(data => data.year)).size;
+		const totalGenres = new Set(metadata.flatMap(data => data.genre)).size;
+		const totalLabels = new Set(metadata.map(data => data.label)).size;
+		const totalCountries = new Set(metadata.map(data => data.country)).size;
+		const totalRatings = metadata.reduce((sum, data) => sum + data.tracks.reduce((sum, track) => sum + track.rating, 0), 0);
+		const totalPlaycounts = metadata.reduce((sum, data) => sum + data.tracks.reduce((sum, track) => sum + track.playcount, 0), 0);
+
+		const totalArtistPlays  = [...artistPlaycounts.values()].reduce((acc, count) => acc + count, 0);
+		const totalAlbumPlays   = [...albumPlaycounts.values()].reduce((acc, count) => acc + count, 0);
+		const totalTrackPlays   = [...trackPlaycounts.values()].reduce((acc, count) => acc + count, 0);
+		const totalGenrePlays   = [...genrePlaycounts.values()].reduce((acc, count) => acc + count, 0);
+		const totalLabelPlays   = [...labelPlaycounts.values()].reduce((acc, count) => acc + count, 0);
+		const totalCountryPlays = [...countryPlaycounts.values()].reduce((acc, count) => acc + count, 0);
+
+		// * Set best rated stats
+		const bestRatedArtist = GetKeyByHighestAvg(artistRatings, artistCounts);
+		const bestRatedAlbum = GetKeyByHighestAvg(albumRatings, albumCounts);
+		const bestRatedTrack = GetKeyByHighestAvg(trackRatings, trackCounts);
+
+		// * Set most listened stats
+		const mostPlayedArtist = GetKeyByHighestVal(artistPlaycounts);
+		const mostPlayedAlbum = GetKeyByHighestVal(albumPlaycounts);
+		const mostPlayedTrack = GetKeyByHighestVal(trackPlaycounts);
+		const mostPlayedGenre = GetKeyByHighestVal(genrePlaycounts);
+		const mostPlayedLabel = GetKeyByHighestVal(labelPlaycounts);
+		const mostPlayedCountry = GetKeyByHighestVal(countryPlaycounts);
+
+		const artistPlaycount = artistPlaycounts.get(mostPlayedArtist);
+		const albumPlaycount = albumPlaycounts.get(mostPlayedAlbum);
+		const trackPlaycount = trackPlaycounts.get(mostPlayedTrack);
+		const genrePlaycount = genrePlaycounts.get(mostPlayedGenre);
+		const labelPlaycount = labelPlaycounts.get(mostPlayedLabel);
+		const countryPlaycount = countryPlaycounts.get(mostPlayedCountry);
+
+		const artistPercentage = (artistPlaycount / totalArtistPlays) * 100;
+		const albumPercentage = (albumPlaycount / totalAlbumPlays) * 100;
+		const trackPercentage = (trackPlaycount / totalTrackPlays) * 100;
+		const genrePercentage = (genrePlaycount / totalGenrePlays) * 100;
+		const labelPercentage = (labelPlaycount / totalLabelPlays) * 100;
+		const countryPercentage = (countryPlaycount / totalCountryPlays) * 100;
+
+		return {
+			artistGenre, artistCountry,
+			albumArtist, albumYear,	albumGenre,
+			albumLabel,	albumCountry,
+			trackArtist, trackAlbum, trackYear,	trackGenre,	trackLabel,
+
+			artistRatings, albumRatings, trackRatings,
+			artistCounts, albumCounts, trackCounts,
+			artistPlaycounts, albumPlaycounts, trackPlaycounts, genrePlaycounts, labelPlaycounts, countryPlaycounts,
+
+			topRatedArtists, topRatedAlbums, topRatedTracks,
+			topPlayedArtists, topPlayedAlbums, topPlayedTracks, topPlayedGenres, topPlayedLabels, topPlayedCountries,
+
+			totalArtists, totalAlbums, totalTracks, totalYears, totalGenres, totalLabels, totalCountries, totalRatings, totalPlaycounts,
+			totalArtistPlays, totalAlbumPlays, totalTrackPlays, totalGenrePlays, totalLabelPlays, totalCountryPlays,
+
+			bestRatedArtist, bestRatedAlbum, bestRatedTrack,
+
+			mostPlayedArtist, mostPlayedAlbum, mostPlayedTrack, mostPlayedGenre, mostPlayedLabel, mostPlayedCountry,
+			artistPlaycount, albumPlaycount, trackPlaycount, genrePlaycount, labelPlaycount, countryPlaycount,
+			artistPercentage, albumPercentage, trackPercentage, genrePercentage, labelPercentage, countryPercentage
+		};
+	}
+
+	/**
+	 * Writes calculated %ALBUMRATING%, '%ALBUMPLAYCOUNT%' and '%ALBUMPLAYCOUNTTOTAL%' values to music files via the Playlist context menu.
+	 * - '%ALBUMRATING%': The calculated average album rating, converted from a 0-5 scale to a 0-100 scale due to Foobar2000's incompatibility with floating point numbers when sorting.
+	 * - '%ALBUMPLAYCOUNT%': The calculated average playcount of the album.
+	 * - '%ALBUMPLAYCOUNTTOTAL%': The calculated total playcount of all tracks on the album.
+	 */
+	write_album_stats_to_tags() {
+		const metadata = this.get_metadata();
+		const plItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+		const libItems = new FbMetadbHandleList(pop.getHandleList('newItems'));
+		const items = displayLibrary && !displayPlaylist || displayLibrarySplit() && state.mouse_x < ww * 0.5 ? libItems : plItems;
+
+		if (!items || !items.Count) return;
+
+		const albums = new Map();
+		for (let i = 0; i < items.Count; i++) {
+			const albumName = $('%album%', items[i]);
+			if (!albums.has(albumName)) {
+				albums.set(albumName, []);
+			}
+			albums.get(albumName).push(items[i]);
+		}
+
+		const albumUpdates = [];
+		for (const [albumName, items] of albums.entries()) {
+			const metadataEntry = metadata.get(albumName);
+			if (metadataEntry) {
+				const { albumAverageRating, albumAveragePlaycount, albumTotalPlaycount } = metadataEntry;
+
+				if (albumAverageRating || albumAveragePlaycount || albumTotalPlaycount) {
+					const albumStats = {};
+					if (albumAverageRating) {
+						// Convert albumAverageRating floating point number from scale 0-5 to an integer on scale 0-100.
+						// Foobar2000 does not handle floating point numbers well in its metadata fields when sorting,
+						// so we store the ratings as integers to ensure they are processed correctly.
+						const convertedRating = Math.round(albumAverageRating * 20);
+						albumStats.ALBUMRATING = convertedRating;
+					}
+					if (albumAveragePlaycount || albumTotalPlaycount) {
+						albumStats.ALBUMPLAYCOUNT = albumAveragePlaycount;
+						albumStats.ALBUMPLAYCOUNTTOTAL = albumTotalPlaycount;
+					}
+
+					for (const item of items) {
+						albumUpdates.push(albumStats);
+					}
+				}
+			}
+		}
+
+		if (albumUpdates.length) {
+			(items === libItems ? libItems : plItems).UpdateFileInfoFromJSON(JSON.stringify(albumUpdates));
+		}
+	}
+
+	/**
+	 * Chooses and returns either the `rating` or `playcount` based on the `statsType`.
+	 * The `statsType` string should be in the format 'property_subproperty'.
+	 * If it has three parts ('property_subproperty_subproperty'), the third subproperty determines the return value.
+	 * If `statsType` does not indicate 'rating' or 'trackPlaycount', the function defaults to returning the `rating`.
+	 * @param {string} statsType The type of stats to return, expected to be either 'rating' or 'trackPlaycount'.
+	 * @param {number} rating The rating value to return if `statsType` is 'rating' or invalid.
+	 * @param {number} playcount The playcount value to return if `statsType` is 'trackPlaycount'.
+	 * @returns {number} Either the `rating` or `playcount` value, based on the `statsType`.
+	 */
+	write_stats_choose_statistic_by_type(statsType, rating, playcount) {
+		const statsArray = statsType.split('_');
+		const statsProperty = statsArray.length === 3 ? statsArray[2] : statsArray[0];
+		return statsProperty === 'trackPlaycount' ? playcount : rating;
+	}
+
+	/**
+	 * Gets a sorting function based on the provided statistic type.
+	 * The statistic type string should be in the format 'property_direction'.
+	 * The property indicates the statistic to sort by, and the direction indicates the order ('asc' for ascending, 'dsc' for descending).
+	 * @param {string} statsType The statistic type to sort by.
+	 * @returns {(function(a: any, b: any): number)} A sorting function.
+	 */
+	write_stats_get_sorting(statsType) {
+		const sortMethods = {
+			artist: (a, b) => compareValues(a.artist, b.artist),
+			albumTitle: (a, b) => compareValues(a.album, b.album),
+			albumRating: (a, b) => compareValues(a.albumAverageRating, b.albumAverageRating),
+			albumPlaycount: (a, b) => compareValues(a.albumAveragePlaycount, b.albumAveragePlaycount),
+			albumPlaycountTotal: (a, b) => compareValues(a.albumTotalPlaycount, b.albumTotalPlaycount),
+			albumTrackPlaycount: (a, b) => compareValues(a.albumTotalPlaycount, b.albumTotalPlaycount),
+			trackTitle: (a, b) => compareValues(a.track, b.track),
+			trackRating: (a, b) => compareValues(a.rating, b.rating),
+			trackPlaycount: (a, b) => compareValues(a.playcount, b.playcount),
+			year: (a, b) => compareValues(a.year, b.year),
+			genre: (a, b) => compareValues(a.genre, b.genre),
+			label: (a, b) => compareValues(a.label, b.label),
+			country: (a, b) => compareValues(a.country, b.country)
+		};
+
+		const [property, direction] = statsType.split('_');
+		const sortMethod = sortMethods[property];
+
+		// Retrieve sortMethod from sortMethods with the given property.
+		// If 'dsc', sort descending by reversing arguments; otherwise, sort ascending.
+		return sortMethod && ((direction === 'dsc') ? (a, b) => sortMethod(b, a) : sortMethod);
+	}
+
+	/**
+	 * Generates a formatted string of total and top statistics from the current active playlist.
+	 * @param {Object} metadata An object containing various statistics and counts.
+	 * @param {string} statsType A string that indicates whether to return 'rating' or 'playcount' total statistics.
+	 * @param {string} topStatsType A string that indicates whether to return 'topRated' or 'topPlayed' statistics.
+	 * @returns {string} Returns a formatted string with the requested statistics.
+	 */
+	write_stats_total_top_stats(metadata, statsType, topStatsType) {
+		const rating = statsType.toLowerCase().includes('rating') || statsType.toLowerCase().includes('rated');
+		const playcount = statsType.toLowerCase().includes('playcount') || statsType.toLowerCase().includes('played');
+		let list = '';
+
+		list += 'Total statistics:\n'
+			+ ` \u00B7 Artists: ${metadata.totalArtists}\n`
+			+ ` \u00B7 Albums: ${metadata.totalAlbums}\n`
+			+ ` \u00B7 Tracks: ${metadata.totalTracks}\n`
+			+ ` \u00B7 Years: ${metadata.totalYears}\n`
+			+ ` \u00B7 Genres: ${metadata.totalGenres}\n`
+			+ ` \u00B7 Labels: ${metadata.totalLabels}\n`
+			+ ` \u00B7 Countries: ${metadata.totalCountries}\n`
+			+ (rating ? ` \u00B7 Ratings: ${metadata.totalRatings}\n` : '')
+			+ (playcount ? ` \u00B7 Playcounts: ${metadata.totalPlaycounts}\n` : '') + '\n';
+
+		if (topStatsType === 'topRated') {
+			list += 'Top statistics:\n'
+				+ ` \u00B7 Best rated artist: ${metadata.bestRatedArtist}\n`
+				+ ` \u00B7 Best rated album: ${metadata.bestRatedAlbum}\n`
+				+ ` \u00B7 Best rated track: ${metadata.bestRatedTrack}\n\n\n`;
+		}
+
+		if (topStatsType === 'topPlayed') {
+			list += 'Top statistics:\n'
+				+ ` \u00B7 Most played artist: ${metadata.mostPlayedArtist} - ${metadata.artistPlaycount} plays (${metadata.artistPercentage.toFixed(2)}%)\n`
+				+ ` \u00B7 Most played album: ${metadata.mostPlayedAlbum} - ${metadata.albumPlaycount} plays (${metadata.albumPercentage.toFixed(2)}%)\n`
+				+ ` \u00B7 Most played track: ${metadata.mostPlayedTrack} - ${metadata.trackPlaycount} plays (${metadata.trackPercentage.toFixed(2)}%)\n`
+				+ ` \u00B7 Most played genre: ${metadata.mostPlayedGenre} - ${metadata.genrePlaycount} plays (${metadata.genrePercentage.toFixed(2)}%)\n`
+				+ ` \u00B7 Most played label: ${metadata.mostPlayedLabel} - ${metadata.labelPlaycount} plays (${metadata.labelPercentage.toFixed(2)}%)\n`
+				+ ` \u00B7 Most played country: ${metadata.mostPlayedCountry} - ${metadata.countryPlaycount} plays (${metadata.countryPercentage.toFixed(2)}%)\n\n\n`;
+		}
+
+		return list;
+	}
+
+	/**
+	 * Writes top statistics list for:
+	 * - Top rated artists
+	 * - Top rated albums
+	 * - Top rated tracks
+	 * - Top played artists
+	 * - Top played albums
+	 * - Top played tracks
+	 * - Top played genres
+	 * - Top played labels
+	 * - Top played countries
+	 *
+	 * It provides a detailed ranked list from top to bottom for each category from the current active playlist.
+	 * @param {Array<Object>} metadata An array of objects, each object representing track metadata with all provided properties.
+	 * @param {boolean} topRated Writes the top rated artist and albums as the list.
+	 * @param {boolean} topPlayed Writes the top played artists, albums, genres, labels and countries as the list.
+	 * @returns {string} A string formatted for display, containing the top statistics.
+	 */
+	write_stats_top_list(metadata, topRated, topPlayed) {
+		const includeArtist  = g_properties.playlist_stats_include_artist;
+		const includeAlbum   = g_properties.playlist_stats_include_album;
+		const includeYear    = g_properties.playlist_stats_include_year;
+		const includeGenre   = g_properties.playlist_stats_include_genre;
+		const includeLabel   = g_properties.playlist_stats_include_label;
+		const includeCountry = g_properties.playlist_stats_include_country;
+		const includeStats   = g_properties.playlist_stats_include_stats;
+
+		const data = this.get_metadata_stats(metadata);
+		let list = '';
+
+		// * Top rated lists
+		if (topRated) {
+			list += `${WriteFancyHeader('Top rated artists')}\n`;
+			data.topRatedArtists.forEach((artist, index) => {
+				const country = includeCountry ? Array.from(data.artistCountry.get(artist) || []).join(', ') : '';
+				const genre = includeGenre ? Array.from(data.artistGenre.get(artist) || []).join(', ') : '';
+				const include = country || genre ? ` (${country}${country && genre ? ' \u00B7 ' : ''}${genre})` : '';
+				const average = data.artistRatings.get(artist) / data.artistCounts.get(artist);
+				const stats = includeStats ? `: ${average.toFixed(2)}` : '';
+
+				list += `${index + 1}: ${artist}${include}${stats}\n`;
+			});
+			list += '\n\n';
+
+			list += `${WriteFancyHeader('Top rated albums')}\n`;
+			data.topRatedAlbums.forEach((album, index) => {
+				const year = includeYear && data.albumYear.get(album) ? `${data.albumYear.get(album)}` : '';
+				const genreSet = data.albumGenre.get(album);
+				const genre = includeGenre && genreSet.size > 0 ? Array.from(genreSet).join(', ') : '';
+				const labelSet = data.albumLabel.get(album);
+				const label = includeLabel && labelSet.size > 0 ? Array.from(labelSet).join(', ') : '';
+				const includeParts = [year, genre, label].filter(part => part !== '');
+				const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+				const artist = includeArtist && data.albumArtist.get(album) ? ` - ${data.albumArtist.get(album)}` : '';
+				const average = data.albumRatings.get(album) / data.albumCounts.get(album);
+				const stats = includeStats ? `: ${average.toFixed(2)}` : '';
+
+				list += `${index + 1}: ${album}${include}${artist}${stats}\n`;
+			});
+			list += '\n\n';
+
+			list += `${WriteFancyHeader('Top rated tracks')}\n`;
+			data.topRatedTracks.forEach((track, index) => {
+				const album = includeAlbum && data.trackAlbum.get(track) ? ` - ${data.trackAlbum.get(track)}` : '';
+				const year = includeYear && data.trackYear.get(track) ? `${data.trackYear.get(track)}` : '';
+				const genreSet = data.trackGenre.get(track);
+				const genre = includeGenre && genreSet.size > 0 ? Array.from(genreSet).join(', ') : '';
+				const labelSet = data.trackLabel.get(track);
+				const label = includeLabel && labelSet.size > 0 ? Array.from(labelSet).join(', ') : '';
+				const includeParts = [year, genre, label].filter(part => part !== '');
+				const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+				const artist = includeArtist && data.trackArtist.get(track) ? ` - ${data.trackArtist.get(track)}` : '';
+				const average = data.trackRatings.get(track);
+				const stats = includeStats ? `: ${average.toFixed(2)}` : '';
+
+				list += `${index + 1}: ${track}${album}${include}${artist}${stats}\n`;
+			});
+		}
+
+		// * Top played lists
+		if (topPlayed) {
+			list += `${WriteFancyHeader('Top played artists')}\n`;
+			data.topPlayedArtists.forEach((artist, index) => {
+				const country = includeCountry ? Array.from(data.artistCountry.get(artist) || []).join(', ') : '';
+				const genre = includeGenre ? Array.from(data.artistGenre.get(artist) || []).join(', ') : '';
+				const include = country || genre ? ` (${country}${country && genre ? ' \u00B7 ' : ''}${genre})` : '';
+				const playcount = data.artistPlaycounts.get(artist);
+				const percentage = (playcount / data.totalArtistPlays) * 100;
+				const stats = includeStats ? ` - ${playcount} plays (${percentage.toFixed(2)}%)` : '';
+
+				list += `${index + 1}: ${artist}${include}${stats}\n`;
+			});
+			list += '\n\n';
+
+			list += `${WriteFancyHeader('Top played albums')}\n`;
+			data.topPlayedAlbums.forEach((album, index) => {
+				const year = includeYear && data.albumYear.get(album) ? data.albumYear.get(album) : '';
+				const genreSet = data.albumGenre.get(album);
+				const genre = includeGenre && genreSet && genreSet.size > 0 ? Array.from(genreSet).join(', ') : '';
+				const labelSet = data.albumLabel.get(album);
+				const label = includeLabel && labelSet && labelSet.size > 0 ? Array.from(labelSet).join(', ') : '';
+				const includeParts = [year, genre, label].filter(part => part !== '');
+				const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+				const artist = includeArtist && data.albumArtist.get(album) ? ` - ${data.albumArtist.get(album)}` : '';
+				const playcount = data.albumPlaycounts.get(album);
+				const percentage = (playcount / data.totalAlbumPlays) * 100;
+				const stats = includeStats ? ` - ${playcount} plays (${percentage.toFixed(2)}%)` : '';
+
+				list += `${index + 1}: ${album}${include}${artist}${stats}\n`;
+			});
+			list += '\n\n';
+
+			list += `${WriteFancyHeader('Top played tracks')}\n`;
+			data.topPlayedTracks.forEach((track, index) => {
+				const album = includeAlbum && data.trackAlbum.get(track) ? ` - ${data.trackAlbum.get(track)}` : '';
+				const year = includeYear && data.trackYear.get(track) ? data.trackYear.get(track) : '';
+				const genreSet = data.trackGenre.get(track);
+				const genre = includeGenre && genreSet && genreSet.size > 0 ? Array.from(genreSet).join(', ') : '';
+				const labelSet = data.trackLabel.get(track);
+				const label = includeLabel && labelSet && labelSet.size > 0 ? Array.from(labelSet).join(', ') : '';
+				const includeParts = [year, genre, label].filter(part => part !== '');
+				const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+				const artist = includeArtist && data.trackArtist.get(track) ? ` - ${data.trackArtist.get(track)}` : '';
+				const playcount = data.trackPlaycounts.get(track);
+				const percentage = (playcount / data.totalAlbumPlays) * 100;
+				const stats = includeStats ? ` - ${playcount} plays (${percentage.toFixed(2)}%)` : '';
+
+				list += `${index + 1}: ${track}${album}${include}${artist}${stats}\n`;
+			});
+			list += '\n\n';
+
+			list += `${WriteFancyHeader('Top played genres')}\n`;
+			data.topPlayedGenres.forEach((genre, index) => {
+				const playcount = data.genrePlaycounts.get(genre);
+				const percentage = (playcount / data.totalGenrePlays) * 100;
+				const stats = includeStats ? ` - ${playcount} plays (${percentage.toFixed(2)}%)` : '';
+				list += `${index + 1}: ${genre}${stats}\n`;
+			});
+			list += '\n\n';
+
+			list += `${WriteFancyHeader('Top played labels')}\n`;
+			data.topPlayedLabels.forEach((label, index) => {
+				const playcount = data.labelPlaycounts.get(label);
+				if (playcount <= 0) return;
+				const percentage = (playcount / data.totalLabelPlays) * 100;
+				const stats = includeStats ? ` - ${playcount} plays (${percentage.toFixed(2)}%)` : '';
+				list += `${index + 1}: ${label}${stats}\n`;
+			});
+			list += '\n\n';
+
+			list += `${WriteFancyHeader('Top played countries')}\n`;
+			data.topPlayedCountries.forEach((country, index) => {
+				const playcount = data.countryPlaycounts.get(country);
+				if (playcount <= 0) return;
+				const percentage = (playcount / data.totalCountryPlays) * 100;
+				const stats = includeStats ? ` - ${playcount} plays (${percentage.toFixed(2)}%)` : '';
+				list += `${index + 1}: ${country}${stats}\n`;
+			});
+		}
+
+		return list;
+	}
+
+	/**
+	 * Writes various statistics for the current playlist to a text file.
+	 * @param {Array<Object>} metadata The metadata array of objects with properties depending on metadataType.
+	 * @param {string} metadataType The type of metadata: 'album', 'track', 'topRated', or 'topPlayed'.
+	 * @param {string} filePath The path to the text file where statistics will be written.
+	 * @param {string} statsName The name of the statistic type.
+	 * @param {string} statsType The statistic type to be used for sorting.
+	 * @param {string} ratingType The rating type, one of 'albumAverage', 'albumTotal', or 'albumTracks'.
+	 * @param {string} playcountType The playcount type, one of 'albumAverage', 'albumTotal', or 'albumTracks'.
+	 * @returns {boolean} True if writing to the text file was successful, false otherwise.
+	 */
+	write_stats_to_text_file(metadata, metadataType, filePath, statsName, statsType, ratingType, playcountType) {
+		const includeArtist  = g_properties.playlist_stats_include_artist;
+		const includeAlbum   = g_properties.playlist_stats_include_album;
+		const includeTrack   = g_properties.playlist_stats_include_track;
+		const includeYear    = g_properties.playlist_stats_include_year;
+		const includeGenre   = g_properties.playlist_stats_include_genre;
+		const includeLabel   = g_properties.playlist_stats_include_label;
+		const includeCountry = g_properties.playlist_stats_include_country;
+		const includeStats   = g_properties.playlist_stats_include_stats;
+
+		const metadataStats = this.get_metadata_stats(metadata);
+		const playlistStats = includeStats ? this.write_stats_total_top_stats(metadataStats, statsType, metadataType) : '\n';
+		const playlistName  = plman.GetPlaylistName(plman.ActivePlaylist);
+		const playlistTitle = `${playlistName} - ${statsName} statistics${metadataType.startsWith('top') ? '' : ` - sorted by ${statsType}`}`;
+		const playlistData  = `${WriteFancyHeader(playlistTitle)}\n\n${playlistStats}`;
+
+		const sortFunction = this.write_stats_get_sorting(statsType);
+
+		// * Albums
+		const albumMetadataSorted = sortFunction ? metadata.sort(sortFunction) : metadata;
+		const albumMetadata = albumMetadataSorted.map((metadata) => {
+			const separator = includeArtist && includeAlbum ? ' - ' : '';
+			const artist = includeArtist ? metadata.artist ? `${metadata.artist}${separator}` : 'NO ARTIST' : '';
+			const album = includeAlbum ? metadata.album ? `${metadata.album}` : 'NO ALBUM' : '';
+			const albumTracksRating = includeTrack && metadata.tracks ? `\n${metadata.tracks.map(trackRating => ` ${trackRating.trackNumber}. ${trackRating.title}${includeStats ? `: ${trackRating.rating}` : ''}`).join('\n')}` : '';
+			const albumTracksPlaycount = includeTrack && metadata.tracks ? `\n${metadata.tracks.map(trackPlaycount => ` ${trackPlaycount.trackNumber}. ${trackPlaycount.title}${includeStats ? `: ${trackPlaycount.playcount}` : ''}`).join('\n')}` : '';
+			const year = includeYear ? metadata.year ? `${metadata.year}` : 'NO YEAR' : '';
+			const genre = includeGenre ? metadata.genre && metadata.genre.trim() !== '' && metadata.genre.trim() !== '?' ? `${metadata.genre}` : 'NO GENRE' : '';
+			const label = includeLabel ? metadata.label ? `${metadata.label}` : 'NO LABEL' : '';
+			const country = includeCountry ? metadata.country ? `${metadata.country}` : 'NO COUNTRY' : '';
+			const includeParts = [year, genre, label, country].filter(part => part !== '');
+			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+
+			const ratingTypeMeta = {
+				albumAverage: includeStats && metadata.albumAverageRating,
+				albumTotal: includeStats && metadata.albumTotalRating,
+				albumTracks: albumTracksRating
+			};
+			const rating = `: ${ratingTypeMeta[ratingType]}`;
+			const ratingAvg = includeStats ? `: ${metadata.albumAverageRating}` : '';
+
+			const playcountTypeMeta = {
+				albumAverage: includeStats && metadata.albumAveragePlaycount,
+				albumTotal: includeStats && metadata.albumTotalPlaycount,
+				albumTracks: albumTracksPlaycount
+			};
+			const playcount = `: ${playcountTypeMeta[playcountType]}`;
+			const playcountAvg = includeStats ? `: ${metadata.albumAveragePlaycount}` : '';
+
+			if (ratingType) {
+				return ratingType === 'albumTracks' ?
+					`${artist}${album}${include}${ratingAvg}${rating}\n` :
+					`${artist}${album}${include}${rating}`;
+			}
+			else if (playcountType) {
+				return playcountType === 'albumTracks' ?
+					`${artist}${album}${include}${playcountAvg}${playcount}\n` :
+					`${artist}${album}${include}${playcount}`;
+			}
+			else {
+				return `${artist}${album}${include}`;
+			}
+		}).join('\n');
+
+		// * Tracks
+		const trackMetadataMap = metadata.flatMap(album =>
+			album.tracks.map(track => ({
+				artist: album.artist,
+				album: album.album,
+				trackNumber: track.trackNumber,
+				track: track.title,
+				year: album.year,
+				genre: album.genre,
+				label: album.label,
+				country: album.country,
+				rating: track.rating,
+				playcount: track.playcount
+			}))
+		);
+
+		const trackMetadataSorted = sortFunction ? trackMetadataMap.sort(sortFunction) : trackMetadataMap;
+		const trackMetadata = trackMetadataSorted.map((trackData) => {
+			const track = includeTrack ? (trackData.trackNumber && trackData.track ? `${trackData.trackNumber}. ${trackData.track}` : 'NO TRACK') : '';
+			const album = includeAlbum ? (trackData.album && trackData.album.trim() !== '' ? `${trackData.album}` : 'NO ALBUM') : '';
+			const artist = includeArtist ? (trackData.artist && trackData.artist.trim() !== '' ? `${trackData.artist}` : 'NO ARTIST') : '';
+			const year = includeYear ? (trackData.year && trackData.year.trim() !== '' && trackData.year.trim() !== '?' ? `${trackData.year}` : 'NO YEAR') : '';
+			const genre = includeGenre ? (trackData.genre && trackData.genre.trim() !== '' && trackData.genre.trim() !== '?' ? `${trackData.genre}` : 'NO GENRE') : '';
+			const label = includeLabel ? (trackData.label && trackData.label.trim() !== '' && trackData.label.trim() !== '?' ? `${trackData.label}` : 'NO LABEL') : '';
+			const country = includeCountry ? (trackData.country && trackData.country.trim() !== '' && trackData.country.trim() !== '?' ? `${trackData.country}` : 'NO COUNTRY') : '';
+			const includeParts = [year, genre, label, country].filter(part => part !== '');
+			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+			const rating = includeStats ? `: ${trackData.rating}` : '';
+			const playcount = includeStats ? `: ${trackData.playcount}` : '';
+			const separator1 = includeTrack && includeAlbum ? ' - ' : '';
+			const separator2 = includeAlbum && includeArtist || includeTrack && includeArtist ? ' - ' : '';
+
+			return `${track}${separator1}${album}${include}${separator2}${artist}${this.write_stats_choose_statistic_by_type(statsType, rating, playcount)}`;
+		}).join('\n');
+
+		// * Write the data to text file
+		const data = playlistData + (
+			metadataType === 'track' ? trackMetadata :
+			metadataType === 'album' ? albumMetadata :
+			metadataType === 'topRated' ? this.write_stats_top_list(metadata, true, false) :
+			metadataType === 'topPlayed' ? this.write_stats_top_list(metadata, false, true) : ''
+		);
+
+		return Save(filePath, data);
 	};
 }
 
@@ -7386,7 +8416,7 @@ function GroupingHandler() {
 	/**
 	 * Called when the sync state is changed.
 	 * Updates the settings object with the new state and reinitializes the name to preset map.
-     * It also sets the active playlist to the current playlist name.
+	 * It also sets the active playlist to the current playlist name.
 	 * @param {?} value The new sync state.
 	 */
 	this.sync_state = function (value) {
