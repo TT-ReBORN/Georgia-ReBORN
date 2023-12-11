@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-09                                          * //
+// * Last change:    2023-12-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3970,11 +3970,11 @@ class WaveformBar {
 			}
 			else if (prepaint && this.preset.animate && frames) {
 				const barW = Math.ceil(Math.max(this.w / frames, SCALE(2)));
-				this.throttlePaintRect(currX - SCALE(40), this.y, this.w + SCALE(40), this.h);
+				this.throttlePaintRect(currX - barW - SCALE(40), this.y, this.w - (currX - barW - SCALE(40)) + SCALE(40), this.h);
 			}
 			else if (this.preset.indicator && frames) {
 				const barW = Math.ceil(Math.max(this.w / frames, SCALE(2)));
-				this.throttlePaintRect(currX - SCALE(40), this.y, 4 * barW + SCALE(40), this.h);
+				this.throttlePaintRect(currX - barW - SCALE(40), this.y, 2 * (barW + SCALE(40)), this.h);
 			}
 			if (this.ui.refreshRateVar) {
 				if (this.profilerPaint.Time > this.ui.refreshRate) {
@@ -4147,14 +4147,14 @@ class WaveformBar {
 			this.throttlePaint();
 		}
 		else if (this.preset.paintMode === 'partial' && this.preset.prepaint) {
-			const currX = this.x + this.w * fb.PlaybackTime / fb.PlaybackLength;
+			const currX = this.x + this.w * time / fb.PlaybackLength;
 			const barW = Math.round(Math.max(this.w / this.current.length, SCALE(2)));
-			this.throttlePaintRect(currX - 2 * barW, this.y, this.w, this.h);
+			this.throttlePaintRect(currX - barW - SCALE(40), this.y, this.w - (currX - barW - SCALE(40)) + SCALE(40), this.h);
 		}
 		else if (this.preset.indicator || this.preset.paintMode === 'partial') {
-			const currX = this.x + this.w * fb.PlaybackTime / fb.PlaybackLength;
+			const currX = this.x + this.w * time / fb.PlaybackLength;
 			const barW = Math.round(Math.max(this.w / this.current.length, SCALE(2)));
-			this.throttlePaintRect(currX - 2 * barW, this.y, 4 * barW, this.h);
+			this.throttlePaintRect(currX - barW - SCALE(40), this.y, 2 * (barW + SCALE(40)), this.h);
 		}
 	};
 
