@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-09                                          * //
+// * Last change:    2023-12-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -24,6 +24,10 @@
 function topMenuRating(x, y) {
 	const handle = new FbMetadbHandleList();
 	const metadb = fb.GetFocusItem();
+	if (!metadb) {
+		fb.ShowPopupMessage('No track selected, it seems like the playlist is empty.', 'Empty playlist');
+		return;
+	}
 	const fileInfo = metadb.GetFileInfo();
 	const ratingMetaIdx = fileInfo.MetaFind('RATING');
 	const ratingMeta = ratingMetaIdx === -1 ? 0 : fileInfo.MetaValue(ratingMetaIdx, 0);
