@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-11                                          * //
+// * Last change:    2023-12-12                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -250,6 +250,16 @@ function styleOptions(menu) {
 
 	// * STYLES * //
 	styleMenu.addToggleItem('Default', pref, 'styleDefault', () => {
+		if (pref.themeSandbox) {
+			if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+				fb.ShowPopupMessage('Theme style reset was canceled:\n\nActive theme sandbox needs to be deactivated first\nin order to reset theme styles.', 'Theme style reset canceled');
+			} else {
+				const msg = 'Theme style reset was canceled:\n\nActive theme sandbox needs to be deactivated first\nin order to reset theme styles.\n\n\n';
+				popUpBox.confirm('Georgia-ReBORN', msg, 'OK', false, false, 'center', false);
+			}
+			pref.styleDefault = false;
+			return;
+		}
 		pref.preset = false;
 		resetStyle('all');
 		restoreThemeStylePreset(true);
