@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-11                                          * //
+// * Last change:    2023-12-12                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -6547,7 +6547,7 @@ class MetaHandler {
 			currentPlaycount = $('%play_count%', track);
 		}
 		return currentPlaycount === '' ? null : Number(currentPlaycount);
-	};
+	}
 
 	/**
 	 * Iterates through the current active playlist and builds metadata for each album.
@@ -7276,7 +7276,7 @@ class MetaHandler {
 		);
 
 		return Save(filePath, data);
-	};
+	}
 }
 
 
