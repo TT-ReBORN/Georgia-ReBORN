@@ -3968,7 +3968,7 @@ class WaveformBar {
 			if (visualizer) {
 				this.throttlePaint();
 			}
-			else if ((prepaint || this.preset.indicator) && frames) {
+			else if ((this.preset.paintMode === 'partial' || this.preset.indicator) && frames) {
 				const widerModesScale = (this.preset.waveMode === 'bars' || this.preset.waveMode === 'halfbars' ? 2 : 1);
 				const barW = Math.ceil(Math.max(this.w / frames, SCALE(2))) * widerModesScale;
 				const timeConstant =  fb.PlaybackLength / frames;
@@ -4150,11 +4150,11 @@ class WaveformBar {
 		}
 		// Repaint by zone when possible
 		const frames = this.current.length;
-		const prepaint = this.preset.paintMode === 'partial' && this.preset.bPrePaint;
 		if (this.analysis.binaryMode === 'visualizer' || !frames) {
 			this.throttlePaint();
 		}
-		else if (prepaint || this.preset.indicator) {
+		else if (this.preset.paintMode === 'partial' || this.preset.indicator) {
+			const prepaint = this.preset.paintMode === 'partial' && this.preset.bPrePaint;
 			const widerModesScale = (this.preset.waveMode === 'bars' || this.preset.waveMode === 'halfbars' ? 2 : 1);
 			const currX = this.x + this.w * time / fb.PlaybackLength;
 			const barW = Math.ceil(Math.max(this.w / frames, SCALE(2))) * widerModesScale;
