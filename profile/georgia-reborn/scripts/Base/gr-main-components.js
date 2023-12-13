@@ -3968,13 +3968,19 @@ class WaveformBar {
 			if (visualizer) {
 				this.throttlePaint();
 			}
-			else if (prepaint && this.preset.animate && frames) {
-				const barW = Math.ceil(Math.max(this.w / frames, SCALE(2)));
-				this.throttlePaintRect(currX - barW - SCALE(40), this.y, this.w - (currX - barW - SCALE(40)) + SCALE(40), this.h);
-			}
-			else if (this.preset.indicator && frames) {
-				const barW = Math.ceil(Math.max(this.w / frames, SCALE(2)));
-				this.throttlePaintRect(currX - barW - SCALE(40), this.y, 2 * (barW + SCALE(40)), this.h);
+			else if ((prepaint || this.preset.indicator) && frames) {
+				const widerModesScale = (this.preset.waveMode === 'bars' || this.preset.waveMode === 'halfbars' ? 2 : 1);
+				const barW = Math.ceil(Math.max(this.w / frames, SCALE(2))) * widerModesScale;
+				const timeConstant =  fb.PlaybackLength / frames;
+				const prePaintW = Math.min(
+					prepaint && this.preset.prepaintFront !== Infinity || this.preset.animate
+						? this.preset.prepaintFront === Infinity  && this.preset.animate
+							? Infinity
+							: this.preset.prepaintFront / timeConstant * barW + barW
+						: 2.5 * barW,
+					this.w - currX + barW
+				);
+				this.throttlePaintRect(currX - barW- SCALE(40), this.y, prePaintW + SCALE(40) * 2, this.h);
 			}
 			if (this.ui.refreshRateVar) {
 				if (this.profilerPaint.Time > this.ui.refreshRate) {
@@ -4143,18 +4149,25 @@ class WaveformBar {
 			this.cache = this.current;
 		}
 		// Repaint by zone when possible
-		if (this.analysis.binaryMode === 'visualizer' || !this.current.length) {
+		const frames = this.current.length;
+		const prepaint = this.preset.paintMode === 'partial' && this.preset.bPrePaint;
+		if (this.analysis.binaryMode === 'visualizer' || !frames) {
 			this.throttlePaint();
 		}
-		else if (this.preset.paintMode === 'partial' && this.preset.prepaint) {
+		else if (prepaint || this.preset.indicator) {
+			const widerModesScale = (this.preset.waveMode === 'bars' || this.preset.waveMode === 'halfbars' ? 2 : 1);
 			const currX = this.x + this.w * time / fb.PlaybackLength;
-			const barW = Math.round(Math.max(this.w / this.current.length, SCALE(2)));
-			this.throttlePaintRect(currX - barW - SCALE(40), this.y, this.w - (currX - barW - SCALE(40)) + SCALE(40), this.h);
-		}
-		else if (this.preset.indicator || this.preset.paintMode === 'partial') {
-			const currX = this.x + this.w * time / fb.PlaybackLength;
-			const barW = Math.round(Math.max(this.w / this.current.length, SCALE(2)));
-			this.throttlePaintRect(currX - barW - SCALE(40), this.y, 2 * (barW + SCALE(40)), this.h);
+			const barW = Math.ceil(Math.max(this.w / frames, SCALE(2))) * widerModesScale;
+			const timeConstant =  fb.PlaybackLength / frames;
+			const prePaintW = Math.min(
+				prepaint && this.preset.prepaintFront !== Infinity || this.preset.animate
+					? this.preset.prepaintFront === Infinity && this.preset.animate
+						? Infinity
+						: this.preset.prepaintFront / timeConstant * barW + barW
+					: 2.5 * barW,
+				this.w - currX + barW
+			);
+			this.throttlePaintRect(currX - barW- SCALE(40), this.y, prePaintW + SCALE(40) * 2, this.h);
 		}
 	};
 
