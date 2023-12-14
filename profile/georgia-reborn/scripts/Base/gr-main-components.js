@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-11                                          * //
+// * Last change:    2023-12-14                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3980,7 +3980,7 @@ class WaveformBar {
 						: 2.5 * barW,
 					this.w - currX + barW
 				);
-				this.throttlePaintRect(currX - barW- SCALE(40), this.y, prePaintW + SCALE(40) * 2, this.h);
+				this.throttlePaintRect(currX - barW - SCALE(40), this.y, prePaintW + SCALE(40) * 2, this.h);
 			}
 			if (this.ui.refreshRateVar) {
 				if (this.profilerPaint.Time > this.ui.refreshRate) {
@@ -4167,7 +4167,7 @@ class WaveformBar {
 					: 2.5 * barW,
 				this.w - currX + barW
 			);
-			this.throttlePaintRect(currX - barW- SCALE(40), this.y, prePaintW + SCALE(40) * 2, this.h);
+			this.throttlePaintRect(currX - barW - SCALE(40), this.y, prePaintW + SCALE(40) * 2, this.h);
 		}
 	};
 
