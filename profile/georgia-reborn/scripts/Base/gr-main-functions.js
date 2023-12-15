@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-09                                          * //
+// * Last change:    2023-12-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -119,8 +119,8 @@ function initMain() {
 		getRandomThemeAutoColor();
 	}
 	if (pref.themeDayNightMode) {
-		themeDayNightMode(new Date());
-		console.log(`Theme day/night mode is active, current time is: ${themeDayNightMode(new Date())}. The schedule has been set to ${pref.themeDayNightMode}am (day) - ${pref.themeDayNightMode}pm (night).`);
+		initThemeDayNightMode(new Date());
+		console.log(`Theme day/night mode is active, current time is: ${initThemeDayNightMode(new Date())}. The schedule has been set to ${pref.themeDayNightMode}am (day) - ${pref.themeDayNightMode}pm (night).`);
 	}
 
 	initThemeFull = true;
@@ -266,6 +266,7 @@ function initTheme() {
 	if (pref.theme === 'random' && !isStreaming && !isPlayingCD) getRandomThemeColor();
 	if (noAlbumArtStub || isStreaming || isPlayingCD) setNoAlbumArtColors();
 	if ((pref.styleBlend || pref.styleBlend2 || pref.styleProgressBarFill === 'blend') && albumArt) setStyleBlend();
+	if (pref.themeDayNightMode && !pref.themeSetupDay && !pref.themeSetupNight) initThemeDayNightState();
 	setBackgroundColorDefinition();
 
 	// * INIT COLORS * //
@@ -302,6 +303,79 @@ function initTheme() {
 	window.Repaint();
 
 	if (timings.showDebugTiming) themeProfiler.Print();
+}
+
+
+/**
+ * Initializes the current time and changes the theme to day theme or night theme based on the OS clock and pref.themeDayNightMode value.
+ * The pref.themeDayNightMode can be one of the following values: false, 6, 7, 8, 9, 10.
+ * These represent the starting hour for the day theme and imply an ending hour for the night theme, for example, 6 for '6am (day) - 6pm (night)'.
+ * If the feature is disabled (default, represented by `false`) or other theme-related preferences are set, the function exits without changing the theme.
+ * This function has a side effect of modifying pref.theme.
+ * @param {Date} date The `Date` object that represents the current date and time.
+ * @returns {string} The current time in the format "hours:minutes am/pm".
+ */
+function initThemeDayNightMode(date) {
+	if (!pref.themeDayNightMode) return;
+
+	const hours = date.getHours();
+	const minutes = date.getMinutes();
+
+	// * Adjust the end time for day theme to wrap around midnight
+	const dayEndTime = (pref.themeDayNightMode + 12) % 24;
+	const dayAfterMidnight = dayEndTime <= pref.themeDayNightMode;
+
+	// * Determine if it's day or night based on the pref.themeDayNightMode
+	const isDayRange = hours >= pref.themeDayNightMode && hours < dayEndTime;
+	const isNightRange = hours < dayEndTime || hours >= pref.themeDayNightMode;
+	const isDayTime = dayAfterMidnight ? isNightRange : isDayRange;
+
+	// * Formatting time
+	const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+	const formattedHours = hours % 12 || 12;
+	const timeSuffix = hours >= 12 ? 'pm' : 'am';
+
+	// * Set theme based on day time
+	pref.themeDayNightTime = isDayTime ? 'day' : 'night';
+	setDayNightTheme(isDayTime, !isDayTime);
+
+	return `${formattedHours}:${formattedMinutes} ${timeSuffix}`;
+}
+
+
+/**
+ * Initializes the theme day and night state.
+ * - Aborts if `pref.themeDayNightMode` is falsy or if any custom GR theme tags are detected.
+ * - Restores the day or night theme based on `pref.themeDayNightTime` if the current theme does not match the expected day or night theme.
+ * - Sets an interval to check and update the theme every 10 minutes based on the time of day.
+ */
+function initThemeDayNightState() {
+	const customTheme  = $('[%GR_THEME%]');
+	const customStyle  = $('[%GR_STYLE%]');
+	const customPreset = $('[%GR_PRESET%]');
+
+	if (!pref.themeDayNightMode || customTheme || customStyle || customPreset) {
+		return;
+	}
+
+	// * Restore day or night theme after custom GR theme tags usage
+	if (pref.theme !== pref.theme_day && pref.themeDayNightTime === 'day' ||
+		pref.theme !== pref.theme_night && pref.themeDayNightTime === 'night') {
+		resetTheme();
+		initThemeDayNightMode(new Date());
+		initThemeFull = true;
+		return;
+	}
+
+	// * Check every 10 minutes if it is day or night for the entire play session
+	if (!themeDayNightModeTimer) {
+		themeDayNightModeTimer = setInterval(() => {
+			initThemeDayNightMode(new Date());
+			initThemeFull = true;
+			initTheme();
+			DebugLog('\n>>> initTheme -> fetchNewArtwork -> on_playback_new_track -> themeDayNightModeTimer <<<\n');
+		}, 600000);
+	}
 }
 
 
@@ -638,6 +712,155 @@ function restoreThemeStylePreset(reset) {
 
 
 /**
+ * Sets the theme based on the time of day.
+ * Used to switch between day and night mode by applying the corresponding theme settings.
+ * @param {boolean} dayTheme When daytime is true, the daytime theme is applied.
+ * @param {boolean} nightTheme When nighttime is true, the nighttime theme is applied.
+ */
+function setDayNightTheme(dayTheme, nightTheme) {
+	if (dayTheme) {
+		pref.theme = pref.theme_day;
+		pref.styleBevel = pref.styleBevel_day;
+		pref.styleBlend = pref.styleBlend_day;
+		pref.styleBlend2 = pref.styleBlend2_day;
+		pref.styleGradient = pref.styleGradient_day;
+		pref.styleGradient2 = pref.styleGradient2_day;
+		pref.styleAlternative = pref.styleAlternative_day;
+		pref.styleAlternative2 = pref.styleAlternative2_day;
+		pref.styleBlackAndWhite = pref.styleBlackAndWhite_day;
+		pref.styleBlackAndWhite2 = pref.styleBlackAndWhite2_day;
+		pref.styleBlackAndWhiteReborn = pref.styleBlackAndWhiteReborn_day;
+		pref.styleBlackReborn = pref.styleBlackReborn_day;
+		pref.styleRebornWhite = pref.styleRebornWhite_day;
+		pref.styleRebornBlack = pref.styleRebornBlack_day;
+		pref.styleRebornFusion = pref.styleRebornFusion_day;
+		pref.styleRebornFusion2 = pref.styleRebornFusion2_day;
+		pref.styleRebornFusionAccent = pref.styleRebornFusionAccent_day;
+		pref.styleRandomPastel = pref.styleRandomPastel_day;
+		pref.styleRandomDark = pref.styleRandomDark_day;
+		pref.styleRandomAutoColor = pref.styleRandomAutoColor_day;
+		pref.styleTopMenuButtons = pref.styleTopMenuButtons_day;
+		pref.styleTransportButtons = pref.styleTransportButtons_day;
+		pref.styleProgressBarDesign = pref.styleProgressBarDesign_day;
+		pref.styleProgressBar = pref.styleProgressBar_day;
+		pref.styleProgressBarFill = pref.styleProgressBarFill_day;
+		pref.styleVolumeBarDesign = pref.styleVolumeBarDesign_day;
+		pref.styleVolumeBar = pref.styleVolumeBar_day;
+		pref.styleVolumeBarFill = pref.styleVolumeBarFill_day;
+		pref.themeBrightness = pref.themeBrightness_day;
+		pref.preset = pref.preset_day;
+	} else if (nightTheme) {
+		pref.theme = pref.theme_night;
+		pref.styleBevel = pref.styleBevel_night;
+		pref.styleBlend = pref.styleBlend_night;
+		pref.styleBlend2 = pref.styleBlend2_night;
+		pref.styleGradient = pref.styleGradient_night;
+		pref.styleGradient2 = pref.styleGradient2_night;
+		pref.styleAlternative = pref.styleAlternative_night;
+		pref.styleAlternative2 = pref.styleAlternative2_night;
+		pref.styleBlackAndWhite = pref.styleBlackAndWhite_night;
+		pref.styleBlackAndWhite2 = pref.styleBlackAndWhite2_night;
+		pref.styleBlackAndWhiteReborn = pref.styleBlackAndWhiteReborn_night;
+		pref.styleBlackReborn = pref.styleBlackReborn_night;
+		pref.styleRebornWhite = pref.styleRebornWhite_night;
+		pref.styleRebornBlack = pref.styleRebornBlack_night;
+		pref.styleRebornFusion = pref.styleRebornFusion_night;
+		pref.styleRebornFusion2 = pref.styleRebornFusion2_night;
+		pref.styleRebornFusionAccent = pref.styleRebornFusionAccent_night;
+		pref.styleRandomPastel = pref.styleRandomPastel_night;
+		pref.styleRandomDark = pref.styleRandomDark_night;
+		pref.styleRandomAutoColor = pref.styleRandomAutoColor_night;
+		pref.styleTopMenuButtons = pref.styleTopMenuButtons_night;
+		pref.styleTransportButtons = pref.styleTransportButtons_night;
+		pref.styleProgressBarDesign = pref.styleProgressBarDesign_night;
+		pref.styleProgressBar = pref.styleProgressBar_night;
+		pref.styleProgressBarFill = pref.styleProgressBarFill_night;
+		pref.styleVolumeBarDesign = pref.styleVolumeBarDesign_night;
+		pref.styleVolumeBar = pref.styleVolumeBar_night;
+		pref.styleVolumeBarFill = pref.styleVolumeBarFill_night;
+		pref.themeBrightness = pref.themeBrightness_night;
+		pref.preset = pref.preset_night;
+	}
+}
+
+
+/**
+ * Sets the chosen theme preset to the daytime theme when selecting a theme preset in top menu Options > Preset.
+ * Used when daytime theme setup is active.
+ */
+function setDayThemePreset() {
+	pref.theme_day = pref.theme;
+	pref.styleBevel_day = pref.styleBevel;
+	pref.styleBlend_day = pref.styleBlend;
+	pref.styleBlend2_day = pref.styleBlend2;
+	pref.styleGradient_day = pref.styleGradient;
+	pref.styleGradient2_day = pref.styleGradient2;
+	pref.styleAlternative_day = pref.styleAlternative;
+	pref.styleAlternative2_day = pref.styleAlternative2;
+	pref.styleBlackAndWhite_day = pref.styleBlackAndWhite;
+	pref.styleBlackAndWhite2_day = pref.styleBlackAndWhite2;
+	pref.styleBlackAndWhiteReborn_day = pref.styleBlackAndWhiteReborn;
+	pref.styleBlackReborn_day = pref.styleBlackReborn;
+	pref.styleRebornWhite_day = pref.styleRebornWhite;
+	pref.styleRebornBlack_day = pref.styleRebornBlack;
+	pref.styleRebornFusion_day = pref.styleRebornFusion;
+	pref.styleRebornFusion2_day = pref.styleRebornFusion2;
+	pref.styleRebornFusionAccent_day = pref.styleRebornFusionAccent;
+	pref.styleRandomPastel_day = pref.styleRandomPastel;
+	pref.styleRandomDark_day = pref.styleRandomDark;
+	pref.styleRandomAutoColor_day = pref.styleRandomAutoColor;
+	pref.styleTopMenuButtons_day = pref.styleTopMenuButtons;
+	pref.styleTransportButtons_day = pref.styleTransportButtons;
+	pref.styleProgressBarDesign_day = pref.styleProgressBarDesign;
+	pref.styleProgressBar_day = pref.styleProgressBar;
+	pref.styleProgressBarFill_day = pref.styleProgressBarFill;
+	pref.styleVolumeBarDesign_day = pref.styleVolumeBarDesign;
+	pref.styleVolumeBar_day = pref.styleVolumeBar;
+	pref.styleVolumeBarFill_day = pref.styleVolumeBarFill;
+	pref.themeBrightness_day = pref.themeBrightness;
+	pref.preset_day = pref.preset;
+}
+
+
+/**
+ * Sets the chosen theme preset to the nighttime theme when selecting a theme preset in top menu Options > Preset.
+ * Used when nighttime theme setup is active.
+ */
+function setNightThemePreset() {
+	pref.theme_night = pref.theme;
+	pref.styleBevel_night = pref.styleBevel;
+	pref.styleBlend_night = pref.styleBlend;
+	pref.styleBlend2_night = pref.styleBlend2;
+	pref.styleGradient_night = pref.styleGradient;
+	pref.styleGradient2_night = pref.styleGradient2;
+	pref.styleAlternative_night = pref.styleAlternative;
+	pref.styleAlternative2_night = pref.styleAlternative2;
+	pref.styleBlackAndWhite_night = pref.styleBlackAndWhite;
+	pref.styleBlackAndWhite2_night = pref.styleBlackAndWhite2;
+	pref.styleBlackAndWhiteReborn_night = pref.styleBlackAndWhiteReborn;
+	pref.styleBlackReborn_night = pref.styleBlackReborn;
+	pref.styleRebornWhite_night = pref.styleRebornWhite;
+	pref.styleRebornBlack_night = pref.styleRebornBlack;
+	pref.styleRebornFusion_night = pref.styleRebornFusion;
+	pref.styleRebornFusion2_night = pref.styleRebornFusion2;
+	pref.styleRebornFusionAccent_night = pref.styleRebornFusionAccent;
+	pref.styleRandomPastel_night = pref.styleRandomPastel;
+	pref.styleRandomDark_night = pref.styleRandomDark;
+	pref.styleRandomAutoColor_night = pref.styleRandomAutoColor;
+	pref.styleTopMenuButtons_night = pref.styleTopMenuButtons;
+	pref.styleTransportButtons_night = pref.styleTransportButtons;
+	pref.styleProgressBarDesign_night = pref.styleProgressBarDesign;
+	pref.styleProgressBar_night = pref.styleProgressBar;
+	pref.styleProgressBarFill_night = pref.styleProgressBarFill;
+	pref.styleVolumeBarDesign_night = pref.styleVolumeBarDesign;
+	pref.styleVolumeBar_night = pref.styleVolumeBar;
+	pref.styleVolumeBarFill_night = pref.styleVolumeBarFill;
+	pref.themeBrightness_night = pref.themeBrightness;
+	pref.preset_night = pref.preset;
+}
+
+
+/**
  * Sets the chosen style based by its current state. Used when changing styles in top menu Options > Style.
  * @param {string} style The selected style.
  * @param {boolean} state The state of the selected style will be either activated or deactivated.
@@ -883,35 +1106,6 @@ function setProgressBarRefresh() {
 			refreshSeekbar();
 		}, progressBarTimerInterval || 1000);
 	}
-}
-
-
-/**
- * Checks and changes the theme to white ( day ) or black ( night ), controlled by OS clock and pref.themeDayNightMode value.
- * @param {Date} date The `Date` object that represents the current date and time.
- * @returns {string} The current time in the format "hours:minutes am/pm".
- */
-function themeDayNightMode(date) {
-	if (!pref.themeDayNightMode || ((pref.theme === 'reborn' && (pref.styleRebornWhite || pref.styleRebornBlack) || pref.theme === 'random')) ||
-		pref.styleBlackAndWhite || pref.styleBlackAndWhite2 || pref.styleBlackAndWhiteReborn) {
-		return;
-	}
-
-	let hours = date.getHours();
-	let minutes = date.getMinutes();
-		hours %= 12;
-		hours = hours || 12;
-		minutes = minutes < 10 ? `0${minutes}` : minutes;
-
-	const time = hours >= 12 ? 'pm' : 'am';
-
-	const day =
-		hours >= pref.themeDayNightMode && time === 'am' && (hours !== 12 && time === 'am') ||
-		hours === 12 && time === 'pm' || hours < pref.themeDayNightMode && time === 'pm';
-
-	pref.theme = day ? 'white' : 'black';
-
-	return `${hours}:${minutes} ${time}`;
 }
 
 
@@ -1840,7 +2034,7 @@ function createButtonObjects(ww, wh) {
  */
 function loadCountryFlags() {
 	flagImgs = [];
-	getMetaValues(tf.artist_country).forEach(country => {
+	GetMetaValues(tf.artist_country).forEach(country => {
 		const flagImage = loadFlagImage(country);
 		flagImage && flagImgs.push(flagImage);
 	});
@@ -2581,11 +2775,11 @@ function getBandLogo() {
 	invertedBandLogo = null;
 	let path;
 	let tryArtistList = [
-		...getMetaValues('%album artist%').map(artist => ReplaceFileChars(artist)),
-		...getMetaValues('%album artist%').map(artist => ReplaceFileChars(artist).replace(/^[Tt]he /, '')),
+		...GetMetaValues('%album artist%').map(artist => ReplaceFileChars(artist)),
+		...GetMetaValues('%album artist%').map(artist => ReplaceFileChars(artist).replace(/^[Tt]he /, '')),
 		ReplaceFileChars($('[%track artist%]')),
-		...getMetaValues('%artist%').map(artist => ReplaceFileChars(artist)),
-		...getMetaValues('%artist%').map(artist => ReplaceFileChars(artist).replace(/^[Tt]he /, ''))
+		...GetMetaValues('%artist%').map(artist => ReplaceFileChars(artist)),
+		...GetMetaValues('%artist%').map(artist => ReplaceFileChars(artist).replace(/^[Tt]he /, ''))
 	];
 
 	tryArtistList = [...new Set(tryArtistList)];
@@ -2622,7 +2816,7 @@ function getLabelLogo(metadb) {
 	recordLabelsInverted = [];
 
 	for (let i = 0; i < tf.labels.length; i++) {
-		labelStrings.push(...getMetaValues(tf.labels[i], metadb));
+		labelStrings.push(...GetMetaValues(tf.labels[i], metadb));
 	}
 	labelStrings = [...new Set(labelStrings)];
 

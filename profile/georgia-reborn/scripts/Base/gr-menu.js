@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-12                                          * //
+// * Last change:    2023-12-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -90,47 +90,49 @@ function topMenuOptions(x, y, context_menu, playlist, details, library, biograph
 	state.mouse_x = x;
 	state.mouse_y = y;
 	const menu = new Menu();
+	const themeDayNightSetup = pref.themeSetupDay || pref.themeSetupNight;
 
 	if (!context_menu) {
 		themeOptions(menu);
 		styleOptions(menu);
 		presetOptions(menu);
-		playerSizeOptions(menu);
-		layoutOptions(menu);
-		displayOptions(menu);
+
+		if (!themeDayNightSetup) {
+			playerSizeOptions(menu);
+			layoutOptions(menu);
+			displayOptions(menu);
+		}
+
 		brightnessOptions(menu);
-		fontSizeOptions(menu);
 
-		menu.addSeparator();
-		playerControlsOptions(menu);
-		menu.addSeparator();
+		if (!themeDayNightSetup) {
+			fontSizeOptions(menu);
+			menu.addSeparator();
+			playerControlsOptions(menu);
+			menu.addSeparator();
+			playlistOptions(menu);
 
-		playlistOptions(menu);
-		detailsOptions(menu);
-		libraryOptions(menu);
-		biographyOptions(menu);
-		lyricsOptions(menu);
+			if (pref.layout !== 'compact') {
+				detailsOptions(menu);
+				libraryOptions(menu);
+				biographyOptions(menu);
+				lyricsOptions(menu);
+			}
+		}
 
 		menu.addSeparator();
 		settingsOptions(menu);
-		if (pref.devTools) menu.addSeparator();
-		developerToolsOptions(menu);
+
+		if (pref.devTools) {
+			menu.addSeparator();
+			developerToolsOptions(menu);
+		}
 	}
-	else if (playlist) {
-		playlistOptions(menu, context_menu);
-	}
-	else if (details) {
-		detailsOptions(menu, context_menu);
-	}
-	else if (library) {
-		libraryOptions(menu, context_menu);
-	}
-	else if (biography) {
-		biographyOptions(menu, context_menu);
-	}
-	else if (lyrics) {
-		lyricsOptions(menu, context_menu);
-	}
+	else if (playlist) playlistOptions(menu, context_menu);
+	else if (details) detailsOptions(menu, context_menu);
+	else if (library) libraryOptions(menu, context_menu);
+	else if (biography) biographyOptions(menu, context_menu);
+	else if (lyrics) lyricsOptions(menu, context_menu);
 
 	const idx = menu.trackPopupMenu(x, y);
 	menu.doCallback(idx);
@@ -149,6 +151,8 @@ function themeOptions(menu) {
 	const themeMenu = new Menu('Theme');
 	themeMenu.addRadioItems(['White', 'Black', 'Reborn', 'Random'], pref.theme, ['white', 'black', 'reborn', 'random'], (theme) => {
 		if (!pref.themeSandbox) pref.savedTheme = pref.theme = theme; else pref.theme = theme;
+		if (pref.themeSetupDay) pref.theme_day = theme;
+		if (pref.themeSetupNight) pref.theme_night = theme;
 		resetTheme();
 		initTheme();
 		initThemePresetState();
@@ -156,6 +160,8 @@ function themeOptions(menu) {
 	themeMenu.addSeparator();
 	themeMenu.addRadioItems(['Blue', 'Dark blue', 'Red', 'Cream'], pref.theme, ['blue', 'darkblue', 'red', 'cream'], (theme) => {
 		if (!pref.themeSandbox) pref.savedTheme = pref.theme = theme; else pref.theme = theme;
+		if (pref.themeSetupDay) pref.theme_day = theme;
+		if (pref.themeSetupNight) pref.theme_night = theme;
 		resetTheme();
 		initTheme();
 		initThemePresetState();
@@ -163,6 +169,8 @@ function themeOptions(menu) {
 	themeMenu.addSeparator();
 	themeMenu.addRadioItems(['Neon blue', 'Neon green', 'Neon red', 'Neon gold'], pref.theme, ['nblue', 'ngreen', 'nred', 'ngold'], (theme) => {
 		if (!pref.themeSandbox) pref.savedTheme = pref.theme = theme; else pref.theme = theme;
+		if (pref.themeSetupDay) pref.theme_day = theme;
+		if (pref.themeSetupNight) pref.theme_night = theme;
 		resetTheme();
 		initTheme();
 		initThemePresetState();
@@ -186,6 +194,8 @@ function themeOptions(menu) {
 
 	customThemeMenu.addRadioItems(customThemes, pref.theme, ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'], (theme) => {
 		if (!pref.themeSandbox) pref.savedTheme = pref.theme = theme; else pref.theme = theme;
+		if (pref.themeSetupDay) pref.theme_day = theme;
+		if (pref.themeSetupNight) pref.theme_night = theme;
 		resetTheme();
 		initCustomTheme();
 		initTheme();
@@ -269,6 +279,8 @@ function styleOptions(menu) {
 	styleMenu.addSeparator();
 	styleMenu.addToggleItem('Bevel', pref, 'styleBevel', () => {
 		if (!pref.themeSandbox) pref.savedStyleBevel = pref.styleBevel;
+		if (pref.themeSetupDay) pref.styleBevel_day = pref.styleBevel;
+		if (pref.themeSetupNight) pref.styleBevel_night = pref.styleBevel;
 		updateStyle();
 	});
 	styleMenu.addSeparator();
@@ -276,17 +288,23 @@ function styleOptions(menu) {
 	// * STYLES - GROUP ONE * //
 	styleMenu.addToggleItem('Blend', pref, 'styleBlend', () => {
 		if (!pref.themeSandbox) pref.savedStyleBlend = pref.styleBlend;
+		if (pref.themeSetupDay) pref.styleBlend_day = pref.styleBlend;
+		if (pref.themeSetupNight) pref.styleBlend_night = pref.styleBlend;
 		setStyle('blend', pref.styleBlend);
 		updateStyle();
 	});
 	styleMenu.addToggleItem('Blend 2', pref, 'styleBlend2', () => {
 		if (!pref.themeSandbox) pref.savedStyleBlend2 = pref.styleBlend2;
+		if (pref.themeSetupDay) pref.styleBlend2_day = pref.styleBlend2;
+		if (pref.themeSetupNight) pref.styleBlend2_night = pref.styleBlend2;
 		setStyle('blend2', pref.styleBlend2);
 		updateStyle();
 	});
 	if (['reborn', 'random', 'blue', 'darkblue', 'red', 'custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
 		styleMenu.addToggleItem('Gradient', pref, 'styleGradient', () => {
 			if (!pref.themeSandbox) pref.savedStyleGradient = pref.styleGradient;
+			if (pref.themeSetupDay) pref.styleGradient_day = pref.styleGradient;
+			if (pref.themeSetupNight) pref.styleGradient_night = pref.styleGradient;
 			setStyle('gradient', pref.styleGradient);
 			updateStyle();
 		}, pref.styleRebornWhite);
@@ -294,6 +312,8 @@ function styleOptions(menu) {
 	if (['reborn', 'random', 'blue', 'darkblue', 'red', 'custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
 		styleMenu.addToggleItem('Gradient 2', pref, 'styleGradient2', () => {
 			if (!pref.themeSandbox) pref.savedStyleGradient2 = pref.styleGradient2;
+			if (pref.themeSetupDay) pref.styleGradient2_day = pref.styleGradient2;
+			if (pref.themeSetupNight) pref.styleGradient2_night = pref.styleGradient2;
 			setStyle('gradient2', pref.styleGradient2);
 			updateStyle();
 		}, pref.styleRebornWhite);
@@ -303,27 +323,37 @@ function styleOptions(menu) {
 	// * STYLES - GROUP TWO * //
 	styleMenu.addToggleItem('Alternative', pref, 'styleAlternative', () => {
 		if (!pref.themeSandbox) pref.savedStyleAlternative = pref.styleAlternative;
+		if (pref.themeSetupDay) pref.styleAlternative_day = pref.styleAlternative;
+		if (pref.themeSetupNight) pref.styleAlternative_night = pref.styleAlternative;
 		setStyle('alternative', pref.styleAlternative);
 		updateStyle();
 	});
 	styleMenu.addToggleItem('Alternative 2', pref, 'styleAlternative2', () => {
 		if (!pref.themeSandbox) pref.savedStyleAlternative2 = pref.styleAlternative2;
+		if (pref.themeSetupDay) pref.styleAlternative2_day = pref.styleAlternative2;
+		if (pref.themeSetupNight) pref.styleAlternative2_night = pref.styleAlternative2;
 		setStyle('alternative2', pref.styleAlternative2);
 		updateStyle();
 	});
 	if (pref.theme === 'white') {
 		styleMenu.addToggleItem('Black and white', pref, 'styleBlackAndWhite', () => {
 			if (!pref.themeSandbox) pref.savedStyleBlackAndWhite = pref.styleBlackAndWhite;
+			if (pref.themeSetupDay) pref.styleBlackAndWhite_day = pref.styleBlackAndWhite;
+			if (pref.themeSetupNight) pref.styleBlackAndWhite_night = pref.styleBlackAndWhite;
 			setStyle('blackAndWhite', pref.styleBlackAndWhite);
 			updateStyle();
 		}, pref.styleBlackAndWhiteReborn);
 		styleMenu.addToggleItem('Black and white 2', pref, 'styleBlackAndWhite2', () => {
 			if (!pref.themeSandbox) pref.savedStyleBlackAndWhite2 = pref.styleBlackAndWhite2;
+			if (pref.themeSetupDay) pref.styleBlackAndWhite2_day = pref.styleBlackAndWhite2;
+			if (pref.themeSetupNight) pref.styleBlackAndWhite2_night = pref.styleBlackAndWhite2;
 			setStyle('blackAndWhite2', pref.styleBlackAndWhite2);
 			updateStyle();
 		}, pref.styleBlackAndWhiteReborn);
 		styleMenu.addToggleItem('Black and white reborn', pref, 'styleBlackAndWhiteReborn', () => {
 			if (!pref.themeSandbox) pref.savedStyleBlackAndWhiteReborn = pref.styleBlackAndWhiteReborn;
+			if (pref.themeSetupDay) pref.styleBlackAndWhiteReborn_day = pref.styleBlackAndWhiteReborn;
+			if (pref.themeSetupNight) pref.styleBlackAndWhiteReborn_night = pref.styleBlackAndWhiteReborn;
 			setStyle('blackAndWhiteReborn', pref.styleBlackAndWhiteReborn);
 			updateStyle();
 		});
@@ -331,6 +361,8 @@ function styleOptions(menu) {
 	if (pref.theme === 'black') {
 		styleMenu.addToggleItem('Black reborn', pref, 'styleBlackReborn', () => {
 			if (!pref.themeSandbox) pref.savedStyleBlackReborn = pref.styleBlackReborn;
+			if (pref.themeSetupDay) pref.styleBlackReborn_day = pref.styleBlackReborn;
+			if (pref.themeSetupNight) pref.styleBlackReborn_night = pref.styleBlackReborn;
 			setStyle('blackReborn', pref.styleBlackReborn);
 			updateStyle();
 		});
@@ -338,26 +370,36 @@ function styleOptions(menu) {
 	if (pref.theme === 'reborn') {
 		styleMenu.addToggleItem('Reborn white', pref, 'styleRebornWhite', () => {
 			if (!pref.themeSandbox) pref.savedStyleRebornWhite = pref.styleRebornWhite;
+			if (pref.themeSetupDay) pref.styleRebornWhite_day = pref.styleRebornWhite;
+			if (pref.themeSetupNight) pref.styleRebornWhite_night = pref.styleRebornWhite;
 			setStyle('rebornWhite', pref.styleRebornWhite);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Reborn black', pref, 'styleRebornBlack', () => {
 			if (!pref.themeSandbox) pref.savedStyleRebornBlack = pref.styleRebornBlack;
+			if (pref.themeSetupDay) pref.styleRebornBlack_day = pref.styleRebornBlack;
+			if (pref.themeSetupNight) pref.styleRebornBlack_night = pref.styleRebornBlack;
 			setStyle('rebornBlack', pref.styleRebornBlack);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Reborn fusion', pref, 'styleRebornFusion', () => {
 			if (!pref.themeSandbox) pref.savedStyleRebornFusion = pref.styleRebornFusion;
+			if (pref.themeSetupDay) pref.styleRebornFusion_day = pref.styleRebornFusion;
+			if (pref.themeSetupNight) pref.styleRebornFusion_night = pref.styleRebornFusion;
 			setStyle('rebornFusion', pref.styleRebornFusion);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Reborn fusion 2', pref, 'styleRebornFusion2', () => {
 			if (!pref.themeSandbox) pref.savedStyleRebornFusion2 = pref.styleRebornFusion2;
+			if (pref.themeSetupDay) pref.styleRebornFusion2_day = pref.styleRebornFusion2;
+			if (pref.themeSetupNight) pref.styleRebornFusion2_night = pref.styleRebornFusion2;
 			setStyle('rebornFusion2', pref.styleRebornFusion2);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Reborn fusion accent', pref, 'styleRebornFusionAccent', () => {
 			if (!pref.themeSandbox) pref.savedStyleRebornFusionAccent = pref.styleRebornFusionAccent;
+			if (pref.themeSetupDay) pref.styleRebornFusionAccent_day = pref.styleRebornFusionAccent;
+			if (pref.themeSetupNight) pref.styleRebornFusionAccent_night = pref.styleRebornFusionAccent;
 			setStyle('rebornFusionAccent', pref.styleRebornFusionAccent);
 			updateStyle();
 		});
@@ -365,11 +407,15 @@ function styleOptions(menu) {
 	if (pref.theme === 'random') {
 		styleMenu.addToggleItem('Random pastel', pref, 'styleRandomPastel', () => {
 			if (!pref.themeSandbox) pref.savedStyleRandomPastel = pref.styleRandomPastel;
+			if (pref.themeSetupDay) pref.styleRandomPastel_day = pref.styleRandomPastel;
+			if (pref.themeSetupNight) pref.styleRandomPastel_night = pref.styleRandomPastel;
 			setStyle('randomPastel', pref.styleRandomPastel);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Random dark', pref, 'styleRandomDark', () => {
 			if (!pref.themeSandbox) pref.savedStyleRandomDark = pref.styleRandomDark;
+			if (pref.themeSetupDay) pref.styleRandomDark_day = pref.styleRandomDark;
+			if (pref.themeSetupNight) pref.styleRandomDark_night = pref.styleRandomDark;
 			setStyle('randomDark', pref.styleRandomDark);
 			updateStyle();
 		});
@@ -382,6 +428,8 @@ function styleOptions(menu) {
 		styleAutoColorMenu.addRadioItems(['Off', '5 sec', '10 sec', '15 sec', '30 sec', '45 sec', '1 min', '2 min', '3 min', '4 min', '5 min', 'New track'], pref.styleRandomAutoColor,
 			['off', 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, 'track'], (timer) => {
 			if (!pref.themeSandbox) pref.savedStyleRandomAutoColor = pref.styleRandomAutoColor = timer; else pref.styleRandomAutoColor = timer;
+			if (pref.themeSetupDay) pref.styleRandomAutoColor_day = timer;
+			if (pref.themeSetupNight) pref.styleRandomAutoColor_night = timer;
 			getRandomThemeAutoColor();
 		});
 		styleAutoColorMenu.appendTo(styleMenu);
@@ -393,12 +441,16 @@ function styleOptions(menu) {
 	const styleTopButtonsMenu = new Menu('Top menu');
 	styleTopButtonsMenu.addRadioItems(['Default', 'Filled', 'Bevel', 'Inner', 'Emboss', 'Minimal'], pref.styleTopMenuButtons, ['default', 'filled', 'bevel', 'inner', 'emboss', 'minimal'], (style) => {
 		if (!pref.themeSandbox) pref.savedStyleTopMenuButtons = pref.styleTopMenuButtons = style; else pref.styleTopMenuButtons = style;
+		if (pref.themeSetupDay) pref.styleTopMenuButtons_day = style;
+		if (pref.themeSetupNight) pref.styleTopMenuButtons_night = style;
 		updateStyle();
 	});
 	styleTopButtonsMenu.appendTo(styleButtonsMenu);
 	const styleTransportButtonsMenu = new Menu('Transport');
 	styleTransportButtonsMenu.addRadioItems(['Default', 'Bevel', 'Inner', 'Emboss', 'Minimal'], pref.styleTransportButtons, ['default', 'bevel', 'inner', 'emboss', 'minimal'], (style) => {
 		if (!pref.themeSandbox) pref.savedStyleTransportButtons = pref.styleTransportButtons = style; else pref.styleTransportButtons = style;
+		if (pref.themeSetupDay) pref.styleTransportButtons_day = style;
+		if (pref.themeSetupNight) pref.styleTopMenuButtons_night = style;
 		updateStyle();
 	});
 	styleTransportButtonsMenu.appendTo(styleButtonsMenu);
@@ -408,14 +460,20 @@ function styleOptions(menu) {
 	const styleProgressBarMenu = new Menu('Progress bar');
 	styleProgressBarMenu.createRadioSubMenu('Design', ['Default', 'Rounded', 'Lines', 'Blocks', 'Dots', 'Thin'], pref.styleProgressBarDesign, ['default', 'rounded', 'lines', 'blocks', 'dots', 'thin'], (design) => {
 		if (!pref.themeSandbox) pref.savedStyleProgressBarDesign = pref.styleProgressBarDesign = design; else pref.styleProgressBarDesign = design;
+		if (pref.themeSetupDay) pref.styleProgressBarDesign_day = design;
+		if (pref.themeSetupNight) pref.styleProgressBarDesign_night = design;
 		updateStyle();
 	});
 	styleProgressBarMenu.createRadioSubMenu('Background', ['Default', 'Bevel', 'Inner'], pref.styleProgressBar, ['default', 'bevel', 'inner'], (style) => {
 		if (!pref.themeSandbox) pref.savedStyleProgressBar = pref.styleProgressBar = style; else pref.styleProgressBar = style;
+		if (pref.themeSetupDay) pref.styleProgressBar_day = style;
+		if (pref.themeSetupNight) pref.styleProgressBar_night = style;
 		updateStyle();
 	});
 	styleProgressBarMenu.createRadioSubMenu('Progress fill', ['Default', 'Bevel', 'Inner', 'Blend'], pref.styleProgressBarFill, ['default', 'bevel', 'inner', 'blend'], (style) => {
 		if (!pref.themeSandbox) pref.savedStyleProgressBarFill = pref.styleProgressBarFill = style; else pref.styleProgressBarFill = style;
+		if (pref.themeSetupDay) pref.styleProgressBarFill_day = style;
+		if (pref.themeSetupNight) pref.styleProgressBarFill_night = style;
 		updateStyle();
 	});
 	styleProgressBarMenu.appendTo(styleMenu);
@@ -424,14 +482,20 @@ function styleOptions(menu) {
 	const styleVolumeBarMenu = new Menu('Volume bar');
 	styleVolumeBarMenu.createRadioSubMenu('Design', ['Default', 'Rounded'], pref.styleVolumeBarDesign, ['default', 'rounded'], (design) => {
 		if (!pref.themeSandbox) pref.savedStyleVolumeBarDesign = pref.styleVolumeBarDesign = design; else pref.styleVolumeBarDesign = design;
+		if (pref.themeSetupDay) pref.styleVolumeBarDesign_day = design;
+		if (pref.themeSetupNight) pref.styleVolumeBarDesign_night = design;
 		updateStyle();
 	});
 	styleVolumeBarMenu.createRadioSubMenu('Background', ['Default', 'Bevel', 'Inner'], pref.styleVolumeBar, ['default', 'bevel', 'inner'], (style) => {
 		if (!pref.themeSandbox) pref.savedStyleVolumeBar = pref.styleVolumeBar = style; else pref.styleVolumeBar = style;
+		if (pref.themeSetupDay) pref.styleVolumeBar_day = style;
+		if (pref.themeSetupNight) pref.styleVolumeBar_night = style;
 		updateStyle();
 	});
 	styleVolumeBarMenu.createRadioSubMenu('Volume fill', ['Default', 'Bevel', 'Inner'], pref.styleVolumeBarFill, ['default', 'bevel', 'inner'], (style) => {
 		if (!pref.themeSandbox) pref.savedStyleVolumeBarFill = pref.styleVolumeBarFill = style; else pref.styleVolumeBarFill = style;
+		if (pref.themeSetupDay) pref.styleVolumeBarFill_day = style;
+		if (pref.themeSetupNight) pref.styleVolumeBarFill_night = style;
 		updateStyle();
 	});
 	styleVolumeBarMenu.appendTo(styleMenu);
@@ -530,12 +594,19 @@ function presetOptions(menu) {
 		return;
 	}
 
+	// * THEME PRESETS MENUS * //
+	const applyThemePreset = (preset) => {
+		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
+		setThemePreset(preset); // After applying the preset, synchronize the daytime/nighttime theme preset if necessary
+		if (pref.themeSetupDay) { pref.preset_day = preset; setDayThemePreset(); }
+		if (pref.themeSetupNight) { pref.preset_night = preset; setNightThemePreset(); }
+	}
+
 	// * WHITE THEME PRESETS * //
 	const themePresetsWhiteMenu = new Menu('White');
 	themePresetsWhiteMenu.addRadioItems(['Beveled', 'Black and white', 'Black and white blended', 'Black and white 2', 'Black and white 2 blended', 'Black and white reborn', 'Black and white reborn blended', 'Minimalized'], pref.preset,
 		['whiteP01', 'whiteP02', 'whiteP03', 'whiteP04', 'whiteP05', 'whiteP06', 'whiteP07', 'whiteP08'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsWhiteMenu.appendTo(themePresetsMenu);
 
@@ -543,8 +614,7 @@ function presetOptions(menu) {
 	const themePresetsBlackMenu = new Menu('Black');
 	themePresetsBlackMenu.addRadioItems(['Beveled', 'Blended', 'Blended alternative', 'Blended alternative 2', 'Black reborn', 'Black reborn blended', 'Dark gray', 'Dark gray blended', 'Dark gray 2 blended', 'Minimalized'], pref.preset,
 		['blackP01', 'blackP02', 'blackP03', 'blackP04', 'blackP05', 'blackP06', 'blackP07', 'blackP08', 'blackP09', 'blackP10'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsBlackMenu.appendTo(themePresetsMenu);
 
@@ -552,38 +622,32 @@ function presetOptions(menu) {
 	const themePresetsRebornMenu = new Menu('Reborn');
 	themePresetsRebornMenu.addRadioItems(['Beveled', 'Blended', 'Blended 2', 'Gradiented', 'Gradiented 2', 'Minimalized', 'Minimalized blended'], pref.preset,
 		['rebornP01', 'rebornP02', 'rebornP03', 'rebornP04', 'rebornP05', 'rebornP06', 'rebornP07'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsRebornMenu.addSeparator();
 	themePresetsRebornMenu.addRadioItems(['Reborn white beveled', 'Reborn white blended', 'Reborn white blended 2'], pref.preset,
 		['rebornP08', 'rebornP09', 'rebornP10'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsRebornMenu.addSeparator();
 	themePresetsRebornMenu.addRadioItems(['Reborn black beveled', 'Reborn black blended', 'Reborn black blended 2', 'Reborn black gradiented', 'Reborn black gradiented 2'], pref.preset,
 		['rebornP11', 'rebornP12', 'rebornP13', 'rebornP14', 'rebornP15'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsRebornMenu.addSeparator();
 	themePresetsRebornMenu.addRadioItems(['Reborn fusion beveled', 'Reborn fusion blended', 'Reborn fusion blended 2', 'Reborn fusion gradiented', 'Reborn fusion gradiented 2'], pref.preset,
 		['rebornP16', 'rebornP17', 'rebornP18', 'rebornP19', 'rebornP20'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsRebornMenu.addSeparator();
 	themePresetsRebornMenu.addRadioItems(['Reborn fusion 2 beveled', 'Reborn fusion 2 blended', 'Reborn fusion 2 blended 2', 'Reborn fusion 2 gradiented', 'Reborn fusion 2 gradiented 2'], pref.preset,
 		['rebornP21', 'rebornP22', 'rebornP23', 'rebornP24', 'rebornP25'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsRebornMenu.addSeparator();
 	themePresetsRebornMenu.addRadioItems(['Reborn fusion accent beveled', 'Reborn fusion accent blended', 'Reborn fusion accent blended 2', 'Reborn fusion accent gradiented', 'Reborn fusion accent gradiented 2'], pref.preset,
 		['rebornP26', 'rebornP27', 'rebornP28', 'rebornP29', 'rebornP30'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsRebornMenu.appendTo(themePresetsMenu);
 
@@ -591,8 +655,7 @@ function presetOptions(menu) {
 	const themePresetsRandomMenu = new Menu('Random');
 	themePresetsRandomMenu.addRadioItems(['Beveled blended alternative', 'Beveled blended pastel', 'Beveled blended dark', 'Beveled blended auto dark', 'Beveled auto dark', 'Beveled dark', 'Gradiented', 'Gradiented 2', 'Minimalized', 'Minimalized blended'], pref.preset,
 		['randomP01', 'randomP02', 'randomP03', 'randomP04', 'randomP05', 'randomP06', 'randomP07', 'randomP08', 'randomP09', 'randomP10'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsRandomMenu.appendTo(themePresetsMenu);
 	themePresetsMenu.addSeparator();
@@ -601,8 +664,7 @@ function presetOptions(menu) {
 	const themePresetsBlueMenu = new Menu('Blue');
 	themePresetsBlueMenu.addRadioItems(['Beveled', 'Beveled 2', 'Gradiented', 'Gradiented 2', 'Minimalized'], pref.preset,
 		['blueP01', 'blueP02', 'blueP03', 'blueP04', 'blueP05'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsBlueMenu.appendTo(themePresetsMenu);
 
@@ -610,8 +672,7 @@ function presetOptions(menu) {
 	const themePresetsDarkblueMenu = new Menu('Dark blue');
 	themePresetsDarkblueMenu.addRadioItems(['Beveled', 'Beveled 2', 'Gradiented', 'Gradiented 2', 'Minimalized'], pref.preset,
 		['darkblueP01', 'darkblueP02', 'darkblueP03', 'darkblueP04', 'darkblueP05'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsDarkblueMenu.appendTo(themePresetsMenu);
 
@@ -619,8 +680,7 @@ function presetOptions(menu) {
 	const themePresetsRedMenu = new Menu('Red');
 	themePresetsRedMenu.addRadioItems(['Beveled', 'Beveled 2', 'Gradiented', 'Gradiented 2', 'Minimalized'], pref.preset,
 		['redP01', 'redP02', 'redP03', 'redP04', 'redP05'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsRedMenu.appendTo(themePresetsMenu);
 
@@ -628,8 +688,7 @@ function presetOptions(menu) {
 	const themePresetsCreamMenu = new Menu('Cream');
 	themePresetsCreamMenu.addRadioItems(['Beveled', 'Beveled 2', 'Alternative', 'Alternative 2', 'Minimalized'], pref.preset,
 		['creamP01', 'creamP02', 'creamP03', 'creamP04', 'creamP05'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsCreamMenu.appendTo(themePresetsMenu);
 	themePresetsMenu.addSeparator();
@@ -638,8 +697,7 @@ function presetOptions(menu) {
 	const themePresetsNblueMenu = new Menu('Neon blue');
 	themePresetsNblueMenu.addRadioItems(['Beveled', 'Beveled 2', 'Blended', 'Blended 2', 'Alternative', 'Alternative 2', 'Dark gray', 'Dark gray blended', 'Dark gray 2 blended', 'Minimalized'], pref.preset,
 		['nblueP01', 'nblueP02', 'nblueP03', 'nblueP04', 'nblueP05', 'nblueP06', 'nblueP07', 'nblueP08', 'nblueP09', 'nblueP10'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsNblueMenu.appendTo(themePresetsMenu);
 
@@ -647,8 +705,7 @@ function presetOptions(menu) {
 	const themePresetsNgreenMenu = new Menu('Neon green');
 	themePresetsNgreenMenu.addRadioItems(['Beveled', 'Beveled 2', 'Blended', 'Blended 2', 'Alternative', 'Alternative 2', 'Dark gray', 'Dark gray blended', 'Dark gray 2 blended', 'Minimalized'], pref.preset,
 		['ngreenP01', 'ngreenP02', 'ngreenP03', 'ngreenP04', 'ngreenP05', 'ngreenP06', 'ngreenP07', 'ngreenP08', 'ngreenP09', 'ngreenP10'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsNgreenMenu.appendTo(themePresetsMenu);
 
@@ -656,8 +713,7 @@ function presetOptions(menu) {
 	const themePresetsNredMenu = new Menu('Neon red');
 	themePresetsNredMenu.addRadioItems(['Beveled', 'Beveled 2', 'Blended', 'Blended 2', 'Alternative', 'Alternative 2', 'Dark gray', 'Dark gray blended', 'Dark gray 2 blended', 'Minimalized'], pref.preset,
 		['nredP01', 'nredP02', 'nredP03', 'nredP04', 'nredP05', 'nredP06', 'nredP07', 'nredP08', 'nredP09', 'nredP10'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsNredMenu.appendTo(themePresetsMenu);
 
@@ -665,8 +721,7 @@ function presetOptions(menu) {
 	const themePresetsNgoldMenu = new Menu('Neon gold');
 	themePresetsNgoldMenu.addRadioItems(['Beveled', 'Beveled 2', 'Blended', 'Blended 2', 'Alternative', 'Alternative 2', 'Dark gray', 'Dark gray blended', 'Dark gray 2 blended', 'Minimalized'], pref.preset,
 		['ngoldP01', 'ngoldP02', 'ngoldP03', 'ngoldP04', 'ngoldP05', 'ngoldP06', 'ngoldP07', 'ngoldP08', 'ngoldP09', 'ngoldP10'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsNgoldMenu.appendTo(themePresetsMenu);
 	themePresetsMenu.addSeparator();
@@ -675,8 +730,7 @@ function presetOptions(menu) {
 	const themePresetsCustomMenu = new Menu('Custom');
 	themePresetsCustomMenu.addRadioItems(['Beveled', 'Beveled 2', 'Blended', 'Blended 2', 'Gradiented', 'Gradiented 2', 'Alternative', 'Alternative 2', 'Minimalized', 'Minimalized blended'], pref.preset,
 		['customP01', 'customP02', 'customP03', 'customP04', 'customP05', 'customP06', 'customP07', 'customP08', 'customP09', 'customP10'], (preset) => {
-		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
-		setThemePreset(preset);
+		applyThemePreset(preset);
 	});
 	themePresetsCustomMenu.appendTo(themePresetsMenu);
 	themePresetsMenu.addSeparator();
@@ -717,6 +771,9 @@ function presetOptions(menu) {
 		pref.styleVolumeBarFill = customStylePreset.styleVolumeBarFill;
 		pref.themeBrightness = customStylePreset.themeBrightness;
 		updateStyle();
+		// After applying the preset, synchronize the daytime/nighttime theme preset if necessary
+		if (pref.themeSetupDay) { pref.preset_day = preset; setDayThemePreset(); }
+		if (pref.themeSetupNight) { pref.preset_night = preset; setNightThemePreset(); }
 	});
 	themePresetUserMenu.appendTo(themePresetsMenu);
 	themePresetsMenu.addSeparator();
@@ -906,6 +963,9 @@ function brightnessOptions(menu) {
 	menu.createRadioSubMenu('Brightness', ['   -50%', '   -40%', '   -30%', '   -25%', '   -20%', '   -15%', '   -10%', '     -5%', 'Default', '     +5%', '   +10%', '   +15%', '   +20%', '   +25%', '   +30%', '   +40%', '   +50%'],
 		pref.themeBrightness, [-50, -40, -30, -25, -20, -15, -10, -5, 'default', 5, 10, 15, 20, 25, 30, 40, 50], (percent) => {
 		if (!pref.themeSandbox) pref.savedThemeBrightness = pref.themeBrightness = percent; else pref.themeBrightness = percent;
+		if (pref.themeSetupDay) pref.themeBrightness_day = percent;
+		if (pref.themeSetupNight) pref.themeBrightness_night = percent;
+		initThemeFull = true;
 		initTheme();
 	}, pref.presetSelectMode === 'harmonic');
 }
@@ -2036,7 +2096,6 @@ function playlistOptions(menu, context_menu) {
  * @param {boolean} context_menu Appends Details panel options to context menu.
  */
 function detailsOptions(menu, context_menu) {
-	if (pref.layout === 'compact') return;
 	const detailsMenu = context_menu ? menu : new Menu('Details');
 
 	if (pref.layout === 'default') {
@@ -2296,7 +2355,6 @@ function detailsOptions(menu, context_menu) {
  * @param {boolean} context_menu Appends Library options to context menu.
  */
 function libraryOptions(menu, context_menu) {
-	if (pref.layout === 'compact') return;
 	const libraryMenu = context_menu ? menu : new Menu('Library');
 
 	// * LAYOUT * //
@@ -2663,7 +2721,6 @@ function libraryOptions(menu, context_menu) {
  * @param {boolean} context_menu Appends Biography panel options to context menu.
  */
 function biographyOptions(menu, context_menu) {
-	if (pref.layout === 'compact') return;
 	const biographyMenu = context_menu ? menu : new Menu('Biography');
 	const biographyLayoutMenu = new Menu('Layout');
 
@@ -2933,7 +2990,6 @@ function biographyOptions(menu, context_menu) {
  * @param {boolean} context_menu Appends Lyrics panel options to context menu.
  */
 function lyricsOptions(menu, context_menu) {
-	if (pref.layout === 'compact') return;
 	const lyricsMenu = context_menu ? menu : new Menu('Lyrics');
 
 	if (pref.layout === 'default') {
@@ -3045,6 +3101,86 @@ function lyricsOptions(menu, context_menu) {
 function settingsOptions(menu) {
 	const settingsMenu = new Menu('Settings');
 
+	// * THEME DAY/NIGHT MODE * //
+	const themeDayNightModeMenu = new Menu('Theme day/night mode');
+	themeDayNightModeMenu.addRadioItems(['  Deactivated (default)', '  6am (day) -  6pm  (night)', '  7am (day) -  7pm  (night)', '  8am (day) -  8pm  (night)', '  9am (day) -  9pm  (night)', '10am (day) - 10pm (night)'], pref.themeDayNightMode, [false, 6, 7, 8, 9, 10], (time) => {
+		pref.themeDayNightMode = time;
+		if (!pref.themeDayNightMode) {
+			pref.themeDayNightMode = false;
+			clearInterval(themeDayNightModeTimer);
+			themeDayNightModeTimer = null;
+			return;
+		}
+		const msg = 'Do you want to activate the theme day/night mode?\n\nThe default daytime theme is White\nand the nighttime theme is Black.\n\nYou can set up and configure\na new theme and styles for both modes\nin the theme day/night mode setup.\n\nContinue?\n\n\n';
+		const continue_confirmation = (status, confirmed) => {
+			if (confirmed) {
+				resetTheme();
+				on_playback_new_track(fb.GetNowPlaying());
+				initThemeDayNightMode(new Date());
+				initThemeFull = true;
+				initTheme();
+			} else {
+				pref.themeDayNightMode = false;
+				if (pref.presetAutoRandomMode !== 'off') {
+					pref.presetAutoRandomMode = 'dblclick';
+					getRandomThemePreset();
+				}
+			}
+		};
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			fb.ShowPopupMessage('Theme day/night mode is active:\n\nThe default daytime theme is White\nand the nighttime theme is Black.\n\nYou can set up and configure\na new theme and styles for both modes\nin the theme day/night mode setup', 'Theme day/night mode');
+			continue_confirmation(false, 'Yes');
+		} else {
+			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
+		}
+	});
+	themeDayNightModeMenu.addSeparator();
+	themeDayNightModeMenu.appendTo(settingsMenu);
+	themeDayNightModeMenu.addItem(!pref.themeSetupDay ? 'Theme setup for daytime' : 'Save and exit daytime theme setup', false, () => {
+		pref.themeSetupDay = !pref.themeSetupDay;
+		pref.themeSetupNight = false;
+		repaintWindow();
+		if (!pref.themeSetupDay) {
+			themeNotification = '';
+			return;
+		}
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			fb.ShowPopupMessage('>>> Theme setup for daytime is active <<<\n\nPlease select your theme and styles for daytime usage.\nAfter configuring the theme settings, revisit this menu to save them.', 'Theme setup for daytime');
+		} else {
+			const msg = '>>> Theme setup for daytime is active <<<\n\nPlease select your theme and styles for daytime usage.\nAfter configuring the theme settings, revisit this menu to save them.\n\n\n';
+			popUpBox.confirm('Georgia-ReBORN', msg, 'OK', false, false, 'center', false);
+		}
+		resetTheme();
+		setDayNightTheme(true);
+		initThemeFull = true;
+		initTheme();
+	});
+	themeDayNightModeMenu.addItem(!pref.themeSetupNight ? 'Theme setup for nighttime' : 'Save and exit nighttime theme setup', false, () => {
+		pref.themeSetupDay = false;
+		pref.themeSetupNight = !pref.themeSetupNight;
+		repaintWindow();
+		if (!pref.themeSetupNight) {
+			themeNotification = '';
+			return;
+		}
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			fb.ShowPopupMessage('>>> Theme setup for nighttime is active <<<\n\nPlease select your theme and styles for nighttime usage.\nAfter configuring the theme settings, revisit this menu to save them.', 'Theme setup for nighttime');
+		} else {
+			const msg = '>>> Theme setup for nighttime is active <<<\n\nPlease select your theme and styles for nighttime usage.\nAfter configuring the theme settings, revisit this menu to save them.\n\n\n';
+			popUpBox.confirm('Georgia-ReBORN', msg, 'OK', false, false, 'center', false);
+		}
+		resetTheme();
+		setDayNightTheme(false, true);
+		initThemeFull = true;
+		initTheme();
+	});
+
+	// * HIDE OTHER MENUS WHEN THEME DAY/NIGHT SETUP IS ACTIVE
+	if (pref.themeSetupDay || pref.themeSetupNight) {
+		settingsMenu.appendTo(menu);
+		return;
+	}
+
 	// * THEME SANDBOX * //
 	const themeSandboxMenu = new Menu('Theme sandbox');
 	const restoreThemeStylePresetSettings = (reset) => {
@@ -3100,39 +3236,23 @@ function settingsOptions(menu) {
 	}, pref.themeSandbox);
 	themeSandboxMenu.appendTo(settingsMenu);
 
-	// * THEME DAY/NIGHT MODE * //
-	settingsMenu.createRadioSubMenu('Theme day/night mode', ['  Deactivated (default)', '  6am (day) -  6pm  (night)', '  7am (day) -  7pm  (night)', '  8am (day) -  8pm  (night)', '  9am (day) -  9pm  (night)', '10am (day) - 10pm (night)'], pref.themeDayNightMode, [false, 6, 7, 8, 9, 10], (time) => {
-		pref.themeDayNightMode = time;
-		if (!pref.themeDayNightMode) {
-			pref.themeDayNightMode = false;
-			clearInterval(themeDayNightModeTimer);
-			themeDayNightModeTimer = null;
-			return;
-		}
-		const msg = 'Do you want to activate the day/night mode?\n\nThis mode will only work for White, Black, Reborn and Random theme,\nall other themes plus special styles will not be supported.\n\nContinue?';
+	// * THEME FONTS * //
+	const themeFontMenu = new Menu('Theme fonts');
+	themeFontMenu.addToggleItem('Use custom theme fonts', pref, 'customThemeFonts', () => {
+		const msg = 'Do you want to use custom theme fonts?\n\nYou need to set your custom fonts in your config file located in\nfoobar\\profile\\georgia-reborn\\configs\\georgia-reborn-config.jsonc\n\nContinue?\n\n\n';
 		const continue_confirmation = (status, confirmed) => {
-			if (confirmed) {
-				resetStyle('all');
-				resetTheme();
-				on_playback_new_track(fb.GetNowPlaying());
-				themeDayNightMode(new Date());
-				initThemePresetState();
-				initThemeFull = true;
-				initTheme();
-			} else {
-				pref.themeDayNightMode = false;
-				if (pref.presetAutoRandomMode !== 'off') {
-					pref.presetAutoRandomMode = 'dblclick';
-					getRandomThemePreset();
-				}
-			}
+			pref.customThemeFonts = confirmed;
 		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
+		if (pref.customThemeFonts) {
+			if (detectWine || !detectIE) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+				continue_confirmation(false, 'Yes');
+			} else {
+				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
+			}
 		}
+		window.Reload();
 	});
+	themeFontMenu.appendTo(settingsMenu);
 
 	// * THEME CACHE * //
 	const themeCacheMenu = new Menu('Theme cache');
@@ -3294,24 +3414,6 @@ function settingsOptions(menu) {
 	});
 	themeCacheWaveformBarMenu.appendTo(themeCacheMenu);
 	themeCacheMenu.appendTo(settingsMenu);
-
-	// * THEME FONTS * //
-	const themeFontMenu = new Menu('Theme fonts');
-	themeFontMenu.addToggleItem('Use custom theme fonts', pref, 'customThemeFonts', () => {
-		const msg = 'Do you want to use custom theme fonts?\n\nYou need to set your custom fonts in your config file located in\nfoobar\\profile\\georgia-reborn\\configs\\georgia-reborn-config.jsonc\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
-			pref.customThemeFonts = confirmed;
-		};
-		if (pref.customThemeFonts) {
-			if (detectWine || !detectIE) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-				continue_confirmation(false, 'Yes');
-			} else {
-				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-			}
-		}
-		window.Reload();
-	});
-	themeFontMenu.appendTo(settingsMenu);
 
 	// * THEME BACKUP * //
 	const themeBackupMenu = new Menu('Theme backup');

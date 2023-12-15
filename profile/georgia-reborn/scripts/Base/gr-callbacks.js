@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-02                                          * //
+// * Last change:    2023-12-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -189,14 +189,6 @@ function on_playback_new_track(metadb) {
 	currentAlbumFolder = !isStreaming ? metadb.Path.substring(0, metadb.Path.lastIndexOf('\\')) : '';
 
 	setProgressBarRefresh();
-
-	if (pref.themeDayNightMode && (pref.theme === 'white' || pref.theme === 'black')) {
-		themeDayNightModeTimer = setInterval(() => {
-			themeDayNightMode(new Date());
-			initTheme();
-			DebugLog('\n>>> initTheme -> fetchNewArtwork -> on_playback_new_track -> themeDayNightModeTimer <<<\n');
-		}, 600000);
-	}
 
 	if (albumArtTimeout) {
 		clearTimeout(albumArtTimeout);

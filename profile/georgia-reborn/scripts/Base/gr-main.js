@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-09                                          * //
+// * Last change:    2023-12-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -261,7 +261,7 @@ function drawHiResAudioLogo(gr) {
  * @param {GdiGraphics} gr
  */
 function drawPauseBtn(gr) {
-	if (loadingThemeComplete && pref.showPause && fb.IsPaused && (!presetIndicatorTimer || !doubleClicked)
+	if (loadingThemeComplete && pref.showPause && fb.IsPaused && !presetIndicatorTimer && !doubleClicked
 		&&
 		(pref.layout === 'default' && (displayPlaylist && pref.playlistLayout !== 'full' && !displayLibrary && !displayBiography ||
 		displayLibrary && pref.libraryLayout === 'normal' && !displayPlaylist || !displayPlaylist && !displayLibrary && !displayBiography)
@@ -760,21 +760,29 @@ function drawStyles(gr) {
 
 
 /**
- * Draws the theme preset indicator as a popup when using theme presets or styles.
+ * Draws a theme notification as a popup.
  * @param {GdiGraphics} gr
  */
-function drawThemePresetIndicator(gr) {
-	if (themePresetName === '' || !pref.presetIndicator || !themePresetIndicator || !['off', 'dblclick'].includes(pref.presetAutoRandomMode)) {
+function drawThemeNotification(gr) {
+	if (pref.themeSetupDay || pref.themeSetupNight) {
+		const timeOfDay = pref.themeSetupDay ? 'daytime' : 'nighttime';
+		themeNotification = `Theme setup for ${timeOfDay} is active:\n\nPlease select your theme and styles\nfor ${timeOfDay} usage.\n\nAfter configuration,\nrevisit the theme day/night menu\nto save changes.`;
+	}
+
+	if (themeNotification === '' && themePresetName === '' || !pref.presetIndicator || !themePresetIndicator || !['off', 'dblclick'].includes(pref.presetAutoRandomMode)) {
 		return;
 	}
 
-	const match = themePresetMatchMode;
-	const text  = 'Active styles matching:';
-	const text2 = themePresetName;
-	const arc   = SCALE(6);
-	const boxH  = gr.CalcTextHeight(text, ft.notification) * (match ? 2.5 : 0) + gr.CalcTextHeight(text2, ft.notification) * 2 + arc;
-	const w     = Math.max(gr.CalcTextWidth(text, ft.notification) + 50, gr.CalcTextWidth(text2, ft.notification) + 50);
-	const h     = gr.CalcTextHeight(text, ft.notification);
+	const themePresetText = themePresetMatchMode ? `Active styles matching:\n\n${themePresetName}` : themePresetName;
+	const text = themeNotification === '' ? themePresetText : themeNotification;
+
+	const arc = SCALE(6);
+	const padding = SCALE(20);
+	const lines = text.split('\n');
+	const lineH = gr.CalcTextHeight('Ag', ft.notification);
+	const maxWidth = Math.max(...lines.map(line => gr.CalcTextWidth(line, ft.notification)));
+	const boxW = maxWidth + padding * 3;
+	const boxH = lineH * lines.length + padding * 2;
 
 	const fullW =
 		pref.layout === 'default'
@@ -790,15 +798,14 @@ function drawThemePresetIndicator(gr) {
 	const cover = fb.IsPlaying && albumArt && pref.layout !== 'compact' && !fullW;
 	const noCoverDefault = pref.layout === 'default' && !fullW && !pref.panelWidthAuto;
 
-	const x = Math.round((cover ? albumArtSize.x + albumArtSize.w * 0.5 : noCoverDefault ? ww * 0.25 : ww * 0.5) - w * 0.5);
-	const y = Math.round((cover ? albumArtSize.h * 0.5 : wh * 0.5 - geo.lowerBarHeight * 0.5) - (match ? h : -h * 0.5));
+	const x = Math.round((cover ? albumArtSize.x + albumArtSize.w * 0.5 : noCoverDefault ? ww * 0.25 : ww * 0.5) - boxW * 0.5);
+	const y = Math.round((cover ? geo.topMenuHeight + albumArtSize.h * 0.5 : ((wh - geo.topMenuHeight - geo.lowerBarHeight) * 0.5) + geo.topMenuHeight) - boxH * 0.5);
 
 	gr.SetSmoothingMode(SmoothingMode.AntiAlias);
-	gr.FillRoundRect(x, y, w, boxH, arc, arc, col.popupBg);
-	gr.DrawRoundRect(x, y, w, boxH, arc, arc, SCALE(2), 0x64000000);
+	gr.FillRoundRect(x, y, boxW, boxH, arc, arc, col.popupBg);
+	gr.DrawRoundRect(x, y, boxW, boxH, arc, arc, SCALE(2), 0x64000000);
 	gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
-	if (match) gr.DrawString(text, ft.notification, col.popupText, x, y + h, w, h, StringFormat(1, 1, 4));
-	gr.DrawString(text2, ft.notification, col.popupText, x, y + h * (match ? 2.5 : 0.66), w, h, StringFormat(1, 1, 4));
+	gr.DrawString(text, ft.notification, col.popupText, x, y, boxW, boxH, StringFormat(1, 1, 4));
 }
 
 
@@ -1274,7 +1281,7 @@ function drawMain(gr) {
 	drawDetailsLabelLogo(gr);
 	drawLyrics(gr);
 	drawStyles(gr);
-	drawThemePresetIndicator(gr);
+	drawThemeNotification(gr);
 	drawThemeDebugOverlay(gr);
 	drawPanelShadows(gr);
 	drawTopMenuBar(gr);

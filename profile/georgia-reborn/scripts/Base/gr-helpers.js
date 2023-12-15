@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-11                                          * //
+// * Last change:    2023-12-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -191,7 +191,7 @@ function PrintColorObj(obj) {
  * @param {FbMetadbHandle=} metadb The handle to evaluate string with.
  * @returns {Array<string>} An array of values of the meta field.
  */
-function getMetaValues(name, metadb = undefined) {
+function GetMetaValues(name, metadb = undefined) {
 	const vals = [];
 	const searchName = name.replace(/%/g, '');
 	for (let i = 0; i < parseInt($(`$meta_num(${searchName})`, metadb)); i++) {
@@ -2099,7 +2099,7 @@ function ToPaddedHexString(num, len) {
  * When comparing strings, -1 if a < b, 0 if a = b, 1 if a > b.
  * When comparing numbers, the result of (a - b).
  */
-function compareValues(a, b) {
+function CompareValues(a, b) {
 	return typeof a === 'string' && typeof b === 'string' ? a.localeCompare(b) : (a || 0) - (b || 0);
 }
 

@@ -1237,7 +1237,7 @@ class Text {
 			const codes = $Bio.jsonParse(this.countryCodes, {}, 'file');
 			const code = (codes[artist.toLowerCase()] || '').slice(0, 2);
 			const path = `${basePath}scripts\\biography\\assets\\images\\flags/${code}.png`;
-			this.countryFlagMeta = getMetaValues(tf.artist_country);
+			this.countryFlagMeta = GetMetaValues(tf.artist_country);
 			this.countryTooltip = `[${ConvertIsoCountryCodeToFull(code)}] ${artist}`;
 			this.countryTooltipMeta = `[${this.countryFlagMeta.join(' \u00B7 ')}] ${artist}`;
 			if ($Bio.file(path)) {

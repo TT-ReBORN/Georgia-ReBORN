@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-11-01                                          * //
+// * Last change:    2023-12-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -4242,6 +4242,16 @@ function themeColorAdjustments() {
 		if (cBRT2 < 25 && pref.styleRebornFusion || cBRT < 25 && pref.styleRebornFusion2) {
 			mainBlackColors();
 		}
+	}
+
+	//////////////////////////////////
+	// * REBORN/RANDOM NIGHT MODE * //
+	//////////////////////////////////
+	// * ADJUST REBORN/RANDOM COLORS FOR THEME NIGHT MODE ON START UP * //
+	if (!fb.IsPlaying && pref.themeDayNightMode && pref.themeDayNightTime === 'night' &&
+		['reborn', 'random'].includes(pref.theme) && !pref.styleRebornBlack) {
+		panelBlackColors();
+		mainBlackColors();
 	}
 }
 

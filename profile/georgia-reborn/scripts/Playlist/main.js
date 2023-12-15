@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-12                                          * //
+// * Last change:    2023-12-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -5339,7 +5339,7 @@ class Header extends BaseHeader {
 		let multi_artist = false;
 		if (!is_radio) {
 			for (let i = 0; i < albumArtist.length; i++) {
-				artist_text.push(...getMetaValues(albumArtist, this.metadb));
+				artist_text.push(...GetMetaValues(albumArtist, this.metadb));
 			}
 			artist_text = [...new Set(artist_text)]; // Remove duplicates
 			for (let i = 0; i < artist_text.length; i++) {
@@ -5382,7 +5382,7 @@ class Header extends BaseHeader {
 		// * Record labels
 		let labels = [];
 		for (let i = 0; i < tf.labels.length; i++) {
-			labels.push(...getMetaValues(tf.labels[i], this.metadb));
+			labels.push(...GetMetaValues(tf.labels[i], this.metadb));
 		}
 		labels = [...new Set(labels)];	// Remove duplicates
 		let label_left = -right_edge * 2 + (RES_4K ? 42 : 20);
@@ -5397,7 +5397,7 @@ class Header extends BaseHeader {
 		}
 
 		// * Genres
-		const genres = getMetaValues('%genre%', this.metadb);
+		const genres = GetMetaValues('%genre%', this.metadb);
 		let genre_left = left_pad;
 		const genre_y = label_y;
 		for (let i = 0; i < genres.length; i++) {
@@ -6928,19 +6928,19 @@ class MetaHandler {
 	 */
 	write_stats_get_sorting(statsType) {
 		const sortMethods = {
-			artist: (a, b) => compareValues(a.artist, b.artist),
-			albumTitle: (a, b) => compareValues(a.album, b.album),
-			albumRating: (a, b) => compareValues(a.albumAverageRating, b.albumAverageRating),
-			albumPlaycount: (a, b) => compareValues(a.albumAveragePlaycount, b.albumAveragePlaycount),
-			albumPlaycountTotal: (a, b) => compareValues(a.albumTotalPlaycount, b.albumTotalPlaycount),
-			albumTrackPlaycount: (a, b) => compareValues(a.albumTotalPlaycount, b.albumTotalPlaycount),
-			trackTitle: (a, b) => compareValues(a.track, b.track),
-			trackRating: (a, b) => compareValues(a.rating, b.rating),
-			trackPlaycount: (a, b) => compareValues(a.playcount, b.playcount),
-			year: (a, b) => compareValues(a.year, b.year),
-			genre: (a, b) => compareValues(a.genre, b.genre),
-			label: (a, b) => compareValues(a.label, b.label),
-			country: (a, b) => compareValues(a.country, b.country)
+			artist: (a, b) => CompareValues(a.artist, b.artist),
+			albumTitle: (a, b) => CompareValues(a.album, b.album),
+			albumRating: (a, b) => CompareValues(a.albumAverageRating, b.albumAverageRating),
+			albumPlaycount: (a, b) => CompareValues(a.albumAveragePlaycount, b.albumAveragePlaycount),
+			albumPlaycountTotal: (a, b) => CompareValues(a.albumTotalPlaycount, b.albumTotalPlaycount),
+			albumTrackPlaycount: (a, b) => CompareValues(a.albumTotalPlaycount, b.albumTotalPlaycount),
+			trackTitle: (a, b) => CompareValues(a.track, b.track),
+			trackRating: (a, b) => CompareValues(a.rating, b.rating),
+			trackPlaycount: (a, b) => CompareValues(a.playcount, b.playcount),
+			year: (a, b) => CompareValues(a.year, b.year),
+			genre: (a, b) => CompareValues(a.genre, b.genre),
+			label: (a, b) => CompareValues(a.label, b.label),
+			country: (a, b) => CompareValues(a.country, b.country)
 		};
 
 		const [property, direction] = statsType.split('_');

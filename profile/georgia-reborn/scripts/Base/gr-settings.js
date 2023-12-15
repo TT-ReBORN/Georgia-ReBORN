@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-09                                          * //
+// * Last change:    2023-12-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -115,6 +115,8 @@ pref.add_properties({
 
 	// * Theme
 	theme:                              ['Georgia-ReBORN - 01. Theme:', 'reborn'], // Use reborn theme as default
+	theme_day:                          ['Georgia-ReBORN - 01. Theme_daytime:', 'white'], // Use white theme as default for daytime
+	theme_night:                        ['Georgia-ReBORN - 01. Theme_nighttime:', 'black'], // Use black theme as default for nighttime
 	savedTheme:                         ['Georgia-ReBORN - 01. Theme_saved:', 'reborn'], // Saved active theme state - used to restore theme state after custom [%GR_THEME%] usage
 
 	// * Style
@@ -146,6 +148,60 @@ pref.add_properties({
 	styleVolumeBarDesign:               ['Georgia-ReBORN - 02. Style: Volume bar design', 'default'], // default = flat, volume bar design
 	styleVolumeBar:                     ['Georgia-ReBORN - 02. Style: Volume bar', 'default'], // default = flat, style of volume bar
 	styleVolumeBarFill:                 ['Georgia-ReBORN - 02. Style: Volume bar fill', 'default'], // default = flat, style of volume bar fill
+	styleBevel_day:                     ['Georgia-ReBORN - 02. Style_daytime: Bevel', false], // Daytime bevel style state - used for theme day/night mode usage
+	styleBlend_day:                     ['Georgia-ReBORN - 02. Style_daytime: Blend', false], // Daytime blend style state - used for theme day/night mode usage
+	styleBlend2_day:                    ['Georgia-ReBORN - 02. Style_daytime: Blend 2', false], // Daytime blend 2 style state - used for theme day/night mode usage
+	styleGradient_day:                  ['Georgia-ReBORN - 02. Style_daytime: Gradient', false], // Daytime gradient style state - used for theme day/night mode usage
+	styleGradient2_day:                 ['Georgia-ReBORN - 02. Style_daytime: Gradient 2', false], // Daytime gradient 2 style state - used for theme day/night mode usage
+	styleAlternative_day:               ['Georgia-ReBORN - 02. Style_daytime: Alternative colors', false], // Daytime alternative style state - used for theme day/night mode usage
+	styleAlternative2_day:              ['Georgia-ReBORN - 02. Style_daytime: Alternative colors 2', false], // Daytime alternative 2 style state - used for theme day/night mode usage
+	styleBlackAndWhite_day:             ['Georgia-ReBORN - 02. Style_daytime: Black and white', false], // Daytime black and white style state - used for theme day/night mode usage
+	styleBlackAndWhite2_day:            ['Georgia-ReBORN - 02. Style_daytime: Black and white 2', false], // Daytime black and white 2 style state - used for theme day/night mode usage
+	styleBlackAndWhiteReborn_day:       ['Georgia-ReBORN - 02. Style_daytime: Black and white reborn', false], // Daytime black and white reborn style state - used for theme day/night mode usage
+	styleBlackReborn_day:               ['Georgia-ReBORN - 02. Style_daytime: Black reborn', false], // Daytime black reborn style state - used for theme day/night mode usage
+	styleRebornWhite_day:               ['Georgia-ReBORN - 02. Style_daytime: Reborn white', false], // Daytime reborn white style state - used for theme day/night mode usage
+	styleRebornBlack_day:               ['Georgia-ReBORN - 02. Style_daytime: Reborn black', false], // Daytime reborn black style state - used for theme day/night mode usage
+	styleRebornFusion_day:              ['Georgia-ReBORN - 02. Style_daytime: Reborn fusion', false], // Daytime reborn fusion style state - used for theme day/night mode usage
+	styleRebornFusion2_day:             ['Georgia-ReBORN - 02. Style_daytime: Reborn fusion 2', false], // Daytime reborn fusion 2 style state - used for theme day/night mode usage
+	styleRebornFusionAccent_day:        ['Georgia-ReBORN - 02. Style_daytime: Reborn fusion accent', false], // Daytime reborn fusion accent style state - used for theme day/night mode usage
+	styleRandomPastel_day:              ['Georgia-ReBORN - 02. Style_daytime: Random pastel', false], // Daytime random pastel style state - used for theme day/night mode usage
+	styleRandomDark_day:                ['Georgia-ReBORN - 02. Style_daytime: Random dark', false], // Daytime random dark style state - used for theme day/night mode usage
+	styleRandomAutoColor_day:           ['Georgia-ReBORN - 02. Style_daytime: Random auto color', 'off'], // Daytime random auto color style state - used for theme day/night mode usage
+	styleTopMenuButtons_day:            ['Georgia-ReBORN - 02. Style_daytime: Top menu buttons', 'default'], // Daytime top menu button style state - used for theme day/night mode usage
+	styleTransportButtons_day:          ['Georgia-ReBORN - 02. Style_daytime: Transport buttons', 'default'], // Daytime transport button style state - used for theme day/night mode usage
+	styleProgressBarDesign_day:         ['Georgia-ReBORN - 02. Style_daytime: Progress bar design', 'default'], // Daytime progress bar design style state - used for theme day/night mode usage
+	styleProgressBar_day:               ['Georgia-ReBORN - 02. Style_daytime: Progress bar', 'default'], // Daytime progress bar style state - used for theme day/night mode usage
+	styleProgressBarFill_day:           ['Georgia-ReBORN - 02. Style_daytime: Progress bar fill', 'default'], // Daytime progress bar fill style state - used for theme day/night mode usage
+	styleVolumeBarDesign_day:           ['Georgia-ReBORN - 02. Style_daytime: Volume bar design', 'default'], // Daytime volume bar design style state - used for theme day/night mode usage
+	styleVolumeBar_day:                 ['Georgia-ReBORN - 02. Style_daytime: Volume bar', 'default'], // Daytime volume bar style state - used for theme day/night mode usage
+	styleVolumeBarFill_day:             ['Georgia-ReBORN - 02. Style_daytime: Volume bar fill', 'default'], // Daytime volume bar fill style state - used for theme day/night mode usage
+	styleBevel_night:                   ['Georgia-ReBORN - 02. Style_nighttime: Bevel', false], // Nighttime bevel style state - used for theme day/night mode usage
+	styleBlend_night:                   ['Georgia-ReBORN - 02. Style_nighttime: Blend', false], // Nighttime blend style state - used for theme day/night mode usage
+	styleBlend2_night:                  ['Georgia-ReBORN - 02. Style_nighttime: Blend 2', false], // Nighttime blend 2 style state - used for theme day/night mode usage
+	styleGradient_night:                ['Georgia-ReBORN - 02. Style_nighttime: Gradient', false], // Nighttime gradient style state - used for theme day/night mode usage
+	styleGradient2_night:               ['Georgia-ReBORN - 02. Style_nighttime: Gradient 2', false], // Nighttime gradient 2 style state - used for theme day/night mode usage
+	styleAlternative_night:             ['Georgia-ReBORN - 02. Style_nighttime: Alternative colors', false], // Nighttime alternative style state - used for theme day/night mode usage
+	styleAlternative2_night:            ['Georgia-ReBORN - 02. Style_nighttime: Alternative colors 2', false], // Nighttime alternative 2 style state - used for theme day/night mode usage
+	styleBlackAndWhite_night:           ['Georgia-ReBORN - 02. Style_nighttime: Black and white', false], // Nighttime black and white style state - used for theme day/night mode usage
+	styleBlackAndWhite2_night:          ['Georgia-ReBORN - 02. Style_nighttime: Black and white 2', false], // Nighttime black and white 2 style state - used for theme day/night mode usage
+	styleBlackAndWhiteReborn_night:     ['Georgia-ReBORN - 02. Style_nighttime: Black and white reborn', false], // Nighttime black and white reborn style state - used for theme day/night mode usage
+	styleBlackReborn_night:             ['Georgia-ReBORN - 02. Style_nighttime: Black reborn', false], // Nighttime black reborn style state - used for theme day/night mode usage
+	styleRebornWhite_night:             ['Georgia-ReBORN - 02. Style_nighttime: Reborn white', false], // Nighttime reborn white style state - used for theme day/night mode usage
+	styleRebornBlack_night:             ['Georgia-ReBORN - 02. Style_nighttime: Reborn black', false], // Nighttime reborn black style state - used for theme day/night mode usage
+	styleRebornFusion_night:            ['Georgia-ReBORN - 02. Style_nighttime: Reborn fusion', false], // Nighttime reborn fusion style state - used for theme day/night mode usage
+	styleRebornFusion2_night:           ['Georgia-ReBORN - 02. Style_nighttime: Reborn fusion 2', false], // Nighttime reborn fusion 2 style state - used for theme day/night mode usage
+	styleRebornFusionAccent_night:      ['Georgia-ReBORN - 02. Style_nighttime: Reborn fusion accent', false], // Nighttime reborn fusion accent style state - used for theme day/night mode usage
+	styleRandomPastel_night:            ['Georgia-ReBORN - 02. Style_nighttime: Random pastel', false], // Nighttime random pastel style state - used for theme day/night mode usage
+	styleRandomDark_night:              ['Georgia-ReBORN - 02. Style_nighttime: Random dark', false], // Nighttime random dark style state - used for theme day/night mode usage
+	styleRandomAutoColor_night:         ['Georgia-ReBORN - 02. Style_nighttime: Random auto color', 'off'], // Nighttime random auto color style state - used for theme day/night mode usage
+	styleTopMenuButtons_night:          ['Georgia-ReBORN - 02. Style_nighttime: Top menu buttons', 'default'], // Nighttime top menu button style state - used for theme day/night mode usage
+	styleTransportButtons_night:        ['Georgia-ReBORN - 02. Style_nighttime: Transport buttons', 'default'], // Nighttime transport button style state - used for theme day/night mode usage
+	styleProgressBarDesign_night:       ['Georgia-ReBORN - 02. Style_nighttime: Progress bar design', 'default'], // Nighttime progress bar design style state - used for theme day/night mode usage
+	styleProgressBar_night:             ['Georgia-ReBORN - 02. Style_nighttime: Progress bar', 'default'], // Nighttime progress bar style state - used for theme day/night mode usage
+	styleProgressBarFill_night:         ['Georgia-ReBORN - 02. Style_nighttime: Progress bar fill', 'default'], // Nighttime progress bar fill style state - used for theme day/night mode usage
+	styleVolumeBarDesign_night:         ['Georgia-ReBORN - 02. Style_nighttime: Volume bar design', 'default'], // Nighttime volume bar design style state - used for theme day/night mode usage
+	styleVolumeBar_night:               ['Georgia-ReBORN - 02. Style_nighttime: Volume bar', 'default'], // Nighttime volume bar style state - used for theme day/night mode usage
+	styleVolumeBarFill_night:           ['Georgia-ReBORN - 02. Style_nighttime: Volume bar fill', 'default'], // Nighttime volume bar fill style state - used for theme day/night mode usage
 	savedStyleBevel:                    ['Georgia-ReBORN - 02. Style_saved: Bevel', false], // Saved active bevel style state - used to restore style state after custom [%GR_STYLE%] usage
 	savedStyleBlend:                    ['Georgia-ReBORN - 02. Style_saved: Blend', false], // Saved active blend style state - used to restore style state after custom [%GR_STYLE%] usage
 	savedStyleBlend2:                   ['Georgia-ReBORN - 02. Style_saved: Blend 2', false], // Saved active blend 2 style state - used to restore style state after custom [%GR_STYLE%] usage
@@ -176,6 +232,8 @@ pref.add_properties({
 
 	// * Preset
 	preset:                             ['Georgia-ReBORN - 03. Preset: Active preset:', false], // Active preset
+	preset_day:                         ['Georgia-ReBORN - 03. Preset: Active preset_daytime:', false], // Daytime active preset
+	preset_night:                       ['Georgia-ReBORN - 03. Preset: Active preset_nighttime:', false], // Nighttime active preset
 	presetSelectMode:                   ['Georgia-ReBORN - 03. Preset: Select mode', 'default'], // 'default', 'theme', 'harmonic' - preset select mode
 	presetSelectWhite:                  ['Georgia-ReBORN - 03. Preset: Select presets: White', true], // Include White theme presets when using the auto random presets timer
 	presetSelectBlack:                  ['Georgia-ReBORN - 03. Preset: Select presets: Black', true], // Include Black theme presets when using the auto random presets timer
@@ -214,6 +272,8 @@ pref.add_properties({
 
 	// * Brightness
 	themeBrightness:                    ['Georgia-ReBORN - 07. Brightness', 'default'], // default: Theme brightness
+	themeBrightness_day:                ['Georgia-ReBORN - 07. Brightness_daytime', 'default'], // default: Daytime theme brightness
+	themeBrightness_night:              ['Georgia-ReBORN - 07. Brightness_nighttime', 'default'], // default: Nighttime theme brightness
 	savedThemeBrightness:               ['Georgia-ReBORN - 07. Saved_Brightness', 'default'], // Saved active theme brightness state - used to restore brightness after custom [%GR_PRESET%] usage
 
 	// * Font size
@@ -495,8 +555,12 @@ pref.add_properties({
 	displayLyrics:                      ['Georgia-ReBORN - 14. Lyrics: Show lyrics', false], // true: Shows lyrics, always set to false at startup unless lyricsRememberDisplay is true
 
 	// * Settings
+	themeDayNightMode:                  ['Georgia-ReBORN - 15. Settings: Auto-day/night mode', false], // false: The theme day/night mode state controlled by OS clock and users set themeSettings.themeDayNightMode value
+	themeDayNightTime:                  ['Georgia-ReBORN - 15. Settings: Auto-day/night time', ''], // The current time of the day as string value 'day' or 'night', auto-controlled and used for theme day/night mode
+	themeSetupDay:                      ['Georgia-ReBORN - 15. Settings: Auto-day/night theme setup daytime', false], // false: The daytime setup mode state when configuring the theme for daytime
+	themeSetupNight:                    ['Georgia-ReBORN - 15. Settings: Auto-day/night theme setup nighttime', false], // false: The nighttime setup mode state when configuring the theme for nighttime
 	themeSandbox:                       ['Georgia-ReBORN - 15. Settings: Theme sandbox', false], // false: Enables theme sandbox, useful when trying out themes, styles, presets or writing theme tags. After disabling, it will restore last previous theme settings
-	themeDayNightMode:                  ['Georgia-ReBORN - 15. Settings: Auto-day/night mode', false], // false: Controlled by OS clock and users set theSettings.themeDayNightMode value, changes the White, Black, Reborn & Random theme to white ( day ) or black ( night )
+	customThemeFonts:                   ['Georgia-ReBORN - 15. Settings: Use custom theme fonts', false], // false: User can set own custom theme fonts in foobar's Preferences > Display > Columns UI > Colours and fonts
 	customLibraryDir:                   ['Georgia-ReBORN - 15. Settings: Use custom library directory', false], // false: Use custom library directory
 	libraryAutoDelete:                  ['Georgia-ReBORN - 15. Settings: Auto-delete library cache', false], // false: This will auto-delete cached library album art thumbnails on startup
 	customBiographyDir:                 ['Georgia-ReBORN - 15. Settings: Use custom biography directory', false], // false: Use custom biography directory
@@ -505,7 +569,6 @@ pref.add_properties({
 	lyricsAutoDelete:                   ['Georgia-ReBORN - 15. Settings: Auto-delete lyrics', false], // false: This will auto-delete downloaded lyrics on startup
 	customWaveformBarDir:               ['Georgia-ReBORN - 15. Settings: Use custom waveform bar directory', false], // false: Use custom waveform bar directory
 	waveformBarAutoDelete:              ['Georgia-ReBORN - 15. Settings: Auto-delete waveform bar cache', false], // false: This will auto-delete analyized waveform bar files on startup
-	customThemeFonts:                   ['Georgia-ReBORN - 15. Settings: Use custom theme fonts', false], // false: User can set own custom theme fonts in foobar's Preferences > Display > Columns UI > Colours and fonts
 	customThemeSettings:                ['Georgia-ReBORN - 15. Settings: Use custom theme settings', true], // true: User can set own custom theme settings in the config file
 	themePerformance:                   ['Georgia-ReBORN - 15. Settings: Theme performance', 'balanced'], // 'balanced' - default: How the theme performs, either fast speed, balanced or good quality depending on CPU
 	devTools:                           ['Georgia-ReBORN - 15. Settings: Enable developer tools', false], // true: Show developer tools in options context menu
@@ -551,8 +614,12 @@ async function setThemeSettings(save) {
 	// * Themes
 	if (save) {
 		theme.theme = pref.theme;
+		theme.theme_day = pref.theme_day;
+		theme.theme_night = pref.theme_night;
 	} else {
 		pref.theme = custom ? theme.theme : 'reborn';
+		pref.theme_day = custom ? theme.theme_day : 'white';
+		pref.theme_night = custom ? theme.theme_night : 'black';
 	}
 
 	// * Style
@@ -585,6 +652,60 @@ async function setThemeSettings(save) {
 		style.volumeBarDesign = pref.styleVolumeBarDesign;
 		style.volumeBar = pref.styleVolumeBar;
 		style.volumeBarFill = pref.styleVolumeBarFill;
+		style.bevel_day = pref.styleBevel_day;
+		style.blend_day = pref.styleBlend_day;
+		style.blend2_day = pref.styleBlend2_day;
+		style.gradient_day = pref.styleGradient_day;
+		style.gradient2_day = pref.styleGradient2_day;
+		style.alternative_day = pref.styleAlternative_day;
+		style.alternative2_day = pref.styleAlternative2_day;
+		style.blackAndWhite_day = pref.styleBlackAndWhite_day;
+		style.blackAndWhite2_day = pref.styleBlackAndWhite2_day;
+		style.blackAndWhiteReborn_day = pref.styleBlackAndWhiteReborn_day;
+		style.blackReborn_day = pref.styleBlackReborn_day;
+		style.rebornWhite_day = pref.styleRebornWhite_day;
+		style.rebornBlack_day = pref.styleRebornBlack_day;
+		style.rebornFusion_day = pref.styleRebornFusion_day;
+		style.rebornFusion2_day = pref.styleRebornFusion2_day;
+		style.rebornFusionAccent_day = pref.styleRebornFusionAccent_day;
+		style.randomPastel_day = pref.styleRandomPastel_day;
+		style.randomDark_day = pref.styleRandomDark_day;
+		style.randomAutoColor_day = pref.styleRandomAutoColor_day;
+		style.topMenuButtons_day = pref.styleTopMenuButtons_day;
+		style.transportButtons_day = pref.styleTransportButtons_day;
+		style.progressBarDesign_day = pref.styleProgressBarDesign_day;
+		style.progressBar_day = pref.styleProgressBar_day;
+		style.progressBarFill_day = pref.styleProgressBarFill_day;
+		style.volumeBarDesign_day = pref.styleVolumeBarDesign_day;
+		style.volumeBar_day = pref.styleVolumeBar_day;
+		style.volumeBarFill_day = pref.styleVolumeBarFill_day;
+		style.bevel_night = pref.styleBevel_night;
+		style.blend_night = pref.styleBlend_night;
+		style.blend2_night = pref.styleBlend2_night;
+		style.gradient_night = pref.styleGradient_night;
+		style.gradient2_night = pref.styleGradient2_night;
+		style.alternative_night = pref.styleAlternative_night;
+		style.alternative2_night = pref.styleAlternative2_night;
+		style.blackAndWhite_night = pref.styleBlackAndWhite_night;
+		style.blackAndWhite2_night = pref.styleBlackAndWhite2_night;
+		style.blackAndWhiteReborn_night = pref.styleBlackAndWhiteReborn_night;
+		style.blackReborn_night = pref.styleBlackReborn_night;
+		style.rebornWhite_night = pref.styleRebornWhite_night;
+		style.rebornBlack_night = pref.styleRebornBlack_night;
+		style.rebornFusion_night = pref.styleRebornFusion_night;
+		style.rebornFusion2_night = pref.styleRebornFusion2_night;
+		style.rebornFusionAccent_night = pref.styleRebornFusionAccent_night;
+		style.randomPastel_night = pref.styleRandomPastel_night;
+		style.randomDark_night = pref.styleRandomDark_night;
+		style.randomAutoColor_night = pref.styleRandomAutoColor_night;
+		style.topMenuButtons_night = pref.styleTopMenuButtons_night;
+		style.transportButtons_night = pref.styleTransportButtons_night;
+		style.progressBarDesign_night = pref.styleProgressBarDesign_night;
+		style.progressBar_night = pref.styleProgressBar_night;
+		style.progressBarFill_night = pref.styleProgressBarFill_night;
+		style.volumeBarDesign_night = pref.styleVolumeBarDesign_night;
+		style.volumeBar_night = pref.styleVolumeBar_night;
+		style.volumeBarFill_night = pref.styleVolumeBarFill_night;
 	} else {
 		pref.styleDefault = custom ? style.default : true;
 		pref.styleBevel = custom ? style.bevel : false;
@@ -614,6 +735,60 @@ async function setThemeSettings(save) {
 		pref.styleVolumeBarDesign = custom ? style.volumeBarDesign : 'default';
 		pref.styleVolumeBar = custom ? style.volumeBar : 'default';
 		pref.styleVolumeBarFill = custom ? style.volumeBarFill : 'default';
+		pref.styleBevel_day = custom ? style.bevel_day : false;
+		pref.styleBlend_day = custom ? style.blend_day : false;
+		pref.styleBlend2_day = custom ? style.blend2_day : false;
+		pref.styleGradient_day = custom ? style.gradient_day : false;
+		pref.styleGradient2_day = custom ? style.gradient2_day : false;
+		pref.styleAlternative_day = custom ? style.alternative_day : false;
+		pref.styleAlternative2_day = custom ? style.alternative2_day : false;
+		pref.styleBlackAndWhite_day = custom ? style.blackAndWhite_day : false;
+		pref.styleBlackAndWhite2_day = custom ? style.blackAndWhite2_day : false;
+		pref.styleBlackAndWhiteReborn_day = custom ? style.blackAndWhiteReborn_day : false;
+		pref.styleBlackReborn_day = custom ? style.blackReborn_day : false;
+		pref.styleRebornWhite_day = custom ? style.rebornWhite_day : false;
+		pref.styleRebornBlack_day = custom ? style.rebornBlack_day : false;
+		pref.styleRebornFusion_day = custom ? style.rebornFusion_day : false;
+		pref.styleRebornFusion2_day = custom ? style.rebornFusion2_day : false;
+		pref.styleRebornFusionAccent_day = custom ? style.rebornFusionAccent_day : false;
+		pref.styleRandomPastel_day = custom ? style.randomPastel_day : false;
+		pref.styleRandomDark_day = custom ? style.randomDark_day : false;
+		pref.styleRandomAutoColor_day = custom ? style.randomAutoColor_day : 'off';
+		pref.styleTopMenuButtons_day = custom ? style.topMenuButtons_day : 'default';
+		pref.styleTransportButtons_day = custom ? style.transportButtons_day : 'default';
+		pref.styleProgressBarDesign_day = custom ? style.progressBarDesign_day : 'default';
+		pref.styleProgressBar_day = custom ? style.progressBar_day : 'default';
+		pref.styleProgressBarFill_day = custom ? style.progressBarFill_day : 'default';
+		pref.styleVolumeBarDesign_day = custom ? style.volumeBarDesign_day : 'default';
+		pref.styleVolumeBar_day = custom ? style.volumeBar_day : 'default';
+		pref.styleVolumeBarFill_day = custom ? style.volumeBarFill_day : 'default';
+		pref.styleBevel_night = custom ? style.bevel_night : false;
+		pref.styleBlend_night = custom ? style.blend_night : false;
+		pref.styleBlend2_night = custom ? style.blend2_night : false;
+		pref.styleGradient_night = custom ? style.gradient_night : false;
+		pref.styleGradient2_night = custom ? style.gradient2_night : false;
+		pref.styleAlternative_night = custom ? style.alternative_night : false;
+		pref.styleAlternative2_night = custom ? style.alternative2_night : false;
+		pref.styleBlackAndWhite_night = custom ? style.blackAndWhite_night : false;
+		pref.styleBlackAndWhite2_night = custom ? style.blackAndWhite2_night : false;
+		pref.styleBlackAndWhiteReborn_night = custom ? style.blackAndWhiteReborn_night : false;
+		pref.styleBlackReborn_night = custom ? style.blackReborn_night : false;
+		pref.styleRebornWhite_night = custom ? style.rebornWhite_night : false;
+		pref.styleRebornBlack_night = custom ? style.rebornBlack_night : false;
+		pref.styleRebornFusion_night = custom ? style.rebornFusion_night : false;
+		pref.styleRebornFusion2_night = custom ? style.rebornFusion2_night : false;
+		pref.styleRebornFusionAccent_night = custom ? style.rebornFusionAccent_night : false;
+		pref.styleRandomPastel_night = custom ? style.randomPastel_night : false;
+		pref.styleRandomDark_night = custom ? style.randomDark_night : false;
+		pref.styleRandomAutoColor_night = custom ? style.randomAutoColor_night : 'off';
+		pref.styleTopMenuButtons_night = custom ? style.topMenuButtons_night : 'default';
+		pref.styleTransportButtons_night = custom ? style.transportButtons_night : 'default';
+		pref.styleProgressBarDesign_night = custom ? style.progressBarDesign_night : 'default';
+		pref.styleProgressBar_night = custom ? style.progressBar_night : 'default';
+		pref.styleProgressBarFill_night = custom ? style.progressBarFill_night : 'default';
+		pref.styleVolumeBarDesign_night = custom ? style.volumeBarDesign_night : 'default';
+		pref.styleVolumeBar_night = custom ? style.volumeBar_night : 'default';
+		pref.styleVolumeBarFill_night = custom ? style.volumeBarFill_night : 'default';
 	}
 
 	// * Preset
@@ -698,8 +873,12 @@ async function setThemeSettings(save) {
 	// * Brightness
 	if (save) {
 		themeBrightness.themeBrightness = pref.themeBrightness;
+		themeBrightness.themeBrightness_day = pref.themeBrightness_day;
+		themeBrightness.themeBrightness_night = pref.themeBrightness_night;
 	} else {
 		pref.themeBrightness = custom ? themeBrightness.themeBrightness : 'default';
+		pref.themeBrightness_day = custom ? themeBrightness.themeBrightness_day : 'default';
+		pref.themeBrightness_night = custom ? themeBrightness.themeBrightness_night : 'default';
 	}
 
 	// * Font size
@@ -1491,6 +1670,7 @@ async function setThemeSettings(save) {
 	// * Settings
 	if (save) {
 		themeSettings.themeDayNightMode = pref.themeDayNightMode;
+		themeSettings.customThemeFonts = pref.customThemeFonts;
 		themeSettings.albumArtDiskCache = ppt.albumArtDiskCache;
 		themeSettings.albumArtPreLoad = ppt.albumArtPreLoad;
 		themeSettings.customLibraryDir = pref.customLibraryDir;
@@ -1501,12 +1681,12 @@ async function setThemeSettings(save) {
 		themeSettings.lyricsAutoDelete = pref.lyricsAutoDelete;
 		themeSettings.customWaveformBarDir = pref.customWaveformBarDir;
 		themeSettings.waveformBarAutoDelete = pref.waveformBarAutoDelete;
-		themeSettings.customThemeFonts = pref.customThemeFonts;
 		themeSettings.themePerformance = pref.themePerformance;
 		themeSettings.devTools = pref.devTools;
 		themeSettings.disableRightClick = pref.disableRightClick;
 	} else {
 		pref.themeDayNightMode = custom ? themeSettings.themeDayNightMode : false;
+		pref.customThemeFonts = custom ? themeSettings.customThemeFonts : false;
 		ppt.albumArtDiskCache = custom ? themeSettings.albumArtDiskCache : true;
 		ppt.albumArtPreLoad = custom ? themeSettings.albumArtPreLoad : false;
 		pref.customLibraryDir = custom ? themeSettings.customLibraryDir : false;
@@ -1517,7 +1697,6 @@ async function setThemeSettings(save) {
 		pref.lyricsAutoDelete = custom ? themeSettings.lyricsAutoDelete : false;
 		pref.customWaveformBarDir = custom ? themeSettings.customWaveformBarDir : false;
 		pref.waveformBarAutoDelete = custom ? themeSettings.waveformBarAutoDelete : false;
-		pref.customThemeFonts = custom ? themeSettings.customThemeFonts : false;
 		pref.themePerformance = custom ? themeSettings.themePerformance : 'balanced';
 		pref.devTools = custom ? themeSettings.devTools : false;
 		pref.disableRightClick = custom ? themeSettings.disableRightClick : true;

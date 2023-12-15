@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-09                                          * //
+// * Last change:    2023-12-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -132,12 +132,16 @@ const imgPathSchema = new ConfigurationObjectSchema('imgPaths', ConfigurationObj
 ///////////////
 /** @type {Object} Options > Theme settings with default value. */
 const themeDefaults = {
-	theme: 'reborn'
+	theme: 'reborn',
+	theme_day: 'white',
+	theme_night: 'black'
 };
 
 /** @type {Object} Options > Theme settings config name description. */
 const themesComments = {
-	theme: 'Values: "white", "black", "reborn", "random", "blue", "darkblue", "red", "cream", "nblue", "ngreen", "nred", "ngold", "custom01-custom10" - Options > Theme'
+	theme: 'Values: "white", "black", "reborn", "random", "blue", "darkblue", "red", "cream", "nblue", "ngreen", "nred", "ngold", "custom01-custom10" - Options > Theme',
+	theme_day: 'Values: "white", "black", "reborn", "random", "blue", "darkblue", "red", "cream", "nblue", "ngreen", "nred", "ngold", "custom01-custom10" - Options > Theme - daytime theme',
+	theme_night: 'Values: "white", "black", "reborn", "random", "blue", "darkblue", "red", "cream", "nblue", "ngreen", "nred", "ngold", "custom01-custom10" - Options > Theme - nighttime theme'
 };
 
 /** @type {Object} Options > Theme settings config header description. */
@@ -183,7 +187,61 @@ const stylesDefaults = {
 	progressBarFill: 'default',
 	volumeBarDesign: 'default',
 	volumeBar: 'default',
-	volumeBarFill: 'default'
+	volumeBarFill: 'default',
+	bevel_day: false,
+	blend_day: false,
+	blend2_day: false,
+	gradient_day: false,
+	gradient2_day: false,
+	alternative_day: false,
+	alternative2_day: false,
+	blackAndWhite_day: false,
+	blackAndWhite2_day: false,
+	blackAndWhiteReborn_day: false,
+	blackReborn_day: false,
+	rebornWhite_day: false,
+	rebornBlack_day: false,
+	rebornFusion_day: false,
+	rebornFusion2_day: false,
+	rebornFusionAccent_day: false,
+	randomPastel_day: false,
+	randomDark_day: false,
+	randomAutoColor_day: 'off',
+	topMenuButtons_day: 'default',
+	transportButtons_day: 'default',
+	progressBarDesign_day: 'default',
+	progressBar_day: 'default',
+	progressBarFill_day: 'default',
+	volumeBarDesign_day: 'default',
+	volumeBar_day: 'default',
+	volumeBarFill_day: 'default',
+	bevel_night: false,
+	blend_night: false,
+	blend2_night: false,
+	gradient_night: false,
+	gradient2_night: false,
+	alternative_night: false,
+	alternative2_night: false,
+	blackAndWhite_night: false,
+	blackAndWhite2_night: false,
+	blackAndWhiteReborn_night: false,
+	blackReborn_night: false,
+	rebornWhite_night: false,
+	rebornBlack_night: false,
+	rebornFusion_night: false,
+	rebornFusion2_night: false,
+	rebornFusionAccent_night: false,
+	randomPastel_night: false,
+	randomDark_night: false,
+	randomAutoColor_night: 'off',
+	topMenuButtons_night: 'default',
+	transportButtons_night: 'default',
+	progressBarDesign_night: 'default',
+	progressBar_night: 'default',
+	progressBarFill_night: 'default',
+	volumeBarDesign_night: 'default',
+	volumeBar_night: 'default',
+	volumeBarFill_night: 'default'
 };
 
 /** @type {Object} Options > Style settings config name description. */
@@ -207,7 +265,7 @@ const stylesComments = {
 	rebornFusionAccent: 'Values: true, false - special reborn style can only used with reborn theme',
 	randomPastel: 'Values: true, false - special random style can only used with random theme',
 	randomDark: 'Values: true, false - special random style can only used with random theme',
-	randomAutoColor: 'Values: "off", 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, "track", - can only used with random theme',
+	randomAutoColor: 'Values: "off", 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, "track" - can only used with random theme',
 	topMenuButtons: 'Values: "default", "filled", "bevel", "inner", "emboss", "minimal"',
 	transportButtons: 'Values: "default", "bevel", "inner", "emboss", "minimal"',
 	progressBarDesign: 'Values: "default", "rounded", "lines", "blocks", "dots", "thin"',
@@ -215,7 +273,61 @@ const stylesComments = {
 	progressBarFill: 'Values: "default", "bevel", "inner", "blend"',
 	volumeBarDesign: 'Values: "default", "rounded"',
 	volumeBar: 'Values: "default", "bevel", "inner"',
-	volumeBarFill: 'Values: "default", "bevel", "inner"'
+	volumeBarFill: 'Values: "default", "bevel", "inner"',
+	bevel_day: 'Values: true, false - daytime theme - can be used in all themes',
+	blend_day: 'Values: true, false - daytime theme - can be used in all themes',
+	blend2_day: 'Values: true, false - daytime theme - can be used in all themes',
+	gradient_day: 'Values: true, false - daytime theme - can only be used in reborn, random, blue, darkblue, red themes',
+	gradient2_day: 'Values: true, false - daytime theme - can only be used in reborn, random, blue, darkblue, red themes',
+	alternative_day: 'Values: true, false - daytime theme - can be used in all themes but not with special styles',
+	alternative2_day: 'Values: true, false - daytime theme - can be used in all themes but not with special styles',
+	blackAndWhite_day: 'Values: true, false - daytime theme - special white style can only used with white theme',
+	blackAndWhite2_day: 'Values: true, false - daytime theme - special white style can only used with white theme',
+	blackAndWhiteReborn_day: 'Values: true, false - daytime theme - special white style can only used with white theme',
+	blackReborn_day: 'Values: true, false - daytime theme - special black style can only used with black theme',
+	rebornWhite_day: 'Values: true, false - daytime theme - special reborn style can only used with reborn theme',
+	rebornBlack_day: 'Values: true, false - daytime theme - special reborn style can only used with reborn theme',
+	rebornFusion_day: 'Values: true, false - daytime theme - special reborn style can only used with reborn theme',
+	rebornFusion2_day: 'Values: true, false - daytime theme - special reborn style can only used with reborn theme',
+	rebornFusionAccent_day: 'Values: true, false - daytime theme - special reborn style can only used with reborn theme',
+	randomPastel_day: 'Values: true, false - daytime theme - special random style can only used with random theme',
+	randomDark_day: 'Values: true, false - daytime theme - special random style can only used with random theme',
+	randomAutoColor_day: 'Values: "off", 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, "track" - daytime theme - can only used with random theme',
+	topMenuButtons_day: 'Values: "default", "filled", "bevel", "inner", "emboss", "minimal" - daytime theme',
+	transportButtons_day: 'Values: "default", "bevel", "inner", "emboss", "minimal" - daytime theme',
+	progressBarDesign_day: 'Values: "default", "rounded", "lines", "blocks", "dots", "thin" - daytime theme',
+	progressBar_day: 'Values: "default", "bevel", "inner" - daytime theme',
+	progressBarFill_day: 'Values: "default", "bevel", "inner", "blend" - daytime theme',
+	volumeBarDesign_day: 'Values: "default", "rounded" - daytime theme',
+	volumeBar_day: 'Values: "default", "bevel", "inner" - daytime theme',
+	volumeBarFill_day: 'Values: "default", "bevel", "inner" - daytime theme',
+	bevel_night: 'Values: true, false - nighttime theme - can be used in all themes',
+	blend_night: 'Values: true, false - nighttime theme - can be used in all themes',
+	blend2_night: 'Values: true, false - nighttime theme - can be used in all themes',
+	gradient_night: 'Values: true, false - nighttime theme - can only be used in reborn, random, blue, darkblue, red themes',
+	gradient2_night: 'Values: true, false - nighttime theme - can only be used in reborn, random, blue, darkblue, red themes',
+	alternative_night: 'Values: true, false - nighttime theme - can be used in all themes but not with special styles',
+	alternative2_night: 'Values: true, false - nighttime theme - can be used in all themes but not with special styles',
+	blackAndWhite_night: 'Values: true, false - nighttime theme - special white style can only used with white theme',
+	blackAndWhite2_night: 'Values: true, false - nighttime theme - special white style can only used with white theme',
+	blackAndWhiteReborn_night: 'Values: true, false - nighttime theme - special white style can only used with white theme',
+	blackReborn_night: 'Values: true, false - nighttime theme - special black style can only used with black theme',
+	rebornWhite_night: 'Values: true, false - nighttime theme - special reborn style can only used with reborn theme',
+	rebornBlack_night: 'Values: true, false - nighttime theme - special reborn style can only used with reborn theme',
+	rebornFusion_night: 'Values: true, false - nighttime theme - special reborn style can only used with reborn theme',
+	rebornFusion2_night: 'Values: true, false - nighttime theme - special reborn style can only used with reborn theme',
+	rebornFusionAccent_night: 'Values: true, false - nighttime theme - special reborn style can only used with reborn theme',
+	randomPastel_night: 'Values: true, false - nighttime theme - special random style can only used with random theme',
+	randomDark_night: 'Values: true, false - nighttime theme - special random style can only used with random theme',
+	randomAutoColor_night: 'Values: "off", 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, "track" - nighttime theme - can only used with random theme',
+	topMenuButtons_night: 'Values: "default", "filled", "bevel", "inner", "emboss", "minimal" - nighttime theme',
+	transportButtons_night: 'Values: "default", "bevel", "inner", "emboss", "minimal" - nighttime theme',
+	progressBarDesign_night: 'Values: "default", "rounded", "lines", "blocks", "dots", "thin" - nighttime theme',
+	progressBar_night: 'Values: "default", "bevel", "inner" - nighttime theme',
+	progressBarFill_night: 'Values: "default", "bevel", "inner", "blend" - nighttime theme',
+	volumeBarDesign_night: 'Values: "default", "rounded" - nighttime theme',
+	volumeBar_night: 'Values: "default", "bevel", "inner" - nighttime theme',
+	volumeBarFill_night: 'Values: "default", "bevel", "inner" - nighttime theme'
 };
 
 /** @type {Object} Options > Style settings config header description. */
@@ -375,12 +487,16 @@ const themeDisplaySchema = new ConfigurationObjectSchema('themeDisplay', Configu
 ////////////////////
 /** @type {Object} Options > Brightness settings with default value. */
 const themeBrightnessDefaults = {
-	themeBrightness: 'default'
+	themeBrightness: 'default',
+	themeBrightness_day: 'default',
+	themeBrightness_night: 'default'
 };
 
 /** @type {Object} Options > Brightness settings config name description. */
 const themeBrightnessComments = {
-	themeBrightness: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness'
+	themeBrightness: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness',
+	themeBrightness_day: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness - daytime theme',
+	themeBrightness_night: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness - nighttime theme'
 };
 
 /** @type {Object} Options > Brightness settings config header description. */
@@ -1419,6 +1535,7 @@ const lyricFilenamesSchema = new ConfigurationObjectSchema('lyricFilenamePattern
 /** @type {Object} Options > Settings with default values. */
 const themeSettingsDefaults = {
 	themeDayNightMode: false,
+	customThemeFonts: false,
 	albumArtDiskCache: true,
 	albumArtPreLoad: false,
 	customLibraryDir: false,
@@ -1429,7 +1546,6 @@ const themeSettingsDefaults = {
 	lyricsAutoDelete: false,
 	customWaveformBarDir: false,
 	waveformBarAutoDelete: false,
-	customThemeFonts: false,
 	themePerformance: 'balanced',
 	devTools: false,
 	disableRightClick: true
@@ -1438,6 +1554,7 @@ const themeSettingsDefaults = {
 /** @type {Object} Options > Settings config name description. */
 const themeSettingsComments = {
 	themeDayNightMode: 'Values: false, 6, 7, 8, 9, 10 - Options > Settings > Theme day/night mode',
+	customThemeFonts: 'Values: true, false - Options > Settings > Theme fonts > Use custom theme fonts',
 	albumArtDiskCache: 'Values: true, false - Options > Settings > Theme cache > Library > Image disk cache enabled',
 	albumArtPreLoad: 'Values: true, false - Options > Settings > Theme cache > Library > Preload images in disk cache',
 	customLibraryDir: 'Values: true, false - Options > Settings > Theme cache > Library > Use custom library directory',
@@ -1448,7 +1565,6 @@ const themeSettingsComments = {
 	lyricsAutoDelete: 'Values: true, false - Options > Settings > Theme cache > Lyrics > Auto-delete lyrics cache on startup',
 	customWaveformBarDir: 'Values: true, false - Options > Settings > Theme cache > Waveform bar > Use custom waveform bar directory',
 	waveformBarAutoDelete: 'Values: true, false - Options > Settings > Theme cache > Waveform bar > Auto-delete waveform bar cache on startup',
-	customThemeFonts: 'Values: true, false - Options > Settings > Theme fonts > Use custom theme fonts',
 	themePerformance: 'Values: "lowestQuality", "lowQuality", "balanced", "highQuality", "highestQuality" - Options > Settings > Theme performance',
 	devTools: 'Values: true, false - Options > Settings > Developer tools',
 	disableRightClick: 'Values: true, false - Options > Settings > Disable right-click'
