@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-15                                          * //
+// * Last change:    2023-12-16                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2047,8 +2047,8 @@ function loadCountryFlags() {
  * @returns {GdiBitmap} The flag image object.
  */
 function loadFlagImage(country) {
-	const countryName = ConvertIsoCountryCodeToFull(country) || country; // In case we have a 2-digit country code
-	const path = `${$(paths.flagsBase) + (RES_4K ? '64\\' : '32\\') + countryName.trim().replace(/ /g, '-')}.png`;
+	const countryName = (ConvertIsoCountryCodeToFull(country) || country).trim().replace(/ /g, '-'); // In case we have a 2-digit country code
+	const path = `${$($Escape(paths.flagsBase)) + (RES_4K ? '64\\' : '32\\') + countryName}.png`;
 	return gdi.Image(path);
 }
 
