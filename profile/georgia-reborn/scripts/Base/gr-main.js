@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-15                                          * //
+// * Last change:    2023-12-17                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -309,6 +309,7 @@ function drawDetailsMetadataGrid(gr) {
 	const showGridTimeline     = pref[`showGridTimeline_${pref.layout}`];
 	const showGridArtistFlags  = pref[`showGridArtistFlags_${pref.layout}`];
 	const showGridReleaseFlags = pref[`showGridReleaseFlags_${pref.layout}`];
+	const showGridChannelLogo  = pref[`showGridChannelLogo_${pref.layout}`];
 	const showGridCodecLogo    = pref[`showGridCodecLogo_${pref.layout}`];
 
 	// * DETAILS METADATA GRID * //
@@ -461,6 +462,7 @@ function drawDetailsMetadataGrid(gr) {
 			let showLastFmImage = false;
 			let showReleaseFlagImage = false;
 			let showGridCodecLogoImage = false;
+			let showGridChannelLogoImage = false;
 			let dropShadow = false;
 			let grid_val_col = col.detailsText;
 
@@ -489,6 +491,45 @@ function drawDetailsMetadataGrid(gr) {
 						showGridCodecLogoImage = showGridCodecLogo;
 						break;
 					}
+					case 'Channels': {
+						const channels = $('%channels%');
+						const textLogo =
+							pref.layout === 'default' && pref.showGridChannelLogo_default === 'textlogo' ||
+							pref.layout === 'artwork' && pref.showGridChannelLogo_artwork === 'textlogo';
+						const noLogo =
+							pref.layout === 'default' && pref.showGridChannelLogo_default === false ||
+							pref.layout === 'artwork' && pref.showGridChannelLogo_artwork === false;
+						const textLogoString = {
+							'3ch': 'Center',
+							'4ch': 'Quad',
+							'5ch': 'Surround',
+							'6ch': 'Surround',
+							'7ch': 'Surround',
+							'8ch': 'Surround',
+							'10ch': 'Surround',
+							'12ch': 'Surround'
+						};
+						const noLogoString = {
+							'mono': '1 \u00B7 Mono',
+							'stereo': '2 \u00B7 Stereo',
+							'3ch': '3 \u00B7 Center',
+							'4ch': '4 \u00B7 Quad',
+							'5ch': '5 \u00B7 Surround',
+							'6ch': '6 \u00B7 Surround',
+							'7ch': '7 \u00B7 Surround',
+							'8ch': '8 \u00B7 Surround',
+							'10ch': '10 \u00B7 Surround',
+							'12ch': '12 \u00B7 Surround'
+						};
+						// * Remap foobar's org. channel strings
+						if (textLogo && textLogoString[channels]) {
+							value = textLogoString[channels];
+						} else if (noLogo && noLogoString[channels]) {
+							value = noLogoString[channels];
+						}
+						showGridChannelLogoImage = showGridChannelLogo;
+						break;
+					}
 					default:
 						break;
 				}
@@ -500,8 +541,10 @@ function drawDetailsMetadataGrid(gr) {
 					const valFontSize = pref[`gridValueFontSize_${pref.layout}`] + SCALE(1);
 					const showReleaseFlagOnly = pref[`showGridReleaseFlags_${pref.layout}`] === 'logo';
 					const showCodecLogoOnly = pref[`showGridCodecLogo_${pref.layout}`] === 'logo';
+					const showChannelLogoOnly = pref[`showGridChannelLogo_${pref.layout}`] === 'logo';
 					const flag = showReleaseFlagOnly && key === 'Rel. Country';
 					const codec = showCodecLogoOnly && key === 'Codec';
+					const channels = showChannelLogoOnly && key === 'Channels';
 					const ratingLinux = detectWine && key === 'Rating';
 
 					// * Apply better anti-aliasing on smaller font sizes in HD res
@@ -514,7 +557,7 @@ function drawDetailsMetadataGrid(gr) {
 						gr.DrawString(value, grid_val_ft, col.darkAccent_50, Math.round(col2Left - borderWidth), Math.round(gridTop - borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
 					}
 					gr.DrawString(key, grid_key_ft, col.detailsText, marginLeft, Math.round(gridTop), col1Width, cellHeight, g_string_format.trim_ellipsis_char);
-					gr.DrawString(flag || codec ? '' : value, grid_val_ft, grid_val_col, col2Left, Math.round(gridTop), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
+					gr.DrawString(flag || codec || channels ? '' : value, grid_val_ft, grid_val_col, col2Left, Math.round(gridTop), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
 
 					// * Last.fm logo
 					if (playCountVerifiedByLastFm && showLastFmImage) {
@@ -544,6 +587,15 @@ function drawDetailsMetadataGrid(gr) {
 						if (codecLogo != null && (!showCodecLogoOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(codecLogo.Width * heightRatio) < col2Width) {
 							gr.DrawImage(codecLogo, showCodecLogoOnly && key === 'Codec' ? col2Left : col2Left + txtRec.Width + SCALE(8), gridTop - 1,
 								Math.round(codecLogo.Width * heightRatio), cellHeight - 4, 0, 0, codecLogo.Width, codecLogo.Height);
+						}
+					}
+					// * Channel logo
+					if (showGridChannelLogoImage) {
+						loadChannelLogo();
+						const heightRatio = channelLogo != null ? (cellHeight - 4) / channelLogo.Height : '';
+						if (channelLogo != null && (!showChannelLogoOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(channelLogo.Width * heightRatio) < col2Width) {
+							gr.DrawImage(channelLogo, showChannelLogoOnly && key === 'Channels' ? col2Left : col2Left + txtRec.Width + SCALE(8), gridTop - 1,
+								Math.round(channelLogo.Width * heightRatio), cellHeight - 4, 0, 0, channelLogo.Width, channelLogo.Height);
 						}
 					}
 					gridTop += cellHeight + 5;

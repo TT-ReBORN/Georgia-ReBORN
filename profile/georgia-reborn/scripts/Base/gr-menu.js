@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-15                                          * //
+// * Last change:    2023-12-17                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2302,6 +2302,18 @@ function detailsOptions(menu, context_menu) {
 		repaintWindow();
 	});
 	detailsShowCodecLogoMenu.appendTo(detailsMetadataGridMenu);
+
+	// * SHOW CHANNEL LOGO IN DETAILS * //
+	const detailsShowChannelLogoMenu = new Menu('Show channel logo');
+	detailsShowChannelLogoMenu.createRadioSubMenu('Default', ['Disabled', 'Logo', 'Text + Logo'], pref.showGridChannelLogo_default, [false, 'logo', 'textlogo'], type => {
+		pref.showGridChannelLogo_default = type;
+		repaintWindow();
+	});
+	detailsShowChannelLogoMenu.createRadioSubMenu('Artwork', ['Disabled', 'Logo', 'Text + Logo'], pref.showGridChannelLogo_artwork, [false, 'logo', 'textlogo'], type => {
+		pref.showGridChannelLogo_artwork = type;
+		repaintWindow();
+	});
+	detailsShowChannelLogoMenu.appendTo(detailsMetadataGridMenu);
 
 	// * EDIT METADATA GRID IN DETAILS * //
 	if (fb.IsPlaying) {

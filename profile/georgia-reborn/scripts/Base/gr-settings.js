@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-15                                          * //
+// * Last change:    2023-12-17                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -512,6 +512,8 @@ pref.add_properties({
 	showGridReleaseFlags_artwork:       ['Georgia-ReBORN - 11. Details: Show release country flags (Artwork)', 'logo'], // true: Show the release country flags in the metadata grid in Artwork layout
 	showGridCodecLogo_default:          ['Georgia-ReBORN - 11. Details: Show codec logo (Default)', 'logo'], // true: Show the codec logo in the metadata grid in Default layout
 	showGridCodecLogo_artwork:          ['Georgia-ReBORN - 11. Details: Show codec logo (Artwork)', 'logo'], // true: Show the codec logo in the metadata grid in Artwork layout
+	showGridChannelLogo_default:        ['Georgia-ReBORN - 11. Details: Show channel logo (Default)', 'logo'], // true: Show the channel logo in the metadata grid in Default layout
+	showGridChannelLogo_artwork:        ['Georgia-ReBORN - 11. Details: Show channel logo (Artwork)', 'logo'], // true: Show the channel logo in the metadata grid in Artwork layout
 	noDiscArtBg:                        ['Georgia-ReBORN - 11. Details: Show full background when no disc art', true], // Fill background when no disc art is available
 	labelArtOnBg:                       ['Georgia-ReBORN - 11. Details: Draw label art on background', false], // true: Don't show the theme color background behind label art
 
@@ -1406,6 +1408,8 @@ async function setThemeSettings(save) {
 		themeDetails.showGridReleaseFlags_artwork = pref.showGridReleaseFlags_artwork;
 		themeDetails.showGridCodecLogo_default = pref.showGridCodecLogo_default;
 		themeDetails.showGridCodecLogo_artwork = pref.showGridCodecLogo_artwork;
+		themeDetails.showGridChannelLogo_default = pref.showGridChannelLogo_default;
+		themeDetails.showGridChannelLogo_artwork = pref.showGridChannelLogo_artwork;
 		themeDetails.noDiscArtBg = pref.noDiscArtBg;
 		themeDetails.labelArtOnBg = pref.labelArtOnBg;
 	} else {
@@ -1439,6 +1443,8 @@ async function setThemeSettings(save) {
 		pref.showGridReleaseFlags_artwork = custom ? themeDetails.showGridReleaseFlags_artwork : 'logo';
 		pref.showGridCodecLogo_default = custom ? themeDetails.showGridCodecLogo_default : 'logo';
 		pref.showGridCodecLogo_artwork = custom ? themeDetails.showGridCodecLogo_artwork : 'logo';
+		pref.showGridChannelLogo_default = custom ? themeDetails.showGridChannelLogo_default : 'logo';
+		pref.showGridChannelLogo_artwork = custom ? themeDetails.showGridChannelLogo_artwork : 'logo';
 		pref.noDiscArtBg = custom ? themeDetails.noDiscArtBg : true;
 		pref.labelArtOnBg = custom ? themeDetails.labelArtOnBg : false;
 	}
@@ -2148,6 +2154,15 @@ function migrateCheck(version, storedVersion) {
 	};
 
 	/**
+	 * Checks if specific entry exist in the metadata grid configuration.
+	 * @param {MetadataGridEntry[]} grid Each element in the array is an object with a `label` property.
+	 * @param {...string} labels The labels of the settings to check.
+	 * @returns {boolean} Returns true if all specified labels exist, otherwise false.
+	 */
+	const CheckGridEntry = (grid, ...labels) =>
+		labels.every(label => grid.some(gridEntry => gridEntry.label.toLowerCase() === label.toLowerCase()));
+
+	/**
 	 * Renames an entry in the metadata grid with a new label name.
 	 * @param {MetadataGridEntry[]} grid Each element in the array is an object with a `label` property.
 	 * @param {string} oldLabel The old label name to rename.
@@ -2190,6 +2205,12 @@ function migrateCheck(version, storedVersion) {
 		config.addConfigurationObject(settingsSchema, configFile.settings);
 		config.addConfigurationObject(settingsSchema, settingsDefaults, settingsComments);
 		config.writeConfiguration(configFile.settings);
+	}
+	if (!CheckGridEntry(configFile.metadataGrid, 'Channels')) {
+		fso.CopyFile(configPath, fb.ProfilePath + fileName);
+		config.addConfigurationObject(gridSchema, defaultMetadataGrid);
+		config.writeConfiguration();
+		window.Reload(); // Reinit new config
 	}
 
 	// * Update config settings which have changed since last update

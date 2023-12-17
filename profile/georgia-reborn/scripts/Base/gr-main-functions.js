@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-16                                          * //
+// * Last change:    2023-12-17                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3046,6 +3046,44 @@ function loadCodecLogo() {
 			codecLogo = gdi.Image(paths.codecLogoPcmAiff); break;
 		case codec === 'pcm' && ['w64', 'wav'].includes(format):
 			codecLogo = gdi.Image(paths.codecLogoPcmWav); break;
+	}
+}
+
+
+/**
+ * Loads the channel logo of the now playing track, displayed in the metadata grid in Details.
+ */
+function loadChannelLogo() {
+	const channels = $('%channels%');
+	const type =
+		(pref.layout === 'default' && pref.showGridChannelLogo_default === 'textlogo' ||
+		 pref.layout === 'artwork' && pref.showGridChannelLogo_artwork === 'textlogo') ? '_text' : '';
+
+	const lightBg = new Color(col.detailsText).brightness < 140;
+	const bw = lightBg ? 'black' : 'white';
+
+	paths.channelLogo10Mono   = `${imagesPath}channels/10_mono${type}-${bw}.png`;
+	paths.channelLogo20Stereo = `${imagesPath}channels/20_stereo${type}-${bw}.png`;
+	paths.channelLogo30Center = `${imagesPath}channels/30_center${type}-${bw}.png`;
+	paths.channelLogo40Quad   = `${imagesPath}channels/40_quad${type}-${bw}.png`;
+	paths.channelLogo50Surr   = `${imagesPath}channels/50_surround${type}-${bw}.png`;
+	paths.channelLogo51Surr   = `${imagesPath}channels/51_surround${type}-${bw}.png`;
+	paths.channelLogo61Surr   = `${imagesPath}channels/61_surround${type}-${bw}.png`;
+	paths.channelLogo71Surr   = `${imagesPath}channels/71_surround${type}-${bw}.png`;
+	paths.channelLogo91Surr   = `${imagesPath}channels/91_surround${type}-${bw}.png`;
+	paths.channelLogo111Surr  = `${imagesPath}channels/111_surround${type}-${bw}.png`;
+
+	switch (true) {
+		case channels === 'mono':   channelLogo = gdi.Image(paths.channelLogo10Mono);   break;
+		case channels === 'stereo': channelLogo = gdi.Image(paths.channelLogo20Stereo); break;
+		case channels === '3ch':    channelLogo = gdi.Image(paths.channelLogo30Center); break;
+		case channels === '4ch':    channelLogo = gdi.Image(paths.channelLogo40Quad);   break;
+		case channels === '5ch':    channelLogo = gdi.Image(paths.channelLogo50Surr);   break;
+		case channels === '6ch':    channelLogo = gdi.Image(paths.channelLogo51Surr);   break;
+		case channels === '7ch':    channelLogo = gdi.Image(paths.channelLogo61Surr);   break;
+		case channels === '8ch':    channelLogo = gdi.Image(paths.channelLogo71Surr);   break;
+		case channels === '10ch':   channelLogo = gdi.Image(paths.channelLogo91Surr);   break;
+		case channels === '12ch':   channelLogo = gdi.Image(paths.channelLogo111Surr);  break;
 	}
 }
 

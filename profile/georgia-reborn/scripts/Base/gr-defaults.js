@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-15                                          * //
+// * Last change:    2023-12-17                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1139,6 +1139,8 @@ const themeDetailsDefaults = {
 	showGridReleaseFlags_artwork: 'logo',
 	showGridCodecLogo_default: 'logo',
 	showGridCodecLogo_artwork: 'logo',
+	showGridChannelLogo_default: 'logo',
+	showGridChannelLogo_artwork: 'logo',
 	noDiscArtBg: true,
 	labelArtOnBg: false
 };
@@ -1175,6 +1177,8 @@ const themeDetailsComments = {
 	showGridReleaseFlags_artwork: 'Values: false, logo, textlogo - Options > Details > Metadata grid > Show release country flags - when Artwork layout is active',
 	showGridCodecLogo_default: 'Values: false, logo, textlogo - Options > Details > Metadata grid > Show codec logo - when Default layout is active',
 	showGridCodecLogo_artwork: 'Values: false, logo, textlogo - Options > Details > Metadata grid > Show codec logo - when Artwork layout is active',
+	showGridChannelLogo_default: 'Values: false, logo, textlogo - Options > Details > Metadata grid > Show channel logo - when Default layout is active',
+	showGridChannelLogo_artwork: 'Values: false, logo, textlogo - Options > Details > Metadata grid > Show channel logo - when Artwork layout is active',
 	noDiscArtBg: 'Values: true, false - Options > Details > Background > Show full background when no disc art',
 	labelArtOnBg: 'Values: true, false - Options > Details > Background > Show label art on background'
 };
@@ -1211,6 +1215,7 @@ const defaultMetadataGrid = [
 	{ label: 'Style',           val: '[$meta_sep(style, \u00B7 )]' },
 	{ label: 'Release',         val: '[%release%]' },
 	{ label: 'Codec',           val: '[%codec%]' },
+	{ label: 'Channels',        val: '[%channels%]' },
 	{ label: 'Source',          val: '[%codec_profile%$if(%__bitspersample%, \u00B7 )]$if($strcmp(%__encoding%,lossless),%__bitspersample% bit)$ifgreater(%samplerate%,44100,$if($if2(%codec_profile%,%__bitspersample%), \u00B7 )$div(%samplerate%,1000)$replace($insert($right($div(%samplerate%,100),1),.,0),.0,) kHz,)[ \u00B7 $if3(%media%,%mediatype%,%media type%)]' },
 	{ label: 'Data',            val: '%__bitrate% kbps \u00B7 $div(%filesize%,1048576).$num($div($mul($mod(%filesize%,1048576),10),1048576),0) MB' },
 	{ label: 'Added',           val: '[$if2(%added_enhanced%,%added%)]', age: true },

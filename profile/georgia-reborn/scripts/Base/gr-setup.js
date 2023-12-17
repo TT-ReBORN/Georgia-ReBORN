@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-15                                          * //
+// * Last change:    2023-12-17                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -631,6 +631,8 @@ let flagImgs = [];
 let releaseFlagImg = null;
 /** @type {GdiBitmap} The codec logo image shown in the metadata grid in Details. */
 let codecLogo = null;
+/** @type {GdiBitmap} The channel logo image shown in the metadata grid in Details. */
+let channelLogo = null;
 /** @type {GdiBitmap} The Hi-Res Audio badge logo image shown on album art when enabled. */
 let hiResAudioImg = null;
 /** @type {boolean} The last.fm logo image displayed when we %lastfm_play_count% > 0, shown in the metadata grid in Details. */
