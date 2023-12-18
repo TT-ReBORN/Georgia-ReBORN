@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-17                                          * //
+// * Last change:    2023-12-18                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -514,6 +514,7 @@ pref.add_properties({
 	showGridCodecLogo_artwork:          ['Georgia-ReBORN - 11. Details: Show codec logo (Artwork)', 'logo'], // true: Show the codec logo in the metadata grid in Artwork layout
 	showGridChannelLogo_default:        ['Georgia-ReBORN - 11. Details: Show channel logo (Default)', 'logo'], // true: Show the channel logo in the metadata grid in Default layout
 	showGridChannelLogo_artwork:        ['Georgia-ReBORN - 11. Details: Show channel logo (Artwork)', 'logo'], // true: Show the channel logo in the metadata grid in Artwork layout
+	autoHideGridMetadata:               ['Georgia-ReBORN - 11. Details: Auto-hide full metadata on small player', true], // true: Auto-hides full metadata when the player size is too small
 	noDiscArtBg:                        ['Georgia-ReBORN - 11. Details: Show full background when no disc art', true], // Fill background when no disc art is available
 	labelArtOnBg:                       ['Georgia-ReBORN - 11. Details: Draw label art on background', false], // true: Don't show the theme color background behind label art
 
@@ -1410,6 +1411,7 @@ async function setThemeSettings(save) {
 		themeDetails.showGridCodecLogo_artwork = pref.showGridCodecLogo_artwork;
 		themeDetails.showGridChannelLogo_default = pref.showGridChannelLogo_default;
 		themeDetails.showGridChannelLogo_artwork = pref.showGridChannelLogo_artwork;
+		themeDetails.autoHideGridMetadata = pref.autoHideGridMetadata;
 		themeDetails.noDiscArtBg = pref.noDiscArtBg;
 		themeDetails.labelArtOnBg = pref.labelArtOnBg;
 	} else {
@@ -1445,6 +1447,7 @@ async function setThemeSettings(save) {
 		pref.showGridCodecLogo_artwork = custom ? themeDetails.showGridCodecLogo_artwork : 'logo';
 		pref.showGridChannelLogo_default = custom ? themeDetails.showGridChannelLogo_default : 'logo';
 		pref.showGridChannelLogo_artwork = custom ? themeDetails.showGridChannelLogo_artwork : 'logo';
+		pref.autoHideGridMetadata = custom ? themeDetails.autoHideGridMetadata : true;
 		pref.noDiscArtBg = custom ? themeDetails.noDiscArtBg : true;
 		pref.labelArtOnBg = custom ? themeDetails.labelArtOnBg : false;
 	}

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-17                                          * //
+// * Last change:    2023-12-18                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2314,6 +2314,9 @@ function detailsOptions(menu, context_menu) {
 		repaintWindow();
 	});
 	detailsShowChannelLogoMenu.appendTo(detailsMetadataGridMenu);
+
+	detailsMetadataGridMenu.addSeparator();
+	detailsMetadataGridMenu.addToggleItem('Auto-hide full metadata on small player', pref, 'autoHideGridMetadata', () => repaintWindow());
 
 	// * EDIT METADATA GRID IN DETAILS * //
 	if (fb.IsPlaying) {

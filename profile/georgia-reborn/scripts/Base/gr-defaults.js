@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-17                                          * //
+// * Last change:    2023-12-18                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1141,6 +1141,7 @@ const themeDetailsDefaults = {
 	showGridCodecLogo_artwork: 'logo',
 	showGridChannelLogo_default: 'logo',
 	showGridChannelLogo_artwork: 'logo',
+	autoHideGridMetadata: true,
 	noDiscArtBg: true,
 	labelArtOnBg: false
 };
@@ -1179,6 +1180,7 @@ const themeDetailsComments = {
 	showGridCodecLogo_artwork: 'Values: false, logo, textlogo - Options > Details > Metadata grid > Show codec logo - when Artwork layout is active',
 	showGridChannelLogo_default: 'Values: false, logo, textlogo - Options > Details > Metadata grid > Show channel logo - when Default layout is active',
 	showGridChannelLogo_artwork: 'Values: false, logo, textlogo - Options > Details > Metadata grid > Show channel logo - when Artwork layout is active',
+	autoHideGridMetadata: 'Values: true, false - Options > Details > Metadata grid > Auto-hide full metadata on small player',
 	noDiscArtBg: 'Values: true, false - Options > Details > Background > Show full background when no disc art',
 	labelArtOnBg: 'Values: true, false - Options > Details > Background > Show label art on background'
 };

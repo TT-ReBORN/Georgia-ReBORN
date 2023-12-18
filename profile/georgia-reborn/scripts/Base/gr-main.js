@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-17                                          * //
+// * Last change:    2023-12-18                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -457,7 +457,7 @@ function drawDetailsMetadataGrid(gr) {
 		const col2Left = marginLeft + col1Width + columnMargin;
 
 		for (let k = 0; k < str.grid.length; k++) {
-			const key = str.grid[k].label;
+			let key = str.grid[k].label;
 			let value = str.grid[k].val;
 			let showLastFmImage = false;
 			let showReleaseFlagImage = false;
@@ -466,23 +466,16 @@ function drawDetailsMetadataGrid(gr) {
 			let dropShadow = false;
 			let grid_val_col = col.detailsText;
 
+			txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, col2Width, wh);
+			const cellHeight = txtRec.Height + 5;
+
 			if (value.length) {
 				switch (key) {
-					case 'Rating':
-						grid_val_col = col.detailsRating;
-						dropShadow = true;
-						break;
-					case 'Hotness':
-						grid_val_col = col.detailsHotness;
-						dropShadow = true;
-						break;
-					case 'Play Count':
-						showLastFmImage = true;
-						break;
 					case 'Catalog':
 					case 'Rel. Country':
 						showReleaseFlagImage = showGridReleaseFlags;
 						break;
+
 					case 'Codec': {
 						const codec = $('$lower($if2(%codec%,$ext(%path%)))');
 						if (['dts', 'dca (dts coherent acoustics)'].includes(codec)) {
@@ -491,49 +484,81 @@ function drawDetailsMetadataGrid(gr) {
 						showGridCodecLogoImage = showGridCodecLogo;
 						break;
 					}
+
 					case 'Channels': {
 						const channels = $('%channels%');
-						const textLogo =
-							pref.layout === 'default' && pref.showGridChannelLogo_default === 'textlogo' ||
-							pref.layout === 'artwork' && pref.showGridChannelLogo_artwork === 'textlogo';
-						const noLogo =
-							pref.layout === 'default' && pref.showGridChannelLogo_default === false ||
-							pref.layout === 'artwork' && pref.showGridChannelLogo_artwork === false;
-						const textLogoString = {
-							'3ch': 'Center',
-							'4ch': 'Quad',
-							'5ch': 'Surround',
-							'6ch': 'Surround',
-							'7ch': 'Surround',
-							'8ch': 'Surround',
-							'10ch': 'Surround',
-							'12ch': 'Surround'
+						const logoType = pref[`showGridChannelLogo_${pref.layout}`];
+						const textLogo = logoType === 'textlogo';
+						const noLogo = logoType === false;
+						const ChannelString = (number, string) => {
+							if (textLogo) return string;
+							if (noLogo) return `${number} \u00B7 ${string}`;
 						};
-						const noLogoString = {
-							'mono': '1 \u00B7 Mono',
-							'stereo': '2 \u00B7 Stereo',
-							'3ch': '3 \u00B7 Center',
-							'4ch': '4 \u00B7 Quad',
-							'5ch': '5 \u00B7 Surround',
-							'6ch': '6 \u00B7 Surround',
-							'7ch': '7 \u00B7 Surround',
-							'8ch': '8 \u00B7 Surround',
-							'10ch': '10 \u00B7 Surround',
-							'12ch': '12 \u00B7 Surround'
+						const channelLogoMapping = {
+							'mono':   ChannelString(1, 'Mono'),
+							'stereo': ChannelString(2, 'Stereo'),
+							'3ch':    ChannelString(3, 'Center'),
+							'4ch':    ChannelString(4, 'Quad'),
+							'5ch':    ChannelString(5, 'Surround'),
+							'6ch':    ChannelString(6, 'Surround'),
+							'7ch':    ChannelString(7, 'Surround'),
+							'8ch':    ChannelString(8, 'Surround'),
+							'10ch':   ChannelString(10, 'Surround'),
+							'12ch':   ChannelString(12, 'Surround')
 						};
 						// * Remap foobar's org. channel strings
-						if (textLogo && textLogoString[channels]) {
-							value = textLogoString[channels];
-						} else if (noLogo && noLogoString[channels]) {
-							value = noLogoString[channels];
+						if (Object.prototype.hasOwnProperty.call(channelLogoMapping, channels)) {
+							value = channelLogoMapping[channels];
 						}
 						showGridChannelLogoImage = showGridChannelLogo;
 						break;
 					}
-					default:
+
+					case 'Hotness':
+						grid_val_col = col.detailsHotness;
+						dropShadow = true;
 						break;
+
+					case 'Play Count':
+						showLastFmImage = true;
+						break;
+
+					case 'Rating':
+						grid_val_col = col.detailsRating;
+						dropShadow = true;
+						break;
+
+					default: {
+						let matchCount = 0;
+						// * There is no space for these metadata entries on small player sizes, so hide them
+						const smallHDRes  = pref.displayRes === 'HD'  && (ww < 1250 || wh < 800);
+						const smallQHDRes = pref.displayRes === 'QHD' && (ww < 1350 || wh < 900);
+						const small4KRes  = pref.displayRes === '4K'  && (ww < 2350 || wh < 1550);
+						if (pref.autoHideGridMetadata && pref.layout === 'default' && (smallHDRes || smallQHDRes || small4KRes)) {
+							switch (key) {
+								case 'Disc':
+								case 'Rel. Type':
+								case 'Rel. Date':
+								case 'Edition':
+								case 'Catalog':
+								case 'Rel. Country':
+								case 'Added':
+								case 'Last Played':
+								case 'Hotness':
+								case 'View Count':
+								case 'Likes':
+								case 'Mood':
+								case 'Playing List':
+									value = '';
+									key = '';
+									matchCount++;
+									break;
+							}
+						}
+						gridTop -= cellHeight * matchCount;
+					}
 				}
-				txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, col2Width, wh);
+
 				if (gridTop + txtRec.Height < albumArtSize.y + albumArtSize.h) {
 					const borderWidth = SCALE(0.5);
 					const cellHeight = txtRec.Height + 5;
@@ -603,6 +628,7 @@ function drawDetailsMetadataGrid(gr) {
 			}
 		}
 	}
+
 	if (timings.showExtraDrawTiming) drawTextGrid.Print();
 }
 
@@ -753,6 +779,7 @@ function drawDetailsLabelLogo(gr) {
 		}
 		// if (timings.showExtraDrawTiming) drawLabelTime.Print();
 	}
+
 	if (timings.showExtraDrawTiming) drawLogos.Print();
 }
 
