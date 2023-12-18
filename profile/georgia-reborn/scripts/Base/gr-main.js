@@ -530,30 +530,16 @@ function drawDetailsMetadataGrid(gr) {
 
 					default: {
 						let matchCount = 0;
-						// * There is no space for these metadata entries on small player sizes, so hide them
 						const smallHDRes  = pref.displayRes === 'HD'  && (ww < 1250 || wh < 800);
 						const smallQHDRes = pref.displayRes === 'QHD' && (ww < 1350 || wh < 900);
 						const small4KRes  = pref.displayRes === '4K'  && (ww < 2350 || wh < 1550);
-						if (pref.autoHideGridMetadata && pref.layout === 'default' && (smallHDRes || smallQHDRes || small4KRes)) {
-							switch (key) {
-								case 'Disc':
-								case 'Rel. Type':
-								case 'Rel. Date':
-								case 'Edition':
-								case 'Catalog':
-								case 'Rel. Country':
-								case 'Added':
-								case 'Last Played':
-								case 'Hotness':
-								case 'View Count':
-								case 'Likes':
-								case 'Mood':
-								case 'Playing List':
-									value = '';
-									key = '';
-									matchCount++;
-									break;
-							}
+						const basicMeta = ['Year', 'Label', 'Genre', 'Codec', 'Channels', 'Source', 'Data', 'Play Count', 'Rating'];
+
+						// * On small player sizes, there is no space for all metadata entries. Hide them and only display entries from basicMeta.
+						if (pref.autoHideGridMetadata && pref.layout === 'default' && (smallHDRes || smallQHDRes || small4KRes) && !basicMeta.includes(key)) {
+							value = '';
+							key = '';
+							matchCount++;
 						}
 						gridTop -= cellHeight * matchCount;
 					}
