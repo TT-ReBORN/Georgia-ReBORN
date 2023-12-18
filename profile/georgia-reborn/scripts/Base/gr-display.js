@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-12-18                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -220,8 +220,8 @@ class Display {
 		}
 
 		// * Check and set display monitor resolution mode for 4K or QHD
-		RES_4K  = pref.displayRes === '4K'  || (ww >= 2560 && wh >= 1600);
-		RES_QHD = pref.displayRes === 'QHD' || (ww >= 2500 && wh >= 1400);
+		RES_4K  = pref.displayRes === '4K'  || (ww > 2560 && wh > 1600);
+		RES_QHD = pref.displayRes === 'QHD' || (ww > 2500 && ww <= 2560 && wh > 1400 && wh <= 1600);
 
 		if (lastSize !== RES_4K) {
 			sizeInitialized = false;
