@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-15                                          * //
+// * Last change:    2023-12-18                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -255,6 +255,23 @@ function ParseJson(json, label, log) {
 		console.log(json);
 	}
 	return parsed;
+}
+
+
+/**
+ * Sanitizes a string to be safe for insertion into a JSON config.
+ * Removes double quotes, backslashes, newlines and trailing spaces.
+ * @param {string} str The string to sanitize.
+ * @returns {string} The sanitized string.
+ */
+function SanitizeJsonString(str) {
+	if (typeof str !== 'string') return '';
+
+	return str
+		.replace(/"/g, '')
+		.replace(/\\/g, '')
+		.replace(/\r?\n|\r/g, ' ')
+		.trim();
 }
 
 

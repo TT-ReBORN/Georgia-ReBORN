@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-12-18                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2910,8 +2910,17 @@ function updateMetadataGridFromConfig(id, value1, value2) {
 	const index = metadataGrid.findIndex(x => x.label === id);
 
 	if (index > -1) {
-		if (value1) metadataGrid[index].label = value1;
-		else if (value2) metadataGrid[index].val = value2;
+		if (value1) {
+			metadataGrid[index].label = SanitizeJsonString(value1);
+		} else if (value1 === '') {
+			metadataGrid[index].label = `Blank ${index}`;
+		}
+
+		if (value2) {
+			metadataGrid[index].val = SanitizeJsonString(value2);
+		} else if (value2 === '') {
+			metadataGrid[index].val = '';
+		}
 	}
 
 	config.updateConfigObjValues('metadataGrid', metadataGrid, true);
