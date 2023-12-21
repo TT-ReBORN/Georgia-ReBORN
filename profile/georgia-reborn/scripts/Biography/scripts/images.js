@@ -549,6 +549,10 @@ class ImagesBio {
 	}
 
 	draw(gr) {
+		if (syncBio.get && syncBio.img) {
+			syncBio.image(syncBio.img.image, syncBio.img.id);
+			syncBio.get = false;
+		}
 		if (pptBio.text_only && !uiBio.style.isBlur) {
 			if (pptBio.showFilmStrip && this.get) this.getImgFallback();
 			return;
@@ -988,12 +992,12 @@ class ImagesBio {
 	}
 
 	isColOk(c) {
-		const hsp = Math.sqrt(
+		const brightness = Math.sqrt(
 			0.299 * (c[0] * c[0]) +
 			0.587 * (c[1] * c[1]) +
 			0.114 * (c[2] * c[2])
 		);
-		return hsp > 55;
+		return brightness > 55;
 	}
 
 	isEmbedded(type, ix) { // also identifies yt etc

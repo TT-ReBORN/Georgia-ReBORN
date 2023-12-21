@@ -451,7 +451,6 @@ class UserInterfaceBio {
 	getLineCol(type) {
 		if (!pptBio.colLineDark) return this.col.line === '' ? this.getBlend(this.blur.dark ? RGB(0, 0, 0) : this.blur.light ? RGB(255, 255, 255) : this.col.bg == 0 ? 0xff000000 : this.col.bg, pptBio.highlightHdLine ? this.col.txt_h : this.col.txt, type == 'bottom' || this.style.isBlur ? 0.25 : 0.5) : this.col.line;
 		const lightBg = this.isLightBackground();
-		const isLightBg = !this.blur.dark && lightBg;
 		const nearBlack = ((pptBio.theme == 1 || pptBio.theme == 2) && !this.col.themeLight || (pptBio.theme == 0 || pptBio.theme == 6 || pptBio.theme == 7) && !lightBg) && this.getColSat(this.col.bg) < 45;
 		const alpha = !lightBg ? nearBlack ? 0x20ffffff : 0x50000000 : 0x30000000;
 		return this.col.text & alpha;
@@ -676,7 +675,7 @@ class UserInterfaceBio {
 		panelBio.checkNumServers();
 
 		if (pptBio.showFilmStrip && pptBio.autoFilm) txt.getScrollPos();
-		if (pptBio.filmStripOverlay) filmStrip.set(pptBio.filmStripPos);
+		if (pptBio.filmStripOverlay && pptBio.showFilmStrip) filmStrip.set(pptBio.filmStripPos);
 		if (pptBio.text_only && !this.style.isBlur) txt.paint();
 	}
 
@@ -690,9 +689,9 @@ class UserInterfaceBio {
 		pptBio.durationScroll = $Bio.clamp($Bio.value(pptBio.durationScroll, 500, 0), 0, 5000);
 		pptBio.flickDistance = $Bio.clamp(pptBio.flickDistance, 0, 10);
 		pptBio.touchStep = $Bio.clamp(pptBio.touchStep, 1, 10);
-		pptBio.sbarType = $Bio.value(pptBio.sbarType, 0, 2);
-		this.sbar.type = pptBio.sbarType;
-		if (this.sbar.type == 2) {
+		pptBio.sbarType = $Bio.value(pptBio.sbarType, 0, 0);
+		this.sbar.type = Math.min(pptBio.sbarType, 2);
+		if (pptBio.sbarType == 2) { // light mode only
 			this.theme = window.CreateThemeManager('scrollbar');
 			$Bio.gr(21, 21, false, g => {
 				try {
@@ -731,7 +730,7 @@ class UserInterfaceBio {
 		} catch (e) {}
 		if (pptBio.sbarWinMetrics) {
 			this.sbar.w = themed_w;
-			this.sbar.but_w = this.sbar.w;
+			this.sbar.but_w = pptBio.sbarType != 3 ? this.sbar.w : this.sbar.w * 10 / 18;
 		}
 		else if (pptBio.sbarWidth) {
 			this.sbar.w = RES_4K ? 26 : 12;
@@ -739,12 +738,12 @@ class UserInterfaceBio {
 		}
 		if (!pptBio.sbarWinMetrics && this.sbar.type == 2) this.sbar.w = Math.max(this.sbar.w, 12);
 		if (!pptBio.sbarShow) this.sbar.w = 0;
-		this.sbar.but_h = this.sbar.w + (this.sbar.type != 2 ? 1 : 0);
-		if (this.sbar.type != 2) {
+		this.sbar.but_h = this.sbar.w + (pptBio.sbarType != 2 ? 1 : 0);
+		if (pptBio.sbarType != 2) {
 			if (pptBio.sbarButType || !this.sbar.type && this.sbar.but_w < Math.round(15 * $Bio.scale)) this.sbar.but_w += 1;
 			else if (this.sbar.type == 1 && this.sbar.but_w < Math.round(14 * $Bio.scale)) this.sbar.arrowPad += 1;
 		}
-		const sp = this.sbar.w - this.sbar.but_w < 5 || this.sbar.type == 2 ? Math.round(1 * $Bio.scale) : 0;
+		const sp = this.sbar.type == 2 || this.sbar.w - this.sbar.but_w > 4 ? 0 : Math.round(1 * $Bio.scale);
 		this.sbar.sp = this.sbar.w ? this.sbar.w + sp : 0;
 		this.sbar.arrowPad = $Bio.clamp(-this.sbar.but_h / 5, this.sbar.arrowPad, this.sbar.but_h / 5);
 	}

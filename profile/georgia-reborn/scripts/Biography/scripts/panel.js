@@ -355,12 +355,15 @@ class PanelBio {
 			switch (item) {
 				case 'stndArtist':
 					!this.id.lookUp ? txt.getText(true) : txt.getItem(true, this.art.ix, this.alb.ix);
+					imgBio.getImages();
 					break;
 				case 'stndAlbum':
 					this.style.inclTrackRev != 1 || !this.id.lookUp ? txt.getText(true) : txt.getItem(true, this.art.ix, this.alb.ix);
+					imgBio.getImages();
 					break;
 				case 'lookUp':
 					txt.getItem(true, this.art.ix, this.alb.ix);
+					imgBio.getItem(this.art.ix, this.alb.ix);
 					break;
 			}
 			butBio.refresh(true);
@@ -418,7 +421,6 @@ class PanelBio {
 		if (!sameStyle) this.setStyle();
 		txt.na = '';
 		timerBio.clear(timerBio.source);
-		if (this.calc) this.calc = pptBio.artistView ? 1 : 2;
 		if (!this.lock && this.updateNeeded()) {
 			this.getList(true, true);
 			if (!pptBio.artistView) txt.albumReset();
@@ -440,7 +442,7 @@ class PanelBio {
 		}
 		if (pptBio.img_only) imgBio.setCrop(true);
 		butBio.refresh(true);
-		if (!sameStyle && pptBio.filmStripOverlay) filmStrip.set(pptBio.filmStripPos);
+		if (!sameStyle && pptBio.filmStripOverlay && pptBio.showFilmStrip) filmStrip.set(pptBio.filmStripPos);
 		if (!pptBio.artistView) imgBio.setCheckArr(null);
 		this.move(x, y, true);
 		txt.getScrollPos();
@@ -879,7 +881,7 @@ class PanelBio {
 		let pth;
 		switch (sw) {
 			case 'bio':
-				if (stnd === '' || panelBio.isRadio(pptBio.focus)) stnd = this.stnd(this.art.ix, this.art.list);
+				if (panelBio.isRadio(pptBio.focus)) stnd = false; else if (stnd === '') stnd = this.stnd(this.art.ix, this.art.list);
 				if (server) fo = stnd ? this.cleanPth(cfg.pth[folder], focus, 'server') : this.cleanPth(cfg.remap[folder], focus, 'remap', artist, '', 1);
 				else fo = stnd && !this.lock ? this.cleanPth(cfg.pth[folder], focus) : this.cleanPth(cfg.remap[folder], focus, 'remap', artist, '', 1);
 				pth = `${fo + cleanArtist + cfg.suffix[folder]}.txt`;
@@ -1095,6 +1097,7 @@ class PanelBio {
 	mode(n) {
 		if (!pptBio.sameStyle) pptBio.artistView ? pptBio.bioMode = n : pptBio.revMode = n;
 		let calcText = true;
+		this.calc = true;
 		filmStrip.logScrollPos();
 		switch (n) {
 			case 0: {
@@ -1103,7 +1106,6 @@ class PanelBio {
 				pptBio.text_only = false;
 				this.setStyle();
 				imgBio.clearCache();
-				if (calcText && !pptBio.sameStyle && (pptBio.bioMode != pptBio.revMode || pptBio.bioStyle != pptBio.revStyle)) calcText = pptBio.artistView ? 1 : 2;
 				if (!this.art.ix && pptBio.artistView && !txt.bio.lookUp || !this.alb.ix && !pptBio.artistView && !txt.rev.lookUp) {
 					txt.albumReset();
 					txt.artistReset();
@@ -1113,6 +1115,7 @@ class PanelBio {
 					txt.getItem(calcText, this.art.ix, this.alb.ix);
 					imgBio.getItem(this.art.ix, this.alb.ix);
 				}
+				this.calcText = false;
 				break;
 			}
 			case 1:
@@ -1128,7 +1131,7 @@ class PanelBio {
 				pptBio.text_only = true;
 				this.setStyle();
 				if (uiBio.style.isBlur) imgBio.clearCache();
-				if (!pptBio.sameStyle && (pptBio.bioMode != pptBio.revMode || pptBio.bioStyle != pptBio.revStyle)) calcText = pptBio.artistView ? 1 : 2;
+				if (!pptBio.sameStyle && (pptBio.bioMode != pptBio.revMode || pptBio.bioStyle != pptBio.revStyle)) calcText = true;
 				if (!this.art.ix && pptBio.artistView && !txt.bio.lookUp || !this.alb.ix && !pptBio.artistView && !txt.rev.lookUp) {
 					txt.albumReset();
 					txt.artistReset();
@@ -1139,11 +1142,11 @@ class PanelBio {
 					if (uiBio.style.isBlur) imgBio.getItem(this.art.ix, this.alb.ix);
 					imgBio.setCheckArr(null);
 				}
+				this.calcText = true;
 				break;
 		}
-		this.calcText = false;
 		if (pptBio.text_only) seeker.upd(true);
-		if (pptBio.filmStripOverlay) filmStrip.set(pptBio.filmStripPos);
+		if (pptBio.filmStripOverlay && pptBio.showFilmStrip) filmStrip.set(pptBio.filmStripPos);
 		butBio.refresh(true);
 	}
 
@@ -1593,13 +1596,13 @@ class PanelBio {
 	}
 
 	tfBio(n, artist, focus) {
-		n = n.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_artist%/gi, '$&#@!%path%#@!').replace(/%bio_artist%/gi, $Bio.tfEscape(artist)).replace(/%bio_album%/gi, this.tf.album).replace(/%bio_title%/gi, this.tf.title);
+		n = n.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_artist%/gi, '$&#@!%path%#@!').replace(/%bio_artist%/gi, $Bio.tfEscape(artist)).replace(/%bio_album%/gi, cfg.tf.album).replace(/%bio_title%/gi, cfg.tf.title);
 		n = $Bio.eval(n, focus);
 		return n.replace(/#@!.*?#@!/g, '');
 	}
 
 	tfRev(n, albumArtist, album, focus) {
-		n = n.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*(%bio_albumartist%|%bio_album%)/gi, '$&#@!%path%#@!').replace(/%bio_albumartist%/gi, $Bio.tfEscape(albumArtist)).replace(/%bio_album%/gi, $Bio.tfEscape(album)).replace(/%bio_title%/gi, this.tf.title);
+		n = n.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*(%bio_albumartist%|%bio_album%)/gi, '$&#@!%path%#@!').replace(/%bio_albumartist%/gi, $Bio.tfEscape(albumArtist)).replace(/%bio_album%/gi, $Bio.tfEscape(album)).replace(/%bio_title%/gi, cfg.tf.title);
 		n = $Bio.eval(n, focus);
 		return n.replace(/#@!.*?#@!/g, '');
 	}

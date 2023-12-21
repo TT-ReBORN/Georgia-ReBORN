@@ -41,7 +41,7 @@ class LyricsBio {
 	}
 
 	clearHighlight() {
-		this.lyrics.forEach(v => v.highlight = false);
+		this.lyrics.forEach(v => { v.highlight = false; });
 	}
 
 	display() {
@@ -61,27 +61,26 @@ class LyricsBio {
 
 		let col = uiBio.col.lyricsNormal;
 
-		let fadeBot = !this.shadowEffect ? this.transBot[transition_factor] : col;
+		let fadeBot = this.transBot[transition_factor];
 		if (!fadeBot) {
 			fadeBot = $Bio.RGBtoRGBA(col, alpha);
 			this.transBot[transition_factor] = fadeBot;
 		}
 
-		let fadeTop = !this.shadowEffect ? this.transTop[transition_factor] : col;
+		let fadeTop = this.transTop[transition_factor];
 		if (!fadeTop) {
 			fadeTop = $Bio.RGBtoRGBA(col, 255 - alpha);
 			this.transTop[transition_factor] = fadeTop;
 		}
 
 		gr.SetTextRenderingHint(5);
-
 		this.lyrics.forEach((lyric, i) => {
 			const lyric_y = this.lineHeight * i;
 			const line_y = Math.round(y - top + lyric_y);
 			const bottomLine = line_y > this.bot;
 			if (this.showlyric(lyric_y, top)) {
 				const font = !lyric.highlight ? uiBio.font.lyrics : this.font.lyrics;
-				if (this.shadowEffect) {
+				if (this.shadowEffect && line_y >= this.top && !bottomLine) {
 					if (this.dropNegativeShadowLevel) {
 						gr.DrawString(lyric.content, font, uiBio.col.dropShadow, this.x - this.dropNegativeShadowLevel, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
 						gr.DrawString(lyric.content, font, uiBio.col.dropShadow, this.x, line_y - this.dropNegativeShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
@@ -94,7 +93,10 @@ class LyricsBio {
 			}
 		});
 		if (this.showOffset) {
-			gr.DrawString(`Offset: ${this.userOffset / 1000}s`, uiBio.font.main, uiBio.col.lyricsHighlight, this.x, this.top, this.w, this.lineHeight + 1, this.alignRight);
+			this.offsetW = gr.CalcTextWidth(`Offset: ${this.userOffset / 1000}s`, uiBio.font.lyrics) + this.lineHeight;
+			gr.FillRoundRect(this.x + this.w - this.offsetW * 0.5 + this.arc, this.top, this.offsetW, this.lineHeight + 1, this.arc, this.arc, uiBio.col.popupBg);
+			gr.DrawRoundRect(this.x + this.w - this.offsetW * 0.5 + this.arc, this.top, this.offsetW, this.lineHeight + 1, this.arc, this.arc, 1, 0x64000000);
+			gr.DrawString(`Offset: ${this.userOffset / 1000}s`, uiBio.font.lyrics, uiBio.col.popupText, this.x + this.offsetW * 0.5 - this.lineHeight * 0.5, this.top, this.w, this.lineHeight + 1, this.alignRight);
 		}
 	}
 
@@ -107,7 +109,7 @@ class LyricsBio {
 					if (l[1] > this.maxLyrWidth) this.maxLyrWidth = l[1];
 					if (l.length > 2) {
 						const numLines = l.length / 2;
-						let maxScrollTime = this.durationScroll;
+						let maxScrollTime = this.durationScroll * 2;
 						if (lyrics[i + 1]) {
 							maxScrollTime = Math.min(maxScrollTime * numLines, (lyrics[i + 1].timestamp - lyrics[i].timestamp) / numLines);
 						}
@@ -178,12 +180,13 @@ class LyricsBio {
 			this.userOffset = 0;
 		}
 		this.font = {
-			lyrics: !pptBio.largerSyncLyricLine ? uiBio.font.lyrics : gdi.Font(uiBio.font.main.Name, uiBio.font.zoomSize * 1.33, uiBio.font.lyrics.Style)
+			lyrics: !pptBio.largerSyncLyricLine ? uiBio.font.lyrics : gdi.Font(uiBio.font.main.Name, Math.floor(uiBio.font.zoomSize * 1.33), uiBio.font.lyrics.Style)
 		}
 		this.alignCenter = StringFormat(1, 1);
 		this.alignRight = StringFormat(2, 1);
 		this.init = true;
-		this.lineHeight = !pptBio.largerSyncLyricLine ? uiBio.font.lyrics_h + 4 * $Bio.scale : uiBio.font.lyrics_h * 1.33;
+		this.lineHeight = !pptBio.largerSyncLyricLine ? uiBio.font.lyrics_h + 4 * $Bio.scale : Math.floor(uiBio.font.lyrics_h * 1.33);
+		this.arc = SCALE(6);
 		pptBio.lyricsScrollTimeMax = $Bio.clamp(Math.round(pptBio.lyricsScrollTimeMax), 0, 3000);
 		pptBio.lyricsScrollTimeAvg = $Bio.clamp(Math.round(pptBio.lyricsScrollTimeAvg), 0, 3000);
 		this.durationScroll = pptBio.lyricsScrollMaxMethod ? pptBio.lyricsScrollTimeMax : Math.round(pptBio.lyricsScrollTimeAvg * 2 / 3);
@@ -208,17 +211,15 @@ class LyricsBio {
 		pptBio.lyricsFadeHeight = $Bio.clamp(pptBio.lyricsFadeHeight, -1, 2);
 		const fadeHeight = this.lineHeight * pptBio.lyricsFadeHeight;
 		this.x = panelBio.text.l;
-		this.y = panelBio.text.t - (!this.shadowEffect ? this.lineHeight + fadeHeight : 0);
+		this.y = panelBio.text.t - this.lineHeight + fadeHeight;
 		this.w = panelBio.text.w;
-		this.h = panelBio.lines_drawn * uiBio.font.main_h + (!this.shadowEffect ? this.lineHeight * 2 - fadeHeight * 2 : 0);
-
+		this.h = panelBio.lines_drawn * uiBio.font.main_h + this.lineHeight * 2 - fadeHeight * 2;
 		const linesDrawn = Math.floor(this.h / this.lineHeight);
 		const oddNumLines = linesDrawn % 2;
-		const realHeight = this.lineHeight * linesDrawn;
 
 		this.locusOffset = this.h / 2 - (oddNumLines ? this.lineHeight / 2 : this.lineHeight);
 		this.top = this.locusOffset - this.lineHeight * (Math.floor(linesDrawn / 2) - (oddNumLines ? 1 : 2)) + this.y;
-		this.bot = this.top + this.lineHeight * (linesDrawn - 3);
+		this.bot = Math.round(this.top + this.lineHeight * (linesDrawn - 3));
 
 		this.type = {
 			none: false,
@@ -237,8 +238,8 @@ class LyricsBio {
 		this.showOffset = this.type.synced && this.userOffset != 0;
 		clearTimeout(this.showOffsetTimer);
 		this.showOffsetTimer = setTimeout(() => {
-			this.showOffset = false;
 			this.repaintRect();
+			this.showOffset = false;
 		}, 5000);
 		this.seek();
 	}
@@ -271,7 +272,7 @@ class LyricsBio {
 			case this.type.unsynced: {
 				this.format(this.parseUnsyncedLyrics(lyr, this.type.none));
 				const ratio = !panelBio.isRadio() ? this.trackLength / this.lyrics.length * 1000 : 2000;
-				this.lyrics.forEach((line, i) => line.timestamp = ratio * i);
+				this.lyrics.forEach((line, i) => { line.timestamp = ratio * i });
 				break;
 			}
 		}
@@ -312,7 +313,7 @@ class LyricsBio {
 	repaintRect() {
 		if (!displayBiography) return;
 		window.RepaintRect(this.x + (this.w - this.maxLyrWidth) / 2, this.y, this.maxLyrWidth, this.h + this.lineHeight);
-		if (this.showOffset) window.RepaintRect(this.x, this.top, this.w, this.lineHeight + 1);
+		if (this.showOffset) window.RepaintRect(this.w - this.arc, this.top - SCALE(3), this.w * 0.5 - this.x * 2 - this.offsetW * 0.5 + this.arc, this.lineHeight + SCALE(6));
 	}
 
 	scrollUpdateNeeded() {
@@ -335,7 +336,7 @@ class LyricsBio {
 	}
 
 	showlyric(y, top) {
-		return y >= top && y + this.lineHeight * (!this.shadowEffect ? 2 : 1) <= this.h + top;
+		return y >= top && y + this.lineHeight * 2 <= this.h + top;
 	}
 
 	smoothScroll() {

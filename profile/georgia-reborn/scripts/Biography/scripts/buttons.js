@@ -6,16 +6,15 @@ class ButtonsBio {
 		this.btns = {};
 		this.cur = null;
 		this.Dn = false;
+		this.fbv1 = fb.Version.startsWith('1');
 		this.traceBtn = false;
 		this.transition;
 
 		this.flag = {
 			x: panelBio.heading.x,
-			w: Math.round(uiBio.font.heading_h * 1.2)
+			h: Math.round(uiBio.font.heading_h * 0.56)
 		};
-		this.flag.h = Math.round(this.flag.w * 0.6);
 		this.flag.y = panelBio.text.t - uiBio.heading.h + Math.round((uiBio.font.heading_h - this.flag.h) / 2);
-		this.flag.sp = Math.round(this.flag.w * 1.42);
 
 		this.lookUp = {
 			baseSize: 15 * $Bio.scale,
@@ -213,16 +212,16 @@ class ButtonsBio {
 			const iconFont = gdi.Font(this.scr.iconFontName, sz, this.scr.iconFontStyle);
 			this.alpha = !uiBio.sbar.col ? [180, 220, 255] : [180, 220, 255];
 			const hovAlpha = (!uiBio.sbar.col ? 75 : (!uiBio.sbar.type ? 68 : 51)) * 0.4;
-			this.scr.hover = !uiBio.sbar.col ? RGBA(uiBio.col.t, uiBio.col.t, uiBio.col.t, hovAlpha) : uiBio.col.text & RGBA(255, 255, 255, hovAlpha);
+			this.scr.hover = pptBio.sbarType == 3 ? RGBA(55, 55, 55, 255) : !uiBio.sbar.col ? RGBA(uiBio.col.t, uiBio.col.t, uiBio.col.t, hovAlpha) : uiBio.col.text & RGBA(255, 255, 255, hovAlpha);
 			this.scr.img = $Bio.gr(sz, sz, true, g => {
 				g.SetTextRenderingHint(3);
 				g.SetSmoothingMode(2);
-				if (pptBio.sbarCol) {
-					this.scr.arrow == 0 ? g.FillPolygon(uiBio.col.text, 1, [50 * sc, 0, 100 * sc, 76 * sc, 0, 76 * sc]) :
-					g.DrawString(this.scr.arrow, iconFont, uiBio.col.sbarBtns, 0, sz * this.scr.pad, sz, sz, StringFormat(1, 1));
+				if (pptBio.sbarType == 3) {
+					g.DrawString(this.scr.arrow, iconFont, RGBA(103, 103, 103, 255), 0, sz * this.scr.pad, sz, sz, StringFormat(1, 1));
+				} else if (pptBio.sbarCol) {
+					this.scr.arrow == 0 ? g.FillPolygon(uiBio.col.text, 1, [50 * sc, 0, 100 * sc, 76 * sc, 0, 76 * sc]) : g.DrawString(this.scr.arrow, iconFont, uiBio.col.text, 0, sz * this.scr.pad, sz, sz, StringFormat(1, 1));
 				} else {
-					this.scr.arrow == 0 ? g.FillPolygon(RGBA(uiBio.col.t, uiBio.col.t, uiBio.col.t, 255), 1, [50 * sc, 0, 100 * sc, 76 * sc, 0, 76 * sc]) :
-					g.DrawString(this.scr.arrow, iconFont, RGBA(uiBio.col.t, uiBio.col.t, uiBio.col.t, 255), 0, sz * this.scr.pad, sz, sz, StringFormat(1, 1));
+					this.scr.arrow == 0 ? g.FillPolygon(RGBA(uiBio.col.t, uiBio.col.t, uiBio.col.t, 255), 1, [50 * sc, 0, 100 * sc, 76 * sc, 0, 76 * sc]) : g.DrawString(this.scr.arrow, iconFont, RGBA(uiBio.col.t, uiBio.col.t, uiBio.col.t, 255), 0, sz * this.scr.pad, sz, sz, StringFormat(1, 1));
 				}
 				g.SetSmoothingMode(0);
 			});
@@ -422,7 +421,8 @@ class ButtonsBio {
 			this.scr.x1 = panelBio.sbar.x;
 			this.scr.yUp1 = Math.round(panelBio.sbar.y);
 			this.scr.yDn1 = Math.round(panelBio.sbar.y + panelBio.sbar.h - uiBio.sbar.but_h);
-			if (uiBio.sbar.type < 2) {
+
+			if (uiBio.sbar.type != 2) {
 				this.scr.x1 -= 1;
 				this.scr.x2 = (uiBio.sbar.but_h - uiBio.sbar.but_w) / 2;
 				this.scr.yUp2 = -uiBio.sbar.arrowPad + this.scr.yUp1 + (uiBio.sbar.but_h - 1 - uiBio.sbar.but_w) / 2;
@@ -430,6 +430,7 @@ class ButtonsBio {
 			}
 			this.setLookUpPos();
 		}
+		const n = pptBio.artistView ? 'bio' : 'rev';
 		this.check();
 		if (pptBio.heading) {
 			this.btns.heading = new BtnBio(panelBio.heading.x, panelBio.text.t - uiBio.heading.h, panelBio.heading.w - (this.lookUp.pos == 2 ? this.lookUp.sz + (pptBio.hdPos != 2 ? this.lookUp.gap : 10) * $Bio.scale : 0), uiBio.font.heading_h, 6, $Bio.clamp(Math.round(panelBio.text.t - uiBio.heading.h + (uiBio.font.heading_h - this.src.h) / 2 + pptBio.hdBtnPad), panelBio.text.t - uiBio.heading.h, panelBio.text.t - uiBio.heading.h + uiBio.font.heading_h - this.src.h), '', '', '', !pptBio.heading || pptBio.img_only, '', () => {
@@ -449,7 +450,6 @@ class ButtonsBio {
 				this.check(true);
 				if (uiBio.style.isBlur) window.Repaint();
 			}, () => this.srcTiptext(), true, 'heading');
-			const n = pptBio.artistView ? 'bio' : 'rev';
 			this.src.col = {
 				normal: txt[n].loaded.ix != 1 || !uiBio.show.btnRedLastfm ? uiBio.style.bg || !uiBio.style.bg && !uiBio.style.trans || uiBio.blur.dark || uiBio.blur.light || uiBio.col.headingBtn !== '' ? uiBio.col.headBtn : RGB(255, 255, 255) : RGB(225, 225, 245),
 				hover: txt[n].loaded.ix != 1 || !uiBio.show.btnRedLastfm ? uiBio.style.bg || !uiBio.style.bg && !uiBio.style.trans || uiBio.blur.dark || uiBio.blur.light || uiBio.col.headingBtn !== '' ? uiBio.col.text_h : RGB(255, 255, 255) : RGB(225, 225, 245)
@@ -457,12 +457,10 @@ class ButtonsBio {
 			if (!pptBio.hdPos) {
 				this.flag = {
 					x: panelBio.heading.x,
-					w: Math.round(uiBio.font.heading_h * 0.9)
+					h: Math.round(uiBio.font.heading_h * 0.56)
 				};
-				this.flag.h = Math.round(this.flag.w * 0.65);
 				this.flag.y = panelBio.text.t - uiBio.heading.h + Math.round((uiBio.font.heading_h - this.flag.h) / 2);
 				if (uiBio.font.heading_h >= 28 && uiBio.font.heading_h % 2 == 0) this.flag.y++;
-				this.flag.sp = Math.round(this.flag.w * 1.42);
 			} else this.flag.sp = 0;
 		} else delete this.btns.heading;
 		if (panelBio.id.lookUp) {
@@ -472,13 +470,15 @@ class ButtonsBio {
 			}, !panelBio.id.lookUp, '', () => bMenu.load(this.lookUp.x + this.lookUp.p1, this.lookUp.y + this.lookUp.h), () => pref.showTooltipBiography ? `Click: look up...\r\n${!panelBio.id.lyricsSource && !panelBio.id.nowplayingSource ? `Middle click: ${!panelBio.lock ? 'lock: stop track change updates' : 'Unlock'}...` : 'Lock N/A with enabled lyrics or nowplaying sources'}` : '', true, 'lookUp');
 		} else delete this.btns.lookUp;
 		if (pptBio.summaryShow) {
-			this.btns.summary = new Btn(panelBio.text.l, panelBio.text.t, panelBio.text.w, pptBio.artistView ? (txt.line.h.bio * txt.bio.summaryEnd) : (txt.line.h.rev * txt.rev.summaryEnd), 8, this.lookUp.p1, this.lookUp.p2, '', {
+			const hide = txt[n].loaded.txt && (txt.reader[n].lyrics || txt.reader[n].props || txt.reader[n].nowplaying) || pptBio.img_only;
+			this.btns.summary = new Btn(panelBio.text.l, panelBio.text.t, panelBio.text.w,
+			pptBio.artistView ? (txt.line.h.bio * txt.bio.summaryEnd) : (txt.line.h.rev * txt.rev.summaryEnd), 8, this.lookUp.p1, this.lookUp.p2, '', {
 				normal: RGBA(this.lookUp.col[0], this.lookUp.col[1], this.lookUp.col[2], this.lookUp.pos == 2 ? 100 : 50),
 				hover: RGBA(this.lookUp.col[0], this.lookUp.col[1], this.lookUp.col[2], this.lookUp.pos == 2 ? 200 : this.alpha[1])
-			}, '', '', () => { pptBio.toggle('summaryCompact'); txt.refresh(1); }, '', false, 'summary');
+			}, hide, '', () => { pptBio.toggle('summaryCompact'); txt.refresh(1); }, '', false, 'summary');
 		} else delete this.btns.summary;
 		if (pptBio.sbarShow) {
-			switch (uiBio.sbar.type) {
+			switch (pptBio.sbarType) {
 				case 2:
 					this.btns.alb_scrollUp = new BtnBio(this.scr.x1, this.scr.yUp1, uiBio.sbar.but_h, uiBio.sbar.but_h, 5, '', '', '', {
 						normal: 1,
@@ -548,7 +548,7 @@ class ButtonsBio {
 	}
 
 	setLookUpPos() {
-		this.lookUp.pos = pptBio.hdLine == 2 && pptBio.hdPos == 2 ? 0 : uiBio.sbar.type < panelBio.sbar.style || !pptBio.text_only ? panelBio.id.lookUp : 0;
+		this.lookUp.pos = pptBio.hdLine == 2 && pptBio.hdPos == 2 ? 0 : pptBio.heading ? panelBio.id.lookUp : 0;
 		this.lookUp.x = [0, 1 * $Bio.scale, (!pptBio.heading || pptBio.img_only ? panelBio.w - 1 * $Bio.scale - this.lookUp.sz - 1 : panelBio.heading.x + panelBio.heading.w - this.lookUp.sz) - 9 * $Bio.scale][this.lookUp.pos];
 		this.lookUp.y = [0, 0, !pptBio.heading || pptBio.img_only ? /*0*/ 9999 : panelBio.text.t - uiBio.heading.h + (uiBio.font.heading_h - this.lookUp.sz) / 2][this.lookUp.pos];
 		this.lookUp.w = [12, this.lookUp.sz * 1.5, panelBio.w - this.lookUp.x][this.lookUp.pos];
@@ -618,28 +618,33 @@ class ButtonsBio {
 	}
 
 	setSbarIcon() {
-		switch (pptBio.sbarButType) {
-			case 0:
-				this.scr.iconFontName = 'Segoe UI Symbol';
-				this.scr.iconFontStyle = 0;
-				if (!uiBio.sbar.type) {
-					this.scr.arrow = uiBio.sbar.but_w < Math.round(14 * $Bio.scale) ? '\uE018' : '\uE0A0';
-					this.scr.pad = uiBio.sbar.but_w < Math.round(15 * $Bio.scale) ? -0.3 : -0.22;
-				} else {
-					this.scr.arrow = uiBio.sbar.but_w < Math.round(14 * $Bio.scale) ? '\uE018' : '\uE0A0';
-					this.scr.pad = uiBio.sbar.but_w < Math.round(14 * $Bio.scale) ? -0.26 : -0.22;
-				}
-				break;
-			case 1:
-				this.scr.arrow = 0;
-				break;
-			case 2:
-				this.scr.iconFontName = pptBio.butCustIconFont;
-				this.scr.iconFontStyle = 0;
-				this.scr.arrow = pptBio.arrowSymbol.charAt().trim();
-				if (!this.scr.arrow.length) this.scr.arrow = 0;
-				this.scr.pad = $Bio.clamp(pptBio.sbarButPad / 100, -0.5, 0.3);
-				break;
+		if (pptBio.sbarType == 3) {
+			this.scr.arrow = uiBio.sbar.but_w < Math.round(14 * $Bio.scale) ? '\uE018' : '\uE0A0';
+			this.scr.pad = uiBio.sbar.but_w < Math.round(14 * $Bio.scale) ? -0.26 : -0.22;
+		} else {
+			switch (pptBio.sbarButType) {
+				case 0:
+					this.scr.iconFontName = 'Segoe UI Symbol';
+					this.scr.iconFontStyle = 0;
+					if (!uiBio.sbar.type) {
+						this.scr.arrow = uiBio.sbar.but_w < Math.round(14 * $Bio.scale) ? '\uE018' : '\uE0A0';
+						this.scr.pad = uiBio.sbar.but_w < Math.round(15 * $Bio.scale) ? -0.3 : -0.22;
+					} else {
+						this.scr.arrow = uiBio.sbar.but_w < Math.round(14 * $Bio.scale) ? '\uE018' : '\uE0A0';
+						this.scr.pad = uiBio.sbar.but_w < Math.round(14 * $Bio.scale) ? -0.26 : -0.22;
+					}
+					break;
+				case 1:
+					this.scr.arrow = 0;
+					break;
+				case 2:
+					this.scr.iconFontName = pptBio.butCustIconFont;
+					this.scr.iconFontStyle = 0;
+					this.scr.arrow = pptBio.arrowSymbol.charAt().trim();
+					if (!this.scr.arrow.length) this.scr.arrow = 0;
+					this.scr.pad = $Bio.clamp(pptBio.sbarButPad / 100, -0.5, 0.3);
+					break;
+			}
 		}
 	}
 
@@ -671,9 +676,13 @@ class ButtonsBio {
 	}
 
 	srcTiptext() {
+		const n = pptBio.artistView ? 'bio' : 'rev';
+		const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`];
+		const flagWidthTotal = flagImgs.reduce((sum, img) => sum + img.Width + SCALE(biographyFontSize) - (RES_4K ? 60 : 18), 0);
+		const flagTooltip = `[${GetMetaValues(tf.artist_country).join(' \u00B7 ')}] ${txt.artist}`;
 		const suffix = pref.showTooltipBiography ? this.isNextSourceAvailable() ? 'text' : 'N/A' : '';
-		const type = pref.showTooltipBiography ? panelBio.m.x > panelBio.heading.x + panelBio.heading.w / 2 ? 'Next ' : 'Previous ' : '';
-		return this.src.visible && this.trace_src(panelBio.m.x, panelBio.m.y) || !butBio.tooltipBio.name ? `${type}${suffix}` : butBio.tooltipBio.name.replace(/&/g, '&&');
+		const type = pref.showTooltipBiography ? panelBio.m.x > panelBio.heading.x + panelBio.heading.w / 2 ? `Next ${suffix}` : panelBio.m.x > panelBio.heading.x ? (txt[n].flag && txt[n].flagCountry && panelBio.m.x < panelBio.heading.x + flagWidthTotal ? flagTooltip : `Previous ${suffix}`) : '' : '';
+		return this.src.visible && this.trace_src(panelBio.m.x, panelBio.m.y) || !butBio.tooltipBio.name ? type : !this.fbv1 ? butBio.tooltipBio.name : butBio.tooltipBio.name.replace(/&/g, '&&');
 	}
 
 	trace(btn, x, y) {
@@ -751,6 +760,8 @@ class BtnBio {
 			case 7:
 				this.drawLookUp(gr);
 				break;
+			case 8: // summary doesn't draw
+				break;
 			default:
 				this.drawScrollBtn(gr);
 				break;
@@ -760,7 +771,6 @@ class BtnBio {
 	drawHeading(gr) {
 		const n = pptBio.artistView ? 'bio' : 'rev';
 		const flag = txt[n].flag;
-		const countryMetaFlag = txt.countryFlagMeta.length > 0;
 		let dh;
 		let dx1;
 		let dx2;
@@ -806,32 +816,31 @@ class BtnBio {
 				}
 				break;
 		}
-		if (flag || countryMetaFlag) {
+		if (flag) {
 			gr.SetInterpolationMode(7);
 			if (!pptBio.hdPos) {
 				const w = uiBio.style.l_w;
 				const o = Math.floor(w / 2);
-				if (countryMetaFlag) {
-					const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`];
-					const maxFlags = Math.min(flagImgs.length, 6);
-					butBio.flag.x  = this.x;
-					butBio.flag.sp = 0;
-					for (let i = 0; i < maxFlags; i++) {
-						gr.DrawImage(flagImgs[i], butBio.flag.x, butBio.flag.y - butBio.flag.h * 0.33, flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 76 : 26), butBio.flag.h * 1.66, 0, 0, flagImgs[i].Width, flagImgs[i].Height);
-						butBio.flag.x  += flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 60 : 18);
-						butBio.flag.sp += flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 60 : 18);
-					}
-				}
-				else if (flag) {
-					gr.DrawImage(flag, butBio.flag.x, butBio.flag.y, butBio.flag.w, butBio.flag.h, 0, 0, flag.Width, flag.Height, '', 212);
-				}
+				butBio.flag.w = Math.round(butBio.flag.h * flag.Width / flag.Height);
+				butBio.flag.sp = Math.round(butBio.flag.h * 0.75 + butBio.flag.w);
+				// gr.DrawImage(flag, butBio.flag.x, butBio.flag.y, butBio.flag.w, butBio.flag.h, 0, 0, flag.Width, flag.Height, '', 212);
 				// gr.DrawRect(butBio.flag.x + o, butBio.flag.y + o, butBio.flag.w - w, butBio.flag.h - w + 1, w, uiBio.col.imgBor);
+
+				const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`];
+				const maxFlags = Math.min(flagImgs.length, 6);
+				butBio.flag.x  = this.x;
+				butBio.flag.sp = 0;
+				for (let i = 0; i < maxFlags; i++) {
+					gr.DrawImage(flagImgs[i], butBio.flag.x, butBio.flag.y - butBio.flag.h * 0.33, flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 76 : 26), butBio.flag.h * 1.66, 0, 0, flagImgs[i].Width, flagImgs[i].Height);
+					butBio.flag.x  += flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 60 : 18);
+					butBio.flag.sp += flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 60 : 18);
+				}
 			}
 			gr.SetInterpolationMode(2);
 			const h_x = (pptBio.hdPos != 2 ? dx1 : this.x) + butBio.flag.sp;
 			const h_w = (pptBio.hdPos != 2 ? this.w - spacer - butBio.src.w - (!pptBio.hdPos ? 10 : 0) : this.w - spacer) - butBio.flag.sp;
 			gr.GdiDrawText(dh, uiBio.font.heading, uiBio.col.headingText, h_x, this.y, h_w, this.h, pptBio.hdPos != 2 ? txt.c[pptBio.hdPos] : txt.cc);
-			butBio.tooltipBio.name = gr.CalcTextWidth(dh, uiBio.font.heading) > h_w ? dh : pref.showTooltipBiography ? countryMetaFlag ? txt.countryTooltipMeta : txt.countryTooltip : '';
+			butBio.tooltipBio.name = gr.CalcTextWidth(dh, uiBio.font.heading) > h_w ? (!flag || !txt[n].flagCountry ? dh : pref.showTooltipBiography ? `${txt[n].flagCountry} | ${dh}` : '') : '';
 			butBio.tooltipBio.x = h_x;
 			butBio.tooltipBio.w = h_w;
 		} else {
@@ -890,9 +899,12 @@ class BtnBio {
 	}
 
 	drawScrollBtn(gr) {
-		const a = this.state !== 'down' ? Math.min(butBio.alpha[0] + (butBio.alpha[1] - butBio.alpha[0]) * this.transition_factor, butBio.alpha[1]) : butBio.alpha[2];
-		// if (this.state !== 'normal' && uiBio.sbar.type == 1) gr.FillSolidRect(panelBio.sbar.x, this.y, uiBio.sbar.w, this.h, butBio.scr.hover);
+		gr.SetSmoothingMode(3);
+		const type3 = pptBio.sbarType == 3;
+		const a = type3 ? 255 : this.state !== 'down' ? Math.min(butBio.alpha[0] + (butBio.alpha[1] - butBio.alpha[0]) * this.transition_factor, butBio.alpha[1]) : butBio.alpha[2];
+		// if (this.state !== 'normal' && (uiBio.sbar.type == 1 || type3)) gr.FillSolidRect(panelBio.sbar.x + (!type3 ?  0 : uiBio.style.l_w), this.y, uiBio.sbar.w - (!type3 ? 0 : uiBio.style.l_w * 2), this.h, butBio.scr.hover);
 		if (butBio.scr.img) gr.DrawImage(butBio.scr.img, this.x + this.p1, this.p2, this.p3, this.p3, 0, 0, butBio.scr.img.Width, butBio.scr.img.Height, this.type == 1 || this.type == 3 ? 0 : 180, a);
+		gr.SetSmoothingMode(0);
 	}
 
 	lbtn_dn(x, y) {

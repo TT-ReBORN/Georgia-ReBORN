@@ -6,6 +6,7 @@ class ScrollbarBio {
 		this.alpha = 255;
 		this.alpha1 = this.alpha;
 		this.alpha2 = 255;
+		this.arc = 1;
 		this.but_h = 11;
 		this.clock = Date.now();
 		this.col = {};
@@ -202,22 +203,34 @@ class ScrollbarBio {
 			// Theme Light scrollbar colors
 			if (pptBio.theme == 3) thumbColors = [RGBA(100, 100, 100, this.alpha2 + this.alpha), RGBA(60, 60, 60, this.alpha), RGBA(60, 60, 60, this.alpha2)];
 
+			gr.SetSmoothingMode(this.narrow.show || pptBio.sbarType == 2 || this.arc < 1 ? 3 : 4);
 			switch (uiBio.sbar.type) {
 				case 0:
-					gr.FillSolidRect(sbar_x + (this.narrow.show ? uiBio.sbar.narrowWidth + (RES_4K ? -4 : 1) : 0), this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
+					if (this.arc > 0 && !this.narrow.show) gr.FillRoundRect(sbar_x - 0.5, this.y + this.bar.y, sbar_w, this.bar.h, this.arc, this.arc, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col.max);
+					else gr.FillSolidRect(sbar_x + (this.narrow.show ? uiBio.sbar.narrowWidth + (RES_4K ? -4 : 1) : 0), this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
 					break;
 				case 1:
-					gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
+					if (this.arc > 0 && !this.narrow.show) gr.FillRoundRect(sbar_x - 0.5, this.y + this.bar.y, sbar_w, this.bar.h, this.arc, this.arc, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col.max);
+					else gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
 					if (pref.theme.startsWith('custom')) {
 						gr.FillSolidRect(sbar_x, this.y + this.bar.y, sbar_w, this.bar.h, uiBio.col.sbarHoveredRGBA);
 					}
 					break;
-				case 2:
-					uiBio.theme.SetPartAndStateID(6, 1);
-					if (!this.narrow.show || pptBio.sbarShow != 1) uiBio.theme.DrawThemeBackground(gr, sbar_x, this.y, sbar_w, this.h);
-					uiBio.theme.SetPartAndStateID(3, this.narrow.show ? 2 : !this.hover && !this.bar.isDragging ? 1 : this.hover && !this.bar.isDragging ? 2 : 3);
-					uiBio.theme.DrawThemeBackground(gr, sbar_x + (this.narrow.show ? uiBio.sbar.narrowWidth + (RES_4K ? -4 : 1) : 0), this.y + this.bar.y, sbar_w, this.bar.h);
-					break;
+				case 2: // windows
+					switch (pptBio.sbarType) {
+						case 2: // light mode
+							uiBio.theme.SetPartAndStateID(6, 1);
+							if (!this.narrow.show || pptBio.sbarShow != 1) uiBio.theme.DrawThemeBackground(gr, sbar_x, this.y, sbar_w, this.h);
+							uiBio.theme.SetPartAndStateID(3, this.narrow.show ? 2 : !this.hover && !this.bar.isDragging ? 1 : this.hover && !this.bar.isDragging ? 2 : 3);
+							uiBio.theme.DrawThemeBackground(gr, sbar_x, this.y + this.bar.y, sbar_w, this.bar.h);
+							break;
+						case 3: // dark mode
+							if (!this.narrow.show || pptBio.sbarShow != 1) gr.FillSolidRect(sbar_x, this.y - panelBio.sbar.offset, this.w, this.h + panelBio.sbar.offset * 2, this.col.bg);
+							if (this.arc > 0 && !this.narrow.show) gr.FillRoundRect(sbar_x + (this.narrow.show ?  0 : uiBio.style.l_w) - 0.5, this.y + this.bar.y, sbar_w - (this.narrow.show ? 0 : uiBio.style.l_w * 2), this.bar.h, this.arc, this.arc, this.narrow.show ? RGB(77, 77, 77) : !this.bar.isDragging ? this.col[this.alpha] : this.col.max);
+							else gr.FillSolidRect(sbar_x + (this.narrow.show ?  0 : uiBio.style.l_w), this.y + this.bar.y, sbar_w - (this.narrow.show ? 0 : uiBio.style.l_w * 2), this.bar.h, this.narrow.show ? RGB(77, 77, 77) : !this.bar.isDragging ? this.col[this.alpha] : this.col.max);
+							break;
+					}
+				gr.SetSmoothingMode(0);
 			}
 		}
 	}
@@ -315,6 +328,8 @@ class ScrollbarBio {
 		// draw info
 		this.scrollbar.height = Math.round(this.h - this.but_h * 2);
 		this.bar.h = Math.max(Math.round(this.scrollbar.height * this.rows_drawn / this.row.count), $Bio.clamp(this.scrollbar.height / 2, 5, pptBio.sbarShow == 2 ? pptBio.sbarGripHeight : pptBio.sbarGripHeight * 2));
+		let min_w = Math.min(this.w, this.bar.h); if (pptBio.sbarType == 3) min_w -= uiBio.style.l_w * 2;
+		this.arc = !pptBio.sbarGripRounded ? 0 : Math.floor(min_w / 2);
 		this.scrollbar.travel = this.scrollbar.height - this.bar.h;
 		// scrolling info
 		this.scrollable_lines = this.rows_drawn > 0 ? this.row.count - this.rows_drawn : 0;
@@ -323,7 +338,7 @@ class ScrollbarBio {
 		this.bar.y = this.but_h + this.scrollbar.travel * (this.delta * this.ratio) / (this.row.count * this.row.h);
 		this.drag_distance_per_row = this.scrollbar.travel / this.scrollable_lines;
 		// panel info
-		this.narrow.x = this.x + this.w - $Bio.clamp(uiBio.narrowSbarWidth, 5, this.w);
+		this.narrow.x = this.x + this.w - $Bio.clamp(uiBio.narrowSbarWidth, 5, this.w) - (pptBio.sbarType > 1 ? 1 : 0);
 		this.max_scroll = this.scrollable_lines * this.row.h;
 		if (pptBio.sbarShow != 1) butBio.setScrollBtnsHide();
 	}
@@ -439,6 +454,7 @@ class ScrollbarBio {
 
 	setCol() { // not called by film type
 		this.alpha =
+			pptBio.sbarType == 3 ? 140 :
 			!uiBio.sbar.col ? 75 :
 			pref.theme.startsWith('custom') ? 0 :
 			['nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) ? 220 :
@@ -447,7 +463,7 @@ class ScrollbarBio {
 			pref.styleBlend ? 175 :
 			100;
 		this.alpha1 = this.alpha;
-		this.alpha2 = !uiBio.sbar.col ? 128 : 255;
+		this.alpha2 = pptBio.sbarType == 3 ? 255 : !uiBio.sbar.col ? 128 : 255;
 		this.inStep = uiBio.sbar.type && uiBio.sbar.col ? 12 : 18;
 		switch (uiBio.sbar.type) {
 			case 0:
@@ -476,6 +492,14 @@ class ScrollbarBio {
 						break;
 				}
 				break;
+		}
+
+		if (pptBio.sbarType == 3) { // dark mode
+			this.col.bg = RGB(23, 23, 23);
+			for (let i = 0; i < 116; i++) {
+				this.col[this.alpha + i] = RGBA(122, 122, 122, 140 + i);
+			}
+			this.col.max = RGBA(166, 166, 166, 255);
 		}
 	}
 

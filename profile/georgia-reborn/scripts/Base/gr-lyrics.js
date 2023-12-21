@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-06                                          * //
+// * Last change:    2023-12-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -258,6 +258,7 @@ class Lyrics {
 		this.alignRight = StringFormat(2, 1);
 		this.init = true;
 		this.lineHeight = this.font.lyrics_h;
+		this.arc = SCALE(6);
 		this.lyricsScrollTimeMax = pref.lyricsScrollRateAvg * 0.5;
 		this.lyricsScrollTimeAvg = pref.lyricsScrollRateMax;
 		this.lyricsScrollMaxMethod = 0;
@@ -466,7 +467,10 @@ class Lyrics {
 		});
 
 		if (this.showOffset) {
-			gr.DrawString(`Offset: ${this.userOffset / 1000}s`, ft.lyrics, col.lyricsHighlight, this.x, this.y, this.w, this.lineHeight + 1, this.alignRight);
+			this.offsetW = gr.CalcTextWidth(`Offset: ${this.userOffset / 1000}s`, ft.notification) + this.lineHeight;
+			gr.FillRoundRect(this.x + this.w - this.offsetW, this.y, this.offsetW, this.lineHeight + 1, this.arc, this.arc, col.popupBg);
+			gr.DrawRoundRect(this.x + this.w - this.offsetW, this.y, this.offsetW, this.lineHeight + 1, this.arc, this.arc, 1, 0x64000000);
+			gr.DrawString(`Offset: ${this.userOffset / 1000}s`, ft.notification, col.popupText, this.x - this.lineHeight * 0.5, this.y, this.w, this.lineHeight + 1, this.alignRight);
 		}
 	}
 

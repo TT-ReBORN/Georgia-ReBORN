@@ -292,6 +292,7 @@ let propertiesBio = [
 	['Panel Biography - Photo Style [Image Only] Regular-0 Auto-Fill-1 Circular-2', 1, 'artStyleImgOnly'],
 
 	['Panel Biography - Prefer Focus', false, 'focus'],
+
 	['Panel Biography - Rating Position Prefer Heading-0 Text-1', 0, 'star'],
 	['Panel Biography - Rating Show AllMusic', true, 'amRating'],
 	['Panel Biography - Rating Show Last.fm', true, 'lfmRating'],
@@ -316,11 +317,12 @@ let propertiesBio = [
 	['Panel Biography - Scrollbar Button Type', 0, 'sbarButType'],
 	['Panel Biography - Scrollbar Colour Grey-0 Blend-1', 1, 'sbarCol'],
 	['Panel Biography - Scrollbar Grip MinHeight', Math.round(20 * $Bio.scale), 'sbarGripHeight'],
+	['Panel Biography - Scrollbar Grip Rounded', false, 'sbarGripRounded'],
 	['Panel Biography - Scrollbar Height Prefer Full', false, 'sbarFullHeight'],
 	['Panel Biography - Scrollbar Padding', 0, 'sbarPad'],
 	['Panel Biography - Scrollbar Narrow Bar Width (0 = Auto)', 0, 'narrowSbarWidth'],
 	['Panel Biography - Scrollbar Show', 1, 'sbarShow'],
-	['Panel Biography - Scrollbar Type Default-0 Styled-1 Windows-2', 1, 'sbarType'],
+	['Panel Biography - Scrollbar Type Default-0 Styled-1 WindowsLightMode-2 WindowsDarkMode-3', 1, 'sbarType'],
 	['Panel Biography - Scrollbar Width', Math.round(11 * $Bio.scale), 'sbarWidth'],
 	['Panel Biography - Scrollbar Width Bar', 11, 'sbarBase_w'],
 	['Panel Biography - Scrollbar Windows Metrics', false, 'sbarWinMetrics'],
@@ -424,6 +426,7 @@ let propertiesBio = [
 	['Panel Biography - Track Review', 0, 'inclTrackRev'],
 	['Panel Biography - Track Review Show Options', false, 'showTrackRevOptions'],
 	['Panel Biography - Touch Step 1-10', 1, 'touchStep'],
+	['Panel Biography - Update Not Found', true, 'updateNotFound'],
 	['Panel Biography - Zoom Font Size (%)', 100, 'zoomFont'],
 	['Panel Biography - Zoom Heading Font Size (%)', 115, 'zoomHead'],
 	['Panel Biography - Zoom Button Heading Size (%)', 100, 'zoomHeadBtn'],
@@ -457,3 +460,5 @@ if (pptBio.get('Panel Biography - Remove Old Properties', true)) {
 	oldProperties.forEach(v => window.SetProperty(v, null));
 	pptBio.set('Panel Biography - Remove Old Properties', false);
 }
+
+window.SetProperty('Panel Biography - Scrollbar Type Default-0 Styled-1 Windows-2', null);

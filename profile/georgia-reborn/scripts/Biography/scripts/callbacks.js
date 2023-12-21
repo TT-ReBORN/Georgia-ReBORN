@@ -426,8 +426,12 @@ class BiographyCallbacks {
 			}
 			case 'Sync image':
 				if (!pptBio.themed) break;
-				syncBio.image(new GdiBitmap(info.image), info.id);
-				break
+				syncBio.img = { image: new GdiBitmap(info.image), id: info.id };
+				if (!panelBio.block()) {
+					syncBio.image(syncBio.img.image, syncBio.img.id);
+					syncBio.get = false;
+				} else syncBio.get = true;
+				break;
 		}
 	}
 
@@ -488,12 +492,12 @@ class BiographyCallbacks {
 		}
 	}
 
-	on_playback_time(t) {
+	on_playback_time() {
 		if (panelBio.block()) return;
 		const n = pptBio.artistView ? 'bio' : 'rev';
 		if ((txt[n].loaded.txt && txt.reader[n].nowplaying || pptBio.sourceAll) && txt.reader[n].perSec) {
 			txt.logScrollPos();
-			txt.getText();
+			txt.getText('', '', 'playbackTime');
 			txt.paint();
 		}
 	}
@@ -555,9 +559,9 @@ class BiographyCallbacks {
 		panelBio.calcText = true;
 		txt.on_size();
 
-		if (pptBio.themed && pptBio.theme) {
+		if (pptBio.themed && (pptBio.theme || pptBio.themeBgImage)) {
 			const themed_image = pref.customLibraryDir ? `${globals.customLibraryDir}cache\\library\\themed\\themed_image.bmp` :  `${fb.ProfilePath}cache\\library\\themed\\themed_image.bmp`;
-			if ($Bio.file(themed_image)) syncBio.image(gdi.Image(themed_image));
+			if ($Bio.file(themed_image) && !panelBio.block()) syncBio.image(gdi.Image(themed_image));
 		}
 		imgBio.on_size();
 		filmStrip.on_size();
@@ -678,7 +682,7 @@ this.on_playback_dynamic_info_track = () => biography.on_playback_dynamic_info_t
 this.on_playback_new_track = () => biography.on_playback_new_track();
 this.on_playback_pause = (state) => biography.on_playback_pause(state);
 this.on_playback_seek = () => biography.on_playback_seek();
-this.on_playback_time = (t) => biography.on_playback_time(t);
+this.on_playback_time = () => biography.on_playback_time();
 this.on_playback_stop = (reason) => biography.on_playback_stop(reason);
 this.on_playlist_items_added = () => biography.on_playlist_items_added();
 this.on_playlist_items_removed = () => biography.on_playlist_items_removed();

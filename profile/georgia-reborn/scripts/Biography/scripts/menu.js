@@ -693,7 +693,7 @@ class MenuItemsBio {
 		const m = pptBio.artistView ? pptBio.bioMode : pptBio.revMode;
 		this.display.check = [pptBio.sameStyle ? !pptBio.img_only && !pptBio.text_only : m == 0, pptBio.sameStyle ? pptBio.img_only : m == 1, pptBio.sameStyle ? pptBio.text_only : m == 2, pptBio.showFilmStrip, pptBio.heading, pptBio.summaryShow, false, pptBio.artistView, !pptBio.artistView, !panelBio.id.focus, panelBio.id.focus];
 		const n = [lg['Image+text'], lg.Image, lg.Text, lg.Filmstrip, lg.Heading, lg.Summary, pptBio.summaryCompact ? lg['Summary expand'] : lg['Summary compact'], lg['Artist view'], lg['Album view'], lg['Prefer nowplaying'], !panelBio.id.lyricsSource && !panelBio.id.nowplayingSource ? lg['Follow selected track (playlist)'] : lg['Follow selected track: N/A lyrics or nowplaying enabled']];
-		const click = [!this.display.check[0] ? `\t${lg['Middle click']}` : '', !this.display.check[1] && !pptBio.text_only && !pptBio.img_only ? `\t${lg['Middle click']}` : '', !this.display.check[2] && !pptBio.img_only ? `\t${lg['Middle click']}` : '', `\t${lg['Alt+Middle click']}`, '', '', `\t${lg.Click}`, !pptBio.artistView ? (!pptBio.dblClickToggle ? `\t${lg.Click}` : `\t${lg['Double click']}`) : '', pptBio.artistView ? (!pptBio.dblClickToggle ? `\t${lg.Click}` : `\t${lg['Double click']}`) : '', '', ''];
+		const click = [!this.display.check[0] ? `\t${lg['Middle click']}` : '', !this.display.check[1] && !pptBio.text_only && !pptBio.img_only ? `\t${lg['Middle click']}` : '', !this.display.check[2] && !pptBio.img_only ? `\t${lg['Middle click']}` : '', `\t${lg['Alt+Middle click']}`, '', '', !pptBio.sourceAll ? `\t${lg.Click}` : '', !pptBio.artistView ? (!pptBio.dblClickToggle ? `\t${lg.Click}` : `\t${lg['Double click']}`) : '', pptBio.artistView ? (!pptBio.dblClickToggle ? `\t${lg.Click}` : `\t${lg['Double click']}`) : '', '', ''];
 		this.display.str = n.map((v, i) => v + click[i])
 	}
 
@@ -1325,7 +1325,7 @@ class MenuItemsBio {
 		pptBio.img_only = false;
 		pptBio.text_only = false;
 		txt.refresh(0);
-		if (pptBio.filmStripOverlay) filmStrip.set(pptBio.filmStripPos);
+		if (pptBio.filmStripOverlay && pptBio.showFilmStrip) filmStrip.set(pptBio.filmStripPos);
 	}
 
 	setStyles(i) {

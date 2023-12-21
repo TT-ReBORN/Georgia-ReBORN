@@ -4,9 +4,9 @@
 // * Author:         TT                                                  * //
 // * Org. Author:    WilB                                                * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
-// * Version:        1.4.1                                               * //
+// * Version:        1.4.2                                               * //
 // * Dev. started:   2016-10-18                                          * //
-// * Last change:    2023-05-19 (Mod change 2023-12-15)                  * //
+// * Last change:    2023-12-13 (Mod change 2023-12-21)                  * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -22,7 +22,7 @@ let isRadioStreamParser = false;
 if (typeof my_utilsBio === 'undefined') include(`${basePath}scripts\\biography\\scripts\\utils.js`);
 // include(fb.ProfilePath + 'elements\\colourSelector.js'); // sort handling n/a standalone
 
-// const loadAsync = window.GetProperty('Load Biography Asynchronously', true);
+// const loadAsync = false; // window.GetProperty('Load Biography Asynchronously', true); // changed to false: issue on loading fth with many panels
 
 // async function readFiles(files) {
 // 	for (const file of files) {

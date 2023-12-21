@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-15                                          * //
+// * Last change:    2023-12-21                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -182,6 +182,10 @@ function biographyColorsWhiteTheme() {
 	uiBio.col.source = uiBio.col.headingText;
 	uiBio.col.accent = uiBio.col.headingText;
 	uiBio.col.summary = uiBio.col.text;
+
+	// * POPUP COLORS * //
+	uiBio.col.popupBg = pref.styleBlackAndWhite ? RGB(230, 230, 230) : pref.styleBlackAndWhite2 ? RGB(25, 25, 25) : RGBAtoRGB(g_pl_colors.header_nowplaying_bg, 255);
+	uiBio.col.popupText = pref.styleBlackAndWhite ? RGB(0, 0, 0) : pref.styleBlackAndWhite2 ? RGB(255, 255, 255) : lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
 
 	// * MISC COLORS * //
 	uiBio.col.lyricsNormal = uiBio.col.text;
@@ -505,6 +509,10 @@ function biographyColorsBlackTheme() {
 	uiBio.col.source = uiBio.col.headingText;
 	uiBio.col.accent = uiBio.col.headingText;
 	uiBio.col.summary = uiBio.col.text;
+
+	// * POPUP COLORS * //
+	uiBio.col.popupBg = RGBAtoRGB(g_pl_colors.header_nowplaying_bg, 255);
+	uiBio.col.popupText = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
 
 	// * MISC COLORS * //
 	uiBio.col.lyricsNormal = uiBio.col.text;
@@ -976,6 +984,10 @@ function biographyColorsRebornRandomTheme() {
 	uiBio.col.accent = uiBio.col.headingText;
 	uiBio.col.summary = uiBio.col.text;
 
+	// * POPUP COLORS * //
+	uiBio.col.popupBg = RGBAtoRGB(g_pl_colors.header_nowplaying_bg, 255);
+	uiBio.col.popupText = (lightBgBiography || lightBg) && !noAlbumArtStub ? col.darkAccent_75 : col.lightAccent_100;
+
 	// * MISC COLORS * //
 	uiBio.col.lyricsNormal = uiBio.col.text;
 	uiBio.col.lyricsHighlight = (lightBgBiography || lightBg) && ColorDistance(RGB(255, 240, 150), uiBio.col.bg, true) < 200 ? RGB(220, 160, 40) : RGB(255, 240, 150);
@@ -1078,7 +1090,7 @@ function mainColorsRebornRandomTheme() {
 
 	// * POPUP COLORS * //
 	col.popupBg = RGBAtoRGB(g_pl_colors.header_nowplaying_bg, 255);
-	col.popupText = lightBg && !noAlbumArtStub ? col.darkAccent_75 : col.lightAccent_100;
+	col.popupText = (lightBgBiography || lightBg) && !noAlbumArtStub ? col.darkAccent_75 : col.lightAccent_100;
 
 	// * TOP MENU BUTTON COLORS * //
 	col.menuBgColor =
@@ -1470,6 +1482,10 @@ function biographyColorsBlueTheme() {
 	uiBio.col.accent = uiBio.col.headingText;
 	uiBio.col.summary = uiBio.col.text;
 
+	// * POPUP COLORS * //
+	uiBio.col.popupBg = RGBAtoRGB(g_pl_colors.header_nowplaying_bg, 255);
+	uiBio.col.popupText = accentColor;
+
 	// * MISC COLORS * //
 	uiBio.col.lyricsNormal = uiBio.col.text;
 	uiBio.col.lyricsHighlight = accentColor;
@@ -1769,6 +1785,10 @@ function biographyColorsDarkblueTheme() {
 	uiBio.col.accent = uiBio.col.headingText;
 	uiBio.col.summary = uiBio.col.text;
 
+	// * POPUP COLORS * //
+	uiBio.col.popupBg = RGBAtoRGB(g_pl_colors.header_nowplaying_bg, 255);
+	uiBio.col.popupText = accentColor;
+
 	// * MISC COLORS * //
 	uiBio.col.lyricsNormal = uiBio.col.text;
 	uiBio.col.lyricsHighlight = accentColor;
@@ -2060,6 +2080,10 @@ function biographyColorsRedTheme() {
 	uiBio.col.source = uiBio.col.headingText;
 	uiBio.col.accent = uiBio.col.headingText;
 	uiBio.col.summary = uiBio.col.text;
+
+	// * POPUP COLORS * //
+	uiBio.col.popupBg = RGBAtoRGB(g_pl_colors.header_nowplaying_bg, 255);
+	uiBio.col.popupText = accentColor;
 
 	// * MISC COLORS * //
 	uiBio.col.lyricsNormal = uiBio.col.text;
@@ -2365,6 +2389,10 @@ function biographyColorsCreamTheme() {
 	uiBio.col.source = uiBio.col.headingText;
 	uiBio.col.accent = uiBio.col.headingText;
 	uiBio.col.summary = uiBio.col.text;
+
+	// * POPUP COLORS * //
+	uiBio.col.popupBg = RGBAtoRGB(g_pl_colors.header_nowplaying_bg, 255);
+	uiBio.col.popupText = RGB(255, 255, 255);
 
 	// * MISC COLORS * //
 	uiBio.col.lyricsNormal = uiBio.col.text;
@@ -2744,6 +2772,10 @@ function biographyColorsNeonThemes() {
 	uiBio.col.accent = uiBio.col.headingText;
 	uiBio.col.summary = uiBio.col.text;
 
+	// * POPUP COLORS * //
+	uiBio.col.popupBg = RGBAtoRGB(g_pl_colors.header_nowplaying_bg, 255);
+	uiBio.col.popupText = accentColor;
+
 	// * MISC COLORS * //
 	uiBio.col.lyricsNormal = uiBio.col.text;
 	uiBio.col.lyricsHighlight = accentColor;
@@ -3069,6 +3101,10 @@ function biographyColorsCustomTheme() {
 		uiBio.col.source = pref.styleBlend ? TintColor(HEXtoRGB(customColor.uiBio_col_source), 10) : HEXtoRGB(customColor.uiBio_col_source);
 		uiBio.col.accent = pref.styleBlend ? TintColor(HEXtoRGB(customColor.uiBio_col_accent), 10) : HEXtoRGB(customColor.uiBio_col_accent);
 		uiBio.col.summary = pref.styleBlend ? TintColor(HEXtoRGB(customColor.uiBio_col_summary), 10) : HEXtoRGB(customColor.uiBio_col_summary);
+
+		// * POPUP COLORS * //
+		uiBio.col.popupBg = HEXtoRGB(customColor.col_popupBg);
+		uiBio.col.popupText = HEXtoRGB(customColor.col_popupText);
 
 		// * MISC COLORS * //
 		uiBio.col.lyricsNormal = HEXtoRGB(customColor.uiBio_col_lyricsNormal);

@@ -879,7 +879,7 @@ let item_properties =
 			{"name": "First played", "titleformat": "[%first_played%]"},
 			{"name": "Last played", "titleformat": "[%last_played%]"},
 			{"name": "Added", "titleformat": "[%added%]"},
-			{"name": "Rating", "titleformat": "[$if3(%_Autorating%,%rating%,$meta(rating))]"}
+			{"name": "Rating", "titleformat": "[$if2(%rating%,$meta(rating))]"}
 		]
 	},
 	"Location": {
@@ -918,17 +918,18 @@ let item_properties_alternative_grouping = item_properties
 .replace(/("Metadata\*":\s{\s*?"show":\s)false/, `$1${true}`)
 .replace(/(("Metadata"|"Popularity"|"AllMusic"|"Last.fm"|"Wikipedia"):\s{\s*?"show":\s)true/g, `$1${false}`);
 
-let nowplaying = `Artist: %artist%$crlf()
+let nowplaying = `Artist: %BIO_ARTIST%$crlf()
 $crlf()
-Title: %title%$crlf()
+Title: %BIO_TITLE%$crlf()
 $crlf()
-[Album: %album%$crlf()
+[Album: %BIO_ALBUM%$crlf()
 $crlf()]
 $if2(%playback_time%,0:00)[ / %length%]`;
 
 let radioParser = `/* RadioStreamParser is written in javascript and can be user edited with care.
 It's designed for use with internet radio streams that contain the artist name and song title in a non-standard format.
 Before editing, make a backup copy in case things go wrong.
+
 1. To add a new radio stream, copy one of the case instances including the break. Paste under the last and within the switch statement.
 2. For each, change the path. For this, open properties and copy and paste the File path. Retain the quotes below. Escape any backslashes: replace \\ with \\\\
 3. Extract artist and title from radio stream item.
@@ -936,30 +937,41 @@ Before editing, make a backup copy in case things go wrong.
 	In more complex cases use RegExp or javascript string manipulation functions. Google for syntax.
 4. Adjust the format (comment out if unwanted). This is aesthetic. It won't affect searching.
 5. Use console.log traces to see what's going on and debug, e.g uncomment those below.
+6. If fb2K artist name is required, use, e.g. $Bio.eval('[$trim(' + (typeof cfg !== 'undefined' ? cfg.tf.artist : pptBio.tfArtist) + ')]', focus, ignoreLock)
+7. For info, biography uses cfg.tf.artist and cfg.tf.title; Find & Play uses pptBio.tfArtist and pptBio.tfTitle.
 
 This parser is also used by Find & Play provided the biography package id {BA9557CE-7B4B-4E0E-9373-99F511E81252} is unaltered.
 */
+
 'use strict';
+
 class radioStreamParser {
+
 	static getStreamInfo(focus, ignoreLock) {
 		// don't alter the next 4 lines
 		const path = $Bio.eval('%path%', focus, ignoreLock);
 		let artist = '';
 		let item = $Bio.eval('[$trim(' + (typeof cfg !== 'undefined' ? cfg.tf.title : pptBio.tfTitle) + ')]', focus, ignoreLock);
 		let title = '';
+
 		switch (path) {
+
 			case 'http://dieneuewelle.cast.addradio.de/dieneuewelle/simulcast/high/stream.mp3':
 				//console.log('original item', item);
 				item = item.split('-');
 				//console.log('split item', item);
+
 				artist = (item[1] || '').trim(); // always return empty string if no match
 				//console.log('artist', artist);
+
 				title = (item[2] || '').trim();
 				//console.log('title', title);
 
 				break;
+
 			case 'http://energyzuerich.ice.infomaniak.ch/energyzuerich-high.mp3': // items requiring same parsing can be grouped as shown
 			case 'http://vintageradio.ice.infomaniak.ch/vintageradio-high.mp3':
+
 				//console.log('original item', item);
 				item = item.split('˗'); // use correct hyphen(s)!; it's safest to save file as utf-8-BOM especially if there are unicode characters
 				//console.log('split item', item);
@@ -969,19 +981,24 @@ class radioStreamParser {
 
 				title = (item[1] || '').trim();
 				//console.log('title', title);
+
 				break;
 
 			case 'http://kohina.duckdns.org:8000/stream.ogg':
+
 				//console.log('original item', item);
 				item = item.split('-');
 				//console.log('split item', item);
+
 				artist = (item[0] || '').trim(); // always return empty string if no match
 				//console.log('artist', artist);
 
 				title = (item[1] || '').trim();
 				if (item[2]) title = (title + ' - ' + item[2].trim());
 				//console.log('title', title);
+
 				break;
+
 			case 'http://www.rcgoldserver.eu:8253/': // artist name and song title in standard format except title has year
 			case 'http://www.rmgoldserver.eu:8199/':
 
@@ -989,10 +1006,24 @@ class radioStreamParser {
 				title = this.removeTrailingYear(item);	// item is the original parsed title; trailing year removed as it interferes with searching
 				//console.log('title', title);
 
-				// artist is correct: return will be '': as its empty  original parsed artist is used without modification
+				// artist is correct: return will be '': as its empty original parsed artist is used without modification
 
 				break;
+
+			case 'https://stream.arrowrockradio.com/arrowrockradio':
+
+				// artist needs stream name and playing removing
+				artist = $Bio.eval('[$trim($replace(' + (typeof cfg !== 'undefined' ? cfg.tf.artist : pptBio.tfArtist) + ',Arrow Rock Radio:,,PLAYING:,))]', focus, ignoreLock);
+				//console.log('artist', artist);
+
+				// title is correct except it's uppercase: including here means it goes through the titlecase converter
+				title = (item || '').trim();
+				//console.log('title', title);
+
+				break;
+
 			case 'artist and title are switched - a path would need to be put here':
+
 				//console.log('original item', item);
 				artist = item; // item is the title, which is the artist as they're swapped
 				//console.log('artist', artist);
@@ -1001,6 +1032,7 @@ class radioStreamParser {
 				//console.log('title', title);
 
 				break;
+
 		}
 
 		// adjust format
@@ -1018,8 +1050,9 @@ class radioStreamParser {
 			title: title
 		}
 	}
+
 	static removeTrailingYear(title) {
-		const kw = '(-\\s*|\\s+)\\d\\d\\d\\d';
+		const kw = '(-\\\\s*|\\\\s+)\\\\d\\\\d\\\\d\\\\d';
 		let ix = -1;
 		let yr = title.match(RegExp(kw));
 		if (yr) {
