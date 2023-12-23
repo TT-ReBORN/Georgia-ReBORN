@@ -6,16 +6,16 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        2.4.0                                               * //
 // * Dev. started:   2016-10-18                                          * //
-// * Last change:    2023-05-13 (Mod change 2023-12-09)                  * //
+// * Last change:    2023-05-13 (Mod change 2023-12-22)                  * //
 /////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
 
 
-/////////////////////////////////////////////////////
-// ! ALL FILES LOADED IN GEORGIA-REBORN-THEME.JS ! //
-/////////////////////////////////////////////////////
+////////////////////////////////////////////////
+// ! ALL FILES LOADED IN GR-ASYNC-LOADER.JS ! //
+////////////////////////////////////////////////
 let libraryInitialized = false;
 
 if (typeof my_utilsLib === 'undefined') include(`${basePath}scripts\\library\\scripts\\utils.js`);

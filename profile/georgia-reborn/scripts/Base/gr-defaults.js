@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-18                                          * //
+// * Last change:    2023-12-23                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1560,7 +1560,7 @@ const themeSettingsDefaults = {
 
 /** @type {Object} Options > Settings config name description. */
 const themeSettingsComments = {
-	themeDayNightMode: 'Values: false, 6, 7, 8, 9, 10 - Options > Settings > Theme day/night mode',
+	themeDayNightMode: 'Values: false, or a custom string value in 24 hour time format e.g "6-18" - Options > Settings > Theme day/night mode',
 	customThemeFonts: 'Values: true, false - Options > Settings > Theme fonts > Use custom theme fonts',
 	albumArtDiskCache: 'Values: true, false - Options > Settings > Theme cache > Library > Image disk cache enabled',
 	albumArtPreLoad: 'Values: true, false - Options > Settings > Theme cache > Library > Preload images in disk cache',

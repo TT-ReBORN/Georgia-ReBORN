@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-18                                          * //
+// * Last change:    2023-12-23                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3118,7 +3118,42 @@ function settingsOptions(menu) {
 
 	// * THEME DAY/NIGHT MODE * //
 	const themeDayNightModeMenu = new Menu('Theme day/night mode');
-	themeDayNightModeMenu.addRadioItems(['  Deactivated (default)', '  6am (day) -  6pm  (night)', '  7am (day) -  7pm  (night)', '  8am (day) -  8pm  (night)', '  9am (day) -  9pm  (night)', '10am (day) - 10pm (night)'], pref.themeDayNightMode, [false, 6, 7, 8, 9, 10], (time) => {
+
+	/**
+	 * Formats the day/night mode time range string into a more readable format.
+	 * @param {string|null} dayNightMode The time range for day-night mode in 24-hour format, e.g. '6-18' for 6am to 6pm. If null or undefined, it returns 'Deactivated (default)'.
+	 * @returns {string} A formatted string representing the time range in 12-hour format with am/pm suffixes, e.g. '06am (day) - 06pm (night)', or 'Deactivated (default)' if dayNightMode is falsy.
+	 */
+	const FormatDayNightModeString = (dayNightMode) => {
+		if (!dayNightMode) return 'Deactivated (default)';
+		const [start, end] = dayNightMode.split('-').map(part => {
+			let hour = parseInt(part, 10);
+			const suffix = (hour >= 12 && hour < 24) ? ' PM' : ' AM';
+			hour = (hour === 0 || hour === 12) ? 12 : hour % 12;
+			return `${hour.toString().padStart(2, '0')}${suffix}`;
+		});
+		return `${start} (day) - ${end} (night)`;
+	};
+
+	const dayNightTimeRangeDefaults = ['6-18', '7-19', '8-20', '9-21', '10-22'];
+	const dayNightTimeRangeLabels = dayNightTimeRangeDefaults.map(FormatDayNightModeString);
+	dayNightTimeRangeLabels.unshift('Deactivated (default)');
+
+	const dayNightTimeRangeCustom = pref.themeDayNightMode && !dayNightTimeRangeDefaults.includes(pref.themeDayNightMode);
+	const dayNightTimeRangeCustomLabel = `Custom: ${FormatDayNightModeString(pref.themeDayNightMode)}`;
+	const dayNightTimeRangeVal = dayNightTimeRangeCustom ? pref.themeDayNightMode : (pref.themeDayNightMode || false);
+	const dayNightTimeRangeValues = [false, ...dayNightTimeRangeDefaults];
+
+	if (dayNightTimeRangeCustom) {
+		dayNightTimeRangeLabels.push(dayNightTimeRangeCustomLabel);
+		dayNightTimeRangeValues.push(pref.themeDayNightMode);
+	}
+
+	themeDayNightModeMenu.addItem('Set custom time range', false, () => {
+		inputBox('themeDayNightModeCustom');
+	});
+	themeDayNightModeMenu.addSeparator();
+	themeDayNightModeMenu.addRadioItems(dayNightTimeRangeLabels, dayNightTimeRangeVal, dayNightTimeRangeValues, (time) => {
 		pref.themeDayNightMode = time;
 		if (!pref.themeDayNightMode) {
 			pref.themeDayNightMode = false;
@@ -3789,8 +3824,7 @@ function inputBox(option) {
 	const customDirSchema      = customLibraryDir ? customLibraryDirSchema : customBiographyDir ? customBiographyDirSchema : customLyricsDir ? customLyricsDirSchema : customWaveformBarDir ? customWaveformBarDirSchema : '';
 
 	switch (option) {
-		case 'renameCustomTheme':
-		{
+		case 'renameCustomTheme': {
 			let newVal;
 			let input;
 			try {
@@ -3809,8 +3843,7 @@ function inputBox(option) {
 		}
 		break;
 
-		case 'playlistCustomHeaderInfo':
-		{
+		case 'playlistCustomHeaderInfo': {
 			const oldValStr = JSON.stringify(settings.playlistCustomHeaderInfo).replace(/"/g, '');
 			let newVal;
 			let input;
@@ -3830,8 +3863,7 @@ function inputBox(option) {
 		}
 		break;
 
-		case 'playlistCustomTrackRow':
-		{
+		case 'playlistCustomTrackRow': {
 			const oldValStr1 = JSON.stringify(settings.playlistCustomTitle).replace(/"/g, '');
 			const oldValStr2 = JSON.stringify(settings.playlistCustomTitleNoHeader).replace(/"/g, '');
 			let newVal1;
@@ -3858,8 +3890,7 @@ function inputBox(option) {
 		}
 		break;
 
-		case 'playlistSortCustom':
-		{
+		case 'playlistSortCustom': {
 			const oldValStr = JSON.stringify(settings.playlistSortCustom).replace(/"/g, '');
 			let newVal;
 			let input;
@@ -3879,25 +3910,46 @@ function inputBox(option) {
 		}
 		break;
 
-		case 'customLibraryDir': case 'customBiographyDir': case 'customLyricsDir': case 'customWaveformBarDir':
-			{
-				const oldValStr = JSON.stringify(customDirPath).replace(/["[\]]/g, '').replace(/\\\\/g, '\\');
-				let newVal;
-				let input;
-				try {
-					input = utils.InputBox(window.ID, `Enter your custom ${customDirString} directory:`, 'Georgia-ReBORN', oldValStr, true);
-					newVal = !input || typeof input !== 'string' && !input.length ? '' : JSON.parse(`"${input.replace(/[\\/]/g, '\\\\')}"`);
-					if (typeof newVal !== 'string') throw new Error('Invalid type');
-				}
-				catch (e) {
-					if (e.message === 'Invalid type' || e.name === 'SyntaxError') {
-						fb.ShowPopupMessage(`Path is not valid:\n${input}\n\nDo not use any " at the beginning and the end of your pattern.\n\nExample of a correct path:\n\nD:\\Stuff\\Directory\\`, `Custom ${customDirString} directory`);
-					}
-					return;
-				}
-				configCustom.addConfigurationObject(customDirSchema, [newVal]);
-				configCustom.writeConfiguration();
+		case 'customLibraryDir': case 'customBiographyDir': case 'customLyricsDir': case 'customWaveformBarDir': {
+			const oldValStr = JSON.stringify(customDirPath).replace(/["[\]]/g, '').replace(/\\\\/g, '\\');
+			let newVal;
+			let input;
+			try {
+				input = utils.InputBox(window.ID, `Enter your custom ${customDirString} directory:`, 'Georgia-ReBORN', oldValStr, true);
+				newVal = !input || typeof input !== 'string' && !input.length ? '' : JSON.parse(`"${input.replace(/[\\/]/g, '\\\\')}"`);
+				if (typeof newVal !== 'string') throw new Error('Invalid type');
 			}
-			break;
+			catch (e) {
+				if (e.message === 'Invalid type' || e.name === 'SyntaxError') {
+					fb.ShowPopupMessage(`Path is not valid:\n${input}\n\nDo not use any " at the beginning and the end of your pattern.\n\nExample of a correct path:\n\nD:\\Stuff\\Directory\\`, `Custom ${customDirString} directory`);
+				}
+				return;
+			}
+			configCustom.addConfigurationObject(customDirSchema, [newVal]);
+			configCustom.writeConfiguration();
+		}
+		break;
+
+		case 'themeDayNightModeCustom': {
+			const oldValues = Array.isArray(themeSettings.themeDayNightMode) ? themeSettings.themeDayNightMode.join('-') : themeSettings.themeDayNightMode || '6-18';
+			const input = utils.InputBox(window.ID, 'Enter your custom day-night mode (e.g 6-18):', 'Georgia-ReBORN', oldValues, true);
+
+			const validFormat = /^\s*(\d+)\s*-\s*(\d+)\s*$/; // Regex to match a valid input format
+			const match = input.match(validFormat);
+
+			if (match) {
+				const startTime = Number(match[1]);
+				const endTime = Number(match[2]);
+
+				if (startTime !== endTime && startTime >= 0 && startTime <= 23 && endTime >= 0 && endTime <= 23) { // Validate the times
+					themeSettings.themeDayNightMode = pref.themeDayNightMode = input;
+					config.updateConfigObjValues('themeSettings', true);
+					break;
+				}
+			}
+
+			fb.ShowPopupMessage(`Input is not valid: ${input}\n\nPlease enter valid times in 24-hour format separated by a hyphen (e.g 6-18), where both times are between 0 and 23.`, 'Custom Day/Night Mode');
+		}
+		break;
 	}
 }

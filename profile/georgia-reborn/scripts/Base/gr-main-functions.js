@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-17                                          * //
+// * Last change:    2023-12-23                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -120,7 +120,8 @@ function initMain() {
 	}
 	if (pref.themeDayNightMode) {
 		initThemeDayNightMode(new Date());
-		console.log(`Theme day/night mode is active, current time is: ${initThemeDayNightMode(new Date())}. The schedule has been set to ${pref.themeDayNightMode}am (day) - ${pref.themeDayNightMode}pm (night).`);
+		const [dayStart, nightStart] = pref.themeDayNightMode.split('-');
+		console.log(`Theme day/night mode is active, current time is: ${initThemeDayNightMode(new Date())}. The schedule has been set to ${To12HourTimeFormat(dayStart)} (day) - ${To12HourTimeFormat(nightStart)} (night).`);
 	}
 
 	initThemeFull = true;
@@ -307,13 +308,14 @@ function initTheme() {
 
 
 /**
- * Initializes the current time and changes the theme to day theme or night theme based on the OS clock and pref.themeDayNightMode value.
- * The pref.themeDayNightMode can be one of the following values: false, 6, 7, 8, 9, 10.
- * These represent the starting hour for the day theme and imply an ending hour for the night theme, for example, 6 for '6am (day) - 6pm (night)'.
- * If the feature is disabled (default, represented by `false`) or other theme-related preferences are set, the function exits without changing the theme.
+ * Initializes the current time and changes the theme to day or night based on the OS clock and pref.themeDayNightMode value.
+ * The pref.themeDayNightMode can be a string in the format 'startHour-endHour', which represents custom starting and ending hours for the day theme.
+ * For example, '6-18' indicates day theme from 6 AM to 6 PM. This range can wrap around midnight.
+ * The value 'false' disables the day/night theme feature, which is the default setting.
+ * If the feature is disabled or if other theme-related preferences are set, the function exits without changing the theme.
  * This function has a side effect of modifying pref.theme.
  * @param {Date} date The `Date` object that represents the current date and time.
- * @returns {string} The current time in the format "hours:minutes am/pm".
+ * @returns {string} The current time in the format "hours:minutes AM/PM".
  */
 function initThemeDayNightMode(date) {
 	if (!pref.themeDayNightMode) return;
@@ -321,19 +323,21 @@ function initThemeDayNightMode(date) {
 	const hours = date.getHours();
 	const minutes = date.getMinutes();
 
-	// * Adjust the end time for day theme to wrap around midnight
-	const dayEndTime = (pref.themeDayNightMode + 12) % 24;
-	const dayAfterMidnight = dayEndTime <= pref.themeDayNightMode;
+	// * Parse the start and end times from the themeDayNightMode string
+	const [startHourStr, endHourStr] = pref.themeDayNightMode.split('-').map(Number);
+	const startHour = parseInt(startHourStr, 10);
+	const rawEndHour = parseInt(endHourStr, 10);
+	const endHour = rawEndHour === 0 ? 24 : rawEndHour;
 
-	// * Determine if it's day or night based on the pref.themeDayNightMode
-	const isDayRange = hours >= pref.themeDayNightMode && hours < dayEndTime;
-	const isNightRange = hours < dayEndTime || hours >= pref.themeDayNightMode;
-	const isDayTime = dayAfterMidnight ? isNightRange : isDayRange;
+	// * Determine if the current time is within the day range, the day range can wrap around midnight, e.g '23-6' means 23:00 to 06:00.
+	const isDayTime = (startHour < endHour)
+		? (hours >= startHour && hours < endHour)
+		: (hours >= startHour || hours < endHour);
 
 	// * Formatting time
 	const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
 	const formattedHours = hours % 12 || 12;
-	const timeSuffix = hours >= 12 ? 'pm' : 'am';
+	const timeSuffix = hours >= 12 ? 'PM' : 'AM';
 
 	// * Set theme based on day time
 	pref.themeDayNightTime = isDayTime ? 'day' : 'night';

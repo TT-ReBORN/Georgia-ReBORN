@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-18                                          * //
+// * Last change:    2023-12-23                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2311,6 +2311,19 @@ function DateToYMD(date) {
 	const m = date.getMonth() + 1; // Month from 0 to 11
 	const y = date.getFullYear();
 	return `${y}-${(m <= 9 ? `0${m}` : m)}-${(d <= 9 ? `0${d}` : d)}`;
+}
+
+
+/**
+ * Converts a 24-hour time format hour to 12-hour time format.
+ * @param {number|string} hour The hour in 24-hour format.
+ * @returns {string} The hour in 12-hour format with AM/PM suffix.
+ */
+function To12HourTimeFormat(hour) {
+	const hourInt = parseInt(hour, 10);
+	const suffix = hourInt >= 12 ? 'PM' : 'AM';
+	const hour12 = hourInt % 12 === 0 ? 12 : hourInt % 12;
+	return `${hour12} ${suffix}`;
 }
 
 

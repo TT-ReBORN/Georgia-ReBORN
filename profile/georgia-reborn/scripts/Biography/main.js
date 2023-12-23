@@ -6,16 +6,16 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        1.4.2                                               * //
 // * Dev. started:   2016-10-18                                          * //
-// * Last change:    2023-12-13 (Mod change 2023-12-21)                  * //
+// * Last change:    2023-12-13 (Mod change 2023-12-22)                  * //
 /////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
 
 
-/////////////////////////////////////////////////////
-// ! ALL FILES LOADED IN GEORGIA-REBORN-THEME.JS ! //
-/////////////////////////////////////////////////////
+////////////////////////////////////////////////
+// ! ALL FILES LOADED IN GR-ASYNC-LOADER.JS ! //
+////////////////////////////////////////////////
 let biographyInitialized = false;
 let isRadioStreamParser = false;
 
