@@ -2151,7 +2151,11 @@ function fetchAlbumArt(metadb) {
 					DebugLog('\n>>> initTheme -> fetchNewArtwork -> embeddedArt <<<\n');
 				}
 			}
-			resizeArtwork(true);
+			if (pref.panelWidthAuto) {
+				initPanelWidthAuto();
+			} else {
+				resizeArtwork(true);
+			}
 			embeddedArt = true;
 		}
 		// * No album art found, using noAlbumArtStub
