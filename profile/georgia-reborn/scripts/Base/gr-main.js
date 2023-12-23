@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-18                                          * //
+// * Last change:    2023-12-23                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -466,9 +466,6 @@ function drawDetailsMetadataGrid(gr) {
 			let dropShadow = false;
 			let grid_val_col = col.detailsText;
 
-			txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, col2Width, wh);
-			const cellHeight = txtRec.Height + 5;
-
 			if (value.length) {
 				switch (key) {
 					case 'Catalog':
@@ -541,9 +538,13 @@ function drawDetailsMetadataGrid(gr) {
 							key = '';
 							matchCount++;
 						}
+						txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, col2Width, wh);
+						const cellHeight = txtRec.Height + 5;
 						gridTop -= cellHeight * matchCount;
 					}
 				}
+
+				txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, col2Width, wh);
 
 				if (gridTop + txtRec.Height < albumArtSize.y + albumArtSize.h) {
 					const borderWidth = SCALE(0.5);
