@@ -678,10 +678,11 @@ class ButtonsBio {
 	srcTiptext() {
 		const n = pptBio.artistView ? 'bio' : 'rev';
 		const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`];
-		const flagWidthTotal = flagImgs.reduce((sum, img) => sum + img.Width + SCALE(biographyFontSize) - (RES_4K ? 60 : 18), 0);
-		const flagTooltip = `[${GetMetaValues(tf.artist_country).join(' \u00B7 ')}] ${txt.artist}`;
+		const grFlag = flagImgs.length;
+		const flagWidth = grFlag ? flagImgs.reduce((sum, img) => sum + img.Width + SCALE(biographyFontSize) - (RES_4K ? 60 : 18), 0) : butBio.flag.w;
+		const flagTooltip = grFlag ? `[${GetMetaValues(tf.artist_country).join(' \u00B7 ')}] ${txt.artist}` : txt[n].flagCountry;
 		const suffix = pref.showTooltipBiography ? this.isNextSourceAvailable() ? 'text' : 'N/A' : '';
-		const type = pref.showTooltipBiography ? panelBio.m.x > panelBio.heading.x + panelBio.heading.w / 2 ? `Next ${suffix}` : panelBio.m.x > panelBio.heading.x ? (txt[n].flag && txt[n].flagCountry && panelBio.m.x < panelBio.heading.x + flagWidthTotal ? flagTooltip : `Previous ${suffix}`) : '' : '';
+		const type = pref.showTooltipBiography ? panelBio.m.x > panelBio.heading.x + panelBio.heading.w / 2 ? `Next ${suffix}` : panelBio.m.x > panelBio.heading.x ? (txt[n].flag && txt[n].flagCountry && panelBio.m.x < panelBio.heading.x + flagWidth ? flagTooltip : `Previous ${suffix}`) : '' : '';
 		return this.src.visible && this.trace_src(panelBio.m.x, panelBio.m.y) || !butBio.tooltipBio.name ? type : !this.fbv1 ? butBio.tooltipBio.name : butBio.tooltipBio.name.replace(/&/g, '&&');
 	}
 
@@ -819,21 +820,23 @@ class BtnBio {
 		if (flag) {
 			gr.SetInterpolationMode(7);
 			if (!pptBio.hdPos) {
-				const w = uiBio.style.l_w;
-				const o = Math.floor(w / 2);
-				butBio.flag.w = Math.round(butBio.flag.h * flag.Width / flag.Height);
-				butBio.flag.sp = Math.round(butBio.flag.h * 0.75 + butBio.flag.w);
-				// gr.DrawImage(flag, butBio.flag.x, butBio.flag.y, butBio.flag.w, butBio.flag.h, 0, 0, flag.Width, flag.Height, '', 212);
-				// gr.DrawRect(butBio.flag.x + o, butBio.flag.y + o, butBio.flag.w - w, butBio.flag.h - w + 1, w, uiBio.col.imgBor);
-
 				const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`];
-				const maxFlags = Math.min(flagImgs.length, 6);
-				butBio.flag.x  = this.x;
-				butBio.flag.sp = 0;
-				for (let i = 0; i < maxFlags; i++) {
-					gr.DrawImage(flagImgs[i], butBio.flag.x, butBio.flag.y - butBio.flag.h * 0.33, flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 76 : 26), butBio.flag.h * 1.66, 0, 0, flagImgs[i].Width, flagImgs[i].Height);
-					butBio.flag.x  += flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 60 : 18);
-					butBio.flag.sp += flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 60 : 18);
+				const grFlag = flagImgs.length;
+				const maxFlags = Math.min(grFlag, 6);
+				butBio.flag.w = Math.round(butBio.flag.h * flag.Width / flag.Height);
+				butBio.flag.sp = grFlag ? 0 : Math.round(butBio.flag.h * 0.75 + butBio.flag.w);
+				butBio.flag.x = this.x;
+				if (grFlag) {
+					for (let i = 0; i < maxFlags; i++) {
+						gr.DrawImage(flagImgs[i], butBio.flag.x, butBio.flag.y - butBio.flag.h * 0.33, flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 76 : 26), butBio.flag.h * 1.66, 0, 0, flagImgs[i].Width, flagImgs[i].Height);
+						butBio.flag.x  += flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 60 : 18);
+						butBio.flag.sp += flagImgs[i].Width + SCALE(biographyFontSize) - (RES_4K ? 60 : 18);
+					}
+				} else {
+					gr.DrawImage(flag, butBio.flag.x, butBio.flag.y, butBio.flag.w, butBio.flag.h, 0, 0, flag.Width, flag.Height, '', 212);
+					// const w = uiBio.style.l_w;
+					// const o = Math.floor(w / 2);
+					// gr.DrawRect(butBio.flag.x + o, butBio.flag.y + o, butBio.flag.w - w, butBio.flag.h - w + 1, w, uiBio.col.imgBor);
 				}
 			}
 			gr.SetInterpolationMode(2);
