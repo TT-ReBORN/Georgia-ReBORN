@@ -1,7 +1,7 @@
 <p align="center">
 	<picture>
-		<source media="(prefers-color-scheme: dark)" srcset="https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/logo-black.png">
-		<img alt="Georgia-ReBORN logo" src="https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/logo.png">
+		<source media="(prefers-color-scheme: dark)" srcset="https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/logo-reborn-night.png">
+		<img alt="Georgia-ReBORN logo" src="https://github.com/TT-ReBORN/Georgia-ReBORN-resources/blob/master/logo-reborn.png">
 	</picture>
 </p>
 
