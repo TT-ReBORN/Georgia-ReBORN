@@ -6,16 +6,16 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-23                                          * //
+// * Last change:    2024-01-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
 
 
-/////////////////////
-// * RATING MENU * //
-/////////////////////
+/////////////////////////
+// * TOP MENU RATING * //
+/////////////////////////
 /**
  * Top menu > Rating.
  * @param {number} x The x-coordinate.
@@ -149,10 +149,11 @@ function topMenuOptions(x, y, context_menu, playlist, details, library, biograph
  */
 function themeOptions(menu) {
 	const themeMenu = new Menu('Theme');
+
 	themeMenu.addRadioItems(['White', 'Black', 'Reborn', 'Random'], pref.theme, ['white', 'black', 'reborn', 'random'], (theme) => {
 		if (!pref.themeSandbox) pref.savedTheme = pref.theme = theme; else pref.theme = theme;
-		if (pref.themeSetupDay) pref.theme_day = theme;
-		if (pref.themeSetupNight) pref.theme_night = theme;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		resetTheme();
 		initTheme();
 		initThemePresetState();
@@ -160,8 +161,8 @@ function themeOptions(menu) {
 	themeMenu.addSeparator();
 	themeMenu.addRadioItems(['Blue', 'Dark blue', 'Red', 'Cream'], pref.theme, ['blue', 'darkblue', 'red', 'cream'], (theme) => {
 		if (!pref.themeSandbox) pref.savedTheme = pref.theme = theme; else pref.theme = theme;
-		if (pref.themeSetupDay) pref.theme_day = theme;
-		if (pref.themeSetupNight) pref.theme_night = theme;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		resetTheme();
 		initTheme();
 		initThemePresetState();
@@ -169,8 +170,8 @@ function themeOptions(menu) {
 	themeMenu.addSeparator();
 	themeMenu.addRadioItems(['Neon blue', 'Neon green', 'Neon red', 'Neon gold'], pref.theme, ['nblue', 'ngreen', 'nred', 'ngold'], (theme) => {
 		if (!pref.themeSandbox) pref.savedTheme = pref.theme = theme; else pref.theme = theme;
-		if (pref.themeSetupDay) pref.theme_day = theme;
-		if (pref.themeSetupNight) pref.theme_night = theme;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		resetTheme();
 		initTheme();
 		initThemePresetState();
@@ -179,23 +180,23 @@ function themeOptions(menu) {
 
 	// * CUSTOM THEME * //
 	const customThemeMenu = new Menu('Custom');
-	const customThemes = [
-		customTheme01.name === '' ? 'Theme 01' : customTheme01.name,
-		customTheme02.name === '' ? 'Theme 02' : customTheme02.name,
-		customTheme03.name === '' ? 'Theme 03' : customTheme03.name,
-		customTheme04.name === '' ? 'Theme 04' : customTheme04.name,
-		customTheme05.name === '' ? 'Theme 05' : customTheme05.name,
-		customTheme06.name === '' ? 'Theme 06' : customTheme06.name,
-		customTheme07.name === '' ? 'Theme 07' : customTheme07.name,
-		customTheme08.name === '' ? 'Theme 08' : customTheme08.name,
-		customTheme09.name === '' ? 'Theme 09' : customTheme09.name,
-		customTheme10.name === '' ? 'Theme 10' : customTheme10.name
+	const customThemeName = [
+		customTheme01.name || 'Theme 01',
+		customTheme02.name || 'Theme 02',
+		customTheme03.name || 'Theme 03',
+		customTheme04.name || 'Theme 04',
+		customTheme05.name || 'Theme 05',
+		customTheme06.name || 'Theme 06',
+		customTheme07.name || 'Theme 07',
+		customTheme08.name || 'Theme 08',
+		customTheme09.name || 'Theme 09',
+		customTheme10.name || 'Theme 10'
 	];
 
-	customThemeMenu.addRadioItems(customThemes, pref.theme, ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'], (theme) => {
+	customThemeMenu.addRadioItems(customThemeName, pref.theme, ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'], (theme) => {
 		if (!pref.themeSandbox) pref.savedTheme = pref.theme = theme; else pref.theme = theme;
-		if (pref.themeSetupDay) pref.theme_day = theme;
-		if (pref.themeSetupNight) pref.theme_night = theme;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		resetTheme();
 		initCustomTheme();
 		initTheme();
@@ -218,7 +219,7 @@ function themeOptions(menu) {
 				initButtonState();
 			}
 			initCustomThemeMenu('pl_bg');
-			repaintWindow();
+			RepaintWindow();
 		} else {
 			const configPathCustom = `${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc`;
 			fb.ShowPopupMessage(`Custom theme can only be live edited in default layout:\nOptions > Layout > Default\n\nYou could manually edit your config file while reloading to take effect:\n${configPathCustom}\n`, 'Custom theme live editing');
@@ -227,19 +228,12 @@ function themeOptions(menu) {
 
 	customThemeMenu.addItem('Rename custom theme', false, () => { inputBox('renameCustomTheme'); });
 
-	customThemeMenu.createRadioSubMenu('Save current colors', customThemes, '', ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'], (theme) => {
+	customThemeMenu.createRadioSubMenu('Save current colors', customThemeName, '', ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'], (theme) => {
 		const configPathCustom = `${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc`;
 		const msg = `Do you want to save current used colors to the selected\ncustom theme slot?\n\nThis will overwrite all colors in the selected custom theme slot.\nIt is recommended to make a backup of your ${configPathCustom}\nconfig file.\n\nContinue?`;
-		const continue_confirmation = (status, confirmed) => {
-			if (confirmed) {
-				setCurrentColorsToCustomTheme(theme);
-			}
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			if (confirmed) setCurrentColorsToCustomTheme(theme);
+		});
 	});
 	customThemeMenu.appendTo(themeMenu);
 	themeMenu.appendTo(menu, pref.presetSelectMode === 'harmonic');
@@ -261,26 +255,34 @@ function styleOptions(menu) {
 	// * STYLES * //
 	styleMenu.addToggleItem('Default', pref, 'styleDefault', () => {
 		if (pref.themeSandbox) {
-			if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-				fb.ShowPopupMessage('Theme style reset was canceled:\n\nActive theme sandbox needs to be deactivated first\nin order to reset theme styles.', 'Theme style reset canceled');
-			} else {
-				const msg = 'Theme style reset was canceled:\n\nActive theme sandbox needs to be deactivated first\nin order to reset theme styles.\n\n\n';
-				popUpBox.confirm('Georgia-ReBORN', msg, 'OK', false, false, 'center', false);
-			}
+			const msg = 'Theme style reset was canceled:\n\nActive theme sandbox needs to be deactivated first\nin order to reset theme styles.\n\n\n';
+			ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 			pref.styleDefault = false;
 			return;
 		}
 		pref.preset = false;
 		resetStyle('all');
+		resetStyle('all_theme_day_night');
 		restoreThemeStylePreset(true);
 		resetTheme();
 		initTheme();
 	});
 	styleMenu.addSeparator();
+	if (pref.theme === 'reborn' || pref.theme === 'random' || pref.theme.startsWith('custom')) {
+		styleMenu.addToggleItem('Night', pref, 'styleNighttime', () => {
+			if (!pref.themeSandbox) pref.savedStyleNighttime = pref.styleNighttime;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
+			if (pref.styleRebornWhite) pref.styleRebornWhite = false;
+			if (pref.styleRebornBlack) pref.styleRebornBlack = false;
+			updateStyle();
+		});
+		styleMenu.addSeparator();
+	}
 	styleMenu.addToggleItem('Bevel', pref, 'styleBevel', () => {
 		if (!pref.themeSandbox) pref.savedStyleBevel = pref.styleBevel;
-		if (pref.themeSetupDay) pref.styleBevel_day = pref.styleBevel;
-		if (pref.themeSetupNight) pref.styleBevel_night = pref.styleBevel;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		updateStyle();
 	});
 	styleMenu.addSeparator();
@@ -288,23 +290,23 @@ function styleOptions(menu) {
 	// * STYLES - GROUP ONE * //
 	styleMenu.addToggleItem('Blend', pref, 'styleBlend', () => {
 		if (!pref.themeSandbox) pref.savedStyleBlend = pref.styleBlend;
-		if (pref.themeSetupDay) pref.styleBlend_day = pref.styleBlend;
-		if (pref.themeSetupNight) pref.styleBlend_night = pref.styleBlend;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		setStyle('blend', pref.styleBlend);
 		updateStyle();
 	});
 	styleMenu.addToggleItem('Blend 2', pref, 'styleBlend2', () => {
 		if (!pref.themeSandbox) pref.savedStyleBlend2 = pref.styleBlend2;
-		if (pref.themeSetupDay) pref.styleBlend2_day = pref.styleBlend2;
-		if (pref.themeSetupNight) pref.styleBlend2_night = pref.styleBlend2;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		setStyle('blend2', pref.styleBlend2);
 		updateStyle();
 	});
 	if (['reborn', 'random', 'blue', 'darkblue', 'red', 'custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
 		styleMenu.addToggleItem('Gradient', pref, 'styleGradient', () => {
 			if (!pref.themeSandbox) pref.savedStyleGradient = pref.styleGradient;
-			if (pref.themeSetupDay) pref.styleGradient_day = pref.styleGradient;
-			if (pref.themeSetupNight) pref.styleGradient_night = pref.styleGradient;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 			setStyle('gradient', pref.styleGradient);
 			updateStyle();
 		}, pref.styleRebornWhite);
@@ -312,8 +314,8 @@ function styleOptions(menu) {
 	if (['reborn', 'random', 'blue', 'darkblue', 'red', 'custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(pref.theme)) {
 		styleMenu.addToggleItem('Gradient 2', pref, 'styleGradient2', () => {
 			if (!pref.themeSandbox) pref.savedStyleGradient2 = pref.styleGradient2;
-			if (pref.themeSetupDay) pref.styleGradient2_day = pref.styleGradient2;
-			if (pref.themeSetupNight) pref.styleGradient2_night = pref.styleGradient2;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 			setStyle('gradient2', pref.styleGradient2);
 			updateStyle();
 		}, pref.styleRebornWhite);
@@ -323,37 +325,37 @@ function styleOptions(menu) {
 	// * STYLES - GROUP TWO * //
 	styleMenu.addToggleItem('Alternative', pref, 'styleAlternative', () => {
 		if (!pref.themeSandbox) pref.savedStyleAlternative = pref.styleAlternative;
-		if (pref.themeSetupDay) pref.styleAlternative_day = pref.styleAlternative;
-		if (pref.themeSetupNight) pref.styleAlternative_night = pref.styleAlternative;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		setStyle('alternative', pref.styleAlternative);
 		updateStyle();
 	});
 	styleMenu.addToggleItem('Alternative 2', pref, 'styleAlternative2', () => {
 		if (!pref.themeSandbox) pref.savedStyleAlternative2 = pref.styleAlternative2;
-		if (pref.themeSetupDay) pref.styleAlternative2_day = pref.styleAlternative2;
-		if (pref.themeSetupNight) pref.styleAlternative2_night = pref.styleAlternative2;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		setStyle('alternative2', pref.styleAlternative2);
 		updateStyle();
 	});
 	if (pref.theme === 'white') {
 		styleMenu.addToggleItem('Black and white', pref, 'styleBlackAndWhite', () => {
 			if (!pref.themeSandbox) pref.savedStyleBlackAndWhite = pref.styleBlackAndWhite;
-			if (pref.themeSetupDay) pref.styleBlackAndWhite_day = pref.styleBlackAndWhite;
-			if (pref.themeSetupNight) pref.styleBlackAndWhite_night = pref.styleBlackAndWhite;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 			setStyle('blackAndWhite', pref.styleBlackAndWhite);
 			updateStyle();
 		}, pref.styleBlackAndWhiteReborn);
 		styleMenu.addToggleItem('Black and white 2', pref, 'styleBlackAndWhite2', () => {
 			if (!pref.themeSandbox) pref.savedStyleBlackAndWhite2 = pref.styleBlackAndWhite2;
-			if (pref.themeSetupDay) pref.styleBlackAndWhite2_day = pref.styleBlackAndWhite2;
-			if (pref.themeSetupNight) pref.styleBlackAndWhite2_night = pref.styleBlackAndWhite2;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 			setStyle('blackAndWhite2', pref.styleBlackAndWhite2);
 			updateStyle();
 		}, pref.styleBlackAndWhiteReborn);
 		styleMenu.addToggleItem('Black and white reborn', pref, 'styleBlackAndWhiteReborn', () => {
 			if (!pref.themeSandbox) pref.savedStyleBlackAndWhiteReborn = pref.styleBlackAndWhiteReborn;
-			if (pref.themeSetupDay) pref.styleBlackAndWhiteReborn_day = pref.styleBlackAndWhiteReborn;
-			if (pref.themeSetupNight) pref.styleBlackAndWhiteReborn_night = pref.styleBlackAndWhiteReborn;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 			setStyle('blackAndWhiteReborn', pref.styleBlackAndWhiteReborn);
 			updateStyle();
 		});
@@ -361,8 +363,8 @@ function styleOptions(menu) {
 	if (pref.theme === 'black') {
 		styleMenu.addToggleItem('Black reborn', pref, 'styleBlackReborn', () => {
 			if (!pref.themeSandbox) pref.savedStyleBlackReborn = pref.styleBlackReborn;
-			if (pref.themeSetupDay) pref.styleBlackReborn_day = pref.styleBlackReborn;
-			if (pref.themeSetupNight) pref.styleBlackReborn_night = pref.styleBlackReborn;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 			setStyle('blackReborn', pref.styleBlackReborn);
 			updateStyle();
 		});
@@ -370,36 +372,38 @@ function styleOptions(menu) {
 	if (pref.theme === 'reborn') {
 		styleMenu.addToggleItem('Reborn white', pref, 'styleRebornWhite', () => {
 			if (!pref.themeSandbox) pref.savedStyleRebornWhite = pref.styleRebornWhite;
-			if (pref.themeSetupDay) pref.styleRebornWhite_day = pref.styleRebornWhite;
-			if (pref.themeSetupNight) pref.styleRebornWhite_night = pref.styleRebornWhite;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
+			if (pref.styleNighttime) pref.styleNighttime = false;
 			setStyle('rebornWhite', pref.styleRebornWhite);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Reborn black', pref, 'styleRebornBlack', () => {
 			if (!pref.themeSandbox) pref.savedStyleRebornBlack = pref.styleRebornBlack;
-			if (pref.themeSetupDay) pref.styleRebornBlack_day = pref.styleRebornBlack;
-			if (pref.themeSetupNight) pref.styleRebornBlack_night = pref.styleRebornBlack;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
+			if (pref.styleNighttime) pref.styleNighttime = false;
 			setStyle('rebornBlack', pref.styleRebornBlack);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Reborn fusion', pref, 'styleRebornFusion', () => {
 			if (!pref.themeSandbox) pref.savedStyleRebornFusion = pref.styleRebornFusion;
-			if (pref.themeSetupDay) pref.styleRebornFusion_day = pref.styleRebornFusion;
-			if (pref.themeSetupNight) pref.styleRebornFusion_night = pref.styleRebornFusion;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 			setStyle('rebornFusion', pref.styleRebornFusion);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Reborn fusion 2', pref, 'styleRebornFusion2', () => {
 			if (!pref.themeSandbox) pref.savedStyleRebornFusion2 = pref.styleRebornFusion2;
-			if (pref.themeSetupDay) pref.styleRebornFusion2_day = pref.styleRebornFusion2;
-			if (pref.themeSetupNight) pref.styleRebornFusion2_night = pref.styleRebornFusion2;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 			setStyle('rebornFusion2', pref.styleRebornFusion2);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Reborn fusion accent', pref, 'styleRebornFusionAccent', () => {
 			if (!pref.themeSandbox) pref.savedStyleRebornFusionAccent = pref.styleRebornFusionAccent;
-			if (pref.themeSetupDay) pref.styleRebornFusionAccent_day = pref.styleRebornFusionAccent;
-			if (pref.themeSetupNight) pref.styleRebornFusionAccent_night = pref.styleRebornFusionAccent;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 			setStyle('rebornFusionAccent', pref.styleRebornFusionAccent);
 			updateStyle();
 		});
@@ -407,15 +411,15 @@ function styleOptions(menu) {
 	if (pref.theme === 'random') {
 		styleMenu.addToggleItem('Random pastel', pref, 'styleRandomPastel', () => {
 			if (!pref.themeSandbox) pref.savedStyleRandomPastel = pref.styleRandomPastel;
-			if (pref.themeSetupDay) pref.styleRandomPastel_day = pref.styleRandomPastel;
-			if (pref.themeSetupNight) pref.styleRandomPastel_night = pref.styleRandomPastel;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 			setStyle('randomPastel', pref.styleRandomPastel);
 			updateStyle();
 		});
 		styleMenu.addToggleItem('Random dark', pref, 'styleRandomDark', () => {
 			if (!pref.themeSandbox) pref.savedStyleRandomDark = pref.styleRandomDark;
-			if (pref.themeSetupDay) pref.styleRandomDark_day = pref.styleRandomDark;
-			if (pref.themeSetupNight) pref.styleRandomDark_night = pref.styleRandomDark;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 			setStyle('randomDark', pref.styleRandomDark);
 			updateStyle();
 		});
@@ -428,8 +432,8 @@ function styleOptions(menu) {
 		styleAutoColorMenu.addRadioItems(['Off', '5 sec', '10 sec', '15 sec', '30 sec', '45 sec', '1 min', '2 min', '3 min', '4 min', '5 min', 'New track'], pref.styleRandomAutoColor,
 			['off', 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, 'track'], (timer) => {
 			if (!pref.themeSandbox) pref.savedStyleRandomAutoColor = pref.styleRandomAutoColor = timer; else pref.styleRandomAutoColor = timer;
-			if (pref.themeSetupDay) pref.styleRandomAutoColor_day = timer;
-			if (pref.themeSetupNight) pref.styleRandomAutoColor_night = timer;
+			if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+			if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 			getRandomThemeAutoColor();
 		});
 		styleAutoColorMenu.appendTo(styleMenu);
@@ -441,16 +445,16 @@ function styleOptions(menu) {
 	const styleTopButtonsMenu = new Menu('Top menu');
 	styleTopButtonsMenu.addRadioItems(['Default', 'Filled', 'Bevel', 'Inner', 'Emboss', 'Minimal'], pref.styleTopMenuButtons, ['default', 'filled', 'bevel', 'inner', 'emboss', 'minimal'], (style) => {
 		if (!pref.themeSandbox) pref.savedStyleTopMenuButtons = pref.styleTopMenuButtons = style; else pref.styleTopMenuButtons = style;
-		if (pref.themeSetupDay) pref.styleTopMenuButtons_day = style;
-		if (pref.themeSetupNight) pref.styleTopMenuButtons_night = style;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		updateStyle();
 	});
 	styleTopButtonsMenu.appendTo(styleButtonsMenu);
 	const styleTransportButtonsMenu = new Menu('Transport');
 	styleTransportButtonsMenu.addRadioItems(['Default', 'Bevel', 'Inner', 'Emboss', 'Minimal'], pref.styleTransportButtons, ['default', 'bevel', 'inner', 'emboss', 'minimal'], (style) => {
 		if (!pref.themeSandbox) pref.savedStyleTransportButtons = pref.styleTransportButtons = style; else pref.styleTransportButtons = style;
-		if (pref.themeSetupDay) pref.styleTransportButtons_day = style;
-		if (pref.themeSetupNight) pref.styleTopMenuButtons_night = style;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		updateStyle();
 	});
 	styleTransportButtonsMenu.appendTo(styleButtonsMenu);
@@ -460,20 +464,20 @@ function styleOptions(menu) {
 	const styleProgressBarMenu = new Menu('Progress bar');
 	styleProgressBarMenu.createRadioSubMenu('Design', ['Default', 'Rounded', 'Lines', 'Blocks', 'Dots', 'Thin'], pref.styleProgressBarDesign, ['default', 'rounded', 'lines', 'blocks', 'dots', 'thin'], (design) => {
 		if (!pref.themeSandbox) pref.savedStyleProgressBarDesign = pref.styleProgressBarDesign = design; else pref.styleProgressBarDesign = design;
-		if (pref.themeSetupDay) pref.styleProgressBarDesign_day = design;
-		if (pref.themeSetupNight) pref.styleProgressBarDesign_night = design;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		updateStyle();
 	});
 	styleProgressBarMenu.createRadioSubMenu('Background', ['Default', 'Bevel', 'Inner'], pref.styleProgressBar, ['default', 'bevel', 'inner'], (style) => {
 		if (!pref.themeSandbox) pref.savedStyleProgressBar = pref.styleProgressBar = style; else pref.styleProgressBar = style;
-		if (pref.themeSetupDay) pref.styleProgressBar_day = style;
-		if (pref.themeSetupNight) pref.styleProgressBar_night = style;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		updateStyle();
 	});
 	styleProgressBarMenu.createRadioSubMenu('Progress fill', ['Default', 'Bevel', 'Inner', 'Blend'], pref.styleProgressBarFill, ['default', 'bevel', 'inner', 'blend'], (style) => {
 		if (!pref.themeSandbox) pref.savedStyleProgressBarFill = pref.styleProgressBarFill = style; else pref.styleProgressBarFill = style;
-		if (pref.themeSetupDay) pref.styleProgressBarFill_day = style;
-		if (pref.themeSetupNight) pref.styleProgressBarFill_night = style;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		updateStyle();
 	});
 	styleProgressBarMenu.appendTo(styleMenu);
@@ -482,20 +486,20 @@ function styleOptions(menu) {
 	const styleVolumeBarMenu = new Menu('Volume bar');
 	styleVolumeBarMenu.createRadioSubMenu('Design', ['Default', 'Rounded'], pref.styleVolumeBarDesign, ['default', 'rounded'], (design) => {
 		if (!pref.themeSandbox) pref.savedStyleVolumeBarDesign = pref.styleVolumeBarDesign = design; else pref.styleVolumeBarDesign = design;
-		if (pref.themeSetupDay) pref.styleVolumeBarDesign_day = design;
-		if (pref.themeSetupNight) pref.styleVolumeBarDesign_night = design;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		updateStyle();
 	});
 	styleVolumeBarMenu.createRadioSubMenu('Background', ['Default', 'Bevel', 'Inner'], pref.styleVolumeBar, ['default', 'bevel', 'inner'], (style) => {
 		if (!pref.themeSandbox) pref.savedStyleVolumeBar = pref.styleVolumeBar = style; else pref.styleVolumeBar = style;
-		if (pref.themeSetupDay) pref.styleVolumeBar_day = style;
-		if (pref.themeSetupNight) pref.styleVolumeBar_night = style;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		updateStyle();
 	});
 	styleVolumeBarMenu.createRadioSubMenu('Volume fill', ['Default', 'Bevel', 'Inner'], pref.styleVolumeBarFill, ['default', 'bevel', 'inner'], (style) => {
 		if (!pref.themeSandbox) pref.savedStyleVolumeBarFill = pref.styleVolumeBarFill = style; else pref.styleVolumeBarFill = style;
-		if (pref.themeSetupDay) pref.styleVolumeBarFill_day = style;
-		if (pref.themeSetupNight) pref.styleVolumeBarFill_night = style;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		updateStyle();
 	});
 	styleVolumeBarMenu.appendTo(styleMenu);
@@ -520,7 +524,8 @@ function presetOptions(menu) {
 			pref.presetSelectMode = mode;
 			if (mode === 'default') {
 				const msg = 'Do you want to activate the -Default- preset select mode?\n\nThe default select mode will automatically choose\na random pick of 88 theme presets.\n\nDouble-click on the lower bar to choose\nanother random theme preset.\n\nWhen random mode is activated,\nall themes and style options will be available.\n\nContinue?\n\n\n';
-				const continue_confirmation = (status, confirmed) => {
+				const msgFb = 'Default preset select mode activated:\n\nThe default preset select mode will automatically choose a random pick of 88 theme presets.\n\nDouble-click on the lower bar to choose another random theme preset.\n\nWhen random mode is activated,\nall themes and style options will be available.';
+				ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 					if (!confirmed) {
 						pref.presetSelectMode = 'default';
 						return;
@@ -532,17 +537,12 @@ function presetOptions(menu) {
 					restoreThemeStylePreset();
 					if (pref.savedPreset !== false) setThemePreset(pref.savedPreset);
 					updateStyle();
-				}
-				if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-					continue_confirmation(false, 'Yes');
-					fb.ShowPopupMessage('Default preset select mode activated:\n\nThe default preset select mode will automatically choose a random pick of 88 theme presets.\n\nDouble-click on the lower bar to choose another random theme preset.\n\nWhen random mode is activated,\nall themes and style options will be available.', 'Default preset select mode');
-				} else {
-					popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-				}
+				});
 			}
 			else if (mode === 'harmonic') {
 				const msg = 'Do you want to activate the -Harmonic- preset select mode?\n\nThe harmonic preset select mode will automatically\nchoose the best visual experience of themes and styles\nbased on album art.\n\nYou can also double-click on the lower bar\nto choose another random harmonic preset.\n\nWhen harmonic preset select mode is activated,\nall themes and almost all style options will be disabled.\n\nContinue?\n\n\n';
-				const continue_confirmation = (status, confirmed) => {
+				const msgFb = 'Harmonic preset select mode activated:\n\nThe harmonic preset select mode will automatically choose the best visual experience of themes and styles based on album art.\n\nYou can also double-click on the lower bar to choose another random harmonic preset.\n\nWhen harmonic preset select mode is activated,\nall themes and almost all style options will be disabled.';
+				ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 					if (!confirmed) {
 						pref.presetSelectMode = 'default';
 						return;
@@ -550,17 +550,12 @@ function presetOptions(menu) {
 					pref.presetAutoRandomMode = 'dblclick';
 					setThemePresetSelection(true); // * Reactivate all
 					getRandomThemePreset();
-				}
-				if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-					continue_confirmation(false, 'Yes');
-					fb.ShowPopupMessage('Harmonic preset select mode activated:\n\nThe harmonic preset select mode will automatically choose the best visual experience of themes and styles based on album art.\n\nYou can also double-click on the lower bar to choose another random harmonic preset.\n\nWhen harmonic preset select mode is activated,\nall themes and almost all style options will be disabled.', 'Harmonic preset select mode');
-				} else {
-					popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-				}
+				});
 			}
 			else if (mode === 'theme') {
 				const msg = 'Do you want to activate the -Theme- preset select mode?\n\nThe theme preset select mode will automatically choose\na random theme preset based on current active theme.\n\nYou can also double-click on the lower bar\nto choose another random theme preset.\n\nWhen theme preset select mode is activated,\nall themes and style options will be available.\n\nContinue?\n\n\n';
-				const continue_confirmation = (status, confirmed) => {
+				const msgFb = 'Theme preset select mode activated:\n\nThe theme preset select mode will automatically choose a random theme preset based on current active theme.\n\nYou can also double-click on the lower bar to choose another random theme preset.\n\nWhen theme preset select mode is activated,\nall themes and style options will be available';
+				ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 					if (!confirmed) {
 						pref.presetSelectMode = 'default';
 						return;
@@ -568,16 +563,10 @@ function presetOptions(menu) {
 					pref.presetAutoRandomMode = 'dblclick';
 					setThemePresetSelection(false, true);
 					getRandomThemePreset();
-				}
-				if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-					continue_confirmation(false, 'Yes');
-					fb.ShowPopupMessage('Theme preset select mode activated:\n\nThe theme preset select mode will automatically choose a random theme preset based on current active theme.\n\nYou can also double-click on the lower bar to choose another random theme preset.\n\nWhen theme preset select mode is activated,\nall themes and style options will be available', 'Theme preset select mode');
-				} else {
-					popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-				}
+				});
 			}
 		});
-	}
+	};
 
 	// * HARMONIC MODE EXCLUSIVE MENU * // only show these options when harmonic mode is active
 	if (pref.presetSelectMode === 'harmonic') {
@@ -598,9 +587,9 @@ function presetOptions(menu) {
 	const applyThemePreset = (preset) => {
 		if (!pref.themeSandbox) pref.savedPreset = pref.preset = preset; else pref.preset = preset;
 		setThemePreset(preset); // After applying the preset, synchronize the daytime/nighttime theme preset if necessary
-		if (pref.themeSetupDay) { pref.preset_day = preset; setDayThemePreset(); }
-		if (pref.themeSetupNight) { pref.preset_night = preset; setNightThemePreset(); }
-	}
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
+	};
 
 	// * WHITE THEME PRESETS * //
 	const themePresetsWhiteMenu = new Menu('White');
@@ -742,6 +731,7 @@ function presetOptions(menu) {
 		resetStyle('all');
 		resetTheme();
 		pref.theme = customStylePreset.theme;
+		pref.styleNighttime = customStylePreset.styleNighttime;
 		pref.styleBevel = customStylePreset.styleBevel;
 		pref.styleBlend = customStylePreset.styleBlend;
 		pref.styleBlend2 = customStylePreset.styleBlend2;
@@ -772,8 +762,8 @@ function presetOptions(menu) {
 		pref.themeBrightness = customStylePreset.themeBrightness;
 		updateStyle();
 		// After applying the preset, synchronize the daytime/nighttime theme preset if necessary
-		if (pref.themeSetupDay) { pref.preset_day = preset; setDayThemePreset(); }
-		if (pref.themeSetupNight) { pref.preset_night = preset; setNightThemePreset(); }
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 	});
 	themePresetUserMenu.appendTo(themePresetsMenu);
 	themePresetsMenu.addSeparator();
@@ -876,7 +866,7 @@ function playerSizeOptions(menu) {
 				display.playerSize_4K_large();
 			}
 		}
-		repaintWindow();
+		RepaintWindow();
 	}, pref.lockPlayerSize);
 }
 
@@ -963,8 +953,8 @@ function brightnessOptions(menu) {
 	menu.createRadioSubMenu('Brightness', ['   -50%', '   -40%', '   -30%', '   -25%', '   -20%', '   -15%', '   -10%', '     -5%', 'Default', '     +5%', '   +10%', '   +15%', '   +20%', '   +25%', '   +30%', '   +40%', '   +50%'],
 		pref.themeBrightness, [-50, -40, -30, -25, -20, -15, -10, -5, 'default', 5, 10, 15, 20, 25, 30, 40, 50], (percent) => {
 		if (!pref.themeSandbox) pref.savedThemeBrightness = pref.themeBrightness = percent; else pref.themeBrightness = percent;
-		if (pref.themeSetupDay) pref.themeBrightness_day = percent;
-		if (pref.themeSetupNight) pref.themeBrightness_night = percent;
+		if (pref.themeSetupDay || pref.themeSetupNight) setThemeDayNightStyle();
+		if (pref.themeDayNightMode) ShowThemeDayNightModePopup();
 		initThemeFull = true;
 		initTheme();
 	}, pref.presetSelectMode === 'harmonic');
@@ -1014,7 +1004,7 @@ function fontSizeOptions(menu) {
 		createFonts();
 		createButtonImages();
 		createButtonObjects(ww, wh);
-		repaintWindow();
+		RepaintWindow();
 	});
 
 	// * MAIN - LOWER BAR * //
@@ -1032,7 +1022,7 @@ function fontSizeOptions(menu) {
 		createFonts();
 		createButtonImages();
 		createButtonObjects(ww, wh);
-		repaintWindow();
+		RepaintWindow();
 	});
 	mainFontSizeMenu.appendTo(changeFontSizeMenu);
 
@@ -1044,7 +1034,7 @@ function fontSizeOptions(menu) {
 		else if (pref.layout === 'compact') { pref.notificationFontSize_compact = size; }
 
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 
 	// * MAIN - POPUP * //
@@ -1057,7 +1047,7 @@ function fontSizeOptions(menu) {
 		createFonts();
 		if      (displayCustomThemeMenu)  initCustomThemeMenu('pl_bg');
 		else if (displayMetadataGridMenu) initMetadataGridMenu();
-		repaintWindow();
+		RepaintWindow();
 	});
 
 	// * MAIN - TOOLTIP * //
@@ -1068,7 +1058,7 @@ function fontSizeOptions(menu) {
 		else if (pref.layout === 'compact') { pref.tooltipFontSize_compact = size; }
 
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 
 	// * DETAILS - ARTIST * //
@@ -1082,7 +1072,7 @@ function fontSizeOptions(menu) {
 			pref.gridArtistFontSize_artwork = size;
 		}
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 
 	// * DETAILS - TITLE * //
@@ -1097,7 +1087,7 @@ function fontSizeOptions(menu) {
 			pref.gridTitleFontSize_artwork = size;
 		}
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 
 	// * DETAILS - ALBUM * //
@@ -1110,7 +1100,7 @@ function fontSizeOptions(menu) {
 			pref.gridAlbumFontSize_artwork = size;
 		}
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 
 	// * DETAILS - TAG NAME * //
@@ -1123,7 +1113,7 @@ function fontSizeOptions(menu) {
 			pref.gridKeyFontSize_artwork = size;
 		}
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 
 	// * DETAILS - TAG VALUE * //
@@ -1136,7 +1126,7 @@ function fontSizeOptions(menu) {
 			pref.gridValueFontSize_artwork = size;
 		}
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsFontSizeMenu.appendTo(changeFontSizeMenu);
 
@@ -1176,7 +1166,7 @@ function fontSizeOptions(menu) {
 			panel.zoomReset();
 			initLibraryLayout();
 		}
-		repaintWindow();
+		RepaintWindow();
 	});
 
 	// * LIBRARY * //
@@ -1199,7 +1189,7 @@ function fontSizeOptions(menu) {
 		setLibrarySize();
 		panel.zoomReset();
 		pop.createImages();
-		repaintWindow();
+		RepaintWindow();
 	});
 
 	// * BIOGRAPHY * //
@@ -1222,7 +1212,7 @@ function fontSizeOptions(menu) {
 		setBiographySize();
 		butBio.resetZoom();
 		butBio.createImages();
-		repaintWindow();
+		RepaintWindow();
 	});
 
 	// * LYRICS * //
@@ -1262,19 +1252,19 @@ function playerControlsOptions(menu) {
 
 	const playlistCallback = () => {
 		playlist.on_size(ww, wh);
-		repaintWindow();
+		RepaintWindow();
 	};
 
 	const updateButtons = () => {
 		createButtonImages();
 		createButtonObjects(ww, wh);
-		repaintWindow();
+		RepaintWindow();
 	};
 
 	const updateSeekbar = () => {
 		setGeometry();
 		resizeArtwork(true);
-		repaintWindow();
+		RepaintWindow();
 	};
 
 	// * TOP MENU * //
@@ -1318,13 +1308,13 @@ function playerControlsOptions(menu) {
 				playlist.on_size(ww, wh);
 				setLibrarySize();
 				setBiographySize();
-				repaintWindow();
+				RepaintWindow();
 			});
 			playerControlsAlbumArtNotPropMenu.addSeparator();
 		}
 		playerControlsAlbumArtNotPropMenu.addRadioItems(['Left album art bg', 'Full album art bg', 'No album art bg'], pref.albumArtBg, ['left', 'full', 'none'], (type) => {
 			pref.albumArtBg = type;
-			repaintWindow();
+			RepaintWindow();
 		});
 		playerControlsAlbumArtNotPropMenu.appendTo(playerControlsAlbumArtMenu);
 		const playerControlsAlbumArtScaleMenu = new Menu('When player size is maximized/fullscreen');
@@ -1332,7 +1322,7 @@ function playerControlsOptions(menu) {
 			playerControlsAlbumArtScaleMenu.addRadioItems(['Scale album art filled', 'Scale album art proportional'], pref.albumArtScale, ['filled', 'proportional'], (scale) => {
 				pref.albumArtScale = scale;
 				resizeArtwork(true);
-				repaintWindow();
+				RepaintWindow();
 			});
 			playerControlsAlbumArtScaleMenu.appendTo(playerControlsAlbumArtMenu);
 		}
@@ -1349,34 +1339,29 @@ function playerControlsOptions(menu) {
 		playerControlsAlbumArtMenu.addSeparator();
 		playerControlsAlbumArtMenu.addToggleItem('Load embedded album art first', pref, 'loadEmbeddedAlbumArtFirst', () => {
 			const msg = 'Do you want to load embedded album art first?\n\nYou also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art\n\nContinue?\n\n\n';
-			const continue_confirmation = (status, confirmed) => {
+			const msgFb = 'Embedded album art enabled:\n\nYou also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art.';
+			ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) pref.loadEmbeddedAlbumArtFirst = false;
-			}
-			if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-				continue_confirmation(false, 'Yes');
-				fb.ShowPopupMessage('Embedded album art enabled:\n\nYou also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art.', 'Embedded album art');
-			} else {
-				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-			}
+			});
 		});
 		playerControlsAlbumArtMenu.addSeparator();
 
 		const showHiResAudioLogoMenu = new Menu('Show hi-res audio badge on album cover');
-		showHiResAudioLogoMenu.addToggleItem('Enabled', pref, 'showHiResAudioBadge', () => { repaintWindow(); });
+		showHiResAudioLogoMenu.addToggleItem('Enabled', pref, 'showHiResAudioBadge', () => { RepaintWindow(); });
 		showHiResAudioLogoMenu.addSeparator();
-		showHiResAudioLogoMenu.addToggleItem('Round', pref, 'hiResAudioBadgeRound', () => { repaintWindow(); }, !pref.showHiResAudioBadge);
+		showHiResAudioLogoMenu.addToggleItem('Round', pref, 'hiResAudioBadgeRound', () => { RepaintWindow(); }, !pref.showHiResAudioBadge);
 		showHiResAudioLogoMenu.addSeparator();
 		showHiResAudioLogoMenu.addRadioItems(['Small', 'Normal', 'Large'], pref.hiResAudioBadgeSize, ['small', 'normal', 'large'], (size) => {
 			pref.hiResAudioBadgeSize = size;
-			repaintWindow();
+			RepaintWindow();
 		}, !pref.showHiResAudioBadge);
 		showHiResAudioLogoMenu.addSeparator();
 		showHiResAudioLogoMenu.addRadioItems(['Top left', 'Top right', 'Bottom left', 'Bottom right'], pref.hiResAudioBadgePos, ['topleft', 'topright', 'bottomleft', 'bottomright'], (pos) => {
 			pref.hiResAudioBadgePos = pos;
-			repaintWindow();
+			RepaintWindow();
 		}, !pref.showHiResAudioBadge);
 		showHiResAudioLogoMenu.appendTo(playerControlsAlbumArtMenu);
-		playerControlsAlbumArtMenu.addToggleItem('Show pause on album cover', pref, 'showPause', () => { repaintWindow(); });
+		playerControlsAlbumArtMenu.addToggleItem('Show pause on album cover', pref, 'showPause', () => { RepaintWindow(); });
 		playerControlsAlbumArtMenu.appendTo(playerControlsMenu);
 	}
 
@@ -1497,7 +1482,7 @@ function playerControlsOptions(menu) {
 		playlist.on_size(ww, wh);
 		setLibrarySize();
 		setBiographySize();
-		repaintWindow();
+		RepaintWindow();
 	});
 	playerControlsPanelNotPropMenu.appendTo(playerControlsPanelMenu);
 	playerControlsPanelMenu.addSeparator();
@@ -1510,11 +1495,18 @@ function playerControlsOptions(menu) {
 		});
 		showPanelOnStartupMenu.appendTo(playerControlsPanelMenu);
 	}
-	playerControlsPanelMenu.addToggleItem('Show logo on startup', pref, 'showLogoOnStartup', () => { repaintWindow(); });
+	playerControlsPanelMenu.addToggleItem('Show logo on preloader', pref, 'showPreloaderLogo', () => { RepaintWindow(); });
+	playerControlsPanelMenu.addToggleItem('Show custom logo on preloader', pref, 'showPreloaderCustomLogo', () => {
+		if (!pref.showPreloaderCustomLogo) return;
+		const customLogoPath = `${fb.ProfilePath}georgia-reborn\\images\\custom\\logo\\_4K-custom-logo.png and _custom-logo.png`;
+		const msg = `The custom logo placeholder can be replaced\nwith a new logo:\n\n${customLogoPath}\n\nRecommended logo dimensions are:\n500x500 pixels for 4K\n250x250 pixels for HD\n\n\n`;
+		ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+		RepaintWindow();
+	});
 	playerControlsPanelMenu.addSeparator();
 	playerControlsPanelMenu.addToggleItem('Return to home on playback stop', pref, 'returnToHomeOnPlaybackStop');
 	playerControlsPanelMenu.addSeparator();
-	playerControlsPanelMenu.addToggleItem('Hide middle panel shadow', pref, 'hideMiddlePanelShadow', () => { repaintWindow(); });
+	playerControlsPanelMenu.addToggleItem('Hide middle panel shadow', pref, 'hideMiddlePanelShadow', () => { RepaintWindow(); });
 	playerControlsPanelMenu.addSeparator();
 	playerControlsPanelMenu.addToggleItem('Lock player size', pref, 'lockPlayerSize', () => { UIHacks.DisableSizing = true; });
 	playerControlsPanelMenu.appendTo(playerControlsMenu);
@@ -1691,37 +1683,37 @@ function playerControlsOptions(menu) {
 
 	// * SHOW ARTIST IN LOWER BAR * //
 	const showArtistMenu = new Menu('Show artist');
-	showArtistMenu.addToggleItem('Default', pref, 'showLowerBarArtist_default', () => { repaintWindow(); });
-	showArtistMenu.addToggleItem('Artwork', pref, 'showLowerBarArtist_artwork', () => { repaintWindow(); });
-	showArtistMenu.addToggleItem('Compact', pref, 'showLowerBarArtist_compact', () => { repaintWindow(); });
+	showArtistMenu.addToggleItem('Default', pref, 'showLowerBarArtist_default', () => { RepaintWindow(); });
+	showArtistMenu.addToggleItem('Artwork', pref, 'showLowerBarArtist_artwork', () => { RepaintWindow(); });
+	showArtistMenu.addToggleItem('Compact', pref, 'showLowerBarArtist_compact', () => { RepaintWindow(); });
 	showArtistMenu.appendTo(playerControlsLowerBarMenu);
 
 	// * SHOW TRACK NUMBER IN LOWER BAR * //
 	const showTrackNumberMenu = new Menu('Show track number');
-	showTrackNumberMenu.addToggleItem('Default', pref, 'showLowerBarTrackNum_default', () => { on_metadb_changed(); repaintWindow(); });
-	showTrackNumberMenu.addToggleItem('Artwork', pref, 'showLowerBarTrackNum_artwork', () => { on_metadb_changed(); repaintWindow(); });
-	showTrackNumberMenu.addToggleItem('Compact', pref, 'showLowerBarTrackNum_compact', () => { on_metadb_changed(); repaintWindow(); });
+	showTrackNumberMenu.addToggleItem('Default', pref, 'showLowerBarTrackNum_default', () => { on_metadb_changed(); RepaintWindow(); });
+	showTrackNumberMenu.addToggleItem('Artwork', pref, 'showLowerBarTrackNum_artwork', () => { on_metadb_changed(); RepaintWindow(); });
+	showTrackNumberMenu.addToggleItem('Compact', pref, 'showLowerBarTrackNum_compact', () => { on_metadb_changed(); RepaintWindow(); });
 	showTrackNumberMenu.appendTo(playerControlsLowerBarMenu);
 
 	// * SHOW SONG TITLE IN LOWER BAR * //
 	const showTitleMenu = new Menu('Show song title');
-	showTitleMenu.addToggleItem('Default', pref, 'showLowerBarTitle_default', () => { repaintWindow(); });
-	showTitleMenu.addToggleItem('Artwork', pref, 'showLowerBarTitle_artwork', () => { repaintWindow(); });
-	showTitleMenu.addToggleItem('Compact', pref, 'showLowerBarTitle_compact', () => { repaintWindow(); });
+	showTitleMenu.addToggleItem('Default', pref, 'showLowerBarTitle_default', () => { RepaintWindow(); });
+	showTitleMenu.addToggleItem('Artwork', pref, 'showLowerBarTitle_artwork', () => { RepaintWindow(); });
+	showTitleMenu.addToggleItem('Compact', pref, 'showLowerBarTitle_compact', () => { RepaintWindow(); });
 	showTitleMenu.appendTo(playerControlsLowerBarMenu);
 
 	// * SHOW COMPOSER IN LOWER BAR * //
 	const showComposerMenu = new Menu('Show composer');
-	showComposerMenu.addToggleItem('Default', pref, 'showLowerBarComposer_default', () => { repaintWindow(); });
-	showComposerMenu.addToggleItem('Artwork', pref, 'showLowerBarComposer_artwork', () => { repaintWindow(); });
-	showComposerMenu.addToggleItem('Compact', pref, 'showLowerBarComposer_compact', () => { repaintWindow(); });
+	showComposerMenu.addToggleItem('Default', pref, 'showLowerBarComposer_default', () => { RepaintWindow(); });
+	showComposerMenu.addToggleItem('Artwork', pref, 'showLowerBarComposer_artwork', () => { RepaintWindow(); });
+	showComposerMenu.addToggleItem('Compact', pref, 'showLowerBarComposer_compact', () => { RepaintWindow(); });
 	showComposerMenu.appendTo(playerControlsLowerBarMenu);
 
 	// * SHOW ARTIST COUNTRY FLAGS IN LOWER BAR * //
 	const showArtistFlagsMenu = new Menu('Show artist country flags');
-	showArtistFlagsMenu.addToggleItem('Default', pref, 'showLowerBarArtistFlags_default', () => { loadCountryFlags(); repaintWindow(); });
-	showArtistFlagsMenu.addToggleItem('Artwork', pref, 'showLowerBarArtistFlags_artwork', () => { loadCountryFlags(); repaintWindow(); });
-	showArtistFlagsMenu.addToggleItem('Compact', pref, 'showLowerBarArtistFlags_compact', () => { loadCountryFlags(); repaintWindow(); });
+	showArtistFlagsMenu.addToggleItem('Default', pref, 'showLowerBarArtistFlags_default', () => { loadCountryFlags(); RepaintWindow(); });
+	showArtistFlagsMenu.addToggleItem('Artwork', pref, 'showLowerBarArtistFlags_artwork', () => { loadCountryFlags(); RepaintWindow(); });
+	showArtistFlagsMenu.addToggleItem('Compact', pref, 'showLowerBarArtistFlags_compact', () => { loadCountryFlags(); RepaintWindow(); });
 	showArtistFlagsMenu.appendTo(playerControlsLowerBarMenu);
 
 	// * SHOW SOFTWARE VERSION IN LOWER BAR * //
@@ -1763,13 +1755,13 @@ function playerControlsOptions(menu) {
 			waveformBar.updateBar();
 		}
 		setProgressBarRefresh();
-		repaintWindow();
+		RepaintWindow();
 	});
 	const playerControlsProgressBarMenu = new Menu('Progress bar');
 	playerControlsProgressBarMenu.createRadioSubMenu('Style', ['Default', 'Rounded', 'Lines', 'Blocks', 'Dots', 'Thin'], pref.styleProgressBarDesign, ['default', 'rounded', 'lines', 'blocks', 'dots', 'thin'], (style) => {
 		pref.styleProgressBarDesign = style;
 		setGeometry();
-		repaintWindow();
+		RepaintWindow();
 	});
 	playerControlsProgressBarMenu.createRadioSubMenu('Mouse wheel seek speed', ['  1 sec', '  2 sec', '  3 sec', '  4 sec', '  5 sec (default)', '  6 sec', '  7 sec', '  8 sec', '  9 sec', '10 sec'], pref.progressBarWheelSeekSpeed, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (speed) => {
 		pref.progressBarWheelSeekSpeed = speed;
@@ -1784,41 +1776,41 @@ function playerControlsOptions(menu) {
 	const playerControlspeakmeterBarMenu = new Menu('Peakmeter bar');
 	playerControlspeakmeterBarMenu.createRadioSubMenu('Style', ['Horizontal', 'Horizontal center', 'Vertical'], pref.peakmeterBarDesign, ['horizontal', 'horizontal_center', 'vertical'], (design) => {
 		pref.peakmeterBarDesign = design;
-		repaintWindow();
+		RepaintWindow();
 	});
 	if (pref.peakmeterBarDesign === 'vertical') {
 		playerControlspeakmeterBarMenu.createRadioSubMenu('Size', ['  0 px', '  2 px', '  4 px', '  6 px', '  8 px', '10 px', pref.layout !== 'default' ? '12 px (default)' : '12 px', '14 px', '16 px', '18 px', pref.layout !== 'default' ? '20 px' : '20 px (default)', '25 px', '30 px', '35 px', '40 px', 'Minimum'], pref.peakmeterBarVertSize, [0, 2, 4, 6, 8, 10, 20, 25, 30, 35, 40, 'min'], (size) => {
 			pref.peakmeterBarVertSize = size;
-			repaintWindow();
+			RepaintWindow();
 		});
 		playerControlspeakmeterBarMenu.createRadioSubMenu('Decibel range', ['2 to -20 db (default)', '2 to -15 db', '2 to -10 db', '3 to -20 db', '3 to -15 db', '3 to -10 db', '5 to -20 db', '5 to -15 db', '5 to -10 db'], pref.peakmeterBarVertDbRange, [220, 215, 210, 320, 315, 310, 520, 515, 510], (range) => {
 			pref.peakmeterBarVertDbRange = range;
-			repaintWindow();
+			RepaintWindow();
 		});
 	}
 	const playerControlspeakmeterBarDisplayMenu = new Menu('Display');
 	if (pref.peakmeterBarDesign === 'horizontal' || pref.peakmeterBarDesign === 'horizontal_center') {
-		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show over bars', pref, 'peakmeterBarOverBars', () => { repaintWindow(); });
+		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show over bars', pref, 'peakmeterBarOverBars', () => { RepaintWindow(); });
 		playerControlspeakmeterBarDisplayMenu.addSeparator();
-		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show outer bars', pref, 'peakmeterBarOuterBars', () => { repaintWindow(); });
-		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show outer peaks', pref, 'peakmeterBarOuterPeaks', () => { repaintWindow(); });
+		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show outer bars', pref, 'peakmeterBarOuterBars', () => { RepaintWindow(); });
+		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show outer peaks', pref, 'peakmeterBarOuterPeaks', () => { RepaintWindow(); });
 		playerControlspeakmeterBarDisplayMenu.addSeparator();
-		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show main bars', pref, 'peakmeterBarMainBars', () => { repaintWindow(); });
-		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show main peaks', pref, 'peakmeterBarMainPeaks', () => { repaintWindow(); });
+		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show main bars', pref, 'peakmeterBarMainBars', () => { RepaintWindow(); });
+		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show main peaks', pref, 'peakmeterBarMainPeaks', () => { RepaintWindow(); });
 		playerControlspeakmeterBarDisplayMenu.addSeparator();
-		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show middle bars', pref, 'peakmeterBarMiddleBars', () => { repaintWindow(); });
+		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show middle bars', pref, 'peakmeterBarMiddleBars', () => { RepaintWindow(); });
 	}
-	playerControlspeakmeterBarDisplayMenu.addToggleItem('Show progress bar', pref, 'peakmeterBarProgBar', () => { repaintWindow(); });
+	playerControlspeakmeterBarDisplayMenu.addToggleItem('Show progress bar', pref, 'peakmeterBarProgBar', () => { RepaintWindow(); });
 	if (pref.peakmeterBarDesign === 'horizontal' || pref.peakmeterBarDesign === 'horizontal_center') {
 		playerControlspeakmeterBarDisplayMenu.addSeparator();
-		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show gaps', pref, 'peakmeterBarGaps', () => { repaintWindow(); });
-		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show grid', pref, 'peakmeterBarGrid', () => { peakmeterBar.on_size(ww, wh); repaintWindow(); });
+		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show gaps', pref, 'peakmeterBarGaps', () => { RepaintWindow(); });
+		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show grid', pref, 'peakmeterBarGrid', () => { peakmeterBar.on_size(ww, wh); RepaintWindow(); });
 	}
 	if (pref.peakmeterBarDesign === 'vertical') {
-		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show peaks', pref, 'peakmeterBarVertPeaks', () => { repaintWindow(); });
-		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show baseline', pref, 'peakmeterBarVertBaseline', () => { repaintWindow(); });
+		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show peaks', pref, 'peakmeterBarVertPeaks', () => { RepaintWindow(); });
+		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show baseline', pref, 'peakmeterBarVertBaseline', () => { RepaintWindow(); });
 	}
-	playerControlspeakmeterBarDisplayMenu.addToggleItem(pref.layout !== 'default' ? 'Show info (only available in Default layout)' : 'Show info', pref, 'peakmeterBarInfo', () => { repaintWindow(); });
+	playerControlspeakmeterBarDisplayMenu.addToggleItem(pref.layout !== 'default' ? 'Show info (only available in Default layout)' : 'Show info', pref, 'peakmeterBarInfo', () => { RepaintWindow(); });
 	playerControlspeakmeterBarDisplayMenu.appendTo(playerControlspeakmeterBarMenu);
 	playerControlspeakmeterBarMenu.createRadioSubMenu('Refresh rate', ['  200 ms (very slow CPU)', '  150 ms', '  120 ms', '  100 ms', '    80 ms (default)', '    60 ms', '    30 ms (very fast CPU)'], pref.peakmeterBarRefreshRate, [200, 150, 120, 100, 80, 60, 30], (rate) => {
 		pref.peakmeterBarRefreshRate = rate;
@@ -1833,14 +1825,14 @@ function playerControlsOptions(menu) {
 		pref.waveformBarAnalysis = type;
 		waveformBar.updateConfig({ preset: { analysisMode: type } });
 		waveformBar.updateBar();
-		repaintWindow();
+		RepaintWindow();
 	}, pref.waveformBarMode !== 'ffprobe');
 
 	playerControlsWaveformBarMenu.createRadioSubMenu('Mode', ['FFprobe', 'Audiowaveform', 'Visualizer'], pref.waveformBarMode, ['ffprobe', 'audiowaveform', 'visualizer'], (mode) => {
 		pref.waveformBarMode = mode;
 		waveformBar.updateConfig({ analysis: { binaryMode: mode } });
 		waveformBar.updateBar();
-		repaintWindow();
+		RepaintWindow();
 	});
 
 	playerControlsWaveformBarMenu.createRadioSubMenu('Style', ['Waveform', 'Bars', 'Dots', 'Halfbars'], pref.waveformBarDesign, ['waveform', 'bars', 'dots', 'halfbars'], (design) => {
@@ -1942,7 +1934,7 @@ function playlistOptions(menu, context_menu) {
 
 	const playlistCallback = () => {
 		playlist.on_size(ww, wh);
-		repaintWindow();
+		RepaintWindow();
 	};
 
 	// * LAYOUT * //
@@ -1955,7 +1947,7 @@ function playlistOptions(menu, context_menu) {
 			playlist.on_size(ww, wh);
 			jumpSearch.on_size();
 			initButtonState();
-			repaintWindow();
+			RepaintWindow();
 		});
 	}
 
@@ -1966,7 +1958,7 @@ function playlistOptions(menu, context_menu) {
 	playlistManagerShowMenu.addToggleItem('Artwork', pref, 'showPlaylistManager_artwork', playlistCallback);
 	playlistManagerShowMenu.addToggleItem('Compact', pref, 'showPlaylistManager_compact', playlistCallback);
 	playlistManagerShowMenu.appendTo(playlistManagerMenu);
-	playlistManagerMenu.addToggleItem('Show playlist history', pref, 'showPlaylistHistory',  () => { repaintWindow(); });
+	playlistManagerMenu.addToggleItem('Show playlist history', pref, 'showPlaylistHistory',  () => { RepaintWindow(); });
 	playlistManagerMenu.addToggleItem('Auto-hide', pref, 'autoHidePlman',  () => { initTheme(); });
 	playlistManagerMenu.appendTo(playlistMenu);
 
@@ -1986,7 +1978,7 @@ function playlistOptions(menu, context_menu) {
 		rescalePlaylist(true);
 		initPlaylist();
 		playlist.on_size(ww, wh);
-		repaintWindow();
+		RepaintWindow();
 	}, !g_properties.show_header);
 	playlistAlbumMenu.addToggleItem('Auto collapse and expand', g_properties, 'auto_collapse', () => {
 		initPlaylist();
@@ -2026,11 +2018,11 @@ function playlistOptions(menu, context_menu) {
 	rowsMenu.addToggleItem('Show artist name on difference', pref, 'showDifferentArtist', () => { updatePlaylist(); });
 	rowsMenu.addToggleItem('Show artist name in all rows', pref, 'showArtistPlaylistRows', () => { updatePlaylist(); });
 	rowsMenu.addToggleItem('Show album title in all rows', pref, 'showAlbumPlaylistRows', () => { updatePlaylist(); });
-	rowsMenu.addToggleItem('Show time remaining on playing track', pref, 'playlistTimeRemaining', () => { repaintWindow(); });
+	rowsMenu.addToggleItem('Show time remaining on playing track', pref, 'playlistTimeRemaining', () => { RepaintWindow(); });
 	rowsMenu.addToggleItem('Show vinyl style numbering if available', pref, 'showVinylNums', () => { updatePlaylist(); });
 	rowsMenu.addToggleItem('Show last.fm scrobbles on no local plays', pref, 'lastFmScrobblesFallback', () => { updatePlaylist(); });
 	rowsMenu.addSeparator();
-	rowsMenu.addToggleItem('Row mouse hover', pref, 'playlistRowHover', () => { repaintWindow(); });
+	rowsMenu.addToggleItem('Row mouse hover', pref, 'playlistRowHover', () => { RepaintWindow(); });
 	rowsMenu.addSeparator();
 	rowsMenu.addItem('Customize track row', false, () => { inputBox('playlistCustomTrackRow'); updatePlaylist(); });
 	rowsMenu.appendTo(playlistMenu);
@@ -2045,7 +2037,7 @@ function playlistOptions(menu, context_menu) {
 	const setSorting = () => {
 		setPlaylistSortOrder();
 		playlist.on_size(ww, wh);
-		repaintWindow();
+		RepaintWindow();
 	};
 
 	const sortOrderWithDirection = ['artistDate', 'albumRating', 'albumPlaycount', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country'];
@@ -2106,7 +2098,7 @@ function detailsOptions(menu, context_menu) {
 		displayDiscArtMenu.addToggleItem('Show placeholder if no disc art found', pref, 'showDiscArtStub', () => {
 			pref.noDiscArtStub = false;
 			fetchNewArtwork(fb.GetNowPlaying());
-			repaintWindow();
+			RepaintWindow();
 		}, !pref.displayDiscArt);
 		displayDiscArtMenu.addSeparator();
 		displayDiscArtMenu.addToggleItem('No placeholder', pref, 'noDiscArtStub', () => {
@@ -2116,7 +2108,7 @@ function detailsOptions(menu, context_menu) {
 			discArtArray = [];
 			discArtArrayCover = [];
 			if (!pref.noDiscArtStub) fetchNewArtwork(fb.GetNowPlaying());
-			repaintWindow();
+			RepaintWindow();
 		}, !pref.displayDiscArt);
 		displayDiscArtMenu.addSeparator();
 		displayDiscArtMenu.addRadioItems(['CD - Album cover', 'CD - White', 'CD - Black', 'CD - Blank', 'CD - Transparent', 'CD - Custom'],
@@ -2126,7 +2118,7 @@ function detailsOptions(menu, context_menu) {
 			discArtCover = disposeDiscArt(discArtCover);
 			discArtArrayCover = [];
 			fetchNewArtwork(fb.GetNowPlaying());
-			repaintWindow();
+			RepaintWindow();
 		}, !pref.displayDiscArt);
 		displayDiscArtMenu.addSeparator();
 		displayDiscArtMenu.addRadioItems(['Vinyl - Album cover', 'Vinyl - White', 'Vinyl - Void', 'Vinyl - Cold fusion', 'Vinyl - Ring of fire', 'Vinyl - Maple', 'Vinyl - Black', 'Vinyl - Black hole', 'Vinyl - Ebony', 'Vinyl - Transparent', 'Vinyl - Custom'],
@@ -2136,7 +2128,7 @@ function detailsOptions(menu, context_menu) {
 			discArtCover = disposeDiscArt(discArtCover);
 			discArtArrayCover = [];
 			fetchNewArtwork(fb.GetNowPlaying());
-			repaintWindow();
+			RepaintWindow();
 		}, !pref.displayDiscArt);
 		displayDiscArtMenu.appendTo(discArtMenu);
 
@@ -2145,12 +2137,12 @@ function detailsOptions(menu, context_menu) {
 			if (fb.IsPlaying) fetchNewArtwork(fb.GetNowPlaying());
 			lastLeftEdge = 0; // resize labels
 			resizeArtwork(true);
-			repaintWindow();
+			RepaintWindow();
 		});
 
 		discArtMenu.addToggleItem('Display disc art above cover', pref, 'discArtOnTop', () => {
 			pref.detailsAlbumArtDiscAreaOpacity = 255;
-			repaintWindow();
+			RepaintWindow();
 		}, !pref.displayDiscArt);
 		discArtMenu.addToggleItem('Filter cd/disc/vinyl .jpgs from artwork', pref, 'filterDiscJpgsFromAlbumArt');
 		discArtMenu.addSeparator();
@@ -2169,25 +2161,25 @@ function detailsOptions(menu, context_menu) {
 			discArtRotationIndexCover = 0;
 			discArtArray = [];
 			discArtArrayCover = [];
-			repaintWindow();
+			RepaintWindow();
 		}, !pref.spinDiscArt);
 		discArtMenu.createRadioSubMenu('Spinning disc art redraw speed', ['250ms (very slow CPU)', '200ms', '150ms', '125ms', '100ms', '  75ms (default)', '  50ms', '  40ms', '  30ms', '  20ms', '  10ms (very fast CPU)'], pref.spinDiscArtRedrawInterval, [250, 200, 150, 125, 100, 75, 50, 40, 30, 20, 10], interval => {
 			pref.spinDiscArtRedrawInterval = interval;
 			setDiscArtRotationTimer();
 		}, !pref.spinDiscArt);
 		discArtMenu.addSeparator();
-		discArtMenu.addToggleItem('Rotate disc art as tracks change', pref, 'rotateDiscArt', () => { repaintWindow(); }, !pref.displayDiscArt || pref.spinDiscArt);
+		discArtMenu.addToggleItem('Rotate disc art as tracks change', pref, 'rotateDiscArt', () => { RepaintWindow(); }, !pref.displayDiscArt || pref.spinDiscArt);
 		discArtMenu.createRadioSubMenu('Disc art rotation amount', ['2 degrees', '3 degrees', '4 degrees', '5 degrees'], parseInt(pref.rotationAmt), [2, 3, 4, 5], (rot) => {
 			pref.rotationAmt = rot;
 			createDiscArtRotation();
-			repaintWindow();
+			RepaintWindow();
 		}, !pref.rotateDiscArt || pref.spinDiscArt);
 		discArtMenu.appendTo(detailsMenu);
 
 		discArtMenu.createRadioSubMenu('Disc art display amount', ['Auto (Needs enough width)', '50%  (Needs enough width, default)', '45%', '40%', '35%', '30%', '25%', '20%', '15%', '10%'], pref.discArtDisplayAmount, [1, 0.5, 0.455, 0.4, 0.35, 0.3, 0.25, 0.2, 0.15, 0.1], amount => {
 			pref.discArtDisplayAmount = amount;
 			resizeArtwork(true);
-			repaintWindow();
+			RepaintWindow();
 		});
 
 		// * DISC ART ALBUM ART * //
@@ -2196,13 +2188,13 @@ function detailsOptions(menu, context_menu) {
 			pref.detailsAlbumArtOpacity = value;
 			pref.detailsAlbumArtDiscAreaOpacity = 255;
 			pref.discArtOnTop = false;
-			repaintWindow();
+			RepaintWindow();
 		});
 		albumArtOpacityMenu.createRadioSubMenu('Disc area opacity (very fast CPU needed when disc art spinning)', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], pref.detailsAlbumArtDiscAreaOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
 			pref.detailsAlbumArtDiscAreaOpacity = value;
 			pref.detailsAlbumArtOpacity = 255;
 			pref.discArtOnTop = false;
-			repaintWindow();
+			RepaintWindow();
 		});
 		albumArtOpacityMenu.appendTo(detailsMenu);
 	}
@@ -2212,11 +2204,11 @@ function detailsOptions(menu, context_menu) {
 	const detailsShowArtistMenu = new Menu('Show artist');
 	detailsShowArtistMenu.addToggleItem('Default', pref, 'showGridArtist_default', () => {
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowArtistMenu.addToggleItem('Artwork', pref, 'showGridArtist_artwork', () => {
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowArtistMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2224,11 +2216,11 @@ function detailsOptions(menu, context_menu) {
 	const detailsShowTrackNumberMenu = new Menu('Show track number');
 	detailsShowTrackNumberMenu.addToggleItem('Default', pref, 'showGridTrackNum_default', () => {
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowTrackNumberMenu.addToggleItem('Artwork', pref, 'showGridTrackNum_artwork', () => {
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowTrackNumberMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2237,12 +2229,12 @@ function detailsOptions(menu, context_menu) {
 	detailsShowTitleMenu.addToggleItem('Default', pref, 'showGridTitle_default', () => {
 		pref.showGridTrackNum_default = true;
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowTitleMenu.addToggleItem('Artwork', pref, 'showGridTitle_artwork', () => {
 		pref.showGridTrackNum_artwork = true;
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowTitleMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2251,17 +2243,17 @@ function detailsOptions(menu, context_menu) {
 	detailsShowPlaylingPlaylistMenu.addToggleItem('Enable', pref, 'showGridPlayingPlaylist', () => {
 		on_playback_new_track(fb.GetNowPlaying());
 		createFonts();
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowPlaylingPlaylistMenu.appendTo(detailsMetadataGridMenu);
 
 	// * SHOW TIMELINE IN DETAILS * //
 	const detailsShowTimelineMenu = new Menu('Show timeline');
 	detailsShowTimelineMenu.addToggleItem('Default', pref, 'showGridTimeline_default', () => {
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowTimelineMenu.addToggleItem('Artwork', pref, 'showGridTimeline_artwork', () => {
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowTimelineMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2269,11 +2261,11 @@ function detailsOptions(menu, context_menu) {
 	const detailsShowArtistFlagsMenu = new Menu('Show artist country flags');
 	detailsShowArtistFlagsMenu.addToggleItem('Default', pref, 'showGridArtistFlags_default', () => {
 		loadCountryFlags();
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowArtistFlagsMenu.addToggleItem('Artwork', pref, 'showGridArtistFlags_artwork', () => {
 		loadCountryFlags();
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowArtistFlagsMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2282,12 +2274,12 @@ function detailsOptions(menu, context_menu) {
 	detailsShowReleaseFlagsMenu.createRadioSubMenu('Default', ['Disabled', 'Logo', 'Text + Logo'], pref.showGridReleaseFlags_default, [false, 'logo', 'textlogo'], type => {
 		pref.showGridReleaseFlags_default = type;
 		loadReleaseCountryFlag();
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowReleaseFlagsMenu.createRadioSubMenu('Artwork', ['Disabled', 'Logo', 'Text + Logo'], pref.showGridReleaseFlags_artwork, [false, 'logo', 'textlogo'], type => {
 		pref.showGridReleaseFlags_artwork = type;
 		loadReleaseCountryFlag();
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowReleaseFlagsMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2295,11 +2287,11 @@ function detailsOptions(menu, context_menu) {
 	const detailsShowCodecLogoMenu = new Menu('Show codec logo');
 	detailsShowCodecLogoMenu.createRadioSubMenu('Default', ['Disabled', 'Logo', 'Text + Logo'], pref.showGridCodecLogo_default, [false, 'logo', 'textlogo'], type => {
 		pref.showGridCodecLogo_default = type;
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowCodecLogoMenu.createRadioSubMenu('Artwork', ['Disabled', 'Logo', 'Text + Logo'], pref.showGridCodecLogo_artwork, [false, 'logo', 'textlogo'], type => {
 		pref.showGridCodecLogo_artwork = type;
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowCodecLogoMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2307,16 +2299,16 @@ function detailsOptions(menu, context_menu) {
 	const detailsShowChannelLogoMenu = new Menu('Show channel logo');
 	detailsShowChannelLogoMenu.createRadioSubMenu('Default', ['Disabled', 'Logo', 'Text + Logo'], pref.showGridChannelLogo_default, [false, 'logo', 'textlogo'], type => {
 		pref.showGridChannelLogo_default = type;
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowChannelLogoMenu.createRadioSubMenu('Artwork', ['Disabled', 'Logo', 'Text + Logo'], pref.showGridChannelLogo_artwork, [false, 'logo', 'textlogo'], type => {
 		pref.showGridChannelLogo_artwork = type;
-		repaintWindow();
+		RepaintWindow();
 	});
 	detailsShowChannelLogoMenu.appendTo(detailsMetadataGridMenu);
 
 	detailsMetadataGridMenu.addSeparator();
-	detailsMetadataGridMenu.addToggleItem('Auto-hide full metadata on small player', pref, 'autoHideGridMetadata', () => repaintWindow());
+	detailsMetadataGridMenu.addToggleItem('Auto-hide full metadata on small player', pref, 'autoHideGridMetadata', () => RepaintWindow());
 
 	// * EDIT METADATA GRID IN DETAILS * //
 	if (fb.IsPlaying) {
@@ -2334,7 +2326,7 @@ function detailsOptions(menu, context_menu) {
 					initButtonState();
 				}
 				initMetadataGridMenu(1);
-				repaintWindow();
+				RepaintWindow();
 			} else {
 				const configPath = `${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc`;
 				fb.ShowPopupMessage(`Metadata grid can only be live edited in default layout:\nOptions > Layout > Default\n\nYou could manually edit your config file while reloading to take effect:\n${configPath}\n`, 'Metadata grid live editing');
@@ -2350,10 +2342,10 @@ function detailsOptions(menu, context_menu) {
 			if (pref.labelArtOnBg) {
 				pref.labelArtOnBg = false;
 			}
-			repaintWindow();
+			RepaintWindow();
 		});
 		// * SHOW LABEL ART ON BACKGROUND IN DETAILS * //
-		detailsBackgroundMenu.addToggleItem('Show label art on background', pref, 'labelArtOnBg', () => repaintWindow(), pref.noDiscArtBg);
+		detailsBackgroundMenu.addToggleItem('Show label art on background', pref, 'labelArtOnBg', () => RepaintWindow(), pref.noDiscArtBg);
 		detailsBackgroundMenu.appendTo(detailsMenu);
 	}
 
@@ -2383,10 +2375,10 @@ function libraryOptions(menu, context_menu) {
 			resizeArtwork(true);
 			initLibraryLayout();
 			initButtonState();
-			repaintWindow();
+			RepaintWindow();
 		});
 		libraryLayoutMenu.addSeparator();
-		libraryLayoutMenu.addToggleItem('Use full preset', pref, 'libraryLayoutFullPreset', () => { repaintWindow(); });
+		libraryLayoutMenu.addToggleItem('Use full preset', pref, 'libraryLayoutFullPreset', () => { RepaintWindow(); });
 		libraryLayoutMenu.addSeparator();
 		libraryLayoutMenu.addToggleItem('Use split preset (collapse)', pref, 'libraryLayoutSplitPreset', () => {
 			pref.libraryLayoutSplitPreset2 = false;
@@ -2445,7 +2437,7 @@ function libraryOptions(menu, context_menu) {
 	libraryThumbnailSizeMenu.addRadioItems(['Auto (default)', 'Playlist', 'Mini', 'Small', 'Regular', 'Medium', 'Large', 'XL', 'XXL', 'MAX'], pref.libraryThumbnailSize, ['auto', 'playlist', 0, 1, 2, 3, 4, 5, 6, 7], (thumbnailSize) => {
 		pref.libraryThumbnailSizeSaved = ppt.thumbNailSize = pref.libraryThumbnailSize = thumbnailSize;
 		setLibrarySize();
-		repaintWindow();
+		RepaintWindow();
 	});
 	libraryThumbnailSizeMenu.appendTo(libraryAlbumArtMenu);
 
@@ -2544,7 +2536,8 @@ function libraryOptions(menu, context_menu) {
 		ppt.actionMode = mode;
 		if (mode === 1) {
 			const msg = 'Do you want to enable library browser mode?\n\nThis will act like a file browser to quickly see the content of the album. It is not recommended for new users\nwho don\'t know how the library works.\n\nContinue?\n\n\n';
-			const continue_confirmation = (status, confirmed) => {
+			const msgFb = 'Library browser mode enabled:\n\nThis will act like a file browser to quickly see the content of the album.\nIt is not recommended for new users who don\'t know how the library works.';
+			ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) {
 					ppt.actionMode = 0;
 					return;
@@ -2565,30 +2558,19 @@ function libraryOptions(menu, context_menu) {
 				g_properties.auto_collapse = false;
 				displayPlaylist = true;
 				displayLibrary = true;
-			}
+			});
 			updatePlaylist();
-			repaintWindow();
-			if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-				continue_confirmation(false, 'Yes');
-				fb.ShowPopupMessage('Library browser mode enabled:\n\nThis will act like a file browser to quickly see the content of the album.\nIt is not recommended for new users who don\'t know how the library works.', 'Library browser mode');
-			} else {
-				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-			}
+			RepaintWindow();
 		}
 		else if (mode === 2) {
 			const msg = 'Do you want to enable library player mode?\n\nThis will act like a playlist and will not automatically add content to the playlist. It is recommended for new users\nwho don\'t know how the library works.\n\nContinue?\n\n\n';
-			const continue_confirmation = (status, confirmed) => {
+			const msgFb = 'Library player mode enabled:\n\nThis will act like a like a playlist and will not automatically add content to the playlist.\nIt is recommended for new users who don\'t know how the library works.';
+			ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) {
 					ppt.actionMode = 0;
 				}
-			}
-			repaintWindow();
-			if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-				continue_confirmation(false, 'Yes');
-				fb.ShowPopupMessage('Library player mode enabled:\n\nThis will act like a like a playlist and will not automatically add content to the playlist.\nIt is recommended for new users who don\'t know how the library works.', 'Library player mode');
-			} else {
-				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-			}
+			});
+			RepaintWindow();
 		};
 	});
 	libraryControlsMenu.addSeparator();
@@ -2655,7 +2637,7 @@ function libraryOptions(menu, context_menu) {
 	libraryTrackRowMenu.addToggleItem('Show row stripes', ppt, 'rowStripes', () => { panel.updateProp(1); });
 	libraryTrackRowMenu.addSeparator();
 	libraryTrackRowMenu.addToggleItem('Row fully clickable', ppt, 'fullLineSelection', () => { panel.updateProp(1); });
-	libraryTrackRowMenu.addToggleItem('Row mouse hover', pref, 'libraryRowHover', () => { repaintWindow(); });
+	libraryTrackRowMenu.addToggleItem('Row mouse hover', pref, 'libraryRowHover', () => { RepaintWindow(); });
 	libraryTrackRowMenu.appendTo(libraryMenu);
 
 	// * FILTER ORDER * //
@@ -2750,7 +2732,7 @@ function biographyOptions(menu, context_menu) {
 			initButtonState();
 		});
 		biographyLayoutMenu.addSeparator();
-		biographyLayoutMenu.addToggleItem('Use full preset', pref, 'biographyLayoutFullPreset', () => { repaintWindow(); });
+		biographyLayoutMenu.addToggleItem('Use full preset', pref, 'biographyLayoutFullPreset', () => { RepaintWindow(); });
 		biographyLayoutMenu.addSeparator();
 	}
 	biographyLayoutMenu.addRadioItems(['Top (default)', 'Right', 'Bottom', 'Left', 'Full overlay', 'Part overlay'], pptBio.style, [0, 1, 2, 3, 4, 5], (layout) => {
@@ -3027,7 +3009,7 @@ function lyricsOptions(menu, context_menu) {
 			on_playback_seek();
 			resizeArtwork(true);
 			initButtonState();
-			repaintWindow();
+			RepaintWindow();
 		});
 	}
 
@@ -3035,21 +3017,21 @@ function lyricsOptions(menu, context_menu) {
 	lyricsDisplayMenu.createRadioSubMenu('Show drop shadow', ['None', 'Small', 'Normal', 'Large'], pref.lyricsDropShadowLevel, [0, 1, 2, 3], (size) => {
 		pref.lyricsDropShadowLevel = size;
 		initLyrics();
-		repaintWindow();
+		RepaintWindow();
 	});
 	lyricsDisplayMenu.addToggleItem('Show fade scroll', pref, 'lyricsFadeScroll', () => {
 		initLyrics();
-		repaintWindow();
+		RepaintWindow();
 	});
 	lyricsDisplayMenu.addToggleItem('Show larger current sync', pref, 'lyricsLargerCurrentSync', () => {
 		pptBio.largerSyncLyricLine = pref.lyricsLargerCurrentSync;
 		initLyrics();
 		uiBio.updateProp(1);
-		repaintWindow();
+		RepaintWindow();
 	});
 	lyricsDisplayMenu.addToggleItem('Show lyrics on album art', pref, 'lyricsAlbumArt', () => {
 		initMainColors();
-		repaintWindow();
+		RepaintWindow();
 	});
 	lyricsDisplayMenu.appendTo(lyricsMenu);
 
@@ -3086,19 +3068,19 @@ function lyricsOptions(menu, context_menu) {
 				break;
 		}
 		initLyrics();
-		repaintWindow();
+		RepaintWindow();
 	});
 	lyricsScrollSpeedMenu.appendTo(lyricsMenu);
 	lyricsMenu.addSeparator();
 
-	lyricsMenu.addItem('Lyric information', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Lyric information'); });
-	lyricsMenu.addItem('Lyric search', false, () => { fb.RunMainMenuCommand('View/ESLyric/Search...'); });
+	lyricsMenu.addItem('Lyrics information', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Lyric information'); });
+	lyricsMenu.addItem('Lyrics search', false, () => { fb.RunMainMenuCommand('View/ESLyric/Search...'); });
 	lyricsMenu.addSeparator();
-	lyricsMenu.addItem('Next lyric', false, () => { lyrics.nextLyrics(); });
-	lyricsMenu.addItem('Edit lyric', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Edit lyric'); });
-	lyricsMenu.addItem('Delete lyric', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Delete lyric'); });
+	lyricsMenu.addItem('Next lyrics', false, () => { lyrics.nextLyrics(); });
+	lyricsMenu.addItem('Edit lyrics', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Edit lyric'); });
+	lyricsMenu.addItem('Delete lyrics', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Delete lyric'); });
 	lyricsMenu.addSeparator();
-	lyricsMenu.addItem('Save lyric to tags', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Save Lyric To/Tags'); });
+	lyricsMenu.addItem('Save lyrics to tags', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Save Lyric To/Tags'); });
 	lyricsMenu.addSeparator();
 	lyricsMenu.addItem('Open containing folder', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Open containing folder'); });
 
@@ -3119,28 +3101,12 @@ function settingsOptions(menu) {
 	// * THEME DAY/NIGHT MODE * //
 	const themeDayNightModeMenu = new Menu('Theme day/night mode');
 
-	/**
-	 * Formats the day/night mode time range string into a more readable format.
-	 * @param {string|null} dayNightMode The time range for day-night mode in 24-hour format, e.g. '6-18' for 6am to 6pm. If null or undefined, it returns 'Deactivated (default)'.
-	 * @returns {string} A formatted string representing the time range in 12-hour format with am/pm suffixes, e.g. '06am (day) - 06pm (night)', or 'Deactivated (default)' if dayNightMode is falsy.
-	 */
-	const FormatDayNightModeString = (dayNightMode) => {
-		if (!dayNightMode) return 'Deactivated (default)';
-		const [start, end] = dayNightMode.split('-').map(part => {
-			let hour = parseInt(part, 10);
-			const suffix = (hour >= 12 && hour < 24) ? ' PM' : ' AM';
-			hour = (hour === 0 || hour === 12) ? 12 : hour % 12;
-			return `${hour.toString().padStart(2, '0')}${suffix}`;
-		});
-		return `${start} (day) - ${end} (night)`;
-	};
-
 	const dayNightTimeRangeDefaults = ['6-18', '7-19', '8-20', '9-21', '10-22'];
-	const dayNightTimeRangeLabels = dayNightTimeRangeDefaults.map(FormatDayNightModeString);
+	const dayNightTimeRangeLabels = dayNightTimeRangeDefaults.map(FormatThemeDayNightModeString);
 	dayNightTimeRangeLabels.unshift('Deactivated (default)');
 
 	const dayNightTimeRangeCustom = pref.themeDayNightMode && !dayNightTimeRangeDefaults.includes(pref.themeDayNightMode);
-	const dayNightTimeRangeCustomLabel = `Custom: ${FormatDayNightModeString(pref.themeDayNightMode)}`;
+	const dayNightTimeRangeCustomLabel = `Custom: ${FormatThemeDayNightModeString(pref.themeDayNightMode)}`;
 	const dayNightTimeRangeVal = dayNightTimeRangeCustom ? pref.themeDayNightMode : (pref.themeDayNightMode || false);
 	const dayNightTimeRangeValues = [false, ...dayNightTimeRangeDefaults];
 
@@ -3162,13 +3128,17 @@ function settingsOptions(menu) {
 			return;
 		}
 		const msg = 'Do you want to activate the theme day/night mode?\n\nThe default daytime theme is White\nand the nighttime theme is Black.\n\nYou can set up and configure\na new theme and styles for both modes\nin the theme day/night mode setup.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
+		const msgFb = 'Theme day/night mode is active:\n\nThe default daytime theme is White\nand the nighttime theme is Black.\n\nYou can set up and configure\na new theme and styles for both modes\nin the theme day/night mode setup.';
+		ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 			if (confirmed) {
 				resetTheme();
-				on_playback_new_track(fb.GetNowPlaying());
 				initThemeDayNightMode(new Date());
 				initThemeFull = true;
+				if (pref.theme.startsWith('custom')) initCustomTheme();
+				if (!fb.IsPlaying) setThemeColors();
 				initTheme();
+				initStyleState();
+				initThemePresetState();
 			} else {
 				pref.themeDayNightMode = false;
 				if (pref.presetAutoRandomMode !== 'off') {
@@ -3176,53 +3146,47 @@ function settingsOptions(menu) {
 					getRandomThemePreset();
 				}
 			}
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			fb.ShowPopupMessage('Theme day/night mode is active:\n\nThe default daytime theme is White\nand the nighttime theme is Black.\n\nYou can set up and configure\na new theme and styles for both modes\nin the theme day/night mode setup', 'Theme day/night mode');
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		});
 	});
 	themeDayNightModeMenu.addSeparator();
 	themeDayNightModeMenu.appendTo(settingsMenu);
 	themeDayNightModeMenu.addItem(!pref.themeSetupDay ? 'Theme setup for daytime' : 'Save and exit daytime theme setup', false, () => {
 		pref.themeSetupDay = !pref.themeSetupDay;
 		pref.themeSetupNight = false;
-		repaintWindow();
+		RepaintWindow();
 		if (!pref.themeSetupDay) {
 			themeNotification = '';
 			return;
 		}
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			fb.ShowPopupMessage('>>> Theme setup for daytime is active <<<\n\nPlease select your theme and styles for daytime usage.\nAfter configuring the theme settings, revisit this menu to save them.', 'Theme setup for daytime');
-		} else {
-			const msg = '>>> Theme setup for daytime is active <<<\n\nPlease select your theme and styles for daytime usage.\nAfter configuring the theme settings, revisit this menu to save them.\n\n\n';
-			popUpBox.confirm('Georgia-ReBORN', msg, 'OK', false, false, 'center', false);
-		}
+		const msg = '>>> Theme setup for daytime is active <<<\n\nPlease select your theme and styles for daytime usage.\nAfter configuring the theme settings, revisit this menu to save them.\n\n\n';
+		ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 		resetTheme();
-		setDayNightTheme(true);
+		setThemeDayNightTheme(true);
 		initThemeFull = true;
+		if (pref.theme.startsWith('custom')) initCustomTheme();
+		if (!fb.IsPlaying) setThemeColors();
 		initTheme();
+		initStyleState();
+		initThemePresetState();
 	});
 	themeDayNightModeMenu.addItem(!pref.themeSetupNight ? 'Theme setup for nighttime' : 'Save and exit nighttime theme setup', false, () => {
 		pref.themeSetupDay = false;
 		pref.themeSetupNight = !pref.themeSetupNight;
-		repaintWindow();
+		RepaintWindow();
 		if (!pref.themeSetupNight) {
 			themeNotification = '';
 			return;
 		}
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			fb.ShowPopupMessage('>>> Theme setup for nighttime is active <<<\n\nPlease select your theme and styles for nighttime usage.\nAfter configuring the theme settings, revisit this menu to save them.', 'Theme setup for nighttime');
-		} else {
-			const msg = '>>> Theme setup for nighttime is active <<<\n\nPlease select your theme and styles for nighttime usage.\nAfter configuring the theme settings, revisit this menu to save them.\n\n\n';
-			popUpBox.confirm('Georgia-ReBORN', msg, 'OK', false, false, 'center', false);
-		}
+		const msg = '>>> Theme setup for nighttime is active <<<\n\nPlease select your theme and styles for nighttime usage.\nAfter configuring the theme settings, revisit this menu to save them.\n\n\n';
+		ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 		resetTheme();
-		setDayNightTheme(false, true);
+		setThemeDayNightTheme(false);
 		initThemeFull = true;
+		if (pref.theme.startsWith('custom')) initCustomTheme();
+		if (!fb.IsPlaying) setThemeColors();
 		initTheme();
+		initStyleState();
+		initThemePresetState();
 	});
 
 	// * HIDE OTHER MENUS WHEN THEME DAY/NIGHT SETUP IS ACTIVE
@@ -3244,45 +3208,29 @@ function settingsOptions(menu) {
 	themeSandboxMenu.addToggleItem('Enabled', pref, 'themeSandbox', () => {
 		if (!pref.themeSandbox) {
 			const msg = 'Do you want to restore\nor keep current theme settings?\n\nThis will restore previously used\ntheme, styles, preset\nor use the current active.\n\nContinue?\n\n\n';
-			const continue_confirmation = (status, confirmed) => {
+			const msgFb = 'Theme settings restored:\n\nTheme, styles or preset have been restored.';
+			ShowPopup(true, msgFb, msg, 'Restore', 'Keep', (confirmed) => {
 				if (confirmed) {
 					restoreThemeStylePresetSettings();
 				} else {
 					restoreThemeStylePresetSettings(true);
 				}
-			}
-			if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-				continue_confirmation(false, 'Restore');
-				fb.ShowPopupMessage('Theme settings restored:\n\nTheme, styles or preset have been restored.', 'Theme settings restored');
-			} else {
-				popUpBox.confirm('Georgia-ReBORN', msg, 'Restore', 'Keep', false, 'center', continue_confirmation);
-			}
+			});
 			return;
 		}
 		const msg = 'Do you want to activate the theme sandbox?\n\nThis mode is useful when trying out\nthemes, styles, presets or writing theme tags.\n\nAfter disabling the theme sandbox mode,\npreviously used theme settings can be restored.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
+		const msgFb = 'Theme sandbox mode activated:\n\nThis mode is useful when trying out\nthemes, styles, presets or writing theme tags.\n\nAfter disabling the theme sandbox mode,\npreviously used theme settings will be restored.';
+		ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 			if (!confirmed) pref.themeSandbox = false;
-		}
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-			fb.ShowPopupMessage('Theme sandbox mode activated:\n\nThis mode is useful when trying out\nthemes, styles, presets or writing theme tags.\n\nAfter disabling the theme sandbox mode,\npreviously used theme settings will be restored.', 'Theme sandbox mode');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		});
 	});
 	themeSandboxMenu.addSeparator();
 	themeSandboxMenu.addItem('Restore theme settings', false, () => {
 		const msg = 'Do you want to restore theme settings?\n\nThis will restore previously used\ntheme, styles, preset.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
-			if (!confirmed) return;
-			restoreThemeStylePresetSettings();
-		}
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-			fb.ShowPopupMessage('Theme settings restored:\n\nTheme, styles or preset have been restored.', 'Theme settings restored');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		const msgFb = 'Theme settings restored:\n\nTheme, styles or preset have been restored.';
+		ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+			if (confirmed) restoreThemeStylePresetSettings();
+		});
 	}, pref.themeSandbox);
 	themeSandboxMenu.appendTo(settingsMenu);
 
@@ -3290,16 +3238,9 @@ function settingsOptions(menu) {
 	const themeFontMenu = new Menu('Theme fonts');
 	themeFontMenu.addToggleItem('Use custom theme fonts', pref, 'customThemeFonts', () => {
 		const msg = 'Do you want to use custom theme fonts?\n\nYou need to set your custom fonts in your config file located in\nfoobar\\profile\\georgia-reborn\\configs\\georgia-reborn-config.jsonc\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 			pref.customThemeFonts = confirmed;
-		};
-		if (pref.customThemeFonts) {
-			if (detectWine || !detectIE) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-				continue_confirmation(false, 'Yes');
-			} else {
-				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-			}
-		}
+		});
 		window.Reload();
 	});
 	themeFontMenu.appendTo(settingsMenu);
@@ -3321,27 +3262,17 @@ function settingsOptions(menu) {
 	});
 	themeCacheLibraryMenu.addItem('Delete library cache', false, () => {
 		const msg = 'Do you want to delete the library cache?\n\nThis will permanently delete cached library album art thumbnails.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
-			if (confirmed) deleteLibraryCache();
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			if (confirmed) DeleteLibraryCache();
+		});
 	});
 	themeCacheLibraryMenu.addSeparator();
 	themeCacheLibraryMenu.addToggleItem('Auto-delete library cache on startup', pref, 'libraryAutoDelete', () => {
 		const msg = 'Do you want to set auto-delete for library cache?\n\nThis will always auto-delete cached library album art thumbnails on startup.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
-			pref.libraryAutoDelete = confirmed;
-		};
 		if (pref.libraryAutoDelete) {
-			if (detectWine || !detectIE) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-				continue_confirmation(false, 'Yes');
-			} else {
-				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-			}
+			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+				pref.libraryAutoDelete = confirmed;
+			});
 		}
 	});
 	themeCacheLibraryMenu.appendTo(themeCacheMenu);
@@ -3363,27 +3294,17 @@ function settingsOptions(menu) {
 	});
 	themeCacheBiographyMenu.addItem('Delete biography cache', false, () => {
 		const msg = 'Do you want to delete the biography cache?\n\nThis will permanently delete downloaded biography images and text files\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
-			if (confirmed) deleteBiographyCache();
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			if (confirmed) DeleteBiographyCache();
+		});
 	});
 	themeCacheBiographyMenu.addSeparator();
 	themeCacheBiographyMenu.addToggleItem('Auto-delete biography cache on startup', pref, 'biographyAutoDelete', () => {
 		const msg = 'Do you want to set auto-delete for biography cache?\n\nThis will always auto-delete downloaded biography images\nand text on startup\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
-			pref.biographyAutoDelete = confirmed;
-		};
 		if (pref.biographyAutoDelete) {
-			if (detectWine || !detectIE) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-				continue_confirmation(false, 'Yes');
-			} else {
-				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-			}
+			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+				pref.biographyAutoDelete = confirmed;
+			});
 		}
 	});
 	themeCacheBiographyMenu.appendTo(themeCacheMenu);
@@ -3401,27 +3322,17 @@ function settingsOptions(menu) {
 	});
 	themeCacheLyricsMenu.addItem('Delete lyrics', false, () => {
 		const msg = 'Do you want to delete all lyrics?\n\nThis will permanently delete downloaded lyrics.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
-			if (confirmed) deleteLyrics();
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			if (confirmed) DeleteLyrics();
+		});
 	});
 	themeCacheLyricsMenu.addSeparator();
 	themeCacheLyricsMenu.addToggleItem('Auto-delete lyrics on startup', pref, 'lyricsAutoDelete', () => {
 		const msg = 'Do you want to set auto-delete for lyrics?\n\nThis will always auto-delete downloaded lyrics on startup.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
-			pref.lyricsAutoDelete = confirmed;
-		};
 		if (pref.lyricsAutoDelete) {
-			if (detectWine || !detectIE) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-				continue_confirmation(false, 'Yes');
-			} else {
-				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-			}
+			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+				pref.lyricsAutoDelete = confirmed;
+			});
 		}
 	});
 	themeCacheLyricsMenu.appendTo(themeCacheMenu);
@@ -3439,27 +3350,17 @@ function settingsOptions(menu) {
 	});
 	themeCacheWaveformBarMenu.addItem('Delete waveform bar cache', false, () => {
 		const msg = 'Do you want to delete all waveform bar cache?\n\nThis will permanently delete analyzed files.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
-			if (confirmed) deleteWaveformBarCache();
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			if (confirmed) DeleteWaveformBarCache();
+		});
 	});
 
 	themeCacheWaveformBarMenu.addToggleItem('Auto-delete waveform bar cache on startup', pref, 'waveformBarAutoDelete', () => {
 		const msg = 'Do you want to set auto-delete for waveform bar?\n\nThis will always auto-delete waveform bar cache on startup.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
-			pref.waveformBarAutoDelete = confirmed;
-		};
 		if (pref.waveformBarAutoDelete) {
-			if (detectWine || !detectIE) {  // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-				continue_confirmation(false, 'Yes');
-			} else {
-				popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-			}
+			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+				pref.waveformBarAutoDelete = confirmed;
+			});
 		}
 	});
 	themeCacheWaveformBarMenu.appendTo(themeCacheMenu);
@@ -3469,29 +3370,17 @@ function settingsOptions(menu) {
 	const themeBackupMenu = new Menu('Theme backup');
 	themeBackupMenu.addItem('Make backup', false, () => {
 		const msg = `Do you want to make a backup of the theme?\n\nThis will create a backup in ${fb.ProfilePath}backup\n\nOn new fb2k installation, you can copy/paste and replace it with ${fb.ProfilePath}\n\nIf a backup already exist, you can use\nOptions > Settings > Theme backup > Restore backup\n\nContinue?\n\n\n`;
-		const continue_confirmation = (status, confirmed) => {
-			if (!confirmed) return;
-			manageBackup(true);
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-			fb.ShowPopupMessage(`You can find the Georgia-ReBORN theme backup in ${fb.ProfilePath}backup\n\nOn new fb2k installation, you can copy/paste and replace it with ${fb.ProfilePath}\n\nIf a backup already exist, you can use\nOptions > Settings > Theme backup > Restore backup`, 'Theme backup');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		const msgFb = `You can find the Georgia-ReBORN theme backup in ${fb.ProfilePath}backup\n\nOn new fb2k installation, you can copy/paste and replace it with ${fb.ProfilePath}\n\nIf a backup already exist, you can use\nOptions > Settings > Theme backup > Restore backup`;
+		ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+			if (confirmed) ManageBackup(true);
+		});
 	});
 
 	themeBackupMenu.addItem('Restore backup', false, () => {
 		const msg = `Do you want to restore your backup of the theme?\n\n>>> WARNING <<<\n\nThis will restore your backup from ${fb.ProfilePath}\n\nChanges and modifications since your last backup\n(new theme settings, new playlists and play statistics)\nwill be lost!\n\nIt is recommended to make a new backup\nbefore you restore.\n\nContinue?\n\n\n`;
-		const continue_confirmation = (status, confirmed) => {
-			if (!confirmed) return;
-			manageBackup(false, true);
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			if (confirmed) ManageBackup(false, true);
+		});
 	});
 	themeBackupMenu.appendTo(settingsMenu);
 
@@ -3499,7 +3388,7 @@ function settingsOptions(menu) {
 	const themeConfigMenu = new Menu('Theme configuration');
 	themeConfigMenu.addItem('Save settings to config file', false, () => {
 		const msg = 'Do you want to save all current theme settings?\n\nThis will overwrite all settings from the top menu "Options"\nin the georgia-reborn-config.jsonc file.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 			if (!confirmed) return;
 			const start = async () => {
 				await setThemeSettings(true);
@@ -3507,16 +3396,11 @@ function settingsOptions(menu) {
 			};
 			start();
 			console.log(`\n>>> Georgia-ReBORN theme settings have been successfully saved in ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc <<<\n\n`);
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		});
 	});
 	themeConfigMenu.addItem('Load settings from config file', false, () => {
 		const msg = 'Do you want to load all theme settings\nfrom the georgia-reborn-config.jsonc file?\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 			if (!confirmed) return;
 			const start = async () => {
 				pref.customThemeSettings = true;
@@ -3525,17 +3409,12 @@ function settingsOptions(menu) {
 			};
 			start();
 			console.log(`\n>>> Georgia-ReBORN theme settings have been successfully loaded from ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc <<<\n\n`);
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		});
 	});
 	themeConfigMenu.addSeparator();
 	themeConfigMenu.addItem('Load default settings', false, () => {
 		const msg = 'Do you want to load default theme settings?\n\nThis will not overwrite the georgia-reborn-config.jsonc file,\nbut you should probably first save your settings.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 			if (!confirmed) return;
 			const start = async () => {
 				pref.customThemeSettings = false;
@@ -3545,12 +3424,7 @@ function settingsOptions(menu) {
 			};
 			start();
 			console.log('\n>>> Default Georgia-ReBORN theme settings have been successfully loaded <<<\n\n');
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		});
 	});
 	themeConfigMenu.addSeparator();
 	themeConfigMenu.addItem('Edit main configuration file', false, () => {
@@ -3570,7 +3444,7 @@ function settingsOptions(menu) {
 	themeConfigMenu.addSeparator();
 	themeConfigMenu.addItem('Reset main configuration file', false, () => {
 		const msg = 'Do you want to reset the config file to default?\n\n!!! WARNING !!!\n\nThis will set all settings to default.\nYou should probably make a backup first.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 			if (!confirmed) return;
 			try { // Needed to prevent crash when there is no config file
 				pref.customThemeSettings = false;
@@ -3579,33 +3453,23 @@ function settingsOptions(menu) {
 				display.layoutDefault();
 				console.log(`\n>>> Georgia-ReBORN's ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc file has been successfully reset to default. <<<\n\n`);
 			} catch (e) { window.Reload(); }
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		});
 	});
 	themeConfigMenu.addItem('Reset custom configuration file', false, () => {
 		const msg = 'Do you want to reset the custom config file to default?\n\n!!! WARNING !!!\n\nThis will delete and replace all custom themes\nto the default custom theme template.\nYou should definitely make a backup first.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 			if (!confirmed) return;
 			try { // Needed to prevent crash when there is no config file
 				pref.customThemeSettings = false;
 				configCustom.resetConfiguration();
 				console.log(`\n>>> Georgia-ReBORN's ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc file has been successfully reset to default. <<<\n\n`);
 			} catch (e) { window.Reload(); }
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		});
 	});
 	themeConfigMenu.addSeparator();
 	themeConfigMenu.addItem('Reset all', false, () => {
 		const msg = 'Do you want to reset all theme settings to default?\n\nThis will also clear all library custom views plus filters\nand Georgia-ReBORN config.\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 			if (!confirmed) return;
 			pref.customThemeSettings = false;
 			pref.systemFirstLaunch = true; // Reset Georgia-ReBORN theme settings
@@ -3620,12 +3484,7 @@ function settingsOptions(menu) {
 			} catch (e) {
 				fb.ShowPopupMessage('Something went wrong and Georgia-ReBORN has NOT been successfully reset, try again!', 'Resetting Georgia-ReBORN');
 			}
-		};
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		});
 	});
 	themeConfigMenu.appendTo(settingsMenu);
 
@@ -3633,18 +3492,13 @@ function settingsOptions(menu) {
 	settingsMenu.createRadioSubMenu('Theme performance', ['Lowest quality (fastest speed - very slow CPU)', 'Low quality', 'Balanced (Default)', 'High quality', 'Highest quality (slowest speed - very fast CPU)'], pref.themePerformance,
 		['lowestQuality', 'lowQuality', 'balanced', 'highQuality', 'highestQuality'], (perf) => {
 		const msg = 'Do you want to change the theme performance?\n\nThese presets will change various theme settings!\nIt is recommended to save current theme settings\nto the config file. You should also make a backup\nof your playlists to be on the safe side!\n\n!!! WARNING !!!\n"High quality" and especially "Highest Quality"\ncan freeze foobar, depending how fast your CPU performs.\nIt does not matter if you are using a multi-core CPU,\nonly single-core CPU performance counts!\nIf your foobar is unresponsive, restart\nand change to a lighter preset.\n\nContinue?';
-		const continue_confirmation = (status, confirmed) => {
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 			if (!confirmed) return;
 			pref.themePerformance = perf;
 			setThemePerformance('balanced'); // First reset
 			setThemePerformance(pref.themePerformance); // Then set
 			window.Reload();
-		}
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		});
 	});
 	settingsMenu.addSeparator();
 
@@ -3709,7 +3563,7 @@ function developerToolsOptions(menu) {
 			albumArt = null;
 			on_playback_new_track(fb.GetNowPlaying());
 		} else {
-			repaintWindow();
+			RepaintWindow();
 		}
 	});
 	debugMenu.addSeparator();
@@ -3720,9 +3574,9 @@ function developerToolsOptions(menu) {
 	debugMenu.addToggleItem('Show ram usage', timings, 'showRamUsage');
 	debugMenu.addToggleItem('Show draw areas', timings, 'drawRepaintRects', () => {
 		if (timings.drawRepaintRects) {
-			repaintRectAreas();
+			RepaintRectAreas();
 		} else {
-			repaintWindow();
+			RepaintWindow();
 		}
 	});
 	debugMenu.addSeparator();
@@ -3754,7 +3608,7 @@ function developerToolsOptions(menu) {
 	debugMenu.addSeparator();
 	debugMenu.addItem('Set system first launch to true', false, () => { // Used when creating new config files
 		const msg = 'Do you really want to set system to first launch?\n\nContinue?\n\n\n';
-		const continue_confirmation = (status, confirmed) => {
+		ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 			if (!confirmed) return;
 			window.SetProperty('Georgia-ReBORN - 16. System: System first launch', true);
 			g_properties.show_scrollbar = false;
@@ -3762,12 +3616,7 @@ function developerToolsOptions(menu) {
 			pref.devTools = false;
 			pref.disableRightClick = true;
 			console.log('\n>>> Georgia-ReBORN has been set to system first launch <<<\n\n');
-		}
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			continue_confirmation(false, 'Yes');
-		} else {
-			popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-		}
+		});
 	});
 
 	debugMenu.appendTo(menu);
@@ -3932,24 +3781,37 @@ function inputBox(option) {
 
 		case 'themeDayNightModeCustom': {
 			const oldValues = Array.isArray(themeSettings.themeDayNightMode) ? themeSettings.themeDayNightMode.join('-') : themeSettings.themeDayNightMode || '6-18';
-			const input = utils.InputBox(window.ID, 'Enter your custom day-night mode (e.g 6-18):', 'Georgia-ReBORN', oldValues, true);
+			let input;
+			try {
+				input = utils.InputBox(window.ID, 'Enter your custom day-night mode (e.g 6-18):', 'Georgia-ReBORN', oldValues, true);
 
-			const validFormat = /^\s*(\d+)\s*-\s*(\d+)\s*$/; // Regex to match a valid input format
-			const match = input.match(validFormat);
+				const validFormat = /^\s*(\d+)\s*-\s*(\d+)\s*$/; // Regex to match a valid input format
+				const match = input.match(validFormat);
+				if (!match) throw new Error('Invalid format');
 
-			if (match) {
 				const startTime = Number(match[1]);
 				const endTime = Number(match[2]);
+				if (startTime === endTime || startTime < 0 || startTime > 23 || endTime < 0 || endTime > 23) {
+					throw new Error('Invalid time');
+				}
 
-				if (startTime !== endTime && startTime >= 0 && startTime <= 23 && endTime >= 0 && endTime <= 23) { // Validate the times
-					themeSettings.themeDayNightMode = pref.themeDayNightMode = input;
-					config.updateConfigObjValues('themeSettings', true);
-					break;
+				themeSettings.themeDayNightMode = pref.themeDayNightMode = input;
+			}
+			catch (e) {
+				if (e.message === 'Invalid format' || e.message === 'Invalid time') {
+					fb.ShowPopupMessage(`Input is not valid: ${input}\n\nPlease enter valid times in 24-hour format separated by a hyphen (e.g 6-18), where both times are between 0 and 23.`, 'Custom Day/Night Mode');
 				}
 			}
-
-			fb.ShowPopupMessage(`Input is not valid: ${input}\n\nPlease enter valid times in 24-hour format separated by a hyphen (e.g 6-18), where both times are between 0 and 23.`, 'Custom Day/Night Mode');
+			config.updateConfigObjValues('themeSettings', true);
+			initThemeDayNightMode(new Date());
+			resetTheme();
+			initThemeFull = true;
+			if (pref.theme.startsWith('custom')) initCustomTheme();
+			if (!fb.IsPlaying) setThemeColors();
+			initTheme();
+			initStyleState();
+			initThemePresetState();
+			break;
 		}
-		break;
 	}
 }

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-17                                          * //
+// * Last change:    2024-01-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -865,7 +865,7 @@ let selectedPrimaryColor;
 let selectedPrimaryColor2;
 /** @type {array} Used in drawDebugRectAreas(). */
 let repaintRects = [];
-/** @type {number} Used in repaintRectAreas(). */
+/** @type {number} Used in RepaintRectAreas(). */
 let repaintRectCount = 0;
 /** @type {boolean} DO NOT CHANGE, can be activated via Options > Developer tools. */
 let trace_call = false;

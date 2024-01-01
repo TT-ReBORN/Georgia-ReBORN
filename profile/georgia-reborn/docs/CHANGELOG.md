@@ -3,7 +3,7 @@
 
 ## Updated to Georgia v2.0.3 - 20 April 2023 - Commit 514 8db1e81
 ## Updated to Library v2.4.0
-## Updated to Biography v1.4.1
+## Updated to Biography v1.4.2
 <br>
 
 

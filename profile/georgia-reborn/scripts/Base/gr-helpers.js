@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-23                                          * //
+// * Last change:    2024-01-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -154,6 +154,18 @@ function MakeHttpRequest(type, url, successCB) {
 ///////////////
 // * DEBUG * //
 ///////////////
+/**
+ * Asserts that a condition is true and throws an error if it is not.
+ * @param {boolean} predicate The condition to evaluate.
+ * @param {new (...args: any[]) => Error} ExceptionType The error constructor to instantiate if the condition is false.
+ * @param {...any} args Additional arguments to pass to the error constructor.
+ * @throws {Error} Throws an error of the type specified by `ExceptionType` if `predicate` is false.
+ */
+function Assert(predicate, ExceptionType, ...args) {
+	if (!predicate) throw new ExceptionType(...args);
+}
+
+
 /**
  * Prints exclusive theme debug logs and avoids cluttering the console constantly.
  * @type {function(...*):void} var_args
@@ -668,6 +680,25 @@ function RunCmd(command, wait, show) {
 		console.log(`RunCmd(): failed to run command ${command}(${e})`);
 		return false;
 	}
+}
+
+
+/**
+ * Creates a function that can only be called once.
+ * The result of the first call is cached and returned on subsequent calls.
+ * @param {Function} fn A function to be called only once.
+ * @returns {Function} A new function that wraps the `fn` function, caching and returning the result of the first invocation.
+ */
+function Once(fn) {
+	let called = false;
+	let result;
+	return (...args) => {
+		if (!called) {
+			result = fn(...args);
+			called = true;
+		}
+		return result;
+	};
 }
 
 
@@ -2023,6 +2054,16 @@ function PadNumber(num, len, base) {
 
 
 /**
+ * Wraps a string in double quotes.
+ * @param {string} value The value to be quoted.
+ * @returns {string} The quoted value.
+ */
+function Quotes(value) {
+	return `"${value}"`;
+}
+
+
+/**
  * Replaces unicode characters such as apostrophes and multi-timestamps which will print as crap.
  * May not be needed when using UTF-8 code page.
  * @param {*} rawString The raw string that has certain characters that need to be replaced.
@@ -2060,16 +2101,6 @@ function ReplaceFileChars(s) {
 			.replace(/\*/g, '')
 			.replace(/"/g, '\'')
 			.replace(/\|/g, '-');
-}
-
-
-/**
- * Wraps a string in double quotes.
- * @param {string} value The value to be quoted.
- * @returns {string} The quoted value.
- */
-function Quotes(value) {
-	return `"${value}"`;
 }
 
 
@@ -2358,4 +2389,409 @@ function ToTime(dateTimeStr) {
 function UpdateTimezoneOffset() {
 	const temp = new Date();
 	timezoneOffset = temp.getTimezoneOffset() * 60 * 1000;
+}
+
+
+////////////////////////
+// * THEME SPECIFIC * //
+////////////////////////
+/**
+ * Deletes the Biography cache on auto or manual usage.
+ */
+function DeleteBiographyCache() {
+	try { fso.DeleteFolder(pref.customBiographyDir ? `${globals.customBiographyDir}\\*.*` : `${fb.ProfilePath}cache\\biography\\biography-cache`); }
+	catch (e) {}
+}
+
+
+/**
+ * Deletes the Library cache on auto or manual usage.
+ */
+function DeleteLibraryCache() {
+	try { fso.DeleteFolder(pref.customLibraryDir ? `${globals.customLibraryDir}\\*.*` : `${fb.ProfilePath}cache\\library\\library-tree-cache`); }
+	catch (e) {}
+}
+
+
+/**
+ * Deletes the Lyrics cache on auto or manual usage.
+ */
+function DeleteLyrics() {
+	try { fso.DeleteFile(pref.customLyricsDir ? `${globals.customLyricsDir}\\*.*` : `${fb.ProfilePath}cache\\lyrics\\*.*`); }
+	catch (e) {}
+}
+
+
+/**
+ * Deletes the Waveform bar cache on auto or manual usage.
+ */
+function DeleteWaveformBarCache() {
+	try { fso.DeleteFolder(pref.customWaveformBarDir ? `${globals.customWaveformBarDir}\\*.*` : `${fb.ProfilePath}cache\\waveform\\*.*`); }
+	catch (e) {}
+}
+
+
+/**
+ * Formats the theme day/night mode time range string into a more readable format.
+ * @param {string|null} themeDayNightMode The time range for theme day/night mode in 24-hour format, e.g. '6-18' for 6am to 6pm. If null or undefined, it returns 'Deactivated (default)'.
+ * @returns {string} A formatted string representing the time range in 12-hour format with am/pm suffixes, e.g. '06am (day) - 06pm (night)', or 'Deactivated (default)' if themeDayNightMode is falsy.
+ */
+function FormatThemeDayNightModeString(themeDayNightMode) {
+	if (!themeDayNightMode) return 'Deactivated (default)';
+
+	// * Safeguard to handle number values and convert them to string with default end hour
+	if (typeof pref.themeDayNightMode === 'number') {
+		pref.themeDayNightMode = `${pref.themeDayNightMode}-18`; // Defaulting end hour to 18 (6 PM)
+	} else if (typeof pref.themeDayNightMode === 'string' && !pref.themeDayNightMode.includes('-')) {
+		pref.themeDayNightMode = `${pref.themeDayNightMode}-${pref.themeDayNightMode}`; // Same start and end hour
+	}
+
+	const [start, end] = themeDayNightMode.split('-').map(part => {
+		let hour = parseInt(part, 10);
+		const suffix = (hour >= 12 && hour < 24) ? ' PM' : ' AM';
+		hour = (hour === 0 || hour === 12) ? 12 : hour % 12;
+		return `${hour.toString().padStart(2, '0')}${suffix}`;
+	});
+	return `${start} (day) - ${end} (night)`;
+}
+
+
+/**
+ * Makes or restores a theme backup.
+ * @param {boolean} make Should a theme backup be made.
+ * @param {boolean} restore Should a theme backup be restored.
+ */
+function ManageBackup(make, restore) {
+	const backupPath = `${fb.ProfilePath}backup\\profile\\`;
+	const cfgPathFb  = `${fb.ProfilePath}configuration`;
+	const dspPathFb  = `${fb.ProfilePath}dsp-presets`;
+	const cfgPathBp  = `${backupPath}configuration`;
+	const dspPathBp  = `${backupPath}dsp-presets`;
+	const indexPath  = `${backupPath}index-data`;
+	const themePath  = `${backupPath}georgia-reborn`;
+
+	const libOld   = make ? `${fb.ProfilePath}library`        : `${backupPath}library`;
+	const libNew   = make ? `${fb.ProfilePath}library-v2.0`   : `${backupPath}library-v2.0`;
+	const plistOld = make ? `${fb.ProfilePath}playlists-v1.4` : `${backupPath}playlists-v1.4`;
+	const plistNew = make ? `${fb.ProfilePath}playlists-v2.0` : `${backupPath}playlists-v2.0`;
+
+	let libaryDir;
+	let playlistDir;
+	let oldVersion = false;
+
+	const checkVersion = async () => {
+		if      (IsFolder(libOld)) { libaryDir = libOld; oldVersion = true; }
+		else if (IsFolder(libNew)) { libaryDir = libNew; oldVersion = false; }
+		if      (IsFolder(plistOld)) { playlistDir = plistOld; oldVersion = true; }
+		else if (IsFolder(plistNew)) { playlistDir = plistNew; oldVersion = false; }
+	};
+
+	const createFolders = async () => {
+		CreateFolder(themePath, true);
+		CreateFolder(cfgPathFb, true);
+		CreateFolder(cfgPathBp, true);
+		CreateFolder(dspPathFb, true);
+		CreateFolder(dspPathBp, true);
+		if (oldVersion) CreateFolder(indexPath, true);
+	};
+
+	const checkFolders = () => {
+		// * Safeguard to prevent crash when directories do not exist
+		const foldersExist =
+			((IsFolder(libOld) && IsFolder(plistOld)) || IsFolder(libNew) && IsFolder(plistNew))
+			&&
+			(IsFolder(themePath) && IsFolder(dspPathFb) && IsFolder(dspPathBp) && IsFolder(cfgPathFb) && IsFolder(cfgPathBp));
+
+		if (foldersExist) {
+			return true;
+		}
+		else {
+			if (make) {
+				fb.ShowPopupMessage(`>>> Georgia-ReBORN theme backup was aborted <<<\n\n"configuration" or "dsp-presets" or "georgia-reborn" or "library" or "playlist" directory\ndoes not exist in:\n${fb.ProfilePath}`, 'Theme backup');
+			} else {
+				fb.ShowPopupMessage(`>>> Georgia-ReBORN restore backup was aborted <<<\n\n"backup" directory does not exist in:\n${fb.ProfilePath}\n\nor\n\n"configuration" or "dsp-presets" or "georgia-reborn" or "library" or "playlist" directory\ndoes not exist in:\n${fb.ProfilePath}backup`, 'Theme backup');
+			}
+			return false;
+		}
+	};
+
+	const copyFolders = async () => {
+		const backup    = new ActiveXObject('Scripting.FileSystemObject');
+		const library   = backup.GetFolder(libaryDir);
+		const playlists = backup.GetFolder(playlistDir);
+		const configs   = backup.GetFolder(make ? `${fb.ProfilePath}georgia-reborn\\configs` : `${backupPath}georgia-reborn\\configs`);
+		const cfg       = backup.GetFolder(make ? cfgPathFb : `${backupPath}configuration`);
+
+		// * If old or new version, copy the library, playlist and config files
+		library.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		playlists.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		configs.Copy(make ? `${backupPath}georgia-reborn\\configs` : `${fb.ProfilePath}georgia-reborn\\configs`, true);
+		try { cfg.Copy(make ? `${backupPath}configuration` : cfgPathFb, true); } catch (e) {}
+
+		// * Delete user's foo_ui_columns.dll.cfg, we use the clean cfg file from the zip
+		try { backup.DeleteFile(`${backupPath}configuration\\foo_ui_columns.dll.cfg`, true); } catch (e) {}
+
+		// * If old version, copy the old library data files
+		if (oldVersion) {
+			const indexData = backup.GetFolder(make ? `${fb.ProfilePath}index-data` : indexPath);
+			indexData.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+			return;
+		}
+
+		// * If new version, copy the new fb2k v2 files
+		const dspPresets = backup.GetFolder(make ? dspPathFb : dspPathBp);
+		const dspConfig = backup.GetFile(make ? `${fb.ProfilePath}config.fb2k-dsp` : `${backupPath}config.fb2k-dsp`);
+		const fbConfig = backup.GetFile(make ? `${fb.ProfilePath}config.sqlite` : `${backupPath}config.sqlite`);
+		const metadb = backup.GetFile(make ? `${fb.ProfilePath}metadb.sqlite` : `${backupPath}metadb.sqlite`);
+		dspPresets.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		dspConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		fbConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+		metadb.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+	};
+
+	const makeBackup = async () => {
+		await checkVersion();
+		await createFolders();
+
+		if (!checkFolders()) return;
+
+		await setThemeSettings(true);
+		await copyFolders();
+
+		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			const msgFb = `>>> Theme backup has been successfully saved <<<\n\n${fb.ProfilePath}backup`;
+			await fb.ShowPopupMessage(msgFb, 'Theme backup');
+		} else {
+			const msg = `Theme backup has been successfully saved:\n\n${fb.ProfilePath}backup\n\n\n`;
+			await popUpBox.confirm('Georgia-ReBORN', msg, 'OK', false, false, 'center', false);
+		}
+	};
+
+	const restoreBackup = async () => {
+		if (!checkFolders()) return;
+
+		pref.customThemeSettings = true;
+		pref.restoreBackupPlaylist = true;
+
+		await checkVersion();
+		await copyFolders();
+		await setThemeSettings();
+		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
+	};
+
+	if (make) {
+		makeBackup();
+	} else {
+		restoreBackup();
+	}
+}
+
+
+/**
+ * Restores the backup playlist directory with its playlists.
+ * This is a foobar workaround fix when user has installed and launched foobar for the very first time after installation.
+ * If theme backup has been successfully restored, foobar automatically deletes all restored playlist files in the playlist directory.
+ * On the next foobar restart and initialization, foobar adds crap playlist files in the playlist directory making them useless.
+ * To fix this issue, all playlist files from the backup directory will be copied and restored again.
+ */
+function RestoreBackupPlaylist() {
+	const plistOld = `${fb.ProfilePath}backup\\profile\\playlists-v1.4`;
+	const plistNew = `${fb.ProfilePath}backup\\profile\\playlists-v2.0`;
+
+	let playlistDir;
+	let oldVersion = false;
+
+	const checkVersion = async () => {
+		if      (IsFolder(plistOld)) { playlistDir = plistOld; oldVersion = true; }
+		else if (IsFolder(plistNew)) { playlistDir = plistNew; oldVersion = false; }
+	};
+
+	const checkFolders = () => {
+		// * Safeguard to prevent crash when directories do not exist
+		const foldersExist = IsFolder(plistOld) || IsFolder(plistNew);
+
+		if (foldersExist) {
+			return true;
+		}
+		else {
+			fb.ShowPopupMessage(`>>> Georgia-ReBORN restore backup was aborted <<<\n\n"playlist" directory does not exist in:\n${fb.ProfilePath}backup`, 'Theme backup');
+			return false;
+		}
+	};
+
+	const copyFolders = async () => {
+		const backup = new ActiveXObject('Scripting.FileSystemObject');
+		const playlists = backup.GetFolder(playlistDir);
+		playlists.Copy(`${fb.ProfilePath}`, true);
+	};
+
+	const restoreBackup = async () => {
+		pref.restoreBackupPlaylist = false;
+		if (!checkFolders()) return;
+
+		await checkVersion();
+		await copyFolders();
+		await setThemeSettings();
+		await console.log('\n>>> Georgia-ReBORN theme backup has been successfully restored <<<\n\n');
+		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
+	};
+
+	restoreBackup();
+}
+
+
+/**
+ * Displays red rectangles to show all repaint areas when activating "Draw areas" in dev tools, used for debugging.
+ */
+function RepaintRectAreas() {
+	window.RepaintRect = (x, y, w, h, force = undefined) => {
+		if (timings.drawRepaintRects) {
+			repaintRects.push({ x, y, w, h });
+			window.Repaint();
+		} else {
+			repaintRectCount++;
+			window.oldRepaintRect(x, y, w, h, force);
+		}
+	};
+}
+
+
+/**
+ * Prints logs for window.Repaint() in the console, used for debugging.
+ */
+function RepaintWindow() {
+	DebugLog('Repainting from RepaintWindow()');
+	window.Repaint();
+}
+
+
+/**
+ * Continuously repaints rectangles for a short period of time ( 1 sec ), used when changing the layout width.
+ */
+function RepaintWindowRectAreas() {
+	DebugLog('Repainting from RepaintWindowRectAreas()');
+
+	window.RepaintRect = () => {
+		window.Repaint();
+	};
+
+	setTimeout(() => { // Restore window.RepaintRect afterwards
+		window.RepaintRect = (x, y, w, h, force = undefined) => {
+			window.oldRepaintRect(x, y, w, h, force);
+		};
+	}, 1000);
+}
+
+
+/**
+ * Displays a popup with customizable message and button labels.
+ * The behavior of the popup depends on the environment; if running under Wine or without Internet Explorer,
+ * it will show a simple popup message. Otherwise, it will show a confirm box with two buttons.
+ * @param {boolean} fbPopup Determines if the fb.ShowPopupMessage should be shown.
+ * @param {string} fbMsg The message to be displayed in the fb.ShowPopupMessage popup.
+ * @param {string} popUpMsg The message to be displayed in the confirm box popup.
+ * @param {string} btn1Label The label for the first button in the confirm box.
+ * @param {string} btn2Label The label for the second button in the confirm box. If not provided, no second button is shown.
+ * @param {Function} callback The callback function that is called with the confirmation status.
+ */
+function ShowPopup(fbPopup, fbMsg, popUpMsg, btn1Label, btn2Label, callback) {
+	const continue_confirmation = (status, confirmed) => {
+		if (!confirmed) {
+			callback(confirmed);
+			return;
+		}
+		callback(confirmed);
+	};
+
+	if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		continue_confirmation(false, btn1Label);
+		if (fbPopup) fb.ShowPopupMessage(fbMsg, 'Georgia-ReBORN');
+	}
+	else {
+		popUpBox.confirm('Georgia-ReBORN', popUpMsg, btn1Label, btn2Label, false, 'center', btn2Label ? continue_confirmation : false);
+	}
+}
+
+
+/**
+ * Displays a popup message for the theme day/night mode.
+ * If the mode is active, it provides an option to deactivate it.
+ */
+function ShowThemeDayNightModePopup() {
+	const msg = 'Theme day/night mode is active\nand has locked the theme.\n\nIn order to change themes,\nthis mode must be deactivated first.\n\nDeactivate it now?\n\n\n';
+	const msgFb = 'Theme day/night mode has been deactivated in order to change themes.';
+
+	ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+		if (confirmed) pref.themeDayNightMode = false;
+	});
+}
+
+
+/**
+ * Writes %GR_THEMECOLOR%, %GR_THEME%, %GR_STYLE%, %GR_PRESET% tags to music files via the Playlist or Library context menu.
+ */
+function WriteThemeTags() {
+	const grTags = [];
+	const plItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+	const libItems = new FbMetadbHandleList(pop.getHandleList('newItems'));
+	const items = displayLibrary && !displayPlaylist || displayLibrarySplit() && state.mouse_x < ww * 0.5 ? libItems : plItems;
+
+	if (!items) return;
+
+	for (let i = 0; i < items.Count; ++i) {
+		grTags.push({
+			GR_THEMECOLOR: pref.theme === 'random' ? ColToRgb(col.primary) : '',
+
+			GR_THEME: pref.preset === false ? pref.theme : '',
+
+			GR_STYLE: pref.preset === false ? [
+				pref.styleNighttime ? 'styleNighttime' : '',
+				pref.styleBevel ? 'bevel' : '',
+				pref.styleBlend ? 'blend' : '',
+				pref.styleBlend2 ? 'blend2' : '',
+				pref.styleGradient ? 'gradient' : '',
+				pref.styleGradient2 ? 'gradient2' : '',
+				pref.styleAlternative ? 'alternative' : '',
+				pref.styleAlternative2 ? 'alternative2' : '',
+				pref.styleBlackAndWhite ? 'blackAndWhite' : '',
+				pref.styleBlackAndWhite2 ? 'blackAndWhite2' : '',
+				pref.styleBlackReborn ? 'blackReborn' : '',
+				pref.styleRebornWhite ? 'rebornWhite' : '',
+				pref.styleRebornBlack ? 'rebornBlack' : '',
+				pref.styleRebornFusion ? 'rebornFusion' : '',
+				pref.styleRebornFusion2 ? 'rebornFusion2' : '',
+				pref.styleRandomPastel ? 'randomPastel' : '',
+				pref.styleRandomDark ? 'randomDark' : '',
+				pref.styleRebornFusionAccent ? 'rebornFusionAccent' : '',
+				pref.styleTopMenuButtons === 'filled' ? 'topMenuButtons=filled' : '',
+				pref.styleTopMenuButtons === 'bevel' ? 'topMenuButtons=bevel' : '',
+				pref.styleTopMenuButtons === 'inner' ? 'topMenuButtons=inner' : '',
+				pref.styleTopMenuButtons === 'emboss' ? 'topMenuButtons=emboss' : '',
+				pref.styleTopMenuButtons === 'minimal' ? 'topMenuButtons=minimal' : '',
+				pref.styleTransportButtons === 'bevel' ? 'transportButtons=bevel' : '',
+				pref.styleTransportButtons === 'inner' ? 'transportButtons=inner' : '',
+				pref.styleTransportButtons === 'emboss' ? 'transportButtons=emboss' : '',
+				pref.styleTransportButtons === 'minimal' ? 'transportButtons=minimal' : '',
+				pref.styleProgressBarDesign === 'rounded' ? 'progressBarDesign=rounded' : '',
+				pref.styleProgressBarDesign === 'lines' ? 'progressBarDesign=lines' : '',
+				pref.styleProgressBarDesign === 'blocks' ? 'progressBarDesign=blocks' : '',
+				pref.styleProgressBarDesign === 'dots' ? 'progressBarDesign=dots' : '',
+				pref.styleProgressBarDesign === 'thin' ? 'progressBarDesign=thin' : '',
+				pref.styleProgressBar === 'bevel' ? 'progressBarBg=bevel' : '',
+				pref.styleProgressBar === 'inner' ? 'progressBarBg=inner' : '',
+				pref.styleProgressBarFill === 'bevel' ? 'progressBarFill=bevel' : '',
+				pref.styleProgressBarFill === 'inner' ? 'progressBarFill=inner' : '',
+				pref.styleProgressBarFill === 'blend' ? 'progressBarFill=blend' : '',
+				pref.styleVolumeBarDesign === 'rounded' ? 'volumeBarDesign=rounded' : '',
+				pref.styleVolumeBar === 'bevel' ? 'volumeBarBg=bevel' : '',
+				pref.styleVolumeBar === 'inner' ? 'volumeBarBg=inner' : '',
+				pref.styleVolumeBarFill === 'bevel' ? 'volumeBarFill=bevel' : '',
+				pref.styleVolumeBarFill === 'bevel' ? 'volumeBarFill=inner' : ''
+			] : '',
+
+			GR_PRESET: pref.preset !== false ? pref.preset : ''
+		});
+	}
+
+	if (items.Count) items.UpdateFileInfoFromJSON(JSON.stringify(grTags));
 }

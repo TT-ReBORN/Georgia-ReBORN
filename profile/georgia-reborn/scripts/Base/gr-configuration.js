@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2024-01-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -151,11 +151,16 @@ class Configuration {
 			return config;
 		}
 		catch (e) {
-			throw new ThemeError(`Could not read config file:\n${this.path}\n\n` +
-				'JSON seems to be invalid, if have you edited the config file,\n' +
-				'be sure that your modified lines have the correct syntax and values.\n' +
-				'You can also delete or rename the config file and on next foobar startup\n' +
-				'a new default one will be created. Or replace your old config from a backup.');
+			throw new ThemeError(
+				`Could not read config file:\n${this.path}\n\n`
+				+ 'The JSON appears to be invalid. If you have edited the config file,\n'
+				+ 'ensure that your modifications have the correct syntax and values:\n'
+				+ `${e.message}\n\n`
+				+ 'The error typically occurs on the line before the one indicated in the error message.\n\n'
+				+ 'You can also delete or rename the config file, and on the next startup,\n'
+				+ 'a new default one will be created. As a last resort, you can replace your\n'
+				+ 'current config with a backup config file.'
+			);
 		}
 	}
 

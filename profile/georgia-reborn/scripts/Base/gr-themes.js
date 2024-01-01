@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-21                                          * //
+// * Last change:    2024-01-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1054,9 +1054,11 @@ function biographyColorsRebornRandomTheme() {
  * The Main colors for Reborn/Random theme used in Options > Theme > Reborn/Random.
  */
 function mainColorsRebornRandomTheme() {
+	const nighttime = (pref.styleNighttime || pref.themeDayNightMode && pref.themeDayNightTime === 'night') && !pref.styleRebornWhite;
+
 	// * MAIN COLORS * //
 	col.bg = isColored ? col.primary : RGB(245, 245, 245);
-	col.loadingThemeBg = RGB(245, 245, 245);
+	col.loadingThemeBg = nighttime || pref.styleRebornBlack ? RGB(25, 25, 25) : RGB(245, 245, 245);
 	col.uiHacksFrame =
 		pref.styleRebornWhite ? RGB(245, 245, 245) :
 		pref.styleRebornBlack ? RGB(25, 25, 25) :
@@ -2622,8 +2624,8 @@ function playlistColorsNeonThemes() {
 	const accentColor =
 		pref.theme === 'nblue'  ? RGB(0, 200, 255) :
 		pref.theme === 'ngreen' ? RGB(0, 200, 0) :
-		pref.theme === 'nred'   ? RGB(229, 7, 44) :
-		pref.theme === 'ngold'  ? RGB(254, 204, 3) : '';
+		pref.theme === 'nred'   ? RGB(240, 10, 60) :
+		pref.theme === 'ngold'  ? RGB(255, 205, 5) : '';
 
 	const accentColorLight =
 		pref.theme === 'nblue'  ? RGB(0, 238, 255) :
@@ -2685,8 +2687,8 @@ function libraryColorsNeonThemes() {
 	const accentColor =
 		pref.theme === 'nblue'  ? RGB(0, 200, 255) :
 		pref.theme === 'ngreen' ? RGB(0, 200, 0) :
-		pref.theme === 'nred'   ? RGB(229, 7, 44) :
-		pref.theme === 'ngold'  ? RGB(254, 204, 3) : '';
+		pref.theme === 'nred'   ? RGB(240, 10, 60) :
+		pref.theme === 'ngold'  ? RGB(255, 205, 5) : '';
 
 	const accentColorLight =
 		pref.theme === 'nblue'  ? RGB(0, 238, 255) :
@@ -2748,8 +2750,8 @@ function biographyColorsNeonThemes() {
 	const accentColor =
 		pref.theme === 'nblue'  ? RGB(0, 200, 255) :
 		pref.theme === 'ngreen' ? RGB(0, 200, 0) :
-		pref.theme === 'nred'   ? RGB(229, 7, 44) :
-		pref.theme === 'ngold'  ? RGB(254, 204, 3) : '';
+		pref.theme === 'nred'   ? RGB(240, 10, 60) :
+		pref.theme === 'ngold'  ? RGB(255, 205, 5) : '';
 
 	const accentColorLight =
 		pref.theme === 'nblue'  ? RGB(0, 238, 255) :
@@ -2798,8 +2800,8 @@ function mainColorsNeonThemes() {
 	const accentColor =
 		pref.theme === 'nblue'  ? RGB(0, 200, 255) :
 		pref.theme === 'ngreen' ? RGB(0, 200, 0) :
-		pref.theme === 'nred'   ? RGB(229, 7, 44) :
-		pref.theme === 'ngold'  ? RGB(254, 204, 3) : '';
+		pref.theme === 'nred'   ? RGB(240, 10, 60) :
+		pref.theme === 'ngold'  ? RGB(255, 205, 5) : '';
 
 	const accentColorLight =
 		pref.theme === 'nblue'  ? RGB(0, 238, 255) :
@@ -3133,11 +3135,12 @@ function mainColorsCustomTheme() {
 		const lightImg = imgBrightness > 180;
 		const lightBg = new Color(HEXtoRGB(customColor.col_bg)).brightness > 200;
 		const darkBg = new Color(HEXtoRGB(customColor.col_bg)).brightness < 50;
+		const nighttime = (pref.styleNighttime || pref.themeDayNightMode && pref.themeDayNightTime === 'night') && !pref.styleRebornWhite;
 
 		// * MAIN COLORS * //
 		col.bg = pref.styleBevel ? TintColor(HEXtoRGB(customColor.col_bg), lightBgMain ? 80 : 0) : HEXtoRGB(customColor.col_bg);
-		col.loadingThemeBg = RGB(255, 255, 255);
-		col.uiHacksFrame = col.bg;
+		col.loadingThemeBg = nighttime && customColor.preloaderBg === '' ? RGB(25, 25, 25) : customColor.preloaderBg !== '' ? HEXtoRGB(customColor.preloaderBg) : RGB(245, 245, 245);
+		col.uiHacksFrame = nighttime ? RGB(25, 25, 25) : col.bg;
 		col.shadow = HEXtoRGBA(customColor.col_shadow, lightBgMain ? 50 : 75);
 		col.discArtShadow = HEXtoRGBA(customColor.col_discArtShadow, lightBgMain ? 50 : 75);
 		col.noAlbumArtStub = HEXtoRGB(customColor.col_noAlbumArtStub);
@@ -3341,8 +3344,9 @@ function mainColorsCustomTheme() {
 /**
  * Mainly used for style Black and white 2 or theme color adjustments for style Reborn fusion 1 and 2 when panel bg is too light.
  * @param {boolean} lighterBg If true, lightens the panel background color.
+ * @param {Object} [accentColor] If provided, the RGB color object to be used as the accent color.
  */
-function panelWhiteColors(lighterBg) {
+function panelWhiteColors(lighterBg, accentColor) {
 	// * PLAYLIST COLORS * //
 	g_pl_colors.bg = lighterBg ? RGB(255, 255, 255) : RGB(245, 245, 245);
 	g_pl_colors.plman_bg = g_pl_colors.bg;
@@ -3350,7 +3354,7 @@ function panelWhiteColors(lighterBg) {
 	g_pl_colors.plman_text_hovered = pref.autoHidePlman ? RGB(100, 100, 100) : RGB(240, 240, 240);
 	g_pl_colors.plman_text_pressed = pref.autoHidePlman ? RGB(100, 100, 100) : RGB(180, 180, 180);
 	g_pl_colors.header_nowplaying_bg = pref.styleBlend ? lighterBg ? RGBA(245, 245, 245, 130) : RGBA(255, 255, 255, 130) : lighterBg ? RGB(245, 245, 245) : RGB(255, 255, 255);
-	g_pl_colors.header_sideMarker = isStreaming ? RGB(207, 0, 5) : RGB(40, 40, 40);
+	g_pl_colors.header_sideMarker = isStreaming ? RGB(207, 0, 5) : accentColor || RGB(40, 40, 40);
 	g_pl_colors.header_artist_normal = RGB(80, 80, 80);
 	g_pl_colors.header_artist_playing = RGB(60, 60, 60);
 	g_pl_colors.header_album_normal = RGB(80, 80, 80);
@@ -3383,7 +3387,7 @@ function panelWhiteColors(lighterBg) {
 	// * LIBRARY COLORS * //
 	ui.col.bg = g_pl_colors.bg;
 	ui.col.nowPlayingBg = g_pl_colors.row_nowplaying_bg;
-	ui.col.sideMarker = isStreaming ? RGB(207, 0, 5) : RGB(40, 40, 40);
+	ui.col.sideMarker = isStreaming ? RGB(207, 0, 5) : accentColor || RGB(40, 40, 40);
 	ui.col.selectionFrame = pref.styleBlend ? RGB(190, 190, 190) : RGB(215, 215, 215);
 	ui.col.selectionFrame2 = ui.col.sideMarker;
 	ui.col.hoverFrame = ui.col.sideMarker;
@@ -3450,6 +3454,7 @@ function panelWhiteColors(lighterBg) {
 function mainWhiteColors(lighterBg) {
 	// * MAIN COLORS * //
 	col.bg = lighterBg || pref.styleBevel ? RGB(255, 255, 255) : RGB(230, 230, 230);
+	col.loadingThemeBg = col.bg;
 	col.uiHacksFrame = col.bg;
 	col.noAlbumArtStub = RGB(255, 255, 255);
 	col.lowerBarArtist = RGB(80, 80, 80);
@@ -3570,8 +3575,9 @@ function mainWhiteColors(lighterBg) {
 /**
  * Mainly used for style Black and white 1 or theme color adjustments for style Reborn fusion 1 and 2 when panel bg is too dark.
  * @param {boolean} darkerBg If true, darkens the panel background color.
+ * @param {Object} [accentColor] If provided, the RGB color object to be used as the accent color.
  */
-function panelBlackColors(darkerBg) {
+function panelBlackColors(darkerBg, accentColor) {
 	// * PLAYLIST COLORS * //
 	g_pl_colors.bg = darkerBg ? RGB(0, 0, 0) : RGB(20, 20, 20);
 	g_pl_colors.plman_bg = g_pl_colors.bg;
@@ -3579,7 +3585,7 @@ function panelBlackColors(darkerBg) {
 	g_pl_colors.plman_text_hovered = pref.autoHidePlman ? RGB(200, 200, 200) : RGB(240, 240, 240);
 	g_pl_colors.plman_text_pressed = pref.autoHidePlman ? RGB(240, 240, 240) : RGB(180, 180, 180);
 	g_pl_colors.header_nowplaying_bg = pref.styleBlend ? RGBA(230, 230, 230, 200) : RGB(230, 230, 230);
-	g_pl_colors.header_sideMarker = isStreaming ? RGB(207, 0, 5) : RGB(255, 255, 255);
+	g_pl_colors.header_sideMarker = isStreaming ? RGB(207, 0, 5) : accentColor || RGB(255, 255, 255);
 	g_pl_colors.header_artist_normal = RGB(220, 220, 220);
 	g_pl_colors.header_artist_playing = RGB(25, 25, 25);
 	g_pl_colors.header_album_normal = RGB(200, 200, 200);
@@ -3612,7 +3618,7 @@ function panelBlackColors(darkerBg) {
 	// * LIBRARY COLORS * //
 	ui.col.bg = g_pl_colors.bg;
 	ui.col.nowPlayingBg = g_pl_colors.row_nowplaying_bg;
-	ui.col.sideMarker = isStreaming ? RGB(207, 0, 5) : RGB(255, 255, 255);
+	ui.col.sideMarker = isStreaming ? RGB(207, 0, 5) : accentColor || RGB(255, 255, 255);
 	ui.col.selectionFrame = pref.styleBlend ? RGB(80, 80, 80) : RGB(45, 45, 45);
 	ui.col.selectionFrame2 = ui.col.sideMarker;
 	ui.col.hoverFrame = ui.col.sideMarker;
@@ -3679,8 +3685,11 @@ function panelBlackColors(darkerBg) {
  * @param {boolean} darkerBg If true, darkens the main background color.
  */
 function mainBlackColors(darkerBg) {
+	const nighttime = (pref.styleNighttime || pref.themeDayNightMode && pref.themeDayNightTime === 'night') && !pref.styleRebornWhite;
+
 	// * MAIN COLORS * //
 	col.bg = pref.styleBevel ? darkerBg ? RGB(25, 25, 25) : RGB(50, 50, 50) : darkerBg ? RGB(0, 0, 0) : RGB(25, 25, 25);
+	col.loadingThemeBg = nighttime ? RGB(25, 25, 25) : col.bg;
 	col.uiHacksFrame = col.bg;
 	col.shadow = isPlayingCD ? RGBA(0, 0, 0, 30) : col.shadow;
 	col.noAlbumArtStub = RGB(40, 40, 40);
@@ -4279,16 +4288,6 @@ function themeColorAdjustments() {
 			mainBlackColors();
 		}
 	}
-
-	//////////////////////////////////
-	// * REBORN/RANDOM NIGHT MODE * //
-	//////////////////////////////////
-	// * ADJUST REBORN/RANDOM COLORS FOR THEME NIGHT MODE ON START UP * //
-	if (!fb.IsPlaying && pref.themeDayNightMode && pref.themeDayNightTime === 'night' &&
-		['reborn', 'random'].includes(pref.theme) && !pref.styleRebornBlack) {
-		panelBlackColors();
-		mainBlackColors();
-	}
 }
 
 
@@ -4637,6 +4636,29 @@ function adjustThemeBrightness(percent) {
 	else if (pref.themeBrightness < -20 && bgColBrightness < 150 && bgColBrightness > 50) {
 		lightBg = false;
 		adjustTextButtonColors(false, false, false, true);
+	}
+}
+
+
+////////////////////////////////
+// * STYLE NIGHTTIME COLORS * //
+////////////////////////////////
+/**
+ * Active Reborn theme used in Options > Style > Nighttime.
+ */
+function styleNighttimeColors() {
+	if (pref.theme.startsWith('custom')) return;
+
+	const rebornNightAccentColor = pref.theme === 'reborn' ? RGB(210, 235, 240) : false;
+
+	if (!fb.IsPlaying) {
+		panelBlackColors(false, rebornNightAccentColor);
+		mainBlackColors();
+	} else {
+		playlistColorsRebornRandomTheme();
+		libraryColorsRebornRandomTheme();
+		biographyColorsRebornRandomTheme();
+		mainColorsRebornRandomTheme();
 	}
 }
 
@@ -5436,9 +5458,7 @@ function initPlaylistColors() {
 		case 'red': playlistColorsRedTheme(); break;
 		case 'cream': playlistColorsCreamTheme(); break;
 		case 'nblue': case 'ngreen': case 'nred': case 'ngold': playlistColorsNeonThemes(); break;
-		case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
-		case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
-		playlistColorsCustomTheme(); break;
+		default: if (pref.theme.startsWith('custom')) playlistColorsCustomTheme(); break;
 	}
 }
 
@@ -5456,9 +5476,7 @@ function initLibraryColors() {
 		case 'red': libraryColorsRedTheme(); break;
 		case 'cream': libraryColorsCreamTheme(); break;
 		case 'nblue': case 'ngreen': case 'nred': case 'ngold': libraryColorsNeonThemes(); break;
-		case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
-		case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
-		libraryColorsCustomTheme(); break;
+		default: if (pref.theme.startsWith('custom')) libraryColorsCustomTheme(); break;
 	}
 	if (ppt.theme !== 0) libraryThemeColors();
 }
@@ -5477,9 +5495,7 @@ function initBiographyColors() {
 		case 'red': biographyColorsRedTheme(); break;
 		case 'cream': biographyColorsCreamTheme(); break;
 		case 'nblue': case 'ngreen': case 'nred': case 'ngold': biographyColorsNeonThemes(); break;
-		case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
-		case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
-		biographyColorsCustomTheme(); break;
+		default: if (pref.theme.startsWith('custom')) biographyColorsCustomTheme(); break;
 	}
 	if (pptBio.theme !== 0) biographyThemeColors();
 }
@@ -5498,9 +5514,7 @@ function initMainColors() {
 		case 'red': mainColorsRedTheme(); break;
 		case 'cream': mainColorsCreamTheme(); break;
 		case 'nblue': case 'ngreen': case 'nred': case 'ngold': mainColorsNeonThemes(); break;
-		case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
-		case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
-		mainColorsCustomTheme(); break;
+		default: if (pref.theme.startsWith('custom')) mainColorsCustomTheme(); break;
 	}
 }
 
@@ -5509,16 +5523,23 @@ function initMainColors() {
  * Init all colors that are used in styles, mostly called from initTheme().
  */
 function initStyleColors() {
-	if      (pref.styleAlternative) styleAlternativeColors();
-	else if (pref.styleAlternative2) styleAlternative2Colors();
-	else if (pref.styleBlackAndWhite) styleBlackAndWhiteColors();
-	else if (pref.styleBlackAndWhite2) styleBlackAndWhite2Colors();
-	else if (pref.styleBlackReborn) styleBlackRebornColors();
-	else if (pref.styleRebornWhite) styleRebornWhiteColors();
-	else if (pref.styleRebornBlack) styleRebornBlackColors();
-	else if (pref.styleRebornFusion) styleRebornFusionColors();
-	else if (pref.styleRebornFusion2) styleRebornFusion2Colors();
-	else if (pref.styleRebornFusionAccent) styleRebornFusionAccentColors();
+	if ((['reborn', 'random'].includes(pref.theme) || pref.theme.startsWith('custom')) &&
+		(pref.styleNighttime || pref.themeDayNightMode && pref.themeDayNightTime === 'night') && !pref.styleRebornWhite) {
+		styleNighttimeColors();
+	}
+
+	switch (true) {
+		case pref.styleAlternative: styleAlternativeColors(); break;
+		case pref.styleAlternative2: styleAlternative2Colors(); break;
+		case pref.styleBlackAndWhite: styleBlackAndWhiteColors(); break;
+		case pref.styleBlackAndWhite2: styleBlackAndWhite2Colors(); break;
+		case pref.styleBlackReborn: styleBlackRebornColors(); break;
+		case pref.styleRebornWhite: styleRebornWhiteColors(); break;
+		case pref.styleRebornBlack: styleRebornBlackColors(); break;
+		case pref.styleRebornFusion: styleRebornFusionColors(); break;
+		case pref.styleRebornFusion2: styleRebornFusion2Colors(); break;
+		case pref.styleRebornFusionAccent: styleRebornFusionAccentColors(); break;
+	}
 }
 
 
@@ -5858,9 +5879,7 @@ function setThemeColors() {
 		case 'ngreen': setTheme(ngreenTheme.colors); break;
 		case 'nred': setTheme(nredTheme.colors); break;
 		case 'ngold': setTheme(ngoldTheme.colors); break;
-		case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
-		case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
-		setTheme(customTheme.colors); break;
+		default: if (pref.theme.startsWith('custom')) setTheme(customTheme.colors); break;
 	}
 }
 

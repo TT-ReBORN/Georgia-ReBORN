@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-23                                          * //
+// * Last change:    2024-01-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -801,10 +801,10 @@ function drawStyles(gr) {
 			// Fill gap when album art or player size is not proportional
 			gr.FillSolidRect(-1, geo.topMenuHeight, pref.layout === 'default' ? ww * 0.5 + 1 : ww + 1, (displayLibrary && pref.libraryLayout === 'full' ? 0 : albumArtSize.y) - geo.topMenuHeight - 1, RGBtoRGBA(col.styleBevel, 40));
 		}
-		if (!['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) && !pref.styleBlackAndWhite2 && !pref.styleRebornBlack) {
-			const customThemes = pref.theme.startsWith('custom');
-			gr.FillGradRect(-1, 0, ww + 1, geo.topMenuHeight, 90, 0, RGBtoRGBA(col.styleBevel, customThemes ? 255 : 40)); // Top
-			gr.FillGradRect(-1, wh - geo.lowerBarHeight - 1, ww + 1, geo.lowerBarHeight + 1, -88, RGBtoRGBA(col.styleBevel, customThemes ? 255 : 80), 0); // Bottom
+		if (!['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) && !pref.styleNighttime && !pref.styleBlackAndWhite2 && !pref.styleRebornBlack || (pref.styleNighttime && fb.IsPlaying)) {
+			const customTheme = pref.theme.startsWith('custom');
+			gr.FillGradRect(-1, 0, ww + 1, geo.topMenuHeight, 90, 0, RGBtoRGBA(col.styleBevel, customTheme ? 255 : 40)); // Top
+			gr.FillGradRect(-1, wh - geo.lowerBarHeight - 1, ww + 1, geo.lowerBarHeight + 1, -88, RGBtoRGBA(col.styleBevel, customTheme ? 255 : 80), 0); // Bottom
 		} else {
 			gr.FillGradRect(-1, 0, ww + 1, geo.topMenuHeight, 90, pref.styleBlackReborn ? 0 : RGBtoRGBA(col.styleBevel, 200), pref.styleBlackReborn ? RGBtoRGBA(col.styleBevel, 200) : 0);
 			gr.FillGradRect(-1, wh - geo.lowerBarHeight - 1, ww + 1, geo.lowerBarHeight + 1, -90, RGBtoRGBA(col.styleBevel, 255), 0);
@@ -815,8 +815,8 @@ function drawStyles(gr) {
 		gr.DrawImage(blendedImg, 0, wh - geo.lowerBarHeight, ww, wh, 0, wh * 0.5, blendedImg.Width, blendedImg.Height);
 	}
 	if (pref.styleGradient || pref.styleGradient2) {
-		gr.FillGradRect(-0.5, 0, ww, geo.topMenuHeight, pref.styleGradient2 ? -200 : pref.styleRebornBlack ? -180 : 0, pref.styleGradient2 || pref.styleRebornBlack ? 0 : col.styleGradient, pref.styleGradient2 || pref.styleRebornBlack ? col.styleGradient2 : 0, 0.5);
-		gr.FillGradRect(-0.5, wh - geo.lowerBarHeight, ww, geo.lowerBarHeight, pref.styleGradient2 ? -200 : pref.styleRebornBlack ? -180 : 0, pref.styleGradient2 || pref.styleRebornBlack ? 0 : col.styleGradient, pref.styleGradient2 || pref.styleRebornBlack ? col.styleGradient2 : 0, 0.5);
+		gr.FillGradRect(-0.5, 0, ww, geo.topMenuHeight, pref.styleGradient2 ? -200 : (pref.styleNighttime || pref.styleRebornBlack) ? -180 : 0, pref.styleGradient2 || pref.styleNighttime || pref.styleRebornBlack ? 0 : col.styleGradient, pref.styleGradient2 || pref.styleNighttime || pref.styleRebornBlack ? col.styleGradient2 : 0, 0.5);
+		gr.FillGradRect(-0.5, wh - geo.lowerBarHeight, ww, geo.lowerBarHeight, pref.styleGradient2 ? -200 : pref.styleRebornBlack || pref.styleNighttime ? -180 : 0, pref.styleGradient2 || pref.styleNighttime || pref.styleRebornBlack ? 0 : col.styleGradient, pref.styleGradient2 || pref.styleNighttime || pref.styleRebornBlack ? col.styleGradient2 : 0, 0.5);
 	}
 	if ((pref.styleAlternative || pref.styleAlternative2) && (['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme))) {
 		gr.FillGradRect(0, 0, ww, geo.topMenuHeight, pref.styleAlternative2 ? -87 : -87, col.styleAlternative, 0);
@@ -892,6 +892,10 @@ function drawThemeDebugOverlay(gr) {
 
 	const createBlock = (obj) => Object.keys(obj).find(key => obj[key]) || '';
 
+	const tsBlock0 = createBlock({
+		'Nighttime,': pref.styleNighttime
+	});
+
 	const tsBlock1 = createBlock({
 		'Bevel,': pref.styleBevel
 	});
@@ -938,7 +942,7 @@ function drawThemeDebugOverlay(gr) {
 		{ prop: pref.styleBlend || pref.styleBlend2, log: `Image alpha: ${blendedImgAlpha}` },
 		{ prop: pref.preset, log: `Theme preset: ${pref.preset}` },
 		{ prop: pref.themeBrightness !== 'default', log: `Theme brightness: ${pref.themeBrightness}%` },
-		{ prop: tsBlock1 || tsBlock2 || tsBlock3, log: `Styles: ${tsBlock1} ${tsBlock2} ${tsBlock3}` },
+		{ prop: tsBlock0 || tsBlock1 || tsBlock2 || tsBlock3, log: `Styles: ${tsBlock0} ${tsBlock1} ${tsBlock2} ${tsBlock3}` },
 		{ prop: tsTopMenuButtons, log: `Top menu button style: ${tsTopMenuButtons}` },
 		{ prop: tsTransportButtons, log: `Transport button style: ${tsTransportButtons}` },
 		{ prop: tsProgressBar1 || tsProgressBar2 || tsProgressBar3, log: tsProgressBar1 || tsProgressBar2 || tsProgressBar3 ? `Progressbar styles: ${tsProgressBar1} ${tsProgressBar2} ${tsProgressBar3}` : '' },
@@ -1022,7 +1026,7 @@ function drawPanelShadows(gr) {
 		if (panelLayoutNormal && playlist.x !== 0 && !pref.hideMiddlePanelShadow) {
 			// Middle shadow for playlist
 			gr.FillGradRect(pref.panelWidthAuto ? displayLibrarySplit() ? wh - geo.topMenuHeight - geo.lowerBarHeight - 4 : albumArtSize.x + albumArtSize.w - 4 : ww * 0.5 - 4, geo.topMenuHeight, 4, wh - geo.topMenuHeight - geo.lowerBarHeight, 0.5, 0,
-				pref.styleBlackAndWhite && noAlbumArtStub ? RGB(0, 0, 0) : pref.styleBlackAndWhite2 || pref.styleRebornBlack ? RGBA(0, 0, 0, 30) : col.shadow);
+				pref.styleBlackAndWhite && noAlbumArtStub ? RGB(0, 0, 0) : pref.styleNighttime || pref.styleBlackAndWhite2 || pref.styleRebornBlack ? RGBA(0, 0, 0, 30) : col.shadow);
 			// Middle shadow for album art
 			if (albumArt && albumArtSize.w !== ww * 0.5 && !displayLibrarySplit() && !displayBiography && !noAlbumArtStub) {
 				gr.FillGradRect(albumArtSize.x + albumArtSize.w - 2, albumArtSize.y, 4, albumArtSize.h, 0.5, pref.styleBlackAndWhite ? RGB(0, 0, 0) : col.shadow, 0);
@@ -1313,7 +1317,7 @@ function drawDebugRectAreas(gr) {
 function drawStartupBackground(gr) {
 	if (loadingThemeComplete) return;
 	gr.FillSolidRect(0, 0, ww, wh, col.loadingThemeBg);
-	if (pref.showLogoOnStartup) drawLogo(gr);
+	if (pref.showPreloaderLogo) drawLogo(gr);
 }
 
 
@@ -1360,8 +1364,8 @@ function drawMain(gr) {
 
 	// * UIHacks aero glass shadow frame fix
 	if (UIHacks.Aero.Effect === 2 && (!loadingThemeComplete && (pref.styleBlend || pref.styleBlend2)) || !pref.styleBlend && !pref.styleBlend2) {
-		gr.DrawLine(0, 0, ww, 0, 1, loadingThemeComplete ? col.uiHacksFrame : pref.styleBlackReborn ? RGB(25, 25, 25) : pref.styleRebornBlack && fb.IsPlaying ? RGB(245, 245, 245) : col.bg);
-		if (pref.styleDefault) gr.DrawLine(ww, wh - 1, 0, wh - 1, 1, loadingThemeComplete ? col.uiHacksFrame : col.bg);
+		gr.DrawLine(0, 0, ww, 0, 1, !loadingThemeComplete ? col.loadingThemeBg : col.uiHacksFrame);
+		if (pref.styleDefault) gr.DrawLine(ww, wh - 1, 0, wh - 1, 1, !loadingThemeComplete ? col.loadingThemeBg : col.uiHacksFrame);
 		else if (pref.styleGradient || pref.styleGradient2) {
 			gr.DrawLine(0, 0, ww, 0, 1, col.bg);
 			gr.FillGradRect(-0.5, 0, ww, 1, pref.styleGradient2 ? -200 : 0, pref.styleGradient2 ? 0 : col.styleGradient, pref.styleGradient2 ? col.styleGradient2 : 0, 0.5);

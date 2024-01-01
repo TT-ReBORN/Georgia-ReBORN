@@ -283,7 +283,7 @@ class MenuItems {
 
 		menu.newItem({
 			str: 'Write theme to tags',
-			func: () => writeThemeTags()
+			func: () => WriteThemeTags()
 		});
 
 		const meta_handler = new MetaHandler();
@@ -727,7 +727,7 @@ class MenuItems {
 				// Need continuous repaint when using style "Blend" and switching from normal to full width
 				let blendedImgNeedsRepaint = true;
 				if (pref.styleBlend && blendedImgNeedsRepaint) {
-					repaintWindowRectAreas();
+					RepaintWindowRectAreas();
 				}
 
 				setLibrarySize();

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-23                                          * //
+// * Last change:    2024-01-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -64,10 +64,10 @@ function initMain() {
 	}
 
 	// * Do auto-delete cache if enabled
-	if (pref.libraryAutoDelete) deleteLibraryCache();
-	if (pref.biographyAutoDelete) deleteBiographyCache();
-	if (pref.lyricsAutoDelete) deleteLyrics();
-	if (pref.waveformBarAutoDelete) deleteWaveformBarCache();
+	if (pref.libraryAutoDelete) DeleteLibraryCache();
+	if (pref.biographyAutoDelete) DeleteBiographyCache();
+	if (pref.lyricsAutoDelete) DeleteLyrics();
+	if (pref.waveformBarAutoDelete) DeleteWaveformBarCache();
 
 	lastAlbumFolder = '';
 	lastPlaybackOrder = fb.PlaybackOrder;
@@ -75,8 +75,8 @@ function initMain() {
 	setThemeColors();
 	themeColorSet = true;
 
-	if (pref.loadAsync) {
-		on_size();	// Needed when loading async, otherwise just needed in fb.IsPlaying conditional
+	if (pref.asyncThemePreloader) {
+		on_size(); // Needed when loading async, otherwise just needed in fb.IsPlaying conditional
 	}
 
 	setGeometry();
@@ -118,11 +118,6 @@ function initMain() {
 	if (pref.theme === 'random' && pref.randomThemeAutoColor !== 'off') {
 		getRandomThemeAutoColor();
 	}
-	if (pref.themeDayNightMode) {
-		initThemeDayNightMode(new Date());
-		const [dayStart, nightStart] = pref.themeDayNightMode.split('-');
-		console.log(`Theme day/night mode is active, current time is: ${initThemeDayNightMode(new Date())}. The schedule has been set to ${To12HourTimeFormat(dayStart)} (day) - ${To12HourTimeFormat(nightStart)} (night).`);
-	}
 
 	initThemeFull = true;
 	initCustomTheme();
@@ -133,7 +128,7 @@ function initMain() {
 	// * Restore backup workaround to successfully restore playlist files after foobar installation
 	if (pref.restoreBackupPlaylist) {
 		setTimeout(() => {
-			restoreBackupPlaylist();
+			RestoreBackupPlaylist();
 		}, !loadingTheme);
 	}
 
@@ -308,46 +303,6 @@ function initTheme() {
 
 
 /**
- * Initializes the current time and changes the theme to day or night based on the OS clock and pref.themeDayNightMode value.
- * The pref.themeDayNightMode can be a string in the format 'startHour-endHour', which represents custom starting and ending hours for the day theme.
- * For example, '6-18' indicates day theme from 6 AM to 6 PM. This range can wrap around midnight.
- * The value 'false' disables the day/night theme feature, which is the default setting.
- * If the feature is disabled or if other theme-related preferences are set, the function exits without changing the theme.
- * This function has a side effect of modifying pref.theme.
- * @param {Date} date The `Date` object that represents the current date and time.
- * @returns {string} The current time in the format "hours:minutes AM/PM".
- */
-function initThemeDayNightMode(date) {
-	if (!pref.themeDayNightMode) return;
-
-	const hours = date.getHours();
-	const minutes = date.getMinutes();
-
-	// * Parse the start and end times from the themeDayNightMode string
-	const [startHourStr, endHourStr] = pref.themeDayNightMode.split('-').map(Number);
-	const startHour = parseInt(startHourStr, 10);
-	const rawEndHour = parseInt(endHourStr, 10);
-	const endHour = rawEndHour === 0 ? 24 : rawEndHour;
-
-	// * Determine if the current time is within the day range, the day range can wrap around midnight, e.g '23-6' means 23:00 to 06:00.
-	const isDayTime = (startHour < endHour)
-		? (hours >= startHour && hours < endHour)
-		: (hours >= startHour || hours < endHour);
-
-	// * Formatting time
-	const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-	const formattedHours = hours % 12 || 12;
-	const timeSuffix = hours >= 12 ? 'PM' : 'AM';
-
-	// * Set theme based on day time
-	pref.themeDayNightTime = isDayTime ? 'day' : 'night';
-	setDayNightTheme(isDayTime, !isDayTime);
-
-	return `${formattedHours}:${formattedMinutes} ${timeSuffix}`;
-}
-
-
-/**
  * Initializes the theme day and night state.
  * - Aborts if `pref.themeDayNightMode` is falsy or if any custom GR theme tags are detected.
  * - Restores the day or night theme based on `pref.themeDayNightTime` if the current theme does not match the expected day or night theme.
@@ -432,6 +387,7 @@ function initThemeTags() {
 		resetStyle('all');
 		for (const style of customStyle.split(/(?:,|;| )+/)) {
 			switch (style) {
+				case 'nighttime': pref.styleNighttime = true; break;
 				case 'bevel': pref.styleBevel = true; break;
 				case 'blend': pref.styleBlend = true; break;
 				case 'blend2': pref.styleBlend2 = true; break;
@@ -513,6 +469,7 @@ function initCustomTheme() {
  */
 function initStyleState() {
 	const styles = [
+		pref.styleNighttime,
 		pref.styleBevel,
 		pref.styleBlend,
 		pref.styleBlend2,
@@ -566,15 +523,27 @@ function resetPlayerSize() {
  */
 function resetTheme() {
 	initThemeFull = true;
-	// * Themes that don't have these styles will be reset to default
-	if (pref.theme !== 'white' && (pref.styleBlackAndWhite || pref.styleBlackAndWhite2 || pref.styleBlackAndWhiteReborn) ||
-		pref.theme !== 'black' && pref.styleBlackReborn ||
-		pref.theme !== 'reborn' && (pref.styleRebornWhite || pref.styleRebornBlack || pref.styleRebornFusion || pref.styleRebornFusion2 || pref.styleRebornFusionAccent) ||
-		pref.theme !== 'reborn' && pref.theme !== 'random' && pref.theme !== 'blue' && pref.theme !== 'darkblue' && pref.theme !== 'red' && (pref.styleGradient || pref.styleGradient2)) {
+
+	const invalidNighttimeStyle = pref.theme !== 'reborn' && pref.theme !== 'random' && !pref.theme.startsWith('custom') || pref.styleRebornWhite || pref.styleRebornBlack;
+	const invalidWhiteThemeStyle = pref.theme !== 'white' && (pref.styleBlackAndWhite || pref.styleBlackAndWhite2 || pref.styleBlackAndWhiteReborn);
+	const invalidBlackThemeStyle = pref.theme !== 'black' && pref.styleBlackReborn;
+	const invalidRebornThemeStyle = pref.theme !== 'reborn' && (pref.styleRebornWhite || pref.styleRebornBlack || pref.styleRebornFusion || pref.styleRebornFusion2 || pref.styleRebornFusionAccent);
+	const invalidGradientStyle = !['reborn', 'random', 'blue', 'darkblue', 'red'].includes(pref.theme) && !pref.theme.startsWith('custom') && (pref.styleGradient || pref.styleGradient2);
+
+	// * Disable style nighttime for themes that do not support it
+	if (invalidNighttimeStyle) {
+		pref.styleNighttime = false;
+		initStyleState();
+	}
+
+	// * Reset themes that do not support specific styles to the default style
+	if (invalidWhiteThemeStyle || invalidBlackThemeStyle || invalidRebornThemeStyle || invalidGradientStyle) {
 		resetStyle('all');
 	}
+
 	getThemeColors(albumArt);
-	// * Update default theme colors when nothing is playing and changing themes
+
+	// * Update default theme colors when nothing is playing or when changing themes
 	if (!fb.IsPlaying) setThemeColors();
 }
 
@@ -582,14 +551,39 @@ function resetTheme() {
 /**
  * Resets all styles or grouped styles when changing styles. Used in top menu Options > Style.
  * @param {string} group Specifies which group of styles to reset:
- * - 'all'
  * - 'group_one'
  * - 'group_two'
+ * - 'all'
+ * - 'all_theme_day_night'
  */
 function resetStyle(group) {
-	if (group === 'all') {
+	const _day_night = pref.themeSetupDay ? '_day' : '_night';
+
+	if (group === 'group_one') {
+		pref.styleBlend     = false;
+		pref.styleBlend2    = false;
+		pref.styleGradient  = false;
+		pref.styleGradient2 = false;
+	}
+	else if (group === 'group_two') {
+		pref.styleAlternative         = false;
+		pref.styleAlternative2        = false;
+		pref.styleBlackAndWhite       = false;
+		pref.styleBlackAndWhite2      = false;
+		pref.styleBlackAndWhiteReborn = false;
+		pref.styleBlackReborn         = false;
+		pref.styleRebornWhite         = false;
+		pref.styleRebornBlack         = false;
+		pref.styleRebornFusion        = false;
+		pref.styleRebornFusion2       = false;
+		pref.styleRebornFusionAccent  = false;
+		pref.styleRandomPastel        = false;
+		pref.styleRandomDark          = false;
+	}
+	else if (group === 'all') {
 		initThemeFull                 = true;
 		pref.styleDefault             = true;
+		pref.styleNighttime           = false;
 		pref.styleBevel               = false;
 		pref.styleBlend               = false;
 		pref.styleBlend2              = false;
@@ -619,26 +613,38 @@ function resetStyle(group) {
 		pref.styleVolumeBarFill       = 'default';
 		pref.themeBrightness          = 'default';
 	}
-	else if (group === 'group_one') {
-		pref.styleBlend     = false;
-		pref.styleBlend2    = false;
-		pref.styleGradient  = false;
-		pref.styleGradient2 = false;
-	}
-	else if (group === 'group_two') {
-		pref.styleAlternative         = false;
-		pref.styleAlternative2        = false;
-		pref.styleBlackAndWhite       = false;
-		pref.styleBlackAndWhite2      = false;
-		pref.styleBlackAndWhiteReborn = false;
-		pref.styleBlackReborn         = false;
-		pref.styleRebornWhite         = false;
-		pref.styleRebornBlack         = false;
-		pref.styleRebornFusion        = false;
-		pref.styleRebornFusion2       = false;
-		pref.styleRebornFusionAccent  = false;
-		pref.styleRandomPastel        = false;
-		pref.styleRandomDark          = false;
+	else if (group === 'all_theme_day_night') {
+		initThemeFull                                 = true;
+		pref.styleDefault                             = true;
+		pref[`styleNighttime${_day_night}`]           = false;
+		pref[`styleBevel${_day_night}`]               = false;
+		pref[`styleBlend${_day_night}`]               = false;
+		pref[`styleBlend2${_day_night}`]              = false;
+		pref[`styleGradient${_day_night}`]            = false;
+		pref[`styleGradient2${_day_night}`]           = false;
+		pref[`styleAlternative${_day_night}`]         = false;
+		pref[`styleAlternative2${_day_night}`]        = false;
+		pref[`styleBlackAndWhite${_day_night}`]       = false;
+		pref[`styleBlackAndWhite2${_day_night}`]      = false;
+		pref[`styleBlackAndWhiteReborn${_day_night}`] = false;
+		pref[`styleBlackReborn${_day_night}`]         = false;
+		pref[`styleRebornWhite${_day_night}`]         = false;
+		pref[`styleRebornBlack${_day_night}`]         = false;
+		pref[`styleRebornFusion${_day_night}`]        = false;
+		pref[`styleRebornFusion2${_day_night}`]       = false;
+		pref[`styleRebornFusionAccent${_day_night}`]  = false;
+		pref[`styleRandomPastel${_day_night}`]        = false;
+		pref[`styleRandomDark${_day_night}`]          = false;
+		pref[`styleRandomAutoColor${_day_night}`]     = 'off';
+		pref[`styleTopMenuButtons${_day_night}`]      = 'default';
+		pref[`styleTransportButtons${_day_night}`]    = 'default';
+		pref[`styleProgressBarDesign${_day_night}`]   = 'default';
+		pref[`styleProgressBar${_day_night}`]         = 'default';
+		pref[`styleProgressBarFill${_day_night}`]     = 'default';
+		pref[`styleVolumeBarDesign${_day_night}`]     = 'default';
+		pref[`styleVolumeBar${_day_night}`]           = 'default';
+		pref[`styleVolumeBarFill${_day_night}`]       = 'default';
+		pref[`themeBrightness${_day_night}`]          = 'default';
 	}
 }
 
@@ -651,6 +657,7 @@ function resetStyle(group) {
 function restoreThemeStylePreset(reset) {
 	if (reset) {
 		pref.savedTheme = pref.theme;
+		pref.savedStyleNighttime = pref.styleNighttime;
 		pref.savedStyleBevel = pref.styleBevel;
 		pref.savedStyleBlend = pref.styleBlend;
 		pref.savedStyleBlend2 = pref.styleBlend2;
@@ -682,6 +689,7 @@ function restoreThemeStylePreset(reset) {
 		pref.savedPreset = false;
 	} else {
 		pref.theme = pref.savedTheme;
+		pref.styleNighttime = pref.savedStyleNighttime;
 		pref.styleBevel = pref.savedStyleBevel;
 		pref.styleBlend = pref.savedStyleBlend;
 		pref.styleBlend2 = pref.savedStyleBlend2;
@@ -716,178 +724,35 @@ function restoreThemeStylePreset(reset) {
 
 
 /**
- * Sets the theme based on the time of day.
- * Used to switch between day and night mode by applying the corresponding theme settings.
- * @param {boolean} dayTheme When daytime is true, the daytime theme is applied.
- * @param {boolean} nightTheme When nighttime is true, the nighttime theme is applied.
- */
-function setDayNightTheme(dayTheme, nightTheme) {
-	if (dayTheme) {
-		pref.theme = pref.theme_day;
-		pref.styleBevel = pref.styleBevel_day;
-		pref.styleBlend = pref.styleBlend_day;
-		pref.styleBlend2 = pref.styleBlend2_day;
-		pref.styleGradient = pref.styleGradient_day;
-		pref.styleGradient2 = pref.styleGradient2_day;
-		pref.styleAlternative = pref.styleAlternative_day;
-		pref.styleAlternative2 = pref.styleAlternative2_day;
-		pref.styleBlackAndWhite = pref.styleBlackAndWhite_day;
-		pref.styleBlackAndWhite2 = pref.styleBlackAndWhite2_day;
-		pref.styleBlackAndWhiteReborn = pref.styleBlackAndWhiteReborn_day;
-		pref.styleBlackReborn = pref.styleBlackReborn_day;
-		pref.styleRebornWhite = pref.styleRebornWhite_day;
-		pref.styleRebornBlack = pref.styleRebornBlack_day;
-		pref.styleRebornFusion = pref.styleRebornFusion_day;
-		pref.styleRebornFusion2 = pref.styleRebornFusion2_day;
-		pref.styleRebornFusionAccent = pref.styleRebornFusionAccent_day;
-		pref.styleRandomPastel = pref.styleRandomPastel_day;
-		pref.styleRandomDark = pref.styleRandomDark_day;
-		pref.styleRandomAutoColor = pref.styleRandomAutoColor_day;
-		pref.styleTopMenuButtons = pref.styleTopMenuButtons_day;
-		pref.styleTransportButtons = pref.styleTransportButtons_day;
-		pref.styleProgressBarDesign = pref.styleProgressBarDesign_day;
-		pref.styleProgressBar = pref.styleProgressBar_day;
-		pref.styleProgressBarFill = pref.styleProgressBarFill_day;
-		pref.styleVolumeBarDesign = pref.styleVolumeBarDesign_day;
-		pref.styleVolumeBar = pref.styleVolumeBar_day;
-		pref.styleVolumeBarFill = pref.styleVolumeBarFill_day;
-		pref.themeBrightness = pref.themeBrightness_day;
-		pref.preset = pref.preset_day;
-	} else if (nightTheme) {
-		pref.theme = pref.theme_night;
-		pref.styleBevel = pref.styleBevel_night;
-		pref.styleBlend = pref.styleBlend_night;
-		pref.styleBlend2 = pref.styleBlend2_night;
-		pref.styleGradient = pref.styleGradient_night;
-		pref.styleGradient2 = pref.styleGradient2_night;
-		pref.styleAlternative = pref.styleAlternative_night;
-		pref.styleAlternative2 = pref.styleAlternative2_night;
-		pref.styleBlackAndWhite = pref.styleBlackAndWhite_night;
-		pref.styleBlackAndWhite2 = pref.styleBlackAndWhite2_night;
-		pref.styleBlackAndWhiteReborn = pref.styleBlackAndWhiteReborn_night;
-		pref.styleBlackReborn = pref.styleBlackReborn_night;
-		pref.styleRebornWhite = pref.styleRebornWhite_night;
-		pref.styleRebornBlack = pref.styleRebornBlack_night;
-		pref.styleRebornFusion = pref.styleRebornFusion_night;
-		pref.styleRebornFusion2 = pref.styleRebornFusion2_night;
-		pref.styleRebornFusionAccent = pref.styleRebornFusionAccent_night;
-		pref.styleRandomPastel = pref.styleRandomPastel_night;
-		pref.styleRandomDark = pref.styleRandomDark_night;
-		pref.styleRandomAutoColor = pref.styleRandomAutoColor_night;
-		pref.styleTopMenuButtons = pref.styleTopMenuButtons_night;
-		pref.styleTransportButtons = pref.styleTransportButtons_night;
-		pref.styleProgressBarDesign = pref.styleProgressBarDesign_night;
-		pref.styleProgressBar = pref.styleProgressBar_night;
-		pref.styleProgressBarFill = pref.styleProgressBarFill_night;
-		pref.styleVolumeBarDesign = pref.styleVolumeBarDesign_night;
-		pref.styleVolumeBar = pref.styleVolumeBar_night;
-		pref.styleVolumeBarFill = pref.styleVolumeBarFill_night;
-		pref.themeBrightness = pref.themeBrightness_night;
-		pref.preset = pref.preset_night;
-	}
-}
-
-
-/**
- * Sets the chosen theme preset to the daytime theme when selecting a theme preset in top menu Options > Preset.
- * Used when daytime theme setup is active.
- */
-function setDayThemePreset() {
-	pref.theme_day = pref.theme;
-	pref.styleBevel_day = pref.styleBevel;
-	pref.styleBlend_day = pref.styleBlend;
-	pref.styleBlend2_day = pref.styleBlend2;
-	pref.styleGradient_day = pref.styleGradient;
-	pref.styleGradient2_day = pref.styleGradient2;
-	pref.styleAlternative_day = pref.styleAlternative;
-	pref.styleAlternative2_day = pref.styleAlternative2;
-	pref.styleBlackAndWhite_day = pref.styleBlackAndWhite;
-	pref.styleBlackAndWhite2_day = pref.styleBlackAndWhite2;
-	pref.styleBlackAndWhiteReborn_day = pref.styleBlackAndWhiteReborn;
-	pref.styleBlackReborn_day = pref.styleBlackReborn;
-	pref.styleRebornWhite_day = pref.styleRebornWhite;
-	pref.styleRebornBlack_day = pref.styleRebornBlack;
-	pref.styleRebornFusion_day = pref.styleRebornFusion;
-	pref.styleRebornFusion2_day = pref.styleRebornFusion2;
-	pref.styleRebornFusionAccent_day = pref.styleRebornFusionAccent;
-	pref.styleRandomPastel_day = pref.styleRandomPastel;
-	pref.styleRandomDark_day = pref.styleRandomDark;
-	pref.styleRandomAutoColor_day = pref.styleRandomAutoColor;
-	pref.styleTopMenuButtons_day = pref.styleTopMenuButtons;
-	pref.styleTransportButtons_day = pref.styleTransportButtons;
-	pref.styleProgressBarDesign_day = pref.styleProgressBarDesign;
-	pref.styleProgressBar_day = pref.styleProgressBar;
-	pref.styleProgressBarFill_day = pref.styleProgressBarFill;
-	pref.styleVolumeBarDesign_day = pref.styleVolumeBarDesign;
-	pref.styleVolumeBar_day = pref.styleVolumeBar;
-	pref.styleVolumeBarFill_day = pref.styleVolumeBarFill;
-	pref.themeBrightness_day = pref.themeBrightness;
-	pref.preset_day = pref.preset;
-}
-
-
-/**
- * Sets the chosen theme preset to the nighttime theme when selecting a theme preset in top menu Options > Preset.
- * Used when nighttime theme setup is active.
- */
-function setNightThemePreset() {
-	pref.theme_night = pref.theme;
-	pref.styleBevel_night = pref.styleBevel;
-	pref.styleBlend_night = pref.styleBlend;
-	pref.styleBlend2_night = pref.styleBlend2;
-	pref.styleGradient_night = pref.styleGradient;
-	pref.styleGradient2_night = pref.styleGradient2;
-	pref.styleAlternative_night = pref.styleAlternative;
-	pref.styleAlternative2_night = pref.styleAlternative2;
-	pref.styleBlackAndWhite_night = pref.styleBlackAndWhite;
-	pref.styleBlackAndWhite2_night = pref.styleBlackAndWhite2;
-	pref.styleBlackAndWhiteReborn_night = pref.styleBlackAndWhiteReborn;
-	pref.styleBlackReborn_night = pref.styleBlackReborn;
-	pref.styleRebornWhite_night = pref.styleRebornWhite;
-	pref.styleRebornBlack_night = pref.styleRebornBlack;
-	pref.styleRebornFusion_night = pref.styleRebornFusion;
-	pref.styleRebornFusion2_night = pref.styleRebornFusion2;
-	pref.styleRebornFusionAccent_night = pref.styleRebornFusionAccent;
-	pref.styleRandomPastel_night = pref.styleRandomPastel;
-	pref.styleRandomDark_night = pref.styleRandomDark;
-	pref.styleRandomAutoColor_night = pref.styleRandomAutoColor;
-	pref.styleTopMenuButtons_night = pref.styleTopMenuButtons;
-	pref.styleTransportButtons_night = pref.styleTransportButtons;
-	pref.styleProgressBarDesign_night = pref.styleProgressBarDesign;
-	pref.styleProgressBar_night = pref.styleProgressBar;
-	pref.styleProgressBarFill_night = pref.styleProgressBarFill;
-	pref.styleVolumeBarDesign_night = pref.styleVolumeBarDesign;
-	pref.styleVolumeBar_night = pref.styleVolumeBar;
-	pref.styleVolumeBarFill_night = pref.styleVolumeBarFill;
-	pref.themeBrightness_night = pref.themeBrightness;
-	pref.preset_night = pref.preset;
-}
-
-
-/**
  * Sets the chosen style based by its current state. Used when changing styles in top menu Options > Style.
  * @param {string} style The selected style.
  * @param {boolean} state The state of the selected style will be either activated or deactivated.
  */
 function setStyle(style, state) {
+	const _day_night = pref.themeSetupDay ? '_day' : '_night';
+
+	if (pref.themeSetupDay || pref.themeSetupNight) {
+		resetStyle('all_theme_day_night');
+	}
+
 	switch (style) {
-		case 'blend': resetStyle('group_one'); pref.styleBlend = state; break;
-		case 'blend2':  resetStyle('group_one'); pref.styleBlend2 = state; break;
-		case 'gradient': resetStyle('group_one'); pref.styleGradient = state; break;
-		case 'gradient2': resetStyle('group_one'); pref.styleGradient2 = state; break;
-		case 'alternative': resetStyle('group_two'); pref.styleAlternative = state; break;
-		case 'alternative2': resetStyle('group_two'); pref.styleAlternative2 = state; break;
-		case 'blackAndWhite': resetStyle('group_two'); pref.styleBlackAndWhite = state; break;
-		case 'blackAndWhite2': resetStyle('group_two'); pref.styleBlackAndWhite2 = state; break;
-		case 'blackAndWhiteReborn': resetStyle('group_two'); pref.styleBlackAndWhiteReborn = state; break;
-		case 'blackReborn': resetStyle('group_two'); pref.styleBlackReborn = state; break;
-		case 'rebornWhite': resetStyle('group_two'); pref.styleRebornWhite = state; pref.themeBrightness = 'default'; break;
-		case 'rebornBlack': resetStyle('group_two'); pref.styleRebornBlack = state; pref.themeBrightness = 'default'; break;
-		case 'rebornFusion': resetStyle('group_two'); pref.styleRebornFusion = state; break;
-		case 'rebornFusion2': resetStyle('group_two'); pref.styleRebornFusion2 = state; break;
-		case 'rebornFusionAccent': resetStyle('group_two'); pref.styleRebornFusionAccent = state; break;
-		case 'randomPastel': resetStyle('group_two'); pref.styleRandomPastel = state; break;
-		case 'randomDark': resetStyle('group_two'); pref.styleRandomDark = state; break;
+		case 'blend':               resetStyle('group_one'); pref[`styleBlend${_day_night}`] = pref.styleBlend = state; break;
+		case 'blend2':              resetStyle('group_one'); pref[`styleBlend2${_day_night}`] = pref.styleBlend2 = state; break;
+		case 'gradient':            resetStyle('group_one'); pref[`styleGradient${_day_night}`] = pref.styleGradient = state; break;
+		case 'gradient2':           resetStyle('group_one'); pref[`styleGradient2${_day_night}`] = pref.styleGradient2 = state; break;
+		case 'alternative':         resetStyle('group_two'); pref[`styleAlternative${_day_night}`] = pref.styleAlternative = state; break;
+		case 'alternative2':        resetStyle('group_two'); pref[`styleAlternative2${_day_night}`] = pref.styleAlternative2 = state; break;
+		case 'blackAndWhite':       resetStyle('group_two'); pref[`styleBlackAndWhite${_day_night}`] = pref.styleBlackAndWhite = state; break;
+		case 'blackAndWhite2':      resetStyle('group_two'); pref[`styleBlackAndWhite2${_day_night}`] = pref.styleBlackAndWhite2 = state; break;
+		case 'blackAndWhiteReborn': resetStyle('group_two'); pref[`styleBlackAndWhiteReborn${_day_night}`] = pref.styleBlackAndWhiteReborn = state; break;
+		case 'blackReborn':         resetStyle('group_two'); pref[`styleBlackReborn${_day_night}`] = pref.styleBlackReborn = state; break;
+		case 'rebornWhite':         resetStyle('group_two'); pref[`styleRebornWhite${_day_night}`] = pref.styleRebornWhite = state; pref[`themeBrightness${_day_night}`] = pref.themeBrightness = 'default'; break;
+		case 'rebornBlack':         resetStyle('group_two'); pref[`styleRebornBlack${_day_night}`] = pref.styleRebornBlack = state; pref[`themeBrightness${_day_night}`] = pref.themeBrightness = 'default'; break;
+		case 'rebornFusion':        resetStyle('group_two'); pref[`styleRebornFusion${_day_night}`] = pref.styleRebornFusion = state; break;
+		case 'rebornFusion2':       resetStyle('group_two'); pref[`styleRebornFusion2${_day_night}`] = pref.styleRebornFusion2 = state; break;
+		case 'rebornFusionAccent':  resetStyle('group_two'); pref[`styleRebornFusionAccent${_day_night}`] = pref.styleRebornFusionAccent = state; break;
+		case 'randomPastel':        resetStyle('group_two'); pref[`styleRandomPastel${_day_night}`] = pref.styleRandomPastel = state; break;
+		case 'randomDark':          resetStyle('group_two'); pref[`styleRandomDark${_day_night}`] = pref.styleRandomDark = state; break;
 	}
 }
 
@@ -940,9 +805,7 @@ function setThemePresetSelection(state, presetSelectModeTheme) {
 			case 'ngreen': pref.presetSelectNgreen = true; break;
 			case 'nred':  pref.presetSelectNred = true; break;
 			case 'ngold': pref.presetSelectNgold = true; break;
-			case 'custom01': case 'custom02': case 'custom03': case 'custom04': case 'custom05':
-			case 'custom06': case 'custom07': case 'custom08': case 'custom09': case 'custom10':
-				pref.presetSelectCustom = true; break;
+			default: if (pref.theme.startsWith('custom')) pref.presetSelectCustom = true; break;
 		}
 	}
 }
@@ -1110,340 +973,6 @@ function setProgressBarRefresh() {
 			refreshSeekbar();
 		}, progressBarTimerInterval || 1000);
 	}
-}
-
-
-////////////////////////
-// * MAIN - HELPERS * //
-////////////////////////
-/**
- * Deletes the Biography cache on auto or manual usage.
- */
-function deleteBiographyCache() {
-	try { fso.DeleteFolder(pref.customBiographyDir ? `${globals.customBiographyDir}\\*.*` : `${fb.ProfilePath}cache\\biography\\biography-cache`); }
-	catch (e) {}
-}
-
-
-/**
- * Deletes the Library cache on auto or manual usage.
- */
-function deleteLibraryCache() {
-	try { fso.DeleteFolder(pref.customLibraryDir ? `${globals.customLibraryDir}\\*.*` : `${fb.ProfilePath}cache\\library\\library-tree-cache`); }
-	catch (e) {}
-}
-
-
-/**
- * Deletes the Lyrics cache on auto or manual usage.
- */
-function deleteLyrics() {
-	try { fso.DeleteFile(pref.customLyricsDir ? `${globals.customLyricsDir}\\*.*` : `${fb.ProfilePath}cache\\lyrics\\*.*`); }
-	catch (e) {}
-}
-
-
-/**
- * Deletes the Waveform bar cache on auto or manual usage.
- */
-function deleteWaveformBarCache() {
-	try { fso.DeleteFolder(pref.customWaveformBarDir ? `${globals.customWaveformBarDir}\\*.*` : `${fb.ProfilePath}cache\\waveform\\*.*`); }
-	catch (e) {}
-}
-
-
-/**
- * Makes or restores a theme backup.
- * @param {boolean} make Should a theme backup be made.
- * @param {boolean} restore Should a theme backup be restored.
- */
-function manageBackup(make, restore) {
-	const backupPath = `${fb.ProfilePath}backup\\profile\\`;
-	const cfgPathFb  = `${fb.ProfilePath}configuration`;
-	const dspPathFb  = `${fb.ProfilePath}dsp-presets`;
-	const cfgPathBp  = `${backupPath}configuration`;
-	const dspPathBp  = `${backupPath}dsp-presets`;
-	const indexPath  = `${backupPath}index-data`;
-	const themePath  = `${backupPath}georgia-reborn`;
-
-	const libOld   = make ? `${fb.ProfilePath}library`        : `${backupPath}library`;
-	const libNew   = make ? `${fb.ProfilePath}library-v2.0`   : `${backupPath}library-v2.0`;
-	const plistOld = make ? `${fb.ProfilePath}playlists-v1.4` : `${backupPath}playlists-v1.4`;
-	const plistNew = make ? `${fb.ProfilePath}playlists-v2.0` : `${backupPath}playlists-v2.0`;
-
-	let libaryDir;
-	let playlistDir;
-	let oldVersion = false;
-
-	const checkVersion = async () => {
-		if      (IsFolder(libOld)) { libaryDir = libOld; oldVersion = true; }
-		else if (IsFolder(libNew)) { libaryDir = libNew; oldVersion = false; }
-		if      (IsFolder(plistOld)) { playlistDir = plistOld; oldVersion = true; }
-		else if (IsFolder(plistNew)) { playlistDir = plistNew; oldVersion = false; }
-	};
-
-	const createFolders = async () => {
-		CreateFolder(themePath, true);
-		CreateFolder(cfgPathFb, true);
-		CreateFolder(cfgPathBp, true);
-		CreateFolder(dspPathFb, true);
-		CreateFolder(dspPathBp, true);
-		if (oldVersion) CreateFolder(indexPath, true);
-	};
-
-	const checkFolders = () => {
-		// * Safeguard to prevent crash when directories do not exist
-		const foldersExist =
-			((IsFolder(libOld) && IsFolder(plistOld)) || IsFolder(libNew) && IsFolder(plistNew))
-			&&
-			(IsFolder(themePath) && IsFolder(dspPathFb) && IsFolder(dspPathBp) && IsFolder(cfgPathFb) && IsFolder(cfgPathBp));
-
-		if (foldersExist) {
-			return true;
-		}
-		else {
-			if (make) {
-				fb.ShowPopupMessage(`>>> Georgia-ReBORN theme backup was aborted <<<\n\n"configuration" or "dsp-presets" or "georgia-reborn" or "library" or "playlist" directory\ndoes not exist in:\n${fb.ProfilePath}`, 'Theme backup');
-			} else {
-				fb.ShowPopupMessage(`>>> Georgia-ReBORN restore backup was aborted <<<\n\n"backup" directory does not exist in:\n${fb.ProfilePath}\n\nor\n\n"configuration" or "dsp-presets" or "georgia-reborn" or "library" or "playlist" directory\ndoes not exist in:\n${fb.ProfilePath}backup`, 'Theme backup');
-			}
-			return false;
-		}
-	};
-
-	const copyFolders = async () => {
-		const backup    = new ActiveXObject('Scripting.FileSystemObject');
-		const library   = backup.GetFolder(libaryDir);
-		const playlists = backup.GetFolder(playlistDir);
-		const configs   = backup.GetFolder(make ? `${fb.ProfilePath}georgia-reborn\\configs` : `${backupPath}georgia-reborn\\configs`);
-		const cfg       = backup.GetFolder(make ? cfgPathFb : `${backupPath}configuration`);
-
-		// * If old or new version, copy the library, playlist and config files
-		library.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-		playlists.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-		configs.Copy(make ? `${backupPath}georgia-reborn\\configs` : `${fb.ProfilePath}georgia-reborn\\configs`, true);
-		try { cfg.Copy(make ? `${backupPath}configuration` : cfgPathFb, true); } catch (e) {}
-
-		// * Delete user's foo_ui_columns.dll.cfg, we use the clean cfg file from the zip
-		try { backup.DeleteFile(`${backupPath}configuration\\foo_ui_columns.dll.cfg`, true); } catch (e) {}
-
-		// * If old version, copy the old library data files
-		if (oldVersion) {
-			const indexData = backup.GetFolder(make ? `${fb.ProfilePath}index-data` : indexPath);
-			indexData.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-			return;
-		}
-
-		// * If new version, copy the new fb2k v2 files
-		const dspPresets = backup.GetFolder(make ? dspPathFb : dspPathBp);
-		const dspConfig = backup.GetFile(make ? `${fb.ProfilePath}config.fb2k-dsp` : `${backupPath}config.fb2k-dsp`);
-		const fbConfig = backup.GetFile(make ? `${fb.ProfilePath}config.sqlite` : `${backupPath}config.sqlite`);
-		const metadb = backup.GetFile(make ? `${fb.ProfilePath}metadb.sqlite` : `${backupPath}metadb.sqlite`);
-		dspPresets.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-		dspConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-		fbConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-		metadb.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-	};
-
-	const makeBackup = async () => {
-		await checkVersion();
-		await createFolders();
-
-		if (!checkFolders()) return;
-
-		await setThemeSettings(true);
-		await copyFolders();
-
-		if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-			await fb.ShowPopupMessage(`>>> Theme backup has been successfully saved <<<\n\n${fb.ProfilePath}backup`, 'Theme backup');
-		} else {
-			const msg = `Theme backup has been successfully saved:\n\n${fb.ProfilePath}backup\n\n\n`;
-			await popUpBox.confirm('Georgia-ReBORN', msg, 'OK', false, false, 'center', false);
-		}
-	};
-
-	const restoreBackup = async () => {
-		if (!checkFolders()) return;
-
-		pref.customThemeSettings = true;
-		pref.restoreBackupPlaylist = true;
-
-		await checkVersion();
-		await copyFolders();
-		await setThemeSettings();
-		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
-	};
-
-	if (make) {
-		makeBackup();
-	} else {
-		restoreBackup();
-	}
-}
-
-
-/**
- * Restores the backup playlist directory with its playlists.
- * This is a foobar workaround fix when user has installed and launched foobar for the very first time after installation.
- * If theme backup has been successfully restored, foobar automatically deletes all restored playlist files in the playlist directory.
- * On the next foobar restart and initialization, foobar adds crap playlist files in the playlist directory making them useless.
- * To fix this issue, all playlist files from the backup directory will be copied and restored again.
- */
-function restoreBackupPlaylist() {
-	const plistOld = `${fb.ProfilePath}backup\\profile\\playlists-v1.4`;
-	const plistNew = `${fb.ProfilePath}backup\\profile\\playlists-v2.0`;
-
-	let playlistDir;
-	let oldVersion = false;
-
-	const checkVersion = async () => {
-		if      (IsFolder(plistOld)) { playlistDir = plistOld; oldVersion = true; }
-		else if (IsFolder(plistNew)) { playlistDir = plistNew; oldVersion = false; }
-	};
-
-	const checkFolders = () => {
-		// * Safeguard to prevent crash when directories do not exist
-		const foldersExist = IsFolder(plistOld) || IsFolder(plistNew);
-
-		if (foldersExist) {
-			return true;
-		}
-		else {
-			fb.ShowPopupMessage(`>>> Georgia-ReBORN restore backup was aborted <<<\n\n"playlist" directory does not exist in:\n${fb.ProfilePath}backup`, 'Theme backup');
-			return false;
-		}
-	};
-
-	const copyFolders = async () => {
-		const backup = new ActiveXObject('Scripting.FileSystemObject');
-		const playlists = backup.GetFolder(playlistDir);
-		playlists.Copy(`${fb.ProfilePath}`, true);
-	};
-
-	const restoreBackup = async () => {
-		pref.restoreBackupPlaylist = false;
-		if (!checkFolders()) return;
-
-		await checkVersion();
-		await copyFolders();
-		await setThemeSettings();
-		await console.log('\n>>> Georgia-ReBORN theme backup has been successfully restored <<<\n\n');
-		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
-	};
-
-	restoreBackup();
-}
-
-
-/**
- * Displays red rectangles to show all repaint areas when activating "Draw areas" in dev tools, used for debugging.
- */
-function repaintRectAreas() {
-	window.RepaintRect = (x, y, w, h, force = undefined) => {
-		if (timings.drawRepaintRects) {
-			repaintRects.push({ x, y, w, h });
-			window.Repaint();
-		} else {
-			repaintRectCount++;
-			window.oldRepaintRect(x, y, w, h, force);
-		}
-	};
-}
-
-
-/**
- * Prints logs for window.Repaint() in the console, used for debugging.
- */
-function repaintWindow() {
-	DebugLog('Repainting from repaintWindow()');
-	window.Repaint();
-}
-
-
-/**
- * Continuously repaints rectangles for a short period of time ( 1 sec ), used when changing the layout width.
- */
-function repaintWindowRectAreas() {
-	DebugLog('Repainting from repaintWindowRectAreas()');
-
-	window.RepaintRect = () => {
-		window.Repaint();
-	};
-
-	setTimeout(() => { // Restore window.RepaintRect afterwards
-		window.RepaintRect = (x, y, w, h, force = undefined) => {
-			window.oldRepaintRect(x, y, w, h, force);
-		};
-	}, 1000);
-}
-
-
-/**
- * Writes %GR_THEMECOLOR%, %GR_THEME%, %GR_STYLE%, %GR_PRESET% tags to music files via the Playlist or Library context menu.
- */
-function writeThemeTags() {
-	const grTags = [];
-	const plItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
-	const libItems = new FbMetadbHandleList(pop.getHandleList('newItems'));
-	const items = displayLibrary && !displayPlaylist || displayLibrarySplit() && state.mouse_x < ww * 0.5 ? libItems : plItems;
-
-	if (!items) return;
-
-	for (let i = 0; i < items.Count; ++i) {
-		grTags.push({
-			GR_THEMECOLOR: pref.theme === 'random' ? ColToRgb(col.primary) : '',
-
-			GR_THEME: pref.preset === false ? pref.theme : '',
-
-			GR_STYLE: pref.preset === false ? [
-				pref.styleBevel ? 'bevel' : '',
-				pref.styleBlend ? 'blend' : '',
-				pref.styleBlend2 ? 'blend2' : '',
-				pref.styleGradient ? 'gradient' : '',
-				pref.styleGradient2 ? 'gradient2' : '',
-				pref.styleAlternative ? 'alternative' : '',
-				pref.styleAlternative2 ? 'alternative2' : '',
-				pref.styleBlackAndWhite ? 'blackAndWhite' : '',
-				pref.styleBlackAndWhite2 ? 'blackAndWhite2' : '',
-				pref.styleBlackReborn ? 'blackReborn' : '',
-				pref.styleRebornWhite ? 'rebornWhite' : '',
-				pref.styleRebornBlack ? 'rebornBlack' : '',
-				pref.styleRebornFusion ? 'rebornFusion' : '',
-				pref.styleRebornFusion2 ? 'rebornFusion2' : '',
-				pref.styleRandomPastel ? 'randomPastel' : '',
-				pref.styleRandomDark ? 'randomDark' : '',
-				pref.styleRebornFusionAccent ? 'rebornFusionAccent' : '',
-				pref.styleTopMenuButtons === 'filled' ? 'topMenuButtons=filled' : '',
-				pref.styleTopMenuButtons === 'bevel' ? 'topMenuButtons=bevel' : '',
-				pref.styleTopMenuButtons === 'inner' ? 'topMenuButtons=inner' : '',
-				pref.styleTopMenuButtons === 'emboss' ? 'topMenuButtons=emboss' : '',
-				pref.styleTopMenuButtons === 'minimal' ? 'topMenuButtons=minimal' : '',
-				pref.styleTransportButtons === 'bevel' ? 'transportButtons=bevel' : '',
-				pref.styleTransportButtons === 'inner' ? 'transportButtons=inner' : '',
-				pref.styleTransportButtons === 'emboss' ? 'transportButtons=emboss' : '',
-				pref.styleTransportButtons === 'minimal' ? 'transportButtons=minimal' : '',
-				pref.styleProgressBarDesign === 'rounded' ? 'progressBarDesign=rounded' : '',
-				pref.styleProgressBarDesign === 'lines' ? 'progressBarDesign=lines' : '',
-				pref.styleProgressBarDesign === 'blocks' ? 'progressBarDesign=blocks' : '',
-				pref.styleProgressBarDesign === 'dots' ? 'progressBarDesign=dots' : '',
-				pref.styleProgressBarDesign === 'thin' ? 'progressBarDesign=thin' : '',
-				pref.styleProgressBar === 'bevel' ? 'progressBarBg=bevel' : '',
-				pref.styleProgressBar === 'inner' ? 'progressBarBg=inner' : '',
-				pref.styleProgressBarFill === 'bevel' ? 'progressBarFill=bevel' : '',
-				pref.styleProgressBarFill === 'inner' ? 'progressBarFill=inner' : '',
-				pref.styleProgressBarFill === 'blend' ? 'progressBarFill=blend' : '',
-				pref.styleVolumeBarDesign === 'rounded' ? 'volumeBarDesign=rounded' : '',
-				pref.styleVolumeBar === 'bevel' ? 'volumeBarBg=bevel' : '',
-				pref.styleVolumeBar === 'inner' ? 'volumeBarBg=inner' : '',
-				pref.styleVolumeBarFill === 'bevel' ? 'volumeBarFill=bevel' : '',
-				pref.styleVolumeBarFill === 'bevel' ? 'volumeBarFill=inner' : ''
-			] : '',
-
-			GR_PRESET: pref.preset !== false ? pref.preset : ''
-		});
-	}
-
-	if (items.Count) items.UpdateFileInfoFromJSON(JSON.stringify(grTags));
 }
 
 
@@ -2075,7 +1604,7 @@ function displayNextImage() {
 	}
 	lastLeftEdge = 0;
 	resizeArtwork(true); // Needed to readjust discArt shadow size if artwork size changes
-	repaintWindow();
+	RepaintWindow();
 	albumArtTimeout = setTimeout(() => {
 		displayNextImage();
 	}, settings.artworkDisplayTime * 1000);
@@ -2172,7 +1701,7 @@ function fetchAlbumArt(metadb) {
 				resizeArtwork(true);
 			}
 			DebugLog('Repainting on_playback_new_track due to no cover image');
-			repaintWindow();
+			RepaintWindow();
 		}
 	}
 
@@ -2270,7 +1799,7 @@ function loadImageFromAlbumArtList(index) {
 
 			if (discArt) createDiscArtRotation();
 			lastLeftEdge = 0; // Recalc label location
-			repaintWindow();
+			RepaintWindow();
 		});
 	}
 
@@ -2635,7 +2164,7 @@ function fetchDiscArt() {
 					setDiscArtRotationTimer();
 				}
 				lastLeftEdge = 0; // Recalc label location
-				repaintWindow();
+				RepaintWindow();
 			});
 		}
 	}
@@ -3265,7 +2794,7 @@ function initLibraryLayout() {
 		lib.logTree();
 		pop.clearTree();
 		ui.getFont(); // * Reset font size when pref.libraryLayoutSplitPreset4 was used
-		repaintWindowRectAreas();
+		RepaintWindowRectAreas();
 		if (pref.libraryLayout !== 'split' && (!pref.libraryLayoutFullPreset || !libraryLayoutSplitPresets)) {
 			ppt.albumArtShow = pref.savedAlbumArtShow;
 			ppt.albumArtLabelType = pref.savedAlbumArtLabelType;
@@ -3543,7 +3072,7 @@ function initBiographyLayout() {
 		pptBio.showFilmStrip = false;
 		pptBio.filmStripPos = 3;
 	}
-	repaintWindowRectAreas();
+	RepaintWindowRectAreas();
 	setBiographySize();
 }
 

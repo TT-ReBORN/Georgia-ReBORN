@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-12-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -534,7 +534,7 @@ Object.assign(qwr_utils, {
 		const updateButtons = () => {
 			createButtonImages();
 			createButtonObjects(ww, wh);
-			repaintWindow();
+			RepaintWindow();
 		};
 
 		const topMenuDisplayMenu = new ContextMenu('Display');
@@ -756,7 +756,7 @@ Object.assign(qwr_utils, {
 						initButtonState();
 					}
 					initMetadataGridMenu(1);
-					repaintWindow();
+					RepaintWindow();
 				} else {
 					const configPath = `${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc`;
 					fb.ShowPopupMessage(`Metadata grid can only be live edited in default layout:\nOptions > Layout > Default\n\nYou could manually edit your config file while reloading to take effect:\n${configPath}\n`, 'Metadata grid live editing');
@@ -772,7 +772,7 @@ Object.assign(qwr_utils, {
 					if (pref.panelWidthAuto) {
 						initPanelWidthAuto();
 					}
-					repaintWindowRectAreas();
+					RepaintWindowRectAreas();
 					g_properties.auto_collapse = false;
 					playlist.expand_header();
 					playlist.on_size(ww, wh);
@@ -813,7 +813,7 @@ Object.assign(qwr_utils, {
 					if (pref.panelWidthAuto) {
 						initPanelWidthAuto();
 					}
-					repaintWindowRectAreas();
+					RepaintWindowRectAreas();
 					resizeArtwork(true);
 					initButtonState();
 				});
@@ -893,7 +893,7 @@ Object.assign(qwr_utils, {
 			pref.showDiscArtStub = !pref.showDiscArtStub;
 			pref.noDiscArtStub = false;
 			fetchNewArtwork(fb.GetNowPlaying());
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showDiscArtStub });
 		discArtMenu.append_separator();
 		discArtMenu.append_item('No placeholder', () => {
@@ -904,7 +904,7 @@ Object.assign(qwr_utils, {
 			discArtArray = [];
 			discArtArrayCover = [];
 			if (!pref.noDiscArtStub) fetchNewArtwork(fb.GetNowPlaying());
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.noDiscArtStub });
 		discArtMenu.append_separator();
 		const displayCdArtMenu = [
@@ -922,7 +922,7 @@ Object.assign(qwr_utils, {
 				discArtCover = disposeDiscArt(discArtCover);
 				discArtArrayCover = [];
 				fetchNewArtwork(fb.GetNowPlaying());
-				repaintWindow();
+				RepaintWindow();
 			}.bind(null, cdArt[1]), { is_radio_checked: cdArt[1] === pref.discArtStub });
 		});
 		discArtMenu.append_separator();
@@ -946,7 +946,7 @@ Object.assign(qwr_utils, {
 				discArtCover = disposeDiscArt(discArtCover);
 				discArtArrayCover = [];
 				fetchNewArtwork(fb.GetNowPlaying());
-				repaintWindow();
+				RepaintWindow();
 			}.bind(null, vinylArt[1]), { is_radio_checked: vinylArt[1] === pref.discArtStub });
 		});
 		cmac.append(discArtMenu);
@@ -984,13 +984,13 @@ Object.assign(qwr_utils, {
 		const updateButtons = () => {
 			createButtonImages();
 			createButtonObjects(ww, wh);
-			repaintWindow();
+			RepaintWindow();
 		};
 
 		const updateSeekbar = () => {
 			setGeometry();
 			resizeArtwork(true);
-			repaintWindow();
+			RepaintWindow();
 		};
 
 		// * TRANSPORT BUTTON SIZE * //
@@ -1213,15 +1213,15 @@ Object.assign(qwr_utils, {
 		const showArtistMenu = new ContextMenu('Show artist');
 		showArtistMenu.append_item('Default', () => {
 			pref.showLowerBarArtist_default = !pref.showLowerBarArtist_default;
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarArtist_default });
 		showArtistMenu.append_item('Artwork', () => {
 			pref.showLowerBarArtist_artwork = !pref.showLowerBarArtist_artwork;
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarArtist_artwork });
 		showArtistMenu.append_item('Compact', () => {
 			pref.showLowerBarArtist_compact = !pref.showLowerBarArtist_compact;
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarArtist_compact });
 		transportButtonDisplayMenu.append(showArtistMenu);
 
@@ -1230,17 +1230,17 @@ Object.assign(qwr_utils, {
 		showTrackNumberMenu.append_item('Default', () => {
 			pref.showLowerBarTrackNum_default = !pref.showLowerBarTrackNum_default;
 			on_metadb_changed();
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarTrackNum_default });
 		showTrackNumberMenu.append_item('Artwork', () => {
 			pref.showLowerBarTrackNum_artwork = !pref.showLowerBarTrackNum_artwork;
 			on_metadb_changed();
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarTrackNum_artwork });
 		showTrackNumberMenu.append_item('Compact', () => {
 			pref.showLowerBarTrackNum_compact = !pref.showLowerBarTrackNum_compact;
 			on_metadb_changed();
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarTrackNum_compact });
 		transportButtonDisplayMenu.append(showTrackNumberMenu);
 
@@ -1248,15 +1248,15 @@ Object.assign(qwr_utils, {
 		const showTitleMenu = new ContextMenu('Show song title');
 		showTitleMenu.append_item('Default', () => {
 			pref.showLowerBarTitle_default = !pref.showLowerBarTitle_default;
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarTitle_default });
 		showTitleMenu.append_item('Artwork', () => {
 			pref.showLowerBarTitle_artwork = !pref.showLowerBarTitle_artwork;
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarTitle_artwork });
 		showTitleMenu.append_item('Compact', () => {
 			pref.showLowerBarTitle_compact = !pref.showLowerBarTitle_compact;
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarTitle_compact });
 		transportButtonDisplayMenu.append(showTitleMenu);
 
@@ -1264,15 +1264,15 @@ Object.assign(qwr_utils, {
 		const showComposerMenu = new ContextMenu('Show composer');
 		showComposerMenu.append_item('Default', () => {
 			pref.showLowerBarComposer_default = !pref.showLowerBarComposer_default;
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarComposer_default });
 		showComposerMenu.append_item('Artwork', () => {
 			pref.showLowerBarComposer_artwork = !pref.showLowerBarComposer_artwork;
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarComposer_artwork });
 		showComposerMenu.append_item('Compact', () => {
 			pref.showLowerBarComposer_compact = !pref.showLowerBarComposer_compact;
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarComposer_compact });
 		transportButtonDisplayMenu.append(showComposerMenu);
 
@@ -1281,17 +1281,17 @@ Object.assign(qwr_utils, {
 		showArtistFlagsMenu.append_item('Default', () => {
 			pref.showLowerBarArtistFlags_default = !pref.showLowerBarArtistFlags_default;
 			loadCountryFlags();
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarArtistFlags_default });
 		showArtistFlagsMenu.append_item('Artwork', () => {
 			pref.showLowerBarArtistFlags_artwork = !pref.showLowerBarArtistFlags_artwork;
 			loadCountryFlags();
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarArtistFlags_artwork });
 		showArtistFlagsMenu.append_item('Compact', () => {
 			pref.showLowerBarArtistFlags_compact = !pref.showLowerBarArtistFlags_compact;
 			loadCountryFlags();
-			repaintWindow();
+			RepaintWindow();
 		}, { is_checked: pref.showLowerBarArtistFlags_compact });
 		transportButtonDisplayMenu.append(showArtistFlagsMenu);
 
@@ -1439,7 +1439,7 @@ Object.assign(qwr_utils, {
 				setGeometry();
 				setProgressBarRefresh();
 				if (pref.seekbar === 'waveformbar') waveformBar.updateBar();
-				repaintWindow();
+				RepaintWindow();
 			}, { is_radio_checked: type[1] === pref.seekbar });
 		});
 
@@ -1452,7 +1452,7 @@ Object.assign(qwr_utils, {
 				progressBarStyleMenu.append_item(sec[0], () => {
 					pref.styleProgressBarDesign = sec[1];
 					setGeometry();
-					repaintWindow();
+					RepaintWindow();
 				}, { is_radio_checked: sec[1] === pref.styleProgressBarDesign });
 			});
 			cmac.append(progressBarStyleMenu);
@@ -1485,7 +1485,7 @@ Object.assign(qwr_utils, {
 				peakmeterBarDesignMenu.append_item(design[0], () => {
 					pref.peakmeterBarDesign = design[1];
 					peakmeterBar.on_size(ww, wh);
-					repaintWindow();
+					RepaintWindow();
 				}, { is_radio_checked: design[1] === pref.peakmeterBarDesign });
 			});
 			cmac.append(peakmeterBarDesignMenu);
@@ -1497,7 +1497,7 @@ Object.assign(qwr_utils, {
 					peakmeterBarVertSizeMenu.append_item(size[0], () => {
 						pref.peakmeterBarVertSize = size[1];
 						peakmeterBar = new PeakmeterBar(ww, wh);
-						repaintWindow();
+						RepaintWindow();
 					}, { is_radio_checked: size[1] === pref.peakmeterBarVertSize });
 				});
 				cmac.append(peakmeterBarVertSizeMenu);
@@ -1508,7 +1508,7 @@ Object.assign(qwr_utils, {
 					peakmeterBarVertDbRangeMenu.append_item(range[0], () => {
 						pref.peakmeterBarVertDbRange = range[1];
 						peakmeterBar = new PeakmeterBar(ww, wh);
-						repaintWindow();
+						RepaintWindow();
 					}, { is_radio_checked: range[1] === pref.peakmeterBarVertDbRange });
 				});
 				cmac.append(peakmeterBarVertDbRangeMenu);
@@ -1518,36 +1518,36 @@ Object.assign(qwr_utils, {
 			if (pref.peakmeterBarDesign === 'horizontal' || pref.peakmeterBarDesign === 'horizontal_center') {
 				peakmeterBarDisplayMenu.append_item('Show over bars', () => {
 					pref.peakmeterBarOverBars = !pref.peakmeterBarOverBars;
-					repaintWindow();
+					RepaintWindow();
 				}, { is_checked: pref.peakmeterBarOverBars });
 				peakmeterBarDisplayMenu.append_separator();
 				peakmeterBarDisplayMenu.append_item('Show outer bars', () => {
 					pref.peakmeterBarOuterBars = !pref.peakmeterBarOuterBars;
-					repaintWindow();
+					RepaintWindow();
 				}, { is_checked: pref.peakmeterBarOuterBars });
 				peakmeterBarDisplayMenu.append_item('Show outer peaks', () => {
 					pref.peakmeterBarOuterPeaks = !pref.peakmeterBarOuterPeaks;
-					repaintWindow();
+					RepaintWindow();
 				}, { is_checked: pref.peakmeterBarOuterPeaks });
 				peakmeterBarDisplayMenu.append_separator();
 				peakmeterBarDisplayMenu.append_item('Show main bars', () => {
 					pref.peakmeterBarMainBars = !pref.peakmeterBarMainBars;
-					repaintWindow();
+					RepaintWindow();
 				}, { is_checked: pref.peakmeterBarMainBars });
 				peakmeterBarDisplayMenu.append_item('Show main peaks', () => {
 					pref.peakmeterBarMainPeaks = !pref.peakmeterBarMainPeaks;
-					repaintWindow();
+					RepaintWindow();
 				}, { is_checked: pref.peakmeterBarMainPeaks });
 				peakmeterBarDisplayMenu.append_separator();
 				peakmeterBarDisplayMenu.append_item('Show middle bars', () => {
 					pref.peakmeterBarMiddleBars = !pref.peakmeterBarMiddleBars;
-					repaintWindow();
+					RepaintWindow();
 				}, { is_checked: pref.peakmeterBarMiddleBars });
 			}
 
 			peakmeterBarDisplayMenu.append_item('Show progress bar', () => {
 				pref.peakmeterBarProgBar = !pref.peakmeterBarProgBar;
-				repaintWindow();
+				RepaintWindow();
 			}, { is_checked: pref.peakmeterBarProgBar });
 
 			if (pref.peakmeterBarDesign === 'horizontal' || pref.peakmeterBarDesign === 'horizontal_center') {
@@ -1555,28 +1555,28 @@ Object.assign(qwr_utils, {
 				peakmeterBarDisplayMenu.append_item('Show gaps', () => {
 					pref.peakmeterBarGaps = !pref.peakmeterBarGaps;
 					peakmeterBar.on_size(ww, wh);
-					repaintWindow();
+					RepaintWindow();
 				}, { is_checked: pref.peakmeterBarGaps });
 				peakmeterBarDisplayMenu.append_item('Show grid', () => {
 					pref.peakmeterBarGrid = !pref.peakmeterBarGrid;
-					repaintWindow();
+					RepaintWindow();
 				}, { is_checked: pref.peakmeterBarGrid });
 			}
 
 			if (pref.peakmeterBarDesign === 'vertical') {
 				peakmeterBarDisplayMenu.append_item('Show peaks', () => {
 					pref.peakmeterBarVertPeaks = !pref.peakmeterBarVertPeaks;
-					repaintWindow();
+					RepaintWindow();
 				}, { is_checked: pref.peakmeterBarVertPeaks });
 				peakmeterBarDisplayMenu.append_item('Show baseline', () => {
 					pref.peakmeterBarVertBaseline = !pref.peakmeterBarVertBaseline;
-					repaintWindow();
+					RepaintWindow();
 				}, { is_checked: pref.peakmeterBarVertBaseline });
 			}
 
 			peakmeterBarDisplayMenu.append_item(pref.layout !== 'default' ? 'Show info (only available in Default layout)' : 'Show info', () => {
 				pref.peakmeterBarInfo = !pref.peakmeterBarInfo;
-				repaintWindow();
+				RepaintWindow();
 			}, { is_checked: pref.peakmeterBarInfo });
 
 			cmac.append(peakmeterBarDisplayMenu);
@@ -1601,7 +1601,7 @@ Object.assign(qwr_utils, {
 					pref.waveformBarAnalysis = type[1];
 					waveformBar.updateConfig({ preset: { analysisMode: type[1] } });
 					waveformBar.updateBar();
-					repaintWindow();
+					RepaintWindow();
 				}, {
 					is_grayed_out: pref.waveformBarMode !== 'ffprobe',
 					is_radio_checked: type[1] === pref.waveformBarAnalysis
@@ -1611,14 +1611,10 @@ Object.assign(qwr_utils, {
 			waveformBarAnalysisMenu.append_separator();
 			waveformBarAnalysisMenu.append_item('Delete analysis files', () => {
 				const msg = 'Do you want to delete all waveform bar cache?\n\nThis will permanently delete analyzed files.\n\nContinue?\n\n\n';
-				const continue_confirmation = (status, confirmed) => {
-					if (confirmed) deleteWaveformBarCache();
-				};
-				if (detectWine || !detectIE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-					continue_confirmation(false, 'Yes');
-				} else {
-					popUpBox.confirm('Georgia-ReBORN', msg, 'Yes', 'No', false, 'center', continue_confirmation);
-				}
+
+				ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+					if (confirmed) DeleteWaveformBarCache();
+				});
 			});
 			waveformBarAnalysisMenu.append_separator();
 			waveformBarAnalysisMenu.append_item('Auto-delete analysis files', () => {
@@ -1641,7 +1637,7 @@ Object.assign(qwr_utils, {
 					pref.waveformBarMode = mode[1];
 					waveformBar.updateConfig({ analysis: { binaryMode: pref.waveformBarMode } });
 					waveformBar.updateBar(true);
-					repaintWindow();
+					RepaintWindow();
 				}, {
 					is_grayed_out: !found,
 					is_radio_checked: mode[1] === pref.waveformBarMode
@@ -1668,7 +1664,7 @@ Object.assign(qwr_utils, {
 					pref.waveformBarSizeWave = size[1];
 					waveformBar.updateConfig({ ui: { sizeWave: size[1] } });
 					waveformBar.updateBar();
-					repaintWindow();
+					RepaintWindow();
 				}, { is_radio_checked: size[1] === pref.waveformBarSizeWave });
 			});
 			waveformBarSizeMenu.append(waveformBarSizeWaveMenu);
@@ -1679,7 +1675,7 @@ Object.assign(qwr_utils, {
 					pref.waveformBarSizeBars = size[1];
 					waveformBar.updateConfig({ ui: { sizeBars: size[1] } });
 					waveformBar.updateBar();
-					repaintWindow();
+					RepaintWindow();
 				}, { is_radio_checked: size[1] === pref.waveformBarSizeBars });
 			});
 			waveformBarSizeMenu.append(waveformBarSizeBarsMenu);
@@ -1690,7 +1686,7 @@ Object.assign(qwr_utils, {
 					pref.waveformBarSizeDots = size[1];
 					waveformBar.updateConfig({ ui: { sizeDots: size[1] } });
 					waveformBar.updateBar();
-					repaintWindow();
+					RepaintWindow();
 				}, { is_radio_checked: size[1] === pref.waveformBarSizeDots });
 			});
 			waveformBarSizeMenu.append(waveformBarSizeDotsMenu);
@@ -1701,7 +1697,7 @@ Object.assign(qwr_utils, {
 					pref.waveformBarSizeHalf = size[1];
 					waveformBar.updateConfig({ ui: { sizeHalf: size[1] } });
 					waveformBar.updateBar();
-					repaintWindow();
+					RepaintWindow();
 				}, { is_radio_checked: size[1] === pref.waveformBarSizeHalf });
 			});
 			waveformBarSizeMenu.append(waveformBarSizeHalfMenu);
@@ -1710,7 +1706,7 @@ Object.assign(qwr_utils, {
 				pref.waveformBarSizeNormalize = !pref.waveformBarSizeNormalize;
 				waveformBar.updateConfig({ ui: { sizeNormalizeWidth: pref.waveformBarSizeNormalize } });
 				waveformBar.updateBar();
-				repaintWindow();
+				RepaintWindow();
 			}, { is_checked: pref.waveformBarSizeNormalize });
 			cmac.append(waveformBarSizeMenu);
 

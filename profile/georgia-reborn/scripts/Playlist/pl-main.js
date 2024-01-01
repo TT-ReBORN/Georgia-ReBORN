@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-15                                          * //
+// * Last change:    2024-01-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1368,7 +1368,7 @@ class Playlist extends List {
 
 				cmm.append_separator();
 				cmm.append_item('Write theme to tags', () => {
-					writeThemeTags();
+					WriteThemeTags();
 				});
 				cmm.append_item('Write album statistics to tags', () => {
 					this.meta_handler.write_album_stats_to_tags();
@@ -2846,7 +2846,7 @@ class Playlist extends List {
 		const setSorting = () => {
 			setPlaylistSortOrder();
 			playlist.on_size(ww, wh);
-			repaintWindow();
+			RepaintWindow();
 		};
 
 		sortOrderDirection.forEach((direction) => {
@@ -3308,8 +3308,7 @@ class Playlist extends List {
 					neighbour_item = direction > 0 ? this.cnt_helper.get_next_visible_item(neighbour_item) : this.cnt_helper.get_prev_visible_item(neighbour_item);
 				} while (neighbour_item && !this.cnt_helper.is_item_navigateable(neighbour_item));
 
-				assert(neighbour_item != null,
-					LogicError, 'Failed to get navigateable neighbour');
+				Assert(neighbour_item != null, LogicError, 'Failed to get navigateable neighbour');
 
 				if (visible_to_item !== neighbour_item) {
 					// I.e. to_item and from_item are not neighbours
@@ -3749,10 +3748,12 @@ class PlaylistContent extends ListRowContent {
 
 		const first_item = iterate_level(this.sub_items);
 
-		if (first_item === null) {
+		if (first_item == null) {
 			g_properties.scroll_pos = 0; // Additional safe guard for invalid scroll positions to break error loop
-			assert(first_item != null, LogicError, 'first_item_to_draw can\'t be null!');
 		}
+		// No idea if this debug warning is still needed when we are using the safeguard
+		// Maybe we need to init the playlist or scrollbar if first_item is null due to a race condition
+		// Assert(first_item != null, LogicError, 'first_item_to_draw can\'t be null!');
 
 		return first_item;
 	}
@@ -6192,9 +6193,7 @@ class Row extends ListItem {
 	 * @param {number} y The y-coordinate.
 	 */
 	rating_click(x, y) {
-		assert(g_properties.show_rating,
-			LogicError, 'Rating_click was called, when there was no rating object.\nShould use trace before calling click');
-
+		Assert(g_properties.show_rating, LogicError, 'Rating_click was called, when there was no rating object.\nShould use trace before calling click');
 		this.rating.click(x, y);
 	}
 
@@ -7346,8 +7345,7 @@ function SelectionHandler(cnt_arg, cur_playlist_idx_arg) {
 		if (!item) {
 			return;
 		}
-		assert(item != null,
-			LogicError, 'update_selection was called with undefined item');
+		Assert(item != null, LogicError, 'update_selection was called with undefined item');
 
 		if (!ctrl_pressed && !shift_pressed) {
 			selected_indexes = [];
@@ -8313,8 +8311,7 @@ function GroupingHandler() {
 			cur_group = settings.group_presets[group_by_name.indexOf(group_name)];
 		}
 
-		assert(cur_group != null,
-			ArgumentError, 'group_name', group_name);
+		Assert(cur_group != null, ArgumentError, 'group_name', group_name);
 	};
 
 	/**

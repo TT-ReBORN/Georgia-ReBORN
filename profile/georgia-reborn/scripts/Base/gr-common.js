@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-09-25                                          * //
+// * Last change:    2023-12-27                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -956,21 +956,14 @@ const VK_OEM_CLEAR  = 0xFE; // Clear key
  */
 class ThemeError extends Error {
 	/**
+	 * Creates an instance of ThemeError.
 	 * @param {string} msg The error message.
 	 * @extends {Error}
-	 * @returns {ThemeError}
-	 * @class
 	 */
 	constructor(msg) {
 		super(msg);
-
 		this.name = 'ThemeError';
-
-		let err_msg = '\n';
-		err_msg += msg;
-		err_msg += '\n';
-
-		this.message = err_msg;
+		this.message = `\n${msg}\n`;
 	}
 }
 
@@ -980,20 +973,14 @@ class ThemeError extends Error {
  */
 class LogicError extends Error {
 	/**
+	 * Creates an instance of LogicError.
 	 * @param {string} msg The error message.
 	 * @extends {Error}
-	 * @class
 	 */
 	constructor(msg) {
 		super(msg);
-
 		this.name = 'LogicError';
-
-		let err_msg = '\n';
-		err_msg += msg;
-		err_msg += '\n';
-
-		this.message = err_msg;
+		this.message = `\n${msg}\n`;
 	}
 }
 
@@ -1003,26 +990,17 @@ class LogicError extends Error {
  */
 class InvalidTypeError extends Error {
 	/**
+	 * Creates an instance of InvalidTypeError.
 	 * @param {string} arg_name The name of the argument that caused the error.
 	 * @param {string} arg_type The actual type of the argument that was passed.
 	 * @param {string} valid_type The expected type of the argument.
 	 * @param {string=} additional_msg An optional message to provide more information about the error.
 	 * @extends {Error}
-	 * @class
 	 */
-	constructor(arg_name, arg_type, valid_type, additional_msg) {
+	constructor(arg_name, arg_type, valid_type, additional_msg = '') {
 		super('');
-
 		this.name = 'InvalidTypeError';
-
-		let err_msg = '\n';
-		err_msg += `'${arg_name}' is not a ${valid_type}, it's a ${arg_type}`;
-		if (additional_msg) {
-			err_msg += `\n${additional_msg}`;
-		}
-		err_msg += '\n';
-
-		this.message = err_msg;
+		this.message = `\n'${arg_name}' is not a ${valid_type}, it's a ${arg_type}${additional_msg ? `\n${additional_msg}` : ''}\n`;
 	}
 }
 
@@ -1032,40 +1010,16 @@ class InvalidTypeError extends Error {
  */
 class ArgumentError extends Error {
 	/**
+	 * Creates an instance of ArgumentError.
 	 * @param {string} arg_name The name of the argument that has an invalid value.
 	 * @param {*} arg_value The value of the argument that is considered invalid.
 	 * @param {string=} additional_msg An optional message to provide more information about the error.
 	 * @extends {Error}
-	 * @class
 	 */
-	constructor(arg_name, arg_value, additional_msg) {
+	constructor(arg_name, arg_value, additional_msg = '') {
 		super('');
-
 		this.name = 'ArgumentError';
-
-		let err_msg = '\n';
-		err_msg += `'${arg_name}' has invalid value: ${arg_value.toString()}`;
-		if (additional_msg) {
-			err_msg += `\n${additional_msg}`;
-		}
-		err_msg += '\n';
-
-		this.message = err_msg;
-	}
-}
-
-
-/**
- * Throws an exception of a specified type if a given predicate is false.
- * @param {boolean} predicate If the predicate is false, an exception is thrown.
- * @param {Function} exception_type The type of exception that will be thrown if the `predicate` is false.
- * @param {...*} args An array of arguments that will be passed to the `exception_type` when an exception is thrown.
- * @throws {T}
- * @template T
- */
-function assert(predicate, exception_type, args) {
-	if (!predicate) {
-		throw exception_type(...Array.prototype.slice.call(arguments, 2));
+		this.message = `\n'${arg_name}' has invalid value: ${arg_value}${additional_msg ? `\n${additional_msg}` : ''}\n`;
 	}
 }
 
@@ -1255,24 +1209,6 @@ const qwr_utils = {
 };
 
 
-/**
- * Creates a function that can only be called once and subsequent calls will return the result of the first call.
- * @param {Function} fn A function that will be called only once when the returned function is invoked.
- * @returns {Function} A new function that wraps the original function `fn`.
- */
-function Once(fn) {
-	let called = false;
-	let result;
-	return (...args) => {
-		if (!called) {
-			result = fn(...args);
-			called = true;
-		}
-		return result;
-	};
-}
-
-
 /////////////////////////
 // * KEYBOARD EVENTS * //
 /////////////////////////
@@ -1435,8 +1371,8 @@ class PanelProperties {
 	}
 }
 
-/**
- * The Playlist panel properties object.
- * @type {*}
- */
+/** @type {*} The Main UI properties object. */
+const pref = new PanelProperties();
+
+/** @type {*} The Playlist panel properties object. */
 const g_properties = new PanelProperties();

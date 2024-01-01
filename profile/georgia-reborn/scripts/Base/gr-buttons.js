@@ -390,7 +390,7 @@ function topMenuCompact(collapse) {
 	createButtonImages();
 	createButtonObjects(ww, wh);
 	initButtonState();
-	repaintWindow();
+	RepaintWindow();
 }
 
 

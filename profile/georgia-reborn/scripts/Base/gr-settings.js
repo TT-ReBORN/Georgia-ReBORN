@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-18                                          * //
+// * Last change:    2024-01-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -39,8 +39,6 @@ let updateRetryCount = 0;
 /** @type {number} The update timeout timer used only in scheduleUpdateCheck(). */
 let updateTimer;
 
-/** @type {*} */
-const pref = new PanelProperties();
 /** @type {*} */
 const globals = {};
 /** @type {*} */
@@ -121,6 +119,7 @@ pref.add_properties({
 
 	// * Style
 	styleDefault:                       ['Georgia-ReBORN - 02. Style: Default', true], // Use default style
+	styleNighttime:                     ['Georgia-ReBORN - 02. Style: Nighttime', false], // Use Nighttime style
 	styleBevel:                         ['Georgia-ReBORN - 02. Style: Bevel', false], // Use bevel style
 	styleBlend:                         ['Georgia-ReBORN - 02. Style: Blend', false], // Use blend style
 	styleBlend2:                        ['Georgia-ReBORN - 02. Style: Blend 2', false], // Use blend2 style
@@ -148,6 +147,7 @@ pref.add_properties({
 	styleVolumeBarDesign:               ['Georgia-ReBORN - 02. Style: Volume bar design', 'default'], // default = flat, volume bar design
 	styleVolumeBar:                     ['Georgia-ReBORN - 02. Style: Volume bar', 'default'], // default = flat, style of volume bar
 	styleVolumeBarFill:                 ['Georgia-ReBORN - 02. Style: Volume bar fill', 'default'], // default = flat, style of volume bar fill
+	styleNighttime_day:                 ['Georgia-ReBORN - 02. Style_daytime: Nighttime', false], // Daytime nighttime style state - used for theme day/night mode usage
 	styleBevel_day:                     ['Georgia-ReBORN - 02. Style_daytime: Bevel', false], // Daytime bevel style state - used for theme day/night mode usage
 	styleBlend_day:                     ['Georgia-ReBORN - 02. Style_daytime: Blend', false], // Daytime blend style state - used for theme day/night mode usage
 	styleBlend2_day:                    ['Georgia-ReBORN - 02. Style_daytime: Blend 2', false], // Daytime blend 2 style state - used for theme day/night mode usage
@@ -175,6 +175,7 @@ pref.add_properties({
 	styleVolumeBarDesign_day:           ['Georgia-ReBORN - 02. Style_daytime: Volume bar design', 'default'], // Daytime volume bar design style state - used for theme day/night mode usage
 	styleVolumeBar_day:                 ['Georgia-ReBORN - 02. Style_daytime: Volume bar', 'default'], // Daytime volume bar style state - used for theme day/night mode usage
 	styleVolumeBarFill_day:             ['Georgia-ReBORN - 02. Style_daytime: Volume bar fill', 'default'], // Daytime volume bar fill style state - used for theme day/night mode usage
+	styleNighttime_night:               ['Georgia-ReBORN - 02. Style_nighttime: Nighttime', false], // Nighttime nighttime style state - used for theme day/night mode usage
 	styleBevel_night:                   ['Georgia-ReBORN - 02. Style_nighttime: Bevel', false], // Nighttime bevel style state - used for theme day/night mode usage
 	styleBlend_night:                   ['Georgia-ReBORN - 02. Style_nighttime: Blend', false], // Nighttime blend style state - used for theme day/night mode usage
 	styleBlend2_night:                  ['Georgia-ReBORN - 02. Style_nighttime: Blend 2', false], // Nighttime blend 2 style state - used for theme day/night mode usage
@@ -202,6 +203,7 @@ pref.add_properties({
 	styleVolumeBarDesign_night:         ['Georgia-ReBORN - 02. Style_nighttime: Volume bar design', 'default'], // Nighttime volume bar design style state - used for theme day/night mode usage
 	styleVolumeBar_night:               ['Georgia-ReBORN - 02. Style_nighttime: Volume bar', 'default'], // Nighttime volume bar style state - used for theme day/night mode usage
 	styleVolumeBarFill_night:           ['Georgia-ReBORN - 02. Style_nighttime: Volume bar fill', 'default'], // Nighttime volume bar fill style state - used for theme day/night mode usage
+	savedStyleNighttime:                ['Georgia-ReBORN - 02. Style_saved: Nighttime', false], // Saved active nighttime style state - used to restore style state after custom [%GR_STYLE%] usage
 	savedStyleBevel:                    ['Georgia-ReBORN - 02. Style_saved: Bevel', false], // Saved active bevel style state - used to restore style state after custom [%GR_STYLE%] usage
 	savedStyleBlend:                    ['Georgia-ReBORN - 02. Style_saved: Blend', false], // Saved active blend style state - used to restore style state after custom [%GR_STYLE%] usage
 	savedStyleBlend2:                   ['Georgia-ReBORN - 02. Style_saved: Blend 2', false], // Saved active blend 2 style state - used to restore style state after custom [%GR_STYLE%] usage
@@ -363,7 +365,8 @@ pref.add_properties({
 	showStyledTooltips:                 ['Georgia-ReBORN - 09. Player controls: Show styled tooltips', true], // true: Show styled tooltips
 	panelWidthAuto:                     ['Georgia-ReBORN - 09. Player controls: Use auto panel width', false], // true: Use auto panel width when player size is not proportional
 	showPanelOnStartup:                 ['Georgia-ReBORN - 09. Player controls: Show panel on startup', 'playlist'], // "cover", "playlist", "details", "library", "biography", "lyrics" - show panel on foobar startup
-	showLogoOnStartup:                  ['Georgia-ReBORN - 09. Player controls: Show logo on startup', true], // true: Show logo on foobar startup
+	showPreloaderLogo:                  ['Georgia-ReBORN - 09. Player controls: Show logo on preloader', true], // true: Show logo on preloader
+	showPreloaderCustomLogo:            ['Georgia-ReBORN - 09. Player controls: Show custom logo on preloader', false], // false: Show custom logo on preloader
 	returnToHomeOnPlaybackStop:         ['Georgia-ReBORN - 09. Player controls: Return to home on playback stop', true], // true: Return to home on playback stop
 	hideMiddlePanelShadow:              ['Georgia-ReBORN - 09. Player controls: Hide middle panel shadow', false], // false: Hides the middle panel shadow
 	lockPlayerSize:                     ['Georgia-ReBORN - 09. Player controls: Lock player size', false], // false: Locks the player size
@@ -578,8 +581,8 @@ pref.add_properties({
 	disableRightClick:                  ['Georgia-ReBORN - 15. Settings: Disable right-click', true], // true: Disables right-clicking on the background from bringing up the SMP context menu
 
 	// * System
+	asyncThemePreloader:                ['Georgia-ReBORN - 16. System: Asynchronously theme preloader', true], // Loads individual theme files asynchronously at startup to reduce risk of SMP throwing slow script error on startup
 	checkForUpdates:                    ['Georgia-ReBORN - 16. System: Check for Updates', true], // true: Check github repo to determine if updates exist
-	loadAsync:                          ['Georgia-ReBORN - 16. System: Load Theme Asynchronously', true], // Loads individual theme files asynchronously at startup to reduce risk of FSM throwing slow script error on startup
 	restoreBackupPlaylist:              ['Georgia-ReBORN - 16. System: Restore backup playlist', false], // false: Used to copy playlist files again after fb2k installation
 	savedLayout:                        ['Georgia-ReBORN - 16. System: Saved layout', 'default'], // Default saved layout
 	savedWidth_default:                 ['Georgia-ReBORN - 16. System: Saved width (Default)',  1140], // Default saved width for Default layout
@@ -628,6 +631,7 @@ async function setThemeSettings(save) {
 	// * Style
 	if (save) {
 		style.default = pref.styleDefault;
+		style.nighttime = pref.styleNighttime;
 		style.bevel = pref.styleBevel;
 		style.blend = pref.styleBlend;
 		style.blend2 = pref.styleBlend2;
@@ -655,6 +659,7 @@ async function setThemeSettings(save) {
 		style.volumeBarDesign = pref.styleVolumeBarDesign;
 		style.volumeBar = pref.styleVolumeBar;
 		style.volumeBarFill = pref.styleVolumeBarFill;
+		style.nighttime_day = pref.styleNighttime_day;
 		style.bevel_day = pref.styleBevel_day;
 		style.blend_day = pref.styleBlend_day;
 		style.blend2_day = pref.styleBlend2_day;
@@ -682,6 +687,7 @@ async function setThemeSettings(save) {
 		style.volumeBarDesign_day = pref.styleVolumeBarDesign_day;
 		style.volumeBar_day = pref.styleVolumeBar_day;
 		style.volumeBarFill_day = pref.styleVolumeBarFill_day;
+		style.nighttime_night = pref.styleNighttime_night;
 		style.bevel_night = pref.styleBevel_night;
 		style.blend_night = pref.styleBlend_night;
 		style.blend2_night = pref.styleBlend2_night;
@@ -711,6 +717,7 @@ async function setThemeSettings(save) {
 		style.volumeBarFill_night = pref.styleVolumeBarFill_night;
 	} else {
 		pref.styleDefault = custom ? style.default : true;
+		pref.styleNighttime = custom ? style.nighttime : false;
 		pref.styleBevel = custom ? style.bevel : false;
 		pref.styleBlend = custom ? style.blend : false;
 		pref.styleBlend2 = custom ? style.blend2 : false;
@@ -738,6 +745,7 @@ async function setThemeSettings(save) {
 		pref.styleVolumeBarDesign = custom ? style.volumeBarDesign : 'default';
 		pref.styleVolumeBar = custom ? style.volumeBar : 'default';
 		pref.styleVolumeBarFill = custom ? style.volumeBarFill : 'default';
+		pref.styleNighttime_day = custom ? style.nighttime_day : false;
 		pref.styleBevel_day = custom ? style.bevel_day : false;
 		pref.styleBlend_day = custom ? style.blend_day : false;
 		pref.styleBlend2_day = custom ? style.blend2_day : false;
@@ -765,6 +773,7 @@ async function setThemeSettings(save) {
 		pref.styleVolumeBarDesign_day = custom ? style.volumeBarDesign_day : 'default';
 		pref.styleVolumeBar_day = custom ? style.volumeBar_day : 'default';
 		pref.styleVolumeBarFill_day = custom ? style.volumeBarFill_day : 'default';
+		pref.styleNighttime_night = custom ? style.nighttime_night : false;
 		pref.styleBevel_night = custom ? style.bevel_night : false;
 		pref.styleBlend_night = custom ? style.blend_night : false;
 		pref.styleBlend2_night = custom ? style.blend2_night : false;
@@ -1019,7 +1028,8 @@ async function setThemeSettings(save) {
 		themeControls.showStyledTooltips = pref.showStyledTooltips;
 		themeControls.panelWidthAuto = pref.panelWidthAuto;
 		themeControls.showPanelOnStartup = pref.showPanelOnStartup;
-		themeControls.showLogoOnStartup = pref.showLogoOnStartup;
+		themeControls.showPreloaderLogo = pref.showPreloaderLogo;
+		themeControls.showPreloaderCustomLogo = pref.showPreloaderCustomLogo;
 		themeControls.returnToHomeOnPlaybackStop = pref.returnToHomeOnPlaybackStop;
 		themeControls.hideMiddlePanelShadow = pref.hideMiddlePanelShadow;
 		themeControls.lockPlayerSize = pref.lockPlayerSize;
@@ -1164,7 +1174,8 @@ async function setThemeSettings(save) {
 		pref.showStyledTooltips = custom ? themeControls.showStyledTooltips : true;
 		pref.panelWidthAuto = custom ? themeControls.panelWidthAuto : false;
 		pref.showPanelOnStartup = custom ? themeControls.showPanelOnStartup : 'playlist';
-		pref.showLogoOnStartup = custom ? themeControls.showLogoOnStartup : true;
+		pref.showPreloaderLogo = custom ? themeControls.showPreloaderLogo : true;
+		pref.showPreloaderCustomLogo = custom ? themeControls.showPreloaderCustomLogo : false;
 		pref.returnToHomeOnPlaybackStop = custom ? themeControls.returnToHomeOnPlaybackStop : true;
 		pref.hideMiddlePanelShadow = custom ? themeControls.hideMiddlePanelShadow : false;
 		pref.lockPlayerSize = custom ? themeControls.lockPlayerSize : false;
@@ -1747,7 +1758,7 @@ function setThemePerformance(preset) {
 			ppt.smooth = true;
 			pptBio.smooth = true;
 			pref.showStyledTooltips = true;
-			pref.showLogoOnStartup = true;
+			pref.showPreloaderLogo = true;
 			pref.showHiResAudioBadge = false;
 			pref.showPause = true;
 			pref.seekbar = 'progressbar';
@@ -1813,7 +1824,7 @@ function setThemePerformance(preset) {
 			ppt.smooth = false;
 			pptBio.smooth = false;
 			pref.showStyledTooltips = false;
-			pref.showLogoOnStartup = false;
+			pref.showPreloaderLogo = false;
 			pref.showHiResAudioBadge = false;
 			pref.showPause = false;
 			pref.seekbar = 'progressbar';
@@ -2263,7 +2274,7 @@ function checkForUpdates(openUrl) {
 					lowerBarStoppedTime = '';
 					if (!fb.IsPlaying) {
 						str.time = lowerBarStoppedTime;
-						repaintWindow();
+						RepaintWindow();
 					}
 					if (openUrl) {
 						updateHyperlink.click();

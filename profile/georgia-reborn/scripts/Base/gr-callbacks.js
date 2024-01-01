@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-21                                          * //
+// * Last change:    2024-01-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -165,7 +165,7 @@ function on_metadb_changed(handle_list, fromhook) {
 			biography && biography.on_metadb_changed(handle_list, fromhook);
 		}
 	}
-	repaintWindow();
+	RepaintWindow();
 }
 
 
@@ -693,7 +693,7 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 				discArtArrayCover = [];
 				discArt = null;
 				discArtCover = null;
-				repaintWindow();
+				RepaintWindow();
 				on_playback_new_track(fb.GetNowPlaying());
 			}
 		}
@@ -1100,7 +1100,7 @@ function on_mouse_wheel(step) {
 			playlist.on_size(ww, wh);
 		}
 		lastLeftEdge = 0;
-		repaintWindow();
+		RepaintWindow();
 		return;
 	}
 
@@ -1326,7 +1326,7 @@ function on_playback_stop(reason) {
 		// Clear all variables and repaint
 		str = clearUIVariables();
 		DebugLog('Repainting on_playback_stop:', reason);
-		repaintWindow();
+		RepaintWindow();
 		isPlayingCD = false;
 		isStreaming = false;
 		lastAlbumFolder = '';
@@ -1337,7 +1337,7 @@ function on_playback_stop(reason) {
 		btnPlayPause();
 		// * Keep Reborn/Random colors when they are not too bright or too dark otherwise reset colors to default
 		if (['reborn', 'random'].includes(pref.theme) && ((colBrightness < 20 || imgBrightness < 20) || (colBrightness > 240 || imgBrightness > 240)) ||
-			!['reborn', 'random'].includes(pref.theme)) {
+			!['reborn', 'random'].includes(pref.theme) || pref.styleNighttime) {
 			setThemeColors();
 			initTheme();
 			DebugLog('\n>>> initTheme -> on_playback_stop <<<\n');

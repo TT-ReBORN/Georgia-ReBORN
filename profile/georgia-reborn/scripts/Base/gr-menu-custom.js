@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-18                                          * //
+// * Last change:    2024-01-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1569,6 +1569,7 @@ function customMenuButtonHandler(label, labelArray, activeIndex) {
 	customThemeMenuCall = true;
 
 	const customThemeMenu = {
+		Main_Pre:        () => { displayPanel('details'); initCustomThemeMenu(false, 'main_pre'); },
 		Main_Bg:         () => { displayPanel('details'); initCustomThemeMenu(false, 'main_bg'); },
 		Main_Bar:        () => { displayPanel('details'); initCustomThemeMenu(false, 'main_bar'); },
 		Main_Bar2:       () => { displayPanel('details'); initCustomThemeMenu(false, 'main_bar2'); },
@@ -1695,12 +1696,12 @@ function initCustomThemeMenu(playlist_section, main_section, library_section, bi
 	const w = ww * 0.5;
 	const h = wh - geo.topMenuHeight - geo.lowerBarHeight;
 
-	const mainSection      = ['main_bg', 'main_bar', 'main_bar2', 'main_bar3', 'main_text', 'main_btns', 'main_btns2', 'main_style'].includes(main_section);
-	const playlistSection  = ['pl_bg',   'pl_text1', 'pl_text2',  'pl_misc', 'pl_btns'].includes(playlist_section);
-	const librarySection   = ['lib_bg',  'lib_text', 'lib_node',  'lib_btns'].includes(library_section);
-	const biographySection = ['bio_bg',  'bio_text', 'bio_misc',  'bio_btns'].includes(biography_section);
+	const mainSection      = ['main_pre', 'main_bg',  'main_bar',  'main_bar2', 'main_bar3', 'main_text', 'main_btns', 'main_btns2', 'main_style'].includes(main_section);
+	const playlistSection  = ['pl_bg',    'pl_text1', 'pl_text2',  'pl_misc', 'pl_btns'].includes(playlist_section);
+	const librarySection   = ['lib_bg',   'lib_text', 'lib_node',  'lib_btns'].includes(library_section);
+	const biographySection = ['bio_bg',   'bio_text', 'bio_misc',  'bio_btns'].includes(biography_section);
 
-	const menu = new DropDownMenu(x, y, 'Main', ['Bg', 'Bar', 'Bar 2', 'Bar 3', 'Text', 'Btns', 'Btns 2', 'Style'], 0);
+	const menu = new DropDownMenu(x, y, 'Main', ['Pre', 'Bg', 'Bar', 'Bar 2', 'Bar 3', 'Text', 'Btns', 'Btns 2', 'Style'], 0);
 	controlList.push(menu);
 	x += controlList[controlList.length - 1].w + 1; controlList.push(new DropDownMenu(x, y, 'Playlist',  ['Bg', 'Text', 'Text 2', 'Misc', 'Btns'], 0));
 	x += controlList[controlList.length - 1].w + 1; controlList.push(new DropDownMenu(x, y, 'Library',   ['Bg', 'Text', 'Node', 'Btns'], 0));
@@ -1749,6 +1750,31 @@ function customMainColors(x, y, w, h, main_section) {
 	const markerX = x + margin + inputW + (popupFontSize * (RES_4K ? 0.25 : 0.5)) - SCALE(2);
 
 	switch (main_section) {
+		case 'main_pre':
+			{
+				const mainColors = new StringInput('main_pre_01', 'preloaderBg', customColor.preloaderBg, x, y, labelW, inputW);
+				controlList.push(mainColors);
+				controlList.push(new ColorPicker('main_pre_01', customColor.preloaderBg, x + 2, y, () => {}));
+				y += mainColors.h + margin;
+				controlList.push(new StringInput('main_pre_02', 'preloaderLogo', customColor.preloaderLogo, x, y, labelW, inputW));
+				controlList.push(new ColorPicker('main_pre_02', customColor.preloaderLogo, x + 2, y, () => {}));
+				y += mainColors.h + margin;
+				controlList.push(new StringInput('main_pre_03', 'preloaderLowerBarTitle', customColor.preloaderLowerBarTitle, x, y, labelW, inputW));
+				controlList.push(new ColorPicker('main_pre_03', customColor.preloaderLowerBarTitle, x + 2, y, () => {}));
+				y += mainColors.h + margin;
+				controlList.push(new StringInput('main_pre_04', 'preloaderProgressBar', customColor.preloaderProgressBar, x, y, labelW, inputW));
+				controlList.push(new ColorPicker('main_pre_04', customColor.preloaderProgressBar, x + 2, y, () => {}));
+				y += mainColors.h + margin;
+				controlList.push(new StringInput('main_pre_05', 'preloaderProgressBarFill', customColor.preloaderProgressBarFill, x, y, labelW, inputW));
+				controlList.push(new ColorPicker('main_pre_05', customColor.preloaderProgressBarFill, x + 2, y, () => {}));
+				y += mainColors.h + margin;
+				controlList.push(new StringInput('main_pre_06', 'preloaderProgressBarFrame', customColor.preloaderProgressBarFrame, x, y, labelW, inputW));
+				controlList.push(new ColorPicker('main_pre_06', customColor.preloaderProgressBarFrame, x + 2, y, () => {}));
+				y += mainColors.h + margin;
+				controlList.push(new StringInput('main_pre_07', 'preloaderUIHacksFrame', customColor.preloaderUIHacksFrame, x, y, labelW, inputW));
+				controlList.push(new ColorPicker('main_pre_07', customColor.preloaderUIHacksFrame, x + 2, y, () => {}));
+			}
+			break;
 		case 'main_bg':
 			{
 				const mainColors = new StringInput('main_bg_01', 'col.bg', customColor.col_bg, x, y, labelW, inputW);
@@ -2537,6 +2563,14 @@ function customThemeInfo(x, y, w, h, link) {
  */
 function updateColorsFromConfig(id, value) {
 	const customThemeColors = {
+		// * PRELOADER * //
+		main_pre_01: 'preloaderBg',
+		main_pre_02: 'preloaderLogo',
+		main_pre_03: 'preloaderLowerBarTitle',
+		main_pre_04: 'preloaderProgressBar',
+		main_pre_05: 'preloaderProgressBarFill',
+		main_pre_06: 'preloaderProgressBarFrame',
+		main_pre_07: 'preloaderUIHacksFrame',
 		// * MAIN - BG * //
 		main_bg_01: 'col_bg',
 		main_bg_02: 'col_popupBg',

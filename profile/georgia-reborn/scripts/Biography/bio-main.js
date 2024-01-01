@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        1.4.2                                               * //
 // * Dev. started:   2016-10-18                                          * //
-// * Last change:    2023-12-13 (Mod change 2023-12-29)                  * //
+// * Last change:    2023-12-13 (Mod change 2023-12-24)                  * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -19,10 +19,10 @@
 let biographyInitialized = false;
 let isRadioStreamParser = false;
 
-if (typeof my_utilsBio === 'undefined') include(`${basePath}scripts\\biography\\scripts\\utils.js`);
+if (typeof my_utilsBio === 'undefined') include(`${basePath}scripts\\biography\\scripts\\bio-utils.js`);
 // include(fb.ProfilePath + 'elements\\colourSelector.js'); // sort handling n/a standalone
 
-// const loadAsync = false; // window.GetProperty('Load Biography Asynchronously', true); // changed to false: issue on loading fth with many panels
+// const loadAsync = false; // window.GetProperty('Panel Biography - Load Biography Asynchronously', true); // changed to false: issue on loading fth with many panels
 
 // async function readFiles(files) {
 // 	for (const file of files) {
@@ -33,31 +33,31 @@ if (typeof my_utilsBio === 'undefined') include(`${basePath}scripts\\biography\\
 // }
 
 // const files = [
-// 	'helpers.js',
-// 	'properties.js',
-// 	'settings.js',
-// 	'interface.js',
-//     'language.js',
-// 	'panel.js',
-// 	'server.js',
-// 	'allmusic.js',
-// 	'lastfm.js',
-// 	'wikipedia.js',
-// 	'names.js',
-// 	'scrollbar.js',
-// 	'buttons.js',
-// 	'menu.js',
-// 	'text.js',
-// 	'lyrics.js',
-// 	'tagger.js',
-// 	'resize.js',
-// 	'library.js',
-// 	'images.js',
-// 	'filmstrip.js',
-// 	'timers.js',
-// 	'popupbox.js',
-// 	'initialise.js',
-// 	'callbacks.js'
+// 	'bio-helpers.js',
+// 	'bio-properties.js',
+// 	'bio-settings.js',
+// 	'bio-interface.js',
+//     'bio-language.js',
+// 	'bio-panel.js',
+// 	'bio-server.js',
+// 	'bio-allmusic.js',
+// 	'bio-lastfm.js',
+// 	'bio-wikipedia.js',
+// 	'bio-names.js',
+// 	'bio-scrollbar.js',
+// 	'bio-buttons.js',
+// 	'bio-menu.js',
+// 	'bio-text.js',
+// 	'bio-lyrics.js',
+// 	'bio-tagger.js',
+// 	'bio-resize.js',
+// 	'bio-library.js',
+// 	'bio-images.js',
+// 	'bio-filmstrip.js',
+// 	'bio-timers.js',
+// 	'bio-popupbox.js',
+// 	'bio-initialise.js',
+// 	'bio-callbacks.js'
 // ];
 
 // if (loadAsync) {

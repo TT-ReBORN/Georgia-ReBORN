@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-23                                          * //
+// * Last change:    2024-01-01                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -161,6 +161,7 @@ const themesSchema = new ConfigurationObjectSchema('theme', ConfigurationObjectT
 /** @type {Object} Options > Style settings with default values */
 const stylesDefaults = {
 	default: true,
+	nighttime: false,
 	bevel: false,
 	blend: false,
 	blend2: false,
@@ -188,6 +189,7 @@ const stylesDefaults = {
 	volumeBarDesign: 'default',
 	volumeBar: 'default',
 	volumeBarFill: 'default',
+	nighttime_day: false,
 	bevel_day: false,
 	blend_day: false,
 	blend2_day: false,
@@ -215,6 +217,7 @@ const stylesDefaults = {
 	volumeBarDesign_day: 'default',
 	volumeBar_day: 'default',
 	volumeBarFill_day: 'default',
+	nighttime_night: false,
 	bevel_night: false,
 	blend_night: false,
 	blend2_night: false,
@@ -247,25 +250,26 @@ const stylesDefaults = {
 /** @type {Object} Options > Style settings config name description. */
 const stylesComments = {
 	default: 'Values: true, false - can be used in all themes',
+	nighttime: 'Values: true, false - special style can only be used with reborn, random, custom theme',
 	bevel: 'Values: true, false - can be used in all themes',
 	blend: 'Values: true, false - can be used in all themes',
 	blend2: 'Values: true, false - can be used in all themes',
-	gradient: 'Values: true, false - can only be used in reborn, random, blue, darkblue, red themes',
-	gradient2: 'Values: true, false - can only be used in reborn, random, blue, darkblue, red themes',
+	gradient: 'Values: true, false - can only be used with reborn, random, blue, darkblue, red theme',
+	gradient2: 'Values: true, false - can only be used with reborn, random, blue, darkblue, red theme',
 	alternative: 'Values: true, false - can be used in all themes but not with special styles',
 	alternative2: 'Values: true, false - can be used in all themes but not with special styles',
-	blackAndWhite: 'Values: true, false - special white style can only used with white theme',
-	blackAndWhite2: 'Values: true, false - special white style can only used with white theme',
-	blackAndWhiteReborn: 'Values: true, false - special white style can only used with white theme',
-	blackReborn: 'Values: true, false - special black style can only used with black theme',
-	rebornWhite: 'Values: true, false - special reborn style can only used with reborn theme',
-	rebornBlack: 'Values: true, false - special reborn style can only used with reborn theme',
-	rebornFusion: 'Values: true, false - special reborn style can only used with reborn theme',
-	rebornFusion2: 'Values: true, false - special reborn style can only used with reborn theme',
-	rebornFusionAccent: 'Values: true, false - special reborn style can only used with reborn theme',
-	randomPastel: 'Values: true, false - special random style can only used with random theme',
-	randomDark: 'Values: true, false - special random style can only used with random theme',
-	randomAutoColor: 'Values: "off", 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, "track" - can only used with random theme',
+	blackAndWhite: 'Values: true, false - special white style can only be used with white theme',
+	blackAndWhite2: 'Values: true, false - special white style can only be used with white theme',
+	blackAndWhiteReborn: 'Values: true, false - special white style can only be used with white theme',
+	blackReborn: 'Values: true, false - special black style can only be used with black theme',
+	rebornWhite: 'Values: true, false - special reborn style can only be used with reborn theme',
+	rebornBlack: 'Values: true, false - special reborn style can only be used with reborn theme',
+	rebornFusion: 'Values: true, false - special reborn style can only be used with reborn theme',
+	rebornFusion2: 'Values: true, false - special reborn style can only be used with reborn theme',
+	rebornFusionAccent: 'Values: true, false - special reborn style can only be used with reborn theme',
+	randomPastel: 'Values: true, false - special random style can only be used with random theme',
+	randomDark: 'Values: true, false - special random style can only be used with random theme',
+	randomAutoColor: 'Values: "off", 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, "track" - can only be used with random theme',
 	topMenuButtons: 'Values: "default", "filled", "bevel", "inner", "emboss", "minimal"',
 	transportButtons: 'Values: "default", "bevel", "inner", "emboss", "minimal"',
 	progressBarDesign: 'Values: "default", "rounded", "lines", "blocks", "dots", "thin"',
@@ -274,25 +278,26 @@ const stylesComments = {
 	volumeBarDesign: 'Values: "default", "rounded"',
 	volumeBar: 'Values: "default", "bevel", "inner"',
 	volumeBarFill: 'Values: "default", "bevel", "inner"',
+	nighttime_day: 'Values: true, false - daytime theme - special style can only be used with reborn, random, custom theme',
 	bevel_day: 'Values: true, false - daytime theme - can be used in all themes',
 	blend_day: 'Values: true, false - daytime theme - can be used in all themes',
 	blend2_day: 'Values: true, false - daytime theme - can be used in all themes',
-	gradient_day: 'Values: true, false - daytime theme - can only be used in reborn, random, blue, darkblue, red themes',
-	gradient2_day: 'Values: true, false - daytime theme - can only be used in reborn, random, blue, darkblue, red themes',
+	gradient_day: 'Values: true, false - daytime theme - can only be used with reborn, random, blue, darkblue, red theme',
+	gradient2_day: 'Values: true, false - daytime theme - can only be used with reborn, random, blue, darkblue, red theme',
 	alternative_day: 'Values: true, false - daytime theme - can be used in all themes but not with special styles',
 	alternative2_day: 'Values: true, false - daytime theme - can be used in all themes but not with special styles',
-	blackAndWhite_day: 'Values: true, false - daytime theme - special white style can only used with white theme',
-	blackAndWhite2_day: 'Values: true, false - daytime theme - special white style can only used with white theme',
-	blackAndWhiteReborn_day: 'Values: true, false - daytime theme - special white style can only used with white theme',
-	blackReborn_day: 'Values: true, false - daytime theme - special black style can only used with black theme',
-	rebornWhite_day: 'Values: true, false - daytime theme - special reborn style can only used with reborn theme',
-	rebornBlack_day: 'Values: true, false - daytime theme - special reborn style can only used with reborn theme',
-	rebornFusion_day: 'Values: true, false - daytime theme - special reborn style can only used with reborn theme',
-	rebornFusion2_day: 'Values: true, false - daytime theme - special reborn style can only used with reborn theme',
-	rebornFusionAccent_day: 'Values: true, false - daytime theme - special reborn style can only used with reborn theme',
-	randomPastel_day: 'Values: true, false - daytime theme - special random style can only used with random theme',
-	randomDark_day: 'Values: true, false - daytime theme - special random style can only used with random theme',
-	randomAutoColor_day: 'Values: "off", 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, "track" - daytime theme - can only used with random theme',
+	blackAndWhite_day: 'Values: true, false - daytime theme - special white style can only be used with white theme',
+	blackAndWhite2_day: 'Values: true, false - daytime theme - special white style can only be used with white theme',
+	blackAndWhiteReborn_day: 'Values: true, false - daytime theme - special white style can only be used with white theme',
+	blackReborn_day: 'Values: true, false - daytime theme - special black style can only be used with black theme',
+	rebornWhite_day: 'Values: true, false - daytime theme - special reborn style can only be used with reborn theme',
+	rebornBlack_day: 'Values: true, false - daytime theme - special reborn style can only be used with reborn theme',
+	rebornFusion_day: 'Values: true, false - daytime theme - special reborn style can only be used with reborn theme',
+	rebornFusion2_day: 'Values: true, false - daytime theme - special reborn style can only be used with reborn theme',
+	rebornFusionAccent_day: 'Values: true, false - daytime theme - special reborn style can only be used with reborn theme',
+	randomPastel_day: 'Values: true, false - daytime theme - special random style can only be used with random theme',
+	randomDark_day: 'Values: true, false - daytime theme - special random style can only be used with random theme',
+	randomAutoColor_day: 'Values: "off", 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, "track" - daytime theme - can only be used with random theme',
 	topMenuButtons_day: 'Values: "default", "filled", "bevel", "inner", "emboss", "minimal" - daytime theme',
 	transportButtons_day: 'Values: "default", "bevel", "inner", "emboss", "minimal" - daytime theme',
 	progressBarDesign_day: 'Values: "default", "rounded", "lines", "blocks", "dots", "thin" - daytime theme',
@@ -301,25 +306,26 @@ const stylesComments = {
 	volumeBarDesign_day: 'Values: "default", "rounded" - daytime theme',
 	volumeBar_day: 'Values: "default", "bevel", "inner" - daytime theme',
 	volumeBarFill_day: 'Values: "default", "bevel", "inner" - daytime theme',
+	nighttime_night: 'Values: true, false - nighttime theme - special style can only be used with reborn, random, custom theme',
 	bevel_night: 'Values: true, false - nighttime theme - can be used in all themes',
 	blend_night: 'Values: true, false - nighttime theme - can be used in all themes',
 	blend2_night: 'Values: true, false - nighttime theme - can be used in all themes',
-	gradient_night: 'Values: true, false - nighttime theme - can only be used in reborn, random, blue, darkblue, red themes',
-	gradient2_night: 'Values: true, false - nighttime theme - can only be used in reborn, random, blue, darkblue, red themes',
+	gradient_night: 'Values: true, false - nighttime theme - can only be used with reborn, random, blue, darkblue, red theme',
+	gradient2_night: 'Values: true, false - nighttime theme - can only be used with reborn, random, blue, darkblue, red theme',
 	alternative_night: 'Values: true, false - nighttime theme - can be used in all themes but not with special styles',
 	alternative2_night: 'Values: true, false - nighttime theme - can be used in all themes but not with special styles',
-	blackAndWhite_night: 'Values: true, false - nighttime theme - special white style can only used with white theme',
-	blackAndWhite2_night: 'Values: true, false - nighttime theme - special white style can only used with white theme',
-	blackAndWhiteReborn_night: 'Values: true, false - nighttime theme - special white style can only used with white theme',
-	blackReborn_night: 'Values: true, false - nighttime theme - special black style can only used with black theme',
-	rebornWhite_night: 'Values: true, false - nighttime theme - special reborn style can only used with reborn theme',
-	rebornBlack_night: 'Values: true, false - nighttime theme - special reborn style can only used with reborn theme',
-	rebornFusion_night: 'Values: true, false - nighttime theme - special reborn style can only used with reborn theme',
-	rebornFusion2_night: 'Values: true, false - nighttime theme - special reborn style can only used with reborn theme',
-	rebornFusionAccent_night: 'Values: true, false - nighttime theme - special reborn style can only used with reborn theme',
-	randomPastel_night: 'Values: true, false - nighttime theme - special random style can only used with random theme',
-	randomDark_night: 'Values: true, false - nighttime theme - special random style can only used with random theme',
-	randomAutoColor_night: 'Values: "off", 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, "track" - nighttime theme - can only used with random theme',
+	blackAndWhite_night: 'Values: true, false - nighttime theme - special white style can only be used with white theme',
+	blackAndWhite2_night: 'Values: true, false - nighttime theme - special white style can only be used with white theme',
+	blackAndWhiteReborn_night: 'Values: true, false - nighttime theme - special white style can only be used with white theme',
+	blackReborn_night: 'Values: true, false - nighttime theme - special black style can only be used with black theme',
+	rebornWhite_night: 'Values: true, false - nighttime theme - special reborn style can only be used with reborn theme',
+	rebornBlack_night: 'Values: true, false - nighttime theme - special reborn style can only be used with reborn theme',
+	rebornFusion_night: 'Values: true, false - nighttime theme - special reborn style can only be used with reborn theme',
+	rebornFusion2_night: 'Values: true, false - nighttime theme - special reborn style can only be used with reborn theme',
+	rebornFusionAccent_night: 'Values: true, false - nighttime theme - special reborn style can only be used with reborn theme',
+	randomPastel_night: 'Values: true, false - nighttime theme - special random style can only be used with random theme',
+	randomDark_night: 'Values: true, false - nighttime theme - special random style can only be used with random theme',
+	randomAutoColor_night: 'Values: "off", 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, "track" - nighttime theme - can only be used with random theme',
 	topMenuButtons_night: 'Values: "default", "filled", "bevel", "inner", "emboss", "minimal" - nighttime theme',
 	transportButtons_night: 'Values: "default", "bevel", "inner", "emboss", "minimal" - nighttime theme',
 	progressBarDesign_night: 'Values: "default", "rounded", "lines", "blocks", "dots", "thin" - nighttime theme',
@@ -336,8 +342,9 @@ const stylesSchema = new ConfigurationObjectSchema('style', ConfigurationObjectT
 	'* STYLES:                                                                                                                                                                                               ' +
 	'* Top menu Options > Style                                                                                                                                                                              ' +
 	'* If you set a style, you need to set default: false,                                                                                                                                                   ' +
-	'* Basic style "gradient" and "gradient2" is only supported and can be used with reborn, random, blue, darkblue, red themes.                                                                             ' +
-	'* Basic style "alternative" and "alternative2" can not be used with special styles.                                                                                                                     ' +
+	'* Basic style "gradient" and "gradient2" is only supported and can be used with reborn, random, blue, darkblue, red theme.                                                                              ' +
+	'* Basic style "alternative" and "alternative2" can not be used with special styles except "nighttime".                                                                                                  ' +
+	'* Special style "nighttime" can only be used with "reborn", "random", "custom" theme.                                                                                                                   ' +
 	'* Special style "blackAndWhite", "blackAndWhite2" and "blackAndWhiteReborn" can only be used with "white" theme.                                                                                        ' +
 	'* Special style "blackReborn" can only be used with "black" theme.                                                                                                                                      ' +
 	'* Special style "rebornWhite", "rebornBlack", "rebornFusion", "rebornFusion2" and "rebornFusionAccent" can only be used with "reborn" theme.                                                            ' +
@@ -663,7 +670,8 @@ const themePlayerControlsDefaults = {
 	showStyledTooltips: true,
 	panelWidthAuto: false,
 	showPanelOnStartup: 'playlist',
-	showLogoOnStartup: true,
+	showPreloaderLogo: true,
+	showPreloaderCustomLogo: false,
 	returnToHomeOnPlaybackStop: true,
 	hideMiddlePanelShadow: false,
 	lockPlayerSize: false,
@@ -810,7 +818,8 @@ const themePlayerControlsComments = {
 	showStyledTooltips: 'Values: true, false - Options > Player controls > Tooltip > Show styled tooltips',
 	panelWidthAuto: 'Values: true, false - Options > Player controls > Panel > Width > Use auto panel width',
 	showPanelOnStartup: 'Values: "cover", "playlist", "details", "library", "biography", "lyrics" - Options > Player controls > Panel > Show panel on startup',
-	showLogoOnStartup: 'Values: true, false - Options > Player controls > Panel > Show logo on startup',
+	showPreloaderLogo: 'Values: true, false - Options > Player controls > Panel > Show logo on preloader',
+	showPreloaderCustomLogo: 'Values: true, false - Options > Player controls > Panel > Show custom logo on preloader',
 	returnToHomeOnPlaybackStop: 'Values: true, false - Options > Player controls > Panel > Return to home on playback stop',
 	hideMiddlePanelShadow: 'Values: true, false - Options > Player controls > Panel > Hide middle panel shadow',
 	lockPlayerSize: 'Values: true, false - Options > Player controls > Panel > Lock player size',
@@ -1850,6 +1859,7 @@ const customFontsSchema = new ConfigurationObjectSchema('customFont', Configurat
 /** @type {Object} Custom style preset with default values. */
 const customStylePresetDefaults = {
 	theme: 'white',
+	nighttime: false,
 	bevel: false,
 	blend: false,
 	blend2: false,
@@ -1880,22 +1890,23 @@ const customStylePresetDefaults = {
 /** @type {Object} Custom style preset config name description. */
 const customStylePresetComments = {
 	theme: 'Values: "white", "black", "reborn", "random", "blue", "darkblue", "red", "cream", "nblue", "ngreen", "nred", "ngold"',
+	nighttime: 'Values: true, false - special style can only be used with reborn, random, custom theme',
 	bevel: 'Values: true, false - can be used in all themes',
 	blend: 'Values: true, false - can be used in all themes',
 	blend2: 'Values: true, false - can be used in all themes',
-	gradient: 'Values: true, false - can only be used in reborn, random, blue, darkblue, red themes',
-	gradient2: 'Values: true, false - can only be used in reborn, random, blue, darkblue, red themes',
+	gradient: 'Values: true, false - can only be used with reborn, random, blue, darkblue, red theme',
+	gradient2: 'Values: true, false - can only be used with reborn, random, blue, darkblue, red theme',
 	alternative: 'Values: true, false - can be used in all themes but not with special styles',
 	alternative2: 'Values: true, false - can be used in all themes but not with special styles',
-	blackAndWhite: 'Values: true, false - special white style can only used with white theme',
-	blackAndWhite2: 'Values: true, false - special white style can only used with white theme',
-	blackAndWhiteReborn: 'Values: true, false - special white style can only used with white theme',
-	blackReborn: 'Values: true, false - special black style can only used with black theme',
-	rebornWhite: 'Values: true, false - special reborn style can only used with reborn theme',
-	rebornBlack: 'Values: true, false - special reborn style can only used with reborn theme',
-	randomPastel: 'Values: true, false - special random style can only used with random theme',
-	randomDark: 'Values: true, false - special random style can only used with random theme',
-	randomAutoColor: 'Values: "off", 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, "track", - can only used with random theme',
+	blackAndWhite: 'Values: true, false - special white style can only be used with white theme',
+	blackAndWhite2: 'Values: true, false - special white style can only be used with white theme',
+	blackAndWhiteReborn: 'Values: true, false - special white style can only be used with white theme',
+	blackReborn: 'Values: true, false - special black style can only be used with black theme',
+	rebornWhite: 'Values: true, false - special reborn style can only be used with reborn theme',
+	rebornBlack: 'Values: true, false - special reborn style can only be used with reborn theme',
+	randomPastel: 'Values: true, false - special random style can only be used with random theme',
+	randomDark: 'Values: true, false - special random style can only be used with random theme',
+	randomAutoColor: 'Values: "off", 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, "track", - can only be used with random theme',
 	topMenuButtons: 'Values: "default", "filled", "bevel", "inner", "emboss", "minimal"',
 	transportButtons: 'Values: "default", "bevel", "inner", "emboss", "minimal"',
 	progressBarDesign: 'Values: "default", "rounded", "lines", "blocks", "dots", "thin"',
@@ -1928,6 +1939,18 @@ const customStylePresetSchema = new ConfigurationObjectSchema('customStylePreset
 /** @type {Object} Custom theme with default HEX color values. */
 const customThemeDefaults = {
 	name: '',
+
+	//////////////////////////
+	// * PRELOADER COLORS * //
+	//////////////////////////
+
+	preloaderBg: '372355',
+	preloaderLogo: 'violet-play-logo.png',
+	preloaderLowerBarTitle: 'ffffff',
+	preloaderProgressBar: '412d64',
+	preloaderProgressBarFill: 'ebc841',
+	preloaderProgressBarFrame: '372355',
+	preloaderUIHacksFrame: '372355',
 
 	/////////////////////////
 	// * PLAYLIST COLORS * //
@@ -1966,7 +1989,7 @@ const customThemeDefaults = {
 	g_pl_colors_row_title_hovered: 'ffffff',
 	g_pl_colors_row_rating_color: 'ebc841',
 	g_pl_colors_row_disc_subheader_line: '503782',
-	g_pl_colors_row_drag_line: '503782',
+	g_pl_colors_row_drag_line: '6450b4',
 	g_pl_colors_row_drag_line_reached: '3cfaa0',
 
 	// * SCROLLBAR COLORS * //
@@ -2129,9 +2152,9 @@ const customThemeDefaults = {
 	// * WAVEFORM BAR COLORS * //
 	col_waveformBarFillFront: 'ebc841',
 	col_waveformBarFillBack: 'b99b32',
-	col_waveformBarFillPreFront: 'b99b32',
-	col_waveformBarFillPreBack: '877323',
-	col_waveformBarIndicator: 'ffffff',
+	col_waveformBarFillPreFront: '7d55cd',
+	col_waveformBarFillPreBack: '5f419b',
+	col_waveformBarIndicator: '3cfaa0',
 
 	// * VOLUME BAR COLORS * //
 	col_volumeBar: '412d64',
@@ -2153,6 +2176,18 @@ const customThemeDefaults = {
 /** @type {Object} Custom theme config name description. */
 const customThemeComments = {
 	name: 'Custom theme name will be displayed in the options theme menu',
+
+	//////////////////////////
+	// * PRELOADER COLORS * //
+	//////////////////////////
+
+	preloaderBg: 'Preloader background color. If this value is empty, the default color will be used',
+	preloaderLogo: 'Preloader logo must end with .png, for example, logo.png. If this value is empty, the default logo will be used',
+	preloaderLowerBarTitle: 'Preloader lower bar title color. If this value is empty, the default color will be used',
+	preloaderProgressBar: 'Preloader progress bar color. If this value is empty, the default color will be used',
+	preloaderProgressBarFill: 'Preloader progress bar fill color. If this value is empty, the default color will be used',
+	preloaderProgressBarFrame: 'Preloader progress bar frame color. If this value is empty, the default color will be used',
+	preloaderUIHacksFrame: 'Preloader UIHacks frame color. Should have the same color as preloaderBg. If this value is empty, the default color will be used',
 
 	/////////////////////////
 	// * PLAYLIST COLORS * //
