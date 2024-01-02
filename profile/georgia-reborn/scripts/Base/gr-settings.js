@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-01                                          * //
+// * Last change:    2024-01-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -81,6 +81,8 @@ let metadataGrid;
 let customFont = {};
 /** @type {*} */
 let customStylePreset = {};
+/** @type {*} */
+let customDiscArtStub = {};
 /** @type {*} */
 let customTheme01 = {};
 /** @type {*} */
@@ -2000,6 +2002,7 @@ if (!configCustom.fileExists) {
 
 	customFont        = configCustom.addConfigurationObject(customFontsSchema, customFontsDefaults, customFontsComments);
 	customStylePreset = configCustom.addConfigurationObject(customStylePresetSchema, customStylePresetDefaults, customStylePresetComments);
+	customDiscArtStub = configCustom.addConfigurationObject(customDiscArtStubSchema, customDiscArtStubDefaults, customDiscArtStubComments);
 	customTheme01     = configCustom.addConfigurationObject(customTheme01Schema, customThemeDefaults, customThemeComments);
 	customTheme02     = configCustom.addConfigurationObject(customTheme02Schema, customThemeDefaults, customThemeComments);
 	customTheme03     = configCustom.addConfigurationObject(customTheme03Schema, customThemeDefaults, customThemeComments);
@@ -2082,6 +2085,7 @@ if (configCustom.fileExists) {
 
 	customFont        = configCustom.addConfigurationObject(customFontsSchema, Object.assign({}, customFontsDefaults, prefs.customFont), customFontsComments);
 	customStylePreset = configCustom.addConfigurationObject(customStylePresetSchema, Object.assign({}, customStylePresetDefaults, prefs.customStylePreset), customStylePresetComments);
+	customDiscArtStub = configCustom.addConfigurationObject(customDiscArtStubSchema, Object.assign({}, customDiscArtStubDefaults, prefs.customDiscArtStub), customDiscArtStubComments);
 	customTheme01     = configCustom.addConfigurationObject(customTheme01Schema, Object.assign({}, customThemeDefaults, prefs.customTheme01), customThemeComments);
 	customTheme02     = configCustom.addConfigurationObject(customTheme02Schema, Object.assign({}, customThemeDefaults, prefs.customTheme02), customThemeComments);
 	customTheme03     = configCustom.addConfigurationObject(customTheme03Schema, Object.assign({}, customThemeDefaults, prefs.customTheme03), customThemeComments);
@@ -2099,6 +2103,7 @@ if (configCustom.fileExists) {
 	globals.customWaveformBarDir = prefs.customWaveformBarDir;
 	customFont = prefs.customFont;
 	customStylePreset = prefs.customStylePreset;
+	customDiscArtStub = prefs.customDiscArtStub;
 	configVersion = prefs.configVersion || prefs.version;
 }
 

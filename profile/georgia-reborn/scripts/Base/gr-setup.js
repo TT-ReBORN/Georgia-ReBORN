@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-01                                          * //
+// * Last change:    2024-01-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -502,7 +502,7 @@ function createFonts() {
 /** @type {Object} The Georgia-ReBORN images path object. */
 const paths = {};
 /** @type {string} The Georgia-ReBORN images path shortcut. */
-const imagesPath = `${fb.ProfilePath}georgia-reborn/images/`;
+const imagesPath = `${fb.ProfilePath}georgia-reborn\\images\\`;
 
 // We expect disc art will be in .png with transparent background, best found at fanart.tv.
 
@@ -543,33 +543,34 @@ pref.vinyl_path_images           = '$directory_path(%path%)\\Images\\vinyl.png';
 pref.vinyl_path_scans            = '$directory_path(%path%)\\Scans\\vinyl.png'; // Subfolder Scans -> vinyl.png
 
 // * CD ART STUBS * //
-paths.cdArtWhiteStub         = `${imagesPath}discart/cd-white.png`;
-paths.cdArtBlackStub         = `${imagesPath}discart/cd-black.png`;
-paths.cdArtBlankStub         = `${imagesPath}discart/cd-blank.png`;
-paths.cdArtTransStub         = `${imagesPath}discart/cd-transparent.png`;
-paths.cdArtCustomStub        = `${imagesPath}discart/cd-custom.png`;
+paths.cdArtWhiteStub         = `${imagesPath}discart\\cd-white.png`;
+paths.cdArtBlackStub         = `${imagesPath}discart\\cd-black.png`;
+paths.cdArtBlankStub         = `${imagesPath}discart\\cd-blank.png`;
+paths.cdArtTransStub         = `${imagesPath}discart\\cd-transparent.png`;
 
 // * VINYL ART STUBS * //
-paths.vinylArtWhiteStub      = `${imagesPath}discart/vinyl-white.png`;
-paths.vinylArtVoidStub       = `${imagesPath}discart/vinyl-void.png`;
-paths.vinylArtColdFusionStub = `${imagesPath}discart/vinyl-cold-fusion.png`;
-paths.vinylArtRingOfFireStub = `${imagesPath}discart/vinyl-ring-of-fire.png`;
-paths.vinylArtMapleStub      = `${imagesPath}discart/vinyl-maple.png`;
-paths.vinylArtBlackStub      = `${imagesPath}discart/vinyl-black.png`;
-paths.vinylArtBlackHoleStub  = `${imagesPath}discart/vinyl-black-hole.png`;
-paths.vinylArtEbonyStub      = `${imagesPath}discart/vinyl-ebony.png`;
-paths.vinylArtTransStub      = `${imagesPath}discart/vinyl-transparent.png`;
-paths.vinylArtCustomStub     = `${imagesPath}discart/vinyl-custom.png`;
+paths.vinylArtWhiteStub      = `${imagesPath}discart\\vinyl-white.png`;
+paths.vinylArtVoidStub       = `${imagesPath}discart\\vinyl-void.png`;
+paths.vinylArtColdFusionStub = `${imagesPath}discart\\vinyl-cold-fusion.png`;
+paths.vinylArtRingOfFireStub = `${imagesPath}discart\\vinyl-ring-of-fire.png`;
+paths.vinylArtMapleStub      = `${imagesPath}discart\\vinyl-maple.png`;
+paths.vinylArtBlackStub      = `${imagesPath}discart\\vinyl-black.png`;
+paths.vinylArtBlackHoleStub  = `${imagesPath}discart\\vinyl-black-hole.png`;
+paths.vinylArtEbonyStub      = `${imagesPath}discart\\vinyl-ebony.png`;
+paths.vinylArtTransStub      = `${imagesPath}discart\\vinyl-transparent.png`;
+
+// * CUSTOM ART STUBS * //
+paths.customStub             = `${imagesPath}custom\\discart\\${pref.discArtStub}.png`;
 
 // * ARTIST & LABEL LOGOS * //
-paths.artistlogos      = `${imagesPath}artistlogos/`;
-paths.artistlogosColor = `${imagesPath}artistlogos color/`;
-paths.labelsBase       = `${imagesPath}recordlabel/`;
+paths.artistlogos      = `${imagesPath}artistlogos\\`;
+paths.artistlogosColor = `${imagesPath}artistlogos color\\`;
+paths.labelsBase       = `${imagesPath}recordlabel\\`;
 
 // * MISC * //
-paths.flagsBase        = `${imagesPath}flags/`;
-paths.lastFmImageRed   = `${imagesPath}misc/last-fm-red-36.png`;
-paths.lastFmImageWhite = `${imagesPath}misc/last-fm-36.png`;
+paths.flagsBase        = `${imagesPath}flags\\`;
+paths.lastFmImageRed   = `${imagesPath}misc\\last-fm-red-36.png`;
+paths.lastFmImageWhite = `${imagesPath}misc\\last-fm-36.png`;
 
 
 /////////////////

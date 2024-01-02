@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-01                                          * //
+// * Last change:    2024-01-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1159,7 +1159,7 @@ const themeDetailsDefaults = {
 const themeDetailsComments = {
 	showDiscArtStub: 'Values: true, false - Options > Details > Disc art > Disc art placeholder > Show placeholder if no disc art found',
 	noDiscArtStub: 'Values: true, false - Options > Details > Disc art > Disc art placeholder > No placeholder',
-	discArtStub: 'Values: "cdAlbumCover", "cdWhite", "cdBlack", "cdBlank", "cdTrans", "cdCustom", "vinylAlbumCover", "vinylWhite", "vinylVoid", "vinylColdFusion", "vinylRingOfFire", "vinylMaple", "vinylBlack", "vinylBlackHole", "vinylEbony", "vinylTrans", "vinylCustom" - Options > Details > Disc art > Disc art placeholder',
+	discArtStub: 'Values: "cdAlbumCover", "cdWhite", "cdBlack", "cdBlank", "cdTrans", "vinylAlbumCover", "vinylWhite", "vinylVoid", "vinylColdFusion", "vinylRingOfFire", "vinylMaple", "vinylBlack", "vinylBlackHole", "vinylEbony", "vinylTrans" - Options > Details > Disc art > Disc art placeholder',
 	displayDiscArt: 'Values: true, false - Options > Details > Disc art > Display disc art if found',
 	discArtOnTop: 'Values: true, false - Options > Details > Disc art > Display disc art above cover',
 	filterDiscJpgsFromAlbumArt: 'Values: true, false - Options > Details > Disc art > Filter cd/disc/vinyl .jpgs from artwork',
@@ -1929,6 +1929,71 @@ const customStylePresetSchema = new ConfigurationObjectSchema('customStylePreset
 	'* It is the same for Alternative or Alternative 2 or if this particular column has an additional special style, see comment in styles section.                                                          ' +
 	'* Best practice would be to first set each style in top menu Options > Style, note these styles and modify them in the config here.                                                                     ' +
 	'* If something goes wrong, you can reset your theme settings in top menu Options > Settings > Theme configuration > Reset all                                                                           ' +
+	'* Note: These settings will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                        ' +
+	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
+
+
+/////////////////////////////////////
+// * CUSTOM DISC ART PLACEHOLDER * //
+/////////////////////////////////////
+/** @type {Object} Custom disc art placeholder with default values. */
+const customDiscArtStubDefaults = {
+	cdName01: 'Custom CD - Name 01',
+	cdStub01: 'cd-custom01.png',
+	cdName02: 'Custom CD - Name 02',
+	cdStub02: '',
+	cdName03: 'Custom CD - Name 03',
+	cdStub03: '',
+	cdName04: 'Custom CD - Name 04',
+	cdStub04: '',
+	cdName05: 'Custom CD - Name 05',
+	cdStub05: '',
+	vinylName01: 'Custom Vinyl - Name 01',
+	vinylStub01: 'vinyl-custom01.png',
+	vinylName02: 'Custom Vinyl - Name 02',
+	vinylStub02: '',
+	vinylName03: 'Custom Vinyl - Name 03',
+	vinylStub03: '',
+	vinylName04: 'Custom Vinyl - Name 04',
+	vinylStub04: '',
+	vinylName05: 'Custom Vinyl - Name 05',
+	vinylStub05: ''
+};
+
+/** @type {Object} Custom disc art placeholder config name description. */
+const customDiscArtStubComments = {
+	cdName01: 'Value: the name of the first CD placeholder, e.g. Custom CD - Name 01',
+	cdStub01: 'Value: the filename of the first CD placeholder, e.g. cd-custom01.png',
+	cdName02: 'Value: the name of the second CD placeholder, e.g. Custom CD - Name 02',
+	cdStub02: 'Value: the filename of the second CD placeholder, e.g. cd-custom02.png',
+	cdName03: 'Value: the name of the third CD placeholder, e.g. Custom CD - Name 03',
+	cdStub03: 'Value: the filename of the third CD placeholder, e.g. cd-custom03.png',
+	cdName04: 'Value: the name of the fourth CD placeholder, e.g. Custom CD - Name 04',
+	cdStub04: 'Value: the filename of the fourth CD placeholder, e.g. cd-custom04.png',
+	cdName05: 'Value: the name of the fifth CD placeholder, e.g. Custom CD - Name 05',
+	cdStub05: 'Value: the filename of the fifth CD placeholder, e.g. cd-custom05.png',
+	vinylName01: 'Value: the name of the first vinyl placeholder, e.g. Custom vinyl - Name 01',
+	vinylStub01: 'Value: the filename of the first vinyl placeholder, e.g. vinyl-custom01.png',
+	vinylName02: 'Value: the name of the second vinyl placeholder, e.g. Custom vinyl - Name 02',
+	vinylStub02: 'Value: the filename of the second vinyl placeholder, e.g. vinyl-custom02.png',
+	vinylName03: 'Value: the name of the third vinyl placeholder, e.g. Custom vinyl - Name 03',
+	vinylStub03: 'Value: the filename of the third vinyl placeholder, e.g. vinyl-custom03.png',
+	vinylName04: 'Value: the name of the fourth vinyl placeholder, e.g. Custom vinyl - Name 04',
+	vinylStub04: 'Value: the filename of the fourth vinyl placeholder, e.g. vinyl-custom04.png',
+	vinylName05: 'Value: the name of the fifth vinyl placeholder, e.g. Custom vinyl - Name 05',
+	vinylStub05: 'Value: the filename of the fifth vinyl placeholder, e.g. vinyl-custom05.png'
+};
+
+/** @type {Object} Custom disc art placeholder config header description. */
+const customDiscArtStubSchema = new ConfigurationObjectSchema('customDiscArtStub', ConfigurationObjectType.Object, undefined,
+	'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
+	'* CUSTOM DISC ART PLACEHOLDER:                                                                                                                                                                          ' +
+	'* Top menu Options > Details > Disc art > Disc art placeholder                                                                                                                                          ' +
+	'* You can add your own custom CD and Vinyl placeholders that will be dynamically appended to the disc art placeholder menu.                                                                             ' +
+	'* It is recommended to use the predefined prefix naming convention for CD and Vinyl placeholders, such as "Custom CD - YourName" or "Custom Vinyl - YourName".                                          ' +
+	'* The filenames must end with .png, for example, "cd-custom01.png" or "vinyl-custom01.png".                                                                                                             ' +
+	'* If the placeholders cdStub02, cdStub03, cdStub04, cdStub05, vinylStub02, vinylStub03, vinylStub04, vinylStub05 etc, do not have any filename values, they will not be added to the menu.              ' +
+	'* The custom disc art placeholders are located in the directory "georgia-reborn/images/custom/discart".                                                                                                 ' +
 	'* Note: These settings will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                        ' +
 	'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 

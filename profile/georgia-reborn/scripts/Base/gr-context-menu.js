@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-27                                          * //
+// * Last change:    2024-01-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -912,8 +912,7 @@ Object.assign(qwr_utils, {
 			['CD - White', 'cdWhite'],
 			['CD - Black', 'cdBlack'],
 			['CD - Blank', 'cdBlank'],
-			['CD - Transparent', 'cdTrans'],
-			['CD - Custom', 'cdCustom']
+			['CD - Transparent', 'cdTrans']
 		];
 		displayCdArtMenu.forEach((cdArt) => {
 			discArtMenu.append_item(cdArt[0], function (cdArt) {
@@ -936,8 +935,7 @@ Object.assign(qwr_utils, {
 			['Vinyl - Black', 'vinylBlack'],
 			['Vinyl - Black hole', 'vinylBlackHole'],
 			['Vinyl - Ebony', 'vinylEbony'],
-			['Vinyl - Transparent', 'vinylTrans'],
-			['Vinyl - Custom', 'vinylCustom']
+			['Vinyl - Transparent', 'vinylTrans']
 		];
 		displayVinylArtMenu.forEach((vinylArt) => {
 			discArtMenu.append_item(vinylArt[0], function (vinylArt) {

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-01                                          * //
+// * Last change:    2024-01-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2111,8 +2111,8 @@ function detailsOptions(menu, context_menu) {
 			RepaintWindow();
 		}, !pref.displayDiscArt);
 		displayDiscArtMenu.addSeparator();
-		displayDiscArtMenu.addRadioItems(['CD - Album cover', 'CD - White', 'CD - Black', 'CD - Blank', 'CD - Transparent', 'CD - Custom'],
-			pref.discArtStub, ['cdAlbumCover', 'cdWhite', 'cdBlack', 'cdBlank', 'cdTrans', 'cdCustom'], (discArt) => {
+		displayDiscArtMenu.addRadioItems(['CD - Album cover', 'CD - White', 'CD - Black', 'CD - Blank', 'CD - Transparent'],
+			pref.discArtStub, ['cdAlbumCover', 'cdWhite', 'cdBlack', 'cdBlank', 'cdTrans'], (discArt) => {
 			pref.discArtStub = discArt;
 			pref.noDiscArtStub = false;
 			discArtCover = disposeDiscArt(discArtCover);
@@ -2121,14 +2121,47 @@ function detailsOptions(menu, context_menu) {
 			RepaintWindow();
 		}, !pref.displayDiscArt);
 		displayDiscArtMenu.addSeparator();
-		displayDiscArtMenu.addRadioItems(['Vinyl - Album cover', 'Vinyl - White', 'Vinyl - Void', 'Vinyl - Cold fusion', 'Vinyl - Ring of fire', 'Vinyl - Maple', 'Vinyl - Black', 'Vinyl - Black hole', 'Vinyl - Ebony', 'Vinyl - Transparent', 'Vinyl - Custom'],
-			pref.discArtStub, ['vinylAlbumCover', 'vinylWhite', 'vinylVoid', 'vinylColdFusion', 'vinylRingOfFire', 'vinylMaple', 'vinylBlack', 'vinylBlackHole', 'vinylEbony', 'vinylTrans', 'vinylCustom'], (discArt) => {
+		displayDiscArtMenu.addRadioItems(['Vinyl - Album cover', 'Vinyl - White', 'Vinyl - Void', 'Vinyl - Cold fusion', 'Vinyl - Ring of fire', 'Vinyl - Maple', 'Vinyl - Black', 'Vinyl - Black hole', 'Vinyl - Ebony', 'Vinyl - Transparent'],
+			pref.discArtStub, ['vinylAlbumCover', 'vinylWhite', 'vinylVoid', 'vinylColdFusion', 'vinylRingOfFire', 'vinylMaple', 'vinylBlack', 'vinylBlackHole', 'vinylEbony', 'vinylTrans'], (discArt) => {
 			pref.discArtStub = discArt;
 			pref.noDiscArtStub = false;
 			discArtCover = disposeDiscArt(discArtCover);
 			discArtArrayCover = [];
 			fetchNewArtwork(fb.GetNowPlaying());
 			RepaintWindow();
+		}, !pref.displayDiscArt);
+
+		// * DISC ART CUSTOM PLACEHOLDERS * //
+		const customDiscArtLabels = [];
+		const customDiscArtValues = [];
+		for (const key in customDiscArtStub) {
+			if (Object.prototype.hasOwnProperty.call(customDiscArtStub, key) && key.includes('Name')) {
+				const num = key.match(/\d+$/)[0]; // Extract the number from the key (e.g., "01" from "cdName01")
+				const cdStubKey = `cdStub${num}`;
+				const vinylStubKey = `vinylStub${num}`;
+				if (key.startsWith('cdName') && customDiscArtStub[cdStubKey]) {
+					customDiscArtLabels.push(customDiscArtStub[key]);
+					customDiscArtValues.push(customDiscArtStub[cdStubKey].replace('.png', ''));
+				}
+				else if (key.startsWith('vinylName') && customDiscArtStub[vinylStubKey]) {
+					customDiscArtLabels.push(customDiscArtStub[key]);
+					customDiscArtValues.push(customDiscArtStub[vinylStubKey].replace('.png', ''));
+				}
+			}
+		}
+		if (customDiscArtValues.length) displayDiscArtMenu.addSeparator();
+		displayDiscArtMenu.addRadioItems(customDiscArtLabels, pref.discArtStub, customDiscArtValues, (discArt) => {
+			pref.discArtStub = discArt;
+			pref.noDiscArtStub = false;
+			paths.customStub = `${imagesPath}custom\\discart\\${pref.discArtStub}.png`;
+			discArtCover = disposeDiscArt(discArtCover);
+			discArtArrayCover = [];
+			fetchNewArtwork(fb.GetNowPlaying());
+			RepaintWindow();
+			if (!IsFile(paths.customStub)) {
+				const msg = `The custom disc art placeholder was not found in:\n${paths.customStub}\n\nBe sure that image exist and has the correct filename\nin the "customDiscArtStub" section of the\ncustom config file:\n${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc\n\n\n`;
+				ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+			}
 		}, !pref.displayDiscArt);
 		displayDiscArtMenu.appendTo(discArtMenu);
 

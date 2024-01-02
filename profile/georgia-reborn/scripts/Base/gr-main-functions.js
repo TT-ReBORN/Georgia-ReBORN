@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-01                                          * //
+// * Last change:    2024-01-02                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2105,7 +2105,6 @@ function fetchDiscArt() {
 		cdBlack:         paths.cdArtBlackStub,
 		cdBlank:         paths.cdArtBlankStub,
 		cdTrans:         paths.cdArtTransStub,
-		cdCustom:        paths.cdArtCustomStub,
 		vinylAlbumCover: paths.vinylArtBlackHoleStub,
 		vinylWhite:      paths.vinylArtWhiteStub,
 		vinylVoid:       paths.vinylArtVoidStub,
@@ -2115,8 +2114,7 @@ function fetchDiscArt() {
 		vinylBlack:      paths.vinylArtBlackStub,
 		vinylBlackHole:  paths.vinylArtBlackHoleStub,
 		vinylEbony:      paths.vinylArtEbonyStub,
-		vinylTrans:      paths.vinylArtTransStub,
-		vinylCustom:     paths.vinylArtCustomStub
+		vinylTrans:      paths.vinylArtTransStub
 	};
 
 	let discArtPath;
@@ -2125,10 +2123,10 @@ function fetchDiscArt() {
 	if (pref.displayDiscArt && !isStreaming) { // We must attempt to load CD/vinyl art first so that the shadow is drawn correctly
 		if (pref.noDiscArtStub || pref.showDiscArtStub) {
 			// * Search for disc art
-			for (let i = 0; i < discArtAllPaths.length; i++) {
-				if (IsFile(discArtAllPaths[i])) {
+			for (const path of discArtAllPaths) {
+				if (IsFile(path)) {
 					discArtFound = true;
-					discArtPath = discArtAllPaths[i];
+					discArtPath = path;
 				}
 			}
 		}
@@ -2136,7 +2134,7 @@ function fetchDiscArt() {
 		// * No disc art found, display custom disc art stubs
 		if (!discArtPath && (!pref.noDiscArtStub || pref.showDiscArtStub)) {
 			discArtFound = false;
-			discArtPath = discArtStubPaths[pref.discArtStub];
+			discArtPath = Object.prototype.hasOwnProperty.call(discArtStubPaths, pref.discArtStub) ? discArtStubPaths[pref.discArtStub] : paths.customStub;
 		}
 
 		// * Load disc art
