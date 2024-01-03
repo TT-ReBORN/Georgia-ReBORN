@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-01                                          * //
+// * Last change:    2024-01-03                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -799,7 +799,7 @@ function drawStyles(gr) {
 		if ((pref.layout === 'default' && (displayPlaylist || displayLibrary) && !displayBiography ||
 			 pref.layout === 'artwork' && (!displayPlaylistArtwork && !displayLibrary && !displayBiography)) && fb.IsPlaying) {
 			// Fill gap when album art or player size is not proportional
-			gr.FillSolidRect(-1, geo.topMenuHeight, pref.layout === 'default' ? ww * 0.5 + 1 : ww + 1, (displayLibrary && pref.libraryLayout === 'full' ? 0 : albumArtSize.y) - geo.topMenuHeight - 1, RGBtoRGBA(col.styleBevel, 40));
+			gr.FillSolidRect(-1, geo.topMenuHeight, pref.layout === 'default' ? albumArtSize.w + 1 : ww + 1, (displayLibrary && pref.libraryLayout === 'full' ? 0 : albumArtSize.y) - geo.topMenuHeight - 1, RGBtoRGBA(col.styleBevel, 40));
 		}
 		if (!['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(pref.theme) && !pref.styleNighttime && !pref.styleBlackAndWhite2 && !pref.styleRebornBlack || (pref.styleNighttime && fb.IsPlaying)) {
 			const customTheme = pref.theme.startsWith('custom');
