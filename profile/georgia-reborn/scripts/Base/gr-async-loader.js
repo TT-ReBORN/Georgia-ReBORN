@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-05                                          * //
+// * Last change:    2024-01-07                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -522,7 +522,7 @@ function drawLogo(gr) {
 	}
 	else if (!drawLogo.logoErrorShown) {
 		const customLogoPath = `${fb.ProfilePath}georgia-reborn\\images\\custom\\logo\\`;
-		fb.ShowPopupMessage(`Logo file not found:\n\nIf you are using a custom logo, check if the file exists and has the correct name in:\n\n${customLogoPath}`, 'Logo error');
+		fb.ShowPopupMessage(`Logo file not found:\n\nIf you are using a custom logo, please ensure the file exists and has the correct name at the following location:\n\n${customLogoPath}\n\nImportant: Do not include the "4K-" prefix in your filename.\nThe script applies this prefix automatically, adding it manually will lead to naming issues such as "4K-4K-logoname.png".`, 'Logo error');
 		drawLogo.logoErrorShown = true;
 	}
 }
