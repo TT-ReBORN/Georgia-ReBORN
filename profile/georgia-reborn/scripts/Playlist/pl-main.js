@@ -8371,6 +8371,7 @@ function GroupingHandler() {
 
 			settings.save();
 			settings.send_sync();
+			settings.load();
 
 			config.addConfigurationObject(themePlaylistGroupingPresetsSchema, themePlaylistGroupingPresets);
 			config.writeConfiguration();
@@ -8380,13 +8381,13 @@ function GroupingHandler() {
 
 		group.append_separator();
 
-		// let group_by_text = 'by...';
-		// if (cur_group.name === 'user_defined') {
-		// 	group_by_text += ' [' + this.get_query() + ']';
-		// }
-		// group.append_item(group_by_text, () => {
-		// 	request_user_query(on_execute_callback_fn);
-		// }, { is_radio_checked: cur_group.name === 'user_defined' });
+		let group_by_text = 'by...';
+		if (cur_group.name === 'user_defined') {
+			group_by_text += ` [${this.get_query()}]`;
+		}
+		group.append_item(group_by_text, () => {
+			request_user_query(on_execute_callback_fn);
+		}, { is_radio_checked: cur_group.name === 'user_defined' });
 
 		settings.group_presets.forEach((group_item) => {
 			let group_by_text = group_item.description;
@@ -8439,10 +8440,7 @@ function GroupingHandler() {
 			on_execute_callback_fn();
 		};
 
-		const parsed_query = cur_group.name === 'user_defined'
-			? [cur_group.group_query, cur_group.title_query]
-			: ['', '[%album artist%]'];
-
+		const parsed_query = cur_group.name === 'user_defined' ? [cur_group.group_query, cur_group.title_query]	: ['', '[%album artist%]'];
 		const htmlCode = qwr_utils.prepare_html_file(`${fb.ProfilePath}georgia-reborn\\scripts\\playlist\\assets\\html\\MsgBox.html`);
 		utils.ShowHtmlDialog(window.ID, htmlCode, { width: 650, height: 425, data: ['Foobar2000: Group by', ['Grouping Query', 'Title Query'], parsed_query, on_ok_fn] });
 	}

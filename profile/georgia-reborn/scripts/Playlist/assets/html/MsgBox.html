@@ -15,8 +15,8 @@
 	</head>
 	<body>
 		<div id="main_div">
-			<button id="hta_cancel">Cancel</button>
-			<button id="hta_ok">OK</button>
+			<button id="cancel">Cancel</button>
+			<button id="ok">OK</button>
 		</div>
 		<script>
 			// helpers
@@ -36,6 +36,18 @@
 				}
 			}
 
+			window.onload = function () {
+				var d = document;
+				var someThingStyles = d.getElementsByTagName('link')[0];
+				var is_win7 = (navigator.userAgent.indexOf('Windows NT 6.1') > 0);
+				if (is_win7) {
+					someThingStyles.href = 'styles7.css';
+				}
+				else {
+					someThingStyles.href = 'styles10.css';
+				}
+			}
+
 			// parse data
 			var parsed_args;
 			var prompt;
@@ -48,8 +60,8 @@
 			}
 			if (parsed_args) {
 				document.title = parsed_args[0];
-				prompt = parsed_args[1];
-				defval = parsed_args[2];
+				prompt = parsed_args[1].toArray();
+				defval = parsed_args[2].toArray();
 				callback_fn = parsed_args[3];
 			}
 			else {
@@ -85,11 +97,11 @@
 				item.style.width = label_max_width + 'px';
 			});
 
-			window.hta_cancel.onclick = function () {
+			window.cancel.onclick = function () {
 				window.close();
 			};
 
-			window.hta_ok.onclick = function () {
+			window.ok.onclick = function () {
 				var vals = [];
 				for (var i = 0; i < val_count; ++i) {
 					vals.push(window['input_val_' + i].value);
@@ -108,7 +120,7 @@
 			}
 
 			window.document.body.focus();
-			window.hta_ok.focus();
+			window.ok.focus();
 		</script>
 	</body>
 </html>
