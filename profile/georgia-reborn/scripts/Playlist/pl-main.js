@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-07                                          * //
+// * Last change:    2024-01-08                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -4950,8 +4950,7 @@ class Header extends BaseHeader {
 
 			// * ALBUM * //
 			if (this.grouping_handler.get_sub_title_query()) {
-				// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
-				const album_text = g_properties.show_disc_header ? $('[%album%]', this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
+				const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
 
 				if (album_text) {
 					const album_h = part_h;
@@ -5069,8 +5068,7 @@ class Header extends BaseHeader {
 					line_x1 += RES_4K ? 20 : 9;
 				}
 
-				// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
-				const album_text = g_properties.show_disc_header ? $('[%album%]', this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
+				const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
 				const album_height = gr.MeasureString(album_text, g_pl_fonts.album, 0, 0, 0, 0).Height;
 				const date_query = pref.showPlaylistFullDate ? tf.date : tf.year;
 				const date_text = $(date_query, this.metadb);
@@ -5372,8 +5370,8 @@ class Header extends BaseHeader {
 
 		// * Album
 		const album_y = part_h * (!g_properties.show_group_info ? 1.5 : 1) + ((RES_4K || RES_QHD && headerFontSize === 17 ? 5 : 4) * (!g_properties.show_group_info ? 2 : 1));
-		// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
-		const album_text = g_properties.show_disc_header ? $('[%album%]', this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
+		const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+
 		if (album_text) {
 			this.hyperlinks.album = new Hyperlink(album_text, g_pl_fonts.album, 'album', left_pad, album_y, this.w - left_pad * 2, true);
 		}
@@ -5534,8 +5532,7 @@ class Header extends BaseHeader {
 		}
 
 		const artist_text = $(this.grouping_handler.get_title_query(), this.metadb);
-		// const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
-		const album_text = g_properties.show_disc_header ? $('[%album%]', this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
+		const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
 
 		if (this.artist_text_w > this.max_w || this.album_text_w > this.max_w ||
 			g_properties.use_compact_header && (this.artist_text_w_compact > this.artist_w_compact || this.album_text_w_compact > this.album_w_compact)) {
