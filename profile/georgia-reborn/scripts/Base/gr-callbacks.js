@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-01                                          * //
+// * Last change:    2024-01-08                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -110,9 +110,6 @@ function on_metadb_changed(handle_list, fromhook) {
 				codec = $('$info(codec_profile)') === 'CBR' ? `${codec}-${$('%bitrate%')} kbps` : `${codec}-${$('$info(codec_profile)')}`;
 			}
 			str.trackInfo = $(codec + settings.extraTrackInfo);
-			// TODO: Add LUFS option?
-			// str.trackInfo += $('$if(%replaygain_track_gain%, | LUFS $puts(l,$sub(-1800,$replace(%replaygain_track_gain%,.,)))$div($get(l),100).$right($get(l),2) dB,)');
-
 			str.disc = fb.TitleFormat(tf.disc).Eval();
 
 			const h = Math.floor(fb.PlaybackLength / 3600);
@@ -1438,7 +1435,7 @@ function on_playlist_items_removed(playlistIndex) {
 		trace_call && console.log('Playlist => on_playlist_items_removed');
 		playlist.on_playlist_items_removed(playlistIndex);
 	}
-	else if (displayLibrary) {
+	if (displayLibrary) {
 		trace_call && console.log('Library => on_playlist_items_removed');
 		library.on_playlist_items_removed(playlistIndex);
 	}
@@ -1462,7 +1459,7 @@ function on_playlist_items_reordered(playlistIndex) {
 		trace_call && console.log('Playlist => on_playlist_items_reordered');
 		playlist.on_playlist_items_reordered(playlistIndex);
 	}
-	else if (displayLibrary) {
+	if (displayLibrary) {
 		trace_call && console.log('Library => on_playlist_items_reordered');
 		library.on_playlist_items_reordered(playlistIndex);
 	}
@@ -1513,7 +1510,7 @@ function on_playlists_changed() {
 		trace_call && console.log('Playlist => on_playlists_changed');
 		playlist.on_playlists_changed();
 	}
-	else if (displayLibrary) {
+	if (displayLibrary) {
 		trace_call && console.log('Library => on_playlists_changed');
 		library.on_playlists_changed();
 	}

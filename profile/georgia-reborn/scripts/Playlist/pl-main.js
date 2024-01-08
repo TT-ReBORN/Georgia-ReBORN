@@ -1616,7 +1616,7 @@ class Playlist extends List {
 		if (to_idx === -1) {
 			this.focused_item = undefined;
 		}
-		else if (this.cnt.rows.length) {
+		else if (this.cnt.rows.length && to_idx >= 0 && to_idx < this.cnt.rows.length) {
 			to_idx = Math.min(to_idx, this.cnt.rows.length - 1);
 			this.focused_item = this.cnt.rows[to_idx];
 			this.focused_item.is_focused = true;
@@ -8605,11 +8605,11 @@ GroupingHandler.Settings = function () {
 				}),
 				new CtorGroupData('artist_album_disc', 'by artist / album / disc number', '%album artist%%album%%discnumber%', undefined, undefined, {
 					show_date: true,
-					show_disc:   true
+					show_disc: true
 				}),
 				new CtorGroupData('artist_album_disc_edition', 'by artist / album / disc number / edition / codec', '%album artist%%album%%discnumber%%edition%%codec%', undefined, undefined, {
 					show_date: true,
-					show_disc:   true
+					show_disc: true
 				}),
 				new CtorGroupData('path', 'by path', '$directory_path(%path%)', undefined, undefined, {
 					show_date: true
