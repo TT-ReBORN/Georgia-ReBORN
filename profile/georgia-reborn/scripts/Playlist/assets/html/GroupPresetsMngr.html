@@ -73,7 +73,7 @@
 			</div>
 			<div class="input_cnt_block input_cnt_block_checkbox">
 				<label class="label_for_checkbox">Show Disc Headers:</label>
-				<span><input id="input_show_cd" type="checkbox"/></span>
+				<span><input id="input_show_disc" type="checkbox"/></span>
 			</div>
 			</div>
 		</div>
@@ -173,7 +173,7 @@
 				window.input_title_query.value = cur_data.title_query;
 				window.input_sub_title_query.value = cur_data.sub_title_query;
 				window.input_description.value = cur_data.description;
-				window.input_show_cd.checked = cur_data.show_cd;
+				window.input_show_disc.checked = cur_data.show_disc;
 				window.input_show_date.checked = cur_data.show_date;
 			}
 
@@ -248,7 +248,7 @@
 					title_query: '[%album artist%]',
 					sub_title_query: '[%album%[ - %subtitle%]]',
 					show_date: false,
-					show_cd: false
+					show_disc: false
 				}];
 				cur_group_name = 'preset name';
 				default_group_name = 'preset name';
@@ -268,12 +268,12 @@
 				window.input_title_query,
 				window.input_sub_title_query,
 				window.input_description,
-				window.input_show_cd,
+				window.input_show_disc,
 				window.input_show_date
 			];
 
 			var input_box = [
-				window.input_show_cd,
+				window.input_show_disc,
 				window.input_show_date
 			];
 
@@ -358,7 +358,7 @@
 				cur_data.title_query = window.input_title_query.value;
 				cur_data.sub_title_query = window.input_sub_title_query.value;
 				cur_data.description = window.input_description.value;
-				cur_data.show_cd = window.input_show_cd.checked;
+				cur_data.show_disc = window.input_show_disc.checked;
 				cur_data.show_date = window.input_show_date.checked;
 
 				populate_select(window.input_select.selectedIndex);
