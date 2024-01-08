@@ -8621,7 +8621,7 @@ GroupingHandler.Settings = function () {
 		}
 
 		if (!g_properties.default_group_name || !IsString(g_properties.default_group_name)) {
-			g_properties.default_group_name = 'artist_album_disc_edition';
+			g_properties.default_group_name = prefs.themePlaylistGroupingPresets[3].name || prefs.themePlaylistGroupingPresets[0].name || 'artist_album_disc_edition';
 		}
 	}
 
