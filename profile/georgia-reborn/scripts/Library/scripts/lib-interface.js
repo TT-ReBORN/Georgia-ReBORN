@@ -520,7 +520,7 @@ class UserInterface {
 		// * Only used for pref.libraryLayoutSplitPreset4, synchronizes artist & album font sizes with Playlist
 		const headerFontSize = pref[`playlistHeaderFontSize_${pref.layout}`];
 		const rowFontSize    = pref[`playlistFontSize_${pref.layout}`];
-		const libraryLayoutSplitPreset4 = ppt.albumArtLabelType === 2 && displayLibrarySplit();
+		const libraryLayoutSplitPreset4 = ppt.albumArtLabelType === 2 && (pref.layout === 'default' && pref.libraryLayout === 'split' && displayLibrary && displayPlaylist); // displayLibrarySplit
 
 		if (ppt.custAlbumArtGrpFontUse && ppt.custAlbumArtGrpFont.length) {
 			const custFont = $Lib.split(ppt.custAlbumArtGrpFont, 1);
