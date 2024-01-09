@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-08                                          * //
+// * Last change:    2024-01-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2885,6 +2885,7 @@ function initLibraryLayout() {
 	setLibraryView();
 	setLibrarySize();
 	initLibraryColors();
+	initStyleColors();
 	themeColorAdjustments();
 	window.Repaint();
 }

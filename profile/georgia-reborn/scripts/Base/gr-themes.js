@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-01                                          * //
+// * Last change:    2024-01-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3424,7 +3424,9 @@ function panelWhiteColors(lighterBg, accentColor) {
 	uiBio.col.bottomLine = g_pl_colors.header_line_normal;
 	uiBio.col.centerLine = uiBio.col.bottomLine;
 	uiBio.col.text = g_pl_colors.row_title_normal;
-	uiBio.col.source = g_pl_colors.row_title_normal;
+	uiBio.col.source = uiBio.col.headingText;
+	uiBio.col.accent = uiBio.col.headingText;
+	uiBio.col.summary = uiBio.col.text;
 	uiBio.col.sbarBtns = RGB(60, 60, 60);
 	uiBio.col.sbarNormal = RGB(0, 0, 0);
 	uiBio.col.sbarHovered = RGB(40, 40, 40);
@@ -3657,7 +3659,9 @@ function panelBlackColors(darkerBg, accentColor) {
 	uiBio.col.bottomLine = g_pl_colors.header_line_normal;
 	uiBio.col.centerLine = uiBio.col.bottomLine;
 	uiBio.col.text = g_pl_colors.row_title_normal;
-	uiBio.col.source = g_pl_colors.row_title_normal;
+	uiBio.col.source = uiBio.col.headingText;
+	uiBio.col.accent = uiBio.col.headingText;
+	uiBio.col.summary = uiBio.col.text;
 	uiBio.col.sbarBtns = RGB(200, 200, 200);
 	uiBio.col.sbarNormal = RGB(255, 255, 255);
 	uiBio.col.sbarHovered = RGB(255, 255, 255);
