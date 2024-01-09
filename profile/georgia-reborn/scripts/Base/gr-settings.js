@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-02                                          * //
+// * Last change:    2024-01-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -337,7 +337,8 @@ pref.add_properties({
 	topMenuCompact:                     ['Georgia-ReBORN - 09. Player controls: Top menu compact', true], // true: top menu will be displayed as a hamburger menu
 	albumArtAlign:                      ['Georgia-ReBORN - 09. Player controls: Album art alignment', 'right'], // right: Align album art in Default layout when player size is not proportional
 	albumArtBg:                         ['Georgia-ReBORN - 09. Player controls: Album art background', 'left'], // 'left': Show album art background when player size is not proportional
-	albumArtScale:                      ['Georgia-ReBORN - 09. Player controls: Album art scale fullscreen', 'filled'], // filled: Scale album art in Default layout when player size is maximized/fullscreen
+	albumArtScale:                      ['Georgia-ReBORN - 09. Player controls: Album art scale fullscreen', 'cropped'], // cropped: Scale album art in Default layout when player size is maximized/fullscreen
+	albumArtAspectRatioLimit:           ['Georgia-ReBORN - 09. Player controls: Album art aspect ratio limits fullscreen', 1.5], // 1.5: Keep wide and tall artworks proportional when player size is maximized/fullscreen
 	cycleArt:                           ['Georgia-ReBORN - 09. Player controls: Cycle through all images', false], // true: Use glob, false: use albumArt reader (front only)
 	cycleArtMWheel:                     ['Georgia-ReBORN - 09. Player controls: Cycle through all images with mouse wheel', true], // true: Cycle through all images with mouse wheel
 	loadEmbeddedAlbumArtFirst:          ['Georgia-ReBORN - 09. Player controls: Load embedded album art first', false], // false: Loads embedded album art from music files first
@@ -368,7 +369,6 @@ pref.add_properties({
 	panelWidthAuto:                     ['Georgia-ReBORN - 09. Player controls: Use auto panel width', false], // true: Use auto panel width when player size is not proportional
 	showPanelOnStartup:                 ['Georgia-ReBORN - 09. Player controls: Show panel on startup', 'playlist'], // "cover", "playlist", "details", "library", "biography", "lyrics" - show panel on foobar startup
 	showPreloaderLogo:                  ['Georgia-ReBORN - 09. Player controls: Show logo on preloader', true], // true: Show logo on preloader
-	showPreloaderCustomLogo:            ['Georgia-ReBORN - 09. Player controls: Show custom logo on preloader', false], // false: Show custom logo on preloader
 	returnToHomeOnPlaybackStop:         ['Georgia-ReBORN - 09. Player controls: Return to home on playback stop', true], // true: Return to home on playback stop
 	hideMiddlePanelShadow:              ['Georgia-ReBORN - 09. Player controls: Hide middle panel shadow', false], // false: Hides the middle panel shadow
 	lockPlayerSize:                     ['Georgia-ReBORN - 09. Player controls: Lock player size', false], // false: Locks the player size
@@ -569,6 +569,8 @@ pref.add_properties({
 	themeSetupNight:                    ['Georgia-ReBORN - 15. Settings: Auto-day/night theme setup nighttime', false], // false: The nighttime setup mode state when configuring the theme for nighttime
 	themeSandbox:                       ['Georgia-ReBORN - 15. Settings: Theme sandbox', false], // false: Enables theme sandbox, useful when trying out themes, styles, presets or writing theme tags. After disabling, it will restore last previous theme settings
 	customThemeFonts:                   ['Georgia-ReBORN - 15. Settings: Use custom theme fonts', false], // false: User can set own custom theme fonts in foobar's Preferences > Display > Columns UI > Colours and fonts
+	customPreloaderLogo:                ['Georgia-ReBORN - 15. Settings: Use custom preloader logo', false], // false: Use custom preloader logo
+	customThemeImages:                  ['Georgia-ReBORN - 15. Settings: Use custom theme images', false], // false: Use custom theme images
 	customLibraryDir:                   ['Georgia-ReBORN - 15. Settings: Use custom library directory', false], // false: Use custom library directory
 	libraryAutoDelete:                  ['Georgia-ReBORN - 15. Settings: Auto-delete library cache', false], // false: This will auto-delete cached library album art thumbnails on startup
 	customBiographyDir:                 ['Georgia-ReBORN - 15. Settings: Use custom biography directory', false], // false: Use custom biography directory
@@ -995,6 +997,7 @@ async function setThemeSettings(save) {
 		themeControls.albumArtAlign = pref.albumArtAlign;
 		themeControls.albumArtBg = pref.albumArtBg;
 		themeControls.albumArtScale = pref.albumArtScale;
+		themeControls.albumArtAspectRatioLimit = pref.albumArtAspectRatioLimit;
 		themeControls.cycleArt = pref.cycleArt;
 		themeControls.cycleArtMWheel = pref.cycleArtMWheel;
 		themeControls.loadEmbeddedAlbumArtFirst = pref.loadEmbeddedAlbumArtFirst;
@@ -1031,7 +1034,6 @@ async function setThemeSettings(save) {
 		themeControls.panelWidthAuto = pref.panelWidthAuto;
 		themeControls.showPanelOnStartup = pref.showPanelOnStartup;
 		themeControls.showPreloaderLogo = pref.showPreloaderLogo;
-		themeControls.showPreloaderCustomLogo = pref.showPreloaderCustomLogo;
 		themeControls.returnToHomeOnPlaybackStop = pref.returnToHomeOnPlaybackStop;
 		themeControls.hideMiddlePanelShadow = pref.hideMiddlePanelShadow;
 		themeControls.lockPlayerSize = pref.lockPlayerSize;
@@ -1138,7 +1140,8 @@ async function setThemeSettings(save) {
 		pref.topMenuCompact = custom ? themeControls.topMenuCompact : true;
 		pref.albumArtAlign = custom ? themeControls.albumArtAlign : 'right';
 		pref.albumArtBg = custom ? themeControls.albumArtBg : 'left';
-		pref.albumArtScale = custom ? themeControls.albumArtScale : 'filled';
+		pref.albumArtScale = custom ? themeControls.albumArtScale : 'cropped';
+		pref.albumArtAspectRatioLimit = custom ? themeControls.albumArtAspectRatioLimit : true;
 		pref.cycleArt = custom ? themeControls.cycleArt : false;
 		pref.cycleArtMWheel = custom ? themeControls.cycleArtMWheel : true;
 		pref.loadEmbeddedAlbumArtFirst = custom ? themeControls.loadEmbeddedAlbumArtFirst : false;
@@ -1177,7 +1180,6 @@ async function setThemeSettings(save) {
 		pref.panelWidthAuto = custom ? themeControls.panelWidthAuto : false;
 		pref.showPanelOnStartup = custom ? themeControls.showPanelOnStartup : 'playlist';
 		pref.showPreloaderLogo = custom ? themeControls.showPreloaderLogo : true;
-		pref.showPreloaderCustomLogo = custom ? themeControls.showPreloaderCustomLogo : false;
 		pref.returnToHomeOnPlaybackStop = custom ? themeControls.returnToHomeOnPlaybackStop : true;
 		pref.hideMiddlePanelShadow = custom ? themeControls.hideMiddlePanelShadow : false;
 		pref.lockPlayerSize = custom ? themeControls.lockPlayerSize : false;
@@ -1693,6 +1695,8 @@ async function setThemeSettings(save) {
 	if (save) {
 		themeSettings.themeDayNightMode = pref.themeDayNightMode;
 		themeSettings.customThemeFonts = pref.customThemeFonts;
+		themeSettings.customPreloaderLogo = pref.customPreloaderLogo;
+		themeSettings.customThemeImages = pref.customThemeImages;
 		themeSettings.albumArtDiskCache = ppt.albumArtDiskCache;
 		themeSettings.albumArtPreLoad = ppt.albumArtPreLoad;
 		themeSettings.customLibraryDir = pref.customLibraryDir;
@@ -1709,6 +1713,8 @@ async function setThemeSettings(save) {
 	} else {
 		pref.themeDayNightMode = custom ? themeSettings.themeDayNightMode : false;
 		pref.customThemeFonts = custom ? themeSettings.customThemeFonts : false;
+		pref.customPreloaderLogo = custom ? themeSettings.customPreloaderLogo : false;
+		pref.customThemeImages = custom ? themeSettings.customThemeImages : false;
 		ppt.albumArtDiskCache = custom ? themeSettings.albumArtDiskCache : true;
 		ppt.albumArtPreLoad = custom ? themeSettings.albumArtPreLoad : false;
 		pref.customLibraryDir = custom ? themeSettings.customLibraryDir : false;

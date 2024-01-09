@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-01                                          * //
+// * Last change:    2024-01-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1216,6 +1216,37 @@ function GR(w, h, im, func) {
 	i.ReleaseGraphics(g);
 	g = null;
 	return im ? i : null;
+}
+
+
+/**
+ * Crops an image with optional width and/or height.
+ * @param {GdiBitmap} image The image to crop.
+ * @param {number} [cropWidth=0] The width to crop from the image. If 0, no width cropping is performed.
+ * @param {number} [cropHeight=0] The height to crop from the image. If 0, no height cropping is performed.
+ * @returns {GdiBitmap} The cropped image.
+ */
+function CropImage(image, cropWidth = 0, cropHeight = 0) {
+    const maskWidth = cropWidth ? image.Width - cropWidth : image.Width;
+    const maskHeight = cropHeight ? image.Height - cropHeight : image.Height;
+    const maskX = cropWidth / 2;
+    const maskY = cropHeight / 2;
+
+    // * Mask
+    const maskImg = gdi.CreateImage(maskWidth, maskHeight);
+    let g = maskImg.GetGraphics();
+    g.FillSolidRect(0, 0, maskWidth, maskHeight, 0xff000000);
+    maskImg.ReleaseGraphics(g);
+
+    // * Canvas with cropped image
+    const croppedImg = gdi.CreateImage(maskWidth, maskHeight);
+    g = croppedImg.GetGraphics();
+	g.SetSmoothingMode(SmoothingMode.None);
+    g.DrawImage(image, 0, 0, maskWidth, maskHeight, cropWidth ? maskX : 0, cropHeight ? maskY : 0, maskWidth, maskHeight);
+    croppedImg.ReleaseGraphics(g);
+    croppedImg.ApplyMask(maskImg);
+
+    return croppedImg;
 }
 
 

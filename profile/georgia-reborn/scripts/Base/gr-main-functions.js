@@ -1593,6 +1593,69 @@ function loadFlagImage(country) {
 // * MAIN - ALBUM ART * //
 //////////////////////////
 /**
+ * Scales album art to a global size, handling potential errors.
+ * @global albumArtScaled The scaled album art image.
+ * @global albumArtSize The dimensions to scale the image to.
+ * @throws Logs an error if the scaling operation fails.
+ */
+function createScaledAlbumArt() {
+	if (albumArtScaled) albumArtScaled = null;
+
+	try {
+		// * Avoid weird anti-aliased scaling along border of images, see: https://stackoverflow.com/questions/4772273/interpolationmode-highqualitybicubic-introducing-artefacts-on-edge-of-resized-im
+		albumArtScaled = albumArt.Resize(albumArtSize.w, albumArtSize.h, InterpolationMode.Bicubic); // Old method -> albumArtScaled = albumArt.Resize(albumArtSize.w, albumArtSize.h);
+		const sg = albumArtScaled.GetGraphics();
+		const HQscaled = albumArt.Resize(albumArtSize.w, albumArtSize.h, InterpolationMode.HighQualityBicubic);
+		sg.DrawImage(HQscaled, 2, 2, albumArtScaled.Width - 4, albumArtScaled.Height - 4, 2, 2, albumArtScaled.Width - 4, albumArtScaled.Height - 4);
+		albumArtScaled.ReleaseGraphics(sg);
+	} catch (e) {
+		noArtwork = true;
+		albumArt = null;
+		noAlbumArtStub = true;
+		albumArtSize = new ImageSize(0, geo.topMenuHeight, 0, 0);
+		console.log('\n<Error: Album art could not be scaled! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>\n');
+	}
+}
+
+
+/**
+ * Creates cropped album art within max dimensions.
+ * @param {Object} albumArt The original album art with Width and Height.
+ * @param {number} maxWidth The max width for the art.
+ * @param {number} maxHeight The max height for the art.
+ * @returns {Object} The cropped image and its scale factor.
+ */
+function createCroppedAlbumArt(albumArt, maxWidth, maxHeight) {
+	const widthScale = maxWidth / albumArt.Width;
+	const heightScale = maxHeight / albumArt.Height;
+	const scaledWidth = albumArt.Width * heightScale;
+	const scaledHeight = albumArt.Height * widthScale;
+
+	// * Fill the height and crop the width
+	if (scaledWidth >= maxWidth) {
+		const cropWidth = (scaledWidth - maxWidth) / 2;
+		return {
+			image: CropImage(albumArt, cropWidth, 0),
+			scale: heightScale
+		};
+	}
+	// * Fill the width and crop the height
+	else if (scaledHeight >= maxHeight) {
+		const cropHeight = scaledHeight - maxHeight;
+		return {
+			image: CropImage(albumArt, 0, cropHeight),
+			scale: widthScale
+		};
+	}
+	// * If no cropping is needed, return the original image and scale
+	return {
+		image: albumArt,
+		scale: Math.min(widthScale, heightScale)
+	};
+}
+
+
+/**
  * Displays the next artwork image when cycling through album artworks with a default 30 sec interval or when using album art context menu.
  */
 function displayNextImage() {
@@ -1741,6 +1804,8 @@ function loadImageFromAlbumArtList(index) {
 	if (tempAlbumArt) {
 		albumArt = tempAlbumArt;
 		discArtCover = tempDiscArtCover;
+		albumArtCopy = albumArt;
+
 		if (pref.panelWidthAuto) {
 			initPanelWidthAuto();
 		}
@@ -1794,6 +1859,8 @@ function loadImageFromAlbumArtList(index) {
 				newTrackFetchingArtwork = false;
 			}
 
+			albumArtCopy = albumArt;
+
 			if (pref.panelWidthAuto) {
 				initPanelWidthAuto();
 			} else {
@@ -1828,81 +1895,89 @@ function resizeArtwork(resetDiscArtPosition) {
 
 /**
  * Resizes and resets the size and position of the album art.
+ * Accounts for different window states and user preferences to calculate
+ * the appropriate size and position of the album artwork.
  */
 function resizeAlbumArt() {
-	if (albumArt && albumArt.Width && albumArt.Height) {
-		// * Size for big albumArt
-		let xCenter = 0;
-		const albumScale =
-			pref.layout === 'artwork' ? Math.min(ww / albumArt.Width, (wh - geo.topMenuHeight - geo.lowerBarHeight) / albumArt.Height) :
-			Math.min(((displayPlaylist || displayLibrary) ?
-				UIHacks.FullScreen ? pref.albumArtScale === 'filled' ? 0.545 * ww : 0.5 * ww :
-				UIHacks.MainWindowState === WindowState.Maximized ? pref.albumArtScale === 'filled' ? 0.55 * ww : 0.5 * ww :
-				0.5 * ww :
-			0.75 * ww) / albumArt.Width, (wh - geo.topMenuHeight - geo.lowerBarHeight) / albumArt.Height);
-
-		if (displayPlaylist || displayLibrary) {
-			xCenter =
-				pref.layout === 'artwork' ? 0 :
-				UIHacks.FullScreen && !pref.panelWidthAuto ? RES_4K ? 0.261 * ww : 0.23 * ww :
-				UIHacks.MainWindowState === WindowState.Maximized && !pref.panelWidthAuto ? RES_4K ? 0.267 * ww : 0.24 * ww :
-				xCenter = 0.25 * ww;
-		}
-		else if (ww / wh < 1.40) { // When using a roughly 4:3 display the album art crowds, so move it slightly off center
-			xCenter = 0.56 * ww; // TODO: check if this is still needed?
-		}
-		else {
-			xCenter = 0.5 * ww;
-			artOffCenter = false;
-			if (albumScale === 0.75 * ww / albumArt.Width) {
-				xCenter += 0.1 * ww;
-				artOffCenter = true; // TODO: We should probably suppress labels in this case
-			}
-		}
-
-		albumArtSize.w = Math.floor(albumArt.Width * albumScale); // Width
-		albumArtSize.h = Math.floor(albumArt.Height * albumScale); // Height
-		albumArtSize.x = // * When player size is not proportional, album art is aligned via setting 'pref.albumArtAlign' in Default layout and is centered in Artwork layout */
-			pref.layout === 'default' ?
-				displayPlaylist || displayLibrary ?
-					pref.albumArtAlign === 'left' ? 0 :
-					pref.albumArtAlign === 'leftMargin' ? ww / wh > 1.8 ? SCALE(40) : 0 :
-					pref.albumArtAlign === 'center' ? Math.floor(xCenter - 0.5 * albumArtSize.w) :
-					ww * 0.5 - albumArtSize.w :
-				Math.floor(xCenter - 0.5 * albumArtSize.w) :
-			pref.layout === 'artwork' ?
-				!displayPlaylist || pref.displayLyrics ? ww * 0.5 - albumArtSize.w * 0.5 : ww : 0;
-
-		if (albumScale !== (wh - geo.topMenuHeight - geo.lowerBarHeight) / albumArt.Height) {
-			// Restricted by width
-			const y = Math.floor(((wh - geo.lowerBarHeight + geo.topMenuHeight) / 2) - albumArtSize.h / 2);
-			albumArtSize.y = Math.min(y, SCALE(150) + 10);	// 150 or 300 + 10? Not sure where 160 comes from
-		} else {
-			albumArtSize.y = geo.topMenuHeight;
-		}
-
-		if (albumArtScaled) {
-			albumArtScaled = null;
-		}
-		try { // * Prevent crash if album art is corrupt, file format is not supported or has an unusual ICC profile embedded
-			// * Avoid weird anti-aliased scaling along border of images, see: https://stackoverflow.com/questions/4772273/interpolationmode-highqualitybicubic-introducing-artefacts-on-edge-of-resized-im
-			albumArtScaled = albumArt.Resize(albumArtSize.w, albumArtSize.h, InterpolationMode.Bicubic); // Old method -> albumArtScaled = albumArt.Resize(albumArtSize.w, albumArtSize.h);
-			const sg = albumArtScaled.GetGraphics();
-			const HQscaled = albumArt.Resize(albumArtSize.w, albumArtSize.h, InterpolationMode.HighQualityBicubic);
-			sg.DrawImage(HQscaled, 2, 2, albumArtScaled.Width - 4, albumArtScaled.Height - 4, 2, 2, albumArtScaled.Width - 4, albumArtScaled.Height - 4);
-			albumArtScaled.ReleaseGraphics(sg);
-		} catch (e) {
-			noArtwork = true;
-			albumArt = null;
-			noAlbumArtStub = true;
-			albumArtSize = new ImageSize(0, geo.topMenuHeight, 0, 0);
-			console.log('\n<Error: Album art could not be scaled! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>\n');
-		}
-		hasArtwork = true;
-	}
-	else {
+	if (!albumArt || !albumArt.Width || !albumArt.Height) {
 		albumArtSize = new ImageSize(0, geo.topMenuHeight, 0, 0);
+		return;
 	}
+
+	// * Set album scale
+	const windowFullscreenOrMaximized = UIHacks.FullScreen || UIHacks.MainWindowState === WindowState.Maximized;
+	const aspectRatioInBounds = !pref.albumArtAspectRatioLimit || (albumArt.Width < albumArt.Height * pref.albumArtAspectRatioLimit) && (albumArt.Height < albumArt.Width * pref.albumArtAspectRatioLimit);
+	const albumArtCropped = pref.albumArtScale === 'cropped' && windowFullscreenOrMaximized && aspectRatioInBounds && (displayPlaylist || displayLibrary);
+	const albumArtStretched = pref.albumArtScale === 'stretched' && windowFullscreenOrMaximized && aspectRatioInBounds && (displayPlaylist || displayLibrary);
+	const albumArtMaxWidth = ww * 0.5;
+	const albumArtMaxHeight = wh - geo.topMenuHeight - geo.lowerBarHeight;
+    const albumArtScaleFactor = displayPlaylist || displayLibrary ? 0.5 : 0.75;
+    const albumArtScaleDefault = Math.min(ww * albumArtScaleFactor / albumArt.Width, albumArtMaxHeight / albumArt.Height);
+    const albumArtScaleArtwork = Math.min(ww / albumArt.Width, albumArtMaxHeight / albumArt.Height);
+    let albumArtScale = pref.layout === 'artwork' ? albumArtScaleArtwork : albumArtScaleDefault;
+
+	// * Set album art width, height and proportions
+	if (albumArtCropped) {
+		const { image, scale } = createCroppedAlbumArt(albumArt, albumArtMaxWidth, albumArtMaxHeight);
+		albumArtCopy = image;
+		albumArtScale = scale;
+        albumArtSize.w = Math.floor(albumArtCopy.Width * albumArtScale);
+        albumArtSize.h = Math.floor(albumArtCopy.Height * albumArtScale);
+	} else if (albumArtStretched) {
+		albumArtCopy = null;
+		albumArtSize.w = albumArtMaxWidth;
+		albumArtSize.h = albumArtMaxHeight;
+	} else { // Restore original proportional album art image
+		albumArtCopy = null;
+        albumArtSize.w = Math.floor(albumArt.Width * albumArtScale);
+        albumArtSize.h = Math.floor(albumArt.Height * albumArtScale);
+	}
+
+	// * Set xCenter position
+	let xCenter = ww * 0.5;
+	artOffCenter = false;
+	if (displayPlaylist || displayLibrary) {
+		xCenter = pref.layout === 'artwork' ? 0 : ww * 0.25;
+	} else if (albumArtScale === ww * 0.75 / albumArt.Width) {
+		xCenter = Math.round(ww * 0.66 - SCALE(40)); // xCenter += ww * 0.1;
+		artOffCenter = true;
+	}
+
+	// * Set album art x-coordinate
+	switch (pref.layout) {
+		case 'default': // In a non-proportional player size, 'pref.albumArtAlign' sets album art alignment in Default layout
+			if (displayPlaylist || displayLibrary) {
+				switch (pref.albumArtAlign) {
+					case 'left':
+						albumArtSize.x = Math.round(Math.min(0, ww * 0.5 - albumArtSize.w));
+						break;
+					case 'leftMargin':
+						albumArtSize.x = Math.round(Math.min(ww / wh > 1.8 ? SCALE(40) : 0, ww * 0.5 - albumArtSize.w));
+						break;
+					case 'center':
+						albumArtSize.x = Math.round(Math.min(xCenter - 0.5 * albumArtSize.w, ww * 0.5 - albumArtSize.w));
+						break;
+					default:
+						albumArtSize.x = Math.round(ww * 0.5 - albumArtSize.w);
+						break;
+				}
+			} else {
+				albumArtSize.x = Math.round(xCenter - 0.5 * albumArtSize.w);
+			}
+			break;
+
+		case 'artwork': // And is always centered in Artwork layout
+			albumArtSize.x = Math.round(!displayPlaylist || pref.displayLyrics ? ww * 0.5 - albumArtSize.w * 0.5 : ww);
+			break;
+	}
+
+	// * Set album art y-coordinate
+	const restrictedWidth = albumArtScale !== (wh - geo.topMenuHeight - geo.lowerBarHeight) / albumArt.Height;
+	const centerY = Math.floor(((wh - geo.lowerBarHeight + geo.topMenuHeight) / 2) - albumArtSize.h / 2);
+	albumArtSize.y = restrictedWidth ? Math.min(centerY, SCALE(150) + 10) : geo.topMenuHeight;
+
+	createScaledAlbumArt();
+	hasArtwork = true;
 }
 
 
@@ -1912,9 +1987,15 @@ function resizeAlbumArt() {
 function resetPausePosition() {
 	const noAlbumArtSize = wh - geo.topMenuHeight - geo.lowerBarHeight;
 	const displayDetails = (pref.layout === 'artwork' ? displayPlaylist : !displayPlaylist) && !displayLibrary && !displayBiography;
+	const windowFullscreenOrMaximized = UIHacks.FullScreen || UIHacks.MainWindowState === WindowState.Maximized;
 
-	const pauseBtnX =
-		!pref.panelWidthAuto && pref.layout !== 'artwork' && !noAlbumArtStub && (displayLibrary || displayPlaylist) ||
+	const albumArtPauseBtnX = windowFullscreenOrMaximized ? ww * 0.25 : albumArtSize.x + albumArtSize.w * 0.5;
+	const albumArtPauseBtnY = albumArtSize.y + albumArtSize.h * 0.5;
+	const discArtPauseBtnX = discArtSize.x + discArtSize.w * 0.5;
+	const discArtPauseBtnY = discArtSize.y + discArtSize.h * 0.5;
+
+	const noAlbumArtPauseBtnX =
+		!pref.panelWidthAuto && pref.layout !== 'artwork' && !noAlbumArtStub && (displayPlaylist || displayLibrary) ||
 			pref.layout === 'artwork' || displayDetails || pref.lyricsLayout === 'full' && pref.displayLyrics ? ww * 0.5 :
 		pref.panelWidthAuto ?
 			pref.albumArtAlign === 'left' ? noAlbumArtSize * 0.5 :
@@ -1923,11 +2004,11 @@ function resetPausePosition() {
 			ww * 0.5 - noAlbumArtSize * 0.5 :
 		ww * 0.25;
 
-	const pauseBtnY = wh * 0.5 - geo.topMenuHeight;
+	const noAlbumArtPauseBtnY = wh * 0.5 - geo.topMenuHeight;
 
-	if (albumArt) pauseBtn.setCoords(albumArtSize.x + albumArtSize.w / 2, albumArtSize.y + albumArtSize.h / 2);
-	else if (discArt) pauseBtn.setCoords(discArtSize.x + discArtSize.w / 2, discArtSize.y + discArtSize.h / 2);
-	else if (noAlbumArtStub) pauseBtn.setCoords(pauseBtnX, pauseBtnY);
+	if (albumArt) pauseBtn.setCoords(albumArtPauseBtnX, albumArtPauseBtnY);
+	else if (discArt) pauseBtn.setCoords(discArtPauseBtnX, discArtPauseBtnY);
+	else if (noAlbumArtStub) pauseBtn.setCoords(noAlbumArtPauseBtnX, noAlbumArtPauseBtnY);
 }
 
 
@@ -2179,69 +2260,63 @@ function fetchDiscArt() {
  * @param {boolean} resetDiscArtPosition Whether the position of the disc art should be reset.
  */
 function resizeDiscArt(resetDiscArtPosition) {
-	if (discArt) {
-		const discArtSizeCorr = SCALE(4);
-		const discArtMargin = SCALE(2);
-		const discArtMarginRight = SCALE(36);
+    if (!discArt) {
+        discArtSize = new ImageSize(0, 0, 0, 0);
+        return;
+    }
 
-		if (hasArtwork) {
-			if (resetDiscArtPosition) {
-				discArtSize.x =
-					ww - (albumArtSize.x + albumArtSize.w) < albumArtSize.h * pref.discArtDisplayAmount ? Math.floor(ww - albumArtSize.h - discArtMarginRight) :
-					pref.discArtDisplayAmount === 1 ? Math.floor(ww - albumArtSize.h - discArtMarginRight) :
-					pref.discArtDisplayAmount === 0.5 ? Math.floor(Math.min(ww - albumArtSize.h - discArtMarginRight,
-						albumArtSize.x + albumArtSize.w - (albumArtSize.h - 4) * (1 - pref.discArtDisplayAmount) - (pref.discArtDisplayAmount === 1 || pref.discArtDisplayAmount === 0.5 ? 0 : discArtMarginRight))) :
-					Math.floor(albumArtSize.x + albumArtSize.w - (albumArtSize.h - discArtSizeCorr) * (1 - pref.discArtDisplayAmount) - discArtMarginRight);
+	const discArtSizeCorr = SCALE(4);
+	const discArtMargin = SCALE(2);
+	const discArtMarginRight = SCALE(36);
+	const discArtMaxHeight = wh - geo.topMenuHeight - geo.lowerBarHeight;
+	const discScaleFactor = displayPlaylist || displayLibrary ? 0.5 : 0.75;
+	const discScale = Math.min(ww * discScaleFactor / discArt.Width, (discArtMaxHeight - SCALE(16)) / discArt.Height);
 
-				discArtSize.y = albumArtSize.y + discArtMargin;
-				discArtSize.w = albumArtSize.h - discArtSizeCorr; // Disc art must be square so use the height of album art for width of discArt
-				discArtSize.h = discArtSize.w;
-			} else { // When disc art moves because folder images are different sizes we want to push it outwards, but not move it back in so it jumps around less
-				discArtSize.x = Math.max(discArtSize.x, Math.floor(Math.min(ww - albumArtSize.h - discArtMarginRight,
-					albumArtSize.x + albumArtSize.w - (albumArtSize.h - 4) * (1 - pref.discArtDisplayAmount) - (pref.discArtDisplayAmount === 1 || pref.discArtDisplayAmount === 0.5 ? 0 : discArtMarginRight))));
+	if (hasArtwork) {
+		if (resetDiscArtPosition) {
+			discArtSize.x =
+				ww - (albumArtSize.x + albumArtSize.w) < albumArtSize.h * pref.discArtDisplayAmount ? Math.floor(ww - albumArtSize.h - discArtMarginRight) :
+				pref.discArtDisplayAmount === 1 ? Math.floor(ww - albumArtSize.h - discArtMarginRight) :
+				pref.discArtDisplayAmount === 0.5 ? Math.floor(Math.min(ww - albumArtSize.h - discArtMarginRight,
+					albumArtSize.x + albumArtSize.w - (albumArtSize.h - 4) * (1 - pref.discArtDisplayAmount) - (pref.discArtDisplayAmount === 1 || pref.discArtDisplayAmount === 0.5 ? 0 : discArtMarginRight))) :
+				Math.floor(albumArtSize.x + albumArtSize.w - (albumArtSize.h - discArtSizeCorr) * (1 - pref.discArtDisplayAmount) - discArtMarginRight);
 
-				discArtSize.y = discArtSize.y > 0 ? Math.min(discArtSize.y, albumArtSize.y + discArtMargin) : albumArtSize.y + discArtMargin;
-				discArtSize.w = Math.max(discArtSize.w, albumArtSize.h - discArtSizeCorr);
-				discArtSize.h = discArtSize.w;
-				if (discArtSize.x + discArtSize.w > ww) {
-					discArtSize.x = ww - discArtSize.w - discArtMarginRight;
-				}
+			discArtSize.y = albumArtSize.y + discArtMargin;
+			discArtSize.w = albumArtSize.h - discArtSizeCorr; // Disc art must be square so use the height of album art for width of discArt
+			discArtSize.h = discArtSize.w;
+		} else { // When disc art moves because folder images are different sizes we want to push it outwards, but not move it back in so it jumps around less
+			discArtSize.x = Math.max(discArtSize.x, Math.floor(Math.min(ww - albumArtSize.h - discArtMarginRight,
+				albumArtSize.x + albumArtSize.w - (albumArtSize.h - 4) * (1 - pref.discArtDisplayAmount) - (pref.discArtDisplayAmount === 1 || pref.discArtDisplayAmount === 0.5 ? 0 : discArtMarginRight))));
+
+			discArtSize.y = discArtSize.y > 0 ? Math.min(discArtSize.y, albumArtSize.y + discArtMargin) : albumArtSize.y + discArtMargin;
+			discArtSize.w = Math.max(discArtSize.w, albumArtSize.h - discArtSizeCorr);
+			discArtSize.h = discArtSize.w;
+			if (discArtSize.x + discArtSize.w > ww) {
+				discArtSize.x = ww - discArtSize.w - discArtMarginRight;
 			}
-		}
-		else { // * No album art so we need to calc size of disc
-			const discScale = Math.min(((displayPlaylist || displayLibrary) ? 0.5 * ww : 0.75 * ww) / discArt.Width, (wh - geo.topMenuHeight - geo.lowerBarHeight - SCALE(16)) / discArt.Height);
-			let xCenter = 0;
-
-			if (displayPlaylist || displayLibrary) {
-				xCenter = 0.25 * ww;
-			} else if (ww / wh < 1.40) { // When using a roughly 4:3 display the album art crowds, so move it slightly off center
-				xCenter = 0.56 * ww; // TODO: check if this is still needed?
-			} else {
-				xCenter = 0.5 * ww;
-				artOffCenter = false;
-				if (discScale === 0.75 * ww / discArt.Width) {
-					xCenter += 0.1 * ww;
-					artOffCenter = true; // TODO: We should probably suppress labels in this case
-				}
-			}
-
-			// Need to -4 from height and add 2 to y to avoid skipping discArt drawing - not sure this is needed
-			discArtSize.w = Math.floor(discArt.Width * discScale) - discArtSizeCorr; // Width
-			discArtSize.h = discArtSize.w; // height
-			discArtSize.x = Math.floor(xCenter - 0.5 * discArtSize.w); // Left
-
-			if (discScale !== (wh - geo.topMenuHeight - geo.lowerBarHeight - SCALE(16)) / discArt.Height) {
-				// Restricted by width
-				const y = geo.topMenuHeight + Math.floor(((wh - geo.topMenuHeight - geo.lowerBarHeight - SCALE(16)) / 2) - discArtSize.h / 2);
-				discArtSize.y = Math.min(y, 160);
-			} else {
-				discArtSize.y = geo.topMenuHeight + discArtMargin; // Top
-			}
-			hasArtwork = true;
 		}
 	}
-	else {
-		discArtSize = new ImageSize(0, 0, 0, 0);
+	else { // * No album art so we need to calc size of disc
+		let xCenter = ww * 0.5;
+		artOffCenter = false;
+		if (displayPlaylist || displayLibrary) {
+			xCenter = ww * 0.25;
+		} else if (discScale === ww * 0.75 / discArt.Width) {
+			xCenter = Math.round(ww * 0.66 - SCALE(40));
+			artOffCenter = true;
+		}
+
+		// Need to -4 from height and add 2 to y to avoid skipping discArt drawing - not sure this is needed
+		discArtSize.w = Math.floor(discArt.Width * discScale) - discArtSizeCorr;
+		discArtSize.h = discArtSize.w;
+		discArtSize.x = Math.floor(xCenter - discArtSize.w * 0.5);
+
+		// * Set disc art y-coordinate
+		const restrictedWidth = discScale !== (discArtMaxHeight - SCALE(16)) / discArt.Height;
+		const centerY = geo.topMenuHeight + Math.floor(((discArtMaxHeight - SCALE(16)) / 2) - discArtSize.h / 2);
+		discArtSize.y = restrictedWidth ? Math.min(centerY, 160) : geo.topMenuHeight + discArtMargin;
+
+		hasArtwork = true;
 	}
 
 	if ((hasArtwork || noAlbumArtStub) && (discArt && pref.displayDiscArt && !displayPlaylist && !displayLibrary && pref.layout !== 'compact')) {

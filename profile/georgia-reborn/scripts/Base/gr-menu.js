@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-02                                          * //
+// * Last change:    2024-01-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1304,6 +1304,7 @@ function playerControlsOptions(menu) {
 		if (pref.layout === 'default') {
 			playerControlsAlbumArtNotPropMenu.addRadioItems(['Align album art left', 'Align album art left (margin)', 'Align album art center', 'Align album art right'], pref.albumArtAlign, ['left', 'leftMargin', 'center', 'right'], (pos) => {
 				pref.albumArtAlign = pos;
+				loadImageFromAlbumArtList(albumArtIndex);
 				resizeArtwork(true);
 				playlist.on_size(ww, wh);
 				setLibrarySize();
@@ -1319,8 +1320,22 @@ function playerControlsOptions(menu) {
 		playerControlsAlbumArtNotPropMenu.appendTo(playerControlsAlbumArtMenu);
 		const playerControlsAlbumArtScaleMenu = new Menu('When player size is maximized/fullscreen');
 		if (pref.layout === 'default') {
-			playerControlsAlbumArtScaleMenu.addRadioItems(['Scale album art filled', 'Scale album art proportional'], pref.albumArtScale, ['filled', 'proportional'], (scale) => {
+			playerControlsAlbumArtScaleMenu.addRadioItems(['Scale album art cropped', 'Scale album art stretched', 'Scale album art proportional'], pref.albumArtScale, ['cropped', 'stretched', 'proportional'], (scale) => {
 				pref.albumArtScale = scale;
+				loadImageFromAlbumArtList(albumArtIndex);
+				resizeArtwork(true);
+				RepaintWindow();
+			});
+			playerControlsAlbumArtScaleMenu.addSeparator();
+			playerControlsAlbumArtScaleMenu.addRadioItems([
+				'Crop and stretch - always',
+				'Crop and stretch - limit aspect ratio 1.25x',
+				'Crop and stretch - limit aspect ratio 1.50x',
+				'Crop and stretch - limit aspect ratio 1.75x',
+				'Crop and stretch - limit aspect ratio 2.00x'
+			], pref.albumArtAspectRatioLimit, [false, 1.25, 1.5, 1.75, 2], (factor) => {
+				pref.albumArtAspectRatioLimit = factor;
+				loadImageFromAlbumArtList(albumArtIndex);
 				resizeArtwork(true);
 				RepaintWindow();
 			});
@@ -1496,13 +1511,6 @@ function playerControlsOptions(menu) {
 		showPanelOnStartupMenu.appendTo(playerControlsPanelMenu);
 	}
 	playerControlsPanelMenu.addToggleItem('Show logo on preloader', pref, 'showPreloaderLogo', () => { RepaintWindow(); });
-	playerControlsPanelMenu.addToggleItem('Show custom logo on preloader', pref, 'showPreloaderCustomLogo', () => {
-		if (!pref.showPreloaderCustomLogo) return;
-		const customLogoPath = `${fb.ProfilePath}georgia-reborn\\images\\custom\\logo\\_4K-custom-logo.png and _custom-logo.png`;
-		const msg = `The custom logo placeholder can be replaced\nwith a new logo:\n\n${customLogoPath}\n\nRecommended logo dimensions are:\n500x500 pixels for 4K\n250x250 pixels for HD\n\n\n`;
-		ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
-		RepaintWindow();
-	});
 	playerControlsPanelMenu.addSeparator();
 	playerControlsPanelMenu.addToggleItem('Return to home on playback stop', pref, 'returnToHomeOnPlaybackStop');
 	playerControlsPanelMenu.addSeparator();
@@ -3277,6 +3285,24 @@ function settingsOptions(menu) {
 		window.Reload();
 	});
 	themeFontMenu.appendTo(settingsMenu);
+
+	// * THEME IMAGES * //
+	const themeImagesMenu = new Menu('Theme images');
+	themeImagesMenu.addToggleItem('Use custom preloader logo', pref, 'customPreloaderLogo', () => {
+		if (!pref.customPreloaderLogo) return;
+		const customLogoPath = `${fb.ProfilePath}georgia-reborn\\images\\custom\\logo\\_4K-custom-logo.png and _custom-logo.png`;
+		const msg = `The custom logo placeholder can be replaced\nwith a new logo:\n\n${customLogoPath}\n\nRecommended logo dimensions are:\n500x500 pixels for 4K\n250x250 pixels for HD\n\n\n`;
+		ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+		RepaintWindow();
+	});
+	themeImagesMenu.addToggleItem('Use custom theme images', pref, 'customThemeImages', () => {
+		if (!pref.customThemeImages) return;
+		const customImagesPath = `${fb.ProfilePath}georgia-reborn\\images\\custom\\`;
+		const msg = `All theme images can be safely replaced\nwith new custom ones:\n\n${customImagesPath}\n\nPlease ensure all images have the same names\nas the original ones, which are located in the\nparent directory.\n\n\n`;
+		ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+		RepaintWindow();
+	});
+	themeImagesMenu.appendTo(settingsMenu);
 
 	// * THEME CACHE * //
 	const themeCacheMenu = new Menu('Theme cache');

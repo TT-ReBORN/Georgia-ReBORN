@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-02                                          * //
+// * Last change:    2024-01-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -634,7 +634,8 @@ const themePlayerControlsDefaults = {
 	topMenuCompact: true,
 	albumArtAlign: 'right',
 	albumArtBg: 'left',
-	albumArtScale: 'filled',
+	albumArtScale: 'cropped',
+	albumArtAspectRatioLimit: 1.5,
 	cycleArt: false,
 	cycleArtMWheel: true,
 	loadEmbeddedAlbumArtFirst: false,
@@ -671,7 +672,6 @@ const themePlayerControlsDefaults = {
 	panelWidthAuto: false,
 	showPanelOnStartup: 'playlist',
 	showPreloaderLogo: true,
-	showPreloaderCustomLogo: false,
 	returnToHomeOnPlaybackStop: true,
 	hideMiddlePanelShadow: false,
 	lockPlayerSize: false,
@@ -782,7 +782,8 @@ const themePlayerControlsComments = {
 	topMenuCompact: 'Values: true, false - Options > Player controls > Top menu > Compact top menu',
 	albumArtAlign: 'Values: "left", "leftMargin", "center", "right" - Options > Player controls > Album art > When player size is not proportional',
 	albumArtBg: 'Values: "left", "full", "none" - Options > Player controls > Album art > When player size is not proportional',
-	albumArtScale: 'Values: "filled, proportional" - Options > Player controls > Album art > When player size is maximized/fullscreen',
+	albumArtScale: 'Values: "cropped", "stretched", "proportional" - Options > Player controls > Album art > When player size is maximized/fullscreen',
+	albumArtAspectRatioLimit: 'Values: 1, 1.25, 1.5, 1.75, 2 - Options > Player controls > Album art > When player size is maximized/fullscreen > Keep wide and tall artworks proportional',
 	cycleArt: 'Values: min: 5, max: 120 in seconds - Options > Player controls > Album art > Cycle album artwork',
 	cycleArtMWheel: 'Values: true, false - Options > Player controls > Album art > Cycle album artwork with mouse wheel',
 	loadEmbeddedAlbumArtFirst: 'Values: true, false - Options > Player controls > Album art > Load embedded album art first',
@@ -819,7 +820,6 @@ const themePlayerControlsComments = {
 	panelWidthAuto: 'Values: true, false - Options > Player controls > Panel > Width > Use auto panel width',
 	showPanelOnStartup: 'Values: "cover", "playlist", "details", "library", "biography", "lyrics" - Options > Player controls > Panel > Show panel on startup',
 	showPreloaderLogo: 'Values: true, false - Options > Player controls > Panel > Show logo on preloader',
-	showPreloaderCustomLogo: 'Values: true, false - Options > Player controls > Panel > Show custom logo on preloader',
 	returnToHomeOnPlaybackStop: 'Values: true, false - Options > Player controls > Panel > Return to home on playback stop',
 	hideMiddlePanelShadow: 'Values: true, false - Options > Player controls > Panel > Hide middle panel shadow',
 	lockPlayerSize: 'Values: true, false - Options > Player controls > Panel > Lock player size',
@@ -1552,6 +1552,8 @@ const lyricFilenamesSchema = new ConfigurationObjectSchema('lyricFilenamePattern
 const themeSettingsDefaults = {
 	themeDayNightMode: false,
 	customThemeFonts: false,
+	customPreloaderLogo: false,
+	customThemeImages: false,
 	albumArtDiskCache: true,
 	albumArtPreLoad: false,
 	customLibraryDir: false,
@@ -1571,6 +1573,8 @@ const themeSettingsDefaults = {
 const themeSettingsComments = {
 	themeDayNightMode: 'Values: false, or a custom string value in 24 hour time format e.g "6-18" - Options > Settings > Theme day/night mode',
 	customThemeFonts: 'Values: true, false - Options > Settings > Theme fonts > Use custom theme fonts',
+	customPreloaderLogo: 'Values: true, false - Options > Settings > Theme images > Use custom preloader logo',
+	customThemeImages: 'Values: true, false - Options > Settings > Theme images > Use custom theme images',
 	albumArtDiskCache: 'Values: true, false - Options > Settings > Theme cache > Library > Image disk cache enabled',
 	albumArtPreLoad: 'Values: true, false - Options > Settings > Theme cache > Library > Preload images in disk cache',
 	customLibraryDir: 'Values: true, false - Options > Settings > Theme cache > Library > Use custom library directory',

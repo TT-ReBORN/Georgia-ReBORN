@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-02                                          * //
+// * Last change:    2024-01-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -501,8 +501,10 @@ function createFonts() {
 ///////////////
 /** @type {Object} The Georgia-ReBORN images path object. */
 const paths = {};
+/** @type {string} The Georgia-ReBORN custom/original images dir. */
+const images = pref.customThemeImages ? 'images\\custom' : 'images';
 /** @type {string} The Georgia-ReBORN images path shortcut. */
-const imagesPath = `${fb.ProfilePath}georgia-reborn\\images\\`;
+const imagesPath = `${fb.ProfilePath}georgia-reborn\\${images}\\`;
 
 // We expect disc art will be in .png with transparent background, best found at fanart.tv.
 
@@ -588,6 +590,8 @@ let albumArtIndex = 0;
 let albumArtSize = new ImageSize(0, 0, 0, 0);
 /** @type {GdiBitmap} The pre-scaled album art to speed up drawing considerably. */
 let albumArtScaled = null;
+/** @type {GdiBitmap} The copy of the original album art image, used for cropping. */
+let albumArtCopy = null;
 /** @type {boolean} The off-center position of the album art, if true, it will shift 40 pixels to the right. */
 let artOffCenter = false;
 /** @type {boolean} The state when artwork displayed is embedded and not loaded from a file. */
