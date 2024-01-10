@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-08                                          * //
+// * Last change:    2024-01-09                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -6024,29 +6024,25 @@ class Row extends ListItem {
 			const margin = !pref.showPlaylistTrackNumbers && !pref.showPlaylistIndexNumbers ? this.is_playing ? '      ' : '' : ' ';
 			const indexNumbers = this.idx < 9 ? `0${this.idx + 1}. ` : `${this.idx + 1}. `;
 			const trackNumbers = pref.showPlaylistIndexNumbers ? indexNumbers : `$if2(%tracknumber%,$pad_right(${this.idx_in_header + 1},2,0)). `;
-			const trackNumbersVinyl = `$if2(${tf.vinyl_track},00. )`;
-			let track_num_query = trackNumbers;
-
-			if (pref.showVinylNums) {
-				track_num_query = pref.showPlaylistIndexNumbers ? indexNumbers : trackNumbersVinyl;
-			}
-			if (this.is_playing) {
-				track_num_query = g_properties.show_header ? pref.showPlaylistIndexNumbers ? '      ' : '      ' : pref.showVinylNums ? trackNumbersVinyl : trackNumbers;
-			}
-
-			const showTrackNum = pref.showPlaylistTrackNumbers || pref.showPlaylistIndexNumbers ? track_num_query : '';
+			const trackNumbersVinyl = pref.showPlaylistIndexNumbers ? indexNumbers : `$if2(${tf.vinyl_track},00. )`;
+			const trackNumberQuery = this.is_playing ? g_properties.show_header ? '      ' : pref.showVinylNums ? trackNumbersVinyl : trackNumbers : trackNumbers;
+			const showTrackNumber = pref.showPlaylistTrackNumbers || pref.showPlaylistIndexNumbers ? trackNumberQuery : '';
 			const customTitle = settings.playlistCustomTitle;
 			const customTitleNoHeader = settings.playlistCustomTitleNoHeader;
 
-			const title_query =
-				g_properties.show_header ? (pref.showPlaylistTrackNumbers || pref.showPlaylistIndexNumbers ? track_num_query : '') +
+			const titleQuery =
+				g_properties.show_header ? showTrackNumber +
 					(pref.showArtistPlaylistRows && pref.showAlbumPlaylistRows && customTitle === '' ? `${margin}%artist% - %album% -  %title%[ '('%original artist%' cover)']` :
 					 pref.showArtistPlaylistRows && customTitle === '' ? `${margin}%artist% -  %title%[ '('%original artist%' cover)']` :
 					 pref.showAlbumPlaylistRows  && customTitle === '' ? `${margin}%album% -  %title%[ '('%original artist%' cover)']` :
-					customTitle !== '' ? `${margin}${customTitle}` : `${margin}%title%[ '('%original artist%' cover)']`) :
-				customTitleNoHeader !== '' ? `${margin}     ${customTitleNoHeader}` : `${margin}     %artist% - %album% - ${showTrackNum} %title%[ '('%original artist%' cover)']`;
+					 customTitle !== '' && !customTitle.includes('%tracknumber%') ? `${margin}${showTrackNumber}${customTitle}` :
+					 customTitle !== '' ? `${margin}${customTitle}` :
+					 `${margin}%title%[ '('%original artist%' cover)']`) :
+				customTitleNoHeader !== '' && !customTitleNoHeader.includes('%tracknumber%') ? `${margin}     ${showTrackNumber} ${customTitleNoHeader}` :
+				customTitleNoHeader !== '' ? `${margin}     ${customTitleNoHeader}` :
+				`${margin}     %artist% - %album% - ${showTrackNumber} %title%[ '('%original artist%' cover)']`;
 
-			this.title_text = (fb.IsPlaying && this.is_playing && is_radio) ? $(title_query) : $(title_query, this.metadb);
+			this.title_text = (fb.IsPlaying && this.is_playing && is_radio) ? $(titleQuery) : $(titleQuery, this.metadb);
 		}
 
 		// * TITLE ARTIST init
@@ -6267,18 +6263,27 @@ class Row extends ListItem {
 		}
 
 		const is_radio = this.metadb.RawPath.startsWith('http');
-		const margin = !pref.showPlaylistTrackNumbers && !pref.showPlaylistIndexNumbers ? '' : ' ';
+		const margin = '';
 		const indexNumbers = this.idx < 9 ? `0${this.idx + 1}. ` : `${this.idx + 1}. `;
 		const trackNumbers = pref.showPlaylistIndexNumbers ? indexNumbers : `$if2(%tracknumber%,$pad_right(${this.idx_in_header + 1},2,0)). `;
-		const track_num_query = pref.showVinylNums ? pref.showPlaylistIndexNumbers ? indexNumbers : tf.vinyl_track : trackNumbers;
+		const trackNumberQuery = pref.showVinylNums ? pref.showPlaylistIndexNumbers ? indexNumbers : tf.vinyl_track : trackNumbers;
+		const showTrackNumber = pref.showPlaylistTrackNumbers || pref.showPlaylistIndexNumbers ? trackNumberQuery : '';
+		const customTitle = settings.playlistCustomTitle;
+		const customTitleNoHeader = settings.playlistCustomTitleNoHeader;
 
-		const title_query = g_properties.show_header ? (pref.showPlaylistTrackNumbers || pref.showPlaylistIndexNumbers ? track_num_query : '') +
-			(pref.showArtistPlaylistRows && pref.showAlbumPlaylistRows ? `${margin}%artist% - %album% -  %title%[ '('%original artist%' cover)']` :
-			 pref.showArtistPlaylistRows ? `${margin}%artist% -  %title%[ '('%original artist%' cover)']` :
-			 pref.showAlbumPlaylistRows  ? `${margin}%album% -  %title%[ '('%original artist%' cover)']` :
-		`${margin}%title%[ '('%original artist%' cover)']`) : `%artist%$crlf()%album%$crlf()${track_num_query} %title%[ '('%original artist%' cover)']`;
+		const titleQuery =
+			g_properties.show_header ? showTrackNumber +
+				(pref.showArtistPlaylistRows && pref.showAlbumPlaylistRows && customTitle === '' ? `${margin}%artist% - %album% -  %title%[ '('%original artist%' cover)']` :
+				pref.showArtistPlaylistRows && customTitle === '' ? `${margin}%artist% -  %title%[ '('%original artist%' cover)']` :
+				pref.showAlbumPlaylistRows  && customTitle === '' ? `${margin}%album% -  %title%[ '('%original artist%' cover)']` :
+				customTitle !== '' && !customTitle.includes('%tracknumber%') ? `${margin}${showTrackNumber}${customTitle}` :
+				customTitle !== '' ? `${margin}${customTitle}` :
+				`${margin}%title%[ '('%original artist%' cover)']`) :
+			customTitleNoHeader !== '' && !customTitleNoHeader.includes('%tracknumber%') ? `${margin}${showTrackNumber}${customTitleNoHeader}` :
+			customTitleNoHeader !== '' ? `${margin}${customTitleNoHeader}` :
+			`%artist%$crlf()%album%$crlf()${showTrackNumber} %title%[ '('%original artist%' cover)']`;
 
-		const title_text = (fb.IsPlaying && this.is_playing && is_radio) ? $(title_query) : $(title_query, this.metadb);
+		const title_text = (fb.IsPlaying && this.is_playing && is_radio) ? $(titleQuery) : $(titleQuery, this.metadb);
 
 		if (this.title_text_w > this.title_w) {
 			tt.showDelayed(title_text);
