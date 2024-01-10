@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-09                                          * //
+// * Last change:    2024-01-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -232,7 +232,7 @@ function drawHiResAudioLogo(gr) {
 
 	if (!displayHiResAudioLogo) return;
 
-	const logoPath = `${fb.ProfilePath}georgia-reborn\\images\\misc\\`;
+	const logoPath = `${imagesPath}misc\\`;
 	const plus4k = RES_4K ? '4K-' : '';
 	const plusRound = pref.hiResAudioBadgeRound ? '-round' : '';
 

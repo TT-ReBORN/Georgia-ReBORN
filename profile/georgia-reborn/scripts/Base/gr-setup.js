@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-09                                          * //
+// * Last change:    2024-01-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -503,8 +503,10 @@ function createFonts() {
 const paths = {};
 /** @type {string} The Georgia-ReBORN custom/original images dir. */
 const images = pref.customThemeImages ? 'images\\custom' : 'images';
-/** @type {string} The Georgia-ReBORN images path shortcut. */
+/** @type {string} The Georgia-ReBORN images+custom path shortcut. */
 const imagesPath = `${fb.ProfilePath}georgia-reborn\\${images}\\`;
+/** @type {string} The Georgia-ReBORN images base path shortcut. */
+const imagesPathBase = `${fb.ProfilePath}georgia-reborn\\images\\`;
 
 // We expect disc art will be in .png with transparent background, best found at fanart.tv.
 
@@ -545,29 +547,29 @@ pref.vinyl_path_images           = '$directory_path(%path%)\\Images\\vinyl.png';
 pref.vinyl_path_scans            = '$directory_path(%path%)\\Scans\\vinyl.png'; // Subfolder Scans -> vinyl.png
 
 // * CD ART STUBS * //
-paths.cdArtWhiteStub         = `${imagesPath}discart\\cd-white.png`;
-paths.cdArtBlackStub         = `${imagesPath}discart\\cd-black.png`;
-paths.cdArtBlankStub         = `${imagesPath}discart\\cd-blank.png`;
-paths.cdArtTransStub         = `${imagesPath}discart\\cd-transparent.png`;
+paths.cdArtWhiteStub         = `${imagesPathBase}discart\\cd-white.png`;
+paths.cdArtBlackStub         = `${imagesPathBase}discart\\cd-black.png`;
+paths.cdArtBlankStub         = `${imagesPathBase}discart\\cd-blank.png`;
+paths.cdArtTransStub         = `${imagesPathBase}discart\\cd-transparent.png`;
 
 // * VINYL ART STUBS * //
-paths.vinylArtWhiteStub      = `${imagesPath}discart\\vinyl-white.png`;
-paths.vinylArtVoidStub       = `${imagesPath}discart\\vinyl-void.png`;
-paths.vinylArtColdFusionStub = `${imagesPath}discart\\vinyl-cold-fusion.png`;
-paths.vinylArtRingOfFireStub = `${imagesPath}discart\\vinyl-ring-of-fire.png`;
-paths.vinylArtMapleStub      = `${imagesPath}discart\\vinyl-maple.png`;
-paths.vinylArtBlackStub      = `${imagesPath}discart\\vinyl-black.png`;
-paths.vinylArtBlackHoleStub  = `${imagesPath}discart\\vinyl-black-hole.png`;
-paths.vinylArtEbonyStub      = `${imagesPath}discart\\vinyl-ebony.png`;
-paths.vinylArtTransStub      = `${imagesPath}discart\\vinyl-transparent.png`;
+paths.vinylArtWhiteStub      = `${imagesPathBase}discart\\vinyl-white.png`;
+paths.vinylArtVoidStub       = `${imagesPathBase}discart\\vinyl-void.png`;
+paths.vinylArtColdFusionStub = `${imagesPathBase}discart\\vinyl-cold-fusion.png`;
+paths.vinylArtRingOfFireStub = `${imagesPathBase}discart\\vinyl-ring-of-fire.png`;
+paths.vinylArtMapleStub      = `${imagesPathBase}discart\\vinyl-maple.png`;
+paths.vinylArtBlackStub      = `${imagesPathBase}discart\\vinyl-black.png`;
+paths.vinylArtBlackHoleStub  = `${imagesPathBase}discart\\vinyl-black-hole.png`;
+paths.vinylArtEbonyStub      = `${imagesPathBase}discart\\vinyl-ebony.png`;
+paths.vinylArtTransStub      = `${imagesPathBase}discart\\vinyl-transparent.png`;
 
 // * CUSTOM ART STUBS * //
-paths.customStub             = `${imagesPath}custom\\discart\\${pref.discArtStub}.png`;
+paths.customStub             = `${imagesPathBase}custom\\discart\\${pref.discArtStub}.png`;
 
 // * ARTIST & LABEL LOGOS * //
-paths.artistlogos      = `${imagesPath}artistlogos\\`;
-paths.artistlogosColor = `${imagesPath}artistlogos color\\`;
-paths.labelsBase       = `${imagesPath}recordlabel\\`;
+paths.artistlogos      = `${imagesPathBase}artistlogos\\`;
+paths.artistlogosColor = `${imagesPathBase}artistlogos color\\`;
+paths.labelsBase       = `${imagesPathBase}recordlabel\\`;
 
 // * MISC * //
 paths.flagsBase        = `${imagesPath}flags\\`;

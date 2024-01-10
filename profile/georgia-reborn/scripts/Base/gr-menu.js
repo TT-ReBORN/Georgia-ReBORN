@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-09                                          * //
+// * Last change:    2024-01-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2161,7 +2161,7 @@ function detailsOptions(menu, context_menu) {
 		displayDiscArtMenu.addRadioItems(customDiscArtLabels, pref.discArtStub, customDiscArtValues, (discArt) => {
 			pref.discArtStub = discArt;
 			pref.noDiscArtStub = false;
-			paths.customStub = `${imagesPath}custom\\discart\\${pref.discArtStub}.png`;
+			paths.customStub = `${imagesPathBase}custom\\discart\\${pref.discArtStub}.png`;
 			discArtCover = disposeDiscArt(discArtCover);
 			discArtArrayCover = [];
 			fetchNewArtwork(fb.GetNowPlaying());
