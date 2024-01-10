@@ -3289,18 +3289,18 @@ function settingsOptions(menu) {
 	// * THEME IMAGES * //
 	const themeImagesMenu = new Menu('Theme images');
 	themeImagesMenu.addToggleItem('Use custom preloader logo', pref, 'customPreloaderLogo', () => {
-		if (!pref.customPreloaderLogo) return;
+		if (!pref.customPreloaderLogo) return window.Reload();
 		const customLogoPath = `${fb.ProfilePath}georgia-reborn\\images\\custom\\logo\\_4K-custom-logo.png and _custom-logo.png`;
 		const msg = `The custom logo placeholder can be replaced\nwith a new logo:\n\n${customLogoPath}\n\nRecommended logo dimensions are:\n500x500 pixels for 4K\n250x250 pixels for HD\n\n\n`;
 		ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
-		RepaintWindow();
+		window.Reload();
 	});
 	themeImagesMenu.addToggleItem('Use custom theme images', pref, 'customThemeImages', () => {
-		if (!pref.customThemeImages) return;
+		if (!pref.customThemeImages) return window.Reload();
 		const customImagesPath = `${fb.ProfilePath}georgia-reborn\\images\\custom\\`;
 		const msg = `All theme images can be safely replaced\nwith new custom ones:\n\n${customImagesPath}\n\nPlease ensure all images have the same names\nas the original ones, which are located in the\nparent directory.\n\n\n`;
 		ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
-		RepaintWindow();
+		window.Reload();
 	});
 	themeImagesMenu.appendTo(settingsMenu);
 
