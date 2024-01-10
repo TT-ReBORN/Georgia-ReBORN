@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-10                                          * //
+// * Last change:    2024-01-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2218,7 +2218,7 @@ function fetchDiscArt() {
 		// * No disc art found, display custom disc art stubs
 		if (!discArtPath && (!pref.noDiscArtStub || pref.showDiscArtStub)) {
 			discArtFound = false;
-			discArtPath = Object.prototype.hasOwnProperty.call(discArtStubPaths, pref.discArtStub) ? discArtStubPaths[pref.discArtStub] : paths.customStub;
+			discArtPath = Object.prototype.hasOwnProperty.call(discArtStubPaths, pref.discArtStub) ? discArtStubPaths[pref.discArtStub] : paths.discArtCustomStub;
 		}
 
 		// * Load disc art

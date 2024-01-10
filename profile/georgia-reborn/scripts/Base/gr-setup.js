@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-10                                          * //
+// * Last change:    2024-01-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -561,7 +561,7 @@ paths.vinylArtEbonyStub      = `${imagesPathBase}discart\\vinyl-ebony.png`;
 paths.vinylArtTransStub      = `${imagesPathBase}discart\\vinyl-transparent.png`;
 
 // * CUSTOM ART STUBS * //
-paths.customStub             = `${imagesPathBase}custom\\discart\\${pref.discArtStub}.png`;
+paths.discArtCustomStub      = `${imagesPathBase}custom\\discart\\${pref.discArtStub}.png`;
 
 // * ARTIST & LABEL LOGOS * //
 paths.artistlogos      = `${imagesPathBase}artistlogos\\`;

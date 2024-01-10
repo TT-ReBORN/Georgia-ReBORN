@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-10                                          * //
+// * Last change:    2024-01-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2161,13 +2161,13 @@ function detailsOptions(menu, context_menu) {
 		displayDiscArtMenu.addRadioItems(customDiscArtLabels, pref.discArtStub, customDiscArtValues, (discArt) => {
 			pref.discArtStub = discArt;
 			pref.noDiscArtStub = false;
-			paths.customStub = `${imagesPathBase}custom\\discart\\${pref.discArtStub}.png`;
+			paths.discArtCustomStub = `${imagesPathBase}custom\\discart\\${pref.discArtStub}.png`;
 			discArtCover = disposeDiscArt(discArtCover);
 			discArtArrayCover = [];
 			fetchNewArtwork(fb.GetNowPlaying());
 			RepaintWindow();
-			if (!IsFile(paths.customStub)) {
-				const msg = `The custom disc art placeholder was not found in:\n${paths.customStub}\n\nBe sure that image exist and has the correct filename\nin the "customDiscArtStub" section of the\ncustom config file:\n${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc\n\n\n`;
+			if (!IsFile(paths.discArtCustomStub)) {
+				const msg = `The custom disc art placeholder was not found in:\n${paths.discArtCustomStub}\n\nBe sure that image exist and has the correct filename\nin the "customDiscArtStub" section of the\ncustom config file:\n${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc\n\n\n`;
 				ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 			}
 		}, !pref.displayDiscArt);
