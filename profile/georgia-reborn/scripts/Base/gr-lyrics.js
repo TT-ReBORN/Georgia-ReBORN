@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-21                                          * //
+// * Last change:    2024-01-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -135,7 +135,7 @@ class Lyrics {
 		const tpath = [];
 		const tfilename = [];
 		const stripReservedChars = (filename) => filename.replace(/[<>:"/\\|?*]/g, '_');
-		const lyricPaths = pref.customLyricsDir ? globals.customLyricsDir : tf.lyr_path;
+		const lyricPaths = pref.customLyricsDir ? globals.customLyricsDir : globals.lyr_path;
 
 		lyricPaths.forEach(path => {
 			tpath.push($($Escape(path)));

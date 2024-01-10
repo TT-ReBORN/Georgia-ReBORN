@@ -21,24 +21,21 @@
  * @returns {boolean} Returns `true` if IE installed, otherwise `false`.
  * @type {Function}
  */
-let detectIE = false;
-detectIE = DetectIE();
+const detectIE = DetectIE();
 
 /**
  * Detects if the user's system is running on Windows 64 bit.
  * @returns {boolean} Returns `true` if Windows is 64 bit, otherwise `false`.
  * @type {Function}
  */
-let detectWin64 = false;
-detectWin64 = DetectWin64();
+const detectWin64 = DetectWin64();
 
 /**
  * Detects if the user's system is running Wine on Linux or MacOs.
  * @returns {boolean} Returns `true` if Wine is running, otherwise `false`.
  * @type {Function}
  */
-let detectWine = false;
-detectWine = DetectWine();
+const detectWine = DetectWine();
 
 
 ////////////////
@@ -575,6 +572,23 @@ paths.labelsBase       = `${imagesPathBase}recordlabel\\`;
 paths.flagsBase        = `${imagesPath}flags\\`;
 paths.lastFmImageRed   = `${imagesPath}misc\\last-fm-red-36.png`;
 paths.lastFmImageWhite = `${imagesPath}misc\\last-fm-36.png`;
+
+
+/////////////////
+// * GLOBALS * //
+/////////////////
+/** @type {string} The string template for the vinyl track, with a fallback to track number if vinyl track information is not available. */
+globals.vinyl_track = `$if2(${tf.vinyl_side}[${tf.vinyl_tracknum}]. ,[%tracknumber%. ])`;
+
+/** @type {string[]} The array of label information fields, utilized in $meta() calls without '%' delimiters. */
+globals.labels = ['label', 'publisher', 'discogs_label'];
+
+/** @type {string[]} The array of paths for locating cached lyrics files in the user's system. */
+globals.lyr_path = [
+    '$replace($replace(%path%,%filename_ext%,),,\\)',
+    `${fb.ProfilePath}cache\\lyrics\\`,
+    `${fb.FoobarPath}cache\\lyrics\\`
+];
 
 
 /////////////////

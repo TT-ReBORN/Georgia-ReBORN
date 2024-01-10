@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-09                                          * //
+// * Last change:    2024-01-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1714,7 +1714,7 @@ function fetchAlbumArt(metadb) {
 		albumArtList = globals.imgPaths.map(path => utils.Glob($(path), FileAttributes.Directory | FileAttributes.Hidden)).flat();
 		const filteredFileTypes = pref.filterDiscJpgsFromAlbumArt ? '(png|jpg)' : 'png';
 		const pattern = new RegExp(`(cd|disc|vinyl|${settings.discArtBasename})([0-9]*|[a-h]).${filteredFileTypes}`, 'i');
-		const imageType = /(jpg|png)$/i;	// TODO: Add gifs?
+		const imageType = /(jpg|png)$/i;
 		// * Remove duplicates and cd/vinyl art and make sure all files are jpg or pngs
 		albumArtList = [...new Set(albumArtList)].filter(path => !pattern.test(path) && imageType.test(path));
 
@@ -2428,13 +2428,13 @@ function getLabelLogo(metadb) {
 	recordLabels = [];	// Will free memory from earlier loaded record label images
 	recordLabelsInverted = [];
 
-	for (let i = 0; i < tf.labels.length; i++) {
-		labelStrings.push(...GetMetaValues(tf.labels[i], metadb));
+	for (const label of globals.labels) {
+		labelStrings.push(...GetMetaValues(label, metadb));
 	}
 	labelStrings = [...new Set(labelStrings)];
 
-	for (let i = 0; i < labelStrings.length; i++) {
-		const addLabel = loadLabelLogo(labelStrings[i]);
+	for (const labelString of labelStrings) {
+		const addLabel = loadLabelLogo(labelString);
 		if (addLabel != null) {
 			recordLabels.push(addLabel);
 			try {

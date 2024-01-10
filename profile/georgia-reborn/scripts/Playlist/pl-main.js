@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-09                                          * //
+// * Last change:    2024-01-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -4273,11 +4273,8 @@ class DiscHeader extends BaseHeader {
 		super(parent, x, y, w, h, idx);
 
 		this.idx = idx;
-
 		this.num_in_header = 0;
 		// this.dont_draw = false;
-		this.is_odd = false;    // TODO: Does this ever get set?
-
 		this.disc_title = '';
 	}
 
@@ -4327,10 +4324,6 @@ class DiscHeader extends BaseHeader {
 	 */
 	draw(gr, top, bottom) {
 		gr.SetSmoothingMode(SmoothingMode.None);
-
-		if (this.is_odd && g_properties.show_row_stripes) {
-			gr.FillSolidRect(this.x, this.y + 1, this.w, this.h - 1, g_pl_colors.row_stripes_bg);
-		}
 
 		const cur_x = this.x + SCALE(20);
 		const right_pad = SCALE(20);
@@ -5378,10 +5371,10 @@ class Header extends BaseHeader {
 
 		// * Record labels
 		let labels = [];
-		for (let i = 0; i < tf.labels.length; i++) {
-			labels.push(...GetMetaValues(tf.labels[i], this.metadb));
+		for (let i = 0; i < globals.labels.length; i++) {
+			labels.push(...GetMetaValues(globals.labels[i], this.metadb));
 		}
-		labels = [...new Set(labels)];	// Remove duplicates
+		labels = [...new Set(labels)]; // Remove duplicates
 		let label_left = -right_edge * 2 + (RES_4K ? 42 : 20);
 		const label_y = Math.round(2 * this.h / 3) - (RES_4K ? 4 : -1);
 		for (let i = labels.length - 1; i >= 0; --i) {
@@ -6024,7 +6017,7 @@ class Row extends ListItem {
 			const margin = !pref.showPlaylistTrackNumbers && !pref.showPlaylistIndexNumbers ? this.is_playing ? '      ' : '' : ' ';
 			const indexNumbers = this.idx < 9 ? `0${this.idx + 1}. ` : `${this.idx + 1}. `;
 			const trackNumbers = pref.showPlaylistIndexNumbers ? indexNumbers : `$if2(%tracknumber%,$pad_right(${this.idx_in_header + 1},2,0)). `;
-			const trackNumbersVinyl = pref.showPlaylistIndexNumbers ? indexNumbers : `$if2(${tf.vinyl_track},00. )`;
+			const trackNumbersVinyl = pref.showPlaylistIndexNumbers ? indexNumbers : `$if2(${globals.vinyl_track},00. )`;
 			const trackNumberQuery = this.is_playing ? g_properties.show_header ? '      ' : pref.showVinylNums ? trackNumbersVinyl : trackNumbers : trackNumbers;
 			const showTrackNumber = pref.showPlaylistTrackNumbers || pref.showPlaylistIndexNumbers ? trackNumberQuery : '';
 			const customTitle = settings.playlistCustomTitle;
@@ -6266,7 +6259,7 @@ class Row extends ListItem {
 		const margin = '';
 		const indexNumbers = this.idx < 9 ? `0${this.idx + 1}. ` : `${this.idx + 1}. `;
 		const trackNumbers = pref.showPlaylistIndexNumbers ? indexNumbers : `$if2(%tracknumber%,$pad_right(${this.idx_in_header + 1},2,0)). `;
-		const trackNumberQuery = pref.showVinylNums ? pref.showPlaylistIndexNumbers ? indexNumbers : tf.vinyl_track : trackNumbers;
+		const trackNumberQuery = pref.showVinylNums ? pref.showPlaylistIndexNumbers ? indexNumbers : globals.vinyl_track : trackNumbers;
 		const showTrackNumber = pref.showPlaylistTrackNumbers || pref.showPlaylistIndexNumbers ? trackNumberQuery : '';
 		const customTitle = settings.playlistCustomTitle;
 		const customTitleNoHeader = settings.playlistCustomTitleNoHeader;

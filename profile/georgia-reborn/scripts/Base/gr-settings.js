@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-09                                          * //
+// * Last change:    2024-01-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2113,25 +2113,6 @@ if (configCustom.fileExists) {
 	configVersion = prefs.configVersion || prefs.version;
 }
 
-// * Do the migration check BEFORE we start adding extra crap to tf.
-// TODO: Should I move all the tf. extra properties that AREN'T in the config to the globals object? Probably maybe?
-migrateCheck(currentVersion, configVersion);
-
-// ! All tf values from here below will NOT be written to the georgia-reborn-config file
-tf.vinyl_track = `$if2(${tf.vinyl_side}[${tf.vinyl_tracknum}]. ,[%tracknumber%. ])`;
-
-tf.lyr_path = [ // To add and use a new custom lyric directory, go to the customLyricsDir section in the config file
-	'$replace($replace(%path%,%filename_ext%,),,\\)',
-	`${fb.ProfilePath}cache\\lyrics\\`,
-	`${fb.FoobarPath}cache\\lyrics\\`
-];
-
-tf.labels = [ // Array of fields to test for publisher. Add, change or re-order as needed.
-	'label', // ! DO NOT put %s around the field names because we are using $meta() calls
-	'publisher',
-	'discogs_label'
-];
-
 
 ///////////////////////////
 // * DISC ART SETTINGS * //
@@ -2319,3 +2300,9 @@ function scheduleUpdateCheck(delay) {
 		}
 	}, delay);
 }
+
+
+////////////////////////////
+// ! DO MIGRATION CHECK ! //
+////////////////////////////
+migrateCheck(currentVersion, configVersion);

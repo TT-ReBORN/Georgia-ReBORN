@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-08                                          * //
+// * Last change:    2024-01-10                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -78,7 +78,7 @@ function on_metadb_changed(handle_list, fromhook) {
 			const composer = $(tf.composer);
 			const originalArtist = $(tf.original_artist);
 			let tracknum = '';
-			tracknum = pref.showVinylNums ? $(tf.vinyl_track) : $(tf.tracknum);
+			tracknum = pref.showVinylNums ? $(globals.vinyl_track) : $(tf.tracknum);
 
 			str.tracknum = tracknum.trim();
 			str.title = title + originalArtist;
