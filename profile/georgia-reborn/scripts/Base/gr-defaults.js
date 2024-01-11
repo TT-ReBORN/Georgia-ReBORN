@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-09                                          * //
+// * Last change:    2024-01-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1633,8 +1633,8 @@ const settingsDefaults = {
 	hidePanelBgWhenCollapsed: false,
 	doubleClickRefresh: false,
 	showDebugLog: false,
-	showThemeLog: false,
-	showThemeLogOverlay: false,
+	showDebugThemeLog: false,
+	showDebugThemeOverlay: false,
 	stoppedString1: 'foobar2000',
 	stoppedString1acr: 'fb2k',
 	stoppedString2: '$replace(%_foobar2000_version%,foobar2000 ,)'
@@ -1674,8 +1674,8 @@ const settingsComments = {
 	hidePanelBgWhenCollapsed: 'Hide panel background when playing an album and the playlist or library view is active',
 	doubleClickRefresh: 'Will refresh the theme when double clicking for example on the lower bar',
 	showDebugLog: 'Enables extra logging in the console. Probably not needed unless you encounter a problem or you\'re asked to enable it.',
-	showThemeLog: 'Logs the output of the algorithm which determines the primary theme color.',
-	showThemeLogOverlay: 'Displays various theme debug logs on the album art as an overlay.',
+	showDebugThemeLog: 'Logs the output of the algorithm which determines the primary theme color.',
+	showDebugThemeOverlay: 'Displays various theme debug logs on the album art as an overlay.',
 	stoppedString1: 'The bolded portion of text shown above the progress bar when nothing is playing',
 	stoppedString2: 'The second (non-bold) portion of text shown above the progress bar when nothing is playing'
 };

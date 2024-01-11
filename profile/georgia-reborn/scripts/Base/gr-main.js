@@ -55,31 +55,43 @@ function drawBackgrounds(gr) {
 
 
 /**
+ * Draws the style Blend in the Details panel.
+ * @param {GdiGraphics} gr
+ */
+function drawDetailsBlend(gr) {
+	if (pref.styleBlend && albumArt && blendedImg && (!displayPlaylist && !displayLibrary && !displayBiography && pref.layout === 'default' ||
+		!displayPlaylistArtwork && !displayLibrary && pref.layout === 'artwork')) {
+		gr.DrawImage(blendedImg, 0, 0, ww, wh, 0, 0, blendedImg.Width, blendedImg.Height);
+	}
+}
+
+
+/**
  * Draws the Playlist, Library and Biography panels.
  * @param {GdiGraphics} gr
  */
 function drawPanels(gr) {
 	if (pref.layout === 'default' || pref.layout === 'artwork') {
 		if (displayLibrary) {
-			const drawLibraryProfiler = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> library') : null;
+			const drawLibraryProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> library');
 			libraryPanel.on_paint(gr);
-			drawLibraryProfiler && drawLibraryProfiler.Print();
+			if (drawLibraryProfiler) drawLibraryProfiler.Print();
 		}
 		if (pref.layout === 'default' && displayPlaylist || pref.layout === 'artwork' && displayPlaylistArtwork || displayLibrarySplit()) {
-			const drawPlaylistProfiler = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> playlist') : null;
+			const drawPlaylistProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> playlist');
 			playlist.on_paint(gr);
-			timings.showExtraDrawTiming && drawPlaylistProfiler.Print();
+			if (drawPlaylistProfiler) drawPlaylistProfiler.Print();
 		}
 		if (displayBiography) {
-			const drawBiographyProfiler = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> biography') : null;
+			const drawBiographyProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> biography');
 			biographyPanel.on_paint(gr);
-			drawBiographyProfiler && drawBiographyProfiler.Print();
+			if (drawBiographyProfiler) drawBiographyProfiler.Print();
 		}
 	}
 	else if (pref.layout === 'compact' && displayPlaylist) {
-		const drawPlaylistProfiler = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> playlist') : null;
+		const drawPlaylistProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> playlist');
 		playlist.on_paint(gr);
-		timings.showExtraDrawTiming && drawPlaylistProfiler.Print();
+		if (drawPlaylistProfiler) drawPlaylistProfiler.Print();
 	}
 }
 
@@ -98,7 +110,7 @@ function drawAlbumArt(gr) {
 
 	if (!fb.IsPlaying || !displayAlbumArt || displayLibrarySplit()) return;
 
-	const drawArt = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> artwork') : null;
+	const drawAlbumArtProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> album art');
 
 	// * BIG ALBUM ART - NEEDS TO BE DRAWN AFTER ALL BLENDING IS DONE, I.E AFTER PLAYLIST * //
 	if (!noAlbumArtStub) {
@@ -132,7 +144,7 @@ function drawAlbumArt(gr) {
 		}
 	}
 
-	if (timings.showExtraDrawTiming) drawArt.Print();
+	if (drawAlbumArtProfiler) drawAlbumArtProfiler.Print();
 }
 
 
@@ -197,7 +209,7 @@ function drawNoAlbumArt(gr) {
  */
 function drawDiscArt(gr) {
 	if (pref.layout === 'default' && pref.displayDiscArt && discArtSize.y >= albumArtSize.y && discArtSize.h <= albumArtSize.h) {
-		const drawDiscProfiler = timings.showExtraDrawTiming ? fb.CreateProfiler('discArt') : null;
+		const drawDiscArtProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> disc art');
 		const discArtImg = discArtArray[discArtRotationIndex] || discArtRotation;
 		gr.DrawImage(discArtImg, discArtSize.x, discArtSize.y, discArtSize.w, discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);
 
@@ -206,7 +218,7 @@ function drawDiscArt(gr) {
 			gr.DrawImage(discArtImgCover, discArtSize.x, discArtSize.y, discArtSize.w, discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);
 		}
 
-		if (timings.showExtraDrawTiming) drawDiscProfiler.Print();
+		if (drawDiscArtProfiler) drawDiscArtProfiler.Print();
 	}
 
 	// Show full background when displaying the Lyrics panel and lyrics layout is in full width
@@ -293,14 +305,7 @@ function drawDetailsMetadataGrid(gr) {
 	const displayDetails = (pref.layout === 'artwork' ? !displayPlaylistArtwork && displayPlaylist : !displayPlaylist) && !displayLibrary && !displayBiography;
 	if (!displayDetails || pref.lyricsLayout === 'full' && pref.displayLyrics) return;
 
-	const drawTextGrid = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> textGrid') : null;
-
-	const marginLeft = SCALE(pref.layout !== 'default' ? 20 : 40);
-	const marginRight = SCALE(20);
-	let gridSpace = 0;
-	gridTop = albumArtSize.y ? albumArtSize.y + marginLeft : geo.topMenuHeight + marginLeft;
-	gridSpace = Math.round((!albumArt && discArt ? discArtSize.x : albumArtSize.x) - geo.discArtShadow - marginLeft - marginRight);
-	const textWidth = gridSpace;
+	const drawMetadataGridProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> metadata grid');
 
 	const gridArtistFontSize   = pref[`gridArtistFontSize_${pref.layout}`];
 	const showGridArtist       = pref[`showGridArtist_${pref.layout}`];
@@ -312,8 +317,13 @@ function drawDetailsMetadataGrid(gr) {
 	const showGridChannelLogo  = pref[`showGridChannelLogo_${pref.layout}`];
 	const showGridCodecLogo    = pref[`showGridCodecLogo_${pref.layout}`];
 
+	const marginLeft = SCALE(pref.layout !== 'default' ? 20 : 40);
+	const marginRight = SCALE(20);
+	const textWidth = Math.round((!albumArt && discArt ? discArtSize.x : albumArtSize.x) - geo.discArtShadow - marginLeft - marginRight);
+	gridTop = albumArtSize.y ? albumArtSize.y + marginLeft : geo.topMenuHeight + marginLeft;
+
 	// * DETAILS METADATA GRID * //
-	if (gridSpace > 150) {
+	if (textWidth > 150) {
 		/** @type {MeasureStringInfo} */
 		let txtRec;
 		let gridArtistTxtRec;
@@ -616,7 +626,7 @@ function drawDetailsMetadataGrid(gr) {
 		}
 	}
 
-	if (timings.showExtraDrawTiming) drawTextGrid.Print();
+	if (drawMetadataGridProfiler) drawMetadataGridProfiler.Print();
 }
 
 
@@ -628,7 +638,7 @@ function drawDetailsBandLogo(gr) {
 	const displayDetails = pref.layout === 'default' && !displayPlaylist && !displayLibrary && !displayBiography;
 	if (!fb.IsPlaying || !albumArt || !displayDetails || pref.lyricsLayout === 'full' && pref.displayLyrics) return;
 
-	const drawLogos = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> logos');
+	const drawBandLogoProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> band logo');
 	const availableSpace = albumArtSize.y + albumArtSize.h - gridTop;
 	const lightBg = new Color(col.detailsText).brightness < 140;
 	const logo = lightBg || noAlbumArtStub ? (invertedBandLogo || bandLogo) : bandLogo;
@@ -646,7 +656,7 @@ function drawDetailsBandLogo(gr) {
 		gr.DrawImage(logo, logoX, logoY, logoW, logoH, 0, 0, logo.Width, logo.Height, 0);
 	}
 
-	if (timings.showExtraDrawTiming) drawLogos.Print();
+	if (drawBandLogoProfiler) drawBandLogoProfiler.Print();
 }
 
 
@@ -656,7 +666,7 @@ function drawDetailsBandLogo(gr) {
  */
 function drawDetailsLabelLogo(gr) {
 	const displayDetails = pref.layout === 'default' && !displayPlaylist && !displayLibrary && !displayBiography;
-	const drawLogos = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> labels') : null;
+	const drawLabelLogoProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> label logo');
 	if (!fb.IsPlaying || !albumArt || !displayDetails || pref.lyricsLayout === 'full' && pref.displayLyrics) return;
 
 	if (recordLabels.length > 0) {
@@ -673,7 +683,6 @@ function drawDetailsLabelLogo(gr) {
 		let labelSpacing = 0;
 		let labelWidth;
 		let labelHeight;
-		// const drawLabelTime = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> record labels') : null;
 
 		for (let i = 0; i < labels.length; i++) {
 			if (labels[i].Width > maxLabelWidth) {
@@ -761,10 +770,9 @@ function drawDetailsLabelLogo(gr) {
 			}
 			labelHeight = origLabelHeight; // Restore
 		}
-		// if (timings.showExtraDrawTiming) drawLabelTime.Print();
 	}
 
-	if (timings.showExtraDrawTiming) drawLogos.Print();
+	if (drawLabelLogoProfiler) drawLabelLogoProfiler.Print();
 }
 
 
@@ -791,6 +799,8 @@ function drawLyrics(gr) {
  * @param {GdiGraphics} gr
  */
 function drawStyles(gr) {
+	const drawStylesProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> theme styles');
+
 	if (pref.styleBevel) {
 		gr.SetSmoothingMode(SmoothingMode.None);
 		if ((pref.layout === 'default' && (displayPlaylist || displayLibrary) && !displayBiography ||
@@ -819,6 +829,8 @@ function drawStyles(gr) {
 		gr.FillGradRect(0, 0, ww, geo.topMenuHeight, pref.styleAlternative2 ? -87 : -87, col.styleAlternative, 0);
 		gr.FillGradRect(0, wh - geo.lowerBarHeight, ww, geo.lowerBarHeight, pref.styleAlternative2 ? 87 : -87, 0, col.styleAlternative);
 	}
+
+	if (drawStylesProfiler) drawStylesProfiler.Print();
 }
 
 
@@ -873,100 +885,12 @@ function drawThemeNotification(gr) {
 
 
 /**
- * Draws the theme debug overlay in the album art area when "Enable theme debug overlay" is activated in dev tools.
- * @param {GdiGraphics} gr
- */
-function drawThemeDebugOverlay(gr) {
-	if (!settings.showThemeLogOverlay) return;
-
-	const fullW = pref.layout === 'default' && pref.lyricsLayout === 'full' && pref.displayLyrics && noAlbumArtStub || pref.layout === 'artwork';
-	const titleWidth = albumArtSize.w - SCALE(80);
-	const titleHeight = gr.CalcTextHeight(' ', ft.popup);
-	const lineSpacing = titleHeight * 1.5;
-	const logColor = RGB(255, 255, 255);
-	const x = albumArtSize.x + SCALE(pref.layout !== 'default' ? 20 : 40);
-	let y = albumArtSize.y;
-
-	const createBlock = (obj) => Object.keys(obj).find(key => obj[key]) || '';
-
-	const tsBlock0 = createBlock({
-		'Nighttime,': pref.styleNighttime
-	});
-
-	const tsBlock1 = createBlock({
-		'Bevel,': pref.styleBevel
-	});
-
-	const tsBlock2 = createBlock({
-		'Blend,': pref.styleBlend,
-		'Blend 2,': pref.styleBlend2,
-		'Gradient,': pref.styleGradient,
-		'Gradient 2,': pref.styleGradient2
-	});
-
-	const tsBlock3 = createBlock({
-		'Alternative ': pref.styleAlternative,
-		'Alternative 2': pref.styleAlternative2,
-		'Black and white': pref.styleBlackAndWhite,
-		'Black and white 2': pref.styleBlackAndWhite2,
-		'Black and white reborn': pref.styleBlackAndWhiteReborn,
-		'Black reborn': pref.styleBlackReborn,
-		'Reborn white': pref.styleRebornWhite,
-		'Reborn black': pref.styleRebornBlack,
-		'Reborn fusion': pref.styleRebornFusion,
-		'Reborn fusion 2': pref.styleRebornFusion2,
-		'Reborn fusion accent': pref.styleRebornFusionAccent,
-		'Random pastel': pref.styleRandomPastel,
-		'Random dark': pref.styleRandomDark
-	});
-
-	const tsTopMenuButtons = pref.styleTopMenuButtons !== 'default' ? CapitalizeString(`${pref.styleTopMenuButtons}`) : '';
-	const tsTransportButtons = pref.styleTransportButtons !== 'default' ? CapitalizeString(`${pref.styleTransportButtons}`) : '';
-	const tsProgressBar1 = pref.styleProgressBarDesign === 'rounded' ? 'Rounded,' : '';
-	const tsProgressBar2 = pref.styleProgressBar !== 'default' ? `Bg: ${CapitalizeString(`${pref.styleProgressBar},`)}` : '';
-	const tsProgressBar3 = pref.styleProgressBarFill !== 'default' ? `Fill: ${CapitalizeString(`${pref.styleProgressBarFill}`)}` : '';
-	const tsVolumeBar1 = pref.styleVolumeBarDesign === 'rounded' ? 'Rounded,' : '';
-	const tsVolumeBar2 = pref.styleVolumeBar !== 'default' ? `Bg: ${CapitalizeString(`${pref.styleVolumeBar},`)}` : '';
-	const tsVolumeBar3 = pref.styleVolumeBarFill !== 'default' ? `Fill: ${CapitalizeString(`${pref.styleVolumeBarFill}`)}` : '';
-
-	const propertiesLog = [
-		{ prop: selectedPrimaryColor, log: `Primary color: ${selectedPrimaryColor}` },
-		{ prop: selectedPrimaryColor2, log: `Primary 2 color: ${selectedPrimaryColor2}` },
-		{ prop: colBrightness, log: `Primary color brightness: ${colBrightness}` },
-		{ prop: colBrightness2, log: `Primary 2 color brightness: ${colBrightness2}` },
-		{ prop: imgBrightness, log: `Image brightness: ${imgBrightness}` },
-		{ prop: pref.styleBlend || pref.styleBlend2, log: `Image blur: ${blendedImgBlur}` },
-		{ prop: pref.styleBlend || pref.styleBlend2, log: `Image alpha: ${blendedImgAlpha}` },
-		{ prop: pref.preset, log: `Theme preset: ${pref.preset}` },
-		{ prop: pref.themeBrightness !== 'default', log: `Theme brightness: ${pref.themeBrightness}%` },
-		{ prop: tsBlock0 || tsBlock1 || tsBlock2 || tsBlock3, log: `Styles: ${tsBlock0} ${tsBlock1} ${tsBlock2} ${tsBlock3}` },
-		{ prop: tsTopMenuButtons, log: `Top menu button style: ${tsTopMenuButtons}` },
-		{ prop: tsTransportButtons, log: `Transport button style: ${tsTransportButtons}` },
-		{ prop: tsProgressBar1 || tsProgressBar2 || tsProgressBar3, log: tsProgressBar1 || tsProgressBar2 || tsProgressBar3 ? `Progressbar styles: ${tsProgressBar1} ${tsProgressBar2} ${tsProgressBar3}` : '' },
-		{ prop: tsVolumeBar1 || tsVolumeBar2 || tsVolumeBar3, log: `Volumebar styles: ${tsVolumeBar1} ${tsVolumeBar2} ${tsVolumeBar3}` }
-	];
-
-	gr.SetSmoothingMode(SmoothingMode.None);
-	gr.FillSolidRect(fullW ? 0 : albumArtSize.x, fullW ? geo.topMenuHeight : albumArtSize.y, fullW ? ww : albumArtSize.w, fullW ? wh - geo.topMenuHeight - geo.lowerBarHeight : albumArtSize.h, RGBA(0, 0, 0, 180));
-	gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
-
-	const drawString = (str) => {
-		y += lineSpacing;
-		gr.DrawString(str, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-	};
-
-	propertiesLog.forEach(({ prop, log }) => {
-		if (prop) drawString(log);
-		if (prop === imgBrightness) y += lineSpacing;
-	});
-}
-
-
-/**
  * Draws all the shadows for album art and panels.
  * @param {GdiGraphics} gr
  */
 function drawPanelShadows(gr) {
+	const drawPanelShadowsProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> panel shadows');
+
 	// * SHADOWS FOR ALBUM ART, noAlbumArtStub AND DETAILS * //
 	const layoutDefault = pref.layout === 'default' &&
 		(!displayPlaylist && !displayLibrary && !displayBiography ||
@@ -1032,6 +956,8 @@ function drawPanelShadows(gr) {
 		// Bottom shadow
 		gr.FillGradRect(x, wh - geo.lowerBarHeight + (RES_4K ? 0 : -1), ww, SCALE(5), 90, col.shadow, 0);
 	}
+
+	if (drawPanelShadowsProfiler) drawPanelShadowsProfiler.Print();
 }
 
 
@@ -1040,7 +966,7 @@ function drawPanelShadows(gr) {
  * @param {GdiGraphics} gr
  */
 function drawTopMenuBar(gr) {
-	const drawTopMenuBar = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> top menu bar') : null;
+	const drawTopMenuBarProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> top menu bar');
 
 	for (const i in btns) { // Can't replace for..in until non-numeric indexes are removed
 		const btn = btns[i];
@@ -1063,7 +989,7 @@ function drawTopMenuBar(gr) {
 		}
 	}
 
-	timings.showExtraDrawTiming && drawTopMenuBar.Print();
+	if (drawTopMenuBarProfiler) drawTopMenuBarProfiler.Print();
 }
 
 
@@ -1072,7 +998,7 @@ function drawTopMenuBar(gr) {
  * @param {GdiGraphics} gr
  */
 function drawLowerBar(gr) {
-	const drawLowerBarProfiler     = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> lower bar') : null;
+	const drawLowerBarProfiler     = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> lower bar');
 	const lowerBarTop              = wh - geo.lowerBarHeight + (pref.layout === 'default' ? (RES_4K ? 65 : 35) : (RES_4K ? 33 : 18));
 	const lowerMargin              = SCALE(pref.layout === 'compact' || pref.layout === 'artwork' ? 80 : pref.showTransportControls_default ? 80 : 120);
 	const lowerBarFontSize         = pref[`lowerBarFontSize_${pref.layout}`];
@@ -1262,7 +1188,7 @@ function drawLowerBar(gr) {
 		peakmeterBar.draw(gr);
 	}
 
-	drawLowerBarProfiler && drawLowerBarProfiler.Print();
+	if (drawLowerBarProfiler) drawLowerBarProfiler.Print();
 }
 
 
@@ -1273,6 +1199,7 @@ function drawLowerBar(gr) {
 function drawStyledTooltips(gr) {
 	if (styledTooltipText === '' || !styledTooltipReady || !pref.showStyledTooltips) return;
 
+	const drawStyledTooltipsProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> styled tooltips');
 	const tooltipFontSize = pref[`tooltipFontSize_${pref.layout}`];
 	const offset = SCALE(30);
 	const padding = SCALE(15);
@@ -1290,19 +1217,8 @@ function drawStyledTooltips(gr) {
 	gr.DrawRoundRect(x, y, w, h, arc, arc, SCALE(2), 0x64000000);
 	gr.DrawString(styledTooltipText, ft.tooltip, col.popupText, x + padding * 0.5, y + padding * 0.5, w - padding, h - padding, StringFormat(0, 0, 4));
 	throttleRepaintRect(x - offset * 0.5, y - offset * 0.5, w + offset, h + offset);
-}
 
-
-/**
- * Draws red rectangles for debugging to show all painted areas in the panels.
- * @param {GdiGraphics} gr
- */
-function drawDebugRectAreas(gr) {
-	if (!repaintRects.length) return;
-	try {
-		repaintRects.forEach(rect => gr.DrawRect(rect.x, rect.y, rect.w, rect.h, SCALE(2), RGBA(255, 0, 0, 200)));
-		repaintRects = [];
-	} catch (e) {}
+	if (drawStyledTooltipsProfiler) drawStyledTooltipsProfiler.Print();
 }
 
 
@@ -1318,6 +1234,129 @@ function drawStartupBackground(gr) {
 }
 
 
+/**
+ * Draws the debug theme overlay in the album art area when `Enable debug theme overlay` in Developer tools is active.
+ * @param {GdiGraphics} gr
+ */
+function drawDebugThemeOverlay(gr) {
+	if (!settings.showDebugThemeOverlay) return;
+
+	const fullW = pref.layout === 'default' && pref.lyricsLayout === 'full' && pref.displayLyrics && noAlbumArtStub || pref.layout === 'artwork';
+	const titleWidth = albumArtSize.w - SCALE(80);
+	const titleHeight = gr.CalcTextHeight(' ', ft.popup);
+	const lineSpacing = titleHeight * 1.5;
+	const logColor = RGB(255, 255, 255);
+	const x = albumArtSize.x + SCALE(pref.layout !== 'default' ? 20 : 40);
+	let y = albumArtSize.y;
+
+	const createBlock = (obj) => Object.keys(obj).find(key => obj[key]) || '';
+
+	const tsBlock0 = createBlock({
+		'Nighttime,': pref.styleNighttime
+	});
+
+	const tsBlock1 = createBlock({
+		'Bevel,': pref.styleBevel
+	});
+
+	const tsBlock2 = createBlock({
+		'Blend,': pref.styleBlend,
+		'Blend 2,': pref.styleBlend2,
+		'Gradient,': pref.styleGradient,
+		'Gradient 2,': pref.styleGradient2
+	});
+
+	const tsBlock3 = createBlock({
+		'Alternative ': pref.styleAlternative,
+		'Alternative 2': pref.styleAlternative2,
+		'Black and white': pref.styleBlackAndWhite,
+		'Black and white 2': pref.styleBlackAndWhite2,
+		'Black and white reborn': pref.styleBlackAndWhiteReborn,
+		'Black reborn': pref.styleBlackReborn,
+		'Reborn white': pref.styleRebornWhite,
+		'Reborn black': pref.styleRebornBlack,
+		'Reborn fusion': pref.styleRebornFusion,
+		'Reborn fusion 2': pref.styleRebornFusion2,
+		'Reborn fusion accent': pref.styleRebornFusionAccent,
+		'Random pastel': pref.styleRandomPastel,
+		'Random dark': pref.styleRandomDark
+	});
+
+	const tsTopMenuButtons = pref.styleTopMenuButtons !== 'default' ? CapitalizeString(`${pref.styleTopMenuButtons}`) : '';
+	const tsTransportButtons = pref.styleTransportButtons !== 'default' ? CapitalizeString(`${pref.styleTransportButtons}`) : '';
+	const tsProgressBar1 = pref.styleProgressBarDesign === 'rounded' ? 'Rounded,' : '';
+	const tsProgressBar2 = pref.styleProgressBar !== 'default' ? `Bg: ${CapitalizeString(`${pref.styleProgressBar},`)}` : '';
+	const tsProgressBar3 = pref.styleProgressBarFill !== 'default' ? `Fill: ${CapitalizeString(`${pref.styleProgressBarFill}`)}` : '';
+	const tsVolumeBar1 = pref.styleVolumeBarDesign === 'rounded' ? 'Rounded,' : '';
+	const tsVolumeBar2 = pref.styleVolumeBar !== 'default' ? `Bg: ${CapitalizeString(`${pref.styleVolumeBar},`)}` : '';
+	const tsVolumeBar3 = pref.styleVolumeBarFill !== 'default' ? `Fill: ${CapitalizeString(`${pref.styleVolumeBarFill}`)}` : '';
+
+	const propertiesLog = [
+		{ prop: selectedPrimaryColor, log: `Primary color: ${selectedPrimaryColor}` },
+		{ prop: selectedPrimaryColor2, log: `Primary 2 color: ${selectedPrimaryColor2}` },
+		{ prop: colBrightness, log: `Primary color brightness: ${colBrightness}` },
+		{ prop: colBrightness2, log: `Primary 2 color brightness: ${colBrightness2}` },
+		{ prop: imgBrightness, log: `Image brightness: ${imgBrightness}` },
+		{ prop: pref.styleBlend || pref.styleBlend2, log: `Image blur: ${blendedImgBlur}` },
+		{ prop: pref.styleBlend || pref.styleBlend2, log: `Image alpha: ${blendedImgAlpha}` },
+		{ prop: pref.preset, log: `Theme preset: ${pref.preset}` },
+		{ prop: pref.themeBrightness !== 'default', log: `Theme brightness: ${pref.themeBrightness}%` },
+		{ prop: tsBlock0 || tsBlock1 || tsBlock2 || tsBlock3, log: `Styles: ${tsBlock0} ${tsBlock1} ${tsBlock2} ${tsBlock3}` },
+		{ prop: tsTopMenuButtons, log: `Top menu button style: ${tsTopMenuButtons}` },
+		{ prop: tsTransportButtons, log: `Transport button style: ${tsTransportButtons}` },
+		{ prop: tsProgressBar1 || tsProgressBar2 || tsProgressBar3, log: tsProgressBar1 || tsProgressBar2 || tsProgressBar3 ? `Progressbar styles: ${tsProgressBar1} ${tsProgressBar2} ${tsProgressBar3}` : '' },
+		{ prop: tsVolumeBar1 || tsVolumeBar2 || tsVolumeBar3, log: `Volumebar styles: ${tsVolumeBar1} ${tsVolumeBar2} ${tsVolumeBar3}` }
+	];
+
+	gr.SetSmoothingMode(SmoothingMode.None);
+	gr.FillSolidRect(fullW ? 0 : albumArtSize.x, fullW ? geo.topMenuHeight : albumArtSize.y, fullW ? ww : albumArtSize.w, fullW ? wh - geo.topMenuHeight - geo.lowerBarHeight : albumArtSize.h, RGBA(0, 0, 0, 180));
+	gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+
+	const drawString = (str) => {
+		y += lineSpacing;
+		gr.DrawString(str, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+	};
+
+	propertiesLog.forEach(({ prop, log }) => {
+		if (prop) drawString(log);
+		if (prop === imgBrightness) y += lineSpacing;
+	});
+}
+
+
+/**
+ * Draws the draw timing in the console when `Show extra draw timing` in Developer tools is active.
+ * @param {Date} drawTimingStart The start time of the operation.
+ */
+function drawDebugTiming(drawTimingStart) {
+	if (!drawTimingStart) return;
+
+	const drawTimingEnd = new Date();
+	const duration = drawTimingEnd - drawTimingStart;
+	const hours = String(drawTimingStart.getHours()).padStart(2, '0');
+	const minutes = String(drawTimingStart.getMinutes()).padStart(2, '0');
+	const seconds = String(drawTimingStart.getSeconds()).padStart(2, '0');
+	const milliseconds = String(drawTimingStart.getMilliseconds()).padStart(3, '0');
+	const time = `${hours}:${minutes}:${seconds}.${milliseconds}`;
+	const repaintRectCalls = repaintRectCount > 1 ? ` - ${repaintRectCount} repaintRect calls` : '';
+
+	console.log(`${time}: on_paint total: ${duration}ms${repaintRectCalls}`);
+}
+
+
+/**
+ * Draws red rectangles for debugging to show all painted areas in all panels when `Show draw areas` in Developer tools is active.
+ * @param {GdiGraphics} gr
+ */
+function drawDebugRectAreas(gr) {
+	if (!repaintRects.length) return;
+	try {
+		repaintRects.forEach(rect => gr.DrawRect(rect.x, rect.y, rect.w, rect.h, SCALE(2), RGBA(255, 0, 0, 200)));
+		repaintRects = [];
+	} catch (e) {}
+}
+
+
 /////////////////////////////
 // * MAIN USER INTERFACE * //
 /////////////////////////////
@@ -1326,17 +1365,14 @@ function drawStartupBackground(gr) {
  * @param {GdiGraphics} gr
  */
 function drawMain(gr) {
+	const drawTimingStart = (timings.showDrawTiming || timings.showExtraDrawTiming) && new Date();
+
 	drawBackgrounds(gr);
 
 	// * UIHacks aero glass shadow frame fix, needed for style Blend in Details
 	if (UIHacks.Aero.Effect === 2) gr.DrawLine(0, 0, ww, 0, 1, col.bg);
 
-	// * Style Blend applied in Details
-	if (pref.styleBlend && albumArt && blendedImg && (!displayPlaylist && !displayLibrary && !displayBiography && pref.layout === 'default' ||
-		!displayPlaylistArtwork && !displayLibrary && pref.layout === 'artwork')) {
-		gr.DrawImage(blendedImg, 0, 0, ww, wh, 0, 0, blendedImg.Width, blendedImg.Height);
-	}
-
+	drawDetailsBlend(gr);
 	drawPanels(gr);
 	drawAlbumArt(gr);
 	drawNoAlbumArt(gr)
@@ -1349,14 +1385,12 @@ function drawMain(gr) {
 	drawLyrics(gr);
 	drawStyles(gr);
 	drawThemeNotification(gr);
-	drawThemeDebugOverlay(gr);
 	drawPanelShadows(gr);
 	drawTopMenuBar(gr);
 	drawLowerBar(gr);
 	drawCustomThemeMenu(gr);
 	drawMetadataGridMenu(gr);
 	drawStyledTooltips(gr);
-	drawDebugRectAreas(gr);
 	drawStartupBackground(gr);
 
 	// * UIHacks aero glass shadow frame fix
@@ -1369,13 +1403,9 @@ function drawMain(gr) {
 		}
 	}
 
-	// * Debug
-	if (timings.showDrawTiming || timings.showExtraDrawTiming) {
-		const start = new Date();
-		const end = Date.now();
-		console.log(`${start.getHours()}:${LeftPad(start.getMinutes(), 2, '0')}:${LeftPad(start.getSeconds(), 2, '0')}.${LeftPad(start.getMilliseconds(), 3, '0')}: ` +
-			`on_paint took ${end - start.getTime()}ms ${repaintRectCount > 1 ? `- ${repaintRectCount} repaintRect calls` : ''}`);
-	}
+	drawDebugThemeOverlay(gr);
+	drawDebugTiming(drawTimingStart);
+	drawDebugRectAreas(gr);
 	repaintRectCount = 0;
 }
 

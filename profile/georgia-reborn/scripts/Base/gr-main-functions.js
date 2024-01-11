@@ -248,7 +248,7 @@ function initPanelWidthAuto() {
  * Initializes the theme when updating colors.
  */
 function initTheme() {
-	const themeProfiler = timings.showDebugTiming ? fb.CreateProfiler('initTheme') : null;
+	const themeProfiler = timings.showDebugTiming && fb.CreateProfiler('initTheme');
 
 	const fullInit =
 		initThemeFull || pref.themeBrightness !== 'default'
@@ -301,7 +301,7 @@ function initTheme() {
 	// * REFRESH * //
 	window.Repaint();
 
-	if (timings.showDebugTiming) themeProfiler.Print();
+	if (themeProfiler) themeProfiler.Print();
 }
 
 
@@ -986,7 +986,7 @@ function setProgressBarRefresh() {
  * Creates the top menu and lower bar button images for button state 'Enabled', 'Hovered', 'Down'.
  */
 function createButtonImages() {
-	const createButtonProfiler = timings.showExtraDrawTiming ? fb.CreateProfiler('createButtonImages') : null;
+	const createButtonProfiler = timings.showExtraDrawTiming && fb.CreateProfiler('createButtonImages');
 	const transportCircleSize = Math.round(pref[`transportButtonSize_${pref.layout}`] * 0.93333);
 	let btns = {};
 
@@ -1351,7 +1351,7 @@ function createButtonImages() {
 
 		btnImg[i] = stateImages;
 	}
-	if (timings.showExtraDrawTiming) createButtonProfiler.Print();
+	if (createButtonProfiler) createButtonProfiler.Print();
 }
 
 
@@ -1685,7 +1685,7 @@ function displayNextImage() {
 function fetchAlbumArt(metadb) {
 	albumArtList = [];
 
-	const fetchAlbumArtProfiler = timings.showDebugTiming ? fb.CreateProfiler('fetchAlbumArt') : null;
+	const fetchAlbumArtProfiler = timings.showDebugTiming && fb.CreateProfiler('fetchAlbumArt');
 
 	const autoRandomPreset =
 		(!['off', 'track'].includes(pref.presetAutoRandomMode) && pref.presetSelectMode === 'harmonic' ||
@@ -1771,7 +1771,7 @@ function fetchAlbumArt(metadb) {
 		}
 	}
 
-	if (timings.showDebugTiming) fetchAlbumArtProfiler.Print();
+	if (fetchAlbumArtProfiler) fetchAlbumArtProfiler.Print();
 }
 
 
@@ -2105,7 +2105,7 @@ function createDiscArtRotation() {
  * Creates the drop shadow for disc art.
  */
 function createDiscArtShadow() {
-	const shadowProfiler = timings.showDebugTiming ? fb.CreateProfiler('createDiscArtShadow') : null;
+	const discArtShadowProfiler = timings.showDebugTiming && fb.CreateProfiler('createDiscArtShadow');
 	if ((albumArt && albumArtSize.w > 0) || (discArt && pref.displayDiscArt && discArtSize.w > 0)) {
 		const discArtMargin = SCALE(2);
 		shadowImg = discArt && !displayPlaylist && !displayLibrary && pref.displayDiscArt ?
@@ -2131,7 +2131,7 @@ function createDiscArtShadow() {
 		}
 	}
 
-	if (timings.showDebugTiming) shadowProfiler.Print();
+	if (discArtShadowProfiler) discArtShadowProfiler.Print();
 }
 
 
@@ -2150,7 +2150,7 @@ function disposeDiscArt(discArtImg) {
  * Fetches new disc art when a new album is being played.
  */
 function fetchDiscArt() {
-	const fetchDiscArtProfiler = timings.showDebugTiming ? fb.CreateProfiler('fetchDiscArt') : null;
+	const fetchDiscArtProfiler = timings.showDebugTiming && fb.CreateProfiler('fetchDiscArt');
 
 	const discArtAllPaths = [
 		$(pref.cdartdisc_path),              // Root -> cd%discnumber%.png
@@ -2251,7 +2251,7 @@ function fetchDiscArt() {
 		}
 	}
 
-	if (timings.showDebugTiming) fetchDiscArtProfiler.Print();
+	if (fetchDiscArtProfiler) fetchDiscArtProfiler.Print();
 }
 
 

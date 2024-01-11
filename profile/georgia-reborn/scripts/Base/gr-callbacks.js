@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-10                                          * //
+// * Last change:    2024-01-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -171,8 +171,8 @@ function on_metadb_changed(handle_list, fromhook) {
  * @param {FbMetadbHandle} metadb The metadb of the track.
  */
 function on_playback_new_track(metadb) {
-	if (!metadb) return;	// Solve weird corner case
-	const newTrackProfiler = timings.showDebugTiming ? fb.CreateProfiler('on_playback_new_track') : null;
+	if (!metadb) return; // Solve weird corner case
+	const newTrackProfiler = timings.showDebugTiming && fb.CreateProfiler('on_playback_new_track');
 	DebugLog('in on_playback_new_track()');
 
 	lastLeftEdge = 0;
@@ -262,7 +262,7 @@ function on_playback_new_track(metadb) {
 	// * Load finished, Playlist auto-scroll is ready
 	newTrackFetchingDone = true;
 
-	if (timings.showDebugTiming) newTrackProfiler.Print();
+	if (newTrackProfiler) newTrackProfiler.Print();
 
 	if (timings.showRamUsage) {
 		console.log(

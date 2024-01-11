@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-09                                          * //
+// * Last change:    2024-01-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1029,7 +1029,7 @@ function CalcImgBrightness(image) {
 			Clamp(Math.round(Math.sqrt(bTot / freqTot)), 0, 255)
 			] / 3);
 
-		if (settings.showThemeLog) console.log('Image brightness:', avgCol);
+		if (settings.showDebugThemeLog) console.log('Image brightness:', avgCol);
 		return avgCol;
 	}
 	catch (e) {
@@ -1045,7 +1045,7 @@ function CalcImgBrightness(image) {
  * provide enough visual separation. As such, adding some additional weighting based on individual colors differences.
  * @param {number} a The first color in numeric form (i.e. RGB(150,250,255)).
  * @param {number} b The second color in numeric form (i.e. RGB(150,250,255)).
- * @param {boolean=} log Whether to print the distance in the console. Also requires that settings.showThemeLog is true.
+ * @param {boolean=} log Whether to print the distance in the console. Also requires that settings.showDebugThemeLog is true.
  */
 function ColorDistance(a, b, log) {
 	const aCol = new Color(a);
@@ -1066,7 +1066,7 @@ function ColorDistance(a, b, log) {
 		// then it's very likely there will be enough visual separation between the two, so bump up the diff percentage.
 		distance *= 1.1;
 	}
-	if (log && settings.showThemeLog) {
+	if (log && settings.showDebugThemeLog) {
 		console.log('Distance from:', aCol.getRGB(), 'to:', bCol.getRGB(), '=', distance);
 	}
 	return distance;

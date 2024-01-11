@@ -3609,16 +3609,16 @@ function developerToolsOptions(menu) {
 	debugMenu.addSeparator();
 	debugMenu.addToggleItem('Enable double click refresh', settings, 'doubleClickRefresh');
 	debugMenu.addToggleItem('Enable debug output', settings, 'showDebugLog');
-	debugMenu.addItem('Enable theme debug output', settings.showThemeLog, () => {
-		settings.showThemeLog = !settings.showThemeLog;
-		if (settings.showThemeLog) {
+	debugMenu.addItem('Enable debug theme output', settings.showDebugThemeLog, () => {
+		settings.showDebugThemeLog = !settings.showDebugThemeLog;
+		if (settings.showDebugThemeLog) {
 			albumArt = null;
 			on_playback_new_track(fb.GetNowPlaying());
 		}
 	});
-	debugMenu.addItem('Enable theme debug overlay', settings.showThemeLogOverlay, () => {
-		settings.showThemeLogOverlay = !settings.showThemeLogOverlay;
-		if (settings.showThemeLogOverlay) {
+	debugMenu.addItem('Enable debug theme overlay', settings.showDebugThemeOverlay, () => {
+		settings.showDebugThemeOverlay = !settings.showDebugThemeOverlay;
+		if (settings.showDebugThemeOverlay) {
 			albumArt = null;
 			on_playback_new_track(fb.GetNowPlaying());
 		} else {

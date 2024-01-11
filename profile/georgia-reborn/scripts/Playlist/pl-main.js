@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-10                                          * //
+// * Last change:    2024-01-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2257,7 +2257,7 @@ class Playlist extends List {
 	initialize_list() {
 		trace_call && console.log('initialize_list');
 		const profiler = fb.CreateProfiler();
-		const profiler_part = trace_initialize_list_performance ? fb.CreateProfiler() : '';
+		const profiler_part = trace_initialize_list_performance && fb.CreateProfiler();
 
 		this.cur_playlist_idx = plman.ActivePlaylist;
 

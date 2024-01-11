@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-09                                          * //
+// * Last change:    2024-01-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3923,11 +3923,11 @@ function themeColorAdjustments() {
 	// * WHITE THEME/REBORN WHITE WITH STYLE BLEND - dynamically adjust progress bar background color
 	if ((pref.theme === 'white' || pref.styleRebornWhite) && (blend || blend2) && fb.IsPlaying) {
 		if (ColorDistance(RGB(iBRT, iBRT, iBRT), col.bg, true) < 180) {
-			if (settings.showThemeLog) console.log('>>> Blended album art image is too close to col.bg. Adjusting progress bar');
+			if (settings.showDebugThemeLog) console.log('>>> Blended album art image is too close to col.bg. Adjusting progress bar');
 			col.progressBar = bevel ? TintColor(col.progressBar, 10) : ShadeColor(col.progressBar, 10);
 		}
 		if (!pref.styleBlackAndWhiteReborn && ColorDistance(col.progressBarFill, col.progressBar, true) < 150) {
-			if (settings.showThemeLog) console.log('>>> Progress bar fill color is too close to progress bar background. Adjusting progress bar fill');
+			if (settings.showDebugThemeLog) console.log('>>> Progress bar fill color is too close to progress bar background. Adjusting progress bar fill');
 			col.progressBarFill = bevel ? ShadeColor(col.progressBarFill, 20) : ShadeColor(col.progressBarFill, 10);
 		}
 	}
@@ -5670,7 +5670,7 @@ function setBackgroundColorDefinition() {
  * Sets style Blend 1 and 2, blurs and blends album art image in the background.
  */
 function setStyleBlend() {
-	const setStyleBlendProfiler = timings.showDebugTiming ? fb.CreateProfiler('setStyleBlend') : null;
+	const setStyleBlendProfiler = timings.showDebugTiming && fb.CreateProfiler('setStyleBlend');
 
 	const blurImage = (image, blurLevel) => {
 		switch (pref.theme) {
@@ -5692,8 +5692,8 @@ function setStyleBlend() {
 
 		image.StackBlur(blurLevel);
 
-		if (settings.showThemeLog) console.log(`Blended image blur: ${blurLevel}`);
-		if (settings.showThemeLogOverlay) blendedImgBlur = blurLevel;
+		if (settings.showDebugThemeLog) console.log(`Blended image blur: ${blurLevel}`);
+		if (settings.showDebugThemeOverlay) blendedImgBlur = blurLevel;
 
 		return image;
 	}
@@ -5748,15 +5748,15 @@ function setStyleBlend() {
 		tempImg.ReleaseGraphics(g);
 		tempImg = blurImage(tempImg);
 
-		if (settings.showThemeLog) console.log(`Blended image alpha: ${alpha}\nTheme brightness: ${pref.themeBrightness}`);
-		if (settings.showThemeLogOverlay) blendedImgAlpha = alpha;
+		if (settings.showDebugThemeLog) console.log(`Blended image alpha: ${alpha}\nTheme brightness: ${pref.themeBrightness}`);
+		if (settings.showDebugThemeOverlay) blendedImgAlpha = alpha;
 
 		return tempImg;
 	}
 
 	blendedImg = formatBlendedImg(albumArt, ww, wh, 100, fb.GetNowPlaying());
 
-	if (timings.showDebugTiming) setStyleBlendProfiler.Print();
+	if (setStyleBlendProfiler) setStyleBlendProfiler.Print();
 }
 
 
@@ -5796,7 +5796,7 @@ function setTheme(color, color2) {
 
 	if (ColorDistance(color.primary, col.bg, true) < (themeCol.isCloseToGreyscale ? 60 : 45) &&
 		(pref.theme !== 'reborn' && pref.theme !== 'random' && (pref.theme !== 'black' && !pref.styleBlackReborn) && !customThemes)) {
-		if (settings.showThemeLog) console.log('>>> Theme primary color is too close to bg color. Tinting theme color.');
+		if (settings.showDebugThemeLog) console.log('>>> Theme primary color is too close to bg color. Tinting theme color.');
 		color.primary = TintColor(color.primary, 15);
 		color.accent = TintColor(color.primary, 10);
 		themeCol = new Color(color.primary);
@@ -5806,7 +5806,7 @@ function setTheme(color, color2) {
 
 	if (ColorDistance(color.primary, col.progressBar, true) < (themeCol.isCloseToGreyscale ? 60 : 45)) {
 		// Progress bar fill is too close in color to bg
-		if (settings.showThemeLog) console.log('>>> Theme primary color is too close to progress bar. Adjusting progressBar');
+		if (settings.showDebugThemeLog) console.log('>>> Theme primary color is too close to progress bar. Adjusting progressBar');
 		if (pref.theme === 'white' && themeCol.brightness < 125) {
 			col.progressBar = RGB(180, 180, 180);
 		}
@@ -6130,11 +6130,11 @@ function getRandomThemeColor() {
 	const tObj = createThemeColorObject(color);
 	setTheme(tObj);
 
-	if (settings.showThemeLog) {
+	if (settings.showDebugThemeLog) {
 		console.log('Random generated color:', color.getRGB(true));
 		console.log('Random color brightness:', color.brightness);
 	}
-	if (settings.showThemeLogOverlay) selectedPrimaryColor = color.getRGB(true);
+	if (settings.showDebugThemeOverlay) selectedPrimaryColor = color.getRGB(true);
 }
 
 
@@ -6225,7 +6225,7 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 			return c.col;
 		});
 
-		if (settings.showThemeLog) console.log('idx      color        bright  freq   weight');
+		if (settings.showDebugThemeLog) console.log('idx      color        bright  freq   weight');
 
 		let maxWeight = 0;
 		let maxWeight2 = 0;
@@ -6240,7 +6240,7 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 			c.weight2 = c.freq * midBrightness2 * 10; // Multiply by 10 so numbers are easier to compare
 
 			if (c.freq >= minFrequency && !col.isCloseToGreyscale && col.brightness < maxBrightness) {
-				if (settings.showThemeLog) {
+				if (settings.showDebugThemeLog) {
 					console.log(LeftPad(i, 2), col.getRGB(true, true), LeftPad(col.brightness, 4), ' ', `${LeftPad((c.freq * 100).toFixed(2), 5)}%`, LeftPad(c.weight.toFixed(2), 7));
 				}
 				if (c.weight > maxWeight) {
@@ -6252,13 +6252,13 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 					selectedColor2 = col;
 				}
 			}
-			else if (settings.showThemeLog) {
+			else if (settings.showDebugThemeLog) {
 				console.log(' -', col.getRGB(true, true), LeftPad(col.brightness, 4), ' ', `${LeftPad((c.freq * 100).toFixed(2), 5)}%`, col.isCloseToGreyscale ? '   grey' : (c.freq < minFrequency) ? '   freq' : ' bright');
 			}
 		});
 
 		if (selectedColor.brightness < 37) {
-			if (settings.showThemeLog) console.log(selectedColor.getRGB(true), 'brightness:', selectedColor.brightness, 'too dark -- searching for highlight color');
+			if (settings.showDebugThemeLog) console.log(selectedColor.getRGB(true), 'brightness:', selectedColor.brightness, 'too dark -- searching for highlight color');
 			let brightest = selectedColor;
 			maxWeight = 0;
 			colorsWeighted.forEach(c => {
@@ -6274,7 +6274,7 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 			selectedColor = brightest;
 		}
 		if (selectedColor.brightness < selectedColor2.brightness) {
-			if (settings.showThemeLog) console.log(selectedColor.getRGB(true), 'brightness:', selectedColor.brightness, 'too dark -- searching for highlight color');
+			if (settings.showDebugThemeLog) console.log(selectedColor.getRGB(true), 'brightness:', selectedColor.brightness, 'too dark -- searching for highlight color');
 			let brightest = selectedColor2;
 			maxWeight = 0;
 			colorsWeighted.forEach(c => {
@@ -6289,11 +6289,11 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 			selectedColor2 = brightest;
 		}
 
-		if (settings.showThemeLog) {
+		if (settings.showDebugThemeLog) {
 			console.log('Primary color:', selectedColor.getRGB(true));
 			console.log('Primary color 2:', selectedColor2.getRGB(true));
 		}
-		if (settings.showThemeLogOverlay) {
+		if (settings.showDebugThemeOverlay) {
 			selectedPrimaryColor = selectedColor.getRGB(true);
 			selectedPrimaryColor2 = selectedColor2.getRGB(true);
 		}
@@ -6334,13 +6334,13 @@ function getThemeColors(image) {
 
 	while (pref.theme !== 'black' && color.brightness > 220) {
 		calculatedColor = ShadeColor(calculatedColor, pref.theme === 'white' ? 12 : 3);
-		if (settings.showThemeLog) console.log(' >> Shading: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
+		if (settings.showDebugThemeLog) console.log(' >> Shading: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
 		color = new Color(calculatedColor);
 		if (rebornFusion) color2 = new Color(calculatedColor2);
 	}
 	while (!color.isGreyscale && color.brightness <= 17) {
 		calculatedColor = TintColor(calculatedColor, 3);
-		if (settings.showThemeLog) console.log(' >> Tinting: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
+		if (settings.showDebugThemeLog) console.log(' >> Tinting: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
 		color = new Color(calculatedColor);
 		if (rebornFusion) color2 = new Color(calculatedColor2);
 	}
@@ -6353,7 +6353,7 @@ function getThemeColors(image) {
 		setTheme(tObj);
 	}
 
-	if (settings.showThemeLog) {
+	if (settings.showDebugThemeLog) {
 		console.log('Primary color brightness:', color.brightness);
 		console.log('Primary color 2 brightness:', color2.brightness);
 	  }
