@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-10                                          * //
+// * Last change:    2024-01-11                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -628,25 +628,22 @@ function drawDetailsBandLogo(gr) {
 	const displayDetails = pref.layout === 'default' && !displayPlaylist && !displayLibrary && !displayBiography;
 	if (!fb.IsPlaying || !albumArt || !displayDetails || pref.lyricsLayout === 'full' && pref.displayLyrics) return;
 
-	const drawLogos = timings.showExtraDrawTiming ? fb.CreateProfiler('on_paint -> logos') : null;
+	const drawLogos = timings.showExtraDrawTiming && fb.CreateProfiler('on_paint -> logos');
 	const availableSpace = albumArtSize.y + albumArtSize.h - gridTop;
 	const lightBg = new Color(col.detailsText).brightness < 140;
 	const logo = lightBg || noAlbumArtStub ? (invertedBandLogo || bandLogo) : bandLogo;
 
 	if (logo && availableSpace > 75) {
-		// Max width we'll draw is 1/2 the full size because the HQ images are just so big
 		let logoWidth = Math.min(RES_4K ? logo.Width : logo.Width / 2, albumArtSize.x - ww * 0.05);
-		let heightScale = logoWidth / logo.Width; // Width is fixed to logoWidth, so scale height accordingly
-		if (logo.Height * heightScale > availableSpace) {
-			// TODO: could probably do this calc just once, but the logic is complicated
-			heightScale = availableSpace / logo.Height;
-			logoWidth = logo.Width * heightScale;
-		}
-		let logoTop = Math.round(albumArtSize.y + albumArtSize.h - (heightScale * logo.Height)) - 4;
-		if (RES_4K) {
-			logoTop -= 20;
-		}
-		gr.DrawImage(logo, Math.round(isStreaming ? SCALE(40) : albumArtSize.x / 2 - logoWidth / 2), logoTop, Math.round(logoWidth), Math.round(logo.Height * heightScale), 0, 0, logo.Width, logo.Height, 0);
+		const heightScale = Math.min(logoWidth / logo.Width, availableSpace / logo.Height);
+		logoWidth = logo.Width * heightScale; // Adjust logoWidth after heightScale is potentially updated
+
+		const logoX = Math.round(isStreaming ? SCALE(40) : albumArtSize.x / 2 - logoWidth / 2);
+		const logoY = Math.round(albumArtSize.y + albumArtSize.h - (logo.Height * heightScale)) - (RES_4K ? 24 : 4);
+		const logoW = Math.round(logoWidth);
+		const logoH = Math.round(logo.Height * heightScale);
+
+		gr.DrawImage(logo, logoX, logoY, logoW, logoH, 0, 0, logo.Width, logo.Height, 0);
 	}
 
 	if (timings.showExtraDrawTiming) drawLogos.Print();
