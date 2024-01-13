@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-14                                          * //
+// * Last change:    2024-01-13                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -818,29 +818,6 @@ const HyperlinkStates = {
 };
 
 /**
- * Sets mouse hover state for every hyperlink not created in Playlist.
- * @param {Object} hyperlink The hyperlink object.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @returns {boolean} True or false.
- */
-function hyperlinks_on_mouse_move(hyperlink, x, y) {
-	if (hyperlink.trace(x, y)) {
-		if (hyperlink.state !== HyperlinkStates.Hovered) {
-			hyperlink.state = HyperlinkStates.Hovered;
-			window.RepaintRect(hyperlink.x, hyperlink.y, hyperlink.w, hyperlink.h);
-		}
-		return true;
-	}
-	if (hyperlink.state !== HyperlinkStates.Normal) {
-		hyperlink.state = HyperlinkStates.Normal;
-		window.RepaintRect(hyperlink.x, hyperlink.y, hyperlink.w, hyperlink.h);
-	}
-	return false;
-}
-
-
-/**
  * Creates clickable hyperlinks in the Playlist header and in the lower bar.
  */
 class Hyperlink {
@@ -1027,6 +1004,28 @@ class Hyperlink {
 	}
 
 	// * CALLBACKS * //
+
+	/**
+	 * Sets mouse hover state for every hyperlink not created in Playlist.
+	 * @param {Object} hyperlink The hyperlink object.
+	 * @param {number} x The x-coordinate.
+	 * @param {number} y The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
+	on_mouse_move(hyperlink, x, y) {
+		if (hyperlink.trace(x, y)) {
+			if (hyperlink.state !== HyperlinkStates.Hovered) {
+				hyperlink.state = HyperlinkStates.Hovered;
+				window.RepaintRect(hyperlink.x, hyperlink.y, hyperlink.w, hyperlink.h);
+			}
+			return true;
+		}
+		if (hyperlink.state !== HyperlinkStates.Normal) {
+			hyperlink.state = HyperlinkStates.Normal;
+			window.RepaintRect(hyperlink.x, hyperlink.y, hyperlink.w, hyperlink.h);
+		}
+		return false;
+	}
 
 	/**
 	 * Checks if the mouse is within the boundaries of a hyperlink.

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-11                                          * //
+// * Last change:    2024-01-13                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2162,7 +2162,6 @@ function StringFormat(h_align, v_align, trimming, flags) {
 function ToPaddedHexString(num, len) {
 	return PadNumber(num, len, 16);
 }
-
 
 
 /////////////////////

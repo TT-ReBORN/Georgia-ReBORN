@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-11                                          * //
+// * Last change:    2024-01-13                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -37,10 +37,6 @@ const playlist_geo = {};
 const g_pl_colors = {};
 /** @type {Object} The playlist fonts object. */
 let g_pl_fonts = {};
-/** @type {Object} The key down suppress utility handler. */
-const key_down_suppress = qwr_utils.KeyModifiersSuppress();
-/** @type {Object} The mouse move suppress utility handler. */
-const mouse_move_suppress = qwr_utils.MouseMoveSuppress();
 
 /**
  * A set of drag and drop action settings.

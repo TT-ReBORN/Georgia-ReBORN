@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-27                                          * //
+// * Last change:    2024-01-13                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1208,36 +1208,56 @@ const qwr_utils = {
 	})
 };
 
+/**
+ * The key down suppress utility handler.
+ * @type {Object}
+ */
+const qwr_supress_key_down = qwr_utils.KeyModifiersSuppress();
+
+/**
+ * The mouse move suppress utility handler.
+ * @type {Object}
+ */
+const qwr_supress_mouse_move = qwr_utils.MouseMoveSuppress();
+
 
 /////////////////////////
 // * KEYBOARD EVENTS * //
 /////////////////////////
 /**
  * Handles key action events to determine whether a key is pressed.
- * @returns {boolean} True or false.
+ * Provides a way to manage key action events, allowing you to register
+ * and invoke actions based on key inputs. It maintains an internal registry
+ * of key actions, which can be triggered by invoking the registered keys.
  * @class
  */
-function KeyActionHandler() {
-	const actions = {};
+class KeyActionHandler {
+	/**
+	 * The actions registry is an object that maps keys to their respective action callbacks.
+	 */
+	constructor() {
+		/** @type {Object.<string|number, function>} */
+		this.actions = {};
+	}
 
 	/**
 	 * Registers a key action.
 	 * @param {string|number} key The key to register.
 	 * @param {function} action_callback The callback to run when the key is pressed.
 	 * @throws {ArgumentError} If the action callback is not a function.
-     * @throws {ArgumentError} If the key is already used.
+	 * @throws {ArgumentError} If the key is already used.
 	 */
-	this.register_key_action = (key, action_callback) => {
+	register_key_action(key, action_callback) {
 		if (!action_callback) {
 			throw new ArgumentError('action_callback', action_callback);
 		}
 
-		if (actions[key]) {
+		if (this.actions[key]) {
 			throw new ArgumentError('key', key.toString(), 'This key is already used');
 		}
 
-		actions[key] = action_callback;
-	};
+		this.actions[key] = action_callback;
+	}
 
 	/**
 	 * Invokes a key action.
@@ -1248,16 +1268,16 @@ function KeyActionHandler() {
 	 * @param {boolean=} [key_modifiers.shift=false] The option to disable the SHIFT key.
 	 * @returns {boolean} True or false.
 	 */
-	this.invoke_key_action = (key, key_modifiers) => {
-		const key_action = actions[key];
-		if (!actions[key]) {
+	invoke_key_action(key, key_modifiers) {
+		const key_action = this.actions[key];
+		if (!this.actions[key]) {
 			return false;
 		}
 
 		key_action(key_modifiers || {});
 
 		return true;
-	};
+	}
 }
 
 
@@ -1266,47 +1286,54 @@ function KeyActionHandler() {
 //////////////////////////
 /**
  * Creates an object with a name and a value, and provides methods to get and set the value while also storing.
- * @param {string} name The name of the property, it is used as a key to store and retrieve the property value.
- * @param {*} default_value The initial value that will be used if there is no existing value stored for the property.
  * @class
  */
-function PanelProperty(name, default_value) {
-	/** @const {string} */
-	this.name = name;
-
-	/** @type {*} */
-	let value = window.GetProperty(this.name, default_value);
+class PanelProperty {
+	/**
+	 * @param {string} name The name of the property, used as a key to store and retrieve the property value.
+	 * @param {*} defaultValue The initial value that will be used if there is no existing value stored for the property.
+	 */
+	constructor(name, defaultValue) {
+		/** @const {string} */
+		this.name = name;
+		/** @type {*} */
+		this.value = window.GetProperty(this.name, defaultValue);
+	}
 
 	/**
-	 * Gets the panel properties from the SMP.
+	 * Gets the panel property value (backward compatibility method).
 	 * @returns {*}
 	 */
-	this.get = () => value;
+	get() {
+		return this.value;
+	}
 
 	/**
 	 * Sets the panel properties of the SMP.
 	 * @param {*} new_value
 	 */
-	this.set = function (new_value) {
-		if (value !== new_value) {
+	set(new_value) {
+		if (this.value !== new_value) {
 			window.SetProperty(this.name, new_value);
-			value = new_value;
+			this.value = new_value;
 		}
-	};
+	}
 }
 
-
-/**
- * Used for collision checks only and shared between objects.
- * @type {Object}
- */
-const properties_name_list = {};
 
 /**
  * Allows to add and manage SMP properties with their names and default values.
  * @class
  */
 class PanelProperties {
+	constructor() {
+		/**
+		 * Used for collision checks only and shared between objects.
+		 * @type {Object}
+		 */
+		this.properties_name_list = {};
+	}
+
 	/**
 	 * @param {Object} properties Each item in array is an object of the following type { string, [string, any] }.
 	 */
@@ -1344,7 +1371,7 @@ class PanelProperties {
 		if (this[item_id] || this[`${item_id}_internal`]) {
 			throw new ArgumentError('property_id', item_id, 'This id is already occupied');
 		}
-		if (properties_name_list[item[0]]) {
+		if (this.properties_name_list[item[0]]) {
 			throw new ArgumentError('property_name', item[0], 'This name is already occupied');
 		}
 	}
@@ -1356,7 +1383,7 @@ class PanelProperties {
 	 * @returns {*} Defining a new property on an object and setting its getter and setter methods.
 	 */
 	add_property_item(item, item_id) {
-		properties_name_list[item[0]] = 1;
+		this.properties_name_list[item[0]] = 1;
 
 		this[`${item_id}_internal`] = new PanelProperty(item[0], item[1]);
 
