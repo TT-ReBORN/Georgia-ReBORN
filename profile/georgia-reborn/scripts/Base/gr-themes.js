@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-11                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -6355,6 +6355,6 @@ function getThemeColors(image) {
 
 	if (settings.showDebugThemeLog) {
 		console.log('Primary color brightness:', color.brightness);
-		console.log('Primary color 2 brightness:', color2.brightness);
-	  }
+		if (color2) console.log('Primary color 2 brightness:', color2.brightness);
+	}
 }
