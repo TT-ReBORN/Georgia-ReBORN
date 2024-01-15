@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-01                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -46,7 +46,6 @@ class BaseControl {
 	 * @param {number} x The x-coordinate.
 	 * @param {number} y The y-coordinate.
 	 * @param {string} label The menu names.
-	 * @class
 	 */
 	constructor(x, y, label) {
 		/** @protected */ this.x = x;
@@ -271,6 +270,7 @@ class BaseControl {
 //////////////////////////////
 /**
  * Drop down top navigation of the custom menu.
+ * @extends {BaseControl}
  */
 class DropDownMenu extends BaseControl {
 	/**
@@ -279,8 +279,6 @@ class DropDownMenu extends BaseControl {
 	 * @param {string} label The main drop down menu item.
 	 * @param {string[]} labelArray The submenu items of the main.
 	 * @param {number=} [activeIndex=-1] The index and state of the drop down main item.
-	 * @extends {BaseControl}
-	 * @class
 	 */
 	constructor(x, y, label, labelArray, activeIndex) {
 		super(x, y, label);
@@ -362,7 +360,7 @@ class DropDownMenu extends BaseControl {
 			gr.SetSmoothingMode(SmoothingMode.AntiAlias);
 			gr.FillSolidRect(this.x, this.y, this.w - 1, this.selectUpHeight + this.h, TintColor(col.bg, 10));
 			gr.DrawLine(this.x, optionY, this.x + this.w - 1, optionY, 2, ShadeColor(col.bg, 20));
-			this.labelArray.forEach((option, i) => {
+			for (const [i, option] of this.labelArray.entries()) {
 				const isActive = this.activeIndex === i;
 				if (isActive || this.selectUpHoveredOption === i) {
 					const color = isActive ? col.progressBarFill : ShadeColor(col.bg, 10);
@@ -371,7 +369,7 @@ class DropDownMenu extends BaseControl {
 				gr.DrawLine(this.x, optionY, this.x + this.w - 1, optionY, 1, ShadeColor(col.bg, 10));
 				gr.GdiDrawText(option, this.font, textColor, this.x + this.padding * 2, optionY + this.padding, this.w - this.padding * 4, optionH, StringFormat(0, 0, 4));
 				optionY += optionH;
-			});
+			}
 		}
 		else { // Line is not visible if select is up
 			gr.FillSolidRect(this.x, this.y + this.h - lineHeight, this.w - 1, lineHeight, TintColor(col.bg, 10));
@@ -496,6 +494,7 @@ class DropDownMenu extends BaseControl {
 //////////////////////////////////
 /**
  * The first string input object of the custom menu, draws stored values of variables.
+ * @extends {BaseControl}
  */
 class StringInput extends BaseControl {
 	/**
@@ -507,8 +506,6 @@ class StringInput extends BaseControl {
 	 * @param {number} y The y-coordinate.
 	 * @param {number} labelWidth The width of the label area.
 	 * @param {number} inputWidth The width of the input field.
-	 * @extends {BaseControl}
-	 * @class
 	 */
 	constructor(id, label, value, x, y, labelWidth, inputWidth) {
 		super(x, y, label);
@@ -916,6 +913,7 @@ class StringInput extends BaseControl {
 ////////////////////////////////////
 /**
  * Second string input field object of the custom menu, used in the metadata grid custom menu.
+ * @extends {BaseControl}
  */
 class StringInput2 extends BaseControl {
 	/**
@@ -927,8 +925,6 @@ class StringInput2 extends BaseControl {
 	 * @param {number} y The y-coordinate.
 	 * @param {number} labelWidth The width of the label area.
 	 * @param {number} inputWidth The width of the input field.
-	 * @extends {BaseControl}
-	 * @class
 	 */
 	constructor(id, label, value2, x, y, labelWidth, inputWidth) {
 		super(x, y, label);
@@ -1316,6 +1312,7 @@ class StringInput2 extends BaseControl {
 //////////////////////////////////
 /**
  * The color picker object of the custom menu, opens utils.ColourPicker.
+ * @extends {BaseControl}
  */
 class ColorPicker extends BaseControl {
 	/**
@@ -1323,8 +1320,6 @@ class ColorPicker extends BaseControl {
 	 * @param {number} value The value of the color will be passed to the color picker.
 	 * @param {number} x The x-coordinate.
 	 * @param {number} y The y-coordinate.
-	 * @extends {BaseControl}
-	 * @class
 	 */
 	constructor(id, value, x, y) {
 		super(x, y);
@@ -1396,6 +1391,7 @@ class ColorPicker extends BaseControl {
 //////////////////////////////////
 /**
  * The color marker of the custom menu drawn as a lightbulb icon, displays UI elements in red color.
+ * @extends {BaseControl}
  */
 class ColorMarker extends BaseControl {
 	/**
@@ -1403,8 +1399,6 @@ class ColorMarker extends BaseControl {
 	 * @param value The value of the color will be passed to the color marker.
 	 * @param {number} x The x-coordinate.
 	 * @param {number} y The y-coordinate.
-	 * @extends {BaseControl}
-	 * @class
 	 */
 	constructor(id, value, x, y) {
 		super(x, y);
@@ -1477,6 +1471,7 @@ class ColorMarker extends BaseControl {
 //////////////////////////
 /**
  * The info page of the custom menu.
+ * @extends {BaseControl}
  */
 class Info extends BaseControl {
 	/**
@@ -1487,8 +1482,6 @@ class Info extends BaseControl {
 	 * @param {number} h The height.
 	 * @param {string} text The text content of the button.
 	 * @param {string} link The URL that the button should navigate to when clicked.
-	 * @extends {BaseControl}
-	 * @class
 	 */
 	constructor(x, y, w, h, text, link) {
 		super(x, y, w, h);
@@ -1666,7 +1659,7 @@ function drawCustomThemeMenu(gr) {
 
 	gr.SetSmoothingMode(SmoothingMode.None);
 	gr.FillSolidRect(x, y, width, height, g_pl_colors.bg);
-	controlList.forEach(c => c.draw(gr));
+	for (const c of controlList) c.draw(gr);
 
 	if (activeControl && activeControl instanceof DropDownMenu && activeControl.isSelectUp) {
 		activeControl.draw(gr);
@@ -2841,7 +2834,7 @@ function drawMetadataGridMenu(gr) {
 	const height = wh - geo.topMenuHeight - geo.lowerBarHeight;
 
 	gr.FillSolidRect(x, y, width, height, g_pl_colors.bg);
-	controlList.forEach(c => c.draw(gr));
+	for (const c of controlList) c.draw(gr);
 
 	if (activeControl && activeControl instanceof DropDownMenu && activeControl.isSelectUp) {
 		activeControl.draw(gr);

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2023-12-18                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -60,12 +60,8 @@ function SCALE(val) {
 /////////////////
 /**
  * Manages and sets the window size based on active display resolution, layout setting and player size.
- * @type {Object} Sets the windows size via UIHacks.
  */
 class Display {
-	/**
-	 * @class
-	 */
 	constructor() {
 		/**
 		 * Saves last used active window width and height.

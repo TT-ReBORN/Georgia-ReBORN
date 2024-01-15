@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-08                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -66,7 +66,6 @@ class Button {
 	 * @param {GdiBitmap[]} img The image that will be displayed for the button.
 	 * @param {string} tip The tooltip text for the button.
 	 * @param {boolean} isEnabled A callback function that determines whether the button is enabled or disabled.
-	 * @class
 	 */
 	constructor(x, y, w, h, id, img, tip = undefined, isEnabled = undefined) {
 		this.x = x;

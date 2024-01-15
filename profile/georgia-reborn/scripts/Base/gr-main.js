@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-11                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -451,7 +451,7 @@ function drawDetailsMetadataGrid(gr) {
 		const font_array = [ft.grd_key];
 		const key_font_array = [ft.grd_val];
 		let grid_key_ft = ft.grd_key;
-		str.grid.forEach((el) => {
+		for (const el of str.grid) {
 			if (font_array.length > 1) { // Only check if there's more than one entry in font_array
 				grid_key_ft = ChooseFontForWidth(gr, textWidth / 3, el, font_array);
 				while (grid_key_ft !== font_array[0]) { // If font returned was first item in the array, then everything fits, otherwise pare down array
@@ -459,7 +459,7 @@ function drawDetailsMetadataGrid(gr) {
 					key_font_array.shift();
 				}
 			}
-		});
+		}
 		const grid_val_ft = key_font_array.shift();
 		const col1Width = CalcGridMaxTextWidth(gr, str.grid, grid_key_ft);
 		const columnMargin = SCALE(10);
@@ -1317,10 +1317,10 @@ function drawDebugThemeOverlay(gr) {
 		gr.DrawString(str, ft.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
 	};
 
-	propertiesLog.forEach(({ prop, log }) => {
+	for (const { prop, log } of propertiesLog) {
 		if (prop) drawString(log);
 		if (prop === imgBrightness) y += lineSpacing;
-	});
+	}
 }
 
 
@@ -1351,7 +1351,9 @@ function drawDebugTiming(drawTimingStart) {
 function drawDebugRectAreas(gr) {
 	if (!repaintRects.length) return;
 	try {
-		repaintRects.forEach(rect => gr.DrawRect(rect.x, rect.y, rect.w, rect.h, SCALE(2), RGBA(255, 0, 0, 200)));
+		for (const rect of repaintRects) {
+			gr.DrawRect(rect.x, rect.y, rect.w, rect.h, SCALE(2), RGBA(255, 0, 0, 200));
+		}
 		repaintRects = [];
 	} catch (e) {}
 }

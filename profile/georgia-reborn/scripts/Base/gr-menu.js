@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-11                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3569,11 +3569,10 @@ function settingsOptions(menu) {
 			const deviceList = JSON.parse(output);
 			const last = deviceList.length + 1
 			let active = -1;
-
-			deviceList.forEach((array, i) => {
+			for (const [i, array] of deviceList.entries()) {
 				menu.AppendMenuItem(MF_STRING, i + 1, array.name);
 				if (array.active) active = i;
-			});
+			}
 			menu.AppendMenuSeparator();
 			menu.AppendMenuItem(MF_STRING, last, 'Preferences...');
 

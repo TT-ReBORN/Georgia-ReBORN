@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-13                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -30,7 +30,6 @@ class ArtCache {
 	 * Creates ArtCache. ArtCache is a Least-Recently Used cache meaning that each cache hit will bump
 	 * that image to be the last image to be removed from the cache (if maxCacheSize is exceeded).
 	 * @param {number} maxCacheSize The maximum number of images to keep in the cache.
-	 * @class
 	 */
 	constructor(maxCacheSize) {
 		/** @private @type {Object.<string, ArtCacheObj>} */
@@ -161,7 +160,6 @@ class ArtCache {
 class Menu {
 	/**
 	 * @param {string=} title The title of the menu item. It is optional and defaults to an empty string if not provided.
-	 * @class
 	 */
 	constructor(title = '') {
 		_MenuItemIndex++;
@@ -341,9 +339,6 @@ class Menu {
  * Creates or stops the tooltip timer.
  */
 class TooltipTimer {
-	/**
-	 * @class
-	 */
 	constructor() {
 		this.tooltip_timer = undefined;
 		this.tt_caller = undefined;
@@ -414,9 +409,6 @@ class TooltipTimer {
  * Creates or clears the tooltip text for normal and styled tooltips.
  */
 class TooltipHandler {
-	/**
-	 * @class
-	 */
 	constructor() {
 		this.id = Math.ceil(Math.random() * 10000);
 		this.timer = g_tooltip_timer;
@@ -474,7 +466,6 @@ class TooltipHandler {
 class MetadataGridTooltip {
 	/**
 	 * @param {number} height The height.
-	 * @class
 	 */
 	constructor(height) {
 		this.x = 0;
@@ -698,9 +689,6 @@ class MetadataGridTooltip {
  * Creates tooltips on the lower bar when artist or title is truncated.
  */
 class LowerBarTooltip {
-	/**
-	 * @class
-	 */
 	constructor() {
 		this.tooltipText = '';
 	}
@@ -830,7 +818,6 @@ class Hyperlink {
 	 * @param {number} yOffset The y-offset of the hyperlink.
 	 * @param {number} containerWidth The width of the container the hyperlink will be in. Used for right justification purposes.
 	 * @param {boolean} [inPlaylist=false] If the hyperlink is drawing in a scrolling container like a playlist, then it is drawn differently.
-	 * @class
 	 */
 	constructor(text, font, type, xOffset, yOffset, containerWidth, inPlaylist = false) {
 		this.text = text;
@@ -1048,7 +1035,6 @@ class Hyperlink {
 class Timeline {
 	/**
 	 * @param {number} height The height of the timeline.
-	 * @class
 	 */
 	constructor(height) {
 		this.marginLeft = SCALE(pref.layout !== 'default' ? 20 : 40);
@@ -1238,9 +1224,6 @@ class Timeline {
  * Creates the jump search when using keystrokes, searches in the active Playlist first and if nothing found it tries in the Library.
  */
 class JumpSearch {
-	/**
-	 * @class
-	 */
 	constructor() {
 		this.arc1 = 5;
 		this.arc2 = 4;
@@ -1333,10 +1316,10 @@ class JumpSearch {
 				let init = '';
 				let cur = 'currentArr';
 				if (!this.initials) { // reset in buildTree
-					this.initials = {}
+					this.initials = {};
 					// * Playlist advance
 					if (displayPlaylist || displayLibrarySplit(true)) {
-						playlistItems.Convert().forEach((v, i) => {
+						for (const [i, v] of playlistItems.Convert().entries()) {
 							const name = search[i].replace(/@!#.*?@!#/g, '');
 							init = name.charAt().toLowerCase();
 							if (cur !== init && !this.initials[init]) {
@@ -1345,12 +1328,11 @@ class JumpSearch {
 							} else {
 								this.initials[init].push(i);
 							}
-							return true;
-						});
+						}
 					}
 					// * Library advance
 					else {
-						pop.tree.forEach((v, i) => {
+						for (const [i, v] of pop.tree.entries()) {
 							if (!v.root) {
 								const nm = v.name.replace(/@!#.*?@!#/g, '');
 								init = nm.charAt().toLowerCase();
@@ -1361,7 +1343,7 @@ class JumpSearch {
 									this.initials[init].push(i);
 								}
 							}
-						});
+						}
 					}
 				}
 
@@ -1529,9 +1511,6 @@ class JumpSearch {
  * Creates a pause button on the album art when playback is being paused.
  */
 class PauseButton {
-	/**
-	 * @class
-	 */
 	constructor() {
 		this.xCenter = 0;
 		this.yCenter = 0;
@@ -1606,7 +1585,6 @@ class Volume {
 	 * @param {number} y The y-coordinate.
 	 * @param {number} w The width.
 	 * @param {number} h The height.
-	 * @class
 	 */
 	constructor(x, y, w, h) {
 		this.x = x;
@@ -1756,9 +1734,6 @@ class Volume {
  * Creates the volume button in the lower bar next to its other playback transport buttons.
  */
 class VolumeBtn {
-	/**
-	 * @class
-	 */
 	constructor() {
 		// * Calculate all transport buttons width
 		const showPlaybackOrderBtn = pref[`showPlaybackOrderBtn_${pref.layout}`];
@@ -2043,7 +2018,6 @@ class ProgressBar {
 	/**
 	 * @param {number} ww window.Width
 	 * @param {number} wh window.Height
-	 * @class
 	 */
 	constructor(ww, wh) {
 		this.x = SCALE(pref.layout !== 'default' ? 20 : 40);
@@ -2268,7 +2242,6 @@ class PeakmeterBar {
 	/**
 	 * @param {number} ww window.Width
 	 * @param {number} wh window.Height
-	 * @class
 	 */
 	constructor(ww, wh) {
 		if (componentVUMeter) this.VUMeter = new ActiveXObject('VUMeter');
@@ -3076,7 +3049,6 @@ class WaveformBar {
 	/**
 	 * @param {number} ww window.Width
 	 * @param {number} wh window.Height
-	 * @class
 	 */
 	constructor(ww, wh) {
 		// * Dependencies
@@ -3332,50 +3304,50 @@ class WaveformBar {
 			// Calculate max values
 			const { pos } = this.ffprobeMode[this.preset.analysisMode];
 			let max = 0;
-			this.current.forEach((frame) => {
+			for (const frame of this.current) {
 				// After parsing JSON, restore infinity values
 				if (frame[pos] === null) { frame[pos] = -Infinity; }
 				const val = frame[pos];
 				max = Math.min(max, isFinite(val) ? val : 0);
-			});
+			}
 			// Calculate point scale
 			let maxVal = 1;
 			if (this.preset.analysisMode !== 'rms_level') {
-				this.current.forEach((frame, n) => {
+				for (const frame of this.current) {
 					if (frame.length === 5) { frame.length = 4; }
 					frame.push(isFinite(frame[pos]) ? Math.abs(1 - (Math.log(Math.abs(max)) + Math.log(Math.abs(frame[pos]))) / Math.log(Math.abs(max))) : 1);
 					if (!isFinite(frame[4])) { frame[4] = 0; }
 					maxVal = Math.min(maxVal, frame[4]);
-				});
+				}
 			}
 			else {
-				this.current.forEach((frame) => {
+				for (const frame of this.current) {
 					frame.push(isFinite(frame[pos]) ? 1 - Math.abs((frame[pos] - max) / max) : 1);
 					maxVal = Math.min(maxVal, frame[4]);
-				});
+				}
 			}
 			// Normalize
 			if (maxVal !== 0) {
-				this.current.forEach((frame) => {
+				for (const frame of this.current) {
 					if (frame[4] !== 1) { frame[4] = frame[4] - maxVal; }
-				});
+				}
 			}
 			// Flat data
 			this.current = this.current.map((x, i) => Math.sign((0.5 - i % 2)) * (1 - x[4]));
 			// Calculate max values
-			this.current.forEach((frame) => {
+			for (const frame of this.current) {
 				upper = Math.max(upper, frame);
 				lower = Math.min(lower, frame);
-			});
+			}
 			max = Math.max(Math.abs(upper), Math.abs(lower));
 		}
 		else if (this.analysis.binaryMode === 'audiowaveform' || this.analysis.binaryMode === 'visualizer' || this.isFallback || this.fallbackMode.paint) {
 			// Calculate max values
 			let max = 0;
-			this.current.forEach((frame) => {
+			for (const frame of this.current) {
 				upper = Math.max(upper, frame);
 				lower = Math.min(lower, frame);
-			});
+			}
 			max = Math.max(Math.abs(upper), Math.abs(lower));
 			// Calculate point scale
 			this.current = this.current.map((frame) => frame / max);
@@ -3456,10 +3428,10 @@ class WaveformBar {
 				// Lower or upper side can be normalized to the max value of the other side to account for this
 				const bias = Math.abs(upper / lower);
 				upper = lower = 0;
-				this.current.forEach((frame) => {
+				for (const frame of this.current) {
 					upper = Math.max(upper, frame);
 					lower = Math.min(lower, frame);
-				});
+				}
 				const newBias = Math.abs(upper / lower);
 				const diff = bias - newBias;
 				if (diff > 0.1) {
@@ -3539,7 +3511,7 @@ class WaveformBar {
 			if (data) {
 				if (!this.isFallback && !this.fallbackMode.analysis && this.analysis.binaryMode === 'ffprobe' && data.frames && data.frames.length) {
 					const processedData = [];
-					data.frames.forEach((frame) => {
+					for (const frame of data.frames) {
 						// Save values as array to compress file as much as possible, also round decimals...
 						const rms = frame.tags['lavfi.astats.Overall.RMS_level'] === '-inf'	? -Infinity :
 							Round(Number(frame.tags['lavfi.astats.Overall.RMS_level']), 1);
@@ -3552,7 +3524,7 @@ class WaveformBar {
 
 						const time = Round(Number(frame.pkt_pts_time), 2);
 						processedData.push([time, rms, rmsPeak, peak]);
-					});
+					}
 					this.current = processedData;
 					// Save data and compress it optionally
 					const str = JSON.stringify(this.current);
@@ -3638,7 +3610,7 @@ class WaveformBar {
 					const val = (Math.random() * i) / third;
 					data.push(val);
 				}
-				[...data].reverse().forEach((frame) => data.push(frame));
+				for (const frame of [...data].reverse()) data.push(frame)
 				break;
 			}
 		}

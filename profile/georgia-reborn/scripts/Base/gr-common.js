@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-13                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1229,7 +1229,6 @@ const qwr_supress_mouse_move = qwr_utils.MouseMoveSuppress();
  * Provides a way to manage key action events, allowing you to register
  * and invoke actions based on key inputs. It maintains an internal registry
  * of key actions, which can be triggered by invoking the registered keys.
- * @class
  */
 class KeyActionHandler {
 	/**
@@ -1286,7 +1285,6 @@ class KeyActionHandler {
 //////////////////////////
 /**
  * Creates an object with a name and a value, and provides methods to get and set the value while also storing.
- * @class
  */
 class PanelProperty {
 	/**
@@ -1323,7 +1321,6 @@ class PanelProperty {
 
 /**
  * Allows to add and manage SMP properties with their names and default values.
- * @class
  */
 class PanelProperties {
 	constructor() {
@@ -1338,10 +1335,10 @@ class PanelProperties {
 	 * @param {Object} properties Each item in array is an object of the following type { string, [string, any] }.
 	 */
 	add_properties(properties) {
-		Object.keys(properties).forEach(key => {
+		for (const key of Object.keys(properties)) {
 			this.validate_property_item(properties[key], key);
 			this.add_property_item(properties[key], key);
-		});
+		}
 	}
 
 	/**

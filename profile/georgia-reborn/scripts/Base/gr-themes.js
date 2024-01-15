@@ -6232,7 +6232,7 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 		selectedColor = colorsWeighted[0].col;  // Choose first color in case no color selected below
 		selectedColor2 = colorsWeighted[1].col; // Choose second color in case no color selected below
 
-		colorsWeighted.forEach((c, i) => {
+		for (const [i, c] of colorsWeighted.entries()) {
 			const col = c.col;
 			const midBrightness = 127 - Math.abs(127 - col.brightness); // Favors colors with a brightness around 127
 			const midBrightness2 = RandomMinMax(60, 120) - Math.abs(RandomMinMax(60, 120) - col.brightness); // Favors colors with a random brightness from 60 - 120
@@ -6255,13 +6255,13 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 			else if (settings.showDebugThemeLog) {
 				console.log(' -', col.getRGB(true, true), LeftPad(col.brightness, 4), ' ', `${LeftPad((c.freq * 100).toFixed(2), 5)}%`, col.isCloseToGreyscale ? '   grey' : (c.freq < minFrequency) ? '   freq' : ' bright');
 			}
-		});
+		}
 
 		if (selectedColor.brightness < 37) {
 			if (settings.showDebugThemeLog) console.log(selectedColor.getRGB(true), 'brightness:', selectedColor.brightness, 'too dark -- searching for highlight color');
 			let brightest = selectedColor;
 			maxWeight = 0;
-			colorsWeighted.forEach(c => {
+			for (const c of colorsWeighted) {
 				if (c.col.brightness > selectedColor.brightness &&
 					c.col.brightness < 200 &&
 					!c.col.isCloseToGreyscale &&
@@ -6270,14 +6270,14 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 						maxWeight = c.weight;
 						brightest = c.col;
 					}
-			});
+			}
 			selectedColor = brightest;
 		}
 		if (selectedColor.brightness < selectedColor2.brightness) {
 			if (settings.showDebugThemeLog) console.log(selectedColor.getRGB(true), 'brightness:', selectedColor.brightness, 'too dark -- searching for highlight color');
 			let brightest = selectedColor2;
 			maxWeight = 0;
-			colorsWeighted.forEach(c => {
+			for (const c of colorsWeighted) {
 				if (c.col.brightness > selectedColor2.brightness &&
 					c.col.brightness < 200 &&
 					!c.col.isCloseToGreyscale &&
@@ -6285,7 +6285,7 @@ function getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
 						maxWeight2 = c.weight2;
 						brightest = c.col;
 					}
-			});
+			}
 			selectedColor2 = brightest;
 		}
 
@@ -6334,15 +6334,15 @@ function getThemeColors(image) {
 
 	while (pref.theme !== 'black' && color.brightness > 220) {
 		calculatedColor = ShadeColor(calculatedColor, pref.theme === 'white' ? 12 : 3);
-		if (settings.showDebugThemeLog) console.log(' >> Shading: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
 		color = new Color(calculatedColor);
 		if (rebornFusion) color2 = new Color(calculatedColor2);
+		if (settings.showDebugThemeLog) console.log(' >> Shading: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
 	}
 	while (!color.isGreyscale && color.brightness <= 17) {
 		calculatedColor = TintColor(calculatedColor, 3);
-		if (settings.showDebugThemeLog) console.log(' >> Tinting: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
 		color = new Color(calculatedColor);
 		if (rebornFusion) color2 = new Color(calculatedColor2);
+		if (settings.showDebugThemeLog) console.log(' >> Tinting: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
 	}
 
 	const tObj = createThemeColorObject(color);

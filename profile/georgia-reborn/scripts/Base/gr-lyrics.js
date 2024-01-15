@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-10                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -33,9 +33,6 @@ let lyricType;
  * Loads and displays lyrics on album art in the Lyrics panel from the cache directory or embedded files.
  */
 class Lyrics {
-	/**
-	 * @class
-	 */
 	constructor() {
 		/** @type {<Array<string>>} */
 		this.lyr = [];
@@ -137,12 +134,12 @@ class Lyrics {
 		const stripReservedChars = (filename) => filename.replace(/[<>:"/\\|?*]/g, '_');
 		const lyricPaths = pref.customLyricsDir ? globals.customLyricsDir : globals.lyr_path;
 
-		lyricPaths.forEach(path => {
+		for (const path of lyricPaths) {
 			tpath.push($($Escape(path)));
-		});
-		globals.lyricFilenamePatterns.forEach(filename => {
+		}
+		for (const filename of globals.lyricFilenamePatterns) {
 			tfilename.push(stripReservedChars($(filename)));
-		});
+		}
 
 		for (let i = 0; i < tpath.length && !foundLyrics; i++) {
 			for (const file of tfilename) {
@@ -322,7 +319,7 @@ class Lyrics {
 			case this.type.unsynced: {
 				this.formatLyrics(this.parseUnsyncedLyrics(lyr, this.type.none));
 				const ratio = isStreaming ? 2000 : this.trackLength / this.lyrics.length * 1000;
-				this.lyrics.forEach((line, i) => { line.timestamp = ratio * i });
+				for (const [i, line] of this.lyrics.entries()) line.timestamp = ratio * i;
 				break;
 			}
 		}
@@ -339,16 +336,16 @@ class Lyrics {
 	parseSyncLyrics(lyr, isNone) {
 		const lyrics = [];
 		if (isNone) lyrics.push({ timestamp: 0, content: lyr[0] });
-		lyr.forEach(line => {
+		for (const line of lyr) {
 			const content = this.tidy(line);
 			const matches = line.match(this.leadingTimestamps);
 			if (matches) {
 				const all = matches[0].split('][');
-				all.forEach(m => {
+				for (const m of all) {
 					lyrics.push({ timestamp: this.getMilliseconds(m), content });
-				});
+				}
 			}
-		});
+		}
 		return lyrics.sort((a, b) => a.timestamp - b.timestamp);
 	}
 
@@ -361,9 +358,9 @@ class Lyrics {
 	parseUnsyncedLyrics(lyr, isNone) {
 		const lyrics = [];
 		if (isNone) lyrics.push({ timestamp: 0, content: lyr[0] });
-		lyr.forEach(line => {
+		for (const line of lyr) {
 			lyrics.push({ timestamp: 0, content: this.tidy(line) });
-		});
+		}
 		return lyrics;
 	}
 
@@ -394,12 +391,12 @@ class Lyrics {
 		}
 		this.maxLyrWidth = Math.min(this.maxLyrWidth + 40, this.w);
 		const incr = Math.min(500, this.durationScroll);
-		this.lyrics.forEach((v, i) => {
+		for (const [i, v] of this.lyrics.entries()) {
 			const t1 = this.getTimestamp(i - 1);
 			const t2 = this.getTimestamp(i);
 			const t3 = this.getTimestamp(i + 1);
 			if (!v.content && t3 && t2 && t1 && t3 - t2 < incr) v.timestamp = Math.max((t2 - t1) / 2 + t1, t2 - incr);
-		});
+		}
 		this.repaintRect();
 	}
 
@@ -445,13 +442,13 @@ class Lyrics {
 
 		gr.SetTextRenderingHint(5);
 
-		this.lyrics.forEach((lyric, i) => {
+		for (const [i, lyric] of this.lyrics.entries()) {
 			const font = lyric.highlight && pref.lyricsLargerCurrentSync ? ft.lyricsHighlight : ft.lyrics;
 			const lyric_y = this.lineHeight * i;
 			const line_y = Math.round(y - top + lyric_y - ((this.stringSearching || this.stringNotFound) ? SCALE(24) : 0));
 			const bottomLine = line_y > this.bot + this.lineHeight * (pref.lyricsFadeScroll ? 2 : 3);
 
-			if (!this.displayLyrics(lyric_y, top)) return;
+			if (!this.displayLyrics(lyric_y, top)) continue;
 
 			if (this.shadowEffect && line_y >= this.top && !bottomLine) { // * Do not show drop shadow at top and bottom
 				if (this.dropNegativeShadowLevel) {
@@ -464,7 +461,7 @@ class Lyrics {
 
 			color = line_y >= this.top ? lyric.highlight ? blendIn : i === this.locus - 1 ? blendOut : bottomLine ? fadeBot : col.lyricsNormal : fadeTop;
 			gr.DrawString(lyric.content, font, color, this.x, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
-		});
+		}
 
 		if (this.showOffset) {
 			this.offsetW = gr.CalcTextWidth(`Offset: ${this.userOffset / 1000}s`, ft.notification) + this.lineHeight;
@@ -513,7 +510,7 @@ class Lyrics {
 	 * Removes highlight from all lines in the lyric array.
 	 */
 	clearHighlight() {
-		this.lyrics.forEach(v => { v.highlight = false });
+		for (const v of this.lyrics) { v.highlight = false }
 	}
 
 	/**
@@ -617,7 +614,7 @@ class Lyrics {
 	 */
 	setHighlight() {
 		const { id } = this.lyrics[this.locus];
-		if (this.type.synced) this.lyrics.forEach(v => { if (v.id === id) v.highlight = true; });
+		if (this.type.synced) for (const v of this.lyrics) { if (v.id === id) v.highlight = true; }
 	}
 
 	/**

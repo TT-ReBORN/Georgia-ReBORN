@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-11                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1570,10 +1570,10 @@ function createButtonObjects(ww, wh) {
  */
 function loadCountryFlags() {
 	flagImgs = [];
-	GetMetaValues(tf.artist_country).forEach(country => {
+	for (const country of GetMetaValues(tf.artist_country)) {
 		const flagImage = loadFlagImage(country);
 		flagImage && flagImgs.push(flagImage);
-	});
+	}
 }
 
 

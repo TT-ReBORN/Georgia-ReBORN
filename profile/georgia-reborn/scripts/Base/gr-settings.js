@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-10                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2047,13 +2047,15 @@ if (config.fileExists) {
 	config.addConfigurationObject(themePlaylistGroupingPresetsSchema, prefs.themePlaylistGroupingPresets || themePlaylistGroupingPresets);
 
 	themeDetails     = config.addConfigurationObject(themeDetailsSchema, Object.assign({}, themeDetailsDefaults, prefs.themeDetails), themeDetailsComments);
-	prefs.metadataGrid && prefs.metadataGrid.forEach(entry => {
-		// Copy comments over to existing object so they aren't lost
-		const gridEntryDefinition = defaultMetadataGrid.find(gridDefItem => gridDefItem.label === entry.label);
-		if (gridEntryDefinition && gridEntryDefinition.comment) {
-			entry.comment = gridEntryDefinition.comment;
+	if (prefs.metadataGrid) {
+		for (const entry of prefs.metadataGrid) {
+			// Copy comments over to existing object so they aren't lost
+			const gridEntryDefinition = defaultMetadataGrid.find(gridDefItem => gridDefItem.label === entry.label);
+			if (gridEntryDefinition && gridEntryDefinition.comment) {
+				entry.comment = gridEntryDefinition.comment;
+			}
 		}
-	});
+	}
 	config.addConfigurationObject(gridSchema, prefs.metadataGrid || defaultMetadataGrid); // Can't Object.assign here to add new fields. Add new fields in the upgrade section of migrateCheck
 
 	themeLibrary   = config.addConfigurationObject(themeLibrarySchema, Object.assign({}, themeLibraryDefaults, prefs.themeLibrary), themeLibraryComments);
@@ -2154,9 +2156,9 @@ function migrateCheck(version, storedVersion) {
 	 * @param {...string} settingNames The names of the settings to remove.
 	 */
 	const DeleteSettings = (settings, ...settingNames) => {
-		settingNames.forEach(settingName => {
+		for (const settingName of settingNames) {
 			delete settings[settingName];
-		});
+		}
 	};
 
 	/**

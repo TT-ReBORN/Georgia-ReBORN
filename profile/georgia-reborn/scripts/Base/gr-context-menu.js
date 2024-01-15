@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-02                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -22,7 +22,6 @@
 class ContextBaseObject {
 	/**
 	 * @param {string} text_arg The text value that will be assigned to the `text` property of the object.
-	 * @class
 	 */
 	constructor(text_arg) {
 		/** @const {string} */
@@ -68,6 +67,7 @@ class ContextBaseObject {
 //////////////////////
 /**
  * Provides methods for adding items to the context menu and handling user interactions.
+ * @extends {ContextBaseObject}
  */
 class ContextMenu extends ContextBaseObject {
 	/**
@@ -76,8 +76,6 @@ class ContextMenu extends ContextBaseObject {
 	 * @param {object} [optional_args={}] Additional parameters that can be passed to the constructor.
 	 * @param {boolean=} [optional_args.is_grayed_out=false] The item will be grayed out.
 	 * @param {boolean=} [optional_args.is_checked=false] The item will be checked.
-	 * @extends {ContextBaseObject}
-	 * @class
 	 */
 	constructor(text_arg, optional_args) {
 		super(text_arg);
@@ -182,12 +180,12 @@ class ContextMenu extends ContextBaseObject {
 		let cur_idx = start_idx;
 
 		this.idx = cur_idx++;
-		this.menu_items.forEach((item) => {
+		for (const item of this.menu_items) {
 			if (!item.initialize_menu_idx) {
-				return;
+				continue;
 			}
 			cur_idx = item.initialize_menu_idx(cur_idx);
-		});
+		}
 
 		return cur_idx;
 	}
@@ -198,9 +196,9 @@ class ContextMenu extends ContextBaseObject {
 	 * @protected
 	 */
 	initialize_menu(parent_menu) {
-		this.menu_items.forEach(item => {
+		for (const item of this.menu_items) {
 			item.initialize_menu(this);
-		});
+		}
 
 		this.cm.AppendTo(parent_menu.cm, this.is_grayed_out ? MF_GRAYED : MF_STRING, this.text);
 	}
@@ -230,6 +228,7 @@ class ContextMenu extends ContextBaseObject {
 //////////////
 /**
  * Context menu items with various properties and methods for customization and interaction.
+ * @extends {ContextBaseObject}
  */
 class ContextItem extends ContextBaseObject {
 	/**
@@ -240,8 +239,6 @@ class ContextItem extends ContextBaseObject {
 	 * @param {boolean=} [optional_args.is_grayed_out=false] The item will be grayed out.
 	 * @param {boolean=} [optional_args.is_checked=false] The item will be checked.
 	 * @param {boolean=} [optional_args.is_radio_checked=false] The ratio item will be checked.
-	 * @extends {ContextBaseObject}
-	 * @class
 	 */
 	constructor(text_arg, callback_fn_arg, optional_args) {
 		super(text_arg);
@@ -325,12 +322,9 @@ class ContextItem extends ContextBaseObject {
 ///////////////////
 /**
  * Handles a separator in a context menu.
+ * @extends {ContextBaseObject}
  */
 class ContextSeparator extends ContextBaseObject {
-	/**
-	 * @extends {ContextBaseObject}
-	 * @class
-	 */
 	constructor() {
 		super('');
 	}
@@ -372,13 +366,12 @@ class ContextSeparator extends ContextBaseObject {
 /////////////////////
 /**
  * Provides methods for initializing and executing the foobar2000 context menu.
+ * @extends {ContextBaseObject}
  */
 class ContextFoobarMenu extends ContextBaseObject {
 	/**
 	 * Initializes a context menu manager.
 	 * @param {FbMetadbHandleList} metadb_handles_arg An array of media database handles.
-	 * @extends {ContextBaseObject}
-	 * @class
 	 */
 	constructor(metadb_handles_arg) {
 		super('');
@@ -434,12 +427,11 @@ class ContextFoobarMenu extends ContextBaseObject {
 ///////////////////
 /**
  * The main context menu with multiple items that can be executed when clicked.
+ * @extends {ContextMenu}
  */
 class ContextMainMenu extends ContextMenu {
 	/**
-	 * @extends {ContextMenu}
 	 * @final
-	 * @class
 	 */
 	constructor() {
 		super('');
@@ -456,16 +448,16 @@ class ContextMainMenu extends ContextMenu {
 	execute(x, y) {
 		// Initialize menu
 		let cur_idx = 1;
-		this.menu_items.forEach(item => {
+		for (const item of this.menu_items) {
 			if (!item.initialize_menu_idx) {
-				return;
+				continue;
 			}
 			cur_idx = item.initialize_menu_idx(cur_idx);
-		});
+		}
 
-		this.menu_items.forEach(item => {
+		for (const item of this.menu_items) {
 			item.initialize_menu(this);
-		});
+		}
 
 		// Execute menu
 		const idx = this.cm.TrackPopupMenu(x, y);
@@ -590,12 +582,12 @@ Object.assign(qwr_utils, {
 
 		// * DISPLAY - ALIGN TOP MENU BUTTONS * //
 		const topMenuDisplayAlign = [['Align left', 'left'], ['Align center', 'center']];
-		topMenuDisplayAlign.forEach((align) => {
+		for (const align of topMenuDisplayAlign) {
 			topMenuDisplayMenu.append_item(align[0], function (align) {
 				pref.topMenuAlignment = align;
 				updateButtons();
 			}.bind(null, align[1]), { is_radio_checked: align[1] === pref.topMenuAlignment });
-		});
+		}
 		topMenuDisplayMenu.append_separator();
 		topMenuDisplayMenu.append_item('Compact top menu', () => {
 			pref.topMenuCompact = !pref.topMenuCompact;
@@ -617,13 +609,13 @@ Object.assign(qwr_utils, {
 			['Emboss', 'emboss'],
 			['Minimal', 'minimal']
 		];
-		topMenuButtonStyle.forEach((style) => {
+		for (const style of topMenuButtonStyle) {
 			topMenuStyleMenu.append_item(style[0], function (style) {
 				pref.styleTopMenuButtons = style;
 				if (!pref.themeSandbox) pref.savedStyleTopMenuButtons = pref.styleTopMenuButtons = style; else pref.styleTopMenuButtons = style;
 				updateStyle();
 			}.bind(null, style[1]), { is_radio_checked: style[1] === pref.styleTopMenuButtons });
-		});
+		}
 		cmac.append(topMenuStyleMenu);
 	}
 });
@@ -658,7 +650,7 @@ Object.assign(qwr_utils, {
 
 			const playbackOrderMenu = new ContextMenu('Playback order');
 			const playbackOrderModes = ['default', 'repeatPlaylist', 'repeatTrack', 'shuffle'];
-			playbackOrderModes.forEach((playbackOrder) => {
+			for (const playbackOrder of playbackOrderModes) {
 				playbackOrderMenu.append_item(playbackOrder, () => {
 					switch (playbackOrder) {
 						case 'default':
@@ -679,7 +671,7 @@ Object.assign(qwr_utils, {
 							break;
 					}
 				}, { is_radio_checked: playbackOrder === pref.playbackOrder });
-			});
+			}
 			cmac.append(playbackOrderMenu);
 			cmac.append_separator();
 		}
@@ -914,7 +906,7 @@ Object.assign(qwr_utils, {
 			['CD - Blank', 'cdBlank'],
 			['CD - Transparent', 'cdTrans']
 		];
-		displayCdArtMenu.forEach((cdArt) => {
+		for (const cdArt of displayCdArtMenu) {
 			discArtMenu.append_item(cdArt[0], function (cdArt) {
 				pref.discArtStub = cdArt;
 				pref.noDiscArtStub = false;
@@ -923,7 +915,7 @@ Object.assign(qwr_utils, {
 				fetchNewArtwork(fb.GetNowPlaying());
 				RepaintWindow();
 			}.bind(null, cdArt[1]), { is_radio_checked: cdArt[1] === pref.discArtStub });
-		});
+		}
 		discArtMenu.append_separator();
 		const displayVinylArtMenu = [
 			['Vinyl - Album cover', 'vinylAlbumCover'],
@@ -937,7 +929,7 @@ Object.assign(qwr_utils, {
 			['Vinyl - Ebony', 'vinylEbony'],
 			['Vinyl - Transparent', 'vinylTrans']
 		];
-		displayVinylArtMenu.forEach((vinylArt) => {
+		for (const vinylArt of displayVinylArtMenu) {
 			discArtMenu.append_item(vinylArt[0], function (vinylArt) {
 				pref.discArtStub = vinylArt;
 				pref.noDiscArtStub = false;
@@ -946,7 +938,7 @@ Object.assign(qwr_utils, {
 				fetchNewArtwork(fb.GetNowPlaying());
 				RepaintWindow();
 			}.bind(null, vinylArt[1]), { is_radio_checked: vinylArt[1] === pref.discArtStub });
-		});
+		}
 		cmac.append(discArtMenu);
 		cmac.append_separator();
 
@@ -995,7 +987,7 @@ Object.assign(qwr_utils, {
 		const transportSizeMenu = new ContextMenu('Transport button size');
 		const transportSizeMenuDefault = new ContextMenu('Default');
 		const transportSizeDefault = [['28px', 28], ['30px', 30], ['32px (default)', 32], ['34px', 34], ['36px', 36], ['38px', 38], ['40px', 40], ['42px', 42]];
-		transportSizeDefault.forEach((size) => {
+		for (const size of transportSizeDefault) {
 			transportSizeMenuDefault.append_item(size[0], function (size) {
 				pref.transportButtonSize_default = size;
 				if (size === -1) {
@@ -1009,12 +1001,12 @@ Object.assign(qwr_utils, {
 				resizeArtwork(true);
 				updateButtons();
 			}.bind(null, size[1]), { is_radio_checked: size[1] === pref.transportButtonSize_default });
-		});
+		}
 		transportSizeMenu.append(transportSizeMenuDefault);
 
 		const transportSizeMenuArtwork = new ContextMenu('Artwork');
 		const transportSizeArtwork = [['28px', 28], ['30px', 30], ['32px (default)', 32], ['34px', 34], ['36px', 36], ['38px', 38], ['40px', 40], ['42px', 42]];
-		transportSizeArtwork.forEach((size) => {
+		for (const size of transportSizeArtwork) {
 			transportSizeMenuArtwork.append_item(size[0], function (size) {
 				pref.transportButtonSize_artwork = size;
 				if (size === -1) {
@@ -1028,12 +1020,12 @@ Object.assign(qwr_utils, {
 				resizeArtwork(true);
 				updateButtons();
 			}.bind(null, size[1]), { is_radio_checked: size[1] === pref.transportButtonSize_artwork });
-		});
+		}
 		transportSizeMenu.append(transportSizeMenuArtwork);
 
 		const transportSizeMenuCompact = new ContextMenu('Compact');
 		const transportSizeCompact = [['28px', 28], ['30px', 30], ['32px (default)', 32], ['34px', 34], ['36px', 36], ['38px', 38], ['40px', 40], ['42px', 42]];
-		transportSizeCompact.forEach((size) => {
+		for (const size of transportSizeCompact) {
 			transportSizeMenuCompact.append_item(size[0], function (size) {
 				pref.transportButtonSize_compact = size;
 				if (size === -1) {
@@ -1047,7 +1039,7 @@ Object.assign(qwr_utils, {
 				resizeArtwork(true);
 				updateButtons();
 			}.bind(null, size[1]), { is_radio_checked: size[1] === pref.transportButtonSize_compact });
-		});
+		}
 		transportSizeMenu.append(transportSizeMenuCompact);
 		cmac.append(transportSizeMenu);
 
@@ -1055,7 +1047,7 @@ Object.assign(qwr_utils, {
 		const transportSpacingMenu = new ContextMenu('Transport button spacing');
 		const transportSpacingMenuDefault = new ContextMenu('Default');
 		const transportSpacingDefault = [['-2', -1], ['3px', 3], ['5px (default)', 5], ['7px', 7], ['10px', 10], ['15px', 15], ['+2', 999]];
-		transportSpacingDefault.forEach((spacing) => {
+		for (const spacing of transportSpacingDefault) {
 			transportSpacingMenuDefault.append_item(spacing[0], function (spacing) {
 				pref.transportButtonSpacing_default = spacing;
 				if (spacing === -1) {
@@ -1067,12 +1059,12 @@ Object.assign(qwr_utils, {
 				}
 				updateStyle();
 			}.bind(null, spacing[1]), { is_radio_checked: spacing[1] === pref.transportButtonSpacing_default });
-		});
+		}
 		transportSpacingMenu.append(transportSpacingMenuDefault);
 
 		const transportSpacingMenuArtwork = new ContextMenu('Artwork');
 		const transportSpacingArtwork = [['-2', -1], ['3px', 3], ['5px (default)', 5], ['7px', 7], ['10px', 10], ['15px', 15], ['+2', 999]];
-		transportSpacingArtwork.forEach((spacing) => {
+		for (const spacing of transportSpacingArtwork) {
 			transportSpacingMenuArtwork.append_item(spacing[0], function (spacing) {
 				pref.transportButtonSpacing_artwork = spacing;
 				if (spacing === -1) {
@@ -1084,12 +1076,12 @@ Object.assign(qwr_utils, {
 				}
 				updateStyle();
 			}.bind(null, spacing[1]), { is_radio_checked: spacing[1] === pref.transportButtonSpacing_artwork });
-		});
+		}
 		transportSpacingMenu.append(transportSpacingMenuArtwork);
 
 		const transportSpacingMenuCompact = new ContextMenu('Compact');
 		const transportSpacingCompact = [['-2', -1], ['3px', 3], ['5px (default)', 5], ['7px', 7], ['10px', 10], ['15px', 15], ['+2', 999]];
-		transportSpacingCompact.forEach((spacing) => {
+		for (const spacing of transportSpacingCompact) {
 			transportSpacingMenuCompact.append_item(spacing[0], function (spacing) {
 				pref.transportButtonSpacing_compact = spacing;
 				if (spacing === -1) {
@@ -1101,7 +1093,7 @@ Object.assign(qwr_utils, {
 				}
 				updateStyle();
 			}.bind(null, spacing[1]), { is_radio_checked: spacing[1] === pref.transportButtonSpacing_compact });
-		});
+		}
 		transportSpacingMenu.append(transportSpacingMenuCompact);
 		cmac.append(transportSpacingMenu);
 
@@ -1370,48 +1362,48 @@ Object.assign(qwr_utils, {
 			['Emboss', 'emboss'],
 			['Minimal', 'minimal']
 		];
-		transportButtonStyles.forEach((style) => {
+		for (const style of transportButtonStyles) {
 			transportButtonStyleMenu.append_item(style[0], function (style) {
 				pref.styleTransportButtons = style;
 				if (!pref.themeSandbox) pref.savedStyleTransportButtons = pref.styleTransportButtons = style; else pref.styleTransportButtons = style;
 				updateStyle();
 			}.bind(null, style[1]), { is_radio_checked: style[1] === pref.styleTransportButtons });
-		});
+		}
 		cmac.append(transportButtonStyleMenu);
 
 		// * STYLES - VOLUME BAR * //
 		const transportVolumeBarStyleMenu = new ContextMenu('Style volume bar');
 		const transportVolumeBarStylesDesignMenu = new ContextMenu('Design');
 		const transportVolumeBarStylesDesign = [['Default', 'default'], ['Rounded', 'rounded']];
-		transportVolumeBarStylesDesign.forEach((design) => {
+		for (const design of transportVolumeBarStylesDesign) {
 			transportVolumeBarStylesDesignMenu.append_item(design[0], function (design) {
 				pref.styleVolumeBarDesign = design;
 				if (!pref.themeSandbox) pref.savedStyleVolumeBarDesign = pref.styleVolumeBarDesign = design; else pref.styleVolumeBarDesign = design;
 				updateStyle();
 			}.bind(null, design[1]), { is_radio_checked: design[1] === pref.styleVolumeBarDesign });
-		});
+		}
 		transportVolumeBarStyleMenu.append(transportVolumeBarStylesDesignMenu);
 
 		const transportVolumeBarStylesBgMenu = new ContextMenu('Background');
 		const transportVolumeBarStylesBg = [['Default', 'default'], ['Bevel', 'bevel'], ['Inner', 'inner']];
-		transportVolumeBarStylesBg.forEach((style) => {
+		for (const style of transportVolumeBarStylesBg) {
 			transportVolumeBarStylesBgMenu.append_item(style[0], function (style) {
 				pref.styleVolumeBar = style;
 				if (!pref.themeSandbox) pref.savedStyleVolumeBar = pref.styleVolumeBar = style; else pref.styleVolumeBar = style;
 				updateStyle();
 			}.bind(null, style[1]), { is_radio_checked: style[1] === pref.styleVolumeBar });
-		});
+		}
 		transportVolumeBarStyleMenu.append(transportVolumeBarStylesBgMenu);
 
 		const transportVolumeBarStylesFillMenu = new ContextMenu('Fill');
 		const transportVolumeBarStylesFill = [['Default', 'default'], ['Bevel', 'bevel'], ['Inner', 'inner']];
-		transportVolumeBarStylesFill.forEach((style) => {
+		for (const style of transportVolumeBarStylesFill) {
 			transportVolumeBarStylesFillMenu.append_item(style[0], function (style) {
 				pref.styleVolumeBarFill = style;
 				if (!pref.themeSandbox) pref.savedStyleVolumeBarFill = pref.styleVolumeBarFill = style; else pref.styleVolumeBarFill = style;
 				updateStyle();
 			}.bind(null, style[1]), { is_radio_checked: style[1] === pref.styleVolumeBarFill });
-		});
+		}
 		transportVolumeBarStyleMenu.append(transportVolumeBarStylesFillMenu);
 		cmac.append(transportVolumeBarStyleMenu);
 	}
@@ -1431,7 +1423,7 @@ Object.assign(qwr_utils, {
 	 */
 	append_seekbar_context_menu_to(cmac) {
 		const seekbar = [['Progress bar', 'progressbar'], ['Peakmeter bar', 'peakmeterbar'], ['Waveform bar', 'waveformbar']];
-		seekbar.forEach((type) => {
+		for (const type of seekbar) {
 			cmac.append_item(type[0], () => {
 				pref.seekbar = type[1];
 				setGeometry();
@@ -1439,39 +1431,39 @@ Object.assign(qwr_utils, {
 				if (pref.seekbar === 'waveformbar') waveformBar.updateBar();
 				RepaintWindow();
 			}, { is_radio_checked: type[1] === pref.seekbar });
-		});
+		}
 
 		// * PROGRESS BAR * //
 		if (pref.seekbar === 'progressbar') {
 			cmac.append_separator();
 			const progressBarStyleMenu = new ContextMenu('Style');
 			const progressBarStyle = [['Default', 'default'], ['Rounded', 'rounded'], ['Lines', 'lines'], ['Blocks', 'blocks'], ['Dots', 'dots'], ['Thin', 'thin']];
-			progressBarStyle.forEach((sec) => {
+			for (const sec of progressBarStyle) {
 				progressBarStyleMenu.append_item(sec[0], () => {
 					pref.styleProgressBarDesign = sec[1];
 					setGeometry();
 					RepaintWindow();
 				}, { is_radio_checked: sec[1] === pref.styleProgressBarDesign });
-			});
+			}
 			cmac.append(progressBarStyleMenu);
 
 			const progressBarSeekSpeedMenu = new ContextMenu('Mouse wheel seek speed');
 			const progressBarSeekSpeed = [['  1 sec', 1], ['  2 sec', 2], ['  3 sec', 3], ['  4 sec', 4], ['  5 sec (default)', 5], ['  6 sec', 6], ['  7 sec', 7], ['  8 sec', 8], ['  9 sec', 9], ['10 sec', 10]];
-			progressBarSeekSpeed.forEach((sec) => {
+			for (const sec of progressBarSeekSpeed) {
 				progressBarSeekSpeedMenu.append_item(sec[0], () => {
 					pref.progressBarWheelSeekSpeed = sec[1];
 				}, { is_radio_checked: sec[1] === pref.progressBarWheelSeekSpeed });
-			});
+			}
 			cmac.append(progressBarSeekSpeedMenu);
 
 			const progressBarRefreshMenu = new ContextMenu('Refresh rate');
 			const progressBarRefresh = [['1000 ms (very slow CPU)', 1000], ['  500 ms', 500], ['  333 ms', 333], ['  Variable (default)', 'variable'], ['  250 ms', 250], ['  200 ms', 200], ['  150 ms', 150], ['  100 ms', 100], ['    60 ms', 60], ['    30 ms (very fast CPU)', 30]];
-			progressBarRefresh.forEach((rate) => {
+			for (const rate of progressBarRefresh) {
 				progressBarRefreshMenu.append_item(rate[0], () => {
 					pref.progressBarRefreshRate = rate[1];
 					setProgressBarRefresh();
 				}, { is_radio_checked: rate[1] === pref.progressBarRefreshRate });
-			});
+			}
 			cmac.append(progressBarRefreshMenu);
 		}
 		// * PEAKMETER BAR * //
@@ -1479,36 +1471,36 @@ Object.assign(qwr_utils, {
 			cmac.append_separator();
 			const peakmeterBarDesignMenu = new ContextMenu('Style');
 			const peakmeterBarDesign = [['Horizontal', 'horizontal'], ['Horizontal center', 'horizontal_center'], ['Vertical', 'vertical']];
-			peakmeterBarDesign.forEach((design) => {
+			for (const design of peakmeterBarDesign) {
 				peakmeterBarDesignMenu.append_item(design[0], () => {
 					pref.peakmeterBarDesign = design[1];
 					peakmeterBar.on_size(ww, wh);
 					RepaintWindow();
 				}, { is_radio_checked: design[1] === pref.peakmeterBarDesign });
-			});
+			}
 			cmac.append(peakmeterBarDesignMenu);
 
 			if (pref.peakmeterBarDesign === 'vertical') {
 				const peakmeterBarVertSizeMenu = new ContextMenu('Size');
 				const peakmeterBarVertSize = [['  0 px', 0], ['  2 px', 2], ['  4 px', 4], ['  6 px', 6], ['  8 px', 8], ['10 px', 10], [pref.layout !== 'default' ? '12 px (default)' : '12 px', 12], ['14 px', 14], ['16 px', 16], ['18 px', 18], [pref.layout !== 'default' ? '20 px' : '20 px (default)', 20], ['25 px', 25], ['30 px', 30], ['35 px', 35], ['40 px', 40], ['Minimum', 'min']];
-				peakmeterBarVertSize.forEach((size) => {
+				for (const size of peakmeterBarVertSize) {
 					peakmeterBarVertSizeMenu.append_item(size[0], () => {
 						pref.peakmeterBarVertSize = size[1];
 						peakmeterBar = new PeakmeterBar(ww, wh);
 						RepaintWindow();
 					}, { is_radio_checked: size[1] === pref.peakmeterBarVertSize });
-				});
+				}
 				cmac.append(peakmeterBarVertSizeMenu);
 
 				const peakmeterBarVertDbRangeMenu = new ContextMenu('Decibel range');
 				const peakmeterBarVertDbRange = [['2 to -20 db (default)', 220], ['2 to -15 db', 215], ['2 to -10 db', 210], ['3 to -20 db', 320], ['3 to -15 db', 315], ['3 to -10 db', 310], ['5 to -20 db', 520], ['5 to -15 db', 515], ['5 to -10 db', 510]];
-				peakmeterBarVertDbRange.forEach((range) => {
+				for (const range of peakmeterBarVertDbRange) {
 					peakmeterBarVertDbRangeMenu.append_item(range[0], () => {
 						pref.peakmeterBarVertDbRange = range[1];
 						peakmeterBar = new PeakmeterBar(ww, wh);
 						RepaintWindow();
 					}, { is_radio_checked: range[1] === pref.peakmeterBarVertDbRange });
-				});
+				}
 				cmac.append(peakmeterBarVertDbRangeMenu);
 			}
 
@@ -1581,12 +1573,12 @@ Object.assign(qwr_utils, {
 
 			const peakmeterBarRefreshMenu = new ContextMenu('Refresh rate');
 			const peakmeterBarRefresh = [['200 ms (very slow CPU)', 200], ['150 ms', 150], ['120 ms', 120], ['100 ms', 100], ['  80 ms (default)', 80], ['  60 ms', 60], ['  30 ms (very fast CPU)', 30]];
-			peakmeterBarRefresh.forEach((rate) => {
+			for (const rate of peakmeterBarRefresh) {
 				peakmeterBarRefreshMenu.append_item(rate[0], () => {
 					pref.peakmeterBarRefreshRate = rate[1];
 					setProgressBarRefresh();
 				}, { is_radio_checked: rate[1] === pref.peakmeterBarRefreshRate });
-			});
+			}
 			cmac.append(peakmeterBarRefreshMenu);
 		}
 		// * WAVEFORM BAR * //
@@ -1594,7 +1586,7 @@ Object.assign(qwr_utils, {
 			cmac.append_separator();
 			const waveformBarAnalysisMenu = new ContextMenu('Analysis');
 			const waveformBarAnalysis = [['RMS level', 'rms_level'], ['Peak level', 'peak_level'], ['RMS peak', 'rms_peak']];
-			waveformBarAnalysis.forEach((type) => {
+			for (const type of waveformBarAnalysis) {
 				waveformBarAnalysisMenu.append_item(type[0] + (pref.waveformBarMode === 'ffprobe' ? '' : '\t (ffprobe only)'), () => {
 					pref.waveformBarAnalysis = type[1];
 					waveformBar.updateConfig({ preset: { analysisMode: type[1] } });
@@ -1605,7 +1597,7 @@ Object.assign(qwr_utils, {
 					is_radio_checked: type[1] === pref.waveformBarAnalysis
 					}
 				);
-			});
+			}
 			waveformBarAnalysisMenu.append_separator();
 			waveformBarAnalysisMenu.append_item('Delete analysis files', () => {
 				const msg = 'Do you want to delete all waveform bar cache?\n\nThis will permanently delete analyzed files.\n\nContinue?\n\n\n';
@@ -1629,7 +1621,7 @@ Object.assign(qwr_utils, {
 				});
 				waveformBarModeMenu.append_separator();
 			}
-			waveformBarMode.forEach((mode) => {
+			for (const mode of waveformBarMode) {
 				const found = IsFile(waveformBar.binaries[mode[1]]);
 				waveformBarModeMenu.append_item(mode[0] + (found ? '' : '\t(not found)'), () => {
 					pref.waveformBarMode = mode[1];
@@ -1641,63 +1633,63 @@ Object.assign(qwr_utils, {
 					is_radio_checked: mode[1] === pref.waveformBarMode
 					}
 				);
-			});
+			}
 			cmac.append(waveformBarModeMenu);
 
 			const waveformBarDesignMenu = new ContextMenu('Style');
 			const waveformBarDesign = [['Waveform', 'waveform'], ['Bars', 'bars'], ['Dots', 'dots'], ['Halfbars', 'halfbars']];
-			waveformBarDesign.forEach((design) => {
+			for (const design of waveformBarDesign) {
 				waveformBarDesignMenu.append_item(design[0], () => {
 					pref.waveformBarDesign = design[1];
 					waveformBar.updateConfig({ preset: { barDesign: design[1] } });
 				}, { is_radio_checked: design[1] === pref.waveformBarDesign });
-			});
+			}
 			cmac.append(waveformBarDesignMenu);
 
 			const waveformBarSizeMenu = new ContextMenu('Size');
 			const waveformBarSizeWaveMenu = new ContextMenu('Waveform');
 			const waveformBarSizeWave = [['1', 1], ['2', 2], ['3 (Default)', 3], ['4', 4], ['5', 5]];
-			waveformBarSizeWave.forEach((size) => {
+			for (const size of waveformBarSizeWave) {
 				waveformBarSizeWaveMenu.append_item(size[0], () => {
 					pref.waveformBarSizeWave = size[1];
 					waveformBar.updateConfig({ ui: { sizeWave: size[1] } });
 					waveformBar.updateBar();
 					RepaintWindow();
 				}, { is_radio_checked: size[1] === pref.waveformBarSizeWave });
-			});
+			}
 			waveformBarSizeMenu.append(waveformBarSizeWaveMenu);
 			const waveformBarSizeBarsMenu = new ContextMenu('Bars');
 			const waveformBarSizeBars = [['1 (Default)', 1], ['2', 2], ['3', 3], ['4', 4], ['5', 5]];
-			waveformBarSizeBars.forEach((size) => {
+			for (const size of waveformBarSizeBars) {
 				waveformBarSizeBarsMenu.append_item(size[0], () => {
 					pref.waveformBarSizeBars = size[1];
 					waveformBar.updateConfig({ ui: { sizeBars: size[1] } });
 					waveformBar.updateBar();
 					RepaintWindow();
 				}, { is_radio_checked: size[1] === pref.waveformBarSizeBars });
-			});
+			}
 			waveformBarSizeMenu.append(waveformBarSizeBarsMenu);
 			const waveformBarSizeDotsMenu = new ContextMenu('Dots');
 			const waveformBarSizeDots = [['1', 1], ['2 (Default)', 2], ['3', 3], ['4', 4], ['5', 5]];
-			waveformBarSizeDots.forEach((size) => {
+			for (const size of waveformBarSizeDots) {
 				waveformBarSizeDotsMenu.append_item(size[0], () => {
 					pref.waveformBarSizeDots = size[1];
 					waveformBar.updateConfig({ ui: { sizeDots: size[1] } });
 					waveformBar.updateBar();
 					RepaintWindow();
 				}, { is_radio_checked: size[1] === pref.waveformBarSizeDots });
-			});
+			}
 			waveformBarSizeMenu.append(waveformBarSizeDotsMenu);
 			const waveformBarSizeHalfMenu = new ContextMenu('Halfbars');
 			const waveformBarSizeHalf = [['1', 1], ['2', 2], ['3', 3], ['4 (Default)', 4], ['5', 5]];
-			waveformBarSizeHalf.forEach((size) => {
+			for (const size of waveformBarSizeHalf) {
 				waveformBarSizeHalfMenu.append_item(size[0], () => {
 					pref.waveformBarSizeHalf = size[1];
 					waveformBar.updateConfig({ ui: { sizeHalf: size[1] } });
 					waveformBar.updateBar();
 					RepaintWindow();
 				}, { is_radio_checked: size[1] === pref.waveformBarSizeHalf });
-			});
+			}
 			waveformBarSizeMenu.append(waveformBarSizeHalfMenu);
 			waveformBarSizeMenu.append_separator();
 			waveformBarSizeMenu.append_item('Normalize width', () => {
@@ -1710,12 +1702,12 @@ Object.assign(qwr_utils, {
 
 			const waveformBarDisplayMenu = new ContextMenu('Display');
 			const waveformBarDisplay = [['Full', 'full'], ['Partial', 'partial']];
-			waveformBarDisplay.forEach((paint) => {
+			for (const paint of waveformBarDisplay) {
 				waveformBarDisplayMenu.append_item(paint[0], () => {
 					pref.waveformBarPaint = paint[1];
 					waveformBar.updateConfig({ preset: { paintMode: paint[1] } });
 				}, { is_radio_checked: paint[1] === pref.waveformBarPaint });
-			});
+			}
 			waveformBarDisplayMenu.append_separator();
 
 			waveformBarDisplayMenu.append_item(`Prepaint${pref.waveformBarPaint === 'full' ? '\t(partial only)' : ''}`, () => {
@@ -1730,7 +1722,7 @@ Object.assign(qwr_utils, {
 			const waveformBarPrepaintMenuDisabled = pref.waveformBarPaint === 'full' || pref.waveformBarMode === 'visualizer' || !pref.waveformBarPrepaint;
 			const waveformBarPrepaintMenu = new ContextMenu('Prepaint front', { is_grayed_out: waveformBarPrepaintMenuDisabled });
 			const waveformBarPrepaint = [['  2 secs', 2], ['  5 secs', 5], ['10 secs', 10], ['     Full', Infinity]];
-			waveformBarPrepaint.forEach((time) => {
+			for (const time of waveformBarPrepaint) {
 				waveformBarPrepaintMenu.append_item(time[0], () => {
 					pref.waveformBarPrepaintFront = time[1];
 					waveformBar.updateConfig({ preset: { prepaintFront: time[1] } });
@@ -1739,7 +1731,7 @@ Object.assign(qwr_utils, {
 					is_radio_checked: time[1] === pref.waveformBarPrepaintFront
 					}
 				);
-			});
+			}
 			waveformBarDisplayMenu.append(waveformBarPrepaintMenu);
 			waveformBarDisplayMenu.append_separator();
 
@@ -1776,7 +1768,7 @@ Object.assign(qwr_utils, {
 			const waveformBarRefreshMenuDisabled = !(pref.waveformBarPaint === 'partial' && pref.waveformBarPrepaint || pref.waveformBarMode === 'visualizer');
 			const waveformBarRefreshMenu = new ContextMenu(`Refresh rate${pref.waveformBarPaint === 'full' && pref.waveformBarMode !== 'visualizer' ? '\t(partial only)' : ''}`, { is_grayed_out: waveformBarRefreshMenuDisabled });
 			const waveformBarRefresh = [['1000 ms (very slow CPU)', 1000], ['  500 ms', 500], ['  200 ms', 200], ['  100 ms (default)', 100], ['    80 ms', 80], ['    60 ms', 60], ['    30 ms (very fast CPU)', 30]];
-			waveformBarRefresh.forEach((rate) => {
+			for (const rate of waveformBarRefresh) {
 				waveformBarRefreshMenu.append_item(rate[0], () => {
 					pref.waveformBarRefreshRate = rate[1];
 					waveformBar.updateConfig({ ui: { refreshRate: rate[1] } });
@@ -1785,7 +1777,7 @@ Object.assign(qwr_utils, {
 					is_radio_checked: rate[1] === pref.waveformBarRefreshRate
 					}
 				);
-			});
+			}
 			waveformBarRefreshMenu.append_separator();
 			waveformBarRefreshMenu.append_item('    Variable refresh rate', () => {
 				pref.waveformBarRefreshRateVar = !pref.waveformBarRefreshRateVar;

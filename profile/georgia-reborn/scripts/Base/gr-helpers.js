@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-13                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -414,13 +414,13 @@ function _CreateFolder(folder) {
 	if (!IsFolder(folder)) {
 		if (folder.startsWith('.\\')) { folder = fb.FoobarPath + folder.replace('.\\', ''); }
 		const subFolders = folder.split('\\').map((_, i, arr) => i ? arr.slice(0, i).reduce((path, name) => `${path}\\${name}`) : _);
-		subFolders.forEach((path) => {
+		for (const path of subFolders) {
 			try {
 				fso.CreateFolder(path);
 			} catch (e) {
 				return false;
 			}
-		});
+		}
 		return IsFolder(folder);
 	}
 	return false;
@@ -1014,13 +1014,13 @@ function CalcImgBrightness(image) {
 		let bTot = 0;
 		let freqTot = 0;
 
-		colorSchemeArray.forEach(v => {
+		for (const v of colorSchemeArray) {
 			const col = ToRGB(v.col);
 			rTot += col[0] ** 2 * v.freq;
 			gTot += col[1] ** 2 * v.freq;
 			bTot += col[2] ** 2 * v.freq;
 			freqTot += v.freq;
-		});
+		}
 
 		const avgCol =
 			Math.round([
@@ -1189,7 +1189,6 @@ class ImageSize {
 	 * @param {number} y The y-coordinate of the image.
 	 * @param {number} w The width of the image.
 	 * @param {number} h The height of the image.
-	 * @class
 	 */
 	constructor(x, y, w, h) {
 		this.x = x;
@@ -1478,12 +1477,14 @@ function TestFont(fontName) {
  */
 function CalcGridMaxTextWidth(gr, gridArray, font) {
 	let maxWidth = 0;
-	gridArray && gridArray.forEach((el) => {
-		const width = Math.ceil(gr.MeasureString(el.label, font, 0, 0, ww, wh).Width) + 1;
-		if (width > maxWidth) {
-			maxWidth = width;
+	if (gridArray) {
+		for (const el of gridArray) {
+			const width = Math.ceil(gr.MeasureString(el.label, font, 0, 0, ww, wh).Width) + 1;
+			if (width > maxWidth) {
+				maxWidth = width;
+			}
 		}
-	});
+	}
 	return maxWidth;
 }
 
@@ -1632,8 +1633,8 @@ function DeepAssign(options = { nonEnum: false, symbols: false, descriptors: fal
 	 * @returns {void} Void if all sources are valid Objects.
 	 */
 	return function deepAssignWithOptions (target, ...sources) {
-		sources.forEach((source) => {
-			if (!IsDeepObject(source) || !IsDeepObject(target)) { return; }
+		for (const source of sources) {
+			if (!IsDeepObject(source) || !IsDeepObject(target)) { continue; }
 			// Copy source's own properties into target's own properties
 			const copyProperty = (property) => {
 				const descriptor = Object.getOwnPropertyDescriptor(source, property);
@@ -1652,10 +1653,14 @@ function DeepAssign(options = { nonEnum: false, symbols: false, descriptors: fal
 				}
 			};
 			// Copy string-keyed properties
-			Object.getOwnPropertyNames(source).forEach(copyProperty);
+			for (const property of Object.getOwnPropertyNames(source)) {
+				copyProperty(property);
+			}
 			// default: omit symbol-keyed properties
 			if (options.symbols) {
-				Object.getOwnPropertySymbols(source).forEach(copyProperty);
+				for (const symbol of Object.getOwnPropertySymbols(source)) {
+					copyProperty(symbol);
+				}
 			}
 			// default: omit prototype's own properties
 			if (options.proto) {
@@ -1665,7 +1670,7 @@ function DeepAssign(options = { nonEnum: false, symbols: false, descriptors: fal
 					Object.getPrototypeOf(source)
 				);
 			}
-		});
+		}
 		return target;
 	}
 }

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
 // * Version:        3.0-DEV                                             * //
 // * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-01                                          * //
+// * Last change:    2024-01-15                                          * //
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -38,7 +38,6 @@ class ConfigurationObjectSchema {
 	 * @param {string} container The type of container for the object. Should be of ConfigurationObjectType.
 	 * @param {Array<FieldDefinition>=} fields The fields for each entry in the object. If undefined, uses key/value pairs for objects, or comma separated values for arrays.
 	 * @param {string=} comment Adds a '//' field as first entry in the object. Used for explaining things to the user.
-	 * @class
 	 */
 	constructor(name, container, fields = undefined, comment = undefined) {
 		this.name = name;
@@ -62,7 +61,6 @@ class Configuration {
 	/**
 	 * Instantiates a Configuration object and specifies a file to read from.
 	 * @param {string} configurationPath The path to the config file.
-	 * @class
 	 */
 	constructor(configurationPath) {
 		this.path = configurationPath;
@@ -192,7 +190,7 @@ class Configuration {
 		p.WriteLine('/////////////////////////////////////////////////////////////////////////////');
 		p.WriteLine('');
 
-		this._configuration.forEach((conf, i) => {
+		for (const conf of this._configuration) {
 			p.WriteLine('');
 			const container = conf.definition.container === ConfigurationObjectType.Array ? '[' : '{';
 			p.WriteLine(`\t"${conf.definition.name}": ${container}`);
@@ -215,39 +213,39 @@ class Configuration {
 
 			if (conf.definition.fields) {
 				// Array of fields
-				for (let i = 0; i < conf.values.length; i++) {
+				for (const value of conf.values) {
 					let entry = '';
 					if (conf.definition.container === ConfigurationObjectType.Array) {
-						conf.definition.fields.forEach(field => {
-							if (!field.optional || conf.values[i][field.name]) {
-								const quotes = typeof conf.values[i][field.name] === 'string' ? '"' : '';
-								entry += `, "${field.name}": ${quotes}${conf.values[i][field.name]}${quotes}`;
+						for (const field of conf.definition.fields) {
+							if (!field.optional || value[field.name]) {
+								const quotes = typeof value[field.name] === 'string' ? '"' : '';
+								entry += `, "${field.name}": ${quotes}${value[field.name]}${quotes}`;
 							}
-						});
+						}
 						entry = `{${entry.substr(1)} }`;
 					}
-					const comment = conf.values[i].comment ? ` // ${conf.values[i].comment}` : '';
-					p.WriteLine(`\t\t${entry}${i < conf.values.length - 1 ? ',' : ''}${comment}`);
+					const comment = value.comment ? ` // ${value.comment}` : '';
+					p.WriteLine(`\t\t${entry}${value !== conf.values[conf.values.length - 1] ? ',' : ''}${comment}`);
 				}
 			}
 			else if (conf.definition.container === ConfigurationObjectType.Array) {
 				// Array of comma separated entries
-				conf.values.forEach((val, i) => {
-					p.WriteLine(`\t\t"${val.replace(/\\/g, '\\\\')}"${i < conf.values.length - 1 ? ',' : ''}`);
-				});
+				for (const val of conf.values) {
+					p.WriteLine(`\t\t"${val.replace(/\\/g, '\\\\')}"${val !== conf.values[conf.values.length - 1] ? ',' : ''}`);
+				}
 			}
 			else {
 				// Object with key/value pairs
 				const keys = Object.keys(conf.values);
-				keys.forEach((key, i) => {
+				for (const key of keys) {
 					const comment = conf.comments[key] ? ` // ${conf.comments[key]}` : '';
 					const quotes = typeof conf.values[key] === 'string' ? '"' : '';
-					p.WriteLine(`\t\t"${key}": ${quotes}${conf.values[key]}${quotes}${i < keys.length - 1 ? ',' : ''}${comment}`);
-				});
+					p.WriteLine(`\t\t"${key}": ${quotes}${conf.values[key]}${quotes}${key !== keys[keys.length - 1] ? ',' : ''}${comment}`);
+				}
 			}
 			const closeContainer = conf.definition.container === ConfigurationObjectType.Array ? ']' : '}';
-			p.WriteLine(`\t${closeContainer}${i < this._configuration.length - 1 ? ',' : ''}`);
-		});
+			p.WriteLine(`\t${closeContainer}${conf !== this._configuration[this._configuration.length - 1] ? ',' : ''}`);
+		}
 
 		p.WriteLine('}');
 		p.Close();
@@ -283,7 +281,6 @@ class ThemeSetting {
 	/**
 	 * @param {string} name The name of the setting.
 	 * @param {*} settingVal The value of the setting.
-	 * @class
 	 */
 	constructor(name, settingVal) {
 		/** @const {string} */
@@ -319,7 +316,6 @@ class ThemeSettings {
 	 * @param {Configuration} config The config.
 	 * @param {String} objName The name of the config.
 	 * @param {ConfigurationObject} properties The properties to add to the config.
-	 * @class
 	 */
 	constructor(config, objName, properties = undefined) {
 		/** @protected */
@@ -338,10 +334,10 @@ class ThemeSettings {
 	 * @param {ConfigurationObject|*} properties Each item in array is an array of objects
 	 */
 	add_properties(properties) {
-		Object.keys(properties).forEach(key => {
+		for (const key of Object.keys(properties)) {
 			this.validate_config_item(properties[key], key);
 			this.add_config_item(properties[key], key);
-		});
+		}
 	}
 
 	/**
