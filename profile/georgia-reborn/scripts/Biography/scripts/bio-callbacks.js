@@ -420,14 +420,14 @@ class BioCallbacks {
 				bioSet.theme = info.theme;
 				bioSet.themeBgImage = info.themeBgImage;
 				bioSet.themeColour = info.themeColour;
-				on_colours_changed();
+				this.on_colours_changed();
 				break;
 			case 'Sync col': {
 				if (!bioSet.themed) break;
 				const themeLight = bioSet.themeLight;
 				if (themeLight != info.themeLight) {
 					bioSet.themeLight = info.themeLight;
-					on_colours_changed();
+					this.on_colours_changed();
 				}
 				break;
 			}
@@ -515,22 +515,22 @@ class BioCallbacks {
 		if (reason != 2 && bio.txt[n].loaded.txt && bio.txt.reader[n].lyrics) bio.txt.getText();
 		if (bio.panel.id.lyricsSource) bio.lyrics.clear();
 		if (reason == 2) return;
-		on_item_focus_change();
+		this.on_item_focus_change();
 	}
 
 	on_playlist_items_added() {
 		if (!bioSet.panelActive) return;
-		on_item_focus_change();
+		this.on_item_focus_change();
 	}
 
 	on_playlist_items_removed() {
 		if (!bioSet.panelActive) return;
-		on_item_focus_change();
+		this.on_item_focus_change();
 	}
 
 	on_playlist_switch() {
 		if (!bioSet.panelActive) return;
-		on_item_focus_change();
+		this.on_item_focus_change();
 	}
 
 	on_playlists_changed() {

@@ -46,7 +46,7 @@ class LibLibrary {
 		this.playlist_update = $Lib.debounce((playlistIndex) => {
 			this.searchCache = {};
 			this.treeState(false, 2);
-			if (playlistIndex) on_item_focus_change(playlistIndex);
+			if (playlistIndex) lib.call.on_item_focus_change(playlistIndex);
 		}, 100);
 
 		this.search = $Lib.debounce(() => {

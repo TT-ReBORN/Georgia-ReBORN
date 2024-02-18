@@ -183,7 +183,7 @@ class LibUserInterface {
 	blurReset(clear) {
 		this.img.cur = null;
 		this.img.cur_pth = '';
-		if (clear) on_colours_changed();
+		if (clear) lib.call.on_colours_changed();
 		this.on_playback_new_track();
 	}
 

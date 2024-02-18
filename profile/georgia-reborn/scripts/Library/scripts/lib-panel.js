@@ -1316,7 +1316,7 @@ class LibPanel {
 		lib.sbar.duration.barFast = lib.sbar.duration.step;
 		if (!libSet.butCustIconFont.length) libSet.butCustIconFont = 'Segoe UI Symbol';
 		lib.ui.setSbar();
-		on_colours_changed();
+		lib.call.on_colours_changed();
 		if (lib.ui.col.counts) lib.panel.colMarker = true;
 		if (libSet.themed && libSet.theme) {
 			const themed_image = grSet.customLibraryDir ? `${grCfg.customLibraryDir}cache\\library\\themed\\themed_image.bmp` : `${fb.ProfilePath}cache\\library\\themed\\themed_image.bmp`;

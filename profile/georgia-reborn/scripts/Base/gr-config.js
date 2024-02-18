@@ -788,6 +788,11 @@ class ConfigurationManager {
 			this.configCustom.writeConfiguration();
 			window.Reload(); // Reinit new config
 		}
+		if (this._checkSettings(configFile, 'lyricFilenamePatterns')) {
+			this._renameSettings(configFile, ['lyricFilenamePatterns'], ['lyricsFilenamePatterns']);
+			this.config.writeConfiguration();
+			window.Reload(); // Reinit new config
+		}
 		// #endregion
 
 		// * Update config settings which have changed since last update

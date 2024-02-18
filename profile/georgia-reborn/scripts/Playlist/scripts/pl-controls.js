@@ -507,7 +507,7 @@ class PlaylistMetaHandler {
 
 				list += `${topPlayedTracksIndex + 1}: ${track}${album}${include}${artist}${stats}\n`;
 				topPlayedTracksIndex++;
-			};
+			}
 			list += '\n\n';
 
 			list += `${WriteFancyHeader('Top played genres')}\n`;

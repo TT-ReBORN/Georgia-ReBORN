@@ -265,14 +265,14 @@ class LibCallbacks {
 				libSet.theme = info.theme;
 				libSet.themeBgImage = info.themeBgImage;
 				libSet.themeColour = info.themeColour;
-				on_colours_changed(true);
+				this.on_colours_changed(true);
 				break;
 			case 'Sync col': {
 				if (!libSet.themed) break;
 				const themeLight = libSet.themeLight;
 				if (themeLight != info.themeLight) {
 					libSet.themeLight = info.themeLight;
-					on_colours_changed(true);
+					this.on_colours_changed(true);
 				}
 				break;
 			}
@@ -330,7 +330,7 @@ class LibCallbacks {
 	on_playback_stop(reason) {
 		if (reason == 2) return;
 		lib.pop.getNowplaying('', true);
-		on_item_focus_change();
+		this.on_item_focus_change();
 	}
 
 	on_playback_queue_changed() {
