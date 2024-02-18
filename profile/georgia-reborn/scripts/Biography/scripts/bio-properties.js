@@ -1,10 +1,10 @@
 ﻿'use strict';
 
-class PanelPropertyBio {
+class BioPanelProperty {
 	constructor(name, default_value) {
 		this.name = name;
 		this.default_value = default_value;
-		this.value = pptBio.get(this.name, default_value);
+		this.value = bioSet.get(this.name, default_value);
 	}
 
 	// * METHODS * //
@@ -15,13 +15,13 @@ class PanelPropertyBio {
 
 	set(new_value) {
 		if (this.value !== new_value) {
-			pptBio.set(this.name, new_value);
+			bioSet.set(this.name, new_value);
 			this.value = new_value;
 		}
 	}
 }
 
-class PanelPropertiesBio {
+class BioPanelProperties {
 	constructor() { // this.name_list = {}; debug
 	}
 
@@ -57,7 +57,7 @@ class PanelPropertiesBio {
 
 	add(item) {
 		// this.name_list[item[0]] = 1; debug
-		this[`${item[2]}_internal`] = new PanelPropertyBio(item[0], item[1]);
+		this[`${item[2]}_internal`] = new BioPanelProperty(item[0], item[1]);
 
 		Object.defineProperty(this, item[2], {
 			get() {
@@ -82,7 +82,8 @@ class PanelPropertiesBio {
 	}
 }
 
-let propertiesBio = [
+/** @global @type {Array.<Array>} */
+let bioProperties = [
 	['Panel Biography - - Show Html Dialog Unsupported-0 Supported-1 Autocheck-2', 2, 'isHtmlDialogSupported'],
 	['Panel Biography - Album History', JSON.stringify([]), 'albumHistory'],
 	['Panel Biography - Artist History', JSON.stringify([]), 'artistHistory'],
@@ -434,31 +435,36 @@ let propertiesBio = [
 	['Panel Biography - Zoom Tooltip (%)', 100, 'zoomTooltip']
 ];
 
-const pptBio = new PanelPropertiesBio();
-pptBio.init('auto', propertiesBio);
-propertiesBio = undefined;
+/**
+ * The instance of `BioPanelProperties` class for biography panel property settings.
+ * @typedef {BioPanelProperties}
+ * @global
+ */
+const bioSet = new BioPanelProperties();
+bioSet.init('auto', bioProperties);
+bioProperties = undefined;
 
-if (pptBio.get('Panel Biography - Update Properties', true)) { // ~22.7.22
-	pptBio.nmTxtReader7 = 'item properties';
-	pptBio.pthTxtReader7 = '%storage_folder%\\item_properties.json';
-	pptBio.lyricsTxtReader7 = false;
-	if (pptBio.summary == '128,228,0') pptBio.summary = '128,228,27';
+if (bioSet.get('Panel Biography - Update Properties', true)) { // ~22.7.22
+	bioSet.nmTxtReader7 = 'item properties';
+	bioSet.pthTxtReader7 = '%storage_folder%\\item_properties.json';
+	bioSet.lyricsTxtReader7 = false;
+	if (bioSet.summary == '128,228,0') bioSet.summary = '128,228,27';
 	const oldProperties = ['Stub Path: Front [No Title Format Except %profile%]', 'Stub Path: Back [No Title Format Except %profile%]', 'Stub Path: Disc [No Title Format Except %profile%]', 'Stub Path: Icon [No Title Format Except %profile%]', 'Stub Path: Artist [No Title Format Except %profile%]'];
 	const props = ['panelFrontStub', 'panelBackStub', 'panelDiscStub', 'panelIconStub', 'panelArtStub'];
-	oldProperties.forEach((v, i) => { const value = window.GetProperty(v); if (value) pptBio[props[i]] = value; window.SetProperty(v, null); });
+	oldProperties.forEach((v, i) => { const value = window.GetProperty(v); if (value) bioSet[props[i]] = value; window.SetProperty(v, null); });
 	window.SetProperty('Lock Rev', null);
-	pptBio.set('Panel Biography - Update Properties', false);
+	bioSet.set('Panel Biography - Update Properties', false);
 }
 
-if (pptBio.get('Panel Biography - Reset Track Review', true)) {
-	pptBio.inclTrackRev = 0;
-	pptBio.set('Panel Biography - Reset Track Review', false);
+if (bioSet.get('Panel Biography - Reset Track Review', true)) {
+	bioSet.inclTrackRev = 0;
+	bioSet.set('Panel Biography - Reset Track Review', false);
 }
 
-if (pptBio.get('Panel Biography - Remove Old Properties', true)) {
+if (bioSet.get('Panel Biography - Remove Old Properties', true)) {
 	const oldProperties = ['Allmusic Alb', 'Allmusic Bio', 'Both Bio', 'Both Rev', 'Heading', 'Heading BtnName Biography [AllMusic]', 'Heading BtnName Biography [Last.fm]', 'Heading BtnName Biography [Wikipedia]', 'Heading BtnName Review [AllMusic]', 'Heading BtnName Review [Last.fm]', 'Heading BtnName Review [Wikipedia]', 'Heading Title Format Album Review [AllMusic]', 'Heading Title Format Album Review [Last.fm]', 'Heading Title Format Biography [AllMusic]', 'Heading Title Format Biography [Last.fm]', 'Heading Title Format Track Review [AllMusic]', 'Heading Title Format Track Review [Last.fm]', 'Layout Dual Image+Text', 'Image Seeker Dots', 'Subheading [Source] Text Biography [AllMusic]: Heading|No Heading', 'Subheading [Source] Text Biography [Last.fm]: Heading|No Heading', 'Subheading [Source] Text Biography [Wikipedia]: Heading|No Heading', 'Subheading [Source] Text Review [AllMusic]: Heading|No Heading', 'Subheading [Source] Text Review [Last.fm]: Heading|No Heading', 'Subheading Source Hide-0 Show-1', 'Subheading [Source] Text Review [Wikipedia]: Heading|No Heading', 'Subheading [Track Review] Title Format [AllMusic]', 'Subheading [Track Review] Title Format [Last.fm]', 'Summary First', 'Tagger Last.fm Genre Find>Replace', 'Tagger Last.fm Genre Number Clean Up', 'Tagger Last.fm Genre Run Find>Replace', 'Tagger Last.fm Genre Strip Artist+Album Names', 'Text Album + Track Auto Optimise', 'Text Reader Source 0 Name', 'Text Reader Source 1 Name', 'Text Reader Source 2 Name', 'Text Reader Source 3 Name', 'Text Reader Source 4 Name', 'Text Reader Source 5 Name', 'Text Reader Source 6 Name', 'Text Reader Source 7 Name', 'Text Reader Source 1 (field or full path)', 'Text Reader Source 2 (field or full path)', 'Text Reader Source 3 (field or full path)', 'Text Reader Source 4 (field or full path)', 'Text Reader Source 5 (field or full path)', 'Text Reader Source 6 (field or full path)', 'Text Reader Source 7 (field or full path)', 'Text Reader Source 8 (field or full path)', 'Text Reader Source 1 Lyrics', 'Text Reader Source 2 Lyrics', 'Text Reader Source 3 Lyrics', 'Text Reader Source 4 Lyrics', 'Text Reader Source 5 Lyrics', 'Text Reader Source 6 Lyrics', 'Text Reader Source 7 Lyrics', 'Text Reader Source 8 Lyrics'];
 	oldProperties.forEach(v => window.SetProperty(v, null));
-	pptBio.set('Panel Biography - Remove Old Properties', false);
+	bioSet.set('Panel Biography - Remove Old Properties', false);
 }
 
 window.SetProperty('Panel Biography - Scrollbar Type Default-0 Styled-1 Windows-2', null);

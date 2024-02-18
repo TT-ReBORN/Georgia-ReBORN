@@ -1,129 +1,155 @@
 ﻿'use strict';
 
-class LibraryCallbacks {
-	on_colours_changed(keepCache) {
-		ui.getColours();
+class LibCallbacks {
+	constructor() {
+		/** @type {string} */
+		this.windowMetricsPath = grSet.customLibraryDir
+			? `${grCfg.customLibraryDir}cache\\library\\themed\\windowMetrics.json`
+			: `${fb.ProfilePath}cache\\library\\themed\\windowMetrics.json`;
 
-		if (panel.colMarker) {
-			panel.getFields(ppt.viewBy, ppt.filterBy);
-			if (lib) {
-				lib.getLibrary();
-				lib.rootNodes(true, true);
+		this.on_queue_changed = $Lib.debounce(() => {
+			if (libSet.itemShowStatistics != 7) return;
+			lib.pop.tree.forEach(v => {
+				v.id = '';
+				v.count = '';
+				delete v.statistics;
+				delete v._statistics;
+			});
+			lib.pop.cache = {
+				standard: {},
+				search: {},
+				filter: {}
+			}
+			lib.panel.treePaint();
+			}, 250, {
+			leading:  true,
+			trailing: true
+		});
+	}
+
+	on_colours_changed(keepCache) {
+		lib.ui.getColours();
+
+		if (lib.panel.colMarker) {
+			lib.panel.getFields(libSet.viewBy, libSet.filterBy);
+			if (lib.lib) {
+				lib.lib.getLibrary();
+				lib.lib.rootNodes(true, true);
 			}
 		}
-		sbar.setCol();
-		pop.createImages();
-		but.createImages();
-		if (!keepCache) img.clearCache();
-		img.createImages();
-		but.refresh(true);
-		sbar.resetAuto();
-		ui.createImages();
-		if (!ppt.themed) ui.blurReset();
+		lib.sbar.setCol();
+		lib.pop.createImages();
+		lib.but.createImages();
+		if (!keepCache) libImg.clearCache();
+		libImg.createImages();
+		lib.but.refresh(true);
+		lib.sbar.resetAuto();
+		lib.ui.createImages();
+		if (!libSet.themed) lib.ui.blurReset();
 		window.Repaint();
 	}
 
 	on_font_changed() {
-		sbar.logScroll();
-		pop.deactivateTooltip();
-		ui.getFont();
-		panel.on_size(true);
-		if (ui.style.topBarShow || ppt.sbarShow) but.refresh(true);
-		sbar.resetAuto();
+		lib.sbar.logScroll();
+		lib.pop.deactivateTooltip();
+		lib.ui.getFont();
+		lib.panel.on_size(true);
+		if (lib.ui.style.topBarShow || libSet.sbarShow) lib.but.refresh(true);
+		lib.sbar.resetAuto();
 		window.Repaint();
-		sbar.setScroll();
+		lib.sbar.setScroll();
 	}
 
 	on_char(code) {
-		pop.on_char(code);
-		find.on_char(code);
-		if (!ppt.searchShow) return;
-		search.on_char(code);
+		lib.pop.on_char(code);
+		lib.find.on_char(code);
+		if (!libSet.searchShow) return;
+		lib.search.on_char(code);
 	}
 
 	on_focus(is_focused) {
 		if (!is_focused) {
-			timer.clear(timer.cursor);
-			panel.search.cursor = false;
-			panel.searchPaint();
+			lib.timer.clear(lib.timer.cursor);
+			lib.panel.search.cursor = false;
+			lib.panel.searchPaint();
 		}
-		pop.on_focus(is_focused);
+		lib.pop.on_focus(is_focused);
 	}
 
 	on_get_album_art_done(handle, art_id, image, image_path) {
-		ui.on_get_album_art_done(handle, image, image_path);
+		lib.ui.on_get_album_art_done(handle, image, image_path);
 	}
 
 	on_item_focus_change(playlistIndex) {
-		lib.checkFilter();
-		if (!pop.setFocus) {
-			if (ppt.followPlaylistFocus && playlistIndex == $Lib.pl_active && !ppt.libSource) {
-				setSelection(fb.GetFocusItem());
+		lib.lib.checkFilter();
+		if (!lib.pop.setFocus) {
+			if (libSet.followPlaylistFocus && playlistIndex == $Lib.pl_active && !libSet.libSource) {
+				this.setSelection(fb.GetFocusItem());
 			}
-		} else pop.setFocus = false;
-		ui.focus_changed();
+		} else lib.pop.setFocus = false;
+		lib.ui.focus_changed();
 	}
 
 	on_key_down(vkey) {
-		pop.on_key_down(vkey);
-		img.on_key_down(vkey);
-		if (!ppt.searchShow) return;
-		search.on_key_down(vkey);
+		lib.pop.on_key_down(vkey);
+		libImg.on_key_down(vkey);
+		if (!libSet.searchShow) return;
+		lib.search.on_key_down(vkey);
 	}
 
 	on_key_up(vkey) {
-		img.on_key_up(vkey);
-		if (!ppt.searchShow) return;
-		search.on_key_up(vkey);
+		libImg.on_key_up(vkey);
+		if (!libSet.searchShow) return;
+		lib.search.on_key_up(vkey);
 	}
 
 	on_library_items_added(handleList) {
-		if (ppt.libSource == 2) return;
-		if (lib.v2_init) {
-			lib.v2_init = false;
-			if (ui.w < 1 || !window.IsVisible) return;
-			lib.initialise(handleList);
+		if (libSet.libSource == 2) return;
+		if (lib.lib.v2_init) {
+			lib.lib.v2_init = false;
+			if (lib.ui.w < 1 || !window.IsVisible) return;
+			lib.lib.initialise(handleList);
 			return;
 		}
-		if (!libraryInitialized || !ppt.libAutoSync || ppt.fixedPlaylist || !ppt.libSource) return;
-		lib.treeState(false, 2, handleList, 0);
+		if (!lib.initialized || !libSet.libAutoSync || libSet.fixedPlaylist || !libSet.libSource) return;
+		lib.lib.treeState(false, 2, handleList, 0);
 	}
 
 	on_library_items_removed(handleList) {
-		if (!libraryInitialized || !ppt.libAutoSync || ppt.fixedPlaylist || !ppt.libSource) return;
-		if (ppt.libSource == 2) {
-			const libList = lib.list.Clone();
+		if (!lib.initialized || !libSet.libAutoSync || libSet.fixedPlaylist || !libSet.libSource) return;
+		if (libSet.libSource == 2) {
+			const libList = lib.lib.list.Clone();
 			libList.Sort();
 			handleList.Sort();
 			handleList.MakeIntersection(libList);
 		}
-		lib.treeState(false, 2, handleList, 2);
+		lib.lib.treeState(false, 2, handleList, 2);
 	}
 
 	on_library_items_changed(handleList) {
-		if (!libraryInitialized || !ppt.libAutoSync || ppt.fixedPlaylist || !ppt.libSource) return;
-		if (ppt.libSource == 2) {
-			const libList = lib.list.Clone();
+		if (!lib.initialized || !libSet.libAutoSync || libSet.fixedPlaylist || !libSet.libSource) return;
+		if (libSet.libSource == 2) {
+			const libList = lib.lib.list.Clone();
 			libList.Sort();
 			handleList.Sort();
 			handleList.MakeIntersection(libList);
 		}
-		lib.treeState(false, 2, handleList, 1);
+		lib.lib.treeState(false, 2, handleList, 1);
 	}
 
 	on_main_menu(index) {
-		pop.on_main_menu(index);
+		lib.pop.on_main_menu(index);
 	}
 
 	on_metadb_changed(handleList, isDatabase) {
-		if (isDatabase && !panel.statistics || lib.list.Count != lib.libNode.length) return;
-		if (ppt.fixedPlaylist || !ppt.libSource) {
+		if (isDatabase && !lib.panel.statistics || lib.lib.list.Count != lib.lib.libNode.length) return;
+		if (libSet.fixedPlaylist || !libSet.libSource) {
 			handleList.Convert().some(h => {
-				const i = lib.full_list.Find(h);
+				const i = lib.lib.full_list.Find(h);
 				if (i != -1) {
-					const isMainChanged = lib.isMainChanged(handleList);
-					if (isMainChanged) lib.treeState(false, 2);
-					ui.focus_changed();
+					const isMainChanged = lib.lib.isMainChanged(handleList);
+					if (isMainChanged) lib.lib.treeState(false, 2);
+					lib.ui.focus_changed();
 					return true;
 				}
 			});
@@ -131,324 +157,255 @@ class LibraryCallbacks {
 	}
 
 	on_mouse_lbtn_dblclk(x, y) {
-		but.lbtn_dn(x, y);
-		if (ppt.searchShow) search.lbtn_dblclk(x, y);
-		pop.lbtn_dblclk(x, y);
-		sbar.lbtn_dblclk(x, y);
+		lib.but.lbtn_dn(x, y);
+		if (libSet.searchShow) lib.search.lbtn_dblclk(x, y);
+		lib.pop.lbtn_dblclk(x, y);
+		lib.sbar.lbtn_dblclk(x, y);
 	}
 
 	on_mouse_lbtn_down(x, y) {
-		if (ppt.touchControl) {
-			panel.last_pressed_coord = {
+		if (libSet.touchControl) {
+			lib.panel.last_pressed_coord = {
 				x,
 				y
 			};
 		}
-		if (ui.style.topBarShow || ppt.sbarShow) but.lbtn_dn(x, y);
-		if (ppt.searchShow) search.lbtn_dn(x, y);
-		pop.lbtn_dn(x, y);
-		sbar.lbtn_dn(x, y);
-		ui.sz.y_start = y;
+		if (lib.ui.style.topBarShow || libSet.sbarShow) lib.but.lbtn_dn(x, y);
+		if (libSet.searchShow) lib.search.lbtn_dn(x, y);
+		lib.pop.lbtn_dn(x, y);
+		lib.sbar.lbtn_dn(x, y);
+		lib.ui.sz.y_start = y;
 	}
 
 	on_mouse_lbtn_up(x, y) {
-		pop.lbtn_up(x, y);
-		if (ppt.searchShow) search.lbtn_up();
-		but.lbtn_up(x, y);
-		sbar.lbtn_up();
+		lib.pop.lbtn_up(x, y);
+		if (libSet.searchShow) lib.search.lbtn_up();
+		lib.but.lbtn_up(x, y);
+		lib.sbar.lbtn_up();
 	}
 
 	on_mouse_leave() {
-		if (ui.style.topBarShow || ppt.sbarShow) but.leave();
-		sbar.leave();
-		pop.leave();
+		if (lib.ui.style.topBarShow || libSet.sbarShow) lib.but.leave();
+		lib.sbar.leave();
+		lib.pop.leave();
 	}
 
 	on_mouse_mbtn_dblclk(x, y, mask) {
-		pop.mbtnDblClickOrAltDblClick(x, y, mask, 'mbtn');
+		lib.pop.mbtnDblClickOrAltDblClick(x, y, mask, 'mbtn');
 	}
 
 	on_mouse_mbtn_down(x, y) {
-		pop.mbtn_dn(x, y);
+		lib.pop.mbtn_dn(x, y);
 	}
 
 	on_mouse_mbtn_up(x, y, mask) {
 		// UIHacks at default settings blocks on_mouse_mbtn_up, at least in windows; workaround configure hacks: main window > move with > caption only & ensure pseudo-caption doesn't overlap buttons
-		pop.mbtnUpOrAltClickUp(x, y, mask, 'mbtn');
+		lib.pop.mbtnUpOrAltClickUp(x, y, mask, 'mbtn');
 	}
 
 	on_mouse_move(x, y) {
-		if (panel.m.x == x && panel.m.y == y) return;
-		pop.hand = false;
-		if (ui.style.topBarShow || ppt.sbarShow) but.move(x, y);
-		if (ppt.searchShow) search.move(x, y);
-		if (pref.libraryRowHover) pop.move(x, y);
-		pop.dragDrop(x, y);
-		sbar.move(x, y);
-		ui.zoomDrag(x, y);
-		panel.m.x = x;
-		panel.m.y = y;
+		if (lib.panel.m.x == x && lib.panel.m.y == y) return;
+		lib.pop.hand = false;
+		if (lib.ui.style.topBarShow || libSet.sbarShow) lib.but.move(x, y);
+		if (libSet.searchShow) lib.search.move(x, y);
+		if (grSet.libraryRowHover) lib.pop.move(x, y);
+		lib.pop.dragDrop(x, y);
+		lib.sbar.move(x, y);
+		lib.ui.zoomDrag(x, y);
+		lib.panel.m.x = x;
+		lib.panel.m.y = y;
 	}
 
 	on_mouse_rbtn_up(x, y) {
-		if (y < ui.y + panel.search.h && x > panel.search.x && x < panel.search.x + panel.search.w) {
-			if (ppt.searchShow) search.rbtn_up(x, y);
-		} else men.rbtn_up(x, y);
+		if (y < lib.ui.y + lib.panel.search.h && x > lib.panel.search.x && x < lib.panel.search.x + lib.panel.search.w) {
+			if (libSet.searchShow) lib.search.rbtn_up(x, y);
+		} else lib.men.rbtn_up(x, y);
 		return true;
 	}
 
 	on_mouse_wheel(step) {
-		pop.deactivateTooltip();
-		if (!vk.k('zoom')) sbar.wheel(step);
-		else ui.wheel(step);
+		lib.pop.deactivateTooltip();
+		if (!lib.vk.k('zoom')) lib.sbar.wheel(step);
+		else lib.ui.wheel(step);
 	}
 
 	on_notify_data(name, info) {
-		if (ppt.libSource == 2 && name != 'bio_imgChange') {
-			const panelSelectionPlaylists = ppt.panelSelectionPlaylist.split(/\s*\|\s*/);
+		if (libSet.libSource == 2 && name != 'bio_imgChange') {
+			const panelSelectionPlaylists = libSet.panelSelectionPlaylist.split(/\s*\|\s*/);
 			panelSelectionPlaylists.some(v => {
 				if (name == v) {
-					lib.list = new FbMetadbHandleList(info);
-					if ($Lib.equalHandles(lib.list.Convert(), lib.full_list.Convert())) return;
-					lib.full_list = lib.list.Clone();
-					ppt.lastPanelSelectionPlaylist = `${v} Cache`;
+					lib.lib.list = new FbMetadbHandleList(info);
+					if ($Lib.equalHandles(lib.lib.list.Convert(), lib.lib.full_list.Convert())) return;
+					lib.lib.full_list = lib.lib.list.Clone();
+					libSet.lastPanelSelectionPlaylist = `${v} Cache`;
 					const pln = plman.FindOrCreatePlaylist(`${v} Cache`, false);
 					plman.ClearPlaylist(pln);
-					plman.InsertPlaylistItems(pln, 0, lib.list);
-					lib.searchCache = {};
-					pop.clearTree();
-					pop.cache = {
+					plman.InsertPlaylistItems(pln, 0, lib.lib.list);
+					lib.lib.searchCache = {};
+					lib.pop.clearTree();
+					lib.pop.cache = {
 						standard: {},
 						search: {},
 						filter: {}
 					}
-					lib.treeState(false, 2, null, 3);
-					ui.expandHandle = lib.list.Count ? lib.list[0] : null;
-					ui.on_playback_new_track();
-					lib.treeState(false, ppt.rememberTree);
+					lib.lib.treeState(false, 2, null, 3);
+					lib.ui.expandHandle = lib.lib.list.Count ? lib.lib.list[0] : null;
+					lib.ui.on_playback_new_track();
+					lib.lib.treeState(false, libSet.rememberTree);
 				}
 			});
 		}
 
 		switch (name) {
 			case '!!.tags update':
-				lib.treeState(false, 2);
+				lib.lib.treeState(false, 2);
 				break;
 			case 'newThemeColours':
-				if (!ppt.themed) break;
-				ppt.theme = info.theme;
-				ppt.themeBgImage = info.themeBgImage;
-				ppt.themeColour = info.themeColour;
+				if (!libSet.themed) break;
+				libSet.theme = info.theme;
+				libSet.themeBgImage = info.themeBgImage;
+				libSet.themeColour = info.themeColour;
 				on_colours_changed(true);
 				break;
 			case 'Sync col': {
-				if (!ppt.themed) break;
-				const themeLight = ppt.themeLight;
+				if (!libSet.themed) break;
+				const themeLight = libSet.themeLight;
 				if (themeLight != info.themeLight) {
-					ppt.themeLight = info.themeLight;
+					libSet.themeLight = info.themeLight;
 					on_colours_changed(true);
 				}
 				break;
 			}
 			case 'Sync image':
-				if (!ppt.themed) break;
-				sync.image(new GdiBitmap(info.image), info.id);
+				if (!libSet.themed) break;
+				libSync.image(new GdiBitmap(info.image), info.id);
 				break;
 		}
-		if (ui.id.local && name.startsWith('opt_')) {
+		if (lib.ui.id.local && name.startsWith('opt_')) {
 			const clone = typeof info === 'string' ? String(info) : info;
 			on_notify(name, clone);
 		}
 	}
 
-	// on_paint(gr) {
-	// if (!lib.initialised) {
-	// 	lib.initialise();
-	// }
-	// 	ui.draw(gr);
-	// 	lib.checkTree();
-	// 	img.draw(gr);
-	// 	ui.drawLine(gr);
-	// 	search.draw(gr);
-	// 	pop.draw(gr);
-	// 	sbar.draw(gr);
-	// 	but.draw(gr);
-	// 	find.draw(gr);
-	// }
+	on_paint(gr) {
+		if (!lib.lib.initialised) {
+			lib.lib.initialise();
+		}
+		lib.ui.draw(gr);
+		lib.lib.checkTree();
+		libImg.draw(gr);
+		lib.ui.drawLine(gr);
+		lib.search.draw(gr);
+		lib.pop.draw(gr);
+		lib.sbar.draw(gr);
+		lib.but.draw(gr);
+		lib.find.draw(gr);
+
+		if (libSet.albumArtFlowMode && lib.panel.imgView) {
+			gr.FillSolidRect(this.x, this.y, SCALE(20), this.h, lib.ui.col.bg); // Margin left and masking for horizontal flow mode
+			gr.FillSolidRect(this.x + this.w - SCALE(20), this.y, SCALE(20), this.h, lib.ui.col.bg); // Margin right and masking for horizontal flow mode
+			if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended) {
+				gr.DrawImage(grCol.imgBlended, this.x - this.w + SCALE(20), this.y, grm.ui.ww, grm.ui.wh, this.x - this.w + SCALE(20), this.y, grCol.imgBlended.Width, grCol.imgBlended.Height);
+				gr.DrawImage(grCol.imgBlended, this.x + this.w - SCALE(20), this.y, grm.ui.ww, grm.ui.wh, this.x + this.w - SCALE(20), this.y, grCol.imgBlended.Width, grCol.imgBlended.Height);
+			}
+		}
+
+		gr.FillSolidRect(this.x, 0, this.w, grm.ui.topMenuHeight, grCol.bg); // Hides top row that shouldn't be visible in album art mode
+		gr.FillSolidRect(this.x, this.y + this.h, this.w, this.h, grCol.bg); // Hides bottom row that shouldn't be visible in album art mode
+		if (UIHacks.Aero.Effect === 2) gr.DrawLine(this.x, 0, grm.ui.ww, 0, 1, grCol.bg); // UIHacks aero glass shadow frame fix - needed for style Blend
+
+		if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended) {
+			gr.DrawImage(grCol.imgBlended, this.x, this.y - this.h - grm.ui.topMenuHeight - grm.ui.lowerBarHeight, grm.ui.ww, grm.ui.wh, this.x, this.y - this.h - grm.ui.topMenuHeight - grm.ui.lowerBarHeight, grCol.imgBlended.Width, grCol.imgBlended.Height);
+			gr.DrawImage(grCol.imgBlended, this.x, this.y + this.h, grm.ui.ww, grm.ui.wh, this.x, this.y + this.h, grCol.imgBlended.Width, grCol.imgBlended.Height);
+		}
+	}
 
 	on_playback_new_track(handle) {
-		lib.checkFilter();
-		pop.getNowplaying(handle);
-		if (pref.libraryAutoScrollNowPlaying) pop.nowPlayingShow();
-		if (!ppt.recItemImage || ppt.libSource != 2) ui.on_playback_new_track(handle);
+		lib.lib.checkFilter();
+		lib.pop.getNowplaying(handle);
+		if (grSet.libraryAutoScrollNowPlaying) lib.pop.nowPlayingShow();
+		if (!libSet.recItemImage || libSet.libSource != 2) lib.ui.on_playback_new_track(handle);
 	}
 
 	on_playback_stop(reason) {
 		if (reason == 2) return;
-		pop.getNowplaying('', true);
+		lib.pop.getNowplaying('', true);
 		on_item_focus_change();
 	}
 
 	on_playback_queue_changed() {
-		on_queue_changed();
+		this.on_queue_changed();
 	}
 
 	on_playlists_changed() {
-		men.playlists_changed();
+		lib.men.playlists_changed();
 		if ($Lib.pl_active != plman.ActivePlaylist) $Lib.pl_active = plman.ActivePlaylist;
 		let fixedPlaylistIndex = -1;
-		if (ppt.fixedPlaylist) {
-			fixedPlaylistIndex = plman.FindPlaylist(ppt.fixedPlaylistName);
+		if (libSet.fixedPlaylist) {
+			fixedPlaylistIndex = plman.FindPlaylist(libSet.fixedPlaylistName);
 			if (fixedPlaylistIndex == -1) {
-				ppt.fixedPlaylist = false;
-				ppt.libSource = 0;
-				if (panel.imgView) img.clearCache();
-				lib.playlist_update();
+				libSet.fixedPlaylist = false;
+				libSet.libSource = 0;
+				if (lib.panel.imgView) libImg.clearCache();
+				lib.lib.playlist_update();
 			}
 		}
 	}
 
 	on_playlist_items_added(playlistIndex) {
-		if (ppt.fixedPlaylist) {
-			const fixedPlaylistIndex = plman.FindPlaylist(ppt.fixedPlaylistName);
+		if (libSet.fixedPlaylist) {
+			const fixedPlaylistIndex = plman.FindPlaylist(libSet.fixedPlaylistName);
 			if (playlistIndex == fixedPlaylistIndex) {
-				lib.playlist_update(playlistIndex);
+				lib.lib.playlist_update(playlistIndex);
 				return;
 			}
 		}
-		if (!ppt.libSource && playlistIndex == $Lib.pl_active) {
-			lib.playlist_update(playlistIndex);
+		if (!libSet.libSource && playlistIndex == $Lib.pl_active) {
+			lib.lib.playlist_update(playlistIndex);
 		}
 
-		if (!playlist) return; // Abort if Playlist was not initialized
-		if (pref.playlistSortOrderAuto) setPlaylistSortOrder();
-		initPlaylist(); // Update Playlist when adding items from Library
-		playlist.on_size(ww, wh);
+		if (!pl.playlist) return; // Abort if Playlist was not initialized
+		if (grSet.playlistSortOrderAuto) grm.ui.setPlaylistSortOrder();
+		grm.ui.initPlaylist(); // Update Playlist when adding items from Library
+		pl.call.on_size(grm.ui.ww, grm.ui.wh);
 	}
 
 	on_playlist_items_removed(playlistIndex) {
-		if (ppt.fixedPlaylist) {
-			const fixedPlaylistIndex = plman.FindPlaylist(ppt.fixedPlaylistName);
+		if (libSet.fixedPlaylist) {
+			const fixedPlaylistIndex = plman.FindPlaylist(libSet.fixedPlaylistName);
 			if (playlistIndex == fixedPlaylistIndex) {
-				lib.playlist_update(playlistIndex);
+				lib.lib.playlist_update(playlistIndex);
 				return;
 			}
 		}
 
-		if (!ppt.libSource && playlistIndex == $Lib.pl_active) {
-			lib.playlist_update(playlistIndex);
+		if (!libSet.libSource && playlistIndex == $Lib.pl_active) {
+			lib.lib.playlist_update(playlistIndex);
 		}
 	}
 
 	on_playlist_items_reordered(playlistIndex) {
-		if (!ppt.libSource && playlistIndex == $Lib.pl_active) {
-			lib.playlist_update(playlistIndex);
+		if (!libSet.libSource && playlistIndex == $Lib.pl_active) {
+			lib.lib.playlist_update(playlistIndex);
 		}
 	}
 
 	on_playlist_switch() {
 		$Lib.pl_active = plman.ActivePlaylist;
-		if (!ppt.libSource) {
-			lib.playlist_update();
+		if (!libSet.libSource) {
+			lib.lib.playlist_update();
 		}
-		ui.focus_changed();
+		lib.ui.focus_changed();
 	}
 
 	on_script_unload() {
-		but.on_script_unload();
-		pop.deactivateTooltip();
+		lib.but.on_script_unload();
+		lib.pop.deactivateTooltip();
 	}
 
 	on_selection_changed() {
-		if (!panel.setSelection()) return;
-		setSelection(fb.GetSelection());
-	}
-
-	// on_size() {
-	// 	ui.w = window.Width;
-	// 	ui.h = window.Height;
-	// 	if (!ui.w || !ui.h) return;
-
-	// 	pop.deactivateTooltip();
-	// 	tooltipLib.SetMaxWidth(Math.max(ui.w, SCALE(pref.layout !== 'default' ? 600 : 800)));
-	// 	ui.blurReset();
-	// 	ui.calcText(true)
-
-	// 	if (ppt.themed && ppt.theme) {
-	// 		const themed_image = `${fb.ProfilePath}settings\\themed\\themed_image.bmp`;
-	// 		if ($Lib.file(themed_image)) sync.image(gdi.Image(themed_image));
-	// 	}
-
-	// 	panel.on_size();
-	// 	if (ui.style.topBarShow || ppt.sbarShow) but.refresh(true);
-	// 	sbar.resetAuto();
-	// 	find.on_size();
-	// 	but.createImages();
-	// 	pop.createImages();
-
-	// 	if (!ppt.themed) return;
-	// 	const windowMetrics = $Lib.jsonParse(windowMetricsPath, {}, 'file');
-	// 	windowMetrics[window.Name] = {
-	// 		w: ui.w,
-	// 		h: ui.h
-	// 	}
-	// 	$Lib.save(windowMetricsPath, JSON.stringify(windowMetrics, null, 3), true);
-	// }
-
-	setSelection(handle) {
-		if (!handle || !panel.list.Count) return;
-		const item = panel.list.Find(handle);
-		let idx = -1;
-		pop.tree.forEach((v, i) => {
-			if (!v.root && pop.inRange(item, v.item)) idx = i;
-		});
-		if (idx != -1) {
-			if (!panel.imgView) pop.focusShow(idx);
-			else pop.showItem(idx, 'focus');
-		}
-	}
-}
-
-
-class LibraryPanel {
-	constructor() {
-		this.x = -1; // not set
-		this.y = -1; // not set
-		this.w = -1; // not set
-		this.h = -1; // not set
-	}
-
-	on_paint(gr) {
-		if (!lib.initialised) {
-			lib.initialise();
-		}
-		ui.draw(gr);
-		lib.checkTree();
-		img.draw(gr);
-		ui.drawLine(gr);
-		search.draw(gr);
-		pop.draw(gr);
-		sbar.draw(gr);
-		but.draw(gr);
-		find.draw(gr);
-
-		if (ppt.albumArtFlowMode && panel.imgView) {
-			gr.FillSolidRect(this.x, this.y, SCALE(20), this.h, ui.col.bg); // Margin left and masking for horizontal flow mode
-			gr.FillSolidRect(this.x + this.w - SCALE(20), this.y, SCALE(20), this.h, ui.col.bg); // Margin right and masking for horizontal flow mode
-			if (pref.styleBlend && albumArt && blendedImg) {
-				gr.DrawImage(blendedImg, this.x - this.w + SCALE(20), this.y, ww, wh, this.x - this.w + SCALE(20), this.y, blendedImg.Width, blendedImg.Height);
-				gr.DrawImage(blendedImg, this.x + this.w - SCALE(20), this.y, ww, wh, this.x + this.w - SCALE(20), this.y, blendedImg.Width, blendedImg.Height);
-			}
-		}
-
-		gr.FillSolidRect(this.x, 0, this.w, geo.topMenuHeight, col.bg); // Hides top row that shouldn't be visible in album art mode
-		gr.FillSolidRect(this.x, this.y + this.h, this.w, this.h, col.bg); // Hides bottom row that shouldn't be visible in album art mode
-		if (UIHacks.Aero.Effect === 2) gr.DrawLine(this.x, 0, ww, 0, 1, col.bg); // UIHacks aero glass shadow frame fix - needed for style Blend
-
-		if (pref.styleBlend && albumArt && blendedImg) {
-			gr.DrawImage(blendedImg, this.x, this.y - this.h - geo.topMenuHeight - geo.lowerBarHeight, ww, wh, this.x, this.y - this.h - geo.topMenuHeight - geo.lowerBarHeight, blendedImg.Width, blendedImg.Height);
-			gr.DrawImage(blendedImg, this.x, this.y + this.h, ww, wh, this.x, this.y + this.h, blendedImg.Width, blendedImg.Height);
-		}
+		if (!lib.panel.setSelection()) return;
+		this.setSelection(fb.GetSelection());
 	}
 
 	on_size(x, y, width, height) {
@@ -456,112 +413,58 @@ class LibraryPanel {
 		this.y = y;
 		this.w = width;
 		this.h = height;
-		ui.x = x;
-		ui.y = y;
-		ui.w = width;
-		ui.h = height;
+		lib.ui.x = x;
+		lib.ui.y = y;
+		lib.ui.w = width;
+		lib.ui.h = height;
 
-		if (!ui.w || !ui.h) return;
-		if (panel.imgView) autoThumbnailSize();
+		if (!lib.ui.w || !lib.ui.h) return;
+		if (lib.panel.imgView) grm.ui.autoThumbnailSize();
 
 		// * Set guard for fixed Library margin sizes in case user changed them in Library options
-		ppt.margin = SCALE(20);
-		ppt.verticalPad = 5; // Setup default line padding value needed, otherwise 0 on reset
-		ppt.zoomNode = 100; // Sets correct node zoom value, i.e when switching to 4K
-		panel.setTopBar();	// Resets filter font in case the zoom was reset, also needed when changing font size
+		libSet.margin = SCALE(20);
+		libSet.verticalPad = 5; // Setup default line padding value needed, otherwise 0 on reset
+		libSet.zoomNode = 100; // Sets correct node zoom value, i.e when switching to 4K
+		lib.panel.setTopBar();	// Resets filter font in case the zoom was reset, also needed when changing font size
 
-		pop.deactivateTooltip();
-		tooltipLib.SetMaxWidth(Math.max(ui.w, SCALE(pref.layout !== 'default' ? 600 : 800)));
-		ui.blurReset();
-		ui.calcText(true);
+		lib.pop.deactivateTooltip();
+		libTooltip.SetMaxWidth(Math.max(lib.ui.w, SCALE(grSet.layout !== 'default' ? 600 : 800)));
+		lib.ui.blurReset();
+		lib.ui.calcText(true);
 
-		if (ppt.themed && ppt.theme) {
-			const themed_image = pref.customLibraryDir ? `${globals.customLibraryDir}cache\\library\\themed\\themed_image.bmp` : `${fb.ProfilePath}cache\\library\\themed\\themed_image.bmp`;
-			if ($Lib.file(themed_image)) sync.image(gdi.Image(themed_image));
+		if (libSet.themed && libSet.theme) {
+			const themed_image = grSet.customLibraryDir ? `${grCfg.customLibraryDir}cache\\library\\themed\\themed_image.bmp` : `${fb.ProfilePath}cache\\library\\themed\\themed_image.bmp`;
+			if ($Lib.file(themed_image)) libSync.image(gdi.Image(themed_image));
 		}
 
-		panel.on_size();
-		if (ui.style.topBarShow || ppt.sbarShow) but.refresh(true);
-		sbar.resetAuto();
-		find.on_size();
-		but.createImages();
-		pop.createImages();
+		lib.panel.on_size();
+		if (lib.ui.style.topBarShow || libSet.sbarShow) lib.but.refresh(true);
+		lib.sbar.resetAuto();
+		lib.find.on_size();
+		lib.but.createImages();
+		lib.pop.createImages();
 
-		if (!ppt.themed) return;
-		const windowMetrics = $Lib.jsonParse(windowMetricsPath, {}, 'file');
+		if (!libSet.themed) return;
+		const windowMetrics = $Lib.jsonParse(this.windowMetricsPath, {}, 'file');
 		windowMetrics[window.Name] = {
-			w: ui.w,
-			h: ui.h
+			w: lib.ui.w,
+			h: lib.ui.h
 		}
-		$Lib.save(windowMetricsPath, JSON.stringify(windowMetrics, null, 3), true);
+		$Lib.save(this.windowMetricsPath, JSON.stringify(windowMetrics, null, 3), true);
+	}
+
+	setSelection(handle) {
+		if (!handle || !lib.panel.list.Count) return;
+		const item = lib.panel.list.Find(handle);
+		let idx = -1;
+		lib.pop.tree.forEach((v, i) => {
+			if (!v.root && lib.pop.inRange(item, v.item)) idx = i;
+		});
+		if (idx != -1) {
+			if (!lib.panel.imgView) lib.pop.focusShow(idx);
+			else lib.pop.showItem(idx, 'focus');
+		}
 	}
 }
 
-
-////////////////////////
-// * INIT CALLBACKS * //
-////////////////////////
-/** @type {LibraryCallbacks} */
-let library = new LibraryCallbacks();
-/** @type {LibraryPanel} */
-let libraryPanel = new LibraryPanel();
-
-
-this.on_colours_changed = () => library.on_colours_changed();
-this.on_font_changed = () => library.on_font_changed();
-this.on_char = (code) => library.on_char(code);
-this.on_focus = (is_focused) => library.on_focus(is_focused);
-this.on_get_album_art_done = (handle, art_id, image, image_path) => library.on_get_album_art_done(handle, art_id, image, image_path);
-this.on_metadb_changed = (handleList, isDatabase) => library.on_metadb_changed(handleList, isDatabase);
-this.on_item_focus_change = (playlistIndex) => library.on_item_focus_change(playlistIndex);
-this.on_selection_changed = () => library.on_selection_changed();
-this.on_key_down = (vkey) => library.on_key_down(vkey);
-this.on_key_up = (vkey) => library.on_key_up(vkey);
-this.on_library_items_added = (handleList) => library.on_library_items_added(handleList);
-this.on_library_items_removed = (handleList) => library.on_library_items_removed(handleList);
-this.on_library_items_changed = (handleList) => library.on_library_items_changed(handleList);
-this.on_main_menu = (index) => library.on_main_menu(index);
-this.on_mouse_lbtn_dblclk = (x, y) => library.on_mouse_lbtn_dblclk(x, y);
-this.on_mouse_lbtn_down = (x, y) => library.on_mouse_lbtn_down(x, y);
-this.on_mouse_lbtn_up = (x, y) => library.on_mouse_lbtn_up(x, y);
-this.on_mouse_leave = () => library.on_mouse_leave();
-this.on_mouse_mbtn_dblclk = (x, y, mask) => library.on_mouse_mbtn_dblclk(x, y, mask);
-this.on_mouse_mbtn_down = (x, y) => library.on_mouse_mbtn_down(x, y);
-this.on_mouse_mbtn_up = (x, y, mask) => library.on_mouse_mbtn_up(x, y, mask);
-this.on_mouse_move = (x, y) => library.on_mouse_move(x, y);
-this.on_mouse_rbtn_up = (x, y) => library.on_mouse_rbtn_up(x, y);
-this.on_mouse_wheel = (step) => library.on_mouse_wheel(step);
-this.on_notify_data = (name, info) => library.on_notify_data(name, info);
-this.on_playback_new_track = (handle) => library.on_playback_new_track(handle);
-this.on_playback_stop = (reason) => library.on_playback_stop(reason);
-this.on_playback_queue_changed = () => library.on_playback_queue_changed();
-this.on_playlists_changed = () => library.on_playlists_changed();
-this.on_playlist_items_added = (playlistIndex) => library.on_playlist_items_added(playlistIndex);
-this.on_playlist_items_removed = (playlistIndex) => library.on_playlist_items_removed(playlistIndex);
-this.on_playlist_items_reordered = (playlistIndex) => library.on_playlist_items_reordered(playlistIndex);
-this.on_playlist_switch = () => library.on_playlist_switch();
-this.on_script_unload = () => library.on_script_unload();
-this.on_selection_changed = () => library.on_selection_changed();
-this.setSelection = (handle) => library.setSelection(handle);
-
-
-const on_queue_changed = $Lib.debounce(() => {
-	if (ppt.itemShowStatistics != 7) return;
-	pop.tree.forEach(v => {
-		v.id = '';
-		v.count = '';
-		delete v.statistics;
-		delete v._statistics;
-	});
-	pop.cache = {
-		standard: {},
-		search: {},
-		filter: {}
-	}
-	panel.treePaint();
-	}, 250, {
-	leading:  true,
-	trailing: true
-});
-
-const windowMetricsPath = pref.customLibraryDir ? `${globals.customLibraryDir}cache\\library\\themed\\windowMetrics.json` : `${fb.ProfilePath}cache\\library\\themed\\windowMetrics.json`;
+lib.call = new LibCallbacks();

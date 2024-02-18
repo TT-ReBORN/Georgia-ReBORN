@@ -1,6 +1,6 @@
 'use strict';
 
-class Timers {
+class LibTimers {
 	constructor() {
 		['cursor', 'jsearch1', 'jsearch2', 'tt'].forEach(v => this[v] = {
 			id: null
@@ -16,17 +16,17 @@ class Timers {
 
 	searchCursor(clear) {
 		if (clear) this.clear(this.cursor);
-		if (!panel.search.cursor) panel.search.cursor = true;
+		if (!lib.panel.search.cursor) lib.panel.search.cursor = true;
 		this.cursor.id = setInterval(() => {
-			panel.search.cursor = !panel.search.cursor;
-			panel.searchPaint();
+			lib.panel.search.cursor = !lib.panel.search.cursor;
+			lib.panel.searchPaint();
 		}, 530);
 	}
 
 	tooltipLib() {
 		this.clear(this.tt);
 		this.tt.id = setTimeout(() => {
-			pop.deactivateTooltip();
+			lib.pop.deactivateTooltip();
 			this.tt.id = null;
 		}, 5000);
 	}

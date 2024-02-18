@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-function onStateChange(resolve, reject, func = null) { // credit regorxxx
+function bioOnStateChange(resolve, reject, func = null) { // credit regorxxx
 	if (this !== null) { // this is xmlhttp bound
 		if (this.Status === 200) {
 			return func ? func(this.ResponseText, this) : resolve(this.ResponseText);
@@ -10,7 +10,7 @@ function onStateChange(resolve, reject, func = null) { // credit regorxxx
 }
 
 // May be used to async run a func for the response or as promise
-function send({ method = 'GET', URL, body = void (0), func = null, requestHeader = [/*[header, type]*/], bypassCache = false, timeout = 5000 }) { // credit regorxxx
+function bioSend({ method = 'GET', URL, body = void (0), func = null, requestHeader = [/*[header, type]*/], bypassCache = false, timeout = 5000 }) { // credit regorxxx
 	return new Promise(async (resolve, reject) => {
 		const xmlhttp = new ActiveXObject('WinHttp.WinHttpRequest.5.1');
 		// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#bypassing_the_cache
@@ -34,9 +34,10 @@ function send({ method = 'GET', URL, body = void (0), func = null, requestHeader
 		xmlhttp.Send(method === 'POST' ? body : void (0));
 		// Add a timer for timeout
 		const timer = setTimeout(() => {
+			clearInterval(checkResponse);
 			try {
 				xmlhttp.WaitForResponse(-1);
-				onStateChange.call(xmlhttp, resolve, reject, func);
+				bioOnStateChange.call(xmlhttp, resolve, reject, func);
 			} catch (e) {
 				let status = 400;
 				if (e.message.indexOf('0x80072ee7') !== -1) { status = 400; } // No network
@@ -50,12 +51,12 @@ function send({ method = 'GET', URL, body = void (0), func = null, requestHeader
 			try { xmlhttp.Status && xmlhttp.ResponseText } catch (e) { return; }
 			clearTimeout(timer);
 			clearInterval(checkResponse);
-			onStateChange.call(xmlhttp, resolve, reject, func);
+			bioOnStateChange.call(xmlhttp, resolve, reject, func);
 		}, 30);
 	});
 }
 
-class DldAllmusicBio {
+class BioDldAllmusic {
 	init(URL, referer, p_title, p_artist, p_fo_bio, p_pth_bio, p_force) {
 		this.active = '';
 		this.artist = p_artist;
@@ -80,7 +81,7 @@ class DldAllmusicBio {
 		let list = [];
 		switch (item) {
 			case 'id':
-				send({
+				bioSend({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -90,32 +91,32 @@ class DldAllmusicBio {
 					URL
 				}).then(
 					(response) => {
-						docBio.open();
-						const div = docBio.createElement('div');
+						bioDoc.open();
+						const div = bioDoc.createElement('div');
 						div.innerHTML = response;
-						list = parse.amSearch(div, 'performers', 'song');
-						i = serverBio.match(this.artist, this.title, list, 'song');
+						list = bioParse.amSearch(div, 'performers', 'song');
+						i = bio.server.match(this.artist, this.title, list, 'song');
 						if (i != -1) {
 							this.artistLink = list[i].artistLink;
 							if (this.artistLink) {
-								docBio.close();
+								bioDoc.close();
 								return this.search('biography', `${this.artistLink}/biographyAjax`, this.artistLink);
 							}
 						}
-						if (this.artist) this.search('artist', `${serverBio.url.am}artists/${encodeURIComponent(this.artist)}`, 'https://allmusic.com');
-						docBio.close();
+						if (this.artist) this.search('artist', `${bio.server.url.am}artists/${encodeURIComponent(this.artist)}`, 'https://allmusic.com');
+						bioDoc.close();
 					},
 					(error) => {
-						$Bio.trace(`allmusic review / biography: ${serverBio.album} / ${serverBio.albumArtist}: not found Status error: ${this.xmlhttp.status}`, true);
+						$Bio.trace(`allmusic review / biography: ${bio.server.album} / ${bio.server.albumArtist}: not found Status error: ${this.xmlhttp.status}`, true);
 					}
 				).catch((error) => {
-					serverBio.updateNotFound(`Bio ${cfg.partialMatch} ${this.artist} - ${this.title}`);
+					bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.artist} - ${this.title}`);
 					if (!$Bio.file(this.pth_bio)) $Bio.trace(`allmusic biography: ${this.artist}: not found`, true);
 				});
 				break;
 
 			case 'artist':
-				send({
+				bioSend({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -125,8 +126,8 @@ class DldAllmusicBio {
 					URL
 				}).then(
 					(response) => {
-						docBio.open();
-						const div = docBio.createElement('div');
+						bioDoc.open();
+						const div = bioDoc.createElement('div');
 						div.innerHTML = response;
 						const artists = [];
 						const artist = $Bio.strip(this.artist);
@@ -137,26 +138,26 @@ class DldAllmusicBio {
 							const href = a.length && a[0].href ? a[0].href : '';
 							if (name && href && artist == name) artists.push(href);
 						});
-						docBio.close();
+						bioDoc.close();
 						if (artists.length == 1 && artists[0]) {
 							return this.search('biography', `${artists[0]}/biographyAjax`, artists[0]);
 						}
-						serverBio.updateNotFound(`Bio ${cfg.partialMatch} ${this.artist} - ${this.title}`);
+						bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.artist} - ${this.title}`);
 						if (!$Bio.file(this.pth_bio)) {
 							$Bio.trace(`allmusic biography: ${this.artist}${artists.length > 1 ? ': unable to disambiguate multiple artists of same name: discriminators, album name or track title, either not matched or absent (e.g. menu look ups)' : ': not found'}`, true);
 						}
 					},
 					(error) => {
-						$Bio.trace(`allmusic review / biography: ${serverBio.album} / ${serverBio.albumArtist}: not found Status error: ${this.xmlhttp.status}`, true);
+						$Bio.trace(`allmusic review / biography: ${bio.server.album} / ${bio.server.albumArtist}: not found Status error: ${this.xmlhttp.status}`, true);
 					}
 				).catch((error) => {
-					serverBio.updateNotFound(`Bio ${cfg.partialMatch} ${this.artist} - ${this.title}`);
+					bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.artist} - ${this.title}`);
 					if (!$Bio.file(this.pth_bio)) $Bio.trace(`allmusic biography: ${this.artist}: not found`, true);
 				});
 				break;
 
 			case 'biography':
-				send({
+				bioSend({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -166,7 +167,7 @@ class DldAllmusicBio {
 					URL
 				}).then(
 					(response) => {
-						parse.amBio(this, response);
+						bioParse.amBio(this, response);
 						if (this.artistLink) {
 							this.search('artistPage', this.artistLink, 'https://allmusic.com');
 						}
@@ -176,7 +177,7 @@ class DldAllmusicBio {
 				break;
 
 			case 'artistPage':
-				send({
+				bioSend({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -186,16 +187,16 @@ class DldAllmusicBio {
 					URL
 				}).then(
 					(response) => {
-						parse.amArtist(this, response, this.artist, '', this.title, this.fo_bio, this.pth_bio, '');
+						bioParse.amArtist(this, response, this.artist, '', this.title, this.fo_bio, this.pth_bio, '');
 			},
 			(error) => {
 				$Bio.trace(`allmusic review / biography: ${this.album} / ${this.albumArtist}: not found Status error: ${JSON.stringify(error)}`, true)
 			}
 			).catch((error) => {
 				if (this.album) {
-					serverBio.updateNotFound(`Bio ${cfg.partialMatch} ${this.pth_rev}`);
+					bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.pth_rev}`);
 				} else {
-					serverBio.updateNotFound(`Bio ${cfg.partialMatch} ${this.artist} - ${this.title}`);
+					bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.artist} - ${this.title}`);
 				}
 				if (!$Bio.file(this.pth_bio)) $Bio.trace(`allmusic biography: ${this.artist}: not found`, true);
 			});
@@ -204,7 +205,7 @@ class DldAllmusicBio {
 	}
 }
 
-class DldAllmusicRev {
+class BioDldAllmusicRev {
 	init(URL, referer, p_album, p_alb_artist, p_artist, p_va, p_dn_type, p_fo_rev, p_pth_rev, p_fo_bio, p_pth_bio, p_art, p_force) {
 		this.album = p_album;
 		this.albumArtist = p_alb_artist;
@@ -245,7 +246,7 @@ class DldAllmusicRev {
 		let list = [];
 		switch (item) {
 			case 'id':
-				send({
+				bioSend({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -255,49 +256,49 @@ class DldAllmusicRev {
 					URL
 				}).then(
 					(response) => {
-						docBio.open();
-						const div = docBio.createElement('div');
+						bioDoc.open();
+						const div = bioDoc.createElement('div');
 						div.innerHTML = response;
 						const item = {};
 						if (this.dn_type.startsWith('review') || this.dn_type == 'biography') { item.art = 'artist'; item.type = 'album'; } // this.dn_type choices: 'review+biography'* || 'composition+biography' || 'review' || 'composition' || 'track' || 'biography' // *falls back to trying track / artist based biography if art_upd needed
 						else if (this.dn_type == 'track') { item.art = 'performers'; item.type = 'song'; }
 						else { item.art = 'composer'; item.type = 'composition'; }
-						list = parse.amSearch(div, item.art, item.type);
-						const i = serverBio.match(this.albumArtist, this.album, list, item.type);
+						list = bioParse.amSearch(div, item.art, item.type);
+						const i = bio.server.match(this.albumArtist, this.album, list, item.type);
 						if (i != -1) {
 							if (!this.va) this.artistLink = list[i].artistLink;
 							if (this.dn_type != 'biography') {
-								docBio.close();
+								bioDoc.close();
 								this.titleLink = list[i].titleLink;
 								if (this.titleLink) {
 									return this.search('review', this.titleLink + (item.type != 'composition' ? '/reviewAjax' : '/descriptionAjax'), this.titleLink);
 								}
 							} else if (!this.va) {
-								docBio.close();
+								bioDoc.close();
 								if (this.artistLink) {
 									return this.search('biography', `${this.artistLink}/biographyAjax`, this.artistLink);
 								}
 							}
 						}
-						serverBio.getBio(this.force, this.art, 1);
-						if (this.dn_type.includes('biography')) serverBio.updateNotFound(`Bio ${cfg.partialMatch} ${this.pth_rev}`);
-						serverBio.updateNotFound(`Rev ${cfg.partialMatch} ${this.pth_rev}${this.dn_type != 'track' ? '' : ` ${this.album} ${this.albumArtist}`}`);
+						bio.server.getBio(this.force, this.art, 1);
+						if (this.dn_type.includes('biography')) bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.pth_rev}`);
+						bio.server.updateNotFound(`Rev ${bioCfg.partialMatch} ${this.pth_rev}${this.dn_type != 'track' ? '' : ` ${this.album} ${this.albumArtist}`}`);
 						$Bio.trace(`allmusic review: ${this.album} / ${this.albumArtist}: not found`, true);
-						docBio.close();
+						bioDoc.close();
 					},
 					(error) => {
 						$Bio.trace(`allmusic review / biography: ${this.album} / ${this.albumArtist}: not found Status error: ${JSON.stringify(error)}`, true)
 					}
 				).catch((error) => {
-					serverBio.getBio(this.force, this.art, 1);
-					serverBio.updateNotFound(`Bio ${cfg.partialMatch} ${this.pth_rev}`);
-					serverBio.updateNotFound(`Rev ${cfg.partialMatch} ${this.pth_rev}${this.dn_type != 'track' ? '' : ` ${this.album} ${this.albumArtist}`}`);
+					bio.server.getBio(this.force, this.art, 1);
+					bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.pth_rev}`);
+					bio.server.updateNotFound(`Rev ${bioCfg.partialMatch} ${this.pth_rev}${this.dn_type != 'track' ? '' : ` ${this.album} ${this.albumArtist}`}`);
 					$Bio.trace(`allmusic review: ${this.album} / ${this.albumArtist}: not found`, true);
 				});
 				break;
 
 			case 'review':
-				send({
+				bioSend({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -307,18 +308,18 @@ class DldAllmusicRev {
 					URL
 				}).then(
 					(response) => {
-						docBio.open();
-						const div = docBio.createElement('div');
+						bioDoc.open();
+						const div = bioDoc.createElement('div');
 						div.innerHTML = response;
 						const dv = div.getElementsByTagName('div');
 						const module = this.dn_type == 'track' ? 'songContentSubModule' : this.dn_type.includes('composition') ? 'compositionContentSubModule' : 'albumContentSubModule';
 						$Bio.htmlParse(dv, 'className', module, v => this.review = v.innerHTML);
 						this.review = this.dn_type != 'track' && !this.dn_type.includes('composition') ? this.review.split(/<\/h3>/i) : this.review.split(/<\/h2>/i);
 						if (this.review.length == 2) {
-							this.reviewAuthor = serverBio.format(this.review[0]);
-							this.review = serverBio.format(this.review[1]);
-						} else this.review = serverBio.format(this.review[0]);
-						docBio.close();
+							this.reviewAuthor = bio.server.format(this.review[0]);
+							this.review = bio.server.format(this.review[1]);
+						} else this.review = bio.server.format(this.review[0]);
+						bioDoc.close();
 						if (this.titleLink) {
 							if (!this.dn_type.includes('composition')) this.search('moodsThemes', `${this.titleLink}/moodsThemesAjax`, this.titleLink);
 							else this.search('titlePage', this.titleLink, 'https://allmusic.com');
@@ -329,7 +330,7 @@ class DldAllmusicRev {
 				break;
 
 			case 'moodsThemes':
-				send({
+				bioSend({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -339,8 +340,8 @@ class DldAllmusicRev {
 					URL
 				}).then(
 					(response) => {
-						docBio.open();
-						const div = docBio.createElement('div');
+						bioDoc.open();
+						const div = bioDoc.createElement('div');
 						div.innerHTML = response;
 						const a = div.getElementsByTagName('a');
 						const reviewMood = [];
@@ -363,7 +364,7 @@ class DldAllmusicRev {
 							if (this.dn_type != 'track') this.reviewTheme = `Album Themes: ${reviewTheme.join('\u200b, ')}`
 							else this.songTheme = reviewTheme;
 						}
-						docBio.close();
+						bioDoc.close();
 						if (this.titleLink) this.search('titlePage', this.titleLink, 'https://allmusic.com');
 					},
 					(error) => {}
@@ -371,7 +372,7 @@ class DldAllmusicRev {
 				break;
 
 			case 'titlePage':
-				send({
+				bioSend({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -381,8 +382,8 @@ class DldAllmusicRev {
 					URL
 				}).then(
 					(response) => {
-						docBio.open();
-						const div = docBio.createElement('div')
+						bioDoc.open();
+						const div = bioDoc.createElement('div')
 						div.innerHTML = response;
 						const a = div.getElementsByTagName('a');
 						const dv = div.getElementsByTagName('div');
@@ -425,7 +426,7 @@ class DldAllmusicRev {
 							}
 							this.saveTrackReview();
 						}
-						docBio.close();
+						bioDoc.close();
 
 						if (this.dn_type.includes('+biography') && this.artistLink) {
 							return this.search('biography', `${this.artistLink}/biographyAjax`, this.artistLink);
@@ -441,14 +442,14 @@ class DldAllmusicRev {
 					if (this.dn_type.includes('+biography') && this.artistLink) {
 						return this.search('biography', `${this.artistLink}/biographyAjax`, this.artistLink);
 					}
-					serverBio.updateNotFound(`Bio ${cfg.partialMatch} ${this.pth_rev}`);
-					serverBio.updateNotFound(`Rev ${cfg.partialMatch} ${this.pth_rev}${this.dn_type != 'track' ? '' : ` ${this.album} ${this.albumArtist}`}`);
+					bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.pth_rev}`);
+					bio.server.updateNotFound(`Rev ${bioCfg.partialMatch} ${this.pth_rev}${this.dn_type != 'track' ? '' : ` ${this.album} ${this.albumArtist}`}`);
 					$Bio.trace(`allmusic review: ${this.album} / ${this.albumArtist}: not found`, true);
 				});
 				break;
 
 			case 'biography':
-				send({
+				bioSend({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -458,7 +459,7 @@ class DldAllmusicRev {
 					URL
 				}).then(
 					(response) => {
-						parse.amBio(this, response);
+						bioParse.amBio(this, response);
 						if (this.artistLink) this.search('artistPage', this.artistLink, 'https://allmusic.com');
 					},
 					(error) => {}
@@ -466,7 +467,7 @@ class DldAllmusicRev {
 				break;
 
 			case 'artistPage':
-				send({
+				bioSend({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -476,16 +477,16 @@ class DldAllmusicRev {
 					URL
 				}).then(
 					(response) => {
-						parse.amArtist(this, response, this.artist, this.album, '', this.fo_bio, this.pth_bio, this.pth_rev);
+						bioParse.amArtist(this, response, this.artist, this.album, '', this.fo_bio, this.pth_bio, this.pth_rev);
 				},
 					(error) => {
 						$Bio.trace(`allmusic review / biography: ${this.album} / ${this.albumArtist}: not found Status error: ${JSON.stringify(error)}`, true)
 					}
 				).catch((error) => {
 					if (this.album) {
-						serverBio.updateNotFound(`Bio ${cfg.partialMatch} ${this.pth_rev}`);
+						bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.pth_rev}`);
 					} else {
-						serverBio.updateNotFound(`Bio ${cfg.partialMatch} ${this.artist} - ${this.title}`);
+						bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.artist} - ${this.title}`);
 					}
 					if (!$Bio.file(this.pth_bio)) $Bio.trace(`allmusic biography: ${this.artist}: not found`, true);
 				});
@@ -495,16 +496,16 @@ class DldAllmusicRev {
 
 	saveAlbumReview() {
 		this.review = `>> Album rating: ${this.rating} <<  ${this.review}`;
-		this.review = txt.add([this.reviewGenre, this.reviewMood, this.reviewTheme, this.releaseDate, this.reviewAuthor], this.review);
+		this.review = bio.txt.add([this.reviewGenre, this.reviewMood, this.reviewTheme, this.releaseDate, this.reviewAuthor], this.review);
 		this.review = this.review.trim();
 		if (this.review.length > 22) {
 			if (this.fo_rev) {
 				$Bio.buildPth(this.fo_rev);
 				$Bio.save(this.pth_rev, this.review, true);
-				serverBio.res();
+				bio.server.res();
 			}
 		} else {
-			serverBio.updateNotFound(`Rev ${cfg.partialMatch} ${this.pth_rev}`);
+			bio.server.updateNotFound(`Rev ${bioCfg.partialMatch} ${this.pth_rev}`);
 			$Bio.trace(`allmusic this.review: ${this.album} / ${this.albumArtist}: not found`, true);
 		}
 	}
@@ -527,24 +528,24 @@ class DldAllmusicRev {
 		}
 
 		if (this.reviewAuthor || this.reviewGenre || this.reviewMood || this.reviewTheme || this.review || this.songReleaseYear || this.composer)	{
-			serverBio.res();
+			bio.server.res();
 		} else {
-			serverBio.updateNotFound(`Rev ${cfg.partialMatch} ${this.pth_rev} ${this.album} ${this.albumArtist}`);
+			bio.server.updateNotFound(`Rev ${bioCfg.partialMatch} ${this.pth_rev} ${this.album} ${this.albumArtist}`);
 			$Bio.trace(`allmusic review: ${this.album} / ${this.albumArtist}: not found`, true);
 		}
 	}
 }
 
 
-class Parse {
+class BioParse {
 	amArtist(that, responseText, artist, album, title, fo_bio, pth_bio, pth_rev) {
-		docBio.open();
-		const div = docBio.createElement('div');
+		bioDoc.open();
+		const div = bioDoc.createElement('div');
 		div.innerHTML = responseText;
 		const dv = div.getElementsByTagName('div');
 		let tg = '';
-		$Bio.htmlParse(dv, 'className', 'birth', v => that.start = serverBio.format(v.innerHTML).replace(/Born/i, 'Born:').replace(/Formed/i, 'Formed:'));
-		$Bio.htmlParse(dv, 'className', 'death', v => that.end = serverBio.format(v.innerHTML).replace(/Died/i, 'Died:').replace(/Disbanded/i, 'Disbanded:'));
+		$Bio.htmlParse(dv, 'className', 'birth', v => that.start = bio.server.format(v.innerHTML).replace(/Born/i, 'Born:').replace(/Formed/i, 'Formed:'));
+		$Bio.htmlParse(dv, 'className', 'death', v => that.end = bio.server.format(v.innerHTML).replace(/Died/i, 'Died:').replace(/Disbanded/i, 'Disbanded:'));
 		$Bio.htmlParse(dv, 'className', 'activeDates', v => that.active = v.innerText.replace(/Active/i, 'Active: ').trim());
 
 		$Bio.htmlParse(div.getElementsByTagName('a'), false, false, v => {
@@ -565,21 +566,21 @@ class Parse {
 		that.groupMembers = that.groupMembers.length ? `Group Members: ${that.groupMembers.join('\u200b, ')}` : '';
 
 		this.saveBiography(that, artist, album, title, fo_bio, pth_bio, pth_rev);
-		docBio.close();
+		bioDoc.close();
 	}
 
 	amBio(that, responseText) {
-		docBio.open();
-		const div = docBio.createElement('div');
+		bioDoc.open();
+		const div = bioDoc.createElement('div');
 		div.innerHTML = responseText;
 		const dv = div.getElementsByTagName('div');
 		$Bio.htmlParse(dv, 'className', 'artistContentSubModule', v => that.biography = v.innerHTML);
 		that.biography = that.biography.split(/<\/h2>/i);
 		if (that.biography.length == 2) {
-			that.biographyAuthor = serverBio.format(that.biography[0]);
-			that.biography = serverBio.format(that.biography[1]);
-		} else that.biography = serverBio.format(that.biography[0]);
-		docBio.close();
+			that.biographyAuthor = bio.server.format(that.biography[0]);
+			that.biography = bio.server.format(that.biography[1]);
+		} else that.biography = bio.server.format(that.biography[0]);
+		bioDoc.close();
 	}
 
 	amSearch(div, artist, item) {
@@ -606,24 +607,29 @@ class Parse {
 	}
 
 	saveBiography(that, artist, album, title, fo_bio, pth_bio, pth_rev) {
-		that.biography = txt.add([that.active, that.start, that.end, that.biographyGenre, that.groupMembers, that.biographyAuthor], that.biography);
+		that.biography = bio.txt.add([that.active, that.start, that.end, that.biographyGenre, that.groupMembers, that.biographyAuthor], that.biography);
 		that.biography = that.biography.trim();
 
 		if (that.biography.length > 19) {
 			if (fo_bio) {
 				$Bio.buildPth(fo_bio);
 				$Bio.save(pth_bio, that.biography, true);
-				serverBio.res();
+				bio.server.res();
 			}
 		} else {
 			if (album) {
-				serverBio.updateNotFound(`Bio ${cfg.partialMatch} ${pth_rev}`);
+				bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${pth_rev}`);
 			} else {
-				serverBio.updateNotFound(`Bio ${cfg.partialMatch} ${artist} - ${title}`);
+				bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${artist} - ${title}`);
 			}
 			if (!$Bio.file(pth_bio)) $Bio.trace(`allmusic biography: ${artist}: not found`, true);
 		}
 	}
 }
 
-const parse = new Parse();
+/**
+ * The instance of `BioParse` class for biography parsing operations.
+ * @typedef {BioParse}
+ * @global
+ */
+const bioParse = new BioParse();

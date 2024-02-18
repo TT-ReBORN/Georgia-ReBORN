@@ -4,7 +4,8 @@
 
 'use strict';
 
-const English = {
+/** @global @type {object.<string, string>} */
+const bioEnglish = {
 	' - Remove from black list (click name): ': ' - Remove from black list (click name): ',
 	' biography': ' biography',
 	' first': ' first',
@@ -163,7 +164,8 @@ const English = {
 	'Write existing file info to tags: ': 'Write existing file info to tags: '
 }
 
-const simplifiedChinese = {
+/** @global @type {object.<string, string>} */
+const bioSimplifiedChinese = {
 	' - Remove from black list (click name): ': ' - 从黑名单中删除（点击名称）：',
 	' biography': ' 简介',
 	' first': ' 首选',
@@ -322,7 +324,8 @@ const simplifiedChinese = {
 	'Write existing file info to tags: ': '将现有文件信息写入标签：'
 }
 
-const traditionalChinese = {
+/** @global @type {object.<string, string>} */
+const bioTraditionalChinese = {
 	' - Remove from black list (click name): ': ' - 從黑名單中刪除（點擊名稱）： ',
 	' biography': ' 傳記',
 	' first': ' 第一的',
@@ -481,4 +484,5 @@ const traditionalChinese = {
 	'Write existing file info to tags: ': '將現有文件信息寫入標籤：'
 }
 
-const lg = [English, simplifiedChinese, traditionalChinese][pptBio.menuLanguage];
+/** @global @type @type {Array<Object.<string, string>>} */
+const bioLg = [bioEnglish, bioSimplifiedChinese, bioTraditionalChinese][bioSet.menuLanguage];

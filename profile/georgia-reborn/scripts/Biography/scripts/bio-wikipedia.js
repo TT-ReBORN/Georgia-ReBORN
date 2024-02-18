@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-class DldWikipedia {
+class BioDldWikipedia {
 	constructor(state_callback) {
 		this.alias = '';
 		this.alwaysCheckArtistInWiki = true;
@@ -29,7 +29,7 @@ class DldWikipedia {
 		this.rg_mbid = '';
 		this.artistWorksChecked = false;
 		this.searchItem = 0;
-		this.site = cfg.language.toLowerCase();
+		this.site = bioCfg.language.toLowerCase();
 		this.tagChecked = false;
 		this.timer = null;
 		this.title;
@@ -95,10 +95,10 @@ class DldWikipedia {
 			} else {
 				this.ar_mbid = $Bio.eval('$trim($if3(%musicbrainz_artistid%,%musicbrainz artist id%,))', this.focus);
 				if (!this.ar_mbid || this.ar_mbid.length != 36) {
-					const related_artists = $Bio.jsonParse(`${cfg.storageFolder.replace('{BA9557CE-7B4B-4E0E-9373-99F511E81252}', '{F5E9D9EB-42AD-4A47-B8EE-C9877A8E7851}')}related_artists.json`, {}, 'file');
+					const related_artists = $Bio.jsonParse(`${bioCfg.storageFolder.replace('{BA9557CE-7B4B-4E0E-9373-99F511E81252}', '{F5E9D9EB-42AD-4A47-B8EE-C9877A8E7851}')}related_artists.json`, {}, 'file');
 					this.ar_mbid = related_artists[this.artist.toUpperCase()]; // f&p says if it's a tag read
 				}
-				if ((!this.ar_mbid || this.ar_mbid.length != 36) && !this.force) this.ar_mbid = serverBio.artistMbid[this.artist];
+				if ((!this.ar_mbid || this.ar_mbid.length != 36) && !this.force) this.ar_mbid = bio.server.artistMbid[this.artist];
 				if (!this.ar_mbid || this.ar_mbid.length != 36) this.ar_mbid = '';
 				this.tagChecked = true;
 			}
@@ -112,23 +112,23 @@ class DldWikipedia {
 				if (this.ar_mbid) return this.search(1);
 				switch (this.aridType) {
 					case 0:
-						URL = `${serverBio.url.mb}recording/?query=${encodeURIComponent($Bio.regexEscape(this.recording.toLowerCase()))} AND artist:${encodeURIComponent($Bio.regexEscape(this.artist.toLowerCase()))}&fmt=json`;
+						URL = `${bio.server.url.mb}recording/?query=${encodeURIComponent($Bio.regexEscape(this.recording.toLowerCase()))} AND artist:${encodeURIComponent($Bio.regexEscape(this.artist.toLowerCase()))}&fmt=json`;
 						break;
 					case 1:
-						URL = `${serverBio.url.mb}release-group/?query=${encodeURIComponent($Bio.regexEscape(this.album.toLowerCase()))} AND artist:${encodeURIComponent($Bio.regexEscape(this.artist.toLowerCase()))} AND  (primarytype:Album OR primarytype:EP)&fmt=json`;
+						URL = `${bio.server.url.mb}release-group/?query=${encodeURIComponent($Bio.regexEscape(this.album.toLowerCase()))} AND artist:${encodeURIComponent($Bio.regexEscape(this.artist.toLowerCase()))} AND  (primarytype:Album OR primarytype:EP)&fmt=json`;
 						break;
 					case 2:
-						URL = `${serverBio.url.mb}artist/?query=${encodeURIComponent($Bio.regexEscape(this.artist.toLowerCase()))}&fmt=json`;
+						URL = `${bio.server.url.mb}artist/?query=${encodeURIComponent($Bio.regexEscape(this.artist.toLowerCase()))}&fmt=json`;
 						break;
 				}
 				break;
 			case 1:
 				if (this.type && !this.force) {
-					this.wikidataArtist = $Bio.getProp(serverBio.artistQid, `${this.artist}.code`, '');
-					this.alias = $Bio.getProp(serverBio.artistQid, `${this.artist}.alias`, '');
+					this.wikidataArtist = $Bio.getProp(bio.server.artistQid, `${this.artist}.code`, '');
+					this.alias = $Bio.getProp(bio.server.artistQid, `${this.artist}.alias`, '');
 				}
 				if (!this.type || !this.wikidataArtist) {
-					URL = `${serverBio.url.mb}artist/${this.ar_mbid}?inc=genres+url-rels&fmt=json`;
+					URL = `${bio.server.url.mb}artist/${this.ar_mbid}?inc=genres+url-rels&fmt=json`;
 				}
 				if (this.type && this.wikidataArtist) {
 					return this.search(2);
@@ -140,38 +140,38 @@ class DldWikipedia {
 				}
 				const params = this.type == 1 || this.type == 3 ? ` AND arid:${this.ar_mbid} AND ${this.type == 1 ? '(primarytype:Album OR primarytype:EP)' : 'primarytype:Single'}` : '';
 				const type = this.type == 2 || this.type == 4 ? 'work' : 'release-group';
-				URL = `${serverBio.url.mb + type}?query=${encodeURIComponent($Bio.regexEscape(this.title.toLowerCase()) + params)}&fmt=json`;
+				URL = `${bio.server.url.mb + type}?query=${encodeURIComponent($Bio.regexEscape(this.title.toLowerCase()) + params)}&fmt=json`;
 				break;
 			}
 			case 3:
-				URL = `${serverBio.url.mb + (this.type == 2 || this.type == 4 ? 'work/' : 'release-group/') + this.rg_mbid}?inc=genres+url-rels&fmt=json`;
+				URL = `${bio.server.url.mb + (this.type == 2 || this.type == 4 ? 'work/' : 'release-group/') + this.rg_mbid}?inc=genres+url-rels&fmt=json`;
 				break;
 			case 4: {
-				let lang = cfg.language == 'EN' ? 'enwiki' : `${cfg.language.toLowerCase()}wiki`;
-				if (serverBio.langFallback) lang += '|enwiki';
-				URL = `${serverBio.url.wikidata + this.wikidata}&sitefilter=${lang}`;
+				let lang = bioCfg.language == 'EN' ? 'enwiki' : `${bioCfg.language.toLowerCase()}wiki`;
+				if (bio.server.langFallback) lang += '|enwiki';
+				URL = `${bio.server.url.wikidata + this.wikidata}&sitefilter=${lang}`;
 				break;
 			}
 			case 5:
-				URL = serverBio.url.wikipedia.replace('//lang', `//${this.site}`) + this.wikititle; // encodeURIComponent broke Y Viva España
+				URL = bio.server.url.wikipedia.replace('//lang', `//${this.site}`) + this.wikititle; // encodeURIComponent broke Y Viva España
 				break;
 			case 6: {
 				this.artistValidated = true;
 				setTimeout(() => {
-					URL = `${serverBio.url.mb}work?artist=${this.ar_mbid}&limit=100&offset=${this.offset}&fmt=json`;
+					URL = `${bio.server.url.mb}work?artist=${this.ar_mbid}&limit=100&offset=${this.offset}&fmt=json`;
 					this.get(URL, this.force);
 				}, 1200);
 				break;
 			}
 			case 7:
 				setTimeout(() => {
-					URL = serverBio.url.wikisearch + encodeURIComponent(this.title + (this.type == 1 ? ` ${this.artist}` : ''));
+					URL = bio.server.url.wikisearch + encodeURIComponent(this.title + (this.type == 1 ? ` ${this.artist}` : ''));
 					this.get(URL, this.force);
 				}, 1200);
 				break;
 			case 8: {
-				const site = this.site == 'en' || cfg.wikipediaEnGenres ? 'en' : this.site;
-				URL = serverBio.url.wikiinfo.replace('//lang', `//${site}`) + this.wikititle;
+				const site = this.site == 'en' || bioCfg.wikipediaEnGenres ? 'en' : this.site;
+				URL = bio.server.url.wikiinfo.replace('//lang', `//${site}`) + this.wikititle;
 				break;
 			}
 		}
@@ -190,7 +190,7 @@ class DldWikipedia {
 						}
 						const list = [];
 						data.forEach(v => {
-							const i = serverBio.match(this.artist, !this.aridType ? this.recording : this.album, [{ artist: this.artist, title: v.title }], this.type != 2 ? (!this.aridType ? 'song' : 'album') : 'composition', true, 80);
+							const i = bio.server.match(this.artist, !this.aridType ? this.recording : this.album, [{ artist: this.artist, title: v.title }], this.type != 2 ? (!this.aridType ? 'song' : 'album') : 'composition', true, 80);
 							if (i != -1) list.push(v);
 						});
 						const artist = $Bio.strip(this.artist);
@@ -198,7 +198,7 @@ class DldWikipedia {
 							if (this.ar_mbid) return true;
 							v['artist-credit'].some(w => {
 								if (artist == $Bio.strip(w.artist.name)) {
-									serverBio.artistMbid[this.artist] = this.ar_mbid = w.artist.id;
+									bio.server.artistMbid[this.artist] = this.ar_mbid = w.artist.id;
 									return true;
 								}
 							});
@@ -211,22 +211,22 @@ class DldWikipedia {
 									w.artist.aliases.some(u => {
 										if (artist == $Bio.strip(u.name)) {
 											this.alias = u.name;
-											serverBio.artistMbid[this.artist] = this.ar_mbid = w.artist.id;
+											bio.server.artistMbid[this.artist] = this.ar_mbid = w.artist.id;
 											return true;
 										}
 									});
 								}
 							});
 						});
-						if (!this.ar_mbid && cfg.partialMatchEnabled) {
-							const alias = serverBio.tidy(this.artist, true);
+						if (!this.ar_mbid && bioCfg.partialMatchEnabled) {
+							const alias = bio.server.tidy(this.artist, true);
 							if (alias) {
 								list.some(v => {
 									if (this.ar_mbid) return true;
 									v['artist-credit'].some(w => {
-										if (alias == serverBio.tidy(w.artist.name, true)) {
+										if (alias == bio.server.tidy(w.artist.name, true)) {
 											this.alias = w.artist.name;
-											serverBio.artistMbid[this.artist] = this.ar_mbid = w.artist.id;
+											bio.server.artistMbid[this.artist] = this.ar_mbid = w.artist.id;
 											return true;
 										}
 									});
@@ -246,7 +246,7 @@ class DldWikipedia {
 						const aliases = [];
 						let items = [];
 						items = data.filter(v => artist == $Bio.strip(v.name));
-						if (items.length == 1 || this.type == 2) serverBio.artistMbid[this.artist] = this.ar_mbid = items[0].id;
+						if (items.length == 1 || this.type == 2) bio.server.artistMbid[this.artist] = this.ar_mbid = items[0].id;
 						if (!items.length) {
 							data.forEach(v => {
 								if (v.aliases) {
@@ -258,7 +258,7 @@ class DldWikipedia {
 								}
 							});
 							if (aliases.length == 1 || this.type == 2) {
-								serverBio.artistMbid[this.artist] = this.ar_mbid = aliases[0].id;
+								bio.server.artistMbid[this.artist] = this.ar_mbid = aliases[0].id;
 								this.alias = aliases[0].name;
 							}
 						}
@@ -305,7 +305,7 @@ class DldWikipedia {
 					});
 				}
 				this.wikidataArtist = this.wikidata = this.wikidata.split('/').pop();
-				serverBio.artistQid[this.artist] = {
+				bio.server.artistQid[this.artist] = {
 					alias: this.alias,
 					code: this.wikidata
 				};
@@ -313,7 +313,7 @@ class DldWikipedia {
 					return this.search(!this.type ? 4 : 2);
 				}
 				let wikidata = '';
-				if (!this.type && cfg.language == 'EN') {
+				if (!this.type && bioCfg.language == 'EN') {
 					data.some(v => {
 						if (v.type == 'wikipedia' && v.url.resource && v.url.resource.includes('//en.') && !v.url.resource.includes('disambiguation')) return wikidata = v.url.resource;
 					});
@@ -348,11 +348,11 @@ class DldWikipedia {
 				$Bio.sort(list, 'type');
 				let i = -1;
 				if (this.type == 2 || this.type == 4) {
-					i = serverBio.match(this.artist, this.title, filteredList, ['', 'review', 'composition', 'song', 'song'][this.type], true);
+					i = bio.server.match(this.artist, this.title, filteredList, ['', 'review', 'composition', 'song', 'song'][this.type], true);
 					if (i != -1) this.rg_mbid = filteredList[i].rg_mbid;
 				}
 				if (i == -1) {
-					i = serverBio.match(this.artist, this.title, list, ['', 'review', 'composition', 'song', 'song'][this.type], true);
+					i = bio.server.match(this.artist, this.title, list, ['', 'review', 'composition', 'song', 'song'][this.type], true);
 					if (i != -1) this.rg_mbid = list[i].rg_mbid;
 				}
 				if (i == -1) {
@@ -395,7 +395,7 @@ class DldWikipedia {
 				}
 				this.wikidata = '';
 				this.wikititle = '';
-				if (cfg.language == 'EN') {
+				if (bioCfg.language == 'EN') {
 					data.some(v => {
 						if (v.type == 'wikipedia' && v.url.resource && v.url.resource.includes('//en.') && !v.url.resource.includes('disambiguation')) return this.wikidata = v.url.resource;
 					});
@@ -420,17 +420,17 @@ class DldWikipedia {
 			case 4: { // parseWikidata
 				const data = $Bio.jsonParse(this.xmlhttp.responseText, {});
 				if (this.alwaysCheckArtistInWiki && this.type || !this.artistValidated && (this.type == 2 || this.type == 4 || this.fallBackDone)) this.artistValidated = this.wikidataArtist ? this.xmlhttp.responseText.includes(this.wikidataArtist) : false;
-				const wikititles = serverBio.getObjKeyValue(data, 'title');
-				const wikiurls = serverBio.getObjKeyValue(data, 'url');
+				const wikititles = bio.server.getObjKeyValue(data, 'title');
+				const wikiurls = bio.server.getObjKeyValue(data, 'url');
 				this.wikititle = '';
 				wikiurls.some((v, i) => {
-					if (v.includes(`${cfg.language.toLowerCase()}.wikipedia`) && !v.includes('disambiguation')) {
-						this.site = cfg.language.toLowerCase();
+					if (v.includes(`${bioCfg.language.toLowerCase()}.wikipedia`) && !v.includes('disambiguation')) {
+						this.site = bioCfg.language.toLowerCase();
 						this.wikititle = encodeURIComponent(wikititles[i]);
 						return true;
 					}
 				});
-				if (!this.wikititle && serverBio.langFallback) {
+				if (!this.wikititle && bio.server.langFallback) {
 					wikiurls.some((v, i) => {
 						if (v.includes('en.wikipedia') && !v.includes('disambiguation')) {
 							this.site = 'en';
@@ -456,7 +456,7 @@ class DldWikipedia {
 			}
 			case 5: { // parseWikipediaResponse
 				const data = $Bio.jsonParse(this.xmlhttp.responseText, {});
-				this.wiki = serverBio.getObjKeyValue(data, 'extract')[0] || '';
+				this.wiki = bio.server.getObjKeyValue(data, 'extract')[0] || '';
 				const needArtistCheck = this.alwaysCheckArtistInWiki && this.type || this.type == 2 || this.type == 4 || this.fallBackDone;
 
 				if (!this.artistValidated && needArtistCheck) {
@@ -482,7 +482,7 @@ class DldWikipedia {
 				response.forEach(v => {
 					list.push({ artist: this.artist, rg_mbid: v.id, title: v.title });
 				});
-				const i = serverBio.match(this.artist, this.title, list, ['', 'review', 'composition', 'song', 'song'][this.type], true);
+				const i = bio.server.match(this.artist, this.title, list, ['', 'review', 'composition', 'song', 'song'][this.type], true);
 				if (i == -1) {
 					this.offset += 100;
 					if (this.releases > this.offset) {
@@ -511,7 +511,7 @@ class DldWikipedia {
 						this.wikidataFirst = v.title;
 					}
 				});
-				const i = serverBio.match(this.artist, this.title, list, ['', 'review', 'composition', 'song', 'song'][this.type], true);
+				const i = bio.server.match(this.artist, this.title, list, ['', 'review', 'composition', 'song', 'song'][this.type], true);
 				if (i != -1) {
 					this.wikidata = list[i].id;
 					this.artistValidated = true;
@@ -527,9 +527,9 @@ class DldWikipedia {
 				const json = $Bio.jsonParse(this.xmlhttp.responseText, {}, 'get', 'query.pages');
 				const key = Object.keys(json);
 				if (!key.length) { this.save(); break; }
-				const source = infoboxBio.cleanText($Bio.getProp(json, `${key[0]}.revisions.0.slots.main.*`, ''), this.site);
+				const source = bio.infobox.cleanText($Bio.getProp(json, `${key[0]}.revisions.0.slots.main.*`, ''), this.site);
 				if (!source || /#REDIRECT/i.test(source)) { this.save(); break; }
-				this.info = infoboxBio.getValues(this.type, source, this.site);
+				this.info = bio.infobox.getValues(this.type, source, this.site);
 				this.save();
 				break;
 			}
@@ -588,7 +588,7 @@ class DldWikipedia {
 
 	get(URL, force) {
 		this.func = this.analyse;
-		if (pptBio.multiServer && !force && serverBio.urlDone(md5Bio.hashStr(this.artist + this.title + this.type + this.pth + cfg.partialMatch + URL))) return;
+		if (bioSet.multiServer && !force && bio.server.urlDone(bioMD5.hashStr(this.artist + this.title + this.type + this.pth + bioCfg.partialMatch + URL))) return;
 		this.xmlhttp.open('GET', URL);
 		this.xmlhttp.onreadystatechange = this.ready_callback;
 		this.xmlhttp.setRequestHeader('User-Agent', 'foobar2000_yttm (https://hydrogenaud.io/index.php/topic,111059.0.html)');
@@ -646,14 +646,14 @@ class DldWikipedia {
 		}
 
 		if (this.type == 0) {
-			this.wiki = txt.add([this.info.active, this.info.start, this.info.bornIn, this.info.end, this.info.foundedIn], this.wiki);
-			const value = $Bio.jsonParse(txt.countryCodes, {}, 'file')[this.artist.toLowerCase()];
+			this.wiki = bio.txt.add([this.info.active, this.info.start, this.info.bornIn, this.info.end, this.info.foundedIn], this.wiki);
+			const value = $Bio.jsonParse(bio.txt.countryCodes, {}, 'file')[this.artist.toLowerCase()];
 			if (!value) {
 				let countryCode = '';
 				let locale = this.info.bornIn || this.info.foundedIn;
 				if (locale) {
 					locale = locale.split(',');
-					countryCode = countryToCode[$Bio.strip(locale[locale.length - 1])];
+					countryCode = bioCountryToCode[$Bio.strip(locale[locale.length - 1])];
 					this.saveCountryCode(countryCode);
 				}
 			}
@@ -661,16 +661,16 @@ class DldWikipedia {
 
 		this.checkTypeOf();
 
-		if (this.site != 'en' && !cfg.wikipediaEnGenres) this.genres = this.type < 3 ? '' : []; // no fallback to mb genres if !en
+		if (this.site != 'en' && !bioCfg.wikipediaEnGenres) this.genres = this.type < 3 ? '' : []; // no fallback to mb genres if !en
 		const genres = this.info.genre.length ? this.info.genre : this.genres.length ? this.genres : this.type < 3 ? '' : [];
-		if (genres && this.type < 3) this.wiki = txt.add([`Genre: ${genres}`], this.wiki);
+		if (genres && this.type < 3) this.wiki = bio.txt.add([`Genre: ${genres}`], this.wiki);
 
 		if (this.type == 1) {
-			this.wiki = txt.add([this.info.released], this.wiki);
+			this.wiki = bio.txt.add([this.info.released], this.wiki);
 		}
 
 		if (this.type > 0 && this.type < 3) {
-			this.wiki = txt.add([this.info.length], this.wiki);
+			this.wiki = bio.txt.add([this.info.length], this.wiki);
 		}
 		this.wiki = this.wiki.trim();
 
@@ -682,9 +682,9 @@ class DldWikipedia {
 			if (this.fo) {
 				$Bio.buildPth(this.fo);
 
-				this.wiki = txt.add([`Wikipedia language: ${this.site.toUpperCase()}`], this.wiki);
+				this.wiki = bio.txt.add([`Wikipedia language: ${this.site.toUpperCase()}`], this.wiki);
 				$Bio.save(this.pth, this.wiki, true);
-				serverBio.res();
+				bio.server.res();
 			}
 		} else {
 			const text = $Bio.jsonParse(this.pth, {}, 'file');
@@ -706,7 +706,7 @@ class DldWikipedia {
 				};
 				$Bio.save(this.pth, JSON.stringify($Bio.sortKeys(text), null, 3), true);
 			}
-			if (genres.length || this.info.composer.length || this.info.released || this.info.length || this.wiki) serverBio.res();
+			if (genres.length || this.info.composer.length || this.info.released || this.info.length || this.wiki) bio.server.res();
 			else $Bio.trace(`wikipedia: ${this.name}: not found`, true);
 		}
 	}
@@ -714,12 +714,12 @@ class DldWikipedia {
 	saveCountryCode(code, force) {
 		if (!code) return;
 		const a = this.artist.toLowerCase();
-		const m = $Bio.jsonParse(txt.countryCodes, {}, 'file');
+		const m = $Bio.jsonParse(bio.txt.countryCodes, {}, 'file');
 		const value = m[a];
 		if (code == value && !force) return;
 			m[a] = code;
-			$Bio.save(txt.countryCodes, JSON.stringify($Bio.sortKeys(m), null, 3), true);
-			serverBio.res();
+			$Bio.save(bio.txt.countryCodes, JSON.stringify($Bio.sortKeys(m), null, 3), true);
+			bio.server.res();
 	}
 
 	tidyWiki(n, en) {
@@ -731,7 +731,7 @@ class DldWikipedia {
 	}
 }
 
-class InfoboxBio {
+class BioInfobox {
 	constructor() {
 		this.date = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
 		this.mm_yyyy = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long' });

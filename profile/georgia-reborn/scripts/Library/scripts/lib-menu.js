@@ -1,9 +1,11 @@
 'use strict';
 
-const MF_GRAYED_LIB = 0x00000001;
-const MF_STRING_LIB = 0x00000000;
+/** @global @type {number} */
+const LIB_MF_GRAYED = 0x00000001;
+/** @global @type {number} */
+const LIB_MF_STRING = 0x00000000;
 
-class MenuManager {
+class LibMenuManager {
 	constructor(name, clearArr, baseMenu) {
 		this.baseMenu = baseMenu || 'baseMenu';
 		this.clearArr = clearArr;
@@ -79,7 +81,7 @@ addSeparator({ menuName = this.baseMenu, separator = true }) { this.menuItems.pu
 	}
 
 	load(x, y) {
-		if (!this.menuItems.length) men[this.name]();
+		if (!this.menuItems.length) lib.men[this.name]();
 		let i = 0;
 		let ln = this.menuNames.length;
 		while (i < ln) {
@@ -96,9 +98,9 @@ addSeparator({ menuName = this.baseMenu, separator = true }) { this.menuItems.pu
 		}
 
 		let Context;
-		if (men.show_context) {
+		if (lib.men.show_context) {
 			Context = fb.CreateContextMenuManager();
-			Context.InitContext(men.items);
+			Context.InitContext(lib.men.items);
 			this.menu[this.baseMenu].AppendMenuSeparator();
 			Context.BuildMenu(this.menu[this.baseMenu], 5000);
 		}
@@ -106,17 +108,17 @@ addSeparator({ menuName = this.baseMenu, separator = true }) { this.menuItems.pu
 		const idx = this.menu[this.baseMenu].TrackPopupMenu(x, y);
 		this.run(idx);
 
-		if (men.show_context) {
+		if (lib.men.show_context) {
 			if (idx >= 5000 && idx <= 5800) Context.ExecuteByID(idx - 5000);
-			men.show_context = false;
+			lib.men.show_context = false;
 		}
 
 		this.clear();
 	}
 
-	newItem({ str = null, func = null, menuName = this.baseMenu, flags = MF_STRING_LIB, checkItem = false, checkRadio = false, separator = false, hide = false }) { this.menuItems.push({ str, func, menuName, flags, checkItem, checkRadio, separator, hide }); }
+	newItem({ str = null, func = null, menuName = this.baseMenu, flags = LIB_MF_STRING, checkItem = false, checkRadio = false, separator = false, hide = false }) { this.menuItems.push({ str, func, menuName, flags, checkItem, checkRadio, separator, hide }); }
 
-	newMenu({ menuName = this.baseMenu, str = '', appendTo = this.baseMenu, flags = MF_STRING_LIB, separator = false, hide = false }) {
+	newMenu({ menuName = this.baseMenu, str = '', appendTo = this.baseMenu, flags = LIB_MF_STRING, separator = false, hide = false }) {
 		this.menuNames.push(menuName);
 		if (menuName != this.baseMenu) this.menuItems.push({ menuName, appendMenu: true, str, appendTo, flags, separator, hide });
 	}
@@ -127,13 +129,38 @@ addSeparator({ menuName = this.baseMenu, separator = true }) { this.menuItems.pu
 	}
 }
 
-const clearArr = true;
-const menu = new MenuManager('mainMenu', clearArr);
-const fMenu = new MenuManager('filterMenu', clearArr);
-const sMenu = new MenuManager('searchHistoryMenu', clearArr);
-const searchMenu = new MenuManager('searchMenu');
+/** @global @type {boolean} */
+const libClearArr = true;
 
-class MenuItems {
+/**
+ * The instance of `LibMenuManager` class for library main menu operations.
+ * @typedef {LibMenuManager}
+ * @global
+ */
+const libMenu = new LibMenuManager('mainMenu', libClearArr);
+
+/**
+ * The instance of `LibMenuManager` class for library filter menu operations.
+ * @typedef {LibMenuManager}
+ * @global
+ */
+const libFMenu = new LibMenuManager('filterMenu', libClearArr);
+
+/**
+ * The instance of `LibMenuManager` class for library search histry menu operations.
+ * @typedef {LibMenuManager}
+ * @global
+ */
+const libSMenu = new LibMenuManager('searchHistoryMenu', libClearArr);
+
+/**
+ * The instance of `LibMenuManager` class for library search menu operations.
+ * @typedef {LibMenuManager}
+ * @global
+ */
+const libSearchMenu = new LibMenuManager('searchMenu');
+
+class LibMenuItems {
 	constructor() {
 		this.expandable = false;
 		this.ix = -1;
@@ -142,7 +169,7 @@ class MenuItems {
 		this.pl = [];
 		this.r_up = false;
 		this.show_context = false;
-		this.treeExpandLimit = $Lib.file('C:\\check_local\\1450343922.txt') ? 6000 : $Lib.clamp(ppt.treeExpandLimit, 10, 6000);
+		this.treeExpandLimit = $Lib.file('C:\\check_local\\1450343922.txt') ? 6000 : $Lib.clamp(libSet.treeExpandLimit, 10, 6000);
 		this.playlists_changed(true);
 		this.settingsBtnDn = false;
 		this.validItem = false;
@@ -151,23 +178,23 @@ class MenuItems {
 	// * METHODS * //
 
 	mainMenu() {
-		menu.newMenu({ hide: !this.settingsBtnDn && ppt.settingsShow && this.validItem });
+		libMenu.newMenu({ hide: !this.settingsBtnDn && libSet.settingsShow && this.validItem });
 
 		// * Top menu options Library submenu
-		menu.newItem({
+		libMenu.newItem({
 			str: 'Library options menu',
 			func: () => {
-				topMenuOptions(state.mouse_x, state.mouse_y, true, false, false, true);
+				grm.topMenu.topMenuOptions(grm.ui.state.mouse_x, grm.ui.state.mouse_y, true, false, false, true);
 			},
 			separator: () => true
 		});
 
-		if (pref.layout === 'default' && pref.theme.startsWith('custom')) {
-			menu.newItem({
+		if (grSet.layout === 'default' && grSet.theme.startsWith('custom')) {
+			libMenu.newItem({
 				str: 'Edit custom theme',
 				func: () => {
-					displayCustomThemeMenu = true;
-					initCustomThemeMenu(false, false, 'lib_bg');
+					grm.ui.displayCustomThemeMenu = true;
+					grm.cthMenu.initCustomThemeMenu(false, false, 'lib_bg');
 					window.Repaint();
 				},
 				separator: () => true
@@ -175,36 +202,36 @@ class MenuItems {
 		}
 
 		// * Library layout switcher
-		menu.newItem({
-			str: pref.libraryLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal',
+		libMenu.newItem({
+			str: grSet.libraryLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal',
 			func: () => {
-				pref.libraryLayout = pref.libraryLayout === 'normal' ? 'full' : 'normal';
-				displayPlaylist = pref.libraryLayout === 'split';
-				g_properties.auto_collapse = false;
-				playlist.expand_header();
-				if (pref.panelWidthAuto) {
-					initPanelWidthAuto();
+				grSet.libraryLayout = grSet.libraryLayout === 'normal' ? 'full' : 'normal';
+				grm.ui.displayPlaylist = grSet.libraryLayout === 'split';
+				plSet.auto_collapse = false;
+				pl.playlist.header_expand();
+				if (grSet.panelWidthAuto) {
+					grm.ui.initPanelWidthAuto();
 				}
-				initLibraryLayout();
+				grm.ui.initLibraryLayout();
 			},
-			hide: () => pref.layout === 'default' && pref.libraryDesign === 'flowMode' || pref.layout !== 'default'
+			hide: () => grSet.layout === 'default' && grSet.libraryDesign === 'flowMode' || grSet.layout !== 'default'
 		});
-		menu.newItem({
-			str: pref.libraryLayout === 'split' ? 'Change layout to full' : 'Change layout to split',
+		libMenu.newItem({
+			str: grSet.libraryLayout === 'split' ? 'Change layout to full' : 'Change layout to split',
 			func: () => {
-				pref.libraryLayout = pref.libraryLayout === 'split' ? 'full' : 'split';
-				displayPlaylist = pref.libraryLayout === 'split';
-				if (pref.panelWidthAuto) {
-					initPanelWidthAuto();
+				grSet.libraryLayout = grSet.libraryLayout === 'split' ? 'full' : 'split';
+				grm.ui.displayPlaylist = grSet.libraryLayout === 'split';
+				if (grSet.panelWidthAuto) {
+					grm.ui.initPanelWidthAuto();
 				}
-				initLibraryLayout();
+				grm.ui.initLibraryLayout();
 			},
 			separator: () => true,
-			hide: () => pref.layout === 'default' && pref.libraryDesign === 'flowMode' || pref.layout !== 'default'
+			hide: () => grSet.layout === 'default' && grSet.libraryDesign === 'flowMode' || grSet.layout !== 'default'
 		});
 
 		if (this.validItem) {
-			['Add to current playlist\tShift+enter', 'Send to new playlist\tCtrl+enter', 'Show now playing'].forEach((v, i) => menu.newItem({
+			['Add to current playlist\tShift+enter', 'Send to new playlist\tCtrl+enter', 'Show now playing'].forEach((v, i) => libMenu.newItem({
 				str: v,
 				func: () => this.setPlaylist(i),
 				flags: this.getPaylistFlag(i),
@@ -212,146 +239,146 @@ class MenuItems {
 			}));
 		}
 
-		if (this.validItem && ppt.albumArtOptionsShow) {
-			menu.newItem({
-				str: !panel.imgView ? 'Show album art' : (!ppt.facetView ? 'Show tree' : 'Show text'),
+		if (this.validItem && libSet.albumArtOptionsShow) {
+			libMenu.newItem({
+				str: !lib.panel.imgView ? 'Show album art' : (!libSet.facetView ? 'Show tree' : 'Show text'),
 				func: () => this.setPlaylist(3),
-				flags: !panel.pn_h_auto || ppt.pn_h != ppt.pn_h_min ? MF_STRING_LIB : MF_GRAYED_LIB,
-				separator: !panel.imgView //|| this.show_context && !ui.style.topBarShow
+				flags: !lib.panel.pn_h_auto || libSet.pn_h != libSet.pn_h_min ? LIB_MF_STRING : LIB_MF_GRAYED,
+				separator: !lib.panel.imgView //|| this.show_context && !lib.ui.style.topBarShow
 			});
 		}
 
-		if (this.validItem && panel.imgView) {
-			menu.newItem({
-				str: ppt.artId != 4 ? 'Show artists' : 'Show albums',
-				func: () => { ppt.artId = ppt.artId != 4 ? 4 : 0; this.setPlaylist(4); },
-				separator: this.show_context && !ui.style.topBarShow
+		if (this.validItem && lib.panel.imgView) {
+			libMenu.newItem({
+				str: libSet.artId != 4 ? 'Show artists' : 'Show albums',
+				func: () => { libSet.artId = libSet.artId != 4 ? 4 : 0; this.setPlaylist(4); },
+				separator: this.show_context && !lib.ui.style.topBarShow
 			});
 		}
 
 		for (let i = 0; i < 2; i++) {
-			menu.newItem({
+			libMenu.newItem({
 				str: [this.items.Count ? 'Refresh selected images...' : 'Refresh images: none selected', 'Refresh all images...'][i],
 				func: () => this.setMode(i),
-				flags: () => panel.imgView && !i && this.items.Count || !panel.imgView || i ? MF_STRING_LIB : MF_GRAYED_LIB,
-				hide: () => !this.validItem || !ppt.albumArtShow
+				flags: () => lib.panel.imgView && !i && this.items.Count || !lib.panel.imgView || i ? LIB_MF_STRING : LIB_MF_GRAYED,
+				hide: () => !this.validItem || !libSet.albumArtShow
 			});
 		}
 
-		if (this.validItem && !panel.imgView) {
-			['Collapse all\tNum -', 'Expand\tNum *'].forEach((v, i) => menu.newItem({
+		if (this.validItem && !lib.panel.imgView) {
+			['Collapse all\tNum -', 'Expand\tNum *'].forEach((v, i) => libMenu.newItem({
 				str: v,
 				func: () => this.setTreeState(i),
-				flags: !i || i == 1 && this.expandable ? MF_STRING_LIB : MF_GRAYED_LIB,
-				separator: i == 1 && this.show_context && (!ppt.settingsShow && !ppt.searchShow && !ppt.filterShow || this.shift)
+				flags: !i || i == 1 && this.expandable ? LIB_MF_STRING : LIB_MF_GRAYED,
+				separator: i == 1 && this.show_context && (!libSet.settingsShow && !libSet.searchShow && !libSet.filterShow || this.shift)
 			}));
 		}
 
-		menu.newMenu({ menuName: 'Settings', hide: !this.show_context || ui.style.topBarShow && !this.shift });
+		libMenu.newMenu({ menuName: 'Settings', hide: !this.show_context || lib.ui.style.topBarShow && !this.shift });
 
 		const mainMenu = () => this.show_context ? 'Settings' : 'baseMenu';
 
-		menu.newMenu({ menuName: 'Views', separator: false });
-		panel.menu.forEach((v, i) => menu.newItem({
+		libMenu.newMenu({ menuName: 'Views', separator: false });
+		lib.panel.menu.forEach((v, i) => libMenu.newItem({
 			menuName: 'Views',
 			str: v,
 			func: () => this.setView(i),
-			checkRadio: i == ppt.viewBy,
-			separator: i > panel.menu.length - 3
+			checkRadio: i == libSet.viewBy,
+			separator: i > lib.panel.menu.length - 3
 		}));
 
 		const d = {};
 		this.getSortData(d);
-		menu.newMenu({ menuName: d.menuName, flags: d.sortType ? MF_STRING_LIB : MF_GRAYED_LIB, separator: this.show_context });
+		libMenu.newMenu({ menuName: d.menuName, flags: d.sortType ? LIB_MF_STRING : LIB_MF_GRAYED, separator: this.show_context });
 		if (d.sortType) {
-			menu.newItem({
+			libMenu.newItem({
 				menuName: d.menuName,
 				str: ['', 'By year', 'Albums by year'][d.sortType],
-				flags: MF_GRAYED_LIB,
+				flags: LIB_MF_GRAYED,
 				separator: true
 			});
 			const menuSort = [[], ['Default', 'Ascending', 'Descending'], ['Default', 'Ascending (hide year)', 'Ascending (show year)', 'Descending (hide year)', 'Descending (show year)', 'Action: year after album', 'Action: year before album']][d.sortType];
-			menuSort.forEach((v, i) => menu.newItem({
+			menuSort.forEach((v, i) => libMenu.newItem({
 				menuName: d.menuName,
 				str: v,
 				func: () => this.sortByDate(i, d),
-				flags: i > 4 && (d.sortIX == 1 || d.sortIX == 3) ? MF_GRAYED_LIB : MF_STRING_LIB,
-				checkRadio: d.sortIX == -1 && !i || i == d.sortIX || d.sortType == 2 && i == 5 && !ppt.yearBeforeAlbum || i == 6 && ppt.yearBeforeAlbum,
+				flags: i > 4 && (d.sortIX == 1 || d.sortIX == 3) ? LIB_MF_GRAYED : LIB_MF_STRING,
+				checkRadio: d.sortIX == -1 && !i || i == d.sortIX || d.sortType == 2 && i == 5 && !libSet.yearBeforeAlbum || i == 6 && libSet.yearBeforeAlbum,
 				separator: i == 0 || d.sortType == 2 && (i == 2 || i == 4)
 			}));
 		}
 
-		menu.newItem({
+		libMenu.newItem({
 			str: 'Write theme to tags',
 			func: () => WriteThemeTags()
 		});
 
-		const meta_handler = new MetaHandler();
-		menu.newItem({
+		const meta_handler = new PlaylistMetaHandler();
+		libMenu.newItem({
 			str: 'Write album statistics to tags',
 			func: () => meta_handler.write_album_stats_to_tags()
 		});
 
-		menu.newItem({
+		libMenu.newItem({
 			menuName: 'Views',
 			str: 'Configure views...',
-			func: () => panel.open('views')
+			func: () => lib.panel.open('views')
 		});
 
-		menu.newMenu({ menuName: 'Statistics', appendTo: mainMenu(), separator: true });
-		[pop.countsRight && !panel.imgView ? ['None', '# Tracks', '# Items'][pop.nodeCounts] : 'None', 'Bitrate', 'Duration', 'Total size', 'Rating', 'Popularity', 'Date', 'Playback queue', 'Playcount', 'First played', 'Last played', 'Added', 'Configure statistics...'].forEach((v, i) => menu.newItem({
+		libMenu.newMenu({ menuName: 'Statistics', appendTo: mainMenu(), separator: true });
+		[lib.pop.countsRight && !lib.panel.imgView ? ['None', '# Tracks', '# Items'][lib.pop.nodeCounts] : 'None', 'Bitrate', 'Duration', 'Total size', 'Rating', 'Popularity', 'Date', 'Playback queue', 'Playcount', 'First played', 'Last played', 'Added', 'Configure statistics...'].forEach((v, i) => libMenu.newItem({
 			menuName: 'Statistics',
 			str: v,
 			func: () => this.setStatistics(i),
-			checkRadio: i == ppt.itemShowStatistics,
+			checkRadio: i == libSet.itemShowStatistics,
 			separator: !i || i == 7 || i == 11
 		}));
 
-		menu.newMenu({ menuName: 'Album art', appendTo: mainMenu(), hide: !panel.imgView });
-		['Front', 'Back', 'Disc', 'Icon', 'Artist', 'Group: auto', 'Group: top level', 'Group: two levels', 'Change group name...', 'Configure album art...'].forEach((v, i) => menu.newItem({
+		libMenu.newMenu({ menuName: 'Album art', appendTo: mainMenu(), hide: !lib.panel.imgView });
+		['Front', 'Back', 'Disc', 'Icon', 'Artist', 'Group: auto', 'Group: top level', 'Group: two levels', 'Change group name...', 'Configure album art...'].forEach((v, i) => libMenu.newItem({
 			menuName: 'Album art',
 			str: v,
 			func: () => this.setAlbumart(i),
-			flags: i == 8 && (panel.folderView || ppt.rootNode != 3) ? MF_GRAYED_LIB : MF_STRING_LIB,
-			checkRadio: i == ppt.artId || i - 5 == ppt.albumArtGrpLevel,
+			flags: i == 8 && (lib.panel.folderView || libSet.rootNode != 3) ? LIB_MF_GRAYED : LIB_MF_STRING,
+			checkRadio: i == libSet.artId || i - 5 == libSet.albumArtGrpLevel,
 			separator: i == 4 || i == 7 || i == 8
 		}));
 
-		menu.newMenu({ menuName: 'Quick setup', appendTo: mainMenu() });
+		libMenu.newMenu({ menuName: 'Quick setup', appendTo: mainMenu() });
 
-		['Georgia-Reborn'].forEach((v, i) => menu.newItem({
+		['Georgia-Reborn'].forEach((v, i) => libMenu.newItem({
 			menuName: 'Quick setup',
 			str: v,
-			func: () => panel.set('quickSetup', 12),
-			flags: () => i != 10 || this.items.Count ? MF_STRING_LIB : MF_GRAYED_LIB,
+			func: () => lib.panel.set('quickSetup', 12),
+			flags: () => i != 10 || this.items.Count ? LIB_MF_STRING : LIB_MF_GRAYED,
 			separator: i == 0
 		}));
 
-		['Traditional', 'Modern', 'Ultra-Modern', 'Clean', 'Facet'].forEach((v, i) => menu.newItem({
+		['Traditional', 'Modern', 'Ultra-Modern', 'Clean', 'Facet'].forEach((v, i) => libMenu.newItem({
 			menuName: 'Quick setup',
 			str: v,
-			func: () => panel.set('quickSetup', i),
+			func: () => lib.panel.set('quickSetup', i),
 			separator: i == 3 || i == 4
 		}));
 
-		if (ppt.albumArtOptionsShow) {
-			['Covers [labels right]', 'Covers [labels bottom]', 'Covers [labels blend]', 'Artist photos [labels right]', pref.libraryThumbnailSize === 'auto' ? 'Album art size + (disable thumbnail auto-size)' : 'Album art size +', pref.libraryThumbnailSize === 'auto' ? 'Album art size - (disable thumbnail auto-size)' : 'Album art size -', 'Flow mode', 'Always load preset with current \'view\' pattern'].forEach((v, i) => menu.newItem({
+		if (libSet.albumArtOptionsShow) {
+			['Covers [labels right]', 'Covers [labels bottom]', 'Covers [labels blend]', 'Artist photos [labels right]', grSet.libraryThumbnailSize === 'auto' ? 'Album art size + (disable thumbnail auto-size)' : 'Album art size +', grSet.libraryThumbnailSize === 'auto' ? 'Album art size - (disable thumbnail auto-size)' : 'Album art size -', 'Flow mode', 'Always load preset with current \'view\' pattern'].forEach((v, i) => libMenu.newItem({
 				menuName: 'Quick setup',
 				str: v,
-				func: () => panel.set('quickSetup', i + 5),
-				flags: i == 4 && (ppt.thumbNailSize == 7 || !panel.imgView || ppt.albumArtFlowMode || pref.libraryThumbnailSize === 'auto') || i == 5 && (ppt.thumbNailSize == 0 || !panel.imgView || ppt.albumArtFlowMode || pref.libraryThumbnailSize === 'auto') ? MF_GRAYED_LIB : MF_STRING_LIB,
-				checkItem: i == 7 && ppt.presetLoadCurView,
+				func: () => lib.panel.set('quickSetup', i + 5),
+				flags: i == 4 && (libSet.thumbNailSize == 7 || !lib.panel.imgView || libSet.albumArtFlowMode || grSet.libraryThumbnailSize === 'auto') || i == 5 && (libSet.thumbNailSize == 0 || !lib.panel.imgView || libSet.albumArtFlowMode || grSet.libraryThumbnailSize === 'auto') ? LIB_MF_GRAYED : LIB_MF_STRING,
+				checkItem: i == 7 && libSet.presetLoadCurView,
 				separator: i == 2 || i == 3 || i == 5 || i == 6
 			}));
 		}
 
 		// ! Source panel and playlist feature is not supported in a single panel/one library i.e in Georgia/Georgia-ReBORN
-		menu.newMenu({ menuName: 'Source', appendTo: mainMenu(), separator: true });
-		['Library'/*, 'Panel', 'Playlist' */].forEach((v, i) => menu.newItem({
+		libMenu.newMenu({ menuName: 'Source', appendTo: mainMenu(), separator: true });
+		['Library'/*, 'Panel', 'Playlist' */].forEach((v, i) => libMenu.newItem({
 			menuName: 'Source',
 			str: v,
 			func: () => this.setSource(i),
-			checkRadio: i == (ppt.libSource - 1 < 0 || ppt.fixedPlaylist ? 2 : ppt.libSource - 1),
+			checkRadio: i == (libSet.libSource - 1 < 0 || libSet.fixedPlaylist ? 2 : libSet.libSource - 1),
 			separator: i == 2
 		}));
 
@@ -359,86 +386,86 @@ class MenuItems {
 		// 	menuName: 'Source',
 		// 	str: 'Select source panel',
 		// 	func: () => this.setSourcePanel(),
-		// 	flags: ppt.libSource != 2 ? MF_GRAYED_LIB : MF_STRING_LIB,
+		// 	flags: libSet.libSource != 2 ? MF_GRAYED_LIB : MF_STRING_LIB,
 		// 	separator: true
 		// });
 
-		menu.newMenu({ menuName: 'Playlist', appendTo: 'Source' });
-		menu.newItem({
+		libMenu.newMenu({ menuName: 'Playlist', appendTo: 'Source' });
+		libMenu.newItem({
 			menuName: 'Playlist',
 			str: 'Active playlist',
 			func: () => { this.setActivePlaylist(); this.setSource(2) },
-			checkRadio: ppt.libSource == 0,
+			checkRadio: libSet.libSource == 0,
 			separator: true
 		});
 
 		const pl_no = Math.ceil(this.pl.length / 30);
-		const pl_ix = ppt.fixedPlaylist ? plman.FindPlaylist(ppt.fixedPlaylistName) : -1;
+		const pl_ix = libSet.fixedPlaylist ? plman.FindPlaylist(libSet.fixedPlaylistName) : -1;
 		for (let j = 0; j < pl_no; j++) {
 			const n = `# ${j * 30 + 1} - ${Math.min(this.pl.length, 30 + j * 30)}${30 + j * 30 > pl_ix && ((j * 30) - 1) < pl_ix ? '  >>>' : ''}`;
-			menu.newMenu({ menuName: n, appendTo: 'Playlist' });
+			libMenu.newMenu({ menuName: n, appendTo: 'Playlist' });
 			for (let i = j * 30; i < Math.min(this.pl.length, 30 + j * 30); i++) {
-				menu.newItem({
+				libMenu.newItem({
 					menuName: n,
 					str: this.pl[i].menuName,
 					func: () => { this.setFixedPlaylist(i); this.setSource(2) },
-					checkRadio: i == pl_ix && ppt.libSource != 0
+					checkRadio: i == pl_ix && libSet.libSource != 0
 				});
 			}
 		}
 
-		menu.newMenu({ menuName: 'Refresh', appendTo: mainMenu(), separator: true });
-		for (let i = 0; i < 5; i++) { menu.newItem({
+		libMenu.newMenu({ menuName: 'Refresh', appendTo: mainMenu(), separator: true });
+		for (let i = 0; i < 5; i++) { libMenu.newItem({
 			menuName: 'Refresh',
 			str: ['Refresh selected images...', 'Refresh all images...', 'Reset zoom...', 'Refresh library...', 'Reload...'][i],
 			func: () => this.setMode(i),
-			flags: panel.imgView && !i && this.items.Count || !panel.imgView || i ? MF_STRING_LIB : MF_GRAYED_LIB,
-			separator: i == 1 && panel.imgView,
-			hide: i < 2 && !panel.imgView || i == 3 && ppt.libAutoSync
+			flags: lib.panel.imgView && !i && this.items.Count || !lib.panel.imgView || i ? LIB_MF_STRING : LIB_MF_GRAYED,
+			separator: i == 1 && lib.panel.imgView,
+			hide: i < 2 && !lib.panel.imgView || i == 3 && libSet.libAutoSync
 		}); }
 
-		for (let i = 0; i < 2; i++) { menu.newItem({
+		for (let i = 0; i < 2; i++) { libMenu.newItem({
 			menuName: mainMenu(),
-			str: [popUpBox.ok ? 'Options...' : 'Options: see console', 'Configure...'][i],
-			func: () => !i ? panel.open() : window.EditScript(),
+			str: [lib.popUpBox.ok ? 'Options...' : 'Options: see console', 'Configure...'][i],
+			func: () => !i ? lib.panel.open() : window.EditScript(),
 			separator: !i && this.shift,
-			hide: !this.settingsBtnDn && ppt.settingsShow && this.validItem && !this.shift || i && !this.shift
+			hide: !this.settingsBtnDn && libSet.settingsShow && this.validItem && !this.shift || i && !this.shift
 		}); }
 	}
 
 	filterMenu() {
-		fMenu.newMenu({});
-		for (let i = 0; i < panel.filter.menu.length + 1; i++) { fMenu.newItem({
-			str: i != panel.filter.menu.length ? (!i ? 'No filter' : panel.filter.menu[i]) : 'Auto-manage scroll',
-			func: () => panel.set('Filter', i),
-			checkItem: i == panel.filter.menu.length && !ppt.reset,
-			checkRadio: i == ppt.filterBy && i < panel.filter.menu.length,
-			separator: !i || i == panel.filter.menu.length - 1 || i == panel.filter.menu.length
+		libFMenu.newMenu({});
+		for (let i = 0; i < lib.panel.filter.menu.length + 1; i++) { libFMenu.newItem({
+			str: i != lib.panel.filter.menu.length ? (!i ? 'No filter' : lib.panel.filter.menu[i]) : 'Auto-manage scroll',
+			func: () => lib.panel.set('Filter', i),
+			checkItem: i == lib.panel.filter.menu.length && !libSet.reset,
+			checkRadio: i == libSet.filterBy && i < lib.panel.filter.menu.length,
+			separator: !i || i == lib.panel.filter.menu.length - 1 || i == lib.panel.filter.menu.length
 		}); }
-		fMenu.newItem({
+		libFMenu.newItem({
 			str: 'Configure filters...',
-			func: () => panel.open('filters')
+			func: () => lib.panel.open('filters')
 		});
 	}
 
 	searchHistoryMenu() {
-		sMenu.newMenu({});
-		for (let i = 0; i < search.menu.length + 2; i++) {
-			sMenu.newItem({
-				str: !i ? 'Query syntax help' : i < search.menu.length + 1 ? search.menu[i - 1].search : 'Clear history',
+		libSMenu.newMenu({});
+		for (let i = 0; i < lib.search.menu.length + 2; i++) {
+			libSMenu.newItem({
+				str: !i ? 'Query syntax help' : i < lib.search.menu.length + 1 ? lib.search.menu[i - 1].search : 'Clear history',
 				func: () => this.setSearchHistory(i),
-				flags: i != 1 || search.menu.length ? MF_STRING_LIB : MF_GRAYED_LIB,
-				separator: !i || search.menu.length && i == search.menu.length
+				flags: i != 1 || lib.search.menu.length ? LIB_MF_STRING : LIB_MF_GRAYED,
+				separator: !i || lib.search.menu.length && i == lib.search.menu.length
 			});
 		}
 	}
 
 	searchMenu() {
-		searchMenu.newMenu({});
-		['Copy', 'Cut', 'Paste'].forEach((v, i) => searchMenu.newItem({
+		libSearchMenu.newMenu({});
+		['Copy', 'Cut', 'Paste'].forEach((v, i) => libSearchMenu.newItem({
 			str: v,
 			func: () => this.setEdit(i),
-			flags: () => search.start == search.end && i < 2 || i == 2 && !search.paste ? MF_GRAYED_LIB : MF_STRING_LIB,
+			flags: () => lib.search.start == lib.search.end && i < 2 || i == 2 && !lib.search.paste ? LIB_MF_GRAYED : LIB_MF_STRING,
 			separator: i == 1
 		}));
 	}
@@ -448,18 +475,18 @@ class MenuItems {
 		const plnIsValid = pln != -1 && pln < plman.PlaylistCount;
 		const plLockAdd = plnIsValid ? plman.GetPlaylistLockedActions(pln).includes('AddItems') : false;
 		const plLockRemoveOrAdd = plnIsValid ? plman.GetPlaylistLockedActions(pln).includes('RemoveItems') || plman.GetPlaylistLockedActions(pln).includes('ReplaceItems') || plLockAdd : false;
-		return !i && !plLockRemoveOrAdd || i == 1 && !plLockAdd || i == 2 || i == 3 && pop.nowp != -1 ? MF_STRING_LIB : MF_GRAYED_LIB
+		return !i && !plLockRemoveOrAdd || i == 1 && !plLockAdd || i == 2 || i == 3 && lib.pop.nowp != -1 ? LIB_MF_STRING : LIB_MF_GRAYED
 	}
 
 	getSortData(d) {
-		d.name = panel.propNames[ppt.viewBy];
-		d.sortAlbumsByYearAfter = ['', `[$nodisplay{$sub(${tf.date},0#)}]%album%`, `[$nodisplay{$sub(${tf.date},0)}]%album%[ '['$sub(${tf.date},0)']']`, `[$nodisplay{$sub(4001,${tf.date})}]%album%`, `[$nodisplay{$sub(4002,${tf.date})}]%album%[ '['$sub(${tf.date},0)']']`];
-		d.sortAlbumsByYearBefore = ['', `[$nodisplay{$sub(${tf.date},0)}]%album%`, `$sub(${tf.date},0) - %album%`, `[$nodisplay{$sub(4003,${tf.date})}]%album%`, `[$nodisplay{$sub(4004,${tf.date})}]$sub(${tf.date},0) - %album%`];
-		d.sortAlbumByYear = ppt.yearBeforeAlbum ? d.sortAlbumsByYearBefore : d.sortAlbumsByYearAfter;
+		d.name = lib.panel.propNames[libSet.viewBy];
+		d.sortAlbumsByYearAfter = ['', `[$nodisplay{$sub(${grTF.date},0#)}]%album%`, `[$nodisplay{$sub(${grTF.date},0)}]%album%[ '['$sub(${grTF.date},0)']']`, `[$nodisplay{$sub(4001,${grTF.date})}]%album%`, `[$nodisplay{$sub(4002,${grTF.date})}]%album%[ '['$sub(${grTF.date},0)']']`];
+		d.sortAlbumsByYearBefore = ['', `[$nodisplay{$sub(${grTF.date},0)}]%album%`, `$sub(${grTF.date},0) - %album%`, `[$nodisplay{$sub(4003,${grTF.date})}]%album%`, `[$nodisplay{$sub(4004,${grTF.date})}]$sub(${grTF.date},0) - %album%`];
+		d.sortAlbumByYear = libSet.yearBeforeAlbum ? d.sortAlbumsByYearBefore : d.sortAlbumsByYearAfter;
 		d.sortIX = -1;
 		d.sortType = 0;
 		d.sortYear = ['', '$if2($nodisplay{$sub(%date%,0)},$nodisplay{-4000})', '$nodisplay{$sub(4000,%date%)}'];
-		d.value = ppt.get(d.name) || '';
+		d.value = libSet.get(d.name) || '';
 		d.valueLength = d.value.length;
 		let l = d.sortYear.length;
 		while (l-- && l) {
@@ -496,28 +523,28 @@ class MenuItems {
 	}
 
 	loadView(clearCache, view, sel) {
-		ui.getColours();
-		initLibraryColors();
-		themeColorAdjustments();
-		sbar.setCol();
-		but.createImages();
-		if (clearCache) img.clearCache();
+		lib.ui.getColours();
+		grm.theme.initLibraryColors();
+		grm.theme.themeColorAdjustments();
+		lib.sbar.setCol();
+		lib.but.createImages();
+		if (clearCache) libImg.clearCache();
 		if (sel !== undefined) {
-			const handle = sel >= panel.list.Count ? null : panel.list[sel];
-			panel.set('view', view, true);
+			const handle = sel >= lib.panel.list.Count ? null : lib.panel.list[sel];
+			lib.panel.set('view', view, true);
 			if (handle) {
-				const item = panel.list.Find(handle);
+				const item = lib.panel.list.Find(handle);
 				let idx = -1;
-				pop.tree.forEach((v, i) => {
-					if (pop.inRange(item, v.item)) idx = i;
+				lib.pop.tree.forEach((v, i) => {
+					if (lib.pop.inRange(item, v.item)) idx = i;
 				});
 				if (idx != -1) {
-					if (!panel.imgView) pop.focusShow(idx);
-					else pop.showItem(idx, 'focus');
+					if (!lib.panel.imgView) lib.pop.focusShow(idx);
+					else lib.pop.showItem(idx, 'focus');
 				}
 			}
-		} else panel.set('view', view, true);
-		but.refresh(true);
+		} else lib.panel.set('view', view, true);
+		lib.but.refresh(true);
 	}
 
 	playlists_changed() {
@@ -533,63 +560,63 @@ class MenuItems {
 		this.r_up = true;
 		this.expandable = false;
 		this.items = new FbMetadbHandleList();
-		this.ix = pop.get_ix(x, y, true, false);
+		this.ix = lib.pop.get_ix(x, y, true, false);
 		this.nm = '';
 		this.settingsBtnDn = settingsBtnDn;
-		this.shift = vk.k('shift');
+		this.shift = lib.vk.k('shift');
 		this.show_context = false;
 
-		let item = pop.tree[this.ix];
+		let item = lib.pop.tree[this.ix];
 		let row = -1;
-		const level = pop.tree.length > this.ix && this.ix != -1 ? !pop.inlineRoot ? item.level : Math.max(item.level - 1, 0) : -1;
+		const level = lib.pop.tree.length > this.ix && this.ix != -1 ? !lib.pop.inlineRoot ? item.level : Math.max(item.level - 1, 0) : -1;
 
-		this.validItem = this.settingsBtnDn ? false : !panel.imgView ? y < panel.tree.y + pop.rows * sbar.row.h + ui.y && pop.tree.length > this.ix && this.ix != -1 && (x < Math.round(ppt.treeIndent * level) + ui.icon.w + ppt.margin + ui.x && (!item.track || item.root) || pop.check_ix(item, x, y, true)) : pop.tree.length > this.ix && this.ix != -1;
+		this.validItem = this.settingsBtnDn ? false : !lib.panel.imgView ? y < lib.panel.tree.y + lib.pop.rows * lib.sbar.row.h + lib.ui.y && lib.pop.tree.length > this.ix && this.ix != -1 && (x < Math.round(libSet.treeIndent * level) + lib.ui.icon.w + libSet.margin + lib.ui.x && (!item.track || item.root) || lib.pop.check_ix(item, x, y, true)) : lib.pop.tree.length > this.ix && this.ix != -1;
 
-		if (!this.validItem && !this.settingsBtnDn && ppt.settingsShow && y > ui.y + panel.search.sp) {
-			this.ix = pop.row.i != -1 ? pop.row.i : !panel.imgView ? pop.tree.length - 1 : -1;
-			if (this.ix < pop.tree.length && this.ix != -1) {
-				item = pop.tree[this.ix];
+		if (!this.validItem && !this.settingsBtnDn && libSet.settingsShow && y > lib.ui.y + lib.panel.search.sp) {
+			this.ix = lib.pop.row.i != -1 ? lib.pop.row.i : !lib.panel.imgView ? lib.pop.tree.length - 1 : -1;
+			if (this.ix < lib.pop.tree.length && this.ix != -1) {
+				item = lib.pop.tree[this.ix];
 				this.validItem = true;
 			}
 		}
 
 		if (this.validItem) {
 			if (!item.sel) {
-				pop.clearSelected();
+				lib.pop.clearSelected();
 				item.sel = true;
 			}
-			pop.getTreeSel();
-			this.expandable = !(pop.trackCount(pop.tree[this.ix].item) > this.treeExpandLimit || pop.tree[this.ix].track || panel.imgView);
-			if (this.expandable && pop.tree.length) {
+			lib.pop.getTreeSel();
+			this.expandable = !(lib.pop.trackCount(lib.pop.tree[this.ix].item) > this.treeExpandLimit || lib.pop.tree[this.ix].track || lib.panel.imgView);
+			if (this.expandable && lib.pop.tree.length) {
 				let count = 0;
-				pop.tree.forEach((v, m, arr) => {
+				lib.pop.tree.forEach((v, m, arr) => {
 					if (m == this.ix || v.sel) {
 						if (row == -1 || m < row) {
 							row = m;
 							this.nm = (v.level ? arr[v.par].srt[0] : '') + v.srt[0];
 							this.nm = this.nm.toUpperCase();
 						}
-						count += pop.trackCount(v.item);
+						count += lib.pop.trackCount(v.item);
 						this.expandable = count <= this.treeExpandLimit;
 					}
 				});
 			}
-			this.items = pop.getHandleList();
+			this.items = lib.pop.getHandleList();
 			this.show_context = true;
-		} else this.items = pop.getHandleList('newItems');
+		} else this.items = lib.pop.getHandleList('newItems');
 
-		menu.load(x, y);
+		libMenu.load(x, y);
 		this.r_up = false;
 	}
 
 	setActivePlaylist() {
-		ppt.libSource = 0;
-		ppt.fixedPlaylist = false;
-		ppt.fixedPlaylistName = 'ActivePlaylist';
-		if (panel.imgView) img.clearCache();
-		lib.searchCache = {};
-		if (ppt.showSource) panel.setRootName();
-		lib.treeState(false, 2);
+		libSet.libSource = 0;
+		libSet.fixedPlaylist = false;
+		libSet.fixedPlaylistName = 'ActivePlaylist';
+		if (lib.panel.imgView) libImg.clearCache();
+		lib.lib.searchCache = {};
+		if (libSet.showSource) lib.panel.setRootName();
+		lib.lib.treeState(false, 2);
 	}
 
 	setAlbumart(i) {
@@ -600,26 +627,26 @@ class MenuItems {
 			case 2:
 			case 3:
 			case 4:
-				ppt.artId = i;
+				libSet.artId = i;
 				break;
 			case 5:
 			case 6:
 			case 7:
-				ppt.albumArtGrpLevel = i - 5;
+				libSet.albumArtGrpLevel = i - 5;
 				break;
 			case 8: {
-				const key = `${panel.grp[ppt.viewBy].type.trim()}${panel.lines}`;
+				const key = `${lib.panel.grp[libSet.viewBy].type.trim()}${lib.panel.lines}`;
 				const ok_callback = (status, input) => {
 					if (status != 'cancel') {
-						const albumArtGrpNames = $Lib.jsonParse(ppt.albumArtGrpNames, {});
+						const albumArtGrpNames = $Lib.jsonParse(libSet.albumArtGrpNames, {});
 						albumArtGrpNames[key] = input;
-						ppt.albumArtGrpNames = JSON.stringify(albumArtGrpNames);
+						libSet.albumArtGrpNames = JSON.stringify(albumArtGrpNames);
 					}
 				}
 				const caption = 'Change group name';
-				const def = img.groupField;
+				const def = libImg.groupField;
 				const prompt = 'Enter SINGULAR name, i.e. not plural\n\nName is pinned to VIEW PATTERN and GROUP LEVEL';
-				const fallback = popUpBox.isHtmlDialogSupported() ? popUpBox.input(caption, prompt, ok_callback, '', def) : true;
+				const fallback = lib.popUpBox.isHtmlDialogSupported() ? lib.popUpBox.input(caption, prompt, ok_callback, '', def) : true;
 				if (fallback) {
 					let ns = '';
 					let status = 'ok';
@@ -633,49 +660,49 @@ class MenuItems {
 				break;
 			}
 			case 9:
-				panel.open('albumArt');
+				lib.panel.open('albumArt');
 				break;
 		}
-		this.loadView(clearCache, ppt.albumArtViewBy);
+		this.loadView(clearCache, libSet.albumArtViewBy);
 	}
 
 	setEdit(i) {
 		switch (i) {
 			case 0:
-				search.on_char(vk.copy);
+				lib.search.on_char(lib.vk.copy);
 				break;
 			case 1:
-				search.on_char(vk.cut);
+				lib.search.on_char(lib.vk.cut);
 				break;
 			case 2:
-				search.on_char(vk.paste, true);
+				lib.search.on_char(lib.vk.paste, true);
 				break;
 		}
 	}
 
 	setFixedPlaylist(i) {
-		ppt.fixedPlaylistName = this.pl[i].name;
-		ppt.fixedPlaylist = true;
-		ppt.libSource = 1;
-		if (panel.imgView) img.clearCache();
-		if (ppt.showSource) panel.setRootName();
-		lib.searchCache = {};
-		lib.treeState(false, 2);
+		libSet.fixedPlaylistName = this.pl[i].name;
+		libSet.fixedPlaylist = true;
+		libSet.libSource = 1;
+		if (lib.panel.imgView) libImg.clearCache();
+		if (libSet.showSource) lib.panel.setRootName();
+		lib.lib.searchCache = {};
+		lib.lib.treeState(false, 2);
 	}
 
 	setMode(i) {
 		switch (i) {
 			case 0:
-				img.refresh(this.items);
+				libImg.refresh(this.items);
 				break;
 			case 1:
-				img.refresh('all');
+				libImg.refresh('all');
 				break;
 			case 2:
-				panel.zoomReset();
+				lib.panel.zoomReset();
 				break;
 			case 3:
-				lib.treeState(false, 2);
+				lib.lib.treeState(false, 2);
 				break;
 			case 4:
 				window.Reload();
@@ -686,63 +713,65 @@ class MenuItems {
 	setPlaylist(i) {
 		switch (i) {
 			// case 0: // The infamous 'Send to current playlist' func, deleting your entire playlist... >_<
-			// 	pop.load(pop.sel_items, true, false, pop.autoPlay.send, false, false);
-			// 	panel.treePaint();
-			// 	lib.treeState(false, ppt.rememberTree);
+			// 	lib.pop.load(lib.pop.sel_items, true, false, lib.pop.autoPlay.send, false, false);
+			// 	lib.panel.treePaint();
+			// 	lib.lib.treeState(false, libSet.rememberTree);
 			// 	break;
 			case 0:
-				pop.load(pop.sel_items, true, true, false, false, false);
-				lib.treeState(false, ppt.rememberTree);
-				if (pref.libraryPlaylistSwitch) {
-					btns.library.enabled = false;
-					btns.library.changeState(ButtonState.Default);
-					displayLibrary = false;
-					displayPlaylist = true;
-					if (!pref.playlistAutoScrollNowPlaying) playlist.on_size(ww, wh);
+				lib.pop.load(lib.pop.sel_items, true, true, false, false, false);
+				lib.lib.treeState(false, libSet.rememberTree);
+				if (grSet.addTracksPlaylistSwitch) {
+					grm.ui.btn.library.enabled = false;
+					grm.ui.btn.library.changeState(ButtonState.Default);
+					grm.ui.displayLibrary = false;
+					grm.ui.displayPlaylist = true;
+					if (!grSet.playlistAutoScrollNowPlaying) pl.call.on_size(grm.ui.ww, grm.ui.wh);
+					setTimeout(() => { pl.playlist.scrollbar.scroll_to_end(); }, 500);
 					window.Repaint();
 				}
 				break;
 			case 1:
-				pop.sendToNewPlaylist();
-				panel.treePaint();
-				lib.treeState(false, ppt.rememberTree);
-				if (pref.libraryPlaylistSwitch) {
-					btns.library.enabled = false;
-					btns.library.changeState(ButtonState.Default);
-					displayLibrary = false;
-					displayPlaylist = true;
+				lib.pop.sendToNewPlaylist();
+				lib.panel.treePaint();
+				lib.lib.treeState(false, libSet.rememberTree);
+				if (grSet.addTracksPlaylistSwitch) {
+					grm.ui.btn.library.enabled = false;
+					grm.ui.btn.library.changeState(ButtonState.Default);
+					grm.ui.displayLibrary = false;
+					grm.ui.displayPlaylist = true;
+					setTimeout(() => { pl.playlist.scrollbar.scroll_to_end(); }, 100);
 					window.Repaint();
 				}
 				break;
 			case 2:
-				pop.nowPlayingShow();
+				lib.pop.nowPlayingShow();
 				break;
 			case 3: {
-				lib.logTree();
-				pop.clearTree();
-				ppt.toggle('albumArtShow');
-				panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow;
-				this.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
+				lib.lib.logTree();
+				lib.pop.clearTree();
+				libSet.toggle('albumArtShow');
+				lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow;
+				this.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
 
 				// Need continuous repaint when using style "Blend" and switching from normal to full width
 				let blendedImgNeedsRepaint = true;
-				if (pref.styleBlend && blendedImgNeedsRepaint) {
+				if (grSet.styleBlend && blendedImgNeedsRepaint) {
 					RepaintWindowRectAreas();
 				}
 
-				setLibrarySize();
-				initLibraryColors();
-				themeColorAdjustments();
-				if (pref.libraryDesign === 'traditional') pop.createImages();
+				grm.ui.setLibrarySize();
+				grm.theme.initLibraryColors();
+				grm.theme.themeColorAdjustments();
+				if (grSet.libraryDesign === 'traditional') lib.pop.createImages();
 
 				blendedImgNeedsRepaint = false;
 				window.Repaint();
 				break;
 			}
 			case 4:
-				lib.logTree();
-				pop.clearTree();
-				this.loadView(false, !panel.imgView ? (ppt.artTreeSameView ? ppt.viewBy : ppt.treeViewBy) : (ppt.artTreeSameView ? ppt.viewBy : ppt.albumArtViewBy), pop.sel_items[0]);
+				lib.lib.logTree();
+				lib.pop.clearTree();
+				this.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
 				break;
 		}
 	}
@@ -755,16 +784,16 @@ class MenuItems {
 				$Lib.browser(`"${fn}`);
 				break;
 			}
-			case i < search.menu.length + 1:
-				panel.search.txt = search.menu[i - 1].search;
-				search.menu[i - 1].accessed = Date.now();
-				search.focus();
-				but.setSearchBtnsHide();
-				lib.search();
+			case i < lib.search.menu.length + 1:
+				lib.panel.search.txt = lib.search.menu[i - 1].search;
+				lib.search.menu[i - 1].accessed = Date.now();
+				lib.search.focus();
+				lib.but.setSearchBtnsHide();
+				lib.lib.search();
 				break;
-			case i == search.menu.length + 1:
-				search.menu = [];
-				ppt.searchHistory = JSON.stringify([]);
+			case i == lib.search.menu.length + 1:
+				lib.search.menu = [];
+				libSet.searchHistory = JSON.stringify([]);
 				break;
 		}
 	}
@@ -772,42 +801,42 @@ class MenuItems {
 	setSource(i) {
 		switch (i) {
 			case 0:
-				ppt.libSource = 1;
-				ppt.fixedPlaylist = false;
+				libSet.libSource = 1;
+				libSet.fixedPlaylist = false;
 				break;
 			case 1:
-				ppt.libSource = 2;
-				ppt.fixedPlaylist = false;
-				// if (ppt.panelSourceMsg && popUpBox.isHtmlDialogSupported()) popUpBox.message(); // Deactivated popup, let's not confuse the user since panel source is deactivated
+				libSet.libSource = 2;
+				libSet.fixedPlaylist = false;
+				// if (libSet.panelSourceMsg && lib.popUpBox.isHtmlDialogSupported()) lib.popUpBox.message(); // Deactivated popup, let's not confuse the user since panel source is deactivated
 				break;
 			case 2: {
-				const fixedPlaylistIndex = plman.FindPlaylist(ppt.fixedPlaylistName);
-				if (fixedPlaylistIndex != -1) ppt.fixedPlaylist = true;
-				ppt.libSource = ppt.fixedPlaylist ? 1 : 0;
-				// if (ppt.panelSourceMsg && popUpBox.isHtmlDialogSupported()) popUpBox.message(); // Deactivated popup, let's not confuse the user since panel source is deactivated
+				const fixedPlaylistIndex = plman.FindPlaylist(libSet.fixedPlaylistName);
+				if (fixedPlaylistIndex != -1) libSet.fixedPlaylist = true;
+				libSet.libSource = libSet.fixedPlaylist ? 1 : 0;
+				// if (libSet.panelSourceMsg && lib.popUpBox.isHtmlDialogSupported()) lib.popUpBox.message(); // Deactivated popup, let's not confuse the user since panel source is deactivated
 				break;
 			}
 		}
-		if (panel.imgView) img.clearCache();
-		lib.searchCache = {};
-		if (ppt.showSource) panel.setRootName();
-		lib.treeState(false, 2);
+		if (lib.panel.imgView) libImg.clearCache();
+		lib.lib.searchCache = {};
+		if (libSet.showSource) lib.panel.setRootName();
+		lib.lib.treeState(false, 2);
 
-		pref.librarySource = ppt.libSource;
-		pref.libraryFixedPlaylist = ppt.fixedPlaylist;
-		pref.libraryFixedPlaylistName = ppt.fixedPlaylistName;
+		grSet.librarySource = libSet.libSource;
+		grSet.libraryFixedPlaylist = libSet.fixedPlaylist;
+		grSet.libraryFixedPlaylistName = libSet.fixedPlaylistName;
 	}
 
 	setSourcePanel() {
 		const ok_callback = (status, input) => {
 			if (status != 'cancel') {
-				ppt.panelSelectionPlaylist = input;
+				libSet.panelSelectionPlaylist = input;
 			}
 		}
 		const caption = 'Panel source name';
-		const def = ppt.panelSelectionPlaylist;
+		const def = libSet.panelSelectionPlaylist;
 		const prompt = 'Enter source panel name\n\n• To get the name, go to the library tree panel to be used as source\n• Press shift + windows key and choose configure\n• Paste the panel name or id at the top into here\n• Name is also used for a cache playlist that remembers last open state\n• Edit source panel name if required\n• For more than one source panel, use pipe separator, e.g. Genre|Artist'
-		const fallback = popUpBox.isHtmlDialogSupported() ? popUpBox.input(caption, prompt, ok_callback, '', def) : true;
+		const fallback = lib.popUpBox.isHtmlDialogSupported() ? lib.popUpBox.input(caption, prompt, ok_callback, '', def) : true;
 		if (fallback) {
 			let ns = '';
 			let status = 'ok';
@@ -822,67 +851,67 @@ class MenuItems {
 
 	setStatistics(i) {
 		if (i < 12) {
-			const curStatisticsShown = ppt.itemShowStatistics > 0;
-			ppt.itemShowStatistics = i;
-			ppt.itemShowStatisticsLast = ppt.itemShowStatistics;
-			pop.tree.forEach(v => {
+			const curStatisticsShown = libSet.itemShowStatistics > 0;
+			libSet.itemShowStatistics = i;
+			libSet.itemShowStatisticsLast = libSet.itemShowStatistics;
+			lib.pop.tree.forEach(v => {
 				v.id = '';
 				v.count = ''; // has to reset parentheses if stats change off/on
 				delete v.statistics;
 				delete v._statistics;
 			});
-			pop.cache = {
+			lib.pop.cache = {
 				standard: {},
 				search: {},
 				filter: {}
 			}
-			pop.statisticsShow = ppt.itemShowStatistics;
-			pop.label = !ppt.labelStatistics || !pop.statisticsShow ? '' : pop.statistics[pop.statisticsShow];
-			const statisticsShown = ppt.itemShowStatistics > 0;
-			if (panel.imgView && curStatisticsShown != statisticsShown) {
-				img.labels = { statistics: ppt.itemShowStatistics ? 1 : 0 }
-				img.clearCache();
-				panel.set('view', ppt.viewBy);
+			lib.pop.statisticsShow = libSet.itemShowStatistics;
+			lib.pop.label = !libSet.labelStatistics || !lib.pop.statisticsShow ? '' : lib.pop.statistics[lib.pop.statisticsShow];
+			const statisticsShown = libSet.itemShowStatistics > 0;
+			if (lib.panel.imgView && curStatisticsShown != statisticsShown) {
+				libImg.labels = { statistics: libSet.itemShowStatistics ? 1 : 0 }
+				libImg.clearCache();
+				lib.panel.set('view', libSet.viewBy);
 			}
-			panel.treePaint();
-		} else panel.open('display');
+			lib.panel.treePaint();
+		} else lib.panel.open('display');
 	}
 
 	setTreeState(i) {
 		switch (i) {
 			case 0:
-				pop.collapseAll();
+				lib.pop.collapseAll();
 				break;
 			case 1:
-				pop.expand(this.ix, this.nm);
-				panel.setHeight(true);
+				lib.pop.expand(this.ix, this.nm);
+				lib.panel.setHeight(true);
 				break;
 		}
-		pop.checkAutoHeight();
+		lib.pop.checkAutoHeight();
 	}
 
 	setView(i) {
-		if (i < panel.menu.length) {
-			if (ppt.artTreeSameView) {
-				ppt.treeViewBy = i;
-				ppt.albumArtViewBy = i;
+		if (i < lib.panel.menu.length) {
+			if (libSet.artTreeSameView) {
+				libSet.treeViewBy = i;
+				libSet.albumArtViewBy = i;
 			} else {
-				if (!panel.imgView) ppt.treeViewBy = i;
-				else ppt.albumArtViewBy = i;
-				if (ppt.treeViewBy != ppt.albumArtViewBy) {
-					ppt.set(panel.imgView ? 'Panel Library - Tree' : 'Panel Library - Tree Image', null);
-					ppt.set(panel.imgView ? 'Panel Library - Tree Search' : 'Panel Library - Tree Image Search', null);
+				if (!lib.panel.imgView) libSet.treeViewBy = i;
+				else libSet.albumArtViewBy = i;
+				if (libSet.treeViewBy != libSet.albumArtViewBy) {
+					libSet.set(lib.panel.imgView ? 'Panel Library - Tree' : 'Panel Library - Tree Image', null);
+					libSet.set(lib.panel.imgView ? 'Panel Library - Tree Search' : 'Panel Library - Tree Image Search', null);
 				}
 			}
-			panel.set('view', i);
+			lib.panel.set('view', i);
 		}
 	}
 
 	sortByDate(i, d) {
 		let sortByIX = -1;
 		if (i > 4) {
-			ppt.toggle('yearBeforeAlbum');
-			d.sortAlbumByYear = ppt.yearBeforeAlbum ? d.sortAlbumsByYearBefore : d.sortAlbumsByYearAfter;
+			libSet.toggle('yearBeforeAlbum');
+			d.sortAlbumByYear = libSet.yearBeforeAlbum ? d.sortAlbumsByYearBefore : d.sortAlbumsByYearAfter;
 			sortByIX = d.sortIX;
 		} else sortByIX = i;
 		if (d.sortType == 1) {
@@ -899,38 +928,38 @@ class MenuItems {
 		}
 		if (d.sortType == 1 || sortByIX != -1) {
 			const expanded = [];
-			const ix = pop.get_ix(!panel.imgView ? 0 : img.panel.x + 1, (!panel.imgView || img.style.vertical ? panel.tree.y : panel.tree.x) + sbar.row.h / 2, true, false);
-			const curName = ix != -1 ? pop.tree[ix].name : '';
-			const scrollPos = sbar.scroll;
+			const ix = lib.pop.get_ix(!lib.panel.imgView ? 0 : libImg.panel.x + 1, (!lib.panel.imgView || libImg.style.vertical ? lib.panel.tree.y : lib.panel.tree.x) + lib.sbar.row.h / 2, true, false);
+			const curName = ix != -1 ? lib.pop.tree[ix].name : '';
+			const scrollPos = lib.sbar.scroll;
 			const selected = [];
-			pop.tree.forEach((v, i) => {
-				const level = !ppt.rootNode ? v.level : v.level - 1; // 1 level memory: more is less reliable
+			lib.pop.tree.forEach((v, i) => {
+				const level = !libSet.rootNode ? v.level : v.level - 1; // 1 level memory: more is less reliable
 				if (!level) {
 					if (v.child.length) expanded.push(i);
 					if (v.sel) selected.push(i);
 				}
 			});
-			ppt.set(d.name, d.value);
-			pop.clearTree();
-			panel.getViews();
-			this.setView(ppt.viewBy);
-			if (ix < pop.tree.length) {
-				const name = ix != -1 ? pop.tree[ix].name : '';
+			libSet.set(d.name, d.value);
+			lib.pop.clearTree();
+			lib.panel.getViews();
+			this.setView(libSet.viewBy);
+			if (ix < lib.pop.tree.length) {
+				const name = ix != -1 ? lib.pop.tree[ix].name : '';
 				if (name && name == curName) {
 					expanded.forEach(v => {
-						if (v < pop.tree.length) {
-							const item = pop.tree[v];
-							pop.branch(item, !!item.root, true);
+						if (v < lib.pop.tree.length) {
+							const item = lib.pop.tree[v];
+							lib.pop.branch(item, !!item.root, true);
 						}
 					});
 					selected.forEach(v => {
-						if (v < pop.tree.length) {
-							pop.tree[v].sel = true;
+						if (v < lib.pop.tree.length) {
+							lib.pop.tree[v].sel = true;
 						}
 					});
 				}
 			}
-			sbar.checkScroll(scrollPos, 'full', true);
+			lib.sbar.checkScroll(scrollPos, 'full', true);
 		}
 	}
 }

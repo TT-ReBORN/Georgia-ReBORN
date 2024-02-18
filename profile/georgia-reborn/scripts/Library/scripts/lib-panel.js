@@ -1,6 +1,6 @@
 'use strict';
 
-class Panel {
+class LibPanel {
 	constructor() {
 		const DT_CENTER = 0x00000001;
 		const DT_RIGHT = 0x00000002;
@@ -21,15 +21,15 @@ class Panel {
 		this.folder_view = 10;
 		this.folderView = false;
 		this.grp = [];
-		this.imgView = ppt.albumArtShow;
+		this.imgView = libSet.albumArtShow;
 		this.init = true;
 		this.l = DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX;
 		this.lc = DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_END_ELLIPSIS;
-		this.lines = ppt.albumArtGrpLevel ? ppt.albumArtGrpLevel : [2, 2, 2, 1, 1][ppt.artId];
+		this.lines = libSet.albumArtGrpLevel ? libSet.albumArtGrpLevel : [2, 2, 2, 1, 1][libSet.artId];
 		this.list = new FbMetadbHandleList();
 		this.menu = [];
-		this.paint_y = Math.floor(ui.style.topBarShow || !ppt.sbarShow ? ui.row.h * 1.2 : 0);
-		this.pn_h_auto = ppt.pn_h_auto && ppt.rootNode;
+		this.paint_y = Math.floor(lib.ui.style.topBarShow || !libSet.sbarShow ? lib.ui.row.h * 1.2 : 0);
+		this.pn_h_auto = libSet.pn_h_auto && libSet.rootNode;
 		this.propNames = [];
 		this.newView = true;
 		this.pos = -1;
@@ -44,8 +44,8 @@ class Panel {
 		this.sourceName = '';
 		this.statistics = false;
 		this.viewName = '';
-		this.zoomFilter = Math.max(ppt.zoomFilter / 100, 0.7);
-		ppt.zoomFilter = this.zoomFilter * 100;
+		this.zoomFilter = Math.max(libSet.zoomFilter / 100, 0.7);
+		libSet.zoomFilter = this.zoomFilter * 100;
 
 		this.filter = {
 			menu: [],
@@ -93,7 +93,7 @@ class Panel {
 			y: 0
 		};
 
-		ppt.get('Panel Library - Library Tree Dialog Box', JSON.stringify({
+		libSet.get('Panel Library - Library Tree Dialog Box', JSON.stringify({
 			w: 85,
 			h: 60,
 			def_w: 85,
@@ -103,64 +103,64 @@ class Panel {
 		}));
 
 		if (this.pn_h_auto) {
-			window.MaxHeight = window.MinHeight = ppt.pn_h;
+			window.MaxHeight = window.MinHeight = libSet.pn_h;
 		}
 
 		this.setTopBar();
 		this.getViews();
 		this.getFilters();
-		ppt.initialLoadFilters = false;
-		ppt.initialLoadViews = false;
-		this.getFields(ppt.viewBy, ppt.filterBy);
+		libSet.initialLoadFilters = false;
+		libSet.initialLoadViews = false;
+		this.getFields(libSet.viewBy, libSet.filterBy);
 	}
 
 	// * METHODS * //
 
 	calcText() {
-		ui.style.topBarShow = ppt.filterShow || ppt.searchShow || ppt.settingsShow;
-		if (!ui.style.topBarShow) return;
+		lib.ui.style.topBarShow = libSet.filterShow || libSet.searchShow || libSet.settingsShow;
+		if (!lib.ui.style.topBarShow) return;
 		$Lib.gr(1, 1, false, g => {
-			this.filter.w = ppt.filterShow ? g.CalcTextWidth(this.filter.mode[ppt.filterBy].name, this.filter.font) + (ppt.searchShow ? Math.max(ppt.margin * 2 + (!ppt.settingsBtnStyle ? 2 : 0), 12) : 0) : 0;
-			this.settings.w = ppt.settingsShow ? Math.round(g.MeasureString(this.settings.icon, this.settings.font, 0, 0, 500, 500).Width) : 0;
+			this.filter.w = libSet.filterShow ? g.CalcTextWidth(this.filter.mode[libSet.filterBy].name, this.filter.font) + (libSet.searchShow ? Math.max(libSet.margin * 2 + (!libSet.settingsBtnStyle ? 2 : 0), 12) : 0) : 0;
+			this.settings.w = libSet.settingsShow ? Math.round(g.MeasureString(this.settings.icon, this.settings.font, 0, 0, 500, 500).Width) : 0;
 		});
 		switch (true) {
-			case ppt.settingsShow && ppt.searchShow:
-				this.filter.x = ui.x + ui.w - ui.sz.marginSearch - this.filter.w - this.settings.w + this.settings.offset;
+			case libSet.settingsShow && libSet.searchShow:
+				this.filter.x = lib.ui.x + lib.ui.w - lib.ui.sz.marginSearch - this.filter.w - this.settings.w + this.settings.offset;
 				break;
-			case !ppt.searchShow:
-				this.filter.x = ui.x + ui.sz.marginSearch;
+			case !libSet.searchShow:
+				this.filter.x = lib.ui.x + lib.ui.sz.marginSearch;
 				break;
-			case !ppt.settingsShow:
-				this.filter.x = ui.x + ui.w - ui.sz.marginSearch - this.filter.w;
+			case !libSet.settingsShow:
+				this.filter.x = lib.ui.x + lib.ui.w - lib.ui.sz.marginSearch - this.filter.w;
 				break;
-			case !ppt.filterShow:
-				this.filter.x = ui.x + ui.w - ui.sz.marginSearch * 2 - this.settings.w + this.settings.offset;
+			case !libSet.filterShow:
+				this.filter.x = lib.ui.x + lib.ui.w - lib.ui.sz.marginSearch * 2 - this.settings.w + this.settings.offset;
 				break;
 		}
-		this.search.x = Math.round(ui.sz.marginSearch + ui.row.h);
-		this.search.w = ppt.searchShow && (ppt.filterShow || ppt.settingsShow) ? this.filter.x - this.search.x - 11 : ui.w - ui.sz.marginSearch - Math.round(ui.row.h * 0.75) - this.search.x + 1;
+		this.search.x = Math.round(lib.ui.sz.marginSearch + lib.ui.row.h);
+		this.search.w = libSet.searchShow && (libSet.filterShow || libSet.settingsShow) ? this.filter.x - this.search.x - 11 : lib.ui.w - lib.ui.sz.marginSearch - Math.round(lib.ui.row.h * 0.75) - this.search.x + 1;
 	}
 
 	clear(type) {
 		if (type == 'views' || type == 'both') {
 			for (let i = 0; i < 100; i++) {
-				ppt.set(`Panel Library - View ${$Lib.padNumber(i, 2)}: Name // Pattern`, null);
+				libSet.set(`Panel Library - View ${$Lib.padNumber(i, 2)}: Name // Pattern`, null);
 			}
 		}
 		if (type == 'filters' || type == 'both') {
-			for (let i = 0; i < 100; i++) ppt.set(`Panel Library - Filter ${$Lib.padNumber(i, 2)}: Name // Query`, null);
+			for (let i = 0; i < 100; i++) libSet.set(`Panel Library - Filter ${$Lib.padNumber(i, 2)}: Name // Query`, null);
 		}
 	}
 
 	forcePaint() {
-		window.RepaintRect(ui.x, ui.y, ui.w, ui.h, true);
+		window.RepaintRect(lib.ui.x, lib.ui.y, lib.ui.w, lib.ui.h, true);
 	}
 
 	getFields(view, filter, grpsOnly) {
-		this.newView = ppt.viewBy != view;
-		ppt.filterBy = filter;
-		ppt.viewBy = view;
-		const prefix = ppt.prefix.split('|');
+		this.newView = libSet.viewBy != view;
+		libSet.filterBy = filter;
+		libSet.viewBy = view;
+		const prefix = libSet.prefix.split('|');
 		let grps = [];
 		let ix1 = -1;
 		let ix2 = -1;
@@ -219,25 +219,25 @@ class Panel {
 		this.grp = this.grp.filter(removeEmpty);
 		this.filter.mode = this.filter.mode.filter(removeEmpty);
 		this.folder_view = this.grp.length - 1;
-		ppt.filterBy = Math.min(ppt.filterBy, this.filter.mode.length - 1);
-		ppt.viewBy = Math.min(ppt.viewBy, this.grp.length - 1);
-		this.folderView = ppt.viewBy == this.folder_view;
+		libSet.filterBy = Math.min(libSet.filterBy, this.filter.mode.length - 1);
+		libSet.viewBy = Math.min(libSet.viewBy, this.grp.length - 1);
+		this.folderView = libSet.viewBy == this.folder_view;
 		if (grpsOnly) return;
-		this.colMarker = this.grp[ppt.viewBy].type.includes('$colour{');
+		this.colMarker = this.grp[libSet.viewBy].type.includes('$colour{');
 		let valid = false;
-		if (ui.img.blurDark && ppt.text_hUse) {
-			const c = ppt.text_h.replace(/[^0-9.,-]/g, '').split(/[,-]/);
+		if (lib.ui.img.blurDark && libSet.text_hUse) {
+			const c = libSet.text_h.replace(/[^0-9.,-]/g, '').split(/[,-]/);
 			if (c.length == 3 || c.length == 4) valid = true;
 		}
-		this.textDiffHighlight = ui.img.blurDark && !ppt.highLightRow && !(ppt.text_hUse && valid) && ppt.highLightText && !this.colMarker;
+		this.textDiffHighlight = lib.ui.img.blurDark && !libSet.highLightRow && !(libSet.text_hUse && valid) && libSet.highLightText && !this.colMarker;
 		if (this.folderView) {
 			this.samePattern = !this.newView && !this.init;
 		} else {
-			this.sortBy = this.view = this.grp[ppt.viewBy].type;
+			this.sortBy = this.view = this.grp[libSet.viewBy].type;
 			this.samePattern = !this.colMarker && this.curPattern == this.view;
 		}
 		this.curPattern = this.view;
-		this.lines = ppt.albumArtGrpLevel ? ppt.albumArtGrpLevel : [2, 2, 2, 1, 1][ppt.artId];
+		this.lines = libSet.albumArtGrpLevel ? libSet.albumArtGrpLevel : [2, 2, 2, 1, 1][libSet.artId];
 
 		if (!this.folderView) {
 			this.statistics = /play(_|)count|auto(_|)rating/.test(this.view);
@@ -314,12 +314,12 @@ class Panel {
 				colView.forEach((v, i, arr) => {
 					if (i % 2 === 1) {
 						const colSplit = v.split(',');
-						arr[i] = `@!#${ui.setMarkerCol(colSplit[0]) || (!ppt.albumArtShow || ppt.albumArtLabelType != 4 ? ui.col.text : RGB(240, 240, 240))}\`${ui.setMarkerCol(colSplit[1]) || (ppt.highLightText ? ui.col.text_h : (!ppt.albumArtShow || ppt.albumArtLabelType != 4 ? ui.col.text : RGB(240, 240, 240)))}\`${ui.setMarkerCol(colSplit[2]) || (!ppt.albumArtShow || ppt.albumArtLabelType != 4 ? ui.col.textSel : ui.col.text)}@!#`;
+						arr[i] = `@!#${lib.ui.setMarkerCol(colSplit[0]) || (!libSet.albumArtShow || libSet.albumArtLabelType != 4 ? lib.ui.col.text : RGB(240, 240, 240))}\`${lib.ui.setMarkerCol(colSplit[1]) || (libSet.highLightText ? lib.ui.col.text_h : (!libSet.albumArtShow || libSet.albumArtLabelType != 4 ? lib.ui.col.text : RGB(240, 240, 240)))}\`${lib.ui.setMarkerCol(colSplit[2]) || (!libSet.albumArtShow || libSet.albumArtLabelType != 4 ? lib.ui.col.textSel : lib.ui.col.text)}@!#`;
 					}
 				});
 				this.view = colView.join('');
 			}
-			if (ui.col.counts) this.colMarker = true;
+			if (lib.ui.col.counts) this.colMarker = true;
 			if (this.colMarker) this.sortBy = this.sortBy.replace(/\$colour{.*?}/g, '');
 			while (this.sortBy.includes('$nodisplay{')) {
 				ix1 = this.sortBy.indexOf('$nodisplay{');
@@ -329,8 +329,8 @@ class Panel {
 			}
 			this.sortBy = this.sortBy.replace(RegExp(this.splitter, 'g'), '  ');
 		}
-		this.pn_h_auto = ppt.pn_h_auto && ppt.rootNode;
-		if (this.pn_h_auto) window.MaxHeight = window.MinHeight = ppt.pn_h;
+		this.pn_h_auto = libSet.pn_h_auto && libSet.rootNode;
+		if (this.pn_h_auto) window.MaxHeight = window.MinHeight = libSet.pn_h;
 		else {
 			window.MaxHeight = 2147483647;
 			window.MinHeight = 0;
@@ -342,7 +342,7 @@ class Panel {
 
 	getFilterIndex(arr, name, type) {
 		const findFilterIndex = arr.findIndex(v => v.name === name && v.type === type);
-		if (findFilterIndex != -1) ppt.filterBy = findFilterIndex;
+		if (findFilterIndex != -1) libSet.filterBy = findFilterIndex;
 		return findFilterIndex;
 	}
 
@@ -375,12 +375,12 @@ class Panel {
 		let pptNo = 0;
 		for (let i = 0; i < pt.length; i++) {
 			const v = pt[i];
-			const prop = ppt.initialLoadFilters ? ppt.get(v[0], v[1]) : ppt.get(v[0]);
+			const prop = libSet.initialLoadFilters ? libSet.get(v[0], v[1]) : libSet.get(v[0]);
 			if (!i) {
 				const defValid = prop && prop.endsWith('// Button Name');
 				dialogFilters.push(defValid ? prop : 'Panel Library - Filter // Button Name');
 				this.filter_ppt.push(defValid ? prop : 'Panel Library - Filter // Button Name');
-				if (!defValid) ppt.set(v[0], v[1]);
+				if (!defValid) libSet.set(v[0], v[1]);
 				pptNo++;
 			}
 			else {
@@ -396,7 +396,7 @@ class Panel {
 
 		let nm = '';
 		for (let i = pptNo + 1; i < 100; i++) {
-			nm = ppt.get(`Panel Library - Filter ${$Lib.padNumber(i, 2)}: Name // Query`);
+			nm = libSet.get(`Panel Library - Filter ${$Lib.padNumber(i, 2)}: Name // Query`);
 			if (nm) {
 				if (nm.includes('//') || nm.includes('/hide/')) dialogFilters.push(nm);
 				if (nm.includes('//')) this.filter_ppt.push(nm);
@@ -407,7 +407,7 @@ class Panel {
 		this.propNames = [];
 		for (let i = 1; i < 100; i++) {
 			const propName = `Panel Library - View ${$Lib.padNumber(i, 2)}: Name // Pattern`;
-			nm = ppt.get(propName);
+			nm = libSet.get(propName);
 			if (nm && nm.includes('//')) {
 				this.propNames.push(propName);
 			}
@@ -439,7 +439,7 @@ class Panel {
 
 	getViewIndex(arr, name, type) {
 		const findViewIndex = arr.findIndex(v => v.name.trim() === name && v.type.trimStart() === type);
-		if (findViewIndex != -1) ppt.viewBy = findViewIndex;
+		if (findViewIndex != -1) libSet.viewBy = findViewIndex;
 		return findViewIndex;
 	}
 
@@ -472,7 +472,7 @@ class Panel {
 
 		const names1 = ['Artist', 'Album Artist', 'Album', 'Album', 'Genre', 'Year'];
 		const names2 = ['Album', 'Album', 'Track', 'Track', 'Album', 'Album'];
-		const albumArtGrpNames = $Lib.jsonParse(ppt.albumArtGrpNames, {});
+		const albumArtGrpNames = $Lib.jsonParse(libSet.albumArtGrpNames, {});
 		this.defaultViews.forEach((v, i) => {
 			if (!albumArtGrpNames[`${v}1`]) albumArtGrpNames[`${v}1`] = names1[i];
 			if (!albumArtGrpNames[`${v}2`]) albumArtGrpNames[`${v}2`] = names2[i];
@@ -483,12 +483,12 @@ class Panel {
 		let pptNo = 0;
 		for (let i = 0; i < pt.length; i++) {
 			const v = pt[i];
-			const prop = ppt.initialLoadViews ? ppt.get(v[0], v[1]) : ppt.get(v[0]);
+			const prop = libSet.initialLoadViews ? libSet.get(v[0], v[1]) : libSet.get(v[0]);
 			if (!i) {
 				const defValid = prop && prop.endsWith('// Pattern Not Configurable');
 				dialogViews.push(defValid ? prop : 'Panel Library - View by Folder Structure // Pattern Not Configurable');
 				this.view_ppt.push(defValid ? prop : 'Panel Library - View by Folder Structure // Pattern Not Configurable');
-				if (!defValid) ppt.set(v[0], v[1]);
+				if (!defValid) libSet.set(v[0], v[1]);
 				pptNo++;
 			}
 			else if (prop) {
@@ -501,7 +501,7 @@ class Panel {
 		pt = undefined;
 		let nm = 0;
 		for (let i = pptNo + 1; i < 100; i++) {
-			nm = ppt.get(`Panel Library - View ${$Lib.padNumber(i, 2)}: Name // Pattern`);
+			nm = libSet.get(`Panel Library - View ${$Lib.padNumber(i, 2)}: Name // Pattern`);
 			if (nm) {
 				if (nm.includes('//') || nm.includes('/hide/')) dialogViews.push(nm);
 				if (nm.includes('//')) this.view_ppt.push(nm);
@@ -542,71 +542,71 @@ class Panel {
 				if (!keysPresent.includes(`${v}2`)) delete albumArtGrpNames[`${v}2`];
 			});
 		}
-		ppt.albumArtGrpNames = JSON.stringify(albumArtGrpNames);
+		libSet.albumArtGrpNames = JSON.stringify(albumArtGrpNames);
 	}
 
 	load() {
-		ppt.nodeLines = true;
-		ppt.nodeCounts = 1;
-		ppt.sbarButType = 0;
-		ppt.searchShow = true;
-		ppt.filterShow = true;
-		ppt.settingsShow = true;
-		if (libraryCanReload) window.Reload();
+		libSet.nodeLines = true;
+		libSet.nodeCounts = 1;
+		libSet.sbarButType = 0;
+		libSet.searchShow = true;
+		libSet.filterShow = true;
+		libSet.settingsShow = true;
+		if (grm.ui.libraryCanReload) window.Reload();
 	}
 
 	on_size(fontChanged) {
-		const ln_sp = ui.style.topBarShow && !ui.id.local ? Math.floor(ui.row.h * 0.1) : 0;
-		const sbarStyle = !ppt.sbarFullHeight ? 2 : 0;
+		const ln_sp = lib.ui.style.topBarShow && !lib.ui.id.local ? Math.floor(lib.ui.row.h * 0.1) : 0;
+		const sbarStyle = !libSet.sbarFullHeight ? 2 : 0;
 		this.calcText();
-		this.ln.x = ppt.countsRight || ppt.itemShowStatistics || ppt.rowStripes || ppt.fullLineSelection || pop.inlineRoot ? 0 : ui.sz.marginSearch;
-		this.ln.w = ui.w - this.ln.x - 1;
-		this.search.h = ui.style.topBarShow ? ui.row.h + (!ui.id.local ? ln_sp * 2 + ui.sz.margin + SCALE(7) : 0) : ppt.marginTopBottom;
+		this.ln.x = libSet.countsRight || libSet.itemShowStatistics || libSet.rowStripes || libSet.fullLineSelection || lib.pop.inlineRoot ? 0 : lib.ui.sz.marginSearch;
+		this.ln.w = lib.ui.w - this.ln.x - 1;
+		this.search.h = lib.ui.style.topBarShow ? lib.ui.row.h + (!lib.ui.id.local ? ln_sp * 2 + lib.ui.sz.margin + SCALE(7) : 0) : libSet.marginTopBottom;
 		this.search.sp = this.search.h - ln_sp;
-		let sp = ui.h - this.search.h - (ui.style.topBarShow ? ui.sz.margin / 2 : ppt.marginTopBottom);
-		this.rows = sp / ui.row.h;
+		let sp = lib.ui.h - this.search.h - (lib.ui.style.topBarShow ? lib.ui.sz.margin / 2 : libSet.marginTopBottom);
+		this.rows = sp / lib.ui.row.h;
 		this.rows = Math.floor(this.rows);
-		sp = ui.row.h * this.rows;
-		this.node_y = Math.round((ui.row.h - ui.sz.node) / 1.75);
-		this.filter.y = ui.y + sp + this.search.h - ui.row.h * 0.9;
+		sp = lib.ui.row.h * this.rows;
+		this.node_y = Math.round((lib.ui.row.h - lib.ui.sz.node) / 1.75);
+		this.filter.y = lib.ui.y + sp + this.search.h - lib.ui.row.h * 0.9;
 		if (this.init || fontChanged || !this.tree.y) this.tree.y = this.search.h;
-		this.paint_y = Math.floor(ui.style.topBarShow || !ppt.sbarShow ? this.search.h : 0);
+		this.paint_y = Math.floor(lib.ui.style.topBarShow || !libSet.sbarShow ? this.search.h : 0);
 
-		const sbar_top = !ui.sbar.type ? 5 : ui.style.topBarShow ? 3 : 0;
-		const sbar_bot = !ui.sbar.type ? 5 : 0;
-		this.sbar_o = [ui.sbar.arrowPad, Math.max(Math.floor(ui.sbar.but_w * 0.2), 2) + ui.sbar.arrowPad * 2, 0][ui.sbar.type];
-		const vertical = !ppt.albumArtFlowMode || ui.h - this.search.h > ui.w - ui.sbar.w;
+		const sbar_top = !lib.ui.sbar.type ? 5 : lib.ui.style.topBarShow ? 3 : 0;
+		const sbar_bot = !lib.ui.sbar.type ? 5 : 0;
+		this.sbar_o = [lib.ui.sbar.arrowPad, Math.max(Math.floor(lib.ui.sbar.but_w * 0.2), 2) + lib.ui.sbar.arrowPad * 2, 0][lib.ui.sbar.type];
+		const vertical = !libSet.albumArtFlowMode || lib.ui.h - this.search.h > lib.ui.w - lib.ui.sbar.w;
 		switch (true) {
 			case !this.imgView || vertical: {
-				this.sbar_x = ui.x + ui.w - ui.sbar.sp - (RES_4K ? 48 : 18);
-				const top_corr = [this.sbar_o - (ui.sbar.but_h - ui.sbar.but_w) / 2, this.sbar_o, 0][ui.sbar.type];
-				const bot_corr = [(ui.sbar.but_h - ui.sbar.but_w) / 2 - this.sbar_o, -this.sbar_o, 0][ui.sbar.type];
-				let sbar_y = ui.y + (ui.sbar.type < sbarStyle || ui.style.topBarShow ? this.search.sp + 1 : 0) + sbar_top + top_corr;
-				let sbar_h = ui.sbar.type < sbarStyle ? sp + 1 - sbar_top - sbar_bot + bot_corr * 2 - ui.sz.margin : ui.y + ui.h - sbar_y - sbar_bot + bot_corr - ui.sz.margin;
-				if (ui.sbar.type == 2) {
+				this.sbar_x = lib.ui.x + lib.ui.w - lib.ui.sbar.sp - (RES._4K ? 48 : 18);
+				const top_corr = [this.sbar_o - (lib.ui.sbar.but_h - lib.ui.sbar.but_w) / 2, this.sbar_o, 0][lib.ui.sbar.type];
+				const bot_corr = [(lib.ui.sbar.but_h - lib.ui.sbar.but_w) / 2 - this.sbar_o, -this.sbar_o, 0][lib.ui.sbar.type];
+				let sbar_y = lib.ui.y + (lib.ui.sbar.type < sbarStyle || lib.ui.style.topBarShow ? this.search.sp + 1 : 0) + sbar_top + top_corr;
+				let sbar_h = lib.ui.sbar.type < sbarStyle ? sp + 1 - sbar_top - sbar_bot + bot_corr * 2 - lib.ui.sz.margin : lib.ui.y + lib.ui.h - sbar_y - sbar_bot + bot_corr - lib.ui.sz.margin;
+				if (lib.ui.sbar.type == 2) {
 					sbar_y += 1;
 					sbar_h -= 2;
 				}
-				sbar.metrics(this.sbar_x, sbar_y, ui.sbar.w, sbar_h, this.rows, ui.row.h, !this.imgView ? true : vertical);
-				if (this.imgView) img.metrics();
+				lib.sbar.metrics(this.sbar_x, sbar_y, lib.ui.sbar.w, sbar_h, this.rows, lib.ui.row.h, !this.imgView ? true : vertical);
+				if (this.imgView) libImg.metrics();
 				break;
 			}
 			case !vertical: {
-				this.sbar_y = ui.y + ui.h - ui.sbar.sp;
-				let sbar_x = ui.x;
-				let sbar_w = ui.w;
-				if (ui.sbar.type == 2) {
+				this.sbar_y = lib.ui.y + lib.ui.h - lib.ui.sbar.sp;
+				let sbar_x = lib.ui.x;
+				let sbar_w = lib.ui.w;
+				if (lib.ui.sbar.type == 2) {
 					sbar_x += 1;
 					sbar_w -= 2;
 				}
-				sbar.metrics(sbar_x, this.sbar_y, sbar_w, ui.sbar.w, this.rows, ui.row.h, !this.imgView);
-				if (this.imgView) img.metrics();
+				lib.sbar.metrics(sbar_x, this.sbar_y, sbar_w, lib.ui.sbar.w, this.rows, lib.ui.row.h, !this.imgView);
+				if (this.imgView) libImg.metrics();
 				break;
 			}
 		}
 		if (this.imgView) {
-			if (this.init) img.sizeDebounce();
-			else if (sbar.scroll > sbar.max_scroll) sbar.checkScroll(sbar.max_scroll);
+			if (this.init) libImg.sizeDebounce();
+			else if (lib.sbar.scroll > lib.sbar.max_scroll) lib.sbar.checkScroll(lib.sbar.max_scroll);
 		}
 	}
 
@@ -621,7 +621,7 @@ class Panel {
 				}
 				cfg[0].forEach((v, i) => {
 					const nm = v.type ? v.name + (v.menu ? ' // ' : ' /hide/ ') + v.type : null;
-					ppt.set(v.type != 'Pattern Not Configurable' ? `Panel Library - View ${$Lib.padNumber(i + 2, 2)}: Name // Pattern` : 'Panel Library - View 01: Name // Pattern', nm);
+					libSet.set(v.type != 'Pattern Not Configurable' ? `Panel Library - View ${$Lib.padNumber(i + 2, 2)}: Name // Pattern` : 'Panel Library - View 01: Name // Pattern', nm);
 				});
 				i = cfg[1].length;
 				while (i--) {
@@ -629,46 +629,46 @@ class Panel {
 				}
 				cfg[1].forEach((v, i) => {
 					const nm = v.type ? v.name + (v.menu ? ' // ' : ' /hide/ ') + v.type : null;
-					ppt.set(v.type != 'Button Name' ? `Panel Library - Filter ${$Lib.padNumber(i + 2, 2)}: Name // Query` : 'Panel Library - Filter 01: Name // Query', nm);
+					libSet.set(v.type != 'Button Name' ? `Panel Library - Filter ${$Lib.padNumber(i + 2, 2)}: Name // Query` : 'Panel Library - Filter 01: Name // Query', nm);
 				});
-				const view_name = this.grp[ppt.viewBy].name;
-				const view_type = this.grp[ppt.viewBy].type.trimStart();
-				const filter_name = this.filter.mode[ppt.filterBy].name;
-				const filter_type = this.filter.mode[ppt.filterBy].type;
+				const view_name = this.grp[libSet.viewBy].name;
+				const view_type = this.grp[libSet.viewBy].type.trimStart();
+				const filter_name = this.filter.mode[libSet.filterBy].name;
+				const filter_type = this.filter.mode[libSet.filterBy].type;
 				this.getViews();
 				this.getFilters();
-				this.getFields(ppt.viewBy, ppt.filterBy, true);
+				this.getFields(libSet.viewBy, libSet.filterBy, true);
 				if (this.getViewIndex(this.grp, view_name, view_type) == -1 || this.getFilterIndex(this.filter.mode, filter_name, filter_type) == -1) {
-					lib.logTree();
+					lib.lib.logTree();
 					window.Reload();
-				} else this.getFields(ppt.viewBy, ppt.filterBy);
+				} else this.getFields(libSet.viewBy, libSet.filterBy);
 			}
 
 			if (new_ppt) this.updateProp($Lib.jsonParse(new_ppt, {}), 'value');
 
-			if (new_cfgWindow) ppt.set('Panel Library - Library Tree Dialog Box', new_cfgWindow);
+			if (new_cfgWindow) libSet.set('Panel Library - Library Tree Dialog Box', new_cfgWindow);
 
 			if (type == 'reset') {
-				this.updateProp(ppt, 'default_value');
+				this.updateProp(libSet, 'default_value');
 			}
 		};
 
 		this.getViews();
-		let cfgWindow = ppt.get('Panel Library - Library Tree Dialog Box');
+		let cfgWindow = libSet.get('Panel Library - Library Tree Dialog Box');
 		cfgWindow = $Lib.jsonParse(cfgWindow);
 		if (page !== undefined) cfgWindow.page = page;
 		cfgWindow.version = `v${window.ScriptInfo.Version}`;
 		cfgWindow = JSON.stringify(cfgWindow);
-		ppt.set('Panel Library - Library Tree Dialog Box', cfgWindow);
-		if (popUpBox.isHtmlDialogSupported()) popUpBox.config(JSON.stringify([this.dialogGrps, this.dialogFiltGrps, this.defViewPatterns, this.defFilterPatterns]), JSON.stringify(ppt), cfgWindow, ok_callback);
+		libSet.set('Panel Library - Library Tree Dialog Box', cfgWindow);
+		if (lib.popUpBox.isHtmlDialogSupported()) lib.popUpBox.config(JSON.stringify([this.dialogGrps, this.dialogFiltGrps, this.defViewPatterns, this.defFilterPatterns]), JSON.stringify(libSet), cfgWindow, ok_callback);
 		else {
-			popUpBox.ok = false;
+			lib.popUpBox.ok = false;
 			$Lib.trace('options dialog isn\'t available with current operating system. All settings in options are available in panel properties. Common settings are on the menu.');
 		}
 	}
 
 	searchPaint() {
-		window.RepaintRect(ui.x, ui.y, ui.w, this.search.h);
+		window.RepaintRect(lib.ui.x, lib.ui.y, lib.ui.w, this.search.h);
 	}
 
 	set(n, i, treeArtToggle) {
@@ -679,490 +679,490 @@ class Panel {
 					case 0: {
 						// const continue_confirmation = (status, confirmed) => {
 						// 	if (confirmed) {
-								pref.libraryDesign = 'traditional';
-								pref.libraryLayout = 'normal';
-								if (pref.libraryThumbnailSize === 'auto') ppt.thumbNailSize = 2;
-								ppt.highLightNowplaying = true; // In default does not exist
-								ppt.zoomNode = 100; // In default does not exist
-								ppt.countsRight = false;
-								ppt.itemShowStatistics = 0;
-								ppt.nodeStyle = 0;
-								ppt.inlineRoot = false;
-								ppt.autoCollapse = false;
-								ppt.treeAutoExpandSingle = false;
-								ppt.facetView = false;
-								ui.sbar.type = 1; // ui.sbar.type = 0;
-								ppt.sbarType = 1; // ppt.sbarType = 0;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar // ppt.sbarShow = 2;
-								ppt.fullLineSelection = false;
-								ppt.highLightText = true;
-								ppt.rowStripes = false;
-								ppt.highLightRow = 3;
-								ppt.highLightNode = true;
-								ppt.verticalPad = 3;
-								ppt.rootNode = 0; // ppt.rootNode = 1;
-								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = false;
-								ppt.albumArtLabelType = 1;
-								ppt.artId = 0;
-								ppt.albumArtFlowMode = false; // In default does not exist
+								grSet.libraryDesign = 'traditional';
+								grSet.libraryLayout = 'normal';
+								if (grSet.libraryThumbnailSize === 'auto') libSet.thumbNailSize = 2;
+								libSet.highLightNowplaying = true; // In default does not exist
+								libSet.zoomNode = 100; // In default does not exist
+								libSet.countsRight = false;
+								libSet.itemShowStatistics = 0;
+								libSet.nodeStyle = 0;
+								libSet.inlineRoot = false;
+								libSet.autoCollapse = false;
+								libSet.treeAutoExpandSingle = false;
+								libSet.facetView = false;
+								lib.ui.sbar.type = 1; // lib.ui.sbar.type = 0;
+								libSet.sbarType = 1; // libSet.sbarType = 0;
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar // libSet.sbarShow = 2;
+								libSet.fullLineSelection = false;
+								libSet.highLightText = true;
+								libSet.rowStripes = false;
+								libSet.highLightRow = 3;
+								libSet.highLightNode = true;
+								libSet.verticalPad = 3;
+								libSet.rootNode = 0; // libSet.rootNode = 1;
+								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = false;
+								libSet.albumArtLabelType = 1;
+								libSet.artId = 0;
+								libSet.albumArtFlowMode = false; // In default does not exist
 								this.load();
 						// 	}
 						// }
 						// const caption = 'Quick Setup: Traditional Style';
-						// const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
+						// const wsh = lib.popUpBox.isHtmlDialogSupported() ? lib.popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
 						// if (wsh) continue_confirmation('ok', $Lib.wshPopup(prompt, caption));
 						break;
 					}
 					case 1: {
 						// const continue_confirmation = (status, confirmed) => {
 						// 	if (confirmed) {
-								pref.libraryDesign = 'modern';
-								pref.libraryLayout = 'normal';
-								ppt.highLightNowplaying = true; // In default does not exist
-								ppt.zoomNode = 100; // In default does not exist
-								ppt.countsRight = true;
-								ppt.itemShowStatistics = 0;
-								ppt.nodeStyle = 1;
-								ppt.inlineRoot = true;
-								ppt.autoCollapse = false;
-								ppt.treeAutoExpandSingle = false;
-								ppt.facetView = false;
-								ui.sbar.type = 1;
-								ppt.sbarType = 1;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
-								ppt.fullLineSelection = true;
-								ppt.highLightText = false;
-								ppt.rowStripes = false; // ppt.rowStripes = true;
-								ppt.highLightRow = 2;
-								ppt.highLightNode = true;
-								ppt.verticalPad = 5;
-								ppt.rootNode = 3;
-								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = false;
-								ppt.albumArtLabelType = 1;
-								if (pref.libraryThumbnailSize === 'auto') ppt.thumbNailSize = 2; // In default the same
-								ppt.artId = 0;
-								ppt.albumArtFlowMode = false; // In default does not exist
+								grSet.libraryDesign = 'modern';
+								grSet.libraryLayout = 'normal';
+								libSet.highLightNowplaying = true; // In default does not exist
+								libSet.zoomNode = 100; // In default does not exist
+								libSet.countsRight = true;
+								libSet.itemShowStatistics = 0;
+								libSet.nodeStyle = 1;
+								libSet.inlineRoot = true;
+								libSet.autoCollapse = false;
+								libSet.treeAutoExpandSingle = false;
+								libSet.facetView = false;
+								lib.ui.sbar.type = 1;
+								libSet.sbarType = 1;
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								libSet.fullLineSelection = true;
+								libSet.highLightText = false;
+								libSet.rowStripes = false; // libSet.rowStripes = true;
+								libSet.highLightRow = 2;
+								libSet.highLightNode = true;
+								libSet.verticalPad = 5;
+								libSet.rootNode = 3;
+								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = false;
+								libSet.albumArtLabelType = 1;
+								if (grSet.libraryThumbnailSize === 'auto') libSet.thumbNailSize = 2; // In default the same
+								libSet.artId = 0;
+								libSet.albumArtFlowMode = false; // In default does not exist
 								this.load();
 						// 	}
 						// }
 						// const caption = 'Quick Setup: Modern Style';
-						// const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
+						// const wsh = lib.popUpBox.isHtmlDialogSupported() ? lib.popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
 						// if (wsh) continue_confirmation('ok', $Lib.wshPopup(prompt, caption));
 						break;
 					}
 					case 2: {
 						// const continue_confirmation = (status, confirmed) => {
 						// 	if (confirmed) {
-								pref.libraryDesign = 'ultraModern';
-								pref.libraryLayout = 'normal';
-								ppt.highLightNowplaying = true; // In default does not exist
-								ppt.zoomNode = 100; // In default does not exist
-								ppt.countsRight = true;
-								ppt.itemShowStatistics = 1;
-								ppt.nodeStyle = 3;
-								ppt.inlineRoot = true;
-								ppt.autoCollapse = true;
-								ppt.treeAutoExpandSingle = true;
-								ppt.facetView = false;
-								ui.sbar.type = 1;
-								ppt.sbarType = 1;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
-								ppt.fullLineSelection = true;
-								ppt.highLightText = false;
-								ppt.rowStripes = false; // ppt.rowStripes = true;
-								ppt.highLightRow = 1;
-								ppt.highLightNode = true; // ppt.highLightNode = false;
-								ppt.verticalPad = 5;
-								ppt.rootNode = 3;
-								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = false;
-								if (!ppt.presetLoadCurView) ppt.viewBy = 1;
-								ppt.albumArtFlowMode = false;
-								ppt.albumArtLabelType = 1;
-								ppt.albumArtFlipLabels = false;
-								ppt.imgStyleFront = 1;
-								ppt.itemOverlayType = 1;
-								ppt.thumbNailSize = 2;
-								ppt.albumArtGrpLevel = 0;
-								if (pref.libraryThumbnailSize === 'auto') ppt.thumbNailSize = 2; // In default the same
-								ppt.artId = 0;
+								grSet.libraryDesign = 'ultraModern';
+								grSet.libraryLayout = 'normal';
+								libSet.highLightNowplaying = true; // In default does not exist
+								libSet.zoomNode = 100; // In default does not exist
+								libSet.countsRight = true;
+								libSet.itemShowStatistics = 1;
+								libSet.nodeStyle = 3;
+								libSet.inlineRoot = true;
+								libSet.autoCollapse = true;
+								libSet.treeAutoExpandSingle = true;
+								libSet.facetView = false;
+								lib.ui.sbar.type = 1;
+								libSet.sbarType = 1;
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								libSet.fullLineSelection = true;
+								libSet.highLightText = false;
+								libSet.rowStripes = false; // libSet.rowStripes = true;
+								libSet.highLightRow = 1;
+								libSet.highLightNode = true; // libSet.highLightNode = false;
+								libSet.verticalPad = 5;
+								libSet.rootNode = 3;
+								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = false;
+								if (!libSet.presetLoadCurView) libSet.viewBy = 1;
+								libSet.albumArtFlowMode = false;
+								libSet.albumArtLabelType = 1;
+								libSet.albumArtFlipLabels = false;
+								libSet.imgStyleFront = 1;
+								libSet.itemOverlayType = 1;
+								libSet.thumbNailSize = 2;
+								libSet.albumArtGrpLevel = 0;
+								if (grSet.libraryThumbnailSize === 'auto') libSet.thumbNailSize = 2; // In default the same
+								libSet.artId = 0;
 								this.load();
 						// 	}
 						// }
 						// const caption = 'Quick Setup: Ultra Modern Style';
-						// const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
+						// const wsh = lib.popUpBox.isHtmlDialogSupported() ? lib.popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
 						// if (wsh) continue_confirmation('ok', $Lib.wshPopup(prompt, caption));
 						break;
 					}
 					case 3: {
 						// const continue_confirmation = (status, confirmed) => {
 						// 	if (confirmed) {
-								pref.libraryDesign = 'clean';
-								ppt.countsRight = true;
-								ppt.itemShowStatistics = 0;
-								ppt.nodeStyle = 5;
-								ppt.inlineRoot = true;
-								ppt.autoCollapse = false;
-								ppt.treeAutoExpandSingle = false;
-								ppt.facetView = false;
-								ui.sbar.type = 0;
-								ppt.sbarType = 0;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
-								ppt.fullLineSelection = true;
-								ppt.highLightText = true;
-								ppt.rowStripes = false; // ppt.rowStripes = true;
-								ppt.highLightRow = 0;
-								ppt.highLightNode = true;
-								ppt.verticalPad = 5;
-								ppt.rootNode = 3;
-								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = false;
-								pref.libraryLayout = ppt.albumArtShow ? 'full' : 'normal';
-								ppt.albumArtLabelType = 1;
-								if (pref.libraryThumbnailSize === 'auto') ppt.thumbNailSize = 2; // In default the same
-								ppt.artId = 0;
+								grSet.libraryDesign = 'clean';
+								libSet.countsRight = true;
+								libSet.itemShowStatistics = 0;
+								libSet.nodeStyle = 5;
+								libSet.inlineRoot = true;
+								libSet.autoCollapse = false;
+								libSet.treeAutoExpandSingle = false;
+								libSet.facetView = false;
+								lib.ui.sbar.type = 0;
+								libSet.sbarType = 0;
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								libSet.fullLineSelection = true;
+								libSet.highLightText = true;
+								libSet.rowStripes = false; // libSet.rowStripes = true;
+								libSet.highLightRow = 0;
+								libSet.highLightNode = true;
+								libSet.verticalPad = 5;
+								libSet.rootNode = 3;
+								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = false;
+								grSet.libraryLayout = libSet.albumArtShow ? 'full' : 'normal';
+								libSet.albumArtLabelType = 1;
+								if (grSet.libraryThumbnailSize === 'auto') libSet.thumbNailSize = 2; // In default the same
+								libSet.artId = 0;
 								this.load();
 						// 	}
 						// }
 						// const caption = 'Quick Setup: Clean';
-						// const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
+						// const wsh = lib.popUpBox.isHtmlDialogSupported() ? lib.popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
 						// if (wsh) continue_confirmation('ok', $Lib.wshPopup(prompt, caption));
 						break;
 					}
 					case 4: {
 						// const continue_confirmation = (status, confirmed) => {
 						// 	if (confirmed) {
-								pref.libraryDesign = 'facet';
-								pref.libraryLayout = 'normal';
-								ppt.highLightNowplaying = true; // In default does not exist
-								ppt.zoomNode = 100; // In default does not exist
-								ppt.countsRight = true;
-								ppt.itemShowStatistics = 0;
-								ppt.nodeStyle = 1;
-								ppt.inlineRoot = true;
-								ppt.autoCollapse = false;
-								ppt.treeAutoExpandSingle = false;
-								ppt.facetView = true;
-								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = false;
-								ppt.albumArtLabelType = 1;
-								if (pref.libraryThumbnailSize === 'auto') ppt.thumbNailSize = 2; // In default the same
-								ppt.artId = 0;
-								ui.sbar.type = 1;
-								ppt.sbarType = 1;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
-								ppt.fullLineSelection = true;
-								ppt.highLightText = false;
-								ppt.rowStripes = false; // ppt.rowStripes = true;
-								ppt.highLightRow = 2;
-								ppt.highLightNode = true;
-								ppt.verticalPad = 5;
-								ppt.rootNode = 3;
+								grSet.libraryDesign = 'facet';
+								grSet.libraryLayout = 'normal';
+								libSet.highLightNowplaying = true; // In default does not exist
+								libSet.zoomNode = 100; // In default does not exist
+								libSet.countsRight = true;
+								libSet.itemShowStatistics = 0;
+								libSet.nodeStyle = 1;
+								libSet.inlineRoot = true;
+								libSet.autoCollapse = false;
+								libSet.treeAutoExpandSingle = false;
+								libSet.facetView = true;
+								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = false;
+								libSet.albumArtLabelType = 1;
+								if (grSet.libraryThumbnailSize === 'auto') libSet.thumbNailSize = 2; // In default the same
+								libSet.artId = 0;
+								lib.ui.sbar.type = 1;
+								libSet.sbarType = 1;
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								libSet.fullLineSelection = true;
+								libSet.highLightText = false;
+								libSet.rowStripes = false; // libSet.rowStripes = true;
+								libSet.highLightRow = 2;
+								libSet.highLightNode = true;
+								libSet.verticalPad = 5;
+								libSet.rootNode = 3;
 								this.load();
 						// 	}
 						// }
 						// const caption = 'Quick Setup: Facet';
-						// const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
+						// const wsh = lib.popUpBox.isHtmlDialogSupported() ? lib.popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
 						// if (wsh) continue_confirmation('ok', $Lib.wshPopup(prompt, caption));
 						break;
 					}
 					case 5: {
 						// const continue_confirmation = (status, confirmed) => {
 						// 	if (confirmed) {
-							pref.libraryDesign = 'coversLabelsRight';
-							pref.libraryLayout = 'normal';
-							if (pref.libraryThumbnailSize === 'auto') ppt.thumbNailSize = 0;
-							ppt.highLightNowplaying = true; // In default does not exist
-							ppt.zoomNode = 100; // In default does not exist
-							ppt.nodeStyle = 5; // In default does not exist
-							ppt.inlineRoot = true; // In default does not exist
-							ui.sbar.type = 1;
-							ppt.sbarType = 1;
-							// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
-							ppt.fullLineSelection = true;
-							ppt.highLightText = false;
-							ppt.rowStripes = false; // ppt.rowStripes = true;
-							ppt.highLightRow = 1;
-							ppt.highLightNode = false;
-							ppt.verticalPad = 5;
-							ppt.rootNode = 3;
-							ppt.facetView = false;
-							panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = true;
-							if (!ppt.presetLoadCurView) ppt.viewBy = 0; // ppt.viewBy = 1;
-							ppt.albumArtFlowMode = false;
-							ppt.albumArtLabelType = 2;
-							ppt.imgStyleFront = 1;
-							ppt.itemOverlayType = 2;
-							ppt.artId = 0;
-							ppt.albumArtGrpLevel = 0;
+							grSet.libraryDesign = 'coversLabelsRight';
+							grSet.libraryLayout = 'normal';
+							if (grSet.libraryThumbnailSize === 'auto') libSet.thumbNailSize = 0;
+							libSet.highLightNowplaying = true; // In default does not exist
+							libSet.zoomNode = 100; // In default does not exist
+							libSet.nodeStyle = 5; // In default does not exist
+							libSet.inlineRoot = true; // In default does not exist
+							lib.ui.sbar.type = 1;
+							libSet.sbarType = 1;
+							// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+							libSet.fullLineSelection = true;
+							libSet.highLightText = false;
+							libSet.rowStripes = false; // libSet.rowStripes = true;
+							libSet.highLightRow = 1;
+							libSet.highLightNode = false;
+							libSet.verticalPad = 5;
+							libSet.rootNode = 3;
+							libSet.facetView = false;
+							lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = true;
+							if (!libSet.presetLoadCurView) libSet.viewBy = 0; // libSet.viewBy = 1;
+							libSet.albumArtFlowMode = false;
+							libSet.albumArtLabelType = 2;
+							libSet.imgStyleFront = 1;
+							libSet.itemOverlayType = 2;
+							libSet.artId = 0;
+							libSet.albumArtGrpLevel = 0;
 							this.load();
 						// 	}
 						// }
 						// const caption = 'Quick Setup: Covers [Labels Right]';
-						// const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
+						// const wsh = lib.popUpBox.isHtmlDialogSupported() ? lib.popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
 						// if (wsh) continue_confirmation('ok', $Lib.wshPopup(prompt, caption));
 						break;
 					}
 					case 6: {
 						// const continue_confirmation = (status, confirmed) => {
 						// 	if (confirmed) {
-								pref.libraryDesign = 'coversLabelsBottom';
-								pref.libraryLayout = 'normal';
-								if (pref.libraryThumbnailSize === 'auto') ppt.thumbNailSize = 0;
-								ppt.highLightNowplaying = true; // In default does not exist
-								ppt.zoomNode = 100; // In default does not exist
-								ppt.nodeStyle = 5; // In default does not exist
-								ppt.inlineRoot = true; // In default does not exist
-								ui.sbar.type = 1;
-								ppt.sbarType = 1;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
-								ppt.fullLineSelection = true;
-								ppt.highLightText = false;
-								ppt.rowStripes = false; // ppt.rowStripes = true;
-								ppt.highLightRow = 1;
-								ppt.highLightNode = false;
-								ppt.verticalPad = 5;
-								ppt.rootNode = 3;
-								ppt.facetView = false;
-								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = true;
-								if (!ppt.presetLoadCurView) ppt.viewBy = 1; // ppt.viewBy = 1;
-								ppt.albumArtFlowMode = false;
-								ppt.albumArtLabelType = 1;
-								ppt.albumArtFlipLabels = false;
-								ppt.itemShowStatistics = 0;
-								ppt.imgStyleFront = 1;
-								ppt.itemOverlayType = 1;
-								ppt.artId = 0;
+								grSet.libraryDesign = 'coversLabelsBottom';
+								grSet.libraryLayout = 'normal';
+								if (grSet.libraryThumbnailSize === 'auto') libSet.thumbNailSize = 0;
+								libSet.highLightNowplaying = true; // In default does not exist
+								libSet.zoomNode = 100; // In default does not exist
+								libSet.nodeStyle = 5; // In default does not exist
+								libSet.inlineRoot = true; // In default does not exist
+								lib.ui.sbar.type = 1;
+								libSet.sbarType = 1;
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								libSet.fullLineSelection = true;
+								libSet.highLightText = false;
+								libSet.rowStripes = false; // libSet.rowStripes = true;
+								libSet.highLightRow = 1;
+								libSet.highLightNode = false;
+								libSet.verticalPad = 5;
+								libSet.rootNode = 3;
+								libSet.facetView = false;
+								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = true;
+								if (!libSet.presetLoadCurView) libSet.viewBy = 1; // libSet.viewBy = 1;
+								libSet.albumArtFlowMode = false;
+								libSet.albumArtLabelType = 1;
+								libSet.albumArtFlipLabels = false;
+								libSet.itemShowStatistics = 0;
+								libSet.imgStyleFront = 1;
+								libSet.itemOverlayType = 1;
+								libSet.artId = 0;
 								this.load();
 						// 	}
 						// }
 						// const caption = 'Quick Setup: Covers [Labels Bottom]';
-						// cconst wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
+						// cconst wsh = lib.popUpBox.isHtmlDialogSupported() ? lib.popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
 						// if (wsh) continue_confirmation('ok', $Lib.wshPopup(prompt, caption));
 						break;
 					}
 					case 7: {
 						// const continue_confirmation = (status, confirmed) => {
 						// 	if (confirmed) {
-								pref.libraryDesign = 'coversLabelsBlend';
-								pref.libraryLayout = 'normal';
-								if (pref.libraryThumbnailSize === 'auto') ppt.thumbNailSize = 0;
-								ppt.highLightNowplaying = true; // In default does not exist
-								ppt.zoomNode = 100; // In default does not exist
-								ppt.nodeStyle = 5; // In default does not exist
-								ppt.inlineRoot = true; // In default does not exist
-								ui.sbar.type = 1;
-								ppt.sbarType = 1;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
-								ppt.fullLineSelection = true;
-								ppt.highLightText = false;
-								ppt.rowStripes = false; // ppt.rowStripes = true;
-								ppt.highLightRow = 1;
-								ppt.highLightNode = false;
-								ppt.verticalPad = 5;
-								ppt.rootNode = 3;
-								ppt.facetView = false;
-								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = true;
-								if (!ppt.presetLoadCurView) ppt.viewBy = 0; // if (!ppt.presetLoadCurView) ppt.viewBy = 1;
-								ppt.albumArtFlowMode = false;
-								ppt.albumArtLabelType = 4;
-								ppt.albumArtFlipLabels = false;
-								ppt.itemShowStatistics = 0;
-								ppt.imgStyleFront = 0;
-								ppt.itemOverlayType = 1;
-								ppt.artId = 0;
-								ppt.albumArtGrpLevel = 0;
+								grSet.libraryDesign = 'coversLabelsBlend';
+								grSet.libraryLayout = 'normal';
+								if (grSet.libraryThumbnailSize === 'auto') libSet.thumbNailSize = 0;
+								libSet.highLightNowplaying = true; // In default does not exist
+								libSet.zoomNode = 100; // In default does not exist
+								libSet.nodeStyle = 5; // In default does not exist
+								libSet.inlineRoot = true; // In default does not exist
+								lib.ui.sbar.type = 1;
+								libSet.sbarType = 1;
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								libSet.fullLineSelection = true;
+								libSet.highLightText = false;
+								libSet.rowStripes = false; // libSet.rowStripes = true;
+								libSet.highLightRow = 1;
+								libSet.highLightNode = false;
+								libSet.verticalPad = 5;
+								libSet.rootNode = 3;
+								libSet.facetView = false;
+								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = true;
+								if (!libSet.presetLoadCurView) libSet.viewBy = 0; // if (!libSet.presetLoadCurView) libSet.viewBy = 1;
+								libSet.albumArtFlowMode = false;
+								libSet.albumArtLabelType = 4;
+								libSet.albumArtFlipLabels = false;
+								libSet.itemShowStatistics = 0;
+								libSet.imgStyleFront = 0;
+								libSet.itemOverlayType = 1;
+								libSet.artId = 0;
+								libSet.albumArtGrpLevel = 0;
 								this.load();
 						// 	}
 						// }
 						// const caption = 'Quick Setup: Covers [Labels Blend]';
-						// const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
+						// const wsh = lib.popUpBox.isHtmlDialogSupported() ? lib.popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
 						// if (wsh) continue_confirmation('ok', $Lib.wshPopup(prompt, caption));
 						break;
 					}
 					case 8: {
 						// const continue_confirmation = (status, confirmed) => {
 						// 	if (confirmed) {
-								pref.libraryDesign = 'artistLabelsRight';
-								pref.libraryLayout = ppt.albumArtShow ? 'full' : 'normal';
-								if (pref.libraryThumbnailSize === 'auto') ppt.thumbNailSize = 0;
-								ui.sbar.type = 1;
-								ppt.sbarType = 1;
-								ppt.sbarShow = 1;
-								ppt.fullLineSelection = true;
-								ppt.highLightText = false;
-								ppt.rowStripes = false; // ppt.rowStripes = true;
-								ppt.highLightRow = 1;
-								ppt.highLightNode = false;
-								ppt.verticalPad = 5;
-								ppt.rootNode = 3;
-								ppt.facetView = false;
-								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = true;
-								if (!ppt.presetLoadCurView) ppt.viewBy = 0;
-								ppt.albumArtFlowMode = false;
-								ppt.albumArtLabelType = 2;
-								ppt.itemShowStatistics = 0;
-								ppt.imgStyleArtist = 1;
-								ppt.itemOverlayType = 0;
-								ppt.thumbNailSize = 1;
-								ppt.artId = 4;
-								ppt.albumArtGrpLevel = 0;
+								grSet.libraryDesign = 'artistLabelsRight';
+								grSet.libraryLayout = libSet.albumArtShow ? 'full' : 'normal';
+								if (grSet.libraryThumbnailSize === 'auto') libSet.thumbNailSize = 0;
+								lib.ui.sbar.type = 1;
+								libSet.sbarType = 1;
+								libSet.sbarShow = 1;
+								libSet.fullLineSelection = true;
+								libSet.highLightText = false;
+								libSet.rowStripes = false; // libSet.rowStripes = true;
+								libSet.highLightRow = 1;
+								libSet.highLightNode = false;
+								libSet.verticalPad = 5;
+								libSet.rootNode = 3;
+								libSet.facetView = false;
+								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = true;
+								if (!libSet.presetLoadCurView) libSet.viewBy = 0;
+								libSet.albumArtFlowMode = false;
+								libSet.albumArtLabelType = 2;
+								libSet.itemShowStatistics = 0;
+								libSet.imgStyleArtist = 1;
+								libSet.itemOverlayType = 0;
+								libSet.thumbNailSize = 1;
+								libSet.artId = 4;
+								libSet.albumArtGrpLevel = 0;
 								this.load();
 						// 	}
 						// }
 						// const caption = 'Quick Setup: Artist Photos [Labels Right]';
-						// const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
+						// const wsh = lib.popUpBox.isHtmlDialogSupported() ? lib.popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
 						// if (wsh) continue_confirmation('ok', $Lib.wshPopup(prompt, caption));
 						break;
 					}
-					case 9: ppt.thumbNailSize++; this.load(); break;
-					case 10: ppt.thumbNailSize--; this.load(); break;
+					case 9: libSet.thumbNailSize++; this.load(); break;
+					case 10: libSet.thumbNailSize--; this.load(); break;
 					case 11: {
 						// const continue_confirmation = (status, confirmed) => {
 						// 	if (confirmed) {
-								pref.libraryDesign = 'flowMode';
-								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = true;
-								pref.libraryLayout = ppt.albumArtShow ? 'full' : 'normal';
-								if (pref.playerSize_HD_small && ppt.thumbNailSize === 'auto') ppt.thumbNailSize = 2;
-								ppt.highLightNowplaying = true; // In default does not exist
-								ppt.zoomNode = 100; // In default does not exist
-								ppt.countsRight = true;
-								ppt.nodeStyle = 5; // ppt.nodeStyle = 2;
-								ppt.inlineRoot = true;
-								ppt.autoCollapse = false;
-								ppt.treeAutoExpandSingle = false;
-								ppt.facetView = false;
-								ppt.highLightRow = 1;
-								if (!ppt.presetLoadCurView) ppt.viewBy = 0; // if (!ppt.presetLoadCurView) ppt.viewBy = 1;
-								ppt.albumArtFlowMode = true;
-								ppt.albumArtLabelType = 1;
-								ppt.itemShowStatistics = 0;
-								ppt.imgStyleFront = 1;
-								ppt.itemOverlayType = 0;
-								if (!ppt.presetLoadCurView) ppt.artId = 0;
-								ppt.albumArtGrpLevel = 0;
+								grSet.libraryDesign = 'flowMode';
+								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = true;
+								grSet.libraryLayout = libSet.albumArtShow ? 'full' : 'normal';
+								if (grSet.playerSize_HD_small && libSet.thumbNailSize === 'auto') libSet.thumbNailSize = 2;
+								libSet.highLightNowplaying = true; // In default does not exist
+								libSet.zoomNode = 100; // In default does not exist
+								libSet.countsRight = true;
+								libSet.nodeStyle = 5; // libSet.nodeStyle = 2;
+								libSet.inlineRoot = true;
+								libSet.autoCollapse = false;
+								libSet.treeAutoExpandSingle = false;
+								libSet.facetView = false;
+								libSet.highLightRow = 1;
+								if (!libSet.presetLoadCurView) libSet.viewBy = 0; // if (!libSet.presetLoadCurView) libSet.viewBy = 1;
+								libSet.albumArtFlowMode = true;
+								libSet.albumArtLabelType = 1;
+								libSet.itemShowStatistics = 0;
+								libSet.imgStyleFront = 1;
+								libSet.itemOverlayType = 0;
+								if (!libSet.presetLoadCurView) libSet.artId = 0;
+								libSet.albumArtGrpLevel = 0;
 								this.load();
 						// 	}
 						// }
 						// const caption = 'Quick Setup: Flow Mode';
-						// const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
+						// const wsh = lib.popUpBox.isHtmlDialogSupported() ? lib.popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
 						// if (wsh) continue_confirmation('ok', $Lib.wshPopup(prompt, caption));
 						break;
 					}
 					case 12: {
 						// const continue_confirmation = (status, confirmed) => {
 						// 	if (confirmed) {
-								pref.libraryDesign = 'reborn';
-								pref.libraryLayout = 'normal';
-								if (pref.playerSize_HD_small && ppt.thumbNailSize === 'auto') ppt.thumbNailSize = 1;
-								ppt.highLightNowplaying = true;
-								ppt.zoomNode = 100;
-								ppt.countsRight = true;
-								ppt.nodeStyle = 5;
-								ppt.inlineRoot = true;
-								ppt.autoCollapse = false;
-								ppt.treeAutoExpandSingle = true;
-								ppt.facetView = false;
-								ui.sbar.type = 1;
-								ppt.sbarType = 1;
-								// ppt.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
-								ppt.fullLineSelection = true;
-								ppt.highLightText = false;
-								ppt.rowStripes = false;
-								ppt.highLightRow = 1;
-								ppt.highLightNode = true;
-								ppt.verticalPad = 5;
-								ppt.rootNode = 3;
-								panel.imgView = pref.savedAlbumArtShow = ppt.albumArtShow = false;
-								if (!ppt.presetLoadCurView) ppt.viewBy = 2;
-								ppt.albumArtLabelType = 1;
-								ppt.itemOverlayType = 0;
-								ppt.artId = 0;
-								ppt.albumArtFlowMode = false;
+								grSet.libraryDesign = 'reborn';
+								grSet.libraryLayout = 'normal';
+								if (grSet.playerSize_HD_small && libSet.thumbNailSize === 'auto') libSet.thumbNailSize = 1;
+								libSet.highLightNowplaying = true;
+								libSet.zoomNode = 100;
+								libSet.countsRight = true;
+								libSet.nodeStyle = 5;
+								libSet.inlineRoot = true;
+								libSet.autoCollapse = false;
+								libSet.treeAutoExpandSingle = true;
+								libSet.facetView = false;
+								lib.ui.sbar.type = 1;
+								libSet.sbarType = 1;
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								libSet.fullLineSelection = true;
+								libSet.highLightText = false;
+								libSet.rowStripes = false;
+								libSet.highLightRow = 1;
+								libSet.highLightNode = true;
+								libSet.verticalPad = 5;
+								libSet.rootNode = 3;
+								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = false;
+								if (!libSet.presetLoadCurView) libSet.viewBy = 2;
+								libSet.albumArtLabelType = 1;
+								libSet.itemOverlayType = 0;
+								libSet.artId = 0;
+								libSet.albumArtFlowMode = false;
 								this.load();
 						// 	}
 						// }
 						// const caption = 'Quick Setup: Georgia-ReBORN Style';
-						// const wsh = popUpBox.isHtmlDialogSupported() ? popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
+						// const wsh = lib.popUpBox.isHtmlDialogSupported() ? lib.popUpBox.confirm(caption, prompt, 'Yes', 'No', '', '', continue_confirmation) : true;
 						// if (wsh) continue_confirmation('ok', $Lib.wshPopup(prompt, caption));
 						break;
 					}
 					case 13:
-						ppt.toggle('presetLoadCurView');
+						libSet.toggle('presetLoadCurView');
 				}
 				break;
 			case 'Filter':
-				lib.searchCache = {};
-				pop.cache.filter = {};
-				pop.cache.search = {};
+				lib.lib.searchCache = {};
+				lib.pop.cache.filter = {};
+				lib.pop.cache.search = {};
 				switch (i) {
 					case this.filter.menu.length:
-						ppt.toggle('reset');
-						if (ppt.reset) {
+						libSet.toggle('reset');
+						if (libSet.reset) {
 							this.searchPaint();
-							lib.treeState(true, 2);
+							lib.lib.treeState(true, 2);
 						}
 						break;
 					default:
-						ppt.filterBy = i;
+						libSet.filterBy = i;
 						this.calcText();
-						if (this.search.txt) lib.upd_search = true;
-						if (!ppt.reset) {
-							const ix = pop.get_ix(!panel.imgView ? 0 : img.panel.x + 1, (!panel.imgView || img.style.vertical ? panel.tree.y : panel.tree.x) + sbar.row.h / 2, true, false);
-							const l = Math.min(Math.floor(ix + panel.rows), pop.tree.length);
+						if (this.search.txt) lib.lib.upd_search = true;
+						if (!libSet.reset) {
+							const ix = lib.pop.get_ix(!lib.panel.imgView ? 0 : libImg.panel.x + 1, (!lib.panel.imgView || libImg.style.vertical ? lib.panel.tree.y : lib.panel.tree.x) + lib.sbar.row.h / 2, true, false);
+							const l = Math.min(Math.floor(ix + lib.panel.rows), lib.pop.tree.length);
 							if (ix != -1) {
 								for (i = ix; i < l; i++) {
-									if (pop.tree[i].sel) {
-										sbar.checkScroll(sbar.row.h * i, 'full', true);
-										lib.logTree();
+									if (lib.pop.tree[i].sel) {
+										lib.sbar.checkScroll(lib.sbar.row.h * i, 'full', true);
+										lib.lib.logTree();
 										break;
 									}
 								}
 							}
-						if (!ppt.rememberTree && !ppt.reset)
-							{ lib.logTree(); }
-						else if (ppt.rememberTree)
-							{ lib.logFilter(); }
+						if (!libSet.rememberTree && !libSet.reset)
+							{ lib.lib.logTree(); }
+						else if (libSet.rememberTree)
+							{ lib.lib.logFilter(); }
 						}
-						lib.getLibrary();
-						lib.rootNodes(!ppt.reset ? 1 : 0, true);
-						but.refresh(true);
+						lib.lib.getLibrary();
+						lib.lib.rootNodes(!libSet.reset ? 1 : 0, true);
+						lib.but.refresh(true);
 						this.searchPaint();
-						if (!pop.notifySelection())  {
-							const list = !this.search.txt.length || !lib.list.Count ? lib.list : this.list;
-							window.NotifyOthers(window.Name, ppt.filterBy ? list : new FbMetadbHandleList());
+						if (!lib.pop.notifySelection())  {
+							const list = !this.search.txt.length || !lib.lib.list.Count ? lib.lib.list : this.list;
+							window.NotifyOthers(window.Name, libSet.filterBy ? list : new FbMetadbHandleList());
 						}
-						if (ppt.searchSend == 2 && this.search.txt.length) pop.load(this.list, false, false, false, true, false);
+						if (libSet.searchSend == 2 && this.search.txt.length) lib.pop.load(this.list, false, false, false, true, false);
 						break;
 				}
-				pop.checkAutoHeight();
+				lib.pop.checkAutoHeight();
 				break;
 			case 'view': {
 				if (this.colMarker) this.draw = false;
-				if (this.search.txt) lib.upd_search = true;
-				this.getFields(i < this.grp.length ? i : ppt.viewBy, ppt.filterBy);
+				if (this.search.txt) lib.lib.upd_search = true;
+				this.getFields(i < this.grp.length ? i : libSet.viewBy, libSet.filterBy);
 				this.on_size();
-				lib.searchCache = {};
-				pop.cache = {
+				lib.lib.searchCache = {};
+				lib.pop.cache = {
 					standard: {},
 					search: {},
 					filter: {}
 				};
-				lib.checkView();
-				const key = !ppt.rememberView ? 'def' : this.viewName;
-				if ((ppt.rememberView || treeArtToggle) && lib.exp[key]) lib.readTreeState(false, treeArtToggle);
-				lib.getLibrary(treeArtToggle);
-				lib.rootNodes((ppt.rememberView || treeArtToggle), !!((ppt.rememberView || treeArtToggle)));
-				if (ppt.rememberView) {
+				lib.lib.checkView();
+				const key = !libSet.rememberView ? 'def' : this.viewName;
+				if ((libSet.rememberView || treeArtToggle) && lib.lib.exp[key]) lib.lib.readTreeState(false, treeArtToggle);
+				lib.lib.getLibrary(treeArtToggle);
+				lib.lib.rootNodes((libSet.rememberView || treeArtToggle), !!((libSet.rememberView || treeArtToggle)));
+				if (libSet.rememberView) {
 					this.calcText();
-					but.refresh(true);
+					lib.but.refresh(true);
 					this.searchPaint();
-					lib.logTree();
-					if (!pop.notifySelection())  {
-						const list = !this.search.txt.length || !lib.list.Count ? lib.list : this.list;
-						window.NotifyOthers(window.Name, ppt.filterBy ? list : new FbMetadbHandleList());
+					lib.lib.logTree();
+					if (!lib.pop.notifySelection())  {
+						const list = !this.search.txt.length || !lib.lib.list.Count ? lib.lib.list : this.list;
+						window.NotifyOthers(window.Name, libSet.filterBy ? list : new FbMetadbHandleList());
 					}
 				}
 				this.draw = true;
-				if (ppt.searchSend == 2 && this.search.txt.length) pop.load(this.list, false, false, false, true, false);
-				pop.checkAutoHeight();
+				if (libSet.searchSend == 2 && this.search.txt.length) lib.pop.load(this.list, false, false, false, true, false);
+				lib.pop.checkAutoHeight();
 				break;
 			}
 		}
@@ -1170,41 +1170,41 @@ class Panel {
 
 	setHeight(n) {
 		if (!this.pn_h_auto) return;
-		ppt.pn_h = n || this.imgView ? ppt.pn_h_max : ppt.pn_h_min;
-		window.MaxHeight = window.MinHeight = ppt.pn_h;
+		libSet.pn_h = n || this.imgView ? libSet.pn_h_max : libSet.pn_h_min;
+		window.MaxHeight = window.MinHeight = libSet.pn_h;
 	}
 
 	setRootName() {
-		this.sourceName = ['Active Playlist', !ppt.fixedPlaylist ? 'Library' : ppt.fixedPlaylistName, 'Panel'][ppt.libSource];
-		this.viewName = this.grp[ppt.viewBy].name;
-		switch (ppt.rootNode) {
+		this.sourceName = ['Active Playlist', !libSet.fixedPlaylist ? 'Library' : libSet.fixedPlaylistName, 'Panel'][libSet.libSource];
+		this.viewName = this.grp[libSet.viewBy].name;
+		switch (libSet.rootNode) {
 			case 1:
-				this.rootName = !ppt.showSource ? 'All Music' : this.sourceName;
+				this.rootName = !libSet.showSource ? 'All Music' : this.sourceName;
 				break;
 			case 2:
-				this.rootName = this.viewName + (!ppt.showSource ? '' : ` [${this.sourceName}]`);
+				this.rootName = this.viewName + (!libSet.showSource ? '' : ` [${this.sourceName}]`);
 				break;
 			case 3: {
 				const nm = this.viewName.replace(/view by|^by\b/i, '').trim();
 				const basenames = nm.split(' ').map(v => pluralize(v));
 				const basename = basenames.join(' ').replace(/(album|artist|top|track)s\s/gi, '$1 ').replace(/(similar artist)\s/gi, '$1s ').replace(/years - albums/gi, 'Year - Albums');
-				this.rootName = (!this.imgView ? `${!ppt.showSource ? 'All' : this.sourceName} (#^^^^# ${basename})` : `All #^^^^# ${basename}`);
-				this.rootName1 = (!this.imgView ? `${!ppt.showSource ? 'All' : this.sourceName} (1 ${nm})` : `All 1 ${nm}`);
+				this.rootName = (!this.imgView ? `${!libSet.showSource ? 'All' : this.sourceName} (#^^^^# ${basename})` : `All #^^^^# ${basename}`);
+				this.rootName1 = (!this.imgView ? `${!libSet.showSource ? 'All' : this.sourceName} (1 ${nm})` : `All 1 ${nm}`);
 				break;
 			}
 		}
 	}
 
 	setSelection() {
-		const flowMode = this.imgView && ppt.albumArtFlowMode;
-		return (flowMode && ppt.flowModeFollowSelection || !flowMode && ppt.stndModeFollowSelection) && (!ppt.followPlaylistFocus || ppt.libSource) && panel.m.x == -1;
+		const flowMode = this.imgView && libSet.albumArtFlowMode;
+		return (flowMode && libSet.flowModeFollowSelection || !flowMode && libSet.stndModeFollowSelection) && (!libSet.followPlaylistFocus || libSet.libSource) && lib.panel.m.x == -1;
 	}
 
 	setTopBar() {
-		const sz = Math.round(12 * $Lib.scale * this.zoomFilter);
-		const libraryFontSize = ppt[`baseFontSize_${pref.layout}`] || 14;
-		const mod = sz > 15 ? (sz % 2) - 1 : 0;
-		this.filter.font = gdi.Font(fontDefault, this.zoomFilter > 1.05 ? Math.floor(libraryFontSize /*11 * $Lib.scale * this.zoomFilter*/) : Math.max((libraryFontSize) /*11 * $Lib.scale * this.zoomFilter*/, 9), 1);
+		// const sz = Math.round(12 * $Lib.scale * this.zoomFilter);
+		// const mod = sz > 15 ? (sz % 2) - 1 : 0;
+		const libraryFontSize = libSet[`baseFontSize_${grSet.layout}`] || 14;
+		this.filter.font = gdi.Font(grFont.fontDefault, this.zoomFilter > 1.05 ? Math.floor(libraryFontSize /*11 * $Lib.scale * this.zoomFilter*/) : Math.max((libraryFontSize) /*11 * $Lib.scale * this.zoomFilter*/, 9), 1);
 		this.settings.font = gdi.Font('Segoe UI Symbol', libraryFontSize /*sz + mod*/, 0);
 		this.settings.icon = '\uE10C';
 		this.settings.offset = Math.round(1 * this.settings.font.Size / 17);
@@ -1224,164 +1224,164 @@ class Panel {
 	}
 
 	treePaint() {
-		window.RepaintRect(ui.x, ui.y, ui.w, ui.h);
+		window.RepaintRect(lib.ui.x, lib.ui.y, lib.ui.w, lib.ui.h);
 	}
 
 	updateProp(prop, value) {
-		const curActionMode = ppt.actionMode;
+		const curActionMode = libSet.actionMode;
 		Object.entries(prop).forEach(v => {
-			ppt[v[0].replace('_internal', '')] = v[1][value];
+			libSet[v[0].replace('_internal', '')] = v[1][value];
 		});
 
-		img.asyncBypass = Date.now();
-		img.preLoadItems = [];
-		clearInterval(img.timer.preLoad);
-		img.timer.preLoad = null;
+		libImg.asyncBypass = Date.now();
+		libImg.preLoadItems = [];
+		clearInterval(libImg.timer.preLoad);
+		libImg.timer.preLoad = null;
 
-		pop.autoPlay.send = ppt.autoPlay;
-		pop.setActions();
-		if (ppt.actionMode != curActionMode) {
-			if (ppt.actionMode != 2) {
-				ppt.itemShowStatistics = ppt.itemShowStatisticsLast;
-				ppt.highLightNowplaying = ppt.highLightNowplayingLast;
-				ppt.nowPlayingIndicator = ppt.nowPlayingIndicatorLast;
-				ppt.nowPlayingSidemarker = ppt.nowPlayingSidemarkerLast;
+		lib.pop.autoPlay.send = libSet.autoPlay;
+		lib.pop.setActions();
+		if (libSet.actionMode != curActionMode) {
+			if (libSet.actionMode != 2) {
+				libSet.itemShowStatistics = libSet.itemShowStatisticsLast;
+				libSet.highLightNowplaying = libSet.highLightNowplayingLast;
+				libSet.nowPlayingIndicator = libSet.nowPlayingIndicatorLast;
+				libSet.nowPlayingSidemarker = libSet.nowPlayingSidemarkerLast;
 			} else {
-				ppt.itemShowStatisticsLast = ppt.itemShowStatistics;
-				ppt.highLightNowplayingLast = ppt.highLightNowplaying;
-				ppt.nowPlayingIndicatorLast = ppt.nowPlayingIndicator;
-				ppt.nowPlayingSidemarkerLast = ppt.nowPlayingSidemarker;
-				ppt.itemShowStatistics = 7;
-				ppt.highLightNowplaying = true;
-				ppt.nowPlayingIndicator = true;
-				ppt.nowPlayingSidemarker = true;
+				libSet.itemShowStatisticsLast = libSet.itemShowStatistics;
+				libSet.highLightNowplayingLast = libSet.highLightNowplaying;
+				libSet.nowPlayingIndicatorLast = libSet.nowPlayingIndicator;
+				libSet.nowPlayingSidemarkerLast = libSet.nowPlayingSidemarker;
+				libSet.itemShowStatistics = 7;
+				libSet.highLightNowplaying = true;
+				libSet.nowPlayingIndicator = true;
+				libSet.nowPlayingSidemarker = true;
 			}
 		}
-		ppt.autoExpandLimit = Math.round(ppt.autoExpandLimit);
-		if (isNaN(ppt.autoExpandLimit)) ppt.autoExpandLimit = 350;
-		ppt.autoExpandLimit = $Lib.clamp(ppt.autoExpandLimit, 10, 1000);
-		ppt.margin = Math.round(ppt.margin);
-		if (isNaN(ppt.margin)) ppt.margin = 8 * $Lib.scale;
-		ppt.margin = $Lib.clamp(ppt.margin, 0, 100);
-		ppt.treeIndent = Math.round(ppt.treeIndent);
-		if (isNaN(ppt.treeIndent)) ppt.treeIndent = 19 * $Lib.scale;
-		ppt.treeIndent = $Lib.clamp(ppt.treeIndent, 0, 100);
+		libSet.autoExpandLimit = Math.round(libSet.autoExpandLimit);
+		if (isNaN(libSet.autoExpandLimit)) libSet.autoExpandLimit = 350;
+		libSet.autoExpandLimit = $Lib.clamp(libSet.autoExpandLimit, 10, 1000);
+		libSet.margin = Math.round(libSet.margin);
+		if (isNaN(libSet.margin)) libSet.margin = 8 * $Lib.scale;
+		libSet.margin = $Lib.clamp(libSet.margin, 0, 100);
+		libSet.treeIndent = Math.round(libSet.treeIndent);
+		if (isNaN(libSet.treeIndent)) libSet.treeIndent = 19 * $Lib.scale;
+		libSet.treeIndent = $Lib.clamp(libSet.treeIndent, 0, 100);
 
-		pop.cache = {
+		lib.pop.cache = {
 			standard: {},
 			search: {},
 			filter: {}
 		};
 
-		pop.tf = {
-			added: FbTitleFormat(ppt.tfAdded),
+		lib.pop.tf = {
+			added: FbTitleFormat(libSet.tfAdded),
 			bitrate: FbTitleFormat('%bitrate%'),
 			bytes: FbTitleFormat('%path%|%filesize%'),
-			date: FbTitleFormat(ppt.tfDate),
-			firstPlayed: FbTitleFormat(ppt.tfFirstPlayed),
-			lastPlayed: FbTitleFormat(ppt.tfLastPlayed),
-			pc: FbTitleFormat(ppt.tfPc),
-			popularity: FbTitleFormat(ppt.tfPopularity),
-			rating: FbTitleFormat(ppt.tfRating)
+			date: FbTitleFormat(libSet.tfDate),
+			firstPlayed: FbTitleFormat(libSet.tfFirstPlayed),
+			lastPlayed: FbTitleFormat(libSet.tfLastPlayed),
+			pc: FbTitleFormat(libSet.tfPc),
+			popularity: FbTitleFormat(libSet.tfPopularity),
+			rating: FbTitleFormat(libSet.tfRating)
 		}
 
-		pop.tree.forEach(v => {
+		lib.pop.tree.forEach(v => {
 			v.id = '';
 			v.count = '';
 			delete v.statistics;
 			delete v._statistics;
 		});
-		lib.checkView();
-		lib.logTree();
-		img.setRoot();
-		ppt.zoomImg = Math.round($Lib.clamp(ppt.zoomImg, 10, 500));
+		lib.lib.checkView();
+		lib.lib.logTree();
+		libImg.setRoot();
+		libSet.zoomImg = Math.round($Lib.clamp(libSet.zoomImg, 10, 500));
 
 		const o = !this.imgView ? 'verticalPad' : 'verticalAlbumArtPad';
-		if (ppt[o] === null) ppt[o] = !this.imgView ? 3 : 2;
-		ppt[o] = Math.round(ppt[o]);
-		if (isNaN(ppt[o])) ppt[o] = !this.imgView ? 3 : 2;
-		ppt[o] = $Lib.clamp(ppt[o], 0, !this.imgView ? 100 : 20);
+		if (libSet[o] === null) libSet[o] = !this.imgView ? 3 : 2;
+		libSet[o] = Math.round(libSet[o]);
+		if (isNaN(libSet[o])) libSet[o] = !this.imgView ? 3 : 2;
+		libSet[o] = $Lib.clamp(libSet[o], 0, !this.imgView ? 100 : 20);
 
-		ppt.iconCustom = ppt.iconCustom.trim();
-		ui.setNodes();
-		sbar.active = true;
-		sbar.duration = {
+		libSet.iconCustom = libSet.iconCustom.trim();
+		lib.ui.setNodes();
+		lib.sbar.active = true;
+		lib.sbar.duration = {
 			drag: 200,
-			inertia: ppt.durationTouchFlick,
-			full: ppt.durationScroll
+			inertia: libSet.durationTouchFlick,
+			full: libSet.durationScroll
 		};
-		sbar.duration.scroll = Math.round(sbar.duration.full * 0.8);
-		sbar.duration.step = Math.round(sbar.duration.full * 2 / 3);
-		sbar.duration.bar = sbar.duration.full;
-		sbar.duration.barFast = sbar.duration.step;
-		if (!ppt.butCustIconFont.length) ppt.butCustIconFont = 'Segoe UI Symbol';
-		ui.setSbar();
+		lib.sbar.duration.scroll = Math.round(lib.sbar.duration.full * 0.8);
+		lib.sbar.duration.step = Math.round(lib.sbar.duration.full * 2 / 3);
+		lib.sbar.duration.bar = lib.sbar.duration.full;
+		lib.sbar.duration.barFast = lib.sbar.duration.step;
+		if (!libSet.butCustIconFont.length) libSet.butCustIconFont = 'Segoe UI Symbol';
+		lib.ui.setSbar();
 		on_colours_changed();
-		if (ui.col.counts) panel.colMarker = true;
-		if (ppt.themed && ppt.theme) {
-			const themed_image = pref.customLibraryDir ? `${globals.customLibraryDir}cache\\library\\themed\\themed_image.bmp` : `${fb.ProfilePath}cache\\library\\themed\\themed_image.bmp`;
-			if ($Lib.file(themed_image)) sync.image(gdi.Image(themed_image));
+		if (lib.ui.col.counts) lib.panel.colMarker = true;
+		if (libSet.themed && libSet.theme) {
+			const themed_image = grSet.customLibraryDir ? `${grCfg.customLibraryDir}cache\\library\\themed\\themed_image.bmp` : `${fb.ProfilePath}cache\\library\\themed\\themed_image.bmp`;
+			if ($Lib.file(themed_image)) libSync.image(gdi.Image(themed_image));
 		}
 
-		if (img.labels.overlayDark) ui.getItemColours();
-		initLibraryColors();
-		themeColorAdjustments();
+		if (libImg.labels.overlayDark) lib.ui.getItemColours();
+		grm.theme.initLibraryColors();
+		grm.theme.themeColorAdjustments();
 
 		this.setRootName();
-		but.setSbarIcon();
-		pop.setValues();
-		pop.inlineRoot = ppt.rootNode && (ppt.inlineRoot || ppt.facetView);
+		lib.but.setSbarIcon();
+		lib.pop.setValues();
+		lib.pop.inlineRoot = libSet.rootNode && (libSet.inlineRoot || libSet.facetView);
 
-		ui.getFont();
+		lib.ui.getFont();
 		this.on_size();
 		this.tree.y = this.search.h;
-		but.createImages();
-		but.refresh(true);
-		find.on_size();
-		pop.createImages();
+		lib.but.createImages();
+		lib.but.refresh(true);
+		lib.find.on_size();
+		lib.pop.createImages();
 
-		if (ppt.highLightNowplaying || ppt.nowPlayingSidemarker) {
-			pop.getNowplaying();
-			pop.nowPlayingShow();
+		if (libSet.highLightNowplaying || libSet.nowPlayingSidemarker) {
+			lib.pop.getNowplaying();
+			lib.pop.nowPlayingShow();
 		}
 
-		if (panel.imgView && pop.tree.length) {
-			img.trimCache(pop.tree[0].key);
-			img.metrics();
+		if (lib.panel.imgView && lib.pop.tree.length) {
+			libImg.trimCache(lib.pop.tree[0].key);
+			libImg.metrics();
 		}
-		lib.rootNodes(1, true);
-		this.pn_h_auto = ppt.pn_h_auto && ppt.rootNode;
+		lib.lib.rootNodes(1, true);
+		this.pn_h_auto = libSet.pn_h_auto && libSet.rootNode;
 		if (this.pn_h_auto) {
-			window.MaxHeight = window.MinHeight = ppt.pn_h;
+			window.MaxHeight = window.MinHeight = libSet.pn_h;
 		}
-		if (panel.pn_h_auto && !panel.imgView && ppt.pn_h == ppt.pn_h_min && this.tree[0]) this.clearChild(this.tree[0]);
-		pop.checkAutoHeight();
-		if (sbar.scroll > sbar.max_scroll) sbar.checkScroll(sbar.max_scroll);
+		if (lib.panel.pn_h_auto && !lib.panel.imgView && libSet.pn_h == libSet.pn_h_min && this.tree[0]) this.clearChild(this.tree[0]);
+		lib.pop.checkAutoHeight();
+		if (lib.sbar.scroll > lib.sbar.max_scroll) lib.sbar.checkScroll(lib.sbar.max_scroll);
 
-		if (ui.sbarType != 0) sbar.narrow.show = false;
-		sbar.resetAuto();
+		if (lib.ui.sbarType != 0) lib.sbar.narrow.show = false;
+		lib.sbar.resetAuto();
 
 		window.Repaint();
 	}
 
 	zoomReset() {
-		sbar.logScroll();
-		ppt.zoomFont = 100;
-		ppt.zoomNode = 100;
+		lib.sbar.logScroll();
+		libSet.zoomFont = 100;
+		libSet.zoomNode = 100;
 		this.zoomFilter = 1;
-		ppt.zoomFilter = 100;
-		ppt.zoomTooltipBut = 100;
+		libSet.zoomFilter = 100;
+		libSet.zoomTooltipBut = 100;
 		this.setTopBar();
-		ui.getFont();
+		lib.ui.getFont();
 		this.on_size();
-		find.on_size();
-		if (panel.imgView) {
-			ppt.zoomImg = 100;
-			img.clearCache();
-			img.metrics();
+		lib.find.on_size();
+		if (lib.panel.imgView) {
+			libSet.zoomImg = 100;
+			libImg.clearCache();
+			libImg.metrics();
 		}
-		if (ui.style.topBarShow || ppt.sbarShow) but.refresh(true);
+		if (lib.ui.style.topBarShow || libSet.sbarShow) lib.but.refresh(true);
 		window.Repaint();
-		sbar.setScroll();
+		lib.sbar.setScroll();
 	}
 }

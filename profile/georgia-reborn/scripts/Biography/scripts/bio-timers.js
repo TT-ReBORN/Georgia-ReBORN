@@ -1,6 +1,6 @@
 'use strict';
 
-class TimersBio {
+class BioTimers {
 	constructor() {
 		['dl', 'img', 'lyrics', 'sim1', 'sim2', 'source', 'transition', 'tt', 'zSearch'].forEach(v => this[v] = {
 			id: null
@@ -35,21 +35,21 @@ class TimersBio {
 		if (!$Bio.server) return;
 		this.clear(this.img);
 		this.img.id = setInterval(() => {
-			imgBio.fresh();
-			menBio.fresh();
+			bio.img.fresh();
+			bio.men.fresh();
 			window.NotifyOthers('bio_imgChange', 0);
 		}, 1000);
 	}
 
 	res(force) {
 		window.NotifyOthers('bio_getImg', force);
-		if ($Bio.server) imgBio.grab(force);
+		if ($Bio.server) bio.img.grab(force);
 	}
 
 	tooltip() {
 		this.clear(this.tt);
 		this.tt.id = setTimeout(() => {
-			txt.deactivateTooltip();
+			bio.txt.deactivateTooltip();
 			this.tt.id = null;
 		}, 5000);
 	}

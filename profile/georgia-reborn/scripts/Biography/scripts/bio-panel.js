@@ -1,6 +1,6 @@
 'use strict';
 
-class PanelBio {
+class BioPanel {
 	constructor() {
 		this.arc = 10;
 		this.calc = true;
@@ -17,7 +17,7 @@ class PanelBio {
 		};
 
 		this.notifyTimestamp = Date.now();
-		window.NotifyOthers(`bio_notServer${pptBio.serverName}`, this.notifyTimestamp);
+		window.NotifyOthers(`bio_notServer${bioSet.serverName}`, this.notifyTimestamp);
 		this.tf = {};
 		this.w = 0;
 
@@ -26,14 +26,14 @@ class PanelBio {
 			init: [],
 			ix: 0,
 			list: [],
-			history: $Bio.jsonParse(pptBio.albumHistory, []),
+			history: $Bio.jsonParse(bioSet.albumHistory, []),
 			uniq: []
 		};
 
 		this.art = {
 			cur: '',
-			fields: cfg.artFields.map(v => `%${v}%`),
-			history: $Bio.jsonParse(pptBio.artistHistory, []),
+			fields: bioCfg.artFields.map(v => `%${v}%`),
+			history: $Bio.jsonParse(bioSet.artistHistory, []),
 			init: [],
 			ix: 0,
 			list: [],
@@ -43,10 +43,10 @@ class PanelBio {
 		};
 
 		this.bor = {
-			t: pptBio.borL,
-			r: pptBio.borR,
-			b: pptBio.borB,
-			l: pptBio.borL
+			t: bioSet.borL,
+			r: bioSet.borR,
+			b: bioSet.borB,
+			l: bioSet.borL
 		};
 
 		this.filmStripSize = {
@@ -73,7 +73,7 @@ class PanelBio {
 			curAlb: '',
 			artist: '',
 			curArtist: '',
-			focus: pptBio.focus,
+			focus: bioSet.focus,
 			last_pressed_coord: {
 				x: -1,
 				y: -1
@@ -91,7 +91,7 @@ class PanelBio {
 		};
 
 		for (let i = 0; i < 8; i++) {
-			if (pptBio.txtReaderEnable && pptBio[`useTxtReader${i}`] && pptBio[`pthTxtReader${i}`] && pptBio[`lyricsTxtReader${i}`] && !/item_properties/i.test(utils.SplitFilePath(pptBio[`pthTxtReader${i}`])[1]) && !/nowplaying/i.test(utils.SplitFilePath(pptBio[`pthTxtReader${i}`])[1])) {
+			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && bioSet[`pthTxtReader${i}`] && bioSet[`lyricsTxtReader${i}`] && !/item_properties/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1]) && !/nowplaying/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
 				this.id.lyricsSource = true;
 				this.id.focus = false;
 				break;
@@ -99,7 +99,7 @@ class PanelBio {
 		}
 
 		for (let i = 0; i < 8; i++) {
-			if (pptBio.txtReaderEnable && pptBio[`useTxtReader${i}`] && /nowplaying/i.test(utils.SplitFilePath(pptBio[`pthTxtReader${i}`])[1])) {
+			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && /nowplaying/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
 				this.id.nowplayingSource = true;
 				this.id.focus = false;
 				break;
@@ -107,13 +107,13 @@ class PanelBio {
 		}
 
 		for (let i = 0; i < 8; i++) {
-			if (pptBio.txtReaderEnable && pptBio[`useTxtReader${i}`] && /item_properties/i.test(utils.SplitFilePath(pptBio[`pthTxtReader${i}`])[1])) {
+			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && /item_properties/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
 				this.id.propsSource = true;
 				break;
 			}
 		}
 
-		this.id.lookUp = pptBio.lookUp;
+		this.id.lookUp = bioSet.lookUp;
 
 		this.im = {
 			t: 0,
@@ -130,7 +130,7 @@ class PanelBio {
 		};
 
 		this.logo = {
-			img: my_utilsBio.getImageAsset('Logo.png')
+			img: bio_my_utils.getImageAsset('Logo.png')
 		};
 
 		this.repaint = {
@@ -145,24 +145,24 @@ class PanelBio {
 			x: 0,
 			y: 0,
 			h: 100,
-			style: !pptBio.sbarFullHeight ? 2 : 0,
+			style: !bioSet.sbarFullHeight ? 2 : 0,
 			top_corr: 0
 		};
 
 		this.style = {
-			cycTimeItem: Math.max(pptBio.cycTimeItem, 30),
+			cycTimeItem: Math.max(bioSet.cycTimeItem, 30),
 			enlarged_img: false,
-			free: $Bio.jsonParse(pptBio.styleFree, false),
-			fullWidthHeading: pptBio.heading && pptBio.fullWidthHeading,
-			gap: pptBio.gap,
+			free: $Bio.jsonParse(bioSet.styleFree, false),
+			fullWidthHeading: bioSet.heading && bioSet.fullWidthHeading,
+			gap: bioSet.gap,
 			imgSize: 0,
-			inclTrackRev: pptBio.inclTrackRev,
+			inclTrackRev: bioSet.inclTrackRev,
 			max_y: 0,
 			minH: 50,
 			moreTags: false,
 			name: [],
 			new: false,
-			overlay: $Bio.jsonParse(pptBio.styleOverlay, false),
+			overlay: $Bio.jsonParse(bioSet.styleOverlay, false),
 			showFilmStrip: false
 		};
 
@@ -200,9 +200,9 @@ class PanelBio {
 		this.topAlbumsKey = 'Top Albums: |Top-Alben: |\\u00c1lbumes M\\u00e1s Escuchados: |Top Albums: |Album Pi\\u00f9 Ascoltati: |\\u4eba\\u6c17\\u30a2\\u30eb\\u30d0\\u30e0: |Najpopularniejsze Albumy: |\\u00c1lbuns Principais: |\\u041f\\u043e\\u043f\\u0443\\u043b\\u044f\\u0440\\u043d\\u044b\\u0435 \\u0430\\u043b\\u044c\\u0431\\u043e\\u043c\\u044b: |Toppalbum: |En Sevilen Alb\\u00fcmler: |\\u6700\\u4f73\\u4e13\\u8f91: ';
 
 		if (!this.style.free || !$Bio.isArray(this.style.free)) {
-			pptBio.set('Panel Biography - System: Freestyle Custom BackUp', pptBio.styleFree);
+			bioSet.set('Panel Biography - System: Freestyle Custom BackUp', bioSet.styleFree);
 			this.style.free = [];
-			pptBio.styleFree = JSON.stringify(this.style.free);
+			bioSet.styleFree = JSON.stringify(this.style.free);
 			fb.ShowPopupMessage('Unable to load custom styles.\n\nThe save location was corrupt. Custom styles have been reset.\n\nThe original should be backed up to "SYSTEM.Freestyle Custom BackUp" in panel properties.', 'Biography');
 		} else {
 			let valid = true;
@@ -210,14 +210,14 @@ class PanelBio {
 				if (!$Bio.objHasOwnProperty(v, 'name') || isNaN(v.imL) || isNaN(v.imR) || isNaN(v.imT) || isNaN(v.imB) || isNaN(v.txL) || isNaN(v.txR) || isNaN(v.txT) || isNaN(v.txB)) valid = false;
 			});
 			if (!valid) {
-				pptBio.set('Panel Biography - System: Freestyle Custom BackUp', pptBio.styleFree);
+				bioSet.set('Panel Biography - System: Freestyle Custom BackUp', bioSet.styleFree);
 				this.style.free = [];
-				pptBio.styleFree = JSON.stringify(this.style.free);
+				bioSet.styleFree = JSON.stringify(this.style.free);
 				fb.ShowPopupMessage('Unable to load custom styles.\n\nThe save location was corrupt. Custom styles have been reset.\n\nThe original should be backed up to "SYSTEM.Freestyle Custom BackUp" in panel properties.', 'Biography');
 			}
 		}
 		if (!this.style.overlay || !$Bio.objHasOwnProperty(this.style.overlay, 'name') || isNaN(this.style.overlay.imL) || isNaN(this.style.overlay.imR) || isNaN(this.style.overlay.imT) || isNaN(this.style.overlay.imB) || isNaN(this.style.overlay.txL) || isNaN(this.style.overlay.txR) || isNaN(this.style.overlay.txT) || isNaN(this.style.overlay.txB)) {
-			pptBio.set('Panel Biography - System: Overlay BackUp', pptBio.styleOverlay);
+			bioSet.set('Panel Biography - System: Overlay BackUp', bioSet.styleOverlay);
 
 			this.style.overlay = {
 				name: 'Overlay',
@@ -231,7 +231,7 @@ class PanelBio {
 				txB: 0
 			};
 
-			pptBio.styleOverlay = JSON.stringify(this.style.overlay);
+			bioSet.styleOverlay = JSON.stringify(this.style.overlay);
 			fb.ShowPopupMessage('Unable to load "Panel Biography - System: Overlay".\n\nThe save location was corrupt. The overlay style has been reset to default.\n\nThe original should be backed up to "Panel Biography - System: Overlay BackUp" in panel properties.', 'Biography');
 		}
 
@@ -259,7 +259,7 @@ class PanelBio {
 		switch (type) {
 			case 0:
 				if ($Bio.server) {
-					serverBio.download(force, {
+					bio.server.download(force, {
 						ix: this.art.ix,
 						focus,
 						arr: this.art.list.slice(0)
@@ -269,7 +269,7 @@ class PanelBio {
 						arr: this.alb.list.slice(0)
 					}, notify);
 				}
-				if (!$Bio.server || pptBio.multiServer) {
+				if (!$Bio.server || bioSet.multiServer) {
 					window.NotifyOthers(notify, [{
 						ix: this.art.ix,
 						focus,
@@ -282,7 +282,7 @@ class PanelBio {
 				}
 				break;
 			case 1:
-				serverBio.download(force, {
+				bio.server.download(force, {
 					ix: this.art.ix,
 					focus,
 					arr: this.art.list.slice(0)
@@ -307,75 +307,75 @@ class PanelBio {
 			{ key: 'lookUpServerRate', descr: 'Panel Biography - Panel Lookup Refresh Rate', min: 1500, max: 15000, oldDef: 1500, newDef: 1500 }
 		].forEach((rate) => {
 			const name = `${rate.descr} ${rate.min}-${rate.max} msec (Max)`;
-			const value = pptBio.get(name, null);
+			const value = bioSet.get(name, null);
 			if (value === null) { throw (`property_name: ${name}\nPanel's rate property name does not match range checked`); }
 			else {
-				if (pptBio[rate.key] === rate.oldDef && pptBio[rate.key] !== rate.newDef) { pptBio[rate.key] = rate.newDef; }
-				pptBio[rate.key] = $Bio.clamp(pptBio[rate.key], rate.min, rate.max);
-				if (pptBio[rate.key] !== Number(value)) {
-					pptBio.set(name, pptBio[rate.key]);
+				if (bioSet[rate.key] === rate.oldDef && bioSet[rate.key] !== rate.newDef) { bioSet[rate.key] = rate.newDef; }
+				bioSet[rate.key] = $Bio.clamp(bioSet[rate.key], rate.min, rate.max);
+				if (bioSet[rate.key] !== Number(value)) {
+					bioSet.set(name, bioSet[rate.key]);
 				}
 			}
 		});
 
 		this.focusLoad = $Bio.debounce(() => {
-			if (!pptBio.img_only) txt.on_playback_new_track();
-			if (!pptBio.text_only || uiBio.style.isBlur || pptBio.showFilmStrip) imgBio.on_playback_new_track();
-		}, pptBio.focusLoadRate, {
-			leading: pptBio.focusLoadImmediate,
+			if (!bioSet.img_only) bio.txt.on_playback_new_track();
+			if (!bioSet.text_only || bio.ui.style.isBlur || bioSet.showFilmStrip) bio.img.on_playback_new_track();
+		}, bioSet.focusLoadRate, {
+			leading: bioSet.focusLoadImmediate,
 			trailing: true
 		});
 
 		this.focusServer = $Bio.debounce(() => {
 			this.changed();
-		}, pptBio.focusServerRate);
+		}, bioSet.focusServerRate);
 
 		this.lookUpServer = $Bio.debounce(() => {
 			this.callServer(false, this.id.focus, 'bio_lookUpItem', 0);
-		}, pptBio.lookUpServerRate);
+		}, bioSet.lookUpServerRate);
 	}
 
 	checkNumServers() {
-		pptBio.multiServer = false;
+		bioSet.multiServer = false;
 		window.NotifyOthers('bio_checkNumServers', 0);
 		this.id.numServersChecked = true;
 	}
 
 	changeView(x, y, menu) {
-		if (!menu && (this.zoom() || vkBio.k('alt') || x < 0 || y < 0 || x > this.w || y > this.h || butBio.Dn)) return false;
-		if (!menu && !pptBio.dblClickToggle && this.isTouchEvent(x, y)) return false;
-		if (!menu && !pptBio.img_only && (txt.scrollbar_type().onSbar && !txt.lyricsDisplayed())  || butBio.trace('heading', x, y) || butBio.trace('lookUp', x, y)) return false;
+		if (!menu && (this.zoom() || bio.vk.k('alt') || x < 0 || y < 0 || x > this.w || y > this.h || bio.but.Dn)) return false;
+		if (!menu && !bioSet.dblClickToggle && this.isTouchEvent(x, y)) return false;
+		if (!menu && !bioSet.img_only && (bio.txt.scrollbar_type().onSbar && !bio.txt.lyricsDisplayed())  || bio.but.trace('heading', x, y) || bio.but.trace('lookUp', x, y)) return false;
 		return true;
 	}
 
 	checkFilm() {
-		if (!pptBio.showFilmStrip) return;
+		if (!bioSet.showFilmStrip) return;
 		const item = this.getItem();
 		if (Date.now() - this.id.loadTimestamp > 1500) { // delay needed for correct sizing on init; ignored by click (sets loadTimestamp = 0);
 			switch (item) {
 				case 'stndArtist':
-					!this.id.lookUp ? txt.getText(true) : txt.getItem(true, this.art.ix, this.alb.ix);
-					imgBio.getImages();
+					!this.id.lookUp ? bio.txt.getText(true) : bio.txt.getItem(true, this.art.ix, this.alb.ix);
+					bio.img.getImages();
 					break;
 				case 'stndAlbum':
-					this.style.inclTrackRev != 1 || !this.id.lookUp ? txt.getText(true) : txt.getItem(true, this.art.ix, this.alb.ix);
-					imgBio.getImages();
+					this.style.inclTrackRev != 1 || !this.id.lookUp ? bio.txt.getText(true) : bio.txt.getItem(true, this.art.ix, this.alb.ix);
+					bio.img.getImages();
 					break;
 				case 'lookUp':
-					txt.getItem(true, this.art.ix, this.alb.ix);
-					imgBio.getItem(this.art.ix, this.alb.ix);
+					bio.txt.getItem(true, this.art.ix, this.alb.ix);
+					bio.img.getItem(this.art.ix, this.alb.ix);
 					break;
 			}
-			butBio.refresh(true);
-			txt.getScrollPos();
-			txt.paint();
+			bio.but.refresh(true);
+			bio.txt.getScrollPos();
+			bio.txt.paint();
 		}
 	}
 
 	cleanPth(pth, item, type, artist, album, bio) {
 		if (!pth) return '';
 		pth = pth.trim().replace(/\//g, '\\');
-		pth = cfg.expandPath(pth);
+		pth = bioCfg.expandPath(pth);
 		switch (type) {
 			case 'remap':
 				pth = bio ? this.tfBio(pth, artist, item) : this.tfRev(pth, artist, album, item);
@@ -413,39 +413,39 @@ class PanelBio {
 		this.clicked = this.changeView(x, y, menu);
 		if (!this.clicked) return;
 		this.id.loadTimestamp = 0;
-		txt.logScrollPos();
-		filmStrip.logScrollPos();
-		pptBio.toggle('artistView');
-		imgBio.resetTimestamps();
+		bio.txt.logScrollPos();
+		bio.filmStrip.logScrollPos();
+		bioSet.toggle('artistView');
+		bio.img.resetTimestamps();
 		const sameStyle = this.sameStyle();
 		if (!sameStyle) this.setStyle();
-		txt.na = '';
-		timerBio.clear(timerBio.source);
+		bio.txt.na = '';
+		bio.timer.clear(bio.timer.source);
 		if (!this.lock && this.updateNeeded()) {
 			this.getList(true, true);
-			if (!pptBio.artistView) txt.albumReset();
+			if (!bioSet.artistView) bio.txt.albumReset();
 		}
 		const item = this.getItem();
 		switch (item) {
 			case 'stndArtist':
-				!this.id.lookUp ? txt.getText(this.calc) : txt.getItem(this.calc, this.art.ix, this.alb.ix);
-				imgBio.getImages();
+				!this.id.lookUp ? bio.txt.getText(this.calc) : bio.txt.getItem(this.calc, this.art.ix, this.alb.ix);
+				bio.img.getImages();
 				break;
 			case 'stndAlbum':
-				this.style.inclTrackRev != 1 || !this.id.lookUp ? txt.getText(this.calc) : txt.getItem(this.calc, this.art.ix, this.alb.ix);
-				imgBio.getImages();
+				this.style.inclTrackRev != 1 || !this.id.lookUp ? bio.txt.getText(this.calc) : bio.txt.getItem(this.calc, this.art.ix, this.alb.ix);
+				bio.img.getImages();
 				break;
 			case 'lookUp':
-				txt.getItem(this.calc, this.art.ix, this.alb.ix);
-				imgBio.getItem(this.art.ix, this.alb.ix);
+				bio.txt.getItem(this.calc, this.art.ix, this.alb.ix);
+				bio.img.getItem(this.art.ix, this.alb.ix);
 				break;
 		}
-		if (pptBio.img_only) imgBio.setCrop(true);
-		butBio.refresh(true);
-		if (!sameStyle && pptBio.filmStripOverlay && pptBio.showFilmStrip) filmStrip.set(pptBio.filmStripPos);
-		if (!pptBio.artistView) imgBio.setCheckArr(null);
+		if (bioSet.img_only) bio.img.setCrop(true);
+		bio.but.refresh(true);
+		if (!sameStyle && bioSet.filmStripOverlay && bioSet.showFilmStrip) bio.filmStrip.set(bioSet.filmStripPos);
+		if (!bioSet.artistView) bio.img.setCheckArr(null);
 		this.move(x, y, true);
-		txt.getScrollPos();
+		bio.txt.getScrollPos();
 		this.calc = false;
 	}
 
@@ -458,7 +458,7 @@ class PanelBio {
 		};
 		const caption = 'Create New Layout';
 		const prompt = 'This copies the current layout style & saves it to the entered name\n\nThe copy is in freestyle format that offers fully flexible drag style positioning of image & text boxes + overlay effects\n\nContinue?';
-		const fallback = popUpBoxBio.isHtmlDialogSupported() ? popUpBoxBio.input(caption, prompt, ok_callback, '', 'My Style') : true;
+		const fallback = bio.popUpBox.isHtmlDialogSupported() ? bio.popUpBox.input(caption, prompt, ok_callback, '', 'My Style') : true;
 		if (fallback) {
 			try {
 				ns = utils.InputBox(0, prompt, caption, 'My Style', true);
@@ -469,14 +469,14 @@ class PanelBio {
 		let lines_drawn;
 		let imgs;
 		let te_t;
-		switch (pptBio.style) {
+		switch (bioSet.style) {
 			case 0: {
-				let txt_h = Math.round((this.h - this.bor.t - pptBio.textB) * (1 - pptBio.rel_imgs));
-				lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0);
-				txt_h = lines_drawn * uiBio.font.main_h + this.style.gap;
-				imgs = Math.max(this.h - txt_h - this.bor.t - pptBio.textB - uiBio.heading.h, 10);
+				let txt_h = Math.round((this.h - this.bor.t - bioSet.textB) * (1 - bioSet.rel_imgs));
+				lines_drawn = Math.max(Math.floor((txt_h - bio.ui.heading.h) / bio.ui.font.main_h), 0);
+				txt_h = lines_drawn * bio.ui.font.main_h + this.style.gap;
+				imgs = Math.max(this.h - txt_h - this.bor.t - bioSet.textB - bio.ui.heading.h, 10);
 				this.im.b = (this.h - this.bor.t - imgs - this.bor.b) / this.h;
-				this.tx.t = (this.bor.t + imgs - pptBio.textT + this.style.gap) / this.h;
+				this.tx.t = (this.bor.t + imgs - bioSet.textT + this.style.gap) / this.h;
 				this.im.l = 0;
 				this.im.r = 0;
 				this.im.t = 0;
@@ -486,12 +486,12 @@ class PanelBio {
 				break;
 			}
 			case 1: {
-				const txt_sp = Math.round((this.w - pptBio.textL - this.bor.r) * (1 - pptBio.rel_imgs));
-				lines_drawn = Math.max(Math.floor((this.h - pptBio.textT - pptBio.textB - uiBio.heading.h) / uiBio.font.main_h), 0);
-				te_t = !pptBio.topAlign ? pptBio.textT + (this.h - pptBio.textT - pptBio.textB - lines_drawn * uiBio.font.main_h + uiBio.heading.h) / 2 : pptBio.textT + uiBio.heading.h;
-				this.im.l = (txt_sp + this.style.gap + (pptBio.sbarShow ? uiBio.sbar.sp + 10 : 0)) / this.w;
-				this.tx.r = (this.w - (txt_sp + pptBio.textR)) / this.w;
-				this.tx.t = (te_t - uiBio.heading.h - pptBio.textT) / this.h;
+				const txt_sp = Math.round((this.w - bioSet.textL - this.bor.r) * (1 - bioSet.rel_imgs));
+				lines_drawn = Math.max(Math.floor((this.h - bioSet.textT - bioSet.textB - bio.ui.heading.h) / bio.ui.font.main_h), 0);
+				te_t = !bioSet.topAlign ? bioSet.textT + (this.h - bioSet.textT - bioSet.textB - lines_drawn * bio.ui.font.main_h + bio.ui.heading.h) / 2 : bioSet.textT + bio.ui.heading.h;
+				this.im.l = (txt_sp + this.style.gap + (bioSet.sbarShow ? bio.ui.sbar.sp + 10 : 0)) / this.w;
+				this.tx.r = (this.w - (txt_sp + bioSet.textR)) / this.w;
+				this.tx.t = (te_t - bio.ui.heading.h - bioSet.textT) / this.h;
 				this.im.r = 0;
 				this.im.t = 0;
 				this.im.b = 0;
@@ -500,13 +500,13 @@ class PanelBio {
 				break;
 			}
 			case 2: {
-				let txt_h = Math.round((this.h - pptBio.textT - this.bor.b) * (1 - pptBio.rel_imgs));
-				lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0);
-				txt_h = lines_drawn * uiBio.font.main_h + this.style.gap;
-				imgs = Math.max(this.h - txt_h - this.bor.b - pptBio.textT - uiBio.heading.h, 10);
+				let txt_h = Math.round((this.h - bioSet.textT - this.bor.b) * (1 - bioSet.rel_imgs));
+				lines_drawn = Math.max(Math.floor((txt_h - bio.ui.heading.h) / bio.ui.font.main_h), 0);
+				txt_h = lines_drawn * bio.ui.font.main_h + this.style.gap;
+				imgs = Math.max(this.h - txt_h - this.bor.b - bioSet.textT - bio.ui.heading.h, 10);
 				const img_t = this.h - this.bor.b - imgs;
 				this.im.t = img_t / this.h;
-				this.tx.b = (this.h - img_t - pptBio.textB + this.style.gap) / this.h;
+				this.tx.b = (this.h - img_t - bioSet.textB + this.style.gap) / this.h;
 				this.im.l = 0;
 				this.im.r = 0;
 				this.im.b = 0;
@@ -516,14 +516,14 @@ class PanelBio {
 				break;
 			}
 			case 3: {
-				const te_r = pptBio.sbarShow ? Math.max(pptBio.textR, uiBio.sbar.sp + 10) : pptBio.textR;
-				const txt_sp = Math.round((this.w - this.bor.l - te_r) * (1 - pptBio.rel_imgs));
+				const te_r = bioSet.sbarShow ? Math.max(bioSet.textR, bio.ui.sbar.sp + 10) : bioSet.textR;
+				const txt_sp = Math.round((this.w - this.bor.l - te_r) * (1 - bioSet.rel_imgs));
 				imgs = Math.max(this.w - txt_sp - this.bor.l - te_r - this.style.gap, 10);
-				lines_drawn = Math.max(Math.floor((this.h - pptBio.textT - pptBio.textB - uiBio.heading.h) / uiBio.font.main_h), 0);
-				te_t = !pptBio.topAlign ? pptBio.textT + (this.h - pptBio.textT - pptBio.textB - lines_drawn * uiBio.font.main_h + uiBio.heading.h) / 2 : pptBio.textT + uiBio.heading.h;
+				lines_drawn = Math.max(Math.floor((this.h - bioSet.textT - bioSet.textB - bio.ui.heading.h) / bio.ui.font.main_h), 0);
+				te_t = !bioSet.topAlign ? bioSet.textT + (this.h - bioSet.textT - bioSet.textB - lines_drawn * bio.ui.font.main_h + bio.ui.heading.h) / 2 : bioSet.textT + bio.ui.heading.h;
 				this.im.r = (this.w - this.bor.l - imgs - this.bor.r) / this.w;
-				this.tx.l = (this.bor.l + imgs - pptBio.textL + this.style.gap) / this.w;
-				this.tx.t = (te_t - uiBio.heading.h - pptBio.textT) / this.h;
+				this.tx.l = (this.bor.l + imgs - bioSet.textL + this.style.gap) / this.w;
+				this.tx.t = (te_t - bio.ui.heading.h - bioSet.textT) / this.h;
 				this.im.l = 0;
 				this.im.t = 0;
 				this.im.b = 0;
@@ -535,9 +535,9 @@ class PanelBio {
 		this.style.free.forEach(v => {
 			if (v.name == ns) ns = ns + ' New';
 		});
-		if (pptBio.style > 3 && (pptBio.img_only || pptBio.text_only)) {
-			if (pptBio.style - 6 >= this.style.free.length) this.getStyleFallback();
-			const obj = pptBio.style == 4 || pptBio.style == 5 ? this.style.overlay : this.style.free[pptBio.style - 6];
+		if (bioSet.style > 3 && (bioSet.img_only || bioSet.text_only)) {
+			if (bioSet.style - 6 >= this.style.free.length) this.getStyleFallback();
+			const obj = bioSet.style == 4 || bioSet.style == 5 ? this.style.overlay : this.style.free[bioSet.style - 6];
 			this.im.l = $Bio.clamp(obj.imL, 0, 1);
 			this.im.r = $Bio.clamp(obj.imR, 0, 1);
 			this.im.t = $Bio.clamp(obj.imT, 0, 1);
@@ -559,24 +559,24 @@ class PanelBio {
 			txB: this.tx.b
 		});
 		this.sort(this.style.free, 'name');
-		pptBio.styleFree = JSON.stringify(this.style.free);
+		bioSet.styleFree = JSON.stringify(this.style.free);
 		this.style.free.some((v, i) => {
 			if (v.name == ns) {
-				if (pptBio.sameStyle) pptBio.style = i + 6;
-				else if (pptBio.artistView) pptBio.bioStyle = i + 6;
-				else pptBio.revStyle = i + 6;
+				if (bioSet.sameStyle) bioSet.style = i + 6;
+				else if (bioSet.artistView) bioSet.bioStyle = i + 6;
+				else bioSet.revStyle = i + 6;
 				return true;
 			}
 		});
 		this.getStyleNames();
-		txt.refresh(0);
-		timerBio.clear(timerBio.source);
-		timerBio.source.id = setTimeout(() => {
+		bio.txt.refresh(0);
+		bio.timer.clear(bio.timer.source);
+		bio.timer.source.id = setTimeout(() => {
 			this.style.new = false;
 			window.Repaint();
-			timerBio.source.id = null;
+			bio.timer.source.id = null;
 		}, 10000);
-		if (timerBio.source.id !== 0) {
+		if (bio.timer.source.id !== 0) {
 			this.style.new = true;
 			window.Repaint();
 		}
@@ -586,47 +586,47 @@ class PanelBio {
 		const continue_confirmation = (status, confirmed) => {
 			if (confirmed) {
 				this.style.free.splice(n - 6, 1);
-				pptBio.styleFree = JSON.stringify(this.style.free);
-				pptBio.style = 0;
-				if (!pptBio.sameStyle) {
-					if (pptBio.artistView) pptBio.bioStyle = 0;
-					else pptBio.revStyle = 0;
+				bioSet.styleFree = JSON.stringify(this.style.free);
+				bioSet.style = 0;
+				if (!bioSet.sameStyle) {
+					if (bioSet.artistView) bioSet.bioStyle = 0;
+					else bioSet.revStyle = 0;
 				}
 				this.getStyleNames();
-				if (!pptBio.showFilmStrip) txt.refresh(0);
-				else filmStrip.set(pptBio.filmStripPos);
+				if (!bioSet.showFilmStrip) bio.txt.refresh(0);
+				else bio.filmStrip.set(bioSet.filmStripPos);
 			}
 		};
 		const caption = 'Delete Current Style';
 		const prompt = `Delete: ${this.style.name[n]}\n\nStyle will be set to top`;
-		const wsh = popUpBoxBio.isHtmlDialogSupported() ? popUpBoxBio.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
+		const wsh = bio.popUpBox.isHtmlDialogSupported() ? bio.popUpBox.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
 		if (wsh) continue_confirmation('ok', $Bio.wshPopup(prompt, caption));
 	}
 
 	draw(gr) {
-		let font = uiBio.font.main;
+		let font = bio.ui.font.main;
 		let str = 'POWERED by allmusic, last.fm & Wikipedia.\r\n\r\nShift+middle click to activate / inactivate.';
 		let textHeight2;
 
 		const textHeight1 = Math.round(gr.MeasureString(str, font, 10, 0, this.w - 20, 1000, StringFormat(1, 1)).Height);
 		const version = `  ${window.ScriptInfo.Name}: v${window.ScriptInfo.Version}`;
-		const versionHeight = gr.CalcTextHeight(version, uiBio.font.small);
+		const versionHeight = gr.CalcTextHeight(version, bio.ui.font.small);
 		const txtSp = this.h * 0.37;
 
 		if (textHeight1 > txtSp) {
 			str = str.replace('\r\n\r\n', ' ');
 			textHeight2 = Math.round(gr.MeasureString(str, font, 10, 0, this.w - 20, 1000, StringFormat(1, 1)).Height);
-			if (textHeight2 > txtSp) font = uiBio.font.small;
+			if (textHeight2 > txtSp) font = bio.ui.font.small;
 		}
 
 		const textHeight3 = Math.round(gr.MeasureString(str, font, 10, 0, this.w - 20, 1000, StringFormat(1, 1)).Height);
 		if (textHeight3 > txtSp) str = 'Shift+middle click to activate.';
 
-		let textCol = uiBio.col.text;
-		let textCol_h = uiBio.col.text_h;
-		if (pptBio.theme > 0) {
-			textCol = uiBio.dui ? window.GetColourDUI(0) : window.GetColourCUI(0);
-			textCol_h = uiBio.dui ? window.GetColourDUI(2) : window.GetColourCUI(2);
+		let textCol = bio.ui.col.text;
+		// let textCol_h = bio.ui.col.text_h;
+		if (bioSet.theme > 0) {
+			textCol = bio.ui.dui ? window.GetColourDUI(0) : window.GetColourCUI(0);
+			// textCol_h = bio.ui.dui ? window.GetColourDUI(2) : window.GetColourCUI(2);
 		}
 		const hAvail = (this.h - txtSp - versionHeight) * 0.9;
 		const wAvail = this.w * 0.9;
@@ -634,13 +634,13 @@ class PanelBio {
 		this.logo.w = scale[0];
 		this.logo.h = scale[1];
 		this.logo.x = (this.w - this.logo.w) / 2;
-		this.logo.y = hAvail - this.logo.h + versionHeight + hAvail * 0.145 + uiBio.y + pptBio.borT;
+		this.logo.y = hAvail - this.logo.h + versionHeight + hAvail * 0.145 + bio.ui.y + bioSet.borT;
 
 		gr.SetInterpolationMode(7);
 		if (this.logo.img) gr.DrawImage(this.logo.img, this.logo.x, this.logo.y, this.logo.w, this.logo.h, 0, 0, this.logo.img.Width, this.logo.img.Height);
 		gr.SetInterpolationMode(0);
-		// gr.GdiDrawText(version, uiBio.font.small, textCol, 10, pptBio.borT * 0.5 + this.h - txtSp, this.w - 20, txtSp, txt.ncc);
-		gr.GdiDrawText(str, font, textCol, 10, uiBio.y + this.h - txtSp, this.w - 20, txtSp, txt.ncc);
+		// gr.GdiDrawText(version, bio.ui.font.small, textCol, 10, bioSet.borT * 0.5 + this.h - txtSp, this.w - 20, txtSp, txt.ncc);
+		gr.GdiDrawText(str, font, textCol, 10, bio.ui.y + this.h - txtSp, this.w - 20, txtSp, bio.txt.ncc);
 	}
 
 	exportStyle(n) {
@@ -651,21 +651,21 @@ class PanelBio {
 		};
 		const caption = 'Export Current Style To Other Biography Panels';
 		const prompt = `Export: ${this.style.name[n]}`;
-		const wsh = popUpBoxBio.isHtmlDialogSupported() ? popUpBoxBio.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
+		const wsh = bio.popUpBox.isHtmlDialogSupported() ? bio.popUpBox.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
 		if (wsh) continue_confirmation('ok', $Bio.wshPopup(prompt, caption));
 	}
 
 	getItem() {
-		if (!this.art.ix && pptBio.artistView) return 'stndArtist';
-		return !this.alb.ix && !pptBio.artistView ? 'stndAlbum' : 'lookUp';
+		if (!this.art.ix && bioSet.artistView) return 'stndArtist';
+		return !this.alb.ix && !bioSet.artistView ? 'stndAlbum' : 'lookUp';
 	}
 
 	getList(p_clear, isAlbum) {
 		if (!this.id.lookUp) return;
-		const artist = name.artist(this.id.focus, true) || lg['Artist Unknown'];
-		const albumArtist = (!panelBio.isRadio(this.id.focus) ? name.albumArtist(this.id.focus, true) : artist) || lg['Artist Unknown'];
-		const composition = isAlbum ? false : pptBio.classicalMusicMode && (txt.rev.loaded.am && !txt.rev.amFallback || txt.rev.loaded.wiki && !txt.rev.wikiFallback);
-		const album = !composition ? name.album(this.id.focus, true) || lg['Album Unknown'] : name.composition(this.id.focus, true) || lg['Composition Unknown'];
+		const artist = bio.name.artist(this.id.focus, true) || bioLg['Artist Unknown'];
+		const albumArtist = (!bio.panel.isRadio(this.id.focus) ? bio.name.albumArtist(this.id.focus, true) : artist) || bioLg['Artist Unknown'];
+		const composition = isAlbum ? false : bioSet.classicalMusicMode && (bio.txt.rev.loaded.am && !bio.txt.rev.amFallback || bio.txt.rev.loaded.wiki && !bio.txt.rev.wikiFallback);
+		const album = !composition ? bio.name.album(this.id.focus, true) || bioLg['Album Unknown'] : bio.name.composition(this.id.focus, true) || bioLg['Composition Unknown'];
 		if (this.lock) {
 			this.logArtistHistory(artist);
 			this.logAlbumHistory(albumArtist, album, composition);
@@ -673,9 +673,9 @@ class PanelBio {
 		}
 
 		let k = 0;
-		const lfmBio = `${(!panelBio.isRadio(this.id.focus) ? this.cleanPth(cfg.pth.foLfmBio, this.id.focus) : this.cleanPth(cfg.remap.foLfmBio, this.id.focus, 'remap', artist, '', 1)) + $Bio.clean(artist) + cfg.suffix.foLfmBio}.txt`;
+		const lfmBio = `${(!bio.panel.isRadio(this.id.focus) ? this.cleanPth(bioCfg.pth.foLfmBio, this.id.focus) : this.cleanPth(bioCfg.remap.foLfmBio, this.id.focus, 'remap', artist, '', 1)) + $Bio.clean(artist) + bioCfg.suffix.foLfmBio}.txt`;
 		const lBio = $Bio.open(lfmBio);
-		const lfmSim = `${(!panelBio.isRadio(this.id.focus) ? this.cleanPth(cfg.pth.foLfmSim, this.id.focus) : this.cleanPth(cfg.remap.foLfmSim, this.id.focus, 'remap', artist, '', 1)) + $Bio.clean(artist)} And Similar Artists.json`;
+		const lfmSim = `${(!bio.panel.isRadio(this.id.focus) ? this.cleanPth(bioCfg.pth.foLfmSim, this.id.focus) : this.cleanPth(bioCfg.remap.foLfmSim, this.id.focus, 'remap', artist, '', 1)) + $Bio.clean(artist)} And Similar Artists.json`;
 		const mult_arr = [];
 		let mn = '';
 		let nm = '';
@@ -690,17 +690,17 @@ class PanelBio {
 			field: '',
 			type: 'Artist'
 		});
-		if (pptBio.showSimilarArtists) {
+		if (bioSet.showSimilarArtists) {
 			if ($Bio.file(lfmSim)) {
 				const lSim = $Bio.jsonParse(lfmSim, false, 'file');
 				let newStyle = false;
 				if (lSim) {
 					if ($Bio.objHasOwnProperty(lSim[0], 'name')) newStyle = true;
 					lSim.shift();
-					$Bio.take(lSim, cfg.menuSimilarNum);
+					$Bio.take(lSim, bioCfg.menuSimilarNum);
 					if (lSim.length) {
 						this.art.list.push({
-							name: lg['Similar Artists:'],
+							name: bioLg['Similar Artists:'],
 							field: '',
 							type: 'label'
 						});
@@ -714,26 +714,26 @@ class PanelBio {
 			} else {
 				if ($Bio.file(lfmBio)) {
 					let found = false;
-					sa = tagBio.getTag(lBio, this.similarArtistsKey).tag;
+					sa = bio.tag.getTag(lBio, this.similarArtistsKey).tag;
 					if (sa.length < 7 && sa) {
-						$Bio.take(sa, cfg.menuSimilarNum);
+						$Bio.take(sa, bioCfg.menuSimilarNum);
 						found = true;
 					}
 					if (!found) {
 						this.art.similar.some(v => {
 							if (v.name == artist) {
-								sa = $Bio.take(v.similar, cfg.menuSimilarNum);
+								sa = $Bio.take(v.similar, bioCfg.menuSimilarNum);
 								return found = true;
 							}
 						});
 						if (!found) {
-							const getSimilar = new LfmSimilarArtists(() => getSimilar.onStateChange(), this.getSimilar_search_done.bind(this));
+							const getSimilar = new BioLfmSimilarArtists(() => getSimilar.onStateChange(), this.getSimilar_search_done.bind(this));
 							getSimilar.search(artist, '', '', 6);
 						}
 					}
 					if (found && $Bio.isArray(sa) && sa.length) {
 						this.art.list.push({
-							name: lg['Similar Artists:'],
+							name: bioLg['Similar Artists:'],
 							field: '',
 							type: 'label'
 						});
@@ -747,14 +747,14 @@ class PanelBio {
 			}
 		}
 
-		if (pptBio.showMoreTags) {
+		if (bioSet.showMoreTags) {
 			this.style.moreTags = false;
 			this.art.fields.forEach(v => {
 				nm = v.replace(/%/g, '');
 				for (let h = 0; h < $Bio.eval(`$meta_num(${nm})`, this.id.focus); h++) {
 					mn = `$trim($meta(${nm},${h}))`;
 					const name = $Bio.eval(mn, this.id.focus);
-					if (this.art.list.every(v => v.name !== name) && name.toLowerCase() != cfg.va.toLowerCase()) {
+					if (this.art.list.every(v => v.name !== name) && name.toLowerCase() != bioCfg.va.toLowerCase()) {
 						mult_arr.push({
 							name,
 							field: ` ~ ${$Bio.titlecase(nm)}`,
@@ -776,7 +776,7 @@ class PanelBio {
 			if (mult_arr.length) {
 				this.style.moreTags = true;
 				this.art.list.push({
-					name: lg['More Tags:'],
+					name: bioLg['More Tags:'],
 					field: '',
 					type: 'label'
 				});
@@ -792,13 +792,13 @@ class PanelBio {
 
 		if (!(albumArtist + album) || !this.alb.cur || albumArtist + album != this.alb.cur) {
 			this.logAlbumHistory(albumArtist, album, composition);
-			this.style.inclTrackRev = pptBio.inclTrackRev;
+			this.style.inclTrackRev = bioSet.inclTrackRev;
 			this.alb.cur = albumArtist + album;
 		}
 
-		if (this.art.history.length && pptBio.showArtistHistory) {
+		if (this.art.history.length && bioSet.showArtistHistory) {
 			this.art.list.push({
-				name: lg['Artist History:'],
+				name: bioLg['Artist History:'],
 				field: '',
 				type: 'label'
 			});
@@ -811,9 +811,9 @@ class PanelBio {
 		this.art.list.forEach((v, i) => v.ix = i);
 		this.art.uniq = this.art.list.filter(v => v.type != 'label');
 
-		if (pptBio.showTopAlbums && $Bio.file(lfmBio)) {
+		if (bioSet.showTopAlbums && $Bio.file(lfmBio)) {
 			let found = false;
-			ta = tagBio.getTag(lBio, this.topAlbumsKey).tag;
+			ta = bio.tag.getTag(lBio, this.topAlbumsKey).tag;
 			if (ta.length < 7 && ta) found = true;
 			if (!found) {
 				this.art.topAlbums.some(v => {
@@ -823,7 +823,7 @@ class PanelBio {
 					}
 				});
 				if (!found) {
-					const getTopAlb = new LfmTopAlbums(() => getTopAlb.onStateChange(), this.getTopAlb_search_done.bind(this));
+					const getTopAlb = new BioLfmTopAlbums(() => getTopAlb.onStateChange(), this.getTopAlb_search_done.bind(this));
 					getTopAlb.search(artist);
 				}
 			}
@@ -836,8 +836,8 @@ class PanelBio {
 			});
 			if (found && $Bio.isArray(ta) && ta.length) {
 				this.alb.list.push({
-					artist: `${lg['Last.fm Top Albums: '] + artist}:`,
-					album: `${lg['Last.fm Top Albums: '] + artist}:`,
+					artist: `${bioLg['Last.fm Top Albums: '] + artist}:`,
+					album: `${bioLg['Last.fm Top Albums: '] + artist}:`,
 					type: 'label'
 				});
 				ta.forEach((v, i) => this.alb.list.push({
@@ -856,10 +856,10 @@ class PanelBio {
 			});
 		}
 
-		if (this.alb.history.length && pptBio.showAlbumHistory) {
+		if (this.alb.history.length && bioSet.showAlbumHistory) {
 			this.alb.list.push({
 				artist: '',
-				album: lg['Album History:'],
+				album: bioLg['Album History:'],
 				type: 'label'
 			});
 			for (let h = 0; h < this.alb.history.length; h++) {
@@ -881,12 +881,12 @@ class PanelBio {
 		let pth;
 		switch (sw) {
 			case 'bio':
-				if (panelBio.isRadio(pptBio.focus)) stnd = false; else if (stnd === '') stnd = this.stnd(this.art.ix, this.art.list);
-				if (server) fo = stnd ? this.cleanPth(cfg.pth[folder], focus, 'server') : this.cleanPth(cfg.remap[folder], focus, 'remap', artist, '', 1);
-				else fo = stnd && !this.lock ? this.cleanPth(cfg.pth[folder], focus) : this.cleanPth(cfg.remap[folder], focus, 'remap', artist, '', 1);
-				pth = `${fo + cleanArtist + cfg.suffix[folder]}.txt`;
-				if (!stnd && supCache && !$Bio.file(pth)) fo = this.cleanPth(cfg.sup[folder], focus, 'remap', artist, '', 1);
-				pth = `${fo + cleanArtist + cfg.suffix[folder]}.txt`;
+				if (bio.panel.isRadio(bioSet.focus)) stnd = false; else if (stnd === '') stnd = this.stnd(this.art.ix, this.art.list);
+				if (server) fo = stnd ? this.cleanPth(bioCfg.pth[folder], focus, 'server') : this.cleanPth(bioCfg.remap[folder], focus, 'remap', artist, '', 1);
+				else fo = stnd && !this.lock ? this.cleanPth(bioCfg.pth[folder], focus) : this.cleanPth(bioCfg.remap[folder], focus, 'remap', artist, '', 1);
+				pth = `${fo + cleanArtist + bioCfg.suffix[folder]}.txt`;
+				if (!stnd && supCache && !$Bio.file(pth)) fo = this.cleanPth(bioCfg.sup[folder], focus, 'remap', artist, '', 1);
+				pth = `${fo + cleanArtist + bioCfg.suffix[folder]}.txt`;
 				return basic ? {
 					fo,
 					pth
@@ -894,34 +894,34 @@ class PanelBio {
 			case 'rev':
 				if (stnd === '') stnd = this.stnd(this.alb.ix, this.alb.list);
 				if (!stnd) cleanAlbumArtist = cleanArtist;
-				if (server) fo = stnd ? this.cleanPth(cfg.pth[folder], focus, 'server') : this.cleanPth(cfg.remap[folder], focus, 'remap', artist, album, 0);
-				else fo = stnd && !this.lock ? this.cleanPth(cfg.pth[folder], focus) : this.cleanPth(cfg.remap[folder], focus, 'remap', artist, album, 0);
-				pth = `${fo + cleanAlbumArtist} - ${cleanAlbum}${cfg.suffix[folder]}.txt`;
-				if (!stnd && supCache && !$Bio.file(pth)) fo = this.cleanPth(cfg.sup[folder], focus, 'remap', artist, album, 0);
-				pth = `${fo + cleanAlbumArtist} - ${cleanAlbum}${cfg.suffix[folder]}.txt`;
+				if (server) fo = stnd ? this.cleanPth(bioCfg.pth[folder], focus, 'server') : this.cleanPth(bioCfg.remap[folder], focus, 'remap', artist, album, 0);
+				else fo = stnd && !this.lock ? this.cleanPth(bioCfg.pth[folder], focus) : this.cleanPth(bioCfg.remap[folder], focus, 'remap', artist, album, 0);
+				pth = `${fo + cleanAlbumArtist} - ${cleanAlbum}${bioCfg.suffix[folder]}.txt`;
+				if (!stnd && supCache && !$Bio.file(pth)) fo = this.cleanPth(bioCfg.sup[folder], focus, 'remap', artist, album, 0);
+				pth = `${fo + cleanAlbumArtist} - ${cleanAlbum}${bioCfg.suffix[folder]}.txt`;
 				if (pth.length > 259) {
 					cleanAlbum = $Bio.abbreviate(cleanAlbum);
-					pth = `${fo + cleanAlbumArtist} - ${cleanAlbum}${cfg.suffix[folder]}.txt`;
+					pth = `${fo + cleanAlbumArtist} - ${cleanAlbum}${bioCfg.suffix[folder]}.txt`;
 				}
 				return basic ? {
 					fo,
 					pth
 				} : [fo, pth, !!(cleanAlbumArtist && cleanAlbum), $Bio.file(pth)];
 			case 'track':
-				fo = this.cleanPth(cfg.remap[folder], focus, 'remap', artist, album, 0);
-				pth = `${fo + cleanArtist} - ${cleanAlbum}${cfg.suffix[folder].replace(' Review', '')}.json`;
+				fo = this.cleanPth(bioCfg.remap[folder], focus, 'remap', artist, album, 0);
+				pth = `${fo + cleanArtist} - ${cleanAlbum}${bioCfg.suffix[folder].replace(' Review', '')}.json`;
 				return basic ? {
 					fo,
 					pth
 				} : [fo, pth, !!cleanArtist, $Bio.file(pth)];
 			case 'cov':
-				fo = this.cleanPth(cfg.pth.foImgCov, focus, 'server');
-				pth = fo + $Bio.clean($Bio.eval(cfg.pth.fnImgCov, focus, true));
+				fo = this.cleanPth(bioCfg.pth.foImgCov, focus, 'server');
+				pth = fo + $Bio.clean($Bio.eval(bioCfg.pth.fnImgCov, focus, true));
 				return {
 					fo, pth
 				};
 			case 'img': {
-				fo = this.cleanPth(cfg.remap.foImgRev, focus, 'remap', artist, album, 0);
+				fo = this.cleanPth(bioCfg.remap.foImgRev, focus, 'remap', artist, album, 0);
 				let fn = $Bio.clean(`${artist} - ${album}`);
 				pth = fo + fn;
 				if (pth.length > 259) {
@@ -937,7 +937,7 @@ class PanelBio {
 					};
 				}
 				const pe = [fo];
-				if (supCache) pe.push(this.cleanPth(cfg.sup.foImgRev, focus, 'remap', artist, album, 0));
+				if (supCache) pe.push(this.cleanPth(bioCfg.sup.foImgRev, focus, 'remap', artist, album, 0));
 				// fn long file path done above
 				return {
 					pe,
@@ -961,10 +961,10 @@ class PanelBio {
 	}
 
 	getStyleFallback() {
-		pptBio.style = 4;
-		if (!pptBio.sameStyle) {
-			if (pptBio.artistView) pptBio.bioStyle = 4;
-			else pptBio.revStyle = 4;
+		bioSet.style = 4;
+		if (!bioSet.sameStyle) {
+			if (bioSet.artistView) bioSet.bioStyle = 4;
+			else bioSet.revStyle = 4;
 		}
 		fb.ShowPopupMessage('Unable to locate style. Using overlay layout instead.', 'Biography');
 	}
@@ -978,15 +978,15 @@ class PanelBio {
 	}
 
 	getStyleNames() {
-		this.style.name = [lg.Top, lg.Right, lg.Bottom, lg.Left, lg['Full overlay'], lg['Part overlay']];
+		this.style.name = [bioLg.Top, bioLg.Right, bioLg.Bottom, bioLg.Left, bioLg['Full overlay'], bioLg['Part overlay']];
 		this.style.free.forEach(v => this.style.name.push(v.name));
 	}
 
 	imgBoxTrace(x, y) {
 		if (this.trace.film || this.m.y == -1) return false;
-		if (pptBio.img_only) return true;
-		if (pptBio.style < 4) {
-			switch (pptBio.style) {
+		if (bioSet.img_only) return true;
+		if (bioSet.style < 4) {
+			switch (bioSet.style) {
 				case 0:
 				case 2:
 					return y > this.img.t && y < this.img.t + this.style.imgSize;
@@ -998,8 +998,8 @@ class PanelBio {
 	}
 
 	inactivate() {
-		pptBio.toggle('panelActive');
-		window.NotifyOthers('bio_status', pptBio.panelActive);
+		bioSet.toggle('panelActive');
+		window.NotifyOthers('bio_status', bioSet.panelActive);
 		window.Reload();
 	}
 
@@ -1016,19 +1016,19 @@ class PanelBio {
 	}
 
 	isTouchEvent(x, y) {
-		return pptBio.touchControl && Math.sqrt((Math.pow(this.id.last_pressed_coord.x - x, 2) + Math.pow(this.id.last_pressed_coord.y - y, 2))) > 3 * $Bio.scale;
+		return bioSet.touchControl && Math.sqrt((Math.pow(this.id.last_pressed_coord.x - x, 2) + Math.pow(this.id.last_pressed_coord.y - y, 2))) > 3 * $Bio.scale;
 	}
 
 	leave() {
-		if (!pptBio.autoEnlarge || menBio.right_up) return;
-		if (pptBio.img_only) {
+		if (!bioSet.autoEnlarge || bio.men.right_up) return;
+		if (bioSet.img_only) {
 			this.mode(0);
 			this.style.enlarged_img = false;
 		}
 	}
 
 	logAlbumHistory(albumArtist, album, composition) {
-		if (albumArtist != lg['Artist Unknown'] && album != lg['Album Unknown']) {
+		if (albumArtist != bioLg['Artist Unknown'] && album != bioLg['Album Unknown']) {
 			this.alb.history.unshift({
 				artist: albumArtist,
 				album,
@@ -1038,11 +1038,11 @@ class PanelBio {
 		}
 		this.alb.history = this.uniqAlbum(this.alb.history);
 		if (this.alb.history.length > 20) this.alb.history.length = 20;
-		pptBio.albumHistory = JSON.stringify(this.alb.history);
+		bioSet.albumHistory = JSON.stringify(this.alb.history);
 	}
 
 	logArtistHistory(artist) {
-		if (artist != lg['Artist Unknown']) {
+		if (artist != bioLg['Artist Unknown']) {
 			this.art.history.unshift({
 				name: artist,
 				field: '',
@@ -1051,41 +1051,41 @@ class PanelBio {
 		}
 		this.art.history = this.uniqArtist(this.art.history);
 		if (this.art.history.length > 20) this.art.history.length = 20;
-		pptBio.artistHistory = JSON.stringify(this.art.history);
+		bioSet.artistHistory = JSON.stringify(this.art.history);
 	}
 
 	mbtn_up(x, y, menuLock, bypass) {
 		if ((x < 0 || y < 0 || x > this.w || y > this.h) && !bypass) return;
-		if (this.id.lookUp && (butBio.btns.lookUp.trace(x, y) || menuLock || bypass)) {
+		if (this.id.lookUp && (bio.but.btns.lookUp.trace(x, y) || menuLock || bypass)) {
 			if (this.id.lyricsSource || this.id.nowplayingSource) {
 				this.lock = 0;
 				return;
 			}
-			const mArtist = pptBio.artistView && this.art.ix;
-			if (!this.lock && !mArtist) imgBio.artistReset();
+			const mArtist = bioSet.artistView && this.art.ix;
+			if (!this.lock && !mArtist) bio.img.artistReset();
 			if (!this.lock) {
 				this.id.lockArt = $Bio.eval(this.art.fields, this.id.focus);
-				this.id.lockAlb = name.albID(this.id.focus, 'full') + (this.style.inclTrackRev ? name.trackID(this.id.focus) : '');
+				this.id.lockAlb = bio.name.albID(this.id.focus, 'full') + (this.style.inclTrackRev ? bio.name.trackID(this.id.focus) : '');
 				this.lockHandle = $Bio.handle(this.id.focus);
-				imgBio.setAlbID();
-				imgBio.cov.folder = this.cleanPth(cfg.albCovFolder, this.id.focus);
+				bio.img.setAlbID();
+				bio.img.cov.folder = this.cleanPth(bioCfg.albCovFolder, this.id.focus);
 			}
 			if (!bypass) this.lock = this.lock == 0 || menuLock ? 1 : 0;
-			txt.curHeadingID = this.lock ? txt.headingID() : '';
-			if (!this.lock && (pptBio.artistView && this.id.lockArt != $Bio.eval(this.art.fields, this.id.focus) || !pptBio.artistView && this.id.lockAlb != name.albID(this.id.focus, 'full') + (this.style.inclTrackRev ? name.trackID(this.id.focus) : ''))) {
-				txt.on_playback_new_track(true);
-				imgBio.on_playback_new_track(true);
+			bio.txt.curHeadingID = this.lock ? bio.txt.headingID() : '';
+			if (!this.lock && (bioSet.artistView && this.id.lockArt != $Bio.eval(this.art.fields, this.id.focus) || !bioSet.artistView && this.id.lockAlb != bio.name.albID(this.id.focus, 'full') + (this.style.inclTrackRev ? bio.name.trackID(this.id.focus) : ''))) {
+				bio.txt.on_playback_new_track(true);
+				bio.img.on_playback_new_track(true);
 			}
-			butBio.check();
+			bio.but.check();
 			window.Repaint();
 			return;
 		}
 		switch (true) {
-			case ((pptBio.img_only || pptBio.text_only) && !this.trace.film):
+			case ((bioSet.img_only || bioSet.text_only) && !this.trace.film):
 				this.mode(0);
 				break;
 			case this.trace.image:
-				this.mode(!pptBio.img_only ? 1 : 2);
+				this.mode(!bioSet.img_only ? 1 : 2);
 				break;
 			case this.trace.text:
 				this.mode(2);
@@ -1095,70 +1095,70 @@ class PanelBio {
 	}
 
 	mode(n) {
-		if (!pptBio.sameStyle) pptBio.artistView ? pptBio.bioMode = n : pptBio.revMode = n;
+		if (!bioSet.sameStyle) bioSet.artistView ? bioSet.bioMode = n : bioSet.revMode = n;
 		let calcText = true;
 		this.calc = true;
-		filmStrip.logScrollPos();
+		bio.filmStrip.logScrollPos();
 		switch (n) {
 			case 0: {
-				calcText = this.calcText || pptBio.text_only;
-				pptBio.img_only = false;
-				pptBio.text_only = false;
+				calcText = this.calcText || bioSet.text_only;
+				bioSet.img_only = false;
+				bioSet.text_only = false;
 				this.setStyle();
-				imgBio.clearCache();
-				if (!this.art.ix && pptBio.artistView && !txt.bio.lookUp || !this.alb.ix && !pptBio.artistView && !txt.rev.lookUp) {
-					txt.albumReset();
-					txt.artistReset();
-					txt.getText(calcText);
-					imgBio.getImages();
+				bio.img.clearCache();
+				if (!this.art.ix && bioSet.artistView && !bio.txt.bio.lookUp || !this.alb.ix && !bioSet.artistView && !bio.txt.rev.lookUp) {
+					bio.txt.albumReset();
+					bio.txt.artistReset();
+					bio.txt.getText(calcText);
+					bio.img.getImages();
 				} else {
-					txt.getItem(calcText, this.art.ix, this.alb.ix);
-					imgBio.getItem(this.art.ix, this.alb.ix);
+					bio.txt.getItem(calcText, this.art.ix, this.alb.ix);
+					bio.img.getItem(this.art.ix, this.alb.ix);
 				}
 				this.calcText = false;
 				break;
 			}
 			case 1:
-				pptBio.img_only = true;
-				pptBio.text_only = false;
-				imgBio.setCrop();
+				bioSet.img_only = true;
+				bioSet.text_only = false;
+				bio.img.setCrop();
 				this.setStyle();
-				imgBio.clearCache();
-				imgBio.getImages();
+				bio.img.clearCache();
+				bio.img.getImages();
 				break;
 			case 2:
-				pptBio.img_only = false;
-				pptBio.text_only = true;
+				bioSet.img_only = false;
+				bioSet.text_only = true;
 				this.setStyle();
-				if (uiBio.style.isBlur) imgBio.clearCache();
-				if (!pptBio.sameStyle && (pptBio.bioMode != pptBio.revMode || pptBio.bioStyle != pptBio.revStyle)) calcText = true;
-				if (!this.art.ix && pptBio.artistView && !txt.bio.lookUp || !this.alb.ix && !pptBio.artistView && !txt.rev.lookUp) {
-					txt.albumReset();
-					txt.artistReset();
-					txt.getText(calcText);
-					if (uiBio.style.isBlur) imgBio.getImages();
+				if (bio.ui.style.isBlur) bio.img.clearCache();
+				if (!bioSet.sameStyle && (bioSet.bioMode != bioSet.revMode || bioSet.bioStyle != bioSet.revStyle)) calcText = true;
+				if (!this.art.ix && bioSet.artistView && !bio.txt.bio.lookUp || !this.alb.ix && !bioSet.artistView && !bio.txt.rev.lookUp) {
+					bio.txt.albumReset();
+					bio.txt.artistReset();
+					bio.txt.getText(calcText);
+					if (bio.ui.style.isBlur) bio.img.getImages();
 				} else {
-					txt.getItem(calcText, this.art.ix, this.alb.ix);
-					if (uiBio.style.isBlur) imgBio.getItem(this.art.ix, this.alb.ix);
-					imgBio.setCheckArr(null);
+					bio.txt.getItem(calcText, this.art.ix, this.alb.ix);
+					if (bio.ui.style.isBlur) bio.img.getItem(this.art.ix, this.alb.ix);
+					bio.img.setCheckArr(null);
 				}
 				this.calcText = true;
 				break;
 		}
-		if (pptBio.text_only) seeker.upd(true);
-		if (pptBio.filmStripOverlay && pptBio.showFilmStrip) filmStrip.set(pptBio.filmStripPos);
-		butBio.refresh(true);
+		if (bioSet.text_only) bio.seeker.upd(true);
+		if (bioSet.filmStripOverlay && bioSet.showFilmStrip) bio.filmStrip.set(bioSet.filmStripPos);
+		bio.but.refresh(true);
 	}
 
 	move(x, y, click) {
 		this.trace.film = false;
 		this.trace.text = false;
 		this.trace.image = false;
-		if (filmStrip.trace(x, y)) this.trace.film = true;
-		else if (pptBio.text_only) this.trace.text = true;
-		else if (pptBio.img_only) this.trace.text = false;
-		else if (pptBio.style < 4) {
-			switch (pptBio.style) {
+		if (bio.filmStrip.trace(x, y)) this.trace.film = true;
+		else if (bioSet.text_only) this.trace.text = true;
+		else if (bioSet.img_only) this.trace.text = false;
+		else if (bioSet.style < 4) {
+			switch (bioSet.style) {
 				case 0:
 					this.trace.text = y > this.img.t + this.style.imgSize;
 					break;
@@ -1173,11 +1173,11 @@ class PanelBio {
 					break;
 			}
 		} else this.trace.text = y > this.tbox.t && y < this.tbox.t + this.tbox.h && x > this.tbox.l && x < this.tbox.l + this.tbox.w;
-		if (!this.trace.text && !this.trace.film) this.trace.image = imgBio.trace(x, y);
-		if (!pptBio.autoEnlarge || click || this.zoom() || seeker.dn) return;
+		if (!this.trace.text && !this.trace.film) this.trace.image = bio.img.trace(x, y);
+		if (!bioSet.autoEnlarge || click || this.zoom() || bio.seeker.dn) return;
 		const enlarged_img_o = this.style.enlarged_img;
 		this.style.enlarged_img = !this.trace.text && this.trace.image;
-		if (this.style.enlarged_img && !pptBio.text_only && !pptBio.img_only && !enlarged_img_o) this.mode(1);
+		if (this.style.enlarged_img && !bioSet.text_only && !bioSet.img_only && !enlarged_img_o) this.mode(1);
 	}
 
 	on_notify(info) {
@@ -1187,7 +1187,7 @@ class PanelBio {
 		});
 		this.style.free.push(rec);
 		this.sort(this.style.free, 'name');
-		pptBio.styleFree = JSON.stringify(this.style.free);
+		bioSet.styleFree = JSON.stringify(this.style.free);
 		this.getStyleNames();
 	}
 
@@ -1204,10 +1204,10 @@ class PanelBio {
 				});
 				this.style.free[n - 6].name = input;
 				this.sort(this.style.free, 'name');
-				pptBio.styleFree = JSON.stringify(this.style.free);
+				bioSet.styleFree = JSON.stringify(this.style.free);
 				this.style.free.some((v, i) => {
 					if (v.name == input) {
-						pptBio.style = i + 5;
+						bioSet.style = i + 5;
 						return true;
 					}
 				});
@@ -1217,7 +1217,7 @@ class PanelBio {
 		};
 		const caption = 'Rename Current Style';
 		const prompt = `Rename style: ${this.style.name[n]}\n\nEnter new name\n\nContinue?`;
-		const fallback = popUpBoxBio.isHtmlDialogSupported() ? popUpBoxBio.input(caption, prompt, ok_callback, '', this.style.name[n]) : true;
+		const fallback = bio.popUpBox.isHtmlDialogSupported() ? bio.popUpBox.input(caption, prompt, ok_callback, '', this.style.name[n]) : true;
 		if (fallback) {
 			let ns = '';
 			let status = 'ok';
@@ -1234,7 +1234,7 @@ class PanelBio {
 		this.alb.ix = 0;
 		this.lock = 0;
 		this.alb.history = [];
-		pptBio.albumHistory = JSON.stringify([]);
+		bioSet.albumHistory = JSON.stringify([]);
 		this.alb.cur = '';
 		this.getList(true, true);
 	}
@@ -1243,7 +1243,7 @@ class PanelBio {
 		this.art.ix = 0;
 		this.lock = 0;
 		this.art.history = [];
-		pptBio.artistHistory = JSON.stringify([]);
+		bioSet.artistHistory = JSON.stringify([]);
 		this.art.cur = '';
 		this.getList(true);
 	}
@@ -1251,9 +1251,9 @@ class PanelBio {
 	resetStyle(n) {
 		const continue_confirmation = (status, confirmed) => {
 			if (confirmed) {
-				if (pptBio.style < 4) pptBio.rel_imgs = 0.65;
+				if (bioSet.style < 4) bioSet.rel_imgs = 0.65;
 				else {
-					const obj = pptBio.style == 4 || pptBio.style == 5 ? this.style.overlay : this.style.free[pptBio.style - 6];
+					const obj = bioSet.style == 4 || bioSet.style == 5 ? this.style.overlay : this.style.free[bioSet.style - 6];
 					obj.name = this.style.name[n];
 					obj.imL = 0;
 					obj.imR = 0;
@@ -1263,19 +1263,19 @@ class PanelBio {
 					obj.txR = 0;
 					obj.txT = 0.632;
 					obj.txB = 0;
-					pptBio.style == 4 || pptBio.style == 5 ? pptBio.styleOverlay = JSON.stringify(this.style.overlay) : pptBio.styleFree = JSON.stringify(this.style.free);
+					bioSet.style == 4 || bioSet.style == 5 ? bioSet.styleOverlay = JSON.stringify(this.style.overlay) : bioSet.styleFree = JSON.stringify(this.style.free);
 				}
-				txt.refresh(3);
+				bio.txt.refresh(3);
 			}
 		};
 		const caption = 'Reset Current Style';
-		const prompt = `Reset to Default ${pptBio.style < 5 ? this.style.name[n] : 'Overlay'} Style.\n\nContinue?`;
-		const wsh = popUpBoxBio.isHtmlDialogSupported() ? popUpBoxBio.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
+		const prompt = `Reset to Default ${bioSet.style < 5 ? this.style.name[n] : 'Overlay'} Style.\n\nContinue?`;
+		const wsh = bio.popUpBox.isHtmlDialogSupported() ? bio.popUpBox.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
 		if (wsh) continue_confirmation('ok', $Bio.wshPopup(prompt, caption));
 	}
 
 	sameStyle() {
-		return pptBio.sameStyle || (pptBio.bioMode == pptBio.revMode && pptBio.bioStyle == pptBio.revStyle);
+		return bioSet.sameStyle || (bioSet.bioMode == bioSet.revMode && bioSet.bioStyle == bioSet.revStyle);
 	}
 
 	setBorder(imgFull, bor, refl) {
@@ -1283,84 +1283,84 @@ class PanelBio {
 			const value = bor > 1 && !refl ? 10 * $Bio.scale : 0;
 			$Bio.key.forEach(v => this.bor[v] = value);
 		} else {
-			$Bio.key.forEach(v => this.bor[v] = bor < 2 || refl ? pptBio[`bor${v.toUpperCase()}`] : Math.max(pptBio[`bor${v.toUpperCase()}`], 10 * $Bio.scale));
-			this.style.gap = bor < 2 || refl ? pptBio.gap : Math.max(pptBio.gap, 10 * $Bio.scale);
+			$Bio.key.forEach(v => this.bor[v] = bor < 2 || refl ? bioSet[`bor${v.toUpperCase()}`] : Math.max(bioSet[`bor${v.toUpperCase()}`], 10 * $Bio.scale));
+			this.style.gap = bor < 2 || refl ? bioSet.gap : Math.max(bioSet.gap, 10 * $Bio.scale);
 		}
 	}
 
 	setStyle(bypass) {
-		this.sbar.offset = [2 + uiBio.sbar.arrowPad, Math.max(Math.floor(uiBio.sbar.but_w * 0.2), 2) + uiBio.sbar.arrowPad * 2, 0][uiBio.sbar.type];
-		this.sbar.top_corr = [this.sbar.offset - (uiBio.sbar.but_h - uiBio.sbar.but_w) / 2, this.sbar.offset, 0][uiBio.sbar.type];
-		const bot_corr = [(uiBio.sbar.but_h - uiBio.sbar.but_w) / 2 - this.sbar.offset, -this.sbar.offset, 0][uiBio.sbar.type];
+		this.sbar.offset = [2 + bio.ui.sbar.arrowPad, Math.max(Math.floor(bio.ui.sbar.but_w * 0.2), 2) + bio.ui.sbar.arrowPad * 2, 0][bio.ui.sbar.type];
+		this.sbar.top_corr = [this.sbar.offset - (bio.ui.sbar.but_h - bio.ui.sbar.but_w) / 2, this.sbar.offset, 0][bio.ui.sbar.type];
+		const bot_corr = [(bio.ui.sbar.but_h - bio.ui.sbar.but_w) / 2 - this.sbar.offset, -this.sbar.offset, 0][bio.ui.sbar.type];
 		this.clip = false;
-		if (!pptBio.sameStyle) {
+		if (!bioSet.sameStyle) {
 			switch (true) {
-				case pptBio.artistView:
-					if (pptBio.bioMode === 1) {
-						pptBio.img_only = true;
-						pptBio.text_only = false;
-					} else if (pptBio.bioMode === 2) {
-						pptBio.img_only = false;
-						pptBio.text_only = true;
+				case bioSet.artistView:
+					if (bioSet.bioMode === 1) {
+						bioSet.img_only = true;
+						bioSet.text_only = false;
+					} else if (bioSet.bioMode === 2) {
+						bioSet.img_only = false;
+						bioSet.text_only = true;
 					} else {
-						pptBio.img_only = false;
-						pptBio.text_only = false;
-						pptBio.style = pptBio.bioStyle;
+						bioSet.img_only = false;
+						bioSet.text_only = false;
+						bioSet.style = bioSet.bioStyle;
 					}
 					break;
-				case !pptBio.artistView:
-					if (pptBio.revMode === 1) {
-						pptBio.img_only = true;
-						pptBio.text_only = false;
-					} else if (pptBio.revMode === 2) {
-						pptBio.img_only = false;
-						pptBio.text_only = true;
+				case !bioSet.artistView:
+					if (bioSet.revMode === 1) {
+						bioSet.img_only = true;
+						bioSet.text_only = false;
+					} else if (bioSet.revMode === 2) {
+						bioSet.img_only = false;
+						bioSet.text_only = true;
 					} else {
-						pptBio.img_only = false;
-						pptBio.text_only = false;
-						pptBio.style = pptBio.revStyle;
+						bioSet.img_only = false;
+						bioSet.text_only = false;
+						bioSet.style = bioSet.revStyle;
 					}
 					break;
 			}
-			if (pptBio.text_only) seeker.upd(true);
+			if (bioSet.text_only) bio.seeker.upd(true);
 		}
 
 		const sp1 = SCALE(10 * $Bio.scale);
-		const sp2 = sp1 + (this.filmStripSize.r && !pptBio.filmStripOverlay ? ((SCALE(pref.layout === 'artwork' ? 12 : 9) * $Bio.scale)) : 0);
-		const filmStripRight = pptBio.artistView && pptBio.showFilmStrip && pptBio.filmStripPos === 1;
-		const filmStripLeft = pptBio.artistView && pptBio.showFilmStrip && pptBio.filmStripPos === 3;
-		const RES_4K_Corr = RES_4K ? uiBio.heading.linePad * 0.5 : 0;
-		const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`];
+		const sp2 = sp1 + (this.filmStripSize.r && !bioSet.filmStripOverlay ? ((SCALE(grSet.layout === 'artwork' ? 12 : 9) * $Bio.scale)) : 0);
+		const filmStripRight = bioSet.artistView && bioSet.showFilmStrip && bioSet.filmStripPos === 1;
+		const filmStripLeft = bioSet.artistView && bioSet.showFilmStrip && bioSet.filmStripPos === 3;
+		const RES_4K_Corr = RES._4K ? bio.ui.heading.linePad * 0.5 : 0;
+		const biographyFontSize = bioSet[`baseFontSizeBio_${grSet.layout}`];
 
 		switch (true) {
-			case pptBio.img_only: { // img_only
+			case bioSet.img_only: { // img_only
 				$Bio.key.forEach(v => this.img[v] = this.bor[v]);
-				const autoFill = pptBio.artistView && pptBio.artStyleImgOnly == 1 || !pptBio.artistView && pptBio.covStyleImgOnly == 1;
-				if (!autoFill && !pptBio.filmStripOverlay) {
-					const v = $Bio.key[pptBio.filmStripPos];
+				const autoFill = bioSet.artistView && bioSet.artStyleImgOnly == 1 || !bioSet.artistView && bioSet.covStyleImgOnly == 1;
+				if (!autoFill && !bioSet.filmStripOverlay) {
+					const v = $Bio.key[bioSet.filmStripPos];
 					this.img[v] += this.filmStripSize[v];
 					this.style.imgSize = $Bio.clamp(this.h - this.img.t - this.img.b, 10, this.w - this.img.l - this.img.r);
 				} else this.style.imgSize = $Bio.clamp(this.h - this.bor.t - this.bor.b, 10, this.w - this.bor.l - this.bor.r);
 				break;
 			}
 
-			case pptBio.text_only: { // text_only
-				const textWidthCorr  = filmStripRight ? pptBio.filmStripOverlay ? this.text.r + this.filmStripSize.r * 0.5 - this.style.gap : this.text.r : this.text.r * 2;
+			case bioSet.text_only: { // text_only
+				const textWidthCorr  = filmStripRight ? bioSet.filmStripOverlay ? this.text.r + this.filmStripSize.r * 0.5 - this.style.gap : this.text.r : this.text.r * 2;
 				const textWidthCorr2 = filmStripLeft  ? this.text.r - this.style.gap - RES_4K_Corr : 0;
-				const sbarScrollCorr = filmStripRight ? pptBio.filmStripOverlay ? this.text.r - (this.filmStripSize.r + this.style.gap) : 0 : 0;
+				const sbarScrollCorr = filmStripRight ? bioSet.filmStripOverlay ? this.text.r - (this.filmStripSize.r + this.style.gap) : 0 : 0;
 
-				this.lines_drawn = Math.max(Math.floor((this.h - pptBio.textT - pptBio.textB - uiBio.heading.h - this.filmStripSize.t - this.filmStripSize.b) / uiBio.font.main_h), 0);
-				this.text.l = pptBio.textL + this.filmStripSize.l - textWidthCorr2;
-				this.text.r = (pptBio.sbarShow ? Math.max(pptBio.textR, uiBio.sbar.sp + sp2) : pptBio.textR) + this.filmStripSize.r;
-				/** MOD */ this.text.t = !pptBio.topAlign ? uiBio.y + pptBio.textT + (this.h - pptBio.textT + this.filmStripSize.t - pptBio.textB - this.filmStripSize.b - this.lines_drawn * uiBio.font.main_h + uiBio.heading.h) / 2 : pptBio.textT + uiBio.heading.h + this.filmStripSize.t;
+				this.lines_drawn = Math.max(Math.floor((this.h - bioSet.textT - bioSet.textB - bio.ui.heading.h - this.filmStripSize.t - this.filmStripSize.b) / bio.ui.font.main_h), 0);
+				this.text.l = bioSet.textL + this.filmStripSize.l - textWidthCorr2;
+				this.text.r = (bioSet.sbarShow ? Math.max(bioSet.textR, bio.ui.sbar.sp + sp2) : bioSet.textR) + this.filmStripSize.r;
+				/** MOD */ this.text.t = !bioSet.topAlign ? bio.ui.y + bioSet.textT + (this.h - bioSet.textT + this.filmStripSize.t - bioSet.textB - this.filmStripSize.b - this.lines_drawn * bio.ui.font.main_h + bio.ui.heading.h) / 2 : bioSet.textT + bio.ui.heading.h + this.filmStripSize.t;
 				/** MOD */ this.text.w = this.w - this.text.l - textWidthCorr;
-				this.text.h = this.lines_drawn * uiBio.font.main_h;
-				this.heading.x = !this.style.fullWidthHeading ? this.text.l : pptBio.textL;
-				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - pptBio.textR;
-				if (pptBio.sbarShow) {
-					/** MOD */ this.sbar.x = (!this.filmStripSize.r || pptBio.filmStripOverlay ? this.w - uiBio.sbar.sp - this.text.r : this.text.l + this.text.w + sp1) + sbarScrollCorr;
-					this.sbar.y = (uiBio.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.r || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;
-					this.sbar.h = (uiBio.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.r || this.filmStripSize.b ? uiBio.font.main_h * this.lines_drawn + bot_corr : this.h - this.sbar.y) + bot_corr;
+				this.text.h = this.lines_drawn * bio.ui.font.main_h;
+				this.heading.x = !this.style.fullWidthHeading ? this.text.l : bioSet.textL;
+				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - bioSet.textR;
+				if (bioSet.sbarShow) {
+					/** MOD */ this.sbar.x = (!this.filmStripSize.r || bioSet.filmStripOverlay ? this.w - bio.ui.sbar.sp - this.text.r : this.text.l + this.text.w + sp1) + sbarScrollCorr;
+					this.sbar.y = (bio.ui.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.r || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;
+					this.sbar.h = (bio.ui.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.r || this.filmStripSize.b ? bio.ui.font.main_h * this.lines_drawn + bot_corr : this.h - this.sbar.y) + bot_corr;
 				}
 				this.repaint.x = this.text.l;
 				this.repaint.y = 0;
@@ -1369,125 +1369,125 @@ class PanelBio {
 				break;
 			}
 
-			case pptBio.style === 0: { // top
-				const textWidthCorr  = filmStripRight && !pptBio.filmStripOverlay ? this.text.r + RES_4K_Corr : this.text.r * 2;
-				const textWidthCorr2 = filmStripLeft  && !pptBio.filmStripOverlay ? this.filmStripSize.l - this.text.r + this.style.gap + RES_4K_Corr : 0;
+			case bioSet.style === 0: { // top
+				const textWidthCorr  = filmStripRight && !bioSet.filmStripOverlay ? this.text.r + RES_4K_Corr : this.text.r * 2;
+				const textWidthCorr2 = filmStripLeft  && !bioSet.filmStripOverlay ? this.filmStripSize.l - this.text.r + this.style.gap + RES_4K_Corr : 0;
 
-				$Bio.key.forEach(v => this.img[v] = this.bor[v] + (v != 'b' ? (!pptBio.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
-				/** MOD */ let txt_h = Math.round((this.h - this.img.t - pptBio.textB - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0)) * (1 - pptBio.rel_imgs) + biographyFontSize);
-				this.lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0);
-				this.text.h = this.lines_drawn * uiBio.font.main_h + biographyFontSize;
+				$Bio.key.forEach(v => this.img[v] = this.bor[v] + (v != 'b' ? (!bioSet.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
+				/** MOD */ let txt_h = Math.round((this.h - this.img.t - bioSet.textB - (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0)) * (1 - bioSet.rel_imgs) + biographyFontSize);
+				this.lines_drawn = Math.max(Math.floor((txt_h - bio.ui.heading.h) / bio.ui.font.main_h), 0);
+				this.text.h = this.lines_drawn * bio.ui.font.main_h + biographyFontSize;
 				txt_h = this.text.h + this.style.gap;
-				/** MOD */ this.style.imgSize = Math.max(this.h - txt_h - this.img.t - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) - pptBio.textB - uiBio.heading.h * 0.75, 10);
-				/** MOD */ this.text.l = pptBio.textL + textWidthCorr2;
-				this.text.r = (pptBio.sbarShow ? Math.max(pptBio.textR, uiBio.sbar.sp + sp2) : pptBio.textR) + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
-				/** MOD */ this.text.t = this.img.t + this.style.imgSize + this.style.gap + uiBio.heading.h * 2;
+				/** MOD */ this.style.imgSize = Math.max(this.h - txt_h - this.img.t - (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0) - bioSet.textB - bio.ui.heading.h * 0.75, 10);
+				/** MOD */ this.text.l = bioSet.textL + textWidthCorr2;
+				this.text.r = (bioSet.sbarShow ? Math.max(bioSet.textR, bio.ui.sbar.sp + sp2) : bioSet.textR) + (!bioSet.filmStripOverlay ? this.filmStripSize.r : 0);
+				/** MOD */ this.text.t = this.img.t + this.style.imgSize + this.style.gap + bio.ui.heading.h * 2;
 				/** MOD */ this.text.w = this.w - this.text.l - textWidthCorr;
-				this.heading.x = (!this.style.fullWidthHeading ? this.text.l : pptBio.textL);
-				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - pptBio.textL - pptBio.textR;
-				/** MOD */ this.sbar.x = (!this.filmStripSize.r || pptBio.filmStripOverlay ? this.w - uiBio.sbar.sp - this.text.r : this.text.l + this.text.w + sp1);
-				this.sbar.y = (uiBio.sbar.type < this.sbar.style || pptBio.heading || this.filmStripSize.b ? this.text.t : this.img.t + this.style.imgSize) + this.sbar.top_corr;
-				this.sbar.h = (uiBio.sbar.type < this.sbar.style || this.filmStripSize.b ? uiBio.font.main_h * this.lines_drawn + bot_corr : this.h - this.sbar.y) + bot_corr;
+				this.heading.x = (!this.style.fullWidthHeading ? this.text.l : bioSet.textL);
+				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - bioSet.textL - bioSet.textR;
+				/** MOD */ this.sbar.x = (!this.filmStripSize.r || bioSet.filmStripOverlay ? this.w - bio.ui.sbar.sp - this.text.r : this.text.l + this.text.w + sp1);
+				this.sbar.y = (bio.ui.sbar.type < this.sbar.style || bioSet.heading || this.filmStripSize.b ? this.text.t : this.img.t + this.style.imgSize) + this.sbar.top_corr;
+				this.sbar.h = (bio.ui.sbar.type < this.sbar.style || this.filmStripSize.b ? bio.ui.font.main_h * this.lines_drawn + bot_corr : this.h - this.sbar.y) + bot_corr;
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
-				/** MOD */ this.repaint.w = this.w - this.repaint.x - (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0) - (pptBio.filmStripPos === 1 ? 0 : this.text.r);
-				/** MOD */ this.repaint.h = this.h - this.repaint.y - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) + uiBio.y;
+				/** MOD */ this.repaint.w = this.w - this.repaint.x - (!bioSet.filmStripOverlay ? this.filmStripSize.r : 0) - (bioSet.filmStripPos === 1 ? 0 : this.text.r);
+				/** MOD */ this.repaint.h = this.h - this.repaint.y - (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0) + bio.ui.y;
 				break;
 			}
 
-			case pptBio.style === 1: { // right
-				const textWidthCorr1 = filmStripLeft  && !pptBio.filmStripOverlay ? this.style.gap + SCALE(uiBio.heading.linePad) - SCALE(pref.layout === 'artwork' ? 10 : 0) : 0;
-				const textWidthCorr2 = filmStripRight && !pptBio.filmStripOverlay ? this.style.gap + SCALE(uiBio.heading.linePad) - SCALE(pref.layout === 'artwork' ? 10 : 0) : 0;
+			case bioSet.style === 1: { // right
+				const textWidthCorr1 = filmStripLeft  && !bioSet.filmStripOverlay ? this.style.gap + SCALE(bio.ui.heading.linePad) - SCALE(grSet.layout === 'artwork' ? 10 : 0) : 0;
+				const textWidthCorr2 = filmStripRight && !bioSet.filmStripOverlay ? this.style.gap + SCALE(bio.ui.heading.linePad) - SCALE(grSet.layout === 'artwork' ? 10 : 0) : 0;
 
-				$Bio.key.forEach(v => this.img[v] = this.bor[v] + (v != 'l' ? (!pptBio.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
-				let txt_sp = Math.round((this.w - pptBio.textL - (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) - this.img.r) * (1 - pptBio.rel_imgs));
-				const txt_h = this.h - pptBio.textT - pptBio.textB - (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
-				this.lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0);
-				this.style.imgSize = Math.max(this.w - txt_sp - this.img.r - pptBio.textL - (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) - this.style.gap, 10);
-				if (pptBio.sbarShow) txt_sp -= (uiBio.sbar.sp + sp1);
-				/** MOD */ this.text.l = pptBio.textL + (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) - textWidthCorr1;
-				this.text.r = pptBio.sbarShow ? Math.max(pptBio.textR + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0), uiBio.sbar.sp + sp1) : pptBio.textR + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
-				/** MOD */ this.text.t = !pptBio.topAlign ? uiBio.y + pptBio.textT + (this.h - pptBio.textT - pptBio.textB + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) - this.lines_drawn * uiBio.font.main_h + uiBio.heading.h) / 2 : pptBio.textT + uiBio.heading.h + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0);
+				$Bio.key.forEach(v => this.img[v] = this.bor[v] + (v != 'l' ? (!bioSet.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
+				let txt_sp = Math.round((this.w - bioSet.textL - (!bioSet.filmStripOverlay ? this.filmStripSize.l : 0) - this.img.r) * (1 - bioSet.rel_imgs));
+				const txt_h = this.h - bioSet.textT - bioSet.textB - (!bioSet.filmStripOverlay ? this.filmStripSize.t : 0) - (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0);
+				this.lines_drawn = Math.max(Math.floor((txt_h - bio.ui.heading.h) / bio.ui.font.main_h), 0);
+				this.style.imgSize = Math.max(this.w - txt_sp - this.img.r - bioSet.textL - (!bioSet.filmStripOverlay ? this.filmStripSize.l : 0) - this.style.gap, 10);
+				if (bioSet.sbarShow) txt_sp -= (bio.ui.sbar.sp + sp1);
+				/** MOD */ this.text.l = bioSet.textL + (!bioSet.filmStripOverlay ? this.filmStripSize.l : 0) - textWidthCorr1;
+				this.text.r = bioSet.sbarShow ? Math.max(bioSet.textR + (!bioSet.filmStripOverlay ? this.filmStripSize.r : 0), bio.ui.sbar.sp + sp1) : bioSet.textR + (!bioSet.filmStripOverlay ? this.filmStripSize.r : 0);
+				/** MOD */ this.text.t = !bioSet.topAlign ? bio.ui.y + bioSet.textT + (this.h - bioSet.textT - bioSet.textB + (!bioSet.filmStripOverlay ? this.filmStripSize.t : 0) - (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0) - this.lines_drawn * bio.ui.font.main_h + bio.ui.heading.h) / 2 : bioSet.textT + bio.ui.heading.h + (!bioSet.filmStripOverlay ? this.filmStripSize.t : 0);
 				/** MOD */ this.text.w = txt_sp + textWidthCorr1 + textWidthCorr2;
-				this.text.h = this.lines_drawn * uiBio.font.main_h;
-				this.heading.x = !this.style.fullWidthHeading ? this.text.l : pptBio.textL;
+				this.text.h = this.lines_drawn * bio.ui.font.main_h;
+				this.heading.x = !this.style.fullWidthHeading ? this.text.l : bioSet.textL;
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - this.bor.r;
-				/** MOD */ if (this.style.fullWidthHeading) this.img.t = this.text.t - uiBio.y + (RES_4K ? uiBio.heading.linePad * 1.5 : uiBio.heading.linePad * 0.5);
-				/** MOD */ this.img.l = pptBio.textL + txt_sp + (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) + this.style.gap + (pptBio.sbarShow ? uiBio.sbar.sp + sp1 : 0) + textWidthCorr2;
+				/** MOD */ if (this.style.fullWidthHeading) this.img.t = this.text.t - bio.ui.y + (RES._4K ? bio.ui.heading.linePad * 1.5 : bio.ui.heading.linePad * 0.5);
+				/** MOD */ this.img.l = bioSet.textL + txt_sp + (!bioSet.filmStripOverlay ? this.filmStripSize.l : 0) + this.style.gap + (bioSet.sbarShow ? bio.ui.sbar.sp + sp1 : 0) + textWidthCorr2;
 				/** MOD */ this.sbar.x = this.text.l + this.text.w + sp1 - RES_4K_Corr;
-				this.sbar.y = (uiBio.sbar.type < this.sbar.style || pptBio.heading || this.filmStripSize.t || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;
-				this.sbar.h = uiBio.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.b ? uiBio.font.main_h * this.lines_drawn + bot_corr * 2 : this.h - this.sbar.y + bot_corr;
+				this.sbar.y = (bio.ui.sbar.type < this.sbar.style || bioSet.heading || this.filmStripSize.t || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;
+				this.sbar.h = bio.ui.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.b ? bio.ui.font.main_h * this.lines_drawn + bot_corr * 2 : this.h - this.sbar.y + bot_corr;
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
 				this.repaint.w = this.img.l - this.repaint.x - this.style.gap;
-				/** MOD */ this.repaint.h = this.h - this.repaint.y - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) + uiBio.y;
+				/** MOD */ this.repaint.h = this.h - this.repaint.y - (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0) + bio.ui.y;
 				break;
 			}
 
-			case pptBio.style === 2: { // bottom
-				const textWidthCorr  = filmStripRight && !pptBio.filmStripOverlay ? this.text.r + RES_4K_Corr : this.text.r * 2;
-				const textWidthCorr2 = filmStripLeft  && !pptBio.filmStripOverlay ? this.filmStripSize.l - this.text.r + this.style.gap + RES_4K_Corr : 0;
+			case bioSet.style === 2: { // bottom
+				const textWidthCorr  = filmStripRight && !bioSet.filmStripOverlay ? this.text.r + RES_4K_Corr : this.text.r * 2;
+				const textWidthCorr2 = filmStripLeft  && !bioSet.filmStripOverlay ? this.filmStripSize.l - this.text.r + this.style.gap + RES_4K_Corr : 0;
 
-				$Bio.key.forEach(v => this.img[v] = this.bor[v] + (v != 't' && v != 'b' ? (!pptBio.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
-				/** MOD */ let txt_h = Math.round((this.h - pptBio.textT - this.img.b - (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0)) * (1 - pptBio.rel_imgs) + biographyFontSize);
-				this.lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0);
-				this.text.h = this.lines_drawn * uiBio.font.main_h;
+				$Bio.key.forEach(v => this.img[v] = this.bor[v] + (v != 't' && v != 'b' ? (!bioSet.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
+				/** MOD */ let txt_h = Math.round((this.h - bioSet.textT - this.img.b - (!bioSet.filmStripOverlay ? this.filmStripSize.t : 0) - (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0)) * (1 - bioSet.rel_imgs) + biographyFontSize);
+				this.lines_drawn = Math.max(Math.floor((txt_h - bio.ui.heading.h) / bio.ui.font.main_h), 0);
+				this.text.h = this.lines_drawn * bio.ui.font.main_h;
 				txt_h = this.text.h + this.style.gap;
-				this.style.imgSize = Math.max(this.h - txt_h - pptBio.textT - this.img.b - (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) - uiBio.heading.h, 10);
-				this.img.t = this.h - this.bor.b - this.style.imgSize - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
+				this.style.imgSize = Math.max(this.h - txt_h - bioSet.textT - this.img.b - (!bioSet.filmStripOverlay ? this.filmStripSize.t : 0) - (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0) - bio.ui.heading.h, 10);
+				this.img.t = this.h - this.bor.b - this.style.imgSize - (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0);
 				/** MOD */ this.img.l = this.text.l;
-				/** MOD */ this.text.l = pptBio.textL + textWidthCorr2;
-				this.text.r = (pptBio.sbarShow ? Math.max(pptBio.textR, uiBio.sbar.sp + sp2) : pptBio.textR) + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
-				/** MOD */ this.text.t = uiBio.y + this.img.t - txt_h;
+				/** MOD */ this.text.l = bioSet.textL + textWidthCorr2;
+				this.text.r = (bioSet.sbarShow ? Math.max(bioSet.textR, bio.ui.sbar.sp + sp2) : bioSet.textR) + (!bioSet.filmStripOverlay ? this.filmStripSize.r : 0);
+				/** MOD */ this.text.t = bio.ui.y + this.img.t - txt_h;
 				/** MOD */ this.text.w = this.w - this.text.l - textWidthCorr;
-				this.heading.x = (!this.style.fullWidthHeading ? this.text.l : pptBio.textL);
-				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - pptBio.textL - pptBio.textR;
-				/** MOD */ this.sbar.x = (!this.filmStripSize.r || pptBio.filmStripOverlay ? this.w - uiBio.sbar.sp - this.text.r : this.text.l + this.text.w + sp1);
-				this.sbar.y = (uiBio.sbar.type < this.sbar.style || pptBio.heading ? this.text.t : 0) + this.sbar.top_corr;
-				this.sbar.h = uiBio.sbar.type < this.sbar.style ? uiBio.font.main_h * this.lines_drawn + bot_corr * 2 : this.img.t - this.sbar.y + bot_corr;
+				this.heading.x = (!this.style.fullWidthHeading ? this.text.l : bioSet.textL);
+				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - bioSet.textL - bioSet.textR;
+				/** MOD */ this.sbar.x = (!this.filmStripSize.r || bioSet.filmStripOverlay ? this.w - bio.ui.sbar.sp - this.text.r : this.text.l + this.text.w + sp1);
+				this.sbar.y = (bio.ui.sbar.type < this.sbar.style || bioSet.heading ? this.text.t : 0) + this.sbar.top_corr;
+				this.sbar.h = bio.ui.sbar.type < this.sbar.style ? bio.ui.font.main_h * this.lines_drawn + bot_corr * 2 : this.img.t - this.sbar.y + bot_corr;
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
-				/** MOD */ this.repaint.w = this.w - this.repaint.x - (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0) - (pptBio.filmStripPos === 1 ? 0 : this.text.r);
-				/** MOD */ this.repaint.h = this.img.t - this.repaint.y + uiBio.y;
+				/** MOD */ this.repaint.w = this.w - this.repaint.x - (!bioSet.filmStripOverlay ? this.filmStripSize.r : 0) - (bioSet.filmStripPos === 1 ? 0 : this.text.r);
+				/** MOD */ this.repaint.h = this.img.t - this.repaint.y + bio.ui.y;
 				break;
 			}
 
-			case pptBio.style === 3: { // left
-				const textWidthCorr1 = filmStripLeft && !pptBio.filmStripOverlay ? this.style.gap - (pref.layout === 'artwork' ? RES_4K_Corr * 2 : RES_4K ? -uiBio.heading.linePad * 1.5 : -uiBio.heading.linePad) : -RES_4K_Corr;
-				const textWidthCorr2 = filmStripLeft && !pptBio.filmStripOverlay ? this.text.r - this.style.gap - RES_4K_Corr : 0;
-				const textWidthCorr3 = pptBio.artistView && pptBio.showFilmStrip && !pptBio.filmStripOverlay ? pptBio.filmStripPos === 1 ? RES_4K_Corr * 2 : pptBio.filmStripPos === 3 ? this.style.gap : this.text.r : this.text.r;
+			case bioSet.style === 3: { // left
+				const textWidthCorr1 = filmStripLeft && !bioSet.filmStripOverlay ? this.style.gap - (grSet.layout === 'artwork' ? RES_4K_Corr * 2 : RES._4K ? -bio.ui.heading.linePad * 1.5 : -bio.ui.heading.linePad) : -RES_4K_Corr;
+				const textWidthCorr2 = filmStripLeft && !bioSet.filmStripOverlay ? this.text.r - this.style.gap - RES_4K_Corr : 0;
+				const textWidthCorr3 = bioSet.artistView && bioSet.showFilmStrip && !bioSet.filmStripOverlay ? bioSet.filmStripPos === 1 ? RES_4K_Corr * 2 : bioSet.filmStripPos === 3 ? this.style.gap : this.text.r : this.text.r;
 
-				$Bio.key.forEach(v => this.img[v] = this.bor[v] + (v != 'r' ? (!pptBio.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
-				this.text.r = (pptBio.sbarShow ? Math.max(pptBio.textR, uiBio.sbar.sp + sp2) : pptBio.textR) + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
-				const txt_sp = Math.round((this.w - this.img.l - this.text.r) * (1 - pptBio.rel_imgs));
-				const txt_h = this.h - pptBio.textT - pptBio.textB - (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
-				this.lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0);
+				$Bio.key.forEach(v => this.img[v] = this.bor[v] + (v != 'r' ? (!bioSet.filmStripOverlay ? this.filmStripSize[v] : 0) : 0));
+				this.text.r = (bioSet.sbarShow ? Math.max(bioSet.textR, bio.ui.sbar.sp + sp2) : bioSet.textR) + (!bioSet.filmStripOverlay ? this.filmStripSize.r : 0);
+				const txt_sp = Math.round((this.w - this.img.l - this.text.r) * (1 - bioSet.rel_imgs));
+				const txt_h = this.h - bioSet.textT - bioSet.textB - (!bioSet.filmStripOverlay ? this.filmStripSize.t : 0) - (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0);
+				this.lines_drawn = Math.max(Math.floor((txt_h - bio.ui.heading.h) / bio.ui.font.main_h), 0);
 				this.style.imgSize = Math.max(this.w - txt_sp - this.img.l - this.text.r - this.style.gap, 10);
 				/** MOD */ this.text.l = this.img.l + this.style.imgSize + this.style.gap - textWidthCorr1;
-				/** MOD */ this.text.t = !pptBio.topAlign ? uiBio.y + pptBio.textT + (this.h - pptBio.textT - pptBio.textB + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0) - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) - this.lines_drawn * uiBio.font.main_h + uiBio.heading.h) / 2 : pptBio.textT + uiBio.heading.h + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0);
+				/** MOD */ this.text.t = !bioSet.topAlign ? bio.ui.y + bioSet.textT + (this.h - bioSet.textT - bioSet.textB + (!bioSet.filmStripOverlay ? this.filmStripSize.t : 0) - (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0) - this.lines_drawn * bio.ui.font.main_h + bio.ui.heading.h) / 2 : bioSet.textT + bio.ui.heading.h + (!bioSet.filmStripOverlay ? this.filmStripSize.t : 0);
 				/** MOD */ this.text.w = txt_sp - textWidthCorr3;
-				this.text.h = this.lines_drawn * uiBio.font.main_h;
+				this.text.h = this.lines_drawn * bio.ui.font.main_h;
 				this.heading.x = !this.style.fullWidthHeading ? this.text.l : this.bor.l;
-				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - pptBio.textR;
-				/** MOD */ if (this.style.fullWidthHeading) this.img.t = this.text.t - uiBio.y + (RES_4K ? uiBio.heading.linePad * 1.5 : uiBio.heading.linePad * 0.5);
+				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - bioSet.textR;
+				/** MOD */ if (this.style.fullWidthHeading) this.img.t = this.text.t - bio.ui.y + (RES._4K ? bio.ui.heading.linePad * 1.5 : bio.ui.heading.linePad * 0.5);
 				/** MOD */ this.img.l -= textWidthCorr2;
-				/** MOD */ this.sbar.x = (!this.filmStripSize.r || pptBio.filmStripOverlay ? this.w - uiBio.sbar.sp - this.text.r : this.text.l + this.text.w + sp1);
-				this.sbar.y = (uiBio.sbar.type < this.sbar.style || pptBio.heading || this.filmStripSize.t || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;
-				this.sbar.h = uiBio.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.b ? uiBio.font.main_h * this.lines_drawn + bot_corr * 2 : this.h - this.sbar.y + bot_corr;
+				/** MOD */ this.sbar.x = (!this.filmStripSize.r || bioSet.filmStripOverlay ? this.w - bio.ui.sbar.sp - this.text.r : this.text.l + this.text.w + sp1);
+				this.sbar.y = (bio.ui.sbar.type < this.sbar.style || bioSet.heading || this.filmStripSize.t || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;
+				this.sbar.h = bio.ui.sbar.type < this.sbar.style || this.filmStripSize.t || this.filmStripSize.b ? bio.ui.font.main_h * this.lines_drawn + bot_corr * 2 : this.h - this.sbar.y + bot_corr;
 				this.repaint.x = this.text.l;
 				this.repaint.y = this.text.t;
-				/** MOD */ this.repaint.w = this.w - this.repaint.x - (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0) - (pptBio.showFilmStrip ? 0 : this.text.r);
-				/** MOD */ this.repaint.h = this.h - this.repaint.y - (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0) + uiBio.y;
+				/** MOD */ this.repaint.w = this.w - this.repaint.x - (!bioSet.filmStripOverlay ? this.filmStripSize.r : 0) - (bioSet.showFilmStrip ? 0 : this.text.r);
+				/** MOD */ this.repaint.h = this.h - this.repaint.y - (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0) + bio.ui.y;
 				break;
 			}
 
-			case pptBio.style > 3: {
-				const textWidthCorr  = filmStripRight && !pptBio.filmStripOverlay ? this.text.r + this.style.gap + RES_4K_Corr : this.text.r * 2;
-				const textWidthCorr2 = filmStripLeft  ? pptBio.filmStripOverlay && pptBio.style === 4 ? this.filmStripSize.l : pptBio.filmStripOverlay && pptBio.style === 5 ? 0 : this.text.r - this.style.gap - RES_4K_Corr : 0;
-				const sbarScrollCorr = filmStripRight ? pptBio.filmStripOverlay ? 0 : pptBio.style === 4 ? this.text.r - this.filmStripSize.r - this.style.gap - RES_4K_Corr : pptBio.style === 5 ? this.text.r - this.style.gap - RES_4K_Corr : 0 : 0;
+			case bioSet.style > 3: {
+				const textWidthCorr  = filmStripRight && !bioSet.filmStripOverlay ? this.text.r + this.style.gap + RES_4K_Corr : this.text.r * 2;
+				const textWidthCorr2 = filmStripLeft  ? bioSet.filmStripOverlay && bioSet.style === 4 ? this.filmStripSize.l : bioSet.filmStripOverlay && bioSet.style === 5 ? 0 : this.text.r - this.style.gap - RES_4K_Corr : 0;
+				const sbarScrollCorr = filmStripRight ? bioSet.filmStripOverlay ? 0 : bioSet.style === 4 ? this.text.r - this.filmStripSize.r - this.style.gap - RES_4K_Corr : bioSet.style === 5 ? this.text.r - this.style.gap - RES_4K_Corr : 0 : 0;
 
-				if (pptBio.style - 6 >= this.style.free.length) this.getStyleFallback();
-				const obj = pptBio.style === 4 || pptBio.style === 5 ? this.style.overlay : this.style.free[pptBio.style - 6];
+				if (bioSet.style - 6 >= this.style.free.length) this.getStyleFallback();
+				const obj = bioSet.style === 4 || bioSet.style === 5 ? this.style.overlay : this.style.free[bioSet.style - 6];
 				if (!bypass) {
 					this.im.l = $Bio.clamp(obj.imL, 0, 1);
 					this.im.r = $Bio.clamp(obj.imR, 0, 1);
@@ -1498,78 +1498,78 @@ class PanelBio {
 					this.tx.t = $Bio.clamp(obj.txT, 0, 1);
 					this.tx.b = $Bio.clamp(obj.txB, 0, 1);
 				}
-				const imL = Math.round(this.im.l * this.w) + (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0);
-				const imR = Math.round(this.im.r * this.w) + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
-				const imT = Math.round(this.im.t * this.h) + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0);
-				const imB = Math.round(this.im.b * this.h) + (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
-				const txL = pptBio.style === 4 ? 0 : Math.round(this.tx.l * this.w) + (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0);
-				const txR = pptBio.style === 4 ? 0 : Math.round(this.tx.r * this.w) + (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0);
-				/** MOD */ const txT = pptBio.style === 4 ? uiBio.y : Math.round(this.tx.t * this.h) + (!pptBio.filmStripOverlay ? this.filmStripSize.t : 0);
-				const txB = pptBio.style === 4 ? 0 : Math.round(this.tx.b * this.h) + (!pptBio.filmStripOverlay ? this.filmStripSize.b : 0);
+				const imL = Math.round(this.im.l * this.w) + (!bioSet.filmStripOverlay ? this.filmStripSize.l : 0);
+				const imR = Math.round(this.im.r * this.w) + (!bioSet.filmStripOverlay ? this.filmStripSize.r : 0);
+				const imT = Math.round(this.im.t * this.h) + (!bioSet.filmStripOverlay ? this.filmStripSize.t : 0);
+				const imB = Math.round(this.im.b * this.h) + (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0);
+				const txL = bioSet.style === 4 ? 0 : Math.round(this.tx.l * this.w) + (!bioSet.filmStripOverlay ? this.filmStripSize.l : 0);
+				const txR = bioSet.style === 4 ? 0 : Math.round(this.tx.r * this.w) + (!bioSet.filmStripOverlay ? this.filmStripSize.r : 0);
+				/** MOD */ const txT = bioSet.style === 4 ? bio.ui.y : Math.round(this.tx.t * this.h) + (!bioSet.filmStripOverlay ? this.filmStripSize.t : 0);
+				const txB = bioSet.style === 4 ? 0 : Math.round(this.tx.b * this.h) + (!bioSet.filmStripOverlay ? this.filmStripSize.b : 0);
 				this.ibox.l = Math.max(imL, 0);
 				this.ibox.t = Math.max(imT, 0);
 				this.ibox.w = this.w - imL - imR;
 				this.ibox.h = this.h - imT - imB;
-				/** MOD */ this.img.l = pptBio.style === 4 ? 0 : this.bor.l; // this.img.l = pptBio.style === 4 ? 0 : imL + this.bor.l;
-				/** MOD */ this.img.r = pptBio.style === 4 ? 0 : this.bor.r; // this.img.r = pptBio.style === 4 ? 0 : imR + this.bor.r;
-				this.img.t = pptBio.style === 4 ? 0 : imT + this.bor.t;
-				this.img.b = pptBio.style === 4 ? 0 : imB + this.bor.b;
-				const t_l = (pptBio.style === 4 ? this.filmStripSize.l : 0) + pptBio.textL + uiBio.overlay.borderWidth;
-				const t_t = (pptBio.style === 4 ? this.filmStripSize.t : 0) + pptBio.textT + uiBio.overlay.borderWidth;
-				let t_r = (pptBio.style === 4 ? this.filmStripSize.r : 0) + pptBio.textR + uiBio.overlay.borderWidth;
-				let t_b = (pptBio.style === 4 ? this.filmStripSize.b : 0) + pptBio.textB + uiBio.overlay.borderWidth;
-				if ((pptBio.typeOverlay === 2 || pptBio.typeOverlay === 4) && pptBio.style !== 4) {
+				/** MOD */ this.img.l = bioSet.style === 4 ? 0 : this.bor.l; // this.img.l = bioSet.style === 4 ? 0 : imL + this.bor.l;
+				/** MOD */ this.img.r = bioSet.style === 4 ? 0 : this.bor.r; // this.img.r = bioSet.style === 4 ? 0 : imR + this.bor.r;
+				this.img.t = bioSet.style === 4 ? 0 : imT + this.bor.t;
+				this.img.b = bioSet.style === 4 ? 0 : imB + this.bor.b;
+				const t_l = (bioSet.style === 4 ? this.filmStripSize.l : 0) + bioSet.textL + bio.ui.overlay.borderWidth;
+				const t_t = (bioSet.style === 4 ? this.filmStripSize.t : 0) + bioSet.textT + bio.ui.overlay.borderWidth;
+				let t_r = (bioSet.style === 4 ? this.filmStripSize.r : 0) + bioSet.textR + bio.ui.overlay.borderWidth;
+				let t_b = (bioSet.style === 4 ? this.filmStripSize.b : 0) + bioSet.textB + bio.ui.overlay.borderWidth;
+				if ((bioSet.typeOverlay === 2 || bioSet.typeOverlay === 4) && bioSet.style !== 4) {
 					t_r += 1;
 					t_b += 1;
 				}
 
-				/** MOD */ const txt_h = Math.round((this.h - txT - txB - t_t - t_b) + uiBio.heading.h);
-				this.lines_drawn = Math.max(Math.floor((txt_h - uiBio.heading.h) / uiBio.font.main_h), 0);
+				/** MOD */ const txt_h = Math.round((this.h - txT - txB - t_t - t_b) + bio.ui.heading.h);
+				this.lines_drawn = Math.max(Math.floor((txt_h - bio.ui.heading.h) / bio.ui.font.main_h), 0);
 				/** MOD */ this.text.l = txL + t_l - textWidthCorr2;
-				this.text.r = txR + (pptBio.sbarShow ? Math.max(t_r, uiBio.sbar.sp + sp1) : t_r);
-				/** MOD */ this.text.t = uiBio.y + txT + t_t;
+				this.text.r = txR + (bioSet.sbarShow ? Math.max(t_r, bio.ui.sbar.sp + sp1) : t_r);
+				/** MOD */ this.text.t = bio.ui.y + txT + t_t;
 				/** MOD */ this.text.w = this.w - this.text.l - textWidthCorr;
-				this.text.h = this.lines_drawn * uiBio.font.main_h;
-				/** MOD */ this.heading.x = !this.style.fullWidthHeading ? this.text.l : pptBio.style === 4 ? pptBio.textL : Math.min(this.img.l, this.text.l, (!pptBio.filmStripOverlay ? this.filmStripSize.l : 0) ? filmStrip.x : this.w);
-				/** MOD */ this.heading.w = !this.style.fullWidthHeading ? this.text.w : pptBio.style === 4 ? this.w - this.heading.x * 2 : this.w - this.heading.x - Math.min(this.img.r, this.text.r, (!pptBio.filmStripOverlay ? this.filmStripSize.r : 0) ? this.w - filmStrip.x - filmStrip.w : this.w);
+				this.text.h = this.lines_drawn * bio.ui.font.main_h;
+				/** MOD */ this.heading.x = !this.style.fullWidthHeading ? this.text.l : bioSet.style === 4 ? bioSet.textL : Math.min(this.img.l, this.text.l, (!bioSet.filmStripOverlay ? this.filmStripSize.l : 0) ? bio.filmStrip.x : this.w);
+				/** MOD */ this.heading.w = !this.style.fullWidthHeading ? this.text.w : bioSet.style === 4 ? this.w - this.heading.x * 2 : this.w - this.heading.x - Math.min(this.img.r, this.text.r, (!bioSet.filmStripOverlay ? this.filmStripSize.r : 0) ? this.w - bio.filmStrip.x - bio.filmStrip.w : this.w);
 				this.tbox.l = Math.max(txL, 0);
-				/** MOD */ this.tbox.t = pptBio.style === 4 ? 0 : Math.max(txT, 0) - uiBio.heading.h * 0.5;
+				/** MOD */ this.tbox.t = bioSet.style === 4 ? 0 : Math.max(txT, 0) - bio.ui.heading.h * 0.5;
 				this.tbox.w = this.w - Math.max(txL, 0) - Math.max(txR, 0);
 				this.tbox.h = this.h - Math.max(txT, 0) - Math.max(txB, 0);
-				this.style.minH = uiBio.font.main_h + uiBio.heading.h + t_t + t_b;
-				if (pptBio.typeOverlay === 2 && pptBio.style !== 4) uiBio.overlay.borderWidth = Math.max(Math.min(uiBio.overlay.borderWidth, this.tbox.w / 3, this.tbox.h / 3), 1);
-				if (pptBio.typeOverlay && pptBio.style !== 4) this.arc = Math.max(Math.min(uiBio.font.main_h / 1.5, this.tbox.w / 3, this.tbox.h / 3), 1);
+				this.style.minH = bio.ui.font.main_h + bio.ui.heading.h + t_t + t_b;
+				if (bioSet.typeOverlay === 2 && bioSet.style !== 4) bio.ui.overlay.borderWidth = Math.max(Math.min(bio.ui.overlay.borderWidth, this.tbox.w / 3, this.tbox.h / 3), 1);
+				if (bioSet.typeOverlay && bioSet.style !== 4) this.arc = Math.max(Math.min(bio.ui.font.main_h / 1.5, this.tbox.w / 3, this.tbox.h / 3), 1);
 				this.clip = this.ibox.t + 100 < this.tbox.t && this.tbox.t < this.ibox.t + this.ibox.h && (this.tbox.l < this.ibox.l + this.ibox.w || this.tbox.l + this.tbox.w < this.ibox.l + this.ibox.w);
 				this.style.imgSize = this.clip ? this.tbox.t - this.ibox.t : Math.min(this.h - imT - imB - this.bor.t - this.bor.b, this.w - imL - imR - this.bor.l - this.bor.r);
-				/** MOD */ this.sbar.x = this.tbox.l + this.tbox.w - uiBio.sbar.sp - uiBio.overlay.borderWidth - this.text.r + (pptBio.style === 4 && pptBio.showFilmStrip && pptBio.filmStripOverlay ? this.filmStripSize.r : sbarScrollCorr);
+				/** MOD */ this.sbar.x = this.tbox.l + this.tbox.w - bio.ui.sbar.sp - bio.ui.overlay.borderWidth - this.text.r + (bioSet.style === 4 && bioSet.showFilmStrip && bioSet.filmStripOverlay ? this.filmStripSize.r : sbarScrollCorr);
 				this.sbar.y = this.text.t + this.sbar.top_corr;
-				this.sbar.h = uiBio.font.main_h * this.lines_drawn + bot_corr * 2;
+				this.sbar.h = bio.ui.font.main_h * this.lines_drawn + bot_corr * 2;
 				this.repaint.x = this.tbox.l;
-				/** MOD */ this.repaint.y = this.tbox.t + uiBio.y;
+				/** MOD */ this.repaint.y = this.tbox.t + bio.ui.y;
 				this.repaint.w = this.tbox.w;
 				this.repaint.h = this.tbox.h;
 				break;
 			}
 		}
-		if (uiBio.sbar.type === 2) {
+		if (bio.ui.sbar.type === 2) {
 			this.sbar.y += 1;
 			this.sbar.h -= 2;
 		}
 		this.text.w = Math.max(this.text.w, 10);
-		this.style.max_y = this.lines_drawn * uiBio.font.main_h + this.text.t - uiBio.font.main_h * 0.9;
-		if (!this.id.init) filmStrip.check();
+		this.style.max_y = this.lines_drawn * bio.ui.font.main_h + this.text.t - bio.ui.font.main_h * 0.9;
+		if (!this.id.init) bio.filmStrip.check();
 		this.id.init = false;
 	}
 
 	setSummary() {
 		this.summary = {
-			date: pptBio.summaryShow && pptBio.summaryDate,
-			genre: pptBio.summaryShow && pptBio.summaryGenre,
-			latest: pptBio.summaryShow && pptBio.summaryLatest,
-			locale: pptBio.summaryShow && pptBio.summaryLocale,
-			other: pptBio.summaryShow && pptBio.summaryOther,
-			popNow: pptBio.summaryShow && pptBio.summaryPopNow,
-			show: pptBio.summaryShow
+			date: bioSet.summaryShow && bioSet.summaryDate,
+			genre: bioSet.summaryShow && bioSet.summaryGenre,
+			latest: bioSet.summaryShow && bioSet.summaryLatest,
+			locale: bioSet.summaryShow && bioSet.summaryLocale,
+			other: bioSet.summaryShow && bioSet.summaryOther,
+			popNow: bioSet.summaryShow && bioSet.summaryPopNow,
+			show: bioSet.summaryShow
 		};
 	}
 
@@ -1587,22 +1587,22 @@ class PanelBio {
 	}
 
 	simTagTopLookUp() {
-		const li = pptBio.artistView ? this.art : this.alb;
+		const li = bioSet.artistView ? this.art : this.alb;
 		return li.ix && li.list[li.ix] && li.list[li.ix].type != 'history';
 	}
 
 	stndItem() {
-		return !this.art.ix && pptBio.artistView || !this.alb.ix && !pptBio.artistView;
+		return !this.art.ix && bioSet.artistView || !this.alb.ix && !bioSet.artistView;
 	}
 
 	tfBio(n, artist, focus) {
-		n = n.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_artist%/gi, '$&#@!%path%#@!').replace(/%bio_artist%/gi, $Bio.tfEscape(artist)).replace(/%bio_album%/gi, cfg.tf.album).replace(/%bio_title%/gi, cfg.tf.title);
+		n = n.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_artist%/gi, '$&#@!%path%#@!').replace(/%bio_artist%/gi, $Bio.tfEscape(artist)).replace(/%bio_album%/gi, bioCfg.tf.album).replace(/%bio_title%/gi, bioCfg.tf.title);
 		n = $Bio.eval(n, focus);
 		return n.replace(/#@!.*?#@!/g, '');
 	}
 
 	tfRev(n, albumArtist, album, focus) {
-		n = n.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*(%bio_albumartist%|%bio_album%)/gi, '$&#@!%path%#@!').replace(/%bio_albumartist%/gi, $Bio.tfEscape(albumArtist)).replace(/%bio_album%/gi, $Bio.tfEscape(album)).replace(/%bio_title%/gi, cfg.tf.title);
+		n = n.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*(%bio_albumartist%|%bio_album%)/gi, '$&#@!%path%#@!').replace(/%bio_albumartist%/gi, $Bio.tfEscape(albumArtist)).replace(/%bio_album%/gi, $Bio.tfEscape(album)).replace(/%bio_title%/gi, bioCfg.tf.title);
 		n = $Bio.eval(n, focus);
 		return n.replace(/#@!.*?#@!/g, '');
 	}
@@ -1636,22 +1636,22 @@ class PanelBio {
 
 	updateNeeded() {
 		switch (true) {
-			case pptBio.artistView:
+			case bioSet.artistView:
 				this.id.curArtist = this.id.artist;
 				this.id.artist = $Bio.eval(this.art.fields, this.id.focus);
 				return !this.id.lookUp ? true : this.id.artist != this.id.curArtist || !this.art.list.length || !this.art.ix;
-			case !pptBio.artistView:
+			case !bioSet.artistView:
 				this.id.curAlb = this.id.alb;
-				this.id.alb = name.albID(this.id.focus, 'simple');
+				this.id.alb = bio.name.albID(this.id.focus, 'simple');
 				if (this.style.inclTrackRev) {
 					this.id.curTr = this.id.tr;
-					this.id.tr = name.trackID(this.id.focus);
+					this.id.tr = bio.name.trackID(this.id.focus);
 				} else this.id.curTr = this.id.tr = '';
 				return !this.id.lookUp ? true : this.id.alb != this.id.curAlb || this.id.tr != this.id.curTr || !this.alb.list.length || !this.alb.ix;
 		}
 	}
 
 	zoom() {
-		return vkBio.k('shift') || vkBio.k('ctrl');
+		return bio.vk.k('shift') || bio.vk.k('ctrl');
 	}
 }

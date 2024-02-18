@@ -1,55 +1,120 @@
-/////////////////////////////////////////////////////////////////////////////
-// * Georgia-ReBORN: A Clean, Full Dynamic Color Reborn foobar2000 Theme * //
-// * Description:    Georgia-ReBORN Common                               * //
-// * Author:         TT                                                  * //
-// * Org. Author:    TheQwertiest                                        * //
-// * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
-// * Version:        3.0-DEV                                             * //
-// * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-15                                          * //
-/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+// * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
+// * Description:    Georgia-ReBORN Common                                   * //
+// * Author:         TT                                                      * //
+// * Org. Author:    TheQwertiest                                            * //
+// * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
+// * Version:        3.0-DEV                                                 * //
+// * Dev. started:   22-12-2017                                              * //
+// * Last change:    18-02-2024                                              * //
+/////////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
+
+
+/////////////////////////
+// * ACTIVEX OBJECTS * //
+/////////////////////////
+/** @global @type {ActiveXObject} */
+const app = new ActiveXObject('Shell.Application');
+/** @global @type {ActiveXObject} */
+const esl = new ActiveXObject('eslyric');
+/** @global @type {ActiveXObject} */
+const doc = new ActiveXObject('htmlfile');
+/** @global @type {ActiveXObject} */
+const fso = new ActiveXObject('Scripting.FileSystemObject');
+/** @global @type {ActiveXObject} */
+const UIHacks = new ActiveXObject('UIHacks');
+/** @global @type {ActiveXObject} */
+const vb = new ActiveXObject('ScriptControl');
+/** @global @type {ActiveXObject} */
+const WshShell = new ActiveXObject('WScript.Shell');
+
+
+////////////////////
+// * COMPONENTS * //
+////////////////////
+/**
+ * A set of boolean flags indicating the presence of specific components.
+ * Each flag is set based on the result of a check performed at the time of initialization.
+ * @global
+ * @enum {boolean}
+ */
+const Component = {
+	/** Indicates if the foo_chronflow component or its mod version is installed. */
+	ChronFlow: utils.CheckComponent('foo_chronflow') || utils.CheckComponent('foo_chronflow_mod'),
+	/** Indicates if the foo_enhanced_playcount component is installed. */
+	EnhancedPlaycount: utils.CheckComponent('foo_enhanced_playcount'),
+	/** Indicates if the foo_uie_eslyric component is installed. */
+	ESLyric: utils.CheckComponent('foo_uie_eslyric'),
+	/** Indicates if the foo_vis_vumeter component is installed. */
+	VUMeter: utils.CheckComponent('foo_vis_vumeter')
+};
+
+
+///////////////////////
+// * COMPATIBILITY * //
+///////////////////////
+/**
+ * A set of boolean flags indicating various environment conditions.
+ * @global
+ * @enum {boolean}
+ */
+const Detect = {
+	/** Indicates if user has Internet Explorer installed, needed to render HTML popups. */
+	IE: DetectIE(),
+	/** Indicates if the user's system is running on Windows 64 bit. */
+	Win64: DetectWin64(),
+	/** Indicates if the user's system is running Wine on Linux or macOS. */
+	Wine: DetectWine()
+};
+
+
+///////////////////////
+// * CONFIGURATION * //
+///////////////////////
+/**
+ * A set of configuration type settings.
+ * @global
+ * @enum {string}
+ */
+const ConfigurationObjectType = {
+	Array:  'array',
+	Object: 'object',
+	Value:  'value' // Not currently handled
+};
+
+
+/////////////////
+// * DISPLAY * //
+/////////////////
+/**
+ * A set of display resolution state settings, initially set to false.
+ * These states can be modified at runtime to reflect the current display settings.
+ * @global
+ * @enum {boolean}
+ */
+const RES = {
+	/** 4K resolution state. */
+	_4K: false,
+
+	/** Quad HD resolution state. */
+	_QHD: false,
+
+	/** High Definition resolution state. */
+	_HD: false
+};
 
 
 ///////////////////
 // * RENDERING * //
 ///////////////////
 /**
- * A set of several different quality type settings for text rendering.
- * Used in SetTextRenderingHint().
- * For more information, see: http://msdn.microsoft.com/en-us/library/ms534404(VS.85).aspx
- * @enum {number}
- */
-const TextRenderingHint = {
-	SystemDefault: 0,
-	SingleBitPerPixelGridFit: 1,
-	SingleBitPerPixel: 2,
-	AntiAliasGridFit: 3,
-	AntiAlias: 4,
-	ClearTypeGridFit: 5
-};
-
-/**
- * A set of several different quality type settings for anti-aliasing that is applied to the edges of lines and curves.
- * Used in SetSmoothingMode().
- * For more information, see: http://msdn.microsoft.com/en-us/library/ms534173(VS.85).aspx
- * @enum {number}
- */
-const SmoothingMode = {
-	Invalid: -1,
-	Default: 0,
-	HighSpeed: 1,
-	HighQuality: 2,
-	None: 3,
-	AntiAlias: 4
-};
-
-/**
  * A set of several different quality type settings for interpolation of image processing when resizing or transforming.
  * Used in SetInterpolationMode().
- * For more information, see: http://msdn.microsoft.com/en-us/library/ms534141(VS.85).aspx
+ * For more information, see: http://msdn.microsoft.com/en-us/library/ms534141(VS.85).aspx.
+ * @global
  * @enum {number}
  */
 const InterpolationMode = {
@@ -64,12 +129,58 @@ const InterpolationMode = {
 	HighQualityBicubic: 7  // Highest quality
 };
 
+/**
+ * A set of several different quality type settings for anti-aliasing that is applied to the edges of lines and curves.
+ * Used in SetSmoothingMode().
+ * For more information, see: http://msdn.microsoft.com/en-us/library/ms534173(VS.85).aspx.
+ * @global
+ * @enum {number}
+ */
+const SmoothingMode = {
+	Invalid: -1,
+	Default: 0,
+	HighSpeed: 1,
+	HighQuality: 2,
+	None: 3,
+	AntiAlias: 4
+};
+
+/**
+ * A set of several different quality type settings for text rendering.
+ * Used in SetTextRenderingHint().
+ * For more information, see: http://msdn.microsoft.com/en-us/library/ms534404(VS.85).aspx.
+ * @global
+ * @enum {number}
+ */
+const TextRenderingHint = {
+	SystemDefault: 0,
+	SingleBitPerPixelGridFit: 1,
+	SingleBitPerPixel: 2,
+	AntiAliasGridFit: 3,
+	AntiAlias: 4,
+	ClearTypeGridFit: 5
+};
+
 
 //////////////////
 // * GRAPHICS * //
 //////////////////
 /**
+ * A set of foobar's album art ID settings used to identify which album art image to load.
+ * @global
+ * @enum {number}
+ */
+const AlbumArtId = {
+	front: 0,
+	back: 1,
+	disc: 2,
+	icon: 3,
+	artist: 4
+};
+
+/**
  * A set of different text alignment and formatting settings.
+ * @global
  * @enum {number}
  */
 const DrawText = {
@@ -86,9 +197,10 @@ const DrawText = {
 
 /**
  * A set of text formatting settings used in gr.DrawString() or gr.GdiDrawText().
+ * @global
  * @enum {number}
  */
-const g_string_format = {
+const Stringformat = {
 	h_align_near: 0x00000000,
 	h_align_center: 0x10000000,
 	h_align_far: 0x20000000,
@@ -119,9 +231,10 @@ const g_string_format = {
 
 /**
  * A set of font style settings used when creating font objects.
+ * @global
  * @enum {number}
  */
-const g_font_style = {
+const FontStyle = {
 	regular: 0,
 	bold: 1,
 	italic: 2,
@@ -132,9 +245,10 @@ const g_font_style = {
 
 /**
  * A set of font mapping settings for the 'Guifx v2 Transports' font used for button symbols.
+ * @global
  * @enum {string|number}
  */
-const g_guifx = {
+const Guifx = {
 	name: 'Guifx v2 Transports',
 	play: 1,
 	pause: 2,
@@ -196,45 +310,14 @@ const g_guifx = {
 	police: 'p'
 };
 
-/**
- * A set of foobar's album art ID settings used to identify which album art image to load.
- * @enum {number}
- */
-const g_album_art_id = {
-	front: 0,
-	back: 1,
-	disc: 2,
-	icon: 3,
-	artist: 4
-};
-
 
 ///////////////////////
 // * FILE SETTINGS * //
 ///////////////////////
 /**
- * A set of file mode settings that specifies how the operating system should open a file.
- * @enum {number}
- */
-const FileMode = {
-	Read: 1,
-	Write: 2,
-	Append: 3
-};
-
-/**
- * A set of file type settings that specifies the file format.
- * @enum {number}
- */
-const FileType = {
-	SystemDefault: -2,
-	Unicode: -1,
-	Ascii: 0
-};
-
-/**
  * A set of file attribute settings that specifies the attributes of a file, used with utils.Glob().
- * For more information, see: http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx
+ * For more information, see: http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx.
+ * @global
  * @enum {number}
  */
 const FileAttributes = {
@@ -255,12 +338,57 @@ const FileAttributes = {
 	// Virtual: 0x00010000; // ! Do not use
 };
 
+/**
+ * A set of file mode settings that specifies how the operating system should open a file.
+ * @global
+ * @enum {number}
+ */
+const FileMode = {
+	Read: 1,
+	Write: 2,
+	Append: 3
+};
+
+/**
+ * A set of file type settings that specifies the file format.
+ * @global
+ * @enum {number}
+ */
+const FileType = {
+	SystemDefault: -2,
+	Unicode: -1,
+	Ascii: 0
+};
+
 
 ////////////////
 // * STATES * //
 ////////////////
 /**
+ * A set of all button state settings.
+ * @global
+ * @enum {number}
+ */
+const ButtonState = {
+	Default: 0,
+	Hovered: 1,
+	Down:    2,
+	Enabled: 3
+};
+
+/**
+ * A set of all hyperlink state settings.
+ * @global
+ * @enum {number}
+ */
+const HyperlinkStates = {
+	Normal: 0,
+	Hovered: 1
+};
+
+/**
  * A set of all available foobar playback order state settings.
+ * @global
  * @enum {number}
  */
 const PlaybackOrder = {
@@ -279,6 +407,7 @@ const PlaybackOrder = {
 /////////////////
 /**
  * A set of UIHacks main menu state settings.
+ * @global
  * @enum {number}
  */
 const MainMenuState = {
@@ -288,7 +417,19 @@ const MainMenuState = {
 };
 
 /**
+ * A set of UIHacks window state settings.
+ * @global
+ * @enum {number}
+ */
+const WindowState = {
+	Normal:    0,
+	Minimized: 1,
+	Maximized: 2
+};
+
+/**
  * A set of UIHacks frame style settings, see foobar's Preferences > Display > Main Window > Frame style.
+ * @global
  * @enum {number}
  */
 const FrameStyle = {
@@ -300,6 +441,7 @@ const FrameStyle = {
 
 /**
  * A set of UIHacks move style settings, see foobar's Preferences > Display > Main Window > Move with.
+ * @global
  * @enum {number}
  */
 const MoveStyle = {
@@ -315,9 +457,10 @@ const MoveStyle = {
 ///////////////////////
 /**
  * A set of country codes that maps two digit country codes to full names, mostly used for displaying flag images via tags.
+ * @global
  * @enum {string}
  */
-const countryCodes = {
+const CountryCodes = {
 	US: 'United States',
 	GB: 'United Kingdom',
 	AU: 'Australia',
@@ -570,24 +713,28 @@ const countryCodes = {
 /**
  * The menu item is disabled.
  * @type {number}
+ * @global
  */
 const MF_DISABLED = 0x00000002;
 
 /**
  * The menu item is grayed out.
  * @type {number}
+ * @global
  */
 const MF_GRAYED = 0x00000001;
 
 /**
  * The menu item is a popup menu item.
  * @type {number}
+ * @global
  */
 const MF_POPUP = 0x00000010;
 
 /**
  * The menu item is a string.
  * @type {number}
+ * @global
  */
 const MF_STRING = 0x00000000;
 
@@ -598,42 +745,49 @@ const MF_STRING = 0x00000000;
 /**
  * The CTRL key is down.
  * @type {number}
+ * @global
  */
 const MK_CONTROL = 0x0008;
 
 /**
  * The left mouse button is down.
  * @type {number}
+ * @global
  */
 const MK_LBUTTON = 0x0001;
 
 /**
  * The middle mouse button is down.
  * @type {number}
+ * @global
  */
 const MK_MBUTTON = 0x0010;
 
 /**
  * The right mouse button is down.
  * @type {number}
+ * @global
  */
 const MK_RBUTTON = 0x0002;
 
 /**
  * The SHIFT key is down.
  * @type {number}
+ * @global
  */
 const MK_SHIFT = 0x0004;
 
 /**
  * The first X button is down.
  * @type {number}
+ * @global
  */
 const MK_XBUTTON1 = 0x0020;
 
 /**
  * The second X button is down.
  * @type {number}
+ * @global
  */
 const MK_XBUTTON2 = 0x0040;
 
@@ -644,96 +798,112 @@ const MK_XBUTTON2 = 0x0040;
 /**
  * The standard arrow cursor with small hourglass to indicate application is starting.
  * @type {number}
+ * @global
  */
 const IDC_APPSTARTING = 32650;
 
 /**
  * The standard arrow cursor.
  * @type {number}
+ * @global
  */
 const IDC_ARROW = 32512;
 
 /**
  * The crosshair cursor.
  * @type {number}
+ * @global
  */
 const IDC_CROSS = 32515;
 
 /**
  * The pointing hand cursor.
  * @type {number}
+ * @global
  */
 const IDC_HAND = 32649;
 
 /**
  * The arrow cursor with a question mark to indicate help.
  * @type {number}
+ * @global
  */
 const IDC_HELP = 32651;
 
 /**
  * The text insertion cursor (I-beam).
  * @type {number}
+ * @global
  */
 const IDC_IBEAM = 32513;
 
 /**
  * The application icon cursor.
  * @type {number}
+ * @global
  */
 const IDC_ICON = 32641;
 
 /**
  * The slashed circle cursor indicating "no".
  * @type {number}
+ * @global
  */
 const IDC_NO = 32648;
 
 /**
  * The double-headed horizontal arrow cursor.
  * @type {number}
+ * @global
  */
 const IDC_SIZE = 32640;
 
 /**
  * The four-headed arrow cursor (North/South/East/West).
  * @type {number}
+ * @global
  */
 const IDC_SIZEALL = 32646;
 
 /**
  * The double-headed horizontal arrow cursor (West/East).
  * @type {number}
+ * @global
  */
 const IDC_SIZEWE = 32644;
 
 /**
  * The double-headed diagonal arrow cursor (Northeast/Southwest).
  * @type {number}
+ * @global
  */
 const IDC_SIZENESW = 32643;
 
 /**
  * The double-headed diagonal arrow cursor (Northwest/Southeast).
  * @type {number}
+ * @global
  */
 const IDC_SIZENWSE = 32642;
 
 /**
  * The double-headed vertical arrow cursor (North/South).
  * @type {number}
+ * @global
  */
 const IDC_SIZENS = 32645;
 
 /**
  * The up arrow cursor.
  * @type {number}
+ * @global
  */
 const IDC_UPARROW = 32516;
 
 /**
  * The wait/busy cursor.
  * @type {number}
+ * @global
  */
 const IDC_WAIT = 32514;
 
@@ -747,6 +917,11 @@ const VK_CANCEL     = 0x03; // Control-break processing
 const VK_MBUTTON    = 0x04; // Middle mouse button (three-button mouse)
 const VK_XBUTTON1   = 0x05; // X1 mouse button
 const VK_XBUTTON2   = 0x06; // X2 mouse button
+
+const VK_COPY       = 0x03; // Copy command
+const VK_CUT        = 0x18; // Cut command
+const VK_PASTE      = 0x16; // Paste command
+const VK_SELECT_ALL = 0x01; // Select All command
 
 const VK_BACK       = 0x08; // BACKSPACE key
 const VK_TAB        = 0x09; // TAB key
@@ -930,6 +1105,7 @@ const VK_NONAME     = 0xFC; // Reserved
 const VK_PA1        = 0xFD; // PA1 key
 const VK_OEM_CLEAR  = 0xFE; // Clear key
 
+/************************/
 // 0x0A-0B // Reserved
 // 0x0E-0F // Undefined
 // 0x3A-40 // Undefined
@@ -946,112 +1122,123 @@ const VK_OEM_CLEAR  = 0xFE; // Clear key
 // 0xE6    // OEM specific
 // 0xE8    // Unassigned
 // 0xE9-F5 // OEM specific
+/************************/
 
 
-///////////////////////
-// * ERROR HANDLER * //
-///////////////////////
+///////////////
+// * ERROR * //
+///////////////
 /**
- * A custom error class that handles theme errors with detailed messages.
+ * A class that handles theme errors with detailed messages.
+ * @augments {Error}
  */
 class ThemeError extends Error {
 	/**
-	 * Creates an instance of ThemeError.
-	 * @param {string} msg The error message.
-	 * @extends {Error}
+	 * Creates the `ThemeError` instance.
+	 * @param {string} msg - The error message.
 	 */
 	constructor(msg) {
 		super(msg);
+		/** @private @type {string} */
 		this.name = 'ThemeError';
+		/** @private @type {string} */
 		this.message = `\n${msg}\n`;
 	}
 }
 
 
 /**
- * A custom error class that handles logic errors with detailed messages.
+ * A class that handles logic errors with detailed messages.
+ * @augments {Error}
  */
 class LogicError extends Error {
 	/**
-	 * Creates an instance of LogicError.
-	 * @param {string} msg The error message.
-	 * @extends {Error}
+	 * Creates the `LogicError` instance.
+	 * @param {string} msg - The error message.
 	 */
 	constructor(msg) {
 		super(msg);
+		/** @private @type {string} */
 		this.name = 'LogicError';
+		/** @private @type {string} */
 		this.message = `\n${msg}\n`;
 	}
 }
 
 
 /**
- * A custom error class that handles invalid type errors with detailed messages.
+ * A class that handles invalid type errors with detailed messages.
+ * @augments {Error}
  */
 class InvalidTypeError extends Error {
 	/**
-	 * Creates an instance of InvalidTypeError.
-	 * @param {string} arg_name The name of the argument that caused the error.
-	 * @param {string} arg_type The actual type of the argument that was passed.
-	 * @param {string} valid_type The expected type of the argument.
-	 * @param {string=} additional_msg An optional message to provide more information about the error.
-	 * @extends {Error}
+	 * Creates the `InvalidTypeError` instance.
+	 * @param {string} arg_name - The name of the argument that caused the error.
+	 * @param {string} arg_type - The actual type of the argument that was passed.
+	 * @param {string} valid_type - The expected type of the argument.
+	 * @param {string} [additional_msg] - An optional message to provide more information about the error.
 	 */
 	constructor(arg_name, arg_type, valid_type, additional_msg = '') {
 		super('');
+		/** @private @type {string} */
 		this.name = 'InvalidTypeError';
+		/** @private @type {string} */
 		this.message = `\n'${arg_name}' is not a ${valid_type}, it's a ${arg_type}${additional_msg ? `\n${additional_msg}` : ''}\n`;
 	}
 }
 
 
 /**
- * A custom error class that handles argument errors with detailed messages.
+ * A class that handles argument errors with detailed messages.
+ * @augments {Error}
  */
 class ArgumentError extends Error {
 	/**
-	 * Creates an instance of ArgumentError.
-	 * @param {string} arg_name The name of the argument that has an invalid value.
-	 * @param {*} arg_value The value of the argument that is considered invalid.
-	 * @param {string=} additional_msg An optional message to provide more information about the error.
-	 * @extends {Error}
+	 * Creates the `ArgumentError` instance.
+	 * @param {string} arg_name - The name of the argument that has an invalid value.
+	 * @param {*} arg_value - The value of the argument that is considered invalid.
+	 * @param {string} [additional_msg] - An optional message to provide more information about the error.
 	 */
 	constructor(arg_name, arg_value, additional_msg = '') {
 		super('');
+		/** @private @type {string} */
 		this.name = 'ArgumentError';
+		/** @private @type {string} */
 		this.message = `\n'${arg_name}' has invalid value: ${arg_value}${additional_msg ? `\n${additional_msg}` : ''}\n`;
 	}
 }
 
 
-/////////////////////////
-// * UTILITY HANDLER * //
-/////////////////////////
+///////////////////
+// * UTILITIES * //
+///////////////////
 /**
- * Contains several utility methods.
- * @type {Object}
+ * A class that provides a collection of utilities for various operations.
+ * @type {object}
  */
-const qwr_utils = {
+class Utilities {
 	/**
-	 * Enables window sizing via UIHacks.
-	 * @param {number} m The mouse mask.
+	 * Creates the `Utilities` instance.
+	 * Initializes default values for saved coordinates and modifier keys.
 	 */
-	EnableSizing(m) {
-		try {
-			if (UIHacks && UIHacks.FrameStyle === 3 && UIHacks.DisableSizing) {
-				UIHacks.DisableSizing = false;
-			}
-		}
-		catch (e) {
-			console.log(e);
-		}
-	},
+	constructor() {
+		/** @private @type {number} */
+		this.savedX = 0;
+		/** @private @type {number} */
+		this.savedY = 0;
+		/** @private @type {number} */
+		this.savedM = 0;
+		/** @private @type {number} */
+		this.savedKey = 0;
+	}
 
+	// * PUBLIC METHODS * //
+	// #region PUBLIC METHODS
 	/**
-	 * Disables window sizing via UIHacks.
-	 * @param {number} m The mouse mask.
+	 * Disables window resizing if certain conditions are met via UIHacks.
+	 * @param {number} m - The mouse mask.
 	 */
-	DisableSizing(m) {
+	disableSizing(m) {
 		try {
 			if (m && UIHacks && UIHacks.FrameStyle === 3 && !UIHacks.DisableSizing) {
 				UIHacks.DisableSizing = true;
@@ -1060,343 +1247,142 @@ const qwr_utils = {
 		catch (e) {
 			console.log(e);
 		}
-	},
+	}
 
 	/**
-	 * Takes a site name and a metadata object, extracts artist, album, and title information from the metadata,
-	 * and generates a search URL for the specified site using the extracted information.
-	 * @param {string} site The url of the website.
-	 * @param {FbMetadbHandle} metadb The metadb of the track.
-	 * @returns the URL of a specific website based on the provided site parameter and the metadata of a music file.
+	 * Enables window resizing if certain conditions are met via UIHacks.
+	 * @param {number} m - The mouse mask.
+	 */
+	enableSizing(m) {
+		try {
+			if (UIHacks && UIHacks.FrameStyle === 3 && UIHacks.DisableSizing) {
+				UIHacks.DisableSizing = false;
+			}
+		}
+		catch (e) {
+			console.log(e);
+		}
+	}
+
+	/**
+	 * Gets the major and minor version of Windows operating system from the registry.
+	 * Falls back to a default version if registry read is unsuccessful.
+	 * @returns {string} The Windows version in 'major.minor' format or a default if not obtainable.
+	 */
+	getWindowsVersion() {
+		return Once(() => {
+			let version = '';
+			let ret = Attempt(() => {
+				version = (WshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentMajorVersionNumber')).toString();
+				version += '.';
+				version += (WshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentMinorVersionNumber')).toString();
+			});
+
+			if (!IsError(ret)) {
+				return version;
+			}
+
+			ret = Attempt(() => {
+				version = WshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentVersion');
+			});
+
+			if (!IsError(ret)) {
+				return version;
+			}
+
+			return '6.1';
+		});
+	}
+
+	/**
+	 * Constructs a search URL for a specified site using available track metadata.
+	 * @param {string} site - The name of the site to generate a search URL for.
+	 * @param {FbMetadbHandle} metadb - The metadata handle of the track.
 	 */
 	link(site, metadb) {
-		if (!metadb) {
-			return;
-		}
+		if (!metadb) return;
 
-		const meta_info = metadb.GetFileInfo();
-		const artist = meta_info.MetaValue(meta_info.MetaFind('artist'), 0).replace(/\s+/g, '+').replace(/&/g, '%26');
-		const album = meta_info.MetaValue(meta_info.MetaFind('album'), 0).replace(/\s+/g, '+');
-		const title = meta_info.MetaValue(meta_info.MetaFind('title'), 0).replace(/\s+/g, '+');
+		const metaInfo = metadb.GetFileInfo();
+		const artist = metaInfo.MetaValue(metaInfo.MetaFind('artist'), 0).replace(/\s+/g, '+').replace(/&/g, '%26');
+		const album = metaInfo.MetaValue(metaInfo.MetaFind('album'), 0).replace(/\s+/g, '+');
+		const title = metaInfo.MetaValue(metaInfo.MetaFind('title'), 0).replace(/\s+/g, '+');
 
-		const search_term = artist || title;
+		const searchQuerry = artist || title;
 
 		switch (site.toLowerCase()) {
 			case 'google':
-				site = (search_term ? `http://images.google.com/search?q=${search_term}&ie=utf-8` : null);
+				site = (searchQuerry ? `http://images.google.com/search?q=${searchQuerry}&ie=utf-8` : null);
 				break;
 			case 'googleimages':
-				site = (search_term ? `http://images.google.com/images?hl=en&q=${search_term}&ie=utf-8` : null);
+				site = (searchQuerry ? `http://images.google.com/images?hl=en&q=${searchQuerry}&ie=utf-8` : null);
 				break;
 			case 'wikipedia':
 				site = (artist ? `http://en.wikipedia.org/wiki/${artist.replace(/\+/g, '_')}` : null);
 				break;
 			case 'youtube':
-				site = (search_term ? `http://www.youtube.com/results?search_type=&search_query=${search_term}&ie=utf-8` : null);
+				site = (searchQuerry ? `http://www.youtube.com/results?search_type=&search_query=${searchQuerry}&ie=utf-8` : null);
 				break;
 			case 'lastfm':
-				site = (search_term ? `http://www.last.fm/music/${search_term.replace('/', '%252F')}` : null);
+				site = (searchQuerry ? `http://www.last.fm/music/${searchQuerry.replace('/', '%252F')}` : null);
 				break;
 			case 'discogs':
-				site = (search_term || album ? `http://www.discogs.com/search?q=${search_term}+${album}&ie=utf-8` : null);
+				site = (searchQuerry || album ? `http://www.discogs.com/search?q=${searchQuerry}+${album}&ie=utf-8` : null);
+				break;
+			case 'musicbrainz':
+				site = (searchQuerry || album ? `https://musicbrainz.org/taglookup/index?tag-lookup.artist=${searchQuerry}&tag-lookup.release=${album}&ie=utf-8` : null);
 				break;
 			default:
 				site = '';
 		}
 
-		if (!site) {
-			return;
-		}
+		if (!site) return;
 
 		RunCmd(site);
-	},
-
-	/**
-	 * Checks if a mouse movement event should be suppressed or not.
-	 */
-	MouseMoveSuppress() {
-		let saved_x;
-		let saved_y;
-		let saved_m;
-
-		return {
-			/**
-			 * Checks if the mouse movement is suppressed.
-			 * @param {number} x The x-coordinate.
-			 * @param {number} y The y-coordinate.
-			 * @param {number} m The mouse mask.
-			 * @returns {boolean} True or false.
-			 */
-			is_supressed: (x, y, m) => {
-				if (saved_x === x && saved_y === y && saved_m === m) {
-					return true;
-				}
-
-				saved_x = x;
-				saved_y = y;
-				saved_m = m;
-
-				return false;
-			}
-		};
-	},
+	}
 
 	/**
 	 * Prepares an HTML file by replacing the CSS file reference with a new CSS file based on the Windows version.
-	 * @param {string} path The file path of the HTML file that needs to be prepared.
-	 * @returns {string} The modified HTML code with the updated CSS path.
+	 * @param {string} path - The file path of the HTML file that needs to be prepared.
+	 * @returns {string} The modified HTML content with the updated CSS file reference.
 	 */
-	prepare_html_file(path) {
-		const html_code = utils.ReadTextFile(path);
+	prepareHTML(path) {
+		const htmlCode = utils.ReadTextFile(path);
+		const newCss = grm.utils.getWindowsVersion() === '6.1' ? 'styles7.css' : 'styles10.css';
+		const cssPath = `${fb.FoobarPath}georgia-reborn\\scripts\\playlist\\assets\\html\\${newCss}`;
 
-		const new_css = (qwr_utils.get_windows_version() === '6.1') ? 'styles7.css' : 'styles10.css';
-		const css_path = `${fb.FoobarPath}${g_pl_colors.script_folder}html\\${new_css}`;
-
-		return html_code.replace(/href="styles10.css"/i, `href="${css_path}"`);
-	},
-
-	/**
-	 * Suppresses certain key modifiers (SHIFT, CONTROL, and MENU) in order
-	 * to prevent them from being triggered multiple times in quick succession.
-	 */
-	KeyModifiersSuppress() {
-		let saved_key;
-
-		return {
-			/**
-			 * Checks if the key modifiers are suppressed.
-			 * @param {string|number} key The keyboard key.
-			 * @returns {boolean} True or false.
-			 */
-			is_supressed: (key) => {
-				if ((VK_SHIFT === key || VK_CONTROL === key || VK_MENU === key) && saved_key === key) {
-					return true;
-				}
-
-				saved_key = key;
-
-				return false;
-			}
-		};
-	},
-
-	/**
-	 * Gets the Windows version of the operating system.
-	 * @returns {string}
-	 */
-	get_windows_version: Once(() => {
-		let version = '';
-		let ret = Attempt(() => {
-			version = (WshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentMajorVersionNumber')).toString();
-			version += '.';
-			version += (WshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentMinorVersionNumber')).toString();
-		});
-
-		if (!IsError(ret)) {
-			return version;
-		}
-
-		ret = Attempt(() => {
-			version = WshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentVersion');
-		});
-
-		if (!IsError(ret)) {
-			return version;
-		}
-
-		return '6.1';
-	})
-};
-
-/**
- * The key down suppress utility handler.
- * @type {Object}
- */
-const qwr_supress_key_down = qwr_utils.KeyModifiersSuppress();
-
-/**
- * The mouse move suppress utility handler.
- * @type {Object}
- */
-const qwr_supress_mouse_move = qwr_utils.MouseMoveSuppress();
-
-
-/////////////////////////
-// * KEYBOARD EVENTS * //
-/////////////////////////
-/**
- * Handles key action events to determine whether a key is pressed.
- * Provides a way to manage key action events, allowing you to register
- * and invoke actions based on key inputs. It maintains an internal registry
- * of key actions, which can be triggered by invoking the registered keys.
- */
-class KeyActionHandler {
-	/**
-	 * The actions registry is an object that maps keys to their respective action callbacks.
-	 */
-	constructor() {
-		/** @type {Object.<string|number, function>} */
-		this.actions = {};
+		return htmlCode.replace(/href="styles10.css"/i, `href="${cssPath}"`);
 	}
 
 	/**
-	 * Registers a key action.
-	 * @param {string|number} key The key to register.
-	 * @param {function} action_callback The callback to run when the key is pressed.
-	 * @throws {ArgumentError} If the action callback is not a function.
-	 * @throws {ArgumentError} If the key is already used.
+	 * Suppresses key events for SHIFT, CONTROL, and MENU keys if they are triggered in quick succession.
+	 * @param {number} key - The keycode of the key to potentially suppress.
+	 * @returns {boolean} Whether the key event should be suppressed.
 	 */
-	register_key_action(key, action_callback) {
-		if (!action_callback) {
-			throw new ArgumentError('action_callback', action_callback);
-		}
-
-		if (this.actions[key]) {
-			throw new ArgumentError('key', key.toString(), 'This key is already used');
-		}
-
-		this.actions[key] = action_callback;
-	}
-
-	/**
-	 * Invokes a key action.
-	 * @param {string} key The key to invoke.
-	 * @param {Object} [key_modifiers={}] The modifiers for the key passed to key action callback.
-	 * @param {boolean=} [key_modifiers.ctrl=false] The option to disable the CTRL key.
-	 * @param {boolean=} [key_modifiers.alt=false] The option to disable the ALT key.
-	 * @param {boolean=} [key_modifiers.shift=false] The option to disable the SHIFT key.
-	 * @returns {boolean} True or false.
-	 */
-	invoke_key_action(key, key_modifiers) {
-		const key_action = this.actions[key];
-		if (!this.actions[key]) {
-			return false;
-		}
-
-		key_action(key_modifiers || {});
-
-		return true;
-	}
-}
-
-
-//////////////////////////
-// * PANEL PROPERTIES * //
-//////////////////////////
-/**
- * Creates an object with a name and a value, and provides methods to get and set the value while also storing.
- */
-class PanelProperty {
-	/**
-	 * @param {string} name The name of the property, used as a key to store and retrieve the property value.
-	 * @param {*} defaultValue The initial value that will be used if there is no existing value stored for the property.
-	 */
-	constructor(name, defaultValue) {
-		/** @const {string} */
-		this.name = name;
-		/** @type {*} */
-		this.value = window.GetProperty(this.name, defaultValue);
-	}
-
-	/**
-	 * Gets the panel property value (backward compatibility method).
-	 * @returns {*}
-	 */
-	get() {
-		return this.value;
-	}
-
-	/**
-	 * Sets the panel properties of the SMP.
-	 * @param {*} new_value
-	 */
-	set(new_value) {
-		if (this.value !== new_value) {
-			window.SetProperty(this.name, new_value);
-			this.value = new_value;
-		}
-	}
-}
-
-
-/**
- * Allows to add and manage SMP properties with their names and default values.
- */
-class PanelProperties {
-	constructor() {
-		/**
-		 * Used for collision checks only and shared between objects.
-		 * @type {Object}
-		 */
-		this.properties_name_list = {};
-	}
-
-	/**
-	 * @param {Object} properties Each item in array is an object of the following type { string, [string, any] }.
-	 */
-	add_properties(properties) {
-		for (const key of Object.keys(properties)) {
-			this.validate_property_item(properties[key], key);
-			this.add_property_item(properties[key], key);
-		}
-	}
-
-	/**
-	 * Checks if a given value is a string.
-	 * @param {*} str A value that we want to check if it is a string.
-	 * @returns {boolean} True or false.
-	 */
-	isString(str) {
-		if (str != null && typeof str.valueOf() === 'string') {
+	suppressKey(key) {
+		if ((VK_SHIFT === key || VK_CONTROL === key || VK_MENU === key) && this.savedKey === key) {
 			return true;
 		}
+
+		this.savedKey = key;
 		return false;
 	}
 
 	/**
-	 * Validates a property item and throws appropriate errors if any validation fails.
-	 * @param {Array} item An array that contains the name and default value.
-	 * @param {string} item_id A unique identifier for the property item.
+	 * Suppresses mouse movement events if the current position and modifier keys are the same as the last.
+	 * @param {number} x - The current x-coordinate of the mouse.
+	 * @param {number} y - The current y-coordinate of the mouse.
+	 * @param {number} m - The current mouse mask.
+	 * @returns {boolean} Whether the mouse move event should be suppressed.
 	 */
-	validate_property_item(item, item_id) {
-		if (!Array.isArray(item) || item.length !== 2 || !this.isString(item[0])) {
-			throw new InvalidTypeError('property', typeof item, '{ string, [string, any] }', 'Usage: add_properties({\n  property_id: [property_name, property_default_value]\n})');
+	suppressMouseMove(x, y, m) {
+		if (this.savedX === x && this.savedY === y && this.savedM === m) {
+			return true;
 		}
-		if (item_id === 'add_properties') {
-			throw new ArgumentError('property_id', item_id, 'This id is reserved');
-		}
-		if (this[item_id] || this[`${item_id}_internal`]) {
-			throw new ArgumentError('property_id', item_id, 'This id is already occupied');
-		}
-		if (this.properties_name_list[item[0]]) {
-			throw new ArgumentError('property_name', item[0], 'This name is already occupied');
-		}
+
+		this.savedX = x;
+		this.savedY = y;
+		this.savedM = m;
+		return false;
 	}
-
-	/**
-	 * Adds a new property to an object and creates a getter and setter for that property.
-	 * @param {Array} item An array that contains the name and default value.
-	 * @param {string} item_id A unique identifier for the property item.
-	 * @returns {*} Defining a new property on an object and setting its getter and setter methods.
-	 */
-	add_property_item(item, item_id) {
-		this.properties_name_list[item[0]] = 1;
-
-		this[`${item_id}_internal`] = new PanelProperty(item[0], item[1]);
-
-		Object.defineProperty(this, item_id, {
-			get() {
-				return this[`${item_id}_internal`].get();
-			},
-			set(new_value) {
-				this[`${item_id}_internal`].set(new_value);
-			}
-		});
-	}
+	// #endregion
 }
-
-/** @type {*} The Main UI properties object. */
-const pref = new PanelProperties();
-
-/** @type {*} The Playlist panel properties object. */
-const g_properties = new PanelProperties();

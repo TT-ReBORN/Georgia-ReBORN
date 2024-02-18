@@ -1,6 +1,6 @@
 'use strict';
 
-class TaggerBio {
+class BioTagger {
 	constructor() {
 		this.arr1 = [];
 		this.arr2 = [];
@@ -45,7 +45,7 @@ class TaggerBio {
 		let cur_artist = '####';
 		let rec = 0;
 		let writeSent = false;
-		const tf_artist = FbTitleFormat(`$upper(${cfg.tf.artist})`);
+		const tf_artist = FbTitleFormat(`$upper(${bioCfg.tf.artist})`);
 		const artists = tf_artist.EvalWithMetadbs(handles);
 		const similarArtists = [];
 		const similarArr = [];
@@ -55,10 +55,10 @@ class TaggerBio {
 			if (artist != cur_artist) {
 				cur_artist = artist;
 				similarArtists[i] = '';
-				const lfmBio = `${panelBio.cleanPth(cfg.pth.foLfmBio, handles[i], 'tag') + $Bio.clean(artist) + cfg.suffix.foLfmBio}.txt`;
+				const lfmBio = `${bio.panel.cleanPth(bioCfg.pth.foLfmBio, handles[i], 'tag') + $Bio.clean(artist) + bioCfg.suffix.foLfmBio}.txt`;
 				if ($Bio.file(lfmBio)) {
 					const lBio = $Bio.open(lfmBio);
-					similarArtists[i] = this.getTag(lBio, panelBio.similarArtistsKey).tag;
+					similarArtists[i] = this.getTag(lBio, bio.panel.similarArtistsKey).tag;
 					if (similarArtists[i].length > 6) similarArr.push(artist);
 				}
 			}
@@ -66,23 +66,23 @@ class TaggerBio {
 
 		if (similarArr.length) {
 			let i = 0;
-			timerBio.clear(timerBio.sim1);
-			timerBio.sim1.id = setInterval(() => {
+			bio.timer.clear(bio.timer.sim1);
+			bio.timer.sim1.id = setInterval(() => {
 				if (i < similarArr.length) {
-					const lfm_similar = new LfmSimilarArtists(() => lfm_similar.onStateChange(), lfm_similar_search_done.bind(this));
+					const lfm_similar = new BioLfmSimilarArtists(() => lfm_similar.onStateChange(), lfm_similar_search_done.bind(this));
 					lfm_similar.search(similarArr[i], similarArr.length, handles, 6);
 					i++;
-				} else timerBio.clear(timerBio.sim1);
+				} else bio.timer.clear(bio.timer.sim1);
 			}, similarArr.length < 100 ? 20 : 300);
 		} else this.write(handles);
 
 		const lfm_similar_search_done = (res1, res2, p_done, p_handles) => {
 			rec++;
-			if (!timerBio.sim2.id) {
-				timerBio.sim2.id = setTimeout(() => {
+			if (!bio.timer.sim2.id) {
+				bio.timer.sim2.id = setTimeout(() => {
 					writeSent = true;
 					this.write(p_handles);
-					timerBio.sim2.id = null;
+					bio.timer.sim2.id = null;
 				}, 60000);
 			}
 			this.simList.push({
@@ -90,7 +90,7 @@ class TaggerBio {
 				similar: res2
 			});
 			if (p_done == rec && !writeSent) {
-				timerBio.clear(timerBio.sim2);
+				bio.timer.clear(bio.timer.sim2);
 				this.write(p_handles);
 			}
 		};
@@ -147,7 +147,7 @@ class TaggerBio {
 	}
 
 	lfmTidy(n) {
-		if (!cfg.useWhitelist || this.genres.length < 701) return n;
+		if (!bioCfg.useWhitelist || this.genres.length < 701) return n;
 		n.forEach((v, i) => {
 			this.arr1.forEach((w, j) => {
 				if (!w.includes('\\b')) {
@@ -167,9 +167,9 @@ class TaggerBio {
 	}
 
 	setGenres() {
-		this.genres = $Bio.jsonParse(`${cfg.storageFolder}lastfm_genre_whitelist.json`, [], 'file');
-		if (cfg.customGenres.length) {
-			this.customGenres = cfg.customGenres.split(',');
+		this.genres = $Bio.jsonParse(`${bioCfg.storageFolder}lastfm_genre_whitelist.json`, [], 'file');
+		if (bioCfg.customGenres.length) {
+			this.customGenres = bioCfg.customGenres.split(',');
 			this.customGenres = this.customGenres.map(v => v.trim());
 			this.genres = [...new Set(this.genres.concat(this.customGenres))];
 		}
@@ -177,7 +177,7 @@ class TaggerBio {
 
 		this.arr1 = [];
 		this.arr2 = [];
-		const items = cfg.translate.split(',');
+		const items = bioCfg.translate.split(',');
 		items.forEach(v => {
 			const w = v.split('>');
 			this.arr1.push($Bio.strip(w[0]));
@@ -223,14 +223,14 @@ class TaggerBio {
 		const cue = [];
 		const force = this.force && notify;
 		const locale = [];
-		const radioStream = notify && panelBio.isRadio(panelBio.id.focus);
+		const radioStream = notify && bio.panel.isRadio(bio.panel.id.focus);
 		const rem = [];
 		const similarArtists = [];
 		const tags = [];
-		const tf_artist = FbTitleFormat(`$upper(${cfg.tf.artist})`);
-		const tf_albumArtist = FbTitleFormat(`$upper(${cfg.tf.albumArtist})`);
+		const tf_artist = FbTitleFormat(`$upper(${bioCfg.tf.artist})`);
+		const tf_albumArtist = FbTitleFormat(`$upper(${bioCfg.tf.albumArtist})`);
 		const tf_cue = FbTitleFormat('$ext(%path%)');
-		const tf_l = FbTitleFormat(`$upper(${cfg.tf.album})`);
+		const tf_l = FbTitleFormat(`$upper(${bioCfg.tf.album})`);
 		const artists = !radioStream ? tf_artist.EvalWithMetadbs(handles) : [tf_artist.Eval()];
 		const albumArtists = tf_albumArtist.EvalWithMetadbs(handles);
 		const cues = tf_cue.EvalWithMetadbs(handles);
@@ -243,25 +243,25 @@ class TaggerBio {
 			albumArtist = albumArtists[i];
 			cue[i] = cues[i].toLowerCase() == 'cue';
 			album = albums[i];
-			album = !cfg.albStrip ? name.albumTidy(album) : name.albumClean(album);
+			album = !bioCfg.albStrip ? bio.name.albumTidy(album) : bio.name.albumClean(album);
 			if (artist != cur_artist) {
 				cur_artist = artist;
 				similarArtists[i] = '';
-				if (cfg.tagEnabled7 || cfg.tagEnabled8 || cfg.tagEnabled9 || cfg.tagEnabled10 && cfg.tagEnabled13 < 7 || force) {
+				if (bioCfg.tagEnabled7 || bioCfg.tagEnabled8 || bioCfg.tagEnabled9 || bioCfg.tagEnabled10 && bioCfg.tagEnabled13 < 7 || force) {
 					artTags[i] = '';
 					artListeners[i] = '';
 					locale[i] = '';
-					const lfmBio = `${panelBio.cleanPth(cfg.pth.foLfmBio, !radioStream ? handles[i] : panelBio.id.focus, !radioStream ? 'tag' : 'notifyRadioStream') + $Bio.clean(artist) + cfg.suffix.foLfmBio}.txt`;
+					const lfmBio = `${bio.panel.cleanPth(bioCfg.pth.foLfmBio, !radioStream ? handles[i] : bio.panel.id.focus, !radioStream ? 'tag' : 'notifyRadioStream') + $Bio.clean(artist) + bioCfg.suffix.foLfmBio}.txt`;
 					if ($Bio.file(lfmBio)) {
 						const lBio = $Bio.open(lfmBio);
-						if (cfg.tagEnabled7 || force) {
+						if (bioCfg.tagEnabled7 || force) {
 							artTags[i] = this.getTag(lBio, 'Top Tags: ').tag;
 							if (artTags[i]) artTags[i] = this.lfmTidy(artTags[i]);
 						}
-						if (cfg.tagEnabled8) artListeners[i] = this.getTag(lBio, lkw, false, 1, 'artist').tag;
-						if (cfg.tagEnabled9 || force) locale[i] = this.getTag(lBio, kww).tag;
-						if ((cfg.tagEnabled10 || force) && cfg.tagEnabled13 < 7) {
-							similarArtists[i] = this.getTag(lBio, panelBio.similarArtistsKey).tag;
+						if (bioCfg.tagEnabled8) artListeners[i] = this.getTag(lBio, lkw, false, 1, 'artist').tag;
+						if (bioCfg.tagEnabled9 || force) locale[i] = this.getTag(lBio, kww).tag;
+						if ((bioCfg.tagEnabled10 || force) && bioCfg.tagEnabled13 < 7) {
+							similarArtists[i] = this.getTag(lBio, bio.panel.similarArtistsKey).tag;
 							if (similarArtists[i].length > 6) {
 								similarArtists[i] = '';
 								this.simList.some(v => {
@@ -271,23 +271,23 @@ class TaggerBio {
 									}
 								});
 							}
-							if (similarArtists[i]) $Bio.take(similarArtists[i], cfg.tagEnabled13);
+							if (similarArtists[i]) $Bio.take(similarArtists[i], bioCfg.tagEnabled13);
 						}
 					}
 				}
 				if (!similarArtists[i].length) similarArtists[i] = '';
-				if (cfg.tagEnabled12 || !locale[i] && notify || force) {
+				if (bioCfg.tagEnabled12 || !locale[i] && notify || force) {
 					artGenre_w[i] = '';
-					const wikiBio = `${panelBio.cleanPth(cfg.pth.foWikiBio, !radioStream ? handles[i] : panelBio.id.focus, !radioStream ? 'tag' : 'notifyRadioStream') + $Bio.clean(artist) + cfg.suffix.foWikiBio}.txt`;
+					const wikiBio = `${bio.panel.cleanPth(bioCfg.pth.foWikiBio, !radioStream ? handles[i] : bio.panel.id.focus, !radioStream ? 'tag' : 'notifyRadioStream') + $Bio.clean(artist) + bioCfg.suffix.foWikiBio}.txt`;
 					if ($Bio.file(wikiBio)) {
 						const wBio = $Bio.open(wikiBio);
 						artGenre_w[i] = this.getTag(wBio, 'Genre: ').tag;
 						if (!locale[i] && notify) locale[i] = this.getTag(wBio, kww).tag;
 					}
 				}
-				if (cfg.tagEnabled4 || !locale[i] && notify || force) {
+				if (bioCfg.tagEnabled4 || !locale[i] && notify || force) {
 					artGenre_am[i] = '';
-					const amBio = `${panelBio.cleanPth(cfg.pth.foAmBio, !radioStream ? handles[i] : panelBio.id.focus, !radioStream ? 'tag' : 'notifyRadioStream') + $Bio.clean(artist) + cfg.suffix.foAmBio}.txt`;
+					const amBio = `${bio.panel.cleanPth(bioCfg.pth.foAmBio, !radioStream ? handles[i] : bio.panel.id.focus, !radioStream ? 'tag' : 'notifyRadioStream') + $Bio.clean(artist) + bioCfg.suffix.foAmBio}.txt`;
 					if ($Bio.file(amBio)) {
 						const aBio = $Bio.open(amBio);
 						artGenre_am[i] = this.getTag(aBio, 'Genre: ').tag;
@@ -309,21 +309,21 @@ class TaggerBio {
 			if (albumArtist + album != cur_albumArtist + cur_album) {
 				cur_albumArtist = albumArtist;
 				cur_album = album;
-				if (cfg.tagEnabled0 || cfg.tagEnabled1 || cfg.tagEnabled2 || cfg.tagEnabled3 || force) {
+				if (bioCfg.tagEnabled0 || bioCfg.tagEnabled1 || bioCfg.tagEnabled2 || bioCfg.tagEnabled3 || force) {
 					albGenre_am[i] = '';
 					amMoods[i] = '';
 					amRating[i] = '';
 					amThemes[i] = '';
-					let amRev = `${panelBio.cleanPth(cfg.pth.foAmRev, handles[i], 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${cfg.suffix.foAmRev}.txt`;
+					let amRev = `${bio.panel.cleanPth(bioCfg.pth.foAmRev, handles[i], 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${bioCfg.suffix.foAmRev}.txt`;
 					if (amRev.length > 259) {
 						album = $Bio.abbreviate(album);
-						amRev = `${panelBio.cleanPth(cfg.pth.foAmRev, handles[i], 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${cfg.suffix.foAmRev}.txt`;
+						amRev = `${bio.panel.cleanPth(bioCfg.pth.foAmRev, handles[i], 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${bioCfg.suffix.foAmRev}.txt`;
 					}
 					if ($Bio.file(amRev)) {
 						const aRev = $Bio.open(amRev);
-						if (cfg.tagEnabled0 || force) albGenre_am[i] = this.getTag(aRev, 'Genre: ').tag;
-						if (cfg.tagEnabled1 || force) amMoods[i] = this.getTag(aRev, 'Album Moods: ').tag;
-						if (cfg.tagEnabled2) {
+						if (bioCfg.tagEnabled0 || force) albGenre_am[i] = this.getTag(aRev, 'Genre: ').tag;
+						if (bioCfg.tagEnabled1 || force) amMoods[i] = this.getTag(aRev, 'Album Moods: ').tag;
+						if (bioCfg.tagEnabled2) {
 							const b = aRev.indexOf('>> Album rating: ') + 17;
 							const f = aRev.indexOf(' <<');
 							if (b != -1 && f != -1 && f > b) {
@@ -331,32 +331,32 @@ class TaggerBio {
 								if (amRating[i] == 0) amRating[i] = '';
 							}
 						}
-						if (cfg.tagEnabled3 || force) amThemes[i] = this.getTag(aRev, 'Album Themes: ').tag;
+						if (bioCfg.tagEnabled3 || force) amThemes[i] = this.getTag(aRev, 'Album Themes: ').tag;
 					}
 				}
-				if (cfg.tagEnabled5 || cfg.tagEnabled6 || force) {
+				if (bioCfg.tagEnabled5 || bioCfg.tagEnabled6 || force) {
 					albTags[i] = '';
 					albListeners[i] = '';
-					let lfmRev = `${panelBio.cleanPth(cfg.pth.foLfmRev, handles[i], 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${cfg.suffix.foLfmRev}.txt`;
+					let lfmRev = `${bio.panel.cleanPth(bioCfg.pth.foLfmRev, handles[i], 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${bioCfg.suffix.foLfmRev}.txt`;
 					if (lfmRev.length > 259) {
 						album = $Bio.abbreviate(album);
-						lfmRev = `${panelBio.cleanPth(cfg.pth.foLfmRev, handles[i], 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${cfg.suffix.foLfmRev}.txt`;
+						lfmRev = `${bio.panel.cleanPth(bioCfg.pth.foLfmRev, handles[i], 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${bioCfg.suffix.foLfmRev}.txt`;
 					}
 					if ($Bio.file(lfmRev)) {
 						const lRev = $Bio.open(lfmRev);
-						if (cfg.tagEnabled5 || force) {
+						if (bioCfg.tagEnabled5 || force) {
 							albTags[i] = this.getTag(lRev, 'Top Tags: ').tag;
 							if (albTags[i]) albTags[i] = this.lfmTidy(albTags[i]);
 						}
-						if (cfg.tagEnabled6) albListeners[i] = this.getTag(lRev, lkw, false, 1, 'album').tag;
+						if (bioCfg.tagEnabled6) albListeners[i] = this.getTag(lRev, lkw, false, 1, 'album').tag;
 					}
 				}
-				if (cfg.tagEnabled11 || force) {
+				if (bioCfg.tagEnabled11 || force) {
 					albGenre_w[i] = '';
-					let wikiRev = `${panelBio.cleanPth(cfg.pth.foWikiRev, handles[i], 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${cfg.suffix.foWikiRev}.txt`;
+					let wikiRev = `${bio.panel.cleanPth(bioCfg.pth.foWikiRev, handles[i], 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${bioCfg.suffix.foWikiRev}.txt`;
 					if (wikiRev.length > 259) {
 						album = $Bio.abbreviate(album);
-						wikiRev = `${panelBio.cleanPth(cfg.pth.foWikiRev, handles[i], 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${cfg.suffix.foWikiRev}.txt`;
+						wikiRev = `${bio.panel.cleanPth(bioCfg.pth.foWikiRev, handles[i], 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${bioCfg.suffix.foWikiRev}.txt`;
 					}
 					if ($Bio.file(wikiRev)) {
 						const wRev = $Bio.open(wikiRev);
@@ -374,7 +374,7 @@ class TaggerBio {
 			}
 		}
 
-		for (let j = 0; j < 13; j++) this[`tagName${j}`] = !notify ? cfg[`tagName${j}`] : cfg[`tagName${j}_internal`].default_value;
+		for (let j = 0; j < 13; j++) this[`tagName${j}`] = !notify ? bioCfg[`tagName${j}`] : bioCfg[`tagName${j}_internal`].default_value;
 
 		for (let i = 0; i < handles.Count; i++) {
 			if (!cue[i] && (albGenre_am[i] || amMoods[i] || amRating[i] || amThemes[i] || artGenre_am[i] || albTags[i] || albListeners[i] || artTags[i] || artListeners[i] || locale[i] || similarArtists[i] || albGenre_w[i] || artGenre_w[i])) {

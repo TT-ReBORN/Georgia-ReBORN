@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-class ServerBio {
+class BioServer {
 	constructor() {
 		if (!$Bio.server) return;
 		this.albm = '';
@@ -10,21 +10,21 @@ class ServerBio {
 		this.artistMbid = {};
 		this.artistQid = {};
 		this.auto_corr = 1;
-		this.bioCache = `${cfg.storageFolder}cache_bio.json`;
+		this.bioCache = `${bioCfg.storageFolder}cache_bio.json`;
 		this.disambig = '';
-		this.exp = Math.max(panelBio.d * cfg.exp / 28, panelBio.d);
-		if (!this.exp || isNaN(this.exp)) this.exp = panelBio.d;
+		this.exp = Math.max(bio.panel.d * bioCfg.exp / 28, bio.panel.d);
+		if (!this.exp || isNaN(this.exp)) this.exp = bio.panel.d;
 		this.imgToRecycle = [];
 		if ($Bio.file(this.bioCache)) this.imgToRecycle = $Bio.jsonParse(this.bioCache, false, 'file');
 		this.langFallback = false;
 		this.lastGetTrack = Date.now();
-		this.notFound = `${cfg.storageFolder}update_bio.json`;
-		if (pptBio.updateNotFound) {
+		this.notFound = `${bioCfg.storageFolder}update_bio.json`;
+		if (bioSet.updateNotFound) {
 			$Bio.save(this.notFound, JSON.stringify([{
 				name: 'update',
 				time: Date.now()
 			}], null, 3), true);
-			pptBio.updateNotFound = false;
+			bioSet.updateNotFound = false;
 		}
 		this.similar = ['Similar Artists: ', '\u00c4hnliche K\u00fcnstler: ', 'Artistas Similares: ', 'Artistes Similaires: ', 'Artisti Simili: ', '\u4f3c\u3066\u3044\u308b\u30a2\u30fc\u30c6\u30a3\u30b9\u30c8: ', 'Podobni Wykonawcy: ', 'Artistas Parecidos: ', '\u041f\u043e\u0445\u043e\u0436\u0438\u0435 \u0438\u0441\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u0438: ', 'Liknande Artister: ', 'Benzer Sanat\u00e7\u0131lar: ', '\u76f8\u4f3c\u827a\u672f\u5bb6: '];
 		this.urlRequested = {};
@@ -37,11 +37,11 @@ class ServerBio {
 		};
 		this.lfm = {
 			def_EN: false,
-			server: cfg.language.toLowerCase()
+			server: bioCfg.language.toLowerCase()
 		};
 		this.url = {
 			am: 'https://www.allmusic.com/search/',
-			lfm: `https://ws.audioscrobbler.com/2.0/?format=json${panelBio.lfm}`,
+			lfm: `https://ws.audioscrobbler.com/2.0/?format=json${bio.panel.lfm}`,
 			lfm_sf: 'https://www.songfacts.com/',
 			mb: 'https://musicbrainz.org/ws/2/',
 			wikidata: 'https://www.wikidata.org/w/api.php?action=wbgetentities&utf8&format=json&props=claims|sitelinks/urls&ids=',
@@ -103,14 +103,14 @@ class ServerBio {
 		if (tr.artist + tr.title == this.id.track_1 && !tr.force && !tr.menu || tr.artist == '' || tr.title == '') track_done = true;
 		else this.id.track_1 = tr.artist + tr.title;
 
-		if ((cfg.dlAmRev || cfg.dlLfmRev || cfg.dlWikiRev) && !track_done) {
-			if (pptBio.showTrackRevOptions) this.getTrack(tr);
+		if ((bioCfg.dlAmRev || bioCfg.dlLfmRev || bioCfg.dlWikiRev) && !track_done) {
+			if (bioSet.showTrackRevOptions) this.getTrack(tr);
 			else window.NotifyOthers('bio_chkTrackRev', tr);
 		}
 	}
 
 	createImgDlFile() {
-		const n = `${cfg.storageFolder}foo_lastfm_img.vbs`;
+		const n = `${bioCfg.storageFolder}foo_lastfm_img.vbs`;
 
 		if (!$Bio.file(n)) {
 			const dl_im = 'If (WScript.Arguments.Count <> 2) Then\r\nWScript.Quit\r\nEnd If\r\n\r\nurl = WScript.Arguments(0)\r\nfile = WScript.Arguments(1)\r\n\r\nSet objFSO = Createobject("Scripting.FileSystemObject")\r\nIf objFSO.Fileexists(file) Then\r\nSet objFSO = Nothing\r\nWScript.Quit\r\nEnd If\r\n\r\nSet objXMLHTTP = CreateObject("MSXML2.XMLHTTP")\r\nobjXMLHTTP.open "GET", url, false\r\nobjXMLHTTP.send()\r\n\r\nIf objXMLHTTP.Status = 200 Then\r\nSet objADOStream = CreateObject("ADODB.Stream")\r\nobjADOStream.Open\r\nobjADOStream.Type = 1\r\nobjADOStream.Write objXMLHTTP.ResponseBody\r\nobjADOStream.Position = 0\r\nobjADOStream.SaveToFile file\r\nobjADOStream.Close\r\nSet objADOStream = Nothing\r\nEnd If\r\n\r\nSet objFSO = Nothing\r\nSet objXMLHTTP = Nothing';
@@ -123,7 +123,7 @@ class ServerBio {
 		const m = $Bio.jsonParse(this.notFound, false, 'file');
 		const n = Date.now();
 		const r = n - exp;
-		const u = n - panelBio.d / 28;
+		const u = n - bio.panel.d / 28;
 		let k = m.length;
 		if (m.length && m[0].time < u) {
 			while (k--) {
@@ -148,7 +148,7 @@ class ServerBio {
 					let langOK = false;
 					for (i = 0; i < this.similar.length; i++) {
 						if (langCheck.includes(this.similar[i])) {
-							if (i == cfg.lang.ix) langOK = true;
+							if (i == bioCfg.lang.ix) langOK = true;
 							else if (this.langFallback && !i) langOK = true;
 							if (!langOK) return true;
 							break;
@@ -156,7 +156,7 @@ class ServerBio {
 					}
 					for (i = 0; i < listeners.length; i++) {
 						if (langCheck.includes(listeners[i])) {
-							if (i == cfg.lang.ix) langOK = true;
+							if (i == bioCfg.lang.ix) langOK = true;
 							else if (this.langFallback && !i) langOK = true;
 							if (!langOK) return true;
 							break;
@@ -168,7 +168,7 @@ class ServerBio {
 					let langOK = false;
 					for (i = 0; i < releaseDate.length; i++) {
 						if (langCheck.includes(releaseDate[i])) {
-							if (i == cfg.lang.ix) langOK = true;
+							if (i == bioCfg.lang.ix) langOK = true;
 							else if (this.langFallback && !i) langOK = true;
 							if (!langOK) return true;
 							break;
@@ -176,7 +176,7 @@ class ServerBio {
 					}
 					for (i = 0; i < listeners.length; i++) {
 						if (langCheck.includes(listeners[i])) {
-							if (i == cfg.lang.ix) langOK = true;
+							if (i == bioCfg.lang.ix) langOK = true;
 							else if (this.langFallback && !i) langOK = true;
 							if (!langOK) return true;
 							break;
@@ -186,7 +186,7 @@ class ServerBio {
 				}
 				case 2: {
 					let langOK = false;
-					if (langCheck.includes(`Wikipedia language: ${cfg.language}`)) langOK = true;
+					if (langCheck.includes(`Wikipedia language: ${bioCfg.language}`)) langOK = true;
 					else if (this.langFallback && langCheck.includes('Wikipedia language: EN')) langOK = true;
 					if (!langOK) return true;
 					break;
@@ -226,45 +226,45 @@ class ServerBio {
 	getBio(force, art, type) {
 		const stndBio = !art.ix || art.ix + 1 > art.arr.length;
 		let artist_done = false;
-		const new_artist = stndBio ? name.artist(art.focus, true) : art.arr[art.ix].name;
+		const new_artist = stndBio ? bio.name.artist(art.focus, true) : art.arr[art.ix].name;
 		if (new_artist == this.artist && !force || new_artist == '') artist_done = true; else this.artist = new_artist;
 
-		const album = name.album(art.focus, true);
-		let title = name.title(art.focus, true);
+		const album = bio.name.album(art.focus, true);
+		let title = bio.name.title(art.focus, true);
 
-		const supCache = !stndBio ? cfg.supCache && !libBio.inLibrary(0, this.artist) : false;
+		const supCache = !stndBio ? bioCfg.supCache && !bio.lib.inLibrary(0, this.artist) : false;
 
-		if (this.expired(`${cfg.storageFolder}lastfm_genre_whitelist.json`, this.exp) || tagBio.genres.length < 701 || force) {
-			const lfm_genres = new DldLastfmGenresWhitelist(() => lfm_genres.onStateChange());
+		if (this.expired(`${bioCfg.storageFolder}lastfm_genre_whitelist.json`, this.exp) || bio.tag.genres.length < 701 || force) {
+			const lfm_genres = new BioDldLastfmGenresWhitelist(() => lfm_genres.onStateChange());
 			lfm_genres.search();
 		}
 
 		switch (type) {
 			case 0: {
-				if (cfg.dlLfmBio && !artist_done) {
-					const lfm_bio = panelBio.getPth('bio', art.focus, this.artist, '', stndBio, supCache, $Bio.clean(this.artist), '', '', 'foLfmBio', true, true);
+				if (bioCfg.dlLfmBio && !artist_done) {
+					const lfm_bio = bio.panel.getPth('bio', art.focus, this.artist, '', stndBio, supCache, $Bio.clean(this.artist), '', '', 'foLfmBio', true, true);
 					const text = $Bio.open(lfm_bio.pth);
 					const custBio = text.includes('Custom Biography');
 
 					if (this.expired(lfm_bio.pth, this.exp, '', text, 0) && !custBio || force == 2 && !custBio || force == 1) {
-						const dl_lfm_bio = new DldLastfmBio(() => dl_lfm_bio.onStateChange());
+						const dl_lfm_bio = new BioDldLastfm(() => dl_lfm_bio.onStateChange());
 						dl_lfm_bio.search(this.artist, lfm_bio.fo, lfm_bio.pth, force);
 					}
 				}
 
-				if (cfg.dlWikiBio) {
+				if (bioCfg.dlWikiBio) {
 					const new_disambig = `${title} - ${album}`;
 					let disambig_done = false;
 					if (new_disambig == this.disambig && !force || new_disambig == '') disambig_done = true;
 					else this.disambig = new_disambig;
 
 					if (stndBio && (!artist_done || !disambig_done) || !stndBio && !artist_done) {
-						const wiki_bio = panelBio.getPth('bio', art.focus, this.artist, '', stndBio, supCache, $Bio.clean(this.artist), '', '', 'foWikiBio', true, true);
+						const wiki_bio = bio.panel.getPth('bio', art.focus, this.artist, '', stndBio, supCache, $Bio.clean(this.artist), '', '', 'foWikiBio', true, true);
 						const text = $Bio.open(wiki_bio.pth);
 						const custBio = text.includes('Custom Biography');
 
 						if (this.expired(wiki_bio.pth, this.exp, '', text, 2) && !custBio || force == 2 && !custBio || force == 1) {
-							const dl_wiki_bio = new DldWikipedia(() => dl_wiki_bio.onStateChange());
+							const dl_wiki_bio = new BioDldWikipedia(() => dl_wiki_bio.onStateChange());
 							dl_wiki_bio.search(0, this.artist, '', album, title, stndBio ? 0 : '!stndBio', wiki_bio.fo, wiki_bio.pth, art.focus, force);
 						}
 					}
@@ -279,13 +279,13 @@ class ServerBio {
 				});
 
 				if (!artist_done) {
-					if (cfg.dlArtImg) {
-						const dl_art = new DldArtImages();
+					if (bioCfg.dlArtImg) {
+						const dl_art = new BioDldArtImages();
 						dl_art.run(this.artist, force, art, stndBio, supCache);
-					} else timerBio.decelerating();
+					} else bio.timer.decelerating();
 
-					if (cfg.lfmSim && stndBio) {
-						const fo_sim = !panelBio.isRadio(art.focus) ? panelBio.cleanPth(cfg.pth.foLfmSim, art.focus, 'server') : panelBio.cleanPth(cfg.remap.foLfmSim, art.focus, 'remap', this.artist, '', 1);
+					if (bioCfg.lfmSim && stndBio) {
+						const fo_sim = !bio.panel.isRadio(art.focus) ? bio.panel.cleanPth(bioCfg.pth.foLfmSim, art.focus, 'server') : bio.panel.cleanPth(bioCfg.remap.foLfmSim, art.focus, 'remap', this.artist, '', 1);
 						const pth_sim = `${fo_sim + $Bio.clean(this.artist)} And Similar Artists.json`;
 						let len = 0;
 						let valid = false;
@@ -298,25 +298,25 @@ class ServerBio {
 						}
 
 						if (this.expired(pth_sim, this.exp) || !valid || force) {
-							const dl_lfm_sim = new LfmSimilarArtists(() => dl_lfm_sim.onStateChange());
+							const dl_lfm_sim = new BioLfmSimilarArtists(() => dl_lfm_sim.onStateChange());
 							dl_lfm_sim.search(this.artist, '', '', len > 115 ? 249 : 100, fo_sim, pth_sim);
 						}
 					}
 
-					if (stndBio && cfg.photoLimit && !panelBio.lock) { // purge imgToRecycle
+					if (stndBio && bioCfg.photoLimit && !bio.panel.lock) { // purge imgToRecycle
 						let j = this.imgToRecycle.length;
 						while (j--) {
-							if (this.imgToRecycle[j].a != name.artist(true) && this.imgToRecycle[j].a != name.artist(false)) {
+							if (this.imgToRecycle[j].a != bio.name.artist(true) && this.imgToRecycle[j].a != bio.name.artist(false)) {
 								try {
 									if ($Bio.file(this.imgToRecycle[j].p)) {
-										$Bio.create(cfg.photoRecycler);
-										const fn = `${fsoBio.GetBaseName(this.imgToRecycle[j].p)}.jpg`;
-										if (!$Bio.file(cfg.photoRecycler + fn)) fsoBio.MoveFile(this.imgToRecycle[j].p, cfg.photoRecycler);
+										$Bio.create(bioCfg.photoRecycler);
+										const fn = `${bioFSO.GetBaseName(this.imgToRecycle[j].p)}.jpg`;
+										if (!$Bio.file(bioCfg.photoRecycler + fn)) bioFSO.MoveFile(this.imgToRecycle[j].p, bioCfg.photoRecycler);
 										else {
 											for (let i = 0; i < 100; i++) {
 												const new_fn = fn.replace('.jpg', `_${i}.jpg`);
-												if (!$Bio.file(cfg.photoRecycler + new_fn)) {
-													fsoBio.MoveFile(this.imgToRecycle[j].p, cfg.photoRecycler + new_fn);
+												if (!$Bio.file(bioCfg.photoRecycler + new_fn)) {
+													bioFSO.MoveFile(this.imgToRecycle[j].p, bioCfg.photoRecycler + new_fn);
 													break;
 												}
 											}
@@ -332,13 +332,13 @@ class ServerBio {
 				break;
 			}
 			case 1: {
-				if (!cfg.dlAmBio || !this.artist) return;
+				if (!bioCfg.dlAmBio || !this.artist) return;
 				if (!stndBio) title = '';
-				const am_bio = panelBio.getPth('bio', art.focus, this.artist, '', stndBio, supCache, $Bio.clean(this.artist), '', '', 'foAmBio', true, true);
+				const am_bio = bio.panel.getPth('bio', art.focus, this.artist, '', stndBio, supCache, $Bio.clean(this.artist), '', '', 'foAmBio', true, true);
 
-				if (force || this.expired(am_bio.pth, this.exp, `Bio ${cfg.partialMatch} ${this.artist} - ${title}`, false) && !$Bio.open(am_bio.pth).includes('Custom Biography')) {
-					const dl_am_bio = new DldAllmusicBio();
-					const url = title ? `${serverBio.url.am}songs/${encodeURIComponent(`${title} ${this.artist}`)}` : `${serverBio.url.am}artists/${encodeURIComponent(this.artist)}`;
+				if (force || this.expired(am_bio.pth, this.exp, `Bio ${bioCfg.partialMatch} ${this.artist} - ${title}`, false) && !$Bio.open(am_bio.pth).includes('Custom Biography')) {
+					const dl_am_bio = new BioDldAllmusic();
+					const url = title ? `${bio.server.url.am}songs/${encodeURIComponent(`${title} ${this.artist}`)}` : `${bio.server.url.am}artists/${encodeURIComponent(this.artist)}`;
 					dl_am_bio.init(url, 'https://allmusic.com', title, this.artist, am_bio.fo, am_bio.pth, force);
 				}
 				break;
@@ -352,25 +352,25 @@ class ServerBio {
 		const g_img = utils.GetAlbumArtV2(handle, 0, false);
 		if (g_img) return;
 		const covCanBeSaved = !handle.RawPath.startsWith('fy+') && !handle.RawPath.startsWith('3dydfy:') && !handle.RawPath.startsWith('http');
-		const sw = cfg.dlLfmCov && covCanBeSaved ? 1 : cfg.dlRevImg ? 0 : 2;
+		const sw = bioCfg.dlLfmCov && covCanBeSaved ? 1 : bioCfg.dlRevImg ? 0 : 2;
 		let lfm_cov;
 
 		switch (sw) {
 			case 1: { // cover
-				const cov = panelBio.getPth('cov', alb.focus, 'server');
+				const cov = bio.panel.getPth('cov', alb.focus, 'server');
 				if (this.done(`${this.albumArtist} - ${this.album} ${this.auto_corr} ${cov.pth}`, this.exp) && !force) return;
-				if (imgBio.chkPths([cov.pth], '', 2)) return;
-				if (cfg.cusCov && imgBio.chkPths(cfg.cusCovPaths, '', 2, true)) return;
-				lfm_cov = new LfmAlbum(() => lfm_cov.onStateChange());
+				if (bio.img.chkPths([cov.pth], '', 2)) return;
+				if (bioCfg.cusCov && bio.img.chkPths(bioCfg.cusCovPaths, '', 2, true)) return;
+				lfm_cov = new BioLfmAlbum(() => lfm_cov.onStateChange());
 				lfm_cov.search(this.albumArtist, this.album, false, cov.fo, cov.pth, this.albm, force, false);
 				break;
 			}
 			case 0: { // rev_img
-				const rev_img = panelBio.getPth('img', alb.focus, this.albumArtist, this.album);
+				const rev_img = bio.panel.getPth('img', alb.focus, this.albumArtist, this.album);
 				if (this.done(`${this.albumArtist} - ${this.album} ${this.auto_corr} ${rev_img.pth}`, this.exp) && !force) return;
-				if (imgBio.chkPths([rev_img.pth, panelBio.getPth('cov', alb.focus).pth], '', 2)) return;
-				if (cfg.cusCov && imgBio.chkPths(cfg.cusCovPaths, '', 2, true)) return;
-				lfm_cov = new LfmAlbum(() => lfm_cov.onStateChange());
+				if (bio.img.chkPths([rev_img.pth, bio.panel.getPth('cov', alb.focus).pth], '', 2)) return;
+				if (bioCfg.cusCov && bio.img.chkPths(bioCfg.cusCovPaths, '', 2, true)) return;
+				lfm_cov = new BioLfmAlbum(() => lfm_cov.onStateChange());
 				lfm_cov.search(this.albumArtist, this.album, false, rev_img.fo, rev_img.pth, this.albm, force, true);
 				break;
 			}
@@ -392,15 +392,15 @@ class ServerBio {
 
 	getRev(force, art, alb, onlyForceLfm) { // also gets bios that depend on rev
 		const stndAlb = !alb.ix || alb.ix + 1 > alb.arr.length;
-		const new_album_id = stndAlb ? $Bio.eval(cfg.tf.albumArtist + cfg.tf.album, alb.focus, true) : alb.arr[alb.ix].artist + alb.arr[alb.ix].album;
-		const new_composition_id = stndAlb ? $Bio.eval(cfg.tf.albumArtist + cfg.tf.composition, alb.focus, true) : '';
-		const new_title_id = name.title(art.focus, true);
+		const new_album_id = stndAlb ? $Bio.eval(bioCfg.tf.albumArtist + bioCfg.tf.album, alb.focus, true) : alb.arr[alb.ix].artist + alb.arr[alb.ix].album;
+		const new_composition_id = stndAlb ? $Bio.eval(bioCfg.tf.albumArtist + bioCfg.tf.composition, alb.focus, true) : '';
+		const new_title_id = bio.name.title(art.focus, true);
 		let supCache = false;
 
 		let title_done = false;
 		if (new_title_id == this.id.title) title_done = true; else this.id.title = new_title_id;
 
-		const sameComposition = cfg.classicalModeEnable && !alb.ix ? new_composition_id == this.id.composition : true;
+		const sameComposition = bioCfg.classicalModeEnable && !alb.ix ? new_composition_id == this.id.composition : true;
 
 		if (new_album_id == this.id.album && sameComposition && !force) {
 			if (!title_done) {
@@ -411,31 +411,31 @@ class ServerBio {
 		this.id.album = new_album_id;
 		this.id.composition = new_composition_id;
 
-		this.album = stndAlb ? name.album(alb.focus, true) : alb.arr[alb.ix].album;
-		this.albm = stndAlb ? name.albm(alb.focus, true) : alb.arr[alb.ix].album;
-		this.albumArtist = stndAlb ? name.albumArtist(alb.focus, true) : alb.arr[alb.ix].artist;
-		this.composition = cfg.classicalModeEnable && stndAlb ? name.composition(alb.focus, true) : '';
+		this.album = stndAlb ? bio.name.album(alb.focus, true) : alb.arr[alb.ix].album;
+		this.albm = stndAlb ? bio.name.albm(alb.focus, true) : alb.arr[alb.ix].album;
+		this.albumArtist = stndAlb ? bio.name.albumArtist(alb.focus, true) : alb.arr[alb.ix].artist;
+		this.composition = bioCfg.classicalModeEnable && stndAlb ? bio.name.composition(alb.focus, true) : '';
 
 		if ((!this.album && !this.composition) || !this.albumArtist) return this.getBio(force, art, 1);
 
-		if (!stndAlb) supCache = cfg.supCache && !libBio.inLibrary(1, this.albumArtist, this.album);
+		if (!stndAlb) supCache = bioCfg.supCache && !bio.lib.inLibrary(1, this.albumArtist, this.album);
 		if (stndAlb) {
 			if (this.albm) this.getCover(force, alb);
-		} else if (force && cfg.dlRevImg) this.getRevImg(this.albumArtist, this.album, '', '', force);
+		} else if (force && bioCfg.dlRevImg) this.getRevImg(this.albumArtist, this.album, '', '', force);
 
-		const am_rev = panelBio.getPth('rev', alb.focus, this.albumArtist, this.album, stndAlb, supCache, $Bio.clean(this.albumArtist), $Bio.clean(this.albumArtist), $Bio.clean(this.album), 'foAmRev', true, true);
-		const artiste = stndAlb ? name.artist(alb.focus, true) : this.albumArtist;
-		const am_bio = panelBio.getPth('bio', alb.focus, artiste, '', stndAlb, cfg.supCache && !libBio.inLibrary(0, artiste), $Bio.clean(artiste), '', '', 'foAmBio', true, true);
-		const va = this.albumArtist.toLowerCase() == cfg.va.toLowerCase() || this.albumArtist.toLowerCase() != artiste.toLowerCase();
+		const am_rev = bio.panel.getPth('rev', alb.focus, this.albumArtist, this.album, stndAlb, supCache, $Bio.clean(this.albumArtist), $Bio.clean(this.albumArtist), $Bio.clean(this.album), 'foAmRev', true, true);
+		const artiste = stndAlb ? bio.name.artist(alb.focus, true) : this.albumArtist;
+		const am_bio = bio.panel.getPth('bio', alb.focus, artiste, '', stndAlb, bioCfg.supCache && !bio.lib.inLibrary(0, artiste), $Bio.clean(artiste), '', '', 'foAmBio', true, true);
+		const va = this.albumArtist.toLowerCase() == bioCfg.va.toLowerCase() || this.albumArtist.toLowerCase() != artiste.toLowerCase();
 
 		if (this.album) {
 			if (!onlyForceLfm) {
-				const art_upd = cfg.dlAmBio && (force || this.expired(am_bio.pth, this.exp, `Bio ${cfg.partialMatch} ${am_rev.pth}`, false) && !$Bio.open(am_bio.pth).includes('Custom Biography'));
+				const art_upd = bioCfg.dlAmBio && (force || this.expired(am_bio.pth, this.exp, `Bio ${bioCfg.partialMatch} ${am_rev.pth}`, false) && !$Bio.open(am_bio.pth).includes('Custom Biography'));
 				let rev_upd = false;
-				if (cfg.dlAmRev) {
+				if (bioCfg.dlAmRev) {
 					rev_upd = force;
 					if (!rev_upd) {
-						rev_upd = !$Bio.file(am_rev.pth) && !this.done(`Rev ${cfg.partialMatch} ${am_rev.pth}`, this.exp);
+						rev_upd = !$Bio.file(am_rev.pth) && !this.done(`Rev ${bioCfg.partialMatch} ${am_rev.pth}`, this.exp);
 					}
 				}
 				let dn_type = '';
@@ -444,71 +444,71 @@ class ServerBio {
 					else if (rev_upd) dn_type = 'review';
 					else if (art_upd) dn_type = 'biography';
 
-					const dl_am_rev = new DldAllmusicRev();
-					dl_am_rev.init(`${serverBio.url.am}albums/${encodeURIComponent(this.album + (!va ? ` ${this.albumArtist}` : ''))}`, 'https://allmusic.com', this.album, this.albumArtist, artiste, va, dn_type, am_rev.fo, am_rev.pth, am_bio.fo, am_bio.pth, art, force);
+					const dl_am_rev = new BioDldAllmusicRev();
+					dl_am_rev.init(`${bio.server.url.am}albums/${encodeURIComponent(this.album + (!va ? ` ${this.albumArtist}` : ''))}`, 'https://allmusic.com', this.album, this.albumArtist, artiste, va, dn_type, am_rev.fo, am_rev.pth, am_bio.fo, am_bio.pth, art, force);
 				}
 			}
 		} else this.getBio(force, art, 1);
 
-		if (cfg.dlAmRev && this.composition && !onlyForceLfm) {
-			const am_comp = panelBio.getPth('rev', alb.focus, this.albumArtist, this.composition, stndAlb, supCache, $Bio.clean(this.albumArtist), $Bio.clean(this.albumArtist), $Bio.clean(this.composition), 'foAmRev', true, true);
-			const comp_upd = !alb.ix && (force || !$Bio.file(am_comp.pth) && !this.done(`Rev ${cfg.partialMatch} ${am_comp.pth}`, this.exp));
+		if (bioCfg.dlAmRev && this.composition && !onlyForceLfm) {
+			const am_comp = bio.panel.getPth('rev', alb.focus, this.albumArtist, this.composition, stndAlb, supCache, $Bio.clean(this.albumArtist), $Bio.clean(this.albumArtist), $Bio.clean(this.composition), 'foAmRev', true, true);
+			const comp_upd = !alb.ix && (force || !$Bio.file(am_comp.pth) && !this.done(`Rev ${bioCfg.partialMatch} ${am_comp.pth}`, this.exp));
 
 			if (comp_upd) {
-				const artUpd = cfg.dlAmBio && (force || this.expired(am_bio.pth, this.exp, `Bio ${cfg.partialMatch} ${am_comp.pth}`, false) && !$Bio.open(am_bio.pth).includes('Custom Biography'));
+				const artUpd = bioCfg.dlAmBio && (force || this.expired(am_bio.pth, this.exp, `Bio ${bioCfg.partialMatch} ${am_comp.pth}`, false) && !$Bio.open(am_bio.pth).includes('Custom Biography'));
 				const dn_type = comp_upd && artUpd ? 'composition+biography' : 'composition';
 				const amAlbumArtist = this.albumArtist;
 				const amWork = this.composition;
 				setTimeout(() => {
-				const dl_am_comp = new DldAllmusicRev();
-					dl_am_comp.init(`${serverBio.url.am}compositions/${encodeURIComponent(amWork + (!va ? ` ${amAlbumArtist}` : ''))}`, 'https://allmusic.com', amWork, amAlbumArtist, artiste, va, dn_type, am_rev.fo, am_comp.pth, am_bio.fo, am_bio.pth, art, force);
+				const dl_am_comp = new BioDldAllmusicRev();
+					dl_am_comp.init(`${bio.server.url.am}compositions/${encodeURIComponent(amWork + (!va ? ` ${amAlbumArtist}` : ''))}`, 'https://allmusic.com', amWork, amAlbumArtist, artiste, va, dn_type, am_rev.fo, am_comp.pth, am_bio.fo, am_bio.pth, art, force);
 				}, 3200); // throttle
 			}
 		}
 
-		if (cfg.dlLfmRev && this.album) {
-			const lfm_rev = panelBio.getPth('rev', alb.focus, this.albumArtist, this.album, stndAlb, supCache, $Bio.clean(this.albumArtist), $Bio.clean(this.albumArtist), $Bio.clean(this.album), 'foLfmRev', true, true);
+		if (bioCfg.dlLfmRev && this.album) {
+			const lfm_rev = bio.panel.getPth('rev', alb.focus, this.albumArtist, this.album, stndAlb, supCache, $Bio.clean(this.albumArtist), $Bio.clean(this.albumArtist), $Bio.clean(this.album), 'foLfmRev', true, true);
 			const lfmRev = $Bio.open(lfm_rev.pth);
 			const custRev = lfmRev.includes('Custom Review');
 
 			if (this.expired(lfm_rev.pth, this.exp, '', lfmRev, 1) && !custRev || force == 2 && !custRev || force == 1) { // force == 2: identifies newlang: upd if !custRev; force == 1: user force from menu
-				const lfm_alb = new LfmAlbum(() => lfm_alb.onStateChange());
+				const lfm_alb = new BioLfmAlbum(() => lfm_alb.onStateChange());
 				lfm_alb.search(this.albumArtist, this.album, true, lfm_rev.fo, lfm_rev.pth, '', force, false);
 			}
 		}
 
-		if (cfg.dlWikiRev) {
+		if (bioCfg.dlWikiRev) {
 			if (this.album) {
-				const wiki_rev = panelBio.getPth('rev', alb.focus, this.albumArtist, this.album, stndAlb, supCache, $Bio.clean(this.albumArtist), $Bio.clean(this.albumArtist), $Bio.clean(this.album), 'foWikiRev', true, true);
+				const wiki_rev = bio.panel.getPth('rev', alb.focus, this.albumArtist, this.album, stndAlb, supCache, $Bio.clean(this.albumArtist), $Bio.clean(this.albumArtist), $Bio.clean(this.album), 'foWikiRev', true, true);
 				const wikiRev = $Bio.open(wiki_rev.pth);
 				const custRev = wikiRev.includes('Custom Review');
 				const wikiAlbum = this.album;
 				const wikiAlbumArtist = this.albumArtist;
 				const wikiStnd = stndAlb;
-				const wikiTitle = name.title(alb.focus, true);
+				const wikiTitle = bio.name.title(alb.focus, true);
 
 				if (this.expired(wiki_rev.pth, this.exp, '', wikiRev, 2) && !custRev || force == 2 && !custRev || force == 1) {
 					setTimeout(() => {
-						const wiki_alb = new DldWikipedia(() => wiki_alb.onStateChange());
-						wiki_alb.search(0, wikiAlbumArtist.toLowerCase() != cfg.va.toLowerCase() ? wikiAlbumArtist : 'Various Artists', wikiAlbum, wikiAlbum, wikiTitle, wikiStnd ? 1 : '!stndAlb', wiki_rev.fo, wiki_rev.pth, alb.focus, force);
+						const wiki_alb = new BioDldWikipedia(() => wiki_alb.onStateChange());
+						wiki_alb.search(0, wikiAlbumArtist.toLowerCase() != bioCfg.va.toLowerCase() ? wikiAlbumArtist : 'Various Artists', wikiAlbum, wikiAlbum, wikiTitle, wikiStnd ? 1 : '!stndAlb', wiki_rev.fo, wiki_rev.pth, alb.focus, force);
 					}, 1200); // wait for mbid & Qid
 				}
 			}
 
 			if (this.composition) {
-				const wiki_comp = panelBio.getPth('rev', alb.focus, this.albumArtist, this.composition, stndAlb, supCache, $Bio.clean(this.albumArtist), $Bio.clean(this.albumArtist), $Bio.clean(this.composition), 'foWikiRev', true, true);
-				const wikiAlbum = name.album(alb.focus, true);
+				const wiki_comp = bio.panel.getPth('rev', alb.focus, this.albumArtist, this.composition, stndAlb, supCache, $Bio.clean(this.albumArtist), $Bio.clean(this.albumArtist), $Bio.clean(this.composition), 'foWikiRev', true, true);
+				const wikiAlbum = bio.name.album(alb.focus, true);
 				const wikiAlbumArtist = this.albumArtist;
 				const wikiComp = $Bio.open(wiki_comp.pth);
 				const wikiStnd = stndAlb;
-				const wikiTitle = name.title(alb.focus, true);
+				const wikiTitle = bio.name.title(alb.focus, true);
 				const wikiWork = this.composition;
 				const custRev = wikiComp.includes('Custom Review');
 
 				if ((!this.expired(wiki_comp.pth, this.exp, '', wikiComp, 2) || custRev) && !force || custRev && force == 2) return;
 				setTimeout(() => {
-					const wk_comp = new DldWikipedia(() => wk_comp.onStateChange());
-					wk_comp.search(0, wikiAlbumArtist.toLowerCase() != cfg.va.toLowerCase() ? wikiAlbumArtist : 'Various Artists', wikiWork, wikiAlbum, wikiTitle, wikiStnd ? 2 : '!stndComp', wiki_comp.fo, wiki_comp.pth, alb.focus, force);
+					const wk_comp = new BioDldWikipedia(() => wk_comp.onStateChange());
+					wk_comp.search(0, wikiAlbumArtist.toLowerCase() != bioCfg.va.toLowerCase() ? wikiAlbumArtist : 'Various Artists', wikiWork, wikiAlbum, wikiTitle, wikiStnd ? 2 : '!stndComp', wiki_comp.fo, wiki_comp.pth, alb.focus, force);
 				}, 3600); // wait for mbid & Qid & limit call frequency
 			}
 		}
@@ -517,18 +517,18 @@ class ServerBio {
 	getRevImg(a, l, pe, fe, force) { // !stndAlb
 		if (!force) {
 			if (this.done(`${a} - ${l} ${this.auto_corr} ${fe}`, this.exp)) return;
-			const lfm_cov = new LfmAlbum(() => lfm_cov.onStateChange());
+			const lfm_cov = new BioLfmAlbum(() => lfm_cov.onStateChange());
 			lfm_cov.search(a, l, false, pe, fe, l, false, true);
 		} else {
-			const metadb = libBio.inLibrary(2, a, l);
+			const metadb = bio.lib.inLibrary(2, a, l);
 			if (metadb) {
 				const g_img = utils.GetAlbumArtV2(metadb, 0, false);
 				if (g_img) return;
 			} else {
-				const pth = panelBio.getPth('img', panelBio.id.focus, a, l, '', cfg.supCache);
-				if (imgBio.chkPths(pth.pe, pth.fe, 2)) return;
-				const lfm_cov = new LfmAlbum(() => lfm_cov.onStateChange());
-				lfm_cov.search(a, l, false, pth.pe[cfg.supCache], pth.pe[cfg.supCache] + pth.fe, l, true, true);
+				const pth = bio.panel.getPth('img', bio.panel.id.focus, a, l, '', bioCfg.supCache);
+				if (bio.img.chkPths(pth.pe, pth.fe, 2)) return;
+				const lfm_cov = new BioLfmAlbum(() => lfm_cov.onStateChange());
+				lfm_cov.search(a, l, false, pth.pe[bioCfg.supCache], pth.pe[bioCfg.supCache] + pth.fe, l, true, true);
 			}
 		}
 	}
@@ -565,43 +565,43 @@ class ServerBio {
 		this.id.track_2 = tr.artist + tr.title;
 		const trk = tr.title.toLowerCase();
 
-		if (cfg.dlAmRev) {
-			const amTracks = panelBio.getPth('track', tr.focus, tr.artist, 'Track Reviews', '', '', $Bio.clean(tr.artist), '', 'Track Reviews', 'foAmRev', true, true);
-			const am_bio = panelBio.getPth('bio', tr.focus, tr.artist, '', true, cfg.supCache && !libBio.inLibrary(0, tr.artist), $Bio.clean(tr.artist), '', '', 'foAmBio', true, true);
+		if (bioCfg.dlAmRev) {
+			const amTracks = bio.panel.getPth('track', tr.focus, tr.artist, 'Track Reviews', '', '', $Bio.clean(tr.artist), '', 'Track Reviews', 'foAmRev', true, true);
+			const am_bio = bio.panel.getPth('bio', tr.focus, tr.artist, '', true, bioCfg.supCache && !bio.lib.inLibrary(0, tr.artist), $Bio.clean(tr.artist), '', '', 'foAmBio', true, true);
 			const amText = $Bio.jsonParse(amTracks.pth, false, 'file');
 			const amArtist = tr.artist;
 			const amTrk = trk;
 
-			let track_upd = !this.done(`Rev ${cfg.partialMatch} ${amTracks.pth} ${trk} ${tr.artist}`, this.exp * 6);
+			let track_upd = !this.done(`Rev ${bioCfg.partialMatch} ${amTracks.pth} ${trk} ${tr.artist}`, this.exp * 6);
 			track_upd = track_upd && (!amText || !amText[trk] || !amText[trk].wiki && amText[trk].update < Date.now() - this.exp * 6) || tr.force;
 			if (track_upd) {
 				setTimeout(() => {
-					const dl_am_trk = new DldAllmusicRev();
-					dl_am_trk.init(`${serverBio.url.am}songs/${encodeURIComponent(`${amTrk} ${amArtist}`)}`, 'https://allmusic.com', amTrk, amArtist, amArtist, false, 'track', amTracks.fo, amTracks.pth, am_bio.fo, am_bio.pth, [], tr.force);
+					const dl_am_trk = new BioDldAllmusicRev();
+					dl_am_trk.init(`${bio.server.url.am}songs/${encodeURIComponent(`${amTrk} ${amArtist}`)}`, 'https://allmusic.com', amTrk, amArtist, amArtist, false, 'track', amTracks.fo, amTracks.pth, am_bio.fo, am_bio.pth, [], tr.force);
 				}, 1600); // throttle
 			}
 		}
 
-		if (cfg.dlLfmRev) {
-			const lfmTracks = panelBio.getPth('track', tr.focus, tr.artist, 'Track Reviews', '', '', $Bio.clean(tr.artist), '', 'Track Reviews', 'foLfmRev', true, true);
+		if (bioCfg.dlLfmRev) {
+			const lfmTracks = bio.panel.getPth('track', tr.focus, tr.artist, 'Track Reviews', '', '', $Bio.clean(tr.artist), '', 'Track Reviews', 'foLfmRev', true, true);
 			const lfmText = $Bio.jsonParse(lfmTracks.pth, false, 'file');
 
-			if (!lfmText || !lfmText[trk] || lfmText[trk].update < Date.now() - this.exp || lfmText[trk].lang != cfg.language || tr.force) {
-				const dl_lfm_track = new LfmTrack(() => dl_lfm_track.onStateChange());
+			if (!lfmText || !lfmText[trk] || lfmText[trk].update < Date.now() - this.exp || lfmText[trk].lang != bioCfg.language || tr.force) {
+				const dl_lfm_track = new BioLfmTrack(() => dl_lfm_track.onStateChange());
 				dl_lfm_track.search(tr.artist, trk, lfmTracks.fo, lfmTracks.pth, tr.force);
 			}
 		}
 
-		if (cfg.dlWikiRev) {
-			const wikiTracks = panelBio.getPth('track', tr.focus, tr.artist, 'Track Reviews', '', '', $Bio.clean(tr.artist), '', 'Track Reviews', 'foWikiRev', true, true);
+		if (bioCfg.dlWikiRev) {
+			const wikiTracks = bio.panel.getPth('track', tr.focus, tr.artist, 'Track Reviews', '', '', $Bio.clean(tr.artist), '', 'Track Reviews', 'foWikiRev', true, true);
 			const wikiText = $Bio.jsonParse(wikiTracks.pth, false, 'file');
-			const wikiAlbum = name.album(tr.focus, true);
+			const wikiAlbum = bio.name.album(tr.focus, true);
 			const wikiArtist = tr.artist;
 			const wikiTrk = trk;
 
-			if (!wikiText || !wikiText[wikiTrk] || wikiText[wikiTrk].update < Date.now() - this.exp * 6 || wikiText[wikiTrk].lang != cfg.language || tr.force) {
+			if (!wikiText || !wikiText[wikiTrk] || wikiText[wikiTrk].update < Date.now() - this.exp * 6 || wikiText[wikiTrk].lang != bioCfg.language || tr.force) {
 				setTimeout(() => {
-					const dl_wiki_track = new DldWikipedia(() => dl_wiki_track.onStateChange());
+					const dl_wiki_track = new BioDldWikipedia(() => dl_wiki_track.onStateChange());
 					dl_wiki_track.search(0, wikiArtist, wikiTrk, wikiAlbum, wikiTrk, 3, wikiTracks.fo, wikiTracks.pth, tr.focus, tr.force);
 				}, 2400); // wait for mbid & Qid & limit call frequency
 			}
@@ -623,7 +623,7 @@ class ServerBio {
 			list[i].art = $Bio.removeDiacritics(this.tidy(list[i].artist || 'N/A', true));
 			if (rel == list[i].rel && a == list[i].art) return i;
 		}
-		if (!cfg.partialMatchEnabled && !force) return -1;
+		if (!bioCfg.partialMatchEnabled && !force) return -1;
 
 		switch (true) {
 			case type == 'review': {
@@ -636,24 +636,24 @@ class ServerBio {
 				a = stripAmp(a);
 				rel = stripAmp(rel);
 				list.forEach(v => v.rel = stripAmp(v.rel));
-				serverBio.getSortedScores(list, rel, 'rel', 'damerauLevenshtein');
-				const pm = !force ? cfg.fuzzyMatchReview : Math.min(force, cfg.fuzzyMatchReview);
+				bio.server.getSortedScores(list, rel, 'rel', 'damerauLevenshtein');
+				const pm = !force ? bioCfg.fuzzyMatchReview : Math.min(force, bioCfg.fuzzyMatchReview);
 				for (i = 0; i < list.length; i++) {
 					if (list[i].score * 100 >= pm && a == list[i].art) return i;
 				}
 				break;
 			}
 			case type == 'song': {
-				serverBio.getSortedScores(list, rel, 'rel', 'damerauLevenshtein');
-				const pm = !force ? cfg.fuzzyMatchTrack : Math.min(force, cfg.fuzzyMatchTrack);
+				bio.server.getSortedScores(list, rel, 'rel', 'damerauLevenshtein');
+				const pm = !force ? bioCfg.fuzzyMatchTrack : Math.min(force, bioCfg.fuzzyMatchTrack);
 				for (i = 0; i < list.length; i++) {
 					if (list[i].score * 100 >= pm && a == list[i].art) return i;
 				}
 				break;
 			}
 			case type == 'composition': {
-				serverBio.getSortedScores(list, p_release, 'title', 'fuzzyset');
-				const pm = !force ? cfg.fuzzyMatchComposition : Math.min(force, cfg.fuzzyMatchComposition);
+				bio.server.getSortedScores(list, p_release, 'title', 'fuzzyset');
+				const pm = !force ? bioCfg.fuzzyMatchComposition : Math.min(force, bioCfg.fuzzyMatchComposition);
 				for (i = 0; i < list.length; i++) {
 					if (list[i].score * 100 >= pm && a == list[i].art) return i;
 				}
@@ -665,7 +665,7 @@ class ServerBio {
 
 	res() {
 		window.NotifyOthers('bio_getText', 'bio_getText');
-		txt.grab();
+		bio.txt.grab();
 	}
 
 	setImgRecycler(n) {
@@ -680,7 +680,7 @@ class ServerBio {
 		if (lang) this.lfm.server = lang.toLowerCase();
 		this.lfm.server = this.lfm.server == 'en' ? 'www.last.fm' : `www.last.fm/${this.lfm.server}`;
 		this.lfm.def_EN = this.lfm.server == 'www.last.fm';
-		this.langFallback = cfg.languageFallback && !this.lfm.def_EN;
+		this.langFallback = bioCfg.languageFallback && !this.lfm.def_EN;
 	}
 
 	tidy(n, cutLeadThe) {

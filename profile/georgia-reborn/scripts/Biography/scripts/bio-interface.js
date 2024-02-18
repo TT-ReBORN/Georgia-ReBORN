@@ -2,12 +2,12 @@
 
 window.DlgCode = 0x004;
 
-class UserInterfaceBio {
+class BioUserInterface {
 	constructor() {
 		this.dui = window.InstanceType;
 
-		if (pptBio.typeOverlay > 4 || pptBio.typeOverlay < 0) pptBio.typeOverlay = 0;
-		pptBio.sbarCol = $Bio.clamp(pptBio.sbarCol, 0, 1);
+		if (bioSet.typeOverlay > 4 || bioSet.typeOverlay < 0) bioSet.typeOverlay = 0;
+		bioSet.sbarCol = $Bio.clamp(bioSet.sbarCol, 0, 1);
 
 		this.blur = {
 			level: 100
@@ -25,13 +25,13 @@ class UserInterfaceBio {
 
 		this.font = {
 			boldAdjust: 1,
-			heading: gdi.Font(fontDefault, 16, 0),
+			heading: gdi.Font(grFont.fontDefault, 16, 0),
 			heading_h: 21,
 			headingBaseSize: 16,
 			headingCustom: false,
 			headingStyle: 1,
 			items: [['lyricsFontStyle', 'lyrics'], ['sourceStyle', 'subHeadSource'], ['summaryStyle', 'summary'], ['trackStyle', 'subHeadTrack'], ['wikiStyle', 'subHeadWiki']],
-			lyrics: gdi.Font(fontDefault, 16, 3),
+			lyrics: gdi.Font(grFont.fontDefault, 16, 3),
 			main_h: 21,
 			small_h: 8,
 			zoomSize: 16
@@ -40,8 +40,8 @@ class UserInterfaceBio {
 		this.heading = {
 			h: 30,
 			line_y: 0,
-			linePad: pptBio.hdLinePad,
-			pad: pptBio.hdPad
+			linePad: bioSet.hdLinePad,
+			pad: bioSet.hdPad
 		};
 
 		this.id = {
@@ -49,14 +49,14 @@ class UserInterfaceBio {
 			touch_dn: -1
 		};
 
-		pptBio.overlayStrength = $Bio.clamp(pptBio.overlayStrength, 0, 100);
-		pptBio.overlayGradient = $Bio.clamp(pptBio.overlayGradient, 0, 100);
-		pptBio.overlayBorderWidth = $Bio.clamp(pptBio.overlayBorderWidth, 1, 20);
+		bioSet.overlayStrength = $Bio.clamp(bioSet.overlayStrength, 0, 100);
+		bioSet.overlayGradient = $Bio.clamp(bioSet.overlayGradient, 0, 100);
+		bioSet.overlayBorderWidth = $Bio.clamp(bioSet.overlayBorderWidth, 1, 20);
 
 		this.overlay = {
-			gradient: pptBio.overlayGradient / 10 - 1,
-			borderWidth: pptBio.typeOverlay != 2 && pptBio.typeOverlay != 4 ? 0 : pptBio.overlayBorderWidth,
-			strength: $Bio.clamp(255 * (100 - pptBio.overlayStrength) / 100, 0, 255)
+			gradient: bioSet.overlayGradient / 10 - 1,
+			borderWidth: bioSet.typeOverlay != 2 && bioSet.typeOverlay != 4 ? 0 : bioSet.overlayBorderWidth,
+			strength: $Bio.clamp(255 * (100 - bioSet.overlayStrength) / 100, 0, 255)
 		};
 
 		this.pss = {
@@ -65,23 +65,23 @@ class UserInterfaceBio {
 		};
 
 		this.sbar = {
-			arrowPad: pptBio.sbarPad,
+			arrowPad: bioSet.sbarPad,
 			but_h: 11,
 			but_w: 11,
-			col: pptBio.sbarCol,
+			col: bioSet.sbarCol,
 			narrowWidth: 2,
 			sp: 12,
 			type: 0,
 			w: 11
 		};
 
-		if (!pptBio.butCustIconFont.length) pptBio.butCustIconFont = 'Segoe UI Symbol';
+		if (!bioSet.butCustIconFont.length) bioSet.butCustIconFont = 'Segoe UI Symbol';
 
 		this.show = {
-			btnBg: pptBio.hdShowBtnBg,
-			btnLabel: pptBio.hdShowBtnLabel,
-			btnRedLastfm: pptBio.hdShowRedLfm,
-			headingText: pptBio.hdShowTitle
+			btnBg: bioSet.hdShowBtnBg,
+			btnLabel: bioSet.hdShowBtnLabel,
+			btnRedLastfm: bioSet.hdShowRedLfm,
+			headingText: bioSet.hdShowTitle
 		};
 
 		if (this.show.btnRedLastfm) this.show.btnBg = 1;
@@ -95,16 +95,16 @@ class UserInterfaceBio {
 
 		this.themeColour = {}
 
-		if (pptBio.narrowSbarWidth != 0) pptBio.narrowSbarWidth = $Bio.clamp(pptBio.narrowSbarWidth, 2, 10);
-		pptBio.hdLine = $Bio.value(pptBio.hdLine, 1, 2);
-		if (pptBio.headFontStyle < 0 || pptBio.headFontStyle > 5) pptBio.headFontStyle = 2;
+		if (bioSet.narrowSbarWidth != 0) bioSet.narrowSbarWidth = $Bio.clamp(bioSet.narrowSbarWidth, 2, 10);
+		bioSet.hdLine = $Bio.value(bioSet.hdLine, 1, 2);
+		if (bioSet.headFontStyle < 0 || bioSet.headFontStyle > 5) bioSet.headFontStyle = 2;
 		this.id.c_c = this.id.local && typeof opt_c_c !== 'undefined';
 
 		this.getColours();
 		this.getFont(true);
 
 		this.refresh = $Bio.debounce(() => {
-			txt.refresh(3);
+			bio.txt.refresh(3);
 		}, 100);
 
 		this.setSbar();
@@ -149,23 +149,23 @@ class UserInterfaceBio {
 		};
 
 		prop.forEach((v, i) => {
-			this.col[v] = set(pptBio[`${v}Use`] ? pptBio[v] : '', i < 8 ? 0 : 1);
+			this.col[v] = set(bioSet[`${v}Use`] ? bioSet[v] : '', i < 8 ? 0 : 1);
 		});
 	}
 
 	calcText() {
-		pptBio.textPad = Math.max(pptBio.textPad, -Math.round(this.font.main.Size / 2));
+		bioSet.textPad = Math.max(bioSet.textPad, -Math.round(this.font.main.Size / 2));
 		$Bio.gr(1, 1, false, g => {
-			this.font.main_h = Math.round(g.CalcTextHeight('String', this.font.main) + pptBio.textPad);
-			this.font.lyrics_h = Math.round(g.CalcTextHeight('STRING', this.font.lyrics) + pptBio.textPad);
+			this.font.main_h = Math.round(g.CalcTextHeight('String', this.font.main) + bioSet.textPad);
+			this.font.lyrics_h = Math.round(g.CalcTextHeight('STRING', this.font.lyrics) + bioSet.textPad);
 			this.font.heading_h = g.CalcTextHeight('String', this.font.heading);
 			this.font.small_h = Math.max(g.CalcTextHeight('0', this.font.small), 8);
 		});
 		const min_line_y = this.font.heading_h;
-		const max_line_y = Math.round(this.font.heading_h * (pptBio.hdLine == 1 ? 1.25 : 1.1) + (pptBio.hdLine == 1 ? this.heading.linePad : 0));
-		this.heading.line_y = pptBio.heading ? Math.max(min_line_y, max_line_y) : 0;
-		const min_h = pptBio.hdLine == 1 ? this.heading.line_y : this.font.heading_h + (pptBio.hdLine == 1 ? this.heading.linePad : 0);
-		this.heading.h = pptBio.heading ? Math.max(Math.round(this.heading.line_y + (pptBio.gap * (pptBio.hdLine == 1 ? 0.75 : 0.25)) + this.heading.pad), min_h) : 0;
+		const max_line_y = Math.round(this.font.heading_h * (bioSet.hdLine == 1 ? 1.25 : 1.1) + (bioSet.hdLine == 1 ? this.heading.linePad : 0));
+		this.heading.line_y = bioSet.heading ? Math.max(min_line_y, max_line_y) : 0;
+		const min_h = bioSet.hdLine == 1 ? this.heading.line_y : this.font.heading_h + (bioSet.hdLine == 1 ? this.heading.linePad : 0);
+		this.heading.h = bioSet.heading ? Math.max(Math.round(this.heading.line_y + (bioSet.gap * (bioSet.hdLine == 1 ? 0.75 : 0.25)) + this.heading.pad), min_h) : 0;
 	}
 
 	dim(c, bg, alpha) {
@@ -188,27 +188,27 @@ class UserInterfaceBio {
 	}
 
 	draw(gr) {
-		if (this.style.bg) gr.FillSolidRect(this.x - pptBio.borL, this.y, panelBio.w + pptBio.borR, panelBio.h, this.col.bg);
-		if (pref.styleBlend && albumArt && blendedImg) {
-			gr.FillSolidRect(0, 0, pref.layout === 'artwork' || pref.biographyLayout === 'full' ? ww : pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww * 0.5, geo.topMenuHeight, col.bg); // Hide alpha overlapping at the top
-			if (pref.layout === 'artwork') gr.FillSolidRect(0, this.y + this.h, ww, geo.lowerBarHeight, col.bg); // Hide alpha overlapping at the bottom
-			if (UIHacks.Aero.Effect === 2) gr.DrawLine(0, 0, pref.layout === 'artwork' || pref.biographyLayout === 'full' ? ww : pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww * 0.5 - 1, 0, 1, col.bg); // UIHacks aero glass shadow frame fix - needed for style Blend
-			if (pref.layout === 'default' && pref.biographyLayout === 'full') {
-				gr.DrawImage(blendedImg, 0, 0, ww, wh, 0, 0, blendedImg.Width, blendedImg.Height);
+		if (this.style.bg) gr.FillSolidRect(this.x - bioSet.borL, this.y, bio.panel.w + bioSet.borR, bio.panel.h, this.col.bg);
+		if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended) {
+			gr.FillSolidRect(0, 0, grSet.layout === 'artwork' || grSet.biographyLayout === 'full' ? grm.ui.ww : grSet.panelWidthAuto ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w : grm.ui.ww * 0.5, grm.ui.topMenuHeight, grCol.bg); // Hide alpha overlapping at the top
+			if (grSet.layout === 'artwork') gr.FillSolidRect(0, this.y + this.h, grm.ui.ww, grm.ui.lowerBarHeight, grCol.bg); // Hide alpha overlapping at the bottom
+			if (UIHacks.Aero.Effect === 2) gr.DrawLine(0, 0, grSet.layout === 'artwork' || grSet.biographyLayout === 'full' ? grm.ui.ww : grSet.panelWidthAuto ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w : grm.ui.ww * 0.5 - 1, 0, 1, grCol.bg); // UIHacks aero glass shadow frame fix - needed for style Blend
+			if (grSet.layout === 'default' && grSet.biographyLayout === 'full') {
+				gr.DrawImage(grCol.imgBlended, 0, 0, grm.ui.ww, grm.ui.wh, 0, 0, grCol.imgBlended.Width, grCol.imgBlended.Height);
 			} else {
-				gr.DrawImage(blendedImg, pref.panelWidthAuto || pref.layout === 'artwork' ? 0 : this.x - this.w, pref.layout === 'artwork' ? this.h - panelBio.h : this.h - panelBio.h - geo.lowerBarHeight, pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww, wh,
-					pref.panelWidthAuto || pref.layout === 'artwork' ? 0 : this.x - this.w, pref.layout === 'artwork' ? this.h - panelBio.h : this.h - panelBio.h - geo.lowerBarHeight, pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : blendedImg.Width, blendedImg.Height);
+				gr.DrawImage(grCol.imgBlended, grSet.panelWidthAuto || grSet.layout === 'artwork' ? 0 : this.x - this.w, grSet.layout === 'artwork' ? this.h - bio.panel.h : this.h - bio.panel.h - grm.ui.lowerBarHeight, grSet.panelWidthAuto ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w : grm.ui.ww, grm.ui.wh,
+					grSet.panelWidthAuto || grSet.layout === 'artwork' ? 0 : this.x - this.w, grSet.layout === 'artwork' ? this.h - bio.panel.h : this.h - bio.panel.h - grm.ui.lowerBarHeight, grSet.panelWidthAuto ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w : grCol.imgBlended.Width, grCol.imgBlended.Height);
 			}
 		}
 	}
 
 	getAccentColour() {
 		let valid = false;
-		if (this.blur.dark && pptBio.text_hUse) {
-			const c = pptBio.text_h.replace(/[^0-9.,-]/g, '').split(/[,-]/);
+		if (this.blur.dark && bioSet.text_hUse) {
+			const c = bioSet.text_h.replace(/[^0-9.,-]/g, '').split(/[,-]/);
 			if (c.length == 3 || c.length == 4) valid = true;
 		}
-		this.col.accent = !this.blur.dark || pptBio.text_hUse && valid ? this.col.text_h : pptBio.themed && pptBio.theme == 9 ? RGB(104, 225, 255) : RGB(128, 228, 27);
+		this.col.accent = !this.blur.dark || bioSet.text_hUse && valid ? this.col.text_h : bioSet.themed && bioSet.theme == 9 ? RGB(104, 225, 255) : RGB(128, 228, 27);
 	}
 
 	getBlend(c1, c2, f) {
@@ -224,33 +224,33 @@ class UserInterfaceBio {
 
 	getBlurColours() {
 		switch (true) {
-			case !pptBio.themed: // has to be able to create image: uses original themes
-				if (pptBio.theme > 4) pptBio.theme = 0; // reset if coming from themed & out of bounds
-				this.style.isBlur = pptBio.theme > 0;
+			case !bioSet.themed: // has to be able to create image: uses original themes
+				if (bioSet.theme > 4) bioSet.theme = 0; // reset if coming from themed & out of bounds
+				this.style.isBlur = bioSet.theme > 0;
 				this.blur = {
-					alpha: $Bio.clamp(pptBio.blurAlpha, 0, 100) / 30,
-					blend: pptBio.theme == 2,
-					blendAlpha: $Bio.clamp($Bio.clamp(pptBio.blurAlpha, 0, 100) * 105 / 30, 0, 255),
-					dark: pptBio.theme == 1 || pptBio.theme == 4,
-					level: pptBio.theme == 2 ? 91.05 - $Bio.clamp(pptBio.blurTemp, 1.05, 90) : $Bio.clamp(pptBio.blurTemp * 2, 0, 254),
-					light: pptBio.theme == 3
+					alpha: $Bio.clamp(bioSet.blurAlpha, 0, 100) / 30,
+					blend: bioSet.theme == 2,
+					blendAlpha: $Bio.clamp($Bio.clamp(bioSet.blurAlpha, 0, 100) * 105 / 30, 0, 255),
+					dark: bioSet.theme == 1 || bioSet.theme == 4,
+					level: bioSet.theme == 2 ? 91.05 - $Bio.clamp(bioSet.blurTemp, 1.05, 90) : $Bio.clamp(bioSet.blurTemp * 2, 0, 254),
+					light: bioSet.theme == 3
 				}
 				if (this.blur.dark) {
 					this.col.bg_light = RGBA(0, 0, 0, Math.min(160 / this.blur.alpha, 255));
 					this.col.bg_dark = RGBA(0, 0, 0, Math.min(80 / this.blur.alpha, 255));
-					if (pptBio.typeOverlay && !pptBio.rectOvUse) this.col.rectOv = RGBA(0, 0, 0, 255 - this.overlay.strength);
+					if (bioSet.typeOverlay && !bioSet.rectOvUse) this.col.rectOv = RGBA(0, 0, 0, 255 - this.overlay.strength);
 				}
 				if (this.blur.light) {
 					this.col.bg_light = RGBA(255, 255, 255, Math.min(160 / this.blur.alpha, 255));
 					this.col.bg_dark = RGBA(255, 255, 255, Math.min(205 / this.blur.alpha, 255));
-					if (pptBio.typeOverlay && !pptBio.rectOvUse) this.col.rectOv = RGBA(255, 255, 255, 255 - this.overlay.strength);
+					if (bioSet.typeOverlay && !bioSet.rectOvUse) this.col.rectOv = RGBA(255, 255, 255, 255 - this.overlay.strength);
 				}
 				break;
-			case pptBio.themed: // sent image
-				this.style.isBlur = pptBio.theme || pptBio.themeBgImage;
-				this.blur.blend = pptBio.theme == 6 || pptBio.theme == 7;
-				this.blur.dark = pptBio.theme == 1 && !pptBio.themeLight || pptBio.theme == 2 && !pptBio.themeLight || pptBio.theme == 3 || pptBio.theme == 4 || pptBio.theme == 5 || pptBio.theme == 9;
-				this.blur.light = pptBio.theme == 1 && pptBio.themeLight || pptBio.theme == 2 && pptBio.themeLight || pptBio.theme == 8;
+			case bioSet.themed: // sent image
+				this.style.isBlur = bioSet.theme || bioSet.themeBgImage;
+				this.blur.blend = bioSet.theme == 6 || bioSet.theme == 7;
+				this.blur.dark = bioSet.theme == 1 && !bioSet.themeLight || bioSet.theme == 2 && !bioSet.themeLight || bioSet.theme == 3 || bioSet.theme == 4 || bioSet.theme == 5 || bioSet.theme == 9;
+				this.blur.light = bioSet.theme == 1 && bioSet.themeLight || bioSet.theme == 2 && bioSet.themeLight || bioSet.theme == 8;
 				break;
 		}
 	}
@@ -265,8 +265,8 @@ class UserInterfaceBio {
 		this.setStarType();
 		this.getUIColours();
 		this.getItemColours();
-		if (pptBio.themed) {
-			if ((pptBio.theme == 0 || pptBio.theme == 6 || pptBio.theme == 7) && this.themeColour && pptBio.themeColour) {
+		if (bioSet.themed) {
+			if ((bioSet.theme == 0 || bioSet.theme == 6 || bioSet.theme == 7) && this.themeColour && bioSet.themeColour) {
 				// nothing to do
 			} else {
 				this.themeColour = {
@@ -297,59 +297,59 @@ class UserInterfaceBio {
 				} catch (e) { return false; }
 			});
 		}
-		const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`] || 14;
+		const biographyFontSize = bioSet[`baseFontSizeBio_${grSet.layout}`] || 14;
 
-		if (pref.customThemeFonts) this.font.main = ft.biography;
-		else if (pptBio.custFontUse && pptBio.custFont.length) {
-			const custFont = $Bio.split(pptBio.custFont, 1);
+		if (grSet.customThemeFonts) this.font.main = grFont.biography;
+		else if (bioSet.custFontUse && bioSet.custFont.length) {
+			const custFont = $Bio.split(bioSet.custFont, 1);
 			this.font.main = gdi.Font(custFont[0], Math.max(Math.round($Bio.value(custFont[1], 16, 0)), 1), Math.round($Bio.value(custFont[2], 0, 0)));
 		}
 		else if (this.dui) this.font.main = window.GetFontDUI(3);
 		else this.font.main = window.GetFontCUI(0);
 
-		if (!this.font.main || !pref.customThemeFonts && DetectWine() && /tahoma/i.test(this.font.main.Name)) { // Windows: check still needed (test MS Serif or Modern, neither can be used); Wine: tahoma is default system font, but bold and some unicode characters don't work: if Wine + tahoma detected changed to Segoe UI (if that's not installed, tahoma is still used)
-			this.font.main = gdi.Font(fontDefault, 16, 0);
+		if (!this.font.main || !grSet.customThemeFonts && DetectWine() && /tahoma/i.test(this.font.main.Name)) { // Windows: check still needed (test MS Serif or Modern, neither can be used); Wine: tahoma is default system font, but bold and some unicode characters don't work: if Wine + tahoma detected changed to Segoe UI (if that's not installed, tahoma is still used)
+			this.font.main = gdi.Font(grFont.fontDefault, 16, 0);
 			$Bio.trace('Spider Monkey Panel is unable to use your default font. Using Segoe UI at default size & style instead');
 		}
-		if (this.font.main.Size != biographyFontSize) pptBio.zoomFont = 100;
-		// pref.layout === 'artwork' ? pptBio.baseFontSizeBio_artwork : pptBio.baseFontSizeBio_default = this.font.headingBaseSize = this.font.main.Size;
+		if (this.font.main.Size != biographyFontSize) bioSet.zoomFont = 100;
+		// pref.layout === 'artwork' ? bioSet.baseFontSizeBio_artwork : bioSet.baseFontSizeBio_default = this.font.headingBaseSize = this.font.main.Size;
 		this.font.headingBaseSize = biographyFontSize;
 
-		this.font.zoomSize = Math.max(Math.round(biographyFontSize * pptBio.zoomFont / 100), 1);
+		this.font.zoomSize = Math.max(Math.round(biographyFontSize * bioSet.zoomFont / 100), 1);
 
-		if (pptBio.custHeadFontUse && pptBio.custHeadFont.length) {
-			const custHeadFont = $Bio.split(pptBio.custHeadFont, 1);
+		if (bioSet.custHeadFontUse && bioSet.custHeadFont.length) {
+			const custHeadFont = $Bio.split(bioSet.custHeadFont, 1);
 			this.font.headingBaseSize = Math.max(Math.round($Bio.value(custHeadFont[1], 16, 0)), 1);
 			this.font.heading = gdi.Font(custHeadFont[0], this.font.headingBaseSize, this.font.headingStyle);
 			this.font.headingStyle = Math.round($Bio.value(custHeadFont[2], 3, 0));
 			this.font.headingCustom = true;
 		} else {
-			this.font.headingStyle = pptBio.headFontStyle < 4 ? pptBio.headFontStyle : (pptBio.headFontStyle - 4) * 2;
-			this.font.heading = gdi.Font(pptBio.headFontStyle < 4 ? this.font.main.Name : 'Segoe UI Semibold', this.font.main.Size, this.font.headingStyle);
+			this.font.headingStyle = bioSet.headFontStyle < 4 ? bioSet.headFontStyle : (bioSet.headFontStyle - 4) * 2;
+			this.font.heading = gdi.Font(bioSet.headFontStyle < 4 ? this.font.main.Name : 'Segoe UI Semibold', this.font.main.Size, this.font.headingStyle);
 		}
 		this.font.boldAdjust = this.font.headingStyle != 1 && this.font.headingStyle != 4 && this.font.headingStyle != 5 ? 1 : 1.5;
 		this.font.main = gdi.Font(this.font.main.Name, this.font.zoomSize, this.font.main.Style);
 		this.font.lyrics = gdi.Font(this.font.main.Name, this.font.zoomSize, this.font.lyrics.Style);
-		this.font.heading = gdi.Font(this.font.heading.Name, Math.max(Math.round(this.font.headingBaseSize * pptBio.zoomFont / 100 * (100 + ((pptBio.zoomHead - 100) / this.font.boldAdjust)) / 100), 6), this.font.headingStyle);
-		this.heading.pad = $Bio.clamp(this.heading.pad, -pptBio.gap * 2, this.font.main.Size * 5);
-		this.heading.linePad = $Bio.clamp(this.heading.linePad, -pptBio.gap, this.font.main.Size * 5);
+		this.font.heading = gdi.Font(this.font.heading.Name, Math.max(Math.round(this.font.headingBaseSize * bioSet.zoomFont / 100 * (100 + ((bioSet.zoomHead - 100) / this.font.boldAdjust)) / 100), 6), this.font.headingStyle);
+		this.heading.pad = $Bio.clamp(this.heading.pad, -bioSet.gap * 2, this.font.main.Size * 5);
+		this.heading.linePad = $Bio.clamp(this.heading.linePad, -bioSet.gap, this.font.main.Size * 5);
 
-		pptBio.zoomFont = Math.round(this.font.zoomSize / biographyFontSize * 100);
+		bioSet.zoomFont = Math.round(this.font.zoomSize / biographyFontSize * 100);
 
 		this.font.items.forEach(v => {
-			const style = pptBio[v[0]] < 4 ? pptBio[v[0]] : (pptBio[v[0]] - 4) * 2;
-			this.font[v[1]] = gdi.Font(pptBio[v[0]] < 4 ? this.font.main.Name : 'Segoe UI Semibold', this.font.main.Size, style);
+			const style = bioSet[v[0]] < 4 ? bioSet[v[0]] : (bioSet[v[0]] - 4) * 2;
+			this.font[v[1]] = gdi.Font(bioSet[v[0]] < 4 ? this.font.main.Name : 'Segoe UI Semibold', this.font.main.Size, style);
 		});
 
 		this.font.message = gdi.Font(this.font.main.Name, this.font.main.Size * 1.5, 1);
 		this.font.small = gdi.Font(this.font.main.Name, Math.round(this.font.main.Size * 12 / 14), this.font.main.Style);
 
-		this.narrowSbarWidth = pptBio.narrowSbarWidth == 0 ? $Bio.clamp(Math.floor(this.font.main.Size / 7), 2, 10) : pptBio.narrowSbarWidth;
+		this.narrowSbarWidth = bioSet.narrowSbarWidth == 0 ? $Bio.clamp(Math.floor(this.font.main.Size / 7), 2, 10) : bioSet.narrowSbarWidth;
 		if (this.id.local) {
 			this.font.main = c_font;
-			this.font.items.forEach(v => this.font[v[1]] = gdi.Font(this.font.main.Name, this.font.main.Size, pptBio[v[0]]));
+			this.font.items.forEach(v => this.font[v[1]] = gdi.Font(this.font.main.Name, this.font.main.Size, bioSet[v[0]]));
 			this.font.message = gdi.Font(this.font.main.Name, this.font.main.Size * 1.5, 1);
-			if (pptBio.sbarShow) {
+			if (bioSet.sbarShow) {
 				this.sbar.type = 0;
 				this.sbar.w = c_scr_w;
 				this.sbar.but_w = this.sbar.w + 1;
@@ -372,7 +372,7 @@ class UserInterfaceBio {
 			this.col.txt = this.col.text;
 			customColText = true;
 		}
-		if (this.col.text_h === '') this.col.txt_h = pptBio.themed && pptBio.theme == 9 ? RGB(104, 225, 255) : this.blur.blend ? this.setBrightness(this.col.txt_h, lightBg ? -10 : 10) : this.blur.dark ? RGB(255, 255, 255) : this.blur.light ? (pptBio.themed && (pptBio.theme == 1 || pptBio.themed == 2) ? RGB(25, 25, 25) : RGB(71, 129, 183)) : this.col.txt_h;
+		if (this.col.text_h === '') this.col.txt_h = bioSet.themed && bioSet.theme == 9 ? RGB(104, 225, 255) : this.blur.blend ? this.setBrightness(this.col.txt_h, lightBg ? -10 : 10) : this.blur.dark ? RGB(255, 255, 255) : this.blur.light ? (bioSet.themed && (bioSet.theme == 1 || bioSet.themed == 2) ? RGB(25, 25, 25) : RGB(71, 129, 183)) : this.col.txt_h;
 		else {
 			this.col.txt_h = this.col.text_h;
 			customColText_h = true;
@@ -394,50 +394,50 @@ class UserInterfaceBio {
 		this.col.bg2 = lightBg ? 0x04000000 : 0x04ffffff;
 		this.col.bg3 = lightBg ? 0x04ffffff : 0x04000000;
 
-		if (pptBio.swapCol) {
+		if (bioSet.swapCol) {
 			const colH = this.col.txt_h;
 			this.col.txt_h = this.col.txt;
 			this.col.txt = colH;
 		}
 
-		if (!customColText || pptBio.swapCol) this.col.text = !pptBio.highlightText ? this.col.txt : this.col.txt_h;
-		if (!customColText_h || pptBio.swapCol) this.col.text_h = !pptBio.highlightText ? this.col.txt_h : this.col.txt;
+		if (!customColText || bioSet.swapCol) this.col.text = !bioSet.highlightText ? this.col.txt : this.col.txt_h;
+		if (!customColText_h || bioSet.swapCol) this.col.text_h = !bioSet.highlightText ? this.col.txt_h : this.col.txt;
 		this.col.shadow = this.getSelTextCol(this.col.text_h);
-		if (this.col.summary === '') this.col.summary = !pptBio.highlightSummary ? this.col.txt : this.col.txt_h;
+		if (this.col.summary === '') this.col.summary = !bioSet.highlightSummary ? this.col.txt : this.col.txt_h;
 		this.col.t = this.style.bg ? this.getButCol(this.col.bg) : 200;
 
 		if (this.stars) {
 			this.col.stars = RGB(255, 190, 0);
 			['starOn', 'starOff', 'starBor'].forEach((v, i) => {
-				this.col[v] = i < 2 ? (this.stars == 2 ? $Bio.RGBtoRGBA(this.col.stars === '' ? pptBio.highlightStars ? this.col.txt : this.col.txt_h : this.col.stars, !i ? 232 : 60) :
-					this.style.bg || !this.style.bg && !this.style.trans || this.blur.dark || this.blur.light ? $Bio.RGBtoRGBA(this.col.stars === '' ? pptBio.highlightStars ? this.col.txt_h : this.col.txt : this.col.stars, !i ? 232 : 60) : (this.col.stars === '' ? RGBA(255, 255, 255, !i ? 232 : 60) : $Bio.RGBtoRGBA(this.col.stars, !i ? 232 : 60))) : RGBA(0, 0, 0, 0);
+				this.col[v] = i < 2 ? (this.stars == 2 ? $Bio.RGBtoRGBA(this.col.stars === '' ? bioSet.highlightStars ? this.col.txt : this.col.txt_h : this.col.stars, !i ? 232 : 60) :
+					this.style.bg || !this.style.bg && !this.style.trans || this.blur.dark || this.blur.light ? $Bio.RGBtoRGBA(this.col.stars === '' ? bioSet.highlightStars ? this.col.txt_h : this.col.txt : this.col.stars, !i ? 232 : 60) : (this.col.stars === '' ? RGBA(255, 255, 255, !i ? 232 : 60) : $Bio.RGBtoRGBA(this.col.stars, !i ? 232 : 60))) : RGBA(0, 0, 0, 0);
 			});
 		}
 
 		this.col.bottomLine = this.getLineCol('bottom');
 		this.col.centerLine = this.getLineCol('center');
-		this.col.sectionLine = this.col.line === '' && !pptBio.colLineDark ? (pptBio.highlightHdLine ? this.col.text_h : this.col.text) & 0x40ffffff : $Bio.RGBAtoRGB(this.col.bottomLine, this.col.bg == 0 ? 0xff000000 : this.col.bg) & 0x56ffffff;
+		this.col.sectionLine = this.col.line === '' && !bioSet.colLineDark ? (bioSet.highlightHdLine ? this.col.text_h : this.col.text) & 0x40ffffff : $Bio.RGBAtoRGB(this.col.bottomLine, this.col.bg == 0 ? 0xff000000 : this.col.bg) & 0x56ffffff;
 		this.col.edBg = (this.blur.dark ? RGB(0, 0, 0) : this.blur.light ? RGB(255, 255, 255) : this.col.bg) & 0x99ffffff;
 		this.col.imgBor = this.col.text & 0x25ffffff;
 		const col_txt = this.col.txt == -1 ? RGB(240, 240, 240) : this.col.txt;
 		const col_txt_h = this.col.txt_h == -1 ? RGB(240, 240, 240) : this.col.txt_h;
 		this.col.dropShadow = RGB(18, 26, 46);
-		this.col.source = this.blur.dark ? (pptBio.highlightSubHd ? col_txt_h : col_txt) : !this.blur.light && (pptBio.sourceStyle == 1 || pptBio.sourceStyle == 3) && (pptBio.headFontStyle != 1 && pptBio.headFontStyle != 3) ? this.dim(pptBio.highlightSubHd ? this.col.txt_h : this.col.txt, !window.IsTransparent ? this.col.bg : 0xff000000, 240) : pptBio.highlightSubHd ? this.col.txt_h : this.col.txt;
-		this.col.track = this.blur.dark ? (pptBio.highlightSubHd ? col_txt_h : col_txt) : !this.blur.light && (pptBio.trackStyle == 1 || pptBio.trackStyle == 3) && (pptBio.headFontStyle != 1 && pptBio.headFontStyle != 3) ? this.dim(pptBio.highlightSubHd ? this.col.txt_h : this.col.txt, !window.IsTransparent ? this.col.bg : 0xff000000, 240) : pptBio.highlightSubHd ? this.col.txt_h : this.col.txt;
+		this.col.source = this.blur.dark ? (bioSet.highlightSubHd ? col_txt_h : col_txt) : !this.blur.light && (bioSet.sourceStyle == 1 || bioSet.sourceStyle == 3) && (bioSet.headFontStyle != 1 && bioSet.headFontStyle != 3) ? this.dim(bioSet.highlightSubHd ? this.col.txt_h : this.col.txt, !window.IsTransparent ? this.col.bg : 0xff000000, 240) : bioSet.highlightSubHd ? this.col.txt_h : this.col.txt;
+		this.col.track = this.blur.dark ? (bioSet.highlightSubHd ? col_txt_h : col_txt) : !this.blur.light && (bioSet.trackStyle == 1 || bioSet.trackStyle == 3) && (bioSet.headFontStyle != 1 && bioSet.headFontStyle != 3) ? this.dim(bioSet.highlightSubHd ? this.col.txt_h : this.col.txt, !window.IsTransparent ? this.col.bg : 0xff000000, 240) : bioSet.highlightSubHd ? this.col.txt_h : this.col.txt;
 
-		this.sbar.col = this.blur.dark || this.blur.light ? 1 : pptBio.sbarCol;
+		this.sbar.col = this.blur.dark || this.blur.light ? 1 : bioSet.sbarCol;
 
 		if (this.col.frame === '') this.col.frame = (this.blur.dark ? 0xff808080 : this.blur.light ? 0xA330AFED : this.col.bgSel) & 0xd0ffffff;
 		if (this.col.rectOv === '') this.col.rectOv = this.col.bg;
 		this.col.rectOv = $Bio.RGBtoRGBA(this.col.rectOv, 255 - this.overlay.strength);
 		if (this.col.rectOvBor === '') {
-			this.col.rectOvBor = pptBio.highlightOvBor ? this.col.txt_h : this.col.txt;
+			this.col.rectOvBor = bioSet.highlightOvBor ? this.col.txt_h : this.col.txt;
 			this.col.rectOvBor = $Bio.RGBtoRGBA(this.col.rectOvBor, 228);
 		}
 
-		if (!pptBio.heading) return;
-		this.col.headBtn = this.col.headingBtn === '' ? !pptBio.highlightHdBtn ? this.col.txt : this.col.txt_h : this.col.headingBtn;
-		if (this.col.headingText === '') this.col.headingText = !pptBio.highlightHdText ? this.col.txt : this.col.txt_h;
+		if (!bioSet.heading) return;
+		this.col.headBtn = this.col.headingBtn === '' ? !bioSet.highlightHdBtn ? this.col.txt : this.col.txt_h : this.col.headingBtn;
+		if (this.col.headingText === '') this.col.headingText = !bioSet.highlightHdText ? this.col.txt : this.col.txt_h;
 		['blend1', 'blend2', 'blend3'].forEach((v, i) => {
 			this.col[v] =
 			this.blur.blend ? this.col.headBtn & RGBA(255, 255, 255, i == 2 ? 40 : 12) :
@@ -449,9 +449,9 @@ class UserInterfaceBio {
 	}
 
 	getLineCol(type) {
-		if (!pptBio.colLineDark) return this.col.line === '' ? this.getBlend(this.blur.dark ? RGB(0, 0, 0) : this.blur.light ? RGB(255, 255, 255) : this.col.bg == 0 ? 0xff000000 : this.col.bg, pptBio.highlightHdLine ? this.col.txt_h : this.col.txt, type == 'bottom' || this.style.isBlur ? 0.25 : 0.5) : this.col.line;
+		if (!bioSet.colLineDark) return this.col.line === '' ? this.getBlend(this.blur.dark ? RGB(0, 0, 0) : this.blur.light ? RGB(255, 255, 255) : this.col.bg == 0 ? 0xff000000 : this.col.bg, bioSet.highlightHdLine ? this.col.txt_h : this.col.txt, type == 'bottom' || this.style.isBlur ? 0.25 : 0.5) : this.col.line;
 		const lightBg = this.isLightBackground();
-		const nearBlack = ((pptBio.theme == 1 || pptBio.theme == 2) && !this.col.themeLight || (pptBio.theme == 0 || pptBio.theme == 6 || pptBio.theme == 7) && !lightBg) && this.getColSat(this.col.bg) < 45;
+		const nearBlack = ((bioSet.theme == 1 || bioSet.theme == 2) && !this.col.themeLight || (bioSet.theme == 0 || bioSet.theme == 6 || bioSet.theme == 7) && !lightBg) && this.getColSat(this.col.bg) < 45;
 		const alpha = !lightBg ? nearBlack ? 0x20ffffff : 0x50000000 : 0x30000000;
 		return this.col.text & alpha;
 	}
@@ -467,12 +467,12 @@ class UserInterfaceBio {
 
 	getParams() {
 		this.calcText();
-		panelBio.setStyle();
-		butBio.createStars();
-		butBio.setTooltipFont();
-		txt.getSubHeadWidths();
-		txt.artCalc();
-		txt.albCalc();
+		bio.panel.setStyle();
+		bio.but.createStars();
+		bio.but.setTooltipFont();
+		bio.txt.getSubHeadWidths();
+		bio.txt.artCalc();
+		bio.txt.albCalc();
 	}
 
 	getSelTextCol(c, bypass) {
@@ -480,9 +480,9 @@ class UserInterfaceBio {
 	}
 
 	getUIColours() {
-		const colours = Object.keys(colourSelectorBio);
-		this.themeColour = pptBio.themeColour && colours.length ? colourSelectorBio[colours[pptBio.themeColour]] : null;
-		if (pptBio.themed && (pptBio.theme == 0 || pptBio.theme == 6 || pptBio.theme == 7) && this.themeColour && pptBio.themeColour) {
+		const colours = Object.keys(bioColourSelector);
+		this.themeColour = bioSet.themeColour && colours.length ? bioColourSelector[colours[bioSet.themeColour]] : null;
+		if (bioSet.themed && (bioSet.theme == 0 || bioSet.theme == 6 || bioSet.theme == 7) && this.themeColour && bioSet.themeColour) {
 			this.col.txt = this.themeColour.text;
 			if (this.col.bg === '') this.col.bg = this.themeColour.background;
 			if (this.col.bgSel === '') this.col.bgSel = this.img.blurDark ? RGBA(255, 255, 255, 36) : this.img.blurLight ? RGBA(50, 50, 50, 36) : this.themeColour.selection;
@@ -506,7 +506,7 @@ class UserInterfaceBio {
 	}
 
 	isLightBackground() {
-		if (pptBio.themed && (pptBio.theme == 0 || pptBio.theme == 6 || pptBio.theme == 7) && this.themeColour && pptBio.themeColour) {
+		if (bioSet.themed && (bioSet.theme == 0 || bioSet.theme == 6 || bioSet.theme == 7) && this.themeColour && bioSet.themeColour) {
 			// do nothing
 		} else if (this.blur.light) return true;
 		else if (this.blur.dark) return false;
@@ -519,94 +519,94 @@ class UserInterfaceBio {
 
 	lines(gr) {
 		if (!this.id.c_c) return;
-		if (pptBio.artistView && !pptBio.img_only || !pptBio.artistView && !pptBio.img_only) {
-			gr.DrawRect(0, 0, panelBio.w - 1, panelBio.h - 1, 1, RGB(155, 155, 155));
-			gr.DrawRect(1, 1, panelBio.w - 3, panelBio.h - 3, 1, RGB(0, 0, 0));
+		if (bioSet.artistView && !bioSet.img_only || !bioSet.artistView && !bioSet.img_only) {
+			gr.DrawRect(0, 0, bio.panel.w - 1, bio.panel.h - 1, 1, RGB(155, 155, 155));
+			gr.DrawRect(1, 1, bio.panel.w - 3, bio.panel.h - 3, 1, RGB(0, 0, 0));
 		}
 	}
 
 	refreshProp() {
-		if (panelBio.style.inclTrackRev == 1) txt.logScrollPos();
+		if (bio.panel.style.inclTrackRev == 1) bio.txt.logScrollPos();
 
-		this.heading.pad = pptBio.hdPad;
-		this.heading.linePad = pptBio.hdLinePad;
-		panelBio.style.fullWidthHeading = pptBio.heading && pptBio.fullWidthHeading;
-		panelBio.id.focus = pptBio.focus;
-		panelBio.id.lyricsSource = false;
-		panelBio.id.nowplayingSource = false;
-		panelBio.id.propsSource = false;
+		this.heading.pad = bioSet.hdPad;
+		this.heading.linePad = bioSet.hdLinePad;
+		bio.panel.style.fullWidthHeading = bioSet.heading && bioSet.fullWidthHeading;
+		bio.panel.id.focus = bioSet.focus;
+		bio.panel.id.lyricsSource = false;
+		bio.panel.id.nowplayingSource = false;
+		bio.panel.id.propsSource = false;
 		for (let i = 0; i < 8; i++) {
-			if (pptBio.txtReaderEnable && pptBio[`useTxtReader${i}`] && pptBio[`pthTxtReader${i}`] && pptBio[`lyricsTxtReader${i}`] && !/item_properties/i.test(utils.SplitFilePath(pptBio[`pthTxtReader${i}`])[1]) && !/nowplaying/i.test(utils.SplitFilePath(pptBio[`pthTxtReader${i}`])[1])) {
-				panelBio.id.lyricsSource = true;
-				panelBio.id.focus = false;
+			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && bioSet[`pthTxtReader${i}`] && bioSet[`lyricsTxtReader${i}`] && !/item_properties/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1]) && !/nowplaying/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
+				bio.panel.id.lyricsSource = true;
+				bio.panel.id.focus = false;
 				break;
 			}
 		}
 		for (let i = 0; i < 8; i++) {
-			if (pptBio.txtReaderEnable && pptBio[`useTxtReader${i}`] && /nowplaying/i.test(utils.SplitFilePath(pptBio[`pthTxtReader${i}`])[1])) {
-				panelBio.id.nowplayingSource = true;
-				panelBio.id.focus = false;
+			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && /nowplaying/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
+				bio.panel.id.nowplayingSource = true;
+				bio.panel.id.focus = false;
 				break;
 			}
 		}
 		for (let i = 0; i < 8; i++) {
-			if (pptBio.txtReaderEnable && pptBio[`useTxtReader${i}`] && /item_properties/i.test(utils.SplitFilePath(pptBio[`pthTxtReader${i}`])[1])) {
-				panelBio.id.propsSource = true;
+			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && /item_properties/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
+				bio.panel.id.propsSource = true;
 				break;
 			}
 		}
-		if (!lyricsBio && panelBio.id.lyricsSource) lyricsBio = new LyricsBio();
-		panelBio.id.lookUp = pptBio.lookUp;
+		if (!bio.lyrics && bio.panel.id.lyricsSource) bio.lyrics = new BioLyrics();
+		bio.panel.id.lookUp = bioSet.lookUp;
 
 		this.show = {
-			btnBg: pptBio.hdShowBtnBg,
-			btnLabel: pptBio.hdShowBtnLabel,
-			btnRedLastfm: pptBio.hdShowRedLfm,
-			headingText: pptBio.hdShowTitle
+			btnBg: bioSet.hdShowBtnBg,
+			btnLabel: bioSet.hdShowBtnLabel,
+			btnRedLastfm: bioSet.hdShowRedLfm,
+			headingText: bioSet.hdShowTitle
 		};
 		if (this.show.btnRedLastfm) this.show.btnBg = 1;
 
-		panelBio.checkRefreshRates();
-		panelBio.setSummary();
-		if (pptBio.typeOverlay > 4 || pptBio.typeOverlay < 0) pptBio.typeOverlay = 0;
+		bio.panel.checkRefreshRates();
+		bio.panel.setSummary();
+		if (bioSet.typeOverlay > 4 || bioSet.typeOverlay < 0) bioSet.typeOverlay = 0;
 
-		pptBio.overlayStrength = $Bio.clamp(pptBio.overlayStrength, 0, 100);
-		pptBio.overlayGradient = $Bio.clamp(pptBio.overlayGradient, 0, 100);
-		pptBio.overlayBorderWidth = $Bio.clamp(pptBio.overlayBorderWidth, 1, 20);
+		bioSet.overlayStrength = $Bio.clamp(bioSet.overlayStrength, 0, 100);
+		bioSet.overlayGradient = $Bio.clamp(bioSet.overlayGradient, 0, 100);
+		bioSet.overlayBorderWidth = $Bio.clamp(bioSet.overlayBorderWidth, 1, 20);
 		this.overlay = {
-			gradient: pptBio.overlayGradient / 10 - 1,
-			borderWidth: pptBio.typeOverlay != 2 && pptBio.typeOverlay != 4 ? 0 : pptBio.overlayBorderWidth,
-			strength: $Bio.clamp(255 * (100 - pptBio.overlayStrength) / 100, 0, 255)
+			gradient: bioSet.overlayGradient / 10 - 1,
+			borderWidth: bioSet.typeOverlay != 2 && bioSet.typeOverlay != 4 ? 0 : bioSet.overlayBorderWidth,
+			strength: $Bio.clamp(255 * (100 - bioSet.overlayStrength) / 100, 0, 255)
 		};
-		pptBio.reflStrength = $Bio.clamp(pptBio.reflStrength, 0, 100);
-		pptBio.reflGradient = $Bio.clamp(pptBio.reflGradient, 0, 100);
-		pptBio.reflSize = $Bio.clamp(pptBio.reflSize, 0, 100);
-		imgBio.refl = {
+		bioSet.reflStrength = $Bio.clamp(bioSet.reflStrength, 0, 100);
+		bioSet.reflGradient = $Bio.clamp(bioSet.reflGradient, 0, 100);
+		bioSet.reflSize = $Bio.clamp(bioSet.reflSize, 0, 100);
+		bio.img.refl = {
 			adjust: false,
-			gradient: pptBio.reflGradient / 10 - 1,
-			size: $Bio.clamp(pptBio.reflSize / 100, 0.1, 1),
-			strength: $Bio.clamp(255 * pptBio.reflStrength / 100, 0, 255)
+			gradient: bioSet.reflGradient / 10 - 1,
+			size: $Bio.clamp(bioSet.reflSize / 100, 0.1, 1),
+			strength: $Bio.clamp(255 * bioSet.reflStrength / 100, 0, 255)
 		};
 
-		imgBio.mask.reflection = false;
-		if (!pptBio.butCustIconFont.length) pptBio.butCustIconFont = 'Segoe UI Symbol';
+		bio.img.mask.reflection = false;
+		if (!bioSet.butCustIconFont.length) bioSet.butCustIconFont = 'Segoe UI Symbol';
 		this.getColours();
-		this.blur.level = pptBio.theme == 2 ? 91.05 - $Bio.clamp(pptBio.blurTemp, 1.05, 90) : $Bio.clamp(pptBio.blurTemp * 2, 0, 254);
+		this.blur.level = bioSet.theme == 2 ? 91.05 - $Bio.clamp(bioSet.blurTemp, 1.05, 90) : $Bio.clamp(bioSet.blurTemp * 2, 0, 254);
 
-		setBiographySize();
-		initBiographyColors();
-		txt.artCalc(); txt.albCalc(); // Refresh text color
+		grm.ui.setBiographySize();
+		grm.theme.initBiographyColors();
+		bio.txt.artCalc(); bio.txt.albCalc(); // Refresh text color
 
-		imgBio.mask.reset = true;
+		bio.img.mask.reset = true;
 		this.setSbar();
-		butBio.setSbarIcon();
-		alb_scrollbar.active = true;
-		art_scrollbar.active = true;
-		[alb_scrollbar, art_scrollbar].forEach(v => {
+		bio.but.setSbarIcon();
+		bio.alb_scrollbar.active = true;
+		bio.art_scrollbar.active = true;
+		[bio.alb_scrollbar, bio.art_scrollbar].forEach(v => {
 			v.duration = {
 				drag: 200,
-				inertia: pptBio.durationTouchFlick,
-				full: pptBio.durationScroll
+				inertia: bioSet.durationTouchFlick,
+				full: bioSet.durationScroll
 			};
 			v.duration.scroll = Math.round(v.duration.full * 0.8);
 			v.duration.step = Math.round(v.duration.full * 2 / 3);
@@ -615,36 +615,36 @@ class UserInterfaceBio {
 			v.setCol();
 			v.resetAuto();
 		});
-		butBio.createImages('all');
+		bio.but.createImages('all');
 		this.getFont();
 		this.calcText();
-		pptBio.thumbNailGap = Math.max(pptBio.thumbNailGap, 0);
-		imgBio.createImages();
-		filmStrip.set('clear');
-		filmStrip.style.image = [pptBio.filmCoverStyle, pptBio.filmPhotoStyle];
-		filmStrip.createBorder();
-		imgBio.setCrop(true);
-		panelBio.alb.ix = 0;
-		panelBio.art.ix = 0;
-		imgBio.id.albCyc = imgBio.id.curAlbCyc = txt.id.curAlb = txt.id.alb = '';
+		bioSet.thumbNailGap = Math.max(bioSet.thumbNailGap, 0);
+		bio.img.createImages();
+		bio.filmStrip.set('clear');
+		bio.filmStrip.style.image = [bioSet.filmCoverStyle, bioSet.filmPhotoStyle];
+		bio.filmStrip.createBorder();
+		bio.img.setCrop(true);
+		bio.panel.alb.ix = 0;
+		bio.panel.art.ix = 0;
+		bio.img.id.albCyc = bio.img.id.curAlbCyc = bio.txt.id.curAlb = bio.txt.id.alb = '';
 
-		butBio.createStars(true);
+		bio.but.createStars(true);
 
-		txt.artistReset(true);
-		txt.albumReset(true);
-		txt.albumFlush();
-		txt.artistFlush();
-		txt.rev.cur = '';
-		txt.bio.cur = '';
+		bio.txt.artistReset(true);
+		bio.txt.albumReset(true);
+		bio.txt.albumFlush();
+		bio.txt.artistFlush();
+		bio.txt.rev.cur = '';
+		bio.txt.bio.cur = '';
 
-		txt.bio.loaded = {
+		bio.txt.bio.loaded = {
 			am: false,
 			lfm: false,
 			wiki: false,
 			txt: false,
 			ix: -1
 		};
-		txt.rev.loaded = {
+		bio.txt.rev.loaded = {
 			am: false,
 			lfm: false,
 			wiki: false,
@@ -652,31 +652,31 @@ class UserInterfaceBio {
 			ix: -1
 		};
 
-		txt.bio.fallback = pptBio.bioFallbackText.split('|');
-		txt.rev.fallback = pptBio.revFallbackText.split('|');
-		txt.loadReader();
-		txt.getText(true);
-		butBio.refresh(true);
-		imgBio.processSizeFilter();
-		imgBio.art.done = false;
-		imgBio.art.allFilesLength = 0;
-		imgBio.updImages();
-		seeker.upd();
+		bio.txt.bio.fallback = bioSet.bioFallbackText.split('|');
+		bio.txt.rev.fallback = bioSet.revFallbackText.split('|');
+		bio.txt.loadReader();
+		bio.txt.getText(true);
+		bio.but.refresh(true);
+		bio.img.processSizeFilter();
+		bio.img.art.done = false;
+		bio.img.art.allFilesLength = 0;
+		bio.img.updImages();
+		bio.seeker.upd();
 
-		const origLock = panelBio.lock;
-		if (txt.bio.reader || txt.rev.reader) {
-			panelBio.lock = 0;
-			if (origLock != panelBio.lock) panelBio.mbtn_up(0, 0, false, true);
+		const origLock = bio.panel.lock;
+		if (bio.txt.bio.reader || bio.txt.rev.reader) {
+			bio.panel.lock = 0;
+			if (origLock != bio.panel.lock) bio.panel.mbtn_up(0, 0, false, true);
 		}
 
-		if (!panelBio.lock) panelBio.getList(true, true);
+		if (!bio.panel.lock) bio.panel.getList(true, true);
 
-		menBio.playlists_changed();
-		panelBio.checkNumServers();
+		bio.men.playlists_changed();
+		bio.panel.checkNumServers();
 
-		if (pptBio.showFilmStrip && pptBio.autoFilm) txt.getScrollPos();
-		if (pptBio.filmStripOverlay && pptBio.showFilmStrip) filmStrip.set(pptBio.filmStripPos);
-		if (pptBio.text_only && !this.style.isBlur) txt.paint();
+		if (bioSet.showFilmStrip && bioSet.autoFilm) bio.txt.getScrollPos();
+		if (bioSet.filmStripOverlay && bioSet.showFilmStrip) bio.filmStrip.set(bioSet.filmStripPos);
+		if (bioSet.text_only && !this.style.isBlur) bio.txt.paint();
 	}
 
 	setBrightness(c, percent) {
@@ -685,13 +685,13 @@ class UserInterfaceBio {
 	}
 
 	setSbar() {
-		pptBio.durationTouchFlick = $Bio.clamp($Bio.value(pptBio.durationTouchFlick, 3000, 0), 0, 5000);
-		pptBio.durationScroll = $Bio.clamp($Bio.value(pptBio.durationScroll, 500, 0), 0, 5000);
-		pptBio.flickDistance = $Bio.clamp(pptBio.flickDistance, 0, 10);
-		pptBio.touchStep = $Bio.clamp(pptBio.touchStep, 1, 10);
-		pptBio.sbarType = $Bio.value(pptBio.sbarType, 0, 0);
-		this.sbar.type = Math.min(pptBio.sbarType, 2);
-		if (pptBio.sbarType == 2) { // light mode only
+		bioSet.durationTouchFlick = $Bio.clamp($Bio.value(bioSet.durationTouchFlick, 3000, 0), 0, 5000);
+		bioSet.durationScroll = $Bio.clamp($Bio.value(bioSet.durationScroll, 500, 0), 0, 5000);
+		bioSet.flickDistance = $Bio.clamp(bioSet.flickDistance, 0, 10);
+		bioSet.touchStep = $Bio.clamp(bioSet.touchStep, 1, 10);
+		bioSet.sbarType = $Bio.value(bioSet.sbarType, 0, 0);
+		this.sbar.type = Math.min(bioSet.sbarType, 2);
+		if (bioSet.sbarType == 2) { // light mode only
 			this.theme = window.CreateThemeManager('scrollbar');
 			$Bio.gr(21, 21, false, g => {
 				try {
@@ -707,40 +707,40 @@ class UserInterfaceBio {
 					}
 				} catch (e) {
 					this.sbar.type = 1;
-					pptBio.sbarType = 1;
+					bioSet.sbarType = 1;
 				}
 			});
 		}
-		this.sbar.arrowPad = pptBio.sbarPad;
-		pptBio.sbarWidth = $Bio.clamp(pptBio.sbarWidth, 0, 400);
-		pptBio.sbarBase_w = $Bio.clamp(pptBio.sbarBase_w, 0, 400);
+		this.sbar.arrowPad = bioSet.sbarPad;
+		bioSet.sbarWidth = $Bio.clamp(bioSet.sbarWidth, 0, 400);
+		bioSet.sbarBase_w = $Bio.clamp(bioSet.sbarBase_w, 0, 400);
 
-		if (pptBio.sbarWidth != pptBio.sbarBase_w) {
-			pptBio.sbarArrowWidth = Math.min(pptBio.sbarArrowWidth, pptBio.sbarWidth, 400);
+		if (bioSet.sbarWidth != bioSet.sbarBase_w) {
+			bioSet.sbarArrowWidth = Math.min(bioSet.sbarArrowWidth, bioSet.sbarWidth, 400);
 		} else {
-			pptBio.sbarArrowWidth = $Bio.clamp(pptBio.sbarArrowWidth, 0, 400);
-			pptBio.sbarWidth = $Bio.clamp(pptBio.sbarWidth, pptBio.sbarArrowWidth, 400);
+			bioSet.sbarArrowWidth = $Bio.clamp(bioSet.sbarArrowWidth, 0, 400);
+			bioSet.sbarWidth = $Bio.clamp(bioSet.sbarWidth, bioSet.sbarArrowWidth, 400);
 		}
-		pptBio.sbarBase_w = pptBio.sbarWidth;
-		this.sbar.w = pptBio.sbarBase_w;
-		this.sbar.but_w = pptBio.sbarArrowWidth;
+		bioSet.sbarBase_w = bioSet.sbarWidth;
+		this.sbar.w = bioSet.sbarBase_w;
+		this.sbar.but_w = bioSet.sbarArrowWidth;
 		let themed_w = 21;
 		try {
 			themed_w = utils.GetSystemMetrics(2);
 		} catch (e) {}
-		if (pptBio.sbarWinMetrics) {
+		if (bioSet.sbarWinMetrics) {
 			this.sbar.w = themed_w;
-			this.sbar.but_w = pptBio.sbarType != 3 ? this.sbar.w : this.sbar.w * 10 / 18;
+			this.sbar.but_w = bioSet.sbarType != 3 ? this.sbar.w : this.sbar.w * 10 / 18;
 		}
-		else if (pptBio.sbarWidth) {
-			this.sbar.w = RES_4K ? 26 : 12;
-			this.sbar.but_w = RES_4K ? 26 : 12;
+		else if (bioSet.sbarWidth) {
+			this.sbar.w = RES._4K ? 26 : 12;
+			this.sbar.but_w = RES._4K ? 26 : 12;
 		}
-		if (!pptBio.sbarWinMetrics && this.sbar.type == 2) this.sbar.w = Math.max(this.sbar.w, 12);
-		if (!pptBio.sbarShow) this.sbar.w = 0;
-		this.sbar.but_h = this.sbar.w + (pptBio.sbarType != 2 ? 1 : 0);
-		if (pptBio.sbarType != 2) {
-			if (pptBio.sbarButType || !this.sbar.type && this.sbar.but_w < Math.round(15 * $Bio.scale)) this.sbar.but_w += 1;
+		if (!bioSet.sbarWinMetrics && this.sbar.type == 2) this.sbar.w = Math.max(this.sbar.w, 12);
+		if (!bioSet.sbarShow) this.sbar.w = 0;
+		this.sbar.but_h = this.sbar.w + (bioSet.sbarType != 2 ? 1 : 0);
+		if (bioSet.sbarType != 2) {
+			if (bioSet.sbarButType || !this.sbar.type && this.sbar.but_w < Math.round(15 * $Bio.scale)) this.sbar.but_w += 1;
 			else if (this.sbar.type == 1 && this.sbar.but_w < Math.round(14 * $Bio.scale)) this.sbar.arrowPad += 1;
 		}
 		const sp = this.sbar.type == 2 || this.sbar.w - this.sbar.but_w > 4 ? 0 : Math.round(1 * $Bio.scale);
@@ -749,37 +749,37 @@ class UserInterfaceBio {
 	}
 
 	setStarType() {
-		this.stars = $Bio.value(pptBio.star, 1, 1) + 1;
-		if ((!pptBio.heading || !pptBio.hdBtnShow || pptBio.hdPos == 2) && this.stars == 1) this.stars = 2;
-		if (!pptBio.amRating && !pptBio.lfmRating) this.stars = 0;
+		this.stars = $Bio.value(bioSet.star, 1, 1) + 1;
+		if ((!bioSet.heading || !bioSet.hdBtnShow || bioSet.hdPos == 2) && this.stars == 1) this.stars = 2;
+		if (!bioSet.amRating && !bioSet.lfmRating) this.stars = 0;
 	}
 
 	updateProp(prop, value) {
-		const serverName = pptBio.serverName;
+		const serverName = bioSet.serverName;
 		Object.entries(prop).forEach(v => {
-			pptBio[v[0].replace('_internal', '')] = v[1][value];
+			bioSet[v[0].replace('_internal', '')] = v[1][value];
 		});
 		this.refreshProp();
-		if (serverName != pptBio.serverName) {
+		if (serverName != bioSet.serverName) {
 			window.Reload();
 			window.NotifyOthers('bio_refresh', 'bio_refresh');
 		}
 	}
 
 	wheel(step) {
-		const biographyFontSize = pptBio[`baseFontSizeBio_${pref.layout}`] || 14;
-		if (!panelBio || butBio.trace('lookUp', panelBio.m.x, panelBio.m.y)) return;
-		if (vkBio.k('ctrl')) {
-			if (butBio.trace('heading', panelBio.m.x, panelBio.m.y)) {
-				if (!butBio.trace_src(panelBio.m.x, panelBio.m.y)) {
-					pptBio.zoomHead = $Bio.clamp(pptBio.zoomHead += step * 5, 25, 400);
-					this.font.heading = gdi.Font(this.font.heading.Name, Math.max(Math.round(this.font.headingBaseSize * this.font.zoomSize / (biographyFontSize) * (100 + ((pptBio.zoomHead - 100) / this.font.boldAdjust)) / 100), 6), this.font.headingStyle);
-				} else butBio.setSrcFontSize(step);
-			} else if (panelBio.trace.text) {
+		const biographyFontSize = bioSet[`baseFontSizeBio_${grSet.layout}`] || 14;
+		if (!bio.panel || bio.but.trace('lookUp', bio.panel.m.x, bio.panel.m.y)) return;
+		if (bio.vk.k('ctrl')) {
+			if (bio.but.trace('heading', bio.panel.m.x, bio.panel.m.y)) {
+				if (!bio.but.trace_src(bio.panel.m.x, bio.panel.m.y)) {
+					bioSet.zoomHead = $Bio.clamp(bioSet.zoomHead += step * 5, 25, 400);
+					this.font.heading = gdi.Font(this.font.heading.Name, Math.max(Math.round(this.font.headingBaseSize * this.font.zoomSize / (biographyFontSize) * (100 + ((bioSet.zoomHead - 100) / this.font.boldAdjust)) / 100), 6), this.font.headingStyle);
+				} else bio.but.setSrcFontSize(step);
+			} else if (bio.panel.trace.text) {
 				this.font.zoomSize += step;
 				this.font.zoomSize = Math.max(this.font.zoomSize, 1);
 				this.font.main = gdi.Font(this.font.main.Name, this.font.zoomSize, this.font.main.Style);
-				this.font.heading = gdi.Font(this.font.heading.Name, Math.max(Math.round(this.font.headingBaseSize * this.font.zoomSize / (biographyFontSize) * (100 + ((pptBio.zoomHead - 100) / this.font.boldAdjust)) / 100), 6), this.font.headingStyle);
+				this.font.heading = gdi.Font(this.font.heading.Name, Math.max(Math.round(this.font.headingBaseSize * this.font.zoomSize / (biographyFontSize) * (100 + ((bioSet.zoomHead - 100) / this.font.boldAdjust)) / 100), 6), this.font.headingStyle);
 
 				['lyrics', 'subHeadSource', 'summary', 'subHeadTrack', 'subHeadWiki'].forEach(v => {
 					this.font[v] = gdi.Font(this.font[v].Name, this.font.zoomSize, this.font[v].Style);
@@ -787,32 +787,32 @@ class UserInterfaceBio {
 
 				this.font.message = gdi.Font(this.font.main.Name, this.font.zoomSize * 1.5, 1);
 				this.font.small = gdi.Font(this.font.main.Name, Math.round(this.font.zoomSize * 12 / 14), this.font.main.Style);
-				this.narrowSbarWidth = pptBio.narrowSbarWidth == 0 ? $Bio.clamp(Math.floor(this.font.zoomSize / 7), 2, 10) : pptBio.narrowSbarWidth;
+				this.narrowSbarWidth = bioSet.narrowSbarWidth == 0 ? $Bio.clamp(Math.floor(this.font.zoomSize / 7), 2, 10) : bioSet.narrowSbarWidth;
 			}
 			this.calcText();
-			butBio.createStars();
-			txt.getSubHeadWidths();
+			bio.but.createStars();
+			bio.txt.getSubHeadWidths();
 			window.Repaint();
-			pptBio.zoomFont = Math.round(this.font.zoomSize / (biographyFontSize) * 100);
+			bioSet.zoomFont = Math.round(this.font.zoomSize / (biographyFontSize) * 100);
 			this.refresh();
 		}
-		if (vkBio.k('shift') && pptBio.style > 3 && panelBio.trace.text) {
+		if (bio.vk.k('shift') && bioSet.style > 3 && bio.panel.trace.text) {
 			this.overlay.strength += (-step * 5);
 			this.overlay.strength = $Bio.clamp(this.overlay.strength, 0, 255);
-			pptBio.overlayStrength = Math.round((255 - this.overlay.strength) / 2.55);
+			bioSet.overlayStrength = Math.round((255 - this.overlay.strength) / 2.55);
 			this.getColours();
-			imgBio.mask.reset = true;
-			if (!pptBio.typeOverlay) {
-				imgBio.refl.adjust = true;
-				if (pptBio.artistView && pptBio.cycPhoto) imgBio.clearArtCache();
-				if (panelBio.stndItem()) imgBio.getImages();
-				else imgBio.getItem(panelBio.art.ix, panelBio.alb.ix);
-			} else txt.paint();
+			bio.img.mask.reset = true;
+			if (!bioSet.typeOverlay) {
+				bio.img.refl.adjust = true;
+				if (bioSet.artistView && bioSet.cycPhoto) bio.img.clearArtCache();
+				if (bio.panel.stndItem()) bio.img.getImages();
+				else bio.img.getItem(bio.panel.art.ix, bio.panel.alb.ix);
+			} else bio.txt.paint();
 		}
 	}
 }
 
-class VkeysBio {
+class BioVkeys {
 	k(n) {
 		switch (n) {
 			case 'shift':
@@ -825,7 +825,10 @@ class VkeysBio {
 	}
 }
 
-let colourSelectorBio = {}
-let syncBio = { image: () => {} }
-const syncerBio = pref.customBiographyDir ? `${globals.customBiographyDir}cache\\biography\\themed\\bioSyncTheme.js` : `${fb.ProfilePath}cache\\biography\\themed\\bioSyncTheme.js`;
-if (pptBio.themed && $Bio.file(syncerBio)) include(syncerBio);
+/** @global @type {object} */
+let bioColourSelector = {}
+/** @global @type {{image: Function}} */
+let bioSync = { image: () => {} }
+/** @global @type {string} */
+const bioSyncer = grSet.customBiographyDir ? `${grCfg.customBiographyDir}cache\\biography\\themed\\bioSyncTheme.js` : `${fb.ProfilePath}cache\\biography\\themed\\bioSyncTheme.js`;
+if (bioSet.themed && $Bio.file(bioSyncer)) include(bioSyncer);

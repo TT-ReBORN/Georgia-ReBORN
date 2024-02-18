@@ -1,13 +1,13 @@
-/////////////////////////////////////////////////////////////////////////////
-// * Georgia-ReBORN: A Clean, Full Dynamic Color Reborn foobar2000 Theme * //
-// * Description:    Georgia-ReBORN Callbacks                            * //
-// * Author:         TT                                                  * //
-// * Org. Author:    Mordred                                             * //
-// * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
-// * Version:        3.0-DEV                                             * //
-// * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-13                                          * //
-/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+// * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
+// * Description:    Georgia-ReBORN Callbacks                                * //
+// * Author:         TT                                                      * //
+// * Org. Author:    Mordred                                                 * //
+// * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
+// * Version:        3.0-DEV                                                 * //
+// * Dev. started:   22-12-2017                                              * //
+// * Last change:    18-02-2024                                              * //
+/////////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
@@ -18,43 +18,46 @@
 ////////////////////////
 /**
  * Called when thread created by utils.GetAlbumArtAsync is done.
- * @param {FbMetadbHandle} metadb The metadb of the track.
- * @param {number} art_id See Flags.js > AlbumArtId.
- * @param {GdiBitmap} image Null on failure.
- * @param {string} image_path The path to image file (or music file if image is embedded).
+ * @global
+ * @param {FbMetadbHandle} metadb - The metadb of the track.
+ * @param {number} art_id - See Flags.js > AlbumArtId.
+ * @param {GdiBitmap} image - Null on failure.
+ * @param {string} image_path - The path to image file (or music file if image is embedded).
  */
 function on_get_album_art_done(metadb, art_id, image, image_path) {
-	if (displayPlaylist || displayPlaylistArtwork) {
-		trace_call && console.log('Playlist => on_get_album_art_done');
-		playlist.on_get_album_art_done(metadb, art_id, image, image_path);
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_get_album_art_done');
+		pl.call.on_get_album_art_done(metadb, art_id, image, image_path);
 	}
-	else if (displayLibrary) {
-		trace_call && console.log('Library => on_get_album_art_done');
-		library.on_get_album_art_done(metadb, art_id, image, image_path);
+	else if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_get_album_art_done');
+		lib.call.on_get_album_art_done(metadb, art_id, image, image_path);
 	}
-	if (displayBiography) {
-		trace_call && console.log('Biography => on_get_album_art_done');
-		biography.on_get_album_art_done(metadb, art_id, image, image_path);
+	if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_get_album_art_done');
+		bio.call.on_get_album_art_done(metadb, art_id, image, image_path);
 	}
 }
 
 
 /**
  * Called when thread created by gdi.LoadImageAsync is done.
- * @param {number} cookie The return value from the gdi.LoadImageAsync call.
- * @param {GdiBitmap} imagenullable Null on failure (invalid path/not an image).
- * @param {string} image_path The path that was originally supplied to gdi.LoadImageAsync.
+ * @global
+ * @param {number} cookie - The return value from the gdi.LoadImageAsync call.
+ * @param {GdiBitmap} imagenullable - Null on failure (invalid path/not an image).
+ * @param {string} image_path - The path that was originally supplied to gdi.LoadImageAsync.
  */
 function on_load_image_done(cookie, imagenullable, image_path) {
-	trace_call && console.log('Biography => on_load_image_done');
-	biography.on_load_image_done(cookie, imagenullable, image_path);
+	grm.ui.traceCall && console.log('Biography => on_load_image_done');
+	bio.call.on_load_image_done(cookie, imagenullable, image_path);
 }
 
 
 /**
  * Called when metadb contents change, i.e tag or database updates.
- * @param {FbMetadbHandleList=} handle_list Can be undefined when called manually from on_playback_new_track.
- * @param {boolean=} fromhook True if notification is not from tag update, but a component that provides tag-like data from a database.
+ * @global
+ * @param {FbMetadbHandleList} [handle_list] - Can be undefined when called manually from on_playback_new_track.
+ * @param {boolean} [fromhook] - True if notification is not from tag update, but a component that provides tag-like data from a database.
  */
 function on_metadb_changed(handle_list, fromhook) {
 	console.log(`on_metadb_changed(): ${handle_list ? handle_list.Count : '0'} handles, fromhook: ${fromhook}`);
@@ -73,25 +76,24 @@ function on_metadb_changed(handle_list, fromhook) {
 
 		if (nowPlayingUpdated) {
 			// * The handle_list contains the currently playing song so update
-			const title = $(tf.title);
-			const artist = $(tf.artist);
-			const composer = $(tf.composer);
-			const originalArtist = $(tf.original_artist);
-			let tracknum = '';
-			tracknum = pref.showVinylNums ? $(globals.vinyl_track) : $(tf.tracknum);
+			const title = $(grTF.title);
+			const artist = $(grTF.artist);
+			const composer = $(grTF.composer);
+			const originalArtist = $(grTF.original_artist);
+			const tracknum = grSet.showVinylNums ? $(grTF.vinyl_track) : $(grTF.tracknum);
 
-			str.tracknum = tracknum.trim();
-			str.title = title + originalArtist;
-			str.title_lower = title;
-			str.original_artist = originalArtist;
-			str.artist = artist;
-			str.composer = composer;
-			str.year = $(tf.year);
-			if (str.year === '0000') {
-				str.year = '';
+			grStr.tracknum = tracknum.trim();
+			grStr.title = title + originalArtist;
+			grStr.titleLower = title;
+			grStr.original_artist = originalArtist;
+			grStr.artist = artist;
+			grStr.composer = composer;
+			grStr.year = $(grTF.year);
+			if (grStr.year === '0000') {
+				grStr.year = '';
 			}
-			str.album = $(`[%album%][ '['${tf.album_translation}']']`);
-			str.album_subtitle = $(`[ '['${tf.album_subtitle}']']`);
+			grStr.album = $(`[%album%][ '['${grTF.album_translation}']']`);
+			grStr.album_subtitle = $(`[ '['${grTF.album_subtitle}']']`);
 			let codec = $('$lower($if2(%codec%,$ext(%path%)))');
 			if (codec === 'dca (dts coherent acoustics)') {
 				codec = 'dts';
@@ -109,57 +111,57 @@ function on_metadb_changed(handle_list, fromhook) {
 			else if ($('$info(encoding)') === 'lossy') {
 				codec = $('$info(codec_profile)') === 'CBR' ? `${codec}-${$('%bitrate%')} kbps` : `${codec}-${$('$info(codec_profile)')}`;
 			}
-			str.trackInfo = $(codec + settings.extraTrackInfo);
-			str.disc = fb.TitleFormat(tf.disc).Eval();
+			grStr.trackInfo = $(codec + grCfg.settings.extraTrackInfo);
+			grStr.disc = fb.TitleFormat(grTF.disc).Eval();
 
 			const h = Math.floor(fb.PlaybackLength / 3600);
 			const m = Math.floor(fb.PlaybackLength % 3600 / 60);
 			const s = Math.floor(fb.PlaybackLength % 60);
-			str.length = `${h > 0 ? `${h}:${m < 10 ? '0' : ''}${m}` : m}:${s < 10 ? '0' : ''}${s}`;
+			grStr.length = `${h > 0 ? `${h}:${m < 10 ? '0' : ''}${m}` : m}:${s < 10 ? '0' : ''}${s}`;
 
 			const lastfmCount = $('%lastfm_play_count%');
-			playCountVerifiedByLastFm = lastfmCount !== '0' && lastfmCount !== '?';
+			grm.ui.playCountVerifiedByLastFm = lastfmCount !== '0' && lastfmCount !== '?';
 
-			const lastPlayed = $(tf.last_played);
-			if (str.timeline) { // TODO: figure out why this is null for foo_input_spotify
-				str.timeline.setColors(col.timelineAdded, col.timelinePlayed, col.timelineUnplayed);
-				// No need to call calcDateRatios if str.timeline is undefined
-				calcDateRatios($Date(currentLastPlayed) !== $Date(lastPlayed), currentLastPlayed); // lastPlayed has probably changed and we want to update the date bar
+			const lastPlayed = $(grTF.last_played);
+			if (grm.timeline) { // TODO: figure out why this is null for foo_input_spotify
+				grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+				// No need to call calcDateRatios if grMain.timeline is undefined
+				grm.ui.calcDateRatios($Date(grm.ui.currentLastPlayed) !== $Date(lastPlayed), grm.ui.currentLastPlayed); // lastPlayed has probably changed and we want to update the date bar
 			}
 			if (lastPlayed.length) {
 				const today = DateToYMD(new Date());
-				if (!currentLastPlayed.length || $Date(lastPlayed) !== today) {
-					currentLastPlayed = lastPlayed;
+				if (!grm.ui.currentLastPlayed.length || $Date(lastPlayed) !== today) {
+					grm.ui.currentLastPlayed = lastPlayed;
 				}
 			}
 
-			updateMetadataGrid(currentLastPlayed, playingPlaylist);
+			grm.ui.updateMetadataGrid(grm.ui.currentLastPlayed, grm.ui.playingPlaylist);
 
-			const showGridArtistFlags     = pref[`showGridArtistFlags_${pref.layout}`];
-			const showGridReleaseFlags    = pref[`showGridReleaseFlags_${pref.layout}`];
-			const showLowerBarArtistFlags = pref[`showLowerBarArtistFlags_${pref.layout}`];
+			const showGridArtistFlags     = grSet[`showGridArtistFlags_${grSet.layout}`];
+			const showGridReleaseFlags    = grSet[`showGridReleaseFlags_${grSet.layout}`];
+			const showLowerBarArtistFlags = grSet[`showLowerBarArtistFlags_${grSet.layout}`];
 
 			if (showGridArtistFlags || showLowerBarArtistFlags) {
-				loadCountryFlags();
+				grm.ui.loadCountryFlags();
 			}
 			if (showGridReleaseFlags) {
-				loadReleaseCountryFlag();
+				grm.ui.loadReleaseCountryFlag();
 			}
 		}
 	}
 	// * Not called manually from on_playback_new_track
 	if (handle_list) {
-		if (displayPlaylist || displayPlaylistArtwork || !displayPlaylist) {
-			trace_call && console.log('Playlist => on_metadb_changed');
-			playlist && playlist.on_metadb_changed(handle_list, fromhook);
+		if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork || !grm.ui.displayPlaylist) {
+			grm.ui.traceCall && console.log('Playlist => on_metadb_changed');
+			pl.call && pl.call.on_metadb_changed(handle_list, fromhook);
 		}
-		if (displayLibrary) {
-			trace_call && console.log('Library => on_metadb_changed');
-			library && library.on_metadb_changed(handle_list, fromhook);
+		if (grm.ui.displayLibrary) {
+			grm.ui.traceCall && console.log('Library => on_metadb_changed');
+			lib.call && lib.call.on_metadb_changed(handle_list, fromhook);
 		}
-		if (displayBiography) {
-			trace_call && console.log('Biography => on_metadb_changed');
-			biography && biography.on_metadb_changed(handle_list, fromhook);
+		if (grm.ui.displayBiography) {
+			grm.ui.traceCall && console.log('Biography => on_metadb_changed');
+			bio.call && bio.call.on_metadb_changed(handle_list, fromhook);
 		}
 	}
 	RepaintWindow();
@@ -168,103 +170,112 @@ function on_metadb_changed(handle_list, fromhook) {
 
 /**
  * Called when playing a new track.
- * @param {FbMetadbHandle} metadb The metadb of the track.
+ * @global
+ * @param {FbMetadbHandle} metadb - The metadb of the track.
  */
 function on_playback_new_track(metadb) {
 	if (!metadb) return; // Solve weird corner case
-	const newTrackProfiler = timings.showDebugTiming && fb.CreateProfiler('on_playback_new_track');
+	const newTrackProfiler = grm.ui.showDebugTiming && fb.CreateProfiler('on_playback_new_track');
 	DebugLog('in on_playback_new_track()');
-
-	lastLeftEdge = 0;
-	newTrackFetchingArtwork = true;
-	newTrackFetchingDone = false;
-	themeColorSet = true;
-	initThemeFull = false;
 	UpdateTimezoneOffset();
-	isPlayingCD = metadb ? metadb.RawPath.startsWith('cdda://') : false;
-	isStreaming = metadb ? metadb.RawPath.startsWith('http://') : false;
-	currentAlbumFolder = !isStreaming ? metadb.Path.substring(0, metadb.Path.lastIndexOf('\\')) : '';
 
-	setProgressBarRefresh();
+	grm.ui.lastLeftEdge = 0;
+	grm.ui.newTrackFetchingArtwork = true;
+	grm.ui.newTrackFetchingDone = false;
+	grm.ui.themeColorSet = true;
+	grm.ui.initThemeFull = false;
+	grm.ui.isPlayingCD = metadb ? metadb.RawPath.startsWith('cdda://') : false;
+	grm.ui.isStreaming = metadb ? metadb.RawPath.startsWith('http://') : false;
+	grm.ui.currentAlbumFolder = !grm.ui.isStreaming ? metadb.Path.substring(0, metadb.Path.lastIndexOf('\\')) : '';
 
-	if (albumArtTimeout) {
-		clearTimeout(albumArtTimeout);
-		albumArtTimeout = 0;
+	grm.timeline = new Timeline(grm.ui.timelineHeight);
+	grm.gridTip = new MetadataGridTooltip(grm.ui.gridTooltipHeight);
+	grm.lowerTip = new LowerBarTooltip();
+
+	grm.ui.setProgressBarRefresh();
+
+	if (grm.ui.albumArtTimeout) {
+		clearTimeout(grm.ui.albumArtTimeout);
+		grm.ui.albumArtTimeout = 0;
 	}
-
-	str.timeline = new Timeline(geo.timelineHeight);
-	str.metadata_grid_tt = new MetadataGridTooltip(geo.metadataGridTooltipHeight);
-	str.lowerBar_tt = new LowerBarTooltip();
 
 	// * Fetch new albumArt
-	if ((pref.cycleArt && albumArtIndex !== 0) || isStreaming || embeddedArt || currentAlbumFolder !== lastAlbumFolder || albumArt == null ||
-		$('%album%') !== lastAlbumFolderTag || $('$if2(%discnumber%,0)') !== lastAlbumDiscNumber || $(`$if2(${tf.vinyl_side},ZZ)`) !== lastAlbumVinylSide) {
-		clearPlaylistNowPlayingBg();
-		fetchNewArtwork(metadb);
+	if ((grSet.cycleArt && grm.ui.albumArtIndex !== 0)
+		|| grm.ui.isStreaming
+		|| grm.ui.albumArtEmbedded
+		|| grm.ui.currentAlbumFolder !== grm.ui.lastAlbumFolder
+		|| grm.ui.albumArt == null
+		|| $('%album%') !== grm.ui.lastAlbumFolderTag
+		|| $('$if2(%discnumber%,0)') !== grm.ui.lastAlbumDiscNumber
+		|| $(`$if2(${grTF.vinyl_side},ZZ)`) !== grm.ui.lastAlbumVinylSide) {
+		grm.ui.clearPlaylistNowPlayingBg();
+		grm.ui.fetchNewArtwork(metadb);
 	}
-	else if (pref.cycleArt && albumArtList.length > 1) {
-		// Need to do this here since we're no longer always fetching when albumArtList.length > 1
-		albumArtTimeout = setTimeout(() => {
-			displayNextImage();
-		}, settings.artworkDisplayTime * 1000);
+	else if (grSet.cycleArt && grm.ui.albumArtList.length > 1) {
+		// Need to do this here since we're no longer always fetching when grMain.ui.albumArtList.length > 1
+		grm.ui.albumArtTimeout = setTimeout(() => {
+			grm.ui.displayNextImage();
+		}, grCfg.settings.artworkDisplayTime * 1000);
 	}
 
 	// * Pick a new random theme preset on new track
-	if (pref.presetAutoRandomMode === 'track' && !doubleClicked) getRandomThemePreset();
+	if (grSet.presetAutoRandomMode === 'track' && !grm.ui.doubleClicked) {
+		grm.preset.getRandomThemePreset();
+	}
 
 	// * Generate a new color in Random theme on new track
-	if (pref.styleRandomAutoColor === 'track' && !doubleClicked) getRandomThemeAutoColor();
-
-	if (discArt) {
-		setDiscArtRotationTimer();
-	}
-	if (pref.rotateDiscArt && !pref.spinDiscArt) {
-		createDiscArtRotation(); // We need to always setup the rotated image because it rotates on every track
+	if (grSet.styleRandomAutoColor === 'track' && !grm.ui.doubleClicked) {
+		grm.color.getRandomThemeAutoColor();
 	}
 
-	getBandLogo();
-	getLabelLogo(metadb);
-
-	lastAlbumFolder = currentAlbumFolder;
-	lastAlbumFolderTag = $('%album%');
-	lastAlbumDiscNumber = $('$if2(%discnumber%,0)');
-	lastAlbumVinylSide = $(`$if2(${tf.vinyl_side},ZZ)`);
-	currentLastPlayed = $(tf.last_played);
-	playingPlaylist = pref.showGridPlayingPlaylist ? $(tf.playing_playlist = plman.GetPlaylistName(plman.PlayingPlaylist)) : '';
-
-	if (fb.GetNowPlaying()) {
-		on_metadb_changed(); // Refresh panel
+	if (grm.ui.discArt) {
+		grm.ui.setDiscArtRotationTimer();
 	}
+	if (grSet.rotateDiscArt && !grSet.spinDiscArt) {
+		grm.ui.createDiscArtRotation(); // We need to always setup the rotated image because it rotates on every track
+	}
+
+	grm.ui.getBandLogo();
+	grm.ui.getLabelLogo(metadb);
+
+	grm.ui.lastAlbumFolder = grm.ui.currentAlbumFolder;
+	grm.ui.lastAlbumFolderTag = $('%album%');
+	grm.ui.lastAlbumDiscNumber = $('$if2(%discnumber%,0)');
+	grm.ui.lastAlbumVinylSide = $(`$if2(${grTF.vinyl_side},ZZ)`);
+	grm.ui.currentLastPlayed = $(grTF.last_played);
+	grm.ui.playingPlaylist = grSet.showGridPlayingPlaylist ? $(grTF.playing_playlist = plman.GetPlaylistName(plman.PlayingPlaylist)) : '';
+
+	if (fb.GetNowPlaying()) on_metadb_changed(); // Refresh panel
 
 	on_playback_time();
-	progressBar.progressLength = 0;
-	peakmeterBar.progressLength = 0;
-	if (pref.seekbar === 'peakmeterbar') {
-		peakmeterBar.on_playback_new_track(metadb);
-	} else if (pref.seekbar === 'waveformbar') {
-		waveformBar.on_playback_new_track_queue(metadb);
+	grm.progBar.progressLength = 0;
+	grm.peakBar.progressLength = 0;
+	if (grSet.seekbar === 'peakmeterbar') {
+		grm.peakBar.on_playback_new_track(metadb);
+	} else if (grSet.seekbar === 'waveformbar') {
+		grm.waveBar.on_playback_new_track_queue(metadb);
 	}
 
-	if (displayPlaylist || displayPlaylistArtwork || !displayPlaylist) {
-		playlist.on_playback_new_track(metadb);
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork || !grm.ui.displayPlaylist) {
+		pl.call.on_playback_new_track(metadb);
 	}
-	if (displayLibrary) {
-		library.on_playback_new_track(metadb);
+	if (grm.ui.displayLibrary) {
+		lib.call.on_playback_new_track(metadb);
 	}
-	if (displayBiography) {
-		biography.on_playback_new_track();
+	if (grm.ui.displayBiography) {
+		bio.call.on_playback_new_track();
 	}
 
-	if (pref.displayLyrics) { // No need to try retrieving them if we aren't going to display them now
-		initLyrics();
+	if (grm.ui.displayLyrics) { // No need to try retrieving them if we aren't going to display them now
+		grm.lyrics.initLyrics();
 	}
 
 	// * Load finished, Playlist auto-scroll is ready
-	newTrackFetchingDone = true;
+	grm.ui.newTrackFetchingDone = true;
 
 	if (newTrackProfiler) newTrackProfiler.Print();
 
-	if (timings.showRamUsage) {
+	if (grm.ui.showRamUsage) {
 		console.log(
 		'\n' +
 		'Ram usage for current panel:', `${(window.JsMemoryStats.MemoryUsage / 1024 ** 2).toFixed()} MB\n` +
@@ -279,67 +290,64 @@ function on_playback_new_track(metadb) {
  * Called when window is being resized.
  *
  * !IMPORTANT: Do NOT call window.Repaint from this callback!
+ * @global
  */
 function on_size() {
-	ww = window.Width;
-	wh = window.Height;
+	grm.ui.ww = window.Width;
+	grm.ui.wh = window.Height;
 
-	console.log(`in on_size() => width: ${ww}, height: ${wh}`);
+	console.log(`in on_size() => width: ${grm.ui.ww}, height: ${grm.ui.wh}`);
 
-	if (ww <= 0 || wh <= 0) return;
+	if (grm.ui.ww <= 0 || grm.ui.wh <= 0) return;
 
-	display.checkRes();
+	grm.display.checkRes();
 
-	if (!sizeInitialized) {
-		createFonts();
-		setGeometry();
+	if (!grm.display.sizeInitialized) {
+		grm.ui.createFonts();
+		grm.ui.initMetrics();
 		if (fb.IsPlaying) {
-			loadCountryFlags(); // Wrong size flag gets loaded on 4K systems
+			grm.ui.loadCountryFlags(); // Wrong size flag gets loaded on 4K systems
 		}
-		rescalePlaylist(true);
-		initPlaylist();
-		volumeBtn = new VolumeBtn();
-		artCache && artCache.clear();
-		artCache = new ArtCache(15);
-		sizeInitialized = true;
-		if (str.timeline) {
-			str.timeline.setHeight(geo.timelineHeight);
+		PlaylistRescale(true);
+		grm.ui.initPlaylist();
+		grm.artCache && grm.artCache.clear();
+		grm.display.sizeInitialized = true;
+		if (grm.timeline) {
+			grm.timeline.setHeight(grm.ui.timelineHeight);
 		}
-		if (str.metadata_grid_tt) {
-			str.metadata_grid_tt.setHeight(geo.metadataGridTooltipHeight);
+		if (grm.gridTip) {
+			grm.gridTip.setHeight(grm.ui.gridTooltipHeight);
 		}
 	}
 
-	customMenu && customMenu.on_size(ww, wh);
-	jumpSearch && jumpSearch.on_size(ww, wh);
-	progressBar && progressBar.on_size(ww, wh);
-	waveformBar && waveformBar.on_size(ww, wh);
-	peakmeterBar && peakmeterBar.on_size(ww, wh);
+	grm.cusMenu && grm.cusMenu.on_size(grm.ui.ww, grm.ui.wh);
+	grm.jSearch && grm.jSearch.on_size(grm.ui.ww, grm.ui.wh);
+	grm.progBar && grm.progBar.on_size(grm.ui.ww, grm.ui.wh);
+	grm.peakBar && grm.peakBar.on_size(grm.ui.ww, grm.ui.wh);
+	grm.waveBar && grm.waveBar.on_size(grm.ui.ww, grm.ui.wh);
 
-	lastLeftEdge = 0;
+	grm.ui.lastLeftEdge = 0;
 
-	resizeArtwork(true);
-	createButtonObjects(ww, wh);
-	playlist.on_size(ww, wh);
-	setLibrarySize();
-	setBiographySize();
+	grm.ui.resizeArtwork(true);
+	grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
+	pl.call.on_size(grm.ui.ww, grm.ui.wh);
+	grm.ui.setLibrarySize();
+	grm.ui.setBiographySize();
+	if (grm.ui.displayLyrics) grm.lyrics.initLyrics();
 
-	if (albumArt && (pref.styleBlend || pref.styleBlend2 || pref.styleProgressBarFill === 'blend')) setStyleBlend(); // Reposition all drawn blendedImg
+	if (grm.ui.albumArt && (grSet.styleBlend || grSet.styleBlend2 || grSet.styleProgressBarFill === 'blend')) {
+		grm.color.setStyleBlend(); // Reposition all drawn imgBlended
+	}
 
-	initButtonState();
+	grm.button.initButtonState();
 
 	// * UIHacks double click on caption in fullscreen
-	if (!componentUIHacks) return;
 	try { // Needed when double clicking on caption and UIHacks.FullScreen === true; also disabling maximize in Artwork layout
 		if (!utils.IsKeyPressed(VK_CONTROL) && UIHacks.FullScreen && UIHacks.MainWindowState === WindowState.Normal ||
-			pref.layout === 'artwork' && UIHacks.MainWindowState === WindowState.Maximized) {
+			grSet.layout === 'artwork' && UIHacks.MainWindowState === WindowState.Maximized) {
 			UIHacks.MainWindowState = WindowState.Normal;
 		}
 	} catch (e) {}
-
-	if (pref.displayLyrics) {
-		initLyrics();
-	}
 }
 
 
@@ -351,27 +359,29 @@ function on_size() {
  *
  * Note: in order to use this callback, use window.DlgCode(DLGC_WANTCHARS).
  * See Flags.js > DLGC_WANTCHARS.
- * @param {number} code The character code.
+ * @global
+ * @param {number} code - The character code.
  */
 function on_char(code) {
-	if (displayCustomThemeMenu || displayMetadataGridMenu) {
-		customMenu.on_char(code);
+	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
+		grm.ui.traceCall && console.log('Custom menu => on_char');
+		grm.cusMenu.on_char(code);
 	}
-	else if (displayPlaylist && !displayLibrary || !displayPlaylist && !displayLibrary || displayLibrarySplit(true)) {
-		trace_call && console.log('Playlist => on_char');
-		jumpSearch.on_char(code);
+	else if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || !grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayLibrarySplit(true)) {
+		grm.ui.traceCall && console.log('Playlist => on_char');
+		grm.jSearch.on_char(code);
 
 		// Switch back to Playlist
-		if (pref.layout === 'default' && !displayPlaylist && !displayLibrary) {
-			btns.details.onClick();
+		if (grSet.layout === 'default' && grm.ui.displayDetails) {
+			grm.ui.btn.details.onClick();
 		}
-		else if (pref.layout === 'artwork' && !displayPlaylistArtwork && !displayLibrary) {
-			btns.playlistArtworkLayout.onClick();
+		else if (grSet.layout === 'artwork' && !grm.ui.displayPlaylistArtwork && !grm.ui.displayLibrary) {
+			grm.ui.btn.playlistArtworkLayout.onClick();
 		}
 	}
-	else if (displayLibrary) {
-		trace_call && console.log('Library => on_char');
-		library.on_char(code);
+	else if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_char');
+		lib.call.on_char(code);
 	}
 }
 
@@ -381,16 +391,17 @@ function on_char(code) {
  *
  * 1. Called first.
  *
- * See fb.DoDragDrop documentation and samples/basic/DragnDrop.txt
- * @param {DropTargetAction} action The type of drag action being performed.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {number} mask The mouse mask.
+ * See fb.DoDragDrop documentation and samples/basic/DragnDrop.txt.
+ * @global
+ * @param {DropTargetAction} action - The type of drag action being performed.
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @param {number} mask - The mouse mask.
  */
 function on_drag_enter(action, x, y, mask) {
-	if (displayPlaylist || displayPlaylistArtwork) {
-		trace_call && console.log('Playlist => on_drag_enter');
-		playlist.on_drag_enter(action, x, y, mask);
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_drag_enter');
+		pl.call.on_drag_enter(action, x, y, mask);
 	}
 }
 
@@ -400,16 +411,17 @@ function on_drag_enter(action, x, y, mask) {
  *
  * 2. Called after on_drag_enter.
  *
- * See fb.DoDragDrop documentation and samples/basic/DragnDrop.txt
- * @param {DropTargetAction} action The type of drag action being performed.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {number} mask The mouse mask.
+ * See fb.DoDragDrop documentation and samples/basic/DragnDrop.txt.
+ * @global
+ * @param {DropTargetAction} action - The type of drag action being performed.
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @param {number} mask - The mouse mask.
  */
 function on_drag_over(action, x, y, mask) {
-	if (displayPlaylist || displayPlaylistArtwork) {
-		trace_call && console.log('Playlist => on_drag_over');
-		playlist.on_drag_over(action, x, y, mask);
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_drag_over');
+		pl.call.on_drag_over(action, x, y, mask);
 	}
 }
 
@@ -419,12 +431,13 @@ function on_drag_over(action, x, y, mask) {
  *
  * 3. Called after on_drag_over.
  *
- * See fb.DoDragDrop documentation and samples/basic/DragnDrop.txt
+ * See fb.DoDragDrop documentation and samples/basic/DragnDrop.txt.
+ * @global
  */
 function on_drag_leave() {
-	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) {
-		trace_call && console.log('Playlist => on_drag_leave');
-		playlist.on_drag_leave();
+	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
+		grm.ui.traceCall && console.log('Playlist => on_drag_leave');
+		pl.call.on_drag_leave();
 	}
 }
 
@@ -434,63 +447,66 @@ function on_drag_leave() {
  *
  * 4. Called after on_drag_over.
  *
- * See fb.DoDragDrop documentation and samples/basic/DragnDrop.txt
- * @param {DropTargetAction} action The type of drag action being performed.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {number} mask The mouse mask.
+ * See fb.DoDragDrop documentation and samples/basic/DragnDrop.txt.
+ * @global
+ * @param {DropTargetAction} action - The type of drag action being performed.
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @param {number} mask - The mouse mask.
  */
 function on_drag_drop(action, x, y, mask) {
-	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) {
-		trace_call && console.log('Playlist => on_drag_drop');
-		playlist.on_drag_drop(action, x, y, mask);
+	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
+		grm.ui.traceCall && console.log('Playlist => on_drag_drop');
+		pl.call.on_drag_drop(action, x, y, mask);
 	}
 }
 
 
 /**
  * Called when the panel gets or loses focus.
- * @param {boolean} is_focused Whether the panel is focused.
+ * @global
+ * @param {boolean} is_focused - Whether the panel is focused.
  */
 function on_focus(is_focused) {
-	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) {
-		trace_call && console.log('Playlist => on_focus');
-		playlist.on_focus(is_focused);
+	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
+		grm.ui.traceCall && console.log('Playlist => on_focus');
+		pl.call.on_focus(is_focused);
 	}
-	else if (displayLibrary) {
-		trace_call && console.log('Library => on_focus');
-		library.on_focus(is_focused);
+	else if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_focus');
+		lib.call.on_focus(is_focused);
 	}
-	if (displayBiography) {
-		trace_call && console.log('Biography => on_focus');
-		biography.on_focus(is_focused);
+	if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_focus');
+		bio.call.on_focus(is_focused);
 	}
 	if (is_focused) {
 		plman.SetActivePlaylistContext(); // When the panel gets focus but not on every click.
 	} else {
-		clearTimeout(hideCursorTimeout); // Not sure this is required, but I think the mouse was occasionally disappearing
+		clearTimeout(grm.ui.hideCursorTimeout); // Not sure this is required, but I think the mouse was occasionally disappearing
 	}
 }
 
 
 /**
  * Called when focused item in panel has been changed.
- * @param {number} playlistIndex The index of the playlist.
- * @param {number} from The index of the previously focused item.
- * @param {number} to The index of the item that is gaining focus.
+ * @global
+ * @param {number} playlistIndex - The index of the playlist.
+ * @param {number} from - The index of the previously focused item.
+ * @param {number} to - The index of the item that is gaining focus.
  */
 function on_item_focus_change(playlistIndex, from, to) {
-	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) {
-		trace_call && console.log('Playlist => on_item_focus_change');
-		playlist.on_item_focus_change(playlistIndex, from, to);
+	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
+		grm.ui.traceCall && console.log('Playlist => on_item_focus_change');
+		pl.call.on_item_focus_change(playlistIndex, from, to);
 	}
-	else if (displayLibrary) {
-		trace_call && console.log('Library => on_item_focus_change');
-		library.on_item_focus_change();
+	else if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_item_focus_change');
+		lib.call.on_item_focus_change();
 	}
-	if (displayBiography) {
-		trace_call && console.log('Biography => on_item_focus_change');
-		biography.on_item_focus_change();
+	if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_item_focus_change');
+		bio.call.on_item_focus_change();
 	}
 }
 
@@ -503,32 +519,34 @@ function on_item_focus_change(playlistIndex, from, to) {
  * In order to use arrow keys, use window.DlgCode(DLGC_WANTARROWS) (see Flags.js > DLGC_WANTARROWS).
  *
  * Note: keyboard shortcuts defined in the main preferences are always executed first and are not passed to the callback.
- * @param {number} vkey The virtual key code.
+ * @global
+ * @param {number} vkey - The virtual key code.
  */
 function on_key_down(vkey) {
 	const CtrlKeyPressed = utils.IsKeyPressed(VK_CONTROL);
 	const ShiftKeyPressed = utils.IsKeyPressed(VK_SHIFT);
 
-	if (displayCustomThemeMenu || displayMetadataGridMenu) {
-		customMenu.on_key_down(vkey);
+	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
+		grm.ui.traceCall && console.log('Custom menu => on_key_down');
+		grm.cusMenu.on_key_down(vkey);
 	}
 	else {
-		if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) {
-			trace_call && console.log('Playlist => on_key_down');
+		if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
+			grm.ui.traceCall && console.log('Playlist => on_key_down');
 
-			if (qwr_supress_key_down.is_supressed(vkey)) {
+			if (grm.utils.suppressKey(vkey)) {
 				return;
 			}
 
-			playlist.on_key_down(vkey);
+			pl.call.on_key_down(vkey);
 		}
-		else if (displayLibrary) {
-			trace_call && console.log('Library => on_key_down');
-			library.on_key_down(vkey);
+		else if (grm.ui.displayLibrary) {
+			grm.ui.traceCall && console.log('Library => on_key_down');
+			lib.call.on_key_down(vkey);
 		}
-		if (displayBiography) {
-			trace_call && console.log('Biography => on_key_down');
-			biography.on_key_down(vkey);
+		if (grm.ui.displayBiography) {
+			grm.ui.traceCall && console.log('Biography => on_key_down');
+			bio.call.on_key_down(vkey);
 		}
 	}
 
@@ -541,7 +559,7 @@ function on_key_down(vkey) {
 				if (fb.IsPlaying) {
 					fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadb);
 				}
-				else if (!metadb && (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true))) {
+				else if (!metadb && (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true))) {
 					const metadbList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 					if (metadbList.Count === 1) {
 						fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadbList[0]);
@@ -573,123 +591,119 @@ function on_key_down(vkey) {
  * Requires "Grab focus" enabled in the Configuration window.
  *
  * In order to use arrow keys, use window.DlgCode(DLGC_WANTARROWS) (see Flags.js > DLGC_WANTARROWS).
- * @param {number} vkey The virtual key code.
+ * @global
+ * @param {number} vkey - The virtual key code.
  */
 function on_key_up(vkey) {
-	if (displayLibrary) {
-		trace_call && console.log('Library => on_key_up');
-		library.on_key_up(vkey);
+	if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_key_up');
+		lib.call.on_key_up(vkey);
 	}
-	else if (displayBiography) {
-		trace_call && console.log('Biography => on_key_up');
-		biography.on_key_up(vkey);
+	else if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_key_up');
+		bio.call.on_key_up(vkey);
 	}
 }
 
 
 /**
  * Called when adding new songs to the media library index.
- * @param {FbMetadbHandleList} handle_list The handle list of the library items.
+ * @global
+ * @param {FbMetadbHandleList} handle_list - The handle list of the library items.
  */
 function on_library_items_added(handle_list) {
-	if (displayLibrary) {
-		trace_call && console.log('Library => on_library_items_added');
-		library.on_library_items_added(handle_list);
+	if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_library_items_added');
+		lib.call.on_library_items_added(handle_list);
 	}
-	else if (displayBiography) {
-		trace_call && console.log('Biography => on_library_items_added');
-		biography.on_library_items_added(handle_list);
+	else if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_library_items_added');
+		bio.call.on_library_items_added(handle_list);
 	}
 }
 
 
 /**
  * Called when media library is being changed, i.e updated by removing/adding tracks.
- * @param {FbMetadbHandleList} handle_list The handle list of the library items.
+ * @global
+ * @param {FbMetadbHandleList} handle_list - The handle list of the library items.
  */
 function on_library_items_changed(handle_list) {
-	if (displayLibrary) {
-		trace_call && console.log('Library => on_library_items_changed');
-		library.on_library_items_changed(handle_list);
+	if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_library_items_changed');
+		lib.call.on_library_items_changed(handle_list);
 	}
-	else if (displayBiography) {
-		trace_call && console.log('Biography => on_library_items_changed');
-		biography.on_library_items_changed(handle_list);
+	else if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_library_items_changed');
+		bio.call.on_library_items_changed(handle_list);
 	}
 }
 
 
 /**
  * Called when removing songs from the media library index.
- * @param {FbMetadbHandleList} handle_list The handle list of the library items.
+ * @global
+ * @param {FbMetadbHandleList} handle_list - The handle list of the library items.
  */
 function on_library_items_removed(handle_list) {
-	if (displayLibrary) {
-		trace_call && console.log('Library => on_library_items_removed');
-		library.on_library_items_removed(handle_list);
+	if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_library_items_removed');
+		lib.call.on_library_items_removed(handle_list);
 	}
-	else if (displayBiography) {
-		trace_call && console.log('Biography => on_library_items_removed');
-		biography.on_library_items_removed(handle_list);
+	else if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_library_items_removed');
+		bio.call.on_library_items_removed(handle_list);
 	}
-}
-
-
-/**
- * Refresh playback time plus playback time remaining every second.
- */
-function on_playback_time() {
-	str.time = pref.switchPlaybackTime ? $('-%playback_time_remaining%') : $('%playback_time%');
-	waveformBar.on_playback_time(fb.PlaybackTime);
-	biography.on_playback_time();
 }
 
 
 /**
  * Called when double clicking the left mouse button.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {number} m The mouse mask.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @param {number} m - The mouse mask.
  */
 function on_mouse_lbtn_dblclk(x, y, m) {
-	if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
-		trace_call && console.log('Playlist => on_mouse_lbtn_dblclk');
-		if (displayCustomThemeMenu && pref.displayLyrics) return;
-		playlist.on_mouse_lbtn_dblclk(x, y, m);
+	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
+		grm.ui.traceCall && console.log('Playlist => on_mouse_lbtn_dblclk');
+		if (grm.ui.displayCustomThemeMenu && grm.ui.displayLyrics) return;
+		pl.call.on_mouse_lbtn_dblclk(x, y, m);
 	}
-	else if (displayLibrary && mouseInLibrary(x, y)) {
-		trace_call && console.log('Library => on_mouse_lbtn_dblclk');
-		library.on_mouse_lbtn_dblclk(x, y, m);
+	else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
+		grm.ui.traceCall && console.log('Library => on_mouse_lbtn_dblclk');
+		lib.call.on_mouse_lbtn_dblclk(x, y, m);
 	}
-	else if (displayBiography && mouseInBiography(x, y)) {
-		trace_call && console.log('Biography => on_mouse_lbtn_dblclk');
-		biography.on_mouse_lbtn_dblclk(x, y, m);
+	else if (grm.ui.displayBiography && mouseInBiography(x, y)) {
+		grm.ui.traceCall && console.log('Biography => on_mouse_lbtn_dblclk');
+		bio.call.on_mouse_lbtn_dblclk(x, y, m);
 	}
-	else if (!displayCustomThemeMenu && !displayMetadataGridMenu || displayCustomThemeMenu && mouseInPanel(x, y)) {
-		if (presetIndicatorTimer) {
-			clearTimeout(presetIndicatorTimer);
-			presetIndicatorTimer = null;
+	else if (!grm.ui.displayCustomThemeMenu && !grm.ui.displayMetadataGridMenu || grm.ui.displayCustomThemeMenu && mouseInPanel(x, y)) {
+		if (grm.ui.presetIndicatorTimer) {
+			clearTimeout(grm.ui.presetIndicatorTimer);
+			grm.ui.presetIndicatorTimer = null;
 		}
-		doubleClicked = true;
-		if (fb.IsPlaying && !mouseInControl && mouseInLowerBar(x, y)) {
+		grm.ui.doubleClicked = true;
+		if (fb.IsPlaying && !grm.button.mouseInControl && mouseInLowerBar(x, y)) {
+			grm.ui.traceCall && console.log('Lower bar => on_mouse_lbtn_dblclk');
 			// * Pick a new random theme preset
-			if (pref.presetAutoRandomMode === 'dblclick') {
-				themePresetIndicator = true;
-				getRandomThemePreset();
+			if (grSet.presetAutoRandomMode === 'dblclick') {
+				grm.ui.themePresetIndicator = true;
+				grm.preset.getRandomThemePreset();
 			}
 			// * Generate a new color in Random theme
-			else if (pref.theme === 'random') {
-				initTheme();
+			else if (grSet.theme === 'random') {
+				grm.ui.initTheme();
 				DebugLog('\n>>> initTheme -> on_mouse_lbtn_dblclk -> random theme <<<\n');
 			}
 			// * Refresh theme
-			else if (settings.doubleClickRefresh) {
-				albumArt = null;
-				artCache && artCache.clear();
-				discArtArray = [];
-				discArtArrayCover = [];
-				discArt = null;
-				discArtCover = null;
+			else if (grCfg.settings.doubleClickRefresh) {
+				grm.ui.albumArt = null;
+				grm.artCache && grm.artCache.clear();
+				grm.ui.discArtArray = [];
+				grm.ui.discArtArrayCover = [];
+				grm.ui.discArt = null;
+				grm.ui.discArtCover = null;
 				RepaintWindow();
 				on_playback_new_track(fb.GetNowPlaying());
 			}
@@ -700,55 +714,58 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 
 /**
  * Called when left mouse button is pressed.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {number} m The mouse mask.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @param {number} m - The mouse mask.
  */
 function on_mouse_lbtn_down(x, y, m) {
-	const showProgressBar = pref[`showProgressBar_${pref.layout}`];
+	const showProgressBar = grSet[`showProgressBar_${grSet.layout}`];
 	window.SetCursor(32512); // Arrow
 
-	if (topMenu) {
-		topMenu.on_mouse_lbtn_down(x, y, m);
+	if (grm.button) {
+		grm.button.on_mouse_lbtn_down(x, y, m);
 	}
 
-	if (pref.seekbar === 'progressbar' && progressBar.mouseInThis(x, y)) {
-		progressBar.on_mouse_lbtn_down(x, y);
+	if (grSet.seekbar === 'progressbar' && grm.progBar.mouseInThis(x, y)) {
+		grm.ui.traceCall && console.log('Progress bar => on_mouse_lbtn_down');
+		grm.progBar.on_mouse_lbtn_down(x, y);
 	}
-	else if (pref.seekbar === 'peakmeterbar' && peakmeterBar.mouseInThis(x, y)) {
-		peakmeterBar.on_mouse_lbtn_down(x, y);
+	else if (grSet.seekbar === 'peakmeterbar' && grm.peakBar.mouseInThis(x, y)) {
+		grm.ui.traceCall && console.log('Peakmeter bar => on_mouse_lbtn_down');
+		grm.peakBar.on_mouse_lbtn_down(x, y);
 	}
-	else if (!volumeBtn.on_mouse_lbtn_down(x, y, m)) {
-		// Not handled by volumeBtn
-
+	else if (!grm.volBtn.on_mouse_lbtn_down(x, y, m)) { // Not handled by volumeBtn
 		// * Clicking on progress bar to seek playback
 		if (showProgressBar && mouseInSeekbar(x, y)) {
-			let v = (x - 0.025 * ww) / (0.95 * ww);
+			let v = (x - 0.025 * grm.ui.ww) / (0.95 * grm.ui.ww);
 			v = (v < 0) ? 0 : (v < 1) ? v : 1;
 			if (fb.PlaybackTime !== v * fb.PlaybackLength) fb.PlaybackTime = v * fb.PlaybackLength;
-			window.RepaintRect(0, wh - geo.lowerBarHeight, ww, geo.lowerBarHeight);
+			window.RepaintRect(0, grm.ui.wh - grm.ui.lowerBarHeight, grm.ui.ww, grm.ui.lowerBarHeight);
 		}
 
-		if (displayCustomThemeMenu || displayMetadataGridMenu) {
-			customMenu.on_mouse_lbtn_down(x, y, m);
+		if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
+			grm.ui.traceCall && console.log('Custom menu => on_mouse_lbtn_down');
+			grm.cusMenu.on_mouse_lbtn_down(x, y, m);
 		}
 
-		if (updateHyperlink && !fb.IsPlaying && updateHyperlink.trace(x, y)) {
-			updateHyperlink.click();
+		if (grCfg.updateHyperlink && !fb.IsPlaying && grCfg.updateHyperlink.trace(x, y)) {
+			grm.ui.traceCall && console.log('Hyperlink => on_mouse_lbtn_down');
+			grCfg.updateHyperlink.click();
 		}
 
-		if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
-			trace_call && console.log('Playlist => on_mouse_lbtn_down');
-			if (displayCustomThemeMenu && displayBiography) return;
-			playlist.on_mouse_lbtn_down(x, y, m);
+		if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
+			grm.ui.traceCall && console.log('Playlist => on_mouse_lbtn_down');
+			if (grm.ui.displayCustomThemeMenu && grm.ui.displayBiography) return;
+			pl.call.on_mouse_lbtn_down(x, y, m);
 		}
-		else if (displayLibrary && mouseInLibrary(x, y)) {
-			trace_call && console.log('Library => on_mouse_lbtn_down');
-			library.on_mouse_lbtn_down(x, y, m);
+		else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
+			grm.ui.traceCall && console.log('Library => on_mouse_lbtn_down');
+			lib.call.on_mouse_lbtn_down(x, y, m);
 		}
-		if (displayBiography && mouseInBiography(x, y)) {
-			trace_call && console.log('Biography => on_mouse_lbtn_down');
-			biography.on_mouse_lbtn_down(x, y, m);
+		if (grm.ui.displayBiography && mouseInBiography(x, y)) {
+			grm.ui.traceCall && console.log('Biography => on_mouse_lbtn_down');
+			bio.call.on_mouse_lbtn_down(x, y, m);
 		}
 
 		// * Clicking on album art or noAlbumArtStub to pause playback
@@ -761,48 +778,53 @@ function on_mouse_lbtn_down(x, y, m) {
 
 /**
  * Called when left mouse button is released from pressed state.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {number} m The mouse mask.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @param {number} m - The mouse mask.
  */
 function on_mouse_lbtn_up(x, y, m) {
-	if (topMenu) {
-		topMenu.on_mouse_lbtn_up(x, y, m);
+	if (grm.button) {
+		grm.button.on_mouse_lbtn_up(x, y, m);
 	}
 
-	if (pref.seekbar === 'progressbar') {
-		progressBar.on_mouse_lbtn_up(x, y);
-	} else if (pref.seekbar === 'peakmeterbar') {
-		peakmeterBar.on_mouse_lbtn_up(x, y);
-	} else if (pref.seekbar === 'waveformbar') {
-		waveformBar.on_mouse_lbtn_up(x, y, m);
+	if (grSet.seekbar === 'progressbar') {
+		grm.ui.traceCall && console.log('Progress bar => on_mouse_lbtn_up');
+		grm.progBar.on_mouse_lbtn_up(x, y);
+	} else if (grSet.seekbar === 'peakmeterbar') {
+		grm.ui.traceCall && console.log('Peakmeter bar => on_mouse_lbtn_up');
+		grm.peakBar.on_mouse_lbtn_up(x, y);
+	} else if (grSet.seekbar === 'waveformbar') {
+		grm.ui.traceCall && console.log('Waveform bar => on_mouse_lbtn_up');
+		grm.waveBar.on_mouse_lbtn_up(x, y, m);
 	}
 
-	if (displayCustomThemeMenu || displayMetadataGridMenu) {
-		customMenu.on_mouse_lbtn_up(x, y, m);
+	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
+		grm.ui.traceCall && console.log('Custom menu => on_mouse_lbtn_up');
+		grm.cusMenu.on_mouse_lbtn_up(x, y, m);
 	}
 
-	if (volumeBtn.on_mouse_lbtn_up(x, y, m)) return;
+	if (grm.volBtn.on_mouse_lbtn_up(x, y, m)) return;
 
 	// Not handled by volumeBtn
-	if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit()) && mouseInPlaylist(x, y)) {
-		trace_call && console.log('Playlist => on_mouse_lbtn_up');
-		if (displayCustomThemeMenu && displayBiography) return;
-		playlist.on_mouse_lbtn_up(x, y, m);
+	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit()) && mouseInPlaylist(x, y)) {
+		grm.ui.traceCall && console.log('Playlist => on_mouse_lbtn_up');
+		if (grm.ui.displayCustomThemeMenu && grm.ui.displayBiography) return;
+		pl.call.on_mouse_lbtn_up(x, y, m);
 
-		if (!pref.lockPlayerSize) qwr_utils.EnableSizing(m);
+		if (!grSet.lockPlayerSize) grm.utils.enableSizing(m);
 	}
-	else if (displayLibrary && mouseInLibrary(x, y)) {
-		trace_call && console.log('Library => on_mouse_lbtn_up');
-		library.on_mouse_lbtn_up(x, y, m);
+	else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
+		grm.ui.traceCall && console.log('Library => on_mouse_lbtn_up');
+		lib.call.on_mouse_lbtn_up(x, y, m);
 	}
-	if (displayBiography && mouseInBiography(x, y)) {
-		trace_call && console.log('Biography => on_mouse_lbtn_up');
-		biography.on_mouse_lbtn_up(x, y, m);
+	if (grm.ui.displayBiography && mouseInBiography(x, y)) {
+		grm.ui.traceCall && console.log('Biography => on_mouse_lbtn_up');
+		bio.call.on_mouse_lbtn_up(x, y, m);
 	}
 
-	if (doubleClicked) {
-		doubleClicked = false; // You just did a double-click, so do nothing
+	if (grm.ui.doubleClicked) {
+		grm.ui.doubleClicked = false; // You just did a double-click, so do nothing
 	}
 
 	on_mouse_move(x, y);
@@ -811,174 +833,186 @@ function on_mouse_lbtn_up(x, y, m) {
 
 /**
  * Called when mouse leaves the window.
+ * @global
  */
 function on_mouse_leave() {
-	const showVolumeBtn = pref[`showVolumeBtn_${pref.layout}`];
+	const showVolumeBtn = grSet[`showVolumeBtn_${grSet.layout}`];
 
-	if (showVolumeBtn && volumeBtn) {
-		volumeBtn.on_mouse_leave();
+	if (showVolumeBtn && grm.volBtn) {
+		grm.ui.traceCall && console.log('Volume button => on_mouse_leave');
+		grm.volBtn.on_mouse_leave();
 	}
-	if (displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) {
-		playlist.on_mouse_leave();
+	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
+		grm.ui.traceCall && console.log('Playlist => on_mouse_leave');
+		pl.call.on_mouse_leave();
 	}
-	else if (displayLibrary) {
-		library.on_mouse_leave();
+	else if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_mouse_leave');
+		lib.call.on_mouse_leave();
 	}
-	if (displayBiography) {
-		biography.on_mouse_leave();
+	if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_mouse_leave');
+		bio.call.on_mouse_leave();
 	}
 }
 
 
 /**
  * Called when middle mouse (wheel) button is double clicked.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {number} m The mouse mask.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @param {number} m - The mouse mask.
  */
 function on_mouse_mbtn_dblclk(x, y, m) {
-	if (displayLibrary) {
-		library.on_mouse_mbtn_dblclk(x, y, m);
+	if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_mouse_mbtn_dblclk');
+		lib.call.on_mouse_mbtn_dblclk(x, y, m);
 	}
 }
 
 
 /**
  * Called when middle mouse (wheel) button is pressed.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {number} m The mouse mask.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @param {number} m - The mouse mask.
  */
 function on_mouse_mbtn_down(x, y, m) {
-	if (displayLibrary) {
-		library.on_mouse_mbtn_down(x, y, m);
+	if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_mouse_mbtn_down');
+		lib.call.on_mouse_mbtn_down(x, y, m);
 	}
 }
 
 
 /**
  * Called when middle mouse (wheel) button is released from pressed state.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {number} m The mouse mask.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @param {number} m - The mouse mask.
  */
 function on_mouse_mbtn_up(x, y, m) {
-	if (displayLibrary) {
-		library.on_mouse_mbtn_up(x, y, m);
+	if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_mouse_mbtn_up');
+		lib.call.on_mouse_mbtn_up(x, y, m);
 	}
-	else if (displayBiography) {
-		biography.on_mouse_mbtn_up(x, y, m);
+	else if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_mouse_mbtn_up');
+		bio.call.on_mouse_mbtn_up(x, y, m);
 	}
 }
 
 
 /**
  * Called when mouse moves in the panel.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {number} m The mouse mask.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @param {number} m - The mouse mask.
  */
 function on_mouse_move(x, y, m) {
-	const showGridTimeline      = pref[`showGridTimeline_${pref.layout}`];
-	const showTransportControls = pref[`showTransportControls_${pref.layout}`];
-	const showVolumeBtn         = pref[`showVolumeBtn_${pref.layout}`];
+	const showGridTimeline      = grSet[`showGridTimeline_${grSet.layout}`];
+	const showTransportControls = grSet[`showTransportControls_${grSet.layout}`];
+	const showVolumeBtn         = grSet[`showVolumeBtn_${grSet.layout}`];
 
-	if (x === state.mouse_x && y === state.mouse_y) return;
+	if (x === grm.ui.state.mouse_x && y === grm.ui.state.mouse_y) return;
 
-	display.setWindowDrag(x, y);
+	grm.display.setWindowDrag(x, y);
 
 	if (!mouseInLibrarySearch(x, y)) window.SetCursor(32512); // Arrow
 
-	if (topMenu) {
-		topMenu.on_mouse_move(x, y, m);
+	if (grm.button) {
+		grm.button.on_mouse_move(x, y, m);
 	}
 
-	if (progressBar && pref.seekbar === 'progressbar') {
-		progressBar.on_mouse_move(x, y);
-	} else if (peakmeterBar && pref.seekbar === 'peakmeterbar') {
-		peakmeterBar.on_mouse_move(x, y, m);
-	} else if (waveformBar && pref.seekbar === 'waveformbar') {
-		waveformBar.on_mouse_move(x, y, m);
+	if (grm.progBar && grSet.seekbar === 'progressbar') {
+		grm.progBar.on_mouse_move(x, y);
+	} else if (grm.peakBar && grSet.seekbar === 'peakmeterbar') {
+		grm.peakBar.on_mouse_move(x, y, m);
+	} else if (grm.waveBar && grSet.seekbar === 'waveformbar') {
+		grm.waveBar.on_mouse_move(x, y, m);
 	}
 
-	state.mouse_x = x;
-	state.mouse_y = y;
+	grm.ui.state.mouse_x = x;
+	grm.ui.state.mouse_y = y;
 
 	// * Top menu compact - collapse top menu to compact when mouse is out of top menu area
-	if (pref.topMenuCompact && !pref.showTopMenuCompact && state.mouse_y > geo.topMenuHeight * 2) { // Start collapse
-		pref.showTopMenuCompact = true;
+	if (grSet.topMenuCompact && !grSet.showTopMenuCompact && grm.ui.state.mouse_y > grm.ui.topMenuHeight * 2) { // Start collapse
+		grSet.showTopMenuCompact = true;
 		setTimeout(() => {
-			topMenuCompact(true);
-			topMenuCompactExpanded = false;
-		}, 2000);
-	}
-	else if (pref.topMenuCompact && pref.showTopMenuCompact && state.mouse_y < geo.topMenuHeight * 2) { // Cancel collapse
-		topMenuCompactExpanded = true;
+			grm.button.topMenu(true);
+		}, 3000);
 	}
 
-	if (settings.hideCursor && fb.IsPlaying) {
-		clearTimeout(hideCursorTimeout);
-		hideCursorTimeout = setTimeout(() => {
+	if (grCfg.settings.hideCursor && fb.IsPlaying) {
+		clearTimeout(grm.ui.hideCursorTimeout);
+		grm.ui.hideCursorTimeout = setTimeout(() => {
 			// * If there's a menu id (i.e. a menu is down) we don't want the cursor to ever disappear
-			if (!activeMenu && fb.IsPlaying) {
+			if (!grm.ui.activeMenu && fb.IsPlaying) {
 				window.SetCursor(-1); // Hide cursor
 			}
 		}, 10000);
 	}
 
-	if (displayCustomThemeMenu || displayMetadataGridMenu) {
-		customMenu.on_mouse_move(x, y, m);
+	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
+		grm.ui.traceCall && console.log('Custom menu => on_mouse_move');
+		grm.cusMenu.on_mouse_move(x, y, m);
 	}
 
-	if (updateHyperlink) updateHyperlink.on_mouse_move(updateHyperlink, x, y);
+	if (grCfg.updateHyperlink) grCfg.updateHyperlink.on_mouse_move(grCfg.updateHyperlink, x, y);
 
-	if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
-		trace_call && trace_on_move && console.log('Playlist => on_mouse_move');
+	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Playlist => on_mouse_move');
 
-		if (qwr_supress_mouse_move.is_supressed(x, y, m)) {
+		if (grm.utils.suppressMouseMove(x, y, m)) {
 			return;
 		}
 
-		qwr_utils.DisableSizing(m);
-		playlist.on_mouse_move(x, y, m);
+		grm.utils.disableSizing(m);
+		pl.call.on_mouse_move(x, y, m);
 	}
-	else if (displayLibrary && mouseInLibrary(x, y)) {
-		trace_call && trace_on_move && console.log('Library => on_mouse_move');
-		library.on_mouse_move(x, y, m);
+	else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Library => on_mouse_move');
+		lib.call.on_mouse_move(x, y, m);
 	}
-	else if (displayBiography && mouseInBiography(x, y)) {
-		trace_call && trace_on_move && console.log('Biography => on_mouse_move');
-		biography.on_mouse_move(x, y, m);
+	else if (grm.ui.displayBiography && mouseInBiography(x, y)) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Biography => on_mouse_move');
+		bio.call.on_mouse_move(x, y, m);
 	}
-	else if (showGridTimeline && str.timeline && str.timeline.mouseInThis(x, y) &&
-		(pref.layout === 'default' && !displayPlaylist && !displayLibrary && !displayBiography && !pref.displayLyrics ||
-		pref.layout === 'artwork' && displayPlaylist && !displayLibrary && !displayBiography)) { // Prevent tooltips on album cover when Artwork layout is active
-		str.timeline.on_mouse_move(x, y, m);
+	else if (showGridTimeline && grm.timeline && grm.timeline.mouseInThis(x, y) && grm.ui.displayDetails) {
+		grm.ui.traceCall && console.log('Timeline => on_mouse_move');
+		grm.timeline.on_mouse_move(x, y, m);
 	}
-	else if (str.metadata_grid_tt && str.metadata_grid_tt.mouseInThis(x, y)) {
-		str.metadata_grid_tt.on_mouse_move(x, y, m);
+	else if (grm.gridTip && grm.gridTip.mouseInThis(x, y)) {
+		grm.ui.traceCall && console.log('Metadata Grid => on_mouse_move');
+		grm.gridTip.on_mouse_move(x, y, m);
 	}
-	else if (str.lowerBar_tt && str.lowerBar_tt.mouseInThis(x, y)) {
-		str.lowerBar_tt.on_mouse_move(x, y, m);
+	else if (grm.lowerTip && grm.lowerTip.mouseInThis(x, y)) {
+		grm.ui.traceCall && console.log('Lower bar tooltip => on_mouse_move');
+		grm.lowerTip.on_mouse_move(x, y, m);
 	}
-	else if (showTransportControls && showVolumeBtn && volumeBtn) {
-		volumeBtn.on_mouse_move(x, y, m);
+	else if (showTransportControls && showVolumeBtn && grm.volBtn) {
+		grm.volBtn.on_mouse_move(x, y, m);
 	}
 }
 
 
 /**
  * Called when right mouse button is pressed.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {number} m The mouse mask.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @param {number} m - The mouse mask.
  */
 function on_mouse_rbtn_down(x, y, m) {
-    if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) && mouseInPlaylist(x, y) &&
-        !(displayCustomThemeMenu && displayBiography)) {
-        trace_call && console.log('Playlist => on_mouse_rbtn_down');
-        playlist.on_mouse_rbtn_down(x, y, m);
-    }
+	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y) &&
+		!(grm.ui.displayCustomThemeMenu && grm.ui.displayBiography)) {
+		grm.ui.traceCall && console.log('Playlist => on_mouse_rbtn_down');
+		pl.call.on_mouse_rbtn_down(x, y, m);
+	}
 }
 
 
@@ -988,141 +1022,145 @@ function on_mouse_rbtn_down(x, y, m) {
  * You must return true, if you want to suppress the default context menu.
  *
  * Note: left shift + left windows key will bypass this callback and will open default context menu.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {number} m The mouse mask.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @param {number} m - The mouse mask.
+ * @returns {boolean} True to suppress the default context menu, otherwise depends on internal conditions.
  */
 function on_mouse_rbtn_up(x, y, m) {
 	const cmm = new ContextMainMenu();
 	const handleContextMenu = (x, y) => {
-		activeMenu = true;
+		grm.ui.activeMenu = true;
 		cmm.execute(x, y);
-		activeMenu = false;
+		grm.ui.activeMenu = false;
 	}
 
 	if (mouseInTopMenu(x, y)) {
-		trace_call && console.log('Top menu => on_mouse_rbtn_up');
-		qwr_utils.append_top_menu_context_menu_to(cmm);
+		grm.ui.traceCall && console.log('Top menu => on_mouse_rbtn_up');
+		grm.ctxMenu.contextMenuTopBar(cmm);
 		handleContextMenu(x, y);
 		return true;
 	}
 	else if (mouseInAlbumArt(x, y) && fb.IsPlaying) {
-		trace_call && console.log('Album art => on_mouse_rbtn_up');
-		qwr_utils.append_album_cover_context_menu_to(cmm);
+		grm.ui.traceCall && console.log('Album art => on_mouse_rbtn_up');
+		grm.ctxMenu.contextMenuAlbumCover(cmm);
 		handleContextMenu(x, y);
 		return true;
 	}
 	else if (mouseInLowerBar(x, y) && !mouseInSeekbar(x, y)) {
-		trace_call && console.log('Lower bar => on_mouse_rbtn_up');
-		qwr_utils.append_lower_bar_context_menu_to(cmm);
+		grm.ui.traceCall && console.log('Lower bar => on_mouse_rbtn_up');
+		grm.ctxMenu.contextMenuLowerBar(cmm);
 		handleContextMenu(x, y);
 		return true;
 	}
 	else if (mouseInSeekbar(x, y)) {
-		trace_call && console.log('Seekbar => on_mouse_rbtn_up');
-		qwr_utils.append_seekbar_context_menu_to(cmm);
+		grm.ui.traceCall && console.log('Seekbar => on_mouse_rbtn_up');
+		grm.ctxMenu.contextMenuSeekbar(cmm);
 		handleContextMenu(x, y);
 		return true;
 	}
 
-	if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
-		trace_call && console.log('Playlist => on_mouse_rbtn_up');
-		if (displayCustomThemeMenu && displayBiography) return;
-		return playlist.on_mouse_rbtn_up(x, y, m);
+	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
+		grm.ui.traceCall && console.log('Playlist => on_mouse_rbtn_up');
+		if (grm.ui.displayCustomThemeMenu && grm.ui.displayBiography) return;
+		return pl.call.on_mouse_rbtn_up(x, y, m);
 	}
-	else if (displayLibrary && mouseInLibrary(x, y)) {
-		trace_call && console.log('Library => on_mouse_rbtn_up');
-		return library.on_mouse_rbtn_up(x, y, m);
+	else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
+		grm.ui.traceCall && console.log('Library => on_mouse_rbtn_up');
+		return lib.call.on_mouse_rbtn_up(x, y, m);
 	}
-	else if (displayBiography && mouseInBiography(x, y)) {
-		trace_call && console.log('Biography => on_mouse_rbtn_up');
-		return biography.on_mouse_rbtn_up(x, y, m);
+	else if (grm.ui.displayBiography && mouseInBiography(x, y)) {
+		grm.ui.traceCall && console.log('Biography => on_mouse_rbtn_up');
+		return bio.call.on_mouse_rbtn_up(x, y, m);
 	}
 	else {
-		return pref.disableRightClick;
+		return grSet.disableRightClick;
 	}
 }
 
 
 /**
  * Called when using the mouse wheel, also used to cycle through album artworks and control the seekbar.
- * @param {number} step The scroll direction: -1 or 1.
+ * @global
+ * @param {number} step - The scroll direction: -1 or 1.
  */
 function on_mouse_wheel(step) {
-	const showVolumeBtn = pref[`showVolumeBtn_${pref.layout}`];
-	const displayAlbumArt = pref.layout !== 'compact' &&
-		(!displayPlaylistArtwork && !displayBiography && !pref.displayLyrics || (displayLibrary && pref.libraryLayout === 'normal'));
+	const showVolumeBtn = grSet[`showVolumeBtn_${grSet.layout}`];
+	const displayAlbumArt = grSet.layout !== 'compact' &&
+		(!grm.ui.displayPlaylistArtwork && !grm.ui.displayBiography && !grm.ui.displayLyrics || (grm.ui.displayLibrary && grSet.libraryLayout === 'normal'));
 
-	if (showVolumeBtn && volumeBtn.on_mouse_wheel(step)) return;
+	if (showVolumeBtn && grm.volBtn.on_mouse_wheel(step)) return;
 
 	// * Seeking through playback
 	if (mouseInSeekbar()) {
-		fb.PlaybackTime = fb.PlaybackTime - step * pref.progressBarWheelSeekSpeed;
-		refreshSeekbar();
-		if (pref.seekbar === 'peakmeterbar') peakmeterBar.on_mouse_wheel(step);
+		fb.PlaybackTime = fb.PlaybackTime - step * grSet.progressBarWheelSeekSpeed;
+		grm.ui.refreshSeekbar();
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.on_mouse_wheel(step);
 		return;
 	}
 
 	// * Cycling through album artwork
-	if (pref.cycleArtMWheel && albumArtList.length > 1 && displayAlbumArt && mouseInAlbumArt()) {
+	if (grSet.cycleArtMWheel && grm.ui.albumArtList.length > 1 && displayAlbumArt && mouseInAlbumArt()) {
 		// Prev album art image
 		if (step > 0) {
-			if (albumArtIndex !== 0) {
-				albumArtIndex = (albumArtIndex - 1) % albumArtList.length;
+			if (grm.ui.albumArtIndex !== 0) {
+				grm.ui.albumArtIndex = (grm.ui.albumArtIndex - 1) % grm.ui.albumArtList.length;
 			}
 		}
 		// Next album art image
-		else if (albumArtIndex !== albumArtList.length - 1) {
-			albumArtIndex = (albumArtIndex + 1) % albumArtList.length;
+		else if (grm.ui.albumArtIndex !== grm.ui.albumArtList.length - 1) {
+			grm.ui.albumArtIndex = (grm.ui.albumArtIndex + 1) % grm.ui.albumArtList.length;
 		}
-		loadImageFromAlbumArtList(albumArtIndex);
+		grm.ui.loadImageFromAlbumArtList(grm.ui.albumArtIndex);
 		// Display embedded album art image
-		if (pref.loadEmbeddedAlbumArtFirst && albumArtIndex === 0) {
-			albumArt = utils.GetAlbumArtV2(fb.GetNowPlaying());
-			albumArtList.unshift(albumArt);
-			albumArtIndex = 0;
+		if (grSet.loadEmbeddedAlbumArtFirst && grm.ui.albumArtIndex === 0) {
+			grm.ui.albumArt = utils.GetAlbumArtV2(fb.GetNowPlaying());
+			grm.ui.albumArtList.unshift(grm.ui.albumArt);
+			grm.ui.albumArtIndex = 0;
 		}
 
 		// Update colors for dynamic themes
-		if (['white', 'black', 'reborn', 'random'].includes(pref.theme)) {
-			newTrackFetchingArtwork = true;
-			getThemeColors(albumArt);
-			initTheme();
+		if (['white', 'black', 'reborn', 'random'].includes(grSet.theme)) {
+			grm.ui.newTrackFetchingArtwork = true;
+			grm.color.getThemeColors(grm.ui.albumArt);
+			grm.ui.initTheme();
 			DebugLog('\n>>> initTheme -> on_mouse_wheel <<<\n');
 		}
 
 		// Update positions
-		resizeArtwork(true); // Re-adjust discArt shadow size if artwork size changes
-		if (pref.panelWidthAuto && albumArtSize.w !== albumArtSize.h) { // Re-adjust playlist if artwork size changes
-			playlist.on_size(ww, wh);
+		grm.ui.resizeArtwork(true); // Re-adjust discArt shadow size if artwork size changes
+		if (grSet.panelWidthAuto && grm.ui.albumArtSize.w !== grm.ui.albumArtSize.h) { // Re-adjust playlist if artwork size changes
+			pl.call.on_size(grm.ui.ww, grm.ui.wh);
 		}
-		lastLeftEdge = 0;
+		grm.ui.lastLeftEdge = 0;
 		RepaintWindow();
 		return;
 	}
 
-	if (pref.displayLyrics && mouseInAlbumArt()) {
-		lyrics.on_mouse_wheel(step);
+	if (grm.ui.displayLyrics && mouseInAlbumArt()) {
+		grm.lyrics.on_mouse_wheel(step);
 	}
-	else if (displayBiography && mouseInBiography()) {
-		trace_call && console.log('Biography => on_mouse_wheel');
-		biography.on_mouse_wheel(step);
+	else if (grm.ui.displayBiography && mouseInBiography()) {
+		grm.ui.traceCall && console.log('Biography => on_mouse_wheel');
+		bio.call.on_mouse_wheel(step);
 	}
-	else if ((displayPlaylist && !displayLibrary || displayPlaylistArtwork || displayLibrarySplit(true)) && mouseInPlaylist()) {
-		trace_call && console.log('Playlist => on_mouse_wheel');
-		playlist.on_mouse_wheel(step);
+	else if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist()) {
+		grm.ui.traceCall && console.log('Playlist => on_mouse_wheel');
+		pl.call.on_mouse_wheel(step);
 	}
-	else if (displayLibrary && mouseInLibrary()) {
-		trace_call && console.log('Library => on_mouse_wheel');
-		library.on_mouse_wheel(step);
+	else if (grm.ui.displayLibrary && mouseInLibrary()) {
+		grm.ui.traceCall && console.log('Library => on_mouse_wheel');
+		lib.call.on_mouse_wheel(step);
 	}
 }
 
 
 /**
  * Called in other panels after window.NotifyOthers is executed.
- * @param {string} name The name of the data that was updated.
- * @param {*} info The data that was updated:
+ * @global
+ * @param {string} name - The name of the data that was updated.
+ * @param {*} info - The data that was updated:
  *
  * - 1. Data from `info` argument is only accessible inside `on_notify_data` callback:
  * if stored and accessed outside of the callback it will throw JS error.
@@ -1131,22 +1169,22 @@ function on_mouse_wheel(step) {
  * - 2. If you want to store the data from `info` you have to perform a deep copy:
  * `String(info)` for strings.
  * `JSON.parse(JSON.stringify(info))` for serializable objects.
- * `new ObjectType(info)` for objects that have an approppriate constructor available, e.g. `new GdiBitmap(info)` or `new FbMetadbHandleList(info)`.
+ * `new ObjectType(info)` for objects that have an appropriate constructor available, e.g. `new GdiBitmap(info)` or `new FbMetadbHandleList(info)`.
  *
  * - 3. `info` argument is shared between panels, so it should NOT be modified in any way.
  */
 function on_notify_data(name, info) {
-	if (displayPlaylist || displayPlaylistArtwork) {
-		trace_call && console.log('Playlist => on_notify_data');
-		playlist.on_notify_data(name, info);
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_notify_data');
+		pl.call.on_notify_data(name, info);
 	}
-	else if (displayLibrary) {
-		trace_call && console.log('Library => on_notify_data');
-		library.on_notify_data(name, info);
+	else if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_notify_data');
+		lib.call.on_notify_data(name, info);
 	}
-	if (displayBiography) {
-		trace_call && console.log('Biography => on_notify_data');
-		biography.on_notify_data(name, info);
+	if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_notify_data');
+		bio.call.on_notify_data(name, info);
 	}
 }
 
@@ -1155,27 +1193,31 @@ function on_notify_data(name, info) {
  * Called when Per-track dynamic info (stream track titles etc) changes.
  *
  * Happens less often than on_playback_dynamic_info.
+ * @global
  */
 function on_playback_dynamic_info_track() {
 	// How frequently does this get called?
 	const metadb = fb.IsPlaying ? fb.GetNowPlaying() : null;
 	on_playback_new_track(metadb);
 
-	if (displayPlaylist || displayPlaylistArtwork) {
-		playlist.on_playback_dynamic_info_track();
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_playback_dynamic_info_track');
+		pl.call.on_playback_dynamic_info_track();
 	}
-	if (displayBiography) {
-		biography.on_playback_dynamic_info_track();
+	if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_playback_dynamic_info_track');
+		bio.call.on_playback_dynamic_info_track();
 	}
-	if (pref.displayLyrics) { // No need to try retrieving them if we aren't going to display them now
-		initLyrics();
+	if (grm.ui.displayLyrics) { // No need to try retrieving them if we aren't going to display them now
+		grm.lyrics.initLyrics();
 	}
 }
 
 
 /**
  * Called when playback order is changed via the transport playback order button or foobar's playback menu.
- * @param {*} pbo The playback order has following settings:
+ * @global
+ * @param {*} pbo - The playback order has following settings:
  * - 0 - Default.
  * - 1 - Repeat (Playlist).
  * - 2 - Repeat (Track).
@@ -1185,114 +1227,122 @@ function on_playback_dynamic_info_track() {
  */
 function on_playback_order_changed(pbo) {
 	// Repaint playback order
-	if (pbo !== lastPlaybackOrder) {
+	if (pbo !== grm.ui.lastPlaybackOrder) {
 		DebugLog('Repainting on_playback_order_changed');
-		window.RepaintRect(0.5 * ww, wh - geo.lowerBarHeight, 0.5 * ww, geo.lowerBarHeight);
+		window.RepaintRect(0.5 * grm.ui.ww, grm.ui.wh - grm.ui.lowerBarHeight, 0.5 * grm.ui.ww, grm.ui.lowerBarHeight);
 	}
-	lastPlaybackOrder = pbo;
+	grm.ui.lastPlaybackOrder = pbo;
 
 	// Link foobar's playback order menu functions with playback order button
-	const showTransportControls = pref[`showTransportControls_${pref.layout}`];
-	const showPlaybackOrderBtn  = pref[`showPlaybackOrderBtn_${pref.layout}`];
+	const showTransportControls = grSet[`showTransportControls_${grSet.layout}`];
+	const showPlaybackOrderBtn  = grSet[`showPlaybackOrderBtn_${grSet.layout}`];
 	const showBtns = showTransportControls && showPlaybackOrderBtn;
 
 	switch (pbo) {
 		case PlaybackOrder.Default:
-			pref.playbackOrder = 'default';
-			if (showBtns) btns.playbackOrder.img = btnImg.PlaybackDefault;
+			grSet.playbackOrder = 'default';
+			if (showBtns) grm.ui.btn.playbackOrder.img = grm.ui.btnImg.PlaybackDefault;
 			break;
 
 		case PlaybackOrder.RepeatPlaylist:
-			pref.playbackOrder = 'repeatPlaylist';
-			if (showBtns) btns.playbackOrder.img = btnImg.PlaybackRepeatPlaylist;
+			grSet.playbackOrder = 'repeatPlaylist';
+			if (showBtns) grm.ui.btn.playbackOrder.img = grm.ui.btnImg.PlaybackRepeatPlaylist;
 			break;
 		case PlaybackOrder.RepeatTrack:
-			pref.playbackOrder = 'repeatTrack';
-			if (showBtns) btns.playbackOrder.img = btnImg.PlaybackRepeatTrack;
+			grSet.playbackOrder = 'repeatTrack';
+			if (showBtns) grm.ui.btn.playbackOrder.img = grm.ui.btnImg.PlaybackRepeatTrack;
 			break;
 
 		case PlaybackOrder.Random:
 		case PlaybackOrder.ShuffleTracks:
 		case PlaybackOrder.ShuffleAlbums:
 		case PlaybackOrder.ShuffleFolders:
-			pref.playbackOrder = 'shuffle';
-			if (showBtns) btns.playbackOrder.img = btnImg.PlaybackShuffle;
+			grSet.playbackOrder = 'shuffle';
+			if (showBtns) grm.ui.btn.playbackOrder.img = grm.ui.btnImg.PlaybackShuffle;
 			break;
 	}
+	grm.ui.traceCall && console.log('Main => on_playback_order_changed');
 }
 
 
 /**
  * Called when pausing current playing track.
- * @param {boolean} state Whether the playback is paused or not.
+ * @global
+ * @param {boolean} state - Whether the playback is paused or not.
  */
 function on_playback_pause(state) {
-	btnPlayPause();
+	grm.button.lowerPlayPause();
 	if (state || fb.PlaybackLength < 0) {
-		clearInterval(progressBarTimer);
-		clearInterval(discArtRotationTimer);
-		window.RepaintRect(0, geo.topMenuHeight, Math.max(albumArtSize.x, SCALE(40)), wh - geo.topMenuHeight - geo.lowerBarHeight);
+		clearInterval(grm.ui.progressBarTimer);
+		clearInterval(grm.ui.discArtRotationTimer);
+		window.RepaintRect(0, grm.ui.topMenuHeight, Math.max(grm.ui.albumArtSize.x, SCALE(40)), grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight);
 	}
 	else { // Unpausing
-		clearInterval(progressBarTimer); // Clear to avoid multiple progressTimers which can happen depending on the playback state when theme is loaded
-		DebugLog(`on_playback_pause: creating refreshSeekbar() interval with delay = ${progressBarTimerInterval}`);
-		progressBarTimer = setInterval(() => {
-			refreshSeekbar();
-		}, progressBarTimerInterval || 1000);
-		if (discArt && pref.spinDiscArt) setDiscArtRotationTimer();
+		clearInterval(grm.ui.progressBarTimer); // Clear to avoid multiple progressTimers which can happen depending on the playback state when theme is loaded
+		DebugLog(`on_playback_pause: creating refreshSeekbar() interval with delay = ${grm.ui.progressBarTimerInterval}`);
+		grm.ui.progressBarTimer = setInterval(() => {
+			grm.ui.refreshSeekbar();
+		}, grm.ui.progressBarTimerInterval || 1000);
+		if (grm.ui.discArt && grSet.spinDiscArt) grm.ui.setDiscArtRotationTimer();
 	}
 
-	pauseBtn.repaint();
+	grm.pseBtn.repaint();
 
-	if ((albumArt || noAlbumArtStub) && pref.displayLyrics) { // If we are displaying lyrics we need to refresh all the lyrics to avoid tearing at the edges of the pause button
-		lyrics.on_playback_pause(state);
+	if ((grm.ui.albumArt || grm.ui.noAlbumArtStub) && grm.ui.displayLyrics) { // If we are displaying lyrics we need to refresh all the lyrics to avoid tearing at the edges of the pause button
+		grm.ui.traceCall && console.log('Lyrics => on_playback_pause');
+		grm.lyrics.on_playback_pause(state);
 	}
-	if (displayPlaylist || displayPlaylistArtwork) {
-		playlist.on_playback_pause(state);
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_playback_pause');
+		pl.call.on_playback_pause(state);
 	}
-	if (displayBiography) {
-		biography.on_playback_pause(state);
+	if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_playback_pause');
+		bio.call.on_playback_pause(state);
 	}
 }
 
 
 /**
  * Called when adding new playlist tracks in queue.
- * @param {number} origin The parameter has following settings:
+ * @global
+ * @param {number} origin - The parameter has following settings:
  * - 0 - User added.
  * - 1 - User removed.
  * - 2 - Playback advance.
  */
 function on_playback_queue_changed(origin) {
-	trace_call && console.log('Playlist => on_playback_queue_changed');
-	playlist.on_playback_queue_changed(origin);
-	library.on_playback_queue_changed();
+	grm.ui.traceCall && console.log('Playlist => on_playback_queue_changed');
+	pl.call.on_playback_queue_changed(origin);
+	lib.call.on_playback_queue_changed();
 }
 
 
 /**
  * Called when playback time is being seeked, float value in seconds.
+ * @global
  */
 function on_playback_seek() {
-	if (pref.seekbar === 'progressbar') {
-		progressBar.progressMoved = true;
-	} else if (pref.seekbar === 'peakmeterbar') {
-		peakmeterBar.progressMoved = true;
+	if (grSet.seekbar === 'progressbar') {
+		grm.progBar.progressMoved = true;
+	} else if (grSet.seekbar === 'peakmeterbar') {
+		grm.peakBar.progressMoved = true;
 	}
-	if (pref.displayLyrics) {
-		lyrics.seek();
+	if (grm.ui.displayLyrics) {
+		grm.lyrics.seek();
 	}
-	else if (displayBiography) {
-		biography.on_playback_seek();
+	else if (grm.ui.displayBiography) {
+		bio.call.on_playback_seek();
 	}
 	on_playback_time();
-	refreshSeekbar();
+	grm.ui.refreshSeekbar();
 }
 
 
 /**
  * Called when playback process is being initialized, on_playback_new_track should be called soon after this when first file is successfully opened for decoding.
- * @param {number} cmd The command has following settings:
+ * @global
+ * @param {number} cmd - The command has following settings:
  * - 0 - Default.
  * - 1 - Play.
  * - 2 - Plays the next track from the current playlist according to the current playback order.
@@ -1300,19 +1350,20 @@ function on_playback_seek() {
  * - 4 - settrack (internal fb2k value).
  * - 5 - Plays a random track from the current playlist.
  * - 6 - resume (internal fb2k value).
- * @param {boolean} is_paused Whether the playback is paused.
+ * @param {boolean} is_paused - Whether the playback is paused.
  */
 function on_playback_starting(cmd, is_paused) {
-	if (settings.hideCursor) {
+	if (grCfg.settings.hideCursor) {
 		window.SetCursor(-1); // Hide cursor
 	}
-	btnPlayPause();
+	grm.button.lowerPlayPause();
 }
 
 
 /**
  * Called when playback is stopped.
- * @param {number} reason The playback stop has following settings:
+ * @global
+ * @param {number} reason - The playback stop has following settings:
  * - 0 - Invoked by user.
  * - 1 - End of file.
  * - 2 - Starting another track.
@@ -1321,127 +1372,144 @@ function on_playback_starting(cmd, is_paused) {
 function on_playback_stop(reason) {
 	if (reason !== 2) {
 		// Clear all variables and repaint
-		str = clearUIVariables();
+		grm.ui.clearUIVariables();
 		DebugLog('Repainting on_playback_stop:', reason);
 		RepaintWindow();
-		isPlayingCD = false;
-		isStreaming = false;
-		lastAlbumFolder = '';
-		btns.playbackTime = '';
-		lastAlbumDiscNumber = '0';
-		recordLabels = [];
-		recordLabelsInverted = [];
-		btnPlayPause();
+		grm.ui.isPlayingCD = false;
+		grm.ui.isStreaming = false;
+		grm.ui.lastAlbumFolder = '';
+		grm.ui.btn.playbackTime = '';
+		grm.ui.lastAlbumDiscNumber = '0';
+		grm.ui.recordLabels = [];
+		grm.ui.recordLabelsInverted = [];
+		grm.button.lowerPlayPause();
 		// * Keep Reborn/Random colors when they are not too bright or too dark otherwise reset colors to default
-		if (['reborn', 'random'].includes(pref.theme) && ((colBrightness < 20 || imgBrightness < 20) || (colBrightness > 240 || imgBrightness > 240)) ||
-			!['reborn', 'random'].includes(pref.theme) || pref.styleNighttime) {
-			setThemeColors();
-			initTheme();
+		if (['reborn', 'random'].includes(grSet.theme) && ((grCol.colBrightness < 20 || grCol.imgBrightness < 20) || (grCol.colBrightness > 240 || grCol.imgBrightness > 240)) ||
+			!['reborn', 'random'].includes(grSet.theme) || grSet.styleNighttime) {
+			grm.color.setThemeColors();
+			grm.ui.initTheme();
 			DebugLog('\n>>> initTheme -> on_playback_stop <<<\n');
 		}
 	}
 
-	waveformBar.on_playback_stop(reason);
+	grm.waveBar.on_playback_stop(reason);
 
-	clearInterval(discArtRotationTimer);
-	clearInterval(progressBarTimer);
-	clearTimeout(albumArtTimeout);
+	clearInterval(grm.ui.discArtRotationTimer);
+	clearInterval(grm.ui.progressBarTimer);
+	clearTimeout(grm.ui.albumArtTimeout);
 
-	if (albumArt && ((pref.cycleArt && albumArtIndex !== 0) || lastAlbumFolder === '')) {
+	if (grm.ui.albumArt && ((grSet.cycleArt && grm.ui.albumArtIndex !== 0) || grm.ui.lastAlbumFolder === '')) {
 		DebugLog('disposing artwork');
-		albumArt = null;
-		albumArtScaled = null;
+		grm.ui.albumArt = null;
+		grm.ui.albumArtScaled = null;
 	}
-	bandLogo = null;
-	invertedBandLogo = null;
+	grm.ui.bandLogo = null;
+	grm.ui.bandLogoInverted = null;
 
-	if (pref.displayLyrics && lyrics) {
-		lyrics.on_playback_stop(reason);
+	if (grm.ui.displayLyrics && grm.lyrics) {
+		grm.lyrics.on_playback_stop(reason);
 	}
 
-	flagImgs = [];
-	discArtRotation = null;
-	discArtRotationCover = null;
-	albumArtTimeout = 0;
+	grm.ui.flagImgs = [];
+	grm.ui.discArtRotation = null;
+	grm.ui.discArtRotationCover = null;
+	grm.ui.albumArtTimeout = 0;
 
-	if (pref.panelWidthAuto) {
-		initPanelWidthAuto();
+	if (grSet.panelWidthAuto) {
+		grm.ui.initPanelWidthAuto();
 	}
 
 	if (reason === 0 || reason === 1) { // Stop or end of playlist
-		discArt = disposeDiscArt(discArt);
-		discArtCover = disposeDiscArt(discArtCover);
-		discArtArray = []; // Clear Images
-		discArtArrayCover = []; // Clear Images
+		grm.ui.discArt = grm.ui.disposeDiscArt(grm.ui.discArt);
+		grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
+		grm.ui.discArtArray = []; // Clear Images
+		grm.ui.discArtArrayCover = []; // Clear Images
 		window.Repaint();
 	}
-	if (displayPlaylist || displayPlaylistArtwork) {
-		playlist.on_playback_stop(reason);
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_playback_stop');
+		pl.call.on_playback_stop(reason);
 	}
-	else if (displayLibrary) {
-		library.on_playback_stop(reason);
+	else if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_playback_stop');
+		lib.call.on_playback_stop(reason);
 	}
-	if (displayBiography) {
-		biography.on_playback_stop(reason);
+	if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_playback_stop');
+		bio.call.on_playback_stop(reason);
 	}
 }
 
 
 /**
+ * Refresh playback time plus playback time remaining every second.
+ * @global
+ */
+function on_playback_time() {
+	grStr.time = grSet.switchPlaybackTime ? $('-%playback_time_remaining%') : $('%playback_time%');
+	grm.waveBar.on_playback_time(fb.PlaybackTime);
+	bio.call.on_playback_time();
+}
+
+
+/**
  * Called when clicking on playlist items that are visible in the playlist panel.
- * @param {number} playlistIndex The index of the playlist.
- * @param {number} playlistItemIndex The index of the playlist item.
+ * @global
+ * @param {number} playlistIndex - The index of the playlist.
+ * @param {number} playlistItemIndex - The index of the playlist item.
  */
 function on_playlist_item_ensure_visible(playlistIndex, playlistItemIndex) {
-	if (displayPlaylist || displayPlaylistArtwork) {
-		trace_call && console.log('Playlist => on_playlist_item_ensure_visible');
-		playlist.on_playlist_item_ensure_visible(playlistIndex, playlistItemIndex);
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_playlist_item_ensure_visible');
+		pl.call.on_playlist_item_ensure_visible(playlistIndex, playlistItemIndex);
 	}
 }
 
 
 /**
  * Called when adding tracks to the playlist.
- * @param {number} playlistIndex The index of the playlist.
+ * @global
+ * @param {number} playlistIndex - The index of the playlist.
  */
 function on_playlist_items_added(playlistIndex) {
-	if (playlistHistory) {
-		playlistHistory.playlistAltered(PlaylistMutation.Added);
+	if (pl.history) {
+		pl.history.playlistAltered(PlaylistMutation.Added);
 	}
-	if (displayPlaylist || displayPlaylistArtwork) {
-		trace_call && console.log('Playlist => on_playlist_items_added');
-		playlist.on_playlist_items_added(playlistIndex);
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_playlist_items_added');
+		pl.call.on_playlist_items_added(playlistIndex);
 	}
-	if (displayLibrary || displayLibrarySplit()) {
-		trace_call && console.log('Library => on_playlist_items_added');
-		library.on_playlist_items_added(playlistIndex);
+	if (grm.ui.displayLibrary || grm.ui.displayLibrarySplit()) {
+		grm.ui.traceCall && console.log('Library => on_playlist_items_added');
+		lib.call.on_playlist_items_added(playlistIndex);
 	}
-	if (displayBiography) {
-		trace_call && console.log('Biography => on_playlist_items_added');
-		biography.on_playlist_items_added(playlistIndex);
+	if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_playlist_items_added');
+		bio.call.on_playlist_items_added(playlistIndex);
 	}
 }
 
 
 /**
  * Called when removing tracks from the playlist.
- * @param {number} playlistIndex The index of the playlist.
+ * @global
+ * @param {number} playlistIndex - The index of the playlist.
  */
 function on_playlist_items_removed(playlistIndex) {
-	if (playlistHistory) {
-		playlistHistory.playlistAltered(PlaylistMutation.Removed);
+	if (pl.history) {
+		pl.history.playlistAltered(PlaylistMutation.Removed);
 	}
-	if (displayPlaylist || displayPlaylistArtwork) {
-		trace_call && console.log('Playlist => on_playlist_items_removed');
-		playlist.on_playlist_items_removed(playlistIndex);
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_playlist_items_removed');
+		pl.call.on_playlist_items_removed(playlistIndex);
 	}
-	if (displayLibrary) {
-		trace_call && console.log('Library => on_playlist_items_removed');
-		library.on_playlist_items_removed(playlistIndex);
+	if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_playlist_items_removed');
+		lib.call.on_playlist_items_removed(playlistIndex);
 	}
-	if (displayBiography) {
-		trace_call && console.log('Biography => on_playlist_items_removed');
-		biography.on_playlist_items_removed(playlistIndex);
+	if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_playlist_items_removed');
+		bio.call.on_playlist_items_removed(playlistIndex);
 	}
 }
 
@@ -1449,102 +1517,110 @@ function on_playlist_items_removed(playlistIndex) {
 /**
  * Called when reordering tracks in the playlist, i.e by dragging them up or down.
  * Changes selection too. Doesn't actually change the set of items that are selected or item having focus, just changes their order.
- * @param {number} playlistIndex The index of the playlist.
+ * @global
+ * @param {number} playlistIndex - The index of the playlist.
  */
 function on_playlist_items_reordered(playlistIndex) {
-	if (playlistHistory) {
-		playlistHistory.playlistAltered(PlaylistMutation.Reordered);
+	if (pl.history) {
+		pl.history.playlistAltered(PlaylistMutation.Reordered);
 	}
-	if (displayPlaylist || displayPlaylistArtwork) {
-		trace_call && console.log('Playlist => on_playlist_items_reordered');
-		playlist.on_playlist_items_reordered(playlistIndex);
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_playlist_items_reordered');
+		pl.call.on_playlist_items_reordered(playlistIndex);
 	}
-	if (displayLibrary) {
-		trace_call && console.log('Library => on_playlist_items_reordered');
-		library.on_playlist_items_reordered(playlistIndex);
+	if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_playlist_items_reordered');
+		lib.call.on_playlist_items_reordered(playlistIndex);
 	}
 }
 
 
 /**
  * Called as a workaround for some 3rd party playlist viewers not working with on_selection_changed.
+ * @global
  */
 function on_playlist_items_selection_change() {
-	if (displayPlaylist || displayPlaylistArtwork) {
-		trace_call && console.log('Playlist => on_playlist_items_selection_change');
-		playlist.on_playlist_items_selection_change();
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_playlist_items_selection_change');
+		pl.call.on_playlist_items_selection_change();
 	}
 }
 
 
 /**
  * Called when switching the current active playlist to another.
+ * @global
  */
 function on_playlist_switch() {
-	if (playlistHistory) {
-		playlistHistory.playlistAltered(PlaylistMutation.Switch);
+	if (pl.history) {
+		pl.history.playlistAltered(PlaylistMutation.Switch);
 	}
-	if (displayPlaylist || displayPlaylistArtwork) {
-		trace_call && console.log('Playlist => on_playlist_switch');
-		playlist.on_playlist_switch();
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_playlist_switch');
+		pl.call.on_playlist_switch();
 	}
-	if (displayLibrary || ppt.libSource === 0) {
-		trace_call && console.log('Library => on_playlist_switch');
-		library.on_playlist_switch();
+	if (grm.ui.displayLibrary || libSet.libSource === 0) {
+		grm.ui.traceCall && console.log('Library => on_playlist_switch');
+		lib.call.on_playlist_switch();
 	}
-	if (displayBiography) {
-		trace_call && console.log('Biography => on_playlist_switch');
-		biography.on_playlist_switch();
+	if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_playlist_switch');
+		bio.call.on_playlist_switch();
 	}
 }
 
 
 /**
  * Called when playlists are added/removed/reordered/renamed or a playlist's lock status changes.
+ * @global
  */
 function on_playlists_changed() {
-	if (playlistHistory) {
-		playlistHistory.reset(); // When playlists are changed, indexes no longer apply, and so we have to wipe history
+	if (pl.history) {
+		pl.history.reset(); // When playlists are changed, indexes no longer apply, and so we have to wipe history
 	}
-	if (displayPlaylist || displayPlaylistArtwork) {
-		trace_call && console.log('Playlist => on_playlists_changed');
-		playlist.on_playlists_changed();
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+		grm.ui.traceCall && console.log('Playlist => on_playlists_changed');
+		pl.call.on_playlists_changed();
 	}
-	if (displayLibrary) {
-		trace_call && console.log('Library => on_playlists_changed');
-		library.on_playlists_changed();
+	if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_playlists_changed');
+		lib.call.on_playlists_changed();
 	}
-	if (displayBiography) {
-		trace_call && console.log('Biography => on_playlists_changed');
-		biography.on_playlists_changed();
+	if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_playlists_changed');
+		bio.call.on_playlists_changed();
 	}
 }
 
 
 /**
  * Called when script is reloaded via context menu > Reload or script is changed via panel menu > Configure or fb2k is exiting normally.
+ * @global
  */
 function on_script_unload() {
 	console.log('Unloading Script');
-	waveformBar.on_script_unload();
+	grm.waveBar.on_script_unload();
 
 	// It appears we don't need to dispose the images which we loaded using gdi.Image in their declaration for some reason. Attempting to dispose them causes a script error.
-	if (displayLibrary) {
-		library.on_script_unload();
+	if (grm.ui.displayLibrary) {
+		grm.ui.traceCall && console.log('Library => on_script_unload');
+		lib.call.on_script_unload();
 	}
-	else if (displayBiography) {
-		biography.on_script_unload();
+	else if (grm.ui.displayBiography) {
+		grm.ui.traceCall && console.log('Biography => on_script_unload');
+		bio.call.on_script_unload();
 	}
 }
 
 
 /**
  * Called when volume changes, i.e the volume bar in the volume button.
- * @param {float} val The volume level in dB. Minimum is -100. Maximum is 0.
+ * @global
+ * @param {number} val - The volume level in dB. Minimum is -100. Maximum is 0.
  */
 function on_volume_change(val) {
-	trace_call && console.log('Volume bar => on_volume_change');
-	volumeBtn.on_volume_change(val);
+	grm.ui.traceCall && console.log('Volume bar => on_volume_change');
+	grm.volBtn.on_volume_change(val);
 }
 
 
@@ -1553,13 +1629,14 @@ function on_volume_change(val) {
 //////////////////////////
 /**
  * Checks if the mouse is within the boundaries of the top menu.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
  * @returns {boolean} True or false.
  */
 function mouseInTopMenu(x, y) {
-	if (x < ww - SCALE(100) && y < geo.topMenuHeight) {
-		trace_call && trace_on_move && console.log('mouseInTopMenu');
+	if (x < grm.ui.ww - SCALE(100) && y < grm.ui.topMenuHeight) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInTopMenu');
 		return true;
 	}
 
@@ -1569,27 +1646,28 @@ function mouseInTopMenu(x, y) {
 
 /**
  * Checks if the mouse is within the boundaries of the album art.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
  * @returns {boolean} True or false.
  */
 function mouseInAlbumArt(x, y) {
 	const displayAlbumArt =
-		pref.layout === 'default' && !displayBiography && (displayPlaylist && !displayLibrary && pref.playlistLayout !== 'full' // Playlist
+		grSet.layout === 'default' && !grm.ui.displayBiography && (grm.ui.displayPlaylist && !grm.ui.displayLibrary && grSet.playlistLayout !== 'full' // Playlist
 		||
-		displayLibrary && pref.libraryLayout === 'normal' && pref.libraryDesign !== 'flowMode' // Library
+		grm.ui.displayLibrary && grSet.libraryLayout === 'normal' && grSet.libraryDesign !== 'flowMode' // Library
 		||
-		!displayPlaylist && !displayLibrary || pref.displayLyrics) // Details, Lyrics
+		!grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayLyrics) // Details, Lyrics
 		||
-		pref.layout === 'artwork' && !displayBiography && (displayPlaylist || !displayPlaylistArtwork && !displayLibrary); // Cover, Details, Lyrics
+		grSet.layout === 'artwork' && !grm.ui.displayBiography && (grm.ui.displayPlaylist || !grm.ui.displayPlaylistArtwork && !grm.ui.displayLibrary); // Cover, Details, Lyrics
 
 	const albumArtBounds =
-		state.mouse_x > 0 && state.mouse_x <= ((isStreaming || !albumArt && noArtwork || albumArt) && (displayPlaylist || displayLibrary) &&
-		pref.layout === 'default' ? pref.panelWidthAuto ? albumArtSize.x + albumArtSize.w : ww * 0.5 : !displayPlaylist && !displayLibrary ? ww : albumArtSize.w) &&
-		state.mouse_y > albumArtSize.y && state.mouse_y <= albumArtSize.y + albumArtSize.h;
+		grm.ui.state.mouse_x > 0 && grm.ui.state.mouse_x <= ((grm.ui.isStreaming || !grm.ui.albumArt && grm.ui.noArtwork || grm.ui.albumArt) && (grm.ui.displayPlaylist || grm.ui.displayLibrary) &&
+		grSet.layout === 'default' ? grSet.panelWidthAuto ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w : grm.ui.ww * 0.5 : !grm.ui.displayPlaylist && !grm.ui.displayLibrary ? grm.ui.ww : grm.ui.albumArtSize.w) &&
+		grm.ui.state.mouse_y > grm.ui.albumArtSize.y && grm.ui.state.mouse_y <= grm.ui.albumArtSize.y + grm.ui.albumArtSize.h;
 
 	if (displayAlbumArt && albumArtBounds) {
-		trace_call && trace_on_move && console.log('mouseInAlbumArt');
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInAlbumArt');
 		return true;
 	}
 
@@ -1599,31 +1677,32 @@ function mouseInAlbumArt(x, y) {
 
 /**
  * Checks if the mouse can pause when clicking on the album art or noAlbumArtStub.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
  * @returns {boolean} True or false.
  */
 function mouseInPause(x, y) {
 	// * Do not pause when Playlist/Library layout is in full width or when using Library's flow mode
-	const panelPlaylist = displayPlaylist  && !displayLibrary && !displayBiography && pref.playlistLayout !== 'full';
-	const panelDetails  = !displayPlaylist && !displayLibrary && !displayBiography;
-	const panelLibrary  = displayLibrary && pref.libraryLayout === 'normal' && pref.libraryDesign !== 'flowMode';
-	const artworkLayout = pref.layout === 'artwork' && !displayPlaylistArtwork && !displayLibrary && !displayBiography;
+	const panelPlaylist = grm.ui.displayPlaylist && !grm.ui.displayLibrary && !grm.ui.displayBiography && grSet.playlistLayout !== 'full';
+	const panelDetails  = grm.ui.displayDetails;
+	const panelLibrary  = grm.ui.displayLibrary && grSet.libraryLayout === 'normal' && grSet.libraryDesign !== 'flowMode';
+	const artworkLayout = grSet.layout === 'artwork' && !grm.ui.displayPlaylistArtwork && !grm.ui.displayLibrary && !grm.ui.displayBiography;
 
-	const albumArtBounds   = albumArtSize.x <= x && albumArtSize.y <= y && albumArtSize.x + albumArtSize.w >= x && albumArtSize.y + albumArtSize.h >= y;
-	const discArtBounds    = discArtSize.x  <= x && discArtSize.y  <= y && discArtSize.x  + discArtSize.w  >= x && discArtSize.y  + discArtSize.h  >= y;
-	const noAlbumArtBounds = state.mouse_x > 0 && state.mouse_x <= (displayPlaylist || displayLibrary ? albumArtSize.x + albumArtSize.w : !displayPlaylist || !displayLibrary ? ww : ww * 0.5) &&
-							 state.mouse_y > albumArtSize.y && state.mouse_y <= albumArtSize.h + geo.topMenuHeight;
+	const albumArtBounds   = grm.ui.albumArtSize.x <= x && grm.ui.albumArtSize.y <= y && grm.ui.albumArtSize.x + grm.ui.albumArtSize.w >= x && grm.ui.albumArtSize.y + grm.ui.albumArtSize.h >= y;
+	const discArtBounds    = grm.ui.discArtSize.x  <= x && grm.ui.discArtSize.y  <= y && grm.ui.discArtSize.x  + grm.ui.discArtSize.w  >= x && grm.ui.discArtSize.y  + grm.ui.discArtSize.h  >= y;
+	const noAlbumArtBounds = grm.ui.state.mouse_x > 0 && grm.ui.state.mouse_x <= (grm.ui.displayPlaylist || grm.ui.displayLibrary ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w : !grm.ui.displayPlaylist || !grm.ui.displayLibrary ? grm.ui.ww : grm.ui.ww * 0.5) &&
+							 grm.ui.state.mouse_y > grm.ui.albumArtSize.y && grm.ui.state.mouse_y <= grm.ui.albumArtSize.h + grm.ui.topMenuHeight;
 	const pauseOnAlbumArt =
-		(pref.layout === 'default' && albumArt && (panelPlaylist || panelDetails || panelLibrary) || artworkLayout) &&
-		!displayCustomThemeMenu && !displayMetadataGridMenu && albumArtBounds || discArt && !albumArt && discArtBounds;
+		(grSet.layout === 'default' && grm.ui.albumArt && (panelPlaylist || panelDetails || panelLibrary) || artworkLayout) &&
+		!grm.ui.displayCustomThemeMenu && !grm.ui.displayMetadataGridMenu && albumArtBounds || grm.ui.discArt && !grm.ui.albumArt && discArtBounds;
 
 	const pauseOnNoAlbumArt =
-		(pref.layout === 'default' && !albumArt && (panelPlaylist || panelDetails || panelLibrary) || artworkLayout) &&
-		!displayCustomThemeMenu && !displayMetadataGridMenu && noAlbumArtBounds;
+		(grSet.layout === 'default' && !grm.ui.albumArt && (panelPlaylist || panelDetails || panelLibrary) || artworkLayout) &&
+		!grm.ui.displayCustomThemeMenu && !grm.ui.displayMetadataGridMenu && noAlbumArtBounds;
 
 	if (pauseOnAlbumArt || pauseOnNoAlbumArt) {
-		trace_call && trace_on_move && console.log('mouseInPause');
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInPause');
 		return true;
 	}
 
@@ -1633,13 +1712,14 @@ function mouseInPause(x, y) {
 
 /**
  * Checks if the mouse is within the boundaries of the lower bar.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
  * @returns {boolean} True or false.
  */
 function mouseInLowerBar(x, y) {
-	if (y > wh - SCALE(120)) {
-		trace_call && trace_on_move && console.log('mouseInLowerBar');
+	if (y > grm.ui.wh - SCALE(120)) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInLowerBar');
 		return true;
 	}
 
@@ -1649,19 +1729,20 @@ function mouseInLowerBar(x, y) {
 
 /**
  * Checks if the mouse is within the boundaries of the seekbar.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
  * @returns {boolean} True or false.
  */
 function mouseInSeekbar(x, y) {
-	const seekX = x || state.mouse_x;
-	const seekY = y || state.mouse_y;
-	const pBar = pref.seekbar === 'progressbar';
+	const seekX = x || grm.ui.state.mouse_x;
+	const seekY = y || grm.ui.state.mouse_y;
+	const pBar = grSet.seekbar === 'progressbar';
 
-	if (seekX >= SCALE(40) && seekX < ww - SCALE(40) &&
-		seekY >= wh - (pref.layout !== 'default' ? 0.6 : 0.5) * geo.lowerBarHeight - 0.5 * geo.progBarHeight &&
-		seekY <= wh - (pref.layout !== 'default' ? SCALE(pBar ? 60 : 55) : SCALE(pBar ? 35 : 20))) {
-		trace_call && trace_on_move && console.log('mouseInSeekbar');
+	if (seekX >= SCALE(40) && seekX < grm.ui.ww - SCALE(40) &&
+		seekY >= grm.ui.wh - (grSet.layout !== 'default' ? 0.6 : 0.5) * grm.ui.lowerBarHeight - 0.5 * grm.ui.progressBarH &&
+		seekY <= grm.ui.wh - (grSet.layout !== 'default' ? SCALE(pBar ? 60 : 55) : SCALE(pBar ? 35 : 20))) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInSeekbar');
 		return true;
 	}
 
@@ -1671,13 +1752,14 @@ function mouseInSeekbar(x, y) {
 
 /**
  * Checks if the mouse is within the boundaries of the panel.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
  * @returns {boolean} True or false.
  */
 function mouseInPanel(x, y) {
-	if (y < geo.topMenuHeight && y > wh - geo.topMenuHeight - geo.lowerBarHeight) {
-		trace_call && trace_on_move && console.log('mouseInPanel');
+	if (y < grm.ui.topMenuHeight && y > grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInPanel');
 		return true;
 	}
 
@@ -1687,18 +1769,24 @@ function mouseInPanel(x, y) {
 
 /**
  * Checks if the mouse is within the boundaries of the Playlist.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
  * @returns {boolean} True or false.
  */
 function mouseInPlaylist(x, y) {
-	const plistX = x || state.mouse_x;
-	const plistY = y || state.mouse_y;
+	const plistX = x || grm.ui.state.mouse_x;
+	const plistY = y || grm.ui.state.mouse_y;
 
-	if (plistX >= playlist.x && plistX < playlist.x + playlist.w &&
-		plistY >= (pref.layout !== 'default' ? playlist.y - SCALE(g_properties.row_h) : playlist.y) && plistY < playlist.y + playlist.h) {
-		trace_call && trace_on_move && console.log('Playlist => mouseInPlaylist');
+	if (plistX >= pl.playlist.x && plistX < pl.playlist.x + pl.playlist.w &&
+		plistY >= pl.playlist.y - SCALE(plSet.row_h) && plistY < pl.playlist.y + pl.playlist.h) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Playlist => mouseInPlaylist');
 		return true;
+	}
+
+	if (pl.playlist.scrollbar.b_is_dragging) {
+		pl.playlist.scrollbar.b_is_dragging = false;
+		pl.playlist.scrollbar.desiredScrollPosition = undefined;
 	}
 
 	return false;
@@ -1707,17 +1795,23 @@ function mouseInPlaylist(x, y) {
 
 /**
  * Checks if the mouse is within the boundaries of the Library.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
  * @returns {boolean} True or false.
  */
 function mouseInLibrary(x, y) {
-	const libX = x || state.mouse_x;
-	const libY = y || state.mouse_y;
+	const libX = x || grm.ui.state.mouse_x;
+	const libY = y || grm.ui.state.mouse_y;
 
-	if (libX >= ui.x && libX < ui.x + ui.w && libY >= ui.y && libY < ui.y + ui.h) {
-		trace_call && trace_on_move && console.log('Library => mouseInLibrary');
+	if (libX >= lib.ui.x && libX < lib.ui.x + lib.ui.w && libY >= lib.ui.y && libY < lib.ui.y + lib.ui.h) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Library => mouseInLibrary');
 		return true;
+	}
+
+	if (lib.sbar.bar.isDragging) {
+		lib.sbar.bar.isDragging = false;
+		lib.but.Dn = false;
 	}
 
 	return false;
@@ -1726,14 +1820,15 @@ function mouseInLibrary(x, y) {
 
 /**
  * Checks if the mouse is within the boundaries of the Library search.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
  * @returns {boolean} True or false.
  */
 function mouseInLibrarySearch(x, y) {
-	if (!but.Dn && x > ui.x + but.q.h + but.margin && x < panel.search.x + panel.search.w &&
-		y > ui.y && y < ui.y + panel.search.h && ppt.searchShow) {
-		trace_call && trace_on_move && console.log('Library => mouseInLibrarySearch');
+	if (!lib.but.Dn && x > lib.ui.x + lib.but.q.h + lib.but.margin && x < lib.panel.search.x + lib.panel.search.w &&
+		y > lib.ui.y && y < lib.ui.y + lib.panel.search.h && libSet.searchShow) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Library => mouseInLibrarySearch');
 		return true;
 	}
 
@@ -1743,17 +1838,26 @@ function mouseInLibrarySearch(x, y) {
 
 /**
  * Checks if the mouse is within the boundaries of the Biography.
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
  * @returns {boolean} True or false.
  */
 function mouseInBiography(x, y) {
-	const bioX = x || state.mouse_x;
-	const bioY = y || state.mouse_y;
+	const bioX = x || grm.ui.state.mouse_x;
+	const bioY = y || grm.ui.state.mouse_y;
 
-	if (bioX >= uiBio.x && bioX < uiBio.x + uiBio.w && bioY >= uiBio.y && bioY < uiBio.y + uiBio.h) {
-		trace_call && trace_on_move && console.log('Biography => mouseInBiography');
+	if (bioX >= bio.ui.x && bioX < bio.ui.x + bio.ui.w && bioY >= bio.ui.y && bioY < bio.ui.y + bio.ui.h) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Biography => mouseInBiography');
 		return true;
+	}
+
+	if (bio.alb_scrollbar.bar.isDragging || bio.art_scrollbar.bar.isDragging || bio.art_scroller.bar.isDragging || bio.cov_scroller.bar.isDragging) {
+		bio.alb_scrollbar.bar.isDragging = false;
+		bio.art_scrollbar.bar.isDragging = false;
+		bio.art_scroller.bar.isDragging = false;
+		bio.cov_scroller.bar.isDragging = false;
+		bio.but.Dn = false;
 	}
 
 	return false;

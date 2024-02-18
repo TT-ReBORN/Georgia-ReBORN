@@ -1,13 +1,13 @@
-/////////////////////////////////////////////////////////////////////////////
-// * Georgia-ReBORN: A Clean, Full Dynamic Color Reborn foobar2000 Theme * //
-// * Description:    Georgia-ReBORN Color Definition                     * //
-// * Author:         TT                                                  * //
-// * Org. Author:    Mordred                                             * //
-// * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
-// * Version:        3.0-DEV                                             * //
-// * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-15                                          * //
-/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+// * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
+// * Description:    Georgia-ReBORN Color Definition                         * //
+// * Author:         TT                                                      * //
+// * Org. Author:    Mordred                                                 * //
+// * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
+// * Version:        3.0-DEV                                                 * //
+// * Dev. started:   22-12-2017                                              * //
+// * Last change:    18-02-2024                                              * //
+/////////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
@@ -17,96 +17,150 @@
 // * COLOR DEFINITION * //
 //////////////////////////
 /**
- * Represents a color and provides methods for parsing and manipulating it.
+ * A class that handles a color and provides methods for parsing and manipulating it.
  * The value of the color can be in various formats such as RGB, HEX, HSL, HSV, or INT.
  */
 class Color {
 	/**
+	 * Creates the `Color` instance.
 	 * The constructor parses the initial value and sets up the color object.
-	 * @param {string|number} value The initial color value in one of the supported formats:
+	 * @param {string|number} value - The initial color value in one of the supported formats:
 	 * - RGB: A string like "rgb(255, 0, 0)" or "rgba(255, 0, 0, 1)"
 	 * - HEX: A string like "#ff0000" or "ff0000"
 	 * - HSL: A string like "hsl(0, 100%, 50%)" or "hsla(0, 100%, 50%, 1)"
 	 * - HSV: A string like "hsv(0, 100%, 100%)"
-	 * - INT: A number representing the color in integer format (0 - 16777215)
+	 * - INT: A number representing the color in integer format (0 - 16777215).
 	 */
 	constructor(value) {
-		// * Events
-		this._decimal = 0;     // 0 - 16777215
-		this._hex = '#000000'; // #000000 - #FFFFFF
-		this._red = 0;         // 0 - 255
-		this._green = 0;       // 0 - 255
-		this._blue = 0;        // 0 - 255
-		this._hue = 0;         // 0 - 360
-		this._saturation = 0;  // 0 - 100
-		this._lightness = 0;   // 0 - 100
-		this._brightness = 0;  // 0 - 100
-		this._alpha = 255;     // 0 - 255
+		// * EVENTS * //
+		// #region EVENTS
+		/** @private @type {number} 0 - 16777215. */
+		this._decimal = 0;
+		/** @private @type {string} #000000 - #FFFFFF5. */
+		this._hex = '#000000';
+		/** @private @type {number} 0 - 255. */
+		this._red = 0;
+		/** @private @type {number} 0 - 255. */
+		this._green = 0;
+		/** @private @type {number} 0 - 255. */
+		this._blue = 0;
+		/** @private @type {number} 0 - 360. */
+		this._hue = 0;
+		/** @private @type {number} 0 - 100. */
+		this._saturation = 0;
+		/** @private @type {number} 0 - 100. */
+		this._lightness = 0;
+		/** @private @type {number} 0 - 100. */
+		this._brightness = 0;
+		/** @private @type {number} 0 - 255. */
+		this._alpha = 255;
+		/** @private @type {object} */
 		this._listeners = {};
+		// #endregion
 
-		// * Event subscription
-		this.subscribe(Color.Events.RGB_UPDATED, this._RGBUpdated);
-		this.subscribe(Color.Events.HEX_UPDATED, this._HEXUpdated);
-		this.subscribe(Color.Events.HSL_UPDATED, this._HSLUpdated);
-		this.subscribe(Color.Events.HSV_UPDATED, this._HSVUpdated);
-		this.subscribe(Color.Events.INT_UPDATED, this._INTUpdated);
-
-		// * Patterns
+		// * PATTERNS * //
+		// #region PATTERNS
+		/**
+		 * Regular expression to test for a valid hex color.
+		 * @type {RegExp}
+		 * @private
+		 */
 		this.isHex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i;
-		this.isHSL = /^hsla?\((\d{1,3}?),\s*(\d{1,3}%),\s*(\d{1,3}%)(,\s*[01]?\.?\d*)?\)$/;
-		this.isRGB = /^rgba?\((\d{1,3}%?),\s*(\d{1,3}%?),\s*(\d{1,3}%?)(,\s*[01]?\.?\d*)?\)$/;
-		this.isPercent = /^\d+(\.\d+)*%$/;
-		this.hexBit = /([0-9a-f])/gi;
-		this.leadHex = /^#/;
-		this.matchHSL = /^hsla?\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%(,\s*([01]?\.?\d*))?\)$/;
-		this.matchRGB = /^rgba?\((\d{1,3}%?),\s*(\d{1,3}%?),\s*(\d{1,3}%?)(,\s*([01]?\.?\d*))?\)$/;
 
-		// * Helpers
+		/**
+		 * Regular expression to test for a valid HSL(A) color.
+		 * @type {RegExp}
+		 * @private
+		 */
+		this.isHSL = /^hsla?\((\d{1,3}?),\s*(\d{1,3}%),\s*(\d{1,3}%)(,\s*[01]?\.?\d*)?\)$/;
+
+		/**
+		 * Regular expression to test for a valid RGB(A) color.
+		 * @type {RegExp}
+		 * @private
+		 */
+		this.isRGB = /^rgba?\((\d{1,3}%?),\s*(\d{1,3}%?),\s*(\d{1,3}%?)(,\s*[01]?\.?\d*)?\)$/;
+
+		/**
+		 * Regular expression to test for a value with a percentage.
+		 * @type {RegExp}
+		 * @private
+		 */
+		this.isPercent = /^\d+(\.\d+)*%$/;
+
+		/**
+		 * Regular expression to match individual hex digits.
+		 * @type {RegExp}
+		 * @private
+		 */
+		this.hexBit = /([0-9a-f])/gi;
+
+		/**
+		 * Regular expression to match the leading hash symbol in hex colors.
+		 * @type {RegExp}
+		 * @private
+		 */
+		this.leadHex = /^#/;
+
+		/**
+		 * Regular expression to test and capture groups in HSL(A) strings.
+		 * @type {RegExp}
+		 * @private
+		 */
+		this.matchHSL = /^hsla?\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%(,\s*([01]?\.?\d*))?\)$/;
+
+		/**
+		 * Regular expression to test and capture groups in RGB(A) strings.
+		 * @type {RegExp}
+		 * @private
+		 */
+		this.matchRGB = /^rgba?\((\d{1,3}%?),\s*(\d{1,3}%?),\s*(\d{1,3}%?)(,\s*([01]?\.?\d*))?\)$/;
+		// #endregion
+
+		// * HELPERS * //
+		// #region HELPERS
 		/**
 		 * Rounds a number to the nearest integer using the "round half up" method.
-		 * @param {number} number The number that will be round to the nearest whole number (integer) using the absolute value method.
+		 * @param {number} number - The number that will be round to the nearest whole number (integer) using the absolute value method.
+		 * @returns {number} The number rounded to the nearest integer.
+		 * @private
 		 */
 		this.AbsRound = (number) => (0.5 + number) << 0;
 
 		/**
 		 * Takes a number as input and returns a string representation of that number with leading zeroes added if necessary.
-		 * @param {number} num The number that we want to pad with zeroes.
+		 * @param {number} num - The number that we want to pad with zeroes.
+		 * @returns {string} The number padded with leading zeroes, resulting in a string of at least 3 characters width.
+		 * @private
 		 */
 		this.PadZeroes = (num) => (`   ${num}`).substr(-3, 3);
 
 		/**
-		 * Converts a hue value to its corresponding RGB value.
-		 * http://www.w3.org/TR/css3-color/#hsl-color
-		 * @param {number} a The starting value of the color component (e.g., red, green, or blue) in the RGB color model.
-		 * @param {number} b The middle value in the range of colors. It is used to calculate the RGB value based on the given hue value.
-		 * @param {number} c The hue value in the HSL color model. It is a value between 0 and 1, where 0 represents red, 1/3 represents green, and 2/3 represents blue.
-		 * @returns {number} The specific value that is returned depends on the value of `c` and follows a series of conditional statements.
-		 */
-		this.HUEtoRGB = (a, b, c) => {
-			if (c < 0) c++;
-			if (c > 1) c--;
-			if (c < 1 / 6) return a + (b - a) * 6 * c;
-			if (c < 1 / 2) return b;
-			if (c < 2 / 3) return a + (b - a) * (2 / 3 - c) * 6;
-			return a;
-		};
-
-		/**
 		 * Converts a percentage value to a value between 0 and 255.
-		 * @param {number} p The percentage number.
+		 * @param {number} p - The percentage number.
+		 * @returns {number} The corresponding value between 0 and 255 if the input is a percentage, otherwise the parsed integer value of the input.
+		 * @private
 		 */
 		this.PerToVal = (p) => this.isPercent.test(p) ? this.AbsRound(parseInt(p) * 2.55) : parseInt(p);
+		// #endregion
 
-		// * Parse the initial value
-		this.parse(value);
+		// * INITIALIZATION * //
+		// #region INITIALIZATION
+		this.subscribe(Color.Events.RGB_UPDATED, this._RGBUpdated);
+		this.subscribe(Color.Events.HEX_UPDATED, this._HEXUpdated);
+		this.subscribe(Color.Events.HSL_UPDATED, this._HSLUpdated);
+		this.subscribe(Color.Events.HSV_UPDATED, this._HSVUpdated);
+		this.subscribe(Color.Events.INT_UPDATED, this._INTUpdated);
+		this.parse(value); // Parse the initial value
+		// #endregion
 	}
 
-	// * STATICS * //
-
+	// * STATIC METHODS * //
+	// #region STATIC METHODS
 	/**
 	 * A static property that provides an enumeration of event names used by the Color class.
 	 * This allows for consistent naming of events throughout the application.
-	 * @returns {Object} An object containing event name constants.
+	 * @returns {object} An object containing event name constants.
 	 * @example
 	 * Assuming Color is a class that emits events and has an 'on' method for event listening.
 	 * colorInstance.on(Color.Events.RGB_UPDATED, (newColor) => {
@@ -134,9 +188,10 @@ class Color {
 	static random() {
 		return new Color(this.AbsRound(Math.random() * 16777215));
 	}
+	// #endregion
 
-	// * GETTERS * //
-
+	// * GETTERS & SETTERS * //
+	// #region GETTERS & SETTERS
 	/**
 	 * Gets the red component value of the color.
 	 * @returns {number} The red component value, between 0 and 255.
@@ -202,29 +257,29 @@ class Color {
 	}
 
 	/**
-	 * Checks if the color is greyscale (all RGB values are identical).
-	 * @returns {boolean} `true` if the color is greyscale, otherwise `false`.
+	 * Checks if the color is grayscale (all RGB values are identical).
+	 * @returns {boolean} `true` if the color is grayscale, otherwise `false`.
 	 */
-	get isGreyscale() {
+	get isGrayscale() {
 		return this._red === this._green && this._red === this._blue;
 	}
 
 	/**
-	 * Checks if a color is almost greyscale by determining if each RGB component is within a
+	 * Checks if a color is almost grayscale by determining if each RGB component is within a
 	 * specific threshold from the average RGB value.
-	 * @returns {boolean} `true` if the color is close to greyscale, otherwise `false`.
+	 * @returns {boolean} `true` if the color is close to grayscale, otherwise `false`.
 	 * @example
 	 * Assuming Color is a class that takes three arguments: red, green, and blue.
 	 * const color = new Color(100, 102, 104);
-	 * console.log(color.isCloseToGreyscale); // => true
+	 * console.log(color.isCloseToGrayscale); // => true
 	 *
 	 * const color2 = new Color(100, 100, 120);
-	 * console.log(color2.isCloseToGreyscale); // => false
+	 * console.log(color2.isCloseToGrayscale); // => false
 	 */
-	get isCloseToGreyscale() {
+	get isCloseToGrayscale() {
 		const threshold = 6;
 		const avg = Math.round((this._red + this._green + this._blue) / 3);
-		return this.isGreyscale ||
+		return this.isGrayscale ||
 				(Math.abs(this._red - avg) < threshold &&
 				Math.abs(this._green - avg) < threshold &&
 				Math.abs(this._blue - avg) < threshold);
@@ -247,11 +302,9 @@ class Color {
 		return this._decimal;
 	}
 
-	// * SETTERS * //
-
 	/**
 	 * Sets the hue component value of the color, updates all other components based on the new hue, and dispatches an event to notify about the update.
-	 * @param {number} value The hue component value to set, in the range of 0 to 360.
+	 * @param {number} value - The hue component value to set, in the range of 0 to 360.
 	 * @example
 	 * const color = new Color();
 	 * color.hue = 280; // sets the hue to 280 degrees
@@ -262,7 +315,7 @@ class Color {
 
 	/**
 	 * Sets the saturation component value of the color, updates all other components based on the new saturation, and dispatches an event to notify about the update.
-	 * @param {number} value The saturation component value to set, in the range of 0 to 100.
+	 * @param {number} value - The saturation component value to set, in the range of 0 to 100.
 	 * @example
 	 * const color = new Color();
 	 * color.saturation = 50; // sets the saturation to 50%
@@ -273,7 +326,7 @@ class Color {
 
 	/**
 	 * Sets the lightness component value of the color, updates all other components based on the new lightness, and dispatches an event to notify about the update.
-	 * @param {number} value The lightness component value to set, in the range of 0 to 100.
+	 * @param {number} value - The lightness component value to set, in the range of 0 to 100.
 	 * @example
 	 * const color = new Color();
 	 * color.lightness = 80; // sets the lightness to 80%
@@ -281,9 +334,10 @@ class Color {
 	set lightness(value) {
 		this._handle('_lightness', value, Color.Events.HSL_UPDATED);
 	}
+	// #endregion
 
 	// * PRIVATE METHODS * //
-
+	// #region PRIVATE METHODS
 	/**
 	 * Converts RGB color values to HSL (Hue, Saturation, Lightness) and updates the instance properties.
 	 *
@@ -298,16 +352,14 @@ class Color {
 	 *
 	 * The conversion accounts for cases where the RGB values are equal (achromatic colors), in which case saturation is set to 0,
 	 * and hue is set arbitrarily to 0 as it is undefined for achromatic colors.
-	 *
+	 * @property {number} _red - The internal red value used for conversion.
+	 * @property {number} _green - The internal green value used for conversion.
+	 * @property {number} _blue - The internal blue value used for conversion.
+	 * @property {number} _hue - The internal property set to the calculated hue value.
+	 * @property {number} _saturation - The internal property set to the calculated saturation value.
+	 * @property {number} _lightness - The internal property set to the calculated lightness value.
+	 * @property {number} _brightness - The internal property set to the calculated brightness value.
 	 * @private
-	 * @method _RGB2HSL
-	 * @property {_red} Internal red value used for conversion.
-	 * @property {_green} Internal green value used for conversion.
-	 * @property {_blue} Internal blue value used for conversion.
-	 * @property {_hue} Internal property set to the calculated hue value.
-	 * @property {_saturation} Internal property set to the calculated saturation value.
-	 * @property {_lightness} Internal property set to the calculated lightness value.
-	 * @property {_brightness} Internal property set to the calculated brightness value.
 	 * @see AbsRound
 	 */
 	_RGB2HSL() {
@@ -348,19 +400,18 @@ class Color {
 	 *
 	 * Assumes instance properties `_hue`, `_saturation`, and `_lightness` are defined:
 	 * - `_hue`: Range of 0 to 360 degrees
-	 * - `_saturation` and `_lightness`: Percentage from 0 to 100
+	 * - `_saturation` and `_lightness`: Percentage from 0 to 100.
 	 *
 	 * The RGB values are in the range of 0 to 255.
 	 * No value is returned.
-	 *
+	 * @property {number} _hue - The internal hue value used for conversion.
+	 * @property {number} _saturation - The internal saturation value used for conversion.
+	 * @property {number} _lightness - The internal lightness value used for conversion.
+	 * @property {number} _red - The internal property set after conversion to the red color component.
+	 * @property {number} _green - The internal property set after conversion to the green color component.
+	 * @property {number} _blue - The internal property set after conversion to the blue color component.
 	 * @private
-	 * @property {_hue} Internal hue value used for conversion.
-	 * @property {_saturation} Internal saturation value used for conversion.
-	 * @property {_lightness} Internal lightness value used for conversion.
-	 * @property {_red} Internal property set after conversion.
-	 * @property {_green} Internal property set after conversion.
-	 * @property {_blue} Internal property set after conversion.
-	 * @see HUEtoRGB
+	 * @see _HUEtoRGB
 	 * @see AbsRound
 	 */
 	_HSL2RGB() {
@@ -369,9 +420,9 @@ class Color {
 		const l = this._lightness / 100;
 		const q = l < 0.5 ? l * (1 + s) : (l + s - l * s);
 		const p = 2 * l - q;
-		this._red = this.AbsRound(this.HUEtoRGB(p, q, h + 1 / 3) * 255);
-		this._green = this.AbsRound(this.HUEtoRGB(p, q, h) * 255);
-		this._blue = this.AbsRound(this.HUEtoRGB(p, q, h - 1 / 3) * 255);
+		this._red = this.AbsRound(this._HUEtoRGB(p, q, h + 1 / 3) * 255);
+		this._green = this.AbsRound(this._HUEtoRGB(p, q, h) * 255);
+		this._blue = this.AbsRound(this._HUEtoRGB(p, q, h - 1 / 3) * 255);
 	}
 
 	/**
@@ -380,20 +431,19 @@ class Color {
 	 *
 	 * Assumes instance properties `_hue`, `_saturation`, and `_brightness` are defined:
 	 * - `_hue`: Range of 0 to 360 degrees
-	 * - `_saturation` and `_brightness`: Percentage from 0 to 100
+	 * - `_saturation` and `_brightness`: Percentage from 0 to 100.
 	 *
 	 * The RGB values are in the range of 0 to 255.
 	 * No value is returned.
 	 *
 	 * The conversion algorithm is sector-based, typical for HSV to RGB conversion.
-	 *
+	 * @property {number} _hue - Internal hue value used for conversion.
+	 * @property {number} _saturation - Internal saturation value used for conversion.
+	 * @property {number} _brightness - Internal brightness value used for conversion.
+	 * @property {number} _red - Internal property set after conversion to the red color component.
+	 * @property {number} _green - Internal property set after conversion to the green color component.
+	 * @property {number} _blue - Internal property set after conversion to the blue color component.
 	 * @private
-	 * @property {_hue} Internal hue value used for conversion.
-	 * @property {_saturation} Internal saturation value used for conversion.
-	 * @property {_brightness} Internal brightness value used for conversion.
-	 * @property {_red} Internal property set after conversion.
-	 * @property {_green} Internal property set after conversion.
-	 * @property {_blue} Internal property set after conversion.
 	 * @see AbsRound
 	 * @see {@link http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript|Conversion algorithm}
 	 */
@@ -420,6 +470,24 @@ class Color {
 		this._red = this.AbsRound(r * 255);
 		this._green = this.AbsRound(g * 255);
 		this._blue = this.AbsRound(b * 255);
+	}
+
+	/**
+	 * Converts a hue value to its corresponding RGB value.
+	 * Http://www.w3.org/TR/css3-color/#hsl-color.
+	 * @param {number} a - The starting value of the color component (e.g., red, green, or blue) in the RGB color model.
+	 * @param {number} b - The middle value in the range of colors. It is used to calculate the RGB value based on the given hue value.
+	 * @param {number} c - The hue value in the HSL color model. It is a value between 0 and 1, where 0 represents red, 1/3 represents green, and 2/3 represents blue.
+	 * @returns {number} The specific value that is returned depends on the value of `c` and follows a series of conditional statements.
+	 * @private
+	 */
+	_HUEtoRGB(a, b, c) {
+		if (c < 0) c++;
+		if (c > 1) c--;
+		if (c < 1 / 6) return a + (b - a) * 6 * c;
+		if (c < 1 / 2) return b;
+		if (c < 2 / 3) return a + (b - a) * (2 / 3 - c) * 6;
+		return a;
 	}
 
 	/**
@@ -527,9 +595,9 @@ class Color {
 	 * Handles the property update by setting the new value if it differs from the current one.
 	 * Triggers a specific event broadcast if the event name is provided and the value has changed.
 	 * Always broadcasts an 'updated' event regardless of the change in value.
-	 * @param {string} prop The name of the property to handle.
-	 * @param {*} value The new value to set for the property.
-	 * @param {string} [event] The name of the event to broadcast on change.
+	 * @param {string} prop - The name of the property to handle.
+	 * @param {*} value - The new value to set for the property.
+	 * @param {string} [event] - The name of the event to broadcast on change.
 	 * @returns {*} The updated value of the property if it was changed, otherwise the original value.
 	 * @private
 	 */
@@ -548,16 +616,17 @@ class Color {
 
 	/**
 	 * Checks if the object has subscribers for a given event type.
-	 * @param {string} type The event type to check for subscribers.
+	 * @param {string} type - The event type to check for subscribers.
 	 * @returns {boolean} True if there are subscribers for the event type, false otherwise.
 	 * @private
 	 */
 	_isSubscribed(type) {
 		return this._listeners[type] != null;
 	}
+	// #endregion
 
-	// * METHODS * //
-
+	// * PUBLIC METHODS * //
+	// #region PUBLIC METHODS
 	/**
 	 * Returns a CSS-formatted hex string (e.g., "#FF9900") from the Color's component values.
 	 * @returns {string} Hexadecimal color string representing the Color object's current state.
@@ -568,8 +637,8 @@ class Color {
 
 	/**
 	 * Returns a CSS-formatted RGB or RGBA string from the Color's component values.
-	 * @param {boolean} [showPrefix=true] If true, includes 'rgb' or 'rgba' as prefix in the string.
-	 * @param {boolean} [threeDigitColors=false] If true, pads the color component values with zeroes to have three digits.
+	 * @param {boolean} [showPrefix] - If true, includes 'rgb' or 'rgba' as prefix in the string.
+	 * @param {boolean} [threeDigitColors] - If true, pads the color component values with zeroes to have three digits.
 	 * @returns {string} The CSS-formatted RGB or RGBA color string.
 	 * @example
 	 * Assuming the color instance has _red=255, _green=153, _blue=0, _alpha=0.5
@@ -629,7 +698,7 @@ class Color {
 
 	/**
 	 * Sets the hex value of the color, updates all other components, and dispatches Event.HEX_UPDATED.
-	 * @param {string} value The hex value to be set.
+	 * @param {string} value - The hex value to be set.
 	 * @returns {Color} This Color instance for method chaining.
 	 * @fires Color#event:HEX_UPDATED When the hex value is updated.
 	 * @example
@@ -643,7 +712,7 @@ class Color {
 
 	/**
 	 * Sets the red component value of the color, updates all other components, and dispatches Event.RGB_UPDATED.
-	 * @param {number} value The red component value to set (0 - 255).
+	 * @param {number} value - The red component value to set (0 - 255).
 	 * @returns {Color} This Color instance for method chaining.
 	 * @fires Color#event:RGB_UPDATED When the red component is updated.
 	 * @example
@@ -656,7 +725,7 @@ class Color {
 
 	/**
 	 * Sets the green component value of the color, updates all other components, and dispatches Event.RGB_UPDATED.
-	 * @param {number} value The green component value to set (0 - 255).
+	 * @param {number} value - The green component value to set (0 - 255).
 	 * @returns {Color} This Color instance for method chaining.
 	 * @fires Color#event:RGB_UPDATED When the green component is updated.
 	 * @example
@@ -669,7 +738,7 @@ class Color {
 
 	/**
 	 * Sets the blue component value of the color, updates all other components, and dispatches Event.RGB_UPDATED.
-	 * @param {number} value The blue component value to set (0 - 255).
+	 * @param {number} value - The blue component value to set (0 - 255).
 	 * @returns {Color} This Color instance for method chaining.
 	 * @fires Color#event:RGB_UPDATED When the blue component is updated.
 	 * @example
@@ -682,7 +751,7 @@ class Color {
 
 	/**
 	 * Sets the brightness component value of the color, updates all other components, and dispatches Event.HSV_UPDATED.
-	 * @param {number} value The brightness component value to set (0 - 100).
+	 * @param {number} value - The brightness component value to set (0 - 100).
 	 * @returns {Color} This Color instance for method chaining.
 	 * @fires Color#event:HSV_UPDATED When the brightness component is updated.
 	 * @example
@@ -695,7 +764,7 @@ class Color {
 
 	/**
 	 * Sets the opacity value of the color, updates all other components, and dispatches Event.UPDATED.
-	 * @param {number} [value=1] The opacity component value to set (0 - 1). Defaults to 1 if not specified.
+	 * @param {number} [value] - The opacity component value to set (0 - 1). Defaults to 1 if not specified.
 	 * @returns {Color} This Color instance for method chaining.
 	 * @fires Color#event:UPDATED When the opacity is updated.
 	 * @example
@@ -708,7 +777,7 @@ class Color {
 
 	/**
 	 * Parses a mixed variable and adopts its properties into the current Color instance. The value can be any CSS color value, a hash of properties, another Color instance, a numeric value, or a named CSS color.
-	 * @param {*} value A CSS color string, object with color properties, another Color instance, or a numeric color value. If undefined, the method will return the current instance without parsing.
+	 * @param {*} value - A CSS color string, object with color properties, another Color instance, or a numeric color value. If undefined, the method will return the current instance without parsing.
 	 * @returns {Color} This Color instance for method chaining.
 	 * @fires Color#event:PARSED When the color is successfully parsed. The PARSED event is emitted with the new color value.
 	 * @example
@@ -793,7 +862,7 @@ class Color {
 
 	/**
 	 * Copies the color properties from another Color object to this one.
-	 * @param {Color} color The Color object to copy properties from.
+	 * @param {Color} color - The Color object to copy properties from.
 	 * @returns {Color} The current Color object after copying the color and alpha values.
 	 */
 	copy(color) {
@@ -805,8 +874,8 @@ class Color {
 	 * If a single numeric value is provided, it sets the decimal color value.
 	 * If an object is provided, each key-value pair is applied to the corresponding color component.
 	 * If a key and value are provided, it sets the specified component to the given value.
-	 * @param {string|object|number} key The name of the color component to set, a hash of key-value pairs for multiple components, or a single numeric value representing the color.
-	 * @param {?string|number} [value] The value of the color component to be set. This parameter is ignored if key is an object or number.
+	 * @param {string|object|number} key - The name of the color component to set, a hash of key-value pairs for multiple components, or a single numeric value representing the color.
+	 * @param {?string|number} [value] - The value of the color component to be set. This parameter is ignored if key is an object or number.
 	 * @returns {Color} The Color instance for method chaining.
 	 * @example
 	 * const color = new Color();
@@ -833,8 +902,8 @@ class Color {
 
 	/**
 	 * Modifies the invoking Color instance by interpolating its component values between the original color and the destination color based on the provided factor.
-	 * @param {Color} destination The Color instance toward which the interpolation occurs.
-	 * @param {number} factor A float between 0 and 1, where 0 is the original Color, 1 is the destination Color, and 0.5 represents the midpoint. This method blends the colors accordingly.
+	 * @param {Color} destination - The Color instance toward which the interpolation occurs.
+	 * @param {number} factor - A float between 0 and 1, where 0 is the original Color, 1 is the destination Color, and 0.5 represents the midpoint. This method blends the colors accordingly.
 	 * @returns {Color} The Color instance after interpolation, for method chaining.
 	 * @example
 	 * const orange = new Color('#FF9900');
@@ -878,8 +947,8 @@ class Color {
 	 * - `v` for brightness component (in HSV)
 	 * - `a` for alpha component (transparency)
 	 * - `x` for hexadecimal color representation
-	 * - `d` for decimal color representation
-	 * @param {string} string The string with tokens to be replaced by color values.
+	 * - `d` for decimal color representation.
+	 * @param {string} string - The string with tokens to be replaced by color values.
 	 * @returns {string} The formatted string with all tokens replaced by their corresponding values.
 	 */
 	format(string) {
@@ -932,8 +1001,8 @@ class Color {
 
 	/**
 	 * Broadcasts an event to all subscribed listeners with optional parameters.
-	 * @param {string} type The event type to broadcast.
-	 * @param {Array} [params] An array of parameters to pass to each of the event listeners.
+	 * @param {string} type - The event type to broadcast.
+	 * @param {Array} [params] - An array of parameters to pass to each of the event listeners.
 	 * @example
 	 * Suppose some listeners have been added to 'update' event
 	 * color.broadcast('update', [newColorValue]);
@@ -951,8 +1020,8 @@ class Color {
 
 	/**
 	 * Subscribes a new listener to a specific event type.
-	 * @param {string} type The event type for which to register the listener.
-	 * @param {function} callback The callback function that will be invoked when the event is broadcasted.
+	 * @param {string} type - The event type for which to register the listener.
+	 * @param {Function} callback - The callback function that will be invoked when the event is broadcasted.
 	 * @example
 	 * To listen for a color update event
 	 * color.subscribe('update', function(updatedColor) {
@@ -969,8 +1038,9 @@ class Color {
 	/**
 	 * Unsubscribes a previously registered listener from a specific event type.
 	 * If the callback is not found, no action is taken.
-	 * @param {string} type The event type to unsubscribe from.
-	 * @param {function} callback The callback function to unregister from the event.
+	 * @param {string} type - The event type to unsubscribe from.
+	 * @param {Function} callback - The callback function to unregister from the event.
+	 * @returns {void|this} If the callback is found and removed, the method returns the instance for chaining.
 	 * @example
 	 * To remove a previously added listener from the 'update' event
 	 * color.unsubscribe('update', updateListener);
@@ -987,4 +1057,5 @@ class Color {
 			}
 		}
 	}
+	// #endregion
 }

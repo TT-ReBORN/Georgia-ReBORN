@@ -1,9 +1,11 @@
 'use strict';
 
-const MF_GRAYED_BIO = 0x00000001;
-const MF_STRING_BIO = 0x00000000;
+/** @global @type {number} */
+const BIO_MF_GRAYED = 0x00000001;
+/** @global @type {number} */
+const BIO_MF_STRING = 0x00000000;
 
-class MenuManagerBio {
+class BioMenuManager {
 	constructor(name, clearArr, baseMenu) {
 		this.baseMenu = baseMenu || 'baseMenu';
 		this.clearArr = clearArr;
@@ -79,7 +81,7 @@ class MenuManagerBio {
 	}
 
 	load(x, y) {
-		if (!this.menuItems.length) menBio[this.name]();
+		if (!this.menuItems.length) bio.men[this.name]();
 		let i = 0;
 		let ln = this.menuNames.length;
 		while (i < ln) {
@@ -100,9 +102,9 @@ class MenuManagerBio {
 		this.clear();
 	}
 
-	newItem({ str = null, func = null, menuName = this.baseMenu, flags = MF_STRING_BIO, checkItem = false, checkRadio = false, separator = false, hide = false }) { this.menuItems.push({ str, func, menuName, flags, checkItem, checkRadio, separator, hide }); }
+	newItem({ str = null, func = null, menuName = this.baseMenu, flags = BIO_MF_STRING, checkItem = false, checkRadio = false, separator = false, hide = false }) { this.menuItems.push({ str, func, menuName, flags, checkItem, checkRadio, separator, hide }); }
 
-	newMenu({ menuName = this.baseMenu, str = '', appendTo = this.baseMenu, flags = MF_STRING_BIO, separator = false, hide = false }) {
+	newMenu({ menuName = this.baseMenu, str = '', appendTo = this.baseMenu, flags = BIO_MF_STRING, separator = false, hide = false }) {
 		this.menuNames.push(menuName);
 		if (menuName != this.baseMenu) this.menuItems.push({ menuName, appendMenu: true, str, appendTo, flags, separator, hide });
 	}
@@ -113,11 +115,24 @@ class MenuManagerBio {
 	}
 }
 
-const clearArrBio = true;
-const menuBio = new MenuManagerBio('mainMenu', clearArrBio);
-const bMenu = new MenuManagerBio('buttonMenu', clearArrBio);
+/** @global @type {boolean} */
+const bioClearArr = true;
 
-class MenuItemsBio {
+/**
+ * The instance of `BioMenuManager` class for biography main menu operations.
+ * @typedef {BioMenuManager}
+ * @global
+ */
+const bioMenu = new BioMenuManager('mainMenu', bioClearArr);
+
+/**
+ * The instance of `BioMenuManager` class for biography buttion menu operations.
+ * @typedef {BioMenuManager}
+ * @global
+ */
+const bioBMenu = new BioMenuManager('buttonMenu', bioClearArr);
+
+class BioMenuItems {
 	constructor() {
 		this.docTxt = '';
 		this.handles = new FbMetadbHandleList();
@@ -141,7 +156,7 @@ class MenuItemsBio {
 			artistClean: '',
 			blacklist: [],
 			blacklistStr: [],
-			covType: [lg.Front, lg.Back, lg.Disc, lg.Icon, lg.Artist, lg['Cycle above'], lg['Cycle from folder']],
+			covType: [bioLg.Front, bioLg.Back, bioLg.Disc, bioLg.Icon, bioLg.Artist, bioLg['Cycle above'], bioLg['Cycle from folder']],
 			isLfm: true,
 			list: [],
 			name: ''
@@ -174,60 +189,60 @@ class MenuItemsBio {
 	// * METHODS * //
 
 	buttonMenu() {
-		bMenu.newMenu({});
-		const artist = panelBio.art.list.length ? panelBio.art.list[0].name : name.artist(panelBio.id.focus);
-		switch (pptBio.artistView) {
+		bioBMenu.newMenu({});
+		const artist = bio.panel.art.list.length ? bio.panel.art.list[0].name : bio.name.artist(bio.panel.id.focus);
+		switch (bioSet.artistView) {
 			case true:
-				panelBio.art.list.forEach((v, i) => bMenu.newItem({
+				bio.panel.art.list.forEach((v, i) => bioBMenu.newItem({
 					str: v.name.replace(/&/g, '&&') + v.field.replace(/&/g, '&&'),
 					func: () => this.lookUpArtist(i),
-					flags: v.type != 'label' ? MF_STRING_BIO : MF_GRAYED_BIO,
-					checkRadio: i == panelBio.art.ix,
+					flags: v.type != 'label' ? BIO_MF_STRING : BIO_MF_GRAYED,
+					checkRadio: i == bio.panel.art.ix,
 					separator: !i || v.type == 'similarend' || v.type == 'label' || v.type == 'tagend' || v.type == 'historyend'
 				}));
-				for (let i = 0; i < 4; i++) { bMenu.newItem({
+				for (let i = 0; i < 4; i++) { bioBMenu.newItem({
 					str: this.getlookUpStr(i, 0),
-					func: () => this.lookUpArtist(panelBio.art.list.length + i),
-					flags: !i ? MF_GRAYED_BIO : MF_STRING_BIO,
-					checkItem: i == 1 && pptBio.cycItem,
+					func: () => this.lookUpArtist(bio.panel.art.list.length + i),
+					flags: !i ? BIO_MF_GRAYED : BIO_MF_STRING,
+					checkItem: i == 1 && bioSet.cycItem,
 					separator: true
 				}); }
 
-				bMenu.newMenu({
-					menuName: lg['More...']
+				bioBMenu.newMenu({
+					menuName: bioLg['More...']
 				});
-				for (let i = 0; i < 8; i++) { bMenu.newItem({
-					menuName: lg['More...'],
+				for (let i = 0; i < 8; i++) { bioBMenu.newItem({
+					menuName: bioLg['More...'],
 					str: this.getlookUpStr(i, 1, artist),
 					func: () => this.lookUpArtistItems(i),
-					checkItem: i < 4 && [pptBio.showSimilarArtists, pptBio.showMoreTags, pptBio.showArtistHistory, pptBio.autoLock][i],
+					checkItem: i < 4 && [bioSet.showSimilarArtists, bioSet.showMoreTags, bioSet.showArtistHistory, bioSet.autoLock][i],
 					separator: i == 2 || i == 3 || i == 4 || i == 5
 				}); }
 				break;
 			case false:
-				panelBio.alb.list.forEach((v, i) => bMenu.newItem({
+				bio.panel.alb.list.forEach((v, i) => bioBMenu.newItem({
 					str: ((!i || v.type.includes('history') ? `${v.artist.replace(/&/g, '&&')} - ${v.album.replace(/&/g, '&&')}` : v.album.replace(/&/g, '&&')) + (!v.composition ? '' : ' [composition]')).replace(/^\s-\s/, ''),
 					func: () => this.lookUpAlbum(i),
-					flags: v.type != 'label' && v.album != lg['Album History:'] ? MF_STRING_BIO : MF_GRAYED_BIO,
-					checkRadio: i == panelBio.alb.ix,
+					flags: v.type != 'label' && v.album != bioLg['Album History:'] ? BIO_MF_STRING : BIO_MF_GRAYED,
+					checkRadio: i == bio.panel.alb.ix,
 					separator: !i || v.type == 'albumend' || v.type == 'label' || v.type == 'historyend'
 				}));
-				for (let i = 0; i < 4; i++) { bMenu.newItem({
+				for (let i = 0; i < 4; i++) { bioBMenu.newItem({
 					str: this.getlookUpStr(i, 0),
-					func: () => this.lookUpAlbum(panelBio.alb.list.length + i),
-					flags: !i ? MF_GRAYED_BIO : MF_STRING_BIO,
-					checkItem: i == 1 && pptBio.cycItem,
+					func: () => this.lookUpAlbum(bio.panel.alb.list.length + i),
+					flags: !i ? BIO_MF_GRAYED : BIO_MF_STRING,
+					checkItem: i == 1 && bioSet.cycItem,
 					separator: true
 				}); }
 
-				bMenu.newMenu({
-					menuName: lg['More...']
+				bioBMenu.newMenu({
+					menuName: bioLg['More...']
 				});
-				for (let i = 0; i < 8; i++) { bMenu.newItem({
-					menuName: lg['More...'],
+				for (let i = 0; i < 8; i++) { bioBMenu.newItem({
+					menuName: bioLg['More...'],
 					str: this.getlookUpStr(i, 2, artist),
 					func: () => this.lookUpAlbumItems(i),
-					checkItem: i < 3 && [pptBio.showTopAlbums, pptBio.showAlbumHistory, pptBio.autoLock][i],
+					checkItem: i < 3 && [bioSet.showTopAlbums, bioSet.showAlbumHistory, bioSet.autoLock][i],
 					separator: i == 1 || i == 2 || i == 3 || i == 4
 				}); }
 				break;
@@ -235,168 +250,168 @@ class MenuItemsBio {
 	}
 
 	mainMenu() {
-		menuBio.newMenu({});
-		menuBio.newItem({
-			str: `${$Bio.titlecase(cfg.cfgBaseName)} server`,
-			flags: MF_GRAYED_BIO,
+		bioMenu.newMenu({});
+		bioMenu.newItem({
+			str: `${$Bio.titlecase(bioCfg.cfgBaseName)} server`,
+			flags: BIO_MF_GRAYED,
 			separator: true,
-			hide: !$Bio.server || !this.shift || !vkBio.k('ctrl')
+			hide: !$Bio.server || !this.shift || !bio.vk.k('ctrl')
 		});
 
-		const b = pptBio.artistView ? 'Bio' : 'Rev';
-		const loadName = lg.Load + (!pptBio.sourceAll ? '' : lg[' first']);
+		const b = bioSet.artistView ? 'Bio' : 'Rev';
+		const loadName = bioLg.Load + (!bioSet.sourceAll ? '' : bioLg[' first']);
 		const n = b.toLowerCase();
-		const separator = !pptBio.artistView && (pptBio.showTrackRevOptions || txt.isCompositionLoaded()) || !panelBio.stndItem();
+		const separator = !bioSet.artistView && (bioSet.showTrackRevOptions || bio.txt.isCompositionLoaded()) || !bio.panel.stndItem();
 
-		if (pref.layout === 'default' && pref.theme.startsWith('custom')) {
-			menuBio.newItem({
+		if (grSet.layout === 'default' && grSet.theme.startsWith('custom')) {
+			bioMenu.newItem({
 				str: 'Edit custom theme',
 				func: () => {
-					displayCustomThemeMenu = true;
-					initCustomThemeMenu(false, false, false, 'bio_bg');
+					grm.ui.displayCustomThemeMenu = true;
+					grm.cthMenu.initCustomThemeMenu(false, false, false, 'bio_bg');
 					window.Repaint();
 				},
 				separator: true
 			});
 		}
 
-		menuBio.newItem({ // * Biography layout switcher
-			str: pref.biographyLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal',
+		bioMenu.newItem({ // * Biography layout switcher
+			str: grSet.biographyLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal',
 			func: () => {
-				if (pref.biographyLayout === 'normal') {
-					pref.biographyLayout = 'full';
-					displayPlaylist = false;
+				if (grSet.biographyLayout === 'normal') {
+					grSet.biographyLayout = 'full';
+					grm.ui.displayPlaylist = false;
 				} else {
-					pref.biographyLayout = 'normal';
-					displayPlaylist = true;
+					grSet.biographyLayout = 'normal';
+					grm.ui.displayPlaylist = true;
 				}
-				if (pref.panelWidthAuto) {
-					initPanelWidthAuto();
+				if (grSet.panelWidthAuto) {
+					grm.ui.initPanelWidthAuto();
 				}
-				initBiographyLayout();
+				grm.ui.initBiographyLayout();
 			},
 			separator: true,
-			hide: pref.layout !== 'default'
+			hide: grSet.layout !== 'default'
 		});
 
-		menuBio.newMenu({
+		bioMenu.newMenu({
 			menuName: loadName,
-			hide: pptBio.img_only
+			hide: bioSet.img_only
 		});
 
-		this.sources.forEach((v, i) => menuBio.newItem({
+		this.sources.forEach((v, i) => bioMenu.newItem({
 			menuName: loadName,
 			str: v,
 			func: () => this.toggle(i, b, true),
-			flags: txt[n][this.types[i]] ? MF_STRING_BIO : MF_GRAYED_BIO,
-			checkRadio: i == txt[n].loaded.ix,
-			separator: txt[n].reader ? i == 3 && separator : i == 2 && separator
+			flags: bio.txt[n][this.types[i]] ? BIO_MF_STRING : BIO_MF_GRAYED,
+			checkRadio: i == bio.txt[n].loaded.ix,
+			separator: bio.txt[n].reader ? i == 3 && separator : i == 2 && separator
 		}));
 
-		if (pptBio.showTrackRevOptions && !pptBio.artistView && panelBio.stndItem() && !txt.isCompositionLoaded()) {
-			menuBio.newItem({
+		if (bioSet.showTrackRevOptions && !bioSet.artistView && bio.panel.stndItem() && !bio.txt.isCompositionLoaded()) {
+			bioMenu.newItem({
 				menuName: loadName,
-				str: lg['Type:'],
-				flags: MF_GRAYED_BIO,
+				str: bioLg['Type:'],
+				flags: BIO_MF_GRAYED,
 				separator: true
 			});
-			[lg.Album, lg.Track, lg['Prefer both']].forEach((v, i) => menuBio.newItem({
+			[bioLg.Album, bioLg.Track, bioLg['Prefer both']].forEach((v, i) => bioMenu.newItem({
 				menuName: loadName,
 				str: v,
 				func: () => this.setReviewType(i),
-				flags: !txt[n][this.types[0]] && !txt[n][this.types[1]] && !txt[n][this.types[2]] ? MF_STRING_BIO : !txt[n].loaded.txt && [this.albAvail, this.trkAvail, this.albAvail || this.trkAvail][i] ? MF_STRING_BIO : MF_GRAYED_BIO,
-				checkRadio: !i && !pptBio.inclTrackRev || i == 1 && pptBio.inclTrackRev == 2 || i == 2 && pptBio.inclTrackRev == 1
+				flags: !bio.txt[n][this.types[0]] && !bio.txt[n][this.types[1]] && !bio.txt[n][this.types[2]] ? BIO_MF_STRING : !bio.txt[n].loaded.txt && [this.albAvail, this.trkAvail, this.albAvail || this.trkAvail][i] ? BIO_MF_STRING : BIO_MF_GRAYED,
+				checkRadio: !i && !bioSet.inclTrackRev || i == 1 && bioSet.inclTrackRev == 2 || i == 2 && bioSet.inclTrackRev == 1
 			}));
 		}
 
-		if (!panelBio.stndItem() || txt.isCompositionLoaded()) {
-			menuBio.newItem({
+		if (!bio.panel.stndItem() || bio.txt.isCompositionLoaded()) {
+			bioMenu.newItem({
 				menuName: loadName,
-				str: lg['Mode: '] + (pptBio.artistView ? lg['artist look-up'] : (txt.isCompositionLoaded() ? lg['composition loaded'] : lg['album look-up'])),
-				flags: MF_GRAYED_BIO
+				str: bioLg['Mode: '] + (bioSet.artistView ? bioLg['artist look-up'] : (bio.txt.isCompositionLoaded() ? bioLg['composition loaded'] : bioLg['album look-up'])),
+				flags: BIO_MF_GRAYED
 			});
 		}
 
-		menuBio.addSeparator({ separator: !pptBio.img_only });
+		bioMenu.addSeparator({ separator: !bioSet.img_only });
 
-		menuBio.newMenu({
-			menuName: lg.Display
+		bioMenu.newMenu({
+			menuName: bioLg.Display
 		});
 
-		for (let i = 0; i < 11; i++) { menuBio.newItem({
-			menuName: lg.Display,
+		for (let i = 0; i < 11; i++) { bioMenu.newItem({
+			menuName: bioLg.Display,
 			str: this.display.str[i],
 			func: () => this.setDisplay(i),
-			flags: i == 1 && pptBio.autoEnlarge || i == 6 && !pptBio.summaryShow || i == 10 && (panelBio.id.lyricsSource || panelBio.id.nowplayingSource) ? MF_GRAYED_BIO : MF_STRING_BIO,
+			flags: i == 1 && bioSet.autoEnlarge || i == 6 && !bioSet.summaryShow || i == 10 && (bio.panel.id.lyricsSource || bio.panel.id.nowplayingSource) ? BIO_MF_GRAYED : BIO_MF_STRING,
 			checkItem: (i > 2 && i < 6) && this.display.check[i],
 			checkRadio: (i < 3 || i > 6 && i < 9 || i > 8) && this.display.check[i],
 			separator: i == 2 || i == 5 || i == 6 || i == 8
 		}); }
 
-		menuBio.addSeparator({});
+		bioMenu.addSeparator({});
 
-		menuBio.newMenu({
-			menuName: lg.Sources
+		bioMenu.newMenu({
+			menuName: bioLg.Sources
 		});
 
-		menuBio.newMenu({
-			menuName: lg.Text,
-			appendTo: lg.Sources
+		bioMenu.newMenu({
+			menuName: bioLg.Text,
+			appendTo: bioLg.Sources
 		});
 
-		for (let i = 0; i < 5; i++) { menuBio.newItem({
-			menuName: lg.Text,
-			str: [lg['Auto-fallback'], lg.Static, lg.Amalgamate, lg['Show track review options on load menu'], lg['Prefer composition reviews (allmusic && wikipedia)']][i],
+		for (let i = 0; i < 5; i++) { bioMenu.newItem({
+			menuName: bioLg.Text,
+			str: [bioLg['Auto-fallback'], bioLg.Static, bioLg.Amalgamate, bioLg['Show track review options on load menu'], bioLg['Prefer composition reviews (allmusic && wikipedia)']][i],
 			func: () => this.setTextType(i, b),
-			flags: !i && pptBio.sourceAll || i == 1 && pptBio.sourceAll ? MF_GRAYED_BIO : MF_STRING_BIO,
-			checkItem: i == 2 && pptBio.sourceAll || i == 3 && pptBio.showTrackRevOptions || i == 4 && pptBio.classicalMusicMode,
-			checkRadio: !i && (!pptBio.lockBio || pptBio.sourceAll) || i == 1 && pptBio.lockBio && !pptBio.sourceAll,
-			separator: i == 1 || i == 2 || i == 3 && cfg.classicalModeEnable,
-			hide: i == 4 && !cfg.classicalModeEnable
+			flags: !i && bioSet.sourceAll || i == 1 && bioSet.sourceAll ? BIO_MF_GRAYED : BIO_MF_STRING,
+			checkItem: i == 2 && bioSet.sourceAll || i == 3 && bioSet.showTrackRevOptions || i == 4 && bioSet.classicalMusicMode,
+			checkRadio: !i && (!bioSet.lockBio || bioSet.sourceAll) || i == 1 && bioSet.lockBio && !bioSet.sourceAll,
+			separator: i == 1 || i == 2 || i == 3 && bioCfg.classicalModeEnable,
+			hide: i == 4 && !bioCfg.classicalModeEnable
 		}); }
 
-		menuBio.addSeparator({ menuName: lg.Sources });
+		bioMenu.addSeparator({ menuName: bioLg.Sources });
 
-		menuBio.newMenu({
-			menuName: lg.Photo,
-			appendTo: lg.Sources
+		bioMenu.newMenu({
+			menuName: bioLg.Photo,
+			appendTo: bioLg.Sources
 		});
 
-		[lg['Cycle from download folder'], lg['Cycle from custom folder [fallback to above]'], lg['Artist (single image [fb2k: display])']].forEach((v, i) => menuBio.newItem({
-			menuName: lg.Photo,
+		[bioLg['Cycle from download folder'], bioLg['Cycle from custom folder [fallback to above]'], bioLg['Artist (single image [fb2k: display])']].forEach((v, i) => bioMenu.newItem({
+			menuName: bioLg.Photo,
 			str: v,
 			func: () => this.setPhotoType(i),
-			checkRadio: pptBio.cycPhotoLocation == i,
+			checkRadio: bioSet.cycPhotoLocation == i,
 			separator: i == 1
 		}));
 
-		menuBio.newMenu({
-			menuName: lg.Cover,
-			str: lg.Cover,
-			appendTo: lg.Sources,
-			flags: !panelBio.alb.ix || pptBio.artistView ? MF_STRING_BIO : MF_GRAYED_BIO
+		bioMenu.newMenu({
+			menuName: bioLg.Cover,
+			str: bioLg.Cover,
+			appendTo: bioLg.Sources,
+			flags: !bio.panel.alb.ix || bioSet.artistView ? BIO_MF_STRING : BIO_MF_GRAYED
 		});
 
-		this.img.covType.forEach((v, i) => menuBio.newItem({
-			menuName: lg.Cover,
+		this.img.covType.forEach((v, i) => bioMenu.newItem({
+			menuName: bioLg.Cover,
 			str: v,
 			func: () => this.setCover(i),
-			flags: pptBio.loadCovFolder && !pptBio.loadCovAllFb && i < 5 ? MF_GRAYED_BIO : MF_STRING_BIO,
-			checkItem: (pptBio.loadCovAllFb || i > 4) && [imgBio.cov.selection[0] != -1, imgBio.cov.selection[1] != -1, imgBio.cov.selection[2] != -1, imgBio.cov.selection[3] != -1, imgBio.cov.selection[4] != -1, pptBio.loadCovAllFb, pptBio.loadCovFolder][i],
-			checkRadio: !pptBio.loadCovAllFb && i == pptBio.covType,
+			flags: bioSet.loadCovFolder && !bioSet.loadCovAllFb && i < 5 ? BIO_MF_GRAYED : BIO_MF_STRING,
+			checkItem: (bioSet.loadCovAllFb || i > 4) && [bio.img.cov.selection[0] != -1, bio.img.cov.selection[1] != -1, bio.img.cov.selection[2] != -1, bio.img.cov.selection[3] != -1, bio.img.cov.selection[4] != -1, bioSet.loadCovAllFb, bioSet.loadCovFolder][i],
+			checkRadio: !bioSet.loadCovAllFb && i == bioSet.covType,
 			separator: i == 4
 		}));
 
-		menuBio.addSeparator({ menuName: lg.Sources });
+		bioMenu.addSeparator({ menuName: bioLg.Sources });
 
-		menuBio.newMenu({
-			menuName: lg['Open file location'],
-			appendTo: lg.Sources,
+		bioMenu.newMenu({
+			menuName: bioLg['Open file location'],
+			appendTo: bioLg.Sources,
 			flags: this.getOpenFlag()
 		});
 
-		for (let i = 0; i < 8; i++) { menuBio.newItem({
-			menuName: lg['Open file location'],
+		for (let i = 0; i < 8; i++) { bioMenu.newItem({
+			menuName: bioLg['Open file location'],
 			str:  this.openName[i],
 			func: () => $Bio.browser(`explorer /select,"${this.path.open[i]}"`, false),
 			flags: this.getOpenFlag(),
@@ -404,172 +419,172 @@ class MenuItemsBio {
 			hide: !this.openName[i]
 		}); }
 
-		menuBio.addSeparator({ menuName: lg.Sources });
+		bioMenu.addSeparator({ menuName: bioLg.Sources });
 
-		if (pptBio.menuShowPaste == 2 || pptBio.menuShowPaste && this.shift) {
-			menuBio.newMenu({
-				menuName: lg['Paste text from clipboard'],
-				appendTo: lg.Sources,
-				separator: pptBio.menuShowPaste == 2 || pptBio.menuShowPaste && this.shift
+		if (bioSet.menuShowPaste == 2 || bioSet.menuShowPaste && this.shift) {
+			bioMenu.newMenu({
+				menuName: bioLg['Paste text from clipboard'],
+				appendTo: bioLg.Sources,
+				separator: bioSet.menuShowPaste == 2 || bioSet.menuShowPaste && this.shift
 			});
-			for (let i = 0; i < 5; i++) { menuBio.newItem({
-				menuName: lg['Paste text from clipboard'],
-				str: [pptBio.artistView ? lg['Biography [allmusic location]'] : lg['Review [allmusic location]'], pptBio.artistView ? lg['Biography [last.fm location]'] : lg['Review [last.fm location]'], pptBio.artistView ? lg['Biography [wikipedia location]'] : lg['Review [wikipedia location]'], lg['Open last edited'], lg.Undo][i],
+			for (let i = 0; i < 5; i++) { bioMenu.newItem({
+				menuName: bioLg['Paste text from clipboard'],
+				str: [bioSet.artistView ? bioLg['Biography [allmusic location]'] : bioLg['Review [allmusic location]'], bioSet.artistView ? bioLg['Biography [last.fm location]'] : bioLg['Review [last.fm location]'], bioSet.artistView ? bioLg['Biography [wikipedia location]'] : bioLg['Review [wikipedia location]'], bioLg['Open last edited'], bioLg.Undo][i],
 				func: () => this.setPaste(i),
-				flags: !i && !this.path.am[2] || i == 1 && !this.path.lfm[2]  || i == 2 && !this.path.wiki[2] || i == 3 && !this.undo.path || i == 4 && this.undo.text == '#!#' ? MF_GRAYED_BIO : MF_STRING_BIO,
+				flags: !i && !this.path.am[2] || i == 1 && !this.path.lfm[2]  || i == 2 && !this.path.wiki[2] || i == 3 && !this.undo.path || i == 4 && this.undo.text == '#!#' ? BIO_MF_GRAYED : BIO_MF_STRING,
 				separator: i == 2 || i == 3
 			}); }
 		}
 
-		menuBio.newItem({
-			menuName: lg.Sources,
-			str: lg['Force update'],
-			func: () => panelBio.callServer(1, panelBio.id.focus, 'bio_forceUpdate', 0)
+		bioMenu.newItem({
+			menuName: bioLg.Sources,
+			str: bioLg['Force update'],
+			func: () => bio.panel.callServer(1, bio.panel.id.focus, 'bio_forceUpdate', 0)
 		});
 
-		const style_arr = panelBio.style.name.slice();
-		menuBio.newMenu({
-			menuName: lg.Layout
+		const style_arr = bio.panel.style.name.slice();
+		bioMenu.newMenu({
+			menuName: bioLg.Layout
 		});
 
-		const style = pptBio.sameStyle ? pptBio.style : pptBio.artistView ? pptBio.bioStyle : pptBio.revStyle
-		style_arr.forEach((v, i) => menuBio.newItem({
-			menuName: lg.Layout,
+		const style = bioSet.sameStyle ? bioSet.style : bioSet.artistView ? bioSet.bioStyle : bioSet.revStyle
+		style_arr.forEach((v, i) => bioMenu.newItem({
+			menuName: bioLg.Layout,
 			str: v,
 			func: () => this.setStyle(i),
 			checkRadio: style <= style_arr.length - 1 && i == style,
 			separator: i == 3 || style_arr.length > 5 && i == style_arr.length - 1
 		}));
 
-		menuBio.newMenu({
-			menuName: lg['Create && manage styles'],
-			appendTo: lg.Layout
+		bioMenu.newMenu({
+			menuName: bioLg['Create && manage styles'],
+			appendTo: bioLg.Layout
 		});
 
-		[lg['Create new style...'], lg['Rename custom style...'], lg['Delete custom style...'], lg['Export custom style...'], lg['Reset style...']].forEach((v, i) => menuBio.newItem({
-			menuName: lg['Create && manage styles'],
+		[bioLg['Create new style...'], bioLg['Rename custom style...'], bioLg['Delete custom style...'], bioLg['Export custom style...'], bioLg['Reset style...']].forEach((v, i) => bioMenu.newItem({
+			menuName: bioLg['Create && manage styles'],
 			str: v,
 			func: () => this.setStyles(i),
-			flags: !i || pptBio.style > 4 || i == 4 ? MF_STRING_BIO : MF_GRAYED_BIO,
+			flags: !i || bioSet.style > 4 || i == 4 ? BIO_MF_STRING : BIO_MF_GRAYED,
 			separator: !i
 		}));
 
-		menuBio.addSeparator({ menuName: lg.Layout });
+		bioMenu.addSeparator({ menuName: bioLg.Layout });
 
-		menuBio.newMenu({
-			menuName: lg.Filmstrip,
-			appendTo: lg.Layout
+		bioMenu.newMenu({
+			menuName: bioLg.Filmstrip,
+			appendTo: bioLg.Layout
 		});
 
-		[lg.Top, lg.Right, lg.Bottom, lg.Left, lg['Overlay image area'], lg['Reset to default size...']].forEach((v, i) => menuBio.newItem({
-			menuName: lg.Filmstrip,
+		[bioLg.Top, bioLg.Right, bioLg.Bottom, bioLg.Left, bioLg['Overlay image area'], bioLg['Reset to default size...']].forEach((v, i) => bioMenu.newItem({
+			menuName: bioLg.Filmstrip,
 			str: v,
 			func: () => {
-				if (i == 4) pptBio.toggle('filmStripOverlay');
-				if (i != 4 || pptBio.showFilmStrip) filmStrip.set(i == 4 ? pptBio.filmStripPos : i);
+				if (i == 4) bioSet.toggle('filmStripOverlay');
+				if (i != 4 || bioSet.showFilmStrip) bio.filmStrip.set(i == 4 ? bioSet.filmStripPos : i);
 			},
-			flags: i != 4 || pptBio.style != 4 ? MF_STRING_BIO : MF_GRAYED_BIO,
-			checkItem: i == 4 && (pptBio.filmStripOverlay || (pptBio.style == 4 && !pptBio.text_only && !pptBio.img_only)),
-			checkRadio: i < 4 && i == pptBio.filmStripPos,
+			flags: i != 4 || bioSet.style != 4 ? BIO_MF_STRING : BIO_MF_GRAYED,
+			checkItem: i == 4 && (bioSet.filmStripOverlay || (bioSet.style == 4 && !bioSet.text_only && !bioSet.img_only)),
+			checkRadio: i < 4 && i == bioSet.filmStripPos,
 			separator: i == 3 || i == 4
 		}));
 
-		menuBio.addSeparator({ menuName: lg.Layout });
+		bioMenu.addSeparator({ menuName: bioLg.Layout });
 
-		[lg['Reset zoom'], lg.Reload].forEach((v, i) => menuBio.newItem({
-			menuName: lg.Layout,
+		[bioLg['Reset zoom'], bioLg.Reload].forEach((v, i) => bioMenu.newItem({
+			menuName: bioLg.Layout,
 			str: v,
-			func: () => !i ? butBio.resetZoom() : window.Reload()
+			func: () => !i ? bio.but.resetZoom() : window.Reload()
 		}));
 
-		menuBio.newMenu({
-			menuName: lg.Image
+		bioMenu.newMenu({
+			menuName: bioLg.Image
 		});
 
-		menuBio.newItem({
-			menuName: lg.Image,
-			str: lg['Auto cycle'],
-			func: () => pptBio.toggle('cycPic'),
-			checkItem: pptBio.cycPic,
+		bioMenu.newItem({
+			menuName: bioLg.Image,
+			str: bioLg['Auto cycle'],
+			func: () => bioSet.toggle('cycPic'),
+			checkItem: bioSet.cycPic,
 			separator: true
 		});
 
-		if (pptBio.style < 4) {
-			menuBio.newMenu({
-				menuName: lg.Alignment,
-				appendTo: lg.Image
+		if (bioSet.style < 4) {
+			bioMenu.newMenu({
+				menuName: bioLg.Alignment,
+				appendTo: bioLg.Image
 			});
-			for (let i = 0; i < 4; i++) { menuBio.newItem({
-				menuName: lg.Alignment,
-				str: pptBio.style == 0 || pptBio.style == 2 ? [lg.Left, lg.Centre, lg.Right, lg['Align with text']][i] : [lg.Top, lg.Centre, lg.Bottom, lg['Align with text']][i],
+			for (let i = 0; i < 4; i++) { bioMenu.newItem({
+				menuName: bioLg.Alignment,
+				str: bioSet.style == 0 || bioSet.style == 2 ? [bioLg.Left, bioLg.Centre, bioLg.Right, bioLg['Align with text']][i] : [bioLg.Top, bioLg.Centre, bioLg.Bottom, bioLg['Align with text']][i],
 				func: () => this.setImageAlignnment(i, 'standard'),
-				checkItem: i == 3 && pptBio.textAlign,
-				checkRadio: i == (pptBio.style == 0 || pptBio.style == 2 ? pptBio.alignH : pptBio.alignV),
+				checkItem: i == 3 && bioSet.textAlign,
+				checkRadio: i == (bioSet.style == 0 || bioSet.style == 2 ? bioSet.alignH : bioSet.alignV),
 				separator: i == 2
 			}); }
 		}
 
-		if (pptBio.style > 3) {
-			menuBio.newMenu({
-				menuName: lg['Alignment horizontal'],
-				appendTo: lg.Image
+		if (bioSet.style > 3) {
+			bioMenu.newMenu({
+				menuName: bioLg['Alignment horizontal'],
+				appendTo: bioLg.Image
 			});
-			[lg.Left, lg.Centre, lg.Right].forEach((v, i) => menuBio.newItem({
-				menuName: lg['Alignment horizontal'],
+			[bioLg.Left, bioLg.Centre, bioLg.Right].forEach((v, i) => bioMenu.newItem({
+				menuName: bioLg['Alignment horizontal'],
 				str: v,
 				func: () => this.setImageAlignnment(i, 'horizontal'),
-				checkRadio:  i == pptBio.alignH
+				checkRadio:  i == bioSet.alignH
 			}));
-			menuBio.newMenu({
-				menuName: lg['Alignment vertical'],
-				appendTo: lg.Image
+			bioMenu.newMenu({
+				menuName: bioLg['Alignment vertical'],
+				appendTo: bioLg.Image
 			});
-			[lg.Top, lg.Centre, lg.Bottom, lg.Auto].forEach((v, i) => menuBio.newItem({
-				menuName: lg['Alignment vertical'],
+			[bioLg.Top, bioLg.Centre, bioLg.Bottom, bioLg.Auto].forEach((v, i) => bioMenu.newItem({
+				menuName: bioLg['Alignment vertical'],
 				str: v,
 				func: () => this.setImageAlignnment(i, 'vertical'),
-				checkRadio: [!pptBio.alignV && !pptBio.alignAuto, pptBio.alignV == 1 && !pptBio.alignAuto, pptBio.alignV == 2 && !pptBio.alignAuto, pptBio.alignAuto][i],
+				checkRadio: [!bioSet.alignV && !bioSet.alignAuto, bioSet.alignV == 1 && !bioSet.alignAuto, bioSet.alignV == 2 && !bioSet.alignAuto, bioSet.alignAuto][i],
 				separator: i == 2
 			}));
 		}
 
-		menuBio.addSeparator({ menuName: lg.Image });
+		bioMenu.addSeparator({ menuName: bioLg.Image });
 
-		menuBio.newMenu({
-			menuName: lg['Black list'],
-			appendTo: lg.Image
+		bioMenu.newMenu({
+			menuName: bioLg['Black list'],
+			appendTo: bioLg.Image
 		});
 
-		for (let i = 0; i < 3; i++) { menuBio.newItem({
-			menuName: lg['Black list'],
+		for (let i = 0; i < 3; i++) { bioMenu.newItem({
+			menuName: bioLg['Black list'],
 			str: this.img.blacklistStr[i],
 			func: () => this.setImageBlacklist(i),
-			flags: !i && this.img.isLfm || i == 2 ? MF_STRING_BIO : MF_GRAYED_BIO,
-			hide: i == 2 && imgBio.blackList.undo[0] != this.img.artistClean
+			flags: !i && this.img.isLfm || i == 2 ? BIO_MF_STRING : BIO_MF_GRAYED,
+			hide: i == 2 && bio.img.blackList.undo[0] != this.img.artistClean
 		}); }
 
-		this.img.blacklist.forEach((v, i) => menuBio.newItem({
-			menuName: lg['Black list'],
+		this.img.blacklist.forEach((v, i) => bioMenu.newItem({
+			menuName: bioLg['Black list'],
 			str: (`${this.img.artist}_${v}`).replace(/&/g, '&&'),
-			func: () => this.setImageBlacklist(i + (imgBio.blackList.undo[0] == this.img.artistClean ? 3 : 2))
+			func: () => this.setImageBlacklist(i + (bio.img.blackList.undo[0] == this.img.artistClean ? 3 : 2))
 		}));
 
-		menuBio.addSeparator({});
+		bioMenu.addSeparator({});
 
-		if (pptBio.menuShowPlaylists == 2 || pptBio.menuShowPlaylists && this.shift) {
+		if (bioSet.menuShowPlaylists == 2 || bioSet.menuShowPlaylists && this.shift) {
 			const pl_no = Math.ceil(this.playlist.menu.length / 30);
-			menuBio.newMenu({
-				menuName: lg.Playlists,
-				separator: pptBio.menuShowPlaylists == 2 || pptBio.menuShowPlaylists && this.shift
+			bioMenu.newMenu({
+				menuName: bioLg.Playlists,
+				separator: bioSet.menuShowPlaylists == 2 || bioSet.menuShowPlaylists && this.shift
 			});
 			for (let j = 0; j < pl_no; j++) {
 				const n = `# ${j * 30 + 1} - ${Math.min(this.playlist.menu.length, 30 + j * 30)}${30 + j * 30 > plman.ActivePlaylist && ((j * 30) - 1) < plman.ActivePlaylist ? '  >>>' : ''}`;
-				menuBio.newMenu({
+				bioMenu.newMenu({
 					menuName: n,
-					appendTo: lg.Playlists
+					appendTo: bioLg.Playlists
 				});
 				for (let i = j * 30; i < Math.min(this.playlist.menu.length, 30 + j * 30); i++) {
-					menuBio.newItem({
+					bioMenu.newItem({
 						menuName: n,
 						str: this.playlist.menu[i].name,
 						func: () => this.setPlaylist(i),
@@ -579,47 +594,47 @@ class MenuItemsBio {
 			}
 		}
 
-		if (pptBio.menuShowTagger == 2 || pptBio.menuShowTagger && this.shift) {
-			menuBio.newMenu({
-				menuName: lg.Tagger,
-				str: lg.Tagger + (this.handles.Count ? '' : lg[': N/A no playlist tracks selected']),
-				flags: this.handles.Count ? MF_STRING_BIO : MF_GRAYED_BIO,
-				separator: pptBio.menuShowTagger == 2 || pptBio.menuShowTagger && this.shift
+		if (bioSet.menuShowTagger == 2 || bioSet.menuShowTagger && this.shift) {
+			bioMenu.newMenu({
+				menuName: bioLg.Tagger,
+				str: bioLg.Tagger + (this.handles.Count ? '' : bioLg[': N/A no playlist tracks selected']),
+				flags: this.handles.Count ? BIO_MF_STRING : BIO_MF_GRAYED,
+				separator: bioSet.menuShowTagger == 2 || bioSet.menuShowTagger && this.shift
 			});
-			for (let i = 0; i < 13 + 4; i++) { menuBio.newItem({
-				menuName: lg.Tagger,
+			for (let i = 0; i < 13 + 4; i++) { bioMenu.newItem({
+				menuName: bioLg.Tagger,
 				str: this.getTaggerStr(i),
-				func: () => cfg.setTag(i, this.handles),
-				flags: !i || i == 13 + 1 && !this.tags ? MF_GRAYED_BIO : MF_STRING_BIO,
-				checkItem: i && i < 13 + 1 && cfg[`tagEnabled${i - 1}`],
+				func: () => bioCfg.setTag(i, this.handles),
+				flags: !i || i == 13 + 1 && !this.tags ? BIO_MF_GRAYED : BIO_MF_STRING,
+				checkItem: i && i < 13 + 1 && bioCfg[`tagEnabled${i - 1}`],
 				separator: !i || i == 5 || i == 11 || i == 13
 			}); }
 		}
 
-		if (pptBio.menuShowMissingData == 2 || pptBio.menuShowMissingData && this.shift) {
-			menuBio.newMenu({
-				menuName: lg['Missing data'],
-				separator: pptBio.menuShowMissingData == 2 || pptBio.menuShowMissingData && this.shift
+		if (bioSet.menuShowMissingData == 2 || bioSet.menuShowMissingData && this.shift) {
+			bioMenu.newMenu({
+				menuName: bioLg['Missing data'],
+				separator: bioSet.menuShowMissingData == 2 || bioSet.menuShowMissingData && this.shift
 			});
-			[lg['Album review [allmusic]'], lg['Album review [last.fm]'], lg['Album review [wikipedia]'], lg['Biography [allmusic]'], lg['Biography [last.fm]'], lg['Biography [wikipedia]'], lg['Photos [last.fm]']].forEach((v, i) => menuBio.newItem({
-				menuName: lg['Missing data'],
+			[bioLg['Album review [allmusic]'], bioLg['Album review [last.fm]'], bioLg['Album review [wikipedia]'], bioLg['Biography [allmusic]'], bioLg['Biography [last.fm]'], bioLg['Biography [wikipedia]'], bioLg['Photos [last.fm]']].forEach((v, i) => bioMenu.newItem({
+				menuName: bioLg['Missing data'],
 				str: v,
 				func: () => this.checkMissingData(i),
 				separator: i == 2 || i == 5
 			}));
 		}
 
-		if (pptBio.menuShowInactivate == 2 || pptBio.menuShowInactivate && this.shift) {
-			menuBio.newItem({
-				str: pptBio.panelActive ? lg.Inactivate : lg['Activate biography'],
-				func: () => panelBio.inactivate(),
+		if (bioSet.menuShowInactivate == 2 || bioSet.menuShowInactivate && this.shift) {
+			bioMenu.newItem({
+				str: bioSet.panelActive ? bioLg.Inactivate : bioLg['Activate biography'],
+				func: () => bio.panel.inactivate(),
 				separator: true
 			});
 		}
 
-		for (let i = 0; i < 2; i++) { menuBio.newItem({
-			str: [popUpBoxBio.ok ? lg['Options...'] : lg['Options: see console'], lg['Configure...']][i],
-			func: () => !i ? cfg.open('PanelCfg') : window.EditScript(),
+		for (let i = 0; i < 2; i++) { bioMenu.newItem({
+			str: [bio.popUpBox.ok ? bioLg['Options...'] : bioLg['Options: see console'], bioLg['Configure...']][i],
+			func: () => !i ? bioCfg.open('PanelCfg') : window.EditScript(),
 			separator: !i && this.shift,
 			hide: i && !this.shift
 		}); }
@@ -652,29 +667,29 @@ class MenuItemsBio {
 	}
 
 	fresh() {
-		if (panelBio.block() || !pptBio.cycItem || panelBio.zoom() || panelBio.id.lyricsSource && lyricsBio.display() && lyricsBio.scroll) return;
-		if (pptBio.artistView) {
+		if (bio.panel.block() || !bioSet.cycItem || bio.panel.zoom() || bio.panel.id.lyricsSource && bio.lyrics.display() && bio.lyrics.scroll) return;
+		if (bioSet.artistView) {
 			this.counter.bio++;
-			if (this.counter.bio < pptBio.cycTimeItem) return;
+			if (this.counter.bio < bioSet.cycTimeItem) return;
 			this.counter.bio = 0;
-			if (panelBio.art.list.length < 2) return;
+			if (bio.panel.art.list.length < 2) return;
 		} else {
 			this.counter.rev++;
-			if (this.counter.rev < pptBio.cycTimeItem) return;
+			if (this.counter.rev < bioSet.cycTimeItem) return;
 			this.counter.rev = 0;
-			if (panelBio.alb.list.length < 2) return;
+			if (bio.panel.alb.list.length < 2) return;
 		}
 		this.wheel(1, true, false);
 	}
 
 	getBlacklistImageItems() {
-		const imgInfo = imgBio.pth();
+		const imgInfo = bio.img.pth();
 		this.img.artist = imgInfo.artist;
 		this.path.img = imgInfo.imgPth;
 		this.img.isLfm = imgInfo.blk && this.path.img;
 		this.img.name = this.img.isLfm ? this.path.img.slice(this.path.img.lastIndexOf('_') + 1) : this.path.img.slice(this.path.img.lastIndexOf('\\') + 1); // needed for init
 		this.img.blacklist = [];
-		this.path.blackList = `${cfg.storageFolder}blacklist_image.json`;
+		this.path.blackList = `${bioCfg.storageFolder}blacklist_image.json`;
 
 		if (!$Bio.file(this.path.blackList)) { $Bio.save(this.path.blackList, JSON.stringify({
 			blacklist: {}
@@ -686,32 +701,32 @@ class MenuItemsBio {
 			this.img.blacklist = this.img.list.blacklist[this.img.artistClean] || [];
 		}
 
-		this.img.blacklistStr = [this.img.isLfm ? `${lg['+ Add'] + (!panelBio.style.showFilmStrip ? '' : lg[' main image']) + lg[' to black list: '] + this.img.artist}_${this.img.name}` : lg['+ Add to black list: '] + (this.img.name ? lg['N/A - requires last.fm photo. Selected image: '] + this.img.name : lg['N/A - no'] + (!panelBio.style.showFilmStrip ? '' : '') + lg[' image file']), this.img.blacklist.length ? lg[' - Remove from black list (click name): '] : lg['No black listed images for current artist'], lg.Undo];
+		this.img.blacklistStr = [this.img.isLfm ? `${bioLg['+ Add'] + (!bio.panel.style.showFilmStrip ? '' : bioLg[' main image']) + bioLg[' to black list: '] + this.img.artist}_${this.img.name}` : bioLg['+ Add to black list: '] + (this.img.name ? bioLg['N/A - requires last.fm photo. Selected image: '] + this.img.name : bioLg['N/A - no'] + (!bio.panel.style.showFilmStrip ? '' : '') + bioLg[' image file']), this.img.blacklist.length ? bioLg[' - Remove from black list (click name): '] : bioLg['No black listed images for current artist'], bioLg.Undo];
 	}
 
 	getDisplayStr() {
-		const m = pptBio.artistView ? pptBio.bioMode : pptBio.revMode;
-		this.display.check = [pptBio.sameStyle ? !pptBio.img_only && !pptBio.text_only : m == 0, pptBio.sameStyle ? pptBio.img_only : m == 1, pptBio.sameStyle ? pptBio.text_only : m == 2, pptBio.showFilmStrip, pptBio.heading, pptBio.summaryShow, false, pptBio.artistView, !pptBio.artistView, !panelBio.id.focus, panelBio.id.focus];
-		const n = [lg['Image+text'], lg.Image, lg.Text, lg.Filmstrip, lg.Heading, lg.Summary, pptBio.summaryCompact ? lg['Summary expand'] : lg['Summary compact'], lg['Artist view'], lg['Album view'], lg['Prefer nowplaying'], !panelBio.id.lyricsSource && !panelBio.id.nowplayingSource ? lg['Follow selected track (playlist)'] : lg['Follow selected track: N/A lyrics or nowplaying enabled']];
-		const click = [!this.display.check[0] ? `\t${lg['Middle click']}` : '', !this.display.check[1] && !pptBio.text_only && !pptBio.img_only ? `\t${lg['Middle click']}` : '', !this.display.check[2] && !pptBio.img_only ? `\t${lg['Middle click']}` : '', `\t${lg['Alt+Middle click']}`, '', '', !pptBio.sourceAll ? `\t${lg.Click}` : '', !pptBio.artistView ? (!pptBio.dblClickToggle ? `\t${lg.Click}` : `\t${lg['Double click']}`) : '', pptBio.artistView ? (!pptBio.dblClickToggle ? `\t${lg.Click}` : `\t${lg['Double click']}`) : '', '', ''];
+		const m = bioSet.artistView ? bioSet.bioMode : bioSet.revMode;
+		this.display.check = [bioSet.sameStyle ? !bioSet.img_only && !bioSet.text_only : m == 0, bioSet.sameStyle ? bioSet.img_only : m == 1, bioSet.sameStyle ? bioSet.text_only : m == 2, bioSet.showFilmStrip, bioSet.heading, bioSet.summaryShow, false, bioSet.artistView, !bioSet.artistView, !bio.panel.id.focus, bio.panel.id.focus];
+		const n = [bioLg['Image+text'], bioLg.Image, bioLg.Text, bioLg.Filmstrip, bioLg.Heading, bioLg.Summary, bioSet.summaryCompact ? bioLg['Summary expand'] : bioLg['Summary compact'], bioLg['Artist view'], bioLg['Album view'], bioLg['Prefer nowplaying'], !bio.panel.id.lyricsSource && !bio.panel.id.nowplayingSource ? bioLg['Follow selected track (playlist)'] : bioLg['Follow selected track: N/A lyrics or nowplaying enabled']];
+		const click = [!this.display.check[0] ? `\t${bioLg['Middle click']}` : '', !this.display.check[1] && !bioSet.text_only && !bioSet.img_only ? `\t${bioLg['Middle click']}` : '', !this.display.check[2] && !bioSet.img_only ? `\t${bioLg['Middle click']}` : '', `\t${bioLg['Alt+Middle click']}`, '', '', !bioSet.sourceAll ? `\t${bioLg.Click}` : '', !bioSet.artistView ? (!bioSet.dblClickToggle ? `\t${bioLg.Click}` : `\t${bioLg['Double click']}`) : '', bioSet.artistView ? (!bioSet.dblClickToggle ? `\t${bioLg.Click}` : `\t${bioLg['Double click']}`) : '', '', ''];
 		this.display.str = n.map((v, i) => v + click[i])
 	}
 
 	getlookUpStr(i, j, artist) {
 		return [
-			[lg['Manual cycle: wheel over button'], lg['Auto cycle items'], popUpBoxBio.ok ? lg['Options...'] : lg['Options: see console'], lg.Reload][i],
-			[lg['Show similar artists'], lg['Show more tags (circle button if present)'], lg['Show artist history'], lg['Auto lock'], lg['Reset artist history...'], lg['Last.fm: '] + artist + lg['...'], lg['Last.fm: '] + artist + lg[': similar artists...'], lg['Last.fm: '] + artist + lg[': top albums...'], lg['Allmusic: '] + artist + lg['...']][i],
-			[lg['Show top albums'], lg['Show album history'], lg['Auto lock'], lg['Reset album history...'], lg['Last.fm: '] + artist + lg['...'], lg['Last.fm: '] + artist + lg[': similar artists...'], lg['Last.fm: '] + artist + lg[': top albums...'], lg['Allmusic: '] + artist + lg['...']][i]
+			[bioLg['Manual cycle: wheel over button'], bioLg['Auto cycle items'], bio.popUpBox.ok ? bioLg['Options...'] : bioLg['Options: see console'], bioLg.Reload][i],
+			[bioLg['Show similar artists'], bioLg['Show more tags (circle button if present)'], bioLg['Show artist history'], bioLg['Auto lock'], bioLg['Reset artist history...'], bioLg['Last.fm: '] + artist + bioLg['...'], bioLg['Last.fm: '] + artist + bioLg[': similar artists...'], bioLg['Last.fm: '] + artist + bioLg[': top albums...'], bioLg['Allmusic: '] + artist + bioLg['...']][i],
+			[bioLg['Show top albums'], bioLg['Show album history'], bioLg['Auto lock'], bioLg['Reset album history...'], bioLg['Last.fm: '] + artist + bioLg['...'], bioLg['Last.fm: '] + artist + bioLg[': similar artists...'], bioLg['Last.fm: '] + artist + bioLg[': top albums...'], bioLg['Allmusic: '] + artist + bioLg['...']][i]
 		][j];
 	}
 
 	getOpenFlag() {
-		return this.path.img || this.path.am[3] || this.path.lfm[3] || this.path.wiki[3] || this.path.txt[3] || this.path.tracksAm[3] || this.path.tracksLfm[3] || this.path.tracksWiki[3] ? MF_STRING_BIO : MF_GRAYED_BIO;
+		return this.path.img || this.path.am[3] || this.path.lfm[3] || this.path.wiki[3] || this.path.txt[3] || this.path.tracksAm[3] || this.path.tracksLfm[3] || this.path.tracksWiki[3] ? BIO_MF_STRING : BIO_MF_GRAYED;
 	}
 
 	getOpenName() {
 		const fo = [this.path.img, this.path.am[3], this.path.lfm[3], this.path.wiki[3], this.path.tracksAm[3], this.path.tracksLfm[3], this.path.tracksWiki[3], this.path.txt[3]];
-		this.openName = [`${lg['Image ']}\t${lg['Alt+Click']}`, pptBio.artistView ? lg['Biography [allmusic]'] : lg['Review [allmusic]'], pptBio.artistView ? lg['Biography [last.fm]'] : lg['Review [last.fm]'], pptBio.artistView ? lg['Biography [wikipedia]'] : lg['Review [wikipedia]'], pptBio.artistView ? '' : lg['Tracks [allmusic]'], pptBio.artistView ? '' : lg['Tracks [last.fm]'], pptBio.artistView ? '' : lg['Tracks [wikipedia]'], pptBio.artistView ? txt.bio.subhead.txt[0] : txt.rev.subhead.txt[0]];
+		this.openName = [`${bioLg['Image ']}\t${bioLg['Alt+Click']}`, bioSet.artistView ? bioLg['Biography [allmusic]'] : bioLg['Review [allmusic]'], bioSet.artistView ? bioLg['Biography [last.fm]'] : bioLg['Review [last.fm]'], bioSet.artistView ? bioLg['Biography [wikipedia]'] : bioLg['Review [wikipedia]'], bioSet.artistView ? '' : bioLg['Tracks [allmusic]'], bioSet.artistView ? '' : bioLg['Tracks [last.fm]'], bioSet.artistView ? '' : bioLg['Tracks [wikipedia]'], bioSet.artistView ? bio.txt.bio.subhead.txt[0] : bio.txt.rev.subhead.txt[0]];
 		let i = this.openName.length;
 		while (i--)
 			{ if (!fo[i]) {
@@ -722,73 +737,73 @@ class MenuItemsBio {
 	}
 
 	getSourceNames() {
-		const b = pptBio.artistView ? 'Bio' : 'Rev';
+		const b = bioSet.artistView ? 'Bio' : 'Rev';
 		const n = b.toLowerCase();
-		this.types = !txt[n].reader ? $Bio.source.amLfmWiki : $Bio.source.amLfmWikiTxt;
-		this.sources = [lg.Allmusic, lg['Last.fm'], lg.Wikipedia];
-		this.sources = this.sources.map(v => v + (pptBio.artistView ? ' biography' : ' review'));
-		if (txt[n].reader) this.sources.push(txt[n].subhead.txt[0] || '');
-		if (!panelBio.stndItem() && (txt.reader[n].lyrics || txt.reader[n].props)) this.sources[3] += ' // current track';
+		this.types = !bio.txt[n].reader ? $Bio.source.amLfmWiki : $Bio.source.amLfmWikiTxt;
+		this.sources = [bioLg.Allmusic, bioLg['Last.fm'], bioLg.Wikipedia];
+		this.sources = this.sources.map(v => v + (bioSet.artistView ? ' biography' : ' review'));
+		if (bio.txt[n].reader) this.sources.push(bio.txt[n].subhead.txt[0] || '');
+		if (!bio.panel.stndItem() && (bio.txt.reader[n].lyrics || bio.txt.reader[n].props)) this.sources[3] += ' // current track';
 	}
 
 	getTaggerStr(i) {
-		return !i ? lg['Write existing file info to tags: '] : i == 13 + 1 ? lg['All tagger settings...'] : i == 13 + 2 ? (cfg.taggerConfirm ? lg['Tag files...'] : `${lg.Tag} ${this.handles.Count} ${this.handles.Count > 1 ? lg.tracks : lg.track}...`) + (this.tags ? '' : lg[' N/A no tags enabled']) + (cfg.tagEnabled5 || cfg.tagEnabled7 ? tagBio.genres.length > 700 || !cfg.useWhitelist ? '' : lg[' WARNING: last.fm genre whitelist not found or invalid [try force update - needs internet connection]'] : '') : i == 13 + 3 ? lg.Cancel : i == 11 ? cfg[`tagName${i - 1}`] + (cfg[`tagEnabled${i - 1}`] ? ` (${cfg[`tagEnabled${i + 2}`]})` : '') : cfg[`tagName${i - 1}`];
+		return !i ? bioLg['Write existing file info to tags: '] : i == 13 + 1 ? bioLg['All tagger settings...'] : i == 13 + 2 ? (bioCfg.taggerConfirm ? bioLg['Tag files...'] : `${bioLg.Tag} ${this.handles.Count} ${this.handles.Count > 1 ? bioLg.tracks : bioLg.track}...`) + (this.tags ? '' : bioLg[' N/A no tags enabled']) + (bioCfg.tagEnabled5 || bioCfg.tagEnabled7 ? bio.tag.genres.length > 700 || !bioCfg.useWhitelist ? '' : bioLg[' WARNING: last.fm genre whitelist not found or invalid [try force update - needs internet connection]'] : '') : i == 13 + 3 ? bioLg.Cancel : i == 11 ? bioCfg[`tagName${i - 1}`] + (bioCfg[`tagEnabled${i - 1}`] ? ` (${bioCfg[`tagEnabled${i + 2}`]})` : '') : bioCfg[`tagName${i - 1}`];
 	}
 
 	images(v) {
-		return name.isLfmImg(fsoBio.GetFileName(v));
+		return bio.name.isLfmImg(bioFSO.GetFileName(v));
 	}
 
 	isRevAvail() {
 		const type = ['alb', 'trk'];
 		type.forEach(w => {
-			this[`${w}Avail`] = $Bio.source.amLfmWiki.some(v => pptBio.lockBio ? txt.rev.loaded.ix == txt.avail[`${v}${w}`] : txt.avail[`${v}${w}`] != -1);
+			this[`${w}Avail`] = $Bio.source.amLfmWiki.some(v => bioSet.lockBio ? bio.txt.rev.loaded.ix == bio.txt.avail[`${v}${w}`] : bio.txt.avail[`${v}${w}`] != -1);
 		});
 	}
 
 	lookUpAlbum(i) {
-		const origArr = JSON.stringify(panelBio.alb.list);
+		const origArr = JSON.stringify(bio.panel.alb.list);
 		switch (true) {
-			case i < panelBio.alb.list.length: {
-				if (origArr != JSON.stringify(panelBio.alb.list) || !i && !panelBio.alb.ix || panelBio.alb.ix == i) break;
-				txt.logScrollPos();
-				filmStrip.logScrollPos();
-				panelBio.alb.ix = i;
-				imgBio.get = false;
-				txt.get = 0;
+			case i < bio.panel.alb.list.length: {
+				if (origArr != JSON.stringify(bio.panel.alb.list) || !i && !bio.panel.alb.ix || bio.panel.alb.ix == i) break;
+				bio.txt.logScrollPos();
+				bio.filmStrip.logScrollPos();
+				bio.panel.alb.ix = i;
+				bio.img.get = false;
+				bio.txt.get = 0;
 				let force = false;
-				if (pptBio.sourcerev == 3) {
-					pptBio.sourcerev = 0;
+				if (bioSet.sourcerev == 3) {
+					bioSet.sourcerev = 0;
 					this.setSource('Rev');
 				}
-				panelBio.style.inclTrackRev = pptBio.inclTrackRev;
-				if (pptBio.inclTrackRev) {
-					if (i) panelBio.style.inclTrackRev = 0;
-					txt.albumFlush();
+				bio.panel.style.inclTrackRev = bioSet.inclTrackRev;
+				if (bioSet.inclTrackRev) {
+					if (i) bio.panel.style.inclTrackRev = 0;
+					bio.txt.albumFlush();
 					force = true;
 				}
-				if (panelBio.alb.list[panelBio.alb.ix].composition && pptBio.sourcerev != 0 && pptBio.sourcerev != 2) {
-					pptBio.sourcerev = txt.rev.am ? 0 : txt.rev.wiki ? 2 : txt.rev.am;
+				if (bio.panel.alb.list[bio.panel.alb.ix].composition && bioSet.sourcerev != 0 && bioSet.sourcerev != 2) {
+					bioSet.sourcerev = bio.txt.rev.am ? 0 : bio.txt.rev.wiki ? 2 : bio.txt.rev.am;
 					this.setSource('Rev');
 				}
-				txt.getItem(false, panelBio.art.ix, panelBio.alb.ix, force);
-				txt.getScrollPos();
-				imgBio.getItem(panelBio.art.ix, panelBio.alb.ix);
-				panelBio.callServer(false, panelBio.id.focus, 'bio_lookUpItem', 0);
-				filmStrip.check();
-				if (pptBio.autoLock) panelBio.mbtn_up(1, 1, true);
-				if (panelBio.alb.list[panelBio.alb.ix].type.includes('history')) break;
-				panelBio.logAlbumHistory(panelBio.alb.list[panelBio.alb.ix].artist, panelBio.alb.list[panelBio.alb.ix].album);
-				panelBio.getList();
+				bio.txt.getItem(false, bio.panel.art.ix, bio.panel.alb.ix, force);
+				bio.txt.getScrollPos();
+				bio.img.getItem(bio.panel.art.ix, bio.panel.alb.ix);
+				bio.panel.callServer(false, bio.panel.id.focus, 'bio_lookUpItem', 0);
+				bio.filmStrip.check();
+				if (bioSet.autoLock) bio.panel.mbtn_up(1, 1, true);
+				if (bio.panel.alb.list[bio.panel.alb.ix].type.includes('history')) break;
+				bio.panel.logAlbumHistory(bio.panel.alb.list[bio.panel.alb.ix].artist, bio.panel.alb.list[bio.panel.alb.ix].album);
+				bio.panel.getList();
 				break;
 			}
-			case i == panelBio.alb.list.length + 1:
-				pptBio.toggle('cycItem');
+			case i == bio.panel.alb.list.length + 1:
+				bioSet.toggle('cycItem');
 				break;
-			case i == panelBio.alb.list.length + 2:
-				cfg.open('PanelCfg');
+			case i == bio.panel.alb.list.length + 2:
+				bioCfg.open('PanelCfg');
 				break;
-			case i == panelBio.alb.list.length + 3:
+			case i == bio.panel.alb.list.length + 3:
 				window.Reload();
 				break;
 		}
@@ -798,82 +813,82 @@ class MenuItemsBio {
 	lookUpAlbumItems(i) {
 		switch (i) {
 			case 0:
-				panelBio.alb.ix = 0;
-				pptBio.toggle('showTopAlbums');
-				panelBio.getList(!pptBio.showTopAlbums, true);
+				bio.panel.alb.ix = 0;
+				bioSet.toggle('showTopAlbums');
+				bio.panel.getList(!bioSet.showTopAlbums, true);
 				break;
 			case 1:
-				panelBio.alb.ix = 0;
-				pptBio.toggle('showAlbumHistory');
-				panelBio.getList(!pptBio.showAlbumHistory, true);
+				bio.panel.alb.ix = 0;
+				bioSet.toggle('showAlbumHistory');
+				bio.panel.getList(!bioSet.showAlbumHistory, true);
 				break;
 			case 2:
-				pptBio.toggle('autoLock');
+				bioSet.toggle('autoLock');
 				break;
 			case 3:
-				panelBio.resetAlbumHistory();
+				bio.panel.resetAlbumHistory();
 				break;
 			default: {
-				const artist = panelBio.art.list.length ? panelBio.art.list[0].name : name.artist(panelBio.id.focus);
+				const artist = bio.panel.art.list.length ? bio.panel.art.list[0].name : bio.name.artist(bio.panel.id.focus);
 				const brArr = ['', '/+similar', '/+albums'];
-				if (i < 7) $Bio.browser(`https://www.last.fm/${cfg.language == 'EN' ? '' : `${cfg.language.toLowerCase()}/`}music/${encodeURIComponent(artist)}${brArr[i - 4]}`, true);
+				if (i < 7) $Bio.browser(`https://www.last.fm/${bioCfg.language == 'EN' ? '' : `${bioCfg.language.toLowerCase()}/`}music/${encodeURIComponent(artist)}${brArr[i - 4]}`, true);
 				else $Bio.browser(`https://www.allmusic.com/search/artists/${encodeURIComponent(artist)}`, true);
 				break;
 			}
 		}
 		if (i < 4) {
-			txt.logScrollPos();
-			filmStrip.logScrollPos();
-			imgBio.get = false;
-			txt.get = 0;
-			if (pptBio.sourcerev == 3) {
-				pptBio.sourcerev = 0;
+			bio.txt.logScrollPos();
+			bio.filmStrip.logScrollPos();
+			bio.img.get = false;
+			bio.txt.get = 0;
+			if (bioSet.sourcerev == 3) {
+				bioSet.sourcerev = 0;
 				this.setSource('Rev');
 			}
-			panelBio.style.inclTrackRev = pptBio.inclTrackRev;
-			if (pptBio.inclTrackRev) {
-				if (panelBio.alb.list[panelBio.alb.ix].type.includes('history')) panelBio.style.inclTrackRev = 0;
-				txt.albumFlush();
+			bio.panel.style.inclTrackRev = bioSet.inclTrackRev;
+			if (bioSet.inclTrackRev) {
+				if (bio.panel.alb.list[bio.panel.alb.ix].type.includes('history')) bio.panel.style.inclTrackRev = 0;
+				bio.txt.albumFlush();
 			}
-			txt.getItem(false, panelBio.art.ix, panelBio.alb.ix, true);
-			txt.getScrollPos();
-			imgBio.getItem(panelBio.art.ix, panelBio.alb.ix);
-			panelBio.callServer(false, panelBio.id.focus, 'bio_lookUpItem', 0);
-			filmStrip.check();
+			bio.txt.getItem(false, bio.panel.art.ix, bio.panel.alb.ix, true);
+			bio.txt.getScrollPos();
+			bio.img.getItem(bio.panel.art.ix, bio.panel.alb.ix);
+			bio.panel.callServer(false, bio.panel.id.focus, 'bio_lookUpItem', 0);
+			bio.filmStrip.check();
 		}
 	}
 
 	lookUpArtist(i) {
-		const origArr = JSON.stringify(panelBio.art.list);
+		const origArr = JSON.stringify(bio.panel.art.list);
 		switch (true) {
-			case i < panelBio.art.list.length:
-				if (origArr != JSON.stringify(panelBio.art.list) || !i && !panelBio.art.ix || panelBio.art.ix == i) break;
-				txt.logScrollPos();
-				filmStrip.logScrollPos();
-				panelBio.art.ix = i;
-				imgBio.get = false;
-				txt.get = 0;
-				if (pptBio.sourcebio == 3) {
-					pptBio.sourcebio = 1;
+			case i < bio.panel.art.list.length:
+				if (origArr != JSON.stringify(bio.panel.art.list) || !i && !bio.panel.art.ix || bio.panel.art.ix == i) break;
+				bio.txt.logScrollPos();
+				bio.filmStrip.logScrollPos();
+				bio.panel.art.ix = i;
+				bio.img.get = false;
+				bio.txt.get = 0;
+				if (bioSet.sourcebio == 3) {
+					bioSet.sourcebio = 1;
 					this.setSource('Bio');
 				}
-				txt.getItem(false, panelBio.art.ix, panelBio.alb.ix);
-				txt.getScrollPos();
-				imgBio.getItem(panelBio.art.ix, panelBio.alb.ix);
-				panelBio.callServer(false, panelBio.id.focus, 'bio_lookUpItem', 0);
-				filmStrip.check();
-				if (pptBio.autoLock) panelBio.mbtn_up(1, 1, true);
-				if (panelBio.art.list[panelBio.art.ix].type.includes('history')) break;
-				panelBio.logArtistHistory(panelBio.art.list[panelBio.art.ix].name);
-				panelBio.getList();
+				bio.txt.getItem(false, bio.panel.art.ix, bio.panel.alb.ix);
+				bio.txt.getScrollPos();
+				bio.img.getItem(bio.panel.art.ix, bio.panel.alb.ix);
+				bio.panel.callServer(false, bio.panel.id.focus, 'bio_lookUpItem', 0);
+				bio.filmStrip.check();
+				if (bioSet.autoLock) bio.panel.mbtn_up(1, 1, true);
+				if (bio.panel.art.list[bio.panel.art.ix].type.includes('history')) break;
+				bio.panel.logArtistHistory(bio.panel.art.list[bio.panel.art.ix].name);
+				bio.panel.getList();
 				break;
-			case i == panelBio.art.list.length + 1:
-				pptBio.toggle('cycItem');
+			case i == bio.panel.art.list.length + 1:
+				bioSet.toggle('cycItem');
 				break;
-			case i == panelBio.art.list.length + 2:
-				cfg.open('PanelCfg');
+			case i == bio.panel.art.list.length + 2:
+				bioCfg.open('PanelCfg');
 				break;
-			case i == panelBio.art.list.length + 3:
+			case i == bio.panel.art.list.length + 3:
 				window.Reload();
 				break;
 		}
@@ -883,48 +898,48 @@ class MenuItemsBio {
 	lookUpArtistItems(i) {
 		switch (i) {
 			case 0:
-				panelBio.art.ix = 0;
-				pptBio.toggle('showSimilarArtists');
-				panelBio.getList(!pptBio.showSimilarArtists);
+				bio.panel.art.ix = 0;
+				bioSet.toggle('showSimilarArtists');
+				bio.panel.getList(!bioSet.showSimilarArtists);
 				break;
 			case 1:
-				panelBio.art.ix = 0;
-				pptBio.toggle('showMoreTags');
-				panelBio.getList(!pptBio.showMoreTags);
+				bio.panel.art.ix = 0;
+				bioSet.toggle('showMoreTags');
+				bio.panel.getList(!bioSet.showMoreTags);
 				break;
 			case 2:
-				panelBio.art.ix = 0;
-				pptBio.toggle('showArtistHistory');
-				panelBio.getList(!pptBio.showArtistHistory);
+				bio.panel.art.ix = 0;
+				bioSet.toggle('showArtistHistory');
+				bio.panel.getList(!bioSet.showArtistHistory);
 				break;
 			case 3:
-				pptBio.toggle('autoLock');
+				bioSet.toggle('autoLock');
 				break;
 			case 4:
-				panelBio.resetArtistHistory();
+				bio.panel.resetArtistHistory();
 				break;
 			default: {
-				const artist = panelBio.art.list.length ? panelBio.art.list[0].name : name.artist(panelBio.id.focus);
+				const artist = bio.panel.art.list.length ? bio.panel.art.list[0].name : bio.name.artist(bio.panel.id.focus);
 				const brArr = ['', '/+similar', '/+albums'];
-				if (i < 8) $Bio.browser(`https://www.last.fm/${cfg.language == 'EN' ? '' : `${cfg.language.toLowerCase()}/`}music/${encodeURIComponent(artist)}${brArr[i - 5]}`, true);
+				if (i < 8) $Bio.browser(`https://www.last.fm/${bioCfg.language == 'EN' ? '' : `${bioCfg.language.toLowerCase()}/`}music/${encodeURIComponent(artist)}${brArr[i - 5]}`, true);
 				else $Bio.browser(`https://www.allmusic.com/search/artists/${encodeURIComponent(artist)}`, true);
 				break;
 			}
 		}
 		if (i < 5) {
-			txt.logScrollPos();
-			filmStrip.logScrollPos();
-			if (pptBio.sourcebio == 3) {
-				pptBio.sourcebio = 1;
+			bio.txt.logScrollPos();
+			bio.filmStrip.logScrollPos();
+			if (bioSet.sourcebio == 3) {
+				bioSet.sourcebio = 1;
 				this.setSource('Bio');
 			}
-			imgBio.get = false;
-			txt.get = 0;
-			txt.getItem(false, panelBio.art.ix, panelBio.alb.ix);
-			txt.getScrollPos();
-			imgBio.getItem(panelBio.art.ix, panelBio.alb.ix);
-			panelBio.callServer(false, panelBio.id.focus, 'bio_lookUpItem', 0);
-			filmStrip.check();
+			bio.img.get = false;
+			bio.txt.get = 0;
+			bio.txt.getItem(false, bio.panel.art.ix, bio.panel.alb.ix);
+			bio.txt.getScrollPos();
+			bio.img.getItem(bio.panel.art.ix, bio.panel.alb.ix);
+			bio.panel.callServer(false, bio.panel.id.focus, 'bio_lookUpItem', 0);
+			bio.filmStrip.check();
 		}
 	}
 
@@ -933,8 +948,8 @@ class MenuItemsBio {
 			if (confirmed) {
 				const handleList = fb.GetLibraryItems();
 				if (!handleList) return;
-				const tf_a = FbTitleFormat(cfg.tf.artist);
-				const sort = FbTitleFormat(`${cfg.tf.artist} | ${cfg.tf.album} | [[%discnumber%.]%tracknumber%. ][%track artist% - ]${cfg.tf.title}`);
+				const tf_a = FbTitleFormat(bioCfg.tf.artist);
+				const sort = FbTitleFormat(`${bioCfg.tf.artist} | ${bioCfg.tf.album} | [[%discnumber%.]%tracknumber%. ][%track artist% - ]${bioCfg.tf.title}`);
 				let a = '';
 				let cur_a = '####';
 				let found = false;
@@ -945,7 +960,7 @@ class MenuItemsBio {
 					a = artists[i].toLowerCase();
 					if (a != cur_a) {
 						cur_a = a;
-						const pth = panelBio.cleanPth(cfg.pth[n1], h, 'tag');
+						const pth = bio.panel.cleanPth(bioCfg.pth[n1], h, 'tag');
 						let files = utils.Glob(`${pth}*`);
 						files = files.some(this.images);
 						if (a && !files) {
@@ -959,7 +974,7 @@ class MenuItemsBio {
 		}
 		const caption = this.popUpTitle;
 		const prompt = this.popUpText(n2, n3);
-		const wsh = popUpBoxBio.isHtmlDialogSupported() ? popUpBoxBio.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
+		const wsh = bio.popUpBox.isHtmlDialogSupported() ? bio.popUpBox.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
 		if (wsh) continue_confirmation('ok', $Bio.wshPopup(prompt, caption));
 	}
 
@@ -968,8 +983,8 @@ class MenuItemsBio {
 			if (confirmed) {
 				const handleList = fb.GetLibraryItems();
 				if (!handleList) return;
-				const tf_a = FbTitleFormat(cfg.tf.artist);
-				const sort = FbTitleFormat(`${cfg.tf.artist} | ${cfg.tf.album} | [[%discnumber%.]%tracknumber%. ][%track artist% - ]${cfg.tf.title}`);
+				const tf_a = FbTitleFormat(bioCfg.tf.artist);
+				const sort = FbTitleFormat(`${bioCfg.tf.artist} | ${bioCfg.tf.album} | [[%discnumber%.]%tracknumber%. ][%track artist% - ]${bioCfg.tf.title}`);
 				let a = '';
 				let cur_a = '####';
 				let found = false;
@@ -980,7 +995,7 @@ class MenuItemsBio {
 					a = artists[i].toLowerCase();
 					if (a != cur_a) {
 						cur_a = a;
-						const pth = `${panelBio.cleanPth(cfg.pth[n1], h, 'tag') + $Bio.clean(a) + cfg.suffix[n1]}.txt`;
+						const pth = `${bio.panel.cleanPth(bioCfg.pth[n1], h, 'tag') + $Bio.clean(a) + bioCfg.suffix[n1]}.txt`;
 						if (a && !$Bio.file(pth)) {
 							found = false;
 							m.Insert(m.Count, h);
@@ -992,7 +1007,7 @@ class MenuItemsBio {
 		}
 		const caption = this.popUpTitle;
 		const prompt = this.popUpText(n2, n3);
-		const wsh = popUpBoxBio.isHtmlDialogSupported() ? popUpBoxBio.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
+		const wsh = bio.popUpBox.isHtmlDialogSupported() ? bio.popUpBox.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
 		if (wsh) continue_confirmation('ok', $Bio.wshPopup(prompt, caption));
 	}
 
@@ -1001,9 +1016,9 @@ class MenuItemsBio {
 			if (confirmed) {
 				const handleList = fb.GetLibraryItems();
 				if (!handleList) return;
-				const tf_albumArtist = FbTitleFormat(cfg.tf.albumArtist);
-				const tf_album = FbTitleFormat(cfg.tf.album);
-				const sort = FbTitleFormat(`${cfg.tf.albumArtist} | ${cfg.tf.album} | [[%discnumber%.]%tracknumber%. ][%track artist% - ]${cfg.tf.title}`);
+				const tf_albumArtist = FbTitleFormat(bioCfg.tf.albumArtist);
+				const tf_album = FbTitleFormat(bioCfg.tf.album);
+				const sort = FbTitleFormat(`${bioCfg.tf.albumArtist} | ${bioCfg.tf.album} | [[%discnumber%.]%tracknumber%. ][%track artist% - ]${bioCfg.tf.title}`);
 				let albumArtist = '';
 				let cur_albumArtist = '####';
 				let cur_album = '####';
@@ -1016,14 +1031,14 @@ class MenuItemsBio {
 				handleList.Convert().forEach((h, i) => {
 					albumArtist = albumartists[i].toLowerCase();
 					album = albums[i].toLowerCase();
-					album = !cfg.albStrip ? name.albumTidy(album) : name.albumClean(album);
+					album = !bioCfg.albStrip ? bio.name.albumTidy(album) : bio.name.albumClean(album);
 					if (albumArtist + album != cur_albumArtist + cur_album) {
 						cur_albumArtist = albumArtist;
 						cur_album = album;
-						let pth = `${panelBio.cleanPth(cfg.pth[n1], h, 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${cfg.suffix[n1]}.txt`;
+						let pth = `${bio.panel.cleanPth(bioCfg.pth[n1], h, 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${bioCfg.suffix[n1]}.txt`;
 						if (pth.length > 259) {
 							album = $Bio.abbreviate(album);
-							pth = `${panelBio.cleanPth(cfg.pth[n1], h, 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${cfg.suffix[n1]}.txt`;
+							pth = `${bio.panel.cleanPth(bioCfg.pth[n1], h, 'tag') + $Bio.clean(albumArtist)} - ${$Bio.clean(album)}${bioCfg.suffix[n1]}.txt`;
 						}
 						if (albumArtist && album && !$Bio.file(pth)) {
 							found = false;
@@ -1036,12 +1051,12 @@ class MenuItemsBio {
 		}
 		const caption = this.popUpTitle;
 		const prompt = this.popUpText(n2, n3);
-		const wsh = popUpBoxBio.isHtmlDialogSupported() ? popUpBoxBio.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
+		const wsh = bio.popUpBox.isHtmlDialogSupported() ? bio.popUpBox.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
 		if (wsh) continue_confirmation('ok', $Bio.wshPopup(prompt, caption));
 	}
 
 	playlists_changed() {
-		if (!pptBio.menuShowPlaylists) return;
+		if (!bioSet.menuShowPlaylists) return;
 		this.playlist.menu = [];
 		for (let i = 0; i < plman.PlaylistCount; i++) { this.playlist.menu.push({
 			name: plman.GetPlaylistName(i).replace(/&/g, '&&'),
@@ -1055,10 +1070,10 @@ class MenuItemsBio {
 
 	rbtn_up(x, y) {
 		this.right_up = true;
-		this.shift = vkBio.k('shift');
-		const imgInfo = imgBio.pth();
+		this.shift = bio.vk.k('shift');
+		const imgInfo = bio.img.pth();
 		this.docTxt = $Bio.getClipboardData() || '';
-		if (!tagBio.genres.length) tagBio.setGenres();
+		if (!bio.tag.genres.length) bio.tag.setGenres();
 		this.getDisplayStr();
 		this.getSourceNames();
 		this.img.artist = imgInfo.artist;
@@ -1066,29 +1081,29 @@ class MenuItemsBio {
 		this.img.isLfm = imgInfo.blk && this.path.img;
 		this.img.name = this.img.isLfm ? this.path.img.slice(this.path.img.lastIndexOf('_') + 1) : this.path.img.slice(this.path.img.lastIndexOf('\\') + 1);
 		this.isRevAvail();
-		this.path.am = pptBio.artistView ? txt.bioPth('Am') : txt.revPth('Am');
-		this.path.lfm = pptBio.artistView ? txt.bioPth('Lfm') : txt.revPth('Lfm');
-		this.path.txt = pptBio.artistView ? txt.txtBioPth() : txt.txtRevPth();
-		this.path.wiki = pptBio.artistView ? txt.bioPth('Wiki') : txt.revPth('Wiki');
-		this.path.tracksAm = pptBio.artistView ? '' : txt.trackPth('Am');
-		this.path.tracksLfm = pptBio.artistView ? '' : txt.trackPth('Lfm');
-		this.path.tracksWiki = pptBio.artistView ? '' : txt.trackPth('Wiki');
+		this.path.am = bioSet.artistView ? bio.txt.bioPth('Am') : bio.txt.revPth('Am');
+		this.path.lfm = bioSet.artistView ? bio.txt.bioPth('Lfm') : bio.txt.revPth('Lfm');
+		this.path.txt = bioSet.artistView ? bio.txt.txtBioPth() : bio.txt.txtRevPth();
+		this.path.wiki = bioSet.artistView ? bio.txt.bioPth('Wiki') : bio.txt.revPth('Wiki');
+		this.path.tracksAm = bioSet.artistView ? '' : bio.txt.trackPth('Am');
+		this.path.tracksLfm = bioSet.artistView ? '' : bio.txt.trackPth('Lfm');
+		this.path.tracksWiki = bioSet.artistView ? '' : bio.txt.trackPth('Wiki');
 		this.path.open = [this.path.img, this.path.am[1], this.path.lfm[1], this.path.wiki[1], this.path.tracksAm[1], this.path.tracksLfm[1], this.path.tracksWiki[1], this.path.txt[1]];
 		this.getOpenName();
 		this.getBlacklistImageItems();
-		if (pptBio.menuShowTagger == 2 || pptBio.menuShowTagger && this.shift) this.handles = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+		if (bioSet.menuShowTagger == 2 || bioSet.menuShowTagger && this.shift) this.handles = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 		this.tagsEnabled();
 
-		menuBio.load(x, y);
+		bioMenu.load(x, y);
 		this.right_up = false;
 
 		// * Link with top menu Options > Biography > Display
-		if (!pptBio.img_only && !pptBio.text_only) {
-			pref.biographyDisplay = 'Image+text';
-		} else if (pptBio.img_only) {
-			pref.biographyDisplay = 'Image';
-		} else if (pptBio.text_only) {
-			pref.biographyDisplay = 'Text';
+		if (!bioSet.img_only && !bioSet.text_only) {
+			grSet.biographyDisplay = 'Image+text';
+		} else if (bioSet.img_only) {
+			grSet.biographyDisplay = 'Image';
+		} else if (bioSet.text_only) {
+			grSet.biographyDisplay = 'Text';
 		}
 	}
 
@@ -1104,20 +1119,20 @@ class MenuItemsBio {
 	setCover(i) {
 		switch (true) {
 			case i < 5:
-				!pptBio.loadCovAllFb ? pptBio.covType = i : imgBio.cov.selection[i] = imgBio.cov.selection[i] == -1 ? i : -1;
-				imgBio.cov.selFiltered = imgBio.cov.selection.filter(v => v != -1);
-				if (!imgBio.cov.selFiltered.length) {
-					imgBio.cov.selection = [0, -1, -1, -1, -1];
-					imgBio.cov.selFiltered = [0];
+				!bioSet.loadCovAllFb ? bioSet.covType = i : bio.img.cov.selection[i] = bio.img.cov.selection[i] == -1 ? i : -1;
+				bio.img.cov.selFiltered = bio.img.cov.selection.filter(v => v != -1);
+				if (!bio.img.cov.selFiltered.length) {
+					bio.img.cov.selection = [0, -1, -1, -1, -1];
+					bio.img.cov.selFiltered = [0];
 				}
-				pptBio.loadCovSelFb = JSON.stringify(imgBio.cov.selection);
-				!pptBio.loadCovAllFb ? imgBio.getImages() : imgBio.check();
+				bioSet.loadCovSelFb = JSON.stringify(bio.img.cov.selection);
+				!bioSet.loadCovAllFb ? bio.img.getImages() : bio.img.check();
 				break;
 			case i == 5:
-				imgBio.toggle('loadCovAllFb');
+				bio.img.toggle('loadCovAllFb');
 				break;
 			case i == 6:
-				imgBio.toggle('loadCovFolder');
+				bio.img.toggle('loadCovFolder');
 				break;
 		}
 	}
@@ -1127,40 +1142,40 @@ class MenuItemsBio {
 			case 0:
 			case 1:
 			case 2:
-				if (pptBio.sameStyle) panelBio.mode(i);
+				if (bioSet.sameStyle) bio.panel.mode(i);
 				else {
-					pptBio.artistView ? pptBio.bioMode = i : pptBio.revMode = i;
-					txt.refresh(0);
+					bioSet.artistView ? bioSet.bioMode = i : bioSet.revMode = i;
+					bio.txt.refresh(0);
 				}
 				break;
 			case 3:
-				filmStrip.mbtn_up('onOff');
+				bio.filmStrip.mbtn_up('onOff');
 				break;
 			case 4:
-				txt.bio.scrollPos = {}; txt.rev.scrollPos = {};
-				pptBio.heading = !pptBio.heading ? 1 : 0;
-				panelBio.style.fullWidthHeading = pptBio.heading && pptBio.fullWidthHeading;
-				if (panelBio.style.inclTrackRev == 1) txt.logScrollPos();
-				txt.refresh(1);
+				bio.txt.bio.scrollPos = {}; bio.txt.rev.scrollPos = {};
+				bioSet.heading = !bioSet.heading ? 1 : 0;
+				bio.panel.style.fullWidthHeading = bioSet.heading && bioSet.fullWidthHeading;
+				if (bio.panel.style.inclTrackRev == 1) bio.txt.logScrollPos();
+				bio.txt.refresh(1);
 				break;
 			case 5:
 			case 6:
-				txt.bio.scrollPos = {}; txt.rev.scrollPos = {};
-				pptBio.toggle(i == 5 ? 'summaryShow' : 'summaryCompact');
-				panelBio.setSummary();
-				txt.refresh(1);
+				bio.txt.bio.scrollPos = {}; bio.txt.rev.scrollPos = {};
+				bioSet.toggle(i == 5 ? 'summaryShow' : 'summaryCompact');
+				bio.panel.setSummary();
+				bio.txt.refresh(1);
 				break;
 			case 7:
 			case 8:
-				panelBio.click('', '', true);
+				bio.panel.click('', '', true);
 				break;
 			case 9:
 			case 10:
-				pptBio.toggle('focus');
-				panelBio.id.focus = pptBio.focus;
-				panelBio.changed();
-				txt.on_playback_new_track();
-				imgBio.on_playback_new_track();
+				bioSet.toggle('focus');
+				bio.panel.id.focus = bioSet.focus;
+				bio.panel.changed();
+				bio.txt.on_playback_new_track();
+				bio.img.on_playback_new_track();
 				break;
 		}
 	}
@@ -1170,38 +1185,38 @@ class MenuItemsBio {
 			case 'standard':
 				switch (i) {
 					case 3:
-						pptBio.toggle('textAlign');
-						panelBio.setStyle();
-						imgBio.clearCache();
-						imgBio.getImages();
+						bioSet.toggle('textAlign');
+						bio.panel.setStyle();
+						bio.img.clearCache();
+						bio.img.getImages();
 						break;
 					default:
-						if (pptBio.style == 0 || pptBio.style == 2) pptBio.alignH = i;
-						else pptBio.alignV = i;
-						imgBio.clearCache();
-						imgBio.getImages();
+						if (bioSet.style == 0 || bioSet.style == 2) bioSet.alignH = i;
+						else bioSet.alignV = i;
+						bio.img.clearCache();
+						bio.img.getImages();
 						break;
 				}
 				break;
 			case 'horizontal':
-				pptBio.alignH = i;
-				imgBio.clearCache();
-				imgBio.getImages();
+				bioSet.alignH = i;
+				bio.img.clearCache();
+				bio.img.getImages();
 				break;
 			case 'vertical':
 				switch (i) {
 					case 3:
-						pptBio.alignAuto = true;
-						panelBio.setStyle();
-						imgBio.clearCache();
-						imgBio.getImages();
+						bioSet.alignAuto = true;
+						bio.panel.setStyle();
+						bio.img.clearCache();
+						bio.img.getImages();
 						break;
 					default:
-						pptBio.alignV = i;
-						pptBio.alignAuto = false;
-						panelBio.setStyle();
-						imgBio.clearCache();
-						imgBio.getImages();
+						bioSet.alignV = i;
+						bioSet.alignAuto = false;
+						bio.panel.setStyle();
+						bio.img.clearCache();
+						bio.img.getImages();
 						break;
 					}
 					break;
@@ -1212,45 +1227,45 @@ class MenuItemsBio {
 		if (!i) {
 			if (!this.img.list.blacklist[this.img.artistClean]) this.img.list.blacklist[this.img.artistClean] = [];
 			this.img.list.blacklist[this.img.artistClean].push(this.img.name);
-		} else if (imgBio.blackList.undo[0] == this.img.artistClean && i == 2) {
-			if (!this.img.list.blacklist[imgBio.blackList.undo[0]]) this.img.list.blacklist[this.img.artistClean] = [];
-			if (imgBio.blackList.undo[1].length) this.img.list.blacklist[imgBio.blackList.undo[0]].push(imgBio.blackList.undo[1]);
-			imgBio.blackList.undo = [];
+		} else if (bio.img.blackList.undo[0] == this.img.artistClean && i == 2) {
+			if (!this.img.list.blacklist[bio.img.blackList.undo[0]]) this.img.list.blacklist[this.img.artistClean] = [];
+			if (bio.img.blackList.undo[1].length) this.img.list.blacklist[bio.img.blackList.undo[0]].push(bio.img.blackList.undo[1]);
+			bio.img.blackList.undo = [];
 		} else {
-			const bl_ind = i - (imgBio.blackList.undo[0] == this.img.artistClean ? 3 : 2);
-			imgBio.blackList.undo = [this.img.artistClean, this.img.list.blacklist[this.img.artistClean][bl_ind]];
+			const bl_ind = i - (bio.img.blackList.undo[0] == this.img.artistClean ? 3 : 2);
+			bio.img.blackList.undo = [this.img.artistClean, this.img.list.blacklist[this.img.artistClean][bl_ind]];
 			this.img.list.blacklist[this.img.artistClean].splice(bl_ind, 1);
 			$Bio.removeNulls(this.img.list);
 		}
 		const bl = this.img.list.blacklist[this.img.artistClean];
 		if (bl) this.img.list.blacklist[this.img.artistClean] = this.sort([...new Set(bl)]);
-		imgBio.blackList.artist = '';
+		bio.img.blackList.artist = '';
 		$Bio.save(this.path.blackList, JSON.stringify({
 			blacklist: $Bio.sortKeys(this.img.list.blacklist)
 		}, null, 3), true);
-		imgBio.check();
+		bio.img.check();
 		window.NotifyOthers('bio_blacklist', 'bio_blacklist');
 	}
 
 	setPaste(i) {
 		switch (i) {
 			case 0: case 1: case 2: {
-				const n = pptBio.artistView ? 'bio' : 'rev';
+				const n = bioSet.artistView ? 'bio' : 'rev';
 				const s = $Bio.source.amLfmWiki[i];
 				this.undo.folder = this.path[s][0];
 				this.undo.path = this.path[s][1];
 				this.undo.text = $Bio.open(this.undo.path);
 				$Bio.buildPth(this.undo.folder);
-				$Bio.save(this.undo.path, `${this.docTxt}\r\n\r\nCustom ${pptBio.artistView ? 'Biography' : 'Review'}`, true);
-				const b = pptBio.artistView ? 'Bio' : 'Rev';
-				const pth = txt[`${n}Pth`](['Am', 'Lfm', 'Wiki'][i]);
+				$Bio.save(this.undo.path, `${this.docTxt}\r\n\r\nCustom ${bioSet.artistView ? 'Biography' : 'Review'}`, true);
+				const b = bioSet.artistView ? 'Bio' : 'Rev';
+				const pth = bio.txt[`${n}Pth`](['Am', 'Lfm', 'Wiki'][i]);
 				if (this.path[s][1] == pth[1]) {
-					pptBio[`source${b}`] = 0;
-					txt[n].source[s] = true;
+					bioSet[`source${b}`] = 0;
+					bio.txt[n].source[s] = true;
 				}
 				window.NotifyOthers('bio_getText', 'bio_getText');
-				txt.grab();
-				if (pptBio.text_only) txt.paint();
+				bio.txt.grab();
+				if (bioSet.text_only) bio.txt.paint();
 				break;
 			}
 			case 3: {
@@ -1262,14 +1277,14 @@ class MenuItemsBio {
 			}
 			case 4:
 				if (!this.undo.text.length && $Bio.file(this.undo.path)) {
-					fsoBio.DeleteFile(this.undo.path);
+					bioFSO.DeleteFile(this.undo.path);
 					window.NotifyOthers('bio_reload', 'bio_reload');
-					if (panelBio.stndItem()) window.Reload();
+					if (bio.panel.stndItem()) window.Reload();
 					else {
-						txt.artistFlush();
-						txt.albumFlush();
-						txt.grab();
-						if (pptBio.text_only) txt.paint();
+						bio.txt.artistFlush();
+						bio.txt.albumFlush();
+						bio.txt.grab();
+						if (bioSet.text_only) bio.txt.paint();
 					}
 					break;
 				}
@@ -1277,20 +1292,20 @@ class MenuItemsBio {
 				$Bio.save(this.undo.path, this.undo.text, true);
 				this.undo.text = '#!#';
 				window.NotifyOthers('bio_getText', 'bio_getText');
-				txt.grab();
-				if (pptBio.text_only) txt.paint();
+				bio.txt.grab();
+				if (bioSet.text_only) bio.txt.paint();
 				break;
 		}
 	}
 
 	setPhotoType(i) {
-		pptBio.cycPhoto = i < 2;
-		pptBio.cycPhotoLocation = i;
-		if (i == 1 && !pptBio.get('SYSTEM.Photo Folder Checked', false)) {
+		bioSet.cycPhoto = i < 2;
+		bioSet.cycPhotoLocation = i;
+		if (i == 1 && !bioSet.get('SYSTEM.Photo Folder Checked', false)) {
 			fb.ShowPopupMessage('Enter folder in options: "Server Settings"\\Photo\\Custom photo folder.', 'Biography: custom folder for photo cycling');
-			pptBio.set('SYSTEM.Photo Folder Checked', true);
+			bioSet.set('SYSTEM.Photo Folder Checked', true);
 		}
-		imgBio.updImages();
+		bio.img.updImages();
 	}
 
 	setPlaylist(i) {
@@ -1298,52 +1313,52 @@ class MenuItemsBio {
 	}
 
 	setReviewType(i) {
-		txt.logScrollPos();
-		panelBio.style.inclTrackRev = pptBio.inclTrackRev = [0, 2, 1][i];
-		if (pptBio.inclTrackRev) { serverBio.checkTrack({
-			focus: panelBio.id.focus,
+		bio.txt.logScrollPos();
+		bio.panel.style.inclTrackRev = bioSet.inclTrackRev = [0, 2, 1][i];
+		if (bioSet.inclTrackRev) { bio.server.checkTrack({
+			focus: bio.panel.id.focus,
 			force: false,
 			menu: true,
-			artist: panelBio.art.list.length ? panelBio.art.list[0].name : name.artist(panelBio.id.focus),
-			title: name.title(panelBio.id.focus)
+			artist: bio.panel.art.list.length ? bio.panel.art.list[0].name : bio.name.artist(bio.panel.id.focus),
+			title: bio.name.title(bio.panel.id.focus)
 		}); }
-		txt.refresh(1);
-		txt.getScrollPos();
+		bio.txt.refresh(1);
+		bio.txt.getScrollPos();
 	}
 
 	setSource(b, n) {
 		n = n || b.toLowerCase();
-		$Bio.source.amLfmWikiTxt.forEach((v, i) => txt[n].source[v] = pptBio[`source${n}`] == i);
-		$Bio.source.amLfmWiki.forEach(v => { if (txt[n].source[v]) txt.done[`${v}${b}`] = false });
-		txt[n].source.ix = pptBio[`source${n}`];
+		$Bio.source.amLfmWikiTxt.forEach((v, i) => bio.txt[n].source[v] = bioSet[`source${n}`] == i);
+		$Bio.source.amLfmWiki.forEach(v => { if (bio.txt[n].source[v]) bio.txt.done[`${v}${b}`] = false });
+		bio.txt[n].source.ix = bioSet[`source${n}`];
 	}
 
 	setStyle(i) {
-		const prop = pptBio.sameStyle ? 'style' : pptBio.artistView ? 'bioStyle' : 'revStyle';
-		pptBio[prop] = i;
-		imgBio.mask.reset = true;
-		pptBio.img_only = false;
-		pptBio.text_only = false;
-		txt.refresh(0);
-		if (pptBio.filmStripOverlay && pptBio.showFilmStrip) filmStrip.set(pptBio.filmStripPos);
+		const prop = bioSet.sameStyle ? 'style' : bioSet.artistView ? 'bioStyle' : 'revStyle';
+		bioSet[prop] = i;
+		bio.img.mask.reset = true;
+		bioSet.img_only = false;
+		bioSet.text_only = false;
+		bio.txt.refresh(0);
+		if (bioSet.filmStripOverlay && bioSet.showFilmStrip) bio.filmStrip.set(bioSet.filmStripPos);
 	}
 
 	setStyles(i) {
 		switch (i) {
 			case 0:
-				panelBio.createStyle();
+				bio.panel.createStyle();
 				break;
 			case 1:
-				panelBio.renameStyle(pptBio.style);
+				bio.panel.renameStyle(bioSet.style);
 				break;
 			case 2:
-				panelBio.deleteStyle(pptBio.style);
+				bio.panel.deleteStyle(bioSet.style);
 				break;
 			case 3:
-				panelBio.exportStyle(pptBio.style);
+				bio.panel.exportStyle(bioSet.style);
 				break;
 			case 4:
-				panelBio.resetStyle(pptBio.style);
+				bio.panel.resetStyle(bioSet.style);
 				break;
 		}
 	}
@@ -1352,22 +1367,22 @@ class MenuItemsBio {
 		switch (i) {
 			case 0:
 			case 1: this.toggle(4, b); break;
-			case 2: txt.bio.scrollPos = {}; txt.rev.scrollPos = {}; pptBio.toggle('sourceAll'); txt.refresh(1); break;
+			case 2: bio.txt.bio.scrollPos = {}; bio.txt.rev.scrollPos = {}; bioSet.toggle('sourceAll'); bio.txt.refresh(1); break;
 			case 3:
-				pptBio.toggle('showTrackRevOptions');
-				txt.logScrollPos();
-				panelBio.style.inclTrackRev = pptBio.inclTrackRev = 0;
-				if (pptBio.showTrackRevOptions) { serverBio.checkTrack({
-					focus: panelBio.id.focus,
+				bioSet.toggle('showTrackRevOptions');
+				bio.txt.logScrollPos();
+				bio.panel.style.inclTrackRev = bioSet.inclTrackRev = 0;
+				if (bioSet.showTrackRevOptions) { bio.server.checkTrack({
+					focus: bio.panel.id.focus,
 					force: false,
 					menu: true,
-					artist: panelBio.art.list.length ? panelBio.art.list[0].name : name.artist(panelBio.id.focus),
-					title: name.title(panelBio.id.focus)
+					artist: bio.panel.art.list.length ? bio.panel.art.list[0].name : bio.name.artist(bio.panel.id.focus),
+					title: bio.name.title(bio.panel.id.focus)
 				}); }
-				txt.refresh(1);
-				txt.getScrollPos();
+				bio.txt.refresh(1);
+				bio.txt.getScrollPos();
 				break;
-			case 4: pptBio.toggle('classicalMusicMode'); pptBio.classicalAlbFallback = pptBio.classicalMusicMode; txt.refresh(1); break;
+			case 4: bioSet.toggle('classicalMusicMode'); bioSet.classicalAlbFallback = bioSet.classicalMusicMode; bio.txt.refresh(1); break;
 		}
 	}
 
@@ -1378,102 +1393,102 @@ class MenuItemsBio {
 	tagsEnabled() {
 		this.tags = false;
 		for (let i = 0; i < 13; i++)
-			{ if (cfg[`tagEnabled${i}`]) {
+			{ if (bioCfg[`tagEnabled${i}`]) {
 				this.tags = true;
 				break;
 			} }
 	}
 
 	toggle(i, b, fix, direction) {
-		txt.logScrollPos();
+		bio.txt.logScrollPos();
 		const n = b.toLowerCase();
-		if (i === pptBio[`source${n}`]) return;
+		if (i === bioSet[`source${n}`]) return;
 		if (i == 4) {
-			pptBio.toggle('lockBio');
+			bioSet.toggle('lockBio');
 		} else {
-		if (i === '') i = pptBio[`source${n}`];
+		if (i === '') i = bioSet[`source${n}`];
 			if (fix) {
-				pptBio[`source${n}`] = i;
-			} else if (pptBio.lockBio && !pptBio.sourceAll) {
-				const limit = txt[n].reader ? 3 : 2;
-				direction == 1 ? pptBio[`source${n}`] = i == limit ? 0 : ++i : pptBio[`source${n}`] = i == 0 ? limit : --i;
-			} else if (txt[n].reader) {
-				switch (txt[n].loaded.ix) {
-					case 0: pptBio[`source${n}`] = direction == 1 ? (txt[n].lfm ? 1 : txt[n].wiki ? 2 : txt[n].txt ? 3 : 0) : (txt[n].txt ? 3 : txt[n].wiki ? 2 : txt[n].lfm ? 1 : 0); break;
-					case 1: pptBio[`source${n}`] = direction == 1 ? (txt[n].wiki ? 2 : txt[n].txt ? 3 : txt[n].am ? 0 : 1) : (txt[n].am ? 0 : txt[n].txt ? 3 : txt[n].wiki ? 2 : 1); break;
-					case 2: pptBio[`source${n}`] = direction == 1 ? (txt[n].txt ? 3 : txt[n].am ? 0 : txt[n].lfm ? 1 : 2) : (txt[n].lfm ? 1 : txt[n].am ? 0 : txt[n].txt ? 3 : 2); break;
-					case 3: pptBio[`source${n}`] = direction == 1 ? (txt[n].am ? 0 : txt[n].lfm ? 1 : txt[n].wiki ? 2 : 3) : (txt[n].wiki ? 2 : txt[n].lfm ? 1 : txt[n].am ? 0 : 3); break;
+				bioSet[`source${n}`] = i;
+			} else if (bioSet.lockBio && !bioSet.sourceAll) {
+				const limit = bio.txt[n].reader ? 3 : 2;
+				direction == 1 ? bioSet[`source${n}`] = i == limit ? 0 : ++i : bioSet[`source${n}`] = i == 0 ? limit : --i;
+			} else if (bio.txt[n].reader) {
+				switch (bio.txt[n].loaded.ix) {
+					case 0: bioSet[`source${n}`] = direction == 1 ? (bio.txt[n].lfm ? 1 : bio.txt[n].wiki ? 2 : bio.txt[n].txt ? 3 : 0) : (bio.txt[n].txt ? 3 : bio.txt[n].wiki ? 2 : bio.txt[n].lfm ? 1 : 0); break;
+					case 1: bioSet[`source${n}`] = direction == 1 ? (bio.txt[n].wiki ? 2 : bio.txt[n].txt ? 3 : bio.txt[n].am ? 0 : 1) : (bio.txt[n].am ? 0 : bio.txt[n].txt ? 3 : bio.txt[n].wiki ? 2 : 1); break;
+					case 2: bioSet[`source${n}`] = direction == 1 ? (bio.txt[n].txt ? 3 : bio.txt[n].am ? 0 : bio.txt[n].lfm ? 1 : 2) : (bio.txt[n].lfm ? 1 : bio.txt[n].am ? 0 : bio.txt[n].txt ? 3 : 2); break;
+					case 3: bioSet[`source${n}`] = direction == 1 ? (bio.txt[n].am ? 0 : bio.txt[n].lfm ? 1 : bio.txt[n].wiki ? 2 : 3) : (bio.txt[n].wiki ? 2 : bio.txt[n].lfm ? 1 : bio.txt[n].am ? 0 : 3); break;
 					}
 			} else {
-				switch (txt[n].loaded.ix) {
-					case 0: pptBio[`source${n}`] = direction == 1 ? (txt[n].lfm ? 1 : txt[n].wiki ? 2 : 0) : (txt[n].wiki ? 2 : txt[n].lfm ? 1 : 0); break;
-					case 1: pptBio[`source${n}`] = direction == 1 ? (txt[n].wiki ? 2 : txt[n].am ? 0 : 1) : (txt[n].am ? 0 : txt[n].wiki ? 2 : 1); break;
-					case 2: pptBio[`source${n}`] = direction == 1 ? (txt[n].am ? 0 : txt[n].lfm ? 1 : 2) : (txt[n].lfm ? 1 : txt[n].am ? 0 : 2); break;
+				switch (bio.txt[n].loaded.ix) {
+					case 0: bioSet[`source${n}`] = direction == 1 ? (bio.txt[n].lfm ? 1 : bio.txt[n].wiki ? 2 : 0) : (bio.txt[n].wiki ? 2 : bio.txt[n].lfm ? 1 : 0); break;
+					case 1: bioSet[`source${n}`] = direction == 1 ? (bio.txt[n].wiki ? 2 : bio.txt[n].am ? 0 : 1) : (bio.txt[n].am ? 0 : bio.txt[n].wiki ? 2 : 1); break;
+					case 2: bioSet[`source${n}`] = direction == 1 ? (bio.txt[n].am ? 0 : bio.txt[n].lfm ? 1 : 2) : (bio.txt[n].lfm ? 1 : bio.txt[n].am ? 0 : 2); break;
 				}
 			}
 		}
 		this.setSource(b, n);
-		txt.getText(false);
-		butBio.src.y = butBio.src.fontSize < 12 || txt[n].loaded.ix == 2 ? 1 : 0;
-		txt.getScrollPos();
-		imgBio.getImages();
+		bio.txt.getText(false);
+		bio.but.src.y = bio.but.src.fontSize < 12 || bio.txt[n].loaded.ix == 2 ? 1 : 0;
+		bio.txt.getScrollPos();
+		bio.img.getImages();
 	}
 
 	wheel(step, resetCounters) {
 		let i = 0;
-		butBio.clearTooltip();
+		bio.but.clearTooltip();
 		let force = false;
 		switch (true) {
-			case pptBio.artistView:
-				if (!panelBio.art.uniq.length) break;
-				for (i = 0; i < panelBio.art.uniq.length; i++)
-					{ if (!panelBio.art.ix && name.artist(panelBio.id.focus) == panelBio.art.uniq[i].name || panelBio.art.ix == panelBio.art.uniq[i].ix) break; }
+			case bioSet.artistView:
+				if (!bio.panel.art.uniq.length) break;
+				for (i = 0; i < bio.panel.art.uniq.length; i++)
+					{ if (!bio.panel.art.ix && bio.name.artist(bio.panel.id.focus) == bio.panel.art.uniq[i].name || bio.panel.art.ix == bio.panel.art.uniq[i].ix) break; }
 				i += step;
-				if (i < 0) i = panelBio.art.uniq.length - 1;
-				else if (i >= panelBio.art.uniq.length) i = 0;
-				txt.logScrollPos();
-				filmStrip.logScrollPos();
-				if (pptBio.sourcebio == 3) {
-					pptBio.sourcebio = 1;
+				if (i < 0) i = bio.panel.art.uniq.length - 1;
+				else if (i >= bio.panel.art.uniq.length) i = 0;
+				bio.txt.logScrollPos();
+				bio.filmStrip.logScrollPos();
+				if (bioSet.sourcebio == 3) {
+					bioSet.sourcebio = 1;
 					this.setSource('Bio');
 				}
-				panelBio.art.ix = panelBio.art.uniq[i].ix;
-				if (panelBio.art.list[panelBio.art.ix].type.includes('history')) break;
-				panelBio.logArtistHistory(panelBio.art.list[panelBio.art.ix].name);
-				panelBio.getList();
+				bio.panel.art.ix = bio.panel.art.uniq[i].ix;
+				if (bio.panel.art.list[bio.panel.art.ix].type.includes('history')) break;
+				bio.panel.logArtistHistory(bio.panel.art.list[bio.panel.art.ix].name);
+				bio.panel.getList();
 				break;
-			case !pptBio.artistView:
-				if (!panelBio.alb.uniq.length) break;
-				for (i = 0; i < panelBio.alb.uniq.length; i++)
-					{ if (!panelBio.alb.ix && `${name.albumArtist(panelBio.id.focus)} - ${name.album(panelBio.id.focus)}` == `${panelBio.alb.uniq[i].artist} - ${panelBio.alb.uniq[i].album}` || panelBio.alb.ix == panelBio.alb.uniq[i].ix) break; }
+			case !bioSet.artistView:
+				if (!bio.panel.alb.uniq.length) break;
+				for (i = 0; i < bio.panel.alb.uniq.length; i++)
+					{ if (!bio.panel.alb.ix && `${bio.name.albumArtist(bio.panel.id.focus)} - ${bio.name.album(bio.panel.id.focus)}` == `${bio.panel.alb.uniq[i].artist} - ${bio.panel.alb.uniq[i].album}` || bio.panel.alb.ix == bio.panel.alb.uniq[i].ix) break; }
 				i += step;
-				if (i < 0) i = panelBio.alb.uniq.length - 1;
-				else if (i >= panelBio.alb.uniq.length) i = 0;
-				txt.logScrollPos();
-				filmStrip.logScrollPos();
-				if (pptBio.sourcerev == 3) {
-					pptBio.sourcerev = 0;
+				if (i < 0) i = bio.panel.alb.uniq.length - 1;
+				else if (i >= bio.panel.alb.uniq.length) i = 0;
+				bio.txt.logScrollPos();
+				bio.filmStrip.logScrollPos();
+				if (bioSet.sourcerev == 3) {
+					bioSet.sourcerev = 0;
 					this.setSource('Rev');
 				}
-				panelBio.alb.ix = panelBio.alb.uniq[i].ix;
-				if (panelBio.alb.ix) seeker.show = false;
-				if (pptBio.showAlbumHistory && pptBio.inclTrackRev) {
-					panelBio.style.inclTrackRev = pptBio.inclTrackRev;
-					if (panelBio.alb.list[panelBio.alb.ix].type.includes('history')) panelBio.style.inclTrackRev = 0;
-					txt.albumFlush();
+				bio.panel.alb.ix = bio.panel.alb.uniq[i].ix;
+				if (bio.panel.alb.ix) bio.seeker.show = false;
+				if (bioSet.showAlbumHistory && bioSet.inclTrackRev) {
+					bio.panel.style.inclTrackRev = bioSet.inclTrackRev;
+					if (bio.panel.alb.list[bio.panel.alb.ix].type.includes('history')) bio.panel.style.inclTrackRev = 0;
+					bio.txt.albumFlush();
 					force = true;
 				}
-				if (panelBio.alb.list[panelBio.alb.ix].type.includes('history')) break;
-				panelBio.logAlbumHistory(panelBio.alb.list[panelBio.alb.ix].artist, panelBio.alb.list[panelBio.alb.ix].album);
-				panelBio.getList();
+				if (bio.panel.alb.list[bio.panel.alb.ix].type.includes('history')) break;
+				bio.panel.logAlbumHistory(bio.panel.alb.list[bio.panel.alb.ix].artist, bio.panel.alb.list[bio.panel.alb.ix].album);
+				bio.panel.getList();
 				break;
 		}
-		imgBio.get = false;
-		txt.getItem(false, panelBio.art.ix, panelBio.alb.ix, force);
-		txt.getScrollPos();
-		imgBio.getItem(panelBio.art.ix, panelBio.alb.ix);
-		panelBio.lookUpServer();
-		if (resetCounters) pptBio.artistView ? this.counter.bio = 0 : this.counter.rev = 0;
-		filmStrip.check();
+		bio.img.get = false;
+		bio.txt.getItem(false, bio.panel.art.ix, bio.panel.alb.ix, force);
+		bio.txt.getScrollPos();
+		bio.img.getItem(bio.panel.art.ix, bio.panel.alb.ix);
+		bio.panel.lookUpServer();
+		if (resetCounters) bioSet.artistView ? this.counter.bio = 0 : this.counter.rev = 0;
+		bio.filmStrip.check();
 	}
 }

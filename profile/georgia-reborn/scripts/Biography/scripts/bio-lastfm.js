@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-class DldLastfmBio {
+class BioDldLastfm {
 	constructor(state_callback) {
 		this.artist;
 		this.con = '';
@@ -44,9 +44,9 @@ class DldLastfmBio {
 		this.pth_bio = p_pth_bio;
 		this.func = null;
 		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
-		const URL = this.searchBio == 3 ? `https://${serverBio.lfm.server}/music/${encodeURIComponent(this.artist)}/${encodeURIComponent(this.itemValue[0])}` : this.searchBio == 2 ? `https://www.last.fm/music/${encodeURIComponent(this.artist)}/+albums` : `https://${!this.retry ? serverBio.lfm.server : 'www.last.fm'}/music/${encodeURIComponent(this.artist)}${this.searchBio ? '/+wiki' : ''}`;
+		const URL = this.searchBio == 3 ? `https://${bio.server.lfm.server}/music/${encodeURIComponent(this.artist)}/${encodeURIComponent(this.itemValue[0])}` : this.searchBio == 2 ? `https://www.last.fm/music/${encodeURIComponent(this.artist)}/+albums` : `https://${!this.retry ? bio.server.lfm.server : 'www.last.fm'}/music/${encodeURIComponent(this.artist)}${this.searchBio ? '/+wiki' : ''}`;
 		this.func = this.analyse;
-		if (pptBio.multiServer && !force && serverBio.urlDone(md5Bio.hashStr(this.artist + this.pth_bio + URL))) return;
+		if (bioSet.multiServer && !force && bio.server.urlDone(bioMD5.hashStr(this.artist + this.pth_bio + URL))) return;
 		this.xmlhttp.open('GET', URL);
 		this.xmlhttp.onreadystatechange = this.ready_callback;
 		if (force) this.xmlhttp.setRequestHeader('If-Modified-Since', 'Thu, 01 Jan 1970 00:00:00 GMT');
@@ -63,8 +63,8 @@ class DldLastfmBio {
 	analyse(saveOnly) {
 		const noWiki = n => /wiki|vikimiz|\u0412\u0438\u043A\u0438|\u7EF4\u57FA/i.test(n);
 		if (!saveOnly) {
-			docBio.open();
-			const div = docBio.createElement('div');
+			bioDoc.open();
+			const div = bioDoc.createElement('div');
 			div.innerHTML = this.xmlhttp.responseText;
 			const r1 = ['Popular this week', 'Beliebt diese Woche', 'Popular esta semana', 'Populaire cette semaine', 'Popolare questa settimana', '\u4eca\u9031\u306e\u4eba\u6c17\u97f3\u697d', 'Popularne w tym tygodniu', 'Mais ouvida na semana', '\u041f\u043e\u043f\u0443\u043b\u044f\u0440\u043d\u043e \u043d\u0430 \u044d\u0442\u043e\u0439 \u043d\u0435\u0434\u0435\u043b\u0435', 'Popul\u00e4rt denna vecka', 'Bu hafta pop\u00fcler olanlar', '\u672c\u5468\u70ed\u95e8'];
 			const r2 = ['Popular Now', 'Beliebt Jetzt', 'Popular Ahora', 'Populaire Maintenant', 'Popolare Ora', '\u4eca\u4eba\u6c17', 'Popularne Teraz', 'Popular Agora', '\u041f\u043e\u043f\u0443\u043b\u044f\u0440\u043d\u044b\u0435 \u0441\u0435\u0439\u0447\u0430\u0441', 'Popul\u00e4r Nu', '\u015eimdi Pop\u00fcler', '\u70ed\u95e8 \u73b0\u5728'];
@@ -109,7 +109,7 @@ class DldLastfmBio {
 						this.topTracks.push($Bio.titlecase(v.innerText.trim()));
 						i++;
 					});
-					this.topTracks = this.topTracks.length ? topTracks[cfg.lang.ix] + this.topTracks.join('\u200b, ') : '';
+					this.topTracks = this.topTracks.length ? topTracks[bioCfg.lang.ix] + this.topTracks.join('\u200b, ') : '';
 					this.tags = this.tags.length ? `Top Tags: ${this.tags.join('\u200b, ')}` : '';
 					if (this.itemValue[1].length) {
 						r1.forEach((v, i) => itemName[1] = itemName[1].replace(RegExp(v, 'i'), r2[i]));
@@ -121,8 +121,8 @@ class DldLastfmBio {
 						}
 						this.pop += `${(this.itemValue[1].length ? '; ' : '\r\n\r\n') + $Bio.titlecase(itemName[0])}: ${this.itemValue[0]}`;
 					}
-					this.simArtists = this.simArtists.length ? serverBio.similar[cfg.lang.ix] + this.simArtists.join('\u200b, ') : '';
-					docBio.close();
+					this.simArtists = this.simArtists.length ? bio.server.similar[bioCfg.lang.ix] + this.simArtists.join('\u200b, ') : '';
+					bioDoc.close();
 					this.searchBio = 1;
 					return this.search(this.artist, this.fo_bio, this.pth_bio);
 				}
@@ -130,15 +130,15 @@ class DldLastfmBio {
 					let factbox = '';
 					this.con = '';
 					$Bio.htmlParse(div.getElementsByTagName('div'), 'className', 'wiki-content', v => {
-						this.con = serverBio.format(v.innerHTML);
+						this.con = bio.server.format(v.innerHTML);
 						return true;
 					});
 					$Bio.htmlParse(div.getElementsByTagName('li'), 'className', 'factbox-item', v => {
 						factbox = '';
-						factbox = serverBio.format(v.innerHTML.replace(/<\/H4>/gi, ': ').replace(/\s*<\/LI>\s*/gi, ', ').replace(/\s*Show all members\u2026\s*/gi, '')).replace(/\s+/g, ' ').replace(/,$/, '');
-						this.con = txt.add([factbox], this.con);
+						factbox = bio.server.format(v.innerHTML.replace(/<\/H4>/gi, ': ').replace(/\s*<\/LI>\s*/gi, ', ').replace(/\s*Show all members\u2026\s*/gi, '')).replace(/\s+/g, ' ').replace(/,$/, '');
+						this.con = bio.txt.add([factbox], this.con);
 					});
-					docBio.close();
+					bioDoc.close();
 					if (!this.retry) {
 						this.searchBio = 2;
 						return this.search(this.artist, this.fo_bio, this.pth_bio);
@@ -154,7 +154,7 @@ class DldLastfmBio {
 						i++;
 						if (i == 10) return true;
 					});
-					docBio.close();
+					bioDoc.close();
 					if (popAlbums.length) {
 						const mapAlbums = this.topAlbums.map(v => $Bio.cut(v));
 						const match = mapAlbums.includes($Bio.cut(popAlbums[0]));
@@ -163,7 +163,7 @@ class DldLastfmBio {
 					}
 					this.topAlbums = [...new Set(this.topAlbums)];
 					this.topAlbums.length = Math.min(6, this.topAlbums.length);
-					this.topAlbums = this.topAlbums.length ? topAlb[cfg.lang.ix] + this.topAlbums.join('\u200b, ') : '';
+					this.topAlbums = this.topAlbums.length ? topAlb[bioCfg.lang.ix] + this.topAlbums.join('\u200b, ') : '';
 					if (this.itemValue[0]) {
 						this.searchBio = 3;
 						return this.search(this.artist, this.fo_bio, this.pth_bio);
@@ -175,7 +175,7 @@ class DldLastfmBio {
 						this.itemValue[2] = v.innerText.trim().split(',')[0];
 						return true
 					});
-					docBio.close();
+					bioDoc.close();
 					if (this.itemValue[0].length) {
 						const item = this.itemDate.length && this.itemValue[2].length && this.itemDate.length != this.itemValue[2].length ? ` (${this.itemDate} - ${this.itemValue[2]})` : this.itemValue[2].length ? ` (${this.itemValue[2]})` : this.itemDate.length ? ` (${this.itemDate})` : '';
 						if (item) this.pop += item;
@@ -183,15 +183,15 @@ class DldLastfmBio {
 					break;
 			}
 		}
-		if ((!this.con.length || this.con.length < 45 && noWiki(this.con)) && serverBio.langFallback && !this.retry) {
+		if ((!this.con.length || this.con.length < 45 && noWiki(this.con)) && bio.server.langFallback && !this.retry) {
 			this.retry = true;
 			this.searchBio = 1;
 			return this.search(this.artist, this.fo_bio, this.pth_bio);
 		}
 		if (this.con.length < 45 && noWiki(this.con)) this.con = '';
-		this.con = txt.add([this.tags, this.topAlbums, this.topTracks], this.con);
+		this.con = bio.txt.add([this.tags, this.topAlbums, this.topTracks], this.con);
 		this.con += this.pop;
-		this.con = txt.add([this.simArtists], this.con);
+		this.con = bio.txt.add([this.simArtists], this.con);
 		if (this.scrobbles[1].length && this.counts[1].length || this.scrobbles[0].length && this.counts[0].length) this.con += (`\r\n\r\nLast.fm: ${this.counts[1].length ? `${this.scrobbles[1]} ${this.counts[1]}; ` : ''}${this.counts[0].length ? `${this.scrobbles[0]} ${this.counts[0]}` : ''}`);
 		this.con = this.con.trim();
 		if (!this.con.length) {
@@ -201,26 +201,26 @@ class DldLastfmBio {
 		if (!this.fo_bio) return;
 		$Bio.buildPth(this.fo_bio);
 		$Bio.save(this.pth_bio, this.con, true);
-		serverBio.res();
-		panelBio.getList();
+		bio.server.res();
+		bio.panel.getList();
 		window.NotifyOthers('bio_getLookUpList', 'bio_getLookUpList');
 	}
 }
 
-class DldArtImages {
+class BioDldArtImages {
 	img_exp(p_dl_ar, imgFolder, ex) {
 		const f = `${imgFolder}update.txt`;
 		const imgExisting = [];
 		let allFiles = [];
-		if (!$Bio.file(f)) return [cfg.photoNum, 0, allFiles];
+		if (!$Bio.file(f)) return [bioCfg.photoNum, 0, allFiles];
 		const getNew = Date.now() - $Bio.lastModified(f) > ex;
-		if (!getNew) return [0, cfg.photoAutoAdd, allFiles];
+		if (!getNew) return [0, bioCfg.photoAutoAdd, allFiles];
 		allFiles = utils.Glob(`${imgFolder}*`);
 		let imNo = 0;
 		allFiles.forEach(v => {
-			if (name.isLfmImg(fsoBio.GetFileName(v), p_dl_ar)) {
+			if (bio.name.isLfmImg(bioFSO.GetFileName(v), p_dl_ar)) {
 				imNo++;
-				if (cfg.photoLimit) {
+				if (bioCfg.photoLimit) {
 					imgExisting.push({
 						p: v,
 						m: $Bio.lastModified(v)
@@ -229,38 +229,38 @@ class DldArtImages {
 			}
 		});
 
-		if (cfg.photoLimit) imgExisting.sort((a, b) => a.m - b.m);
-		const newImgNo = cfg.photoNum - imNo
+		if (bioCfg.photoLimit) imgExisting.sort((a, b) => a.m - b.m);
+		const newImgNo = bioCfg.photoNum - imNo
 		if (newImgNo > 0) return [newImgNo, 0, allFiles];
-		else if (!cfg.photoAutoAdd) {
-			if (cfg.photoLimit) {
-				const remove = imgExisting.length - cfg.photoLimit;
+		else if (!bioCfg.photoAutoAdd) {
+			if (bioCfg.photoLimit) {
+				const remove = imgExisting.length - bioCfg.photoLimit;
 				if (remove > 0) {
 					for (let j = 0; j < remove; j++) {
-						serverBio.imgToRecycle.push({
+						bio.server.imgToRecycle.push({
 							a: p_dl_ar,
 							p: imgExisting[j].p
 						});
 					}
-					serverBio.setImgRecycler(true);
+					bio.server.setImgRecycler(true);
 				}
 			}
-			return [0, cfg.photoAutoAdd, allFiles];
-		} else return [5, cfg.photoAutoAdd, allFiles, imgExisting];
+			return [0, bioCfg.photoAutoAdd, allFiles];
+		} else return [5, bioCfg.photoAutoAdd, allFiles, imgExisting];
 	}
 
 	run(dl_ar, force, art, p_stndBio, p_supCache) {
-		if (!$Bio.file(`${cfg.storageFolder}foo_lastfm_img.vbs`)) return;
-		let img_folder = p_stndBio && !panelBio.isRadio(art.focus) ? panelBio.cleanPth(cfg.pth.foImgArt, art.focus, 'server') : panelBio.cleanPth(cfg.remap.foImgArt, art.focus, 'remap', dl_ar, '', 1);
-		if (p_supCache && !$Bio.folder(img_folder)) img_folder = panelBio.cleanPth(cfg.sup.foImgArt, art.focus, 'remap', dl_ar, '', 1);
-		const getNo = this.img_exp(dl_ar, img_folder, !force ? serverBio.exp : 0);
+		if (!$Bio.file(`${bioCfg.storageFolder}foo_lastfm_img.vbs`)) return;
+		let img_folder = p_stndBio && !bio.panel.isRadio(art.focus) ? bio.panel.cleanPth(bioCfg.pth.foImgArt, art.focus, 'server') : bio.panel.cleanPth(bioCfg.remap.foImgArt, art.focus, 'remap', dl_ar, '', 1);
+		if (p_supCache && !$Bio.folder(img_folder)) img_folder = bio.panel.cleanPth(bioCfg.sup.foImgArt, art.focus, 'remap', dl_ar, '', 1);
+		const getNo = this.img_exp(dl_ar, img_folder, !force ? bio.server.exp : 0);
 		if (!getNo[0]) return;
-		const lfm_art = new LfmArtImg(() => lfm_art.onStateChange());
+		const lfm_art = new BioLfmArtImg(() => lfm_art.onStateChange());
 		lfm_art.search(dl_ar, img_folder, getNo[0], getNo[1], getNo[2], getNo[3], force);
 	}
 }
 
-class LfmArtImg {
+class BioLfmArtImg {
 	constructor(state_callback) {
 		this.allFiles;
 		this.autoAdd;
@@ -293,9 +293,9 @@ class LfmArtImg {
 		this.imgExisting = p_imgExisting;
 		this.func = null;
 		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
-		const URL = `https://${!this.retry ? serverBio.lfm.server : 'www.last.fm'}/music/${encodeURIComponent(this.dl_ar)}/+images`;
+		const URL = `https://${!this.retry ? bio.server.lfm.server : 'www.last.fm'}/music/${encodeURIComponent(this.dl_ar)}/+images`;
 		this.func = this.analyse;
-		if (pptBio.multiServer && !force && serverBio.urlDone(md5Bio.hashStr(this.dl_ar + this.getNo + this.autoAdd + this.img_folder + URL))) return;
+		if (bioSet.multiServer && !force && bio.server.urlDone(bioMD5.hashStr(this.dl_ar + this.getNo + this.autoAdd + this.img_folder + URL))) return;
 		this.xmlhttp.open('GET', URL);
 		this.xmlhttp.onreadystatechange = this.ready_callback;
 		if (force) this.xmlhttp.setRequestHeader('If-Modified-Since', 'Thu, 01 Jan 1970 00:00:00 GMT');
@@ -311,31 +311,31 @@ class LfmArtImg {
 
 	analyse() {
 		const a = $Bio.clean(this.dl_ar);
-		docBio.open();
-		const div = docBio.createElement('div');
+		bioDoc.open();
+		const div = bioDoc.createElement('div');
 		div.innerHTML = this.xmlhttp.responseText;
 		const list = div.getElementsByTagName('img');
 		let links = [];
 		if (!list) {
-			if (serverBio.langFallback && !this.retry) {
+			if (bio.server.langFallback && !this.retry) {
 				this.retry = true;
-				docBio.close();
+				bioDoc.close();
 				return this.search(this.dl_ar, this.img_folder);
 			}
-			docBio.close();
+			bioDoc.close();
 			return $Bio.trace(`last.fm artist photos: ${this.dl_ar}: none found`, true);
 		}
 		$Bio.htmlParse(list, false, false, v => {
 			const attr = v.src || '';
 			if (attr.includes('avatar170s/')) links.push(attr.replace('avatar170s/', ''));
 		});
-		docBio.close();
-		const blacklist = imgBio.blacklist(a.toLowerCase());
+		bioDoc.close();
+		const blacklist = bio.img.blacklist(a.toLowerCase());
 		links = links.filter(v => !blacklist.includes(`${v.substring(v.lastIndexOf('/') + 1)}.jpg`));
 		if (links.length) {
 			$Bio.buildPth(this.img_folder);
 			if ($Bio.folder(this.img_folder)) {
-				if (this.autoAdd && cfg.photoLimit) {
+				if (this.autoAdd && bioCfg.photoLimit) {
 					let k = 0;
 					let noNewLinks = 0;
 					for (k = 0; k < Math.min(links.length, 5); k++) {
@@ -343,28 +343,28 @@ class LfmArtImg {
 						if (this.imgExisting.every(v => v.p !== iPth)) noNewLinks++;
 						if (noNewLinks == 5) break;
 					}
-					let remove = this.imgExisting.length + noNewLinks - cfg.photoLimit;
+					let remove = this.imgExisting.length + noNewLinks - bioCfg.photoLimit;
 					remove = Math.min(remove, this.imgExisting.length);
 					if (remove > 0) {
 						for (k = 0; k < remove; k++) {
-							serverBio.imgToRecycle.push({
+							bio.server.imgToRecycle.push({
 								a,
 								p: this.imgExisting[k].p
 							});
 						}
-						serverBio.setImgRecycler(true);
+						bio.server.setImgRecycler(true);
 					}
 				}
 				$Bio.save(`${this.img_folder}update.txt`, '', true);
-				timerBio.decelerating();
+				bio.timer.decelerating();
 				if (this.autoAdd) {
-					$Bio.take(links, this.getNo).forEach(v => $Bio.run(`cscript //nologo "${cfg.storageFolder}foo_lastfm_img.vbs" "${v}" "${this.img_folder + a}_${v.substring(v.lastIndexOf('/') + 1)}.jpg"`, 0));
+					$Bio.take(links, this.getNo).forEach(v => $Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${v}" "${this.img_folder + a}_${v.substring(v.lastIndexOf('/') + 1)}.jpg"`, 0));
 				} else {
 					let c = 0;
-					$Bio.take(links, cfg.photoNum).some(v => {
+					$Bio.take(links, bioCfg.photoNum).some(v => {
 						const imPth = `${this.img_folder + a}_${v.substring(v.lastIndexOf('/') + 1)}.jpg`;
 						if (!this.allFiles.includes(imPth)) {
-							$Bio.run(`cscript //nologo "${cfg.storageFolder}foo_lastfm_img.vbs" "${v}" "${imPth}"`, 0);
+							$Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${v}" "${imPth}"`, 0);
 							c++;
 							return c == this.getNo;
 						}
@@ -375,7 +375,7 @@ class LfmArtImg {
 	}
 }
 
-class LfmAlbum {
+class BioLfmAlbum {
 	constructor(state_callback) {
 		this.albumArtist;
 		this.albm;
@@ -419,14 +419,14 @@ class LfmAlbum {
 		this.albm = p_albm;
 		this.rev_img = p_rev_img;
 		if (!this.getStats && this.rev || !this.rev) {
-			URL = serverBio.url.lfm;
-			if (this.rev && !serverBio.lfm.def_EN && !this.retry) URL += `&lang=${cfg.language.toLowerCase()}`;
-			URL += `&method=album.getInfo&artist=${encodeURIComponent(this.albumArtist)}&album=${encodeURIComponent(this.rev || this.retry ? this.album : this.albm)}&autocorrect=${serverBio.auto_corr}`;
-		} else URL = `https://${serverBio.lfm.server}/music/${encodeURIComponent(this.albumArtist)}/${encodeURIComponent(this.album.replace(/\+/g, '%2B'))}`;
+			URL = bio.server.url.lfm;
+			if (this.rev && !bio.server.lfm.def_EN && !this.retry) URL += `&lang=${bioCfg.language.toLowerCase()}`;
+			URL += `&method=album.getInfo&artist=${encodeURIComponent(this.albumArtist)}&album=${encodeURIComponent(this.rev || this.retry ? this.album : this.albm)}&autocorrect=${bio.server.auto_corr}`;
+		} else URL = `https://${bio.server.lfm.server}/music/${encodeURIComponent(this.albumArtist)}/${encodeURIComponent(this.album.replace(/\+/g, '%2B'))}`;
 		this.func = null;
 		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
 		this.func = this.analyse;
-		if (pptBio.multiServer && !force && serverBio.urlDone(md5Bio.hashStr(this.albumArtist + this.album + this.albm + this.rev + this.rev_img + (cfg.imgRevHQ || !this.rev_img) + this.pth + URL))) return;
+		if (bioSet.multiServer && !force && bio.server.urlDone(bioMD5.hashStr(this.albumArtist + this.album + this.albm + this.rev + this.rev_img + (bioCfg.imgRevHQ || !this.rev_img) + this.pth + URL))) return;
 		this.xmlhttp.open('GET', URL);
 		this.xmlhttp.onreadystatechange = this.ready_callback;
 		if (!this.getStats && this.rev || !this.rev) this.xmlhttp.setRequestHeader('User-Agent', 'foobar2000_script');
@@ -445,7 +445,7 @@ class LfmAlbum {
 		if (!this.getStats && this.rev) {
 			let wiki = $Bio.jsonParse(this.xmlhttp.responseText, '', 'get', 'album.wiki.content');
 			if (!wiki) {
-				if (serverBio.langFallback && !this.retry) {
+				if (bio.server.langFallback && !this.retry) {
 					this.retry = true;
 					return this.search(this.albumArtist, this.album, this.rev, this.fo, this.pth);
 				}
@@ -461,12 +461,12 @@ class LfmAlbum {
 			if (this.fo) {
 				$Bio.buildPth(this.fo);
 				$Bio.save(this.pth, wiki, true);
-				serverBio.res();
+				bio.server.res();
 			}
 		} else if (this.rev) {
-			docBio.open();
+			bioDoc.open();
 			const counts = ['', '', ''];
-			const div = docBio.createElement('div');
+			const div = bioDoc.createElement('div');
 			const scrobbles = ['', '', ''];
 			div.innerHTML = this.xmlhttp.responseText;
 			let j = 0;
@@ -505,7 +505,7 @@ class LfmAlbum {
 				counts[j] = j != 2 ? `${$Bio.titlecase(v.innerText.trim())} \u200b| ${v.title.trim()}` : $Bio.titlecase(v.innerText.trim());
 				j++
 			});
-			docBio.close();
+			bioDoc.close();
 			if (this.tags.length) {
 				this.tags = [...new Set(this.tags)];
 				this.tags.length = Math.min(5, this.tags.length);
@@ -520,38 +520,38 @@ class LfmAlbum {
 			this.getStats = false;
 			return this.search(this.albumArtist, this.album, this.rev, this.fo, this.pth);
 		} else {
-			if (!$Bio.file(`${cfg.storageFolder}foo_lastfm_img.vbs`)) return;
+			if (!$Bio.file(`${bioCfg.storageFolder}foo_lastfm_img.vbs`)) return;
 			const data = $Bio.jsonParse(this.xmlhttp.responseText, [], 'get', 'album.image');
 			if (data.length < 5) {
-				serverBio.updateNotFound(`${this.albumArtist} - ${this.retry ? this.album : this.albm} ${serverBio.auto_corr} ${this.pth}`);
-				if (!this.retry && cfg.albStrip && this.album != this.albm) {
+				bio.server.updateNotFound(`${this.albumArtist} - ${this.retry ? this.album : this.albm} ${bio.server.auto_corr} ${this.pth}`);
+				if (!this.retry && bioCfg.albStrip && this.album != this.albm) {
 					this.retry = true;
 					return this.search(this.albumArtist, this.album, this.rev, this.fo, this.pth, this.albm);
 				}
 				return $Bio.trace(`last.fm album cover: ${this.album} / ${this.albumArtist}: not found`, true);
 			}
-			let link = data[cfg.imgRevHQ || !this.rev_img ? 4 : 3]['#text'];
-			if (link && (cfg.imgRevHQ || !this.rev_img)) {
+			let link = data[bioCfg.imgRevHQ || !this.rev_img ? 4 : 3]['#text'];
+			if (link && (bioCfg.imgRevHQ || !this.rev_img)) {
 				const linkSplit = link.split('/');
 				linkSplit.splice(linkSplit.length - 2, 1);
 				link = linkSplit.join('/');
 			}
 			if (!link) {
-				serverBio.updateNotFound(`${this.albumArtist} - ${this.retry ? this.album : this.albm} ${serverBio.auto_corr} ${this.pth}`);
-				if (!this.retry && cfg.albStrip && this.album != this.albm) {
+				bio.server.updateNotFound(`${this.albumArtist} - ${this.retry ? this.album : this.albm} ${bio.server.auto_corr} ${this.pth}`);
+				if (!this.retry && bioCfg.albStrip && this.album != this.albm) {
 					this.retry = true;
 					return this.search(this.albumArtist, this.album, this.rev, this.fo, this.pth, this.albm);
 				}
 				return $Bio.trace(`last.fm album cover: ${this.album} / ${this.albumArtist}: not found`, true);
 			}
-			timerBio.decelerating(true);
+			bio.timer.decelerating(true);
 			$Bio.buildPth(this.fo);
-			$Bio.run(`cscript //nologo "${cfg.storageFolder}foo_lastfm_img.vbs" "${link}" "${this.pth + link.slice(-4)}"`, 0);
+			$Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${link}" "${this.pth + link.slice(-4)}"`, 0);
 		}
 	}
 }
 
-class LfmTrack {
+class BioLfmTrack {
 	constructor(state_callback) {
 		this.album = [];
 		this.artist;
@@ -602,9 +602,9 @@ class LfmTrack {
 		this.force = p_force;
 		if (!this.lfm_done) {
 			if (!this.getStats) {
-				URL = serverBio.url.lfm;
-				if (!serverBio.lfm.def_EN && !this.retry) URL += `&lang=${cfg.language.toLowerCase()}`;
-				URL += `&method=track.getInfo&artist=${encodeURIComponent(this.artist)}&track=${encodeURIComponent(this.track)}&autocorrect=${serverBio.auto_corr}`;
+				URL = bio.server.url.lfm;
+				if (!bio.server.lfm.def_EN && !this.retry) URL += `&lang=${bioCfg.language.toLowerCase()}`;
+				URL += `&method=track.getInfo&artist=${encodeURIComponent(this.artist)}&track=${encodeURIComponent(this.track)}&autocorrect=${bio.server.auto_corr}`;
 			} else {
 				this.text = $Bio.jsonParse(this.pth, false, 'file');
 				if (!this.text) {
@@ -612,7 +612,7 @@ class LfmTrack {
 						ids: {}
 					}
 				}
-				URL = `https://${serverBio.lfm.server}/music/${encodeURIComponent(this.artist)}/_/${encodeURIComponent(this.track)}`;
+				URL = `https://${bio.server.lfm.server}/music/${encodeURIComponent(this.artist)}/_/${encodeURIComponent(this.track)}`;
 			}
 		} else {
 			if (this.text[this.track] && this.text[this.track].wiki && !this.force) {
@@ -621,16 +621,16 @@ class LfmTrack {
 				return this.revSave();
 			}
 			const formatName = n => n.replace(/[\s/]/g, '-').replace(/[.,!?:;'\u2019"_\u2010+()[\]&]/g, '').replace(/\$/g, 's').replace(/-+/g, '-').toLowerCase();
-			if (this.getIDs && (!this.text.ids.ids_update || this.text.ids.ids_update < Date.now() - serverBio.exp * 3 || this.force)) URL = `${serverBio.url.lfm_sf}songs/${formatName(this.artist)}`;
-			else if (this.text.ids[serverBio.tidy(this.track)]) {
+			if (this.getIDs && (!this.text.ids.ids_update || this.text.ids.ids_update < Date.now() - bio.server.exp * 3 || this.force)) URL = `${bio.server.url.lfm_sf}songs/${formatName(this.artist)}`;
+			else if (this.text.ids[bio.server.tidy(this.track)]) {
 				this.getIDs = false;
-				URL = serverBio.url.lfm_sf + this.text.ids[serverBio.tidy(this.track)];
+				URL = bio.server.url.lfm_sf + this.text.ids[bio.server.tidy(this.track)];
 			} else return this.revSave();
 		}
 		this.func = null;
 		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
 		this.func = this.analyse;
-		if (pptBio.multiServer && !this.force && serverBio.urlDone(md5Bio.hashStr(this.artist + this.track + this.pth + URL))) return;
+		if (bioSet.multiServer && !this.force && bio.server.urlDone(bioMD5.hashStr(this.artist + this.track + this.pth + URL))) return;
 		this.xmlhttp.open('GET', URL);
 		this.xmlhttp.onreadystatechange = this.ready_callback;
 		if (!this.getStats && !this.lfm_done) this.xmlhttp.setRequestHeader('User-Agent', 'foobar2000_script');
@@ -664,11 +664,11 @@ class LfmTrack {
 				this.tags.length = Math.min(5, this.tags.length);
 				this.length = this.convertDuration($Bio.jsonParse(this.xmlhttp.responseText, '', 'get', 'track.duration'));
 				if (!this.wiki) {
-					if (serverBio.langFallback && !this.retry) {
+					if (bio.server.langFallback && !this.retry) {
 						this.retry = true;
 						return this.search(this.artist, this.track, this.fo, this.pth, this.force);
 					}
-					if (!this.lfm_done && (cfg.language == 'EN' || serverBio.langFallback)) {
+					if (!this.lfm_done && (bioCfg.language == 'EN' || bio.server.langFallback)) {
 						this.lfm_done = true;
 						return this.search(this.artist, this.track, this.fo, this.pth, this.force);
 					}
@@ -676,9 +676,9 @@ class LfmTrack {
 				} else this.src = 1;
 				this.revSave();
 			} else {
-				docBio.open();
+				bioDoc.open();
 				const counts = ['', ''];
-				const div = docBio.createElement('div');
+				const div = bioDoc.createElement('div');
 				const scrobbles = ['', ''];
 				div.innerHTML = this.xmlhttp.responseText;
 				let from = '';
@@ -695,7 +695,7 @@ class LfmTrack {
 					if (j == 1) return true;
 					j++;
 				});
-				if (!cfg.lang.ix && !feat) {
+				if (!bioCfg.lang.ix && !feat) {
 					$Bio.htmlParse(div.getElementsByTagName('p'), 'className', 'more-link-fullwidth-right', v => {
 						feat = v.innerText.trim();
 						feat = /^\d+/.test(feat) ? feat.replace(/\D/g, '') : '';
@@ -712,7 +712,7 @@ class LfmTrack {
 					counts[j] = $Bio.titlecase(v.innerText.trim());
 					j++
 				});
-				docBio.close();
+				bioDoc.close();
 				if (from && this.album.length) {
 					this.album = [...new Set(this.album)].join('\u200b, ');
 					this.releases += `${from}\u200b: ${this.album}`;
@@ -728,8 +728,8 @@ class LfmTrack {
 				return this.search(this.artist, this.track, this.fo, this.pth, this.force);
 			}
 		} else {
-			docBio.open();
-			const div = docBio.createElement('div');
+			bioDoc.open();
+			const div = bioDoc.createElement('div');
 			div.innerHTML = this.xmlhttp.responseText;
 			if (!this.getIDs) {
 				let j = 0;
@@ -744,7 +744,7 @@ class LfmTrack {
 					}
 				});
 				this.wiki = this.wiki.trim();
-				docBio.close();
+				bioDoc.close();
 				if (!this.wiki) {
 					if (!this.releases && !this.stats.length) return this.revSave(true);
 				} else this.src = 2;
@@ -753,10 +753,10 @@ class LfmTrack {
 				this.text.ids = {}
 				$Bio.htmlParse(div.getElementsByTagName('li'), false, false, v => {
 					const a = v.getElementsByTagName('a');
-					if (a.length && a[0].href && a[0].href.includes('/facts/')) this.text.ids[serverBio.tidy(a[0].innerText)] = a[0].href.replace('about:/', '');
+					if (a.length && a[0].href && a[0].href.includes('/facts/')) this.text.ids[bio.server.tidy(a[0].innerText)] = a[0].href.replace('about:/', '');
 				});
 				this.text.ids.ids_update = Date.now();
-				docBio.close();
+				bioDoc.close();
 				this.getIDs = false;
 				this.search(this.artist, this.track, this.fo, this.pth, this.force);
 			}
@@ -773,7 +773,7 @@ class LfmTrack {
 	}
 
 	revSave(ret) {
-		if (this.text[this.track] && this.text[this.track].lang == cfg.language) {
+		if (this.text[this.track] && this.text[this.track].lang == bioCfg.language) {
 			if (!this.releases) this.releases = this.text[this.track].releases;
 			if (!this.wiki && !this.force) {
 				this.wiki = this.text[this.track].wiki;
@@ -788,7 +788,7 @@ class LfmTrack {
 			tags: this.tags,
 			wiki: this.wiki || '',
 			s: this.src,
-			lang: this.retry ? 'EN' : cfg.language,
+			lang: this.retry ? 'EN' : bioCfg.language,
 			update: Date.now()
 		};
 		if (this.fo) {
@@ -796,11 +796,11 @@ class LfmTrack {
 			$Bio.save(this.pth, JSON.stringify($Bio.sortKeys(this.text), null, 3), true);
 		}
 		if (ret) return $Bio.trace(`last.fm track review: ${$Bio.titlecase(this.track)} / ${this.artist}: not found`, true);
-		serverBio.res();
+		bio.server.res();
 	}
 }
 
-class LfmSimilarArtists {
+class BioLfmSimilarArtists {
 	constructor(state_callback, on_search_done_callback) {
 		this.artist;
 		this.done;
@@ -832,7 +832,7 @@ class LfmSimilarArtists {
 		if (this.retry) this.lmt = this.lmt == 249 ? 235 + Math.floor(Math.random() * 14) : this.lmt + 10;
 		this.func = null;
 		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
-		const URL = 'http://ws.audioscrobbler.com/2.0/?format=json' + panelBio.lfm + '&method=artist.getSimilar&artist=' + encodeURIComponent(this.artist) + '&limit=' + this.lmt + '&autocorrect=1';
+		const URL = 'http://ws.audioscrobbler.com/2.0/?format=json' + bio.panel.lfm + '&method=artist.getSimilar&artist=' + encodeURIComponent(this.artist) + '&limit=' + this.lmt + '&autocorrect=1';
 		this.func = this.analyse;
 		this.xmlhttp.open('GET', URL);
 		this.xmlhttp.onreadystatechange = this.ready_callback;
@@ -866,8 +866,8 @@ class LfmSimilarArtists {
 					});
 					$Bio.buildPth(this.pth_sim);
 					$Bio.save(this.fn_sim, JSON.stringify(list), true);
-					if (cfg.lfmSim) {
-						panelBio.getList();
+					if (bioCfg.lfmSim) {
+						bio.panel.getList();
 						window.NotifyOthers('bio_getLookUpList', 'bio_getLookUpList');
 					}
 				}
@@ -876,7 +876,7 @@ class LfmSimilarArtists {
 	}
 }
 
-class LfmTopAlbums {
+class BioLfmTopAlbums {
 	constructor(state_callback, on_search_done_callback) {
 		this.artist;
 		this.func = null;
@@ -904,8 +904,8 @@ class LfmTopAlbums {
 	}
 
 	analyse() {
-		docBio.open();
-		const div = docBio.createElement('div');
+		bioDoc.open();
+		const div = bioDoc.createElement('div');
 		const popAlbums = [];
 		let i = 0;
 		let topAlbums = [];
@@ -915,7 +915,7 @@ class LfmTopAlbums {
 			i++;
 			if (i == 10) return true;
 		});
-		docBio.close();
+		bioDoc.close();
 		if (popAlbums.length) {
 			const mapAlbums = topAlbums.map(v => $Bio.cut(v));
 			const match = mapAlbums.includes($Bio.cut(popAlbums[0]));
@@ -928,7 +928,7 @@ class LfmTopAlbums {
 	}
 }
 
-class DldLastfmGenresWhitelist {
+class BioDldLastfmGenresWhitelist {
 	constructor(state_callback) {
 		this.func = null;
 		this.ready_callback = state_callback;
@@ -963,8 +963,8 @@ class DldLastfmGenresWhitelist {
 	}
 
 	analyse() {
-		docBio.open();
-		const div = docBio.createElement('div');
+		bioDoc.open();
+		const div = bioDoc.createElement('div');
 		div.innerHTML = this.xmlhttp.responseText;
 		const a = div.getElementsByTagName('a');
 		const genres = [];
@@ -975,7 +975,7 @@ class DldLastfmGenresWhitelist {
 		}
 
 		if (genres.length > 860) {
-			const pth = `${cfg.storageFolder}lastfm_genre_whitelist.json`;
+			const pth = `${bioCfg.storageFolder}lastfm_genre_whitelist.json`;
 			const existingGenres = $Bio.jsonParse(pth, [], 'file');
 			if (genres.length > existingGenres.length) {
 				$Bio.buildPth(pth);

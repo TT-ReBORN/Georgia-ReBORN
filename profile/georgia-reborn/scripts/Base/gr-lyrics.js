@@ -1,90 +1,65 @@
-/////////////////////////////////////////////////////////////////////////////
-// * Georgia-ReBORN: A Clean, Full Dynamic Color Reborn foobar2000 Theme * //
-// * Description:    Georgia-ReBORN Lyrics                               * //
-// * Author:         TT                                                  * //
-// * Org. Author:    Mordred + WilB                                      * //
-// * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
-// * Version:        3.0-DEV                                             * //
-// * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-15                                          * //
-/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+// * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
+// * Description:    Georgia-ReBORN Lyrics                                   * //
+// * Author:         TT                                                      * //
+// * Org. Author:    Mordred + WilB                                          * //
+// * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
+// * Version:        3.0-DEV                                                 * //
+// * Dev. started:   22-12-2017                                              * //
+// * Last change:    18-02-2024                                              * //
+/////////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
 
 
-///////////////////
-// * VARIABLES * //
-///////////////////
-/** @type {Lyrics} */
-let lyrics;
-/** @type {<Array<string>>} */
-let lyricSource;
-/** @type {number} */
-let lyricsSourceQueue = 0;
-/** @type {string} */
-let lyricType;
-
-
-///////////////////////
-// * LYRICS OBJECT * //
-///////////////////////
+////////////////
+// * LYRICS * //
+////////////////
 /**
- * Loads and displays lyrics on album art in the Lyrics panel from the cache directory or embedded files.
+ * A class that loads and displays lyrics on album art in the Lyrics panel
+ * from the cache directory or embedded files.
  */
 class Lyrics {
+	/**
+	 * Creates the `Lyrics` instance.
+	 * Initializes variables and settings for loading and displaying lyrics.
+	 */
 	constructor() {
-		/** @type {<Array<string>>} */
+		/** @private @type {Array<string>} An array to hold individual lyrics. */
 		this.lyr = [];
-		/** @type {<Array<string>>} */
+		/** @private @type {Array<string>} An array to hold the lyrics in a structured format. */
 		this.lyrics = [];
-		/** @type {<Array<number>>} */
-		this.timestamps         = /(\s*)\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}])(\s*)/g;
-		/** @type {<Array<number>>} */
+		/** @private @type {Array<string>} An array to hold the sources of lyrics. */
+		this.lyricSource = [];
+		/** @private @type {string} The type of the lyrics, `.lrc` for synced and `.txt` for unsynced. */
+		this.lyricType = '';
+		/** @private @type {number} A counter to manage lyrics source loading queue. */
+		this.lyricsSourceQueue = 0;
+		/** @private @type {RegExp} A regular expression to match standard timestamps in lyrics. */
+		this.timestamps = /(\s*)\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}])(\s*)/g;
+		/** @private @type {RegExp} A regular expression to match enhanced timestamps in lyrics. */
 		this.enhancedTimestamps = /(\s*)<(\d{1,2}:|)\d{1,2}:\d{2}(>|\.\d{1,3}>)(\s*)/g;
-		/** @type {<Array<number>>} */
-		this.leadingTimestamps  = /^(\s*\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}]))+/;
-		/** @type {number} */
+		/** @private @type {RegExp} A regular expression to match leading timestamps in lyrics. */
+		this.leadingTimestamps = /^(\s*\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}]))+/;
+		/** @private @type {number} A time step value for manual adjusting lyrics synchronization. */
 		this.stepTime = 0;
-		/** @type {<Array<string>>} */
-		this.stringNoLyrics  = ['No lyrics found'];
-		/** @type {<Array<string>>} */
-		this.stringNotFound  = ['Search completed\nNo lyrics were found'];
-		/** @type {<Array<string>>} */
+		/** @private @type {Array<string>} A message displayed when no lyrics are found. */
+		this.stringNoLyrics = ['No lyrics found'];
+		/** @private @type {Array<string>} A message displayed when the search is completed but no lyrics were found. */
+		this.stringNotFound = ['Search completed\nNo lyrics were found'];
+		/** @private @type {Array<string>} A message displayed when the lyrics search is in progress. */
 		this.stringSearching = ['Searching for lyrics...\nPlease wait...'];
-		/** @type {number} */
+		/** @private @type {number} A TitleFormat object to get the track length in seconds. */
 		this.tfLength = fb.TitleFormat('%length_seconds%');
-		/** @type {number} */
+		/** @private @type {number} A padding value for text display. */
 		this.textPad = SCALE(12);
-		/** @type {GdiFont} */
-		this.font = { lyrics: pref.lyricsLargerCurrentSync ? ft.lyricsHighlight : ft.lyrics };
-
-		/** @type {GdiGraphics} */
-		GR(1, 1, false, g => {
-			this.font.lyrics_h = Math.round(g.CalcTextHeight('STRING', this.font.lyrics) + (pref.lyricsLargerCurrentSync ? 0 : this.textPad));
-		});
 
 		this.clear();
-
-		/** Changes current lyrics when changing the lyrics source, only used for ESLyric "Lyric search". */
-		const changeLyrics = (meta) => {
-			this.clear();
-			if (!meta) return;
-
-			lyricSource = [meta.lyricText];
-			lyricSource = lyricSource.map(line => line.split('\n')).flat();
-
-			const timestamps = /\[\d{2}:\d{2}\.\d{2}\]/;
-			lyricType = timestamps.test(lyricSource) ? 'lrc' : 'txt';
-
-			this.loadLyrics(lyricSource);
-		};
-		const esl = new ActiveXObject('eslyric');
-		esl.SetPlayingLyricChangedCallback(changeLyrics); // Start ESLyric callback listener when lyrics change
 	}
 
-	// * METHODS * //
-
+	// * PUBLIC METHODS * //
+	// #region PUBLIC METHODS
 	/**
 	 * Initializes the lyrics as follows:
 	 * - Loads them from cache if found locally or from embedded tags.
@@ -93,11 +68,14 @@ class Lyrics {
 	 */
 	initLyrics() {
 		let rawLyrics = [];
-		const embeddedLyrics = $(tf.lyrics);
+		const embeddedLyrics = $(grTF.lyrics);
 		const foundLyrics = this.findLyrics();
 
+		 // * Start ESLyric callback listener when lyrics change
+		esl.SetPlayingLyricChangedCallback(this.changeLyrics.bind(this));
+
 		if (foundLyrics) {
-			if (pref.displayLyrics) console.log('Found Lyrics:', this.fileName);
+			if (grm.ui.displayLyrics) console.log('Found Lyrics:', this.fileName);
 			rawLyrics = utils.ReadTextFile(this.fileName, 65001).split('\n');
 		}
 		else if (embeddedLyrics.length) {
@@ -116,11 +94,13 @@ class Lyrics {
 
 		if (rawLyrics.length) { // * Lyrics found
 			this.loadLyrics(rawLyrics);
-		} else if (componentESLyric) { // * No lyrics found locally, searching...
+		} else if (Component.ESLyric) { // * No lyrics found locally, searching...
 			this.searchLyrics();
 		} else { // * Search completed, no lyrics were found
 			this.loadLyrics(this.stringNoLyrics);
 		}
+
+		this.on_size(grm.ui.albumArtSize.x, grm.ui.albumArtSize.y, grm.ui.albumArtSize.w, grm.ui.albumArtSize.h);
 	}
 
 	/**
@@ -132,12 +112,12 @@ class Lyrics {
 		const tpath = [];
 		const tfilename = [];
 		const stripReservedChars = (filename) => filename.replace(/[<>:"/\\|?*]/g, '_');
-		const lyricPaths = pref.customLyricsDir ? globals.customLyricsDir : globals.lyr_path;
+		const lyricPaths = grSet.customLyricsDir ? grCfg.customLyricsDir : grPath.lyricsPath;
 
 		for (const path of lyricPaths) {
 			tpath.push($($Escape(path)));
 		}
-		for (const filename of globals.lyricFilenamePatterns) {
+		for (const filename of grCfg.lyricsFilenamePatterns) {
 			tfilename.push(stripReservedChars($(filename)));
 		}
 
@@ -155,11 +135,13 @@ class Lyrics {
 
 	/**
 	 * Checks if the lyrics file exists at path+filename and sets this.fileName if it does.
-	 * @param {string} path The lyric file path
-	 * @param {string} filename The lyric file name
+	 * @param {string} path - The lyric file path.
+	 * @param {string} filename - The lyric file name.
+	 * @returns {boolean} True if the file exists and this.fileName is set, false otherwise.
 	 */
 	checkLyrics(path, filename) {
-		const types = [lyricType, 'lrc', 'txt'];
+		this.lyricType = this.timestamps.test(this.lyricSource) ? 'lrc' : 'txt';
+		const types = [this.lyricType, 'lrc', 'txt'];
 
 		for (const type of types) {
 			const currentFile = `${path + filename}.${type}`;
@@ -183,46 +165,57 @@ class Lyrics {
 		this.searchTimeout = setTimeout(() => {
 			if (!this.findLyrics()) {
 				this.loadLyrics(this.stringNotFound);
-				this.on_size(albumArtSize.x, albumArtSize.y, albumArtSize.w, albumArtSize.h);
+				this.on_size(grm.ui.albumArtSize.x, grm.ui.albumArtSize.y, grm.ui.albumArtSize.w, grm.ui.albumArtSize.h);
 			}
 			clearInterval(this.lyricsSearchTimer);
 		}, 60000);
 	}
 
 	/**
-	 * Cycles through the next lyric source in the search results, used for ESLyric's "Next lyric" feature.
+	 * Changes current lyrics when changing the lyrics source, used only for ESLyric "Lyric search".
+	 * @param {object} meta - The metadata object containing the new lyrics text.
+	 */
+	changeLyrics(meta) {
+		this.clear();
+		if (!meta) return;
+
+		this.lyricSource = [meta.lyricText];
+		this.lyricSource = this.lyricSource.map(line => line.split('\n')).flat();
+
+		this.loadLyrics(this.lyricSource);
+		setTimeout(() => { this.initLyrics(); }, 1000);
+	}
+
+	/**
+	 * Cycles through the next lyric source in the search results, used only for ESLyric's "Next lyric" feature.
 	 */
 	nextLyrics() {
 		const nextSrc = (meta) => {
-			fb.RunMainMenuCommand('View/ESLyric/Panels/Delete lyric');
-			lyricsSourceQueue++;
+			this.lyricsSourceQueue++;
 
 			RepeatFunc(() => {
 				fb.RunMainMenuCommand('View/ESLyric/Panels/Select lyric/Next lyric');
 				if (!meta) return;
 
-				lyricSource = [meta.lyricText];
-				lyricSource = lyricSource.map(line => line.split('\n')).flat();
+				this.lyricSource = [meta.lyricText];
+				this.lyricSource = this.lyricSource.map(line => line.split('\n')).flat();
+			}, this.lyricsSourceQueue);
 
-				const timestamps = /\[\d{2}:\d{2}\.\d{2}\]/;
-				lyricType = timestamps.test(lyricSource) ? 'lrc' : 'txt';
-			}, lyricsSourceQueue);
-
-			return lyricsSourceQueue;
+			return this.lyricsSourceQueue;
 		};
 
 		nextSrc();
 		setTimeout(() => { fb.RunMainMenuCommand('View/ESLyric/Panels/Save lyric'); }, 1000);
-		setTimeout(() => { initLyrics(); }, 1000);
+		setTimeout(() => { grm.lyrics.initLyrics(); }, 1000);
 	}
 
 	/**
 	 * Automatically saves the lyrics file to cache once it was successfully found.
-	 * @param {FbMetadbHandle} metadb The metadb of the track.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	saveLyrics(metadb) {
 		clearInterval(this.lyricsSearchTimer);
-		if (!componentESLyric && !metadb) return;
+		if (!Component.ESLyric && !metadb) return;
 
 		this.lyricsSearchTimer = setInterval(() => {
 			if (this.findLyrics()) {
@@ -236,7 +229,7 @@ class Lyrics {
 
 	/**
 	 * Initializes various variables and settings for displaying lyrics and sends them to parse.
-	 * @param {string} lyr The lyrics that will be loaded and displayed.
+	 * @param {string} lyr - The lyrics that will be loaded and displayed.
 	 */
 	loadLyrics(lyr) {
 		const newLyrics = !Equal(lyr, this.lyr);
@@ -245,19 +238,27 @@ class Lyrics {
 			this.userOffset = 0;
 		}
 
-		this.x = albumArtSize.x + SCALE(40);
-		this.y = albumArtSize.y + SCALE(40);
-		this.w = albumArtSize.w - SCALE(80);
-		this.h = albumArtSize.h - SCALE(80);
-		if (noAlbumArtStub) resetLyricsPosition();
+		/** @type {GdiFont} */
+		this.font = { lyrics: grSet.lyricsLargerCurrentSync ? grFont.lyricsHighlight : grFont.lyrics };
+
+		/** @type {GdiGraphics} */
+		GDI(1, 1, false, g => {
+			this.font.lyrics_h = Math.round(g.CalcTextHeight('STRING', this.font.lyrics) + (grSet.lyricsLargerCurrentSync ? 0 : this.textPad));
+		});
+
+		this.x = grm.ui.albumArtSize.x + SCALE(40);
+		this.y = grm.ui.albumArtSize.y + SCALE(40);
+		this.w = grm.ui.albumArtSize.w - SCALE(80);
+		this.h = grm.ui.albumArtSize.h - SCALE(80);
+		if (grm.ui.noAlbumArtStub) this.resetLyricsPosition();
 
 		this.alignCenter = StringFormat(1, 1);
 		this.alignRight = StringFormat(2, 1);
 		this.init = true;
 		this.lineHeight = this.font.lyrics_h;
 		this.arc = SCALE(6);
-		this.lyricsScrollTimeMax = pref.lyricsScrollRateAvg * 0.5;
-		this.lyricsScrollTimeAvg = pref.lyricsScrollRateMax;
+		this.lyricsScrollTimeMax = grSet.lyricsScrollRateAvg * 0.5;
+		this.lyricsScrollTimeAvg = grSet.lyricsScrollRateMax;
 		this.lyricsScrollMaxMethod = 0;
 		this.durationScroll = this.lyricsScrollMaxMethod ? this.lyricsScrollTimeMax : Math.round(this.lyricsScrollTimeAvg * 2 / 3);
 		this.factor = this.durationScroll < 1500 ? 20 : 24;
@@ -269,7 +270,7 @@ class Lyrics {
 		this.minDurationScroll = Math.min(this.durationScroll, 250);
 		this.newHighlighted = false;
 		this.scroll = 0;
-		this.dropShadowLevel = pref.lyricsDropShadowLevel;
+		this.dropShadowLevel = grSet.lyricsDropShadowLevel;
 		this.dropNegativeShadowLevel = this.dropShadowLevel > 1 ? Math.floor(this.dropShadowLevel / 2) : 0;
 		this.shadowEffect = this.dropShadowLevel > 0;
 		this.showOffsetTimer = null;
@@ -294,7 +295,7 @@ class Lyrics {
 
 	/**
 	 * Determines if the lyrics are synced or unsynced, formats and parses them accordingly.
-	 * @param {string} lyr The lyrics that need to be parsed.
+	 * @param {string} lyr - The lyrics that need to be parsed.
 	 */
 	parseLyrics(lyr) {
 		if (!lyr.length) {
@@ -318,7 +319,7 @@ class Lyrics {
 			}
 			case this.type.unsynced: {
 				this.formatLyrics(this.parseUnsyncedLyrics(lyr, this.type.none));
-				const ratio = isStreaming ? 2000 : this.trackLength / this.lyrics.length * 1000;
+				const ratio = grm.ui.isStreaming ? 2000 : this.trackLength / this.lyrics.length * 1000;
 				for (const [i, line] of this.lyrics.entries()) line.timestamp = ratio * i;
 				break;
 			}
@@ -329,8 +330,8 @@ class Lyrics {
 
 	/**
 	 * Parses synced lyrics that contain timestamps and content of each line, sorted by timestamp.
-	 * @param {string} lyr The lyrics of the song. Each string in the array represents a line of lyric.
-	 * @param {boolean} isNone Indicates if the lyrics array starts with a timestamp or not.
+	 * @param {string} lyr - The lyrics of the song. Each string in the array represents a line of lyric.
+	 * @param {boolean} isNone - Indicates if the lyrics array starts with a timestamp or not.
 	 * @returns {Array} An array of objects with properties `timestamp` and `content`.
 	 */
 	parseSyncLyrics(lyr, isNone) {
@@ -351,9 +352,9 @@ class Lyrics {
 
 	/**
 	 * Parses unsynced lyrics when there are no timestamps included.
-	 * @param {string} lyr The lyrics of the song.
-	 * @param {boolean} isNone The first line of lyrics should be treated as a timestamp or not.
-	 * @returns {Object} An array of objects with "timestamp" and "content" properties for each line of the lyric.
+	 * @param {string} lyr - The lyrics of the song.
+	 * @param {boolean} isNone - The first line of lyrics should be treated as a timestamp or not.
+	 * @returns {object} An array of objects with "timestamp" and "content" properties for each line of the lyric.
 	 */
 	parseUnsyncedLyrics(lyr, isNone) {
 		const lyrics = [];
@@ -366,13 +367,13 @@ class Lyrics {
 
 	/**
 	 * Formats the lyrics with synchronization and line wrapping.
-	 * @param {string} lyrics An array of objects with the properties "content" and "timestamp".
-	 * @param {boolean} isSynced Whether the lyrics are synced with the audio or not.
+	 * @param {string} lyrics - An array of objects with the properties "content" and "timestamp".
+	 * @param {boolean} isSynced - Whether the lyrics are synced with the audio or not.
 	 */
 	formatLyrics(lyrics, isSynced) {
 		if (lyrics.length && this.w > 10) {
 			if (isSynced && lyrics[0].content && lyrics[0].timestamp > this.durationScroll) lyrics.unshift({ timestamp: 0, content: '' });
-			GR(1, 1, false, g => {
+			GDI(1, 1, false, g => {
 				for (let i = 0; i < lyrics.length; i++) {
 					const l = g.EstimateLineWrap(lyrics[i].content, this.font.lyrics, this.w - 10);
 					if (l[1] > this.maxLyrWidth) this.maxLyrWidth = l[1];
@@ -402,39 +403,39 @@ class Lyrics {
 
 	/**
 	 * Defines the draw area when lyrics should be displayed.
-	 * @param {number} y The distance from the top of the screen to the top of the lyrics.
-	 * @param {number} top The top position of the lyrics display area.
+	 * @param {number} y - The distance from the top of the screen to the top of the lyrics.
+	 * @param {number} top - The top position of the lyrics display area.
 	 * @returns {boolean} True if the given `y` value is within the range of `top` and `top` plus the line height.
 	 */
 	displayLyrics(y, top) {
-		return y >= top && y + (pref.lyricsFadeScroll ? this.lineHeight : 0) <= this.h + top;
+		return y >= top && y + (grSet.lyricsFadeScroll ? this.lineHeight : 0) <= this.h + top;
 	}
 
 	/**
 	 * Draws the lyrics on screen and also applies various visual effects such as fading and drop shadows.
-	 * @param {GdiGraphics} gr
+	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawLyrics(gr) {
-		if (!(pref.displayLyrics && this.lyrics.length && this.locus >= 0)) return;
+		if (!(grm.ui.displayLyrics && this.lyrics.length && this.locus >= 0)) return;
 
 		const top = this.locus * this.lineHeight - this.locusOffset;
 		const transition_factor = Clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
 		const transition_factor_in = !this.lyrics[this.locus].multiLine ? transition_factor : 1;
 		const transition_factor_out = Clamp(transition_factor_in * 3, 0, 1);
 		const alpha = Math.min(255 * transition_factor * 4 / 3, 255);
-		const blendIn = this.type.synced ? GetBlend(col.lyricsHighlight, col.lyricsNormal, transition_factor_in) : col.lyricsNormal;
-		const blendOut = this.type.synced ? GetBlend(col.lyricsNormal, col.lyricsHighlight, transition_factor_out) : col.lyricsNormal;
+		const blendIn = this.type.synced ? GetBlend(grCol.lyricsHighlight, grCol.lyricsNormal, transition_factor_in) : grCol.lyricsNormal;
+		const blendOut = this.type.synced ? GetBlend(grCol.lyricsNormal, grCol.lyricsHighlight, transition_factor_out) : grCol.lyricsNormal;
 		const y = this.y + this.scroll;
 
-		let color  = col.lyricsNormal;
+		let color  = grCol.lyricsNormal;
 
-		let fadeBot = pref.lyricsFadeScroll ? this.transBot[transition_factor] : color;
+		let fadeBot = grSet.lyricsFadeScroll ? this.transBot[transition_factor] : color;
 		if (!fadeBot) {
 			fadeBot = RGBtoRGBA(color, alpha);
 			this.transBot[transition_factor] = fadeBot;
 		}
 
-		let fadeTop = pref.lyricsFadeScroll ? this.transTop[transition_factor] : color;
+		let fadeTop = grSet.lyricsFadeScroll ? this.transTop[transition_factor] : color;
 		if (!fadeTop) {
 			fadeTop = RGBtoRGBA(color, 255 - alpha);
 			this.transTop[transition_factor] = fadeTop;
@@ -443,31 +444,31 @@ class Lyrics {
 		gr.SetTextRenderingHint(5);
 
 		for (const [i, lyric] of this.lyrics.entries()) {
-			const font = lyric.highlight && pref.lyricsLargerCurrentSync ? ft.lyricsHighlight : ft.lyrics;
+			const font = lyric.highlight && grSet.lyricsLargerCurrentSync ? grFont.lyricsHighlight : grFont.lyrics;
 			const lyric_y = this.lineHeight * i;
 			const line_y = Math.round(y - top + lyric_y - ((this.stringSearching || this.stringNotFound) ? SCALE(24) : 0));
-			const bottomLine = line_y > this.bot + this.lineHeight * (pref.lyricsFadeScroll ? 2 : 3);
+			const bottomLine = line_y > this.bot + this.lineHeight * (grSet.lyricsFadeScroll ? 2 : 3);
 
 			if (!this.displayLyrics(lyric_y, top)) continue;
 
 			if (this.shadowEffect && line_y >= this.top && !bottomLine) { // * Do not show drop shadow at top and bottom
 				if (this.dropNegativeShadowLevel) {
-					gr.DrawString(lyric.content, font, col.lyricsShadow, this.x - this.dropNegativeShadowLevel, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
-					gr.DrawString(lyric.content, font, col.lyricsShadow, this.x, line_y - this.dropNegativeShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
+					gr.DrawString(lyric.content, font, grCol.lyricsShadow, this.x - this.dropNegativeShadowLevel, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
+					gr.DrawString(lyric.content, font, grCol.lyricsShadow, this.x, line_y - this.dropNegativeShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
 				}
 
-				gr.DrawString(lyric.content, font, col.lyricsShadow, this.x + this.dropShadowLevel, line_y + this.dropShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
+				gr.DrawString(lyric.content, font, grCol.lyricsShadow, this.x + this.dropShadowLevel, line_y + this.dropShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
 			}
 
-			color = line_y >= this.top ? lyric.highlight ? blendIn : i === this.locus - 1 ? blendOut : bottomLine ? fadeBot : col.lyricsNormal : fadeTop;
+			color = line_y >= this.top ? lyric.highlight ? blendIn : i === this.locus - 1 ? blendOut : bottomLine ? fadeBot : grCol.lyricsNormal : fadeTop;
 			gr.DrawString(lyric.content, font, color, this.x, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
 		}
 
 		if (this.showOffset) {
-			this.offsetW = gr.CalcTextWidth(`Offset: ${this.userOffset / 1000}s`, ft.notification) + this.lineHeight;
-			gr.FillRoundRect(this.x + this.w - this.offsetW, this.y, this.offsetW, this.lineHeight + 1, this.arc, this.arc, col.popupBg);
+			this.offsetW = gr.CalcTextWidth(`Offset: ${this.userOffset / 1000}s`, grFont.notification) + this.lineHeight;
+			gr.FillRoundRect(this.x + this.w - this.offsetW, this.y, this.offsetW, this.lineHeight + 1, this.arc, this.arc, grCol.popupBg);
 			gr.DrawRoundRect(this.x + this.w - this.offsetW, this.y, this.offsetW, this.lineHeight + 1, this.arc, this.arc, 1, 0x64000000);
-			gr.DrawString(`Offset: ${this.userOffset / 1000}s`, ft.notification, col.popupText, this.x - this.lineHeight * 0.5, this.y, this.w, this.lineHeight + 1, this.alignRight);
+			gr.DrawString(`Offset: ${this.userOffset / 1000}s`, grFont.notification, grCol.popupText, this.x - this.lineHeight * 0.5, this.y, this.w, this.lineHeight + 1, this.alignRight);
 		}
 	}
 
@@ -515,6 +516,7 @@ class Lyrics {
 
 	/**
 	 * Gets the index of the current lyric line.
+	 * @returns {number} The index of the current lyric line based on the playback time.
 	 */
 	getCurPos() {
 		return this.lyrics.findIndex(v => v.timestamp >= this.playbackTime());
@@ -522,7 +524,7 @@ class Lyrics {
 
 	/**
 	 * Converts timestamped lyrics to milliseconds.
-	 * @param {string} t The timestamped string.
+	 * @param {string} t - The timestamped string.
 	 * @returns {number} The time in milliseconds.
 	 */
 	getMilliseconds(t) {
@@ -532,7 +534,6 @@ class Lyrics {
 
 	/**
 	 * Gets the duration of the scroll animation.
-	 * @returns {number} The duration of the scroll animation in milliseconds.
 	 */
 	getScrollSpeed() {
 		let { durationScroll } = this;
@@ -565,7 +566,7 @@ class Lyrics {
 
 	/**
 	 * Gets the timestamp for a given word.
-	 * @param {string} v The word to get the timestamp for.
+	 * @param {string} v - The word to get the timestamp for.
 	 * @returns {number} The timestamp for the word, or undefined if the word is not found.
 	 */
 	getTimestamp(v) {
@@ -577,7 +578,7 @@ class Lyrics {
 	 * @returns {number} The current playback time in milliseconds.
 	 */
 	playbackTime() {
-		const time = isStreaming ? fb.PlaybackTime - txt.reader.trackStartTime : fb.PlaybackTime;
+		const time = grm.ui.isStreaming ? fb.PlaybackTime - bio.txt.reader.trackStartTime : fb.PlaybackTime;
 		return Math.round(time * 1000) + this.lyricsOffset + this.transitionOffset + this.userOffset;
 	}
 
@@ -586,6 +587,36 @@ class Lyrics {
 	 */
 	repaintRect() {
 		window.RepaintRect(this.x, this.y, this.w, this.h);
+	}
+
+	/**
+	 * Resets the size and position of the lyrics.
+	 */
+	resetLyricsPosition() {
+		const fullW = grSet.layout === 'default' && grSet.lyricsLayout === 'full' && grm.ui.displayLyrics;
+		const noAlbumArtSize = grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight;
+
+		const lyricsX =
+			grm.ui.noAlbumArtStub ?
+				fullW ? grSet.panelWidthAuto && grSet.lyricsLayout === 'normal' ? noAlbumArtSize * 0.5 : grm.ui.ww * 0.333 :
+				grSet.panelWidthAuto ? grm.ui.albumArtSize.x : 0 :
+			grm.ui.albumArtSize.x;
+
+		const lyricsY = grm.ui.noAlbumArtStub ? grm.ui.topMenuHeight : grm.ui.albumArtSize.y;
+
+		const lyricsW =
+			grm.ui.noAlbumArtStub ?
+				grSet.layout === 'artwork' ? grm.ui.ww :
+				fullW ? grm.ui.ww * 0.333 :
+				grSet.panelWidthAuto ? noAlbumArtSize :
+				grm.ui.ww * 0.5 :
+			grm.ui.albumArtSize.w;
+
+		const lyricsH = grm.ui.noAlbumArtStub ? grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight : grm.ui.albumArtSize.h;
+
+		if (grm.lyrics) {
+			this.on_size(lyricsX, lyricsY, lyricsW, lyricsH);
+		}
 	}
 
 	/**
@@ -621,7 +652,7 @@ class Lyrics {
 	 * Smoothly scrolls the lyrics to the next lyric on scroll animation.
 	 */
 	smoothScroll() {
-		if (!pref.displayLyrics) return;
+		if (!grm.ui.displayLyrics) return;
 
 		if (this.scrollUpdateNeeded()) {
 			this.advanceHighLighted();
@@ -652,18 +683,19 @@ class Lyrics {
 
 	/**
 	 * Tidy ups a string by removing all timestamps and enhanced timestamps.
-	 * @param {!string|number} n The string containing timestamped data which needs cleaning up.
+	 * @param {!string|number} n - The string containing timestamped data which needs cleaning up.
 	 * @returns {!string} A cleaned version of the original string without any timestamps.
 	 */
 	tidy(n) {
 		return n.replace(this.timestamps, '$1$4').replace(this.enhancedTimestamps, '$1$4').trim();
 	}
+	// #endregion
 
 	// * CALLBACKS * //
-
+	// #region CALLBACKS
 	/**
 	 * Adjusts the user offset, updates the display, and seeks to the new position.
-	 * @param {number} step The amount of scrolling offset that should be performed.
+	 * @param {number} step - The amount of scrolling offset that should be performed.
 	 */
 	on_mouse_wheel(step) {
 		step *= Clamp(Math.round(500 / ((Date.now() - this.stepTime) * 5)), 1, 5);
@@ -681,7 +713,7 @@ class Lyrics {
 
 	/**
 	 * Checks if the playback is paused and stops or starts accordingly.
-	 * @param {boolean} isPaused Wether playback is currently paused or not.
+	 * @param {boolean} isPaused - Wether playback is currently paused or not.
 	 */
 	on_playback_pause(isPaused) {
 		if (isPaused) this.stop();
@@ -690,7 +722,7 @@ class Lyrics {
 
 	/**
 	 * Stops the playback.
-	 * @param {number} reason The type of playback stop.
+	 * @param {number} reason - The type of playback stop.
 	 */
 	on_playback_stop(reason) {
 		this.stop();
@@ -698,10 +730,10 @@ class Lyrics {
 
 	/**
 	 * Adjusts the size and position of the lyrics object and repaints it.
-	 * @param {number} x The x-coordinate.
-	 * @param {number} y The y-coordinate.
-	 * @param {number} w The width.
-	 * @param {number} h The height.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @param {number} w - The width.
+	 * @param {number} h - The height.
 	 */
 	on_size(x, y, w, h) {
 		this.x = x + SCALE(40);
@@ -710,4 +742,5 @@ class Lyrics {
 		this.h = h - SCALE(80);
 		this.repaintRect();
 	}
+	// #endregion
 }

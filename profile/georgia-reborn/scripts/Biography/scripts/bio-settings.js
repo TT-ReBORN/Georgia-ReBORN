@@ -1,12 +1,12 @@
 'use strict';
 
-class SettingBio {
+class BioSetting {
 	constructor(key, default_value, type) {
 		this.checkImagesTimer = null;
 		this.key = key;
 		this.default_value = default_value;
 		this.type = type;
-		this.value = cfg.get(this.key, this.default_value, this.type);
+		this.value = bioCfg.get(this.key, this.default_value, this.type);
 	}
 
 	// * METHODS * //
@@ -33,18 +33,18 @@ class SettingBio {
 					}
 					break;
 			}
-			cfg.set(this.key, new_value);
+			bioCfg.set(this.key, new_value);
 			this.value = new_value;
 		}
 	}
 }
 
-class SettingsBio {
+class BioSettings {
 	constructor(name) {
 		// this.key_list = {}; debug
 
 		this.cfgBaseName = name;
-		this.storageFolder = pref.customBiographyDir ? `${globals.customBiographyDir}` : `${fb.ProfilePath}cache\\biography\\`;
+		this.storageFolder = grSet.customBiographyDir ? `${grCfg.customBiographyDir}` : `${fb.ProfilePath}cache\\biography\\`;
 		$Bio.buildPth(this.storageFolder);
 		this.bio = `${this.storageFolder + this.cfgBaseName}.cfg`;
 		this.item_properties = `${this.storageFolder}item_properties.json`;
@@ -63,7 +63,7 @@ class SettingsBio {
 		};
 
 		this.local = $Bio.file('C:\\check_local\\1450343922.txt');
-		if (!this.local) pptBio.themed = false;
+		if (!this.local) bioSet.themed = false;
 		this.remap = {};
 		this.pth = {};
 		this.sup = {};
@@ -72,7 +72,7 @@ class SettingsBio {
 		this.photoRecycler = `${this.storageFolder}oldPhotosForDeletion\\`;
 		this.settingsKeys = [];
 
-		this.caPath = pref.customBiographyDir ? `${globals.customBiographyDir}biography-cache\\` : `${this.storageFolder}biography-cache`;
+		this.caPath = grSet.customBiographyDir ? `${grCfg.customBiographyDir}biography-cache\\` : `${this.storageFolder}biography-cache`;
 		this.cachePath = `${this.caPath}\\`;
 
 		this.suffix = {
@@ -128,7 +128,7 @@ class SettingsBio {
 
 	add(item) {
 		// this.key_list[item[3]] = 1; debug
-		this[`${item[3]}_internal`] = new SettingBio(item[3], item[1], item[2]);
+		this[`${item[3]}_internal`] = new BioSetting(item[3], item[1], item[2]);
 
 		Object.defineProperty(this, item[3], {
 			get() {
@@ -176,28 +176,28 @@ class SettingsBio {
 	}
 
 	checkCfg() {
-		if (!$Bio.file(this.item_properties)) $Bio.save(this.item_properties, item_properties, true);
-		if (!$Bio.file(this.item_properties_alternative_grouping)) $Bio.save(this.item_properties_alternative_grouping, item_properties_alternative_grouping, true);
-		if (!$Bio.file(this.nowplaying)) $Bio.save(this.nowplaying, nowplaying, true);
-		if (!$Bio.file(this.radioParser)) $Bio.save(this.radioParser, radioParser, true);
+		if (!$Bio.file(this.item_properties)) $Bio.save(this.item_properties, bio_item_properties, true);
+		if (!$Bio.file(this.item_properties_alternative_grouping)) $Bio.save(this.item_properties_alternative_grouping, bio_item_properties_alternative_grouping, true);
+		if (!$Bio.file(this.nowplaying)) $Bio.save(this.nowplaying, bioNowplaying, true);
+		if (!$Bio.file(this.radioParser)) $Bio.save(this.radioParser, bioRadioParser, true);
 		if ($Bio.file(this.bio)) return;
 		const orig_cfg = `${fb.ProfilePath}cache\\biography\\biography.cfg`;
-		const orig_cfg_copied = $Bio.file(`${cfg.storageFolder}foo_lastfm_img.vbs`);
+		const orig_cfg_copied = $Bio.file(`${bioCfg.storageFolder}foo_lastfm_img.vbs`);
 		if ($Bio.file(orig_cfg) && !orig_cfg_copied) {
 			try {
-				fsoBio.CopyFile(orig_cfg, this.bio);
+				bioFSO.CopyFile(orig_cfg, this.bio);
 				this.cfg = $Bio.jsonParse(this.bio, {}, 'file');
 				const blacklist_image = `${fb.ProfilePath}cache\\biography\\blacklist_image.json`;
 				if ($Bio.file(blacklist_image)) {
-					fsoBio.CopyFile(blacklist_image, `${cfg.storageFolder}blacklist_image.json`);
+					bioFSO.CopyFile(blacklist_image, `${bioCfg.storageFolder}blacklist_image.json`);
 				}
 				return true;
 			} catch (e) {
-				this.createCfg(settingsBio);
+				this.createCfg(bioSettings);
 				return false;
 			}
 		} else {
-			this.createCfg(settingsBio);
+			this.createCfg(bioSettings);
 			return false;
 		}
 	}
@@ -205,9 +205,9 @@ class SettingsBio {
 	checkFiles(v) {
 		if (!$Bio.folder(v) || !$Bio.server) return;
 		const foArr = [];
-		const folder = fsoBio.GetFolder(v);
+		const folder = bioFSO.GetFolder(v);
 		const subFolders = folder.SubFolders;
-		if (!subFolders.Count) try { fsoBio.DeleteFolder(folder); return; } catch (e) {} // rem empty last.fm etc
+		if (!subFolders.Count) try { bioFSO.DeleteFolder(folder); return; } catch (e) {} // rem empty last.fm etc
 		for (const subFolder of subFolders) {
 			foArr.push(v + subFolder.Name);
 		}
@@ -217,11 +217,11 @@ class SettingsBio {
 				let files = utils.Glob(`${foArr[i]}\\*`);
 				files.forEach(w => {
 					if (Date.now() - $Bio.lastAccessed(w) > this.cacheTime) {
-						try { fsoBio.DeleteFile(w); } catch (e) {}
+						try { bioFSO.DeleteFile(w); } catch (e) {}
 					}
 				});
 				files = utils.Glob(`${foArr[i]}\\*`);
-				if (!files.length) try { fsoBio.DeleteFolder(foArr[i]); } catch (e) {}
+				if (!files.length) try { bioFSO.DeleteFolder(foArr[i]); } catch (e) {}
 				i++;
 			} else {
 				clearInterval(timer);
@@ -232,11 +232,11 @@ class SettingsBio {
 	checkImages(v) {
 		if (!$Bio.folder(v) || !$Bio.server) return;
 		const foArr = [];
-		const folder = fsoBio.GetFolder(v);
+		const folder = bioFSO.GetFolder(v);
 		let chars = folder.SubFolders;
-		if (!chars.Count) try { fsoBio.DeleteFolder(folder); return; } catch (e) {}
+		if (!chars.Count) try { bioFSO.DeleteFolder(folder); return; } catch (e) {}
 		for (const char of chars) { // a
-			const folder2 = fsoBio.GetFolder(char); // artist
+			const folder2 = bioFSO.GetFolder(char); // artist
 			const artists = folder2.SubFolders;
 			for (const artist of artists) {
 				foArr.push(`${v + char.Name}\\${artist.Name}`);
@@ -246,14 +246,14 @@ class SettingsBio {
 		const timer = setInterval(() => {
 			if ($Bio.server && i < foArr.length) {
 				const files = utils.Glob(`${foArr[i]}\\*`);
-				if (!files.length) try { fsoBio.DeleteFolder(foArr[i]); } catch (e) {}
+				if (!files.length) try { bioFSO.DeleteFolder(foArr[i]); } catch (e) {}
 				else {
 					let accessed = 0;
 						files.forEach(w => {
 							accessed = Math.max(accessed, $Bio.lastAccessed(w));
 						});
 						if (Date.now() - accessed > this.cacheTime) {
-							try { fsoBio.DeleteFolder(foArr[i]); } catch (e) {}
+							try { bioFSO.DeleteFolder(foArr[i]); } catch (e) {}
 						}
 				}
 				i++;
@@ -261,9 +261,9 @@ class SettingsBio {
 				clearInterval(timer);
 				chars = folder.SubFolders;
 				for (const char of chars) { // a
-					const folder2 = fsoBio.GetFolder(char); // artist
+					const folder2 = bioFSO.GetFolder(char); // artist
 					const artists = folder2.SubFolders;
-					if (!artists.Count) try { fsoBio.DeleteFolder(folder2); } catch (e) {} // rem empty
+					if (!artists.Count) try { bioFSO.DeleteFolder(folder2); } catch (e) {} // rem empty
 				}
 			}
 		}, 100);
@@ -339,8 +339,8 @@ class SettingsBio {
 
 	open() {
 		const ok_callback = (new_ppt, new_cfg, type, new_dialogWindow) => {
-			if (new_dialogWindow) pptBio.set('Panel Biography - Biography Dialog Box', new_dialogWindow);
-			if (new_ppt) uiBio.updateProp($Bio.jsonParse(new_ppt, {}), 'value');
+			if (new_dialogWindow) bioSet.set('Panel Biography - Biography Dialog Box', new_dialogWindow);
+			if (new_ppt) bio.ui.updateProp($Bio.jsonParse(new_ppt, {}), 'value');
 			if (new_cfg) {
 				const lang_ix = this.lang.ix;
 				const cache_type = this.autoCache;
@@ -349,13 +349,13 @@ class SettingsBio {
 					this.setCacheMode();
 					return;
 				}
-				window.NotifyOthers(`bio_newCfg${pptBio.serverName}`, new_cfg);
+				window.NotifyOthers(`bio_newCfg${bioSet.serverName}`, new_cfg);
 				if (lang_ix != this.lang.ix) this.setLanguage(this.lang.ix);
 			}
 			if (new_ppt || new_cfg) return;
 			switch (type) {
 				case 'resetPanelCfg':
-					uiBio.updateProp(pptBio, 'default_value');
+					bio.ui.updateProp(bioSet, 'default_value');
 					break;
 				case 'resetServerCfg':
 					this.resetCfg();
@@ -374,7 +374,7 @@ class SettingsBio {
 					break;
 			}
 		};
-		let dialogWindow = pptBio.get('Panel Biography - Biography Dialog Box', JSON.stringify({
+		let dialogWindow = bioSet.get('Panel Biography - Biography Dialog Box', JSON.stringify({
 			w: 85,
 			h: 60,
 			def_w: 85,
@@ -388,10 +388,10 @@ class SettingsBio {
 		dialogWindow = $Bio.jsonParse(dialogWindow);
 		dialogWindow.version = `v${window.ScriptInfo.Version}`;
 		dialogWindow = JSON.stringify(dialogWindow);
-		if (!panelBio.id.numServersChecked) panelBio.checkNumServers();
-		if (popUpBoxBio.isHtmlDialogSupported()) popUpBoxBio.config(JSON.stringify(pptBio), JSON.stringify(cfg), dialogWindow, ok_callback, this.lang.ix, $Bio.folder(cfg.photoRecycler));
+		if (!bio.panel.id.numServersChecked) bio.panel.checkNumServers();
+		if (bio.popUpBox.isHtmlDialogSupported()) bio.popUpBox.config(JSON.stringify(bioSet), JSON.stringify(bioCfg), dialogWindow, ok_callback, this.lang.ix, $Bio.folder(bioCfg.photoRecycler));
 		else {
-			popUpBoxBio.ok = false;
+			bio.popUpBox.ok = false;
 			$Bio.trace('the options html dialog doesn\'t appear to be available with the current operating system. All settings in options are available elsewhere: 1) panel settings are in panel properties; 2) server settings that apply to all panels are in the cfg file - default settings should be fine for most users, but can be changed by careful editing in a text editor. Common settings are on the menu.');
 		}
 	}
@@ -422,8 +422,8 @@ class SettingsBio {
 		});
 
 		if (!this.classicalModeEnable) {
-			pptBio.classicalMusicMode = false;
-			pptBio.classicalAlbFallback = false;
+			bioSet.classicalMusicMode = false;
+			bioSet.classicalAlbFallback = false;
 		}
 
 		this.suffix = {
@@ -512,13 +512,13 @@ class SettingsBio {
 
 	expandPath(pth) {
 		if (/%profile%\\/i.test(pth) && /%storage_folder%\\/i.test(pth)) pth = pth.replace(/%profile%\\/gi, '');
-		return pth.replace(/^%profile%\\?/i, $Bio.tfEscape(fb.ProfilePath)).replace(/^%storage_folder%\\?/i, $Bio.tfEscape(cfg.storageFolder));
+		return pth.replace(/^%profile%\\?/i, $Bio.tfEscape(fb.ProfilePath)).replace(/^%storage_folder%\\?/i, $Bio.tfEscape(bioCfg.storageFolder));
 	}
 
 	preview(n, tfAll, excludeStream, sFind, sReplace, artistView, trackReview) {
-		if (!tfAll) return txt.tf(n, artistView, trackReview); // heading
+		if (!tfAll) return bio.txt.tf(n, artistView, trackReview); // heading
 		if (excludeStream) {
-			const handle = $Bio.handle(panelBio.id.focus, true);
+			const handle = $Bio.handle(bio.panel.id.focus, true);
 			if (!handle) return;
 			const covCanBeSaved = !handle.RawPath.startsWith('fy+') && !handle.RawPath.startsWith('3dydfy:') && !handle.RawPath.startsWith('http');
 			if (!covCanBeSaved) return 'Stream: Covers Not Saved';
@@ -541,7 +541,7 @@ class SettingsBio {
 		tfNames.forEach((v, i) => n = n.replace(RegExp(v, 'gi'), tf[i]));
 
 		const wildCard = /[*?]/.test(n);
-		return !wildCard ? panelBio.cleanPth(n, false) : panelBio.cleanPth(n.replace(/\*/g, '@!@').replace(/\?/g, '!@!'), false).replace(/@!@/g, '*').replace(/!@!/g, '?');
+		return !wildCard ? bio.panel.cleanPth(n, false) : bio.panel.cleanPth(n.replace(/\*/g, '@!@').replace(/\?/g, '!@!'), false).replace(/@!@/g, '*').replace(/!@!/g, '?');
 	}
 
 	move(n) {
@@ -549,14 +549,14 @@ class SettingsBio {
 		const timestamp = `${[d.getFullYear(), $Bio.padNumber((d.getMonth() + 1), 2), $Bio.padNumber(d.getDate(), 2)].join('-')}_${[$Bio.padNumber(d.getHours(), 2), $Bio.padNumber(d.getMinutes(), 2), $Bio.padNumber(d.getSeconds(), 2)].join('-')}`;
 		try {
 			const fn = `${this.storageFolder + this.cfgBaseName}_old_${timestamp}.cfg`;
-			if (!$Bio.file(fn)) fsoBio.MoveFile(this.bio, fn);
+			if (!$Bio.file(fn)) bioFSO.MoveFile(this.bio, fn);
 		} catch (e) {
 			if (n) fb.ShowPopupMessage(`Unable to reset server settings.\n\n${this.cfgBaseName}.cfg is being used by another program.`, 'Biography');
 		}
 	}
 
 	resetCfg() {
-		cfg.move(true);
+		bioCfg.move(true);
 		window.Reload();
 		window.NotifyOthers('bio_refresh', 'bio_refresh');
 	}
@@ -571,33 +571,33 @@ class SettingsBio {
 			this.lang.ix = i;
 			this.language = this.lang.arr[this.lang.ix];
 		} else this.toggle('languageFallback');
-		txt.bio.subhead = {
-			am: [this.amDisplayName, `${this.amDisplayName} ${txt.bio.lang[this.lang.ix]}`],
-			lfm: [this.lfmDisplayName, `${this.lfmDisplayName} ${txt.bio.lang[this.lang.ix]}`],
-			wiki: [this.wikiDisplayName, `${this.wikiDisplayName} ${txt.bio.lang[this.lang.ix]}`],
+		bio.txt.bio.subhead = {
+			am: [this.amDisplayName, `${this.amDisplayName} ${bio.txt.bio.lang[this.lang.ix]}`],
+			lfm: [this.lfmDisplayName, `${this.lfmDisplayName} ${bio.txt.bio.lang[this.lang.ix]}`],
+			wiki: [this.wikiDisplayName, `${this.wikiDisplayName} ${bio.txt.bio.lang[this.lang.ix]}`],
 			txt: ['', '']
 		};
-		txt.rev.subhead = {
-			am: [this.amDisplayName, `${this.amDisplayName} ${txt.rev.lang[this.lang.ix]}`],
-			lfm: [this.lfmDisplayName, `${this.lfmDisplayName} ${txt.rev.lang[this.lang.ix]}`],
-			wiki: [this.wikiDisplayName, `${this.wikiDisplayName} ${txt.rev.lang[this.lang.ix]}`],
+		bio.txt.rev.subhead = {
+			am: [this.amDisplayName, `${this.amDisplayName} ${bio.txt.rev.lang[this.lang.ix]}`],
+			lfm: [this.lfmDisplayName, `${this.lfmDisplayName} ${bio.txt.rev.lang[this.lang.ix]}`],
+			wiki: [this.wikiDisplayName, `${this.wikiDisplayName} ${bio.txt.rev.lang[this.lang.ix]}`],
 			txt: ['', '']
 		};
-		txt.artistReset(true);
-		txt.albumReset(true);
-		txt.albumFlush();
-		txt.artistFlush();
-		txt.rev.cur = '';
-		txt.bio.cur = '';
+		bio.txt.artistReset(true);
+		bio.txt.albumReset(true);
+		bio.txt.albumFlush();
+		bio.txt.artistFlush();
+		bio.txt.rev.cur = '';
+		bio.txt.bio.cur = '';
 
-		txt.bio.loaded = {
+		bio.txt.bio.loaded = {
 			am: false,
 			lfm: false,
 			wiki: false,
 			txt: false,
 			ix: -1
 		};
-		txt.rev.loaded = {
+		bio.txt.rev.loaded = {
 			am: false,
 			lfm: false,
 			wiki: false,
@@ -605,18 +605,18 @@ class SettingsBio {
 			ix: -1
 		};
 
-		txt.loadReader();
-		txt.getText(true);
-		butBio.createStars();
-		txt.getSubHeadWidths();
-		txt.artCalc();
-		txt.albCalc();
+		bio.txt.loadReader();
+		bio.txt.getText(true);
+		bio.but.createStars();
+		bio.txt.getSubHeadWidths();
+		bio.txt.artCalc();
+		bio.txt.albCalc();
 		$Bio.server = true;
-		panelBio.notifyTimestamp = Date.now();
-		window.NotifyOthers(`bio_notServer${pptBio.serverName}`, panelBio.notifyTimestamp);
+		bio.panel.notifyTimestamp = Date.now();
+		window.NotifyOthers(`bio_notServer${bioSet.serverName}`, bio.panel.notifyTimestamp);
 		if ($Bio.server) {
-			serverBio.setLanguage(this.language);
-			panelBio.callServer(2, panelBio.id.focus, '', 1);
+			bio.server.setLanguage(this.language);
+			bio.panel.callServer(2, bio.panel.id.focus, '', 1);
 			window.NotifyOthers('bio_refresh', 'bio_refresh');
 		}
 	}
@@ -627,8 +627,8 @@ class SettingsBio {
 				this.toggle(`tagEnabled${i - 1}`);
 				break;
 			case i == 14: {
-				const cur = $Bio.jsonParse(pptBio.get('Panel Biography - Biography Dialog Box'), {});
-				pptBio.set('Panel Biography - Biography Dialog Box', JSON.stringify({
+				const cur = $Bio.jsonParse(bioSet.get('Panel Biography - Biography Dialog Box'), {});
+				bioSet.set('Panel Biography - Biography Dialog Box', JSON.stringify({
 					w: cur.w,
 					h: cur.h,
 					def_w: 85,
@@ -642,19 +642,19 @@ class SettingsBio {
 			}
 			case i == 15: {
 				if (!this.taggerConfirm) {
-					if (this.tagEnabled10 && this.tagEnabled13 < 7) tagBio.check(handles);
-					else tagBio.write(handles);
+					if (this.tagEnabled10 && this.tagEnabled13 < 7) bio.tag.check(handles);
+					else bio.tag.write(handles);
 					break;
 				}
 				const continue_confirmation = (status, confirmed) => {
 					if (confirmed) {
-						if (this.tagEnabled10 && this.tagEnabled13 < 7) tagBio.check(handles);
-						else tagBio.write(handles);
+						if (this.tagEnabled10 && this.tagEnabled13 < 7) bio.tag.check(handles);
+						else bio.tag.write(handles);
 					}
 				};
 				const caption = 'Tag Files:';
 				const prompt = handles.Count < 2000 ? `Update ${handles.Count} ${handles.Count > 1 ? 'tracks' : 'track'}.\n\nContinue?` : `Update ${handles.Count} tracks.\n\nADVISORY: This operation analyses a lot of data.\n\nContinue?`;
-				const wsh = popUpBoxBio.isHtmlDialogSupported() ? popUpBoxBio.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
+				const wsh = bio.popUpBox.isHtmlDialogSupported() ? bio.popUpBox.confirm(caption, prompt, 'OK', 'Cancel', false, 'center', continue_confirmation) : true;
 				if (wsh) continue_confirmation('ok', $Bio.wshPopup(prompt, caption));
 				break;
 			}
@@ -663,14 +663,21 @@ class SettingsBio {
 	}
 
 	updateCfg(new_cfg) {
-		this.settingsKeys.forEach(v => cfg[v] = this.cfg[v] = new_cfg[`${v}_internal`].value);
-		tagBio.setGenres();
+		this.settingsKeys.forEach(v => bioCfg[v] = this.cfg[v] = new_cfg[`${v}_internal`].value);
+		bio.tag.setGenres();
 		this.parse();
 	}
 }
-const cfg = new SettingsBio(pptBio.serverName);
 
-let settingsBio = [
+/**
+ * The instance of `BioSettings` class for biography config settings.
+ * @typedef {BioSettings}
+ * @global
+ */
+const bioCfg = new BioSettings(bioSet.serverName);
+
+/** @global @type {Array.<Array>} */
+let bioSettings = [
 	['Album Review [Allmusic] Auto-Download', true, 'boolean', 'dlAmRev'], // description (setting[0]) is for info only otherwise it's unused [update from orig_ini is no longer supported]
 	['Biography [Allmusic] Auto-Download', true, 'boolean', 'dlAmBio'],
 	['Album Review [Lastfm] Auto-Download', true, 'boolean', 'dlLfmRev'],
@@ -782,7 +789,8 @@ let settingsBio = [
 	['Show console messages', true, 'boolean', 'showConsoleMessages']
 ];
 
-let item_properties =
+/** @global @type {object} */
+let bio_item_properties =
 
 `{
 	"*****HELP*****": [
@@ -914,11 +922,13 @@ let item_properties =
 	"uppercase": "ANV|MB"
 }`
 
-let item_properties_alternative_grouping = item_properties
+/** @global @type {object} */
+let bio_item_properties_alternative_grouping = bio_item_properties
 .replace(/("Metadata\*":\s{\s*?"show":\s)false/, `$1${true}`)
 .replace(/(("Metadata"|"Popularity"|"AllMusic"|"Last.fm"|"Wikipedia"):\s{\s*?"show":\s)true/g, `$1${false}`);
 
-let nowplaying = `Artist: %BIO_ARTIST%$crlf()
+/** @global @type {string} */
+let bioNowplaying = `Artist: %BIO_ARTIST%$crlf()
 $crlf()
 Title: %BIO_TITLE%$crlf()
 $crlf()
@@ -926,7 +936,8 @@ $crlf()
 $crlf()]
 $if2(%playback_time%,0:00)[ / %length%]`;
 
-let radioParser = `/* RadioStreamParser is written in javascript and can be user edited with care.
+/** @global @type {object} */
+let bioRadioParser = `/* RadioStreamParser is written in javascript and can be user edited with care.
 It's designed for use with internet radio streams that contain the artist name and song title in a non-standard format.
 Before editing, make a backup copy in case things go wrong.
 
@@ -937,8 +948,8 @@ Before editing, make a backup copy in case things go wrong.
 	In more complex cases use RegExp or javascript string manipulation functions. Google for syntax.
 4. Adjust the format (comment out if unwanted). This is aesthetic. It won't affect searching.
 5. Use console.log traces to see what's going on and debug, e.g uncomment those below.
-6. If fb2K artist name is required, use, e.g. $Bio.eval('[$trim(' + (typeof cfg !== 'undefined' ? cfg.tf.artist : pptBio.tfArtist) + ')]', focus, ignoreLock)
-7. For info, biography uses cfg.tf.artist and cfg.tf.title; Find & Play uses pptBio.tfArtist and pptBio.tfTitle.
+6. If fb2K artist name is required, use, e.g. $Bio.eval('[$trim(' + (typeof bioCfg !== 'undefined' ? bioCfg.tf.artist : bioSet.tfArtist) + ')]', focus, ignoreLock)
+7. For info, biography uses bioCfg.tf.artist and bioCfg.tf.title; Find & Play uses bioSet.tfArtist and bioSet.tfTitle.
 
 This parser is also used by Find & Play provided the biography package id {BA9557CE-7B4B-4E0E-9373-99F511E81252} is unaltered.
 */
@@ -951,7 +962,7 @@ class radioStreamParser {
 		// don't alter the next 4 lines
 		const path = $Bio.eval('%path%', focus, ignoreLock);
 		let artist = '';
-		let item = $Bio.eval('[$trim(' + (typeof cfg !== 'undefined' ? cfg.tf.title : pptBio.tfTitle) + ')]', focus, ignoreLock);
+		let item = $Bio.eval('[$trim(' + (typeof bioCfg !== 'undefined' ? bioCfg.tf.title : bioSet.tfTitle) + ')]', focus, ignoreLock);
 		let title = '';
 
 		switch (path) {
@@ -1013,7 +1024,7 @@ class radioStreamParser {
 			case 'https://stream.arrowrockradio.com/arrowrockradio':
 
 				// artist needs stream name and playing removing
-				artist = $Bio.eval('[$trim($replace(' + (typeof cfg !== 'undefined' ? cfg.tf.artist : pptBio.tfArtist) + ',Arrow Rock Radio:,,PLAYING:,))]', focus, ignoreLock);
+				artist = $Bio.eval('[$trim($replace(' + (typeof bioCfg !== 'undefined' ? bioCfg.tf.artist : bioSet.tfArtist) + ',Arrow Rock Radio:,,PLAYING:,))]', focus, ignoreLock);
 				//console.log('artist', artist);
 
 				// title is correct except it's uppercase: including here means it goes through the titlecase converter
@@ -1028,7 +1039,7 @@ class radioStreamParser {
 				artist = item; // item is the title, which is the artist as they're swapped
 				//console.log('artist', artist);
 
-				title = $Bio.eval('[$trim(' + (typeof cfg !== 'undefined' ? cfg.tf.artist : pptBio.tfArtist) + ')]', focus, ignoreLock);
+				title = $Bio.eval('[$trim(' + (typeof bioCfg !== 'undefined' ? bioCfg.tf.artist : bioSet.tfArtist) + ')]', focus, ignoreLock);
 				//console.log('title', title);
 
 				break;
@@ -1064,14 +1075,14 @@ class radioStreamParser {
 	}
 }`
 
-cfg.init(settingsBio);
-settingsBio = undefined;
-item_properties = undefined;
-item_properties_alternative_grouping = undefined;
-nowplaying = undefined;
-radioParser = undefined;
+bioCfg.init(bioSettings);
+bioSettings = undefined;
+bio_item_properties = undefined;
+bio_item_properties_alternative_grouping = undefined;
+bioNowplaying = undefined;
+bioRadioParser = undefined;
 
-if ($Bio.file(cfg.radioParser)) {
-	include(cfg.radioParser);
-	isRadioStreamParser = true;
+if ($Bio.file(bioCfg.radioParser)) {
+	include(bioCfg.radioParser);
+	bioIsRadioStreamParser = true;
 }

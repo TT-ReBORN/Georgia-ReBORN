@@ -1,11 +1,12 @@
 ﻿'use strict';
 
-const my_utilsLib = {};
+/** @global @type {object} */
+const lib_my_utils = {};
 
-my_utilsLib.scriptInfo = window.ScriptInfo;
-// my_utilsLib.packageInfo = utils.GetPackageInfo(my_utilsLib.scriptInfo.PackageId);
-my_utilsLib.packagePath = `${basePath}scripts\\library/`;
+lib_my_utils.scriptInfo = window.ScriptInfo;
+// lib_my_utils.packageInfo = utils.GetPackageInfo(lib_my_utils.scriptInfo.PackageId);
+lib_my_utils.packagePath = `${grPath.base}scripts\\library\\`;
 
-my_utilsLib.getAsset = assetFile => utils.ReadTextFile(`${basePath}scripts\\library\\assets/${assetFile}`);
-my_utilsLib.getImageAssets = assetFolder => utils.Glob(`${basePath}scripts\\library\\assets\\images/${assetFolder}/*`);
-my_utilsLib.getScriptPath = `${basePath}scripts\\library\\scripts\\`;
+lib_my_utils.getAsset = assetFile => utils.ReadTextFile(`${grPath.base}scripts\\library\\assets\\${assetFile}`);
+lib_my_utils.getImageAssets = assetFolder => utils.Glob(`${grPath.base}scripts\\library\\assets\\images\\${assetFolder}\\*`);
+lib_my_utils.getScriptPath = `${grPath.base}scripts\\library\\scripts\\`;

@@ -650,7 +650,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 
 				var needCustomCol = /colour_container/.test(id);
 				if (needCustomCol) setCustomColours('value');
-				document.getElementById("btn_apply").disabled = JSON.stringify(cfg) != parsed_args[0] || JSON.stringify(ppt) != parsed_args[1] ? false : true;
+				document.getElementById("btn_apply").disabled = JSON.stringify(cfg) != parsed_args[0] || JSON.stringify(libSet) != parsed_args[1] ? false : true;
 			}
 
 			function set_btn_del_state() {
@@ -738,7 +738,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 			var new_id = 100;
 			var parsed_args;
 			var props_callback
-			var ppt = {};
+			var libSet = {};
 			var sizes = [];
 
 			try {
@@ -750,7 +750,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				cur = JSON.parse(parsed_args[2]);
 				document.title = 'Library Tree ' + cur.version + ': Panel Settings';
 				cfg = JSON.parse(parsed_args[0]);
-				ppt = JSON.parse(parsed_args[1]);
+				libSet = JSON.parse(parsed_args[1]);
 				cbox_h = Math.round(Math.max(em, 13));
 				cbox_w = cbox_h + 2;
 				var cbox = "width:" + cbox_w + "px; height:" + cbox_h + "px;"
@@ -774,12 +774,12 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				var albumArtOverlayLabels = ['None', 'Track Count', 'Year'];
 				var altClickLabels = ['Add to default playlist', 'Add to current playlist', 'Add to playback queue (alt dblclk removes)'];
 				var barLabels = ['Search', 'Filter Button', 'Settings button*'];
-				var clickLabels = ppt['actionMode_internal'].value == 1 ? ['Send to playlist'] : ppt['actionMode_internal'].value == 2 ? ['Select'] : ['Select', 'Send to playlist', 'Send to playlist & play', 'Send to playlist & play [add if playing]'];
+				var clickLabels = libSet['actionMode_internal'].value == 1 ? ['Send to playlist'] : libSet['actionMode_internal'].value == 2 ? ['Select'] : ['Select', 'Send to playlist', 'Send to playlist & play', 'Send to playlist & play [add if playing]'];
 				var colourLabels = ['Text', 'Text highlight', 'Text selection', 'Nowplaying text / sidemarker highlight', 'Text search', 'Buttons', 'Background', 'Background accent', 'Background selection', 'Frame hover', 'Frame selection', 'Counts & statistics', 'Node collapse', 'Node expand', 'Node hover', 'Node lines', 'Separators', 'Side marker', 'Transparent fill'];
 				var coverFormatLabels = ['Cover auto-fill', 'Cover opacity (%)'];
 				var cusNodeLabels = ['Custom icon expand|collapse', 'Custom icon font name', 'Custom icon padding (+/-)', 'Square nodes: use windows'];
 				var cusScrollLabels = ['Step (0 = page)', 'Smooth duration max (ms)', 'Touch duration max (ms)', 'Touch sensitivity 0-10'];
-				var dblClickLabels = ppt['actionMode_internal'].value == 1 ? ['Send to playlist & play'] : ppt['actionMode_internal'].value == 2 ? ['Send to playback queue and play'] : ['Send to playlist', 'Send to playlist & play', 'Expand / collapse (tree)', 'Send to playback queue and play'];
+				var dblClickLabels = libSet['actionMode_internal'].value == 1 ? ['Send to playlist & play'] : libSet['actionMode_internal'].value == 2 ? ['Send to playback queue and play'] : ['Send to playlist', 'Send to playlist & play', 'Expand / collapse (tree)', 'Send to playback queue and play'];
 				var diskCacheLabels = ['Enable', 'Preload cached images']
 				var followCurrentLabels = ['Standard mode', 'Album art flow mode'];
 				var fontLabels = ['Main', 'Album art group line 1', 'Album art group line 2', 'Album art statistics line'];
@@ -788,7 +788,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				var keystrokeLabels = ['Select', 'Send to playlist']
 				var itemCountsLabels = ['Hide', '# Tracks', '# Items', 'Align right (tree / text)'];
 				var metricsLabels = ['Margin', 'Tree indent', 'Line padding tree', 'Line padding album art', 'Margin overide top/bottom (no top bar)', 'Side marker width (0 = auto)'];
-				var mbtnClickLabels = ppt['actionMode_internal'].value == 2 ? ['Add to playback queue (middle dblclk removes)'] : ['Add to default playlist', 'Add to current playlist', 'Add to playback queue (middle dblclk removes)'];
+				var mbtnClickLabels = libSet['actionMode_internal'].value == 2 ? ['Add to playback queue (middle dblclk removes)'] : ['Add to default playlist', 'Add to current playlist', 'Add to playback queue (middle dblclk removes)'];
 				var nodeLabels = ['Squares', 'Arrows', 'Arrows Light', 'Triangles', 'Triangles Light', 'Signs', 'Custom'];
 				var playlistLabels = ['Default', 'Activate when changed'];
 				var playlistSortLabels = ['Playlist sort order (empty = default)'];
@@ -806,7 +806,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				var statisticsLabels = ['Rating', 'Popularity', 'Date', '', 'Auto show labels', 'Auto show tooltips'];
 				var targetPlaylistLabels = ['Default', 'Current'];
 				var tfInput = ['Library View'];
-				var themeLabels = !ppt['themed_internal'].value ? ['User interface', 'Dark', 'Blend', 'Light', 'Random', 'Cover', 'Swap colours', 'Panel source: use received item image'] : ['N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set'];
+				var themeLabels = !libSet['themed_internal'].value ? ['User interface', 'Dark', 'Blend', 'Light', 'Random', 'Cover', 'Swap colours', 'Panel source: use received item image'] : ['N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set'];
 				var themeBlurLabels = ['Auto-fill', 'Level (%)', 'Opacity (%)', '%'];
 				var thumbNailGapLabels = ['Thumbnail gap'];
 				var thumbnailSizeLabels = ['Mini', 'Small', 'Regular', 'Medium', 'Large', 'XL', 'XXL', 'Max'];
@@ -815,8 +815,8 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				var modeLabels = ['Max height', 'Min height', 'Limit menu expand: 10-6000'];
 
 				function setNodeLabels() {
-					nodeLabels[0] = !ppt['winNode_internal'].value ? 'Squares' : 'Squares (windows)';
-					if (ppt['nodeStyle_internal'].value == 0 || ppt['nodeStyle_internal'].value == 7) window.node_dropdown.innerHTML = nodeLabels[0];
+					nodeLabels[0] = !libSet['winNode_internal'].value ? 'Squares' : 'Squares (windows)';
+					if (libSet['nodeStyle_internal'].value == 0 || libSet['nodeStyle_internal'].value == 7) window.node_dropdown.innerHTML = nodeLabels[0];
 					window.nodeNo0.innerHTML = nodeLabels[0];
 				}
 
@@ -870,13 +870,13 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 
 				function setSbarShow(n) {
 					window.sbarShow_dropdown.innerHTML = sbarShowLabels[n];
-					ppt['sbarShow_internal'].value = n;
+					libSet['sbarShow_internal'].value = n;
 					window.sbarShow.style.display = 'none';
 				}
 
 				function setsbarType(n) {
 					window.sbarType_dropdown.innerHTML = sbarTypeLabels[n];
-					ppt['sbarType_internal'].value = n;
+					libSet['sbarType_internal'].value = n;
 					sbar_col_dropdown.style.display = n != 2 ? "inline-block" : "none";
 					sbar_icon_dropdown.style.display = n != 2 ? "inline-block" : "none";
 					window.sbarType.style.display = 'none';
@@ -884,113 +884,113 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 
 				function setSbarCol(n) {
 					window.sbarCol_dropdown.innerHTML = sbarColLabels[n];
-					ppt['sbarCol_internal'].value = n;
+					libSet['sbarCol_internal'].value = n;
 					window.sbarCol.style.display = 'none';
 				}
 
 				function setSbarIcon(n) {
 					window.sbarIcon_dropdown.innerHTML = sbarIconLabels[n];
-					ppt['sbarButType_internal'].value = n;
+					libSet['sbarButType_internal'].value = n;
 					window.sbarIcon.style.display = 'none';
 				}
 
 				function setRootImage(n) {
 					window.rootStub_dropdown.innerHTML = '<b>Root:</b> <img src="'+rootStubLabels[n].path+'" width="'+ em +'" height="'+ em +'" class="stub"/> '+rootStubLabels[n].name+'<';
-					ppt.curRootImg_internal.value = n;
+					libSet.curRootImg_internal.value = n;
 					btn_apply.onclick();
 					window.rootStub.style.display = 'none';
 				}
 
 				function setNoArtistImage(n) {
 					window.noArtistStub_dropdown.innerHTML = '<b>No artist:</b> <img src="'+noArtistStubLabels[n].path+'" width="'+ em +'" height="'+ em +'" class="stub"/> '+noArtistStubLabels[n].name+'<';
-					ppt.curNoArtistImg_internal.value = n;
+					libSet.curNoArtistImg_internal.value = n;
 					btn_apply.onclick();
 					window.noArtistStub.style.display = 'none';
 				}
 
 				function setNoCoverImage(n) {
 					window.noCoverStub_dropdown.innerHTML = '<b>No cover:</b> <img src="'+noCoverStubLabels[n].path+'" width="'+ em +'" height="'+ em +'" class="stub"/> '+noCoverStubLabels[n].name+'<';
-					ppt.curNoCoverImg_internal.value = n;
+					libSet.curNoCoverImg_internal.value = n;
 					btn_apply.onclick();
 					window.noCoverStub.style.display = 'none';
 				}
 
 				function setRoot(n) {
 					window.root_dropdown.innerHTML = rootLabels[n];
-					ppt['rootNode_internal'].value = n;
+					libSet['rootNode_internal'].value = n;
 					window.root.style.display = 'none';
 				}
 
 				function setNode(n) {
 					setNodeLabels();
 					window.node_dropdown.innerHTML = nodeLabels[n];
-					ppt['nodeStyle_internal'].value = n;
+					libSet['nodeStyle_internal'].value = n;
 					window.node.style.display = 'none';
 				}
 
 				function setItemCounts(n) {
 					window.itemCounts_dropdown.innerHTML = itemCountsLabels[n];
-					ppt['nodeCounts_internal'].value = n;
+					libSet['nodeCounts_internal'].value = n;
 					window.itemCounts.style.display = 'none';
 				}
 
 				function setHoverBg(n) {
 					window.showHl_dropdown.innerHTML = highLightLabels[n];
-					ppt['highLightRow_internal'].value = n;
+					libSet['highLightRow_internal'].value = n;
 					window.showHl.style.display = 'none';
 				}
 
 				function setOverlay(n) {
 					window.overlay_dropdown.innerHTML = albumArtOverlayLabels[n];
-					ppt['itemOverlayType_internal'].value = n;
+					libSet['itemOverlayType_internal'].value = n;
 					window.overlay.style.display = 'none';
 				}
 
 				function setSearch(n) {
 					window.search_dropdown.innerHTML = searchLabels[n];
-					ppt['searchSend_internal'].value = n;
+					libSet['searchSend_internal'].value = n;
 					window.search.style.display = 'none';
 				}
 
 				function setTheme(n) {
 					window.theme_dropdown.innerHTML = themeLabels[n];
-					ppt['theme_internal'].value = n;
+					libSet['theme_internal'].value = n;
 					window.themeBg.style.display = 'none';
 				}
 
 				function setthumbSize(n) {
 					window.thumbSize_dropdown.innerHTML = thumbnailSizeLabels[n];
-					ppt['thumbNailSize_internal'].value = n;
+					libSet['thumbNailSize_internal'].value = n;
 					window.thumbSize.style.display = 'none';
 				}
 
 				function setClickAction(n) {
 					window.click_dropdown.innerHTML = clickLabels[n];
-					ppt['clickAction_internal'].value = n;
+					libSet['clickAction_internal'].value = n;
 					window.click.style.display = 'none';
 				}
 
 				function setDblClickAction(n) {
 					window.dblClick_dropdown.innerHTML = dblClickLabels[n];
-					ppt['dblClickAction_internal'].value = n;
+					libSet['dblClickAction_internal'].value = n;
 					window.dblClick.style.display = 'none';
 				}
 
 				function setMbtnClickAction(n) {
 					window.mbtnClick_dropdown.innerHTML = mbtnClickLabels[n];
-					ppt['mbtnClickAction_internal'].value = n;
+					libSet['mbtnClickAction_internal'].value = n;
 					window.mbtnClick.style.display = 'none';
 				}
 
 				function setAltClickAction(n) {
 					window.altClick_dropdown.innerHTML = altClickLabels[n];
-					ppt['altClickAction_internal'].value = n;
+					libSet['altClickAction_internal'].value = n;
 					window.altClick.style.display = 'none';
 				}
 
 				function setKeyAction(n) {
 					window.keystroke_dropdown.innerHTML = keystrokeLabels[n];
-					ppt['keyAction_internal'].value = n;
+					libSet['keyAction_internal'].value = n;
 					window.keystroke.style.display = 'none';
 				}
 
@@ -1117,7 +1117,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 
 				function setBehaviour() {
 					for (i = 0; i < 3; i++) {window.actionType.insertAdjacentHTML('beforeend', '<div><input id="actionMode'+i+'" name="actionMode" style="'+cbox+'" type="radio" /><label for="actionMode'+i+'" class="checkbox_label">'+actionTypeLabels[i]+'</label></div>');}
-					if (ppt['actionMode_internal'].value) {
+					if (libSet['actionMode_internal'].value) {
 						window.click_dropdown.innerHTML = clickLabels[0];
 						window.click.insertAdjacentHTML('beforeend', '<a>PRESET</a>');
 						window.click_dropdown.style.background = 'rgb(244, 67, 54)';
@@ -1125,40 +1125,40 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 						window.dblClick.insertAdjacentHTML('beforeend', '<a>PRESET</a>');
 						window.dblClick_dropdown.style.background = 'rgb(244, 67, 54)';
 					} else {
-						window.click_dropdown.innerHTML = clickLabels[ppt['clickAction_internal'].value];
+						window.click_dropdown.innerHTML = clickLabels[libSet['clickAction_internal'].value];
 						for (i = 0; i < 4; i++) {window.click.insertAdjacentHTML('beforeend', '<a onclick="setClickAction(' + i + ');">'+clickLabels[i]+'</a>');}
-						window.dblClick_dropdown.innerHTML = dblClickLabels[ppt['dblClickAction_internal'].value];
+						window.dblClick_dropdown.innerHTML = dblClickLabels[libSet['dblClickAction_internal'].value];
 						for (i = 0; i < 4; i++) {window.dblClick.insertAdjacentHTML('beforeend', '<a onclick="setDblClickAction(' + i + ');">'+dblClickLabels[i]+'</a>');}
 					}
 
-					if (ppt['actionMode_internal'].value == 2) {
+					if (libSet['actionMode_internal'].value == 2) {
 						window.mbtnClick_dropdown.innerHTML = mbtnClickLabels[0];
 						window.mbtnClick.insertAdjacentHTML('beforeend', '<a>PRESET</a>');
 						window.mbtnClick_dropdown.style.background = 'rgb(244, 67, 54)';
 					} else {
-						window.mbtnClick_dropdown.innerHTML = mbtnClickLabels[ppt['mbtnClickAction_internal'].value];
+						window.mbtnClick_dropdown.innerHTML = mbtnClickLabels[libSet['mbtnClickAction_internal'].value];
 						for (i = 0; i < 3; i++) {window.mbtnClick.insertAdjacentHTML('beforeend', '<a onclick="setMbtnClickAction(' + i + ');">'+mbtnClickLabels[i]+'</a>');}
 					}
 
-					window.altClick_dropdown.innerHTML = altClickLabels[ppt['altClickAction_internal'].value];
+					window.altClick_dropdown.innerHTML = altClickLabels[libSet['altClickAction_internal'].value];
 					for (i = 0; i < 3; i++) {window.altClick.insertAdjacentHTML('beforeend', '<a onclick="setAltClickAction(' + i + ');">'+altClickLabels[i]+'</a>');}
 
-					window.keystroke_dropdown.innerHTML = keystrokeLabels[ppt['keyAction_internal'].value];
+					window.keystroke_dropdown.innerHTML = keystrokeLabels[libSet['keyAction_internal'].value];
 					for (i = 0; i < 2; i++) {window.keystroke.insertAdjacentHTML('beforeend', '<a onclick="setKeyAction(' + i + ');">'+keystrokeLabels[i]+'</a>');}
 
-					window.sbarShow_dropdown.innerHTML = sbarShowLabels[ppt['sbarShow_internal'].value];
+					window.sbarShow_dropdown.innerHTML = sbarShowLabels[libSet['sbarShow_internal'].value];
 					for (i = 0; i < 3; i++) {window.sbarShow.insertAdjacentHTML('beforeend', '<a onclick="setSbarShow(' + i + ');" >'+sbarShowLabels[i]+'</a>');}
-					window.sbarType_dropdown.innerHTML = sbarTypeLabels[ppt['sbarType_internal'].value];
+					window.sbarType_dropdown.innerHTML = sbarTypeLabels[libSet['sbarType_internal'].value];
 					for (i = 0; i < 3; i++) {window.sbarType.insertAdjacentHTML('beforeend', '<a onclick="setsbarType(' + i + ');" >'+sbarTypeLabels[i]+'</a>');}
-					window.sbarCol_dropdown.innerHTML = sbarColLabels[ppt['sbarCol_internal'].value];
+					window.sbarCol_dropdown.innerHTML = sbarColLabels[libSet['sbarCol_internal'].value];
 					for (i = 0; i < 2; i++) {window.sbarCol.insertAdjacentHTML('beforeend', '<a onclick="setSbarCol(' + i + ');" >'+sbarColLabels[i]+'</a>');}
-					sbar_col_dropdown.style.display = ppt['sbarType_internal'].value != 2 ? "inline-block" : "none";
-					window.sbarIcon_dropdown.innerHTML = sbarIconLabels[ppt['sbarButType_internal'].value];
+					sbar_col_dropdown.style.display = libSet['sbarType_internal'].value != 2 ? "inline-block" : "none";
+					window.sbarIcon_dropdown.innerHTML = sbarIconLabels[libSet['sbarButType_internal'].value];
 					for (i = 0; i < 3; i++) {window.sbarIcon.insertAdjacentHTML('beforeend', '<a onclick="setSbarIcon(' + i + ');" >'+sbarIconLabels[i]+'</a>');}
-					sbar_icon_dropdown.style.display = ppt['sbarType_internal'].value != 2 ? "inline-block" : "none";
+					sbar_icon_dropdown.style.display = libSet['sbarType_internal'].value != 2 ? "inline-block" : "none";
 					for (i = 0; i < 3; i++) {window.scrolling.insertAdjacentHTML('beforeend', '<div><input id="scroll_checkbox'+i+'" name="behaviour_checkbox" style="'+cbox+'" type="checkbox" /><label for="scroll_checkbox'+i+'" class="checkbox_label">'+scrollLabels[i]+'</label></div>');}
 
-					window.search_dropdown.innerHTML = searchLabels[ppt['searchSend_internal'].value];
+					window.search_dropdown.innerHTML = searchLabels[libSet['searchSend_internal'].value];
 					for (i = 0; i < 3; i++) {window.search.insertAdjacentHTML('beforeend', '<a onclick="setSearch(' + i + ');">'+searchLabels[i]+'</a>');}
 					i = 3; window.searchEnter.insertAdjacentHTML('beforeend', '<div><input id="search_checkbox'+i+'" name="behaviour_checkbox" style="'+cbox+'" type="checkbox" /><label for="search_checkbox'+i+'" class="checkbox_label">'+searchLabels[i]+'</label></div>');
 					for (i = 0; i < 3; i++) {window.expand.insertAdjacentHTML('beforeend', '<div><input id="expand_checkbox'+i+'" name="behaviour_checkbox" style="'+cbox+'" type="checkbox" /><label for="expand_checkbox'+i+'" class="checkbox_label">'+treeLabels[i]+'</label></div>');}
@@ -1176,7 +1176,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				function setDisplay() {
 					for (i = 0; i < 3; i++) {window.bar.insertAdjacentHTML('beforeend', '<div><input id="bar_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="bar_checkbox'+i+'" class="checkbox_label">'+barLabels[i]+'</label></div>');}
 
-					window.theme_dropdown.innerHTML = themeLabels[ppt['theme_internal'].value];
+					window.theme_dropdown.innerHTML = themeLabels[libSet['theme_internal'].value];
 					for (i = 0; i < 6; i++) {window.themeBg.insertAdjacentHTML('beforeend', '<a onclick="setTheme(' + i + ');">'+themeLabels[i]+'</a>');}
 					i = 6; window.themeStyle.insertAdjacentHTML('beforeend', '<div><input id="theme_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="theme_checkbox'+i+'" class="checkbox_label">'+themeLabels[i]+'</label></div>');
 					i = 0; window.coverFormat.insertAdjacentHTML('beforeend', '<div><input id="coverFormat_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="coverFormat_checkbox'+i+'" class="checkbox_label">'+coverFormatLabels[i]+'</label></div>');
@@ -1188,41 +1188,41 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 					for (i = 2; i < 4; i++) {window.metrics2.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="metrics_container'+i+'" name="display_input" style="padding:0; margin:0;" class="input3" /><label for="metrics_container'+i+'" class="inp_label2">'+metricsLabels[i]+'</label></div>');}
 					for (i = 4; i < 6; i++) {window.metrics3.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="metrics_container'+i+'" name="display_input" style="padding:0; margin:0;" class="input3" /><label for="metrics_container'+i+'" class="inp_label2">'+metricsLabels[i]+'</label></div>')};
 
-					window.root_dropdown.innerHTML = rootLabels[ppt['rootNode_internal'].value];
+					window.root_dropdown.innerHTML = rootLabels[libSet['rootNode_internal'].value];
 					for (i = 0; i < 4; i++) {window.root.insertAdjacentHTML('beforeend', '<a onclick="setRoot(' + i + ');">'+rootLabels[i]+'</a>');}
 					i = 4; window.rootStyle.insertAdjacentHTML('beforeend', '<div><input id="root_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="root_checkbox'+i+'" class="checkbox_label">'+rootLabels[i]+'</label></div>');
 					i = 5; window.rootStyle.insertAdjacentHTML('beforeend', '<div><input id="root_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="root_checkbox'+i+'" class="checkbox_label">'+rootLabels[i]+'</label></div>');
 
-					window.node_dropdown.innerHTML = ppt['nodeStyle_internal'].value != 7 ? nodeLabels[ppt['nodeStyle_internal'].value] : 'Squares (windows)';
+					window.node_dropdown.innerHTML = libSet['nodeStyle_internal'].value != 7 ? nodeLabels[libSet['nodeStyle_internal'].value] : 'Squares (windows)';
 					for (i = 0; i < 7; i++) {window.node.insertAdjacentHTML('beforeend', '<a id="nodeNo'+i+'" onclick="setNode(' + i + ');">'+nodeLabels[i]+'</a>');}
 					i = 7; window.nodeLines.insertAdjacentHTML('beforeend', '<div><input id="node_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="node_checkbox'+i+'" class="checkbox_label">Show lines (squares only)</label></div>');
 
-					window.itemCounts_dropdown.innerHTML = itemCountsLabels[ppt['nodeCounts_internal'].value];
+					window.itemCounts_dropdown.innerHTML = itemCountsLabels[libSet['nodeCounts_internal'].value];
 					for (i = 0; i < 3; i++) {window.itemCounts.insertAdjacentHTML('beforeend', '<a onclick="setItemCounts(' + i + ');">'+itemCountsLabels[i]+'</a>');}
 					i = 3; window.countsRight.insertAdjacentHTML('beforeend', '<div><input id="itemCounts_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="itemCounts_checkbox'+i+'" class="checkbox_label">'+itemCountsLabels[i]+'</label></div>');
 					for (i = 0; i < 3; i++) {window.statistics2.insertAdjacentHTML('beforeend', '<div class="input_cnt5"><input id="statistics_container'+i+'" name="display_input" class="input70" /><label for="metrics_container'+i+'" class="inp_label2">'+statisticsLabels[i]+'</label></div>');}
 					for (i = 4; i < 6; i++) {window.labelStatistics.insertAdjacentHTML('beforeend', '<div><input id="itemCounts_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="itemCounts_checkbox'+i+'" class="checkbox_label">'+statisticsLabels[i]+'</label></div>')};
-					window.showHl_dropdown.innerHTML = highLightLabels[ppt['highLightRow_internal'].value];
+					window.showHl_dropdown.innerHTML = highLightLabels[libSet['highLightRow_internal'].value];
 					for (i = 0; i < 4; i++) {window.showHl.insertAdjacentHTML('beforeend', '<a onclick="setHoverBg(' + i + ');">'+highLightLabels[i]+'</a>');}
 					i = 0; window.frameStyle.insertAdjacentHTML('beforeend', '<div><input id="frame_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="frame_checkbox'+i+'" class="checkbox_label">Frame style (album art): image border</label></div>');
 					for (i = 4; i < 7; i++) {window.showH2.insertAdjacentHTML('beforeend', '<div><input id="showH2_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="showH2_checkbox'+i+'" class="checkbox_label">'+highLightLabels[i]+'</label></div>');}
 					for (i = 0; i < 7; i++) {window.show.insertAdjacentHTML('beforeend', '<div><input id="show_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="show_checkbox'+i+'" class="checkbox_label">'+showLabels[i]+'</label></div>');}
 				}
 
-				var rootStubLabels = JSON.parse(ppt['rootImages_internal'].value) || [];
-				var root_ix = ppt['curRootImg_internal'].value;
+				var rootStubLabels = JSON.parse(libSet['rootImages_internal'].value) || [];
+				var root_ix = libSet['curRootImg_internal'].value;
 
-				var noArtistStubLabels = JSON.parse(ppt['noArtistImages_internal'].value) || [];
-				var noart_ix = ppt['curNoArtistImg_internal'].value;
+				var noArtistStubLabels = JSON.parse(libSet['noArtistImages_internal'].value) || [];
+				var noart_ix = libSet['curNoArtistImg_internal'].value;
 
-				var noCoverStubLabels = JSON.parse(ppt['noCoverImages_internal'].value) || [];
-				var nocov_ix = ppt['curNoCoverImg_internal'].value;
+				var noCoverStubLabels = JSON.parse(libSet['noCoverImages_internal'].value) || [];
+				var nocov_ix = libSet['curNoCoverImg_internal'].value;
 
 				function setAlbumArt() {
 					for (i = 0; i < 5; i++) {window.labels.insertAdjacentHTML('beforeend', '<div><input id="albumArtLabelType'+i+'" name="albumArtLabelType" style="'+cbox+'" type="radio" /><label for="albumArtLabelType'+i+'" class="checkbox_label">'+albumArtLabels[i]+'</label></div>');}
 					i = 5; window.flip.insertAdjacentHTML('beforeend', '<div><input id="flip_checkbox'+i+'" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="flip_checkbox'+i+'" class="checkbox_label">'+albumArtLabels[i]+'</label></div>');
 
-					window.overlay_dropdown.innerHTML = albumArtOverlayLabels[ppt['itemOverlayType_internal'].value];
+					window.overlay_dropdown.innerHTML = albumArtOverlayLabels[libSet['itemOverlayType_internal'].value];
 					for (i = 0; i < 3; i++) {window.overlay.insertAdjacentHTML('beforeend', '<a onclick="setOverlay(' + i + ');">'+albumArtOverlayLabels[i]+'</a>');}
 
 					for (i = 0; i < 2; i++) {window.followCurrent.insertAdjacentHTML('beforeend', '<div><input id="selection_checkbox'+i+'" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="selection_checkbox'+i+'" class="checkbox_label">'+followCurrentLabels[i]+'</label></div>');}
@@ -1244,7 +1244,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 					window.dropShadow.insertAdjacentHTML('beforeend', '<div><input id="dropShadow_checkbox" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="dropShadow_checkbox" class="checkbox_label">Enable</label></div>');
 					window.sameAsTree.insertAdjacentHTML('beforeend', '<div><input id="sameAsTree_checkbox" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="sameAsTree_checkbox" class="checkbox_label">Same As Tree</label></div>');
 
-					window.thumbSize_dropdown.innerHTML = thumbnailSizeLabels[ppt['thumbNailSize_internal'].value];
+					window.thumbSize_dropdown.innerHTML = thumbnailSizeLabels[libSet['thumbNailSize_internal'].value];
 					for (i = 0; i < 8; i++) {window.thumbSize.insertAdjacentHTML('beforeend', '<a onclick="setthumbSize(' + i + ');">'+thumbnailSizeLabels[i]+'</a>');}
 
 					i = 0; window.indexLetter.insertAdjacentHTML('beforeend', '<div><input id="indexLetter_checkbox'+i+'" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="indexLetter_checkbox'+i+'" class="checkbox_label">'+indexLetterLabels[i]+'</label></div>');
@@ -1257,7 +1257,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				function setCustomColours(value) {
 					var items = ['text', 'text_h', 'textSel', 'nowp', 'search', 'txt_box', 'bg', 'bg_h', 'bgSel', 'frame', 'bgSelframe', 'counts', 'icon_c', 'icon_e', 'icon_h', 'line', 's_line', 'sideMarker', 'bgTrans'];
 					for (var i= 0; i < items.length; i++) {
-						bg[i] = assign(ppt[items[i] + '_internal'][value], i < 6 ? 0 : 1);
+						bg[i] = assign(libSet[items[i] + '_internal'][value], i < 6 ? 0 : 1);
 						fg[i] = getSelCol(bg[i]);
 						bg[i] = "rgb("+bg[i][0]+","+bg[i][1]+","+bg[i][2]+")";
 						var el = document.getElementById('colour_container'+i);
@@ -1276,11 +1276,11 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				function setAdvanced() {
 					for (i = 0; i < 4; i++) {window.cusScroll.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="scroll_container'+i+'" name="advanced_input" class="input35" /><label for="scroll_container'+i+'" class="inp_label2">'+cusScrollLabels[i]+'</label></div>');}
 					for (i = 0; i < 5; i++) {window.scrollbar.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="scrollbar_container'+i+'" name="advanced_input" class="input35" /><label for="scrollbar_container'+i+'" class="inp_label2">'+scrollbarLabels[i]+'</label></div>');}
-					var fFamily = ppt['butCustIconFont_internal'].value;
+					var fFamily = libSet['butCustIconFont_internal'].value;
 					i = 5; window.scrollbar.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="scrollbar_container'+i+'" name="advanced_input" class="input35" style="font-family:'+fFamily+'" /><label for="scrollbar_container'+i+'" class="inp_label2">'+scrollbarLabels[i]+'</label></div>');
 					for (i = 6; i < 8; i++) {window.scrollbar.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="scrollbar_container'+i+'" name="advanced_input" class="input35" /><label for="scrollbar_container'+i+'" class="inp_label2">'+scrollbarLabels[i]+'</label></div>');}
 					i = 8; window.scrollbar.insertAdjacentHTML('beforeend', '<div><input id="scrollbar_checkbox'+i+'" name="advanced_checkbox" style="'+cbox+'" type="checkbox" /><label for="scrollbar_checkbox'+i+'" class="checkbox_label">'+scrollbarLabels[i]+'</label></div>');
-					fFamily = ppt['custIconFont_internal'].value;
+					fFamily = libSet['custIconFont_internal'].value;
 					i = 0; window.cusNode.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="cusNode_container'+i+'" name="advanced_input" class="input35" style="font-family:'+fFamily+'" /><label for="cusNode_container'+i+'" class="inp_label2">'+cusNodeLabels[i]+'</label></div>');
 					for (i = 1; i < 3; i++) {window.cusNode.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="cusNode_container'+i+'" name="advanced_input" class="input35" /><label for="cusNode_container'+i+'" class="inp_label2">'+cusNodeLabels[i]+'</label></div>');}
 					i = 3; window.cusNode.insertAdjacentHTML('beforeend', '<div><input id="cusNode_checkbox'+i+'" name="advanced_checkbox" style="'+cbox+'" type="checkbox" /><label for="cusNode_checkbox'+i+'" class="checkbox_label">'+cusNodeLabels[i]+'</label></div>');
@@ -1327,10 +1327,10 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				}
 				var nm = page.toString()+'_checkbox', boxes = document.querySelectorAll(page == 'all' ? "[name$='_checkbox']" : "[name="+nm+"]");
 				for (i = 0; i < boxes.length; i++) {
-					boxes[i].checked = ppt[box[page][i] + '_internal'][value];
+					boxes[i].checked = libSet[box[page][i] + '_internal'][value];
 				}
 
-				if (ppt['albumArtShow_internal'][value]) {
+				if (libSet['albumArtShow_internal'][value]) {
 					window.show_checkbox4.parentNode.disabled = true;
 				}
 				if (window.remember_checkbox1.checked || window.remember_checkbox2.checked) window.remember_checkbox0.checked = true;
@@ -1340,31 +1340,31 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				window.checkbox_folderView.disabled = true;
 				window.checkbox_menuName.disabled = true;
 				document.getElementById("albumArtCfg").style.display = window.show_checkbox4.checked ? "block" : "none";
-				window.indexLetter_checkbox2.parentNode.disabled = ppt['albumArtLetterNo_internal'].value == 0;
-				window.metrics_container4.parentNode.style.display = !ppt['filterShow_internal'].value && !ppt['searchShow_internal'].value && !ppt['settingsShow_internal'].value ? "block" : "none";
+				window.indexLetter_checkbox2.parentNode.disabled = libSet['albumArtLetterNo_internal'].value == 0;
+				window.metrics_container4.parentNode.style.display = !libSet['filterShow_internal'].value && !libSet['searchShow_internal'].value && !libSet['settingsShow_internal'].value ? "block" : "none";
 			}
 
 			function textChange(e) {
 				if (window.remember_checkbox1.checked || window.remember_checkbox2.checked) window.remember_checkbox0.checked = true;
 				window.remember_checkbox0.parentNode.disabled = window.remember_checkbox1.checked || window.remember_checkbox2.checked;
-				window.theme_checkbox7.parentNode.disabled = ppt['theme_internal'].value == 1 || ppt['theme_internal'].value == 4;
-				window.coverFormat_checkbox0.parentNode.disabled = ppt['theme_internal'].value != 5;
-				window.coverFormat_container1.parentNode.disabled = ppt['theme_internal'].value != 5;
-				window.frame_checkbox0.parentNode.disabled = ppt['highLightRow_internal'].value != 3;
-				window.node_checkbox7.parentNode.disabled = ppt['nodeStyle_internal'].value != 0 && ppt['nodeStyle_internal'].value != 7;
-				window.itemCounts_checkbox3.parentNode.disabled = ppt['itemShowStatistics_internal'].value;
+				window.theme_checkbox7.parentNode.disabled = libSet['theme_internal'].value == 1 || libSet['theme_internal'].value == 4;
+				window.coverFormat_checkbox0.parentNode.disabled = libSet['theme_internal'].value != 5;
+				window.coverFormat_container1.parentNode.disabled = libSet['theme_internal'].value != 5;
+				window.frame_checkbox0.parentNode.disabled = libSet['highLightRow_internal'].value != 3;
+				window.node_checkbox7.parentNode.disabled = libSet['nodeStyle_internal'].value != 0 && libSet['nodeStyle_internal'].value != 7;
+				window.itemCounts_checkbox3.parentNode.disabled = libSet['itemShowStatistics_internal'].value;
 				setNodeLabels();
-				window.showH2_checkbox5.parentNode.disabled = window.cusNode_checkbox3.checked && (ppt['nodeStyle_internal'].value == 0 || ppt['nodeStyle_internal'].value == 7);
+				window.showH2_checkbox5.parentNode.disabled = window.cusNode_checkbox3.checked && (libSet['nodeStyle_internal'].value == 0 || libSet['nodeStyle_internal'].value == 7);
 				document.getElementById("albumArtCfg").style.display = window.show_checkbox4.checked ? "block" : "none";
 				window.albumArtLabelType2.parentNode.disabled = window.flowMode_checkbox.checked;
 				window.thumbSize_dropdown.style.visibility = window.flowMode_checkbox.checked ? 'hidden' : 'visible';
 				window.thumbNailSize.style.visibility = window.flowMode_checkbox.checked ? 'hidden' : 'visible';
-				window.metrics_container4.parentNode.style.display = !ppt['filterShow_internal'].value && !ppt['searchShow_internal'].value && !ppt['settingsShow_internal'].value ? "block" : "none";
-				clickLabels = ppt['actionMode_internal'].value == 1 ? ['Send to playlist'] : ppt['actionMode_internal'].value == 2 ? ['Select'] : ['Select', 'Send to playlist', 'Send to playlist & play', 'Send to playlist & play [add if playing]'];
-				dblClickLabels = ppt['actionMode_internal'].value == 1 ? ['Send to playlist & play'] : ppt['actionMode_internal'].value == 2 ? ['Send to playback queue and play'] : ['Send to playlist', 'Send to playlist & play', 'Expand / collapse (tree)', 'Send to playback queue and play'];
-				mbtnClickLabels = ppt['actionMode_internal'].value == 2 ? ['Add to playback queue (middle dblclk removes)'] : ['Add to default playlist', 'Add to current playlist', 'Add to playback queue (middle dblclk removes)'];
+				window.metrics_container4.parentNode.style.display = !libSet['filterShow_internal'].value && !libSet['searchShow_internal'].value && !libSet['settingsShow_internal'].value ? "block" : "none";
+				clickLabels = libSet['actionMode_internal'].value == 1 ? ['Send to playlist'] : libSet['actionMode_internal'].value == 2 ? ['Select'] : ['Select', 'Send to playlist', 'Send to playlist & play', 'Send to playlist & play [add if playing]'];
+				dblClickLabels = libSet['actionMode_internal'].value == 1 ? ['Send to playlist & play'] : libSet['actionMode_internal'].value == 2 ? ['Send to playback queue and play'] : ['Send to playlist', 'Send to playlist & play', 'Expand / collapse (tree)', 'Send to playback queue and play'];
+				mbtnClickLabels = libSet['actionMode_internal'].value == 2 ? ['Add to playback queue (middle dblclk removes)'] : ['Add to default playlist', 'Add to current playlist', 'Add to playback queue (middle dblclk removes)'];
 
-				if (ppt['actionMode_internal'].value) {
+				if (libSet['actionMode_internal'].value) {
 					window.click_dropdown.innerHTML = clickLabels[0];
 					window.click.innerHTML = '';
 					window.click.insertAdjacentHTML('beforeend', '<a>PRESET</a>');
@@ -1374,22 +1374,22 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 					window.dblClick.insertAdjacentHTML('beforeend', '<a>PRESET</a>');
 					window.dblClick_dropdown.style.background = 'rgb(244, 67, 54)';
 				} else {
-					window.click_dropdown.innerHTML = clickLabels[ppt['clickAction_internal'].value];
+					window.click_dropdown.innerHTML = clickLabels[libSet['clickAction_internal'].value];
 					window.click.innerHTML = '';
 					for (i = 0; i < 4; i++) {window.click.insertAdjacentHTML('beforeend', '<a onclick="setClickAction(' + i + ');">'+clickLabels[i]+'</a>');}
 					window.click_dropdown.style.background = '#3e8e41';
-					window.dblClick_dropdown.innerHTML = dblClickLabels[ppt['dblClickAction_internal'].value];
+					window.dblClick_dropdown.innerHTML = dblClickLabels[libSet['dblClickAction_internal'].value];
 					window.dblClick.innerHTML = '';
 					for (i = 0; i < 4; i++) {window.dblClick.insertAdjacentHTML('beforeend', '<a onclick="setDblClickAction(' + i + ');">'+dblClickLabels[i]+'</a>');}
 					window.dblClick_dropdown.style.background = '#3e8e41';
 				}
-				if (ppt['actionMode_internal'].value == 2) {
+				if (libSet['actionMode_internal'].value == 2) {
 						window.mbtnClick_dropdown.innerHTML = mbtnClickLabels[0];
 						window.mbtnClick.innerHTML = '';
 						window.mbtnClick.insertAdjacentHTML('beforeend', '<a>PRESET</a>');
 						window.mbtnClick_dropdown.style.background = 'rgb(244, 67, 54)';
 				} else {
-					window.mbtnClick_dropdown.innerHTML = mbtnClickLabels[ppt['mbtnClickAction_internal'].value];
+					window.mbtnClick_dropdown.innerHTML = mbtnClickLabels[libSet['mbtnClickAction_internal'].value];
 					window.mbtnClick.innerHTML = '';
 					for (i = 0; i < 3; i++) {window.mbtnClick.insertAdjacentHTML('beforeend', '<a onclick="setMbtnClickAction(' + i + ');">'+mbtnClickLabels[i]+'</a>');}
 					window.mbtnClick_dropdown.style.background = '#3e8e41';
@@ -1398,7 +1398,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 
 			setInterval(inputChanged, 500);
 			function inputChanged() {
-				window.indexLetter_checkbox2.parentNode.disabled = ppt['albumArtLetterNo_internal'].value == 0;
+				window.indexLetter_checkbox2.parentNode.disabled = libSet['albumArtLetterNo_internal'].value == 0;
 				set_btn_apply_state();
 			}
 
@@ -1406,7 +1406,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				var radios = radio[page];
 				for (i = 0; i < radios.length; i++) {
 					var radioBtns = document.getElementsByName(radios[i]);
-					var new_value = radios[i] == 'nodeStyle' && ppt[radios[i] + '_internal'][value] == 7 ? 0 : ppt[radios[i] + '_internal'][value];
+					var new_value = radios[i] == 'nodeStyle' && libSet[radios[i] + '_internal'][value] == 7 ? 0 : libSet[radios[i] + '_internal'][value];
 					for (j = 0; j < radioBtns.length; j++) {
 						if (j == new_value) {
 							radioBtns[j].checked = true;
@@ -1414,14 +1414,14 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 						}
 					}
 				}
-				window.theme_checkbox7.parentNode.disabled = ppt['theme_internal'].value == 1 || ppt['theme_internal'].value == 4;
-				window.coverFormat_checkbox0.parentNode.disabled = ppt['theme_internal'].value != 5;
-				window.coverFormat_container1.parentNode.disabled = ppt['theme_internal'].value != 5;
-				if (ppt['themed_internal'].value) window.themeStyle.style.display = "none";
-				if (ppt['themed_internal'].value) window.coverFormat.style.display = "none";
-				if (ppt['themed_internal'].value) window.panelStyle.style.display = "none";
-				window.node_checkbox7.parentNode.disabled = ppt['nodeStyle_internal'].value != 0 && ppt['nodeStyle_internal'].value != 7;
-				window.showH2_checkbox5.parentNode.disabled = window.cusNode_checkbox3.checked && (ppt['nodeStyle_internal'].value == 0 || ppt['nodeStyle_internal'].value == 7);
+				window.theme_checkbox7.parentNode.disabled = libSet['theme_internal'].value == 1 || libSet['theme_internal'].value == 4;
+				window.coverFormat_checkbox0.parentNode.disabled = libSet['theme_internal'].value != 5;
+				window.coverFormat_container1.parentNode.disabled = libSet['theme_internal'].value != 5;
+				if (libSet['themed_internal'].value) window.themeStyle.style.display = "none";
+				if (libSet['themed_internal'].value) window.coverFormat.style.display = "none";
+				if (libSet['themed_internal'].value) window.panelStyle.style.display = "none";
+				window.node_checkbox7.parentNode.disabled = libSet['nodeStyle_internal'].value != 0 && libSet['nodeStyle_internal'].value != 7;
+				window.showH2_checkbox5.parentNode.disabled = window.cusNode_checkbox3.checked && (libSet['nodeStyle_internal'].value == 0 || libSet['nodeStyle_internal'].value == 7);
 
 				window.albumArtLabelType2.parentNode.disabled = window.flowMode_checkbox.checked;
 			}
@@ -1480,19 +1480,19 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 
 				inputs = document.querySelectorAll("[name$='_input']");
 				for (i = 0; i < inputs.length; i++) {
-					(ppt[input.all.name[i] + '_internal'] || cfg[input.all.name[i] + '_internal']).value = input.all.type[i] == 'text' ? inputs[i].value : input.all.type[i] == 'int' ? parseInt(inputs[i].value) : parseFloat(inputs[i].value);
+					(libSet[input.all.name[i] + '_internal'] || cfg[input.all.name[i] + '_internal']).value = input.all.type[i] == 'text' ? inputs[i].value : input.all.type[i] == 'int' ? parseInt(inputs[i].value) : parseFloat(inputs[i].value);
 				}
 
 				var boxes = document.querySelectorAll("[name$='_checkbox']");
 				for (i = 0; i < boxes.length; i++) {
-					(ppt[box.all[i] + '_internal'] || cfg[box.all[i] + '_internal']).value = boxes[i].checked;
+					(libSet[box.all[i] + '_internal'] || cfg[box.all[i] + '_internal']).value = boxes[i].checked;
 				}
 
 				for (i = 0; i < radio.all.length; i++) {
 					var radioBtns = document.getElementsByName(radio.all[i]);
 					for (j = 0; j < radioBtns.length; j++) {
 						if (radioBtns[j].checked) {
-							ppt[radio.all[i] + '_internal'].value = j;
+							libSet[radio.all[i] + '_internal'].value = j;
 							break;
 						}
 					}
@@ -1502,7 +1502,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 			window.btn_ok.onclick = function () {
 				getValues();
 				var new_cfg = JSON.stringify(cfg);
-				var new_ppt = JSON.stringify(ppt);
+				var new_ppt = JSON.stringify(libSet);
 				var new_cur = JSON.stringify(cur);
 				if (new_cfg == parsed_args[0]) new_cfg = '';
 				if (new_ppt == parsed_args[1]) new_ppt = '';
@@ -1518,7 +1518,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 			window.btn_apply.onclick = function () {
 				getValues();
 				var new_cfg = JSON.stringify(cfg);
-				var new_ppt = JSON.stringify(ppt);
+				var new_ppt = JSON.stringify(libSet);
 				if (new_cfg == parsed_args[0]) new_cfg = '';
 				else parsed_args[0] = new_cfg;
 				if (new_ppt == parsed_args[1]) new_ppt = '';
@@ -1630,10 +1630,10 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 
 				var nm = page.toString()+'_input', inputs = document.querySelectorAll(page == 'all' ? "[name$='_input']" : "[name="+nm+"]");
 				for (i = 0; i < inputs.length; i++) {
-					inputs[i].value = ppt[input[page].name[i] + '_internal'][value];
+					inputs[i].value = libSet[input[page].name[i] + '_internal'][value];
 				}
 
-				window.coverFormat_container1.parentNode.disabled = ppt['theme_internal'].value != 4;
+				window.coverFormat_container1.parentNode.disabled = libSet['theme_internal'].value != 4;
 			}
 
 			window.btn_resetPage.onclick = function () {
@@ -1654,34 +1654,34 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				setInputs(cur.page, 'default_value');
 				setRadioBtns(cur.page, 'default_value');
 				if (cur.page == 'behaviour') {
-					setClickAction(ppt['clickAction_internal'].default_value);
-					setDblClickAction(ppt['dblClickAction_internal'].default_value);
-					setKeyAction(ppt['keyAction_internal'].default_value);
+					setClickAction(libSet['clickAction_internal'].default_value);
+					setDblClickAction(libSet['dblClickAction_internal'].default_value);
+					setKeyAction(libSet['keyAction_internal'].default_value);
 
-					setRoot(ppt['rootNode_internal'].default_value);
-					setNode(ppt['nodeStyle_internal'].default_value);
-					setItemCounts(ppt['nodeCounts_internal'].default_value);
-					setHoverBg(ppt['highLightRow_internal'].default_value);
+					setRoot(libSet['rootNode_internal'].default_value);
+					setNode(libSet['nodeStyle_internal'].default_value);
+					setItemCounts(libSet['nodeCounts_internal'].default_value);
+					setHoverBg(libSet['highLightRow_internal'].default_value);
 
-					setSbarShow(ppt['sbarShow_internal'].default_value);
-					setsbarType(ppt['sbarType_internal'].default_value);
-					setSbarCol(ppt['sbarCol_internal'].default_value);
-					setSbarIcon(ppt['highLightRow_internal'].default_value);
+					setSbarShow(libSet['sbarShow_internal'].default_value);
+					setsbarType(libSet['sbarType_internal'].default_value);
+					setSbarCol(libSet['sbarCol_internal'].default_value);
+					setSbarIcon(libSet['highLightRow_internal'].default_value);
 
-					setSearch(ppt['searchSend_internal'].default_value);
+					setSearch(libSet['searchSend_internal'].default_value);
 				}
 				if (cur.page == 'display') {
-					setTheme(ppt['theme_internal'].default_value);
+					setTheme(libSet['theme_internal'].default_value);
 				}
 				if (cur.page == 'albumArt') {
-					window.rootStub_dropdown.innerHTML = '<b>Root:</b> ' + ppt.curRootImg_internal.default_value;
-					ppt.curRootImg_internal.value = ppt.curRootImg_internal.default_value;
-					window.noArtistStub_dropdown.innerHTML = '<b>No artist:</b> ' + ppt.curNoArtistImg_internal.default_value;
-					ppt.curNoArtistImg_internal.value = ppt.curNoArtistImg_internal.default_value;
-					window.noCoverStub_dropdown.innerHTML = '<b>No cover:</b> ' + ppt.curNoCoverImg_internal.default_value;
-					ppt.curNoCoverImg_internal.value = ppt.curNoCoverImg_internal.default_value;
-					setOverlay(ppt['itemOverlayType_internal'].default_value);
-					setthumbSize(ppt['thumbNailSize_internal'].default_value);
+					window.rootStub_dropdown.innerHTML = '<b>Root:</b> ' + libSet.curRootImg_internal.default_value;
+					libSet.curRootImg_internal.value = libSet.curRootImg_internal.default_value;
+					window.noArtistStub_dropdown.innerHTML = '<b>No artist:</b> ' + libSet.curNoArtistImg_internal.default_value;
+					libSet.curNoArtistImg_internal.value = libSet.curNoArtistImg_internal.default_value;
+					window.noCoverStub_dropdown.innerHTML = '<b>No cover:</b> ' + libSet.curNoCoverImg_internal.default_value;
+					libSet.curNoCoverImg_internal.value = libSet.curNoCoverImg_internal.default_value;
+					setOverlay(libSet['itemOverlayType_internal'].default_value);
+					setthumbSize(libSet['thumbNailSize_internal'].default_value);
 				}
 				if (cur.page == 'custom') setCustomColours('default_value');
 			}

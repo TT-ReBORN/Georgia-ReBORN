@@ -1,6 +1,6 @@
 'use strict';
 
-class PopUpBox {
+class LibPopUpBox {
 	constructor() {
 		this.getHtmlCode();
 		this.ok = true;
@@ -9,9 +9,9 @@ class PopUpBox {
 
 	// * METHODS * //
 
-	config(cfg, ppt, cfgWindow, ok_callback) {
+	config(cfg, libSet, cfgWindow, ok_callback) {
 		utils.ShowHtmlDialog(0, this.configHtmlCode, {
-			data: [cfg, ppt, cfgWindow, ok_callback],
+			data: [cfg, libSet, cfgWindow, ok_callback],
 			resizable: true
 		});
 	}
@@ -23,24 +23,24 @@ class PopUpBox {
 	}
 
 	getHtmlCode() {
-		let cssPath = `${my_utilsLib.packagePath}/assets/html/`;
+		let cssPath = `${lib_my_utils.packagePath}/assets/html/`;
 		cssPath += this.getWindowsVersion() === '6.1' ? 'styles7.css' : 'styles10.css';
-		this.configHtmlCode = my_utilsLib.getAsset('\\html\\config.html').replace(/href="styles10.css"/i, `href="${cssPath}"`);
-		this.inputHtmlCode = my_utilsLib.getAsset('\\html\\input.html').replace(/href="styles10.css"/i, `href="${cssPath}"`);
-		this.messageHtmlCode = my_utilsLib.getAsset('\\html\\messageBox.html').replace(/href="styles10.css"/i, `href="${cssPath}"`);
-		this.confirmHtmlCode = my_utilsLib.getAsset('\\html\\confirm.html').replace(/href="styles10.css"/i, `href="${cssPath}"`);
+		this.configHtmlCode = lib_my_utils.getAsset('\\html\\config.html').replace(/href="styles10.css"/i, `href="${cssPath}"`);
+		this.inputHtmlCode = lib_my_utils.getAsset('\\html\\input.html').replace(/href="styles10.css"/i, `href="${cssPath}"`);
+		this.messageHtmlCode = lib_my_utils.getAsset('\\html\\messageBox.html').replace(/href="styles10.css"/i, `href="${cssPath}"`);
+		this.confirmHtmlCode = lib_my_utils.getAsset('\\html\\confirm.html').replace(/href="styles10.css"/i, `href="${cssPath}"`);
 	}
 
 	getWindowsVersion() {
 		let version = '';
 		try {
-			version = (WshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentMajorVersionNumber')).toString();
+			version = (libWshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentMajorVersionNumber')).toString();
 			version += '.';
-			version += (WshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentMinorVersionNumber')).toString();
+			version += (libWshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentMinorVersionNumber')).toString();
 			return version;
 		} catch (e) {}
 		try {
-			version = WshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentVersion');
+			version = libWshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentVersion');
 			return version;
 		} catch (e) {}
 		return '6.1';
@@ -53,26 +53,26 @@ class PopUpBox {
 	}
 
 	isHtmlDialogSupported() {
-		if (ppt.isHtmlDialogSupported != 2) return ppt.isHtmlDialogSupported;
+		if (libSet.isHtmlDialogSupported != 2) return libSet.isHtmlDialogSupported;
 
-		if (typeof doc === 'undefined' || !doc) {
+		if (typeof libDoc === 'undefined' || !libDoc) {
 			this.soFeat.gecko = false;
 		}
 		if (this.soFeat.gecko) {
 			let cache = null;
 			let clText = 'test';
 			try {
-				cache = doc.parentWindow.clipboardData.getData('Text');
+				cache = libDoc.parentWindow.clipboardData.getData('Text');
 			} catch (e) {}
 			try {
-				doc.parentWindow.clipboardData.setData('Text', clText);
-				clText = doc.parentWindow.clipboardData.getData('Text');
+				libDoc.parentWindow.clipboardData.setData('Text', clText);
+				clText = libDoc.parentWindow.clipboardData.getData('Text');
 			} catch (e) {
 				this.soFeat.clipboard = false;
 			}
 			if (cache) { // Just in case previous clipboard data is needed
 				try {
-					doc.parentWindow.clipboardData.setData('Text', cache);
+					libDoc.parentWindow.clipboardData.setData('Text', cache);
 				} catch (e) {}
 			}
 			if (clText !== 'test') {
@@ -82,8 +82,8 @@ class PopUpBox {
 			this.soFeat.clipboard = false;
 		}
 
-		ppt.isHtmlDialogSupported = this.soFeat.gecko && this.soFeat.clipboard || this.isIEInstalled() ? 1 : 0;
-		if (!ppt.isHtmlDialogSupported) {
+		libSet.isHtmlDialogSupported = this.soFeat.gecko && this.soFeat.clipboard || this.isIEInstalled() ? 1 : 0;
+		if (!libSet.isHtmlDialogSupported) {
 		const caption = 'Show HTML Dialog';
 			const prompt =
 `A feature check indicates that Spider Monkey Panel show html dialog isn't supported by the current operating system.
@@ -95,15 +95,15 @@ Supported-1; unsupported-0`;
 			let ns = '';
 			let status = 'ok'
 			try {
-				ns = utils.InputBox(0, prompt, caption, ppt.isHtmlDialogSupported, true);
+				ns = utils.InputBox(0, prompt, caption, libSet.isHtmlDialogSupported, true);
 			} catch (e) {
 				status = 'cancel';
 			}
 			if (status != 'cancel') {
-				ppt.isHtmlDialogSupported = ns == 0 ? 0 : 1;
+				libSet.isHtmlDialogSupported = ns == 0 ? 0 : 1;
 			}
 		}
-		return ppt.isHtmlDialogSupported;
+		return libSet.isHtmlDialogSupported;
 	}
 
 	isIEInstalled() {
@@ -124,6 +124,6 @@ Supported-1; unsupported-0`;
 	}
 
 	window_ok_callback(status, clicked) {
-		if (clicked) ppt.panelSourceMsg = false;
+		if (clicked) libSet.panelSourceMsg = false;
 	}
 }

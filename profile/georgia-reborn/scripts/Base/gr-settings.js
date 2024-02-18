@@ -1,117 +1,153 @@
-/////////////////////////////////////////////////////////////////////////////
-// * Georgia-ReBORN: A Clean, Full Dynamic Color Reborn foobar2000 Theme * //
-// * Description:    Georgia-ReBORN Settings                             * //
-// * Author:         TT                                                  * //
-// * Org. Author:    Mordred                                             * //
-// * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN         * //
-// * Version:        3.0-DEV                                             * //
-// * Dev. started:   2017-12-22                                          * //
-// * Last change:    2024-01-15                                          * //
-/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+// * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
+// * Description:    Georgia-ReBORN Settings                                 * //
+// * Author:         TT                                                      * //
+// * Org. Author:    Mordred                                                 * //
+// * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
+// * Version:        3.0-DEV                                                 * //
+// * Dev. started:   22-12-2017                                              * //
+// * Last change:    18-02-2024                                              * //
+/////////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
 
 
-///////////////////
-// * VARIABLES * //
-///////////////////
-/** @type {string} The Georgia-ReBORN config file path. */
-const configPath = `${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc`;
-/** @type {Configuration} The Georgia-ReBORN config object. */
-const config = new Configuration(configPath);
-/** @type {string} The Georgia-ReBORN custom config file path. */
-const configPathCustom = `${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc`;
-/** @type {Configuration} The Georgia-ReBORN custom config object. */
-const configCustom = new Configuration(configPathCustom);
-/** @type {string} The Georgia-ReBORN current version. */
-const currentVersion = '3.0-DEV';
-/** @type {string} The Georgia-ReBORN version will be overwritten when loaded from config file. */
-let configVersion = currentVersion;
-/** @type {string} The Georgia-ReBORN version will be shown on the right side of the lower bar when nothing is playing. */
-let lowerBarStoppedTime = `Georgia-ReBORN v${currentVersion}`;
-/** @type {boolean} The update state if a new update is available on Github releases page. */
-let updateAvailable = false;
-/** @type {Hyperlink} The update link will be shown on the right side of the lower bar. */
-let updateHyperlink;
-/** @type {number} The update retry, don't hammer the server if it's not working, used only in checkForUpdates(). */
-let updateRetryCount = 0;
-/** @type {number} The update timeout timer used only in scheduleUpdateCheck(). */
-let updateTimer;
+//////////////////////////
+// * PANEL PROPERTIES * //
+//////////////////////////
+/**
+ * A class that creates an object with a name and a value, and provides methods to get and set the value while also storing.
+ */
+class PanelProperty {
+	/**
+	 * Creates the `PanelProperty` instance.
+	 * @param {string} name - The name of the property, used as a key to store and retrieve the property value.
+	 * @param {*} defaultValue - The initial value that will be used if there is no existing value stored for the property.
+	 */
+	constructor(name, defaultValue) {
+		/** @constant {string} */
+		this.name = name;
+		/** @private @type {*} */
+		this.value = window.GetProperty(this.name, defaultValue);
+	}
 
-/** @type {*} */
-const globals = {};
-/** @type {*} */
-let settings = {};
-/** @type {*} */
-let theme = {};
-/** @type {*} */
-let style = {};
-/** @type {*} */
-let preset = {};
-/** @type {*} */
-let themePlayerSize = {};
-/** @type {*} */
-let themeLayout = {};
-/** @type {*} */
-let themeDisplay = {};
-/** @type {*} */
-let themeBrightness = {};
-/** @type {*} */
-let themeFontSize = {};
-/** @type {*} */
-let themeControls = {};
-/** @type {*} */
-let themePlaylist = {};
-/** @type {*} */
-let themeDetails = {};
-/** @type {*} */
-let themeLibrary = {};
-/** @type {*} */
-let themeBiography = {};
-/** @type {*} */
-let themeLyrics = {};
-/** @type {*} */
-let themeSettings = {};
-/** @type {MetadataGridEntry[]} */
-let metadataGrid;
+	// * PUBLIC METHODS * //
+	// #region PUBLIC METHODS
+	/**
+	 * Gets the current value of the panel property (backward compatibility method).
+	 * @returns {*} The current value of the property.
+	 */
+	get() {
+		return this.value;
+	}
 
-// * Custom theme
-/** @type {*} */
-let customFont = {};
-/** @type {*} */
-let customStylePreset = {};
-/** @type {*} */
-let customDiscArtStub = {};
-/** @type {*} */
-let customTheme01 = {};
-/** @type {*} */
-let customTheme02 = {};
-/** @type {*} */
-let customTheme03 = {};
-/** @type {*} */
-let customTheme04 = {};
-/** @type {*} */
-let customTheme05 = {};
-/** @type {*} */
-let customTheme06 = {};
-/** @type {*} */
-let customTheme07 = {};
-/** @type {*} */
-let customTheme08 = {};
-/** @type {*} */
-let customTheme09 = {};
-/** @type {*} */
-let customTheme10 = {};
+	/**
+	 * Sets the panel property to a new value and updates the internal state as well as the stored value.
+	 * @param {*} newValue - The new value to set for the property.
+	 */
+	set(newValue) {
+		if (this.value !== newValue) {
+			window.SetProperty(this.name, newValue);
+			this.value = newValue;
+		}
+	}
+	// #endregion
+}
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ! THEME PROPERTIES - AFTER INITIAL RUN, THESE VALUES ARE CHANGED IN OPTIONS MENU OR BY RIGHT CLICK >> PROPERTIES AND NOT HERE ! //
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pref.add_properties({
-	version: ['Georgia-ReBORN - #Version: Do not hand edit!', currentVersion],
+/**
+ * A class that allows to add and manage SMP properties with their names and default values.
+ */
+class PanelProperties {
+	/**
+	 * Creates the `PanelProperties` instance.
+	 */
+	constructor() {
+		/** @private @type {{[key: string]: boolean}} An object used for collision checks only and shared between objects. */
+		this.properties_name_list = {};
+	}
 
-	// * Settings chronological ordered by top menu > Options
+	// * PRIVATE METHODS * //
+	// #region PRIVATE METHODS
+	/**
+	 * Adds a new property to an object and creates a getter and setter for that property.
+	 * @param {Array} item - An array that contains the name and default value.
+	 * @param {string} itemId - A unique identifier for the property item.
+	 * @returns {*} Defining a new property on an object and setting its getter and setter methods.
+	 * @private
+	 */
+	_addPropertyItem(item, itemId) {
+		this.properties_name_list[item[0]] = 1;
+
+		this[`${itemId}_internal`] = new PanelProperty(item[0], item[1]);
+
+		Object.defineProperty(this, itemId, {
+			get() {
+				return this[`${itemId}_internal`].get();
+			},
+			set(newValue) {
+				this[`${itemId}_internal`].set(newValue);
+			}
+		});
+	}
+
+	/**
+	 * Validates a property item and throws appropriate errors if any validation fails.
+	 * @param {Array} item - An array where the first element is a string representing the property name, and the second element is the default value of the property.
+	 * @param {string} itemId - A unique identifier for the property item.
+	 * @throws {InvalidTypeError} Throws an error if the property item is not an array of the expected format.
+	 * @throws {ArgumentError} Throws an error if the property_id is reserved, already occupied, or if the property_name is already taken.
+	 * @private
+	 */
+	_validatePropertyItem(item, itemId) {
+		if (!Array.isArray(item) || item.length !== 2 || !IsString(item[0])) {
+			throw new InvalidTypeError('property', typeof item, '{ string, [string, any] }', 'Usage: addProperties({\n  property_id: [property_name, property_default_value]\n})');
+		}
+		if (itemId === 'add_properties') {
+			throw new ArgumentError('property_id', itemId, 'This id is reserved');
+		}
+		if (this[itemId] || this[`${itemId}_internal`]) {
+			throw new ArgumentError('property_id', itemId, 'This id is already occupied');
+		}
+		if (this.properties_name_list[item[0]]) {
+			throw new ArgumentError('property_name', item[0], 'This name is already occupied');
+		}
+	}
+	// #endregion
+
+	// * PUBLIC METHODS * //
+	// #region PUBLIC METHODS
+	/**
+	 * Adds multiple properties to the object by defining a new property with a getter and setter for each item in the `properties` object.
+	 * @param {{[key: string]: [string, *]}} properties - An object where keys are property identifiers, and values are arrays containing the property name and default value.
+	 */
+	addProperties(properties) {
+		for (const key of Object.keys(properties)) {
+			this._validatePropertyItem(properties[key], key);
+			this._addPropertyItem(properties[key], key);
+		}
+	}
+	// #endregion
+}
+
+
+////////////////////////
+// * THEME SETTINGS * //
+////////////////////////
+/**
+ * The instance of `PanelProperties` class for Georgia-ReBORN panel property settings.
+ * @typedef {PanelProperties}
+ * @global
+ */
+const grSet = new PanelProperties();
+
+/**
+ * ! AFTER INITIAL RUN, THESE VALUES ARE CHANGED IN OPTIONS MENU OR BY RIGHT CLICK > PROPERTIES AND NOT HERE.
+ * Settings chronological ordered by top menu > Options.
+ */
+grSet.addProperties({
+	version:                            ['Georgia-ReBORN - #Version: Do not hand edit!', '3.0-DEV'],
 
 	// * Theme
 	theme:                              ['Georgia-ReBORN - 01. Theme:', 'reborn'], // Use reborn theme as default
@@ -370,6 +406,7 @@ pref.add_properties({
 	showPanelOnStartup:                 ['Georgia-ReBORN - 09. Player controls: Show panel on startup', 'playlist'], // "cover", "playlist", "details", "library", "biography", "lyrics" - show panel on foobar startup
 	showPreloaderLogo:                  ['Georgia-ReBORN - 09. Player controls: Show logo on preloader', true], // true: Show logo on preloader
 	returnToHomeOnPlaybackStop:         ['Georgia-ReBORN - 09. Player controls: Return to home on playback stop', true], // true: Return to home on playback stop
+	addTracksPlaylistSwitch:            ['Georgia-ReBORN - 09. Player controls: Switch to playlist when adding songs', false], // When adding songs from Library or Playlist to another playlist
 	hideMiddlePanelShadow:              ['Georgia-ReBORN - 09. Player controls: Hide middle panel shadow', false], // false: Hides the middle panel shadow
 	lockPlayerSize:                     ['Georgia-ReBORN - 09. Player controls: Lock player size', false], // false: Locks the player size
 	transportButtonSize_default:        ['Georgia-ReBORN - 09. Player controls: Transport button size (Default)', 32], // Size in pixels of the buttons in Default layout
@@ -387,6 +424,9 @@ pref.add_properties({
 	showReloadBtn_default:              ['Georgia-ReBORN - 09. Player controls: Show reload button (Default)', false], // false: Show reload button in lower bar in Default layout
 	showReloadBtn_artwork:              ['Georgia-ReBORN - 09. Player controls: Show reload button (Artwork)', false], // false: Show reload button in lower bar in Artwork layout
 	showReloadBtn_compact:              ['Georgia-ReBORN - 09. Player controls: Show reload button (Compact)', false], // false: Show reload button in lower bar in Compact layout
+	showAddTracksBtn_default:           ['Georgia-ReBORN - 09. Player controls: Show add tracks button (Default)', false], // false: Show add tracks button in lower bar in Default layout
+	showAddTracksBtn_artwork:           ['Georgia-ReBORN - 09. Player controls: Show add tracks button (Artwork)', false], // false: Show add tracks button in lower bar in Artwork layout
+	showAddTracksBtn_compact:           ['Georgia-ReBORN - 09. Player controls: Show add tracks button (Compact)', false], // false: Show add tracks button in lower bar in Compact layout
 	showVolumeBtn_default:              ['Georgia-ReBORN - 09. Player controls: Show volume button (Default)', true], // true: Show volume button in lower bar in Default layout
 	showVolumeBtn_artwork:              ['Georgia-ReBORN - 09. Player controls: Show volume button (Artwork)', true], // true: Show volume button in lower bar in Artwork layout
 	showVolumeBtn_compact:              ['Georgia-ReBORN - 09. Player controls: Show volume button (Compact)', true], // true: Show volume button in lower bar in Compact layout
@@ -421,6 +461,7 @@ pref.add_properties({
 	showWaveformBar_default:            ['Georgia-ReBORN - 09. Player controls: Show waveform bar (Default)', true], // true: Show waveform bar in Default layout, otherwise hide it (useful is using another panel for this)
 	showWaveformBar_artwork:            ['Georgia-ReBORN - 09. Player controls: Show waveform bar (Artwork)', true], // true: Show waveform bar in Artwork layout, otherwise hide it (useful is using another panel for this)
 	showWaveformBar_compact:            ['Georgia-ReBORN - 09. Player controls: Show waveform bar (Compact)', true], // true: Show waveform bar in Compact layout, otherwise hide it (useful is using another panel for this)
+	addTracksPlaylist:                  ['Georgia-ReBORN - 09. Player controls: Add tracks playlist', 'Favorites'], // 'Favorites', the playlist where tracks will be added when using the add tracks button.
 	seekbar:                            ['Georgia-ReBORN - 09. Player controls: Seekbar', 'progressbar'], // 'progressbar', 'peakmeterbar', 'waveformbar' - Seekbar type
 	progressBarWheelSeekSpeed:          ['Georgia-ReBORN - 09. Player controls: Progress bar mouse wheel seek speed', 5], // Progress bar mouse wheel seeking speed, seconds per wheel step
 	progressBarRefreshRate:             ['Georgia-ReBORN - 09. Player controls: Progress bar refresh rate', 'variable'], // variable - default: Update progress bar multiple times a second. Smoother, but uses more CPU
@@ -535,7 +576,6 @@ pref.add_properties({
 	libraryThumbnailSize:               ['Georgia-ReBORN - 12. Library: Thumbnail size', 'auto'], // Library thumbnail size - auto (default)
 	libraryThumbnailSizeSaved:          ['Georgia-ReBORN - 12. Library: Thumbnail size saved', 'auto'], // Library thumbnail size saved setting, used to restore user setting when switching from library split layout to full layout
 	libraryThumbnailBorder:             ['Georgia-ReBORN - 12. Library: Thumbnail border', 'border'], // Library thumbnail border - border (default)
-	libraryPlaylistSwitch:              ['Georgia-ReBORN - 12. Library: Switch to playlist when adding songs', false], // When adding songs from Library auto-switch to Playlist
 	libraryRowHover:                    ['Georgia-ReBORN - 12. Library: Row mouse hover', true], // Enable library row mouse hover effect
 	savedAlbumArtShow:                  ['Georgia-ReBORN - 12. Library: Album art view saved', false], // Used to resume library view mode from split layout when not using library layout presets
 	savedAlbumArtLabelType:             ['Georgia-ReBORN - 12. Library: Album art label type saved', 1], // Used to resume album art label type from split layout when not using library layout presets
@@ -555,12 +595,11 @@ pref.add_properties({
 	lyricsFadeScroll:                   ['Georgia-ReBORN - 14. Lyrics: Show fade scroll', true], // true: Show lyrics fade scroll
 	lyricsLargerCurrentSync:            ['Georgia-ReBORN - 14. Lyrics: Show larger current sync', true], // true: Displays larger font on current synced lyric
 	lyricsAlbumArt:                     ['Georgia-ReBORN - 14. Lyrics: Show lyrics on album art', true], // true: Show lyrics on album art
-	lyricsRememberActiveState:          ['Georgia-ReBORN - 14. Lyrics: Remember lyrics active state', false], // true: Show active lyrics even when switching through panels
-	lyricsRememberPanelState:           ['Georgia-ReBORN - 14. Lyrics: Remember lyrics panel state', false], // true: Show lyrics on startup if they were displayed when theme last reloaded
+	lyricsRememberPanelState:           ['Georgia-ReBORN - 14. Lyrics: Remember lyrics panel state', false], // true: Displays lyrics panel state on startup and when switching through panels
 	lyricsScrollSpeed:                  ['Georgia-ReBORN - 14. Lyrics: Scroll speed', 'normal'], // 'fastest', 'fast', 'normal', 'slow', 'slowest' - lyrics scroll speed based on scroll average and maximum
 	lyricsScrollRateAvg:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed avg rate', 750], // 300, 500, 750, 1000, 1500 - average lyrics scroll in ms
 	lyricsScrollRateMax:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed max rate', 375], // average lyrics scroll / 2 = maximum lyrics scroll in ms
-	displayLyrics:                      ['Georgia-ReBORN - 14. Lyrics: Show lyrics', false], // true: Shows lyrics, always set to false at startup unless lyricsRememberDisplay is true
+	lyricsPanelState:                   ['Georgia-ReBORN - 14. Lyrics: Lyrics panel state', false], // false: Saved the lyrics panel state, used for lyricsRememberPanelState
 
 	// * Settings
 	themeDayNightMode:                  ['Georgia-ReBORN - 15. Settings: Auto-day/night mode', false], // false: The theme day/night mode state controlled by OS clock and users set themeSettings.themeDayNightMode value
@@ -578,7 +617,7 @@ pref.add_properties({
 	customLyricsDir:                    ['Georgia-ReBORN - 15. Settings: Use custom lyrics directory', false], // false: Use custom lyrics directory
 	lyricsAutoDelete:                   ['Georgia-ReBORN - 15. Settings: Auto-delete lyrics', false], // false: This will auto-delete downloaded lyrics on startup
 	customWaveformBarDir:               ['Georgia-ReBORN - 15. Settings: Use custom waveform bar directory', false], // false: Use custom waveform bar directory
-	waveformBarAutoDelete:              ['Georgia-ReBORN - 15. Settings: Auto-delete waveform bar cache', false], // false: This will auto-delete analyized waveform bar files on startup
+	waveformBarAutoDelete:              ['Georgia-ReBORN - 15. Settings: Auto-delete waveform bar cache', false], // false: This will auto-delete analyzed waveform bar files on startup
 	customThemeSettings:                ['Georgia-ReBORN - 15. Settings: Use custom theme settings', true], // true: User can set own custom theme settings in the config file
 	themePerformance:                   ['Georgia-ReBORN - 15. Settings: Theme performance', 'balanced'], // 'balanced' - default: How the theme performs, either fast speed, balanced or good quality depending on CPU
 	devTools:                           ['Georgia-ReBORN - 15. Settings: Enable developer tools', false], // true: Show developer tools in options context menu
@@ -596,1715 +635,988 @@ pref.add_properties({
 	savedWidth_compact:                 ['Georgia-ReBORN - 16. System: Saved width (Compact)',  484], // Default saved width for Compact layout
 	savedHeight_compact:                ['Georgia-ReBORN - 16. System: Saved height (Compact)', 730], // Default saved height for Compact layout
 	systemFirstLaunch:                  ['Georgia-ReBORN - 16. System: System first launch', true] // true: Init and reset to theme factory settings
-
-	// check_multich:                      ['Check for MultiChannel version', false] // true: Search paths in tf.MultiCh_paths to see if there is a multichannel version of the current album available
 });
 
 
-// * Fixup properties
-/** @type {string} */
-const savedLayout = pref.savedLayout;
-if (savedLayout !== 'default' || savedLayout !== 'artwork' || savedLayout !== 'compact') {
-	pref.savedLayout = 'default';
-}
-
-
-////////////////////////
-// * THEME SETTINGS * //
-////////////////////////
+////////////////////////////////
+// * THEME SETTINGS MANAGER * //
+////////////////////////////////
 /**
- * Loads default theme settings when pref.customThemeSettings is false, otherwise it loads settings from the config file.
- * When using with the parameter, it saves all settings to the config file.
- * @param {boolean} save Saves current used theme settings to config file.
+ * A class that manages theme settings for the application, allowing to save, load, and apply default configurations.
  */
-async function setThemeSettings(save) {
-	const custom = pref.customThemeSettings;
-	libraryCanReload = false;
-
-	// * Themes
-	if (save) {
-		theme.theme = pref.theme;
-		theme.theme_day = pref.theme_day;
-		theme.theme_night = pref.theme_night;
-	} else {
-		pref.theme = custom ? theme.theme : 'reborn';
-		pref.theme_day = custom ? theme.theme_day : 'white';
-		pref.theme_night = custom ? theme.theme_night : 'black';
-	}
-
-	// * Style
-	if (save) {
-		style.default = pref.styleDefault;
-		style.nighttime = pref.styleNighttime;
-		style.bevel = pref.styleBevel;
-		style.blend = pref.styleBlend;
-		style.blend2 = pref.styleBlend2;
-		style.gradient = pref.styleGradient;
-		style.gradient2 = pref.styleGradient2;
-		style.alternative = pref.styleAlternative;
-		style.alternative2 = pref.styleAlternative2;
-		style.blackAndWhite = pref.styleBlackAndWhite;
-		style.blackAndWhite2 = pref.styleBlackAndWhite2;
-		style.blackAndWhiteReborn = pref.styleBlackAndWhiteReborn;
-		style.blackReborn = pref.styleBlackReborn;
-		style.rebornWhite = pref.styleRebornWhite;
-		style.rebornBlack = pref.styleRebornBlack;
-		style.rebornFusion = pref.styleRebornFusion;
-		style.rebornFusion2 = pref.styleRebornFusion2;
-		style.rebornFusionAccent = pref.styleRebornFusionAccent;
-		style.randomPastel = pref.styleRandomPastel;
-		style.randomDark = pref.styleRandomDark;
-		style.randomAutoColor = pref.styleRandomAutoColor;
-		style.topMenuButtons = pref.styleTopMenuButtons;
-		style.transportButtons = pref.styleTransportButtons;
-		style.progressBarDesign = pref.styleProgressBarDesign;
-		style.progressBar = pref.styleProgressBar;
-		style.progressBarFill = pref.styleProgressBarFill;
-		style.volumeBarDesign = pref.styleVolumeBarDesign;
-		style.volumeBar = pref.styleVolumeBar;
-		style.volumeBarFill = pref.styleVolumeBarFill;
-		style.nighttime_day = pref.styleNighttime_day;
-		style.bevel_day = pref.styleBevel_day;
-		style.blend_day = pref.styleBlend_day;
-		style.blend2_day = pref.styleBlend2_day;
-		style.gradient_day = pref.styleGradient_day;
-		style.gradient2_day = pref.styleGradient2_day;
-		style.alternative_day = pref.styleAlternative_day;
-		style.alternative2_day = pref.styleAlternative2_day;
-		style.blackAndWhite_day = pref.styleBlackAndWhite_day;
-		style.blackAndWhite2_day = pref.styleBlackAndWhite2_day;
-		style.blackAndWhiteReborn_day = pref.styleBlackAndWhiteReborn_day;
-		style.blackReborn_day = pref.styleBlackReborn_day;
-		style.rebornWhite_day = pref.styleRebornWhite_day;
-		style.rebornBlack_day = pref.styleRebornBlack_day;
-		style.rebornFusion_day = pref.styleRebornFusion_day;
-		style.rebornFusion2_day = pref.styleRebornFusion2_day;
-		style.rebornFusionAccent_day = pref.styleRebornFusionAccent_day;
-		style.randomPastel_day = pref.styleRandomPastel_day;
-		style.randomDark_day = pref.styleRandomDark_day;
-		style.randomAutoColor_day = pref.styleRandomAutoColor_day;
-		style.topMenuButtons_day = pref.styleTopMenuButtons_day;
-		style.transportButtons_day = pref.styleTransportButtons_day;
-		style.progressBarDesign_day = pref.styleProgressBarDesign_day;
-		style.progressBar_day = pref.styleProgressBar_day;
-		style.progressBarFill_day = pref.styleProgressBarFill_day;
-		style.volumeBarDesign_day = pref.styleVolumeBarDesign_day;
-		style.volumeBar_day = pref.styleVolumeBar_day;
-		style.volumeBarFill_day = pref.styleVolumeBarFill_day;
-		style.nighttime_night = pref.styleNighttime_night;
-		style.bevel_night = pref.styleBevel_night;
-		style.blend_night = pref.styleBlend_night;
-		style.blend2_night = pref.styleBlend2_night;
-		style.gradient_night = pref.styleGradient_night;
-		style.gradient2_night = pref.styleGradient2_night;
-		style.alternative_night = pref.styleAlternative_night;
-		style.alternative2_night = pref.styleAlternative2_night;
-		style.blackAndWhite_night = pref.styleBlackAndWhite_night;
-		style.blackAndWhite2_night = pref.styleBlackAndWhite2_night;
-		style.blackAndWhiteReborn_night = pref.styleBlackAndWhiteReborn_night;
-		style.blackReborn_night = pref.styleBlackReborn_night;
-		style.rebornWhite_night = pref.styleRebornWhite_night;
-		style.rebornBlack_night = pref.styleRebornBlack_night;
-		style.rebornFusion_night = pref.styleRebornFusion_night;
-		style.rebornFusion2_night = pref.styleRebornFusion2_night;
-		style.rebornFusionAccent_night = pref.styleRebornFusionAccent_night;
-		style.randomPastel_night = pref.styleRandomPastel_night;
-		style.randomDark_night = pref.styleRandomDark_night;
-		style.randomAutoColor_night = pref.styleRandomAutoColor_night;
-		style.topMenuButtons_night = pref.styleTopMenuButtons_night;
-		style.transportButtons_night = pref.styleTransportButtons_night;
-		style.progressBarDesign_night = pref.styleProgressBarDesign_night;
-		style.progressBar_night = pref.styleProgressBar_night;
-		style.progressBarFill_night = pref.styleProgressBarFill_night;
-		style.volumeBarDesign_night = pref.styleVolumeBarDesign_night;
-		style.volumeBar_night = pref.styleVolumeBar_night;
-		style.volumeBarFill_night = pref.styleVolumeBarFill_night;
-	} else {
-		pref.styleDefault = custom ? style.default : true;
-		pref.styleNighttime = custom ? style.nighttime : false;
-		pref.styleBevel = custom ? style.bevel : false;
-		pref.styleBlend = custom ? style.blend : false;
-		pref.styleBlend2 = custom ? style.blend2 : false;
-		pref.styleGradient = custom ? style.gradient : false;
-		pref.styleGradient2 = custom ? style.gradient2 : false;
-		pref.styleAlternative = custom ? style.alternative : false;
-		pref.styleAlternative2 = custom ? style.alternative2 : false;
-		pref.styleBlackAndWhite = custom ? style.blackAndWhite : false;
-		pref.styleBlackAndWhite2 = custom ? style.blackAndWhite2 : false;
-		pref.styleBlackAndWhiteReborn = custom ? style.blackAndWhiteReborn : false;
-		pref.styleBlackReborn = custom ? style.blackReborn : false;
-		pref.styleRebornWhite = custom ? style.rebornWhite : false;
-		pref.styleRebornBlack = custom ? style.rebornBlack : false;
-		pref.styleRebornFusion = custom ? style.rebornFusion : false;
-		pref.styleRebornFusion2 = custom ? style.rebornFusion2 : false;
-		pref.styleRebornFusionAccent = custom ? style.rebornFusionAccent : false;
-		pref.styleRandomPastel = custom ? style.randomPastel : false;
-		pref.styleRandomDark = custom ? style.randomDark : false;
-		pref.styleRandomAutoColor = custom ? style.randomAutoColor : 'off';
-		pref.styleTopMenuButtons = custom ? style.topMenuButtons : 'default';
-		pref.styleTransportButtons = custom ? style.transportButtons : 'default';
-		pref.styleProgressBarDesign = custom ? style.progressBarDesign : 'default';
-		pref.styleProgressBar = custom ? style.progressBar : 'default';
-		pref.styleProgressBarFill = custom ? style.progressBarFill : 'default';
-		pref.styleVolumeBarDesign = custom ? style.volumeBarDesign : 'default';
-		pref.styleVolumeBar = custom ? style.volumeBar : 'default';
-		pref.styleVolumeBarFill = custom ? style.volumeBarFill : 'default';
-		pref.styleNighttime_day = custom ? style.nighttime_day : false;
-		pref.styleBevel_day = custom ? style.bevel_day : false;
-		pref.styleBlend_day = custom ? style.blend_day : false;
-		pref.styleBlend2_day = custom ? style.blend2_day : false;
-		pref.styleGradient_day = custom ? style.gradient_day : false;
-		pref.styleGradient2_day = custom ? style.gradient2_day : false;
-		pref.styleAlternative_day = custom ? style.alternative_day : false;
-		pref.styleAlternative2_day = custom ? style.alternative2_day : false;
-		pref.styleBlackAndWhite_day = custom ? style.blackAndWhite_day : false;
-		pref.styleBlackAndWhite2_day = custom ? style.blackAndWhite2_day : false;
-		pref.styleBlackAndWhiteReborn_day = custom ? style.blackAndWhiteReborn_day : false;
-		pref.styleBlackReborn_day = custom ? style.blackReborn_day : false;
-		pref.styleRebornWhite_day = custom ? style.rebornWhite_day : false;
-		pref.styleRebornBlack_day = custom ? style.rebornBlack_day : false;
-		pref.styleRebornFusion_day = custom ? style.rebornFusion_day : false;
-		pref.styleRebornFusion2_day = custom ? style.rebornFusion2_day : false;
-		pref.styleRebornFusionAccent_day = custom ? style.rebornFusionAccent_day : false;
-		pref.styleRandomPastel_day = custom ? style.randomPastel_day : false;
-		pref.styleRandomDark_day = custom ? style.randomDark_day : false;
-		pref.styleRandomAutoColor_day = custom ? style.randomAutoColor_day : 'off';
-		pref.styleTopMenuButtons_day = custom ? style.topMenuButtons_day : 'default';
-		pref.styleTransportButtons_day = custom ? style.transportButtons_day : 'default';
-		pref.styleProgressBarDesign_day = custom ? style.progressBarDesign_day : 'default';
-		pref.styleProgressBar_day = custom ? style.progressBar_day : 'default';
-		pref.styleProgressBarFill_day = custom ? style.progressBarFill_day : 'default';
-		pref.styleVolumeBarDesign_day = custom ? style.volumeBarDesign_day : 'default';
-		pref.styleVolumeBar_day = custom ? style.volumeBar_day : 'default';
-		pref.styleVolumeBarFill_day = custom ? style.volumeBarFill_day : 'default';
-		pref.styleNighttime_night = custom ? style.nighttime_night : false;
-		pref.styleBevel_night = custom ? style.bevel_night : false;
-		pref.styleBlend_night = custom ? style.blend_night : false;
-		pref.styleBlend2_night = custom ? style.blend2_night : false;
-		pref.styleGradient_night = custom ? style.gradient_night : false;
-		pref.styleGradient2_night = custom ? style.gradient2_night : false;
-		pref.styleAlternative_night = custom ? style.alternative_night : false;
-		pref.styleAlternative2_night = custom ? style.alternative2_night : false;
-		pref.styleBlackAndWhite_night = custom ? style.blackAndWhite_night : false;
-		pref.styleBlackAndWhite2_night = custom ? style.blackAndWhite2_night : false;
-		pref.styleBlackAndWhiteReborn_night = custom ? style.blackAndWhiteReborn_night : false;
-		pref.styleBlackReborn_night = custom ? style.blackReborn_night : false;
-		pref.styleRebornWhite_night = custom ? style.rebornWhite_night : false;
-		pref.styleRebornBlack_night = custom ? style.rebornBlack_night : false;
-		pref.styleRebornFusion_night = custom ? style.rebornFusion_night : false;
-		pref.styleRebornFusion2_night = custom ? style.rebornFusion2_night : false;
-		pref.styleRebornFusionAccent_night = custom ? style.rebornFusionAccent_night : false;
-		pref.styleRandomPastel_night = custom ? style.randomPastel_night : false;
-		pref.styleRandomDark_night = custom ? style.randomDark_night : false;
-		pref.styleRandomAutoColor_night = custom ? style.randomAutoColor_night : 'off';
-		pref.styleTopMenuButtons_night = custom ? style.topMenuButtons_night : 'default';
-		pref.styleTransportButtons_night = custom ? style.transportButtons_night : 'default';
-		pref.styleProgressBarDesign_night = custom ? style.progressBarDesign_night : 'default';
-		pref.styleProgressBar_night = custom ? style.progressBar_night : 'default';
-		pref.styleProgressBarFill_night = custom ? style.progressBarFill_night : 'default';
-		pref.styleVolumeBarDesign_night = custom ? style.volumeBarDesign_night : 'default';
-		pref.styleVolumeBar_night = custom ? style.volumeBar_night : 'default';
-		pref.styleVolumeBarFill_night = custom ? style.volumeBarFill_night : 'default';
-	}
-
-	// * Preset
-	if (save) {
-		preset.selectMode = pref.presetSelectMode;
-		preset.selectWhitePresets = pref.presetSelectWhite;
-		preset.selectBlackPresets = pref.presetSelectBlack;
-		preset.selectRebornPresets = pref.presetSelectReborn;
-		preset.selectRandomPresets = pref.presetSelectRandom;
-		preset.selectBluePresets = pref.presetSelectBlue;
-		preset.selectDarkbluePresets = pref.presetSelectDarkblue;
-		preset.selectRedPresets = pref.presetSelectRed;
-		preset.selectCreamPresets = pref.presetSelectCream;
-		preset.selectNbluePresets = pref.presetSelectNblue;
-		preset.selectNgreenPresets = pref.presetSelectNgreen;
-		preset.selectNredPresets = pref.presetSelectNred;
-		preset.selectNgoldPresets = pref.presetSelectNgold;
-		preset.selectCustomPresets = pref.presetSelectCustom;
-		preset.autoRandomMode = pref.presetAutoRandomMode;
-		preset.indicator = pref.presetIndicator;
-	} else {
-		pref.presetSelectMode = custom ? preset.selectMode : 'default';
-		pref.presetSelectWhite = custom ? preset.selectWhitePresets : true;
-		pref.presetSelectBlack = custom ? preset.selectBlackPresets : true;
-		pref.presetSelectReborn = custom ? preset.selectRebornPresets : true;
-		pref.presetSelectRandom = custom ? preset.selectRandomPresets : true;
-		pref.presetSelectBlue = custom ? preset.selectBluePresets : true;
-		pref.presetSelectDarkblue = custom ? preset.selectDarkbluePresets : true;
-		pref.presetSelectRed = custom ? preset.selectRedPresets : true;
-		pref.presetSelectCream = custom ? preset.selectCreamPresets : true;
-		pref.presetSelectNblue = custom ? preset.selectNbluePresets : true;
-		pref.presetSelectNgreen = custom ? preset.selectNgreenPresets : true;
-		pref.presetSelectNred = custom ? preset.selectNredPresets : true;
-		pref.presetSelectNgold = custom ? preset.selectNgoldPresets : true;
-		pref.presetSelectCustom = custom ? preset.selectCustomPresets : true;
-		pref.presetAutoRandomMode = custom ? preset.autoRandomMode : 'dblclick';
-		pref.presetIndicator = custom ? preset.indicator : true;
-	}
-
-	// * Player size
-	if (save) {
-		themePlayerSize.playerSize = pref.playerSize;
-		themePlayerSize.savedWidth_default = pref.savedWidth_default;
-		themePlayerSize.savedHeight_default = pref.savedHeight_default;
-		themePlayerSize.savedWidth_artwork = pref.savedWidth_artwork;
-		themePlayerSize.savedHeight_artwork = pref.savedHeight_artwork;
-		themePlayerSize.savedWidth_compact = pref.savedWidth_compact;
-		themePlayerSize.savedHeight_compact = pref.savedHeight_compact;
-	} else {
-		pref.playerSize = custom ? themePlayerSize.playerSize : 'small';
-		pref.savedWidth_default = custom ? themePlayerSize.savedWidth_default : 1140;
-		pref.savedHeight_default = custom ? themePlayerSize.savedHeight_default : 730;
-		pref.savedWidth_artwork = custom ? themePlayerSize.savedWidth_artwork : 526;
-		pref.savedHeight_artwork = custom ? themePlayerSize.savedHeight_artwork : 686;
-		pref.savedWidth_compact = custom ? themePlayerSize.savedWidth_compact : 484;
-		pref.savedHeight_compact = custom ? themePlayerSize.savedHeight_compact : 730;
-		pref.playerSize_4K_small = false;   // ! System setting, not configurable for users
-		pref.playerSize_4K_normal = false;  // ! System setting, not configurable for users
-		pref.playerSize_4K_large = false;   // ! System setting, not configurable for users
-		pref.playerSize_QHD_small = false;  // ! System setting, not configurable for users
-		pref.playerSize_QHD_normal = false; // ! System setting, not configurable for users
-		pref.playerSize_QHD_large = false;  // ! System setting, not configurable for users
-		pref.playerSize_HD_small = false;   // ! System setting, not configurable for users
-		pref.playerSize_HD_normal = false;  // ! System setting, not configurable for users
-		pref.playerSize_HD_large = false;   // ! System setting, not configurable for users
-	}
-
-	// * Layout
-	if (save) {
-		themeLayout.layout = pref.layout;
-	} else {
-		pref.layout = custom ? themeLayout.layout : 'default';
-	}
-
-	// * Display
-	if (save) {
-		themeDisplay.resolution = pref.displayRes;
-	} else {
-		pref.displayRes = custom ? themeDisplay.resolution : 'HD';
-	}
-
-	// * Brightness
-	if (save) {
-		themeBrightness.themeBrightness = pref.themeBrightness;
-		themeBrightness.themeBrightness_day = pref.themeBrightness_day;
-		themeBrightness.themeBrightness_night = pref.themeBrightness_night;
-	} else {
-		pref.themeBrightness = custom ? themeBrightness.themeBrightness : 'default';
-		pref.themeBrightness_day = custom ? themeBrightness.themeBrightness_day : 'default';
-		pref.themeBrightness_night = custom ? themeBrightness.themeBrightness_night : 'default';
-	}
-
-	// * Font size
-	if (save) {
-		themeFontSize.menuFontSize_default = pref.menuFontSize_default;
-		themeFontSize.menuFontSize_artwork = pref.menuFontSize_artwork;
-		themeFontSize.menuFontSize_compact = pref.menuFontSize_compact;
-		themeFontSize.lowerBarFontSize_default = pref.lowerBarFontSize_default;
-		themeFontSize.lowerBarFontSize_artwork = pref.lowerBarFontSize_artwork;
-		themeFontSize.lowerBarFontSize_compact = pref.lowerBarFontSize_compact;
-		themeFontSize.notificationFontSize_default = pref.notificationFontSize_default;
-		themeFontSize.notificationFontSize_artwork = pref.notificationFontSize_artwork;
-		themeFontSize.notificationFontSize_compact = pref.notificationFontSize_compact;
-		themeFontSize.popupFontSize_default = pref.popupFontSize_default;
-		themeFontSize.popupFontSize_artwork = pref.popupFontSize_artwork;
-		themeFontSize.popupFontSize_compact = pref.popupFontSize_compact;
-		themeFontSize.tooltipFontSize_default = pref.tooltipFontSize_default;
-		themeFontSize.tooltipFontSize_artwork = pref.tooltipFontSize_artwork;
-		themeFontSize.tooltipFontSize_compact = pref.tooltipFontSize_compact;
-		themeFontSize.gridArtistFontSize_default = pref.gridArtistFontSize_default;
-		themeFontSize.gridArtistFontSize_artwork = pref.gridArtistFontSize_artwork;
-		themeFontSize.gridTrackNumFontSize_default = pref.gridTrackNumFontSize_default;
-		themeFontSize.gridTrackNumFontSize_artwork = pref.gridTrackNumFontSize_artwork;
-		themeFontSize.gridTitleFontSize_default = pref.gridTitleFontSize_default;
-		themeFontSize.gridTitleFontSize_artwork = pref.gridTitleFontSize_artwork;
-		themeFontSize.gridAlbumFontSize_default = pref.gridAlbumFontSize_default;
-		themeFontSize.gridAlbumFontSize_artwork = pref.gridAlbumFontSize_artwork;
-		themeFontSize.gridKeyFontSize_default = pref.gridKeyFontSize_default;
-		themeFontSize.gridKeyFontSize_artwork = pref.gridKeyFontSize_artwork;
-		themeFontSize.gridValueFontSize_default = pref.gridValueFontSize_default;
-		themeFontSize.gridValueFontSize_artwork = pref.gridValueFontSize_artwork;
-		themeFontSize.playlistHeaderFontSize_default = pref.playlistHeaderFontSize_default;
-		themeFontSize.playlistHeaderFontSize_artwork = pref.playlistHeaderFontSize_artwork;
-		themeFontSize.playlistHeaderFontSize_compact = pref.playlistHeaderFontSize_compact;
-		themeFontSize.playlistFontSize_default = pref.playlistFontSize_default;
-		themeFontSize.playlistFontSize_artwork = pref.playlistFontSize_artwork;
-		themeFontSize.playlistFontSize_compact = pref.playlistFontSize_compact;
-		themeFontSize.libraryFontSize_default = ppt.baseFontSize_default;
-		themeFontSize.libraryFontSize_artwork = ppt.baseFontSize_artwork;
-		themeFontSize.biographyFontSize_default = pptBio.baseFontSizeBio_default;
-		themeFontSize.biographyFontSize_artwork = pptBio.baseFontSizeBio_artwork;
-		themeFontSize.lyricsFontSize_default = pref.lyricsFontSize_default;
-		themeFontSize.lyricsFontSize_artwork = pref.lyricsFontSize_artwork;
-	} else {
-		pref.menuFontSize_default = custom ? themeFontSize.menuFontSize_default : RES_QHD ? 14 : 12;
-		pref.menuFontSize_artwork = custom ? themeFontSize.menuFontSize_artwork : RES_QHD ? 14 : 12;
-		pref.menuFontSize_compact = custom ? themeFontSize.menuFontSize_compact : RES_QHD ? 14 : 12;
-		pref.lowerBarFontSize_default = custom ? themeFontSize.lowerBarFontSize_default : RES_QHD ? 20 : 18;
-		pref.lowerBarFontSize_artwork = custom ? themeFontSize.lowerBarFontSize_artwork : RES_QHD ? 18 : 16;
-		pref.lowerBarFontSize_compact = custom ? themeFontSize.lowerBarFontSize_compact : RES_QHD ? 18 : 16;
-		pref.notificationFontSize_default = custom ? themeFontSize.notificationFontSize_default : RES_QHD ? 20 : 18;
-		pref.notificationFontSize_artwork = custom ? themeFontSize.notificationFontSize_artwork : RES_QHD ? 18 : 16;
-		pref.notificationFontSize_compact = custom ? themeFontSize.notificationFontSize_compact : RES_QHD ? 18 : 16;
-		pref.popupFontSize_default = custom ? themeFontSize.popupFontSize_default : RES_QHD ? 18 : 16;
-		pref.popupFontSize_artwork = custom ? themeFontSize.popupFontSize_artwork : RES_QHD ? 16 : 14;
-		pref.popupFontSize_compact = custom ? themeFontSize.popupFontSize_compact : RES_QHD ? 16 : 14;
-		pref.tooltipFontSize_default = custom ? themeFontSize.tooltipFontSize_default : RES_QHD ? 18 : 16;
-		pref.tooltipFontSize_artwork = custom ? themeFontSize.tooltipFontSize_artwork : RES_QHD ? 16 : 14;
-		pref.tooltipFontSize_compact = custom ? themeFontSize.tooltipFontSize_compact : RES_QHD ? 16 : 14;
-		pref.gridArtistFontSize_default = custom ? themeFontSize.gridArtistFontSize_default : RES_QHD ? 20 : 18;
-		pref.gridArtistFontSize_artwork = custom ? themeFontSize.gridArtistFontSize_artwork : RES_QHD ? 20 : 18;
-		pref.gridTrackNumFontSize_default = custom ? themeFontSize.gridTrackNumFontSize_default : RES_QHD ? 20 : 18;
-		pref.gridTrackNumFontSize_artwork = custom ? themeFontSize.gridTrackNumFontSize_artwork : RES_QHD ? 20 : 18;
-		pref.gridTitleFontSize_default = custom ? themeFontSize.gridTitleFontSize_default : RES_QHD ? 20 : 18;
-		pref.gridTitleFontSize_artwork = custom ? themeFontSize.gridTitleFontSize_artwork : RES_QHD ? 20 : 18;
-		pref.gridAlbumFontSize_default = custom ? themeFontSize.gridAlbumFontSize_default : RES_QHD ? 20 : 18;
-		pref.gridAlbumFontSize_artwork = custom ? themeFontSize.gridAlbumFontSize_artwork : RES_QHD ? 20 : 18;
-		pref.gridKeyFontSize_default = custom ? themeFontSize.gridKeyFontSize_default : RES_QHD ? 19 : 17;
-		pref.gridKeyFontSize_artwork = custom ? themeFontSize.gridKeyFontSize_artwork : RES_QHD ? 19 : 17;
-		pref.gridValueFontSize_default = custom ? themeFontSize.gridValueFontSize_default : RES_QHD ? 19 : 17;
-		pref.gridValueFontSize_artwork = custom ? themeFontSize.gridValueFontSize_artwork : RES_QHD ? 19 : 17;
-		pref.playlistHeaderFontSize_default = custom ? themeFontSize.playlistHeaderFontSize_default : RES_QHD ? 17 : 15;
-		pref.playlistHeaderFontSize_artwork = custom ? themeFontSize.playlistHeaderFontSize_artwork : RES_QHD ? 17 : 15;
-		pref.playlistHeaderFontSize_compact = custom ? themeFontSize.playlistHeaderFontSize_compact : RES_QHD ? 17 : 15;
-		pref.playlistFontSize_default = custom ? themeFontSize.playlistFontSize_default : RES_QHD ? 14 : 12;
-		pref.playlistFontSize_artwork = custom ? themeFontSize.playlistFontSize_artwork : RES_QHD ? 14 : 12;
-		pref.playlistFontSize_compact = custom ? themeFontSize.playlistFontSize_compact : RES_QHD ? 14 : 12;
-		ppt.baseFontSize_default = custom ? themeFontSize.libraryFontSize_default : RES_4K ? 24 : RES_QHD ? 14 : 12;
-		ppt.baseFontSize_artwork = custom ? themeFontSize.libraryFontSize_artwork : RES_4K ? 24 : RES_QHD ? 14 : 12;
-		pptBio.baseFontSizeBio_default = custom ? themeFontSize.biographyFontSize_default : RES_4K ? 24 : RES_QHD ? 14 : 12;
-		pptBio.baseFontSizeBio_artwork = custom ? themeFontSize.biographyFontSize_artwork : RES_4K ? 24 : RES_QHD ? 14 : 12;
-		pref.lyricsFontSize_default = custom ? themeFontSize.lyricsFontSize_default : RES_QHD ? 22 : 20;
-		pref.lyricsFontSize_artwork = custom ? themeFontSize.lyricsFontSize_artwork : RES_QHD ? 22 : 20;
-	}
-
-	// * Player controls
-	if (save) {
-		themeControls.showPanelDetails_default = pref.showPanelDetails_default;
-		themeControls.showPanelDetails_artwork = pref.showPanelDetails_artwork;
-		themeControls.showPanelLibrary_default = pref.showPanelLibrary_default;
-		themeControls.showPanelLibrary_artwork = pref.showPanelLibrary_artwork;
-		themeControls.showPanelBiography_default = pref.showPanelBiography_default;
-		themeControls.showPanelBiography_artwork = pref.showPanelBiography_artwork;
-		themeControls.showPanelLyrics_default = pref.showPanelLyrics_default;
-		themeControls.showPanelLyrics_artwork = pref.showPanelLyrics_artwork;
-		themeControls.showPanelRating_default = pref.showPanelRating_default;
-		themeControls.showPanelRating_artwork = pref.showPanelRating_artwork;
-		themeControls.topMenuAlignment = pref.topMenuAlignment;
-		themeControls.topMenuCompact = pref.topMenuCompact;
-		themeControls.albumArtAlign = pref.albumArtAlign;
-		themeControls.albumArtBg = pref.albumArtBg;
-		themeControls.albumArtScale = pref.albumArtScale;
-		themeControls.albumArtAspectRatioLimit = pref.albumArtAspectRatioLimit;
-		themeControls.cycleArt = pref.cycleArt;
-		themeControls.cycleArtMWheel = pref.cycleArtMWheel;
-		themeControls.loadEmbeddedAlbumArtFirst = pref.loadEmbeddedAlbumArtFirst;
-		themeControls.showHiResAudioBadge = pref.showHiResAudioBadge;
-		themeControls.hiResAudioBadgeRound = pref.hiResAudioBadgeRound;
-		themeControls.hiResAudioBadgeSize = pref.hiResAudioBadgeSize;
-		themeControls.hiResAudioBadgePos = pref.hiResAudioBadgePos;
-		themeControls.showPause = pref.showPause;
-		themeControls.jumpSearchIncludeLibrary = pref.jumpSearchIncludeLibrary;
-		themeControls.jumpSearchIncludePlaylist = pref.jumpSearchIncludePlaylist;
-		themeControls.jumpSearchComposerOnly = pref.jumpSearchComposerOnly;
-		themeControls.playlistWheelScrollSteps = pref.playlistWheelScrollSteps;
-		themeControls.playlistWheelScrollDuration = pref.playlistWheelScrollDuration;
-		themeControls.playlistAutoScrollNowPlaying = pref.playlistAutoScrollNowPlaying;
-		themeControls.playlistAutoHideScrollbar = pref.playlistAutoHideScrollbar;
-		themeControls.playlistSmoothScrolling = pref.playlistSmoothScrolling;
-		themeControls.scrollStepLib = ppt.scrollStep;
-		themeControls.durationScrollLib = ppt.durationScroll;
-		themeControls.libraryAutoScrollNowPlaying = pref.libraryAutoScrollNowPlaying;
-		themeControls.libraryAutoHideScrollbar = pref.libraryAutoHideScrollbar;
-		themeControls.smoothLib = ppt.smooth;
-		themeControls.scrollStepBio = pptBio.scrollStep;
-		themeControls.durationScrollBio = pptBio.durationScroll;
-		themeControls.biographyAutoHideScrollbar = pref.biographyAutoHideScrollbar;
-		themeControls.smoothBio = pptBio.smooth;
-		themeControls.showTooltipTruncated = pref.showTooltipTruncated;
-		themeControls.showTooltipTimeline = pref.showTooltipTimeline;
-		themeControls.showTooltipVolume = pref.showTooltipVolume;
-		themeControls.showTooltipVolumeInPercent = pref.showTooltipVolumeInPercent;
-		themeControls.showTooltipMain = pref.showTooltipMain;
-		themeControls.showTooltipLibrary = pref.showTooltipLibrary;
-		themeControls.showTooltipBiography = pref.showTooltipBiography;
-		themeControls.showStyledTooltips = pref.showStyledTooltips;
-		themeControls.panelWidthAuto = pref.panelWidthAuto;
-		themeControls.showPanelOnStartup = pref.showPanelOnStartup;
-		themeControls.showPreloaderLogo = pref.showPreloaderLogo;
-		themeControls.returnToHomeOnPlaybackStop = pref.returnToHomeOnPlaybackStop;
-		themeControls.hideMiddlePanelShadow = pref.hideMiddlePanelShadow;
-		themeControls.lockPlayerSize = pref.lockPlayerSize;
-		themeControls.transportButtonSize_default = pref.transportButtonSize_default;
-		themeControls.transportButtonSize_artwork = pref.transportButtonSize_artwork;
-		themeControls.transportButtonSize_compact = pref.transportButtonSize_compact;
-		themeControls.transportButtonSpacing_default = pref.transportButtonSpacing_default;
-		themeControls.transportButtonSpacing_artwork = pref.transportButtonSpacing_artwork;
-		themeControls.transportButtonSpacing_compact = pref.transportButtonSpacing_compact;
-		themeControls.showTransportControls_default = pref.showTransportControls_default;
-		themeControls.showTransportControls_artwork = pref.showTransportControls_artwork;
-		themeControls.showTransportControls_compact = pref.showTransportControls_compact;
-		themeControls.showPlaybackOrderBtn_default = pref.showPlaybackOrderBtn_default;
-		themeControls.showPlaybackOrderBtn_artwork = pref.showPlaybackOrderBtn_artwork;
-		themeControls.showPlaybackOrderBtn_compact = pref.showPlaybackOrderBtn_compact;
-		themeControls.showReloadBtn_default = pref.showReloadBtn_default;
-		themeControls.showReloadBtn_artwork = pref.showReloadBtn_artwork;
-		themeControls.showReloadBtn_compact = pref.showReloadBtn_compact;
-		themeControls.showVolumeBtn_default = pref.showVolumeBtn_default;
-		themeControls.showVolumeBtn_artwork = pref.showVolumeBtn_artwork;
-		themeControls.showVolumeBtn_compact = pref.showVolumeBtn_compact;
-		themeControls.autoHideVolumeBar = pref.autoHideVolumeBar;
-		themeControls.showPlaybackTime_default = pref.showPlaybackTime_default;
-		themeControls.showPlaybackTime_artwork = pref.showPlaybackTime_artwork;
-		themeControls.showPlaybackTime_compact = pref.showPlaybackTime_compact;
-		themeControls.showLowerBarArtist_default = pref.showLowerBarArtist_default;
-		themeControls.showLowerBarArtist_artwork = pref.showLowerBarArtist_artwork;
-		themeControls.showLowerBarArtist_compact = pref.showLowerBarArtist_compact;
-		themeControls.showLowerBarTrackNum_default = pref.showLowerBarTrackNum_default;
-		themeControls.showLowerBarTrackNum_artwork = pref.showLowerBarTrackNum_artwork;
-		themeControls.showLowerBarTrackNum_compact = pref.showLowerBarTrackNum_compact;
-		themeControls.showLowerBarTitle_default = pref.showLowerBarTitle_default;
-		themeControls.showLowerBarTitle_artwork = pref.showLowerBarTitle_artwork;
-		themeControls.showLowerBarTitle_compact = pref.showLowerBarTitle_compact;
-		themeControls.showLowerBarComposer_default = pref.showLowerBarComposer_default;
-		themeControls.showLowerBarComposer_artwork = pref.showLowerBarComposer_artwork;
-		themeControls.showLowerBarComposer_compact = pref.showLowerBarComposer_compact;
-		themeControls.showLowerBarArtistFlags_default = pref.showLowerBarArtistFlags_default;
-		themeControls.showLowerBarArtistFlags_artwork = pref.showLowerBarArtistFlags_artwork;
-		themeControls.showLowerBarArtistFlags_compact = pref.showLowerBarArtistFlags_compact;
-		themeControls.showLowerBarVersion_default = pref.showLowerBarVersion_default;
-		themeControls.showLowerBarVersion_artwork = pref.showLowerBarVersion_artwork;
-		themeControls.showLowerBarVersion_compact = pref.showLowerBarVersion_compact;
-		themeControls.showProgressBar_default = pref.showProgressBar_default;
-		themeControls.showProgressBar_artwork = pref.showProgressBar_artwork;
-		themeControls.showProgressBar_compact = pref.showProgressBar_compact;
-		themeControls.showPeakmeterBar_default = pref.showPeakmeterBar_default;
-		themeControls.showPeakmeterBar_artwork = pref.showPeakmeterBar_artwork;
-		themeControls.showPeakmeterBar_compact = pref.showPeakmeterBar_compact;
-		themeControls.showWaveformBar_default = pref.showWaveformBar_default;
-		themeControls.showWaveformBar_artwork = pref.showWaveformBar_artwork;
-		themeControls.showWaveformBar_compact = pref.showWaveformBar_compact;
-		themeControls.seekbar = pref.seekbar;
-		themeControls.progressBarWheelSeekSpeed = pref.progressBarWheelSeekSpeed;
-		themeControls.progressBarRefreshRate = pref.progressBarRefreshRate;
-		themeControls.peakmeterBarDesign = pref.peakmeterBarDesign;
-		themeControls.peakmeterBarVertSize = pref.peakmeterBarVertSize;
-		themeControls.peakmeterBarVertDbRange = pref.peakmeterBarVertDbRange;
-		themeControls.peakmeterBarOverBars = pref.peakmeterBarOverBars;
-		themeControls.peakmeterBarOuterBars = pref.peakmeterBarOuterBars;
-		themeControls.peakmeterBarOuterPeaks = pref.peakmeterBarOuterPeaks;
-		themeControls.peakmeterBarMainBars = pref.peakmeterBarMainBars;
-		themeControls.peakmeterBarMainPeaks = pref.peakmeterBarMainPeaks;
-		themeControls.peakmeterBarMiddleBars = pref.peakmeterBarMiddleBars;
-		themeControls.peakmeterBarProgBar = pref.peakmeterBarProgBar;
-		themeControls.peakmeterBarGaps = pref.peakmeterBarGaps;
-		themeControls.peakmeterBarGrid = pref.peakmeterBarGrid;
-		themeControls.peakmeterBarInfo = pref.peakmeterBarInfo;
-		themeControls.peakmeterBarVertPeaks = pref.peakmeterBarVertPeaks;
-		themeControls.peakmeterBarVertBaseline = pref.peakmeterBarVertBaseline;
-		themeControls.peakmeterBarRefreshRate = pref.peakmeterBarRefreshRate;
-		themeControls.waveformBarMode = pref.waveformBarMode;
-		themeControls.waveformBarAnalysis = pref.waveformBarAnalysis;
-		themeControls.waveformBarDesign = pref.waveformBarDesign;
-		themeControls.waveformBarSizeWave = pref.waveformBarSizeWave;
-		themeControls.waveformBarSizeBars = pref.waveformBarSizeBars;
-		themeControls.waveformBarSizeDots = pref.waveformBarSizeDots;
-		themeControls.waveformBarSizeHalf = pref.waveformBarSizeHalf;
-		themeControls.waveformBarSizeNormalize = pref.waveformBarSizeNormalize;
-		themeControls.waveformBarPaint = pref.waveformBarPaint;
-		themeControls.waveformBarPrepaint = pref.waveformBarPrepaint;
-		themeControls.waveformBarPrepaintFront = pref.waveformBarPrepaintFront === Infinity ? 'Infinity' : pref.waveformBarPrepaintFront;
-		themeControls.waveformBarAnimate = pref.waveformBarAnimate;
-		themeControls.waveformBarBPM = pref.waveformBarBPM;
-		themeControls.waveformBarInvertHalfbars = pref.waveformBarInvertHalfbars;
-		themeControls.waveformBarIndicator = pref.waveformBarIndicator;
-		themeControls.waveformBarRefreshRate = pref.waveformBarRefreshRate;
-		themeControls.waveformBarRefreshRateVar = pref.waveformBarRefreshRateVar;
-		themeControls.maximizeToFullscreen = pref.maximizeToFullscreen;
-		themeControls.switchPlaybackTime = pref.switchPlaybackTime;
-		themeControls.playbackOrder = pref.playbackOrder;
-	} else {
-		pref.showPanelDetails_default = custom ? themeControls.showPanelDetails_default : true;
-		pref.showPanelDetails_artwork = custom ? themeControls.showPanelDetails_artwork : true;
-		pref.showPanelLibrary_default = custom ? themeControls.showPanelLibrary_default : true;
-		pref.showPanelLibrary_artwork = custom ? themeControls.showPanelLibrary_artwork : true;
-		pref.showPanelBiography_default = custom ? themeControls.showPanelBiography_default : true;
-		pref.showPanelBiography_artwork = custom ? themeControls.showPanelBiography_artwork : true;
-		pref.showPanelLyrics_default = custom ? themeControls.showPanelLyrics_default : true;
-		pref.showPanelLyrics_artwork = custom ? themeControls.showPanelLyrics_artwork : true;
-		pref.showPanelRating_default = custom ? themeControls.showPanelRating_default : true;
-		pref.showPanelRating_artwork = custom ? themeControls.showPanelRating_artwork : true;
-		pref.topMenuAlignment = custom ? themeControls.topMenuAlignment : 'center';
-		pref.topMenuCompact = custom ? themeControls.topMenuCompact : true;
-		pref.albumArtAlign = custom ? themeControls.albumArtAlign : 'right';
-		pref.albumArtBg = custom ? themeControls.albumArtBg : 'left';
-		pref.albumArtScale = custom ? themeControls.albumArtScale : 'cropped';
-		pref.albumArtAspectRatioLimit = custom ? themeControls.albumArtAspectRatioLimit : true;
-		pref.cycleArt = custom ? themeControls.cycleArt : false;
-		pref.cycleArtMWheel = custom ? themeControls.cycleArtMWheel : true;
-		pref.loadEmbeddedAlbumArtFirst = custom ? themeControls.loadEmbeddedAlbumArtFirst : false;
-		pref.showHiResAudioBadge = custom ? themeControls.showHiResAudioBadge : false;
-		pref.hiResAudioBadgeRound = custom ? themeControls.hiResAudioBadgeRound : false;
-		pref.hiResAudioBadgeSize = custom ? themeControls.hiResAudioBadgeSize : 'normal';
-		pref.hiResAudioBadgePos = custom ? themeControls.hiResAudioBadgePos : 'bottomright';
-		pref.showPause = custom ? themeControls.showPause : true;
-		pref.jumpSearchIncludeLibrary = custom ? themeControls.jumpSearchIncludeLibrary : true;
-		pref.jumpSearchIncludePlaylist = custom ? themeControls.jumpSearchIncludePlaylist : true;
-		pref.jumpSearchComposerOnly = custom ? themeControls.jumpSearchComposerOnly : false;
-		pref.playlistWheelScrollSteps = custom ? themeControls.playlistWheelScrollSteps : 3;
-		pref.playlistWheelScrollDuration = custom ? themeControls.playlistWheelScrollDuration : 300;
-		pref.playlistAutoScrollNowPlaying = custom ? themeControls.playlistAutoScrollNowPlaying : false;
-		pref.playlistAutoHideScrollbar = custom ? themeControls.playlistAutoHideScrollbar : true;
-		pref.playlistSmoothScrolling = custom ? themeControls.playlistSmoothScrolling : true;
-		ppt.scrollStep = custom ? themeControls.scrollStepLib : 3;
-		ppt.durationScroll = custom ? themeControls.durationScrollLib : 500;
-		pref.libraryAutoScrollNowPlaying = custom ? themeControls.libraryAutoScrollNowPlaying : false;
-		pref.libraryAutoHideScrollbar = custom ? themeControls.libraryAutoHideScrollbar : true;
-		ppt.sbarShow = pref.libraryAutoHideScrollbar ? 1 : 2;
-		ppt.smooth = custom ? themeControls.smoothLib : true;
-		pptBio.scrollStep = custom ? themeControls.scrollStepBio : 3;
-		pptBio.durationScroll = custom ? themeControls.durationScrollBio : 500;
-		pref.biographyAutoHideScrollbar = custom ? themeControls.biographyAutoHideScrollbar : true;
-		pptBio.sbarShow = pref.biographyAutoHideScrollbar ? 1 : 2;
-		pptBio.smooth = custom ? themeControls.smoothBio : true;
-		pref.showTooltipTruncated = custom ? themeControls.showTooltipTruncated : true;
-		pref.showTooltipTimeline = custom ? themeControls.showTooltipTimeline : true;
-		pref.showTooltipVolume = custom ? themeControls.showTooltipVolume : false;
-		pref.showTooltipVolumeInPercent = custom ? themeControls.showTooltipVolumeInPercent : false;
-		pref.showTooltipMain = custom ? themeControls.showTooltipMain : false;
-		pref.showTooltipLibrary = custom ? themeControls.showTooltipLibrary : false;
-		pref.showTooltipBiography = custom ? themeControls.showTooltipBiography : false;
-		pref.showStyledTooltips = custom ? themeControls.showStyledTooltips : true;
-		pref.panelWidthAuto = custom ? themeControls.panelWidthAuto : false;
-		pref.showPanelOnStartup = custom ? themeControls.showPanelOnStartup : 'playlist';
-		pref.showPreloaderLogo = custom ? themeControls.showPreloaderLogo : true;
-		pref.returnToHomeOnPlaybackStop = custom ? themeControls.returnToHomeOnPlaybackStop : true;
-		pref.hideMiddlePanelShadow = custom ? themeControls.hideMiddlePanelShadow : false;
-		pref.lockPlayerSize = custom ? themeControls.lockPlayerSize : false;
-		pref.transportButtonSize_default = custom ? themeControls.transportButtonSize_default : 32;
-		pref.transportButtonSize_artwork = custom ? themeControls.transportButtonSize_artwork : 32;
-		pref.transportButtonSize_compact = custom ? themeControls.transportButtonSize_compact : 32;
-		pref.transportButtonSpacing_default = custom ? themeControls.transportButtonSpacing_default : 5;
-		pref.transportButtonSpacing_artwork = custom ? themeControls.transportButtonSpacing_artwork : 5;
-		pref.transportButtonSpacing_compact = custom ? themeControls.transportButtonSpacing_compact : 5;
-		pref.showTransportControls_default = custom ? themeControls.showTransportControls_default : true;
-		pref.showTransportControls_artwork = custom ? themeControls.showTransportControls_artwork : true;
-		pref.showTransportControls_compact = custom ? themeControls.showTransportControls_compact : true;
-		pref.showPlaybackOrderBtn_default = custom ? themeControls.showPlaybackOrderBtn_default : true;
-		pref.showPlaybackOrderBtn_artwork = custom ? themeControls.showPlaybackOrderBtn_artwork : true;
-		pref.showPlaybackOrderBtn_compact = custom ? themeControls.showPlaybackOrderBtn_compact : true;
-		pref.showReloadBtn_default = custom ? themeControls.showReloadBtn_default : false;
-		pref.showReloadBtn_artwork = custom ? themeControls.showReloadBtn_artwork : false;
-		pref.showReloadBtn_compact = custom ? themeControls.showReloadBtn_compact : false;
-		pref.showVolumeBtn_default = custom ? themeControls.showVolumeBtn_default : true;
-		pref.showVolumeBtn_artwork = custom ? themeControls.showVolumeBtn_artwork : true;
-		pref.showVolumeBtn_compact = custom ? themeControls.showVolumeBtn_compact : true;
-		pref.autoHideVolumeBar = custom ? themeControls.autoHideVolumeBar : true;
-		pref.showPlaybackTime_default = custom ? themeControls.showPlaybackTime_default : true;
-		pref.showPlaybackTime_artwork = custom ? themeControls.showPlaybackTime_artwork : true;
-		pref.showPlaybackTime_compact = custom ? themeControls.showPlaybackTime_compact : true;
-		pref.showLowerBarArtist_default = custom ? themeControls.showLowerBarArtist_default : true;
-		pref.showLowerBarArtist_artwork = custom ? themeControls.showLowerBarArtist_artwork : true;
-		pref.showLowerBarArtist_compact = custom ? themeControls.showLowerBarArtist_compact : true;
-		pref.showLowerBarTrackNum_default = custom ? themeControls.showLowerBarTrackNum_default : true;
-		pref.showLowerBarTrackNum_artwork = custom ? themeControls.showLowerBarTrackNum_artwork : true;
-		pref.showLowerBarTrackNum_compact = custom ? themeControls.showLowerBarTrackNum_compact : true;
-		pref.showLowerBarTitle_default = custom ? themeControls.showLowerBarTitle_default : true;
-		pref.showLowerBarTitle_artwork = custom ? themeControls.showLowerBarTitle_artwork : true;
-		pref.showLowerBarTitle_compact = custom ? themeControls.showLowerBarTitle_compact : true;
-		pref.showLowerBarComposer_default = custom ? themeControls.showLowerBarComposer_default : false;
-		pref.showLowerBarComposer_artwork = custom ? themeControls.showLowerBarComposer_artwork : false;
-		pref.showLowerBarComposer_compact = custom ? themeControls.showLowerBarComposer_compact : false;
-		pref.showLowerBarArtistFlags_default = custom ? themeControls.showLowerBarArtistFlags_default : true;
-		pref.showLowerBarArtistFlags_artwork = custom ? themeControls.showLowerBarArtistFlags_artwork : true;
-		pref.showLowerBarArtistFlags_compact = custom ? themeControls.showLowerBarArtistFlags_compact : true;
-		pref.showLowerBarVersion_default = custom ? themeControls.showLowerBarVersion_default : true;
-		pref.showLowerBarVersion_artwork = custom ? themeControls.showLowerBarVersion_artwork : true;
-		pref.showLowerBarVersion_compact = custom ? themeControls.showLowerBarVersion_compact : true;
-		pref.showProgressBar_default = custom ? themeControls.showProgressBar_default : true;
-		pref.showProgressBar_artwork = custom ? themeControls.showProgressBar_artwork : true;
-		pref.showProgressBar_compact = custom ? themeControls.showProgressBar_compact : true;
-		pref.showPeakmeterBar_default = custom ? themeControls.showPeakmeterBar_default : true;
-		pref.showPeakmeterBar_artwork = custom ? themeControls.showPeakmeterBar_artwork : true;
-		pref.showPeakmeterBar_compact = custom ? themeControls.showPeakmeterBar_compact : true;
-		pref.showWaveformBar_default = custom ? themeControls.showWaveformBar_default : true;
-		pref.showWaveformBar_artwork = custom ? themeControls.showWaveformBar_artwork : true;
-		pref.showWaveformBar_compact = custom ? themeControls.showWaveformBar_compact : true;
-		pref.seekbar = custom ? themeControls.seekbar : 'progressbar';
-		pref.progressBarWheelSeekSpeed = custom ? themeControls.progressBarWheelSeekSpeed : 5;
-		pref.progressBarRefreshRate = custom ? themeControls.progressBarRefreshRate : 'variable';
-		pref.peakmeterBarDesign = custom ? themeControls.peakmeterBarDesign : 'horizontal';
-		pref.peakmeterBarVertSize = custom ? themeControls.peakmeterBarVertSize : 20;
-		pref.peakmeterBarVertDbRange = custom ? themeControls.peakmeterBarVertDbRange : 220;
-		pref.peakmeterBarOverBars = custom ? themeControls.peakmeterBarOverBars : true;
-		pref.peakmeterBarOuterBars = custom ? themeControls.peakmeterBarOuterBars : true;
-		pref.peakmeterBarOuterPeaks = custom ? themeControls.peakmeterBarOuterPeaks : true;
-		pref.peakmeterBarMainBars = custom ? themeControls.peakmeterBarMainBars : true;
-		pref.peakmeterBarMainPeaks = custom ? themeControls.peakmeterBarMainPeaks : true;
-		pref.peakmeterBarMiddleBars = custom ? themeControls.peakmeterBarMiddleBars : true;
-		pref.peakmeterBarProgBar = custom ? themeControls.peakmeterBarProgBar : true;
-		pref.peakmeterBarGaps = custom ? themeControls.peakmeterBarGaps : false;
-		pref.peakmeterBarGrid = custom ? themeControls.peakmeterBarGrid : false;
-		pref.peakmeterBarInfo = custom ? themeControls.peakmeterBarInfo : false;
-		pref.peakmeterBarVertPeaks = custom ? themeControls.peakmeterBarVertPeaks : true;
-		pref.peakmeterBarVertBaseline = custom ? themeControls.peakmeterBarVertBaseline : true;
-		pref.peakmeterBarRefreshRate = custom ? themeControls.peakmeterBarRefreshRate : 80;
-		pref.waveformBarMode = custom ? themeControls.waveformBarMode : 'audiowaveform';
-		pref.waveformBarAnalysis = custom ? themeControls.waveformBarAnalysis : 'rms_level';
-		pref.waveformBarDesign = custom ? themeControls.waveformBarDesign : 'halfbars';
-		pref.waveformBarSizeWave = custom ? themeControls.waveformBarSizeWave : 3;
-		pref.waveformBarSizeBars = custom ? themeControls.waveformBarSizeBars : 1;
-		pref.waveformBarSizeDots = custom ? themeControls.waveformBarSizeDots : 2;
-		pref.waveformBarSizeHalf = custom ? themeControls.waveformBarSizeHalf : 4;
-		pref.waveformBarSizeNormalize = custom ? themeControls.waveformBarSizeNormalize : false;
-		pref.waveformBarPaint = custom ? themeControls.waveformBarPaint : 'partial';
-		pref.waveformBarPrepaint = custom ? themeControls.waveformBarPrepaint : true;
-		pref.waveformBarPrepaintFront = custom ? themeControls.waveformBarPrepaintFront : false; // ! Do not use Infinity here, set to false has same effect
-		pref.waveformBarAnimate = custom ? themeControls.waveformBarAnimate : true;
-		pref.waveformBarBPM = custom ? themeControls.waveformBarBPM : true;
-		pref.waveformBarInvertHalfbars = custom ? themeControls.waveformBarInvertHalfbars : true;
-		pref.waveformBarIndicator = custom ? themeControls.waveformBarIndicator : false;
-		pref.waveformBarRefreshRate = custom ? themeControls.waveformBarRefreshRate : 200;
-		pref.waveformBarRefreshRateVar = custom ? themeControls.waveformBarRefreshRateVar : false;
-		pref.maximizeToFullscreen = custom ? themeControls.maximizeToFullscreen : true;
-		pref.switchPlaybackTime = custom ? themeControls.switchPlaybackTime : false;
-		pref.playbackOrder = custom ? themeControls.playbackOrder : 'default';
-	}
-
-	// * Playlist
-	if (save) {
-		themePlaylist.playlistLayout = pref.playlistLayout;
-		themePlaylist.showPlaylistManager_default = pref.showPlaylistManager_default;
-		themePlaylist.showPlaylistManager_artwork = pref.showPlaylistManager_artwork;
-		themePlaylist.showPlaylistManager_compact = pref.showPlaylistManager_compact;
-		themePlaylist.showPlaylistHistory = pref.showPlaylistHistory;
-		themePlaylist.autoHidePlman = pref.autoHidePlman;
-		themePlaylist.show_album_art = g_properties.show_album_art;
-		themePlaylist.auto_album_art = g_properties.auto_album_art;
-		themePlaylist.show_header = g_properties.show_header;
-		themePlaylist.show_rating_header = g_properties.show_rating_header;
-		themePlaylist.show_PLR_header = g_properties.show_PLR_header;
-		themePlaylist.use_compact_header = g_properties.use_compact_header;
-		themePlaylist.auto_collapse = g_properties.auto_collapse;
-		themePlaylist.hyperlinksCtrlClick = pref.hyperlinksCtrlClick;
-		themePlaylist.show_disc_header = g_properties.show_disc_header;
-		themePlaylist.show_group_info = g_properties.show_group_info;
-		themePlaylist.showWeblinks = pref.showWeblinks;
-		themePlaylist.showPlaylistFullDate = pref.showPlaylistFullDate;
-		themePlaylist.show_row_stripes = g_properties.show_row_stripes;
-		themePlaylist.show_playcount = g_properties.show_playcount;
-		themePlaylist.show_queue_position = g_properties.show_queue_position;
-		themePlaylist.show_rating = g_properties.show_rating;
-		themePlaylist.use_rating_from_tags = g_properties.use_rating_from_tags;
-		themePlaylist.showPlaylistRatingGrid = pref.showPlaylistRatingGrid;
-		themePlaylist.show_PLR = g_properties.show_PLR;
-		themePlaylist.showPlaylistTrackNumbers = pref.showPlaylistTrackNumbers;
-		themePlaylist.showPlaylistIndexNumbers = pref.showPlaylistIndexNumbers;
-		themePlaylist.showDifferentArtist = pref.showDifferentArtist;
-		themePlaylist.showArtistPlaylistRows = pref.showArtistPlaylistRows;
-		themePlaylist.showAlbumPlaylistRows = pref.showAlbumPlaylistRows;
-		themePlaylist.playlistTimeRemaining = pref.playlistTimeRemaining;
-		themePlaylist.showVinylNums = pref.showVinylNums;
-		themePlaylist.lastFmScrobblesFallback = pref.lastFmScrobblesFallback;
-		themePlaylist.playlistRowHover = pref.playlistRowHover;
-		themePlaylist.playlistSortOrderAuto = pref.playlistSortOrderAuto;
-		themePlaylist.playlistSortOrder = pref.playlistSortOrder;
-		themePlaylist.playlistSortOrderDirection = pref.playlistSortOrderDirection;
-		themePlaylist.playlist_stats_include_artist = g_properties.playlist_stats_include_artist;
-		themePlaylist.playlist_stats_include_album = g_properties.playlist_stats_include_album;
-		themePlaylist.playlist_stats_include_track = g_properties.playlist_stats_include_track;
-		themePlaylist.playlist_stats_include_year = g_properties.playlist_stats_include_year;
-		themePlaylist.playlist_stats_include_genre = g_properties.playlist_stats_include_genre;
-		themePlaylist.playlist_stats_include_label = g_properties.playlist_stats_include_label;
-		themePlaylist.playlist_stats_include_country = g_properties.playlist_stats_include_country;
-		themePlaylist.playlist_stats_include_stats = g_properties.playlist_stats_include_stats;
-		themePlaylist.playlist_stats_sort_by = g_properties.playlist_stats_sort_by;
-		themePlaylist.playlist_stats_sort_direction = g_properties.playlist_stats_sort_direction;
-	} else {
-		pref.playlistLayout = custom ? themePlaylist.playlistLayout : 'normal';
-		pref.playlistLayoutNormal = true;
-		pref.showPlaylistManager_default = custom ? themePlaylist.showPlaylistManager_default : true;
-		pref.showPlaylistManager_artwork = custom ? themePlaylist.showPlaylistManager_artwork : false;
-		pref.showPlaylistManager_compact = custom ? themePlaylist.showPlaylistManager_compact : false;
-		pref.showPlaylistHistory = custom ? themePlaylist.showPlaylistHistory : true;
-		pref.autoHidePlman = custom ? themePlaylist.autoHidePlman : true;
-		g_properties.show_album_art = custom ? themePlaylist.show_album_art : true;
-		g_properties.auto_album_art = custom ? themePlaylist.auto_album_art : false;
-		g_properties.show_header = custom ? themePlaylist.show_header : true;
-		g_properties.show_rating_header = custom ? themePlaylist.show_rating_header : true;
-		g_properties.show_PLR_header = custom ? themePlaylist.show_PLR_header : false;
-		g_properties.use_compact_header = custom ? themePlaylist.use_compact_header : false;
-		g_properties.auto_collapse = custom ? themePlaylist.auto_collapse : false;
-		pref.hyperlinksCtrlClick = custom ? themePlaylist.hyperlinksCtrlClick : false;
-		g_properties.show_disc_header = custom ? themePlaylist.show_disc_header : true;
-		g_properties.show_group_info = custom ? themePlaylist.show_group_info : true;
-		pref.showWeblinks = custom ? themePlaylist.showWeblinks : true;
-		pref.showPlaylistFullDate = custom ? themePlaylist.showPlaylistFullDate : false;
-		g_properties.show_row_stripes = custom ? themePlaylist.show_row_stripes : false;
-		g_properties.show_playcount = custom ? themePlaylist.show_playcount : true;
-		g_properties.show_queue_position = custom ? themePlaylist.show_queue_position : true;
-		g_properties.show_rating = custom ? themePlaylist.show_rating : true;
-		g_properties.use_rating_from_tags = custom ? themePlaylist.use_rating_from_tags : false;
-		g_properties.show_PLR = custom ? themePlaylist.show_PLR : false;
-		pref.showPlaylistRatingGrid = custom ? themePlaylist.showPlaylistRatingGrid : false;
-		pref.showPlaylistTrackNumbers = custom ? themePlaylist.showPlaylistTrackNumbers : true;
-		pref.showPlaylistIndexNumbers = custom ? themePlaylist.showPlaylistIndexNumbers : false;
-		pref.showDifferentArtist = custom ? themePlaylist.showDifferentArtist : false;
-		pref.showArtistPlaylistRows = custom ? themePlaylist.showArtistPlaylistRows : false;
-		pref.showAlbumPlaylistRows = custom ? themePlaylist.showAlbumPlaylistRows : false;
-		pref.playlistTimeRemaining = custom ? themePlaylist.playlistTimeRemaining : false;
-		pref.showVinylNums = custom ? themePlaylist.showVinylNums : true;
-		pref.lastFmScrobblesFallback = custom ? themePlaylist.lastFmScrobblesFallback : true;
-		pref.playlistRowHover = custom ? themePlaylist.playlistRowHover : true;
-		pref.playlistSortOrderAuto = custom ? themePlaylist.playlistSortOrderAuto : false;
-		pref.playlistSortOrder = custom ? themePlaylist.playlistSortOrder : '';
-		pref.playlistSortOrderDirection = custom ? themePlaylist.playlistSortOrderDirection : '_asc';
-		g_properties.playlist_stats_include_artist = custom ? themePlaylist.playlist_stats_include_artist : true;
-		g_properties.playlist_stats_include_album = custom ? themePlaylist.playlist_stats_include_album : true;
-		g_properties.playlist_stats_include_track = custom ? themePlaylist.playlist_stats_include_track : true;
-		g_properties.playlist_stats_include_year = custom ? themePlaylist.playlist_stats_include_year : false;
-		g_properties.playlist_stats_include_genre = custom ? themePlaylist.playlist_stats_include_genre : false;
-		g_properties.playlist_stats_include_label = custom ? themePlaylist.playlist_stats_include_label : false;
-		g_properties.playlist_stats_include_country = custom ? themePlaylist.playlist_stats_include_country : false;
-		g_properties.playlist_stats_include_stats = custom ? themePlaylist.playlist_stats_include_stats : true;
-		g_properties.playlist_stats_sort_by = custom ? themePlaylist.playlist_stats_sort_by : '';
-		g_properties.playlist_stats_sort_direction = custom ? themePlaylist.playlist_stats_sort_direction : '_dsc';
-	}
-
-	// * Playlist properties
-	g_properties.list_left_pad = 0;
-	g_properties.list_top_pad = 0;
-	g_properties.list_right_pad = 0;
-	g_properties.list_bottom_pad = 15;
-	g_properties.show_scrollbar = false;
-	g_properties.scrollbar_right_pad = 0;
-	g_properties.scrollbar_top_pad = 0;
-	g_properties.scrollbar_bottom_pad = 3;
-	g_properties.scrollbar_w = '';
-	g_properties.row_h = 20;
-	g_properties.scroll_pos = 0;
-	g_properties.wheel_scroll_page = false;
-	g_properties.rows_in_header = 4;
-	g_properties.rows_in_compact_header = 3;
-	g_properties.show_playlist_info = true;
-	g_properties.collapse_on_playlist_switch = false;
-	g_properties.collapse_on_start = false;
-
-	// * Details
-	if (save) {
-		themeDetails.showDiscArtStub = pref.showDiscArtStub;
-		themeDetails.noDiscArtStub = pref.noDiscArtStub;
-		themeDetails.discArtStub = pref.discArtStub;
-		themeDetails.displayDiscArt = pref.displayDiscArt;
-		themeDetails.discArtOnTop = pref.discArtOnTop;
-		themeDetails.filterDiscJpgsFromAlbumArt = pref.filterDiscJpgsFromAlbumArt;
-		themeDetails.spinDiscArt = pref.spinDiscArt;
-		themeDetails.spinDiscArtImageCount = pref.spinDiscArtImageCount;
-		themeDetails.spinDiscArtRedrawInterval = pref.spinDiscArtRedrawInterval;
-		themeDetails.rotateDiscArt = pref.rotateDiscArt;
-		themeDetails.rotationAmt = pref.rotationAmt;
-		themeDetails.artRotateDelay = pref.artRotateDelay;
-		themeDetails.discArtDisplayAmount = pref.discArtDisplayAmount;
-		themeDetails.detailsAlbumArtOpacity = pref.detailsAlbumArtOpacity;
-		themeDetails.detailsAlbumArtDiscAreaOpacity = pref.detailsAlbumArtDiscAreaOpacity;
-		themeDetails.showGridArtist_default = pref.showGridArtist_default;
-		themeDetails.showGridArtist_artwork = pref.showGridArtist_artwork;
-		themeDetails.showGridTrackNum_default = pref.showGridTrackNum_default;
-		themeDetails.showGridTrackNum_artwork = pref.showGridTrackNum_artwork;
-		themeDetails.showGridTitle_default = pref.showGridTitle_default;
-		themeDetails.showGridTitle_artwork = pref.showGridTitle_artwork;
-		themeDetails.showGridPlayingPlaylist = pref.showGridPlayingPlaylist;
-		themeDetails.showGridTimeline_default = pref.showGridTimeline_default;
-		themeDetails.showGridTimeline_artwork = pref.showGridTimeline_artwork;
-		themeDetails.showGridArtistFlags_default = pref.showGridArtistFlags_default;
-		themeDetails.showGridArtistFlags_artwork = pref.showGridArtistFlags_artwork;
-		themeDetails.showGridReleaseFlags_default = pref.showGridReleaseFlags_default;
-		themeDetails.showGridReleaseFlags_artwork = pref.showGridReleaseFlags_artwork;
-		themeDetails.showGridCodecLogo_default = pref.showGridCodecLogo_default;
-		themeDetails.showGridCodecLogo_artwork = pref.showGridCodecLogo_artwork;
-		themeDetails.showGridChannelLogo_default = pref.showGridChannelLogo_default;
-		themeDetails.showGridChannelLogo_artwork = pref.showGridChannelLogo_artwork;
-		themeDetails.autoHideGridMetadata = pref.autoHideGridMetadata;
-		themeDetails.noDiscArtBg = pref.noDiscArtBg;
-		themeDetails.labelArtOnBg = pref.labelArtOnBg;
-	} else {
-		pref.showDiscArtStub = custom ? themeDetails.showDiscArtStub : true;
-		pref.noDiscArtStub = custom ? themeDetails.noDiscArtStub : false;
-		pref.discArtStub = custom ? themeDetails.discArtStub : 'cdAlbumCover';
-		pref.displayDiscArt = custom ? themeDetails.displayDiscArt : true;
-		pref.discArtOnTop = custom ? themeDetails.discArtOnTop : false;
-		pref.filterDiscJpgsFromAlbumArt = custom ? themeDetails.filterDiscJpgsFromAlbumArt : true;
-		pref.spinDiscArt = custom ? themeDetails.spinDiscArt : false;
-		pref.spinDiscArtImageCount = custom ? themeDetails.spinDiscArtImageCount : 72;
-		pref.spinDiscArtRedrawInterval = custom ? themeDetails.spinDiscArtRedrawInterval : 75;
-		pref.rotateDiscArt = custom ? themeDetails.rotateDiscArt : true;
-		pref.rotationAmt = custom ? themeDetails.rotationAmt : 3;
-		pref.artRotateDelay = custom ? themeDetails.artRotateDelay : 30;
-		pref.discArtDisplayAmount = custom ? themeDetails.discArtDisplayAmount : 0.5;
-		pref.detailsAlbumArtOpacity = custom ? themeDetails.detailsAlbumArtOpacity : 255;
-		pref.detailsAlbumArtDiscAreaOpacity = custom ? themeDetails.detailsAlbumArtDiscAreaOpacity : 255;
-		pref.showGridArtist_default = custom ? themeDetails.showGridArtist_default : false;
-		pref.showGridArtist_artwork = custom ? themeDetails.showGridArtist_artwork : false;
-		pref.showGridTrackNum_default = custom ? themeDetails.showGridTrackNum_default : false;
-		pref.showGridTrackNum_artwork = custom ? themeDetails.showGridTrackNum_artwork : false;
-		pref.showGridTitle_default = custom ? themeDetails.showGridTitle_default : false;
-		pref.showGridTitle_artwork = custom ? themeDetails.showGridTitle_artwork : false;
-		pref.showGridPlayingPlaylist = custom ? themeDetails.showGridPlayingPlaylist : false;
-		pref.showGridTimeline_default = custom ? themeDetails.showGridTimeline_default : true;
-		pref.showGridTimeline_artwork = custom ? themeDetails.showGridTimeline_artwork : true;
-		pref.showGridArtistFlags_default = custom ? themeDetails.showGridArtistFlags_default : true;
-		pref.showGridArtistFlags_artwork = custom ? themeDetails.showGridArtistFlags_artwork : true;
-		pref.showGridReleaseFlags_default = custom ? themeDetails.showGridReleaseFlags_default : 'logo';
-		pref.showGridReleaseFlags_artwork = custom ? themeDetails.showGridReleaseFlags_artwork : 'logo';
-		pref.showGridCodecLogo_default = custom ? themeDetails.showGridCodecLogo_default : 'logo';
-		pref.showGridCodecLogo_artwork = custom ? themeDetails.showGridCodecLogo_artwork : 'logo';
-		pref.showGridChannelLogo_default = custom ? themeDetails.showGridChannelLogo_default : 'logo';
-		pref.showGridChannelLogo_artwork = custom ? themeDetails.showGridChannelLogo_artwork : 'logo';
-		pref.autoHideGridMetadata = custom ? themeDetails.autoHideGridMetadata : true;
-		pref.noDiscArtBg = custom ? themeDetails.noDiscArtBg : true;
-		pref.labelArtOnBg = custom ? themeDetails.labelArtOnBg : false;
-	}
-
-	// * Library
-	if (save) {
-		themeLibrary.libraryLayout = pref.libraryLayout;
-		themeLibrary.libraryLayoutFullPreset = pref.libraryLayoutFullPreset;
-		themeLibrary.libraryLayoutSplitPreset = pref.libraryLayoutSplitPreset;
-		themeLibrary.libraryLayoutSplitPreset2 = pref.libraryLayoutSplitPreset2;
-		themeLibrary.libraryLayoutSplitPreset3 = pref.libraryLayoutSplitPreset3;
-		themeLibrary.libraryLayoutSplitPreset4 = pref.libraryLayoutSplitPreset4;
-		themeLibrary.libraryDesign = pref.libraryDesign;
-		themeLibrary.libraryTheme = pref.libraryTheme;
-		themeLibrary.libraryThumbnailSize = pref.libraryThumbnailSize;
-		themeLibrary.libraryThumbnailBorder = pref.libraryThumbnailBorder;
-		themeLibrary.albumArtShow = ppt.albumArtShow;
-		themeLibrary.itemOverlayType = ppt.itemOverlayType;
-		themeLibrary.albumArtLetter = ppt.albumArtLetter;
-		themeLibrary.albumArtLetterNo = ppt.albumArtLetterNo;
-		themeLibrary.artId = ppt.artId;
-		themeLibrary.albumArtGrpLevel = ppt.albumArtGrpLevel;
-		themeLibrary.imgStyleFront = ppt.imgStyleFront;
-		themeLibrary.imgStyleBack = ppt.imgStyleBack;
-		themeLibrary.imgStyleDisc = ppt.imgStyleDisc;
-		themeLibrary.imgStyleIcon = ppt.imgStyleIcon;
-		themeLibrary.imgStyleArtist = ppt.imgStyleArtist;
-		themeLibrary.albumArtLabelType = ppt.albumArtLabelType;
-		themeLibrary.albumArtFlipLabels = ppt.albumArtFlipLabels;
-		themeLibrary.actionMode = ppt.actionMode;
-		themeLibrary.clickAction = ppt.clickAction;
-		themeLibrary.dblClickAction = ppt.dblClickAction;
-		themeLibrary.mbtnClickAction = ppt.mbtnClickAction;
-		themeLibrary.altClickAction = ppt.altClickAction;
-		themeLibrary.autoPlay = ppt.autoPlay;
-		themeLibrary.keyAction = ppt.keyAction;
-		themeLibrary.rememberTree = ppt.rememberTree;
-		themeLibrary.artTreeSameView = ppt.artTreeSameView;
-		themeLibrary.presetLoadCurView = ppt.presetLoadCurView;
-		themeLibrary.libraryPlaylistSwitch = pref.libraryPlaylistSwitch;
-		themeLibrary.rootNode = ppt.rootNode;
-		themeLibrary.nodeCounts = ppt.nodeCounts;
-		themeLibrary.countsRight = ppt.countsRight;
-		themeLibrary.autoCollapse = ppt.autoCollapse;
-		themeLibrary.itemShowStatistics = ppt.itemShowStatistics;
-		themeLibrary.highLightNowplaying = ppt.highLightNowplaying;
-		themeLibrary.showTracks = ppt.showTracks;
-		themeLibrary.rowStripes = ppt.rowStripes;
-		themeLibrary.fullLineSelection = ppt.fullLineSelection;
-		themeLibrary.libraryRowHover = pref.libraryRowHover;
-		themeLibrary.filterBy = ppt.filterBy;
-		themeLibrary.sortOrder = ppt.sortOrder;
-		themeLibrary.yearBeforeAlbum = ppt.yearBeforeAlbum;
-		themeLibrary.albumArtViewBy = ppt.albumArtViewBy;
-		themeLibrary.treeViewBy = ppt.treeViewBy;
-		themeLibrary.librarySource = ppt.libSource;
-		themeLibrary.librarySourceFixedPlaylist = ppt.fixedPlaylist;
-		themeLibrary.librarySourceFixedPlaylistName = ppt.fixedPlaylistName;
-	} else {
-		pref.libraryDesign = custom ? themeLibrary.libraryDesign : 'reborn';
-		setLibraryDesign();
-
-		pref.libraryLayout = pref.libraryDesign === 'flowMode' ? 'full' : custom ? themeLibrary.libraryLayout : 'normal';
-		pref.libraryLayoutFullPreset = custom ? themeLibrary.libraryLayoutFullPreset : true;
-		pref.libraryLayoutSplitPreset = custom ? themeLibrary.libraryLayoutSplitPreset : true;
-		pref.libraryLayoutSplitPreset2 = custom ? themeLibrary.libraryLayoutSplitPreset2 : false;
-		pref.libraryLayoutSplitPreset3 = custom ? themeLibrary.libraryLayoutSplitPreset3 : false;
-		pref.libraryLayoutSplitPreset4 = custom ? themeLibrary.libraryLayoutSplitPreset4 : false;
-		ppt.theme = pref.libraryTheme = custom ? themeLibrary.libraryTheme : 0;
-		pref.libraryThumbnailSizeSaved = ppt.thumbNailSize = pref.libraryThumbnailSize = custom ? themeLibrary.libraryThumbnailSize : 'auto';
-		pref.libraryThumbnailBorder = custom ? themeLibrary.libraryThumbnailBorder : 'border';
-		ppt.albumArtShow = custom ? themeLibrary.albumArtShow : false;
-		ppt.itemOverlayType = custom ? themeLibrary.itemOverlayType : 0;
-		ppt.albumArtLetter = custom ? themeLibrary.albumArtLetter : true;
-		ppt.albumArtLetterNo = custom ? themeLibrary.albumArtLetterNo : 1;
-		ppt.artId = custom ? themeLibrary.artId : 0;
-		ppt.albumArtGrpLevel = custom ? themeLibrary.albumArtGrpLevel : 0;
-		ppt.imgStyleFront = custom ? themeLibrary.imgStyleFront : 1;
-		ppt.imgStyleBack = custom ? themeLibrary.imgStyleBack : 1;
-		ppt.imgStyleDisc = custom ? themeLibrary.imgStyleDisc : 1;
-		ppt.imgStyleIcon = custom ? themeLibrary.imgStyleIcon : 1;
-		ppt.imgStyleArtist = custom ? themeLibrary.imgStyleArtist : 1;
-		ppt.albumArtLabelType = custom ? themeLibrary.albumArtLabelType : 1;
-		ppt.albumArtFlipLabels = custom ? themeLibrary.albumArtFlipLabels : false;
-		ppt.actionMode = custom ? themeLibrary.actionMode : 0;
-		ppt.clickAction = custom ? themeLibrary.clickAction : 0;
-		ppt.dblClickAction = custom ? themeLibrary.dblClickAction : 1;
-		ppt.mbtnClickAction = custom ? themeLibrary.mbtnClickAction : 1;
-		ppt.altClickAction = custom ? themeLibrary.altClickAction : 1;
-		ppt.autoPlay = custom ? themeLibrary.autoPlay : true;
-		ppt.keyAction = custom ? themeLibrary.keyAction : 0;
-		ppt.rememberTree = custom ? themeLibrary.rememberTree : false;
-		ppt.artTreeSameView = custom ? themeLibrary.artTreeSameView : false;
-		ppt.presetLoadCurView = custom ? themeLibrary.presetLoadCurView : true;
-		pref.libraryPlaylistSwitch = custom ? themeLibrary.libraryPlaylistSwitch : false;
-		ppt.rootNode = custom ? themeLibrary.rootNode : 3;
-		ppt.nodeCounts = custom ? themeLibrary.nodeCounts : 1;
-		ppt.countsRight = custom ? themeLibrary.countsRight : true;
-		ppt.autoCollapse = custom ? themeLibrary.autoCollapse : false;
-		ppt.itemShowStatistics = custom ? themeLibrary.itemShowStatistics : 0;
-		ppt.highLightNowplaying = custom ? themeLibrary.highLightNowplaying : true;
-		ppt.showTracks = custom ? themeLibrary.showTracks : true;
-		ppt.rowStripes = custom ? themeLibrary.rowStripes : false;
-		ppt.fullLineSelection = custom ? themeLibrary.fullLineSelection : true;
-		pref.libraryRowHover = custom ? themeLibrary.libraryRowHover : true;
-		ppt.filterBy = custom ? themeLibrary.filterBy : 0;
-		ppt.sortOrder = custom ? themeLibrary.sortOrder : 'default';
-		ppt.yearBeforeAlbum = custom ? themeLibrary.yearBeforeAlbum : true;
-		ppt.albumArtViewBy = custom ? themeLibrary.albumArtViewBy : 0;
-		ppt.treeViewBy = custom ? themeLibrary.treeViewBy : 0;
-		ppt.libSource = pref.librarySource = custom ? themeLibrary.librarySource : 1;
-		ppt.fixedPlaylist = pref.librarySourceFixedPlaylist = custom ? themeLibrary.librarySourceFixedPlaylist : false;
-		ppt.fixedPlaylistName = pref.librarySourceFixedPlaylistName = custom ? themeLibrary.librarySourceFixedPlaylistName : '';
-	}
-
-	// * Biography
-	if (save) {
-		themeBiography.biographyLayout = pref.biographyLayout;
-		themeBiography.biographyLayoutFullPreset = pref.biographyLayoutFullPreset;
-		themeBiography.style = pptBio.style;
-		themeBiography.filmStripPos = pptBio.filmStripPos;
-		themeBiography.filmStripOverlay = pptBio.filmStripOverlay;
-		themeBiography.biographyTheme = pref.biographyTheme;
-		themeBiography.biographyDisplay = pref.biographyDisplay;
-		themeBiography.showFilmStrip = pptBio.showFilmStrip;
-		themeBiography.imgSeekerShow = pptBio.imgSeekerShow;
-		themeBiography.heading = pptBio.heading;
-		themeBiography.summaryShow = pptBio.summaryShow;
-		themeBiography.summaryCompact = pptBio.summaryCompact;
-		themeBiography.artistView = pptBio.artistView;
-		themeBiography.focus = pptBio.focus;
-		themeBiography.lockBio = pptBio.lockBio;
-		themeBiography.sourceAll = pptBio.sourceAll;
-		themeBiography.classicalMusicMode = pptBio.classicalMusicMode;
-		themeBiography.cycPhotoLocation = pptBio.cycPhotoLocation;
-		themeBiography.covType = pptBio.covType;
-		themeBiography.loadCovAllFb = pptBio.loadCovAllFb;
-		themeBiography.loadCovFolder = pptBio.loadCovFolder;
-		themeBiography.artStyleDual = pptBio.artStyleDual;
-		themeBiography.artReflDual = pptBio.artReflDual;
-		themeBiography.artShadowDual = pptBio.artShadowDual;
-		themeBiography.covStyleDual = pptBio.covStyleDual;
-		themeBiography.covReflDual = pptBio.covReflDual;
-		themeBiography.covShadowDual = pptBio.covShadowDual;
-		themeBiography.artStyleImgOnly = pptBio.artStyleImgOnly;
-		themeBiography.artReflImgOnly = pptBio.artReflImgOnly;
-		themeBiography.artShadowImgOnly = pptBio.artShadowImgOnly;
-		themeBiography.covStyleImgOnly = pptBio.covStyleImgOnly;
-		themeBiography.covReflImgOnly = pptBio.covReflImgOnly;
-		themeBiography.covShadowImgOnly = pptBio.covShadowImgOnly;
-		themeBiography.filmPhotoStyle = pptBio.filmPhotoStyle;
-		themeBiography.filmCoverStyle = pptBio.filmCoverStyle;
-		themeBiography.photoNum = cfg.photoNum;
-		themeBiography.cycPic = pptBio.cycPic;
-		themeBiography.imgSmoothTrans = pptBio.imgSmoothTrans;
-		themeBiography.cycTimePic = pptBio.cycTimePic;
-	} else {
-		pref.biographyLayout = custom ? themeBiography.biographyLayout : 'normal';
-		pref.biographyLayoutFullPreset = custom ? themeBiography.biographyLayoutFullPreset : true;
-		pptBio.style = custom ? themeBiography.style : 0;
-		pptBio.filmStripPos = custom ? themeBiography.filmStripPos : 3;
-		pptBio.filmStripOverlay = custom ? themeBiography.filmStripOverlay : false;
-		pptBio.theme = pref.biographyTheme = custom ? themeBiography.biographyTheme : 0;
-
-		pref.biographyDisplay = custom ? themeBiography.biographyDisplay : 'Image+text';
-		setBiographyDisplay();
-
-		pptBio.showFilmStrip = custom ? themeBiography.showFilmStrip : false;
-		pptBio.imgSeekerShow = custom ? themeBiography.imgSeekerShow : 0;
-		pptBio.heading = custom ? themeBiography.heading : 1;
-		pptBio.summaryShow = custom ? themeBiography.summaryShow : true;
-		pptBio.summaryCompact = custom ? themeBiography.summaryCompact : true;
-		pptBio.artistView = custom ? themeBiography.artistView : true;
-		pptBio.focus = custom ? themeBiography.focus : false;
-		pptBio.lockBio = custom ? themeBiography.lockBio : false;
-		pptBio.sourceAll = custom ? themeBiography.sourceAll : false;
-		pptBio.classicalMusicMode = custom ? themeBiography.classicalMusicMode : false;
-		pptBio.cycPhotoLocation = custom ? themeBiography.cycPhotoLocation : 0;
-		pptBio.covType = custom ? themeBiography.covType : 0;
-		pptBio.loadCovAllFb = custom ? themeBiography.loadCovAllFb : false;
-		pptBio.loadCovFolder = custom ? themeBiography.loadCovFolder : false;
-		pptBio.artStyleDual = custom ? themeBiography.artStyleDual : 1;
-		pptBio.artReflDual = custom ? themeBiography.artReflDual : false;
-		pptBio.artShadowDual = custom ? themeBiography.artShadowDual : false;
-		pptBio.covStyleDual = custom ? themeBiography.covStyleDual : 1;
-		pptBio.covReflDual = custom ? themeBiography.covReflDual : false;
-		pptBio.covShadowDual = custom ? themeBiography.covShadowDual : false;
-		pptBio.artStyleImgOnly = custom ? themeBiography.artStyleImgOnly : 1;
-		pptBio.artReflImgOnly = custom ? themeBiography.artReflImgOnly : false;
-		pptBio.artShadowImgOnly = custom ? themeBiography.artShadowImgOnly : false;
-		pptBio.covStyleImgOnly = custom ? themeBiography.covStyleImgOnly : 1;
-		pptBio.covReflImgOnly = custom ? themeBiography.covReflImgOnly : false;
-		pptBio.covShadowImgOnly = custom ? themeBiography.covShadowImgOnly : false;
-		pptBio.filmPhotoStyle = custom ? themeBiography.filmPhotoStyle : 1;
-		pptBio.filmCoverStyle = custom ? themeBiography.filmCoverStyle : 1;
-		cfg.photoNum = custom ? themeBiography.photoNum : 10;
-		pptBio.cycPic = custom ? themeBiography.cycPic : true;
-		pptBio.imgSmoothTrans = custom ? themeBiography.imgSmoothTrans : false;
-		pptBio.cycTimePic = custom ? themeBiography.cycTimePic : 15;
-	}
-
-	// * Lyrics
-	if (save) {
-		themeLyrics.lyricsLayout = pref.lyricsLayout;
-		themeLyrics.lyricsDropShadowLevel = pref.lyricsDropShadowLevel;
-		themeLyrics.lyricsFadeScroll = pref.lyricsFadeScroll;
-		themeLyrics.lyricsLargerCurrentSync = pref.lyricsLargerCurrentSync;
-		themeLyrics.lyricsAlbumArt = pref.lyricsAlbumArt;
-		themeLyrics.lyricsRememberActiveState = pref.lyricsRememberActiveState;
-		themeLyrics.lyricsRememberPanelState = pref.lyricsRememberPanelState;
-		themeLyrics.lyricsScrollSpeed = pref.lyricsScrollSpeed;
-		themeLyrics.lyricsScrollRateAvg = pref.lyricsScrollRateAvg;
-		themeLyrics.lyricsScrollRateMax = pref.lyricsScrollRateMax;
-		themeLyrics.displayLyrics = pref.displayLyrics;
-	} else {
-		pref.lyricsLayout = custom ? themeLyrics.lyricsLayout : 'normal';
-		pref.lyricsDropShadowLevel = custom ? themeLyrics.lyricsDropShadowLevel : 2;
-		pref.lyricsFadeScroll = custom ? themeLyrics.lyricsFadeScroll : true;
-		pref.lyricsLargerCurrentSync = custom ? themeLyrics.lyricsLargerCurrentSync : true;
-		pref.lyricsAlbumArt = custom ? themeLyrics.lyricsAlbumArt : true;
-		pref.lyricsRememberActiveState = custom ? themeLyrics.lyricsRememberActiveState : false;
-		pref.lyricsRememberPanelState = custom ? themeLyrics.lyricsRememberPanelState : false;
-		pref.lyricsScrollSpeed = custom ? themeLyrics.lyricsScrollSpeed : 'normal';
-		pref.lyricsScrollRateAvg = custom ? themeLyrics.lyricsScrollRateAvg : 750;
-		pref.lyricsScrollRateMax = custom ? themeLyrics.lyricsScrollRateMax : 375;
-		pref.displayLyrics = custom ? themeLyrics.displayLyrics : false;
-	}
-
-	// * Settings
-	if (save) {
-		themeSettings.themeDayNightMode = pref.themeDayNightMode;
-		themeSettings.customThemeFonts = pref.customThemeFonts;
-		themeSettings.customPreloaderLogo = pref.customPreloaderLogo;
-		themeSettings.customThemeImages = pref.customThemeImages;
-		themeSettings.albumArtDiskCache = ppt.albumArtDiskCache;
-		themeSettings.albumArtPreLoad = ppt.albumArtPreLoad;
-		themeSettings.customLibraryDir = pref.customLibraryDir;
-		themeSettings.libraryAutoDelete = pref.libraryAutoDelete;
-		themeSettings.customBiographyDir = pref.customBiographyDir;
-		themeSettings.biographyAutoDelete = pref.biographyAutoDelete;
-		themeSettings.customLyricsDir = pref.customLyricsDir;
-		themeSettings.lyricsAutoDelete = pref.lyricsAutoDelete;
-		themeSettings.customWaveformBarDir = pref.customWaveformBarDir;
-		themeSettings.waveformBarAutoDelete = pref.waveformBarAutoDelete;
-		themeSettings.themePerformance = pref.themePerformance;
-		themeSettings.devTools = pref.devTools;
-		themeSettings.disableRightClick = pref.disableRightClick;
-	} else {
-		pref.themeDayNightMode = custom ? themeSettings.themeDayNightMode : false;
-		pref.customThemeFonts = custom ? themeSettings.customThemeFonts : false;
-		pref.customPreloaderLogo = custom ? themeSettings.customPreloaderLogo : false;
-		pref.customThemeImages = custom ? themeSettings.customThemeImages : false;
-		ppt.albumArtDiskCache = custom ? themeSettings.albumArtDiskCache : true;
-		ppt.albumArtPreLoad = custom ? themeSettings.albumArtPreLoad : false;
-		pref.customLibraryDir = custom ? themeSettings.customLibraryDir : false;
-		pref.libraryAutoDelete = custom ? themeSettings.libraryAutoDelete : false;
-		pref.customBiographyDir = custom ? themeSettings.customBiographyDir : false;
-		pref.biographyAutoDelete = custom ? themeSettings.biographyAutoDelete : false;
-		pref.customLyricsDir = custom ? themeSettings.customLyricsDir : false;
-		pref.lyricsAutoDelete = custom ? themeSettings.lyricsAutoDelete : false;
-		pref.customWaveformBarDir = custom ? themeSettings.customWaveformBarDir : false;
-		pref.waveformBarAutoDelete = custom ? themeSettings.waveformBarAutoDelete : false;
-		pref.themePerformance = custom ? themeSettings.themePerformance : 'balanced';
-		pref.devTools = custom ? themeSettings.devTools : false;
-		pref.disableRightClick = custom ? themeSettings.disableRightClick : true;
-	}
-
-	// * Not in the config nor in the Options menu
-	pref.savedAlbumArtShow = ppt.albumArtShow;
-	ppt.albumArtDropShadow = pref.libraryThumbnailBorder === 'shadow';
-	pptBio.largerSyncLyricLine = pref.lyricsLargerCurrentSync;
-
-	// * Set variable blendedImg when switching from default settings to config settings that has style Blend or Blend2 activated
-	if ((pref.styleBlend || pref.styleBlend2 || pref.styleProgressBarFill === 'blend') && albumArt) setStyleBlend();
-
-	// * Reinitialize theme presets when user has reset style settings by clicking on "Default" and reloading the config file
-	initThemePresetState();
-
-	// * Reinitialize the saved player size
-	await display.initPlayerSize();
-
-	libraryCanReload = true;
-}
-
-
-/**
- * Loads theme performance presets with various theme settings that affect overall performance.
- * The 'balanced' preset settings will be also applied in 'highQuality' and 'highestQuality'.
- * Used in Options > Settings > Theme performance.
- * @param {string} preset The theme performance preset to load.
- */
-function setThemePerformance(preset) {
-	switch (preset) {
-		case 'balanced': // Default
-			pref.playerSize = 'small';
-			display.autoDetectRes();
-			pref.styleDefault = true;
-			pref.playlistAutoScrollNowPlaying = false;
-			pref.playlistSmoothScrolling = true;
-			pref.libraryAutoScrollNowPlaying = false;
-			ppt.smooth = true;
-			pptBio.smooth = true;
-			pref.showStyledTooltips = true;
-			pref.showPreloaderLogo = true;
-			pref.showHiResAudioBadge = false;
-			pref.showPause = true;
-			pref.seekbar = 'progressbar';
-			pref.progressBarRefreshRate = 'variable';
-			pref.peakmeterBarRefreshRate = 80;
-			pref.waveformBarPaint = 'partial';
-			pref.waveformBarPrepaint = true;
-			pref.waveformBarPrepaintFront = Infinity;
-			pref.waveformBarAnimate = true;
-			pref.waveformBarBPM = true;
-			pref.waveformBarRefreshRate = 200;
-			pref.playlistLayout = 'normal';
-			g_properties.show_album_art = true;
-			pref.playlistTimeRemaining = false;
-			pref.playlistRowHover = true;
-			pref.showDiscArtStub = true;
-			pref.noDiscArtStub = false;
-			pref.discArtStub = 'cdAlbumCover';
-			pref.displayDiscArt = true;
-			pref.spinDiscArt = false;
-			pref.spinDiscArtImageCount = 72;
-			pref.spinDiscArtRedrawInterval = 75;
-			clearInterval(discArtRotationTimer);
-			discArtArray = [];
-			pref.detailsAlbumArtOpacity = 255;
-			pref.detailsAlbumArtDiscAreaOpacity = 255;
-			pref.showGridTimeline_default = true;
-			pref.showGridTimeline_artwork = true;
-			pref.libraryLayout = 'normal';
-			pref.libraryDesign = 'reborn';
-			pref.libraryTheme = 0;
-			ppt.albumArtShow = false;
-			pref.libraryRowHover = true;
-			pref.biographyLayout = 'normal';
-			pref.biographyTheme = 0;
-			pptBio.showFilmStrip = false;
-			cfg.photoNum = 10;
-			ppt.albumArtDiskCache = true;
-			ppt.albumArtPreLoad = false;
-			pref.libraryAutoDelete = false;
-			pref.biographyAutoDelete = false;
-			pref.lyricsAutoDelete = false;
-			pptBio.focusLoadRate = 1000;
-			pptBio.focusLoadImmediate = false;
-			pref.lyricsDropShadowLevel = 2;
-			pref.lyricsFadeScroll = true;
-			pref.lyricsAlbumArt = true;
-			pref.lyricsRememberActiveState = false;
-			pref.lyricsScrollSpeed = 'normal';
-			pref.lyricsScrollRateAvg = 750;
-			pref.lyricsScrollRateMax = 375;
-			break;
-
-		case 'lowestQuality':
-			pref.playerSize = 'small';
-			pref.playerSize_HD_small = true;
-			display.playerSize_HD_small();
-			pref.styleDefault = true;
-			pref.displayRes = 'HD';
-			pref.playlistAutoScrollNowPlaying = false;
-			pref.playlistSmoothScrolling = false;
-			pref.libraryAutoScrollNowPlaying = false;
-			ppt.smooth = false;
-			pptBio.smooth = false;
-			pref.showStyledTooltips = false;
-			pref.showPreloaderLogo = false;
-			pref.showHiResAudioBadge = false;
-			pref.showPause = false;
-			pref.seekbar = 'progressbar';
-			pref.progressBarRefreshRate = 1000;
-			pref.peakmeterBarRefreshRate = 200;
-			pref.waveformBarPaint = 'full';
-			pref.waveformBarPrepaint = false;
-			pref.waveformBarPrepaintFront = 2;
-			pref.waveformBarAnimate = false;
-			pref.waveformBarBPM = false;
-			pref.waveformBarRefreshRate = 1000;
-			pref.playlistLayout = 'normal';
-			g_properties.show_album_art = false;
-			pref.playlistTimeRemaining = false;
-			pref.playlistRowHover = false;
-			pref.showDiscArtStub = false;
-			pref.noDiscArtStub = true;
-			pref.displayDiscArt = false;
-			pref.spinDiscArt = false;
-			pref.spinDiscArtImageCount = 36;
-			pref.spinDiscArtRedrawInterval = 250;
-			pref.showGridTimeline_default = false;
-			pref.showGridTimeline_artwork = false;
-			pref.libraryLayout = 'normal';
-			pref.libraryDesign = 'reborn';
-			pref.libraryTheme = 0;
-			ppt.albumArtShow = false;
-			pref.libraryRowHover = false;
-			pref.biographyLayout = 'normal';
-			pref.biographyTheme = 0;
-			pptBio.showFilmStrip = false;
-			cfg.photoNum = 1;
-			ppt.albumArtDiskCache = true;
-			ppt.albumArtPreLoad = false;
-			pptBio.focusLoadRate = 3000;
-			pref.lyricsDropShadowLevel = 0;
-			pref.lyricsFadeScroll = false;
-			pref.lyricsAlbumArt = false;
-			pref.lyricsRememberActiveState = false;
-			pref.lyricsScrollSpeed = 'fastest';
-			pref.lyricsScrollRateAvg = 300;
-			pref.lyricsScrollRateMax = 150;
-			break;
-
-		case 'lowQuality':
-			pref.playerSize = 'small';
-			pref.styleDefault = true;
-			pref.displayRes = 'HD';
-			pref.showStyledTooltips = false;
-			pref.seekbar = 'progressbar';
-			pref.progressBarRefreshRate = 500;
-			pref.peakmeterBarRefreshRate = 120;
-			pref.waveformBarPaint = 'full';
-			pref.waveformBarPrepaint = false;
-			pref.waveformBarPrepaintFront = 2;
-			pref.waveformBarAnimate = false;
-			pref.waveformBarBPM = false;
-			pref.waveformBarRefreshRate = 500;
-			pref.playlistTimeRemaining = false;
-			pref.showDiscArtStub = false;
-			pref.noDiscArtStub = true;
-			pref.displayDiscArt = false;
-			pref.spinDiscArt = false;
-			pref.spinDiscArtImageCount = 45;
-			pref.spinDiscArtRedrawInterval = 125;
-			pref.libraryTheme = 0;
-			ppt.albumArtShow = false;
-			pref.biographyTheme = 0;
-			pptBio.showFilmStrip = false;
-			cfg.photoNum = 5;
-			ppt.albumArtDiskCache = true;
-			ppt.albumArtPreLoad = false;
-			pptBio.focusLoadRate = 2000;
-			pref.lyricsDropShadowLevel = 0;
-			pref.lyricsScrollSpeed = 'fast';
-			pref.lyricsScrollRateAvg = 500;
-			pref.lyricsScrollRateMax = 250;
-			break;
-
-		case 'highQuality':
-			pref.playerSize = 'normal';
-			pref.progressBarRefreshRate = 100;
-			pref.peakmeterBarRefreshRate = 60;
-			pref.waveformBarPaint = 'partial';
-			pref.waveformBarPrepaint = true;
-			pref.waveformBarPrepaintFront = Infinity;
-			pref.waveformBarRefreshRate = 100;
-			pref.waveformBarRefreshRateVar = false;
-			pref.spinDiscArt = true;
-			pref.spinDiscArtImageCount = 120;
-			pref.spinDiscArtRedrawInterval = 40;
-			setDiscArtRotationTimer();
-			pref.libraryLayout = 'full';
-			ppt.albumArtShow = true;
-			pref.biographyLayout = 'full';
-			cfg.photoNum = 15;
-			ppt.albumArtDiskCache = true;
-			ppt.albumArtPreLoad = true;
-			pptBio.focusLoadRate = 750;
-			pref.lyricsScrollSpeed = 'slow';
-			pref.lyricsScrollRateAvg = 1000;
-			pref.lyricsScrollRateMax = 500;
-			break;
-
-		case 'highestQuality':
-			pref.playerSize = 'large';
-			pref.progressBarRefreshRate = 30;
-			pref.peakmeterBarRefreshRate = 30;
-			pref.waveformBarPaint = 'partial';
-			pref.waveformBarPrepaint = true;
-			pref.waveformBarPrepaintFront = Infinity;
-			pref.waveformBarRefreshRate = 30;
-			pref.waveformBarRefreshRateVar = false;
-			pref.spinDiscArt = true;
-			pref.spinDiscArtImageCount = 180;
-			pref.spinDiscArtRedrawInterval = 10;
-			setDiscArtRotationTimer();
-			pref.detailsAlbumArtDiscAreaOpacity = 178;
-			pref.libraryLayout = 'full';
-			ppt.albumArtShow = true;
-			pref.biographyLayout = 'full';
-			cfg.photoNum = 20;
-			ppt.albumArtDiskCache = true;
-			ppt.albumArtPreLoad = true;
-			pptBio.focusLoadRate = 500;
-			pref.lyricsScrollSpeed = 'slowest';
-			pref.lyricsScrollRateAvg = 1500;
-			pref.lyricsScrollRateMax = 725;
-			break;
-	}
-}
-
-
-/////////////////////
-// * CONFIG FILE * //
-/////////////////////
-if (!config.fileExists) {
-	tf = config.addConfigurationObject(titleFormatSchema, defaultTitleFormatStrings, titleFormatComments);
-	config.addConfigurationObject(imgPathSchema, imgPathDefaults);
-
-	theme            = config.addConfigurationObject(themesSchema, themeDefaults, themesComments);
-	style            = config.addConfigurationObject(stylesSchema, stylesDefaults, stylesComments);
-	preset           = config.addConfigurationObject(presetSchema, presetDefaults, presetComments);
-	themePlayerSize  = config.addConfigurationObject(themePlayerSizeSchema, themePlayerSizeDefaults, themePlayerSizeComments);
-	themeLayout      = config.addConfigurationObject(themeLayoutSchema, themeLayoutDefaults, themeLayoutComments);
-	themeDisplay     = config.addConfigurationObject(themeDisplaySchema, themeDisplayDefaults, themeDisplayComments);
-	themeBrightness  = config.addConfigurationObject(themeBrightnessSchema, themeBrightnessDefaults, themeBrightnessComments);
-	themeFontSize    = config.addConfigurationObject(themeFontSizesSchema, themeFontSizesDefaults, themeFontSizesComments);
-	themeControls    = config.addConfigurationObject(themePlayerControlsSchema, themePlayerControlsDefaults, themePlayerControlsComments);
-
-	themePlaylist    = config.addConfigurationObject(themePlaylistSchema, themePlaylistDefaults, themePlaylistComments);
-	config.addConfigurationObject(themePlaylistGroupingPresetsSchema, themePlaylistGroupingPresets);
-
-	themeDetails     = config.addConfigurationObject(themeDetailsSchema, themeDetailsDefaults, themeDetailsComments);
-	config.addConfigurationObject(gridSchema, defaultMetadataGrid); // We don't assign an object here because these aren't key/value pairs and thus can't use the get/setters
-
-	themeLibrary     = config.addConfigurationObject(themeLibrarySchema, themeLibraryDefaults, themeLibraryComments);
-	themeBiography   = config.addConfigurationObject(themeBiographySchema, themeBiographyDefaults, themeBiographyComments);
-	themeLyrics      = config.addConfigurationObject(themeLyricsSchema, themeLyricsDefaults, themeLyricsComments);
-					   config.addConfigurationObject(lyricFilenamesSchema, lyricFilenamesDefaults);
-	themeSettings    = config.addConfigurationObject(themeSettingsSchema, themeSettingsDefaults, themeSettingsComments);
-	settings         = config.addConfigurationObject(settingsSchema, settingsDefaults, settingsComments);
-
-	console.log('> Writing', configPath);
-	config.writeConfiguration();
-}
-
-if (!configCustom.fileExists) {
-	configCustom.addConfigurationObject(customLibraryDirSchema, customLibraryDirDefaults);
-	configCustom.addConfigurationObject(customBiographyDirSchema, customBiographyDirDefaults);
-	configCustom.addConfigurationObject(customLyricsDirSchema, customLyricsDirDefaults);
-	configCustom.addConfigurationObject(customWaveformBarDirSchema, customWaveformBarDirDefaults);
-
-	customFont        = configCustom.addConfigurationObject(customFontsSchema, customFontsDefaults, customFontsComments);
-	customStylePreset = configCustom.addConfigurationObject(customStylePresetSchema, customStylePresetDefaults, customStylePresetComments);
-	customDiscArtStub = configCustom.addConfigurationObject(customDiscArtStubSchema, customDiscArtStubDefaults, customDiscArtStubComments);
-	customTheme01     = configCustom.addConfigurationObject(customTheme01Schema, customThemeDefaults, customThemeComments);
-	customTheme02     = configCustom.addConfigurationObject(customTheme02Schema, customThemeDefaults, customThemeComments);
-	customTheme03     = configCustom.addConfigurationObject(customTheme03Schema, customThemeDefaults, customThemeComments);
-	customTheme04     = configCustom.addConfigurationObject(customTheme04Schema, customThemeDefaults, customThemeComments);
-	customTheme05     = configCustom.addConfigurationObject(customTheme05Schema, customThemeDefaults, customThemeComments);
-	customTheme06     = configCustom.addConfigurationObject(customTheme06Schema, customThemeDefaults, customThemeComments);
-	customTheme07     = configCustom.addConfigurationObject(customTheme07Schema, customThemeDefaults, customThemeComments);
-	customTheme08     = configCustom.addConfigurationObject(customTheme08Schema, customThemeDefaults, customThemeComments);
-	customTheme09     = configCustom.addConfigurationObject(customTheme09Schema, customThemeDefaults, customThemeComments);
-	customTheme10     = configCustom.addConfigurationObject(customTheme10Schema, customThemeDefaults, customThemeComments);
-
-	console.log('> Writing', configPathCustom);
-	configCustom.writeConfiguration();
-}
-
-if (config.fileExists) {
-	const prefs = config.readConfiguration();
+class ThemeSettingsManager {
 	/**
-	 * While we've read all the values in, we still need to call addConfigurationObject to add the getters/setters
-	 * for the objects so that the file gets automatically written when a setting is changed.
+	 * Creates the `ThemeSettingsManager` instance.
+	 * @param {boolean} saveCfg - The current settings will be saved to the configuration.
+	 * @param {boolean} loadCfg - The settings will be loaded from the configuration.
+	 * @param {boolean} defaultCfg - The default settings will be applied.
 	 */
-	tf = config.addConfigurationObject(titleFormatSchema, Object.assign({}, defaultTitleFormatStrings, prefs.title_format_strings), titleFormatComments);
-	config.addConfigurationObject(imgPathSchema, prefs.imgPaths);
+	constructor(saveCfg, loadCfg, defaultCfg) {
+		/** @private @type {boolean} */
+		this.saveCfg = saveCfg;
+		/** @private @type {boolean} */
+		this.loadCfg = loadCfg;
+		/** @private @type {boolean} */
+		this.defaultCfg = defaultCfg;
+	}
 
-	theme            = config.addConfigurationObject(themesSchema, Object.assign({}, themeDefaults, prefs.theme), themesComments);
-	style            = config.addConfigurationObject(stylesSchema, Object.assign({}, stylesDefaults, prefs.style), stylesComments);
-	preset           = config.addConfigurationObject(presetSchema, Object.assign({}, presetDefaults, prefs.preset), presetComments);
-	themePlayerSize  = config.addConfigurationObject(themePlayerSizeSchema, Object.assign({}, themePlayerSizeDefaults, prefs.themePlayerSize), themePlayerSizeComments);
-	themeLayout      = config.addConfigurationObject(themeLayoutSchema, Object.assign({}, themeLayoutDefaults, prefs.themeLayout), themeLayoutComments);
-	themeDisplay     = config.addConfigurationObject(themeDisplaySchema, Object.assign({}, themeDisplayDefaults, prefs.themeDisplay), themeDisplayComments);
-	themeBrightness  = config.addConfigurationObject(themeBrightnessSchema, Object.assign({}, themeBrightnessDefaults, prefs.themeBrightness), themeBrightnessComments);
-	themeFontSize    = config.addConfigurationObject(themeFontSizesSchema, Object.assign({}, themeFontSizesDefaults, prefs.themeFontSize), themeFontSizesComments);
-	themeControls    = config.addConfigurationObject(themePlayerControlsSchema, Object.assign({}, themePlayerControlsDefaults, prefs.themeControls), themePlayerControlsComments);
-
-	themePlaylist    = config.addConfigurationObject(themePlaylistSchema, Object.assign({}, themePlaylistDefaults, prefs.themePlaylist), themePlaylistComments);
-	config.addConfigurationObject(themePlaylistGroupingPresetsSchema, prefs.themePlaylistGroupingPresets || themePlaylistGroupingPresets);
-
-	themeDetails     = config.addConfigurationObject(themeDetailsSchema, Object.assign({}, themeDetailsDefaults, prefs.themeDetails), themeDetailsComments);
-	if (prefs.metadataGrid) {
-		for (const entry of prefs.metadataGrid) {
-			// Copy comments over to existing object so they aren't lost
-			const gridEntryDefinition = defaultMetadataGrid.find(gridDefItem => gridDefItem.label === entry.label);
-			if (gridEntryDefinition && gridEntryDefinition.comment) {
-				entry.comment = gridEntryDefinition.comment;
-			}
+	// * PRIVATE METHODS * //
+	// #region PRIVATE METHODS
+	/**
+	 * Sets an individual setting based on the config args from the other set methods as follows:
+	 * - `saveCfg`: configObj.keyname = prefObj.keyname;
+	 * - `loadCfg`: prefObj.keyname = configObj.keyname;
+	 * - `defaultCfg`: prefObj.keyname = defaultValue;.
+	 * @param {object} prefObj - The preferences object.
+	 * @param {string} prefKey - The pref key in the preferences object.
+	 * @param {object} configObj - The config object.
+	 * @param {string} configKey - The config key in the presets object.
+	 * @param {*} defaultValue - The default value to set if defaultCfg is true.
+	 * @private
+	 */
+	_setSetting(prefObj, prefKey, configObj, configKey, defaultValue) {
+		if (this.saveCfg && configKey !== false) {
+			configObj[configKey] = prefObj[prefKey];
+		}
+		else if (this.loadCfg && configKey !== false) {
+			prefObj[prefKey] = configObj[configKey];
+		}
+		else if (this.defaultCfg) {
+			prefObj[prefKey] = defaultValue;
 		}
 	}
-	config.addConfigurationObject(gridSchema, prefs.metadataGrid || defaultMetadataGrid); // Can't Object.assign here to add new fields. Add new fields in the upgrade section of migrateCheck
+	// #endregion
 
-	themeLibrary   = config.addConfigurationObject(themeLibrarySchema, Object.assign({}, themeLibraryDefaults, prefs.themeLibrary), themeLibraryComments);
-	themeBiography = config.addConfigurationObject(themeBiographySchema, Object.assign({}, themeBiographyDefaults, prefs.themeBiography), themeBiographyComments);
-	themeLyrics    = config.addConfigurationObject(themeLyricsSchema, Object.assign({}, themeLyricsDefaults, prefs.themeLyrics), themeLyricsComments);
-					 config.addConfigurationObject(lyricFilenamesSchema, prefs.lyricFilenamePatterns || lyricFilenamesDefaults);
-	themeSettings  = config.addConfigurationObject(themeSettingsSchema, Object.assign({}, themeSettingsDefaults, prefs.themeSettings), themeSettingsComments);
-	settings       = config.addConfigurationObject(settingsSchema, Object.assign({}, settingsDefaults, prefs.settings), settingsComments);
+	// * PUBLIC METHODS * //
+	// #region PUBLIC METHODS
+	/**
+	 * Loads default theme settings when pref.customThemeSettings is false, otherwise it loads settings from the config file.
+	 * When using with the parameter, it saves all settings to the config file.
+	 * @param {boolean} saveCfg - Saves current theme settings from the `pref` panel properties object to config file.
+	 * @param {boolean} loadCfg - Loads theme settings from the config file to the `pref` panel properties object.
+	 * @param {boolean} defaultCfg - Loads theme settings based on default setting values.
+	 */
+	async setThemeSettings(saveCfg = false, loadCfg = false, defaultCfg = false) {
+		grm.ui.libraryCanReload = false;
 
-	// Safety checks. Fix up potentially bad vals from config
-	settings.discArtBasename = settings.discArtBasename && settings.discArtBasename.trim().length ? settings.discArtBasename.trim() : 'cd';
-	settings.artworkDisplayTime = Math.min(Math.max(settings.artworkDisplayTime, 5), 120);	// Ensure min of 5sec and max of 120sec
+		this.saveCfg = saveCfg;
+		this.loadCfg = loadCfg;
+		this.defaultCfg = defaultCfg;
 
-	globals.imgPaths = prefs.imgPaths;
-	globals.lyricFilenamePatterns = prefs.lyricFilenamePatterns;
-	metadataGrid = prefs.metadataGrid;
-	configVersion = prefs.configVersion || prefs.version;
-	// When adding new objects to the config file, add them in the version check below
+		await this.setTheme();
+		await this.setStyle();
+		await this.setPreset();
+		await this.setPlayerSize();
+		await this.setLayout();
+		await this.setDisplay();
+		await this.setBrightness();
+		await this.setFontSize();
+		await this.setPlayerControls();
+		await this.setPlaylist();
+		await this.setDetails();
+		await this.setLibrary();
+		await this.setBiography();
+		await this.setLyrics();
+		await this.setSettings();
+		await this.setSettingsNotInConfig();
 
-	// Safe guard when playlist grouping presets or metadata grid do not exist in the config
-	if (!prefs.themePlaylistGroupingPresets || !prefs.metadataGrid) {
-		const fileName = 'georgia-reborn\\configs\\georgia-reborn-config-backup.jsonc';
-		fso.CopyFile(configPath, fb.ProfilePath + fileName);
-		config.writeConfiguration();
+		// * Set variable imgBlended when switching from default settings to config settings that has style Blend or Blend2 activated
+		await this.setStyleBlend();
+
+		// * Reinitialize theme presets when user has reset style settings by clicking on "Default" and reloading the config file
+		await grm.preset.initThemePresetState();
+
+		// * Reinitialize the saved player size
+		await grm.display.initPlayerSize();
+
+		grm.ui.libraryCanReload = true;
 	}
-}
 
-if (configCustom.fileExists) {
-	const prefs = configCustom.readConfiguration();
-
-	configCustom.addConfigurationObject(customLibraryDirSchema, prefs.customLibraryDir || customLibraryDirDefaults);
-	configCustom.addConfigurationObject(customBiographyDirSchema, prefs.customBiographyDir || customBiographyDirDefaults);
-	configCustom.addConfigurationObject(customLyricsDirSchema, prefs.customLyricsDir || customLyricsDirDefaults);
-	configCustom.addConfigurationObject(customWaveformBarDirSchema, prefs.customWaveformBarDir || customWaveformBarDirDefaults);
-
-	customFont        = configCustom.addConfigurationObject(customFontsSchema, Object.assign({}, customFontsDefaults, prefs.customFont), customFontsComments);
-	customStylePreset = configCustom.addConfigurationObject(customStylePresetSchema, Object.assign({}, customStylePresetDefaults, prefs.customStylePreset), customStylePresetComments);
-	customDiscArtStub = configCustom.addConfigurationObject(customDiscArtStubSchema, Object.assign({}, customDiscArtStubDefaults, prefs.customDiscArtStub), customDiscArtStubComments);
-	customTheme01     = configCustom.addConfigurationObject(customTheme01Schema, Object.assign({}, customThemeDefaults, prefs.customTheme01), customThemeComments);
-	customTheme02     = configCustom.addConfigurationObject(customTheme02Schema, Object.assign({}, customThemeDefaults, prefs.customTheme02), customThemeComments);
-	customTheme03     = configCustom.addConfigurationObject(customTheme03Schema, Object.assign({}, customThemeDefaults, prefs.customTheme03), customThemeComments);
-	customTheme04     = configCustom.addConfigurationObject(customTheme04Schema, Object.assign({}, customThemeDefaults, prefs.customTheme04), customThemeComments);
-	customTheme05     = configCustom.addConfigurationObject(customTheme05Schema, Object.assign({}, customThemeDefaults, prefs.customTheme05), customThemeComments);
-	customTheme06     = configCustom.addConfigurationObject(customTheme06Schema, Object.assign({}, customThemeDefaults, prefs.customTheme06), customThemeComments);
-	customTheme07     = configCustom.addConfigurationObject(customTheme07Schema, Object.assign({}, customThemeDefaults, prefs.customTheme07), customThemeComments);
-	customTheme08     = configCustom.addConfigurationObject(customTheme08Schema, Object.assign({}, customThemeDefaults, prefs.customTheme08), customThemeComments);
-	customTheme09     = configCustom.addConfigurationObject(customTheme09Schema, Object.assign({}, customThemeDefaults, prefs.customTheme09), customThemeComments);
-	customTheme10     = configCustom.addConfigurationObject(customTheme10Schema, Object.assign({}, customThemeDefaults, prefs.customTheme10), customThemeComments);
-
-	globals.customLibraryDir = prefs.customLibraryDir;
-	globals.customBiographyDir = prefs.customBiographyDir;
-	globals.customLyricsDir = prefs.customLyricsDir;
-	globals.customWaveformBarDir = prefs.customWaveformBarDir;
-	customFont = prefs.customFont;
-	customStylePreset = prefs.customStylePreset;
-	customDiscArtStub = prefs.customDiscArtStub;
-	configVersion = prefs.configVersion || prefs.version;
-}
-
-
-///////////////////////////
-// * DISC ART SETTINGS * //
-///////////////////////////
-{
-	let count = Number(pref.spinDiscArtImageCount);
-	if (Number.isNaN(count)) { // Check if NaN
-		count = 72;
+	/**
+	 * Sets theme settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 */
+	setTheme() {
+		this._setSetting(grSet, 'theme', grCfg.theme, 'theme', 'reborn');
+		this._setSetting(grSet, 'theme_day', grCfg.theme, 'theme_day', 'white');
+		this._setSetting(grSet, 'theme_night', grCfg.theme, 'theme_night', 'black');
 	}
-	pref.spinDiscArtImageCount = count;
-	let interval = Number(pref.spinDiscArtRedrawInterval);
-	if (Number.isNaN(interval)) {
-		interval = 200;
+
+	/**
+	 * Sets style settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 */
+	setStyle() {
+		this._setSetting(grSet, 'styleDefault', grCfg.style, 'default', true);
+		this._setSetting(grSet, 'styleNighttime', grCfg.style, 'nighttime', false);
+		this._setSetting(grSet, 'styleBevel', grCfg.style, 'bevel', false);
+		this._setSetting(grSet, 'styleBlend', grCfg.style, 'blend', false);
+		this._setSetting(grSet, 'styleBlend2', grCfg.style, 'blend2', false);
+		this._setSetting(grSet, 'styleGradient', grCfg.style, 'gradient', false);
+		this._setSetting(grSet, 'styleGradient2', grCfg.style, 'gradient2', false);
+		this._setSetting(grSet, 'styleAlternative', grCfg.style, 'alternative', false);
+		this._setSetting(grSet, 'styleAlternative2', grCfg.style, 'alternative2', false);
+		this._setSetting(grSet, 'styleBlackAndWhite', grCfg.style, 'blackAndWhite', false);
+		this._setSetting(grSet, 'styleBlackAndWhite2', grCfg.style, 'blackAndWhite2', false);
+		this._setSetting(grSet, 'styleBlackAndWhiteReborn', grCfg.style, 'blackAndWhiteReborn', false);
+		this._setSetting(grSet, 'styleBlackReborn', grCfg.style, 'blackReborn', false);
+		this._setSetting(grSet, 'styleRebornWhite', grCfg.style, 'rebornWhite', false);
+		this._setSetting(grSet, 'styleRebornBlack', grCfg.style, 'rebornBlack', false);
+		this._setSetting(grSet, 'styleRebornFusion', grCfg.style, 'rebornFusion', false);
+		this._setSetting(grSet, 'styleRebornFusion2', grCfg.style, 'rebornFusion2', false);
+		this._setSetting(grSet, 'styleRebornFusionAccent', grCfg.style, 'rebornFusionAccent', false);
+		this._setSetting(grSet, 'styleRandomPastel', grCfg.style, 'randomPastel', false);
+		this._setSetting(grSet, 'styleRandomDark', grCfg.style, 'randomDark', false);
+		this._setSetting(grSet, 'styleRandomAutoColor', grCfg.style, 'randomAutoColor', 'off');
+		this._setSetting(grSet, 'styleTopMenuButtons', grCfg.style, 'topMenuButtons', 'default');
+		this._setSetting(grSet, 'styleTransportButtons', grCfg.style, 'transportButtons', 'default');
+		this._setSetting(grSet, 'styleProgressBarDesign', grCfg.style, 'progressBarDesign', 'default');
+		this._setSetting(grSet, 'styleProgressBar', grCfg.style, 'progressBar', 'default');
+		this._setSetting(grSet, 'styleProgressBarFill', grCfg.style, 'progressBarFill', 'default');
+		this._setSetting(grSet, 'styleVolumeBarDesign', grCfg.style, 'volumeBarDesign', 'default');
+		this._setSetting(grSet, 'styleVolumeBar', grCfg.style, 'volumeBar', 'default');
+		this._setSetting(grSet, 'styleVolumeBarFill', grCfg.style, 'volumeBarFill', 'default');
+		this._setSetting(grSet, 'styleNighttime_day', grCfg.style, 'nighttime_day', false);
+		this._setSetting(grSet, 'styleBevel_day', grCfg.style, 'bevel_day', false);
+		this._setSetting(grSet, 'styleBlend_day', grCfg.style, 'blend_day', false);
+		this._setSetting(grSet, 'styleBlend2_day', grCfg.style, 'blend2_day', false);
+		this._setSetting(grSet, 'styleGradient_day', grCfg.style, 'gradient_day', false);
+		this._setSetting(grSet, 'styleGradient2_day', grCfg.style, 'gradient2_day', false);
+		this._setSetting(grSet, 'styleAlternative_day', grCfg.style, 'alternative_day', false);
+		this._setSetting(grSet, 'styleAlternative2_day', grCfg.style, 'alternative2_day', false);
+		this._setSetting(grSet, 'styleBlackAndWhite_day', grCfg.style, 'blackAndWhite_day', false);
+		this._setSetting(grSet, 'styleBlackAndWhite2_day', grCfg.style, 'blackAndWhite2_day', false);
+		this._setSetting(grSet, 'styleBlackAndWhiteReborn_day', grCfg.style, 'blackAndWhiteReborn_day', false);
+		this._setSetting(grSet, 'styleBlackReborn_day', grCfg.style, 'blackReborn_day', false);
+		this._setSetting(grSet, 'styleRebornWhite_day', grCfg.style, 'rebornWhite_day', false);
+		this._setSetting(grSet, 'styleRebornBlack_day', grCfg.style, 'rebornBlack_day', false);
+		this._setSetting(grSet, 'styleRebornFusion_day', grCfg.style, 'rebornFusion_day', false);
+		this._setSetting(grSet, 'styleRebornFusion2_day', grCfg.style, 'rebornFusion2_day', false);
+		this._setSetting(grSet, 'styleRebornFusionAccent_day', grCfg.style, 'rebornFusionAccent_day', false);
+		this._setSetting(grSet, 'styleRandomPastel_day', grCfg.style, 'randomPastel_day', false);
+		this._setSetting(grSet, 'styleRandomDark_day', grCfg.style, 'randomDark_day', false);
+		this._setSetting(grSet, 'styleRandomAutoColor_day', grCfg.style, 'randomAutoColor_day', 'off');
+		this._setSetting(grSet, 'styleTopMenuButtons_day', grCfg.style, 'topMenuButtons_day', 'default');
+		this._setSetting(grSet, 'styleTransportButtons_day', grCfg.style, 'transportButtons_day', 'default');
+		this._setSetting(grSet, 'styleProgressBarDesign_day', grCfg.style, 'progressBarDesign_day', 'default');
+		this._setSetting(grSet, 'styleProgressBar_day', grCfg.style, 'progressBar_day', 'default');
+		this._setSetting(grSet, 'styleProgressBarFill_day', grCfg.style, 'progressBarFill_day', 'default');
+		this._setSetting(grSet, 'styleVolumeBarDesign_day', grCfg.style, 'volumeBarDesign_day', 'default');
+		this._setSetting(grSet, 'styleVolumeBar_day', grCfg.style, 'volumeBar_day', 'default');
+		this._setSetting(grSet, 'styleVolumeBarFill_day', grCfg.style, 'volumeBarFill_day', 'default');
+		this._setSetting(grSet, 'styleNighttime_night', grCfg.style, 'nighttime_night', false);
+		this._setSetting(grSet, 'styleBevel_night', grCfg.style, 'bevel_night', false);
+		this._setSetting(grSet, 'styleBlend_night', grCfg.style, 'blend_night', false);
+		this._setSetting(grSet, 'styleBlend2_night', grCfg.style, 'blend2_night', false);
+		this._setSetting(grSet, 'styleGradient_night', grCfg.style, 'gradient_night', false);
+		this._setSetting(grSet, 'styleGradient2_night', grCfg.style, 'gradient2_night', false);
+		this._setSetting(grSet, 'styleAlternative_night', grCfg.style, 'alternative_night', false);
+		this._setSetting(grSet, 'styleAlternative2_night', grCfg.style, 'alternative2_night', false);
+		this._setSetting(grSet, 'styleBlackAndWhite_night', grCfg.style, 'blackAndWhite_night', false);
+		this._setSetting(grSet, 'styleBlackAndWhite2_night', grCfg.style, 'blackAndWhite2_night', false);
+		this._setSetting(grSet, 'styleBlackAndWhiteReborn_night', grCfg.style, 'blackAndWhiteReborn_night', false);
+		this._setSetting(grSet, 'styleBlackReborn_night', grCfg.style, 'blackReborn_night', false);
+		this._setSetting(grSet, 'styleRebornWhite_night', grCfg.style, 'rebornWhite_night', false);
+		this._setSetting(grSet, 'styleRebornBlack_night', grCfg.style, 'rebornBlack_night', false);
+		this._setSetting(grSet, 'styleRebornFusion_night', grCfg.style, 'rebornFusion_night', false);
+		this._setSetting(grSet, 'styleRebornFusion2_night', grCfg.style, 'rebornFusion2_night', false);
+		this._setSetting(grSet, 'styleRebornFusionAccent_night', grCfg.style, 'rebornFusionAccent_night', false);
+		this._setSetting(grSet, 'styleRandomPastel_night', grCfg.style, 'randomPastel_night', false);
+		this._setSetting(grSet, 'styleRandomDark_night', grCfg.style, 'randomDark_night', false);
+		this._setSetting(grSet, 'styleRandomAutoColor_night', grCfg.style, 'randomAutoColor_night', 'off');
+		this._setSetting(grSet, 'styleTopMenuButtons_night', grCfg.style, 'topMenuButtons_night', 'default');
+		this._setSetting(grSet, 'styleTransportButtons_night', grCfg.style, 'transportButtons_night', 'default');
+		this._setSetting(grSet, 'styleProgressBarDesign_night', grCfg.style, 'progressBarDesign_night', 'default');
+		this._setSetting(grSet, 'styleProgressBar_night', grCfg.style, 'progressBar_night', 'default');
+		this._setSetting(grSet, 'styleProgressBarFill_night', grCfg.style, 'progressBarFill_night', 'default');
+		this._setSetting(grSet, 'styleVolumeBarDesign_night', grCfg.style, 'volumeBarDesign_night', 'default');
+		this._setSetting(grSet, 'styleVolumeBar_night', grCfg.style, 'volumeBar_night', 'default');
+		this._setSetting(grSet, 'styleVolumeBarFill_night', grCfg.style, 'volumeBarFill_night', 'default');
 	}
-	pref.spinDiscArtRedrawInterval = Math.max(10, interval);
-}
-
-
-////////////////////////////
-// * THEME UPDATE CHECK * //
-////////////////////////////
-/**
- * Compares the latest version with the existing config version.
- * @param {string} version The latest version.
- * @param {string} storedVersion The config version.
- */
-function migrateCheck(version, storedVersion) {
-	/**
-	 * Checks if settings exist in the configuration file.
-	 * @param {object} settings The settings object from the configuration file.
-	 * @param {...string} settingNames The names of the settings to check.
-	 * @returns {boolean} Returns true if all specified settings exist, otherwise false.
-	 */
-	const CheckSettings = (settings, ...settingNames) => settingNames.every(settingName => Object.prototype.hasOwnProperty.call(settings, settingName));
 
 	/**
-	 * Deletes settings from the configuration file.
-	 * @param {object} settings The settings object from the configuration file.
-	 * @param {...string} settingNames The names of the settings to remove.
+	 * Sets preset settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
 	 */
-	const DeleteSettings = (settings, ...settingNames) => {
-		for (const settingName of settingNames) {
-			delete settings[settingName];
-		}
-	};
+	setPreset() {
+		this._setSetting(grSet, 'presetSelectMode', grCfg.preset, 'selectMode', 'default');
+		this._setSetting(grSet, 'presetSelectWhite', grCfg.preset, 'selectWhitePresets', true);
+		this._setSetting(grSet, 'presetSelectBlack', grCfg.preset, 'selectBlackPresets', true);
+		this._setSetting(grSet, 'presetSelectReborn', grCfg.preset, 'selectRebornPresets', true);
+		this._setSetting(grSet, 'presetSelectRandom', grCfg.preset, 'selectRandomPresets', true);
+		this._setSetting(grSet, 'presetSelectBlue', grCfg.preset, 'selectBluePresets', true);
+		this._setSetting(grSet, 'presetSelectDarkblue', grCfg.preset, 'selectDarkbluePresets', true);
+		this._setSetting(grSet, 'presetSelectRed', grCfg.preset, 'selectRedPresets', true);
+		this._setSetting(grSet, 'presetSelectCream', grCfg.preset, 'selectCreamPresets', true);
+		this._setSetting(grSet, 'presetSelectNblue', grCfg.preset, 'selectNbluePresets', true);
+		this._setSetting(grSet, 'presetSelectNgreen', grCfg.preset, 'selectNgreenPresets', true);
+		this._setSetting(grSet, 'presetSelectNred', grCfg.preset, 'selectNredPresets', true);
+		this._setSetting(grSet, 'presetSelectNgold', grCfg.preset, 'selectNgoldPresets', true);
+		this._setSetting(grSet, 'presetSelectCustom', grCfg.preset, 'selectCustomPresets', true);
+		this._setSetting(grSet, 'presetAutoRandomMode', grCfg.preset, 'autoRandomMode', 'dblclick');
+		this._setSetting(grSet, 'presetIndicator', grCfg.preset, 'indicator', true);
+	}
 
 	/**
-	 * Checks if specific entry exist in the metadata grid configuration.
-	 * @param {MetadataGridEntry[]} grid Each element in the array is an object with a `label` property.
-	 * @param {...string} labels The labels of the settings to check.
-	 * @returns {boolean} Returns true if all specified labels exist, otherwise false.
+	 * Sets player size settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
 	 */
-	const CheckGridEntry = (grid, ...labels) =>
-		labels.every(label => grid.some(gridEntry => gridEntry.label.toLowerCase() === label.toLowerCase()));
+	setPlayerSize() {
+		this._setSetting(grSet, 'playerSize', grCfg.themePlayerSize, 'playerSize', 'small');
+		this._setSetting(grSet, 'savedWidth_default', grCfg.themePlayerSize, 'savedWidth_default', 1140);
+		this._setSetting(grSet, 'savedHeight_default', grCfg.themePlayerSize, 'savedHeight_default', 730);
+		this._setSetting(grSet, 'savedWidth_artwork', grCfg.themePlayerSize, 'savedWidth_artwork', 526);
+		this._setSetting(grSet, 'savedHeight_artwork', grCfg.themePlayerSize, 'savedHeight_artwork', 686);
+		this._setSetting(grSet, 'savedWidth_compact', grCfg.themePlayerSize, 'savedWidth_compact', 484);
+		this._setSetting(grSet, 'savedHeight_compact', grCfg.themePlayerSize, 'savedHeight_compact', 730);
+
+		// ! System settings not configurable
+		grSet.playerSize_4K_small = false;
+		grSet.playerSize_4K_normal = false;
+		grSet.playerSize_4K_large = false;
+		grSet.playerSize_QHD_small = false;
+		grSet.playerSize_QHD_normal = false;
+		grSet.playerSize_QHD_large = false;
+		grSet.playerSize_HD_small = false;
+		grSet.playerSize_HD_normal = false;
+		grSet.playerSize_HD_large = false;
+	}
 
 	/**
-	 * Renames an entry in the metadata grid with a new label name.
-	 * @param {MetadataGridEntry[]} grid Each element in the array is an object with a `label` property.
-	 * @param {string} oldLabel The old label name to rename.
-	 * @param {string} newLabel The new label name that will be replaced in the config file.
+	 * Sets layout settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
 	 */
-	const RenameGridEntry = (grid, oldLabel, newLabel) => {
-		const entryIdx = grid.findIndex(gridEntry => gridEntry && gridEntry.label.toLowerCase() === oldLabel.toLowerCase());
-		if (entryIdx >= 0) {
-			grid[entryIdx].label = newLabel;
-		}
-	};
+	setLayout() {
+		this._setSetting(grSet, 'layout', grCfg.themeLayout, 'layout', 'default');
+	}
 
 	/**
-	 * Adds or Replaces values in the metadata grid with updated string from defaults.
-	 * @param {MetadataGridEntry[]} grid Each element in the array is an object with a `label` property.
-	 * @param {string} label The label of the value to add or replace.
-	 * @param {number} position 0-based index of place to insert new value if existing entry not found.
+	 * Sets display settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
 	 */
-	const ReplaceGridEntry = (grid, label, position) => {
-		const entryIdx = grid.findIndex(gridEntry => gridEntry && gridEntry.label.toLowerCase() === label.toLowerCase());
-		const newVal = defaultMetadataGrid[defaultMetadataGrid.findIndex(e => e && e.label.toLowerCase() === label.toLowerCase())];
-		if (entryIdx >= 0) {
-			grid[entryIdx] = newVal;
+	setDisplay() {
+		this._setSetting(grSet, 'displayRes', grCfg.themeDisplay, 'resolution', 'HD');
+	}
+
+	/**
+	 * Sets brightness settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 */
+	setBrightness() {
+		this._setSetting(grSet, 'themeBrightness', grCfg.themeBrightness, 'themeBrightness', 'default');
+		this._setSetting(grSet, 'themeBrightness_day', grCfg.themeBrightness, 'themeBrightness_day', 'default');
+		this._setSetting(grSet, 'themeBrightness_night', grCfg.themeBrightness, 'themeBrightness_night', 'default');
+	}
+
+	/**
+	 * Sets font size settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 */
+	setFontSize() {
+		this._setSetting(grSet, 'menuFontSize_default', grCfg.themeFontSize, 'menuFontSize_default', RES._QHD ? 14 : 12);
+		this._setSetting(grSet, 'menuFontSize_artwork', grCfg.themeFontSize, 'menuFontSize_artwork', RES._QHD ? 14 : 12);
+		this._setSetting(grSet, 'menuFontSize_compact', grCfg.themeFontSize, 'menuFontSize_compact', RES._QHD ? 14 : 12);
+		this._setSetting(grSet, 'lowerBarFontSize_default', grCfg.themeFontSize, 'lowerBarFontSize_default', RES._QHD ? 20 : 18);
+		this._setSetting(grSet, 'lowerBarFontSize_artwork', grCfg.themeFontSize, 'lowerBarFontSize_artwork', RES._QHD ? 18 : 16);
+		this._setSetting(grSet, 'lowerBarFontSize_compact', grCfg.themeFontSize, 'lowerBarFontSize_compact', RES._QHD ? 18 : 16);
+		this._setSetting(grSet, 'notificationFontSize_default', grCfg.themeFontSize, 'notificationFontSize_default', RES._QHD ? 20 : 18);
+		this._setSetting(grSet, 'notificationFontSize_artwork', grCfg.themeFontSize, 'notificationFontSize_artwork', RES._QHD ? 18 : 16);
+		this._setSetting(grSet, 'notificationFontSize_compact', grCfg.themeFontSize, 'notificationFontSize_compact', RES._QHD ? 18 : 16);
+		this._setSetting(grSet, 'popupFontSize_default', grCfg.themeFontSize, 'popupFontSize_default', RES._QHD ? 18 : 16);
+		this._setSetting(grSet, 'popupFontSize_artwork', grCfg.themeFontSize, 'popupFontSize_artwork', RES._QHD ? 16 : 14);
+		this._setSetting(grSet, 'popupFontSize_compact', grCfg.themeFontSize, 'popupFontSize_compact', RES._QHD ? 16 : 14);
+		this._setSetting(grSet, 'tooltipFontSize_default', grCfg.themeFontSize, 'tooltipFontSize_default', RES._QHD ? 18 : 16);
+		this._setSetting(grSet, 'tooltipFontSize_artwork', grCfg.themeFontSize, 'tooltipFontSize_artwork', RES._QHD ? 16 : 14);
+		this._setSetting(grSet, 'tooltipFontSize_compact', grCfg.themeFontSize, 'tooltipFontSize_compact', RES._QHD ? 16 : 14);
+		this._setSetting(grSet, 'gridArtistFontSize_default', grCfg.themeFontSize, 'gridArtistFontSize_default', RES._QHD ? 20 : 18);
+		this._setSetting(grSet, 'gridArtistFontSize_artwork', grCfg.themeFontSize, 'gridArtistFontSize_artwork', RES._QHD ? 20 : 18);
+		this._setSetting(grSet, 'gridTrackNumFontSize_default', grCfg.themeFontSize, 'gridTrackNumFontSize_default', RES._QHD ? 20 : 18);
+		this._setSetting(grSet, 'gridTrackNumFontSize_artwork', grCfg.themeFontSize, 'gridTrackNumFontSize_artwork', RES._QHD ? 20 : 18);
+		this._setSetting(grSet, 'gridTitleFontSize_default', grCfg.themeFontSize, 'gridTitleFontSize_default', RES._QHD ? 20 : 18);
+		this._setSetting(grSet, 'gridTitleFontSize_artwork', grCfg.themeFontSize, 'gridTitleFontSize_artwork', RES._QHD ? 20 : 18);
+		this._setSetting(grSet, 'gridAlbumFontSize_default', grCfg.themeFontSize, 'gridAlbumFontSize_default', RES._QHD ? 20 : 18);
+		this._setSetting(grSet, 'gridAlbumFontSize_artwork', grCfg.themeFontSize, 'gridAlbumFontSize_artwork', RES._QHD ? 20 : 18);
+		this._setSetting(grSet, 'gridKeyFontSize_default', grCfg.themeFontSize, 'gridKeyFontSize_default', RES._QHD ? 19 : 17);
+		this._setSetting(grSet, 'gridKeyFontSize_artwork', grCfg.themeFontSize, 'gridKeyFontSize_artwork', RES._QHD ? 19 : 17);
+		this._setSetting(grSet, 'gridValueFontSize_default', grCfg.themeFontSize, 'gridValueFontSize_default', RES._QHD ? 19 : 17);
+		this._setSetting(grSet, 'gridValueFontSize_artwork', grCfg.themeFontSize, 'gridValueFontSize_artwork', RES._QHD ? 19 : 17);
+		this._setSetting(grSet, 'playlistHeaderFontSize_default', grCfg.themeFontSize, 'playlistHeaderFontSize_default', RES._QHD ? 17 : 15);
+		this._setSetting(grSet, 'playlistHeaderFontSize_artwork', grCfg.themeFontSize, 'playlistHeaderFontSize_artwork', RES._QHD ? 17 : 15);
+		this._setSetting(grSet, 'playlistHeaderFontSize_compact', grCfg.themeFontSize, 'playlistHeaderFontSize_compact', RES._QHD ? 17 : 15);
+		this._setSetting(grSet, 'playlistFontSize_default', grCfg.themeFontSize, 'playlistFontSize_default', RES._QHD ? 14 : 12);
+		this._setSetting(grSet, 'playlistFontSize_artwork', grCfg.themeFontSize, 'playlistFontSize_artwork', RES._QHD ? 14 : 12);
+		this._setSetting(grSet, 'playlistFontSize_compact', grCfg.themeFontSize, 'playlistFontSize_compact', RES._QHD ? 14 : 12);
+		this._setSetting(libSet, 'baseFontSize_default', grCfg.themeFontSize, 'libraryFontSize_default', RES._4K ? 24 : RES._QHD ? 14 : 12);
+		this._setSetting(libSet, 'baseFontSize_artwork', grCfg.themeFontSize, 'libraryFontSize_artwork', RES._4K ? 24 : RES._QHD ? 14 : 12);
+		this._setSetting(bioSet, 'baseFontSizeBio_default', grCfg.themeFontSize, 'biographyFontSize_default', RES._4K ? 24 : RES._QHD ? 14 : 12);
+		this._setSetting(bioSet, 'baseFontSizeBio_artwork', grCfg.themeFontSize, 'biographyFontSize_artwork', RES._4K ? 24 : RES._QHD ? 14 : 12);
+		this._setSetting(grSet, 'lyricsFontSize_default', grCfg.themeFontSize, 'lyricsFontSize_default', RES._QHD ? 22 : 20);
+		this._setSetting(grSet, 'lyricsFontSize_artwork', grCfg.themeFontSize, 'lyricsFontSize_artwork', RES._QHD ? 22 : 20);
+	}
+
+	/**
+	 * Sets player controls settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 */
+	setPlayerControls() {
+		// * Special cases
+		if (this.saveCfg) {
+			grCfg.themeControls.waveformBarPrepaintFront = grSet.waveformBarPrepaintFront === Infinity ? 'Infinity' : grSet.waveformBarPrepaintFront;
 		} else {
-			grid.splice(position, 0, newVal);
+			grSet.waveformBarPrepaintFront = this.loadCfg ? grCfg.themeControls.waveformBarPrepaintFront : false; // ! Do not use Infinity here, set to false has same effect
 		}
-	};
 
-	const configFile = config.readConfiguration();
-	const configFileCustom = configCustom.readConfiguration();
-	const fileName = `georgia-reborn\\configs\\georgia-reborn-config-${storedVersion}.jsonc`;
-	const fileNameCustom = `georgia-reborn\\configs\\georgia-reborn-custom-${storedVersion}.jsonc`;
-
-	// * Remove old settings from the config file and add the new settings
-	const oldSettings = ['playlistSortArtistDateAsc', 'playlistSortArtistDateDesc', 'playlistSortAlbum', 'playlistSortTitle', 'playlistSortTracknum', 'playlistSortArtistYearAsc', 'playlistSortArtistYearDesc'];
-	if (CheckSettings(configFile.settings, ...oldSettings)) {
-		fso.CopyFile(configPath, fb.ProfilePath + fileName);
-		config.writeConfiguration();
-		DeleteSettings(configFile.settings, ...oldSettings);
-		config.addConfigurationObject(settingsSchema, configFile.settings);
-		config.addConfigurationObject(settingsSchema, settingsDefaults, settingsComments);
-		config.writeConfiguration(configFile.settings);
+		this._setSetting(grSet, 'showPanelDetails_default', grCfg.themeControls, 'showPanelDetails_default', true);
+		this._setSetting(grSet, 'showPanelDetails_artwork', grCfg.themeControls, 'showPanelDetails_artwork', true);
+		this._setSetting(grSet, 'showPanelLibrary_default', grCfg.themeControls, 'showPanelLibrary_default', true);
+		this._setSetting(grSet, 'showPanelLibrary_artwork', grCfg.themeControls, 'showPanelLibrary_artwork', true);
+		this._setSetting(grSet, 'showPanelBiography_default', grCfg.themeControls, 'showPanelBiography_default', true);
+		this._setSetting(grSet, 'showPanelBiography_artwork', grCfg.themeControls, 'showPanelBiography_artwork', true);
+		this._setSetting(grSet, 'showPanelLyrics_default', grCfg.themeControls, 'showPanelLyrics_default', true);
+		this._setSetting(grSet, 'showPanelLyrics_artwork', grCfg.themeControls, 'showPanelLyrics_artwork', true);
+		this._setSetting(grSet, 'showPanelRating_default', grCfg.themeControls, 'showPanelRating_default', true);
+		this._setSetting(grSet, 'showPanelRating_artwork', grCfg.themeControls, 'showPanelRating_artwork', true);
+		this._setSetting(grSet, 'topMenuAlignment', grCfg.themeControls, 'topMenuAlignment', 'center');
+		this._setSetting(grSet, 'topMenuCompact', grCfg.themeControls, 'topMenuCompact', true);
+		this._setSetting(grSet, 'albumArtAlign', grCfg.themeControls, 'albumArtAlign', 'right');
+		this._setSetting(grSet, 'albumArtBg', grCfg.themeControls, 'albumArtBg', 'left');
+		this._setSetting(grSet, 'albumArtScale', grCfg.themeControls, 'albumArtScale', 'cropped');
+		this._setSetting(grSet, 'albumArtAspectRatioLimit', grCfg.themeControls, 'albumArtAspectRatioLimit', true);
+		this._setSetting(grSet, 'cycleArt', grCfg.themeControls, 'cycleArt', false);
+		this._setSetting(grSet, 'cycleArtMWheel', grCfg.themeControls, 'cycleArtMWheel', true);
+		this._setSetting(grSet, 'loadEmbeddedAlbumArtFirst', grCfg.themeControls, 'loadEmbeddedAlbumArtFirst', false);
+		this._setSetting(grSet, 'showHiResAudioBadge', grCfg.themeControls, 'showHiResAudioBadge', false);
+		this._setSetting(grSet, 'hiResAudioBadgeRound', grCfg.themeControls, 'hiResAudioBadgeRound', false);
+		this._setSetting(grSet, 'hiResAudioBadgeSize', grCfg.themeControls, 'hiResAudioBadgeSize', 'normal');
+		this._setSetting(grSet, 'hiResAudioBadgePos', grCfg.themeControls, 'hiResAudioBadgePos', 'bottomright');
+		this._setSetting(grSet, 'showPause', grCfg.themeControls, 'showPause', true);
+		this._setSetting(grSet, 'jumpSearchIncludeLibrary', grCfg.themeControls, 'jumpSearchIncludeLibrary', true);
+		this._setSetting(grSet, 'jumpSearchIncludePlaylist', grCfg.themeControls, 'jumpSearchIncludePlaylist', true);
+		this._setSetting(grSet, 'jumpSearchComposerOnly', grCfg.themeControls, 'jumpSearchComposerOnly', false);
+		this._setSetting(grSet, 'playlistWheelScrollSteps', grCfg.themeControls, 'playlistWheelScrollSteps', 3);
+		this._setSetting(grSet, 'playlistWheelScrollDuration', grCfg.themeControls, 'playlistWheelScrollDuration', 300);
+		this._setSetting(grSet, 'playlistAutoScrollNowPlaying', grCfg.themeControls, 'playlistAutoScrollNowPlaying', false);
+		this._setSetting(grSet, 'playlistAutoHideScrollbar', grCfg.themeControls, 'playlistAutoHideScrollbar', true);
+		this._setSetting(grSet, 'playlistSmoothScrolling', grCfg.themeControls, 'playlistSmoothScrolling', true);
+		this._setSetting(libSet, 'scrollStep', grCfg.themeControls, 'scrollStepLib', 3);
+		this._setSetting(libSet, 'durationScroll', grCfg.themeControls, 'durationScrollLib', 500);
+		this._setSetting(grSet, 'libraryAutoScrollNowPlaying', grCfg.themeControls, 'libraryAutoScrollNowPlaying', false);
+		this._setSetting(grSet, 'libraryAutoHideScrollbar', grCfg.themeControls, 'libraryAutoHideScrollbar', true);
+		this._setSetting(libSet, 'sbarShow', false, false, grSet.libraryAutoHideScrollbar ? 1 : 2);
+		this._setSetting(libSet, 'smooth', grCfg.themeControls, 'smoothLib', true);
+		this._setSetting(bioSet, 'scrollStep', grCfg.themeControls, 'scrollStepBio', 3);
+		this._setSetting(bioSet, 'durationScroll', grCfg.themeControls, 'durationScrollBio', 500);
+		this._setSetting(grSet, 'biographyAutoHideScrollbar', grCfg.themeControls, 'biographyAutoHideScrollbar', true);
+		this._setSetting(bioSet, 'sbarShow', false, false, grSet.biographyAutoHideScrollbar ? 1 : 2);
+		this._setSetting(bioSet, 'smooth', grCfg.themeControls, 'smoothBio', true);
+		this._setSetting(grSet, 'showTooltipTruncated', grCfg.themeControls, 'showTooltipTruncated', true);
+		this._setSetting(grSet, 'showTooltipTimeline', grCfg.themeControls, 'showTooltipTimeline', true);
+		this._setSetting(grSet, 'showTooltipVolume', grCfg.themeControls, 'showTooltipVolume', false);
+		this._setSetting(grSet, 'showTooltipVolumeInPercent', grCfg.themeControls, 'showTooltipVolumeInPercent', false);
+		this._setSetting(grSet, 'showTooltipMain', grCfg.themeControls, 'showTooltipMain', false);
+		this._setSetting(grSet, 'showTooltipLibrary', grCfg.themeControls, 'showTooltipLibrary', false);
+		this._setSetting(grSet, 'showTooltipBiography', grCfg.themeControls, 'showTooltipBiography', false);
+		this._setSetting(grSet, 'showStyledTooltips', grCfg.themeControls, 'showStyledTooltips', true);
+		this._setSetting(grSet, 'panelWidthAuto', grCfg.themeControls, 'panelWidthAuto', false);
+		this._setSetting(grSet, 'showPanelOnStartup', grCfg.themeControls, 'showPanelOnStartup', 'playlist');
+		this._setSetting(grSet, 'showPreloaderLogo', grCfg.themeControls, 'showPreloaderLogo', true);
+		this._setSetting(grSet, 'returnToHomeOnPlaybackStop', grCfg.themeControls, 'returnToHomeOnPlaybackStop', true);
+		this._setSetting(grSet, 'addTracksPlaylistSwitch', grCfg.themeControls, 'addTracksPlaylistSwitch', false);
+		this._setSetting(grSet, 'hideMiddlePanelShadow', grCfg.themeControls, 'hideMiddlePanelShadow', false);
+		this._setSetting(grSet, 'lockPlayerSize', grCfg.themeControls, 'lockPlayerSize', false);
+		this._setSetting(grSet, 'transportButtonSize_default', grCfg.themeControls, 'transportButtonSize_default', 32);
+		this._setSetting(grSet, 'transportButtonSize_artwork', grCfg.themeControls, 'transportButtonSize_artwork', 32);
+		this._setSetting(grSet, 'transportButtonSize_compact', grCfg.themeControls, 'transportButtonSize_compact', 32);
+		this._setSetting(grSet, 'transportButtonSpacing_default', grCfg.themeControls, 'transportButtonSpacing_default', 5);
+		this._setSetting(grSet, 'transportButtonSpacing_artwork', grCfg.themeControls, 'transportButtonSpacing_artwork', 5);
+		this._setSetting(grSet, 'transportButtonSpacing_compact', grCfg.themeControls, 'transportButtonSpacing_compact', 5);
+		this._setSetting(grSet, 'showTransportControls_default', grCfg.themeControls, 'showTransportControls_default', true);
+		this._setSetting(grSet, 'showTransportControls_artwork', grCfg.themeControls, 'showTransportControls_artwork', true);
+		this._setSetting(grSet, 'showTransportControls_compact', grCfg.themeControls, 'showTransportControls_compact', true);
+		this._setSetting(grSet, 'showPlaybackOrderBtn_default', grCfg.themeControls, 'showPlaybackOrderBtn_default', true);
+		this._setSetting(grSet, 'showPlaybackOrderBtn_artwork', grCfg.themeControls, 'showPlaybackOrderBtn_artwork', true);
+		this._setSetting(grSet, 'showPlaybackOrderBtn_compact', grCfg.themeControls, 'showPlaybackOrderBtn_compact', true);
+		this._setSetting(grSet, 'showReloadBtn_default', grCfg.themeControls, 'showReloadBtn_default', false);
+		this._setSetting(grSet, 'showReloadBtn_artwork', grCfg.themeControls, 'showReloadBtn_artwork', false);
+		this._setSetting(grSet, 'showReloadBtn_compact', grCfg.themeControls, 'showReloadBtn_compact', false);
+		this._setSetting(grSet, 'showAddTracksBtn_default', grCfg.themeControls, 'showAddTracksBtn_default', false);
+		this._setSetting(grSet, 'showAddTracksBtn_artwork', grCfg.themeControls, 'showAddTracksBtn_artwork', false);
+		this._setSetting(grSet, 'showAddTracksBtn_compact', grCfg.themeControls, 'showAddTracksBtn_compact', false);
+		this._setSetting(grSet, 'showVolumeBtn_default', grCfg.themeControls, 'showVolumeBtn_default', true);
+		this._setSetting(grSet, 'showVolumeBtn_artwork', grCfg.themeControls, 'showVolumeBtn_artwork', true);
+		this._setSetting(grSet, 'showVolumeBtn_compact', grCfg.themeControls, 'showVolumeBtn_compact', true);
+		this._setSetting(grSet, 'autoHideVolumeBar', grCfg.themeControls, 'autoHideVolumeBar', true);
+		this._setSetting(grSet, 'showPlaybackTime_default', grCfg.themeControls, 'showPlaybackTime_default', true);
+		this._setSetting(grSet, 'showPlaybackTime_artwork', grCfg.themeControls, 'showPlaybackTime_artwork', true);
+		this._setSetting(grSet, 'showPlaybackTime_compact', grCfg.themeControls, 'showPlaybackTime_compact', true);
+		this._setSetting(grSet, 'showLowerBarArtist_default', grCfg.themeControls, 'showLowerBarArtist_default', true);
+		this._setSetting(grSet, 'showLowerBarArtist_artwork', grCfg.themeControls, 'showLowerBarArtist_artwork', true);
+		this._setSetting(grSet, 'showLowerBarArtist_compact', grCfg.themeControls, 'showLowerBarArtist_compact', true);
+		this._setSetting(grSet, 'showLowerBarTrackNum_default', grCfg.themeControls, 'showLowerBarTrackNum_default', true);
+		this._setSetting(grSet, 'showLowerBarTrackNum_artwork', grCfg.themeControls, 'showLowerBarTrackNum_artwork', true);
+		this._setSetting(grSet, 'showLowerBarTrackNum_compact', grCfg.themeControls, 'showLowerBarTrackNum_compact', true);
+		this._setSetting(grSet, 'showLowerBarTitle_default', grCfg.themeControls, 'showLowerBarTitle_default', true);
+		this._setSetting(grSet, 'showLowerBarTitle_artwork', grCfg.themeControls, 'showLowerBarTitle_artwork', true);
+		this._setSetting(grSet, 'showLowerBarTitle_compact', grCfg.themeControls, 'showLowerBarTitle_compact', true);
+		this._setSetting(grSet, 'showLowerBarComposer_default', grCfg.themeControls, 'showLowerBarComposer_default', false);
+		this._setSetting(grSet, 'showLowerBarComposer_artwork', grCfg.themeControls, 'showLowerBarComposer_artwork', false);
+		this._setSetting(grSet, 'showLowerBarComposer_compact', grCfg.themeControls, 'showLowerBarComposer_compact', false);
+		this._setSetting(grSet, 'showLowerBarArtistFlags_default', grCfg.themeControls, 'showLowerBarArtistFlags_default', true);
+		this._setSetting(grSet, 'showLowerBarArtistFlags_artwork', grCfg.themeControls, 'showLowerBarArtistFlags_artwork', true);
+		this._setSetting(grSet, 'showLowerBarArtistFlags_compact', grCfg.themeControls, 'showLowerBarArtistFlags_compact', true);
+		this._setSetting(grSet, 'showLowerBarVersion_default', grCfg.themeControls, 'showLowerBarVersion_default', true);
+		this._setSetting(grSet, 'showLowerBarVersion_artwork', grCfg.themeControls, 'showLowerBarVersion_artwork', true);
+		this._setSetting(grSet, 'showLowerBarVersion_compact', grCfg.themeControls, 'showLowerBarVersion_compact', true);
+		this._setSetting(grSet, 'showProgressBar_default', grCfg.themeControls, 'showProgressBar_default', true);
+		this._setSetting(grSet, 'showProgressBar_artwork', grCfg.themeControls, 'showProgressBar_artwork', true);
+		this._setSetting(grSet, 'showProgressBar_compact', grCfg.themeControls, 'showProgressBar_compact', true);
+		this._setSetting(grSet, 'showPeakmeterBar_default', grCfg.themeControls, 'showPeakmeterBar_default', true);
+		this._setSetting(grSet, 'showPeakmeterBar_artwork', grCfg.themeControls, 'showPeakmeterBar_artwork', true);
+		this._setSetting(grSet, 'showPeakmeterBar_compact', grCfg.themeControls, 'showPeakmeterBar_compact', true);
+		this._setSetting(grSet, 'showWaveformBar_default', grCfg.themeControls, 'showWaveformBar_default', true);
+		this._setSetting(grSet, 'showWaveformBar_artwork', grCfg.themeControls, 'showWaveformBar_artwork', true);
+		this._setSetting(grSet, 'showWaveformBar_compact', grCfg.themeControls, 'showWaveformBar_compact', true);
+		this._setSetting(grSet, 'addTracksPlaylist', grCfg.themeControls, 'addTracksPlaylist', 'Favorites');
+		this._setSetting(grSet, 'seekbar', grCfg.themeControls, 'seekbar', 'progressbar');
+		this._setSetting(grSet, 'progressBarWheelSeekSpeed', grCfg.themeControls, 'progressBarWheelSeekSpeed', 5);
+		this._setSetting(grSet, 'progressBarRefreshRate', grCfg.themeControls, 'progressBarRefreshRate', 'variable');
+		this._setSetting(grSet, 'peakmeterBarDesign', grCfg.themeControls, 'peakmeterBarDesign', 'horizontal');
+		this._setSetting(grSet, 'peakmeterBarVertSize', grCfg.themeControls, 'peakmeterBarVertSize', 20);
+		this._setSetting(grSet, 'peakmeterBarVertDbRange', grCfg.themeControls, 'peakmeterBarVertDbRange', 220);
+		this._setSetting(grSet, 'peakmeterBarOverBars', grCfg.themeControls, 'peakmeterBarOverBars', true);
+		this._setSetting(grSet, 'peakmeterBarOuterBars', grCfg.themeControls, 'peakmeterBarOuterBars', true);
+		this._setSetting(grSet, 'peakmeterBarOuterPeaks', grCfg.themeControls, 'peakmeterBarOuterPeaks', true);
+		this._setSetting(grSet, 'peakmeterBarMainBars', grCfg.themeControls, 'peakmeterBarMainBars', true);
+		this._setSetting(grSet, 'peakmeterBarMainPeaks', grCfg.themeControls, 'peakmeterBarMainPeaks', true);
+		this._setSetting(grSet, 'peakmeterBarMiddleBars', grCfg.themeControls, 'peakmeterBarMiddleBars', true);
+		this._setSetting(grSet, 'peakmeterBarProgBar', grCfg.themeControls, 'peakmeterBarProgBar', true);
+		this._setSetting(grSet, 'peakmeterBarGaps', grCfg.themeControls, 'peakmeterBarGaps', false);
+		this._setSetting(grSet, 'peakmeterBarGrid', grCfg.themeControls, 'peakmeterBarGrid', false);
+		this._setSetting(grSet, 'peakmeterBarInfo', grCfg.themeControls, 'peakmeterBarInfo', false);
+		this._setSetting(grSet, 'peakmeterBarVertPeaks', grCfg.themeControls, 'peakmeterBarVertPeaks', true);
+		this._setSetting(grSet, 'peakmeterBarVertBaseline', grCfg.themeControls, 'peakmeterBarVertBaseline', true);
+		this._setSetting(grSet, 'peakmeterBarRefreshRate', grCfg.themeControls, 'peakmeterBarRefreshRate', 80);
+		this._setSetting(grSet, 'waveformBarMode', grCfg.themeControls, 'waveformBarMode', 'audiowaveform');
+		this._setSetting(grSet, 'waveformBarAnalysis', grCfg.themeControls, 'waveformBarAnalysis', 'rms_level');
+		this._setSetting(grSet, 'waveformBarDesign', grCfg.themeControls, 'waveformBarDesign', 'halfbars');
+		this._setSetting(grSet, 'waveformBarSizeWave', grCfg.themeControls, 'waveformBarSizeWave', 3);
+		this._setSetting(grSet, 'waveformBarSizeBars', grCfg.themeControls, 'waveformBarSizeBars', 1);
+		this._setSetting(grSet, 'waveformBarSizeDots', grCfg.themeControls, 'waveformBarSizeDots', 2);
+		this._setSetting(grSet, 'waveformBarSizeHalf', grCfg.themeControls, 'waveformBarSizeHalf', 4);
+		this._setSetting(grSet, 'waveformBarSizeNormalize', grCfg.themeControls, 'waveformBarSizeNormalize', false);
+		this._setSetting(grSet, 'waveformBarPaint', grCfg.themeControls, 'waveformBarPaint', 'partial');
+		this._setSetting(grSet, 'waveformBarPrepaint', grCfg.themeControls, 'waveformBarPrepaint', true);
+		this._setSetting(grSet, 'waveformBarAnimate', grCfg.themeControls, 'waveformBarAnimate', true);
+		this._setSetting(grSet, 'waveformBarBPM', grCfg.themeControls, 'waveformBarBPM', true);
+		this._setSetting(grSet, 'waveformBarInvertHalfbars', grCfg.themeControls, 'waveformBarInvertHalfbars', true);
+		this._setSetting(grSet, 'waveformBarIndicator', grCfg.themeControls, 'waveformBarIndicator', false);
+		this._setSetting(grSet, 'waveformBarRefreshRate', grCfg.themeControls, 'waveformBarRefreshRate', 200);
+		this._setSetting(grSet, 'waveformBarRefreshRateVar', grCfg.themeControls, 'waveformBarRefreshRateVar', false);
+		this._setSetting(grSet, 'maximizeToFullscreen', grCfg.themeControls, 'maximizeToFullscreen', true);
+		this._setSetting(grSet, 'switchPlaybackTime', grCfg.themeControls, 'switchPlaybackTime', false);
+		this._setSetting(grSet, 'playbackOrder', grCfg.themeControls, 'playbackOrder', 'default');
 	}
-	if (!CheckGridEntry(configFile.metadataGrid, 'Channels')) {
-		fso.CopyFile(configPath, fb.ProfilePath + fileName);
-		config.addConfigurationObject(gridSchema, defaultMetadataGrid);
-		config.writeConfiguration();
-		window.Reload(); // Reinit new config
+
+	/**
+	 * Sets Playlist settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 */
+	setPlaylist() {
+		this._setSetting(grSet, 'playlistLayout', grCfg.themePlaylist, 'playlistLayout', 'normal');
+		this._setSetting(grSet, 'playlistLayoutNormal', false, false, true);
+		this._setSetting(grSet, 'showPlaylistManager_default', grCfg.themePlaylist, 'showPlaylistManager_default', true);
+		this._setSetting(grSet, 'showPlaylistManager_artwork', grCfg.themePlaylist, 'showPlaylistManager_artwork', false);
+		this._setSetting(grSet, 'showPlaylistManager_compact', grCfg.themePlaylist, 'showPlaylistManager_compact', false);
+		this._setSetting(grSet, 'showPlaylistHistory', grCfg.themePlaylist, 'showPlaylistHistory', true);
+		this._setSetting(grSet, 'autoHidePlman', grCfg.themePlaylist, 'autoHidePlman', true);
+		this._setSetting(plSet, 'show_album_art', grCfg.themePlaylist, 'show_album_art', true);
+		this._setSetting(plSet, 'auto_album_art', grCfg.themePlaylist, 'auto_album_art', false);
+		this._setSetting(plSet, 'show_header', grCfg.themePlaylist, 'show_header', true);
+		this._setSetting(plSet, 'show_rating_header', grCfg.themePlaylist, 'show_rating_header', true);
+		this._setSetting(plSet, 'show_PLR_header', grCfg.themePlaylist, 'show_PLR_header', false);
+		this._setSetting(plSet, 'use_compact_header', grCfg.themePlaylist, 'use_compact_header', false);
+		this._setSetting(plSet, 'auto_collapse', grCfg.themePlaylist, 'auto_collapse', false);
+		this._setSetting(grSet, 'hyperlinksCtrlClick', grCfg.themePlaylist, 'hyperlinksCtrlClick', false);
+		this._setSetting(plSet, 'show_disc_header', grCfg.themePlaylist, 'show_disc_header', true);
+		this._setSetting(plSet, 'show_group_info', grCfg.themePlaylist, 'show_group_info', true);
+		this._setSetting(grSet, 'showWeblinks', grCfg.themePlaylist, 'showWeblinks', true);
+		this._setSetting(grSet, 'showPlaylistFullDate', grCfg.themePlaylist, 'showPlaylistFullDate', false);
+		this._setSetting(plSet, 'show_row_stripes', grCfg.themePlaylist, 'show_row_stripes', false);
+		this._setSetting(plSet, 'show_playcount', grCfg.themePlaylist, 'show_playcount', true);
+		this._setSetting(plSet, 'show_queue_position', grCfg.themePlaylist, 'show_queue_position', true);
+		this._setSetting(plSet, 'show_rating', grCfg.themePlaylist, 'show_rating', true);
+		this._setSetting(plSet, 'use_rating_from_tags', grCfg.themePlaylist, 'use_rating_from_tags', false);
+		this._setSetting(plSet, 'show_PLR', grCfg.themePlaylist, 'show_PLR', false);
+		this._setSetting(grSet, 'showPlaylistRatingGrid', grCfg.themePlaylist, 'showPlaylistRatingGrid', false);
+		this._setSetting(grSet, 'showPlaylistTrackNumbers', grCfg.themePlaylist, 'showPlaylistTrackNumbers', true);
+		this._setSetting(grSet, 'showPlaylistIndexNumbers', grCfg.themePlaylist, 'showPlaylistIndexNumbers', false);
+		this._setSetting(grSet, 'showDifferentArtist', grCfg.themePlaylist, 'showDifferentArtist', false);
+		this._setSetting(grSet, 'showArtistPlaylistRows', grCfg.themePlaylist, 'showArtistPlaylistRows', false);
+		this._setSetting(grSet, 'showAlbumPlaylistRows', grCfg.themePlaylist, 'showAlbumPlaylistRows', false);
+		this._setSetting(grSet, 'playlistTimeRemaining', grCfg.themePlaylist, 'playlistTimeRemaining', false);
+		this._setSetting(grSet, 'showVinylNums', grCfg.themePlaylist, 'showVinylNums', true);
+		this._setSetting(grSet, 'lastFmScrobblesFallback', grCfg.themePlaylist, 'lastFmScrobblesFallback', true);
+		this._setSetting(grSet, 'playlistRowHover', grCfg.themePlaylist, 'playlistRowHover', true);
+		this._setSetting(grSet, 'playlistSortOrderAuto', grCfg.themePlaylist, 'playlistSortOrderAuto', false);
+		this._setSetting(grSet, 'playlistSortOrder', grCfg.themePlaylist, 'playlistSortOrder', '');
+		this._setSetting(grSet, 'playlistSortOrderDirection', grCfg.themePlaylist, 'playlistSortOrderDirection', '_asc');
+		this._setSetting(plSet, 'playlist_stats_include_artist', grCfg.themePlaylist, 'playlist_stats_include_artist', true);
+		this._setSetting(plSet, 'playlist_stats_include_album', grCfg.themePlaylist, 'playlist_stats_include_album', true);
+		this._setSetting(plSet, 'playlist_stats_include_track', grCfg.themePlaylist, 'playlist_stats_include_track', true);
+		this._setSetting(plSet, 'playlist_stats_include_year', grCfg.themePlaylist, 'playlist_stats_include_year', false);
+		this._setSetting(plSet, 'playlist_stats_include_genre', grCfg.themePlaylist, 'playlist_stats_include_genre', false);
+		this._setSetting(plSet, 'playlist_stats_include_label', grCfg.themePlaylist, 'playlist_stats_include_label', false);
+		this._setSetting(plSet, 'playlist_stats_include_country', grCfg.themePlaylist, 'playlist_stats_include_country', false);
+		this._setSetting(plSet, 'playlist_stats_include_stats', grCfg.themePlaylist, 'playlist_stats_include_stats', true);
+		this._setSetting(plSet, 'playlist_stats_sort_by', grCfg.themePlaylist, 'playlist_stats_sort_by', '');
+		this._setSetting(plSet, 'playlist_stats_sort_direction', grCfg.themePlaylist, 'playlist_stats_sort_direction', '_dsc');
+
+		// ! System settings not configurable
+		plSet.list_left_pad = 0;
+		plSet.list_top_pad = 0;
+		plSet.list_right_pad = 0;
+		plSet.list_bottom_pad = 15;
+		plSet.show_scrollbar = false;
+		plSet.scrollbar_right_pad = 0;
+		plSet.scrollbar_top_pad = 0;
+		plSet.scrollbar_bottom_pad = 3;
+		plSet.scrollbar_w = '';
+		plSet.row_h = 20;
+		plSet.scrollbar_pos = 0;
+		plSet.scrollbar_wheel_scroll_page = false;
+		plSet.rows_in_header = 4;
+		plSet.rows_in_compact_header = 3;
+		plSet.show_plman = true;
+		plSet.collapse_on_playlist_switch = false;
+		plSet.collapse_on_start = false;
 	}
 
-	// * Update config settings which have changed since last update
-	if (version !== storedVersion) {
-		switch (storedVersion) {
-			/* eslint-disable no-fallthrough */
-			case '3.0-RC1':
-				RenameGridEntry(configFile.metadataGrid, 'Catalog #', 'Catalog');
-				config.addConfigurationObject(gridSchema, configFile.metadataGrid);
-			case '3.0-RC2':
-				config.addConfigurationObject(themePlaylistGroupingPresetsSchema, themePlaylistGroupingPresets);
-			case '3.0-DEV':
-				// This default block ( latest version ) should appear after all previous versions have fallen through
-				console.log('> Upgrading Georgia-ReBORN theme settings from', storedVersion);
-				console.log(`> Backing up Georgia-ReBORN configuration file to ${fileName}`);
-				fso.CopyFile(configPath, fb.ProfilePath + fileName);
-				config.writeConfiguration();
-				fso.CopyFile(configPathCustom, fb.ProfilePath + fileNameCustom);
-				configCustom.writeConfiguration();
+	/**
+	 * Sets Details settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 */
+	setDetails() {
+		this._setSetting(grSet, 'showDiscArtStub', grCfg.themeDetails, 'showDiscArtStub', true);
+		this._setSetting(grSet, 'noDiscArtStub', grCfg.themeDetails, 'noDiscArtStub', false);
+		this._setSetting(grSet, 'discArtStub', grCfg.themeDetails, 'discArtStub', 'cdAlbumCover');
+		this._setSetting(grSet, 'displayDiscArt', grCfg.themeDetails, 'displayDiscArt', true);
+		this._setSetting(grSet, 'discArtOnTop', grCfg.themeDetails, 'discArtOnTop', false);
+		this._setSetting(grSet, 'filterDiscJpgsFromAlbumArt', grCfg.themeDetails, 'filterDiscJpgsFromAlbumArt', true);
+		this._setSetting(grSet, 'spinDiscArt', grCfg.themeDetails, 'spinDiscArt', false);
+		this._setSetting(grSet, 'spinDiscArtImageCount', grCfg.themeDetails, 'spinDiscArtImageCount', 72);
+		this._setSetting(grSet, 'spinDiscArtRedrawInterval', grCfg.themeDetails, 'spinDiscArtRedrawInterval', 75);
+		this._setSetting(grSet, 'rotateDiscArt', grCfg.themeDetails, 'rotateDiscArt', true);
+		this._setSetting(grSet, 'rotationAmt', grCfg.themeDetails, 'rotationAmt', 3);
+		this._setSetting(grSet, 'artRotateDelay', grCfg.themeDetails, 'artRotateDelay', 30);
+		this._setSetting(grSet, 'discArtDisplayAmount', grCfg.themeDetails, 'discArtDisplayAmount', 0.5);
+		this._setSetting(grSet, 'detailsAlbumArtOpacity', grCfg.themeDetails, 'detailsAlbumArtOpacity', 255);
+		this._setSetting(grSet, 'detailsAlbumArtDiscAreaOpacity', grCfg.themeDetails, 'detailsAlbumArtDiscAreaOpacity', 255);
+		this._setSetting(grSet, 'showGridArtist_default', grCfg.themeDetails, 'showGridArtist_default', false);
+		this._setSetting(grSet, 'showGridArtist_artwork', grCfg.themeDetails, 'showGridArtist_artwork', false);
+		this._setSetting(grSet, 'showGridTrackNum_default', grCfg.themeDetails, 'showGridTrackNum_default', false);
+		this._setSetting(grSet, 'showGridTrackNum_artwork', grCfg.themeDetails, 'showGridTrackNum_artwork', false);
+		this._setSetting(grSet, 'showGridTitle_default', grCfg.themeDetails, 'showGridTitle_default', false);
+		this._setSetting(grSet, 'showGridTitle_artwork', grCfg.themeDetails, 'showGridTitle_artwork', false);
+		this._setSetting(grSet, 'showGridPlayingPlaylist', grCfg.themeDetails, 'showGridPlayingPlaylist', false);
+		this._setSetting(grSet, 'showGridTimeline_default', grCfg.themeDetails, 'showGridTimeline_default', true);
+		this._setSetting(grSet, 'showGridTimeline_artwork', grCfg.themeDetails, 'showGridTimeline_artwork', true);
+		this._setSetting(grSet, 'showGridArtistFlags_default', grCfg.themeDetails, 'showGridArtistFlags_default', true);
+		this._setSetting(grSet, 'showGridArtistFlags_artwork', grCfg.themeDetails, 'showGridArtistFlags_artwork', true);
+		this._setSetting(grSet, 'showGridReleaseFlags_default', grCfg.themeDetails, 'showGridReleaseFlags_default', 'logo');
+		this._setSetting(grSet, 'showGridReleaseFlags_artwork', grCfg.themeDetails, 'showGridReleaseFlags_artwork', 'logo');
+		this._setSetting(grSet, 'showGridCodecLogo_default', grCfg.themeDetails, 'showGridCodecLogo_default', 'logo');
+		this._setSetting(grSet, 'showGridCodecLogo_artwork', grCfg.themeDetails, 'showGridCodecLogo_artwork', 'logo');
+		this._setSetting(grSet, 'showGridChannelLogo_default', grCfg.themeDetails, 'showGridChannelLogo_default', 'logo');
+		this._setSetting(grSet, 'showGridChannelLogo_artwork', grCfg.themeDetails, 'showGridChannelLogo_artwork', 'logo');
+		this._setSetting(grSet, 'autoHideGridMetadata', grCfg.themeDetails, 'autoHideGridMetadata', true);
+		this._setSetting(grSet, 'noDiscArtBg', grCfg.themeDetails, 'noDiscArtBg', true);
+		this._setSetting(grSet, 'labelArtOnBg', grCfg.themeDetails, 'labelArtOnBg', false);
+	}
+
+	/**
+	 * Sets Library settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 */
+	setLibrary() {
+		this._setSetting(grSet, 'libraryDesign', grCfg.themeLibrary, 'libraryDesign', 'reborn');
+		if (!this.saveCfg) grm.ui.setLibraryDesign();
+
+		// * Special cases
+		if (this.saveCfg) {
+			grCfg.themeLibrary.libraryLayout = grSet.libraryLayout;
+			grCfg.themeLibrary.libraryTheme = grSet.libraryTheme;
+			grCfg.themeLibrary.librarySource = libSet.libSource;
+			grCfg.themeLibrary.librarySourceFixedPlaylist = libSet.fixedPlaylist;
+			grCfg.themeLibrary.librarySourceFixedPlaylistName = libSet.fixedPlaylistName;
+		} else {
+			grSet.libraryLayout = grSet.libraryDesign === 'flowMode' ? 'full' : this.loadCfg ? grCfg.themeLibrary.libraryLayout : 'normal';
+			libSet.theme = grSet.libraryTheme = this.loadCfg ? grCfg.themeLibrary.libraryTheme : 0;
+			grSet.libraryThumbnailSizeSaved = libSet.thumbNailSize = grSet.libraryThumbnailSize = this.loadCfg ? grCfg.themeLibrary.libraryThumbnailSize : 'auto';
+			libSet.libSource = grSet.librarySource = this.loadCfg ? grCfg.themeLibrary.librarySource : 1;
+			libSet.fixedPlaylist = grSet.librarySourceFixedPlaylist = this.loadCfg ? grCfg.themeLibrary.librarySourceFixedPlaylist : false;
+			libSet.fixedPlaylistName = grSet.librarySourceFixedPlaylistName = this.loadCfg ? grCfg.themeLibrary.librarySourceFixedPlaylistName : '';
+		}
+
+		this._setSetting(grSet, 'libraryLayoutFullPreset', grCfg.themeLibrary, 'libraryLayoutFullPreset', true);
+		this._setSetting(grSet, 'libraryLayoutSplitPreset', grCfg.themeLibrary, 'libraryLayoutSplitPreset', true);
+		this._setSetting(grSet, 'libraryLayoutSplitPreset2', grCfg.themeLibrary, 'libraryLayoutSplitPreset2', false);
+		this._setSetting(grSet, 'libraryLayoutSplitPreset3', grCfg.themeLibrary, 'libraryLayoutSplitPreset3', false);
+		this._setSetting(grSet, 'libraryLayoutSplitPreset4', grCfg.themeLibrary, 'libraryLayoutSplitPreset4', false);
+		this._setSetting(grSet, 'libraryThumbnailBorder', grCfg.themeLibrary, 'libraryThumbnailBorder', 'border');
+		this._setSetting(libSet, 'albumArtShow', grCfg.themeLibrary, 'albumArtShow', false);
+		this._setSetting(libSet, 'itemOverlayType', grCfg.themeLibrary, 'itemOverlayType', 0);
+		this._setSetting(libSet, 'albumArtLetter', grCfg.themeLibrary, 'albumArtLetter', true);
+		this._setSetting(libSet, 'albumArtLetterNo', grCfg.themeLibrary, 'albumArtLetterNo', 1);
+		this._setSetting(libSet, 'artId', grCfg.themeLibrary, 'artId', 0);
+		this._setSetting(libSet, 'albumArtGrpLevel', grCfg.themeLibrary, 'albumArtGrpLevel', 0);
+		this._setSetting(libSet, 'imgStyleFront', grCfg.themeLibrary, 'imgStyleFront', 1);
+		this._setSetting(libSet, 'imgStyleBack', grCfg.themeLibrary, 'imgStyleBack', 1);
+		this._setSetting(libSet, 'imgStyleDisc', grCfg.themeLibrary, 'imgStyleDisc', 1);
+		this._setSetting(libSet, 'imgStyleIcon', grCfg.themeLibrary, 'imgStyleIcon', 1);
+		this._setSetting(libSet, 'imgStyleArtist', grCfg.themeLibrary, 'imgStyleArtist', 1);
+		this._setSetting(libSet, 'albumArtLabelType', grCfg.themeLibrary, 'albumArtLabelType', 1);
+		this._setSetting(libSet, 'albumArtFlipLabels', grCfg.themeLibrary, 'albumArtFlipLabels', false);
+		this._setSetting(libSet, 'actionMode', grCfg.themeLibrary, 'actionMode', 0);
+		this._setSetting(libSet, 'clickAction', grCfg.themeLibrary, 'clickAction', 0);
+		this._setSetting(libSet, 'dblClickAction', grCfg.themeLibrary, 'dblClickAction', 1);
+		this._setSetting(libSet, 'mbtnClickAction', grCfg.themeLibrary, 'mbtnClickAction', 1);
+		this._setSetting(libSet, 'altClickAction', grCfg.themeLibrary, 'altClickAction', 1);
+		this._setSetting(libSet, 'autoPlay', grCfg.themeLibrary, 'autoPlay', true);
+		this._setSetting(libSet, 'keyAction', grCfg.themeLibrary, 'keyAction', 0);
+		this._setSetting(libSet, 'rememberTree', grCfg.themeLibrary, 'rememberTree', false);
+		this._setSetting(libSet, 'artTreeSameView', grCfg.themeLibrary, 'artTreeSameView', false);
+		this._setSetting(libSet, 'presetLoadCurView', grCfg.themeLibrary, 'presetLoadCurView', true);
+		this._setSetting(libSet, 'rootNode', grCfg.themeLibrary, 'rootNode', 3);
+		this._setSetting(libSet, 'nodeCounts', grCfg.themeLibrary, 'nodeCounts', 1);
+		this._setSetting(libSet, 'countsRight', grCfg.themeLibrary, 'countsRight', true);
+		this._setSetting(libSet, 'autoCollapse', grCfg.themeLibrary, 'autoCollapse', false);
+		this._setSetting(libSet, 'itemShowStatistics', grCfg.themeLibrary, 'itemShowStatistics', 0);
+		this._setSetting(libSet, 'highLightNowplaying', grCfg.themeLibrary, 'highLightNowplaying', true);
+		this._setSetting(libSet, 'showTracks', grCfg.themeLibrary, 'showTracks', true);
+		this._setSetting(libSet, 'rowStripes', grCfg.themeLibrary, 'rowStripes', false);
+		this._setSetting(libSet, 'fullLineSelection', grCfg.themeLibrary, 'fullLineSelection', true);
+		this._setSetting(grSet, 'libraryRowHover', grCfg.themeLibrary, 'libraryRowHover', true);
+		this._setSetting(libSet, 'filterBy', grCfg.themeLibrary, 'filterBy', 0);
+		this._setSetting(libSet, 'sortOrder', grCfg.themeLibrary, 'sortOrder', 'default');
+		this._setSetting(libSet, 'yearBeforeAlbum', grCfg.themeLibrary, 'yearBeforeAlbum', true);
+		this._setSetting(libSet, 'albumArtViewBy', grCfg.themeLibrary, 'albumArtViewBy', 0);
+		this._setSetting(libSet, 'treeViewBy', grCfg.themeLibrary, 'treeViewBy', 0);
+	}
+
+	/**
+	 * Sets Biography settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 */
+	setBiography() {
+		// * Special cases
+		if (this.saveCfg) {
+			grCfg.themeBiography.biographyTheme = grSet.biographyTheme;
+		} else {
+			bioSet.theme = grSet.biographyTheme = this.loadCfg ? grCfg.themeBiography.biographyTheme : 0;
+		}
+
+		this._setSetting(grSet, 'biographyLayout', grCfg.themeBiography, 'biographyLayout', 'normal');
+		this._setSetting(grSet, 'biographyLayoutFullPreset', grCfg.themeBiography, 'biographyLayoutFullPreset', true);
+		this._setSetting(bioSet, 'style', grCfg.themeBiography, 'style', 0);
+		this._setSetting(bioSet, 'filmStripPos', grCfg.themeBiography, 'filmStripPos', 3);
+		this._setSetting(bioSet, 'filmStripOverlay', grCfg.themeBiography, 'filmStripOverlay', false);
+
+		this._setSetting(grSet, 'biographyDisplay', grCfg.themeBiography, 'biographyDisplay', 'Image+text');
+		if (!this.saveCfg) grm.ui.setBiographyDisplay();
+
+		this._setSetting(bioSet, 'showFilmStrip', grCfg.themeBiography, 'showFilmStrip', false);
+		this._setSetting(bioSet, 'imgSeekerShow', grCfg.themeBiography, 'imgSeekerShow', 0);
+		this._setSetting(bioSet, 'heading', grCfg.themeBiography, 'heading', 1);
+		this._setSetting(bioSet, 'summaryShow', grCfg.themeBiography, 'summaryShow', true);
+		this._setSetting(bioSet, 'summaryCompact', grCfg.themeBiography, 'summaryCompact', true);
+		this._setSetting(bioSet, 'artistView', grCfg.themeBiography, 'artistView', true);
+		this._setSetting(bioSet, 'focus', grCfg.themeBiography, 'focus', false);
+		this._setSetting(bioSet, 'lockBio', grCfg.themeBiography, 'lockBio', false);
+		this._setSetting(bioSet, 'sourceAll', grCfg.themeBiography, 'sourceAll', false);
+		this._setSetting(bioSet, 'classicalMusicMode', grCfg.themeBiography, 'classicalMusicMode', false);
+		this._setSetting(bioSet, 'cycPhotoLocation', grCfg.themeBiography, 'cycPhotoLocation', 0);
+		this._setSetting(bioSet, 'covType', grCfg.themeBiography, 'covType', 0);
+		this._setSetting(bioSet, 'loadCovAllFb', grCfg.themeBiography, 'loadCovAllFb', false);
+		this._setSetting(bioSet, 'loadCovFolder', grCfg.themeBiography, 'loadCovFolder', false);
+		this._setSetting(bioSet, 'artStyleDual', grCfg.themeBiography, 'artStyleDual', 1);
+		this._setSetting(bioSet, 'artReflDual', grCfg.themeBiography, 'artReflDual', false);
+		this._setSetting(bioSet, 'artShadowDual', grCfg.themeBiography, 'artShadowDual', false);
+		this._setSetting(bioSet, 'covStyleDual', grCfg.themeBiography, 'covStyleDual', 1);
+		this._setSetting(bioSet, 'covReflDual', grCfg.themeBiography, 'covReflDual', false);
+		this._setSetting(bioSet, 'covShadowDual', grCfg.themeBiography, 'covShadowDual', false);
+		this._setSetting(bioSet, 'artStyleImgOnly', grCfg.themeBiography, 'artStyleImgOnly', 1);
+		this._setSetting(bioSet, 'artReflImgOnly', grCfg.themeBiography, 'artReflImgOnly', false);
+		this._setSetting(bioSet, 'artShadowImgOnly', grCfg.themeBiography, 'artShadowImgOnly', false);
+		this._setSetting(bioSet, 'covStyleImgOnly', grCfg.themeBiography, 'covStyleImgOnly', 1);
+		this._setSetting(bioSet, 'covReflImgOnly', grCfg.themeBiography, 'covReflImgOnly', false);
+		this._setSetting(bioSet, 'covShadowImgOnly', grCfg.themeBiography, 'covShadowImgOnly', false);
+		this._setSetting(bioSet, 'filmPhotoStyle', grCfg.themeBiography, 'filmPhotoStyle', 1);
+		this._setSetting(bioSet, 'filmCoverStyle', grCfg.themeBiography, 'filmCoverStyle', 1);
+		this._setSetting(bioCfg, 'photoNum', grCfg.themeBiography, 'photoNum', 10);
+		this._setSetting(bioSet, 'cycPic', grCfg.themeBiography, 'cycPic', true);
+		this._setSetting(bioSet, 'imgSmoothTrans', grCfg.themeBiography, 'imgSmoothTrans', false);
+		this._setSetting(bioSet, 'cycTimePic', grCfg.themeBiography, 'cycTimePic', 15);
+	}
+
+	/**
+	 * Sets Lyrics settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 */
+	setLyrics() {
+		this._setSetting(grSet, 'lyricsLayout', grCfg.themeLyrics, 'lyricsLayout', 'normal');
+		this._setSetting(grSet, 'lyricsDropShadowLevel', grCfg.themeLyrics, 'lyricsDropShadowLevel', 2);
+		this._setSetting(grSet, 'lyricsFadeScroll', grCfg.themeLyrics, 'lyricsFadeScroll', true);
+		this._setSetting(grSet, 'lyricsLargerCurrentSync', grCfg.themeLyrics, 'lyricsLargerCurrentSync', true);
+		this._setSetting(grSet, 'lyricsAlbumArt', grCfg.themeLyrics, 'lyricsAlbumArt', true);
+		this._setSetting(grSet, 'lyricsRememberPanelState', grCfg.themeLyrics, 'lyricsRememberPanelState', false);
+		this._setSetting(grSet, 'lyricsScrollSpeed', grCfg.themeLyrics, 'lyricsScrollSpeed', 'normal');
+		this._setSetting(grSet, 'lyricsScrollRateAvg', grCfg.themeLyrics, 'lyricsScrollRateAvg', 750);
+		this._setSetting(grSet, 'lyricsScrollRateMax', grCfg.themeLyrics, 'lyricsScrollRateMax', 375);
+		this._setSetting(grSet, 'displayLyrics', grCfg.themeLyrics, 'displayLyrics', false);
+	}
+
+	/**
+	 * Sets Settings settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 */
+	setSettings() {
+		this._setSetting(grSet, 'themeDayNightMode', grCfg.themeSettings, 'themeDayNightMode', false);
+		this._setSetting(grSet, 'customThemeFonts', grCfg.themeSettings, 'customThemeFonts', false);
+		this._setSetting(grSet, 'customPreloaderLogo', grCfg.themeSettings, 'customPreloaderLogo', false);
+		this._setSetting(grSet, 'customThemeImages', grCfg.themeSettings, 'customThemeImages', false);
+		this._setSetting(libSet, 'albumArtDiskCache', grCfg.themeSettings, 'albumArtDiskCache', true);
+		this._setSetting(libSet, 'albumArtPreLoad', grCfg.themeSettings, 'albumArtPreLoad', false);
+		this._setSetting(grSet, 'customLibraryDir', grCfg.themeSettings, 'customLibraryDir', false);
+		this._setSetting(grSet, 'libraryAutoDelete', grCfg.themeSettings, 'libraryAutoDelete', false);
+		this._setSetting(grSet, 'customBiographyDir', grCfg.themeSettings, 'customBiographyDir', false);
+		this._setSetting(grSet, 'biographyAutoDelete', grCfg.themeSettings, 'biographyAutoDelete', false);
+		this._setSetting(grSet, 'customLyricsDir', grCfg.themeSettings, 'customLyricsDir', false);
+		this._setSetting(grSet, 'lyricsAutoDelete', grCfg.themeSettings, 'lyricsAutoDelete', false);
+		this._setSetting(grSet, 'customWaveformBarDir', grCfg.themeSettings, 'customWaveformBarDir', false);
+		this._setSetting(grSet, 'waveformBarAutoDelete', grCfg.themeSettings, 'waveformBarAutoDelete', false);
+		this._setSetting(grSet, 'themePerformance', grCfg.themeSettings, 'themePerformance', 'balanced');
+		this._setSetting(grSet, 'devTools', grCfg.themeSettings, 'devTools', false);
+		this._setSetting(grSet, 'disableRightClick', grCfg.themeSettings, 'disableRightClick', true);
+	}
+
+	/**
+	 * Sets settings not in the config nor in the Options menu.
+	 */
+	setSettingsNotInConfig() {
+		grSet.savedAlbumArtShow = libSet.albumArtShow;
+		libSet.albumArtDropShadow = grSet.libraryThumbnailBorder === 'shadow';
+		bioSet.largerSyncLyricLine = grSet.lyricsLargerCurrentSync;
+	}
+
+	/**
+	 * Sets variable imgBlended when switching from default settings to config settings that has style Blend or Blend2 activated.
+	 */
+	setStyleBlend() {
+		if ((grSet.styleBlend || grSet.styleBlend2 || grSet.styleProgressBarFill === 'blend') && grm.ui.albumArt) {
+			grm.color.setStyleBlend();
+		}
+	}
+
+	/**
+	 * Sets theme performance presets with various theme settings that affect overall performance.
+	 * The 'balanced' preset settings will be also applied in 'highQuality' and 'highestQuality'.
+	 * Used in Options > Settings > Theme performance.
+	 * @param {string} preset - The theme performance preset to load.
+	 */
+	setThemePerformance(preset) {
+		switch (preset) {
+			case 'balanced': // Default
+				grSet.playerSize = 'small';
+				grm.display.autoDetectRes();
+				grSet.styleDefault = true;
+				grSet.playlistAutoScrollNowPlaying = false;
+				grSet.playlistSmoothScrolling = true;
+				grSet.libraryAutoScrollNowPlaying = false;
+				libSet.smooth = true;
+				bioSet.smooth = true;
+				grSet.showStyledTooltips = true;
+				grSet.showPreloaderLogo = true;
+				grSet.showHiResAudioBadge = false;
+				grSet.showPause = true;
+				grSet.seekbar = 'progressbar';
+				grSet.progressBarRefreshRate = 'variable';
+				grSet.peakmeterBarRefreshRate = 80;
+				grSet.waveformBarPaint = 'partial';
+				grSet.waveformBarPrepaint = true;
+				grSet.waveformBarPrepaintFront = Infinity;
+				grSet.waveformBarAnimate = true;
+				grSet.waveformBarBPM = true;
+				grSet.waveformBarRefreshRate = 200;
+				grSet.playlistLayout = 'normal';
+				plSet.show_album_art = true;
+				grSet.playlistTimeRemaining = false;
+				grSet.playlistRowHover = true;
+				grSet.showDiscArtStub = true;
+				grSet.noDiscArtStub = false;
+				grSet.discArtStub = 'cdAlbumCover';
+				grSet.displayDiscArt = true;
+				grSet.spinDiscArt = false;
+				grSet.spinDiscArtImageCount = 72;
+				grSet.spinDiscArtRedrawInterval = 75;
+				clearInterval(grm.ui.discArtRotationTimer);
+				grm.ui.discArtArray = [];
+				grSet.detailsAlbumArtOpacity = 255;
+				grSet.detailsAlbumArtDiscAreaOpacity = 255;
+				grSet.showGridTimeline_default = true;
+				grSet.showGridTimeline_artwork = true;
+				grSet.libraryLayout = 'normal';
+				grSet.libraryDesign = 'reborn';
+				grSet.libraryTheme = 0;
+				libSet.albumArtShow = false;
+				grSet.libraryRowHover = true;
+				grSet.biographyLayout = 'normal';
+				grSet.biographyTheme = 0;
+				bioSet.showFilmStrip = false;
+				bioCfg.photoNum = 10;
+				libSet.albumArtDiskCache = true;
+				libSet.albumArtPreLoad = false;
+				grSet.libraryAutoDelete = false;
+				grSet.biographyAutoDelete = false;
+				grSet.lyricsAutoDelete = false;
+				bioSet.focusLoadRate = 1000;
+				bioSet.focusLoadImmediate = false;
+				grSet.lyricsDropShadowLevel = 2;
+				grSet.lyricsFadeScroll = true;
+				grSet.lyricsAlbumArt = true;
+				grSet.lyricsRememberPanelState = false;
+				grSet.lyricsScrollSpeed = 'normal';
+				grSet.lyricsScrollRateAvg = 750;
+				grSet.lyricsScrollRateMax = 375;
 				break;
-			default:
+
+			case 'lowestQuality':
+				grSet.playerSize = 'small';
+				grSet.playerSize_HD_small = true;
+				grm.display.playerSize_HD_small();
+				grSet.styleDefault = true;
+				grSet.displayRes = 'HD';
+				grSet.playlistAutoScrollNowPlaying = false;
+				grSet.playlistSmoothScrolling = false;
+				grSet.libraryAutoScrollNowPlaying = false;
+				libSet.smooth = false;
+				bioSet.smooth = false;
+				grSet.showStyledTooltips = false;
+				grSet.showPreloaderLogo = false;
+				grSet.showHiResAudioBadge = false;
+				grSet.showPause = false;
+				grSet.seekbar = 'progressbar';
+				grSet.progressBarRefreshRate = 1000;
+				grSet.peakmeterBarRefreshRate = 200;
+				grSet.waveformBarPaint = 'full';
+				grSet.waveformBarPrepaint = false;
+				grSet.waveformBarPrepaintFront = 2;
+				grSet.waveformBarAnimate = false;
+				grSet.waveformBarBPM = false;
+				grSet.waveformBarRefreshRate = 1000;
+				grSet.playlistLayout = 'normal';
+				plSet.show_album_art = false;
+				grSet.playlistTimeRemaining = false;
+				grSet.playlistRowHover = false;
+				grSet.showDiscArtStub = false;
+				grSet.noDiscArtStub = true;
+				grSet.displayDiscArt = false;
+				grSet.spinDiscArt = false;
+				grSet.spinDiscArtImageCount = 36;
+				grSet.spinDiscArtRedrawInterval = 250;
+				grSet.showGridTimeline_default = false;
+				grSet.showGridTimeline_artwork = false;
+				grSet.libraryLayout = 'normal';
+				grSet.libraryDesign = 'reborn';
+				grSet.libraryTheme = 0;
+				libSet.albumArtShow = false;
+				grSet.libraryRowHover = false;
+				grSet.biographyLayout = 'normal';
+				grSet.biographyTheme = 0;
+				bioSet.showFilmStrip = false;
+				bioCfg.photoNum = 1;
+				libSet.albumArtDiskCache = true;
+				libSet.albumArtPreLoad = false;
+				bioSet.focusLoadRate = 3000;
+				grSet.lyricsDropShadowLevel = 0;
+				grSet.lyricsFadeScroll = false;
+				grSet.lyricsAlbumArt = false;
+				grSet.lyricsRememberPanelState = false;
+				grSet.lyricsScrollSpeed = 'fastest';
+				grSet.lyricsScrollRateAvg = 300;
+				grSet.lyricsScrollRateMax = 150;
+				break;
+
+			case 'lowQuality':
+				grSet.playerSize = 'small';
+				grSet.styleDefault = true;
+				grSet.displayRes = 'HD';
+				grSet.showStyledTooltips = false;
+				grSet.seekbar = 'progressbar';
+				grSet.progressBarRefreshRate = 500;
+				grSet.peakmeterBarRefreshRate = 120;
+				grSet.waveformBarPaint = 'full';
+				grSet.waveformBarPrepaint = false;
+				grSet.waveformBarPrepaintFront = 2;
+				grSet.waveformBarAnimate = false;
+				grSet.waveformBarBPM = false;
+				grSet.waveformBarRefreshRate = 500;
+				grSet.playlistTimeRemaining = false;
+				grSet.showDiscArtStub = false;
+				grSet.noDiscArtStub = true;
+				grSet.displayDiscArt = false;
+				grSet.spinDiscArt = false;
+				grSet.spinDiscArtImageCount = 45;
+				grSet.spinDiscArtRedrawInterval = 125;
+				grSet.libraryTheme = 0;
+				libSet.albumArtShow = false;
+				grSet.biographyTheme = 0;
+				bioSet.showFilmStrip = false;
+				bioCfg.photoNum = 5;
+				libSet.albumArtDiskCache = true;
+				libSet.albumArtPreLoad = false;
+				bioSet.focusLoadRate = 2000;
+				grSet.lyricsDropShadowLevel = 0;
+				grSet.lyricsScrollSpeed = 'fast';
+				grSet.lyricsScrollRateAvg = 500;
+				grSet.lyricsScrollRateMax = 250;
+				break;
+
+			case 'highQuality':
+				grSet.playerSize = 'normal';
+				grSet.progressBarRefreshRate = 100;
+				grSet.peakmeterBarRefreshRate = 60;
+				grSet.waveformBarPaint = 'partial';
+				grSet.waveformBarPrepaint = true;
+				grSet.waveformBarPrepaintFront = Infinity;
+				grSet.waveformBarRefreshRate = 100;
+				grSet.waveformBarRefreshRateVar = false;
+				grSet.spinDiscArt = true;
+				grSet.spinDiscArtImageCount = 120;
+				grSet.spinDiscArtRedrawInterval = 40;
+				grm.ui.setDiscArtRotationTimer();
+				grSet.libraryLayout = 'full';
+				libSet.albumArtShow = true;
+				grSet.biographyLayout = 'full';
+				bioCfg.photoNum = 15;
+				libSet.albumArtDiskCache = true;
+				libSet.albumArtPreLoad = true;
+				bioSet.focusLoadRate = 750;
+				grSet.lyricsScrollSpeed = 'slow';
+				grSet.lyricsScrollRateAvg = 1000;
+				grSet.lyricsScrollRateMax = 500;
+				break;
+
+			case 'highestQuality':
+				grSet.playerSize = 'large';
+				grSet.progressBarRefreshRate = 30;
+				grSet.peakmeterBarRefreshRate = 30;
+				grSet.waveformBarPaint = 'partial';
+				grSet.waveformBarPrepaint = true;
+				grSet.waveformBarPrepaintFront = Infinity;
+				grSet.waveformBarRefreshRate = 30;
+				grSet.waveformBarRefreshRateVar = false;
+				grSet.spinDiscArt = true;
+				grSet.spinDiscArtImageCount = 180;
+				grSet.spinDiscArtRedrawInterval = 10;
+				grm.ui.setDiscArtRotationTimer();
+				grSet.detailsAlbumArtDiscAreaOpacity = 178;
+				grSet.libraryLayout = 'full';
+				libSet.albumArtShow = true;
+				grSet.biographyLayout = 'full';
+				bioCfg.photoNum = 20;
+				libSet.albumArtDiskCache = true;
+				libSet.albumArtPreLoad = true;
+				bioSet.focusLoadRate = 500;
+				grSet.lyricsScrollSpeed = 'slowest';
+				grSet.lyricsScrollRateAvg = 1500;
+				grSet.lyricsScrollRateMax = 725;
 				break;
 		}
 	}
-
-	pref.version = currentVersion; // Always update the version panel property
+	// #endregion
 }
-
-
-/**
- * Checks if there is a new update available, also called in Options > Help > Theme > Updates > Check for latest theme update.
- * @param {boolean} openUrl Opens the Georgia-ReBORN Github releases page when hyperlink is available.
- */
-function checkForUpdates(openUrl) {
-	const url = 'https://api.github.com/repos/TT-ReBORN/Georgia-ReBORN/tags';
-	MakeHttpRequest('GET', url, (resp) => {
-		try {
-			/** @type {boolean} The current Github master version, used to prevent notifying users for new update when in development state. */
-			const developVersion = currentVersion.endsWith('DEV');
-			const respObj = JSON.parse(resp);
-			updateAvailable = developVersion ? false : IsNewerVersion(currentVersion, respObj[0].name);
-			console.log(`Current released version of Georgia-ReBORN: v${respObj[0].name}`);
-			if (updateAvailable) {
-				console.log('>>> Georgia-ReBORN new update available. Download it from here: https://github.com/TT-ReBORN/Georgia-ReBORN/releases');
-				updateHyperlink = new Hyperlink('New Update Available', ft.lower_bar_title, 'update', 0, 0, window.Width);
-				if (updateHyperlink) {
-					lowerBarStoppedTime = '';
-					if (!fb.IsPlaying) {
-						str.time = lowerBarStoppedTime;
-						RepaintWindow();
-					}
-					if (openUrl) {
-						updateHyperlink.click();
-					}
-				}
-			} else {
-				console.log('You are on the most current version of Georgia-ReBORN');
-			}
-		} catch (e) {
-			if (!updateHyperlink && updateRetryCount < 3) {
-				// updateHyperlink failed to be created somehow. Let's check again after 1 minute.
-				updateRetryCount++;
-				updateAvailable = false;
-				scheduleUpdateCheck(61000);
-			}
-		}
-	});
-}
-
-
-/**
- * Schedules an update check. Sets at startup and then typically every 24 hours after unless an update is found.
- * @param {number} delay In milliseconds.
- */
-function scheduleUpdateCheck(delay) {
-	clearTimeout(updateTimer);
-	updateTimer = setTimeout(() => {
-		if (!updateAvailable) {
-			checkForUpdates(false);
-			scheduleUpdateCheck(1000 * 60 * 60 * 24);	// Check every 24 hours
-		}
-	}, delay);
-}
-
-
-////////////////////////////
-// ! DO MIGRATION CHECK ! //
-////////////////////////////
-migrateCheck(currentVersion, configVersion);

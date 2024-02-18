@@ -1,64 +1,76 @@
 'use strict';
 
-/** @type {UserInterfaceBio} */
-let uiBio = new UserInterfaceBio();
-/** @type {VkeysBio} */
-let vkBio = new VkeysBio();
-/** @type {PanelBio} */
-let panelBio = new PanelBio();
-/** @type {Names} */
-let name = new Names();
-/** @type {ScrollbarBio} */
-let alb_scrollbar = new ScrollbarBio();
-/** @type {ScrollbarBio} */
-let art_scrollbar = new ScrollbarBio();
-/** @type {ScrollbarBio} */
-let art_scroller = new ScrollbarBio();
-/** @type {ScrollbarBio} */
-let cov_scroller = new ScrollbarBio();
-/** @type {ButtonsBio} */
-let butBio = new ButtonsBio();
-/** @type {PopUpBoxBio} */
-let popUpBoxBio = new PopUpBoxBio();
-/** @type {Text} */
-let txt = new Text();
-/** @type {TaggerBio} */
-let tagBio = new TaggerBio();
-/** @type {ResizeHandler} */
-let resize = new ResizeHandler();
-/** @type {LibraryBio} */
-let libBio = new LibraryBio();
-/** @type {ImagesBio} */
-let imgBio = new ImagesBio();
-/** @type {Seeker} */
-let seeker = new Seeker();
-/** @type {FilmStrip} */
-let filmStrip = new FilmStrip();
-/** @type {TimersBio} */
-let timerBio = new TimersBio();
-/** @type {MenuItemsBio} */
-let menBio = new MenuItemsBio();
-/** @type {ServerBio} */
-let serverBio = new ServerBio();
-/** @type {InfoboxBio} */
-let infoboxBio = new InfoboxBio();
-/** @type {LyricsBio} */
-let lyricsBio; if (panelBio.id.lyricsSource) lyricsBio = new LyricsBio();
+/**
+ * A collection of all biography class instances.
+ * @typedef  {object} bio - The biography main object.
+ * @property {BioUserInterface} ui - The instance of `BioUserInterface` class for ui operations.
+ * @property {BioVkeys} vk - The instance of `BioVkeys` class for vkeys operations.
+ * @property {BioPanel} panel - The instance of `BioPanel` class for panel operations.
+ * @property {BioNames} name - The instance of `BioNames` class for name operations.
+ * @property {BioScrollbar} alb_scrollbar - The instance of `BioScrollbar` class for scrollbar operations.
+ * @property {BioScrollbar} art_scrollbar - The instance of `BioScrollbar` class for scrollbar operations.
+ * @property {BioScrollbar} art_scroller - The instance of `BioScrollbar` class for scrollbar operations.
+ * @property {BioScrollbar} cov_scroller - The instance of `BioScrollbar` class for scrollbar operations.
+ * @property {BioButtons} but - The instance of `BioButtons` class for button operations.
+ * @property {BioPopUpBox} popUpBox - The instance of `BioPopUpBox` class for popup operations.
+ * @property {BioText} txt - The instance of `BioText` class for text operations.
+ * @property {BioTagger} tag - The instance of `BioTagger` class for tagger operations.
+ * @property {BioResizeHandler} resize - The instance of `BioResizeHandler` class for resize operations.
+ * @property {BioLibrary} lib - The instance of `BioLibrary` class for lib operations.
+ * @property {BioImages} img - The instance of `BioImages` class for image operations.
+ * @property {BioSeeker} seeker - The instance of `BioSeeker` class for seeker operations.
+ * @property {BioFilmStrip} filmStrip - The instance of `BioFilmStrip` class for filmstrip operations.
+ * @property {BioTimers} timer - The instance of `BioTimers` class for timer operations.
+ * @property {BioMenuItems} men - The instance of `BioMenuItems` class for menu operations.
+ * @property {BioServer} server - The instance of `BioServer` class for server operations.
+ * @property {BioInfobox} infobox - The instance of `BioInfobox` class for info operations.
+ * @property {BioLyrics} lyrics - The instance of `BioLyrics` class for lyric operations.
+ * @property {BioCallbacks} call - The instance of `BioCallbacks` class for callback operations.
+ */
+/** @global @type {bio} */
+const bio = {};
 
-alb_scrollbar.type = 'alb';
-art_scrollbar.type = 'art';
-art_scroller.type = 'film';
-cov_scroller.type = 'film';
+bio.initialized = false;
 
-timerBio.image();
+bio.ui            = new BioUserInterface();
+bio.vk            = new BioVkeys();
+bio.panel         = new BioPanel();
+bio.name          = new BioNames();
+bio.alb_scrollbar = new BioScrollbar();
+bio.art_scrollbar = new BioScrollbar();
+bio.art_scroller  = new BioScrollbar();
+bio.cov_scroller  = new BioScrollbar();
+bio.but           = new BioButtons();
+bio.popUpBox      = new BioPopUpBox();
+bio.txt           = new BioText();
+bio.tag           = new BioTagger();
+bio.resize        = new BioResizeHandler();
+bio.lib           = new BioLibrary();
+bio.img           = new BioImages();
+bio.seeker        = new BioSeeker();
+bio.filmStrip     = new BioFilmStrip();
+bio.timer         = new BioTimers();
+bio.men           = new BioMenuItems();
+bio.server        = new BioServer();
+bio.infobox       = new BioInfobox();
+if (bio.panel.id.lyricsSource) {
+	bio.lyrics    = new BioLyrics();
+}
 
-timerBio.clear(timerBio.zSearch);
-timerBio.zSearch.id = setTimeout(() => {
-	if ($Bio.server && pptBio.panelActive) {
-	serverBio.download(false, { ix: 0, focus: false }, { ix: 0, focus: false }); serverBio.download(false, { ix: 0, focus: true }, { ix: 0, focus: true });
+bio.alb_scrollbar.type = 'alb';
+bio.art_scrollbar.type = 'art';
+bio.art_scroller.type = 'film';
+bio.cov_scroller.type = 'film';
+
+bio.timer.image();
+bio.timer.clear(bio.timer.zSearch);
+bio.timer.zSearch.id = setTimeout(() => {
+	if ($Bio.server && bioSet.panelActive) {
+		bio.server.download(false, { ix: 0, focus: false }, { ix: 0, focus: false });
+		bio.server.download(false, { ix: 0, focus: true  }, { ix: 0, focus: true });
 	}
-	timerBio.zSearch.id = null;
+	bio.timer.zSearch.id = null;
 }, 3000);
 
-// if (!pptBio.get('Panel Biography - System: Software Notice Checked', false)) fb.ShowPopupMessage('License\r\n\r\nCopyright (c) 2021-2023 WilB\r\n\r\nThe above copyright notice shall be included in all copies or substantial portions of the Software.\r\n\r\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.', 'Biography');
-// pptBio.set('Panel Biography - System: Software Notice Checked', true);
+if (!bioSet.get('Panel Biography - System: Software Notice Checked', true)) fb.ShowPopupMessage('License\r\n\r\nCopyright (c) 2021-2023 WilB\r\n\r\nThe above copyright notice shall be included in all copies or substantial portions of the Software.\r\n\r\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.', 'Biography');
+	 bioSet.set('Panel Biography - System: Software Notice Checked', true);

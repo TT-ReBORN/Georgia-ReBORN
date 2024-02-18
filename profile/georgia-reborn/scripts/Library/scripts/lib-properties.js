@@ -1,10 +1,10 @@
 ﻿'use strict';
 
-class PanelPropertyLib {
+class LibPanelProperty {
 	constructor(name, default_value) {
 		this.name = name;
 		this.default_value = default_value;
-		this.value = ppt.get(this.name, default_value);
+		this.value = libSet.get(this.name, default_value);
 	}
 
 	// * METHODS * //
@@ -15,13 +15,13 @@ class PanelPropertyLib {
 
 	set(new_value) {
 		if (this.value !== new_value) {
-			ppt.set(this.name, new_value);
+			libSet.set(this.name, new_value);
 			this.value = new_value;
 		}
 	}
 }
 
-class PanelPropertiesLib {
+class LibPanelProperties {
 	constructor() {
 		// this.name_list = {}; debug
 	}
@@ -62,7 +62,7 @@ class PanelPropertiesLib {
 
 	add(item) {
 		// this.name_list[item[0]] = 1; debug
-		this[`${item[2]}_internal`] = new PanelPropertyLib(item[0], item[1]);
+		this[`${item[2]}_internal`] = new LibPanelProperty(item[0], item[1]);
 
 		Object.defineProperty(this, item[2], {
 			get() {
@@ -87,7 +87,8 @@ class PanelPropertiesLib {
 	}
 }
 
-let properties = [
+/** @global @type {Array.<Array>} */
+let libProperties = [
 	['Panel Library - #Show Html Dialog Unsupported-0 Supported-1 Autocheck-2', 2, 'isHtmlDialogSupported'],
 	['Panel Library - Action Mode', 0, 'actionMode'],
 	['Panel Library - Alt-Click Action', 1, 'altClickAction'],
@@ -324,18 +325,23 @@ let properties = [
 	['Panel Library - Zoom Tooltip [Button] (%)', 100, 'zoomTooltipBut']
 ];
 
-const ppt = new PanelPropertiesLib();
-ppt.init('auto', properties);
-if (!$Lib.file('C:\\check_local\\1450343922.txt')) ppt.themed = false;
+/**
+ * The instance of `PanelPropertiesLib` class for library panel property settings.
+ * @typedef {LibPanelProperties}
+ * @global
+ */
+const libSet = new LibPanelProperties();
+libSet.init('auto', libProperties);
+if (!$Lib.file('C:\\check_local\\1450343922.txt')) libSet.themed = false;
 
-if (ppt.get('Panel Library - Tree List View')) {
-	ppt.facetView = ppt.get('Panel Library - Tree List View');
-	ppt.set('Panel Library - Tree List View', null);
+if (libSet.get('Panel Library - Tree List View')) {
+	libSet.facetView = libSet.get('Panel Library - Tree List View');
+	libSet.set('Panel Library - Tree List View', null);
 }
-ppt.set('Panel Library - Image Pre-Load Images In Disk Cache', null);
-ppt.set('Panel Library - Image Root Collage', null);
-ppt.set('Panel Library - Image Show Index Number', null);
-ppt.set('Panel Library - Image Show Index Year Auto', null);
-ppt.set('Panel Library - Node: Item Show Duration', null);
-ppt.set('Panel Library - Node [Squares]: Windows 0 or 1', null);
-properties = undefined;
+libSet.set('Panel Library - Image Pre-Load Images In Disk Cache', null);
+libSet.set('Panel Library - Image Root Collage', null);
+libSet.set('Panel Library - Image Show Index Number', null);
+libSet.set('Panel Library - Image Show Index Year Auto', null);
+libSet.set('Panel Library - Node: Item Show Duration', null);
+libSet.set('Panel Library - Node [Squares]: Windows 0 or 1', null);
+libProperties = undefined;

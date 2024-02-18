@@ -1014,7 +1014,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 
 			function set_btn_apply_state() {
 				getValues();
-				document.getElementById("btn_apply").disabled = JSON.stringify(pptBio) != parsed_args[0] || JSON.stringify(cfg) != parsed_args[1] ? false : true;
+				document.getElementById("btn_apply").disabled = JSON.stringify(bioSet) != parsed_args[0] || JSON.stringify(cfg) != parsed_args[1] ? false : true;
 
 				var el = document.activeElement;
 				var id = el.id;
@@ -1078,7 +1078,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 			var lang_ix = 0;
 			var parsed_args;
 			var tf_callback;
-			var pptBio = {};
+			var bioSet = {};
 			var scale = 1;
 			var sizes = [];
 			var isTransparent = false;
@@ -1090,7 +1090,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 
 			if (parsed_args) {
 				cur = JSON.parse(parsed_args[2]);
-				if (!/PanelCfg|ServerCfg/.test(cur.tab)) cur.tab = 'PanelCfg'; // guard against bad user edits of pptBio
+				if (!/PanelCfg|ServerCfg/.test(cur.tab)) cur.tab = 'PanelCfg'; // guard against bad user edits of bioSet
 				if (cur.tab == 'PanelCfg') {
 					if (!/behaviour|display|headings|image|custom|textreader|advanced/.test(cur.panelPage)) cur.panelPage = 'display'
 				}
@@ -1098,10 +1098,10 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					if (!/title_format|download|photo|cover|tagger|misc/.test(cur.serverPage)) cur.serverPage = 'download'
 				}
 				document.title = 'Biography ' + cur.version;
-				pptBio = JSON.parse(parsed_args[0]);
+				bioSet = JSON.parse(parsed_args[0]);
 				cfg = JSON.parse(parsed_args[1]);
-				if (pptBio.multiServer_internal.value) {
-					var servName = pptBio.serverName_internal.value;
+				if (bioSet.multiServer_internal.value) {
+					var servName = bioSet.serverName_internal.value;
 					servName = servName.charAt(0).toUpperCase() + servName.slice(1).toLowerCase() + ' ';
 					var newName = ServerCfg.innerHTML.replace(' (All Panels)',  '')
 					ServerCfg.innerHTML = servName + newName;
@@ -1168,7 +1168,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				var textStyleLabels = ['Top align', 'Expand lists', 'Auto-optimise if multiple items shown'];
 				var tfLabels = ['Biography', 'Review', 'Title', 'Lyrics', 'Title'];
 				var tfServLabels = ['%BIO_ALBUMARTIST%', '%BIO_ARTIST%', '%BIO_ALBUM%', '%BIO_TITLE%', 'Composition tag'];
-				var themeLabels = !pptBio['themed_internal'].value ? ['User interface', 'Dark', 'Blend', 'Light', 'Random', 'Always cover based', 'Swap colours'] : ['N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set'];
+				var themeLabels = !bioSet['themed_internal'].value ? ['User interface', 'Dark', 'Blend', 'Light', 'Random', 'Always cover based', 'Swap colours'] : ['N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set', 'N/A: central set'];
 				var themeBlurLabels = ['Auto-fill', 'Level (%)', 'Opacity (%)', '%', 'Load delay (ms)', 'Leading item: load immediately (ignore delay)'];
 				var whitelistLabels = ['Write all last.fm tags', 'Apply filter to remove non-standard genres using this <a href="microsoft-edge:https://musicbrainz.org/genres" target=\"_blank\">whitelist</a>',];
 
@@ -1415,20 +1415,20 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 
 				function setDropShadowLevel(n) {
 					window.shadowFontStyle_dropdown.innerHTML = 'Lyrics & nowplaying drop shadow level: ' + dropShadowLevelLabels[n];
-					pptBio['dropShadowLevel_internal'].value = n;
+					bioSet['dropShadowLevel_internal'].value = n;
 					window.shadowLevel.style.display = 'none';
 				}
 
 				function setFilmAlignment(n) {
 					window.film_dropdown.innerHTML = filmStripLabels[n];
-					pptBio['filmStripMargin_internal'].value = n;
+					bioSet['filmStripMargin_internal'].value = n;
 					window.filmStripAlign.style.display = 'none';
 				}
 
 				function setHeadingShow(n, type) {
 					var prop = ['heading', 'trackHeading', 'sourceHeading'][type];
 					window[prop + '_dropdown'].innerHTML = '<b>' + ['Main', 'Track', 'Source'][type] + ': </b>' + (type == 0 ? headingLabels[n] : sbarShowLabels[n]);
-					pptBio[prop + '_internal'].value = n;
+					bioSet[prop + '_internal'].value = n;
 					switch (type) {
 						case 0: window.mainShow.style.display = 'none'; break;
 						case 1: window.trackShow.style.display = 'none'; break;
@@ -1439,7 +1439,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				function setHeadingFont(n, type) {
 					var prop = ['headFontStyle', 'trackStyle', 'sourceStyle', 'wikiStyle', 'lyricsFontStyle', 'summaryStyle'][type];
 					window[prop + '_dropdown'].innerHTML = (type == 3 ? 'Wikipedia section heading: ' : type == 4 ? 'Lyrics & nowplaying: font style: ' : type == 5 ? 'Summary font style: ' : '') + headingFontLabels[n];
-					pptBio[prop + '_internal'].value = n;
+					bioSet[prop + '_internal'].value = n;
 					setHeadingFontStyle(n, type);
 					switch (type) {
 						case 0: window.mainFont.style.display = 'none'; break;
@@ -1460,37 +1460,37 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 
 				function setLyricsScrollMethod(n) {
 					window.lyricsScrollMethod_dropdown.innerHTML = lyricsScrollMethodLabels[n];
-					pptBio['lyricsScrollMaxMethod_internal'].value = n;
+					bioSet['lyricsScrollMaxMethod_internal'].value = n;
 					window.lyricsScrollMethod.style.display = 'none';
 				}
 
 				function setOverlayType(n) {
 					window.overlay_dropdown.innerHTML = overlayLabels[n];
-					pptBio['typeOverlay_internal'].value = n;
+					bioSet['typeOverlay_internal'].value = n;
 					window.overlayType.style.display = 'none';
 				}
 
 				function ratingTextPosn(n) {
 					window.rating_dropdown.innerHTML = 'Text position: ' + ratingTextPosLabels[n];
-					pptBio['ratingTextPos_internal'].value = n;
+					bioSet['ratingTextPos_internal'].value = n;
 					window.ratingTextPos.style.display = 'none';
 				}
 
 				function setReflectionType(n) {
 					window.reflection_dropdown.innerHTML = reflPosLabels[n];
-					pptBio['imgReflType_internal'].value = n;
+					bioSet['imgReflType_internal'].value = n;
 					window.reflPos.style.display = 'none';
 				}
 
 				function setSbarShow(n) {
 					window.sbarShow_dropdown.innerHTML = sbarShowLabels[n];
-					pptBio['sbarShow_internal'].value = n;
+					bioSet['sbarShow_internal'].value = n;
 					window.sbarShow.style.display = 'none';
 				}
 
 				function setsbarType(n) {
 					window.sbarType_dropdown.innerHTML = sbarTypeLabels[n];
-					pptBio['sbarType_internal'].value = n;
+					bioSet['sbarType_internal'].value = n;
 					sbar_col_dropdown.style.display = n < 2 ? "inline-block" : "none";
 					sbar_icon_dropdown.style.display = n < 2 ? "inline-block" : "none"
 					window.sbarType.style.display = 'none';
@@ -1498,44 +1498,44 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 
 				function setSbarCol(n) {
 					window.sbarCol_dropdown.innerHTML = sbarColLabels[n];
-					pptBio['sbarCol_internal'].value = n;
+					bioSet['sbarCol_internal'].value = n;
 					window.sbarCol.style.display = 'none';
 				}
 
 				function setSbarIcon(n) {
 					window.sbarIcon_dropdown.innerHTML = sbarIconLabels[n];
-					pptBio['sbarButType_internal'].value = n;
+					bioSet['sbarButType_internal'].value = n;
 					window.sbarIcon.style.display = 'none';
 				}
 
 				function setSeekerShow(n) {
 					window.seeker_dropdown.innerHTML = sbarShowLabels[n];
-					pptBio['imgSeekerShow_internal'].value = n;
+					bioSet['imgSeekerShow_internal'].value = n;
 					window.seeker.style.display = 'none';
 				}
 
 				function setTheme(n) {
 					window.theme_dropdown.innerHTML = themeLabels[n];
-					pptBio['theme_internal'].value = n;
+					bioSet['theme_internal'].value = n;
 					window.themeBg.style.display = 'none';
 				}
 
 				function setBehaviour() {
 					for (i = 0; i < 2; i++) {window.layout.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="layout_checkbox'+i+'" name="behaviour_checkbox" style="'+cbox+'" type="checkbox" /><label for="layout_checkbox'+i+'" class="checkbox_label">'+layoutLabels[i]+'</label></div>');}
-					window.sbarShow_dropdown.innerHTML = sbarShowLabels[pptBio['sbarShow_internal'].value];
+					window.sbarShow_dropdown.innerHTML = sbarShowLabels[bioSet['sbarShow_internal'].value];
 					for (i = 0; i < 3; i++) {window.sbarShow.insertAdjacentHTML('beforeend', '<a onclick="setSbarShow(' + i + ');">'+sbarShowLabels[i]+'</a>');}
-					window.sbarType_dropdown.innerHTML = sbarTypeLabels[pptBio['sbarType_internal'].value];
+					window.sbarType_dropdown.innerHTML = sbarTypeLabels[bioSet['sbarType_internal'].value];
 					for (i = 0; i < 4; i++) {window.sbarType.insertAdjacentHTML('beforeend', '<a onclick="setsbarType(' + i + ');">'+sbarTypeLabels[i]+'</a>');}
-					window.sbarCol_dropdown.innerHTML = sbarColLabels[pptBio['sbarCol_internal'].value];
+					window.sbarCol_dropdown.innerHTML = sbarColLabels[bioSet['sbarCol_internal'].value];
 					for (i = 0; i < 2; i++) {window.sbarCol.insertAdjacentHTML('beforeend', '<a onclick="setSbarCol(' + i + ');">'+sbarColLabels[i]+'</a>');}
-					sbar_col_dropdown.style.display = pptBio['sbarType_internal'].value < 2 ? "inline-block" : "none";
-					window.sbarIcon_dropdown.innerHTML = sbarIconLabels[pptBio['sbarButType_internal'].value];
+					sbar_col_dropdown.style.display = bioSet['sbarType_internal'].value < 2 ? "inline-block" : "none";
+					window.sbarIcon_dropdown.innerHTML = sbarIconLabels[bioSet['sbarButType_internal'].value];
 					for (i = 0; i < 3; i++) {window.sbarIcon.insertAdjacentHTML('beforeend', '<a onclick="setSbarIcon(' + i + ');">'+sbarIconLabels[i]+'</a>');}
-					sbar_icon_dropdown.style.display = pptBio['sbarType_internal'].value != 2 ? "inline-block" : "none";
+					sbar_icon_dropdown.style.display = bioSet['sbarType_internal'].value != 2 ? "inline-block" : "none";
 					for (i = 0; i < 4; i++) {window.scrolling.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="scroll_checkbox'+i+'" name="behaviour_checkbox" style="'+cbox+'" type="checkbox" /><label for="scroll_checkbox'+i+'" class="checkbox_label">'+scrollLabels[i]+'</label></div>');}
 					for (i = 0; i < 2; i++) {window.fall_back.insertAdjacentHTML('beforeend', '<div class="input_cnt5"><input id="fallback_container'+i+'" name="behaviour_input" class="input54" /><label for="fallback_container'+i+'" class="inp_label2">'+fallbackLabels[i]+'</label></div>');}
 
-					window.overlay_dropdown.innerHTML = overlayLabels[pptBio['typeOverlay_internal'].value];
+					window.overlay_dropdown.innerHTML = overlayLabels[bioSet['typeOverlay_internal'].value];
 					for (i = 0; i < 5; i++) {window.overlayType.insertAdjacentHTML('beforeend', '<a onclick="setOverlayType(' + i + ');">'+overlayLabels[i]+'</a>');}
 					for (i = 5; i < 8; i++) {window.overlayMetrics.insertAdjacentHTML('beforeend', '<div class="input_cnt5"><input id="overlayMetrics_container'+i+'" name="behaviour_input" style="padding:0; margin:0;" class="input3" /><label for="overlayMetrics_container'+i+'" class="inp_label2">'+overlayLabels[i]+'</label></div>');}
 					generateTable('menu');
@@ -1550,7 +1550,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					i = 5; window.metrics2.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="metrics_container'+i+'" name="display_input" class="input2" /><label for="metrics_container'+i+'" class="inp_label2"><b>'+metricsLabels[1]+'</b></label></div>');
 					for (i = 0; i < 3; i++) {window.textStyle.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="textStyle_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="textStyle_checkbox'+i+'" class="checkbox_label">'+textStyleLabels[i]+'</label></div>');}
 
-					window.theme_dropdown.innerHTML = themeLabels[pptBio['theme_internal'].value];
+					window.theme_dropdown.innerHTML = themeLabels[bioSet['theme_internal'].value];
 					for (i = 0; i < 5; i++) {window.themeBg.insertAdjacentHTML('beforeend', '<a onclick="setTheme(' + i + ');">'+themeLabels[i]+'</a>');}
 					for (i = 5; i < 7; i++) {window.themeStyle.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="theme_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="theme_checkbox'+i+'" class="checkbox_label">'+themeLabels[i]+'</label></div>');}
 					for (i = 0; i < 9; i++) {window.highlight.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="highlight_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="highlight_checkbox'+i+'" class="checkbox_label">'+highlightLabels[i]+'</label></div>');}
@@ -1558,13 +1558,13 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					for (i = 0; i < 2; i++) {window.rating1.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="rating_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="rating_checkbox'+i+'" class="checkbox_label">'+ratingLabels[i]+'</label></div>');}
 					for (i = 2; i < 4; i++) {window.rating2.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="star'+i+'" name="star" style="'+cbox+'" type="radio" /><label for="star'+i+'" class="checkbox_label">'+ratingLabels[i]+'</label></div>');}
 
-					window.rating_dropdown.innerHTML = 'Text position: ' + ratingTextPosLabels[pptBio['ratingTextPos_internal'].value];
+					window.rating_dropdown.innerHTML = 'Text position: ' + ratingTextPosLabels[bioSet['ratingTextPos_internal'].value];
 					for (i = 0; i < 3; i++) {window.ratingTextPos.insertAdjacentHTML('beforeend', '<a onclick="ratingTextPosn(' + i + ');">'+ratingTextPosLabels[i]+'</a>');}
 					for (i = 4; i < 6; i++) {window.rating3.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="ratingName_container'+i+'" name="display_input" style="padding:0; margin:0;" class="input70" /><label for="ratingName_container'+i+'" class="inp_label2">'+ratingLabels[i]+'</label></div>');}
 
 					for (i = 0; i < 6; i++) {window.summary.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="summary_checkbox'+i+'" name="display_checkbox" style="'+cbox+'" type="checkbox" /><label for="summary_checkbox'+i+'" class="checkbox_label">'+summaryLabels[i]+'</label></div>');}
-					window.summaryStyle_dropdown.innerHTML = 'Summary font style: ' + headingFontLabels[pptBio['summaryStyle_internal'].value];
-					setHeadingFontStyle(pptBio['summaryStyle_internal'].value, 5);
+					window.summaryStyle_dropdown.innerHTML = 'Summary font style: ' + headingFontLabels[bioSet['summaryStyle_internal'].value];
+					setHeadingFontStyle(bioSet['summaryStyle_internal'].value, 5);
 					for (i = 0; i < 6; i++) {window.summaryFont.insertAdjacentHTML('beforeend', '<a onclick="setHeadingFont(' + i + ',' + 5 + ');">'+headingFontLabels[i]+'</a>');}
 				}
 
@@ -1581,24 +1581,24 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					for (i = 0; i < 2; i++) {window.flag.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="flag_checkbox'+i+'" name="headings_checkbox" style="'+cbox+'" type="checkbox" /><label for="flag_checkbox'+i+'" class="checkbox_label">'+flaglabels[i]+'</label></div>');}
 					for (i = 0; i < 3; i++) {window.headingPadding.insertAdjacentHTML('beforeend', '<div class="input_cnt3"><input id="headingPadding_container'+i+'" name="headings_input" style="padding:0; margin:0;" class="input15" /><label for="headingPadding_container'+i+'" class="inp_label2">'+headingPaddingLabels[i]+'</label></div>');}
 
-					window.heading_dropdown.innerHTML = '<b>Main: </b>' + headingLabels[pptBio['heading_internal'].value];
+					window.heading_dropdown.innerHTML = '<b>Main: </b>' + headingLabels[bioSet['heading_internal'].value];
 					for (i = 0; i < 2; i++) {window.mainShow.insertAdjacentHTML('beforeend', '<a onclick="setHeadingShow(' + i + ',' + 0 + ');">'+headingLabels[i]+'</a>');}
-					window.trackHeading_dropdown.innerHTML = '<b>Track: </b>' + sbarShowLabels[pptBio['trackHeading_internal'].value];
+					window.trackHeading_dropdown.innerHTML = '<b>Track: </b>' + sbarShowLabels[bioSet['trackHeading_internal'].value];
 					for (i = 0; i < 3; i++) {window.trackShow.insertAdjacentHTML('beforeend', '<a onclick="setHeadingShow(' + i + ',' + 1 + ');">'+sbarShowLabels[i]+'</a>');}
-					window.sourceHeading_dropdown.innerHTML = '<b>Source: </b>' + sbarShowLabels[pptBio['sourceHeading_internal'].value];
+					window.sourceHeading_dropdown.innerHTML = '<b>Source: </b>' + sbarShowLabels[bioSet['sourceHeading_internal'].value];
 					for (i = 0; i < 3; i++) {window.sourceShow.insertAdjacentHTML('beforeend', '<a onclick="setHeadingShow(' + i + ',' + 2 + ');">'+sbarShowLabels[i]+'</a>');}
 
-					window.headFontStyle_dropdown.innerHTML = headingFontLabels[pptBio['headFontStyle_internal'].value];
-					setHeadingFontStyle(pptBio['headFontStyle_internal'].value, 0);
+					window.headFontStyle_dropdown.innerHTML = headingFontLabels[bioSet['headFontStyle_internal'].value];
+					setHeadingFontStyle(bioSet['headFontStyle_internal'].value, 0);
 					for (i = 0; i < 6; i++) {window.mainFont.insertAdjacentHTML('beforeend', '<a onclick="setHeadingFont(' + i + ',' + 0 + ');">'+headingFontLabels[i]+'</a>');}
-					window.trackStyle_dropdown.innerHTML = headingFontLabels[pptBio['trackStyle_internal'].value];
-					setHeadingFontStyle(pptBio['trackStyle_internal'].value, 1);
+					window.trackStyle_dropdown.innerHTML = headingFontLabels[bioSet['trackStyle_internal'].value];
+					setHeadingFontStyle(bioSet['trackStyle_internal'].value, 1);
 					for (i = 0; i < 6; i++) {window.trackFont.insertAdjacentHTML('beforeend', '<a onclick="setHeadingFont(' + i + ',' + 1 + ');">'+headingFontLabels[i]+'</a>');}
-					window.sourceStyle_dropdown.innerHTML = headingFontLabels[pptBio['sourceStyle_internal'].value];
-					setHeadingFontStyle(pptBio['sourceStyle_internal'].value, 2);
+					window.sourceStyle_dropdown.innerHTML = headingFontLabels[bioSet['sourceStyle_internal'].value];
+					setHeadingFontStyle(bioSet['sourceStyle_internal'].value, 2);
 					for (i = 0; i < 6; i++) {window.sourceFont.insertAdjacentHTML('beforeend', '<a onclick="setHeadingFont(' + i + ',' + 2 + ');">'+headingFontLabels[i]+'</a>');}
-					window.wikiStyle_dropdown.innerHTML = 'Wikipedia section heading: ' + headingFontLabels[pptBio['wikiStyle_internal'].value];
-					setHeadingFontStyle(pptBio['wikiStyle_internal'].value, 3);
+					window.wikiStyle_dropdown.innerHTML = 'Wikipedia section heading: ' + headingFontLabels[bioSet['wikiStyle_internal'].value];
+					setHeadingFontStyle(bioSet['wikiStyle_internal'].value, 3);
 					for (i = 0; i < 6; i++) {window.wikiFont.insertAdjacentHTML('beforeend', '<a onclick="setHeadingFont(' + i + ',' + 3 + ');">'+headingFontLabels[i]+'</a>');}
 				}
 
@@ -1606,8 +1606,8 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					for (i = 0; i < 2; i++) {window.mainImage.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="mainImg_checkbox'+i+'" name="image_checkbox" style="'+cbox+'" type="checkbox" /><label for="mainImg_checkbox'+i+'" class="checkbox_label">'+mainImgLabels[i]+'</label></div>');}
 					i = 2; window.mainImage.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="cycleTime_container'+i+'" name="image_input" style="padding:0; margin:0;" class="input2" /><label for="cycleTime_container'+i+'" class="inp_label2">'+mainImgLabels[i]+'</label></div>');
 
-					window.seeker_dropdown.innerHTML = sbarShowLabels[pptBio['imgSeekerShow_internal'].value];
-					if (!pptBio['imgSeekerDisabled_internal'].value) for (i = 0; i < 3; i++) {window.seeker.insertAdjacentHTML('beforeend', '<a onclick="setSeekerShow(' + i + ');">'+sbarShowLabels[i]+'</a>');}
+					window.seeker_dropdown.innerHTML = sbarShowLabels[bioSet['imgSeekerShow_internal'].value];
+					if (!bioSet['imgSeekerDisabled_internal'].value) for (i = 0; i < 3; i++) {window.seeker.insertAdjacentHTML('beforeend', '<a onclick="setSeekerShow(' + i + ');">'+sbarShowLabels[i]+'</a>');}
 					else {
 						window.seeker_dropdown.style.background = '#EBEBE4';
 						window.seeker_dropdown.style.color = '#C6C6C6';
@@ -1617,8 +1617,8 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					for (i = 2; i < 4; i++) {window.seekerDots.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="imgSeekerDots'+i+'" name="imgSeekerDots" style="'+cbox+'" type="radio" /><label for="imgSeekerDots'+i+'" class="checkbox_label">'+seekerLabels[i]+'</label></div>');}
 					i = 0; window.filmStripShow.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="filmStrip_checkbox'+i+'" name="image_checkbox" style="'+cbox+'" type="checkbox" /><label for="filmStrip_checkbox'+i+'" class="checkbox_label">Only show if > 1 thumbnail</label></div>');
 
-					window.film_dropdown.innerHTML = filmStripLabels[pptBio['filmStripMargin_internal'].value];
-					if (!pptBio['filmStripOverlay_internal'].value || pptBio['text_only_internal'].value) for (i = 0; i < 5; i++) {window.filmStripAlign.insertAdjacentHTML('beforeend', '<a onclick="setFilmAlignment(' + i + ');">'+filmStripLabels[i]+'</a>');}
+					window.film_dropdown.innerHTML = filmStripLabels[bioSet['filmStripMargin_internal'].value];
+					if (!bioSet['filmStripOverlay_internal'].value || bioSet['text_only_internal'].value) for (i = 0; i < 5; i++) {window.filmStripAlign.insertAdjacentHTML('beforeend', '<a onclick="setFilmAlignment(' + i + ');">'+filmStripLabels[i]+'</a>');}
 					else {
 						window.film_dropdown.style.background = '#EBEBE4';
 						window.film_dropdown.style.color = '#C6C6C6';
@@ -1630,7 +1630,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					i = 3; window.input_cntf2.insertAdjacentHTML('beforeend', '<div class="input_cnt4"><input id="filterCheckbox'+i+'" style="'+cboxMargin+'; visibility:hidden;" name="image_checkbox_hidden" type="checkbox" /><input id="filter_container'+i+'" class="input50" name="image_input"></input><label for="filter_container'+i+'" class="inp_label5">'+filterLabels[i]+'</label></div>');
 					generateTable('imageFormat');
 
-					window.reflection_dropdown.innerHTML = reflPosLabels[pptBio['imgReflType_internal'].value];
+					window.reflection_dropdown.innerHTML = reflPosLabels[bioSet['imgReflType_internal'].value];
 					for (i = 0; i < 5; i++) {window.reflPos.insertAdjacentHTML('beforeend', '<a onclick="setReflectionType(' + i + ');">'+reflPosLabels[i]+'</a>');}
 					for (i = 5; i < 8; i++) {window.reflectionMetrics.insertAdjacentHTML('beforeend', '<div class="input_cnt5"><input id="reflectionMetrics_container'+i+'" name="image_input" class="input2" /><label for="reflectionMetrics_container'+i+'" class="inp_label2">'+reflPosLabels[i]+'</label></div>');}
 				}
@@ -1639,7 +1639,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				function setCustomColours(value) {
 					var items = ['text', 'text_h', 'headingBtn', 'headingText', 'stars', 'summary', 'rectOv', 'rectOvBor', 'bg', 'line', 'bgTrans', 'frame'];
 					for (var i = 0; i < items.length; i++) {
-						bg[i] = assign(pptBio[items[i] + '_internal'][value], i < 8 ? 0 : 1);
+						bg[i] = assign(bioSet[items[i] + '_internal'][value], i < 8 ? 0 : 1);
 						fg[i] = getSelCol(bg[i]);
 						bg[i] = "rgb("+bg[i][0]+","+bg[i][1]+","+bg[i][2]+")";
 						var el = document.getElementById('colour_container'+i);
@@ -1654,9 +1654,9 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					for (i = 0; i < 4; i++) {window.cusText2.insertAdjacentHTML('beforeend', '<div class="input_cnt1" ><input name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><input name="textreader_input" class="input18" /><input id="tf_cusText_container'+i+'" name="textreader_input" class="input65" /><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cboxMargin+'" type="checkbox" /></div>')}
 					for (i = 4; i < 8; i++) {window.cusText3.insertAdjacentHTML('beforeend', '<div class="input_cnt1" ><input name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><input name="textreader_input" class="input18" /><input id="tf_cusText_container'+i+'" name="textreader_input" class="input65" /><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cboxMargin+'" type="checkbox" /></div>')}
 
-					window.lyricsFontStyle_dropdown.innerHTML = 'Lyrics & nowplaying: font style: ' + headingFontLabels[pptBio['lyricsFontStyle_internal'].value];
-					window.shadowFontStyle_dropdown.innerHTML = 'Lyrics & nowplaying drop shadow level: ' + dropShadowLevelLabels[pptBio['dropShadowLevel_internal'].value];
-					setHeadingFontStyle(pptBio['lyricsFontStyle_internal'].value, 4);
+					window.lyricsFontStyle_dropdown.innerHTML = 'Lyrics & nowplaying: font style: ' + headingFontLabels[bioSet['lyricsFontStyle_internal'].value];
+					window.shadowFontStyle_dropdown.innerHTML = 'Lyrics & nowplaying drop shadow level: ' + dropShadowLevelLabels[bioSet['dropShadowLevel_internal'].value];
+					setHeadingFontStyle(bioSet['lyricsFontStyle_internal'].value, 4);
 					for (i = 0; i < 6; i++) {window.lyricsFont.insertAdjacentHTML('beforeend', '<a onclick="setHeadingFont(' + i + ',' + 4 + ');">'+headingFontLabels[i]+'</a>');}
 					for (i = 0; i < 11; i++) {window.shadowLevel.insertAdjacentHTML('beforeend', '<a onclick="setDropShadowLevel(' + i + ');">'+dropShadowLevelLabels[i]+'</a>');}
 					i = 0; window.largerHighlighted.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="larger_checkbox'+i+'" name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><label for="larger_checkbox'+i+'" class="checkbox_label">Larger sync lyric line</label></div>');
@@ -1667,7 +1667,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					i = 5; window.lyricsFadeHeight.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="lyricsFadeHeight_container'+i+'" name="textreader_input" class="input2" /><label for="lyricsFadeHeight_container'+i+'" class="inp_label2">Fade height (0 = auto)</label></div>');
 					i = 6; window.lyricsScrollTimeAvg.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="lyricsScrollTimeAvg_container'+i+'" name="textreader_input" class="input98" /></div>');
 					i = 7; window.lyricsScrollTimeMax.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="lyricsScrollTimeMax_container'+i+'" name="textreader_input" class="input98" /></div>');
-					window.lyricsScrollMethod_dropdown.innerHTML = lyricsScrollMethodLabels[pptBio['lyricsScrollMaxMethod_internal'].value];
+					window.lyricsScrollMethod_dropdown.innerHTML = lyricsScrollMethodLabels[bioSet['lyricsScrollMaxMethod_internal'].value];
 					for (i = 0; i < 2; i++) {window.lyricsScrollMethod.insertAdjacentHTML('beforeend', '<a onclick="setLyricsScrollMethod(' + i + ',' + 0 + ');">'+lyricsScrollMethodLabels[i]+'</a>');}
 					i = 8; window.rowStripes.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><label for="cusTxt_checkbox'+i+'" class="checkbox_label">Row stripes</label></div>');
 					i = 9; window.lineDividers.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><label for="cusTxt_checkbox'+i+'" class="checkbox_label">Lines</label></div>');
@@ -1685,7 +1685,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				function setAdvanced() {
 					for (i = 0; i < 4; i++) {window.cusScroll.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="scroll_container'+i+'" name="advanced_input" class="input35" /><label for="scroll_container'+i+'" class="inp_label2">'+cusScrollLabels[i]+'</label></div>');}
 					for (i = 0; i < 5; i++) {window.scrollbar.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="scrollbar_container'+i+'" name="advanced_input" class="input35" /><label for="scrollbar_container'+i+'" class="inp_label2">'+scrollbarLabels[i]+'</label></div>');}
-					var fFamily = pptBio['butCustIconFont_internal'].value;
+					var fFamily = bioSet['butCustIconFont_internal'].value;
 					i = 5; window.scrollbar.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="scrollbar_container'+i+'" name="advanced_input" class="input35" style="font-family:'+fFamily+'" /><label for="scrollbar_container'+i+'" class="inp_label2">'+scrollbarLabels[i]+'</label></div>');
 					for (i = 6; i < 8; i++) {window.scrollbar.insertAdjacentHTML('beforeend', '<div class="input_cnt1"><input id="scrollbar_container'+i+'" name="advanced_input" class="input35" /><label for="scrollbar_container'+i+'" class="inp_label2">'+scrollbarLabels[i]+'</label></div>');}
 					i = 8; window.scrollbar.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="scrollbar_checkbox'+i+'" name="advanced_checkbox" style="'+cbox+'" type="checkbox" /><label for="scrollbar_checkbox'+i+'" class="checkbox_label">'+scrollbarLabels[i]+'</label></div>');
@@ -1794,7 +1794,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 			function setInputs(page, value) {
 				var nm = page.toString()+'_input', inputs = document.querySelectorAll(page == 'all' ? "[name$='_input']" : "[name="+nm+"]");
 				for (i = 0; i < inputs.length; i++) {
-					inputs[i].value = (pptBio[input[page].name[i] + '_internal'] || cfg[input[page].name[i] + '_internal'])[value];
+					inputs[i].value = (bioSet[input[page].name[i] + '_internal'] || cfg[input[page].name[i] + '_internal'])[value];
 				}
 			}
 
@@ -1811,9 +1811,9 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				window.filterCheckbox3.parentNode.disabled = !window.filterCheckbox0.checked && !window.filterCheckbox1.checked && !window.filterCheckbox2.checked
 				window.fuzzyLevel.disabled = !misc_checkbox3.checked;
 				window.headFontStyle_dropdown.style.display = window.font_checkbox1.checked && window.font_container1.value.length ? "none" : "inline-block";
-				window.flag_checkbox0.parentNode.disabled = pptBio['hdPos_internal'].value != 0;
-				window.flag_checkbox1.parentNode.disabled = pptBio['hdPos_internal'].value != 0;
-				window.flagInfo.innerHTML = pptBio['hdPos_internal'].value == 0 ? "Country codes are saved during wikipedia bio download" : "Flag display requires heading format set to left";
+				window.flag_checkbox0.parentNode.disabled = bioSet['hdPos_internal'].value != 0;
+				window.flag_checkbox1.parentNode.disabled = bioSet['hdPos_internal'].value != 0;
+				window.flagInfo.innerHTML = bioSet['hdPos_internal'].value == 0 ? "Country codes are saved during wikipedia bio download" : "Flag display requires heading format set to left";
 				window.highlight_checkbox0.parentNode.disabled = window.colour_checkbox2.checked;
 				window.highlight_checkbox1.parentNode.disabled = window.colour_checkbox3.checked;
 				window.highlight_checkbox2.parentNode.disabled = window.colour_checkbox9.checked || window.lines_checkbox.checked;
@@ -1821,21 +1821,21 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				window.highlight_checkbox5.parentNode.disabled = window.colour_checkbox4.checked;
 				window.highlight_checkbox7.parentNode.disabled = window.colour_checkbox5.checked;
 				window.highlight_checkbox8.parentNode.disabled = window.colour_checkbox0.checked;
-				var disabled1 = !pptBio['imgSeekerShow_internal'].value || pptBio['imgSeekerDisabled_internal'].value;
+				var disabled1 = !bioSet['imgSeekerShow_internal'].value || bioSet['imgSeekerDisabled_internal'].value;
 				var disabled2 = disabled1 || !window.imgSeekerStyle1.checked;
 				window.imgSeekerStyle0.parentNode.disabled = disabled1;
 				window.imgSeekerStyle1.parentNode.disabled = disabled1;
 				window.imgSeekerDots2.parentNode.disabled = disabled2;
 				window.imgSeekerDots3.parentNode.disabled = disabled2;
-				window.seekerNA.innerHTML = pptBio['imgSeekerDisabled_internal'].value ? (pptBio['filmStripOverlay_internal'].value ? "<i>Grayed items items N/A with filmstrip overlay of image area</i>" : "<i>Seeker & counter N/A with current overlay metrics</i>") : "";
-				window.scroll_checkbox1.parentNode.disabled = pptBio['sbarType_internal'].value == 2;
-				window.lyricsScrollTimeMax.style.display = pptBio['lyricsScrollMaxMethod_internal'].value == 0 ? "none" : "block";
-				window.lyricsScrollTimeAvg.style.display = pptBio['lyricsScrollMaxMethod_internal'].value == 1 ? "none" : "block";
-				document.getElementById('ratingTextName').style.display = pptBio['star_internal'].value ? "block" : "none";
-				window.rating3.style.display = pptBio['star_internal'].value ? "block" : "none";
-				window.theme_checkbox5.parentNode.disabled = pptBio['theme_internal'].value == 0;
-				window.theme_checkbox6.parentNode.disabled = pptBio['theme_internal'].value == 1 || pptBio['theme_internal'].value == 4;
-				if (pptBio['themed_internal'].value) window.themeStyle.style.display = "none";
+				window.seekerNA.innerHTML = bioSet['imgSeekerDisabled_internal'].value ? (bioSet['filmStripOverlay_internal'].value ? "<i>Grayed items items N/A with filmstrip overlay of image area</i>" : "<i>Seeker & counter N/A with current overlay metrics</i>") : "";
+				window.scroll_checkbox1.parentNode.disabled = bioSet['sbarType_internal'].value == 2;
+				window.lyricsScrollTimeMax.style.display = bioSet['lyricsScrollMaxMethod_internal'].value == 0 ? "none" : "block";
+				window.lyricsScrollTimeAvg.style.display = bioSet['lyricsScrollMaxMethod_internal'].value == 1 ? "none" : "block";
+				document.getElementById('ratingTextName').style.display = bioSet['star_internal'].value ? "block" : "none";
+				window.rating3.style.display = bioSet['star_internal'].value ? "block" : "none";
+				window.theme_checkbox5.parentNode.disabled = bioSet['theme_internal'].value == 0;
+				window.theme_checkbox6.parentNode.disabled = bioSet['theme_internal'].value == 1 || bioSet['theme_internal'].value == 4;
+				if (bioSet['themed_internal'].value) window.themeStyle.style.display = "none";
 				window.whitelistInfo.style.display = window.useWhitelist1.checked ? "block" : "none";
 				window.lfmGenreTag.style.display = window.useWhitelist1.checked ? "block" : "none";
 
@@ -1873,7 +1873,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 			function setCheckboxes(page, value) {
 				var nm = page.toString()+'_checkbox', boxes = document.querySelectorAll(page == 'all' ? "[name$='_checkbox']" : "[name="+nm+"]");
 				for (i = 0; i < boxes.length; i++) {
-					boxes[i].checked = (pptBio[box[page][i] + '_internal'] || cfg[box[page][i] + '_internal'])[value];
+					boxes[i].checked = (bioSet[box[page][i] + '_internal'] || cfg[box[page][i] + '_internal'])[value];
 				}
 			}
 
@@ -1887,7 +1887,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				for (i = 0; i < radios.length; i++) {
 					var radioBtns = document.getElementsByName(radios[i]);
 					for (j = 0; j < radioBtns.length; j++) {
-						if (j == (pptBio[radios[i] + '_internal'] || cfg[radios[i] + '_internal'])[value]) {
+						if (j == (bioSet[radios[i] + '_internal'] || cfg[radios[i] + '_internal'])[value]) {
 							radioBtns[j].checked = true;
 							radioBtns[j].value = j;
 						}
@@ -1898,19 +1898,19 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 			function getValues() {
 				var inputs = document.querySelectorAll("[name$='_input']");
 				for (i = 0; i < inputs.length; i++) {
-					(pptBio[input.all.name[i] + '_internal'] || cfg[input.all.name[i] + '_internal']).value = input.all.type[i] == 'text' ? inputs[i].value : input.all.type[i] == 'int' ? parseInt(inputs[i].value) : parseFloat(inputs[i].value);
+					(bioSet[input.all.name[i] + '_internal'] || cfg[input.all.name[i] + '_internal']).value = input.all.type[i] == 'text' ? inputs[i].value : input.all.type[i] == 'int' ? parseInt(inputs[i].value) : parseFloat(inputs[i].value);
 				}
 
 				var boxes = document.querySelectorAll("[name$='_checkbox']");
 				for (i = 0; i < boxes.length; i++) {
-					(pptBio[box.all[i] + '_internal'] || cfg[box.all[i] + '_internal']).value = boxes[i].checked;
+					(bioSet[box.all[i] + '_internal'] || cfg[box.all[i] + '_internal']).value = boxes[i].checked;
 				}
 
 				for (i = 0; i < radio.all.length; i++) {
 					var radioBtns = document.getElementsByName(radio.all[i]);
 					for (j = 0; j < radioBtns.length; j++) {
 						if (radioBtns[j].checked) {
-							(pptBio[radio.all[i] + '_internal'] || cfg[radio.all[i] + '_internal']).value = j;
+							(bioSet[radio.all[i] + '_internal'] || cfg[radio.all[i] + '_internal']).value = j;
 							break;
 						}
 					}
@@ -1927,7 +1927,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 
 			window.btn_ok.onclick = function () {
 				getValues();
-				var new_pptBio = JSON.stringify(pptBio);
+				var new_pptBio = JSON.stringify(bioSet);
 				var new_cfg = JSON.stringify(cfg);
 				var new_cur = JSON.stringify(cur);
 				if (new_pptBio == parsed_args[0]) new_pptBio = '';
@@ -1941,7 +1941,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 
 			window.btn_apply.onclick = function () {
 				getValues();
-				var new_pptBio = JSON.stringify(pptBio);
+				var new_pptBio = JSON.stringify(bioSet);
 				var new_cfg = JSON.stringify(cfg);
 				if (new_pptBio == parsed_args[0]) new_pptBio = ''; else parsed_args[0] = new_pptBio;
 				if (new_cfg == parsed_args[1]) new_cfg = ''; else parsed_args[1] = new_cfg;
@@ -1955,31 +1955,31 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				setInputs(cur.page, 'default_value');
 				setRadioBtns(cur.page, 'default_value');
 				if (cur.page == 'behaviour') {
-					setOverlayType(pptBio['typeOverlay_internal'].default_value);
-					setSbarShow(pptBio['sbarShow_internal'].default_value);
-					setsbarType(pptBio['sbarType_internal'].default_value);
-					setSbarCol(pptBio['sbarCol_internal'].default_value);
-					setSbarIcon(pptBio['sbarButType_internal'].default_value);
+					setOverlayType(bioSet['typeOverlay_internal'].default_value);
+					setSbarShow(bioSet['sbarShow_internal'].default_value);
+					setsbarType(bioSet['sbarType_internal'].default_value);
+					setSbarCol(bioSet['sbarCol_internal'].default_value);
+					setSbarIcon(bioSet['sbarButType_internal'].default_value);
 				}
 				if (cur.page == 'display') {
-					setTheme(pptBio['theme_internal'].default_value);
+					setTheme(bioSet['theme_internal'].default_value);
 				}
 				if (cur.page == 'headings') {
-					setHeadingShow(pptBio['heading_internal'].default_value, 0);
-					setHeadingShow(pptBio['trackHeading_internal'].default_value, 1);
-					setHeadingShow(pptBio['sourceHeading_internal'].default_value, 2);
-					setHeadingFont(pptBio['headFontStyle_internal'].default_value, 0);
-					setHeadingFont(pptBio['trackStyle_internal'].default_value, 1);
-					setHeadingFont(pptBio['sourceStyle_internal'].default_value, 2);
+					setHeadingShow(bioSet['heading_internal'].default_value, 0);
+					setHeadingShow(bioSet['trackHeading_internal'].default_value, 1);
+					setHeadingShow(bioSet['sourceHeading_internal'].default_value, 2);
+					setHeadingFont(bioSet['headFontStyle_internal'].default_value, 0);
+					setHeadingFont(bioSet['trackStyle_internal'].default_value, 1);
+					setHeadingFont(bioSet['sourceStyle_internal'].default_value, 2);
 				}
 				if (cur.page == 'image') {
-					setFilmAlignment(pptBio['filmStripMargin_internal'].default_value);
-					setReflectionType(pptBio['imgReflType_internal'].default_value);
-					setSeekerShow(pptBio['imgSeekerShow_internal'].default_value);
+					setFilmAlignment(bioSet['filmStripMargin_internal'].default_value);
+					setReflectionType(bioSet['imgReflType_internal'].default_value);
+					setSeekerShow(bioSet['imgSeekerShow_internal'].default_value);
 				}
 				if (cur.page == 'custom') setCustomColours('default_value');
 				if (cur.page == 'textreader') {
-					setHeadingFont(pptBio['lyricsFontStyle_internal'].default_value, 3);
+					setHeadingFont(bioSet['lyricsFontStyle_internal'].default_value, 3);
 				}
 				set_btn_apply_state();
 			}

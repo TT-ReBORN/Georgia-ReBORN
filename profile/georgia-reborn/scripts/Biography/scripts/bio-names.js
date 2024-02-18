@@ -1,6 +1,6 @@
 'use strict';
 
-class Names {
+class BioNames {
 	constructor() {
 		this.cur_artist = '';
 		this.lfmUID = '_[a-f0-9]{32}\\.jpg$';
@@ -9,33 +9,33 @@ class Names {
 	// * METHODS * //
 
 	alb(focus) {
-		return $Bio.eval(`[$trim(${cfg.tf.album})]`, focus);
+		return $Bio.eval(`[$trim(${bioCfg.tf.album})]`, focus);
 	}
 
 	albID(focus, n) {
-		if (!this.alb(focus)) return $Bio.eval(`${cfg.tf.artist + cfg.tf.albumArtist}%path%`, focus);
+		if (!this.alb(focus)) return $Bio.eval(`${bioCfg.tf.artist + bioCfg.tf.albumArtist}%path%`, focus);
 		switch (n) {
 			case 'simple':
-				return $Bio.eval(cfg.tf.artist + cfg.tf.albumArtist + cfg.tf.album, focus);
+				return $Bio.eval(bioCfg.tf.artist + bioCfg.tf.albumArtist + bioCfg.tf.album, focus);
 			case 'stnd':
-				return $Bio.eval(`${cfg.tf.albumArtist + cfg.tf.album}%discnumber%%date%`, focus);
+				return $Bio.eval(`${bioCfg.tf.albumArtist + bioCfg.tf.album}%discnumber%%date%`, focus);
 			case 'full':
-				return $Bio.eval(`${cfg.tf.artist + cfg.tf.albumArtist + cfg.tf.album}%discnumber%%date%`, focus);
+				return $Bio.eval(`${bioCfg.tf.artist + bioCfg.tf.albumArtist + bioCfg.tf.album}%discnumber%%date%`, focus);
 		}
 	}
 
 	albm(focus, ignoreLock) {
-		return this.albumTidy($Bio.eval(`[${cfg.tf.album}]`, focus, ignoreLock));
+		return this.albumTidy($Bio.eval(`[${bioCfg.tf.album}]`, focus, ignoreLock));
 	}
 
 	album(focus, ignoreLock) {
-		if (!cfg.albStrip) return this.albm(focus);
-		return this.albumClean($Bio.eval(`[${cfg.tf.album}]`, focus, ignoreLock));
+		if (!bioCfg.albStrip) return this.albm(focus);
+		return this.albumClean($Bio.eval(`[${bioCfg.tf.album}]`, focus, ignoreLock));
 	}
 
 	albumArtist(focus, ignoreLock) {
-		const albumArtist = $Bio.eval(`[$trim(${cfg.tf.albumArtist})]`, focus, ignoreLock);
-		const radioTrackArtist = !isRadioStreamParser || !panelBio.isRadio(focus) ? '' : radioStreamParser.getStreamInfo(focus, ignoreLock).artist;
+		const albumArtist = $Bio.eval(`[$trim(${bioCfg.tf.albumArtist})]`, focus, ignoreLock);
+		const radioTrackArtist = !bioIsRadioStreamParser || !bio.panel.isRadio(focus) ? '' : radioStreamParser.getStreamInfo(focus, ignoreLock).artist;
 		return radioTrackArtist || albumArtist;
 	}
 
@@ -48,13 +48,13 @@ class Names {
 	}
 
 	artist(focus, ignoreLock) {
-		const artist = $Bio.eval(`[$trim(${cfg.tf.artist})]`, focus, ignoreLock);
-		const radioTrackArtist = !isRadioStreamParser || !panelBio.isRadio(focus) ? '' : radioStreamParser.getStreamInfo(focus, ignoreLock).artist;
+		const artist = $Bio.eval(`[$trim(${bioCfg.tf.artist})]`, focus, ignoreLock);
+		const radioTrackArtist = !bioIsRadioStreamParser || !bio.panel.isRadio(focus) ? '' : radioStreamParser.getStreamInfo(focus, ignoreLock).artist;
 		return radioTrackArtist || artist;
 	}
 
 	composition(focus, ignoreLock) {
-		return $Bio.eval(`[${cfg.tf.composition}]`, focus, ignoreLock);
+		return $Bio.eval(`[${bioCfg.tf.composition}]`, focus, ignoreLock);
 	}
 
 	isLfmImg(fn, artist) {
@@ -68,12 +68,12 @@ class Names {
 	}
 
 	title(focus, ignoreLock) {
-		const title = $Bio.eval(`[$trim(${cfg.tf.title})]`, focus, ignoreLock);
-		const radioTrackTitle = !isRadioStreamParser || !panelBio.isRadio(focus) ? '' : radioStreamParser.getStreamInfo(focus, ignoreLock).title;
+		const title = $Bio.eval(`[$trim(${bioCfg.tf.title})]`, focus, ignoreLock);
+		const radioTrackTitle = !bioIsRadioStreamParser || !bio.panel.isRadio(focus) ? '' : radioStreamParser.getStreamInfo(focus, ignoreLock).title;
 		return radioTrackTitle || title;
 	}
 
 	trackID(focus) {
-		return $Bio.eval(cfg.tf.artist + cfg.tf.title, focus);
+		return $Bio.eval(bioCfg.tf.artist + bioCfg.tf.title, focus);
 	}
 }
