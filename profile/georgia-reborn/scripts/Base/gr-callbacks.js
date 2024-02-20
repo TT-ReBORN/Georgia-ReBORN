@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -694,7 +694,7 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 			// * Generate a new color in Random theme
 			else if (grSet.theme === 'random') {
 				grm.ui.initTheme();
-				DebugLog('\n>>> initTheme -> on_mouse_lbtn_dblclk -> random theme <<<\n');
+				DebugLog('\n>>> initTheme => on_mouse_lbtn_dblclk => random theme <<<\n');
 			}
 			// * Refresh theme
 			else if (grCfg.settings.doubleClickRefresh) {
@@ -1125,7 +1125,7 @@ function on_mouse_wheel(step) {
 			grm.ui.newTrackFetchingArtwork = true;
 			grm.color.getThemeColors(grm.ui.albumArt);
 			grm.ui.initTheme();
-			DebugLog('\n>>> initTheme -> on_mouse_wheel <<<\n');
+			DebugLog('\n>>> initTheme => on_mouse_wheel <<<\n');
 		}
 
 		// Update positions
@@ -1388,7 +1388,7 @@ function on_playback_stop(reason) {
 			!['reborn', 'random'].includes(grSet.theme) || grSet.styleNighttime) {
 			grm.color.setThemeColors();
 			grm.ui.initTheme();
-			DebugLog('\n>>> initTheme -> on_playback_stop <<<\n');
+			DebugLog('\n>>> initTheme => on_playback_stop <<<\n');
 		}
 	}
 

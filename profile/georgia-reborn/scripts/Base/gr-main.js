@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -113,6 +113,8 @@ class MainUI {
 		this.albumArtSize = new ImageSize(0, 0, 0, 0);
 		/** @public @type {GdiBitmap} The pre-scaled album art to speed up drawing considerably. */
 		this.albumArtScaled = null;
+		/** @public @type {boolean} The state when album art is corrupt and can not be loaded. */
+		this.albumArtCorrupt = false;
 		/** @public @type {boolean} The state when artwork displayed is embedded and not loaded from a file. */
 		this.albumArtEmbedded = false;
 		/** @private @type {boolean} The off-center position of the album art, if true, it will shift 40 pixels to the right. */
@@ -994,11 +996,11 @@ class MainUI {
 			let labelWidth;
 			let labelHeight;
 
-			for (let i = 0; i < labels.length; i++) {
-				if (labels[i].Width > maxLabelWidth) {
+			for (const label of labels) {
+				if (label.Width > maxLabelWidth) {
 					totalLabelWidth += maxLabelWidth;
 				} else {
-					totalLabelWidth += RES._4K && labels[i].Width < 200 ? labels[i].Width * 2 : labels[i].Width;
+					totalLabelWidth += RES._4K && label.Width < 200 ? label.Width * 2 : label.Width;
 				}
 			}
 			if (!this.lastLeftEdge) { // We don't want to recalculate this every screen refresh
@@ -1075,10 +1077,8 @@ class MainUI {
 					labelHeight = Math.round(labels[i].Height * labelWidth / labels[i].Width); // Width is based on height scale
 
 					gr.DrawImage(labels[i], labelX, Math.round(topEdge + origLabelHeight / 2 - labelHeight / 2), labelWidth, labelHeight, 0, 0, this.recordLabels[i].Width, this.recordLabels[i].Height);
-					// gr.DrawRect(labelX, topEdge, labelWidth, labelHeight, 1, RGB(255,0,0));	// Shows bounding rect of record labels
 					labelX += labelWidth + labelSpacing;
 				}
-				labelHeight = origLabelHeight; // Restore
 			}
 		}
 
@@ -1863,7 +1863,7 @@ class MainUI {
 		this.initThemeFull = true;
 		if (grSet.theme.startsWith('custom')) this.initCustomTheme();
 		this.initTheme();
-		DebugLog('\n>>> initTheme -> initMain <<<\n');
+		DebugLog('\n>>> initTheme => initMain <<<\n');
 		this.loadingTheme = false;
 
 		// * Restore backup workaround to successfully restore playlist files after foobar installation
@@ -2088,7 +2088,7 @@ class MainUI {
 				initThemeDayNightMode(new Date());
 				this.initThemeFull = true;
 				this.initTheme();
-				DebugLog('\n>>> initTheme -> fetchNewArtwork -> on_playback_new_track -> themeDayNightModeTimer <<<\n');
+				DebugLog('\n>>> initTheme => fetchNewArtwork => on_playback_new_track => themeDayNightModeTimer <<<\n');
 			}, 600000);
 		}
 	}
@@ -2169,23 +2169,23 @@ class MainUI {
 
 		// * 1. Set preset
 		if (customPreset.length) {
-			DebugLog('\n>>> initThemeTags -> %GR_PRESET% loaded <<<');
+			DebugLog('\n>>> initThemeTags => %GR_PRESET% loaded <<<');
 			grSet.preset = customPreset;
 			grm.preset.setThemePreset(customPreset);
 			this.themeRestoreState = true;
 		}
 		// * 2. Set theme
 		else if (customTheme.length) {
-			DebugLog('\n>>> initThemeTags -> %GR_THEME% loaded <<<');
+			DebugLog('\n>>> initThemeTags => %GR_THEME% loaded <<<');
 			grSet.theme = customTheme;
 			this.resetTheme();
 			this.themeRestoreState = true;
 		}
 		// * 3. Set styles
 		if (customStyle.length && !customPreset.length) {
-			DebugLog('\n>>> initThemeTags -> %GR_STYLE% loaded <<<');
+			DebugLog('\n>>> initThemeTags => %GR_STYLE% loaded <<<');
 			this.resetStyle('all');
-			for (const style of customStyle.split(/(?:,|;| )+/)) {
+			for (const style of customStyle.split(/[,; ]+/)) {
 				const setStyle = themeStyles[style];
 				if (setStyle) setStyle();
 			}
@@ -2263,9 +2263,9 @@ class MainUI {
 	async systemFirstLaunch() {
 		if (!grSet.systemFirstLaunch) return;
 
-		await this.initMain();
+		this.initMain();
 		await grm.settings.setThemeSettings(false, false, true);
-		await this.initMain();
+		this.initMain();
 		await grm.display.autoDetectRes();
 
 		grSet.systemFirstLaunch = false;
@@ -2755,7 +2755,7 @@ class MainUI {
 		}
 
 		this.initTheme();
-		DebugLog('\n>>> initTheme -> updateStyle <<<\n');
+		DebugLog('\n>>> initTheme => updateStyle <<<\n');
 		if (grSet.theme === 'random' && grSet.randomThemeAutoColor !== 'off') grm.color.getRandomThemeAutoColor();
 		this.initStyleState();
 		grm.preset.initThemePresetState();
@@ -3528,6 +3528,7 @@ class MainUI {
 
 		try {
 			// * Avoid weird anti-aliased scaling along border of images, see: https://stackoverflow.com/questions/4772273/interpolationmode-highqualitybicubic-introducing-artefacts-on-edge-of-resized-im
+			this.albumArtCorrupt = false;
 			this.albumArtScaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h, InterpolationMode.Bicubic); // Old method -> this.albumArtScaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h);
 			const sg = this.albumArtScaled.GetGraphics();
 			const HQscaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h, InterpolationMode.HighQualityBicubic);
@@ -3535,10 +3536,14 @@ class MainUI {
 			this.albumArtScaled.ReleaseGraphics(sg);
 		} catch (e) {
 			this.noArtwork = true;
-			this.albumArt = null;
 			this.noAlbumArtStub = true;
+			this.albumArtCorrupt = true;
+			this.albumArt = null;
 			this.albumArtSize = new ImageSize(0, this.topMenuHeight, 0, 0);
-			console.log('\n<Error: Album art could not be scaled! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>\n');
+			setTimeout(() => {
+				const msg = 'Album art could not be properly parsed!\n\nMaybe it is corrupt, file format is not supported\nor has an unusual ICC profile embedded.\n\n\n';
+				ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+			}, 1000);
 		}
 	}
 
@@ -3589,7 +3594,7 @@ class MainUI {
 			this.newTrackFetchingArtwork = true;
 			grm.color.getThemeColors(this.albumArt);
 			this.initTheme();
-			DebugLog('\n>>> initTheme -> displayNextImage <<<\n');
+			DebugLog('\n>>> initTheme => displayNextImage <<<\n');
 		}
 		this.lastLeftEdge = 0;
 		this.resizeArtwork(true); // Needed to readjust discArt shadow size if artwork size changes
@@ -3627,7 +3632,7 @@ class MainUI {
 				this.shadowImg = null;
 			}
 			this.initTheme();
-			DebugLog('\n>>> initTheme -> fetchNewArtwork -> isStreaming || isPlayingCD <<<\n');
+			DebugLog('\n>>> initTheme => fetchNewArtwork => isStreaming || isPlayingCD <<<\n');
 		}
 		else {
 			this.albumArtList = grCfg.imgPaths && grCfg.imgPaths.map(path => utils.Glob($(path), FileAttributes.Directory | FileAttributes.Hidden)).flat();
@@ -3662,7 +3667,7 @@ class MainUI {
 					grm.color.getThemeColors(this.albumArt);
 					if (!this.loadingTheme) {
 						this.initTheme(); // * Prevent incorrect theme brightness at startup/reload when using embedded art
-						DebugLog('\n>>> initTheme -> fetchNewArtwork -> albumArtEmbedded <<<\n');
+						DebugLog('\n>>> initTheme => fetchNewArtwork => albumArtEmbedded <<<\n');
 					}
 				}
 				if (grSet.panelWidthAuto) {
@@ -3679,7 +3684,7 @@ class MainUI {
 				this.albumArt = null;
 				this.discArtCover = null;
 				this.initTheme();
-				DebugLog('\n>>> initTheme -> fetchNewArtwork -> noAlbumArtStub <<<\n');
+				DebugLog('\n>>> initTheme => fetchNewArtwork => noAlbumArtStub <<<\n');
 				if (grSet.panelWidthAuto) {
 					this.initPanelWidthAuto();
 				} else {
@@ -3729,7 +3734,7 @@ class MainUI {
 			grm.color.getThemeColors(albumArt);
 			if (!this.initThemeSkip && !hasThemeTags) {
 				this.initTheme();
-				DebugLog('\n>>> initTheme -> loadImageFromAlbumArtList >>>\n');
+				DebugLog('\n>>> initTheme => loadImageFromAlbumArtList >>>\n');
 			}
 		};
 
@@ -3748,6 +3753,7 @@ class MainUI {
 		}
 		else {
 			gdi.LoadImageAsyncV2(window.ID, artIndex).then(coverImage => {
+				this.albumArtCorrupt = false;
 				this.albumArt = grm.artCache.encache(coverImage, artIndex);
 				this.discArtCover = grm.artCache.encache(coverImage, artIndex, 2);
 
@@ -3760,8 +3766,12 @@ class MainUI {
 						} else {
 							this.noArtwork = true;
 							this.noAlbumArtStub = true;
+							this.albumArtCorrupt = true;
 							this.albumArtEmbedded = false;
-							console.log('Error GetAlbumArtV2: Album art could not be properly parsed!');
+							setTimeout(() => {
+								const msg = 'Album art could not be properly parsed!\n\nMaybe it is corrupt, file format is not supported\nor has an unusual ICC profile embedded.\n\n\n';
+								ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+							}, 1000);
 						}
 					}
 					_initTheme(this.albumArt);
@@ -3986,7 +3996,7 @@ class MainUI {
 	 */
 	createDiscArtRotation() {
 		// Drawing discArt rotated is slow, so first draw it rotated into the discArtRotation image, and then draw discArtRotation image unrotated in on_paint.
-		if (grSet.displayDiscArt && (this.discArt && this.discArtSize.w > 0)) {
+		if (grSet.displayDiscArt && !this.albumArtCorrupt && this.discArt && this.discArtSize.w > 0) {
 			let tracknum = parseInt(fb.TitleFormat(`$num($if(${grTF.vinyl_tracknum},$sub($mul(${grTF.vinyl_tracknum},2),1),$if2(%tracknumber%,1)),1)`).Eval()) - 1;
 			if (!grSet.rotateDiscArt || Number.isNaN(tracknum)) tracknum = 0; // Avoid NaN issues when changing tracks rapidly
 
@@ -4175,7 +4185,7 @@ class MainUI {
 	 */
 	setDiscArtRotationTimer() {
 		clearInterval(this.discArtRotationTimer);
-		if (grSet.layout === 'default' && this.discArt && fb.IsPlaying && !fb.IsPaused && grSet.displayDiscArt && grSet.spinDiscArt && this.displayDetails) {
+		if (grSet.layout === 'default' && !this.albumArtCorrupt && this.discArt && fb.IsPlaying && !fb.IsPaused && grSet.displayDiscArt && grSet.spinDiscArt && this.displayDetails) {
 			console.log(`creating ${grSet.spinDiscArtImageCount} rotated disc images, shown every ${grSet.spinDiscArtRedrawInterval}ms`);
 			this.discArtRotationTimer = setInterval(() => {
 				this.discArtRotationIndex++;
@@ -4207,7 +4217,6 @@ class MainUI {
 	 * @returns {string} The path of the band logo if it exists.
 	 */
 	checkBandLogo(bandStr) {
-		// See if artist logo exists at various paths
 		const testBandLogoPath = (imgDir, name) => {
 			if (name) {
 				const logoPath = `${imgDir}${name}.png`;
@@ -4216,11 +4225,11 @@ class MainUI {
 					return logoPath;
 				}
 			}
-			return false;
+			return '';
 		};
 
 		return testBandLogoPath(grPath.artistlogos, bandStr) || // Try 800x310 white
-			testBandLogoPath(grPath.artistlogosColor, bandStr); // Try 800x310 color
+			   testBandLogoPath(grPath.artistlogosColor, bandStr) || ''; // Try 800x310 color
 	}
 
 	/**

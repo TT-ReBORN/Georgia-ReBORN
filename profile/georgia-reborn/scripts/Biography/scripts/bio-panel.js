@@ -711,38 +711,36 @@ class BioPanel {
 						}));
 					}
 				}
-			} else {
-				if ($Bio.file(lfmBio)) {
-					let found = false;
-					sa = bio.tag.getTag(lBio, this.similarArtistsKey).tag;
-					if (sa.length < 7 && sa) {
-						$Bio.take(sa, bioCfg.menuSimilarNum);
-						found = true;
-					}
-					if (!found) {
-						this.art.similar.some(v => {
-							if (v.name == artist) {
-								sa = $Bio.take(v.similar, bioCfg.menuSimilarNum);
-								return found = true;
-							}
-						});
-						if (!found) {
-							const getSimilar = new BioLfmSimilarArtists(() => getSimilar.onStateChange(), this.getSimilar_search_done.bind(this));
-							getSimilar.search(artist, '', '', 6);
+			} else if ($Bio.file(lfmBio)) {
+				let found = false;
+				sa = bio.tag.getTag(lBio, this.similarArtistsKey).tag;
+				if (sa.length < 7 && sa) {
+					$Bio.take(sa, bioCfg.menuSimilarNum);
+					found = true;
+				}
+				if (!found) {
+					this.art.similar.some(v => {
+						if (v.name == artist) {
+							sa = $Bio.take(v.similar, bioCfg.menuSimilarNum);
+							return found = true;
 						}
+					});
+					if (!found) {
+						const getSimilar = new BioLfmSimilarArtists(() => getSimilar.onStateChange(), this.getSimilar_search_done.bind(this));
+						getSimilar.search(artist, '', '', 6);
 					}
-					if (found && $Bio.isArray(sa) && sa.length) {
-						this.art.list.push({
-							name: bioLg['Similar Artists:'],
-							field: '',
-							type: 'label'
-						});
-						sa.forEach((v, i) => this.art.list.push({
-							name: v,
-							field: '',
-							type: i != sa.length - 1 ? 'similar' : 'similarend'
-						}));
-					}
+				}
+				if (found && $Bio.isArray(sa) && sa.length) {
+					this.art.list.push({
+						name: bioLg['Similar Artists:'],
+						field: '',
+						type: 'label'
+					});
+					sa.forEach((v, i) => this.art.list.push({
+						name: v,
+						field: '',
+						type: i != sa.length - 1 ? 'similar' : 'similarend'
+					}));
 				}
 			}
 		}

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -34,7 +34,7 @@ class ConfigDefaults {
 		// * TITLE FORMAT STRINGS * //
 		// #region TITLE FORMAT STRINGS
 		/** @public @type {object} Assigning the title formatting strings. */
-		this.titleFormatDefaults = Object.assign({}, grTF);
+		this.titleFormatDefaults = { ...grTF };
 
 		/** @public @type {object} Title formatting config name description. */
 		this.titleFormatComments = {

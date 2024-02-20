@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -350,15 +350,12 @@ class PlaylistRow extends BaseListItem {
 		gr.SetSmoothingMode(SmoothingMode.HighQuality);
 
 		// * Refresh playlist time remaining all the time when activated
-		let timeRemainingTimer = null;
 		if (grSet.playlistTimeRemaining && this.is_playing && fb.IsPlaying) {
-			timeRemainingTimer = setTimeout(() => {
+			setTimeout(() => {
 				const length_w = SCALE(60);
 				const length_x = this.x + this.w - length_w;
 				window.RepaintRect(length_x + 5, this.y, length_w + 5, this.h);
 			}, 1000);
-		} else {
-			clearTimeout(timeRemainingTimer);
 		}
 
 		// * Change and update title_color back to normal from previous mouse row hover state

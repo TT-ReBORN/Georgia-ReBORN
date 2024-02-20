@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -703,31 +703,31 @@ class ThemeSettingsManager {
 		this.loadCfg = loadCfg;
 		this.defaultCfg = defaultCfg;
 
-		await this.setTheme();
-		await this.setStyle();
-		await this.setPreset();
-		await this.setPlayerSize();
-		await this.setLayout();
-		await this.setDisplay();
-		await this.setBrightness();
-		await this.setFontSize();
-		await this.setPlayerControls();
-		await this.setPlaylist();
-		await this.setDetails();
-		await this.setLibrary();
-		await this.setBiography();
-		await this.setLyrics();
-		await this.setSettings();
-		await this.setSettingsNotInConfig();
+		this.setTheme();
+		this.setStyle();
+		this.setPreset();
+		this.setPlayerSize();
+		this.setLayout();
+		this.setDisplay();
+		this.setBrightness();
+		this.setFontSize();
+		this.setPlayerControls();
+		this.setPlaylist();
+		this.setDetails();
+		this.setLibrary();
+		this.setBiography();
+		this.setLyrics();
+		this.setSettings();
+		this.setSettingsNotInConfig();
 
 		// * Set variable imgBlended when switching from default settings to config settings that has style Blend or Blend2 activated
-		await this.setStyleBlend();
+		this.setStyleBlend();
 
 		// * Reinitialize theme presets when user has reset style settings by clicking on "Default" and reloading the config file
-		await grm.preset.initThemePresetState();
+		grm.preset.initThemePresetState();
 
 		// * Reinitialize the saved player size
-		await grm.display.initPlayerSize();
+		grm.display.initPlayerSize();
 
 		grm.ui.libraryCanReload = true;
 	}

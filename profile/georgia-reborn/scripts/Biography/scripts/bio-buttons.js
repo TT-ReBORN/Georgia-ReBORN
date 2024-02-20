@@ -536,7 +536,7 @@ class BioButtons {
 		const n = bioSet.artistView ? 'bio' : 'rev';
 		if (bio.txt[n].loaded.txt && bio.txt.reader[n].lyrics) bio.txt.getText();
 		grm.ui.initTheme();
-		DebugLog('\n>>> initTheme -> Biography -> resetZoom <<<\n');
+		DebugLog('\n>>> initTheme => Biography => resetZoom <<<\n');
 	}
 
 	scrollAlb() {
@@ -843,7 +843,7 @@ class BioBtn {
 			const h_x = (bioSet.hdPos != 2 ? dx1 : this.x) + bio.but.flag.sp;
 			const h_w = (bioSet.hdPos != 2 ? this.w - spacer - bio.but.src.w - (!bioSet.hdPos ? 10 : 0) : this.w - spacer) - bio.but.flag.sp;
 			gr.GdiDrawText(dh, bio.ui.font.heading, bio.ui.col.headingText, h_x, this.y, h_w, this.h, bioSet.hdPos != 2 ? bio.txt.c[bioSet.hdPos] : bio.txt.cc);
-			bio.but.tooltipBio.name = gr.CalcTextWidth(dh, bio.ui.font.heading) > h_w ? (!flag || !bio.txt[n].flagCountry ? dh : grSet.showTooltipBiography ? `${bio.txt[n].flagCountry} | ${dh}` : '') : '';
+			bio.but.tooltipBio.name = gr.CalcTextWidth(dh, bio.ui.font.heading) > h_w ? (!bio.txt[n].flagCountry ? dh : grSet.showTooltipBiography ? `${bio.txt[n].flagCountry} | ${dh}` : '') : '';
 			bio.but.tooltipBio.x = h_x;
 			bio.but.tooltipBio.w = h_w;
 		} else {

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -509,7 +509,7 @@ class Playlist extends BaseList {
 
 		this.hyperlink_set_now_playing();
 
-		(true || grm.ui.traceListPerformance) && console.log(`Playlist initialized in ${profiler.Time}ms`);
+		grm.ui.traceListPerformance && console.log(`Playlist initialized in ${profiler.Time}ms`);
 	}
 
 	/**

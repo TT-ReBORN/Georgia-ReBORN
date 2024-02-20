@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2419,7 +2419,6 @@ class ThemePreset {
 
 		const pickRandomPreset = () => {
 			let randomThemePreset;
-			let lastIndex;
 
 			// * Random presets
 			const themePresetsRandom = [
@@ -2465,31 +2464,26 @@ class ThemePreset {
 				grCol.imgBrightness = CalcImgBrightness(grm.ui.albumArt);
 
 				if (grCol.colBrightness > 200 || grCol.imgBrightness > 180) { // * Light
-					while ((randomThemePreset = Math.floor(Math.random() * themePresetsLight.length)) === lastIndex);
-					themePresetsLight[(lastIndex = randomThemePreset)]();
-					console.log('themePresetsLight');
+					randomThemePreset = Math.floor(Math.random() * themePresetsLight.length);
+					themePresetsLight[(randomThemePreset)]();
 				}
 				else if (grCol.colBrightness < 200 && grCol.colBrightness > 50 || grCol.imgBrightness < 180 && grCol.imgBrightness > 130) { // * Middle
 					if (ColorDistance(grCol.primary, grCol.primary_alt) > 200) { // * Reborn fusion
-						while ((randomThemePreset = Math.floor(Math.random() * themePresetsFusion.length)) === lastIndex);
-						themePresetsFusion[(lastIndex = randomThemePreset)]();
-						console.log('themePresetsFusion');
+						randomThemePreset = Math.floor(Math.random() * themePresetsFusion.length);
+						themePresetsFusion[(randomThemePreset)]();
 					} else {
-						while ((randomThemePreset = Math.floor(Math.random() * themePresetsMiddle.length)) === lastIndex);
-						themePresetsMiddle[(lastIndex = randomThemePreset)]();
-						console.log('themePresetsMiddle');
+						randomThemePreset = Math.floor(Math.random() * themePresetsMiddle.length);
+						themePresetsMiddle[(randomThemePreset)]();
 					}
 				}
 				else if (grCol.colBrightness < 50 || grCol.imgBrightness < 130) { // * Dark
-					while ((randomThemePreset = Math.floor(Math.random() * themePresetsDark.length)) === lastIndex);
-					themePresetsDark[(lastIndex = randomThemePreset)]();
-					console.log('themePresetsDark');
+					randomThemePreset = Math.floor(Math.random() * themePresetsDark.length);
+					themePresetsDark[(randomThemePreset)]();
 				}
 			}
 			else {
-				if (themePresetsRandom.length === 0) return;
-				while ((randomThemePreset = Math.floor(Math.random() * themePresetsRandom.length)) === lastIndex);
-				themePresetsRandom[(lastIndex = randomThemePreset)]();
+				randomThemePreset = Math.floor(Math.random() * themePresetsRandom.length);
+				themePresetsRandom[(randomThemePreset)]();
 			}
 		}
 

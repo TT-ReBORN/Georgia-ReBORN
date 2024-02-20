@@ -2429,11 +2429,9 @@ class BioText {
 						found = i;
 						return true;
 					}
-				} else {
-					if (this.findFile(v, n)) {
-						found = i;
-						return true;
-					}
+				} else if (this.findFile(v, n)) {
+					found = i;
+					return true;
 				}
 			}
 		});
@@ -2497,11 +2495,9 @@ class BioText {
 					this[n].txt = item;
 					this.newText = true;
 				}
-			} else {
-				if (!$Bio.equal(this[n].txt, item)) {
-					this[n].txt = item;
-					this.newText = true;
-				}
+			} else if (!$Bio.equal(this[n].txt, item)) {
+				this[n].txt = item;
+				this.newText = true;
 			}
 		}
 	}

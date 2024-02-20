@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1299,7 +1299,7 @@ class Hyperlink {
 		if (!populatePlaylist(query)) {
 			const start = this.text.indexOf('[');
 			if (start > 0) {
-				query = `${this.type} IS ${this.text.substr(0, start - 3)}`; // Remove ' - [...]' from end of string in case we're showing "Album - [Deluxe Edition]", etc.
+				query = `${this.type} IS ${this.text.slice(0, start - 3)}`; // Remove ' - [...]' from end of string in case we're showing "Album - [Deluxe Edition]", etc.
 				populatePlaylist(query);
 			}
 		}
@@ -1640,7 +1640,7 @@ class JumpSearch {
 
 		switch (code) {
 			case lib.vk.back:
-				this.jSearch = this.jSearch.substr(0, this.jSearch.length - 1);
+				this.jSearch = this.jSearch.slice(0, -1);
 				break;
 			case lib.vk.enter:
 				this.jSearch = '';
@@ -2274,14 +2274,10 @@ class VolumeButton {
 	 * @returns {boolean} True or false.
 	 */
 	mouseInThis(x, y) {
-		const padding = this.inThisPadding;
-		if (x >  this.x - padding &&
-			x <= this.x + this.w + padding &&
-			y >  this.y - this.h - padding * 0.2 &&
-			y <= this.y - this.h + padding) {
-			return true;
-		}
-		return false;
+		return (
+			x > this.x - this.inThisPadding && x <= this.x + this.w + this.inThisPadding &&
+			y > this.y - this.h - this.inThisPadding * 0.2 && y <= this.y - this.h + this.inThisPadding
+		);
 	}
 
 	/**
@@ -3327,7 +3323,14 @@ class PeakmeterBar {
 		if (metadb) img = utils.GetAlbumArtV2(metadb, 0);
 
 		if (metadb && img) {
-			this.colors = JSON.parse(img.GetColourSchemeJSON(4));
+			try {
+				grm.ui.albumArtCorrupt = false;
+				this.colors = JSON.parse(img.GetColourSchemeJSON(4));
+			} catch (e) {
+				grm.ui.noArtwork = true;
+				grm.ui.noAlbumArtStub = true;
+				grm.ui.albumArtCorrupt = true;
+			}
 			this.c1 = grCol.peakmeterBarFillMiddle; // this.colors[1].col;
 			this.c2 = grCol.peakmeterBarFillTop; // this.colors[2].col;
 			this.c3 = grCol.peakmeterBarFillBack; // this.colors[3].col;
@@ -4187,7 +4190,7 @@ class WaveformBar {
 				upper = Math.max(upper, frame);
 				lower = Math.min(lower, frame);
 			}
-			max = Math.max(Math.abs(upper), Math.abs(lower));
+			// max = Math.max(Math.abs(upper), Math.abs(lower));
 		}
 		else if (this.analysis.binaryMode === 'audiowaveform' || this.analysis.binaryMode === 'visualizer' || this.isFallback || this.fallbackMode.paint) {
 			// Calculate max values

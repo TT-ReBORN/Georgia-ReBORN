@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -125,7 +125,7 @@ class Color {
 		 * @returns {number} The number rounded to the nearest integer.
 		 * @private
 		 */
-		this.AbsRound = (number) => (0.5 + number) << 0;
+		this._absRound = (number) => (0.5 + number) << 0;
 
 		/**
 		 * Takes a number as input and returns a string representation of that number with leading zeroes added if necessary.
@@ -133,7 +133,7 @@ class Color {
 		 * @returns {string} The number padded with leading zeroes, resulting in a string of at least 3 characters width.
 		 * @private
 		 */
-		this.PadZeroes = (num) => (`   ${num}`).substr(-3, 3);
+		this._padZeroes = (num) => (`   ${num}`).slice(-3);
 
 		/**
 		 * Converts a percentage value to a value between 0 and 255.
@@ -141,7 +141,7 @@ class Color {
 		 * @returns {number} The corresponding value between 0 and 255 if the input is a percentage, otherwise the parsed integer value of the input.
 		 * @private
 		 */
-		this.PerToVal = (p) => this.isPercent.test(p) ? this.AbsRound(parseInt(p) * 2.55) : parseInt(p);
+		this._perToVal = (p) => this.isPercent.test(p) ? this._absRound(parseInt(p) * 2.55) : parseInt(p);
 		// #endregion
 
 		// * INITIALIZATION * //
@@ -360,7 +360,7 @@ class Color {
 	 * @property {number} _lightness - The internal property set to the calculated lightness value.
 	 * @property {number} _brightness - The internal property set to the calculated brightness value.
 	 * @private
-	 * @see AbsRound
+	 * @see _absRound
 	 */
 	_RGB2HSL() {
 		const r = this._red / 255;
@@ -375,8 +375,8 @@ class Color {
 		if (max === min) {
 			this._hue = 0;
 			this._saturation = 0;
-			this._lightness = this.AbsRound(l * 100);
-			this._brightness = this.AbsRound(v * 100);
+			this._lightness = this._absRound(l * 100);
+			this._brightness = this._absRound(v * 100);
 			return;
 		}
 
@@ -388,10 +388,10 @@ class Color {
 			? ((b - r) / d + 2)
 			: ((r - g) / d + 4)) / 6;
 
-		this._hue = this.AbsRound(h * 360);
-		this._saturation = this.AbsRound(s * 100);
-		this._lightness = this.AbsRound(l * 100);
-		this._brightness = this.AbsRound(v * 100);
+		this._hue = this._absRound(h * 360);
+		this._saturation = this._absRound(s * 100);
+		this._lightness = this._absRound(l * 100);
+		this._brightness = this._absRound(v * 100);
 	}
 
 	/**
@@ -412,7 +412,7 @@ class Color {
 	 * @property {number} _blue - The internal property set after conversion to the blue color component.
 	 * @private
 	 * @see _HUEtoRGB
-	 * @see AbsRound
+	 * @see _absRound
 	 */
 	_HSL2RGB() {
 		const h = this._hue / 360;
@@ -420,9 +420,9 @@ class Color {
 		const l = this._lightness / 100;
 		const q = l < 0.5 ? l * (1 + s) : (l + s - l * s);
 		const p = 2 * l - q;
-		this._red = this.AbsRound(this._HUEtoRGB(p, q, h + 1 / 3) * 255);
-		this._green = this.AbsRound(this._HUEtoRGB(p, q, h) * 255);
-		this._blue = this.AbsRound(this._HUEtoRGB(p, q, h - 1 / 3) * 255);
+		this._red = this._absRound(this._HUEtoRGB(p, q, h + 1 / 3) * 255);
+		this._green = this._absRound(this._HUEtoRGB(p, q, h) * 255);
+		this._blue = this._absRound(this._HUEtoRGB(p, q, h - 1 / 3) * 255);
 	}
 
 	/**
@@ -444,7 +444,7 @@ class Color {
 	 * @property {number} _green - Internal property set after conversion to the green color component.
 	 * @property {number} _blue - Internal property set after conversion to the blue color component.
 	 * @private
-	 * @see AbsRound
+	 * @see _absRound
 	 * @see {@link http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript|Conversion algorithm}
 	 */
 	_HSV2RGB() {
@@ -467,9 +467,9 @@ class Color {
 			case 4: r = t; g = p; b = v; break;
 			case 5: r = v; g = p; b = q; break;
 		}
-		this._red = this.AbsRound(r * 255);
-		this._green = this.AbsRound(g * 255);
-		this._blue = this.AbsRound(b * 255);
+		this._red = this._absRound(r * 255);
+		this._green = this._absRound(g * 255);
+		this._blue = this._absRound(b * 255);
 	}
 
 	/**
@@ -498,7 +498,7 @@ class Color {
 	 */
 	_INT2HEX() {
 		let x = this._decimal.toString(16);
-		x = '000000'.substr(0, 6 - x.length) + x;
+		x = '000000'.substring(0, 6 - x.length) + x;
 		this._hex = `#${x.toUpperCase()}`;
 	}
 
@@ -658,7 +658,7 @@ class Color {
 
 		components = threeDigitColors === false ?
 			[this._red, this._green, this._blue, this._alpha] :
-			[this.PadZeroes(this._red), this.PadZeroes(this._green), this.PadZeroes(this._blue), this.PadZeroes(this._alpha)];
+			[this._padZeroes(this._red), this._padZeroes(this._green), this._padZeroes(this._blue), this._padZeroes(this._alpha)];
 
 		if (this._alpha === 255) {
 			components.pop();
@@ -824,9 +824,9 @@ class Color {
 				}
 				case this.isRGB.test(value): {
 					const partsRGB = value.match(this.matchRGB);
-					this.red(this.PerToVal(partsRGB[1]));
-					this.green(this.PerToVal(partsRGB[2]));
-					this.blue(this.PerToVal(partsRGB[3]));
+					this.red(this._perToVal(partsRGB[1]));
+					this.green(this._perToVal(partsRGB[2]));
+					this.blue(this._perToVal(partsRGB[3]));
 					let alphaRGB = parseFloat(partsRGB[5]);
 					if (isNaN(alphaRGB)) alphaRGB = 1;
 					this.alpha(alphaRGB);
@@ -914,10 +914,10 @@ class Color {
 		if (!(destination instanceof Color)) {
 			destination = new Color(destination);
 		}
-		this._red = this.AbsRound(+(this._red) + (destination._red - this._red) * factor);
-		this._green = this.AbsRound(+(this._green) + (destination._green - this._green) * factor);
-		this._blue = this.AbsRound(+(this._blue) + (destination._blue - this._blue) * factor);
-		this._alpha = this.AbsRound(+(this._alpha) + (destination._alpha - this._alpha) * factor);
+		this._red = this._absRound(+(this._red) + (destination._red - this._red) * factor);
+		this._green = this._absRound(+(this._green) + (destination._green - this._green) * factor);
+		this._blue = this._absRound(+(this._blue) + (destination._blue - this._blue) * factor);
+		this._alpha = this._absRound(+(this._alpha) + (destination._alpha - this._alpha) * factor);
 		this.broadcast(Color.Events.RGB_UPDATED);
 		this.broadcast(Color.Events.UPDATED);
 		return this;

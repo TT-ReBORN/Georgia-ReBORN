@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -875,7 +875,7 @@ class ContextMenus {
 						grm.ui.newTrackFetchingArtwork = true;
 						grm.color.getThemeColors(grm.ui.albumArt);
 						grm.ui.initTheme();
-						DebugLog('\n>>> initTheme -> Album cover context menu -> Display next/previous artwork <<<\n');
+						DebugLog('\n>>> initTheme => Album cover context menu => Display next/previous artwork <<<\n');
 					}
 					window.Repaint();
 				}, !grm.ui.activeMenu);

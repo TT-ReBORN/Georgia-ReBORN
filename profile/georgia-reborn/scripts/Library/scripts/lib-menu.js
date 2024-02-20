@@ -754,8 +754,7 @@ class LibMenuItems {
 				this.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
 
 				// Need continuous repaint when using style "Blend" and switching from normal to full width
-				let blendedImgNeedsRepaint = true;
-				if (grSet.styleBlend && blendedImgNeedsRepaint) {
+				if (grSet.styleBlend) {
 					RepaintWindowRectAreas();
 				}
 
@@ -763,8 +762,6 @@ class LibMenuItems {
 				grm.theme.initLibraryColors();
 				grm.theme.themeColorAdjustments();
 				if (grSet.libraryDesign === 'traditional') lib.pop.createImages();
-
-				blendedImgNeedsRepaint = false;
 				window.Repaint();
 				break;
 			}

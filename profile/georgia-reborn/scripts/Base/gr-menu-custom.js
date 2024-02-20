@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -737,7 +737,7 @@ class CustomMenuInputField extends CustomMenu {
 		gr.GdiDrawText(this.label, this.font, textColor, this.inputX + this.inputW + margin * 2, this.y, this.labelW, this.h, StringFormat(0, 0, 4));
 		gr.FillSolidRect(this.inputX, this.y - this.padding, this.inputW + margin, this.h + this.padding * 2, RGB(255, 255, 255));
 		gr.DrawRect(this.inputX, this.y - this.padding, this.inputW + margin, this.h + this.padding * 2, this.lineThickness, outlineColor);
-		gr.GdiDrawText(this.value.substr(this.offsetChars), this.font, RGB(0, 0, 0), textX, this.y, this.inputW, this.h, StringFormat(0, 0, 4));
+		gr.GdiDrawText(this.value.slice(this.offsetChars), this.font, RGB(0, 0, 0), textX, this.y, this.inputW, this.h, StringFormat(0, 0, 4));
 
 		if (this.hasSelection) {
 			let selStartIndex = this.selAnchor;
@@ -758,7 +758,7 @@ class CustomMenuInputField extends CustomMenu {
 			const textColor = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
 
 			gr.FillSolidRect(start, this.y, maxWidth, this.h, HEXtoRGB(this.value));
-			gr.GdiDrawText(this.value.substr(selStartIndex, selEndIndex - selStartIndex), this.font, textColor, start, this.y, maxWidth, this.h, StringFormat(0, 0, 4));
+			gr.GdiDrawText(this.value.slice(selStartIndex, selEndIndex), this.font, textColor, start, this.y, maxWidth, this.h, StringFormat(0, 0, 4));
 		}
 		if (this.showCursor) {
 			const cursorPos = textX + this.getCursorX(this.cursorPos);
@@ -770,19 +770,21 @@ class CustomMenuInputField extends CustomMenu {
 	 * Calculates how many chars (offsetChars) to *not* draw on the left hand side of the text box.
 	 */
 	calcOffsetIndex() {
-		let width = this.g.CalcTextWidth(this.value.substr(this.offsetChars, this.cursorPos - this.offsetChars), this.font, true);
+		let width = this.g.CalcTextWidth(this.value.slice(this.offsetChars, this.cursorPos + this.offsetChars), this.font, true);
 		let j = 0;
 		while (width > this.inputW && j < 999) {
 			j++;
 			this.offsetChars++;
-			width = this.g.CalcTextWidth(this.value.substr(this.offsetChars, this.cursorPos - this.offsetChars), this.font, true);
+			width = this.g.CalcTextWidth(this.value.slice(this.offsetChars, this.cursorPos + this.offsetChars), this.font, true);
 		}
 		if (j === 0) {
-			while (width < this.inputW && this.offsetChars >= 0) {
+			while (width < this.inputW && this.offsetChars > 0) {
 				this.offsetChars--;
-				width = this.g.CalcTextWidth(this.value.substr(this.offsetChars, this.cursorPos - this.offsetChars), this.font, true);
+				width = this.g.CalcTextWidth(this.value.slice(this.offsetChars, this.cursorPos + this.offsetChars), this.font, true);
 			}
-			this.offsetChars++;
+			if (this.offsetChars < 0) {
+				this.offsetChars = 0;
+			}
 		}
 	}
 
@@ -831,7 +833,7 @@ class CustomMenuInputField extends CustomMenu {
 			 (clickPos <= this.selAnchor && clickPos >= this.selEnd))) {
 			this.onChar(VK_SELECT_ALL);
 		} else {
-			this.selAnchor = Math.max(0, this.value.substr(0, clickPos).lastIndexOf(' ') + 1);
+			this.selAnchor = Math.max(0, this.value.slice(0, clickPos).lastIndexOf(' ') + 1);
 			this.selEnd = this.value.indexOf(' ', clickPos);
 			if (this.selEnd === -1) this.selEnd = this.value.length;
 			this.cursorPos = this.selEnd;
@@ -862,7 +864,7 @@ class CustomMenuInputField extends CustomMenu {
 		const inputX = x - this.inputX; // X-position inside control
 		let pos = this.padding;
 		for (let i = this.offsetChars; i < this.value.length; i++) {
-			const charWidth = this.g.CalcTextWidth(this.value.substr(i, 1), this.font, true);
+			const charWidth = this.g.CalcTextWidth(this.value.slice(i, i + 1), this.font, true);
 			if (Math.round(pos + (charWidth / 2)) >= inputX) {
 				return i;
 			}
@@ -879,7 +881,7 @@ class CustomMenuInputField extends CustomMenu {
 	 */
 	getCursorX(index) {
 		if (index >= this.offsetChars) {
-			return this.g.CalcTextWidth(this.value.substr(this.offsetChars, index - this.offsetChars), this.font, true);
+			return this.g.CalcTextWidth(this.value.slice(this.offsetChars, index), this.font, true);
 		}
 		return 0;
 	}
@@ -1169,7 +1171,7 @@ class CustomMenuInputField2 extends CustomMenu {
 		gr.SetTextRenderingHint(TextRenderingHint.AntiAlias);
 		gr.FillSolidRect(this.inputX, this.y - this.padding, this.inputW + margin, this.h + this.padding * 2, RGB(255, 255, 255));
 		gr.DrawRect(this.inputX, this.y - this.padding, this.inputW + margin, this.h + this.padding * 2, this.lineThickness, outlineColor);
-		gr.GdiDrawText(this.value2.substr(this.offsetChars), this.font, RGB(0, 0, 0), textX, this.y, this.inputW, this.h, StringFormat(0, 0, 4));
+		gr.GdiDrawText(this.value2.slice(this.offsetChars), this.font, RGB(0, 0, 0), textX, this.y, this.inputW, this.h, StringFormat(0, 0, 4));
 
 		if (this.hasSelection) {
 			let selStartIndex = this.selAnchor;
@@ -1188,7 +1190,7 @@ class CustomMenuInputField2 extends CustomMenu {
 
 			const textColor = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
 			gr.FillSolidRect(start, this.y, maxWidth, this.h, HEXtoRGB(this.value2));
-			gr.GdiDrawText(this.value2.substr(selStartIndex, selEndIndex - selStartIndex), this.font, textColor, start, this.y, maxWidth, this.h, StringFormat(0, 0, 4));
+			gr.GdiDrawText(this.value2.slice(selStartIndex, selEndIndex), this.font, textColor, start, this.y, maxWidth, this.h, StringFormat(0, 0, 4));
 		}
 		if (this.showCursor) {
 			const cursorPos = textX + this.getCursorX(this.cursorPos);
@@ -1200,19 +1202,21 @@ class CustomMenuInputField2 extends CustomMenu {
 	 * Calculates how many chars (offsetChars) to *not* draw on the left hand side of the text box.
 	 */
 	calcOffsetIndex() {
-		let width = this.g.CalcTextWidth(this.value2.substr(this.offsetChars, this.cursorPos - this.offsetChars), this.font, true);
+		let width = this.g.CalcTextWidth(this.value2.slice(this.offsetChars, this.cursorPos + this.offsetChars), this.font, true);
 		let j = 0;
 		while (width > this.inputW && j < 999) {
 			j++;
 			this.offsetChars++;
-			width = this.g.CalcTextWidth(this.value2.substr(this.offsetChars, this.cursorPos - this.offsetChars), this.font, true);
+			width = this.g.CalcTextWidth(this.value2.slice(this.offsetChars, this.cursorPos + this.offsetChars), this.font, true);
 		}
 		if (j === 0) {
-			while (width < this.inputW && this.offsetChars >= 0) {
+			while (width < this.inputW && this.offsetChars > 0) {
 				this.offsetChars--;
-				width = this.g.CalcTextWidth(this.value2.substr(this.offsetChars, this.cursorPos - this.offsetChars), this.font, true);
+				width = this.g.CalcTextWidth(this.value2.slice(this.offsetChars, this.cursorPos + this.offsetChars), this.font, true);
 			}
-			this.offsetChars++;
+			if (this.offsetChars < 0) {
+				this.offsetChars = 0;
+			}
 		}
 	}
 
@@ -1256,13 +1260,12 @@ class CustomMenuInputField2 extends CustomMenu {
 	 */
 	doubleClicked(x, y) {
 		const clickPos = this.getCursorIndex(x);
-		if (this.hasSelection &&
-				Math.abs(this.selAnchor - this.selEnd) !== this.value2.length &&
-				((clickPos >= this.selAnchor && clickPos <= this.selEnd) ||
-				(clickPos <= this.selAnchor && clickPos >= this.selEnd))) {
+		if (this.hasSelection && Math.abs(this.selAnchor - this.selEnd) !== this.value2.length &&
+			((clickPos >= this.selAnchor && clickPos <= this.selEnd) ||
+			 (clickPos <= this.selAnchor && clickPos >= this.selEnd))) {
 			this.onChar(VK_SELECT_ALL);
 		} else {
-			this.selAnchor = Math.max(0, this.value2.substr(0, clickPos).lastIndexOf(' ') + 1);
+			this.selAnchor = Math.max(0, this.value2.slice(0, clickPos).lastIndexOf(' ') + 1);
 			this.selEnd = this.value2.indexOf(' ', clickPos);
 			if (this.selEnd === -1) this.selEnd = this.value2.length;
 			this.cursorPos = this.selEnd;
@@ -1293,7 +1296,7 @@ class CustomMenuInputField2 extends CustomMenu {
 		const inputX = x - this.inputX; // X-position inside control
 		let pos = this.padding;
 		for (let i = this.offsetChars; i < this.value2.length; i++) {
-			const charWidth = this.g.CalcTextWidth(this.value2.substr(i, 1), this.font, true);
+			const charWidth = this.g.CalcTextWidth(this.value2.slice(i, i + 1), this.font, true);
 			if (Math.round(pos + (charWidth / 2)) >= inputX) {
 				return i;
 			}
@@ -1310,7 +1313,7 @@ class CustomMenuInputField2 extends CustomMenu {
 	 */
 	getCursorX(index) {
 		if (index >= this.offsetChars) {
-			return this.g.CalcTextWidth(this.value2.substr(this.offsetChars, index - this.offsetChars), this.font, true);
+			return this.g.CalcTextWidth(this.value2.slice(this.offsetChars, index), this.font, true);
 		}
 		return 0;
 	}
@@ -2678,7 +2681,7 @@ class CustomThemeMenu {
 
 		const { schema, customTheme } = customThemes[grSet.theme];
 		const themeDefaults = grCfg.configCustom.updateConfigObjValues(customTheme, grDef.customThemeDefaults, true);
-		grCfg.cTheme = grCfg.configCustom.addConfigurationObject(schema, Object.assign({}, themeDefaults, grDef.customThemeDefaults), grDef.customThemeComments);
+		grCfg.cTheme = grCfg.configCustom.addConfigurationObject(schema, { ...themeDefaults, ...grDef.customThemeDefaults }, grDef.customThemeComments);
 	}
 
 	/**

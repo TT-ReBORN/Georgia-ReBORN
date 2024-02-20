@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -113,7 +113,7 @@ class TopMenu {
 		plTools.AppendMenuItem(MF_STRING, 19, 'Load playlist');
 		plTools.AppendMenuItem(isAutoPl ? MF_DISABLED : MF_STRING, 20, isLocked ? isAutoPl ? 'Unlock playlist (N/A for auto playlists)' : 'Unlock playlist' : 'Lock playlist');
 		cpm.AppendMenuSeparator();
-		for (let i = 0; i !== plman.PlaylistCount; i++) {
+		for (let i = 0; i < plman.PlaylistCount; i++) {
 			cpm.AppendMenuItem(MF_STRING, playlistId + i, `${plman.GetPlaylistName(i).replace(/&/g, '&&')} [${plman.PlaylistItemCount(i)}]${plman.IsAutoPlaylist(i) ? ' (Auto)' : ''}${i === plman.PlayingPlaylist ? ' (Now Playing)' : ''}`);
 		}
 
@@ -207,7 +207,7 @@ class TopMenu {
 			plman.ActivePlaylist = playlistIdx;
 		}
 
-		for (let i = 0; i !== plman.PlaylistCount; i++) {
+		for (let i = 0; i < plman.PlaylistCount; i++) {
 			if (id === (playlistId + i)) plman.ActivePlaylist = i; // Playlist switch
 		}
 
@@ -2094,7 +2094,7 @@ class TopMenuOptions {
 		if (grSet.layout === 'default') {
 			playlistMenu.createRadioSubMenu('Layout', ['Normal', 'Full'], grSet.playlistLayout, ['normal', 'full'], (width) => {
 				grSet.playlistLayout = width;
-				if (!grm.ui.displayPlaylist) grm.ui.displayPlaylist = true; grm.ui.displayLibrary = false; grm.ui.displayBiography = false;
+				if (!grm.ui.displayPlaylist) { grm.ui.displayPlaylist = true; grm.ui.displayLibrary = false; grm.ui.displayBiography = false; }
 				if (grm.ui.displayLyrics) grm.ui.displayLyrics = false;
 				grm.ui.resizeArtwork(true);
 				pl.call.on_size(grm.ui.ww, grm.ui.wh);
@@ -2256,7 +2256,7 @@ class TopMenuOptions {
 				grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
 				grm.ui.discArtArray = [];
 				grm.ui.discArtArrayCover = [];
-				if (!grSet.noDiscArtStub) grm.ui.fetchNewArtwork(fb.GetNowPlaying());
+				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
 				RepaintWindow();
 			}, !grSet.displayDiscArt);
 			displayDiscArtMenu.addSeparator();
@@ -2547,7 +2547,7 @@ class TopMenuOptions {
 			const libraryLayoutMenu = new Menu('Layout');
 			libraryLayoutMenu.addRadioItems(['Normal', 'Full', 'Split'], grSet.libraryLayout, ['normal', 'full', 'split'], (width) => {
 				grSet.libraryLayout = width;
-				if (!grm.ui.displayLibrary) grm.ui.displayLibrary = true; grm.ui.displayPlaylist = false; grm.ui.displayBiography = false;
+				if (!grm.ui.displayLibrary) { grm.ui.displayLibrary = true; grm.ui.displayPlaylist = false; grm.ui.displayBiography = false; }
 				if (grm.ui.displayLyrics) grm.ui.displayLyrics = false;
 				grm.ui.displayPlaylist = grSet.libraryLayout === 'split';
 				grm.ui.resizeArtwork(true);
@@ -2898,7 +2898,7 @@ class TopMenuOptions {
 		if (grSet.layout === 'default') {
 			biographyLayoutMenu.addRadioItems(['Normal', 'Full'], grSet.biographyLayout, ['normal', 'full'], (width) => {
 				grSet.biographyLayout = width;
-				if (!grm.ui.displayBiography) grm.ui.displayBiography = true; grm.ui.displayPlaylist = false; grm.ui.displayLibrary = false;
+				if (!grm.ui.displayBiography) { grm.ui.displayBiography = true; grm.ui.displayPlaylist = false; grm.ui.displayLibrary = false; }
 				if (grm.ui.displayLyrics) grm.ui.displayLyrics = false;
 				grm.ui.displayPlaylist = !grm.ui.displayPlaylist;
 				grm.ui.initBiographyLayout();

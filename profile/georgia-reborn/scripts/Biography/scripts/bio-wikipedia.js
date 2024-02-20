@@ -600,7 +600,7 @@ class BioDldWikipedia {
 				this.timer = null;
 			}, 60000);
 		}
-		this.xmlhttp.send();
+		try { this.xmlhttp.send(); } catch (e) {}
 	}
 
 	getHeadings(text) {

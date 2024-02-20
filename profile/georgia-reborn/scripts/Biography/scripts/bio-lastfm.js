@@ -57,7 +57,7 @@ class BioDldLastfm {
 				this.timer = null;
 			}, 30000);
 		}
-		this.xmlhttp.send();
+		try { this.xmlhttp.send(); } catch (e) {}
 	}
 
 	analyse(saveOnly) {
@@ -306,7 +306,7 @@ class BioLfmArtImg {
 				this.timer = null;
 			}, 30000);
 		}
-		this.xmlhttp.send();
+		try { this.xmlhttp.send(); } catch (e) {}
 	}
 
 	analyse() {
@@ -438,7 +438,7 @@ class BioLfmAlbum {
 				this.timer = null;
 			}, 30000);
 		}
-		this.xmlhttp.send();
+		try { this.xmlhttp.send(); } catch (e) {}
 	}
 
 	analyse() {
@@ -838,7 +838,7 @@ class BioLfmSimilarArtists {
 		this.xmlhttp.onreadystatechange = this.ready_callback;
 		this.xmlhttp.setRequestHeader('User-Agent', 'foobar2000_script');
 		if (this.retry) this.xmlhttp.setRequestHeader('If-Modified-Since', 'Thu, 01 Jan 1970 00:00:00 GMT');
-		this.xmlhttp.send();
+		try { this.xmlhttp.send(); } catch (e) {}
 	}
 
 	analyse() {
@@ -900,7 +900,7 @@ class BioLfmTopAlbums {
 		this.func = this.analyse;
 		this.xmlhttp.open('GET', URL);
 		this.xmlhttp.onreadystatechange = this.ready_callback;
-		this.xmlhttp.send();
+		try { this.xmlhttp.send(); } catch (e) {}
 	}
 
 	analyse() {
@@ -959,7 +959,7 @@ class BioDldLastfmGenresWhitelist {
 				this.timer = null;
 			}, 30000);
 		}
-		this.xmlhttp.send();
+		try { this.xmlhttp.send(); } catch (e) {}
 	}
 
 	analyse() {

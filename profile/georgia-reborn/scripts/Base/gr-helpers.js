@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -118,8 +118,12 @@ function MakeHttpRequest(type, url, successCB) {
 		if (xmlhttp.readyState === 4) {
 			successCB(xmlhttp.responseText);
 		}
-	};
-	xmlhttp.send();
+	}
+	try {
+		xmlhttp.send();
+	} catch (e) {
+		console.log('The HTTP request failed:', e);
+	}
 }
 
 
@@ -243,7 +247,7 @@ function ParseJson(json, label, log) {
 		parsed = JSON.parse(json);
 	}
 	catch (e) {
-		console.log('<<< ERROR IN parseJson >>>');
+		console.log('>>> ERROR IN parseJson <<<');
 		console.log(json);
 	}
 	return parsed;
@@ -305,7 +309,7 @@ function StripJsonComments(jsonString, options = { whitespace: false }) {
 	let offset = 0;
 	let result = '';
 
-	for (let i = 0; i < jsonString.length; i++) {
+	for (let i = 0; i < jsonString.length;) {
 		const currentCharacter = jsonString[i];
 		const nextCharacter = jsonString[i + 1];
 
@@ -317,6 +321,7 @@ function StripJsonComments(jsonString, options = { whitespace: false }) {
 		}
 
 		if (insideString) {
+			i++;
 			continue;
 		}
 
@@ -324,33 +329,32 @@ function StripJsonComments(jsonString, options = { whitespace: false }) {
 			result += jsonString.slice(offset, i);
 			offset = i;
 			insideComment = singleComment;
-			i++;
-		}
-		else if (insideComment === singleComment && currentCharacter + nextCharacter === '\r\n') {
-			i++;
-			insideComment = false;
-			result += strip(jsonString, offset, i);
-			offset = i;
+			i += 2;
 			continue;
 		}
-		else if (insideComment === singleComment && currentCharacter === '\n') {
+		else if (insideComment === singleComment && (currentCharacter === '\n' || currentCharacter + nextCharacter === '\r\n')) {
 			insideComment = false;
 			result += strip(jsonString, offset, i);
 			offset = i;
+			i += (currentCharacter + nextCharacter === '\r\n') ? 2 : 1;
+			continue;
 		}
 		else if (!insideComment && currentCharacter + nextCharacter === '/*') {
 			result += jsonString.slice(offset, i);
 			offset = i;
 			insideComment = multiComment;
-			i++;
+			i += 2;
 			continue;
 		}
 		else if (insideComment === multiComment && currentCharacter + nextCharacter === '*/') {
-			i++;
 			insideComment = false;
-			result += strip(jsonString, offset, i + 1);
-			offset = i + 1;
+			result += strip(jsonString, offset, i + 2);
+			offset = i + 2;
+			i += 2;
 			continue;
+		}
+		else {
+			i++;
 		}
 	}
 
@@ -563,9 +567,9 @@ function OpenFile(filePath) {
  * @returns {string} The sanitized path string.
  */
 function SanitizePath(value) {
-	if (!value || !value.length) { return ''; }
+	if (!value || !value.length) return '';
 	const disk = (value.match(/^\w:\\/g) || [''])[0];
-	return disk + (disk && disk.length ? value.replace(disk, '') : value).replace(/[/]/g, '\\').replace(/[|–‐—-]/g, '-').replace(/\*/g, 'x').replace(/"/g, '\'\'').replace(/[<>]/g, '_').replace(/[?:]/g, '').replace(/(?! )\s/g, '');
+	return disk + (disk && disk.length ? value.replace(disk, '') : value).replace(/\//g, '\\').replace(/[|–‐—-]/g, '-').replace(/\*/g, 'x').replace(/"/g, '\'\'').replace(/[<>]/g, '_').replace(/[?:]/g, '').replace(/(?! )\s/g, '');
 }
 
 
@@ -1063,7 +1067,7 @@ function CalcImgBrightness(image) {
 		return avgCol;
 	}
 	catch (e) {
-		console.log('\n<Error: CalcImgBrightness() failed.>\n');
+		console.log('\n>>> Error => CalcImgBrightness failed!\n');
 		return 0;
 	}
 }
@@ -1703,7 +1707,7 @@ function DrawMultipleLines(gr, availableWidth, left, top, color, text1, fontList
 			/** @type {any[]} */
 			let secondaryText = gr.EstimateLineWrap(text2, fontList2[fontIndex], availableWidth - lastLineWidth - 5);
 			const firstSecondaryLine = secondaryText[0]; // Need to subtract the continuation of the previous line from text2
-			const textRemainder = text2.substr(firstSecondaryLine.length).trim();
+			const textRemainder = text2.slice(firstSecondaryLine.length).trim();
 			if (firstSecondaryLine.trim().length) {
 				textArray.push({ text: firstSecondaryLine, x_offset: lastLineWidth + 5, font: fontList2[fontIndex] });
 				continuation = true; // Font changes on same line
@@ -2066,17 +2070,6 @@ function Zip(arr, ...args) {
 // * NUMBERS * //
 /////////////////
 /**
- * Rounds a number to the nearest integer using the "round half up" method.
- * @global
- * @param {number} number - The number that will be round to the nearest whole number (integer) using the absolute value method.
- * @returns {number} The rounded integer.
- */
-function AbsRound(number) {
-	return (0.5 + number) << 0;
-}
-
-
-/**
  * Takes a number and limits it to a specified range.
  * @global
  * @param {number} num - The number to clamp between the minimum and maximum values.
@@ -2119,17 +2112,6 @@ function Round(floatnum, decimals, eps = 10 ** -14) {
 		result = Math.round(floatnum);
 	}
 	return result;
-}
-
-
-/**
- * Takes a number as input and returns a string representation of that number with leading zeroes added if necessary.
- * @global
- * @param {number} num - The number that we want to pad with zeroes.
- * @returns {string} The number padded with leading zeroes as a string.
- */
-function PadZeroes(num) {
-	return (`   ${num}`).substr(-3, 3);
 }
 
 
@@ -2244,10 +2226,7 @@ function ConvertIsoCountryCodeToFull(code) {
  * @returns {boolean} True if the value is a string, false otherwise.
  */
 function IsString(str) {
-	if (str != null && typeof str.valueOf() === 'string') {
-		return true;
-	}
-	return false;
+	return str != null && typeof str.valueOf() === 'string';
 }
 
 
@@ -2292,7 +2271,7 @@ function LongestString(arr) {
  */
 function PadNumber(num, len, base) {
 	if (!base) base = 10;
-	return (`000000${num.toString(base)}`).substr(-len);
+	return (`000000${num.toString(base)}`).slice(-len);
 }
 
 
@@ -2549,10 +2528,10 @@ function DateDiff(startingDate, endingDate, timezoneOffset) {
 	if (!hasStartDay) {
 		startingDate += '-02'; // Avoid timezone issues
 	}
-	let startDate = new Date(new Date(startingDate).toISOString().substr(0, 10));
+	let startDate = new Date(new Date(startingDate).toISOString().slice(0, 10));
 	if (!endingDate) {
 		const now = new Date().getTime() - timezoneOffset; // Subtract timezone offset because we're stripping timezone from ISOString
-		endingDate = new Date(now).toISOString().substr(0, 10); // Need date in YYYY-MM-DD format
+		endingDate = new Date(now).toISOString().slice(0, 10); // Need date in YYYY-MM-DD format
 	}
 	let endDate = new Date(endingDate);
 	if (startDate > endDate) {
@@ -2828,10 +2807,10 @@ function ManageBackup(make, restore) {
 
 		if (Detect.Wine || !Detect.IE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			const msgFb = `>>> Theme backup has been successfully saved <<<\n\n${fb.ProfilePath}backup`;
-			await fb.ShowPopupMessage(msgFb, 'Theme backup');
+			fb.ShowPopupMessage(msgFb, 'Theme backup');
 		} else {
 			const msg = `Theme backup has been successfully saved:\n\n${fb.ProfilePath}backup\n\n\n`;
-			await lib.popUpBox.confirm('Georgia-ReBORN', msg, 'OK', false, false, 'center', false);
+			lib.popUpBox.confirm('Georgia-ReBORN', msg, 'OK', false, false, 'center', false);
 		}
 	};
 
@@ -2843,7 +2822,7 @@ function ManageBackup(make, restore) {
 		await checkVersion();
 		await copyFolders();
 		await grm.settings.setThemeSettings(false, true);
-		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
+		setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
 	};
 
 	if (make) {
@@ -2899,8 +2878,8 @@ function RestoreBackupPlaylist() {
 		await checkVersion();
 		await copyFolders();
 		await grm.settings.setThemeSettings(false, true);
-		await console.log('\n>>> Georgia-ReBORN theme backup has been successfully restored <<<\n\n');
-		await setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
+		console.log('\n>>> Georgia-ReBORN theme backup has been successfully restored <<<\n\n');
+		setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
 	};
 
 	restoreBackup();

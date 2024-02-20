@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -581,7 +581,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 					artist_text = 'Radio Stream';
 				}
 				if (artist_text) {
-					let artist_x = part1_cur_x;
+					const artist_x = part1_cur_x;
 					let artist_w = this.w - artist_x * 2;
 					let artist_h = part_h;
 					if (!plSet.show_group_info) {
@@ -601,8 +601,6 @@ class PlaylistHeader extends PlaylistBaseHeader {
 							}
 							artist_hyperlink = this.hyperlinks[`artist${i}`];
 							artist_hyperlink.draw(grClip, artist_color);
-							artist_x = artist_hyperlink.x;
-							artist_w = artist_hyperlink.getWidth();
 							i++;
 						}
 					}
@@ -1257,7 +1255,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			try { // Prevent crash if album art is corrupt, file format is not supported or has an unusual ICC profile embedded
 				this.art = image.Resize(art_w, art_h);
 			} catch (e) {
-				console.log('\n<Error: Album art in Playlist could not be scaled! Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded>\n');
+				console.log('\n>>> Error => assign_art: Album art in Playlist could not be scaled!\n>>> Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded.\n');
 			}
 		}
 

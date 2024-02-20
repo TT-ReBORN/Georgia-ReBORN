@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -503,7 +503,7 @@ class ThemeColors {
 		grCol.peakmeterBarVertProgFill  = grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = ShadeColor(grCol.primary, 10);
 		grCol.peakmeterBarVertFillPeaks = TintColor(grCol.primary,  20);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = grCol.primary;
@@ -815,7 +815,7 @@ class ThemeColors {
 		grCol.peakmeterBarVertProgFill  = grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = grCol.colBrightness <  50 ? TintColor(grCol.primary,  20) : ShadeColor(grCol.primary, 10);
 		grCol.peakmeterBarVertFillPeaks = grCol.colBrightness <  50 ? TintColor(grCol.primary,  30) : TintColor(grCol.primary,  20);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = grCol.colBrightness < 50 ? TintColor(grCol.primary, 40) : grCol.colBrightness < 100 ? TintColor(grCol.primary, 20) : grCol.primary;
@@ -1358,7 +1358,7 @@ class ThemeColors {
 		grCol.peakmeterBarVertProgFill  = grCol.colBrightness > 200 ? ShadeColor(grCol.primary, 50) : grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = grCol.colBrightness > 200 ? ShadeColor(grCol.primary, 50) : TintColor(grCol.primary, 40);
 		grCol.peakmeterBarVertFillPeaks = grCol.colBrightness > 200 ? ShadeColor(grCol.primary, 20) : TintColor(grCol.primary, 60);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = grCol.colBrightness > 200 || grm.ui.noAlbumArtStub ? ShadeColor(grCol.primary, 80) : TintColor(grCol.primary, 90);
@@ -1725,7 +1725,7 @@ class ThemeColors {
 		grCol.peakmeterBarVertProgFill  = grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = accentColor;
 		grCol.peakmeterBarVertFillPeaks = TintColor(accentColor,  80);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = accentColor;
@@ -2004,7 +2004,7 @@ class ThemeColors {
 		grCol.peakmeterBarVertProgFill  = grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = accentColor;
 		grCol.peakmeterBarVertFillPeaks = TintColor(accentColor,  80);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = accentColor;
@@ -2281,7 +2281,7 @@ class ThemeColors {
 		grCol.peakmeterBarVertProgFill  = grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = accentColor;
 		grCol.peakmeterBarVertFillPeaks = TintColor(accentColor,  80);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = accentColor;
@@ -2581,7 +2581,7 @@ class ThemeColors {
 		grCol.peakmeterBarVertProgFill  = grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = accentColor;
 		grCol.peakmeterBarVertFillPeaks = ShadeColor(accentColor, 20);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = this.BEVEL || this.BLEND ? TintColor(accentColor, 10) : accentColor;
@@ -2930,7 +2930,7 @@ class ThemeColors {
 		grCol.peakmeterBarVertProgFill  = grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = accentColor;
 		grCol.peakmeterBarVertFillPeaks = TintColor(accentColor,  60);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = accentColor;
@@ -3282,7 +3282,7 @@ class ThemeColors {
 			grCol.peakmeterBarVertProgFill  = this.BEVEL ? ShadeColor(HEXtoRGB(grCfg.cTheme.grCol_peakmeterBarVertProgFill), 5) : HEXtoRGB(grCfg.cTheme.grCol_peakmeterBarVertProgFill);
 			grCol.peakmeterBarVertFill      = this.BEVEL ? ShadeColor(HEXtoRGB(grCfg.cTheme.grCol_peakmeterBarVertFill), 5) : HEXtoRGB(grCfg.cTheme.grCol_peakmeterBarVertFill);
 			grCol.peakmeterBarVertFillPeaks = this.BEVEL ? ShadeColor(HEXtoRGB(grCfg.cTheme.grCol_peakmeterBarVertFillPeaks), 5) : HEXtoRGB(grCfg.cTheme.grCol_peakmeterBarVertFillPeaks);
-			if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+			if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 			// * WAVEFORM BAR COLORS * //
 			grCol.waveformBarFillFront    = lightBg && (this.BEVEL || this.BLEND) ? ShadeColor(HEXtoRGB(grCfg.cTheme.grCol_waveformBarFillFront), 5) : HEXtoRGB(grCfg.cTheme.grCol_waveformBarFillFront);
@@ -3523,7 +3523,7 @@ class ThemeColors {
 		grCol.peakmeterBarVertProgFill  = RGB(20, 20, 20);
 		grCol.peakmeterBarVertFill      = RGB(20, 20, 20);
 		grCol.peakmeterBarVertFillPeaks = RGB(120, 120, 120);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = RGB(120, 120, 120);
@@ -3760,7 +3760,7 @@ class ThemeColors {
 		grCol.peakmeterBarVertProgFill  = grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = RGB(245, 245, 245);
 		grCol.peakmeterBarVertFillPeaks = RGB(200, 200, 200);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = RGB(245, 245, 245);
@@ -4952,7 +4952,7 @@ class StyleColors {
 		grCol.peakmeterBarVertProgFill  = grCol.colBrightness > 200 ? ShadeColor(grCol.primary, 25) : grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = grCol.colBrightness > 200 ? ShadeColor(grCol.primary, 15) : TintColor(grCol.primary, 40);
 		grCol.peakmeterBarVertFillPeaks = grCol.colBrightness > 200 ? ShadeColor(grCol.primary, 25) : TintColor(grCol.primary, 60);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = grCol.colBrightness > 200 ? ShadeColor(grCol.primary, 80) : TintColor(grCol.primary, 90);
@@ -5035,7 +5035,7 @@ class StyleColors {
 		grCol.peakmeterBarVertProgFill  = grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = ShadeColor(grCol.primary, 10);
 		grCol.peakmeterBarVertFillPeaks = TintColor(grCol.primary,  20);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = grCol.primary;
@@ -5142,7 +5142,7 @@ class StyleColors {
 		grCol.peakmeterBarVertProgFill  = grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = grCol.colBrightness <  50 ? TintColor(grCol.primary,  20) : ShadeColor(grCol.primary, 10);
 		grCol.peakmeterBarVertFillPeaks = grCol.colBrightness <  50 ? TintColor(grCol.primary,  30) : TintColor(grCol.primary,  20);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = grCol.colBrightness < 50 ? TintColor(grCol.primary, 40) : grCol.colBrightness < 100 ? TintColor(grCol.primary, 20) : grCol.primary;
@@ -5207,7 +5207,7 @@ class StyleColors {
 		grCol.peakmeterBarVertProgFill  = grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = smallColDiff ? grCol.lightAccent_50 : grCol.primary;
 		grCol.peakmeterBarVertFillPeaks = TintColor(grCol.primary, 60);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = grCol.colBrightness2 > 200 || grm.ui.noAlbumArtStub ? ShadeColor(grCol.primary_alt, 80) : TintColor(grCol.primary_alt, 90);
@@ -5301,7 +5301,7 @@ class StyleColors {
 		grCol.peakmeterBarVertProgFill  = grCol.progressBarFill;
 		grCol.peakmeterBarVertFill      = grCol.progressBarFill;
 		grCol.peakmeterBarVertFillPeaks = TintColor(grCol.primary_alt, 60);
-		if (grm.peakBar) grm.peakBar.setColors(fb.GetNowPlaying());
+		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.setColors(fb.GetNowPlaying());
 
 		// * WAVEFORM BAR COLORS * //
 		grCol.waveformBarFillFront    = grCol.colBrightness > 150 ? ShadeColor(grCol.primary_alt, smallColDiff || grCol.colBrightness > 200 || grm.ui.noAlbumArtStub ? 60 : 10) : TintColor(grCol.primary_alt, smallColDiff ? 60 : 10);
@@ -5498,7 +5498,7 @@ class ColorMethods {
 			sbar_thumb_hovered: SetColor(pl.col.sbar_thumb_hovered, true),
 			sbar_thumb_drag: SetColor(pl.col.sbar_thumb_drag, true)
 		};
-		Object.assign(pl.col, playlistColors);
+		pl.col = { ...pl.col, ...playlistColors };
 
 		const libraryColors = {
 			iconPlus: SetColor(lib.ui.col.iconPlus),
@@ -5523,7 +5523,7 @@ class ColorMethods {
 			sbarHovered: SetColor(lib.ui.col.sbarHovered, true),
 			sbarDrag: SetColor(lib.ui.col.sbarDrag, true)
 		};
-		Object.assign(lib.ui.col, libraryColors);
+		lib.ui.col = { ...lib.ui.col, ...libraryColors };
 
 		const biographyColors = {
 			headingText: SetColor(bio.ui.col.headingText),
@@ -5538,7 +5538,7 @@ class ColorMethods {
 			sbarHovered: SetColor(bio.ui.col.sbarHovered, true),
 			sbarDrag: SetColor(bio.ui.col.sbarDrag, true)
 		};
-		Object.assign(bio.ui.col, biographyColors);
+		bio.ui.col = { ...bio.ui.col, ...biographyColors };
 
 		const mainColors = {
 			detailsText: SetColor(grCol.detailsText),
@@ -5555,7 +5555,7 @@ class ColorMethods {
 			transportIconHovered: !['reborn', 'random'].includes(grSet.theme) ? SetColor(grCol.transportIconHovered, true) : grCol.transportIconHovered,
 			transportIconDown: !['reborn', 'random'].includes(grSet.theme) ? SetColor(grCol.transportIconDown, true) : grCol.transportIconDown
 		};
-		Object.assign(grCol, mainColors);
+		grCol = { ...grCol, ...mainColors };
 
 		window.Repaint();
 	}
@@ -5994,7 +5994,7 @@ class ColorMethods {
 		try { // * Prevent crash if album art is corrupt, file format is not supported or has a unusual ICC profile embedded
 			g.DrawImage(image, 0, 0, grm.ui.ww, grm.ui.wh, 0, 0, image.Width, image.Height, 0, alpha);
 		} catch (e) {
-			console.log('\n<Error: Image blending failed, album art could not be properly parsed! Maybe it is corrupt, file format is not supported or has a unusual ICC profile embedded>\n');
+			console.log('\n>>> Error => _formatStyleBlendImage: Image blending failed, album art could not be properly parsed!\n>>> Maybe it is corrupt, file format is not supported or has a unusual ICC profile embedded.\n');
 		}
 
 		tempImg.ReleaseGraphics(g);
@@ -6380,7 +6380,7 @@ class ColorMethods {
 		else if (grSet.styleRandomAutoColor === 'track') {
 			grm.ui.initTheme();
 		}
-		DebugLog('\n>>> initTheme -> getRandomThemeAutoColor <<<\n');
+		DebugLog('\n>>> initTheme => getRandomThemeAutoColor <<<\n');
 	}
 	// #endregion
 
@@ -6484,7 +6484,7 @@ class ColorMethods {
 			return secondaryColor ? selectedColor2.val : selectedColor.val;
 		}
 		catch (e) {
-			console.log('\n<Error: GetColourSchemeJSON failed.>\n');
+			console.log('\n>>> Error => GetColourSchemeJSON failed!\n');
 			return null;
 		}
 	}
