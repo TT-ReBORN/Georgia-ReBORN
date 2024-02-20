@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    20-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -121,6 +121,9 @@ const grDef = new ConfigDefaults();
  * @global
  */
 const grCfg = new ConfigurationManager();
+
+grCfg.initializeConfigs();
+grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
 
 
 ///////////////
@@ -455,10 +458,3 @@ const grCol = {
 	lightBgLibrary: false,
 	lightBgBiography: false
 };
-
-
-///////////////////////////////
-// ! CONFIG INITIALIZATION ! //
-///////////////////////////////
-grCfg.initializeConfigs();
-grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
