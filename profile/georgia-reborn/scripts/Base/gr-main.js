@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-02-2024                                              * //
+// * Last change:    21-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4465,10 +4465,10 @@ class MainUI {
 			'amr':  'amr',
 			'ape':  'ape', 'monkey\'s audio': 'ape',
 			'caf':  'caf',
-			'dsd':  'dsd',
+			'dsd':  format === 'iso' ? 'dsd-sacd' : 'dsd',
 			'dst':  'dsd-sacd',
 			'dts':  'dts', 'dca (dts coherent acoustics)': 'dts',
-			'dxd':  'dxd',
+			'dxd':  format === 'iso' ? 'dsd-sacd' : 'dxd',
 			'flac': 'flac',
 			'gsm':  'gsm', 'gsm 6.10': 'gsm',
 			'imaadpcm': 'imaadpcm', 'ima adpcm': 'imaadpcm',
@@ -4505,11 +4505,11 @@ class MainUI {
 		}
 		// Handle special cases
 		if (codec.startsWith('dsd')) {
-			this.codecLogo = gdi.Image(codecLogoPath('dsd'));
+			this.codecLogo = gdi.Image(codecLogoPath(codecFormat.dsd));
 		} else if (codec.startsWith('dxd')) {
-			this.codecLogo = gdi.Image(codecLogoPath('dxd'));
+			this.codecLogo = gdi.Image(codecLogoPath(codecFormat.dxd));
 		} else if (codec.startsWith('dst')) {
-			this.codecLogo = gdi.Image(codecLogoPath('dst'));
+			this.codecLogo = gdi.Image(codecLogoPath(codecFormat.dst));
 		}
 	}
 
