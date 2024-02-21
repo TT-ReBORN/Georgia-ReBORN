@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-02-2024                                              * //
+// * Last change:    21-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -429,7 +429,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 			if (!grSet.styleBlend) grClip.FillSolidRect(0, 0, this.w, this.h, pl.col.bg); // Solid background for ClearTypeGridFit text rendering
 
-			// if (this.hasSelection && pref.theme.startsWith('custom')) {
+			// if (this.hasSelection && grSet.theme.startsWith('custom')) {
 			// 	grClip.FillSolidRect(0, 0, this.w, this.h, pl.col.row_selection_bg);
 			// }
 
@@ -822,7 +822,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 		//--->
 		if (!grSet.styleBlend) grClip.FillSolidRect(0, 0, this.w, this.h, pl.col.bg); // Solid background for ClearTypeGridFit text rendering
-		// if (this.has_selected_items() && pref.theme.startsWith('custom')) {
+		// if (this.has_selected_items() && grSet.theme.startsWith('custom')) {
 		// 	grClip.FillSolidRect(0, 0, this.w, this.h, pl.col.row_selection_bg);
 		// }
 

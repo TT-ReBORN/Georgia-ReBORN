@@ -197,7 +197,7 @@ class MainUI {
 		this.playingPlaylist = '';
 		/** @public @type {number} Saves last playback order. */
 		this.lastPlaybackOrder = 0;
-		/** @public @type {boolean} Saves active full width lyrics layout via pref.lyricsLayout. */
+		/** @public @type {boolean} Saves active full width lyrics layout via grSet.lyricsLayout. */
 		this.lyricsLayoutFullWidth = false;
 		/** @public @type {boolean} Is the song from a streaming source? */
 		this.isStreaming = false;
@@ -1957,7 +1957,7 @@ class MainUI {
 	}
 
 	/**
-	 * Initializes size and position of the current panel when using pref.panelWidthAuto.
+	 * Initializes size and position of the current panel when using grSet.panelWidthAuto.
 	 */
 	initPanelWidthAuto() {
 		this.resizeArtwork(true);
@@ -2063,8 +2063,8 @@ class MainUI {
 
 	/**
 	 * Initializes the theme day and night state.
-	 * - Aborts if `pref.themeDayNightMode` is falsy or if any custom GR theme tags are detected.
-	 * - Restores the day or night theme based on `pref.themeDayNightTime` if the current theme does not match the expected day or night theme.
+	 * - Aborts if `grSet.themeDayNightMode` is falsy or if any custom GR theme tags are detected.
+	 * - Restores the day or night theme based on `grSet.themeDayNightTime` if the current theme does not match the expected day or night theme.
 	 * - Sets an interval to check and update the theme every 10 minutes based on the time of day.
 	 */
 	initThemeDayNightState() {
@@ -3864,7 +3864,7 @@ class MainUI {
 
 		// * Set album art x-coordinate
 		switch (grSet.layout) {
-			case 'default': // In a non-proportional player size, 'pref.albumArtAlign' sets album art alignment in Default layout
+			case 'default': // In a non-proportional player size, 'grSet.albumArtAlign' sets album art alignment in Default layout
 				if (this.displayPlaylist || this.displayLibrary) {
 					switch (grSet.albumArtAlign) {
 						case 'left':
@@ -3999,7 +3999,7 @@ class MainUI {
 	 */
 	createDiscArtRotation() {
 		// Drawing discArt rotated is slow, so first draw it rotated into the discArtRotation image, and then draw discArtRotation image unrotated in on_paint.
-		if (grSet.displayDiscArt && !this.albumArtCorrupt && this.discArt && this.discArtSize.w > 0) {
+		if (grSet.displayDiscArt && !this.albumArtCorrupt && this.albumArt && this.discArt && this.discArtSize.w > 0) {
 			let tracknum = parseInt(fb.TitleFormat(`$num($if(${grTF.vinyl_tracknum},$sub($mul(${grTF.vinyl_tracknum},2),1),$if2(%tracknumber%,1)),1)`).Eval()) - 1;
 			if (!grSet.rotateDiscArt || Number.isNaN(tracknum)) tracknum = 0; // Avoid NaN issues when changing tracks rapidly
 
@@ -4188,7 +4188,7 @@ class MainUI {
 	 */
 	setDiscArtRotationTimer() {
 		clearInterval(this.discArtRotationTimer);
-		if (grSet.layout === 'default' && !this.albumArtCorrupt && this.discArt && fb.IsPlaying && !fb.IsPaused && grSet.displayDiscArt && grSet.spinDiscArt && this.displayDetails) {
+		if (grSet.layout === 'default' && !this.albumArtCorrupt && this.albumArt && this.discArt && fb.IsPlaying && !fb.IsPaused && grSet.displayDiscArt && grSet.spinDiscArt && this.displayDetails) {
 			console.log(`creating ${grSet.spinDiscArtImageCount} rotated disc images, shown every ${grSet.spinDiscArtRedrawInterval}ms`);
 			this.discArtRotationTimer = setInterval(() => {
 				this.discArtRotationIndex++;
@@ -4707,7 +4707,7 @@ class MainUI {
 		const setLibraryView = () => {
 			lib.lib.logTree();
 			lib.pop.clearTree();
-			lib.ui.getFont(); // * Reset font size when pref.libraryLayoutSplitPreset4 was used
+			lib.ui.getFont(); // * Reset font size when grSet.libraryLayoutSplitPreset4 was used
 			RepaintWindowRectAreas();
 			if (grSet.libraryLayout !== 'split' && (!grSet.libraryLayoutFullPreset || !libraryLayoutSplitPresets)) {
 				libSet.albumArtShow = grSet.savedAlbumArtShow;

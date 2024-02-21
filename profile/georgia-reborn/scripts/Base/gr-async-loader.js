@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    21-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -131,7 +131,7 @@ function loadAsyncFile(filePath) {
 
 
 /**
- * Loads a list of files asynchronously if pref.asyncThemePreloader is true, otherwise synchronously.
+ * Loads a list of files asynchronously if grSet.asyncThemePreloader is true, otherwise synchronously.
  * Throttles UI updates approximately every 16 milliseconds during async loading.
  * @global
  * @param {string[]} fileList - The list of files to load.
@@ -175,12 +175,12 @@ includeFiles(fileList, startTime).then(() => {
 // * THEME DAY/NIGHT MODE * //
 //////////////////////////////
 /**
- * Initializes the current time and changes the theme to day or night based on the OS clock and pref.themeDayNightMode value.
- * The pref.themeDayNightMode can be a string in the format 'startHour-endHour', which represents custom starting and ending hours for the day theme.
+ * Initializes the current time and changes the theme to day or night based on the OS clock and grSet.themeDayNightMode value.
+ * The grSet.themeDayNightMode can be a string in the format 'startHour-endHour', which represents custom starting and ending hours for the day theme.
  * For example, '6-18' indicates day theme from 6 AM to 6 PM. This range can wrap around midnight.
  * The value 'false' disables the day/night theme feature, which is the default setting.
  * If the feature is disabled or if other theme-related preferences are set, the function exits without changing the theme.
- * This function has a side effect of modifying pref.theme.
+ * This function has a side effect of modifying grSet.theme.
  * @global
  * @param {Date} date - The `Date` object that represents the current date and time.
  * @returns {string|null} The current time in the format "hours:minutes AM/PM" or null.

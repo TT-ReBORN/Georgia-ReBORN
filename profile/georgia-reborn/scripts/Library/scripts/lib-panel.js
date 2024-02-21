@@ -693,7 +693,7 @@ class LibPanel {
 								libSet.facetView = false;
 								lib.ui.sbar.type = 1; // lib.ui.sbar.type = 0;
 								libSet.sbarType = 1; // libSet.sbarType = 0;
-								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar // libSet.sbarShow = 2;
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> grSet.libraryAutoHideScrollbar // libSet.sbarShow = 2;
 								libSet.fullLineSelection = false;
 								libSet.highLightText = true;
 								libSet.rowStripes = false;
@@ -729,7 +729,7 @@ class LibPanel {
 								libSet.facetView = false;
 								lib.ui.sbar.type = 1;
 								libSet.sbarType = 1;
-								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> grSet.libraryAutoHideScrollbar
 								libSet.fullLineSelection = true;
 								libSet.highLightText = false;
 								libSet.rowStripes = false; // libSet.rowStripes = true;
@@ -766,7 +766,7 @@ class LibPanel {
 								libSet.facetView = false;
 								lib.ui.sbar.type = 1;
 								libSet.sbarType = 1;
-								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> grSet.libraryAutoHideScrollbar
 								libSet.fullLineSelection = true;
 								libSet.highLightText = false;
 								libSet.rowStripes = false; // libSet.rowStripes = true;
@@ -806,7 +806,7 @@ class LibPanel {
 								libSet.facetView = false;
 								lib.ui.sbar.type = 0;
 								libSet.sbarType = 0;
-								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> grSet.libraryAutoHideScrollbar
 								libSet.fullLineSelection = true;
 								libSet.highLightText = true;
 								libSet.rowStripes = false; // libSet.rowStripes = true;
@@ -847,7 +847,7 @@ class LibPanel {
 								libSet.artId = 0;
 								lib.ui.sbar.type = 1;
 								libSet.sbarType = 1;
-								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> grSet.libraryAutoHideScrollbar
 								libSet.fullLineSelection = true;
 								libSet.highLightText = false;
 								libSet.rowStripes = false; // libSet.rowStripes = true;
@@ -875,7 +875,7 @@ class LibPanel {
 							libSet.inlineRoot = true; // In default does not exist
 							lib.ui.sbar.type = 1;
 							libSet.sbarType = 1;
-							// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+							// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> grSet.libraryAutoHideScrollbar
 							libSet.fullLineSelection = true;
 							libSet.highLightText = false;
 							libSet.rowStripes = false; // libSet.rowStripes = true;
@@ -912,7 +912,7 @@ class LibPanel {
 								libSet.inlineRoot = true; // In default does not exist
 								lib.ui.sbar.type = 1;
 								libSet.sbarType = 1;
-								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> grSet.libraryAutoHideScrollbar
 								libSet.fullLineSelection = true;
 								libSet.highLightText = false;
 								libSet.rowStripes = false; // libSet.rowStripes = true;
@@ -950,7 +950,7 @@ class LibPanel {
 								libSet.inlineRoot = true; // In default does not exist
 								lib.ui.sbar.type = 1;
 								libSet.sbarType = 1;
-								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> grSet.libraryAutoHideScrollbar
 								libSet.fullLineSelection = true;
 								libSet.highLightText = false;
 								libSet.rowStripes = false; // libSet.rowStripes = true;
@@ -1062,7 +1062,7 @@ class LibPanel {
 								libSet.facetView = false;
 								lib.ui.sbar.type = 1;
 								libSet.sbarType = 1;
-								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> pref.libraryAutoHideScrollbar
+								// libSet.sbarShow = 1; // Disabled here, state controlled in georgia-reborn-main -> library scrollbar menu -> grSet.libraryAutoHideScrollbar
 								libSet.fullLineSelection = true;
 								libSet.highLightText = false;
 								libSet.rowStripes = false;

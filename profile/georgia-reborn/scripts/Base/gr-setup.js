@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-02-2024                                              * //
+// * Last change:    21-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -428,19 +428,19 @@ const grStr = {
  * @property {number} timelineUnplayed - The background color for timeline block in Details from last played to present time.
  * @property {number} progressBar - The background of the progress bar. Fill will be col.primary.
  * @property {number} shadow - The color of the shadow.
- * @property {number} colBrightness - Calculated primary color brightness used in pref.theme === 'white, pref.theme === 'black, pref.theme === 'reborn, pref.theme === 'random.
- * @property {number} colBrightness2 - Calculated secondary color brightness used in pref.styleRebornFusion, pref.styleRebornFusion2, pref.styleRebornFusionAccent.
- * @property {number} imgBrightness - Calculated image brightness used in pref.styleBlend, pref.styleBlend2, pref.styleBlackAndWhite, pref.styleBlackAndWhite2, pref.styleBlackAndWhiteReborn.
+ * @property {number} colBrightness - Calculated primary color brightness used in grSet.theme === 'white, grSet.theme === 'black, grSet.theme === 'reborn, grSet.theme === 'random.
+ * @property {number} colBrightness2 - Calculated secondary color brightness used in grSet.styleRebornFusion, grSet.styleRebornFusion2, grSet.styleRebornFusionAccent.
+ * @property {number} imgBrightness - Calculated image brightness used in grSet.styleBlend, grSet.styleBlend2, grSet.styleBlackAndWhite, grSet.styleBlackAndWhite2, grSet.styleBlackAndWhiteReborn.
  * @property {GdiBitmap} imgBlended - Blended image from grMain.color.setStyleBlend().
  * @property {boolean} isColored - Checks if background color is not full white RGB(255, 255, 255), used in Reborn/Random theme when init on start or when noAlbumArtStub displayed.
- * @property {boolean} lightBg - Color definition when to switch text and logos to white or black, used in pref.theme === 'white', pref.theme === 'black', pref.theme === 'reborn', pref.theme === 'random', pref.styleBlend, pref.styleBlend2.
+ * @property {boolean} lightBg - Color definition when to switch text and logos to white or black, used in grSet.theme === 'white', grSet.theme === 'black', grSet.theme === 'reborn', grSet.theme === 'random', grSet.styleBlend, grSet.styleBlend2.
  * @property {boolean} lightBgLib - Color definition when to switch text and logos to white or black, used in libSet.theme === 1 - 5.
  * @property {boolean} lightBgBio - Color definition when to switch text and logos to white or black, used in bioSet.theme === 1 - 4.
- * @property {boolean} lightBgMain - Color definition for col.bg when to lighten or darken custom theme colors, used in pref.theme === 'custom01' - 'custom10'.
- * @property {boolean} lightBgPlaylist - Color definition for pl.col.bg when to lighten or darken custom theme colors, used in pref.theme === 'custom01' - 'custom10'.
- * @property {boolean} lightBgDetails - Color definition for col.detailsBg) when to lighten or darken custom theme colors, used in pref.theme === 'custom01' - 'custom10'.
- * @property {boolean} lightBgLibrary - Color definition for ui.col.bg when to lighten or darken custom theme colors, used in pref.theme === 'custom01' - 'custom10'.
- * @property {boolean} lightBgBiography - Color definition for bio.ui.col.bg when to lighten or darken custom theme colors, used in pref.theme === 'custom01' - 'custom10'.
+ * @property {boolean} lightBgMain - Color definition for col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
+ * @property {boolean} lightBgPlaylist - Color definition for pl.col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
+ * @property {boolean} lightBgDetails - Color definition for col.detailsBg) when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
+ * @property {boolean} lightBgLibrary - Color definition for ui.col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
+ * @property {boolean} lightBgBiography - Color definition for bio.ui.col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
  */
 /** @global @type {grCol} */
 const grCol = {

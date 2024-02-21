@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-02-2024                                              * //
+// * Last change:    21-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3881,7 +3881,7 @@ class ThemeColors {
 	// * PUBLIC METHODS - THEME COLOR INITIALIZATION * //
 	// #region PUBLIC METHODS - THEME COLOR INITIALIZATION
 	/**
-	 * Initializes current values for all theme pref.properties.
+	 * Initializes current values for all theme grSet.properties.
 	 */
 	initThemePrefVals() {
 		/** @private Options > Theme. */
@@ -5320,7 +5320,7 @@ class StyleColors {
 	// * PUBLIC METHODS - STYLE INITIALIZATION * //
 	// #region PUBLIC METHODS - STYLE INITIALIZATION
 	/**
-	 * Initializes current values for all theme pref.properties.
+	 * Initializes current values for all theme grSet.properties.
 	 */
 	initThemePrefVals() {
 		/** @private Options > Theme. */
@@ -5987,18 +5987,18 @@ class ColorMethods {
 		};
 
 		const alpha = alphaValues[grSet.theme] || alphaValues.default;
-
-		let tempImg = gdi.CreateImage(imageW, imageH);
-		const g = tempImg.GetGraphics();
+		let tempImg;
 
 		try { // * Prevent crash if album art is corrupt, file format is not supported or has a unusual ICC profile embedded
+			tempImg = gdi.CreateImage(imageW, imageH);
+			const g = tempImg.GetGraphics();
 			g.DrawImage(image, 0, 0, grm.ui.ww, grm.ui.wh, 0, 0, image.Width, image.Height, 0, alpha);
+			tempImg.ReleaseGraphics(g);
+			tempImg = this._blurStyleBlendImage(tempImg, grCol.imgBrightness);
 		} catch (e) {
 			console.log('\n>>> Error => _formatStyleBlendImage: Image blending failed, album art could not be properly parsed!\n>>> Maybe it is corrupt, file format is not supported or has a unusual ICC profile embedded.\n');
+			return null;
 		}
-
-		tempImg.ReleaseGraphics(g);
-		tempImg = this._blurStyleBlendImage(tempImg, grCol.imgBrightness);
 
 		if (grCfg.settings.showDebugThemeLog) console.log(`Blended image alpha: ${alpha}\nTheme brightness: ${grSet.themeBrightness}`);
 		if (grCfg.settings.showDebugThemeOverlay) grm.ui.blendedImgAlpha = alpha;

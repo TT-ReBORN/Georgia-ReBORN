@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-02-2024                                              * //
+// * Last change:    21-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -690,7 +690,7 @@ class ThemeSettingsManager {
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
 	/**
-	 * Loads default theme settings when pref.customThemeSettings is false, otherwise it loads settings from the config file.
+	 * Loads default theme settings when grSet.customThemeSettings is false, otherwise it loads settings from the config file.
 	 * When using with the parameter, it saves all settings to the config file.
 	 * @param {boolean} saveCfg - Saves current theme settings from the `pref` panel properties object to config file.
 	 * @param {boolean} loadCfg - Loads theme settings from the config file to the `pref` panel properties object.

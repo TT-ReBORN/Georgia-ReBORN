@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    21-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1202,7 +1202,7 @@ class PlaylistScrollbar {
 	}
 
 	/**
-	 * Scrolls to desired row over pref.playlistWheelScrollDuration (400ms default).
+	 * Scrolls to desired row over grSet.playlistWheelScrollDuration (400ms default).
 	 * Can be called repeatedly (during wheel or holding down arrows) to update the desired position.
 	 * @param {number} newPosition - The new row position to scroll to.
 	 */

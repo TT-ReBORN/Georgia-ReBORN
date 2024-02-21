@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-02-2024                                              * //
+// * Last change:    21-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1507,12 +1507,12 @@ function RotateImg(img, w, h, degrees) {
 
 	/**
 	 * Because foobar x86 can allocate only 4 gigs memory, we must limit disc art res for 4K when using
-	 * high pref.spinDiscArtImageCount, i.e 90 (4 degrees), 120 (3 degrees), 180 (2 degrees) to prevent crash.
+	 * high grSet.spinDiscArtImageCount, i.e 90 (4 degrees), 120 (3 degrees), 180 (2 degrees) to prevent crash.
 	 * When SMP has x64 support, we could try to increase this limit w (1836px max possible res for 4K).
 	 */
 	const imgMaxRes = ({ 90: 1400, 120: 1200, 180: 1000 })[grSet.spinDiscArtImageCount] || w;
-	w = Math.min(w, imgMaxRes);
-	h = Math.min(h, imgMaxRes);
+	w = Math.floor(Math.min(w, imgMaxRes));
+	h = Math.floor(Math.min(h, imgMaxRes));
 
 	if (degrees !== 0) {
 		const rotatedImg = gdi.CreateImage(w, h);

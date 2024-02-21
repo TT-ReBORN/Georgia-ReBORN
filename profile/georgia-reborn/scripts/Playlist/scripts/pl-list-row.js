@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-02-2024                                              * //
+// * Last change:    21-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -123,7 +123,7 @@ class PlaylistRow extends BaseListItem {
 			// 	gr.DrawRect(this.x, this.y, this.w, rect_h, 1, pl.col.row_selection_frame_cropped);
 			// }
 
-			// if (pref.theme.startsWith('custom')) {
+			// if (grSet.theme.startsWith('custom')) {
 			// 	gr.FillSolidRect(this.x, this.y, this.w, this.h, pl.col.row_selection_bg);
 			// }
 			if (!this.is_playing) { // Do not draw selection on now playing to prevent 1px overlapping

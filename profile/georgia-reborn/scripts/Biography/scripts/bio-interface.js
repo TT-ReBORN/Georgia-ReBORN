@@ -312,7 +312,7 @@ class BioUserInterface {
 			$Bio.trace('Spider Monkey Panel is unable to use your default font. Using Segoe UI at default size & style instead');
 		}
 		if (this.font.main.Size != biographyFontSize) bioSet.zoomFont = 100;
-		// pref.layout === 'artwork' ? bioSet.baseFontSizeBio_artwork : bioSet.baseFontSizeBio_default = this.font.headingBaseSize = this.font.main.Size;
+		// grSet.layout === 'artwork' ? bioSet.baseFontSizeBio_artwork : bioSet.baseFontSizeBio_default = this.font.headingBaseSize = this.font.main.Size;
 		this.font.headingBaseSize = biographyFontSize;
 
 		this.font.zoomSize = Math.max(Math.round(biographyFontSize * bioSet.zoomFont / 100), 1);

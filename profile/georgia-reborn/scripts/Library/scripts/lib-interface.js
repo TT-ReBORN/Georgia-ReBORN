@@ -483,7 +483,7 @@ class LibUserInterface {
 			$Lib.trace('Spider Monkey Panel is unable to use your default font. Using Segoe UI at default size & style instead', false);
 		}
 		if (this.font.main.Size != libraryFontSize) libSet.zoomFont = 100;
-		// (pref.layout === 'artwork' ? libSet.baseFontSize_artwork : libSet.baseFontSize_default) = this.font.main.Size;
+		// (grSet.layout === 'artwork' ? libSet.baseFontSize_artwork : libSet.baseFontSize_default) = this.font.main.Size;
 
 		this.font.zoomSize = Math.max(Math.round(libraryFontSize * libSet.zoomFont / 100), 1);
 
@@ -517,7 +517,7 @@ class LibUserInterface {
 		this.sz.sideMarker = SCALE(8); // libSet.sideMarkerWidth ? Math.max(libSet.sideMarkerWidth, 1) : 4 * this.l.w;
 		this.sbar.narrowWidth = libSet.narrowSbarWidth == 0 ? $Lib.clamp(Math.floor(this.font.zoomSize / 7), 2, 10) : libSet.narrowSbarWidth;
 
-		// * Only used for pref.libraryLayoutSplitPreset4, synchronizes artist & album font sizes with Playlist
+		// * Only used for grSet.libraryLayoutSplitPreset4, synchronizes artist & album font sizes with Playlist
 		const headerFontSize = grSet[`playlistHeaderFontSize_${grSet.layout}`];
 		const libraryLayoutSplitPreset4 = libSet.albumArtLabelType === 2 && (grSet.layout === 'default' && grSet.libraryLayout === 'split' && grm.ui.displayLibrary && grm.ui.displayPlaylist); // displayLibrarySplit
 
