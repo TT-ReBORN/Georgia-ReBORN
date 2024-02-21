@@ -2749,7 +2749,7 @@ class TopMenuOptions {
 					}
 				});
 				RepaintWindow();
-			};
+			}
 		});
 		libraryControlsMenu.addSeparator();
 		libraryControlsMenu.createRadioSubMenu('Single-click action', ['Select', 'Send to playlist', 'Send to playlist and play', 'Send to playlist and play (add if playing)'], libSet.clickAction, [0, 1, 2, 3], (action) => {

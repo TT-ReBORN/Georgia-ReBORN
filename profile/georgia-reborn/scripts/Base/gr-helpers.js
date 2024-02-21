@@ -1515,7 +1515,6 @@ function RotateImg(img, w, h, degrees) {
 	h = Math.min(h, imgMaxRes);
 
 	if (degrees !== 0) {
-		/** @type {GdiBitmap} */
 		const rotatedImg = gdi.CreateImage(w, h);
 		const gotGraphics = rotatedImg.GetGraphics();
 		gotGraphics.DrawImage(img, 0, 0, w, h, 0, 0, img.Width, img.Height, degrees);

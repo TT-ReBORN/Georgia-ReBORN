@@ -5,7 +5,7 @@ function bioOnStateChange(resolve, reject, func = null) { // credit regorxxx
 		if (this.Status === 200) {
 			return func ? func(this.ResponseText, this) : resolve(this.ResponseText);
 		} else if (!func) { return reject(this.ResponseText); }
-	} else if (!func) { return reject({ status: 408, responseText: this.ResponseText }) }; // 408 Request Timeout
+	} else if (!func) { return reject({ status: 408, responseText: this.ResponseText }) } // 408 Request Timeout
 	return null;
 }
 

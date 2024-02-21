@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-02-2024                                              * //
+// * Last change:    21-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2799,7 +2799,7 @@ class PeakmeterBar {
 		/** @private @type {number} */
 		this.separator = 0;
 
-		for (let i = 0; i <= this.db.length; i++) {
+		for (let i = 0; i < this.db.length; i++) {
 			if (this.db[i] === 0) this.separator = i;
 		}
 
@@ -4166,7 +4166,7 @@ class WaveformBar {
 			if (this.preset.analysisMode !== 'rms_level') {
 				for (const frame of this.current) {
 					if (frame.length === 5) { frame.length = 4; }
-					frame.push(isFinite(frame[pos]) ? Math.abs(1 - (Math.log(Math.abs(max)) + Math.log(Math.abs(frame[pos]))) / Math.log(Math.abs(max))) : 1);
+					frame.push(isFinite(frame[pos]) ? Math.abs(1 - (Math.log(Math.abs(+max)) + Math.log(Math.abs(+frame[pos]))) / Math.log(Math.abs(+max))) : 1);
 					if (!isFinite(frame[4])) { frame[4] = 0; }
 					maxVal = Math.min(maxVal, frame[4]);
 				}

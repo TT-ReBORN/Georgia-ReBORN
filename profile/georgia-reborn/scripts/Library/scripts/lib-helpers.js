@@ -252,7 +252,19 @@ class LibHelpers {
 	}
 
 	throttle(e, i, t) {
-		let n = !0; let r = !0; if (typeof e != 'function') throw new TypeError('throttle: invalid function'); return this.isObject(t) && (n = 'leading' in t ? !!bio.txt.leading : n, r = 'trailing' in t ? !!bio.txt.trailing : r), this.debounce(e, i, { leading:n, maxWait:i, trailing:r });
+		let n = !0;
+		let r = !0;
+
+		if (typeof e !== 'function') {
+			throw new TypeError('throttle: invalid function');
+		}
+
+		if (this.isObject(t)) {
+			n = 'leading' in t ? !!t.leading : n;
+			r = 'trailing' in t ? !!t.trailing : r;
+		}
+
+		return this.debounce(e, i, { leading: n, maxWait: i, trailing: r });
 	}
 
 	titlecase(n) {

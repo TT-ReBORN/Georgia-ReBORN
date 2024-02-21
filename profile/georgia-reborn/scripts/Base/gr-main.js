@@ -1015,8 +1015,10 @@ class MainUI {
 						discCenter.x = Math.round(this.discArtSize.x + this.discArtSize.w / 2);
 						discCenter.y = Math.round(this.discArtSize.y + this.discArtSize.h / 2);
 						const radius = discCenter.y - this.discArtSize.y;
+						const radiusSquared = radius * radius;
+						let posValid = false;
 
-						while (true) {
+						while (!posValid) {
 							const allLabelsWidth = Math.max(Math.min(Math.round((this.ww - leftEdge - rightSideGap) / labels.length), maxLabelWidth), 50);
 							//console.log("leftEdge = " + leftEdge + ", this.ww-leftEdge-10 = " + (this.ww-leftEdge-10) + ", allLabelsWidth=" + allLabelsWidth);
 							const maxWidth = RES._4K && labels[0].Width < 200 ? labels[0].Width * 2 : labels[0].Width;
@@ -1027,10 +1029,11 @@ class MainUI {
 							const a = topEdge - discCenter.y + 1; // Adding 1 to a and b so that the border just touches the edge of the discArt
 							const b = leftEdge - discCenter.x + 1;
 
-							if ((a * a + b * b) > radius * radius) {
-								break;
+							if ((a * a + b * b) > radiusSquared) {
+								posValid = true;
+							} else {
+								leftEdge += 4;
 							}
-							leftEdge += 4;
 						}
 					} else {
 						leftEdge = Math.round(Math.max(this.albumArtSize.x + this.albumArtSize.w + leftEdgeWidth + leftEdgeGap, this.ww * 0.975 - totalLabelWidth + 1));

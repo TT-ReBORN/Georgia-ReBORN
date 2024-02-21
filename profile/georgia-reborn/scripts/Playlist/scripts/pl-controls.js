@@ -626,7 +626,7 @@ class PlaylistMetaHandler {
 		}
 
 		// * Calculate the averages after processing all tracks
-		for (const [album, albumData] of metadata) {
+		for (const [, albumData] of metadata) {
 			albumData.albumAverageRating = albumData.albumTrackCount > 0 ? Number((albumData.albumTotalRating / albumData.albumTrackCount).toFixed(2)) : 0;
 			albumData.albumAveragePlaycount = albumData.albumTrackCount > 0 ? Math.round(albumData.albumTotalPlaycount / albumData.albumTrackCount) : 0;
 		}
