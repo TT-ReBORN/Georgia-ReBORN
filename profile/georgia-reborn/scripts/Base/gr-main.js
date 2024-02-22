@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-02-2024                                              * //
+// * Last change:    22-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2391,7 +2391,7 @@ class MainUI {
 	 */
 	refreshSeekbar() {
 		// * Time
-		window.RepaintRect(this.lowerBarTimeX, this.lowerBarTimeY, this.lowerBarTimeW, this.lowerBarTimeH, grSet.spinDiscArt && !this.displayLyrics);
+		window.RepaintRect(this.lowerBarTimeX, this.lowerBarTimeY, this.lowerBarTimeW + this.lowerBarTimeH * 0.3, this.lowerBarTimeH, grSet.spinDiscArt && !this.displayLyrics);
 
 		if (grSet.seekbar === 'waveformbar') return;
 
