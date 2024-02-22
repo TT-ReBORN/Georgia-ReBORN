@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-02-2024                                              * //
+// * Last change:    22-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2681,7 +2681,7 @@ class CustomThemeMenu {
 
 		const { schema, customTheme } = customThemes[grSet.theme];
 		const themeDefaults = grCfg.configCustom.updateConfigObjValues(customTheme, grDef.customThemeDefaults, true);
-		grCfg.cTheme = grCfg.configCustom.addConfigurationObject(schema, { ...themeDefaults, ...grDef.customThemeDefaults }, grDef.customThemeComments);
+		grCfg.cTheme = grCfg.configCustom.addConfigurationObject(schema, Object.assign({}, themeDefaults, grDef.customThemeDefaults), grDef.customThemeComments);
 	}
 
 	/**

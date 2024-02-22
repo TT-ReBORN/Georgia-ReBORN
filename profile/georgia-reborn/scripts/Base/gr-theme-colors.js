@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-02-2024                                              * //
+// * Last change:    22-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -5498,7 +5498,7 @@ class ColorMethods {
 			sbar_thumb_hovered: SetColor(pl.col.sbar_thumb_hovered, true),
 			sbar_thumb_drag: SetColor(pl.col.sbar_thumb_drag, true)
 		};
-		pl.col = { ...pl.col, ...playlistColors };
+		Object.assign(pl.col, playlistColors);
 
 		const libraryColors = {
 			iconPlus: SetColor(lib.ui.col.iconPlus),
@@ -5523,7 +5523,7 @@ class ColorMethods {
 			sbarHovered: SetColor(lib.ui.col.sbarHovered, true),
 			sbarDrag: SetColor(lib.ui.col.sbarDrag, true)
 		};
-		lib.ui.col = { ...lib.ui.col, ...libraryColors };
+		Object.assign(lib.ui.col, libraryColors);
 
 		const biographyColors = {
 			headingText: SetColor(bio.ui.col.headingText),
@@ -5538,7 +5538,7 @@ class ColorMethods {
 			sbarHovered: SetColor(bio.ui.col.sbarHovered, true),
 			sbarDrag: SetColor(bio.ui.col.sbarDrag, true)
 		};
-		bio.ui.col = { ...bio.ui.col, ...biographyColors };
+		Object.assign(bio.ui.col, biographyColors);
 
 		const mainColors = {
 			detailsText: SetColor(grCol.detailsText),
@@ -5555,7 +5555,7 @@ class ColorMethods {
 			transportIconHovered: !['reborn', 'random'].includes(grSet.theme) ? SetColor(grCol.transportIconHovered, true) : grCol.transportIconHovered,
 			transportIconDown: !['reborn', 'random'].includes(grSet.theme) ? SetColor(grCol.transportIconDown, true) : grCol.transportIconDown
 		};
-		grCol = { ...grCol, ...mainColors };
+		Object.assign(grCol, mainColors);
 
 		window.Repaint();
 	}
