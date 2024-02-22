@@ -523,30 +523,30 @@ class ConfigurationManager {
 	 * Reads the default configuration from the configuration file and sets up the configuration objects.
 	 */
 	readDefaultConfig() {
-		const prefs = this.config.readConfiguration();
+		const cfgSet = this.config.readConfiguration();
 		/**
 		 * While we've read all the values in, we still need to call addConfigurationObject to add the getters/setters
 		 * for the objects so that the file gets automatically written when a setting is changed.
 		 */
-		this.config.addConfigurationObject(grDef.titleFormatSchema, Object.assign({}, grDef.titleFormatDefaults, prefs.title_format_strings), grDef.titleFormatComments);
-		this.config.addConfigurationObject(grDef.imgPathSchema, prefs.imgPaths);
+		this.config.addConfigurationObject(grDef.titleFormatSchema, Object.assign({}, grDef.titleFormatDefaults, cfgSet.title_format_strings), grDef.titleFormatComments);
+		this.config.addConfigurationObject(grDef.imgPathSchema, cfgSet.imgPaths);
 
-		this.theme           = this.config.addConfigurationObject(grDef.themeSchema, Object.assign({}, grDef.themeDefaults, prefs.theme), grDef.themeComments);
-		this.style           = this.config.addConfigurationObject(grDef.themeStyleSchema, Object.assign({}, grDef.themeStyleDefaults, prefs.style), grDef.themeStyleComments);
-		this.preset          = this.config.addConfigurationObject(grDef.themePresetSchema, Object.assign({}, grDef.themePresetDefaults, prefs.preset), grDef.themePresetComments);
-		this.themePlayerSize = this.config.addConfigurationObject(grDef.themePlayerSizeSchema, Object.assign({}, grDef.themePlayerSizeDefaults, prefs.themePlayerSize), grDef.themePlayerSizeComments);
-		this.themeLayout     = this.config.addConfigurationObject(grDef.themeLayoutSchema, Object.assign({}, grDef.themeLayoutDefaults, prefs.themeLayout), grDef.themeLayoutComments);
-		this.themeDisplay    = this.config.addConfigurationObject(grDef.themeDisplaySchema, Object.assign({}, grDef.themeDisplayDefaults, prefs.themeDisplay), grDef.themeDisplayComments);
-		this.themeBrightness = this.config.addConfigurationObject(grDef.themeBrightnessSchema, Object.assign({}, grDef.themeBrightnessDefaults, prefs.themeBrightness), grDef.themeBrightnessComments);
-		this.themeFontSize   = this.config.addConfigurationObject(grDef.themeFontSizesSchema, Object.assign({}, grDef.themeFontSizesDefaults, prefs.themeFontSize), grDef.themeFontSizesComments);
-		this.themeControls   = this.config.addConfigurationObject(grDef.themePlayerControlsSchema, Object.assign({}, grDef.themePlayerControlsDefaults, prefs.themeControls), grDef.themePlayerControlsComments);
+		this.theme           = this.config.addConfigurationObject(grDef.themeSchema, Object.assign({}, grDef.themeDefaults, cfgSet.theme), grDef.themeComments);
+		this.style           = this.config.addConfigurationObject(grDef.themeStyleSchema, Object.assign({}, grDef.themeStyleDefaults, cfgSet.style), grDef.themeStyleComments);
+		this.preset          = this.config.addConfigurationObject(grDef.themePresetSchema, Object.assign({}, grDef.themePresetDefaults, cfgSet.preset), grDef.themePresetComments);
+		this.themePlayerSize = this.config.addConfigurationObject(grDef.themePlayerSizeSchema, Object.assign({}, grDef.themePlayerSizeDefaults, cfgSet.themePlayerSize), grDef.themePlayerSizeComments);
+		this.themeLayout     = this.config.addConfigurationObject(grDef.themeLayoutSchema, Object.assign({}, grDef.themeLayoutDefaults, cfgSet.themeLayout), grDef.themeLayoutComments);
+		this.themeDisplay    = this.config.addConfigurationObject(grDef.themeDisplaySchema, Object.assign({}, grDef.themeDisplayDefaults, cfgSet.themeDisplay), grDef.themeDisplayComments);
+		this.themeBrightness = this.config.addConfigurationObject(grDef.themeBrightnessSchema, Object.assign({}, grDef.themeBrightnessDefaults, cfgSet.themeBrightness), grDef.themeBrightnessComments);
+		this.themeFontSize   = this.config.addConfigurationObject(grDef.themeFontSizesSchema, Object.assign({}, grDef.themeFontSizesDefaults, cfgSet.themeFontSize), grDef.themeFontSizesComments);
+		this.themeControls   = this.config.addConfigurationObject(grDef.themePlayerControlsSchema, Object.assign({}, grDef.themePlayerControlsDefaults, cfgSet.themeControls), grDef.themePlayerControlsComments);
 
-		this.themePlaylist   = this.config.addConfigurationObject(grDef.themePlaylistSchema, Object.assign({}, grDef.themePlaylistDefaults, prefs.themePlaylist), grDef.themePlaylistComments);
-		this.config.addConfigurationObject(grDef.themePlaylistGroupingPresetsSchema, prefs.themePlaylistGroupingPresets || grDef.themePlaylistGroupingPresets);
+		this.themePlaylist   = this.config.addConfigurationObject(grDef.themePlaylistSchema, Object.assign({}, grDef.themePlaylistDefaults, cfgSet.themePlaylist), grDef.themePlaylistComments);
+		this.config.addConfigurationObject(grDef.themePlaylistGroupingPresetsSchema, cfgSet.themePlaylistGroupingPresets || grDef.themePlaylistGroupingPresets);
 
-		this.themeDetails    = this.config.addConfigurationObject(grDef.themeDetailsSchema, Object.assign({}, grDef.themeDetailsDefaults, prefs.themeDetails), grDef.themeDetailsComments);
-		if (prefs.metadataGrid) {
-			for (const entry of prefs.metadataGrid) {
+		this.themeDetails    = this.config.addConfigurationObject(grDef.themeDetailsSchema, Object.assign({}, grDef.themeDetailsDefaults, cfgSet.themeDetails), grDef.themeDetailsComments);
+		if (cfgSet.metadataGrid) {
+			for (const entry of cfgSet.metadataGrid) {
 				// Copy comments over to existing object so they aren't lost
 				const gridEntryDefinition = grDef.metadataGridDefaults.find(gridDefItem => gridDefItem.label === entry.label);
 				if (gridEntryDefinition && gridEntryDefinition.comment) {
@@ -554,27 +554,28 @@ class ConfigurationManager {
 				}
 			}
 		}
-		this.config.addConfigurationObject(grDef.metadataGridSchema, prefs.metadataGrid || grDef.metadataGridDefaults); // Can't Object.assign here to add new fields. Add new fields in the upgrade section of migrateCheck
+		this.config.addConfigurationObject(grDef.metadataGridSchema, cfgSet.metadataGrid || grDef.metadataGridDefaults); // Can't Object.assign here to add new fields. Add new fields in the upgrade section of migrateCheck
 
-		this.themeLibrary   = this.config.addConfigurationObject(grDef.themeLibrarySchema, Object.assign({}, grDef.themeLibraryDefaults, prefs.themeLibrary), grDef.themeLibraryComments);
-		this.themeBiography = this.config.addConfigurationObject(grDef.themeBiographySchema, Object.assign({}, grDef.themeBiographyDefaults, prefs.themeBiography), grDef.themeBiographyComments);
-		this.themeLyrics    = this.config.addConfigurationObject(grDef.themeLyricsSchema, Object.assign({}, grDef.themeLyricsDefaults, prefs.themeLyrics), grDef.themeLyricsComments);
-						      this.config.addConfigurationObject(grDef.lyricsFilenameSchema, prefs.lyricsFilenamePatterns || grDef.lyricsFilenameDefaults);
-		this.themeSettings  = this.config.addConfigurationObject(grDef.themeSettingsSchema, Object.assign({}, grDef.themeSettingsDefaults, prefs.themeSettings), grDef.themeSettingsComments);
-		this.settings       = this.config.addConfigurationObject(grDef.settingsSchema, Object.assign({}, grDef.settingsDefaults, prefs.settings), grDef.settingsComments);
+		this.themeLibrary   = this.config.addConfigurationObject(grDef.themeLibrarySchema, Object.assign({}, grDef.themeLibraryDefaults, cfgSet.themeLibrary), grDef.themeLibraryComments);
+		this.themeBiography = this.config.addConfigurationObject(grDef.themeBiographySchema, Object.assign({}, grDef.themeBiographyDefaults, cfgSet.themeBiography), grDef.themeBiographyComments);
+		this.themeLyrics    = this.config.addConfigurationObject(grDef.themeLyricsSchema, Object.assign({}, grDef.themeLyricsDefaults, cfgSet.themeLyrics), grDef.themeLyricsComments);
+						      this.config.addConfigurationObject(grDef.lyricsFilenameSchema, cfgSet.lyricsFilenamePatterns || grDef.lyricsFilenameDefaults);
+		this.themeSettings  = this.config.addConfigurationObject(grDef.themeSettingsSchema, Object.assign({}, grDef.themeSettingsDefaults, cfgSet.themeSettings), grDef.themeSettingsComments);
+		this.settings       = this.config.addConfigurationObject(grDef.settingsSchema, Object.assign({}, grDef.settingsDefaults, cfgSet.settings), grDef.settingsComments);
 
 		// Safety checks. Fix up potentially bad vals from config
 		this.settings.discArtBasename = this.settings.discArtBasename && this.settings.discArtBasename.trim().length ? this.settings.discArtBasename.trim() : 'cd';
 		this.settings.artworkDisplayTime = Math.min(Math.max(this.settings.artworkDisplayTime, 5), 120);	// Ensure min of 5sec and max of 120sec
 
-		this.imgPaths = prefs.imgPaths;
-		this.lyricsFilenamePatterns = prefs.lyricsFilenamePatterns;
-		this.metadataGrid = prefs.metadataGrid;
-		this.configVersion = prefs.configVersion || prefs.version;
+		this.titleFormat = cfgSet.title_format_strings;
+		this.imgPaths = cfgSet.imgPaths;
+		this.lyricsFilenamePatterns = cfgSet.lyricsFilenamePatterns;
+		this.metadataGrid = cfgSet.metadataGrid;
+		this.configVersion = cfgSet.configVersion || cfgSet.version;
 		// When adding new objects to the config file, add them in the version check below
 
 		// Safe guard when playlist grouping presets or metadata grid do not exist in the config
-		if (!prefs.themePlaylistGroupingPresets || !prefs.metadataGrid) {
+		if (!cfgSet.themePlaylistGroupingPresets || !cfgSet.metadataGrid) {
 			const fileName = 'georgia-reborn\\configs\\georgia-reborn-config-backup.jsonc';
 			fso.CopyFile(this.configPath, fb.ProfilePath + fileName);
 			this.config.writeConfiguration();

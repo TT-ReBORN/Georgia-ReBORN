@@ -6,11 +6,32 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-02-2024                                              * //
+// * Last change:    22-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
+
+
+////////////////
+// * CONFIG * //
+////////////////
+/**
+ * The instance of `ConfigDefaults` class for default config setting operations.
+ * @typedef {ConfigDefaults}
+ * @global
+ */
+const grDef = new ConfigDefaults();
+
+/**
+ * The instance of `ConfigurationManager` class for config operations.
+ * @typedef {ConfigurationManager}
+ * @global
+ */
+const grCfg = new ConfigurationManager();
+
+grCfg.initializeConfigs();
+grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
 
 
 //////////////
@@ -51,79 +72,6 @@
  */
 /** @global @type {grm} */
 const grm = {};
-
-
-//////////////////////////
-// * TITLE FORMATTING * //
-//////////////////////////
-/**
- * A collection of title formatting strings used throughout the UI.
- * @typedef  {object} grTF
- * @property {string} album_subtitle - %albumsubtitle%.
- * @property {string} album_translation - %albumtranslation%.
- * @property {string} artist_country - '%artistcountry%'.
- * @property {string} artist - '$if3($meta(artist),%composer%,%performer%,%album artist%)'.
- * @property {string} date - '$if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,)'.
- * @property {string} disc_subtitle - '%discsubtitle%'.
- * @property {string} disc - '$ifgreater(%totaldiscs%,1,CD %discnumber%/%totaldiscs%,)'.
- * @property {string} edition - '[$if2($if(%original release date%,$ifequal($year(%original release date%),$year(%date%),,$year(%date%) ))$if2(%edition%,\'release\'),$if(%originaldate%,$ifequal($year(%originaldate%),$year(%date%),,$year(%date%) ))$if2(%edition%,\'release\'))]'.
- * @property {string} last_played - '[$if2(%last_played_enhanced%,%last_played%)]'.
- * @property {string} lyrics - '[$if3(%synced lyrics%,%syncedlyrics%,%lyrics%,%lyric%,%unsyncedlyrics%,%unsynced lyrics%,)]'.
- * @property {string} original_artist - '[ \'(\'%original artist%\' cover)\']'.
- * @property {string} composer - '[\' -\' %composer% \' \']'.
- * @property {string} releaseCountry - '$replace($if3(%releasecountry%,%discogs_country%,),AF,XW)'.
- * @property {string} title - '%title%[ \'[\'%translation%\']\']'.
- * @property {string} tracknum - '[%tracknumber%.]'.
- * @property {string} vinyl_side - '%vinyl side%'.
- * @property {string} vinyl_tracknum - '%vinyl tracknumber%'.
- * @property {string} vinyl_track - '$if2(%vinyl side%[%vinyl tracknumber%]. ,[%tracknumber%. ])'.
- * @property {string} year - '[$year($if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,))]'.
- * @property {string} playing_playlist - 'Do not change this value as it is handled by the theme itself'.
- */
-/** @global @type {grTF} */
-const grTF = {
-	album_subtitle:'%albumsubtitle%',
-	album_translation:'%albumtranslation%',
-	artist_country:'%artistcountry%',
-	artist:'$if3($meta(artist),%composer%,%performer%,%album artist%)',
-	date:'$if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,)',
-	disc_subtitle:'%discsubtitle%',
-	disc:'$ifgreater(%totaldiscs%,1,CD %discnumber%/%totaldiscs%,)',
-	edition:'[$if2($if(%original release date%,$ifequal($year(%original release date%),$year(%date%),,$year(%date%) ))$if2(%edition%,\'release\'),$if(%originaldate%,$ifequal($year(%originaldate%),$year(%date%),,$year(%date%) ))$if2(%edition%,\'release\'))]',
-	last_played:'[$if2(%last_played_enhanced%,%last_played%)]',
-	lyrics:'[$if3(%synced lyrics%,%syncedlyrics%,%lyrics%,%lyric%,%unsyncedlyrics%,%unsynced lyrics%,)]',
-	original_artist:'[ \'(\'%original artist%\' cover)\']',
-	composer:'[\' -\' %composer% \' \']',
-	releaseCountry:'$replace($if3(%releasecountry%,%discogs_country%,),AF,XW)',
-	title:'%title%[ \'[\'%translation%\']\']',
-	tracknum:'[%tracknumber%.]',
-	vinyl_side:'%vinyl side%',
-	vinyl_tracknum:'%vinyl tracknumber%',
-	vinyl_track:'$if2(%vinyl side%[%vinyl tracknumber%]. ,[%tracknumber%. ])',
-	year:'[$year($if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,))]',
-	playing_playlist:'Do not change this value as it is handled by the theme itself'
-};
-
-
-////////////////
-// * CONFIG * //
-////////////////
-/**
- * The instance of `ConfigDefaults` class for default config setting operations.
- * @typedef {ConfigDefaults}
- * @global
- */
-const grDef = new ConfigDefaults();
-
-/**
- * The instance of `ConfigurationManager` class for config operations.
- * @typedef {ConfigurationManager}
- * @global
- */
-const grCfg = new ConfigurationManager();
-
-grCfg.initializeConfigs();
-grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
 
 
 ///////////////
@@ -402,6 +350,59 @@ const grStr = {
 	trackInfo: '',
 	tracknum: '',
 	year: ''
+};
+
+
+//////////////////////////
+// * TITLE FORMATTING * //
+//////////////////////////
+/**
+ * A collection of title formatting strings used throughout the UI.
+ * All of these default title formats can be changed in the config file.
+ * @typedef  {object} grTF
+ * @property {string} album_subtitle - %albumsubtitle%.
+ * @property {string} album_translation - %albumtranslation%.
+ * @property {string} artist_country - '%artistcountry%'.
+ * @property {string} artist - '$if3($meta(artist),%composer%,%performer%,%album artist%)'.
+ * @property {string} date - '$if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,)'.
+ * @property {string} disc_subtitle - '%discsubtitle%'.
+ * @property {string} disc - '$ifgreater(%totaldiscs%,1,CD %discnumber%/%totaldiscs%,)'.
+ * @property {string} edition - '[$if2($if(%original release date%,$ifequal($year(%original release date%),$year(%date%),,$year(%date%) ))$if2(%edition%,\'release\'),$if(%originaldate%,$ifequal($year(%originaldate%),$year(%date%),,$year(%date%) ))$if2(%edition%,\'release\'))]'.
+ * @property {string} last_played - '[$if2(%last_played_enhanced%,%last_played%)]'.
+ * @property {string} lyrics - '[$if3(%synced lyrics%,%syncedlyrics%,%lyrics%,%lyric%,%unsyncedlyrics%,%unsynced lyrics%,)]'.
+ * @property {string} original_artist - '[ \'(\'%original artist%\' cover)\']'.
+ * @property {string} composer - '[\' -\' %composer% \' \']'.
+ * @property {string} releaseCountry - '$replace($if3(%releasecountry%,%discogs_country%,),AF,XW)'.
+ * @property {string} title - '%title%[ \'[\'%translation%\']\']'.
+ * @property {string} tracknum - '[%tracknumber%.]'.
+ * @property {string} vinyl_side - '%vinyl side%'.
+ * @property {string} vinyl_tracknum - '%vinyl tracknumber%'.
+ * @property {string} vinyl_track - '$if2(%vinyl side%[%vinyl tracknumber%]. ,[%tracknumber%. ])'.
+ * @property {string} year - '[$year($if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,))]'.
+ * @property {string} playing_playlist - 'Do not change this value as it is handled by the theme itself'.
+ */
+/** @global @type {grTF} */
+const grTF = {
+	album_subtitle: grCfg.titleFormat.album_subtitle || grDef.titleFormatDefaults.album_subtitle,
+	album_translation: grCfg.titleFormat.album_translation || grDef.titleFormatDefaults.album_translation,
+	artist_country: grCfg.titleFormat.artist_country || grDef.titleFormatDefaults.artist_country,
+	artist: grCfg.titleFormat.artist || grDef.titleFormatDefaults.artist,
+	date: grCfg.titleFormat.date || grDef.titleFormatDefaults.date,
+	disc_subtitle: grCfg.titleFormat.disc_subtitle || grDef.titleFormatDefaults.disc_subtitle,
+	disc: grCfg.titleFormat.disc || grDef.titleFormatDefaults.disc,
+	edition: grCfg.titleFormat.edition || grDef.titleFormatDefaults.edition,
+	last_played: grCfg.titleFormat.last_played || grDef.titleFormatDefaults.last_played,
+	lyrics: grCfg.titleFormat.lyrics || grDef.titleFormatDefaults.lyrics,
+	original_artist: grCfg.titleFormat.original_artist || grDef.titleFormatDefaults.original_artist,
+	composer: grCfg.titleFormat.composer || grDef.titleFormatDefaults.composer,
+	releaseCountry: grCfg.titleFormat.releaseCountry || grDef.titleFormatDefaults.releaseCountry,
+	title: grCfg.titleFormat.title || grDef.titleFormatDefaults.title,
+	tracknum: grCfg.titleFormat.tracknum || grDef.titleFormatDefaults.tracknum,
+	vinyl_side: grCfg.titleFormat.vinyl_side || grDef.titleFormatDefaults.vinyl_side,
+	vinyl_tracknum: grCfg.titleFormat.vinyl_tracknum || grDef.titleFormatDefaults.vinyl_tracknum,
+	vinyl_track: grCfg.titleFormat.vinyl_track || grDef.titleFormatDefaults.vinyl_track,
+	year: grCfg.titleFormat.year || grDef.titleFormatDefaults.year,
+	playing_playlist: grCfg.titleFormat.playing_playlist || grDef.titleFormatDefaults.playing_playlist
 };
 
 

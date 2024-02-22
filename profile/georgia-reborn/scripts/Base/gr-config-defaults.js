@@ -34,7 +34,28 @@ class ConfigDefaults {
 		// * TITLE FORMAT STRINGS * //
 		// #region TITLE FORMAT STRINGS
 		/** @public @type {object} Assigning the title formatting strings. */
-		this.titleFormatDefaults = Object.assign({}, grTF);
+		this.titleFormatDefaults = {
+			album_subtitle: '%albumsubtitle%',
+			album_translation: '%albumtranslation%',
+			artist_country: '%artistcountry%',
+			artist: '$if3($meta(artist),%composer%,%performer%,%album artist%)',
+			date: '$if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,)',
+			disc_subtitle: '%discsubtitle%',
+			disc: '$ifgreater(%totaldiscs%,1,CD %discnumber%/%totaldiscs%,)',
+			edition: '[$if2($if(%original release date%,$ifequal($year(%original release date%),$year(%date%),,$year(%date%) ))$if2(%edition%,\'release\'),$if(%originaldate%,$ifequal($year(%originaldate%),$year(%date%),,$year(%date%) ))$if2(%edition%,\'release\'))]',
+			last_played: '[$if2(%last_played_enhanced%,%last_played%)]',
+			lyrics: '[$if3(%synced lyrics%,%syncedlyrics%,%lyrics%,%lyric%,%unsyncedlyrics%,%unsynced lyrics%,)]',
+			original_artist: '[ \'(\'%original artist%\' cover)\']',
+			composer: '[\' -\' %composer% \' \']',
+			releaseCountry: '$replace($if3(%releasecountry%,%discogs_country%,),AF,XW)',
+			title: '%title%[ \'[\'%translation%\']\']',
+			tracknum: '[%tracknumber%.]',
+			vinyl_side: '%vinyl side%',
+			vinyl_tracknum: '%vinyl tracknumber%',
+			vinyl_track: '$if2(%vinyl side%[%vinyl tracknumber%]. ,[%tracknumber%. ])',
+			year: '[$year($if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,))]',
+			playing_playlist: 'Do not change this value as it is handled by the theme itself'
+		};
 
 		/** @public @type {object} Title formatting config name description. */
 		this.titleFormatComments = {
@@ -1196,14 +1217,14 @@ class ConfigDefaults {
 		 */
 		/** @public @type {MetadataGridEntry[]} Metadata grid default entries and values. */
 		this.metadataGridDefaults = [
-			{ label: 'Disc',            val: `$if(${grTF.disc_subtitle},[Disc %discnumber% \u2013 ]${grTF.disc_subtitle})` },
+			{ label: 'Disc',            val: `$if(${this.titleFormatDefaults.disc_subtitle},[Disc %discnumber% \u2013 ]${this.titleFormatDefaults.disc_subtitle})` },
 			{ label: 'Rel. Type',       val: '$if($stricmp(%releasetype%,Album),,[%releasetype%])' },
-			{ label: 'Year',            val: `$puts(d,${grTF.date})$if($strcmp($year($get(d)),$get(d)),$get(d),)`, comment: '\'Year\' is shown if the date format is YYYY' },
-			{ label: 'Rel. Date',       val: `$puts(d,${grTF.date})$if($strcmp($year($get(d)),$get(d)),,$get(d))`, age: true, comment: '\'Release Date\' is shown if the date format is YYYY-MM-DD' },
-			{ label: 'Edition',         val: grTF.edition },
+			{ label: 'Year',            val: `$puts(d,${this.titleFormatDefaults.date})$if($strcmp($year($get(d)),$get(d)),$get(d),)`, comment: '\'Year\' is shown if the date format is YYYY' },
+			{ label: 'Rel. Date',       val: `$puts(d,${this.titleFormatDefaults.date})$if($strcmp($year($get(d)),$get(d)),,$get(d))`, age: true, comment: '\'Release Date\' is shown if the date format is YYYY-MM-DD' },
+			{ label: 'Edition',         val: this.titleFormatDefaults.edition },
 			{ label: 'Label',           val: '[$if($meta(label),$meta_sep(label, \u00B7 ),$if3(%publisher%,%discogs_label%,))]', comment: 'The label(s) or publisher(s) that released the album.' },
-			{ label: 'Catalog',         val: `$puts(cn,$if3(%catalognumber%,%discogs_catalog%,))[$if($get(cn),$get(cn)[ / ${grTF.releaseCountry}],)]` },
-			{ label: 'Rel. Country',    val: `$puts(cn,$if3(%catalognumber%,%discogs_catalog%,))[$if($get(cn),,$replace(${grTF.releaseCountry},XW,))]`, comment: 'Only shown if %catalognumber% or %discogs_catalog% is not present. If release country is entire world (\'XW\') value is hidden.' },
+			{ label: 'Catalog',         val: `$puts(cn,$if3(%catalognumber%,%discogs_catalog%,))[$if($get(cn),$get(cn)[ / ${this.titleFormatDefaults.releaseCountry}],)]` },
+			{ label: 'Rel. Country',    val: `$puts(cn,$if3(%catalognumber%,%discogs_catalog%,))[$if($get(cn),,$replace(${this.titleFormatDefaults.releaseCountry},XW,))]`, comment: 'Only shown if %catalognumber% or %discogs_catalog% is not present. If release country is entire world (\'XW\') value is hidden.' },
 			{ label: 'Track',           val: '$if(%tracknumber%,$num(%tracknumber%,1)$if(%totaltracks%,/$num(%totaltracks%,1))$ifgreater(%totaldiscs%,1,   CD %discnumber%/$num(%totaldiscs%,1),)' },
 			{ label: 'Genre',           val: '[$meta_sep(genre, \u00B7 )]' },
 			{ label: 'Style',           val: '[$meta_sep(style, \u00B7 )]' },
@@ -1213,14 +1234,14 @@ class ConfigDefaults {
 			{ label: 'Source',          val: '[%codec_profile%$if(%__bitspersample%, \u00B7 )]$if($strcmp(%__encoding%,lossless),%__bitspersample% bit)$ifgreater(%samplerate%,44100,$if($if2(%codec_profile%,%__bitspersample%), \u00B7 )$div(%samplerate%,1000)$replace($insert($right($div(%samplerate%,100),1),.,0),.0,) kHz,)[ \u00B7 $if3(%media%,%mediatype%,%media type%)]' },
 			{ label: 'Data',            val: '%__bitrate% kbps \u00B7 $div(%filesize%,1048576).$num($div($mul($mod(%filesize%,1048576),10),1048576),0) MB' },
 			{ label: 'Added',           val: '[$if2(%added_enhanced%,%added%)]', age: true },
-			{ label: 'Last Played',     val: `[${grTF.last_played}]`, age: true },
+			{ label: 'Last Played',     val: `[${this.titleFormatDefaults.last_played}]`, age: true },
 			{ label: 'Hotness',         val: "$puts(X,5)$puts(Y,$div(%_dynamic_rating%,400))$repeat($repeat(I,$get(X))   ,$div($get(Y),$get(X)))$repeat(I,$mod($get(Y),$get(X)))$ifgreater(%_dynamic_rating%,0,   $replace($div(%_dynamic_rating%,1000)'.'$mod($div(%_dynamic_rating%,100),10),0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9),)" },
 			{ label: 'View Count',      val: '[%fy_view_count%]' },
 			{ label: 'Likes',           val: '[$if(%fy_like_count%,%fy_like_count% \u25B2 / %fy_dislike_count% \u25BC,)]' },
 			{ label: 'Play Count',      val: '$if($or(%play_count%,%lastfm_play_count%),$puts(X,5)$puts(Y,$max(%play_count%,%lastfm_play_count%))$ifgreater($get(Y),30,,$repeat($repeat(I,$get(X)) ,$div($get(Y),$get(X)))$repeat(I,$mod($get(Y),$get(X)))   )$get(Y))' },
 			{ label: 'Rating',          val: '$if(%rating%,$repeat(\u2605 ,%rating%))' },
 			{ label: 'Mood',            val: '$if(%mood%,$puts(X,5)$puts(Y,$mul(5,%mood%))$repeat($repeat(I,$get(X))   ,$div($get(Y),$get(X)))$repeat(I,$mod($get(Y),$get(X)))$replace(%mood%,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9))' },
-			{ label: 'Playing List',    val: grTF.playing_playlist },
+			{ label: 'Playing List',    val: this.titleFormatDefaults.playing_playlist },
 			{ label: 'Blank 01',        val: '' },
 			{ label: 'Blank 02',        val: '' },
 			{ label: 'Blank 03',        val: '' },
