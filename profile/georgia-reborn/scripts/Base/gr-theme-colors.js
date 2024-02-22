@@ -3944,8 +3944,6 @@ class ThemeColors {
 		this.VBF    = grSet.styleVolumeBarFill;
 		/** @private Options > Layout. */
 		this.LAYOUT = grSet.layout;
-		/** @private Options > Brightness. */
-		this.BRT    = grSet.themeBrightness;
 	}
 
 	/**
@@ -4246,7 +4244,7 @@ class ThemeColors {
 		// * REBORN/RANDOM/STYLE REBORN WHITE/BLACK/FUSION * //
 		///////////////////////////////////////////////////////
 		// * Dynamically adjust background colors, lines, transport buttons, progress/volume bar, gradient and shadow
-		if ((this.THEME === 'reborn' || this.THEME === 'random') && fb.IsPlaying && !grm.ui.isStreaming && !grm.ui.isPlayingCD && !grm.ui.noAlbumArtStub) {
+		if ((this.THEME === 'reborn' || this.THEME === 'random') && fb.IsPlaying && grm.ui.loadingThemeComplete && !grm.ui.isStreaming && !grm.ui.isPlayingCD && !grm.ui.noAlbumArtStub) {
 			const primary = this.RF2 ? grCol.primary_alt : grCol.primary;
 			const primary_alt = this.RF ? grCol.primary_alt : grCol.primary;
 
@@ -5383,8 +5381,6 @@ class StyleColors {
 		this.VBF    = grSet.styleVolumeBarFill;
 		/** @private Options > Layout. */
 		this.LAYOUT = grSet.layout;
-		/** @private Options > Brightness. */
-		this.BRT    = grSet.themeBrightness;
 	}
 
 	/**
@@ -5561,13 +5557,13 @@ class ColorMethods {
 	}
 
 	/**
-	 * Lightens or darkens the theme based on this.BRT value, used in Options > Brightness.
+	 * Lightens or darkens the theme based on grSet.themeBrightness value, used in Options > Brightness.
 	 * @param {number} percent - The percentage number for lightening or darkening all colors in the theme.
 	 */
 	adjustThemeBrightness(percent) {
 		if (percent < 0) percent = Math.abs(percent); // Negative passed values need to be converted to positives
 
-		if (this.BRT < 0) { // * Darken
+		if (grSet.themeBrightness < 0) { // * Darken
 			// * PLAYLIST COLORS * //
 			pl.col.bg = ShadeColor(pl.col.bg, percent);
 			pl.col.plman_bg = ShadeColor(pl.col.plman_bg, percent);
@@ -5681,7 +5677,7 @@ class ColorMethods {
 				this.adjustTextButtonColors(percent, true, false, false, false);
 			}
 		}
-		else if (this.BRT > 0) { // * Lighten
+		else if (grSet.themeBrightness > 0) { // * Lighten
 			// * PLAYLIST COLORS * //
 			pl.col.bg = TintColor(pl.col.bg, percent);
 			pl.col.plman_bg = TintColor(pl.col.plman_bg, percent);
@@ -5796,11 +5792,11 @@ class ColorMethods {
 		}
 
 		const bgColBrightness = new Color(grCol.bg).brightness;
-		if (this.BRT > 20 && bgColBrightness < 200 && bgColBrightness > 125) {
+		if (grSet.themeBrightness > 20 && bgColBrightness < 200 && bgColBrightness > 125) {
 			grCol.lightBg = false;
 			this.adjustTextButtonColors(percent, false, true, false, false);
 		}
-		else if (this.BRT < -20 && bgColBrightness < 150 && bgColBrightness > 50) {
+		else if (grSet.themeBrightness < -20 && bgColBrightness < 150 && bgColBrightness > 50) {
 			grCol.lightBg = false;
 			this.adjustTextButtonColors(percent, false, false, false, true);
 		}
