@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-02-2024                                              * //
+// * Last change:    24-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1241,7 +1241,7 @@ class MainUI {
 			this.displayLibrarySplit());
 
 		const displayPanelShadows =
-			grSet.layout !== 'artwork' && this.displayPlaylist || this.displayPlaylistArtwork || this.displayLibrary || this.displayBiography || this.displayCustomThemeMenu && !fb.IsPlaying;
+			grSet.layout !== 'artwork' && this.displayPlaylist || this.displayPlaylistArtwork || this.displayLibrary || this.displayBiography || this.displayLyrics && grSet.lyricsLayout === 'full' || this.displayCustomThemeMenu && !fb.IsPlaying;
 
 		if (displayPanelShadows) {
 			const x =
@@ -2882,12 +2882,15 @@ class MainUI {
 	 */
 	displayLyricsOnStart() {
 		fb.Play();
-		this.displayPlaylist = grSet.layout === 'default';
+		this.displayPlaylist = grSet.layout === 'default' && grSet.lyricsLayout === 'normal';
 		setTimeout(() => {
 			if (!grSet.lyricsRememberPanelState) {
 				grSet.lyricsPanelState = false;
 			}
 			this.displayLyrics = true;
+			if (grSet.lyricsLayout === 'full') {
+				grm.ui.resizeArtwork(true);
+			}
 			grm.lyrics.initLyrics();
 			grm.button.initButtonState();
 		}, 500);

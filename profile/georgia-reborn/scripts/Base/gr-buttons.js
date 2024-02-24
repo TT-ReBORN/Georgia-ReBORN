@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    24-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -234,7 +234,7 @@ class Button {
 		grm.ui.displayPlaylist = !grm.ui.displayPlaylist;
 		grm.ui.displayDetails = grSet.layout === 'artwork' ? grm.ui.displayPlaylist : !grm.ui.displayPlaylist;
 		grm.ui.displayBiography = false;
-		grm.ui.displayLyrics = grSet.lyricsLayout === 'full' || grSet.lyricsPanelState;
+		grm.ui.displayLyrics = grSet.lyricsLayout === 'full' && grm.ui.displayLyrics || grSet.lyricsPanelState;
 
 		if (grm.ui.displayPlaylist) {
 			if (grSet.layout === 'artwork') {

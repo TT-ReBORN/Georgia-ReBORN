@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-02-2024                                              * //
+// * Last change:    24-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -820,8 +820,12 @@ class ContextMenus {
 			else if (grm.ui.displayLyrics) {
 				cm.appendItem(grm.ui.displayLyrics && grSet.lyricsLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 					grSet.lyricsLayout = grSet.lyricsLayout === 'normal' ? 'full' : 'normal';
-					grm.ui.displayPlaylist = !grm.ui.displayPlaylist;
 					grm.ui.lyricsLayoutFullWidth = grSet.lyricsLayout === 'full';
+					grm.ui.displayPlaylist = !grm.ui.displayPlaylist;
+					if (grm.ui.displayDetails && grm.ui.displayLyrics && grSet.lyricsLayout === 'full') {
+						grm.ui.displayDetails = false;
+						grm.ui.displayPlaylist = false;
+					}
 					if (grSet.panelWidthAuto) {
 						grm.ui.initPanelWidthAuto();
 					}
@@ -850,7 +854,9 @@ class ContextMenus {
 		cm.separator();
 
 		cm.appendItem(grm.ui.displayLyrics ? 'Hide lyrics' : 'Display lyrics', () => {
-			if (grSet.layout === 'artwork' && grm.ui.displayPlaylist) grm.ui.btn.details.onClick();
+			if (grSet.layout === 'artwork' && grm.ui.displayPlaylist) {
+				grm.ui.displayPlaylist = false;
+			}
 			grm.ui.displayLyrics = !grm.ui.displayLyrics;
 			if (!grm.ui.displayLyrics && grSet.lyricsLayout === 'full' || grm.ui.noAlbumArtStub) {
 				grm.ui.displayPlaylist = true;
