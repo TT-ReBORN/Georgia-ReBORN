@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-02-2024                                              * //
+// * Last change:    24-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -319,8 +319,8 @@ class ConfigurationManager {
 
 		// * GEORGIA-REBORN-CONFIG.JSONC SETUP * //
 		// #region GEORGIA-REBORN-CONFIG.JSONC SETUP
-		/** @public @type {object} The config global theme settings in the main config. */
-		this.settings = {};
+		/** @public @type {object} The config `title_format_strings` settings in the main config. */
+		this.titleFormat = {};
 		/** @public @type {object} The config `Theme` settings in the main config. */
 		this.theme = {};
 		/** @public @type {object} The config `Style` settings in the main config. */
@@ -343,6 +343,8 @@ class ConfigurationManager {
 		this.themePlaylist = {};
 		/** @public @type {object} The config `Details` settings in the main config. */
 		this.themeDetails = {};
+		/** @public @type {MetadataGridEntry[]} The config `metadataGrid` settings in the main config. */
+		this.metadataGrid = [];
 		/** @public @type {object} The config `Library` settings in the main config. */
 		this.themeLibrary = {};
 		/** @public @type {object} The config `Biography` settings in the main config. */
@@ -351,8 +353,8 @@ class ConfigurationManager {
 		this.themeLyrics = {};
 		/** @public @type {object} The config `Settings` settings in the main config. */
 		this.themeSettings = {};
-		/** @public @type {MetadataGridEntry[]} The metadata grid config entries in the main config. */
-		this.metadataGrid = [];
+		/** @public @type {object} The config global theme settings in the main config. */
+		this.settings = {};
 		// #endregion
 
 		// * GEORGIA-REBORN-CUSTOM.JSONC SETUP * //
@@ -586,35 +588,35 @@ class ConfigurationManager {
 	 * Reads the custom configuration from the custom configuration file and sets up the custom configuration objects.
 	 */
 	readCustomConfig() {
-		const prefs = this.configCustom.readConfiguration();
+		const cfgSet = this.configCustom.readConfiguration();
 
-		this.configCustom.addConfigurationObject(grDef.customLibraryDirSchema, prefs.customLibraryDir || grDef.customLibraryDirDefaults);
-		this.configCustom.addConfigurationObject(grDef.customBiographyDirSchema, prefs.customBiographyDir || grDef.customBiographyDirDefaults);
-		this.configCustom.addConfigurationObject(grDef.customLyricsDirSchema, prefs.customLyricsDir || grDef.customLyricsDirDefaults);
-		this.configCustom.addConfigurationObject(grDef.customWaveformBarDirSchema, prefs.customWaveformBarDir || grDef.customWaveformBarDirDefaults);
+		this.configCustom.addConfigurationObject(grDef.customLibraryDirSchema, cfgSet.customLibraryDir || grDef.customLibraryDirDefaults);
+		this.configCustom.addConfigurationObject(grDef.customBiographyDirSchema, cfgSet.customBiographyDir || grDef.customBiographyDirDefaults);
+		this.configCustom.addConfigurationObject(grDef.customLyricsDirSchema, cfgSet.customLyricsDir || grDef.customLyricsDirDefaults);
+		this.configCustom.addConfigurationObject(grDef.customWaveformBarDirSchema, cfgSet.customWaveformBarDir || grDef.customWaveformBarDirDefaults);
 
-		this.customFont        = this.configCustom.addConfigurationObject(grDef.customFontsSchema, Object.assign({}, grDef.customFontsDefaults, prefs.customFont), grDef.customFontsComments);
-		this.customStylePreset = this.configCustom.addConfigurationObject(grDef.customStylePresetSchema, Object.assign({}, grDef.customStylePresetDefaults, prefs.customStylePreset), grDef.customStylePresetComments);
-		this.customDiscArtStub = this.configCustom.addConfigurationObject(grDef.customDiscArtStubSchema, Object.assign({}, grDef.customDiscArtStubDefaults, prefs.customDiscArtStub), grDef.customDiscArtStubComments);
-		this.customTheme01     = this.configCustom.addConfigurationObject(grDef.customTheme01Schema, Object.assign({}, grDef.customThemeDefaults, prefs.customTheme01), grDef.customThemeComments);
-		this.customTheme02     = this.configCustom.addConfigurationObject(grDef.customTheme02Schema, Object.assign({}, grDef.customThemeDefaults, prefs.customTheme02), grDef.customThemeComments);
-		this.customTheme03     = this.configCustom.addConfigurationObject(grDef.customTheme03Schema, Object.assign({}, grDef.customThemeDefaults, prefs.customTheme03), grDef.customThemeComments);
-		this.customTheme04     = this.configCustom.addConfigurationObject(grDef.customTheme04Schema, Object.assign({}, grDef.customThemeDefaults, prefs.customTheme04), grDef.customThemeComments);
-		this.customTheme05     = this.configCustom.addConfigurationObject(grDef.customTheme05Schema, Object.assign({}, grDef.customThemeDefaults, prefs.customTheme05), grDef.customThemeComments);
-		this.customTheme06     = this.configCustom.addConfigurationObject(grDef.customTheme06Schema, Object.assign({}, grDef.customThemeDefaults, prefs.customTheme06), grDef.customThemeComments);
-		this.customTheme07     = this.configCustom.addConfigurationObject(grDef.customTheme07Schema, Object.assign({}, grDef.customThemeDefaults, prefs.customTheme07), grDef.customThemeComments);
-		this.customTheme08     = this.configCustom.addConfigurationObject(grDef.customTheme08Schema, Object.assign({}, grDef.customThemeDefaults, prefs.customTheme08), grDef.customThemeComments);
-		this.customTheme09     = this.configCustom.addConfigurationObject(grDef.customTheme09Schema, Object.assign({}, grDef.customThemeDefaults, prefs.customTheme09), grDef.customThemeComments);
-		this.customTheme10     = this.configCustom.addConfigurationObject(grDef.customTheme10Schema, Object.assign({}, grDef.customThemeDefaults, prefs.customTheme10), grDef.customThemeComments);
+		this.customFont        = this.configCustom.addConfigurationObject(grDef.customFontsSchema, Object.assign({}, grDef.customFontsDefaults, cfgSet.customFont), grDef.customFontsComments);
+		this.customStylePreset = this.configCustom.addConfigurationObject(grDef.customStylePresetSchema, Object.assign({}, grDef.customStylePresetDefaults, cfgSet.customStylePreset), grDef.customStylePresetComments);
+		this.customDiscArtStub = this.configCustom.addConfigurationObject(grDef.customDiscArtStubSchema, Object.assign({}, grDef.customDiscArtStubDefaults, cfgSet.customDiscArtStub), grDef.customDiscArtStubComments);
+		this.customTheme01     = this.configCustom.addConfigurationObject(grDef.customTheme01Schema, Object.assign({}, grDef.customThemeDefaults, cfgSet.customTheme01), grDef.customThemeComments);
+		this.customTheme02     = this.configCustom.addConfigurationObject(grDef.customTheme02Schema, Object.assign({}, grDef.customThemeDefaults, cfgSet.customTheme02), grDef.customThemeComments);
+		this.customTheme03     = this.configCustom.addConfigurationObject(grDef.customTheme03Schema, Object.assign({}, grDef.customThemeDefaults, cfgSet.customTheme03), grDef.customThemeComments);
+		this.customTheme04     = this.configCustom.addConfigurationObject(grDef.customTheme04Schema, Object.assign({}, grDef.customThemeDefaults, cfgSet.customTheme04), grDef.customThemeComments);
+		this.customTheme05     = this.configCustom.addConfigurationObject(grDef.customTheme05Schema, Object.assign({}, grDef.customThemeDefaults, cfgSet.customTheme05), grDef.customThemeComments);
+		this.customTheme06     = this.configCustom.addConfigurationObject(grDef.customTheme06Schema, Object.assign({}, grDef.customThemeDefaults, cfgSet.customTheme06), grDef.customThemeComments);
+		this.customTheme07     = this.configCustom.addConfigurationObject(grDef.customTheme07Schema, Object.assign({}, grDef.customThemeDefaults, cfgSet.customTheme07), grDef.customThemeComments);
+		this.customTheme08     = this.configCustom.addConfigurationObject(grDef.customTheme08Schema, Object.assign({}, grDef.customThemeDefaults, cfgSet.customTheme08), grDef.customThemeComments);
+		this.customTheme09     = this.configCustom.addConfigurationObject(grDef.customTheme09Schema, Object.assign({}, grDef.customThemeDefaults, cfgSet.customTheme09), grDef.customThemeComments);
+		this.customTheme10     = this.configCustom.addConfigurationObject(grDef.customTheme10Schema, Object.assign({}, grDef.customThemeDefaults, cfgSet.customTheme10), grDef.customThemeComments);
 
-		this.customLibraryDir = prefs.customLibraryDir;
-		this.customBiographyDir = prefs.customBiographyDir;
-		this.customLyricsDir = prefs.customLyricsDir;
-		this.customWaveformBarDir = prefs.customWaveformBarDir;
-		this.customFont = prefs.customFont;
-		this.customStylePreset = prefs.customStylePreset;
-		this.customDiscArtStub = prefs.customDiscArtStub;
-		this.configVersion = prefs.configVersion || prefs.version;
+		this.customLibraryDir = cfgSet.customLibraryDir;
+		this.customBiographyDir = cfgSet.customBiographyDir;
+		this.customLyricsDir = cfgSet.customLyricsDir;
+		this.customWaveformBarDir = cfgSet.customWaveformBarDir;
+		this.customFont = cfgSet.customFont;
+		this.customStylePreset = cfgSet.customStylePreset;
+		this.customDiscArtStub = cfgSet.customDiscArtStub;
+		this.configVersion = cfgSet.configVersion || cfgSet.version;
 	}
 
 	/**
