@@ -1812,7 +1812,7 @@ class MainUI {
 
 		this.lastAlbumFolder = '';
 		this.lastPlaybackOrder = fb.PlaybackOrder;
-		this.displayPanelControl();
+		this.displayPanelControl(true);
 		grm.color.setThemeColors();
 		this.themeColorSet = true;
 
@@ -2805,9 +2805,10 @@ class MainUI {
 	 * This method is used for:
 	 * - Options > Player controls > Panel > Show panel on startup.
 	 * - Options > Player controls > Panel > Return to home on playback stop.
+	 * @param {boolean} force - Force the display state of the panel.
 	 */
-	displayPanelControl() {
-		if (!grSet.returnToHomeOnPlaybackStop && !grSet.showPanelOnStartup || fb.PlaybackLength > 1) {
+	displayPanelControl(force) {
+		if (!grSet.returnToHomeOnPlaybackStop && !grSet.showPanelOnStartup || !force && fb.PlaybackLength > 1) {
 			return;
 		}
 

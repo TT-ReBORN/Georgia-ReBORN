@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-02-2024                                              * //
+// * Last change:    25-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1020,7 +1020,7 @@ class TopMenuOptions {
 			grSet.layout = layout;
 			if (grSet.layout === 'default') {
 				grm.ui.displayPlaylist = grSet.showPanelOnStartup === 'playlist'; // Switch back to Playlist from Artwork layout to Default layout
-				grm.ui.displayPanelControl();
+				grm.ui.displayPanelControl(true);
 				grm.display.layoutDefault();
 			}
 			if (grSet.layout === 'artwork') {
