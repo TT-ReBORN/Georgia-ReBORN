@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-02-2024                                              * //
+// * Last change:    25-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -375,7 +375,7 @@ class MainUI {
 		gr.FillSolidRect(0, 0, this.ww, this.wh, grCol.bg);
 
 		// * ALBUM ART BACKGROUND * //
-		if (grSet.albumArtBg !== 'none' && !this.displayDetails) {
+		if (fb.IsPlaying && grSet.albumArtBg !== 'none' && !this.displayDetails) {
 			gr.FillSolidRect(0, this.albumArtSize.y, grSet.albumArtBg === 'full' || grSet.layout === 'artwork' ? this.ww : this.albumArtSize.x, this.albumArtSize.h, grCol.detailsBg);
 		}
 
@@ -2807,7 +2807,7 @@ class MainUI {
 	 * - Options > Player controls > Panel > Return to home on playback stop.
 	 */
 	displayPanelControl() {
-		if (!grSet.returnToHomeOnPlaybackStop && !grSet.showPanelOnStartup) {
+		if (!grSet.returnToHomeOnPlaybackStop && !grSet.showPanelOnStartup || fb.PlaybackLength > 1) {
 			return;
 		}
 
@@ -2823,6 +2823,8 @@ class MainUI {
 				if (grSet.layout === 'default') {
 					grSet.showPanelOnStartup = 'playlist';
 					this.displayPlaylist = true;
+				} else if (grSet.layout === 'artwork') {
+					this.resizeArtwork(true);
 				}
 			},
 			playlist: () => {
@@ -2830,6 +2832,7 @@ class MainUI {
 					this.displayPlaylistArtwork = true;
 				} else {
 					this.displayPlaylist = true;
+					this.resizeArtwork(true);
 				}
 			},
 			details: () => {

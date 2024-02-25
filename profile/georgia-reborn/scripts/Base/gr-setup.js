@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-02-2024                                              * //
+// * Last change:    25-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -246,38 +246,38 @@ const grPath = {
  * @property {string} fontLibrary - The 'Segoe UI' font name.
  * @property {string} fontBiography - The 'Segoe UI' font name.
  * @property {string} fontLyrics - The 'Segoe UI' font name.
- * @property {GdiFont} topMenu - Theme font 'Segoe UI Semibold' used for top menu buttons.
- * @property {GdiFont} topMenuCaption - Theme font 'Marlett' used for top menu 🗕 🗖 ✖ caption buttons.
- * @property {GdiFont} topMenuCompact - Theme font 'FontAwesome' used for the top menu compact button.
- * @property {GdiFont} lowerBarArtist - Theme artist font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
- * @property {GdiFont} lowerBarTitle - Theme title font 'HelveticaNeueLT Pro 45 Lt' used in lower bar.
- * @property {GdiFont} lowerBarDisc - Theme disc font 'HelveticaNeueLT Pro 45 Lt' used in lower bar.
- * @property {GdiFont} lowerBarTime - Theme time font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
- * @property {GdiFont} lowerBarLength - Theme length font 'HelveticaNeueLT Pro 45 Lt' used in lower bar.
- * @property {GdiFont} lowerBarWave - Theme waveform bar font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
- * @property {GdiFont} guifx - Theme font 'Guifx v2 Transports' used for the lower bar transport/playback buttons.
- * @property {GdiFont} pboDefault - Theme font 'Guifx v2 Transports' used for the lower bar transport playback order button.
- * @property {GdiFont} pboRepeatPlaylist - Theme font 'FontAwesome' used for the lower bar transport playback order button.
- * @property {GdiFont} pboRepeatTrack - Theme font 'FontAwesome' used for the lower bar transport playback order button.
- * @property {GdiFont} pboShuffle - Theme font 'Guifx v2 Transports' used for the lower bar transport playback order button.
- * @property {GdiFont} guifxReload - Theme font 'Guifx v2 Transports' used for the lower bar transport reload button.
- * @property {GdiFont} guifxAddTrack - Theme font 'Guifx v2 Transports' used for the lower bar transport add tracks button.
- * @property {GdiFont} guifxVolume - Theme font 'Guifx v2 Transports' used for the lower bar transport volume button.
- * @property {GdiFont} noAlbumArtStub - Theme font 'FontAwesome' used for no album art music note symbol.
- * @property {GdiFont} symbol - Panel font 'Segoe UI Symbol' used for special chars, scrollbar buttons, etc.
- * @property {GdiFont} notification - Theme font 'HelveticaNeueLT Pro 65 Md' used for notifications.
- * @property {GdiFont} popup - Theme font 'Segoe UI' used for popups.
- * @property {GdiFont} tooltip - Theme font 'HelveticaNeueLT Pro 65 Md' used for styled tooltips.
- * @property {GdiFont} gridArtist - Theme font 'HelveticaNeueLT Pro 65 Md' used for metadata grid artist.
- * @property {GdiFont} gridTrackNumber - Theme font 'HelveticaNeueLT Pro 45 Lt' or 'HelveticaNeueLT Pro 65 Md' used for metadata grid track number.
- * @property {GdiFont} gridTitle - Theme font 'HelveticaNeueLT Pro 45 Lt' or 'HelveticaNeueLT Pro 65 Md' used for metadata grid title.
- * @property {GdiFont} gridAlbum - Theme font 'HelveticaNeueLT Pro 65 Md' used for metadata grid album.
- * @property {GdiFont} gridKey - Theme font 'HelveticaNeueLT Pro 75 Bd' or 'HelveticaNeueLT Pro 65 Md' used for metadata grid key.
- * @property {GdiFont} gridVal - Theme font 'HelveticaNeueLT Pro 45 Lt' used for metadata grid value.
- * @property {GdiFont} library - Panel font 'Segoe UI' used in the Library.
- * @property {GdiFont} biography - Panel font 'Segoe UI' used in the Biography.
- * @property {GdiFont} lyrics - Panel font 'Segoe UI' used in the Lyrics.
- * @property {GdiFont} lyricsHighlight - Panel font 'Segoe UI' used in Lyrics for synced lines.
+ * @property {GdiFont} topMenu - The theme font 'Segoe UI Semibold' used for top menu buttons.
+ * @property {GdiFont} topMenuCaption - The theme font 'Marlett' used for top menu 🗕 🗖 ✖ caption buttons.
+ * @property {GdiFont} topMenuCompact - The theme font 'FontAwesome' used for the top menu compact button.
+ * @property {GdiFont} lowerBarArtist - The theme artist font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
+ * @property {GdiFont} lowerBarTitle - The theme title font 'HelveticaNeueLT Pro 45 Lt' used in lower bar.
+ * @property {GdiFont} lowerBarDisc - The theme disc font 'HelveticaNeueLT Pro 45 Lt' used in lower bar.
+ * @property {GdiFont} lowerBarTime - The theme time font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
+ * @property {GdiFont} lowerBarLength - The theme length font 'HelveticaNeueLT Pro 45 Lt' used in lower bar.
+ * @property {GdiFont} lowerBarWave - The theme waveform bar font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
+ * @property {GdiFont} guifx - The theme font 'Guifx v2 Transports' used for the lower bar transport/playback buttons.
+ * @property {GdiFont} pboDefault - The theme font 'Guifx v2 Transports' used for the lower bar transport playback order button.
+ * @property {GdiFont} pboRepeatPlaylist - The theme font 'FontAwesome' used for the lower bar transport playback order button.
+ * @property {GdiFont} pboRepeatTrack - The theme font 'FontAwesome' used for the lower bar transport playback order button.
+ * @property {GdiFont} pboShuffle - The theme font 'Guifx v2 Transports' used for the lower bar transport playback order button.
+ * @property {GdiFont} guifxReload - The theme font 'Guifx v2 Transports' used for the lower bar transport reload button.
+ * @property {GdiFont} guifxAddTrack - The theme font 'Guifx v2 Transports' used for the lower bar transport add tracks button.
+ * @property {GdiFont} guifxVolume - The theme font 'Guifx v2 Transports' used for the lower bar transport volume button.
+ * @property {GdiFont} noAlbumArtStub - The theme font 'FontAwesome' used for no album art music note symbol.
+ * @property {GdiFont} symbol - The panel font 'Segoe UI Symbol' used for special chars, scrollbar buttons, etc.
+ * @property {GdiFont} notification - The theme font 'HelveticaNeueLT Pro 65 Md' used for notifications.
+ * @property {GdiFont} popup - The theme font 'Segoe UI' used for popups.
+ * @property {GdiFont} tooltip - The theme font 'HelveticaNeueLT Pro 65 Md' used for styled tooltips.
+ * @property {GdiFont} gridArtist - The theme font 'HelveticaNeueLT Pro 65 Md' used for metadata grid artist.
+ * @property {GdiFont} gridTrackNumber - The theme font 'HelveticaNeueLT Pro 45 Lt' or 'HelveticaNeueLT Pro 65 Md' used for metadata grid track number.
+ * @property {GdiFont} gridTitle - The theme font 'HelveticaNeueLT Pro 45 Lt' or 'HelveticaNeueLT Pro 65 Md' used for metadata grid title.
+ * @property {GdiFont} gridAlbum - The theme font 'HelveticaNeueLT Pro 65 Md' used for metadata grid album.
+ * @property {GdiFont} gridKey - The theme font 'HelveticaNeueLT Pro 75 Bd' or 'HelveticaNeueLT Pro 65 Md' used for metadata grid key.
+ * @property {GdiFont} gridVal - The theme font 'HelveticaNeueLT Pro 45 Lt' used for metadata grid value.
+ * @property {GdiFont} library - The panel font 'Segoe UI' used in the Library.
+ * @property {GdiFont} biography - The panel font 'Segoe UI' used in the Biography.
+ * @property {GdiFont} lyrics - The panel font 'Segoe UI' used in the Lyrics.
+ * @property {GdiFont} lyricsHighlight - The panel font 'Segoe UI' used in Lyrics for synced lines.
  */
 /** @global @type {grFont} */
 const grFont = {
@@ -322,17 +322,17 @@ const grFont = {
  * @property {string} artist - The artist will be shown in Details and in the lower bar.
  * @property {string} composer - The composer will be shown in the lower bar if it exist and enabled.
  * @property {string} album - The album will be shown in Details.
- * @property {string} album_subtitle - Currently not used in the theme.
- * @property {string} disc - By default, this string is displayed in the lower bar if there is more than one total disc. Formatted like: "CD1/2".
+ * @property {string} album_subtitle - The album subtitle string is currently not used in the theme.
+ * @property {string} disc - The disc string by default is displayed in the lower bar if there is more than one total disc.
  * @property {Array} grid - The metadata grid strings in Details.
  * @property {string} length - The length of the song in MM:SS format.
- * @property {string} original_artist - If %original artist% exist it will be displayed by the right side of the title in the lower bar.
+ * @property {string} original_artist - The original artist will be shown on the right side of the title in the lower bar.
  * @property {string} time - The current time of the song in MM:SS format in the lower bar.
  * @property {string} title - The title of the song.
  * @property {string} titleLower - The title of the song to be displayed above the progress bar. Can include more information such as translation, original artist, etc.
- * @property {string} trackInfo - Currently not used in the theme.
+ * @property {string} trackInfo - The track info string is currently not used in the theme.
  * @property {string} tracknum - The track number of the song.
- * @property {string} year - Currently not used in the theme.
+ * @property {string} year - The year string is currently not used in the theme.
  */
 /** @global @type {grStr} */
 const grStr = {
@@ -429,19 +429,19 @@ const grTF = {
  * @property {number} timelineUnplayed - The background color for timeline block in Details from last played to present time.
  * @property {number} progressBar - The background of the progress bar. Fill will be col.primary.
  * @property {number} shadow - The color of the shadow.
- * @property {number} colBrightness - Calculated primary color brightness used in grSet.theme === 'white, grSet.theme === 'black, grSet.theme === 'reborn, grSet.theme === 'random.
- * @property {number} colBrightness2 - Calculated secondary color brightness used in grSet.styleRebornFusion, grSet.styleRebornFusion2, grSet.styleRebornFusionAccent.
- * @property {number} imgBrightness - Calculated image brightness used in grSet.styleBlend, grSet.styleBlend2, grSet.styleBlackAndWhite, grSet.styleBlackAndWhite2, grSet.styleBlackAndWhiteReborn.
- * @property {GdiBitmap} imgBlended - Blended image from grMain.color.setStyleBlend().
- * @property {boolean} isColored - Checks if background color is not full white RGB(255, 255, 255), used in Reborn/Random theme when init on start or when noAlbumArtStub displayed.
- * @property {boolean} lightBg - Color definition when to switch text and logos to white or black, used in grSet.theme === 'white', grSet.theme === 'black', grSet.theme === 'reborn', grSet.theme === 'random', grSet.styleBlend, grSet.styleBlend2.
- * @property {boolean} lightBgLib - Color definition when to switch text and logos to white or black, used in libSet.theme === 1 - 5.
- * @property {boolean} lightBgBio - Color definition when to switch text and logos to white or black, used in bioSet.theme === 1 - 4.
- * @property {boolean} lightBgMain - Color definition for col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
- * @property {boolean} lightBgPlaylist - Color definition for pl.col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
- * @property {boolean} lightBgDetails - Color definition for col.detailsBg) when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
- * @property {boolean} lightBgLibrary - Color definition for ui.col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
- * @property {boolean} lightBgBiography - Color definition for bio.ui.col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
+ * @property {number} colBrightness - The calculated primary color brightness used in grSet.theme === 'white, grSet.theme === 'black, grSet.theme === 'reborn, grSet.theme === 'random.
+ * @property {number} colBrightness2 - The calculated secondary color brightness used in grSet.styleRebornFusion, grSet.styleRebornFusion2, grSet.styleRebornFusionAccent.
+ * @property {number} imgBrightness - The calculated image brightness used in grSet.styleBlend, grSet.styleBlend2, grSet.styleBlackAndWhite, grSet.styleBlackAndWhite2, grSet.styleBlackAndWhiteReborn.
+ * @property {GdiBitmap} imgBlended - The blended image from grMain.color.setStyleBlend().
+ * @property {boolean} isColored - The color state that checks if background color is not full white RGB(255, 255, 255), used in Reborn/Random theme when init on start or when noAlbumArtStub displayed.
+ * @property {boolean} lightBg - The color definition when to switch text and logos to white or black, used in grSet.theme === 'white', grSet.theme === 'black', grSet.theme === 'reborn', grSet.theme === 'random', grSet.styleBlend, grSet.styleBlend2.
+ * @property {boolean} lightBgLib - The color definition when to switch text and logos to white or black, used in libSet.theme === 1 - 5.
+ * @property {boolean} lightBgBio - The color definition when to switch text and logos to white or black, used in bioSet.theme === 1 - 4.
+ * @property {boolean} lightBgMain - The color definition for col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
+ * @property {boolean} lightBgPlaylist - The color definition for pl.col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
+ * @property {boolean} lightBgDetails - The color definition for col.detailsBg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
+ * @property {boolean} lightBgLibrary - The color definition for ui.col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
+ * @property {boolean} lightBgBiography - The color definition for bio.ui.col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
  */
 /** @global @type {grCol} */
 const grCol = {
