@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-02-2024                                              * //
+// * Last change:    26-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -428,7 +428,7 @@ class PlaylistImageCache {
 			if (this.queue.length() > this.maxCacheSize) {
 				const lastMetadb = this.queue.back();
 				this.cache.delete(lastMetadb.Path);
-				this.queue.popBack();
+				this.queue.pop_back();
 			}
 		}
 	}
