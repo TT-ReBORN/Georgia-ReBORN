@@ -3222,6 +3222,7 @@ class TopMenuOptions {
 					grSet.lyricsScrollRateMax = 725;
 					break;
 			}
+			grm.lyrics.clear();
 			grm.lyrics.initLyrics();
 			RepaintWindow();
 		});
