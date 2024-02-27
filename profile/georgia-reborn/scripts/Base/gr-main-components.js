@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-02-2024                                              * //
+// * Last change:    27-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1023,6 +1023,7 @@ class LowerBarTooltip {
 		const showLowerBarArtistFlags = grSet[`showLowerBarArtistFlags_${grSet.layout}`];
 		const showPlaybackOrderBtn    = grSet[`showPlaybackOrderBtn_${grSet.layout}`];
 		const showReloadBtn           = grSet[`showReloadBtn_${grSet.layout}`];
+		const showAddTrackskBtn       = grSet[`showAddTracksBtn_${grSet.layout}`];
 		const showVolumeBtn           = grSet[`showVolumeBtn_${grSet.layout}`];
 		const transportBtnSize        = grSet[`transportButtonSize_${grSet.layout}`];
 		const transportBtnSpacing     = grSet[`transportButtonSpacing_${grSet.layout}`];
@@ -1042,7 +1043,7 @@ class LowerBarTooltip {
 
 		// * Calculate all transport buttons width
 		const buttonSize    = SCALE(transportBtnSize);
-		const buttonCount   = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
+		const buttonCount   = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showAddTrackskBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
 		const buttonSpacing = SCALE(transportBtnSpacing);
 
 		// * Setup width for artist and song title
@@ -2121,23 +2122,12 @@ class VolumeButton {
 	 * Creates the `Volume` instance.
 	 */
 	constructor() {
-		// * Calculate all transport buttons width
-		const showPlaybackOrderBtn = grSet[`showPlaybackOrderBtn_${grSet.layout}`];
-		const showReloadBtn        = grSet[`showReloadBtn_${grSet.layout}`];
-		const showVolumeBtn        = grSet[`showVolumeBtn_${grSet.layout}`];
-		const transportBtnSize     = grSet[`transportButtonSize_${grSet.layout}`];
-		const transportBtnSpacing  = grSet[`transportButtonSpacing_${grSet.layout}`];
-		const buttonSize           = SCALE(transportBtnSize);
-		const buttonSpacing        = SCALE(transportBtnSpacing);
-		const buttonCount          = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
-		const volumeBarWidth       = Math.ceil((window.Width - (buttonSize * buttonCount + buttonSpacing * buttonCount)) / 2 - SCALE(40));
-
 		/** @public @type {number} */
 		this.x = 0;
 		/** @public @type {number} */
 		this.y = 0;
 		/** @public @type {number} */
-		this.w = SCALE(window.Width < 600 ? volumeBarWidth : 100);
+		this.w = SCALE(100);
 		/** @public @type {number} */
 		this.h = SCALE(12);
 
@@ -2215,21 +2205,35 @@ class VolumeButton {
 	}
 
 	/**
-	 * Sets the position of the volume bar.
+	 * Sets the metrics for the volume bar.
 	 * @param {number} x - The x-coordinate.
 	 * @param {number} y - The y-coordinate.
-	 * @param {number} btnWidth - The width.
 	 */
-	setPosition(x, y, btnWidth) {
+	setMetrics(x, y) {
 		const buttonSize_default = SCALE(grSet.transportButtonSize_default);
 		const buttonSize_artwork = SCALE(grSet.transportButtonSize_artwork);
 		const buttonSize_compact = SCALE(grSet.transportButtonSize_compact);
 		const center_default = Math.floor(buttonSize_default / 2 + SCALE(4));
 		const center_artwork = Math.floor(buttonSize_artwork / 2 + SCALE(4));
 		const center_compact = Math.floor(buttonSize_compact / 2 + SCALE(4));
+
+		// * Calculate all transport buttons width
+		const showPlaybackOrderBtn = grSet[`showPlaybackOrderBtn_${grSet.layout}`];
+		const showReloadBtn        = grSet[`showReloadBtn_${grSet.layout}`];
+		const showAddTrackskBtn    = grSet[`showAddTracksBtn_${grSet.layout}`];
+		const showVolumeBtn        = grSet[`showVolumeBtn_${grSet.layout}`];
+		const transportBtnSize     = grSet[`transportButtonSize_${grSet.layout}`];
+		const transportBtnSpacing  = grSet[`transportButtonSpacing_${grSet.layout}`];
+		const buttonSize           = SCALE(transportBtnSize);
+		const buttonSpacing        = SCALE(transportBtnSpacing);
+		const buttonCount          = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showAddTrackskBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
+		const volumeBarWidth       = Math.ceil((grm.ui.ww - (buttonSize * buttonCount + buttonSpacing * buttonCount)) / 2 - SCALE(40));
+
 		this.x = x + (grSet[`transportButtonSize_${grSet.layout}`] * SCALE(1.25));
 		this.y = y + (grSet.layout === 'compact' ? center_compact : grSet.layout === 'artwork' ? center_artwork : center_default) - this.h;
-		this.volumeBar = new Volume(this.x, this.y, this.w, Math.min(grm.ui.wh - this.y, this.h));
+		this.w = grm.ui.ww < 600 ? volumeBarWidth : SCALE(100);
+		this.h = Math.min(grm.ui.wh - this.y, this.h);
+		this.volumeBar = new Volume(this.x, this.y, this.w, this.h);
 	}
 
 	/**

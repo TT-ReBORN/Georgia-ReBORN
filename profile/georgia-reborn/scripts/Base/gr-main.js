@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    26-02-2024                                              * //
+// * Last change:    27-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1330,12 +1330,13 @@ class MainUI {
 		// * Calculate all transport buttons width
 		const showPlaybackOrderBtn = grSet[`showPlaybackOrderBtn_${grSet.layout}`];
 		const showReloadBtn        = grSet[`showReloadBtn_${grSet.layout}`];
+		const showAddTrackskBtn    = grSet[`showAddTracksBtn_${grSet.layout}`];
 		const showVolumeBtn        = grSet[`showVolumeBtn_${grSet.layout}`];
 		const transportBtnSize     = grSet[`transportButtonSize_${grSet.layout}`];
 		const transportBtnSpacing  = grSet[`transportButtonSpacing_${grSet.layout}`];
 		const buttonSize           = SCALE(transportBtnSize);
 		const buttonSpacing        = SCALE(transportBtnSpacing);
-		const buttonCount          = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
+		const buttonCount          = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showAddTrackskBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
 
 		// * Setup time area width
 		const timeAreaWidth = this.ww > 400 ? grStr.disc !== '' && grSet.layout === 'default' ? gr.CalcTextWidth(`${grStr.disc}   ${grStr.time}   ${grStr.length}`, grFont.lowerBarTitle) : gr.CalcTextWidth(` ${grStr.time}   ${grStr.length}`, grFont.lowerBarTitle) : 0;
@@ -3458,7 +3459,7 @@ class MainUI {
 			const transportBtnSize     = grSet[`transportButtonSize_${grSet.layout}`];
 			const transportBtnSpacing  = grSet[`transportButtonSpacing_${grSet.layout}`];
 
-			let count = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
+			let count = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showAddTrackskBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
 
 			const buttonSize = SCALE(transportBtnSize);
 			const y = wh - buttonSize - SCALE(grSet.layout !== 'default' ? 36 : 78) + SCALE(lowerBarFontSize);
@@ -3499,7 +3500,7 @@ class MainUI {
 			}
 			if (showVolumeBtn) {
 				this.btn.volume = new Button(calcX(++count), y, w, h, 'Volume', this.btnImg.ShowVolume);
-				grm.volBtn.setPosition(this.btn.volume.x, y, w);
+				grm.volBtn.setMetrics(this.btn.volume.x, y);
 			}
 		}
 	}

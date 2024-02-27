@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-02-2024                                              * //
+// * Last change:    27-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1389,7 +1389,6 @@ class TopMenuOptions {
 
 		const updateSeekbar = () => {
 			grm.ui.initMetrics();
-			grm.ui.resizeArtwork(true);
 			RepaintWindow();
 		};
 
@@ -1660,7 +1659,6 @@ class TopMenuOptions {
 				grSet.transportButtonSize_default = size;
 			}
 			grm.ui.createFonts();
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		});
 		transportSizeMenuDefault.appendTo(transportSizeMenu);
@@ -1675,7 +1673,6 @@ class TopMenuOptions {
 				grSet.transportButtonSize_artwork = size;
 			}
 			grm.ui.createFonts();
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		});
 		transportSizeMenuArtwork.appendTo(transportSizeMenu);
@@ -1690,7 +1687,6 @@ class TopMenuOptions {
 				grSet.transportButtonSize_compact = size;
 			}
 			grm.ui.createFonts();
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		});
 		transportSizeMenuCompact.appendTo(transportSizeMenu);
@@ -1742,15 +1738,12 @@ class TopMenuOptions {
 		// * SHOW TRANSPORT CONTROLS * //
 		const transportControlsMenu = new Menu('Show transport controls');
 		transportControlsMenu.addToggleItem('Default', grSet, 'showTransportControls_default', () => {
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		});
 		transportControlsMenu.addToggleItem('Artwork', grSet, 'showTransportControls_artwork', () => {
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		});
 		transportControlsMenu.addToggleItem('Compact', grSet, 'showTransportControls_compact', () => {
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		});
 		transportControlsMenu.appendTo(playerControlsLowerBarMenu);
@@ -1771,15 +1764,12 @@ class TopMenuOptions {
 		// * SHOW RELOAD BUTTON * //
 		const reloadBtnMenu = new Menu('Show reload button');
 		reloadBtnMenu.addToggleItem('Default', grSet, 'showReloadBtn_default', () => {
-			grm.volBtn = new VolumeButton();
 			updateButtons();
 		}, !grSet.showTransportControls_default);
 		reloadBtnMenu.addToggleItem('Artwork', grSet, 'showReloadBtn_artwork', () => {
-			grm.volBtn = new VolumeButton();
 			updateButtons();
 		}, !grSet.showTransportControls_artwork);
 		reloadBtnMenu.addToggleItem('Compact', grSet, 'showReloadBtn_compact', () => {
-			grm.volBtn = new VolumeButton();
 			updateButtons();
 		}, !grSet.showTransportControls_compact);
 		reloadBtnMenu.appendTo(playerControlsLowerBarMenu);
@@ -1787,15 +1777,12 @@ class TopMenuOptions {
 		// * SHOW ADD TRACKS BUTTON * //
 		const addTrackBtnMenu = new Menu('Show add tracks button');
 		addTrackBtnMenu.addToggleItem('Default', grSet, 'showAddTracksBtn_default', () => {
-			grm.volBtn = new VolumeButton();
 			updateButtons();
 		}, !grSet.showTransportControls_default);
 		addTrackBtnMenu.addToggleItem('Artwork', grSet, 'showAddTracksBtn_artwork', () => {
-			grm.volBtn = new VolumeButton();
 			updateButtons();
 		}, !grSet.showTransportControls_artwork);
 		addTrackBtnMenu.addToggleItem('Compact', grSet, 'showAddTracksBtn_compact', () => {
-			grm.volBtn = new VolumeButton();
 			updateButtons();
 		}, !grSet.showTransportControls_compact);
 		addTrackBtnMenu.appendTo(playerControlsLowerBarMenu);

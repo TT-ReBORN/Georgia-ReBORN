@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-02-2024                                              * //
+// * Last change:    27-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -998,7 +998,6 @@ class ContextMenus {
 
 		const updateSeekbar = () => {
 			grm.ui.initMetrics();
-			grm.ui.resizeArtwork(true);
 			RepaintWindow();
 		};
 
@@ -1017,7 +1016,6 @@ class ContextMenus {
 					grSet.transportButtonSize_default = size;
 				}
 				grm.ui.createFonts();
-				grm.ui.resizeArtwork(true);
 				updateButtons();
 			}).bind(null, size[1]), { is_radio_checked: size[1] === grSet.transportButtonSize_default });
 		}
@@ -1036,7 +1034,6 @@ class ContextMenus {
 					grSet.transportButtonSize_artwork = size;
 				}
 				grm.ui.createFonts();
-				grm.ui.resizeArtwork(true);
 				updateButtons();
 			}).bind(null, size[1]), { is_radio_checked: size[1] === grSet.transportButtonSize_artwork });
 		}
@@ -1055,7 +1052,6 @@ class ContextMenus {
 					grSet.transportButtonSize_compact = size;
 				}
 				grm.ui.createFonts();
-				grm.ui.resizeArtwork(true);
 				updateButtons();
 			}).bind(null, size[1]), { is_radio_checked: size[1] === grSet.transportButtonSize_compact });
 		}
@@ -1123,17 +1119,14 @@ class ContextMenus {
 		const transportControlsMenu = new ContextMenu('Show transport controls');
 		transportControlsMenu.appendItem('Default', () => {
 			grSet.showTransportControls_default = !grSet.showTransportControls_default;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showTransportControls_default });
 		transportControlsMenu.appendItem('Artwork', () => {
 			grSet.showTransportControls_artwork = !grSet.showTransportControls_artwork;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showTransportControls_artwork });
 		transportControlsMenu.appendItem('Compact', () => {
 			grSet.showTransportControls_compact = !grSet.showTransportControls_compact;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showTransportControls_compact });
 		transportButtonDisplayMenu.append(transportControlsMenu);
@@ -1142,17 +1135,14 @@ class ContextMenus {
 		const playbackOrderBtnMenu = new ContextMenu('Show playback order button');
 		playbackOrderBtnMenu.appendItem('Default', () => {
 			grSet.showPlaybackOrderBtn_default = !grSet.showPlaybackOrderBtn_default;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showPlaybackOrderBtn_default });
 		playbackOrderBtnMenu.appendItem('Artwork', () => {
 			grSet.showPlaybackOrderBtn_artwork = !grSet.showPlaybackOrderBtn_artwork;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showPlaybackOrderBtn_artwork });
 		playbackOrderBtnMenu.appendItem('Compact', () => {
 			grSet.showPlaybackOrderBtn_compact = !grSet.showPlaybackOrderBtn_compact;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showPlaybackOrderBtn_compact });
 		transportButtonDisplayMenu.append(playbackOrderBtnMenu);
@@ -1161,17 +1151,14 @@ class ContextMenus {
 		const reloadBtnMenu = new ContextMenu('Show reload button');
 		reloadBtnMenu.appendItem('Default', () => {
 			grSet.showReloadBtn_default = !grSet.showReloadBtn_default;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showReloadBtn_default });
 		reloadBtnMenu.appendItem('Artwork', () => {
 			grSet.showReloadBtn_artwork = !grSet.showReloadBtn_artwork;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showReloadBtn_artwork });
 		reloadBtnMenu.appendItem('Compact', () => {
 			grSet.showReloadBtn_compact = !grSet.showReloadBtn_compact;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showReloadBtn_compact });
 		transportButtonDisplayMenu.append(reloadBtnMenu);
@@ -1180,42 +1167,35 @@ class ContextMenus {
 		const addTrackBtnMenu = new ContextMenu('Show add tracks button');
 		addTrackBtnMenu.appendItem('Default', () => {
 			grSet.showAddTracksBtn_default = !grSet.showAddTracksBtn_default;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showAddTracksBtn_default });
 		addTrackBtnMenu.appendItem('Artwork', () => {
 			grSet.showAddTracksBtn_artwork = !grSet.showAddTracksBtn_artwork;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showAddTracksBtn_artwork });
 		addTrackBtnMenu.appendItem('Compact', () => {
-			grSet.showAddTrackdBtn_compact = !grSet.showAddTrackdBtn_compact;
-			grm.ui.resizeArtwork(true);
+			grSet.showAddTracksBtn_compact = !grSet.showAddTracksBtn_compact;
 			updateButtons();
-		}, { is_checked: grSet.showAddTrackdBtn_compact });
+		}, { is_checked: grSet.showAddTracksBtn_compact });
 		transportButtonDisplayMenu.append(addTrackBtnMenu);
 
 		// * SHOW VOLUME BUTTON * //
 		const volumeBtnMenu = new ContextMenu('Show volume button');
 		volumeBtnMenu.appendItem('Default', () => {
 			grSet.showVolumeBtn_default = !grSet.showVolumeBtn_default;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showVolumeBtn_default });
 		volumeBtnMenu.appendItem('Artwork', () => {
 			grSet.showVolumeBtn_artwork = !grSet.showVolumeBtn_artwork;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showVolumeBtn_artwork });
 		volumeBtnMenu.appendItem('Compact', () => {
 			grSet.showVolumeBtn_compact = !grSet.showVolumeBtn_compact;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.showVolumeBtn_compact });
 		volumeBtnMenu.separator();
 		volumeBtnMenu.appendItem('Auto-hide bar', () => {
 			grSet.autoHideVolumeBar = !grSet.autoHideVolumeBar;
-			grm.ui.resizeArtwork(true);
 			updateButtons();
 		}, { is_checked: grSet.autoHideVolumeBar });
 		transportButtonDisplayMenu.append(volumeBtnMenu);
