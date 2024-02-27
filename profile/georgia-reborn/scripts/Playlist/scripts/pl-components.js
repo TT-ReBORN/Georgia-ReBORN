@@ -2118,17 +2118,16 @@ class PlaylistManager {
 			10: { '4K': -2, 'HD': -3 }
 		};
 		const yCorr = yCorrSize[headerFontSize] && yCorrSize[headerFontSize][RES._4K ? '4K' : 'HD'];
-		const noAlbumArtSize = grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight;
 		const info_w = gr.CalcTextWidth(this.info_text, pl.font.title_selected);
-		const btn_x = Math.round((grSet.playlistLayout === 'normal' ? grSet.panelWidthAuto ? grm.ui.displayLibrarySplit() ? noAlbumArtSize : grm.ui.albumArtSize.x + grm.ui.albumArtSize.w : grm.ui.ww * 0.5 : 0) + (w - info_w) * 0.5);
+		const btn_x = Math.round((pl.playlist.x) + (pl.playlist.w - info_w) * 0.5);
 		const btn_y = grm.ui.topMenuHeight + yCorr;
 		const btns_w = Math.round(h);
 		const hasPlaylistHistory = pl.history.canBack() || pl.history.canForward();
 		const showBtns = (grSet.autoHidePlman && (panel_state !== this.state.normal) || !grSet.autoHidePlman);
 
 		if (grSet.showPlaylistHistory && hasPlaylistHistory && showPlaylistManager) {
-			grm.ui.btn.back = new Button(showBtns ? btn_x - btns_w : 9999, btn_y, h, h, 'Back', grm.ui.btnImg.Back, null, pl.history.canBack.bind(pl.history));
-			grm.ui.btn.forward = new Button(showBtns ? btn_x + info_w + btns_w * SCALE(0.15) : 9999, btn_y, h, h, 'Forward', grm.ui.btnImg.Forward, null, pl.history.canForward.bind(pl.history));
+			grm.ui.btn.back = new Button(showBtns ? btn_x - btns_w + yCorr : 9999, btn_y, h, h, 'Back', grm.ui.btnImg.Back, null, pl.history.canBack.bind(pl.history));
+			grm.ui.btn.forward = new Button(showBtns ? btn_x + info_w + yCorr : 9999, btn_y, h, h, 'Forward', grm.ui.btnImg.Forward, null, pl.history.canForward.bind(pl.history));
 		}
 	}
 	// #endregion

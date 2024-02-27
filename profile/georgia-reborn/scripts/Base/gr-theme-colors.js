@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-02-2024                                              * //
+// * Last change:    27-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4385,7 +4385,7 @@ class ThemeColors {
 				// * PLAYLIST COLORS * //
 				pl.col.bg = RGB(255, 255, 255);
 				pl.col.plman_bg = pl.col.bg;
-				pl.col.plman_text_normal = pl.col.bg;
+				pl.col.plman_text_normal = grSet.autoHidePlman ? pl.col.bg : pl.col.plman_text_normal;
 
 				pl.col.header_nowplaying_bg =
 					defaultRebornRandom ? blend && iBRT > 240 ? grCol.lightAccent_7 : blend2 && iBRT > 240 ? grCol.lightAccent_35 : RGB(245, 245, 245) :
@@ -4565,7 +4565,7 @@ class StyleColors {
 			this.CTHEME ? ShadeColor(pl.col.bg, 5) : '';
 
 		pl.col.plman_bg = pl.col.bg;
-		pl.col.plman_text_normal = pl.col.bg;
+		pl.col.plman_text_normal = grSet.autoHidePlman ? pl.col.bg : pl.col.plman_text_normal;
 
 		pl.col.header_nowplaying_bg =
 			grSet.theme === 'blue' ? RGB(20, 120, 205) :
@@ -4688,7 +4688,7 @@ class StyleColors {
 			this.CTHEME ? TintColor(pl.col.bg, 5) : '';
 
 		pl.col.plman_bg = pl.col.bg;
-		pl.col.plman_text_normal = pl.col.bg;
+		pl.col.plman_text_normal = grSet.autoHidePlman ? pl.col.bg : pl.col.plman_text_normal;
 
 		pl.col.header_nowplaying_bg =
 			grSet.theme === 'black' && grCol.colBrightness < 25 ? TintColor(grCol.primary, 15) :
@@ -4819,7 +4819,7 @@ class StyleColors {
 		// * PLAYLIST COLORS * //
 		pl.col.bg = RGB(20, 20, 20);
 		pl.col.plman_bg = pl.col.bg;
-		pl.col.plman_text_normal = pl.col.bg;
+		pl.col.plman_text_normal = grSet.autoHidePlman ? pl.col.bg : pl.col.plman_text_normal;
 		pl.col.header_nowplaying_bg = grCol.colBrightness < 25 ? grCol.lightAccent : this.BEVEL ? ShadeColor(grCol.primary, 10) : grCol.primary;
 		pl.col.header_line_normal = this.BLEND ? RGB(65, 65, 65) : RGB(45, 45, 45);
 		pl.col.header_line_playing = RGB(25, 25, 25);
@@ -5233,7 +5233,7 @@ class StyleColors {
 		// * PLAYLIST COLORS * //
 		pl.col.bg = grCol.primary_alt;
 		pl.col.plman_bg = pl.col.bg;
-		pl.col.plman_text_normal = pl.col.bg;
+		pl.col.plman_text_normal = grSet.autoHidePlman ? pl.col.bg : pl.col.plman_text_normal;
 		pl.col.header_nowplaying_bg = this.BLEND ? RGBtoRGBA(grCol.lightAccent_7, 130) : TintColor(grCol.primary_alt, 10);
 		pl.col.header_sideMarker = smallColDiff ? grCol.lightAccent_35 : grCol.primary;
 		pl.col.row_nowplaying_bg = pl.col.header_nowplaying_bg;

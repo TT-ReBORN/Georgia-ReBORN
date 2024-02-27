@@ -1282,7 +1282,7 @@ class MainUI {
 			const disabled = btn.isEnabled ? !btn.isEnabled() : false;
 			const alpha = disabled ? 140 : 255;
 
-			if ((i === 'back' || i === 'forward') && !this.displayPlaylist) {
+			if ((i === 'back' || i === 'forward') && !this.displayPlaylist && !this.displayPlaylistArtwork) {
 				continue;
 			}
 
