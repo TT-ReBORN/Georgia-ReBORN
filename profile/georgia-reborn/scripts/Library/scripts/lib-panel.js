@@ -1073,6 +1073,8 @@ class LibPanel {
 								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = false;
 								if (!libSet.presetLoadCurView) libSet.viewBy = 2;
 								libSet.albumArtLabelType = 1;
+								libSet.albumArtFlipLabels = false;
+								libSet.itemShowStatistics = 0;
 								libSet.itemOverlayType = 0;
 								libSet.artId = 0;
 								libSet.albumArtFlowMode = false;
