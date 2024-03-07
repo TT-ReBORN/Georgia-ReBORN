@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-02-2024                                              * //
+// * Last change:    07-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -166,21 +166,37 @@ const grPath = {
 	 */
 	discArtStubPaths() {
 		return {
-			cdAlbumCover:    `${fb.ProfilePath}georgia-reborn\\images\\discart\\cd-transparent.png`,
-			cdWhite:         `${fb.ProfilePath}georgia-reborn\\images\\discart\\cd-white.png`,
-			cdBlack:         `${fb.ProfilePath}georgia-reborn\\images\\discart\\cd-black.png`,
-			cdBlank:         `${fb.ProfilePath}georgia-reborn\\images\\discart\\cd-blank.png`,
-			cdTrans:         `${fb.ProfilePath}georgia-reborn\\images\\discart\\cd-transparent.png`,
-			vinylAlbumCover: `${fb.ProfilePath}georgia-reborn\\images\\discart\\vinyl-black-hole.png`,
-			vinylWhite:      `${fb.ProfilePath}georgia-reborn\\images\\discart\\vinyl-white.png`,
-			vinylVoid:       `${fb.ProfilePath}georgia-reborn\\images\\discart\\vinyl-void.png`,
-			vinylColdFusion: `${fb.ProfilePath}georgia-reborn\\images\\discart\\vinyl-cold-fusion.png`,
-			vinylRingOfFire: `${fb.ProfilePath}georgia-reborn\\images\\discart\\vinyl-ring-of-fire.png`,
-			vinylMaple:      `${fb.ProfilePath}georgia-reborn\\images\\discart\\vinyl-maple.png`,
-			vinylBlack:      `${fb.ProfilePath}georgia-reborn\\images\\discart\\vinyl-black.png`,
-			vinylBlackHole:  `${fb.ProfilePath}georgia-reborn\\images\\discart\\vinyl-black-hole.png`,
-			vinylEbony:      `${fb.ProfilePath}georgia-reborn\\images\\discart\\vinyl-ebony.png`,
-			vinylTrans:      `${fb.ProfilePath}georgia-reborn\\images\\discart\\vinyl-transparent.png`
+			cdAlbumCover:       `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-cd-transparent.png`,
+			cdWhite:            `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-cd-white.png`,
+			cdBlack:            `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-cd-black.png`,
+			cdBlank:            `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-cd-blank.png`,
+			cdTrans:            `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-cd-transparent.png`,
+			vinylAlbumCover:    `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-vinyl-black-hole.png`,
+			vinylWhite:         `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-vinyl-white.png`,
+			vinylVoid:          `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-vinyl-void.png`,
+			vinylColdFusion:    `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-vinyl-cold-fusion.png`,
+			vinylRingOfFire:    `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-vinyl-ring-of-fire.png`,
+			vinylMaple:         `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-vinyl-maple.png`,
+			vinylBlack:         `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-vinyl-black.png`,
+			vinylBlackHole:     `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-vinyl-black-hole.png`,
+			vinylEbony:         `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-vinyl-ebony.png`,
+			vinylTrans:         `${fb.ProfilePath}georgia-reborn\\images\\discart\\common-vinyl-transparent.png`,
+			themeCdBlue:        `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-cd-blue.png`,
+			themeCdDarkBlue:    `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-cd-dark-blue.png`,
+			themeCdRed:         `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-cd-red.png`,
+			themeCdCream:       `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-cd-cream.png`,
+			themeCdNblue:       `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-cd-neon-blue.png`,
+			themeCdNgreen:      `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-cd-neon-green.png`,
+			themeCdNred:        `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-cd-neon-red.png`,
+			themeCdNgold:       `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-cd-neon-gold.png`,
+			themeVinylBlue:     `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-vinyl-blue.png`,
+			themeVinylDarkBlue: `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-vinyl-dark-blue.png`,
+			themeVinylRed:      `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-vinyl-red.png`,
+			themeVinylCream:    `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-vinyl-cream.png`,
+			themeVinylNblue:    `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-vinyl-neon-blue.png`,
+			themeVinylNgreen:   `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-vinyl-neon-green.png`,
+			themeVinylNred:     `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-vinyl-neon-red.png`,
+			themeVinylNgold:    `${fb.ProfilePath}georgia-reborn\\images\\discart\\theme-vinyl-neon-gold.png`
 		};
 	},
 

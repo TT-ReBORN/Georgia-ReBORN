@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-02-2024                                              * //
+// * Last change:    07-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -300,33 +300,16 @@ class TopMenuOptions {
 	 */
 	themeOptions(menu) {
 		const themeMenu = new Menu('Theme');
-
-		themeMenu.addRadioItems(['White', 'Black', 'Reborn', 'Random'], grSet.theme, ['white', 'black', 'reborn', 'random'], (theme) => {
+		themeMenu.addRadioItems(['White', 'Black', 'Reborn', 'Random', 'Blue', 'Dark blue', 'Red', 'Cream', 'Neon blue', 'Neon green', 'Neon red', 'Neon gold'], grSet.theme,
+			['white', 'black', 'reborn', 'random', 'blue', 'darkblue', 'red', 'cream', 'nblue', 'ngreen', 'nred', 'ngold'], theme => {
 			if (!grSet.themeSandbox) grSet.savedTheme = grSet.theme = theme; else grSet.theme = theme;
 			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
 			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 			grm.ui.resetTheme();
 			grm.ui.initTheme();
+			grm.ui.createDiscArtShadow();
 			grm.preset.initThemePresetState();
-		});
-		themeMenu.addSeparator();
-		themeMenu.addRadioItems(['Blue', 'Dark blue', 'Red', 'Cream'], grSet.theme, ['blue', 'darkblue', 'red', 'cream'], (theme) => {
-			if (!grSet.themeSandbox) grSet.savedTheme = grSet.theme = theme; else grSet.theme = theme;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
-			grm.ui.resetTheme();
-			grm.ui.initTheme();
-			grm.preset.initThemePresetState();
-		});
-		themeMenu.addSeparator();
-		themeMenu.addRadioItems(['Neon blue', 'Neon green', 'Neon red', 'Neon gold'], grSet.theme, ['nblue', 'ngreen', 'nred', 'ngold'], (theme) => {
-			if (!grSet.themeSandbox) grSet.savedTheme = grSet.theme = theme; else grSet.theme = theme;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
-			grm.ui.resetTheme();
-			grm.ui.initTheme();
-			grm.preset.initThemePresetState();
-		});
+		}, false, false, [3, 7]);
 		themeMenu.addSeparator();
 
 		// * CUSTOM THEME * //
@@ -351,6 +334,7 @@ class TopMenuOptions {
 			grm.ui.resetTheme();
 			grm.ui.initCustomTheme();
 			grm.ui.initTheme();
+			grm.ui.createDiscArtShadow();
 			grm.cthMenu.initCustomThemeMenu('pl_bg');
 			grm.preset.initThemePresetState();
 		});
@@ -732,6 +716,7 @@ class TopMenuOptions {
 			grm.preset.setThemePreset(preset); // After applying the preset, synchronize the daytime/nighttime theme preset if necessary
 			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
 			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			grm.ui.createDiscArtShadow();
 		};
 
 		// * WHITE THEME PRESETS * //
@@ -2231,6 +2216,15 @@ class TopMenuOptions {
 			const discArtMenu = new Menu('Disc art');
 			const displayDiscArtMenu = new Menu('Disc art placeholder');
 
+			const setDiscArtStub = (discArt) => {
+				grSet.discArtStub = discArt;
+				grSet.noDiscArtStub = false;
+				grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
+				grm.ui.discArtArrayCover = [];
+				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
+				RepaintWindow();
+			};
+
 			// * DISC ART PLACEHOLDER * //
 			displayDiscArtMenu.addToggleItem('Show placeholder if no disc art found', grSet, 'showDiscArtStub', () => {
 				grSet.noDiscArtStub = false;
@@ -2248,27 +2242,31 @@ class TopMenuOptions {
 				RepaintWindow();
 			}, !grSet.displayDiscArt);
 			displayDiscArtMenu.addSeparator();
-			displayDiscArtMenu.addRadioItems(['CD - Album cover', 'CD - White', 'CD - Black', 'CD - Blank', 'CD - Transparent'],
+
+			const discArtCommonMenu = new Menu('Common');
+			discArtCommonMenu.addRadioItems(['Common - CD - Album cover', 'Common - CD - White', 'Common - CD - Black', 'Common - CD - Blank', 'Common - CD - Transparent'],
 				grSet.discArtStub, ['cdAlbumCover', 'cdWhite', 'cdBlack', 'cdBlank', 'cdTrans'], (discArt) => {
-				grSet.discArtStub = discArt;
-				grSet.noDiscArtStub = false;
-				grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
-				grm.ui.discArtArrayCover = [];
-				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
-				RepaintWindow();
+				setDiscArtStub(discArt);
 			}, !grSet.displayDiscArt);
-			displayDiscArtMenu.addSeparator();
-			displayDiscArtMenu.addRadioItems(['Vinyl - Album cover', 'Vinyl - White', 'Vinyl - Void', 'Vinyl - Cold fusion', 'Vinyl - Ring of fire', 'Vinyl - Maple', 'Vinyl - Black', 'Vinyl - Black hole', 'Vinyl - Ebony', 'Vinyl - Transparent'],
+			discArtCommonMenu.addRadioItems(['Common - Vinyl - Album cover', 'Common - Vinyl - White', 'Common - Vinyl - Void', 'Common - Vinyl - Cold fusion', 'Common - Vinyl - Ring of fire', 'Common - Vinyl - Maple', 'Common - Vinyl - Black', 'Common - Vinyl - Black hole', 'Common - Vinyl - Ebony', 'Common - Vinyl - Transparent'],
 				grSet.discArtStub, ['vinylAlbumCover', 'vinylWhite', 'vinylVoid', 'vinylColdFusion', 'vinylRingOfFire', 'vinylMaple', 'vinylBlack', 'vinylBlackHole', 'vinylEbony', 'vinylTrans'], (discArt) => {
-				grSet.discArtStub = discArt;
-				grSet.noDiscArtStub = false;
-				grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
-				grm.ui.discArtArrayCover = [];
-				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
-				RepaintWindow();
+				setDiscArtStub(discArt);
 			}, !grSet.displayDiscArt);
+			discArtCommonMenu.appendTo(displayDiscArtMenu);
+
+			const discArtThemeMenu = new Menu('Theme');
+			discArtThemeMenu.addRadioItems(['Theme - CD - Blue', 'Theme - CD - Dark blue', 'Theme - CD - Red', 'Theme - CD - Cream', 'Theme - CD - Neon blue', 'Theme - CD - Neon green', 'Theme - CD - Neon red', 'Theme - CD - Neon gold'],
+				grSet.discArtStub, ['themeCdBlue', 'themeCdDarkBlue', 'themeCdRed', 'themeCdCream', 'themeCdNblue', 'themeCdNgreen', 'themeCdNred', 'themeCdNgold'], (discArt) => {
+				setDiscArtStub(discArt);
+			}, !grSet.displayDiscArt);
+			discArtThemeMenu.addRadioItems(['Theme - Vinyl - Blue', 'Theme - Vinyl - Dark blue', 'Theme - Vinyl - Red', 'Theme - Vinyl - Cream', 'Theme - Vinyl - Neon blue', 'Theme - Vinyl - Neon green', 'Theme - Vinyl - Neon red', 'Theme - Vinyl - Neon gold'],
+				grSet.discArtStub, ['themeVinylBlue', 'themeVinylDarkBlue', 'themeVinylRed', 'themeVinylCream', 'themeVinylNblue', 'themeVinylNgreen', 'themeVinylNred', 'themeVinylNgold'], (discArt) => {
+				setDiscArtStub(discArt);
+			}, !grSet.displayDiscArt);
+			discArtThemeMenu.appendTo(displayDiscArtMenu);
 
 			// * DISC ART CUSTOM PLACEHOLDERS * //
+			const discArtCustomMenu = new Menu('Custom');
 			const customDiscArtLabels = [];
 			const customDiscArtValues = [];
 			for (const key in grCfg.customDiscArtStub) {
@@ -2286,8 +2284,7 @@ class TopMenuOptions {
 					}
 				}
 			}
-			if (customDiscArtValues.length) displayDiscArtMenu.addSeparator();
-			displayDiscArtMenu.addRadioItems(customDiscArtLabels, grSet.discArtStub, customDiscArtValues, (discArt) => {
+			discArtCustomMenu.addRadioItems(customDiscArtLabels, grSet.discArtStub, customDiscArtValues, (discArt) => {
 				grSet.discArtStub = discArt;
 				grSet.noDiscArtStub = false;
 				grPath.discArtCustomStub = `${fb.ProfilePath}georgia-reborn\\images\\custom\\discart\\${grSet.discArtStub}.png`;
@@ -2300,6 +2297,7 @@ class TopMenuOptions {
 					ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 				}
 			}, !grSet.displayDiscArt);
+			discArtCustomMenu.appendTo(displayDiscArtMenu);
 			displayDiscArtMenu.appendTo(discArtMenu);
 
 			// * DISC ART OPTIONS * //

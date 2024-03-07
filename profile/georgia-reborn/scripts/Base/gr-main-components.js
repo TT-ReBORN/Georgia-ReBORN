@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-02-2024                                              * //
+// * Last change:    07-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -261,16 +261,21 @@ class Menu {
 	 * @param {*[]} variables - An array of values which correspond to each entry.
 	 * @param {Function} callback - A function that will be executed when the item is clicked.
 	 * @param {boolean} [disabled] - Whether the item should be disabled or not.
+	 * @param {boolean} [disableCheckMarking] - Whether the check marking should be disabled or not.
+	 * @param {number[]} [separator] - Indices after which a separator should be added.
 	 */
-	addToggleItems(labels, selectedValues, variables, callback = () => { }, disabled = false) {
+	addToggleItems(labels, selectedValues, variables, callback = () => { }, disabled = false, disableCheckMarking = false, separator = []) {
 		for (let i = 0; i < labels.length; i++) {
 			this.menu.AppendMenuItem(MF_STRING | (disabled ? MF_DISABLED | MF_GRAYED : 0), Menu.menuItemIndex, labels[i]);
 			Menu.menuCallbacks[Menu.menuItemIndex] = callback;
 			Menu.menuVariables[Menu.menuItemIndex] = variables[i];
-			if (selectedValues.includes(variables[i])) {
+			if (!disableCheckMarking && selectedValues.includes(variables[i])) {
 				this.menu.CheckMenuItem(Menu.menuItemIndex, true);
 			}
 			Menu.menuItemIndex++;
+			if (separator.includes(i)) {
+				this.menu.AppendMenuSeparator();
+			}
 		}
 	}
 
@@ -282,8 +287,9 @@ class Menu {
 	 * @param {Function} callback - A function that will be executed when the item is clicked.
 	 * @param {boolean} [disabled] - Whether the item should be disabled or not.
 	 * @param {boolean} [disableCheckMarking] - Whether the radio check marking should be disabled or not.
+	 * @param {number[]} [separator] - Indices after which a separator should be added.
 	 */
-	addRadioItems(labels, selectedValue, variables, callback = () => { }, disabled = false, disableCheckMarking = false) {
+	addRadioItems(labels, selectedValue, variables, callback = () => { }, disabled = false, disableCheckMarking = false, separator = []) {
 		const startIndex = Menu.menuItemIndex;
 		let selectedIndex;
 		for (let i = 0; i < labels.length; i++) {
@@ -294,6 +300,9 @@ class Menu {
 				selectedIndex = Menu.menuItemIndex;
 			}
 			Menu.menuItemIndex++;
+			if (separator.includes(i)) {
+				this.menu.AppendMenuSeparator();
+			}
 		}
 		if (!disableCheckMarking && selectedIndex) {
 			this.menu.CheckMenuRadioItem(startIndex, Menu.menuItemIndex - 1, selectedIndex);
@@ -309,10 +318,11 @@ class Menu {
 	 * @param {Function} callback - A function that will be executed when the menu item is clicked.
 	 * @param {boolean} [disabled] - Whether the item should be disabled or not.
 	 * @param {boolean} [disableCheckMarking] - Whether the radio check marking should be disabled or not.
+	 * @param {number[]} [separator] - Indices after which a separator should be added.
 	 */
-	createRadioSubMenu(subMenuName, labels, selectedValue, variables, callback, disabled = false, disableCheckMarking = false) {
+	createRadioSubMenu(subMenuName, labels, selectedValue, variables, callback, disabled = false, disableCheckMarking = false, separator = []) {
 		const subMenu = new Menu(subMenuName);
-		subMenu.addRadioItems(labels, selectedValue, variables, callback, disabled, disableCheckMarking);
+		subMenu.addRadioItems(labels, selectedValue, variables, callback, disabled, disableCheckMarking, separator);
 		subMenu.appendTo(this, disabled);
 	}
 

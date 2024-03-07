@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-02-2024                                              * //
+// * Last change:    07-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -908,6 +908,14 @@ class ContextMenus {
 		});
 
 		const discArtMenu = new ContextMenu('Disc art placeholder');
+		const setDiscArtStub = (discArt) => {
+			grSet.discArtStub = discArt;
+			grSet.noDiscArtStub = false;
+			grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
+			grm.ui.discArtArrayCover = [];
+			grm.ui.fetchNewArtwork(fb.GetNowPlaying());
+			RepaintWindow();
+		};
 		discArtMenu.appendItem('Show placeholder if no disc art found', () => {
 			grSet.showDiscArtStub = !grSet.showDiscArtStub;
 			grSet.noDiscArtStub = false;
@@ -926,46 +934,107 @@ class ContextMenus {
 			RepaintWindow();
 		}, { is_checked: grSet.noDiscArtStub });
 		discArtMenu.separator();
-		const displayCdArtMenu = [
-			['CD - Album cover', 'cdAlbumCover'],
-			['CD - White', 'cdWhite'],
-			['CD - Black', 'cdBlack'],
-			['CD - Blank', 'cdBlank'],
-			['CD - Transparent', 'cdTrans']
+
+		const discArtCommonMenu = new ContextMenu('Common');
+		const displayCommonCdArtMenu = [
+			['Common - CD - Album cover', 'cdAlbumCover'],
+			['Common - CD - White', 'cdWhite'],
+			['Common - CD - Black', 'cdBlack'],
+			['Common - CD - Blank', 'cdBlank'],
+			['Common - CD - Transparent', 'cdTrans']
 		];
-		for (const cdArt of displayCdArtMenu) {
-			discArtMenu.appendItem(cdArt[0], ((cdArt) => {
-				grSet.discArtStub = cdArt;
-				grSet.noDiscArtStub = false;
-				grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
-				grm.ui.discArtArrayCover = [];
-				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
-				RepaintWindow();
+		for (const cdArt of displayCommonCdArtMenu) {
+			discArtCommonMenu.appendItem(cdArt[0], ((cdArt) => {
+				setDiscArtStub(cdArt);
 			}).bind(null, cdArt[1]), { is_radio_checked: cdArt[1] === grSet.discArtStub });
 		}
-		discArtMenu.separator();
-		const displayVinylArtMenu = [
-			['Vinyl - Album cover', 'vinylAlbumCover'],
-			['Vinyl - White', 'vinylWhite'],
-			['Vinyl - Void', 'vinylVoid'],
-			['Vinyl - Cold fusion', 'vinylColdFusion'],
-			['Vinyl - Ring of fire', 'vinylRingOfFire'],
-			['Vinyl - Maple', 'vinylMaple'],
-			['Vinyl - Black', 'vinylBlack'],
-			['Vinyl - Black hole', 'vinylBlackHole'],
-			['Vinyl - Ebony', 'vinylEbony'],
-			['Vinyl - Transparent', 'vinylTrans']
+		const displayCommonVinylArtMenu = [
+			['Common - Vinyl - Album cover', 'vinylAlbumCover'],
+			['Common - Vinyl - White', 'vinylWhite'],
+			['Common - Vinyl - Void', 'vinylVoid'],
+			['Common - Vinyl - Cold fusion', 'vinylColdFusion'],
+			['Common - Vinyl - Ring of fire', 'vinylRingOfFire'],
+			['Common - Vinyl - Maple', 'vinylMaple'],
+			['Common - Vinyl - Black', 'vinylBlack'],
+			['Common - Vinyl - Black hole', 'vinylBlackHole'],
+			['Common - Vinyl - Ebony', 'vinylEbony'],
+			['Common - Vinyl - Transparent', 'vinylTrans']
 		];
-		for (const vinylArt of displayVinylArtMenu) {
-			discArtMenu.appendItem(vinylArt[0], ((vinylArt) => {
-				grSet.discArtStub = vinylArt;
+		for (const vinylArt of displayCommonVinylArtMenu) {
+			discArtCommonMenu.appendItem(vinylArt[0], ((vinylArt) => {
+				setDiscArtStub(vinylArt);
+			}).bind(null, vinylArt[1]), { is_radio_checked: vinylArt[1] === grSet.discArtStub });
+		}
+		discArtMenu.append(discArtCommonMenu);
+
+		const discArtThemeMenu = new ContextMenu('Theme');
+		const displayThemeCdArtMenu = [
+			['Theme - CD - Blue', 'themeCdBlue'],
+			['Theme - CD - Dark blue', 'themeCdDarkBlue'],
+			['Theme - CD - Red', 'themeCdRed'],
+			['Theme - CD - Cream', 'themeCdCream'],
+			['Theme - CD - Neon blue', 'themeCdNblue'],
+			['Theme - CD - Neon green', 'themeCdNgreen'],
+			['Theme - CD - Neon red', 'themeCdNred'],
+			['Theme - CD - Neon gold', 'themeCdNgold']
+		];
+		for (const cdArt of displayThemeCdArtMenu) {
+			discArtThemeMenu.appendItem(cdArt[0], ((cdArt) => {
+				setDiscArtStub(cdArt);
+			}).bind(null, cdArt[1]), { is_radio_checked: cdArt[1] === grSet.discArtStub });
+		}
+		const displayThemeVinylArtMenu = [
+			['Theme - Vinyl - Blue', 'themeVinylBlue'],
+			['Theme - Vinyl - Dark blue', 'themeVinylDarkBlue'],
+			['Theme - Vinyl - Red', 'themeVinylRed'],
+			['Theme - Vinyl - Cream', 'themeVinylCream'],
+			['Theme - Vinyl - Neon blue', 'themeVinylNblue'],
+			['Theme - Vinyl - Neon green', 'themeVinylNgreen'],
+			['Theme - Vinyl - Neon red', 'themeVinylNred'],
+			['Theme - Vinyl - Neon gold', 'themeVinylNgold']
+		];
+		for (const vinylArt of displayThemeVinylArtMenu) {
+			discArtThemeMenu.appendItem(vinylArt[0], ((vinylArt) => {
+				setDiscArtStub(vinylArt);
+			}).bind(null, vinylArt[1]), { is_radio_checked: vinylArt[1] === grSet.discArtStub });
+		}
+		discArtMenu.append(discArtThemeMenu);
+
+		// * DISC ART CUSTOM PLACEHOLDERS * //
+		const discArtCustomMenu = new ContextMenu('Custom');
+		const customDiscArtLabels = [];
+		const customDiscArtValues = [];
+		for (const key in grCfg.customDiscArtStub) {
+			if (Object.prototype.hasOwnProperty.call(grCfg.customDiscArtStub, key) && key.includes('Name')) {
+				const num = key.match(/\d+$/)[0]; // Extract the number from the key (e.g., "01" from "cdName01")
+				const cdStubKey = `cdStub${num}`;
+				const vinylStubKey = `vinylStub${num}`;
+				if (key.startsWith('cdName') && grCfg.customDiscArtStub[cdStubKey]) {
+					customDiscArtLabels.push(grCfg.customDiscArtStub[key]);
+					customDiscArtValues.push(grCfg.customDiscArtStub[cdStubKey].replace('.png', ''));
+				}
+				else if (key.startsWith('vinylName') && grCfg.customDiscArtStub[vinylStubKey]) {
+					customDiscArtLabels.push(grCfg.customDiscArtStub[key]);
+					customDiscArtValues.push(grCfg.customDiscArtStub[vinylStubKey].replace('.png', ''));
+				}
+			}
+		}
+		for (const [index, customDiscArtLabel] of customDiscArtLabels.entries()) {
+			discArtCustomMenu.appendItem(customDiscArtLabel, ((discArt) => {
+				grSet.discArtStub = discArt;
 				grSet.noDiscArtStub = false;
+				grPath.discArtCustomStub = `${fb.ProfilePath}georgia-reborn\\images\\custom\\discart\\${grSet.discArtStub}.png`;
 				grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
 				grm.ui.discArtArrayCover = [];
 				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
 				RepaintWindow();
-			}).bind(null, vinylArt[1]), { is_radio_checked: vinylArt[1] === grSet.discArtStub });
+				if (!IsFile(grPath.discArtCustomStub)) {
+					const msg = `The custom disc art placeholder was not found in:\n${grPath.discArtCustomStub}\n\nBe sure that image exist and has the correct filename\nin the "customDiscArtStub" section of the\ncustom config file:\n${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc\n\n\n`;
+					ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				}
+			}).bind(null, customDiscArtValues[index]), { is_radio_checked: customDiscArtValues[index] === grSet.discArtStub });
 		}
+		discArtMenu.append(discArtCustomMenu);
 		cm.append(discArtMenu);
 		cm.separator();
 
