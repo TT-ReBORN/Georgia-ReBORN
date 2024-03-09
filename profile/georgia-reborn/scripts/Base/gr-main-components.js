@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-03-2024                                              * //
+// * Last change:    09-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2175,39 +2175,41 @@ class VolumeButton {
 		const { x, y, w, h } = this;
 		const p = 2;
 		const fillWidth = this.volumeBar && this.volumeBar.fillSize('w');
-		const arc = SCALE(3);
-		const arcIsValid = fillWidth > arc * 3; // * Needed when dragging volume to prevent invalid arc value crash
+		const arcBg = SCALE(6);
+		const arcBgIsValid = h > arcBg; // * Needed when display res changes to prevent invalid arc value crash
+		const arcFill = SCALE(3);
+		const arcFillIsValid = fillWidth > arcFill * 3; // * Needed when dragging volume to prevent invalid arc value crash
 
 		gr.SetSmoothingMode(grSet.styleVolumeBarDesign === 'rounded' ? SmoothingMode.AntiAlias : SmoothingMode.None);
 
 		// * Default background
-		if (grSet.styleVolumeBarDesign === 'rounded' && grSet.styleTransportButtons !== 'minimal') {
-			gr.FillRoundRect(x - SCALE(2), y + (RES._4K ? p + 1 : p), w + SCALE(2), h, SCALE(5), SCALE(5), grCol.volumeBar);
-			gr.DrawRoundRect(x - (RES._4K ? 5 : this.showReloadBtn ? 3 : 2), y + SCALE(1), w + (RES._4K ? 5 : 3), h + 2, SCALE(6), SCALE(6), 1, grCol.volumeBarFrame);
+		if (grSet.styleVolumeBarDesign === 'rounded' && grSet.styleTransportButtons !== 'minimal' && arcBgIsValid) {
+			gr.FillRoundRect(x - SCALE(2), y + (RES._4K ? p + 1 : p), w + SCALE(2), h, arcBg, arcBg, grCol.volumeBar);
+			gr.DrawRoundRect(x - (RES._4K ? 5 : this.showReloadBtn ? 3 : 2), y + SCALE(1), w + (RES._4K ? 5 : 3), h + 2, arcBg, arcBg, 1, grCol.volumeBarFrame);
 		}
 		else if (grSet.styleVolumeBarDesign !== 'rounded' && grSet.styleTransportButtons !== 'minimal') {
 			gr.FillSolidRect(x - SCALE(2), y + (RES._4K ? p + 1 : p), w + SCALE(2), h, grCol.volumeBar);
 			gr.DrawRect(x - (RES._4K ? 5 : this.showReloadBtn ? 3 : 2), y + SCALE(1), w + (RES._4K ? 5 : 3), h + 1, 1, grCol.volumeBarFrame);
 		}
 		// * Style background
-		if ((grSet.styleVolumeBar === 'bevel' || grSet.styleVolumeBar === 'inner') && grSet.styleTransportButtons !== 'minimal') {
+		if ((grSet.styleVolumeBar === 'bevel' || grSet.styleVolumeBar === 'inner') && grSet.styleTransportButtons !== 'minimal' && arcBgIsValid) {
 			if (grSet.styleVolumeBarDesign === 'rounded') {
-				FillGradRoundRect(gr, x - SCALE(2), y + (RES._4K ? p + 1 : p) - (grSet.styleVolumeBar === 'inner' ? 1 : 0), w + SCALE(5), h + SCALE(4), SCALE(6), SCALE(6),
+				FillGradRoundRect(gr, x - SCALE(2), y + (RES._4K ? p + 1 : p) - (grSet.styleVolumeBar === 'inner' ? 1 : 0), w + SCALE(5), h + SCALE(4), arcBg, arcBg,
 				grSet.styleVolumeBar === 'inner' ? -89 : 89, grSet.styleVolumeBar === 'inner' ? grCol.styleVolumeBar : 0, grSet.styleVolumeBar === 'inner' ? 0 : grCol.styleVolumeBar, grSet.styleVolumeBar === 'inner' ? 0 : 1);
 			} else {
 				gr.FillGradRect(x - SCALE(2), y + (RES._4K ? p + (grSet.styleVolumeBar === 'inner' ? 0 : 2) : p), w + SCALE(2), h, grSet.styleVolumeBar === 'inner' ? -90 : 90, 0, grCol.styleVolumeBar);
 			}
 		}
 		// * Default fill
-		if (grSet.styleVolumeBarDesign === 'rounded' && arcIsValid) {
-			 gr.FillRoundRect(x + 1, y + (RES._4K ? 7 : 4), fillWidth - SCALE(3), h - SCALE(4), arc, arc, grCol.volumeBarFill);
+		if (grSet.styleVolumeBarDesign === 'rounded' && arcBgIsValid && arcFillIsValid) {
+			gr.FillRoundRect(x + 1, y + (RES._4K ? 7 : 4), fillWidth - SCALE(3), h - SCALE(4), arcFill, arcFill, grCol.volumeBarFill);
 		} else {
 			gr.FillSolidRect(x, y + (RES._4K ? 7 : 4), fillWidth - SCALE(2), h - SCALE(4), grCol.volumeBarFill);
 		}
 		// * Style fill
-		if ((grSet.styleVolumeBarFill === 'bevel' || grSet.styleVolumeBarFill === 'inner') && arcIsValid) {
+		if ((grSet.styleVolumeBarFill === 'bevel' || grSet.styleVolumeBarFill === 'inner') && arcBgIsValid && arcFillIsValid) {
 			if (grSet.styleVolumeBarDesign === 'rounded') {
-				FillGradRoundRect(gr, x + 1, y + (RES._4K ? 7 : 4), fillWidth - SCALE(0.5), h - SCALE(2), arc, arc, grSet.styleVolumeBarFill === 'inner' ? -89 : 89, 0, grCol.styleVolumeBarFill, 1);
+				FillGradRoundRect(gr, x + 1, y + (RES._4K ? 7 : 4), fillWidth - SCALE(0.5), h - SCALE(2), arcFill, arcFill, grSet.styleVolumeBarFill === 'inner' ? -89 : 89, 0, grCol.styleVolumeBarFill, 1);
 			} else {
 				gr.FillGradRect(x, y + (RES._4K ? 7 : 4), fillWidth - SCALE(2), h - SCALE(3), grSet.styleVolumeBarFill === 'inner' ? -90 : 90, grSet.styleBlackAndWhite ? grCol.styleVolumeBarFill : 0, grSet.styleBlackAndWhite ? 0 : grCol.styleVolumeBarFill);
 			}
@@ -2241,7 +2243,7 @@ class VolumeButton {
 
 		this.x = x + (grSet[`transportButtonSize_${grSet.layout}`] * SCALE(1.25));
 		this.y = y + (grSet.layout === 'compact' ? center_compact : grSet.layout === 'artwork' ? center_artwork : center_default) - this.h;
-		this.w = grm.ui.ww < 600 ? volumeBarWidth : SCALE(100);
+		this.w = grm.ui.ww < SCALE(600) ? volumeBarWidth : SCALE(100);
 		this.h = Math.min(grm.ui.wh - this.y, this.h);
 		this.volumeBar = new Volume(this.x, this.y, this.w, this.h);
 	}
