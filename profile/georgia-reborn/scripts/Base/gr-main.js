@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-02-2024                                              * //
+// * Last change:    09-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2409,48 +2409,27 @@ class MainUI {
 	 */
 	setProgressBarRefresh() {
 		DebugLog('setProgressBarRefresh()');
+
 		if (fb.PlaybackLength > 0) {
-			const refreshRate = {
-				// We want to update the progress bar for every pixel so divide total time by number of pixels in progress bar
-				variable: Math.abs(Math.ceil(1000 / ((this.ww - SCALE(80)) / fb.PlaybackLength))),
-				1000: 1000,
-				500: 500,
-				333: 333,
-				250: 250,
-				200: 200,
-				150: 150,
-				120: 120,
-				100: 100,
-				80: 80,
-				60: 60,
-				30: 30
-			};
+			const variableRefreshRate = Math.max(60, Math.ceil(1000 / ((this.ww - SCALE(80)) / fb.PlaybackLength)));
+			const selectedRefreshRate = grSet.seekbar === 'peakmeterbar' ? grSet.peakmeterBarRefreshRate : grSet.progressBarRefreshRate;
+			this.progressBarTimerInterval = selectedRefreshRate === 'variable' ? variableRefreshRate : selectedRefreshRate;
 
-			this.progressBarTimerInterval = refreshRate[grSet.seekbar === 'peakmeterbar' ? grSet.peakmeterBarRefreshRate : grSet.progressBarRefreshRate];
-
-			if (grSet.progressBarRefreshRate === 'variable') {
-				while (this.progressBarTimerInterval > 500) { // We want even multiples of the base progressBarTimerInterval, so that the progress bar always updates as smoothly as possible
+			if (selectedRefreshRate === 'variable') {
+				while (this.progressBarTimerInterval > 500) {
 					this.progressBarTimerInterval = Math.floor(this.progressBarTimerInterval / 2);
 				}
-				while (this.progressBarTimerInterval < 32) { // Roughly 30fps
-					this.progressBarTimerInterval *= 2;
-				}
 			}
-		}
-		else { // * Radio streaming
-			this.progressBarTimerInterval = 1000;
+		} else {
+			this.progressBarTimerInterval = 1000; // Radio streaming
 		}
 
-		if (this.showDebugTiming) console.log(`Progress bar will update every ${this.progressBarTimerInterval}ms or ${1000 / this.progressBarTimerInterval} times per second.`);
-
-		if (this.progressBarTimer) clearInterval(this.progressBarTimer);
-		this.progressBarTimer = null;
-
-		if (!fb.IsPaused) {
-			this.progressBarTimer = setInterval(() => {
-				this.refreshSeekbar();
-			}, this.progressBarTimerInterval || 1000);
+		if (this.showDebugTiming) {
+			console.log(`Progress bar will update every ${this.progressBarTimerInterval}ms or ${(1000 / this.progressBarTimerInterval).toFixed(2)} times per second.`);
 		}
+
+		clearInterval(this.progressBarTimer);
+		this.progressBarTimer = !fb.IsPaused ? setInterval(() => this.refreshSeekbar(), this.progressBarTimerInterval) : null;
 	}
 
 	/**
