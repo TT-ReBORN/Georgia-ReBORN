@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-03-2024                                              * //
+// * Last change:    09-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1265,6 +1265,7 @@ class ContextMenus {
 		volumeBtnMenu.separator();
 		volumeBtnMenu.appendItem('Auto-hide bar', () => {
 			grSet.autoHideVolumeBar = !grSet.autoHideVolumeBar;
+			grm.volBtn.toggleVolumeBar();
 			updateButtons();
 		}, { is_checked: grSet.autoHideVolumeBar });
 		transportButtonDisplayMenu.append(volumeBtnMenu);
