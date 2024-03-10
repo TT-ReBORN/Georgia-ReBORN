@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-03-2024                                              * //
+// * Last change:    10-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4852,7 +4852,9 @@ class MainUI {
 		lib.pop.sortIfNeeded(handleList);
 		fb.DoDragDrop(0, handleList, handleList.Count ? 1 | 4 : 0);
 
-		if (plman.IsPlaylistLocked(plman.ActivePlaylist)) return; // Do nothing, it's locked or an auto-playlist
+		if (plman.IsPlaylistLocked(plman.ActivePlaylist) || !pl.playlist.selection_handler.last_hover_row) {
+			return; // Do nothing, it's locked, an auto-playlist or no pl selection
+		}
 
 		plman.ClearPlaylistSelection(plman.ActivePlaylist);
 

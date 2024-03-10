@@ -519,7 +519,7 @@ class LibUserInterface {
 
 		// * Only used for grSet.libraryLayoutSplitPreset4, synchronizes artist & album font sizes with Playlist
 		const headerFontSize = grSet[`playlistHeaderFontSize_${grSet.layout}`];
-		const libraryLayoutSplitPreset4 = libSet.albumArtLabelType === 2 && (grSet.layout === 'default' && grSet.libraryLayout === 'split' && grm.ui.displayLibrary && grm.ui.displayPlaylist); // displayLibrarySplit
+		const libraryLayoutSplitPreset4 = libSet.albumArtLabelType === 2 && (grSet.layout === 'default' && grSet.libraryLayout === 'split' && grm.ui && grm.ui.displayLibrary && grm.ui.displayPlaylist); // displayLibrarySplit
 
 		if (libSet.custAlbumArtGrpFontUse && libSet.custAlbumArtGrpFont.length) {
 			const custFont = $Lib.split(libSet.custAlbumArtGrpFont, 1);
