@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-02-2024                                              * //
+// * Last change:    19-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -612,14 +612,11 @@ function on_key_up(vkey) {
  * @param {FbMetadbHandleList} handle_list - The handle list of the library items.
  */
 function on_library_items_added(handle_list) {
-	if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_library_items_added');
-		lib.call.on_library_items_added(handle_list);
-	}
-	else if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_library_items_added');
-		bio.call.on_library_items_added(handle_list);
-	}
+	grm.ui.traceCall && console.log('Library => on_library_items_added');
+	lib.call.on_library_items_added(handle_list);
+
+	grm.ui.traceCall && console.log('Biography => on_library_items_added');
+	bio.call.on_library_items_added(handle_list);
 }
 
 
@@ -629,14 +626,11 @@ function on_library_items_added(handle_list) {
  * @param {FbMetadbHandleList} handle_list - The handle list of the library items.
  */
 function on_library_items_changed(handle_list) {
-	if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_library_items_changed');
-		lib.call.on_library_items_changed(handle_list);
-	}
-	else if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_library_items_changed');
-		bio.call.on_library_items_changed(handle_list);
-	}
+	grm.ui.traceCall && console.log('Library => on_library_items_changed');
+	lib.call.on_library_items_changed(handle_list);
+
+	grm.ui.traceCall && console.log('Biography => on_library_items_changed');
+	bio.call.on_library_items_changed(handle_list);
 }
 
 
@@ -646,14 +640,11 @@ function on_library_items_changed(handle_list) {
  * @param {FbMetadbHandleList} handle_list - The handle list of the library items.
  */
 function on_library_items_removed(handle_list) {
-	if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_library_items_removed');
-		lib.call.on_library_items_removed(handle_list);
-	}
-	else if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_library_items_removed');
-		bio.call.on_library_items_removed(handle_list);
-	}
+	grm.ui.traceCall && console.log('Library => on_library_items_removed');
+	lib.call.on_library_items_removed(handle_list);
+
+	grm.ui.traceCall && console.log('Biography => on_library_items_removed');
+	bio.call.on_library_items_removed(handle_list);
 }
 
 
