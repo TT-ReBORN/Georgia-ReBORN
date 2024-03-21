@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-02-2024                                              * //
+// * Last change:    21-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -386,6 +386,7 @@ grSet.addProperties({
 	jumpSearchIncludeLibrary:           ['Georgia-ReBORN - 09. Player controls: Jump search include library', true], // true: Include library in playlist search query
 	jumpSearchIncludePlaylist:          ['Georgia-ReBORN - 09. Player controls: Jump search include playlist', true], // true: Include playlist in library search query
 	jumpSearchComposerOnly:             ['Georgia-ReBORN - 09. Player controls: Jump search composer only', false], // true: Composer only in jump search query
+	jumpSearchDisabled:                 ['Georgia-ReBORN - 09. Player controls: Jump search disabled', false], // true: Disable jump search
 	playlistWheelScrollSteps:           ['Georgia-ReBORN - 09. Player controls: Mouse wheel scroll steps (Playlist)', 3], // Playlist mouse wheel scroll steps
 	playlistWheelScrollDuration:        ['Georgia-ReBORN - 09. Player controls: Mouse wheel scroll smooth duration (Playlist)', 300], // Playlist mouse wheel scroll smooth duration in ms
 	playlistAutoScrollNowPlaying:       ['Georgia-ReBORN - 09. Player controls: Auto-scroll to current playing song (Playlist)', false], // Auto-scroll to current playing song in playlist
@@ -408,6 +409,8 @@ grSet.addProperties({
 	returnToHomeOnPlaybackStop:         ['Georgia-ReBORN - 09. Player controls: Return to home on playback stop', true], // true: Return to home on playback stop
 	addTracksPlaylistSwitch:            ['Georgia-ReBORN - 09. Player controls: Switch to playlist when adding songs', false], // When adding songs from Library or Playlist to another playlist
 	hideMiddlePanelShadow:              ['Georgia-ReBORN - 09. Player controls: Hide middle panel shadow', false], // false: Hides the middle panel shadow
+	fullscreenESCDisabled:              ['Georgia-ReBORN - 09. Player controls: Disable fullscreen ESC', false], // Enable or disable ESC fullscreen exit
+	fullscreenMaximize:                 ['Georgia-ReBORN - 09. Player controls: Maximize to fullscreen', true], // Enable or disable maximize function
 	lockPlayerSize:                     ['Georgia-ReBORN - 09. Player controls: Lock player size', false], // false: Locks the player size
 	transportButtonSize_default:        ['Georgia-ReBORN - 09. Player controls: Transport button size (Default)', 32], // Size in pixels of the buttons in Default layout
 	transportButtonSize_artwork:        ['Georgia-ReBORN - 09. Player controls: Transport button size (Artwork)', 32], // Size in pixels of the buttons in Artwork layout
@@ -498,7 +501,6 @@ grSet.addProperties({
 	waveformBarIndicator:               ['Georgia-ReBORN - 09. Player controls: Waveform bar indicator', false], // false: Shows the waveform bar indicator
 	waveformBarRefreshRate:             ['Georgia-ReBORN - 09. Player controls: Waveform bar refresh rate', 200], // 1000, 500, 200, 100, 60, 30 - Waveform bars refresh rate
 	waveformBarRefreshRateVar:          ['Georgia-ReBORN - 09. Player controls: Waveform bar refresh rate variable', false], // false: Should the waveform bar use variable refresh rate
-	maximizeToFullscreen:               ['Georgia-ReBORN - 09. Player controls: Maximize to fullscreen', true], // Maximize function
 	switchPlaybackTime:                 ['Georgia-ReBORN - 09. Player controls: Switch to playback time remaining', false], // Switch the playback time from time elapsed to time remaining
 	playbackOrder:                      ['Georgia-ReBORN - 09. Player controls: Playback order', 'default'], // Playback order 'default' for context plus foobar menu when no transport controls are displayed
 
@@ -984,6 +986,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'jumpSearchIncludeLibrary', grCfg.themeControls, 'jumpSearchIncludeLibrary', true);
 		this._setSetting(grSet, 'jumpSearchIncludePlaylist', grCfg.themeControls, 'jumpSearchIncludePlaylist', true);
 		this._setSetting(grSet, 'jumpSearchComposerOnly', grCfg.themeControls, 'jumpSearchComposerOnly', false);
+		this._setSetting(grSet, 'jumpSearchDisabled', grCfg.themeControls, 'jumpSearchDisabled', false);
 		this._setSetting(grSet, 'playlistWheelScrollSteps', grCfg.themeControls, 'playlistWheelScrollSteps', 3);
 		this._setSetting(grSet, 'playlistWheelScrollDuration', grCfg.themeControls, 'playlistWheelScrollDuration', 300);
 		this._setSetting(grSet, 'playlistAutoScrollNowPlaying', grCfg.themeControls, 'playlistAutoScrollNowPlaying', false);
@@ -1014,6 +1017,8 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'returnToHomeOnPlaybackStop', grCfg.themeControls, 'returnToHomeOnPlaybackStop', true);
 		this._setSetting(grSet, 'addTracksPlaylistSwitch', grCfg.themeControls, 'addTracksPlaylistSwitch', false);
 		this._setSetting(grSet, 'hideMiddlePanelShadow', grCfg.themeControls, 'hideMiddlePanelShadow', false);
+		this._setSetting(grSet, 'fullscreenESCDisabled', grCfg.themeControls, 'fullscreenESCDisabled', false);
+		this._setSetting(grSet, 'fullscreenMaximize', grCfg.themeControls, 'fullscreenMaximize', true);
 		this._setSetting(grSet, 'lockPlayerSize', grCfg.themeControls, 'lockPlayerSize', false);
 		this._setSetting(grSet, 'transportButtonSize_default', grCfg.themeControls, 'transportButtonSize_default', 32);
 		this._setSetting(grSet, 'transportButtonSize_artwork', grCfg.themeControls, 'transportButtonSize_artwork', 32);
@@ -1103,7 +1108,6 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'waveformBarIndicator', grCfg.themeControls, 'waveformBarIndicator', false);
 		this._setSetting(grSet, 'waveformBarRefreshRate', grCfg.themeControls, 'waveformBarRefreshRate', 200);
 		this._setSetting(grSet, 'waveformBarRefreshRateVar', grCfg.themeControls, 'waveformBarRefreshRateVar', false);
-		this._setSetting(grSet, 'maximizeToFullscreen', grCfg.themeControls, 'maximizeToFullscreen', true);
 		this._setSetting(grSet, 'switchPlaybackTime', grCfg.themeControls, 'switchPlaybackTime', false);
 		this._setSetting(grSet, 'playbackOrder', grCfg.themeControls, 'playbackOrder', 'default');
 	}

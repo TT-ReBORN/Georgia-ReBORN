@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-02-2024                                              * //
+// * Last change:    21-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -486,7 +486,7 @@ class Button {
 	 * Handles the maximize button action in the top menu, player goes into fullscreen and resumes player size.
 	 */
 	topMaximize() {
-		if (grSet.maximizeToFullscreen) { // F11 shortcut ( on_key_down() ) for going into/out fullscreen mode, disabled/not supported in Artwork layout, ESC also exits fullscreen mode
+		if (grSet.fullscreenMaximize) { // F11 shortcut ( on_key_down() ) for going into/out fullscreen mode, disabled/not supported in Artwork layout, ESC also exits fullscreen mode
 			UIHacks.FullScreen = !UIHacks.FullScreen;
 		} else {
 			UIHacks.MainWindowState = UIHacks.MainWindowState === WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;

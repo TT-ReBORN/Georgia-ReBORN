@@ -511,7 +511,11 @@ class LibFind {
 	}
 
 	on_char(code) {
-		if (lib.panel.search.active || utils.IsKeyPressed(0x11)) return;
+		if (grSet.jumpSearchDisabled || lib.panel.search.active ||
+			utils.IsKeyPressed(VK_CONTROL) || utils.IsKeyPressed(VK_ESCAPE)) {
+			return;
+		}
+
 		const text = String.fromCharCode(code);
 		switch (code) {
 			case lib.vk.back:

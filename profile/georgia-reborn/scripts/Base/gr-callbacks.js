@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    19-03-2024                                              * //
+// * Last change:    21-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -579,7 +579,7 @@ function on_key_down(vkey) {
 		UIHacks.MainWindowState === WindowState.Normal ? UIHacks.FullScreen = true : UIHacks.MainWindowState = WindowState.Normal;
 	}
 	// * ESC also exits fullscreen mode
-	else if (utils.IsKeyPressed(VK_ESCAPE) && UIHacks.FullScreen) {
+	else if (utils.IsKeyPressed(VK_ESCAPE) && UIHacks.FullScreen && !grSet.fullscreenESCDisabled) {
 		UIHacks.MainWindowState = WindowState.Normal;
 	}
 }

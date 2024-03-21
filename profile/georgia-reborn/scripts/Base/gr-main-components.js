@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-03-2024                                              * //
+// * Last change:    21-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1639,7 +1639,10 @@ class JumpSearch {
 	 * @param {number} code - The character code.
 	 */
 	on_char(code) {
-		if (lib.panel.search.active || utils.IsKeyPressed(VK_CONTROL)) return;
+		if (grSet.jumpSearchDisabled || lib.panel.search.active ||
+			utils.IsKeyPressed(VK_CONTROL) || utils.IsKeyPressed(VK_ESCAPE)) {
+			return;
+		}
 
 		const text = String.fromCharCode(code);
 		const playlistItems = plman.GetPlaylistItems(plman.ActivePlaylist);

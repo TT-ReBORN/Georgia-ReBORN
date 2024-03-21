@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-03-2024                                              * //
+// * Last change:    21-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1496,6 +1496,8 @@ class TopMenuOptions {
 		playerControlsJumpSearchMenu.addToggleItem('Include playlist in library search query', grSet, 'jumpSearchIncludePlaylist');
 		playerControlsJumpSearchMenu.addSeparator();
 		playerControlsJumpSearchMenu.addToggleItem('Composer only in jump search query', grSet, 'jumpSearchComposerOnly');
+		playerControlsJumpSearchMenu.addSeparator();
+		playerControlsJumpSearchMenu.addToggleItem('Disable jump search', grSet, 'jumpSearchDisabled');
 		playerControlsJumpSearchMenu.appendTo(playerControlsMenu);
 
 		// * SCROLLBAR * //
@@ -1626,6 +1628,8 @@ class TopMenuOptions {
 		playerControlsPanelMenu.addToggleItem('Switch to playlist when adding songs', grSet, 'addTracksPlaylistSwitch');
 		playerControlsPanelMenu.addSeparator();
 		playerControlsPanelMenu.addToggleItem('Hide middle panel shadow', grSet, 'hideMiddlePanelShadow', () => { RepaintWindow(); });
+		playerControlsPanelMenu.addSeparator();
+		playerControlsPanelMenu.addToggleItem('Disable fullscreen ESC', grSet, 'fullscreenESCDisabled');
 		playerControlsPanelMenu.addSeparator();
 		playerControlsPanelMenu.addToggleItem('Lock player size', grSet, 'lockPlayerSize', () => { UIHacks.DisableSizing = true; });
 		playerControlsPanelMenu.appendTo(playerControlsMenu);

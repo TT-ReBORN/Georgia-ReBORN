@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-02-2024                                              * //
+// * Last change:    21-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -644,6 +644,7 @@ class ConfigDefaults {
 			jumpSearchIncludeLibrary: true,
 			jumpSearchIncludePlaylist: true,
 			jumpSearchComposerOnly: false,
+			jumpSearchDisabled: false,
 			playlistWheelScrollSteps: 3,
 			playlistWheelScrollDuration: 300,
 			playlistAutoScrollNowPlaying: false,
@@ -672,8 +673,9 @@ class ConfigDefaults {
 			returnToHomeOnPlaybackStop: true,
 			addTracksPlaylistSwitch: false,
 			hideMiddlePanelShadow: false,
+			fullscreenESCDisabled: false,
+			fullscreenMaximize: true,
 			lockPlayerSize: false,
-			maximizeToFullscreen: true,
 			switchPlaybackTime: false,
 			transportButtonSize_default: 32,
 			transportButtonSize_artwork: 32,
@@ -797,6 +799,7 @@ class ConfigDefaults {
 			jumpSearchIncludeLibrary: 'Values: true, false - Options > Player controls > Jump search > Include library in playlist search query',
 			jumpSearchIncludePlaylist: 'Values: true, false - Options > Player controls > Jump search > Include playlist in library search query',
 			jumpSearchComposerOnly: 'Values: true, false - Options > Player controls > Jump search > Composer only in jump search query',
+			jumpSearchDisabled: 'Values: true, false - Options > Player controls > Jump search > Disable jump search',
 			playlistWheelScrollSteps: 'Values: 0.5, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Player controls > Scrollbar > Playlist > Mouse wheel scroll steps',
 			playlistWheelScrollDuration: 'Values: 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 - Options > Player controls > Scrollbar > Playlist > Mouse wheel scroll smooth duration',
 			playlistAutoScrollNowPlaying: 'Values: true, false - Options > Player controls > Scrollbar > Playlist > Auto-scroll to current playing song',
@@ -825,8 +828,9 @@ class ConfigDefaults {
 			returnToHomeOnPlaybackStop: 'Values: true, false - Options > Player controls > Panel > Return to home on playback stop',
 			addTracksPlaylistSwitch: 'Values: true, false - Options > Player controls > Panel > Switch to playlist when adding songs',
 			hideMiddlePanelShadow: 'Values: true, false - Options > Player controls > Panel > Hide middle panel shadow',
+			fullscreenESCDisabled: 'Values: true, false - Options > Player controls > Panel > Disable fullscreen ESC',
+			fullscreenMaximize: 'Values: true, false - not in Options - enable or disable the maximize to fullscreen function',
 			lockPlayerSize: 'Values: true, false - Options > Player controls > Panel > Lock player size',
-			maximizeToFullscreen: 'Values: true, false - not in Options - enable or disable the maximize to fullscreen function',
 			switchPlaybackTime: 'Values: true, false - not in Options - switch to playback time remaining when clicking on the playback time in the lower bar',
 			transportButtonSize_default: 'Values: 28, 30, 32, 34, 36, 38, 40, 42 - Options > Player controls > Transport button size > Default',
 			transportButtonSize_artwork: 'Values: 28, 30, 32, 34, 36 - Options > Player controls > Lower bar > Transport button size > Artwork',
