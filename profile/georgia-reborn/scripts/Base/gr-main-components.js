@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-03-2024                                              * //
+// * Last change:    25-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -419,21 +419,25 @@ class InputBox {
 	customCacheDir(directory) {
 		const dirMap = {
 			library: {
+				name: 'customLibraryDir',
 				path: grCfg.customLibraryDir,
 				string: 'library',
 				schema: grDef.customLibraryDirSchema
 			},
 			biography: {
+				name: 'customBiographyDir',
 				path: grCfg.customBiographyDir,
 				string: 'biography',
 				schema: grDef.customBiographyDirSchema
 			},
 			lyrics: {
+				name: 'customLyricsDir',
 				path: grCfg.customLyricsDir,
 				string: 'lyrics',
 				schema: grDef.customLyricsDirSchema
 			},
 			waveformBar: {
+				name: 'customWaveformBarDir',
 				path: grCfg.customWaveformBarDir,
 				string: 'waveform',
 				schema: grDef.customWaveformBarDirSchema
@@ -457,6 +461,8 @@ class InputBox {
 			if (e.message === 'Invalid type' || e.name === 'SyntaxError') {
 				fb.ShowPopupMessage(`Path is not valid:\n${input}\n\nDo not use any " at the beginning and the end of your pattern.\n\nExample of a correct path:\n\nD:\\Stuff\\Directory\\`, `Custom ${customDirString} directory`);
 			}
+
+			if (dirInfo.name) grSet[dirInfo.name] = false;
 			return;
 		}
 		grCfg.configCustom.addConfigurationObject(customDirSchema, [newVal]);
