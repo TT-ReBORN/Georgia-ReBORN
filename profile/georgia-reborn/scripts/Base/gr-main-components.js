@@ -455,7 +455,13 @@ class InputBox {
 		try {
 			input = utils.InputBox(window.ID, `Enter your custom ${customDirString} directory:`, 'Georgia-ReBORN', oldValStr, true);
 			newVal = !input || typeof input !== 'string' && !input.length ? '' : JSON.parse(`"${input.replace(/[\\/]/g, '\\\\')}"`);
-			if (typeof newVal !== 'string') throw new Error('Invalid type');
+			if (typeof newVal !== 'string') {
+				throw new Error('Invalid type');
+			}
+			if (dirInfo.name === 'customLyricsDir') {
+				const msg = 'If the custom lyrics directory has been set and is active,\nit must also be updated in the ESLyric location setting:\n\nfoobar\'s Preferences > Tools > ESLyric > Lyric Options > Save Settings > Location.\n\n\n';
+				ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+			}
 		}
 		catch (e) {
 			if (e.message === 'Invalid type' || e.name === 'SyntaxError') {
