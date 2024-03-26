@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-03-2024                                              * //
+// * Last change:    26-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -224,11 +224,14 @@ const grPath = {
 	},
 
 	// * LYRICS * //
-	lyricsPath: [
-		'$replace($replace(%path%,%filename_ext%,),,\\)',
-		`${fb.ProfilePath}cache\\lyrics\\`,
-		`${fb.FoobarPath}cache\\lyrics\\`
-	]
+	lyricsPath() {
+		return [
+			$('$replace($replace(%path%,%filename_ext%,),,\\)'),
+			$(`${grCfg.customLyricsDir}\\`),
+			`${fb.ProfilePath}cache\\lyrics\\`,
+			`${fb.FoobarPath}cache\\lyrics\\`
+		];
+	}
 };
 
 
