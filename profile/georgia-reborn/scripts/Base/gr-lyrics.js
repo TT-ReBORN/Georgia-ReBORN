@@ -121,6 +121,13 @@ class Lyrics {
 			tfilename.push(stripReservedChars($(filename)));
 		}
 
+        // extract file name from NowPlaying
+        let filePath = fb.GetNowPlaying().Path;
+        let filenameWithExtension = filePath.split('\\').pop(); // Get filename with extension
+        let filenameWithoutExtension = filenameWithExtension.replace(/\.[^.]+$/, ''); // match all up to the last dot
+
+        tfilename.push(filenameWithoutExtension);
+
 		for (let i = 0; i < tpath.length && !foundLyrics; i++) {
 			for (const file of tfilename) {
 				foundLyrics = this.checkLyrics(tpath[i], file);
