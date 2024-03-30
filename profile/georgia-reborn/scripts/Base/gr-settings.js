@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-03-2024                                              * //
+// * Last change:    30-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -513,6 +513,7 @@ grSet.addProperties({
 	showPlaylistHistory:                ['Georgia-ReBORN - 10. Playlist: Show playlist history', true], // Show Playlist history
 	autoHidePlman:                      ['Georgia-ReBORN - 10. Playlist: Auto hide playlist manager', true], // Playlist Automatic Playlist Manager Hide
 	hyperlinksCtrlClick:                ['Georgia-ReBORN - 10. Playlist: Ctrl+click to follow hyperlinks', false], // true: Clicking on hyperlinks only works if CTRL key is held down
+	headerFlipRows:                     ['Georgia-ReBORN - 10. Playlist: Flip header rows', false], // true: Playlist header title and subtitle rows will be reversed
 	showWeblinks:                       ['Georgia-ReBORN - 10. Playlist: Show weblinks', true], // Show weblinks in context menu
 	showPlaylistFullDate:               ['Georgia-ReBORN - 10. Playlist: Show full date', false], // Playlist show full date YYYY-MM-DD
 	showPlaylistRatingGrid:             ['Georgia-ReBORN - 10. Playlist: Show rating grid', false], // Show rating grid in playlist rows
@@ -1131,6 +1132,7 @@ class ThemeSettingsManager {
 		this._setSetting(plSet, 'use_compact_header', grCfg.themePlaylist, 'use_compact_header', false);
 		this._setSetting(plSet, 'auto_collapse', grCfg.themePlaylist, 'auto_collapse', false);
 		this._setSetting(grSet, 'hyperlinksCtrlClick', grCfg.themePlaylist, 'hyperlinksCtrlClick', false);
+		this._setSetting(grSet, 'headerFlipRows', grCfg.themePlaylist, 'headerFlipRows', false);
 		this._setSetting(plSet, 'show_disc_header', grCfg.themePlaylist, 'show_disc_header', true);
 		this._setSetting(plSet, 'show_group_info', grCfg.themePlaylist, 'show_group_info', true);
 		this._setSetting(grSet, 'showWeblinks', grCfg.themePlaylist, 'showWeblinks', true);

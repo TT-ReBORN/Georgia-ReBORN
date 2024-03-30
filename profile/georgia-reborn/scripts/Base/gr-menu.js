@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-03-2024                                              * //
+// * Last change:    30-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2115,6 +2115,11 @@ class TopMenuOptions {
 		});
 		playlistAlbumMenu.addSeparator();
 		playlistAlbumMenu.addToggleItem('Ctrl+click to follow hyperlinks', grSet, 'hyperlinksCtrlClick');
+		playlistAlbumMenu.addSeparator();
+		playlistAlbumMenu.addToggleItem('Flip header rows', grSet, 'headerFlipRows', () => {
+			grm.ui.initPlaylist();
+			pl.call.on_size(grm.ui.ww, grm.ui.wh);
+		});
 		playlistAlbumMenu.addSeparator();
 		playlistAlbumMenu.addToggleItem('Show disc sub-header', plSet, 'show_disc_header', () => { grm.ui.updatePlaylist(); });
 		playlistAlbumMenu.addToggleItem('Show group info', plSet, 'show_group_info', () => { grm.ui.updatePlaylist(); });

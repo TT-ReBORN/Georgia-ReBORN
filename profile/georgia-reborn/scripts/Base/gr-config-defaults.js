@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-03-2024                                              * //
+// * Last change:    30-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -952,6 +952,7 @@ class ConfigDefaults {
 			use_compact_header: false,
 			auto_collapse: false,
 			hyperlinksCtrlClick: false,
+			headerFlipRows: false,
 			show_disc_header: true,
 			show_group_info: true,
 			showWeblinks: true,
@@ -1003,6 +1004,7 @@ class ConfigDefaults {
 			use_compact_header: 'Values: true, false - Options > Playlist > Album header > Compact header',
 			auto_collapse: 'Values: true, false - Options > Playlist > Album header > Auto collapse and expand',
 			hyperlinksCtrlClick: 'Values: true, false - Options > Playlist > Album header > Ctrl+click to follow hyperlinks',
+			headerFlipRows: 'Values: true, false - Options > Playlist > Album header > Flip header rows',
 			show_disc_header: 'Values: true, false - Options > Playlist > Album header > Show disc sub-header',
 			show_group_info: 'Values: true, false - Options > Playlist > Album header > Show group info',
 			showWeblinks: 'Values: true, false - Options > Playlist > Album header > Show weblinks in context menu',

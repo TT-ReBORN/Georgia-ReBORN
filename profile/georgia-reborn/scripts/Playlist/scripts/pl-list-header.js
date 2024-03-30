@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-02-2024                                              * //
+// * Last change:    30-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -575,7 +575,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			// * ARTIST * //
 			if (this.grouping_handler.get_title_query()) {
 				const artist_text_format = Stringformat.v_align_far | Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
-				let artist_text = $(this.grouping_handler.get_title_query(), this.metadb);
+				let artist_text = grSet.headerFlipRows ? $(this.grouping_handler.get_sub_title_query(), this.metadb) : $(this.grouping_handler.get_title_query(), this.metadb);
 
 				if (!artist_text && is_radio) {
 					artist_text = 'Radio Stream';
@@ -610,7 +610,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 			// * ALBUM * //
 			if (this.grouping_handler.get_sub_title_query()) {
-				const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+				const album_text = grSet.headerFlipRows ? $(this.grouping_handler.get_title_query(), this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
 
 				if (album_text) {
 					const album_h = part_h;
@@ -1035,7 +1035,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		}
 
 		// * Artist
-		const albumArtist = '%album artist%';
+		const albumArtist = grSet.headerFlipRows ? this.grouping_handler.get_sub_title_query() : this.grouping_handler.get_title_query();
 		const is_radio = this.metadb.RawPath.startsWith('http');
 		let artist_text = [];
 		let artist_x = left_pad;
@@ -1078,7 +1078,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 		// * Album
 		const album_y = part_h * (!plSet.show_group_info ? 1.5 : 1) + ((RES._4K || RES._QHD && headerFontSize === 17 ? 5 : 4) * (!plSet.show_group_info ? 2 : 1));
-		const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
+		const album_text = grSet.headerFlipRows ? $(this.grouping_handler.get_title_query(), this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
 
 		if (album_text) {
 			this.hyperlinks.album = new Hyperlink(album_text, pl.font.album, 'album', left_pad, album_y, this.w - left_pad * 2, true);
