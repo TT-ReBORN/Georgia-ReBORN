@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    31-03-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1262,13 +1262,12 @@ class PlaylistSelectionHandler {
 		/**
 		 * Checks if the playlist is in the same state and if the selected indexes are equal.
 		 * This is necessary to ensure that we can handle the 'move drop' properly.
+		 * The 'move drop' can be handled properly only when playlist is still in the same state.
 		 * @returns {boolean} True or false.
 		 */
-		const can_handle_move_drop = function() {
-			// We can handle the 'move drop' properly only when playlist is still in the same state
-			return cur_playlist_size === plman.PlaylistItemCount(this.cur_playlist_idx)
-				&& this.arraysEqual(cur_selected_indexes, this.selected_indexes);
-		};
+		const can_handle_move_drop = () =>
+			cur_playlist_size === plman.PlaylistItemCount(this.cur_playlist_idx) &&
+			this.arraysEqual(cur_selected_indexes, this.selected_indexes);
 
 		if (PlaylistDropEffect.none === effect && can_handle_move_drop()) {
 			// DROPEFFECT_NONE needs special handling, because on NT it
