@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-03-2024                                              * //
+// * Last change:    03-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -480,10 +480,10 @@ class MainUI {
 	 */
 	drawNoAlbumArt(gr) {
 		const noAlbumArtLayoutDefault =
-			grSet.layout === 'default' && !this.displayLibrarySplit() && (this.displayPlaylist && grSet.playlistLayout !== 'full' && !this.displayBiography || this.displayLibrary && grSet.libraryLayout === 'normal');
+			grSet.layout === 'default' && !this.displayLibrarySplit() && (this.displayPlaylist && grSet.playlistLayout !== 'full' && !this.displayBiography || this.displayLibrary && grSet.libraryLayout === 'normal' || this.displayDetails);
 
 		const noAlbumArtLayoutArtwork =
-			grSet.layout === 'artwork' && !this.displayPlaylist && !this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography;
+			grSet.layout === 'artwork' && (!this.displayPlaylist && !this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography || this.displayDetails);
 
 		if (!this.albumArt && this.noArtwork && fb.IsPlaying) {
 			if (noAlbumArtLayoutDefault || noAlbumArtLayoutArtwork) {
@@ -3991,7 +3991,8 @@ class MainUI {
 			if (!grSet.rotateDiscArt || Number.isNaN(tracknum)) tracknum = 0; // Avoid NaN issues when changing tracks rapidly
 
 			this.discArtRotation = RotateImg(this.discArt, this.discArtSize.w, this.discArtSize.h, tracknum * grSet.rotationAmt);
-			if (['cdAlbumCover', 'vinylAlbumCover'].includes(grSet.discArtStub) && this.discArtCover && (!grSet.noDiscArtStub || grSet.showDiscArtStub)) {
+			if (['cdAlbumCover', 'vinylAlbumCover'].includes(grSet.discArtStub) && (!grSet.noDiscArtStub || grSet.showDiscArtStub) &&
+				this.discArtCover && this.discArtCover.Width && this.discArtCover.Height) {
 				this.createDiscArtCoverMask(this.discArtCover, this.discArtCover.Width, this.discArtCover.Height);
 				this.discArtRotationCover = RotateImg(this.discArtCover, this.discArtSize.w, this.discArtSize.h, tracknum * grSet.rotationAmt);
 			}

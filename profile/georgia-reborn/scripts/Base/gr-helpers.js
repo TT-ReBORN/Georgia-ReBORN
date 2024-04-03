@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-02-2024                                              * //
+// * Last change:    03-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1503,7 +1503,7 @@ function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1,
  * @returns {GdiBitmap|null} The rotated image or null if an error occurs.
  */
 function RotateImg(img, w, h, degrees) {
-	if (!img || w <= 0 || h <= 0) return null;
+	if (!img || !w || !h) return null;
 
 	/**
 	 * Because foobar x86 can allocate only 4 gigs memory, we must limit disc art res for 4K when using
