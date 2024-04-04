@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-02-2024                                              * //
+// * Last change:    04-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1069,7 +1069,7 @@ class CustomMenuInputField extends CustomMenu {
 	 */
 	updateMetadata() {
 		grm.gridMenu.updateMetadataGridFromConfig(this.id, this.value, this.value2);
-		grm.gridMenu.grMain.gridMenu.initMetadataGridMenu();
+		grm.gridMenu.initMetadataGridMenu();
 		this.repaint();
 	}
 	// #endregion
