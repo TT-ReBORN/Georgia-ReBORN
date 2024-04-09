@@ -240,19 +240,25 @@ class LibMenuItems {
 		}
 
 		if (this.validItem && libSet.albumArtOptionsShow) {
+			const gridStr = !lib.panel.imgView ? 'Show album grid' : (!libSet.facetView ? 'Show tree' : 'Show text');
 			libMenu.newItem({
-				str: !lib.panel.imgView ? 'Show album art' : (!libSet.facetView ? 'Show tree' : 'Show text'),
-				func: () => this.setPlaylist(3),
-				flags: !lib.panel.pn_h_auto || libSet.pn_h != libSet.pn_h_min ? LIB_MF_STRING : LIB_MF_GRAYED,
-				separator: !lib.panel.imgView //|| this.show_context && !lib.ui.style.topBarShow
+				str: gridStr,
+				func: () => {
+					libSet.artId = 0;
+					this.setPlaylist(3)
+				},
+				flags: !lib.panel.pn_h_auto || libSet.pn_h != libSet.pn_h_min ? LIB_MF_STRING : LIB_MF_GRAYED
 			});
-		}
 
-		if (this.validItem && lib.panel.imgView) {
+			const gridStr2 = libSet.artId === 4 && gridStr !== 'Show album grid' ? 'Show album grid' : 'Show artist grid';
 			libMenu.newItem({
-				str: libSet.artId != 4 ? 'Show artists' : 'Show albums',
-				func: () => { libSet.artId = libSet.artId != 4 ? 4 : 0; this.setPlaylist(4); },
-				separator: this.show_context && !lib.ui.style.topBarShow
+				str: gridStr2,
+				func: () => {
+					libSet.artId = libSet.artId === 0 || gridStr2 === 'Show artist grid' ? 4 : 0;
+					if (lib.panel.imgView) libSet.toggle('albumArtShow');
+					this.setPlaylist(3);
+				},
+				separator: !lib.panel.imgView
 			});
 		}
 
