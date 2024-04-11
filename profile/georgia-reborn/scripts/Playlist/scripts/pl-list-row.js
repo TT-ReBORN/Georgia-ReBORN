@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-02-2024                                              * //
+// * Last change:    11-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -50,19 +50,21 @@ class PlaylistRow extends BaseListItem {
 		this.parent = undefined;
 
 		/** @public @type {boolean} */
-		this.is_odd = false;
-		/** @public @type {boolean} */
 		this.is_playing = false;
 		/** @public @type {boolean} */
 		this.is_focused = false;
+		/** @public @type {boolean} */
+		this.is_hovered = false;
+		/** @public @type {boolean} */
+		this.is_cropped = false;
+		/** @public @type {boolean} */
+		this.is_odd = false;
 		/** @public @type {boolean} */
 		this.is_drop_boundary_reached = false;
 		/** @public @type {boolean} */
 		this.is_drop_bottom_selected = false;
 		/** @public @type {boolean} */
 		this.is_drop_top_selected = false;
-		/** @public @type {boolean} */
-		this.is_cropped = false;
 
 		/** @private @type {number} */
 		this.rating_left_pad = 0;
@@ -110,8 +112,6 @@ class PlaylistRow extends BaseListItem {
 		let title_artist_color = pl.col.row_title_selected;
 		const scrollbar = plSet.show_scrollbar && pl.playlist.is_scrollbar_available;
 
-		if (!grSet.playlistRowHover) this.title_color = pl.col.row_title_normal;
-
 		if (this.is_selected()) {
 			this.title_color = pl.col.row_title_selected;
 			title_font = pl.font.title_selected;
@@ -132,6 +132,8 @@ class PlaylistRow extends BaseListItem {
 				gr.DrawRect(this.x, this.is_playing ? this.y - 1 : this.y, SCALE(7), this.h, 1, pl.col.row_sideMarker);
 				gr.FillSolidRect(this.x, this.y, SCALE(8), this.h, pl.col.row_sideMarker);
 			}
+		} else {
+			this.title_color = grSet.playlistRowHover && this.is_hovered ? pl.col.row_title_hovered : pl.col.row_title_normal;
 		}
 
 		if (this.is_playing && pl.col.row_nowplaying_bg !== '') { // * Wait until nowplaying bg has a new color to prevent flashing
@@ -358,10 +360,7 @@ class PlaylistRow extends BaseListItem {
 			}, 1000);
 		}
 
-		// * Change and update title_color back to normal from previous mouse row hover state
-		this.title_color = pl.col.row_title_normal;
-
-		// * Callbacks for rowTooltip
+		// * Set widths for rowTooltip
 		this.title_w = this.w - right_pad - SCALE(44);
 		this.title_text_w = gr.MeasureString(this.title_text, title_font, 0, 0, 0, 0).Width;
 	}
@@ -394,19 +393,6 @@ class PlaylistRow extends BaseListItem {
 	set_w(w) {
 		BaseListItem.prototype.set_w.apply(this, [w]);
 		this.initialize_rating();
-	}
-
-	/**
-	 * Changes the playlist row text state when playlist item is hovered or pressed.
-	 * @param {PlaylistRowState} item - The playlist row item.
-	 */
-	changeRowState(item) {
-		const titleColor = {
-			[PlaylistRowState.normal]:  pl.col.row_title_normal,
-			[PlaylistRowState.hovered]: pl.col.row_title_hovered,
-			[PlaylistRowState.pressed]: pl.col.row_title_selected
-		};
-		this.title_color = titleColor[item] || this.title_color;
 	}
 
 	/**
@@ -449,13 +435,28 @@ class PlaylistRow extends BaseListItem {
 	}
 
 	/**
-	 * Checks if the mouse is on a playlist item.
+	 * Checks if the mouse is on a playlist item and sets its hover state.
 	 * @param {number} x - The x-coordinate.
 	 * @param {number} y - The y-coordinate.
 	 * @returns {boolean} True or false.
 	 */
 	trace(x, y) {
-		return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
+		const mouseOnItem = this.x <= x && x < this.x + this.w && this.y <= y && y < this.y + this.h;
+
+		// Check if any other row is hovered and reset its state if necessary
+		if (PlaylistRow.hovered && PlaylistRow.hovered !== this && PlaylistRow.hovered.is_hovered) {
+			PlaylistRow.hovered.is_hovered = false;
+		}
+
+		if (mouseOnItem) {
+			this.is_hovered = true;
+			PlaylistRow.hovered = this; // Set this row as the currently hovered row
+		} else {
+			this.is_hovered = false;
+			PlaylistRow.hovered = null;
+		}
+
+		return mouseOnItem;
 	}
 
 	/**
@@ -518,21 +519,6 @@ class PlaylistRow extends BaseListItem {
 		const panelWhite = grCol.colBrightness > 210 && grSet.styleRebornFusion || grCol.colBrightness2 > 210 && grSet.styleRebornFusion2 || grSet.styleBlackAndWhite2;
 		const panelBlack = grCol.colBrightness <  25 && grSet.styleRebornFusion || grCol.colBrightness2 < 25  && grSet.styleRebornFusion2 || grSet.styleBlackAndWhite;
 		this.title_color = panelWhite ? RGB(80, 80, 80) : panelBlack ? RGB(200, 200, 200) : pl.col.row_title_normal;
-	}
-	// #endregion
-
-	// * CALLBACKS * //
-	// #region CALLBACKS
-	/**
-	 * Traces the mouse movement and changes the playlist text row state on an item.
-	 * @param {number} x - The x-coordinate.
-	 * @param {number} y - The y-coordinate.
-	 * @param {number} m - The mouse mask.
-	 */
-	on_mouse_move(x, y, m) {
-		if (grSet.playlistRowHover && grm.ui.loadingThemeComplete) {
-			this.changeRowState(this.trace(x, y) ? PlaylistRowState.hovered : PlaylistRowState.normal);
-		}
 	}
 	// #endregion
 }

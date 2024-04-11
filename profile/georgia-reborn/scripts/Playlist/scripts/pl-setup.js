@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    11-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -41,17 +41,6 @@ const PlaylistMutation = {
 	Reordered: 'Playlist reordered',
 	Switch:    'Playlist switch'
 }
-
-/**
- * A set of playlist row state settings.
- * @global
- * @enum {number}
- */
-const PlaylistRowState = {
-	normal:  0,
-	hovered: 1,
-	pressed: 2
-};
 
 /**
  * A set of playlist item visibility state settings.
