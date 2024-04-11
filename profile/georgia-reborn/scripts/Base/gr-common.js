@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    12-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1351,6 +1351,27 @@ class Utilities {
 		const cssPath = `${fb.FoobarPath}georgia-reborn\\scripts\\playlist\\assets\\html\\${newCss}`;
 
 		return htmlCode.replace(/href="styles10.css"/i, `href="${cssPath}"`);
+	}
+
+	/**
+	 * Sets the mouse cursor appearance based on position and application state.
+	 * @param {number} x - The current x-coordinate of the mouse.
+	 * @param {number} y - The current y-coordinate of the mouse.
+	 */
+	setMouseCursor(x, y) {
+		if (!mouseInLibrarySearch(x, y)) {
+			window.SetCursor(32512); // Arrow
+		}
+
+		if (grCfg.settings.hideCursor && fb.IsPlaying) {
+			clearTimeout(grm.ui.hideCursorTimeout);
+			grm.ui.hideCursorTimeout = setTimeout(() => {
+				// * If there's a menu id (i.e. a menu is down) we don't want the cursor to ever disappear
+				if (!grm.ui.activeMenu && fb.IsPlaying) {
+					window.SetCursor(-1); // Hide cursor
+				}
+			}, 10000);
+		}
 	}
 
 	/**

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-04-2024                                              * //
+// * Last change:    12-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -905,19 +905,19 @@ function on_mouse_mbtn_up(x, y, m) {
  * @param {number} m - The mouse mask.
  */
 function on_mouse_move(x, y, m) {
+	if (x === grm.ui.state.mouse_x && y === grm.ui.state.mouse_y) return;
+
 	const showGridTimeline      = grSet[`showGridTimeline_${grSet.layout}`];
 	const showTransportControls = grSet[`showTransportControls_${grSet.layout}`];
 	const showVolumeBtn         = grSet[`showVolumeBtn_${grSet.layout}`];
 
-	if (x === grm.ui.state.mouse_x && y === grm.ui.state.mouse_y) return;
-
+	grm.ui.state.mouse_x = x;
+	grm.ui.state.mouse_y = y;
 	grm.display.setWindowDrag(x, y);
+	grm.utils.setMouseCursor(x, y);
 
-	if (!mouseInLibrarySearch(x, y)) window.SetCursor(32512); // Arrow
-
-	if (grm.button) {
-		grm.button.on_mouse_move(x, y, m);
-	}
+	if (grm.button) grm.button.on_mouse_move(x, y, m);
+	if (grCfg.updateHyperlink) grCfg.updateHyperlink.on_mouse_move(grCfg.updateHyperlink, x, y);
 
 	if (grm.progBar && grSet.seekbar === 'progressbar') {
 		grm.progBar.on_mouse_move(x, y);
@@ -927,9 +927,6 @@ function on_mouse_move(x, y, m) {
 		grm.waveBar.on_mouse_move(x, y, m);
 	}
 
-	grm.ui.state.mouse_x = x;
-	grm.ui.state.mouse_y = y;
-
 	// * Top menu compact - collapse top menu to compact when mouse is out of top menu area
 	if (grSet.topMenuCompact && !grSet.showTopMenuCompact && grm.ui.state.mouse_y > grm.ui.topMenuHeight * 2) { // Start collapse
 		grSet.showTopMenuCompact = true;
@@ -937,31 +934,15 @@ function on_mouse_move(x, y, m) {
 			grm.button.topMenu(true);
 		}, 3000);
 	}
-
-	if (grCfg.settings.hideCursor && fb.IsPlaying) {
-		clearTimeout(grm.ui.hideCursorTimeout);
-		grm.ui.hideCursorTimeout = setTimeout(() => {
-			// * If there's a menu id (i.e. a menu is down) we don't want the cursor to ever disappear
-			if (!grm.ui.activeMenu && fb.IsPlaying) {
-				window.SetCursor(-1); // Hide cursor
-			}
-		}, 10000);
-	}
-
-	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
+	else if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
 		grm.ui.traceCall && console.log('Custom menu => on_mouse_move');
 		grm.cusMenu.on_mouse_move(x, y, m);
 	}
-
-	if (grCfg.updateHyperlink) grCfg.updateHyperlink.on_mouse_move(grCfg.updateHyperlink, x, y);
-
-	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
+	else if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
 		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Playlist => on_mouse_move');
-
 		if (grm.utils.suppressMouseMove(x, y, m)) {
 			return;
 		}
-
 		grm.utils.disableSizing(m);
 		pl.call.on_mouse_move(x, y, m);
 	}
