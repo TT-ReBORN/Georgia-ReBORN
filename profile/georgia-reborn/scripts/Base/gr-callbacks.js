@@ -1065,7 +1065,7 @@ function on_mouse_wheel(step) {
 	if (showVolumeBtn && grm.volBtn.on_mouse_wheel(step)) return;
 
 	// * Seeking through playback
-	if (mouseInSeekbar()) {
+	if (mouseInSeekbar(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
 		fb.PlaybackTime = fb.PlaybackTime - step * grSet.progressBarWheelSeekSpeed;
 		grm.ui.refreshSeekbar();
 		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.on_mouse_wheel(step);
@@ -1113,15 +1113,15 @@ function on_mouse_wheel(step) {
 	if (grm.ui.displayLyrics && mouseInAlbumArt()) {
 		grm.lyrics.on_mouse_wheel(step);
 	}
-	else if (grm.ui.displayBiography && mouseInBiography()) {
+	else if (grm.ui.displayBiography && mouseInBiography(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
 		grm.ui.traceCall && console.log('Biography => on_mouse_wheel');
 		bio.call.on_mouse_wheel(step);
 	}
-	else if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist()) {
+	else if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
 		grm.ui.traceCall && console.log('Playlist => on_mouse_wheel');
 		pl.call.on_mouse_wheel(step);
 	}
-	else if (grm.ui.displayLibrary && mouseInLibrary()) {
+	else if (grm.ui.displayLibrary && mouseInLibrary(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
 		grm.ui.traceCall && console.log('Library => on_mouse_wheel');
 		lib.call.on_mouse_wheel(step);
 	}
@@ -1707,13 +1707,11 @@ function mouseInLowerBar(x, y) {
  * @returns {boolean} True or false.
  */
 function mouseInSeekbar(x, y) {
-	const seekX = x || grm.ui.state.mouse_x;
-	const seekY = y || grm.ui.state.mouse_y;
 	const pBar = grSet.seekbar === 'progressbar';
 
-	if (seekX >= SCALE(40) && seekX < grm.ui.ww - SCALE(40) &&
-		seekY >= grm.ui.wh - (grSet.layout !== 'default' ? 0.6 : 0.5) * grm.ui.lowerBarHeight - 0.5 * grm.ui.progressBarH &&
-		seekY <= grm.ui.wh - (grSet.layout !== 'default' ? SCALE(pBar ? 60 : 55) : SCALE(pBar ? 35 : 20))) {
+	if (x >= SCALE(40) && x < grm.ui.ww - SCALE(40) &&
+		y >= grm.ui.wh - (grSet.layout !== 'default' ? 0.6 : 0.5) * grm.ui.lowerBarHeight - 0.5 * grm.ui.progressBarH &&
+		y <= grm.ui.wh - (grSet.layout !== 'default' ? SCALE(pBar ? 60 : 55) : SCALE(pBar ? 35 : 20))) {
 		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInSeekbar');
 		return true;
 	}
@@ -1747,21 +1745,21 @@ function mouseInPanel(x, y) {
  * @returns {boolean} True or false.
  */
 function mouseInPlaylist(x, y) {
-	const plistX = x || grm.ui.state.mouse_x;
-	const plistY = y || grm.ui.state.mouse_y;
-
-	if (plistX >= pl.playlist.x && plistX < pl.playlist.x + pl.playlist.w &&
-		plistY >= pl.playlist.y - SCALE(plSet.row_h) && plistY < pl.playlist.y + pl.playlist.h) {
+	if (x >= pl.playlist.x && x < pl.playlist.x + pl.playlist.w &&
+		y >= pl.playlist.y - SCALE(plSet.row_h) && y < pl.playlist.y + pl.playlist.h) {
 		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Playlist => mouseInPlaylist');
 		return true;
+	}
+
+	if (PlaylistRow.hovered && PlaylistRow.hovered.is_hovered) {
+		PlaylistRow.hovered.is_hovered = false;
+		pl.playlist.repaint();
 	}
 
 	if (pl.playlist.scrollbar.b_is_dragging) {
 		pl.playlist.scrollbar.b_is_dragging = false;
 		pl.playlist.scrollbar.desiredScrollPosition = undefined;
 	}
-
-	pl.call.on_mouse_leave();
 
 	return false;
 }
@@ -1775,10 +1773,7 @@ function mouseInPlaylist(x, y) {
  * @returns {boolean} True or false.
  */
 function mouseInLibrary(x, y) {
-	const libX = x || grm.ui.state.mouse_x;
-	const libY = y || grm.ui.state.mouse_y;
-
-	if (libX >= lib.ui.x && libX < lib.ui.x + lib.ui.w && libY >= lib.ui.y && libY < lib.ui.y + lib.ui.h) {
+	if (x >= lib.ui.x && x < lib.ui.x + lib.ui.w && y >= lib.ui.y && y < lib.ui.y + lib.ui.h) {
 		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Library => mouseInLibrary');
 		return true;
 	}
@@ -1818,10 +1813,7 @@ function mouseInLibrarySearch(x, y) {
  * @returns {boolean} True or false.
  */
 function mouseInBiography(x, y) {
-	const bioX = x || grm.ui.state.mouse_x;
-	const bioY = y || grm.ui.state.mouse_y;
-
-	if (bioX >= bio.ui.x && bioX < bio.ui.x + bio.ui.w && bioY >= bio.ui.y && bioY < bio.ui.y + bio.ui.h) {
+	if (x >= bio.ui.x && x < bio.ui.x + bio.ui.w && y >= bio.ui.y && y < bio.ui.y + bio.ui.h) {
 		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Biography => mouseInBiography');
 		return true;
 	}

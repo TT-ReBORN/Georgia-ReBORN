@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    03-04-2024                                              * //
+// * Last change:    12-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2856,7 +2856,7 @@ class MainUI {
 	 * @returns {boolean} True if Library and Playlist are being displayed.
 	 */
 	displayLibrarySplit(control) {
-		return grSet.layout === 'default' && grSet.libraryLayout === 'split' && this.displayLibrary && this.displayPlaylist &&
+		return grSet.libraryLayout === 'split' && grSet.layout === 'default' && this.displayLibrary && this.displayPlaylist &&
 		(control ? this.state.mouse_x > pl.playlist.x && this.state.mouse_x <= pl.playlist.x + pl.playlist.w &&
 				   this.state.mouse_y > pl.playlist.y && this.state.mouse_y <= pl.playlist.y + pl.playlist.h : this.ww);
 	}
