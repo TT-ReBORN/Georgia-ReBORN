@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-03-2024                                              * //
+// * Last change:    15-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1083,271 +1083,96 @@ class TopMenuOptions {
 	 * @protected
 	 */
 	fontSizeOptions(menu) {
-		const menuFontSize           = grSet[`menuFontSize_${grSet.layout}`];
-		const lowerBarFontSize       = grSet[`lowerBarFontSize_${grSet.layout}`];
-		const notificationFontSize   = grSet[`notificationFontSize_${grSet.layout}`];
-		const popupFontSize          = grSet[`popupFontSize_${grSet.layout}`];
-		const tooltipFontSize        = grSet[`tooltipFontSize_${grSet.layout}`];
-
-		const gridArtistFontSize     = grSet[`gridArtistFontSize_${grSet.layout}`];
-		const gridTrackNumFontSize   = grSet[`gridTrackNumFontSize_${grSet.layout}`];
-		const gridTitleFontSize      = grSet[`gridTitleFontSize_${grSet.layout}`];
-		const gridAlbumFontSize      = grSet[`gridAlbumFontSize_${grSet.layout}`];
-		const gridKeyFontSize        = grSet[`gridKeyFontSize_${grSet.layout}`];
-		const gridValueFontSize      = grSet[`gridValueFontSize_${grSet.layout}`];
-
-		const playlistHeaderFontSize = grSet[`playlistHeaderFontSize_${grSet.layout}`];
-		const libraryFontSize        = libSet[`baseFontSize_${grSet.layout}`];
-		const biographyFontSize      = bioSet[`baseFontSizeBio_${grSet.layout}`];
-		const lyricsFontSize         = grSet[`lyricsFontSize_${grSet.layout}`];
-
 		const changeFontSizeMenu = new Menu('Font size');
 		const mainFontSizeMenu = new Menu('Main');
 
 		// * MAIN - TOP MENU * //
-		mainFontSizeMenu.createRadioSubMenu('Top menu', ['  8px', '10px', '11px', RES._QHD ? '12px' : '12px (default)', '13px', RES._QHD ? '14px (default)' : '14px', '16px'], menuFontSize, [8, 10, 11, 12, 13, 14, 16], (size) => {
-			if (grSet.layout === 'default') {
-				grSet.menuFontSize_default = size;
-			}
-			else if (grSet.layout === 'artwork') {
-				grSet.menuFontSize_artwork = size;
-			}
-			else if (grSet.layout === 'compact') {
-				grSet.menuFontSize_compact = size;
-			}
-			grm.ui.createFonts();
-			grm.ui.createButtonImages();
-			grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
-			RepaintWindow();
+		mainFontSizeMenu.createRadioSubMenu('Top menu', ['  8px', '10px', '11px', RES._QHD ? '12px' : '12px (default)', '13px', RES._QHD ? '14px (default)' : '14px', '16px'], grSet[`menuFontSize_${grSet.layout}`], [8, 10, 11, 12, 13, 14, 16], (size) => {
+			grm.scaling.setMenuFontSize(size);
 		});
 
 		// * MAIN - LOWER BAR * //
 		mainFontSizeMenu.createRadioSubMenu('Lower bar', grSet.layout !== 'default' ? ['10px', '12px', '14px', RES._QHD ? '16px' : '16px (default)', RES._QHD ? '18px (default)' : '18px', '20px', '22px', '24px', '26px'] :
-			['10px', '12px', '14px', '16px', RES._QHD ? '18px' : '18px (default)', RES._QHD ? '20px (default)' : '20px', '22px', '24px', '26px'], lowerBarFontSize, [10, 12, 14, 16, 18, 20, 22, 24, 26], (size) => {
-			if (grSet.layout === 'default') {
-				grSet.lowerBarFontSize_default = size;
-			}
-			else if (grSet.layout === 'artwork') {
-				grSet.lowerBarFontSize_artwork = size;
-			}
-			else if (grSet.layout === 'compact') {
-				grSet.lowerBarFontSize_compact = size;
-			}
-			grm.ui.createFonts();
-			grm.ui.createButtonImages();
-			grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
-			RepaintWindow();
+			['10px', '12px', '14px', '16px', RES._QHD ? '18px' : '18px (default)', RES._QHD ? '20px (default)' : '20px', '22px', '24px', '26px'], grSet[`lowerBarFontSize_${grSet.layout}`], [10, 12, 14, 16, 18, 20, 22, 24, 26], (size) => {
+			grm.scaling.setLowerBarFontSize(size);
 		});
 		mainFontSizeMenu.appendTo(changeFontSizeMenu);
 
 		// * MAIN - NOTIFICATION * //
-		mainFontSizeMenu.createRadioSubMenu('Notification', ['12px', '14px', '16px', RES._QHD ? '18px' : '18px (default)', RES._QHD ? '20px (default)' : '20px', '22px', '24px'], notificationFontSize,
+		mainFontSizeMenu.createRadioSubMenu('Notification', ['12px', '14px', '16px', RES._QHD ? '18px' : '18px (default)', RES._QHD ? '20px (default)' : '20px', '22px', '24px'], grSet[`notificationFontSize_${grSet.layout}`],
 			[12, 14, 16, 18, 20, 22, 24], (size) => {
-			if      (grSet.layout === 'default') { grSet.notificationFontSize_default = size; }
-			else if (grSet.layout === 'artwork') { grSet.notificationFontSize_artwork = size; }
-			else if (grSet.layout === 'compact') { grSet.notificationFontSize_compact = size; }
-
-			grm.ui.createFonts();
-			RepaintWindow();
+			grm.scaling.setNotificationFontSize(size);
 		});
 
 		// * MAIN - POPUP * //
-		mainFontSizeMenu.createRadioSubMenu('Popup', ['12px', '14px', RES._QHD ? '16px' : '16px (default)', RES._QHD ? '18px (default)' : '18px', '20px', '22px', '24px'], popupFontSize,
+		mainFontSizeMenu.createRadioSubMenu('Popup', ['12px', '14px', RES._QHD ? '16px' : '16px (default)', RES._QHD ? '18px (default)' : '18px', '20px', '22px', '24px'], grSet[`popupFontSize_${grSet.layout}`],
 			[12, 14, 16, 18, 20, 22, 24], (size) => {
-			if      (grSet.layout === 'default') { grSet.popupFontSize_default = size; }
-			else if (grSet.layout === 'artwork') { grSet.popupFontSize_artwork = size; }
-			else if (grSet.layout === 'compact') { grSet.popupFontSize_compact = size; }
-
-			grm.ui.createFonts();
-			if      (grm.ui.displayCustomThemeMenu)  grm.cthMenu.initCustomThemeMenu('pl_bg');
-			else if (grm.ui.displayMetadataGridMenu) grm.gridMenu.initMetadataGridMenu();
-			RepaintWindow();
+			grm.scaling.setPopupFontSize(size);
 		});
 
 		// * MAIN - TOOLTIP * //
-		mainFontSizeMenu.createRadioSubMenu('Tooltip', ['12px', '14px', RES._QHD ? '16px' : '16px (default)', RES._QHD ? '18px (default)' : '18px', '20px', '22px', '24px'], tooltipFontSize,
+		mainFontSizeMenu.createRadioSubMenu('Tooltip', ['12px', '14px', RES._QHD ? '16px' : '16px (default)', RES._QHD ? '18px (default)' : '18px', '20px', '22px', '24px'], grSet[`tooltipFontSize_${grSet.layout}`],
 			[12, 14, 16, 18, 20, 22, 24], (size) => {
-			if      (grSet.layout === 'default') { grSet.tooltipFontSize_default = size; }
-			else if (grSet.layout === 'artwork') { grSet.tooltipFontSize_artwork = size; }
-			else if (grSet.layout === 'compact') { grSet.tooltipFontSize_compact = size; }
-
-			grm.ui.createFonts();
-			RepaintWindow();
+			grm.scaling.setTooltipFontSize(size);
 		});
 
 		// * DETAILS - ARTIST * //
 		const detailsFontSizeMenu = new Menu('Details');
-		detailsFontSizeMenu.createRadioSubMenu('Artist', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', RES._QHD ? '18px' : '18px (default)', '19px', RES._QHD ? '20px (default)' : '20px', '22px', '24px'], gridArtistFontSize,
+		detailsFontSizeMenu.createRadioSubMenu('Artist', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', RES._QHD ? '18px' : '18px (default)', '19px', RES._QHD ? '20px (default)' : '20px', '22px', '24px'], grSet[`gridArtistFontSize_${grSet.layout}`],
 			[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
-			if (grSet.layout === 'default') {
-				grSet.gridArtistFontSize_default = size;
-			}
-			else if (grSet.layout === 'artwork') {
-				grSet.gridArtistFontSize_artwork = size;
-			}
-			grm.ui.createFonts();
-			RepaintWindow();
+			grm.scaling.setGridArtistFontSize(size);
 		});
 
 		// * DETAILS - TITLE * //
-		detailsFontSizeMenu.createRadioSubMenu('Title', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', RES._QHD ? '18px' : '18px (default)', '19px', RES._QHD ? '20px (default)' : '20px', '22px', '24px'], gridTrackNumFontSize && gridTitleFontSize,
+		detailsFontSizeMenu.createRadioSubMenu('Title', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', RES._QHD ? '18px' : '18px (default)', '19px', RES._QHD ? '20px (default)' : '20px', '22px', '24px'], grSet[`gridTrackNumFontSize_${grSet.layout}`] && grSet[`gridTitleFontSize_${grSet.layout}`],
 			[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
-			if (grSet.layout === 'default') {
-				grSet.gridTrackNumFontSize_default = size;
-				grSet.gridTitleFontSize_default = size;
-			}
-			else if (grSet.layout === 'artwork') {
-				grSet.gridTrackNumFontSize_artwork = size;
-				grSet.gridTitleFontSize_artwork = size;
-			}
-			grm.ui.createFonts();
-			RepaintWindow();
+			grm.scaling.setGridTitleFontSize(size);
 		});
 
 		// * DETAILS - ALBUM * //
-		detailsFontSizeMenu.createRadioSubMenu('Album', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', RES._QHD ? '18px' : '18px (default)', '19px', RES._QHD ? '20px (default)' : '20px', '22px', '24px'], gridAlbumFontSize,
+		detailsFontSizeMenu.createRadioSubMenu('Album', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', RES._QHD ? '18px' : '18px (default)', '19px', RES._QHD ? '20px (default)' : '20px', '22px', '24px'], grSet[`gridAlbumFontSize_${grSet.layout}`],
 			[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
-			if (grSet.layout === 'default') {
-				grSet.gridAlbumFontSize_default = size;
-			}
-			else if (grSet.layout === 'artwork') {
-				grSet.gridAlbumFontSize_artwork = size;
-			}
-			grm.ui.createFonts();
-			RepaintWindow();
+			grm.scaling.setGridAlbumFontSize(size);
 		});
 
 		// * DETAILS - TAG NAME * //
-		detailsFontSizeMenu.createRadioSubMenu('Tag name', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', RES._QHD ? '17px' : '17px (default)', '18px', RES._QHD ? '19px (default)' : '19px', '20px', '22px', '24px'], gridKeyFontSize,
+		detailsFontSizeMenu.createRadioSubMenu('Tag name', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', RES._QHD ? '17px' : '17px (default)', '18px', RES._QHD ? '19px (default)' : '19px', '20px', '22px', '24px'], grSet[`gridKeyFontSize_${grSet.layout}`],
 			[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
-			if (grSet.layout === 'default') {
-				grSet.gridKeyFontSize_default = size;
-			}
-			else if (grSet.layout === 'artwork') {
-				grSet.gridKeyFontSize_artwork = size;
-			}
-			grm.ui.createFonts();
-			RepaintWindow();
+			grm.scaling.setGridTagNameFontSize(size);
 		});
 
 		// * DETAILS - TAG VALUE * //
-		detailsFontSizeMenu.createRadioSubMenu('Tag value', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', RES._QHD ? '17px' : '17px (default)', '18px', RES._QHD ? '19px (default)' : '19px', '20px', '22px', '24px'], gridValueFontSize,
+		detailsFontSizeMenu.createRadioSubMenu('Tag value', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', RES._QHD ? '17px' : '17px (default)', '18px', RES._QHD ? '19px (default)' : '19px', '20px', '22px', '24px'], grSet[`gridValueFontSize_${grSet.layout}`],
 			[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
-			if (grSet.layout === 'default') {
-				grSet.gridValueFontSize_default = size;
-			}
-			else if (grSet.layout === 'artwork') {
-				grSet.gridValueFontSize_artwork = size;
-			}
-			grm.ui.createFonts();
-			RepaintWindow();
+			grm.scaling.setGridTagValueFontSize(size);
 		});
 		detailsFontSizeMenu.appendTo(changeFontSizeMenu);
 
 		// * PLAYLIST * //
 		changeFontSizeMenu.createRadioSubMenu('Playlist', grSet.layout === 'default' ?
 			RES._QHD ? ['-1', '10px', '12px', '13px', '14px', '15px', '16px', '17px (default)', '18px', '20px', '22px', '+1'] : ['-1', '10px', '12px', '13px', '14px', '15px (default)', '16px', '18px', '20px', '22px', '+1'] :
-			RES._QHD ? ['10px', '12px', '13px', '14px', '15px', '16px', '17px (default)', '18px'] : ['10px', '12px', '13px', '14px', '15px (default)', '16px', '18px'], playlistHeaderFontSize, grSet.layout === 'default' ?
-			RES._QHD ? [-1, 10, 12, 13, 14, 15, 16, 17, 18, 20, 22, 999] : [-1, 10, 12, 13, 14, 15, 16, 18, 20, 22, 999] :
+			RES._QHD ? ['10px', '12px', '13px', '14px', '15px', '16px', '17px (default)', '18px'] : ['10px', '12px', '13px', '14px', '15px (default)', '16px', '18px'], grSet[`playlistHeaderFontSize_${grSet.layout}`], grSet.layout === 'default' ?
+			RES._QHD ? [-1, 10, 12, 13, 14, 15, 16, 17, 18, 20, 22, 1] : [-1, 10, 12, 13, 14, 15, 16, 18, 20, 22, 1] :
 			RES._QHD ? [10, 12, 13, 14, 15, 16, 17, 18] : [10, 12, 13, 14, 15, 16, 18], (size) => {
-			if (size === -1) {
-				if      (grSet.layout === 'default') { grSet.playlistHeaderFontSize_default--; grSet.playlistFontSize_default--; }
-				else if (grSet.layout === 'artwork') { grSet.playlistHeaderFontSize_artwork--; grSet.playlistFontSize_artwork--; }
-				else if (grSet.layout === 'compact') { grSet.playlistHeaderFontSize_compact--; grSet.playlistFontSize_compact--; }
-			}
-			else if (size === 999) {
-				if      (grSet.layout === 'default') { grSet.playlistHeaderFontSize_default++; grSet.playlistFontSize_default++; }
-				else if (grSet.layout === 'artwork') { grSet.playlistHeaderFontSize_artwork++; grSet.playlistFontSize_artwork++; }
-				else if (grSet.layout === 'compact') { grSet.playlistHeaderFontSize_compact++; grSet.playlistFontSize_compact++; }
-			}
-			else if (grSet.layout === 'default') { grSet.playlistHeaderFontSize_default = size; grSet.playlistFontSize_default = size - (size === 15 || size === 17 ? 3 : 2); }
-			else if (grSet.layout === 'artwork') { grSet.playlistHeaderFontSize_artwork = size; grSet.playlistFontSize_artwork = size - (size === 15 || size === 17 ? 3 : 2); }
-			else if (grSet.layout === 'compact') { grSet.playlistHeaderFontSize_compact = size; grSet.playlistFontSize_compact = size - (size === 15 || size === 17 ? 3 : 2); }
-
-			// * Update Playlist history buttons
-			grm.ui.createFonts();
-			grm.ui.initMetrics();
-			grm.ui.createButtonImages();
-			grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
-			// * Update Playlist
-			PlaylistRescale(true);
-			PlaylistHeader.img_cache.clear();
-			grm.ui.initPlaylist();
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
-			if (grSet.libraryLayout === 'split') {
-				// * Update Library
-				lib.pop.createImages();
-				lib.panel.zoomReset();
-				grm.ui.initLibraryLayout();
-			}
-			RepaintWindow();
+			grm.scaling.setPlaylistFontSize(size);
 		});
 
 		// * LIBRARY * //
-		changeFontSizeMenu.createRadioSubMenu('Library', ['-1', '  8px', '10px', '11px', RES._QHD ? '12px' : '12px (default)', '13px', RES._QHD ? '14px (default)' : '14px', '16px', '18px', '+1'], libraryFontSize,
-			[-1, RES._4K ? 8 * 1.5 : 8, RES._4K ? 10 * 1.5 : 10, RES._4K ? 11 * 1.5 : 11, RES._4K ? 12 * 1.5 : 12, RES._4K ? 13 * 1.5 : 13, RES._4K ? 14 * 1.5 : 14, RES._4K ? 16 * 1.5 : 16, RES._4K ? 18 * 1.5 : 18, 999], (size) => {
-			if (size === -1) {
-				if      (grSet.layout === 'default') { libSet.baseFontSize_default--; }
-				else if (grSet.layout === 'artwork') { libSet.baseFontSize_artwork--; }
-			}
-			else if (size === 999) {
-				if      (grSet.layout === 'default') { libSet.baseFontSize_default++; }
-				else if (grSet.layout === 'artwork') { libSet.baseFontSize_artwork++; }
-			}
-			else if (grSet.layout === 'default') { libSet.baseFontSize_default = size; }
-			else if (grSet.layout === 'artwork') { libSet.baseFontSize_artwork = size; }
-
-			grSet.libraryFontSize_default = libSet.baseFontSize_default;
-			grSet.libraryFontSize_artwork = libSet.baseFontSize_artwork;
-
-			grm.ui.setLibrarySize();
-			lib.panel.zoomReset();
-			lib.pop.createImages();
-			RepaintWindow();
+		changeFontSizeMenu.createRadioSubMenu('Library', ['-1', '  8px', '10px', '11px', RES._QHD ? '12px' : '12px (default)', '13px', RES._QHD ? '14px (default)' : '14px', '16px', '18px', '+1'], libSet[`baseFontSize_${grSet.layout}`],
+			[-1, RES._4K ? 8 * 1.5 : 8, RES._4K ? 10 * 1.5 : 10, RES._4K ? 11 * 1.5 : 11, RES._4K ? 12 * 1.5 : 12, RES._4K ? 13 * 1.5 : 13, RES._4K ? 14 * 1.5 : 14, RES._4K ? 16 * 1.5 : 16, RES._4K ? 18 * 1.5 : 18, 1], (size) => {
+			grm.scaling.setLibraryFontSize(size);
 		});
 
 		// * BIOGRAPHY * //
-		changeFontSizeMenu.createRadioSubMenu('Biography', ['-1', '  8px', '10px', '11px', RES._QHD ? '12px' : '12px (default)', '13px', RES._QHD ? '14px (default)' : '14px', '16px', '18px', '+1'], biographyFontSize,
-			[-1, RES._4K ? 8 * 1.5 : 8, RES._4K ? 10 * 2 : 10, RES._4K ? 11 * 2 : 11, RES._4K ? 12 * 2 : 12, RES._4K ? 13 * 2 : 13, RES._4K ? 14 * 2 : 14, RES._4K ? 16 * 2 : 16, RES._4K ? 18 * 2 : 18, 999], (size) => {
-			if (size === -1) {
-				if      (grSet.layout === 'default') { bioSet.baseFontSizeBio_default--; }
-				else if (grSet.layout === 'artwork') { bioSet.baseFontSizeBio_artwork--; }
-			}
-			else if (size === 999) {
-				if      (grSet.layout === 'default') { bioSet.baseFontSizeBio_default++; }
-				else if (grSet.layout === 'artwork') { bioSet.baseFontSizeBio_artwork++; }
-			}
-			else if (grSet.layout === 'default') { bioSet.baseFontSizeBio_default = size; }
-			else if (grSet.layout === 'artwork') { bioSet.baseFontSizeBio_artwork = size; }
-
-			grSet.biographyFontSize_default = bioSet.baseFontSizeBio_default;
-			grSet.biographyFontSize_artwork = bioSet.baseFontSizeBio_artwork;
-
-			grm.ui.setBiographySize();
-			bio.but.resetZoom();
-			bio.but.createImages();
-			RepaintWindow();
+		changeFontSizeMenu.createRadioSubMenu('Biography', ['-1', '  8px', '10px', '11px', RES._QHD ? '12px' : '12px (default)', '13px', RES._QHD ? '14px (default)' : '14px', '16px', '18px', '+1'], bioSet[`baseFontSizeBio_${grSet.layout}`],
+			[-1, RES._4K ? 8 * 1.5 : 8, RES._4K ? 10 * 2 : 10, RES._4K ? 11 * 2 : 11, RES._4K ? 12 * 2 : 12, RES._4K ? 13 * 2 : 13, RES._4K ? 14 * 2 : 14, RES._4K ? 16 * 2 : 16, RES._4K ? 18 * 2 : 18, 1], (size) => {
+			grm.scaling.setBiographyFontSize(size);
 		});
 
 		// * LYRICS * //
-		changeFontSizeMenu.createRadioSubMenu('Lyrics', ['-1', '10px', '12px', '14px', '16px', '18px', RES._QHD ? '20px' : '20px (default)', RES._QHD ? '22px (default)' : '22px', '24px', '26px', '28px', '30px', '+1'], lyricsFontSize,
-			[-1, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 999], (size) => {
-			if (size === -1) {
-				if      (grSet.layout === 'default') { grSet.lyricsFontSize_default--; }
-				else if (grSet.layout === 'artwork') { grSet.lyricsFontSize_artwork--; }
-			}
-			else if (size === 999) {
-				if      (grSet.layout === 'default') { grSet.lyricsFontSize_default++; }
-				else if (grSet.layout === 'artwork') { grSet.lyricsFontSize_artwork++; }
-			}
-			else if (grSet.layout === 'default') { grSet.lyricsFontSize_default = size; }
-			else if (grSet.layout === 'artwork') { grSet.lyricsFontSize_artwork = size; }
-
-			if      (grSet.layout === 'default') { grSet.lyricsFontSize_default = Math.max(6, grSet.lyricsFontSize_default); }
-			else if (grSet.layout === 'artwork') { grSet.lyricsFontSize_artwork = Math.max(6, grSet.lyricsFontSize_artwork); }
-
-			grm.ui.createFonts();
-			if (grm.ui.displayLyrics) grm.lyrics.initLyrics();
+		changeFontSizeMenu.createRadioSubMenu('Lyrics', ['-1', '10px', '12px', '14px', '16px', '18px', RES._QHD ? '20px' : '20px (default)', RES._QHD ? '22px (default)' : '22px', '24px', '26px', '28px', '30px', '+1'], grSet[`lyricsFontSize_${grSet.layout}`],
+			[-1, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 1], (size) => {
+			grm.scaling.setLyricsFontSize(size);
 		});
 
 		changeFontSizeMenu.appendTo(menu);
@@ -1639,44 +1464,20 @@ class TopMenuOptions {
 		// * TRANSPORT BUTTON SIZE * //
 		const transportSizeMenu = new Menu('Transport button size');
 		const transportSizeMenuDefault = new Menu('Default');
-		transportSizeMenuDefault.addRadioItems(['28px', '30px', '32px (default)', '34px', '36px', '38px', '40px', '42px'], grSet.transportButtonSize_default, [28, 30, 32, 34, 36, 38, 40, 42], (size) => {
-			if (size === -1) {
-				grSet.transportButtonSize_default -= 2;
-			} else if (size === 999) {
-				grSet.transportButtonSize_default += 2;
-			} else {
-				grSet.transportButtonSize_default = size;
-			}
-			grm.ui.createFonts();
-			updateButtons();
+		transportSizeMenuDefault.addRadioItems(['28px', '30px', RES._QHD ? '32px' : '32px (default)', RES._QHD ? '34px (default)' : '34px', '36px', '38px', '40px', '42px'], grSet.transportButtonSize_default, [28, 30, 32, 34, 36, 38, 40, 42], (size) => {
+			grm.scaling.setTransportBtnSize(size);
 		});
 		transportSizeMenuDefault.appendTo(transportSizeMenu);
 
 		const transportSizeMenuArtwork = new Menu('Artwork');
-		transportSizeMenuArtwork.addRadioItems(['28px', '30px', '32px (default)', '34px', '36px'], grSet.transportButtonSize_artwork, [28, 30, 32, 34, 36], (size) => {
-			if (size === -1) {
-				grSet.transportButtonSize_artwork -= 2;
-			} else if (size === 999) {
-				grSet.transportButtonSize_artwork += 2;
-			} else {
-				grSet.transportButtonSize_artwork = size;
-			}
-			grm.ui.createFonts();
-			updateButtons();
+		transportSizeMenuArtwork.addRadioItems(['28px', '30px', RES._QHD ? '32px' : '32px (default)', RES._QHD ? '34px (default)' : '34px', '36px'], grSet.transportButtonSize_artwork, [28, 30, 32, 34, 36], (size) => {
+			grm.scaling.setTransportBtnSize(size);
 		});
 		transportSizeMenuArtwork.appendTo(transportSizeMenu);
 
 		const transportSizeMenuCompact = new Menu('Compact');
-		transportSizeMenuCompact.addRadioItems(['28px', '30px', '32px (default)', '34px', '36px'], grSet.transportButtonSize_compact, [28, 30, 32, 34, 36], (size) => {
-			if (size === -1) {
-				grSet.transportButtonSize_compact -= 2;
-			} else if (size === 999) {
-				grSet.transportButtonSize_compact += 2;
-			} else {
-				grSet.transportButtonSize_compact = size;
-			}
-			grm.ui.createFonts();
-			updateButtons();
+		transportSizeMenuCompact.addRadioItems(['28px', '30px', RES._QHD ? '32px' : '32px (default)', RES._QHD ? '34px (default)' : '34px', '36px'], grSet.transportButtonSize_compact, [28, 30, 32, 34, 36], (size) => {
+			grm.scaling.setTransportBtnSize(size);
 		});
 		transportSizeMenuCompact.appendTo(transportSizeMenu);
 		transportSizeMenu.appendTo(playerControlsLowerBarMenu);
@@ -1684,41 +1485,20 @@ class TopMenuOptions {
 		// * TRANSPORT BUTTON SPACING * //
 		const transportSpacingMenu = new Menu('Transport button spacing');
 		const transportSpacingMenuDefault = new Menu('Default');
-		transportSpacingMenuDefault.addRadioItems(['-2', '3px', '5px (default)', '7px', '10px', '15px', '+2'], grSet.transportButtonSpacing_default, [-1, 3, 5, 7, 10, 15, 999], (size) => {
-			if (size === -1) {
-				grSet.transportButtonSpacing_default -= 2;
-			} else if (size === 999) {
-				grSet.transportButtonSpacing_default += 2;
-			} else {
-				grSet.transportButtonSpacing_default = size;
-			}
-			updateButtons();
+		transportSpacingMenuDefault.addRadioItems(['-1', '3px', '5px (default)', '7px', '10px', '15px', '+1'], grSet.transportButtonSpacing_default, [-1, 3, 5, 7, 10, 15, 1], (size) => {
+			grm.scaling.setTransportBtnSpacing(size);
 		});
 		transportSpacingMenuDefault.appendTo(transportSpacingMenu);
 
 		const transportSpacingMenuArtwork = new Menu('Artwork');
-		transportSpacingMenuArtwork.addRadioItems(['-2', '3px', '5px (default)', '7px', '10px', '15px', '+2'], grSet.transportButtonSpacing_artwork, [-1, 3, 5, 7, 10, 15, 999], (size) => {
-			if (size === -1) {
-				grSet.transportButtonSpacing_artwork -= 2;
-			} else if (size === 999) {
-				grSet.transportButtonSpacing_artwork += 2;
-			} else {
-				grSet.transportButtonSpacing_artwork = size;
-			}
-			updateButtons();
+		transportSpacingMenuArtwork.addRadioItems(['-1', '3px', '5px (default)', '7px', '10px', '15px', '+1'], grSet.transportButtonSpacing_artwork, [-1, 3, 5, 7, 10, 15, 1], (size) => {
+			grm.scaling.setTransportBtnSpacing(size);
 		});
 		transportSpacingMenuArtwork.appendTo(transportSpacingMenu);
 
 		const transportSpacingMenuCompact = new Menu('Compact');
-		transportSpacingMenuCompact.addRadioItems(['-2', '3px', '5px (default)', '7px', '10px', '15px', '+2'], grSet.transportButtonSpacing_compact, [-1, 3, 5, 7, 10, 15, 999], (size) => {
-			if (size === -1) {
-				grSet.transportButtonSpacing_compact -= 2;
-			} else if (size === 999) {
-				grSet.transportButtonSpacing_compact += 2;
-			} else {
-				grSet.transportButtonSpacing_compact = size;
-			}
-			updateButtons();
+		transportSpacingMenuCompact.addRadioItems(['-1', '3px', '5px (default)', '7px', '10px', '15px', '+1'], grSet.transportButtonSpacing_compact, [-1, 3, 5, 7, 10, 15, 1], (size) => {
+			grm.scaling.setTransportBtnSpacing(size);
 		});
 		transportSpacingMenuCompact.appendTo(transportSpacingMenu);
 		transportSpacingMenu.appendTo(playerControlsLowerBarMenu);
@@ -2381,10 +2161,12 @@ class TopMenuOptions {
 		const detailsShowArtistMenu = new Menu('Show artist');
 		detailsShowArtistMenu.addToggleItem('Default', grSet, 'showGridArtist_default', () => {
 			grm.ui.createFonts();
+			grm.ui.updateMetadataGridPos();
 			RepaintWindow();
 		});
 		detailsShowArtistMenu.addToggleItem('Artwork', grSet, 'showGridArtist_artwork', () => {
 			grm.ui.createFonts();
+			grm.ui.updateMetadataGridPos();
 			RepaintWindow();
 		});
 		detailsShowArtistMenu.appendTo(detailsMetadataGridMenu);
@@ -2393,10 +2175,12 @@ class TopMenuOptions {
 		const detailsShowTrackNumberMenu = new Menu('Show track number');
 		detailsShowTrackNumberMenu.addToggleItem('Default', grSet, 'showGridTrackNum_default', () => {
 			grm.ui.createFonts();
+			grm.ui.updateMetadataGridPos();
 			RepaintWindow();
 		});
 		detailsShowTrackNumberMenu.addToggleItem('Artwork', grSet, 'showGridTrackNum_artwork', () => {
 			grm.ui.createFonts();
+			grm.ui.updateMetadataGridPos();
 			RepaintWindow();
 		});
 		detailsShowTrackNumberMenu.appendTo(detailsMetadataGridMenu);
@@ -2406,11 +2190,13 @@ class TopMenuOptions {
 		detailsShowTitleMenu.addToggleItem('Default', grSet, 'showGridTitle_default', () => {
 			grSet.showGridTrackNum_default = true;
 			grm.ui.createFonts();
+			grm.ui.updateMetadataGridPos();
 			RepaintWindow();
 		});
 		detailsShowTitleMenu.addToggleItem('Artwork', grSet, 'showGridTitle_artwork', () => {
 			grSet.showGridTrackNum_artwork = true;
 			grm.ui.createFonts();
+			grm.ui.updateMetadataGridPos();
 			RepaintWindow();
 		});
 		detailsShowTitleMenu.appendTo(detailsMetadataGridMenu);

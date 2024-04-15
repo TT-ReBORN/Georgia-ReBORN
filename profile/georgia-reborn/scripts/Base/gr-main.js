@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-04-2024                                              * //
+// * Last change:    15-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -627,13 +627,13 @@ class MainUI {
 		const showGridChannelLogo  = grSet[`showGridChannelLogo_${grSet.layout}`];
 		const showGridCodecLogo    = grSet[`showGridCodecLogo_${grSet.layout}`];
 
-		const marginLeft = SCALE(grSet.layout !== 'default' ? 20 : 40);
-		const marginRight = SCALE(20);
-		const textWidth = Math.round((!this.albumArt && this.discArt ? this.discArtSize.x : this.albumArtSize.x) - this.discArtShadow - marginLeft - marginRight);
-		this.gridTop = this.albumArtSize.y ? this.albumArtSize.y + marginLeft : this.topMenuHeight + marginLeft;
+		this.gridMarginLeft = SCALE(grSet.layout !== 'default' ? 20 : 40);
+		this.gridMarginRight = SCALE(20);
+		this.gridTextWidth = Math.round((!this.albumArt && this.discArt ? this.discArtSize.x : this.albumArtSize.x) - this.discArtShadow - this.gridMarginLeft - this.gridMarginRight);
+		this.gridTop = this.albumArtSize.y ? this.albumArtSize.y + this.gridMarginLeft : this.topMenuHeight + this.gridMarginLeft;
 
 		// * DETAILS METADATA GRID * //
-		if (textWidth > 150) {
+		if (this.gridTextWidth > 150) {
 			let txtRec;
 			let gridArtistTxtRec;
 			let gridTitleTxtRec;
@@ -644,7 +644,9 @@ class MainUI {
 
 				const flagSizeWhiteSpaceTable = {
 					24: [35, 29, 24, 18, 12, 6],
+					23: [36, 30, 25, 19, 12, 6],
 					22: [36, 30, 25, 19, 12, 6],
+					21: [37, 31, 26, 20, 12, 6],
 					20: [37, 31, 26, 20, 12, 6],
 					19: [38, 32, 26, 20, 12, 6],
 					18: [39, 32, 26, 20, 13, 6],
@@ -677,25 +679,27 @@ class MainUI {
 					this.flagImgs.length === 2 ? SCALE(28 + gridArtistFontSize * 2) :
 					this.flagImgs.length === 1 ? SCALE(14 + gridArtistFontSize) : '';
 
-				gridArtistTxtRec = gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, showGridArtistFlags && this.flagImgs.length ? textWidth - flagSize : textWidth, this.wh);
+				gridArtistTxtRec = gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, showGridArtistFlags && this.flagImgs.length ? this.gridTextWidth - flagSize : this.gridTextWidth, this.wh);
 				const gridArtistNumLines  = Math.min(2, gridArtistTxtRec.Lines);
 				const gridArtistNumHeight = gr.CalcTextHeight(grStr.artist, grFont.gridArtist) * gridArtistNumLines + 3;
 				const gridArtistHeight    = gr.CalcTextHeight(grStr.artist, grFont.gridArtist);
 
 				// * Apply better anti-aliasing on smaller font sizes in HD res
 				gr.SetTextRenderingHint(!RES._4K && gridArtistFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-				DrawString(gr, showGridArtistFlags && this.flagImgs.length ? flagSizeWhiteSpace + grStr.artist : grStr.artist, grFont.gridArtist, ['white', 'black', 'reborn', 'random'].includes(grSet.theme) ? grCol.detailsText : grSet.theme === 'cream' ? pl.col.header_artist_normal : pl.col.header_artist_playing, marginLeft, Math.round(top), textWidth, gridArtistNumHeight, Stringformat.trim_ellipsis_char);
+				DrawString(gr, showGridArtistFlags && this.flagImgs.length ? flagSizeWhiteSpace + grStr.artist : grStr.artist, grFont.gridArtist, ['white', 'black', 'reborn', 'random'].includes(grSet.theme) ? grCol.detailsText : grSet.theme === 'cream' ? pl.col.header_artist_normal : pl.col.header_artist_playing, this.gridMarginLeft, Math.round(top), this.gridTextWidth, gridArtistNumHeight, Stringformat.trim_ellipsis_char);
 
 				// * Artist flags
 				if (grStr.artist && this.flagImgs.length && showGridArtistFlags && this.displayDetails) {
 					const maxFlags = Math.min(this.flagImgs.length, 6);
-					let flagsLeft = marginLeft;
+					let flagsLeft = this.gridMarginLeft;
 					for (let i = 0; i < maxFlags; i++) {
 						gr.DrawImage(this.flagImgs[i], flagsLeft, Math.round(top - (this.flagImgs[i].Height / (gridArtistHeight + SCALE(2))) - (RES._4K ? 1 : 0)), this.flagImgs[i].Width + SCALE(gridArtistFontSize) - SCALE(26), gridArtistHeight + SCALE(2), 0, 0, this.flagImgs[i].Width, this.flagImgs[i].Height);
 						flagsLeft += this.flagImgs[i].Width + SCALE(gridArtistFontSize) - SCALE(18);
 					}
 				}
 
+				this.gridArtistTop = this.gridTop;
+				this.gridArtistBottom = this.gridTop + gridArtistNumHeight + (RES._4K ? 17 : 9);
 				return gridArtistNumHeight + (RES._4K ? 17 : 9);
 			};
 
@@ -703,15 +707,17 @@ class MainUI {
 
 			const drawTitle = (top) => {
 				if (!grStr.title) return 0;
-				gridTitleTxtRec = gr.MeasureString(this.isStreaming ? showGridTrackNum ? grStr.tracknum + grStr.title : grStr.title : grStr.tracknum === '' ? grStr.title : showGridTrackNum ? `${grStr.tracknum}\xa0${grStr.title}` : grStr.title, grFont.gridTitle, 0, 0, textWidth, this.wh);
+				gridTitleTxtRec = gr.MeasureString(this.isStreaming ? showGridTrackNum ? grStr.tracknum + grStr.title : grStr.title : grStr.tracknum === '' ? grStr.title : showGridTrackNum ? `${grStr.tracknum}\xa0${grStr.title}` : grStr.title, grFont.gridTitle, 0, 0, this.gridTextWidth, this.wh);
 				const gridTitleNumLines = Math.min(2, gridTitleTxtRec.Lines);
 				const gridTitleNumHeight = gr.CalcTextHeight(grStr.title, grFont.gridTitle) * gridTitleNumLines + 3;
 				const gridTitleFontSize = grSet[`gridTitleFontSize_${grSet.layout}`];
 
 				// * Apply better anti-aliasing on smaller font sizes in HD res
 				gr.SetTextRenderingHint(!RES._4K && gridTitleFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-				DrawString(gr, this.isStreaming ? showGridTrackNum ? grStr.tracknum + grStr.title : grStr.title : grStr.tracknum === '' ? grStr.title : showGridTrackNum ? `${grStr.tracknum}\xa0${grStr.title}` : grStr.title, grFont.gridTitle, grCol.detailsText, marginLeft, Math.round(top), textWidth, gridTitleNumHeight, Stringformat.trim_ellipsis_char);
+				DrawString(gr, this.isStreaming ? showGridTrackNum ? grStr.tracknum + grStr.title : grStr.title : grStr.tracknum === '' ? grStr.title : showGridTrackNum ? `${grStr.tracknum}\xa0${grStr.title}` : grStr.title, grFont.gridTitle, grCol.detailsText, this.gridMarginLeft, Math.round(top), this.gridTextWidth, gridTitleNumHeight, Stringformat.trim_ellipsis_char);
 
+				this.gridTitleTop = this.gridTop;
+				this.gridTitleBottom = this.gridTop + gridTitleNumHeight + (RES._4K ? 17 : 9);
 				return gridTitleNumHeight + (RES._4K ? 17 : 9);
 			};
 
@@ -719,15 +725,17 @@ class MainUI {
 
 			const drawAlbumTitle = (top, maxLines) => {
 				if (!grStr.album) return 0;
-				gridAlbumTxtRec = gr.MeasureString(grStr.album, grFont.gridAlbum, 0, 0, textWidth, this.wh);
+				gridAlbumTxtRec = gr.MeasureString(grStr.album, grFont.gridAlbum, 0, 0, this.gridTextWidth, this.wh);
 				const gridAlbumNumLines = Math.min(showGridArtist || showGridTitle ? 2 : 3, gridAlbumTxtRec.Lines);
 				const gridAlbumNumHeight = gr.CalcTextHeight(grStr.album, grFont.gridAlbum) * gridAlbumNumLines + 3;
 				const gridAlbumFontSize = grSet[`gridAlbumFontSize_${grSet.layout}`];
 
 				// * Apply better anti-aliasing on smaller font sizes in HD res
 				gr.SetTextRenderingHint(!RES._4K && gridAlbumFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-				DrawString(gr, grStr.album, grFont.gridAlbum, grCol.detailsText, marginLeft, Math.round(top), textWidth, gridAlbumNumHeight, Stringformat.trim_ellipsis_char);
+				DrawString(gr, grStr.album, grFont.gridAlbum, grCol.detailsText, this.gridMarginLeft, Math.round(top), this.gridTextWidth, gridAlbumNumHeight, Stringformat.trim_ellipsis_char);
 
+				this.gridAlbumTop = this.gridTop;
+				this.gridAlbumBottom = this.gridTop + gridAlbumNumHeight + SCALE(13);
 				return gridAlbumNumHeight + SCALE(13);
 			};
 
@@ -741,12 +749,12 @@ class MainUI {
 			}
 			// * Timeline
 			if (showGridTimeline && grm.timeline && fb.IsPlaying) {
-				grm.timeline.setSize(marginLeft, this.gridTop + SCALE(4), this.albumArtSize.x - marginLeft * 2);
+				grm.timeline.setSize(this.gridMarginLeft, this.gridTop + SCALE(4), this.albumArtSize.x - this.gridMarginLeft * 2);
 				grm.timeline.draw(gr);
 			}
 			// * Tooltip
 			if (grm.gridTip && fb.IsPlaying) {
-				grm.gridTip.setSize(marginLeft, this.topMenuHeight, this.albumArtSize.x - marginLeft * 2);
+				grm.gridTip.setSize(this.gridMarginLeft, this.topMenuHeight, this.albumArtSize.x - this.gridMarginLeft * 2);
 				grm.gridTip.draw(gr);
 			}
 			if (showGridTimeline) {
@@ -762,7 +770,7 @@ class MainUI {
 			let grid_key_ft = grFont.gridKey;
 			for (const el of grStr.grid) {
 				if (font_array.length > 1) { // Only check if there's more than one entry in font_array
-					grid_key_ft = ChooseFontForWidth(gr, textWidth / 3, el, font_array);
+					grid_key_ft = ChooseFontForWidth(gr, this.gridTextWidth / 3, el, font_array);
 					while (grid_key_ft !== font_array[0]) { // If font returned was first item in the array, then everything fits, otherwise pare down array
 						font_array.shift();
 						key_font_array.shift();
@@ -770,10 +778,12 @@ class MainUI {
 				}
 			}
 			const grid_val_ft = key_font_array.shift();
-			const col1Width = CalcGridMaxTextWidth(gr, grStr.grid, grid_key_ft);
 			const columnMargin = SCALE(10);
-			const col2Width = textWidth - columnMargin - col1Width + SCALE(5);
-			const col2Left = marginLeft + col1Width + columnMargin;
+			this.gridCol1Width = CalcGridMaxTextWidth(gr, grStr.grid, grid_key_ft);
+			this.gridCol2Width = this.gridTextWidth - columnMargin - this.gridCol1Width + SCALE(5);
+			this.gridCol2Left = this.gridMarginLeft + this.gridCol1Width + columnMargin;
+			this.gridTagNameHeight = gr.MeasureString('Ag', grid_key_ft, 0, 0, this.gridTextWidth, this.wh).Height;
+			this.gridTagValueHeight = gr.MeasureString('Ag', grid_val_ft, 0, 0, this.gridTextWidth, this.wh).Height;
 
 			for (let k = 0; k < grStr.grid.length; k++) {
 				let key = grStr.grid[k].label;
@@ -784,6 +794,9 @@ class MainUI {
 				let showGridChannelLogoImage = false;
 				let dropShadow = false;
 				let grid_val_col = grCol.detailsText;
+
+				this.gridTagNameBottom = this.gridTop + this.gridTagNameHeight;
+				this.gridTagValueBottom = this.gridTop + this.gridTagValueHeight;
 
 				if (value.length) {
 					switch (key) {
@@ -857,13 +870,13 @@ class MainUI {
 								key = '';
 								matchCount++;
 							}
-							txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, col2Width, this.wh);
+							txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, this.gridCol2Width, this.wh);
 							const cellHeight = txtRec.Height + 5;
 							this.gridTop -= cellHeight * matchCount;
 						}
 					}
 
-					txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, col2Width, this.wh);
+					txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, this.gridCol2Width, this.wh);
 
 					if (this.gridTop + txtRec.Height < this.albumArtSize.y + this.albumArtSize.h) {
 						const borderWidth = SCALE(0.5);
@@ -882,13 +895,13 @@ class MainUI {
 						gr.SetTextRenderingHint(!RES._4K && (keyFontSize < 17 || valFontSize < 18) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 
 						if (dropShadow) {
-							gr.DrawString(value, grid_val_ft, grCol.darkAccent_50, Math.round(col2Left + borderWidth), Math.round(this.gridTop + borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
-							gr.DrawString(value, grid_val_ft, grCol.darkAccent_50, Math.round(col2Left - borderWidth), Math.round(this.gridTop + borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
-							gr.DrawString(value, grid_val_ft, grCol.darkAccent_50, Math.round(col2Left + borderWidth), Math.round(this.gridTop - borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
-							gr.DrawString(value, grid_val_ft, grCol.darkAccent_50, Math.round(col2Left - borderWidth), Math.round(this.gridTop - borderWidth), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
+							gr.DrawString(value, grid_val_ft, grCol.darkAccent_50, Math.round(this.gridCol2Left + borderWidth), Math.round(this.gridTop + borderWidth), this.gridCol2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
+							gr.DrawString(value, grid_val_ft, grCol.darkAccent_50, Math.round(this.gridCol2Left - borderWidth), Math.round(this.gridTop + borderWidth), this.gridCol2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
+							gr.DrawString(value, grid_val_ft, grCol.darkAccent_50, Math.round(this.gridCol2Left + borderWidth), Math.round(this.gridTop - borderWidth), this.gridCol2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
+							gr.DrawString(value, grid_val_ft, grCol.darkAccent_50, Math.round(this.gridCol2Left - borderWidth), Math.round(this.gridTop - borderWidth), this.gridCol2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
 						}
-						gr.DrawString(key, grid_key_ft, grCol.detailsText, marginLeft, Math.round(this.gridTop), col1Width, cellHeight, Stringformat.trim_ellipsis_char);
-						gr.DrawString(flag || codec || channels ? '' : value, grid_val_ft, grid_val_col, col2Left, Math.round(this.gridTop), col2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
+						gr.DrawString(key, grid_key_ft, grCol.detailsText, this.gridMarginLeft, Math.round(this.gridTop), this.gridCol1Width, cellHeight, Stringformat.trim_ellipsis_char);
+						gr.DrawString(flag || codec || channels ? '' : value, grid_val_ft, grid_val_col, this.gridCol2Left, Math.round(this.gridTop), this.gridCol2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
 
 						// * Last.fm logo
 						if (this.playCountVerifiedByLastFm && showLastFmImage) {
@@ -896,8 +909,8 @@ class MainUI {
 							const lastFmWhiteImg = gdi.Image(grPath.lastFmImageWhite);
 							const lastFmLogo = ColorDistance(grCol.primary, RGB(185, 0, 0), false) < 133 ? lastFmWhiteImg : lastFmImg;
 							const heightRatio = (cellHeight - 12) / lastFmLogo.Height;
-							if (txtRec.Width + SCALE(12) + Math.round(lastFmLogo.Width * heightRatio) < col2Width) {
-								gr.DrawImage(lastFmLogo, col2Left + txtRec.Width + SCALE(12), this.gridTop + 3,
+							if (txtRec.Width + SCALE(12) + Math.round(lastFmLogo.Width * heightRatio) < this.gridCol2Width) {
+								gr.DrawImage(lastFmLogo, this.gridCol2Left + txtRec.Width + SCALE(12), this.gridTop + 3,
 									Math.round(lastFmLogo.Width * heightRatio), cellHeight - 12, 0, 0, lastFmLogo.Width, lastFmLogo.Height);
 							}
 						}
@@ -906,8 +919,8 @@ class MainUI {
 							const sizeCorr = txtRec.Lines === 4 ? 4 : txtRec.Lines === 3 ? 3 : txtRec.Lines === 2 ? 2 : 1;
 							const yCorr = txtRec.Lines === 4 ? cellHeight / 4 : txtRec.Lines === 3 ? cellHeight / 3 : 0;
 							const heightRatio = (cellHeight) / this.releaseFlagImg.Height;
-							if ((!showReleaseFlagOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(this.releaseFlagImg.Width * heightRatio) < col2Width) {
-								gr.DrawImage(this.releaseFlagImg, showReleaseFlagOnly && key === 'Rel. Country' ? col2Left : col2Left + txtRec.Width + SCALE(8), this.gridTop - 3 + yCorr,
+							if ((!showReleaseFlagOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(this.releaseFlagImg.Width * heightRatio) < this.gridCol2Width) {
+								gr.DrawImage(this.releaseFlagImg, showReleaseFlagOnly && key === 'Rel. Country' ? this.gridCol2Left : this.gridCol2Left + txtRec.Width + SCALE(8), this.gridTop - 3 + yCorr,
 									Math.round(this.releaseFlagImg.Width * heightRatio / sizeCorr), cellHeight / sizeCorr, 0, 0, this.releaseFlagImg.Width, this.releaseFlagImg.Height);
 							}
 						}
@@ -915,8 +928,8 @@ class MainUI {
 						if (showGridCodecLogoImage) {
 							this.loadCodecLogo();
 							const heightRatio = this.codecLogo != null ? (cellHeight - 4) / this.codecLogo.Height : '';
-							if (this.codecLogo != null && (!showCodecLogoOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(this.codecLogo.Width * heightRatio) < col2Width) {
-								gr.DrawImage(this.codecLogo, showCodecLogoOnly && key === 'Codec' ? col2Left : col2Left + txtRec.Width + SCALE(8), this.gridTop - 1,
+							if (this.codecLogo != null && (!showCodecLogoOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(this.codecLogo.Width * heightRatio) < this.gridCol2Width) {
+								gr.DrawImage(this.codecLogo, showCodecLogoOnly && key === 'Codec' ? this.gridCol2Left : this.gridCol2Left + txtRec.Width + SCALE(8), this.gridTop - 1,
 									Math.round(this.codecLogo.Width * heightRatio), cellHeight - 4, 0, 0, this.codecLogo.Width, this.codecLogo.Height);
 							}
 						}
@@ -924,8 +937,8 @@ class MainUI {
 						if (showGridChannelLogoImage) {
 							this.loadChannelLogo();
 							const heightRatio = this.channelLogo != null ? (cellHeight - 4) / this.channelLogo.Height : '';
-							if (this.channelLogo != null && (!showChannelLogoOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(this.channelLogo.Width * heightRatio) < col2Width) {
-								gr.DrawImage(this.channelLogo, showChannelLogoOnly && key === 'Channels' ? col2Left : col2Left + txtRec.Width + SCALE(8), this.gridTop - 1,
+							if (this.channelLogo != null && (!showChannelLogoOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(this.channelLogo.Width * heightRatio) < this.gridCol2Width) {
+								gr.DrawImage(this.channelLogo, showChannelLogoOnly && key === 'Channels' ? this.gridCol2Left : this.gridCol2Left + txtRec.Width + SCALE(8), this.gridTop - 1,
 									Math.round(this.channelLogo.Width * heightRatio), cellHeight - 4, 0, 0, this.channelLogo.Width, this.channelLogo.Height);
 							}
 						}
@@ -3295,12 +3308,15 @@ class MainUI {
 		const h = img[0].Height;
 		let   x = RES._4K ? 18 : 8;
 		const y = Math.round(this.topMenuHeight * 0.5 - h * 0.5 - SCALE(1));
+		const overMinWidth = ww > SCALE(grSet.layout === 'compact' ? 580 : 620);
 
-		// Top menu font size X-correction for Artwork and Compact layout
-		const xOffset = ww > SCALE(grSet.layout === 'compact' ? 570 : 620) ? 0 :
-		menuFontSize === 13 && !RES._QHD ? SCALE(3) :
-		menuFontSize === 14 && !RES._QHD ? SCALE(5) :
-		menuFontSize === 16  ?  RES._QHD ? 4 : SCALE(12) : 0;
+		// Top menu font size X-correction for Artwork and Compact layout when width is minimum size
+		const xOffset = overMinWidth ? 0 :
+		menuFontSize === 12 ? SCALE(RES._QHD ? 0 : 2) :
+		menuFontSize === 13 ? SCALE(RES._QHD ? 2 : 8) :
+		menuFontSize === 14 ? SCALE(RES._QHD ? 4 : 10) :
+		menuFontSize === 15 ? SCALE(RES._QHD ? 6 : 12) :
+		menuFontSize === 16 ? SCALE(RES._QHD ? 8 : 14) : 0;
 
 		const widthCorrection =
 			RES._4K ? (grSet.customThemeFonts && menuFontSize > 12 && ww < 1080) ? 12 : (grSet.customThemeFonts && menuFontSize > 10 && ww < 1080) ? 6 : 3 :
@@ -3355,8 +3371,9 @@ class MainUI {
 
 		const buttonCount = (showPanelDetails ? 1 : 0) + (showPanelLibrary ? 1 : 0) + (showPanelBiography ? 1 : 0) + (showPanelLyrics ? 1 : 0) + (showPanelRating ? 1 : 0);
 		const buttonXCorr = 0.33 + (buttonCount === 5 ? 0 : buttonCount === 4 ? 0.3 : buttonCount === 3 ? 0.6 : buttonCount === 2 ? 1.5 : buttonCount === 1 ? 4 : 0);
+		const buttonOptionsXCoor = (grSet.layout === 'compact' && ww < SCALE(580) && menuFontSize > 14 ? SCALE(10) : 0);
 
-		x += img[0].Width - widthCorrection;
+		x += img[0].Width - widthCorrection - buttonOptionsXCoor;
 		if (grSet.layout === 'artwork') x -= xOffset;
 		// Options button is available in all layouts
 		img = this.btnImg.Options;
@@ -3365,7 +3382,7 @@ class MainUI {
 		// These buttons are not available in Compact layout
 		if (grSet.layout !== 'compact') {
 			if (grSet.topMenuAlignment === 'center' && ww > SCALE(grSet.layout === 'artwork' ? 600 : 1380) || grSet.showTopMenuCompact) {
-				const centerMenu = Math.ceil(w * (buttonCount + (grSet.layout === 'artwork' && grSet.topMenuCompact ? 0.5 : 0)) + (menuFontSize * buttonCount * buttonXCorr));
+				const centerMenu = Math.ceil(w * (buttonCount + (grSet.layout === 'artwork' && grSet.topMenuCompact && overMinWidth ? 0.5 : 0)) + (menuFontSize * buttonCount * buttonXCorr));
 				x = Math.round(ww * 0.5 - centerMenu);
 			}
 
@@ -4584,6 +4601,20 @@ class MainUI {
 			}
 		}
 		return grStr.grid;
+	}
+
+	/**
+	 * Updates the metadata grid positions in Details.
+	 * This method is primarily used to refresh the coordinates for mouseInMetadataGrid.
+	 */
+	updateMetadataGridPos() {
+		this.gridTop = 0;
+		this.gridArtistTop = 0;
+		this.gridArtistBottom = 0;
+		this.gridTitleTop = 0;
+		this.gridTitleBottom = 0;
+		this.gridAlbumTop = 0;
+		this.gridAlbumBottom = 0;
 	}
 	// #endregion
 

@@ -455,7 +455,7 @@ class BioCallbacks {
 		if (bio.panel.id.lyricsSource) bio.lyrics.draw(gr);
 		bio.filmStrip.draw(gr);
 		bio.but.draw(gr);
-		if (!grm.ui.displayCustomThemeMenu) bio.resize.drawEd(gr);
+		// if (!grm.ui.displayCustomThemeMenu) bio.resize.drawEd(gr); // Disabled resize overlay, not needed
 		bio.ui.lines(gr);
 	}
 

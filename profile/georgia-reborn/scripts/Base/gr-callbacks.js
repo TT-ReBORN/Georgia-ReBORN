@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-04-2024                                              * //
+// * Last change:    15-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1058,6 +1058,9 @@ function on_mouse_rbtn_up(x, y, m) {
  * @param {number} step - The scroll direction: -1 or 1.
  */
 function on_mouse_wheel(step) {
+	const AltKeyPressed = utils.IsKeyPressed(VK_MENU);
+	const CtrlKeyPressed = utils.IsKeyPressed(VK_CONTROL);
+	const ShiftKeyPressed = utils.IsKeyPressed(VK_SHIFT);
 	const showVolumeBtn = grSet[`showVolumeBtn_${grSet.layout}`];
 	const displayAlbumArt = grSet.layout !== 'compact' &&
 		(!grm.ui.displayPlaylistArtwork && !grm.ui.displayBiography && !grm.ui.displayLyrics || (grm.ui.displayLibrary && grSet.libraryLayout === 'normal'));
@@ -1110,20 +1113,102 @@ function on_mouse_wheel(step) {
 		return;
 	}
 
-	if (grm.ui.displayLyrics && mouseInAlbumArt()) {
-		grm.lyrics.on_mouse_wheel(step);
+	if (mouseInTopMenu(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
+		if (CtrlKeyPressed) {
+			grm.scaling.setMenuFontSize(step);
+		} else if (AltKeyPressed) {
+			grm.scaling.setMenuFontSize(0);
+		}
+	}
+	else if (mouseInTransport(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
+		if (CtrlKeyPressed) {
+			grm.scaling.setTransportBtnSize(step);
+		} else if (AltKeyPressed && !ShiftKeyPressed) {
+			grm.scaling.setTransportBtnSize(0);
+		} else if (!AltKeyPressed && ShiftKeyPressed) {
+			grm.scaling.setTransportBtnSpacing(step);
+		} else if (AltKeyPressed && ShiftKeyPressed) {
+			grm.scaling.setTransportBtnSpacing(0);
+		}
+	}
+	else if (mouseInLowerBar(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
+		if (CtrlKeyPressed) {
+			grm.scaling.setLowerBarFontSize(step);
+		} else if (AltKeyPressed) {
+			grm.scaling.setLowerBarFontSize(0);
+		}
+	}
+	else if (grm.ui.displayDetails) {
+		if (mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, true)) {
+			if (CtrlKeyPressed) {
+				grm.scaling.setGridArtistFontSize(step);
+			} else if (AltKeyPressed) {
+				grm.scaling.setGridArtistFontSize(0);
+			}
+		} else if (mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, false, true)) {
+			if (CtrlKeyPressed) {
+				grm.scaling.setGridTitleFontSize(step);
+			} else if (AltKeyPressed) {
+				grm.scaling.setGridTitleFontSize(0);
+			}
+		} else if (mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, false, false, true)) {
+			if (CtrlKeyPressed) {
+				grm.scaling.setGridAlbumFontSize(step);
+			} else if (AltKeyPressed) {
+				grm.scaling.setGridAlbumFontSize(0);
+			}
+		} else if (mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, false, false, false, true)) {
+			if (CtrlKeyPressed) {
+				grm.scaling.setGridTagNameFontSize(step);
+			} else if (AltKeyPressed) {
+				grm.scaling.setGridTagNameFontSize(0);
+			}
+		} else if (mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, false, false, false, false, true)) {
+			if (CtrlKeyPressed) {
+				grm.scaling.setGridTagValueFontSize(step);
+			} else if (AltKeyPressed) {
+				grm.scaling.setGridTagValueFontSize(0);
+			}
+		}
+	}
+	else if (grm.ui.displayLyrics && mouseInAlbumArt()) {
+		if (CtrlKeyPressed) {
+			grm.scaling.setLyricsFontSize(step);
+		} else if (AltKeyPressed) {
+			grm.scaling.setLyricsFontSize(0);
+		} else {
+			grm.lyrics.on_mouse_wheel(step);
+		}
 	}
 	else if (grm.ui.displayBiography && mouseInBiography(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
 		grm.ui.traceCall && console.log('Biography => on_mouse_wheel');
-		bio.call.on_mouse_wheel(step);
+		if (CtrlKeyPressed) {
+			grm.scaling.setBiographyFontSize(step);
+		} else if (AltKeyPressed) {
+			grm.scaling.setBiographyFontSize(0);
+		} else {
+			bio.call.on_mouse_wheel(step);
+		}
 	}
 	else if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
 		grm.ui.traceCall && console.log('Playlist => on_mouse_wheel');
-		pl.call.on_mouse_wheel(step);
+		if (CtrlKeyPressed) {
+			grm.scaling.setPlaylistFontSize(step);
+		} else if (AltKeyPressed) {
+			grm.scaling.setPlaylistFontSize(0);
+		} else {
+			pl.call.on_mouse_wheel(step);
+		}
 	}
 	else if (grm.ui.displayLibrary && mouseInLibrary(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
 		grm.ui.traceCall && console.log('Library => on_mouse_wheel');
-		lib.call.on_mouse_wheel(step);
+		if (CtrlKeyPressed) {
+			grm.scaling.setLibraryFontSize(step);
+		} else if (AltKeyPressed) {
+			grm.scaling.setLibraryFontSize(0);
+		} else {
+			lib.call.on_mouse_wheel(step);
+		}
 	}
 }
 
@@ -1700,6 +1785,40 @@ function mouseInLowerBar(x, y) {
 
 
 /**
+ * Checks if the mouse is within the boundaries of the transport buttons.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @returns {boolean} True or false.
+ */
+function mouseInTransport(x, y) {
+	const lowerBarFontSize     = grSet[`lowerBarFontSize_${grSet.layout}`];
+	const showPlaybackOrderBtn = grSet[`showPlaybackOrderBtn_${grSet.layout}`];
+	const showReloadBtn        = grSet[`showReloadBtn_${grSet.layout}`];
+	const showAddTrackskBtn    = grSet[`showAddTracksBtn_${grSet.layout}`];
+	const showVolumeBtn        = grSet[`showVolumeBtn_${grSet.layout}`];
+	const transportBtnSize     = grSet[`transportButtonSize_${grSet.layout}`];
+	const transportBtnSpacing  = grSet[`transportButtonSpacing_${grSet.layout}`];
+	const count = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showAddTrackskBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
+
+	const buttonSize = SCALE(transportBtnSize);
+	const buttonSpacing = SCALE(transportBtnSpacing);
+	const totalWidth = count * buttonSize + (count - 1) * buttonSpacing;
+	const startX = (grm.ui.ww - totalWidth) / 2;
+	const endX = startX + totalWidth;
+	const startY = grm.ui.wh - buttonSize - SCALE(grSet.layout !== 'default' ? 36 : 78) + SCALE(lowerBarFontSize)
+	const endY = startY + buttonSize;
+
+	if (x >= startX && x <= endX && y >= startY && y <= endY) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInTransport');
+		return true;
+	}
+
+	return false;
+}
+
+
+/**
  * Checks if the mouse is within the boundaries of the seekbar.
  * @global
  * @param {number} x - The x-coordinate.
@@ -1759,6 +1878,43 @@ function mouseInPlaylist(x, y) {
 	if (pl.playlist.scrollbar.b_is_dragging) {
 		pl.playlist.scrollbar.b_is_dragging = false;
 		pl.playlist.scrollbar.desiredScrollPosition = undefined;
+	}
+
+	return false;
+}
+
+
+/**
+ * Checks if the mouse is within the boundaries of the metadata grid in Details.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @param {boolean} artist - The artist boundary.
+ * @param {boolean} title - The title boundary.
+ * @param {boolean} album - The album boundary.
+ * @param {boolean} tagName - The tag name boundary.
+ * @param {boolean} tagValue - The tag value boundary.
+ * @returns {boolean} True or false.
+ */
+function mouseInMetadataGrid(x, y, artist, title, album, tagName, tagValue) {
+	if (artist && x >= grm.ui.gridMarginLeft && x <= (grm.ui.gridMarginLeft + grm.ui.gridTextWidth) && y >= grm.ui.gridArtistTop && y <= grm.ui.gridArtistBottom) {
+		return true;
+	}
+
+	if (title && x >= grm.ui.gridMarginLeft && x <= (grm.ui.gridMarginLeft + grm.ui.gridTextWidth) && y >= grm.ui.gridTitleTop && y <= grm.ui.gridTitleBottom) {
+		return true;
+	}
+
+	if (album && x >= grm.ui.gridMarginLeft && x <= (grm.ui.gridMarginLeft + grm.ui.gridTextWidth) && y >= grm.ui.gridAlbumTop && y <= grm.ui.gridAlbumBottom) {
+		return true;
+	}
+
+	if (tagName && x >= grm.ui.gridMarginLeft && x <= (grm.ui.gridMarginLeft + grm.ui.gridCol1Width) && y >= grm.ui.gridAlbumBottom && y <= grm.ui.gridTagNameBottom) {
+		return true;
+	}
+
+	if (tagValue && x >= grm.ui.gridMarginLeft && x <= (grm.ui.gridMarginLeft + grm.ui.gridCol1Width + grm.ui.gridCol2Width) && y >= grm.ui.gridAlbumBottom && y <= grm.ui.gridTagValueBottom) {
+		return true;
 	}
 
 	return false;

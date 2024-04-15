@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-03-2024                                              * //
+// * Last change:    15-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -154,6 +154,318 @@ class ArtCache {
 			this.cache2[remove] = null;
 			delete this.cache2[remove];
 		}
+	}
+	// #endregion
+}
+
+
+///////////////////////////
+// * INTERFACE SCALING * //
+///////////////////////////
+/**
+ * A class that creates interface scaling on various UI elements.
+ */
+class Scaling {
+	// * PUBLIC METHODS - FONT SIZES * //
+	// #region PUBLIC METHODS - FONT SIZES
+	/**
+	 * Sets the top menu font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setMenuFontSize(size) {
+		const currentSize = grSet[`menuFontSize_${grSet.layout}`];
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 8),
+			'1' : () => Math.min(currentSize + 1, 16),
+			'0' : () => RES._QHD ? 14 : 12
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet[`menuFontSize_${grSet.layout}`] = newSize();
+
+		grm.ui.createFonts();
+		grm.ui.createButtonImages();
+		grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the lower bar font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setLowerBarFontSize(size) {
+		const currentSize = grSet[`lowerBarFontSize_${grSet.layout}`];
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 26),
+			'0' : () => RES._QHD ? 20 : 18
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet[`lowerBarFontSize_${grSet.layout}`] = newSize();
+
+		grm.ui.createFonts();
+		grm.ui.createButtonImages();
+		grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the notification area font size directly to the specified size.
+	 * @param {number} size - The new font size for the notification area.
+	 */
+	setNotificationFontSize(size) {
+		grSet[`notificationFontSize_${grSet.layout}`] = size;
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the popup font size directly to the specified size.
+	 * @param {number} size - The new font size for popups.
+	 */
+	setPopupFontSize(size) {
+		grSet[`popupFontSize_${grSet.layout}`] = size;
+		grm.ui.createFonts();
+		if (grm.ui.displayCustomThemeMenu) {
+			grm.ui.cthMenu.initCustomThemeMenu('pl_bg');
+		} else if (grm.ui.displayMetadataGridMenu) {
+			grm.ui.gridMenu.initMetadataGridMenu();
+		}
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the tooltip font size directly to the specified size.
+	 * @param {number} size - The new font size for tooltips.
+	 */
+	setTooltipFontSize(size) {
+		grSet[`tooltipFontSize_${grSet.layout}`] = size;
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the metadata grid artist font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setGridArtistFontSize(size) {
+		const currentSize = grSet[`gridArtistFontSize_${grSet.layout}`];
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 24),
+			'0' : () => RES._QHD ? 20 : 18
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet[`gridArtistFontSize_${grSet.layout}`] = newSize();
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the metadata grid title font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setGridTitleFontSize(size) {
+		const currentSize = grSet[`gridTitleFontSize_${grSet.layout}`];
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 24),
+			'0' : () => RES._QHD ? 20 : 18
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet[`gridTrackNumFontSize_${grSet.layout}`] = grSet[`gridTitleFontSize_${grSet.layout}`] = newSize();
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the metadata grid album font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setGridAlbumFontSize(size) {
+		const currentSize = grSet[`gridAlbumFontSize_${grSet.layout}`];
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 24),
+			'0' : () => RES._QHD ? 20 : 18
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet[`gridAlbumFontSize_${grSet.layout}`] = newSize();
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the metadata grid tag name font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setGridTagNameFontSize(size) {
+		const currentSize = grSet[`gridKeyFontSize_${grSet.layout}`];
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 24),
+			'0' : () => RES._QHD ? 19 : 17
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet[`gridKeyFontSize_${grSet.layout}`] = newSize();
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the metadata grid tag value font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setGridTagValueFontSize(size) {
+		const currentSize = grSet[`gridValueFontSize_${grSet.layout}`];
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 24),
+			'0' : () => RES._QHD ? 19 : 17
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet[`gridValueFontSize_${grSet.layout}`] = newSize();
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the Playlist size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setPlaylistFontSize(size) {
+		const currentSize = grSet[`playlistHeaderFontSize_${grSet.layout}`];
+		const getSize = {
+			'-1': () => ({
+				headerSize: Math.max(currentSize - 1, 10),
+				fontSize: Math.max(currentSize - 3, 8)
+			}),
+			'1': () => ({
+				headerSize: Math.min(currentSize + 1, 26),
+				fontSize: Math.min(currentSize - 1, 24)
+			}),
+			'0': () => ({
+				headerSize: RES._QHD ? 17 : 15,
+				fontSize: RES._QHD ? 14 : 12
+			})
+		};
+		const newSize = getSize[size] || (() => ({ headerSize: size, fontSize: size - (size === 15 || size === 17 ? 3 : 2) }));
+		grSet[`playlistHeaderFontSize_${grSet.layout}`] = newSize().headerSize;
+		grSet[`playlistFontSize_${grSet.layout}`] = newSize().fontSize;
+
+		PlaylistRescale(true);
+		PlaylistHeader.img_cache.clear();
+		grm.ui.initPlaylist();
+		pl.call.on_size(grm.ui.ww, grm.ui.wh);
+		if (grSet.libraryLayout === 'split') {
+			lib.pop.createImages();
+			lib.panel.zoomReset();
+			grm.ui.initLibraryLayout();
+		}
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the Library font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setLibraryFontSize(size) {
+		const currentSize = libSet[`baseFontSize_${grSet.layout}`];
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 8),
+			'1' : () => Math.min(currentSize + 1, 26),
+			'0' : () => RES._QHD ? 14 : 12
+		};
+		const newSize = getSize[size] || (() => size);
+		libSet[`baseFontSize_${grSet.layout}`] = newSize();
+		grSet[`libraryFontSize_${grSet.layout}`] = libSet[`baseFontSize_${grSet.layout}`];
+
+		grm.ui.setLibrarySize();
+		lib.panel.zoomReset();
+		lib.pop.createImages();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the Biography font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setBiographyFontSize(size) {
+		const currentSize = bioSet[`baseFontSizeBio_${grSet.layout}`];
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 8),
+			'1' : () => Math.min(currentSize + 1, 26),
+			'0' : () => RES._QHD ? 14 : 12
+		};
+		const newSize = getSize[size] || (() => size);
+		bioSet[`baseFontSizeBio_${grSet.layout}`] = newSize();
+		grSet[`biographyFontSize_${grSet.layout}`] = bioSet[`baseFontSizeBio_${grSet.layout}`];
+
+		grm.ui.setBiographySize();
+		bio.but.resetZoom();
+		bio.but.createImages();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the Lyrics font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setLyricsFontSize(size) {
+		const currentSize = grSet[`lyricsFontSize_${grSet.layout}`];
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 50),
+			'0' : () => RES._QHD ? 22 : 20
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet[`lyricsFontSize_${grSet.layout}`] = newSize();
+
+		grm.ui.createFonts();
+		if (grm.ui.displayLyrics) {
+			grm.lyrics.initLyrics();
+		}
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - LOWER BAR TRANSPORT BUTTONS * //
+	// #region PUBLIC METHODS - LOWER BAR TRANSPORT BUTTONS
+	/**
+	 * Sets the lower bar transport button size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setTransportBtnSize(size) {
+		const currentSize = grSet[`transportButtonSize_${grSet.layout}`];
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 28),
+			'1' : () => Math.min(currentSize + 1, grSet.layout === 'default' ? 42 : 36),
+			'0' : () => RES._QHD ? 34 : 32
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet[`transportButtonSize_${grSet.layout}`] = newSize();
+
+		grm.ui.createFonts();
+		grm.ui.createButtonImages();
+		grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the lower bar transport button spacing size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setTransportBtnSpacing(size) {
+		const currentSize = grSet[`transportButtonSpacing_${grSet.layout}`];
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 3),
+			'1' : () => Math.min(currentSize + 1, 15),
+			'0' : () => 5
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet[`transportButtonSpacing_${grSet.layout}`] = newSize();
+
+		grm.ui.createButtonImages();
+		grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
+		RepaintWindow();
 	}
 	// #endregion
 }

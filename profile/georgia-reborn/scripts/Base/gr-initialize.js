@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    15-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -35,6 +35,7 @@ grm.cthMenu  = new CustomThemeMenu();
 grm.gridMenu = new MetadataGridMenu();
 
 grm.artCache = new ArtCache();
+grm.scaling  = new Scaling();
 grm.button   = new Button();
 grm.pseBtn   = new PauseButton();
 grm.volBtn   = new VolumeButton();
