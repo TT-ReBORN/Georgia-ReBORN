@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-04-2024                                              * //
+// * Last change:    16-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1061,6 +1061,7 @@ function on_mouse_wheel(step) {
 	const AltKeyPressed = utils.IsKeyPressed(VK_MENU);
 	const CtrlKeyPressed = utils.IsKeyPressed(VK_CONTROL);
 	const ShiftKeyPressed = utils.IsKeyPressed(VK_SHIFT);
+	const scaleKeyPressed = AltKeyPressed || CtrlKeyPressed || ShiftKeyPressed;
 	const showVolumeBtn = grSet[`showVolumeBtn_${grSet.layout}`];
 	const displayAlbumArt = grSet.layout !== 'compact' &&
 		(!grm.ui.displayPlaylistArtwork && !grm.ui.displayBiography && !grm.ui.displayLyrics || (grm.ui.displayLibrary && grSet.libraryLayout === 'normal'));
@@ -1076,7 +1077,7 @@ function on_mouse_wheel(step) {
 	}
 
 	// * Cycling through album artwork
-	if (grSet.cycleArtMWheel && grm.ui.albumArtList.length > 1 && displayAlbumArt && mouseInAlbumArt()) {
+	if (displayAlbumArt && mouseInAlbumArt() && grSet.cycleArtMWheel && !scaleKeyPressed && grm.ui.albumArtList.length > 1) {
 		// Prev album art image
 		if (step > 0) {
 			if (grm.ui.albumArtIndex !== 0) {
