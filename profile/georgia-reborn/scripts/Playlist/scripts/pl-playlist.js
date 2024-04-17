@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-03-2024                                              * //
+// * Last change:    17-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -126,12 +126,11 @@ class Playlist extends BaseList {
 		const playlist_items_array = playlist_items.Convert();
 		const rows = new Array(playlist_items_array.length);
 		const showHeader = plSet.show_header;
+		const isOddOffset = showHeader ? 0 : 1;
 
 		for (let i = 0; i < playlist_items_array.length; ++i) {
 			const row = new PlaylistRow(this.list_x, 0, this.list_w, this.row_h, playlist_items_array[i], i, this.cur_playlist_idx);
-			if (!showHeader) {
-				row.is_odd = !(i & 1);
-			}
+			row.is_odd = !(i & 1) ^ isOddOffset;
 			rows[i] = row;
 		}
 

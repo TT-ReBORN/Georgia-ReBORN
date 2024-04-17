@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-03-2024                                              * //
+// * Last change:    17-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -966,27 +966,29 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			return 0;
 		}
 
+		const showHeader = plSet.show_header;
+		const isOddOffset = showHeader ? 0 : 1;
 		const rows_with_header_data = rows_with_data[0];
 		const first_data = rows_with_header_data[0][1];
+		const len = rows_with_header_data.length;
 		const owned_rows = [];
 		let idx = 0;
 
-		for (; idx < rows_with_header_data.length; idx++) {
+		for (; idx < len; idx++) {
 			if (first_data !== rows_with_header_data[idx][1]) {
 				break;
 			}
 			const item = rows_with_header_data[idx][0];
 			item.idx_in_header = idx;
 			item.parent = this;
-			if (plSet.show_header) {
-				item.is_odd = !(idx & 1);
-			}
+			item.is_odd = !(idx & 1) ^ isOddOffset;
+
 			owned_rows.push(item);
 		}
 
 		this.metadb = owned_rows[0].metadb;
 
-		const show_disc_headers = plSet.show_disc_header && this.grouping_handler.show_disc();
+		const show_disc_headers = showHeader && this.grouping_handler.show_disc();
 		const rows_with_disc_header_data = rows_with_data[1] || [];
 		const sub_headers = show_disc_headers ? this.create_disc_headers(rows_with_disc_header_data, idx) : [];
 		this.sub_items = sub_headers.length ? sub_headers : owned_rows;
@@ -1514,12 +1516,14 @@ class PlaylistDiscHeader extends PlaylistBaseHeader {
 		/** @type {PlaylistRow[]} */
 		this.sub_items = [];
 
-		if (!rows_with_data.length) {
+		const first_data = rows_with_data[0][1];
+		const rows_length = rows_with_data.length;
+
+		if (!rows_length) {
 			return 0;
 		}
 
-		const first_data = rows_with_data[0][1];
-		for (let index = 0; index < rows_with_data.length; index++) {
+		for (let index = 0; index < rows_length; index++) {
 			if (first_data !== rows_with_data[index][1]) {
 				break;
 			}

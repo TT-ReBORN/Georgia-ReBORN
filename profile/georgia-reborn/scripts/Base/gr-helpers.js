@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    03-04-2024                                              * //
+// * Last change:    17-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2029,14 +2029,11 @@ function Range(start, end, increment) {
  * @param {boolean} fromHead - Trims from the beginning of the array (if true) or from the end of the array (if false).
  */
 function TrimArray(array, count, fromHead) {
-	// Length deduction is much faster then _.drop or slice, since it does not create a new array.
 	if (fromHead) {
-		array.reverse();
+		array.splice(0, count);
+	} else {
 		array.length -= count;
-		array.reverse();
-		return;
 	}
-	array.length -= count;
 }
 
 
@@ -2061,7 +2058,21 @@ function Union(arr, ...args) {
  * @returns {Array} The new array.
  */
 function Zip(arr, ...args) {
-	return arr.map((value, idx) => [value, ...args.map((arr) => arr[idx])]);
+	const minLength = Math.min(arr.length, ...args.map(a => a.length));
+	const result = new Array(minLength);
+
+	for (let i = 0; i < minLength; i++) {
+		const group = new Array(1 + args.length);
+		group[0] = arr[i];
+
+		for (let j = 0; j < args.length; j++) {
+			group[j + 1] = args[j][i];
+		}
+
+		result[i] = group;
+	}
+
+	return result;
 }
 
 
