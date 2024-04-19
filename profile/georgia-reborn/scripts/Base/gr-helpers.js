@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-04-2024                                              * //
+// * Last change:    19-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -401,20 +401,33 @@ function CreateFolder(folder, is_recursive) {
  * @returns {boolean} True if the folder was created.
  */
 function _CreateFolder(folder) {
-	if (!folder.length) { return false; }
+	if (!folder.length) {
+		return false;
+	}
+
 	if (!IsFolder(folder)) {
-		if (folder.startsWith('.\\')) { folder = fb.FoobarPath + folder.replace('.\\', ''); }
-		const subFolders = folder.split('\\').map((_, i, arr) => i ? arr.slice(0, i).reduce((path, name) => `${path}\\${name}`) : _);
+		if (folder.startsWith('.\\')) {
+			folder = fb.FoobarPath + folder.replace('.\\', '');
+		}
+
+		const subFolders = folder.split('\\').map((_, i, arr) => i ? arr.slice(0, i + 1).reduce((path, name) => `${path}\\${name}`) : arr[0]);
+		let created = true;
+
 		for (const path of subFolders) {
-			try {
-				fso.CreateFolder(path);
-			} catch (e) {
-				return false;
+			if (!IsFolder(path)) {
+				try {
+					fso.CreateFolder(path);
+				} catch (e) {
+					created = false;
+					break;
+				}
 			}
 		}
-		return IsFolder(folder);
+
+		return created && IsFolder(folder);
 	}
-	return false;
+
+	return true;
 }
 
 
