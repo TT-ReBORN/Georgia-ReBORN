@@ -2012,25 +2012,14 @@ function Last(arr) {
  * If the `increment` parameter is not provided, it will be set to the sign of the difference between the `end` and `start` values.
  * @returns {Array<number>} An array of numbers that represents a range of values.
  */
-function Range(start, end, increment) {
-	const isEndDef = typeof end !== 'undefined';
-	end = isEndDef ? end : start;
-	start = isEndDef ? start : 0;
+function Range(start, end, increment = 1) {
+    const result = [];
 
-	if (typeof increment === 'undefined') {
-		increment = Math.sign(end - start);
-	}
+    for (let i = start; i < end; i += increment) {
+        result.push(i);
+    }
 
-	const length = Math.abs((end - start) / (increment || 1));
-
-	const { result } = Array.from({ length }).reduce(
-		({ result, current }) => ({
-			result: [...result, current],
-			current: current + increment
-		}),
-		{ current: start, result: [] }
-	);
-	return result;
+    return result;
 }
 
 

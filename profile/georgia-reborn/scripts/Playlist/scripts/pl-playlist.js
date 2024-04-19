@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-04-2024                                              * //
+// * Last change:    19-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1678,7 +1678,6 @@ class Playlist extends BaseList {
 	 */
 	ctx_menu_playlist_stats(parent_menu) {
 		// * Set up metadata and playlist stats settings
-		const metadata = Array.from(this.meta_handler.get_metadata().values());
 		const playlistName = plman.GetPlaylistName(plman.ActivePlaylist);
 		const playlistStatsMenu = new ContextMenu('Write playlist statistics to list');
 		const sortBy = plSet.playlist_stats_sort_by;
@@ -1778,7 +1777,7 @@ class Playlist extends BaseList {
 			const statsTypeTracks = statsTypeAlbums && plSet.playlist_stats_sort_by.startsWith('track');
 
 			playlistStatsMenu.appendItem(item[0], ((statsType) => {
-				const newStatsType = sortBy ? `${sortBy}${sortDirection}_${statsType}` : `${statsType}${sortDirection}`;
+				const metadata = Array.from(this.meta_handler.get_metadata().values()); // ! Takes long time to process for a very large playlist
 				const metadataType =
 					item[1].startsWith('track') ? 'track' :
 					item[1].startsWith('album') ? 'album' :
@@ -1787,6 +1786,7 @@ class Playlist extends BaseList {
 					'album';
 
 				const statsName = item[0];
+				const newStatsType = sortBy ? `${sortBy}${sortDirection}_${statsType}` : `${statsType}${sortDirection}`;
 				const filePath = `${fb.ProfilePath}cache\\playlist\\${playlistName}_${statsName}${statsType.startsWith('top') ? '_statistics' : `_[${newStatsType}]`}.txt`;
 
 				const ratingType =
