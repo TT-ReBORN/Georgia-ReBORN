@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-04-2024                                              * //
+// * Last change:    23-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -988,7 +988,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 		this.metadb = owned_rows[0].metadb;
 
-		const show_disc_headers = showHeader && this.grouping_handler.show_disc();
+		const show_disc_headers = plSet.show_disc_header && this.grouping_handler.show_disc();
 		const rows_with_disc_header_data = rows_with_data[1] || [];
 		const sub_headers = show_disc_headers ? this.create_disc_headers(rows_with_disc_header_data, idx) : [];
 		this.sub_items = sub_headers.length ? sub_headers : owned_rows;
