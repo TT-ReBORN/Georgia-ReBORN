@@ -1701,6 +1701,7 @@ class MainUI {
 			grm.cpuTrack.start();
 		}
 
+		const debugTimingsSorted = [...this.debugTimingsArray].sort();
 		const fullW = grSet.layout === 'default' && grSet.lyricsLayout === 'full' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
 		const titleWidth = this.albumArtSize.w - SCALE(80);
 		const titleHeight = gr.CalcTextHeight(' ', grFont.popup);
@@ -1719,7 +1720,7 @@ class MainUI {
 			{ title: 'Ram usage limit: ', log: `${(window.JsMemoryStats.TotalMemoryLimit / 1024 ** 2).toFixed(2)} MB` },
 			{ title: 'Separator', log: '' },
 			{ title: 'Timings: ', log: '' },
-			{ title: '', log: this.debugTimingsArray.sort().join('\n') }
+			{ title: '', log: debugTimingsSorted.join('\n') }
 		];
 
 		gr.SetSmoothingMode(SmoothingMode.None);
