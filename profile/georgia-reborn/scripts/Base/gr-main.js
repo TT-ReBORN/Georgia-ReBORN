@@ -1701,7 +1701,7 @@ class MainUI {
 			grm.cpuTrack.start();
 		}
 
-		const debugTimingsSorted = [...this.debugTimingsArray].sort();
+		const debugTimingsSorted = [...this.debugTimingsArray].sort((a, b) => a.localeCompare(b));
 		const fullW = grSet.layout === 'default' && grSet.lyricsLayout === 'full' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
 		const titleWidth = this.albumArtSize.w - SCALE(80);
 		const titleHeight = gr.CalcTextHeight(' ', grFont.popup);
