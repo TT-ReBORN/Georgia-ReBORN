@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-04-2024                                              * //
+// * Last change:    25-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3563,29 +3563,40 @@ class TopMenuOptions {
 		debugMenu.addSeparator();
 		debugMenu.addToggleItem('Enable double click refresh', grCfg.settings, 'doubleClickRefresh');
 		debugMenu.addSeparator();
-		debugMenu.addToggleItem('Enable debug output', grCfg.settings, 'showDebugLog');
+		debugMenu.addToggleItem('Enable debug output', grCfg.settings, 'showDebugLog', () => {
+			if (grCfg.settings.showDebugLog) fb.RunMainMenuCommand('View/Console');
+		});
 		debugMenu.addItem('Enable debug theme output', grCfg.settings.showDebugThemeLog, () => {
 			grCfg.settings.showDebugThemeLog = !grCfg.settings.showDebugThemeLog;
-			if (grCfg.settings.showDebugThemeLog) {
-				grm.ui.albumArt = null;
-				on_playback_new_track(fb.GetNowPlaying());
-			}
+			if (!grCfg.settings.showDebugThemeLog) return;
+			if (grCfg.settings.showDebugThemeLog) fb.RunMainMenuCommand('View/Console');
+			grm.ui.albumArt = null;
+			on_playback_new_track(fb.GetNowPlaying());
 		});
 		debugMenu.addItem('Enable debug theme overlay', grCfg.settings.showDebugThemeOverlay, () => {
 			grCfg.settings.showDebugThemeOverlay = !grCfg.settings.showDebugThemeOverlay;
 			if (grCfg.settings.showDebugThemeOverlay) {
+				grCfg.settings.showDebugPerformanceOverlay = false;
 				grm.ui.albumArt = null;
 				on_playback_new_track(fb.GetNowPlaying());
-			} else {
-				RepaintWindow();
+				return;
 			}
+			RepaintWindow();
+		});
+		debugMenu.addItem('Enable debug performance overlay', grCfg.settings.showDebugPerformanceOverlay, () => {
+			grCfg.settings.showDebugPerformanceOverlay = !grCfg.settings.showDebugPerformanceOverlay;
+			if (grCfg.settings.showDebugPerformanceOverlay) {
+				grCfg.settings.showDebugThemeOverlay = false;
+				grm.cpuTrack = new CPUTracker();
+				grm.cpuTrack.start();
+				grm.ui.albumArt = null;
+				on_playback_new_track(fb.GetNowPlaying());
+				return;
+			}
+			grm.cpuTrack.stop();
+			RepaintWindow();
 		});
 		debugMenu.addSeparator();
-		debugMenu.addToggleItem('Show draw timing', grm.ui, 'showDrawTiming');
-		debugMenu.addToggleItem('Show extra draw timing', grm.ui, 'showExtraDrawTiming');
-		debugMenu.addToggleItem('Show debug timing', grm.ui, 'showDebugTiming');
-		debugMenu.addSeparator();
-		debugMenu.addToggleItem('Show ram usage', grm.ui, 'showRamUsage');
 		debugMenu.addToggleItem('Show draw areas', grm.ui, 'drawRepaintRects', () => {
 			if (grm.ui.drawRepaintRects) {
 				RepaintRectAreas();
@@ -3594,8 +3605,19 @@ class TopMenuOptions {
 			}
 		});
 		debugMenu.addSeparator();
+		debugMenu.addToggleItem('Show draw timing', grm.ui, 'showDrawTiming', () => {
+			if (grm.ui.showDrawTiming) fb.RunMainMenuCommand('View/Console');
+		});
+		debugMenu.addToggleItem('Show draw extended timing', grm.ui, 'showDrawExtendedTiming', () => {
+			if (grm.ui.showDrawExtendedTiming) fb.RunMainMenuCommand('View/Console');
+		});
+		debugMenu.addToggleItem('Show debug timing', grm.ui, 'showDebugTiming', () => {
+			if (grm.ui.showDebugTiming) fb.RunMainMenuCommand('View/Console');
+		});
+		debugMenu.addSeparator();
 		debugMenu.addToggleItem('Show panel calls', grm.ui, 'showPanelTraceCall', () => {
 			if (grm.ui.showPanelTraceCall) {
+				fb.RunMainMenuCommand('View/Console');
 				grm.ui.traceCall = true;
 			} else {
 				grm.ui.traceCall = false;
@@ -3607,6 +3629,7 @@ class TopMenuOptions {
 		});
 		debugMenu.addToggleItem('Show panel moves', grm.ui, 'showPanelTraceOnMove', () => {
 			if (grm.ui.showPanelTraceOnMove) {
+				fb.RunMainMenuCommand('View/Console');
 				grm.ui.traceOnMove = true;
 				grm.ui.traceCall = true;
 				grm.ui.showPanelTraceCall = true;
@@ -3618,6 +3641,7 @@ class TopMenuOptions {
 		});
 		debugMenu.addToggleItem('Show playlist performance', grm.ui, 'showPlaylistTraceListPerf', () => {
 			grm.ui.traceListPerformance = !grm.ui.traceListPerformance;
+			if (grm.ui.showPlaylistTraceListPerf) fb.RunMainMenuCommand('View/Console');
 		});
 		debugMenu.addSeparator();
 		debugMenu.addItem('Set system first launch to true', false, () => { // Used when creating new config files

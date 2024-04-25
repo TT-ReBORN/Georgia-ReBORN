@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-04-2024                                              * //
+// * Last change:    25-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -288,11 +288,9 @@ class MainUI {
 		/** @public @type {boolean} Spams the console with draw times. */
 		this.showDrawTiming = false;
 		/** @public @type {boolean} Spams the console with every section of the draw code to determine bottlenecks. */
-		this.showExtraDrawTiming = false;
+		this.showDrawExtendedTiming = false;
 		/** @public @type {boolean} Spams the console with debug timing. */
 		this.showDebugTiming = false;
-		/** @public @type {boolean} Spams the console with memory statistic. */
-		this.showRamUsage = false;
 		/** @public @type {boolean} Draws all window.RepaintRect as red outlines in the theme. */
 		this.drawRepaintRects = false;
 		/** @public @type {boolean} Spams the console with panel trace call. */
@@ -301,6 +299,16 @@ class MainUI {
 		this.showPanelTraceOnMove = false;
 		/** @public @type {boolean} Spams the console with playlist list performance. */
 		this.showPlaylistTraceListPerf = false;
+		/** @public @type {Array} Stores the debug timing logs. */
+		this.debugTimingsArray = [];
+		// #endregion
+
+		// * REPAINT RECTS * //
+		// #region REPAINT RECTS
+		/** @public @type {Function} Throttles and limits the repaint requests for styled tooltips to 50 ms. */
+		this.repaintStyledTooltips = _Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 50);
+		/** @public @type {Function} Throttles and limits repaint requests for the debug system overlay to 1 sec. */
+		this.repaintDebugSystemOverlay = _Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 1000);
 		// #endregion
 	}
 
@@ -311,7 +319,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawMain(gr) {
-		const drawTimingStart = (this.showDrawTiming || this.showExtraDrawTiming) && new Date();
+		const drawTimingStart = (this.showDrawTiming || this.showDrawExtendedTiming) && new Date();
 
 		this.drawBackgrounds(gr);
 
@@ -350,6 +358,7 @@ class MainUI {
 		}
 
 		this.drawDebugThemeOverlay(gr);
+		this.drawDebugPerformanceOverlay(gr);
 		this.drawDebugTiming(drawTimingStart);
 		this.drawDebugRectAreas(gr);
 		this.repaintRectCount = 0;
@@ -408,23 +417,23 @@ class MainUI {
 	drawPanels(gr) {
 		if (grSet.layout === 'default' || grSet.layout === 'artwork') {
 			if (this.displayLibrary) {
-				const drawLibraryProfiler = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> library');
+				const drawLibraryProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> library');
 				lib.call.on_paint(gr);
 				if (drawLibraryProfiler) drawLibraryProfiler.Print();
 			}
 			if (grSet.layout === 'default' && this.displayPlaylist || grSet.layout === 'artwork' && this.displayPlaylistArtwork || this.displayLibrarySplit()) {
-				const drawPlaylistProfiler = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> playlist');
+				const drawPlaylistProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> playlist');
 				pl.call.on_paint(gr);
 				if (drawPlaylistProfiler) drawPlaylistProfiler.Print();
 			}
 			if (this.displayBiography) {
-				const drawBiographyProfiler = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> biography');
+				const drawBiographyProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> biography');
 				bio.call.on_paint(gr);
 				if (drawBiographyProfiler) drawBiographyProfiler.Print();
 			}
 		}
 		else if (grSet.layout === 'compact' && this.displayPlaylist) {
-			const drawPlaylistProfiler = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> playlist');
+			const drawPlaylistProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> playlist');
 			pl.call.on_paint(gr);
 			if (drawPlaylistProfiler) drawPlaylistProfiler.Print();
 		}
@@ -442,7 +451,7 @@ class MainUI {
 
 		if (!fb.IsPlaying || !displayAlbumArt || this.displayLibrarySplit()) return;
 
-		const drawAlbumArtProfiler = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> album art');
+		const drawAlbumArtProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> album art');
 
 		// * BIG ALBUM ART - NEEDS TO BE DRAWN AFTER ALL BLENDING IS DONE, I.E AFTER PLAYLIST * //
 		if (!this.noAlbumArtStub) {
@@ -538,7 +547,7 @@ class MainUI {
 			return;
 		}
 
-		const drawDiscArtProfiler = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> disc art');
+		const drawDiscArtProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> disc art');
 		const discArtImg = this.discArtArray[this.discArtRotationIndex] || this.discArtRotation;
 		gr.DrawImage(discArtImg, this.discArtSize.x, this.discArtSize.y, this.discArtSize.w, this.discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);
 
@@ -615,7 +624,7 @@ class MainUI {
 
 		if (!fb.IsPlaying || !this.displayDetails || grSet.lyricsLayout === 'full' && this.displayLyrics) return;
 
-		const drawMetadataGridProfiler = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> metadata grid');
+		const drawMetadataGridProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> metadata grid');
 
 		const gridArtistFontSize   = grSet[`gridArtistFontSize_${grSet.layout}`];
 		const showGridArtist       = grSet[`showGridArtist_${grSet.layout}`];
@@ -961,7 +970,7 @@ class MainUI {
 			return;
 		}
 
-		const drawBandLogoProfiler = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> band logo');
+		const drawBandLogoProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> band logo');
 		const availableSpace = this.albumArtSize.y + this.albumArtSize.h - this.gridTop;
 		const lightBg = new Color(grCol.detailsText).brightness < 140;
 		const logo = lightBg || this.noAlbumArtStub ? (this.bandLogoInverted || this.bandLogo) : this.bandLogo;
@@ -992,7 +1001,7 @@ class MainUI {
 			return;
 		}
 
-		const drawLabelLogoProfiler = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> label logo');
+		const drawLabelLogoProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> label logo');
 
 		if (this.recordLabels.length > 0) {
 			const lightBg = grSet.labelArtOnBg ? new Color(grCol.bg).brightness > 140 : new Color(grCol.detailsText).brightness < 140;
@@ -1123,7 +1132,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawStyles(gr) {
-		const drawStylesProfiler = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> theme styles');
+		const drawStylesProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> theme styles');
 
 		if (grSet.styleBevel) {
 			gr.SetSmoothingMode(SmoothingMode.None);
@@ -1212,7 +1221,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawPanelShadows(gr) {
-		const drawPanelShadowsProfiler = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> panel shadows');
+		const drawPanelShadowsProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> panel shadows');
 
 		// * SHADOWS FOR ALBUM ART, noAlbumArtStub AND DETAILS * //
 		const layoutDefault = grSet.layout === 'default' &&
@@ -1287,7 +1296,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawTopMenuBar(gr) {
-		const drawTopMenuBarProfiler = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> top menu bar');
+		const drawTopMenuBarProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> top menu bar');
 
 		for (const i in this.btn) { // Can't replace for..in until non-numeric indexes are removed
 			const btn = this.btn[i];
@@ -1317,7 +1326,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawLowerBar(gr) {
-		const drawLowerBarProfiler     = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> lower bar');
+		const drawLowerBarProfiler     = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> lower bar');
 		const lowerBarTop              = this.wh - this.lowerBarHeight + (grSet.layout === 'default' ? (RES._4K ? 65 : 35) : (RES._4K ? 33 : 18));
 		const lowerMargin              = SCALE(grSet.layout === 'compact' || grSet.layout === 'artwork' ? 80 : grSet.showTransportControls_default ? 80 : 120);
 		const lowerBarFontSize         = grSet[`lowerBarFontSize_${grSet.layout}`];
@@ -1559,7 +1568,7 @@ class MainUI {
 	drawStyledTooltips(gr) {
 		if (this.styledTooltipText === '' || !this.styledTooltipReady || !grSet.showStyledTooltips) return;
 
-		const drawStyledTooltipsProfiler = this.showExtraDrawTiming && fb.CreateProfiler('on_paint -> styled tooltips');
+		const drawStyledTooltipsProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> styled tooltips');
 		const tooltipFontSize = grSet[`tooltipFontSize_${grSet.layout}`];
 		const offset = SCALE(30);
 		const padding = SCALE(15);
@@ -1569,14 +1578,13 @@ class MainUI {
 		const h = Math.min(gr.MeasureString(this.styledTooltipText, grFont.tooltip, 0, 0, w, this.wh).Height + padding, this.wh - (this.state.mouse_y > this.wh * 0.85 ? this.state.mouse_y - this.wh * 0.15 : this.state.mouse_y) - edgeSpace - offset);
 		const x = this.state.mouse_x > this.ww * 0.85 ? this.state.mouse_x - w : this.state.mouse_x; // * When tooltip is too close to the right edge, it will be drawn on the left side of the mouse cursor
 		const y = this.state.mouse_y > this.wh * 0.85 ? this.state.mouse_y - h : this.state.mouse_y + offset; // * When tooltip is too close to the bottom edge, it will be drawn on the top side of the mouse cursor
-		const throttleRepaintRect = _Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 50);
 
 		// * Apply better anti-aliasing on smaller font sizes in HD res
 		gr.SetTextRenderingHint(!RES._4K && tooltipFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 		gr.FillRoundRect(x, y, w, h, arc, arc, RGBtoRGBA(grCol.popupBg, 220));
 		gr.DrawRoundRect(x, y, w, h, arc, arc, SCALE(2), 0x64000000);
 		gr.DrawString(this.styledTooltipText, grFont.tooltip, grCol.popupText, x + padding * 0.5, y + padding * 0.5, w - padding, h - padding, StringFormat(0, 0, 4));
-		throttleRepaintRect(x - offset * 0.5, y - offset * 0.5, w + offset, h + offset);
+		this.repaintStyledTooltips(x - offset * 0.5, y - offset * 0.5, w + offset, h + offset);
 
 		if (drawStyledTooltipsProfiler) drawStyledTooltipsProfiler.Print();
 	}
@@ -1597,7 +1605,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawDebugThemeOverlay(gr) {
-		if (!grCfg.settings.showDebugThemeOverlay) return;
+		if (!grCfg.settings.showDebugThemeOverlay || !grm.ui.loadingThemeComplete) return;
 
 		const fullW = grSet.layout === 'default' && grSet.lyricsLayout === 'full' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
 		const titleWidth = this.albumArtSize.w - SCALE(80);
@@ -1679,6 +1687,63 @@ class MainUI {
 			if (prop) drawString(log);
 			if (prop === grCol.imgBrightness) y += lineSpacing;
 		}
+	}
+
+	/**
+	 * Draws the debug performance overlay in the album art area when `Enable debug performance overlay` in Developer tools is active.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawDebugPerformanceOverlay(gr) {
+		if (!grCfg.settings.showDebugPerformanceOverlay || !grm.ui.loadingThemeComplete) return;
+
+		if (grm.cpuTrack.cpuTrackerTimer === null) {
+			grm.cpuTrack = new CPUTracker();
+			grm.cpuTrack.start();
+		}
+
+		const fullW = grSet.layout === 'default' && grSet.lyricsLayout === 'full' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
+		const titleWidth = this.albumArtSize.w - SCALE(80);
+		const titleHeight = gr.CalcTextHeight(' ', grFont.popup);
+		const titleMaxWidthRepaint = gr.CalcTextWidth('Ram usage for current panel:  6291456 MB', grFont.popup);
+		const lineSpacing = titleHeight * 1.5;
+		const logColor = RGB(255, 255, 255);
+		const x = this.albumArtSize.x + SCALE(grSet.layout !== 'default' ? 20 : 40);
+		let y = this.albumArtSize.y + lineSpacing;
+
+		const systemLog = [
+			{ title: 'System: ', log: '' },
+			{ title: 'CPU usage: ', log: `${grm.cpuTrack.getCpuUsage()}%` },
+			{ title: 'GUI usage: ', log: `${grm.cpuTrack.getGuiCpuUsage()}%` },
+			{ title: 'Ram usage for current panel: ', log: `${(window.JsMemoryStats.MemoryUsage / 1024 ** 2).toFixed(2)} MB` },
+			{ title: 'Ram usage for all panels: ', log: `${(window.JsMemoryStats.TotalMemoryUsage / 1024 ** 2).toFixed(2)} MB` },
+			{ title: 'Ram usage limit: ', log: `${(window.JsMemoryStats.TotalMemoryLimit / 1024 ** 2).toFixed(2)} MB` },
+			{ title: 'Separator', log: '' },
+			{ title: 'Timings: ', log: '' },
+			{ title: '', log: this.debugTimingsArray.sort().join('\n') }
+		];
+
+		gr.SetSmoothingMode(SmoothingMode.None);
+		gr.FillSolidRect(fullW ? 0 : this.albumArtSize.x, fullW ? this.topMenuHeight : this.albumArtSize.y, fullW ? this.ww : this.albumArtSize.w, fullW ? this.wh - this.topMenuHeight - this.lowerBarHeight : this.albumArtSize.h, RGBA(0, 0, 0, 180));
+		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+
+		const drawString = (title, log) => {
+			const lines = log.split('\n');
+			lines.forEach((line, index) => {
+				const fullString = title.length > 0 ? `${title} ${line}` : line;
+				gr.DrawString(fullString, grFont.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
+				y += lineSpacing;
+			});
+		};
+
+		for (const { title, log } of systemLog) {
+			if (title !== 'Separator') {
+				drawString(title, log);
+			} else {
+				y += lineSpacing;
+			}
+		}
+
+		this.repaintDebugSystemOverlay(x, this.albumArtSize.y + lineSpacing * 2, titleMaxWidthRepaint, lineSpacing * 4);
 	}
 
 	/**
@@ -1996,7 +2061,7 @@ class MainUI {
 	 * Initializes the theme when updating colors.
 	 */
 	initTheme() {
-		const themeProfiler = this.showDebugTiming && fb.CreateProfiler('initTheme');
+		const themeProfiler = (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('initTheme');
 
 		const fullInit =
 			this.initThemeFull || grSet.themeBrightness !== 'default'
@@ -2073,6 +2138,7 @@ class MainUI {
 		window.Repaint();
 
 		if (themeProfiler) themeProfiler.Print();
+		if (grCfg.settings.showDebugPerformanceOverlay) this.debugTimingsArray.push(`initTheme: ${themeProfiler.Time} ms`);
 	}
 
 	/**
@@ -2437,7 +2503,8 @@ class MainUI {
 			this.progressBarTimerInterval = 1000; // Radio streaming
 		}
 
-		if (this.showDebugTiming) {
+		if (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) {
+			this.debugTimingsArray.push(`Progress bar: ${this.progressBarTimerInterval} ms or ${(1000 / this.progressBarTimerInterval).toFixed(2)} Hz`);
 			console.log(`Progress bar will update every ${this.progressBarTimerInterval}ms or ${(1000 / this.progressBarTimerInterval).toFixed(2)} times per second.`);
 		}
 
@@ -2909,7 +2976,7 @@ class MainUI {
 	 * Creates the top menu and lower bar button images for button state 'Enabled', 'Hovered', 'Down'.
 	 */
 	createButtonImages() {
-		const createButtonProfiler = this.showExtraDrawTiming && fb.CreateProfiler('createButtonImages');
+		const createButtonProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('createButtonImages');
 		const transportCircleSize = Math.round(grSet[`transportButtonSize_${grSet.layout}`] * 0.93333);
 		let btns = {};
 
@@ -3619,7 +3686,7 @@ class MainUI {
 	fetchAlbumArt(metadb) {
 		this.albumArtList = [];
 
-		const fetchAlbumArtProfiler = this.showDebugTiming && fb.CreateProfiler('fetchAlbumArt');
+		const fetchAlbumArtProfiler = (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('fetchAlbumArt');
 
 		const autoRandomPreset =
 			(!['off', 'track'].includes(grSet.presetAutoRandomMode) && grSet.presetSelectMode === 'harmonic' ||
@@ -3703,6 +3770,7 @@ class MainUI {
 		}
 
 		if (fetchAlbumArtProfiler) fetchAlbumArtProfiler.Print();
+		if (grCfg.settings.showDebugPerformanceOverlay) this.debugTimingsArray.push(`fetchAlbumArt: ${fetchAlbumArtProfiler.Time} ms`);
 	}
 
 	/**
@@ -4024,7 +4092,7 @@ class MainUI {
 	 * Creates the drop shadow for disc art.
 	 */
 	createDiscArtShadow() {
-		const discArtShadowProfiler = this.showDebugTiming && fb.CreateProfiler('createDiscArtShadow');
+		const discArtShadowProfiler = (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('createDiscArtShadow');
 		const discArtMargin = SCALE(2);
 
 		if (this.displayDetails && ((this.albumArt && this.albumArtSize.w > 0) || (this.discArt && grSet.displayDiscArt && this.discArtSize.w > 0))) {
@@ -4047,6 +4115,7 @@ class MainUI {
 		}
 
 		if (discArtShadowProfiler) discArtShadowProfiler.Print();
+		if (grCfg.settings.showDebugPerformanceOverlay) this.debugTimingsArray.push(`createDiscArtShadow: ${discArtShadowProfiler.Time} ms`);
 	}
 
 	/**
@@ -4062,7 +4131,7 @@ class MainUI {
 	 * Fetches new disc art when a new album is being played.
 	 */
 	fetchDiscArt() {
-		const fetchDiscArtProfiler = this.showDebugTiming && fb.CreateProfiler('fetchDiscArt');
+		const fetchDiscArtProfiler = (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('fetchDiscArt');
 		const getDiscArtImagePaths = grPath.discArtImagePaths();
 		const getDiscArtStubPaths = grPath.discArtStubPaths();
 		let discArtPath;
@@ -4117,6 +4186,7 @@ class MainUI {
 		}
 
 		if (fetchDiscArtProfiler) fetchDiscArtProfiler.Print();
+		if (grCfg.settings.showDebugPerformanceOverlay) this.debugTimingsArray.push(`fetchDiscArt: ${fetchDiscArtProfiler.Time} ms`);
 	}
 
 	/**

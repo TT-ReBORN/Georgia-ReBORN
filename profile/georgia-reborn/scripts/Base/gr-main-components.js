@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-04-2024                                              * //
+// * Last change:    25-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -156,6 +156,156 @@ class ArtCache {
 		}
 	}
 	// #endregion
+}
+
+
+///////////////////////////
+// * CPU USAGE TRACKER * //
+///////////////////////////
+/**
+ * A class that tracks and monitors CPU usage.
+ */
+class CPUTracker {
+	/**
+	 * Create the CPUTracker instance.
+	 * @param {Function} onChangeCallback - A callback function to call when CPU usage changes.
+	 */
+	constructor(onChangeCallback) {
+		/** @private @type {number} */
+		this.cpuUsage = 0;
+		/** @private @type {number} */
+		this.guiCpuUsage = 0;
+		/** @private @type {?number} */
+		this.cpuTrackerTimer = null;
+		/** @private @type {Function} */
+		this.onChangeCallback = onChangeCallback;
+		/** @private @type {{[key: string]: {sampleCount: number, currentSampleCount: number, resetSampleCount: number, acumUsage: number, averageUsage: number}}} */
+		this.usage = {
+			idle: {
+				sampleCount: 30,
+				currentSampleCount: 0,
+				resetSampleCount: 0,
+				acumUsage: 0,
+				averageUsage: 0
+			},
+			playing: {
+				sampleCount: 30,
+				currentSampleCount: 0,
+				resetSampleCount: 0,
+				acumUsage: 0,
+				averageUsage: 0
+			}
+		};
+	}
+
+	/**
+	 * Gets the current CPU usage.
+	 * @returns {number} The current CPU usage.
+	 */
+	getCpuUsage() {
+		return this.cpuUsage;
+	}
+
+	/**
+	 * Gets the current GUI CPU usage.
+	 * @returns {number} The current GUI CPU usage.
+	 */
+	getGuiCpuUsage() {
+		return this.guiCpuUsage;
+	}
+
+	/**
+	 * Starts the CPU usage monitoring process.
+	 */
+	start() {
+		if (this.cpuTrackerTimer) return;
+
+		this.cpuTrackerTimer = setInterval(() => {
+			const floatUsage = Math.random() * 100; // Simulated CPU usage
+			const isPlaying = Math.random() > 0.5; // Simulated playback status
+			const isPaused = Math.random() > 0.8;
+			const usageType = isPlaying && !isPaused ? 'playing' : 'idle';
+
+			this.updateUsage(usageType, floatUsage);
+
+			const baseLine = this.usage[usageType].averageUsage;
+			this.cpuUsage = floatUsage.toFixed(1);
+			let usageDiff = Math.max((floatUsage - baseLine), 0);
+			usageDiff = (usageDiff <= 0.5 ? 0 : usageDiff); // Suppress low spikes
+			this.guiCpuUsage = usageDiff.toFixed(1);
+
+			if (this.onChangeCallback) {
+				this.onChangeCallback();
+			}
+		}, 1000);
+	}
+
+	/**
+	 * Stops the CPU usage monitoring and resets usage statistics.
+	 */
+	stop() {
+		if (this.cpuTrackerTimer) {
+			clearInterval(this.cpuTrackerTimer);
+			this.cpuTrackerTimer = undefined;
+		}
+
+		this.resetUsage('idle');
+		this.resetUsage('playing');
+	}
+
+	/**
+	 * Recalculates the average CPU usage based on a new sample.
+	 * @param {string} type - The type of CPU usage to recalculate ('idle' or 'playing').
+	 * @param {number} currentUsage - The new CPU usage sample.
+	 */
+	recalcAvg(type, currentUsage) {
+		const usageState = this.usage[type];
+
+		if (usageState.currentSampleCount < usageState.sampleCount) {
+			usageState.acumUsage += currentUsage;
+			usageState.currentSampleCount++;
+			usageState.averageUsage = usageState.acumUsage / usageState.currentSampleCount;
+			return;
+		}
+
+		usageState.averageUsage -= usageState.averageUsage / usageState.sampleCount;
+		usageState.averageUsage += currentUsage / usageState.sampleCount;
+	}
+
+	/**
+	 * Resets the CPU usage data for a specified type.
+	 * @param {string} type - The type of CPU usage to reset ('idle' or 'playing').
+	 */
+	resetUsage(type) {
+		const usageState = this.usage[type];
+		usageState.currentSampleCount = 0;
+		usageState.resetSampleCount = 0;
+		usageState.acumUsage = 0;
+		usageState.averageUsage = 0;
+	}
+
+	/**
+	 * Updates the CPU usage data based on new sample.
+	 * @param {string} type - The type of CPU usage to update ('idle' or 'playing').
+	 * @param {number} currentUsage - The current CPU usage to update.
+	 */
+	updateUsage(type, currentUsage) {
+		const usageState = this.usage[type];
+
+		if (usageState.currentSampleCount) {
+			if (usageState.averageUsage - currentUsage > 2) {
+				if (usageState.resetSampleCount < 3) {
+					usageState.resetSampleCount++;
+				} else {
+					this.resetUsage(type);
+				}
+			} else if (Math.abs(currentUsage - usageState.averageUsage) < 2) {
+				this.recalcAvg(type, currentUsage);
+			}
+		} else {
+			this.recalcAvg(type, currentUsage);
+		}
+	}
 }
 
 

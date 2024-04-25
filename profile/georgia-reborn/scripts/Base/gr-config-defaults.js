@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-03-2024                                              * //
+// * Last change:    25-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1637,6 +1637,7 @@ class ConfigDefaults {
 			showDebugLog: false,
 			showDebugThemeLog: false,
 			showDebugThemeOverlay: false,
+			showDebugPerformanceOverlay: false,
 			stoppedString1: 'foobar2000',
 			stoppedString1acr: 'fb2k',
 			stoppedString2: '$replace(%_foobar2000_version%,foobar2000 ,)'
@@ -1678,6 +1679,7 @@ class ConfigDefaults {
 			showDebugLog: 'Enables extra logging in the console. Probably not needed unless you encounter a problem or you\'re asked to enable it.',
 			showDebugThemeLog: 'Logs the output of the algorithm which determines the primary theme color.',
 			showDebugThemeOverlay: 'Displays various theme debug logs on the album art as an overlay.',
+			showDebugPerformanceOverlay: 'Displays various performance debug logs on the album art as an overlay.',
 			stoppedString1: 'The bolded portion of text shown above the progress bar when nothing is playing',
 			stoppedString2: 'The second (non-bold) portion of text shown above the progress bar when nothing is playing'
 		};

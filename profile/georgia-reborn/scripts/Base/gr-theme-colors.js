@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-02-2024                                              * //
+// * Last change:    25-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -6006,11 +6006,12 @@ class ColorMethods {
 	 * Main method to set the style Blend 1 & Blend 2 for the album art based on the current theme.
 	 */
 	setStyleBlend() {
-		const setStyleBlendProfiler = grm.ui.showDebugTiming && fb.CreateProfiler('setStyleBlend');
+		const setStyleBlendProfiler = (grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('setStyleBlend');
 
 		grCol.imgBlended = this._formatStyleBlendImage(grm.ui.albumArt, grm.ui.ww, grm.ui.wh, grCol.imgBrightness);
 
 		if (setStyleBlendProfiler) setStyleBlendProfiler.Print();
+		if (grCfg.settings.showDebugPerformanceOverlay) grm.ui.debugTimingsArray.push(`setStyleBlend: ${setStyleBlendProfiler.Time} ms`);
 	}
 
 	/**

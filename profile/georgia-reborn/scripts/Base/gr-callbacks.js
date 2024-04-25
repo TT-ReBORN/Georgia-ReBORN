@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-04-2024                                              * //
+// * Last change:    25-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -175,10 +175,11 @@ function on_metadb_changed(handle_list, fromhook) {
  */
 function on_playback_new_track(metadb) {
 	if (!metadb) return; // Solve weird corner case
-	const newTrackProfiler = grm.ui.showDebugTiming && fb.CreateProfiler('on_playback_new_track');
+	const newTrackProfiler = (grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('on_playback_new_track');
 	DebugLog('in on_playback_new_track()');
 	UpdateTimezoneOffset();
 
+	grm.ui.debugTimingsArray = [];
 	grm.ui.lastLeftEdge = 0;
 	grm.ui.newTrackFetchingArtwork = true;
 	grm.ui.newTrackFetchingDone = false;
@@ -274,15 +275,7 @@ function on_playback_new_track(metadb) {
 	grm.ui.newTrackFetchingDone = true;
 
 	if (newTrackProfiler) newTrackProfiler.Print();
-
-	if (grm.ui.showRamUsage) {
-		console.log(
-		'\n' +
-		'Ram usage for current panel:', `${(window.JsMemoryStats.MemoryUsage / 1024 ** 2).toFixed()} MB\n` +
-		'Ram usage for all panels:', `${(window.JsMemoryStats.TotalMemoryUsage / 1024 ** 2).toFixed()} MB\n` +
-		'Ram usage limit:', `${(window.JsMemoryStats.TotalMemoryLimit / 1024 ** 2).toFixed()} MB\n` +
-		'\n');
-	}
+	if (grCfg.settings.showDebugPerformanceOverlay) grm.ui.debugTimingsArray.push(`on_playback_new_track: ${newTrackProfiler.Time} ms`);
 }
 
 
