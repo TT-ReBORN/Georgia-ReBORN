@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-04-2024                                              * //
+// * Last change:    26-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -595,7 +595,6 @@ class PlaylistCallbacks {
 		}
 		else if (item instanceof PlaylistRow) {
 			item.rowTooltip(x, y);
-			return true;
 		}
 		else grm.ui.styledTooltipReady = false;
 
