@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-04-2024                                              * //
+// * Last change:    25-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -68,14 +68,14 @@ class PlaylistCallbacks {
 		// * Hide rows that shouldn't be visible
 		gr.SetSmoothingMode(SmoothingMode.None);
 		gr.FillSolidRect(this.x, 0, this.w, grm.ui.topMenuHeight, grCol.bg); // Hide alpha overlapping at the top
-		gr.FillSolidRect(this.x, grm.ui.topMenuHeight, this.w, this.plman_h, pl.col.bg); // Hide alpha overlapping at the top
+		gr.FillSolidRect(this.x, this.y, this.w, pl.plman.h, pl.col.bg); // Hide alpha overlapping at the top
 		gr.FillSolidRect(this.x, this.y + this.h - pl.geo.row_h, this.w, pl.geo.row_h + grm.ui.lowerBarHeight, pl.col.bg); // Hide alpha overlapping at the bottom
 		gr.FillSolidRect(this.x, this.y + this.h, this.w, grm.ui.lowerBarHeight, grCol.bg); // Hide alpha overlapping at the bottom
 
 		if (UIHacks.Aero.Effect === 2) gr.DrawLine(this.x, 0, grm.ui.ww, 0, 1, grCol.bg); // UIHacks aero glass shadow frame fix - needed for style Blend
 
 		if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended) {
-			gr.DrawImage(grCol.imgBlended, this.x, this.y - this.h - grm.ui.topMenuHeight - grm.ui.lowerBarHeight + this.plman_h, grm.ui.ww, grm.ui.wh, this.x, this.y - this.h - grm.ui.topMenuHeight - grm.ui.lowerBarHeight + this.plman_h, grCol.imgBlended.Width, grCol.imgBlended.Height);
+			gr.DrawImage(grCol.imgBlended, this.x, this.y - this.h - grm.ui.topMenuHeight - grm.ui.lowerBarHeight + pl.plman.h, grm.ui.ww, grm.ui.wh, this.x, this.y - this.h - grm.ui.topMenuHeight - grm.ui.lowerBarHeight + pl.plman.h, grCol.imgBlended.Width, grCol.imgBlended.Height);
 			gr.DrawImage(grCol.imgBlended, this.x, this.y + this.h - pl.geo.row_h, grm.ui.ww, grm.ui.wh, this.x, this.y + this.h - pl.geo.row_h, grCol.imgBlended.Width, grCol.imgBlended.Height);
 		}
 
