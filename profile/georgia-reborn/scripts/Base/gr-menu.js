@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-04-2024                                              * //
+// * Last change:    29-04-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2323,6 +2323,26 @@ class TopMenuOptions {
 	libraryOptions(menu, context_menu) {
 		const libraryMenu = context_menu ? menu : new Menu('Library');
 
+		const setLibrarySplitPreset = (libraryLayoutSplitPreset) => {
+			grSet.libraryLayoutSplitPreset  = false;
+			grSet.libraryLayoutSplitPreset2 = false;
+			grSet.libraryLayoutSplitPreset3 = false;
+			grSet.libraryLayoutSplitPreset4 = false;
+			if (libraryLayoutSplitPreset) grSet[libraryLayoutSplitPreset] = true;
+
+			// * Reset to default settings when deactivating Library layout split presets
+			if (!grSet.libraryLayoutSplitPreset  && !grSet.libraryLayoutSplitPreset2 &&
+				!grSet.libraryLayoutSplitPreset3 && !grSet.libraryLayoutSplitPreset4) {
+				plSet.show_header = true;
+				plSet.auto_collapse = false;
+				pl.playlist.header_expand();
+			}
+
+			grm.ui.initLibraryLayout();
+			grm.ui.initPlaylist();
+			pl.call.on_size(grm.ui.ww, grm.ui.wh);
+		};
+
 		// * LAYOUT * //
 		if (grSet.layout === 'default') {
 			const libraryLayoutMenu = new Menu('Layout');
@@ -2340,36 +2360,16 @@ class TopMenuOptions {
 			libraryLayoutMenu.addToggleItem('Use full preset', grSet, 'libraryLayoutFullPreset', () => { RepaintWindow(); });
 			libraryLayoutMenu.addSeparator();
 			libraryLayoutMenu.addToggleItem('Use split preset (collapse)', grSet, 'libraryLayoutSplitPreset', () => {
-				grSet.libraryLayoutSplitPreset2 = false;
-				grSet.libraryLayoutSplitPreset3 = false;
-				grSet.libraryLayoutSplitPreset4 = false;
-				grm.ui.initLibraryLayout();
-				grm.ui.initPlaylist();
-				pl.call.on_size(grm.ui.ww, grm.ui.wh);
+				setLibrarySplitPreset(grSet.libraryLayoutSplitPreset ? 'libraryLayoutSplitPreset' : false);
 			});
 			libraryLayoutMenu.addToggleItem('Use split preset (text)', grSet, 'libraryLayoutSplitPreset2', () => {
-				grSet.libraryLayoutSplitPreset = false;
-				grSet.libraryLayoutSplitPreset3 = false;
-				grSet.libraryLayoutSplitPreset4 = false;
-				grm.ui.initLibraryLayout();
-				grm.ui.initPlaylist();
-				pl.call.on_size(grm.ui.ww, grm.ui.wh);
+				setLibrarySplitPreset(grSet.libraryLayoutSplitPreset2 ? 'libraryLayoutSplitPreset2' : false);
 			});
 			libraryLayoutMenu.addToggleItem('Use split preset (art grid)', grSet, 'libraryLayoutSplitPreset3', () => {
-				grSet.libraryLayoutSplitPreset = false;
-				grSet.libraryLayoutSplitPreset2 = false;
-				grSet.libraryLayoutSplitPreset4 = false;
-				grm.ui.initLibraryLayout();
-				grm.ui.initPlaylist();
-				pl.call.on_size(grm.ui.ww, grm.ui.wh);
+				setLibrarySplitPreset(grSet.libraryLayoutSplitPreset3 ? 'libraryLayoutSplitPreset3' : false);
 			});
 			libraryLayoutMenu.addToggleItem('Use split preset (art header)', grSet, 'libraryLayoutSplitPreset4', () => {
-				grSet.libraryLayoutSplitPreset = false;
-				grSet.libraryLayoutSplitPreset2 = false;
-				grSet.libraryLayoutSplitPreset3 = false;
-				grm.ui.initLibraryLayout();
-				grm.ui.initPlaylist();
-				pl.call.on_size(grm.ui.ww, grm.ui.wh);
+				setLibrarySplitPreset(grSet.libraryLayoutSplitPreset4 ? 'libraryLayoutSplitPreset4' : false);
 			});
 			libraryLayoutMenu.appendTo(libraryMenu);
 		}

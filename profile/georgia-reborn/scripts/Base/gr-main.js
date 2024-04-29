@@ -4882,9 +4882,6 @@ class MainUI {
 				}
 			}
 			pl.call.on_size(this.ww, this.wh);
-		} else {
-			plSet.auto_collapse = false;
-			pl.playlist.header_expand();
 		}
 
 		if (!lib.initialized) return;
