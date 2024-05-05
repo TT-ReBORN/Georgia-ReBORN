@@ -1447,7 +1447,7 @@ class MetadataGridTooltip {
 	 * @param {number} m - The mouse mask.
 	 */
 	on_mouse_move(x, y, m) {
-		if (!grSet.showTooltipMain && !grSet.showTooltipTruncated) return;
+		if (!grm.ui.displayDetails || !grSet.showTooltipMain && !grSet.showTooltipTruncated) return;
 
 		let tooltip = '';
 		const showGridArtist       = grSet[`showGridArtist_${grSet.layout}`];
