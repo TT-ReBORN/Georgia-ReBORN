@@ -909,7 +909,7 @@ function on_mouse_move(x, y, m) {
 	grm.display.setWindowDrag(x, y);
 	grm.utils.setMouseCursor(x, y);
 
-	if (grm.ui.displayLibrary && !lib.but.move(x, y) || grm.ui.displayBiography && !bio.but.move(x, y)) {
+	if (!lib.but.cur && !bio.but.cur) { // Needed for Library and Biography button hover
 		grm.ui.styledTooltipText = '';
 	}
 
