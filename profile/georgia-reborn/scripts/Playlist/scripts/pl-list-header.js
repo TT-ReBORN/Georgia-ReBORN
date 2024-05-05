@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    23-04-2024                                              * //
+// * Last change:    05-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1343,7 +1343,6 @@ class PlaylistHeader extends PlaylistBaseHeader {
 				is_hovering = true;
 				if (this.hyperlinks[h].state !== HyperlinkStates.Hovered) {
 					this.hyperlinks[h].state = HyperlinkStates.Hovered;
-					this.headerTooltip();
 					needs_redraw = true;
 				}
 				handled = true;
@@ -1353,6 +1352,8 @@ class PlaylistHeader extends PlaylistBaseHeader {
 				needs_redraw = true;
 			}
 		}
+
+		this.headerTooltip();
 
 		if (!is_hovering) {
 			grm.ttip.stop();

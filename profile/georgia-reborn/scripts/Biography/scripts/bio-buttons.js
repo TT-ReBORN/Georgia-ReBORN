@@ -942,7 +942,6 @@ class BioTooltip {
 	// * METHODS * //
 
 	clear() {
-		grm.ui.styledTooltipReady = false;
 		this.tt_timer.stop(this.id);
 	}
 
@@ -954,7 +953,6 @@ class BioTooltip {
 
 	showDelayed(text) {
 		grm.ui.styledTooltipText = text;
-		grm.ui.styledTooltipReady = true;
 		if (!grSet.showStyledTooltips) {
 			this.tt_timer.start(this.id, text);
 		}
@@ -962,7 +960,6 @@ class BioTooltip {
 
 	showImmediate(text) {
 		grm.ui.styledTooltipText = text;
-		grm.ui.styledTooltipReady = true;
 		if (!grSet.showStyledTooltips) {
 			this.tt_timer.set_id(this.id);
 			this.tt_timer.stop(this.id);
@@ -971,7 +968,6 @@ class BioTooltip {
 	}
 
 	stop() {
-		grm.ui.styledTooltipReady = false;
 		this.tt_timer.forceStop();
 	}
 }

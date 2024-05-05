@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-04-2024                                              * //
+// * Last change:    05-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1209,7 +1209,6 @@ class TooltipHandler {
 	 */
 	showDelayed(text) {
 		grm.ui.styledTooltipText = text;
-		grm.ui.styledTooltipReady = true;
 		if (!grSet.showStyledTooltips) {
 			this.timer.start(this.id, text);
 		}
@@ -1221,7 +1220,6 @@ class TooltipHandler {
 	 */
 	showImmediate(text) {
 		grm.ui.styledTooltipText = text;
-		grm.ui.styledTooltipReady = true;
 		if (!grSet.showStyledTooltips) {
 			this.timer.stop(this.id);
 			this.timer.displayTooltip(text);
@@ -1232,7 +1230,6 @@ class TooltipHandler {
 	 * Clears this tooltip if this handler created it.
 	 */
 	clear() {
-		grm.ui.styledTooltipReady = false;
 		this.timer.stop(this.id);
 	}
 
@@ -1240,7 +1237,6 @@ class TooltipHandler {
 	 * Clears the tooltip regardless of which handler created it.
 	 */
 	stop() {
-		grm.ui.styledTooltipReady = false;
 		this.timer.forceStop();
 	}
 	// #endregion
@@ -1434,9 +1430,13 @@ class MetadataGridTooltip {
 		this.metadataGridTooltipAlbum  = x >= this.x && x < this.x + this.w && y >= this.topAlbum  && y < this.topAlbum  + this.albumNumLinesHeight;
 		this.metadataGridTooltipAll    = this.metadataGridTooltipArtist + this.metadataGridTooltipTitle + this.metadataGridTooltipAlbum;
 
-		if (!this.metadataGridTooltipAll && this.tooltipText.length) {
+		if (this.metadataGridTooltipAll) {
+			grm.ui.repaintStyledTooltips(x, y, this.w, this.h);
+		} else if (!this.metadataGridTooltipAll && this.tooltipText.length) {
+			window.Repaint();
 			this.clearTooltip();
 		}
+
 		return this.metadataGridTooltipAll;
 	}
 
@@ -1565,9 +1565,13 @@ class LowerBarTooltip {
 		const zoneH = grm.ui.lowerBarHeight * 0.33;
 		const zone = zoneX <= x && zoneY <= y && zoneX + zoneW >= x && zoneY + zoneH >= y;
 
-		if (!zone && this.tooltipText.length) {
+		if (zone) {
+			grm.ui.repaintStyledTooltips(x, y, zoneW, zoneH);
+		} else if (!zone && this.tooltipText.length) {
+			window.Repaint();
 			this.clearTooltip();
 		}
+
 		return zone;
 	}
 
@@ -1998,13 +2002,12 @@ class Timeline {
 	mouseInThis(x, y) {
 		const zone = SCALE(10);
 		const inTimeline = x >= this.x && x < this.x + this.w && y >= this.y - zone && y < this.y + this.h + zone;
-		if (!inTimeline && this.tooltipText.length) {
-			this.clearTooltip();
 
-		// * Workaround when using styled tooltips and fb.IsPaused while mouse hovering the timeline.
-		// * Only in pause state, this needs to be somehow repainted to trigger displaying the tooltip.
-		} else if (inTimeline && grSet.showStyledTooltips && fb.IsPaused) {
+		if (inTimeline) {
 			window.RepaintRect(this.x, this.y, this.w, this.h);
+		} else if (!inTimeline && this.tooltipText.length) {
+			window.Repaint();
+			this.clearTooltip();
 		}
 
 		return inTimeline;

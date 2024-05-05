@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-04-2024                                              * //
+// * Last change:    05-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -93,8 +93,6 @@ class MainUI {
 		this.state = {};
 		/** @public @type {string} The tooltip text handler for styled tooltip. */
 		this.styledTooltipText = '';
-		/** @public @type {boolean} The draw state of styled tooltip. */
-		this.styledTooltipReady = false;
 		/** @public @type {FbTooltip} The tooltip object. */
 		this.ttip = null;
 		// #endregion
@@ -1566,7 +1564,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawStyledTooltips(gr) {
-		if (this.styledTooltipText === '' || !this.styledTooltipReady || !grSet.showStyledTooltips) return;
+		if (this.styledTooltipText === '' || !grSet.showStyledTooltips) return;
 
 		const drawStyledTooltipsProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> styled tooltips');
 		const tooltipFontSize = grSet[`tooltipFontSize_${grSet.layout}`];

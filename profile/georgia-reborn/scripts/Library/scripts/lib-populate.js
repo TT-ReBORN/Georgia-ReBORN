@@ -100,7 +100,6 @@ class LibPopulate {
 		this.checkTooltipFont('tree');
 		if (grSet.showStyledTooltips) {
 			grm.ui.styledTooltipText = value;
-			grm.ui.styledTooltipReady = true;
 		} else {
 			libTooltip.Text = value;
 			libTooltip.Activate();
@@ -866,7 +865,6 @@ class LibPopulate {
 		if (!libTooltip.Text && !grSet.showStyledTooltips || lib.but.trace) return;
 		libTooltip.Text = '';
 		lib.but.tooltipLib.delay = false;
-		grm.ui.styledTooltipReady = false;
 		libTooltip.Deactivate();
 	}
 

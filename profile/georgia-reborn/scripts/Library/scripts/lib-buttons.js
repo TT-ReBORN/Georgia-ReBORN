@@ -540,7 +540,6 @@ class LibTooltip {
 	// * METHODS * //
 
 	clear() {
-		grm.ui.styledTooltipReady = false;
 		this.tt_timer.stop(this.id);
 	}
 
@@ -552,7 +551,6 @@ class LibTooltip {
 
 	showDelayed(text) {
 		grm.ui.styledTooltipText = text;
-		grm.ui.styledTooltipReady = true;
 		if (!grSet.showStyledTooltips) {
 			this.tt_timer.start(this.id, text);
 		}
@@ -560,7 +558,6 @@ class LibTooltip {
 
 	showImmediate(text) {
 		grm.ui.styledTooltipText = text;
-		grm.ui.styledTooltipReady = true;
 		if (!grSet.showStyledTooltips) {
 			this.tt_timer.set_id(this.id);
 			this.tt_timer.stop(this.id);
@@ -569,7 +566,6 @@ class LibTooltip {
 	}
 
 	stop() {
-		grm.ui.styledTooltipReady = false;
 		this.tt_timer.forceStop();
 	}
 }
