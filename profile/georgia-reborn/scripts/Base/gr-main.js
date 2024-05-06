@@ -2937,7 +2937,7 @@ class MainUI {
 	displayLibrarySplit(control) {
 		return grSet.libraryLayout === 'split' && grSet.layout === 'default' && this.displayLibrary && this.displayPlaylist &&
 		(control ? this.state.mouse_x > pl.playlist.x && this.state.mouse_x <= pl.playlist.x + pl.playlist.w &&
-				   this.state.mouse_y > pl.playlist.y && this.state.mouse_y <= pl.playlist.y + pl.playlist.h : this.ww);
+				   this.state.mouse_y > pl.playlist.y - SCALE(plSet.row_h) && this.state.mouse_y <= pl.playlist.y + pl.playlist.h : this.ww);
 	}
 
 	/**
