@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-04-2024                                              * //
+// * Last change:    06-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -91,7 +91,7 @@ const pl = {
 	album_ratings: new Map(),
 	track_ratings: new Map(),
 	thumbnail_list: new Set(),
-	thumbnail_size: undefined,
+	thumbnail_size: SCALE(64),
 	call: undefined,
 	plman: undefined,
 	playlist: undefined

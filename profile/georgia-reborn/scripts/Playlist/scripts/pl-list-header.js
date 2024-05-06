@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    05-05-2024                                              * //
+// * Last change:    06-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -271,6 +271,8 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		/** @public @type {PlaylistGroupingHandler} */
 		this.grouping_handler = PlaylistHeader.grouping_handler;
 
+		pl.thumbnail_size = this.art_max_size;
+
 		this.initialize_rating();
 	}
 
@@ -502,8 +504,6 @@ class PlaylistHeader extends PlaylistBaseHeader {
 						grClip.DrawString(grm.ui.isStreaming && is_radio ? 'LIVE\n ON AIR' : 'NO COVER', pl.font.cover, this.is_playing() ? artist_color : pl.col.row_title_normal, art_box_x, art_box_y, art_box_size, art_box_size, Stringformat.align_center);
 					}
 
-					// * Used for Library thumbnail size
-					pl.thumbnail_size = art_box_w - 4;
 					grClip.DrawRect(art_box_x, art_box_y, art_box_w - 1, art_box_h - 1, 1, line_color);
 					left_pad += art_box_x + art_box_w;
 

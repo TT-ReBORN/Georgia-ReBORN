@@ -4789,6 +4789,8 @@ class MainUI {
 	 * Initializes active Library layout presets.
 	 */
 	initLibraryLayout() {
+		if (!lib.initialized) return;
+
 		const libraryLayoutSplitPresets =
 			grSet.libraryLayoutSplitPreset || grSet.libraryLayoutSplitPreset2 || grSet.libraryLayoutSplitPreset3 || grSet.libraryLayoutSplitPreset4;
 
@@ -4815,7 +4817,7 @@ class MainUI {
 			libSet.albumArtLabelType = 1;
 			lib.panel.imgView = libSet.albumArtShow = true;
 		}
-		// * Split layout presets
+		// * Split layout with active split layout presets
 		else if (grSet.libraryLayout === 'split' && libraryLayoutSplitPresets) {
 			if (grSet.layout !== 'default') return;
 
@@ -4881,8 +4883,11 @@ class MainUI {
 			}
 			pl.call.on_size(this.ww, this.wh);
 		}
+		// * Normal layout with active split layout presets
+		else if (grSet.libraryLayout === 'normal' && libraryLayoutSplitPresets) {
+			grSet.libraryThumbnailSize = grSet.libraryThumbnailSizeSaved;
+		}
 
-		if (!lib.initialized) return;
 		setLibraryView();
 		this.setLibrarySize();
 		window.Repaint();
