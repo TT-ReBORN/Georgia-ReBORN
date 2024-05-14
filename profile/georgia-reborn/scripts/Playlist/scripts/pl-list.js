@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    14-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -290,6 +290,8 @@ class BaseList {
 			this.is_scrollbar_available = true;
 			this._on_scrollbar_visibility_change(plSet.show_scrollbar);
 		}
+
+		window.RepaintRect(this.x, this.y, this.w, this.h);
 	}
 	// #endregion
 
