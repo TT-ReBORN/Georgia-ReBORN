@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-03-2024                                              * //
+// * Last change:    14-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -574,6 +574,7 @@ grSet.addProperties({
 	libraryLayoutSplitPreset2:          ['Georgia-ReBORN - 12. Library: Use split preset (text)', false], // Always use playlist without header art when displaying Library and auto-expand when displaying Playlist only
 	libraryLayoutSplitPreset3:          ['Georgia-ReBORN - 12. Library: Use split preset (art grid)', false], // Always use library art grid with playlist header auto-collapse when displaying Library and auto-expand when displaying Playlist only
 	libraryLayoutSplitPreset4:          ['Georgia-ReBORN - 12. Library: Use split preset (art header)', false], // Always use library art header with playlist header auto-collapse when displaying Library and auto-expand when displaying Playlist only
+	libraryMode:                        ['Georgia-ReBORN - 12. Library: Mode', 'tree'], // Library mode - tree (default), albumGrid, artistGrid
 	libraryDesign:                      ['Georgia-ReBORN - 12. Library: Design', 'reborn'], // Library design - reborn (default), ultraModern, modern, traditional, facet, coversLabelsRight, coversLabelsBottom, coversLabelsBlend, flowMode
 	libraryTheme:                       ['Georgia-ReBORN - 12. Library: Theme', 0], // Library theme - 0 (reborn/default), 1 - 'Dark', 2 - 'Blend', 3 - 'Light', 4 - 'Random', 5 - 'Cover'
 	libraryThumbnailSize:               ['Georgia-ReBORN - 12. Library: Thumbnail size', 'auto'], // Library thumbnail size - auto (default)
@@ -1256,6 +1257,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'libraryLayoutSplitPreset2', grCfg.themeLibrary, 'libraryLayoutSplitPreset2', false);
 		this._setSetting(grSet, 'libraryLayoutSplitPreset3', grCfg.themeLibrary, 'libraryLayoutSplitPreset3', false);
 		this._setSetting(grSet, 'libraryLayoutSplitPreset4', grCfg.themeLibrary, 'libraryLayoutSplitPreset4', false);
+		this._setSetting(grSet, 'libraryMode', grCfg.themeLibrary, 'libraryMode', 'tree');
 		this._setSetting(grSet, 'libraryThumbnailBorder', grCfg.themeLibrary, 'libraryThumbnailBorder', 'border');
 		this._setSetting(libSet, 'albumArtShow', grCfg.themeLibrary, 'albumArtShow', false);
 		this._setSetting(libSet, 'itemOverlayType', grCfg.themeLibrary, 'itemOverlayType', 0);

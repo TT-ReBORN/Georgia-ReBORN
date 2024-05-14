@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-04-2024                                              * //
+// * Last change:    14-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2374,6 +2374,18 @@ class TopMenuOptions {
 			libraryLayoutMenu.appendTo(libraryMenu);
 		}
 
+		// * MODE * //
+		const libraryModeMenu = new Menu('Mode');
+		libraryModeMenu.addRadioItems(['Tree', 'Album grid', 'Artist grid'], grSet.libraryMode, ['tree', 'albumGrid', 'artistGrid'], (mode) => {
+			grSet.libraryMode = mode;
+			if (grSet.libraryDesign === 'flowMode') grSet.libraryLayout = 'full';
+			if (lib.panel.imgView) libSet.toggle('albumArtShow');
+			if (mode === 'tree') libSet.toggle('albumArtShow');
+			libSet.artId = mode === 'artist' ? 4 : 0;
+			lib.men.setPlaylist(3);
+		});
+		libraryModeMenu.appendTo(libraryMenu);
+
 		// * DESIGN * //
 		libraryMenu.createRadioSubMenu('Design', ['Georgia-ReBORN', 'Traditional', 'Modern', 'Ultra-modern', 'Clean', 'List view', 'Covers (labels right)', 'Covers (labels bottom)', 'Covers (labels blend)', 'Flow mode'], grSet.libraryDesign,
 			['reborn', 'traditional', 'modern', 'ultraModern', 'clean', 'facet', 'coversLabelsRight', 'coversLabelsBottom', 'coversLabelsBlend', 'flowMode'], (design) => {
@@ -2407,24 +2419,6 @@ class TopMenuOptions {
 			lib.panel.updateProp(1);
 		});
 		libraryThumbnailBorderMenu.appendTo(libraryAlbumArtMenu);
-
-		if (!libSet.albumArtShow) {
-			libraryAlbumArtMenu.addToggleItem('Activate option or change design to album art', libSet, 'albumArtShow', () => {
-				if (grSet.libraryDesign === 'flowMode') grSet.libraryLayout = 'full';
-				lib.lib.logTree();
-				lib.pop.clearTree();
-				libSet.toggle('albumArtShow');
-				lib.panel.imgView = libSet.albumArtShow = true;
-				lib.men.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
-				grm.ui.setLibrarySize();
-				grm.ui.displayPlaylist = false;
-				grm.ui.displayLibrary = true;
-				grm.ui.btn.library.enabled = true;
-				grm.ui.btn.library.changeState(ButtonState.Down);
-				lib.panel.updateProp(1);
-			}, libSet.albumArtShow);
-			libraryAlbumArtMenu.addSeparator();
-		}
 
 		const libraryAlbumArtOverlay = new Menu('Overlay');
 		libraryAlbumArtOverlay.addRadioItems(['None', 'Track count', 'Year'], libSet.itemOverlayType, [0, 1, 2], (type) => {
