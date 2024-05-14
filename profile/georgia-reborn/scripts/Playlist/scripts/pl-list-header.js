@@ -106,18 +106,25 @@ class PlaylistBaseHeader extends BaseListItem {
 	}
 
 	/**
-	 * Gets an array of row indexes by recursively iterating through sub_items.
-	 * @returns {number[]} An array of row indexes.
+	 * Gets an array of row indexes by iteratively (non-recursively) traversing through sub_items using a stack.
+	 * @returns {number[]} An array of row indexes from items of type PlaylistRow.
 	 */
 	get_row_indexes() { // Rewritten
 		const row_indexes = [];
-		const stack = this.sub_items.slice();
+		const stack = [];
+
+		// Initialize the stack with sub-items in reverse order to maintain traversal order when popping.
+		for (let i = this.sub_items.length - 1; i >= 0; i--) {
+			stack.push(this.sub_items[i]);
+		}
 
 		while (stack.length > 0) {
 			const item = stack.pop();
+
 			if (item instanceof PlaylistRow) {
 				row_indexes.push(item.idx);
 			} else if (item.sub_items) {
+				// If the item has sub-items, add them to the stack in reverse order to continue depth-first search
 				for (let i = item.sub_items.length - 1; i >= 0; i--) {
 					stack.push(item.sub_items[i]);
 				}
