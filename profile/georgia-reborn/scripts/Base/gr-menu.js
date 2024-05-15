@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-05-2024                                              * //
+// * Last change:    15-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2376,12 +2376,12 @@ class TopMenuOptions {
 
 		// * MODE * //
 		const libraryModeMenu = new Menu('Mode');
+		grSet.libraryMode = lib.panel.imgView && libSet.artId === 4 ? 'artistGrid' : lib.panel.imgView && libSet.artId === 0 ? 'albumGrid' : 'tree';
 		libraryModeMenu.addRadioItems(['Tree', 'Album grid', 'Artist grid'], grSet.libraryMode, ['tree', 'albumGrid', 'artistGrid'], (mode) => {
-			grSet.libraryMode = mode;
 			if (grSet.libraryDesign === 'flowMode') grSet.libraryLayout = 'full';
 			if (lib.panel.imgView) libSet.toggle('albumArtShow');
 			if (mode === 'tree') libSet.toggle('albumArtShow');
-			libSet.artId = mode === 'artist' ? 4 : 0;
+			libSet.artId = mode === 'artistGrid' ? 4 : 0;
 			lib.men.setPlaylist(3);
 		});
 		libraryModeMenu.appendTo(libraryMenu);
