@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-05-2024                                              * //
+// * Last change:    16-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2487,44 +2487,58 @@ class TopMenuOptions {
 		const libraryControlsMenu = new Menu('Controls');
 		libraryControlsMenu.createRadioSubMenu('Action mode', ['Default', 'Browser', 'Player'], libSet.actionMode, [0, 1, 2], (mode) => {
 			libSet.actionMode = mode;
-			if (mode === 1) {
-				const msg = 'Do you want to enable library browser mode?\n\nThis will act like a file browser to quickly see the content of the album. It is not recommended for new users\nwho don\'t know how the library works.\n\nContinue?\n\n\n';
-				const msgFb = 'Library browser mode enabled:\n\nThis will act like a file browser to quickly see the content of the album.\nIt is not recommended for new users who don\'t know how the library works.';
+
+			const setModeSettings = (mode) => {
+				grSet.libraryLayoutSplitPreset  = mode !== 1;
+				grSet.libraryLayoutSplitPreset2 = false;
+				grSet.libraryLayoutSplitPreset3 = false;
+				grSet.libraryLayoutSplitPreset4 = false;
+				grSet.libraryLayout = mode === 0 ? 'normal' : 'split';
+				plSet.show_header = true;
+				plSet.auto_collapse = false;
+				lib.panel.imgView = libSet.albumArtShow = mode === 1;
+				lib.lib.logTree();
+				lib.pop.clearTree();
+				lib.men.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
+				grm.ui.setLibrarySize();
+				grm.ui.initTheme();
+				grm.ui.displayPlaylist = mode !== 0;
+				grm.ui.displayLibrary = true;
+				grm.ui.updatePlaylist();
+			};
+
+			if (mode === 0) {
+				const msg = 'Do you want to enable library\'s default mode?\n\nThis will restore the original settings, presets,\nand behavior of the library.\n\nContinue?\n\n\n';
+				const msgFb = 'Library\'s default mode enabled:\n\nOriginal settings, presets, and behavior of the library have been restored.\n\n';
+				ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+					setModeSettings(0);
+				});
+			}
+			else if (mode === 1) {
+				const msg = 'Do you want to enable library\'s browser mode?\n\nThis will act like a file browser to quickly see the content of the album. It is not recommended for new users\nwho don\'t know how the library works.\n\nContinue?\n\n\n';
+				const msgFb = 'Library\'s browser mode enabled:\n\nThis will act like a file browser to quickly see the content of the album.\nIt is not recommended for new users who don\'t know how the library works.';
 				ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 					if (!confirmed) {
 						libSet.actionMode = 0;
 						return;
 					}
-					grSet.libraryLayoutSplitPreset  = false;
-					grSet.libraryLayoutSplitPreset2 = false;
-					grSet.libraryLayoutSplitPreset3 = false;
-					grSet.libraryLayoutSplitPreset4 = false;
-					grSet.libraryLayout = 'split';
-					lib.panel.imgView = libSet.albumArtShow = true;
-					lib.lib.logTree();
-					lib.pop.clearTree();
-					lib.men.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
-					grm.ui.setLibrarySize();
-					grm.theme.initLibraryColors();
-					grm.theme.themeColorAdjustments();
-					plSet.show_header = true;
-					plSet.auto_collapse = false;
-					grm.ui.displayPlaylist = true;
-					grm.ui.displayLibrary = true;
+					setModeSettings(1);
 				});
-				grm.ui.updatePlaylist();
-				RepaintWindow();
 			}
 			else if (mode === 2) {
-				const msg = 'Do you want to enable library player mode?\n\nThis will act like a playlist and will not automatically add content to the playlist. It is recommended for new users\nwho don\'t know how the library works.\n\nContinue?\n\n\n';
-				const msgFb = 'Library player mode enabled:\n\nThis will act like a like a playlist and will not automatically add content to the playlist.\nIt is recommended for new users who don\'t know how the library works.';
+				const msg = 'Do you want to enable library\'s player mode?\n\nThis will act like a playlist and will not automatically add content to the playlist. It is recommended for new users\nwho don\'t know how the library works.\n\nContinue?\n\n\n';
+				const msgFb = 'Library\'s player mode enabled:\n\nThis will act like a like a playlist and will not automatically add content to the playlist.\nIt is recommended for new users who don\'t know how the library works.';
 				ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 					if (!confirmed) {
 						libSet.actionMode = 0;
+						return;
 					}
+					setModeSettings(2);
 				});
-				RepaintWindow();
 			}
+
+			RepaintWindow();
+			lib.panel.updateProp(1);
 		});
 		libraryControlsMenu.addSeparator();
 		libraryControlsMenu.createRadioSubMenu('Single-click action', ['Select', 'Send to playlist', 'Send to playlist and play', 'Send to playlist and play (add if playing)'], libSet.clickAction, [0, 1, 2, 3], (action) => {
