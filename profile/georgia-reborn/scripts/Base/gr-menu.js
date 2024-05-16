@@ -2612,6 +2612,10 @@ class TopMenuOptions {
 			libSet.filterBy = order;
 			lib.panel.set('Filter', order);
 		});
+		if (!Detect.Wine && Detect.IE) {
+			libraryFilterOrderMenu.addSeparator();
+			libraryFilterOrderMenu.addItem('Configure filters', false, () => { lib.panel.open('filters'); });
+		}
 		libraryFilterOrderMenu.appendTo(libraryMenu);
 
 		// * SORT ORDER * //
@@ -2641,6 +2645,10 @@ class TopMenuOptions {
 			lib.pop.clearTree();
 			lib.men.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
 		});
+		if (!Detect.Wine && Detect.IE) {
+			libraryViewOrderMenu.addSeparator();
+			libraryViewOrderMenu.addItem('Configure views', false, () => { lib.panel.open('views'); });
+		}
 		libraryViewOrderMenu.appendTo(libraryMenu);
 
 		// * SOURCE * //
