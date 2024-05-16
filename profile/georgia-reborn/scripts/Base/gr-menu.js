@@ -2496,6 +2496,7 @@ class TopMenuOptions {
 				grSet.libraryLayout = mode === 0 ? 'normal' : 'split';
 				plSet.show_header = true;
 				plSet.auto_collapse = false;
+				libSet.itemShowStatistics = mode === 2 ? 7 : 0;
 				lib.panel.imgView = libSet.albumArtShow = mode === 1;
 				lib.lib.logTree();
 				lib.pop.clearTree();
