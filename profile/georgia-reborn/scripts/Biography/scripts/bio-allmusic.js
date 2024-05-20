@@ -11,7 +11,7 @@ function bioOnStateChange(resolve, reject, func = null) { // credit regorxxx
 
 // May be used to async run a func for the response or as promise
 function bioSend({ method = 'GET', URL, body = void (0), func = null, requestHeader = [/*[header, type]*/], bypassCache = false, timeout = 5000 }) { // credit regorxxx
-	return new Promise(async (resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		const xmlhttp = new ActiveXObject('WinHttp.WinHttpRequest.5.1');
 		// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#bypassing_the_cache
 		// Add ('&' + new Date().getTime()) to URLS to avoid caching
@@ -20,18 +20,25 @@ function bioSend({ method = 'GET', URL, body = void (0), func = null, requestHea
 			URL + (bypassCache ? (/\?/.test(URL) ? '&' : '?') + new Date().getTime() : ''),
 			true
 		);
+
 		requestHeader.forEach((pair) => {
-			if (!pair[0] || !pair[1]) { console.log(`HTTP Headers missing: ${pair}`); return; }
+			if (!pair[0] || !pair[1]) {
+				console.log(`HTTP Headers missing: ${pair}`);
+				return;
+			}
 			xmlhttp.SetRequestHeader(...pair);
 		});
+
 		if (bypassCache) {
 			xmlhttp.SetRequestHeader('Cache-Control', 'private');
 			xmlhttp.SetRequestHeader('Pragma', 'no-cache');
 			xmlhttp.SetRequestHeader('cache', 'no-store');
 			xmlhttp.SetRequestHeader('If-Modified-Since', 'Sat, 1 Jan 2000 00:00:00 GMT');
 		}
+
 		xmlhttp.SetTimeouts(timeout, timeout, timeout, timeout);
 		xmlhttp.Send(method === 'POST' ? body : void (0));
+
 		// Add a timer for timeout
 		const timer = setTimeout(() => {
 			clearInterval(checkResponse);
@@ -43,15 +50,27 @@ function bioSend({ method = 'GET', URL, body = void (0), func = null, requestHea
 				if (e.message.indexOf('0x80072ee7') !== -1) { status = 400; } // No network
 				else if (e.message.indexOf('0x80072ee2') !== -1) { status = 408; } // No response
 				else if (e.message.indexOf('0x8000000a') !== -1) { status = 408; } // Not finished response
-				xmlhttp.Abort(); return reject({ status, responseText: e.message });
+				xmlhttp.Abort();
+				return reject({ status, responseText: e.message });
 			}
 		}, timeout);
+
 		// Check for response periodically to not block the UI
 		const checkResponse = setInterval(() => {
-			try { xmlhttp.Status && xmlhttp.ResponseText } catch (e) { return; }
-			clearTimeout(timer);
-			clearInterval(checkResponse);
-			bioOnStateChange.call(xmlhttp, resolve, reject, func);
+			if (window.unloading) {
+				xmlhttp.Abort();
+				clearTimeout(timer);
+				clearInterval(checkResponse);
+				bioOnStateChange.call(null, resolve, reject, () => void (0));
+			} else {
+				let responseComplete;
+				try { responseComplete = xmlhttp.Status && xmlhttp.ResponseText; } catch (e) {}
+				if (responseComplete) {
+					clearTimeout(timer);
+					clearInterval(checkResponse);
+					bioOnStateChange.call(xmlhttp, resolve, reject, func);
+				}
+			}
 		}, 30);
 	});
 }

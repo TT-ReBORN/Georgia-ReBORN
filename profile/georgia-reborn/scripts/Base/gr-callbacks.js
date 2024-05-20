@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    05-05-2024                                              * //
+// * Last change:    20-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1654,6 +1654,7 @@ function on_playlists_changed() {
  */
 function on_script_unload() {
 	console.log('Unloading Script');
+	window.unloading = true;
 	grm.waveBar.on_script_unload();
 
 	// It appears we don't need to dispose the images which we loaded using gdi.Image in their declaration for some reason. Attempting to dispose them causes a script error.
