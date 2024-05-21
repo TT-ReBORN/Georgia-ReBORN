@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-05-2024                                              * //
+// * Last change:    22-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3032,7 +3032,6 @@ class TopMenuOptions {
 					grSet.lyricsScrollRateMax = 725;
 					break;
 			}
-			grm.lyrics.clear();
 			grm.lyrics.initLyrics();
 			RepaintWindow();
 		});
