@@ -539,6 +539,8 @@ class BioCallbacks {
 	}
 
 	on_script_unload() {
+		if (bioAllMusicReq.request) bioAllMusicReq.abortRequest();
+
 		if ($Bio.server) {
 			window.NotifyOthers(`bio_scriptUnload${bioSet.serverName}`, 0);
 			bio.timer.clear(bio.timer.img);

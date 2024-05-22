@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        1.4.2                                                   * //
 // * Dev. started:   18-10-2016                                              * //
-// * Last change:    13-12-2023 (Mod change 20-05-2024)                      * //
+// * Last change:    13-12-2023 (Mod change 23-05-2024)                      * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -72,8 +72,6 @@
 // * FUNCTIONS * //
 // function Bezier        -> BioBezier
 // function MD5           -> BioMD5
-// function onStateChange -> bioOnStateChange
-// function send          -> bioSend
 
 // * CLASSES * //
 // class DldAllmusic              -> BioDldAllmusic

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-05-2024                                              * //
+// * Last change:    23-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1654,7 +1654,6 @@ function on_playlists_changed() {
  */
 function on_script_unload() {
 	console.log('Unloading Script');
-	window.unloading = true;
 	grm.waveBar.on_script_unload();
 
 	// It appears we don't need to dispose the images which we loaded using gdi.Image in their declaration for some reason. Attempting to dispose them causes a script error.
@@ -1662,10 +1661,9 @@ function on_script_unload() {
 		grm.ui.traceCall && console.log('Library => on_script_unload');
 		lib.call.on_script_unload();
 	}
-	else if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_script_unload');
-		bio.call.on_script_unload();
-	}
+
+	grm.ui.traceCall && console.log('Biography => on_script_unload');
+	bio.call.on_script_unload();
 }
 
 

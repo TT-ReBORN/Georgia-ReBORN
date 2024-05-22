@@ -1,79 +1,96 @@
 ﻿'use strict';
 
-function bioOnStateChange(resolve, reject, func = null) { // credit regorxxx
-	if (this !== null) { // this is xmlhttp bound
-		if (this.Status === 200) {
-			return func ? func(this.ResponseText, this) : resolve(this.ResponseText);
-		} else if (!func) { return reject(this.ResponseText); }
-	} else if (!func) { return reject({ status: 408, responseText: this.ResponseText }) } // 408 Request Timeout
-	return null;
-}
+class BioRequestAllmusic {
+	constructor() {
+		this.request = null;
+	}
 
-// May be used to async run a func for the response or as promise
-function bioSend({ method = 'GET', URL, body = void (0), func = null, requestHeader = [/*[header, type]*/], bypassCache = false, timeout = 5000 }) { // credit regorxxx
-	return new Promise((resolve, reject) => {
-		const xmlhttp = new ActiveXObject('WinHttp.WinHttpRequest.5.1');
-		// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#bypassing_the_cache
-		// Add ('&' + new Date().getTime()) to URLS to avoid caching
-		xmlhttp.Open(
-			method,
-			URL + (bypassCache ? (/\?/.test(URL) ? '&' : '?') + new Date().getTime() : ''),
-			true
-		);
-
-		requestHeader.forEach((pair) => {
-			if (!pair[0] || !pair[1]) {
-				console.log(`HTTP Headers missing: ${pair}`);
-				return;
-			}
-			xmlhttp.SetRequestHeader(...pair);
-		});
-
-		if (bypassCache) {
-			xmlhttp.SetRequestHeader('Cache-Control', 'private');
-			xmlhttp.SetRequestHeader('Pragma', 'no-cache');
-			xmlhttp.SetRequestHeader('cache', 'no-store');
-			xmlhttp.SetRequestHeader('If-Modified-Since', 'Sat, 1 Jan 2000 00:00:00 GMT');
+	abortRequest() {
+		if (this.request) {
+			this.request.Abort();
+			this.request = null;
 		}
+	}
 
-		xmlhttp.SetTimeouts(timeout, timeout, timeout, timeout);
-		xmlhttp.Send(method === 'POST' ? body : void (0));
-
-		// Add a timer for timeout
-		const timer = setTimeout(() => {
-			clearInterval(checkResponse);
-			try {
-				xmlhttp.WaitForResponse(-1);
-				bioOnStateChange.call(xmlhttp, resolve, reject, func);
-			} catch (e) {
-				let status = 400;
-				if (e.message.indexOf('0x80072ee7') !== -1) { status = 400; } // No network
-				else if (e.message.indexOf('0x80072ee2') !== -1) { status = 408; } // No response
-				else if (e.message.indexOf('0x8000000a') !== -1) { status = 408; } // Not finished response
-				xmlhttp.Abort();
-				return reject({ status, responseText: e.message });
+	onStateChange(resolve, reject, func = null) { // credit regorxxx
+		if (this.request !== null) {
+			if (this.request.Status === 200) {
+				return func ? func(this.request.ResponseText, this.request) : resolve(this.request.ResponseText);
+			} else if (!func) {
+				return reject(this.request.ResponseText);
 			}
-		}, timeout);
+		} else if (!func) {
+			return reject({ status: 408, responseText: 'Request Timeout' });
+		}
+		return null;
+	}
 
-		// Check for response periodically to not block the UI
-		const checkResponse = setInterval(() => {
-			if (window.unloading) {
-				xmlhttp.Abort();
+	send({ method = 'GET', URL, body = void (0), func = null, requestHeader = [], bypassCache = false, timeout = 5000 }) { // credit regorxxx
+		return new Promise((resolve, reject) => {
+			// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#bypassing_the_cache
+			// Add ('&' + new Date().getTime()) to URLS to avoid caching
+			const fullUrl = URL + (bypassCache ? (/\?/.test(URL) ? '&' : '?') + new Date().getTime() : '');
+			this.request = new ActiveXObject('WinHttp.WinHttpRequest.5.1');
+			this.request.Open(method, fullUrl, true);
+
+			requestHeader.forEach(pair => {
+				if (!pair[0] || !pair[1]) {
+					console.log(`HTTP Headers missing: ${pair}`);
+					return;
+				}
+				this.request.SetRequestHeader(...pair);
+			});
+
+			if (bypassCache) {
+				this.request.SetRequestHeader('Cache-Control', 'private');
+				this.request.SetRequestHeader('Pragma', 'no-cache');
+				this.request.SetRequestHeader('Cache', 'no-store');
+				this.request.SetRequestHeader('If-Modified-Since', 'Sat, 1 Jan 2000 00:00:00 GMT');
+			}
+
+			this.request.SetTimeouts(timeout, timeout, timeout, timeout);
+			this.request.Send(method === 'POST' ? body : void (0));
+
+			const timer = setTimeout(() => {
+				clearInterval(checkResponse);
+				try {
+					this.request.WaitForResponse(-1);
+					this.onStateChange(resolve, reject, func);
+				} catch (e) {
+					let status = 400;
+					if (e.message.indexOf('0x80072ee7') !== -1) {
+						status = 400;
+					} else if (e.message.indexOf('0x80072ee2') !== -1) {
+						status = 408;
+					} else if (e.message.indexOf('0x8000000a') !== -1) {
+						status = 408;
+					}
+					this.request.Abort();
+					reject({ status, responseText: e.message });
+				}
+			}, timeout);
+
+			const checkResponse = setInterval(() => {
+				let response;
+				try {
+					response = this.request.Status && this.request.ResponseText;
+				} catch (e) {}
+				if (!response) return;
 				clearTimeout(timer);
 				clearInterval(checkResponse);
-				bioOnStateChange.call(null, resolve, reject, () => void (0));
-			} else {
-				let responseComplete;
-				try { responseComplete = xmlhttp.Status && xmlhttp.ResponseText; } catch (e) {}
-				if (responseComplete) {
-					clearTimeout(timer);
-					clearInterval(checkResponse);
-					bioOnStateChange.call(xmlhttp, resolve, reject, func);
-				}
-			}
-		}, 30);
-	});
+				this.onStateChange(resolve, reject, func);
+				this.request.Abort();
+			}, 30);
+		});
+	}
 }
+
+/**
+ * The instance of `BioRequestAllmusic` class for biography AllMusic request operations.
+ * @typedef {BioRequestAllmusic}
+ * @global
+ */
+const bioAllMusicReq = new BioRequestAllmusic();
 
 class BioDldAllmusic {
 	init(URL, referer, p_title, p_artist, p_fo_bio, p_pth_bio, p_force) {
@@ -100,7 +117,7 @@ class BioDldAllmusic {
 		let list = [];
 		switch (item) {
 			case 'id':
-				bioSend({
+				bioAllMusicReq.send({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -135,7 +152,7 @@ class BioDldAllmusic {
 				break;
 
 			case 'artist':
-				bioSend({
+				bioAllMusicReq.send({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -176,7 +193,7 @@ class BioDldAllmusic {
 				break;
 
 			case 'biography':
-				bioSend({
+				bioAllMusicReq.send({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -196,7 +213,7 @@ class BioDldAllmusic {
 				break;
 
 			case 'artistPage':
-				bioSend({
+				bioAllMusicReq.send({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -265,7 +282,7 @@ class BioDldAllmusicRev {
 		let list = [];
 		switch (item) {
 			case 'id':
-				bioSend({
+				bioAllMusicReq.send({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -317,7 +334,7 @@ class BioDldAllmusicRev {
 				break;
 
 			case 'review':
-				bioSend({
+				bioAllMusicReq.send({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -349,7 +366,7 @@ class BioDldAllmusicRev {
 				break;
 
 			case 'moodsThemes':
-				bioSend({
+				bioAllMusicReq.send({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -391,7 +408,7 @@ class BioDldAllmusicRev {
 				break;
 
 			case 'titlePage':
-				bioSend({
+				bioAllMusicReq.send({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -468,7 +485,7 @@ class BioDldAllmusicRev {
 				break;
 
 			case 'biography':
-				bioSend({
+				bioAllMusicReq.send({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
@@ -486,7 +503,7 @@ class BioDldAllmusicRev {
 				break;
 
 			case 'artistPage':
-				bioSend({
+				bioAllMusicReq.send({
 					method: 'GET',
 					bypassCache: this.force,
 					requestHeader: [
