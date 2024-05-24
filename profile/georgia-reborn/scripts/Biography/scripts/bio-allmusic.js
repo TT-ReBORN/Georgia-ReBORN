@@ -3,13 +3,18 @@
 class BioRequestAllmusic {
 	constructor() {
 		this.request = null;
+		this.timer = null;
+		this.checkResponse = null;
 	}
 
 	abortRequest() {
-		if (this.request) {
-			this.request.Abort();
-			this.request = null;
-		}
+		if (!this.request) return;
+		clearTimeout(this.timer);
+		clearInterval(this.checkResponse);
+		this.request.Abort();
+		this.request = null;
+		this.timer = null;
+		this.checkResponse = null;
 	}
 
 	onStateChange(resolve, reject, func = null) { // credit regorxxx
@@ -26,6 +31,8 @@ class BioRequestAllmusic {
 	}
 
 	send({ method = 'GET', URL, body = void (0), func = null, requestHeader = [], bypassCache = false, timeout = 5000 }) { // credit regorxxx
+		this.abortRequest();
+
 		return new Promise((resolve, reject) => {
 			// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#bypassing_the_cache
 			// Add ('&' + new Date().getTime()) to URLS to avoid caching
@@ -51,8 +58,8 @@ class BioRequestAllmusic {
 			this.request.SetTimeouts(timeout, timeout, timeout, timeout);
 			this.request.Send(method === 'POST' ? body : void (0));
 
-			const timer = setTimeout(() => {
-				clearInterval(checkResponse);
+			this.timer = setTimeout(() => {
+				clearInterval(this.checkResponse);
 				try {
 					this.request.WaitForResponse(-1);
 					this.onStateChange(resolve, reject, func);
@@ -65,21 +72,18 @@ class BioRequestAllmusic {
 					} else if (e.message.indexOf('0x8000000a') !== -1) {
 						status = 408;
 					}
-					this.request.Abort();
+					this.abortRequest();
 					reject({ status, responseText: e.message });
 				}
 			}, timeout);
 
-			const checkResponse = setInterval(() => {
+			this.checkResponse = setInterval(() => {
 				let response;
 				try {
 					response = this.request.Status && this.request.ResponseText;
 				} catch (e) {}
 				if (!response) return;
-				clearTimeout(timer);
-				clearInterval(checkResponse);
 				this.onStateChange(resolve, reject, func);
-				this.request.Abort();
 			}, 30);
 		});
 	}
