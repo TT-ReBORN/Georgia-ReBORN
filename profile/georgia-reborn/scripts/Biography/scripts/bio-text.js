@@ -1015,6 +1015,16 @@ class BioText {
 			.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_album%/gi, l ? '$&#@!%path%#@!' : '$&').replace(/%bio_album%/gi, l)
 			.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_title%/gi, tr ? '$&#@!%path%#@!' : '$&').replace(/%bio_title%/gi, tr);
 
+		const cleanFileName = (path) => { // WilB, move this helper to helpers.js for common usage!?
+			const stripReservedChars = (filename) => filename.replace(/[<>:"/\\|?*]+/g, '_');
+			const lastSlash = path.lastIndexOf('\\');
+			const dirPath = path.substring(0, lastSlash + 1);
+			const fileName = path.substring(lastSlash + 1);
+			const safeFileName = stripReservedChars(fileName);
+			return dirPath + safeFileName;
+		};
+		item = cleanFileName(item);
+
 		switch (type) {
 			case 0: pth = item.replace(/_\.(lrc|txt)$/, '.$1'); break;
 			case 1: pth = item.replace(/\.(lrc|txt)$/, '_.$1'); break;
