@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-05-2024                                              * //
+// * Last change:    26-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -343,7 +343,12 @@ class TopMenuOptions {
 		customThemeMenu.addItem('Edit custom theme', false, () => {
 			if (grSet.layout === 'default') {
 				grm.ui.displayCustomThemeMenu = !grm.ui.displayCustomThemeMenu;
+				if (!grSet.theme.startsWith('custom')) {
+					grSet.theme = 'custom01';
+				}
 				grm.ui.initCustomTheme();
+				grm.ui.initTheme();
+
 				if (grm.ui.displayDetails || grm.ui.displayLibrary || grm.ui.displayBiography || grm.ui.displayLyrics) {
 					grm.ui.displayPlaylist = true;
 					grm.ui.displayDetails = false;
@@ -360,7 +365,14 @@ class TopMenuOptions {
 			}
 		});
 
-		customThemeMenu.addItem('Rename custom theme', false, () => { grm.inputBox.renameCustomTheme(); });
+		customThemeMenu.addItem('Rename custom theme', false, () => {
+			if (!grSet.theme.startsWith('custom')) {
+				const msg = 'The renaming process was canceled.\n\nPlease ensure that you have selected and activated\na custom theme before attempting to rename it.\n\n\n';
+				ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				return;
+			}
+			grm.inputBox.renameCustomTheme();
+		});
 
 		customThemeMenu.createRadioSubMenu('Save current colors', customThemeName, '', ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'], (theme) => {
 			const msg = `Do you want to save current used colors\nto the selected custom theme slot?\n\nThis will overwrite all colors in the selected\ncustom theme slot.\n\nIt is recommended to make a backup\nof your custom config file:\n${grCfg.configPathCustom}\n\nSaved color changes will take effect on next reload.\n\nContinue?\n\n\n`;
