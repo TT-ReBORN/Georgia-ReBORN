@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    26-05-2024                                              * //
+// * Last change:    29-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -954,6 +954,7 @@ class TopMenuOptions {
 		themePresetAutoRandomModeMenu.appendTo(themePresetsMenu);
 		themePresetsMenu.addSeparator();
 		themePresetsMenu.addToggleItem('Indicator', grSet, 'presetIndicator');
+		themePresetsMenu.addItem('Info', false, () => { grm.preset.initThemePresetState(true); });
 
 		themePresetsMenu.appendTo(menu);
 	}

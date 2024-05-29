@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-03-2024                                              * //
+// * Last change:    29-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2192,12 +2192,151 @@ class ThemePreset {
 	}
 	// #endregion
 
+	// * PRIVATE METHODS * //
+	// #region PRIVATE METHODS
+	/**
+	 * Initializes theme presets and sets the active preset if conditions are met.
+	 * @param {Array} themePresets - An array of theme preset objects.
+	 * @returns {boolean} - Returns true if a valid preset is found and set, otherwise false.
+	 * @private
+	 */
+	_initThemePresets(themePresets) {
+		for (const preset of themePresets) {
+			if (preset.value.every(Boolean)) {
+				grSet.preset = preset.preset;
+				grm.ui.themePresetName = preset.name;
+				return true;
+			}
+			grSet.preset = false;
+			grm.ui.themePresetName = '';
+		}
+
+		return false;
+	}
+
+	/**
+	 * Gets theme preset information about total and unique presets and if a preset is active.
+	 * @param {Array} themePresets - An array of theme preset objects.
+	 * @private
+	 */
+	_getThemePresetInfo(themePresets) {
+		const uniquePresets = new Set(themePresets.map(preset => {
+			const filteredValue = preset.value.slice(1);
+			return JSON.stringify(filteredValue);
+		}));
+
+		grm.ui.themeNotification = `Theme presets:\nTotal: ${themePresets.length}\nUnique: ${uniquePresets.size}\n\nActive preset:\n${grm.ui.themePresetName || 'none'}`;
+	}
+
+	/**
+	 * Hides the theme preset indicator after a specified time.
+	 * @param {number} ms - The time in milliseconds to hide the theme preset indicator.
+	 * @private
+	 */
+	_hideThemePresetIndicator(ms) {
+		clearTimeout(grm.ui.presetIndicatorTimer);
+		grm.ui.presetIndicatorTimer = setTimeout(() => {
+			grm.ui.themePresetName = '';
+			grm.ui.themeNotification = '';
+			clearTimeout(grm.ui.presetIndicatorTimer);
+			grm.ui.presetIndicatorTimer = null;
+			window.Repaint();
+		}, ms);
+	}
+
+	/**
+	 * Picks a random theme preset based on the current theme preset settings.
+	 * @private
+	 */
+	_pickRandomThemePreset() {
+		let randomThemePreset;
+
+		// * Random presets
+		const themePresetsRandom = [
+			...grSet.presetSelectWhite    ? [this.whiteP01, this.whiteP02, this.whiteP03, this.whiteP04, this.whiteP05, this.whiteP06, this.whiteP07, this.whiteP08] : [],
+			...grSet.presetSelectBlack    ? [this.blackP01, this.blackP02, this.blackP03, this.blackP04, this.blackP05, this.blackP06, this.blackP07, this.blackP08, this.blackP09, this.blackP10] : [],
+			...grSet.presetSelectReborn   ? [this.rebornP01, this.rebornP02, this.rebornP03, this.rebornP04, this.rebornP05, this.rebornP06, this.rebornP07, this.rebornP08, this.rebornP09, this.rebornP10, this.rebornP11, this.rebornP12, this.rebornP13, this.rebornP14, this.rebornP15, this.rebornP16, this.rebornP17, this.rebornP18, this.rebornP19, this.rebornP20, this.rebornP21, this.rebornP22, this.rebornP23, this.rebornP24, this.rebornP25, this.rebornP26, this.rebornP27, this.rebornP28, this.rebornP29, this.rebornP30] : [],
+			...grSet.presetSelectRandom   ? [this.randomP01, this.randomP02, this.randomP03, this.randomP04, this.randomP05, this.randomP06, this.randomP07, this.randomP08, this.randomP09, this.randomP10] : [],
+			...grSet.presetSelectBlue     ? [this.blueP01, this.blueP02, this.blueP03, this.blueP04, this.blueP05] : [],
+			...grSet.presetSelectDarkblue ? [this.darkblueP01, this.darkblueP02, this.darkblueP03, this.darkblueP04, this.darkblueP05] : [],
+			...grSet.presetSelectRed      ? [this.redP01, this.redP02, this.redP03, this.redP04, this.redP05] : [],
+			...grSet.presetSelectCream    ? [this.creamP01, this.creamP02, this.creamP03, this.creamP04, this.creamP05] : [],
+			...grSet.presetSelectNblue    ? [this.nblueP01, this.nblueP02, this.nblueP03, this.nblueP04, this.nblueP05, this.nblueP06, this.nblueP07, this.nblueP08, this.nblueP09, this.nblueP10] : [],
+			...grSet.presetSelectNgreen   ? [this.ngreenP01, this.ngreenP02, this.ngreenP03, this.ngreenP04, this.ngreenP05, this.ngreenP06, this.ngreenP07, this.ngreenP08, this.ngreenP09, this.ngreenP10] : [],
+			...grSet.presetSelectNred     ? [this.nredP01, this.nredP02, this.nredP03, this.nredP04, this.nredP05, this.nredP06, this.nredP07, this.nredP08, this.nredP09, this.nredP10] : [],
+			...grSet.presetSelectNgold    ? [this.ngoldP01, this.ngoldP02, this.ngoldP03, this.ngoldP04, this.ngoldP05, this.ngoldP06, this.ngoldP07, this.ngoldP08, this.ngoldP09, this.ngoldP10] : [],
+			...grSet.presetSelectCustom   ? Array(10).fill([this.customP01.bind(this), this.customP02.bind(this), this.customP03.bind(this), this.customP04.bind(this), this.customP05.bind(this), this.customP06.bind(this), this.customP07.bind(this), this.customP08.bind(this), this.customP09.bind(this), this.customP10.bind(this)]).flat() /* Increase pick probability ten times ( 10 custom themes ) */ : []
+		];
+
+		// * Harmonic presets
+		const themePresetsLight = [
+			...grSet.presetSelectWhite  ? [this.whiteP01, this.whiteP02, this.whiteP03, this.whiteP04, this.whiteP05, this.whiteP06, this.whiteP07, this.whiteP08] : [],
+			...grSet.presetSelectReborn ? [this.rebornP08, this.rebornP09, this.rebornP10] : []
+		];
+		const themePresetsMiddle = [
+			...grSet.presetSelectReborn ? [this.rebornP01, this.rebornP02, this.rebornP03, this.rebornP04, this.rebornP05, this.rebornP06, this.rebornP07] : []
+		];
+		const themePresetsFusion = [
+			...grSet.presetSelectReborn ? [this.rebornP16, this.rebornP17, this.rebornP18, this.rebornP19, this.rebornP20, this.rebornP21, this.rebornP22, this.rebornP23, this.rebornP24, this.rebornP25, this.rebornP26, this.rebornP27, this.rebornP28, this.rebornP29, this.rebornP30] : []
+		];
+		const themePresetsDark = [
+			...grSet.presetSelectBlack  ? [this.blackP01, this.blackP02, this.blackP03, this.blackP04, this.blackP05, this.blackP06, this.blackP07, this.blackP08, this.blackP09, this.blackP10] : [],
+			...grSet.presetSelectReborn ? [this.rebornP11, this.rebornP12, this.rebornP13, this.rebornP14, this.rebornP15] : [],
+			...grSet.presetSelectRandom ? [this.randomP03, this.randomP06] : [],
+			...grSet.presetSelectNblue  ? [this.nblueP01, this.nblueP02, this.nblueP03, this.nblueP04, this.nblueP05, this.nblueP06, this.nblueP07, this.nblueP08, this.nblueP09, this.nblueP10] : [],
+			...grSet.presetSelectNgreen ? [this.ngreenP01, this.ngreenP02, this.ngreenP03, this.ngreenP04, this.ngreenP05, this.ngreenP06, this.ngreenP07, this.ngreenP08, this.ngreenP09, this.ngreenP10] : [],
+			...grSet.presetSelectNred   ? [this.nredP01, this.nredP02, this.nredP03, this.nredP04, this.nredP05, this.nredP06, this.nredP07, this.nredP08, this.nredP09, this.nredP10] : [],
+			...grSet.presetSelectNgold  ? [this.ngoldP01, this.ngoldP02, this.ngoldP03, this.ngoldP04, this.ngoldP05, this.ngoldP06, this.ngoldP07, this.ngoldP08, this.ngoldP09, this.ngoldP10] : []
+		];
+
+		if (grSet.presetSelectMode === 'harmonic') {
+			grCol.colBrightness  = new Color(grCol.primary).brightness;
+			grCol.colBrightness2 = new Color(grCol.primary_alt).brightness;
+			grCol.imgBrightness = CalcImgBrightness(grm.ui.albumArt);
+
+			if (grCol.colBrightness > 200 || grCol.imgBrightness > 180) { // * Light
+				randomThemePreset = Math.floor(Math.random() * themePresetsLight.length);
+				themePresetsLight[(randomThemePreset)]();
+			}
+			else if (grCol.colBrightness < 200 && grCol.colBrightness > 50 || grCol.imgBrightness < 180 && grCol.imgBrightness > 130) { // * Middle
+				if (ColorDistance(grCol.primary, grCol.primary_alt) > 200) { // * Reborn fusion
+					randomThemePreset = Math.floor(Math.random() * themePresetsFusion.length);
+					themePresetsFusion[(randomThemePreset)]();
+				} else {
+					randomThemePreset = Math.floor(Math.random() * themePresetsMiddle.length);
+					themePresetsMiddle[(randomThemePreset)]();
+				}
+			}
+			else if (grCol.colBrightness < 50 || grCol.imgBrightness < 130) { // * Dark
+				randomThemePreset = Math.floor(Math.random() * themePresetsDark.length);
+				themePresetsDark[(randomThemePreset)]();
+			}
+		}
+		else {
+			randomThemePreset = Math.floor(Math.random() * themePresetsRandom.length);
+			themePresetsRandom[(randomThemePreset)]();
+		}
+	}
+
+	/**
+	 * Sets and applies a new random theme preset.
+	 * @private
+	 */
+	_setRandomThemePreset() {
+		grm.ui.resetStyle('all');
+		this._pickRandomThemePreset();
+		grm.ui.updateStyle();
+		grm.ui.themePresetMatchMode = false;
+	}
+	// #endregion
+
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
 	/**
 	 * Theme preset initialization to determine if active styles match any theme presets, checks when user uses top menu Options > Style.
+	 * @param {boolean} info - Displays the total and unique number of theme presets and if a preset is active or not.
 	 */
-	initThemePresetState() {
+	initThemePresetState(info) {
 		const THEME  = grSet.theme;
 		const CTHEME = grSet.theme.startsWith('custom');
 		const BEVEL  = grSet.styleBevel;
@@ -2385,27 +2524,16 @@ class ThemePreset {
 			{ preset: 'customP10', name: `${grSet.theme} preset: Minimalized blended`, value: [CTHEME, !BEVEL,  BLEND, !BLEND2, !GRAD, !GRAD2, !ALT,  ALT2, !BW, !BW2, !BWR, !BR, !RW, !RB, !RF, !RF2, !RFA, !RP, !RD, RAC === 'off', TMB === 'minimal', TPB === 'minimal', PBD === 'default', PB === 'default', PBF === 'default', VBD === 'default', VB === 'default', VBF === 'default', BRT === 'default'] }
 		];
 
-		const hidePresetIndicator = () => {
-			grm.ui.presetIndicatorTimer = setTimeout(() => {
-				grm.ui.themePresetName = '';
-				clearTimeout(grm.ui.presetIndicatorTimer);
-				grm.ui.presetIndicatorTimer = null;
-				window.Repaint();
-			}, 5000);
-		};
+		this._initThemePresets(themePresets);
 
-		for (const preset of themePresets) {
-			if (preset.value.every(Boolean)) {
-				grSet.preset = preset.preset;
-				grm.ui.themePresetName = preset.name;
-				hidePresetIndicator();
-				break;
-			}
-			else {
-				grSet.preset = false;
-				grm.ui.themePresetName = '';
-			}
+		if (info) {
+			grSet.presetIndicator = true;
+			grm.ui.themePresetMatchMode = false;
+			this._getThemePresetInfo(themePresets);
+			window.Repaint();
 		}
+
+		this._hideThemePresetIndicator(info ? 10000 : 5000);
 	}
 
 	/**
@@ -2414,94 +2542,17 @@ class ThemePreset {
 	getRandomThemePreset() {
 		clearInterval(grm.ui.presetAutoRandomModeTimer);
 		grm.ui.presetAutoRandomModeTimer = null;
+		grm.ui.themeNotification = '';
 
 		if ($('[%GR_THEME%]') || $('[%GR_STYLE%]') || $('[%GR_PRESET%]')) return;
 
-		const pickRandomPreset = () => {
-			let randomThemePreset;
-
-			// * Random presets
-			const themePresetsRandom = [
-				...grSet.presetSelectWhite    ? [this.whiteP01, this.whiteP02, this.whiteP03, this.whiteP04, this.whiteP05, this.whiteP06, this.whiteP07, this.whiteP08] : [],
-				...grSet.presetSelectBlack    ? [this.blackP01, this.blackP02, this.blackP03, this.blackP04, this.blackP05, this.blackP06, this.blackP07, this.blackP08, this.blackP09, this.blackP10] : [],
-				...grSet.presetSelectReborn   ? [this.rebornP01, this.rebornP02, this.rebornP03, this.rebornP04, this.rebornP05, this.rebornP06, this.rebornP07, this.rebornP08, this.rebornP09, this.rebornP10, this.rebornP11, this.rebornP12, this.rebornP13, this.rebornP14, this.rebornP15, this.rebornP16, this.rebornP17, this.rebornP18, this.rebornP19, this.rebornP20, this.rebornP21, this.rebornP22, this.rebornP23, this.rebornP24, this.rebornP25, this.rebornP26, this.rebornP27, this.rebornP28, this.rebornP29, this.rebornP30] : [],
-				...grSet.presetSelectRandom   ? [this.randomP01, this.randomP02, this.randomP03, this.randomP04, this.randomP05, this.randomP06, this.randomP07, this.randomP08, this.randomP09, this.randomP10] : [],
-				...grSet.presetSelectBlue     ? [this.blueP01, this.blueP02, this.blueP03, this.blueP04, this.blueP05] : [],
-				...grSet.presetSelectDarkblue ? [this.darkblueP01, this.darkblueP02, this.darkblueP03, this.darkblueP04, this.darkblueP05] : [],
-				...grSet.presetSelectRed      ? [this.redP01, this.redP02, this.redP03, this.redP04, this.redP05] : [],
-				...grSet.presetSelectCream    ? [this.creamP01, this.creamP02, this.creamP03, this.creamP04, this.creamP05] : [],
-				...grSet.presetSelectNblue    ? [this.nblueP01, this.nblueP02, this.nblueP03, this.nblueP04, this.nblueP05, this.nblueP06, this.nblueP07, this.nblueP08, this.nblueP09, this.nblueP10] : [],
-				...grSet.presetSelectNgreen   ? [this.ngreenP01, this.ngreenP02, this.ngreenP03, this.ngreenP04, this.ngreenP05, this.ngreenP06, this.ngreenP07, this.ngreenP08, this.ngreenP09, this.ngreenP10] : [],
-				...grSet.presetSelectNred     ? [this.nredP01, this.nredP02, this.nredP03, this.nredP04, this.nredP05, this.nredP06, this.nredP07, this.nredP08, this.nredP09, this.nredP10] : [],
-				...grSet.presetSelectNgold    ? [this.ngoldP01, this.ngoldP02, this.ngoldP03, this.ngoldP04, this.ngoldP05, this.ngoldP06, this.ngoldP07, this.ngoldP08, this.ngoldP09, this.ngoldP10] : [],
-				...grSet.presetSelectCustom   ? Array(10).fill([this.customP01.bind(this), this.customP02.bind(this), this.customP03.bind(this), this.customP04.bind(this), this.customP05.bind(this), this.customP06.bind(this), this.customP07.bind(this), this.customP08.bind(this), this.customP09.bind(this), this.customP10.bind(this)]).flat() /* Increase pick probability ten times ( 10 custom themes ) */ : []
-			];
-
-			// * Harmonic presets
-			const themePresetsLight = [
-				...grSet.presetSelectWhite  ? [this.whiteP01, this.whiteP02, this.whiteP03, this.whiteP04, this.whiteP05, this.whiteP06, this.whiteP07, this.whiteP08] : [],
-				...grSet.presetSelectReborn ? [this.rebornP08, this.rebornP09, this.rebornP10] : []
-			];
-			const themePresetsMiddle = [
-				...grSet.presetSelectReborn ? [this.rebornP01, this.rebornP02, this.rebornP03, this.rebornP04, this.rebornP05, this.rebornP06, this.rebornP07] : []
-			];
-			const themePresetsFusion = [
-				...grSet.presetSelectReborn ? [this.rebornP16, this.rebornP17, this.rebornP18, this.rebornP19, this.rebornP20, this.rebornP21, this.rebornP22, this.rebornP23, this.rebornP24, this.rebornP25, this.rebornP26, this.rebornP27, this.rebornP28, this.rebornP29, this.rebornP30] : []
-			];
-			const themePresetsDark = [
-				...grSet.presetSelectBlack  ? [this.blackP01, this.blackP02, this.blackP03, this.blackP04, this.blackP05, this.blackP06, this.blackP07, this.blackP08, this.blackP09, this.blackP10] : [],
-				...grSet.presetSelectReborn ? [this.rebornP11, this.rebornP12, this.rebornP13, this.rebornP14, this.rebornP15] : [],
-				...grSet.presetSelectRandom ? [this.randomP03, this.randomP06] : [],
-				...grSet.presetSelectNblue  ? [this.nblueP01, this.nblueP02, this.nblueP03, this.nblueP04, this.nblueP05, this.nblueP06, this.nblueP07, this.nblueP08, this.nblueP09, this.nblueP10] : [],
-				...grSet.presetSelectNgreen ? [this.ngreenP01, this.ngreenP02, this.ngreenP03, this.ngreenP04, this.ngreenP05, this.ngreenP06, this.ngreenP07, this.ngreenP08, this.ngreenP09, this.ngreenP10] : [],
-				...grSet.presetSelectNred   ? [this.nredP01, this.nredP02, this.nredP03, this.nredP04, this.nredP05, this.nredP06, this.nredP07, this.nredP08, this.nredP09, this.nredP10] : [],
-				...grSet.presetSelectNgold  ? [this.ngoldP01, this.ngoldP02, this.ngoldP03, this.ngoldP04, this.ngoldP05, this.ngoldP06, this.ngoldP07, this.ngoldP08, this.ngoldP09, this.ngoldP10] : []
-			];
-
-			if (grSet.presetSelectMode === 'harmonic') {
-				grCol.colBrightness  = new Color(grCol.primary).brightness;
-				grCol.colBrightness2 = new Color(grCol.primary_alt).brightness;
-				grCol.imgBrightness = CalcImgBrightness(grm.ui.albumArt);
-
-				if (grCol.colBrightness > 200 || grCol.imgBrightness > 180) { // * Light
-					randomThemePreset = Math.floor(Math.random() * themePresetsLight.length);
-					themePresetsLight[(randomThemePreset)]();
-				}
-				else if (grCol.colBrightness < 200 && grCol.colBrightness > 50 || grCol.imgBrightness < 180 && grCol.imgBrightness > 130) { // * Middle
-					if (ColorDistance(grCol.primary, grCol.primary_alt) > 200) { // * Reborn fusion
-						randomThemePreset = Math.floor(Math.random() * themePresetsFusion.length);
-						themePresetsFusion[(randomThemePreset)]();
-					} else {
-						randomThemePreset = Math.floor(Math.random() * themePresetsMiddle.length);
-						themePresetsMiddle[(randomThemePreset)]();
-					}
-				}
-				else if (grCol.colBrightness < 50 || grCol.imgBrightness < 130) { // * Dark
-					randomThemePreset = Math.floor(Math.random() * themePresetsDark.length);
-					themePresetsDark[(randomThemePreset)]();
-				}
-			}
-			else {
-				randomThemePreset = Math.floor(Math.random() * themePresetsRandom.length);
-				themePresetsRandom[(randomThemePreset)]();
-			}
-		}
-
-		const setRandomPreset = () => {
-			grm.ui.resetStyle('all');
-			pickRandomPreset();
-			grm.ui.updateStyle();
-			grm.ui.themePresetMatchMode = false;
-		};
-
 		if (['off', 'track', 'album', 'dblclick'].includes(grSet.presetAutoRandomMode)) {
-			setRandomPreset();
-		}
-		else {
+			this._setRandomThemePreset();
+		} else {
 			grm.ui.themePresetIndicator = false;
 			grm.ui.presetAutoRandomModeTimer = setInterval(() => {
 				if (grm.ui.activeMenu) return; // * Workaround that pauses when a context menu is active which partially blocks color initialization;
-				setRandomPreset();
+				this._setRandomThemePreset();
 			}, grSet.presetAutoRandomMode);
 		}
 
