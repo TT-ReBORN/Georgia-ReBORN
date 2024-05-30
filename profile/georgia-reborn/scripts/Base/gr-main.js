@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-05-2024                                              * //
+// * Last change:    30-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1370,7 +1370,7 @@ class MainUI {
 		const artistWidth       = gr.MeasureString(grStr.artist, grFont.lowerBarArtist, 0, 0, 0, 0).Width;
 		const artistHeight      = gr.CalcTextHeight(grStr.artist, grFont.lowerBarArtist);
 		const trackNumWidth     = Math.ceil(gr.MeasureString(grStr.tracknum === '' ? '00.' : grStr.tracknum, grFont.lowerBarTitle, 0, 0, 0, 0).Width);
-		const titleMeasurements = gr.MeasureString(showLowerBarComposer ? grStr.titleLower + grStr.composer : grStr.titleLower, grFont.lowerBarTitle, 0, 0, 0, 0);
+		const titleMeasurements = gr.MeasureString((showLowerBarComposer ? grStr.titleLower + grStr.composer : grStr.titleLower) || 'Ag', grFont.lowerBarTitle, 0, 0, 0, 0);
 		// const titleWidth        = trackNumWidth + gr.MeasureString(showLowerBarComposer ? grStr.titleLower + grStr.composer : grStr.titleLower, grFont.lowerBarTitle, 0, 0, 0, 0).Width;
 		const titleHeight       = gr.CalcTextHeight(grStr.titleLower, grFont.lowerBarTitle);
 		const artistTitleWidth  = gr.MeasureString(grStr.artist, grFont.lowerBarArtist, 0, 0, 0, 0).Width + trackNumWidth + gr.MeasureString(showLowerBarComposer ? grStr.titleLower + grStr.composer : grStr.titleLower, grFont.lowerBarTitle, 0, 0, 0, 0).Width + gr.MeasureString(grStr.original_artist, grFont.lowerBarTitle, 0, 0, 0, 0).Width;
