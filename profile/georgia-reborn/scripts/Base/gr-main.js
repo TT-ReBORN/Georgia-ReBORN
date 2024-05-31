@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-05-2024                                              * //
+// * Last change:    31-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1894,10 +1894,7 @@ class MainUI {
 		grm.color.setThemeColors();
 		this.themeColorSet = true;
 
-		if (grSet.asyncThemePreloader) {
-			on_size(); // Needed when loading async, otherwise just needed in fb.IsPlaying conditional
-		}
-
+		on_size();
 		this.initMetrics();
 
 		if (fb.IsPlaying && fb.GetNowPlaying()) {

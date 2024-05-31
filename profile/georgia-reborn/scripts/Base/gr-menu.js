@@ -3673,6 +3673,8 @@ class TopMenuOptions {
 			if (grm.ui.showPlaylistTraceListPerf) fb.RunMainMenuCommand('View/Console');
 		});
 		debugMenu.addSeparator();
+		debugMenu.addItem('Show panel properties', false, () => { window.ShowProperties(); });
+		debugMenu.addSeparator();
 		debugMenu.addItem('Set system first launch to true', false, () => { // Used when creating new config files
 			const msg = 'Do you really want to set system to first launch?\n\nContinue?\n\n\n';
 			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
@@ -3683,6 +3685,15 @@ class TopMenuOptions {
 				grSet.devTools = false;
 				grSet.disableRightClick = true;
 				console.log('\n>>> Georgia-ReBORN has been set to system first launch <<<\n\n');
+			});
+		});
+		const scriptPreloaderMode = grSet.asyncThemePreloader ? 'synchronous' : 'asynchronous';
+		debugMenu.addItem(`Set script preloader to ${scriptPreloaderMode}`, false, () => {
+			const msg = `Do you really want to set the script preloader\nto ${scriptPreloaderMode}?\n\nContinue?\n\n\n`;
+			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+				if (!confirmed) return;
+				grSet.asyncThemePreloader = !grSet.asyncThemePreloader;
+				window.Reload();
 			});
 		});
 
