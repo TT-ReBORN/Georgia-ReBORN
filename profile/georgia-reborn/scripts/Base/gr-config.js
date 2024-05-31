@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-02-2024                                              * //
+// * Last change:    31-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -688,15 +688,19 @@ class ConfigurationManager {
 	/**
 	 * Checks if there is a new update available, also called in Options > Help > Theme > Updates > Check for latest theme update.
 	 * @param {boolean} openUrl - Opens the Georgia-ReBORN Github releases page when hyperlink is available.
+	 * @param {boolean} showPopup - Determines whether to show a popup with the update status.
 	 */
-	checkForUpdates(openUrl) {
+	checkForUpdates(openUrl, showPopup) {
 		MakeHttpRequest('GET', 'https://api.github.com/repos/TT-ReBORN/Georgia-ReBORN/tags', (resp) => {
 			try {
+				const respObj = JSON.parse(resp);
+				const currentVersionMsg = `Current released version of Georgia-ReBORN: v${respObj[0].name}`;
+				console.log(currentVersionMsg);
+
 				/** @type {boolean} The current Github master version, used to prevent notifying users for new update when in development state. */
 				const developVersion = this.currentVersion.endsWith('DEV');
-				const respObj = JSON.parse(resp);
 				this.updateAvailable = developVersion ? false : IsNewerVersion(this.currentVersion, respObj[0].name);
-				console.log(`Current released version of Georgia-ReBORN: v${respObj[0].name}`);
+
 				if (this.updateAvailable) {
 					console.log('>>> Georgia-ReBORN new update available. Download it from here: https://github.com/TT-ReBORN/Georgia-ReBORN/releases');
 					this.updateHyperlink = new Hyperlink('New Update Available', grFont.lowerBarTitle, 'update', 0, 0, window.Width);
@@ -711,9 +715,17 @@ class ConfigurationManager {
 						}
 					}
 				} else {
-					console.log('You are on the most current version of Georgia-ReBORN');
+					console.log(`You are using the latest version: v${this.currentVersion}`);
 				}
-			} catch (e) {
+
+				if (showPopup) {
+					const msg = this.updateAvailable
+						? `There is a new update available.\nPlease visit the release page to download the latest version.\n\n${currentVersionMsg}\n\n`
+						: `You are using the latest version: v${this.currentVersion}\n\n${currentVersionMsg}\n\n`;
+					ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				}
+			}
+			catch (e) {
 				if (!this.updateHyperlink && this.updateRetryCount < 3) {
 					// this.updateHyperlink failed to be created somehow. Let's check again after 1 minute.
 					this.updateRetryCount++;

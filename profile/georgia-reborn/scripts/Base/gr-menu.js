@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-05-2024                                              * //
+// * Last change:    31-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -48,7 +48,7 @@ class TopMenu {
 
 				const updatesMenu = new Menu('Updates');
 				updatesMenu.addToggleItem('Auto-check for theme updates', grSet, 'checkForUpdates', () => { grCfg.scheduleUpdateCheck(1000); });
-				updatesMenu.addItem('Check for latest theme update', false, () => { grCfg.checkForUpdates(true); });
+				updatesMenu.addItem('Check for latest theme update', false, () => { grCfg.checkForUpdates(true, true); });
 				updatesMenu.appendTo(themeMenu);
 
 				themeMenu.addItem('Releases', false, () => { RunCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/releases'); });
