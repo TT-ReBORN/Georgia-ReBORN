@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    26-02-2024                                              * //
+// * Last change:    06-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -290,6 +290,290 @@ class PlaylistLinkedListNode {
 		this.prev = prev;
 		this.next = next;
 	}
+}
+
+
+//////////////////////////////////
+// * PLAYLIST BATCH PROCESSOR * //
+//////////////////////////////////
+/**
+ * A class that processes the playlist content in batches to optimize performance.
+ * It adjusts the size of each batch based on the processing time of the previous batch to approach a target time.
+ */
+class PlaylistBatchProcessor {
+	/**
+	 * Creates a `PlaylistBatchProcessor` instance and initializes parameters.
+	 * The initial batch size is set to ~1000 tracks to optimize startup performance.
+	 */
+	constructor() {
+		/** @private @type {boolean} Indicates if the current batch is the first one. */
+		this.batchIsFirst = true;
+		/** @private @type {number} The minimum size of a batch. */
+		this.batchSizeMin = 1000;
+		/** @private @type {number} The maximum size of a batch. */
+		this.batchSizeMax = 50000;
+		/** @private @type {number} The current size of the batch. */
+		this.batchSizeCurrent = 1000;
+		/** @private @type {number} The target duration for batch processing in milliseconds. */
+		this.batchTimeGoal = 2500;
+		/** @private @type {number} The duration of the previous batch processing in milliseconds. */
+		this.batchTimePrevious = 0;
+		/** @private @type {number} The factor by which the batch size is increased. */
+		this.batchGrowthFactor = 1.5;
+		/** @private @type {number} The factor by which the batch size is decreased. */
+		this.batchShrinkFactor = 0.5;
+		/** @public @type {Map<string, string>} The cache of album directories to optimize batch processing. */
+		this.batchAlbumDirCache = null;
+		/** @public @type {Map<string, string>} The cache of processed playlists to optimize batch processing. */
+		this.batchProcessedCache = new Map();
+		/** @public @type {boolean} Indicates if the batch processing is complete. */
+		this.batchProcessComplete = false;
+	}
+
+	// * PRIVATE METHODS * //
+	// #region PRIVATE METHODS
+	/**
+	 * Caches the album directories from the playlist items to optimize batch processing.
+	 * @returns {Map<string, string>} The cache mapping each item's path to its album directory.
+	 * @private
+	 */
+	_cacheAlbumDirs() {
+		const albumDirCache = new Map();
+		const items = pl.playlist.playlist_items_array;
+		const multiDiscPattern = /\\(CD|Vinyl|Disc|Bonus|Vol\.?|Volume)\s*(\d+|I{1,3}|IV|V(?:I{0,3}|X)?|X{0,3})$/i;
+
+		for (let i = 0; i < items.length; i++) {
+			const item = items[i];
+			let albumPath = item.Path.substring(0, item.Path.lastIndexOf('\\'));
+
+			if (multiDiscPattern.test(albumPath)) {
+				// If the path ends with a recognized pattern, consider the parent directory as the album directory
+				albumPath = albumPath.substring(0, albumPath.lastIndexOf('\\'));
+			}
+
+			albumDirCache.set(item.Path, albumPath);
+		}
+
+		return albumDirCache;
+	}
+
+	/**
+	 * Initializes the album directory cache if it has not been initialized yet.
+	 * @private
+	 */
+	_initAlbumDirCache() {
+		if (!this.batchAlbumDirCache) {
+			this.batchAlbumDirCache = this._cacheAlbumDirs();
+		}
+	}
+
+	/**
+	 * Adjusts the current batch size based on the processing time of the previous batch.
+	 * Increases or decreases the batch size to optimize processing time towards the goal.
+	 * @private
+	 */
+	_adjustBatchSize() {
+		if (this.batchIsFirst) return;
+
+		// Calculate adjustment based on time difference
+		const timeDiff = this.batchTimePrevious - this.batchTimeGoal;
+		const adjustmentFactor = Math.abs(timeDiff) / this.batchTimeGoal;
+		const adjustment = timeDiff > 0 ?
+			Math.max(1 - adjustmentFactor, this.batchShrinkFactor) :
+			Math.min(1 + adjustmentFactor, this.batchGrowthFactor);
+
+		// Apply the calculated adjustment
+		this.batchSizeCurrent = Math.round(this.batchSizeCurrent * adjustment);
+		this.batchSizeCurrent = Clamp(this.batchSizeCurrent, this.batchSizeMin, this.batchSizeMax);
+	}
+
+	/**
+	 * Adjusts the batch time goal dynamically based on CPU performance.
+	 * Modifies the `this.batchTimeGoal` to optimize processing efficiency.
+	 * @returns {number} The adjusted batch time goal.
+	 */
+	_adjustBatchTimeGoal() {
+		const performanceRatio = this.batchTimePrevious / this.batchTimeGoal;
+
+		if (performanceRatio < 0.5) {
+			this.batchTimeGoal *= 1.1; // Very fast CPU
+		} else if (performanceRatio < 0.8) {
+			this.batchTimeGoal *= 1.2; // Fast CPU
+		} else if (performanceRatio < 1.2) {
+			this.batchTimeGoal *= 1.0; // Moderate CPU
+		} else if (performanceRatio < 1.5) {
+			this.batchTimeGoal *= 0.8; // Slow CPU
+		} else {
+			this.batchTimeGoal *= 0.7; // Very slow CPU
+		}
+
+		this.batchTimeGoal = Math.ceil(Clamp(this.batchTimeGoal, 1000, 5000));
+		return this.batchTimeGoal;
+	}
+
+	/**
+	 * Finds the end index for the current batch, ensuring all items in the same album are processed together.
+	 * @param {number} batchIndex - The start index of the current batch.
+	 * @param {Map<string, string>} albumDirCache - The cached album directory paths.
+	 * @param {number} totalRows - The total number of rows in the playlist.
+	 * @returns {number} The calculated end index of the batch.
+	 * @private
+	 */
+	_findBatchIndexEnd(batchIndex, albumDirCache, totalRows) {
+		let batchIndexEnd = Math.min(batchIndex + this.batchSizeCurrent, totalRows);
+		if (batchIndexEnd === 0) return 0; // In case the playlist is empty
+
+		const albumPathLast = albumDirCache.get(pl.playlist.playlist_items_array[batchIndexEnd - 1].Path);
+
+		for (; batchIndexEnd < totalRows; batchIndexEnd++) {
+			const albumPathCurrent = albumDirCache.get(pl.playlist.playlist_items_array[batchIndexEnd].Path);
+			if (albumPathCurrent !== albumPathLast) break;
+		}
+
+		return batchIndexEnd;
+	}
+
+	/**
+	 * Schedules the processing of the next batch or completes processing if all batches are done.
+	 * @param {Array} rows - The rows of the playlist to be processed.
+	 * @param {number} batchIndexEnd - The end index of the current batch.
+	 * @param {number} totalRows - The total number of rows in the playlist.
+	 * @private
+	 */
+	_scheduleBatchProcessing(rows, batchIndexEnd, totalRows) {
+		if (batchIndexEnd < totalRows) {
+			const delayMinimum = 500; // Minimum delay to avoid too frequent batch processing
+			const delayAfterStartup = 5000; // Longer initial delay to allow for system stabilization
+			const delayAverage = Math.round(this.batchTimeGoal * (this.batchTimePrevious / this.batchTimeGoal) * 0.5);
+			const delay = this.batchIsFirst ? delayAfterStartup : Math.max(delayMinimum, delayAverage); // Longer for the initial first batch, dynamically adjusted for subsequent batches
+
+			console.log(`Playlist => batch schedule delay: ${delay} ms\n`);
+
+			setTimeout(() => this.processHeaderBatches(rows, batchIndexEnd), delay);
+			this.batchIsFirst = false;
+			return;
+		}
+		// All headers have been processed and are now cached; proceed to process all headers at once.
+		this._processAllHeaders();
+	}
+
+	/**
+	 * Updates the playlist content after a batch has been processed.
+	 * @private
+	 */
+	_updatePlaylistContent() {
+		pl.playlist.cnt.update_items_w_size(pl.playlist.list_w);
+
+		if (plSet.show_header) {
+			pl.playlist.collapse_handler = new PlaylistCollapseHandler(/** @type {PlaylistContent} */ pl.playlist.cnt);
+
+			pl.playlist.collapse_handler.set_callback(() => {
+				pl.playlist.on_list_items_change();
+			});
+
+			if (plSet.auto_collapse) {
+				pl.playlist.header_collapse();
+			}
+		}
+
+		pl.playlist.on_list_items_change();
+		pl.playlist.repaint();
+	}
+
+	/**
+	 * Processes a specific batch of playlist items by creating a batch list and generating headers.
+	 * This method handles the creation of a batch from the specified range in the playlist,
+	 * adds the items to the batch, and then creates and appends the headers for these items.
+	 * @param {Array} rows - The rows of the playlist to be processed.
+	 * @param {number} batchIndex - The starting index of the batch in the playlist.
+	 * @param {number} batchIndexEnd - The ending index of the batch in the playlist.
+	 * @private
+	 */
+	_processBatch(rows, batchIndex, batchIndexEnd) {
+		const batch = new FbMetadbHandleList();
+		const batchRows = rows.slice(batchIndex, batchIndexEnd);
+
+		for (let j = batchIndex; j < batchIndexEnd; j++) {
+			batch.Add(pl.playlist.playlist_items_array[j]);
+		}
+
+		const batchHeaders = pl.playlist._create_headers(batchRows, batch);
+		pl.playlist.cnt.sub_items.push(...batchHeaders);
+
+		this._updatePlaylistContent();
+	}
+
+	/**
+	 * Processes all headers in the playlist at once, typically used when batch processing is complete.
+	 * @private
+	 */
+	_processAllHeaders() {
+		const startTime = Date.now();
+		const batch = new FbMetadbHandleList(pl.playlist.playlist_items_array);
+		const batchHeaders = pl.playlist._create_headers(pl.playlist.cnt.rows, batch); // Check why rows argument does not work
+		pl.playlist.cnt.sub_items = [];
+		pl.playlist.cnt.sub_items.push(...batchHeaders);
+
+		this._updatePlaylistContent();
+		this.batchProcessedCache.set(pl.playlist.cur_playlist_idx, true);
+		this.batchProcessComplete = true;
+		pl.plman.reinitialize();
+
+		console.log(`Playlist => all tracks processed (${Date.now() - startTime}ms)`);
+	}
+	// #endregion
+
+	// * PUBLIC METHODS * //
+	// #region PUBLIC METHODS
+	/**
+	 * Processes the playlist headers in batches, starting from the specified batch index.
+	 * @param {Array} rows - The rows of the playlist to be processed.
+	 * @param {number} batchIndex - The starting index of the batch in the playlist.
+	 * @param {boolean} batchIsFirst - Indicates if the current batch is the initial one.
+	 * @returns {Array} The processed sub-items of the playlist.
+	 */
+	processHeaderBatches(rows, batchIndex, batchIsFirst) {
+		const totalRows = pl.playlist.playlist_items_array.length;
+
+		if (batchIsFirst) {
+			this.batchSizeCurrent = 1000;
+			this.batchProcessComplete = false;
+			this._initAlbumDirCache();
+		}
+
+		if (this.batchProcessedCache.get(pl.playlist.cur_playlist_idx)) {
+			console.log('Playlist => playlist already processed, loading from cache...');
+			this._processAllHeaders();
+			return pl.playlist.cnt.sub_items;
+		}
+
+		const startProcess = (batchIndex) => {
+			const startTime = Date.now();
+			this._adjustBatchSize();
+
+			const batchIndexEnd = this._findBatchIndexEnd(batchIndex, this.batchAlbumDirCache, totalRows);
+			console.log(`Playlist => batch processing: ${batchIndex} to ${batchIndexEnd} tracks ${this.batchIsFirst ? ' (first batch)' : ''}`);
+			this._processBatch(rows, batchIndex, batchIndexEnd);
+			console.log(`Playlist => batch processed:  ${batchIndexEnd} of ${totalRows} tracks (size: ${batchIndexEnd - batchIndex} - time: ${Date.now() - startTime}ms - goal: ${this.batchTimeGoal}ms)`);
+
+			this.batchTimePrevious = Date.now() - startTime;
+			this._adjustBatchTimeGoal();
+			this._scheduleBatchProcessing(rows, batchIndexEnd, totalRows);
+		};
+
+		startProcess(batchIndex);
+		return pl.playlist.cnt.sub_items;
+	}
+
+	/**
+	 * Clears the batch caches when the playlist is modified.
+	 */
+	clearBatchCaches() {
+		this.batchAlbumDirCache = null;
+		this.batchProcessedCache.clear();
+		console.log('Playlist => batch caches have been cleared.');
+	}
+	// #endregion
 }
 
 
@@ -2135,12 +2419,24 @@ class PlaylistManager {
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
 	/**
+	 * Calculates the total duration of the current playlist and formats it.
+	 * @param {object} metadb_list - The metadb handle list of the playlist.
+	 * @returns {string} The formatted duration string if the duration is non-zero.
+	 */
+	get_duration(metadb_list) {
+		if (!metadb_list) return '';
+		const duration = Math.round(metadb_list.CalcTotalDuration());
+		return duration ? utils.FormatDuration(duration) : '';
+	}
+
+	/**
 	 * Reinitializes the playlist manager text button state.
 	 */
 	reinitialize() {
 		this.info_text = undefined;
 		this.panel_state = this.state.normal;
 		this.hover_alpha = 0;
+		this.get_duration();
 	}
 
 	/**
@@ -2229,9 +2525,10 @@ class PlaylistManager {
 					tracks_text += ' selected';
 				}
 
-				const duration = Math.round(metadb_list.CalcTotalDuration());
-				if (duration) {
-					duration_text = utils.FormatDuration(duration);
+				if (!duration_text && pl.playlist.batch_processor.batchProcessComplete) {
+					// ! There is a significant performance issue during foobar startup or playlist switch when using CalcTotalDuration()
+					// ! The playlist total duration should be calculated after foobar has completely loaded
+					duration_text = this.get_duration(metadb_list);
 				}
 			}
 

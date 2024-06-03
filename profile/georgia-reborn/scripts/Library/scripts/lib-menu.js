@@ -442,7 +442,7 @@ class LibMenuItems {
 	filterMenu() {
 		libFMenu.newMenu({});
 		for (let i = 0; i < lib.panel.filter.menu.length + 1; i++) { libFMenu.newItem({
-			str: i != lib.panel.filter.menu.length ? (!i ? 'No filter' : lib.panel.filter.menu[i]) : 'Auto-manage scroll',
+			str: i != lib.panel.filter.menu.length ? (!i ? 'No filter' : lib.panel.filter.menu[i]) : '' /* 'Auto-manage scroll' */,
 			func: () => lib.panel.set('Filter', i),
 			checkItem: i == lib.panel.filter.menu.length && !libSet.reset,
 			checkRadio: i == libSet.filterBy && i < lib.panel.filter.menu.length,

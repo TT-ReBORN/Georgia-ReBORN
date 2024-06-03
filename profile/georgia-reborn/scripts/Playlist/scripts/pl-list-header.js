@@ -71,7 +71,7 @@ class PlaylistBaseHeader extends BaseListItem {
 	 * @param {Array<PlaylistRow>|Array<PlaylistBaseHeader>} items - The items to initialize the contents with.
 	 * @returns {number} The number of processed items.
 	 */
-	initialize_items(items) {
+	init_header_items(items) {
 		throw new LogicError('initialize_contents not implemented');
 	}
 
@@ -313,16 +313,19 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	 * @param {FbMetadbHandleList} rows_metadb - The metadb of the rows to process.
 	 * @returns {Array} An array of two elements, has the following format [Array<[row,row_data]>, disc_header_prepared_data].
 	 */
-	static prepare_initialization_data(rows_to_process, rows_metadb) {
+	static prepare_header_data(rows_to_process, rows_metadb) {
+		const showDiscHeader = plSet.show_disc_header;
 		let query = PlaylistHeader.grouping_handler.get_query();
-		if (plSet.show_disc_header && query && PlaylistHeader.grouping_handler.show_disc()) {
+
+		if (showDiscHeader && query && PlaylistHeader.grouping_handler.show_disc()) {
 			query = query.replace(/%discnumber%/, '').replace(/%totaldiscs%/, '').replace(/%subtitle%/, '');
 		}
 
-		const tfo = fb.TitleFormat(query || ''); // Workaround a bug, because of which '' is sometimes treated as null :\
+		const profiler = grm.ui.traceListPerformance && fb.CreateProfiler();
+		const tfo = fb.TitleFormat(query || '');
 		const rows_data = tfo.EvalWithMetadbs(rows_metadb);
-
-		const prepared_disc_data = plSet.show_disc_header ? PlaylistDiscHeader.prepare_initialization_data(rows_to_process, rows_metadb) : [];
+		grm.ui.traceListPerformance && console.log(`rows_data initialized in ${profiler.Time}ms`);
+		const prepared_disc_data = showDiscHeader ? PlaylistDiscHeader.prepare_disc_header_data(rows_to_process, rows_metadb) : [];
 
 		return [Zip(rows_to_process, rows_data), prepared_disc_data];
 	}
@@ -344,7 +347,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		const headers = [];
 		while (prepared_header_rows.length) {
 			const header = new PlaylistHeader(parent, x, y, w, h, header_idx);
-			const processed_rows_count = header.initialize_items(prepared_rows);
+			const processed_rows_count = header.init_header_items(prepared_rows);
 
 			TrimArray(prepared_header_rows, processed_rows_count, true);
 
@@ -957,12 +960,12 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	}
 
 	/**
-	 * Initializes items by creating sub headers and assigning properties to each item.
+	 * Initializes header items by creating sub headers and assigning properties to each item.
 	 * @override
 	 * @param {Array} rows_with_data - The rows with data.
 	 * @returns {number} The length of the `owned_rows` array.
 	 */
-	initialize_items(rows_with_data) { // Rewritten
+	init_header_items(rows_with_data) { // Rewritten
 		if (!rows_with_data[0].length) {
 			this.sub_items = [];
 			return 0;
@@ -1148,7 +1151,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	 * @returns {Array<PlaylistDiscHeader>} The disc headers.
 	 */
 	create_disc_headers(prepared_rows, rows_to_process_count) {
-		return PlaylistDiscHeader.create_headers(this, this.x, 0, this.w, pl.geo.row_h, prepared_rows, rows_to_process_count);
+		return PlaylistDiscHeader.create_disc_headers(this, this.x, 0, this.w, pl.geo.row_h, prepared_rows, rows_to_process_count);
 	}
 
 	/**
@@ -1406,11 +1409,26 @@ class PlaylistDiscHeader extends PlaylistBaseHeader {
 	 * @param {FbMetadbHandleList} rows_metadb - The metadb of the rows to process.
 	 * @returns {Array<Array>} Has the following format Array<[row,row_data]>.
 	 */
-	static prepare_initialization_data(rows_to_process, rows_metadb) {
+	static prepare_disc_header_data(rows_to_process, rows_metadb) {
 		const tfo = fb.TitleFormat(`$ifgreater(%totaldiscs%,1,[Disc %discnumber% $if(${grTF.disc_subtitle}, \u2014 ,) ],)[${grTF.disc_subtitle}]`);
 		const disc_data = tfo.EvalWithMetadbs(rows_metadb);
 
 		return Zip(rows_to_process, disc_data);
+	}
+
+	/**
+	 * Validates if the data for the disc header rows is valid.
+	 * @param {Array} rows_with_data - The rows of data.
+	 * @param {number} rows_to_check_count - The number of rows to check.
+	 * @returns {boolean} True if the data is valid, false otherwise.
+	 */
+	static validate_disc_header_data(rows_with_data, rows_to_check_count) {
+		for (let i = 0; i < rows_to_check_count; ++i) {
+			if (!IsEmpty(rows_with_data[i][1])) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1424,35 +1442,24 @@ class PlaylistDiscHeader extends PlaylistBaseHeader {
 	 * @param {number} rows_to_process_count - The number of rows to process.
 	 * @returns {Array<PlaylistDiscHeader>} An array of PlaylistDiscHeader instances that have been created.
 	 */
-	static create_headers(parent, x, y, w, h, prepared_rows, rows_to_process_count) {
-		/**
-		 * Checks if the data in the rows is valid.
-		 * @param {Array} rows_with_data - The rows of data.
-		 * @param {number} rows_to_check_count - The number of rows to check.
-		 * @returns {boolean} True if the data is valid, false otherwise.
-		 */
-		const has_valid_data = (rows_with_data, rows_to_check_count) => {
-			for (let i = 0; i < rows_to_check_count; ++i) {
-				if (!IsEmpty(rows_with_data[i][1])) {
-					return true;
-				}
-			}
-			return false;
-		};
-
-		if (!has_valid_data(prepared_rows, rows_to_process_count)) {
+	static create_disc_headers(parent, x, y, w, h, prepared_rows, rows_to_process_count) {
+		if (!this.validate_disc_header_data(prepared_rows, rows_to_process_count)) {
 			TrimArray(prepared_rows, rows_to_process_count, true);
 			return [];
 		}
 
 		let header_idx = 0;
 		const headers = [];
-		const prepared_rows_copy = Object.assign(Object.create(prepared_rows));
+		const prepared_rows_copy = new Array(rows_to_process_count);
+
+		for (let i = 0; i < rows_to_process_count; i++) { // Make a copy
+			prepared_rows_copy[i] = prepared_rows[i];
+		}
 		prepared_rows_copy.length = rows_to_process_count;
 
 		while (prepared_rows_copy.length) {
 			const header = new PlaylistDiscHeader(parent, x, y, w, h, header_idx);
-			const processed_items = header.initialize_items(prepared_rows_copy);
+			const processed_items = header.init_disc_header_items(prepared_rows_copy);
 
 			TrimArray(prepared_rows_copy, processed_items, true);
 
@@ -1516,7 +1523,7 @@ class PlaylistDiscHeader extends PlaylistBaseHeader {
 	 * @param {Array} rows_with_data - An array of arrays, where each inner array represents a row of data.
 	 * Each inner array contains two elements: the row object and the data value for that row.
 	 */
-	initialize_items(rows_with_data) { // Rewritten
+	init_disc_header_items(rows_with_data) { // Rewritten
 		/** @type {PlaylistRow[]} */
 		this.sub_items = [];
 

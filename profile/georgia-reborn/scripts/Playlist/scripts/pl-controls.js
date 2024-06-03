@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    31-03-2024                                              * //
+// * Last change:    01-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1584,10 +1584,12 @@ class PlaylistCollapseHandler {
 	 * @private
 	 */
 	_set_collapsed_state_recursive(header, is_collapsed) {
+		if (!header) return false;
+
+		const sub_items = header.sub_items;
 		let changed = header.is_collapsed !== is_collapsed;
 		header.is_collapsed = is_collapsed;
 
-		const sub_items = header.sub_items;
 		if (sub_items[0] instanceof PlaylistRow) {
 			return changed;
 		}

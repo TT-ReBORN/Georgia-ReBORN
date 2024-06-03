@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    19-04-2024                                              * //
+// * Last change:    01-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2091,8 +2091,7 @@ function Zip(arr, ...args) {
  * @returns {number} The clamped value of `num`.
  */
 function Clamp(num, min, max) {
-	num = num <= max ? num : max;
-	return num >= min ? num : min;
+    return Math.max(min, Math.min(num, max));
 }
 
 

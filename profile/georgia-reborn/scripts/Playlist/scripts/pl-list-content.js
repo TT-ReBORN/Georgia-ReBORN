@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    01-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -213,7 +213,6 @@ class PlaylistContent extends BaseListRowContent {
 			return 0;
 		}
 
-		// Calculate the height in rows for a single item outside the loop to avoid repetitive work
 		const single_item_height_in_rows = Math.round(this.sub_items[0].h / pl.geo.row_h);
 		let total_height_in_rows = single_item_height_in_rows * this.sub_items.length;
 
@@ -305,7 +304,11 @@ class PlaylistContentNavigation {
 	 */
 	_get_last_visible_item(item) {
 		let last_item = item;
-		while (!(last_item instanceof PlaylistRow) && !last_item.is_collapsed) {
+
+		while (last_item && !(last_item instanceof PlaylistRow) && !last_item.is_collapsed) {
+			if (!last_item.sub_items || last_item.sub_items.length === 0) {
+				break;
+			}
 			last_item = Last(last_item.sub_items);
 		}
 

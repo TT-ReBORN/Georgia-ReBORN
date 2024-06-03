@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    19-04-2024                                              * //
+// * Last change:    01-05-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -77,6 +77,10 @@ class Playlist extends BaseList {
 		this.scroll_pos_list = [];
 
 		// * Objects
+		/** @public @type {FbMetadbHandleList} */
+		this.playlist_items_array = [];
+		/** @public @type {PlaylistBatchProcessor} */
+		this.batch_processor = new PlaylistBatchProcessor();
 		/** @public @type {?PlaylistImage} */
 		this.header_artwork = new PlaylistImage();
 		/** @public @type {?PlaylistMetaHandler} */
@@ -89,7 +93,6 @@ class Playlist extends BaseList {
 		this.queue_handler = undefined;
 		/** @public @type {?PlaylistCollapseHandler} */
 		this.collapse_handler = undefined;
-
 		/**@private @type {PlaylistContentNavigation} */
 		this.cnt_helper = this.cnt.helper;
 
@@ -123,13 +126,12 @@ class Playlist extends BaseList {
 	 * @private
 	 */
 	_initialize_rows(playlist_items) { // Rewritten
-		const playlist_items_array = playlist_items.Convert();
-		const rows = new Array(playlist_items_array.length);
+		const rows = new Array(playlist_items.length);
 		const showHeader = plSet.show_header;
 		const isOddOffset = showHeader ? 0 : 1;
 
-		for (let i = 0; i < playlist_items_array.length; ++i) {
-			const row = new PlaylistRow(this.list_x, 0, this.list_w, this.row_h, playlist_items_array[i], i, this.cur_playlist_idx);
+		for (let i = 0; i < playlist_items.length; ++i) {
+			const row = new PlaylistRow(this.list_x, 0, this.list_w, this.row_h, playlist_items[i], i, this.cur_playlist_idx);
 			row.is_odd = !(i & 1) ^ isOddOffset;
 			rows[i] = row;
 		}
@@ -145,7 +147,7 @@ class Playlist extends BaseList {
 	 * @private
 	 */
 	_create_headers(rows, rows_metadb) {
-		const prepared_rows = PlaylistHeader.prepare_initialization_data(rows, rows_metadb);
+		const prepared_rows = PlaylistHeader.prepare_header_data(rows, rows_metadb);
 		return PlaylistHeader.create_headers(/** @type {PlaylistContent} */ this.cnt, this.list_x, 0, this.list_w, this.row_h * this.header_h_in_rows, prepared_rows);
 	}
 
@@ -158,7 +160,7 @@ class Playlist extends BaseList {
 		let numRows = plSet.use_compact_header ? plSet.rows_in_compact_header : plSet.rows_in_header;
 		const headerFontSize = grSet[`playlistHeaderFontSize_${grSet.layout}`];
 		const rowFontSize    = grSet[`playlistFontSize_${grSet.layout}`];
-		const normalHeader = !plSet.use_compact_header;
+		const normalHeader   = !plSet.use_compact_header;
 		const headerExceedsHeight = (headerFontSize * 2 + 3 + rowFontSize) > (numRows * plSet.row_h * 0.6);
 
 		if (normalHeader && headerExceedsHeight) numRows++;
@@ -262,7 +264,7 @@ class Playlist extends BaseList {
 
 		const topLevelItems = plSet.show_header ? this.cnt.sub_items : this.cnt.rows;
 		if (!iterate_level(topLevelItems, target_item)) {
-			return 0; // Item not found, you could throw an error or handle it as per your requirements
+			return 0;
 		}
 
 		return cur_row;
@@ -432,19 +434,16 @@ class Playlist extends BaseList {
 		const profiler_part = grm.ui.traceListPerformance && fb.CreateProfiler();
 
 		this.cur_playlist_idx = plman.ActivePlaylist;
+		this.playlist_items_array = plman.GetPlaylistItems(this.cur_playlist_idx).Convert();
 
 		// * Clear contents
-
 		this.cnt.rows = [];
 		this.cnt.sub_items = [];
+		this.batch_processor.batchAlbumDirCache = null;
 
 		// * Initialize rows
-
 		grm.ui.traceListPerformance && profiler_part.Reset();
-
-		const rows_metadb = plman.GetPlaylistItems(this.cur_playlist_idx);
-		this.cnt.rows = this._initialize_rows(plman.GetPlaylistItems(this.cur_playlist_idx));
-
+		this.cnt.rows = this._initialize_rows(this.playlist_items_array);
 		grm.ui.traceListPerformance && console.log(`Rows initialized in ${profiler_part.Time}ms`);
 
 		this.playing_item = undefined;
@@ -463,15 +462,13 @@ class Playlist extends BaseList {
 
 		// * Initialize headers
 		grm.ui.traceListPerformance && profiler_part.Reset();
-
 		PlaylistHeader.grouping_handler.set_active_playlist(plman.GetPlaylistName(this.cur_playlist_idx));
-		this.cnt.sub_items = this._create_headers(this.cnt.rows, rows_metadb);
-		this.header_artwork.getHeaderArtwork(this.cnt.sub_items.slice(0, 10));	// Preload first 10 artworks
-
+		this.cnt.sub_items = this.batch_processor.processHeaderBatches(this.cnt.rows, 0, true);
+		this.header_artwork.getHeaderArtwork(this.cnt.sub_items.slice(0, 10)); // Preload first 10 artworks
 		grm.ui.traceListPerformance && console.log(`Headers initialized in ${profiler_part.Time}ms`);
 
-		if (!this.was_on_size_called) {
-			// * First time init
+		// * Initialize states
+		if (!this.was_on_size_called) { // First time init
 			this.collapse_handler = new PlaylistCollapseHandler(/** @type {PlaylistContent} */ this.cnt);
 
 			if (plSet.show_header) {
@@ -484,8 +481,7 @@ class Playlist extends BaseList {
 				});
 			}
 		}
-		else {
-			// * Update list control
+		else { // Update list control
 			if (this.collapse_handler) {
 				this.collapse_handler.on_content_change();
 			}
@@ -495,8 +491,6 @@ class Playlist extends BaseList {
 			}
 
 			this.scrollbar.stopScrolling();
-			this.update_scrollbar();
-
 			this.on_list_items_change();
 		}
 
@@ -568,7 +562,8 @@ class Playlist extends BaseList {
 
 				this.selection_handler.update_selection(new_item, undefined, modifiers.shift);
 				this.repaint();
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_DOWN,
 			(modifiers) => {
@@ -599,7 +594,8 @@ class Playlist extends BaseList {
 
 				this.selection_handler.update_selection(new_item, undefined, modifiers.shift);
 				this.repaint();
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_LEFT,
 			(modifiers) => {
@@ -627,7 +623,8 @@ class Playlist extends BaseList {
 
 				this.selection_handler.update_selection(new_focus);
 				this.repaint();
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_RIGHT,
 			(modifiers) => {
@@ -653,7 +650,8 @@ class Playlist extends BaseList {
 
 				this.selection_handler.update_selection(new_focus);
 				this.repaint();
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_PRIOR,
 			(modifiers) => {
@@ -669,13 +667,13 @@ class Playlist extends BaseList {
 				let new_focus_item;
 				if (this.is_scrollbar_available) {
 					new_focus_item = this.items_to_draw[0];
-					if (!this.cnt_helper.is_item_navigable(new_focus_item)) {
+					if (new_focus_item && (!this.cnt_helper.is_item_navigable(new_focus_item))) {
 						new_focus_item = this.cnt_helper.get_navigable_neighbor(new_focus_item, 1);
 					}
-					if (new_focus_item.y < this.list_y && new_focus_item.y + new_focus_item.h > this.list_y) {
+					if (new_focus_item && (new_focus_item.y < this.list_y && new_focus_item.y + new_focus_item.h > this.list_y)) {
 						new_focus_item = this.cnt_helper.get_navigable_neighbor(new_focus_item, 1);
 					}
-					if (new_focus_item === this.focused_item) {
+					if (new_focus_item && (new_focus_item === this.focused_item)) {
 						this.scrollbar.shift_page(-1);
 
 						new_focus_item = this.items_to_draw[0];
@@ -690,7 +688,8 @@ class Playlist extends BaseList {
 
 				this.selection_handler.update_selection(new_focus_item, undefined, modifiers.shift);
 				this.repaint();
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_NEXT,
 			(modifiers) => {
@@ -701,7 +700,6 @@ class Playlist extends BaseList {
 				if (!this.focused_item) {
 					this.focused_item = this.items_to_draw[0];
 					if (!this.cnt_helper.is_item_navigable(this.focused_item)) {
-						// @ts-ignore
 						this.focused_item = this.cnt_helper.get_navigable_neighbor(this.focused_item, 1);
 					}
 				}
@@ -709,13 +707,13 @@ class Playlist extends BaseList {
 				let new_focus_item;
 				if (this.is_scrollbar_available) {
 					new_focus_item = Last(this.items_to_draw);
-					if (!this.cnt_helper.is_item_navigable(new_focus_item)) {
+					if (new_focus_item && (!this.cnt_helper.is_item_navigable(new_focus_item))) {
 						new_focus_item = this.cnt_helper.get_navigable_neighbor(new_focus_item, -1);
 					}
-					if (new_focus_item.y < this.list_y + this.list_h && new_focus_item.y + new_focus_item.h > this.list_y + this.list_h) {
+					if (new_focus_item && (new_focus_item.y < this.list_y + this.list_h && new_focus_item.y + new_focus_item.h > this.list_y + this.list_h)) {
 						new_focus_item = this.cnt_helper.get_navigable_neighbor(new_focus_item, -1);
 					}
-					if (new_focus_item === this.focused_item) {
+					if (new_focus_item && (new_focus_item === this.focused_item)) {
 						this.scrollbar.shift_page(1);
 						new_focus_item = Last(this.items_to_draw);
 						if (!this.cnt_helper.is_item_navigable(new_focus_item)) {
@@ -729,19 +727,22 @@ class Playlist extends BaseList {
 
 				this.selection_handler.update_selection(new_focus_item, undefined, modifiers.shift);
 				this.repaint();
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_HOME,
 			(modifiers) => {
 				this.selection_handler.update_selection(this.cnt.rows[0], undefined, modifiers.shift);
 				this.scrollbar.scroll_to_start();
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_END,
 			(modifiers) => {
 				this.selection_handler.update_selection(Last(this.cnt.rows), undefined, modifiers.shift);
 				this.scrollbar.scroll_to_end();
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_DELETE,
 			(modifiers) => {
@@ -750,7 +751,8 @@ class Playlist extends BaseList {
 				}
 				plman.UndoBackup(this.cur_playlist_idx);
 				plman.RemovePlaylistSelection(this.cur_playlist_idx);
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_KEY_A,
 			(modifiers) => {
@@ -758,7 +760,8 @@ class Playlist extends BaseList {
 					this.selection_handler.select_all();
 					this.repaint();
 				}
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_KEY_F,
 			(modifiers) => {
@@ -768,7 +771,8 @@ class Playlist extends BaseList {
 				else if (modifiers.shift) {
 					fb.RunMainMenuCommand('Library/Search');
 				}
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_RETURN,
 			(modifiers) => {
@@ -777,14 +781,16 @@ class Playlist extends BaseList {
 					this.focused_item = top_item instanceof PlaylistRow ? top_item : top_item.get_first_row();
 				}
 				plman.ExecutePlaylistDefaultAction(this.cur_playlist_idx, this.focused_item.idx);
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_KEY_O,
 			(modifiers) => {
 				if (modifiers.shift) {
 					fb.RunContextCommandWithMetadb('Open Containing Folder', this.focused_item.metadb);
 				}
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_KEY_Q,
 			(modifiers) => {
@@ -810,34 +816,39 @@ class Playlist extends BaseList {
 						}
 					}
 				}
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_F5,
 			(modifiers) => {
 				PlaylistHeader.img_cache.clear();
 				this.initialize_and_repaint_list(true);
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_KEY_C,
 			(modifiers) => {
 				if (modifiers.ctrl) {
 					this.selection_handler.copy();
 				}
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_KEY_X,
 			(modifiers) => {
 				if (modifiers.ctrl) {
 					this.selection_handler.cut();
 				}
-			});
+			}
+		);
 
 		key_handler.register_key_action(VK_KEY_V,
 			(modifiers) => {
 				if (modifiers.ctrl && !plman.IsPlaylistLocked(this.cur_playlist_idx)) {
 					this.selection_handler.paste();
 				}
-			});
+			}
+		);
 	}
 
 	/**

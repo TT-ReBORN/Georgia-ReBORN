@@ -1046,6 +1046,7 @@ class PlaylistCallbacks {
 		}
 		if (grSet.playlistSortOrderAuto) grm.ui.setPlaylistSortOrder();
 
+		pl.playlist.batch_processor.clearBatchCaches();
 		pl.playlist.debounced_initialize_and_repaint_list();
 	}
 
@@ -1062,6 +1063,7 @@ class PlaylistCallbacks {
 			return;
 		}
 
+		pl.playlist.batch_processor.clearBatchCaches();
 		pl.playlist.debounced_initialize_and_repaint_list(true);
 	}
 
@@ -1082,6 +1084,7 @@ class PlaylistCallbacks {
 			return;
 		}
 
+		pl.playlist.batch_processor.clearBatchCaches();
 		pl.playlist.debounced_initialize_and_repaint_list();
 	}
 
