@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-05-2024                                              * //
+// * Last change:    03-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -470,6 +470,19 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 			// * ART BOX * //
 			if (plSet.show_album_art) {
+				const adjustHyperlinkOffsets = (hyperlinks, property, left_pad) => {
+					let i = 0;
+					let offset = 0;
+					while (hyperlinks[`${property}${i}`]) {
+						if (i === 0) {
+							offset = hyperlinks[`${property}0`].x - left_pad;
+							if (!offset) break;
+						}
+						hyperlinks[`${property}${i}`].x -= offset;
+						i++;
+					}
+				};
+
 				if (!this.is_art_loaded()) {
 					const cached_art = PlaylistHeader.img_cache.get_image_for_meta(this.metadb);
 					if (cached_art) {
@@ -480,7 +493,6 @@ class PlaylistHeader extends PlaylistBaseHeader {
 				if (this.art !== null || !plSet.auto_album_art) {
 					const p = SCALE(6);
 					const spacing = SCALE(2);
-
 					const art_box_size = this.art_max_size + spacing * 2;
 					const art_box_x = p * 3;
 					let art_box_y = p;
@@ -512,36 +524,19 @@ class PlaylistHeader extends PlaylistBaseHeader {
 					}
 
 					grClip.DrawRect(art_box_x, art_box_y, art_box_w - 1, art_box_h - 1, 1, line_color);
+
 					left_pad += art_box_x + art_box_w;
-
-					let i_ = 0;
-					let offset_ = 0;
-					while (this.hyperlinks[`artist${i_}`]) {
-						if (i_ === 0) {
-							offset_ = this.hyperlinks.artist0.x - left_pad;
-							if (!offset_) break;
-						}
-						this.hyperlinks[`artist${i_}`].x -= offset_;
-						i_++;
-					}
-
+					adjustHyperlinkOffsets(this.hyperlinks, 'artist', left_pad);
+					adjustHyperlinkOffsets(this.hyperlinks, 'genre', left_pad);
 					this.hyperlinks.album && this.hyperlinks.album.setXOffset(left_pad);
-
-					let i = 0;
-					let offset = 0;
-					while (this.hyperlinks[`genre${i}`]) {
-						if (i === 0) {
-							offset = this.hyperlinks.genre0.x - left_pad;
-							if (!offset) break;
-						}
-						this.hyperlinks[`genre${i}`].x -= offset;
-						i++;
-					}
 				}
-				else if (this.art === null && plSet.auto_album_art) {
+				else if (this.art === null && plSet.auto_album_art && !this.hyperlinks_reinitialized) {
+					adjustHyperlinkOffsets(this.hyperlinks, 'genre', left_pad);
 					this.hyperlinks.artist0 && this.hyperlinks.artist0.setXOffset(left_pad);
 					this.hyperlinks.album && this.hyperlinks.album.setXOffset(left_pad);
 					this.hyperlinks.genre0 && this.hyperlinks.genre0.setXOffset(left_pad);
+					this.initialize_hyperlinks(gr);
+					this.hyperlinks_reinitialized = true;
 				}
 			}
 
@@ -1014,12 +1009,13 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		const art_box_x = 3 * SCALE(6);
 		const spacing = SCALE(2);
 		const art_box_size = this.art_max_size + spacing * 2;
-		const left_pad = SCALE(10) + (this.art !== null && plSet.show_album_art && !plSet.auto_album_art ? art_box_x + art_box_size : 0);
+		const left_pad = SCALE(20);
 		const right_edge = SCALE(20);
 		const part_h = this.h / 3;
 		const separatorWidth = gr.MeasureString(' \u2020', pl.font.info, 0, 0, 0, 0).Width;
 		const bulletWidth = Math.ceil(gr.MeasureString('\u2020', pl.font.info, 0, 0, 0, 0).Width);
 		const spaceWidth = Math.ceil(separatorWidth - bulletWidth) + SCALE(1);
+		const truncatedWidth = art_box_x + art_box_size * ((this.art === null && plSet.auto_album_art ? 1 : plSet.show_album_art ? 2 : 1) + (grSet.showPlaylistFullDate ? 0.5 : 0));
 
 		// * Date
 		const date_query = grSet.showPlaylistFullDate ? grTF.date : grTF.year;
@@ -1061,8 +1057,8 @@ class PlaylistHeader extends PlaylistBaseHeader {
 					artist_x += bulletWidth + spaceWidth * 3; // Spacing between multi artists
 					multi_artist_spacing_w = bulletWidth + spaceWidth * 3 * i; // Total spacing width
 				}
-				const single_artist_w = this.w - left_pad * 2;
-				const multi_artist_w = this.w - left_pad - artist_x;
+				const single_artist_w = this.w - left_pad * 2 - truncatedWidth;
+				const multi_artist_w = this.w - left_pad - artist_x - truncatedWidth;
 				const ellipsis_w = gr.MeasureString('...', artist_font, 0, 0, 0, 0).Width;
 				artist_w = gr.MeasureString(artist_text[i], artist_font, 0, 0, 0, 0).Width;
 				if (artist_text.length > 1) {
@@ -1090,7 +1086,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		const album_text = grSet.headerFlipRows ? $(this.grouping_handler.get_title_query(), this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
 
 		if (album_text) {
-			this.hyperlinks.album = new Hyperlink(album_text, pl.font.album, 'album', left_pad, album_y, this.w - left_pad * 2, true);
+			this.hyperlinks.album = new Hyperlink(album_text, pl.font.album, 'album', left_pad, album_y, this.w - left_pad * 2 - truncatedWidth, true);
 		}
 
 		// * Record labels
@@ -1131,7 +1127,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		// * Callbacks for headerTooltip
 		this.artist_text_w = gr.MeasureString(artist_text, artist_font, 0, 0, 0, 0).Width + (multi_artist ? multi_artist_spacing_w : 0);
 		this.album_text_w = gr.MeasureString(album_text, pl.font.album, 0, 0, 0, 0).Width;
-		this.max_w = this.w - left_pad * 2;
+		this.max_w = this.w - left_pad * 2 - truncatedWidth;
 
 		// * Hyperlinks init done
 		this.hyperlinks_initialized = true;
