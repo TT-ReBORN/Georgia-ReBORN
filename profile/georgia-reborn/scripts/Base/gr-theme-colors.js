@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-04-2024                                              * //
+// * Last change:    04-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3689,7 +3689,7 @@ class ThemeColors {
 		grCol.loadingThemeBg = nighttime ? RGB(25, 25, 25) : grCol.bg;
 		grCol.uiHacksFrame = grCol.bg;
 		grCol.shadow = grm.ui.isPlayingCD ? RGBA(0, 0, 0, 30) : grCol.shadow;
-		grCol.noAlbumArtStub = RGB(40, 40, 40);
+		grCol.noAlbumArtStub = nighttime ? RGB(240, 240, 240) : RGB(40, 40, 40);
 		grCol.lowerBarArtist = RGB(240, 240, 240);
 		grCol.lowerBarTitle = RGB(220, 220, 220);
 		grCol.lowerBarTime = grCol.lowerBarTitle;
@@ -4534,7 +4534,7 @@ class StyleColors {
 
 		const rebornNightAccentColor = grSet.theme === 'reborn' ? RGB(210, 235, 240) : false;
 
-		if (!fb.IsPlaying) {
+		if (!fb.IsPlaying || grm.ui.noAlbumArtStub) {
 			grm.theme.panelBlackColors(false, rebornNightAccentColor);
 			grm.theme.mainBlackColors();
 		} else {
