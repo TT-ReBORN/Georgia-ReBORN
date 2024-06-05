@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    23-05-2024                                              * //
+// * Last change:    05-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -670,18 +670,8 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 		grm.ui.doubleClicked = true;
 		if (fb.IsPlaying && !grm.button.mouseInControl && mouseInLowerBar(x, y)) {
 			grm.ui.traceCall && console.log('Lower bar => on_mouse_lbtn_dblclk');
-			// * Pick a new random theme preset
-			if (grSet.presetAutoRandomMode === 'dblclick') {
-				grm.ui.themePresetIndicator = true;
-				grm.preset.getRandomThemePreset();
-			}
-			// * Generate a new color in Random theme
-			else if (grSet.theme === 'random') {
-				grm.ui.initTheme();
-				DebugLog('\n>>> initTheme => on_mouse_lbtn_dblclk => random theme <<<\n');
-			}
 			// * Refresh theme
-			else if (grCfg.settings.doubleClickRefresh) {
+			if (grCfg.settings.doubleClickRefresh) {
 				grm.ui.albumArt = null;
 				grm.artCache && grm.artCache.clear();
 				grm.ui.discArtArray = [];
@@ -690,6 +680,16 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 				grm.ui.discArtCover = null;
 				RepaintWindow();
 				on_playback_new_track(fb.GetNowPlaying());
+			}
+			// * Pick a new random theme preset
+			else if (grSet.presetAutoRandomMode === 'dblclick') {
+				grm.ui.themePresetIndicator = true;
+				grm.preset.getRandomThemePreset();
+			}
+			// * Generate a new color in Random theme
+			else if (grSet.theme === 'random') {
+				grm.ui.initTheme();
+				DebugLog('\n>>> initTheme => on_mouse_lbtn_dblclk => random theme <<<\n');
 			}
 		}
 	}
