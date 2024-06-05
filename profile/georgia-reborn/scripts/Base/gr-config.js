@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    31-05-2024                                              * //
+// * Last change:    05-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -417,6 +417,24 @@ class ConfigurationManager {
 	}
 
 	/**
+	 * Compares a specific setting's value with the old value and updates it to the new value if they match.
+	 * @param {object} settings - The settings object from the configuration file.
+	 * @param {string} key - The key of the setting to check.
+	 * @param {string} oldValue - The old value to check for.
+	 * @param {string} newValue - The new value to update to.
+	 * @returns {boolean} - Returns true if the setting was updated, otherwise false.
+	 * @private
+	 */
+	_compareSettingValue(settings, key, oldValue, newValue) {
+		if (settings && settings[key] === oldValue) {
+			settings[key] = newValue;
+			console.log(`Updated "${key}" setting to the new value.`);
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Deletes settings from the configuration file.
 	 * @param {object} settings - The settings object from the configuration file.
 	 * @param {...string} settingNames - The names of the settings to remove.
@@ -805,6 +823,14 @@ class ConfigurationManager {
 		}
 		if (this._checkSettings(configFile, 'lyricFilenamePatterns')) {
 			this._renameSettings(configFile, ['lyricFilenamePatterns'], ['lyricsFilenamePatterns']);
+			this.config.writeConfiguration();
+			window.Reload(); // Reinit new config
+		}
+		// * Check and update the "disc" setting if it has the old value
+		const oldDiscValue = '$ifgreater(%totaldiscs%,1,CD %discnumber%/%totaldiscs%,)';
+		const newDiscValue = '$ifgreater(%totaldiscs%,1,$if($or(%vinyl side%,$strcmp($lower(%media%),vinyl)),Vinyl %discnumber%/%totaldiscs%,CD %discnumber%/%totaldiscs%),)';
+		if (this._compareSettingValue(configFile.title_format_strings, 'disc', oldDiscValue, newDiscValue)) {
+			this.config.addConfigurationObject(grDef.titleFormatSchema, configFile.title_format_strings, grDef.titleFormatComments);
 			this.config.writeConfiguration();
 			window.Reload(); // Reinit new config
 		}

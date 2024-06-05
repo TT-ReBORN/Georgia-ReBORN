@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-04-2024                                              * //
+// * Last change:    05-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -275,7 +275,7 @@ class PlaylistRow extends BaseListItem {
 			const indexNumbers = this.idx < 9 ? `0${this.idx + 1}. ` : `${this.idx + 1}. `;
 			const trackNumbers = grSet.showPlaylistIndexNumbers ? indexNumbers : `$if2(%tracknumber%,$pad_right(${this.idx_in_header + 1},2,0)). `;
 			const trackNumbersVinyl = grSet.showPlaylistIndexNumbers ? indexNumbers : `$if2(${grTF.vinyl_track},00. )`;
-			const trackNumberQuery = this.is_playing ? plSet.show_header ? '      ' : grSet.showVinylNums ? trackNumbersVinyl : trackNumbers : trackNumbers;
+			const trackNumberQuery = this.is_playing ? (plSet.show_header ? '      ' : (grSet.showVinylNums ? trackNumbersVinyl : trackNumbers)) : (grSet.showVinylNums ? trackNumbersVinyl : trackNumbers);
 			const showTrackNumber = grSet.showPlaylistTrackNumbers || grSet.showPlaylistIndexNumbers ? trackNumberQuery : '';
 			const customTitle = grCfg.settings.playlistCustomTitle;
 			const customTitleNoHeader = grCfg.settings.playlistCustomTitleNoHeader;

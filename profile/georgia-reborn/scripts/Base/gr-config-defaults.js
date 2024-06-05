@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-05-2024                                              * //
+// * Last change:    05-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -41,7 +41,7 @@ class ConfigDefaults {
 			artist: '$if3($meta(artist),%composer%,%performer%,%album artist%)',
 			date: '$if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,)',
 			disc_subtitle: '%discsubtitle%',
-			disc: '$ifgreater(%totaldiscs%,1,CD %discnumber%/%totaldiscs%,)',
+			disc: '$ifgreater(%totaldiscs%,1,$if($or(%vinyl side%,$strcmp($lower(%media%),vinyl)),Vinyl %discnumber%/%totaldiscs%,CD %discnumber%/%totaldiscs%),)',
 			edition: '[$if2($if(%original release date%,$ifequal($year(%original release date%),$year(%date%),,$year(%date%) ))$if2(%edition%,\'release\'),$if(%originaldate%,$ifequal($year(%originaldate%),$year(%date%),,$year(%date%) ))$if2(%edition%,\'release\'))]',
 			last_played: '[$if2(%last_played_enhanced%,%last_played%)]',
 			lyrics: '[$if3(%synced lyrics%,%syncedlyrics%,%lyrics%,%lyric%,%unsyncedlyrics%,%unsynced lyrics%,)]',
