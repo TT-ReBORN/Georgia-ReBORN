@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    05-06-2024                                              * //
+// * Last change:    07-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -41,7 +41,7 @@ class ConfigDefaults {
 			artist: '$if3($meta(artist),%composer%,%performer%,%album artist%)',
 			date: '$if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,)',
 			disc_subtitle: '%discsubtitle%',
-			disc: '$ifgreater(%totaldiscs%,1,$if($or(%vinyl side%,$strcmp($lower(%media%),vinyl)),Vinyl %discnumber%/%totaldiscs%,CD %discnumber%/%totaldiscs%),)',
+			disc: '$ifgreater(%totaldiscs%,1,$if($or($if2(%vinylside%,%vinyl side%),$strcmp($lower($if3(%media%,%mediatype%,%media type%)),vinyl)),Vinyl %discnumber%/%totaldiscs%,CD %discnumber%/%totaldiscs%),)',
 			edition: '[$if2($if(%original release date%,$ifequal($year(%original release date%),$year(%date%),,$year(%date%) ))$if2(%edition%,\'release\'),$if(%originaldate%,$ifequal($year(%originaldate%),$year(%date%),,$year(%date%) ))$if2(%edition%,\'release\'))]',
 			last_played: '[$if2(%last_played_enhanced%,%last_played%)]',
 			lyrics: '[$if3(%synced lyrics%,%syncedlyrics%,%lyrics%,%lyric%,%unsyncedlyrics%,%unsynced lyrics%,)]',
@@ -50,9 +50,9 @@ class ConfigDefaults {
 			releaseCountry: '$replace($if3(%releasecountry%,%discogs_country%,),AF,XW)',
 			title: '%title%[ \'[\'%translation%\']\']',
 			tracknum: '[%tracknumber%.]',
-			vinyl_side: '%vinyl side%',
-			vinyl_tracknum: '%vinyl tracknumber%',
-			vinyl_track: '$if2(%vinyl side%[%vinyl tracknumber%]. ,[%tracknumber%. ])',
+			vinyl_side: '$if2(%vinylside%,%vinyl side%)',
+			vinyl_tracknum: '$if2(%vinyltracknumber%,%vinyl tracknumber%)',
+			vinyl_track: '$if2([$if2(%vinylside%,%vinyl side%)][$if2(%vinyltracknumber%,%vinyl tracknumber%)]. ,[%tracknumber%. ])',
 			year: '[$year($if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,))]',
 			playing_playlist: 'Do not change this value as it is handled by the theme itself'
 		};
@@ -64,8 +64,8 @@ class ConfigDefaults {
 			lyrics: 'gr-lyrics.js will check these fields in order if no local lyrics file is found.',
 			releaseCountry: 'Releases tagged from Musicbrainz with a release country of AF (Afghanistan) are almost always whole world releases that have each country listed individually, so replace with \'XW\' (Worldwide) tag.',
 			title: 'Track title shown above the progress bar',
-			vinyl_side: 'Used for determining what side a song appears on for vinyl releases - i.e. song A1 has a %vinyl side% of "A"',
-			vinyl_tracknum: 'Used for determining the track number on vinyl releases - i.e. song A1 has %vinyl tracknumber% set to "1"',
+			vinyl_side: 'Used for determining what side a song appears on for vinyl releases - i.e. song A1 has a %vinylside% or %vinyl side% of "A"',
+			vinyl_tracknum: 'Used for determining the track number on vinyl releases - i.e. song A1 has %vinyltracknumber% or %vinyl tracknumber% set to "1"',
 			year: 'Just the year portion of any stored date.'
 		};
 

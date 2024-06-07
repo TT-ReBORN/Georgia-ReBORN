@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    05-06-2024                                              * //
+// * Last change:    07-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -478,6 +478,29 @@ class ConfigurationManager {
 	}
 
 	/**
+	 * Processes a list of setting updates. If any setting is updated, it triggers configuration save and reload.
+	 * @param {object} settings - The settings object to update.
+	 * @param {Array} updates - An array of updates to process.
+	 * @param {object} schema - The schema to pass to addConfigurationObject.
+	 * @param {object} comments - The comments to pass to addConfigurationObject.
+	 */
+	_processSettingUpdates(settings, updates, schema, comments) {
+		let hasUpdates = false;
+
+		for (const { key, oldValue, newValue } of updates) {
+			if (this._compareSettingValue(settings, key, oldValue, newValue)) {
+				hasUpdates = true;
+			}
+		}
+
+		if (!hasUpdates) return;
+
+		this.config.addConfigurationObject(schema, settings, comments);
+		this.config.writeConfiguration();
+		window.Reload(); // Reinit new config
+	}
+
+	/**
 	 * Checks if specific entry exist in the metadata grid configuration.
 	 * @param {MetadataGridEntry[]} grid - Each element in the array is an object with a `label` property.
 	 * @param {...string} labels - The labels of the settings to check.
@@ -826,14 +849,16 @@ class ConfigurationManager {
 			this.config.writeConfiguration();
 			window.Reload(); // Reinit new config
 		}
-		// * Check and update the "disc" setting if it has the old value
-		const oldDiscValue = '$ifgreater(%totaldiscs%,1,CD %discnumber%/%totaldiscs%,)';
-		const newDiscValue = '$ifgreater(%totaldiscs%,1,$if($or(%vinyl side%,$strcmp($lower(%media%),vinyl)),Vinyl %discnumber%/%totaldiscs%,CD %discnumber%/%totaldiscs%),)';
-		if (this._compareSettingValue(configFile.title_format_strings, 'disc', oldDiscValue, newDiscValue)) {
-			this.config.addConfigurationObject(grDef.titleFormatSchema, configFile.title_format_strings, grDef.titleFormatComments);
-			this.config.writeConfiguration();
-			window.Reload(); // Reinit new config
-		}
+
+		// * Check and update settings if they have old values
+		const settingUpdates = [
+			{ key: 'disc', oldValue: '$ifgreater(%totaldiscs%,1,CD %discnumber%/%totaldiscs%,)', newValue: '$ifgreater(%totaldiscs%,1,$if($or($if2(%vinylside%,%vinyl side%),$strcmp($lower($if3(%media%,%mediatype%,%media type%)),vinyl)),Vinyl %discnumber%/%totaldiscs%,CD %discnumber%/%totaldiscs%),)' },
+			{ key: 'disc', oldValue: '$ifgreater(%totaldiscs%,1,$if($or(%vinyl side%,$strcmp($lower(%media%),vinyl)),Vinyl %discnumber%/%totaldiscs%,CD %discnumber%/%totaldiscs%),)', newValue: '$ifgreater(%totaldiscs%,1,$if($or($if2(%vinylside%,%vinyl side%),$strcmp($lower($if3(%media%,%mediatype%,%media type%)),vinyl)),Vinyl %discnumber%/%totaldiscs%,CD %discnumber%/%totaldiscs%),)' },
+			{ key: 'vinyl_side', oldValue: '%vinyl side%', newValue: '$if2(%vinylside%,%vinyl side%)' },
+			{ key: 'vinyl_tracknum', oldValue: '%vinyl tracknumber%', newValue: '$if2(%vinyltracknumber%,%vinyl tracknumber%)' },
+			{ key: 'vinyl_track', oldValue: '$if2(%vinyl side%[%vinyl tracknumber%]. ,[%tracknumber%. ])', newValue: '$if2([$if2(%vinylside%,%vinyl side%)][$if2(%vinyltracknumber%,%vinyl tracknumber%)]. ,[%tracknumber%. ])' }
+		];
+		this._processSettingUpdates(configFile.title_format_strings, settingUpdates, grDef.titleFormatSchema, grDef.titleFormatComments);
 		// #endregion
 
 		// * Update config settings which have changed since last update
