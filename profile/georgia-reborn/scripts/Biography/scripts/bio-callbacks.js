@@ -289,6 +289,7 @@ class BioCallbacks {
 				if (bio.vk.k('ctrl')) bio.but.wheel(step);
 				if (bio.vk.k('shift')) {
 					bio.img.wheel(step);
+					if (bio.panel.id.lyricsSource) bio.lyrics.on_mouse_wheel(step);
 					if (bio.but.trace('lookUp', bio.panel.m.x, bio.panel.m.y)) bio.men.wheel(step, true);
 				}
 				break;

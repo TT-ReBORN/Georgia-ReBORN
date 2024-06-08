@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-05-2024                                              * //
+// * Last change:    08-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -700,11 +700,12 @@ class Lyrics {
 	 * @param {number} step - The amount of scrolling offset that should be performed.
 	 */
 	on_mouse_wheel(step) {
-		step *= Clamp(Math.round(500 / ((Date.now() - this.stepTime) * 5)), 1, 5);
+		const scrollStepOffset = utils.IsKeyPressed(VK_SHIFT) ? 5000 : this.type.synced ? 500 : 1000;
+		step *= Clamp(Math.round(scrollStepOffset / ((Date.now() - this.stepTime) * 5)), 1, 5);
 		this.stepTime = Date.now();
-		this.userOffset += 500 * -step;
+		this.userOffset += scrollStepOffset * -step;
 		if (!this.userOffset) this.repaintRect();
-		this.showOffset = this.userOffset !== 0;
+		this.showOffset = this.type.synced && this.userOffset !== 0;
 		clearTimeout(this.showOffsetTimer);
 		this.showOffsetTimer = setTimeout(() => {
 			this.showOffset = false;

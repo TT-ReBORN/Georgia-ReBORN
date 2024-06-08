@@ -231,15 +231,16 @@ class BioLyrics {
 	}
 
 	on_mouse_wheel(step) {
-		step *= $Bio.clamp(Math.round(1000 / ((Date.now() - this.stepTime) * 5)), 1, 5);
+		const scrollStepOffset = utils.IsKeyPressed(VK_SHIFT) ? 5000 : this.type.synced ? 500 : 1000;
+		step *= $Bio.clamp(Math.round(scrollStepOffset / ((Date.now() - this.stepTime) * 5)), 1, 5);
 		this.stepTime = Date.now();
-		this.userOffset += 1000 * -step;
+		this.userOffset += scrollStepOffset * -step;
 		if (!this.userOffset) this.repaintRect();
-		this.showOffset = this.type.synced && this.userOffset != 0;
+		this.showOffset = this.type.synced && this.userOffset !== 0;
 		clearTimeout(this.showOffsetTimer);
 		this.showOffsetTimer = setTimeout(() => {
-			this.repaintRect();
 			this.showOffset = false;
+			this.repaintRect();
 		}, 5000);
 		this.seek();
 	}
@@ -313,7 +314,10 @@ class BioLyrics {
 	repaintRect() {
 		if (!grm.ui.displayBiography) return;
 		window.RepaintRect(this.x + (this.w - this.maxLyrWidth) / 2, this.y, this.maxLyrWidth, this.h + this.lineHeight);
-		if (this.showOffset) window.RepaintRect(this.w - this.arc, this.top - SCALE(3), this.w * 0.5 - this.x * 2 - this.offsetW * 0.5 + this.arc, this.lineHeight + SCALE(6));
+		if (this.showOffset) {
+			const offsetWidth = (this.lineHeight + this.arc) * 2;
+			window.RepaintRect(this.x + this.w - offsetWidth, this.top,	offsetWidth * 2 + this.lineHeight, this.lineHeight + SCALE(6));
+		}
 	}
 
 	scrollUpdateNeeded() {
