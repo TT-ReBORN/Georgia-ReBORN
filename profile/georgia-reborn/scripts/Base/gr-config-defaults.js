@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-06-2024                                              * //
+// * Last change:    08-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1171,7 +1171,7 @@ class ConfigDefaults {
 			showDiscArtStub: 'Values: true, false - Options > Details > Disc art > Disc art placeholder > Show placeholder if no disc art found',
 			noDiscArtStub: 'Values: true, false - Options > Details > Disc art > Disc art placeholder > No placeholder',
 			discArtStub: 'Values: "cdAlbumCover", "cdWhite", "cdBlack", "cdBlank", "cdTrans", "vinylAlbumCover", "vinylWhite", "vinylVoid", "vinylColdFusion", "vinylRingOfFire", "vinylMaple", "vinylBlack", "vinylBlackHole", "vinylEbony", "vinylTrans" - Options > Details > Disc art > Disc art placeholder',
-			displayDiscArt: 'Values: true, false - Options > Details > Disc art > Display disc art if found',
+			displayDiscArt: 'Values: true, false - Options > Details > Disc art > Display disc art',
 			discArtOnTop: 'Values: true, false - Options > Details > Disc art > Display disc art above cover',
 			filterDiscJpgsFromAlbumArt: 'Values: true, false - Options > Details > Disc art > Filter cd/disc/vinyl .jpgs from artwork',
 			spinDiscArt: 'Values: true, false - Options > Details > Disc art > Spin disc art while songs play (increases memory and CPU)',
