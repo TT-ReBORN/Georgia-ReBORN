@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    05-06-2024                                              * //
+// * Last change:    09-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -751,10 +751,16 @@ function on_mouse_lbtn_down(x, y, m) {
 			grm.ui.traceCall && console.log('Biography => on_mouse_lbtn_down');
 			bio.call.on_mouse_lbtn_down(x, y, m);
 		}
+		if (grm.ui.displayLyrics && mouseInAlbumArt(x, y)) {
+			grm.ui.traceCall && grm.ui.traceOnMove && console.log('Lyrics => on_mouse_lbtn_down');
+			grm.lyrics.on_mouse_lbtn_down(x, y, m);
+		}
 
 		// * Clicking on album art or noAlbumArtStub to pause playback
 		if (mouseInPause(x, y)) {
-			fb.PlayOrPause();
+			setTimeout(() => { // Differentiate between a lyrics drag scroll and a normal click
+				if (!grm.lyrics.scrollDrag) fb.PlayOrPause();
+			}, grm.ui.displayLyrics ? 200 : 0);
 		}
 	}
 }
@@ -806,6 +812,10 @@ function on_mouse_lbtn_up(x, y, m) {
 		grm.ui.traceCall && console.log('Biography => on_mouse_lbtn_up');
 		bio.call.on_mouse_lbtn_up(x, y, m);
 	}
+	if (grm.ui.displayLyrics && mouseInAlbumArt(x, y)) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Lyrics => on_mouse_lbtn_up');
+		grm.lyrics.on_mouse_lbtn_up(x, y, m);
+	}
 
 	if (grm.ui.doubleClicked) {
 		grm.ui.doubleClicked = false; // You just did a double-click, so do nothing
@@ -837,6 +847,10 @@ function on_mouse_leave() {
 	if (grm.ui.displayBiography) {
 		grm.ui.traceCall && console.log('Biography => on_mouse_leave');
 		bio.call.on_mouse_leave();
+	}
+	if (grm.ui.displayLyrics) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Lyrics => on_mouse_leave');
+		grm.lyrics.on_mouse_leave();
 	}
 }
 
@@ -950,6 +964,10 @@ function on_mouse_move(x, y, m) {
 	else if (grm.ui.displayBiography && mouseInBiography(x, y)) {
 		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Biography => on_mouse_move');
 		bio.call.on_mouse_move(x, y, m);
+	}
+	else if (grm.ui.displayLyrics && mouseInAlbumArt(x, y)) {
+		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Lyrics => on_mouse_move');
+		grm.lyrics.on_mouse_move(x, y, m);
 	}
 	else if (showGridTimeline && grm.timeline && grm.timeline.mouseInThis(x, y) && grm.ui.displayDetails) {
 		grm.ui.traceCall && console.log('Timeline => on_mouse_move');
@@ -1725,6 +1743,10 @@ function mouseInAlbumArt(x, y) {
 		return true;
 	}
 
+	if (grm.lyrics.scrollDrag) {
+		grm.lyrics.scrollDrag = false;
+	}
+
 	return false;
 }
 
@@ -1977,6 +1999,10 @@ function mouseInBiography(x, y) {
 		bio.art_scroller.bar.isDragging = false;
 		bio.cov_scroller.bar.isDragging = false;
 		bio.but.Dn = false;
+	}
+
+	if (bio.lyrics.scrollDrag) {
+		bio.lyrics.scrollDrag = false;
 	}
 
 	return false;

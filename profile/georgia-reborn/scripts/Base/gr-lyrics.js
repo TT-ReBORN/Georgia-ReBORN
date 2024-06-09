@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-06-2024                                              * //
+// * Last change:    09-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -42,6 +42,12 @@ class Lyrics {
 		this.enhancedTimestamps = /(\s*)<(\d{1,2}:|)\d{1,2}:\d{2}(>|\.\d{1,3}>)(\s*)/g;
 		/** @private @type {RegExp} A regular expression to match leading timestamps in lyrics. */
 		this.leadingTimestamps = /^(\s*\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}]))+/;
+		/** @private @type {boolean} A boolean state value for lyric drag scrolling. */
+		this.scrollDrag = false;
+		/** @private @type {number} A y-coordinate value for the lyric drag scrolling. */
+		this.scrollDragY = 0;
+		/** @private @type {number} A offset value for the lyric drag scrolling. */
+		this.scrollDragOffset = 0;
 		/** @private @type {number} A time step value for manual adjusting lyrics synchronization. */
 		this.stepTime = 0;
 		/** @private @type {Array<string>} A message displayed when no lyrics are found. */
@@ -420,7 +426,7 @@ class Lyrics {
 	drawLyrics(gr) {
 		if (!(grm.ui.displayLyrics && this.lyrics.length && this.locus >= 0)) return;
 
-		const top = this.locus * this.lineHeight - this.locusOffset;
+		const top = this.locus * this.lineHeight - this.locusOffset + this.scrollDragOffset;
 		const transition_factor = Clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
 		const transition_factor_in = !this.lyrics[this.locus].multiLine ? transition_factor : 1;
 		const transition_factor_out = Clamp(transition_factor_in * 3, 0, 1);
@@ -507,6 +513,7 @@ class Lyrics {
 	clear() {
 		this.stop();
 		this.lyrics = [];
+		this.scrollDragOffset = 0;
 	}
 
 	/**
@@ -580,6 +587,7 @@ class Lyrics {
 	 * @returns {number} The current playback time in milliseconds.
 	 */
 	playbackTime() {
+		if (!grSet.lyricsAutoScrollUnsynced && this.type.unsynced) return 0;
 		const time = grm.ui.isStreaming ? fb.PlaybackTime - bio.txt.reader.trackStartTime : fb.PlaybackTime;
 		return Math.round(time * 1000) + this.lyricsOffset + this.transitionOffset + this.userOffset;
 	}
@@ -695,6 +703,54 @@ class Lyrics {
 
 	// * CALLBACKS * //
 	// #region CALLBACKS
+	/**
+	 * Initiates a scroll drag operation when the left mouse button is pressed.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @param {number} m - The mouse mask.
+	 */
+	on_mouse_lbtn_down(x, y, m) {
+		this.scrollDrag = true;
+		this.scrollDragY = y;
+	}
+
+	/**
+	 * Releases the scroll drag operation when the left mouse button is pressed.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @param {number} m - The mouse mask.
+	 */
+	on_mouse_lbtn_up(x, y, m) {
+		this.scrollDrag = false;
+	}
+
+	/**
+	 * Ends the scroll drag operation when the mouse leaves.
+	 */
+	on_mouse_leave() {
+		this.scrollDrag = false;
+	}
+
+	/**
+	 * Updates the scroll position during a drag operation when the mouse is moved.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @param {number} m - The mouse mask.
+	 */
+	on_mouse_move(x, y, m) {
+		if (!this.scrollDrag) return;
+
+		if (utils.IsKeyPressed(VK_MENU)) {
+			this.scrollDragOffset = 0;
+			this.userOffset = 0;
+		} else {
+			this.scrollDragOffset += (y - this.scrollDragY);
+			this.scrollDragY = y;
+		}
+
+		this.repaintRect();
+	}
+
 	/**
 	 * Adjusts the user offset, updates the display, and seeks to the new position.
 	 * @param {number} step - The amount of scrolling offset that should be performed.

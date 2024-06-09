@@ -7,6 +7,9 @@ class BioLyrics {
 		this.leadingTimestamps = /^(\s*\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}]))+/;
 		this.lyr = [];
 		this.lyrics = [];
+		this.scrollDrag = false;
+		this.scrollDragY = 0;
+		this.scrollDragOffset = 0;
 		this.stepTime = 0;
 		this.tfLength = fb.TitleFormat('%length_seconds%');
 		this.timestamps = /(\s*)\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}])(\s*)/g;
@@ -38,6 +41,7 @@ class BioLyrics {
 	clear() {
 		this.stop();
 		this.lyrics = [];
+		this.scrollDragOffset = 0;
 	}
 
 	clearHighlight() {
@@ -50,7 +54,7 @@ class BioLyrics {
 
 	draw(gr) {
 		if (!this.display()) return;
-		const top = this.locus * this.lineHeight - this.locusOffset;
+		const top = this.locus * this.lineHeight - this.locusOffset + this.scrollDragOffset;
 		const transition_factor = $Bio.clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
 		const transition_factor_in = !this.lyrics[this.locus].multiLine ? transition_factor : 1;
 		const transition_factor_out = $Bio.clamp(transition_factor_in * 3, 0, 1);
@@ -230,8 +234,35 @@ class BioLyrics {
 		this.parse(lyr);
 	}
 
+	on_mouse_lbtn_down(x, y, m) {
+		this.scrollDrag = true;
+		this.scrollDragY = y;
+	}
+
+	on_mouse_lbtn_up(x, y, m) {
+		this.scrollDrag = false;
+	}
+
+	on_mouse_leave() {
+		this.scrollDrag = false;
+	}
+
+	on_mouse_move(x, y, m) {
+		if (!this.scrollDrag) return;
+
+		if (bio.vk.k('alt')) {
+			this.scrollDragOffset = 0;
+			this.userOffset = 0;
+		} else {
+			this.scrollDragOffset += (y - this.scrollDragY);
+			this.scrollDragY = y;
+		}
+
+		this.repaintRect();
+	}
+
 	on_mouse_wheel(step) {
-		const scrollStepOffset = utils.IsKeyPressed(VK_SHIFT) ? 5000 : this.type.synced ? 500 : 1000;
+		const scrollStepOffset = bio.vk.k('shift') ? 5000 : this.type.synced ? 500 : 1000;
 		step *= $Bio.clamp(Math.round(scrollStepOffset / ((Date.now() - this.stepTime) * 5)), 1, 5);
 		this.stepTime = Date.now();
 		this.userOffset += scrollStepOffset * -step;
@@ -307,6 +338,7 @@ class BioLyrics {
 	}
 
 	playbackTime() {
+		if (!grSet.lyricsAutoScrollUnsynced && this.type.unsynced) return 0;
 		const time = !bio.panel.isRadio() ? fb.PlaybackTime : fb.PlaybackTime - bio.txt.reader.trackStartTime;
 		return Math.round(time * 1000) + this.lyricsOffset + this.transitionOffset + this.userOffset;
 	}

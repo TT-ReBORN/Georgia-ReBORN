@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-06-2024                                              * //
+// * Last change:    09-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3018,6 +3018,9 @@ class TopMenuOptions {
 
 		const lyricsControlsMenu = new Menu('Controls');
 		lyricsControlsMenu.addToggleItem('Remember lyrics panel state', grSet, 'lyricsRememberPanelState');
+		lyricsControlsMenu.addToggleItem('Auto-scroll unsynced lyrics', grSet, 'lyricsAutoScrollUnsynced', () => {
+			on_size();
+		});
 		lyricsControlsMenu.appendTo(lyricsMenu);
 
 		const lyricsScrollSpeedMenu = new Menu('Scroll speed');

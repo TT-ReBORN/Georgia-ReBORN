@@ -185,7 +185,13 @@ class BioCallbacks {
 		} else {
 			bio.resize.lbtn_dn(x, y);
 			bio.but.lbtn_dn(x, y);
+			if (!bioSet.dblClickToggle && !bio.but.Dn && !bio.seeker.dn && !bio.panel.trace.film) {
+				setTimeout(() => { // Differentiate between a lyrics drag scroll and a normal click
+					if (!bio.lyrics.scrollDrag) bio.panel.click(x, y);
+				}, 200);
+			}
 			if (!bio.txt.lyricsDisplayed()) bio.txt.scrollbar_type().lbtn_dn(x, y);
+			else if (bio.panel.id.lyricsSource) bio.lyrics.on_mouse_lbtn_down(x, y);
 			// bio.filmStrip.scrollerType().lbtn_dn(x, y); // Causes locked mouse follow on filmstrip click
 			bio.seeker.lbtn_dn(x, y);
 			bio.img.lbtn_dn(x);
@@ -198,8 +204,8 @@ class BioCallbacks {
 		bio.art_scrollbar.lbtn_drag_up();
 		bio.art_scroller.lbtn_drag_up();
 		bio.cov_scroller.lbtn_drag_up();
-		if (!bioSet.dblClickToggle && !bio.but.Dn && !bio.seeker.dn && !bio.panel.trace.film) bio.panel.click(x, y);
 		if (!bio.txt.lyricsDisplayed()) bio.txt.scrollbar_type().lbtn_up();
+		else if (bio.panel.id.lyricsSource) bio.lyrics.on_mouse_lbtn_up(x, y);
 		bio.panel.clicked = false;
 		bio.resize.lbtn_up();
 		bio.but.lbtn_up(x, y);
@@ -216,6 +222,7 @@ class BioCallbacks {
 		bio.art_scrollbar.leave();
 		bio.art_scroller.leave();
 		bio.cov_scroller.leave();
+		bio.lyrics.on_mouse_leave();
 		bio.txt.leave();
 		bio.img.leave();
 		bio.filmStrip.leave();
@@ -246,6 +253,7 @@ class BioCallbacks {
 		bio.panel.move(x, y);
 		bio.but.move(x, y);
 		if (!bio.txt.lyricsDisplayed()) bio.txt.scrollbar_type().move(x, y);
+		else if (bio.panel.id.lyricsSource) bio.lyrics.on_mouse_move(x, y);
 		bio.filmStrip.scrollerType().move(x, y);
 		bio.resize.imgMove(x, y);
 		bio.resize.move(x, y);
