@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-06-2024                                              * //
+// * Last change:    10-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1571,8 +1571,7 @@ class ConfigDefaults {
 			customWaveformBarDir: false,
 			waveformBarAutoDelete: false,
 			themePerformance: 'balanced',
-			devTools: false,
-			disableRightClick: true
+			devTools: false
 		};
 
 		/** @public @type {object} Options > Settings config name description. */
@@ -1592,8 +1591,7 @@ class ConfigDefaults {
 			customWaveformBarDir: 'Values: true, false - Options > Settings > Theme cache > Waveform bar > Use custom waveform bar directory',
 			waveformBarAutoDelete: 'Values: true, false - Options > Settings > Theme cache > Waveform bar > Auto-delete waveform bar cache on startup',
 			themePerformance: 'Values: "lowestQuality", "lowQuality", "balanced", "highQuality", "highestQuality" - Options > Settings > Theme performance',
-			devTools: 'Values: true, false - Options > Settings > Developer tools',
-			disableRightClick: 'Values: true, false - Options > Settings > Disable right-click'
+			devTools: 'Values: true, false - Options > Settings > Developer tools'
 		};
 
 		/** @public @type {object} Options > Settings config header description. */
@@ -1642,6 +1640,7 @@ class ConfigDefaults {
 			showDebugThemeLog: false,
 			showDebugThemeOverlay: false,
 			showDebugPerformanceOverlay: false,
+			showPanelContextMenu: false,
 			stoppedString1: 'foobar2000',
 			stoppedString1acr: 'fb2k',
 			stoppedString2: '$replace(%_foobar2000_version%,foobar2000 ,)'
@@ -1684,7 +1683,9 @@ class ConfigDefaults {
 			showDebugThemeLog: 'Logs the output of the algorithm which determines the primary theme color.',
 			showDebugThemeOverlay: 'Displays various theme debug logs on the album art as an overlay.',
 			showDebugPerformanceOverlay: 'Displays various performance debug logs on the album art as an overlay.',
+			showPanelContextMenu: 'Displays the Spider Monkey Panel context menu when right clicking in the panel',
 			stoppedString1: 'The bolded portion of text shown above the progress bar when nothing is playing',
+			stoppedString1acr: 'The bolded portion of text shown above the progress bar when nothing is playing - when Artwork or Compact layout is active',
 			stoppedString2: 'The second (non-bold) portion of text shown above the progress bar when nothing is playing'
 		};
 

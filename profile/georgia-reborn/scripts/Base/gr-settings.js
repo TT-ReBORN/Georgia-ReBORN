@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-06-2024                                              * //
+// * Last change:    10-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -626,7 +626,6 @@ grSet.addProperties({
 	customThemeSettings:                ['Georgia-ReBORN - 15. Settings: Use custom theme settings', true], // true: User can set own custom theme settings in the config file
 	themePerformance:                   ['Georgia-ReBORN - 15. Settings: Theme performance', 'balanced'], // 'balanced' - default: How the theme performs, either fast speed, balanced or good quality depending on CPU
 	devTools:                           ['Georgia-ReBORN - 15. Settings: Enable developer tools', false], // true: Show developer tools in options context menu
-	disableRightClick:                  ['Georgia-ReBORN - 15. Settings: Disable right-click', true], // true: Disables right-clicking on the background from bringing up the SMP context menu
 
 	// * System
 	asyncThemePreloader:                ['Georgia-ReBORN - 16. System: Asynchronously theme preloader', true], // Loads individual theme files asynchronously at startup to reduce risk of SMP throwing slow script error on startup
@@ -1391,7 +1390,6 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'waveformBarAutoDelete', grCfg.themeSettings, 'waveformBarAutoDelete', false);
 		this._setSetting(grSet, 'themePerformance', grCfg.themeSettings, 'themePerformance', 'balanced');
 		this._setSetting(grSet, 'devTools', grCfg.themeSettings, 'devTools', false);
-		this._setSetting(grSet, 'disableRightClick', grCfg.themeSettings, 'disableRightClick', true);
 	}
 
 	/**

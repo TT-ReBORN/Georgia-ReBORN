@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-06-2024                                              * //
+// * Last change:    10-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3517,10 +3517,7 @@ class TopMenuOptions {
 		});
 
 		settingsMenu.addSeparator();
-		settingsMenu.addToggleItem('Developer tools', grSet, 'devTools', () => { grSet.disableRightClick = !grSet.devTools; });
-		settingsMenu.addSeparator();
-		settingsMenu.addToggleItem('Disable right-click', grSet, 'disableRightClick');
-
+		settingsMenu.addToggleItem('Developer tools', grSet, 'devTools');
 		settingsMenu.appendTo(menu);
 	}
 
@@ -3676,6 +3673,7 @@ class TopMenuOptions {
 			if (grm.ui.showPlaylistTraceListPerf) fb.RunMainMenuCommand('View/Console');
 		});
 		debugMenu.addSeparator();
+		debugMenu.addToggleItem('Show panel context menu', grCfg.settings, 'showPanelContextMenu');
 		debugMenu.addItem('Show panel properties', false, () => { window.ShowProperties(); });
 		debugMenu.addSeparator();
 		debugMenu.addItem('Set system first launch to true', false, () => { // Used when creating new config files
@@ -3686,7 +3684,6 @@ class TopMenuOptions {
 				plSet.show_scrollbar = false;
 				grSet.showTopMenuCompact = true;
 				grSet.devTools = false;
-				grSet.disableRightClick = true;
 				console.log('\n>>> Georgia-ReBORN has been set to system first launch <<<\n\n');
 			});
 		});
