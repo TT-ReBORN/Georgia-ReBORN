@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-02-2024                                              * //
+// * Last change:    11-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -792,63 +792,53 @@ class Color {
 		if (typeof value == 'undefined') {
 			return this;
 		}
-		switch (true) {
-			case isFinite(value): {
-				const a = ((value & 0xff000000) >> 24) & 0xff;
-				this._alpha = a || 255;
-				this.decimal(value & 0xffffff);
-				this.output = Color.INT;
-				this.broadcast(Color.Events.PARSED);
-				return this;
-			}
-			case (value instanceof Color):
-				this.copy(value);
-				this.broadcast(Color.Events.PARSED);
-				return this;
-		default:
-			switch (typeof value) {
-			case 'object':
-				this.set(value);
-				this.broadcast(Color.Events.PARSED);
-				return this;
-			case 'string':
-				switch (true) {
-				case this.isHex.test(value): {
-					let stripped = value.replace(this.leadHex, '');
-					if (stripped.length === 3) {
+
+		if (isFinite(value)) {
+			const a = ((value & 0xff000000) >> 24) & 0xff;
+			this._alpha = a || 255;
+			this.decimal(value & 0xffffff);
+			this.output = Color.INT;
+			this.broadcast(Color.Events.PARSED);
+		}
+		else if (value instanceof Color) {
+			this.copy(value);
+			this.broadcast(Color.Events.PARSED);
+		}
+		else if (typeof value === 'object') {
+			this.set(value);
+			this.broadcast(Color.Events.PARSED);
+		}
+		else if (typeof value === 'string') {
+			if (this.isHex.test(value)) {
+				let stripped = value.replace(this.leadHex, '');
+				if (stripped.length === 3) {
 					stripped = stripped.replace(this.hexBit, '$1$1');
-					}
-					this.decimal(parseInt(stripped, 16));
-					this.broadcast(Color.Events.PARSED);
-					return this;
 				}
-				case this.isRGB.test(value): {
-					const partsRGB = value.match(this.matchRGB);
-					this.red(this._perToVal(partsRGB[1]));
-					this.green(this._perToVal(partsRGB[2]));
-					this.blue(this._perToVal(partsRGB[3]));
-					let alphaRGB = parseFloat(partsRGB[5]);
-					if (isNaN(alphaRGB)) alphaRGB = 1;
-					this.alpha(alphaRGB);
-					this.output = (this.isPercent.test(partsRGB[1]) ? 2 : 1) + (partsRGB[5] ? 2 : 0);
-					this.broadcast(Color.Events.PARSED);
-					return this;
-				}
-				case this.isHSL.test(value): {
-					const partsHSL = value.match(this.matchHSL);
-					this.hue = parseInt(partsHSL[1]);
-					this.saturation = parseInt(partsHSL[2]);
-					this.lightness = parseInt(partsHSL[3]);
-					let alphaHSL = parseFloat(partsHSL[5]);
-					if (isNaN(alphaHSL)) alphaHSL = 1;
-					this.alpha(alphaHSL);
-					this.output = partsHSL[5] ? 6 : 5;
-					this.broadcast(Color.Events.PARSED);
-					return this;
-				}
-				}
+				this.decimal(parseInt(stripped, 16));
+				this.broadcast(Color.Events.PARSED);
+			}
+			else if (this.isRGB.test(value)) {
+				const partsRGB = value.match(this.matchRGB);
+				this.red(this._perToVal(partsRGB[1]));
+				this.green(this._perToVal(partsRGB[2]));
+				this.blue(this._perToVal(partsRGB[3]));
+				const alphaRGB = parseFloat(partsRGB[5]);
+				this.alpha(isNaN(alphaRGB) ? 1 : alphaRGB);
+				this.output = (this.isPercent.test(partsRGB[1]) ? 2 : 1) + (partsRGB[5] ? 2 : 0);
+				this.broadcast(Color.Events.PARSED);
+			}
+			else if (this.isHSL.test(value)) {
+				const partsHSL = value.match(this.matchHSL);
+				this.hue = parseInt(partsHSL[1]);
+				this.saturation = parseInt(partsHSL[2]);
+				this.lightness = parseInt(partsHSL[3]);
+				const alphaHSL = parseFloat(partsHSL[5]);
+				this.alpha(isNaN(alphaHSL) ? 1 : alphaHSL);
+				this.output = partsHSL[5] ? 6 : 5;
+				this.broadcast(Color.Events.PARSED);
 			}
 		}
+
 		return this;
 	}
 

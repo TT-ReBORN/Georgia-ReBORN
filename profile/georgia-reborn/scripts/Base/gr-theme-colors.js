@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-06-2024                                              * //
+// * Last change:    11-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4244,7 +4244,7 @@ class ThemeColors {
 		// * REBORN/RANDOM/STYLE REBORN WHITE/BLACK/FUSION * //
 		///////////////////////////////////////////////////////
 		// * Dynamically adjust background colors, lines, transport buttons, progress/volume bar, gradient and shadow
-		if ((this.THEME === 'reborn' || this.THEME === 'random') && fb.IsPlaying && grm.ui.loadingThemeComplete && !grm.ui.isStreaming && !grm.ui.isPlayingCD && !grm.ui.noAlbumArtStub) {
+		if ((this.THEME === 'reborn' || this.THEME === 'random') && fb.IsPlaying && !grm.ui.isStreaming && !grm.ui.isPlayingCD && !grm.ui.noAlbumArtStub) {
 			const primary = this.RF2 ? grCol.primary_alt : grCol.primary;
 			const primary_alt = this.RF ? grCol.primary_alt : grCol.primary;
 
@@ -4424,16 +4424,13 @@ class ThemeColors {
 				grCol.bg = this.RB ? RGB(0, 0, 0) : bevel ? RGB(255, 255, 255) : RGB(245, 245, 245);
 				grCol.detailsBg = pl.col.bg;
 
-				if (this.BR || this.RW || this.RB) {
-					grCol.transportEllipseBg = grCol.lightAccent_100;
-					grCol.transportEllipseNormal = ShadeColor(grCol.lightAccent_7, 10);
-				}
-
 				if (!this.RB) {
 					// * LOWER BAR TRANSPORT BUTTON COLORS * //
 					grCol.transportEllipseBg =
 						(this.BLEND || this.BLEND2) && fb.IsPlaying ? RGB(230, 230, 230) :
 						this.BEVEL ? RGB(240, 240, 240) : RGB(255, 255, 255);
+
+					grCol.transportEllipseNormal = ShadeColor(grCol.lightAccent_7, 10);
 
 					// * PROGRESS BAR COLORS * //
 					grCol.progressBar =
