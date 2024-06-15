@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-06-2024                                              * //
+// * Last change:    15-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1677,10 +1677,10 @@ class TopMenuOptions {
 		const playerControlsSeekBarMenu = new Menu('Seekbar');
 		playerControlsSeekBarMenu.createRadioSubMenu('Type', ['Progress bar', 'Peakmeter bar', 'Waveform bar'], grSet.seekbar, ['progressbar', 'peakmeterbar', 'waveformbar'], (type) => {
 			grSet.seekbar = type;
-			if (grSet.seekbar === 'waveformbar') {
-				grm.waveBar.updateBar();
-			}
-			grm.ui.setProgressBarRefresh();
+			grm.ui.initMetrics();
+			grm.ui.setMainComponentSize('seekbar');
+			grm.ui.setSeekbarRefresh();
+			if (grSet.seekbar === 'waveformbar') grm.waveBar.updateBar();
 			RepaintWindow();
 		});
 		const playerControlsProgressBarMenu = new Menu('Progress bar');
@@ -1694,7 +1694,7 @@ class TopMenuOptions {
 		});
 		playerControlsProgressBarMenu.createRadioSubMenu('Refresh rate', ['1000 ms (very slow CPU)', '  500 ms', '  333 ms', '  Variable (default)', '  100 ms', '    60 ms', '    30 ms (very fast CPU)'], grSet.progressBarRefreshRate, [1000, 500, 333, 'variable', 100, 60, 30], (rate) => {
 			grSet.progressBarRefreshRate = rate;
-			grm.ui.setProgressBarRefresh();
+			grm.ui.setSeekbarRefresh();
 		}, !grSet.showProgressBar_default || !grSet.showProgressBar_artwork || !grSet.showProgressBar_compact);
 		playerControlsProgressBarMenu.appendTo(playerControlsSeekBarMenu);
 
@@ -1740,7 +1740,7 @@ class TopMenuOptions {
 		playerControlspeakmeterBarDisplayMenu.appendTo(playerControlspeakmeterBarMenu);
 		playerControlspeakmeterBarMenu.createRadioSubMenu('Refresh rate', ['  200 ms (very slow CPU)', '  150 ms', '  120 ms', '  100 ms', '    80 ms (default)', '    60 ms', '    30 ms (very fast CPU)'], grSet.peakmeterBarRefreshRate, [200, 150, 120, 100, 80, 60, 30], (rate) => {
 			grSet.peakmeterBarRefreshRate = rate;
-			grm.ui.setProgressBarRefresh();
+			grm.ui.setSeekbarRefresh();
 		}, !grSet.showPeakmeterBar_default || !grSet.showPeakmeterBar_artwork || !grSet.showPeakmeterBar_compact);
 		playerControlspeakmeterBarMenu.appendTo(playerControlsSeekBarMenu);
 

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-06-2024                                              * //
+// * Last change:    15-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -220,7 +220,7 @@ class ThemeColors {
 			}
 		};
 
-		this.initThemePrefVals();
+		this.initThemeSetVals();
 	}
 
 	// * PUBLIC METHODS - WHITE THEME * //
@@ -3686,7 +3686,7 @@ class ThemeColors {
 
 		// * MAIN COLORS * //
 		grCol.bg = this.BEVEL ? darkerBg ? RGB(25, 25, 25) : RGB(50, 50, 50) : darkerBg ? RGB(0, 0, 0) : RGB(25, 25, 25);
-		grCol.loadingThemeBg = nighttime ? RGB(25, 25, 25) : grCol.bg;
+		grCol.loadingThemeBg = nighttime || this.BW2 ? RGB(25, 25, 25) : grCol.bg;
 		grCol.uiHacksFrame = grCol.bg;
 		grCol.shadow = grm.ui.isPlayingCD ? RGBA(0, 0, 0, 30) : grCol.shadow;
 		grCol.noAlbumArtStub = nighttime ? RGB(240, 240, 240) : RGB(40, 40, 40);
@@ -3883,7 +3883,7 @@ class ThemeColors {
 	/**
 	 * Initializes current values for all theme grSet.properties.
 	 */
-	initThemePrefVals() {
+	initThemeSetVals() {
 		/** @private Options > Theme. */
 		this.THEME  = grSet.theme;
 		/** @private Options > Theme > Custom. */
@@ -4518,7 +4518,7 @@ class StyleColors {
 	 * Creates the `StyleColors` instance and initializes theme preference values.
 	 */
 	constructor() {
-		this.initThemePrefVals();
+		this.initThemeSetVals();
 	}
 
 	// * PUBLIC METHODS - STYLE NIGHTTIME * //
@@ -5317,7 +5317,7 @@ class StyleColors {
 	/**
 	 * Initializes current values for all theme grSet.properties.
 	 */
-	initThemePrefVals() {
+	initThemeSetVals() {
 		/** @private Options > Theme. */
 		this.THEME  = grSet.theme;
 		/** @private Options > Theme > Custom. */
@@ -5414,15 +5414,13 @@ class StyleColors {
 	 * Init style Black And White Reborn, dynamically change between style Black and white 1 and 2.
 	 */
 	initBlackAndWhiteReborn() {
-		grm.color.setImageBrightness();
-
 		if (grCol.imgBrightness > 150) {
-			this.BW2 = true; // White background
-			this.BW = false;
+			this.BW2 = grSet.styleBlackAndWhite2 = true; // White background
+			this.BW = grSet.styleBlackAndWhite = false;
 		}
 		else {
-			this.BW = true; // Black background
-			this.BW2 = false;
+			this.BW = grSet.styleBlackAndWhite = true; // Black background
+			this.BW2 = grSet.styleBlackAndWhite2 = false;
 		}
 	}
 	// #endregion
@@ -5865,12 +5863,12 @@ class ColorMethods {
 
 		// * STANDARD THEMES * //
 		if (standardThemes) {
-			const lightBrightness = (grCol.colBrightness > 150) && (!grSet.styleBlend && !grSet.styleBlend2 && !grSet.styleRandomDark);
+			const lightBrightness = (primaryBrightness > 150) && (!grSet.styleBlend && !grSet.styleBlend2 && !grSet.styleRandomDark);
 
 			const lightBlend =
-				(grCol.colBrightness + grCol.imgBrightness > 285) && (grSet.styleBlend || grSet.styleBlend2)
+				(primaryBrightness + grCol.imgBrightness > 285) && (grSet.styleBlend || grSet.styleBlend2)
 				&&
-				(grCol.colBrightness > 150 && (grSet.theme === 'white' || grSet.theme === 'black') || grSet.theme === 'reborn' || grSet.theme === 'random' && !grSet.styleRandomDark);
+				(primaryBrightness > 150 && (grSet.theme === 'white' || grSet.theme === 'black') || grSet.theme === 'reborn' || grSet.theme === 'random' && !grSet.styleRandomDark);
 
 			const noAlbumArt = grm.ui.noAlbumArtStub && (grSet.theme === 'white' && !grSet.styleBlackAndWhite || grSet.theme === 'reborn' || grSet.theme === 'random');
 
@@ -5881,23 +5879,25 @@ class ColorMethods {
 		if (!(grSet.styleGradient || grSet.styleGradient2 || grSet.styleRebornFusion || grSet.styleRebornFusion2 || customThemes)) {
 			return;
 		}
+		else if (grSet.theme === 'reborn' || grSet.theme === 'random') {
+			grCol.styleGradient = grCol.darkAccent;
+			grCol.styleGradient2 = grCol.darkAccent;
+		}
 
-		const gradientBrightness  = (new Color(RGBAtoRGB(grCol.styleGradient)).brightness  * 0.5);
-		const gradient2Brightness = (new Color(RGBAtoRGB(grCol.styleGradient2)).brightness * 0.5);
-		const colBrightnessGrad   = colBrightness - gradientBrightness;
-		const colBrightnessGrad2  = colBrightness - gradient2Brightness;
-
-		const mainBgColor      = grSet.styleGradient ? colBrightnessGrad : grSet.styleGradient2 ? colBrightnessGrad2 :
-								 new Color(grSet.styleRebornFusion2 ? primaryBrightness    : (customThemes ? HEXtoRGB(grCfg.cTheme.grCol_bg)        : primaryBrightnessAlt)).brightness;
-		const playlistBgColor  = new Color(grSet.styleRebornFusion2 ? primaryBrightnessAlt : (customThemes ? HEXtoRGB(grCfg.cTheme.pl_col_bg)       : primaryBrightness)).brightness;
-		const detailsBgColor   = new Color(grSet.styleRebornFusion2 ? primaryBrightnessAlt : (customThemes ? HEXtoRGB(grCfg.cTheme.grCol_detailsBg) : primaryBrightness)).brightness;
-		const libraryBgColor   = new Color(grSet.styleRebornFusion2 ? primaryBrightnessAlt : (customThemes ? HEXtoRGB(grCfg.cTheme.lib_ui_col_bg)   : primaryBrightness)).brightness;
-		const biographyBgColor = new Color(grSet.styleRebornFusion2 ? primaryBrightnessAlt : (customThemes ? HEXtoRGB(grCfg.cTheme.bio_ui_col_bg)   : primaryBrightness)).brightness;
-
+		const gradientBRT = (color) => new Color(RGBAtoRGB(color)).brightness;
+		const cThemeBRT = (color) => new Color(HEXtoRGB(color)).brightness;
 		const isLightBg = (color) =>
 			color + grCol.imgBrightness > 285 && (grSet.styleBlend || grSet.styleBlend2)
 			||
 			color > 150 && (!grSet.styleBlend && !grSet.styleBlend2 || grSet.styleBlend2 && grSet.styleRebornFusion2);
+
+		const mainBgColor      = grSet.styleGradient      ? colBrightness - (gradientBRT(grCol.styleGradient) * 0.5) :
+								 grSet.styleGradient2     ? colBrightness - (gradientBRT(grCol.styleGradient2) * 0.5) :
+								 grSet.styleRebornFusion2 ? primaryBrightness    : customThemes ? cThemeBRT(grCfg.cTheme.grCol_bg)        : primaryBrightnessAlt;
+		const playlistBgColor  = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.pl_col_bg)       : primaryBrightness;
+		const detailsBgColor   = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.grCol_detailsBg) : primaryBrightness;
+		const libraryBgColor   = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.lib_ui_col_bg)   : primaryBrightness;
+		const biographyBgColor = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.bio_ui_col_bg)   : primaryBrightness;
 
 		grCol.lightBgMain      = isLightBg(mainBgColor);
 		grCol.lightBgPlaylist  = isLightBg(playlistBgColor);

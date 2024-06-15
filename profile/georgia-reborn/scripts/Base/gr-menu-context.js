@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-03-2024                                              * //
+// * Last change:    15-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1516,7 +1516,8 @@ class ContextMenus {
 			cm.appendItem(type[0], () => {
 				grSet.seekbar = type[1];
 				grm.ui.initMetrics();
-				grm.ui.setProgressBarRefresh();
+				grm.ui.setMainComponentSize('seekbar');
+				grm.ui.setSeekbarRefresh();
 				if (grSet.seekbar === 'waveformbar') grm.waveBar.updateBar();
 				RepaintWindow();
 			}, { is_radio_checked: type[1] === grSet.seekbar });
@@ -1550,7 +1551,7 @@ class ContextMenus {
 			for (const rate of progressBarRefresh) {
 				progressBarRefreshMenu.appendItem(rate[0], () => {
 					grSet.progressBarRefreshRate = rate[1];
-					grm.ui.setProgressBarRefresh();
+					grm.ui.setSeekbarRefresh();
 				}, { is_radio_checked: rate[1] === grSet.progressBarRefreshRate });
 			}
 			cm.append(progressBarRefreshMenu);
@@ -1665,7 +1666,7 @@ class ContextMenus {
 			for (const rate of peakmeterBarRefresh) {
 				peakmeterBarRefreshMenu.appendItem(rate[0], () => {
 					grSet.peakmeterBarRefreshRate = rate[1];
-					grm.ui.setProgressBarRefresh();
+					grm.ui.setSeekbarRefresh();
 				}, { is_radio_checked: rate[1] === grSet.peakmeterBarRefreshRate });
 			}
 			cm.append(peakmeterBarRefreshMenu);

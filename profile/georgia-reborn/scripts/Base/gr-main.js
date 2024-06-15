@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    31-05-2024                                              * //
+// * Last change:    15-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -194,7 +194,7 @@ class MainUI {
 		/** @public @type {string} Displays the active playlist of the current playing track in the metadata grid in Details. */
 		this.playingPlaylist = '';
 		/** @public @type {number} Saves last playback order. */
-		this.lastPlaybackOrder = 0;
+		this.lastPlaybackOrder = fb.PlaybackOrder;
 		/** @public @type {boolean} Saves active full width lyrics layout via grSet.lyricsLayout. */
 		this.lyricsLayoutFullWidth = false;
 		/** @public @type {boolean} Is the song from a streaming source? */
@@ -245,10 +245,10 @@ class MainUI {
 		this.autoDownloadLyricsTimer = null;
 		/** @public @type {number} The setTimeout ID for hiding cursor. */
 		this.hideCursorTimeout = null;
-		/** @public @type {number} The timer of progress bar. */
-		this.progressBarTimer = null;
-		/** @public @type {number} The timer interval between progress bar updates. */
-		this.progressBarTimerInterval = null;
+		/** @public @type {number} The timer of seekbar. */
+		this.seekbarTimer = null;
+		/** @public @type {number} The timer interval between seekbar updates. */
+		this.seekbarTimerInterval = null;
 		/** @public @type {number} The timer for style auto random preset. */
 		this.presetAutoRandomModeTimer = null;
 		/** @public @type {number} The timer for theme preset indicator. */
@@ -1783,6 +1783,16 @@ class MainUI {
 	// * MAIN - PUBLIC METHODS - INITIALIZATION * //
 	// #region PUBLIC METHODS - INITIALIZATION
 	/**
+	 * Initializes auto deletion of theme cache on startup.
+	 */
+	initCacheDeletion() {
+		if (grSet.libraryAutoDelete) DeleteLibraryCache();
+		if (grSet.biographyAutoDelete) DeleteBiographyCache();
+		if (grSet.lyricsAutoDelete) DeleteLyrics();
+		if (grSet.waveformBarAutoDelete) DeleteWaveformBarCache();
+	}
+
+	/**
 	 * Initializes all needed fonts for the theme and displays error messages if fonts are missing.
 	 * @returns {boolean} True if all fonts are installed, otherwise false.
 	 */
@@ -1868,44 +1878,24 @@ class MainUI {
 	 * Initializes the theme on startup or reload.
 	 */
 	initMain() {
-		// * Init variables
+		// * Init state
 		console.log('initMain()');
 		this.loadingTheme = true;
-		this.clearUIVariables();
 		this.ww = window.Width;
 		this.wh = window.Height;
-
-		// * Layout safety check
-		if (!['default', 'artwork', 'compact'].includes(grSet.layout)) {
-			window.SetProperty('Georgia-ReBORN - 05. Layout', 'default');
-			grSet.layout = 'default';
-			grm.display.layoutDefault();
-		}
-
-		// * Do auto-delete cache if enabled
-		if (grSet.libraryAutoDelete) DeleteLibraryCache();
-		if (grSet.biographyAutoDelete) DeleteBiographyCache();
-		if (grSet.lyricsAutoDelete) DeleteLyrics();
-		if (grSet.waveformBarAutoDelete) DeleteWaveformBarCache();
-
-		this.lastAlbumFolder = '';
-		this.lastPlaybackOrder = fb.PlaybackOrder;
-		this.displayPanelControl(true);
-		grm.color.setThemeColors();
-		this.themeColorSet = true;
+		this.clearUIVariables();
+		this.initCacheDeletion();
 
 		on_size();
-		this.initMetrics();
 
 		if (fb.IsPlaying && fb.GetNowPlaying()) {
 			on_playback_new_track(fb.GetNowPlaying());
 		}
-
-		// * Workaround so we can use the Edit menu or run fb.RunMainMenuCommand("Edit/Something...")
-		// * when the panel has focus and a dedicated playlist viewer doesn't.
-		plman.SetActivePlaylistContext(); // Once on startup
+		plman.SetActivePlaylistContext();
 
 		// * Init panels
+		this.displayPanelControl(true);
+
 		if (!lib.initialized) {
 			this.initLibraryPanel();
 			this.setLibrarySize();
@@ -1917,9 +1907,6 @@ class MainUI {
 		if (!bio.initialized) {
 			this.initBiographyPanel();
 			this.setBiographySize();
-		}
-		if (grSet.panelWidthAuto) {
-			this.initPanelWidthAuto();
 		}
 
 		if (grSet.lyricsRememberPanelState) {
@@ -1933,15 +1920,18 @@ class MainUI {
 			this.displayLyricsOnStart();
 		}
 
+		if (grSet.panelWidthAuto) {
+			this.initPanelWidthAuto();
+		}
+
 		// * Init colors
+		grm.color.setThemeColors();
+		if (grSet.theme.startsWith('custom')) this.initCustomTheme();
+		grm.theme.initMainColors(); // Preloader background color
 		if (grSet.theme === 'random' && grSet.randomThemeAutoColor !== 'off') {
 			grm.color.getRandomThemeAutoColor();
 		}
-
-		this.initThemeFull = true;
-		if (grSet.theme.startsWith('custom')) this.initCustomTheme();
-		this.initTheme();
-		DebugLog('\n>>> initTheme => initMain <<<\n');
+		this.themeColorSet = true;
 		this.loadingTheme = false;
 
 		// * Restore backup workaround to successfully restore playlist files after foobar installation
@@ -1953,8 +1943,11 @@ class MainUI {
 
 		// * Hide loading screen
 		setTimeout(() => {
+			this.initThemeFull = true;
+			this.initTheme();
 			this.loadingThemeComplete = true;
 			window.Repaint();
+			DebugLog('\n>>> initTheme => initMain <<<\n');
 		}, 100);
 	}
 
@@ -2068,10 +2061,6 @@ class MainUI {
 			||
 			grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn;
 
-		// * INIT THEME PREFERENCES VALUES * //
-		grm.theme.initThemePrefVals();
-		grm.style.initThemePrefVals();
-
 		// * SETUP COLORS * //
 		grm.color.setImageBrightness();
 		if (grSet.styleBlackAndWhiteReborn) {
@@ -2083,7 +2072,7 @@ class MainUI {
 		if (this.noAlbumArtStub || this.isStreaming || this.isPlayingCD) {
 			grm.color.setNoAlbumArtColors();
 		}
-		if ((grSet.styleBlend || grSet.styleBlend2 || grSet.styleProgressBarFill === 'blend') && this.albumArt) {
+		if (this.albumArt && (grSet.styleBlend || grSet.styleBlend2 || grSet.styleProgressBarFill === 'blend')) {
 			grm.color.setStyleBlend();
 		}
 		if (grSet.themeDayNightMode && !grSet.themeSetupDay && !grSet.themeSetupNight) {
@@ -2092,11 +2081,13 @@ class MainUI {
 		grm.color.setBackgroundColorDefinition();
 
 		// * INIT COLORS * //
+		grm.theme.initThemeSetVals();
 		grm.theme.initPlaylistColors();
 		grm.theme.initLibraryColors();
 		grm.theme.initBiographyColors();
 		grm.theme.initMainColors();
 		grm.theme.initChronflowColors();
+		grm.style.initThemeSetVals();
 		grm.style.initStyleColors();
 
 		// * POST-INIT COLOR ADJUSTMENTS * //
@@ -2231,17 +2222,17 @@ class MainUI {
 			DebugLog('\n>>> initThemeTags restore <<<\n');
 			this.resetStyle('all');
 			this.resetTheme();
-			this.restoreThemeStylePreset(); // * Retore saved pref settings
+			this.restoreThemeStylePreset(); // * Retore saved grSet settings
 			if (grSet.savedPreset !== false) grm.preset.setThemePreset(grSet.savedPreset);
 			if (grSet.theme.startsWith('custom')) this.initCustomTheme();
 			this.initStyleState();
 			this.themeRestoreState = false;
 		}
 
-		// * Skip also restore on next call
+		// * Skip restore also on next call
 		if (grSet.theme === grSet.savedTheme && !customTheme && !customStyle && !customPreset) {
 			DebugLog('\n>>> initThemeTags skipped <<<\n');
-			this.restoreThemeStylePreset(true); // * Reset saved pref settings
+			this.restoreThemeStylePreset(true); // * Reset saved grSet settings
 			this.themeRestoreState = false;
 			return;
 		}
@@ -2334,6 +2325,41 @@ class MainUI {
 		];
 
 		grSet.styleDefault = !styles.some(style => style);
+	}
+
+	/**
+	 * Sets and updates main component size.
+	 * @param {string} component - The component to update its size.
+	 */
+	setMainComponentSize(component) {
+		const customMenu = () => {
+			grm.cusMenu.on_size(grm.ui.ww, grm.ui.wh);
+		};
+
+		const jSearch = () => {
+			grm.jSearch.on_size(grm.ui.ww, grm.ui.wh);
+		};
+
+		const seekbar = () => {
+			if (grSet.seekbar === 'progressbar') {
+				grm.progBar.on_size(grm.ui.ww, grm.ui.wh);
+			} else if (grSet.seekbar === 'peakmeterbar') {
+				grm.peakBar.on_size(grm.ui.ww, grm.ui.wh);
+			} else if (grSet.seekbar === 'waveformbar') {
+				grm.waveBar.on_size(grm.ui.ww, grm.ui.wh);
+			}
+		};
+
+		if (component === 'all') {
+			customMenu();
+			jSearch();
+			seekbar();
+			return;
+		}
+
+		if (component === 'seekbar') {
+			seekbar();
+		}
 	}
 
 	/**
@@ -2471,7 +2497,7 @@ class MainUI {
 
 		if (grSet.seekbar === 'waveformbar') return;
 
-		// * Progress bar
+		// * Progress bar and Peakmeter bar
 		const x = grSet.layout !== 'default' ? SCALE(18) : SCALE(38);
 		const y = (grSet.seekbar === 'peakmeterbar' ? this.peakmeterBarY - SCALE(4) : this.progressBarY) - SCALE(2);
 		const w = grSet.layout !== 'default' ? this.ww - SCALE(36) : this.ww - SCALE(76);
@@ -2480,32 +2506,32 @@ class MainUI {
 	}
 
 	/**
-	 * Sets a given timer interval to update the progress bar.
+	 * Sets a given timer interval to update the seekbar.
 	 */
-	setProgressBarRefresh() {
-		DebugLog('setProgressBarRefresh()');
+	setSeekbarRefresh() {
+		DebugLog('setSeekbarRefresh()');
 
 		if (fb.PlaybackLength > 0) {
 			const variableRefreshRate = Math.max(60, Math.ceil(1000 / ((this.ww - SCALE(80)) / fb.PlaybackLength)));
 			const selectedRefreshRate = grSet.seekbar === 'peakmeterbar' ? grSet.peakmeterBarRefreshRate : grSet.progressBarRefreshRate;
-			this.progressBarTimerInterval = selectedRefreshRate === 'variable' ? variableRefreshRate : selectedRefreshRate;
+			this.seekbarTimerInterval = selectedRefreshRate === 'variable' ? variableRefreshRate : selectedRefreshRate;
 
 			if (selectedRefreshRate === 'variable') {
-				while (this.progressBarTimerInterval > 500) {
-					this.progressBarTimerInterval = Math.floor(this.progressBarTimerInterval / 2);
+				while (this.seekbarTimerInterval > 500) {
+					this.seekbarTimerInterval = Math.floor(this.seekbarTimerInterval / 2);
 				}
 			}
 		} else {
-			this.progressBarTimerInterval = 1000; // Radio streaming
+			this.seekbarTimerInterval = 1000; // Radio streaming
 		}
 
 		if (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) {
-			this.debugTimingsArray.push(`Progress bar: ${this.progressBarTimerInterval} ms or ${(1000 / this.progressBarTimerInterval).toFixed(2)} Hz`);
-			console.log(`Progress bar will update every ${this.progressBarTimerInterval}ms or ${(1000 / this.progressBarTimerInterval).toFixed(2)} times per second.`);
+			this.debugTimingsArray.push(`Progress bar: ${this.seekbarTimerInterval} ms or ${(1000 / this.seekbarTimerInterval).toFixed(2)} Hz`);
+			console.log(`Progress bar will update every ${this.seekbarTimerInterval}ms or ${(1000 / this.seekbarTimerInterval).toFixed(2)} times per second.`);
 		}
 
-		clearInterval(this.progressBarTimer);
-		this.progressBarTimer = !fb.IsPaused ? setInterval(() => this.refreshSeekbar(), this.progressBarTimerInterval) : null;
+		clearInterval(this.seekbarTimer);
+		this.seekbarTimer = !fb.IsPaused ? setInterval(() => this.refreshSeekbar(), this.seekbarTimerInterval) : null;
 	}
 
 	/**

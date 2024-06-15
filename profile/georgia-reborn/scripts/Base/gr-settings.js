@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-06-2024                                              * //
+// * Last change:    15-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1405,7 +1405,7 @@ class ThemeSettingsManager {
 	 * Sets variable imgBlended when switching from default settings to config settings that has style Blend or Blend2 activated.
 	 */
 	setStyleBlend() {
-		if ((grSet.styleBlend || grSet.styleBlend2 || grSet.styleProgressBarFill === 'blend') && grm.ui.albumArt) {
+		if (grm.ui.albumArt && (grSet.styleBlend || grSet.styleBlend2 || grSet.styleProgressBarFill === 'blend')) {
 			grm.color.setStyleBlend();
 		}
 	}

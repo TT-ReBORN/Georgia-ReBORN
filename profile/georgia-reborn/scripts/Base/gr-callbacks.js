@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-06-2024                                              * //
+// * Last change:    15-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -193,7 +193,7 @@ function on_playback_new_track(metadb) {
 	grm.gridTip = new MetadataGridTooltip(grm.ui.gridTooltipHeight);
 	grm.lowerTip = new LowerBarTooltip();
 
-	grm.ui.setProgressBarRefresh();
+	grm.ui.setSeekbarRefresh();
 
 	if (grm.ui.albumArtTimeout) {
 		clearTimeout(grm.ui.albumArtTimeout);
@@ -313,16 +313,11 @@ function on_size() {
 		}
 	}
 
-	grm.cusMenu && grm.cusMenu.on_size(grm.ui.ww, grm.ui.wh);
-	grm.jSearch && grm.jSearch.on_size(grm.ui.ww, grm.ui.wh);
-	grm.progBar && grm.progBar.on_size(grm.ui.ww, grm.ui.wh);
-	grm.peakBar && grm.peakBar.on_size(grm.ui.ww, grm.ui.wh);
-	grm.waveBar && grm.waveBar.on_size(grm.ui.ww, grm.ui.wh);
-
 	grm.ui.lastLeftEdge = 0;
-
 	grm.ui.resizeArtwork(true);
 	grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
+	grm.ui.setMainComponentSize('all');
+
 	pl.call.on_size(grm.ui.ww, grm.ui.wh);
 	grm.ui.setLibrarySize();
 	grm.ui.setBiographySize();
@@ -1346,16 +1341,16 @@ function on_playback_order_changed(pbo) {
 function on_playback_pause(state) {
 	grm.button.lowerPlayPause();
 	if (state || fb.PlaybackLength < 0) {
-		clearInterval(grm.ui.progressBarTimer);
+		clearInterval(grm.ui.seekbarTimer);
 		clearInterval(grm.ui.discArtRotationTimer);
 		window.RepaintRect(0, grm.ui.topMenuHeight, Math.max(grm.ui.albumArtSize.x, SCALE(40)), grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight);
 	}
 	else { // Unpausing
-		clearInterval(grm.ui.progressBarTimer); // Clear to avoid multiple progressTimers which can happen depending on the playback state when theme is loaded
-		DebugLog(`on_playback_pause: creating refreshSeekbar() interval with delay = ${grm.ui.progressBarTimerInterval}`);
-		grm.ui.progressBarTimer = setInterval(() => {
+		clearInterval(grm.ui.seekbarTimer); // Clear to avoid multiple progressTimers which can happen depending on the playback state when theme is loaded
+		DebugLog(`on_playback_pause: creating refreshSeekbar() interval with delay = ${grm.ui.seekbarTimerInterval}`);
+		grm.ui.seekbarTimer = setInterval(() => {
 			grm.ui.refreshSeekbar();
-		}, grm.ui.progressBarTimerInterval || 1000);
+		}, grm.ui.seekbarTimerInterval || 1000);
 		if (grm.ui.discArt && grSet.spinDiscArt) grm.ui.setDiscArtRotationTimer();
 	}
 
@@ -1468,7 +1463,7 @@ function on_playback_stop(reason) {
 	grm.waveBar.on_playback_stop(reason);
 
 	clearInterval(grm.ui.discArtRotationTimer);
-	clearInterval(grm.ui.progressBarTimer);
+	clearInterval(grm.ui.seekbarTimer);
 	clearTimeout(grm.ui.albumArtTimeout);
 
 	if (grm.ui.albumArt && ((grSet.cycleArt && grm.ui.albumArtIndex !== 0) || grm.ui.lastAlbumFolder === '')) {
