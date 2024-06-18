@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-05-2024                                              * //
+// * Last change:    18-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2189,6 +2189,43 @@ class ThemePreset {
 		grSet.styleAlternative2 = true;
 		grSet.styleTopMenuButtons = 'minimal';
 		grSet.styleTransportButtons = 'minimal';
+	}
+
+	/**
+	 * Custom theme preset -> Options > Preset > User preset > User settings.
+	 * @returns {void}
+	 */
+	user() {
+		grSet.theme = grCfg.customStylePreset.theme;
+		grSet.styleNighttime = grCfg.customStylePreset.nighttime;
+		grSet.styleBevel = grCfg.customStylePreset.bevel;
+		grSet.styleBlend = grCfg.customStylePreset.blend;
+		grSet.styleBlend2 = grCfg.customStylePreset.blend2;
+		grSet.styleGradient = grCfg.customStylePreset.gradient;
+		grSet.styleGradient2 = grCfg.customStylePreset.gradient2;
+		grSet.styleAlternative = grCfg.customStylePreset.alternative;
+		grSet.styleAlternative2 = grCfg.customStylePreset.alternative2;
+		grSet.styleBlackAndWhite = grCfg.customStylePreset.blackAndWhite;
+		grSet.styleBlackAndWhite2 = grCfg.customStylePreset.blackAndWhite2;
+		grSet.styleBlackAndWhiteReborn = grCfg.customStylePreset.blackAndWhiteReborn;
+		grSet.styleBlackReborn = grCfg.customStylePreset.blackReborn;
+		grSet.styleRebornWhite = grCfg.customStylePreset.rebornWhite;
+		grSet.styleRebornBlack = grCfg.customStylePreset.rebornBlack;
+		grSet.styleRebornFusion = grCfg.customStylePreset.rebornFusion;
+		grSet.styleRebornFusion2 = grCfg.customStylePreset.rebornFusion2;
+		grSet.styleRebornFusionAccent = grCfg.customStylePreset.rebornFusionAccent;
+		grSet.styleRandomPastel = grCfg.customStylePreset.randomPastel;
+		grSet.styleRandomDark = grCfg.customStylePreset.randomDark;
+		grSet.styleRandomAutoColor = grCfg.customStylePreset.randomAutoColor;
+		grSet.styleTopMenuButtons = grCfg.customStylePreset.topMenuButtons;
+		grSet.styleTransportButtons = grCfg.customStylePreset.transportButtons;
+		grSet.styleProgressBarDesign = grCfg.customStylePreset.progressBarDesign;
+		grSet.styleProgressBar = grCfg.customStylePreset.progressBar;
+		grSet.styleProgressBarFill = grCfg.customStylePreset.progressBarFill;
+		grSet.styleVolumeBarDesign = grCfg.customStylePreset.volumeBarDesign;
+		grSet.styleVolumeBar = grCfg.customStylePreset.volumeBar;
+		grSet.styleVolumeBarFill = grCfg.customStylePreset.volumeBarFill;
+		grSet.themeBrightness = grCfg.customStylePreset.themeBrightness;
 	}
 	// #endregion
 

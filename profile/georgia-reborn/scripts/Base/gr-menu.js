@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-06-2024                                              * //
+// * Last change:    18-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -232,14 +232,14 @@ class TopMenu {
 		grm.ui.state.mouse_x = x;
 		grm.ui.state.mouse_y = y;
 		const menu = new Menu();
-		const themeDayNightSetup = grSet.themeSetupDay || grSet.themeSetupNight;
+		const themeDayNightSandbox = grSet.themeSetupDay || grSet.themeSetupNight || grSet.themeSandbox;
 
 		if (!context_menu) {
 			grm.options.themeOptions(menu);
 			grm.options.styleOptions(menu);
 			grm.options.presetOptions(menu);
 
-			if (!themeDayNightSetup) {
+			if (!themeDayNightSandbox) {
 				grm.options.playerSizeOptions(menu);
 				grm.options.layoutOptions(menu);
 				grm.options.displayOptions(menu);
@@ -247,7 +247,7 @@ class TopMenu {
 
 			grm.options.brightnessOptions(menu);
 
-			if (!themeDayNightSetup) {
+			if (!themeDayNightSandbox) {
 				grm.options.fontSizeOptions(menu);
 				menu.addSeparator();
 				grm.options.playerControlsOptions(menu);
@@ -291,6 +291,40 @@ class TopMenu {
  * A class that provides the full collection of all menus in the `Options` top navigation menu.
  */
 class TopMenuOptions {
+	/**
+	 * Creates the `TopMenuOptions` instance.
+	 */
+	constructor() {
+		/**
+		 * Applies a given theme setting with or without theme sandbox mode.
+		 * If theme sandbox mode is off, the setting is saved and then applied.
+		 * If theme sandbox mode is on, the setting is applied without saving.
+		 * Triggers additional actions like showing a popup if theme day/night mode is active and sets the theme day/night style.
+		 * @param {string} setting - The name of the setting to be applied.
+		 * @param {boolean} value - The value to be set for the setting.
+		 * @private
+		 */
+		this.applyThemeSetting = (setting, value) => {
+			if (grSet.themeDayNightMode) {
+				initThemeDayNightMode(new Date());
+				ShowThemeDayNightModePopup();
+				if (grSet.themeDayNightMode) return;
+			}
+
+			if (setting) {
+				const savedSettingName = `saved${setting.charAt(0).toUpperCase()}${setting.slice(1)}`;
+				if (grSet.themeSandbox) {
+					grSet[setting] = value;
+				} else {
+					grm.ui.restoreThemeStylePreset(true, true);
+					grSet[savedSettingName] = grSet[setting] = value;
+				}
+			}
+
+			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
+		}
+	}
+
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
 	/**
@@ -302,9 +336,7 @@ class TopMenuOptions {
 		const themeMenu = new Menu('Theme');
 		themeMenu.addRadioItems(['White', 'Black', 'Reborn', 'Random', 'Blue', 'Dark blue', 'Red', 'Cream', 'Neon blue', 'Neon green', 'Neon red', 'Neon gold'], grSet.theme,
 			['white', 'black', 'reborn', 'random', 'blue', 'darkblue', 'red', 'cream', 'nblue', 'ngreen', 'nred', 'ngold'], theme => {
-			if (!grSet.themeSandbox) grSet.savedTheme = grSet.theme = theme; else grSet.theme = theme;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			this.applyThemeSetting('theme', theme);
 			grm.ui.resetTheme();
 			grm.ui.initTheme();
 			grm.ui.createDiscArtShadow();
@@ -328,9 +360,7 @@ class TopMenuOptions {
 		];
 
 		customThemeMenu.addRadioItems(customThemeName, grSet.theme, ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'], (theme) => {
-			if (!grSet.themeSandbox) grSet.savedTheme = grSet.theme = theme; else grSet.theme = theme;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			this.applyThemeSetting('theme', theme);
 			grm.ui.resetTheme();
 			grm.ui.initCustomTheme();
 			grm.ui.initTheme();
@@ -412,52 +442,34 @@ class TopMenuOptions {
 		styleMenu.addSeparator();
 		if (grSet.theme === 'reborn' || grSet.theme === 'random' || grSet.theme.startsWith('custom')) {
 			styleMenu.addToggleItem('Night', grSet, 'styleNighttime', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleNighttime = grSet.styleNighttime;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
-				if (grSet.styleRebornWhite) grSet.styleRebornWhite = false;
-				if (grSet.styleRebornBlack) grSet.styleRebornBlack = false;
+				grm.ui.setStyle('night', grSet.styleNighttime);
 				grm.ui.updateStyle();
 			});
 			styleMenu.addSeparator();
 		}
 		styleMenu.addToggleItem('Bevel', grSet, 'styleBevel', () => {
-			if (!grSet.themeSandbox) grSet.savedStyleBevel = grSet.styleBevel;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			grm.ui.setStyle('bevel', grSet.styleBevel);
 			grm.ui.updateStyle();
 		});
 		styleMenu.addSeparator();
 
 		// * STYLES - GROUP ONE * //
 		styleMenu.addToggleItem('Blend', grSet, 'styleBlend', () => {
-			if (!grSet.themeSandbox) grSet.savedStyleBlend = grSet.styleBlend;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 			grm.ui.setStyle('blend', grSet.styleBlend);
 			grm.ui.updateStyle();
 		});
 		styleMenu.addToggleItem('Blend 2', grSet, 'styleBlend2', () => {
-			if (!grSet.themeSandbox) grSet.savedStyleBlend2 = grSet.styleBlend2;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 			grm.ui.setStyle('blend2', grSet.styleBlend2);
 			grm.ui.updateStyle();
 		});
 		if (['reborn', 'random', 'blue', 'darkblue', 'red', 'custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(grSet.theme)) {
 			styleMenu.addToggleItem('Gradient', grSet, 'styleGradient', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleGradient = grSet.styleGradient;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 				grm.ui.setStyle('gradient', grSet.styleGradient);
 				grm.ui.updateStyle();
 			}, grSet.styleRebornWhite);
 		}
 		if (['reborn', 'random', 'blue', 'darkblue', 'red', 'custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(grSet.theme)) {
 			styleMenu.addToggleItem('Gradient 2', grSet, 'styleGradient2', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleGradient2 = grSet.styleGradient2;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 				grm.ui.setStyle('gradient2', grSet.styleGradient2);
 				grm.ui.updateStyle();
 			}, grSet.styleRebornWhite);
@@ -466,102 +478,61 @@ class TopMenuOptions {
 
 		// * STYLES - GROUP TWO * //
 		styleMenu.addToggleItem('Alternative', grSet, 'styleAlternative', () => {
-			if (!grSet.themeSandbox) grSet.savedStyleAlternative = grSet.styleAlternative;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 			grm.ui.setStyle('alternative', grSet.styleAlternative);
 			grm.ui.updateStyle();
 		});
 		styleMenu.addToggleItem('Alternative 2', grSet, 'styleAlternative2', () => {
-			if (!grSet.themeSandbox) grSet.savedStyleAlternative2 = grSet.styleAlternative2;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 			grm.ui.setStyle('alternative2', grSet.styleAlternative2);
 			grm.ui.updateStyle();
 		});
 		if (grSet.theme === 'white') {
 			styleMenu.addToggleItem('Black and white', grSet, 'styleBlackAndWhite', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleBlackAndWhite = grSet.styleBlackAndWhite;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 				grm.ui.setStyle('blackAndWhite', grSet.styleBlackAndWhite);
 				grm.ui.updateStyle();
 			}, grSet.styleBlackAndWhiteReborn);
 			styleMenu.addToggleItem('Black and white 2', grSet, 'styleBlackAndWhite2', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleBlackAndWhite2 = grSet.styleBlackAndWhite2;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 				grm.ui.setStyle('blackAndWhite2', grSet.styleBlackAndWhite2);
 				grm.ui.updateStyle();
 			}, grSet.styleBlackAndWhiteReborn);
 			styleMenu.addToggleItem('Black and white reborn', grSet, 'styleBlackAndWhiteReborn', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleBlackAndWhiteReborn = grSet.styleBlackAndWhiteReborn;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 				grm.ui.setStyle('blackAndWhiteReborn', grSet.styleBlackAndWhiteReborn);
 				grm.ui.updateStyle();
 			});
 		}
 		if (grSet.theme === 'black') {
 			styleMenu.addToggleItem('Black reborn', grSet, 'styleBlackReborn', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleBlackReborn = grSet.styleBlackReborn;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 				grm.ui.setStyle('blackReborn', grSet.styleBlackReborn);
 				grm.ui.updateStyle();
 			});
 		}
 		if (grSet.theme === 'reborn') {
 			styleMenu.addToggleItem('Reborn white', grSet, 'styleRebornWhite', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleRebornWhite = grSet.styleRebornWhite;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
-				if (grSet.styleNighttime) grSet.styleNighttime = false;
 				grm.ui.setStyle('rebornWhite', grSet.styleRebornWhite);
 				grm.ui.updateStyle();
 			});
 			styleMenu.addToggleItem('Reborn black', grSet, 'styleRebornBlack', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleRebornBlack = grSet.styleRebornBlack;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
-				if (grSet.styleNighttime) grSet.styleNighttime = false;
 				grm.ui.setStyle('rebornBlack', grSet.styleRebornBlack);
 				grm.ui.updateStyle();
 			});
 			styleMenu.addToggleItem('Reborn fusion', grSet, 'styleRebornFusion', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleRebornFusion = grSet.styleRebornFusion;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 				grm.ui.setStyle('rebornFusion', grSet.styleRebornFusion);
 				grm.ui.updateStyle();
 			});
 			styleMenu.addToggleItem('Reborn fusion 2', grSet, 'styleRebornFusion2', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleRebornFusion2 = grSet.styleRebornFusion2;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 				grm.ui.setStyle('rebornFusion2', grSet.styleRebornFusion2);
 				grm.ui.updateStyle();
 			});
 			styleMenu.addToggleItem('Reborn fusion accent', grSet, 'styleRebornFusionAccent', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleRebornFusionAccent = grSet.styleRebornFusionAccent;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 				grm.ui.setStyle('rebornFusionAccent', grSet.styleRebornFusionAccent);
 				grm.ui.updateStyle();
 			});
 		}
 		if (grSet.theme === 'random') {
 			styleMenu.addToggleItem('Random pastel', grSet, 'styleRandomPastel', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleRandomPastel = grSet.styleRandomPastel;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 				grm.ui.setStyle('randomPastel', grSet.styleRandomPastel);
 				grm.ui.updateStyle();
 			});
 			styleMenu.addToggleItem('Random dark', grSet, 'styleRandomDark', () => {
-				if (!grSet.themeSandbox) grSet.savedStyleRandomDark = grSet.styleRandomDark;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
 				grm.ui.setStyle('randomDark', grSet.styleRandomDark);
 				grm.ui.updateStyle();
 			});
@@ -573,9 +544,7 @@ class TopMenuOptions {
 			const styleAutoColorMenu = new Menu('Auto color');
 			styleAutoColorMenu.addRadioItems(['Off', '5 sec', '10 sec', '15 sec', '30 sec', '45 sec', '1 min', '2 min', '3 min', '4 min', '5 min', 'New track'], grSet.styleRandomAutoColor,
 				['off', 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, 'track'], (timer) => {
-				if (!grSet.themeSandbox) grSet.savedStyleRandomAutoColor = grSet.styleRandomAutoColor = timer; else grSet.styleRandomAutoColor = timer;
-				if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-				if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+				grm.ui.setStyle('styleRandomAutoColor', timer);
 				grm.color.getRandomThemeAutoColor();
 			});
 			styleAutoColorMenu.appendTo(styleMenu);
@@ -586,17 +555,13 @@ class TopMenuOptions {
 		const styleButtonsMenu = new Menu('Buttons');
 		const styleTopButtonsMenu = new Menu('Top menu');
 		styleTopButtonsMenu.addRadioItems(['Default', 'Filled', 'Bevel', 'Inner', 'Emboss', 'Minimal'], grSet.styleTopMenuButtons, ['default', 'filled', 'bevel', 'inner', 'emboss', 'minimal'], (style) => {
-			if (!grSet.themeSandbox) grSet.savedStyleTopMenuButtons = grSet.styleTopMenuButtons = style; else grSet.styleTopMenuButtons = style;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			grm.ui.setStyle('styleTopMenuButtons', style);
 			grm.ui.updateStyle();
 		});
 		styleTopButtonsMenu.appendTo(styleButtonsMenu);
 		const styleTransportButtonsMenu = new Menu('Transport');
 		styleTransportButtonsMenu.addRadioItems(['Default', 'Bevel', 'Inner', 'Emboss', 'Minimal'], grSet.styleTransportButtons, ['default', 'bevel', 'inner', 'emboss', 'minimal'], (style) => {
-			if (!grSet.themeSandbox) grSet.savedStyleTransportButtons = grSet.styleTransportButtons = style; else grSet.styleTransportButtons = style;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			grm.ui.setStyle('styleTransportButtons', style);
 			grm.ui.updateStyle();
 		});
 		styleTransportButtonsMenu.appendTo(styleButtonsMenu);
@@ -605,21 +570,15 @@ class TopMenuOptions {
 		// * STYLES - PROGRESS BAR * //
 		const styleProgressBarMenu = new Menu('Progress bar');
 		styleProgressBarMenu.createRadioSubMenu('Design', ['Default', 'Rounded', 'Lines', 'Blocks', 'Dots', 'Thin'], grSet.styleProgressBarDesign, ['default', 'rounded', 'lines', 'blocks', 'dots', 'thin'], (design) => {
-			if (!grSet.themeSandbox) grSet.savedStyleProgressBarDesign = grSet.styleProgressBarDesign = design; else grSet.styleProgressBarDesign = design;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			grm.ui.setStyle('styleProgressBarDesign', design);
 			grm.ui.updateStyle();
 		});
 		styleProgressBarMenu.createRadioSubMenu('Background', ['Default', 'Bevel', 'Inner'], grSet.styleProgressBar, ['default', 'bevel', 'inner'], (style) => {
-			if (!grSet.themeSandbox) grSet.savedStyleProgressBar = grSet.styleProgressBar = style; else grSet.styleProgressBar = style;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			grm.ui.setStyle('styleProgressBar', style);
 			grm.ui.updateStyle();
 		});
 		styleProgressBarMenu.createRadioSubMenu('Progress fill', ['Default', 'Bevel', 'Inner', 'Blend'], grSet.styleProgressBarFill, ['default', 'bevel', 'inner', 'blend'], (style) => {
-			if (!grSet.themeSandbox) grSet.savedStyleProgressBarFill = grSet.styleProgressBarFill = style; else grSet.styleProgressBarFill = style;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			grm.ui.setStyle('styleProgressBarFill', style);
 			grm.ui.updateStyle();
 		});
 		styleProgressBarMenu.appendTo(styleMenu);
@@ -627,21 +586,15 @@ class TopMenuOptions {
 		// * STYLES - VOLUME BAR * //
 		const styleVolumeBarMenu = new Menu('Volume bar');
 		styleVolumeBarMenu.createRadioSubMenu('Design', ['Default', 'Rounded'], grSet.styleVolumeBarDesign, ['default', 'rounded'], (design) => {
-			if (!grSet.themeSandbox) grSet.savedStyleVolumeBarDesign = grSet.styleVolumeBarDesign = design; else grSet.styleVolumeBarDesign = design;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			grm.ui.setStyle('styleVolumeBarDesign', design);
 			grm.ui.updateStyle();
 		});
 		styleVolumeBarMenu.createRadioSubMenu('Background', ['Default', 'Bevel', 'Inner'], grSet.styleVolumeBar, ['default', 'bevel', 'inner'], (style) => {
-			if (!grSet.themeSandbox) grSet.savedStyleVolumeBar = grSet.styleVolumeBar = style; else grSet.styleVolumeBar = style;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			grm.ui.setStyle('styleVolumeBar', style);
 			grm.ui.updateStyle();
 		});
 		styleVolumeBarMenu.createRadioSubMenu('Volume fill', ['Default', 'Bevel', 'Inner'], grSet.styleVolumeBarFill, ['default', 'bevel', 'inner'], (style) => {
-			if (!grSet.themeSandbox) grSet.savedStyleVolumeBarFill = grSet.styleVolumeBarFill = style; else grSet.styleVolumeBarFill = style;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			grm.ui.setStyle('styleVolumeBarFill', style);
 			grm.ui.updateStyle();
 		});
 		styleVolumeBarMenu.appendTo(styleMenu);
@@ -724,10 +677,9 @@ class TopMenuOptions {
 
 		// * THEME PRESETS MENUS * //
 		const applyThemePreset = (preset) => {
-			if (!grSet.themeSandbox) grSet.savedPreset = grSet.preset = preset; else grSet.preset = preset;
-			grm.preset.setThemePreset(preset); // After applying the preset, synchronize the daytime/nighttime theme preset if necessary
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			this.applyThemeSetting('preset', preset);
+			grm.preset.setThemePreset(preset);
+			this.applyThemeSetting(); // After applying the preset, synchronize the daytime/nighttime theme preset if necessary
 			grm.ui.createDiscArtShadow();
 		};
 
@@ -867,43 +819,8 @@ class TopMenuOptions {
 		// * CUSTOM USER THEME PRESET * //
 		const themePresetUserMenu = new Menu('User preset');
 		themePresetUserMenu.addRadioItems(['User settings'], grSet.preset, ['user'], (preset) => {
-			if (!grSet.themeSandbox) grSet.savedPreset = grSet.preset = preset; else grSet.preset = preset;
-			grm.ui.resetStyle('all');
-			grm.ui.resetTheme();
-			grSet.theme = grCfg.customStylePreset.theme;
-			grSet.styleNighttime = grCfg.customStylePreset.styleNighttime;
-			grSet.styleBevel = grCfg.customStylePreset.styleBevel;
-			grSet.styleBlend = grCfg.customStylePreset.styleBlend;
-			grSet.styleBlend2 = grCfg.customStylePreset.styleBlend2;
-			grSet.styleGradient = grCfg.customStylePreset.styleGradient;
-			grSet.styleGradient2 = grCfg.customStylePreset.styleGradient2;
-			grSet.styleAlternative = grCfg.customStylePreset.styleAlternative;
-			grSet.styleAlternative2 = grCfg.customStylePreset.styleAlternative2;
-			grSet.styleBlackAndWhite = grCfg.customStylePreset.styleBlackAndWhite;
-			grSet.styleBlackAndWhite2 = grCfg.customStylePreset.styleBlackAndWhite2;
-			grSet.styleBlackAndWhiteReborn = grCfg.customStylePreset.styleBlackAndWhiteReborn;
-			grSet.styleBlackReborn = grCfg.customStylePreset.styleBlackReborn;
-			grSet.styleRebornWhite = grCfg.customStylePreset.styleRebornWhite;
-			grSet.styleRebornBlack = grCfg.customStylePreset.styleRebornBlack;
-			grSet.styleRebornFusion = grCfg.customStylePreset.styleRebornFusion;
-			grSet.styleRebornFusion2 = grCfg.customStylePreset.styleRebornFusion2;
-			grSet.styleRebornFusionAccent = grCfg.customStylePreset.styleRebornFusionAccent;
-			grSet.styleRandomPastel = grCfg.customStylePreset.styleRandomPastel;
-			grSet.styleRandomDark = grCfg.customStylePreset.styleRandomDark;
-			grSet.styleRandomAutoColor = grCfg.customStylePreset.styleRandomAutoColor;
-			grSet.styleTopMenuButtons = grCfg.customStylePreset.styleTopMenuButtons;
-			grSet.styleTransportButtons = grCfg.customStylePreset.styleTransportButtons;
-			grSet.styleProgressBarDesign = grCfg.customStylePreset.styleProgressBarDesign;
-			grSet.styleProgressBar = grCfg.customStylePreset.styleProgressBar;
-			grSet.styleProgressBarFill = grCfg.customStylePreset.styleProgressBarFill;
-			grSet.styleVolumeBarDesign = grCfg.customStylePreset.styleVolumeBarDesign;
-			grSet.styleVolumeBar = grCfg.customStylePreset.styleVolumeBar;
-			grSet.styleVolumeBarFill = grCfg.customStylePreset.styleVolumeBarFill;
-			grSet.themeBrightness = grCfg.customStylePreset.themeBrightness;
-			grm.ui.updateStyle();
-			// After applying the preset, synchronize the daytime/nighttime theme preset if necessary
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			applyThemePreset(preset);
+			grm.ui.validateStyle(true);
 		});
 		themePresetUserMenu.appendTo(themePresetsMenu);
 		themePresetsMenu.addSeparator();
@@ -1082,9 +999,7 @@ class TopMenuOptions {
 	brightnessOptions(menu) {
 		menu.createRadioSubMenu('Brightness', ['   -50%', '   -40%', '   -30%', '   -25%', '   -20%', '   -15%', '   -10%', '     -5%', 'Default', '     +5%', '   +10%', '   +15%', '   +20%', '   +25%', '   +30%', '   +40%', '   +50%'],
 			grSet.themeBrightness, [-50, -40, -30, -25, -20, -15, -10, -5, 'default', 5, 10, 15, 20, 25, 30, 40, 50], (percent) => {
-			if (!grSet.themeSandbox) grSet.savedThemeBrightness = grSet.themeBrightness = percent; else grSet.themeBrightness = percent;
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
-			if (grSet.themeDayNightMode) ShowThemeDayNightModePopup();
+			this.applyThemeSetting('themeBrightness', percent);
 			grm.ui.initThemeFull = true;
 			grm.ui.initTheme();
 		}, grSet.presetSelectMode === 'harmonic');
@@ -3076,96 +2991,100 @@ class TopMenuOptions {
 	settingsOptions(menu) {
 		const settingsMenu = new Menu('Settings');
 
-		// * THEME DAY/NIGHT MODE * //
-		const themeDayNightModeMenu = new Menu('Theme day/night mode');
+		if (!grSet.themeSandbox) {
+			// * THEME DAY/NIGHT MODE * //
+			const themeDayNightModeMenu = new Menu('Theme day/night mode');
 
-		const dayNightTimeRangeDefaults = ['6-18', '7-19', '8-20', '9-21', '10-22'];
-		const dayNightTimeRangeLabels = dayNightTimeRangeDefaults.map(FormatThemeDayNightModeString);
-		dayNightTimeRangeLabels.unshift('Deactivated (default)');
+			const dayNightTimeRangeDefaults = ['6-18', '7-19', '8-20', '9-21', '10-22'];
+			const dayNightTimeRangeLabels = dayNightTimeRangeDefaults.map(FormatThemeDayNightModeString);
+			dayNightTimeRangeLabels.unshift('Deactivated (default)');
 
-		const dayNightTimeRangeCustom = grSet.themeDayNightMode && !dayNightTimeRangeDefaults.includes(grSet.themeDayNightMode);
-		const dayNightTimeRangeCustomLabel = `Custom: ${FormatThemeDayNightModeString(grSet.themeDayNightMode)}`;
-		const dayNightTimeRangeVal = dayNightTimeRangeCustom ? grSet.themeDayNightMode : (grSet.themeDayNightMode || false);
-		const dayNightTimeRangeValues = [false, ...dayNightTimeRangeDefaults];
+			const dayNightTimeRangeCustom = grSet.themeDayNightMode && !dayNightTimeRangeDefaults.includes(grSet.themeDayNightMode);
+			const dayNightTimeRangeCustomLabel = `Custom: ${FormatThemeDayNightModeString(grSet.themeDayNightMode)}`;
+			const dayNightTimeRangeVal = dayNightTimeRangeCustom ? grSet.themeDayNightMode : (grSet.themeDayNightMode || false);
+			const dayNightTimeRangeValues = [false, ...dayNightTimeRangeDefaults];
 
-		if (dayNightTimeRangeCustom) {
-			dayNightTimeRangeLabels.push(dayNightTimeRangeCustomLabel);
-			dayNightTimeRangeValues.push(grSet.themeDayNightMode);
-		}
-
-		themeDayNightModeMenu.addItem('Set custom time range', false, () => {
-			grm.inputBox.themeDayNightModeCustom();
-		});
-		themeDayNightModeMenu.addSeparator();
-		themeDayNightModeMenu.addRadioItems(dayNightTimeRangeLabels, dayNightTimeRangeVal, dayNightTimeRangeValues, (time) => {
-			grSet.themeDayNightMode = time;
-			if (!grSet.themeDayNightMode) {
-				grSet.themeDayNightMode = false;
-				clearInterval(grm.ui.themeDayNightModeTimer);
-				grm.ui.themeDayNightModeTimer = null;
-				return;
+			if (dayNightTimeRangeCustom) {
+				dayNightTimeRangeLabels.push(dayNightTimeRangeCustomLabel);
+				dayNightTimeRangeValues.push(grSet.themeDayNightMode);
 			}
-			const msg = 'Do you want to activate the theme day/night mode?\n\nThe default daytime theme is White\nand the nighttime theme is Black.\n\nYou can set up and configure\na new theme and styles for both modes\nin the theme day/night mode setup.\n\nContinue?\n\n\n';
-			const msgFb = 'Theme day/night mode is active:\n\nThe default daytime theme is White\nand the nighttime theme is Black.\n\nYou can set up and configure\na new theme and styles for both modes\nin the theme day/night mode setup.';
-			ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
-				if (confirmed) {
-					grm.ui.resetTheme();
-					initThemeDayNightMode(new Date());
-					grm.ui.initThemeFull = true;
-					if (grSet.theme.startsWith('custom')) grm.ui.initCustomTheme();
-					if (!fb.IsPlaying) grm.color.setThemeColors();
-					grm.ui.initTheme();
-					grm.ui.initStyleState();
-					grm.preset.initThemePresetState();
-				} else {
-					grSet.themeDayNightMode = false;
-					if (grSet.presetAutoRandomMode !== 'off') {
-						grSet.presetAutoRandomMode = 'dblclick';
-						grm.preset.getRandomThemePreset();
-					}
-				}
+
+			themeDayNightModeMenu.addItem('Set custom time range', false, () => {
+				grm.inputBox.themeDayNightModeCustom();
 			});
-		});
-		themeDayNightModeMenu.addSeparator();
-		themeDayNightModeMenu.appendTo(settingsMenu);
-		themeDayNightModeMenu.addItem(!grSet.themeSetupDay ? 'Theme setup for daytime' : 'Save and exit daytime theme setup', false, () => {
-			grSet.themeSetupDay = !grSet.themeSetupDay;
-			grSet.themeSetupNight = false;
-			RepaintWindow();
-			if (!grSet.themeSetupDay) {
-				grm.ui.themeNotification = '';
-				return;
-			}
-			const msg = '>>> Theme setup for daytime is active <<<\n\nPlease select your theme and styles for daytime usage.\nAfter configuring the theme settings, revisit this menu to save them.\n\n\n';
-			ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
-			grm.ui.resetTheme();
-			setThemeDayNightTheme(true);
-			grm.ui.initThemeFull = true;
-			if (grSet.theme.startsWith('custom')) grm.ui.initCustomTheme();
-			if (!fb.IsPlaying) grm.color.setThemeColors();
-			grm.ui.initTheme();
-			grm.ui.initStyleState();
-			grm.preset.initThemePresetState();
-		});
-		themeDayNightModeMenu.addItem(!grSet.themeSetupNight ? 'Theme setup for nighttime' : 'Save and exit nighttime theme setup', false, () => {
-			grSet.themeSetupDay = false;
-			grSet.themeSetupNight = !grSet.themeSetupNight;
-			RepaintWindow();
-			if (!grSet.themeSetupNight) {
-				grm.ui.themeNotification = '';
-				return;
-			}
-			const msg = '>>> Theme setup for nighttime is active <<<\n\nPlease select your theme and styles for nighttime usage.\nAfter configuring the theme settings, revisit this menu to save them.\n\n\n';
-			ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
-			grm.ui.resetTheme();
-			setThemeDayNightTheme(false);
-			grm.ui.initThemeFull = true;
-			if (grSet.theme.startsWith('custom')) grm.ui.initCustomTheme();
-			if (!fb.IsPlaying) grm.color.setThemeColors();
-			grm.ui.initTheme();
-			grm.ui.initStyleState();
-			grm.preset.initThemePresetState();
-		});
+			themeDayNightModeMenu.addSeparator();
+			themeDayNightModeMenu.addRadioItems(dayNightTimeRangeLabels, dayNightTimeRangeVal, dayNightTimeRangeValues, (time) => {
+				grSet.themeDayNightMode = time;
+				if (!grSet.themeDayNightMode) {
+					grSet.themeDayNightMode = false;
+					clearInterval(grm.ui.themeDayNightModeTimer);
+					grm.ui.themeDayNightModeTimer = null;
+					return;
+				}
+				const msg = 'Do you want to activate the theme day/night mode?\n\nThe default daytime theme is White\nand the nighttime theme is Black.\n\nYou can set up and configure\na new theme and styles for both modes\nin the theme day/night mode setup.\n\nContinue?\n\n\n';
+				const msgFb = 'Theme day/night mode is active:\n\nThe default daytime theme is White\nand the nighttime theme is Black.\n\nYou can set up and configure\na new theme and styles for both modes\nin the theme day/night mode setup.';
+				ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+					if (confirmed) {
+						grm.ui.resetTheme();
+						initThemeDayNightMode(new Date());
+						grm.ui.initThemeFull = true;
+						if (grSet.theme.startsWith('custom')) grm.ui.initCustomTheme();
+						if (!fb.IsPlaying) grm.color.setThemeColors();
+						grm.ui.initTheme();
+						grm.ui.initStyleState();
+						grm.preset.initThemePresetState();
+					} else {
+						grSet.themeDayNightMode = false;
+						if (grSet.presetAutoRandomMode !== 'off') {
+							grSet.presetAutoRandomMode = 'dblclick';
+							grm.preset.getRandomThemePreset();
+						}
+					}
+				});
+			});
+			themeDayNightModeMenu.addSeparator();
+			themeDayNightModeMenu.appendTo(settingsMenu);
+			themeDayNightModeMenu.addItem(!grSet.themeSetupDay ? 'Theme setup for daytime' : 'Save and exit daytime theme setup', false, () => {
+				grSet.themeSetupDay = !grSet.themeSetupDay;
+				grSet.themeSetupNight = false;
+				grSet.themeDayNightMode = false;
+				RepaintWindow();
+				if (!grSet.themeSetupDay) {
+					grm.ui.themeNotification = '';
+					return;
+				}
+				const msg = '>>> Theme setup for daytime is active <<<\n\nPlease select your theme and styles for daytime usage.\nAfter configuring the theme settings, revisit this menu to save them and set a new time range.\n\n\n';
+				ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				grm.ui.resetTheme();
+				setThemeDayNightTheme(true);
+				grm.ui.initThemeFull = true;
+				if (grSet.theme.startsWith('custom')) grm.ui.initCustomTheme();
+				if (!fb.IsPlaying) grm.color.setThemeColors();
+				grm.ui.initTheme();
+				grm.ui.initStyleState();
+				grm.preset.initThemePresetState();
+			});
+			themeDayNightModeMenu.addItem(!grSet.themeSetupNight ? 'Theme setup for nighttime' : 'Save and exit nighttime theme setup', false, () => {
+				grSet.themeSetupDay = false;
+				grSet.themeSetupNight = !grSet.themeSetupNight;
+				grSet.themeDayNightMode = false;
+				RepaintWindow();
+				if (!grSet.themeSetupNight) {
+					grm.ui.themeNotification = '';
+					return;
+				}
+				const msg = '>>> Theme setup for nighttime is active <<<\n\nPlease select your theme and styles for nighttime usage.\nAfter configuring the theme settings, revisit this menu to save them and set a new time range.\n\n\n';
+				ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				grm.ui.resetTheme();
+				setThemeDayNightTheme(false);
+				grm.ui.initThemeFull = true;
+				if (grSet.theme.startsWith('custom')) grm.ui.initCustomTheme();
+				if (!fb.IsPlaying) grm.color.setThemeColors();
+				grm.ui.initTheme();
+				grm.ui.initStyleState();
+				grm.preset.initThemePresetState();
+			});
+		}
 
 		// * HIDE OTHER MENUS WHEN THEME DAY/NIGHT SETUP IS ACTIVE
 		if (grSet.themeSetupDay || grSet.themeSetupNight) {
@@ -3175,24 +3094,33 @@ class TopMenuOptions {
 
 		// * THEME SANDBOX * //
 		const themeSandboxMenu = new Menu('Theme sandbox');
-		const restoreThemeStylePresetSettings = (reset) => {
+		const restoreThemeStylePresetSettings = (restoreStyles) => {
 			grSet.presetAutoRandomMode = 'dblclick';
 			grm.ui.setThemePresetSelection(true); // * Reactivate all
 			grm.ui.resetTheme();
-			if (reset) grm.ui.restoreThemeStylePreset(true); else grm.ui.restoreThemeStylePreset();
-			if (grSet.savedPreset !== false) grm.preset.setThemePreset(grSet.savedPreset);
+			if (restoreStyles) {
+				grm.ui.restoreThemeStylePreset();
+			} else { // Restore theme preset
+				grm.preset.setThemePreset(grSet.savedPreset);
+			}
 			grm.ui.updateStyle();
-		}
+		};
 		themeSandboxMenu.addToggleItem('Enabled', grSet, 'themeSandbox', () => {
 			if (!grSet.themeSandbox) {
 				const msg = 'Do you want to restore\nor keep current theme settings?\n\nThis will restore previously used\ntheme, styles, preset\nor use the current active.\n\nContinue?\n\n\n';
-				const msgFb = 'Theme settings restored:\n\nTheme, styles or preset have been restored.';
-				ShowPopup(true, msgFb, msg, 'Restore', 'Keep', (confirmed) => {
-					if (confirmed) {
-						restoreThemeStylePresetSettings();
-					} else {
-						restoreThemeStylePresetSettings(true);
+				ShowPopup(false, false, msg, 'Restore', 'Keep', (restore) => {
+					if (!restore) return;
+					const msg = grSet.savedPreset ? 'Do you want to restore\nlast used theme styles or theme preset?\n\n\n' : 'Do you want to restore\nlast used theme styles?\n\n\n';
+					const msgFb = 'Theme settings restored:\n\nTheme and styles have been restored.';
+					if (grSet.savedPreset) { // If grSet.savedPreset is available, choose between theme styles or theme preset
+						setTimeout(() => {
+							ShowPopup(true, msgFb, msg, 'Styles', 'Preset', (restoreStyles) => {
+								restoreThemeStylePresetSettings(restoreStyles); // Restore theme styles or theme preset
+							});
+						}, 0);
+						return;
 					}
+					restoreThemeStylePresetSettings(true); // Restore theme styles
 				});
 				return;
 			}
@@ -3202,15 +3130,13 @@ class TopMenuOptions {
 				if (!confirmed) grSet.themeSandbox = false;
 			});
 		});
-		themeSandboxMenu.addSeparator();
-		themeSandboxMenu.addItem('Restore theme settings', false, () => {
-			const msg = 'Do you want to restore theme settings?\n\nThis will restore previously used\ntheme, styles, preset.\n\nContinue?\n\n\n';
-			const msgFb = 'Theme settings restored:\n\nTheme, styles or preset have been restored.';
-			ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
-				if (confirmed) restoreThemeStylePresetSettings();
-			});
-		}, grSet.themeSandbox);
 		themeSandboxMenu.appendTo(settingsMenu);
+
+		// * HIDE OTHER MENUS WHEN THEME SANDBOX IS ACTIVE
+		if (grSet.themeSandbox) {
+			settingsMenu.appendTo(menu);
+			return;
+		}
 
 		// * THEME FONTS * //
 		const themeFontMenu = new Menu('Theme fonts');

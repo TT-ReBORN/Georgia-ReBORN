@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-06-2024                                              * //
+// * Last change:    18-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2555,7 +2555,7 @@ class MainUI {
 	resetTheme() {
 		this.initThemeFull = true;
 
-		const invalidNighttimeStyle = grSet.theme !== 'reborn' && grSet.theme !== 'random' && !grSet.theme.startsWith('custom') || grSet.styleRebornWhite || grSet.styleRebornBlack;
+		const invalidNighttimeStyle = (grSet.theme !== 'reborn' && grSet.theme !== 'random' && !grSet.theme.startsWith('custom') || grSet.styleRebornWhite || grSet.styleRebornBlack) && grSet.styleNighttime;
 		const invalidWhiteThemeStyle = grSet.theme !== 'white' && (grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2 || grSet.styleBlackAndWhiteReborn);
 		const invalidBlackThemeStyle = grSet.theme !== 'black' && grSet.styleBlackReborn;
 		const invalidRebornThemeStyle = grSet.theme !== 'reborn' && (grSet.styleRebornWhite || grSet.styleRebornBlack || grSet.styleRebornFusion || grSet.styleRebornFusion2 || grSet.styleRebornFusionAccent);
@@ -2681,23 +2681,24 @@ class MainUI {
 	/**
 	 * Restores theme, style, preset after custom %GR_THEME%, %GR_STYLE%, %GR_PRESET% usage or in theme sandbox.
 	 * Used in initThemeTags() and theme sandbox options.
-	 * @param {boolean} reset - Determines whether to reset the theme style preset or restore it.
+	 * @param {boolean} reset - Determines whether to reset the theme styles and theme preset or restore them.
+	 * @param {boolean} keepPreset - Determines whether to keep the current theme preset or reset it.
 	 */
-	restoreThemeStylePreset(reset) {
+	restoreThemeStylePreset(reset, keepPreset) {
 		/**
 		 * Sets or resets an individual setting based on the reset flag.
-		 * When reset is true, the value of prefKey is saved to savedKey.
-		 * When reset is false, the saved value in savedKey is restored to prefKey.
-		 * @param {object} prefObj - The preferences object containing the settings.
-		 * @param {string} prefKey - The key for the current setting to be set or restored.
+		 * When reset is true, the value of grSetKey is saved to savedKey.
+		 * When reset is false, the saved value in savedKey is restored to grSetKey.
+		 * @param {object} grSetObj - The preferences object containing the settings.
+		 * @param {string} grSetKey - The key for the current setting to be set or restored.
 		 * @param {string} savedKey - The key for the saved setting to set or restore from.
 		 * @private
 		 */
-		const _setSetting = (prefObj, prefKey, savedKey) => {
+		const _setSetting = (grSetObj, grSetKey, savedKey) => {
 			if (reset) {
-				prefObj[savedKey] = prefObj[prefKey];
+				grSetObj[savedKey] = grSetObj[grSetKey];
 			} else {
-				prefObj[prefKey] = prefObj[savedKey];
+				grSetObj[grSetKey] = grSetObj[savedKey];
 			}
 		}
 
@@ -2732,7 +2733,7 @@ class MainUI {
 		_setSetting(grSet, 'styleVolumeBarFill', 'savedStyleVolumeBarFill');
 		_setSetting(grSet, 'themeBrightness', 'savedThemeBrightness');
 
-		if (reset) {
+		if (reset && !keepPreset) {
 			grSet.savedPreset = false;
 		} else {
 			grSet.preset = grSet.savedPreset;
@@ -2740,39 +2741,62 @@ class MainUI {
 	}
 
 	/**
-	 * Sets the chosen style based by its current state. Used when changing styles in top menu Options > Style.
+	 * Sets the chosen style based on its current state. Used when changing styles in the top menu Options > Style.
 	 * @param {string} style - The selected style.
-	 * @param {boolean} state - The state of the selected style will be either activated or deactivated.
+	 * @param {boolean|string} value - The value of the selected style.
 	 * @returns {void} No return value.
 	 */
-	setStyle(style, state) {
-		const _day_night = grSet.themeSetupDay ? '_day' : '_night';
-
-		if (grSet.themeSetupDay || grSet.themeSetupNight) {
-			this.resetStyle('all_theme_day_night');
+	setStyle(style, value) {
+		// * Check for active theme day/night mode and return if active
+		if (grSet.themeDayNightMode) {
+			initThemeDayNightMode(new Date());
+			ShowThemeDayNightModePopup();
+			if (grSet.themeDayNightMode) return;
 		}
 
-		const themeStyles = {
-			blend: () => {               this.resetStyle('group_one'); grSet[`styleBlend${_day_night}`] = grSet.styleBlend = state; },
-			blend2: () => {              this.resetStyle('group_one'); grSet[`styleBlend2${_day_night}`] = grSet.styleBlend2 = state; },
-			gradient: () => {            this.resetStyle('group_one'); grSet[`styleGradient${_day_night}`] = grSet.styleGradient = state; },
-			gradient2: () => {           this.resetStyle('group_one'); grSet[`styleGradient2${_day_night}`] = grSet.styleGradient2 = state; },
-			alternative: () => {         this.resetStyle('group_two'); grSet[`styleAlternative${_day_night}`] = grSet.styleAlternative = state; },
-			alternative2: () => {        this.resetStyle('group_two'); grSet[`styleAlternative2${_day_night}`] = grSet.styleAlternative2 = state; },
-			blackAndWhite: () => {       this.resetStyle('group_two'); grSet[`styleBlackAndWhite${_day_night}`] = grSet.styleBlackAndWhite = state; },
-			blackAndWhite2: () => {      this.resetStyle('group_two'); grSet[`styleBlackAndWhite2${_day_night}`] = grSet.styleBlackAndWhite2 = state; },
-			blackAndWhiteReborn: () => { this.resetStyle('group_two'); grSet[`styleBlackAndWhiteReborn${_day_night}`] = grSet.styleBlackAndWhiteReborn = state; },
-			blackReborn: () => {         this.resetStyle('group_two'); grSet[`styleBlackReborn${_day_night}`] = grSet.styleBlackReborn = state; },
-			rebornWhite: () => {         this.resetStyle('group_two'); grSet[`styleRebornWhite${_day_night}`] = grSet.styleRebornWhite = state; grSet[`themeBrightness${_day_night}`] = grSet.themeBrightness = 'default'; },
-			rebornBlack: () => {         this.resetStyle('group_two'); grSet[`styleRebornBlack${_day_night}`] = grSet.styleRebornBlack = state; grSet[`themeBrightness${_day_night}`] = grSet.themeBrightness = 'default'; },
-			rebornFusion: () => {        this.resetStyle('group_two'); grSet[`styleRebornFusion${_day_night}`] = grSet.styleRebornFusion = state; },
-			rebornFusion2: () => {       this.resetStyle('group_two'); grSet[`styleRebornFusion2${_day_night}`] = grSet.styleRebornFusion2 = state; },
-			rebornFusionAccent: () => {  this.resetStyle('group_two'); grSet[`styleRebornFusionAccent${_day_night}`] = grSet.styleRebornFusionAccent = state; },
-			randomPastel: () => {        this.resetStyle('group_two'); grSet[`styleRandomPastel${_day_night}`] = grSet.styleRandomPastel = state; },
-			randomDark: () => {          this.resetStyle('group_two'); grSet[`styleRandomDark${_day_night}`] = grSet.styleRandomDark = state; }
+		// * Reset all styles in the group of the chosen style to prevent compatibility issues
+		const styleGroups = {
+			blend: 'group_one',
+			blend2: 'group_one',
+			gradient: 'group_one',
+			gradient2: 'group_one',
+			alternative: 'group_two',
+			alternative2: 'group_two',
+			blackAndWhite: 'group_two',
+			blackAndWhite2: 'group_two',
+			blackAndWhiteReborn: 'group_two',
+			blackReborn: 'group_two',
+			rebornWhite: 'group_two',
+			rebornBlack: 'group_two',
+			rebornFusion: 'group_two',
+			rebornFusion2: 'group_two',
+			rebornFusionAccent: 'group_two',
+			randomPastel: 'group_two',
+			randomDark: 'group_two'
 		};
+		const resetTarget = (grSet.themeSetupDay || grSet.themeSetupNight) ? 'all_theme_day_night' : styleGroups[style];
+		this.resetStyle(resetTarget);
 
-		return themeStyles[style]();
+		if (style === 'night' && (grSet.styleRebornWhite || grSet.styleRebornBlack)) {
+			grSet.styleRebornWhite = false;
+			grSet.styleRebornBlack = false;
+		} else if ((style === 'rebornWhite' || style === 'rebornBlack') && grSet.styleNighttime) {
+			grSet.styleNighttime = false;
+		}
+
+		// * Then set and apply the chosen style
+		if (style) {
+			const styleName = `style${style.charAt(0).toUpperCase()}${style.slice(1)}`;
+			const savedStyleName = `savedStyle${style.charAt(0).toUpperCase()}${style.slice(1)}`;
+			if (grSet.themeSandbox) {
+				grSet[styleName] = value;
+			} else {
+				grm.ui.restoreThemeStylePreset(true, true);
+				grSet[savedStyleName] = grSet[styleName] = value;
+			}
+		}
+
+		if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
 	}
 
 	/**
@@ -2845,6 +2869,95 @@ class MainUI {
 		this.initStyleState();
 		grm.preset.initThemePresetState();
 		grm.button.initButtonState();
+	}
+
+	/**
+	 * Validates theme styles and deactivates those which are not supported in specific themes or theme style groups.
+	 * @param {boolean} showPopup - Whether to show a popup message when an invalid style is detected.
+	 */
+	validateStyle(showPopup) {
+		const invalidNighttimeStyle = (grSet.theme !== 'reborn' && grSet.theme !== 'random' && !grSet.theme.startsWith('custom') || grSet.styleRebornWhite || grSet.styleRebornBlack) && grSet.styleNighttime;
+		const invalidWhiteThemeStyle = grSet.theme !== 'white' && (grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2 || grSet.styleBlackAndWhiteReborn);
+		const invalidBlackThemeStyle = grSet.theme !== 'black' && grSet.styleBlackReborn;
+		const invalidRebornThemeStyle = grSet.theme !== 'reborn' && (grSet.styleRebornWhite || grSet.styleRebornBlack || grSet.styleRebornFusion || grSet.styleRebornFusion2 || grSet.styleRebornFusionAccent);
+		const invalidGradientStyle = !['reborn', 'random', 'blue', 'darkblue', 'red'].includes(grSet.theme) && !grSet.theme.startsWith('custom') && (grSet.styleGradient || grSet.styleGradient2);
+
+		const handlePopup = (showPopup, msg) => {
+			if (!showPopup) return;
+			ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+		};
+
+		if (invalidNighttimeStyle) {
+			grSet.styleNighttime = false;
+			const msg = 'The "Night" theme style has been deactivated!\n\nIt is supported only for the following themes:\n"Reborn"\n"Random"\n"Custom"\n\nIt is not supported with these theme styles:\n"Reborn White"\n"Reborn Black"\n\n\n';
+			handlePopup(showPopup, msg);
+		}
+
+		if (invalidWhiteThemeStyle) {
+			grSet.styleBlackAndWhite = false;
+			grSet.styleBlackAndWhite2 = false;
+			grSet.styleBlackAndWhiteReborn = false;
+			const msg = 'The "Black and white" theme styles have been deactivated!\n\nIt is supported only for the "White" theme.\n\n\n';
+			handlePopup(showPopup, msg);
+		}
+
+		if (invalidBlackThemeStyle) {
+			grSet.styleBlackReborn = false;
+			const msg = 'The "Black reborn" theme style has been deactivated!\n\nIt is supported only for the "Black" theme.\n\n\n';
+			handlePopup(showPopup, msg);
+		}
+
+		if (invalidRebornThemeStyle) {
+			grSet.styleRebornWhite = false;
+			grSet.styleRebornBlack = false;
+			grSet.styleRebornFusion = false;
+			grSet.styleRebornFusion2 = false;
+			grSet.styleRebornFusionAccent = false;
+			const msg = 'The "Reborn" special theme styles have been deactivated!\n\nOnly one theme style can be active\nat a time for this theme style group:\n"Reborn white"\n"Reborn black"\n"Reborn fusion"\n"Reborn fusion 2"\n"Reborn fusion accent"\n\nIt is supported only for the "Reborn" theme.\n\n\n';
+			handlePopup(showPopup, msg);
+		}
+
+		if (invalidGradientStyle) {
+			grSet.styleGradient = false;
+			grSet.styleGradient2 = false;
+			const msg = 'The "Gradient" theme styles have been deactivated!\n\nIt is supported only for following themes:\n"Reborn"\n"Random"\n"Blue"\n"Dark blue"\n"Red"\n"Custom".\n\n\n';
+			handlePopup(showPopup, msg);
+		}
+
+		const groupOneStyles = [
+			'styleBlend', 'styleBlend2',
+			'styleGradient', 'styleGradient2'
+		];
+		const activeGroupOneStyle = groupOneStyles.find(style => grSet[style] === true);
+		if (groupOneStyles.filter(style => grSet[style] === true).length > 1) {
+			for (const style of groupOneStyles) {
+				if (style !== activeGroupOneStyle) {
+					grSet[style] = false;
+				}
+			}
+			const msg = 'Multiple active theme styles detected!\n\nOnly one theme style can be active\nat a time for this theme style group:\n"Blend"\n"Blend 2"\n"Gradient"\n"Gradient 2"\n\nOther theme styles for this group\nhave been deactivated.\n\n\n';
+			handlePopup(showPopup, msg);
+		}
+
+		const groupTwoStyles = [
+			'styleAlternative', 'styleAlternative2',
+			'styleBlackAndWhite', 'styleBlackAndWhite2', 'styleBlackAndWhiteReborn',
+			'styleBlackReborn',
+			'styleRebornWhite', 'styleRebornBlack', 'styleRebornFusion', 'styleRebornFusion2', 'styleRebornFusionAccent',
+			'styleRandomPastel', 'styleRandomDark'
+		];
+		const activeGroupTwoStyle = groupTwoStyles.find(style => grSet[style] === true);
+		if (groupTwoStyles.filter(style => grSet[style] === true).length > 1) {
+			for (const style of groupTwoStyles) {
+				if (style !== activeGroupTwoStyle) {
+					grSet[style] = false;
+				}
+			}
+			const msg = 'Multiple active theme styles detected!\n\nOnly one theme style can be active\nat a time for this theme style group:\n"Alternative"\n"Alternative 2"\n"Black and white"\n"Black and white 2"\n"Black and white reborn"\n"Black reborn"\n"Reborn white"\n"Reborn black"\n"Reborn fusion"\n"Reborn fusion 2"\n"Reborn fusion accent"\n"Random pastel"\n"Random dark"\n\nOther theme styles for this group\nhave been deactivated.\n\n\n';
+			handlePopup(showPopup, msg);
+		}
+
+		this.initStyleState();
 	}
 	// #endregion
 

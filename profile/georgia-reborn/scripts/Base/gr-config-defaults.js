@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-DEV                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-06-2024                                              * //
+// * Last change:    18-06-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1879,6 +1879,9 @@ class ConfigDefaults {
 			blackReborn: false,
 			rebornWhite: false,
 			rebornBlack: false,
+			rebornFusion: false,
+			rebornFusion2: false,
+			rebornFusionAccent: false,
 			randomPastel: false,
 			randomDark: false,
 			randomAutoColor: 'off',
@@ -1910,6 +1913,9 @@ class ConfigDefaults {
 			blackReborn: 'Values: true, false - special black style can only be used with black theme',
 			rebornWhite: 'Values: true, false - special reborn style can only be used with reborn theme',
 			rebornBlack: 'Values: true, false - special reborn style can only be used with reborn theme',
+			rebornFusion: 'Values: true, false - special reborn style can only be used with reborn theme',
+			rebornFusion2: 'Values: true, false - special reborn style can only be used with reborn theme',
+			rebornFusionAccent: 'Values: true, false - special reborn style can only be used with reborn theme',
 			randomPastel: 'Values: true, false - special random style can only be used with random theme',
 			randomDark: 'Values: true, false - special random style can only be used with random theme',
 			randomAutoColor: 'Values: "off", 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, "track", - can only be used with random theme',
