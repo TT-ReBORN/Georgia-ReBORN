@@ -1327,8 +1327,8 @@ class BioPanel {
 		const sp2 = sp1 + (this.filmStripSize.r && !bioSet.filmStripOverlay ? ((SCALE(grSet.layout === 'artwork' ? 12 : 9) * $Bio.scale)) : 0);
 		const filmStripRight = bioSet.artistView && bioSet.showFilmStrip && bioSet.filmStripPos === 1;
 		const filmStripLeft = bioSet.artistView && bioSet.showFilmStrip && bioSet.filmStripPos === 3;
-		const RES_4K_Corr = RES._4K ? bio.ui.heading.linePad * 0.5 : 0;
-		const biographyFontSize = bioSet[`baseFontSizeBio_${grSet.layout}`];
+		const RES_4K_Corr = HD_4K(0, bio.ui.heading.linePad * 0.5);
+		const biographyFontSize = SCALE(RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout || 14);
 
 		switch (true) {
 			case bioSet.img_only: { // img_only
@@ -1410,7 +1410,7 @@ class BioPanel {
 				this.text.h = this.lines_drawn * bio.ui.font.main_h;
 				this.heading.x = !this.style.fullWidthHeading ? this.text.l : bioSet.textL;
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - this.bor.r;
-				/** MOD */ if (this.style.fullWidthHeading) this.img.t = this.text.t - bio.ui.y + (RES._4K ? bio.ui.heading.linePad * 1.5 : bio.ui.heading.linePad * 0.5);
+				/** MOD */ if (this.style.fullWidthHeading) this.img.t = this.text.t - bio.ui.y + HD_4K(bio.ui.heading.linePad * 0.5, bio.ui.heading.linePad * 1.5);
 				/** MOD */ this.img.l = bioSet.textL + txt_sp + (!bioSet.filmStripOverlay ? this.filmStripSize.l : 0) + this.style.gap + (bioSet.sbarShow ? bio.ui.sbar.sp + sp1 : 0) + textWidthCorr2;
 				/** MOD */ this.sbar.x = this.text.l + this.text.w + sp1 - RES_4K_Corr;
 				this.sbar.y = (bio.ui.sbar.type < this.sbar.style || bioSet.heading || this.filmStripSize.t || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;
@@ -1451,7 +1451,7 @@ class BioPanel {
 			}
 
 			case bioSet.style === 3: { // left
-				const textWidthCorr1 = filmStripLeft && !bioSet.filmStripOverlay ? this.style.gap - (grSet.layout === 'artwork' ? RES_4K_Corr * 2 : RES._4K ? -bio.ui.heading.linePad * 1.5 : -bio.ui.heading.linePad) : -RES_4K_Corr;
+				const textWidthCorr1 = filmStripLeft && !bioSet.filmStripOverlay ? this.style.gap - (grSet.layout === 'artwork' ? RES_4K_Corr * 2 : HD_4K(-bio.ui.heading.linePad, -bio.ui.heading.linePad * 1.5)) : -RES_4K_Corr;
 				const textWidthCorr2 = filmStripLeft && !bioSet.filmStripOverlay ? this.text.r - this.style.gap - RES_4K_Corr : 0;
 				const textWidthCorr3 = bioSet.artistView && bioSet.showFilmStrip && !bioSet.filmStripOverlay ? bioSet.filmStripPos === 1 ? RES_4K_Corr * 2 : bioSet.filmStripPos === 3 ? this.style.gap : this.text.r : this.text.r;
 
@@ -1467,7 +1467,7 @@ class BioPanel {
 				this.text.h = this.lines_drawn * bio.ui.font.main_h;
 				this.heading.x = !this.style.fullWidthHeading ? this.text.l : this.bor.l;
 				this.heading.w = !this.style.fullWidthHeading ? this.text.w : this.w - this.heading.x - bioSet.textR;
-				/** MOD */ if (this.style.fullWidthHeading) this.img.t = this.text.t - bio.ui.y + (RES._4K ? bio.ui.heading.linePad * 1.5 : bio.ui.heading.linePad * 0.5);
+				/** MOD */ if (this.style.fullWidthHeading) this.img.t = this.text.t - bio.ui.y + HD_4K(bio.ui.heading.linePad * 0.5, bio.ui.heading.linePad * 1.5);
 				/** MOD */ this.img.l -= textWidthCorr2;
 				/** MOD */ this.sbar.x = (!this.filmStripSize.r || bioSet.filmStripOverlay ? this.w - bio.ui.sbar.sp - this.text.r : this.text.l + this.text.w + sp1);
 				this.sbar.y = (bio.ui.sbar.type < this.sbar.style || bioSet.heading || this.filmStripSize.t || this.filmStripSize.b ? this.text.t : 0) + this.sbar.top_corr;

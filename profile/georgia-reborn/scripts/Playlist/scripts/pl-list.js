@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    TheQwertiest                                            * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-05-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -257,9 +257,9 @@ class BaseList {
 		this.is_scrollbar_available = false;
 
 		const scrollbar_x = this.x - SCALE(32) + this.w - pl.geo.scrollbar_w - pl.geo.scrollbar_right_pad;
-		const scrollbar_y = this.y + pl.geo.scrollbar_top_pad - (RES._4K ? 12 : 5);
+		const scrollbar_y = this.y + pl.geo.scrollbar_top_pad - HD_4K(5, 12);
 		const scrollbar_w = SCALE(28);
-		const scrollbar_h = this.h - (pl.geo.scrollbar_bottom_pad + pl.geo.scrollbar_top_pad) + (RES._4K ? 14 : 5);
+		const scrollbar_h = this.h - (pl.geo.scrollbar_bottom_pad + pl.geo.scrollbar_top_pad) + HD_4K(5, 14);
 
 		if (this.scrollbar) {
 			this.scrollbar.reset();
@@ -448,10 +448,12 @@ class BaseList {
 		// * Automatic scrollbar hide
 		if (grSet.playlistAutoHideScrollbar) {
 			if (this.scrollbar.trace(x, y)) {
+				pl.cache_header = false;
 				plSet.show_scrollbar = true;
 				this.update_scrollbar();
 				this.needs_scrollbar_update = true;
 			} else if (!this.mouse_in || !this.scrollbar.trace(x, y)) {
+				pl.cache_header = true;
 				plSet.show_scrollbar = false;
 				if (this.needs_scrollbar_update) {
 					this.update_scrollbar();
@@ -492,7 +494,7 @@ class BaseList {
 
 		this.append_scrollbar_visibility_context_menu_to(cmm);
 
-		if (utils.IsKeyPressed(VK_SHIFT)) {
+		if (utils.IsKeyPressed(VKey.SHIFT)) {
 			grm.ctxMenu.contextMenuDefault(cmm);
 		}
 

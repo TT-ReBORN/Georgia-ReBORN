@@ -4,26 +4,122 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-06-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
 
 
-//////////////////////
-// * THEME COLORS * //
-//////////////////////
+/////////////////////
+// * BASE COLORS * //
+/////////////////////
 /**
- * A class that provides the full collection of all theme colors and its methods.
+ * A class that provides theme base colors and specific methods responsible for handling color operations.
+ * Allows for creation, manipulation, adjustment, and application of colors to the theme.
  */
-class ThemeColors {
+class BaseColors {
 	/**
-	 * Creates the `ThemeColors` instance and initializes theme preference values.
+	 * Creates the `BaseColors` instance and initializes theme preferences.
 	 */
 	constructor() {
+		this.initThemeStyleSettings();
+		this.initThemeBaseColors();
+	}
+
+	// * PUBLIC METHODS - INITIALIZATION * //
+	// #region PUBLIC METHODS - INITIALIZATION
+	/**
+	 * Initializes current values for all theme style grSet.properties.
+	 */
+	initThemeStyleSettings() {
+		/** @private @type {string} Options > Theme. */
+		this.THEME   = grSet.theme;
+		/** @private @type {string} Options > Theme > Custom. */
+		this.CTHEME  = grSet.theme.startsWith('custom');
+		/** @private @type {boolean} Options > Style > Bevel. */
+		this.BEVEL   = grSet.styleBevel;
+		/** @private @type {boolean} Options > Style > Blend. */
+		this.BLEND   = grSet.styleBlend;
+		/** @private @type {boolean} Options > Style > Blend 2. */
+		this.BLEND2  = grSet.styleBlend2;
+		/** @private @type {boolean} Options > Style > Blend or Blend 2. */
+		this.BLEND12 = grSet.styleBlend || grSet.styleBlend2;
+		/** @private @type {boolean} Options > Style > Gradient. */
+		this.GRAD    = grSet.styleGradient;
+		/** @private @type {boolean} Options > Style > Gradient 2. */
+		this.GRAD2   = grSet.styleGradient2;
+		/** @private @type {boolean} Options > Style > Gradient or Gradient 2. */
+		this.GRAD12  = grSet.styleGradient || grSet.styleGradient2;
+		/** @private @type {boolean} Options > Style > Alternative. */
+		this.ALT     = grSet.styleAlternative;
+		/** @private @type {boolean} Options > Style > Alternative 2. */
+		this.ALT2    = grSet.styleAlternative2;
+		/** @private @type {boolean} Options > Style > Black and white ( White theme ). */
+		this.BW      = grSet.styleBlackAndWhite;
+		/** @private @type {boolean} Options > Style > Black and white 2 ( White theme ). */
+		this.BW2     = grSet.styleBlackAndWhite2;
+		/** @private @type {boolean} Options > Style > Black and white reborn ( White theme ). */
+		this.BWR     = grSet.styleBlackAndWhiteReborn;
+		/** @private @type {boolean} Options > Style > Black reborn ( Black theme ). */
+		this.BR      = grSet.styleBlackReborn;
+		/** @private @type {boolean} Options > Style > Reborn white ( Reborn theme ). */
+		this.RW      = grSet.styleRebornWhite;
+		/** @private @type {boolean} Options > Style > Reborn black ( Reborn theme ). */
+		this.RB      = grSet.styleRebornBlack;
+		/** @private @type {boolean} Options > Style > Reborn fusion ( Reborn theme ). */
+		this.RF      = grSet.styleRebornFusion;
+		/** @private @type {boolean} Options > Style > Reborn fusion 2 ( Reborn theme ). */
+		this.RF2     = grSet.styleRebornFusion2;
+		/** @private @type {boolean} Options > Style > Reborn fusion and Reborn fusion 2 ( Reborn theme ). */
+		this.RF12    = grSet.styleRebornFusion || grSet.styleRebornFusion2;
+		/** @private @type {boolean} Options > Style > Reborn fusion accent ( Reborn theme ). */
+		this.RFA     = grSet.styleRebornFusionAccent;
+		/** @private @type {boolean} Options > Style > Random pastel ( Random theme ). */
+		this.RP      = grSet.styleRandomPastel;
+		/** @private @type {boolean} Options > Style > Random dark ( Random theme ). */
+		this.RD      = grSet.styleRandomDark;
+		/** @private @type {string} Options > Style > Auto color ( Random theme ). */
+		this.RAC     = grSet.styleRandomAutoColor;
+		/** @private @type {string} Options > Style > Buttons > Top menu. */
+		this.TMB     = grSet.styleTopMenuButtons;
+		/** @private @type {string} Options > Style > Buttons > Transport. */
+		this.TPB     = grSet.styleTransportButtons;
+		/** @private @type {string} Options > Style > Progress bar > Design. */
+		this.PBD     = grSet.styleProgressBarDesign;
+		/** @private @type {string} Options > Style > Progress bar > Background. */
+		this.PB      = grSet.styleProgressBar;
+		/** @private @type {string} Options > Style > Progress bar > Progress fill. */
+		this.PBF     = grSet.styleProgressBarFill;
+		/** @private @type {string} Options > Style > Volume bar > Design. */
+		this.VBD     = grSet.styleVolumeBarDesign;
+		/** @private @type {string} Options > Style > Volume bar > Background. */
+		this.VB      = grSet.styleVolumeBar;
+		/** @private @type {string} Options > Style > Volume bar > Volume fill. */
+		this.VBF     = grSet.styleVolumeBarFill;
+		/** @private @type {string} Options > Layout. */
+		this.LAYOUT  = grSet.layout;
+
+		/** @private @type {boolean} The state when theme is nighttime. */
+		this.NIGHTTIME = (['reborn', 'random'].includes(grSet.theme) && grSet.styleNighttime ||
+			grSet.themeDayNightMode && grSet.themeDayNightTime === 'night') && !grSet.styleRebornWhite;
+	}
+
+	/**
+	 * Initializes the current values for all theme style properties in the child classes
+	 * {@link ThemeColors} and {@link StyleColors}.
+	 */
+	initThemeStyleProperties() {
+		grm.theme.initThemeStyleSettings();
+		grm.style.initThemeStyleSettings();
+	}
+
+	/**
+	 * Initializes the default theme base colors.
+	 */
+	initThemeBaseColors() {
 		/**
 		 * The default colors for White theme used in Options > Theme > White.
 		 * @type {object}
@@ -219,10 +315,1023 @@ class ThemeColors {
 				lightAccent: RGB(75, 40, 110)
 			}
 		};
+	}
+	// #endregion
 
-		this.initThemeSetVals();
+	// * PUBLIC METHODS - GENERAL * //
+	// #region PUBLIC METHODS - GENERAL
+	/**
+	 * Adjusts the text and button colors based on the brightness level provided.
+	 * @param {number} percent - The percentage to adjust the brightness by.
+	 * @param {boolean} darken - Whether to darken the color.
+	 * @param {boolean} darkenMax - Whether to apply maximum darkening.
+	 * @param {boolean} lighten - Whether to lighten the color.
+	 * @param {boolean} lightenMax - Whether to apply maximum lightening.
+	 */
+	adjustTextButtonColors(percent, darken, darkenMax, lighten, lightenMax) {
+		/**
+		 * Sets the color brightness based on the provided parameters.
+		 * It selectively shades or tints the color based on the brightness adjustment directives.
+		 * @param {number} color - The base color to be adjusted.
+		 * @param {boolean} [boost] - If true, increases the intensity of the shade or tint.
+		 * @param {boolean} [soften] - If true, decreases the intensity of the shade or tint.
+		 * @returns {number} The adjusted color as a numerical value.
+		 */
+		const SetColor = (color, boost = false, soften = false) => {
+			switch (true) {
+				case darken:
+					return ShadeColor(color, percent * (boost ? 1.75 : soften ? 1.25 : 1.5));
+				case darkenMax:
+					return ShadeColor(color, boost ? 100 : soften ? 60 : 85);
+				case lighten:
+					return TintColor(color, percent * (boost ? 1.75 : soften ? 1.25 : 1.5));
+				case lightenMax:
+					return TintColor(color, boost ? 100 : soften ? 60 : 85);
+			}
+		};
+
+		const playlistColors = {
+			plman_text_normal: grSet.autoHidePlman ? pl.col.bg : SetColor(pl.col.plman_text_normal),
+			plman_text_hovered: SetColor(pl.col.plman_text_hovered, true),
+			plman_text_pressed: SetColor(pl.col.plman_text_pressed, true),
+			header_artist_normal: SetColor(pl.col.header_artist_normal),
+			header_artist_playing: SetColor(pl.col.header_artist_playing, true),
+			header_album_normal: SetColor(pl.col.header_album_normal),
+			header_album_playing: SetColor(pl.col.header_album_playing, true),
+			header_info_normal: SetColor(pl.col.header_info_normal, true),
+			header_info_playing: SetColor(pl.col.header_info_playing, true),
+			header_date_normal: SetColor(pl.col.header_date_normal),
+			header_date_playing: SetColor(pl.col.header_date_playing, true),
+			row_title_normal: SetColor(pl.col.row_title_normal),
+			row_title_playing: SetColor(pl.col.row_title_playing, true),
+			row_title_selected: SetColor(pl.col.row_title_selected, true),
+			row_title_hovered: SetColor(pl.col.row_title_hovered, true),
+			sbar_btn_normal: SetColor(pl.col.sbar_btn_normal),
+			sbar_btn_hovered: SetColor(pl.col.sbar_btn_hovered, true),
+			sbar_thumb_normal: SetColor(pl.col.sbar_thumb_normal, false, true),
+			sbar_thumb_hovered: SetColor(pl.col.sbar_thumb_hovered, true),
+			sbar_thumb_drag: SetColor(pl.col.sbar_thumb_drag, true)
+		};
+		Object.assign(pl.col, playlistColors);
+
+		const libraryColors = {
+			iconPlus: SetColor(lib.ui.col.iconPlus),
+			iconPlus_h: SetColor(lib.ui.col.iconPlus_h, true),
+			iconPlus_sel: SetColor(lib.ui.col.iconPlus_sel, true),
+			iconPlusBg: SetColor(lib.ui.col.iconPlusBg),
+			iconMinus_e: SetColor(lib.ui.col.iconMinus_e),
+			iconMinus_h: SetColor(lib.ui.col.iconMinus_h, true),
+			text: SetColor(lib.ui.col.text),
+			text_h: SetColor(lib.ui.col.text_h, true),
+			text_nowp: SetColor(lib.ui.col.text_nowp, true),
+			textSel: SetColor(lib.ui.col.textSel, true),
+			txt_box: SetColor(lib.ui.col.txt_box),
+			search: SetColor(lib.ui.col.search),
+			searchBtn: SetColor(lib.ui.col.searchBtn),
+			crossBtn: SetColor(lib.ui.col.crossBtn),
+			filterBtn: SetColor(lib.ui.col.filterBtn),
+			settingsBtn: SetColor(lib.ui.col.settingsBtn),
+			line: SetColor(lib.ui.col.line),
+			sbarBtns: SetColor(lib.ui.col.sbarBtns),
+			sbarNormal: SetColor(lib.ui.col.sbarNormal),
+			sbarHovered: SetColor(lib.ui.col.sbarHovered, true),
+			sbarDrag: SetColor(lib.ui.col.sbarDrag, true)
+		};
+		Object.assign(lib.ui.col, libraryColors);
+
+		const biographyColors = {
+			headingText: SetColor(bio.ui.col.headingText),
+			iconMinus_e: SetColor(bio.ui.col.iconMinus_e),
+			iconMinus_h: SetColor(bio.ui.col.iconMinus_h),
+			text: SetColor(bio.ui.col.text),
+			source: SetColor(bio.ui.col.source),
+			accent: SetColor(bio.ui.col.accent),
+			summary: SetColor(bio.ui.col.summary),
+			sbarBtns: SetColor(bio.ui.col.sbarBtns),
+			sbarNormal: SetColor(bio.ui.sbarNormal),
+			sbarHovered: SetColor(bio.ui.col.sbarHovered, true),
+			sbarDrag: SetColor(bio.ui.col.sbarDrag, true)
+		};
+		Object.assign(bio.ui.col, biographyColors);
+
+		const mainColors = {
+			detailsText: SetColor(grCol.detailsText),
+			popupText: SetColor(grCol.popupText),
+			noAlbumArtStub: SetColor(grCol.noAlbumArtStub),
+			lowerBarArtist: SetColor(grCol.lowerBarArtist),
+			lowerBarTitle: SetColor(grCol.lowerBarTitle),
+			lowerBarTime: SetColor(grCol.lowerBarTime),
+			lowerBarLength: SetColor(grCol.lowerBarLength),
+			menuTextNormal: SetColor(grCol.menuTextNormal),
+			menuTextHovered: SetColor(grCol.menuTextHovered, true),
+			menuTextDown: SetColor(grCol.menuTextDown, true),
+			transportIconNormal: !['reborn', 'random'].includes(grSet.theme) ? SetColor(grCol.transportIconNormal) : grCol.transportIconNormal,
+			transportIconHovered: !['reborn', 'random'].includes(grSet.theme) ? SetColor(grCol.transportIconHovered, true) : grCol.transportIconHovered,
+			transportIconDown: !['reborn', 'random'].includes(grSet.theme) ? SetColor(grCol.transportIconDown, true) : grCol.transportIconDown
+		};
+		Object.assign(grCol, mainColors);
+
+		window.Repaint();
 	}
 
+	/**
+	 * Lightens or darkens the theme based on grSet.themeBrightness value, used in Options > Brightness.
+	 * @param {number} percent - The percentage number for lightening or darkening all colors in the theme.
+	 */
+	adjustThemeBrightness(percent) {
+		if (percent < 0) percent = Math.abs(percent); // Negative passed values need to be converted to positives
+
+		if (grSet.themeBrightness < 0) { // * Darken
+			// * PLAYLIST COLORS * //
+			pl.col.bg = ShadeColor(pl.col.bg, percent);
+			pl.col.plman_bg = ShadeColor(pl.col.plman_bg, percent);
+			pl.col.plman_text_normal = ShadeColor(pl.col.plman_text_normal, percent);
+			pl.col.header_nowplaying_bg = ShadeColor(pl.col.header_nowplaying_bg, percent);
+			pl.col.header_sideMarker = ShadeColor(pl.col.header_sideMarker, percent);
+			pl.col.header_line_normal = ShadeColor(pl.col.header_line_normal, percent);
+			pl.col.header_line_playing = ShadeColor(pl.col.header_line_playing, percent);
+			pl.col.row_nowplaying_bg = ShadeColor(pl.col.row_nowplaying_bg, percent);
+			pl.col.row_stripes_bg = ShadeColor(pl.col.row_stripes_bg, percent);
+			pl.col.row_selection_bg = ShadeColor(pl.col.row_selection_bg, percent);
+			pl.col.row_selection_frame = ShadeColor(pl.col.row_selection_frame, percent);
+			pl.col.row_sideMarker = ShadeColor(pl.col.row_sideMarker, percent);
+			pl.col.row_disc_subheader_line = ShadeColor(pl.col.row_disc_subheader_line, percent);
+			pl.col.sbar_btn_normal = ShadeColor(pl.col.sbar_btn_normal, percent);
+			pl.col.sbar_btn_hovered = ShadeColor(pl.col.sbar_btn_hovered, percent);
+			pl.col.sbar_thumb_normal = ShadeColor(pl.col.sbar_thumb_normal, percent);
+			pl.col.sbar_thumb_hovered = ShadeColor(pl.col.sbar_thumb_hovered, percent);
+			pl.col.sbar_thumb_drag = ShadeColor(pl.col.sbar_thumb_drag, percent);
+
+			// * LIBRARY COLORS * //
+			lib.ui.col.bg = pl.col.bg;
+			lib.ui.col.line = ShadeColor(lib.ui.col.line, percent);
+			lib.ui.col.s_line = ShadeColor(lib.ui.col.s_line, percent);
+			lib.ui.col.nowPlayingBg = ShadeColor(lib.ui.col.nowPlayingBg, percent);
+			lib.ui.col.sideMarker = ShadeColor(lib.ui.col.sideMarker, percent);
+			lib.ui.col.sideMarker_nobw = ShadeColor(lib.ui.col.sideMarker_nobw, percent);
+			lib.ui.col.selectionFrame = ShadeColor(lib.ui.col.selectionFrame, percent);
+			lib.ui.col.sbarBtns = ShadeColor(lib.ui.col.sbarBtns, percent);
+			lib.ui.col.sbarNormal = ShadeColor(lib.ui.col.sbarNormal, percent);
+			lib.ui.col.sbarHovered = ShadeColor(lib.ui.col.sbarHovered, percent);
+			lib.ui.col.sbarDrag = ShadeColor(lib.ui.col.sbarDrag, percent);
+
+			// * BIOGRAPHY COLORS * //
+			bio.ui.col.bg = pl.col.bg;
+			bio.ui.col.bottomLine = pl.col.header_line_normal;
+			bio.ui.col.centerLine = pl.col.header_line_normal;
+			bio.ui.col.sbarBtns = ShadeColor(bio.ui.col.sbarBtns, percent);
+			bio.ui.col.sbarNormal = ShadeColor(bio.ui.col.sbarNormal, percent);
+			bio.ui.col.sbarHovered = ShadeColor(bio.ui.col.sbarHovered, percent);
+			bio.ui.col.sbarDrag = ShadeColor(bio.ui.col.sbarDrag, percent);
+
+			// * MAIN COLORS * //
+			grCol.bg = ShadeColor(grCol.bg, percent);
+			grCol.uiHacksFrame = ShadeColor(grCol.uiHacksFrame, percent);
+			grCol.shadow = ShadeColor(grCol.shadow, percent);
+			grCol.detailsBg = ShadeColor(grCol.detailsBg, percent);
+			grCol.timelineAdded = ShadeColor(grCol.timelineAdded, percent);
+			grCol.timelinePlayed = ShadeColor(grCol.timelinePlayed, percent);
+			grCol.timelineUnplayed = ShadeColor(grCol.timelineUnplayed, percent);
+			grCol.timelineFrame = ShadeColor(grCol.timelineFrame, percent);
+			grCol.popupBg = ShadeColor(grCol.popupBg, percent);
+			if (grm.details) grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+
+			// * TOP MENU BUTTON COLORS * //
+			grCol.menuBgColor = ShadeColor(grCol.menuBgColor, percent);
+			grCol.menuStyleBg = ShadeColor(grCol.menuStyleBg, percent);
+			grCol.menuRectStyleEmbossTop = ShadeColor(grCol.menuRectStyleEmbossTop, percent);
+			grCol.menuRectStyleEmbossBottom = ShadeColor(grCol.menuRectStyleEmbossBottom, percent);
+			grCol.menuRectNormal = ShadeColor(grCol.menuRectNormal, percent);
+			grCol.menuRectHovered = ShadeColor(grCol.menuRectHovered, percent);
+			grCol.menuRectDown = grCol.menuRectHovered;
+
+			// * LOWER BAR TRANSPORT BUTTON COLORS * //
+			grCol.transportEllipseBg = ShadeColor(grCol.transportEllipseBg, percent);
+			grCol.transportEllipseNormal = ShadeColor(grCol.transportEllipseNormal, percent);
+			grCol.transportEllipseHovered = ShadeColor(grCol.transportEllipseHovered, percent);
+			grCol.transportEllipseDown = grCol.transportEllipseHovered;
+			grCol.transportStyleBg = ShadeColor(grCol.transportStyleBg, percent);
+			grCol.transportStyleTop = ShadeColor(grCol.transportStyleTop, percent);
+			grCol.transportStyleBottom = ShadeColor(grCol.transportStyleBottom, percent);
+
+			// * PROGRESS BAR COLORS * //
+			grCol.progressBar = ShadeColor(grCol.progressBar, percent);
+			grCol.progressBarStreaming = ShadeColor(grCol.progressBarStreaming, percent);
+			grCol.progressBarFrame = ShadeColor(grCol.progressBarFrame, percent);
+			grCol.progressBarFill = ShadeColor(grCol.progressBarFill, percent);
+
+			// * PEAKMETER BAR COLORS * //
+			grCol.peakmeterBarProg = ShadeColor(grCol.peakmeterBarProg, percent);
+			grCol.peakmeterBarProgFill = ShadeColor(grCol.peakmeterBarProgFill, percent);
+			grCol.peakmeterBarFillTop = ShadeColor(grCol.peakmeterBarFillTop, percent);
+			grCol.peakmeterBarFillMiddle = ShadeColor(grCol.peakmeterBarFillMiddle, percent);
+			grCol.peakmeterBarFillBack = ShadeColor(grCol.peakmeterBarFillBack, percent);
+			grCol.peakmeterBarVertProgFill = ShadeColor(grCol.peakmeterBarVertProgFill, percent);
+			grCol.peakmeterBarVertFill = ShadeColor(grCol.peakmeterBarVertFill, percent);
+			grCol.peakmeterBarVertFillPeaks = ShadeColor(grCol.peakmeterBarVertFillPeaks, percent);
+
+			// * WAVEFORM BAR COLORS * //
+			grCol.waveformBarFillFront = ShadeColor(grCol.waveformBarFillFront, percent);
+			grCol.waveformBarFillBack  = ShadeColor(grCol.waveformBarFillBack, percent);
+			grCol.waveformBarFillPreFront = ShadeColor(grCol.waveformBarFillPreFront, percent);
+			grCol.waveformBarFillPreBack = ShadeColor(grCol.waveformBarFillPreBack, percent);
+			grCol.waveformBarIndicator = ShadeColor(grCol.waveformBarIndicator, percent);
+
+			// * VOLUME BAR COLORS * //
+			grCol.volumeBar = ShadeColor(grCol.volumeBar, percent);
+			grCol.volumeBarFrame = ShadeColor(grCol.volumeBarFrame, percent);
+			grCol.volumeBarFill = ShadeColor(grCol.volumeBarFill, percent);
+
+			// * STYLE COLORS * //
+			grCol.styleProgressBar = ShadeColor(grCol.styleProgressBar, percent);
+			grCol.styleProgressBarLineTop = ShadeColor(grCol.styleProgressBarLineTop, percent);
+			grCol.styleProgressBarLineBottom = ShadeColor(grCol.styleProgressBarLineBottom, percent);
+			grCol.styleVolumeBar = ShadeColor(grCol.styleVolumeBar, percent);
+
+			// * ONLY DARKEN BLACK TEXT AND BUTTON COLORS BUT NOT WHITE TEXT COLORS * //
+			const bgColBrightness = new Color(grCol.bg).brightness;
+			const txtColBrightness = new Color(pl.col.row_title_normal).brightness;
+			if (bgColBrightness < 200 && txtColBrightness < 150) {
+				this.adjustTextButtonColors(percent, true, false, false, false);
+			}
+		}
+		else if (grSet.themeBrightness > 0) { // * Lighten
+			// * PLAYLIST COLORS * //
+			pl.col.bg = TintColor(pl.col.bg, percent);
+			pl.col.plman_bg = TintColor(pl.col.plman_bg, percent);
+			pl.col.plman_text_normal = TintColor(pl.col.plman_text_normal, percent);
+			pl.col.header_nowplaying_bg = TintColor(pl.col.header_nowplaying_bg, percent);
+			pl.col.header_sideMarker = TintColor(pl.col.header_sideMarker, percent);
+			pl.col.header_line_normal = TintColor(pl.col.header_line_normal, percent);
+			pl.col.header_line_playing = TintColor(pl.col.header_line_playing, percent);
+			pl.col.row_nowplaying_bg = TintColor(pl.col.row_nowplaying_bg, percent);
+			pl.col.row_stripes_bg = TintColor(pl.col.row_stripes_bg, percent);
+			pl.col.row_selection_bg = TintColor(pl.col.row_selection_bg, percent);
+			pl.col.row_selection_frame = TintColor(pl.col.row_selection_frame, percent);
+			pl.col.row_sideMarker = TintColor(pl.col.row_sideMarker, percent);
+			pl.col.row_disc_subheader_line = TintColor(pl.col.row_disc_subheader_line, percent);
+			pl.col.sbar_btn_normal = TintColor(pl.col.sbar_btn_normal, percent);
+			pl.col.sbar_btn_hovered = TintColor(pl.col.sbar_btn_hovered, percent);
+			pl.col.sbar_thumb_normal = TintColor(pl.col.sbar_thumb_normal, percent);
+			pl.col.sbar_thumb_hovered = TintColor(pl.col.sbar_thumb_hovered, percent);
+			pl.col.sbar_thumb_drag = TintColor(pl.col.sbar_thumb_drag, percent);
+
+			// * LIBRARY COLORS * //
+			lib.ui.col.bg = pl.col.bg;
+			lib.ui.col.line = TintColor(lib.ui.col.line, percent);
+			lib.ui.col.s_line = TintColor(lib.ui.col.s_line, percent);
+			lib.ui.col.nowPlayingBg = TintColor(lib.ui.col.nowPlayingBg, percent);
+			lib.ui.col.sideMarker = TintColor(lib.ui.col.sideMarker, percent);
+			lib.ui.col.sideMarker_nobw = TintColor(lib.ui.col.sideMarker_nobw, percent);
+			lib.ui.col.selectionFrame = TintColor(lib.ui.col.selectionFrame, percent);
+			lib.ui.col.sbarBtns = TintColor(lib.ui.col.sbarBtns, percent);
+			lib.ui.col.sbarNormal = TintColor(lib.ui.col.sbarNormal, percent);
+			lib.ui.col.sbarHovered = TintColor(lib.ui.col.sbarHovered, percent);
+			lib.ui.col.sbarDrag = TintColor(lib.ui.col.sbarDrag, percent);
+
+			// * BIOGRAPHY COLORS * //
+			bio.ui.col.bg = pl.col.bg;
+			bio.ui.col.bottomLine = pl.col.header_line_normal;
+			bio.ui.col.centerLine = pl.col.header_line_normal;
+			bio.ui.col.sbarBtns = TintColor(bio.ui.col.sbarBtns, percent);
+			bio.ui.col.sbarNormal = TintColor(bio.ui.col.sbarNormal, percent);
+			bio.ui.col.sbarHovered = TintColor(bio.ui.col.sbarHovered, percent);
+			bio.ui.col.sbarDrag = TintColor(bio.ui.col.sbarDrag, percent);
+
+			// * MAIN COLORS * //
+			grCol.bg = TintColor(grCol.bg, percent);
+			grCol.uiHacksFrame = TintColor(grCol.uiHacksFrame, percent);
+			grCol.shadow = TintColor(grCol.shadow, percent);
+			grCol.detailsBg = TintColor(grCol.detailsBg, percent);
+			grCol.timelineAdded = TintColor(grCol.timelineAdded, percent);
+			grCol.timelinePlayed = TintColor(grCol.timelinePlayed, percent);
+			grCol.timelineUnplayed = TintColor(grCol.timelineUnplayed, percent);
+			grCol.timelineFrame = TintColor(grCol.timelineFrame, percent);
+			grCol.popupBg = TintColor(grCol.popupBg, percent);
+			if (grm.details) grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+
+			// * TOP MENU BUTTON COLORS * //
+			grCol.menuBgColor = TintColor(grCol.menuBgColor, percent);
+			grCol.menuStyleBg = TintColor(grCol.menuStyleBg, percent);
+			grCol.menuRectStyleEmbossTop = TintColor(grCol.menuRectStyleEmbossTop, percent);
+			grCol.menuRectStyleEmbossBottom = TintColor(grCol.menuRectStyleEmbossBottom, percent);
+			grCol.menuRectNormal = TintColor(grCol.menuRectNormal, percent);
+			grCol.menuRectHovered = TintColor(grCol.menuRectHovered, percent);
+			grCol.menuRectDown = grCol.menuRectHovered;
+
+			// * LOWER BAR TRANSPORT BUTTON COLORS * //
+			grCol.transportEllipseBg = TintColor(grCol.transportEllipseBg, percent);
+			grCol.transportEllipseNormal = TintColor(grCol.transportEllipseNormal, percent);
+			grCol.transportEllipseHovered = TintColor(grCol.transportEllipseHovered, percent);
+			grCol.transportEllipseDown = grCol.transportEllipseHovered;
+			grCol.transportStyleBg = TintColor(grCol.transportStyleBg, percent);
+			grCol.transportStyleTop = TintColor(grCol.transportStyleTop, percent);
+			grCol.transportStyleBottom = TintColor(grCol.transportStyleBottom, percent);
+
+			// * PROGRESS BAR COLORS * //
+			grCol.progressBar = TintColor(grCol.progressBar, percent);
+			grCol.progressBarStreaming = TintColor(grCol.progressBarStreaming, percent);
+			grCol.progressBarFrame = TintColor(grCol.progressBarFrame, percent);
+			grCol.progressBarFill = TintColor(grCol.progressBarFill, percent);
+
+			// * PEAKMETER BAR COLORS * //
+			grCol.peakmeterBarProg = TintColor(grCol.peakmeterBarProg, percent);
+			grCol.peakmeterBarProgFill = TintColor(grCol.peakmeterBarProgFill, percent);
+			grCol.peakmeterBarFillTop = TintColor(grCol.peakmeterBarFillTop, percent);
+			grCol.peakmeterBarFillMiddle = TintColor(grCol.peakmeterBarFillMiddle, percent);
+			grCol.peakmeterBarFillBack = TintColor(grCol.peakmeterBarFillBack, percent);
+			grCol.peakmeterBarVertProgFill = TintColor(grCol.peakmeterBarVertProgFill, percent);
+			grCol.peakmeterBarVertFill = TintColor(grCol.peakmeterBarVertFill, percent);
+			grCol.peakmeterBarVertFillPeaks = TintColor(grCol.peakmeterBarVertFillPeaks, percent);
+
+			// * WAVEFORM BAR COLORS * //
+			grCol.waveformBarFillFront = TintColor(grCol.waveformBarFillFront, percent);
+			grCol.waveformBarFillBack  = TintColor(grCol.waveformBarFillBack, percent);
+			grCol.waveformBarFillPreFront = TintColor(grCol.waveformBarFillPreFront, percent);
+			grCol.waveformBarFillPreBack = TintColor(grCol.waveformBarFillPreBack, percent);
+			grCol.waveformBarIndicator = TintColor(grCol.waveformBarIndicator, percent);
+
+			// * VOLUME BAR COLORS * //
+			grCol.volumeBar = TintColor(grCol.volumeBar, percent);
+			grCol.volumeBarFrame = TintColor(grCol.volumeBarFrame, percent);
+			grCol.volumeBarFill = TintColor(grCol.volumeBarFill, percent);
+
+			// * STYLE COLORS * //
+			grCol.styleProgressBar = TintColor(grCol.styleProgressBar, percent);
+			grCol.styleProgressBarLineTop = TintColor(grCol.styleProgressBarLineTop, percent);
+			grCol.styleProgressBarLineBottom = TintColor(grCol.styleProgressBarLineBottom, percent);
+			grCol.styleVolumeBar = TintColor(grCol.styleVolumeBar, percent);
+
+			// * LIGHTEN TEXT AND BUTTON COLORS * //
+			const bgColBrightness = new Color(grCol.bg).brightness;
+			if (bgColBrightness < 150 && bgColBrightness > 50) {
+				this.adjustTextButtonColors(percent, false, false, true, false);
+			}
+		}
+
+		const bgColBrightness = new Color(grCol.bg).brightness;
+		if (grSet.themeBrightness > 20 && bgColBrightness < 200 && bgColBrightness > 125) {
+			grCol.lightBg = false;
+			this.adjustTextButtonColors(percent, false, true, false, false);
+		}
+		else if (grSet.themeBrightness < -20 && bgColBrightness < 150 && bgColBrightness > 50) {
+			grCol.lightBg = false;
+			this.adjustTextButtonColors(percent, false, false, false, true);
+		}
+	}
+
+	/**
+	 * Creates the color objects.
+	 * @param {number} color - The primary color.
+	 * @param {number} [color2] - The secondary color.
+	 * @returns {Color} The color as an object.
+	 */
+	createThemeColorObject(color, color2) {
+		if (color2 === undefined) color2 = color;
+		const themeObj = {
+			primary: color.val,
+			primary_alt: color2.val,
+			darkAccent: ShadeColor(color.val, 30),
+			darkAccent_alt: ShadeColor(color2.val, 30),
+			accent: ShadeColor(color.val, 15),
+			accent_alt: ShadeColor(color2.val, 15),
+			lightAccent: TintColor(color.val, 20),
+			lightAccent_alt: TintColor(color2.val, 20)
+		};
+		if (color.brightness < 18) {
+			// Hard code these values otherwise darkAccent and accent can be very hard to see on background
+			themeObj.darkAccent = RGB(32, 32, 32);
+			themeObj.darkAccent_alt = RGB(32, 32, 32);
+			themeObj.accent = RGB(56, 56, 56);
+			themeObj.accent_alt = RGB(56, 56, 56);
+			themeObj.lightAccent = RGB(78, 78, 78);
+			themeObj.lightAccent_alt = RGB(78, 78, 78);
+		}
+		else if (color.brightness < 40) {
+			themeObj.darkAccent = ShadeColor(color.val, 35);
+			themeObj.darkAccent_alt = ShadeColor(color2.val, 35);
+			themeObj.accent = TintColor(color.val, 10);
+			themeObj.accent_alt = TintColor(color2.val, 10);
+			themeObj.lightAccent = TintColor(color.val, 20);
+			themeObj.lightAccent_alt = TintColor(color2.val, 20);
+		}
+		else if (color.brightness > 210) {
+			themeObj.darkAccent = ShadeColor(color.val, 30);
+			themeObj.darkAccent_alt = ShadeColor(color2.val, 30);
+			themeObj.accent = ShadeColor(color.val, 20);
+			themeObj.accent_alt = ShadeColor(color2.val, 20);
+			themeObj.lightAccent = ShadeColor(color.val, 10);
+			themeObj.lightAccent_alt = ShadeColor(color2.val, 10);
+		}
+		return themeObj;
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - SET THEME COLORS * //
+	// #region PUBLIC METHODS - SET THEME COLORS
+	/**
+	 * Sets Main, Playlist, Details, Library and Biography background color brightness rules.
+	 * Based on background color and image brightness, text colors in theme will change accordingly to black or white.
+	 * Used in White, Black, Reborn, Random and Custom themes.
+	 */
+	setBackgroundColorDefinition() {
+		const primaryBrightness    = new Color(grCol.primary).brightness;
+		const primaryBrightnessAlt = new Color(grCol.primary_alt).brightness;
+		const colBrightness = grSet.styleRebornFusion ? primaryBrightnessAlt : primaryBrightness;
+		grCol.colBrightness  = primaryBrightness;
+		grCol.colBrightness2 = primaryBrightnessAlt;
+
+		const standardThemes = ['white', 'black', 'reborn', 'random', 'cream'].includes(grSet.theme) && !grSet.styleRebornFusion && !grSet.styleRebornFusion2;
+		const customThemes = grSet.theme.startsWith('custom');
+
+		// * STANDARD THEMES * //
+		if (standardThemes) {
+			const lightBrightness = (primaryBrightness > 150) && (!grSet.styleBlend && !grSet.styleBlend2 && !grSet.styleRandomDark);
+
+			const lightBlend =
+				(primaryBrightness + grCol.imgBrightness > 285) && (grSet.styleBlend || grSet.styleBlend2)
+				&&
+				(primaryBrightness > 150 && (grSet.theme === 'white' || grSet.theme === 'black') || grSet.theme === 'reborn' || grSet.theme === 'random' && !grSet.styleRandomDark);
+
+			const noAlbumArt = grm.ui.noAlbumArtStub && (grSet.theme === 'white' && !grSet.styleBlackAndWhite && !grm.ui.isStreaming || grSet.theme === 'reborn' || grSet.theme === 'random');
+
+			grCol.lightBg = lightBrightness || lightBlend || noAlbumArt || grSet.theme === 'cream';
+		}
+
+		// * GRADIENT STYLES, REBORN FUSION STYLES, CUSTOM THEMES * //
+		if (!(grSet.styleGradient || grSet.styleGradient2 || grSet.styleRebornFusion || grSet.styleRebornFusion2 || customThemes)) {
+			return;
+		}
+		else if (grSet.theme === 'reborn' || grSet.theme === 'random') {
+			grCol.styleGradient = grCol.darkAccent;
+			grCol.styleGradient2 = grCol.darkAccent;
+		}
+
+		const gradientBRT = (color) => new Color(RGBAtoRGB(color)).brightness;
+		const cThemeBRT = (color) => new Color(HEXtoRGB(color)).brightness;
+		const isLightBg = (color) =>
+			color + grCol.imgBrightness > 285 && (grSet.styleBlend || grSet.styleBlend2)
+			||
+			color > 150 && (!grSet.styleBlend && !grSet.styleBlend2 || grSet.styleBlend2 && grSet.styleRebornFusion2);
+
+		const mainBgColor      = grSet.styleGradient      ? colBrightness - (gradientBRT(grCol.styleGradient) * 0.5) :
+								 grSet.styleGradient2     ? colBrightness - (gradientBRT(grCol.styleGradient2) * 0.5) :
+								 grSet.styleRebornFusion2 ? primaryBrightness    : customThemes ? cThemeBRT(grCfg.cTheme.grCol_bg)        : primaryBrightnessAlt;
+		const playlistBgColor  = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.pl_col_bg)       : primaryBrightness;
+		const detailsBgColor   = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.grCol_detailsBg) : primaryBrightness;
+		const libraryBgColor   = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.lib_ui_col_bg)   : primaryBrightness;
+		const biographyBgColor = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.bio_ui_col_bg)   : primaryBrightness;
+
+		grCol.lightBgMain      = isLightBg(mainBgColor);
+		grCol.lightBgPlaylist  = isLightBg(playlistBgColor);
+		grCol.lightBgDetails   = isLightBg(detailsBgColor);
+		grCol.lightBgLibrary   = isLightBg(libraryBgColor);
+		grCol.lightBgBiography = isLightBg(biographyBgColor);
+	}
+
+	/**
+	 * Sets calculated image brightness from album art, mainly used when using style Blend 1 and 2 or style Black and white reborn.
+	 */
+	setImageBrightness() {
+		if (grm.ui.albumArt && (libSet.theme !== 0 || grSet.styleBlend || grSet.styleBlend2 || grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2 || grSet.styleBlackAndWhiteReborn)) {
+			grCol.imgBrightness = CalcImgBrightness(grm.ui.albumArt);
+		}
+	}
+
+	/**
+	 * Sets noAlbumArtColors, change col.primary when streaming, reset to default when playing from CD or using noAlbumArtStub.
+	 */
+	setNoAlbumArtColors() {
+		if (grm.ui.isStreaming && (['white', 'black', 'reborn', 'random'].includes(grSet.theme))) {
+			grCol.primary = RGB(207, 0, 5);
+		}
+		else if (grm.ui.isPlayingCD || grm.ui.noAlbumArtStub || !fb.IsPlaying) {
+			grm.ui.initCustomTheme();
+			grm.color.setThemeColors();
+			bio.ui.updateProp(1); // Needed to update color for NO PHOTO/COVER stub in Biography when changing themes
+		}
+	}
+
+	/**
+	 * Sets primary and optional secondary theme color as well as accents.
+	 * @param {number} color - The primary color.
+	 * @param {number} color2 - The secondary color.
+	 */
+	setTheme(color, color2) {
+		if (color2 === undefined) color2 = color;
+		let themeCol = new Color(color.primary);
+		const customThemes = grSet.theme.startsWith('custom');
+
+		if (ColorDistance(color.primary, grCol.bg, true) < (themeCol.isCloseToGrayscale ? 60 : 45) &&
+			(grSet.theme !== 'reborn' && grSet.theme !== 'random' && (grSet.theme !== 'black' && !grSet.styleBlackReborn) && !customThemes)) {
+			if (grCfg.settings.showDebugThemeLog) console.log('>>> Theme primary color is too close to bg color. Tinting theme color.');
+			color.primary = TintColor(color.primary, 15);
+			color.accent = TintColor(color.primary, 10);
+			themeCol = new Color(color.primary);
+		}
+		grCol.primary = color.primary;
+		grCol.primary_alt = color2.primary_alt;
+
+		if (ColorDistance(color.primary, grCol.progressBar, true) < (themeCol.isCloseToGrayscale ? 60 : 45)) {
+			// Progress bar fill is too close in color to bg
+			if (grCfg.settings.showDebugThemeLog) console.log('>>> Theme primary color is too close to progress bar. Adjusting progressBar');
+			if (grSet.theme === 'white' && themeCol.brightness < 125) {
+				grCol.progressBar = RGB(180, 180, 180);
+			}
+		}
+
+		if (grm.details) {
+			grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+		}
+
+		grCol.primary     = color.primary;
+		grCol.primary_alt = color2.primary_alt;
+
+		// * Reborn/Random theme main tone palette
+		grCol.darkAccent_100     = ShadeColor(color.primary, 100);
+		grCol.darkAccent_100_alt = ShadeColor(color2.primary_alt, 100);
+		grCol.darkAccent_75      = ShadeColor(color.primary, 75);
+		grCol.darkAccent_75_alt  = ShadeColor(color2.primary_alt, 75);
+		grCol.darkAccent_65      = ShadeColor(color.primary, 65);
+		grCol.darkAccent_65_alt  = ShadeColor(color2.primary_alt, 65);
+		grCol.darkAccent_50      = ShadeColor(color.primary, 50);
+		grCol.darkAccent_50_alt  = ShadeColor(color2.primary_alt, 50);
+		grCol.darkAccent         = color.darkAccent;
+		grCol.darkAccent_alt     = color2.darkAccent_alt;
+		grCol.accent             = color.accent;
+		grCol.accent_alt         = color2.accent_alt;
+
+		grCol.lightAccent_2      = TintColor(color.primary, 2);
+		grCol.lightAccent_2_alt  = TintColor(color2.primary_alt, 2);
+		grCol.lightAccent_7      = TintColor(color.primary, 7);
+		grCol.lightAccent_7_alt  = TintColor(color2.primary_alt, 7);
+		grCol.lightAccent_10     = TintColor(color.primary, 10);
+		grCol.lightAccent_10_alt = TintColor(color2.primary_alt, 10);
+
+		grCol.lightAccent         = color.lightAccent;
+		grCol.lightAccent_alt     = color2.lightAccent_alt;
+		grCol.lightAccent_35      = TintColor(color.primary, 35);
+		grCol.lightAccent_35_alt  = TintColor(color2.primary_alt, 35);
+		grCol.lightAccent_50      = TintColor(color.primary, 50);
+		grCol.lightAccent_50_alt  = TintColor(color2.primary_alt, 50);
+		grCol.lightAccent_65      = TintColor(color.primary, 65);
+		grCol.lightAccent_65_alt  = TintColor(color2.primary_alt, 65);
+		grCol.lightAccent_80      = TintColor(color.primary, 80);
+		grCol.lightAccent_80_alt  = TintColor(color2.primary_alt, 80);
+		grCol.lightAccent_100     = TintColor(color.primary, 100);
+		grCol.lightAccent_100_alt = TintColor(color2.primary_alt, 100);
+
+		// * Change col.primary if too bright or too dark
+		if (grSet.theme === 'white' && (ColorDistance(grCol.primary, grCol.progressBar)) < 60) {
+			grCol.primary = grCol.darkAccent;
+		}
+	}
+
+	/**
+	 * Sets default theme colors, used on startup when nothing has been played or using noAlbumArtStub.
+	 */
+	setThemeColors() {
+		const themeColors = {
+			white: this.whiteTheme.colors,
+			black: this.blackTheme.colors,
+			reborn: this.rebornTheme.colors,
+			random: this.randomTheme.colors,
+			blue: this.blueTheme.colors,
+			darkblue: this.darkblueTheme.colors,
+			red: this.redTheme.colors,
+			cream: this.creamTheme.colors,
+			nblue: this.nblueTheme.colors,
+			ngreen: this.ngreenTheme.colors,
+			nred: this.nredTheme.colors,
+			ngold: this.ngoldTheme.colors
+		};
+
+		if (themeColors[grSet.theme]) {
+			this.setTheme(themeColors[grSet.theme]);
+		} else if (grSet.theme.startsWith('custom')) {
+			this.setTheme(this.customTheme.colors);
+		}
+	}
+
+	/**
+	 * Sets and saves currently used colors, used when transferring colors to a custom theme.
+	 * @param {string} slot - The custom theme slot in which to save.
+	 */
+	setCurrentColorsToCustomTheme(slot) {
+		const currentColors = {
+			// * PRELOADER COLORS * //
+			grCol_preloaderBg: RGBFtoHEX(grCol.bg),
+			grCol_preloaderLogo: '_custom-logo.png',
+			grCol_preloaderLowerBarTitle: RGBFtoHEX(grCol.lowerBarTitle),
+			grCol_preloaderProgressBar: RGBFtoHEX(grCol.progressBar),
+			grCol_preloaderProgressBarFill: RGBFtoHEX(grCol.progressBarFill),
+			grCol_preloaderProgressBarFrame: RGBFtoHEX(grCol.progressBarFrame),
+			grCol_preloaderUIHacksFrame: RGBFtoHEX(grCol.bg),
+			// * PLAYLIST COLORS * //
+			pl_col_bg: RGBFtoHEX(pl.col.bg),
+			pl_col_plman_text_normal: RGBFtoHEX(pl.col.plman_text_normal),
+			pl_col_plman_text_hovered: RGBFtoHEX(pl.col.plman_text_hovered),
+			pl_col_plman_text_pressed: RGBFtoHEX(pl.col.plman_text_pressed),
+			pl_col_header_nowplaying_bg: RGBFtoHEX(pl.col.header_nowplaying_bg),
+			pl_col_header_sideMarker: RGBFtoHEX(pl.col.header_sideMarker),
+			pl_col_header_artist_normal: RGBFtoHEX(pl.col.header_artist_normal),
+			pl_col_header_artist_playing: RGBFtoHEX(pl.col.header_artist_playing),
+			pl_col_header_album_normal: RGBFtoHEX(pl.col.header_album_normal),
+			pl_col_header_album_playing: RGBFtoHEX(pl.col.header_album_playing),
+			pl_col_header_info_normal: RGBFtoHEX(pl.col.header_info_normal),
+			pl_col_header_info_playing: RGBFtoHEX(pl.col.header_info_playing),
+			pl_col_header_date_normal: RGBFtoHEX(pl.col.header_date_normal),
+			pl_col_header_date_playing: RGBFtoHEX(pl.col.header_date_playing),
+			pl_col_header_line_normal: RGBFtoHEX(pl.col.header_line_normal),
+			pl_col_header_line_playing: RGBFtoHEX(pl.col.header_line_playing),
+			pl_col_row_nowplaying_bg: RGBFtoHEX(pl.col.row_nowplaying_bg),
+			pl_col_row_stripes_bg: RGBFtoHEX(pl.col.row_stripes_bg),
+			pl_col_row_selection_frame: RGBFtoHEX(pl.col.row_selection_frame),
+			pl_col_row_sideMarker: RGBFtoHEX(pl.col.row_sideMarker),
+			pl_col_row_title_normal: RGBFtoHEX(pl.col.row_title_normal),
+			pl_col_row_title_playing: RGBFtoHEX(pl.col.row_title_playing),
+			pl_col_row_title_selected: RGBFtoHEX(pl.col.row_title_selected),
+			pl_col_row_title_hovered: RGBFtoHEX(pl.col.row_title_hovered),
+			pl_col_row_rating_color: RGBFtoHEX(pl.col.row_rating_color),
+			pl_col_row_disc_subheader_line: RGBFtoHEX(pl.col.row_disc_subheader_line),
+			pl_col_row_drag_line: RGBFtoHEX(pl.col.row_drag_line),
+			pl_col_row_drag_line_reached: RGBFtoHEX(pl.col.row_drag_line_reached),
+			pl_col_sbar_btn_normal: RGBFtoHEX(pl.col.sbar_btn_normal),
+			pl_col_sbar_btn_hovered: RGBFtoHEX(pl.col.sbar_btn_hovered),
+			pl_col_sbar_thumb_normal: RGBFtoHEX(pl.col.sbar_thumb_normal),
+			pl_col_sbar_thumb_hovered: RGBFtoHEX(pl.col.sbar_thumb_hovered),
+			pl_col_sbar_thumb_drag: RGBFtoHEX(pl.col.sbar_thumb_drag),
+
+			// * LIBRARY COLORS * //
+			lib_ui_col_bg: RGBFtoHEX(lib.ui.col.bg),
+			lib_ui_col_rowStripes: RGBFtoHEX(lib.ui.col.rowStripes),
+			lib_ui_col_nowPlayingBg: RGBFtoHEX(lib.ui.col.nowPlayingBg),
+			lib_ui_col_sideMarker: RGBFtoHEX(lib.ui.col.sideMarker),
+			lib_ui_col_selectionFrame: RGBFtoHEX(lib.ui.col.selectionFrame),
+			lib_ui_col_selectionFrame2: RGBFtoHEX(lib.ui.col.selectionFrame2),
+			lib_ui_col_hoverFrame: RGBFtoHEX(lib.ui.col.hoverFrame),
+			lib_ui_col_iconPlus: RGBFtoHEX(lib.ui.col.iconPlus),
+			lib_ui_col_iconPlus_h: RGBFtoHEX(lib.ui.col.iconPlus_h),
+			lib_ui_col_iconPlus_sel: RGBFtoHEX(lib.ui.col.iconPlus_sel),
+			lib_ui_col_iconPlusBg: RGBFtoHEX(lib.ui.col.iconPlusBg),
+			lib_ui_col_iconMinus_e: RGBFtoHEX(lib.ui.col.iconMinus_e),
+			lib_ui_col_iconMinus_c: RGBFtoHEX(lib.ui.col.iconMinus_c),
+			lib_ui_col_iconMinus_h: RGBFtoHEX(lib.ui.col.iconMinus_h),
+			lib_ui_col_text: RGBFtoHEX(lib.ui.col.text),
+			lib_ui_col_text_h: RGBFtoHEX(lib.ui.col.text_h),
+			lib_ui_col_text_nowp: RGBFtoHEX(lib.ui.col.text_nowp),
+			lib_ui_col_textSel: RGBFtoHEX(lib.ui.col.textSel),
+			lib_ui_col_txt: RGBFtoHEX(lib.ui.col.txt),
+			lib_ui_col_txt_h: RGBFtoHEX(lib.ui.col.txt_h),
+			lib_ui_col_txt_box: RGBFtoHEX(lib.ui.col.txt_box),
+			lib_ui_col_search: RGBFtoHEX(lib.ui.col.search),
+			lib_ui_col_searchBtn: RGBFtoHEX(lib.ui.col.searchBtn),
+			lib_ui_col_crossBtn: RGBFtoHEX(lib.ui.col.crossBtn),
+			lib_ui_col_filterBtn: RGBFtoHEX(lib.ui.col.filterBtn),
+			lib_ui_col_settingsBtn: RGBFtoHEX(lib.ui.col.settingsBtn),
+			lib_ui_col_line: RGBFtoHEX(lib.ui.col.line),
+			lib_ui_col_s_line: RGBFtoHEX(lib.ui.col.s_line),
+			lib_ui_col_sbarBtns: RGBFtoHEX(lib.ui.col.sbarBtns),
+			lib_ui_col_sbarNormal: RGBFtoHEX(lib.ui.col.sbarNormal),
+			lib_ui_col_sbarHovered: RGBFtoHEX(lib.ui.col.sbarHovered),
+			lib_ui_col_sbarDrag: RGBFtoHEX(lib.ui.col.sbarDrag),
+
+			// * BIOGRAPHY COLORS * //
+			bio_ui_col_bg: RGBFtoHEX(bio.ui.col.bg),
+			bio_ui_col_rowStripes: RGBFtoHEX(bio.ui.col.rowStripes),
+			bio_ui_col_headingText: RGBFtoHEX(bio.ui.col.headingText),
+			bio_ui_col_bottomLine: RGBFtoHEX(bio.ui.col.bottomLine),
+			bio_ui_col_centerLine: RGBFtoHEX(bio.ui.col.centerLine),
+			bio_ui_col_sectionLine: RGBFtoHEX(bio.ui.col.sectionLine),
+			bio_ui_col_accent: RGBFtoHEX(bio.ui.col.accent),
+			bio_ui_col_source: RGBFtoHEX(bio.ui.col.source),
+			bio_ui_col_summary: RGBFtoHEX(bio.ui.col.summary),
+			bio_ui_col_text: RGBFtoHEX(bio.ui.col.text),
+			bio_ui_col_lyricsNormal: RGBFtoHEX(bio.ui.col.lyricsNormal),
+			bio_ui_col_lyricsHighlight: RGBFtoHEX(bio.ui.col.lyricsHighlight),
+			bio_ui_col_noPhotoStubBg: RGBFtoHEX(bio.ui.col.noPhotoStubBg),
+			bio_ui_col_noPhotoStubText: RGBFtoHEX(bio.ui.col.noPhotoStubText),
+			bio_ui_col_sbarBtns: RGBFtoHEX(bio.ui.col.sbarBtns),
+			bio_ui_col_sbarNormal: RGBFtoHEX(bio.ui.col.sbarNormal),
+			bio_ui_col_sbarHovered: RGBFtoHEX(bio.ui.col.sbarHovered),
+			bio_ui_col_sbarDrag: RGBFtoHEX(bio.ui.col.sbarDrag),
+
+			// * MAIN COLORS * //
+			grCol_bg: RGBFtoHEX(grCol.bg),
+			grCol_shadow: RGBFtoHEX(grCol.shadow),
+			grCol_discArtShadow: RGBFtoHEX(grCol.discArtShadow),
+			grCol_noAlbumArtStub: RGBFtoHEX(grCol.noAlbumArtStub),
+			grCol_lowerBarArtist: RGBFtoHEX(grCol.lowerBarArtist),
+			grCol_lowerBarTitle: RGBFtoHEX(grCol.lowerBarTitle),
+			grCol_lowerBarTime: RGBFtoHEX(grCol.lowerBarTime),
+			grCol_lowerBarLength: RGBFtoHEX(grCol.lowerBarLength),
+			grCol_lyricsNormal: RGBFtoHEX(grCol.lyricsNormal),
+			grCol_lyricsHighlight: RGBFtoHEX(grCol.lyricsHighlight),
+			grCol_lyricsShadow: RGBFtoHEX(grCol.lyricsShadow),
+			grCol_detailsBg: RGBFtoHEX(grCol.detailsBg),
+			grCol_detailsText: RGBFtoHEX(grCol.detailsText),
+			grCol_detailsRating: RGBFtoHEX(grCol.detailsRating),
+			grCol_timelineAdded: RGBFtoHEX(grCol.timelineAdded),
+			grCol_timelinePlayed: RGBFtoHEX(grCol.timelinePlayed),
+			grCol_timelineUnplayed: RGBFtoHEX(grCol.timelineUnplayed),
+			grCol_timelineFrame: RGBFtoHEX(grCol.timelineFrame),
+			grCol_popupBg: RGBFtoHEX(grCol.popupBg),
+			grCol_popupText: RGBFtoHEX(grCol.popupText),
+			grCol_menuBgColor: RGBFtoHEX(grCol.menuBgColor),
+			grCol_menuStyleBg: RGBFtoHEX(grCol.menuStyleBg),
+			grCol_menuRectStyleEmbossTop: RGBFtoHEX(grCol.menuRectStyleEmbossTop),
+			grCol_menuRectStyleEmbossBottom: RGBFtoHEX(grCol.menuRectStyleEmbossBottom),
+			grCol_menuRectNormal: RGBFtoHEX(grCol.menuRectNormal),
+			grCol_menuRectHovered: RGBFtoHEX(grCol.menuRectHovered),
+			grCol_menuRectDown: RGBFtoHEX(grCol.menuRectDown),
+			grCol_menuTextNormal: RGBFtoHEX(grCol.menuTextNormal),
+			grCol_menuTextHovered: RGBFtoHEX(grCol.menuTextHovered),
+			grCol_menuTextDown: RGBFtoHEX(grCol.menuTextDown),
+			grCol_transportEllipseBg: RGBFtoHEX(grCol.transportEllipseBg),
+			grCol_transportEllipseNormal: RGBFtoHEX(grCol.transportEllipseNormal),
+			grCol_transportEllipseHovered: RGBFtoHEX(grCol.transportEllipseHovered),
+			grCol_transportEllipseDown: RGBFtoHEX(grCol.transportEllipseDown),
+			grCol_transportStyleBg: RGBFtoHEX(grCol.transportStyleBg),
+			grCol_transportStyleTop: RGBFtoHEX(grCol.transportStyleTop),
+			grCol_transportStyleBottom: RGBFtoHEX(grCol.transportStyleBottom),
+			grCol_transportIconNormal: RGBFtoHEX(grCol.transportIconNormal),
+			grCol_transportIconHovered: RGBFtoHEX(grCol.transportIconHovered),
+			grCol_transportIconDown: RGBFtoHEX(grCol.transportIconDown),
+			grCol_progressBar: RGBFtoHEX(grCol.progressBar),
+			grCol_progressBarStreaming: RGBFtoHEX(grCol.progressBarStreaming),
+			grCol_progressBarFrame: RGBFtoHEX(grCol.progressBarFrame),
+			grCol_progressBarFill: RGBFtoHEX(grCol.progressBarFill),
+			grCol_peakmeterBarProg: RGBFtoHEX(grCol.peakmeterBarProg),
+			grCol_peakmeterBarProgFill: RGBFtoHEX(grCol.peakmeterBarProgFill),
+			grCol_peakmeterBarFillTop: RGBFtoHEX(grCol.peakmeterBarFillTop),
+			grCol_peakmeterBarFillMiddle: RGBFtoHEX(grCol.peakmeterBarFillMiddle),
+			grCol_peakmeterBarFillBack: RGBFtoHEX(grCol.peakmeterBarFillBack),
+			grCol_peakmeterBarVertProgFill: RGBFtoHEX(grCol.peakmeterBarVertProgFill),
+			grCol_peakmeterBarVertFill: RGBFtoHEX(grCol.peakmeterBarVertFill),
+			grCol_peakmeterBarVertFillPeaks: RGBFtoHEX(grCol.peakmeterBarVertFillPeaks),
+			grCol_waveformBarFillFront: RGBFtoHEX(grCol.waveformBarFillFront),
+			grCol_waveformBarFillBack: RGBFtoHEX(grCol.waveformBarFillBack),
+			grCol_waveformBarFillPreFront: RGBFtoHEX(grCol.waveformBarFillPreFront),
+			grCol_waveformBarFillPreBack: RGBFtoHEX(grCol.waveformBarFillPreBack),
+			grCol_waveformBarIndicator: RGBFtoHEX(grCol.waveformBarIndicator),
+			grCol_volumeBar: RGBFtoHEX(grCol.volumeBar),
+			grCol_volumeBarFrame: RGBFtoHEX(grCol.volumeBarFrame),
+			grCol_volumeBarFill: RGBFtoHEX(grCol.volumeBarFill),
+			grCol_styleBevel: RGBFtoHEX(grCol.styleBevel),
+			grCol_styleGradient: RGBFtoHEX(grCol.styleGradient),
+			grCol_styleGradient2: RGBFtoHEX(grCol.styleGradient2),
+			grCol_styleProgressBar: RGBFtoHEX(grCol.styleProgressBar),
+			grCol_styleProgressBarLineTop: RGBFtoHEX(grCol.styleProgressBarLineTop),
+			grCol_styleProgressBarLineBottom: RGBFtoHEX(grCol.styleProgressBarLineBottom),
+			grCol_styleProgressBarFill: RGBFtoHEX(grCol.styleProgressBarFill),
+			grCol_styleVolumeBar: RGBFtoHEX(grCol.styleVolumeBar),
+			grCol_styleVolumeBarFill: RGBFtoHEX(grCol.styleVolumeBarFill)
+		}
+
+		const customThemes = {
+			custom01: { schema: grDef.customTheme01Schema, object: 'customTheme01' },
+			custom02: { schema: grDef.customTheme02Schema, object: 'customTheme02' },
+			custom03: { schema: grDef.customTheme03Schema, object: 'customTheme03' },
+			custom04: { schema: grDef.customTheme04Schema, object: 'customTheme04' },
+			custom05: { schema: grDef.customTheme05Schema, object: 'customTheme05' },
+			custom06: { schema: grDef.customTheme06Schema, object: 'customTheme06' },
+			custom07: { schema: grDef.customTheme07Schema, object: 'customTheme07' },
+			custom08: { schema: grDef.customTheme08Schema, object: 'customTheme08' },
+			custom09: { schema: grDef.customTheme09Schema, object: 'customTheme09' },
+			custom10: { schema: grDef.customTheme10Schema, object: 'customTheme10' }
+		};
+
+		if (!customThemes[slot]) return;
+
+		const customTheme = customThemes[slot].object;
+		const { schema }  = customThemes[slot];
+		this[customTheme] = grCfg.configCustom.addConfigurationObject(schema, currentColors, grDef.customThemeComments);
+		grCfg.cTheme = this[customTheme];
+		grCfg.configCustom.updateConfigObjValues(customTheme, currentColors, true);
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - RANDOM COLOR * //
+	// #region PUBLIC METHODS - RANDOM COLOR
+	/**
+	 * Generates a random theme color, used in Random theme.
+	 */
+	getRandomThemeColor() {
+		if (grSet.theme !== 'random' || grm.ui.isStreaming || grm.ui.isPlayingCD ||
+			!grm.ui.getRandomThemeColorContextMenu && ($('[%GR_THEMECOLOR%]') || $('[%GR_THEMECOLOR2%]'))) {
+			return;
+		}
+
+		const generateRandomColor = () => {
+			const R = Math.floor((Math.random() * (grSet.styleRandomPastel ? 127 : 27)) + (grSet.styleRandomPastel ? 127 : 27));
+			const G = Math.floor((Math.random() * (grSet.styleRandomPastel ? 127 : 27)) + (grSet.styleRandomPastel ? 127 : 27));
+			const B = Math.floor((Math.random() * (grSet.styleRandomPastel ? 127 : 27)) + (grSet.styleRandomPastel ? 127 : 27));
+			return grSet.styleRandomPastel || grSet.styleRandomDark ? (R << 16) + (G << 8) + B : ((1 << 24) * Math.random() | 0);
+		};
+
+		const color = new Color(generateRandomColor());
+		const tObj = this.createThemeColorObject(color);
+		grm.color.setTheme(tObj);
+
+		if (grCfg.settings.showDebugThemeLog) {
+			console.log('Random generated color:', color.getRGB(true));
+			console.log('Random color brightness:', color.brightness);
+		}
+		if (grCfg.settings.showDebugThemeOverlay) grm.ui.selectedPrimaryColor = color.getRGB(true);
+	}
+
+	/**
+	 * Auto generates new colors depending on time interval, used in style Random theme auto color.
+	 */
+	getRandomThemeAutoColor() {
+		grm.ui.clearTimer('randomThemeAutoColor');
+
+		if (grSet.styleRandomAutoColor !== 'off' && grSet.styleRandomAutoColor !== 'track') {
+			grm.ui.randomThemeAutoColorTimer = setInterval(() => {
+				grm.ui.initTheme();
+			}, grSet.styleRandomAutoColor);
+		}
+		else if (grSet.styleRandomAutoColor === 'track') {
+			grm.ui.initTheme();
+		}
+		DebugLog('\n>>> initTheme => getRandomThemeAutoColor <<<\n');
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - ALBUM ART COLOR * //
+	// #region PUBLIC METHODS - ALBUM ART COLOR
+	/**
+	 * Finds the brightest color based on given parameters.
+	 * @param {Array} colorsWeighted - Array of color objects with added weight properties.
+	 * @param {number} currentBrightness - The brightness level that colors must exceed.
+	 * @param {number} maxBrightness - The maximum brightness level that colors must not exceed.
+	 * @param {number} minFrequency - The minimum frequency threshold that colors must exceed.
+	 * @returns {Color|null} The brightest Color object or null if no color meets the criteria.
+	 */
+	findBrightestColor(colorsWeighted, currentBrightness, maxBrightness, minFrequency) {
+		let brightestColor;
+		let maxWeight = 0;
+
+		for (const c of colorsWeighted) {
+			if (!c.col.isCloseToGrayscale &&
+				(c.col.brightness > currentBrightness) &&
+				(c.col.brightness < maxBrightness) &&
+				(c.freq > minFrequency) &&
+				(c.weight > maxWeight)) {
+				maxWeight = c.weight;
+				brightestColor = c.col;
+			}
+		}
+
+		return brightestColor ? new Color(brightestColor.val) : null;
+	}
+
+	/**
+	 * Extracts the primary and secondary optional color from an image.
+	 * @param {GdiBitmap} image - The image to extract the colors from.
+	 * @param {number} maxColorsToPull - The max number of colors in the palette.
+	 * @param {number} [secondaryColor] - The secondary picked color, used in Reborn fusion.
+	 * @returns {number|null} The primary color value if secondaryColor is not provided, otherwise the secondary color value.
+	 * Returns null on error.
+	 */
+	getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
+		const debugThemeLog = grCfg.settings.showDebugThemeLog;
+		const debugThemeOverlay = grCfg.settings.showDebugThemeOverlay;
+		const minFreq = 0.015;
+		const minFreqBrightestCol1 = 0.01;
+		const minFreqBrightestCol2 = 0.05;
+		const maxBrightness = grSet.theme === 'black' || grSet.styleBlend || ['reborn', 'random'].includes(grSet.theme) && grSet.styleBlend2 ? 255 : 212;
+		const midBrightness2Value = RandomMinMax(60, 120);
+
+		try {
+			const colorsWeighted = JSON.parse(image.GetColourSchemeJSON(maxColorsToPull)).map(c => ({ ...c, col: new Color(c.col) }));
+			let maxWeight = 0;
+			let maxWeight2 = 0;
+			let selectedColor = new Color(colorsWeighted[0].col);  // Use first color in case no color selected below
+			let selectedColor2 = secondaryColor ? new Color(colorsWeighted[1].col) : null; // Use second color in case no color selected below
+
+			if (debugThemeLog) console.log('idx      color        bright  freq   weight');
+
+			for (const [i, c] of colorsWeighted.entries()) {
+				const col = c.col;
+				const midBrightness = 127 - Math.abs(127 - col.brightness); // Favors colors with brightness around 127
+				const midBrightness2 = midBrightness2Value - Math.abs(midBrightness2Value - col.brightness); // Favors colors with random brightness from 60 - 120
+				c.weight = c.freq * midBrightness * 10;
+				c.weight2 = c.freq * midBrightness2 * 10;
+
+				if (c.freq >= minFreq && !col.isCloseToGrayscale && col.brightness < maxBrightness) {
+					if (debugThemeLog) {
+						console.log(LeftPad(i, 2), col.getRGB(true, true), LeftPad(col.brightness, 4), ' ', `${LeftPad((c.freq * 100).toFixed(2), 5)}%`, LeftPad(c.weight.toFixed(2), 7));
+					}
+					if (c.weight > maxWeight) {
+						maxWeight = c.weight;
+						selectedColor = col;
+					}
+					if (secondaryColor && c.weight2 > maxWeight2) {
+						maxWeight2 = c.weight2;
+						selectedColor2 = col;
+					}
+				}
+				else if (debugThemeLog) {
+					console.log(' -', col.getRGB(true, true), LeftPad(col.brightness, 4), ' ', `${LeftPad((c.freq * 100).toFixed(2), 5)}%`, col.isCloseToGrayscale ? '   grey' : (c.freq < minFreq) ? '   freq' : ' bright');
+				}
+			}
+
+			if (selectedColor.brightness < 37) {
+				selectedColor = this.findBrightestColor(colorsWeighted, selectedColor.brightness, maxBrightness, minFreqBrightestCol1) || selectedColor;
+				if (debugThemeLog) console.log(selectedColor.getRGB(true), 'brightness:', selectedColor.brightness, 'too dark -- searching for highlight color');
+			}
+			if (secondaryColor && selectedColor2.brightness < 37) {
+				selectedColor2 = this.findBrightestColor(colorsWeighted, selectedColor2.brightness, maxBrightness, minFreqBrightestCol2) || selectedColor2;
+				if (debugThemeLog) console.log(selectedColor2.getRGB(true), 'brightness:', selectedColor2.brightness, 'too dark -- searching for highlight color');
+			}
+
+			if (debugThemeLog) {
+				console.log('Primary color:', selectedColor.getRGB(true));
+				if (secondaryColor) console.log('Primary color 2:', selectedColor2.getRGB(true));
+			}
+			if (debugThemeOverlay) {
+				grm.ui.selectedPrimaryColor = selectedColor.getRGB(true);
+				if (secondaryColor) grm.ui.selectedPrimaryColor2 = selectedColor2.getRGB(true);
+			}
+
+			return secondaryColor ? selectedColor2.val : selectedColor.val;
+		}
+		catch (e) {
+			console.log('\n>>> Error => GetColourSchemeJSON failed!\n');
+			return null;
+		}
+	}
+
+	/**
+	 * Sets the primary or secondary color from the value of getThemeColorsJson or from the custom GR-tag.
+	 * @param {GdiBitmap} image - The image from which the colors will be picked.
+	 */
+	getThemeColors(image) {
+		const debugThemeLog = grCfg.settings.showDebugThemeLog;
+		const rebornFusion = grSet.theme === 'reborn' && (grSet.styleRebornFusion || grSet.styleRebornFusion2 || grSet.styleRebornFusionAccent);
+		const val = $('[%GR_THEMECOLOR%]');
+		const val2 = $('[%GR_THEMECOLOR2%]');
+		let color;
+		let color2;
+		let calculatedColor;
+		let calculatedColor2;
+
+		if (val.length) {
+			calculatedColor = ColStringToRGB(val);
+			calculatedColor2 = ColStringToRGB(val2);
+		} else {
+			calculatedColor = this.getThemeColorsJson(image, 14, false);
+			calculatedColor2 = rebornFusion ? this.getThemeColorsJson(image, 14, true) : undefined;
+		}
+
+		if (isNaN(calculatedColor)) return;
+
+		color = new Color(calculatedColor);
+		if (rebornFusion) color2 = new Color(calculatedColor2);
+
+		if (grSet.theme !== 'black') {
+			const shadeAmount = grSet.theme === 'white' ? 12 : 3;
+			while (color.brightness > 220) {
+				calculatedColor = ShadeColor(calculatedColor, shadeAmount);
+				color = new Color(calculatedColor);
+				if (debugThemeLog) console.log(' >> Shading: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
+			}
+		}
+
+		if (!color.isGrayscale) {
+			while (color.brightness <= 17) {
+				calculatedColor = TintColor(calculatedColor, 3);
+				color = new Color(calculatedColor);
+				if (debugThemeLog) console.log(' >> Tinting: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
+			}
+		}
+
+		const tObj = this.createThemeColorObject(color);
+		if (rebornFusion) {
+			const tObj2 = this.createThemeColorObject(color, color2);
+			grm.color.setTheme(tObj, tObj2);
+		} else {
+			grm.color.setTheme(tObj);
+		}
+
+		if (debugThemeLog) {
+			console.log('Primary color brightness:', color.brightness);
+			if (color2) console.log('Primary color 2 brightness:', color2.brightness);
+		}
+	}
+	// #endregion
+}
+
+
+//////////////////////
+// * THEME COLORS * //
+//////////////////////
+/**
+ * A class that provides the full collection of all theme colors and its methods.
+ * @augments {BaseColors}
+ */
+class ThemeColors extends BaseColors {
 	// * PUBLIC METHODS - WHITE THEME * //
 	// #region PUBLIC METHODS - WHITE THEME
 	/**
@@ -406,9 +1515,9 @@ class ThemeColors {
 			RGB(245, 245, 245);
 		grCol.shadow = this.BW2 ? RGBA(0, 0, 0, 240) : RGBA(0, 0, 0, 25);
 		grCol.discArtShadow = this.BW2 ? RGBA(0, 0, 0, 30) : RGBA(0, 0, 0, 10);
-		grCol.noAlbumArtStub = this.BLEND || this.BLEND2 ? RGB(80, 80, 80) : RGB(120, 120, 120);
-		grCol.lowerBarArtist = this.BLEND || this.BLEND2 ? RGB(80, 80, 80) : RGB(120, 120, 120);
-		grCol.lowerBarTitle = this.BLEND || this.BLEND2 ? RGB(80, 80, 80) : RGB(120, 120, 120);
+		grCol.noAlbumArtStub = this.BLEND12 ? RGB(80, 80, 80) : grm.ui.isStreaming ? RGB(207, 0, 5) : RGB(120, 120, 120);
+		grCol.lowerBarArtist = this.BLEND12 ? RGB(80, 80, 80) : RGB(120, 120, 120);
+		grCol.lowerBarTitle = this.BLEND12 ? RGB(80, 80, 80) : RGB(120, 120, 120);
 		grCol.lowerBarTime = grCol.lowerBarTitle;
 		grCol.lowerBarLength = grCol.lowerBarTitle;
 		grCol.lyricsNormal = RGB(255, 255, 255);
@@ -424,7 +1533,7 @@ class ThemeColors {
 		grCol.timelinePlayed = grm.ui.isStreaming ? RGB(207, 0, 5) : grCol.lightBg ? ShadeColor(grCol.primary, this.BLEND ? 35 : 25) : grCol.lightAccent_35;
 		grCol.timelineUnplayed = grm.ui.isStreaming ? RGB(207, 0, 5) : grCol.lightBg ? ShadeColor(grCol.primary, this.BLEND ? 20 : 10) : grCol.lightAccent;
 		grCol.timelineFrame = grCol.detailsBg;
-		if (grm.timeline) grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+		if (grm.details) grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 
 		// * POPUP COLORS * //
 		grCol.popupBg = this.BW ? RGB(230, 230, 230) : this.BW2 ? RGB(25, 25, 25) : RGBAtoRGB(pl.col.header_nowplaying_bg, 255);
@@ -445,26 +1554,26 @@ class ThemeColors {
 
 		grCol.menuRectNormal =
 			this.TMB === 'filled' ? RGB(200, 200, 200) :
-			this.BLEND || this.BLEND2 ? this.BEVEL ? RGB(140, 140, 140) : RGB(150, 150, 150) :
+			this.BLEND12 ? this.BEVEL ? RGB(140, 140, 140) : RGB(150, 150, 150) :
 			this.ALT2 ? RGB(190, 190, 190) :
 			RGB(200, 200, 200);
 
 		grCol.menuRectHovered =
 			this.TMB === 'filled' ? RGB(200, 200, 200) :
 			this.TMB === 'bevel' || this.TMB === 'inner' ? this.BEVEL ? RGB(200, 200, 200) : RGB(220, 220, 220) :
-			this.BLEND || this.BLEND2 ? this.BEVEL ? RGB(140, 140, 140) : RGB(150, 150, 150) :
+			this.BLEND12 ? this.BEVEL ? RGB(140, 140, 140) : RGB(150, 150, 150) :
 			this.ALT2 ? RGB(190, 190, 190) :
 			RGB(200, 200, 200);
 
 		grCol.menuRectDown = grCol.menuRectHovered;
-		grCol.menuTextNormal = this.BLEND || this.BLEND2 ? RGB(80, 80, 80) : RGB(120, 120, 120);
+		grCol.menuTextNormal = this.BLEND12 ? RGB(80, 80, 80) : RGB(120, 120, 120);
 		grCol.menuTextHovered = RGB(80, 80, 80);
 		grCol.menuTextDown = grCol.menuTextHovered;
 
 		// * LOWER BAR TRANSPORT BUTTON COLORS * //
-		grCol.transportEllipseBg = (this.BLEND || this.BLEND2) && fb.IsPlaying ? RGB(230, 230, 230) : RGB(255, 255, 255);
-		grCol.transportEllipseNormal =  this.BLEND || this.BLEND2 ? this.BEVEL ? RGB(200, 200, 200) : RGB(210, 210, 210) : RGB(220, 220, 220);
-		grCol.transportEllipseHovered = this.BLEND || this.BLEND2 ? this.BEVEL ? RGB(160, 160, 160) : RGB(170, 170, 170) : RGB(180, 180, 180);
+		grCol.transportEllipseBg = this.BLEND12 && fb.IsPlaying ? RGB(230, 230, 230) : RGB(255, 255, 255);
+		grCol.transportEllipseNormal =  this.BLEND12 ? this.BEVEL ? RGB(200, 200, 200) : RGB(210, 210, 210) : RGB(220, 220, 220);
+		grCol.transportEllipseHovered = this.BLEND12 ? this.BEVEL ? RGB(160, 160, 160) : RGB(170, 170, 170) : RGB(180, 180, 180);
 		grCol.transportEllipseDown = grCol.transportEllipseHovered;
 
 		grCol.transportStyleBg =
@@ -479,15 +1588,15 @@ class ThemeColors {
 			this.TPB === 'bevel' || this.TPB === 'inner' ? this.BEVEL ? RGB(190, 190, 190) : RGB(215, 215, 215) :
 			this.TPB === 'emboss' ? this.BEVEL ? RGB(210, 210, 210) : RGB(225, 225, 225) : '';
 
-		grCol.transportIconNormal =  this.BLEND || this.BLEND2 || this.TPB === 'minimal' ? RGB(80, 80, 80) : RGB(120, 120, 120);
-		grCol.transportIconHovered = this.BLEND || this.BLEND2 || this.TPB === 'minimal' ? RGB(0, 0, 0) : RGB(60, 60, 60);
+		grCol.transportIconNormal =  this.BLEND12 || this.TPB === 'minimal' ? RGB(80, 80, 80) : RGB(120, 120, 120);
+		grCol.transportIconHovered = this.BLEND12 || this.TPB === 'minimal' ? RGB(0, 0, 0) : RGB(60, 60, 60);
 		grCol.transportIconDown = grCol.transportIconHovered;
 
 		// * PROGRESS BAR COLORS * //
 		grCol.progressBar =
 			this.PB === 'bevel' ? this.BEVEL ? RGB(245, 245, 245) : RGB(220, 220, 220) :
-								  this.BEVEL ? this.BLEND || this.BLEND2 ? RGB(235, 235, 235) : RGB(200, 200, 200) :
-			(this.BLEND || this.BLEND2) && fb.IsPlaying && !grm.ui.noAlbumArtStub ? RGB(240, 240, 240) :
+								  this.BEVEL ? this.BLEND12 ? RGB(235, 235, 235) : RGB(200, 200, 200) :
+			this.BLEND12 && fb.IsPlaying && !grm.ui.noAlbumArtStub ? RGB(240, 240, 240) :
 			RGB(220, 220, 220);
 
 		grCol.progressBarStreaming = RGB(207, 0, 5);
@@ -533,10 +1642,10 @@ class ThemeColors {
 														   this.BEVEL ? RGBA(0, 0, 0, this.ALT || this.ALT2 ? 15 : 20) : RGBA(0, 0, 0, this.ALT || this.ALT2 ? 10 : 20) : '';
 
 		grCol.styleProgressBarLineBottom =
-			this.PB === 'bevel' ? this.PBD === 'rounded' ? this.BEVEL ? this.BLEND || this.BLEND2 ? RGBA(255, 255, 255, 120) : RGBA(255, 255, 255, 160) : this.BLEND || this.BLEND2 ? RGBA(255, 255, 255, 140) : RGBA(255, 255, 255, 255) :
-														   this.BEVEL ? this.BLEND || this.BLEND2 ? RGBA(255, 255, 255, 80)  : RGBA(255, 255, 255, 100) : this.BLEND || this.BLEND2 ? RGBA(255, 255, 255, 120) : RGBA(255, 255, 255, 220) :
-			this.PB === 'inner' ? this.PBD === 'rounded' ? this.BEVEL ? this.BLEND || this.BLEND2 ? RGBA(255, 255, 255, 100) : RGBA(255, 255, 255, 140) : this.BLEND || this.BLEND2 ? RGBA(255, 255, 255, 140) : RGBA(255, 255, 255, 255) :
-														   this.BEVEL ? this.BLEND || this.BLEND2 ? RGBA(255, 255, 255, 80)  : RGBA(255, 255, 255, 140) : this.BLEND || this.BLEND2 ? RGBA(255, 255, 255, 120) : RGBA(255, 255, 255, 255) : '';
+			this.PB === 'bevel' ? this.PBD === 'rounded' ? this.BEVEL ? this.BLEND12 ? RGBA(255, 255, 255, 120) : RGBA(255, 255, 255, 160) : this.BLEND12 ? RGBA(255, 255, 255, 140) : RGBA(255, 255, 255, 255) :
+														   this.BEVEL ? this.BLEND12 ? RGBA(255, 255, 255, 80)  : RGBA(255, 255, 255, 100) : this.BLEND12 ? RGBA(255, 255, 255, 120) : RGBA(255, 255, 255, 220) :
+			this.PB === 'inner' ? this.PBD === 'rounded' ? this.BEVEL ? this.BLEND12 ? RGBA(255, 255, 255, 100) : RGBA(255, 255, 255, 140) : this.BLEND12 ? RGBA(255, 255, 255, 140) : RGBA(255, 255, 255, 255) :
+														   this.BEVEL ? this.BLEND12 ? RGBA(255, 255, 255, 80)  : RGBA(255, 255, 255, 140) : this.BLEND12 ? RGBA(255, 255, 255, 120) : RGBA(255, 255, 255, 255) : '';
 
 		grCol.styleProgressBarFill = this.PBF === 'bevel' || this.PBF === 'inner' ? RGBA(0, 0, 0, 70) : '';
 
@@ -567,13 +1676,13 @@ class ThemeColors {
 		pl.col.header_nowplaying_bg = grCol.colBrightness < 25 ? grCol.lightAccent : grCol.primary;
 		pl.col.header_sideMarker = pl.col.header_nowplaying_bg;
 		pl.col.header_artist_normal = RGB(220, 220, 220);
-		pl.col.header_artist_playing = grm.ui.noAlbumArtStub && (this.BLEND || this.BLEND2) ? RGB(20, 20, 20) : RGB(255, 255, 255);
+		pl.col.header_artist_playing = grm.ui.noAlbumArtStub && this.BLEND12 ? RGB(20, 20, 20) : RGB(255, 255, 255);
 		pl.col.header_album_normal = RGB(200, 200, 200);
-		pl.col.header_album_playing = grm.ui.noAlbumArtStub && (this.BLEND || this.BLEND2) ? RGB(20, 20, 20) : RGB(245, 245, 245);
+		pl.col.header_album_playing = grm.ui.noAlbumArtStub && this.BLEND12 ? RGB(20, 20, 20) : RGB(245, 245, 245);
 		pl.col.header_info_normal = RGB(200, 200, 200);
-		pl.col.header_info_playing = grm.ui.noAlbumArtStub && (this.BLEND || this.BLEND2) ? RGB(20, 20, 20) : RGB(245, 245, 245);
+		pl.col.header_info_playing = grm.ui.noAlbumArtStub && this.BLEND12 ? RGB(20, 20, 20) : RGB(245, 245, 245);
 		pl.col.header_date_normal = RGB(220, 220, 220);
-		pl.col.header_date_playing = grm.ui.noAlbumArtStub && (this.BLEND || this.BLEND2) ? RGB(20, 20, 20) : RGB(245, 245, 245);
+		pl.col.header_date_playing = grm.ui.noAlbumArtStub && this.BLEND12 ? RGB(20, 20, 20) : RGB(245, 245, 245);
 		pl.col.header_line_normal = this.BLEND ? RGB(65, 65, 65) : RGB(45, 45, 45);
 		pl.col.header_line_playing =  RGB(25, 25, 25);
 
@@ -584,7 +1693,7 @@ class ThemeColors {
 		pl.col.row_selection_frame = pl.col.row_selection_bg;
 		pl.col.row_sideMarker = grCol.colBrightness < 25 ? grCol.lightAccent_35 : grCol.primary;
 		pl.col.row_title_normal = RGB(200, 200, 200);
-		pl.col.row_title_playing = grm.ui.noAlbumArtStub && (this.BLEND || this.BLEND2) ? RGB(20, 20, 20) : RGB(245, 245, 245);
+		pl.col.row_title_playing = grm.ui.noAlbumArtStub && this.BLEND12 ? RGB(20, 20, 20) : RGB(245, 245, 245);
 		pl.col.row_title_selected = RGB(255, 255, 255);
 		pl.col.row_title_hovered = pl.col.row_title_selected;
 		pl.col.row_rating_color = RGB(255, 190, 0);
@@ -718,7 +1827,7 @@ class ThemeColors {
 		grCol.discArtShadow = this.BR ? RGBA(0, 0, 0, 30) : RGBA(0, 0, 0, 40);
 		grCol.noAlbumArtStub = grm.ui.isStreaming ? RGB(240, 240, 240) : RGB(175, 205, 225);
 		grCol.lowerBarArtist = RGB(240, 240, 240);
-		grCol.lowerBarTitle = this.BLEND || this.BLEND2 ? RGB(220, 220, 220) : RGB(200, 200, 200);
+		grCol.lowerBarTitle = this.BLEND12 ? RGB(220, 220, 220) : RGB(200, 200, 200);
 		grCol.lowerBarTime = grCol.lowerBarTitle;
 		grCol.lowerBarLength = grCol.lowerBarTitle;
 		grCol.lyricsNormal = RGB(255, 255, 255);
@@ -734,7 +1843,7 @@ class ThemeColors {
 		grCol.timelinePlayed = grm.ui.isStreaming ? RGB(207, 0, 5) : grCol.lightBg ? ShadeColor(grCol.primary, this.BLEND ? 35 : 25) : grCol.lightAccent_35;
 		grCol.timelineUnplayed = grm.ui.isStreaming ? RGB(207, 0, 5) : grCol.lightBg ? ShadeColor(grCol.primary, this.BLEND ? 20 : 10) : grCol.lightAccent;
 		grCol.timelineFrame = grCol.detailsBg;
-		if (grm.timeline) grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+		if (grm.details) grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 
 		// * POPUP COLORS * //
 		grCol.popupBg = RGBAtoRGB(pl.col.header_nowplaying_bg, 255);
@@ -766,13 +1875,13 @@ class ThemeColors {
 			RGB(120, 120, 120);
 
 		grCol.menuRectDown = grCol.menuRectHovered;
-		grCol.menuTextNormal = this.BLEND || this.BLEND2 ? RGB(200, 200, 200) : RGB(180, 180, 180);
+		grCol.menuTextNormal = this.BLEND12 ? RGB(200, 200, 200) : RGB(180, 180, 180);
 		grCol.menuTextHovered = RGB(255, 255, 255);
 		grCol.menuTextDown = grCol.menuTextHovered;
 
 		// * LOWER BAR TRANSPORT BUTTON COLORS * //
 		grCol.transportEllipseBg =
-			(this.BLEND || this.BLEND2) && fb.IsPlaying ?
+			this.BLEND12 && fb.IsPlaying ?
 			this.PB === 'bevel' ? RGB(36, 36, 36) :
 			this.PB === 'inner' ? RGB(37, 37, 37) :
 			RGB(35, 35, 35) : RGB(35, 35, 35);
@@ -870,7 +1979,7 @@ class ThemeColors {
 		pl.col.bg =
 			// * Need this extra condition to overwrite col.primary when switching themes, no album art loaded i.e on startup and going back to Reborn/Random theme.
 			// * Reborn/Random theme should stay default white and not the defined col.primary dark gray
-			!fb.IsPlaying || !grm.ui.albumArt || grCol.primary === RGB(90, 90, 90) && !fb.IsPlaying || grCol.primary === RGB(25, 160, 240) && !fb.IsPlaying ? RGB(255, 255, 255) :
+			!fb.IsPlaying && !grSet.panelBrowseMode || !grm.ui.albumArt || grCol.primary === RGB(90, 90, 90) || grCol.primary === RGB(25, 160, 240) ? RGB(255, 255, 255) :
 			this.LAYOUT !== 'default' ? grCol.lightAccent_2 : grCol.primary;
 		// * Assigned after background has been initialized
 		grCol.isColored = pl.col.bg !== RGB(255, 255, 255);
@@ -883,10 +1992,18 @@ class ThemeColors {
 
 		// * HEADER COLORS * //
 		pl.col.header_nowplaying_bg =
-			this.THEME === 'reborn' ? grCol.isColored ? this.BLEND ? RGBtoRGBA(grCol.lightAccent_10, 130) : grCol.lightAccent_10 :
+			this.THEME === 'reborn' ?
+				grCol.isColored ?
+					this.BLEND ? RGBtoRGBA(grCol.lightAccent_10, 130) :
+					grCol.lightAccent_10 :
 				grCol.primary :
-			this.THEME === 'random' ? grCol.isColored ? this.BLEND ? RGBtoRGBA(grCol.lightAccent_10, 130) : grCol.lightBg ? ShadeColor(grCol.primary, 5) : grCol.lightAccent_10 :
-				grCol.primary : '';
+			this.THEME === 'random' ?
+				grCol.isColored ?
+					this.BLEND ? RGBtoRGBA(grCol.lightAccent_10, 130) :
+					grCol.lightBg ? ShadeColor(grCol.primary, 5) :
+					grCol.lightAccent_10 :
+				grCol.primary :
+			'';
 
 		pl.col.header_sideMarker = grCol.isColored ? grCol.lightAccent_50 : grCol.primary;
 		pl.col.header_artist_normal = RGB(120, 120, 120);
@@ -923,8 +2040,8 @@ class ThemeColors {
 		pl.col.sbar_thumb_drag = pl.col.sbar_thumb_hovered;
 
 		// * WHEN PLAYING * //
-		if (fb.IsPlaying && grCol.isColored) {
-			if (this.GRAD || this.GRAD2 || this.RF || this.RF2 ? grCol.lightBgPlaylist : grCol.lightBg) {
+		if (grCol.isColored) {
+			if (this.GRAD12 || this.RF12 ? grCol.lightBgPlaylist : grCol.lightBg) {
 				// * PLAYLIST MANAGER COLORS * //
 				pl.col.plman_text_normal = grSet.autoHidePlman ? pl.col.bg : grCol.darkAccent_75;
 				pl.col.plman_text_hovered = grCol.darkAccent_100;
@@ -1003,7 +2120,7 @@ class ThemeColors {
 		// * NODE COLORS * //
 		lib.ui.col.iconPlus = RGB(120, 120, 120);
 		lib.ui.col.iconPlus_h = RGB(0, 0, 0);
-		lib.ui.col.iconPlus_sel = !fb.IsPlaying && !libSet.albumArtShow && !lib.pop.highlight.nowPlaying ? RGB(255, 255, 255) : RGB(0, 0, 0);
+		lib.ui.col.iconPlus_sel = !grCol.isColored && !libSet.albumArtShow && !lib.pop.highlight.nowPlaying ? RGB(255, 255, 255) : RGB(0, 0, 0);
 		lib.ui.col.iconPlusBg = RGB(240, 240, 240);
 		lib.ui.col.iconMinus_e = RGB(120, 120, 120);
 		lib.ui.col.iconMinus_c = lib.ui.col.iconMinus_e;
@@ -1015,8 +2132,8 @@ class ThemeColors {
 		lib.ui.col.text_nowp = grm.ui.noAlbumArtStub && libSet.albumArtShow && libImg.labels.overlayDark || grm.ui.noAlbumArtStub && this.ALT2 ? RGB(0, 0, 0) : RGB(255, 255, 255);
 
 		lib.ui.col.textSel =
-			!['facet', 'coversLabelsRight', 'coversLabelsBottom'].includes(grSet.libraryDesign) || ![2, 1].includes(libSet.albumArtLabelType) ||
-			(['facet', 'coversLabelsRight', 'coversLabelsBottom'].includes(grSet.libraryDesign) ||  [2, 1].includes(libSet.albumArtLabelType)) && !lib.pop.highlight.nowPlaying ?
+			!['facet', 'coversLabelsRight', 'coversLabelsBottom', 'artistLabelsRight'].includes(grSet.libraryDesign) || ![2, 1].includes(libSet.albumArtLabelType) ||
+			(['facet', 'coversLabelsRight', 'coversLabelsBottom', 'artistLabelsRight'].includes(grSet.libraryDesign) ||  [2, 1].includes(libSet.albumArtLabelType)) && !lib.pop.highlight.nowPlaying ?
 				!grCol.isColored && !grm.ui.noAlbumArtStub && !libSet.albumArtShow && lib.pop.highlight.nowPlaying || grm.ui.noAlbumArtStub && !libSet.albumArtShow || grm.ui.noAlbumArtStub && libSet.albumArtShow && libImg.labels.overlayDark || grm.ui.noAlbumArtStub && this.ALT2 ?
 				RGB(0, 0, 0) : RGB(255, 255, 255) :
 			lib.ui.col.text_h;
@@ -1042,8 +2159,8 @@ class ThemeColors {
 		lib.ui.col.sbarDrag = RGB(120, 120, 120);
 
 		// * WHEN PLAYING * //
-		if (fb.IsPlaying && grCol.isColored) {
-			if (this.GRAD || this.GRAD2 || this.RF || this.RF2 ? grCol.lightBgLibrary : grCol.lightBg) {
+		if (grCol.isColored) {
+			if (this.GRAD12 || this.RF12 ? grCol.lightBgLibrary : grCol.lightBg) {
 				// * NODE COLORS * //
 				lib.ui.col.iconPlus = grCol.darkAccent_75;
 				lib.ui.col.iconPlus_h = grCol.darkAccent_100;
@@ -1143,8 +2260,8 @@ class ThemeColors {
 		bio.ui.col.sbarDrag = RGB(120, 120, 120);
 
 		// * WHEN PLAYING * //
-		if (fb.IsPlaying && grCol.isColored) {
-			if (this.GRAD || this.GRAD2 || this.RF || this.RF2 ? grCol.lightBgBiography : grCol.lightBg) {
+		if (grCol.isColored) {
+			if (this.GRAD12 || this.RF12 ? grCol.lightBgBiography : grCol.lightBg) {
 				// * HEADER COLORS * //
 				bio.ui.col.headingText = grCol.darkAccent_75;
 				bio.ui.col.source = grCol.darkAccent_75;
@@ -1195,11 +2312,9 @@ class ThemeColors {
 	 * The Main colors for Reborn/Random theme used in Options > Theme > Reborn/Random.
 	 */
 	mainColorsRebornRandomTheme() {
-		const nighttime = (grSet.styleNighttime || grSet.themeDayNightMode && grSet.themeDayNightTime === 'night') && !this.RW;
-
 		// * MAIN COLORS * //
 		grCol.bg = grCol.isColored ? grCol.primary : RGB(245, 245, 245);
-		grCol.loadingThemeBg = nighttime || this.RB ? RGB(25, 25, 25) : RGB(245, 245, 245);
+		grCol.loadingThemeBg = this.NIGHTTIME || this.RB ? RGB(25, 25, 25) : RGB(245, 245, 245);
 		grCol.uiHacksFrame =
 			this.RW ? RGB(245, 245, 245) :
 			this.RB ? RGB(25, 25, 25) :
@@ -1208,7 +2323,7 @@ class ThemeColors {
 			this.RB ? RGBA(0, 0, 0, 255) :
 			grm.ui.isStreaming || grm.ui.isPlayingCD || grm.ui.noAlbumArtStub || !grm.ui.albumArt ? RGBA(0, 0, 0, 25) : RGBA(0, 0, 0, 35);
 		grCol.discArtShadow = RGBA(0, 0, 0, 30);
-		grCol.noAlbumArtStub = RGB(120, 120, 120);
+		grCol.noAlbumArtStub = grm.ui.isStreaming ? RGB(207, 0, 5) : RGB(120, 120, 120);
 		grCol.lowerBarArtist = RGB(120, 120, 120);
 		grCol.lowerBarTitle = RGB(120, 120, 120);
 		grCol.lowerBarTime = grCol.lowerBarTitle;
@@ -1229,7 +2344,7 @@ class ThemeColors {
 		grCol.timelinePlayed = grm.ui.isStreaming ? RGB(207, 0, 5) : grCol.lightBg ? ShadeColor(grCol.primary, this.BLEND ? 35 : 25) : grCol.lightAccent_35;
 		grCol.timelineUnplayed = grm.ui.isStreaming ? RGB(207, 0, 5) : grCol.lightBg ? ShadeColor(grCol.primary, this.BLEND ? 20 : 10) : grCol.lightAccent;
 		grCol.timelineFrame = grCol.detailsBg;
-		if (grm.timeline) grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+		if (grm.details) grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 
 		// * POPUP COLORS * //
 		grCol.popupBg = RGBAtoRGB(pl.col.header_nowplaying_bg, 255);
@@ -1404,8 +2519,8 @@ class ThemeColors {
 		grCol.styleVolumeBarFill = grCol.isColored ? this.VBF === 'bevel' || this.VBF === 'inner' ? RGBA(0, 0, 0, 80) : '' : grCol.primary;
 
 		// * WHEN PLAYING * //
-		if (fb.IsPlaying && grCol.isColored) {
-			if (this.GRAD || this.GRAD2 || this.RF || this.RF2 ? grCol.lightBgMain : grCol.lightBg) {
+		if (grCol.isColored) {
+			if (this.GRAD12 || this.RF12 ? grCol.lightBgMain : grCol.lightBg) {
 				// * MAIN COLORS * //
 				grCol.noAlbumArtStub = RGB(90, 90, 90);
 				grCol.lowerBarArtist = grCol.darkAccent_75;
@@ -1654,7 +2769,7 @@ class ThemeColors {
 		grCol.timelinePlayed = RGB(195, 190, 130);
 		grCol.timelineUnplayed = RGB(155, 150, 130);
 		grCol.timelineFrame = grCol.detailsBg;
-		if (grm.timeline) grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+		if (grm.details) grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 
 		// * POPUP COLORS * //
 		grCol.popupBg = RGBAtoRGB(pl.col.header_nowplaying_bg, 255);
@@ -1939,7 +3054,7 @@ class ThemeColors {
 		grCol.timelinePlayed = RGB(204, 161, 102);
 		grCol.timelineUnplayed = RGB(155, 110, 70);
 		grCol.timelineFrame = grCol.detailsBg;
-		if (grm.timeline) grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+		if (grm.details) grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 
 		// * POPUP COLORS * //
 		grCol.popupBg = RGBAtoRGB(pl.col.header_nowplaying_bg, 255);
@@ -2217,7 +3332,7 @@ class ThemeColors {
 		grCol.timelinePlayed = RGB(207, 170, 118);
 		grCol.timelineUnplayed = RGB(170, 120, 95);
 		grCol.timelineFrame = grCol.detailsBg;
-		if (grm.timeline) grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+		if (grm.details) grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 
 		// * POPUP COLORS * //
 		grCol.popupBg = RGBAtoRGB(pl.col.header_nowplaying_bg, 255);
@@ -2340,9 +3455,9 @@ class ThemeColors {
 		pl.col.plman_text_pressed = grSet.autoHidePlman ? RGB(80, 80, 80) : RGB(130, 130, 130);
 
 		// * HEADER COLORS * //
-		pl.col.header_nowplaying_bg = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : accentColor;
+		pl.col.header_nowplaying_bg = this.BLEND12 ? RGB(65, 135, 80) : accentColor;
 		pl.col.header_sideMarker = pl.col.header_nowplaying_bg;
-		pl.col.header_artist_normal = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : RGB(100, 150, 110);
+		pl.col.header_artist_normal = this.BLEND12 ? RGB(65, 135, 80) : RGB(100, 150, 110);
 		pl.col.header_artist_playing = RGB(255, 255, 255);
 		pl.col.header_album_normal = this.BLEND ? RGB(80, 80, 80) : RGB(110, 110, 110);
 		pl.col.header_album_playing = RGB(245, 245, 245);
@@ -2393,11 +3508,11 @@ class ThemeColors {
 		lib.ui.col.hoverFrame = lib.ui.col.sideMarker;
 
 		// * NODE COLORS * //
-		lib.ui.col.iconPlus = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : RGB(100, 150, 110);
+		lib.ui.col.iconPlus = this.BLEND12 ? RGB(65, 135, 80) : RGB(100, 150, 110);
 		lib.ui.col.iconPlus_h = RGB(0, 0, 0);
 		lib.ui.col.iconPlus_sel = ['modern', 'facet'].includes(grSet.libraryDesign) || !lib.pop.highlight.nowPlaying ? RGB(255, 255, 255) : RGB(0, 0, 0);
 		lib.ui.col.iconPlusBg = RGB(255, 255, 255);
-		lib.ui.col.iconMinus_e = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : RGB(100, 150, 110);
+		lib.ui.col.iconMinus_e = this.BLEND12 ? RGB(65, 135, 80) : RGB(100, 150, 110);
 		lib.ui.col.iconMinus_c = lib.ui.col.iconMinus_e;
 		lib.ui.col.iconMinus_h = RGB(0, 0, 0);
 
@@ -2427,10 +3542,10 @@ class ThemeColors {
 		lib.ui.col.search = this.BLEND ? RGB(60, 60, 60) : RGB(90, 90, 90);
 
 		// * BUTTON COLORS * //
-		lib.ui.col.searchBtn = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : accentColor;
-		lib.ui.col.crossBtn = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : accentColor;
+		lib.ui.col.searchBtn = this.BLEND12 ? RGB(65, 135, 80) : accentColor;
+		lib.ui.col.crossBtn = this.BLEND12 ? RGB(65, 135, 80) : accentColor;
 		lib.ui.col.filterBtn = this.BLEND ? RGB(60, 60, 60) : RGB(120, 120, 120);
-		lib.ui.col.settingsBtn = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : accentColor;
+		lib.ui.col.settingsBtn = this.BLEND12 ? RGB(65, 135, 80) : accentColor;
 		lib.ui.col.line = RGB(200, 200, 200);
 		lib.ui.col.s_line = lib.ui.col.line;
 
@@ -2468,7 +3583,7 @@ class ThemeColors {
 
 		// * MISC COLORS * //
 		bio.ui.col.lyricsNormal = bio.ui.col.text;
-		bio.ui.col.lyricsHighlight = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : RGB(100, 150, 110);
+		bio.ui.col.lyricsHighlight = this.BLEND12 ? RGB(65, 135, 80) : RGB(100, 150, 110);
 		bio.ui.col.noPhotoStubBg = RGB(255, 247, 240);
 		bio.ui.col.noPhotoStubText = accentColor;
 
@@ -2490,13 +3605,13 @@ class ThemeColors {
 		grCol.uiHacksFrame = RGB(255, 247, 240);
 		grCol.shadow = RGBA(0, 0, 0, 25);
 		grCol.discArtShadow = RGBA(0, 0, 0, 10);
-		grCol.noAlbumArtStub = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : RGB(100, 150, 110);
-		grCol.lowerBarArtist = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : RGB(100, 150, 110);
-		grCol.lowerBarTitle = this.BLEND || this.BLEND2 ? RGB(90, 90, 90) : RGB(100, 100, 100);
+		grCol.noAlbumArtStub = this.BLEND12 ? RGB(65, 135, 80) : RGB(100, 150, 110);
+		grCol.lowerBarArtist = this.BLEND12 ? RGB(65, 135, 80) : RGB(100, 150, 110);
+		grCol.lowerBarTitle = this.BLEND12 ? RGB(90, 90, 90) : RGB(100, 100, 100);
 		grCol.lowerBarTime = grCol.lowerBarTitle;
 		grCol.lowerBarLength = grCol.lowerBarTitle;
 		grCol.lyricsNormal = RGB(255, 255, 255);
-		grCol.lyricsHighlight = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : RGB(100, 150, 110);
+		grCol.lyricsHighlight = this.BLEND12 ? RGB(65, 135, 80) : RGB(100, 150, 110);
 		grCol.lyricsShadow = RGB(0, 0, 0);
 
 		// * DETAILS COLORS * //
@@ -2508,7 +3623,7 @@ class ThemeColors {
 		grCol.timelinePlayed = RGB(139, 196, 151);
 		grCol.timelineUnplayed = RGB(158, 222, 171);
 		grCol.timelineFrame = grCol.detailsBg;
-		if (grm.timeline) grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+		if (grm.details) grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 
 		// * POPUP COLORS * //
 		grCol.popupBg = RGBAtoRGB(pl.col.header_nowplaying_bg, 255);
@@ -2527,17 +3642,17 @@ class ThemeColors {
 
 		grCol.menuRectNormal =
 			this.TMB === 'filled' ? RGB(100, 150, 110, 100) :
-			this.BLEND || this.BLEND2 ? RGB(150, 150, 150) :
+			this.BLEND12 ? RGB(150, 150, 150) :
 			RGB(100, 150, 110);
 
 		grCol.menuRectHovered =
 			this.TMB === 'filled' ? RGBA(190, 190, 190, 100) :
 			this.TMB === 'bevel' || this.TMB === 'inner' ? this.BEVEL ? RGB(200, 200, 200) : RGB(220, 220, 220) :
-			this.BLEND || this.BLEND2 ? RGB(150, 150, 150) :
+			this.BLEND12 ? RGB(150, 150, 150) :
 			RGB(190, 190, 190);
 
 		grCol.menuRectDown = grCol.menuRectHovered;
-		grCol.menuTextNormal = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : RGB(100, 150, 110);
+		grCol.menuTextNormal = this.BLEND12 ? RGB(65, 135, 80) : RGB(100, 150, 110);
 		grCol.menuTextHovered = this.BLEND ? RGB(60, 60, 60) : RGB(100, 100, 100);
 		grCol.menuTextDown = grCol.menuTextHovered;
 
@@ -2559,7 +3674,7 @@ class ThemeColors {
 			this.TPB === 'bevel' || this.TPB === 'inner' ? this.BEVEL ? RGB(190, 190, 190) : RGB(220, 220, 220) :
 			this.TPB === 'emboss' ? this.BEVEL ? RGB(210, 210, 210) : RGB(225, 225, 225) : '';
 
-		grCol.transportIconNormal = this.BLEND || this.BLEND2 || this.TPB === 'minimal' ? RGB(65, 135, 80) : RGB(100, 150, 110);
+		grCol.transportIconNormal = this.BLEND12 || this.TPB === 'minimal' ? RGB(65, 135, 80) : RGB(100, 150, 110);
 		grCol.transportIconHovered = RGB(100, 100, 100);
 		grCol.transportIconDown = grCol.transportIconHovered;
 
@@ -2568,9 +3683,9 @@ class ThemeColors {
 			this.PB === 'bevel' ? RGB(240, 240, 240) :
 			this.BEVEL ? RGB(225, 225, 225) : RGB(255, 255, 255);
 
-		grCol.progressBarStreaming = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : accentColor;
+		grCol.progressBarStreaming = this.BLEND12 ? RGB(65, 135, 80) : accentColor;
 		grCol.progressBarFrame = RGB(230, 230, 230);
-		grCol.progressBarFill = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : accentColor;
+		grCol.progressBarFill = this.BLEND12 ? RGB(65, 135, 80) : accentColor;
 
 		// * PEAKMETER BAR COLORS * //
 		grCol.peakmeterBarProg          = grCol.progressBar;
@@ -2593,7 +3708,7 @@ class ThemeColors {
 		// * VOLUME BAR COLORS * //
 		grCol.volumeBar = RGB(255, 255, 255);
 		grCol.volumeBarFrame = RGB(220, 220, 220);
-		grCol.volumeBarFill = this.BLEND || this.BLEND2 ? RGB(65, 135, 80) : accentColor;
+		grCol.volumeBarFill = this.BLEND12 ? RGB(65, 135, 80) : accentColor;
 
 		// * STYLE COLORS * //
 		grCol.styleBevel = RGB(0, 0, 0);
@@ -2656,7 +3771,7 @@ class ThemeColors {
 		pl.col.plman_text_pressed = grSet.autoHidePlman ? RGB(255, 255, 255) : RGB(200, 200, 200);
 
 		// * HEADER COLORS * //
-		pl.col.header_nowplaying_bg = this.BLEND || this.BLEND2 ? RGBA(25, 25, 25, 100) : RGB(25, 25, 25);
+		pl.col.header_nowplaying_bg = this.BLEND12 ? RGBA(25, 25, 25, 100) : RGB(25, 25, 25);
 		pl.col.header_sideMarker = accentColor;
 		pl.col.header_artist_normal = RGB(240, 240, 240);
 		pl.col.header_artist_playing = accentColor;
@@ -2855,7 +3970,7 @@ class ThemeColors {
 		grCol.lyricsShadow = RGB(0, 0, 0);
 
 		// * DETAILS COLORS * //
-		grCol.detailsBg = this.BLEND || this.BLEND2 ? RGBA(10, 10, 10, 100) : RGB(10, 10, 10);
+		grCol.detailsBg = this.BLEND12 ? RGBA(10, 10, 10, 100) : RGB(10, 10, 10);
 		grCol.detailsText = RGB(255, 255, 255);
 		grCol.detailsRating = RGB(255, 170, 32);
 		grCol.detailsHotness = grCol.detailsRating;
@@ -2863,7 +3978,7 @@ class ThemeColors {
 		grCol.timelinePlayed = accentColorDark;
 		grCol.timelineUnplayed = accentColorDarker;
 		grCol.timelineFrame = grCol.detailsBg;
-		if (grm.timeline) grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+		if (grm.details) grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 
 		// * POPUP COLORS * //
 		grCol.popupBg = RGBAtoRGB(pl.col.header_nowplaying_bg, 255);
@@ -3025,7 +4140,8 @@ class ThemeColors {
 			pl.col.sbar_thumb_drag = HEXtoRGB(grCfg.cTheme.pl_col_sbar_thumb_drag);
 		}
 		catch (e) {
-			fb.ShowPopupMessage(`Error when initializing playlist custom theme colors:\n\nOne or more variable color names do not exist or have wrong values in your custom config file:\n\n${grCfg.configPathCustom}\n`, 'Playlist custom theme color error');
+			const msg = grm.msg.getMessage('themeColors', 'playlistColorsCustomTheme');
+			fb.ShowPopupMessage(msg, 'Playlist custom theme color error');
 		}
 	}
 
@@ -3079,7 +4195,8 @@ class ThemeColors {
 			lib.ui.col.sbarDrag = HEXtoRGB(grCfg.cTheme.lib_ui_col_sbarDrag);
 		}
 		catch (e) {
-			fb.ShowPopupMessage(`Error when initializing library custom theme colors:\n\nOne or more variable color names do not exist or have wrong values in your custom config file:\n\n${grCfg.configPathCustom}\n`, 'Library custom theme color error');
+			const msg = grm.msg.getMessage('themeColors', 'libraryColorsCustomTheme');
+			fb.ShowPopupMessage(msg, 'Library custom theme color error');
 		}
 	}
 
@@ -3121,7 +4238,8 @@ class ThemeColors {
 			bio.ui.col.sbarDrag = HEXtoRGB(grCfg.cTheme.bio_ui_col_sbarDrag);
 		}
 		catch (e) {
-			fb.ShowPopupMessage(`Error when initializing biography custom theme colors:\n\nOne or more variable color names do not exist or have wrong values in your custom config file:\n\n${grCfg.configPathCustom}\n`, 'Biography custom theme color error');
+			const msg = grm.msg.getMessage('themeColors', 'biographyColorsCustomTheme');
+			fb.ShowPopupMessage(msg, 'Biography custom theme color error');
 		}
 	}
 
@@ -3133,17 +4251,16 @@ class ThemeColors {
 			const lightImg = grCol.imgBrightness > 180;
 			const lightBg = new Color(HEXtoRGB(grCfg.cTheme.grCol_bg)).brightness > 200;
 			const darkBg = new Color(HEXtoRGB(grCfg.cTheme.grCol_bg)).brightness < 50;
-			const nighttime = (grSet.styleNighttime || grSet.themeDayNightMode && grSet.themeDayNightTime === 'night') && !this.RW;
 
 			// * MAIN COLORS * //
 			grCol.bg = this.BEVEL ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_bg), grCol.lightBgMain ? 80 : 0) : HEXtoRGB(grCfg.cTheme.grCol_bg);
-			grCol.loadingThemeBg = nighttime && grCfg.cTheme.grCol_preloaderBg === '' ? RGB(25, 25, 25) : grCfg.cTheme.grCol_preloaderBg !== '' ? HEXtoRGB(grCfg.cTheme.grCol_preloaderBg) : RGB(245, 245, 245);
-			grCol.uiHacksFrame = nighttime ? RGB(25, 25, 25) : grCol.bg;
+			grCol.loadingThemeBg = this.NIGHTTIME && grCfg.cTheme.grCol_preloaderBg === '' ? RGB(25, 25, 25) : grCfg.cTheme.grCol_preloaderBg !== '' ? HEXtoRGB(grCfg.cTheme.grCol_preloaderBg) : RGB(245, 245, 245);
+			grCol.uiHacksFrame = this.NIGHTTIME ? RGB(25, 25, 25) : grCol.bg;
 			grCol.shadow = HEXtoRGBA(grCfg.cTheme.grCol_shadow, grCol.lightBgMain ? 50 : 75);
 			grCol.discArtShadow = HEXtoRGBA(grCfg.cTheme.grCol_discArtShadow, grCol.lightBgMain ? 50 : 75);
 			grCol.noAlbumArtStub = HEXtoRGB(grCfg.cTheme.grCol_noAlbumArtStub);
-			grCol.lowerBarArtist = this.BLEND || this.BLEND2 ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_lowerBarArtist), 10) : HEXtoRGB(grCfg.cTheme.grCol_lowerBarArtist);
-			grCol.lowerBarTitle = this.BLEND || this.BLEND2 ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_lowerBarTitle), 10) : HEXtoRGB(grCfg.cTheme.grCol_lowerBarTitle);
+			grCol.lowerBarArtist = this.BLEND12 ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_lowerBarArtist), 10) : HEXtoRGB(grCfg.cTheme.grCol_lowerBarArtist);
+			grCol.lowerBarTitle = this.BLEND12 ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_lowerBarTitle), 10) : HEXtoRGB(grCfg.cTheme.grCol_lowerBarTitle);
 			grCol.lowerBarTime = HEXtoRGB(grCfg.cTheme.grCol_lowerBarTime);
 			grCol.lowerBarLength = HEXtoRGB(grCfg.cTheme.grCol_lowerBarLength);
 			grCol.lyricsNormal = HEXtoRGB(grCfg.cTheme.grCol_lyricsNormal);
@@ -3172,7 +4289,7 @@ class ThemeColors {
 				HEXtoRGB(grCfg.cTheme.grCol_timelineUnplayed);
 
 			grCol.timelineFrame = HEXtoRGB(grCfg.cTheme.grCol_timelineFrame);
-			if (grm.timeline) grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+			if (grm.details) grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 
 			// * POPUP COLORS * //
 			grCol.popupBg = HEXtoRGB(grCfg.cTheme.grCol_popupBg);
@@ -3180,7 +4297,7 @@ class ThemeColors {
 
 			// * TOP MENU BUTTON COLORS * //
 			grCol.menuBgColor =
-				this.BLEND || this.BLEND2 ?
+				this.BLEND12 ?
 					grCol.lightBgMain ? ShadeColor(HEXtoRGB(grCfg.cTheme.grCol_menuBgColor), 10) : TintColor(HEXtoRGB(grCfg.cTheme.grCol_menuBgColor), 10) :
 				HEXtoRGB(grCfg.cTheme.grCol_menuBgColor);
 
@@ -3194,36 +4311,36 @@ class ThemeColors {
 			grCol.menuRectStyleEmbossBottom = this.BEVEL ? ShadeColor(HEXtoRGB(grCfg.cTheme.grCol_menuRectStyleEmbossBottom), 10) : HEXtoRGB(grCfg.cTheme.grCol_menuRectStyleEmbossBottom);
 
 			grCol.menuRectNormal =
-				this.BLEND || this.BLEND2 ? this.BEVEL ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_menuRectNormal), 10) : HEXtoRGB(grCfg.cTheme.grCol_menuRectNormal) :
+				this.BLEND12 ? this.BEVEL ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_menuRectNormal), 10) : HEXtoRGB(grCfg.cTheme.grCol_menuRectNormal) :
 				this.ALT2 ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_menuRectNormal), 10) :
 				HEXtoRGB(grCfg.cTheme.grCol_menuRectNormal);
 
 			grCol.menuRectHovered =
 				this.TMB === 'bevel' || this.TMB === 'inner' ?
 					this.BEVEL ? ShadeColor(HEXtoRGB(grCfg.cTheme.grCol_menuRectHovered), 15) : ShadeColor(HEXtoRGB(grCfg.cTheme.grCol_menuRectHovered), 5) :
-				this.BLEND || this.BLEND2 ?
+				this.BLEND12 ?
 					this.BEVEL ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_menuRectHovered), 10) : TintColor(HEXtoRGB(grCfg.cTheme.grCol_menuRectHovered), 5) :
 				this.ALT2 ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_menuRectHovered), 10) :
 				HEXtoRGB(grCfg.cTheme.grCol_menuRectHovered);
 
 			grCol.menuRectDown = HEXtoRGB(grCfg.cTheme.grCol_menuRectDown);
-			grCol.menuTextNormal = this.BLEND || this.BLEND2 ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_menuTextNormal), 10) : HEXtoRGB(grCfg.cTheme.grCol_menuTextNormal);
+			grCol.menuTextNormal = this.BLEND12 ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_menuTextNormal), 10) : HEXtoRGB(grCfg.cTheme.grCol_menuTextNormal);
 			grCol.menuTextHovered = HEXtoRGB(grCfg.cTheme.grCol_menuTextHovered);
 			grCol.menuTextDown = HEXtoRGB(grCfg.cTheme.grCol_menuTextDown);
 
 			// * LOWER BAR TRANSPORT BUTTON COLORS * //
 			grCol.transportEllipseBg =
-				this.BLEND || this.BLEND2 ?
+				this.BLEND12 ?
 					lightImg || grCol.lightBgMain ? ShadeColor(HEXtoRGB(grCfg.cTheme.grCol_transportEllipseBg), 5) : TintColor(HEXtoRGB(grCfg.cTheme.grCol_transportEllipseBg), 10) :
 				darkBg && this.TPB === 'emboss' ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_transportEllipseBg), 15) : HEXtoRGB(grCfg.cTheme.grCol_transportEllipseBg);
 
 			grCol.transportEllipseNormal =
-				this.BLEND || this.BLEND2 ?
+				this.BLEND12 ?
 					this.BEVEL ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_transportEllipseNormal), 5) : TintColor(HEXtoRGB(grCfg.cTheme.grCol_transportEllipseNormal), 10) :
 				HEXtoRGB(grCfg.cTheme.grCol_transportEllipseNormal);
 
 			grCol.transportEllipseHovered =
-				this.BLEND || this.BLEND2 ?
+				this.BLEND12 ?
 					this.BEVEL ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_transportEllipseHovered), 5) : TintColor(HEXtoRGB(grCfg.cTheme.grCol_transportEllipseHovered), 10) :
 				HEXtoRGB(grCfg.cTheme.grCol_transportEllipseHovered);
 
@@ -3250,22 +4367,22 @@ class ThemeColors {
 					TintColor(HEXtoRGB(grCfg.cTheme.grCol_transportStyleBottom), 10) : '';
 
 			grCol.transportIconNormal =
-				this.BLEND || this.BLEND2 ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_transportIconNormal), 10) : HEXtoRGB(grCfg.cTheme.grCol_transportIconNormal);
+				this.BLEND12 ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_transportIconNormal), 10) : HEXtoRGB(grCfg.cTheme.grCol_transportIconNormal);
 
 			grCol.transportIconHovered =
-				this.BLEND || this.BLEND2 ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_transportIconHovered), 10) : HEXtoRGB(grCfg.cTheme.grCol_transportIconHovered);
+				this.BLEND12 ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_transportIconHovered), 10) : HEXtoRGB(grCfg.cTheme.grCol_transportIconHovered);
 
 			grCol.transportIconDown = HEXtoRGB(grCfg.cTheme.grCol_transportIconDown);
 
 			// * PROGRESS BAR COLORS * //
 			grCol.progressBar =
 				this.PB === 'bevel' ?
-					this.BLEND || this.BLEND2 ? lightImg || grCol.lightBgMain ? ShadeColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 5) : TintColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 10) :
+					this.BLEND12 ? lightImg || grCol.lightBgMain ? ShadeColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 5) : TintColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 10) :
 					this.BEVEL ? HEXtoRGB(grCfg.cTheme.grCol_progressBar) : TintColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 10) :
 				this.PB === 'inner' ?
-					this.BLEND || this.BLEND2 ? lightImg || grCol.lightBgMain ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 10) : TintColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 5) :
+					this.BLEND12 ? lightImg || grCol.lightBgMain ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 10) : TintColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 5) :
 					this.BEVEL ? ShadeColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 5) : HEXtoRGB(grCfg.cTheme.grCol_progressBar) :
-				this.BLEND || this.BLEND2 ? grCol.lightBgMain ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 10) : TintColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 5) :
+				this.BLEND12 ? grCol.lightBgMain ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 10) : TintColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 5) :
 				this.BEVEL ? grCol.lightBgMain ? ShadeColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 5) : TintColor(HEXtoRGB(grCfg.cTheme.grCol_progressBar), 5) :
 				HEXtoRGB(grCfg.cTheme.grCol_progressBar);
 
@@ -3330,7 +4447,8 @@ class ThemeColors {
 				HEXtoRGB(grCfg.cTheme.grCol_styleVolumeBarFill);
 		}
 		catch (e) {
-			fb.ShowPopupMessage(`Error when initializing main custom theme colors:\n\nOne or more variable color names do not exist or have wrong values in your custom config file:\n\n${grCfg.configPathCustom}\n`, 'Main custom theme color error');
+			const msg = grm.msg.getMessage('themeColors', 'mainColorsCustomTheme');
+			fb.ShowPopupMessage(msg, 'Main custom theme color error');
 		}
 	}
 	// #endregion
@@ -3437,7 +4555,7 @@ class ThemeColors {
 		grCol.timelinePlayed = grm.ui.isStreaming ? RGB(207, 0, 5) : RGB(80, 80, 80);
 		grCol.timelineUnplayed = grm.ui.isStreaming ? RGB(207, 0, 5) : RGB(120, 120, 120);
 		grCol.timelineFrame = grCol.detailsBg;
-		if (grm.timeline) grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+		if (grm.details) grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 
 		// * POPUP COLORS * //
 		grCol.popupBg = pl.col.row_nowplaying_bg;
@@ -3472,13 +4590,13 @@ class ThemeColors {
 
 		grCol.menuRectNormal =
 			this.TMB === 'filled' ? RGB(200, 200, 200) :
-			this.BLEND || this.BLEND2 ? this.BEVEL ? RGB(140, 140, 140) : RGB(150, 150, 150) :
+			this.BLEND12 ? this.BEVEL ? RGB(140, 140, 140) : RGB(150, 150, 150) :
 			this.BEVEL ? RGB(170, 170, 170) : RGB(180, 180, 180);
 
 		grCol.menuRectHovered =
 			this.TMB === 'filled' ? RGB(200, 200, 200) :
 			this.TMB === 'bevel' || this.TMB === 'inner' ? this.BEVEL ? RGB(200, 200, 200) : RGB(205, 205, 205) :
-			this.BLEND || this.BLEND2 ? this.BEVEL ? RGB(140, 140, 140) : RGB(150, 150, 150) :
+			this.BLEND12 ? this.BEVEL ? RGB(140, 140, 140) : RGB(150, 150, 150) :
 			this.BEVEL ? RGB(170, 170, 170) : RGB(180, 180, 180);
 
 		grCol.menuRectDown = grCol.menuRectHovered;
@@ -3487,9 +4605,9 @@ class ThemeColors {
 		grCol.menuTextDown = grCol.menuTextHovered;
 
 		// * LOWER BAR TRANSPORT BUTTON COLORS * //
-		grCol.transportEllipseBg = (this.BLEND || this.BLEND2) && fb.IsPlaying ? RGB(230, 230, 230) : RGB(255, 255, 255);
-		grCol.transportEllipseNormal =  this.BLEND || this.BLEND2 ? this.BEVEL ? RGB(200, 200, 200) : RGB(210, 210, 210) : RGB(220, 220, 220);
-		grCol.transportEllipseHovered = this.BLEND || this.BLEND2 ? this.BEVEL ? RGB(160, 160, 160) : RGB(170, 170, 170) : RGB(180, 180, 180);
+		grCol.transportEllipseBg = this.BLEND12 && fb.IsPlaying ? RGB(230, 230, 230) : RGB(255, 255, 255);
+		grCol.transportEllipseNormal =  this.BLEND12 ? this.BEVEL ? RGB(200, 200, 200) : RGB(210, 210, 210) : RGB(220, 220, 220);
+		grCol.transportEllipseHovered = this.BLEND12 ? this.BEVEL ? RGB(160, 160, 160) : RGB(170, 170, 170) : RGB(180, 180, 180);
 		grCol.transportEllipseDown = grCol.transportEllipseHovered;
 
 		grCol.transportStyleBg =
@@ -3502,14 +4620,14 @@ class ThemeColors {
 
 		grCol.transportStyleBottom =
 			this.TPB === 'bevel' || this.TPB === 'inner' ?
-				this.BLEND || this.BLEND2 ? RGB(180, 180, 180) : this.BEVEL ? RGB(200, 200, 200) : RGB(220, 220, 220) :
+				this.BLEND12 ? RGB(180, 180, 180) : this.BEVEL ? RGB(200, 200, 200) : RGB(220, 220, 220) :
 			this.TPB === 'emboss' ?
-				this.BLEND || this.BLEND2 ? RGB(180, 180, 180) : this.BEVEL ? RGB(215, 215, 215) : RGB(210, 210, 210) :
+				this.BLEND12 ? RGB(180, 180, 180) : this.BEVEL ? RGB(215, 215, 215) : RGB(210, 210, 210) :
 			RGB(230, 230, 230);
 
 		// * PROGRESS BAR COLORS * //
 		grCol.progressBar =
-			this.BLEND || this.BLEND2 ? this.BEVEL ? RGB(205, 205, 205) : RGB(215, 215, 215) :
+			this.BLEND12 ? this.BEVEL ? RGB(205, 205, 205) : RGB(215, 215, 215) :
 			this.BEVEL ? RGB(195, 195, 195) : RGB(210, 210, 210);
 
 		grCol.progressBarFill = RGB(255, 255, 255);
@@ -3670,7 +4788,7 @@ class ThemeColors {
 		grCol.timelinePlayed = grm.ui.isStreaming ? RGB(207, 0, 5) : RGB(180, 180, 180);
 		grCol.timelineUnplayed = grm.ui.isStreaming ? RGB(207, 0, 5) : RGB(160, 160, 160);
 		grCol.timelineFrame = grCol.detailsBg;
-		if (grm.timeline) grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
+		if (grm.details) grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 
 		// * POPUP COLORS * //
 		grCol.popupBg = pl.col.row_nowplaying_bg;
@@ -3682,14 +4800,12 @@ class ThemeColors {
 	 * @param {boolean} darkerBg - If true, darkens the main background color.
 	 */
 	mainBlackColors(darkerBg) {
-		const nighttime = (grSet.styleNighttime || grSet.themeDayNightMode && grSet.themeDayNightTime === 'night') && !this.RW;
-
 		// * MAIN COLORS * //
 		grCol.bg = this.BEVEL ? darkerBg ? RGB(25, 25, 25) : RGB(50, 50, 50) : darkerBg ? RGB(0, 0, 0) : RGB(25, 25, 25);
-		grCol.loadingThemeBg = nighttime || this.BW2 ? RGB(25, 25, 25) : grCol.bg;
+		grCol.loadingThemeBg = this.NIGHTTIME || this.BW2 ? RGB(25, 25, 25) : grCol.bg;
 		grCol.uiHacksFrame = grCol.bg;
 		grCol.shadow = grm.ui.isPlayingCD ? RGBA(0, 0, 0, 30) : grCol.shadow;
-		grCol.noAlbumArtStub = nighttime ? RGB(240, 240, 240) : RGB(40, 40, 40);
+		grCol.noAlbumArtStub = this.NIGHTTIME ? RGB(240, 240, 240) : RGB(40, 40, 40);
 		grCol.lowerBarArtist = RGB(240, 240, 240);
 		grCol.lowerBarTitle = RGB(220, 220, 220);
 		grCol.lowerBarTime = grCol.lowerBarTitle;
@@ -3721,12 +4837,12 @@ class ThemeColors {
 			RGB(100, 100, 100);
 
 		grCol.menuRectDown = grCol.menuRectHovered;
-		grCol.menuTextNormal = this.BLEND || this.BLEND2 ? RGB(200, 200, 200) : RGB(180, 180, 180);
+		grCol.menuTextNormal = this.BLEND12 ? RGB(200, 200, 200) : RGB(180, 180, 180);
 		grCol.menuTextHovered = RGB(255, 255, 255);
 		grCol.menuTextDown = grCol.menuTextHovered;
 
 		// * LOWER BAR TRANSPORT BUTTON COLORS * //
-		grCol.transportEllipseBg = this.BLEND || this.BLEND2 ? RGB(60, 60, 60) : RGB(40, 40, 40);
+		grCol.transportEllipseBg = this.BLEND12 ? RGB(60, 60, 60) : RGB(40, 40, 40);
 		grCol.transportEllipseNormal = RGB(50, 50, 50);
 		grCol.transportEllipseHovered = RGB(100, 100, 100);
 		grCol.transportEllipseDown = grCol.transportEllipseHovered;
@@ -3881,73 +4997,7 @@ class ThemeColors {
 	// * PUBLIC METHODS - THEME COLOR INITIALIZATION * //
 	// #region PUBLIC METHODS - THEME COLOR INITIALIZATION
 	/**
-	 * Initializes current values for all theme grSet.properties.
-	 */
-	initThemeSetVals() {
-		/** @private Options > Theme. */
-		this.THEME  = grSet.theme;
-		/** @private Options > Theme > Custom. */
-		this.CTHEME = grSet.theme.startsWith('custom');
-		/** @private Options > Style > Bevel. */
-		this.BEVEL  = grSet.styleBevel;
-		/** @private Options > Style > Blend. */
-		this.BLEND  = grSet.styleBlend;
-		/** @private Options > Style > Blend 2. */
-		this.BLEND2 = grSet.styleBlend2;
-		/** @private Options > Style > Gradient. */
-		this.GRAD   = grSet.styleGradient;
-		/** @private Options > Style > Gradient 2. */
-		this.GRAD2  = grSet.styleGradient2;
-		/** @private Options > Style > Alternative. */
-		this.ALT    = grSet.styleAlternative;
-		/** @private Options > Style > Alternative 2. */
-		this.ALT2   = grSet.styleAlternative2;
-		/** @private Options > Style > Black and white ( White theme ). */
-		this.BW     = grSet.styleBlackAndWhite;
-		/** @private Options > Style > Black and white 2 ( White theme ). */
-		this.BW2    = grSet.styleBlackAndWhite2;
-		/** @private Options > Style > Black and white reborn ( White theme ). */
-		this.BWR    = grSet.styleBlackAndWhiteReborn;
-		/** @private Options > Style > Black reborn ( Black theme ). */
-		this.BR     = grSet.styleBlackReborn;
-		/** @private Options > Style > Reborn white ( Reborn theme ). */
-		this.RW     = grSet.styleRebornWhite;
-		/** @private Options > Style > Reborn black ( Reborn theme ). */
-		this.RB     = grSet.styleRebornBlack;
-		/** @private Options > Style > Reborn fusion ( Reborn theme ). */
-		this.RF     = grSet.styleRebornFusion;
-		/** @private Options > Style > Reborn fusion 2 ( Reborn theme ). */
-		this.RF2    = grSet.styleRebornFusion2;
-		/** @private Options > Style > Reborn fusion accent ( Reborn theme ). */
-		this.RFA    = grSet.styleRebornFusionAccent;
-		/** @private Options > Style > Random pastel ( Random theme ). */
-		this.RP     = grSet.styleRandomPastel;
-		/** @private Options > Style > Random dark ( Random theme ). */
-		this.RD     = grSet.styleRandomDark;
-		/** @private Options > Style > Auto color ( Random theme ). */
-		this.RAC    = grSet.styleRandomAutoColor;
-		/** @private Options > Style > Buttons > Top menu. */
-		this.TMB    = grSet.styleTopMenuButtons;
-		/** @private Options > Style > Buttons > Transport. */
-		this.TPB    = grSet.styleTransportButtons;
-		/** @private Options > Style > Progress bar > Design. */
-		this.PBD    = grSet.styleProgressBarDesign;
-		/** @private Options > Style > Progress bar > Background. */
-		this.PB     = grSet.styleProgressBar;
-		/** @private Options > Style > Progress bar > Progress fill. */
-		this.PBF    = grSet.styleProgressBarFill;
-		/** @private Options > Style > Volume bar > Design. */
-		this.VBD    = grSet.styleVolumeBarDesign;
-		/** @private Options > Style > Volume bar > Background. */
-		this.VB     = grSet.styleVolumeBar;
-		/** @private Options > Style > Volume bar > Volume fill. */
-		this.VBF    = grSet.styleVolumeBarFill;
-		/** @private Options > Layout. */
-		this.LAYOUT = grSet.layout;
-	}
-
-	/**
-	 * Init all colors that are used in the Playlist, mostly called from grMain.ui.initTheme().
+	 * Init all colors that are used in the Playlist, mostly called from grm.ui.initTheme().
 	 */
 	initPlaylistColors() {
 		const playlistColors = {
@@ -3973,7 +5023,7 @@ class ThemeColors {
 	}
 
 	/**
-	 * Init all colors that are used in the Library, mostly called from grMain.ui.initTheme().
+	 * Init all colors that are used in the Library, mostly called from grm.ui.initTheme().
 	 */
 	initLibraryColors() {
 		const libraryColors = {
@@ -4001,7 +5051,7 @@ class ThemeColors {
 	}
 
 	/**
-	 * Init all colors that are used in the Biography, mostly called from grMain.ui.initTheme().
+	 * Init all colors that are used in the Biography, mostly called from grm.ui.initTheme().
 	 */
 	initBiographyColors() {
 		const biographyColors = {
@@ -4029,7 +5079,7 @@ class ThemeColors {
 	}
 
 	/**
-	 * Init all colors that are used in Georgia-ReBORN main, mostly called from grMain.ui.initTheme().
+	 * Init all colors that are used in Georgia-ReBORN main, mostly called from grm.ui.initTheme().
 	 */
 	initMainColors() {
 		const mainColors = {
@@ -4055,7 +5105,7 @@ class ThemeColors {
 	}
 
 	/**
-	 * Init all colors that are used in the chronflow user-component, mostly called from grMain.ui.initTheme().
+	 * Init all colors that are used in the chronflow user-component, mostly called from grm.ui.initTheme().
 	 */
 	initChronflowColors() {
 		if (!Component.ChronFlow) return;
@@ -4244,7 +5294,7 @@ class ThemeColors {
 		// * REBORN/RANDOM/STYLE REBORN WHITE/BLACK/FUSION * //
 		///////////////////////////////////////////////////////
 		// * Dynamically adjust background colors, lines, transport buttons, progress/volume bar, gradient and shadow
-		if ((this.THEME === 'reborn' || this.THEME === 'random') && fb.IsPlaying && !grm.ui.isStreaming && !grm.ui.isPlayingCD && !grm.ui.noAlbumArtStub) {
+		if ((this.THEME === 'reborn' || this.THEME === 'random') && grCol.isColored && !grm.ui.isStreaming && !grm.ui.isPlayingCD && !grm.ui.noAlbumArtStub) {
 			const primary = this.RF2 ? grCol.primary_alt : grCol.primary;
 			const primary_alt = this.RF ? grCol.primary_alt : grCol.primary;
 
@@ -4427,7 +5477,7 @@ class ThemeColors {
 				if (!this.RB) {
 					// * LOWER BAR TRANSPORT BUTTON COLORS * //
 					grCol.transportEllipseBg =
-						(this.BLEND || this.BLEND2) && fb.IsPlaying ? RGB(230, 230, 230) :
+						this.BLEND12 && grCol.isColored ? RGB(230, 230, 230) :
 						this.BEVEL ? RGB(240, 240, 240) : RGB(255, 255, 255);
 
 					grCol.transportEllipseNormal = ShadeColor(grCol.lightAccent_7, 10);
@@ -4435,8 +5485,8 @@ class ThemeColors {
 					// * PROGRESS BAR COLORS * //
 					grCol.progressBar =
 						this.PB === 'bevel' ? this.BEVEL ? RGB(245, 245, 245) : RGB(220, 220, 220) :
-						this.BEVEL ? this.BLEND || this.BLEND2 ? RGB(235, 235, 235) : RGB(225, 225, 225) :
-						(this.BLEND || this.BLEND2) && fb.IsPlaying && !grm.ui.noAlbumArtStub ? RGB(240, 240, 240) :
+						this.BEVEL ? this.BLEND12 ? RGB(235, 235, 235) : RGB(225, 225, 225) :
+						this.BLEND12 && grCol.isColored && !grm.ui.noAlbumArtStub ? RGB(240, 240, 240) :
 						RGB(220, 220, 220);
 
 					grCol.progressBarStreaming = RGB(207, 0, 5);
@@ -4512,15 +5562,9 @@ class ThemeColors {
 //////////////////////
 /**
  * A class that provides the full collection of all style colors and its methods.
+ * @augments {BaseColors}
  */
-class StyleColors {
-	/**
-	 * Creates the `StyleColors` instance and initializes theme preference values.
-	 */
-	constructor() {
-		this.initThemeSetVals();
-	}
-
+class StyleColors extends BaseColors {
 	// * PUBLIC METHODS - STYLE NIGHTTIME * //
 	// #region PUBLIC METHODS - STYLE NIGHTTIME
 	/**
@@ -4531,7 +5575,7 @@ class StyleColors {
 
 		const rebornNightAccentColor = grSet.theme === 'reborn' ? RGB(210, 235, 240) : false;
 
-		if (!fb.IsPlaying || grm.ui.noAlbumArtStub) {
+		if (!grCol.isColored || grm.ui.noAlbumArtStub) {
 			grm.theme.panelBlackColors(false, rebornNightAccentColor);
 			grm.theme.mainBlackColors();
 		} else {
@@ -4652,7 +5696,7 @@ class StyleColors {
 		grCol.progressBar =
 			grSet.theme === 'white' ? this.BEVEL ? TintColor(grCol.progressBar, 60) : TintColor(grCol.progressBar, 40) :
 			grSet.theme === 'black' ? TintColor(grCol.progressBar, 2) :
-			grSet.theme === 'reborn' || grSet.theme === 'random' ? grCol.colBrightness < 25 ? TintColor(grCol.primary, 12) : fb.IsPlaying && !grm.ui.noAlbumArtStub ? pl.col.bg : grCol.progressBar :
+			grSet.theme === 'reborn' || grSet.theme === 'random' ? grCol.colBrightness < 25 ? TintColor(grCol.primary, 12) : grCol.isColored && !grm.ui.noAlbumArtStub ? pl.col.bg : grCol.progressBar :
 			grSet.theme === 'blue' ? TintColor(grCol.progressBar, 2) :
 			grSet.theme === 'darkblue' ? TintColor(grCol.progressBar, 0) :
 			grSet.theme === 'red' ? RGB(158, 30, 30) :
@@ -4811,7 +5855,6 @@ class StyleColors {
 	 */
 	styleBlackRebornColors() {
 		if (!fb.IsPlaying || !grm.ui.albumArt && !grm.ui.noAlbumArtStub) grCol.primary = RGB(25, 25, 25);
-		if (grm.ui.isStreaming || grm.ui.isPlayingCD) grm.color.setNoAlbumArtColors();
 
 		// * PLAYLIST COLORS * //
 		pl.col.bg = RGB(20, 20, 20);
@@ -4935,7 +5978,7 @@ class StyleColors {
 			pl.col.bg;
 
 		if (grCol.primary === RGB(175, 205, 225)) {
-			grCol.progressBarFill = this.BLEND || this.BLEND2 ? RGB(155, 185, 205) : RGB(145, 170, 190);
+			grCol.progressBarFill = this.BLEND12 ? RGB(155, 185, 205) : RGB(145, 170, 190);
 		}
 
 		// * PEAKMETER BAR COLORS * //
@@ -4979,10 +6022,10 @@ class StyleColors {
 		pl.col.bg = !fb.IsPlaying ? RGB(255, 255, 255) : pl.col.bg;
 
 		// * MAIN COLORS * //
-		grCol.bg = this.BLEND || this.BLEND2 ? RGB(255, 255, 255) : RGB(245, 245, 245);
+		grCol.bg = this.BLEND12 ? RGB(255, 255, 255) : RGB(245, 245, 245);
 		grCol.noAlbumArtStub = RGB(90, 90, 90);
-		grCol.lowerBarArtist = this.BLEND || this.BLEND2 ? RGB(40, 40, 40) : RGB(80, 80, 80);
-		grCol.lowerBarTitle = this.BLEND || this.BLEND2 ? RGB(50, 50, 50) : RGB(100, 100, 100);
+		grCol.lowerBarArtist = this.BLEND12 ? RGB(40, 40, 40) : RGB(80, 80, 80);
+		grCol.lowerBarTitle = this.BLEND12 ? RGB(50, 50, 50) : RGB(100, 100, 100);
 		grCol.lowerBarTime = grCol.lowerBarTitle;
 		grCol.lowerBarLength = grCol.lowerBarTitle;
 
@@ -4994,26 +6037,26 @@ class StyleColors {
 
 		grCol.menuRectNormal =
 			this.TMB === 'filled' ? RGB(200, 200, 200) :
-			this.BLEND || this.BLEND2 ? this.BEVEL ? RGB(140, 140, 140) : RGB(150, 150, 150) :
+			this.BLEND12 ? this.BEVEL ? RGB(140, 140, 140) : RGB(150, 150, 150) :
 			this.BEVEL ? RGB(170, 170, 170) : RGB(180, 180, 180);
 
 		grCol.menuRectHovered =
 			this.TMB === 'filled' ? RGB(200, 200, 200) :
 			this.TMB === 'bevel' || this.TMB === 'inner' ? this.BEVEL ? RGB(200, 200, 200) : RGB(220, 220, 220) :
-			this.BLEND || this.BLEND2 ? this.BEVEL ? RGB(140, 140, 140) : RGB(150, 150, 150) :
+			this.BLEND12 ? this.BEVEL ? RGB(140, 140, 140) : RGB(150, 150, 150) :
 			this.BEVEL ? RGB(170, 170, 170) : RGB(180, 180, 180);
 
 		grCol.menuRectDown = grCol.menuRectHovered;
-		grCol.menuTextNormal = this.BLEND || this.BLEND2 ? RGB(50, 50, 50) : RGB(100, 100, 100);
-		grCol.menuTextHovered = this.BLEND || this.BLEND2 ? RGB(0, 0, 0) : RGB(80, 80, 80);
+		grCol.menuTextNormal = this.BLEND12 ? RGB(50, 50, 50) : RGB(100, 100, 100);
+		grCol.menuTextHovered = this.BLEND12 ? RGB(0, 0, 0) : RGB(80, 80, 80);
 		grCol.menuTextDown = grCol.menuTextHovered;
 
 		// * LOWER BAR TRANSPORT BUTTON COLORS * //
-		grCol.transportEllipseBg = this.BLEND || this.BLEND2 ? RGB(225, 225, 225) : RGB(255, 255, 255);
+		grCol.transportEllipseBg = this.BLEND12 ? RGB(225, 225, 225) : RGB(255, 255, 255);
 		grCol.transportEllipseNormal = RGB(220, 220, 220);
 		grCol.transportEllipseHovered = RGB(200, 200, 200);
 		grCol.transportEllipseDown = grCol.transportEllipseHovered;
-		grCol.transportIconNormal = this.BLEND || this.BLEND2 ? RGB(80, 80, 80) : RGB(100, 100, 100);
+		grCol.transportIconNormal = this.BLEND12 ? RGB(80, 80, 80) : RGB(100, 100, 100);
 		grCol.transportIconHovered = RGB(80, 80, 80);
 		grCol.transportIconDown = grCol.transportIconHovered;
 
@@ -5052,12 +6095,12 @@ class StyleColors {
 														   this.BEVEL ? RGBA(0, 0, 0, 10) : RGBA(0, 0, 0, 20) : '';
 
 		grCol.styleProgressBarLineBottom =
-			this.PB === 'bevel' ? this.PBD === 'rounded' ? this.BEVEL ? RGBA(255, 255, 255, 120) : RGBA(255, 255, 255, 255) :
-														   this.BEVEL ? RGBA(255, 255, 255, 100) :
-														   this.BLEND || this.BLEND2 ? RGBA(255, 255, 255, 80) : RGBA(255, 255, 255, 255) :
-			this.PB === 'inner' ? this.PBD === 'rounded' ? this.BEVEL ? RGBA(0, 0, 0, 20) : RGBA(0, 0, 0, 25) :
-														   this.BEVEL ? RGBA(0, 0, 0, 5) :
-														   this.BLEND || this.BLEND2 ? RGBA(255, 255, 255, 80) : RGBA(255, 255, 255, 255) : '';
+			this.PB === 'bevel' ? this.PBD === 'rounded' ? this.BEVEL   ? RGBA(255, 255, 255, 120) : RGBA(255, 255, 255, 255) :
+														   this.BEVEL   ? RGBA(255, 255, 255, 100) :
+														   this.BLEND12 ? RGBA(255, 255, 255, 80)  : RGBA(255, 255, 255, 255) :
+			this.PB === 'inner' ? this.PBD === 'rounded' ? this.BEVEL   ? RGBA(0, 0, 0, 20) : RGBA(0, 0, 0, 25) :
+														   this.BEVEL   ? RGBA(0, 0, 0, 5) :
+														   this.BLEND12 ? RGBA(255, 255, 255, 80) : RGBA(255, 255, 255, 255) : '';
 	}
 	// #endregion
 
@@ -5071,7 +6114,7 @@ class StyleColors {
 		grCol.bg = this.BEVEL ? RGB(40, 40, 40) : RGB(20, 20, 20);
 		grCol.noAlbumArtStub = RGB(90, 90, 90);
 		grCol.lowerBarArtist = RGB(240, 240, 240);
-		grCol.lowerBarTitle = this.BLEND || this.BLEND2 ? RGB(220, 220, 220) : RGB(200, 200, 200);
+		grCol.lowerBarTitle = this.BLEND12 ? RGB(220, 220, 220) : RGB(200, 200, 200);
 		grCol.lowerBarTime = grCol.lowerBarTitle;
 		grCol.lowerBarLength = grCol.lowerBarTitle;
 
@@ -5098,12 +6141,12 @@ class StyleColors {
 			RGB(120, 120, 120);
 
 		grCol.menuRectDown = grCol.menuRectHovered;
-		grCol.menuTextNormal = this.BLEND || this.BLEND2 ? RGB(220, 220, 220) : RGB(180, 180, 180);
+		grCol.menuTextNormal = this.BLEND12 ? RGB(220, 220, 220) : RGB(180, 180, 180);
 		grCol.menuTextHovered = RGB(255, 255, 255);
 		grCol.menuTextDown = grCol.menuTextHovered;
 
 		// * LOWER BAR TRANSPORT BUTTON COLORS * //
-		grCol.transportEllipseBg = this.BLEND || this.BLEND2 ? RGB(50, 50, 50) : RGB(35, 35, 35);
+		grCol.transportEllipseBg = this.BLEND12 ? RGB(50, 50, 50) : RGB(35, 35, 35);
 		grCol.transportEllipseNormal = RGB(60, 60, 60);
 		grCol.transportEllipseHovered = RGB(120, 120, 120);
 		grCol.transportEllipseDown = grCol.transportEllipseHovered;
@@ -5120,7 +6163,7 @@ class StyleColors {
 			this.TPB === 'bevel' || this.TPB === 'inner' ? RGB(10, 10, 10) :
 			this.TPB === 'emboss' ? RGB(20, 20, 20) : '';
 
-		grCol.transportIconNormal = this.BLEND || this.BLEND2 ? RGB(180, 180, 180) : RGB(160, 160, 160);
+		grCol.transportIconNormal = this.BLEND12 ? RGB(180, 180, 180) : RGB(160, 160, 160);
 		grCol.transportIconHovered = RGB(255, 255, 255);
 		grCol.transportIconDown = grCol.transportIconHovered;
 
@@ -5162,7 +6205,7 @@ class StyleColors {
 				this.BEVEL ? RGBA(255, 255, 255, 30) : RGBA(255, 255, 255, 25) :
 			this.PB === 'inner' ? this.PBD === 'rounded' ? RGBA(255, 255, 255, 30) :
 				this.BEVEL ? RGBA(255, 255, 255, 45) :
-				this.BLEND || this.BLEND2 ? RGBA(255, 255, 255, 25) :
+				this.BLEND12 ? RGBA(255, 255, 255, 25) :
 			grCol.colBrightness < 50 ? RGBA(255, 255, 255, 15) : RGBA(255, 255, 255, 40) : '';
 	}
 	// #endregion
@@ -5173,7 +6216,7 @@ class StyleColors {
 	 * Active Reborn theme used in Options > Style > Reborn fusion.
 	 */
 	styleRebornFusionColors() {
-		if (!(fb.IsPlaying && grCol.isColored)) return;
+		if (!grCol.isColored) return;
 		const smallColDiff = ColorDistance(grCol.primary, grCol.primary_alt) < 100;
 
 		// * PLAYLIST COLORS * //
@@ -5224,7 +6267,7 @@ class StyleColors {
 	 * Active Reborn theme used in Options > Style > Reborn fusion 2.
 	 */
 	styleRebornFusion2Colors() {
-		if (!(fb.IsPlaying && grCol.isColored)) return;
+		if (!grCol.isColored) return;
 		const smallColDiff = ColorDistance(grCol.primary, grCol.primary_alt) < 100;
 
 		// * PLAYLIST COLORS * //
@@ -5276,7 +6319,7 @@ class StyleColors {
 	 * Active Reborn theme used in Options > Style > Reborn fusion accent.
 	 */
 	styleRebornFusionAccentColors() {
-		if (!(fb.IsPlaying && grCol.isColored)) return;
+		if (!grCol.isColored) return;
 		const smallColDiff = ColorDistance(grCol.primary, grCol.primary_alt) < 100;
 
 		pl.col.header_nowplaying_bg = smallColDiff ? grCol.colBrightness > 150 ? grCol.darkAccent_50_alt : grCol.lightAccent_50_alt : grCol.primary_alt;
@@ -5315,77 +6358,10 @@ class StyleColors {
 	// * PUBLIC METHODS - STYLE INITIALIZATION * //
 	// #region PUBLIC METHODS - STYLE INITIALIZATION
 	/**
-	 * Initializes current values for all theme grSet.properties.
-	 */
-	initThemeSetVals() {
-		/** @private Options > Theme. */
-		this.THEME  = grSet.theme;
-		/** @private Options > Theme > Custom. */
-		this.CTHEME = grSet.theme.startsWith('custom');
-		/** @private Options > Style > Bevel. */
-		this.BEVEL  = grSet.styleBevel;
-		/** @private Options > Style > Blend. */
-		this.BLEND  = grSet.styleBlend;
-		/** @private Options > Style > Blend 2. */
-		this.BLEND2 = grSet.styleBlend2;
-		/** @private Options > Style > Gradient. */
-		this.GRAD   = grSet.styleGradient;
-		/** @private Options > Style > Gradient 2. */
-		this.GRAD2  = grSet.styleGradient2;
-		/** @private Options > Style > Alternative. */
-		this.ALT    = grSet.styleAlternative;
-		/** @private Options > Style > Alternative 2. */
-		this.ALT2   = grSet.styleAlternative2;
-		/** @private Options > Style > Black and white ( White theme ). */
-		this.BW     = grSet.styleBlackAndWhite;
-		/** @private Options > Style > Black and white 2 ( White theme ). */
-		this.BW2    = grSet.styleBlackAndWhite2;
-		/** @private Options > Style > Black and white reborn ( White theme ). */
-		this.BWR    = grSet.styleBlackAndWhiteReborn;
-		/** @private Options > Style > Black reborn ( Black theme ). */
-		this.BR     = grSet.styleBlackReborn;
-		/** @private Options > Style > Reborn white ( Reborn theme ). */
-		this.RW     = grSet.styleRebornWhite;
-		/** @private Options > Style > Reborn black ( Reborn theme ). */
-		this.RB     = grSet.styleRebornBlack;
-		/** @private Options > Style > Reborn fusion ( Reborn theme ). */
-		this.RF     = grSet.styleRebornFusion;
-		/** @private Options > Style > Reborn fusion 2 ( Reborn theme ). */
-		this.RF2    = grSet.styleRebornFusion2;
-		/** @private Options > Style > Reborn fusion accent ( Reborn theme ). */
-		this.RFA    = grSet.styleRebornFusionAccent;
-		/** @private Options > Style > Random pastel ( Random theme ). */
-		this.RP     = grSet.styleRandomPastel;
-		/** @private Options > Style > Random dark ( Random theme ). */
-		this.RD     = grSet.styleRandomDark;
-		/** @private Options > Style > Auto color ( Random theme ). */
-		this.RAC    = grSet.styleRandomAutoColor;
-		/** @private Options > Style > Buttons > Top menu. */
-		this.TMB    = grSet.styleTopMenuButtons;
-		/** @private Options > Style > Buttons > Transport. */
-		this.TPB    = grSet.styleTransportButtons;
-		/** @private Options > Style > Progress bar > Design. */
-		this.PBD    = grSet.styleProgressBarDesign;
-		/** @private Options > Style > Progress bar > Background. */
-		this.PB     = grSet.styleProgressBar;
-		/** @private Options > Style > Progress bar > Progress fill. */
-		this.PBF    = grSet.styleProgressBarFill;
-		/** @private Options > Style > Volume bar > Design. */
-		this.VBD    = grSet.styleVolumeBarDesign;
-		/** @private Options > Style > Volume bar > Background. */
-		this.VB     = grSet.styleVolumeBar;
-		/** @private Options > Style > Volume bar > Volume fill. */
-		this.VBF    = grSet.styleVolumeBarFill;
-		/** @private Options > Layout. */
-		this.LAYOUT = grSet.layout;
-	}
-
-	/**
-	 * Init all colors that are used in styles, mostly called from grMain.ui.initTheme().
+	 * Init all colors that are used in styles, mostly called from grm.ui.initTheme().
 	 */
 	initStyleColors() {
-		if ((['reborn', 'random'].includes(grSet.theme) || this.CTHEME) &&
-			(grSet.styleNighttime || grSet.themeDayNightMode && grSet.themeDayNightTime === 'night') && !this.RW) {
+		if ((['reborn', 'random'].includes(grSet.theme) || this.CTHEME) && this.NIGHTTIME) {
 			this.styleNighttimeColors();
 		}
 
@@ -5414,6 +6390,8 @@ class StyleColors {
 	 * Init style Black And White Reborn, dynamically change between style Black and white 1 and 2.
 	 */
 	initBlackAndWhiteReborn() {
+		if (!grSet.styleBlackAndWhiteReborn) return;
+
 		if (grCol.imgBrightness > 150) {
 			this.BW2 = grSet.styleBlackAndWhite2 = true; // White background
 			this.BW = grSet.styleBlackAndWhite = false;
@@ -5422,488 +6400,6 @@ class StyleColors {
 			this.BW = grSet.styleBlackAndWhite = true; // Black background
 			this.BW2 = grSet.styleBlackAndWhite2 = false;
 		}
-	}
-	// #endregion
-}
-
-
-///////////////////////
-// * COLOR METHODS * //
-///////////////////////
-/**
- * A class that provides color specific methods and is responsible for handling color operations.
- * Allows for creation, manipulation, adjustment, and application of colors to the theme.
- */
-class ColorMethods {
-	// * PUBLIC METHODS - GENERAL * //
-	// #region PUBLIC METHODS - GENERAL
-	/**
-	 * Adjusts the text and button colors based on the brightness level provided.
-	 * @param {number} percent - The percentage to adjust the brightness by.
-	 * @param {boolean} darken - Whether to darken the color.
-	 * @param {boolean} darkenMax - Whether to apply maximum darkening.
-	 * @param {boolean} lighten - Whether to lighten the color.
-	 * @param {boolean} lightenMax - Whether to apply maximum lightening.
-	 */
-	adjustTextButtonColors(percent, darken, darkenMax, lighten, lightenMax) {
-		/**
-		 * Sets the color brightness based on the provided parameters.
-		 * It selectively shades or tints the color based on the brightness adjustment directives.
-		 * @param {number} color - The base color to be adjusted.
-		 * @param {boolean} [boost] - If true, increases the intensity of the shade or tint.
-		 * @param {boolean} [soften] - If true, decreases the intensity of the shade or tint.
-		 * @returns {number} The adjusted color as a numerical value.
-		 */
-		const SetColor = (color, boost = false, soften = false) => {
-			switch (true) {
-				case darken:
-					return ShadeColor(color, percent * (boost ? 1.75 : soften ? 1.25 : 1.5));
-				case darkenMax:
-					return ShadeColor(color, boost ? 100 : soften ? 60 : 85);
-				case lighten:
-					return TintColor(color, percent * (boost ? 1.75 : soften ? 1.25 : 1.5));
-				case lightenMax:
-					return TintColor(color, boost ? 100 : soften ? 60 : 85);
-			}
-		};
-
-		const playlistColors = {
-			plman_text_normal: grSet.autoHidePlman ? pl.col.bg : SetColor(pl.col.plman_text_normal),
-			plman_text_hovered: SetColor(pl.col.plman_text_hovered, true),
-			plman_text_pressed: SetColor(pl.col.plman_text_pressed, true),
-			header_artist_normal: SetColor(pl.col.header_artist_normal),
-			header_artist_playing: SetColor(pl.col.header_artist_playing, true),
-			header_album_normal: SetColor(pl.col.header_album_normal),
-			header_album_playing: SetColor(pl.col.header_album_playing, true),
-			header_info_normal: SetColor(pl.col.header_info_normal, true),
-			header_info_playing: SetColor(pl.col.header_info_playing, true),
-			header_date_normal: SetColor(pl.col.header_date_normal),
-			header_date_playing: SetColor(pl.col.header_date_playing, true),
-			row_title_normal: SetColor(pl.col.row_title_normal),
-			row_title_playing: SetColor(pl.col.row_title_playing, true),
-			row_title_selected: SetColor(pl.col.row_title_selected, true),
-			row_title_hovered: SetColor(pl.col.row_title_hovered, true),
-			sbar_btn_normal: SetColor(pl.col.sbar_btn_normal),
-			sbar_btn_hovered: SetColor(pl.col.sbar_btn_hovered, true),
-			sbar_thumb_normal: SetColor(pl.col.sbar_thumb_normal, false, true),
-			sbar_thumb_hovered: SetColor(pl.col.sbar_thumb_hovered, true),
-			sbar_thumb_drag: SetColor(pl.col.sbar_thumb_drag, true)
-		};
-		Object.assign(pl.col, playlistColors);
-
-		const libraryColors = {
-			iconPlus: SetColor(lib.ui.col.iconPlus),
-			iconPlus_h: SetColor(lib.ui.col.iconPlus_h, true),
-			iconPlus_sel: SetColor(lib.ui.col.iconPlus_sel, true),
-			iconPlusBg: SetColor(lib.ui.col.iconPlusBg),
-			iconMinus_e: SetColor(lib.ui.col.iconMinus_e),
-			iconMinus_h: SetColor(lib.ui.col.iconMinus_h, true),
-			text: SetColor(lib.ui.col.text),
-			text_h: SetColor(lib.ui.col.text_h, true),
-			text_nowp: SetColor(lib.ui.col.text_nowp, true),
-			textSel: SetColor(lib.ui.col.textSel, true),
-			txt_box: SetColor(lib.ui.col.txt_box),
-			search: SetColor(lib.ui.col.search),
-			searchBtn: SetColor(lib.ui.col.searchBtn),
-			crossBtn: SetColor(lib.ui.col.crossBtn),
-			filterBtn: SetColor(lib.ui.col.filterBtn),
-			settingsBtn: SetColor(lib.ui.col.settingsBtn),
-			line: SetColor(lib.ui.col.line),
-			sbarBtns: SetColor(lib.ui.col.sbarBtns),
-			sbarNormal: SetColor(lib.ui.col.sbarNormal),
-			sbarHovered: SetColor(lib.ui.col.sbarHovered, true),
-			sbarDrag: SetColor(lib.ui.col.sbarDrag, true)
-		};
-		Object.assign(lib.ui.col, libraryColors);
-
-		const biographyColors = {
-			headingText: SetColor(bio.ui.col.headingText),
-			iconMinus_e: SetColor(bio.ui.col.iconMinus_e),
-			iconMinus_h: SetColor(bio.ui.col.iconMinus_h),
-			text: SetColor(bio.ui.col.text),
-			source: SetColor(bio.ui.col.source),
-			accent: SetColor(bio.ui.col.accent),
-			summary: SetColor(bio.ui.col.summary),
-			sbarBtns: SetColor(bio.ui.col.sbarBtns),
-			sbarNormal: SetColor(bio.ui.sbarNormal),
-			sbarHovered: SetColor(bio.ui.col.sbarHovered, true),
-			sbarDrag: SetColor(bio.ui.col.sbarDrag, true)
-		};
-		Object.assign(bio.ui.col, biographyColors);
-
-		const mainColors = {
-			detailsText: SetColor(grCol.detailsText),
-			popupText: SetColor(grCol.popupText),
-			noAlbumArtStub: SetColor(grCol.noAlbumArtStub),
-			lowerBarArtist: SetColor(grCol.lowerBarArtist),
-			lowerBarTitle: SetColor(grCol.lowerBarTitle),
-			lowerBarTime: SetColor(grCol.lowerBarTime),
-			lowerBarLength: SetColor(grCol.lowerBarLength),
-			menuTextNormal: SetColor(grCol.menuTextNormal),
-			menuTextHovered: SetColor(grCol.menuTextHovered, true),
-			menuTextDown: SetColor(grCol.menuTextDown, true),
-			transportIconNormal: !['reborn', 'random'].includes(grSet.theme) ? SetColor(grCol.transportIconNormal) : grCol.transportIconNormal,
-			transportIconHovered: !['reborn', 'random'].includes(grSet.theme) ? SetColor(grCol.transportIconHovered, true) : grCol.transportIconHovered,
-			transportIconDown: !['reborn', 'random'].includes(grSet.theme) ? SetColor(grCol.transportIconDown, true) : grCol.transportIconDown
-		};
-		Object.assign(grCol, mainColors);
-
-		window.Repaint();
-	}
-
-	/**
-	 * Lightens or darkens the theme based on grSet.themeBrightness value, used in Options > Brightness.
-	 * @param {number} percent - The percentage number for lightening or darkening all colors in the theme.
-	 */
-	adjustThemeBrightness(percent) {
-		if (percent < 0) percent = Math.abs(percent); // Negative passed values need to be converted to positives
-
-		if (grSet.themeBrightness < 0) { // * Darken
-			// * PLAYLIST COLORS * //
-			pl.col.bg = ShadeColor(pl.col.bg, percent);
-			pl.col.plman_bg = ShadeColor(pl.col.plman_bg, percent);
-			pl.col.plman_text_normal = ShadeColor(pl.col.plman_text_normal, percent);
-			pl.col.header_nowplaying_bg = ShadeColor(pl.col.header_nowplaying_bg, percent);
-			pl.col.header_sideMarker = ShadeColor(pl.col.header_sideMarker, percent);
-			pl.col.header_line_normal = ShadeColor(pl.col.header_line_normal, percent);
-			pl.col.header_line_playing = ShadeColor(pl.col.header_line_playing, percent);
-			pl.col.row_nowplaying_bg = ShadeColor(pl.col.row_nowplaying_bg, percent);
-			pl.col.row_stripes_bg = ShadeColor(pl.col.row_stripes_bg, percent);
-			pl.col.row_selection_bg = ShadeColor(pl.col.row_selection_bg, percent);
-			pl.col.row_selection_frame = ShadeColor(pl.col.row_selection_frame, percent);
-			pl.col.row_sideMarker = ShadeColor(pl.col.row_sideMarker, percent);
-			pl.col.row_disc_subheader_line = ShadeColor(pl.col.row_disc_subheader_line, percent);
-			pl.col.sbar_btn_normal = ShadeColor(pl.col.sbar_btn_normal, percent);
-			pl.col.sbar_btn_hovered = ShadeColor(pl.col.sbar_btn_hovered, percent);
-			pl.col.sbar_thumb_normal = ShadeColor(pl.col.sbar_thumb_normal, percent);
-			pl.col.sbar_thumb_hovered = ShadeColor(pl.col.sbar_thumb_hovered, percent);
-			pl.col.sbar_thumb_drag = ShadeColor(pl.col.sbar_thumb_drag, percent);
-
-			// * LIBRARY COLORS * //
-			lib.ui.col.bg = pl.col.bg;
-			lib.ui.col.line = ShadeColor(lib.ui.col.line, percent);
-			lib.ui.col.s_line = ShadeColor(lib.ui.col.s_line, percent);
-			lib.ui.col.nowPlayingBg = ShadeColor(lib.ui.col.nowPlayingBg, percent);
-			lib.ui.col.sideMarker = ShadeColor(lib.ui.col.sideMarker, percent);
-			lib.ui.col.sideMarker_nobw = ShadeColor(lib.ui.col.sideMarker_nobw, percent);
-			lib.ui.col.selectionFrame = ShadeColor(lib.ui.col.selectionFrame, percent);
-			lib.ui.col.sbarBtns = ShadeColor(lib.ui.col.sbarBtns, percent);
-			lib.ui.col.sbarNormal = ShadeColor(lib.ui.col.sbarNormal, percent);
-			lib.ui.col.sbarHovered = ShadeColor(lib.ui.col.sbarHovered, percent);
-			lib.ui.col.sbarDrag = ShadeColor(lib.ui.col.sbarDrag, percent);
-
-			// * BIOGRAPHY COLORS * //
-			bio.ui.col.bg = pl.col.bg;
-			bio.ui.col.bottomLine = pl.col.header_line_normal;
-			bio.ui.col.centerLine = pl.col.header_line_normal;
-			bio.ui.col.sbarBtns = ShadeColor(bio.ui.col.sbarBtns, percent);
-			bio.ui.col.sbarNormal = ShadeColor(bio.ui.col.sbarNormal, percent);
-			bio.ui.col.sbarHovered = ShadeColor(bio.ui.col.sbarHovered, percent);
-			bio.ui.col.sbarDrag = ShadeColor(bio.ui.col.sbarDrag, percent);
-
-			// * MAIN COLORS * //
-			grCol.bg = ShadeColor(grCol.bg, percent);
-			grCol.uiHacksFrame = ShadeColor(grCol.uiHacksFrame, percent);
-			grCol.shadow = ShadeColor(grCol.shadow, percent);
-			grCol.detailsBg = ShadeColor(grCol.detailsBg, percent);
-			grCol.timelineAdded = ShadeColor(grCol.timelineAdded, percent);
-			grCol.timelinePlayed = ShadeColor(grCol.timelinePlayed, percent);
-			grCol.timelineUnplayed = ShadeColor(grCol.timelineUnplayed, percent);
-			grCol.timelineFrame = ShadeColor(grCol.timelineFrame, percent);
-			grCol.popupBg = ShadeColor(grCol.popupBg, percent);
-			if (grm.timeline) grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
-
-			// * TOP MENU BUTTON COLORS * //
-			grCol.menuBgColor = ShadeColor(grCol.menuBgColor, percent);
-			grCol.menuStyleBg = ShadeColor(grCol.menuStyleBg, percent);
-			grCol.menuRectStyleEmbossTop = ShadeColor(grCol.menuRectStyleEmbossTop, percent);
-			grCol.menuRectStyleEmbossBottom = ShadeColor(grCol.menuRectStyleEmbossBottom, percent);
-			grCol.menuRectNormal = ShadeColor(grCol.menuRectNormal, percent);
-			grCol.menuRectHovered = ShadeColor(grCol.menuRectHovered, percent);
-			grCol.menuRectDown = grCol.menuRectHovered;
-
-			// * LOWER BAR TRANSPORT BUTTON COLORS * //
-			grCol.transportEllipseBg = ShadeColor(grCol.transportEllipseBg, percent);
-			grCol.transportEllipseNormal = ShadeColor(grCol.transportEllipseNormal, percent);
-			grCol.transportEllipseHovered = ShadeColor(grCol.transportEllipseHovered, percent);
-			grCol.transportEllipseDown = grCol.transportEllipseHovered;
-			grCol.transportStyleBg = ShadeColor(grCol.transportStyleBg, percent);
-			grCol.transportStyleTop = ShadeColor(grCol.transportStyleTop, percent);
-			grCol.transportStyleBottom = ShadeColor(grCol.transportStyleBottom, percent);
-
-			// * PROGRESS BAR COLORS * //
-			grCol.progressBar = ShadeColor(grCol.progressBar, percent);
-			grCol.progressBarStreaming = ShadeColor(grCol.progressBarStreaming, percent);
-			grCol.progressBarFrame = ShadeColor(grCol.progressBarFrame, percent);
-			grCol.progressBarFill = ShadeColor(grCol.progressBarFill, percent);
-
-			// * PEAKMETER BAR COLORS * //
-			grCol.peakmeterBarProg = ShadeColor(grCol.peakmeterBarProg, percent);
-			grCol.peakmeterBarProgFill = ShadeColor(grCol.peakmeterBarProgFill, percent);
-			grCol.peakmeterBarFillTop = ShadeColor(grCol.peakmeterBarFillTop, percent);
-			grCol.peakmeterBarFillMiddle = ShadeColor(grCol.peakmeterBarFillMiddle, percent);
-			grCol.peakmeterBarFillBack = ShadeColor(grCol.peakmeterBarFillBack, percent);
-			grCol.peakmeterBarVertProgFill = ShadeColor(grCol.peakmeterBarVertProgFill, percent);
-			grCol.peakmeterBarVertFill = ShadeColor(grCol.peakmeterBarVertFill, percent);
-			grCol.peakmeterBarVertFillPeaks = ShadeColor(grCol.peakmeterBarVertFillPeaks, percent);
-
-			// * WAVEFORM BAR COLORS * //
-			grCol.waveformBarFillFront = ShadeColor(grCol.waveformBarFillFront, percent);
-			grCol.waveformBarFillBack  = ShadeColor(grCol.waveformBarFillBack, percent);
-			grCol.waveformBarFillPreFront = ShadeColor(grCol.waveformBarFillPreFront, percent);
-			grCol.waveformBarFillPreBack = ShadeColor(grCol.waveformBarFillPreBack, percent);
-			grCol.waveformBarIndicator = ShadeColor(grCol.waveformBarIndicator, percent);
-
-			// * VOLUME BAR COLORS * //
-			grCol.volumeBar = ShadeColor(grCol.volumeBar, percent);
-			grCol.volumeBarFrame = ShadeColor(grCol.volumeBarFrame, percent);
-			grCol.volumeBarFill = ShadeColor(grCol.volumeBarFill, percent);
-
-			// * STYLE COLORS * //
-			grCol.styleProgressBar = ShadeColor(grCol.styleProgressBar, percent);
-			grCol.styleProgressBarLineTop = ShadeColor(grCol.styleProgressBarLineTop, percent);
-			grCol.styleProgressBarLineBottom = ShadeColor(grCol.styleProgressBarLineBottom, percent);
-			grCol.styleVolumeBar = ShadeColor(grCol.styleVolumeBar, percent);
-
-			// * ONLY DARKEN BLACK TEXT AND BUTTON COLORS BUT NOT WHITE TEXT COLORS * //
-			const bgColBrightness = new Color(grCol.bg).brightness;
-			const txtColBrightness = new Color(pl.col.row_title_normal).brightness;
-			if (bgColBrightness < 200 && txtColBrightness < 150) {
-				this.adjustTextButtonColors(percent, true, false, false, false);
-			}
-		}
-		else if (grSet.themeBrightness > 0) { // * Lighten
-			// * PLAYLIST COLORS * //
-			pl.col.bg = TintColor(pl.col.bg, percent);
-			pl.col.plman_bg = TintColor(pl.col.plman_bg, percent);
-			pl.col.plman_text_normal = TintColor(pl.col.plman_text_normal, percent);
-			pl.col.header_nowplaying_bg = TintColor(pl.col.header_nowplaying_bg, percent);
-			pl.col.header_sideMarker = TintColor(pl.col.header_sideMarker, percent);
-			pl.col.header_line_normal = TintColor(pl.col.header_line_normal, percent);
-			pl.col.header_line_playing = TintColor(pl.col.header_line_playing, percent);
-			pl.col.row_nowplaying_bg = TintColor(pl.col.row_nowplaying_bg, percent);
-			pl.col.row_stripes_bg = TintColor(pl.col.row_stripes_bg, percent);
-			pl.col.row_selection_bg = TintColor(pl.col.row_selection_bg, percent);
-			pl.col.row_selection_frame = TintColor(pl.col.row_selection_frame, percent);
-			pl.col.row_sideMarker = TintColor(pl.col.row_sideMarker, percent);
-			pl.col.row_disc_subheader_line = TintColor(pl.col.row_disc_subheader_line, percent);
-			pl.col.sbar_btn_normal = TintColor(pl.col.sbar_btn_normal, percent);
-			pl.col.sbar_btn_hovered = TintColor(pl.col.sbar_btn_hovered, percent);
-			pl.col.sbar_thumb_normal = TintColor(pl.col.sbar_thumb_normal, percent);
-			pl.col.sbar_thumb_hovered = TintColor(pl.col.sbar_thumb_hovered, percent);
-			pl.col.sbar_thumb_drag = TintColor(pl.col.sbar_thumb_drag, percent);
-
-			// * LIBRARY COLORS * //
-			lib.ui.col.bg = pl.col.bg;
-			lib.ui.col.line = TintColor(lib.ui.col.line, percent);
-			lib.ui.col.s_line = TintColor(lib.ui.col.s_line, percent);
-			lib.ui.col.nowPlayingBg = TintColor(lib.ui.col.nowPlayingBg, percent);
-			lib.ui.col.sideMarker = TintColor(lib.ui.col.sideMarker, percent);
-			lib.ui.col.sideMarker_nobw = TintColor(lib.ui.col.sideMarker_nobw, percent);
-			lib.ui.col.selectionFrame = TintColor(lib.ui.col.selectionFrame, percent);
-			lib.ui.col.sbarBtns = TintColor(lib.ui.col.sbarBtns, percent);
-			lib.ui.col.sbarNormal = TintColor(lib.ui.col.sbarNormal, percent);
-			lib.ui.col.sbarHovered = TintColor(lib.ui.col.sbarHovered, percent);
-			lib.ui.col.sbarDrag = TintColor(lib.ui.col.sbarDrag, percent);
-
-			// * BIOGRAPHY COLORS * //
-			bio.ui.col.bg = pl.col.bg;
-			bio.ui.col.bottomLine = pl.col.header_line_normal;
-			bio.ui.col.centerLine = pl.col.header_line_normal;
-			bio.ui.col.sbarBtns = TintColor(bio.ui.col.sbarBtns, percent);
-			bio.ui.col.sbarNormal = TintColor(bio.ui.col.sbarNormal, percent);
-			bio.ui.col.sbarHovered = TintColor(bio.ui.col.sbarHovered, percent);
-			bio.ui.col.sbarDrag = TintColor(bio.ui.col.sbarDrag, percent);
-
-			// * MAIN COLORS * //
-			grCol.bg = TintColor(grCol.bg, percent);
-			grCol.uiHacksFrame = TintColor(grCol.uiHacksFrame, percent);
-			grCol.shadow = TintColor(grCol.shadow, percent);
-			grCol.detailsBg = TintColor(grCol.detailsBg, percent);
-			grCol.timelineAdded = TintColor(grCol.timelineAdded, percent);
-			grCol.timelinePlayed = TintColor(grCol.timelinePlayed, percent);
-			grCol.timelineUnplayed = TintColor(grCol.timelineUnplayed, percent);
-			grCol.timelineFrame = TintColor(grCol.timelineFrame, percent);
-			grCol.popupBg = TintColor(grCol.popupBg, percent);
-			if (grm.timeline) grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
-
-			// * TOP MENU BUTTON COLORS * //
-			grCol.menuBgColor = TintColor(grCol.menuBgColor, percent);
-			grCol.menuStyleBg = TintColor(grCol.menuStyleBg, percent);
-			grCol.menuRectStyleEmbossTop = TintColor(grCol.menuRectStyleEmbossTop, percent);
-			grCol.menuRectStyleEmbossBottom = TintColor(grCol.menuRectStyleEmbossBottom, percent);
-			grCol.menuRectNormal = TintColor(grCol.menuRectNormal, percent);
-			grCol.menuRectHovered = TintColor(grCol.menuRectHovered, percent);
-			grCol.menuRectDown = grCol.menuRectHovered;
-
-			// * LOWER BAR TRANSPORT BUTTON COLORS * //
-			grCol.transportEllipseBg = TintColor(grCol.transportEllipseBg, percent);
-			grCol.transportEllipseNormal = TintColor(grCol.transportEllipseNormal, percent);
-			grCol.transportEllipseHovered = TintColor(grCol.transportEllipseHovered, percent);
-			grCol.transportEllipseDown = grCol.transportEllipseHovered;
-			grCol.transportStyleBg = TintColor(grCol.transportStyleBg, percent);
-			grCol.transportStyleTop = TintColor(grCol.transportStyleTop, percent);
-			grCol.transportStyleBottom = TintColor(grCol.transportStyleBottom, percent);
-
-			// * PROGRESS BAR COLORS * //
-			grCol.progressBar = TintColor(grCol.progressBar, percent);
-			grCol.progressBarStreaming = TintColor(grCol.progressBarStreaming, percent);
-			grCol.progressBarFrame = TintColor(grCol.progressBarFrame, percent);
-			grCol.progressBarFill = TintColor(grCol.progressBarFill, percent);
-
-			// * PEAKMETER BAR COLORS * //
-			grCol.peakmeterBarProg = TintColor(grCol.peakmeterBarProg, percent);
-			grCol.peakmeterBarProgFill = TintColor(grCol.peakmeterBarProgFill, percent);
-			grCol.peakmeterBarFillTop = TintColor(grCol.peakmeterBarFillTop, percent);
-			grCol.peakmeterBarFillMiddle = TintColor(grCol.peakmeterBarFillMiddle, percent);
-			grCol.peakmeterBarFillBack = TintColor(grCol.peakmeterBarFillBack, percent);
-			grCol.peakmeterBarVertProgFill = TintColor(grCol.peakmeterBarVertProgFill, percent);
-			grCol.peakmeterBarVertFill = TintColor(grCol.peakmeterBarVertFill, percent);
-			grCol.peakmeterBarVertFillPeaks = TintColor(grCol.peakmeterBarVertFillPeaks, percent);
-
-			// * WAVEFORM BAR COLORS * //
-			grCol.waveformBarFillFront = TintColor(grCol.waveformBarFillFront, percent);
-			grCol.waveformBarFillBack  = TintColor(grCol.waveformBarFillBack, percent);
-			grCol.waveformBarFillPreFront = TintColor(grCol.waveformBarFillPreFront, percent);
-			grCol.waveformBarFillPreBack = TintColor(grCol.waveformBarFillPreBack, percent);
-			grCol.waveformBarIndicator = TintColor(grCol.waveformBarIndicator, percent);
-
-			// * VOLUME BAR COLORS * //
-			grCol.volumeBar = TintColor(grCol.volumeBar, percent);
-			grCol.volumeBarFrame = TintColor(grCol.volumeBarFrame, percent);
-			grCol.volumeBarFill = TintColor(grCol.volumeBarFill, percent);
-
-			// * STYLE COLORS * //
-			grCol.styleProgressBar = TintColor(grCol.styleProgressBar, percent);
-			grCol.styleProgressBarLineTop = TintColor(grCol.styleProgressBarLineTop, percent);
-			grCol.styleProgressBarLineBottom = TintColor(grCol.styleProgressBarLineBottom, percent);
-			grCol.styleVolumeBar = TintColor(grCol.styleVolumeBar, percent);
-
-			// * LIGHTEN TEXT AND BUTTON COLORS * //
-			const bgColBrightness = new Color(grCol.bg).brightness;
-			if (bgColBrightness < 150 && bgColBrightness > 50) {
-				this.adjustTextButtonColors(percent, false, false, true, false);
-			}
-		}
-
-		const bgColBrightness = new Color(grCol.bg).brightness;
-		if (grSet.themeBrightness > 20 && bgColBrightness < 200 && bgColBrightness > 125) {
-			grCol.lightBg = false;
-			this.adjustTextButtonColors(percent, false, true, false, false);
-		}
-		else if (grSet.themeBrightness < -20 && bgColBrightness < 150 && bgColBrightness > 50) {
-			grCol.lightBg = false;
-			this.adjustTextButtonColors(percent, false, false, false, true);
-		}
-	}
-
-	/**
-	 * Creates the color objects.
-	 * @param {number} color - The primary color.
-	 * @param {number} [color2] - The secondary color.
-	 * @returns {Color} The color as an object.
-	 */
-	createThemeColorObject(color, color2) {
-		if (color2 === undefined) color2 = color;
-		const themeObj = {
-			primary: color.val,
-			primary_alt: color2.val,
-			darkAccent: ShadeColor(color.val, 30),
-			darkAccent_alt: ShadeColor(color2.val, 30),
-			accent: ShadeColor(color.val, 15),
-			accent_alt: ShadeColor(color2.val, 15),
-			lightAccent: TintColor(color.val, 20),
-			lightAccent_alt: TintColor(color2.val, 20)
-		};
-		if (color.brightness < 18) {
-			// Hard code these values otherwise darkAccent and accent can be very hard to see on background
-			themeObj.darkAccent = RGB(32, 32, 32);
-			themeObj.darkAccent_alt = RGB(32, 32, 32);
-			themeObj.accent = RGB(56, 56, 56);
-			themeObj.accent_alt = RGB(56, 56, 56);
-			themeObj.lightAccent = RGB(78, 78, 78);
-			themeObj.lightAccent_alt = RGB(78, 78, 78);
-		}
-		else if (color.brightness < 40) {
-			themeObj.darkAccent = ShadeColor(color.val, 35);
-			themeObj.darkAccent_alt = ShadeColor(color2.val, 35);
-			themeObj.accent = TintColor(color.val, 10);
-			themeObj.accent_alt = TintColor(color2.val, 10);
-			themeObj.lightAccent = TintColor(color.val, 20);
-			themeObj.lightAccent_alt = TintColor(color2.val, 20);
-		}
-		else if (color.brightness > 210) {
-			themeObj.darkAccent = ShadeColor(color.val, 30);
-			themeObj.darkAccent_alt = ShadeColor(color2.val, 30);
-			themeObj.accent = ShadeColor(color.val, 20);
-			themeObj.accent_alt = ShadeColor(color2.val, 20);
-			themeObj.lightAccent = ShadeColor(color.val, 10);
-			themeObj.lightAccent_alt = ShadeColor(color2.val, 10);
-		}
-		return themeObj;
-	}
-	// #endregion
-
-	// * PUBLIC METHODS - SET THEME COLORS * //
-	// #region PUBLIC METHODS - SET THEME COLORS
-	/**
-	 * Sets Main, Playlist, Details, Library and Biography background color brightness rules.
-	 * Based on background color and image brightness, text colors in theme will change accordingly to black or white.
-	 * Used in White, Black, Reborn, Random and Custom themes.
-	 */
-	setBackgroundColorDefinition() {
-		const primaryBrightness    = new Color(grCol.primary).brightness;
-		const primaryBrightnessAlt = new Color(grCol.primary_alt).brightness;
-		const colBrightness = grSet.styleRebornFusion ? primaryBrightnessAlt : primaryBrightness;
-		grCol.colBrightness  = primaryBrightness;
-		grCol.colBrightness2 = primaryBrightnessAlt;
-
-		const standardThemes = ['white', 'black', 'reborn', 'random', 'cream'].includes(grSet.theme) && !grSet.styleRebornFusion && !grSet.styleRebornFusion2;
-		const customThemes = grSet.theme.startsWith('custom');
-
-		// * STANDARD THEMES * //
-		if (standardThemes) {
-			const lightBrightness = (primaryBrightness > 150) && (!grSet.styleBlend && !grSet.styleBlend2 && !grSet.styleRandomDark);
-
-			const lightBlend =
-				(primaryBrightness + grCol.imgBrightness > 285) && (grSet.styleBlend || grSet.styleBlend2)
-				&&
-				(primaryBrightness > 150 && (grSet.theme === 'white' || grSet.theme === 'black') || grSet.theme === 'reborn' || grSet.theme === 'random' && !grSet.styleRandomDark);
-
-			const noAlbumArt = grm.ui.noAlbumArtStub && (grSet.theme === 'white' && !grSet.styleBlackAndWhite || grSet.theme === 'reborn' || grSet.theme === 'random');
-
-			grCol.lightBg = lightBrightness || lightBlend || noAlbumArt || grSet.theme === 'cream';
-		}
-
-		// * GRADIENT STYLES, REBORN FUSION STYLES, CUSTOM THEMES * //
-		if (!(grSet.styleGradient || grSet.styleGradient2 || grSet.styleRebornFusion || grSet.styleRebornFusion2 || customThemes)) {
-			return;
-		}
-		else if (grSet.theme === 'reborn' || grSet.theme === 'random') {
-			grCol.styleGradient = grCol.darkAccent;
-			grCol.styleGradient2 = grCol.darkAccent;
-		}
-
-		const gradientBRT = (color) => new Color(RGBAtoRGB(color)).brightness;
-		const cThemeBRT = (color) => new Color(HEXtoRGB(color)).brightness;
-		const isLightBg = (color) =>
-			color + grCol.imgBrightness > 285 && (grSet.styleBlend || grSet.styleBlend2)
-			||
-			color > 150 && (!grSet.styleBlend && !grSet.styleBlend2 || grSet.styleBlend2 && grSet.styleRebornFusion2);
-
-		const mainBgColor      = grSet.styleGradient      ? colBrightness - (gradientBRT(grCol.styleGradient) * 0.5) :
-								 grSet.styleGradient2     ? colBrightness - (gradientBRT(grCol.styleGradient2) * 0.5) :
-								 grSet.styleRebornFusion2 ? primaryBrightness    : customThemes ? cThemeBRT(grCfg.cTheme.grCol_bg)        : primaryBrightnessAlt;
-		const playlistBgColor  = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.pl_col_bg)       : primaryBrightness;
-		const detailsBgColor   = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.grCol_detailsBg) : primaryBrightness;
-		const libraryBgColor   = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.lib_ui_col_bg)   : primaryBrightness;
-		const biographyBgColor = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.bio_ui_col_bg)   : primaryBrightness;
-
-		grCol.lightBgMain      = isLightBg(mainBgColor);
-		grCol.lightBgPlaylist  = isLightBg(playlistBgColor);
-		grCol.lightBgDetails   = isLightBg(detailsBgColor);
-		grCol.lightBgLibrary   = isLightBg(libraryBgColor);
-		grCol.lightBgBiography = isLightBg(biographyBgColor);
 	}
 
 	/**
@@ -6003,542 +6499,16 @@ class ColorMethods {
 	 * Main method to set the style Blend 1 & Blend 2 for the album art based on the current theme.
 	 */
 	setStyleBlend() {
+		if ((!grm.ui.albumArt || (!grSet.styleBlend && !grSet.styleBlend2 && grSet.styleProgressBarFill !== 'blend'))) {
+			return;
+		}
+
 		const setStyleBlendProfiler = (grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('setStyleBlend');
 
 		grCol.imgBlended = this._formatStyleBlendImage(grm.ui.albumArt, grm.ui.ww, grm.ui.wh, grCol.imgBrightness);
 
 		if (setStyleBlendProfiler) setStyleBlendProfiler.Print();
 		if (grCfg.settings.showDebugPerformanceOverlay) grm.ui.debugTimingsArray.push(`setStyleBlend: ${setStyleBlendProfiler.Time} ms`);
-	}
-
-	/**
-	 * Sets calculated image brightness from album art, mainly used when using style Blend 1 and 2 or style Black and white reborn.
-	 */
-	setImageBrightness() {
-		if (grm.ui.albumArt && (libSet.theme !== 0 || grSet.styleBlend || grSet.styleBlend2 || grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2 || grSet.styleBlackAndWhiteReborn)) {
-			grCol.imgBrightness = CalcImgBrightness(grm.ui.albumArt);
-		}
-	}
-
-	/**
-	 * Sets noAlbumArtColors, change col.primary when streaming, reset to default when playing from CD or using noAlbumArtStub.
-	 */
-	setNoAlbumArtColors() {
-		if (grm.ui.isStreaming && (['white', 'black', 'reborn', 'random'].includes(grSet.theme))) {
-			grCol.primary = RGB(207, 0, 5);
-		}
-		if (grm.ui.isPlayingCD || grm.ui.noAlbumArtStub) {
-			if (grSet.theme.startsWith('custom')) grm.ui.initCustomTheme();
-			if (!grm.ui.isStreaming) grm.color.setThemeColors();
-			bio.ui.updateProp(1); // Needed to update color for NO PHOTO/COVER stub in Biography when changing themes
-		}
-	}
-
-	/**
-	 * Sets primary and optional secondary theme color as well as accents.
-	 * @param {number} color - The primary color.
-	 * @param {number} color2 - The secondary color.
-	 */
-	setTheme(color, color2) {
-		if (color2 === undefined) color2 = color;
-		let themeCol = new Color(color.primary);
-		const customThemes = grSet.theme.startsWith('custom');
-
-		if (ColorDistance(color.primary, grCol.bg, true) < (themeCol.isCloseToGrayscale ? 60 : 45) &&
-			(grSet.theme !== 'reborn' && grSet.theme !== 'random' && (grSet.theme !== 'black' && !grSet.styleBlackReborn) && !customThemes)) {
-			if (grCfg.settings.showDebugThemeLog) console.log('>>> Theme primary color is too close to bg color. Tinting theme color.');
-			color.primary = TintColor(color.primary, 15);
-			color.accent = TintColor(color.primary, 10);
-			themeCol = new Color(color.primary);
-		}
-		grCol.primary = color.primary;
-		grCol.primary_alt = color2.primary_alt;
-
-		if (ColorDistance(color.primary, grCol.progressBar, true) < (themeCol.isCloseToGrayscale ? 60 : 45)) {
-			// Progress bar fill is too close in color to bg
-			if (grCfg.settings.showDebugThemeLog) console.log('>>> Theme primary color is too close to progress bar. Adjusting progressBar');
-			if (grSet.theme === 'white' && themeCol.brightness < 125) {
-				grCol.progressBar = RGB(180, 180, 180);
-			}
-		}
-
-		if (grm.timeline) {
-			grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
-		}
-
-		grCol.primary     = color.primary;
-		grCol.primary_alt = color2.primary_alt;
-
-		// * Reborn/Random theme main tone palette
-		grCol.darkAccent_100     = ShadeColor(color.primary, 100);
-		grCol.darkAccent_100_alt = ShadeColor(color2.primary_alt, 100);
-		grCol.darkAccent_75      = ShadeColor(color.primary, 75);
-		grCol.darkAccent_75_alt  = ShadeColor(color2.primary_alt, 75);
-		grCol.darkAccent_65      = ShadeColor(color.primary, 65);
-		grCol.darkAccent_65_alt  = ShadeColor(color2.primary_alt, 65);
-		grCol.darkAccent_50      = ShadeColor(color.primary, 50);
-		grCol.darkAccent_50_alt  = ShadeColor(color2.primary_alt, 50);
-		grCol.darkAccent         = color.darkAccent;
-		grCol.darkAccent_alt     = color2.darkAccent_alt;
-		grCol.accent             = color.accent;
-		grCol.accent_alt         = color2.accent_alt;
-
-		grCol.lightAccent_2      = TintColor(color.primary, 2);
-		grCol.lightAccent_2_alt  = TintColor(color2.primary_alt, 2);
-		grCol.lightAccent_7      = TintColor(color.primary, 7);
-		grCol.lightAccent_7_alt  = TintColor(color2.primary_alt, 7);
-		grCol.lightAccent_10     = TintColor(color.primary, 10);
-		grCol.lightAccent_10_alt = TintColor(color2.primary_alt, 10);
-
-		grCol.lightAccent         = color.lightAccent;
-		grCol.lightAccent_alt     = color2.lightAccent_alt;
-		grCol.lightAccent_35      = TintColor(color.primary, 35);
-		grCol.lightAccent_35_alt  = TintColor(color2.primary_alt, 35);
-		grCol.lightAccent_50      = TintColor(color.primary, 50);
-		grCol.lightAccent_50_alt  = TintColor(color2.primary_alt, 50);
-		grCol.lightAccent_65      = TintColor(color.primary, 65);
-		grCol.lightAccent_65_alt  = TintColor(color2.primary_alt, 65);
-		grCol.lightAccent_80      = TintColor(color.primary, 80);
-		grCol.lightAccent_80_alt  = TintColor(color2.primary_alt, 80);
-		grCol.lightAccent_100     = TintColor(color.primary, 100);
-		grCol.lightAccent_100_alt = TintColor(color2.primary_alt, 100);
-
-		// * Change col.primary if too bright or too dark
-		if (grSet.theme === 'white' && (ColorDistance(grCol.primary, grCol.progressBar)) < 60) {
-			grCol.primary = grCol.darkAccent;
-		}
-	}
-
-	/**
-	 * Sets default theme colors, used on startup when nothing has been played or using noAlbumArtStub.
-	 */
-	setThemeColors() {
-		const themeColors = {
-			white: grm.theme.whiteTheme.colors,
-			black: grm.theme.blackTheme.colors,
-			reborn: grm.theme.rebornTheme.colors,
-			random: grm.theme.randomTheme.colors,
-			blue: grm.theme.blueTheme.colors,
-			darkblue: grm.theme.darkblueTheme.colors,
-			red: grm.theme.redTheme.colors,
-			cream: grm.theme.creamTheme.colors,
-			nblue: grm.theme.nblueTheme.colors,
-			ngreen: grm.theme.ngreenTheme.colors,
-			nred: grm.theme.nredTheme.colors,
-			ngold: grm.theme.ngoldTheme.colors
-		};
-
-		if (themeColors[grSet.theme]) {
-			this.setTheme(themeColors[grSet.theme]);
-		} else if (grSet.theme.startsWith('custom')) {
-			this.setTheme(grm.theme.customTheme.colors);
-		}
-	}
-
-	/**
-	 * Sets and saves currently used colors, used when transferring colors to a custom theme.
-	 * @param {string} slot - The custom theme slot in which to save.
-	 */
-	setCurrentColorsToCustomTheme(slot) {
-		const currentColors = {
-			// * PRELOADER COLORS * //
-			grCol_preloaderBg: RGBFtoHEX(grCol.bg),
-			grCol_preloaderLogo: '_custom-logo.png',
-			grCol_preloaderLowerBarTitle: RGBFtoHEX(grCol.lowerBarTitle),
-			grCol_preloaderProgressBar: RGBFtoHEX(grCol.progressBar),
-			grCol_preloaderProgressBarFill: RGBFtoHEX(grCol.progressBarFill),
-			grCol_preloaderProgressBarFrame: RGBFtoHEX(grCol.progressBarFrame),
-			grCol_preloaderUIHacksFrame: RGBFtoHEX(grCol.bg),
-			// * PLAYLIST COLORS * //
-			pl_col_bg: RGBFtoHEX(pl.col.bg),
-			pl_col_plman_text_normal: RGBFtoHEX(pl.col.plman_text_normal),
-			pl_col_plman_text_hovered: RGBFtoHEX(pl.col.plman_text_hovered),
-			pl_col_plman_text_pressed: RGBFtoHEX(pl.col.plman_text_pressed),
-			pl_col_header_nowplaying_bg: RGBFtoHEX(pl.col.header_nowplaying_bg),
-			pl_col_header_sideMarker: RGBFtoHEX(pl.col.header_sideMarker),
-			pl_col_header_artist_normal: RGBFtoHEX(pl.col.header_artist_normal),
-			pl_col_header_artist_playing: RGBFtoHEX(pl.col.header_artist_playing),
-			pl_col_header_album_normal: RGBFtoHEX(pl.col.header_album_normal),
-			pl_col_header_album_playing: RGBFtoHEX(pl.col.header_album_playing),
-			pl_col_header_info_normal: RGBFtoHEX(pl.col.header_info_normal),
-			pl_col_header_info_playing: RGBFtoHEX(pl.col.header_info_playing),
-			pl_col_header_date_normal: RGBFtoHEX(pl.col.header_date_normal),
-			pl_col_header_date_playing: RGBFtoHEX(pl.col.header_date_playing),
-			pl_col_header_line_normal: RGBFtoHEX(pl.col.header_line_normal),
-			pl_col_header_line_playing: RGBFtoHEX(pl.col.header_line_playing),
-			pl_col_row_nowplaying_bg: RGBFtoHEX(pl.col.row_nowplaying_bg),
-			pl_col_row_stripes_bg: RGBFtoHEX(pl.col.row_stripes_bg),
-			pl_col_row_selection_frame: RGBFtoHEX(pl.col.row_selection_frame),
-			pl_col_row_sideMarker: RGBFtoHEX(pl.col.row_sideMarker),
-			pl_col_row_title_normal: RGBFtoHEX(pl.col.row_title_normal),
-			pl_col_row_title_playing: RGBFtoHEX(pl.col.row_title_playing),
-			pl_col_row_title_selected: RGBFtoHEX(pl.col.row_title_selected),
-			pl_col_row_title_hovered: RGBFtoHEX(pl.col.row_title_hovered),
-			pl_col_row_rating_color: RGBFtoHEX(pl.col.row_rating_color),
-			pl_col_row_disc_subheader_line: RGBFtoHEX(pl.col.row_disc_subheader_line),
-			pl_col_row_drag_line: RGBFtoHEX(pl.col.row_drag_line),
-			pl_col_row_drag_line_reached: RGBFtoHEX(pl.col.row_drag_line_reached),
-			pl_col_sbar_btn_normal: RGBFtoHEX(pl.col.sbar_btn_normal),
-			pl_col_sbar_btn_hovered: RGBFtoHEX(pl.col.sbar_btn_hovered),
-			pl_col_sbar_thumb_normal: RGBFtoHEX(pl.col.sbar_thumb_normal),
-			pl_col_sbar_thumb_hovered: RGBFtoHEX(pl.col.sbar_thumb_hovered),
-			pl_col_sbar_thumb_drag: RGBFtoHEX(pl.col.sbar_thumb_drag),
-
-			// * LIBRARY COLORS * //
-			lib_ui_col_bg: RGBFtoHEX(lib.ui.col.bg),
-			lib_ui_col_rowStripes: RGBFtoHEX(lib.ui.col.rowStripes),
-			lib_ui_col_nowPlayingBg: RGBFtoHEX(lib.ui.col.nowPlayingBg),
-			lib_ui_col_sideMarker: RGBFtoHEX(lib.ui.col.sideMarker),
-			lib_ui_col_selectionFrame: RGBFtoHEX(lib.ui.col.selectionFrame),
-			lib_ui_col_selectionFrame2: RGBFtoHEX(lib.ui.col.selectionFrame2),
-			lib_ui_col_hoverFrame: RGBFtoHEX(lib.ui.col.hoverFrame),
-			lib_ui_col_iconPlus: RGBFtoHEX(lib.ui.col.iconPlus),
-			lib_ui_col_iconPlus_h: RGBFtoHEX(lib.ui.col.iconPlus_h),
-			lib_ui_col_iconPlus_sel: RGBFtoHEX(lib.ui.col.iconPlus_sel),
-			lib_ui_col_iconPlusBg: RGBFtoHEX(lib.ui.col.iconPlusBg),
-			lib_ui_col_iconMinus_e: RGBFtoHEX(lib.ui.col.iconMinus_e),
-			lib_ui_col_iconMinus_c: RGBFtoHEX(lib.ui.col.iconMinus_c),
-			lib_ui_col_iconMinus_h: RGBFtoHEX(lib.ui.col.iconMinus_h),
-			lib_ui_col_text: RGBFtoHEX(lib.ui.col.text),
-			lib_ui_col_text_h: RGBFtoHEX(lib.ui.col.text_h),
-			lib_ui_col_text_nowp: RGBFtoHEX(lib.ui.col.text_nowp),
-			lib_ui_col_textSel: RGBFtoHEX(lib.ui.col.textSel),
-			lib_ui_col_txt: RGBFtoHEX(lib.ui.col.txt),
-			lib_ui_col_txt_h: RGBFtoHEX(lib.ui.col.txt_h),
-			lib_ui_col_txt_box: RGBFtoHEX(lib.ui.col.txt_box),
-			lib_ui_col_search: RGBFtoHEX(lib.ui.col.search),
-			lib_ui_col_searchBtn: RGBFtoHEX(lib.ui.col.searchBtn),
-			lib_ui_col_crossBtn: RGBFtoHEX(lib.ui.col.crossBtn),
-			lib_ui_col_filterBtn: RGBFtoHEX(lib.ui.col.filterBtn),
-			lib_ui_col_settingsBtn: RGBFtoHEX(lib.ui.col.settingsBtn),
-			lib_ui_col_line: RGBFtoHEX(lib.ui.col.line),
-			lib_ui_col_s_line: RGBFtoHEX(lib.ui.col.s_line),
-			lib_ui_col_sbarBtns: RGBFtoHEX(lib.ui.col.sbarBtns),
-			lib_ui_col_sbarNormal: RGBFtoHEX(lib.ui.col.sbarNormal),
-			lib_ui_col_sbarHovered: RGBFtoHEX(lib.ui.col.sbarHovered),
-			lib_ui_col_sbarDrag: RGBFtoHEX(lib.ui.col.sbarDrag),
-
-			// * BIOGRAPHY COLORS * //
-			bio_ui_col_bg: RGBFtoHEX(bio.ui.col.bg),
-			bio_ui_col_rowStripes: RGBFtoHEX(bio.ui.col.rowStripes),
-			bio_ui_col_headingText: RGBFtoHEX(bio.ui.col.headingText),
-			bio_ui_col_bottomLine: RGBFtoHEX(bio.ui.col.bottomLine),
-			bio_ui_col_centerLine: RGBFtoHEX(bio.ui.col.centerLine),
-			bio_ui_col_sectionLine: RGBFtoHEX(bio.ui.col.sectionLine),
-			bio_ui_col_accent: RGBFtoHEX(bio.ui.col.accent),
-			bio_ui_col_source: RGBFtoHEX(bio.ui.col.source),
-			bio_ui_col_summary: RGBFtoHEX(bio.ui.col.summary),
-			bio_ui_col_text: RGBFtoHEX(bio.ui.col.text),
-			bio_ui_col_lyricsNormal: RGBFtoHEX(bio.ui.col.lyricsNormal),
-			bio_ui_col_lyricsHighlight: RGBFtoHEX(bio.ui.col.lyricsHighlight),
-			bio_ui_col_noPhotoStubBg: RGBFtoHEX(bio.ui.col.noPhotoStubBg),
-			bio_ui_col_noPhotoStubText: RGBFtoHEX(bio.ui.col.noPhotoStubText),
-			bio_ui_col_sbarBtns: RGBFtoHEX(bio.ui.col.sbarBtns),
-			bio_ui_col_sbarNormal: RGBFtoHEX(bio.ui.col.sbarNormal),
-			bio_ui_col_sbarHovered: RGBFtoHEX(bio.ui.col.sbarHovered),
-			bio_ui_col_sbarDrag: RGBFtoHEX(bio.ui.col.sbarDrag),
-
-			// * MAIN COLORS * //
-			grCol_bg: RGBFtoHEX(grCol.bg),
-			grCol_shadow: RGBFtoHEX(grCol.shadow),
-			grCol_discArtShadow: RGBFtoHEX(grCol.discArtShadow),
-			grCol_noAlbumArtStub: RGBFtoHEX(grCol.noAlbumArtStub),
-			grCol_lowerBarArtist: RGBFtoHEX(grCol.lowerBarArtist),
-			grCol_lowerBarTitle: RGBFtoHEX(grCol.lowerBarTitle),
-			grCol_lowerBarTime: RGBFtoHEX(grCol.lowerBarTime),
-			grCol_lowerBarLength: RGBFtoHEX(grCol.lowerBarLength),
-			grCol_lyricsNormal: RGBFtoHEX(grCol.lyricsNormal),
-			grCol_lyricsHighlight: RGBFtoHEX(grCol.lyricsHighlight),
-			grCol_lyricsShadow: RGBFtoHEX(grCol.lyricsShadow),
-			grCol_detailsBg: RGBFtoHEX(grCol.detailsBg),
-			grCol_detailsText: RGBFtoHEX(grCol.detailsText),
-			grCol_detailsRating: RGBFtoHEX(grCol.detailsRating),
-			grCol_timelineAdded: RGBFtoHEX(grCol.timelineAdded),
-			grCol_timelinePlayed: RGBFtoHEX(grCol.timelinePlayed),
-			grCol_timelineUnplayed: RGBFtoHEX(grCol.timelineUnplayed),
-			grCol_timelineFrame: RGBFtoHEX(grCol.timelineFrame),
-			grCol_popupBg: RGBFtoHEX(grCol.popupBg),
-			grCol_popupText: RGBFtoHEX(grCol.popupText),
-			grCol_menuBgColor: RGBFtoHEX(grCol.menuBgColor),
-			grCol_menuStyleBg: RGBFtoHEX(grCol.menuStyleBg),
-			grCol_menuRectStyleEmbossTop: RGBFtoHEX(grCol.menuRectStyleEmbossTop),
-			grCol_menuRectStyleEmbossBottom: RGBFtoHEX(grCol.menuRectStyleEmbossBottom),
-			grCol_menuRectNormal: RGBFtoHEX(grCol.menuRectNormal),
-			grCol_menuRectHovered: RGBFtoHEX(grCol.menuRectHovered),
-			grCol_menuRectDown: RGBFtoHEX(grCol.menuRectDown),
-			grCol_menuTextNormal: RGBFtoHEX(grCol.menuTextNormal),
-			grCol_menuTextHovered: RGBFtoHEX(grCol.menuTextHovered),
-			grCol_menuTextDown: RGBFtoHEX(grCol.menuTextDown),
-			grCol_transportEllipseBg: RGBFtoHEX(grCol.transportEllipseBg),
-			grCol_transportEllipseNormal: RGBFtoHEX(grCol.transportEllipseNormal),
-			grCol_transportEllipseHovered: RGBFtoHEX(grCol.transportEllipseHovered),
-			grCol_transportEllipseDown: RGBFtoHEX(grCol.transportEllipseDown),
-			grCol_transportStyleBg: RGBFtoHEX(grCol.transportStyleBg),
-			grCol_transportStyleTop: RGBFtoHEX(grCol.transportStyleTop),
-			grCol_transportStyleBottom: RGBFtoHEX(grCol.transportStyleBottom),
-			grCol_transportIconNormal: RGBFtoHEX(grCol.transportIconNormal),
-			grCol_transportIconHovered: RGBFtoHEX(grCol.transportIconHovered),
-			grCol_transportIconDown: RGBFtoHEX(grCol.transportIconDown),
-			grCol_progressBar: RGBFtoHEX(grCol.progressBar),
-			grCol_progressBarStreaming: RGBFtoHEX(grCol.progressBarStreaming),
-			grCol_progressBarFrame: RGBFtoHEX(grCol.progressBarFrame),
-			grCol_progressBarFill: RGBFtoHEX(grCol.progressBarFill),
-			grCol_peakmeterBarProg: RGBFtoHEX(grCol.peakmeterBarProg),
-			grCol_peakmeterBarProgFill: RGBFtoHEX(grCol.peakmeterBarProgFill),
-			grCol_peakmeterBarFillTop: RGBFtoHEX(grCol.peakmeterBarFillTop),
-			grCol_peakmeterBarFillMiddle: RGBFtoHEX(grCol.peakmeterBarFillMiddle),
-			grCol_peakmeterBarFillBack: RGBFtoHEX(grCol.peakmeterBarFillBack),
-			grCol_peakmeterBarVertProgFill: RGBFtoHEX(grCol.peakmeterBarVertProgFill),
-			grCol_peakmeterBarVertFill: RGBFtoHEX(grCol.peakmeterBarVertFill),
-			grCol_peakmeterBarVertFillPeaks: RGBFtoHEX(grCol.peakmeterBarVertFillPeaks),
-			grCol_waveformBarFillFront: RGBFtoHEX(grCol.waveformBarFillFront),
-			grCol_waveformBarFillBack: RGBFtoHEX(grCol.waveformBarFillBack),
-			grCol_waveformBarFillPreFront: RGBFtoHEX(grCol.waveformBarFillPreFront),
-			grCol_waveformBarFillPreBack: RGBFtoHEX(grCol.waveformBarFillPreBack),
-			grCol_waveformBarIndicator: RGBFtoHEX(grCol.waveformBarIndicator),
-			grCol_volumeBar: RGBFtoHEX(grCol.volumeBar),
-			grCol_volumeBarFrame: RGBFtoHEX(grCol.volumeBarFrame),
-			grCol_volumeBarFill: RGBFtoHEX(grCol.volumeBarFill),
-			grCol_styleBevel: RGBFtoHEX(grCol.styleBevel),
-			grCol_styleGradient: RGBFtoHEX(grCol.styleGradient),
-			grCol_styleGradient2: RGBFtoHEX(grCol.styleGradient2),
-			grCol_styleProgressBar: RGBFtoHEX(grCol.styleProgressBar),
-			grCol_styleProgressBarLineTop: RGBFtoHEX(grCol.styleProgressBarLineTop),
-			grCol_styleProgressBarLineBottom: RGBFtoHEX(grCol.styleProgressBarLineBottom),
-			grCol_styleProgressBarFill: RGBFtoHEX(grCol.styleProgressBarFill),
-			grCol_styleVolumeBar: RGBFtoHEX(grCol.styleVolumeBar),
-			grCol_styleVolumeBarFill: RGBFtoHEX(grCol.styleVolumeBarFill)
-		}
-
-		const customThemes = {
-			custom01: { schema: grDef.customTheme01Schema, object: 'customTheme01' },
-			custom02: { schema: grDef.customTheme02Schema, object: 'customTheme02' },
-			custom03: { schema: grDef.customTheme03Schema, object: 'customTheme03' },
-			custom04: { schema: grDef.customTheme04Schema, object: 'customTheme04' },
-			custom05: { schema: grDef.customTheme05Schema, object: 'customTheme05' },
-			custom06: { schema: grDef.customTheme06Schema, object: 'customTheme06' },
-			custom07: { schema: grDef.customTheme07Schema, object: 'customTheme07' },
-			custom08: { schema: grDef.customTheme08Schema, object: 'customTheme08' },
-			custom09: { schema: grDef.customTheme09Schema, object: 'customTheme09' },
-			custom10: { schema: grDef.customTheme10Schema, object: 'customTheme10' }
-		};
-
-		if (!customThemes[slot]) return;
-
-		const customTheme = customThemes[slot].object;
-		const { schema }  = customThemes[slot];
-		this[customTheme] = grCfg.configCustom.addConfigurationObject(schema, currentColors, grDef.customThemeComments);
-		grCfg.cTheme = this[customTheme];
-		grCfg.configCustom.updateConfigObjValues(customTheme, currentColors, true);
-	}
-	// #endregion
-
-	// * PUBLIC METHODS - RANDOM COLOR * //
-	// #region PUBLIC METHODS - RANDOM COLOR
-	/**
-	 * Generates a random theme color, used in Random theme.
-	 */
-	getRandomThemeColor() {
-		if (!grm.ui.getRandomThemeColorContextMenu && ($('[%GR_THEMECOLOR%]') || $('[%GR_THEMECOLOR2%]'))) return;
-
-		const generateRandomColor = () => {
-			const R = Math.floor((Math.random() * (grSet.styleRandomPastel ? 127 : 27)) + (grSet.styleRandomPastel ? 127 : 27));
-			const G = Math.floor((Math.random() * (grSet.styleRandomPastel ? 127 : 27)) + (grSet.styleRandomPastel ? 127 : 27));
-			const B = Math.floor((Math.random() * (grSet.styleRandomPastel ? 127 : 27)) + (grSet.styleRandomPastel ? 127 : 27));
-			return grSet.styleRandomPastel || grSet.styleRandomDark ? (R << 16) + (G << 8) + B : ((1 << 24) * Math.random() | 0);
-		};
-
-		const color = new Color(generateRandomColor());
-		const tObj = this.createThemeColorObject(color);
-		grm.color.setTheme(tObj);
-
-		if (grCfg.settings.showDebugThemeLog) {
-			console.log('Random generated color:', color.getRGB(true));
-			console.log('Random color brightness:', color.brightness);
-		}
-		if (grCfg.settings.showDebugThemeOverlay) grm.ui.selectedPrimaryColor = color.getRGB(true);
-	}
-
-	/**
-	 * Auto generates new colors depending on time interval, used in style Random theme auto color.
-	 */
-	getRandomThemeAutoColor() {
-		clearInterval(grm.ui.randomThemeAutoColorTimer);
-		grm.ui.randomThemeAutoColorTimer = null;
-
-		if (grSet.styleRandomAutoColor !== 'off' && grSet.styleRandomAutoColor !== 'track') {
-			grm.ui.randomThemeAutoColorTimer = setInterval(() => {
-				grm.ui.initTheme();
-			}, grSet.styleRandomAutoColor);
-		}
-		else if (grSet.styleRandomAutoColor === 'track') {
-			grm.ui.initTheme();
-		}
-		DebugLog('\n>>> initTheme => getRandomThemeAutoColor <<<\n');
-	}
-	// #endregion
-
-	// * PUBLIC METHODS - ALBUM ART COLOR * //
-	// #region PUBLIC METHODS - ALBUM ART COLOR
-	/**
-	 * Finds the brightest color based on given parameters.
-	 * @param {Array} colorsWeighted - Array of color objects with added weight properties.
-	 * @param {number} currentBrightness - The brightness level that colors must exceed.
-	 * @param {number} maxBrightness - The maximum brightness level that colors must not exceed.
-	 * @param {number} minFrequency - The minimum frequency threshold that colors must exceed.
-	 * @returns {Color|null} The brightest Color object or null if no color meets the criteria.
-	 */
-	findBrightestColor(colorsWeighted, currentBrightness, maxBrightness, minFrequency) {
-		let brightestColor;
-		let maxWeight = 0;
-
-		for (const c of colorsWeighted) {
-			if (!c.col.isCloseToGrayscale &&
-				(c.col.brightness > currentBrightness) &&
-				(c.col.brightness < maxBrightness) &&
-				(c.freq > minFrequency) &&
-				(c.weight > maxWeight)) {
-				maxWeight = c.weight;
-				brightestColor = c.col;
-			}
-		}
-
-		return brightestColor ? new Color(brightestColor.val) : null;
-	}
-
-	/**
-	 * Extracts the primary and secondary optional color from an image.
-	 * @param {GdiBitmap} image - The image to extract the colors from.
-	 * @param {number} maxColorsToPull - The max number of colors in the palette.
-	 * @param {number} [secondaryColor] - The secondary picked color, used in Reborn fusion.
-	 * @returns {number|null} The primary color value if secondaryColor is not provided, otherwise the secondary color value.
-	 * Returns null on error.
-	 */
-	getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
-		const debugThemeLog = grCfg.settings.showDebugThemeLog;
-		const debugThemeOverlay = grCfg.settings.showDebugThemeOverlay;
-		const minFreq = 0.015;
-		const minFreqBrightestCol1 = 0.01;
-		const minFreqBrightestCol2 = 0.05;
-		const maxBrightness = grSet.theme === 'black' || grSet.styleBlend || ['reborn', 'random'].includes(grSet.theme) && grSet.styleBlend2 ? 255 : 212;
-		const midBrightness2Value = RandomMinMax(60, 120);
-
-		try {
-			const colorsWeighted = JSON.parse(image.GetColourSchemeJSON(maxColorsToPull)).map(c => ({ ...c, col: new Color(c.col) }));
-			let maxWeight = 0;
-			let maxWeight2 = 0;
-			let selectedColor = new Color(colorsWeighted[0].col);  // Use first color in case no color selected below
-			let selectedColor2 = secondaryColor ? new Color(colorsWeighted[1].col) : null; // Use second color in case no color selected below
-
-			if (debugThemeLog) console.log('idx      color        bright  freq   weight');
-
-			for (const [i, c] of colorsWeighted.entries()) {
-				const col = c.col;
-				const midBrightness = 127 - Math.abs(127 - col.brightness); // Favors colors with brightness around 127
-				const midBrightness2 = midBrightness2Value - Math.abs(midBrightness2Value - col.brightness); // Favors colors with random brightness from 60 - 120
-				c.weight = c.freq * midBrightness * 10;
-				c.weight2 = c.freq * midBrightness2 * 10;
-
-				if (c.freq >= minFreq && !col.isCloseToGrayscale && col.brightness < maxBrightness) {
-					if (debugThemeLog) {
-						console.log(LeftPad(i, 2), col.getRGB(true, true), LeftPad(col.brightness, 4), ' ', `${LeftPad((c.freq * 100).toFixed(2), 5)}%`, LeftPad(c.weight.toFixed(2), 7));
-					}
-					if (c.weight > maxWeight) {
-						maxWeight = c.weight;
-						selectedColor = col;
-					}
-					if (secondaryColor && c.weight2 > maxWeight2) {
-						maxWeight2 = c.weight2;
-						selectedColor2 = col;
-					}
-				}
-				else if (debugThemeLog) {
-					console.log(' -', col.getRGB(true, true), LeftPad(col.brightness, 4), ' ', `${LeftPad((c.freq * 100).toFixed(2), 5)}%`, col.isCloseToGrayscale ? '   grey' : (c.freq < minFreq) ? '   freq' : ' bright');
-				}
-			}
-
-			if (selectedColor.brightness < 37) {
-				selectedColor = this.findBrightestColor(colorsWeighted, selectedColor.brightness, maxBrightness, minFreqBrightestCol1) || selectedColor;
-				if (debugThemeLog) console.log(selectedColor.getRGB(true), 'brightness:', selectedColor.brightness, 'too dark -- searching for highlight color');
-			}
-			if (secondaryColor && selectedColor2.brightness < 37) {
-				selectedColor2 = this.findBrightestColor(colorsWeighted, selectedColor2.brightness, maxBrightness, minFreqBrightestCol2) || selectedColor2;
-				if (debugThemeLog) console.log(selectedColor2.getRGB(true), 'brightness:', selectedColor2.brightness, 'too dark -- searching for highlight color');
-			}
-
-			if (debugThemeLog) {
-				console.log('Primary color:', selectedColor.getRGB(true));
-				if (secondaryColor) console.log('Primary color 2:', selectedColor2.getRGB(true));
-			}
-			if (debugThemeOverlay) {
-				grm.ui.selectedPrimaryColor = selectedColor.getRGB(true);
-				if (secondaryColor) grm.ui.selectedPrimaryColor2 = selectedColor2.getRGB(true);
-			}
-
-			return secondaryColor ? selectedColor2.val : selectedColor.val;
-		}
-		catch (e) {
-			console.log('\n>>> Error => GetColourSchemeJSON failed!\n');
-			return null;
-		}
-	}
-
-	/**
-	 * Sets the primary or secondary color from the value of getThemeColorsJson or from the custom GR-tag.
-	 * @param {GdiBitmap} image - The image from which the colors will be picked.
-	 */
-	getThemeColors(image) {
-		const debugThemeLog = grCfg.settings.showDebugThemeLog;
-		const rebornFusion = grSet.theme === 'reborn' && (grSet.styleRebornFusion || grSet.styleRebornFusion2 || grSet.styleRebornFusionAccent);
-		const val = $('[%GR_THEMECOLOR%]');
-		const val2 = $('[%GR_THEMECOLOR2%]');
-		let color;
-		let color2;
-		let calculatedColor;
-		let calculatedColor2;
-
-		if (val.length) {
-			calculatedColor = ColStringToRGB(val);
-			calculatedColor2 = ColStringToRGB(val2);
-		} else {
-			calculatedColor = this.getThemeColorsJson(image, 14, false);
-			calculatedColor2 = rebornFusion ? this.getThemeColorsJson(image, 14, true) : undefined;
-		}
-
-		if (isNaN(calculatedColor)) return;
-
-		color = new Color(calculatedColor);
-		if (rebornFusion) color2 = new Color(calculatedColor2);
-
-		if (grSet.theme !== 'black') {
-			const shadeAmount = grSet.theme === 'white' ? 12 : 3;
-			while (color.brightness > 220) {
-				calculatedColor = ShadeColor(calculatedColor, shadeAmount);
-				color = new Color(calculatedColor);
-				if (debugThemeLog) console.log(' >> Shading: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
-			}
-		}
-
-		if (!color.isGrayscale) {
-			while (color.brightness <= 17) {
-				calculatedColor = TintColor(calculatedColor, 3);
-				color = new Color(calculatedColor);
-				if (debugThemeLog) console.log(' >> Tinting: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
-			}
-		}
-
-		const tObj = this.createThemeColorObject(color);
-		if (rebornFusion) {
-			const tObj2 = this.createThemeColorObject(color, color2);
-			grm.color.setTheme(tObj, tObj2);
-		} else {
-			grm.color.setTheme(tObj);
-		}
-
-		if (debugThemeLog) {
-			console.log('Primary color brightness:', color.brightness);
-			if (color2) console.log('Primary color 2 brightness:', color2.brightness);
-		}
 	}
 	// #endregion
 }

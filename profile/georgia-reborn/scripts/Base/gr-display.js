@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -30,8 +30,11 @@ class Display {
 		this.sizeInitialized = false;
 		/** @private @type {boolean} Setup variable for 4K check. */
 		this.lastSize = undefined;
-		/** @private @type {boolean} Saves last used active window width and height. */
-		this.fbHandle = undefined;
+		/** @private @type {object} Saves last used active window width and height. */
+		this.fbHandle = {
+			Width: window.Width,
+			Height: window.Height
+		};
 
 		// * UIHACKS * //
 		/** @public @type {boolean} UIHacks pseudo caption state, used in setWindowDrag. */
@@ -117,16 +120,14 @@ class Display {
 	// #region PUBLIC METHODS - INITIALIZATION
 	/**
 	 * Display auto-detection used in Options > Display or for the very first foobar startup and when factory resetting the theme.
+	 * @returns {Promise<void>} A promise that resolves when the initialization has finished.
 	 */
 	async autoDetectRes() {
 		const resetSize = async () => {
 			RES._4K = false;
 			RES._QHD = false;
 			grSet.displayRes = 'HD';
-			grSet.playerSize_4K_small = false;
-			grSet.playerSize_QHD_small = false;
-			grSet.playerSize_HD_small = true;
-			this.setSizesFor4KorHD();
+			this.setSizesForDisplay();
 		};
 
 		const check4k = async () => {
@@ -135,10 +136,7 @@ class Display {
 				RES._4K = true;
 				RES._QHD = false;
 				grSet.displayRes = '4K';
-				grSet.playerSize_4K_normal = true;
-				grSet.playerSize_QHD_small = false;
-				grSet.playerSize_HD_small = false;
-				this.setSizesFor4KorHD();
+				this.setSizesForDisplay();
 			}
 		};
 
@@ -149,27 +147,16 @@ class Display {
 					resetSize();
 				}
 				else { // Set to QHD mode
-					RES._4K = true;
+					RES._4K = false;
 					RES._QHD = true;
 					grSet.displayRes = 'QHD';
-					grSet.playerSize_4K_normal = false;
-					grSet.playerSize_QHD_small = true;
-					grSet.playerSize_HD_small = false;
-					this.setSizesForQHD();
+					this.setSizesForDisplay();
 				}
 			}
 		};
 
 		const updatePanels = async () => {
-			if (grSet.layout === 'default') {
-				grm.display.layoutDefault();
-			}
-			else if (grSet.layout === 'artwork') {
-				grm.display.layoutArtwork();
-			}
-			else if (grSet.layout === 'compact') {
-				grm.display.layoutCompact();
-			}
+			this.setPlayerSize('small');
 			grm.ui.initPanels();
 		};
 
@@ -187,8 +174,8 @@ class Display {
 	 */
 	checkRes() {
 		// * Set and update the player size based on active layout
-		grSet[`savedWidth_${grSet.layout}`]  = grm.ui.ww;
-		grSet[`savedHeight_${grSet.layout}`] = grm.ui.wh;
+		grSet.savedWidth_layout = grm.ui.ww;
+		grSet.savedHeight_layout = grm.ui.wh;
 
 		// * Check current player size
 		const res  = `${grm.ui.ww}x${grm.ui.wh}`;
@@ -217,16 +204,16 @@ class Display {
 	 */
 	initPlayerSize() {
 		if (grSet.layout === 'default') {
-			grSet.savedWidth_default  = window.GetProperty('Georgia-ReBORN - 16. System: Saved width (Default)');
-			grSet.savedHeight_default = window.GetProperty('Georgia-ReBORN - 16. System: Saved height (Default)');
+			grSet.savedWidth_default  = window.GetProperty('Georgia-ReBORN - 16. System: Saved layout width (Default)');
+			grSet.savedHeight_default = window.GetProperty('Georgia-ReBORN - 16. System: Saved layout height (Default)');
 			this.setWindowSize(grSet.savedWidth_default, grSet.savedHeight_default);
 		} else if (grSet.layout === 'artwork') {
-			grSet.savedWidth_artwork  = window.GetProperty('Georgia-ReBORN - 16. System: Saved width (Artwork)');
-			grSet.savedHeight_artwork = window.GetProperty('Georgia-ReBORN - 16. System: Saved height (Artwork)');
+			grSet.savedWidth_artwork  = window.GetProperty('Georgia-ReBORN - 16. System: Saved layout width (Artwork)');
+			grSet.savedHeight_artwork = window.GetProperty('Georgia-ReBORN - 16. System: Saved layout height (Artwork)');
 			this.setWindowSize(grSet.savedWidth_artwork, grSet.savedHeight_artwork);
 		} else if (grSet.layout === 'compact') {
-			grSet.savedWidth_compact  = window.GetProperty('Georgia-ReBORN - 16. System: Saved width (Compact)');
-			grSet.savedHeight_compact = window.GetProperty('Georgia-ReBORN - 16. System: Saved height (Compact)');
+			grSet.savedWidth_compact  = window.GetProperty('Georgia-ReBORN - 16. System: Saved layout width (Compact)');
+			grSet.savedHeight_compact = window.GetProperty('Georgia-ReBORN - 16. System: Saved layout height (Compact)');
 			this.setWindowSize(grSet.savedWidth_compact, grSet.savedHeight_compact);
 		}
 	}
@@ -235,222 +222,523 @@ class Display {
 	// * PUBLIC METHODS - PLAYER SIZE * //
 	// #region PUBLIC METHODS - PLAYER SIZE
 	/**
-	 * Sets the player size based on active display resolution mode and layout.
-	 * @param {object} size - The playerSizes object containing width and height.
+	 * Checks and returns the size ('small', 'normal', 'large') based on the given width, height, layout, and resolution.
+	 * @param {number} width - The window width to check.
+	 * @param {number} height - The window height to check.
+	 * @param {string} layout - The layout to check in the playerSize table.
+	 * @param {string} resolution - The resolution to check in the playerSize table.
+	 * @returns {string|null} - Returns 'small', 'normal', 'large' if a match is found, otherwise null.
+	 * @example
+	 * this.checkPlayerSize(window.Width, window.Height, 'default', '4K');
 	 */
-	setPlayerSize(size) {
+	checkPlayerSize(width, height, layout, resolution) {
+		const sizes = this.playerSize[layout] && this.playerSize[layout][resolution];
+
+		if (width > sizes.normal.width && height > sizes.normal.height) {
+			return 'large';
+		}
+		else if (width > sizes.small.width && height > sizes.small.height) {
+			return 'normal';
+		}
+		else {
+			return 'small';
+		}
+	}
+
+	/**
+	 * Gets the player size from the table of this.playerSize object based on the current display resolution and layout.
+	 * @param {string} sizeName - The size name - 'small', 'normal', 'large'.
+	 * @returns {{ width: number, height: number }} The player size dimensions.
+	 */
+	getPlayerSize(sizeName) {
+		const { width, height } = this.playerSize[grSet.layout][grSet.displayRes][sizeName];
+		const scaled = grSet.displayScale !== 100;
+		const scaleFactor = RES._4K ? 0.5 : 1; // Need to halve the scale factor for 4K to prevent double scaling
+
+		return {
+			width:  scaled ? SCALE(width  * scaleFactor) : width,
+			height: scaled ? SCALE(height * scaleFactor) : height
+		};
+	}
+
+	/**
+	 * Checks if the player size has changed since the last check.
+	 * @returns {boolean} - Returns `true` if the player size has changed, otherwise `false`.
+	 */
+	hasPlayerSizeChanged() {
+		const currentWidth = grm.ui.ww;
+		const currentHeight = grm.ui.wh;
+
+		if (this.lastSize && (this.lastSize.width === currentWidth && this.lastSize.height === currentHeight)) {
+			return false;
+		}
+
+		this.lastSize = { width: currentWidth, height: currentHeight };
+		return true;
+	}
+
+	/**
+	 * Sets the player size based on active display resolution mode and layout.
+	 * @param {string} sizeName - The size name - 'small', 'normal', 'large'.
+	 */
+	setPlayerSize(sizeName) {
+		if (!sizeName) return;
+
 		if (UIHacks.FullScreen) {
 			UIHacks.FullScreen = false;
 		} else if (this.fbHandle) {
-			grSet.savedWidth_default  = this.fbHandle.Width;
-			grSet.savedHeight_default = this.fbHandle.Height;
+			grSet.savedWidth_default = this.fbHandle.Width = window.Width;
+			grSet.savedHeight_default = this.fbHandle.Height = window.Height;
 		}
 
-		if (size) this.setWindowSize(size.width, size.height);
+		const size = this.getPlayerSize(sizeName);
+		this.setWindowSize(size.width, size.height);
 	}
 
 	/**
-	 * Sets the Default layout -> Options > Layout > Default.
+	 * Updates and resizes the player size based on player size name.
+	 * @param {string} sizeName - The size name - 'small', 'normal', 'large'.
+	 * @param {boolean} setSizesForDisplay - Sets the font and button sizes for the current display resolution mode.
 	 */
-	layoutDefault() {
-		this.setPlayerSize(this.playerSize[grSet.layout][grSet.displayRes].small);
-	}
-
-	/**
-	 * Sets the Artwork layout -> Options > Layout > Artwork.
-	 */
-	layoutArtwork() {
-		this.setPlayerSize(this.playerSize[grSet.layout][grSet.displayRes].small);
-	}
-
-	/**
-	 * Sets the Compact layout -> Options > Layout > Compact.
-	 */
-	layoutCompact() {
-		this.setPlayerSize(this.playerSize[grSet.layout][grSet.displayRes].small);
-	}
-
-	/**
-	 * Sets the player size Small for 4K res -> Options > Player size > Small.
-	 */
-	playerSize_4K_small() {
-		this.setPlayerSize(this.playerSize[grSet.layout]['4K'].small);
-	}
-
-	/**
-	 * Sets the player size Normal for 4K res -> Options > Player size > Normal.
-	 */
-	playerSize_4K_normal() {
-		this.setPlayerSize(this.playerSize[grSet.layout]['4K'].normal);
-	}
-
-	/**
-	 * Sets the player size Large for 4K res -> Options > Player size > Large.
-	 */
-	playerSize_4K_large() {
-		this.setPlayerSize(this.playerSize[grSet.layout]['4K'].large);
-	}
-
-	/**
-	 * Sets the player size Small for QHD res -> Options > Player size > Small.
-	 */
-	playerSize_QHD_small() {
-		this.setPlayerSize(this.playerSize[grSet.layout].QHD.small);
-	}
-
-	/**
-	 * Sets the player size Normal for QHD res -> Options > Player size > Normal.
-	 */
-	playerSize_QHD_normal() {
-		this.setPlayerSize(this.playerSize[grSet.layout].QHD.normal);
-	}
-
-	/**
-	 * Sets the player size Large for QHD res -> Options > Player size > Large.
-	 */
-	playerSize_QHD_large() {
-		this.setPlayerSize(this.playerSize[grSet.layout].QHD.large);
-	}
-
-	/**
-	 * Sets the player size Small for HD res -> Options > Player size > Small.
-	 */
-	playerSize_HD_small() {
-		this.setPlayerSize(this.playerSize[grSet.layout].HD.small);
-	}
-
-	/**
-	 * Sets the player size Normal for HD res -> Options > Player size > Normal.
-	 */
-	playerSize_HD_normal() {
-		this.setPlayerSize(this.playerSize[grSet.layout].HD.normal);
-	}
-
-	/**
-	 * Sets the player size Large for HD res -> Options > Player size > Large.
-	 */
-	playerSize_HD_large() {
-		this.setPlayerSize(this.playerSize[grSet.layout].HD.large);
+	updatePlayerSize(sizeName, setSizesForDisplay) {
+		this.setPlayerSize(sizeName);
+		this.setWindowSizeLimitsForLayouts(window.Width, window.Height);
+		if (setSizesForDisplay) this.setSizesForDisplay();
+		grm.ui.initPanels();
+		grm.ui.clearCache('metrics');
+		grm.details.clearCache('metrics');
+		PlaylistHeader.img_cache.clear();
 	}
 	// #endregion
 
 	// * PUBLIC METHODS - RESOLUTION SETTINGS * //
 	// #region PUBLIC METHODS - RESOLUTION SETTINGS
 	/**
-	 * Sets the font and button sizes for 4K and HD display resolution.
+	 * Sets the font and button sizes for the current display resolution mode.
 	 */
-	setSizesFor4KorHD() {
-		RES._QHD = false;
-
+	setSizesForDisplay() {
 		// * Main
-		grSet.menuFontSize_default = 12;
-		grSet.menuFontSize_artwork = 12;
-		grSet.menuFontSize_compact = 12;
-		grSet.lowerBarFontSize_default = 18;
-		grSet.lowerBarFontSize_artwork = 16;
-		grSet.lowerBarFontSize_compact = 16;
-		grSet.transportButtonSize_default = 32;
-		grSet.transportButtonSize_artwork = 32;
-		grSet.transportButtonSize_compact = 32;
+		grSet.menuFontSize_default = HD_QHD_4K(12, 14);
+		grSet.menuFontSize_artwork = HD_QHD_4K(12, 14);
+		grSet.menuFontSize_compact = HD_QHD_4K(12, 14);
+		grSet.lowerBarFontSize_default = HD_QHD_4K(18, 20);
+		grSet.lowerBarFontSize_artwork = HD_QHD_4K(16, 18);
+		grSet.lowerBarFontSize_compact = HD_QHD_4K(16, 18);
+		grSet.transportButtonSize_default = HD_QHD_4K(32, 34);
+		grSet.transportButtonSize_artwork = HD_QHD_4K(32, 34);
+		grSet.transportButtonSize_compact = HD_QHD_4K(32, 34);
 
 		// * Details
-		grSet.gridArtistFontSize_default = 18;
-		grSet.gridArtistFontSize_artwork = 18;
-		grSet.gridTrackNumFontSize_default = 18;
-		grSet.gridTrackNumFontSize_artwork = 18;
-		grSet.gridTitleFontSize_default = 18;
-		grSet.gridTitleFontSize_artwork = 18;
-		grSet.gridAlbumFontSize_default = 18;
-		grSet.gridAlbumFontSize_artwork = 18;
-		grSet.gridKeyFontSize_default = 17;
-		grSet.gridKeyFontSize_artwork = 17;
-		grSet.gridValueFontSize_default = 17;
-		grSet.gridValueFontSize_artwork = 17;
+		grSet.gridArtistFontSize_default = HD_QHD_4K(18, 20);
+		grSet.gridArtistFontSize_artwork = HD_QHD_4K(18, 20);
+		grSet.gridTrackNumFontSize_default = HD_QHD_4K(18, 20);
+		grSet.gridTrackNumFontSize_artwork = HD_QHD_4K(18, 20);
+		grSet.gridTitleFontSize_default = HD_QHD_4K(18, 20);
+		grSet.gridTitleFontSize_artwork = HD_QHD_4K(18, 20);
+		grSet.gridAlbumFontSize_default = HD_QHD_4K(18, 20);
+		grSet.gridAlbumFontSize_artwork = HD_QHD_4K(18, 20);
+		grSet.gridKeyFontSize_default = HD_QHD_4K(17, 19);
+		grSet.gridKeyFontSize_artwork = HD_QHD_4K(17, 19);
+		grSet.gridValueFontSize_default = HD_QHD_4K(17, 19);
+		grSet.gridValueFontSize_artwork = HD_QHD_4K(17, 19);
 
 		// * Playlist
-		grSet.playlistHeaderFontSize_default = 15;
-		grSet.playlistHeaderFontSize_artwork = 15;
-		grSet.playlistHeaderFontSize_compact = 15;
-		grSet.playlistFontSize_default = 12;
-		grSet.playlistFontSize_artwork = 12;
-		grSet.playlistFontSize_compact = 12;
+		grSet.playlistHeaderFontSize_default = HD_QHD_4K(15, 17);
+		grSet.playlistHeaderFontSize_artwork = HD_QHD_4K(15, 17);
+		grSet.playlistHeaderFontSize_compact = HD_QHD_4K(15, 17);
+		grSet.playlistFontSize_default = HD_QHD_4K(12, 14);
+		grSet.playlistFontSize_artwork = HD_QHD_4K(12, 14);
+		grSet.playlistFontSize_compact = HD_QHD_4K(12, 14);
 
-		if (RES._4K) {
-			libSet.baseFontSize_default = 24; // * Library
-			libSet.baseFontSize_artwork = 24; // * Library
-			bioSet.baseFontSizeBio_default = 24; // * Biography
-			bioSet.baseFontSizeBio_artwork = 24; // * Biography
-		} else {
-			libSet.baseFontSize_default = 12; // * Library
-			libSet.baseFontSize_artwork = 12; // * Library
-			bioSet.baseFontSizeBio_default = 12; // * Biography
-			bioSet.baseFontSizeBio_artwork = 12; // * Biography
-		}
+		// * Library
+		grSet.libraryFontSize_default = HD_QHD_4K(12, 14);
+		grSet.libraryFontSize_artwork = HD_QHD_4K(12, 14);
+
+		// * Biography
+		grSet.biographyFontSize_default = HD_QHD_4K(12, 14);
+		grSet.biographyFontSize_artwork = HD_QHD_4K(12, 14);
 
 		// * Lyrics
-		grSet.lyricsFontSize_default = 20;
-		grSet.lyricsFontSize_artwork = 20;
+		grSet.lyricsFontSize_default = HD_QHD_4K(20, 22);
+		grSet.lyricsFontSize_artwork = HD_QHD_4K(20, 22);
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - SCALING - CONTROL * //
+	// #region PUBLIC METHODS - SCALING - CONTROL
+	/**
+	 * Handles display scale adjustments based on key actions.
+	 * @param {string} action - The action to perform ('increase', 'decrease', 'reset').
+	 */
+	handleDisplayScaleKeyAction(action) {
+		const scales = [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150];
+		let currentScaleIndex = scales.indexOf(grSet.displayScale);
+
+		if (action === 'reset') {
+			grSet.displayScale = 100;
+		} else {
+			if (action === 'increase') {
+				currentScaleIndex = Math.min(currentScaleIndex + 1, scales.length - 1);
+			}
+			else if (action === 'decrease') {
+				currentScaleIndex = Math.max(currentScaleIndex - 1, 0);
+			}
+			grSet.displayScale = scales[currentScaleIndex];
+		}
+
+		const size = this.checkPlayerSize(grm.ui.ww, grm.ui.wh, grSet.layout, grSet.displayRes);
+		this.updatePlayerSize(size, true);
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - SCALING - FONT SIZES * //
+	// #region PUBLIC METHODS - SCALING - FONT SIZES
+	/**
+	 * Sets the top menu font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setMenuFontSize(size) {
+		const currentSize = grSet.menuFontSize_layout;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 8),
+			'1' : () => Math.min(currentSize + 1, 16),
+			'0' : () => HD_QHD_4K(12, 14)
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet.menuFontSize_layout = newSize();
+
+		grm.ui.createFonts();
+		grm.button.createButtons(grm.ui.ww, grm.ui.wh);
+		RepaintWindow();
 	}
 
 	/**
-	 * Sets the font and button sizes for QHD display resolution.
+	 * Sets the lower bar font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
 	 */
-	setSizesForQHD() {
-		RES._4K = false;
-		RES._QHD = true;
-		grSet.playerSize_4K_normal = false;
-		grSet.playerSize_QHD_small = true;
-		grSet.playerSize_HD_small  = false;
+	setLowerBarFontSize(size) {
+		const currentSize = grSet.lowerBarFontSize_layout;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 26),
+			'0' : () => HD_QHD_4K(18, 20)
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet.lowerBarFontSize_layout = newSize();
 
-		// * Main
-		grSet.menuFontSize_default = 14;
-		grSet.menuFontSize_artwork = 14;
-		grSet.menuFontSize_compact = 14;
-		grSet.lowerBarFontSize_default = 20;
-		grSet.lowerBarFontSize_artwork = 18;
-		grSet.lowerBarFontSize_compact = 18;
-		grSet.transportButtonSize_default = 34;
-		grSet.transportButtonSize_artwork = 34;
-		grSet.transportButtonSize_compact = 34;
+		grm.ui.clearCache('metrics');
+		grm.ui.createFonts();
+		grm.button.createButtons(grm.ui.ww, grm.ui.wh);
+		RepaintWindow();
+	}
 
-		// * Details
-		grSet.gridArtistFontSize_default = 20;
-		grSet.gridArtistFontSize_artwork = 20;
-		grSet.gridTrackNumFontSize_default = 20;
-		grSet.gridTrackNumFontSize_artwork = 20;
-		grSet.gridTitleFontSize_default = 20;
-		grSet.gridTitleFontSize_artwork = 20;
-		grSet.gridAlbumFontSize_default = 20;
-		grSet.gridAlbumFontSize_artwork = 20;
-		grSet.gridKeyFontSize_default = 19;
-		grSet.gridKeyFontSize_artwork = 19;
-		grSet.gridValueFontSize_default = 19;
-		grSet.gridValueFontSize_artwork = 19;
+	/**
+	 * Sets the notification area font size directly to the specified size.
+	 * @param {number} size - The new font size for the notification area.
+	 */
+	setNotificationFontSize(size) {
+		grSet.notificationFontSize_layout = size;
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
 
-		// * Playlist
-		grSet.playlistHeaderFontSize_default = 17;
-		grSet.playlistHeaderFontSize_artwork = 17;
-		grSet.playlistHeaderFontSize_compact = 17;
-		grSet.playlistFontSize_default = 14;
-		grSet.playlistFontSize_artwork = 14;
-		grSet.playlistFontSize_compact = 14;
+	/**
+	 * Sets the popup font size directly to the specified size.
+	 * @param {number} size - The new font size for popups.
+	 */
+	setPopupFontSize(size) {
+		grSet.popupFontSize_layout = size;
+		grm.ui.createFonts();
+		if (grm.ui.displayCustomThemeMenu) {
+			grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg');
+		} else if (grm.ui.displayMetadataGridMenu) {
+			grm.ui.gridMenu.initMetadataGridMenu();
+		}
+		RepaintWindow();
+	}
 
-		// * Library
-		libSet.baseFontSize_default = 14;
-		libSet.baseFontSize_artwork = 14;
+	/**
+	 * Sets the tooltip font size directly to the specified size.
+	 * @param {number} size - The new font size for tooltips.
+	 */
+	setTooltipFontSize(size) {
+		grSet.tooltipFontSize_layout = size;
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
 
-		// * Biography
-		bioSet.baseFontSizeBio_default = 14;
-		bioSet.baseFontSizeBio_artwork = 14;
+	/**
+	 * Sets the metadata grid artist font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setGridArtistFontSize(size) {
+		const currentSize = grSet.gridArtistFontSize_layout;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 24),
+			'0' : () => HD_QHD_4K(18, 20)
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet.gridArtistFontSize_layout = newSize();
 
-		// * Lyrics
-		grSet.lyricsFontSize_default = 22;
-		grSet.lyricsFontSize_artwork = 22;
+		grm.details.clearCache('metrics');
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the metadata grid title font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setGridTitleFontSize(size) {
+		const currentSize = grSet.gridTitleFontSize_layout;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 24),
+			'0' : () => HD_QHD_4K(18, 20)
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet.gridTrackNumFontSize_layout = grSet.gridTitleFontSize_layout = newSize();
+
+		grm.details.clearCache('metrics');
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the metadata grid album font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setGridAlbumFontSize(size) {
+		const currentSize = grSet.gridAlbumFontSize_layout;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 24),
+			'0' : () => HD_QHD_4K(18, 20)
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet.gridAlbumFontSize_layout = newSize();
+
+		grm.details.clearCache('metrics');
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the metadata grid tag key font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setGridTagKeyFontSize(size) {
+		const currentSize = grSet.gridKeyFontSize_layout;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 24),
+			'0' : () => HD_QHD_4K(17, 19)
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet.gridKeyFontSize_layout = newSize();
+
+		grm.details.clearCache('metrics');
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the metadata grid tag value font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setGridTagValueFontSize(size) {
+		const currentSize = grSet.gridValueFontSize_layout;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 24),
+			'0' : () => HD_QHD_4K(17, 19)
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet.gridValueFontSize_layout = newSize();
+
+		grm.details.clearCache('metrics');
+		grm.ui.createFonts();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the Playlist size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setPlaylistFontSize(size) {
+		const currentSize = grSet.playlistHeaderFontSize_layout;
+		const getSize = {
+			'-1': () => ({
+				headerSize: Math.max(currentSize - 1, 10),
+				fontSize: Math.max(currentSize - 3, 8)
+			}),
+			'1': () => ({
+				headerSize: Math.min(currentSize + 1, 26),
+				fontSize: Math.min(currentSize - 1, 24)
+			}),
+			'0': () => ({
+				headerSize: HD_QHD_4K(15, 17),
+				fontSize: HD_QHD_4K(12, 14)
+			})
+		};
+		const newSize = getSize[size] || (() => ({ headerSize: size, fontSize: size - (size === 15 || size === 17 ? 3 : 2) }));
+		grSet.playlistHeaderFontSize_layout = newSize().headerSize;
+		grSet.playlistFontSize_layout = newSize().fontSize;
+
+		grm.ui.createFonts();
+		grm.button.createButtons(grm.ui.ww, grm.ui.wh);
+
+		PlaylistRescale(true);
+		PlaylistHeader.img_cache.clear();
+		grm.ui.initPlaylist();
+		grm.ui.setPlaylistSize();
+		if (grSet.libraryThumbnailSize === 'playlist') grm.ui.setLibrarySize();
+		if (grSet.libraryLayout === 'split') {
+			lib.pop.createImages();
+			lib.panel.zoomReset();
+		}
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the Library font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setLibraryFontSize(size) {
+		const currentSize = grSet.libraryFontSize_layout;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 8),
+			'1' : () => Math.min(currentSize + 1, 26),
+			'0' : () => HD_QHD_4K(12, 14)
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet.libraryFontSize_layout = newSize();
+
+		grm.ui.setLibrarySize();
+		lib.panel.zoomReset();
+		lib.pop.createImages();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the Biography font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setBiographyFontSize(size) {
+		const currentSize = grSet.biographyFontSize_layout;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 8),
+			'1' : () => Math.min(currentSize + 1, 26),
+			'0' : () => HD_QHD_4K(12, 14)
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet.biographyFontSize_layout = newSize();
+
+		grm.ui.setBiographySize();
+		bio.but.resetZoom();
+		bio.but.createImages();
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the Lyrics font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setLyricsFontSize(size) {
+		const currentSize = grSet.lyricsFontSize_layout;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 10),
+			'1' : () => Math.min(currentSize + 1, 50),
+			'0' : () => HD_QHD_4K(20, 22)
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet.lyricsFontSize_layout = newSize();
+
+		grm.ui.createFonts();
+		grm.ui.displayLyrics && grm.lyrics.initLyrics();
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - SCALING - LOWER BAR TRANSPORT BUTTONS * //
+	// #region PUBLIC METHODS - SCALING - LOWER BAR TRANSPORT BUTTONS
+	/**
+	 * Sets the lower bar transport button size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setTransportBtnSize(size) {
+		const currentSize = grSet.transportButtonSize_layout;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 28),
+			'1' : () => Math.min(currentSize + 1, grSet.layout === 'default' ? 42 : 36),
+			'0' : () => HD_QHD_4K(32, 34)
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet.transportButtonSize_layout = newSize();
+
+		grm.ui.createFonts();
+		grm.button.createButtons(grm.ui.ww, grm.ui.wh);
+		RepaintWindow();
+	}
+
+	/**
+	 * Sets the lower bar transport button spacing size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setTransportBtnSpacing(size) {
+		const currentSize = grSet.transportButtonSpacing_layout;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 3),
+			'1' : () => Math.min(currentSize + 1, 15),
+			'0' : () => 5
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet.transportButtonSpacing_layout = newSize();
+
+		grm.button.createButtons(grm.ui.ww, grm.ui.wh);
+		RepaintWindow();
 	}
 	// #endregion
 
 	// * PUBLIC METHODS - WINDOW CONTROL * //
 	// #region PUBLIC METHODS - WINDOW CONTROL
+	/**
+	 * Manages and adjusts the window state based on various triggers such as key presses, button clicks, and double-click events on the top menu bar.
+	 * This method handles toggling between fullscreen and normal window states, maximizing/restoring the window, and adjusting window state during specific UI interactions.
+	 * @param {string} triggeredBy - Specifies the type of trigger that invoked the method. Expected values are 'key', 'button', or 'doubleClick'.
+	 * The method distinguishes between different types of triggers:
+	 * - 'key': Handles key press events, specifically for F11 to toggle fullscreen and ESC to exit fullscreen, respecting certain conditions.
+	 * - 'button': Handles button click events that are meant to toggle the window state between maximized and normal, or toggle fullscreen based on specific settings.
+	 * - 'doubleClick': Handles double-click events on the top menu bar, adjusting the window state based on fullscreen mode or specific layout settings.
+	 * It also includes condition checks for:
+	 * - Disabling specific functionality in certain layouts (e.g., 'Artwork' layout).
+	 * - Ensuring fullscreen mode can be toggled or exited appropriately.
+	 * - Handling exceptions that may occur during the state adjustment process.
+	 */
+	handleWindowControl(triggeredBy) {
+		const isDoubleClick = triggeredBy === 'doubleClick';
+		const isKeyF11 = triggeredBy === 'key' && utils.IsKeyPressed(VKey.F11);
+		const isKeyEscape = triggeredBy === 'key' && utils.IsKeyPressed(VKey.ESCAPE) && UIHacks.FullScreen && !grSet.fullscreenESCDisabled;
+		const isButtonPress = triggeredBy === 'button';
+
+		try {
+			if (isDoubleClick && !utils.IsKeyPressed(VKey.CONTROL) && UIHacks.FullScreen && UIHacks.MainWindowState === WindowState.Normal ||
+				grSet.layout === 'artwork' && UIHacks.MainWindowState === WindowState.Maximized) {
+				UIHacks.MainWindowState = WindowState.Normal;
+			}
+			else if (isKeyF11 || (isButtonPress && grSet.fullscreenMaximize)) {
+				UIHacks.FullScreen = !UIHacks.FullScreen;
+			}
+			else if (isKeyEscape) {
+				UIHacks.MainWindowState = WindowState.Normal;
+			}
+			else if (isButtonPress) {
+				UIHacks.MainWindowState = UIHacks.MainWindowState === WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+			}
+		}
+		catch (e) {}
+	}
+
 	/**
 	 * Sets temporarily top menu caption to be able to drag foobar around.
 	 * @param {number} x - The x-coordinate.
@@ -499,13 +787,13 @@ class Display {
 	 * @returns {boolean} Whether the window size needs to be fixed.
 	 */
 	setWindowSizeFix() {
-		this.setWindowSizeLimitsForLayouts(grSet.layout);
-
-		const lastW = this.fbHandle ? this.fbHandle.Width : '';
-		const lastH = this.fbHandle ? this.fbHandle.Height : '';
+		const lastW = this.fbHandle ? this.fbHandle.Width : window.Width;
+		const lastH = this.fbHandle ? this.fbHandle.Height : window.Height;
 		const systemFirstLaunch = !this.fbHandle ? grSet.systemFirstLaunch : '';
 
-		return this.fbHandle ? lastW !== this.fbHandle.Width || lastH !== this.fbHandle.Height : systemFirstLaunch;
+		this.setWindowSizeLimitsForLayouts(lastW, lastH);
+
+		return lastW !== window.Width || lastH !== window.Height || systemFirstLaunch;
 	}
 
 	/**
@@ -531,14 +819,26 @@ class Display {
 
 	/**
 	 * Sets the window size limits for each layout.
+	 * @param {number} width - The window width.
+	 * @param {number} height - The window height.
 	 */
-	setWindowSizeLimitsForLayouts() {
-		let min_w = 0; const max_w = 0;
-		let min_h = 0; const max_h = 0;
+	setWindowSizeLimitsForLayouts(width, height) {
+		let min_w = 0;
+		let min_h = 0;
+		const max_w = 0;
+		const max_h = 0;
+
 		const size = this.playerSize[grSet.layout][grSet.displayRes];
 
-		min_w = size && size.small.width
-		min_h = size && size.small.height;
+		if (grSet.displayScale !== 100) {
+			const scaledWidth  = Math.floor(size.small.width  * (grSet.displayScale / 100));
+			const scaledHeight = Math.floor(size.small.height * (grSet.displayScale / 100));
+			min_w = Math.min(scaledWidth, width);
+			min_h = Math.min(scaledHeight, height);
+		} else {
+			min_w = size.small.width;
+			min_h = size.small.height;
+		}
 
 		this.setWindowSizeLimits(min_w, max_w, min_h, max_h);
 	}

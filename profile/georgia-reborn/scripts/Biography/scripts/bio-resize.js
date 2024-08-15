@@ -89,19 +89,19 @@ class BioResizeHandler {
 			switch (bioSet.filmStripPos) {
 				case 0:
 					this.sf = y > bio.filmStrip.y + bio.filmStrip.h && y < bio.filmStrip.y + bio.filmStrip.h + 5;
-					if (this.sf) window.SetCursor(32645);
+					if (this.sf) SetCursor('SizeNS');
 					break;
 				case 1:
 					this.sf = x > bio.filmStrip.x - 5 && x < bio.filmStrip.x;
-					if (this.sf) window.SetCursor(32644);
+					if (this.sf) SetCursor('SizeWE');
 					break;
 				case 2:
 					this.sf = y > bio.filmStrip.y - 5 && y < bio.filmStrip.y;
-					if (this.sf) window.SetCursor(32645);
+					if (this.sf) SetCursor('SizeNS');
 					break;
 				case 3:
 					this.sf = x > bio.filmStrip.x + bio.filmStrip.w && x < bio.filmStrip.x + bio.filmStrip.w + 5;
-					if (this.sf) window.SetCursor(32644);
+					if (this.sf) SetCursor('SizeWE');
 					break;
 			}
 		}
@@ -147,7 +147,7 @@ class BioResizeHandler {
 
 	lbtn_up() {
 		if (!this.down || !this.focus) return;
-		window.SetCursor(32512);
+		SetCursor('Arrow');
 		this.down = false;
 		bio.img.mask.reset = true;
 		if (bioSet.style > 3) {
@@ -280,19 +280,19 @@ class BioResizeHandler {
 					switch (bioSet.style) {
 						case 0:
 							this.si = y > bio.panel.img.t + bio.panel.style.imgSize && y < bio.panel.img.t + bio.panel.style.imgSize + 5;
-							if (this.si) window.SetCursor(32645);
+							if (this.si) SetCursor('SizeNS');
 							break;
 						case 1:
 							this.si = x > bio.panel.img.l - 5 && x < bio.panel.img.l;
-							if (this.si) window.SetCursor(32644);
+							if (this.si) SetCursor('SizeWE');
 							break;
 						case 2:
 							this.si = y > bio.panel.img.t - 5 && y < bio.panel.img.t;
-							if (this.si) window.SetCursor(32645);
+							if (this.si) SetCursor('SizeNS');
 							break;
 						case 3:
 							this.si = x > bio.panel.img.l + bio.panel.style.imgSize && x < bio.panel.img.l + bio.panel.style.imgSize + 5;
-							if (this.si) window.SetCursor(32644);
+							if (this.si) SetCursor('SizeWE');
 							break;
 					}
 				}

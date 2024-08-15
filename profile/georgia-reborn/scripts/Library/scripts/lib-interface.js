@@ -188,14 +188,14 @@ class LibUserInterface {
 	}
 
 	calcText(refreshImg) {
-		const libraryFontSize = libSet[`baseFontSize_${grSet.layout}`] || 14;
+		const libraryFontSize = SCALE(RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout || 14);
 		$Lib.gr(1, 1, false, g => {
-			if (!this.id.local) this.row.h = Math.max(Math.round(g.CalcTextHeight('String', this.font.main)) + libSet.verticalPad, 2);
+			if (!this.id.local) this.row.h = Math.max(Math.round(g.CalcTextHeight('String', this.font.main)) + SCALE(libSet.verticalPad), 2);
 			if (this.style.squareNode) {
 				this.sz.node = Math.round(SCALE(11) * $Lib.scale); // Prevent node size growing in traditional tree // Math.round($Lib.clamp(this.sz.node, 7, this.row.h - 2));
 				libSet.zoomNode = Math.round(this.sz.node / this.sz.node_base * 100);
 			} else {
-				this.sz.node = libSet.nodeStyle === 5 ? Math.round((RES._4K ? 12 : 7) * $Lib.scale) : Math.round($Lib.clamp(this.sz.node, 7, this.row.h * 1.15));
+				this.sz.node = libSet.nodeStyle === 5 ? Math.round(SCALE(7) * $Lib.scale) : Math.round($Lib.clamp(this.sz.node, 7, this.row.h * 1.15));
 				const mod = libSet.nodeStyle < 3 && this.sz.node > 15 ? (this.sz.node % 2) - 1 : 0;
 				this.icon.font = gdi.Font(this.icon.fontName, this.sz.node + mod, libSet.nodeStyle != 6 ? 0 : this.icon.fontStyle);
 				libSet.zoomNode = Math.round(this.sz.node / libraryFontSize * 100);
@@ -259,7 +259,7 @@ class LibUserInterface {
 
 	draw(gr) {
 		gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing for sharp edges on top and bottom bg
-		if (this.style.bg) gr.FillSolidRect(this.x, this.y, this.w + (grSet.libraryLayout === 'split' ? 0 : RES._4K ? 35 : 17), this.h, this.col.bg);
+		if (this.style.bg) gr.FillSolidRect(this.x, this.y, this.w + (grSet.libraryLayout === 'split' ? 0 : HD_4K(17, 35)), this.h, this.col.bg);
 		if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended) gr.DrawImage(grCol.imgBlended, 0, 0, grm.ui.ww, grm.ui.wh, 0, 0, grCol.imgBlended.Width, grCol.imgBlended.Height);
 		if (this.img.isBlur || this.img.bg) {
 			this.getImgFallback();
@@ -466,7 +466,7 @@ class LibUserInterface {
 	}
 
 	getFont(init) {
-		const libraryFontSize = libSet[`baseFontSize_${grSet.layout}`] || 14;
+		const libraryFontSize = SCALE(RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout || 14);
 
 		if (grSet.customThemeFonts) this.font.main = grFont.library;
 		else if (libSet.custFontUse && libSet.custFont.length) {
@@ -483,7 +483,7 @@ class LibUserInterface {
 			$Lib.trace('Spider Monkey Panel is unable to use your default font. Using Segoe UI at default size & style instead', false);
 		}
 		if (this.font.main.Size != libraryFontSize) libSet.zoomFont = 100;
-		// (grSet.layout === 'artwork' ? libSet.baseFontSize_artwork : libSet.baseFontSize_default) = this.font.main.Size;
+		// grSet.libraryFontSize_layout = this.font.main.Size;
 
 		this.font.zoomSize = Math.max(Math.round(libraryFontSize * libSet.zoomFont / 100), 1);
 
@@ -518,7 +518,7 @@ class LibUserInterface {
 		this.sbar.narrowWidth = libSet.narrowSbarWidth == 0 ? $Lib.clamp(Math.floor(this.font.zoomSize / 7), 2, 10) : libSet.narrowSbarWidth;
 
 		// * Only used for grSet.libraryLayoutSplitPreset4, synchronizes artist & album font sizes with Playlist
-		const headerFontSize = grSet[`playlistHeaderFontSize_${grSet.layout}`];
+		const headerFontSize = grSet.playlistHeaderFontSize_layout;
 		const libraryLayoutSplitPreset4 = libSet.albumArtLabelType === 2 && (grSet.layout === 'default' && grSet.libraryLayout === 'split' && grm.ui && grm.ui.displayLibrary && grm.ui.displayPlaylist); // displayLibrarySplit
 
 		if (libSet.custAlbumArtGrpFontUse && libSet.custAlbumArtGrpFont.length) {
@@ -1044,7 +1044,7 @@ class LibUserInterface {
 
 		const fnm = this.font.main.Name;
 		const fst = this.font.main.Style;
-		const libraryFontSize = libSet[`baseFontSize_${grSet.layout}`] || 14;
+		const libraryFontSize = SCALE(RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout || 14);
 		this.font.main = gdi.Font(fnm, this.font.zoomSize, fst);
 		this.font.search = gdi.Font(fnm, this.font.zoomSize, 0);
 		this.font.find = gdi.Font(fnm, this.font.zoomSize * 1.5, 1);

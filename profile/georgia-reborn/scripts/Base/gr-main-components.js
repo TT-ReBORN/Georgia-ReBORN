@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-05-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -33,24 +33,31 @@ class ArtCache {
 		 * @property {number} filesize - The size of the image file in bytes.
 		 */
 
-		/** @private @type {object.<string, ArtCacheObj>} */
+		/** @private @type {object.<string, ArtCacheObj>} The primary cache storing image objects. */
 		this.cache = {};
-		/** @private @type {string[]} */
+		/** @private @type {object.<string, ArtCacheObj>} The secondary cache used mainly for disc art covers to prevent overwriting album art with masked images. */
+		this.cache2 = {};
+		/** @private @type {string[]} The array of cache keys in the order of their usage. */
 		this.cacheIndexes = [];
-		/** @private @type {number} */
+		/** @private @type {string[]} The array of secondary cache keys in the order of their usage. */
+		this.cacheIndexes2 = [];
+		/** @private @type {number} The maximum number of images that can be stored in the primary cache. */
 		this.cacheMaxSize = maxCacheSize;
-		/** @private @type {number} */
-		this.imgMaxWidth = SCALE(1440); // * These are the maximum width and height an image can be displayed in Georgia-ReBORN
-		/** @private @type {number} */
+		/** @private @type {number} The maximum number of images that can be stored in the secondary cache. */
+		this.cacheMaxSize2 = maxCacheSize;
+
+		/** @private @type {number} The maximum width an image can be displayed. */
+		this.imgMaxWidth = SCALE(1440);
+		/** @private @type {number} The maximum height an image can be displayed. */
 		this.imgMaxHeight = SCALE(872);
 
-		// The second cache, mainly used for discArtCover to prevent overwrite albumArt with the masked image
-		/** @private @type {object.<string, ArtCacheObj>} */
-		this.cache2 = {};
-		/** @private @type {string[]} */
-		this.cacheIndexes2 = [];
-		/** @private @type {number} */
-		this.cacheMaxSize2 = maxCacheSize;
+		/**
+		 * Because foobar x86 can allocate only 4 gigs memory, we must limit disc art res for 4K when using
+		 * high grSet.spinDiscArtImageCount, i.e 90 (4 degrees), 120 (3 degrees), 180 (2 degrees) to prevent crash.
+		 * When SMP has x64 support, we could try to increase this limit w (1836px max possible res for 4K).
+		 * @public @type {number}
+		 */
+		this.discArtImgMaxRes = this.setDiscArtMaxResolution(grSet.spinDiscArtImageCount);
 	}
 
 	// * PUBLIC METHODS * //
@@ -65,28 +72,129 @@ class ArtCache {
 		const cache = cacheIndex === 1 ? this.cache : this.cache2;
 		const cacheIndexes = cacheIndex === 1 ? this.cacheIndexes : this.cacheIndexes2;
 
-		if (cache[location]) {
-			if (!fso.FileExists(location)) {
-				// If image in location does not exist, return to prevent crash.
-				return null;
+		if (!cache[location] || !fso.FileExists(location)) {
+			// If image is not in cache or location does not exist, return to prevent crash.
+			return null;
+		}
+
+		const file = fso.GetFile(location);
+		const pathIndex = cacheIndexes.indexOf(location);
+		cacheIndexes.splice(pathIndex, 1);
+
+		if (file && file.Size === cache[location].filesize) {
+			cacheIndexes.push(location);
+			DebugLog('Art cache => Cache hit:', location);
+			return cache[location].image;
+		}
+
+		// Size of file on disk has changed
+		DebugLog(`Art cache => Cache entry was stale: ${location} [old size: ${cache[location].filesize}, new size: ${file.Size}]`);
+		delete cache[location]; // Was removed from cacheIndexes already
+
+		return null;
+	}
+
+	/**
+	 * Gets and optionally logs the size of an image or all images in both caches if cacheIndex is 0.
+	 * @param {string|null} location - The location string of the image to check. If null, process all images in the specified cache or both if cacheIndex is 0.
+	 * @param {number} cacheIndex - The index of the cache to check. 0 for both, 1 for the first, 2 for the second. Defaults to 1.
+	 * @param {boolean} logSize - Whether to log the size(s) to the console. Defaults to false.
+	 * @returns {number|null|object} The size of the image in bytes, all images sizes if location is null and cacheIndex is specified, or null if the image is not found.
+	 * @example
+	 * - Get size of a specific image in cache 1: getImageSize('path/to/img.jpg', 1);
+	 * - Get sizes of all images in cache 1: getImageSize(null, 1, true);
+	 * - Get sizes of all images in both caches: getImageSize(null, 0, true);
+	 */
+	getImageSize(location, cacheIndex = 1, logSize = false) {
+		const processCache = (cache, prefix = '') => {
+			const sizes = {};
+			for (const [loc, cacheObj] of Object.entries(cache)) {
+				const formattedSize = FormatSize(cacheObj.filesize);
+				sizes[loc] = formattedSize;
+				if (logSize) {
+					console.log(`Art cache => ${prefix}Image at '${loc}' size: ${formattedSize}`);
+				}
 			}
+			return sizes;
+		};
 
-			const f = fso.GetFile(location);
-			const pathIndex = cacheIndexes.indexOf(location);
-			cacheIndexes.splice(pathIndex, 1);
+		if (cacheIndex === 0) { // If location is 0, process both caches
+			const sizes1 = processCache(this.cache, 'Cache 1 ');
+			const sizes2 = processCache(this.cache2, 'Cache 2 ');
+			return { ...sizes1, ...sizes2 }; // Merge results from both caches
+		}
 
-			if (!f || f.Size === cache[location].filesize) {
-				cacheIndexes.push(location);
-				DebugLog('cache hit:', location);
-				return cache[location].image;
+		const cache = cacheIndex === 1 ? this.cache : this.cache2;
+
+		if (location === null) { // If location is null, process all images in the specified cache.
+			return processCache(cache);
+		}
+		else if (cache[location]) { // Process a specific image in the specified cache.
+			const formattedSize = FormatSize(cache[location].filesize);
+			if (logSize) {
+				console.log(`Art cache => Image at '${location}' size: ${formattedSize}`);
 			}
-
-			// Size of file on disk has changed
-			DebugLog(`cache entry was stale: ${location} [old size: ${cache[location].filesize}, new size: ${f.Size}]`);
-			delete cache[location]; // Was removed from cacheIndexes already
+			return formattedSize;
 		}
 
 		return null;
+	}
+
+	/**
+	 * Gets and optionally logs the total size of the cached images.
+	 * If cacheIndex is 0, calculates for both caches combined.
+	 * @param {number} cacheIndex - The index of the cache to calculate size for. If 0, calculates for both caches.
+	 * @param {boolean} logSizes - Whether to log individual image sizes to the console.
+	 * @returns {number} The total size of the cache or caches in bytes.
+	 * @example
+	 * - Get total size of cache 1: getTotalCacheSize(1, true);
+	 * - Get total size of both caches combined: getTotalCacheSize(0, true);
+	 */
+	getTotalCacheSize(cacheIndex, logSizes = false) {
+		let totalSize = 0;
+
+		const calculateAndLogSize = (cache, cacheName = '') => {
+			for (const [location, cacheObj] of Object.entries(cache)) {
+				totalSize += cacheObj.filesize;
+				if (logSizes) {
+					const formattedSize = FormatSize(cacheObj.filesize);
+					console.log(`Art cache => ${cacheName} Image at '${location}' size: ${formattedSize}`);
+				}
+			}
+		};
+
+		if (cacheIndex === 0) { // If cacheIndex is 0, process both caches
+			calculateAndLogSize(this.cache, 'Cache 1');
+			calculateAndLogSize(this.cache2, 'Cache 2');
+		} else {
+			const cache = cacheIndex === 1 ? this.cache : this.cache2;
+			calculateAndLogSize(cache, `Cache ${cacheIndex}`);
+		}
+
+		const cacheLabel = cacheIndex === 0 ? 'Total size for both caches' : `Total size for Cache ${cacheIndex}`;
+		const totalFormattedSize = FormatSize(totalSize);
+		if (logSizes) console.log(`Art cache => ${cacheLabel}: ${totalFormattedSize}`);
+
+		return totalFormattedSize;
+	}
+
+	/**
+	 * Sets the maximum resolution for disc art based on the spinDiscArtImageCount.
+	 * @param {number} spinDiscArtImageCount - The count for spinning disc art images.
+	 * @returns {number} The maximum resolution for the disc art image.
+	 */
+	setDiscArtMaxResolution(spinDiscArtImageCount = 72) {
+		const maxResByImgCount = {
+			36:  1500,
+			45:  1500,
+			60:  1400,
+			72:  1400,
+			90:  1300,
+			120: 1200,
+			180: 1000
+		};
+
+		return maxResByImgCount[spinDiscArtImageCount];
 	}
 
 	/**
@@ -103,57 +211,59 @@ class ArtCache {
 		const cacheMaxSize = cacheIndex === 1 ? this.cacheMaxSize : this.cacheMaxSize2;
 
 		try {
-			let h = img.Height;
-			let w = img.Width;
+			let { Width: w, Height: h } = img;
+
+			// Scale image
 			if (w > this.imgMaxWidth || h > this.imgMaxHeight) {
-				let scaleFactor = w / this.imgMaxWidth;
-				if (scaleFactor < h / this.imgMaxHeight) {
-					scaleFactor = h / this.imgMaxHeight;
-				}
-				h = Math.min(h / scaleFactor);
-				w = Math.min(w / scaleFactor);
+				const scaleFactor = Math.max(w / this.imgMaxWidth, h / this.imgMaxHeight);
+				w /= scaleFactor;
+				h /= scaleFactor;
 			}
-			const f = fso.GetFile(location);
-			cache[location] = { image: img.Resize(w, h), filesize: f.Size };
+
+			const file = fso.GetFile(location);
+			cache[location] = { image: img.Resize(w, h), filesize: file.Size };
 			img = null;
+
+			// Update cache order
 			const pathIndex = cacheIndexes.indexOf(location);
 			if (pathIndex !== -1) {
-				// Remove from middle of cache and put on end
-				cacheIndexes.splice(pathIndex, 1);
+				cacheIndexes.splice(pathIndex, 1); // Remove from middle of cache and put on end
 			}
 			cacheIndexes.push(location);
+
+			// Maintain cache size
 			if (cacheIndexes.length > cacheMaxSize) {
 				const remove = cacheIndexes.shift();
-				DebugLog('Removing img from cache:', remove);
+				DebugLog('Art cache => Removing img from cache:', remove);
 				delete cache[remove];
 			}
 		} catch (e) {
 			// Do not console.log inverted band logo and label images in the process of being created
-			if (grm.ui.bandLogoInverted) console.log(`\n<Error: Image could not be properly parsed: ${location}>\n`);
+			grm.ui.bandLogoInverted && console.log(`\nArt cache => <Error: Image could not be properly parsed: ${location}>\n`);
 		}
 
-		if (cache[location]) {
-			return cache[location].image;
-		}
-
-		return img;
+		return cache[location] ? cache[location].image : img;
 	}
 
 	/**
 	 * Completely clears all cached entries and releases memory held by scaled bitmaps.
 	 */
 	clear() {
-		while (this.cacheIndexes.length) {
-			const remove = this.cacheIndexes.shift();
-			this.cache[remove] = null;
-			delete this.cache[remove];
+		if (grCfg.settings.showDebugLog) {
+			DebugLog(`Art cache => Total cache size for Cache 1: ${this.getTotalCacheSize(1, false)}`);
+			DebugLog(`Art cache => Total cache size for Cache 2: ${this.getTotalCacheSize(2, false)}`);
+			DebugLog(`Art cache => Total cache size cleared: ${this.getTotalCacheSize(0, false)}`);
 		}
 
-		while (this.cacheIndexes2.length) {
-			const remove = this.cacheIndexes2.shift();
-			this.cache2[remove] = null;
-			delete this.cache2[remove];
-		}
+		const clearCache = (cacheIndexes, cache) => {
+			for (const index of cacheIndexes) {
+				delete cache[index];
+			}
+			cacheIndexes.length = 0;
+		};
+
+		clearCache(this.cacheIndexes, this.cache);
+		clearCache(this.cacheIndexes2, this.cache2);
 	}
 	// #endregion
 }
@@ -309,316 +419,552 @@ class CPUTracker {
 }
 
 
-///////////////////////////
-// * INTERFACE SCALING * //
-///////////////////////////
+//////////////////
+// * MESSAGES * //
+//////////////////
 /**
- * A class that creates interface scaling on various UI elements.
+ * A class that manages messages and popups for various user interactions.
  */
-class Scaling {
-	// * PUBLIC METHODS - FONT SIZES * //
-	// #region PUBLIC METHODS - FONT SIZES
+class MessageManager {
 	/**
-	 * Sets the top menu font size based on the provided size.
-	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 * Create the `MessageManager` instance.
 	 */
-	setMenuFontSize(size) {
-		const currentSize = grSet[`menuFontSize_${grSet.layout}`];
-		const getSize = {
-			'-1': () => Math.max(currentSize - 1, 8),
-			'1' : () => Math.min(currentSize + 1, 16),
-			'0' : () => RES._QHD ? 14 : 12
+	constructor() {
+		/**
+		 * A collection of messages related to main UI actions.
+		 * @public @type {Object<string, {msg: string}>}
+		 */
+		this.msgMain = {};
+
+		/**
+		 * A collection of messages related to theme color actions.
+		 * @public @type {Object<string, {msg: string}>}
+		 */
+		this.msgThemeColors = {};
+
+		/**
+		 * A collection of messages related to top menu `Options` > `Theme`.
+		 * @public @type {Object<string, {msg: string}>}
+		 */
+		this.msgMenuThemeOptions = {};
+
+		/**
+		 * A collection of messages related to top menu `Options` > `Style`.
+		 * @public @type {Object<string, {msg: string}>}
+		 */
+		this.msgMenuStyleOptions = {};
+
+		/**
+		 * A collection of messages related to top menu `Options` > `Preset`.
+		 * @public @type {Object<string, {content: string, msg: string, msgFb: string}>}
+		 */
+		this.msgMenuPresetOptions = {};
+
+		/**
+		 * A collection of messages related to top menu `Options` > `Player controls`.
+		 * @public @type {Object<string, {content: string, msg: string, msgFb: string}>}
+		 */
+		this.msgMenuPlayerControlsOptions = {};
+
+		/**
+		 * A collection of messages related to top menu `Options` > `Details`.
+		 * @public @type {Object<string, {msg: string}>}
+		 */
+		this.msgMenuDetailsOptions = {};
+
+		/**
+		 * A collection of messages related to top menu `Options` > `Library`.
+		 * @public @type {Object<string, {content: string, msg: string, msgFb: string}>}
+		 */
+		this.msgMenuLibraryOptions = {};
+
+		/**
+		 * A collection of messages related to top menu `Options` > `Biography`.
+		 * @public @type {Object<string, {msg: string}>}
+		 */
+		this.msgMenuBiographyOptions = {};
+
+		/**
+		 * A collection of messages related to top menu `Options` > `Settings`.
+		 * @public @type {Object<string, {content: string, msg: string, msgFb: string}>}
+		 */
+		this.msgMenuSettingsOptions = {};
+
+		/**
+		 * A collection of messages related to top menu `Options` > `Developer tools`.
+		 * @public @type {Object<string, {msg: string}>}
+		 */
+		this.msgMenuDevToolsOptions = {};
+
+		/**
+		 * A collection of messages related to the context menus.
+		 * @public @type {Object<string, {msg: string}>}
+		 */
+		this.msgContextMenu = {};
+
+		/**
+		 * A collection of messages related to the input box actions.
+		 * @public @type {Object<string, {msg: string}>}
+		 */
+		this.msgInputBox = {};
+	}
+
+	/**
+	 * Initializes the message objects and their properties and keys.
+	 * @returns {void}
+	 */
+	initMessages() {
+		this.msgMain = {
+			fontsNotInstalled: {
+				msg: 'Georgia-ReBORN WAS UNABLE TO LOAD SOME FONTS\n\n'
+					+ 'Be sure all fonts from\nfoobar2000\\profile\\georgia-reborn\\fonts\nare correctly installed in these directories:\n\n'
+					+ 'For Windows: C:\\Windows\\Fonts\\\nFor Linux: /usr/share/fonts or ~/.local/share/fonts\n\n'
+					+ 'If you use custom fonts, all your custom fonts need to have\nthe exact font name / font family name in your\n'
+					+ 'foobar\\profile\\georgia-reborn\\configs\\georgia-reborn-config.jsonc config file.\n\n'
+					+ 'You can also check foobar\'s console ( Top menu > View > Console ),\nit will show font errors with its wrong font names.'
+			},
+			customFontsUsed: {
+				msg: '\nCustom fonts are currently being used:\n\n'
+					+ `Panel default: ${grCfg.customFont.fontDefault}\n`
+					+ `Top menu: ${grCfg.customFont.fontTopMenu}\n`
+					+ `Lower bar artist: ${grCfg.customFont.fontLowerBarArtist}\n`
+					+ `Lower bar title: ${grCfg.customFont.fontLowerBarTitle}\n`
+					+ `Lower bar disc: ${grCfg.customFont.fontLowerBarDisc}\n`
+					+ `Lower bar time: ${grCfg.customFont.fontLowerBarTime}\n`
+					+ `Lower bar length: ${grCfg.customFont.fontLowerBarLength}\n`
+					+ `Lower bar waveform bar: ${grCfg.customFont.fontLowerBarWave}\n`
+					+ `Notification: ${grCfg.customFont.fontNotification}\n`
+					+ `Popup: ${grCfg.customFont.fontPopup}\n`
+					+ `Tooltip: ${grCfg.customFont.fontTooltip}\n`
+					+ `Grid artist: ${grCfg.customFont.fontGridArtist}\n`
+					+ `Grid title: ${grCfg.customFont.fontGridTitle}\n`
+					+ `Grid title bold: ${grCfg.customFont.fontGridTitleBold}\n`
+					+ `Grid album: ${grCfg.customFont.fontGridAlbum}\n`
+					+ `Grid key: ${grCfg.customFont.fontGridKey}\n`
+					+ `Grid value: ${grCfg.customFont.fontGridValue}\n`
+					+ `Playlist artist normal: ${grCfg.customFont.playlistArtistNormal}\n`
+					+ `Playlist artist playing: ${grCfg.customFont.playlistArtistPlaying}\n`
+					+ `Playlist artist normal compact: ${grCfg.customFont.playlistArtistNormalCompact}\n`
+					+ `Playlist artist playing compact: ${grCfg.customFont.playlistArtistPlayingCompact}\n`
+					+ `Playlist title normal: ${grCfg.customFont.playlistTitleNormal}\n`
+					+ `Playlist title selected: ${grCfg.customFont.playlistTitleSelected}\n`
+					+ `Playlist title playing: ${grCfg.customFont.playlistTitlePlaying}\n`
+					+ `Playlist album: ${grCfg.customFont.playlistAlbum}\n`
+					+ `Playlist date: ${grCfg.customFont.playlistDate}\n`
+					+ `Playlist date compact: ${grCfg.customFont.playlistDateCompact}\n`
+					+ `Playlist info: ${grCfg.customFont.playlistInfo}\n`
+					+ `Playlist cover: ${grCfg.customFont.playlistCover}\n`
+					+ `Playlist playcount: ${grCfg.customFont.playlistPlaycount}\n`
+					+ `Library: ${grCfg.customFont.fontLibrary}\n`
+					+ `Biography: ${grCfg.customFont.fontBiography}\n`
+					+ `Lyrics: ${grCfg.customFont.fontLyrics}\n\n`
+			},
+			customThemeLiveEdit : {
+				msg: `Custom theme can only be live edited in default layout:\nOptions > Layout > Default\n\nYou could manually edit your config file while reloading to take effect:\n${grCfg.configPathCustom}\n`
+			},
+			metadataGridLiveEdit : {
+				msg: `Metadata grid can only be live edited in default layout:\nOptions > Layout > Default\n\nYou could manually edit your config file while reloading to take effect:\n${grCfg.configPath}\n`
+			},
+			albumArtCorruptError: {
+				msg: 'Album art could not be properly parsed!\n\nMaybe it is corrupt, file format is not supported\nor has an unusual ICC profile embedded.\n\n'
+			},
+			discArtCorruptError: {
+				msg: 'Disc art could not be properly parsed!\n\nMaybe it is corrupt, file format is not supported\nor has an unusual ICC profile embedded.\n\n'
+			},
+			playlistEmptyError: {
+				msg: 'The user action has been canceled.\n\nPlease add some tracks to your playlist first!\n\n'
+			},
+			themeDayNightModeNotice: {
+				msg: 'Theme day/night mode is active\nand has locked the theme.\n\nIn order to change themes,\nthis mode must be deactivated first.\n\nDeactivate it now?\n\n',
+				msgFb: 'Theme day/night mode has been deactivated in order to change themes.'
+			},
+			themeDayNightSetup: {
+				msg: `Theme setup for ${grSet.themeSetupDay ? 'daytime' : 'nighttime'} is active:\n\nPlease select your theme and styles\nfor ${grSet.themeSetupDay ? 'daytime' : 'nighttime'} usage.\n\nAfter configuration,\nrevisit the theme day/night menu\nto save changes.`
+			},
+			validateStyleNight: {
+				msg: 'The "Night" theme style has been deactivated!\n\nIt is supported only for the following themes:\n"Reborn"\n"Random"\n"Custom"\n\nIt is not supported with these theme styles:\n"Reborn White"\n"Reborn Black"\n\n'
+			},
+			validateStyleBlackAndWhite: {
+				msg: 'The "Black and white" theme styles have been deactivated!\n\nIt is supported only for the "White" theme.\n\n'
+			},
+			validateStyleBlackReborn: {
+				msg: 'The "Black reborn" theme style has been deactivated!\n\nIt is supported only for the "Black" theme.\n\n'
+			},
+			validateStyleRebornSpecials: {
+				msg: 'The "Reborn" special theme styles have been deactivated!\n\nOnly one theme style can be active\nat a time for this theme style group:\n"Reborn white"\n"Reborn black"\n"Reborn fusion"\n"Reborn fusion 2"\n"Reborn fusion accent"\n\nIt is supported only for the "Reborn" theme.\n\n'
+			},
+			validateStyleGradient: {
+				msg: 'The "Gradient" theme styles have been deactivated!\n\nIt is supported only for following themes:\n"Reborn"\n"Random"\n"Blue"\n"Dark blue"\n"Red"\n"Custom".\n\n'
+			},
+			validateStyleGroupOne: {
+				msg: 'Multiple active theme styles detected!\n\nOnly one theme style can be active\nat a time for this theme style group:\n"Blend"\n"Blend 2"\n"Gradient"\n"Gradient 2"\n\nOther theme styles for this group\nhave been deactivated.\n\n'
+			},
+			validateStyleGroupTwo: {
+				msg: 'Multiple active theme styles detected!\n\nOnly one theme style can be active\nat a time for this theme style group:\n"Alternative"\n"Alternative 2"\n"Black and white"\n"Black and white 2"\n"Black and white reborn"\n"Black reborn"\n"Reborn white"\n"Reborn black"\n"Reborn fusion"\n"Reborn fusion 2"\n"Reborn fusion accent"\n"Random pastel"\n"Random dark"\n\nOther theme styles for this group\nhave been deactivated.\n\n'
+			}
 		};
-		const newSize = getSize[size] || (() => size);
-		grSet[`menuFontSize_${grSet.layout}`] = newSize();
 
-		grm.ui.createFonts();
-		grm.ui.createButtonImages();
-		grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
-		RepaintWindow();
-	}
-
-	/**
-	 * Sets the lower bar font size based on the provided size.
-	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
-	 */
-	setLowerBarFontSize(size) {
-		const currentSize = grSet[`lowerBarFontSize_${grSet.layout}`];
-		const getSize = {
-			'-1': () => Math.max(currentSize - 1, 10),
-			'1' : () => Math.min(currentSize + 1, 26),
-			'0' : () => RES._QHD ? 20 : 18
+		this.msgThemeColors = {
+			playlistColorsCustomTheme: {
+				msg: `Error when initializing playlist custom theme colors:\n\nOne or more variable color names do not exist or have wrong values in your custom config file:\n\n${grCfg.configPathCustom}\n`
+			},
+			libraryColorsCustomTheme: {
+				msg: `Error when initializing library custom theme colors:\n\nOne or more variable color names do not exist or have wrong values in your custom config file:\n\n${grCfg.configPathCustom}\n`
+			},
+			biographyColorsCustomTheme: {
+				msg: `Error when initializing biography custom theme colors:\n\nOne or more variable color names do not exist or have wrong values in your custom config file:\n\n${grCfg.configPathCustom}\n`
+			},
+			mainColorsCustomTheme: {
+				msg: `Error when initializing main custom theme colors:\n\nOne or more variable color names do not exist or have wrong values in your custom config file:\n\n${grCfg.configPathCustom}\n`
+			}
 		};
-		const newSize = getSize[size] || (() => size);
-		grSet[`lowerBarFontSize_${grSet.layout}`] = newSize();
 
-		grm.ui.createFonts();
-		grm.ui.createButtonImages();
-		grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
-		RepaintWindow();
-	}
+		this.msgMenuThemeOptions = {
+			renameCustomTheme: {
+				msg: 'The renaming process was canceled.\n\nPlease ensure that you have selected and activated\na custom theme before attempting to rename it.\n\n'
+			},
+			saveCurrentColors: {
+				msg: `Do you want to save current used colors\nto the selected custom theme slot?\n\nThis will overwrite all colors in the selected\ncustom theme slot.\n\nIt is recommended to make a backup\nof your custom config file:\n${grCfg.configPathCustom}\n\nSaved color changes will take effect on next reload.\n\nContinue?\n\n`
+			}
+		};
 
-	/**
-	 * Sets the notification area font size directly to the specified size.
-	 * @param {number} size - The new font size for the notification area.
-	 */
-	setNotificationFontSize(size) {
-		grSet[`notificationFontSize_${grSet.layout}`] = size;
-		grm.ui.createFonts();
-		RepaintWindow();
-	}
+		this.msgMenuStyleOptions = {
+			styleDefault: {
+				msg: 'Theme style reset was canceled:\n\nActive theme sandbox needs to be deactivated first\nin order to reset theme styles.\n\n'
+			}
+		};
 
-	/**
-	 * Sets the popup font size directly to the specified size.
-	 * @param {number} size - The new font size for popups.
-	 */
-	setPopupFontSize(size) {
-		grSet[`popupFontSize_${grSet.layout}`] = size;
-		grm.ui.createFonts();
-		if (grm.ui.displayCustomThemeMenu) {
-			grm.ui.cthMenu.initCustomThemeMenu('pl_bg');
-		} else if (grm.ui.displayMetadataGridMenu) {
-			grm.ui.gridMenu.initMetadataGridMenu();
+		this.msgMenuPresetOptions = {
+			presetSelectModeDefault: {
+				content: 'The default select mode will automatically choose\na random pick of 88 theme presets.\n\nDouble-click on the lower bar to choose\nanother random theme preset.\n\nWhen random mode is activated,\nall themes and style options will be available.\n\n',
+				msg: 'Do you want to activate the -Default- preset select mode?\n\n{content}Continue?\n\n',
+				msgFb: 'Default preset select mode activated:\n\n{content}'
+			},
+			presetSelectModeHarmonic: {
+				content: 'The harmonic preset select mode will automatically\nchoose the best visual experience of themes and styles\nbased on album art.\n\nYou can also double-click on the lower bar\nto choose another random harmonic preset.\n\nWhen harmonic preset select mode is activated,\nall themes and almost all style options will be disabled.\n\n',
+				msg: 'Do you want to activate the -Harmonic- preset select mode?\n\n{content}Continue?\n\n',
+				msgFb: 'Harmonic preset select mode activated:\n\n{content}'
+			},
+			presetSelectModeTheme: {
+				content: 'The theme preset select mode will automatically choose\na random theme preset based on current active theme.\n\nYou can also double-click on the lower bar\nto choose another random theme preset.\n\nWhen theme preset select mode is activated,\nall themes and style options will be available.\n\n',
+				msg: 'Do you want to activate the -Theme- preset select mode?\n\n{content}Continue?\n\n',
+				msgFb: 'Theme preset select mode activated:\n\n{content}'
+			}
+		};
+
+		this.msgMenuPlayerControlsOptions = {
+			loadEmbeddedAlbumArtFirst: {
+				content: 'You also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art\n\n',
+				msg: 'Do you want to load embedded album art first?\n\n{content}Continue?\n\n',
+				msgFb: 'Embedded album art enabled:\n\n{content}'
+			},
+			panelBrowseMode: {
+				content: 'When browse mode is active,\n'
+					+ 'album art and track information in Details,\nBiography and Lower bar will change as you select\n'
+					+ 'albums or tracks in the Playlist or Library.\n\nAdditionally, Library\'s play mode will be enabled.\n'
+					+ 'When playing albums or tracks from the Library,\nit will not modify the content of the playlist,\n'
+					+ 'until the browse mode is disabled.\n\nIf a track is currently playing,\nyou can use "Show Now Playing"\n'
+					+ 'or lower bar track title click to return.\n\n',
+				msg: 'Do you want to enable browse mode?\n\n{content}Continue?\n\n',
+				msgFb: 'Browse mode enabled:\n\n{content}'
+			}
+		};
+
+		this.msgMenuDetailsOptions = {
+			discArtStub: {
+				msg: `The custom disc art placeholder was not found in:\n${grPath.discArtCustomStub}\n\n`
+					+ 'Be sure that image exist and has the correct filename\nin the "customDiscArtStub" section of the\n'
+					+ `custom config file:\n${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc\n\n`
+			}
+		};
+
+		this.msgMenuLibraryOptions = {
+			actionModeDefault: {
+				content: 'This will restore the original settings, presets,\nand behavior of the Library.\n\n',
+				msg: 'Do you want to enable Library\'s default mode?\n\n{content}Continue?\n\n',
+				msgFb: 'Library\'s default mode enabled:\n\n{content}'
+			},
+			actionModeBrowser: {
+				content: 'This will act like a file browser to quickly see the content of the album. It is not recommended for new users\nwho don\'t know how the library works.\n\n',
+				msg: 'Do you want to enable Library\'s browser mode?\n\n{content}Continue?\n\n',
+				msgFb: 'Library\'s browser mode enabled:\n\n{content}'
+			},
+			actionModePlayer: {
+				content: 'This will act like a playlist and will not automatically add content to the playlist. It is recommended for new users\nwho don\'t know how the library works.\n\n',
+				msg: 'Do you want to enable Library\'s player mode?\n\n{content}Continue?\n\n',
+				msgFb: 'Library\'s player mode enabled:\n\n{content}'
+			}
+		};
+
+		this.msgMenuBiographyOptions = {
+			cycPhotoLocation: {
+				msg: 'Enter folder in options: "Server Settings"\\Photo\\Custom photo folder.\n\n'
+			},
+			loadCovFolder: {
+				msg: 'Enter folder in options: "Server Settings"\\Cover\\Covers: cycle folder.\n\nDefault: artist photo folder.\n\nImages are updated when the album changes. Any images arriving after choosing the current album aren\'t included.\n\n'
+			}
+		};
+
+		this.msgMenuSettingsOptions = {
+			themeDayNightMode: {
+				content: 'The default daytime theme is White\nand the nighttime theme is Black.\n\nYou can set up and configure\na new theme and styles for both modes\nin the theme day/night mode setup.\n\n',
+				msg: 'Do you want to activate the theme day/night mode?\n\n{content}Continue?\n\n',
+				msgFb: 'Theme day/night mode is active:\n\n{content}'
+			},
+			themeSetupDay: {
+				msg: '>>> Theme setup for daytime is active <<<\n\nPlease select your theme and styles for daytime usage.\nAfter configuring the theme settings, revisit this menu to save them and set a new time range.\n\n'
+			},
+			themeSetupNight: {
+				msg: '>>> Theme setup for nighttime is active <<<\n\nPlease select your theme and styles for nighttime usage.\nAfter configuring the theme settings, revisit this menu to save them and set a new time range.\n\n'
+			},
+			themeSandboxRestore: {
+				msg: 'Do you want to restore\nor keep current theme settings?\n\nThis will restore previously used\ntheme, styles, preset\nor use the current active.\n\nContinue?\n\n'
+			},
+			themeSandboxRestore2: {
+				msg: grSet.savedPreset ? 'Do you want to restore\nlast used theme styles or theme preset?\n\n' : 'Do you want to restore\nlast used theme styles?\n\n',
+				msgFb : 'Theme settings restored:\n\nTheme and styles have been restored.'
+			},
+			themeSandbox: {
+				content: 'This mode is useful when trying out\nthemes, styles, presets or writing theme tags.\n\nAfter disabling the theme sandbox mode,\npreviously used theme settings can be restored.\n\n',
+				msg: 'Do you want to activate the theme sandbox?\n\n{content}\n\nContinue?\n\n',
+				msgFb: 'Theme sandbox mode activated::\n\n{content}'
+			},
+			customThemeFonts: {
+				msg: 'Do you want to use custom theme fonts?\n\nYou need to set your custom fonts\nin your config file located in\nfoobar\\profile\\georgia-reborn\\configs\\georgia-reborn-config.jsonc\n\nContinue?\n\n'
+			},
+			customPreloaderLogo: {
+				msg: `The custom logo placeholder can be replaced\nwith a new logo:\n\n${fb.ProfilePath}georgia-reborn\\images\\custom\\logo\\_4K-custom-logo.png and _custom-logo.png\n\nRecommended logo dimensions are:\n500x500 pixels for 4K\n250x250 pixels for HD\n\n`
+			},
+			customThemeImages: {
+				msg: `All theme images can be safely replaced\nwith new custom ones:\n\n${fb.ProfilePath}georgia-reborn\\images\\custom\\\n\nPlease ensure all images have the same names\nas the original ones, which are located in the\nparent directory.\n\n`
+			},
+			deleteLibraryCache: {
+				msg: 'Do you want to delete the library cache?\n\nThis will permanently delete cached library album art thumbnails.\n\nContinue?\n\n'
+			},
+			libraryAutoDelete: {
+				msg: 'Do you want to set auto-delete for library cache?\n\nThis will always auto-delete cached library album art thumbnails on startup.\n\nContinue?\n\n'
+			},
+			deleteBiographyCache: {
+				msg: 'Do you want to delete the biography cache?\n\nThis will permanently delete downloaded biography images and text files\n\nContinue?\n\n'
+			},
+			biographyAutoDelete: {
+				msg: 'Do you want to set auto-delete for biography cache?\n\nThis will always auto-delete downloaded biography images\nand text on startup\n\nContinue?\n\n'
+			},
+			deleteLyricsCache: {
+				msg: 'Do you want to delete all lyrics?\n\nThis will permanently delete downloaded lyrics.\n\nContinue?\n\n'
+			},
+			lyricsAutoDelete: {
+				msg: 'Do you want to set auto-delete for lyrics?\n\nThis will always auto-delete downloaded lyrics on startup.\n\nContinue?\n\n'
+			},
+			deleteWaveformBarCache: {
+				msg: 'Do you want to delete all waveform bar cache?\n\nThis will permanently delete analyzed files.\n\nContinue?\n\n'
+			},
+			waveformBarAutoDelete: {
+				msg: 'Do you want to set auto-delete for waveform bar?\n\nThis will always auto-delete waveform bar cache on startup.\n\nContinue?\n\n'
+			},
+			makeBackup: {
+				msg: `Do you want to make a backup of the theme?\n\nThis will create a backup in ${fb.ProfilePath}backup\n\nOn new fb2k installation, you can copy/paste and replace it with ${fb.ProfilePath}\n\nIf a backup already exist, you can use\nOptions > Settings > Theme backup > Restore backup\n\nContinue?\n\n\n`,
+				msgFb: `You can find the Georgia-ReBORN theme backup in ${fb.ProfilePath}backup\n\nOn new fb2k installation, you can copy/paste and replace it with ${fb.ProfilePath}\n\nIf a backup already exist, you can use\nOptions > Settings > Theme backup > Restore backup`
+			},
+			restoreBackup: {
+				msg: `Do you want to restore your backup of the theme?\n\n>>> WARNING <<<\n\nThis will restore your backup from ${fb.ProfilePath}\n\nChanges and modifications since your last backup\n(new theme settings, new playlists and play statistics)\nwill be lost!\n\nIt is recommended to make a new backup\nbefore you restore.\n\nContinue?\n\n\n`
+			},
+			saveSettingsConfig: {
+				msg: 'Do you want to save all current theme settings?\n\nThis will overwrite all settings from the top menu "Options"\nin the georgia-reborn-config.jsonc file.\n\nContinue?\n\n'
+			},
+			loadSettingsConfig: {
+				msg: 'Do you want to load all theme settings\nfrom the georgia-reborn-config.jsonc file?\n\nContinue?\n\n'
+			},
+			loadDefaultSettingsConfig: {
+				msg: 'Do you want to load default theme settings?\n\nThis will not overwrite the georgia-reborn-config.jsonc file,\nbut you should probably first save your settings.\n\nContinue?\n\n'
+			},
+			resetSettingsMainConfig: {
+				msg: 'Do you want to reset the config file to default?\n\n!!! WARNING !!!\n\nThis will set all settings to default.\nYou should probably make a backup first.\n\nContinue?\n\n'
+			},
+			resetSettingsCustomConfig: {
+				msg: 'Do you want to reset the custom config file to default?\n\n!!! WARNING !!!\n\nThis will delete and replace all custom themes\nto the default custom theme template.\nYou should definitely make a backup first.\n\nContinue?\n\n'
+			},
+			resetSettingsAll: {
+				msg: 'Do you want to reset all theme settings to default?\n\nThis will also clear all library custom views plus filters\nand Georgia-ReBORN config.\n\nContinue?\n\n'
+			},
+			resetSettingsAllError: {
+				msg: 'Something went wrong and Georgia-ReBORN has NOT been successfully reset, try again!'
+			},
+			themePerformance: {
+				msg: 'Do you want to change the theme performance?\n\nThese presets will change various theme settings!\nIt is recommended to save current theme settings\nto the config file. You should also make a backup\nof your playlists to be on the safe side!\n\n!!! WARNING !!!\n"High quality" and especially "Highest Quality"\ncan freeze foobar, depending how fast your CPU performs.\nIt does not matter if you are using a multi-core CPU,\nonly single-core CPU performance counts!\nIf your foobar is unresponsive, restart\nand change to a lighter preset.\n\nContinue?\n\n'
+			}
+		};
+
+		this.msgMenuDevToolsOptions = {
+			autoDownloadBio: {
+				msg: 'Do you want to enable\nthe auto-download biography mode?\n\nThis will set the playback order to shuffle\nand activate a 6-second timer to automatically\ndownload the biography.\n\nThis is recommended when you leave your PC\nunattended for a longer period of time.\n\nContinue?\n\n'
+			},
+			autoDownloadLyrics: {
+				msg: 'Do you want to enable\nthe auto-download lyrics mode?\n\nThis will set the playback order to playlist\nand activate a 15-second timer to automatically\ndownload the lyrics.\n\nThis is recommended when you leave your PC\nunattended for a longer period of time.\n\nContinue?\n\n'
+			},
+			systemFirstLaunch: {
+				msg: 'Do you really want to set system to first launch?\n\nContinue?\n\n'
+			},
+			asyncThemePreloader: {
+				msg: `Do you really want to set the script preloader\nto ${grSet.asyncThemePreloader ? 'synchronous' : 'asynchronous'}?\n\nContinue?\n\n`
+			}
+		};
+
+		this.msgContextMenu = {
+			discArtCustomStub: {
+				msg: `The custom disc art placeholder was not found in:\n${grPath.discArtCustomStub}\n\nBe sure that image exist and has the correct filename\nin the "customDiscArtStub" section of the\ncustom config file:\n${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc\n\n`
+			},
+			deleteWaveformBarCache: {
+				msg: 'Do you want to delete all waveform bar cache?\n\nThis will permanently delete analyzed files.\n\nContinue?\n\n'
+			}
+		};
+
+		this.msgCustomMenu = {
+			customThemeInfo: {
+				msg: 'You can modify the main colors, the playlist colors, the library colors and the biography colors.'
+					+ 'First select a custom theme slot in the drop down menu "Options" that you want to modify.'
+					+ 'You can either select the color via the color picker or paste a HEX value in the input field.\n'
+					+ 'It will apply all changes in real time and saves it automatically in the georgia-reborn-custom.jsonc config file.'
+					+ 'Each color has a name that you can also find in the georgia-reborn-custom.jsonc config file and modify it there.\n\n'
+					+ 'To reset the colors to the default ones, select the "Reset" option from the drop down menu.\n\n'
+					+ 'Tip: Download the resource pack from the Github page to open the custom theme template and modify colors in Photoshop or Gimp.\n'
+					+ 'If you are happy with the result, just copy and paste the HEX values.\n\n'
+					+ 'You can showcase your custom themes and share your configs here: Click on this text.'
+			},
+			metadataGridMenuInfo: {
+				msg: 'You can modify existing entries or add your new custom patterns.\n'
+					+ 'To confirm changes, press "Enter" or paste a new pattern into the input field.\n'
+					+ 'All changes will be applied in real time and automatically saved in the\ngeorgia-reborn-config.jsonc file where it can be also manually modified.\n\n'
+					+ 'To reset the metadata grid to its default patterns, select the "Reset" option\nfrom the drop down menu.\n\n'
+					+ 'Tip: To reorder the entries, first copy the ones you want to change in your\nnotepad and paste the label and pattern afterwards.\n\n'
+					+ 'Note: Not all entries will be displayed if the height of the player size is too small,\nchange to a larger player size if desired.\n\n'
+					+ 'You can learn more about patterns here, click on this text.'
+			}
+		};
+
+		this.msgInputBox = {
+			addTracksPlaylist: {
+				msg: 'Enter your new add tracks playlist or an existing playlist with its exact name:'
+			},
+			addTracksPlaylistError: {
+				msg: `Playlist name is not valid:\n${grm.inputBox.inputBoxUserValue}\n\nDo not use any " at the beginning and the end of the playlist name.`
+			},
+			customCacheDir: {
+				msg: `Enter your custom ${grm.inputBox.customDirString} directory:`
+			},
+			customCacheDirLyrics: {
+				msg: 'If the custom lyrics directory has been set and is active,\nit must also be updated in the ESLyric location setting:\n\nfoobar\'s Preferences > Tools > ESLyric > Lyric Options > Save Settings > Location.\n\n'
+			},
+			customCacheDirError: {
+				msg: `Path is not valid:\n${grm.inputBox.inputBoxUserValue}\n\nDo not use any " at the beginning and the end of your pattern.\n\nExample of a correct path:\n\nD:\\Stuff\\Directory\\`
+			},
+			renameCustomTheme: {
+				msg: 'Enter your desired name for your current active custom theme'
+			},
+			renameCustomThemeError: {
+				msg: `Name is not valid:\n${grm.inputBox.inputBoxUserValue}\n\nSomething went wrong...`
+			},
+			playlistCustomHeaderInfo: {
+				msg: 'Enter your custom playlist header info pattern:'
+			},
+			playlistCustomHeaderInfoError: {
+				msg: `Pattern is not valid:\n${grm.inputBox.inputBoxUserValue}\n\nDo not use any " at the beginning and the end of your pattern.\n\nExamples of correct patterns:\n\n%album artist% %date% %album% %discnumber% %tracknumber% %title%\n\n$if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%`
+			},
+			playlistCustomTrackRow1 : {
+				msg: 'Enter your custom playlist track row pattern:'
+			},
+			playlistCustomTrackRow2 : {
+				msg: 'Enter your custom playlist track row pattern when no header displayed:'
+			},
+			playlistCustomTrackRowError : {
+				msg: `Pattern is not valid:\n${grm.inputBox.inputBoxUserValue || grm.inputBox.inputBoxUserValue2}\n\nDo not use any " at the beginning and the end of your pattern.\n\nExamples of correct patterns:\n\n%album artist% %date% %album% %discnumber% %tracknumber% %title%\n\n$if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%`
+			},
+			playlistSortCustom: {
+				msg: 'Enter your custom playlist order pattern:'
+			},
+			playlistSortCustomError: {
+				msg: `Pattern is not valid:\n${grm.inputBox.inputBoxUserValue}\n\nDo not use any " at the beginning and the end of your pattern.\n\nExamples of correct patterns:\n\n%album artist% %date% %album% %discnumber% %tracknumber% %title%\n\n$if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%`
+			},
+			themeDayNightModeCustom: {
+				msg: 'Enter your custom day-night mode (e.g 6-18):'
+			},
+			themeDayNightModeCustomError: {
+				msg: `Input is not valid: ${grm.inputBox.inputBoxNewValue}\n\nPlease enter valid times in 24-hour format separated by a hyphen (e.g 6-18), where both times are between 0 and 23.`
+			}
 		}
-		RepaintWindow();
 	}
 
 	/**
-	 * Sets the tooltip font size directly to the specified size.
-	 * @param {number} size - The new font size for tooltips.
+	 * Retrieves the message for a given category and key.
+	 * The concatenated message includes the content and the main or feedback message.
+	 * @param {string} category - The category of the message (e.g., 'main', 'menu').
+	 * @param {string} key - The key of the message within the category (e.g., 'default', 'harmonic').
+	 * @param {boolean} feedback - Whether to retrieve the feedback message.
+	 * @returns {string} The concatenated message or an empty string if not found.
 	 */
-	setTooltipFontSize(size) {
-		grSet[`tooltipFontSize_${grSet.layout}`] = size;
-		grm.ui.createFonts();
-		RepaintWindow();
-	}
+	getMessage(category, key, feedback = false) {
+		this.initMessages();
 
-	/**
-	 * Sets the metadata grid artist font size based on the provided size.
-	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
-	 */
-	setGridArtistFontSize(size) {
-		const currentSize = grSet[`gridArtistFontSize_${grSet.layout}`];
-		const getSize = {
-			'-1': () => Math.max(currentSize - 1, 10),
-			'1' : () => Math.min(currentSize + 1, 24),
-			'0' : () => RES._QHD ? 20 : 18
+		const categories = {
+			main: this.msgMain,
+			themeColors: this.msgThemeColors,
+			menu: {
+				...this.msgMenuThemeOptions,
+				...this.msgMenuStyleOptions,
+				...this.msgMenuPresetOptions,
+				...this.msgMenuPlayerControlsOptions,
+				...this.msgMenuDetailsOptions,
+				...this.msgMenuLibraryOptions,
+				...this.msgMenuBiographyOptions,
+				...this.msgMenuSettingsOptions,
+				...this.msgMenuDevToolsOptions
+			},
+			contextMenu: this.msgContextMenu,
+			customMenu: this.msgCustomMenu,
+			inputBox: this.msgInputBox
 		};
-		const newSize = getSize[size] || (() => size);
-		grSet[`gridArtistFontSize_${grSet.layout}`] = newSize();
-		grm.ui.createFonts();
-		RepaintWindow();
+
+		const messages = categories[category];
+		if (!messages) return '';
+
+		const message = messages[key];
+		if (!message) return '';
+
+		const {	content = '', msg = '',	msgFb = '' } = message;
+		const targetMsg = feedback ? msgFb : msg;
+
+		return targetMsg.includes('{content}') ? targetMsg.replace('{content}', content) : targetMsg;
 	}
 
 	/**
-	 * Sets the metadata grid title font size based on the provided size.
-	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 * Displays a popup with customizable message and button labels.
+	 * The behavior of the popup depends on the environment; if running under Wine or without Internet Explorer,
+	 * it will show a simple popup message. Otherwise, it will show a confirm box with two buttons.
+	 * @global
+	 * @param {boolean} fbPopup - Determines if the fb.ShowPopupMessage should be shown.
+	 * @param {string} fbMsg - The message to be displayed in the fb.ShowPopupMessage popup.
+	 * @param {string} popUpMsg - The message to be displayed in the confirm box popup.
+	 * @param {string} btn1Label - The label for the first button in the confirm box.
+	 * @param {string} btn2Label - The label for the second button in the confirm box. If not provided, no second button is shown.
+	 * @param {Function} callback - The callback function that is called with the confirmation status.
 	 */
-	setGridTitleFontSize(size) {
-		const currentSize = grSet[`gridTitleFontSize_${grSet.layout}`];
-		const getSize = {
-			'-1': () => Math.max(currentSize - 1, 10),
-			'1' : () => Math.min(currentSize + 1, 24),
-			'0' : () => RES._QHD ? 20 : 18
+	showPopup(fbPopup, fbMsg, popUpMsg, btn1Label, btn2Label, callback) {
+		const continue_confirmation = (status, confirmed) => {
+			if (!confirmed) {
+				callback(confirmed);
+				return;
+			}
+			callback(confirmed);
 		};
-		const newSize = getSize[size] || (() => size);
-		grSet[`gridTrackNumFontSize_${grSet.layout}`] = grSet[`gridTitleFontSize_${grSet.layout}`] = newSize();
-		grm.ui.createFonts();
-		RepaintWindow();
-	}
 
-	/**
-	 * Sets the metadata grid album font size based on the provided size.
-	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
-	 */
-	setGridAlbumFontSize(size) {
-		const currentSize = grSet[`gridAlbumFontSize_${grSet.layout}`];
-		const getSize = {
-			'-1': () => Math.max(currentSize - 1, 10),
-			'1' : () => Math.min(currentSize + 1, 24),
-			'0' : () => RES._QHD ? 20 : 18
-		};
-		const newSize = getSize[size] || (() => size);
-		grSet[`gridAlbumFontSize_${grSet.layout}`] = newSize();
-		grm.ui.createFonts();
-		RepaintWindow();
-	}
-
-	/**
-	 * Sets the metadata grid tag name font size based on the provided size.
-	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
-	 */
-	setGridTagNameFontSize(size) {
-		const currentSize = grSet[`gridKeyFontSize_${grSet.layout}`];
-		const getSize = {
-			'-1': () => Math.max(currentSize - 1, 10),
-			'1' : () => Math.min(currentSize + 1, 24),
-			'0' : () => RES._QHD ? 19 : 17
-		};
-		const newSize = getSize[size] || (() => size);
-		grSet[`gridKeyFontSize_${grSet.layout}`] = newSize();
-		grm.ui.createFonts();
-		RepaintWindow();
-	}
-
-	/**
-	 * Sets the metadata grid tag value font size based on the provided size.
-	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
-	 */
-	setGridTagValueFontSize(size) {
-		const currentSize = grSet[`gridValueFontSize_${grSet.layout}`];
-		const getSize = {
-			'-1': () => Math.max(currentSize - 1, 10),
-			'1' : () => Math.min(currentSize + 1, 24),
-			'0' : () => RES._QHD ? 19 : 17
-		};
-		const newSize = getSize[size] || (() => size);
-		grSet[`gridValueFontSize_${grSet.layout}`] = newSize();
-		grm.ui.createFonts();
-		RepaintWindow();
-	}
-
-	/**
-	 * Sets the Playlist size based on the provided size.
-	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
-	 */
-	setPlaylistFontSize(size) {
-		const currentSize = grSet[`playlistHeaderFontSize_${grSet.layout}`];
-		const getSize = {
-			'-1': () => ({
-				headerSize: Math.max(currentSize - 1, 10),
-				fontSize: Math.max(currentSize - 3, 8)
-			}),
-			'1': () => ({
-				headerSize: Math.min(currentSize + 1, 26),
-				fontSize: Math.min(currentSize - 1, 24)
-			}),
-			'0': () => ({
-				headerSize: RES._QHD ? 17 : 15,
-				fontSize: RES._QHD ? 14 : 12
-			})
-		};
-		const newSize = getSize[size] || (() => ({ headerSize: size, fontSize: size - (size === 15 || size === 17 ? 3 : 2) }));
-		grSet[`playlistHeaderFontSize_${grSet.layout}`] = newSize().headerSize;
-		grSet[`playlistFontSize_${grSet.layout}`] = newSize().fontSize;
-
-		PlaylistRescale(true);
-		PlaylistHeader.img_cache.clear();
-		grm.ui.initPlaylist();
-		pl.call.on_size(grm.ui.ww, grm.ui.wh);
-		if (grSet.libraryThumbnailSize === 'playlist') grm.ui.setLibrarySize();
-		if (grSet.libraryLayout === 'split') {
-			lib.pop.createImages();
-			lib.panel.zoomReset();
-			grm.ui.initLibraryLayout();
+		if (Detect.Wine || !Detect.IE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+			continue_confirmation(false, btn1Label);
+			if (fbPopup) fb.ShowPopupMessage(fbMsg, 'Georgia-ReBORN');
 		}
-		RepaintWindow();
-	}
-
-	/**
-	 * Sets the Library font size based on the provided size.
-	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
-	 */
-	setLibraryFontSize(size) {
-		const currentSize = libSet[`baseFontSize_${grSet.layout}`];
-		const getSize = {
-			'-1': () => Math.max(currentSize - 1, 8),
-			'1' : () => Math.min(currentSize + 1, 26),
-			'0' : () => RES._QHD ? 14 : 12
-		};
-		const newSize = getSize[size] || (() => size);
-		libSet[`baseFontSize_${grSet.layout}`] = newSize();
-		grSet[`libraryFontSize_${grSet.layout}`] = libSet[`baseFontSize_${grSet.layout}`];
-
-		grm.ui.setLibrarySize();
-		lib.panel.zoomReset();
-		lib.pop.createImages();
-		RepaintWindow();
-	}
-
-	/**
-	 * Sets the Biography font size based on the provided size.
-	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
-	 */
-	setBiographyFontSize(size) {
-		const currentSize = bioSet[`baseFontSizeBio_${grSet.layout}`];
-		const getSize = {
-			'-1': () => Math.max(currentSize - 1, 8),
-			'1' : () => Math.min(currentSize + 1, 26),
-			'0' : () => RES._QHD ? 14 : 12
-		};
-		const newSize = getSize[size] || (() => size);
-		bioSet[`baseFontSizeBio_${grSet.layout}`] = newSize();
-		grSet[`biographyFontSize_${grSet.layout}`] = bioSet[`baseFontSizeBio_${grSet.layout}`];
-
-		grm.ui.setBiographySize();
-		bio.but.resetZoom();
-		bio.but.createImages();
-		RepaintWindow();
-	}
-
-	/**
-	 * Sets the Lyrics font size based on the provided size.
-	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
-	 */
-	setLyricsFontSize(size) {
-		const currentSize = grSet[`lyricsFontSize_${grSet.layout}`];
-		const getSize = {
-			'-1': () => Math.max(currentSize - 1, 10),
-			'1' : () => Math.min(currentSize + 1, 50),
-			'0' : () => RES._QHD ? 22 : 20
-		};
-		const newSize = getSize[size] || (() => size);
-		grSet[`lyricsFontSize_${grSet.layout}`] = newSize();
-
-		grm.ui.createFonts();
-		if (grm.ui.displayLyrics) {
-			grm.lyrics.initLyrics();
+		else {
+			lib.popUpBox.confirm('Georgia-ReBORN', popUpMsg, btn1Label, btn2Label, false, 'center', btn2Label ? continue_confirmation : false);
 		}
 	}
-	// #endregion
-
-	// * PUBLIC METHODS - LOWER BAR TRANSPORT BUTTONS * //
-	// #region PUBLIC METHODS - LOWER BAR TRANSPORT BUTTONS
-	/**
-	 * Sets the lower bar transport button size based on the provided size.
-	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
-	 */
-	setTransportBtnSize(size) {
-		const currentSize = grSet[`transportButtonSize_${grSet.layout}`];
-		const getSize = {
-			'-1': () => Math.max(currentSize - 1, 28),
-			'1' : () => Math.min(currentSize + 1, grSet.layout === 'default' ? 42 : 36),
-			'0' : () => RES._QHD ? 34 : 32
-		};
-		const newSize = getSize[size] || (() => size);
-		grSet[`transportButtonSize_${grSet.layout}`] = newSize();
-
-		grm.ui.createFonts();
-		grm.ui.createButtonImages();
-		grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
-		RepaintWindow();
-	}
-
-	/**
-	 * Sets the lower bar transport button spacing size based on the provided size.
-	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
-	 */
-	setTransportBtnSpacing(size) {
-		const currentSize = grSet[`transportButtonSpacing_${grSet.layout}`];
-		const getSize = {
-			'-1': () => Math.max(currentSize - 1, 3),
-			'1' : () => Math.min(currentSize + 1, 15),
-			'0' : () => 5
-		};
-		const newSize = getSize[size] || (() => size);
-		grSet[`transportButtonSpacing_${grSet.layout}`] = newSize();
-
-		grm.ui.createButtonImages();
-		grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
-		RepaintWindow();
-	}
-	// #endregion
 }
 
 
@@ -635,14 +981,17 @@ class Menu {
 	 */
 	constructor(title = '') {
 		if (!Menu.menuItemIndex) {
+			/** @static @type {number} The starting index for the menu items. */
 			Menu.menuStartIndex = 100;
+			/** @static @type {number} The auto-incrementing index for each menu item created. */
 			Menu.menuItemIndex = Menu.menuStartIndex;
+			/** @static @type {Array<Function>} The callback functions for the menu items. */
 			Menu.menuCallbacks = [];
+			/** @static @type {Array<any>} The variables related to the menu items. */
 			Menu.menuVariables = [];
 		}
-
-		/** @private @type {number} Auto-incrementing index for each menu item created. */
 		Menu.menuItemIndex++;
+
 		/** @private @type {PopupMenu} The instance of the popup menu created for this menu. */
 		this.menu = window.CreatePopupMenu();
 		/** @private @type {string} The title of the menu item. */
@@ -665,7 +1014,7 @@ class Menu {
 	 * @private
 	 */
 	_addItemWithVariable(label, checked, variable, callback, disabled) {
-		this.menu.AppendMenuItem(MF_STRING | (disabled ? MF_DISABLED | MF_GRAYED : 0), Menu.menuItemIndex, label);
+		this.menu.AppendMenuItem(MenuFlag.String | (disabled ? MenuFlag.Disabled | MenuFlag.Grayed : 0), Menu.menuItemIndex, label);
 		this.menu.CheckMenuItem(Menu.menuItemIndex, checked);
 		Menu.menuCallbacks[Menu.menuItemIndex] = callback;
 		if (typeof variable !== 'undefined') {
@@ -683,6 +1032,7 @@ class Menu {
 	 */
 	initFoobarMenu(name) {
 		if (!name) return;
+		if (name === 'Media') name = 'Library'; // Remap `Media` button to foobar's `Library`
 		this.systemMenu = true;
 		this.menuManager = fb.CreateMainMenuManager();
 		this.menuManager.Init(name);
@@ -729,7 +1079,7 @@ class Menu {
 	 */
 	addToggleItems(labels, selectedValues, variables, callback = () => { }, disabled = false, disableCheckMarking = false, separator = []) {
 		for (let i = 0; i < labels.length; i++) {
-			this.menu.AppendMenuItem(MF_STRING | (disabled ? MF_DISABLED | MF_GRAYED : 0), Menu.menuItemIndex, labels[i]);
+			this.menu.AppendMenuItem(MenuFlag.String | (disabled ? MenuFlag.Disabled | MenuFlag.Grayed : 0), Menu.menuItemIndex, labels[i]);
 			Menu.menuCallbacks[Menu.menuItemIndex] = callback;
 			Menu.menuVariables[Menu.menuItemIndex] = variables[i];
 			if (!disableCheckMarking && selectedValues.includes(variables[i])) {
@@ -756,7 +1106,7 @@ class Menu {
 		const startIndex = Menu.menuItemIndex;
 		let selectedIndex;
 		for (let i = 0; i < labels.length; i++) {
-			this.menu.AppendMenuItem(MF_STRING | (disabled ? MF_DISABLED | MF_GRAYED : 0), Menu.menuItemIndex, labels[i]);
+			this.menu.AppendMenuItem(MenuFlag.String | (disabled ? MenuFlag.Disabled | MenuFlag.Grayed : 0), Menu.menuItemIndex, labels[i]);
 			Menu.menuCallbacks[Menu.menuItemIndex] = callback;
 			Menu.menuVariables[Menu.menuItemIndex] = variables[i];
 			if (selectedValue === variables[i]) {
@@ -802,7 +1152,7 @@ class Menu {
 	 * @param {boolean} [disabled] - Whether the menu items should be disabled or not.
 	 */
 	appendTo(parentMenu, disabled = false) {
-		this.menu.AppendTo(parentMenu.menu, MF_STRING | (disabled ? MF_DISABLED | MF_GRAYED : 0), this.title);
+		this.menu.AppendTo(parentMenu.menu, MenuFlag.String | (disabled ? MenuFlag.Disabled | MenuFlag.Grayed : 0), this.title);
 	}
 
 	/**
@@ -844,6 +1194,20 @@ class Menu {
  * A class that creates input boxes for allowing users to customize settings.
  */
 class InputBox {
+	/**
+	 * Create the `InputBox` instance.
+	 */
+	constructor() {
+		/** @private @type {string} The new value of the input box. */
+		this.inputBoxNewValue = '';
+		/** @private @type {string} The second new value of the input box. */
+		this.inputBoxNewValue2 = '';
+		/** @private @type {string} The user's new value of the input box. */
+		this.inputBoxUserValue = '';
+		/** @private @type {string} The user's second new value of the input box. */
+		this.inputBoxUserValue2 = '';
+	}
+
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
 	/**
@@ -851,21 +1215,25 @@ class InputBox {
 	 * @throws Will throw an error if the new value is not a string.
 	 */
 	addTracksPlaylist() {
-		const oldValStr = JSON.stringify(grCfg.themeControls.addTracksPlaylist).replace(/"/g, '');
-		let newVal;
-		let input;
+		const inputBoxOldValue = JSON.stringify(grCfg.themeControls.addTracksPlaylist).replace(/"/g, '');
+		this.inputBoxNewValue = '';
+		this.inputBoxUserValue = '';
+
 		try {
-			input = utils.InputBox(window.ID, 'Enter your new add tracks playlist or an existing playlist with its exact name:', 'Georgia-ReBORN', oldValStr, true);
-			newVal = !input || typeof input !== 'string' && !input.length ? '' : JSON.parse(`"${input}"`);
-			if (typeof newVal !== 'string') throw new Error('Invalid type');
+			const msg = grm.msg.getMessage('inputBox', 'addTracksPlaylist');
+			this.inputBoxUserValue = utils.InputBox(window.ID, msg, 'Georgia-ReBORN', inputBoxOldValue, true);
+			this.inputBoxNewValue = !this.inputBoxUserValue || typeof this.inputBoxUserValue !== 'string' && !this.inputBoxUserValue.length ? '' : JSON.parse(`"${this.inputBoxUserValue}"`);
+			if (typeof this.inputBoxNewValue !== 'string') throw new Error('Invalid type');
 		}
 		catch (e) {
 			if (e.message === 'Invalid type' || e.name === 'SyntaxError') {
-				fb.ShowPopupMessage(`Playlist name is not valid:\n${input}\n\nDo not use any " at the beginning and the end of the playlist name.`, 'Add tracks playlist');
+				const msg = grm.msg.getMessage('inputBox', 'addTracksPlaylistError');
+				fb.ShowPopupMessage(msg, 'Add tracks playlist');
 			}
 			return;
 		}
-		grCfg.themeControls.addTracksPlaylist = newVal;
+
+		grCfg.themeControls.addTracksPlaylist = this.inputBoxNewValue;
 		grCfg.config.updateConfigObjValues('themeControls', true);
 	}
 
@@ -909,32 +1277,36 @@ class InputBox {
 
 		const dirInfo = dirMap[directory] || {};
 		const customDirPath = dirInfo.path || '';
-		const customDirString = dirInfo.string || '';
 		const customDirSchema = dirInfo.schema || '';
-		const oldValStr = JSON.stringify(customDirPath).replace(/["[\]]/g, '').replace(/\\\\/g, '\\');
+		this.customDirString = dirInfo.string || '';
 
-		let newVal;
-		let input;
+		const inputBoxOldValue = JSON.stringify(customDirPath).replace(/["[\]]/g, '').replace(/\\\\/g, '\\');
+		this.inputBoxNewValue = '';
+		this.inputBoxUserValue = '';
+
 		try {
-			input = utils.InputBox(window.ID, `Enter your custom ${customDirString} directory:`, 'Georgia-ReBORN', oldValStr, true);
-			newVal = !input || typeof input !== 'string' && !input.length ? '' : JSON.parse(`"${input.replace(/[\\/]/g, '\\\\')}"`);
-			if (typeof newVal !== 'string') {
+			const msg = grm.msg.getMessage('inputBox', 'customCacheDir');
+			this.inputBoxUserValue = utils.InputBox(window.ID, msg, 'Georgia-ReBORN', inputBoxOldValue, true);
+			this.inputBoxNewValue = !this.inputBoxUserValue || typeof this.inputBoxUserValue !== 'string' && !this.inputBoxUserValue.length ? '' : JSON.parse(`"${this.inputBoxUserValue.replace(/[\\/]/g, '\\\\')}"`);
+			if (typeof this.inputBoxNewValue !== 'string') {
 				throw new Error('Invalid type');
 			}
 			if (dirInfo.name === 'customLyricsDir') {
-				const msg = 'If the custom lyrics directory has been set and is active,\nit must also be updated in the ESLyric location setting:\n\nfoobar\'s Preferences > Tools > ESLyric > Lyric Options > Save Settings > Location.\n\n\n';
-				ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				const msg = grm.msg.getMessage('inputBox', 'customCacheDirLyrics');
+				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 			}
 		}
 		catch (e) {
 			if (e.message === 'Invalid type' || e.name === 'SyntaxError') {
-				fb.ShowPopupMessage(`Path is not valid:\n${input}\n\nDo not use any " at the beginning and the end of your pattern.\n\nExample of a correct path:\n\nD:\\Stuff\\Directory\\`, `Custom ${customDirString} directory`);
+				const msg = grm.msg.getMessage('inputBox', 'customCacheDirError');
+				fb.ShowPopupMessage(msg, `Custom ${this.customDirString} directory`);
 			}
 
 			if (dirInfo.name) grSet[dirInfo.name] = false;
 			return;
 		}
-		grCfg.configCustom.addConfigurationObject(customDirSchema, [newVal]);
+
+		grCfg.configCustom.addConfigurationObject(customDirSchema, [this.inputBoxNewValue]);
 		grCfg.configCustom.writeConfiguration();
 	}
 
@@ -972,20 +1344,24 @@ class InputBox {
 		};
 		const customThemeName = customThemeNames[grSet.theme] || '';
 
-		let newVal;
-		let input;
+		this.inputBoxNewValue = '';
+		this.inputBoxUserValue = '';
+
 		try {
-			input = utils.InputBox(window.ID, 'Enter your desired name for your current active custom theme', 'Georgia-ReBORN', customThemeName.name, true);
-			newVal = !input || typeof input !== 'string' && !input.length ? '' : JSON.parse(`"${input}"`);
-			if (typeof newVal !== 'string') throw new Error('Invalid type');
+			const msg = grm.msg.getMessage('inputBox', 'renameCustomTheme');
+			this.inputBoxUserValue = utils.InputBox(window.ID, msg, 'Georgia-ReBORN', customThemeName.name, true);
+			this.inputBoxNewValue = !this.inputBoxUserValue || typeof this.inputBoxUserValue !== 'string' && !this.inputBoxUserValue.length ? '' : JSON.parse(`"${this.inputBoxUserValue}"`);
+			if (typeof this.inputBoxNewValue !== 'string') throw new Error('Invalid type');
 		}
 		catch (e) {
 			if (e.message === 'Invalid type' || e.name === 'SyntaxError') {
-				fb.ShowPopupMessage(`Name is not valid:\n${input}\n\nSomething went wrong...`, 'Custom theme name');
+				const msg = grm.msg.getMessage('inputBox', 'renameCustomThemeError');
+				fb.ShowPopupMessage(msg, 'Custom theme name');
 			}
 			return;
 		}
-		customThemeName.name = newVal;
+
+		customThemeName.name = this.inputBoxNewValue;
 		grCfg.configCustom.updateConfigObjValues(customTheme, true);
 	}
 
@@ -994,21 +1370,25 @@ class InputBox {
 	 * @throws Will throw an error if the new value is not a string.
 	 */
 	playlistCustomHeaderInfo() {
-		const oldValStr = JSON.stringify(grCfg.settings.playlistCustomHeaderInfo).replace(/"/g, '');
-		let newVal;
-		let input;
+		const inputBoxOldValue = JSON.stringify(grCfg.settings.playlistCustomHeaderInfo).replace(/"/g, '');
+		this.inputBoxNewValue = '';
+		this.inputBoxUserValue = '';
+
 		try {
-			input = utils.InputBox(window.ID, 'Enter your custom playlist header info pattern:', 'Georgia-ReBORN', oldValStr, true);
-			newVal = !input || typeof input !== 'string' && !input.length ? '' : JSON.parse(`"${input}"`);
-			if (typeof newVal !== 'string') throw new Error('Invalid type');
+			const msg = grm.msg.getMessage('inputBox', 'playlistCustomHeaderInfo');
+			this.inputBoxUserValue = utils.InputBox(window.ID, msg, 'Georgia-ReBORN', inputBoxOldValue, true);
+			this.inputBoxNewValue = !this.inputBoxUserValue || typeof this.inputBoxUserValue !== 'string' && !this.inputBoxUserValue.length ? '' : JSON.parse(`"${this.inputBoxUserValue}"`);
+			if (typeof this.inputBoxNewValue !== 'string') throw new Error('Invalid type');
 		}
 		catch (e) {
 			if (e.message === 'Invalid type' || e.name === 'SyntaxError') {
-				fb.ShowPopupMessage(`Pattern is not valid:\n${input}\n\nDo not use any " at the beginning and the end of your pattern.\n\nExamples of correct patterns:\n\n%album artist% %date% %album% %discnumber% %tracknumber% %title%\n\n$if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%`, 'Custom playlist header info');
+				const msg = grm.msg.getMessage('inputBox', 'playlistCustomHeaderInfoError');
+				fb.ShowPopupMessage(msg, 'Custom playlist header info');
 			}
 			return;
 		}
-		grCfg.settings.playlistCustomHeaderInfo = newVal;
+
+		grCfg.settings.playlistCustomHeaderInfo = this.inputBoxNewValue;
 		grCfg.config.updateConfigObjValues('settings', true);
 	}
 
@@ -1017,28 +1397,33 @@ class InputBox {
 	 * @throws Will throw an error if the new values are not strings.
 	 */
 	playlistCustomTrackRow() {
-		const oldValStr1 = JSON.stringify(grCfg.settings.playlistCustomTitle).replace(/"/g, '');
-		const oldValStr2 = JSON.stringify(grCfg.settings.playlistCustomTitleNoHeader).replace(/"/g, '');
-		let newVal1;
-		let newVal2;
-		let input1;
-		let input2;
+		const inputBoxOldValue1 = JSON.stringify(grCfg.settings.playlistCustomTitle).replace(/"/g, '');
+		const inputBoxOldValue2 = JSON.stringify(grCfg.settings.playlistCustomTitleNoHeader).replace(/"/g, '');
+		this.inputBoxNewValue = '';
+		this.inputBoxNewValue2 = '';
+		this.inputBoxUserValue = '';
+		this.inputBoxUserValue2 = '';
+
 		try {
-			input1 = utils.InputBox(window.ID, 'Enter your custom playlist track row pattern:', 'Georgia-ReBORN', oldValStr1, true);
-			input2 = utils.InputBox(window.ID, 'Enter your custom playlist track row pattern when no header displayed:', 'Georgia-ReBORN', oldValStr2, true);
-			newVal1 = !input1 || typeof input1 !== 'string' && !input1.length ? '' : JSON.parse(`"${input1}"`);
-			newVal2 = !input2 || typeof input2 !== 'string' && !input2.length ? '' : JSON.parse(`"${input2}"`);
-			if (typeof newVal1 !== 'string') throw new Error('Invalid type');
-			if (typeof newVal2 !== 'string') throw new Error('Invalid type');
+			const msg = grm.msg.getMessage('inputBox', 'playlistCustomTrackRow1');
+			const msg2 = grm.msg.getMessage('inputBox', 'playlistCustomTrackRow2');
+			this.inputBoxUserValue = utils.InputBox(window.ID, msg, 'Georgia-ReBORN', inputBoxOldValue1, true);
+			this.inputBoxUserValue2 = utils.InputBox(window.ID, msg2, 'Georgia-ReBORN', inputBoxOldValue2, true);
+			this.inputBoxNewValue = !this.inputBoxUserValue || typeof this.inputBoxUserValue !== 'string' && !this.inputBoxUserValue.length ? '' : JSON.parse(`"${this.inputBoxUserValue}"`);
+			this.inputBoxNewValue2 = !this.inputBoxUserValue2 || typeof this.inputBoxUserValue2 !== 'string' && !this.inputBoxUserValue2.length ? '' : JSON.parse(`"${this.inputBoxUserValue2}"`);
+			if (typeof this.inputBoxNewValue !== 'string') throw new Error('Invalid type');
+			if (typeof this.inputBoxNewValue2 !== 'string') throw new Error('Invalid type');
 		}
 		catch (e) {
 			if (e.message === 'Invalid type' || e.name === 'SyntaxError') {
-				fb.ShowPopupMessage(`Pattern is not valid:\n${input1 || input2}\n\nDo not use any " at the beginning and the end of your pattern.\n\nExamples of correct patterns:\n\n%album artist% %date% %album% %discnumber% %tracknumber% %title%\n\n$if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%`, 'Custom playlist track row');
+				const msg = grm.msg.getMessage('inputBox', 'playlistCustomTrackRowError');
+				fb.ShowPopupMessage(msg, 'Custom playlist track row');
 			}
 			return;
 		}
-		grCfg.settings.playlistCustomTitle = newVal1;
-		grCfg.settings.playlistCustomTitleNoHeader = newVal2;
+
+		grCfg.settings.playlistCustomTitle = this.inputBoxNewValue;
+		grCfg.settings.playlistCustomTitleNoHeader = this.inputBoxNewValue2;
 		grCfg.config.updateConfigObjValues('settings', true);
 	}
 
@@ -1047,21 +1432,25 @@ class InputBox {
 	 * @throws Will throw an error if the new value is not a string.
 	 */
 	playlistSortCustom() {
-		const oldValStr = JSON.stringify(grCfg.settings.playlistSortCustom).replace(/"/g, '');
-		let newVal;
-		let input;
+		const inputBoxOldValue = JSON.stringify(grCfg.settings.playlistSortCustom).replace(/"/g, '');
+		this.inputBoxNewValue = '';
+		this.inputBoxUserValue = '';
+
 		try {
-			input = utils.InputBox(window.ID, 'Enter your custom playlist order pattern:', 'Georgia-ReBORN', oldValStr, true);
-			newVal = !input || typeof input !== 'string' && !input.length ? '' : JSON.parse(`"${input}"`);
-			if (typeof newVal !== 'string') throw new Error('Invalid type');
+			const msg = grm.msg.getMessage('inputBox', 'playlistSortCustom');
+			this.inputBoxUserValue = utils.InputBox(window.ID, msg, 'Georgia-ReBORN', inputBoxOldValue, true);
+			this.inputBoxNewValue = !this.inputBoxUserValue || typeof this.inputBoxUserValue !== 'string' && !this.inputBoxUserValue.length ? '' : JSON.parse(`"${this.inputBoxUserValue}"`);
+			if (typeof this.inputBoxNewValue !== 'string') throw new Error('Invalid type');
 		}
 		catch (e) {
 			if (e.message === 'Invalid type' || e.name === 'SyntaxError') {
-				fb.ShowPopupMessage(`Pattern is not valid:\n${input}\n\nDo not use any " at the beginning and the end of your pattern.\n\nExamples of correct patterns:\n\n%album artist% %date% %album% %discnumber% %tracknumber% %title%\n\n$if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%`, 'Custom playlist order');
+				const msg = grm.msg.getMessage('inputBox', 'playlistSortCustomError');
+				fb.ShowPopupMessage(msg, 'Custom playlist order');
 			}
 			return;
 		}
-		grCfg.settings.playlistSortCustom = newVal;
+
+		grCfg.settings.playlistSortCustom = this.inputBoxNewValue;
 		grCfg.config.updateConfigObjValues('settings', true);
 	}
 
@@ -1070,13 +1459,15 @@ class InputBox {
 	 * @throws Will throw an error if the format or times are invalid.
 	 */
 	themeDayNightModeCustom() {
-		const oldValues = Array.isArray(grCfg.themeSettings.themeDayNightMode) ? grCfg.themeSettings.themeDayNightMode.join('-') : grCfg.themeSettings.themeDayNightMode || '6-18';
-		let input;
+		const inputBoxOldValue = Array.isArray(grCfg.themeSettings.themeDayNightMode) ? grCfg.themeSettings.themeDayNightMode.join('-') : grCfg.themeSettings.themeDayNightMode || '6-18';
+		this.inputBoxNewValue = '';
+
 		try {
-			input = utils.InputBox(window.ID, 'Enter your custom day-night mode (e.g 6-18):', 'Georgia-ReBORN', oldValues, true);
+			const msg = grm.msg.getMessage('inputBox', 'themeDayNightModeCustom');
+			this.inputBoxNewValue = utils.InputBox(msg, 'Georgia-ReBORN', inputBoxOldValue, true);
 
 			const validFormat = /^\s*(\d+)\s*-\s*(\d+)\s*$/; // Regex to match a valid input format
-			const match = input.match(validFormat);
+			const match = this.inputBoxNewValue.match(validFormat);
 			if (!match) throw new Error('Invalid format');
 
 			const startTime = Number(match[1]);
@@ -1085,19 +1476,20 @@ class InputBox {
 				throw new Error('Invalid time');
 			}
 
-			grCfg.themeSettings.themeDayNightMode = grSet.themeDayNightMode = input;
+			grCfg.themeSettings.themeDayNightMode = grSet.themeDayNightMode = this.inputBoxNewValue;
 		}
 		catch (e) {
 			if (e.message === 'Invalid format' || e.message === 'Invalid time') {
-				fb.ShowPopupMessage(`Input is not valid: ${input}\n\nPlease enter valid times in 24-hour format separated by a hyphen (e.g 6-18), where both times are between 0 and 23.`, 'Custom Day/Night Mode');
+				const msg = grm.msg.getMessage('inputBox', 'themeDayNightModeCustomError');
+				fb.ShowPopupMessage(msg, 'Custom Day/Night Mode');
 			}
 		}
+
 		grCfg.config.updateConfigObjValues('themeSettings', true);
 		initThemeDayNightMode(new Date());
 		grm.ui.resetTheme();
 		grm.ui.initThemeFull = true;
-		if (grSet.theme.startsWith('custom')) grm.ui.initCustomTheme();
-		if (!fb.IsPlaying) grm.color.setThemeColors();
+		grm.ui.initCustomTheme();
 		grm.ui.initTheme();
 		grm.ui.initStyleState();
 		grm.preset.initThemePresetState();
@@ -1239,368 +1631,6 @@ class TooltipHandler {
 	 */
 	stop() {
 		this.timer.forceStop();
-	}
-	// #endregion
-}
-
-
-///////////////////////////////////////
-// * DETAILS METADATA GRID TOOLTIP * //
-///////////////////////////////////////
-/**
- * A class that creates tooltips on the metadata grid in Details when artist, title or album is truncated.
- */
-class MetadataGridTooltip {
-	/**
-	 * Creates the `MetadataGridTooltip` instance.
-	 * @param {number} height - The height of the tooltip area.
-	 */
-	constructor(height) {
-		/** @private @type {number} The x-coordinate of the tooltip's position. */
-		this.x = 0;
-		/** @private @type {number} The y-coordinate of the tooltip's position. */
-		this.y = 0;
-		/** @private @type {number} The width of the tooltip. This typically matches the width of the album art. */
-		this.w = grm.ui.albumArtSize.x;
-		/** @private @type {number} The height of the tooltip as specified by the height parameter. */
-		this.h = height;
-		/** @private @type {string} The text content of the tooltip. */
-		this.tooltipText = '';
-	}
-
-	// * PUBLIC METHODS * //
-	// #region PUBLIC METHODS
-	/**
-	 * Draws the metadata grid tooltip.
-	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 */
-	draw(gr) {
-		const showGridArtist      = grSet[`showGridArtist_${grSet.layout}`];
-		const showGridTitle       = grSet[`showGridTitle_${grSet.layout}`];
-		const showGridTimeline    = grSet[`showGridTimeline_${grSet.layout}`];
-		const showGridArtistFlags = grSet[`showGridArtistFlags_${grSet.layout}`];
-		const gridAlbumFontSize   = grSet[`gridAlbumFontSize_${grSet.layout}`];
-		const textLeft            = SCALE(grSet.layout !== 'default' ? 20 : 40);
-		const textRight           = SCALE(20);
-		const lineSpacing         = SCALE(8);
-		const trackNumSpacing     = SCALE(8);
-		const timelineHeight      = showGridTimeline ? SCALE(55) : SCALE(20);
-		const top                 = grm.ui.albumArtSize.y ? grm.ui.albumArtSize.y + textLeft : grm.ui.topMenuHeight + textLeft;
-
-		const flagSize =
-		grm.ui.flagImgs.length >=  6 ? SCALE(84 + gridAlbumFontSize * 6) :
-		grm.ui.flagImgs.length === 5 ? SCALE(70 + gridAlbumFontSize * 5) :
-		grm.ui.flagImgs.length === 4 ? SCALE(56 + gridAlbumFontSize * 4) :
-		grm.ui.flagImgs.length === 3 ? SCALE(42 + gridAlbumFontSize * 3) :
-		grm.ui.flagImgs.length === 2 ? SCALE(28 + gridAlbumFontSize * 2) :
-		grm.ui.flagImgs.length === 1 ? SCALE(14 + gridAlbumFontSize) : '';
-		const availableFlags = showGridArtistFlags && grm.ui.flagImgs.length ? flagSize : 0;
-
-		this.gridSpace = Math.floor((!grm.ui.albumArt && grm.ui.discArt ? grm.ui.discArtSize.x : grm.ui.albumArtSize.x) - grm.ui.discArtShadow - textLeft - textRight);
-
-		if (showGridArtist) {
-			this.artistWidthTrailingSpace = Math.ceil(gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, 0, 0, Stringformat.measure_trailing_spaces).Width);
-			this.artistWidth              = Math.ceil(gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, 0, 0).Width + availableFlags - this.artistWidthTrailingSpace);
-			this.artistHeight             = gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, 0, 0).Height;
-			this.artistTxtRec             = gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, this.gridSpace, 0);
-			this.artistNumLines           = Math.min(3, this.artistTxtRec.Lines);
-			this.artistNumLinesHeight     = this.artistNumLines === 3 ? this.artistHeight * 2 : (this.artistNumLines === 2 || this.artistWidth > this.gridSpace) ? this.artistHeight * 2 : this.artistHeight;
-		}
-		if (showGridTitle) {
-			this.titleWidthTrailingSpace  = Math.ceil(gr.MeasureString(grStr.title, grFont.gridTitle, 0, 0, 0, 0, Stringformat.measure_trailing_spaces).Width);
-			this.trackNumWidth            = Math.ceil(gr.MeasureString(grStr.tracknum, grFont.gridTrackNumber, 0, 0, 0, 0).Width);
-			this.titleWidth               = Math.ceil(gr.MeasureString(grStr.title, grFont.gridTitle, 0, 0, 0, 0).Width + this.trackNumWidth + trackNumSpacing - this.titleWidthTrailingSpace);
-			this.titleHeight              = gr.MeasureString(grStr.title, grFont.gridTitle, 0, 0, 0, 0).Height;
-			this.titleTxtRec              = gr.MeasureString(grm.ui.isStreaming ? grStr.tracknum + grStr.title : grStr.tracknum === '' ? grStr.title : `${grStr.tracknum}\xa0${grStr.title}`, grFont.gridTitle, 0, 0, this.gridSpace, grm.ui.wh);
-			this.titleNumLines            = Math.min(3, this.titleTxtRec.Lines);
-			this.titleNumLinesHeight      = this.titleNumLines === 3 ? this.titleHeight * 2 : (this.titleNumLines === 2 || this.titleWidth > this.gridSpace) ? this.titleHeight * 2 : this.titleHeight;
-		}
-			this.albumWidthTrailingSpace  = Math.ceil(gr.MeasureString(grStr.album, grFont.gridAlbum, 0, 0, 0, 0, Stringformat.measure_trailing_spaces).Width);
-			this.albumWidth               = Math.ceil(gr.MeasureString(grStr.album, grFont.gridAlbum, 0, 0, 0, 0).Width - this.albumWidthTrailingSpace);
-			this.albumHeight              = gr.MeasureString(grStr.album, grFont.gridAlbum, 0, 0, 0, 0).Height;
-			this.albumTxtRec              = gr.MeasureString(grStr.album, grFont.gridAlbum, 0, 0, this.gridSpace, 0);
-			this.albumNumLines            = Math.min(!showGridArtist && !showGridTitle ? 4 : 3, this.albumTxtRec.Lines);
-			this.albumNumLinesHeight      = !showGridArtist && !showGridTitle || this.albumNumLines === 3 ? this.albumHeight * 3 : this.albumNumLines === 2 ? this.albumHeight * 2 : this.albumHeight;
-
-			// * NumLines corrections used for line breaks. Happens on single large words in artist or in title where only country flags or track number stays on first line
-			this.artistNumLinesFix = this.artistWidth > this.gridSpace ? this.artistHeight : 0;
-			this.titleNumLinesFix  = this.titleWidth  > this.gridSpace ? this.titleHeight  : 0;
-
-
-		// * Artist tooltip zone
-		if (showGridArtist) {
-			this.topArtist = top;
-		}
-
-		// * Title tooltip zone
-		if (showGridTitle && !showGridArtist) {
-			this.topTitle = top;
-		}
-		else if (showGridTitle && showGridArtist && this.artistNumLines === 1) {
-			this.topTitle = top + this.artistHeight + lineSpacing + this.artistNumLinesFix;
-		}
-		else if (showGridTitle && showGridArtist && this.artistNumLines >= 2) {
-			this.topTitle = top + this.artistHeight * 2 + lineSpacing;
-		}
-
-		// * Album tooltip zone
-		if (!showGridArtist && !showGridTitle) {
-			this.topAlbum = top;
-		}
-		// Artist
-		else if (showGridArtist && !showGridTitle && this.artistNumLines === 1) {
-			this.topAlbum = top + timelineHeight + lineSpacing + this.artistNumLinesFix;
-		}
-		else if (showGridArtist && !showGridTitle && this.artistNumLines >= 2) {
-			this.topAlbum = top + this.artistHeight + timelineHeight + lineSpacing;
-		}
-		else if (showGridArtist && showGridTitle && this.artistNumLines === 1 && this.titleNumLines === 1) {
-			this.topAlbum = top + this.artistHeight + this.titleHeight + timelineHeight + this.artistNumLinesFix + this.titleNumLinesFix;
-		}
-		else if (showGridArtist && showGridTitle && this.artistNumLines === 1 && this.titleNumLines >= 2) {
-			this.topAlbum = top + this.artistHeight + this.titleHeight * 2 + timelineHeight + this.artistNumLinesFix;
-		}
-		else if (showGridArtist && showGridTitle && this.artistNumLines >= 2 && this.titleNumLines === 1) {
-			this.topAlbum = top + this.artistHeight * 2 + this.titleHeight + timelineHeight + this.titleNumLinesFix;
-		}
-		else if (showGridArtist && showGridTitle && this.artistNumLines >= 2 && this.titleNumLines >= 2) {
-			this.topAlbum = top + this.artistHeight * 2 + this.titleHeight * 2 + timelineHeight;
-		}
-		// Title
-		else if (showGridTitle && !showGridArtist && this.titleNumLines === 1) {
-			this.topAlbum = top + timelineHeight + lineSpacing + this.titleNumLinesFix;
-		}
-		else if (showGridTitle && !showGridArtist && this.titleNumLines >= 2) {
-			this.topAlbum = top + this.titleHeight + timelineHeight + lineSpacing;
-		}
-		else if (showGridTitle && showGridArtist && this.titleNumLine === 1 && this.artistNumLines === 1) {
-			this.topAlbum = top + this.titleHeight + this.artistHeight + timelineHeight + this.titleNumLinesFix + this.artistNumLinesFix;
-		}
-		else if (showGridTitle && showGridArtist && this.titleNumLine === 1 && this.artistNumLines >= 2) {
-			this.topAlbum = top + this.titleHeight + this.artistHeight * 2 + timelineHeight + this.titleNumLinesFix;
-		}
-		else if (showGridTitle && showGridArtist && this.titleNumLine >= 2 && this.artistNumLines === 1) {
-			this.topAlbum = top + this.titleHeight * 2 + this.artistHeight + timelineHeight + this.artistNumLinesFix;
-		}
-		else if (showGridTitle && showGridArtist && this.titleNumLine >= 2 && this.artistNumLines >= 2) {
-			this.topAlbum = top + this.titleHeight * 2 + this.artistHeight * 2 + timelineHeight;
-		}
-	}
-
-	/**
-	 * Sets the width and position of the metadata grid tooltip area.
-	 * @param {number} x - The x-coordinate.
-	 * @param {number} y - The y-coordinate.
-	 * @param {number} width - The width.
-	 */
-	setSize(x, y, width) {
-		if (this.x === x && this.y === y && this.w === width) return;
-		this.x = x;
-		this.y = y;
-		this.w = width;
-	}
-
-	/**
-	 * Sets the height of the metadata grid tooltip area.
-	 * @param {number} height - The height.
-	 */
-	setHeight(height) {
-		this.h = height;
-	}
-
-	/**
-	 * Clears the metadata grid tooltip.
-	 */
-	clearTooltip() {
-		this.tooltipText = '';
-		grm.ttip.stop();
-	}
-	// #endregion
-
-	// * CALLBACKS * //
-	// #region CALLBACKS
-	/**
-	 * Checks if the mouse is over the metadata grid tooltip area.
-	 * @param {number} x - The x-coordinate.
-	 * @param {number} y - The y-coordinate.
-	 * @returns {boolean} True or false.
-	 */
-	mouseInThis(x, y) {
-		this.metadataGridTooltipArtist = x >= this.x && x < this.x + this.w && y >= this.topArtist && y < this.topArtist + this.artistNumLinesHeight;
-		this.metadataGridTooltipTitle  = x >= this.x && x < this.x + this.w && y >= this.topTitle  && y < this.topTitle  + this.titleNumLinesHeight;
-		this.metadataGridTooltipAlbum  = x >= this.x && x < this.x + this.w && y >= this.topAlbum  && y < this.topAlbum  + this.albumNumLinesHeight;
-		this.metadataGridTooltipAll    = this.metadataGridTooltipArtist + this.metadataGridTooltipTitle + this.metadataGridTooltipAlbum;
-
-		if (this.metadataGridTooltipAll) {
-			grm.ui.repaintStyledTooltips(x, y, this.w, this.h);
-		} else if (!this.metadataGridTooltipAll && this.tooltipText.length) {
-			window.Repaint();
-			this.clearTooltip();
-		}
-
-		return this.metadataGridTooltipAll;
-	}
-
-	/**
-	 * Handles the tooltip when the mouse is in the metadata grid tooltip area.
-	 * @param {number} x - The x-coordinate.
-	 * @param {number} y - The y-coordinate.
-	 * @param {number} m - The mouse mask.
-	 */
-	on_mouse_move(x, y, m) {
-		if (!grm.ui.displayDetails || !grSet.showTooltipMain && !grSet.showTooltipTruncated) return;
-
-		let tooltip = '';
-		const showGridArtist       = grSet[`showGridArtist_${grSet.layout}`];
-		const showGridTitle        = grSet[`showGridTitle_${grSet.layout}`];
-		const showLowerBarComposer = grSet[`showLowerBarComposer_${grSet.layout}`];
-
-		// * Artist
-		if (showGridArtist && this.metadataGridTooltipArtist && (this.artistNumLines === 2 && this.artistWidth > this.gridSpace || this.artistNumLines > 2)) {
-			tooltip = grStr.artist;
-		}
-		// * Title
-		if (showGridTitle && this.metadataGridTooltipTitle && (this.titleNumLines === 2 && this.titleWidth > this.gridSpace || this.titleNumLines > 2)) {
-			tooltip = `${grStr.tracknum} ${grStr.title}${showLowerBarComposer ? grStr.composer : ''}`;
-		}
-		// * Album
-		if (!showGridArtist && !showGridTitle && this.metadataGridTooltipAlbum && this.albumNumLines > 3 ||
-			(showGridArtist || showGridTitle) && this.metadataGridTooltipAlbum && this.albumNumLines > 2) {
-			tooltip = grStr.album + (showLowerBarComposer ? grStr.composer : '');
-		}
-
-		if (tooltip.length) {
-			this.tooltipText = tooltip;
-			grm.ttip.showDelayed(this.tooltipText);
-		}
-		else if (!this.metadataGridTooltipAll) {
-			this.clearTooltip();
-		}
-	}
-	// #endregion
-}
-
-
-///////////////////////////
-// * LOWER BAR TOOLTIP * //
-///////////////////////////
-/**
- * A class that creates tooltips on the lower bar when artist or title is truncated.
- */
-class LowerBarTooltip {
-	/**
-	 * Creates the `LowerBarTooltip` instance.
-	 */
-	constructor() {
-		/** @private @type {string} The text content of the tooltip. */
-		this.tooltipText = '';
-	}
-
-	// * PUBLIC METHODS * //
-	// #region PUBLIC METHODS
-	/**
-	 * Draws the tooltip at the left lower bar area.
-	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 */
-	draw(gr) {
-		const lowerBarFontSize        = grSet[`lowerBarFontSize_${grSet.layout}`];
-		const showLowerBarComposer    = grSet[`showLowerBarComposer_${grSet.layout}`];
-		const showLowerBarArtistFlags = grSet[`showLowerBarArtistFlags_${grSet.layout}`];
-		const showPlaybackOrderBtn    = grSet[`showPlaybackOrderBtn_${grSet.layout}`];
-		const showReloadBtn           = grSet[`showReloadBtn_${grSet.layout}`];
-		const showAddTrackskBtn       = grSet[`showAddTracksBtn_${grSet.layout}`];
-		const showVolumeBtn           = grSet[`showVolumeBtn_${grSet.layout}`];
-		const transportBtnSize        = grSet[`transportButtonSize_${grSet.layout}`];
-		const transportBtnSpacing     = grSet[`transportButtonSpacing_${grSet.layout}`];
-
-		const flagSize =
-		grm.ui.flagImgs.length >=  6 ? SCALE(84 + lowerBarFontSize * 6) :
-		grm.ui.flagImgs.length === 5 ? SCALE(70 + lowerBarFontSize * 5) :
-		grm.ui.flagImgs.length === 4 ? SCALE(56 + lowerBarFontSize * 4) :
-		grm.ui.flagImgs.length === 3 ? SCALE(42 + lowerBarFontSize * 3) :
-		grm.ui.flagImgs.length === 2 ? SCALE(28 + lowerBarFontSize * 2) :
-		grm.ui.flagImgs.length === 1 ? SCALE(14 + lowerBarFontSize) : '';
-		const availableFlags = showLowerBarArtistFlags && grm.ui.flagImgs.length ? flagSize : 0;
-		const playbackTime   = grSet[`showPlaybackTime_${grSet.layout}`];
-
-		this.timeAreaWidth = grStr.disc !== '' && grSet.layout === 'default' ? gr.CalcTextWidth(`${grStr.disc}   ${grStr.time}   ${grStr.length}`, grFont.lowerBarTitle) : gr.CalcTextWidth(` ${grStr.time}   ${grStr.length}`, grFont.lowerBarTitle);
-		this.lowerMargin   = SCALE((grSet.layout === 'compact' || grSet.layout === 'artwork' ? 60 : grSet.showTransportControls_default ? 60 : 100) + (!playbackTime ? -this.timeAreaWidth : 0));
-
-		// * Calculate all transport buttons width
-		const buttonSize    = SCALE(transportBtnSize);
-		const buttonCount   = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showAddTrackskBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
-		const buttonSpacing = SCALE(transportBtnSpacing);
-
-		// * Setup width for artist and song title
-		this.availableWidth                = grSet.layout === 'default' && grSet.showTransportControls_default && (grSet.showLowerBarArtist_default || grSet.showLowerBarTitle_default) ? Math.round(grm.ui.ww * 0.5 - this.lowerMargin - ((buttonSize * buttonCount + buttonSpacing * buttonCount) / 2)) : Math.round(grm.ui.ww - this.lowerMargin - (playbackTime ? this.timeAreaWidth : 0));
-		this.artistWidth                   = gr.MeasureString(grStr.artist, grFont.lowerBarArtist, 0, 0, 0, 0).Width + availableFlags;
-		this.trackNumWidth                 = Math.ceil(gr.MeasureString(grStr.tracknum, grFont.lowerBarTitle, 0, 0, 0, 0).Width);
-		this.titleWidth                    = this.trackNumWidth + gr.MeasureString(showLowerBarComposer ? grStr.titleLower + grStr.composer + grStr.original_artist : grStr.titleLower + grStr.original_artist, grFont.lowerBarTitle, 0, 0, 0, 0).Width + gr.MeasureString(grStr.original_artist, grFont.lowerBarTitle, 0, 0, 0, 0).Width;
-		this.artistMaxWidth_no_default     = grm.ui.ww - (this.titleWidth    + this.trackNumWidth + this.timeAreaWidth + this.lowerMargin);
-		this.titleMaxWidth_no_default      = grm.ui.ww - (this.artistWidth   + this.timeAreaWidth + this.lowerMargin);
-		this.artistOnlyMaxWidth_no_default = grm.ui.ww - (this.timeAreaWidth + this.lowerMargin);
-		this.titleOnlyMaxWidth_no_default  = grm.ui.ww - (this.trackNumWidth + this.timeAreaWidth + this.lowerMargin);
-	}
-
-	/**
-	 * Clears the lower bar tooltip.
-	 */
-	clearTooltip() {
-		this.tooltipText = '';
-		grm.ttip.stop();
-	}
-	// #endregion
-
-	// * CALLBACKS * //
-	// #region CALLBACKS
-	/**
-	 * Checks if the mouse is over the lower bar tooltip area.
-	 * @param {number} x - The x-coordinate.
-	 * @param {number} y - The y-coordinate.
-	 * @returns {boolean} True or false.
-	 */
-	mouseInThis(x, y) {
-		const zoneX = SCALE(grSet.layout !== 'default' ? 20 : 40);
-		const zoneY = grm.ui.wh - grm.ui.lowerBarHeight + SCALE(15);
-		const zoneW = grSet.layout === 'compact' || grSet.layout === 'artwork' ? grm.ui.ww - this.lowerMargin - this.timeAreaWidth : this.availableWidth;
-		const zoneH = grm.ui.lowerBarHeight * 0.33;
-		const zone = zoneX <= x && zoneY <= y && zoneX + zoneW >= x && zoneY + zoneH >= y;
-
-		if (zone) {
-			grm.ui.repaintStyledTooltips(x, y, zoneW, zoneH);
-		} else if (!zone && this.tooltipText.length) {
-			window.Repaint();
-			this.clearTooltip();
-		}
-
-		return zone;
-	}
-
-	/**
-	 * Handles the tooltip if the mouse is in the lower bar tooltip area.
-	 * @param {number} x - The x-coordinate.
-	 * @param {number} y - The y-coordinate.
-	 */
-	on_mouse_move(x, y) {
-		let tooltip = '';
-		const showLowerBarArtist   = grSet[`showLowerBarArtist_${grSet.layout}`];
-		const showLowerBarTitle    = grSet[`showLowerBarTitle_${grSet.layout}`];
-		const showLowerBarComposer = grSet[`showLowerBarComposer_${grSet.layout}`];
-
-		if (grSet.layout === 'default' && (this.artistWidth > this.availableWidth || this.titleWidth > this.availableWidth)) {
-			tooltip = (`${grStr.artist}\n${grStr.tracknum === '' ? '' : `${grStr.tracknum} `}${grStr.title}${showLowerBarComposer ? grStr.composer : ''}`);
-		}
-		else if ((showLowerBarArtist && (this.titleWidth  > this.titleMaxWidth_no_default)  || !showLowerBarArtist && (this.titleWidth  > this.titleOnlyMaxWidth_no_default)) ||
-				 (showLowerBarTitle  && (this.artistWidth > this.artistMaxWidth_no_default) || !showLowerBarTitle  && (this.artistWidth > this.artistOnlyMaxWidth_no_default))) {
-			tooltip = (`${grStr.artist}\n${grStr.tracknum} ${grStr.title}${showLowerBarComposer ? grStr.composer : ''}`);
-		}
-
-		if (tooltip.length && this.mouseInThis(x, y)) {
-			this.tooltipText = tooltip;
-			grm.ttip.showDelayed(this.tooltipText);
-		} else {
-			this.clearTooltip();
-		}
 	}
 	// #endregion
 }
@@ -1844,214 +1874,6 @@ class Hyperlink {
 }
 
 
-//////////////////////////
-// * DETAILS TIMELINE * //
-//////////////////////////
-/**
- * A class that creates the timeline above the metadata grid in Details.
- */
-class Timeline {
-	/**
-	 * Creates the `Timeline` instance.
-	 * @param {number} height - The height of the timeline.
-	 */
-	constructor(height) {
-		/** @private @type {number} */
-		this.marginLeft = SCALE(grSet.layout !== 'default' ? 20 : 40);
-		/** @private @type {number} */
-		this.x = this.marginLeft;
-		/** @private @type {number} */
-		this.y = 0;
-		/** @private @type {number} */
-		this.w = grm.ui.albumArtSize.x - 1;
-		/** @private @type {number} */
-		this.h = height;
-
-		/** @private @type {number} */
-		this.playCol = RGBA(255, 255, 255, 150);
-		/** @private @type {number} */
-		this.firstPlayedPercent = 0.33;
-		/** @private @type {number} */
-		this.lastPlayedPercent = 0.66;
-		/** @private @type {number[]} */
-		this.playedTimesPercents = [];
-		/** @private @type {number[]} */
-		this.playedTimes = [];
-
-		// Recalculated in setSize
-		/** @private @type {number} */
-		this.lineWidth = RES._4K ? 3 : 2;
-		/** @private @type {number} */
-		this.extraLeftSpace = SCALE(3);
-		/** @private @type {number} */
-		this.drawWidth = Math.floor(this.w - this.extraLeftSpace - 1 - this.lineWidth / 2);
-		/** @private @type {number} */
-		this.leeway = (1 / this.drawWidth) * (this.lineWidth + SCALE(2)) / 2;
-
-		/** @private @type {string} */
-		this.tooltipText = '';
-	}
-
-	// * PUBLIC METHODS * //
-	// #region PUBLIC METHODS
-	/**
-	 * Draws the timeline above the metadata grid in Details.
-	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 */
-	draw(gr) {
-		if (!this.addedCol && !this.playedCol && !this.unplayedCol) return;
-
-		gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing
-		gr.FillSolidRect(this.marginLeft, this.y, this.drawWidth + this.extraLeftSpace + this.lineWidth, this.h, this.addedCol);
-		if (grSet.theme.startsWith('custom')) {
-			gr.DrawRect(this.x - 2, this.y - 2, this.w + 3, this.h + 3, 1, grCol.timelineFrame);
-		}
-
-		if (this.firstPlayedPercent >= 0 && this.lastPlayedPercent >= 0) {
-			const x1 = Math.floor(this.drawWidth * this.firstPlayedPercent) + this.extraLeftSpace;
-			const x2 = Math.floor(this.drawWidth * this.lastPlayedPercent)  + this.extraLeftSpace;
-			gr.FillSolidRect(x1 + this.marginLeft, this.y, this.drawWidth - x1 + this.extraLeftSpace, this.h, this.playedCol);
-			gr.FillSolidRect(x2 + this.marginLeft, this.y, this.drawWidth - x2 + this.extraLeftSpace + this.lineWidth, this.h, this.unplayedCol);
-		}
-		for (let i = 0; i < this.playedTimesPercents.length; i++) {
-			const x = Math.floor(this.drawWidth * this.playedTimesPercents[i]) + this.marginLeft + this.extraLeftSpace;
-			if (!Number.isNaN(x) && x <= this.w + this.marginLeft * 2) {
-				const linePos = Math.max(this.marginLeft, Math.min(x, x));
-				gr.DrawLine(linePos, this.y, linePos, this.y + this.h, this.lineWidth, this.playCol);
-			} else {
-				// console.log('Played Times Error! ratio: ' + this.playedTimesPercents[i], 'x: ' + x);
-			}
-		}
-		gr.SetSmoothingMode(SmoothingMode.AntiAlias);
-	}
-
-	/**
-	 * Sets the width and position of the timeline.
-	 * @param {number} x - The x-coordinate.
-	 * @param {number} y - The y-coordinate.
-	 * @param {number} width - The width of the timeline.
-	 */
-	setSize(x, y, width) {
-		if (this.x === x && this.y === y && this.w === width) {
-			return;
-		}
-
-		this.x = x;
-		this.y = y;
-		this.w = width;
-
-		// Recalculate these values
-		this.lineWidth = RES._4K ? 3 : 2;
-		this.extraLeftSpace = SCALE(3); // Add a little space to the left so songs that were played a long time ago show more in the "added" stage
-		this.drawWidth = Math.floor(this.w - this.extraLeftSpace - 1 - this.lineWidth / 2);
-		this.leeway = (1 / this.drawWidth) * (this.lineWidth + SCALE(2)) / 2;
-	}
-
-	/**
-	 * Sets the height of the timeline.
-	 * @param {number} height - The height of the timeline.
-	 */
-	setHeight(height) {
-		this.h = height;
-	}
-
-	/**
-	 * Sets the colors of the three timeline bars.
-	 * @param {number} addedCol - The color for the added bar.
-	 * @param {number} playedCol - The color for the played bar.
-	 * @param {number} unplayedCol - The color for the unplayed bar.
-	 */
-	setColors(addedCol, playedCol, unplayedCol) {
-		this.addedCol = addedCol;
-		this.playedCol = playedCol;
-		this.unplayedCol = unplayedCol;
-	}
-
-	/**
-	 * Sets the first and last played percentages, as well as the played time ratios and values.
-	 * @param {number} firstPlayed - The percentage of the total play time that represents the first time the item was played.
-	 * @param {number} lastPlayed - The percentage of the total play time that represents the last time the item was played.
-	 * @param {number} playedTimeRatios - The percentage of time played for each playedTimesValues.
-	 * @param {number} playedTimesValues - Contains the actual played times for each interval.
-	 * For example, if the intervals are divided into 5 parts, playedTimesValues would be an
-	 * array of 5 numbers representing the played times for each interval.
-	 */
-	setPlayTimes(firstPlayed, lastPlayed, playedTimeRatios, playedTimesValues) {
-		this.firstPlayedPercent = firstPlayed;
-		this.lastPlayedPercent = lastPlayed;
-		this.playedTimesPercents = playedTimeRatios;
-		this.playedTimes = playedTimesValues;
-	}
-
-	/**
-	 * Clears the timeline tooltip.
-	 */
-	clearTooltip() {
-		this.tooltipText = '';
-		grm.ttip.stop();
-	}
-	// #endregion
-
-	// * CALLBACKS * //
-	// #region CALLBACKS
-	/**
-	 * Checks if the mouse is within the boundaries of the timeline.
-	 * @param {number} x - The x-coordinate.
-	 * @param {number} y - The y-coordinate.
-	 * @returns {boolean} True or false.
-	 */
-	mouseInThis(x, y) {
-		const zone = SCALE(10);
-		const inTimeline = x >= this.x && x < this.x + this.w && y >= this.y - zone && y < this.y + this.h + zone;
-
-		if (inTimeline) {
-			window.RepaintRect(this.x, this.y, this.w, this.h);
-		} else if (!inTimeline && this.tooltipText.length) {
-			window.Repaint();
-			this.clearTooltip();
-		}
-
-		return inTimeline;
-	}
-
-	/**
-	 * Displays the timeline tooltip with the date and time when the mouse is moved over an element.
-	 * @param {number} x - The x-coordinate.
-	 * @param {number} y - The y-coordinate.
-	 * @param {number} m - The mouse mask.
-	 */
-	on_mouse_move(x, y, m) {
-		if (!grSet.showTooltipTimeline || this.playedTimesPercents.length === 0) return;
-		let tooltip = '';
-		const percent = ToFixed((x + this.x - this.marginLeft * 2 - this.extraLeftSpace) / this.drawWidth, 3);
-		const timezoneOffset = UpdateTimezoneOffset();
-
-		for (let i = 0; i < this.playedTimesPercents.length; i++) {
-			if (Math.abs(percent - this.playedTimesPercents[i]) <= this.leeway) {
-				const date = new Date(this.playedTimes[i]);
-				tooltip += tooltip.length ? '\n' : '';
-				tooltip += date.toLocaleString();
-			}
-			else if (percent < this.playedTimesPercents[i]) {
-				if (!tooltip.length) {
-					const added = i === 0 ? DateDiff($Date('[%added%]'), this.playedTimes[0], timezoneOffset) : DateDiff(new Date(this.playedTimes[i - 1]).toISOString(), this.playedTimes[i], timezoneOffset);
-					tooltip = added ? (i === 0 ? `First played after ${added}` : `No plays for ${added}`) : '';
-				}
-				break;
-			}
-		}
-
-		if (tooltip.length) {
-			this.tooltipText = tooltip;
-			grm.ttip.showImmediate(tooltip);
-		} else {
-			this.clearTooltip();
-		}
-	}
-	// #endregion
-}
-
-
 /////////////////////
 // * JUMP SEARCH * //
 /////////////////////
@@ -2070,10 +1892,10 @@ class JumpSearch {
 		this.arc2 = 4;
 		/** @private @type {object} */
 		this.j = {
-			x: Math.round(grSet.playlistLayout === 'full' || grSet.layout !== 'default' ? grm.ui.ww * 0.5 : grm.ui.ww * 0.5 + grm.ui.ww * 0.25),
-			y: Math.round((grm.ui.wh + grm.ui.topMenuHeight - grm.ui.lowerBarHeight - pl.geo.row_h * 1.5) / 2),
-			w: 50,
-			h: 30
+			x: 0,
+			y: 0,
+			w: grSet.notificationFontSize_layout * 2,
+			h: grSet.notificationFontSize_layout * 2
 		};
 		/** @private @type {string} */
 		this.jSearch = '';
@@ -2118,7 +1940,7 @@ class JumpSearch {
 	 */
 	on_char(code) {
 		if (grSet.jumpSearchDisabled || lib.panel.search.active ||
-			utils.IsKeyPressed(VK_CONTROL) || utils.IsKeyPressed(VK_ESCAPE)) {
+			utils.IsKeyPressed(VKey.CONTROL) || utils.IsKeyPressed(VKey.ESCAPE)) {
 			return;
 		}
 
@@ -2161,7 +1983,7 @@ class JumpSearch {
 
 		switch (true) {
 			case advance: {
-				if (utils.IsKeyPressed(0x0A) || utils.IsKeyPressed(VK_BACK) ||  utils.IsKeyPressed(VK_TAB) || utils.IsKeyPressed(VK_CONTROL) || utils.IsKeyPressed(VK_ESCAPE) || utils.IsKeyPressed(VK_MULTIPLY) || utils.IsKeyPressed(VK_SUBTRACT)) return;
+				if (utils.IsKeyPressed(0x0A) || utils.IsKeyPressed(VKey.BACK) ||  utils.IsKeyPressed(VKey.TAB) || utils.IsKeyPressed(VKey.CONTROL) || utils.IsKeyPressed(VKey.ESCAPE) || utils.IsKeyPressed(VKey.MULTIPLY) || utils.IsKeyPressed(VKey.SUBTRACT)) return;
 				let init = '';
 				let cur = 'currentArr';
 				if (!this.initials) { // reset in buildTree
@@ -2201,7 +2023,7 @@ class JumpSearch {
 				// * Playlist advance
 				if (focusIndex >= 0 && focusIndex < search.length && (grm.ui.displayPlaylist || grm.ui.displayLibrarySplit(true))) {
 					this.matches = this.initials[text];
-					console.log('Playlist advance results', this.matches); // Debug
+					DebugLog('Playlist advance results', this.matches); // Debug
 					this.ix = this.matches.indexOf(focusIndex);
 					this.ix++;
 					if (this.ix >= this.matches.length) this.ix = 0;
@@ -2211,7 +2033,7 @@ class JumpSearch {
 				// * Library advance
 				else if (lib.panel.pos >= 0 && lib.panel.pos < lib.pop.tree.length && !grm.ui.displayLibrarySplit(true)) {
 					this.matches = this.initials[text];
-					console.log('Library advance results', this.matches); // Debug, can remove this soon
+					DebugLog('Library advance results', this.matches); // Debug, can remove this soon
 					this.ix = this.matches.indexOf(lib.panel.pos);
 					this.ix++;
 					if (this.ix >= this.matches.length) this.ix = 0;
@@ -2258,7 +2080,7 @@ class JumpSearch {
 			break;
 
 		case !advance:
-			if (utils.IsKeyPressed(VK_TAB) || utils.IsKeyPressed(VK_CONTROL) || utils.IsKeyPressed(VK_ESCAPE) || utils.IsKeyPressed(VK_MULTIPLY) || utils.IsKeyPressed(VK_SUBTRACT)) return;
+			if (utils.IsKeyPressed(VKey.TAB) || utils.IsKeyPressed(VKey.CONTROL) || utils.IsKeyPressed(VKey.ESCAPE) || utils.IsKeyPressed(VKey.MULTIPLY) || utils.IsKeyPressed(VKey.SUBTRACT)) return;
 			if (!lib.panel.search.active) {
 				let pos = -1;
 				lib.pop.clearSelected();
@@ -2278,7 +2100,7 @@ class JumpSearch {
 							plman.ClearPlaylistSelection(plman.ActivePlaylist);
 							plman.SetPlaylistFocusItem(plman.ActivePlaylist, pos);
 							plman.SetPlaylistSelectionSingle(plman.ActivePlaylist, pos, true);
-							console.log(`Jumpsearch: "${name}" found in Playlist`); // Debug, can remove this soon
+							DebugLog(`Jumpsearch: "${name}" found in Playlist`); // Debug, can remove this soon
 							return true;
 						}
 						return false;
@@ -2295,7 +2117,7 @@ class JumpSearch {
 								lib.pop.setPos(pos);
 								if (lib.pop.autoFill.key) lib.pop.getTreeSel();
 								lib.lib.treeState(false, libSet.rememberTree);
-								console.log(`Jumpsearch: "${name}" found in Library`); // Debug, can remove this soon
+								DebugLog(`Jumpsearch: "${name}" found in Library`); // Debug, can remove this soon
 								return true;
 							}
 							return false;
@@ -2304,7 +2126,7 @@ class JumpSearch {
 
 					if (!foundInPlaylist && !foundInLibrary) {
 						this.jump_search = false;
-						console.log('Jumpsearch: No results were found'); // Debug, can remove this soon
+						DebugLog('Jumpsearch: No results were found'); // Debug, can remove this soon
 					}
 
 					window.Repaint();
@@ -2344,8 +2166,8 @@ class JumpSearch {
 	 * Sets the size and position of the jump search and updates them on window resizing.
 	 */
 	on_size() {
+		this.j.h = grSet.notificationFontSize_layout * 2;
 		this.j.x = Math.round(grSet.playlistLayout === 'full' || grSet.layout !== 'default' ? grm.ui.ww * 0.5 : grm.ui.ww * 0.5 + grm.ui.ww * 0.25);
-		this.j.h = Math.round(pl.geo.row_h * 1.5);
 		this.j.y = Math.round((grm.ui.wh + grm.ui.topMenuHeight - grm.ui.lowerBarHeight - this.j.h) / 2);
 		this.arc1 = Math.min(5, this.j.h / 2);
 		this.arc2 = Math.min(4, (this.j.h - 2) / 2);
@@ -2469,18 +2291,18 @@ class Volume {
 		this.dragVol = 0;
 		/** @private @type {TooltipHandler} */
 		this.tooltipHandler = new TooltipHandler();
-
-		/**
-		 * Calculates the decibel (dB) value of the given volume.
-		 * @param {number} volume - A value between 0 and 1 where 1 is full volume.
-		 * @returns {number} A decibel value between -100 and 0, to pass to fb.Volume. 0 is max volume, -100 is min.
-		 * @private
-		 */
-		this.toDecibel = (volume) => (50 * Math.log(0.99 * volume + 0.01)) / Math.LN10;
 	}
 
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
+	/**
+	 * Displays the volume bar tooltip.
+	 */
+	displayTooltip() {
+		const volTooltip = grSet.showTooltipVolumeInPercent ? `${Math.ceil(ConvertVolume(fb.Volume, 'toPercent'))} %` : `${Math.ceil(fb.Volume.toFixed(2))} dB`;
+		this.tooltipHandler.showImmediate(volTooltip);
+	}
+
 	/**
 	 * Calculates the size of the fill portion of the volume bar based on current volume.
 	 * @param {string} type - Either 'h' or 'w' for vertical or horizontal volume bars.
@@ -2554,17 +2376,16 @@ class Volume {
 		if (this.trace(x, y) || this.drag) {
 			if (this.drag) {
 				x -= this.x;
-				const maxAreaExtraWidth = 0; // Give a little bigger target area to select -0.00dB
-				const pos =
-					(x < maxAreaExtraWidth) ? 0 :
-					(x > this.w) ? 1 :
-					(x - maxAreaExtraWidth) / (this.w - maxAreaExtraWidth);
-
-				this.dragVol = this.toDecibel(pos);
+				const pos = x > this.w ? 1 : x / this.w;
+				this.dragVol = ConvertVolume(pos, 'toDecibel');
 				fb.Volume = this.dragVol;
+			}
+			if (grSet.showTooltipVolume) {
+				this.displayTooltip();
 			}
 			return true;
 		}
+
 		this.drag = false;
 		if (grSet.showTooltipVolume) {
 			this.tooltipHandler.stop();
@@ -2627,21 +2448,13 @@ class VolumeButton {
 
 		// * Runtime state
 		/** @private @type {boolean} */
-		this.mouseInPanel = false;
+		this.mouseInVolumeBar = false;
 		/** @private @type {boolean} */
 		this.displayVolumeBar = !grSet.autoHideVolumeBar;
 
 		// * Objects
 		/** @private @type {Volume} */
 		this.volumeBar = undefined;
-
-		/**
-		 * Calculates the corresponding percentage value from decibel.
-		 * @param {number} volume - A value between 0 and 1 where 1 is full volume.
-		 * @returns {number} A percentage value between 0% and 100%, to pass to fb.Volume.
-		 * @private
-		 */
-		this.toPercent = (volume) => (10 ** (volume / 50) - 0.01) / 0.99;
 	}
 
 	// * PUBLIC METHODS * //
@@ -2665,34 +2478,34 @@ class VolumeButton {
 
 		// * Default background
 		if (grSet.styleVolumeBarDesign === 'rounded' && grSet.styleTransportButtons !== 'minimal' && arcBgIsValid) {
-			gr.FillRoundRect(x - SCALE(2), y + (RES._4K ? p + 1 : p), w + SCALE(2), h, arcBg, arcBg, grCol.volumeBar);
-			gr.DrawRoundRect(x - (RES._4K ? 5 : this.showReloadBtn ? 3 : 2), y + SCALE(1), w + (RES._4K ? 5 : 3), h + 2, arcBg, arcBg, 1, grCol.volumeBarFrame);
+			gr.FillRoundRect(x - SCALE(2), y + HD_4K(p, p + 1), w + SCALE(2), h, arcBg, arcBg, grCol.volumeBar);
+			gr.DrawRoundRect(x - HD_4K(this.showReloadBtn ? 3 : 2, 5), y + SCALE(1), w + HD_4K(3, 5), h + 2, arcBg, arcBg, 1, grCol.volumeBarFrame);
 		}
 		else if (grSet.styleVolumeBarDesign !== 'rounded' && grSet.styleTransportButtons !== 'minimal') {
-			gr.FillSolidRect(x - SCALE(2), y + (RES._4K ? p + 1 : p), w + SCALE(2), h, grCol.volumeBar);
-			gr.DrawRect(x - (RES._4K ? 5 : this.showReloadBtn ? 3 : 2), y + SCALE(1), w + (RES._4K ? 5 : 3), h + 1, 1, grCol.volumeBarFrame);
+			gr.FillSolidRect(x - SCALE(2), y + HD_4K(p, p + 1), w + SCALE(2), h, grCol.volumeBar);
+			gr.DrawRect(x - HD_4K(this.showReloadBtn ? 3 : 2, 5), y + SCALE(1), w + HD_4K(3, 5), h + 1, 1, grCol.volumeBarFrame);
 		}
 		// * Style background
 		if ((grSet.styleVolumeBar === 'bevel' || grSet.styleVolumeBar === 'inner') && grSet.styleTransportButtons !== 'minimal' && arcBgIsValid) {
 			if (grSet.styleVolumeBarDesign === 'rounded') {
-				FillGradRoundRect(gr, x - SCALE(2), y + (RES._4K ? p + 1 : p) - (grSet.styleVolumeBar === 'inner' ? 1 : 0), w + SCALE(5), h + SCALE(4), arcBg, arcBg,
+				FillGradRoundRect(gr, x - SCALE(2), y + HD_4K(p, p + 1) - (grSet.styleVolumeBar === 'inner' ? 1 : 0), w + SCALE(5), h + SCALE(4), arcBg, arcBg,
 				grSet.styleVolumeBar === 'inner' ? -89 : 89, grSet.styleVolumeBar === 'inner' ? grCol.styleVolumeBar : 0, grSet.styleVolumeBar === 'inner' ? 0 : grCol.styleVolumeBar, grSet.styleVolumeBar === 'inner' ? 0 : 1);
 			} else {
-				gr.FillGradRect(x - SCALE(2), y + (RES._4K ? p + (grSet.styleVolumeBar === 'inner' ? 0 : 2) : p), w + SCALE(2), h, grSet.styleVolumeBar === 'inner' ? -90 : 90, 0, grCol.styleVolumeBar);
+				gr.FillGradRect(x - SCALE(2), y + HD_4K(p, p + (grSet.styleVolumeBar === 'inner' ? 0 : 2)), w + SCALE(2), h, grSet.styleVolumeBar === 'inner' ? -90 : 90, 0, grCol.styleVolumeBar);
 			}
 		}
 		// * Default fill
 		if (grSet.styleVolumeBarDesign === 'rounded' && arcBgIsValid && arcFillIsValid) {
-			gr.FillRoundRect(x + 1, y + (RES._4K ? 7 : 4), fillWidth - SCALE(3), h - SCALE(4), arcFill, arcFill, grCol.volumeBarFill);
+			gr.FillRoundRect(x + 1, y + HD_4K(4, 7), fillWidth - SCALE(3), h - SCALE(4), arcFill, arcFill, grCol.volumeBarFill);
 		} else {
-			gr.FillSolidRect(x, y + (RES._4K ? 7 : 4), fillWidth - SCALE(2), h - SCALE(4), grCol.volumeBarFill);
+			gr.FillSolidRect(x, y + HD_4K(4, 7), fillWidth - SCALE(2), h - SCALE(4), grCol.volumeBarFill);
 		}
 		// * Style fill
 		if ((grSet.styleVolumeBarFill === 'bevel' || grSet.styleVolumeBarFill === 'inner') && arcBgIsValid && arcFillIsValid) {
 			if (grSet.styleVolumeBarDesign === 'rounded') {
-				FillGradRoundRect(gr, x + 1, y + (RES._4K ? 7 : 4), fillWidth - SCALE(0.5), h - SCALE(2), arcFill, arcFill, grSet.styleVolumeBarFill === 'inner' ? -89 : 89, 0, grCol.styleVolumeBarFill, 1);
+				FillGradRoundRect(gr, x + 1, y + HD_4K(4, 7), fillWidth - SCALE(0.5), h - SCALE(2), arcFill, arcFill, grSet.styleVolumeBarFill === 'inner' ? -89 : 89, 0, grCol.styleVolumeBarFill, 1);
 			} else {
-				gr.FillGradRect(x, y + (RES._4K ? 7 : 4), fillWidth - SCALE(2), h - SCALE(3), grSet.styleVolumeBarFill === 'inner' ? -90 : 90, grSet.styleBlackAndWhite ? grCol.styleVolumeBarFill : 0, grSet.styleBlackAndWhite ? 0 : grCol.styleVolumeBarFill);
+				gr.FillGradRect(x, y + HD_4K(4, 7), fillWidth - SCALE(2), h - SCALE(3), grSet.styleVolumeBarFill === 'inner' ? -90 : 90, grSet.styleBlackAndWhite ? grCol.styleVolumeBarFill : 0, grSet.styleBlackAndWhite ? 0 : grCol.styleVolumeBarFill);
 			}
 		}
 	}
@@ -2703,29 +2516,15 @@ class VolumeButton {
 	 * @param {number} y - The y-coordinate.
 	 */
 	setMetrics(x, y) {
-		const buttonSize_default = SCALE(grSet.transportButtonSize_default);
-		const buttonSize_artwork = SCALE(grSet.transportButtonSize_artwork);
-		const buttonSize_compact = SCALE(grSet.transportButtonSize_compact);
-		const center_default = Math.floor(buttonSize_default / 2 + SCALE(4));
-		const center_artwork = Math.floor(buttonSize_artwork / 2 + SCALE(4));
-		const center_compact = Math.floor(buttonSize_compact / 2 + SCALE(4));
+		const buttonSize = SCALE(grSet.transportButtonSize_layout);
+		const center = Math.floor(buttonSize / 2 + SCALE(4));
+		const volumeBarWidth = Math.ceil((grm.ui.ww - grm.ui.lowerBarTotalBtnW) / 2 - SCALE(40));
 
-		// * Calculate all transport buttons width
-		const showPlaybackOrderBtn = grSet[`showPlaybackOrderBtn_${grSet.layout}`];
-		const showReloadBtn        = grSet[`showReloadBtn_${grSet.layout}`];
-		const showAddTrackskBtn    = grSet[`showAddTracksBtn_${grSet.layout}`];
-		const showVolumeBtn        = grSet[`showVolumeBtn_${grSet.layout}`];
-		const transportBtnSize     = grSet[`transportButtonSize_${grSet.layout}`];
-		const transportBtnSpacing  = grSet[`transportButtonSpacing_${grSet.layout}`];
-		const buttonSize           = SCALE(transportBtnSize);
-		const buttonSpacing        = SCALE(transportBtnSpacing);
-		const buttonCount          = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showAddTrackskBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
-		const volumeBarWidth       = Math.ceil((grm.ui.ww - (buttonSize * buttonCount + buttonSpacing * buttonCount)) / 2 - SCALE(40));
-
-		this.x = x + (grSet[`transportButtonSize_${grSet.layout}`] * SCALE(1.25));
-		this.y = y + (grSet.layout === 'compact' ? center_compact : grSet.layout === 'artwork' ? center_artwork : center_default) - this.h;
+		this.x = x + (grSet.transportButtonSize_layout * SCALE(1.25));
+		this.y = y + (center - this.h);
 		this.w = grm.ui.ww < SCALE(600) ? volumeBarWidth : SCALE(100);
 		this.h = Math.min(grm.ui.wh - this.y, this.h);
+
 		this.volumeBar = new Volume(this.x, this.y, this.w, this.h);
 	}
 
@@ -2738,9 +2537,7 @@ class VolumeButton {
 
 		this.displayVolumeBar = show;
 		this.repaint();
-		if (show) {
-			this.volumeBar.tooltipHandler.stop();
-		}
+		if (show) this.volumeBar.tooltipHandler.stop();
 	}
 
 	/**
@@ -2771,10 +2568,8 @@ class VolumeButton {
 	 * @returns {boolean} True or false.
 	 */
 	mouseInThis(x, y) {
-		return (
-			x > this.x - this.inThisPadding && x <= this.x + this.w + this.inThisPadding &&
-			y > this.y - this.h - this.inThisPadding * 0.2 && y <= this.y - this.h + this.inThisPadding
-		);
+		return x > this.x - this.inThisPadding && x <= this.x + this.w + this.inThisPadding &&
+			   y > this.y - this.h - this.inThisPadding * 0.2 && y <= this.y - this.h + this.inThisPadding;
 	}
 
 	/**
@@ -2790,6 +2585,7 @@ class VolumeButton {
 		if (this.displayVolumeBar) {
 			return this.volumeBar.lbtnDown(x, y);
 		}
+
 		return false;
 	}
 
@@ -2818,12 +2614,13 @@ class VolumeButton {
 	on_mouse_leave() {
 		if (!this.volumeBar || this.volumeBar.drag) return;
 
-		this.mouseInPanel = false;
+		this.mouseInVolumeBar = false;
 
 		if (this.displayVolumeBar && grSet.autoHideVolumeBar) {
 			this.showVolumeBar(false);
 			this.repaint();
 		}
+
 		if (grSet.autoHideVolumeBar) {
 			this.volumeBar.leave();
 		}
@@ -2840,25 +2637,16 @@ class VolumeButton {
 
 		grm.utils.disableSizing(m);
 
-		if (this.volumeBar.drag) {
+		this.mouseInVolumeBar = this.volumeBar.trace(x, y);
+
+		if (this.volumeBar.drag || this.mouseInThis(x, y)) {
 			this.volumeBar.move(x, y);
 			return;
 		}
 
-		this.mouseInPanel = this.displayVolumeBar && this.volumeBar.trace(x, y);
-
-		if (this.displayVolumeBar) {
-			if (this.mouseInThis(x, y)) {
-				this.volumeBar.move(x, y);
-			} else if (grSet.autoHideVolumeBar) {
-				this.showVolumeBar(false);
-				this.repaint();
-			}
-			const inVolumeBar = x > this.x && x <= this.x + this.w && y > this.y && y <= this.y + this.h;
-			const volTooltip = grSet.showTooltipVolumeInPercent ? `${Math.ceil(this.toPercent(fb.Volume) * 100)} %` : `${Math.ceil(fb.Volume.toFixed(2))} dB`;
-			if (grSet.showTooltipVolume && inVolumeBar) {
-				this.volumeBar.tooltipHandler.showImmediate(volTooltip);
-			}
+		if (grSet.autoHideVolumeBar) {
+			this.showVolumeBar(false);
+			this.repaint();
 		}
 	}
 
@@ -2868,18 +2656,17 @@ class VolumeButton {
 	 * @returns {boolean} True or false.
 	 */
 	on_mouse_wheel(step) {
-		if (this.mouseInPanel) {
-			if (!this.displayVolumeBar || !this.volumeBar.wheel(step)) {
-				if (step > 0) {
-					fb.VolumeUp();
-				}
-				else {
-					fb.VolumeDown();
-				}
-			}
-			return true;
+		if (!this.mouseInVolumeBar) return false;
+
+		if (this.displayVolumeBar && this.volumeBar.wheel(step)) return true;
+
+		if (step > 0) {
+			fb.VolumeUp();
+		} else {
+			fb.VolumeDown();
 		}
-		return false;
+
+		return true;
 	}
 
 	/**
@@ -2887,11 +2674,13 @@ class VolumeButton {
 	 * @param {number} val - The new volume value that triggered the update.
 	 */
 	on_volume_change(val) {
+		if (grSet.showTooltipVolume) {
+			this.volumeBar.displayTooltip();
+		}
+
 		if (this.displayVolumeBar) {
 			this.repaint();
 		}
-		const volTooltip = grSet.showTooltipVolumeInPercent ? `${Math.ceil(this.toPercent(fb.Volume) * 100)} %` : `${Math.ceil(fb.Volume.toFixed(2))} dB`;
-		if (grSet.showTooltipVolume) this.volumeBar.tooltipHandler.showImmediate(volTooltip);
 	}
 	// #endregion
 }
@@ -2912,13 +2701,13 @@ class ProgressBar {
 	 */
 	constructor(ww, wh) {
 		/** @public @type {number} */
-		this.x = SCALE(grSet.layout !== 'default' ? 20 : 40);
+		this.x = grm.ui.edgeMargin;
 		/** @public @type {number} */
-		this.w = ww - SCALE(grSet.layout !== 'default' ? 40 : 80);
+		this.w = ww - grm.ui.edgeMarginBoth;
 		/** @public @type {number} */
 		this.y = 0;
 		/** @public @type {number} */
-		this.h = grm.ui.progressBarH;
+		this.h = grm.ui.seekbarHeight;
 		/** @public @type {number} */
 		this.progressLength = 0; // Fixing jumpiness in progressBar
 		/** @public @type {boolean} */
@@ -2934,8 +2723,6 @@ class ProgressBar {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	draw(gr) {
-		if (!grSet.showProgressBar_default && !grSet.showProgressBar_artwork && !grSet.showProgressBar_compact) return;
-
 		gr.SetSmoothingMode(grSet.styleProgressBarDesign === 'rounded' ? SmoothingMode.AntiAlias : SmoothingMode.None);
 		const arc = Math.min(this.w, this.h) / 2;
 		const arcIsValid = this.h > arc; // * Needed when bg changes to prevent invalid arc value crash
@@ -2987,7 +2774,7 @@ class ProgressBar {
 		else if (grSet.styleProgressBarDesign === 'lines') {
 			let progressLine = 0;
 			if (progressLine < this.progressLength) {
-				gr.FillSolidRect(this.x + this.progressLength, this.y, SCALE(2), grm.ui.progressBarH, grCol.progressBarFill);
+				gr.FillSolidRect(this.x + this.progressLength, this.y, SCALE(2), grm.ui.seekbarHeight, grCol.progressBarFill);
 			}
 			while (progressLine < this.progressLength) {
 				gr.DrawLine(this.x + progressLine + SCALE(2), this.y, this.x + progressLine + SCALE(2), this.y + this.h, SCALE(2), grCol.progressBarFill);
@@ -2997,11 +2784,11 @@ class ProgressBar {
 		else if (grSet.styleProgressBarDesign === 'blocks' && arcIsValid2) {
 			let progressLine = 0;
 			while (progressLine < this.progressLength) {
-				gr.FillSolidRect(this.x + progressLine, this.y + SCALE(2), grm.ui.progressBarH, grm.ui.progressBarH - SCALE(4), grCol.progressBarFill);
-				progressLine += grm.ui.progressBarH + SCALE(2);
+				gr.FillSolidRect(this.x + progressLine, this.y + SCALE(2), grm.ui.seekbarHeight, grm.ui.seekbarHeight - SCALE(4), grCol.progressBarFill);
+				progressLine += grm.ui.seekbarHeight + SCALE(2);
 			}
-			gr.FillSolidRect(this.x + this.progressLength, this.y + 1, grm.ui.progressBarH, grm.ui.progressBarH - 1, grCol.progressBar);
-			gr.FillGradRect(this.x + this.progressLength,  this.y + 1, grm.ui.progressBarH, grm.ui.progressBarH - 1, grSet.styleProgressBar === 'inner' ? grSet.styleBlackReborn && fb.IsPlaying ? 88 : -88 : grSet.styleBlackReborn && fb.IsPlaying ? -88 : 88, 0, grCol.styleProgressBar);
+			gr.FillSolidRect(this.x + this.progressLength, this.y + 1, grm.ui.seekbarHeight, grm.ui.seekbarHeight - 1, grCol.progressBar);
+			gr.FillGradRect(this.x + this.progressLength,  this.y + 1, grm.ui.seekbarHeight, grm.ui.seekbarHeight - 1, grSet.styleProgressBar === 'inner' ? grSet.styleBlackReborn && fb.IsPlaying ? 88 : -88 : grSet.styleBlackReborn && fb.IsPlaying ? -88 : 88, 0, grCol.styleProgressBar);
 		}
 		else if (grSet.styleProgressBarDesign === 'dots') {
 			let progressLine = 0;
@@ -3011,8 +2798,8 @@ class ProgressBar {
 				gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - SCALE(1), SCALE(2), SCALE(2), SCALE(2), grCol.progressBarFill);
 				progressLine += SCALE(8);
 			}
-			const posFix = RES._4K ? grSet.layout !== 'default' ? 6 : 7 : 3;
-			gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - grm.ui.progressBarH * 0.5 + SCALE(2), grm.ui.progressBarH - SCALE(4), grm.ui.progressBarH - SCALE(4), SCALE(2), grCol.progressBarFill); // Knob outline
+			const posFix = HD_4K(3, grSet.layout !== 'default' ? 6 : 7);
+			gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - grm.ui.seekbarHeight * 0.5 + SCALE(2), grm.ui.seekbarHeight - SCALE(4), grm.ui.seekbarHeight - SCALE(4), SCALE(2), grCol.progressBarFill); // Knob outline
 			gr.DrawEllipse(this.x + progressLine + posFix, this.y + this.h * 0.5 - SCALE(1), SCALE(2), SCALE(2), SCALE(2), grCol.transportIconHovered); // Knob inner
 		}
 		else if (grSet.styleProgressBarDesign === 'thin') {
@@ -3053,7 +2840,7 @@ class ProgressBar {
 	 */
 	setPlaybackTime(x) {
 		let v = (x - this.x) / this.w;
-		v = (v < 0) ? 0 : (v < 1) ? v : 1;
+		v = Clamp(v, 0, 1);
 		if (fb.PlaybackTime !== v * fb.PlaybackLength) {
 			fb.PlaybackTime = v * fb.PlaybackLength;
 		}
@@ -3112,15 +2899,24 @@ class ProgressBar {
 	}
 
 	/**
+	 * Updates progress bar length when playing a new track.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
+	 */
+	on_playback_new_track(metadb) {
+		if (!metadb) return;
+		this.progressLength = 0;
+	}
+
+	/**
 	 * Sets the size and position of the progress bar and updates them on window resizing.
 	 * @param {number} w - The width of the window or element.
 	 * @param {number} h - The height of the window or element.
 	 */
 	on_size(w, h) {
-		this.x = SCALE(grSet.layout !== 'default' ? 20 : 40);
+		this.x = grm.ui.edgeMargin;
 		this.y = 0;
-		this.w = w - SCALE(grSet.layout !== 'default' ? 40 : 80);
-		this.h = grm.ui.progressBarH;
+		this.w = w - grm.ui.edgeMarginBoth;
+		this.h = grm.ui.seekbarHeight;
 		this.progressMoved = true;
 	}
 	// #endregion
@@ -3147,15 +2943,15 @@ class PeakmeterBar {
 
 		// * Geometry - Style Horizontal
 		/** @public @type {number} */
-		this.x = SCALE(grSet.layout !== 'default' ? 20 : 40);
+		this.x = grm.ui.edgeMargin;
 		/** @public @type {number} */
 		this.y = 0;
 		/** @public @type {number} */
-		this.w = ww - SCALE(grSet.layout !== 'default' ? 40 : 80);
+		this.w = ww - grm.ui.edgeMarginBoth;
 		/** @public @type {number} */
 		this.w2 = 0;
 		/** @public @type {number} */
-		this.h = grm.ui.peakmeterBarH;
+		this.h = grm.ui.seekbarHeight;
 		/** @private @type {number} */
 		this.bar_h = grSet.layout !== 'default' ? SCALE(2) : SCALE(4);
 		/** @private @type {number} */
@@ -3231,7 +3027,7 @@ class PeakmeterBar {
 
 		// * Text
 		/** @private @type {GdiFont} */
-		this.textFont = gdi.Font('Segoe UI', RES._4K ? 16 : 9, 1);
+		this.textFont = gdi.Font('Segoe UI', HD_4K(9, 16), 1);
 		/** @private @type {number} */
 		this.textWidth = 0;
 		/** @private @type {number} */
@@ -3242,12 +3038,6 @@ class PeakmeterBar {
 		this.tooltipTimer = null;
 
 		// * Volume
-		/**
-		 * Calculates the decibel (dB) value of the given volume.
-		 * @type {Function}
-		 * @private
-		 */
-		this.toDecibel = (Level) => Math.round(2000 * Math.log(Level) / Math.LN10) / 100;
 		/** @private @type {number[]} */
 		this.db_middle = [-100, -95, -90, -85, -80, -75, -70, -65, -62.5, -60, -57.5, -55, -52.5, -50, -47.5, -45, -42.5, -40, -37.5, -35, -32.5, -30, -27.5, -25, -22.5];
 		/** @private @type {number[]} */
@@ -3739,10 +3529,10 @@ class PeakmeterBar {
 	 */
 	setAnimation() {
 		// * Set and monitor volume level/peaks from VUMeter
-		this.leftLevel  = this.toDecibel(this.VUMeter.LeftLevel);
-		this.leftPeak   = this.toDecibel(this.VUMeter.LeftPeak);
-		this.rightLevel = this.toDecibel(this.VUMeter.RightLevel);
-		this.rightPeak  = this.toDecibel(this.VUMeter.RightPeak);
+		this.leftLevel = ConvertVolume(this.VUMeter.LeftLevel, 'vuLevelToDecibel');
+		this.leftPeak = ConvertVolume(this.VUMeter.LeftPeak, 'vuLevelToDecibel');
+		this.rightLevel = ConvertVolume(this.VUMeter.RightLevel, 'vuLevelToDecibel');
+		this.rightPeak = ConvertVolume(this.VUMeter.RightPeak, 'vuLevelToDecibel');
 
 		// * Debug stuff
 		DebugLog('LEFT PEAKS: ',  this.leftPeak,   '      RIGHT PEAKS: ',  this.rightPeak);
@@ -3865,7 +3655,7 @@ class PeakmeterBar {
 	 */
 	setPlaybackTime(x) {
 		let v = (x - this.x) / this.w;
-		v = (v < 0) ? 0 : (v < 1) ? v : 1;
+		v = Clamp(v, 0, 1);
 		if (fb.PlaybackTime !== v * fb.PlaybackLength) {
 			fb.PlaybackTime = v * fb.PlaybackLength;
 		}
@@ -3956,6 +3746,7 @@ class PeakmeterBar {
 	 */
 	on_playback_new_track(metadb) {
 		if (!metadb) return;
+		this.progressLength = 0;
 		this.setColors(metadb);
 	}
 
@@ -3965,10 +3756,10 @@ class PeakmeterBar {
 	 * @param {number} h - The height of the peakmeter bar.
 	 */
 	on_size(w, h) {
-		this.x = SCALE(grSet.layout !== 'default' ? 20 : 40);
+		this.x = grm.ui.edgeMargin;
 		this.y = 0;
-		this.w = w - SCALE(grSet.layout !== 'default' ? 40 : 80);
-		this.h = grm.ui.peakmeterBarH;
+		this.w = w - grm.ui.edgeMarginBoth;
+		this.h = grm.ui.seekbarHeight;
 		this.bar_h = grSet.layout !== 'default' ? SCALE(2) : SCALE(4);
 
 		this.offset        = (grSet.peakmeterBarDesign === 'horizontal_center' ? this.w * 0.5 : this.w) / this.points;
@@ -3993,7 +3784,7 @@ class PeakmeterBar {
 		this.vertRight_x = this.vertLeft_x + this.vertBar_offset * this.points_vert;
 
 		this.progressMoved = true;
-		this.textFont = gdi.Font('Segoe UI', RES._4K ? 16 : 9, 1);
+		this.textFont = gdi.Font('Segoe UI', HD_4K(9, 16), 1);
 	}
 	// #endregion
 }
@@ -4116,13 +3907,13 @@ class WaveformBar {
 
 		// * Easy access
 		/** @public @type {number} */
-		this.x = SCALE(grSet.layout !== 'default' ? 20 : 40);
+		this.x = grm.ui.edgeMargin;
 		/** @public @type {number} */
 		this.y = 0;
 		/** @public @type {number} */
-		this.w = ww - SCALE(grSet.layout !== 'default' ? 40 : 80);
+		this.w = ww - grm.ui.edgeMarginBoth;
 		/** @public @type {number} */
-		this.h = grm.ui.waveformBarH;
+		this.h = grm.ui.seekbarHeight;
 
 		// * Internals
 		/** @private @type {boolean} */
@@ -4268,7 +4059,7 @@ class WaveformBar {
 
 		if (frames !== 0) {
 			const barW = this.w / frames;
-			const minPointDiff = 0.5; // in px
+			const minPointDiff = 1; // in px
 			const timeConstant = fb.PlaybackLength / frames;
 			const past = [{ x: 0, y: 1 }, { x: 0, y: -1 }];
 			let current;
@@ -4490,7 +4281,7 @@ class WaveformBar {
 						: 2.5 * barW,
 					this.w - currX + barW
 				);
-				this.throttlePaintRect(currX - barW - SCALE(40), this.y, prePaintW + SCALE(40) * 2, this.h);
+				this.throttlePaintRect(currX - barW - grm.ui.edgeMargin, this.y, prePaintW + grm.ui.edgeMarginBoth, this.h);
 			}
 			if (this.ui.refreshRateVar) {
 				if (this.profilerPaint.Time > this.ui.refreshRate) {
@@ -4796,7 +4587,7 @@ class WaveformBar {
 	 * @param {FbMetadbHandle} handle - The handle to analyze.
 	 * @param {string} waveformBarFolder - The folder where the waveform bar data should be saved.
 	 * @param {string} waveformBarFile - The name of the waveform bar file.
-	 * @returns {Promise} A promise that resolves when the analysis is finished.
+	 * @returns {Promise<void>} A promise that resolves when the analysis has finished.
 	 */
 	async analyzeData(handle, waveformBarFolder, waveformBarFile) {
 		if (!IsFolder(waveformBarFolder)) { _CreateFolder(waveformBarFolder); }
@@ -4994,7 +4785,7 @@ class WaveformBar {
 				this.isError = true;
 				this.current = [];
 			}  else {
-				console.log(`Seekbar file not valid. Creating new one${file ? `: ${file}` : '.'}`);
+				console.log(`Waveform bar file not valid. Creating new one${file ? `: ${file}` : '.'}`);
 				if (file) _DeleteFile(file);
 				this.on_playback_new_track(handle, true);
 			}
@@ -5106,7 +4897,7 @@ class WaveformBar {
 	 */
 	on_mouse_move(x, y, mask) {
 		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar)) return;
-		if (mask === MK_LBUTTON && this.on_mouse_lbtn_up(x, y, mask)) {
+		if (mask === MouseKey.LButton && this.on_mouse_lbtn_up(x, y, mask)) {
 			this.mouseDown = true;
 		}
 	}
@@ -5115,6 +4906,7 @@ class WaveformBar {
 	 * Resets the current waveform and processes new data for the new current playing track.
 	 * @param {FbMetadbHandle} handle - The handle of the new track.
 	 * @param {boolean} [isRetry] - The flag indicating whether the method call is a retry attempt.
+	 * @returns {Promise<void>} A promise that resolves when the processing has finished.
 	 */
 	async on_playback_new_track(handle = fb.GetNowPlaying(), isRetry = false) {
 		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar) || !this.active) { return; }
@@ -5243,7 +5035,7 @@ class WaveformBar {
 					: 2.5 * barW,
 				this.w - currX + barW
 			);
-			this.throttlePaintRect(currX - barW - SCALE(40), this.y, prePaintW + SCALE(40) * 2, this.h);
+			this.throttlePaintRect(currX - barW - grm.ui.edgeMargin, this.y, prePaintW + grm.ui.edgeMarginBoth, this.h);
 		}
 	}
 
@@ -5262,10 +5054,10 @@ class WaveformBar {
 	 */
 	on_size(w, h) {
 		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar)) return;
-		this.x = SCALE(grSet.layout !== 'default' ? 20 : 40);
+		this.x = grm.ui.edgeMargin;
 		this.y = 0;
-		this.w = w - SCALE(grSet.layout !== 'default' ? 40 : 80);
-		this.h = grm.ui.waveformBarH;
+		this.w = w - grm.ui.edgeMarginBoth;
+		this.h = grm.ui.seekbarHeight;
 	}
 	// #endregion
 }

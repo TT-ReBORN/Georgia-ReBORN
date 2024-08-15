@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    01-05-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -145,13 +145,174 @@ function Assert(predicate, ExceptionType, ...args) {
 
 
 /**
- * Prints exclusive theme debug logs and avoids cluttering the console constantly.
- * @type {function(...*):void} var_args
- * @global
- * @returns {void}
+ * Calculates and logs the average execution time of given functions (code blocks) over a specified number of iterations.
+ * Optionally compares the performance of two code blocks with their respective arguments.
+ * @param {number} iterations - The number of times the code blocks should be executed.
+ * @param {Function} func1 - The first function whose performance is to be measured.
+ * @param {Array} [args1] - The optional arguments for the first function as an array.
+ * @param {Function} [func2] - The optional second function to measure and compare performance against the first.
+ * @param {Array} [args2] - The optional arguments for the second function as an array.
+ * @example
+ * // Usage without arguments:
+ * CalcExecutionTime(1000, function1, [], function2, []);
+ * @example
+ * // Usage with arguments:
+ * CalcExecutionTime(1000, function1, ['arg1', 'arg2'], function2, ['arg1', 'arg2']);
+ * @example
+ * // Usage with methods, use .bind(this):
+ * CalcExecutionTime(1000, this.method1.bind(this), [], this.method2.bind(this), []);
  */
-function DebugLog() {
-	if (arguments.length && grCfg.settings.showDebugLog) console.log(...arguments);
+function CalcExecutionTime(iterations, func1, args1 = [], func2, args2 = []) {
+	// Measure and log function1 performance
+	const start1 = Date.now();
+	for (let i = 0; i < iterations; i++) {
+		func1.apply(this, args1);
+	}
+	const end1 = Date.now();
+	const totalTime1 = end1 - start1;
+	console.log(`Function 1 took: ${(totalTime1 / iterations).toFixed(3)} ms`);
+
+	if (!func2) return;
+
+	// Measure and log function2 performance
+	const start2 = Date.now();
+	for (let i = 0; i < iterations; i++) {
+		func2.apply(this, args2);
+	}
+	const end2 = Date.now();
+	const totalTime2 = end2 - start2;
+	console.log(`Function 2 took: ${(totalTime2 / iterations).toFixed(3)} ms`);
+
+	// Measure, log and compare both function1 and function2 performances
+	const diff = totalTime1 - totalTime2;
+	const percent = (Math.abs(diff) / ((totalTime1 + totalTime2) / 2)) * 100;
+	const faster = diff > 0 ? 'FUNCTION 2 IS FASTER' : 'FUNCTION 1 IS FASTER';
+	console.log(`${faster} BY: ${Math.abs(diff / iterations).toFixed(3)} ms - ${percent.toFixed(2)}%`);
+}
+
+
+/**
+ * Calculates and logs one or two given functions over a specified duration and compares their performance if both are provided.
+ * @param {number} duration - The duration (in milliseconds) for which the functions should be executed.
+ * @param {Function} func1 - The first function to be measured.
+ * @param {Array} [args1] - The optional arguments for the first function as an array.
+ * @param {Function} [func2] - The second function to be measured (optional).
+ * @param {Array} [args2] - The optional arguments for the second function as an array.
+ * @example
+ * // Usage without arguments:
+ * CalcExecutionDuration(5000, function1, [], function2, []);
+ * @example
+ * // Usage with arguments:
+ * CalcExecutionDuration(5000, function1, ['arg1', 'arg2'], function2, ['arg1', 'arg2']);
+ * @example
+ * // Usage with methods, use .bind(this):
+ * CalcExecutionDuration(5000, this.method1.bind(this), [], this.method2.bind(this), []);
+ */
+function CalcExecutionDuration(duration, func1, args1, func2, args2) {
+	const profiler1 = fb.CreateProfiler('Performance Profiler 1');
+	const profiler2 = func2 ? fb.CreateProfiler('Performance Profiler 2') : null;
+
+	const measureFunc = (func, args, profiler) => {
+		console.log(`Starting performance measurement for ${func.name}...`);
+		const startTime = Date.now();
+		const endTime = startTime + duration;
+		let count = 0;
+
+		// Execute the function until the duration elapses
+		while (Date.now() < endTime) {
+			func(...args);
+			count++;
+		}
+
+		profiler.Print();
+		console.log(`Performance measurement for ${func.name} completed.`);
+		return { totalTime: Date.now() - startTime, count };
+	};
+
+	// Measure and log function1 performance
+	const result1 = measureFunc(func1, args1, profiler1);
+	const avgTime1 = result1.totalTime / result1.count;
+	console.log(`Function 1 (${func1.name}) took an average of ${avgTime1.toFixed(3)} ms per execution`);
+
+	if (!func2) return;
+
+	// Measure and log function2 performance
+	const result2 = measureFunc(func2, args2, profiler2);
+	const avgTime2 = result2.totalTime / result2.count;
+	console.log(`Function 2 (${func2.name}) took an average of ${avgTime2.toFixed(3)} ms per execution`);
+
+	// Measure, log and compare both function1 and function2 performances
+	const diff = avgTime1 - avgTime2;
+	const percent = (Math.abs(diff) / ((avgTime1 + avgTime2) / 2)) * 100;
+	const faster = diff > 0 ? 'FUNCTION 2 IS FASTER' : 'FUNCTION 1 IS FASTER';
+	console.log(`${faster} BY: ${Math.abs(diff).toFixed(3)} ms - ${percent.toFixed(2)}%`);
+}
+
+
+/**
+ * Calculates and logs the performance of given functions either by iterations or duration.
+ * @param {string} mode - The mode of performance measurement ('time' for iterations or 'duration' for time-based).
+ * @param {number} metric - The number of iterations or the duration in milliseconds.
+ * @param {Function} func1 - The first function whose performance is to be measured.
+ * @param {Array} [args1] - The optional arguments for the first function as an array.
+ * @param {Function} [func2] - The optional second function to measure and compare performance against the first.
+ * @param {Array} [args2] - The optional arguments for the second function as an array.
+ * @example
+ * // Measure performance by iterations:
+ * CalcPerformance('time', 1000, function1, [], function2, []);
+ * @example
+ * // Measure performance by duration:
+ * CalcPerformance('duration', 5000, function1, ['arg'], function2, ['arg']);
+ * @example
+ * // Measure performance by iterations with arguments:
+ * CalcPerformance('time', 1000, function1, ['arg1', 'arg2'], function2, ['arg1', 'arg2']);
+ * @example
+ * // Measure performance by duration with methods, use .bind(this):
+ * CalcPerformance('duration', 5000, this.method1.bind(this), [], this.method2.bind(this), []);
+ */
+function CalcPerformance(mode, metric, func1, args1 = [], func2, args2 = []) {
+	if (mode === 'time') {
+		CalcExecutionTime(metric, func1, args1, func2, args2);
+	}
+	else if (mode === 'duration') {
+		CalcExecutionDuration(metric, func1, args1, func2, args2);
+	}
+	else {
+		console.log('Invalid mode. Use "time" for iteration-based or "duration" for time-based performance measurement.');
+	}
+}
+
+
+/**
+ * Prints logs for specific callback actions.
+ * Will be shown in the console when `Show panel calls` in Developer tools is active.
+ * @param {string} msg - The callback action message to log.
+ */
+function CallLog(msg) {
+	if (!grm.ui.traceCall) return;
+	console.log(msg);
+}
+
+
+/**
+ * Prints exclusive theme debug logs and avoids cluttering the console constantly.
+ * Will be shown in the console when `Enable debug log` in Developer tools is active.
+ * @param {...any} args - The debug messages to log.
+ */
+function DebugLog(...args) {
+	if (args.length === 0 || !grCfg.settings.showDebugLog) return;
+	console.log(...args);
+}
+
+
+/**
+ * Prints logs for specific callback on_mouse_move actions.
+ * Will be shown in the console when `Show panel moves` in Developer tools is active.
+ * @param {string} msg - The callback mouse move message to log.
+ */
+function MoveLog(msg) {
+	if (!grm.ui.traceCall || !grm.ui.traceOnMove) return;
+	console.log(msg);
 }
 
 
@@ -247,7 +408,6 @@ function ParseJson(json, label, log) {
 		parsed = JSON.parse(json);
 	}
 	catch (e) {
-		console.log('>>> ERROR IN parseJson <<<');
 		console.log(json);
 	}
 	return parsed;
@@ -669,6 +829,67 @@ function Debounce(func, delay, { leading } = {}) {
 
 		timerId = setTimeout(() => func(...args), delay);
 	};
+}
+
+
+/**
+ * Handles key press actions based on the state of control keys (Ctrl, Alt, Shift).
+ * @param {object} action - An object mapping key press combinations to their respective actions.
+ * @param {Function} [action.ctrlAltShift] - Action to perform if `Ctrl`, `Alt`, and `Shift` keys are all pressed.
+ * @param {Function} [action.ctrlShift] - Action to perform if both `Ctrl` and `Shift` keys are pressed.
+ * @param {Function} [action.ctrlNoShift] - Action to perform if `Ctrl` key is pressed and `Shift` key is not pressed.
+ * @param {Function} [action.ctrl] - Action to perform if `Ctrl` key is pressed.
+ * @param {Function} [action.altShift] - Action to perform if both `Alt` and `Shift` keys are pressed.
+ * @param {Function} [action.altNoShift] - Action to perform if `Alt` key is pressed and `Shift` key is not pressed.
+ * @param {Function} [action.alt] - Action to perform if `Alt` key is pressed.
+ * @param {Function} [action.shiftNoCtrl] - Action to perform if `Shift` key is pressed and `Ctrl` key is not pressed.
+ * @param {Function} [action.shiftNoAlt] - Action to perform if `Shift` key is pressed and `Alt` key is not pressed.
+ * @param {Function} [action.shift] - Action to perform if `Shift` key is pressed.
+ * @param {Function} [action.default] - Default action to perform if no other key combinations match.
+ * @example
+ * KeyPressAction({
+ *     ctrlAltShift: () => console.log('Ctrl, Alt, and Shift keys pressed'),
+ *     ctrlShift: () => console.log('Ctrl and Shift keys pressed'),
+ *     ctrlNoShift: () => console.log('Ctrl key pressed without Shift'),
+ *     ctrl: () => console.log('Ctrl key pressed'),
+ *     altShift: () => console.log('Alt and Shift keys pressed'),
+ *     altNoShift: () => console.log('Alt key pressed without Shift'),
+ *     alt: () => console.log('Alt key pressed'),
+ *     shiftNoCtrl: () => console.log('Shift key pressed without Ctrl'),
+ *     shiftNoAlt: () => console.log('Shift key pressed without Alt'),
+ *     shift: () => console.log('Shift key pressed'),
+ *     default: () => console.log('No specific key combination matched')
+ * });
+ */
+function KeyPressAction(action = {}) {
+	const CTRL = utils.IsKeyPressed(VKey.CONTROL);
+	const ALT = utils.IsKeyPressed(VKey.MENU);
+	const SHIFT = utils.IsKeyPressed(VKey.SHIFT);
+
+	const combinations = [
+		// Ctrl combinations
+		{ condition: CTRL && ALT && SHIFT, action: action.ctrlAltShift },
+		{ condition: CTRL && SHIFT, action: action.ctrlShift },
+		{ condition: CTRL && !SHIFT, action: action.ctrlNoShift },
+		{ condition: CTRL, action: action.ctrl },
+		// Alt combinations
+		{ condition: ALT && SHIFT, action: action.altShift },
+		{ condition: ALT && !SHIFT, action: action.altNoShift },
+		{ condition: ALT, action: action.alt },
+		// Shift combinations
+		{ condition: SHIFT && !CTRL, action: action.shiftNoCtrl },
+		{ condition: SHIFT && !ALT, action: action.shiftNoAlt },
+		{ condition: SHIFT, action: action.shift }
+	];
+
+	for (const combo of combinations) {
+		if (combo.condition && combo.action) {
+			combo.action();
+			return;
+		}
+	}
+
+	if (action.default) action.default();
 }
 
 
@@ -1348,18 +1569,41 @@ class GdiService {
  * @global
  * @param {number} w - The width of the graphics object.
  * @param {number} h - The height of the graphics object.
- * @param {boolean} im - Is the graphics type an image (true) or a text object (false).
+ * @param {boolean} img - Is the graphics type an image (true) or a text object (false).
  * @param {Function} func - The function to call the graphics object.
  * @returns {GdiGraphics|null} The created or recycled GDI graphics object.
  */
-function GDI(w, h, im, func) {
+function GDI(w, h, img, func) {
 	if (isNaN(w) || isNaN(h)) return null;
+
 	const i = gdi.CreateImage(Math.max(w, 2), Math.max(h, 2));
 	let g = i.GetGraphics();
+
 	func(g, i);
 	i.ReleaseGraphics(g);
 	g = null;
-	return im ? i : null;
+
+	return img ? i : null;
+}
+
+
+/**
+ * Combines two images into a single image.
+ * @param {GdiBitmap} img1 - The first image.
+ * @param {GdiBitmap} img2 - The second image.
+ * @param {number} w - The width for the combined image.
+ * @param {number} h - The height for the combined image.
+ * @returns {GdiBitmap} The combined image.
+ */
+function CombineImages(img1, img2, w, h) {
+	const combinedImg = gdi.CreateImage(w, h);
+	const gotGraphics = combinedImg.GetGraphics();
+
+	gotGraphics.DrawImage(img1, 0, 0, w, h, 0, 0, img1.Width, img1.Height);
+	gotGraphics.DrawImage(img2, 0, 0, w, h, 0, 0, img2.Width, img2.Height);
+	combinedImg.ReleaseGraphics(gotGraphics);
+
+	return combinedImg;
 }
 
 
@@ -1513,29 +1757,25 @@ function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1,
  * @param {number} w - The width of image.
  * @param {number} h - The height of image.
  * @param {number} [degrees] - The degrees are clockwise.
+ * @param {number} [imgMaxRes] - The maximum resolution for the image.
  * @returns {GdiBitmap|null} The rotated image or null if an error occurs.
  */
-function RotateImg(img, w, h, degrees) {
+function RotateImg(img, w, h, degrees, imgMaxRes = w) {
 	if (!img || !w || !h) return null;
 
-	/**
-	 * Because foobar x86 can allocate only 4 gigs memory, we must limit disc art res for 4K when using
-	 * high grSet.spinDiscArtImageCount, i.e 90 (4 degrees), 120 (3 degrees), 180 (2 degrees) to prevent crash.
-	 * When SMP has x64 support, we could try to increase this limit w (1836px max possible res for 4K).
-	 */
-	const imgMaxRes = ({ 90: 1400, 120: 1200, 180: 1000 })[grSet.spinDiscArtImageCount] || w;
 	w = Math.floor(Math.min(w, imgMaxRes));
 	h = Math.floor(Math.min(h, imgMaxRes));
 
-	if (degrees !== 0) {
-		const rotatedImg = gdi.CreateImage(w, h);
-		const gotGraphics = rotatedImg.GetGraphics();
-		gotGraphics.DrawImage(img, 0, 0, w, h, 0, 0, img.Width, img.Height, degrees);
-		rotatedImg.ReleaseGraphics(gotGraphics);
-		return rotatedImg;
+	if (degrees === 0) {
+		return img.Clone(0, 0, img.Width, img.Height).Resize(w, h);
 	}
 
-	return img.Clone(0, 0, img.Width, img.Height).Resize(w, h);
+	const rotatedImg = gdi.CreateImage(w, h);
+	const gotGraphics = rotatedImg.GetGraphics();
+	gotGraphics.DrawImage(img, 0, 0, w, h, 0, 0, img.Width, img.Height, degrees);
+	rotatedImg.ReleaseGraphics(gotGraphics);
+
+	return rotatedImg;
 }
 
 
@@ -1565,36 +1805,57 @@ function ShadowRect(x, y, w, h, radius, color) {
 // * DISPLAY * //
 /////////////////
 /**
- * Scales the value based on 4K mode or not.
- * @global
- * @param {number} val - The value that needs to be scaled for 4K resolution.
- * @returns {number} The value doubled.
+ * Sets the appropriate value based on detected display mode.
+ * @template T
+ * @param {T} valHD - The value to use for HD display mode.
+ * @param {T} valQHD - The value to use for QHD display mode.
+ * @param {T|null} val4K - The value to use for 4K display mode.
+ * Optional; if not provided, HD or QHD values will be used as fallbacks.
+ * @returns {T} The selected value based on the current display mode.
  */
-function SCALE(val) {
-	return RES._4K ? val * 2 : val;
+function HD_QHD_4K(valHD, valQHD, val4K = null) {
+	if (RES._4K && val4K !== null) return val4K;
+	return RES._QHD ? valQHD : valHD;
 }
 
 
 /**
- * NOT USED AT THE MOMENT.
- * Converts a size value from points to pixels using the DPI value.
- * @global
- * @param {number} size - The size in pixels.
- * @returns {number} The size in points.
+ * Sets the appropriate value based on detected display mode for HD and 4K only.
+ * @template T
+ * @param {T} valHD - The value to use for HD display mode.
+ * @param {T|null} val4K - The value to use for 4K display mode.
+ * Optional; if not provided, HD value will be used as fallback.
+ * @returns {T} The selected value based on the current display mode.
  */
-function Scale(size) {
-	/**
-	 * Checks and sets the actual display DPI number via reading the Windows registry value.
-	 * @type {number} Default display dots per inch setting.
-	 */
-	const DPI = (() => {
-		try {
-			return WshShell.RegRead('HKCU\\Control Panel\\Desktop\\WindowMetrics\\AppliedDPI');
-		} catch (e) {
-			return 96;
-		}
-	})();
-	return Math.round(size * DPI / 72);
+function HD_4K(valHD, val4K = null) {
+	if (RES._4K && val4K !== null) return val4K;
+	return valHD;
+}
+
+
+/**
+ * Scales the value based on 4K mode and the display scale setting.
+ * @global
+ * @param {number} val - The value that needs to be scaled.
+ * @returns {number} The scaled value.
+ */
+function SCALE(val) {
+	const baseScale = RES._4K ? 2 : 1;
+	const scaleFactor = grSet.displayScale / 100;
+	return val * baseScale * scaleFactor;
+}
+
+
+/**
+ * Sets the mouse cursor using the specified cursor symbol name.
+ * @param {string} symbol - The name of the cursor symbol.
+ */
+function SetCursor(symbol) {
+	if (Cursor[symbol] !== undefined) {
+		window.SetCursor(Cursor[symbol]);
+	} else {
+		window.SetCursor(Cursor.Arrow);
+	}
 }
 
 
@@ -1631,16 +1892,15 @@ function ChooseFontForWidth(gr, availableWidth, text, fontList, maxLines = 1) {
  * @param {string} name - The name of the font to load.
  * @param {number} size - The size of the font in pixels.
  * @param {string} style - The style of the font. See style constants for valid values.
- * @returns {GdiFont} The font or null if there was an error.
+ * @returns {GdiFont|null} The font or null if there was an error.
  */
 function Font(name, size, style) {
-	let font;
 	try {
-		font = gdi.Font(name, Math.round(SCALE(size)), style);
+		return gdi.Font(name, Math.round(SCALE(size)), style);
 	} catch (e) {
 		console.log('\nFailed to load font >>>', name, size, style);
+		return null;
 	}
-	return font;
 }
 
 
@@ -1681,6 +1941,67 @@ function CalcGridMaxTextWidth(gr, gridArray, font) {
 		}
 	}
 	return maxWidth;
+}
+
+
+/**
+ * Calculates the wrap space for text within a given container width and provides detailed information.
+ * @param {GdiGraphics} gr - The GDI graphics object used for text measurement.
+ * @param {string} text - The text to be wrapped.
+ * @param {object} font - The font used for measuring the text.
+ * @param {number} containerWidth - The width of the container in which the text is to be wrapped.
+ * @param {object} [cache] - An optional object for caching the results of the calculation. The cache should be used when the helper is called in a draw method. This cache object will be mutated.
+ * @returns {object} An object containing 'totalWrapSpace', 'lineCount', and 'lineWrapSpaces' (an array representing the wrap space for each line).
+ */
+function CalcWrapSpace(gr, text, font, containerWidth, cache) {
+	// Construct a cache key and check if it is available to avoid recalculating
+	const cacheKey = `wrap-space-cache-${text}-${containerWidth}`;
+	if (cache && cache[cacheKey]) {
+		return cache[cacheKey];
+	}
+
+	let line = ''; // Holds the current line being processed
+	let lineCount = 0; // Total number of lines
+	let totalWrapSpace = 0; // Sum of wrap space for all lines
+	const lineWrapSpaces = []; // Individual wrap space for each line
+	const words = text.match(/\S+/g) || []; // Split text into words
+
+	for (const word of words) {
+		// Test if adding the next word exceeds the container width
+		const testLine = line + (line ? ' ' : '') + word;
+		const metrics = gr.MeasureString(testLine.trim(), font, 0, 0, 0, 0, 0);
+
+		if (metrics.Width > containerWidth) {
+			// If the line exceeds container width, calculate wrap space and start a new line
+			if (line !== '') {
+				const currentWrapSpace = Math.max(containerWidth - gr.MeasureString(line.trim(), font, 0, 0, 0, 0, 0).Width, 0);
+				lineWrapSpaces.push(currentWrapSpace);
+				totalWrapSpace += currentWrapSpace;
+				lineCount++;
+			}
+			line = `${word} `;
+		} else {
+			line = testLine;
+		}
+	}
+
+	// Add wrap space for the last line if it exists. The last line's wrap space is always 0.
+	if (line !== '') {
+		lineWrapSpaces.push(0); // Ensure the last line's wrap space is acknowledged but set to 0
+		lineCount++;
+	}
+
+	const result = {
+		lineCount,
+		lineWrapSpaces: lineWrapSpaces.map(space => Math.round(space)),
+		totalWrapSpace: Math.round(totalWrapSpace)
+	};
+
+	if (cache) {
+		cache[cacheKey] = result;
+	}
+
+	return result;
 }
 
 
@@ -2013,13 +2334,13 @@ function Last(arr) {
  * @returns {Array<number>} An array of numbers that represents a range of values.
  */
 function Range(start, end, increment = 1) {
-    const result = [];
+	const result = [];
 
-    for (let i = start; i < end; i += increment) {
-        result.push(i);
-    }
+	for (let i = start; i < end; i += increment) {
+		result.push(i);
+	}
 
-    return result;
+	return result;
 }
 
 
@@ -2091,7 +2412,50 @@ function Zip(arr, ...args) {
  * @returns {number} The clamped value of `num`.
  */
 function Clamp(num, min, max) {
-    return Math.max(min, Math.min(num, max));
+	return Math.max(min, Math.min(num, max));
+}
+
+
+/**
+ * Formats the given file size in bytes to the most appropriate unit (bytes, KB, MB, GB, ...).
+ * @param {number} sizeInBytes - The size of the file in bytes.
+ * @returns {string} The formatted size as a string with the appropriate unit appended.
+ */
+function FormatSize(sizeInBytes) {
+	const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+	let unitIndex = 0;
+	let size = sizeInBytes;
+
+	while (size >= 1024 && unitIndex < units.length - 1) {
+		size /= 1024;
+		unitIndex++;
+	}
+
+	return `${size.toFixed(unitIndex ? 2 : 0)} ${units[unitIndex]}`;
+}
+
+
+/**
+ * Converts the volume to percentage, decibels, or VU meter levels to decibels.
+ * Depending on the 'type' parameter, this function behaves as follows:
+ * - 'toPercent': Converts the volume (expected between 0 and 1) to a percentage representation.
+ * - 'toDecibel': Converts the volume (expected between 0 and 1) to decibels (dB).
+ * - 'vuLevelToDecibel': Converts VU meter levels to decibel.
+ * @param {number} volume - The volume to be converted, expected to be between 0 and 1.
+ * @param {string} type - Determines the format of the output.
+ * @returns {number|undefined} The converted volume as a number, or undefined if an invalid type is specified.
+ */
+function ConvertVolume(volume, type) {
+	if (type === 'toPercent') {
+		return (10 ** (volume / 50) - 0.01) / 0.99 * 100;
+	} else if (type === 'toDecibel') {
+		return (50 * Math.log(0.99 * volume + 0.01)) / Math.LN10;
+	} else if (type === 'vuLevelToDecibel') {
+		return Math.round(2000 * Math.log(volume) / Math.LN10) / 100;
+	} else {
+		console.log('Invalid type. Please specify \'toPercent\', \'toDecibel\', or \'vuLevelToDecibel\'.');
+		return undefined;
+	}
 }
 
 
@@ -2593,6 +2957,17 @@ function DateToYMD(date) {
 
 
 /**
+ * Returns the elapsed time progress of the current track as a percentage.
+ * @returns {string} The elapsed time percentage as a string formatted to two decimal places.
+ */
+function PlaybackTimePercentage() {
+	const { PlaybackTime: currentTime, PlaybackLength: totalTime } = fb;
+	const percentageElapsed = totalTime > 0 ? (currentTime / totalTime) * 100 : 0;
+	return percentageElapsed.toFixed(2);
+}
+
+
+/**
  * Converts a 24-hour time format hour to 12-hour time format.
  * @global
  * @param {number|string} hour - The hour in 24-hour format.
@@ -2716,10 +3091,11 @@ function FormatThemeDayNightModeString(themeDayNightMode) {
 /**
  * Makes or restores a theme backup.
  * @global
- * @param {boolean} make - Should a theme backup be made.
- * @param {boolean} restore - Should a theme backup be restored.
+ * @param {boolean} make - Whether to make a theme backup.
+ * @param {boolean} restore - Whether to restore a theme backup.
+ * @returns {Promise<void>} A promise that resolves when the processing has finished.
  */
-function ManageBackup(make, restore) {
+async function ManageBackup(make, restore) {
 	const backupPath = `${fb.ProfilePath}backup\\profile\\`;
 	const cfgPathFb  = `${fb.ProfilePath}configuration`;
 	const dspPathFb  = `${fb.ProfilePath}dsp-presets`;
@@ -2837,22 +3213,23 @@ function ManageBackup(make, restore) {
 	};
 
 	if (make) {
-		makeBackup();
+		await makeBackup();
 	} else {
-		restoreBackup();
+		await restoreBackup();
 	}
 }
 
 
 /**
  * Restores the backup playlist directory with its playlists.
- * This is a foobar workaround fix when user has installed and launched foobar for the very first time after installation.
- * If theme backup has been successfully restored, foobar automatically deletes all restored playlist files in the playlist directory.
- * On the next foobar restart and initialization, foobar adds crap playlist files in the playlist directory making them useless.
+ * This is a workaround for foobar when the user has installed and launched foobar for the first time after installation.
+ * If the theme backup has been successfully restored, foobar automatically deletes all restored playlist files in the playlist directory.
+ * On the next foobar restart and initialization, foobar adds default playlist files in the playlist directory making them useless.
  * To fix this issue, all playlist files from the backup directory will be copied and restored again.
  * @global
+ * @returns {Promise<void>} A promise that resolves when the processing has finished.
  */
-function RestoreBackupPlaylist() {
+async function RestoreBackupPlaylist() {
 	const plistOld = `${fb.ProfilePath}backup\\profile\\playlists-v1.4`;
 	const plistNew = `${fb.ProfilePath}backup\\profile\\playlists-v2.0`;
 
@@ -2893,7 +3270,7 @@ function RestoreBackupPlaylist() {
 		setTimeout(() => { fb.RunMainMenuCommand('File/Restart'); }, 1000);
 	};
 
-	restoreBackup();
+	await restoreBackup();
 }
 
 
@@ -2907,11 +3284,12 @@ function RepaintRectAreas() {
 	window.RepaintRect = (x, y, w, h, force = undefined) => {
 		if (grm.ui.drawRepaintRects) {
 			grm.ui.repaintRects.push({ x, y, w, h });
-			window.Repaint();
-		} else {
 			grm.ui.repaintRectCount++;
-			originalRepaintRect(x, y, w, h, force);
+			window.Repaint();
+			return;
 		}
+		grm.ui.repaintRectCount = 0;
+		originalRepaintRect(x, y, w, h, force);
 	};
 }
 
@@ -2921,72 +3299,42 @@ function RepaintRectAreas() {
  * @global
  */
 function RepaintWindow() {
-	DebugLog('Repainting from RepaintWindow()');
+	DebugLog('Paint => Repainting from RepaintWindow()');
 	window.Repaint();
 }
 
 
 /**
- * Continuously repaints rectangles for a short period of time ( 1 sec ), used when changing the layout width.
+ * Centralizes and manages continuous calls to `window.RepaintRect` across different panels or components
+ * within the application for a specified duration, providing a more efficient mechanism for repainting
+ * specific areas of the UI. This method optimizes repaint requests by allowing for coordinated updates
+ * of UI components, improving performance over making individual `window.RepaintRect` calls from each panel.
  * @global
+ * @param {number} duration - The duration in milliseconds for which to continuously repaint the UI. Defaults to 500 milliseconds.
+ * @param {number} interval - The interval in milliseconds at which to process and apply repaint requests. Defaults to 100 milliseconds.
  */
-function RepaintWindowRectAreas() {
-	DebugLog('Repainting from RepaintWindowRectAreas()');
+function RepaintWindowRectAreas(duration = 500, interval = 100) {
 	const originalRepaintRect = window.RepaintRect.bind(window);
+	if (window.RepaintRect.overridden) return;
+	DebugLog('Paint => Repainting from RepaintWindowRectAreas()');
 
-	window.RepaintRect = () => {
-		window.Repaint();
-	};
+	let repaintAreas = [];
+
+	window.RepaintRect = (x, y, w, h) => { repaintAreas.push({ x, y, w, h }); };
+	window.RepaintRect.overridden = true;
+
+	let repaintInterval = setInterval(() => {
+		for (const area of repaintAreas) originalRepaintRect(area.x, area.y, area.w, area.h);
+	}, interval);
 
 	setTimeout(() => {
+		clearInterval(repaintInterval);
+		repaintInterval = null;
+		repaintAreas = [];
 		window.RepaintRect = originalRepaintRect;
-	}, 1000);
-}
-
-
-/**
- * Displays a popup with customizable message and button labels.
- * The behavior of the popup depends on the environment; if running under Wine or without Internet Explorer,
- * it will show a simple popup message. Otherwise, it will show a confirm box with two buttons.
- * @global
- * @param {boolean} fbPopup - Determines if the fb.ShowPopupMessage should be shown.
- * @param {string} fbMsg - The message to be displayed in the fb.ShowPopupMessage popup.
- * @param {string} popUpMsg - The message to be displayed in the confirm box popup.
- * @param {string} btn1Label - The label for the first button in the confirm box.
- * @param {string} btn2Label - The label for the second button in the confirm box. If not provided, no second button is shown.
- * @param {Function} callback - The callback function that is called with the confirmation status.
- */
-function ShowPopup(fbPopup, fbMsg, popUpMsg, btn1Label, btn2Label, callback) {
-	const continue_confirmation = (status, confirmed) => {
-		if (!confirmed) {
-			callback(confirmed);
-			return;
-		}
-		callback(confirmed);
-	};
-
-	if (Detect.Wine || !Detect.IE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
-		continue_confirmation(false, btn1Label);
-		if (fbPopup) fb.ShowPopupMessage(fbMsg, 'Georgia-ReBORN');
-	}
-	else {
-		lib.popUpBox.confirm('Georgia-ReBORN', popUpMsg, btn1Label, btn2Label, false, 'center', btn2Label ? continue_confirmation : false);
-	}
-}
-
-
-/**
- * Displays a popup message for the theme day/night mode.
- * If the mode is active, it provides an option to deactivate it.
- * @global
- */
-function ShowThemeDayNightModePopup() {
-	const msg = 'Theme day/night mode is active\nand has locked the theme.\n\nIn order to change themes,\nthis mode must be deactivated first.\n\nDeactivate it now?\n\n\n';
-	const msgFb = 'Theme day/night mode has been deactivated in order to change themes.';
-
-	ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
-		if (confirmed) grSet.themeDayNightMode = false;
-	});
+		delete window.RepaintRect.overridden;
+		DebugLog('Paint => Restored original RepaintRect function.');
+	}, duration);
 }
 
 

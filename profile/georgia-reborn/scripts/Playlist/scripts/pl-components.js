@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    extremeHunter, TheQwertiest                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-05-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -880,48 +880,54 @@ class PlaylistScrollbar {
 		const hoverInStep = 50;
 		const hoverOutStep = 15;
 		const downOutStep = 50;
+		const timerDelay = 25;
+
+		const actions = {
+			normal: (item, part) => {
+				item.hover_alpha = Math.max(0, item.hover_alpha - hoverOutStep);
+				item.hot_alpha = Math.max(0, item.hot_alpha - hoverOutStep);
+				item.pressed_alpha = part === 'thumb' ? Math.max(0, item.pressed_alpha - hoverOutStep) : Math.max(0, item.pressed_alpha - downOutStep);
+			},
+			hover: (item) => {
+				item.hover_alpha = Math.min(255, item.hover_alpha + hoverInStep);
+				item.hot_alpha = Math.max(0, item.hot_alpha - hoverOutStep);
+				item.pressed_alpha = Math.max(0, item.pressed_alpha - downOutStep);
+			},
+			pressed: (item) => {
+				item.hover_alpha = 0;
+				item.hot_alpha = 0;
+				item.pressed_alpha = 255;
+			},
+			hot: (item) => {
+				item.hover_alpha = Math.max(0, item.hover_alpha - hoverOutStep);
+				item.hot_alpha = Math.min(255, item.hot_alpha + hoverInStep);
+				item.pressed_alpha = Math.max(0, item.pressed_alpha - downOutStep);
+			}
+		};
 
 		if (!this._alpha_timer_internal) {
 			this._alpha_timer_internal = setInterval(() => {
 				for (const part in this.sb_parts) {
 					const item = this.sb_parts[part];
-					switch (item.state) {
-						case 'normal':
-							item.hover_alpha = Math.max(0, item.hover_alpha -= hoverOutStep);
-							item.hot_alpha = Math.max(0, item.hot_alpha -= hoverOutStep);
-							item.pressed_alpha = part === 'thumb' ? Math.max(0, item.pressed_alpha -= hoverOutStep) : Math.max(0, item.pressed_alpha -= downOutStep);
-							break;
-						case 'hover':
-							item.hover_alpha = Math.min(255, item.hover_alpha += hoverInStep);
-							item.hot_alpha = Math.max(0, item.hot_alpha -= hoverOutStep);
-							item.pressed_alpha = Math.max(0, item.pressed_alpha -= downOutStep);
-							break;
-						case 'pressed':
-							item.hover_alpha = 0;
-							item.hot_alpha = 0;
-							item.pressed_alpha = 255;
-							break;
-						case 'hot':
-							item.hover_alpha = Math.max(0, item.hover_alpha -= hoverOutStep);
-							item.hot_alpha = Math.min(255, item.hot_alpha += hoverInStep);
-							item.pressed_alpha = Math.max(0, item.pressed_alpha -= downOutStep);
-							break;
+					if (actions[item.state]) {
+						actions[item.state](item, part);
 					}
-					// console.log(i, item.state, item.hover_alpha , item.pressed_alpha , item.hot_alpha);
+					// console.log(part, item.state, item.hover_alpha, item.pressed_alpha, item.hot_alpha);
 					// item.repaint();
 				}
 
 				this.repaint();
 
-				const alpha_in_progress = Object.values(this.sb_parts).some((item) =>
-					(item.hover_alpha > 0 && item.hover_alpha < 255)
-					|| (item.pressed_alpha > 0 && item.pressed_alpha < 255)
-					|| (item.hot_alpha > 0 && item.hot_alpha < 255));
+				const alphaInProgress = Object.values(this.sb_parts).some((item) =>
+					(item.hover_alpha > 0 && item.hover_alpha < 255) ||
+					(item.pressed_alpha > 0 && item.pressed_alpha < 255) ||
+					(item.hot_alpha > 0 && item.hot_alpha < 255)
+				);
 
-				if (!alpha_in_progress) {
+				if (!alphaInProgress) {
 					this._stopAlphaTimer();
 				}
-			}, 25);
+			}, timerDelay);
 		}
 	}
 
@@ -1007,7 +1013,7 @@ class PlaylistScrollbar {
 
 				const btn_format = Stringformat.h_align_center | Stringformat.v_align_far;
 				if (i === 'lineDown') {
-					grClip.DrawString(item.ico, item.font, icoColor, 0, RES._4K ? -25 : -12, w, h, btn_format);
+					grClip.DrawString(item.ico, item.font, icoColor, 0, HD_4K(-12, -25), w, h, btn_format);
 				}
 				else if (i === 'lineUp') {
 					grClip.DrawString(item.ico, item.font, icoColor, 0, 0, w, h, btn_format);
@@ -1098,7 +1104,7 @@ class PlaylistScrollbar {
 	 * Updates the scrollbar via repaint.
 	 */
 	repaint() {
-		window.RepaintRect(this.x - (RES._4K ? 13 : 6), this.y, this.w, this.h);
+		window.RepaintRect(this.x - HD_4K(6, 13), this.y, this.w, this.h);
 	}
 
 	/**
@@ -1151,7 +1157,7 @@ class PlaylistScrollbar {
 		this.btn_h = this.w;
 		// * Draw info
 		this.scrollbar_h = this.h - this.btn_h * 2;
-		this.thumb_h = Math.max(Math.round(this.scrollbar_h * this.rows_drawn / this.row_count), RES._4K ? 45 : 30);
+		this.thumb_h = Math.max(Math.round(this.scrollbar_h * this.rows_drawn / this.row_count), HD_4K(30, 45));
 		this.scrollbar_travel = this.scrollbar_h - this.thumb_h;
 		// * Scrolling info
 		this.scrollable_lines = this.row_count - this.rows_drawn;
@@ -1166,11 +1172,13 @@ class PlaylistScrollbar {
 		this._create_dynamic_scrollbar_images(this.w, this.thumb_h);
 
 		const { x, y, w, h } = this;
+		const thumb_width = w - SCALE(14);
+		const buttonX = x + (thumb_width - w) / 2 + SCALE(1);
 
 		this.sb_parts = {
-			lineUp:   new PlaylistScrollbarPart(x - (RES._4K ? 13 : 6), y, w, this.btn_h, this.scrollbar_images.lineUp),
-			thumb:    new PlaylistScrollbarPart(x, y + this.thumb_y, w - SCALE(14), this.thumb_h, this.scrollbar_images.thumb),
-			lineDown: new PlaylistScrollbarPart(x - (RES._4K ? 13 : 6), y + h - this.btn_h, w, this.btn_h, this.scrollbar_images.lineDown)
+			lineUp:   new PlaylistScrollbarPart(buttonX, y, w, this.btn_h, this.scrollbar_images.lineUp),
+			thumb:    new PlaylistScrollbarPart(x, y + this.thumb_y, thumb_width, this.thumb_h, this.scrollbar_images.thumb),
+			lineDown: new PlaylistScrollbarPart(buttonX, y + h - this.btn_h, w, this.btn_h, this.scrollbar_images.lineDown)
 		};
 	}
 
@@ -1795,7 +1803,7 @@ class PlaylistHistory {
 		if (playlistNowPlaying && (grSet.playlistAutoScrollNowPlaying || fb.PlaybackFollowCursor || fb.CursorFollowPlayback)) {
 			setTimeout(() => { // * Wait until new album art / disc art loaded and other things finished for smoother auto-scrolling
 				pl.playlist.show_now_playing();
-			}, grm.ui.newTrackFetchingDone + 200);
+			}, 200);
 		}
 	}
 
@@ -1830,7 +1838,7 @@ class PlaylistHistory {
 				return true;
 			}
 		}
-		DebugLog(`Checking for duplicate playlist states took: ${Date.now() - start}ms`);
+		DebugLog(`Playlist history => checking for duplicate playlist states took: ${Date.now() - start}ms`);
 		return false;
 	}
 
@@ -1889,11 +1897,11 @@ class PlaylistHistory {
 				}
 				this.history.push(new PlaylistState(plman.ActivePlaylist, plItems));
 				this.stateIndex = this.length - 1;
-				if (grm.ui.btn.back) {
-					grm.ui.btn.back.repaint();
-					grm.ui.btn.forward.repaint();
+				if (grm.button.btn.back) {
+					grm.button.btn.back.repaint();
+					grm.button.btn.forward.repaint();
 				}
-				DebugLog('stateIndex:', this.stateIndex, ' new items count:', plItems.Count, this.stateIndex);
+				DebugLog('Playlist history => stateIndex:', this.stateIndex, ' new items count:', plItems.Count, this.stateIndex);
 			}
 		}
 	}
@@ -1936,7 +1944,7 @@ class PlaylistHistory {
 		if (this.stateIndex <= 0) {
 			this.stateIndex = 0;
 		}
-		DebugLog('pl.history back =>', this.stateIndex);
+		DebugLog('Playlist history => pl.history back =>', this.stateIndex);
 		this._setPlaylistState();
 	}
 
@@ -1949,7 +1957,7 @@ class PlaylistHistory {
 		if (this.stateIndex >= this.length) {
 			this.stateIndex = this.length - 1;
 		}
-		DebugLog('pl.history forward =>', this.stateIndex);
+		DebugLog('Playlist history => pl.history forward =>', this.stateIndex);
 		this._setPlaylistState();
 	}
 
@@ -2007,9 +2015,7 @@ class PlaylistRating {
 	 */
 	constructor(x, y, max_w, h, metadb) {
 		/** @private @type {number} */
-		const rowFontSize = grSet[`playlistFontSize_${grSet.layout}`];
-		/** @private @type {number} */
-		this.btn_w = SCALE(rowFontSize + 2);
+		this.btn_w = SCALE(grSet.playlistFontSize_layout + 2);
 
 		/** @public @type {number} */
 		this.x = x;
@@ -2036,7 +2042,7 @@ class PlaylistRating {
 	draw(gr, color) {
 		const cur_rating = this.get_rating();
 		let cur_rating_x = this.x;
-		const y = this.y - (RES._4K ? 3 : 1);
+		const y = this.y - HD_4K(1, 3);
 
 		for (let j = 0; j < 5; j++) {
 			if (j < cur_rating) {
@@ -2249,7 +2255,6 @@ class PlaylistManager {
 	 * @param {ContextMenu} parent_menu - The parent menu to append the item to.
 	 */
 	static append_playlist_info_visibility_context_menu_to(parent_menu) {
-		const showPlaylistManager = grSet[`showPlaylistManager_${grSet.layout}`];
 		parent_menu.appendItem('Show playlist manager', () => {
 			// plSet.show_plman = !plSet.show_plman;
 			if (grSet.layout === 'compact') {
@@ -2260,7 +2265,7 @@ class PlaylistManager {
 				grSet.showPlaylistManager_default = !grSet.showPlaylistManager_default;
 			}
 			pl.call.on_size(grm.ui.ww, grm.ui.wh);
-		}, { is_checked: showPlaylistManager });
+		}, { is_checked: grSet.showPlaylistManager_layout });
 	}
 	// #endregion
 
@@ -2344,14 +2349,12 @@ class PlaylistManager {
 	 * @private
 	 */
 	_draw_on_image(gr, x, y, w, h, panel_state) {
-		const headerFontSize      = grSet[`playlistHeaderFontSize_${grSet.layout}`];
-		const showPlaylistManager = grSet[`showPlaylistManager_${grSet.layout}`];
 		let text_color;
 		let bg_color;
 
 		switch (panel_state) {
 			case this.state.normal: {
-				text_color = grSet.styleBlend && grSet.autoHidePlman || !showPlaylistManager ? '' : pl.col.plman_text_normal;
+				text_color = grSet.styleBlend && grSet.autoHidePlman || !grSet.showPlaylistManager_layout ? '' : pl.col.plman_text_normal;
 				bg_color = pl.col.plman_bg;
 				break;
 			}
@@ -2369,7 +2372,7 @@ class PlaylistManager {
 
 		if (!grSet.styleBlend) gr.FillSolidRect(x, y, w, h, bg_color); // Playlist Manager Hide Top Rows that shouldn't be visible
 		// * Need to apply text rendering AntiAliasGridFit when using style Blend or when using custom theme fonts with larger font sizes
-		gr.SetTextRenderingHint(grSet.styleBlend || grSet.customThemeFonts && headerFontSize > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
+		gr.SetTextRenderingHint(grSet.styleBlend || grSet.customThemeFonts && grSet.playlistHeaderFontSize_layout > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
 
 		if (plman.ActivePlaylist !== -1 && plman.IsPlaylistLocked(plman.ActivePlaylist)) {
 			// Position above scrollbar for eye candy
@@ -2385,33 +2388,24 @@ class PlaylistManager {
 			// right_pad += lock_w;  // Deactivated -> PLM text should be always centered
 		}
 
-		const info_text_format = Stringformat.align_center | Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
-		gr.DrawString(this.info_text, pl.font.title_selected, text_color, x, y, w, h, info_text_format);
+		const centralPoint = y + h * 0.5;
+		const info_w = this.info_text_measure.Width;
+		const info_h = this.info_text_measure.Height;
+		const info_x = x + (w - info_w) * 0.5;
+		const info_y = centralPoint - (info_h * 0.5);
 
-		// * Playlist history buttons
-		const yCorrSize = {
-			22: { '4K': 14, 'HD':  7 },
-			20: { '4K': 12, 'HD':  5 },
-			18: { '4K': 10, 'HD':  3 },
-			17: { '4K':  8, 'HD':  2 },
-			16: { '4K':  7, 'HD':  1 },
-			15: { '4K':  4, 'HD':  0 },
-			14: { '4K':  4, 'HD':  0 },
-			13: { '4K':  2, 'HD': -1 },
-			12: { '4K':  2, 'HD': -1 },
-			10: { '4K': -2, 'HD': -3 }
-		};
-		const yCorr = yCorrSize[headerFontSize] && yCorrSize[headerFontSize][RES._4K ? '4K' : 'HD'];
-		const info_w = gr.CalcTextWidth(this.info_text, pl.font.title_selected);
-		const btn_x = Math.round((pl.playlist.x) + (pl.playlist.w - info_w) * 0.5);
-		const btn_y = grm.ui.topMenuHeight + yCorr;
-		const btns_w = Math.round(h);
+		gr.DrawString(this.info_text, pl.font.title_selected, text_color, info_x, info_y, info_w, info_h, Stringformat.trim_ellipsis_char | Stringformat.no_wrap);
+
+		const showBtns = grSet.autoHidePlman && (panel_state !== this.state.normal && info_x > pl.playlist.x) || !grSet.autoHidePlman;
+		const btn_h = SCALE(22);
+		const btn_y = this.y + (h * 0.5) - (btn_h * 0.5) + HD_4K(-1, 2);
+		const btn_back_x = showBtns ? info_x - btn_h * 1.2 : 9999;
+		const btn_forward_x = showBtns ? info_x + info_w + btn_h * 0.4 : 9999;
 		const hasPlaylistHistory = pl.history.canBack() || pl.history.canForward();
-		const showBtns = (grSet.autoHidePlman && (panel_state !== this.state.normal) || !grSet.autoHidePlman);
 
-		if (grSet.showPlaylistHistory && hasPlaylistHistory && showPlaylistManager) {
-			grm.ui.btn.back = new Button(showBtns ? btn_x - btns_w + yCorr : 9999, btn_y, h, h, 'Back', grm.ui.btnImg.Back, null, pl.history.canBack.bind(pl.history));
-			grm.ui.btn.forward = new Button(showBtns ? btn_x + info_w + yCorr : 9999, btn_y, h, h, 'Forward', grm.ui.btnImg.Forward, null, pl.history.canForward.bind(pl.history));
+		if (grSet.showPlaylistHistory && grSet.showPlaylistManager_layout && hasPlaylistHistory) {
+			grm.button.btn.back = new Button(btn_back_x, btn_y, btn_h, btn_h, 'Back', grm.button.btnImg.Back, null, pl.history.canBack.bind(pl.history));
+			grm.button.btn.forward = new Button(btn_forward_x, btn_y, btn_h, btn_h, 'Forward', grm.button.btnImg.Forward, null, pl.history.canForward.bind(pl.history));
 		}
 	}
 	// #endregion
@@ -2475,7 +2469,7 @@ class PlaylistManager {
 	 * @param {PlaylistKeyActionHandler} key_handler - The PlaylistKeyActionHandler object.
 	 */
 	register_key_actions(key_handler) {
-		key_handler.register_key_action(VK_KEY_N,
+		key_handler.register_key_action(VKey.KEY_N,
 			(modifiers) => {
 				if (modifiers.ctrl) {
 					plman.CreatePlaylist(plman.PlaylistCount, '');
@@ -2483,7 +2477,7 @@ class PlaylistManager {
 				}
 			});
 
-		key_handler.register_key_action(VK_KEY_M,
+		key_handler.register_key_action(VKey.KEY_M,
 			(modifiers) => {
 				if (modifiers.ctrl) {
 					fb.RunMainMenuCommand('View/Playlist Manager');
@@ -2539,6 +2533,8 @@ class PlaylistManager {
 			if (duration_text) {
 				this.info_text += `, Length: ${duration_text}`;
 			}
+
+			this.info_text_measure = gr.MeasureString(this.info_text, pl.font.title_selected, 0, 0, this.w, this.h);
 		}
 
 		if (this.panel_state === this.state.pressed
@@ -2586,7 +2582,7 @@ class PlaylistManager {
 	 * @param {number} m - The mouse mask.
 	 */
 	on_mouse_lbtn_down(x, y, m) {
-		if (grm.ui.btn.back && grm.ui.btn.back.mouseInThis(x, y) || grm.ui.btn.forward && grm.ui.btn.forward.mouseInThis(x, y)) {
+		if (grm.button.btn.back && grm.button.btn.back.mouseInThis(x, y) || grm.button.btn.forward && grm.button.btn.forward.mouseInThis(x, y)) {
 			return; // Handled in back forward buttons
 		}
 		if (!this.trace(x, y)) {
@@ -2605,7 +2601,7 @@ class PlaylistManager {
 	on_mouse_lbtn_up(x, y, m) {
 		const was_pressed = this.panel_state === this.state.pressed;
 
-		if (grm.ui.btn.back && grm.ui.btn.back.mouseInThis(x, y) || grm.ui.btn.forward && grm.ui.btn.forward.mouseInThis(x, y)) {
+		if (grm.button.btn.back && grm.button.btn.back.mouseInThis(x, y) || grm.button.btn.forward && grm.button.btn.forward.mouseInThis(x, y)) {
 			return; // Handled in back forward buttons
 		}
 		if (!this.trace(x, y)) {
@@ -2688,7 +2684,7 @@ class PlaylistManager {
 
 		fb.RunMainMenuCommand('View/Playlist Manager'); // PlaylistManager.append_playlist_info_visibility_context_menu_to(cmm);
 
-		if (utils.IsKeyPressed(VK_SHIFT)) {
+		if (utils.IsKeyPressed(VKey.SHIFT)) {
 			grm.ctxMenu.contextMenuDefault(cmm);
 		}
 

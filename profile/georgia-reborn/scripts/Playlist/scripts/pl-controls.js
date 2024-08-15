@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    extremeHunter, TheQwertiest                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    01-05-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1353,7 +1353,7 @@ class PlaylistSelectionHandler {
 		let is_drop_bottom_selected = !is_above;
 		const is_drop_boundary_reached = hover_row.idx === 0 || (!is_above && hover_row.idx === this.rows.length - 1);
 
-		if (this.internal_drag_n_drop_active && !utils.IsKeyPressed(VK_CONTROL)) {
+		if (this.internal_drag_n_drop_active && !utils.IsKeyPressed(VKey.CONTROL)) {
 			// Can't move selected item on itself
 			const is_item_above_selected = hover_row.idx !== 0 && this.rows[hover_row.idx - 1].is_selected();
 			const is_item_below_selected = hover_row.idx !== (this.rows.length - 1) && this.rows[hover_row.idx + 1].is_selected();

@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    extremeHunter, TheQwertiest                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    05-06-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -127,7 +127,7 @@ class PlaylistRow extends BaseListItem {
 			// 	gr.FillSolidRect(this.x, this.y, this.w, this.h, pl.col.row_selection_bg);
 			// }
 			if (!this.is_playing) { // Do not draw selection on now playing to prevent 1px overlapping
-				gr.DrawRect(this.x, this.is_playing ? this.y - 1 : this.y, scrollbar ? this.w - (RES._4K ? 25 : 13) : this.w, this.h, 1, pl.col.row_selection_frame);
+				gr.DrawRect(this.x, this.is_playing ? this.y - 1 : this.y, scrollbar ? this.w - HD_4K(13, 25) : this.w, this.h, 1, pl.col.row_selection_frame);
 				// Hide DrawRect 1px gaps when all songs are completely selected
 				gr.DrawRect(this.x, this.is_playing ? this.y - 1 : this.y, SCALE(7), this.h, 1, pl.col.row_sideMarker);
 				gr.FillSolidRect(this.x, this.y, SCALE(8), this.h, pl.col.row_sideMarker);
@@ -174,7 +174,7 @@ class PlaylistRow extends BaseListItem {
 		const right_spacing = SCALE(20);
 		let cur_x = this.x + right_spacing;
 		let right_pad = SCALE(20);
-		const testRect = false;
+		const testRect = false; // For debug
 
 		if ($('$ifgreater(%totaldiscs%,1,true,false)', this.metadb) !== 'false') {
 			cur_x += SCALE(0);
@@ -182,17 +182,28 @@ class PlaylistRow extends BaseListItem {
 
 		// * LENGTH
 		{
+			const length_w = SCALE(60);
 			if (this.length_text == null) {
 				this.length_text = $('[%length%]', this.metadb);
 			}
-			this.length_text = this.is_playing && grSet.playlistTimeRemaining ? $('[-%playback_time_remaining%]') : $('[%length%]', this.metadb);
+			this.length_text =
+				this.is_playing && grSet.playlistPlaybackTimeDisplay === 'remaining' ? $('[-%playback_time_remaining%]') :
+				this.is_playing && grSet.playlistPlaybackTimeDisplay === 'percent' ? PlaybackTimePercentage() :
+				$('[%length%]', this.metadb);
 
-			const length_w = SCALE(60);
 			if (this.length_text) {
 				const length_x = this.x + this.w - length_w - right_pad;
-
 				gr.DrawString(this.length_text, title_font, this.title_color, length_x, this.y, length_w, this.h, Stringformat.h_align_far | Stringformat.v_align_center);
 				testRect && gr.DrawRect(length_x, this.y - 1, length_w, this.h, 1, RGBA(155, 155, 255, 250));
+
+				// * Refresh playlist time display every second if it is not default
+				if (grSet.playlistPlaybackTimeDisplay !== 'default' && this.is_playing && fb.IsPlaying && !this.repaintScheduled) {
+					this.repaintScheduled = true;
+					setTimeout(() => {
+						window.RepaintRect(length_x + 5, this.y, length_w + 5, this.h);
+						this.repaintScheduled = false;
+					}, 1000);
+				}
 			}
 			// We always want that padding
 			right_pad += Math.max(length_w, Math.ceil(gr.MeasureString(this.length_text, title_font, 0, 0, 0, 0).Width + 10));
@@ -266,10 +277,7 @@ class PlaylistRow extends BaseListItem {
 			}
 		}
 
-		// * QUEUE
-		const queueText = plSet.show_queue_position && this.queue_indexes != null ? `  [${this.queue_indexes}]` : '';
-
-		// * TITLE init
+		// * TITLE
 		if (this.title_text == null) {
 			const margin = !grSet.showPlaylistTrackNumbers && !grSet.showPlaylistIndexNumbers ? this.is_playing ? '      ' : '' : ' ';
 			const indexNumbers = this.idx < 9 ? `0${this.idx + 1}. ` : `${this.idx + 1}. `;
@@ -292,8 +300,25 @@ class PlaylistRow extends BaseListItem {
 
 			this.title_text = (fb.IsPlaying && this.is_playing && is_radio) ? $(titleQuery) : $(titleQuery, this.metadb);
 		}
+		if (this.title_text) {
+			const title_w = this.w - right_pad - SCALE(44);
+			const title_text_format = Stringformat.v_align_center | Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
 
-		// * TITLE ARTIST init
+			DrawString(gr, this.title_text, title_font, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
+			if (this.is_playing) {
+				DrawString(gr, fb.IsPaused ? Guifx.pause : Guifx.play, grFont.guifx, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
+			}
+
+			testRect && gr.DrawRect(this.x, this.y - 1, title_w, this.h, 1, RGBA(155, 155, 255, 250));
+
+			// * Set widths for rowTooltip
+			this.title_w = this.w - right_pad - SCALE(44);
+			this.title_text_w = gr.MeasureString(this.title_text, title_font, 0, 0, 0, 0).Width;
+
+			cur_x += this.title_text_w;
+		}
+
+		// * TITLE ARTIST
 		if (this.title_artist_text == null) {
 			const pattern = `^${$('%album artist%', this.metadb).replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&')} `;
 			const regex = new RegExp(pattern);
@@ -305,25 +330,6 @@ class PlaylistRow extends BaseListItem {
 				this.title_artist_text = `  \u25AA  ${this.title_artist_text}`;
 			}
 		}
-
-		// * TITLE draw
-		{
-			const title_w = this.w - right_pad - SCALE(44);
-			const title_text_format = Stringformat.v_align_center | Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
-			DrawString(gr, this.title_text, title_font, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
-			if (this.is_playing) {
-				DrawString(gr, fb.IsPaused ? Guifx.pause : Guifx.play, grFont.guifx, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
-			}
-
-			testRect && gr.DrawRect(this.x, this.y - 1, title_w, this.h, 1, RGBA(155, 155, 255, 250));
-
-			cur_x += Math.ceil(
-				/** @type {!number} */
-				gr.MeasureString(this.title_text, title_font, 0, 0, title_w, this.h, title_text_format | Stringformat.measure_trailing_spaces).Width
-			);
-		}
-
-		// * TITLE ARTIST draw
 		if (this.title_artist_text) {
 			const title_artist_x = cur_x;
 			const title_artist_w = this.w - (title_artist_x - this.x) - right_pad;
@@ -338,6 +344,8 @@ class PlaylistRow extends BaseListItem {
 			);
 		}
 
+		// * QUEUE
+		const queueText = plSet.show_queue_position && this.queue_indexes != null ? `  [${this.queue_indexes}]` : '';
 		if (queueText) {
 			const queueX = cur_x;
 			const queueW = this.w - (queueX - this.x) - right_pad;
@@ -350,19 +358,6 @@ class PlaylistRow extends BaseListItem {
 			gr.DrawString(queueText, title_font, queueColor, queueX, this.y, queueW, this.h, queueTextFormat);
 		}
 		gr.SetSmoothingMode(SmoothingMode.HighQuality);
-
-		// * Refresh playlist time remaining all the time when activated
-		if (grSet.playlistTimeRemaining && this.is_playing && fb.IsPlaying) {
-			setTimeout(() => {
-				const length_w = SCALE(60);
-				const length_x = this.x + this.w - length_w;
-				window.RepaintRect(length_x + 5, this.y, length_w + 5, this.h);
-			}, 1000);
-		}
-
-		// * Set widths for rowTooltip
-		this.title_w = this.w - right_pad - SCALE(44);
-		this.title_text_w = gr.MeasureString(this.title_text, title_font, 0, 0, 0, 0).Width;
 	}
 
 	/**

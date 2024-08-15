@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-06-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2271,12 +2271,11 @@ class ThemePreset {
 	 * @private
 	 */
 	_hideThemePresetIndicator(ms) {
-		clearTimeout(grm.ui.presetIndicatorTimer);
+		grm.ui.clearTimer('presetIndicator');
 		grm.ui.presetIndicatorTimer = setTimeout(() => {
 			grm.ui.themePresetName = '';
 			grm.ui.themeNotification = '';
-			clearTimeout(grm.ui.presetIndicatorTimer);
-			grm.ui.presetIndicatorTimer = null;
+			grm.ui.clearTimer('presetIndicator');
 			window.Repaint();
 		}, ms);
 	}
@@ -2577,11 +2576,10 @@ class ThemePreset {
 	 * Gets a random theme preset, used in Options > Preset > Auto random.
 	 */
 	getRandomThemePreset() {
-		clearInterval(grm.ui.presetAutoRandomModeTimer);
-		grm.ui.presetAutoRandomModeTimer = null;
+		grm.ui.clearTimer('presetAutoRandomMode');
 		grm.ui.themeNotification = '';
 
-		if ($('[%GR_THEME%]') || $('[%GR_STYLE%]') || $('[%GR_PRESET%]')) return;
+		if (grm.ui.hasThemeTags()) return;
 
 		if (['off', 'track', 'album', 'dblclick'].includes(grSet.presetAutoRandomMode)) {
 			this._setRandomThemePreset();
@@ -2606,7 +2604,7 @@ class ThemePreset {
 		grm.ui.resetStyle('all');
 		this[preset](); // Call the method on the ThemePreset instance
 		grm.ui.updateStyle();
-		grm.ui.createDiscArtShadow();
+		grm.details.createDiscArtShadow();
 	}
 	// #endregion
 }

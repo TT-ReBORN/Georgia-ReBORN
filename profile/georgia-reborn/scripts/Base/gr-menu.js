@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-06-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -42,7 +42,7 @@ class TopMenu {
 				statusMenu.addItem('All fonts installed', grm.ui.initFonts(), undefined, true);
 				statusMenu.addItem('Artist logos found', IsFile(`${grPath.artistlogos}Metallica.png`), undefined, true);
 				statusMenu.addItem('Record label logos found', IsFile(`${grPath.labelsBase}Republic.png`), undefined, true);
-				statusMenu.addItem('Flag images found', IsFile(`${grPath.flagsBase + (RES._4K ? '64\\' : '32\\')}United-States.png`), undefined, true);
+				statusMenu.addItem('Flag images found', IsFile(`${grPath.flagsBase + HD_4K('32\\', '64\\')}United-States.png`), undefined, true);
 				statusMenu.addItem('foo_enhanced_playcount installed', Component.EnhancedPlaycount, () => { RunCmd('https://www.foobar2000.org/components/view/foo_enhanced_playcount'); });
 				statusMenu.appendTo(themeMenu);
 
@@ -85,37 +85,37 @@ class TopMenu {
 		const isAutoPl = !playlistCount ? '' : plman.IsAutoPlaylist(plman.ActivePlaylist);
 		const isLocked = !playlistCount ? '' : plman.IsPlaylistLocked(plman.ActivePlaylist);
 
-		plTools.AppendTo(cpm, MF_STRING, 'Playlist tools');
-		plTools.AppendMenuItem(MF_STRING, 1, 'Playlist manager \tCtrl+M');
-		plTools.AppendMenuItem(MF_STRING, 2, 'Playlist search \tCtrl+F');
+		plTools.AppendTo(cpm, MenuFlag.String, 'Playlist tools');
+		plTools.AppendMenuItem(MenuFlag.String, 1, 'Playlist manager \tCtrl+M');
+		plTools.AppendMenuItem(MenuFlag.String, 2, 'Playlist search \tCtrl+F');
 		plTools.AppendMenuSeparator();
-		plTools.AppendMenuItem(MF_STRING, 3, 'Create new playlist \tCtrl+N');
-		autoPl.AppendTo(plTools, MF_STRING, 'Create new auto playlist');
-		autoPl.AppendMenuItem(MF_STRING, 4, 'Custom auto playlist');
+		plTools.AppendMenuItem(MenuFlag.String, 3, 'Create new playlist \tCtrl+N');
+		autoPl.AppendTo(plTools, MenuFlag.String, 'Create new auto playlist');
+		autoPl.AppendMenuItem(MenuFlag.String, 4, 'Custom auto playlist');
 		autoPl.AppendMenuSeparator();
-		autoPl.AppendMenuItem(MF_STRING, 5, 'Tracks from the library');
+		autoPl.AppendMenuItem(MenuFlag.String, 5, 'Tracks from the library');
 		autoPl.AppendMenuSeparator();
-		autoPl.AppendMenuItem(MF_STRING, 6, 'Tracks most played');
-		autoPl.AppendMenuItem(MF_STRING, 7, 'Tracks never played');
-		autoPl.AppendMenuItem(MF_STRING, 8, 'Tracks played in the last week');
-		autoPl.AppendMenuItem(MF_STRING, 9, 'Tracks played in the last month');
-		autoPl.AppendMenuItem(MF_STRING, 10, 'Tracks played in the last year');
+		autoPl.AppendMenuItem(MenuFlag.String, 6, 'Tracks most played');
+		autoPl.AppendMenuItem(MenuFlag.String, 7, 'Tracks never played');
+		autoPl.AppendMenuItem(MenuFlag.String, 8, 'Tracks played in the last week');
+		autoPl.AppendMenuItem(MenuFlag.String, 9, 'Tracks played in the last month');
+		autoPl.AppendMenuItem(MenuFlag.String, 10, 'Tracks played in the last year');
 		autoPl.AppendMenuSeparator();
-		autoPl.AppendMenuItem(MF_STRING, 11, 'Tracks unrated');
-		autoPl.AppendMenuItem(MF_STRING, 12, 'Tracks rated 1 star');
-		autoPl.AppendMenuItem(MF_STRING, 13, 'Tracks rated 2 stars');
-		autoPl.AppendMenuItem(MF_STRING, 14, 'Tracks rated 3 stars');
-		autoPl.AppendMenuItem(MF_STRING, 15, 'Tracks rated 4 stars');
-		autoPl.AppendMenuItem(MF_STRING, 16, 'Tracks rated 5 stars');
+		autoPl.AppendMenuItem(MenuFlag.String, 11, 'Tracks unrated');
+		autoPl.AppendMenuItem(MenuFlag.String, 12, 'Tracks rated 1 star');
+		autoPl.AppendMenuItem(MenuFlag.String, 13, 'Tracks rated 2 stars');
+		autoPl.AppendMenuItem(MenuFlag.String, 14, 'Tracks rated 3 stars');
+		autoPl.AppendMenuItem(MenuFlag.String, 15, 'Tracks rated 4 stars');
+		autoPl.AppendMenuItem(MenuFlag.String, 16, 'Tracks rated 5 stars');
 		autoPl.AppendMenuSeparator();
-		autoPl.AppendMenuItem(MF_STRING, 17, 'Loved tracks');
+		autoPl.AppendMenuItem(MenuFlag.String, 17, 'Loved tracks');
 		plTools.AppendMenuSeparator();
-		plTools.AppendMenuItem(MF_STRING, 18, 'Save playlist \tCtrl+S');
-		plTools.AppendMenuItem(MF_STRING, 19, 'Load playlist');
-		plTools.AppendMenuItem(isAutoPl ? MF_DISABLED : MF_STRING, 20, isLocked ? isAutoPl ? 'Unlock playlist (N/A for auto playlists)' : 'Unlock playlist' : 'Lock playlist');
+		plTools.AppendMenuItem(MenuFlag.String, 18, 'Save playlist \tCtrl+S');
+		plTools.AppendMenuItem(MenuFlag.String, 19, 'Load playlist');
+		plTools.AppendMenuItem(isAutoPl ? MenuFlag.Disabled : MenuFlag.String, 20, isLocked ? isAutoPl ? 'Unlock playlist (N/A for auto playlists)' : 'Unlock playlist' : 'Lock playlist');
 		cpm.AppendMenuSeparator();
 		for (let i = 0; i < playlistCount; i++) {
-			cpm.AppendMenuItem(MF_STRING, playlistId + i, `${plman.GetPlaylistName(i).replace(/&/g, '&&')} [${plman.PlaylistItemCount(i)}]${plman.IsAutoPlaylist(i) ? ' (Auto)' : ''}${i === plman.PlayingPlaylist ? ' (Now Playing)' : ''}`);
+			cpm.AppendMenuItem(MenuFlag.String, playlistId + i, `${plman.GetPlaylistName(i).replace(/&/g, '&&')} [${plman.PlaylistItemCount(i)}]${plman.IsAutoPlaylist(i) ? ' (Auto)' : ''}${i === plman.PlayingPlaylist ? ' (Now Playing)' : ''}`);
 		}
 
 		const id = cpm.TrackPopupMenu(x, y);
@@ -217,24 +217,30 @@ class TopMenu {
 	}
 
 	/**
-	 * All top menus, also used to append menus in panel context menus.
+	 * Handles all top menus, also used to append panel-related menus to the context menu.
 	 * @param {number} x - The x-coordinate.
 	 * @param {number} y - The y-coordinate.
-	 * @param {boolean} context_menu - Appends panel related menus to the context menu.
-	 * @param {boolean} playlist - Appends main Playlist menu to the Playlist context menu.
-	 * @param {boolean} details - Appends main Details menu to the Details context menu.
-	 * @param {boolean} library - Appends main Library menu to the Library context menu.
-	 * @param {boolean} biography - Appends main Biography menu to the Biography context menu.
-	 * @param {boolean} lyrics - Appends main Lyrics menu to the Lyrics context menu.
+	 * @param {boolean} contextMenu - If true, appends panel-related menus to the context menu.
+	 * @param {string} panel - The name of the panel to be appended. Can be 'playlist', 'details', 'library', 'biography', or 'lyrics'.
 	 */
-	topMenuOptions(x, y, context_menu, playlist, details, library, biography, lyrics) {
+	topMenuOptions(x, y, contextMenu, panel) {
 		grm.ui.activeMenu = true;
 		grm.ui.state.mouse_x = x;
 		grm.ui.state.mouse_y = y;
+
 		const menu = new Menu();
+
+		const panelOptionsMenu = {
+			playlist: grm.options.playlistOptions,
+			details: grm.options.detailsOptions,
+			library: grm.options.libraryOptions,
+			biography: grm.options.biographyOptions,
+			lyrics: grm.options.lyricsOptions
+		};
+
 		const themeDayNightSandbox = grSet.themeSetupDay || grSet.themeSetupNight || grSet.themeSandbox;
 
-		if (!context_menu) {
+		if (!contextMenu) {
 			grm.options.themeOptions(menu);
 			grm.options.styleOptions(menu);
 			grm.options.presetOptions(menu);
@@ -270,11 +276,9 @@ class TopMenu {
 				grm.options.developerToolsOptions(menu);
 			}
 		}
-		else if (playlist) grm.options.playlistOptions(menu, context_menu);
-		else if (details) grm.options.detailsOptions(menu, context_menu);
-		else if (library) grm.options.libraryOptions(menu, context_menu);
-		else if (biography) grm.options.biographyOptions(menu, context_menu);
-		else if (lyrics) grm.options.lyricsOptions(menu, context_menu);
+		else if (panelOptionsMenu[panel]) {
+			panelOptionsMenu[panel](menu, contextMenu);
+		}
 
 		const idx = menu.trackPopupMenu(x, y);
 		menu.doCallback(idx);
@@ -307,7 +311,11 @@ class TopMenuOptions {
 		this.applyThemeSetting = (setting, value) => {
 			if (grSet.themeDayNightMode) {
 				initThemeDayNightMode(new Date());
-				ShowThemeDayNightModePopup();
+				const msg = grm.msg.getMessage('main', 'themeDayNightModeNotice');
+				const msgFb = grm.msg.getMessage('main', 'themeDayNightModeNotice', true);
+				grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+					if (confirmed) grSet.themeDayNightMode = false;
+				});
 				if (grSet.themeDayNightMode) return;
 			}
 
@@ -339,7 +347,7 @@ class TopMenuOptions {
 			this.applyThemeSetting('theme', theme);
 			grm.ui.resetTheme();
 			grm.ui.initTheme();
-			grm.ui.createDiscArtShadow();
+			grm.details.createDiscArtShadow();
 			grm.preset.initThemePresetState();
 		}, false, false, [3, 7]);
 		themeMenu.addSeparator();
@@ -364,49 +372,28 @@ class TopMenuOptions {
 			grm.ui.resetTheme();
 			grm.ui.initCustomTheme();
 			grm.ui.initTheme();
-			grm.ui.createDiscArtShadow();
-			grm.cthMenu.initCustomThemeMenu('pl_bg');
+			grm.details.createDiscArtShadow();
+			grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg');
 			grm.preset.initThemePresetState();
 		});
 		customThemeMenu.addSeparator();
 
-		customThemeMenu.addItem('Edit custom theme', false, () => {
-			if (grSet.layout === 'default') {
-				grm.ui.displayCustomThemeMenu = !grm.ui.displayCustomThemeMenu;
-				if (!grSet.theme.startsWith('custom')) {
-					grSet.theme = 'custom01';
-				}
-				grm.ui.initCustomTheme();
-				grm.ui.initTheme();
-
-				if (grm.ui.displayDetails || grm.ui.displayLibrary || grm.ui.displayBiography || grm.ui.displayLyrics) {
-					grm.ui.displayPlaylist = true;
-					grm.ui.displayDetails = false;
-					grm.ui.displayLibrary = false;
-					grm.ui.displayBiography = false;
-					grm.ui.displayLyrics = false;
-					grm.ui.resizeArtwork(true);
-					grm.button.initButtonState();
-				}
-				grm.cthMenu.initCustomThemeMenu('pl_bg');
-				RepaintWindow();
-			} else {
-				fb.ShowPopupMessage(`Custom theme can only be live edited in default layout:\nOptions > Layout > Default\n\nYou could manually edit your config file while reloading to take effect:\n${grCfg.configPathCustom}\n`, 'Custom theme live editing');
-			}
+		customThemeMenu.addItem(!grm.ui.displayCustomThemeMenu ? 'Edit custom theme' : 'Close custom theme menu', false, () => {
+			grm.ui.initCustomThemeMenuState();
 		});
 
 		customThemeMenu.addItem('Rename custom theme', false, () => {
 			if (!grSet.theme.startsWith('custom')) {
-				const msg = 'The renaming process was canceled.\n\nPlease ensure that you have selected and activated\na custom theme before attempting to rename it.\n\n\n';
-				ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				const msg = grm.msg.getMessage('menu', 'renameCustomTheme');
+				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 				return;
 			}
 			grm.inputBox.renameCustomTheme();
 		});
 
 		customThemeMenu.createRadioSubMenu('Save current colors', customThemeName, '', ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'], (theme) => {
-			const msg = `Do you want to save current used colors\nto the selected custom theme slot?\n\nThis will overwrite all colors in the selected\ncustom theme slot.\n\nIt is recommended to make a backup\nof your custom config file:\n${grCfg.configPathCustom}\n\nSaved color changes will take effect on next reload.\n\nContinue?\n\n\n`;
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'saveCurrentColors');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (confirmed) grm.color.setCurrentColorsToCustomTheme(theme);
 			});
 		});
@@ -427,8 +414,8 @@ class TopMenuOptions {
 		// * STYLES * //
 		styleMenu.addToggleItem('Default', grSet, 'styleDefault', () => {
 			if (grSet.themeSandbox) {
-				const msg = 'Theme style reset was canceled:\n\nActive theme sandbox needs to be deactivated first\nin order to reset theme styles.\n\n\n';
-				ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				const msg = grm.msg.getMessage('menu', 'styleDefault');
+				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 				grSet.styleDefault = false;
 				return;
 			}
@@ -442,35 +429,35 @@ class TopMenuOptions {
 		styleMenu.addSeparator();
 		if (grSet.theme === 'reborn' || grSet.theme === 'random' || grSet.theme.startsWith('custom')) {
 			styleMenu.addToggleItem('Night', grSet, 'styleNighttime', () => {
-				grm.ui.setStyle('night', grSet.styleNighttime);
+				grm.ui.setStyle('styleNighttime', grSet.styleNighttime);
 				grm.ui.updateStyle();
 			});
 			styleMenu.addSeparator();
 		}
 		styleMenu.addToggleItem('Bevel', grSet, 'styleBevel', () => {
-			grm.ui.setStyle('bevel', grSet.styleBevel);
+			grm.ui.setStyle('styleBevel', grSet.styleBevel);
 			grm.ui.updateStyle();
 		});
 		styleMenu.addSeparator();
 
 		// * STYLES - GROUP ONE * //
 		styleMenu.addToggleItem('Blend', grSet, 'styleBlend', () => {
-			grm.ui.setStyle('blend', grSet.styleBlend);
+			grm.ui.setStyle('styleBlend', grSet.styleBlend);
 			grm.ui.updateStyle();
 		});
 		styleMenu.addToggleItem('Blend 2', grSet, 'styleBlend2', () => {
-			grm.ui.setStyle('blend2', grSet.styleBlend2);
+			grm.ui.setStyle('styleBlend2', grSet.styleBlend2);
 			grm.ui.updateStyle();
 		});
 		if (['reborn', 'random', 'blue', 'darkblue', 'red', 'custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(grSet.theme)) {
 			styleMenu.addToggleItem('Gradient', grSet, 'styleGradient', () => {
-				grm.ui.setStyle('gradient', grSet.styleGradient);
+				grm.ui.setStyle('styleGradient', grSet.styleGradient);
 				grm.ui.updateStyle();
 			}, grSet.styleRebornWhite);
 		}
 		if (['reborn', 'random', 'blue', 'darkblue', 'red', 'custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(grSet.theme)) {
 			styleMenu.addToggleItem('Gradient 2', grSet, 'styleGradient2', () => {
-				grm.ui.setStyle('gradient2', grSet.styleGradient2);
+				grm.ui.setStyle('styleGradient2', grSet.styleGradient2);
 				grm.ui.updateStyle();
 			}, grSet.styleRebornWhite);
 		}
@@ -478,62 +465,62 @@ class TopMenuOptions {
 
 		// * STYLES - GROUP TWO * //
 		styleMenu.addToggleItem('Alternative', grSet, 'styleAlternative', () => {
-			grm.ui.setStyle('alternative', grSet.styleAlternative);
+			grm.ui.setStyle('styleAlternative', grSet.styleAlternative);
 			grm.ui.updateStyle();
 		});
 		styleMenu.addToggleItem('Alternative 2', grSet, 'styleAlternative2', () => {
-			grm.ui.setStyle('alternative2', grSet.styleAlternative2);
+			grm.ui.setStyle('styleAlternative2', grSet.styleAlternative2);
 			grm.ui.updateStyle();
 		});
 		if (grSet.theme === 'white') {
 			styleMenu.addToggleItem('Black and white', grSet, 'styleBlackAndWhite', () => {
-				grm.ui.setStyle('blackAndWhite', grSet.styleBlackAndWhite);
+				grm.ui.setStyle('styleBlackAndWhite', grSet.styleBlackAndWhite);
 				grm.ui.updateStyle();
 			}, grSet.styleBlackAndWhiteReborn);
 			styleMenu.addToggleItem('Black and white 2', grSet, 'styleBlackAndWhite2', () => {
-				grm.ui.setStyle('blackAndWhite2', grSet.styleBlackAndWhite2);
+				grm.ui.setStyle('styleBlackAndWhite2', grSet.styleBlackAndWhite2);
 				grm.ui.updateStyle();
 			}, grSet.styleBlackAndWhiteReborn);
 			styleMenu.addToggleItem('Black and white reborn', grSet, 'styleBlackAndWhiteReborn', () => {
-				grm.ui.setStyle('blackAndWhiteReborn', grSet.styleBlackAndWhiteReborn);
+				grm.ui.setStyle('styleBlackAndWhiteReborn', grSet.styleBlackAndWhiteReborn);
 				grm.ui.updateStyle();
 			});
 		}
 		if (grSet.theme === 'black') {
 			styleMenu.addToggleItem('Black reborn', grSet, 'styleBlackReborn', () => {
-				grm.ui.setStyle('blackReborn', grSet.styleBlackReborn);
+				grm.ui.setStyle('styleBlackReborn', grSet.styleBlackReborn);
 				grm.ui.updateStyle();
 			});
 		}
 		if (grSet.theme === 'reborn') {
 			styleMenu.addToggleItem('Reborn white', grSet, 'styleRebornWhite', () => {
-				grm.ui.setStyle('rebornWhite', grSet.styleRebornWhite);
+				grm.ui.setStyle('styleRebornWhite', grSet.styleRebornWhite);
 				grm.ui.updateStyle();
 			});
 			styleMenu.addToggleItem('Reborn black', grSet, 'styleRebornBlack', () => {
-				grm.ui.setStyle('rebornBlack', grSet.styleRebornBlack);
+				grm.ui.setStyle('styleRebornBlack', grSet.styleRebornBlack);
 				grm.ui.updateStyle();
 			});
 			styleMenu.addToggleItem('Reborn fusion', grSet, 'styleRebornFusion', () => {
-				grm.ui.setStyle('rebornFusion', grSet.styleRebornFusion);
+				grm.ui.setStyle('styleRebornFusion', grSet.styleRebornFusion);
 				grm.ui.updateStyle();
 			});
 			styleMenu.addToggleItem('Reborn fusion 2', grSet, 'styleRebornFusion2', () => {
-				grm.ui.setStyle('rebornFusion2', grSet.styleRebornFusion2);
+				grm.ui.setStyle('styleRebornFusion2', grSet.styleRebornFusion2);
 				grm.ui.updateStyle();
 			});
 			styleMenu.addToggleItem('Reborn fusion accent', grSet, 'styleRebornFusionAccent', () => {
-				grm.ui.setStyle('rebornFusionAccent', grSet.styleRebornFusionAccent);
+				grm.ui.setStyle('styleRebornFusionAccent', grSet.styleRebornFusionAccent);
 				grm.ui.updateStyle();
 			});
 		}
 		if (grSet.theme === 'random') {
 			styleMenu.addToggleItem('Random pastel', grSet, 'styleRandomPastel', () => {
-				grm.ui.setStyle('randomPastel', grSet.styleRandomPastel);
+				grm.ui.setStyle('styleRandomPastel', grSet.styleRandomPastel);
 				grm.ui.updateStyle();
 			});
 			styleMenu.addToggleItem('Random dark', grSet, 'styleRandomDark', () => {
-				grm.ui.setStyle('randomDark', grSet.styleRandomDark);
+				grm.ui.setStyle('styleRandomDark', grSet.styleRandomDark);
 				grm.ui.updateStyle();
 			});
 		}
@@ -615,9 +602,9 @@ class TopMenuOptions {
 			themePresetSelectModeMenu.addRadioItems(['Default', 'Harmonic', 'Theme'], grSet.presetSelectMode, ['default', 'harmonic', 'theme'], (mode) => {
 				grSet.presetSelectMode = mode;
 				if (mode === 'default') {
-					const msg = 'Do you want to activate the -Default- preset select mode?\n\nThe default select mode will automatically choose\na random pick of 88 theme presets.\n\nDouble-click on the lower bar to choose\nanother random theme preset.\n\nWhen random mode is activated,\nall themes and style options will be available.\n\nContinue?\n\n\n';
-					const msgFb = 'Default preset select mode activated:\n\nThe default preset select mode will automatically choose a random pick of 88 theme presets.\n\nDouble-click on the lower bar to choose another random theme preset.\n\nWhen random mode is activated,\nall themes and style options will be available.';
-					ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+					const msg = grm.msg.getMessage('menu', 'presetSelectModeDefault');
+					const msgFb = grm.msg.getMessage('menu', 'presetSelectModeDefault', true);
+					grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 						if (!confirmed) {
 							grSet.presetSelectMode = 'default';
 							return;
@@ -632,9 +619,9 @@ class TopMenuOptions {
 					});
 				}
 				else if (mode === 'harmonic') {
-					const msg = 'Do you want to activate the -Harmonic- preset select mode?\n\nThe harmonic preset select mode will automatically\nchoose the best visual experience of themes and styles\nbased on album art.\n\nYou can also double-click on the lower bar\nto choose another random harmonic preset.\n\nWhen harmonic preset select mode is activated,\nall themes and almost all style options will be disabled.\n\nContinue?\n\n\n';
-					const msgFb = 'Harmonic preset select mode activated:\n\nThe harmonic preset select mode will automatically choose the best visual experience of themes and styles based on album art.\n\nYou can also double-click on the lower bar to choose another random harmonic preset.\n\nWhen harmonic preset select mode is activated,\nall themes and almost all style options will be disabled.';
-					ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+					const msg = grm.msg.getMessage('menu', 'presetSelectModeHarmonic');
+					const msgFb = grm.msg.getMessage('menu', 'presetSelectModeHarmonic', true);
+					grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 						if (!confirmed) {
 							grSet.presetSelectMode = 'default';
 							return;
@@ -645,9 +632,9 @@ class TopMenuOptions {
 					});
 				}
 				else if (mode === 'theme') {
-					const msg = 'Do you want to activate the -Theme- preset select mode?\n\nThe theme preset select mode will automatically choose\na random theme preset based on current active theme.\n\nYou can also double-click on the lower bar\nto choose another random theme preset.\n\nWhen theme preset select mode is activated,\nall themes and style options will be available.\n\nContinue?\n\n\n';
-					const msgFb = 'Theme preset select mode activated:\n\nThe theme preset select mode will automatically choose a random theme preset based on current active theme.\n\nYou can also double-click on the lower bar to choose another random theme preset.\n\nWhen theme preset select mode is activated,\nall themes and style options will be available';
-					ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+					const msg = grm.msg.getMessage('menu', 'presetSelectModeTheme');
+					const msgFb = grm.msg.getMessage('menu', 'presetSelectModeTheme', true);
+					grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 						if (!confirmed) {
 							grSet.presetSelectMode = 'default';
 							return;
@@ -680,7 +667,7 @@ class TopMenuOptions {
 			this.applyThemeSetting('preset', preset);
 			grm.preset.setThemePreset(preset);
 			this.applyThemeSetting(); // After applying the preset, synchronize the daytime/nighttime theme preset if necessary
-			grm.ui.createDiscArtShadow();
+			grm.details.createDiscArtShadow();
 		};
 
 		// * WHITE THEME PRESETS * //
@@ -864,8 +851,7 @@ class TopMenuOptions {
 			if (!['off', 'track', 'album', 'dblclick'].includes(timer)) {
 				grm.preset.getRandomThemePreset();
 			} else {
-				clearInterval(grm.ui.presetAutoRandomModeTimer);
-				grm.ui.presetAutoRandomModeTimer = null;
+				grm.ui.clearTimer('presetAutoRandomMode');
 			}
 		}, grSet.presetSelectMode === 'harmonic');
 		themePresetAutoRandomModeMenu.appendTo(themePresetsMenu);
@@ -884,44 +870,8 @@ class TopMenuOptions {
 	playerSizeOptions(menu) {
 		menu.createRadioSubMenu('Player size', ['Small', 'Normal', 'Large'], grSet.playerSize, ['small', 'normal', 'large'], (size) => {
 			grSet.playerSize = size;
-			grm.ui.resetPlayerSize();
-			if (size === 'small') {
-				if (!RES._4K && !RES._QHD) {
-					grSet.playerSize_HD_small = true;
-					grm.display.playerSize_HD_small();
-				} else if (RES._QHD) {
-					grSet.playerSize_QHD_small = true;
-					grm.display.playerSize_QHD_small();
-				} else if (RES._4K) {
-					grSet.playerSize_4K_small = true;
-					grm.display.playerSize_4K_small();
-				}
-			}
-			if (size === 'normal') {
-				if (!RES._4K && !RES._QHD) {
-					grSet.playerSize_HD_normal = true;
-					grm.display.playerSize_HD_normal();
-				} else if (RES._QHD) {
-					grSet.playerSize_QHD_normal = true;
-					grm.display.playerSize_QHD_normal();
-				} else if (RES._4K) {
-					grSet.playerSize_4K_normal = true;
-					grm.display.playerSize_4K_normal();
-				}
-			}
-			if (size === 'large') {
-				if (!RES._4K && !RES._QHD) {
-					grSet.playerSize_HD_large = true;
-					grm.display.playerSize_HD_large();
-				} else if (RES._QHD) {
-					grSet.playerSize_QHD_large = true;
-					grm.display.playerSize_QHD_large();
-				} else if (RES._4K) {
-					grSet.playerSize_4K_large = true;
-					grm.display.playerSize_4K_large();
-				}
-			}
-			RepaintWindow();
+			grSet.displayScale = 100;
+			grm.display.updatePlayerSize(grSet.playerSize);
 		}, grSet.lockPlayerSize);
 	}
 
@@ -933,29 +883,14 @@ class TopMenuOptions {
 	layoutOptions(menu) {
 		menu.createRadioSubMenu('Layout', ['Default', 'Artwork', 'Compact'], grSet.layout, ['default', 'artwork', 'compact'], (layout) => {
 			grSet.layout = layout;
-			if (grSet.layout === 'default') {
-				grm.ui.displayPlaylist = grSet.showPanelOnStartup === 'playlist'; // Switch back to Playlist from Artwork layout to Default layout
-				grm.ui.displayPanelControl(true);
-				grm.display.layoutDefault();
-			}
 			if (grSet.layout === 'artwork') {
 				grSet.showPanelOnStartup = 'cover';
-				grm.ui.displayPlaylist = false;
-				grm.ui.displayPlaylistArtwork = false;
-				grm.ui.displayDetails = false;
-				grm.ui.displayLibrary = false;
-				grm.ui.displayBiography = false;
-				grm.display.layoutArtwork();
 			}
-			if (grSet.layout === 'compact') {
-				grm.ui.displayPlaylist = true;
-				grm.ui.displayDetails = false;
-				grm.ui.displayLibrary = false;
-				grm.ui.displayBiography = false;
-				grm.ui.displayLyrics = false;
-				grm.display.layoutCompact();
+			if (!fb.IsPlaying) { // Update lower bar version string
+				grm.ui.clearPlaybackState(true);
 			}
-			grm.ui.initPanels();
+			grm.ui.displayPanel(false, true);
+			grm.display.updatePlayerSize('small');
 		}, grSet.lockPlayerSize);
 	}
 
@@ -971,21 +906,14 @@ class TopMenuOptions {
 		displayResMenu.addSeparator();
 		displayResMenu.addRadioItems(['4K', 'QHD', 'HD'], grSet.displayRes, ['4K', 'QHD', 'HD'], (res) => {
 			grSet.displayRes = res;
-			if (grSet.layout === 'default') {
-				grm.display.layoutDefault();
-			}
-			else if (grSet.layout === 'artwork') {
-				grm.display.layoutArtwork();
-			}
-			else if (grSet.layout === 'compact') {
-				grm.display.layoutCompact();
-			}
-			if (grSet.displayRes === '4K' || grSet.displayRes === 'HD') {
-				grm.display.setSizesFor4KorHD();
-			} else if (grSet.displayRes === 'QHD') {
-				grm.display.setSizesForQHD();
-			}
-			grm.ui.initPanels();
+			grm.display.updatePlayerSize('small', true);
+		});
+		displayResMenu.addSeparator();
+		displayResMenu.createRadioSubMenu('Scaling', ['  50%', '  60%', '  70%', '  80%', '  90%', '100%', '110%', '120%', '130%', '140%', '150%'],
+			grSet.displayScale, [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150], (scale) => {
+			grSet.displayScale = scale;
+			const size = grm.display.checkPlayerSize(grm.ui.ww, grm.ui.wh, grSet.layout, grSet.displayRes);
+			grm.display.updatePlayerSize(size, true);
 		});
 
 		displayResMenu.appendTo(menu);
@@ -1015,92 +943,93 @@ class TopMenuOptions {
 		const mainFontSizeMenu = new Menu('Main');
 
 		// * MAIN - TOP MENU * //
-		mainFontSizeMenu.createRadioSubMenu('Top menu', ['  8px', '10px', '11px', RES._QHD ? '12px' : '12px (default)', '13px', RES._QHD ? '14px (default)' : '14px', '16px'], grSet[`menuFontSize_${grSet.layout}`], [8, 10, 11, 12, 13, 14, 16], (size) => {
-			grm.scaling.setMenuFontSize(size);
+		mainFontSizeMenu.createRadioSubMenu('Top menu', ['  8px', '10px', '11px', HD_QHD_4K('12px (default)', '12px'), '13px', HD_QHD_4K('14px', '14px (default)'), '16px'], grSet.menuFontSize_layout, [8, 10, 11, 12, 13, 14, 16], (size) => {
+			grm.display.setMenuFontSize(size);
 		});
 
 		// * MAIN - LOWER BAR * //
-		mainFontSizeMenu.createRadioSubMenu('Lower bar', grSet.layout !== 'default' ? ['10px', '12px', '14px', RES._QHD ? '16px' : '16px (default)', RES._QHD ? '18px (default)' : '18px', '20px', '22px', '24px', '26px'] :
-			['10px', '12px', '14px', '16px', RES._QHD ? '18px' : '18px (default)', RES._QHD ? '20px (default)' : '20px', '22px', '24px', '26px'], grSet[`lowerBarFontSize_${grSet.layout}`], [10, 12, 14, 16, 18, 20, 22, 24, 26], (size) => {
-			grm.scaling.setLowerBarFontSize(size);
+		mainFontSizeMenu.createRadioSubMenu('Lower bar', grSet.layout !== 'default' ? ['10px', '12px', '14px', HD_QHD_4K('16px (default)', '16px'), HD_QHD_4K('18px', '18px (default)'), '20px', '22px', '24px', '26px'] :
+			['10px', '12px', '14px', '16px', HD_QHD_4K('18px (default)', '18px'), HD_QHD_4K('20px', '20px (default)'), '22px', '24px', '26px'], grSet.lowerBarFontSize_layout, [10, 12, 14, 16, 18, 20, 22, 24, 26], (size) => {
+			grm.display.setLowerBarFontSize(size);
 		});
 		mainFontSizeMenu.appendTo(changeFontSizeMenu);
 
 		// * MAIN - NOTIFICATION * //
-		mainFontSizeMenu.createRadioSubMenu('Notification', ['12px', '14px', '16px', RES._QHD ? '18px' : '18px (default)', RES._QHD ? '20px (default)' : '20px', '22px', '24px'], grSet[`notificationFontSize_${grSet.layout}`],
+		mainFontSizeMenu.createRadioSubMenu('Notification', ['12px', '14px', '16px', HD_QHD_4K('18px (default)', '18px'), HD_QHD_4K('20px', '20px (default)'), '22px', '24px'], grSet.notificationFontSize_layout,
 			[12, 14, 16, 18, 20, 22, 24], (size) => {
-			grm.scaling.setNotificationFontSize(size);
+			grm.display.setNotificationFontSize(size);
 		});
 
 		// * MAIN - POPUP * //
-		mainFontSizeMenu.createRadioSubMenu('Popup', ['12px', '14px', RES._QHD ? '16px' : '16px (default)', RES._QHD ? '18px (default)' : '18px', '20px', '22px', '24px'], grSet[`popupFontSize_${grSet.layout}`],
+		mainFontSizeMenu.createRadioSubMenu('Popup', ['12px', '14px', HD_QHD_4K('16px (default)', '16px'), HD_QHD_4K('18px', '18px (default)'), '20px', '22px', '24px'], grSet.popupFontSize_layout,
 			[12, 14, 16, 18, 20, 22, 24], (size) => {
-			grm.scaling.setPopupFontSize(size);
+			grm.display.setPopupFontSize(size);
 		});
 
 		// * MAIN - TOOLTIP * //
-		mainFontSizeMenu.createRadioSubMenu('Tooltip', ['12px', '14px', RES._QHD ? '16px' : '16px (default)', RES._QHD ? '18px (default)' : '18px', '20px', '22px', '24px'], grSet[`tooltipFontSize_${grSet.layout}`],
+		mainFontSizeMenu.createRadioSubMenu('Tooltip', ['12px', '14px', HD_QHD_4K('16px (default)', '16px'), HD_QHD_4K('18px', '18px (default)'), '20px', '22px', '24px'], grSet.tooltipFontSize_layout,
 			[12, 14, 16, 18, 20, 22, 24], (size) => {
-			grm.scaling.setTooltipFontSize(size);
+			grm.display.setTooltipFontSize(size);
 		});
 
 		// * DETAILS - ARTIST * //
 		const detailsFontSizeMenu = new Menu('Details');
-		detailsFontSizeMenu.createRadioSubMenu('Artist', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', RES._QHD ? '18px' : '18px (default)', '19px', RES._QHD ? '20px (default)' : '20px', '22px', '24px'], grSet[`gridArtistFontSize_${grSet.layout}`],
+		detailsFontSizeMenu.createRadioSubMenu('Artist', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', HD_QHD_4K('18px (default)', '18px'), '19px', HD_QHD_4K('20px', '20px (default)'), '22px', '24px'], grSet.gridArtistFontSize_layout,
 			[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
-			grm.scaling.setGridArtistFontSize(size);
+			grm.display.setGridArtistFontSize(size);
 		});
 
 		// * DETAILS - TITLE * //
-		detailsFontSizeMenu.createRadioSubMenu('Title', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', RES._QHD ? '18px' : '18px (default)', '19px', RES._QHD ? '20px (default)' : '20px', '22px', '24px'], grSet[`gridTrackNumFontSize_${grSet.layout}`] && grSet[`gridTitleFontSize_${grSet.layout}`],
+		detailsFontSizeMenu.createRadioSubMenu('Title', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', HD_QHD_4K('18px (default)', '18px'), '19px', HD_QHD_4K('20px', '20px (default)'), '22px', '24px'], grSet.gridTrackNumFontSize_layout && grSet.gridTitleFontSize_layout,
 			[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
-			grm.scaling.setGridTitleFontSize(size);
+			grm.display.setGridTitleFontSize(size);
 		});
 
 		// * DETAILS - ALBUM * //
-		detailsFontSizeMenu.createRadioSubMenu('Album', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', RES._QHD ? '18px' : '18px (default)', '19px', RES._QHD ? '20px (default)' : '20px', '22px', '24px'], grSet[`gridAlbumFontSize_${grSet.layout}`],
+		detailsFontSizeMenu.createRadioSubMenu('Album', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', HD_QHD_4K('18px (default)', '18px'), '19px', HD_QHD_4K('20px', '20px (default)'), '22px', '24px'], grSet.gridAlbumFontSize_layout,
 			[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
-			grm.scaling.setGridAlbumFontSize(size);
+			grm.display.setGridAlbumFontSize(size);
 		});
 
 		// * DETAILS - TAG NAME * //
-		detailsFontSizeMenu.createRadioSubMenu('Tag name', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', RES._QHD ? '17px' : '17px (default)', '18px', RES._QHD ? '19px (default)' : '19px', '20px', '22px', '24px'], grSet[`gridKeyFontSize_${grSet.layout}`],
+		detailsFontSizeMenu.createRadioSubMenu('Tag key', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', HD_QHD_4K('17px (default)', '17px'), '18px', HD_QHD_4K('19px', '19px (default)'), '20px', '22px', '24px'], grSet.gridKeyFontSize_layout,
 			[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
-			grm.scaling.setGridTagNameFontSize(size);
+			grm.display.setGridTagKeyFontSize(size);
 		});
 
 		// * DETAILS - TAG VALUE * //
-		detailsFontSizeMenu.createRadioSubMenu('Tag value', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', RES._QHD ? '17px' : '17px (default)', '18px', RES._QHD ? '19px (default)' : '19px', '20px', '22px', '24px'], grSet[`gridValueFontSize_${grSet.layout}`],
+		detailsFontSizeMenu.createRadioSubMenu('Tag value', ['10px', '11px', '12px', '13px', '14px', '15px', '16px', HD_QHD_4K('17px (default)', '17px'), '18px', HD_QHD_4K('19px', '19px (default)'), '20px', '22px', '24px'], grSet.gridValueFontSize_layout,
 			[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24], (size) => {
-			grm.scaling.setGridTagValueFontSize(size);
+			grm.display.setGridTagValueFontSize(size);
 		});
 		detailsFontSizeMenu.appendTo(changeFontSizeMenu);
 
 		// * PLAYLIST * //
 		changeFontSizeMenu.createRadioSubMenu('Playlist', grSet.layout === 'default' ?
-			RES._QHD ? ['-1', '10px', '12px', '13px', '14px', '15px', '16px', '17px (default)', '18px', '20px', '22px', '+1'] : ['-1', '10px', '12px', '13px', '14px', '15px (default)', '16px', '18px', '20px', '22px', '+1'] :
-			RES._QHD ? ['10px', '12px', '13px', '14px', '15px', '16px', '17px (default)', '18px'] : ['10px', '12px', '13px', '14px', '15px (default)', '16px', '18px'], grSet[`playlistHeaderFontSize_${grSet.layout}`], grSet.layout === 'default' ?
-			RES._QHD ? [-1, 10, 12, 13, 14, 15, 16, 17, 18, 20, 22, 1] : [-1, 10, 12, 13, 14, 15, 16, 18, 20, 22, 1] :
-			RES._QHD ? [10, 12, 13, 14, 15, 16, 17, 18] : [10, 12, 13, 14, 15, 16, 18], (size) => {
-			grm.scaling.setPlaylistFontSize(size);
+			HD_QHD_4K(['-1', '10px', '12px', '13px', '14px', '15px (default)', '16px', '18px', '20px', '22px', '+1'], ['-1', '10px', '12px', '13px', '14px', '15px', '16px', '17px (default)', '18px', '20px', '22px', '+1']) :
+			HD_QHD_4K(['10px', '12px', '13px', '14px', '15px (default)', '16px', '18px'], ['10px', '12px', '13px', '14px', '15px', '16px', '17px (default)', '18px']),
+			grSet.playlistHeaderFontSize_layout, grSet.layout === 'default' ?
+			HD_QHD_4K([-1, 10, 12, 13, 14, 15, 16, 18, 20, 22, 1], [-1, 10, 12, 13, 14, 15, 16, 17, 18, 20, 22, 1]) :
+			HD_QHD_4K([10, 12, 13, 14, 15, 16, 18], [10, 12, 13, 14, 15, 16, 17, 18]), (size) => {
+			grm.display.setPlaylistFontSize(size);
 		});
 
 		// * LIBRARY * //
-		changeFontSizeMenu.createRadioSubMenu('Library', ['-1', '  8px', '10px', '11px', RES._QHD ? '12px' : '12px (default)', '13px', RES._QHD ? '14px (default)' : '14px', '16px', '18px', '+1'], libSet[`baseFontSize_${grSet.layout}`],
-			[-1, RES._4K ? 8 * 1.5 : 8, RES._4K ? 10 * 1.5 : 10, RES._4K ? 11 * 1.5 : 11, RES._4K ? 12 * 1.5 : 12, RES._4K ? 13 * 1.5 : 13, RES._4K ? 14 * 1.5 : 14, RES._4K ? 16 * 1.5 : 16, RES._4K ? 18 * 1.5 : 18, 1], (size) => {
-			grm.scaling.setLibraryFontSize(size);
+		changeFontSizeMenu.createRadioSubMenu('Library', ['-1', '  8px', '10px', '11px', HD_QHD_4K('12px (default)', '12px'), '13px', HD_QHD_4K('14px', '14px (default)'), '16px', '18px', '+1'], grSet.libraryFontSize_layout,
+			[-1, HD_4K(8, 8 * 1.5), HD_4K(10, 10 * 1.5), HD_4K(11, 11 * 1.5), HD_4K(12, 12 * 1.5), HD_4K(13, 13 * 1.5), HD_4K(14, 14 * 1.5), HD_4K(16, 16 * 1.5), HD_4K(18, 18 * 1.5), 1], (size) => {
+			grm.display.setLibraryFontSize(size);
 		});
 
 		// * BIOGRAPHY * //
-		changeFontSizeMenu.createRadioSubMenu('Biography', ['-1', '  8px', '10px', '11px', RES._QHD ? '12px' : '12px (default)', '13px', RES._QHD ? '14px (default)' : '14px', '16px', '18px', '+1'], bioSet[`baseFontSizeBio_${grSet.layout}`],
-			[-1, RES._4K ? 8 * 1.5 : 8, RES._4K ? 10 * 2 : 10, RES._4K ? 11 * 2 : 11, RES._4K ? 12 * 2 : 12, RES._4K ? 13 * 2 : 13, RES._4K ? 14 * 2 : 14, RES._4K ? 16 * 2 : 16, RES._4K ? 18 * 2 : 18, 1], (size) => {
-			grm.scaling.setBiographyFontSize(size);
+		changeFontSizeMenu.createRadioSubMenu('Biography', ['-1', '  8px', '10px', '11px', HD_QHD_4K('12px (default)', '12px'), '13px', HD_QHD_4K('14px', '14px (default)'), '16px', '18px', '+1'], grSet.biographyFontSize_layout,
+			[-1, HD_4K(8, 8 * 1.5), HD_4K(10, 10 * 2), HD_4K(11, 11 * 2), HD_4K(12, 12 * 2), HD_4K(13, 13 * 2), HD_4K(14, 14 * 2), HD_4K(16, 16 * 2), HD_4K(18, 18 * 2), 1], (size) => {
+			grm.display.setBiographyFontSize(size);
 		});
 
 		// * LYRICS * //
-		changeFontSizeMenu.createRadioSubMenu('Lyrics', ['-1', '10px', '12px', '14px', '16px', '18px', RES._QHD ? '20px' : '20px (default)', RES._QHD ? '22px (default)' : '22px', '24px', '26px', '28px', '30px', '+1'], grSet[`lyricsFontSize_${grSet.layout}`],
+		changeFontSizeMenu.createRadioSubMenu('Lyrics', ['-1', '10px', '12px', '14px', '16px', '18px', HD_QHD_4K('20px (default)', '20px'), HD_QHD_4K('22px', '22px (default)'), '24px', '26px', '28px', '30px', '+1'], grSet.lyricsFontSize_layout,
 			[-1, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 1], (size) => {
-			grm.scaling.setLyricsFontSize(size);
+			grm.display.setLyricsFontSize(size);
 		});
 
 		changeFontSizeMenu.appendTo(menu);
@@ -1115,18 +1044,19 @@ class TopMenuOptions {
 		const playerControlsMenu = new Menu('Player controls');
 
 		const playlistCallback = () => {
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
+			grm.ui.setPlaylistSize();
 			RepaintWindow();
 		};
 
 		const updateButtons = () => {
-			grm.ui.createButtonImages();
-			grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
+			grm.ui.clearCache('metrics');
+			grm.details.clearCache('metrics');
+			grm.button.createButtons(grm.ui.ww, grm.ui.wh);
 			RepaintWindow();
 		};
 
 		const updateSeekbar = () => {
-			grm.ui.initMetrics();
+			grm.ui.setMainMetrics();
 			RepaintWindow();
 		};
 
@@ -1142,6 +1072,7 @@ class TopMenuOptions {
 
 		const playerControlsTopMenuArtwork = new Menu('Artwork');
 		playerControlsTopMenuArtwork.addToggleItem('Details', grSet, 'showPanelDetails_artwork', () => { updateButtons(); });
+		playerControlsTopMenuArtwork.addToggleItem('Playlist', grSet, 'showPanelPlaylist_artwork', () => { updateButtons(); });
 		playerControlsTopMenuArtwork.addToggleItem('Library', grSet, 'showPanelLibrary_artwork', () => { updateButtons(); });
 		playerControlsTopMenuArtwork.addToggleItem('Biography', grSet, 'showPanelBiography_artwork', () => { updateButtons(); });
 		playerControlsTopMenuArtwork.addToggleItem('Lyrics', grSet, 'showPanelLyrics_artwork', () => { updateButtons(); });
@@ -1167,9 +1098,9 @@ class TopMenuOptions {
 			if (grSet.layout === 'default') {
 				playerControlsAlbumArtNotPropMenu.addRadioItems(['Align album art left', 'Align album art left (margin)', 'Align album art center', 'Align album art right'], grSet.albumArtAlign, ['left', 'leftMargin', 'center', 'right'], (pos) => {
 					grSet.albumArtAlign = pos;
-					grm.ui.loadImageFromAlbumArtList(grm.ui.albumArtIndex);
+					grm.ui.loadAlbumArtFromList(grm.ui.albumArtIndex);
 					grm.ui.resizeArtwork(true);
-					pl.call.on_size(grm.ui.ww, grm.ui.wh);
+					grm.ui.setPlaylistSize();
 					grm.ui.setLibrarySize();
 					grm.ui.setBiographySize();
 					RepaintWindow();
@@ -1185,7 +1116,7 @@ class TopMenuOptions {
 			if (grSet.layout === 'default') {
 				playerControlsAlbumArtScaleMenu.addRadioItems(['Scale album art cropped', 'Scale album art stretched', 'Scale album art proportional'], grSet.albumArtScale, ['cropped', 'stretched', 'proportional'], (scale) => {
 					grSet.albumArtScale = scale;
-					grm.ui.loadImageFromAlbumArtList(grm.ui.albumArtIndex);
+					grm.ui.loadAlbumArtFromList(grm.ui.albumArtIndex);
 					grm.ui.resizeArtwork(true);
 					RepaintWindow();
 				});
@@ -1198,7 +1129,7 @@ class TopMenuOptions {
 					'Crop and stretch - limit aspect ratio 2.00x'
 				], grSet.albumArtAspectRatioLimit, [false, 1.25, 1.5, 1.75, 2], (factor) => {
 					grSet.albumArtAspectRatioLimit = factor;
-					grm.ui.loadImageFromAlbumArtList(grm.ui.albumArtIndex);
+					grm.ui.loadAlbumArtFromList(grm.ui.albumArtIndex);
 					grm.ui.resizeArtwork(true);
 					RepaintWindow();
 				});
@@ -1207,18 +1138,17 @@ class TopMenuOptions {
 			playerControlsAlbumArtMenu.addSeparator();
 			playerControlsAlbumArtMenu.addToggleItem(`Cycle album artwork (${grCfg.settings.artworkDisplayTime}s delay)`, grSet, 'cycleArt', () => {
 				if (!grSet.cycleArt) {
-					clearTimeout(grm.ui.albumArtTimeout);
-					grm.ui.albumArtTimeout = 0;
+					grm.ui.clearTimer('albumArt');
 				} else {
-					grm.ui.displayNextImage();
+					grm.ui.displayAlbumArtImage('next', true);
 				}
 			});
 			playerControlsAlbumArtMenu.addToggleItem('Cycle album artwork with mouse wheel', grSet, 'cycleArtMWheel');
 			playerControlsAlbumArtMenu.addSeparator();
 			playerControlsAlbumArtMenu.addToggleItem('Load embedded album art first', grSet, 'loadEmbeddedAlbumArtFirst', () => {
-				const msg = 'Do you want to load embedded album art first?\n\nYou also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art\n\nContinue?\n\n\n';
-				const msgFb = 'Embedded album art enabled:\n\nYou also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art.';
-				ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				const msg = grm.msg.getMessage('menu', 'loadEmbeddedAlbumArtFirst');
+				const msgFb = grm.msg.getMessage('menu', 'loadEmbeddedAlbumArtFirst', true);
+				grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 					if (!confirmed) grSet.loadEmbeddedAlbumArtFirst = false;
 				});
 			});
@@ -1325,7 +1255,6 @@ class TopMenuOptions {
 		});
 		playerControlsBiographyMenu.addToggleItem('Smooth scroll', bioSet, 'smooth');
 		playerControlsBiographyMenu.appendTo(playerControlsScrollbarMenu);
-
 		playerControlsScrollbarMenu.appendTo(playerControlsMenu);
 
 		// * TOOLTIP * //
@@ -1355,16 +1284,25 @@ class TopMenuOptions {
 
 		// * PANEL MENU * //
 		const playerControlsPanelMenu = new Menu('Panel');
-		const playerControlsPanelNotPropMenu = new Menu('Width');
-		playerControlsPanelNotPropMenu.addToggleItem('Use auto panel width', grSet, 'panelWidthAuto', () => {
+		const playerControlsPanelModeMenu = new Menu('Mode');
+		playerControlsPanelModeMenu.addToggleItem('Auto panel width', grSet, 'panelWidthAuto', () => {
 			grSet.albumArtAlign = grSet.panelWidthAuto ? 'left' : 'right';
 			grm.ui.resizeArtwork(true);
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
+			grm.ui.setPlaylistSize();
 			grm.ui.setLibrarySize();
 			grm.ui.setBiographySize();
+			if (grm.ui.displayCustomThemeMenu) grm.cthMenu.reinitCustomThemeMenu();
 			RepaintWindow();
 		});
-		playerControlsPanelNotPropMenu.appendTo(playerControlsPanelMenu);
+		playerControlsPanelModeMenu.addToggleItem('Browse mode', grSet, 'panelBrowseMode', () => {
+			const msg = grm.msg.getMessage('menu', 'panelBrowseMode');
+			const msgFb = grm.msg.getMessage('menu', 'panelBrowseMode', true);
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				if (!confirmed) grSet.panelBrowseMode = false;
+			});
+			grm.ui.initBrowserModeState();
+		});
+		playerControlsPanelModeMenu.appendTo(playerControlsPanelMenu);
 		playerControlsPanelMenu.addSeparator();
 		if (grSet.layout !== 'compact') {
 			const showPanelOnStartupMenu = new Menu('Show panel on startup');
@@ -1392,20 +1330,20 @@ class TopMenuOptions {
 		// * TRANSPORT BUTTON SIZE * //
 		const transportSizeMenu = new Menu('Transport button size');
 		const transportSizeMenuDefault = new Menu('Default');
-		transportSizeMenuDefault.addRadioItems(['28px', '30px', RES._QHD ? '32px' : '32px (default)', RES._QHD ? '34px (default)' : '34px', '36px', '38px', '40px', '42px'], grSet.transportButtonSize_default, [28, 30, 32, 34, 36, 38, 40, 42], (size) => {
-			grm.scaling.setTransportBtnSize(size);
+		transportSizeMenuDefault.addRadioItems(['28px', '30px', HD_QHD_4K('32px (default)', '32px'), HD_QHD_4K('34px', '34px (default)'), '36px', '38px', '40px', '42px'], grSet.transportButtonSize_default, [28, 30, 32, 34, 36, 38, 40, 42], (size) => {
+			grm.display.setTransportBtnSize(size);
 		});
 		transportSizeMenuDefault.appendTo(transportSizeMenu);
 
 		const transportSizeMenuArtwork = new Menu('Artwork');
-		transportSizeMenuArtwork.addRadioItems(['28px', '30px', RES._QHD ? '32px' : '32px (default)', RES._QHD ? '34px (default)' : '34px', '36px'], grSet.transportButtonSize_artwork, [28, 30, 32, 34, 36], (size) => {
-			grm.scaling.setTransportBtnSize(size);
+		transportSizeMenuArtwork.addRadioItems(['28px', '30px', HD_QHD_4K('32px (default)', '32px'), HD_QHD_4K('34px', '34px (default)'), '36px'], grSet.transportButtonSize_artwork, [28, 30, 32, 34, 36], (size) => {
+			grm.display.setTransportBtnSize(size);
 		});
 		transportSizeMenuArtwork.appendTo(transportSizeMenu);
 
 		const transportSizeMenuCompact = new Menu('Compact');
-		transportSizeMenuCompact.addRadioItems(['28px', '30px', RES._QHD ? '32px' : '32px (default)', RES._QHD ? '34px (default)' : '34px', '36px'], grSet.transportButtonSize_compact, [28, 30, 32, 34, 36], (size) => {
-			grm.scaling.setTransportBtnSize(size);
+		transportSizeMenuCompact.addRadioItems(['28px', '30px', HD_QHD_4K('32px (default)', '32px'), HD_QHD_4K('34px', '34px (default)'), '36px'], grSet.transportButtonSize_compact, [28, 30, 32, 34, 36], (size) => {
+			grm.display.setTransportBtnSize(size);
 		});
 		transportSizeMenuCompact.appendTo(transportSizeMenu);
 		transportSizeMenu.appendTo(playerControlsLowerBarMenu);
@@ -1414,19 +1352,19 @@ class TopMenuOptions {
 		const transportSpacingMenu = new Menu('Transport button spacing');
 		const transportSpacingMenuDefault = new Menu('Default');
 		transportSpacingMenuDefault.addRadioItems(['-1', '3px', '5px (default)', '7px', '10px', '15px', '+1'], grSet.transportButtonSpacing_default, [-1, 3, 5, 7, 10, 15, 1], (size) => {
-			grm.scaling.setTransportBtnSpacing(size);
+			grm.display.setTransportBtnSpacing(size);
 		});
 		transportSpacingMenuDefault.appendTo(transportSpacingMenu);
 
 		const transportSpacingMenuArtwork = new Menu('Artwork');
 		transportSpacingMenuArtwork.addRadioItems(['-1', '3px', '5px (default)', '7px', '10px', '15px', '+1'], grSet.transportButtonSpacing_artwork, [-1, 3, 5, 7, 10, 15, 1], (size) => {
-			grm.scaling.setTransportBtnSpacing(size);
+			grm.display.setTransportBtnSpacing(size);
 		});
 		transportSpacingMenuArtwork.appendTo(transportSpacingMenu);
 
 		const transportSpacingMenuCompact = new Menu('Compact');
 		transportSpacingMenuCompact.addRadioItems(['-1', '3px', '5px (default)', '7px', '10px', '15px', '+1'], grSet.transportButtonSpacing_compact, [-1, 3, 5, 7, 10, 15, 1], (size) => {
-			grm.scaling.setTransportBtnSpacing(size);
+			grm.display.setTransportBtnSpacing(size);
 		});
 		transportSpacingMenuCompact.appendTo(transportSpacingMenu);
 		transportSpacingMenu.appendTo(playerControlsLowerBarMenu);
@@ -1518,30 +1456,30 @@ class TopMenuOptions {
 
 		// * SHOW ARTIST IN LOWER BAR * //
 		const showArtistMenu = new Menu('Show artist');
-		showArtistMenu.addToggleItem('Default', grSet, 'showLowerBarArtist_default', () => { RepaintWindow(); });
-		showArtistMenu.addToggleItem('Artwork', grSet, 'showLowerBarArtist_artwork', () => { RepaintWindow(); });
-		showArtistMenu.addToggleItem('Compact', grSet, 'showLowerBarArtist_compact', () => { RepaintWindow(); });
+		showArtistMenu.addToggleItem('Default', grSet, 'showLowerBarArtist_default', () => { on_metadb_changed(); });
+		showArtistMenu.addToggleItem('Artwork', grSet, 'showLowerBarArtist_artwork', () => { on_metadb_changed(); });
+		showArtistMenu.addToggleItem('Compact', grSet, 'showLowerBarArtist_compact', () => { on_metadb_changed(); });
 		showArtistMenu.appendTo(playerControlsLowerBarMenu);
 
 		// * SHOW TRACK NUMBER IN LOWER BAR * //
 		const showTrackNumberMenu = new Menu('Show track number');
-		showTrackNumberMenu.addToggleItem('Default', grSet, 'showLowerBarTrackNum_default', () => { on_metadb_changed(); RepaintWindow(); });
-		showTrackNumberMenu.addToggleItem('Artwork', grSet, 'showLowerBarTrackNum_artwork', () => { on_metadb_changed(); RepaintWindow(); });
-		showTrackNumberMenu.addToggleItem('Compact', grSet, 'showLowerBarTrackNum_compact', () => { on_metadb_changed(); RepaintWindow(); });
+		showTrackNumberMenu.addToggleItem('Default', grSet, 'showLowerBarTrackNum_default', () => { on_metadb_changed(); });
+		showTrackNumberMenu.addToggleItem('Artwork', grSet, 'showLowerBarTrackNum_artwork', () => { on_metadb_changed(); });
+		showTrackNumberMenu.addToggleItem('Compact', grSet, 'showLowerBarTrackNum_compact', () => { on_metadb_changed(); });
 		showTrackNumberMenu.appendTo(playerControlsLowerBarMenu);
 
-		// * SHOW SONG TITLE IN LOWER BAR * //
-		const showTitleMenu = new Menu('Show song title');
-		showTitleMenu.addToggleItem('Default', grSet, 'showLowerBarTitle_default', () => { RepaintWindow(); });
-		showTitleMenu.addToggleItem('Artwork', grSet, 'showLowerBarTitle_artwork', () => { RepaintWindow(); });
-		showTitleMenu.addToggleItem('Compact', grSet, 'showLowerBarTitle_compact', () => { RepaintWindow(); });
+		// * SHOW TRACK TITLE IN LOWER BAR * //
+		const showTitleMenu = new Menu('Show track title');
+		showTitleMenu.addToggleItem('Default', grSet, 'showLowerBarTitle_default', () => { on_metadb_changed(); });
+		showTitleMenu.addToggleItem('Artwork', grSet, 'showLowerBarTitle_artwork', () => { on_metadb_changed(); });
+		showTitleMenu.addToggleItem('Compact', grSet, 'showLowerBarTitle_compact', () => { on_metadb_changed(); });
 		showTitleMenu.appendTo(playerControlsLowerBarMenu);
 
 		// * SHOW COMPOSER IN LOWER BAR * //
 		const showComposerMenu = new Menu('Show composer');
-		showComposerMenu.addToggleItem('Default', grSet, 'showLowerBarComposer_default', () => { RepaintWindow(); });
-		showComposerMenu.addToggleItem('Artwork', grSet, 'showLowerBarComposer_artwork', () => { RepaintWindow(); });
-		showComposerMenu.addToggleItem('Compact', grSet, 'showLowerBarComposer_compact', () => { RepaintWindow(); });
+		showComposerMenu.addToggleItem('Default', grSet, 'showLowerBarComposer_default', () => { on_metadb_changed(); });
+		showComposerMenu.addToggleItem('Artwork', grSet, 'showLowerBarComposer_artwork', () => { on_metadb_changed(); });
+		showComposerMenu.addToggleItem('Compact', grSet, 'showLowerBarComposer_compact', () => { on_metadb_changed(); });
 		showComposerMenu.appendTo(playerControlsLowerBarMenu);
 
 		// * SHOW ARTIST COUNTRY FLAGS IN LOWER BAR * //
@@ -1581,19 +1519,38 @@ class TopMenuOptions {
 		waveformBarMenu.appendTo(playerControlsLowerBarMenu);
 		playerControlsLowerBarMenu.addSeparator();
 
+		// * ARTIST BUTTON CONTROLS * //
+		const lowerBarArtistBtnControlsMenu = new Menu('Artist button action');
+		lowerBarArtistBtnControlsMenu.addRadioItems(['Artist playlist', 'Open website'], grSet.lowerBarArtistBtnAction, ['playlist', 'website'], (type) => {
+			grSet.lowerBarArtistBtnAction = type;
+		});
+		lowerBarArtistBtnControlsMenu.addSeparator();
+
+		const { websiteLabels, websiteValues } = grm.utils.generateWebsiteLinks(grCfg.customWebsiteLinks); // Get labels and values for predefined and custom website links
+		lowerBarArtistBtnControlsMenu.addRadioItems(websiteLabels, grSet.lowerBarArtistBtnWebsite, websiteValues, (website) => {
+			grSet.lowerBarArtistBtnWebsite = website;
+		});
+		lowerBarArtistBtnControlsMenu.appendTo(playerControlsLowerBarMenu);
+
 		// * ADD TRACKS BUTTON CONTROLS * //
 		const addTracksBtnControlsMenu = new Menu('Add tracks button');
 		addTracksBtnControlsMenu.addItem('Add tracks playlist', false, () => { grm.inputBox.addTracksPlaylist(); });
 		addTracksBtnControlsMenu.appendTo(playerControlsLowerBarMenu);
 
+		// * TIME BUTTON CONTROLS * //
+		playerControlsLowerBarMenu.createRadioSubMenu('Playback time display', ['Default', 'Remaining', 'Percent'],
+			grSet.playbackTimeDisplay, ['default', 'remaining', 'percent'], (type) => {
+			grSet.playbackTimeDisplay = type;
+			RepaintWindow();
+		});
 		playerControlsLowerBarMenu.appendTo(playerControlsMenu);
 
 		// * SEEKBAR - PROGRESS BAR * //
 		const playerControlsSeekBarMenu = new Menu('Seekbar');
 		playerControlsSeekBarMenu.createRadioSubMenu('Type', ['Progress bar', 'Peakmeter bar', 'Waveform bar'], grSet.seekbar, ['progressbar', 'peakmeterbar', 'waveformbar'], (type) => {
 			grSet.seekbar = type;
-			grm.ui.initMetrics();
-			grm.ui.setMainComponentSize('seekbar');
+			grm.ui.setMainMetrics();
+			grm.ui.setMainComponents('seekbar');
 			grm.ui.setSeekbarRefresh();
 			if (grSet.seekbar === 'waveformbar') grm.waveBar.updateBar();
 			RepaintWindow();
@@ -1601,7 +1558,7 @@ class TopMenuOptions {
 		const playerControlsProgressBarMenu = new Menu('Progress bar');
 		playerControlsProgressBarMenu.createRadioSubMenu('Style', ['Default', 'Rounded', 'Lines', 'Blocks', 'Dots', 'Thin'], grSet.styleProgressBarDesign, ['default', 'rounded', 'lines', 'blocks', 'dots', 'thin'], (style) => {
 			grSet.styleProgressBarDesign = style;
-			grm.ui.initMetrics();
+			grm.ui.setMainMetrics();
 			RepaintWindow();
 		});
 		playerControlsProgressBarMenu.createRadioSubMenu('Mouse wheel seek speed', ['  1 sec', '  2 sec', '  3 sec', '  4 sec', '  5 sec (default)', '  6 sec', '  7 sec', '  8 sec', '  9 sec', '10 sec'], grSet.progressBarWheelSeekSpeed, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (speed) => {
@@ -1771,7 +1728,7 @@ class TopMenuOptions {
 		const playlistMenu = context_menu ? menu : new Menu('Playlist');
 
 		const playlistCallback = () => {
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
+			grm.ui.setPlaylistSize();
 			RepaintWindow();
 		};
 
@@ -1779,13 +1736,7 @@ class TopMenuOptions {
 		if (grSet.layout === 'default') {
 			playlistMenu.createRadioSubMenu('Layout', ['Normal', 'Full'], grSet.playlistLayout, ['normal', 'full'], (width) => {
 				grSet.playlistLayout = width;
-				if (!grm.ui.displayPlaylist) { grm.ui.displayPlaylist = true; grm.ui.displayLibrary = false; grm.ui.displayBiography = false; }
-				if (grm.ui.displayLyrics) grm.ui.displayLyrics = false;
-				grm.ui.resizeArtwork(true);
-				pl.call.on_size(grm.ui.ww, grm.ui.wh);
-				grm.jSearch.on_size();
-				grm.button.initButtonState();
-				RepaintWindow();
+				grm.ui.initPlaylistLayoutState();
 			});
 		}
 
@@ -1814,19 +1765,19 @@ class TopMenuOptions {
 		playlistAlbumMenu.addToggleItem('Compact header', plSet, 'use_compact_header', () => {
 			PlaylistRescale(true);
 			grm.ui.initPlaylist();
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
+			grm.ui.setPlaylistSize();
 			RepaintWindow();
 		}, !plSet.show_header);
 		playlistAlbumMenu.addToggleItem('Auto collapse and expand', plSet, 'auto_collapse', () => {
 			grm.ui.initPlaylist();
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
+			grm.ui.setPlaylistSize();
 		});
 		playlistAlbumMenu.addSeparator();
 		playlistAlbumMenu.addToggleItem('Ctrl+click to follow hyperlinks', grSet, 'hyperlinksCtrlClick');
 		playlistAlbumMenu.addSeparator();
 		playlistAlbumMenu.addToggleItem('Flip header rows', grSet, 'headerFlipRows', () => {
 			grm.ui.initPlaylist();
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
+			grm.ui.setPlaylistSize();
 		});
 		playlistAlbumMenu.addSeparator();
 		playlistAlbumMenu.addToggleItem('Show disc sub-header', plSet, 'show_disc_header', () => { grm.ui.updatePlaylist(); });
@@ -1860,11 +1811,16 @@ class TopMenuOptions {
 		rowsMenu.addToggleItem('Show artist name on difference', grSet, 'showDifferentArtist', () => { grm.ui.updatePlaylist(); });
 		rowsMenu.addToggleItem('Show artist name in all rows', grSet, 'showArtistPlaylistRows', () => { grm.ui.updatePlaylist(); });
 		rowsMenu.addToggleItem('Show album title in all rows', grSet, 'showAlbumPlaylistRows', () => { grm.ui.updatePlaylist(); });
-		rowsMenu.addToggleItem('Show time remaining on playing track', grSet, 'playlistTimeRemaining', () => { RepaintWindow(); });
 		rowsMenu.addToggleItem('Show vinyl style numbering if available', grSet, 'showVinylNums', () => { grm.ui.updatePlaylist(); });
 		rowsMenu.addToggleItem('Show last.fm scrobbles on no local plays', grSet, 'lastFmScrobblesFallback', () => { grm.ui.updatePlaylist(); });
 		rowsMenu.addSeparator();
 		rowsMenu.addToggleItem('Row mouse hover', grSet, 'playlistRowHover', () => { RepaintWindow(); });
+		rowsMenu.addSeparator();
+		rowsMenu.createRadioSubMenu('Playback time display', ['Default', 'Remaining', 'Percent'],
+			grSet.playlistPlaybackTimeDisplay, ['default', 'remaining', 'percent'], (type) => {
+			grSet.playlistPlaybackTimeDisplay = type;
+			RepaintWindow();
+		});
 		rowsMenu.addSeparator();
 		rowsMenu.addItem('Customize track row', false, () => { grm.inputBox.playlistCustomTrackRow(); grm.ui.updatePlaylist(); });
 		rowsMenu.appendTo(playlistMenu);
@@ -1878,7 +1834,7 @@ class TopMenuOptions {
 
 		const setSorting = () => {
 			grm.ui.setPlaylistSortOrder();
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
+			grm.ui.setPlaylistSize();
 			RepaintWindow();
 		};
 
@@ -1936,8 +1892,7 @@ class TopMenuOptions {
 			const setDiscArtStub = (discArt) => {
 				grSet.discArtStub = discArt;
 				grSet.noDiscArtStub = false;
-				grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
-				grm.ui.discArtArrayCover = [];
+				grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
 				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
 				RepaintWindow();
 			};
@@ -1951,10 +1906,9 @@ class TopMenuOptions {
 			displayDiscArtMenu.addSeparator();
 			displayDiscArtMenu.addToggleItem('No placeholder', grSet, 'noDiscArtStub', () => {
 				grSet.showDiscArtStub = false;
-				grm.ui.discArt = grm.ui.disposeDiscArt(grm.ui.discArt);
-				grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
-				grm.ui.discArtArray = [];
-				grm.ui.discArtArrayCover = [];
+				grm.details.discArt = grm.details.disposeDiscArt(grm.details.discArt);
+				grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
+				grm.details.discArtArray = [];
 				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
 				RepaintWindow();
 			}, !grSet.displayDiscArt);
@@ -2005,13 +1959,12 @@ class TopMenuOptions {
 				grSet.discArtStub = discArt;
 				grSet.noDiscArtStub = false;
 				grPath.discArtCustomStub = `${fb.ProfilePath}georgia-reborn\\images\\custom\\discart\\${grSet.discArtStub}.png`;
-				grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
-				grm.ui.discArtArrayCover = [];
+				grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
 				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
 				RepaintWindow();
 				if (!IsFile(grPath.discArtCustomStub)) {
-					const msg = `The custom disc art placeholder was not found in:\n${grPath.discArtCustomStub}\n\nBe sure that image exist and has the correct filename\nin the "customDiscArtStub" section of the\ncustom config file:\n${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc\n\n\n`;
-					ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+					const msg = grm.msg.getMessage('menu', 'discArtStub');
+					grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 				}
 			}, !grSet.displayDiscArt);
 			discArtCustomMenu.appendTo(displayDiscArtMenu);
@@ -2020,7 +1973,7 @@ class TopMenuOptions {
 			// * DISC ART OPTIONS * //
 			discArtMenu.addToggleItem('Display disc art', grSet, 'displayDiscArt', () => {
 				if (fb.IsPlaying) grm.ui.fetchNewArtwork(fb.GetNowPlaying());
-				grm.ui.lastLeftEdge = 0; // resize labels
+				grm.details.clearCache('metrics', 'cachedLabelLastLeftEdge'); // resize labels
 				grm.ui.resizeArtwork(true);
 				RepaintWindow();
 			});
@@ -2033,30 +1986,28 @@ class TopMenuOptions {
 			discArtMenu.addSeparator();
 			discArtMenu.addToggleItem('Spin disc art while songs play (increases memory and CPU)', grSet, 'spinDiscArt', () => {
 				if (grSet.spinDiscArt) {
-					grm.ui.setDiscArtRotationTimer();
+					grm.details.setDiscArtRotationTimer();
 				} else {
-					clearInterval(grm.ui.discArtRotationTimer);
-					grm.ui.discArtArray = [];
-					grm.ui.discArtArrayCover = [];
+					grm.details.clearTimer('discArt');
+					grm.details.discArtArray = [];
 				}
 			});
 			discArtMenu.createRadioSubMenu('# Rotation images (memory usage/rotational speed)', ['  36 (10 degrees)', '  45 (8 degrees)', '  60 (6 degrees)', '  72 (5 degrees) (default)', '  90 (4 degrees)', '120 (3 degrees)', '180 (2 degrees)'], grSet.spinDiscArtImageCount, [36, 45, 60, 72, 90, 120, 180], (count) => {
 				grSet.spinDiscArtImageCount = count;
-				grm.ui.discArtRotationIndex = 0;
-				grm.ui.discArtRotationIndexCover = 0;
-				grm.ui.discArtArray = [];
-				grm.ui.discArtArrayCover = [];
+				grm.details.discArtRotationIndex = 0;
+				grm.details.discArtArray = [];
+				grm.artCache.discArtImgMaxRes = grm.artCache.setDiscArtMaxResolution(grSet.spinDiscArtImageCount);
 				RepaintWindow();
 			}, !grSet.spinDiscArt);
 			discArtMenu.createRadioSubMenu('Spinning disc art redraw speed', ['250ms (very slow CPU)', '200ms', '150ms', '125ms', '100ms', '  75ms (default)', '  50ms', '  40ms', '  30ms', '  20ms', '  10ms (very fast CPU)'], grSet.spinDiscArtRedrawInterval, [250, 200, 150, 125, 100, 75, 50, 40, 30, 20, 10], interval => {
 				grSet.spinDiscArtRedrawInterval = interval;
-				grm.ui.setDiscArtRotationTimer();
+				grm.details.setDiscArtRotationTimer();
 			}, !grSet.spinDiscArt);
 			discArtMenu.addSeparator();
 			discArtMenu.addToggleItem('Rotate disc art as tracks change', grSet, 'rotateDiscArt', () => { RepaintWindow(); }, !grSet.displayDiscArt || grSet.spinDiscArt);
 			discArtMenu.createRadioSubMenu('Disc art rotation amount', ['2 degrees', '3 degrees', '4 degrees', '5 degrees'], parseInt(grSet.rotationAmt), [2, 3, 4, 5], (rot) => {
 				grSet.rotationAmt = rot;
-				grm.ui.createDiscArtRotation();
+				grm.details.createDiscArtRotation();
 				RepaintWindow();
 			}, !grSet.rotateDiscArt || grSet.spinDiscArt);
 			discArtMenu.appendTo(detailsMenu);
@@ -2088,13 +2039,15 @@ class TopMenuOptions {
 		const detailsMetadataGridMenu = new Menu('Metadata grid');
 		const detailsShowArtistMenu = new Menu('Show artist');
 		detailsShowArtistMenu.addToggleItem('Default', grSet, 'showGridArtist_default', () => {
+			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
-			grm.ui.updateMetadataGridPos();
+			grm.details.updateGridPos();
 			RepaintWindow();
 		});
 		detailsShowArtistMenu.addToggleItem('Artwork', grSet, 'showGridArtist_artwork', () => {
+			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
-			grm.ui.updateMetadataGridPos();
+			grm.details.updateGridPos();
 			RepaintWindow();
 		});
 		detailsShowArtistMenu.appendTo(detailsMetadataGridMenu);
@@ -2102,29 +2055,33 @@ class TopMenuOptions {
 		// * SHOW TRACK NUMBER IN DETAILS * //
 		const detailsShowTrackNumberMenu = new Menu('Show track number');
 		detailsShowTrackNumberMenu.addToggleItem('Default', grSet, 'showGridTrackNum_default', () => {
+			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
-			grm.ui.updateMetadataGridPos();
+			grm.details.updateGridPos();
 			RepaintWindow();
 		});
 		detailsShowTrackNumberMenu.addToggleItem('Artwork', grSet, 'showGridTrackNum_artwork', () => {
+			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
-			grm.ui.updateMetadataGridPos();
+			grm.details.updateGridPos();
 			RepaintWindow();
 		});
 		detailsShowTrackNumberMenu.appendTo(detailsMetadataGridMenu);
 
-		// * SHOW SONG TITLE IN DETAILS * //
-		const detailsShowTitleMenu = new Menu('Show song title');
+		// * SHOW TRACK TITLE IN DETAILS * //
+		const detailsShowTitleMenu = new Menu('Show track title');
 		detailsShowTitleMenu.addToggleItem('Default', grSet, 'showGridTitle_default', () => {
 			grSet.showGridTrackNum_default = true;
+			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
-			grm.ui.updateMetadataGridPos();
+			grm.details.updateGridPos();
 			RepaintWindow();
 		});
 		detailsShowTitleMenu.addToggleItem('Artwork', grSet, 'showGridTitle_artwork', () => {
 			grSet.showGridTrackNum_artwork = true;
+			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
-			grm.ui.updateMetadataGridPos();
+			grm.details.updateGridPos();
 			RepaintWindow();
 		});
 		detailsShowTitleMenu.appendTo(detailsMetadataGridMenu);
@@ -2133,6 +2090,7 @@ class TopMenuOptions {
 		const detailsShowPlaylingPlaylistMenu = new Menu('Show playing playlist');
 		detailsShowPlaylingPlaylistMenu.addToggleItem('Enable', grSet, 'showGridPlayingPlaylist', () => {
 			on_playback_new_track(fb.GetNowPlaying());
+			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
 			RepaintWindow();
 		});
@@ -2141,9 +2099,11 @@ class TopMenuOptions {
 		// * SHOW TIMELINE IN DETAILS * //
 		const detailsShowTimelineMenu = new Menu('Show timeline');
 		detailsShowTimelineMenu.addToggleItem('Default', grSet, 'showGridTimeline_default', () => {
+			grm.details.clearCache('metrics');
 			RepaintWindow();
 		});
 		detailsShowTimelineMenu.addToggleItem('Artwork', grSet, 'showGridTimeline_artwork', () => {
+			grm.details.clearCache('metrics');
 			RepaintWindow();
 		});
 		detailsShowTimelineMenu.appendTo(detailsMetadataGridMenu);
@@ -2151,10 +2111,12 @@ class TopMenuOptions {
 		// * SHOW ARTIST COUNTRY FLAG IN DETAILS * //
 		const detailsShowArtistFlagsMenu = new Menu('Show artist country flags');
 		detailsShowArtistFlagsMenu.addToggleItem('Default', grSet, 'showGridArtistFlags_default', () => {
+			grm.details.clearCache('metrics');
 			grm.ui.loadCountryFlags();
 			RepaintWindow();
 		});
 		detailsShowArtistFlagsMenu.addToggleItem('Artwork', grSet, 'showGridArtistFlags_artwork', () => {
+			grm.details.clearCache('metrics');
 			grm.ui.loadCountryFlags();
 			RepaintWindow();
 		});
@@ -2164,12 +2126,14 @@ class TopMenuOptions {
 		const detailsShowReleaseFlagsMenu = new Menu('Show release country flags');
 		detailsShowReleaseFlagsMenu.createRadioSubMenu('Default', ['Disabled', 'Logo', 'Text + Logo'], grSet.showGridReleaseFlags_default, [false, 'logo', 'textlogo'], type => {
 			grSet.showGridReleaseFlags_default = type;
-			grm.ui.loadReleaseCountryFlag();
+			grm.details.clearCache('metrics');
+			grm.details.loadGridReleaseCountryFlag();
 			RepaintWindow();
 		});
 		detailsShowReleaseFlagsMenu.createRadioSubMenu('Artwork', ['Disabled', 'Logo', 'Text + Logo'], grSet.showGridReleaseFlags_artwork, [false, 'logo', 'textlogo'], type => {
 			grSet.showGridReleaseFlags_artwork = type;
-			grm.ui.loadReleaseCountryFlag();
+			grm.details.clearCache('metrics');
+			grm.details.loadGridReleaseCountryFlag();
 			RepaintWindow();
 		});
 		detailsShowReleaseFlagsMenu.appendTo(detailsMetadataGridMenu);
@@ -2178,10 +2142,12 @@ class TopMenuOptions {
 		const detailsShowCodecLogoMenu = new Menu('Show codec logo');
 		detailsShowCodecLogoMenu.createRadioSubMenu('Default', ['Disabled', 'Logo', 'Text + Logo'], grSet.showGridCodecLogo_default, [false, 'logo', 'textlogo'], type => {
 			grSet.showGridCodecLogo_default = type;
+			grm.details.clearCache('metrics');
 			RepaintWindow();
 		});
 		detailsShowCodecLogoMenu.createRadioSubMenu('Artwork', ['Disabled', 'Logo', 'Text + Logo'], grSet.showGridCodecLogo_artwork, [false, 'logo', 'textlogo'], type => {
 			grSet.showGridCodecLogo_artwork = type;
+			grm.details.clearCache('metrics');
 			RepaintWindow();
 		});
 		detailsShowCodecLogoMenu.appendTo(detailsMetadataGridMenu);
@@ -2190,10 +2156,12 @@ class TopMenuOptions {
 		const detailsShowChannelLogoMenu = new Menu('Show channel logo');
 		detailsShowChannelLogoMenu.createRadioSubMenu('Default', ['Disabled', 'Logo', 'Text + Logo'], grSet.showGridChannelLogo_default, [false, 'logo', 'textlogo'], type => {
 			grSet.showGridChannelLogo_default = type;
+			grm.details.clearCache('metrics');
 			RepaintWindow();
 		});
 		detailsShowChannelLogoMenu.createRadioSubMenu('Artwork', ['Disabled', 'Logo', 'Text + Logo'], grSet.showGridChannelLogo_artwork, [false, 'logo', 'textlogo'], type => {
 			grSet.showGridChannelLogo_artwork = type;
+			grm.details.clearCache('metrics');
 			RepaintWindow();
 		});
 		detailsShowChannelLogoMenu.appendTo(detailsMetadataGridMenu);
@@ -2204,23 +2172,8 @@ class TopMenuOptions {
 		// * EDIT METADATA GRID IN DETAILS * //
 		if (fb.IsPlaying) {
 			detailsMetadataGridMenu.addSeparator();
-			detailsMetadataGridMenu.addItem('Edit metadata grid', false, () => {
-				if (grSet.layout === 'default') {
-					grm.ui.displayMetadataGridMenu = !grm.ui.displayMetadataGridMenu;
-					if (!grm.ui.displayDetails) {
-						grm.ui.displayDetails = true;
-						grm.ui.displayPlaylist = false;
-						grm.ui.displayLibrary = false;
-						grm.ui.displayBiography = false;
-						grm.ui.displayLyrics = false;
-						grm.ui.resizeArtwork(true);
-						grm.button.initButtonState();
-					}
-					grm.gridMenu.initMetadataGridMenu(1);
-					RepaintWindow();
-				} else {
-					fb.ShowPopupMessage(`Metadata grid can only be live edited in default layout:\nOptions > Layout > Default\n\nYou could manually edit your config file while reloading to take effect:\n${grCfg.configPath}\n`, 'Metadata grid live editing');
-				}
+			detailsMetadataGridMenu.addItem(!grm.ui.displayMetadataGridMenu ? 'Edit metadata grid' : 'Close metadata grid menu', false, () => {
+				grm.details.initGridMenuState();
 			});
 		}
 		detailsMetadataGridMenu.appendTo(detailsMenu);
@@ -2251,53 +2204,27 @@ class TopMenuOptions {
 	libraryOptions(menu, context_menu) {
 		const libraryMenu = context_menu ? menu : new Menu('Library');
 
-		const setLibrarySplitPreset = (libraryLayoutSplitPreset) => {
-			grSet.libraryLayoutSplitPreset  = false;
-			grSet.libraryLayoutSplitPreset2 = false;
-			grSet.libraryLayoutSplitPreset3 = false;
-			grSet.libraryLayoutSplitPreset4 = false;
-			if (libraryLayoutSplitPreset) grSet[libraryLayoutSplitPreset] = true;
-
-			// * Reset to default settings when deactivating Library layout split presets
-			if (!grSet.libraryLayoutSplitPreset  && !grSet.libraryLayoutSplitPreset2 &&
-				!grSet.libraryLayoutSplitPreset3 && !grSet.libraryLayoutSplitPreset4) {
-				plSet.show_header = true;
-				plSet.auto_collapse = false;
-				pl.playlist.header_expand();
-			}
-
-			grm.ui.initLibraryLayout();
-			grm.ui.initPlaylist();
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
-		};
-
 		// * LAYOUT * //
 		if (grSet.layout === 'default') {
 			const libraryLayoutMenu = new Menu('Layout');
 			libraryLayoutMenu.addRadioItems(['Normal', 'Full', 'Split'], grSet.libraryLayout, ['normal', 'full', 'split'], (width) => {
 				grSet.libraryLayout = width;
-				if (!grm.ui.displayLibrary) { grm.ui.displayLibrary = true; grm.ui.displayPlaylist = false; grm.ui.displayBiography = false; }
-				if (grm.ui.displayLyrics) grm.ui.displayLyrics = false;
-				grm.ui.displayPlaylist = grSet.libraryLayout === 'split';
-				grm.ui.resizeArtwork(true);
-				grm.ui.initLibraryLayout();
-				grm.button.initButtonState();
-				RepaintWindow();
+				grm.ui.initLibraryLayoutState();
 			});
 			libraryLayoutMenu.addSeparator();
 			libraryLayoutMenu.addToggleItem('Use full preset', grSet, 'libraryLayoutFullPreset', () => { RepaintWindow(); });
 			libraryLayoutMenu.addSeparator();
 			libraryLayoutMenu.addToggleItem('Use split preset (collapse)', grSet, 'libraryLayoutSplitPreset', () => {
-				setLibrarySplitPreset(grSet.libraryLayoutSplitPreset ? 'libraryLayoutSplitPreset' : false);
+				grm.ui.setLibrarySplitPreset(grSet.libraryLayoutSplitPreset ? 'libraryLayoutSplitPreset' : false);
 			});
 			libraryLayoutMenu.addToggleItem('Use split preset (text)', grSet, 'libraryLayoutSplitPreset2', () => {
-				setLibrarySplitPreset(grSet.libraryLayoutSplitPreset2 ? 'libraryLayoutSplitPreset2' : false);
+				grm.ui.setLibrarySplitPreset(grSet.libraryLayoutSplitPreset2 ? 'libraryLayoutSplitPreset2' : false);
 			});
 			libraryLayoutMenu.addToggleItem('Use split preset (art grid)', grSet, 'libraryLayoutSplitPreset3', () => {
-				setLibrarySplitPreset(grSet.libraryLayoutSplitPreset3 ? 'libraryLayoutSplitPreset3' : false);
+				grm.ui.setLibrarySplitPreset(grSet.libraryLayoutSplitPreset3 ? 'libraryLayoutSplitPreset3' : false);
 			});
 			libraryLayoutMenu.addToggleItem('Use split preset (art header)', grSet, 'libraryLayoutSplitPreset4', () => {
-				setLibrarySplitPreset(grSet.libraryLayoutSplitPreset4 ? 'libraryLayoutSplitPreset4' : false);
+				grm.ui.setLibrarySplitPreset(grSet.libraryLayoutSplitPreset4 ? 'libraryLayoutSplitPreset4' : false);
 			});
 			libraryLayoutMenu.appendTo(libraryMenu);
 		}
@@ -2334,7 +2261,7 @@ class TopMenuOptions {
 		const libraryAlbumArtMenu = new Menu('Album art');
 		const libraryThumbnailSizeMenu = new Menu('Thumbnail size');
 		libraryThumbnailSizeMenu.addRadioItems(['Auto (default)', 'Playlist', 'Mini', 'Small', 'Regular', 'Medium', 'Large', 'XL', 'XXL', 'MAX'], grSet.libraryThumbnailSize, ['auto', 'playlist', 0, 1, 2, 3, 4, 5, 6, 7], (thumbnailSize) => {
-			grSet.libraryThumbnailSizeSaved = libSet.thumbNailSize = grSet.libraryThumbnailSize = thumbnailSize;
+			grSet.savedLibraryThumbnailSize = libSet.thumbNailSize = grSet.libraryThumbnailSize = thumbnailSize;
 			grm.ui.setLibrarySize();
 			RepaintWindow();
 		});
@@ -2404,7 +2331,7 @@ class TopMenuOptions {
 
 		const libraryLabelsMenu = new Menu('Labels');
 		libraryLabelsMenu.addRadioItems(['Bottom (default)', 'Right', 'Blend', 'Dark', 'None'], libSet.albumArtLabelType, [1, 2, 3, 4, 0], (style) => {
-			grSet.savedAlbumArtLabelType = libSet.albumArtLabelType = style;
+			grSet.savedLibraryAlbumArtLabelType = libSet.albumArtLabelType = style;
 			lib.panel.updateProp(1);
 		});
 		libraryLabelsMenu.addSeparator();
@@ -2423,7 +2350,6 @@ class TopMenuOptions {
 				grSet.libraryLayoutSplitPreset4 = false;
 				grSet.libraryLayout = mode === 0 ? 'normal' : 'split';
 				plSet.show_header = true;
-				plSet.auto_collapse = false;
 				libSet.itemShowStatistics = mode === 2 ? 7 : 0;
 				lib.panel.imgView = libSet.albumArtShow = mode === 1;
 				lib.lib.logTree();
@@ -2437,16 +2363,16 @@ class TopMenuOptions {
 			};
 
 			if (mode === 0) {
-				const msg = 'Do you want to enable library\'s default mode?\n\nThis will restore the original settings, presets,\nand behavior of the library.\n\nContinue?\n\n\n';
-				const msgFb = 'Library\'s default mode enabled:\n\nOriginal settings, presets, and behavior of the library have been restored.\n\n';
-				ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				const msg = grm.msg.getMessage('menu', 'actionModeDefault');
+				const msgFb = grm.msg.getMessage('menu', 'actionModeDefault', true);
+				grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 					setModeSettings(0);
 				});
 			}
 			else if (mode === 1) {
-				const msg = 'Do you want to enable library\'s browser mode?\n\nThis will act like a file browser to quickly see the content of the album. It is not recommended for new users\nwho don\'t know how the library works.\n\nContinue?\n\n\n';
-				const msgFb = 'Library\'s browser mode enabled:\n\nThis will act like a file browser to quickly see the content of the album.\nIt is not recommended for new users who don\'t know how the library works.';
-				ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				const msg = grm.msg.getMessage('menu', 'actionModeBrowser');
+				const msgFb = grm.msg.getMessage('menu', 'actionModeBrowser', true);
+				grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 					if (!confirmed) {
 						libSet.actionMode = 0;
 						return;
@@ -2455,9 +2381,9 @@ class TopMenuOptions {
 				});
 			}
 			else if (mode === 2) {
-				const msg = 'Do you want to enable library\'s player mode?\n\nThis will act like a playlist and will not automatically add content to the playlist. It is recommended for new users\nwho don\'t know how the library works.\n\nContinue?\n\n\n';
-				const msgFb = 'Library\'s player mode enabled:\n\nThis will act like a like a playlist and will not automatically add content to the playlist.\nIt is recommended for new users who don\'t know how the library works.';
-				ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				const msg = grm.msg.getMessage('menu', 'actionModePlayer');
+				const msgFb = grm.msg.getMessage('menu', 'actionModePlayer', true);
+				grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 					if (!confirmed) {
 						libSet.actionMode = 0;
 						return;
@@ -2624,11 +2550,7 @@ class TopMenuOptions {
 		if (grSet.layout === 'default') {
 			biographyLayoutMenu.addRadioItems(['Normal', 'Full'], grSet.biographyLayout, ['normal', 'full'], (width) => {
 				grSet.biographyLayout = width;
-				if (!grm.ui.displayBiography) { grm.ui.displayBiography = true; grm.ui.displayPlaylist = false; grm.ui.displayLibrary = false; }
-				if (grm.ui.displayLyrics) grm.ui.displayLyrics = false;
-				grm.ui.displayPlaylist = !grm.ui.displayPlaylist;
-				grm.ui.initBiographyLayout();
-				grm.button.initButtonState();
+				grm.ui.initBiographyLayoutState();
 			});
 			biographyLayoutMenu.addSeparator();
 			biographyLayoutMenu.addToggleItem('Use full preset', grSet, 'biographyLayoutFullPreset', () => { RepaintWindow(); });
@@ -2721,7 +2643,8 @@ class TopMenuOptions {
 				bioSet.cycPhoto = true;
 			}
 			else if (location === 1 && !bioSet.get('Panel Biography - System: Photo Folder Checked', false)) {
-				fb.ShowPopupMessage('Enter folder in options: "Server Settings"\\Photo\\Custom photo folder.', 'Biography: custom folder for photo cycling');
+				const msg = grm.msg.getMessage('menu', 'cycPhotoLocation');
+				fb.ShowPopupMessage(msg, 'Biography: custom folder for photo cycling');
 				bioSet.set('Panel Biography - System: Photo Folder Checked', true);
 				bioSet.cycPhoto = true;
 				bio.img.artistReset();
@@ -2761,7 +2684,8 @@ class TopMenuOptions {
 			bioSet.loadCovFolder = !bioSet.loadCovFolder;
 			bio.img.toggle('loadCovFolder');
 			if (bioSet.loadCovFolder) {
-				fb.ShowPopupMessage("Enter folder in options: \"Server Settings\"\\Cover\\Covers: cycle folder.\n\nDefault: artist photo folder.\n\nImages are updated when the album changes. Any images arriving after choosing the current album aren't included.", 'Biography: load folder for cover cycling');
+				const msg = grm.msg.getMessage('menu', 'loadCovFolder');
+				fb.ShowPopupMessage(msg, 'Biography: load folder for cover cycling');
 			}
 		});
 		biographySourcesCoverMenu.appendTo(biographySourcesMenu);
@@ -2888,24 +2812,7 @@ class TopMenuOptions {
 		if (grSet.layout === 'default') {
 			lyricsMenu.createRadioSubMenu('Layout', ['Normal', 'Full'], grSet.lyricsLayout, ['normal', 'full'], (width) => {
 				grSet.lyricsLayout = width;
-				if (!grm.ui.displayLyrics && grSet.lyricsLayout === 'full' || grm.ui.noAlbumArtStub) {
-					grm.ui.displayPlaylist = true;
-					grm.ui.displayLyrics = true;
-					grm.ui.displayLibrary = false;
-					grm.ui.displayBiography = false;
-					grm.ui.lyricsLayoutFullWidth = grSet.lyricsLayout === 'full';
-				}
-				if (grm.ui.displayLyrics && grSet.lyricsLayout === 'full') {
-					grm.ui.displayPlaylist = false;
-					grm.ui.displayLyrics = true;
-					grm.ui.lyricsLayoutFullWidth = grSet.lyricsLayout === 'full';
-				}
-				pl.call.on_size(grm.ui.ww, grm.ui.wh);
-				grm.lyrics.initLyrics();
-				on_playback_seek();
-				grm.ui.resizeArtwork(true);
-				grm.button.initButtonState();
-				RepaintWindow();
+				grm.ui.initLyricsLayoutState();
 			});
 		}
 
@@ -2932,9 +2839,17 @@ class TopMenuOptions {
 		lyricsDisplayMenu.appendTo(lyricsMenu);
 
 		const lyricsControlsMenu = new Menu('Controls');
-		lyricsControlsMenu.addToggleItem('Remember lyrics panel state', grSet, 'lyricsRememberPanelState');
+		lyricsControlsMenu.addToggleItem('Remember lyrics panel state', grSet, 'lyricsRememberPanelState', () => {
+			grm.ui.displayLyrics = grSet.lyricsRememberPanelState;
+			grSet.savedLyricsDisplayed = grm.ui.displayLyrics && grSet.lyricsRememberPanelState;
+			if (grSet.displayLyrics) grm.lyrics.initLyrics();
+			grm.button.initButtonState();
+			RepaintWindow();
+		});
 		lyricsControlsMenu.addToggleItem('Auto-scroll unsynced lyrics', grSet, 'lyricsAutoScrollUnsynced', () => {
-			on_size();
+			if (grSet.displayLyrics) grm.lyrics.initLyrics();
+			grm.button.initButtonState();
+			RepaintWindow();
 		});
 		lyricsControlsMenu.appendTo(lyricsMenu);
 
@@ -3017,19 +2932,17 @@ class TopMenuOptions {
 				grSet.themeDayNightMode = time;
 				if (!grSet.themeDayNightMode) {
 					grSet.themeDayNightMode = false;
-					clearInterval(grm.ui.themeDayNightModeTimer);
-					grm.ui.themeDayNightModeTimer = null;
+					grm.ui.clearTimer('themeDayNightMode');
 					return;
 				}
-				const msg = 'Do you want to activate the theme day/night mode?\n\nThe default daytime theme is White\nand the nighttime theme is Black.\n\nYou can set up and configure\na new theme and styles for both modes\nin the theme day/night mode setup.\n\nContinue?\n\n\n';
-				const msgFb = 'Theme day/night mode is active:\n\nThe default daytime theme is White\nand the nighttime theme is Black.\n\nYou can set up and configure\na new theme and styles for both modes\nin the theme day/night mode setup.';
-				ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				const msg = grm.msg.getMessage('menu', 'themeDayNightMode');
+				const msgFb = grm.msg.getMessage('menu', 'themeDayNightMode', true);
+				grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 					if (confirmed) {
 						grm.ui.resetTheme();
 						initThemeDayNightMode(new Date());
 						grm.ui.initThemeFull = true;
-						if (grSet.theme.startsWith('custom')) grm.ui.initCustomTheme();
-						if (!fb.IsPlaying) grm.color.setThemeColors();
+						grm.ui.initCustomTheme();
 						grm.ui.initTheme();
 						grm.ui.initStyleState();
 						grm.preset.initThemePresetState();
@@ -3053,13 +2966,12 @@ class TopMenuOptions {
 					grm.ui.themeNotification = '';
 					return;
 				}
-				const msg = '>>> Theme setup for daytime is active <<<\n\nPlease select your theme and styles for daytime usage.\nAfter configuring the theme settings, revisit this menu to save them and set a new time range.\n\n\n';
-				ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				const msg = grm.msg.getMessage('menu', 'themeSetupDay');
+				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 				grm.ui.resetTheme();
 				setThemeDayNightTheme(true);
 				grm.ui.initThemeFull = true;
-				if (grSet.theme.startsWith('custom')) grm.ui.initCustomTheme();
-				if (!fb.IsPlaying) grm.color.setThemeColors();
+				grm.ui.initCustomTheme();
 				grm.ui.initTheme();
 				grm.ui.initStyleState();
 				grm.preset.initThemePresetState();
@@ -3073,13 +2985,12 @@ class TopMenuOptions {
 					grm.ui.themeNotification = '';
 					return;
 				}
-				const msg = '>>> Theme setup for nighttime is active <<<\n\nPlease select your theme and styles for nighttime usage.\nAfter configuring the theme settings, revisit this menu to save them and set a new time range.\n\n\n';
-				ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				const msg = grm.msg.getMessage('menu', 'themeSetupNight');
+				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 				grm.ui.resetTheme();
 				setThemeDayNightTheme(false);
 				grm.ui.initThemeFull = true;
-				if (grSet.theme.startsWith('custom')) grm.ui.initCustomTheme();
-				if (!fb.IsPlaying) grm.color.setThemeColors();
+				grm.ui.initCustomTheme();
 				grm.ui.initTheme();
 				grm.ui.initStyleState();
 				grm.preset.initThemePresetState();
@@ -3107,14 +3018,14 @@ class TopMenuOptions {
 		};
 		themeSandboxMenu.addToggleItem('Enabled', grSet, 'themeSandbox', () => {
 			if (!grSet.themeSandbox) {
-				const msg = 'Do you want to restore\nor keep current theme settings?\n\nThis will restore previously used\ntheme, styles, preset\nor use the current active.\n\nContinue?\n\n\n';
-				ShowPopup(false, false, msg, 'Restore', 'Keep', (restore) => {
+				const msg = grm.msg.getMessage('menu', 'themeSandboxRestore');
+				grm.msg.showPopup(false, false, msg, 'Restore', 'Keep', (restore) => {
 					if (!restore) return;
-					const msg = grSet.savedPreset ? 'Do you want to restore\nlast used theme styles or theme preset?\n\n\n' : 'Do you want to restore\nlast used theme styles?\n\n\n';
-					const msgFb = 'Theme settings restored:\n\nTheme and styles have been restored.';
+					const msg = grm.msg.getMessage('menu', 'themeSandboxRestore2');
+					const msgFb = grm.msg.getMessage('menu', 'themeSandboxRestore2', true);
 					if (grSet.savedPreset) { // If grSet.savedPreset is available, choose between theme styles or theme preset
 						setTimeout(() => {
-							ShowPopup(true, msgFb, msg, 'Styles', 'Preset', (restoreStyles) => {
+							grm.msg.showPopup(true, msgFb, msg, 'Styles', 'Preset', (restoreStyles) => {
 								restoreThemeStylePresetSettings(restoreStyles); // Restore theme styles or theme preset
 							});
 						}, 0);
@@ -3124,9 +3035,9 @@ class TopMenuOptions {
 				});
 				return;
 			}
-			const msg = 'Do you want to activate the theme sandbox?\n\nThis mode is useful when trying out\nthemes, styles, presets or writing theme tags.\n\nAfter disabling the theme sandbox mode,\npreviously used theme settings can be restored.\n\nContinue?\n\n\n';
-			const msgFb = 'Theme sandbox mode activated:\n\nThis mode is useful when trying out\nthemes, styles, presets or writing theme tags.\n\nAfter disabling the theme sandbox mode,\npreviously used theme settings will be restored.';
-			ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'themeSandbox');
+			const msgFb = grm.msg.getMessage('menu', 'themeSandbox', true);
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) grSet.themeSandbox = false;
 			});
 		});
@@ -3141,8 +3052,8 @@ class TopMenuOptions {
 		// * THEME FONTS * //
 		const themeFontMenu = new Menu('Theme fonts');
 		themeFontMenu.addToggleItem('Use custom theme fonts', grSet, 'customThemeFonts', () => {
-			const msg = 'Do you want to use custom theme fonts?\n\nYou need to set your custom fonts in your config file located in\nfoobar\\profile\\georgia-reborn\\configs\\georgia-reborn-config.jsonc\n\nContinue?\n\n\n';
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'customThemeFonts');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				grSet.customThemeFonts = confirmed;
 			});
 			window.Reload();
@@ -3153,16 +3064,14 @@ class TopMenuOptions {
 		const themeImagesMenu = new Menu('Theme images');
 		themeImagesMenu.addToggleItem('Use custom preloader logo', grSet, 'customPreloaderLogo', () => {
 			if (!grSet.customPreloaderLogo) return window.Reload();
-			const customLogoPath = `${fb.ProfilePath}georgia-reborn\\images\\custom\\logo\\_4K-custom-logo.png and _custom-logo.png`;
-			const msg = `The custom logo placeholder can be replaced\nwith a new logo:\n\n${customLogoPath}\n\nRecommended logo dimensions are:\n500x500 pixels for 4K\n250x250 pixels for HD\n\n\n`;
-			ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+			const msg = grm.msg.getMessage('menu', 'customPreloaderLogo');
+			grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 			window.Reload();
 		});
 		themeImagesMenu.addToggleItem('Use custom theme images', grSet, 'customThemeImages', () => {
 			if (!grSet.customThemeImages) return window.Reload();
-			const customImagesPath = `${fb.ProfilePath}georgia-reborn\\images\\custom\\`;
-			const msg = `All theme images can be safely replaced\nwith new custom ones:\n\n${customImagesPath}\n\nPlease ensure all images have the same names\nas the original ones, which are located in the\nparent directory.\n\n\n`;
-			ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+			const msg = grm.msg.getMessage('menu', 'customThemeImages');
+			grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 			window.Reload();
 		});
 		themeImagesMenu.appendTo(settingsMenu);
@@ -3183,16 +3092,16 @@ class TopMenuOptions {
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
 		themeCacheLibraryMenu.addItem('Delete library cache', false, () => {
-			const msg = 'Do you want to delete the library cache?\n\nThis will permanently delete cached library album art thumbnails.\n\nContinue?\n\n\n';
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'deleteLibraryCache');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (confirmed) DeleteLibraryCache();
 			});
 		});
 		themeCacheLibraryMenu.addSeparator();
 		themeCacheLibraryMenu.addToggleItem('Auto-delete library cache on startup', grSet, 'libraryAutoDelete', () => {
-			const msg = 'Do you want to set auto-delete for library cache?\n\nThis will always auto-delete cached library album art thumbnails on startup.\n\nContinue?\n\n\n';
+			const msg = grm.msg.getMessage('menu', 'libraryAutoDelete');
 			if (grSet.libraryAutoDelete) {
-				ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+				grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 					grSet.libraryAutoDelete = confirmed;
 				});
 			}
@@ -3215,16 +3124,16 @@ class TopMenuOptions {
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
 		themeCacheBiographyMenu.addItem('Delete biography cache', false, () => {
-			const msg = 'Do you want to delete the biography cache?\n\nThis will permanently delete downloaded biography images and text files\n\nContinue?\n\n\n';
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'deleteBiographyCache');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (confirmed) DeleteBiographyCache();
 			});
 		});
 		themeCacheBiographyMenu.addSeparator();
 		themeCacheBiographyMenu.addToggleItem('Auto-delete biography cache on startup', grSet, 'biographyAutoDelete', () => {
-			const msg = 'Do you want to set auto-delete for biography cache?\n\nThis will always auto-delete downloaded biography images\nand text on startup\n\nContinue?\n\n\n';
+			const msg = grm.msg.getMessage('menu', 'biographyAutoDelete');
 			if (grSet.biographyAutoDelete) {
-				ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+				grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 					grSet.biographyAutoDelete = confirmed;
 				});
 			}
@@ -3243,16 +3152,16 @@ class TopMenuOptions {
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
 		themeCacheLyricsMenu.addItem('Delete lyrics', false, () => {
-			const msg = 'Do you want to delete all lyrics?\n\nThis will permanently delete downloaded lyrics.\n\nContinue?\n\n\n';
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'deleteLyricsCache');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (confirmed) DeleteLyrics();
 			});
 		});
 		themeCacheLyricsMenu.addSeparator();
 		themeCacheLyricsMenu.addToggleItem('Auto-delete lyrics on startup', grSet, 'lyricsAutoDelete', () => {
-			const msg = 'Do you want to set auto-delete for lyrics?\n\nThis will always auto-delete downloaded lyrics on startup.\n\nContinue?\n\n\n';
+			const msg = grm.msg.getMessage('menu', 'lyricsAutoDelete');
 			if (grSet.lyricsAutoDelete) {
-				ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+				grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 					grSet.lyricsAutoDelete = confirmed;
 				});
 			}
@@ -3271,16 +3180,16 @@ class TopMenuOptions {
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
 		themeCacheWaveformBarMenu.addItem('Delete waveform bar cache', false, () => {
-			const msg = 'Do you want to delete all waveform bar cache?\n\nThis will permanently delete analyzed files.\n\nContinue?\n\n\n';
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'deleteWaveformBarCache');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (confirmed) DeleteWaveformBarCache();
 			});
 		});
 
 		themeCacheWaveformBarMenu.addToggleItem('Auto-delete waveform bar cache on startup', grSet, 'waveformBarAutoDelete', () => {
-			const msg = 'Do you want to set auto-delete for waveform bar?\n\nThis will always auto-delete waveform bar cache on startup.\n\nContinue?\n\n\n';
+			const msg = grm.msg.getMessage('menu', 'waveformBarAutoDelete');
 			if (grSet.waveformBarAutoDelete) {
-				ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+				grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 					grSet.waveformBarAutoDelete = confirmed;
 				});
 			}
@@ -3291,16 +3200,16 @@ class TopMenuOptions {
 		// * THEME BACKUP * //
 		const themeBackupMenu = new Menu('Theme backup');
 		themeBackupMenu.addItem('Make backup', false, () => {
-			const msg = `Do you want to make a backup of the theme?\n\nThis will create a backup in ${fb.ProfilePath}backup\n\nOn new fb2k installation, you can copy/paste and replace it with ${fb.ProfilePath}\n\nIf a backup already exist, you can use\nOptions > Settings > Theme backup > Restore backup\n\nContinue?\n\n\n`;
-			const msgFb = `You can find the Georgia-ReBORN theme backup in ${fb.ProfilePath}backup\n\nOn new fb2k installation, you can copy/paste and replace it with ${fb.ProfilePath}\n\nIf a backup already exist, you can use\nOptions > Settings > Theme backup > Restore backup`;
-			ShowPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'makeBackup');
+			const msgFb = grm.msg.getMessage('menu', 'makeBackup', true);
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 				if (confirmed) ManageBackup(true);
 			});
 		});
 
 		themeBackupMenu.addItem('Restore backup', false, () => {
-			const msg = `Do you want to restore your backup of the theme?\n\n>>> WARNING <<<\n\nThis will restore your backup from ${fb.ProfilePath}\n\nChanges and modifications since your last backup\n(new theme settings, new playlists and play statistics)\nwill be lost!\n\nIt is recommended to make a new backup\nbefore you restore.\n\nContinue?\n\n\n`;
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'restoreBackup');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (confirmed) ManageBackup(false, true);
 			});
 		});
@@ -3309,24 +3218,24 @@ class TopMenuOptions {
 		// * THEME CONFIGURATION * //
 		const themeConfigMenu = new Menu('Theme configuration');
 		themeConfigMenu.addItem('Save settings to config file', false, () => {
-			const msg = 'Do you want to save all current theme settings?\n\nThis will overwrite all settings from the top menu "Options"\nin the georgia-reborn-config.jsonc file.\n\nContinue?\n\n\n';
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'saveSettingsConfig');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) return;
 				const start = async () => {
 					await grm.settings.setThemeSettings(true);
-					await window.Reload();
+					window.Reload();
 				};
 				start();
 				console.log(`\n>>> Georgia-ReBORN theme settings have been successfully saved in ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc <<<\n\n`);
 			});
 		});
 		themeConfigMenu.addItem('Load settings from config file', false, () => {
-			const msg = 'Do you want to load all theme settings\nfrom the georgia-reborn-config.jsonc file?\n\nContinue?\n\n\n';
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'loadSettingsConfig');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) return;
 				const start = async () => {
 					await grm.settings.setThemeSettings(false, true);
-					await window.Reload();
+					window.Reload();
 				};
 				start();
 				console.log(`\n>>> Georgia-ReBORN theme settings have been successfully loaded from ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc <<<\n\n`);
@@ -3334,13 +3243,13 @@ class TopMenuOptions {
 		});
 		themeConfigMenu.addSeparator();
 		themeConfigMenu.addItem('Load default settings', false, () => {
-			const msg = 'Do you want to load default theme settings?\n\nThis will not overwrite the georgia-reborn-config.jsonc file,\nbut you should probably first save your settings.\n\nContinue?\n\n\n';
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'loadDefaultSettingsConfig');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) return;
 				const start = async () => {
 					await grm.settings.setThemeSettings(false, false, true);
 					await grm.display.autoDetectRes();
-					await window.Reload();
+					window.Reload();
 				};
 				start();
 				console.log('\n>>> Default Georgia-ReBORN theme settings have been successfully loaded <<<\n\n');
@@ -3363,20 +3272,20 @@ class TopMenuOptions {
 		});
 		themeConfigMenu.addSeparator();
 		themeConfigMenu.addItem('Reset main configuration file', false, () => {
-			const msg = 'Do you want to reset the config file to default?\n\n!!! WARNING !!!\n\nThis will set all settings to default.\nYou should probably make a backup first.\n\nContinue?\n\n\n';
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'resetSettingsMainConfig');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) return;
 				try { // Needed to prevent crash when there is no config file
 					grCfg.config.resetConfiguration();
 					grm.settings.setThemeSettings(false, false, true);
-					grm.display.layoutDefault();
+					grm.display.setPlayerSize('small');
 					console.log(`\n>>> Georgia-ReBORN's ${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-config.jsonc file has been successfully reset to default. <<<\n\n`);
 				} catch (e) { window.Reload(); }
 			});
 		});
 		themeConfigMenu.addItem('Reset custom configuration file', false, () => {
-			const msg = 'Do you want to reset the custom config file to default?\n\n!!! WARNING !!!\n\nThis will delete and replace all custom themes\nto the default custom theme template.\nYou should definitely make a backup first.\n\nContinue?\n\n\n';
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'resetSettingsCustomConfig');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) return;
 				try { // Needed to prevent crash when there is no config file
 					grCfg.configCustom.resetConfiguration();
@@ -3386,8 +3295,8 @@ class TopMenuOptions {
 		});
 		themeConfigMenu.addSeparator();
 		themeConfigMenu.addItem('Reset all', false, () => {
-			const msg = 'Do you want to reset all theme settings to default?\n\nThis will also clear all library custom views plus filters\nand Georgia-ReBORN config.\n\nContinue?\n\n\n';
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'resetSettingsAll');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) return;
 				grSet.systemFirstLaunch = true; // Reset Georgia-ReBORN theme settings
 				try { // Needed to prevent crash when there is no config file
@@ -3399,7 +3308,8 @@ class TopMenuOptions {
 					server.resetCfg(); // Reset Biography server settings
 					console.log('\n>>> Georgia-ReBORN has been successfully reset <<<\n\n');
 				} catch (e) {
-					fb.ShowPopupMessage('Something went wrong and Georgia-ReBORN has NOT been successfully reset, try again!', 'Resetting Georgia-ReBORN');
+					const msg = grm.msg.getMessage('menu', 'resetSettingsAllError');
+					fb.ShowPopupMessage(msg, 'Resetting Georgia-ReBORN');
 				}
 			});
 		});
@@ -3408,8 +3318,8 @@ class TopMenuOptions {
 		// * THEME PERFORMANCE * //
 		settingsMenu.createRadioSubMenu('Theme performance', ['Lowest quality (fastest speed - very slow CPU)', 'Low quality', 'Balanced (Default)', 'High quality', 'Highest quality (slowest speed - very fast CPU)'], grSet.themePerformance,
 			['lowestQuality', 'lowQuality', 'balanced', 'highQuality', 'highestQuality'], (perf) => {
-			const msg = 'Do you want to change the theme performance?\n\nThese presets will change various theme settings!\nIt is recommended to save current theme settings\nto the config file. You should also make a backup\nof your playlists to be on the safe side!\n\n!!! WARNING !!!\n"High quality" and especially "Highest Quality"\ncan freeze foobar, depending how fast your CPU performs.\nIt does not matter if you are using a multi-core CPU,\nonly single-core CPU performance counts!\nIf your foobar is unresponsive, restart\nand change to a lighter preset.\n\nContinue?';
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'themePerformance');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) return;
 				grSet.themePerformance = perf;
 				grm.settings.setThemePerformance('balanced'); // First reset
@@ -3428,11 +3338,11 @@ class TopMenuOptions {
 				const last = deviceList.length + 1
 				let active = -1;
 				for (const [i, array] of deviceList.entries()) {
-					menu.AppendMenuItem(MF_STRING, i + 1, array.name);
+					menu.AppendMenuItem(MenuFlag.String, i + 1, array.name);
 					if (array.active) active = i;
 				}
 				menu.AppendMenuSeparator();
-				menu.AppendMenuItem(MF_STRING, last, 'Preferences...');
+				menu.AppendMenuItem(MenuFlag.String, last, 'Preferences...');
 
 				if (active > -1) menu.CheckMenuRadioItem(1, last, active + 1);
 				const idx = menu.TrackPopupMenu(x, y);
@@ -3458,16 +3368,16 @@ class TopMenuOptions {
 
 		const clearAutoDownloadBio = () => {
 			grm.ui.autoDownloadBio = false;
-			grm.button.setPlaybackOrder(grm.ui.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default, 'Default');
+			grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default, 'Default');
 			grm.ui.displayBiography = false;
-			clearInterval(grm.ui.autoDownloadBioTimer);
+			grm.ui.clearTimer('autoDownloadBio');
 		};
 
 		const clearAutoDownloadLyrics = () => {
 			grm.ui.autoDownloadLyrics = false;
-			grm.button.setPlaybackOrder(grm.ui.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default, 'Default');
+			grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default, 'Default');
 			grm.ui.displayLyrics = false;
-			clearInterval(grm.ui.autoDownloadLyricsTimer);
+			grm.ui.clearTimer('autoDownloadLyrics');
 		};
 
 		debugMenu.addItem('Console', false, () => { fb.RunMainMenuCommand('View/Console'); }); // Top menu 'View' does not exist in Artwork/Compact layout
@@ -3476,20 +3386,20 @@ class TopMenuOptions {
 			if (!grm.ui.autoDownloadBio) {
 				clearAutoDownloadBio();
 			} else {
-				const msg = 'Do you want to enable\nthe auto-download biography mode?\n\nThis will set the playback order to shuffle\nand activate a 6-second timer to automatically\ndownload the biography.\n\nThis is recommended when you leave your PC\nunattended for a longer period of time.\n\nContinue?\n\n\n';
-				ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+				const msg = grm.msg.getMessage('menu', 'autoDownloadBio');
+				grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 					if (!confirmed) {
 						grm.ui.autoDownloadBio = false;
 						return;
 					}
 					clearAutoDownloadLyrics();
 					fb.Play();
-					grm.button.setPlaybackOrder(grm.ui.btnImg.PlaybackShuffle, 'shuffle', PlaybackOrder.ShuffleTracks, 'Shuffle (tracks)');
+					grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackShuffle, 'shuffle', PlaybackOrder.ShuffleTracks, 'Shuffle (tracks)');
 					grm.ui.displayBiography = true;
 					grm.ui.autoDownloadBioTimer = setInterval(() => { fb.Next(); }, 6000);
 				});
 			}
-			grm.ui.btn.playbackOrder.repaint();
+			grm.button.btn.playbackOrder.repaint();
 			grm.button.initButtonState();
 			window.Repaint();
 		});
@@ -3497,31 +3407,31 @@ class TopMenuOptions {
 			if (!grm.ui.autoDownloadLyrics) {
 				clearAutoDownloadLyrics();
 			} else {
-				const msg = 'Do you want to enable\nthe auto-download lyrics mode?\n\nThis will set the playback order to playlist\nand activate a 15-second timer to automatically\ndownload the lyrics.\n\nThis is recommended when you leave your PC\nunattended for a longer period of time.\n\nContinue?\n\n\n';
-				ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+				const msg = grm.msg.getMessage('menu', 'autoDownloadLyrics');
+				grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 					if (!confirmed) {
 						grm.ui.autoDownloadLyrics = false;
 						return;
 					}
 					clearAutoDownloadBio();
 					fb.Play();
-					grm.button.setPlaybackOrder(grm.ui.btnImg.PlaybackRepeatPlaylist, 'repeatPlaylist', PlaybackOrder.RepeatPlaylist, 'Repeat (playlist)');
+					grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackRepeatPlaylist, 'repeatPlaylist', PlaybackOrder.RepeatPlaylist, 'Repeat (playlist)');
 					grm.ui.displayLyrics = true;
 					grm.lyrics.initLyrics();
 					grm.ui.autoDownloadLyricsTimer = setInterval(() => { fb.Next(); }, 15000);
 				});
 			}
-			grm.ui.btn.playbackOrder.repaint();
+			grm.button.btn.playbackOrder.repaint();
 			grm.button.initButtonState();
 			window.Repaint();
 		});
 		debugMenu.addSeparator();
 		debugMenu.addToggleItem('Enable double click refresh', grCfg.settings, 'doubleClickRefresh');
 		debugMenu.addSeparator();
-		debugMenu.addToggleItem('Enable debug output', grCfg.settings, 'showDebugLog', () => {
+		debugMenu.addToggleItem('Enable debug log', grCfg.settings, 'showDebugLog', () => {
 			if (grCfg.settings.showDebugLog) fb.RunMainMenuCommand('View/Console');
 		});
-		debugMenu.addItem('Enable debug theme output', grCfg.settings.showDebugThemeLog, () => {
+		debugMenu.addItem('Enable debug theme log', grCfg.settings.showDebugThemeLog, () => {
 			grCfg.settings.showDebugThemeLog = !grCfg.settings.showDebugThemeLog;
 			if (!grCfg.settings.showDebugThemeLog) return;
 			if (grCfg.settings.showDebugThemeLog) fb.RunMainMenuCommand('View/Console');
@@ -3542,7 +3452,6 @@ class TopMenuOptions {
 			grCfg.settings.showDebugPerformanceOverlay = !grCfg.settings.showDebugPerformanceOverlay;
 			if (grCfg.settings.showDebugPerformanceOverlay) {
 				grCfg.settings.showDebugThemeOverlay = false;
-				grm.cpuTrack = new CPUTracker();
 				grm.cpuTrack.start();
 				grm.ui.albumArt = null;
 				on_playback_new_track(fb.GetNowPlaying());
@@ -3603,8 +3512,8 @@ class TopMenuOptions {
 		debugMenu.addItem('Show panel properties', false, () => { window.ShowProperties(); });
 		debugMenu.addSeparator();
 		debugMenu.addItem('Set system first launch to true', false, () => { // Used when creating new config files
-			const msg = 'Do you really want to set system to first launch?\n\nContinue?\n\n\n';
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+			const msg = grm.msg.getMessage('menu', 'systemFirstLaunch');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) return;
 				window.SetProperty('Georgia-ReBORN - 16. System: System first launch', true);
 				plSet.show_scrollbar = false;
@@ -3613,10 +3522,9 @@ class TopMenuOptions {
 				console.log('\n>>> Georgia-ReBORN has been set to system first launch <<<\n\n');
 			});
 		});
-		const scriptPreloaderMode = grSet.asyncThemePreloader ? 'synchronous' : 'asynchronous';
-		debugMenu.addItem(`Set script preloader to ${scriptPreloaderMode}`, false, () => {
-			const msg = `Do you really want to set the script preloader\nto ${scriptPreloaderMode}?\n\nContinue?\n\n\n`;
-			ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+		debugMenu.addItem(`Set script preloader to ${grSet.asyncThemePreloader ? 'synchronous' : 'asynchronous'}`, false, () => {
+			const msg = grm.msg.getMessage('menu', 'asyncThemePreloader');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) return;
 				grSet.asyncThemePreloader = !grSet.asyncThemePreloader;
 				window.Reload();

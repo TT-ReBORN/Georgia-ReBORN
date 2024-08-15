@@ -4,7 +4,7 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    extremeHunter, TheQwertiest                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
 // * Last change:    18-02-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@
 // if (loadAsync) {
 // 	readFiles(files).then(() => {
 // 		if (!window.ID) return; // fix pss issue
-// 		pl.call.on_size(grMain.ui.ww, grMain.ui.wh);
+// 		grm.ui.setPlaylistSize();
 // 		window.Repaint();
 // 	});
 // } else {

@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    extremeHunter, TheQwertiest                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-05-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -35,11 +35,11 @@ const PlaylistDropEffect = {
  * @enum {string}
  */
 const PlaylistMutation = {
-	Added:     'Playlist added',
-	Init:      'Playlist initializing history',
-	Removed:   'Playlist removed',
-	Reordered: 'Playlist reordered',
-	Switch:    'Playlist switch'
+	Added:     'Playlist => added',
+	Init:      'Playlist => initializing history',
+	Removed:   'Playlist => removed',
+	Reordered: 'Playlist => reordered',
+	Switch:    'Playlist => switch'
 }
 
 /**
@@ -71,6 +71,7 @@ const plSet = new PanelProperties();
  * @property {object} col - The playlist colors object.
  * @property {object} font - The playlist fonts object.
  * @property {object} geo - The playlist geometry object.
+ * @property {boolean} cache_header - The playlist header cache state, must be deactivated on bg color and playlist size changes.
  * @property {PlaylistHistory} history - The playlist history object.
  * @property {boolean} history_used - The playlist history state, used for playlist scroll.
  * @property {Map} album_ratings - The playlist album ratings cached.
@@ -86,6 +87,7 @@ const pl = {
 	col: {},
 	font: {},
 	geo: {},
+	cache_header: true,
 	history: undefined,
 	history_used: false,
 	album_ratings: new Map(),

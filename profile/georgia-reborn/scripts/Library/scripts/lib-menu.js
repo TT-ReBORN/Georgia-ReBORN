@@ -184,18 +184,16 @@ class LibMenuItems {
 		libMenu.newItem({
 			str: 'Library options menu',
 			func: () => {
-				grm.topMenu.topMenuOptions(grm.ui.state.mouse_x, grm.ui.state.mouse_y, true, false, false, true);
+				grm.topMenu.topMenuOptions(grm.ui.state.mouse_x, grm.ui.state.mouse_y, true, 'library');
 			},
 			separator: () => true
 		});
 
 		if (grSet.layout === 'default' && grSet.theme.startsWith('custom')) {
 			libMenu.newItem({
-				str: 'Edit custom theme',
+				str: !grm.ui.displayCustomThemeMenu ? 'Edit custom theme' : 'Close custom theme menu',
 				func: () => {
-					grm.ui.displayCustomThemeMenu = true;
-					grm.cthMenu.initCustomThemeMenu(false, false, 'lib_bg');
-					window.Repaint();
+					grm.ui.initCustomThemeMenuState();
 				},
 				separator: () => true
 			});
@@ -206,13 +204,7 @@ class LibMenuItems {
 			str: grSet.libraryLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal',
 			func: () => {
 				grSet.libraryLayout = grSet.libraryLayout === 'normal' ? 'full' : 'normal';
-				grm.ui.displayPlaylist = grSet.libraryLayout === 'split';
-				plSet.auto_collapse = false;
-				pl.playlist.header_expand();
-				if (grSet.panelWidthAuto) {
-					grm.ui.initPanelWidthAuto();
-				}
-				grm.ui.initLibraryLayout();
+				grm.ui.initLibraryLayoutState();
 			},
 			hide: () => grSet.layout === 'default' && grSet.libraryDesign === 'flowMode' || grSet.layout !== 'default'
 		});
@@ -220,14 +212,21 @@ class LibMenuItems {
 			str: grSet.libraryLayout === 'split' ? 'Change layout to full' : 'Change layout to split',
 			func: () => {
 				grSet.libraryLayout = grSet.libraryLayout === 'split' ? 'full' : 'split';
-				grm.ui.displayPlaylist = grSet.libraryLayout === 'split';
-				if (grSet.panelWidthAuto) {
-					grm.ui.initPanelWidthAuto();
-				}
-				grm.ui.initLibraryLayout();
+				grm.ui.initLibraryLayoutState();
 			},
 			separator: () => true,
 			hide: () => grSet.layout === 'default' && grSet.libraryDesign === 'flowMode' || grSet.layout !== 'default'
+		});
+
+		// * Browse mode
+		libMenu.newItem({
+			str: 'Browse mode',
+			func: () => {
+				grSet.panelBrowseMode = !grSet.panelBrowseMode;
+				grm.ui.initBrowserModeState();
+			},
+			checkItem: grSet.panelBrowseMode,
+			separator: () => true
 		});
 
 		if (this.validItem) {
@@ -292,6 +291,30 @@ class LibMenuItems {
 			checkRadio: i == libSet.viewBy,
 			separator: i > lib.panel.menu.length - 3
 		}));
+
+		// * View by Folder Structure Hide menu
+		if (libSet.viewBy === 10) {
+			libMenu.newMenu({ menuName: 'Hide', separator: false });
+			['Hide album year', 'Hide track number', 'Hide file extension'].forEach((v, i) => {
+				libMenu.newItem({
+					menuName: 'Hide',
+					str: v,
+					func: () => {
+						const key = i.toString();
+						if (libSet.viewByFolderHide.includes(key)) {
+							libSet.viewByFolderHide = libSet.viewByFolderHide.replace(key, '');
+						} else {
+							libSet.viewByFolderHide += key;
+						}
+						lib.pop.buildTree(lib.lib.root, 0);
+						lib.panel.imgView = grSet.libraryLayout === 'normal' && grSet.libraryLayoutFullPreset ? libSet.albumArtShow = false : libSet.albumArtShow;
+						lib.men.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
+					},
+					checkItem: libSet.viewByFolderHide.includes(i.toString()),
+					separator: i > lib.panel.menu.length - 3
+				});
+			});
+		}
 
 		const d = {};
 		this.getSortData(d);
@@ -727,11 +750,11 @@ class LibMenuItems {
 				lib.pop.load(lib.pop.sel_items, true, true, false, false, false);
 				lib.lib.treeState(false, libSet.rememberTree);
 				if (grSet.addTracksPlaylistSwitch) {
-					grm.ui.btn.library.enabled = false;
-					grm.ui.btn.library.changeState(ButtonState.Default);
+					grm.button.btn.library.enabled = false;
+					grm.button.btn.library.changeState(ButtonState.Default);
 					grm.ui.displayLibrary = false;
 					grm.ui.displayPlaylist = true;
-					if (!grSet.playlistAutoScrollNowPlaying) pl.call.on_size(grm.ui.ww, grm.ui.wh);
+					if (!grSet.playlistAutoScrollNowPlaying) grm.ui.setPlaylistSize();
 					setTimeout(() => { pl.playlist.scrollbar.scroll_to_end(); }, 500);
 					window.Repaint();
 				}
@@ -741,8 +764,8 @@ class LibMenuItems {
 				lib.panel.treePaint();
 				lib.lib.treeState(false, libSet.rememberTree);
 				if (grSet.addTracksPlaylistSwitch) {
-					grm.ui.btn.library.enabled = false;
-					grm.ui.btn.library.changeState(ButtonState.Default);
+					grm.button.btn.library.enabled = false;
+					grm.button.btn.library.changeState(ButtonState.Default);
 					grm.ui.displayLibrary = false;
 					grm.ui.displayPlaylist = true;
 					setTimeout(() => { pl.playlist.scrollbar.scroll_to_end(); }, 100);
@@ -756,7 +779,7 @@ class LibMenuItems {
 				lib.lib.logTree();
 				lib.pop.clearTree();
 				libSet.toggle('albumArtShow');
-				lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow;
+				lib.panel.imgView = grSet.savedLibraryAlbumArtShow = libSet.albumArtShow;
 				this.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
 
 				// Need continuous repaint when using style "Blend" and switching from normal to full width
@@ -908,6 +931,45 @@ class LibMenuItems {
 			}
 			lib.panel.set('view', i);
 		}
+	}
+
+	setViewByFolderHide(tree, indicesStr) {
+		const hideAlbumYear = (name) =>
+			name.replace(/^\s*[[({]?\d{4}[\])}]?\s*[-.]\s*/, '');
+
+		const hideTrackNumber = (name) =>
+			/^\d{1,2} \S/.test(name) && !/[-._]/.test(name) ? name :
+			name.replace(/^\d{1,2}([-.]\d{1,2})?([-. _]+)(?=\S)/, '');
+
+		const hideFileExtension = (name) =>
+			name.replace(/\.\w+$/, '');
+
+		const hideFuncs = [
+			hideAlbumYear,
+			hideTrackNumber,
+			hideFileExtension
+		];
+
+		const selectedHideFuncs = indicesStr
+			.split('')
+			.map(index => hideFuncs[parseInt(index, 10)])
+			.filter(Boolean);
+
+		if (selectedHideFuncs.length === 0) return;
+
+		const applyHideFuncs = (name) =>
+			selectedHideFuncs.reduce((acc, hideFunction) => hideFunction(acc), name);
+
+		const traverseAndHide = (node) => {
+			if (node.nm) {
+				node.nm = applyHideFuncs(node.nm);
+			}
+			if (node.child && node.child.length > 0) {
+				node.child.forEach(traverseAndHide);
+			}
+		};
+
+		tree.forEach(traverseAndHide);
 	}
 
 	sortByDate(i, d) {

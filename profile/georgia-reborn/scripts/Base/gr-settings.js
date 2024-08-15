@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-06-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -147,7 +147,7 @@ const grSet = new PanelProperties();
  * Settings chronological ordered by top menu > Options.
  */
 grSet.addProperties({
-	version:                            ['Georgia-ReBORN - #Version: Do not hand edit!', '3.0-DEV'],
+	version:                            ['Georgia-ReBORN - #Version: Do not hand edit!', '3.0-RC3'],
 
 	// * Theme
 	theme:                              ['Georgia-ReBORN - 01. Theme:', 'reborn'], // Use reborn theme as default
@@ -294,21 +294,13 @@ grSet.addProperties({
 
 	// * Player size
 	playerSize:                         ['Georgia-ReBORN - 04. Player size:', 'small'], // Default player size
-	playerSize_4K_small:                ['Georgia-ReBORN - 04. Player size: 4K Small',   false], // Player size Small 4K
-	playerSize_4K_normal:               ['Georgia-ReBORN - 04. Player size: 4K Normal',  false], // Player size Normal 4K
-	playerSize_4K_large:                ['Georgia-ReBORN - 04. Player size: 4K Large',   false], // Player size Large 4K
-	playerSize_QHD_small:               ['Georgia-ReBORN - 04. Player size: QHD Small',  false], // Player size Small QHD
-	playerSize_QHD_normal:              ['Georgia-ReBORN - 04. Player size: QHD Normal', false], // Player size Normal QHD
-	playerSize_QHD_large:               ['Georgia-ReBORN - 04. Player size: QHD Large',  false], // Player size Large QHD
-	playerSize_HD_small:                ['Georgia-ReBORN - 04. Player size: HD Small',   false], // Player size Small HD
-	playerSize_HD_normal:               ['Georgia-ReBORN - 04. Player size: HD Normal',  false], // Player size Normal HD
-	playerSize_HD_large:                ['Georgia-ReBORN - 04. Player size: HD Large',   false], // Player size Large HD
 
 	// * Layout
 	layout:                             ['Georgia-ReBORN - 05. Layout', 'default'], // Default layout
 
 	// * Display resolution
 	displayRes:                         ['Georgia-ReBORN - 06. Display', '<not_set>'], // 4K: Switch to 4K res, QHD: switch to QHD res, HD: switch to HD res
+	displayScale:                       ['Georgia-ReBORN - 06. Display scaling', 100], // 100: Default 100% scale
 
 	// * Brightness
 	themeBrightness:                    ['Georgia-ReBORN - 07. Brightness', 'default'], // default: Theme brightness
@@ -360,6 +352,7 @@ grSet.addProperties({
 	// * Player controls
 	showPanelDetails_default:           ['Georgia-ReBORN - 09. Player controls: Show Details panel (Default)', true], // true: Show Details panel in top menu in Default layout
 	showPanelDetails_artwork:           ['Georgia-ReBORN - 09. Player controls: Show Details panel (Artwork)', true], // true: Show Details panel in top menu in Artwork layout
+	showPanelPlaylist_artwork:          ['Georgia-ReBORN - 09. Player controls: Show Playlist panel (Artwork)', true], // true: Show Playlist panel in top menu in Artwork layout
 	showPanelLibrary_default:           ['Georgia-ReBORN - 09. Player controls: Show Library panel (Default)', true], // true: Show Library panel in top menu in Default layout
 	showPanelLibrary_artwork:           ['Georgia-ReBORN - 09. Player controls: Show Library panel (Artwork)', true], // true: Show Library panel in top menu in Artwork layout
 	showPanelBiography_default:         ['Georgia-ReBORN - 09. Player controls: Show Biography panel (Default)', true], // true: Show Biography panel in top menu in Default layout
@@ -403,7 +396,8 @@ grSet.addProperties({
 	showTooltipLibrary:                 ['Georgia-ReBORN - 09. Player controls: Show library tooltips', false], // true: Show library tooltips
 	showTooltipBiography:               ['Georgia-ReBORN - 09. Player controls: Show biography tooltips', false], // true: Show biography tooltips
 	showStyledTooltips:                 ['Georgia-ReBORN - 09. Player controls: Show styled tooltips', true], // true: Show styled tooltips
-	panelWidthAuto:                     ['Georgia-ReBORN - 09. Player controls: Use auto panel width', false], // true: Use auto panel width when player size is not proportional
+	panelWidthAuto:                     ['Georgia-ReBORN - 09. Player controls: Auto panel width', false], // false: Use auto panel width when player size is not proportional
+	panelBrowseMode:                    ['Georgia-ReBORN - 09. Player controls: Browse mode', false], // false: Enable browse mode to browse through albums when playing or not playing
 	showPanelOnStartup:                 ['Georgia-ReBORN - 09. Player controls: Show panel on startup', 'playlist'], // "cover", "playlist", "details", "library", "biography", "lyrics" - show panel on foobar startup
 	showPreloaderLogo:                  ['Georgia-ReBORN - 09. Player controls: Show logo on preloader', true], // true: Show logo on preloader
 	returnToHomeOnPlaybackStop:         ['Georgia-ReBORN - 09. Player controls: Return to home on playback stop', true], // true: Return to home on playback stop
@@ -443,9 +437,9 @@ grSet.addProperties({
 	showLowerBarTrackNum_default:       ['Georgia-ReBORN - 09. Player controls: Show track number in lower bar (Default)', true], // Show track number in lower bar in Default layout
 	showLowerBarTrackNum_artwork:       ['Georgia-ReBORN - 09. Player controls: Show track number in lower bar (Artwork)', true], // Show track number in lower bar in Artwork layout
 	showLowerBarTrackNum_compact:       ['Georgia-ReBORN - 09. Player controls: Show track number in lower bar (Compact)', true], // Show track number in lower bar in Compact layout
-	showLowerBarTitle_default:          ['Georgia-ReBORN - 09. Player controls: Show song title in lower bar (Default)', true], // Show song title in lower bar in Default layout
-	showLowerBarTitle_artwork:          ['Georgia-ReBORN - 09. Player controls: Show song title in lower bar (Artwork)', true], // Show song title in lower bar in Artwork layout
-	showLowerBarTitle_compact:          ['Georgia-ReBORN - 09. Player controls: Show song title in lower bar (Compact)', true], // Show song title in lower bar in Compact layout
+	showLowerBarTitle_default:          ['Georgia-ReBORN - 09. Player controls: Show track title in lower bar (Default)', true], // Show track title in lower bar in Default layout
+	showLowerBarTitle_artwork:          ['Georgia-ReBORN - 09. Player controls: Show track title in lower bar (Artwork)', true], // Show track title in lower bar in Artwork layout
+	showLowerBarTitle_compact:          ['Georgia-ReBORN - 09. Player controls: Show track title in lower bar (Compact)', true], // Show track title in lower bar in Compact layout
 	showLowerBarComposer_default:       ['Georgia-ReBORN - 09. Player controls: Show composer in lower bar (Default)', false], // Show composer in lower bar in Default layout
 	showLowerBarComposer_artwork:       ['Georgia-ReBORN - 09. Player controls: Show composer in lower bar (Artwork)', false], // Show composer in lower bar in Artwork layout
 	showLowerBarComposer_compact:       ['Georgia-ReBORN - 09. Player controls: Show composer in lower bar (Compact)', false], // Show composer in lower bar in Compact layout
@@ -464,7 +458,10 @@ grSet.addProperties({
 	showWaveformBar_default:            ['Georgia-ReBORN - 09. Player controls: Show waveform bar (Default)', true], // true: Show waveform bar in Default layout, otherwise hide it (useful is using another panel for this)
 	showWaveformBar_artwork:            ['Georgia-ReBORN - 09. Player controls: Show waveform bar (Artwork)', true], // true: Show waveform bar in Artwork layout, otherwise hide it (useful is using another panel for this)
 	showWaveformBar_compact:            ['Georgia-ReBORN - 09. Player controls: Show waveform bar (Compact)', true], // true: Show waveform bar in Compact layout, otherwise hide it (useful is using another panel for this)
+	lowerBarArtistBtnAction:            ['Georgia-ReBORN - 09. Player controls: Lower bar artist button action', 'playlist'], // 'playlist', the lower bar artist button action type when clicked upon.
+	lowerBarArtistBtnWebsite:           ['Georgia-ReBORN - 09. Player controls: Lower bar artist button website', 'lastfm'], // 'lastfm', which website will be opened when the lower bar artist button is clicked upon.
 	addTracksPlaylist:                  ['Georgia-ReBORN - 09. Player controls: Add tracks playlist', 'Favorites'], // 'Favorites', the playlist where tracks will be added when using the add tracks button.
+	playbackTimeDisplay:                ['Georgia-ReBORN - 09. Player controls: Playback time display', 'default'], // Change playback time display from time elapsed to time remaining or percent
 	seekbar:                            ['Georgia-ReBORN - 09. Player controls: Seekbar', 'progressbar'], // 'progressbar', 'peakmeterbar', 'waveformbar' - Seekbar type
 	progressBarWheelSeekSpeed:          ['Georgia-ReBORN - 09. Player controls: Progress bar mouse wheel seek speed', 5], // Progress bar mouse wheel seeking speed, seconds per wheel step
 	progressBarRefreshRate:             ['Georgia-ReBORN - 09. Player controls: Progress bar refresh rate', 'variable'], // variable - default: Update progress bar multiple times a second. Smoother, but uses more CPU
@@ -501,12 +498,10 @@ grSet.addProperties({
 	waveformBarIndicator:               ['Georgia-ReBORN - 09. Player controls: Waveform bar indicator', false], // false: Shows the waveform bar indicator
 	waveformBarRefreshRate:             ['Georgia-ReBORN - 09. Player controls: Waveform bar refresh rate', 200], // 1000, 500, 200, 100, 60, 30 - Waveform bars refresh rate
 	waveformBarRefreshRateVar:          ['Georgia-ReBORN - 09. Player controls: Waveform bar refresh rate variable', false], // false: Should the waveform bar use variable refresh rate
-	switchPlaybackTime:                 ['Georgia-ReBORN - 09. Player controls: Switch to playback time remaining', false], // Switch the playback time from time elapsed to time remaining
 	playbackOrder:                      ['Georgia-ReBORN - 09. Player controls: Playback order', 'default'], // Playback order 'default' for context plus foobar menu when no transport controls are displayed
 
 	// * Playlist
 	playlistLayout:                     ['Georgia-ReBORN - 10. Playlist: Layout', 'normal'], // Playlist layout - normal (default) or full
-	playlistLayoutNormal:               ['Georgia-ReBORN - 10. Playlist: Layout atm is normal width', true], // Playlist layout at the moment - DO NOT CHANGE - when Playlist without Biography or Lyrics panel is full it will always change to normal when showing the Biography, otherwise it's overlayed by the Biography
 	showPlaylistManager_default:        ['Georgia-ReBORN - 10. Playlist: Show playlist manager (Default)',  true], // Show Playlist manager in Default layout
 	showPlaylistManager_artwork:        ['Georgia-ReBORN - 10. Playlist: Show playlist manager (Artwork)', false], // Show Playlist manager in Artwork layout
 	showPlaylistManager_compact:        ['Georgia-ReBORN - 10. Playlist: Show playlist manager (Compact)', false], // Show Playlist manager in Compact layout
@@ -522,10 +517,10 @@ grSet.addProperties({
 	showDifferentArtist:                ['Georgia-ReBORN - 10. Playlist: Show artist name on difference', false], // Show artist name on difference
 	showArtistPlaylistRows:             ['Georgia-ReBORN - 10. Playlist: Show artist name in all playlist rows', false], // Show artist name in all playlist rows
 	showAlbumPlaylistRows:              ['Georgia-ReBORN - 10. Playlist: Show album title in all playlist rows', false], // Show album title in all playlist rows
-	playlistTimeRemaining:              ['Georgia-ReBORN - 10. Playlist: Show time remaining on playing track', false], // Show time remaining in playlist on currently playing track
 	showVinylNums:                      ['Georgia-ReBORN - 10. Playlist: Show vinyl style numbering (e.g. A1)', true], // true: If the tags specified in tf.vinyl_side and tf.vinyl_tracknum are set, then we'll show vinyl style track numbers (i.e. "B2." instead of "04.")
 	lastFmScrobblesFallback:            ['Georgia-ReBORN - 10. Playlist: Show last.fm scrobbles on no local plays', true], // true: Show last.fm scrobbles if no local play count exist
 	playlistRowHover:                   ['Georgia-ReBORN - 10. Playlist: Row mouse hover', true], // Enable playlist row mouse hover effect
+	playlistPlaybackTimeDisplay:        ['Georgia-ReBORN - 10. Playlist: Playback time display', 'default'], // Change playback time display from time elapsed to time remaining or percent in playlist on currently playing track
 	playlistSortOrderAuto:              ['Georgia-ReBORN - 10. Playlist: Sort order Auto', false], // Playlist auto sort order
 	playlistSortOrder:                  ['Georgia-ReBORN - 10. Playlist: Sort order', ''], // Playlist sort order
 	playlistSortOrderDirection:         ['Georgia-ReBORN - 10. Playlist: Sort order direction', '_asc'], // '_asc' or '_dsc' - Playlist sort order direction
@@ -550,8 +545,8 @@ grSet.addProperties({
 	showGridArtist_artwork:             ['Georgia-ReBORN - 11. Details: Show artist (Artwork)', false], // false: Don't show artist at top of metadata grid in Artwork layout
 	showGridTrackNum_default:           ['Georgia-ReBORN - 11. Details: Show track number (Default)', false], // false: Don't show track number at top of metadata grid in Default layout
 	showGridTrackNum_artwork:           ['Georgia-ReBORN - 11. Details: Show track number (Artwork)', false], // false: Don't show track number at top of metadata grid in Artwork layout
-	showGridTitle_default:              ['Georgia-ReBORN - 11. Details: Show song title (Default)', false], // false: Don't show title at top of metadata grid, and move album title above timeline in Default layout
-	showGridTitle_artwork:              ['Georgia-ReBORN - 11. Details: Show song title (Artwork)', false], // false: Don't show title at top of metadata grid, and move album title above timeline in Artwork layout
+	showGridTitle_default:              ['Georgia-ReBORN - 11. Details: Show track title (Default)', false], // false: Don't show track title at top of metadata grid, and move album title above timeline in Default layout
+	showGridTitle_artwork:              ['Georgia-ReBORN - 11. Details: Show track title (Artwork)', false], // false: Don't show track title at top of metadata grid, and move album title above timeline in Artwork layout
 	showGridPlayingPlaylist:            ['Georgia-ReBORN - 11. Details: Show playing playlist', true], // true: Show playling playlist entry in metadata grid
 	showGridTimeline_default:           ['Georgia-ReBORN - 11. Details: Show timeline (Default)', true], // true: Show timeline at top of metadata grid in Default layout
 	showGridTimeline_artwork:           ['Georgia-ReBORN - 11. Details: Show timeline (Artwork)', true], // true: Show timeline at top of metadata grid in Artwork layout
@@ -578,11 +573,8 @@ grSet.addProperties({
 	libraryDesign:                      ['Georgia-ReBORN - 12. Library: Design', 'reborn'], // Library design - reborn (default), ultraModern, modern, traditional, facet, coversLabelsRight, coversLabelsBottom, coversLabelsBlend, flowMode
 	libraryTheme:                       ['Georgia-ReBORN - 12. Library: Theme', 0], // Library theme - 0 (reborn/default), 1 - 'Dark', 2 - 'Blend', 3 - 'Light', 4 - 'Random', 5 - 'Cover'
 	libraryThumbnailSize:               ['Georgia-ReBORN - 12. Library: Thumbnail size', 'auto'], // Library thumbnail size - auto (default)
-	libraryThumbnailSizeSaved:          ['Georgia-ReBORN - 12. Library: Thumbnail size saved', 'auto'], // Library thumbnail size saved setting, used to restore user setting when switching from library split layout to full layout
 	libraryThumbnailBorder:             ['Georgia-ReBORN - 12. Library: Thumbnail border', 'border'], // Library thumbnail border - border (default)
 	libraryRowHover:                    ['Georgia-ReBORN - 12. Library: Row mouse hover', true], // Enable library row mouse hover effect
-	savedAlbumArtShow:                  ['Georgia-ReBORN - 12. Library: Album art view saved', false], // Used to resume library view mode from split layout when not using library layout presets
-	savedAlbumArtLabelType:             ['Georgia-ReBORN - 12. Library: Album art label type saved', 1], // Used to resume album art label type from split layout when not using library layout presets
 	librarySource:                      ['Georgia-ReBORN - 12. Library: Source', 1], // Library source, 0 - Active playlist, 1 - Library (default)
 	librarySourceFixedPlaylist:         ['Georgia-ReBORN - 12. Library: Source fixed playlist', false], // Library source fixed playlist - true or false - used when using Library source selected playlist
 	librarySourceFixedPlaylistName:     ['Georgia-ReBORN - 12. Library: Source fixed playlist name', ''], // Library source fixed playlist name - Selected playlist name - used when using Library source selected playlist
@@ -604,7 +596,6 @@ grSet.addProperties({
 	lyricsScrollSpeed:                  ['Georgia-ReBORN - 14. Lyrics: Scroll speed', 'normal'], // 'fastest', 'fast', 'normal', 'slow', 'slowest' - lyrics scroll speed based on scroll average and maximum
 	lyricsScrollRateAvg:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed avg rate', 750], // 300, 500, 750, 1000, 1500 - average lyrics scroll in ms
 	lyricsScrollRateMax:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed max rate', 375], // average lyrics scroll / 2 = maximum lyrics scroll in ms
-	lyricsPanelState:                   ['Georgia-ReBORN - 14. Lyrics: Lyrics panel state', false], // false: Saved the lyrics panel state, used for lyricsRememberPanelState
 
 	// * Settings
 	themeDayNightMode:                  ['Georgia-ReBORN - 15. Settings: Auto-day/night mode', false], // false: The theme day/night mode state controlled by OS clock and users set themeSettings.themeDayNightMode value
@@ -628,16 +619,25 @@ grSet.addProperties({
 	devTools:                           ['Georgia-ReBORN - 15. Settings: Enable developer tools', false], // true: Show developer tools in options context menu
 
 	// * System
-	asyncThemePreloader:                ['Georgia-ReBORN - 16. System: Asynchronously theme preloader', true], // Loads individual theme files asynchronously at startup to reduce risk of SMP throwing slow script error on startup
-	checkForUpdates:                    ['Georgia-ReBORN - 16. System: Check for Updates', true], // true: Check github repo to determine if updates exist
+	asyncThemePreloader:                ['Georgia-ReBORN - 16. System: Asynchronous theme preloader', true], // Loads individual theme files asynchronously at startup to reduce risk of SMP throwing slow script error on startup
+	checkForUpdates:                    ['Georgia-ReBORN - 16. System: Check for updates', true], // true: Check github repo to determine if updates exist
 	restoreBackupPlaylist:              ['Georgia-ReBORN - 16. System: Restore backup playlist', false], // false: Used to copy playlist files again after fb2k installation
+	savedBiographyLayoutFull:           ['Georgia-ReBORN - 16. System: Saved biography layout full width', false], // Biography layout at the moment - DO NOT CHANGE - used to restore the Biography layout to full width
 	savedLayout:                        ['Georgia-ReBORN - 16. System: Saved layout', 'default'], // Default saved layout
-	savedWidth_default:                 ['Georgia-ReBORN - 16. System: Saved width (Default)',  1140], // Default saved width for Default layout
-	savedHeight_default:                ['Georgia-ReBORN - 16. System: Saved height (Default)', 730], // Default saved height for Default layout
-	savedWidth_artwork:                 ['Georgia-ReBORN - 16. System: Saved width (Artwork)',  526], // Default saved width for Artwork layout
-	savedHeight_artwork:                ['Georgia-ReBORN - 16. System: Saved height (Artwork)', 686], // Default saved height for Artwork layout
-	savedWidth_compact:                 ['Georgia-ReBORN - 16. System: Saved width (Compact)',  484], // Default saved width for Compact layout
-	savedHeight_compact:                ['Georgia-ReBORN - 16. System: Saved height (Compact)', 730], // Default saved height for Compact layout
+	savedWidth_default:                 ['Georgia-ReBORN - 16. System: Saved layout width (Default)', 1140], // Default saved width for Default layout
+	savedHeight_default:                ['Georgia-ReBORN - 16. System: Saved layout height (Default)', 730], // Default saved height for Default layout
+	savedWidth_artwork:                 ['Georgia-ReBORN - 16. System: Saved layout width (Artwork)',  526], // Default saved width for Artwork layout
+	savedHeight_artwork:                ['Georgia-ReBORN - 16. System: Saved layout height (Artwork)', 686], // Default saved height for Artwork layout
+	savedWidth_compact:                 ['Georgia-ReBORN - 16. System: Saved layout width (Compact)',  484], // Default saved width for Compact layout
+	savedHeight_compact:                ['Georgia-ReBORN - 16. System: Saved layout height (Compact)', 730], // Default saved height for Compact layout
+	savedLibraryAlbumArtLabelType:      ['Georgia-ReBORN - 16. System: Saved library album art label type', 1], // Used to resume album art label type from split layout when not using library layout presets
+	savedLibraryAlbumArtShow:           ['Georgia-ReBORN - 16. System: Saved library album art view', false], // Used to resume library view mode from split layout when not using library layout presets
+	savedLibraryLayoutFull:             ['Georgia-ReBORN - 16. System: Saved library layout full width', false], // Library layout at the moment - DO NOT CHANGE - used to restore the Library layout to full width
+	savedLibraryThumbnailSize:          ['Georgia-ReBORN - 16. System: Saved library thumbnail size', 'auto'], // Library thumbnail size saved setting, used to restore user setting when switching from library split layout to full layout
+	savedLyricsDisplayed:               ['Georgia-ReBORN - 16. System: Saved lyrics displayed state', false], // false: Saved the lyrics displayed state, used for lyricsRememberPanelState
+	savedLyricsLayoutFull:              ['Georgia-ReBORN - 16. System: Saved lyrics layout full width', false], // Lyrics layout at the moment - DO NOT CHANGE - used to restore the Lyrics layout to full width
+	savedPlaylistLayoutFull:            ['Georgia-ReBORN - 16. System: Saved playlist layout normal width', false], // Playlist layout at the moment - DO NOT CHANGE - used when using active Library layout split presets or when Playlist without Biography or Lyrics panel is full it will always change to normal when showing the Biography, otherwise it's overlayed by the Biography
+	savedPlaylistHeaderCollapse:        ['Georgia-ReBORN - 16. System: Saved playlist header collapsed state', false], // Playlist header collapsed at the moment - DO NOT CHANGE - used to restore the playlist header state when using active Library layout split presets
 	systemFirstLaunch:                  ['Georgia-ReBORN - 16. System: System first launch', true] // true: Init and reset to theme factory settings
 });
 
@@ -662,6 +662,8 @@ class ThemeSettingsManager {
 		this.loadCfg = loadCfg;
 		/** @private @type {boolean} */
 		this.defaultCfg = defaultCfg;
+
+		this.setSettingsLayout();
 	}
 
 	// * PRIVATE METHODS * //
@@ -699,6 +701,7 @@ class ThemeSettingsManager {
 	 * @param {boolean} saveCfg - Saves current theme settings from the `pref` panel properties object to config file.
 	 * @param {boolean} loadCfg - Loads theme settings from the config file to the `pref` panel properties object.
 	 * @param {boolean} defaultCfg - Loads theme settings based on default setting values.
+	 * @returns {Promise<void>} A promise that resolves when all theme settings have been set.
 	 */
 	async setThemeSettings(saveCfg = false, loadCfg = false, defaultCfg = false) {
 		grm.ui.libraryCanReload = false;
@@ -722,10 +725,10 @@ class ThemeSettingsManager {
 		this.setBiography();
 		this.setLyrics();
 		this.setSettings();
+		this.setSettingsLayout();
 		this.setSettingsNotInConfig();
 
-		// * Set variable imgBlended when switching from default settings to config settings that has style Blend or Blend2 activated
-		this.setStyleBlend();
+		grm.style.setStyleBlend();
 
 		// * Reinitialize theme presets when user has reset style settings by clicking on "Default" and reloading the config file
 		grm.preset.initThemePresetState();
@@ -869,17 +872,6 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'savedHeight_artwork', grCfg.themePlayerSize, 'savedHeight_artwork', 686);
 		this._setSetting(grSet, 'savedWidth_compact', grCfg.themePlayerSize, 'savedWidth_compact', 484);
 		this._setSetting(grSet, 'savedHeight_compact', grCfg.themePlayerSize, 'savedHeight_compact', 730);
-
-		// ! System settings not configurable
-		grSet.playerSize_4K_small = false;
-		grSet.playerSize_4K_normal = false;
-		grSet.playerSize_4K_large = false;
-		grSet.playerSize_QHD_small = false;
-		grSet.playerSize_QHD_normal = false;
-		grSet.playerSize_QHD_large = false;
-		grSet.playerSize_HD_small = false;
-		grSet.playerSize_HD_normal = false;
-		grSet.playerSize_HD_large = false;
 	}
 
 	/**
@@ -894,6 +886,7 @@ class ThemeSettingsManager {
 	 */
 	setDisplay() {
 		this._setSetting(grSet, 'displayRes', grCfg.themeDisplay, 'resolution', 'HD');
+		this._setSetting(grSet, 'displayScale', grCfg.themeDisplay, 'scaling', 100);
 	}
 
 	/**
@@ -909,45 +902,45 @@ class ThemeSettingsManager {
 	 * Sets font size settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
 	 */
 	setFontSize() {
-		this._setSetting(grSet, 'menuFontSize_default', grCfg.themeFontSize, 'menuFontSize_default', RES._QHD ? 14 : 12);
-		this._setSetting(grSet, 'menuFontSize_artwork', grCfg.themeFontSize, 'menuFontSize_artwork', RES._QHD ? 14 : 12);
-		this._setSetting(grSet, 'menuFontSize_compact', grCfg.themeFontSize, 'menuFontSize_compact', RES._QHD ? 14 : 12);
-		this._setSetting(grSet, 'lowerBarFontSize_default', grCfg.themeFontSize, 'lowerBarFontSize_default', RES._QHD ? 20 : 18);
-		this._setSetting(grSet, 'lowerBarFontSize_artwork', grCfg.themeFontSize, 'lowerBarFontSize_artwork', RES._QHD ? 18 : 16);
-		this._setSetting(grSet, 'lowerBarFontSize_compact', grCfg.themeFontSize, 'lowerBarFontSize_compact', RES._QHD ? 18 : 16);
-		this._setSetting(grSet, 'notificationFontSize_default', grCfg.themeFontSize, 'notificationFontSize_default', RES._QHD ? 20 : 18);
-		this._setSetting(grSet, 'notificationFontSize_artwork', grCfg.themeFontSize, 'notificationFontSize_artwork', RES._QHD ? 18 : 16);
-		this._setSetting(grSet, 'notificationFontSize_compact', grCfg.themeFontSize, 'notificationFontSize_compact', RES._QHD ? 18 : 16);
-		this._setSetting(grSet, 'popupFontSize_default', grCfg.themeFontSize, 'popupFontSize_default', RES._QHD ? 18 : 16);
-		this._setSetting(grSet, 'popupFontSize_artwork', grCfg.themeFontSize, 'popupFontSize_artwork', RES._QHD ? 16 : 14);
-		this._setSetting(grSet, 'popupFontSize_compact', grCfg.themeFontSize, 'popupFontSize_compact', RES._QHD ? 16 : 14);
-		this._setSetting(grSet, 'tooltipFontSize_default', grCfg.themeFontSize, 'tooltipFontSize_default', RES._QHD ? 18 : 16);
-		this._setSetting(grSet, 'tooltipFontSize_artwork', grCfg.themeFontSize, 'tooltipFontSize_artwork', RES._QHD ? 16 : 14);
-		this._setSetting(grSet, 'tooltipFontSize_compact', grCfg.themeFontSize, 'tooltipFontSize_compact', RES._QHD ? 16 : 14);
-		this._setSetting(grSet, 'gridArtistFontSize_default', grCfg.themeFontSize, 'gridArtistFontSize_default', RES._QHD ? 20 : 18);
-		this._setSetting(grSet, 'gridArtistFontSize_artwork', grCfg.themeFontSize, 'gridArtistFontSize_artwork', RES._QHD ? 20 : 18);
-		this._setSetting(grSet, 'gridTrackNumFontSize_default', grCfg.themeFontSize, 'gridTrackNumFontSize_default', RES._QHD ? 20 : 18);
-		this._setSetting(grSet, 'gridTrackNumFontSize_artwork', grCfg.themeFontSize, 'gridTrackNumFontSize_artwork', RES._QHD ? 20 : 18);
-		this._setSetting(grSet, 'gridTitleFontSize_default', grCfg.themeFontSize, 'gridTitleFontSize_default', RES._QHD ? 20 : 18);
-		this._setSetting(grSet, 'gridTitleFontSize_artwork', grCfg.themeFontSize, 'gridTitleFontSize_artwork', RES._QHD ? 20 : 18);
-		this._setSetting(grSet, 'gridAlbumFontSize_default', grCfg.themeFontSize, 'gridAlbumFontSize_default', RES._QHD ? 20 : 18);
-		this._setSetting(grSet, 'gridAlbumFontSize_artwork', grCfg.themeFontSize, 'gridAlbumFontSize_artwork', RES._QHD ? 20 : 18);
-		this._setSetting(grSet, 'gridKeyFontSize_default', grCfg.themeFontSize, 'gridKeyFontSize_default', RES._QHD ? 19 : 17);
-		this._setSetting(grSet, 'gridKeyFontSize_artwork', grCfg.themeFontSize, 'gridKeyFontSize_artwork', RES._QHD ? 19 : 17);
-		this._setSetting(grSet, 'gridValueFontSize_default', grCfg.themeFontSize, 'gridValueFontSize_default', RES._QHD ? 19 : 17);
-		this._setSetting(grSet, 'gridValueFontSize_artwork', grCfg.themeFontSize, 'gridValueFontSize_artwork', RES._QHD ? 19 : 17);
-		this._setSetting(grSet, 'playlistHeaderFontSize_default', grCfg.themeFontSize, 'playlistHeaderFontSize_default', RES._QHD ? 17 : 15);
-		this._setSetting(grSet, 'playlistHeaderFontSize_artwork', grCfg.themeFontSize, 'playlistHeaderFontSize_artwork', RES._QHD ? 17 : 15);
-		this._setSetting(grSet, 'playlistHeaderFontSize_compact', grCfg.themeFontSize, 'playlistHeaderFontSize_compact', RES._QHD ? 17 : 15);
-		this._setSetting(grSet, 'playlistFontSize_default', grCfg.themeFontSize, 'playlistFontSize_default', RES._QHD ? 14 : 12);
-		this._setSetting(grSet, 'playlistFontSize_artwork', grCfg.themeFontSize, 'playlistFontSize_artwork', RES._QHD ? 14 : 12);
-		this._setSetting(grSet, 'playlistFontSize_compact', grCfg.themeFontSize, 'playlistFontSize_compact', RES._QHD ? 14 : 12);
-		this._setSetting(libSet, 'baseFontSize_default', grCfg.themeFontSize, 'libraryFontSize_default', RES._4K ? 24 : RES._QHD ? 14 : 12);
-		this._setSetting(libSet, 'baseFontSize_artwork', grCfg.themeFontSize, 'libraryFontSize_artwork', RES._4K ? 24 : RES._QHD ? 14 : 12);
-		this._setSetting(bioSet, 'baseFontSizeBio_default', grCfg.themeFontSize, 'biographyFontSize_default', RES._4K ? 24 : RES._QHD ? 14 : 12);
-		this._setSetting(bioSet, 'baseFontSizeBio_artwork', grCfg.themeFontSize, 'biographyFontSize_artwork', RES._4K ? 24 : RES._QHD ? 14 : 12);
-		this._setSetting(grSet, 'lyricsFontSize_default', grCfg.themeFontSize, 'lyricsFontSize_default', RES._QHD ? 22 : 20);
-		this._setSetting(grSet, 'lyricsFontSize_artwork', grCfg.themeFontSize, 'lyricsFontSize_artwork', RES._QHD ? 22 : 20);
+		this._setSetting(grSet, 'menuFontSize_default', grCfg.themeFontSize, 'menuFontSize_default', HD_QHD_4K(12, 14));
+		this._setSetting(grSet, 'menuFontSize_artwork', grCfg.themeFontSize, 'menuFontSize_artwork', HD_QHD_4K(12, 14));
+		this._setSetting(grSet, 'menuFontSize_compact', grCfg.themeFontSize, 'menuFontSize_compact', HD_QHD_4K(12, 14));
+		this._setSetting(grSet, 'lowerBarFontSize_default', grCfg.themeFontSize, 'lowerBarFontSize_default', HD_QHD_4K(18, 20));
+		this._setSetting(grSet, 'lowerBarFontSize_artwork', grCfg.themeFontSize, 'lowerBarFontSize_artwork', HD_QHD_4K(16, 18));
+		this._setSetting(grSet, 'lowerBarFontSize_compact', grCfg.themeFontSize, 'lowerBarFontSize_compact', HD_QHD_4K(16, 18));
+		this._setSetting(grSet, 'notificationFontSize_default', grCfg.themeFontSize, 'notificationFontSize_default', HD_QHD_4K(18, 20));
+		this._setSetting(grSet, 'notificationFontSize_artwork', grCfg.themeFontSize, 'notificationFontSize_artwork', HD_QHD_4K(16, 18));
+		this._setSetting(grSet, 'notificationFontSize_compact', grCfg.themeFontSize, 'notificationFontSize_compact', HD_QHD_4K(16, 18));
+		this._setSetting(grSet, 'popupFontSize_default', grCfg.themeFontSize, 'popupFontSize_default', HD_QHD_4K(16, 18));
+		this._setSetting(grSet, 'popupFontSize_artwork', grCfg.themeFontSize, 'popupFontSize_artwork', HD_QHD_4K(14, 16));
+		this._setSetting(grSet, 'popupFontSize_compact', grCfg.themeFontSize, 'popupFontSize_compact', HD_QHD_4K(14, 16));
+		this._setSetting(grSet, 'tooltipFontSize_default', grCfg.themeFontSize, 'tooltipFontSize_default', HD_QHD_4K(16, 18));
+		this._setSetting(grSet, 'tooltipFontSize_artwork', grCfg.themeFontSize, 'tooltipFontSize_artwork', HD_QHD_4K(14, 16));
+		this._setSetting(grSet, 'tooltipFontSize_compact', grCfg.themeFontSize, 'tooltipFontSize_compact', HD_QHD_4K(14, 16));
+		this._setSetting(grSet, 'gridArtistFontSize_default', grCfg.themeFontSize, 'gridArtistFontSize_default', HD_QHD_4K(18, 20));
+		this._setSetting(grSet, 'gridArtistFontSize_artwork', grCfg.themeFontSize, 'gridArtistFontSize_artwork', HD_QHD_4K(18, 20));
+		this._setSetting(grSet, 'gridTrackNumFontSize_default', grCfg.themeFontSize, 'gridTrackNumFontSize_default', HD_QHD_4K(18, 20));
+		this._setSetting(grSet, 'gridTrackNumFontSize_artwork', grCfg.themeFontSize, 'gridTrackNumFontSize_artwork', HD_QHD_4K(18, 20));
+		this._setSetting(grSet, 'gridTitleFontSize_default', grCfg.themeFontSize, 'gridTitleFontSize_default', HD_QHD_4K(18, 20));
+		this._setSetting(grSet, 'gridTitleFontSize_artwork', grCfg.themeFontSize, 'gridTitleFontSize_artwork', HD_QHD_4K(18, 20));
+		this._setSetting(grSet, 'gridAlbumFontSize_default', grCfg.themeFontSize, 'gridAlbumFontSize_default', HD_QHD_4K(18, 20));
+		this._setSetting(grSet, 'gridAlbumFontSize_artwork', grCfg.themeFontSize, 'gridAlbumFontSize_artwork', HD_QHD_4K(18, 20));
+		this._setSetting(grSet, 'gridKeyFontSize_default', grCfg.themeFontSize, 'gridKeyFontSize_default', HD_QHD_4K(17, 19));
+		this._setSetting(grSet, 'gridKeyFontSize_artwork', grCfg.themeFontSize, 'gridKeyFontSize_artwork', HD_QHD_4K(17, 19));
+		this._setSetting(grSet, 'gridValueFontSize_default', grCfg.themeFontSize, 'gridValueFontSize_default', HD_QHD_4K(17, 19));
+		this._setSetting(grSet, 'gridValueFontSize_artwork', grCfg.themeFontSize, 'gridValueFontSize_artwork', HD_QHD_4K(17, 19));
+		this._setSetting(grSet, 'playlistHeaderFontSize_default', grCfg.themeFontSize, 'playlistHeaderFontSize_default', HD_QHD_4K(15, 17));
+		this._setSetting(grSet, 'playlistHeaderFontSize_artwork', grCfg.themeFontSize, 'playlistHeaderFontSize_artwork', HD_QHD_4K(15, 17));
+		this._setSetting(grSet, 'playlistHeaderFontSize_compact', grCfg.themeFontSize, 'playlistHeaderFontSize_compact', HD_QHD_4K(15, 17));
+		this._setSetting(grSet, 'playlistFontSize_default', grCfg.themeFontSize, 'playlistFontSize_default', HD_QHD_4K(12, 14));
+		this._setSetting(grSet, 'playlistFontSize_artwork', grCfg.themeFontSize, 'playlistFontSize_artwork', HD_QHD_4K(12, 14));
+		this._setSetting(grSet, 'playlistFontSize_compact', grCfg.themeFontSize, 'playlistFontSize_compact', HD_QHD_4K(12, 14));
+		this._setSetting(grSet, 'libraryFontSize_default', grCfg.themeFontSize, 'libraryFontSize_default', HD_QHD_4K(12, 14, 24));
+		this._setSetting(grSet, 'libraryFontSize_artwork', grCfg.themeFontSize, 'libraryFontSize_artwork', HD_QHD_4K(12, 14, 24));
+		this._setSetting(grSet, 'biographyFontSize_default', grCfg.themeFontSize, 'biographyFontSize_default', HD_QHD_4K(12, 14, 24));
+		this._setSetting(grSet, 'biographyFontSize_artwork', grCfg.themeFontSize, 'biographyFontSize_artwork', HD_QHD_4K(12, 14, 24));
+		this._setSetting(grSet, 'lyricsFontSize_default', grCfg.themeFontSize, 'lyricsFontSize_default', HD_QHD_4K(20, 22));
+		this._setSetting(grSet, 'lyricsFontSize_artwork', grCfg.themeFontSize, 'lyricsFontSize_artwork', HD_QHD_4K(20, 22));
 	}
 
 	/**
@@ -963,6 +956,7 @@ class ThemeSettingsManager {
 
 		this._setSetting(grSet, 'showPanelDetails_default', grCfg.themeControls, 'showPanelDetails_default', true);
 		this._setSetting(grSet, 'showPanelDetails_artwork', grCfg.themeControls, 'showPanelDetails_artwork', true);
+		this._setSetting(grSet, 'showPanelPlaylist_artwork', grCfg.themeControls, 'showPanelPlaylist_artwork', true);
 		this._setSetting(grSet, 'showPanelLibrary_default', grCfg.themeControls, 'showPanelLibrary_default', true);
 		this._setSetting(grSet, 'showPanelLibrary_artwork', grCfg.themeControls, 'showPanelLibrary_artwork', true);
 		this._setSetting(grSet, 'showPanelBiography_default', grCfg.themeControls, 'showPanelBiography_default', true);
@@ -1014,6 +1008,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'showTooltipBiography', grCfg.themeControls, 'showTooltipBiography', false);
 		this._setSetting(grSet, 'showStyledTooltips', grCfg.themeControls, 'showStyledTooltips', true);
 		this._setSetting(grSet, 'panelWidthAuto', grCfg.themeControls, 'panelWidthAuto', false);
+		this._setSetting(grSet, 'panelBrowseMode', grCfg.themeControls, 'panelBrowseMode', false);
 		this._setSetting(grSet, 'showPanelOnStartup', grCfg.themeControls, 'showPanelOnStartup', 'playlist');
 		this._setSetting(grSet, 'showPreloaderLogo', grCfg.themeControls, 'showPreloaderLogo', true);
 		this._setSetting(grSet, 'returnToHomeOnPlaybackStop', grCfg.themeControls, 'returnToHomeOnPlaybackStop', true);
@@ -1074,7 +1069,10 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'showWaveformBar_default', grCfg.themeControls, 'showWaveformBar_default', true);
 		this._setSetting(grSet, 'showWaveformBar_artwork', grCfg.themeControls, 'showWaveformBar_artwork', true);
 		this._setSetting(grSet, 'showWaveformBar_compact', grCfg.themeControls, 'showWaveformBar_compact', true);
+		this._setSetting(grSet, 'lowerBarArtistBtnAction', grCfg.themeControls, 'lowerBarArtistBtnAction', 'playlist');
+		this._setSetting(grSet, 'lowerBarArtistBtnWebsite', grCfg.themeControls, 'lowerBarArtistBtnWebsite', 'lastfm');
 		this._setSetting(grSet, 'addTracksPlaylist', grCfg.themeControls, 'addTracksPlaylist', 'Favorites');
+		this._setSetting(grSet, 'playbackTimeDisplay', grCfg.themeControls, 'playbackTimeDisplay', 'default');
 		this._setSetting(grSet, 'seekbar', grCfg.themeControls, 'seekbar', 'progressbar');
 		this._setSetting(grSet, 'progressBarWheelSeekSpeed', grCfg.themeControls, 'progressBarWheelSeekSpeed', 5);
 		this._setSetting(grSet, 'progressBarRefreshRate', grCfg.themeControls, 'progressBarRefreshRate', 'variable');
@@ -1110,7 +1108,6 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'waveformBarIndicator', grCfg.themeControls, 'waveformBarIndicator', false);
 		this._setSetting(grSet, 'waveformBarRefreshRate', grCfg.themeControls, 'waveformBarRefreshRate', 200);
 		this._setSetting(grSet, 'waveformBarRefreshRateVar', grCfg.themeControls, 'waveformBarRefreshRateVar', false);
-		this._setSetting(grSet, 'switchPlaybackTime', grCfg.themeControls, 'switchPlaybackTime', false);
 		this._setSetting(grSet, 'playbackOrder', grCfg.themeControls, 'playbackOrder', 'default');
 	}
 
@@ -1119,7 +1116,6 @@ class ThemeSettingsManager {
 	 */
 	setPlaylist() {
 		this._setSetting(grSet, 'playlistLayout', grCfg.themePlaylist, 'playlistLayout', 'normal');
-		this._setSetting(grSet, 'playlistLayoutNormal', false, false, true);
 		this._setSetting(grSet, 'showPlaylistManager_default', grCfg.themePlaylist, 'showPlaylistManager_default', true);
 		this._setSetting(grSet, 'showPlaylistManager_artwork', grCfg.themePlaylist, 'showPlaylistManager_artwork', false);
 		this._setSetting(grSet, 'showPlaylistManager_compact', grCfg.themePlaylist, 'showPlaylistManager_compact', false);
@@ -1150,10 +1146,10 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'showDifferentArtist', grCfg.themePlaylist, 'showDifferentArtist', false);
 		this._setSetting(grSet, 'showArtistPlaylistRows', grCfg.themePlaylist, 'showArtistPlaylistRows', false);
 		this._setSetting(grSet, 'showAlbumPlaylistRows', grCfg.themePlaylist, 'showAlbumPlaylistRows', false);
-		this._setSetting(grSet, 'playlistTimeRemaining', grCfg.themePlaylist, 'playlistTimeRemaining', false);
 		this._setSetting(grSet, 'showVinylNums', grCfg.themePlaylist, 'showVinylNums', true);
 		this._setSetting(grSet, 'lastFmScrobblesFallback', grCfg.themePlaylist, 'lastFmScrobblesFallback', true);
 		this._setSetting(grSet, 'playlistRowHover', grCfg.themePlaylist, 'playlistRowHover', true);
+		this._setSetting(grSet, 'playlistPlaybackTimeDisplay', grCfg.themePlaylist, 'playlistPlaybackTimeDisplay', 'default');
 		this._setSetting(grSet, 'playlistSortOrderAuto', grCfg.themePlaylist, 'playlistSortOrderAuto', false);
 		this._setSetting(grSet, 'playlistSortOrder', grCfg.themePlaylist, 'playlistSortOrder', '');
 		this._setSetting(grSet, 'playlistSortOrderDirection', grCfg.themePlaylist, 'playlistSortOrderDirection', '_asc');
@@ -1246,7 +1242,7 @@ class ThemeSettingsManager {
 		} else {
 			grSet.libraryLayout = grSet.libraryDesign === 'flowMode' ? 'full' : this.loadCfg ? grCfg.themeLibrary.libraryLayout : 'normal';
 			libSet.theme = grSet.libraryTheme = this.loadCfg ? grCfg.themeLibrary.libraryTheme : 0;
-			grSet.libraryThumbnailSizeSaved = libSet.thumbNailSize = grSet.libraryThumbnailSize = this.loadCfg ? grCfg.themeLibrary.libraryThumbnailSize : 'auto';
+			grSet.savedLibraryThumbnailSize = libSet.thumbNailSize = grSet.libraryThumbnailSize = this.loadCfg ? grCfg.themeLibrary.libraryThumbnailSize : 'auto';
 			libSet.libSource = grSet.librarySource = this.loadCfg ? grCfg.themeLibrary.librarySource : 1;
 			libSet.fixedPlaylist = grSet.librarySourceFixedPlaylist = this.loadCfg ? grCfg.themeLibrary.librarySourceFixedPlaylist : false;
 			libSet.fixedPlaylistName = grSet.librarySourceFixedPlaylistName = this.loadCfg ? grCfg.themeLibrary.librarySourceFixedPlaylistName : '';
@@ -1393,21 +1389,137 @@ class ThemeSettingsManager {
 	}
 
 	/**
-	 * Sets settings not in the config nor in the Options menu.
+	 * Sets layout-specific settings, simplifying their access and modification.
+	 * Dynamically creates `grSet.settings` based on `Default`, `Artwork`, `Compact` layouts,
+	 * and establishes getters and setters for direct interaction e.g., `grSet.setting_layout`.
+	 * Special case settings are dynamically calculated for coherence.
+	 * This method needs to be initialized right after adding all main `grSet.settings`.
+	 * @example Access `grSet['setting_${grSet.layout}`]` directly via `grSet.setting_layout`.
 	 */
-	setSettingsNotInConfig() {
-		grSet.savedAlbumArtShow = libSet.albumArtShow;
-		libSet.albumArtDropShadow = grSet.libraryThumbnailBorder === 'shadow';
-		bioSet.largerSyncLyricLine = grSet.lyricsLargerCurrentSync;
+	setSettingsLayout() {
+		const settingsLayout = [
+			// * Font size
+			'menuFontSize',
+			'menuCaptionFontSize',
+			'lowerBarFontSize',
+			'notificationFontSize',
+			'popupFontSize',
+			'tooltipFontSize',
+
+			'guiFxBtnFontSize',
+			'pboDefaultBtnFontSize',
+			'pboReplayBtnFontSize',
+			'pboShuffleBtnFontSize',
+			'reloadBtnFontSize',
+			'addTrackBtnFontSize',
+			'volumeBtnFontSize',
+
+			'gridArtistFontSize',
+			'gridTrackNumFontSize',
+			'gridTitleFontSize',
+			'gridAlbumFontSize',
+			'gridKeyFontSize',
+			'gridValueFontSize',
+
+			'playlistHeaderFontSize',
+			'playlistFontSize',
+			'libraryFontSize',
+			'biographyFontSize',
+			'lyricsFontSize',
+
+			// * Player controls
+			'showPanelDetails',
+			'showPanelLibrary',
+			'showPanelBiography',
+			'showPanelLyrics',
+			'showPanelRating',
+
+			'transportButtonSize',
+			'transportButtonSpacing',
+			'showTransportControls',
+			'showPlaybackOrderBtn',
+			'showReloadBtn',
+			'showAddTracksBtn',
+			'showVolumeBtn',
+			'showPlaybackTime',
+
+			'showLowerBarArtist',
+			'showLowerBarTrackNum',
+			'showLowerBarTitle',
+			'showLowerBarComposer',
+			'showLowerBarArtistFlags',
+			'showLowerBarVersion',
+
+			'showProgressBar',
+			'showPeakmeterBar',
+			'showWaveformBar',
+
+			// * Playlist
+			'showPlaylistManager',
+
+			// * Details
+			'showGridArtist',
+			'showGridTrackNum',
+			'showGridTitle',
+			'showGridTimeline',
+			'showGridArtistFlags',
+			'showGridReleaseFlags',
+			'showGridCodecLogo',
+			'showGridChannelLogo',
+
+			// * System
+			'savedWidth',
+			'savedHeight'
+		];
+
+		const settingsLayoutSpecial = {
+			menuCaptionFontSize: setting => setting.menuFontSize_layout + 1,
+			guiFxBtnFontSize: setting => setting.transportButtonSize_layout / 2,
+			pboDefaultBtnFontSize: setting => setting.transportButtonSize_layout / 1.6,
+			pboReplayBtnFontSize: setting => setting.transportButtonSize_layout / 2,
+			pboShuffleBtnFontSize: setting => setting.transportButtonSize_layout / 1.65,
+			reloadBtnFontSize: setting => setting.transportButtonSize_layout / 1.5,
+			addTrackBtnFontSize: setting => setting.transportButtonSize_layout / 1.5,
+			volumeBtnFontSize: setting => setting.transportButtonSize_layout / 1.33
+		};
+
+		for (const setting of settingsLayout) {
+			const property = `${setting}_layout`;
+			const isPropertyDefined = Object.getOwnPropertyDescriptor(grSet, property);
+
+			if (!isPropertyDefined || (isPropertyDefined && isPropertyDefined.configurable)) {
+				Object.defineProperty(grSet, property, {
+					configurable: true,
+					get() {
+						// * Special case
+						const settingLayoutSpecial = settingsLayoutSpecial[setting];
+						if (settingLayoutSpecial) return settingLayoutSpecial(this);
+
+						// * Default case
+						return this[`${setting}_${this.layout}`];
+					},
+					set(value) {
+						this[`${setting}_${this.layout}`] = value;
+					}
+				});
+			}
+		}
 	}
 
 	/**
-	 * Sets variable imgBlended when switching from default settings to config settings that has style Blend or Blend2 activated.
+	 * Sets settings not in the config nor in the Options menu.
 	 */
-	setStyleBlend() {
-		if (grm.ui.albumArt && (grSet.styleBlend || grSet.styleBlend2 || grSet.styleProgressBarFill === 'blend')) {
-			grm.color.setStyleBlend();
-		}
+	setSettingsNotInConfig() {
+		grSet.savedBiographyLayoutFull = false;
+		grSet.savedLibraryAlbumArtLabelType = libSet.albumArtLabelType;
+		grSet.savedLibraryAlbumArtShow = libSet.albumArtShow;
+		grSet.savedLibraryLayoutFull = false;
+		grSet.savedLyricsDisplayed = false;
+		grSet.savedLyricsLayoutFull = false;
+		grSet.savedPlaylistLayoutFull = false;
+		grSet.savedPlaylistHeaderCollapse = false;
+		libSet.albumArtDropShadow = grSet.libraryThumbnailBorder === 'shadow';
+		bioSet.largerSyncLyricLine = grSet.lyricsLargerCurrentSync;
 	}
 
 	/**
@@ -1442,17 +1554,18 @@ class ThemeSettingsManager {
 				grSet.waveformBarRefreshRate = 200;
 				grSet.playlistLayout = 'normal';
 				plSet.show_album_art = true;
-				grSet.playlistTimeRemaining = false;
 				grSet.playlistRowHover = true;
+				grSet.playlistPlaybackTimeDisplay = 'default';
 				grSet.showDiscArtStub = true;
 				grSet.noDiscArtStub = false;
 				grSet.discArtStub = 'cdAlbumCover';
 				grSet.displayDiscArt = true;
 				grSet.spinDiscArt = false;
 				grSet.spinDiscArtImageCount = 72;
+				grm.artCache.discArtImgMaxRes = grm.artCache.setDiscArtMaxResolution(grSet.spinDiscArtImageCount);
 				grSet.spinDiscArtRedrawInterval = 75;
-				clearInterval(grm.ui.discArtRotationTimer);
-				grm.ui.discArtArray = [];
+				grm.details.clearTimer('discArt');
+				grm.details.discArtArray = [];
 				grSet.detailsAlbumArtOpacity = 255;
 				grSet.detailsAlbumArtDiscAreaOpacity = 255;
 				grSet.showGridTimeline_default = true;
@@ -1484,8 +1597,7 @@ class ThemeSettingsManager {
 
 			case 'lowestQuality':
 				grSet.playerSize = 'small';
-				grSet.playerSize_HD_small = true;
-				grm.display.playerSize_HD_small();
+				grm.display.setPlayerSize('small');
 				grSet.styleDefault = true;
 				grSet.displayRes = 'HD';
 				grSet.playlistAutoScrollNowPlaying = false;
@@ -1508,13 +1620,14 @@ class ThemeSettingsManager {
 				grSet.waveformBarRefreshRate = 1000;
 				grSet.playlistLayout = 'normal';
 				plSet.show_album_art = false;
-				grSet.playlistTimeRemaining = false;
 				grSet.playlistRowHover = false;
+				grSet.playlistPlaybackTimeDisplay = 'default';
 				grSet.showDiscArtStub = false;
 				grSet.noDiscArtStub = true;
 				grSet.displayDiscArt = false;
 				grSet.spinDiscArt = false;
 				grSet.spinDiscArtImageCount = 36;
+				grm.artCache.discArtImgMaxRes = grm.artCache.setDiscArtMaxResolution(grSet.spinDiscArtImageCount);
 				grSet.spinDiscArtRedrawInterval = 250;
 				grSet.showGridTimeline_default = false;
 				grSet.showGridTimeline_artwork = false;
@@ -1553,12 +1666,13 @@ class ThemeSettingsManager {
 				grSet.waveformBarAnimate = false;
 				grSet.waveformBarBPM = false;
 				grSet.waveformBarRefreshRate = 500;
-				grSet.playlistTimeRemaining = false;
+				grSet.playlistPlaybackTimeDisplay = 'default';
 				grSet.showDiscArtStub = false;
 				grSet.noDiscArtStub = true;
 				grSet.displayDiscArt = false;
 				grSet.spinDiscArt = false;
 				grSet.spinDiscArtImageCount = 45;
+				grm.artCache.discArtImgMaxRes = grm.artCache.setDiscArtMaxResolution(grSet.spinDiscArtImageCount);
 				grSet.spinDiscArtRedrawInterval = 125;
 				grSet.libraryTheme = 0;
 				libSet.albumArtShow = false;
@@ -1585,8 +1699,9 @@ class ThemeSettingsManager {
 				grSet.waveformBarRefreshRateVar = false;
 				grSet.spinDiscArt = true;
 				grSet.spinDiscArtImageCount = 120;
+				grm.artCache.discArtImgMaxRes = grm.artCache.setDiscArtMaxResolution(grSet.spinDiscArtImageCount);
 				grSet.spinDiscArtRedrawInterval = 40;
-				grm.ui.setDiscArtRotationTimer();
+				grm.details.setDiscArtRotationTimer();
 				grSet.libraryLayout = 'full';
 				libSet.albumArtShow = true;
 				grSet.biographyLayout = 'full';
@@ -1610,8 +1725,9 @@ class ThemeSettingsManager {
 				grSet.waveformBarRefreshRateVar = false;
 				grSet.spinDiscArt = true;
 				grSet.spinDiscArtImageCount = 180;
+				grm.artCache.discArtImgMaxRes = grm.artCache.setDiscArtMaxResolution(grSet.spinDiscArtImageCount);
 				grSet.spinDiscArtRedrawInterval = 10;
-				grm.ui.setDiscArtRotationTimer();
+				grm.details.setDiscArtRotationTimer();
 				grSet.detailsAlbumArtDiscAreaOpacity = 178;
 				grSet.libraryLayout = 'full';
 				libSet.albumArtShow = true;

@@ -265,33 +265,34 @@ class BioMenuItems {
 
 		if (grSet.layout === 'default' && grSet.theme.startsWith('custom')) {
 			bioMenu.newItem({
-				str: 'Edit custom theme',
+				str: !grm.ui.displayCustomThemeMenu ? 'Edit custom theme' : 'Close custom theme menu',
 				func: () => {
-					grm.ui.displayCustomThemeMenu = true;
-					grm.cthMenu.initCustomThemeMenu(false, false, false, 'bio_bg');
-					window.Repaint();
+					grm.ui.initCustomThemeMenuState();
 				},
 				separator: true
 			});
 		}
 
-		bioMenu.newItem({ // * Biography layout switcher
+		// * Biography layout switcher
+		bioMenu.newItem({
 			str: grSet.biographyLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal',
 			func: () => {
-				if (grSet.biographyLayout === 'normal') {
-					grSet.biographyLayout = 'full';
-					grm.ui.displayPlaylist = false;
-				} else {
-					grSet.biographyLayout = 'normal';
-					grm.ui.displayPlaylist = true;
-				}
-				if (grSet.panelWidthAuto) {
-					grm.ui.initPanelWidthAuto();
-				}
-				grm.ui.initBiographyLayout();
+				grSet.biographyLayout = grSet.biographyLayout === 'normal' ? 'full' : 'normal';
+				grm.ui.initBiographyLayoutState();
 			},
 			separator: true,
 			hide: grSet.layout !== 'default'
+		});
+
+		// * Browse mode
+		bioMenu.newItem({
+			str: 'Browse mode',
+			func: () => {
+				grSet.panelBrowseMode = !grSet.panelBrowseMode;
+				grm.ui.initBrowserModeState();
+			},
+			checkItem: grSet.panelBrowseMode,
+			separator: () => true
 		});
 
 		bioMenu.newMenu({

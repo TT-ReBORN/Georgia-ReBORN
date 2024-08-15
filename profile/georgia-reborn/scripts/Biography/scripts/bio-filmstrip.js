@@ -632,9 +632,9 @@ class BioFilmStrip {
 			}
 		}
 
-		const marginT = bio.ui.heading.linePad * (RES._4K ? 1.5 : 0.5);
-		const marginTopCorr = grSet.layout === 'artwork' ? RES._4K ? -12 : -4 : RES._4K ? -7 : -1;
-		const marginTopCorr2 = grSet.layout === 'artwork' ? RES._4K ? -7 : -4 : RES._4K ? -2 : -1;
+		const marginT = bio.ui.heading.linePad * HD_4K(0.5, 1.5);
+		const marginTopCorr = grSet.layout === 'artwork' ? HD_4K(-4, -12) : HD_4K(-1, -7);
+		const marginTopCorr2 = grSet.layout === 'artwork' ? HD_4K(-4, -7) : HD_4K(-1, -2);
 		const filmStripLeftRight = bioSet.filmStripPos === 1 || bioSet.filmStripPos === 3;
 		const filmStripCorrY =
 			bioSet.img_only ? filmStripLeftRight && !filmStripOverlay ? bio.ui.y + bioSet.borT : bioSet.filmStripPos === 2 && !filmStripOverlay ? 0 : bio.ui.y :

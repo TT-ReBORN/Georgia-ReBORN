@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    extremeHunter, TheQwertiest                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    05-05-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -96,7 +96,6 @@ class PlaylistCallbacks {
 		const y = grm.ui.topMenuHeight;
 		const playlist_w = w - x;
 		const playlist_h = Math.max(0, h - grm.ui.lowerBarHeight - y);
-		const showPlaylistManager = grSet[`showPlaylistManager_${grSet.layout}`];
 
 		this.x = x;
 		this.y = y;
@@ -106,7 +105,9 @@ class PlaylistCallbacks {
 
 		pl.playlist.was_on_size_called = true;
 		pl.playlist.on_size(playlist_w, playlist_h - (this.plman_h * 2), x, y + this.plman_h + SCALE(4));
-		pl.plman.set_xywh(x, y, showPlaylistManager ? this.w : 0); // Hide Playlist manager
+		pl.plman.set_xywh(x, y, grSet.showPlaylistManager_layout ? this.w : 0); // Hide Playlist manager
+
+		grm.ui.handleLibrarySplitCollapse();
 
 		if (plSet.show_header && (plSet.auto_collapse || plSet.collapse_on_start)) {
 			pl.playlist.collapse_handler.collapse_all_but_now_playing();
@@ -134,7 +135,7 @@ class PlaylistCallbacks {
 			return;
 		}
 
-		const ctrl_pressed = utils.IsKeyPressed(VK_CONTROL);
+		const ctrl_pressed = utils.IsKeyPressed(VKey.CONTROL);
 
 		if (action.IsInternal) {
 			const copy_drop = ctrl_pressed && ((action.Effect & 1) || (action.Effect & 4));
@@ -350,9 +351,9 @@ class PlaylistCallbacks {
 		pl.playlist.key_down = true;
 
 		const modifiers = {
-			ctrl:  utils.IsKeyPressed(VK_CONTROL),
-			alt:   utils.IsKeyPressed(VK_MENU),
-			shift: utils.IsKeyPressed(VK_SHIFT)
+			ctrl:  utils.IsKeyPressed(VKey.CONTROL),
+			alt:   utils.IsKeyPressed(VKey.MENU),
+			shift: utils.IsKeyPressed(VKey.SHIFT)
 		};
 		pl.playlist.key_handler.invoke_key_action(vkey, modifiers);
 	}
@@ -450,8 +451,8 @@ class PlaylistCallbacks {
 			return true;
 		}
 
-		const ctrl_pressed = utils.IsKeyPressed(VK_CONTROL);
-		const shift_pressed = utils.IsKeyPressed(VK_SHIFT);
+		const ctrl_pressed = utils.IsKeyPressed(VKey.CONTROL);
+		const shift_pressed = utils.IsKeyPressed(VKey.SHIFT);
 
 		/** @type {PlaylistBaseHeader|PlaylistRow} */
 		// @ts-ignore
@@ -520,8 +521,8 @@ class PlaylistCallbacks {
 
 		// Drag is handled in on_drag_drop
 		if (!pl.playlist.selection_handler.is_dragging() && pl.playlist.mouse_on_item) {
-			const ctrl_pressed = utils.IsKeyPressed(VK_CONTROL);
-			const shift_pressed = utils.IsKeyPressed(VK_SHIFT);
+			const ctrl_pressed = utils.IsKeyPressed(VKey.CONTROL);
+			const shift_pressed = utils.IsKeyPressed(VKey.SHIFT);
 			/** @type {PlaylistRow|PlaylistBaseHeader} */
 			// @ts-ignore
 			const item = pl.playlist.get_item_under_mouse(x, y);
@@ -683,7 +684,7 @@ class PlaylistCallbacks {
 				return true;
 			}
 
-			const metadb = utils.IsKeyPressed(VK_CONTROL) ? (fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem()) : fb.GetFocusItem();
+			const metadb = utils.IsKeyPressed(VKey.CONTROL) ? (fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem()) : fb.GetFocusItem();
 			const has_selected_item = pl.playlist.selection_handler.has_selected_items();
 			const is_cur_playlist_empty = !pl.playlist.cnt.rows.length;
 			const cmm = new ContextMainMenu();
@@ -691,17 +692,14 @@ class PlaylistCallbacks {
 			// * Top menu options Playlist submenu
 			cmm.appendItem('Playlist options menu', () => {
 				if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-					grm.topMenu.topMenuOptions(grm.ui.state.mouse_x, grm.ui.state.mouse_y, true, true);
+					grm.topMenu.topMenuOptions(grm.ui.state.mouse_x, grm.ui.state.mouse_y, true, 'playlist');
 				}
 			});
 			cmm.separator();
 
 			if (grSet.layout === 'default' && grSet.theme.startsWith('custom')) {
-				cmm.appendItem('Edit custom theme', () => {
-					grm.ui.displayCustomThemeMenu = true;
-					grm.ui.displayPanel('playlist');
-					grm.cthMenu.initCustomThemeMenu('pl_bg');
-					window.Repaint();
+				cmm.appendItem(!grm.ui.displayCustomThemeMenu ? 'Edit custom theme' : 'Close custom theme menu', () => {
+					grm.ui.initCustomThemeMenuState();
 				});
 				cmm.separator();
 			}
@@ -710,44 +708,31 @@ class PlaylistCallbacks {
 				if (grm.ui.displayPlaylist && !grm.ui.displayBiography && !grm.ui.displayLyrics) {
 					cmm.appendItem(grm.ui.displayPlaylist && grSet.playlistLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 						grSet.playlistLayout = grSet.playlistLayout === 'normal' ? 'full' : 'normal';
-						if (grSet.panelWidthAuto) {
-							grm.ui.initPanelWidthAuto();
-						}
-						pl.call.on_size(grm.ui.ww, grm.ui.wh);
-						grm.jSearch.on_size();
-						window.Repaint();
+						grm.ui.initPlaylistLayoutState();
 					});
 					cmm.separator();
 				}
 				else if (grm.ui.displayBiography && grm.ui.displayPlaylist) {
 					cmm.appendItem(grm.ui.displayPlaylist && grm.ui.displayBiography && grSet.biographyLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
-						if (grSet.biographyLayout === 'normal') {
-							grSet.biographyLayout = 'full';
-							grm.ui.displayPlaylist = false;
-						} else {
-							grSet.biographyLayout = 'normal';
-							grm.ui.displayPlaylist = true;
-						}
-						if (grSet.panelWidthAuto) {
-							grm.ui.initPanelWidthAuto();
-						}
-						grm.ui.initBiographyLayout();
+						grSet.biographyLayout = grSet.biographyLayout === 'normal' ? 'full' : 'normal';
+						grm.ui.initBiographyLayoutState();
 					});
 					cmm.separator();
 				}
 				else if (grm.ui.displayLyrics) {
 					cmm.appendItem(grm.ui.displayLyrics && grSet.lyricsLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 						grSet.lyricsLayout = grSet.lyricsLayout === 'normal' ? 'full' : 'normal';
-						grm.ui.displayPlaylist = !grm.ui.displayPlaylist;
-						if (grSet.panelWidthAuto) {
-							grm.ui.initPanelWidthAuto();
-						}
-						grm.ui.resizeArtwork(true);
-						window.Repaint();
+						grm.ui.initLyricsLayoutState();
 					});
 					cmm.separator();
 				}
 			}
+
+			cmm.appendItem('Browse mode', () => {
+				grSet.panelBrowseMode = !grSet.panelBrowseMode;
+				grm.ui.initBrowserModeState();
+			}, { is_checked: grSet.panelBrowseMode });
+			cmm.separator();
 
 			if (fb.IsPlaying) {
 				cmm.appendItem('Show now playing', () => {
@@ -855,7 +840,7 @@ class PlaylistCallbacks {
 			// -------------------------------------------------------------- //
 			// * System
 
-			if (utils.IsKeyPressed(VK_SHIFT)) {
+			if (utils.IsKeyPressed(VKey.SHIFT)) {
 				grm.ctxMenu.contextMenuDefault(cmm);
 			}
 
@@ -956,8 +941,8 @@ class PlaylistCallbacks {
 
 		if (grSet.playlistAutoScrollNowPlaying || fb.PlaybackFollowCursor || fb.CursorFollowPlayback) {
 			setTimeout(() => { // * Wait until new album art / disc art loaded and other things finished for smoother auto-scrolling
-				pl.playlist.show_now_playing();
-			}, grm.ui.newTrackFetchingDone + 200);
+				if (!grm.button.lowerArtistBtnClicked) pl.playlist.show_now_playing();
+			}, 200);
 		}
 
 		pl.playlist.repaint();

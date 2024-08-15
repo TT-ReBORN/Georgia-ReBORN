@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    extremeHunter, TheQwertiest                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-06-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -370,7 +370,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	 */
 	draw(gr, top, bottom) {
 		if (this.w <= 0 || this.h <= 0) return;
-		// drawProfiler = fb.CreateProfiler('PlaylistHeader.draw items:' + this.sub_items.length);
+		// const drawProfiler = fb.CreateProfiler(`PlaylistHeader.draw items:${this.sub_items.length}`);
 		if (plSet.use_compact_header) {
 			this.draw_compact_header(gr);
 		}
@@ -387,15 +387,13 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	 * @param {number} bottom - The y-coordinate of the bottom edge of the header.
 	 */
 	draw_normal_header(gr, top, bottom) {
-		let clipImg = gdi.CreateImage(this.w, this.h);
-		const grClip = clipImg.GetGraphics();
-		const scrollbar = plSet.show_scrollbar && pl.playlist.is_scrollbar_available;
-		const headerFontSize = grSet[`playlistHeaderFontSize_${grSet.layout}`];
+		let cache_header =  pl.cache_header;
 
-		if (!this.hyperlinks_initialized) {
+		if (!this.hyperlinks_initialized || !cache_header) {
 			this.initialize_hyperlinks(gr);
+			this.clearCachedHeaderImg();
 		}
-		let cache_header = true;  // Caching is a lot faster, but need to handle artwork loading
+
 		if (this.was_playing !== this.is_playing()) {
 			this.was_playing = this.is_playing();
 			cache_header = false;
@@ -407,7 +405,8 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			cache_header = false;
 			this.clearCachedHeaderImg();
 		}
-		if (!cache_header || !this.header_image || this.clearCachedHeaderImg) {
+
+		if (!cache_header || !this.header_image) {
 			let artist_color = pl.col.header_artist_normal;
 			let album_color = pl.col.header_album_normal;
 			let info_color = pl.col.header_info_normal;
@@ -439,6 +438,9 @@ class PlaylistHeader extends PlaylistBaseHeader {
 				}
 			}
 
+			this.clipImg = gdi.CreateImage(this.w, this.h);
+			const grClip = this.clipImg.GetGraphics();
+
 			if (!grSet.styleBlend) grClip.FillSolidRect(0, 0, this.w, this.h, pl.col.bg); // Solid background for ClearTypeGridFit text rendering
 
 			// if (this.hasSelection && grSet.theme.startsWith('custom')) {
@@ -452,7 +454,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 					grClip.FillSolidRect(0, p, SCALE(8), this.h - p * 2, pl.col.header_nowplaying_bg);
 				}
 				else {
-					grClip.FillSolidRect(0, 0, scrollbar ? this.w - SCALE(12) : this.w, this.h * 2, pl.col.header_nowplaying_bg);
+					grClip.FillSolidRect(0, 0, plSet.show_scrollbar && pl.playlist.is_scrollbar_available ? this.w - SCALE(12) : this.w, this.h * 2, pl.col.header_nowplaying_bg);
 				}
 				if (grSet.theme === 'white' && (grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2) || !['white', 'black', 'cream'].includes(grSet.theme)) {
 					grClip.FillSolidRect(0, 0, SCALE(8), this.h, pl.col.header_sideMarker);
@@ -460,7 +462,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			}
 
 			// * Need to apply text rendering AntiAliasGridFit when using style Blend or when using custom theme fonts with larger font sizes
-			grClip.SetTextRenderingHint(grSet.styleBlend || grSet.customThemeFonts && headerFontSize > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
+			grClip.SetTextRenderingHint(grSet.styleBlend || grSet.customThemeFonts && grSet.playlistHeaderFontSize_layout > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
 
 			if (this.is_collapsed && this.is_focused() || this.is_completely_selected() && plSet.show_header && plSet.auto_collapse) {
 				grClip.DrawRect(-1, 0, this.w + 1, this.h - 1, 1, line_color);
@@ -519,7 +521,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 					}
 					else if (!this.is_art_loaded()) {
 						grClip.DrawString('LOADING', pl.font.cover, this.is_playing() ? artist_color : pl.col.row_title_normal, art_box_x, art_box_y, art_box_size, art_box_size, Stringformat.align_center);
-						cache_header = false;   // Don't cache until artwork is loaded
+						cache_header = false; // Don't cache until artwork is loaded
 					}
 					else { // null
 						const is_radio = this.metadb.RawPath.startsWith('http') || this.metadb.Path.startsWith('spotify');
@@ -619,13 +621,13 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 				if (album_text) {
 					const album_h = part_h;
-					let album_y = part_h;
+					this.album_y = part_h;
 					let album_x;
 					if (plSet.show_group_info) {
 						album_x = part2_cur_x;
 					}
 					else {
-						album_y += 5;
+						this.album_y += 5;
 						album_x = part3_cur_x;
 					}
 					const album_w = this.w - album_x - (part2_right_pad + 5);
@@ -636,7 +638,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 					}
 
 					if (!this.hyperlinks.album) {
-						grClip.DrawString(album_text, pl.font.album, album_color, album_x, album_y, album_w, album_h, album_text_format);
+						grClip.DrawString(album_text, pl.font.album, album_color, album_x, this.album_y, album_w, album_h, album_text_format);
 					} else {
 						this.hyperlinks.album.draw(grClip, album_color);
 					}
@@ -657,7 +659,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			// * INFO * //
 			if (plSet.show_group_info) {
 				const info_x = part3_cur_x;
-				const info_y = 2 * part_h - (RES._4K ? 5 : 0);
+				const info_y = 2 * part_h - HD_4K(0, 5);
 				const info_h = part_h; //row_h;
 				const info_w = this.w - info_x;
 				const info_text_format = Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
@@ -730,7 +732,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			{
 				let line_x1 = part2_cur_x;
 				if (line_x1 !== left_pad) {
-					line_x1 += RES._4K ? 20 : 9;
+					line_x1 += HD_4K(9, 20);
 				}
 
 				const album_text = $(this.grouping_handler.get_sub_title_query(), this.metadb);
@@ -738,34 +740,20 @@ class PlaylistHeader extends PlaylistBaseHeader {
 				const date_query = grSet.showPlaylistFullDate ? grTF.date : grTF.year;
 				const date_text = $(date_query, this.metadb);
 				const date_height = gr.MeasureString(date_text, pl.font.date, 0, 0, 0, 0).Height;
-				const line_x2 = this.w - part2_right_pad - (date_text ? (RES._4K ? 58 : 25) : SCALE(20));
+				const line_x2 = this.w - part2_right_pad - (date_text ? HD_4K(25, 58) : SCALE(20));
 
-				const yCorrSize = {
-					22: { '4K': -4, 'HD': -1 },
-					20: { '4K': -5, 'HD':  0 },
-					18: { '4K': -5, 'HD': -1 },
-					17: { '4K': -4, 'HD':  1 },
-					16: { '4K': -3, 'HD': -1 },
-					15: { '4K': -4, 'HD':  0 },
-					14: { '4K': -4, 'HD':  0 },
-					13: { '4K': -3, 'HD':  0 },
-					12: { '4K': -5, 'HD':  0 },
-					10: { '4K': -2, 'HD':  0 }
-				};
-				const yCorr = yCorrSize[headerFontSize] ? yCorrSize[headerFontSize][RES._4K ? '4K' : 'HD'] : 0;
-				const line_y =
-					!plSet.show_group_info ? Math.round(this.h / 2) :
-					grSet.customThemeFonts ? Math.floor(this.h / 2 + (date_height - album_height)) :
-					Math.round(this.h / 2) + SCALE(RES._4K ? 7 : 6) + yCorr;
+				const album_bottom_y = this.h / 3 + album_height - SCALE(6);
+				const date_bottom_y = this.h / 3 + date_height - SCALE(6);
+				const line_y = !plSet.show_group_info || !album_text ? Math.round(this.h / 2) : Math.max(album_bottom_y, date_bottom_y);
 
 				if (line_x2 - line_x1 > 0) {
 					grClip.DrawLine(line_x1, line_y, line_x2, line_y, 1, line_color);
 				}
 			}
 
-			clipImg.ReleaseGraphics(grClip);
+			this.clipImg.ReleaseGraphics(grClip);
 			if (cache_header) {
-				this.header_image = clipImg;
+				this.header_image = this.clipImg;
 			}
 		}
 
@@ -779,13 +767,13 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		} else if (this.y + this.h > bottom) {
 			h = bottom - this.y;
 		}
-		gr.DrawImage(cache_header ? this.header_image : clipImg, this.x, y, this.w, h, 0, srcY, this.w, h);
+		gr.DrawImage(cache_header ? this.header_image : this.clipImg, this.x, y, this.w, h, 0, srcY, this.w, h);
 		if (this.is_completely_selected() && (grSet.theme === 'white' || grSet.theme === 'black')) {
 			gr.SetSmoothingMode(SmoothingMode.None);
 			gr.FillSolidRect(this.x, y + SCALE(6), 0, h, grCol.primary);
 			gr.SetSmoothingMode(SmoothingMode.HighQuality);
 		}
-		clipImg = null;
+		this.clipImg = null;
 	}
 
 	/**
@@ -799,9 +787,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		let line_color = pl.col.header_line_normal;
 		let artist_font = pl.font.artist_normal_compact;
 		const date_font = pl.font.date_compact;
-		const headerFontSize = grSet[`playlistHeaderFontSize_${grSet.layout}`];
 		const updatedNowpBg = pl.col.header_nowplaying_bg !== ''; // * Wait until nowplaying bg has a new color to prevent flashing
-		const scrollbar = plSet.show_scrollbar && pl.playlist.is_scrollbar_available;
 
 		if (this.is_playing() && updatedNowpBg) {
 			artist_color = pl.col.header_artist_playing;
@@ -832,12 +818,12 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		// }
 
 		if (this.is_playing() && updatedNowpBg) {
-			grClip.FillSolidRect(0, 0, scrollbar ? this.w - SCALE(12) : this.w, this.h, pl.col.header_nowplaying_bg);
+			grClip.FillSolidRect(0, 0, plSet.show_scrollbar && pl.playlist.is_scrollbar_available ? this.w - SCALE(12) : this.w, this.h, pl.col.header_nowplaying_bg);
 			grClip.FillSolidRect(0, 0, ['white', 'black', 'cream'].includes(grSet.theme) ? 0 : SCALE(8), this.h, pl.col.header_sideMarker);
 		}
 
 		// * Need to apply text rendering AntiAliasGridFit when using style Blend or when using custom theme fonts with larger font sizes
-		grClip.SetTextRenderingHint(grSet.styleBlend || grSet.customThemeFonts && headerFontSize > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
+		grClip.SetTextRenderingHint(grSet.styleBlend || grSet.customThemeFonts && grSet.playlistHeaderFontSize_layout > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
 
 		if (this.is_collapsed && this.is_focused()) {
 			grClip.DrawRect(-1, 0, this.w + 1, this.h - 1, 1, line_color);
@@ -1008,7 +994,6 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	initialize_hyperlinks(gr) {
 		const date_font = pl.font.date;
 		const artist_font = pl.font.artist_normal;
-		const headerFontSize = grSet[`playlistHeaderFontSize_${grSet.layout}`];
 		const art_box_x = 3 * SCALE(6);
 		const spacing = SCALE(2);
 		const art_box_size = this.art_max_size + spacing * 2;
@@ -1024,20 +1009,10 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		const date_query = grSet.showPlaylistFullDate ? grTF.date : grTF.year;
 		const date_text = $(date_query, this.metadb);
 		if (date_text) {
-			const date_w = Math.ceil(gr.MeasureString(date_text, date_font, 0, 0, 0, 0).Width + 5);
-			const date_x = -date_w - right_edge + (RES._4K ? 5 : 7);
-			const yCorrSize = {
-				20: { '4K': -1, 'HD': 2 },
-				18: { '4K': -1, 'HD': 0 },
-				16: { '4K':  1, 'HD': 0 },
-				13: { '4K': -1, 'HD': 0 },
-				12: { '4K': -1, 'HD': 0 }
-			};
-			const HDCorr = !RES._4K && headerFontSize < 15 ? 1 : 0;
-			const cThemeFontsCorr = RES._4K ? (grSet.customThemeFonts ? 1 : 3) : (grSet.customThemeFonts ? -1 : 0);
-			const yCorr = yCorrSize[headerFontSize] && yCorrSize[headerFontSize][RES._4K ? '4K' : 'HD'] || 0;
-			const date_y_base = !plSet.show_group_info ? part_h : part_h - cThemeFontsCorr;
-			const date_y = date_y_base + yCorr + HDCorr;
+			const date_w = Math.ceil(gr.MeasureString(date_text, date_font, 0, 0, 0, 0).Width);
+			const date_x = -date_w - right_edge;
+			const cThemeFontsCorr = HD_4K((grSet.customThemeFonts ? -1 : 0), (grSet.customThemeFonts ? 1 : 3));
+			const date_y = !plSet.show_group_info ? part_h : part_h - cThemeFontsCorr;
 
 			this.hyperlinks.date = new Hyperlink(date_text, date_font, 'date', date_x, date_y, this.w, true);
 		}
@@ -1085,7 +1060,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		}
 
 		// * Album
-		const album_y = part_h * (!plSet.show_group_info ? 1.5 : 1) + ((RES._4K || RES._QHD && headerFontSize === 17 ? 5 : 4) * (!plSet.show_group_info ? 2 : 1));
+		const album_y = part_h * (!plSet.show_group_info ? 1.5 : 1) + ((RES._4K || RES._QHD && grSet.playlistHeaderFontSize_layout === 17 ? 5 : 4) * (!plSet.show_group_info ? 2 : 1));
 		const album_text = grSet.headerFlipRows ? $(this.grouping_handler.get_title_query(), this.metadb) : $(this.grouping_handler.get_sub_title_query(), this.metadb);
 
 		if (album_text) {
@@ -1099,8 +1074,8 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			labels.push(...GetMetaValues(label, this.metadb));
 		}
 		labels = [...new Set(labels)]; // Remove duplicates
-		let label_left = -right_edge * 2 + (RES._4K ? 42 : 20);
-		const label_y = Math.round(2 * this.h / 3) - (RES._4K ? 4 : -1);
+		let label_left = -right_edge;
+		const label_y = Math.round(2 * this.h / 3) - HD_4K(-1, 4);
 		for (let i = labels.length - 1; i >= 0; --i) {
 			if (i !== labels.length - 1) {
 				label_left -= (bulletWidth + spaceWidth * 2); // Spacing between labels
@@ -1127,7 +1102,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			this.hyperlinks[h].setY(this.y);
 		}
 
-		// * Callbacks for headerTooltip
+		// * For headerTooltip
 		this.artist_text_w = gr.MeasureString(artist_text, artist_font, 0, 0, 0, 0).Width + (multi_artist ? multi_artist_spacing_w : 0);
 		this.album_text_w = gr.MeasureString(album_text, pl.font.album, 0, 0, 0, 0).Width;
 		this.max_w = this.w - left_pad * 2 - truncatedWidth;
@@ -1512,7 +1487,7 @@ class PlaylistDiscHeader extends PlaylistBaseHeader {
 
 		if (this.is_collapsed || !this.is_collapsed) {
 			const line_y = Math.round(this.y + this.h / 2) + SCALE(4);
-			gr.DrawLine(RES._4K ? cur_x + disc_w + 5 : cur_x + disc_w - 5, line_y, RES._4K ? this.x + this.w - tracks_w - 40 : this.x + this.w - tracks_w - 10, line_y, 1, pl.col.row_disc_subheader_line);
+			gr.DrawLine(HD_4K(cur_x + disc_w - 5, cur_x + disc_w + 5), line_y, HD_4K(this.x + this.w - tracks_w - 10, this.x + this.w - tracks_w - 40), line_y, 1, pl.col.row_disc_subheader_line);
 		}
 	}
 

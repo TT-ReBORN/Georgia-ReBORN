@@ -340,6 +340,10 @@ class LibPopulate {
 		const br_l = br.length;
 		const par = this.tree.length - 1;
 		if (level == 0) this.clearTree();
+
+		// * Apply View By Folder Hide if View by Folder Structure is active
+		if (libSet.viewBy === 10) lib.men.setViewByFolderHide(this.tree, libSet.viewByFolderHide);
+
 		br.forEach((v, i) => {
 			j = this.tree.length;
 			const item = this.tree[j] = v;
@@ -1067,7 +1071,7 @@ class LibPopulate {
 				const w = lib.ui.x + lib.panel.tree.w - item_x - lib.ui.sz.sel - item.count_w;
 				this.checkTooltip(item, item_x, item_y, item.name_w, w);
 				if (this.fullLineSelection && item.id != this.id) {
-					item.w = lib.ui.x + lib.panel.tree.w - item_x - (RES._4K ? 45 : 25);
+					item.w = lib.ui.x + lib.panel.tree.w - item_x - HD_4K(25, 45);
 					item.id = this.id;
 				}
 				if (item.np && this.highlight.nowPlayingSidemarker) {
@@ -1085,7 +1089,7 @@ class LibPopulate {
 				!lib.panel.colMarker ? gr.GdiDrawText(nm[i], lib.ui.font.main, txt_c, item_x, item_y, w, lib.ui.row.h, lib.panel.lc) : this.cusCol(gr, nm[i], item, item_x, item_y, w, lib.ui.row.h, type, np, lib.ui.font.main, lib.ui.font.mainEllipsisSpace, 'text');
 				if (this.countsRight || this.statisticsShow) {
 					const scrollbar = lib.sbar.w === SCALE(12) && lib.sbar.scrollable_lines > 0;
-					const x = lib.panel.tree.w - item_x + (grSet.libraryLayout === 'split' ? 0 : lib.ui.x) - (scrollbar ? RES._4K ? 45 : 24 : 0);
+					const x = lib.panel.tree.w - item_x + (grSet.libraryLayout === 'split' ? 0 : lib.ui.x) - (scrollbar ? SCALE(24) : 0);
 					gr.GdiDrawText(!this.statisticsShow ? item.count : item.statistics, !item.root || !this.label ?  lib.ui.font.small : lib.ui.font.label, txt_c, item_x, item_y, x, lib.ui.row.h, lib.panel.rc);
 				}
 			}
@@ -1144,12 +1148,12 @@ class LibPopulate {
 			case 5: // * Custom node - Georgia-ReBORN design ( Clean +|- )
 				if (parent) { // Plus
 					if (hover) {
-						gr.DrawString(lib.ui.icon.expand, lib.ui.icon.font, icon_c, x, y2 - (RES._4K ? -1 : 1), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h, lib.panel.s_lc);
-						gr.DrawString(lib.ui.icon.expand, lib.ui.icon.font, icon_c, x, y2 - (RES._4K ? -1 : 1), lib.ui.x + lib.panel.tree.w - x + 2, lib.ui.row.h + 2, lib.panel.s_lc);
-					} else gr.DrawString(lib.ui.icon.expand, lib.ui.icon.font, icon_c, x, y2 - (DetectWine ? (RES._4K ? -1 : 0) : (RES._4K ? -1 : 1)), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h, lib.panel.s_lc);
+						gr.DrawString(lib.ui.icon.expand, lib.ui.icon.font, icon_c, x, y2 - HD_4K(1, -1), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h, lib.panel.s_lc);
+						gr.DrawString(lib.ui.icon.expand, lib.ui.icon.font, icon_c, x, y2 - HD_4K(1, -1), lib.ui.x + lib.panel.tree.w - x + 2, lib.ui.row.h + 2, lib.panel.s_lc);
+					} else gr.DrawString(lib.ui.icon.expand, lib.ui.icon.font, icon_c, x, y2 - (DetectWine ? HD_4K(0, -1) : HD_4K(1, -1)), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h, lib.panel.s_lc);
 				} else { // Minus
-					gr.DrawString(lib.ui.icon.collapse, lib.ui.icon.font, icon_c, x - lib.ui.icon.offset, y2 - (DetectWine ? (RES._4K ? -1 : 1) : (RES._4K ? 0 : 1)), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h, lib.panel.s_lc);
-					gr.DrawString(lib.ui.icon.collapse, lib.ui.icon.font, icon_c, x - lib.ui.icon.offset, y2 - (RES._4K ? -1 : 1), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h + 2, lib.panel.s_lc);
+					gr.DrawString(lib.ui.icon.collapse, lib.ui.icon.font, icon_c, x - lib.ui.icon.offset, y2 - (DetectWine ? HD_4K(1, -1) : HD_4K(1, 0)), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h, lib.panel.s_lc);
+					gr.DrawString(lib.ui.icon.collapse, lib.ui.icon.font, icon_c, x - lib.ui.icon.offset, y2 - HD_4K(1, -1), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h + 2, lib.panel.s_lc);
 				}
 				break;
 			case 7:
@@ -1607,11 +1611,11 @@ class LibPopulate {
 		if (!libSet.libSource) return this.setPlaylistSelection(ix, item);
 		if (lib.vk.k('alt')) {
 			if (grSet.addTracksPlaylistSwitch) {
-				grm.ui.btn.library.enabled = false;
-				grm.ui.btn.library.changeState(ButtonState.Default);
+				grm.button.btn.library.enabled = false;
+				grm.button.btn.library.changeState(ButtonState.Default);
 				grm.ui.displayLibrary = false;
 				grm.ui.displayPlaylist = true;
-				if (!grSet.playlistAutoScrollNowPlaying) pl.call.on_size(grm.ui.ww, grm.ui.wh);
+				if (!grSet.playlistAutoScrollNowPlaying) grm.ui.setPlaylistSize();
 				setTimeout(() => {
 					if (pl.playlist.is_scrollbar_available) {
 						pl.playlist.scrollbar.scroll_to_end();
@@ -1850,7 +1854,7 @@ class LibPopulate {
 				if (ix != -1 || this.inlineRoot && !this.m.br) this.hand = true;
 			} else if (this.m.br != -1 && !(this.inlineRoot && !this.m.br)) this.hand = true;
 		}
-		window.SetCursor(this.hand ? 32649 : !lib.but.Dn && y > lib.ui.y && y < lib.ui.y + lib.panel.search.h && libSet.searchShow && x > lib.ui.x + lib.but.q.h + lib.but.margin && x < lib.panel.search.x + lib.panel.search.w ? 32513 : 32512);
+		SetCursor(this.hand ? 'Hand' : !lib.but.Dn && y > lib.ui.y && y < lib.ui.y + lib.panel.search.h && libSet.searchShow && x > lib.ui.x + lib.but.q.h + lib.but.margin && x < lib.panel.search.x + lib.panel.search.w ? 'IBeam' : 'Arrow');
 		const same = this.m.i == this.cur_ix && this.m.br == this.m.cur_br && this.row.i == this.row.cur;
 		if (same && !lib.sbar.touch.dn) return;
 		if (!lib.sbar.draw_timer && !same) lib.panel.treePaint();
@@ -2342,7 +2346,7 @@ class LibPopulate {
 	}
 
 	treeTooltipFont() {
-		const libraryFontSize = libSet[`baseFontSize_${grSet.layout}`] || 14;
+		const libraryFontSize = SCALE(RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout || 14);
 		return !lib.panel.imgView ? [lib.ui.font.main.Name, /* ui.font.main.Size */ libraryFontSize + 3, lib.ui.font.main.Style] : [lib.ui.font.group.Name, /* ui.font.group.Size */ libraryFontSize + 3, lib.ui.font.group.Style];
 	}
 

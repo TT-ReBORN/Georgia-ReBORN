@@ -76,8 +76,10 @@ class BioCallbacks {
 				bio.img.get = false;
 				bio.txt.get = 0;
 			}
-			bio.panel.focusLoad();
-			bio.panel.focusServer();
+			if (!fb.IsPlaying && grSet.panelBrowseMode) {
+				bio.panel.focusLoad();
+				bio.panel.focusServer();
+			}
 		}
 	}
 
@@ -162,10 +164,7 @@ class BioCallbacks {
 		if (!bio.txt.lyricsDisplayed()) bio.txt.scrollbar_type().lbtn_dblclk(x, y);
 		if (!bioSet.dblClickToggle) return;
 		if (bioSet.touchControl) {
-			bio.panel.id.last_pressed_coord = {
-				x,
-				y
-			};
+			bio.panel.id.last_pressed_coord = { x, y };
 		}
 		if (!bio.panel.trace.film) bio.panel.click(x, y);
 		else bio.filmStrip.lbtn_dblclk(x, y);
@@ -174,10 +173,7 @@ class BioCallbacks {
 	on_mouse_lbtn_down(x, y) {
 		if (!bioSet.panelActive) return;
 		if (bioSet.touchControl) {
-			bio.panel.id.last_pressed_coord = {
-				x,
-				y
-			};
+			bio.panel.id.last_pressed_coord = { x, y };
 		}
 		if (bio.panel.trace.image && bio.vk.k('alt')) {
 			const imgPth = bio.img.pth().imgPth;

@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-06-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -302,14 +302,14 @@ class ConfigurationManager {
 		/** @public @type {Configuration} The instance of the `Configuration` custom config object. */
 		this.configCustom = new Configuration(this.configPathCustom);
 		/** @public @type {string} The Georgia-ReBORN current version. */
-		this.currentVersion = '3.0-DEV';
+		this.currentVersion = '3.0-RC3';
 		/** @public @type {string} The Georgia-ReBORN version will be overwritten when loaded from config file. */
 		this.configVersion = this.currentVersion;
 		/** @public @type {string} The Georgia-ReBORN version will be shown on the right side of the lower bar when nothing is playing. */
-		this.lowerBarStoppedTime = `Georgia-ReBORN v${this.currentVersion}`;
+		this.lowerBarStoppedTime = this.getCurrentVersionInfo();
 		/** @public @type {boolean} The update state if a new update is available on Github releases page. */
 		this.updateAvailable = false;
-		/** @public @type {boolean} The update link will be shown on the right side of the lower bar. */
+		/** @public @type {Hyperlink} The update link will be shown on the right side of the lower bar. */
 		this.updateHyperlink = false;
 		/** @private @type {number} The update retry, don't hammer the server if it's not working, used only in checkForUpdates(). */
 		this.updateRetryCount = 0;
@@ -635,6 +635,7 @@ class ConfigurationManager {
 		this.configCustom.addConfigurationObject(grDef.customBiographyDirSchema, cfgSet.customBiographyDir || grDef.customBiographyDirDefaults);
 		this.configCustom.addConfigurationObject(grDef.customLyricsDirSchema, cfgSet.customLyricsDir || grDef.customLyricsDirDefaults);
 		this.configCustom.addConfigurationObject(grDef.customWaveformBarDirSchema, cfgSet.customWaveformBarDir || grDef.customWaveformBarDirDefaults);
+		this.configCustom.addConfigurationObject(grDef.customWebsiteLinksSchema, cfgSet.customWebsiteLinks || grDef.customWebsiteLinksDefaults);
 
 		this.customFont        = this.configCustom.addConfigurationObject(grDef.customFontsSchema, Object.assign({}, grDef.customFontsDefaults, cfgSet.customFont), grDef.customFontsComments);
 		this.customStylePreset = this.configCustom.addConfigurationObject(grDef.customStylePresetSchema, Object.assign({}, grDef.customStylePresetDefaults, cfgSet.customStylePreset), grDef.customStylePresetComments);
@@ -654,6 +655,7 @@ class ConfigurationManager {
 		this.customBiographyDir = cfgSet.customBiographyDir;
 		this.customLyricsDir = cfgSet.customLyricsDir;
 		this.customWaveformBarDir = cfgSet.customWaveformBarDir;
+		this.customWebsiteLinks = cfgSet.customWebsiteLinks;
 		this.customFont = cfgSet.customFont;
 		this.customStylePreset = cfgSet.customStylePreset;
 		this.customDiscArtStub = cfgSet.customDiscArtStub;
@@ -703,6 +705,7 @@ class ConfigurationManager {
 		this.configCustom.addConfigurationObject(grDef.customBiographyDirSchema, grDef.customBiographyDirDefaults);
 		this.configCustom.addConfigurationObject(grDef.customLyricsDirSchema, grDef.customLyricsDirDefaults);
 		this.configCustom.addConfigurationObject(grDef.customWaveformBarDirSchema, grDef.customWaveformBarDirDefaults);
+		this.configCustom.addConfigurationObject(grDef.customWebsiteLinksSchema, grDef.customWebsiteLinksDefaults);
 
 		this.customFont        = this.configCustom.addConfigurationObject(grDef.customFontsSchema, grDef.customFontsDefaults, grDef.customFontsComments);
 		this.customStylePreset = this.configCustom.addConfigurationObject(grDef.customStylePresetSchema, grDef.customStylePresetDefaults, grDef.customStylePresetComments);
@@ -763,7 +766,7 @@ class ConfigurationManager {
 					const msg = this.updateAvailable
 						? `There is a new update available.\nPlease visit the release page to download the latest version.\n\n${currentVersionMsg}\n\n`
 						: `You are using the latest version: v${this.currentVersion}\n\n${currentVersionMsg}\n\n`;
-					ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+					grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 				}
 			}
 			catch (e) {
@@ -775,6 +778,15 @@ class ConfigurationManager {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Gets the current version information.
+	 * The Georgia-ReBORN version will be shown on the right side of the lower bar when nothing is playing.
+	 * @returns {string} The current version information.
+	 */
+	getCurrentVersionInfo() {
+		return `${grSet.layout !== 'default' ? 'GR' : 'Georgia-ReBORN'} v${this.currentVersion}`;
 	}
 
 	/**
@@ -850,6 +862,13 @@ class ConfigurationManager {
 			window.Reload(); // Reinit new config
 		}
 
+		// * Check for new customWebsiteLinks section and write if it doesn't exist
+		if (!configFileCustom.customWebsiteLinks) {
+			configFileCustom.customWebsiteLinks = this.configCustom.addConfigurationObject(grDef.customWebsiteLinksSchema, grDef.customWebsiteLinksDefaults, grDef.customWebsiteLinksComments);
+			this.configCustom.writeConfiguration();
+			window.Reload(); // Reinit new config
+		}
+
 		// * Check and update settings if they have old values
 		const settingUpdates = [
 			{ key: 'disc', oldValue: '$ifgreater(%totaldiscs%,1,CD %discnumber%/%totaldiscs%,)', newValue: '$ifgreater(%totaldiscs%,1,$if($or($if2(%vinylside%,%vinyl side%),$strcmp($lower($if3(%media%,%mediatype%,%media type%)),vinyl)),Vinyl %discnumber%/%totaldiscs%,CD %discnumber%/%totaldiscs%),)' },
@@ -870,7 +889,7 @@ class ConfigurationManager {
 					this.config.addConfigurationObject(grDef.metadataGridSchema, configFile.metadataGrid);
 				case '3.0-RC2':
 					this.config.addConfigurationObject(grDef.themePlaylistGroupingPresetsSchema, grDef.themePlaylistGroupingPresets);
-				case '3.0-DEV':
+				case '3.0-RC3':
 					// This default block ( latest version ) should appear after all previous versions have fallen through
 					console.log('> Upgrading Georgia-ReBORN theme settings from', storedVersion);
 					console.log(`> Backing up Georgia-ReBORN configuration file to ${fileName}`);

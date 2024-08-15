@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    extremeHunter, TheQwertiest                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -87,11 +87,4 @@ plSet.rows_in_compact_header = Math.max(0, plSet.rows_in_compact_header);
 
 if (!grSet.playlistAutoHideScrollbar && !plSet.show_scrollbar) {
 	plSet.show_scrollbar = true;
-}
-
-// * Fix playlist panel state at startup
-if (grSet.libraryLayoutSplitPreset || grSet.libraryLayoutSplitPreset3 || grSet.libraryLayoutSplitPreset4) {
-	plSet.auto_collapse = grSet.showPanelOnStartup === 'library';
-} else if (grSet.libraryLayoutSplitPreset2) {
-	plSet.show_header = grSet.showPanelOnStartup === 'playlist';
 }

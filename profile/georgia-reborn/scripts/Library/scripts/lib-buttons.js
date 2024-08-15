@@ -268,7 +268,7 @@ class LibButtons {
 			this.vertical = !lib.panel.imgView || libImg.style.vertical;
 			switch (true) {
 				case this.vertical:
-					this.scr.x1 = lib.panel.sbar_x + (RES._4K ? 6 : 0);
+					this.scr.x1 = lib.panel.sbar_x + HD_4K(0, 6);
 					this.scr.yUp1 = lib.sbar.y;
 					this.scr.yDn1 = lib.sbar.y + lib.sbar.h - lib.ui.sbar.but_h;
 					if (lib.ui.sbar.type != 2) {
@@ -324,12 +324,12 @@ class LibButtons {
 							}, libSet.sbarShow == 1 && lib.sbar.narrow.show || lib.sbar.scrollable_lines < 1, () => lib.sbar.but(-1), '', '', false, 'scrollDn');
 							break;
 						case !this.vertical:
-							this.btns.scrollUp = new LibBtn(lib.ui.x + this.scr.xLeft1, this.scr.y1 - (RES._4K ? 46 : 19), lib.ui.sbar.but_h, lib.ui.sbar.but_h, 3, '', '', '', {
+							this.btns.scrollUp = new LibBtn(lib.ui.x + this.scr.xLeft1, this.scr.y1 - HD_4K(19, 46), lib.ui.sbar.but_h, lib.ui.sbar.but_h, 3, '', '', '', {
 								normal: 9,
 								hover: 10,
 								down: 11
 							}, libSet.sbarShow == 1 && lib.sbar.narrow.show || lib.sbar.scrollable_lines < 1, () => lib.sbar.but(1), '', '', false, 'scrollUp');
-							this.btns.scrollDn = new LibBtn(this.scr.xRight1, this.scr.y1 - (RES._4K ? 46 : 19), lib.ui.sbar.but_h, lib.ui.sbar.but_h, 3, '', '', '', {
+							this.btns.scrollDn = new LibBtn(this.scr.xRight1, this.scr.y1 - HD_4K(19, 46), lib.ui.sbar.but_h, lib.ui.sbar.but_h, 3, '', '', '', {
 								normal: 13,
 								hover: 14,
 								down: 15
@@ -344,8 +344,8 @@ class LibButtons {
 							this.btns.scrollDn = new LibBtn(this.scr.x1, this.scr.yDn1, lib.ui.sbar.but_h, lib.ui.sbar.but_h, 2, this.scr.x2, this.scr.yDn2, lib.ui.sbar.but_w, '', libSet.sbarShow == 1 && lib.sbar.narrow.show || lib.sbar.scrollable_lines < 1, () => lib.sbar.but(-1), '', '', false, 'scrollDn');
 							break;
 						case !this.vertical:
-							this.btns.scrollUp = new LibBtn(this.scr.xLeft1 - this.scr.hotOffset + SCALE(40), this.scr.y1 - (RES._4K ? 46 : 19), lib.ui.sbar.but_h, lib.ui.sbar.but_h + this.scr.hotOffset, 1, this.scr.y2, this.scr.xLeft2, lib.ui.sbar.but_w, '', libSet.sbarShow == 1 && lib.sbar.narrow.show || lib.sbar.scrollable_lines < 1, () => lib.sbar.but(1), '', '', false, 'scrollUp');
-							this.btns.scrollDn = new LibBtn(this.scr.xRight1, this.scr.y1 - (RES._4K ? 46 : 19), lib.ui.sbar.but_h, lib.ui.sbar.but_h + this.scr.hotOffset, 2, this.scr.y2, this.scr.xRight2, lib.ui.sbar.but_w, '', libSet.sbarShow == 1 && lib.sbar.narrow.show || lib.sbar.scrollable_lines < 1, () => lib.sbar.but(-1), '', '', false, 'scrollDn');
+							this.btns.scrollUp = new LibBtn(this.scr.xLeft1 - this.scr.hotOffset + SCALE(40), this.scr.y1 - HD_4K(19, 46), lib.ui.sbar.but_h, lib.ui.sbar.but_h + this.scr.hotOffset, 1, this.scr.y2, this.scr.xLeft2, lib.ui.sbar.but_w, '', libSet.sbarShow == 1 && lib.sbar.narrow.show || lib.sbar.scrollable_lines < 1, () => lib.sbar.but(1), '', '', false, 'scrollUp');
+							this.btns.scrollDn = new LibBtn(this.scr.xRight1, this.scr.y1 - HD_4K(19, 46), lib.ui.sbar.but_h, lib.ui.sbar.but_h + this.scr.hotOffset, 2, this.scr.y2, this.scr.xRight2, lib.ui.sbar.but_w, '', libSet.sbarShow == 1 && lib.sbar.narrow.show || lib.sbar.scrollable_lines < 1, () => lib.sbar.but(-1), '', '', false, 'scrollDn');
 							break;
 					}
 					break;
@@ -354,7 +354,7 @@ class LibButtons {
 		this.transition = new LibTransition(this.btns, v => v.state !== 'normal');
 		this.btns.s_img = new LibBtn(this.q.x - this.margin / 2, lib.ui.y + this.hoverArea, this.q.h + this.margin, this.hot_h, 4, this.q.x, this.q.y, this.q.h, {
 			normal: this.q.s_img
-		}, false, '', () => libSMenu.load(this.q.x - this.margin / 2 - (RES._4K ? 22 : 9), lib.ui.y + lib.panel.search.h - SCALE(12)), () => 'History and query syntax help. Ctrl+E focuses search', true, 's_img');
+		}, false, '', () => libSMenu.load(this.q.x - this.margin / 2 - HD_4K(9, 22), lib.ui.y + lib.panel.search.h - SCALE(12)), () => 'History and query syntax help. Ctrl+E focuses search', true, 's_img');
 
 		this.btns.cross2 = new LibBtn(this.q.x - this.margin / 2, lib.ui.y + this.hoverArea, this.q.h + this.margin, this.hot_h, 5, this.q.x, this.b.y, this.b.h, {
 			normal: this.cross.normal,
@@ -363,12 +363,12 @@ class LibButtons {
 		this.btns.filter = new LibBtn(libSet.searchShow ? lib.panel.filter.x + this.margin / 2 : lib.panel.filter.x - this.margin / 2, lib.ui.y, libSet.searchShow ? lib.panel.filter.w - this.margin : lib.panel.filter.w + this.margin, lib.panel.search.sp, 6, lib.panel.filter.x, libSet.searchShow ? lib.panel.cc : lib.panel.lc, lib.panel.filter.w, {
 			normal: lib.ui.col.txt_box,
 			hover: !lib.ui.id.local ? (!lib.ui.img.blurDark ? lib.ui.col.txt_box_h : lib.ui.col.text) : lib.ui.col.txt_box
-		}, !libSet.filterShow, '', () => libFMenu.load(lib.panel.filter.x - (RES._4K ? -29 : 5), lib.ui.y + lib.panel.search.h - SCALE(12)), () => 'Filter', true, 'filter');
+		}, !libSet.filterShow, '', () => libFMenu.load(lib.panel.filter.x - HD_4K(5, -29), lib.ui.y + lib.panel.search.h - SCALE(12)), () => 'Filter', true, 'filter');
 
 		this.btns.settings = new LibBtn(lib.ui.x + this.s.x, lib.ui.y + lib.panel.settings.offset, this.s.w1, lib.panel.search.sp, 7, this.s.w2, lib.panel.search.sp, lib.panel.settings.y, {
 			normal: lib.ui.col.txt_box,
 			hover: !lib.ui.id.local ? (!lib.ui.img.blurDark ? lib.ui.col.txt_box_h : lib.ui.col.text) : lib.ui.col.txt_box
-		}, !libSet.settingsShow, '', () => lib.men.rbtn_up(lib.ui.x + this.s.x - (RES._4K ? 21 : 28), lib.ui.y + lib.panel.search.h - SCALE(12), true), () => 'Settings', true, 'settings');
+		}, !libSet.settingsShow, '', () => lib.men.rbtn_up(lib.ui.x + this.s.x - HD_4K(28, 21), lib.ui.y + lib.panel.search.h - SCALE(12), true), () => 'Settings', true, 'settings');
 
 		this.btns.cross1 = new LibBtn(this.b.x - this.margin / 2, lib.ui.y + this.hoverArea, this.q.h + this.margin, this.hot_h, 5, this.b.x, this.b.y, this.b.h, {
 			normal: this.cross.normal,
@@ -463,10 +463,10 @@ class LibBtn {
 		gr.SetSmoothingMode(2);
 		// gr.FillRoundRect(this.x, lib.ui.y + lib.but.hoverArea, this.w, lib.but.hot_h, lib.but.arc, lib.but.arc, colRect); // Hover effect
 		gr.SetSmoothingMode(0);
-		if (!lib.ui.img.blurDark) gr.GdiDrawText(lib.panel.filter.mode[libSet.filterBy].name, lib.panel.filter.font, lib.ui.col.filterBtn, this.p1 + (RES._4K ? 22 : 9), lib.ui.y, this.p3, this.h, this.p2);
+		if (!lib.ui.img.blurDark) gr.GdiDrawText(lib.panel.filter.mode[libSet.filterBy].name, lib.panel.filter.font, lib.ui.col.filterBtn, this.p1 + HD_4K(9, 22), lib.ui.y, this.p3, this.h, this.p2);
 		else {
 			gr.SetTextRenderingHint(5);
-			gr.DrawString(lib.panel.filter.mode[libSet.filterBy].name, lib.panel.filter.font, lib.ui.col.filterBtn, this.p1 + (RES._4K ? 21 : 8), lib.ui.y - 1, this.p3, this.h, StringFormat(1, 1));
+			gr.DrawString(lib.panel.filter.mode[libSet.filterBy].name, lib.panel.filter.font, lib.ui.col.filterBtn, this.p1 + HD_4K(8, 21), lib.ui.y - 1, this.p3, this.h, StringFormat(1, 1));
 		}
 	}
 
@@ -475,13 +475,13 @@ class LibBtn {
 		switch (true) {
 			case lib.but.vertical:
 				if (this.state !== 'normal' && lib.ui.sbar.type == 1) gr.FillSolidRect(lib.sbar.x, this.y + (this.type == 1 ? lib.but.scr.hotOffset - lib.panel.sbar_o : 0), lib.sbar.w, this.h - lib.but.scr.hotOffset + lib.panel.sbar_o, lib.ui.col.bg);
-				if (lib.but.scr.opaque && lib.but.scr.bg) gr.DrawImage(lib.but.scr.bg, this.x + this.p1, this.p2, this.p3, this.p3, 0, 0, lib.but.scr.bg.Width, lib.but.scr.bg.Height, this.type == 1 ? 0 : 180);
-				if (lib.but.scr.img) gr.DrawImage(lib.but.scr.img, this.x + this.p1, this.p2, this.p3, this.p3, 0, 0, lib.but.scr.img.Width, lib.but.scr.img.Height, this.type == 1 ? 0 : 180, a);
+				if (lib.but.scr.opaque && lib.but.scr.bg) gr.DrawImage(lib.but.scr.bg, lib.panel.sbar_x /* this.x + this.p1 */, this.p2, this.p3, this.p3, 0, 0, lib.but.scr.bg.Width, lib.but.scr.bg.Height, this.type == 1 ? 0 : 180);
+				if (lib.but.scr.img) gr.DrawImage(lib.but.scr.img, lib.panel.sbar_x /* this.x + this.p1 */, this.p2, this.p3, this.p3, 0, 0, lib.but.scr.img.Width, lib.but.scr.img.Height, this.type == 1 ? 0 : 180, a);
 				break;
 			case !lib.but.vertical:
 				if (this.state !== 'normal' && lib.ui.sbar.type == 1) gr.FillSolidRect(this.x + (this.type == 1 ? lib.but.scr.hotOffset - lib.panel.sbar_o : 0), lib.sbar.y, this.w - lib.but.scr.hotOffset + lib.panel.sbar_o, lib.sbar.h, lib.ui.col.bg);
-				if (lib.but.scr.opaque && lib.but.scr.bg) gr.DrawImage(lib.but.scr.bg, this.p2, this.y + this.p1, this.p3, this.p3, 0, 0, lib.but.scr.bg.Width, lib.but.scr.bg.Height, this.type == 1 ? 270 : 90);
-				if (lib.but.scr.img) gr.DrawImage(lib.but.scr.img, this.p2, this.y + this.p1, this.p3, this.p3, 0, 0, lib.but.scr.img.Width, lib.but.scr.img.Height, this.type == 1 ? 270 : 90, a);
+				if (lib.but.scr.opaque && lib.but.scr.bg) gr.DrawImage(lib.but.scr.bg, this.p2, lib.sbar.y /* this.y + this.p1 */, this.p3, this.p3, 0, 0, lib.but.scr.bg.Width, lib.but.scr.bg.Height, this.type == 1 ? 270 : 90);
+				if (lib.but.scr.img) gr.DrawImage(lib.but.scr.img, this.p2, lib.sbar.y /* this.y + this.p1 */, this.p3, this.p3, 0, 0, lib.but.scr.img.Width, lib.but.scr.img.Height, this.type == 1 ? 270 : 90, a);
 				break;
 		}
 	}
@@ -503,10 +503,10 @@ class LibBtn {
 		gr.SetSmoothingMode(2);
 		// gr.FillRoundRect(this.x, lib.ui.y + lib.but.hoverArea, this.w, lib.but.hot_h, lib.but.arc, lib.but.arc, colRect); // Hover effect
 		gr.SetSmoothingMode(0);
-		if (!lib.ui.img.blurDark) gr.GdiDrawText(lib.panel.settings.icon, lib.panel.settings.font, lib.ui.col.settingsBtn, lib.ui.x + (RES._4K ? 1 : 0), lib.ui.y + SCALE(2), this.p1, this.p2, lib.panel.rc);
+		if (!lib.ui.img.blurDark) gr.GdiDrawText(lib.panel.settings.icon, lib.panel.settings.font, lib.ui.col.settingsBtn, lib.ui.x + HD_4K(0, 1), lib.ui.y + SCALE(2), this.p1, this.p2, lib.panel.rc);
 		else {
 			gr.SetTextRenderingHint(5);
-			gr.DrawString(lib.panel.settings.icon, lib.panel.settings.font, lib.ui.col.settingsBtn, lib.ui.x + (RES._4K ? 1 : 0), lib.ui.y + SCALE(2) - 1, this.p1, this.p2, StringFormat(2, 1));
+			gr.DrawString(lib.panel.settings.icon, lib.panel.settings.font, lib.ui.col.settingsBtn, lib.ui.x + HD_4K(0, 1), lib.ui.y + SCALE(2) - 1, this.p1, this.p2, StringFormat(2, 1));
 		}
 	}
 

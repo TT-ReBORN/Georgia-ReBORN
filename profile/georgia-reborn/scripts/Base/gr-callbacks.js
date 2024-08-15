@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-06-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -26,15 +26,15 @@
  */
 function on_get_album_art_done(metadb, art_id, image, image_path) {
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_get_album_art_done');
+		CallLog('Playlist => on_get_album_art_done');
 		pl.call.on_get_album_art_done(metadb, art_id, image, image_path);
 	}
 	else if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_get_album_art_done');
+		CallLog('Library => on_get_album_art_done');
 		lib.call.on_get_album_art_done(metadb, art_id, image, image_path);
 	}
 	if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_get_album_art_done');
+		CallLog('Biography => on_get_album_art_done');
 		bio.call.on_get_album_art_done(metadb, art_id, image, image_path);
 	}
 }
@@ -48,7 +48,7 @@ function on_get_album_art_done(metadb, art_id, image, image_path) {
  * @param {string} image_path - The path that was originally supplied to gdi.LoadImageAsync.
  */
 function on_load_image_done(cookie, imagenullable, image_path) {
-	grm.ui.traceCall && console.log('Biography => on_load_image_done');
+	CallLog('Biography => on_load_image_done');
 	bio.call.on_load_image_done(cookie, imagenullable, image_path);
 }
 
@@ -60,111 +60,27 @@ function on_load_image_done(cookie, imagenullable, image_path) {
  * @param {boolean} [fromhook] - True if notification is not from tag update, but a component that provides tag-like data from a database.
  */
 function on_metadb_changed(handle_list, fromhook) {
-	console.log(`on_metadb_changed(): ${handle_list ? handle_list.Count : '0'} handles, fromhook: ${fromhook}`);
-	if (fb.IsPlaying) {
-		let nowPlayingUpdated = !handle_list; // If we don't have a handle_list we called this manually from on_playback_new_track
-		const metadb = fb.GetNowPlaying();
+	DebugLog(`Playback => on_metadb_changed(): ${handle_list ? handle_list.Count : '0'} handles, fromhook: ${fromhook}`);
 
-		if (metadb && handle_list) {
-			for (let i = 0; i < handle_list.Count; i++) {
-				if (metadb.RawPath === handle_list[i].RawPath) {
-					nowPlayingUpdated = true;
-					break;
-				}
-			}
-		}
+	grm.ui.handlePlaybackMetadb(handle_list);
 
-		if (nowPlayingUpdated) {
-			// * The handle_list contains the currently playing song so update
-			const title = $(grTF.title);
-			const artist = $(grTF.artist);
-			const composer = $(grTF.composer);
-			const originalArtist = $(grTF.original_artist);
-			const tracknum = grSet.showVinylNums ? $(grTF.vinyl_track) : $(grTF.tracknum);
-
-			grStr.tracknum = tracknum.trim();
-			grStr.title = title + originalArtist;
-			grStr.titleLower = title;
-			grStr.original_artist = originalArtist;
-			grStr.artist = artist;
-			grStr.composer = composer;
-			grStr.year = $(grTF.year);
-			if (grStr.year === '0000') {
-				grStr.year = '';
-			}
-			grStr.album = $(`[%album%][ '['${grTF.album_translation}']']`);
-			grStr.album_subtitle = $(`[ '['${grTF.album_subtitle}']']`);
-			let codec = $('$lower($if2(%codec%,$ext(%path%)))');
-			if (codec === 'dca (dts coherent acoustics)') {
-				codec = 'dts';
-			}
-			if (codec === 'cue') {
-				codec = $('$ext($info(referenced_file))');
-			}
-			else if (codec === 'mpc') {
-				codec = `${codec}-${$('$info(codec_profile)').replace('quality ', 'q')}`;
-			}
-			else if (['dts', 'ac3', 'atsc a/52'].includes(codec)) {
-				codec += `${$("[ $replace($replace($replace($info(channel_mode), + LFE,),' front, ','/'),' rear surround channels',$if($strstr($info(channel_mode),' + LFE'),.1,.0))] %bitrate%")} kbps`;
-				codec = codec.replace('atsc a/52', 'Dolby Digital');
-			}
-			else if ($('$info(encoding)') === 'lossy') {
-				codec = $('$info(codec_profile)') === 'CBR' ? `${codec}-${$('%bitrate%')} kbps` : `${codec}-${$('$info(codec_profile)')}`;
-			}
-			grStr.trackInfo = $(codec + grCfg.settings.extraTrackInfo);
-			grStr.disc = fb.TitleFormat(grTF.disc).Eval();
-
-			const h = Math.floor(fb.PlaybackLength / 3600);
-			const m = Math.floor(fb.PlaybackLength % 3600 / 60);
-			const s = Math.floor(fb.PlaybackLength % 60);
-			grStr.length = `${h > 0 ? `${h}:${m < 10 ? '0' : ''}${m}` : m}:${s < 10 ? '0' : ''}${s}`;
-
-			const lastfmCount = $('%lastfm_play_count%');
-			grm.ui.playCountVerifiedByLastFm = lastfmCount !== '0' && lastfmCount !== '?';
-
-			const lastPlayed = $(grTF.last_played);
-			if (grm.timeline) { // TODO: figure out why this is null for foo_input_spotify
-				grm.timeline.setColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
-				// No need to call calcDateRatios if grMain.timeline is undefined
-				grm.ui.calcDateRatios($Date(grm.ui.currentLastPlayed) !== $Date(lastPlayed), grm.ui.currentLastPlayed); // lastPlayed has probably changed and we want to update the date bar
-			}
-			if (lastPlayed.length) {
-				const today = DateToYMD(new Date());
-				if (!grm.ui.currentLastPlayed.length || $Date(lastPlayed) !== today) {
-					grm.ui.currentLastPlayed = lastPlayed;
-				}
-			}
-
-			grm.ui.updateMetadataGrid(grm.ui.currentLastPlayed, grm.ui.playingPlaylist);
-
-			const showGridArtistFlags     = grSet[`showGridArtistFlags_${grSet.layout}`];
-			const showGridReleaseFlags    = grSet[`showGridReleaseFlags_${grSet.layout}`];
-			const showLowerBarArtistFlags = grSet[`showLowerBarArtistFlags_${grSet.layout}`];
-
-			if (showGridArtistFlags || showLowerBarArtistFlags) {
-				grm.ui.loadCountryFlags();
-			}
-			if (showGridReleaseFlags) {
-				grm.ui.loadReleaseCountryFlag();
-			}
-		}
-	}
 	// * Not called manually from on_playback_new_track
 	if (handle_list) {
 		if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork || !grm.ui.displayPlaylist) {
-			grm.ui.traceCall && console.log('Playlist => on_metadb_changed');
+			CallLog('Playlist => on_metadb_changed');
 			pl.call && pl.call.on_metadb_changed(handle_list, fromhook);
 		}
 		if (grm.ui.displayLibrary) {
-			grm.ui.traceCall && console.log('Library => on_metadb_changed');
+			CallLog('Library => on_metadb_changed');
 			lib.call && lib.call.on_metadb_changed(handle_list, fromhook);
 		}
 		if (grm.ui.displayBiography) {
-			grm.ui.traceCall && console.log('Biography => on_metadb_changed');
+			CallLog('Biography => on_metadb_changed');
 			bio.call && bio.call.on_metadb_changed(handle_list, fromhook);
 		}
 	}
-	RepaintWindow();
+
+	window.Repaint();
 }
 
 
@@ -176,86 +92,9 @@ function on_metadb_changed(handle_list, fromhook) {
 function on_playback_new_track(metadb) {
 	if (!metadb) return; // Solve weird corner case
 	const newTrackProfiler = (grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('on_playback_new_track');
-	DebugLog('in on_playback_new_track()');
-	UpdateTimezoneOffset();
+	DebugLog('Playback => on_playback_new_track()');
 
-	grm.ui.debugTimingsArray = [];
-	grm.ui.lastLeftEdge = 0;
-	grm.ui.newTrackFetchingArtwork = true;
-	grm.ui.newTrackFetchingDone = false;
-	grm.ui.themeColorSet = true;
-	grm.ui.initThemeFull = false;
-	grm.ui.isPlayingCD = metadb ? metadb.RawPath.startsWith('cdda://') : false;
-	grm.ui.isStreaming = metadb ? metadb.RawPath.startsWith('http://') : false;
-	grm.ui.currentAlbumFolder = !grm.ui.isStreaming ? metadb.Path.substring(0, metadb.Path.lastIndexOf('\\')) : '';
-
-	grm.timeline = new Timeline(grm.ui.timelineHeight);
-	grm.gridTip = new MetadataGridTooltip(grm.ui.gridTooltipHeight);
-	grm.lowerTip = new LowerBarTooltip();
-
-	grm.ui.setSeekbarRefresh();
-
-	if (grm.ui.albumArtTimeout) {
-		clearTimeout(grm.ui.albumArtTimeout);
-		grm.ui.albumArtTimeout = 0;
-	}
-
-	// * Fetch new albumArt
-	if ((grSet.cycleArt && grm.ui.albumArtIndex !== 0)
-		|| grm.ui.isStreaming
-		|| grm.ui.albumArtEmbedded
-		|| grm.ui.currentAlbumFolder !== grm.ui.lastAlbumFolder
-		|| grm.ui.albumArt == null
-		|| $('%album%') !== grm.ui.lastAlbumFolderTag
-		|| $('$if2(%discnumber%,0)') !== grm.ui.lastAlbumDiscNumber
-		|| $(`$if2(${grTF.vinyl_side},ZZ)`) !== grm.ui.lastAlbumVinylSide) {
-		grm.ui.clearPlaylistNowPlayingBg();
-		grm.ui.fetchNewArtwork(metadb);
-	}
-	else if (grSet.cycleArt && grm.ui.albumArtList.length > 1) {
-		// Need to do this here since we're no longer always fetching when grMain.ui.albumArtList.length > 1
-		grm.ui.albumArtTimeout = setTimeout(() => {
-			grm.ui.displayNextImage();
-		}, grCfg.settings.artworkDisplayTime * 1000);
-	}
-
-	// * Pick a new random theme preset on new track
-	if (grSet.presetAutoRandomMode === 'track' && !grm.ui.doubleClicked) {
-		grm.preset.getRandomThemePreset();
-	}
-
-	// * Generate a new color in Random theme on new track
-	if (grSet.styleRandomAutoColor === 'track' && !grm.ui.doubleClicked) {
-		grm.color.getRandomThemeAutoColor();
-	}
-
-	if (grm.ui.discArt) {
-		grm.ui.setDiscArtRotationTimer();
-	}
-	if (grSet.rotateDiscArt && !grSet.spinDiscArt) {
-		grm.ui.createDiscArtRotation(); // We need to always setup the rotated image because it rotates on every track
-	}
-
-	grm.ui.getBandLogo();
-	grm.ui.getLabelLogo(metadb);
-
-	grm.ui.lastAlbumFolder = grm.ui.currentAlbumFolder;
-	grm.ui.lastAlbumFolderTag = $('%album%');
-	grm.ui.lastAlbumDiscNumber = $('$if2(%discnumber%,0)');
-	grm.ui.lastAlbumVinylSide = $(`$if2(${grTF.vinyl_side},ZZ)`);
-	grm.ui.currentLastPlayed = $(grTF.last_played);
-	grm.ui.playingPlaylist = grSet.showGridPlayingPlaylist ? $(grTF.playing_playlist = plman.GetPlaylistName(plman.PlayingPlaylist)) : '';
-
-	if (fb.GetNowPlaying()) on_metadb_changed(); // Refresh panel
-
-	on_playback_time();
-	grm.progBar.progressLength = 0;
-	grm.peakBar.progressLength = 0;
-	if (grSet.seekbar === 'peakmeterbar') {
-		grm.peakBar.on_playback_new_track(metadb);
-	} else if (grSet.seekbar === 'waveformbar') {
-		grm.waveBar.on_playback_new_track_queue(metadb);
-	}
+	grm.ui.handlePlaybackNewTrack(metadb);
 
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork || !grm.ui.displayPlaylist) {
 		pl.call.on_playback_new_track(metadb);
@@ -266,13 +105,6 @@ function on_playback_new_track(metadb) {
 	if (grm.ui.displayBiography) {
 		bio.call.on_playback_new_track();
 	}
-
-	if (grm.ui.displayLyrics) { // No need to try retrieving them if we aren't going to display them now
-		grm.lyrics.initLyrics();
-	}
-
-	// * Load finished, Playlist auto-scroll is ready
-	grm.ui.newTrackFetchingDone = true;
 
 	if (newTrackProfiler) newTrackProfiler.Print();
 	if (grCfg.settings.showDebugPerformanceOverlay) grm.ui.debugTimingsArray.push(`on_playback_new_track: ${newTrackProfiler.Time} ms`);
@@ -289,53 +121,31 @@ function on_size() {
 	grm.ui.ww = window.Width;
 	grm.ui.wh = window.Height;
 
-	console.log(`in on_size() => width: ${grm.ui.ww}, height: ${grm.ui.wh}`);
+	DebugLog(`in on_size() => width: ${grm.ui.ww}, height: ${grm.ui.wh}`);
 
 	if (grm.ui.ww <= 0 || grm.ui.wh <= 0) return;
 
+	grm.ui.clearCache('metrics');
+	grm.details.clearCache('metrics');
 	grm.display.checkRes();
+	grm.display.handleWindowControl('doubleClick');
 
 	if (!grm.display.sizeInitialized) {
-		grm.ui.createFonts();
-		grm.ui.initMetrics();
-		if (fb.IsPlaying) {
-			grm.ui.loadCountryFlags(); // Wrong size flag gets loaded on 4K systems
-		}
-		PlaylistRescale(true);
-		grm.ui.initPlaylist();
-		grm.artCache && grm.artCache.clear();
+		grm.ui.initPanels();
 		grm.display.sizeInitialized = true;
-		if (grm.timeline) {
-			grm.timeline.setHeight(grm.ui.timelineHeight);
-		}
-		if (grm.gridTip) {
-			grm.gridTip.setHeight(grm.ui.gridTooltipHeight);
-		}
+	} else {
+		grm.ui.setMainMetrics();
+		grm.ui.setMainComponents('all');
+		grm.ui.resizeArtwork(true);
+		grm.button.createButtons(grm.ui.ww, grm.ui.wh, false);
+		grm.ui.displayPlaylist && grm.ui.setPlaylistSize();
+		grm.ui.displayLibrary && grm.ui.setLibrarySize();
+		grm.ui.displayBiography && grm.ui.setBiographySize();
 	}
 
-	grm.ui.lastLeftEdge = 0;
-	grm.ui.resizeArtwork(true);
-	grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
-	grm.ui.setMainComponentSize('all');
-
-	pl.call.on_size(grm.ui.ww, grm.ui.wh);
-	grm.ui.setLibrarySize();
-	grm.ui.setBiographySize();
-	if (grm.ui.displayLyrics) grm.lyrics.initLyrics();
-
-	if (grm.ui.albumArt && (grSet.styleBlend || grSet.styleBlend2 || grSet.styleProgressBarFill === 'blend')) {
-		grm.color.setStyleBlend(); // Reposition all drawn imgBlended
-	}
-
+	grm.ui.displayLyrics && grm.lyrics.initLyrics();
+	grm.style.setStyleBlend();
 	grm.button.initButtonState();
-
-	// * UIHacks double click on caption in fullscreen
-	try { // Needed when double clicking on caption and UIHacks.FullScreen === true; also disabling maximize in Artwork layout
-		if (!utils.IsKeyPressed(VK_CONTROL) && UIHacks.FullScreen && UIHacks.MainWindowState === WindowState.Normal ||
-			grSet.layout === 'artwork' && UIHacks.MainWindowState === WindowState.Maximized) {
-			UIHacks.MainWindowState = WindowState.Normal;
-		}
-	} catch (e) {}
 }
 
 
@@ -352,23 +162,23 @@ function on_size() {
  */
 function on_char(code) {
 	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
-		grm.ui.traceCall && console.log('Custom menu => on_char');
+		CallLog('Custom menu => on_char');
 		grm.cusMenu.on_char(code);
 	}
 	else if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || !grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayLibrarySplit(true)) {
-		grm.ui.traceCall && console.log('Playlist => on_char');
+		CallLog('Playlist => on_char');
 		grm.jSearch.on_char(code);
 
 		// Switch back to Playlist
 		if (grSet.layout === 'default' && grm.ui.displayDetails) {
-			grm.ui.btn.details.onClick();
+			grm.button.btn.details.onClick();
 		}
 		else if (grSet.layout === 'artwork' && !grm.ui.displayPlaylistArtwork && !grm.ui.displayLibrary) {
-			grm.ui.btn.playlistArtworkLayout.onClick();
+			grm.button.btn.playlist.onClick();
 		}
 	}
 	else if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_char');
+		CallLog('Library => on_char');
 		lib.call.on_char(code);
 	}
 }
@@ -388,7 +198,7 @@ function on_char(code) {
  */
 function on_drag_enter(action, x, y, mask) {
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_drag_enter');
+		CallLog('Playlist => on_drag_enter');
 		pl.call.on_drag_enter(action, x, y, mask);
 	}
 }
@@ -408,7 +218,7 @@ function on_drag_enter(action, x, y, mask) {
  */
 function on_drag_over(action, x, y, mask) {
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_drag_over');
+		CallLog('Playlist => on_drag_over');
 		pl.call.on_drag_over(action, x, y, mask);
 	}
 }
@@ -424,7 +234,7 @@ function on_drag_over(action, x, y, mask) {
  */
 function on_drag_leave() {
 	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
-		grm.ui.traceCall && console.log('Playlist => on_drag_leave');
+		CallLog('Playlist => on_drag_leave');
 		pl.call.on_drag_leave();
 	}
 }
@@ -444,7 +254,7 @@ function on_drag_leave() {
  */
 function on_drag_drop(action, x, y, mask) {
 	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
-		grm.ui.traceCall && console.log('Playlist => on_drag_drop');
+		CallLog('Playlist => on_drag_drop');
 		pl.call.on_drag_drop(action, x, y, mask);
 	}
 }
@@ -457,21 +267,21 @@ function on_drag_drop(action, x, y, mask) {
  */
 function on_focus(is_focused) {
 	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
-		grm.ui.traceCall && console.log('Playlist => on_focus');
+		CallLog('Playlist => on_focus');
 		pl.call.on_focus(is_focused);
 	}
 	else if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_focus');
+		CallLog('Library => on_focus');
 		lib.call.on_focus(is_focused);
 	}
 	if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_focus');
+		CallLog('Biography => on_focus');
 		bio.call.on_focus(is_focused);
 	}
 	if (is_focused) {
 		plman.SetActivePlaylistContext(); // When the panel gets focus but not on every click.
 	} else {
-		clearTimeout(grm.ui.hideCursorTimeout); // Not sure this is required, but I think the mouse was occasionally disappearing
+		grm.ui.clearTimer('hideCursor'); // Not sure this is required, but I think the mouse was occasionally disappearing
 	}
 }
 
@@ -485,15 +295,15 @@ function on_focus(is_focused) {
  */
 function on_item_focus_change(playlistIndex, from, to) {
 	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
-		grm.ui.traceCall && console.log('Playlist => on_item_focus_change');
+		CallLog('Playlist => on_item_focus_change');
 		pl.call.on_item_focus_change(playlistIndex, from, to);
 	}
 	else if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_item_focus_change');
+		CallLog('Library => on_item_focus_change');
 		lib.call.on_item_focus_change();
 	}
 	if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_item_focus_change');
+		CallLog('Biography => on_item_focus_change');
 		bio.call.on_item_focus_change();
 	}
 }
@@ -511,65 +321,28 @@ function on_item_focus_change(playlistIndex, from, to) {
  * @param {number} vkey - The virtual key code.
  */
 function on_key_down(vkey) {
-	const CtrlKeyPressed = utils.IsKeyPressed(VK_CONTROL);
-	const ShiftKeyPressed = utils.IsKeyPressed(VK_SHIFT);
-
 	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
-		grm.ui.traceCall && console.log('Custom menu => on_key_down');
+		CallLog('Custom menu => on_key_down');
 		grm.cusMenu.on_key_down(vkey);
 	}
 	else {
 		if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
-			grm.ui.traceCall && console.log('Playlist => on_key_down');
-
-			if (grm.utils.suppressKey(vkey)) {
-				return;
-			}
-
+			CallLog('Playlist => on_key_down');
+			if (grm.utils.suppressKey(vkey)) return;
 			pl.call.on_key_down(vkey);
 		}
 		else if (grm.ui.displayLibrary) {
-			grm.ui.traceCall && console.log('Library => on_key_down');
+			CallLog('Library => on_key_down');
 			lib.call.on_key_down(vkey);
 		}
 		if (grm.ui.displayBiography) {
-			grm.ui.traceCall && console.log('Biography => on_key_down');
+			CallLog('Biography => on_key_down');
 			bio.call.on_key_down(vkey);
 		}
 	}
 
-	switch (vkey) {
-		case VK_ADD:
-		case VK_SUBTRACT:
-			if (CtrlKeyPressed && ShiftKeyPressed) {
-				const action = vkey === VK_ADD ? '+' : '-';
-				const metadb = fb.GetNowPlaying();
-				if (fb.IsPlaying) {
-					fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadb);
-				}
-				else if (!metadb && (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true))) {
-					const metadbList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
-					if (metadbList.Count === 1) {
-						fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadbList[0]);
-					} else {
-						console.log('Won\'t change rating with more than one selected item');
-					}
-				}
-			}
-			break;
-		case CtrlKeyPressed && VK_KEY_Z:
-			fb.RunMainMenuCommand('Edit/Undo');
-			break;
-	}
-
-	// * F11 shortcut for going into/out fullscreen mode, disabled in Artwork layout
-	if (utils.IsKeyPressed(VK_F11)) {
-		UIHacks.MainWindowState === WindowState.Normal ? UIHacks.FullScreen = true : UIHacks.MainWindowState = WindowState.Normal;
-	}
-	// * ESC also exits fullscreen mode
-	else if (utils.IsKeyPressed(VK_ESCAPE) && UIHacks.FullScreen && !grSet.fullscreenESCDisabled) {
-		UIHacks.MainWindowState = WindowState.Normal;
-	}
+	grm.ui.handleKeyAction(vkey);
+	grm.display.handleWindowControl('key');
 }
 
 
@@ -584,11 +357,11 @@ function on_key_down(vkey) {
  */
 function on_key_up(vkey) {
 	if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_key_up');
+		CallLog('Library => on_key_up');
 		lib.call.on_key_up(vkey);
 	}
 	else if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_key_up');
+		CallLog('Biography => on_key_up');
 		bio.call.on_key_up(vkey);
 	}
 }
@@ -600,10 +373,10 @@ function on_key_up(vkey) {
  * @param {FbMetadbHandleList} handle_list - The handle list of the library items.
  */
 function on_library_items_added(handle_list) {
-	grm.ui.traceCall && console.log('Library => on_library_items_added');
+	CallLog('Library => on_library_items_added');
 	lib.call.on_library_items_added(handle_list);
 
-	grm.ui.traceCall && console.log('Biography => on_library_items_added');
+	CallLog('Biography => on_library_items_added');
 	bio.call.on_library_items_added(handle_list);
 }
 
@@ -614,10 +387,10 @@ function on_library_items_added(handle_list) {
  * @param {FbMetadbHandleList} handle_list - The handle list of the library items.
  */
 function on_library_items_changed(handle_list) {
-	grm.ui.traceCall && console.log('Library => on_library_items_changed');
+	CallLog('Library => on_library_items_changed');
 	lib.call.on_library_items_changed(handle_list);
 
-	grm.ui.traceCall && console.log('Biography => on_library_items_changed');
+	CallLog('Biography => on_library_items_changed');
 	bio.call.on_library_items_changed(handle_list);
 }
 
@@ -628,10 +401,10 @@ function on_library_items_changed(handle_list) {
  * @param {FbMetadbHandleList} handle_list - The handle list of the library items.
  */
 function on_library_items_removed(handle_list) {
-	grm.ui.traceCall && console.log('Library => on_library_items_removed');
+	CallLog('Library => on_library_items_removed');
 	lib.call.on_library_items_removed(handle_list);
 
-	grm.ui.traceCall && console.log('Biography => on_library_items_removed');
+	CallLog('Biography => on_library_items_removed');
 	bio.call.on_library_items_removed(handle_list);
 }
 
@@ -644,37 +417,28 @@ function on_library_items_removed(handle_list) {
  * @param {number} m - The mouse mask.
  */
 function on_mouse_lbtn_dblclk(x, y, m) {
+	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) return;
+
 	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
-		grm.ui.traceCall && console.log('Playlist => on_mouse_lbtn_dblclk');
-		if (grm.ui.displayCustomThemeMenu && grm.ui.displayLyrics) return;
+		CallLog('Playlist => on_mouse_lbtn_dblclk');
 		pl.call.on_mouse_lbtn_dblclk(x, y, m);
 	}
 	else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
-		grm.ui.traceCall && console.log('Library => on_mouse_lbtn_dblclk');
+		CallLog('Library => on_mouse_lbtn_dblclk');
 		lib.call.on_mouse_lbtn_dblclk(x, y, m);
 	}
 	else if (grm.ui.displayBiography && mouseInBiography(x, y)) {
-		grm.ui.traceCall && console.log('Biography => on_mouse_lbtn_dblclk');
+		CallLog('Biography => on_mouse_lbtn_dblclk');
 		bio.call.on_mouse_lbtn_dblclk(x, y, m);
 	}
-	else if (!grm.ui.displayCustomThemeMenu && !grm.ui.displayMetadataGridMenu || grm.ui.displayCustomThemeMenu && mouseInPanel(x, y)) {
-		if (grm.ui.presetIndicatorTimer) {
-			clearTimeout(grm.ui.presetIndicatorTimer);
-			grm.ui.presetIndicatorTimer = null;
-		}
+	else {
+		grm.ui.clearTimer('presetIndicator');
 		grm.ui.doubleClicked = true;
 		if (fb.IsPlaying && !grm.button.mouseInControl && mouseInLowerBar(x, y)) {
-			grm.ui.traceCall && console.log('Lower bar => on_mouse_lbtn_dblclk');
+			CallLog('Lower bar => on_mouse_lbtn_dblclk');
 			// * Refresh theme
 			if (grCfg.settings.doubleClickRefresh) {
-				grm.ui.albumArt = null;
-				grm.artCache && grm.artCache.clear();
-				grm.ui.discArtArray = [];
-				grm.ui.discArtArrayCover = [];
-				grm.ui.discArt = null;
-				grm.ui.discArtCover = null;
-				RepaintWindow();
-				on_playback_new_track(fb.GetNowPlaying());
+				grm.ui.refreshTheme();
 			}
 			// * Pick a new random theme preset
 			else if (grSet.presetAutoRandomMode === 'dblclick') {
@@ -699,55 +463,50 @@ function on_mouse_lbtn_dblclk(x, y, m) {
  * @param {number} m - The mouse mask.
  */
 function on_mouse_lbtn_down(x, y, m) {
-	const showProgressBar = grSet[`showProgressBar_${grSet.layout}`];
-	window.SetCursor(32512); // Arrow
+	SetCursor('Arrow');
 
 	if (grm.button) {
 		grm.button.on_mouse_lbtn_down(x, y, m);
 	}
 
 	if (grSet.seekbar === 'progressbar' && grm.progBar.mouseInThis(x, y)) {
-		grm.ui.traceCall && console.log('Progress bar => on_mouse_lbtn_down');
+		CallLog('Progress bar => on_mouse_lbtn_down');
 		grm.progBar.on_mouse_lbtn_down(x, y);
 	}
 	else if (grSet.seekbar === 'peakmeterbar' && grm.peakBar.mouseInThis(x, y)) {
-		grm.ui.traceCall && console.log('Peakmeter bar => on_mouse_lbtn_down');
+		CallLog('Peakmeter bar => on_mouse_lbtn_down');
 		grm.peakBar.on_mouse_lbtn_down(x, y);
 	}
 	else if (!grm.volBtn.on_mouse_lbtn_down(x, y, m)) { // Not handled by volumeBtn
-		// * Clicking on progress bar to seek playback
-		if (showProgressBar && mouseInSeekbar(x, y)) {
-			let v = (x - 0.025 * grm.ui.ww) / (0.95 * grm.ui.ww);
-			v = (v < 0) ? 0 : (v < 1) ? v : 1;
-			if (fb.PlaybackTime !== v * fb.PlaybackLength) fb.PlaybackTime = v * fb.PlaybackLength;
-			window.RepaintRect(0, grm.ui.wh - grm.ui.lowerBarHeight, grm.ui.ww, grm.ui.lowerBarHeight);
+		if (grSet.showProgressBar_layout && mouseInSeekbar(x, y)) {
+			grm.ui.handleSeekbarPlayback(x);
 		}
 
 		if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
-			grm.ui.traceCall && console.log('Custom menu => on_mouse_lbtn_down');
+			CallLog('Custom menu => on_mouse_lbtn_down');
 			grm.cusMenu.on_mouse_lbtn_down(x, y, m);
 		}
 
 		if (grCfg.updateHyperlink && !fb.IsPlaying && grCfg.updateHyperlink.trace(x, y)) {
-			grm.ui.traceCall && console.log('Hyperlink => on_mouse_lbtn_down');
+			CallLog('Hyperlink => on_mouse_lbtn_down');
 			grCfg.updateHyperlink.click();
 		}
 
 		if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
-			grm.ui.traceCall && console.log('Playlist => on_mouse_lbtn_down');
 			if (grm.ui.displayCustomThemeMenu && grm.ui.displayBiography) return;
+			CallLog('Playlist => on_mouse_lbtn_down');
 			pl.call.on_mouse_lbtn_down(x, y, m);
 		}
 		else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
-			grm.ui.traceCall && console.log('Library => on_mouse_lbtn_down');
+			CallLog('Library => on_mouse_lbtn_down');
 			lib.call.on_mouse_lbtn_down(x, y, m);
 		}
 		if (grm.ui.displayBiography && mouseInBiography(x, y)) {
-			grm.ui.traceCall && console.log('Biography => on_mouse_lbtn_down');
+			CallLog('Biography => on_mouse_lbtn_down');
 			bio.call.on_mouse_lbtn_down(x, y, m);
 		}
 		if (grm.ui.displayLyrics && mouseInAlbumArt(x, y)) {
-			grm.ui.traceCall && grm.ui.traceOnMove && console.log('Lyrics => on_mouse_lbtn_down');
+			MoveLog('Lyrics => on_mouse_lbtn_down');
 			grm.lyrics.on_mouse_lbtn_down(x, y, m);
 		}
 
@@ -774,18 +533,18 @@ function on_mouse_lbtn_up(x, y, m) {
 	}
 
 	if (grSet.seekbar === 'progressbar') {
-		grm.ui.traceCall && console.log('Progress bar => on_mouse_lbtn_up');
+		CallLog('Progress bar => on_mouse_lbtn_up');
 		grm.progBar.on_mouse_lbtn_up(x, y);
 	} else if (grSet.seekbar === 'peakmeterbar') {
-		grm.ui.traceCall && console.log('Peakmeter bar => on_mouse_lbtn_up');
+		CallLog('Peakmeter bar => on_mouse_lbtn_up');
 		grm.peakBar.on_mouse_lbtn_up(x, y);
 	} else if (grSet.seekbar === 'waveformbar') {
-		grm.ui.traceCall && console.log('Waveform bar => on_mouse_lbtn_up');
+		CallLog('Waveform bar => on_mouse_lbtn_up');
 		grm.waveBar.on_mouse_lbtn_up(x, y, m);
 	}
 
 	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
-		grm.ui.traceCall && console.log('Custom menu => on_mouse_lbtn_up');
+		CallLog('Custom menu => on_mouse_lbtn_up');
 		grm.cusMenu.on_mouse_lbtn_up(x, y, m);
 	}
 
@@ -793,22 +552,23 @@ function on_mouse_lbtn_up(x, y, m) {
 
 	// Not handled by volumeBtn
 	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit()) && mouseInPlaylist(x, y)) {
-		grm.ui.traceCall && console.log('Playlist => on_mouse_lbtn_up');
 		if (grm.ui.displayCustomThemeMenu && grm.ui.displayBiography) return;
+		CallLog('Playlist => on_mouse_lbtn_up');
 		pl.call.on_mouse_lbtn_up(x, y, m);
 
 		if (!grSet.lockPlayerSize) grm.utils.enableSizing(m);
 	}
 	else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
-		grm.ui.traceCall && console.log('Library => on_mouse_lbtn_up');
+		if (grm.ui.displayCustomThemeMenu && grSet.libraryLayout === 'split') return;
+		CallLog('Library => on_mouse_lbtn_up');
 		lib.call.on_mouse_lbtn_up(x, y, m);
 	}
 	if (grm.ui.displayBiography && mouseInBiography(x, y)) {
-		grm.ui.traceCall && console.log('Biography => on_mouse_lbtn_up');
+		CallLog('Biography => on_mouse_lbtn_up');
 		bio.call.on_mouse_lbtn_up(x, y, m);
 	}
 	if (grm.ui.displayLyrics && mouseInAlbumArt(x, y)) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Lyrics => on_mouse_lbtn_up');
+		MoveLog('Lyrics => on_mouse_lbtn_up');
 		grm.lyrics.on_mouse_lbtn_up(x, y, m);
 	}
 
@@ -825,26 +585,24 @@ function on_mouse_lbtn_up(x, y, m) {
  * @global
  */
 function on_mouse_leave() {
-	const showVolumeBtn = grSet[`showVolumeBtn_${grSet.layout}`];
-
-	if (showVolumeBtn && grm.volBtn) {
-		grm.ui.traceCall && console.log('Volume button => on_mouse_leave');
+	if (grSet.showVolumeBtn_layout && grm.volBtn) {
+		CallLog('Volume button => on_mouse_leave');
 		grm.volBtn.on_mouse_leave();
 	}
 	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
-		grm.ui.traceCall && console.log('Playlist => on_mouse_leave');
+		CallLog('Playlist => on_mouse_leave');
 		pl.call.on_mouse_leave();
 	}
 	else if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_mouse_leave');
+		CallLog('Library => on_mouse_leave');
 		lib.call.on_mouse_leave();
 	}
 	if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_mouse_leave');
+		CallLog('Biography => on_mouse_leave');
 		bio.call.on_mouse_leave();
 	}
 	if (grm.ui.displayLyrics) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Lyrics => on_mouse_leave');
+		MoveLog('Lyrics => on_mouse_leave');
 		grm.lyrics.on_mouse_leave();
 	}
 }
@@ -859,7 +617,7 @@ function on_mouse_leave() {
  */
 function on_mouse_mbtn_dblclk(x, y, m) {
 	if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_mouse_mbtn_dblclk');
+		CallLog('Library => on_mouse_mbtn_dblclk');
 		lib.call.on_mouse_mbtn_dblclk(x, y, m);
 	}
 }
@@ -874,7 +632,7 @@ function on_mouse_mbtn_dblclk(x, y, m) {
  */
 function on_mouse_mbtn_down(x, y, m) {
 	if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_mouse_mbtn_down');
+		CallLog('Library => on_mouse_mbtn_down');
 		lib.call.on_mouse_mbtn_down(x, y, m);
 	}
 }
@@ -889,11 +647,11 @@ function on_mouse_mbtn_down(x, y, m) {
  */
 function on_mouse_mbtn_up(x, y, m) {
 	if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_mouse_mbtn_up');
+		CallLog('Library => on_mouse_mbtn_up');
 		lib.call.on_mouse_mbtn_up(x, y, m);
 	}
 	else if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_mouse_mbtn_up');
+		CallLog('Biography => on_mouse_mbtn_up');
 		bio.call.on_mouse_mbtn_up(x, y, m);
 	}
 }
@@ -909,10 +667,6 @@ function on_mouse_mbtn_up(x, y, m) {
 function on_mouse_move(x, y, m) {
 	if (x === grm.ui.state.mouse_x && y === grm.ui.state.mouse_y) return;
 
-	const showGridTimeline      = grSet[`showGridTimeline_${grSet.layout}`];
-	const showTransportControls = grSet[`showTransportControls_${grSet.layout}`];
-	const showVolumeBtn         = grSet[`showVolumeBtn_${grSet.layout}`];
-
 	grm.ui.state.mouse_x = x;
 	grm.ui.state.mouse_y = y;
 	grm.display.setWindowDrag(x, y);
@@ -925,11 +679,11 @@ function on_mouse_move(x, y, m) {
 	if (grm.button) grm.button.on_mouse_move(x, y, m);
 	if (grCfg.updateHyperlink) grCfg.updateHyperlink.on_mouse_move(grCfg.updateHyperlink, x, y);
 
-	if (grm.progBar && grSet.seekbar === 'progressbar') {
+	if (grSet.seekbar === 'progressbar') {
 		grm.progBar.on_mouse_move(x, y);
-	} else if (grm.peakBar && grSet.seekbar === 'peakmeterbar') {
+	} else if (grSet.seekbar === 'peakmeterbar') {
 		grm.peakBar.on_mouse_move(x, y, m);
-	} else if (grm.waveBar && grSet.seekbar === 'waveformbar') {
+	} else if (grSet.seekbar === 'waveformbar') {
 		grm.waveBar.on_mouse_move(x, y, m);
 	}
 
@@ -939,44 +693,50 @@ function on_mouse_move(x, y, m) {
 		setTimeout(() => {
 			grm.button.topMenu(true);
 		}, 3000);
+		return;
 	}
-	else if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
-		grm.ui.traceCall && console.log('Custom menu => on_mouse_move');
+
+	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
+		CallLog('Custom menu => on_mouse_move');
 		grm.cusMenu.on_mouse_move(x, y, m);
+		return;
 	}
-	else if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Playlist => on_mouse_move');
-		if (grm.utils.suppressMouseMove(x, y, m)) {
-			return;
-		}
+
+	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
+		MoveLog('Playlist => on_mouse_move');
+		if (grm.utils.suppressMouseMove(x, y, m)) return;
 		grm.utils.disableSizing(m);
 		pl.call.on_mouse_move(x, y, m);
+		return;
 	}
-	else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Library => on_mouse_move');
+	if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
+		MoveLog('Library => on_mouse_move');
 		lib.call.on_mouse_move(x, y, m);
+		return;
 	}
-	else if (grm.ui.displayBiography && mouseInBiography(x, y)) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Biography => on_mouse_move');
+	if (grm.ui.displayBiography && mouseInBiography(x, y)) {
+		MoveLog('Biography => on_mouse_move');
 		bio.call.on_mouse_move(x, y, m);
+		return;
 	}
-	else if (grm.ui.displayLyrics && mouseInAlbumArt(x, y)) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Lyrics => on_mouse_move');
+	if (grm.ui.displayLyrics && mouseInAlbumArt(x, y)) {
+		MoveLog('Lyrics => on_mouse_move');
 		grm.lyrics.on_mouse_move(x, y, m);
+		return;
 	}
-	else if (showGridTimeline && grm.timeline && grm.timeline.mouseInThis(x, y) && grm.ui.displayDetails) {
-		grm.ui.traceCall && console.log('Timeline => on_mouse_move');
-		grm.timeline.on_mouse_move(x, y, m);
+	if (grm.ui.displayDetails && !mouseInLowerBar(x, y)) {
+		CallLog('Details => on_mouse_move');
+		grm.details.on_mouse_move(x, y, m);
+		return;
 	}
-	else if (grm.gridTip && grm.gridTip.mouseInThis(x, y)) {
-		grm.ui.traceCall && console.log('Metadata Grid => on_mouse_move');
-		grm.gridTip.on_mouse_move(x, y, m);
+
+	if (mouseInLowerBar(x, y, true)) {
+		CallLog('Lower bar tooltip => on_mouse_move');
+		grm.ui.handleLowerBarTooltip(x, y)
+		return;
 	}
-	else if (grm.lowerTip && grm.lowerTip.mouseInThis(x, y)) {
-		grm.ui.traceCall && console.log('Lower bar tooltip => on_mouse_move');
-		grm.lowerTip.on_mouse_move(x, y, m);
-	}
-	else if (showTransportControls && showVolumeBtn && grm.volBtn) {
+
+	if (grSet.showTransportControls_layout && grSet.showVolumeBtn_layout) {
 		grm.volBtn.on_mouse_move(x, y, m);
 	}
 }
@@ -992,7 +752,7 @@ function on_mouse_move(x, y, m) {
 function on_mouse_rbtn_down(x, y, m) {
 	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y) &&
 		!(grm.ui.displayCustomThemeMenu && grm.ui.displayBiography)) {
-		grm.ui.traceCall && console.log('Playlist => on_mouse_rbtn_down');
+		CallLog('Playlist => on_mouse_rbtn_down');
 		pl.call.on_mouse_rbtn_down(x, y, m);
 	}
 }
@@ -1012,48 +772,48 @@ function on_mouse_rbtn_down(x, y, m) {
  */
 function on_mouse_rbtn_up(x, y, m) {
 	const cmm = new ContextMainMenu();
+
 	const handleContextMenu = (x, y) => {
 		grm.ui.activeMenu = true;
 		cmm.execute(x, y);
 		grm.ui.activeMenu = false;
-	}
+	};
 
 	if (mouseInTopMenu(x, y)) {
-		grm.ui.traceCall && console.log('Top menu => on_mouse_rbtn_up');
+		CallLog('Top menu => on_mouse_rbtn_up');
 		grm.ctxMenu.contextMenuTopBar(cmm);
 		handleContextMenu(x, y);
 		return true;
 	}
-	else if (mouseInAlbumArt(x, y) && fb.IsPlaying) {
-		grm.ui.traceCall && console.log('Album art => on_mouse_rbtn_up');
+	else if (mouseInAlbumArt(x, y)) {
+		CallLog('Album art => on_mouse_rbtn_up');
 		grm.ctxMenu.contextMenuAlbumCover(cmm);
 		handleContextMenu(x, y);
 		return true;
 	}
 	else if (mouseInLowerBar(x, y) && !mouseInSeekbar(x, y)) {
-		grm.ui.traceCall && console.log('Lower bar => on_mouse_rbtn_up');
+		CallLog('Lower bar => on_mouse_rbtn_up');
 		grm.ctxMenu.contextMenuLowerBar(cmm);
 		handleContextMenu(x, y);
 		return true;
 	}
 	else if (mouseInSeekbar(x, y)) {
-		grm.ui.traceCall && console.log('Seekbar => on_mouse_rbtn_up');
+		CallLog('Seekbar => on_mouse_rbtn_up');
 		grm.ctxMenu.contextMenuSeekbar(cmm);
 		handleContextMenu(x, y);
 		return true;
 	}
 
 	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
-		grm.ui.traceCall && console.log('Playlist => on_mouse_rbtn_up');
-		if (grm.ui.displayCustomThemeMenu && grm.ui.displayBiography) return;
+		CallLog('Playlist => on_mouse_rbtn_up');
 		return pl.call.on_mouse_rbtn_up(x, y, m);
 	}
 	else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
-		grm.ui.traceCall && console.log('Library => on_mouse_rbtn_up');
+		CallLog('Library => on_mouse_rbtn_up');
 		return lib.call.on_mouse_rbtn_up(x, y, m);
 	}
 	else if (grm.ui.displayBiography && mouseInBiography(x, y)) {
-		grm.ui.traceCall && console.log('Biography => on_mouse_rbtn_up');
+		CallLog('Biography => on_mouse_rbtn_up');
 		return bio.call.on_mouse_rbtn_up(x, y, m);
 	}
 	else {
@@ -1068,158 +828,108 @@ function on_mouse_rbtn_up(x, y, m) {
  * @param {number} step - The scroll direction: -1 or 1.
  */
 function on_mouse_wheel(step) {
-	const AltKeyPressed = utils.IsKeyPressed(VK_MENU);
-	const CtrlKeyPressed = utils.IsKeyPressed(VK_CONTROL);
-	const ShiftKeyPressed = utils.IsKeyPressed(VK_SHIFT);
-	const scaleKeyPressed = AltKeyPressed || CtrlKeyPressed || ShiftKeyPressed;
-	const showVolumeBtn = grSet[`showVolumeBtn_${grSet.layout}`];
-	const displayAlbumArt = grSet.layout !== 'compact' &&
-		(!grm.ui.displayPlaylistArtwork && !grm.ui.displayBiography && !grm.ui.displayLyrics || (grm.ui.displayLibrary && grSet.libraryLayout === 'normal'));
-
-	if (showVolumeBtn && grm.volBtn.on_mouse_wheel(step)) return;
-
-	// * Seeking through playback
-	if (mouseInSeekbar(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
-		fb.PlaybackTime = fb.PlaybackTime - step * grSet.progressBarWheelSeekSpeed;
-		grm.ui.refreshSeekbar();
-		if (grSet.seekbar === 'peakmeterbar') grm.peakBar.on_mouse_wheel(step);
-		return;
-	}
-
-	// * Cycling through album artwork
-	if (displayAlbumArt && mouseInAlbumArt() && grSet.cycleArtMWheel && !scaleKeyPressed && grm.ui.albumArtList.length > 1) {
-		// Prev album art image
-		if (step > 0) {
-			if (grm.ui.albumArtIndex !== 0) {
-				grm.ui.albumArtIndex = (grm.ui.albumArtIndex - 1) % grm.ui.albumArtList.length;
-			}
-		}
-		// Next album art image
-		else if (grm.ui.albumArtIndex !== grm.ui.albumArtList.length - 1) {
-			grm.ui.albumArtIndex = (grm.ui.albumArtIndex + 1) % grm.ui.albumArtList.length;
-		}
-		grm.ui.loadImageFromAlbumArtList(grm.ui.albumArtIndex);
-		// Display embedded album art image
-		if (grSet.loadEmbeddedAlbumArtFirst && grm.ui.albumArtIndex === 0) {
-			grm.ui.albumArt = utils.GetAlbumArtV2(fb.GetNowPlaying());
-			grm.ui.albumArtList.unshift(grm.ui.albumArt);
-			grm.ui.albumArtIndex = 0;
-		}
-
-		// Update colors for dynamic themes
-		if (['white', 'black', 'reborn', 'random'].includes(grSet.theme)) {
-			grm.ui.newTrackFetchingArtwork = true;
-			grm.color.getThemeColors(grm.ui.albumArt);
-			grm.ui.initTheme();
-			DebugLog('\n>>> initTheme => on_mouse_wheel <<<\n');
-		}
-
-		// Update positions
-		grm.ui.resizeArtwork(true); // Re-adjust discArt shadow size if artwork size changes
-		if (grSet.panelWidthAuto && grm.ui.albumArtSize.w !== grm.ui.albumArtSize.h) { // Re-adjust playlist if artwork size changes
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
-		}
-		grm.ui.lastLeftEdge = 0;
-		RepaintWindow();
-		return;
-	}
-
 	if (mouseInTopMenu(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
-		if (CtrlKeyPressed) {
-			grm.scaling.setMenuFontSize(step);
-		} else if (AltKeyPressed) {
-			grm.scaling.setMenuFontSize(0);
-		}
+		KeyPressAction({
+			ctrlNoShift: () => grm.display.setMenuFontSize(step),
+			altNoShift: () => grm.display.setMenuFontSize(0)
+		});
+		return;
 	}
-	else if (mouseInTransport(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
-		if (CtrlKeyPressed) {
-			grm.scaling.setTransportBtnSize(step);
-		} else if (AltKeyPressed && !ShiftKeyPressed) {
-			grm.scaling.setTransportBtnSize(0);
-		} else if (!AltKeyPressed && ShiftKeyPressed) {
-			grm.scaling.setTransportBtnSpacing(step);
-		} else if (AltKeyPressed && ShiftKeyPressed) {
-			grm.scaling.setTransportBtnSpacing(0);
-		}
+
+	if (mouseInAlbumArt() && grSet.cycleArtMWheel && grm.ui.albumArtList.length > 1 && !grm.ui.displayLyrics) {
+		grm.ui.cycleAlbumArtImage(step);
+		return;
 	}
-	else if (mouseInLowerBar(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
-		if (CtrlKeyPressed) {
-			grm.scaling.setLowerBarFontSize(step);
-		} else if (AltKeyPressed) {
-			grm.scaling.setLowerBarFontSize(0);
-		}
+
+	if (mouseInTransport(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
+		KeyPressAction({
+			ctrlNoShift: () => grm.display.setTransportBtnSize(step),
+			altNoShift: () => grm.display.setTransportBtnSize(0),
+			altShift: () => grm.display.setTransportBtnSpacing(0),
+			shiftNoAlt: () => grm.display.setTransportBtnSpacing(step)
+		});
+		grSet.showVolumeBtn_layout && grm.volBtn.on_mouse_wheel(step);
+		return;
 	}
-	else if (grm.ui.displayDetails) {
-		if (mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, true)) {
-			if (CtrlKeyPressed) {
-				grm.scaling.setGridArtistFontSize(step);
-			} else if (AltKeyPressed) {
-				grm.scaling.setGridArtistFontSize(0);
-			}
-		} else if (mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, false, true)) {
-			if (CtrlKeyPressed) {
-				grm.scaling.setGridTitleFontSize(step);
-			} else if (AltKeyPressed) {
-				grm.scaling.setGridTitleFontSize(0);
-			}
-		} else if (mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, false, false, true)) {
-			if (CtrlKeyPressed) {
-				grm.scaling.setGridAlbumFontSize(step);
-			} else if (AltKeyPressed) {
-				grm.scaling.setGridAlbumFontSize(0);
-			}
-		} else if (mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, false, false, false, true)) {
-			if (CtrlKeyPressed) {
-				grm.scaling.setGridTagNameFontSize(step);
-			} else if (AltKeyPressed) {
-				grm.scaling.setGridTagNameFontSize(0);
-			}
-		} else if (mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, false, false, false, false, true)) {
-			if (CtrlKeyPressed) {
-				grm.scaling.setGridTagValueFontSize(step);
-			} else if (AltKeyPressed) {
-				grm.scaling.setGridTagValueFontSize(0);
-			}
-		}
+
+	if (mouseInSeekbar(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
+		grm.ui.handleSeekbarPlayback(0, step);
+		return;
 	}
-	else if (grm.ui.displayLyrics && mouseInAlbumArt()) {
-		if (CtrlKeyPressed) {
-			grm.scaling.setLyricsFontSize(step);
-		} else if (AltKeyPressed) {
-			grm.scaling.setLyricsFontSize(0);
-		} else {
-			grm.lyrics.on_mouse_wheel(step);
-		}
+
+	if (mouseInLowerBar(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
+		KeyPressAction({
+			ctrlNoShift: () => grm.display.setLowerBarFontSize(step),
+			altNoShift: () => grm.display.setLowerBarFontSize(0)
+		});
+		return;
 	}
-	else if (grm.ui.displayBiography && mouseInBiography(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
-		grm.ui.traceCall && console.log('Biography => on_mouse_wheel');
-		if (CtrlKeyPressed) {
-			grm.scaling.setBiographyFontSize(step);
-		} else if (AltKeyPressed) {
-			grm.scaling.setBiographyFontSize(0);
-		} else {
-			bio.call.on_mouse_wheel(step);
+
+	if (grm.ui.displayDetails) {
+		if (grm.details.mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, 'artist')) {
+			KeyPressAction({
+				ctrlNoShift: () => grm.display.setGridArtistFontSize(step),
+				altNoShift: () => grm.display.setGridArtistFontSize(0)
+			});
+			return;
 		}
+		if (grm.details.mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, 'title')) {
+			KeyPressAction({
+				ctrlNoShift: () => grm.display.setGridTitleFontSize(step),
+				altNoShift: () => grm.display.setGridTitleFontSize(0)
+			});
+			return;
+		}
+		if (grm.details.mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, 'album')) {
+			KeyPressAction({
+				ctrlNoShift: () => grm.display.setGridAlbumFontSize(step),
+				altNoShift: () => grm.display.setGridAlbumFontSize(0)
+			});
+			return;
+		}
+		if (grm.details.mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, 'tagKey')) {
+			KeyPressAction({
+				ctrlNoShift: () => grm.display.setGridTagKeyFontSize(step),
+				altNoShift: () => grm.display.setGridTagKeyFontSize(0)
+			});
+			return;
+		}
+		if (grm.details.mouseInMetadataGrid(grm.ui.state.mouse_x, grm.ui.state.mouse_y, 'tagValue')) {
+			KeyPressAction({
+				ctrlNoShift: () => grm.display.setGridTagValueFontSize(step),
+				altNoShift: () => grm.display.setGridTagValueFontSize(0)
+			});
+			return;
+		}
+		return;
 	}
-	else if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
-		grm.ui.traceCall && console.log('Playlist => on_mouse_wheel');
-		if (CtrlKeyPressed) {
-			grm.scaling.setPlaylistFontSize(step);
-		} else if (AltKeyPressed) {
-			grm.scaling.setPlaylistFontSize(0);
-		} else {
-			pl.call.on_mouse_wheel(step);
-		}
-	}
-	else if (grm.ui.displayLibrary && mouseInLibrary(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
-		grm.ui.traceCall && console.log('Library => on_mouse_wheel');
-		if (CtrlKeyPressed) {
-			grm.scaling.setLibraryFontSize(step);
-		} else if (AltKeyPressed) {
-			grm.scaling.setLibraryFontSize(0);
-		} else {
-			lib.call.on_mouse_wheel(step);
-		}
+	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
+		CallLog('Playlist => on_mouse_wheel');
+		KeyPressAction({
+			ctrlNoShift: () => grm.display.setPlaylistFontSize(step),
+			altNoShift: () => grm.display.setPlaylistFontSize(0),
+			default: () => pl.call.on_mouse_wheel(step)
+		});
+	} else if (grm.ui.displayLibrary && mouseInLibrary(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
+		CallLog('Library => on_mouse_wheel');
+		KeyPressAction({
+			ctrlNoShift: () => grm.display.setLibraryFontSize(step),
+			altNoShift: () => grm.display.setLibraryFontSize(0),
+			default: () => lib.call.on_mouse_wheel(step)
+		});
+	} else if (grm.ui.displayBiography && mouseInBiography(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
+		CallLog('Biography => on_mouse_wheel');
+		KeyPressAction({
+			ctrlNoShift: () => grm.display.setBiographyFontSize(step),
+			altNoShift: () => grm.display.setBiographyFontSize(0),
+			default: () => bio.call.on_mouse_wheel(step)
+		});
+	} else if (grm.ui.displayLyrics && mouseInAlbumArt()) {
+		KeyPressAction({
+			ctrlNoShift: () => grm.display.setLyricsFontSize(step),
+			altNoShift: () => grm.display.setLyricsFontSize(0),
+			default: () => grm.lyrics.on_mouse_wheel(step)
+		});
 	}
 }
 
@@ -1243,15 +953,15 @@ function on_mouse_wheel(step) {
  */
 function on_notify_data(name, info) {
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_notify_data');
+		CallLog('Playlist => on_notify_data');
 		pl.call.on_notify_data(name, info);
 	}
 	else if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_notify_data');
+		CallLog('Library => on_notify_data');
 		lib.call.on_notify_data(name, info);
 	}
 	if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_notify_data');
+		CallLog('Biography => on_notify_data');
 		bio.call.on_notify_data(name, info);
 	}
 }
@@ -1269,11 +979,11 @@ function on_playback_dynamic_info_track() {
 	on_playback_new_track(metadb);
 
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_playback_dynamic_info_track');
+		CallLog('Playlist => on_playback_dynamic_info_track');
 		pl.call.on_playback_dynamic_info_track();
 	}
 	if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_playback_dynamic_info_track');
+		CallLog('Biography => on_playback_dynamic_info_track');
 		bio.call.on_playback_dynamic_info_track();
 	}
 	if (grm.ui.displayLyrics) { // No need to try retrieving them if we aren't going to display them now
@@ -1285,7 +995,7 @@ function on_playback_dynamic_info_track() {
 /**
  * Called when playback order is changed via the transport playback order button or foobar's playback menu.
  * @global
- * @param {*} pbo - The playback order has following settings:
+ * @param {number} pbo - The playback order has following settings:
  * - 0 - Default.
  * - 1 - Repeat (Playlist).
  * - 2 - Repeat (Track).
@@ -1294,42 +1004,8 @@ function on_playback_dynamic_info_track() {
  * - 6 - Shuffle (folders).
  */
 function on_playback_order_changed(pbo) {
-	// Repaint playback order
-	if (pbo !== grm.ui.lastPlaybackOrder) {
-		DebugLog('Repainting on_playback_order_changed');
-		window.RepaintRect(0.5 * grm.ui.ww, grm.ui.wh - grm.ui.lowerBarHeight, 0.5 * grm.ui.ww, grm.ui.lowerBarHeight);
-	}
-	grm.ui.lastPlaybackOrder = pbo;
-
-	// Link foobar's playback order menu functions with playback order button
-	const showTransportControls = grSet[`showTransportControls_${grSet.layout}`];
-	const showPlaybackOrderBtn  = grSet[`showPlaybackOrderBtn_${grSet.layout}`];
-	const showBtns = showTransportControls && showPlaybackOrderBtn;
-
-	switch (pbo) {
-		case PlaybackOrder.Default:
-			grSet.playbackOrder = 'default';
-			if (showBtns) grm.ui.btn.playbackOrder.img = grm.ui.btnImg.PlaybackDefault;
-			break;
-
-		case PlaybackOrder.RepeatPlaylist:
-			grSet.playbackOrder = 'repeatPlaylist';
-			if (showBtns) grm.ui.btn.playbackOrder.img = grm.ui.btnImg.PlaybackRepeatPlaylist;
-			break;
-		case PlaybackOrder.RepeatTrack:
-			grSet.playbackOrder = 'repeatTrack';
-			if (showBtns) grm.ui.btn.playbackOrder.img = grm.ui.btnImg.PlaybackRepeatTrack;
-			break;
-
-		case PlaybackOrder.Random:
-		case PlaybackOrder.ShuffleTracks:
-		case PlaybackOrder.ShuffleAlbums:
-		case PlaybackOrder.ShuffleFolders:
-			grSet.playbackOrder = 'shuffle';
-			if (showBtns) grm.ui.btn.playbackOrder.img = grm.ui.btnImg.PlaybackShuffle;
-			break;
-	}
-	grm.ui.traceCall && console.log('Main => on_playback_order_changed');
+	CallLog('Main => on_playback_order_changed');
+	grm.ui.handlePlaybackOrder(pbo);
 }
 
 
@@ -1339,34 +1015,19 @@ function on_playback_order_changed(pbo) {
  * @param {boolean} state - Whether the playback is paused or not.
  */
 function on_playback_pause(state) {
-	grm.button.lowerPlayPause();
-	if (state || fb.PlaybackLength < 0) {
-		clearInterval(grm.ui.seekbarTimer);
-		clearInterval(grm.ui.discArtRotationTimer);
-		window.RepaintRect(0, grm.ui.topMenuHeight, Math.max(grm.ui.albumArtSize.x, SCALE(40)), grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight);
-	}
-	else { // Unpausing
-		clearInterval(grm.ui.seekbarTimer); // Clear to avoid multiple progressTimers which can happen depending on the playback state when theme is loaded
-		DebugLog(`on_playback_pause: creating refreshSeekbar() interval with delay = ${grm.ui.seekbarTimerInterval}`);
-		grm.ui.seekbarTimer = setInterval(() => {
-			grm.ui.refreshSeekbar();
-		}, grm.ui.seekbarTimerInterval || 1000);
-		if (grm.ui.discArt && grSet.spinDiscArt) grm.ui.setDiscArtRotationTimer();
-	}
+	grm.ui.handlePlaybackPause(state);
 
-	grm.pseBtn.repaint();
-
-	if ((grm.ui.albumArt || grm.ui.noAlbumArtStub) && grm.ui.displayLyrics) { // If we are displaying lyrics we need to refresh all the lyrics to avoid tearing at the edges of the pause button
-		grm.ui.traceCall && console.log('Lyrics => on_playback_pause');
-		grm.lyrics.on_playback_pause(state);
-	}
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_playback_pause');
+		CallLog('Playlist => on_playback_pause');
 		pl.call.on_playback_pause(state);
 	}
 	if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_playback_pause');
+		CallLog('Biography => on_playback_pause');
 		bio.call.on_playback_pause(state);
+	}
+	if ((grm.ui.albumArt || grm.ui.noAlbumArtStub) && grm.ui.displayLyrics) { // If we are displaying lyrics we need to refresh all the lyrics to avoid tearing at the edges of the pause button
+		CallLog('Lyrics => on_playback_pause');
+		grm.lyrics.on_playback_pause(state);
 	}
 }
 
@@ -1380,7 +1041,7 @@ function on_playback_pause(state) {
  * - 2 - Playback advance.
  */
 function on_playback_queue_changed(origin) {
-	grm.ui.traceCall && console.log('Playlist => on_playback_queue_changed');
+	CallLog('Playlist => on_playback_queue_changed');
 	pl.call.on_playback_queue_changed(origin);
 	lib.call.on_playback_queue_changed();
 }
@@ -1391,19 +1052,13 @@ function on_playback_queue_changed(origin) {
  * @global
  */
 function on_playback_seek() {
-	if (grSet.seekbar === 'progressbar') {
-		grm.progBar.progressMoved = true;
-	} else if (grSet.seekbar === 'peakmeterbar') {
-		grm.peakBar.progressMoved = true;
-	}
-	if (grm.ui.displayLyrics) {
-		grm.lyrics.seek();
-	}
-	else if (grm.ui.displayBiography) {
+	on_playback_time();
+
+	grm.ui.handlePlaybackSeek();
+
+	if (grm.ui.displayBiography) {
 		bio.call.on_playback_seek();
 	}
-	on_playback_time();
-	grm.ui.refreshSeekbar();
 }
 
 
@@ -1421,10 +1076,7 @@ function on_playback_seek() {
  * @param {boolean} is_paused - Whether the playback is paused.
  */
 function on_playback_starting(cmd, is_paused) {
-	if (grCfg.settings.hideCursor) {
-		window.SetCursor(-1); // Hide cursor
-	}
-	grm.button.lowerPlayPause();
+	grm.ui.handlePlaybackStart();
 }
 
 
@@ -1438,73 +1090,28 @@ function on_playback_starting(cmd, is_paused) {
  * - 3 - Fb2k is shutting down.
  */
 function on_playback_stop(reason) {
-	if (reason !== 2) {
-		// Clear all variables and repaint
-		grm.ui.clearUIVariables();
-		DebugLog('Repainting on_playback_stop:', reason);
-		RepaintWindow();
-		grm.ui.isPlayingCD = false;
-		grm.ui.isStreaming = false;
-		grm.ui.lastAlbumFolder = '';
-		grm.ui.btn.playbackTime = '';
-		grm.ui.lastAlbumDiscNumber = '0';
-		grm.ui.recordLabels = [];
-		grm.ui.recordLabelsInverted = [];
-		grm.button.lowerPlayPause();
-		// * Keep Reborn/Random colors when they are not too bright or too dark otherwise reset colors to default
-		if (['reborn', 'random'].includes(grSet.theme) && ((grCol.colBrightness < 20 || grCol.imgBrightness < 20) || (grCol.colBrightness > 240 || grCol.imgBrightness > 240)) ||
-			!['reborn', 'random'].includes(grSet.theme) || grSet.styleNighttime) {
-			grm.color.setThemeColors();
-			grm.ui.initTheme();
-			DebugLog('\n>>> initTheme => on_playback_stop <<<\n');
-		}
-	}
+	DebugLog('Playback => Repainting on_playback_stop:', reason);
 
+	grm.ui.handlePlaybackStop(reason);
 	grm.waveBar.on_playback_stop(reason);
 
-	clearInterval(grm.ui.discArtRotationTimer);
-	clearInterval(grm.ui.seekbarTimer);
-	clearTimeout(grm.ui.albumArtTimeout);
-
-	if (grm.ui.albumArt && ((grSet.cycleArt && grm.ui.albumArtIndex !== 0) || grm.ui.lastAlbumFolder === '')) {
-		DebugLog('disposing artwork');
-		grm.ui.albumArt = null;
-		grm.ui.albumArtScaled = null;
-	}
-	grm.ui.bandLogo = null;
-	grm.ui.bandLogoInverted = null;
-
-	if (grm.ui.displayLyrics && grm.lyrics) {
-		grm.lyrics.on_playback_stop(reason);
-	}
-
-	grm.ui.flagImgs = [];
-	grm.ui.discArtRotation = null;
-	grm.ui.discArtRotationCover = null;
-	grm.ui.albumArtTimeout = 0;
-
-	if (grSet.panelWidthAuto) {
-		grm.ui.initPanelWidthAuto();
-	}
-
-	if (reason === 0 || reason === 1) { // Stop or end of playlist
-		grm.ui.discArt = grm.ui.disposeDiscArt(grm.ui.discArt);
-		grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
-		grm.ui.discArtArray = []; // Clear Images
-		grm.ui.discArtArrayCover = []; // Clear Images
-		window.Repaint();
-	}
-	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_playback_stop');
+	// The playing playlist state always needs to be cleared when the Playlist is not displayed,
+	// i.e., when the startup panel is not set to `Playlist` and when clicking on the stop button.
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork || grSet.showPanelOnStartup !== 'playlist') {
+		CallLog('Playlist => on_playback_stop');
 		pl.call.on_playback_stop(reason);
 	}
 	else if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_playback_stop');
+		CallLog('Library => on_playback_stop');
 		lib.call.on_playback_stop(reason);
 	}
 	if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_playback_stop');
+		CallLog('Biography => on_playback_stop');
 		bio.call.on_playback_stop(reason);
+	}
+	if (grm.ui.displayLyrics) {
+		grm.ui.initLyricsDisplayState('stopTrack');
+		grm.lyrics.on_playback_stop(reason);
 	}
 }
 
@@ -1514,9 +1121,9 @@ function on_playback_stop(reason) {
  * @global
  */
 function on_playback_time() {
-	grStr.time = grSet.switchPlaybackTime ? $('-%playback_time_remaining%') : $('%playback_time%');
+	grm.ui.handlePlaybackTime();
 	grm.waveBar.on_playback_time(fb.PlaybackTime);
-	bio.call.on_playback_time();
+	grm.ui.displayBiography && bio.call.on_playback_time();
 }
 
 
@@ -1528,7 +1135,7 @@ function on_playback_time() {
  */
 function on_playlist_item_ensure_visible(playlistIndex, playlistItemIndex) {
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_playlist_item_ensure_visible');
+		CallLog('Playlist => on_playlist_item_ensure_visible');
 		pl.call.on_playlist_item_ensure_visible(playlistIndex, playlistItemIndex);
 	}
 }
@@ -1544,15 +1151,15 @@ function on_playlist_items_added(playlistIndex) {
 		pl.history.playlistAltered(PlaylistMutation.Added);
 	}
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_playlist_items_added');
+		CallLog('Playlist => on_playlist_items_added');
 		pl.call.on_playlist_items_added(playlistIndex);
 	}
 	if (grm.ui.displayLibrary || grm.ui.displayLibrarySplit()) {
-		grm.ui.traceCall && console.log('Library => on_playlist_items_added');
+		CallLog('Library => on_playlist_items_added');
 		lib.call.on_playlist_items_added(playlistIndex);
 	}
 	if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_playlist_items_added');
+		CallLog('Biography => on_playlist_items_added');
 		bio.call.on_playlist_items_added(playlistIndex);
 	}
 }
@@ -1568,15 +1175,15 @@ function on_playlist_items_removed(playlistIndex) {
 		pl.history.playlistAltered(PlaylistMutation.Removed);
 	}
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_playlist_items_removed');
+		CallLog('Playlist => on_playlist_items_removed');
 		pl.call.on_playlist_items_removed(playlistIndex);
 	}
 	if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_playlist_items_removed');
+		CallLog('Library => on_playlist_items_removed');
 		lib.call.on_playlist_items_removed(playlistIndex);
 	}
 	if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_playlist_items_removed');
+		CallLog('Biography => on_playlist_items_removed');
 		bio.call.on_playlist_items_removed(playlistIndex);
 	}
 }
@@ -1593,11 +1200,11 @@ function on_playlist_items_reordered(playlistIndex) {
 		pl.history.playlistAltered(PlaylistMutation.Reordered);
 	}
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_playlist_items_reordered');
+		CallLog('Playlist => on_playlist_items_reordered');
 		pl.call.on_playlist_items_reordered(playlistIndex);
 	}
 	if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_playlist_items_reordered');
+		CallLog('Library => on_playlist_items_reordered');
 		lib.call.on_playlist_items_reordered(playlistIndex);
 	}
 }
@@ -1609,8 +1216,9 @@ function on_playlist_items_reordered(playlistIndex) {
  */
 function on_playlist_items_selection_change() {
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_playlist_items_selection_change');
+		CallLog('Playlist => on_playlist_items_selection_change');
 		pl.call.on_playlist_items_selection_change();
+		grm.ui.initBrowseMode();
 	}
 }
 
@@ -1624,15 +1232,15 @@ function on_playlist_switch() {
 		pl.history.playlistAltered(PlaylistMutation.Switch);
 	}
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_playlist_switch');
+		CallLog('Playlist => on_playlist_switch');
 		pl.call.on_playlist_switch();
 	}
 	if (grm.ui.displayLibrary || libSet.libSource === 0) {
-		grm.ui.traceCall && console.log('Library => on_playlist_switch');
+		CallLog('Library => on_playlist_switch');
 		lib.call.on_playlist_switch();
 	}
 	if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_playlist_switch');
+		CallLog('Biography => on_playlist_switch');
 		bio.call.on_playlist_switch();
 	}
 }
@@ -1647,15 +1255,15 @@ function on_playlists_changed() {
 		pl.history.reset(); // When playlists are changed, indexes no longer apply, and so we have to wipe history
 	}
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.ui.traceCall && console.log('Playlist => on_playlists_changed');
+		CallLog('Playlist => on_playlists_changed');
 		pl.call.on_playlists_changed();
 	}
 	if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_playlists_changed');
+		CallLog('Library => on_playlists_changed');
 		lib.call.on_playlists_changed();
 	}
 	if (grm.ui.displayBiography) {
-		grm.ui.traceCall && console.log('Biography => on_playlists_changed');
+		CallLog('Biography => on_playlists_changed');
 		bio.call.on_playlists_changed();
 	}
 }
@@ -1666,17 +1274,30 @@ function on_playlists_changed() {
  * @global
  */
 function on_script_unload() {
-	console.log('Unloading Script');
+	DebugLog('Unloading Script');
 	grm.waveBar.on_script_unload();
 
 	// It appears we don't need to dispose the images which we loaded using gdi.Image in their declaration for some reason. Attempting to dispose them causes a script error.
 	if (grm.ui.displayLibrary) {
-		grm.ui.traceCall && console.log('Library => on_script_unload');
+		CallLog('Library => on_script_unload');
 		lib.call.on_script_unload();
 	}
 
-	grm.ui.traceCall && console.log('Biography => on_script_unload');
+	CallLog('Biography => on_script_unload');
 	bio.call.on_script_unload();
+}
+
+
+/**
+ * Called when selection changes based on File > Preferences > Display > Selection viewers.
+ * @global
+ */
+function on_selection_changed() {
+	if (grm.ui.displayLibrary) {
+		CallLog('Library => on_selection_changed');
+		lib.call.on_selection_changed();
+		grm.ui.initBrowseMode();
+	}
 }
 
 
@@ -1686,7 +1307,7 @@ function on_script_unload() {
  * @param {number} val - The volume level in dB. Minimum is -100. Maximum is 0.
  */
 function on_volume_change(val) {
-	grm.ui.traceCall && console.log('Volume bar => on_volume_change');
+	CallLog('Volume bar => on_volume_change');
 	grm.volBtn.on_volume_change(val);
 }
 
@@ -1703,7 +1324,7 @@ function on_volume_change(val) {
  */
 function mouseInTopMenu(x, y) {
 	if (x < grm.ui.ww - SCALE(100) && y < grm.ui.topMenuHeight) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInTopMenu');
+		MoveLog('mouseInTopMenu');
 		return true;
 	}
 
@@ -1729,12 +1350,12 @@ function mouseInAlbumArt(x, y) {
 		grSet.layout === 'artwork' && !grm.ui.displayBiography && (grm.ui.displayPlaylist || !grm.ui.displayPlaylistArtwork && !grm.ui.displayLibrary); // Cover, Details, Lyrics
 
 	const albumArtBounds =
-		grm.ui.state.mouse_x > 0 && grm.ui.state.mouse_x <= ((grm.ui.isStreaming || !grm.ui.albumArt && grm.ui.noArtwork || grm.ui.albumArt) && (grm.ui.displayPlaylist || grm.ui.displayLibrary) &&
-		grSet.layout === 'default' ? grSet.panelWidthAuto ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w : grm.ui.ww * 0.5 : !grm.ui.displayPlaylist && !grm.ui.displayLibrary ? grm.ui.ww : grm.ui.albumArtSize.w) &&
+		grm.ui.state.mouse_x > grm.ui.albumArtSize.x && grm.ui.state.mouse_x <= grm.ui.albumArtSize.x + grm.ui.albumArtSize.w
+		&&
 		grm.ui.state.mouse_y > grm.ui.albumArtSize.y && grm.ui.state.mouse_y <= grm.ui.albumArtSize.y + grm.ui.albumArtSize.h;
 
 	if (displayAlbumArt && albumArtBounds) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInAlbumArt');
+		MoveLog('mouseInAlbumArt');
 		return true;
 	}
 
@@ -1758,22 +1379,23 @@ function mouseInPause(x, y) {
 	const panelPlaylist = grm.ui.displayPlaylist && !grm.ui.displayLibrary && !grm.ui.displayBiography && grSet.playlistLayout !== 'full';
 	const panelDetails  = grm.ui.displayDetails;
 	const panelLibrary  = grm.ui.displayLibrary && grSet.libraryLayout === 'normal' && grSet.libraryDesign !== 'flowMode';
-	const artworkLayout = grSet.layout === 'artwork' && !grm.ui.displayPlaylistArtwork && !grm.ui.displayLibrary && !grm.ui.displayBiography;
+	const panelLyrics   = grm.ui.displayLyrics;
+	const artworkLayout = grSet.layout === 'artwork' && !grm.ui.displayDetails && !grm.ui.displayPlaylistArtwork && !grm.ui.displayLibrary && !grm.ui.displayBiography;
 
 	const albumArtBounds   = grm.ui.albumArtSize.x <= x && grm.ui.albumArtSize.y <= y && grm.ui.albumArtSize.x + grm.ui.albumArtSize.w >= x && grm.ui.albumArtSize.y + grm.ui.albumArtSize.h >= y;
-	const discArtBounds    = grm.ui.discArtSize.x  <= x && grm.ui.discArtSize.y  <= y && grm.ui.discArtSize.x  + grm.ui.discArtSize.w  >= x && grm.ui.discArtSize.y  + grm.ui.discArtSize.h  >= y;
+	const discArtBounds    = grm.details.discArtSize.x  <= x && grm.details.discArtSize.y  <= y && grm.details.discArtSize.x  + grm.details.discArtSize.w  >= x && grm.details.discArtSize.y  + grm.details.discArtSize.h  >= y;
 	const noAlbumArtBounds = grm.ui.state.mouse_x > 0 && grm.ui.state.mouse_x <= (grm.ui.displayPlaylist || grm.ui.displayLibrary ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w : !grm.ui.displayPlaylist || !grm.ui.displayLibrary ? grm.ui.ww : grm.ui.ww * 0.5) &&
 							 grm.ui.state.mouse_y > grm.ui.albumArtSize.y && grm.ui.state.mouse_y <= grm.ui.albumArtSize.h + grm.ui.topMenuHeight;
 	const pauseOnAlbumArt =
-		(grSet.layout === 'default' && grm.ui.albumArt && (panelPlaylist || panelDetails || panelLibrary) || artworkLayout) &&
-		!grm.ui.displayCustomThemeMenu && !grm.ui.displayMetadataGridMenu && albumArtBounds || grm.ui.discArt && !grm.ui.albumArt && discArtBounds;
+		(grSet.layout === 'default' && grm.ui.albumArt && (panelPlaylist || panelDetails || panelLibrary || panelLyrics) || artworkLayout) &&
+		!grm.ui.displayCustomThemeMenu && !grm.ui.displayMetadataGridMenu && albumArtBounds || grm.details.discArt && !grm.ui.albumArt && discArtBounds;
 
 	const pauseOnNoAlbumArt =
-		(grSet.layout === 'default' && !grm.ui.albumArt && (panelPlaylist || panelDetails || panelLibrary) || artworkLayout) &&
+		(grSet.layout === 'default' && !grm.ui.albumArt && (panelPlaylist || panelDetails || panelLibrary || panelLyrics) || artworkLayout) &&
 		!grm.ui.displayCustomThemeMenu && !grm.ui.displayMetadataGridMenu && noAlbumArtBounds;
 
 	if (pauseOnAlbumArt || pauseOnNoAlbumArt) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInPause');
+		MoveLog('mouseInPause');
 		return true;
 	}
 
@@ -1782,15 +1404,27 @@ function mouseInPause(x, y) {
 
 
 /**
- * Checks if the mouse is within the boundaries of the lower bar.
+ * Checks if the mouse is within the boundaries of the lower bar and within the tooltip area.
  * @global
  * @param {number} x - The x-coordinate.
  * @param {number} y - The y-coordinate.
+ * @param {string} tooltip - Wheter to check the artist/title lowerbar tooltip area.
  * @returns {boolean} True or false.
  */
-function mouseInLowerBar(x, y) {
-	if (y > grm.ui.wh - SCALE(120)) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInLowerBar');
+function mouseInLowerBar(x, y, tooltip) {
+	if (tooltip) {
+		const zoneX = grm.ui.edgeMargin;
+		const zoneY = grm.ui.wh - grm.ui.lowerBarHeight + SCALE(15);
+		const zoneW = grm.ui.lowerBarAvailableW;
+		const zoneH = grm.ui.lowerBarHeight * 0.33;
+
+		if (zoneX <= x && zoneY <= y && zoneX + zoneW >= x && zoneY + zoneH >= y) {
+			MoveLog('mouseInLowerBar tooltip');
+			return true;
+		}
+	}
+	else if (y > grm.ui.wh - SCALE(120)) {
+		MoveLog('mouseInLowerBar');
 		return true;
 	}
 
@@ -1806,25 +1440,14 @@ function mouseInLowerBar(x, y) {
  * @returns {boolean} True or false.
  */
 function mouseInTransport(x, y) {
-	const lowerBarFontSize     = grSet[`lowerBarFontSize_${grSet.layout}`];
-	const showPlaybackOrderBtn = grSet[`showPlaybackOrderBtn_${grSet.layout}`];
-	const showReloadBtn        = grSet[`showReloadBtn_${grSet.layout}`];
-	const showAddTrackskBtn    = grSet[`showAddTracksBtn_${grSet.layout}`];
-	const showVolumeBtn        = grSet[`showVolumeBtn_${grSet.layout}`];
-	const transportBtnSize     = grSet[`transportButtonSize_${grSet.layout}`];
-	const transportBtnSpacing  = grSet[`transportButtonSpacing_${grSet.layout}`];
-	const count = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showAddTrackskBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
-
-	const buttonSize = SCALE(transportBtnSize);
-	const buttonSpacing = SCALE(transportBtnSpacing);
-	const totalWidth = count * buttonSize + (count - 1) * buttonSpacing;
-	const startX = (grm.ui.ww - totalWidth) / 2;
-	const endX = startX + totalWidth;
-	const startY = grm.ui.wh - buttonSize - SCALE(grSet.layout !== 'default' ? 36 : 78) + SCALE(lowerBarFontSize)
+	const buttonSize = SCALE(grSet.transportButtonSize_layout);
+	const startX = (grm.ui.ww - grm.ui.lowerBarTotalBtnW) / 2;
+	const endX = startX + grm.ui.lowerBarTotalBtnW + grm.volBtn.volumeBar.w + buttonSize;
+	const startY = grm.ui.lowerBarBtnY;
 	const endY = startY + buttonSize;
 
 	if (x >= startX && x <= endX && y >= startY && y <= endY) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInTransport');
+		MoveLog('mouseInTransport');
 		return true;
 	}
 
@@ -1840,12 +1463,9 @@ function mouseInTransport(x, y) {
  * @returns {boolean} True or false.
  */
 function mouseInSeekbar(x, y) {
-	const pBar = grSet.seekbar === 'progressbar';
-
-	if (x >= SCALE(40) && x < grm.ui.ww - SCALE(40) &&
-		y >= grm.ui.wh - (grSet.layout !== 'default' ? 0.6 : 0.5) * grm.ui.lowerBarHeight - 0.5 * grm.ui.progressBarH &&
-		y <= grm.ui.wh - (grSet.layout !== 'default' ? SCALE(pBar ? 60 : 55) : SCALE(pBar ? 35 : 20))) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInSeekbar');
+	if (x >= grm.ui.edgeMargin && x < grm.ui.ww - grm.ui.edgeMargin &&
+		y >= grm.ui.seekbarY && y <= grm.ui.seekbarY + grm.ui.seekbarHeight * 2) {
+		MoveLog('mouseInSeekbar');
 		return true;
 	}
 
@@ -1862,7 +1482,7 @@ function mouseInSeekbar(x, y) {
  */
 function mouseInPanel(x, y) {
 	if (y < grm.ui.topMenuHeight && y > grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('mouseInPanel');
+		MoveLog('mouseInPanel');
 		return true;
 	}
 
@@ -1880,7 +1500,7 @@ function mouseInPanel(x, y) {
 function mouseInPlaylist(x, y) {
 	if (x >= pl.playlist.x && x < pl.playlist.x + pl.playlist.w &&
 		y >= pl.playlist.y - SCALE(plSet.row_h) && y < pl.playlist.y + pl.playlist.h) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Playlist => mouseInPlaylist');
+		MoveLog('Playlist => mouseInPlaylist');
 		return true;
 	}
 
@@ -1899,43 +1519,6 @@ function mouseInPlaylist(x, y) {
 
 
 /**
- * Checks if the mouse is within the boundaries of the metadata grid in Details.
- * @global
- * @param {number} x - The x-coordinate.
- * @param {number} y - The y-coordinate.
- * @param {boolean} artist - The artist boundary.
- * @param {boolean} title - The title boundary.
- * @param {boolean} album - The album boundary.
- * @param {boolean} tagName - The tag name boundary.
- * @param {boolean} tagValue - The tag value boundary.
- * @returns {boolean} True or false.
- */
-function mouseInMetadataGrid(x, y, artist, title, album, tagName, tagValue) {
-	if (artist && x >= grm.ui.gridMarginLeft && x <= (grm.ui.gridMarginLeft + grm.ui.gridTextWidth) && y >= grm.ui.gridArtistTop && y <= grm.ui.gridArtistBottom) {
-		return true;
-	}
-
-	if (title && x >= grm.ui.gridMarginLeft && x <= (grm.ui.gridMarginLeft + grm.ui.gridTextWidth) && y >= grm.ui.gridTitleTop && y <= grm.ui.gridTitleBottom) {
-		return true;
-	}
-
-	if (album && x >= grm.ui.gridMarginLeft && x <= (grm.ui.gridMarginLeft + grm.ui.gridTextWidth) && y >= grm.ui.gridAlbumTop && y <= grm.ui.gridAlbumBottom) {
-		return true;
-	}
-
-	if (tagName && x >= grm.ui.gridMarginLeft && x <= (grm.ui.gridMarginLeft + grm.ui.gridCol1Width) && y >= grm.ui.gridAlbumBottom && y <= grm.ui.gridTagNameBottom) {
-		return true;
-	}
-
-	if (tagValue && x >= grm.ui.gridMarginLeft && x <= (grm.ui.gridMarginLeft + grm.ui.gridCol1Width + grm.ui.gridCol2Width) && y >= grm.ui.gridAlbumBottom && y <= grm.ui.gridTagValueBottom) {
-		return true;
-	}
-
-	return false;
-}
-
-
-/**
  * Checks if the mouse is within the boundaries of the Library.
  * @global
  * @param {number} x - The x-coordinate.
@@ -1944,7 +1527,7 @@ function mouseInMetadataGrid(x, y, artist, title, album, tagName, tagValue) {
  */
 function mouseInLibrary(x, y) {
 	if (x >= lib.ui.x && x < lib.ui.x + lib.ui.w && y >= lib.ui.y && y < lib.ui.y + lib.ui.h) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Library => mouseInLibrary');
+		MoveLog('Library => mouseInLibrary');
 		return true;
 	}
 
@@ -1967,7 +1550,7 @@ function mouseInLibrary(x, y) {
 function mouseInLibrarySearch(x, y) {
 	if (!lib.but.Dn && x > lib.ui.x + lib.but.q.h + lib.but.margin && x < lib.panel.search.x + lib.panel.search.w &&
 		y > lib.ui.y && y < lib.ui.y + lib.panel.search.h && libSet.searchShow) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Library => mouseInLibrarySearch');
+		MoveLog('Library => mouseInLibrarySearch');
 		return true;
 	}
 
@@ -1984,7 +1567,7 @@ function mouseInLibrarySearch(x, y) {
  */
 function mouseInBiography(x, y) {
 	if (x >= bio.ui.x && x < bio.ui.x + bio.ui.w && y >= bio.ui.y && y < bio.ui.y + bio.ui.h) {
-		grm.ui.traceCall && grm.ui.traceOnMove && console.log('Biography => mouseInBiography');
+		MoveLog('Biography => mouseInBiography');
 		return true;
 	}
 

@@ -30,6 +30,15 @@ class BioLyrics {
 		this.repaintRect();
 	}
 
+	checkBounds(line_y) {
+		return {
+			aboveTop: (line_y < this.top),
+			visibleBounds: (line_y >= this.top) && (line_y <= this.bot),
+			outsideVisibleBounds: (line_y < this.top || line_y > this.bot),
+			lyricsDrawBounds: (line_y >= this.top - this.lineHeight * 0.5) && (line_y <= this.bot + this.lineHeight)
+		};
+	}
+
 	checkScroll() {
 		this.scroll = Math.max(0, this.scroll - this.delta);
 		if (this.scroll <= 0) {
@@ -53,55 +62,68 @@ class BioLyrics {
 	}
 
 	draw(gr) {
-		if (!this.display()) return;
+		if (!(this.lyrics.length && this.locus >= 0 && bio.txt.lyricsDisplayed())) return;
+
 		const top = this.locus * this.lineHeight - this.locusOffset + this.scrollDragOffset;
-		const transition_factor = $Bio.clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
-		const transition_factor_in = !this.lyrics[this.locus].multiLine ? transition_factor : 1;
-		const transition_factor_out = $Bio.clamp(transition_factor_in * 3, 0, 1);
-		const alpha = Math.min(255 * transition_factor * 4 / 3, 255);
-		const blendIn = this.type.synced ? bio.ui.getBlend(bio.ui.col.lyricsHighlight, bio.ui.col.lyricsNormal, transition_factor_in) : bio.ui.col.lyricsNormal;
-		const blendOut = this.type.synced ? bio.ui.getBlend(bio.ui.col.lyricsNormal, bio.ui.col.lyricsHighlight, transition_factor_out) : bio.ui.col.lyricsNormal;
 		const y = this.y + this.scroll;
-
-		let col = bio.ui.col.lyricsNormal;
-
-		let fadeBot = this.transBot[transition_factor];
-		if (!fadeBot) {
-			fadeBot = $Bio.RGBtoRGBA(col, alpha);
-			this.transBot[transition_factor] = fadeBot;
-		}
-
-		let fadeTop = this.transTop[transition_factor];
-		if (!fadeTop) {
-			fadeTop = $Bio.RGBtoRGBA(col, 255 - alpha);
-			this.transTop[transition_factor] = fadeTop;
-		}
-
 		gr.SetTextRenderingHint(5);
+
 		this.lyrics.forEach((lyric, i) => {
 			const lyric_y = this.lineHeight * i;
 			const line_y = Math.round(y - top + lyric_y);
-			const bottomLine = line_y > this.bot;
-			if (this.showlyric(lyric_y, top)) {
+			const bounds = this.checkBounds(line_y);
+			if (bounds.lyricsDrawBounds) {
 				const font = !lyric.highlight ? bio.ui.font.lyrics : this.font.lyrics;
-				if (this.shadowEffect && line_y >= this.top && !bottomLine) {
-					if (this.dropNegativeShadowLevel) {
-						gr.DrawString(lyric.content, font, bio.ui.col.dropShadow, this.x - this.dropNegativeShadowLevel, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
-						gr.DrawString(lyric.content, font, bio.ui.col.dropShadow, this.x, line_y - this.dropNegativeShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
-					}
-
-					gr.DrawString(lyric.content, font, bio.ui.col.dropShadow, this.x + this.dropShadowLevel, line_y + this.dropShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
-				}
-				col = line_y >= this.top ? lyric.highlight ? blendIn : i == this.locus - 1 ? blendOut : bottomLine ? fadeBot : bio.ui.col.lyricsNormal : fadeTop;
-				gr.DrawString(lyric.content, font, col, this.x, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
+				this.drawLyric(gr, lyric, font, line_y, bounds);
 			}
 		});
-		if (this.showOffset) {
-			this.offsetW = gr.CalcTextWidth(`Offset: ${this.userOffset / 1000}s`, bio.ui.font.lyrics) + this.lineHeight;
-			gr.FillRoundRect(this.x + this.w - this.offsetW * 0.5 + this.arc, this.top, this.offsetW, this.lineHeight + 1, this.arc, this.arc, bio.ui.col.popupBg);
-			gr.DrawRoundRect(this.x + this.w - this.offsetW * 0.5 + this.arc, this.top, this.offsetW, this.lineHeight + 1, this.arc, this.arc, 1, 0x64000000);
-			gr.DrawString(`Offset: ${this.userOffset / 1000}s`, bio.ui.font.lyrics, bio.ui.col.popupText, this.x + this.offsetW * 0.5 - this.lineHeight * 0.5, this.top, this.w, this.lineHeight + 1, this.alignRight);
+
+		this.drawOffset(gr);
+	}
+
+	drawLyric(gr, lyric, font, line_y, bounds) {
+		const transition_factor = Clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
+		const transition_factor_in = !this.lyrics[this.locus].multiLine ? transition_factor : 1;
+		const blendIn = this.type.synced ? GetBlend(bio.ui.col.lyricsHighlight, bio.ui.col.lyricsNormal, transition_factor_in) : bio.ui.col.lyricsNormal;
+
+		if (bounds.visibleBounds) {
+			this.drawShadow(gr, lyric.content, font, line_y);
 		}
+
+		const fadeFactor = grSet.lyricsFadeScroll &&
+			bounds.outsideVisibleBounds	? (bounds.aboveTop ? (this.top - line_y) / this.lineHeight :
+			(line_y - this.bot) / this.lineHeight) : 0;
+
+		const color =
+			bounds.outsideVisibleBounds	? RGBtoRGBA(bio.ui.col.lyricsNormal, 255 * (1 - Clamp(fadeFactor, 0, 1))) :
+			(lyric.highlight ? blendIn : bio.ui.col.lyricsNormal);
+
+		gr.DrawString(lyric.content, font, color, this.x, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
+	}
+
+	drawOffset(gr) {
+		if (!this.showOffset) return;
+
+		this.offsetW = gr.CalcTextWidth(`Offset: ${this.userOffset / 1000}s`, bio.ui.font.lyrics) + this.lineHeight;
+		const offsetTextW = this.x + this.offsetW * 0.5 - this.lineHeight * 0.5;
+		const offsetH = this.lineHeight + 1;
+		const offsetX = this.x + this.w - this.offsetW * 0.5 + this.arc;
+		const offsetY = this.top;
+
+		gr.FillRoundRect(offsetX, offsetY, this.offsetW, offsetH, this.arc, this.arc, bio.ui.col.popupBg);
+		gr.DrawRoundRect(offsetX, offsetY, this.offsetW, offsetH, this.arc, this.arc, 1, 0x64000000);
+		gr.DrawString(`Offset: ${this.userOffset / 1000}s`, bio.ui.font.lyrics, bio.ui.col.popupText, offsetTextW, offsetY, this.w, offsetH, this.alignRight);
+	}
+
+	drawShadow(gr, text, font, line_y) {
+		if (!this.shadowEffect) return;
+
+		if (this.dropNegativeShadowLevel) {
+			gr.DrawString(text, font, bio.ui.col.dropShadow, this.x - this.dropNegativeShadowLevel, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
+			gr.DrawString(text, font, bio.ui.col.dropShadow, this.x, line_y - this.dropNegativeShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
+		}
+
+		gr.DrawString(text, font, bio.ui.col.dropShadow, this.x + this.dropShadowLevel, line_y + this.dropShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
 	}
 
 	format(lyrics, isSynced) {
@@ -369,10 +391,6 @@ class BioLyrics {
 	setHighlight() {
 		const id = this.lyrics[this.locus].id;
 		if (this.type.synced) this.lyrics.forEach(v => { if (v.id == id) v.highlight = true; });
-	}
-
-	showlyric(y, top) {
-		return y >= top && y + this.lineHeight * 2 <= this.h + top;
 	}
 
 	smoothScroll() {

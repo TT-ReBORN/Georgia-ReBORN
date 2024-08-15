@@ -185,9 +185,9 @@ class LibScrollbar {
 			let sbar_h = this.h;
 			if (libSet.sbarShow === 1) {
 				sbar_x = !this.narrow.show ? this.x : this.narrow.x;
-				sbar_w = !this.narrow.show ? this.w : lib.ui.sbar.narrowWidth;
+				sbar_w = !this.narrow.show ? this.w : SCALE(lib.ui.sbar.narrowWidth);
 				sbar_y = !this.narrow.show ? this.y : this.narrow.y;
-				sbar_h = !this.narrow.show ? this.h : lib.ui.sbar.narrowWidth;
+				sbar_h = !this.narrow.show ? this.h : SCALE(lib.ui.sbar.narrowWidth);
 			}
 
 			// Non-Reborn/Random theme scrollbar colors
@@ -224,7 +224,7 @@ class LibScrollbar {
 				case 0:
 					if (libSet.rowStripes && libSet.sbarShow == 2 && !this.vertical) gr.FillSolidRect(this.x, this.y, this.w, this.h, lib.ui.col.rowStripes /*ui.col.bg1*/);
 					if (this.vertical) {
-						gr.FillSolidRect(sbar_x + (this.narrow.show ? lib.ui.sbar.narrowWidth - SCALE(1) : RES._4K ? 0 : -1), this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
+						gr.FillSolidRect(sbar_x + (this.narrow.show ? lib.ui.sbar.narrowWidth - SCALE(1) : HD_4K(-1, 0)), this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
 					}
 					else {
 						gr.FillSolidRect(this.x + this.bar.x, sbar_y + (this.narrow.show ? lib.ui.sbar.narrowWidth - SCALE(1) : 0), this.bar.h, sbar_h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
@@ -454,7 +454,10 @@ class LibScrollbar {
 
 	move(p_x, p_y) {
 		this.active = true;
-		if (p_x > this.x - SCALE(25) && p_x < this.x + SCALE(25) && (lib.sbar.vertical ? p_y > this.y : p_y > this.y - SCALE(20) && p_y < this.y + SCALE(30))) {
+		const verticalSbarBounds = lib.sbar.vertical && (p_x > this.x - SCALE(25) && p_x < this.x + SCALE(25) && p_y > this.y);
+		const horizontalSbarBounds = !lib.sbar.vertical && (p_y > this.y - SCALE(20) && p_y < this.y + SCALE(30) && p_x > this.x && p_x < this.x + this.w);
+
+		if (verticalSbarBounds || horizontalSbarBounds) {
 			this.scrollbar.zone = true;
 			this.narrow.show = false;
 			if (libSet.sbarShow == 1 && this.scrollbar.zone != this.scrollbar.cur_zone) {

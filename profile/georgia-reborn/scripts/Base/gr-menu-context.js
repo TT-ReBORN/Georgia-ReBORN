@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    TheQwertiest                                            * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-06-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -117,7 +117,7 @@ class ContextMenu extends ContextBaseObject {
 			item.initMenu(this);
 		}
 
-		this.cm.AppendTo(parent_menu.cm, this.is_grayed_out ? MF_GRAYED : MF_STRING, this.text);
+		this.cm.AppendTo(parent_menu.cm, this.is_grayed_out ? MenuFlag.Grayed : MenuFlag.String, this.text);
 	}
 
 	/**
@@ -283,7 +283,7 @@ class ContextItem extends ContextBaseObject {
 	 * @protected
 	 */
 	initMenu(parent_menu) {
-		parent_menu.cm.AppendMenuItem(this.is_grayed_out ? MF_GRAYED : MF_STRING, this.idx, this.text);
+		parent_menu.cm.AppendMenuItem(this.is_grayed_out ? MenuFlag.Grayed : MenuFlag.String, this.idx, this.text);
 		if (this.is_checked) {
 			parent_menu.cm.CheckMenuItem(this.idx, true);
 		}
@@ -557,8 +557,7 @@ class ContextMenus {
 	 */
 	contextMenuTopBar(cm) {
 		const updateButtons = () => {
-			grm.ui.createButtonImages();
-			grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
+			grm.button.createButtons(grm.ui.ww, grm.ui.wh);
 			RepaintWindow();
 		};
 
@@ -708,18 +707,19 @@ class ContextMenus {
 		if (!showArtworkLayoutAlbumArt) {
 			cm.appendItem(showPlaylist ? 'Playlist options menu' : showDetails ? 'Details options menu' : grm.ui.displayLibrary ? 'Library options menu' : 'Lyrics options menu', () => {
 				if (showPlaylist) {
-					grm.topMenu.topMenuOptions(grm.ui.displayBiography ? grm.ui.state.mouse_x * 2 : grm.ui.state.mouse_x, grm.ui.state.mouse_y, true, true);
+					grm.topMenu.topMenuOptions(grm.ui.displayBiography ? grm.ui.state.mouse_x * 2 : grm.ui.state.mouse_x, grm.ui.state.mouse_y, true, 'playlist');
 				}
 				else if (showDetails) {
-					grm.topMenu.topMenuOptions(grm.ui.state.mouse_x, grm.ui.state.mouse_y, true, false, true);
+					grm.topMenu.topMenuOptions(grm.ui.state.mouse_x, grm.ui.state.mouse_y, true, 'details');
 				}
 				else if (grm.ui.displayLibrary) {
-					grm.topMenu.topMenuOptions(grm.ui.state.mouse_x, grm.ui.state.mouse_y, true, false, false, true);
+					grm.topMenu.topMenuOptions(grm.ui.state.mouse_x, grm.ui.state.mouse_y, true, 'library');
 				}
 				else if (grm.ui.displayLyrics) {
-					grm.topMenu.topMenuOptions(grm.ui.state.mouse_x, grm.ui.state.mouse_y, true, false, false, false, false, true);
+					grm.topMenu.topMenuOptions(grm.ui.state.mouse_x, grm.ui.state.mouse_y, true, 'lyrics');
 				}
 			});
+			cm.separator();
 		}
 
 		if (grSet.theme === 'random') {
@@ -732,47 +732,15 @@ class ContextMenus {
 		}
 
 		if (grSet.layout === 'default' && grSet.theme.startsWith('custom')) {
-			cm.separator();
-			cm.appendItem('Edit custom theme', () => {
-				grm.ui.displayCustomThemeMenu = true;
-				if (showPlaylist) {
-					grm.ui.displayPanel('playlist');
-					grm.cthMenu.initCustomThemeMenu('pl_bg');
-				}
-				else if (showDetails) {
-					grm.ui.displayPanel('details');
-					grm.cthMenu.initCustomThemeMenu(false, 'main_bg');
-				}
-				else if (grm.ui.displayLibrary) {
-					grm.ui.displayPanel('library');
-					grm.cthMenu.initCustomThemeMenu(false, false, 'lib_bg');
-				}
-				else if (grm.ui.displayLyrics) {
-					grm.ui.displayPanel('lyrics');
-					grm.cthMenu.initCustomThemeMenu(false, 'main_text');
-				}
-				window.Repaint();
+			cm.appendItem(!grm.ui.displayCustomThemeMenu ? 'Edit custom theme' : 'Close custom theme menu', () => {
+				grm.ui.initCustomThemeMenuState();
 			});
+			cm.separator();
 		}
 
 		if (showDetails) {
-			cm.appendItem('Edit metadata grid', () => {
-				if (grSet.layout === 'default') {
-					grm.ui.displayMetadataGridMenu = !grm.ui.displayMetadataGridMenu;
-					if (!grm.ui.displayDetails) {
-						grm.ui.displayDetails = true;
-						grm.ui.displayPlaylist = false;
-						grm.ui.displayLibrary = false;
-						grm.ui.displayBiography = false;
-						grm.ui.displayLyrics = false;
-						grm.ui.resizeArtwork(true);
-						grm.button.initButtonState();
-					}
-					grm.gridMenu.initMetadataGridMenu(1);
-					RepaintWindow();
-				} else {
-					fb.ShowPopupMessage(`Metadata grid can only be live edited in default layout:\nOptions > Layout > Default\n\nYou could manually edit your config file while reloading to take effect:\n${grCfg.configPath}\n`, 'Metadata grid live editing');
-				}
+			cm.appendItem(!grm.ui.displayMetadataGridMenu ? 'Edit metadata grid' : 'Close metadata grid menu', () => {
+				grm.details.initGridMenuState();
 			});
 			cm.separator();
 		}
@@ -781,121 +749,61 @@ class ContextMenus {
 			if (grm.ui.displayPlaylist && !grm.ui.displayBiography && !grm.ui.displayLyrics) {
 				cm.appendItem(grm.ui.displayPlaylist && grSet.playlistLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 					grSet.playlistLayout = grSet.playlistLayout === 'normal' ? 'full' : 'normal';
-					if (grSet.panelWidthAuto) {
-						grm.ui.initPanelWidthAuto();
-					}
-					RepaintWindowRectAreas();
-					plSet.auto_collapse = false;
-					pl.playlist.header_expand();
-					pl.call.on_size(grm.ui.ww, grm.ui.wh);
-					grm.jSearch.on_size();
-					grm.button.initButtonState();
+					grm.ui.initPlaylistLayoutState();
 				});
 				cm.separator();
 			}
 			else if (grm.ui.displayLibrary) {
-				cm.separator();
 				cm.appendItem(grm.ui.displayLibrary && grSet.libraryLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 					grSet.libraryLayout = grSet.libraryLayout === 'normal' ? 'full' : 'normal';
-					grm.ui.displayPlaylist = grSet.libraryLayout === 'split';
-					if (grSet.panelWidthAuto) {
-						grm.ui.initPanelWidthAuto();
-					}
-					grm.ui.initLibraryLayout();
-					grm.button.initButtonState();
+					grm.ui.initLibraryLayoutState();
 				});
 				if (grSet.libraryLayout === 'normal') {
 					cm.appendItem(grm.ui.displayLibrary && grSet.libraryLayout === 'normal' ? 'Change layout to split' : 'Change layout to normal', () => {
 						grSet.libraryLayout = grSet.libraryLayout === 'normal' ? 'split' : 'normal';
-						grm.ui.displayPlaylist = grSet.libraryLayout === 'split';
-						if (grSet.panelWidthAuto) {
-							grm.ui.initPanelWidthAuto();
-						}
-						grm.ui.initLibraryLayout();
-						grm.button.initButtonState();
+						grm.ui.initLibraryLayoutState();
 					});
-					cm.separator();
 				}
+				cm.separator();
 			}
 			else if (grm.ui.displayLyrics) {
 				cm.appendItem(grm.ui.displayLyrics && grSet.lyricsLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 					grSet.lyricsLayout = grSet.lyricsLayout === 'normal' ? 'full' : 'normal';
-					grm.ui.lyricsLayoutFullWidth = grSet.lyricsLayout === 'full';
-					grm.ui.displayPlaylist = !grm.ui.displayPlaylist;
-					if (grm.ui.displayDetails && grm.ui.displayLyrics && grSet.lyricsLayout === 'full') {
-						grm.ui.displayDetails = false;
-						grm.ui.displayPlaylist = false;
-					}
-					if (grSet.panelWidthAuto) {
-						grm.ui.initPanelWidthAuto();
-					}
-					RepaintWindowRectAreas();
-					grm.ui.resizeArtwork(true);
-					grm.button.initButtonState();
+					grm.ui.initLyricsLayoutState();
 				});
 				cm.separator();
 			}
 		}
 
+		cm.appendItem('Browse mode', () => {
+			grSet.panelBrowseMode = !grSet.panelBrowseMode;
+			grm.ui.initBrowserModeState();
+		}, { is_checked: grSet.panelBrowseMode });
+		cm.separator();
+
 		cm.appendItem(grSet.layout !== 'artwork' && (grm.ui.displayPlaylist || grm.ui.displayLyrics && grSet.lyricsLayout === 'full') ? 'Details' : 'Playlist', () => {
 			if (grSet.layout !== 'artwork') {
-				grm.ui.btn.details.onClick();
-				if (grm.ui.displayPlaylist && !grSet.lyricsPanelState) grm.ui.displayLyrics = false;
+				grm.button.btn.details.onClick();
 			}
 			else if (grSet.layout === 'artwork') {
-				grm.ui.btn.playlistArtworkLayout.onClick();
-				if (grm.ui.displayPlaylistArtwork) grm.ui.displayLyrics = false;
+				grm.button.btn.playlist.onClick();
 			}
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
-			grm.ui.resizeArtwork(true);
-			grm.button.initButtonState();
-			window.Repaint();
 		});
 		cm.separator();
 
 		cm.appendItem(grm.ui.displayLyrics ? 'Hide lyrics' : 'Display lyrics', () => {
-			if (grSet.layout === 'artwork' && grm.ui.displayPlaylist) {
-				grm.ui.displayPlaylist = false;
-			}
-			grm.ui.displayLyrics = !grm.ui.displayLyrics;
-			if (!grm.ui.displayLyrics && grSet.lyricsLayout === 'full' || grm.ui.noAlbumArtStub) {
-				grm.ui.displayPlaylist = true;
-			}
-			if (grm.ui.displayLyrics && grSet.lyricsLayout === 'full') {
-				grm.ui.displayPlaylist = false;
-				grm.ui.displayDetails = false;
-			}
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
-			grm.lyrics.initLyrics();
-			on_playback_seek();
-			grm.ui.resizeArtwork(true);
-			grm.button.initButtonState();
-			window.Repaint();
+			grm.ui.initLyricsDisplayState('contextMenu');
 		});
 
 		if (grm.ui.albumArtList.length > 1) {
-			const loadImage = () => {
-				setTimeout(() => {
-					grm.ui.loadImageFromAlbumArtList(grm.ui.albumArtIndex);
-					if (grSet.theme === 'reborn' || grSet.theme === 'random' || grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn) {
-						grm.ui.newTrackFetchingArtwork = true;
-						grm.color.getThemeColors(grm.ui.albumArt);
-						grm.ui.initTheme();
-						DebugLog('\n>>> initTheme => Album cover context menu => Display next/previous artwork <<<\n');
-					}
-					window.Repaint();
-				}, !grm.ui.activeMenu);
-			}
 			if (grm.ui.albumArtIndex !== grm.ui.albumArtList.length - 1) {
 				cm.appendItem(fb.IsPlaying ? 'Display next artwork' : '', () => {
-					grm.ui.albumArtIndex = (grm.ui.albumArtIndex + 1) % grm.ui.albumArtList.length;
-					loadImage();
+					grm.ui.displayAlbumArtImage('next', false);
 				});
 			}
 			if (grm.ui.albumArtIndex !== 0) {
 				cm.appendItem(fb.IsPlaying ? 'Display previous artwork' : '', () => {
-					grm.ui.albumArtIndex = (grm.ui.albumArtIndex - 1) % grm.ui.albumArtList.length;
-					loadImage();
+					grm.ui.displayAlbumArtImage('prev', false);
 				});
 			}
 		}
@@ -911,8 +819,7 @@ class ContextMenus {
 		const setDiscArtStub = (discArt) => {
 			grSet.discArtStub = discArt;
 			grSet.noDiscArtStub = false;
-			grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
-			grm.ui.discArtArrayCover = [];
+			grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
 			grm.ui.fetchNewArtwork(fb.GetNowPlaying());
 			RepaintWindow();
 		};
@@ -926,10 +833,9 @@ class ContextMenus {
 		discArtMenu.appendItem('No placeholder', () => {
 			grSet.noDiscArtStub = !grSet.noDiscArtStub;
 			grSet.showDiscArtStub = false;
-			grm.ui.discArt = grm.ui.disposeDiscArt(grm.ui.discArt);
-			grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
-			grm.ui.discArtArray = [];
-			grm.ui.discArtArrayCover = [];
+			grm.details.discArt = grm.details.disposeDiscArt(grm.details.discArt);
+			grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
+			grm.details.discArtArray = [];
 			if (!grSet.noDiscArtStub) grm.ui.fetchNewArtwork(fb.GetNowPlaying());
 			RepaintWindow();
 		}, { is_checked: grSet.noDiscArtStub });
@@ -1024,13 +930,12 @@ class ContextMenus {
 				grSet.discArtStub = discArt;
 				grSet.noDiscArtStub = false;
 				grPath.discArtCustomStub = `${fb.ProfilePath}georgia-reborn\\images\\custom\\discart\\${grSet.discArtStub}.png`;
-				grm.ui.discArtCover = grm.ui.disposeDiscArt(grm.ui.discArtCover);
-				grm.ui.discArtArrayCover = [];
+				grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
 				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
 				RepaintWindow();
 				if (!IsFile(grPath.discArtCustomStub)) {
-					const msg = `The custom disc art placeholder was not found in:\n${grPath.discArtCustomStub}\n\nBe sure that image exist and has the correct filename\nin the "customDiscArtStub" section of the\ncustom config file:\n${fb.ProfilePath}georgia-reborn\\configs\\georgia-reborn-custom.jsonc\n\n\n`;
-					ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+					const msg = grm.msg.getMessage('contextMenu', 'discArtCustomStub');
+					grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 				}
 			}).bind(null, customDiscArtValues[index]), { is_radio_checked: customDiscArtValues[index] === grSet.discArtStub });
 		}
@@ -1060,13 +965,12 @@ class ContextMenus {
 	 */
 	contextMenuLowerBar(cm) {
 		const updateButtons = () => {
-			grm.ui.createButtonImages();
-			grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
+			grm.button.createButtons(grm.ui.ww, grm.ui.wh);
 			RepaintWindow();
 		};
 
 		const updateSeekbar = () => {
-			grm.ui.initMetrics();
+			grm.ui.setMainMetrics();
 			RepaintWindow();
 		};
 
@@ -1322,8 +1226,8 @@ class ContextMenus {
 		}, { is_checked: grSet.showLowerBarTrackNum_compact });
 		transportButtonDisplayMenu.append(showTrackNumberMenu);
 
-		// * SHOW SONG TITLE IN LOWER BAR * //
-		const showTitleMenu = new ContextMenu('Show song title');
+		// * SHOW TRACK TITLE IN LOWER BAR * //
+		const showTitleMenu = new ContextMenu('Show track title');
 		showTitleMenu.appendItem('Default', () => {
 			grSet.showLowerBarTitle_default = !grSet.showLowerBarTitle_default;
 			RepaintWindow();
@@ -1443,6 +1347,23 @@ class ContextMenus {
 
 		// * BUTTON CONTROLS * //
 		const buttonControlsMenu = new ContextMenu('Controls');
+		const lowerBarArtistBtnControlsMenu = new ContextMenu('Artist button action');
+		const lowerBarArtistBtnAction = [['Artist playlist', 'playlist'], ['Open website', 'website']];
+		for (const type of lowerBarArtistBtnAction) {
+			lowerBarArtistBtnControlsMenu.appendItem(type[0], ((type) => {
+				grSet.lowerBarArtistBtnAction = type;
+			}).bind(null, type[1]), { is_radio_checked: type[1] === grSet.lowerBarArtistBtnAction });
+		}
+		lowerBarArtistBtnControlsMenu.separator();
+
+		const { websiteLabels, websiteValues } = grm.utils.generateWebsiteLinks(grCfg.customWebsiteLinks);
+		const websites = websiteLabels.map((label, index) => [label, websiteValues[index]]);
+		for (const website of websites) {
+			lowerBarArtistBtnControlsMenu.appendItem(website[0], ((website) => {
+				grSet.lowerBarArtistBtnWebsite = website;
+			}).bind(null, website[1]), { is_radio_checked: website[1] === grSet.lowerBarArtistBtnWebsite });
+		}
+		buttonControlsMenu.append(lowerBarArtistBtnControlsMenu);
 		buttonControlsMenu.appendItem('Add tracks playlist', () => { grm.inputBox.addTracksPlaylist(); });
 		buttonControlsMenu.appendItem('Switch to playlist when adding songs', () => {
 			grSet.addTracksPlaylistSwitch = !grSet.addTracksPlaylistSwitch;
@@ -1515,8 +1436,8 @@ class ContextMenus {
 		for (const type of seekbar) {
 			cm.appendItem(type[0], () => {
 				grSet.seekbar = type[1];
-				grm.ui.initMetrics();
-				grm.ui.setMainComponentSize('seekbar');
+				grm.ui.setMainMetrics();
+				grm.ui.setMainComponents('seekbar');
 				grm.ui.setSeekbarRefresh();
 				if (grSet.seekbar === 'waveformbar') grm.waveBar.updateBar();
 				RepaintWindow();
@@ -1531,7 +1452,7 @@ class ContextMenus {
 			for (const sec of progressBarStyle) {
 				progressBarStyleMenu.appendItem(sec[0], () => {
 					grSet.styleProgressBarDesign = sec[1];
-					grm.ui.initMetrics();
+					grm.ui.setMainMetrics();
 					RepaintWindow();
 				}, { is_radio_checked: sec[1] === grSet.styleProgressBarDesign });
 			}
@@ -1576,7 +1497,7 @@ class ContextMenus {
 				for (const size of peakmeterBarVertSize) {
 					peakmeterBarVertSizeMenu.appendItem(size[0], () => {
 						grSet.peakmeterBarVertSize = size[1];
-						grm.peakBar = new PeakmeterBar(grm.ui.ww, grm.ui.wh);
+						grm.ui.setMainComponents('seekbar');
 						RepaintWindow();
 					}, { is_radio_checked: size[1] === grSet.peakmeterBarVertSize });
 				}
@@ -1587,7 +1508,7 @@ class ContextMenus {
 				for (const range of peakmeterBarVertDbRange) {
 					peakmeterBarVertDbRangeMenu.appendItem(range[0], () => {
 						grSet.peakmeterBarVertDbRange = range[1];
-						grm.peakBar = new PeakmeterBar(grm.ui.ww, grm.ui.wh);
+						grm.ui.setMainComponents('seekbar');
 						RepaintWindow();
 					}, { is_radio_checked: range[1] === grSet.peakmeterBarVertDbRange });
 				}
@@ -1690,9 +1611,8 @@ class ContextMenus {
 			}
 			waveformBarAnalysisMenu.separator();
 			waveformBarAnalysisMenu.appendItem('Delete analysis files', () => {
-				const msg = 'Do you want to delete all waveform bar cache?\n\nThis will permanently delete analyzed files.\n\nContinue?\n\n\n';
-
-				ShowPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+				const msg = grm.msg.getMessage('contextMenu', 'deleteWaveformBarCache');
+				grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 					if (confirmed) DeleteWaveformBarCache();
 				});
 			});

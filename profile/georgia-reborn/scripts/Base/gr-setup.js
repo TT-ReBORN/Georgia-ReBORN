@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-04-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -42,9 +42,10 @@ grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
  * @typedef  {object} grm - The Georgia-ReBORN main object.
  * @property {Utilities} utils - The instance of `Utilities` class for utility operations.
  * @property {MainUI} ui - The instance of `MainUI` class for main user interface operations.
+ * @property {Details} details - The instance of `Details` class for details interface operations.
  * @property {ThemeSettingsManager} settings - The instance of `ThemeSettingsManager` class for theme settings operations.
  * @property {Display} display - The instance of `Display` class for UI display operations.
- * @property {ColorMethods} color - The instance of `ColorMethods` class for color-related utility operations.
+ * @property {BaseColors} color - The instance of `BaseColors` class for color-related utility operations.
  * @property {ThemeColors} theme - The instance of `ThemeColors` class for theme color operations.
  * @property {StyleColors} style - The instance of `StyleColors` class for style color operations.
  * @property {ThemePreset} preset - The instance of `ThemePreset` class for theme preset operations.
@@ -58,12 +59,11 @@ grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
  * @property {ArtCache} artCache - The instance of `ArtCache` class for artwork caching operations.
  * @property {CPUTracker} cpuTrack - The instance of `CPUTracker` class for cpu tracking operations.
  * @property {Scaling} scaling - The instance of `Scaling` class for scaling size operations.
+ * @property {MessageManager} msg - The instance of `MessageManager` class for message operations.
  * @property {Button} button - The instance of `Button` class for button operations.
  * @property {PauseButton} pseBtn - The instance of `PauseButton` class for pause button operations.
  * @property {VolumeButton} volBtn - The instance of `VolumeButton` class for volume button operations.
  * @property {TooltipHandler} ttip - The instance of `TooltipHandler` class for tooltip handling operations.
- * @property {LowerBarTooltip} lowerTip - The instance of `LowerBarTooltip` class for lower bar tooltip operations.
- * @property {MetadataGridTooltip} gridTip - The instance of `MetadataGridTooltip` class for metadata grid tooltip operations.
  * @property {Timeline} timeline - The instance of `Timeline` class for timeline operations.
  * @property {PlaylistHistory} history - The instance of `PlaylistHistory` class for playlist history operations.
  * @property {JumpSearch} jSearch - The instance of `JumpSearch` class for jump search operations.
@@ -210,7 +210,7 @@ const grPath = {
 	 * @returns {string} The path to the Hi-Res audio logo image.
 	 */
 	hiResAudioLogoPath() {
-		const plus4k = RES._4K ? '4K-' : '';
+		const plus4k = HD_4K('', '4K-');
 		const plusRound = grSet.hiResAudioBadgeRound ? '-round' : '';
 		const imagePath = `${fb.ProfilePath}georgia-reborn\\${grSet.customThemeImages ? 'images\\custom' : 'images'}\\misc\\`;
 
@@ -285,6 +285,7 @@ const grPath = {
  * @property {GdiFont} guifxAddTrack - The theme font 'Guifx v2 Transports' used for the lower bar transport add tracks button.
  * @property {GdiFont} guifxVolume - The theme font 'Guifx v2 Transports' used for the lower bar transport volume button.
  * @property {GdiFont} noAlbumArtStub - The theme font 'FontAwesome' used for no album art music note symbol.
+ * @property {GdiFont} noAlbumArtStub2 - The theme font 'FontAwesome' used for no album art music radio symbol.
  * @property {GdiFont} symbol - The panel font 'Segoe UI Symbol' used for special chars, scrollbar buttons, etc.
  * @property {GdiFont} notification - The theme font 'HelveticaNeueLT Pro 65 Md' used for notifications.
  * @property {GdiFont} popup - The theme font 'Segoe UI' used for popups.
@@ -340,7 +341,8 @@ const grFont = {
 /**
  * A collection of strings and other objects to be displayed throughout UI.
  * @typedef  {object} grStr - The Georgia-ReBORN string object.
- * @property {string} artist - The artist will be shown in Details and in the lower bar.
+ * @property {string} artist - The artist will be shown in Details.
+ * @property {string} artistLower - The artist will be shown will be shown above the progress bar in the lower bar.
  * @property {string} composer - The composer will be shown in the lower bar if it exist and enabled.
  * @property {string} album - The album will be shown in Details.
  * @property {string} album_subtitle - The album subtitle string is currently not used in the theme.
@@ -350,14 +352,14 @@ const grFont = {
  * @property {string} original_artist - The original artist will be shown on the right side of the title in the lower bar.
  * @property {string} time - The current time of the song in MM:SS format in the lower bar.
  * @property {string} title - The title of the song.
- * @property {string} titleLower - The title of the song to be displayed above the progress bar. Can include more information such as translation, original artist, etc.
- * @property {string} trackInfo - The track info string is currently not used in the theme.
+ * @property {string} titleLower - The title of the song will be shown above the progress bar in the lower bar. Can include more information such as translation, original artist, etc.
  * @property {string} tracknum - The track number of the song.
  * @property {string} year - The year string is currently not used in the theme.
  */
 /** @global @type {grStr} */
 const grStr = {
 	artist: '',
+	artistLower: '',
 	composer: '',
 	album: '',
 	album_subtitle: '',
@@ -368,7 +370,6 @@ const grStr = {
 	time: '',
 	title: '',
 	titleLower: '',
-	trackInfo: '',
 	tracknum: '',
 	year: ''
 };
@@ -453,7 +454,7 @@ const grTF = {
  * @property {number} colBrightness - The calculated primary color brightness used in grSet.theme === 'white, grSet.theme === 'black, grSet.theme === 'reborn, grSet.theme === 'random.
  * @property {number} colBrightness2 - The calculated secondary color brightness used in grSet.styleRebornFusion, grSet.styleRebornFusion2, grSet.styleRebornFusionAccent.
  * @property {number} imgBrightness - The calculated image brightness used in grSet.styleBlend, grSet.styleBlend2, grSet.styleBlackAndWhite, grSet.styleBlackAndWhite2, grSet.styleBlackAndWhiteReborn.
- * @property {GdiBitmap} imgBlended - The blended image from grMain.color.setStyleBlend().
+ * @property {GdiBitmap} imgBlended - The blended image from grm.style.setStyleBlend().
  * @property {boolean} isColored - The color state that checks if background color is not full white RGB(255, 255, 255), used in Reborn/Random theme when init on start or when noAlbumArtStub displayed.
  * @property {boolean} lightBg - The color definition when to switch text and logos to white or black, used in grSet.theme === 'white', grSet.theme === 'black', grSet.theme === 'reborn', grSet.theme === 'random', grSet.styleBlend, grSet.styleBlend2.
  * @property {boolean} lightBgLib - The color definition when to switch text and logos to white or black, used in libSet.theme === 1 - 5.

@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-03-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -33,47 +33,57 @@ class Button {
 	 * @param {boolean} isEnabled - A callback function that determines whether the button is enabled or disabled.
 	 */
 	constructor(x, y, w, h, id, img, tip = undefined, isEnabled = undefined) {
-		/** @public @type {number} */
+		/** @public @type {number} The x-coordinate of the button. */
 		this.x = x;
-		/** @public @type {number} */
+		/** @public @type {number} The y-coordinate of the button. */
 		this.y = y;
-		/** @public @type {number} */
+		/** @public @type {number} The width of the button. */
 		this.w = w;
-		/** @public @type {number} */
+		/** * @public @type {number} The height of the button. */
 		this.h = h;
-		/** @public @type {number} */
+		/** * @public @type {number} The ID of the button. */
 		this.id = id;
-		/** @public @type {number} */
+		/** @public @type {GdiBitmap[]} The images for the button. */
 		this.img = img;
-		/** @public @type {number} */
-		this.tooltip = typeof tip !== 'undefined' ? tip : '';
-		/** @public @type {number} */
+		/** @public @type {string} The tooltip text for the button. */
+		this.tooltip = tip || '';
+
+		/** @public @type {number} The state of the button. */
 		this.state = 0;
-		/** @public @type {number} */
+		/** @public @type {number} The alpha value of the button when hovered. */
 		this.hoverAlpha = 0;
-		/** @public @type {number} */
+		/** @public @type {number} The alpha value of the button when pressed. */
 		this.downAlpha = 0;
-		/** @public @type {boolean} */
+		/** @public @type {boolean} The check state when the button is enabled. */
 		this.isEnabled = isEnabled;
-		/** @public @type {boolean} */
+		/** @public @type {boolean} The enabled state of the button. */
 		this.enabled = false;
 
-		/** @private @type {Button} */
-		this.button = null;
-		/** @private @type {Button} */
+		/** @private @type {Button} The currently active button. */
+		this.activeButton = null;
+		/** @private @type {Button} The previously active button. */
 		this.oldButton = null;
-		/** @public @type {Button} */
+		/** @public @type {Button} The button currently being pressed down. */
 		this.downButton = null;
-		/** @private @type {Button} */
+		/** @private @type {Button} The last button that was hovered over. */
 		this.lastOverButton = null;
-		/** @private @type {Button[]} */
+		/** @private @type {Button[]} The buttons that have been activated. */
 		this.activatedBtns = [];
-		/** @private @type {number} */
+		/** @private @type {number} The timer for button state changes. */
 		this.buttonTimer = null;
-		/** @public @type {boolean} */
+		/** @public @type {boolean} The state whether the main menu is open. */
 		this.mainMenuOpen = false;
-		/** @public @type {boolean} */
+		/** @public @type {boolean} The state whether the mouse is in control area. */
 		this.mouseInControl = false;
+		/** @public @type {boolean} The state whether the lower artist button was clicked. */
+		this.lowerArtistBtnClicked = false;
+
+		/** @public @type {object} The button map stores the collection of all buttons. */
+		this.btnMap = {};
+		/** @public @type {object} The button object containing all button information. */
+		this.btn = {};
+		/** @public @type {GdiGraphics} The button images containing all button states. */
+		this.btnImg = {};
 	}
 
 	// * GETTERS & SETTERS * //
@@ -117,15 +127,15 @@ class Button {
 			Edit: () => grm.topMenu.topMenuMain(btn.x, btn.y + btn.h, btn.id),
 			View: () => grm.topMenu.topMenuMain(btn.x, btn.y + btn.h, btn.id),
 			Playback: () => grm.topMenu.topMenuMain(btn.x, btn.y + btn.h, btn.id),
-			Library: () => grm.topMenu.topMenuMain(btn.x, btn.y + btn.h, btn.id),
+			Media: () => grm.topMenu.topMenuMain(btn.x, btn.y + btn.h, btn.id),
 			Help: () => grm.topMenu.topMenuMain(btn.x, btn.y + btn.h, btn.id),
 			Playlists: () => grm.topMenu.topMenuPlaylists(btn.x, btn.y + btn.h),
 
 			// * TOP MENU THEME BUTTONS * //
 			Options: () => grm.topMenu.topMenuOptions(btn.x, btn.y + btn.h),
 			Details: () => this.topDetails(),
-			PlaylistArtworkLayout: () => this.topPlaylistArtwork(),
-			library: () => this.topLibrary(),
+			Playlist: () => this.topPlaylistArtwork(),
+			Library: () => this.topLibrary(),
 			Biography: () => this.topBiography(),
 			Lyrics: () => this.topLyrics(),
 			Rating: () => this.topRating(btn.x, btn.y + btn.h),
@@ -136,15 +146,17 @@ class Button {
 			Close: () => fb.Exit(),
 
 			// * LOWER BAR TRANSPORT BUTTONS * //
-			Stop: () => { fb.Stop(); grm.ui.displayPanelControl(); },
+			Stop: () => fb.Stop(),
 			Previous: () => fb.Prev(),
-			PlayPause: () => { fb.PlayOrPause(); grm.ui.displayPanelControl(); },
+			PlayPause: () => fb.PlayOrPause(),
 			Next: () => fb.Next(),
 			PlaybackOrder: () => this.lowerPlaybackOrder(),
 			Reload: () => window.Reload(),
 			AddTracks: () => this.lowerAddTracks(),
 			Volume: () => this.lowerVolume(),
 			Mute: () => fb.VolumeMute(),
+			ArtistBtn: () => this.lowerArtistBtnAction(),
+			TitleBtn: () => this.lowerTitleBtnAction(),
 			PlaybackTime: () => this.lowerPlaybackTime(),
 
 			// * PLAYLIST HISTORY BUTTONS * //
@@ -161,52 +173,63 @@ class Button {
 	 * @private
 	 */
 	_alphaTimer() {
-		const trace = false;
 		const buttonHoverInStep = 40;
 		const buttonHoverOutStep = 15;
 		const buttonDownInStep = 100;
 		const buttonDownOutStep = 50;
 		const buttonTimerDelay = 25;
 
+		const actions = {
+			0: (btn) => {
+				btn.hoverAlpha = Math.max(0, btn.hoverAlpha - buttonHoverOutStep);
+				btn.downAlpha  = Math.max(0, btn.downAlpha - buttonDownOutStep);
+			},
+			1: (btn) => {
+				btn.hoverAlpha = Math.min(255, btn.hoverAlpha + buttonHoverInStep);
+				btn.downAlpha  = Math.max(0, btn.downAlpha - buttonDownOutStep);
+			},
+			2: (btn) => {
+				btn.downAlpha  = Math.min(255, btn.downAlpha + buttonDownInStep);
+				btn.hoverAlpha = Math.max(0, btn.hoverAlpha - buttonDownInStep);
+			}
+		};
+
 		if (!this.buttonTimer) {
 			this.buttonTimer = setInterval(() => {
-				for (const i in this.activatedBtns) {
-					switch (this.activatedBtns[i].state) {
-						case 0:
-							this.activatedBtns[i].hoverAlpha = Math.max(0, this.activatedBtns[i].hoverAlpha -= buttonHoverOutStep);
-							this.activatedBtns[i].downAlpha = Math.max(0, this.activatedBtns[i].downAlpha -= Math.max(0, buttonDownOutStep));
-							this.activatedBtns[i].repaint();
-							break;
-						case 1:
-							this.activatedBtns[i].hoverAlpha = Math.min(255, this.activatedBtns[i].hoverAlpha += buttonHoverInStep);
-							this.activatedBtns[i].downAlpha = Math.max(0, this.activatedBtns[i].downAlpha -= buttonDownOutStep);
-							this.activatedBtns[i].repaint();
-							break;
-						case 2:
-							this.activatedBtns[i].downAlpha = Math.min(255, this.activatedBtns[i].downAlpha += buttonDownInStep);
-							this.activatedBtns[i].hoverAlpha = Math.max(0, this.activatedBtns[i].hoverAlpha -= buttonDownInStep);
-							this.activatedBtns[i].repaint();
-							break;
-					}
-				}
-
-				// Test button alpha values and turn button timer off when it's not required;
 				for (let i = this.activatedBtns.length - 1; i >= 0; i--) {
-					if ((!this.activatedBtns[i].hoverAlpha && !this.activatedBtns[i].downAlpha) ||
-						this.activatedBtns[i].hoverAlpha === 255 || this.activatedBtns[i].downAlpha === 255) {
+					const btn = this.activatedBtns[i];
+					if (actions[btn.state]) {
+						actions[btn.state](btn);
+						btn.repaint();
+					}
+
+					// * Test button alpha values and turn off the button timer if not required;
+					if ((!btn.hoverAlpha && !btn.downAlpha) || btn.hoverAlpha === 255 || btn.downAlpha === 255) {
 						this.activatedBtns.splice(i, 1);
 					}
 				}
 
-				if (!this.activatedBtns.length) {
+				if (this.activatedBtns.length === 0) {
 					clearInterval(this.buttonTimer);
 					this.buttonTimer = null;
-					trace && console.log('buttonTimerStarted = false');
 				}
 			}, buttonTimerDelay);
-
-			trace && console.log('buttonTimerStarted = true');
 		}
+	}
+
+	/**
+	 * Updates the panel after button logic has been processed.
+	 * @param {boolean} initLyrics - Whether to initialize the lyrics.
+	 * @private
+	 */
+	_updatePanelState(initLyrics) {
+		grm.ui.resizeArtwork(false);
+		grm.ui.initPanelWidthAuto();
+		if (grm.ui.displayCustomThemeMenu) grm.cthMenu.reinitCustomThemeMenu();
+		if (grm.ui.displayDetails) grm.details.setDiscArtRotationTimer();
+		if (grSet.savedLyricsDisplayed || initLyrics) grm.lyrics.initLyrics();
+		this.initButtonState();
+		window.Repaint();
 	}
 	// #endregion
 
@@ -214,71 +237,47 @@ class Button {
 	// #region PUBLIC METHODS - TOP MENU BUTTONS
 	/**
 	 * Collapses the top menu to compact mode or expands it to normal.
-	 * @param {boolean} collapse - Wether the top menu should be collapsed or not.
+	 * @param {boolean} collapse - Whether the top menu should be collapsed or not.
 	 */
 	topMenu(collapse) {
-		grSet.showTopMenuCompact = !grSet.showTopMenuCompact;
-		if (collapse) {
-			grSet.showTopMenuCompact = true;
-		}
-		grm.ui.createButtonImages();
-		grm.ui.createButtonObjects(grm.ui.ww, grm.ui.wh);
+		grSet.showTopMenuCompact = collapse || !grSet.showTopMenuCompact;
+		this.createButtons(grm.ui.ww, grm.ui.wh, false);
 		this.initButtonState();
-		RepaintWindow();
+		window.Repaint();
 	}
 
 	/**
 	 * Handles the Details panel button action in the top menu.
 	 */
 	topDetails() {
-		grm.ui.displayPlaylist = !grm.ui.displayPlaylist;
-		grm.ui.displayDetails = grSet.layout === 'artwork' ? grm.ui.displayPlaylist : !grm.ui.displayPlaylist;
+		const biographyLayoutFull = grm.ui.displayBiography && grSet.biographyLayout === 'full';
+		const lyricsLayoutFull = grm.ui.displayLyrics && grSet.lyricsLayout === 'full';
+		const playlistNeedsToggle = grSet.layout === 'default' && (grm.ui.displayLibrary || biographyLayoutFull || lyricsLayoutFull);
+
+		grm.ui.displayPlaylist = playlistNeedsToggle ? false : !grm.ui.displayPlaylist;
+		grm.ui.displayPlaylistArtwork = false;
+		grm.ui.displayDetails = lyricsLayoutFull ? true : grSet.layout === 'artwork' ? grm.ui.displayPlaylist : !grm.ui.displayPlaylist;
+		grm.ui.displayLibrary = false;
 		grm.ui.displayBiography = false;
-		grm.ui.displayLyrics = grSet.lyricsLayout === 'full' && grm.ui.displayLyrics || grSet.lyricsPanelState;
+		grm.ui.displayLyrics = grSet.savedLyricsDisplayed || lyricsLayoutFull;
+		grm.ui.displayMetadataGridMenu = grm.ui.displayDetails && grm.ui.displayMetadataGridMenu;
 
 		if (grm.ui.displayPlaylist) {
-			if (grSet.layout === 'artwork') {
-				if (grSet.lyricsPanelState) grm.ui.displayLyrics = false;
-				grm.ui.displayPlaylistArtwork = false;
+			if (grSet.layout === 'artwork') { // Details panel in Artwork layout
+				grm.ui.displayLyrics = false;
 				pl.playlist.x = grm.ui.ww; // Move hidden Playlist offscreen to disable Playlist mouse functions in Details
 				grm.ui.resizeArtwork(true);
 			} else {
-				pl.call.on_size(grm.ui.ww, grm.ui.wh);
+				grm.ui.setPlaylistSize();
 			}
 		}
 
-		if (grm.ui.displayLibrary) {
-			grm.ui.displayLibrary = false;
-			if (grSet.layout === 'default') {
-				grm.ui.displayPlaylist = grSet.libraryLayout === 'split' ? false : !grm.ui.displayPlaylist; // * Library Playlist split layout
-				grm.ui.displayDetails = grSet.layout === 'artwork' ? grm.ui.displayPlaylist : !grm.ui.displayPlaylist;
-			}
-		}
-
-		if (grSet.lyricsLayout === 'full' && grm.ui.displayLyrics) {
-			if (grSet.lyricsPanelState) grSet.lyricsLayout = 'normal';
-			if (!grSet.lyricsPanelState) grm.ui.displayLyrics = false;
-			if (grSet.layout === 'default' && grm.ui.displayPlaylist) grm.ui.displayPlaylist = !grm.ui.displayPlaylist;
-			if (!grm.ui.displayPlaylist) grm.ui.displayDetails = true;
-		} else {
-			grm.ui.restoreLyricsLayout();
-		}
-
-		grm.ui.resizeArtwork(false);
-		if (grSet.panelWidthAuto) {
-			grm.ui.initPanelWidthAuto();
-		}
-		if (grm.ui.displayCustomThemeMenu) {
-			grm.ui.displayPanel(grm.ui.displayPlaylist ? 'playlist' : 'details');
-			grm.cthMenu.reinitCustomThemeMenu();
-		}
-		grm.ui.setDiscArtRotationTimer();
-		this.initButtonState();
-		window.Repaint();
+		grm.ui.handlePanelLayout('lyrics', 'initLayout');
+		this._updatePanelState();
 	}
 
 	/**
-	 * Handles the Playlist panel button action for artwork layout in the top menu.
+	 * Handles the Playlist panel button action for Artwork layout in the top menu.
 	 */
 	topPlaylistArtwork() {
 		grm.ui.displayPlaylistArtwork = !grm.ui.displayPlaylistArtwork;
@@ -286,12 +285,14 @@ class Button {
 		grm.ui.displayDetails = false;
 		grm.ui.displayLibrary = false;
 		grm.ui.displayBiography = false;
-		grm.ui.displayLyrics = grSet.lyricsPanelState && !grm.ui.displayPlaylistArtwork;
+		grm.ui.displayLyrics = grSet.savedLyricsDisplayed && !grm.ui.displayPlaylistArtwork;
+		grm.ui.displayMetadataGridMenu = false;
 
-		pl.call.on_size(grm.ui.ww, grm.ui.wh);
-		grm.ui.resizeArtwork(false);
-		this.initButtonState();
-		window.Repaint();
+		if (grm.ui.displayPlaylistArtwork) {
+			grm.ui.setPlaylistSize();
+		}
+
+		this._updatePanelState();
 	}
 
 	/**
@@ -299,133 +300,76 @@ class Button {
 	 */
 	topLibrary() {
 		grm.ui.displayLibrary = !grm.ui.displayLibrary;
+		grm.ui.displayPlaylist = grSet.layout === 'default' && !grm.ui.displayLibrary;
+		grm.ui.displayPlaylistArtwork = false;
 		grm.ui.displayDetails = false;
 		grm.ui.displayBiography = false;
-		grm.ui.displayLyrics = grSet.lyricsPanelState;
-
-		if (grm.ui.displayCustomThemeMenu) grm.cthMenu.reinitCustomThemeMenu();
+		grm.ui.displayLyrics = grSet.savedLyricsDisplayed;
+		grm.ui.displayMetadataGridMenu = false;
 
 		if (grm.ui.displayLibrary) {
-			if (grSet.layout === 'default') {
-				grm.ui.displayPlaylist = true;
-				grm.ui.displayLyrics = grSet.libraryLayout === 'full' ? false : grSet.lyricsPanelState;
-			}
-			else if (grSet.layout === 'artwork') {
-				grm.ui.displayPlaylistArtwork = false;
-				grm.ui.displayLyrics = false;
-				grm.ui.resizeArtwork(true);
-			}
-			if (grSet.panelWidthAuto) {
-				grm.ui.initPanelWidthAuto();
-				window.Repaint();
-			}
+			grm.ui.displayLyrics = grSet.savedLyricsDisplayed && grSet.layout === 'default' && grSet.libraryLayout === 'normal';
 		}
-
-		if (grm.ui.displayPlaylist) {
-			grm.ui.displayPlaylist = false;
-		} else if (grSet.layout === 'default') {
-			grm.ui.displayPlaylist = true;
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
-			grm.ui.restoreLyricsLayout();
-		}
-
-		// * Library Playlist split layout
-		if (grm.ui.displayLibrarySplit()) {
-			grm.ui.displayPlaylist = true;
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
-			grm.ui.setLibrarySize();
-		} else if (grSet.layout === 'default' && grSet.libraryLayout === 'split') {
-			grm.ui.displayPlaylist = true;
-			grm.ui.initLibraryLayout();
-		}
-
-		if (grSet.layout === 'default' && grSet.libraryLayout !== 'split' &&
-			grSet.libraryLayoutSplitPreset  || grSet.libraryLayoutSplitPreset2 ||
-			grSet.libraryLayoutSplitPreset3 || grSet.libraryLayoutSplitPreset4) {
-			plSet.auto_collapse = false;
-			pl.playlist.header_expand();
+		else if (grm.ui.displayPlaylist) {
+			grm.ui.setPlaylistSize();
 		}
 
 		// The Library's on_playback_new_track in gr-callbacks.js is only called when Library panel is active to improve performance.
 		// Therefore, we need to call it now and update the Library's nowPlaying state when a new song is played from the active Playlist panel.
 		lib.call.on_playback_new_track();
-		grm.ui.resizeArtwork(false);
-		this.initButtonState();
-		window.Repaint();
+		grm.ui.handlePanelLayout('all', 'initLayout');
+		this._updatePanelState();
 	}
 
 	/**
 	 * Handles the Biography panel button action in the top menu.
 	 */
 	topBiography() {
-		grm.ui.displayPlaylist = grSet.layout === 'default';
+		grm.ui.displayBiography = !grm.ui.displayBiography;
+
+		const biographyFull = grm.ui.displayBiography && bio.ui.x + bio.ui.w === grm.ui.ww && !fb.IsPlaying || grSet.biographyLayout === 'full';
+		grm.ui.displayPlaylist = grSet.layout === 'default' && (biographyFull ? !grm.ui.displayBiography : true);
+
+		grm.ui.displayPlaylistArtwork = false
 		grm.ui.displayDetails = false;
 		grm.ui.displayLibrary = false;
-		grm.ui.displayBiography = !grm.ui.displayBiography;
-		grm.ui.displayLyrics = false;
+		grm.ui.displayLyrics = grSet.savedLyricsDisplayed && !grm.ui.displayBiography;
+		grm.ui.displayMetadataGridMenu = false;
 
-		if (grm.ui.displayCustomThemeMenu) grm.cthMenu.reinitCustomThemeMenu();
-
-		// Switch playlist to normal width to prevent panel overlaying
-		grSet.playlistLayoutNormal = grSet.playlistLayout === 'full' && grm.ui.displayBiography;
-
-		if (!grm.ui.displayBiography && grSet.lyricsPanelState) {
-			grm.ui.displayLyrics = true;
-			grm.ui.restoreLyricsLayout();
-			// Switch playlist to normal width to prevent panel overlaying
-			grSet.playlistLayoutNormal = grSet.playlistLayout === 'full' && grm.ui.displayLyrics;
-		}
-
-		if (grm.ui.displayBiography && (grSet.biographyLayout === 'full' || grSet.layout === 'artwork')) {
-			grSet.layout === 'artwork' ? grm.ui.displayPlaylistArtwork = false : grm.ui.displayPlaylist = false;
-		} else {
-			if (grSet.panelWidthAuto) {
-				grm.ui.initPanelWidthAuto();
-			}
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
+		if (grm.ui.displayPlaylist) {
+			grm.ui.setPlaylistSize();
 		}
 
 		// The Biography's on_playback_new_track in gr-callbacks.js is only called when Biography panel is active to improve performance.
 		// Therefore, we need to call it now and update the Biography's nowPlaying state when a new song is played from the active Playlist panel.
 		bio.call.on_playback_new_track();
-		grm.ui.resizeArtwork(false);
-		this.initButtonState();
-		window.Repaint();
+		grm.ui.handlePanelLayout('all', 'initLayout');
+		this._updatePanelState();
 	}
 
 	/**
 	 * Handles the Lyrics panel button action in the top menu.
 	 */
 	topLyrics() {
+		grm.ui.displayLyrics = !grm.ui.displayLyrics;
 		grm.ui.displayPlaylist = grSet.layout === 'default';
 		grm.ui.displayPlaylistArtwork = false;
 		grm.ui.displayDetails = false;
 		grm.ui.displayLibrary = false;
 		grm.ui.displayBiography = false;
-		grm.ui.displayLyrics = !grm.ui.displayLyrics;
+		grm.ui.displayMetadataGridMenu = false;
 
-		if (grm.ui.displayCustomThemeMenu) grm.cthMenu.reinitCustomThemeMenu();
+		// Save lyrics active state
+		grSet.savedLyricsDisplayed = grm.ui.displayLyrics && grSet.lyricsRememberPanelState;
 
-		// Switch playlist to normal width to prevent panel overlaying
-		grSet.playlistLayoutNormal = grSet.playlistLayout === 'full' && grm.ui.displayLyrics;
-		// Save lyric active state
-		grSet.lyricsPanelState = grm.ui.displayLyrics && grSet.lyricsRememberPanelState;
-
-		if (grSet.lyricsLayout === 'full' && grm.ui.displayLyrics) {
-			grm.ui.displayPlaylist = false;
-			grm.ui.resizeArtwork(true);
+		if (grSet.savedLyricsLayoutFull || grSet.lyricsLayout === 'full') {
+			grm.ui.displayLyrics = grSet.savedLyricsDisplayed;
 		} else {
-			pl.call.on_size(grm.ui.ww, grm.ui.wh);
+			grm.ui.setPlaylistSize();
 		}
 
-		if (grSet.panelWidthAuto) {
-			grm.ui.initPanelWidthAuto();
-		}
-
-		grm.lyrics.initLyrics();
-		grm.ui.resizeArtwork(grSet.layout === 'artwork');
-		this.initButtonState();
-		window.Repaint();
+		grm.ui.handlePanelLayout('all', 'initLayout');
+		this._updatePanelState(true);
 	}
 
 	/**
@@ -437,7 +381,8 @@ class Button {
 		const handle = new FbMetadbHandleList();
 		const metadb = fb.GetFocusItem();
 		if (!metadb) {
-			fb.ShowPopupMessage('No track selected, it seems like the playlist is empty.', 'Empty playlist');
+			const msg = grm.msg.getMessage('main', 'playlistEmptyError');
+			fb.ShowPopupMessage(msg, 'Empty playlist');
 			return;
 		}
 		const fileInfo = metadb.GetFileInfo();
@@ -486,11 +431,7 @@ class Button {
 	 * Handles the maximize button action in the top menu, player goes into fullscreen and resumes player size.
 	 */
 	topMaximize() {
-		if (grSet.fullscreenMaximize) { // F11 shortcut ( on_key_down() ) for going into/out fullscreen mode, disabled/not supported in Artwork layout, ESC also exits fullscreen mode
-			UIHacks.FullScreen = !UIHacks.FullScreen;
-		} else {
-			UIHacks.MainWindowState = UIHacks.MainWindowState === WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
-		}
+		grm.display.handleWindowControl('button');
 	}
 	// #endregion
 
@@ -500,40 +441,38 @@ class Button {
 	 * Handles the play button action in the lower bar, toggles between playback play or pause state.
 	 */
 	lowerPlayPause() {
-		const showTransportControls = grSet[`showTransportControls_${grSet.layout}`];
-		if (!showTransportControls) return;
-		grm.ui.btn.play.img = !fb.IsPlaying || fb.IsPaused ? grm.ui.btnImg.Play : grm.ui.btnImg.Pause;
-		grm.ui.btn.play.repaint();
+		if (!this.btn.play || !grSet.showTransportControls_layout) return;
+		this.btn.play.img = !fb.IsPlaying || fb.IsPaused ? this.btnImg.Play : this.btnImg.Pause;
+		this.btn.play.repaint();
 	}
 
 	/**
 	 * Handles the playback order button action in the lower bar, toggles the current playback order.
 	 */
 	lowerPlaybackOrder() {
-		const showTransportControls = grSet[`showTransportControls_${grSet.layout}`];
-		if (!showTransportControls) return;
+		if (!grSet.showTransportControls_layout) return;
 
 		switch (plman.PlaybackOrder) {
 			case PlaybackOrder.Default:
-				this.setPlaybackOrder(grm.ui.btnImg.PlaybackRepeatPlaylist, 'repeatPlaylist', PlaybackOrder.RepeatPlaylist, 'Repeat (playlist)');
+				this.setPlaybackOrder(this.btnImg.PlaybackRepeatPlaylist, 'repeatPlaylist', PlaybackOrder.RepeatPlaylist, 'Repeat (playlist)');
 				break;
 
 			case PlaybackOrder.RepeatPlaylist:
-				this.setPlaybackOrder(grm.ui.btnImg.PlaybackRepeatTrack, 'repeatTrack', PlaybackOrder.RepeatTrack, 'Repeat (track)');
+				this.setPlaybackOrder(this.btnImg.PlaybackRepeatTrack, 'repeatTrack', PlaybackOrder.RepeatTrack, 'Repeat (track)');
 				break;
 			case PlaybackOrder.RepeatTrack:
-				this.setPlaybackOrder(grm.ui.btnImg.PlaybackShuffle, 'shuffle', PlaybackOrder.ShuffleTracks, 'Shuffle (tracks)');
+				this.setPlaybackOrder(this.btnImg.PlaybackShuffle, 'shuffle', PlaybackOrder.ShuffleTracks, 'Shuffle (tracks)');
 				break;
 
 			case PlaybackOrder.Random:
 			case PlaybackOrder.ShuffleTracks:
 			case PlaybackOrder.ShuffleAlbums:
 			case PlaybackOrder.ShuffleFolders:
-				this.setPlaybackOrder(grm.ui.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default, 'Default');
+				this.setPlaybackOrder(this.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default, 'Default');
 				break;
 		}
 
-		grm.ui.btn.playbackOrder.repaint();
+		this.btn.playbackOrder.repaint();
 	}
 
 	/**
@@ -552,11 +491,11 @@ class Button {
 			lib.pop.load(lib.pop.sel_items, true, true, false, false, false);
 			lib.lib.treeState(false, libSet.rememberTree);
 			if (grSet.addTracksPlaylistSwitch) {
-				grm.ui.btn.library.enabled = false;
-				grm.ui.btn.library.changeState(ButtonState.Default);
+				this.btn.library.enabled = false;
+				this.btn.library.changeState(ButtonState.Default);
 				grm.ui.displayLibrary = false;
 				grm.ui.displayPlaylist = true;
-				if (!grSet.playlistAutoScrollNowPlaying) pl.call.on_size(grm.ui.ww, grm.ui.wh);
+				if (!grSet.playlistAutoScrollNowPlaying) grm.ui.setPlaylistSize();
 			}
 		}
 
@@ -583,10 +522,70 @@ class Button {
 	}
 
 	/**
+	 * Handles the artist button click action in the lower bar.
+	 */
+	lowerArtistBtnAction() {
+		if (!grStr.artist) return;
+		this.lowerArtistBtnClicked = true;
+		grm.ui.displayPanel('playlist', true);
+
+		if (grSet.lowerBarArtistBtnAction === 'website') {
+			grm.utils.openWebsite(grSet.lowerBarArtistBtnWebsite, grm.ui.initMetadb());
+			return;
+		}
+
+		const artist = $('%artist%', grm.ui.initMetadb());
+		const plName = 'Artist Discography';
+		let plArtist = plman.FindPlaylist(plName);
+
+		if (plArtist === -1) {
+			plArtist = plman.CreatePlaylist(plman.PlaylistCount, plName);
+		} else {
+			plman.RemovePlaylist(plArtist);
+			plArtist = plman.CreatePlaylist(plArtist, plName);
+		}
+
+		const query = `Artist HAS "${artist.replace(/"/g, '')}" OR Album Artist HAS "${artist.replace(/"/g, '')}" OR ARTISTFILTER HAS "${artist.replace(/"/g, '')}"`;
+		const tracks = fb.GetQueryItems(fb.GetLibraryItems(), query);
+		plman.InsertPlaylistItems(plArtist, 0, tracks);
+
+		setTimeout(() => {
+			plman.ActivePlaylist = plArtist;
+			on_playlist_switch();
+			this.lowerArtistBtnClicked = false;
+		}, 250);
+	}
+
+	/**
+	 * Handles the track title button click action in the lower bar.
+	 */
+	lowerTitleBtnAction() {
+		if (!fb.IsPlaying) return;
+		if (grm.ui.displayLibrary) {
+			lib.pop.nowPlayingShow();
+		} else {
+			grm.ui.displayPanel('playlist', true);
+			pl.playlist.show_now_playing();
+		}
+	}
+
+	/**
 	 * Handles the playback time button action in the lower bar, toggles the playback time to remaining or normal.
 	 */
 	lowerPlaybackTime() {
-		grSet.switchPlaybackTime = !grSet.switchPlaybackTime;
+		if (!fb.IsPlaying) return;
+		grm.ui.clearCache('metrics', 'cachedLowerBarMetrics');
+
+		if (!grSet.playbackTimeDisplay) {
+			grSet.playbackTimeDisplay = 'default';
+		} else if (grSet.playbackTimeDisplay === 'default') {
+			grSet.playbackTimeDisplay = 'remaining';
+		} else if (grSet.playbackTimeDisplay === 'remaining') {
+			grSet.playbackTimeDisplay = 'percent';
+		} else {
+			grSet.playbackTimeDisplay = 'default';
+		}
+
 		on_playback_time();
 	}
 
@@ -596,60 +595,656 @@ class Button {
 	 * @returns {string} The tooltip text for the given button.
 	 */
 	lowerTransportTooltip(btn) {
-		const pbModeTooltipText =
-			(fb.StopAfterCurrent ? 'Stop after current\n' : '') +
-			(fb.PlaybackFollowCursor ? 'Playback follows cursor\n' : '') +
-			(fb.CursorFollowPlayback ? 'Cursor follows playback\n' : '');
+		const playbackMode = [
+			fb.StopAfterCurrent && 'Stop after current',
+			fb.PlaybackFollowCursor && 'Playback follows cursor',
+			fb.CursorFollowPlayback && 'Cursor follows playback'
+		].filter(Boolean).join('\n');
 
-		const pboTooltipText =
-			plman.PlaybackOrder === PlaybackOrder.Default ? 'Default' :
-			plman.PlaybackOrder === PlaybackOrder.RepeatPlaylist ? 'Repeat (playlist)' :
-			plman.PlaybackOrder === PlaybackOrder.RepeatTrack ? 'Repeat (track)' :
-			plman.PlaybackOrder === PlaybackOrder.ShuffleTracks ? 'Shuffle (tracks)' : '';
+		const playbackOrderText = {
+			[PlaybackOrder.Default]: 'Default',
+			[PlaybackOrder.RepeatPlaylist]: 'Repeat (playlist)',
+			[PlaybackOrder.RepeatTrack]: 'Repeat (track)',
+			[PlaybackOrder.Random]: 'Random',
+			[PlaybackOrder.ShuffleTracks]: 'Shuffle (tracks)',
+			[PlaybackOrder.ShuffleAlbums]: 'Shuffle (albums)',
+			[PlaybackOrder.ShuffleFolders]: 'Shuffle (folders)'
+		};
 
-		const volumeTooltipText = `${fb.Volume.toFixed(2)} dB`;
+		const tooltip = {
+			stop: 'Stop',
+			prev: 'Previous',
+			play: 'Play',
+			next: 'Next',
+			pbo: `Playback order: ${playbackOrderText[plman.PlaybackOrder]}`,
+			reload: 'Reload',
+			addTracks: 'Add tracks to playlist',
+			volume: `${fb.Volume.toFixed(2)} dB`
+		};
 
-		switch (btn) {
-			case 'stop':      return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\nStop` : 'Stop';
-			case 'prev':      return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\nPrevious` : 'Previous';
-			case 'play':      return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\nPlay` : 'Play';
-			case 'next':      return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\nNext` : 'Next';
-			case 'pbo':       return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\nPlayback order: ${pboTooltipText}` : `Playback order: ${pboTooltipText}`;
-			case 'reload':    return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\nReload` : 'Reload';
-			case 'addTracks': return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\nAdd tracks to playlist` : 'Add tracks to playlist';
-			case 'volume':    return pbModeTooltipText.length > 0 ? `Active playback modes:\n${pbModeTooltipText}\n${volumeTooltipText}` : volumeTooltipText;
+		return playbackMode.length > 0 ? `Active playback modes:\n${playbackMode}\n${tooltip[btn]}` : tooltip[btn];
+	}
+	// #endregion
+
+	// * PRIVATE METHODS - INITIALIZATION * //
+	// #region PUBLIC METHODS - INITIALIZATION
+	/**
+	 * Creates the button map for all buttons with its configurations for the UI.
+	 * @returns {object} A map of button names to their configuration, including icon, font, type, and dimensions.
+	 * @private
+	 */
+	_createButtonMap() {
+		// DebugLog('Buttons => createButtons');
+		const transportCircleSize = SCALE(Math.round(grSet.transportButtonSize_layout * 0.93333));
+		this.btnMap = {};
+
+		try {
+			this.btnMap = {
+				Stop: {
+					ico: Guifx.stop,
+					font: grFont.guifx,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				Previous: {
+					ico: Guifx.previous,
+					font: grFont.guifx,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				Play: {
+					ico: Guifx.play,
+					font: grFont.guifx,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				Pause: {
+					ico: Guifx.pause,
+					font: grFont.guifx,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				Next: {
+					ico: Guifx.next,
+					font: grFont.guifx,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				PlaybackDefault: {
+					ico: Guifx.right,
+					font: grFont.pboDefault,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				PlaybackRepeatPlaylist: {
+					ico: '\uf01e',
+					font: grFont.pboRepeatPlaylist,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				PlaybackRepeatTrack: {
+					ico: '\uf021',
+					font: grFont.pboRepeatTrack,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				PlaybackShuffle: {
+					ico: Guifx.shuffle,
+					font: grFont.pboShuffle,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				ShowVolume: {
+					ico: Guifx.volume_down,
+					font: grFont.guifxVolume,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				Reload: {
+					ico: Guifx.power,
+					font: grFont.guifxReload,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				AddTracks: {
+					ico: Guifx.medical,
+					font: grFont.guifxAddTrack,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				Minimize: {
+					ico: '0',
+					font: grFont.topMenuCaption,
+					type: 'window'
+				},
+				Maximize: {
+					ico: '2',
+					font: grFont.topMenuCaption,
+					type: 'window'
+				},
+				Close: {
+					ico: 'r',
+					font: grFont.topMenuCaption,
+					type: 'window'
+				},
+				Hamburger: {
+					ico: '\uf0c9',
+					font: grFont.topMenuCompact,
+					type: 'compact'
+				},
+				TopMenu: {
+					ico: 'Menu',
+					font: grFont.topMenu,
+					type: 'compact'
+				},
+				File: {
+					ico: 'File',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Edit: {
+					ico: 'Edit',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				View: {
+					ico: 'View',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Playback: {
+					ico: 'Playback',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Media: {
+					ico: 'Media',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Help: {
+					ico: 'Help',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Playlists: {
+					ico: 'Playlists',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Options: {
+					ico: 'Options',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Details: {
+					ico: 'Details',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Playlist: {
+					ico: 'Playlist',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Library: {
+					ico: 'Library',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Lyrics: {
+					ico: 'Lyrics',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Biography: {
+					ico: 'Biography',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Rating: {
+					ico: 'Rating',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Properties: {
+					ico: 'Properties',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Settings: {
+					ico: 'Settings',
+					font: grFont.topMenu,
+					type: 'menu'
+				},
+				Back: {
+					ico: '\uE00E',
+					type: 'backforward',
+					font: grFont.symbol,
+					w: SCALE(22),
+					h: SCALE(22)
+				},
+				Forward: {
+					ico: '\uE00F',
+					type: 'backforward',
+					font: grFont.symbol,
+					w: SCALE(22),
+					h: SCALE(22)
+				}
+			};
+		} catch (e) {
+			console.log('**********************************');
+			console.log('ATTENTION: Buttons could not be created');
+			console.log(`Make sure you installed the theme correctly to ${fb.ProfilePath}.`);
+			console.log('**********************************');
+		}
+
+		return this.btnMap;
+	}
+
+	/**
+	 * Creates the button images for various states ('Default', 'Hovered', 'Down', 'Enabled') based on the current button configurations.
+	 * @param {boolean} [createButtonMap] - Indicates whether to create the button map, true by default.
+	 * Set to false to use previously loaded button map for performance optimization.
+	 * Useful when the button configurations have not changed, such as when only changing themes or colors.
+	 * @private
+	 */
+	_createButtonImages(createButtonMap = true) {
+		// DebugLog('Buttons => createButtonImages');
+		const createButtonProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('createButtonImages');
+
+		if (createButtonMap || IsEmpty(this.btnMap)) {
+			this.btnMap = this._createButtonMap();
+		}
+
+		const btnCompact = '\uf0c9  Menu';
+		const lineW = SCALE(2);
+		const halfLineW = Math.floor(lineW / 2);
+
+		const btnStyle = {
+			topMenuDefault: grSet.styleTopMenuButtons === 'default',
+			topMenuFilled: grSet.styleTopMenuButtons === 'filled',
+			topMenuBevel: grSet.styleTopMenuButtons === 'bevel',
+			topMenuInner: grSet.styleTopMenuButtons === 'inner',
+			topMenuEmboss: grSet.styleTopMenuButtons === 'emboss',
+			transportDefault: grSet.styleTransportButtons === 'default',
+			transportBevel: grSet.styleTransportButtons === 'bevel',
+			transportInner: grSet.styleTransportButtons === 'inner',
+			transportEmboss: grSet.styleTransportButtons === 'emboss'
+		};
+
+		const stateColor = {
+			[ButtonState.Default]: {
+				menuTextColor: grCol.menuTextNormal,
+				menuRectColor: grCol.menuRectNormal,
+				menuBgColor: grCol.menuBgColor,
+				transportIconColor: grCol.transportIconNormal,
+				transportEllipseColor: grCol.transportEllipseNormal
+				// iconAlpha: 255, // Used for images only and not used atm
+			},
+			[ButtonState.Hovered]: {
+				menuTextColor: grCol.menuTextHovered,
+				menuRectColor: grCol.menuRectHovered,
+				menuBgColor: grCol.menuBgColor,
+				transportIconColor: grCol.transportIconHovered,
+				transportEllipseColor: grCol.transportEllipseHovered
+				// iconAlpha: 215, // Used for images only and not used atm
+			},
+			[ButtonState.Down]: {
+				menuTextColor: grCol.menuTextDown,
+				menuRectColor: grCol.menuRectDown,
+				menuBgColor: grCol.menuBgColor,
+				transportIconColor: grCol.transportIconDown,
+				transportEllipseColor: grCol.transportEllipseDown
+				// iconAlpha: 215, // Used for images only and not used atm
+			},
+			[ButtonState.Enabled]: {
+				// iconAlpha: 255, // Used for images only and not used atm
+			}
+		};
+
+		for (const btnKey in this.btnMap) {
+			const btn = this.btnMap[btnKey];
+
+			if (['menu', 'compact', 'window'].includes(btn.type)) {
+				const img = gdi.CreateImage(100, 100);
+				const g = img.GetGraphics();
+				const textToMeasure = (btn.type === 'compact') ? btnCompact : btn.ico;
+				const measurements = g.MeasureString(textToMeasure, btn.font, 0, 0, 0, 0);
+				btn.w = Math.ceil(measurements.Width + SCALE(btn.type === 'window' ? 10 : 20));
+				btn.h = Math.ceil(measurements.Height + SCALE(btn.type === 'window' ? 10 : 5));
+				img.ReleaseGraphics(g);
+			}
+
+			let { w, h } = btn;
+
+			if (RES._4K) {
+				if (btn.type === 'window') {
+					w = Math.round(btn.w * 1.2);
+					h = Math.round(btn.h * 1.2);
+				} else if (btn.type !== 'transport') {
+					w += 0;
+					h += 10;
+				}
+			}
+
+			const stateImages = {};
+
+			for (const stateKey of ['Default', 'Hovered', 'Down', 'Enabled']) {
+				if (stateKey === 'Enabled' && btn.type !== 'image') continue;
+
+				const stateButton = ButtonState[stateKey];
+				const { menuTextColor, menuRectColor, menuBgColor, transportIconColor, transportEllipseColor } = stateColor[stateButton];
+				const img = gdi.CreateImage(w, h);
+				const g = img.GetGraphics();
+
+				g.SetSmoothingMode(SmoothingMode.AntiAlias);
+				// * Positions playback icons weirdly on AntiAliasGridFit
+				if (btn.type !== 'transport' && btn.type !== 'compact' && !grSet.customThemeFonts) {
+					g.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
+				} else {
+					g.SetTextRenderingHint(TextRenderingHint.AntiAlias);
+				}
+
+				switch (btn.type) {
+					case 'menu': case 'window': case 'compact':
+						if (stateButton) {
+							if (btnStyle.topMenuDefault || btnStyle.topMenuFilled) {
+								if (btnStyle.topMenuFilled) g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 3, 3, menuBgColor);
+								g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 3, 3, 1, menuRectColor);
+							}
+							else if (btnStyle.topMenuBevel) {
+								g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 4, 4, menuBgColor);
+								FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, 4, 4, 90, 0, grCol.menuStyleBg, 1);
+								g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 4, 4, 1, menuRectColor);
+							}
+							else if (btnStyle.topMenuInner) {
+								g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 4, 4, menuBgColor);
+								FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, 4, 4, 90, 0, grCol.menuStyleBg, 0);
+								g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 4, 4, 1, menuRectColor);
+							}
+							else if (btnStyle.topMenuEmboss) {
+								g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 4, 4, menuBgColor);
+								FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, 4, 4, 90, 0, grCol.menuStyleBg, 0.33);
+								g.DrawRoundRect(halfLineW + 1, halfLineW + 1, w - lineW - 2, h - lineW - 1, 4, 4, 1, grCol.menuRectStyleEmbossTop);
+								g.DrawRoundRect(halfLineW + 1, halfLineW, w - lineW - 2, h - lineW - 1, 4, 4, 1, grCol.menuRectStyleEmbossBottom);
+							}
+						}
+
+						if (btn.type === 'compact') {
+							g.DrawString(btnCompact, grFont.topMenuCompact, menuTextColor, 0, 0, w, h, StringFormat(1, 1));
+						} else {
+							g.DrawString(btn.ico, btn.font, menuTextColor, 0, 0, w, h, StringFormat(1, 1));
+						}
+						break;
+
+					case 'transport':
+						if (btnStyle.transportDefault) {
+							g.DrawEllipse(halfLineW + 1, halfLineW + 1, w - lineW - 2, h - lineW - 2, lineW, transportEllipseColor);
+							g.FillEllipse(halfLineW + 1, halfLineW + 1, w - lineW - 2, h - lineW - 2, grCol.transportEllipseBg);
+						}
+						else if (btnStyle.transportBevel) {
+							g.FillEllipse(halfLineW, halfLineW, w - lineW - 1, h - lineW - 1, grCol.transportStyleTop);
+							g.DrawEllipse(halfLineW, halfLineW, w - lineW - 1, h - lineW, 1, grCol.transportStyleBottom);
+							FillGradEllipse(g, halfLineW - 0.5, halfLineW, w + 0.5, h + 0.5, 90, 0, grCol.transportStyleBg, 1);
+						}
+						else if (btnStyle.transportInner) {
+							g.FillEllipse(halfLineW, halfLineW, w - lineW, h - lineW - 1, grCol.transportStyleTop);
+							g.DrawEllipse(halfLineW, halfLineW - 1, w - lineW, h - lineW + 1, 1, grCol.transportStyleBottom);
+							FillGradEllipse(g, halfLineW - 0.5, halfLineW, w + 1.5, h + 0.5, 90, 0, grCol.transportStyleBg, 0);
+						}
+						else if (btnStyle.transportEmboss) {
+							g.FillEllipse(halfLineW + 1, halfLineW + 1, w - lineW - 2, h - lineW - 2, grCol.transportEllipseBg);
+							FillGradEllipse(g, halfLineW + 2, halfLineW + 2, w - lineW - 2, h - lineW - 2, 90, 0, grCol.transportStyleBg, 0.33);
+							g.DrawEllipse(halfLineW + 1, halfLineW + 2, w - lineW - 2, h - lineW - 3, lineW, grCol.transportStyleTop);
+							g.DrawEllipse(halfLineW + 1, halfLineW, w - lineW - 2, h - lineW - 2, lineW, grCol.transportStyleBottom);
+						}
+						g.DrawString(btn.ico, btn.font, transportIconColor, 1, (['Stop', 'Reload', 'AddTracks'].includes(this.btnMap)) ? 0 : 1, w, h, StringFormat(1, 1));
+						break;
+
+					case 'backforward':
+						g.DrawString(btn.ico, btn.font, pl.col.plman_text_hovered, this.btnMap === 'Back' ? -1 : 0, 0, w, h, StringFormat(1, 1));
+						break;
+				}
+
+				img.ReleaseGraphics(g);
+				stateImages[stateKey] = img;
+			}
+
+			this.btnImg[btnKey] = stateImages;
+		}
+
+		if (createButtonProfiler) createButtonProfiler.Print();
+	}
+
+	/**
+	 * Creates the top menu buttons which includes foobar and panel buttons.
+	 * @param {number} ww - The window.Width.
+	 * @param {number} wh - The window.Height.
+	 * @private
+	 */
+	_createTopMenuButtons(ww, wh) {
+		/** @type {GdiBitmap[]} */
+		let img = this.btnImg.File;
+		let x   = SCALE(10);
+		const h = img.Default.Height;
+		const y = Math.round(grm.ui.topMenuHeight * 0.5 - h * 0.5 - SCALE(1));
+		const minWidth = ww < SCALE(grSet.layout === 'compact' ? 580 : 620);
+		const fontSize = grSet.menuFontSize_layout;
+		const fontSizeCorr = minWidth && fontSize > 12 ? -fontSize * 0.75 : 0;
+
+		// * ☰ MENU BUTTON * //
+		if (grSet.showTopMenuCompact) {
+			img = this.btnImg.TopMenu;
+			this.btn.Menu = new Button(x, y, img.Default.Width, h, 'Menu', img, 'Open menu');
+		// * DEFAULT BUTTONS * //
+		} else {
+			// Foobar default buttons - Artwork layout only has 'File' button displayed
+			const defaultButtons = grSet.layout === 'artwork' ? ['File'] : ['File', 'Edit', 'View', 'Playback', 'Media', 'Help', 'Playlists'];
+			for (const btnKey of defaultButtons) {
+				img = this.btnImg[btnKey];
+				this.btn[btnKey] = new Button(x, y, img.Default.Width, h, btnKey, img, `Open ${btnKey} menu`);
+				x += img.Default.Width + fontSizeCorr;
+			}
+
+			// * OPTIONS THEME BUTTON * //
+			img = this.btnImg.Options;
+			this.btn.Options = new Button(x, y, img.Default.Width, h, 'Options', img, 'Open Options menu');
+			x += img.Default.Width + fontSizeCorr;
+		}
+
+		// * PANEL BUTTONS * //
+		let panelBtnTotalW = 0;
+		const panelButtons = ['Details', 'Playlist', 'Library', 'Biography', 'Lyrics', 'Rating'];
+		for (const btnKey of panelButtons) {
+			if (grSet[`showPanel${btnKey}_layout`] || (grSet.showPanelPlaylist_artwork && btnKey === 'Playlist' && grSet.layout === 'artwork')) {
+				panelBtnTotalW += this.btnImg[btnKey].Default.Width + fontSizeCorr;
+			}
+		}
+
+		// Calculate new starting x position for centered panel buttons if default alignment is center
+		const centeredX = Math.round((ww - panelBtnTotalW) / 2);
+		const alignCenter = !grSet.showTopMenuCompact && grSet.topMenuAlignment === 'center' && centeredX > x;
+		let panelBtnX = grSet.showTopMenuCompact || alignCenter ? centeredX : x;
+
+		for (const btnKey of panelButtons) {
+			if ((btnKey === 'Playlist' && (!grSet.showPanelPlaylist_artwork || grSet.layout !== 'artwork')) ||
+				(btnKey !== 'Playlist' && (!grSet[`showPanel${btnKey}_layout`] || grSet.layout === 'compact'))) {
+				continue; // Playlist button is only available and displayed in `Artwork` layout
+			}
+			img = this.btnImg[btnKey];
+			this.btn[btnKey.toLowerCase()] = new Button(panelBtnX, y, img.Default.Width, img.Default.Height, btnKey, img, `Display ${btnKey}`);
+			panelBtnX += img.Default.Width + fontSizeCorr;
+		}
+	}
+
+	/**
+	 * Creates the top menu 🗕 🗖 ✖ caption buttons.
+	 * @param {number} ww - The window.Width.
+	 * @param {number} wh - The window.Height.
+	 * @private
+	 */
+	_createTopMenuCaptionButtons(ww, wh) {
+		if (!UIHacks || UIHacks.FrameStyle === FrameStyle.Default ||
+			grSet.layout !== 'default' && !grSet.showTopMenuCompact && ww < SCALE(grSet.layout === 'compact' ? 580 : 620)) {
+			return;
+		}
+
+		const layoutDefault = grSet.layout === 'default';
+		const hideClose = UIHacks.FrameStyle === FrameStyle.SmallCaption && !UIHacks.FullScreen;
+		const btnSize = this.btnImg.Close.Default.Height;
+		const btnCount = hideClose ? (layoutDefault ? 2 : 1) : layoutDefault ? 3 : 2;
+		const totalWidth = btnSize * btnCount + (btnCount - 1);
+
+		let x = ww - totalWidth - SCALE(10);
+		const y = Math.round(grm.ui.topMenuHeight * 0.5 - btnSize * 0.5 - SCALE(1));
+
+		this.btn.Minimize = new Button(x, y, btnSize, btnSize, 'Minimize', this.btnImg.Minimize, 'Minimize');
+		x += btnSize;
+
+		if (layoutDefault && !hideClose) {
+			this.btn.Maximize = new Button(x, y, btnSize, btnSize, 'Maximize', this.btnImg.Maximize, 'Maximize');
+			x += btnSize;
+		}
+
+		if (!hideClose) {
+			this.btn.Close = new Button(x, y, btnSize, btnSize, 'Close', this.btnImg.Close, 'Close');
+		}
+	}
+
+	/**
+	 * Creates the lower bar transport buttons based on configuration.
+	 * @param {number} ww - The window.Width.
+	 * @param {number} wh - The window.Height.
+	 * @private
+	 */
+	_createLowerBarButtons(ww, wh) {
+		if (!grSet.showTransportControls_layout) {
+			return;
+		}
+
+		let buttonCount = this.initButtonCount('lowerBar');
+
+		const btnSize = SCALE(grSet.transportButtonSize_layout);
+		const y = grSet.layout === 'default' ? wh - grm.ui.lowerBarHeight + ((grm.ui.lowerBarHeight - SCALE(grSet.transportButtonSize_layout)) * 0.5) - grm.ui.lowerBarTextMargin * 0.5 : grm.ui.lowerBarTitleY + grm.ui.lowerBarTitleH + grm.ui.seekbarHeight + grm.ui.edgeMargin;
+		const p = SCALE(grSet.transportButtonSpacing_layout); // Space between buttons
+		const x = (ww - btnSize * buttonCount - p * (buttonCount - 1)) * 0.5;
+		const calcX = (index) => x + (btnSize + p) * index;
+
+		buttonCount = 0;
+
+		this.btn.stop = new Button(x, y, btnSize, btnSize, 'Stop', this.btnImg.Stop, this.lowerTransportTooltip('stop'));
+		this.btn.prev = new Button(calcX(++buttonCount), y, btnSize, btnSize, 'Previous', this.btnImg.Previous, this.lowerTransportTooltip('prev'));
+		this.btn.play = new Button(calcX(++buttonCount), y, btnSize, btnSize, 'PlayPause', !fb.IsPlaying || fb.IsPaused ? this.btnImg.Play : this.btnImg.Pause, this.lowerTransportTooltip('play'));
+		this.btn.next = new Button(calcX(++buttonCount), y, btnSize, btnSize, 'Next', this.btnImg.Next, this.lowerTransportTooltip('next'));
+
+		if (grSet.showPlaybackOrderBtn_layout) {
+			const playbackOrderImages = [this.btnImg.PlaybackDefault, this.btnImg.PlaybackRepeatPlaylist, this.btnImg.PlaybackRepeatTrack, this.btnImg.PlaybackShuffle];
+			const btnImg = playbackOrderImages[Math.min(plman.PlaybackOrder, playbackOrderImages.length - 1)];
+			this.btn.playbackOrder = new Button(calcX(++buttonCount), y, btnSize, btnSize, 'PlaybackOrder', btnImg);
+		}
+		if (grSet.showReloadBtn_layout) {
+			this.btn.reload = new Button(calcX(++buttonCount), y, btnSize, btnSize, 'Reload', this.btnImg.Reload, this.lowerTransportTooltip('reload'));
+		}
+		if (grSet.showAddTracksBtn_layout) {
+			this.btn.addTracks = new Button(calcX(++buttonCount), y, btnSize, btnSize, 'AddTracks', this.btnImg.AddTracks, this.lowerTransportTooltip('addTracks'));
+		}
+		if (grSet.showVolumeBtn_layout) {
+			this.btn.volume = new Button(calcX(++buttonCount), y, btnSize, btnSize, 'Volume', this.btnImg.ShowVolume);
+			grm.volBtn.setMetrics(this.btn.volume.x, y);
 		}
 	}
 	// #endregion
 
-	// * PUBLIC METHODS - GENERAL * //
-	// #region PUBLIC METHODS - GENERAL
+	// * PUBLIC METHODS - INITIALIZATION * //
+	// #region PUBLIC METHODS - INITIALIZATION
+	/**
+	 * Creates the theme buttions such as top menu and lower bar transport buttons.
+	 * @param {number} ww - The window.Width.
+	 * @param {number} wh - The window.Height.
+	 * @param {boolean} [createButtonImages] - Whether to create the button images, true by default.
+	 * @param {boolean} [createButtonConfigs] - Whether to create the button configurations, true by default.
+	 */
+	createButtons(ww, wh, createButtonImages = true, createButtonConfigs = true) {
+		// DebugLog('Buttons => createButtons');
+		this.btn = {};
+
+		if (ww <= 0 || wh <= 0) {
+			return;
+		}
+		else if (createButtonImages === true || this.btnImg.File === undefined) {
+			// DebugLog('Buttons => createButtons => createButtonImages');
+			this._createButtonImages(createButtonConfigs);
+		}
+
+		this._createTopMenuButtons(ww, wh);
+		this._createTopMenuCaptionButtons(ww, wh);
+		this._createLowerBarButtons(ww, wh);
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - STATE * //
+	// #region PUBLIC METHODS - STATE
+	/**
+	 * Initializes and sets the top menu or transport button count based on the specified type.
+	 * @param {string} type - Specify whether to count buttons for 'topMenu' or 'lowerBar'.
+	 * @returns {number} The number of buttons for the specified type.
+	 */
+	initButtonCount(type) {
+		if (type === 'topMenu') {
+			grm.ui.topMenuBtnCount = [
+				'showPanelDetails_layout',
+				'showPanelLibrary_layout',
+				'showPanelBiography_layout',
+				'showPanelLyrics_layout',
+				'showPanelRating_layout'
+			].reduce((count, propName) => count + (grSet[propName] ? 1 : 0), 0);
+		}
+		else if (type === 'lowerBar') {
+			grm.ui.lowerBarBtnCount = 4 + [
+				'showPlaybackOrderBtn_layout',
+				'showReloadBtn_layout',
+				'showAddTracksBtn_layout',
+				'showVolumeBtn_layout'
+			].reduce((count, propName) => count + (grSet[propName] ? 1 : 0), 0);
+		}
+
+		return type === 'topMenu' ? grm.ui.topMenuBtnCount : grm.ui.lowerBarBtnCount;
+	}
+
 	/**
 	 * Initializes the top menu button state.
 	 */
 	initButtonState() {
-		const buttons = [grm.ui.btn.details, grm.ui.btn.library, grm.ui.btn.biography, grm.ui.btn.lyrics, grm.ui.btn.playlistArtworkLayout];
+		const buttons = [this.btn.details, this.btn.playlist, this.btn.library, this.btn.biography, this.btn.lyrics];
 		for (const button of buttons) this.setButtonState(false, button);
 
-		if (grSet.layout === 'default' && !grm.ui.displayPlaylist && !grm.ui.displayLibrary && !grm.ui.displayBiography && (!grm.ui.displayLyrics || grm.ui.displayLyrics && grSet.lyricsLayout === 'normal')) {
-			this.setButtonState(grm.ui.btn.details);
+		if (grSet.layout === 'default' && grm.ui.displayDetails || grSet.layout === 'artwork' && grm.ui.displayPlaylist) {
+			this.setButtonState(this.btn.details);
 		}
-		else if (grSet.layout === 'artwork' && (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) && !grm.ui.displayLibrary && !grm.ui.displayBiography && !grm.ui.displayLyrics) {
-			if (grm.ui.displayPlaylist) {
-				this.setButtonState(grm.ui.btn.details);
-			} else if (grm.ui.displayPlaylistArtwork) {
-				grm.ui.displayPlaylist = false;
-				this.setButtonState(grm.ui.btn.playlistArtworkLayout);
-			}
+		else if (grm.ui.displayPlaylistArtwork) {
+			this.setButtonState(this.btn.playlist);
 		}
-		else if (grm.ui.displayLibrary && (!grm.ui.displayPlaylist || grm.ui.displayLibrarySplit())) {
-			this.setButtonState(grm.ui.btn.library);
+		else if (grm.ui.displayLibrary) {
+			this.setButtonState(this.btn.library);
 		}
-		else if (grm.ui.displayBiography) {
-			this.setButtonState(grm.ui.btn.biography);
+		else if (grm.ui.displayBiography && !grm.ui.displayLyrics) {
+			this.setButtonState(this.btn.biography);
 		}
 		if (grm.ui.displayLyrics) {
-			this.setButtonState(grm.ui.btn.lyrics);
+			this.setButtonState(this.btn.lyrics);
 		}
 	}
 
@@ -682,13 +1277,13 @@ class Button {
 
 	/**
 	 * Sets the button image, playback order preference, and foobar2000 playback order.
-	 * @param {GdiBitmap} imgValue - The value of grMain.ui.btnImg.PlaybackDefault, grMain.ui.btnImg.PlaybackRepeatTrack, or grMain.ui.btnImg.PlaybackShuffle.
+	 * @param {GdiBitmap} imgValue - The value of this.btnImg.PlaybackDefault, this.btnImg.PlaybackRepeatTrack, or this.btnImg.PlaybackShuffle.
 	 * @param {string} prefValue - The value of 'default', 'repeatPlaylist', 'repeatTrack', or 'shuffle'.
 	 * @param {string} fbValue - The value of PlaybackOrder.Default, PlaybackOrder.RepeatPlaylist, PlaybackOrder.RepeatTrack, or PlaybackOrder.ShuffleTracks.
 	 * @param {string} cmd - The value of top menu Playback > Order.
 	 */
 	setPlaybackOrder(imgValue, prefValue, fbValue, cmd) {
-		grm.ui.btn.playbackOrder.img = imgValue;
+		this.btn.playbackOrder.img = imgValue;
 		grSet.playbackOrder = prefValue;
 		fb.PlaybackOrder = fbValue;
 		fb.RunMainMenuCommand(`Playback/Order/${cmd}`);
@@ -698,7 +1293,7 @@ class Button {
 	 * Passes in the current button as an argument via the btnActionHandler.
 	 */
 	onClick() {
-		this._actionHandler(this);
+		grm.button._actionHandler(this); // Bind this to `Button` class
 	}
 
 	/**
@@ -712,7 +1307,7 @@ class Button {
 	 * Repaints the button to update its state.
 	 */
 	repaint() {
-		window.RepaintRect(this.x, this.y, this.w, this.h);
+		window.RepaintRect(this.x - SCALE(1), this.y - SCALE(1), this.w + SCALE(2), this.h + SCALE(2));
 	}
 	// #endregion
 
@@ -735,9 +1330,9 @@ class Button {
 	 * @param {number} m - The mouse mask.
 	 */
 	on_mouse_lbtn_dblclk(x, y, m) {
-		if (!this.button) return;
-		this.button.changeState(ButtonState.Down);
-		this.downButton = this.button;
+		if (!this.activeButton) return;
+		this.activeButton.changeState(ButtonState.Down);
+		this.downButton = this.activeButton;
 		this.downButton.onDblClick();
 	}
 
@@ -748,9 +1343,9 @@ class Button {
 	 * @param {number} m - The mouse mask.
 	 */
 	on_mouse_lbtn_down(x, y, m) {
-		if (!this.button) return;
-		this.button.changeState(ButtonState.Down);
-		this.downButton = this.button;
+		if (!this.activeButton) return;
+		this.activeButton.changeState(ButtonState.Down);
+		this.downButton = this.activeButton;
 	}
 
 	/**
@@ -765,18 +1360,18 @@ class Button {
 		this.downButton.onClick();
 
 		if (this.mainMenuOpen) {
-			this.button = undefined;
+			this.activeButton = undefined;
 			this.mainMenuOpen = false;
 		}
 
-		if (this.button) {
-			this.button.changeState(ButtonState.Hovered);
+		if (this.activeButton) {
+			this.activeButton.changeState(ButtonState.Hovered);
 		}
-		else if (this.downButton && this.downButton === this.button) {
+		else if (this.downButton && this.downButton === this.activeButton) {
 			this.downButton.changeState(ButtonState.Default);
 		}
 
-		this.button = this.downButton;
+		this.activeButton = this.downButton;
 	}
 
 	/**
@@ -787,9 +1382,9 @@ class Button {
 
 		if (this.downButton) return;
 
-		for (const i in grm.ui.btn) {
-			if (grm.ui.btn[i].state !== 0) {
-				grm.ui.btn[i].changeState(ButtonState.Default);
+		for (const key in this.btn) {
+			if (this.btn[key].state !== 0) {
+				this.btn[key].changeState(ButtonState.Default);
 			}
 		}
 	}
@@ -801,31 +1396,30 @@ class Button {
 	 * @param {number} m - The mouse mask.
 	 */
 	on_mouse_move(x, y, m) {
-		this.oldButton = this.button;
+		this.oldButton = this.activeButton;
+		this.activeButton = null;
+		this.mouseInControl = false;
 
-		for (const i in grm.ui.btn) {
-			if (typeof grm.ui.btn[i] === 'object' && grm.ui.btn[i].mouseInThis(x, y)) {
+		for (const key in this.btn) {
+			if (typeof this.btn[key] === 'object' && this.btn[key].mouseInThis(x, y)) {
+				this.activeButton = this.btn[key];
 				this.mouseInControl = true;
-				this.button = grm.ui.btn[i];
 				break;
-			} else {
-				this.mouseInControl = false;
-				this.button = null;
 			}
 		}
 
-		if (this.oldButton && this.oldButton !== this.button) {
+		if (this.oldButton && this.oldButton !== this.activeButton) {
 			this.oldButton.changeState(this.oldButton.enabled ? ButtonState.Enabled : ButtonState.Default);
 		}
-		if (this.button && this.button !== this.oldButton) {
-			this.button.changeState(ButtonState.Hovered);
+		if (this.activeButton && this.activeButton !== this.oldButton) {
+			this.activeButton.changeState(ButtonState.Hovered);
 		}
-		this.downButton = this.button;
+		this.downButton = this.activeButton;
 
-		if (this.lastOverButton !== this.button) {
+		if (this.lastOverButton !== this.activeButton) {
 			grm.ttip.stop();
 		}
-		this.lastOverButton = this.button;
+		this.lastOverButton = this.activeButton;
 
 		if (grSet.showTooltipMain && this.lastOverButton) {
 			if (this.lastOverButton.tooltip) {

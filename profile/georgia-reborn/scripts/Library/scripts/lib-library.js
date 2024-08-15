@@ -635,13 +635,15 @@ class LibLibrary {
 		if (ix != -1) {
 			this.scr = [];
 			for (i = ix; i < l; i++) {
-				level = lib.pop.tree[i].level;
-				this.scr.push({
-					level,
-					a: lib.pop.tree[i].root || lib.pop.tree[i].srt[0],
-					b: level != 0 ? lib.pop.tree[lib.pop.tree[i].par].root || lib.pop.tree[lib.pop.tree[i].par].srt[0] : '',
-					c: level > 1 ? lib.pop.tree[lib.pop.tree[lib.pop.tree[i].par].par].root || lib.pop.tree[lib.pop.tree[lib.pop.tree[i].par].par].srt[0] : ''
-				});
+				if (lib.pop.tree[i]) {
+					level = lib.pop.tree[i].level;
+					this.scr.push({
+						level,
+						a: lib.pop.tree[i].root || lib.pop.tree[i].srt[0],
+						b: level != 0 ? lib.pop.tree[lib.pop.tree[i].par].root || lib.pop.tree[lib.pop.tree[i].par].srt[0] : '',
+						c: level > 1 ? lib.pop.tree[lib.pop.tree[lib.pop.tree[i].par].par].root || lib.pop.tree[lib.pop.tree[lib.pop.tree[i].par].par].srt[0] : ''
+					});
+				}
 			}
 		}
 		this.sortByLevel(this.expand);

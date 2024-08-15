@@ -207,7 +207,7 @@ class BioScrollbar {
 			switch (bio.ui.sbar.type) {
 				case 0:
 					if (this.arc > 0 && !this.narrow.show) gr.FillRoundRect(sbar_x - 0.5, this.y + this.bar.y, sbar_w, this.bar.h, this.arc, this.arc, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col.max);
-					else gr.FillSolidRect(sbar_x + (this.narrow.show ? bio.ui.sbar.narrowWidth + (RES._4K ? -4 : 1) : 0), this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
+					else gr.FillSolidRect(sbar_x + (this.narrow.show ? bio.ui.sbar.narrowWidth + HD_4K(1, -4) : 0), this.y + this.bar.y, sbar_w, this.bar.h, this.bar.isDragging ? thumbColors[2] : this.hover ? thumbColors[1] : thumbColors[0]);
 					break;
 				case 1:
 					if (this.arc > 0 && !this.narrow.show) gr.FillRoundRect(sbar_x - 0.5, this.y + this.bar.y, sbar_w, this.bar.h, this.arc, this.arc, this.narrow.show ? this.col[this.alpha2] : !this.bar.isDragging ? this.col[this.alpha] : this.col.max);

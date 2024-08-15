@@ -297,7 +297,7 @@ class BioUserInterface {
 				} catch (e) { return false; }
 			});
 		}
-		const biographyFontSize = bioSet[`baseFontSizeBio_${grSet.layout}`] || 14;
+		const biographyFontSize = SCALE(RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout || 14);
 
 		if (grSet.customThemeFonts) this.font.main = grFont.biography;
 		else if (bioSet.custFontUse && bioSet.custFont.length) {
@@ -312,7 +312,7 @@ class BioUserInterface {
 			$Bio.trace('Spider Monkey Panel is unable to use your default font. Using Segoe UI at default size & style instead');
 		}
 		if (this.font.main.Size != biographyFontSize) bioSet.zoomFont = 100;
-		// grSet.layout === 'artwork' ? bioSet.baseFontSizeBio_artwork : bioSet.baseFontSizeBio_default = this.font.headingBaseSize = this.font.main.Size;
+		// grSet.biographyFontSize_layout = this.font.headingBaseSize = this.font.main.Size;
 		this.font.headingBaseSize = biographyFontSize;
 
 		this.font.zoomSize = Math.max(Math.round(biographyFontSize * bioSet.zoomFont / 100), 1);
@@ -733,8 +733,8 @@ class BioUserInterface {
 			this.sbar.but_w = bioSet.sbarType != 3 ? this.sbar.w : this.sbar.w * 10 / 18;
 		}
 		else if (bioSet.sbarWidth) {
-			this.sbar.w = RES._4K ? 26 : 12;
-			this.sbar.but_w = RES._4K ? 26 : 12;
+			this.sbar.w = SCALE(RES._4K ? 13 : 12);
+			this.sbar.but_w = SCALE(RES._4K ? 13 : 12);
 		}
 		if (!bioSet.sbarWinMetrics && this.sbar.type == 2) this.sbar.w = Math.max(this.sbar.w, 12);
 		if (!bioSet.sbarShow) this.sbar.w = 0;
@@ -767,7 +767,7 @@ class BioUserInterface {
 	}
 
 	wheel(step) {
-		const biographyFontSize = bioSet[`baseFontSizeBio_${grSet.layout}`] || 14;
+		const biographyFontSize = SCALE(RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout || 14);
 		if (!bio.panel || bio.but.trace('lookUp', bio.panel.m.x, bio.panel.m.y)) return;
 		if (bio.vk.k('ctrl')) {
 			if (bio.but.trace('heading', bio.panel.m.x, bio.panel.m.y)) {

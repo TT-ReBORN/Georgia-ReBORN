@@ -237,9 +237,9 @@ class BioButtons {
 	createStars(force) {
 		this.src.icon = bio.ui.show.btnLabel == 2 ? 1 : 0;
 		const hs = bio.ui.font.heading.Size;
-		const fs = bio.ui.stars != 1 ? (this.src.icon ? (this.src.bahnInstalled ? 12 : 11) : 10) * $Bio.scale : (RES._4K ? 26 : 14);
+		const fs = bio.ui.stars != 1 ? (this.src.icon ? (this.src.bahnInstalled ? 12 : 11) : 10) * $Bio.scale : HD_4K(14, 26);
 		const srcFontSize = this.src.fontSize;
-		const biographyFontSize = bioSet[`baseFontSizeBio_${grSet.layout}`] || 14;
+		const biographyFontSize = SCALE(RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout || 14);
 		this.src.fontSize = $Bio.clamp(Math.round(hs * 1.0) + (bioSet.zoomHeadBtn - 100) / 10, Math.min(fs, hs), Math.max(fs, hs));
 		if (this.src.fontSize != srcFontSize || force) this.src.font = gdi.Font('Segoe UI', this.src.fontSize, 1);
 		$Bio.gr(1, 1, false, g => {
@@ -380,7 +380,7 @@ class BioButtons {
 		this.scr.init = false;
 		this.checkScrollBtns(x, y, hover_btn);
 		if (hover_btn) hand = hover_btn.hand;
-		if (!bio.resize.down) window.SetCursor(!hand && !bio.seeker.hand && !bio.filmStrip.hand ? 32512 : 32649);
+		if (!bio.resize.down) SetCursor(!hand && !bio.seeker.hand && !bio.filmStrip.hand ? 'Arrow' : 'Hand');
 		if (hover_btn && hover_btn.hide) {
 			if (this.cur) {
 				this.cur.cs('normal');
@@ -471,7 +471,7 @@ class BioButtons {
 		} else delete this.btns.lookUp;
 		if (bioSet.summaryShow) {
 			const hide = bio.txt[n].loaded.txt && (bio.txt.reader[n].lyrics || bio.txt.reader[n].props || bio.txt.reader[n].nowplaying) || bioSet.img_only;
-			this.btns.summary = new LibBtn(bio.panel.text.l, bio.panel.text.t, bio.panel.text.w,
+			this.btns.summary = new BioBtn(bio.panel.text.l, bio.panel.text.t, bio.panel.text.w,
 			bioSet.artistView ? (bio.txt.line.h.bio * bio.txt.bio.summaryEnd) : (bio.txt.line.h.rev * bio.txt.rev.summaryEnd), 8, this.lookUp.p1, this.lookUp.p2, '', {
 				normal: RGBA(this.lookUp.col[0], this.lookUp.col[1], this.lookUp.col[2], this.lookUp.pos == 2 ? 100 : 50),
 				hover: RGBA(this.lookUp.col[0], this.lookUp.col[1], this.lookUp.col[2], this.lookUp.pos == 2 ? 200 : this.alpha[1])
@@ -553,8 +553,8 @@ class BioButtons {
 		this.lookUp.y = [0, 0, !bioSet.heading || bioSet.img_only ? /*0*/ 9999 : bio.panel.text.t - bio.ui.heading.h + (bio.ui.font.heading_h - this.lookUp.sz) / 2][this.lookUp.pos];
 		this.lookUp.w = [12, this.lookUp.sz * 1.5, bio.panel.w - this.lookUp.x][this.lookUp.pos];
 		this.lookUp.h = [12, this.lookUp.sz * 1.5, Math.max(bio.ui.font.heading_h, this.lookUp.sz)][this.lookUp.pos];
-		this.lookUp.p1 = [12, this.lookUp.sz + 1, this.lookUp.sz + 1 + 9 * $Bio.scale][this.lookUp.pos];
-		this.lookUp.p2 = this.lookUp.sz + 1;
+		this.lookUp.p1 = [12, this.lookUp.sz + SCALE(1), this.lookUp.sz + SCALE(1) + 9 * $Bio.scale][this.lookUp.pos];
+		this.lookUp.p2 = this.lookUp.sz + SCALE(1);
 	}
 
 	setRatingImages(w, h, onCol, offCol, borCol, lfm) {
@@ -665,7 +665,7 @@ class BioButtons {
 
 	setSrcFontSize(step) {
 		this.src.fontSize += step;
-		const fs = bio.ui.stars != 1 ? (this.src.icon ? (this.src.bahnInstalled ? 12 : 11) : 10) * $Bio.scale : (RES._4K ? 26 : 14);
+		const fs = bio.ui.stars != 1 ? (this.src.icon ? (this.src.bahnInstalled ? 12 : 11) : 10) * $Bio.scale : HD_4K(14, 26);
 		const hs = bio.ui.font.heading.Size;
 		this.src.fontSize = $Bio.clamp(this.src.fontSize, Math.min(fs, hs), Math.max(fs, hs));
 		bioSet.zoomHeadBtn = (this.src.fontSize - Math.round(bio.ui.font.heading.Size * 0.47)) * 10 + 100;
@@ -677,9 +677,9 @@ class BioButtons {
 
 	srcTiptext() {
 		const n = bioSet.artistView ? 'bio' : 'rev';
-		const biographyFontSize = bioSet[`baseFontSizeBio_${grSet.layout}`];
+		const biographyFontSize = SCALE(RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout || 14);
 		const grFlag = grm.ui.flagImgs.length;
-		const flagWidth = grFlag ? grm.ui.flagImgs.reduce((sum, img) => sum + img.Width + SCALE(biographyFontSize) - (RES._4K ? 60 : 18), 0) : bio.but.flag.w;
+		const flagWidth = grFlag ? grm.ui.flagImgs.reduce((sum, img) => sum + img.Width + biographyFontSize - HD_4K(18, 60), 0) : bio.but.flag.w;
 		const flagTooltip = grFlag ? `[${GetMetaValues(grTF.artist_country).join(' \u00B7 ')}] ${bio.txt.artist}` : bio.txt[n].flagCountry;
 		const suffix = grSet.showTooltipBiography ? this.isNextSourceAvailable() ? 'text' : 'N/A' : '';
 		const type = grSet.showTooltipBiography ? bio.panel.m.x > bio.panel.heading.x + bio.panel.heading.w / 2 ? `Next ${suffix}` : bio.panel.m.x > bio.panel.heading.x ? (bio.txt[n].flag && bio.txt[n].flagCountry && bio.panel.m.x < bio.panel.heading.x + flagWidth ? flagTooltip : `Previous ${suffix}`) : '' : '';
@@ -820,18 +820,19 @@ class BioBtn {
 		if (flag) {
 			gr.SetInterpolationMode(7);
 			if (!bioSet.hdPos) {
-				const biographyFontSize = bioSet[`baseFontSizeBio_${grSet.layout}`];
 				const grFlag = grm.ui.flagImgs.length;
 				const maxFlags = Math.min(grFlag, 6);
-				bio.but.flag.w = Math.round(bio.but.flag.h * flag.Width / flag.Height);
-				bio.but.flag.sp = grFlag ? 0 : Math.round(bio.but.flag.h * 0.75 + bio.but.flag.w);
 				bio.but.flag.x = this.x;
+				bio.but.flag.w = Math.round(bio.but.flag.h * flag.Width / flag.Height);
+				bio.but.flag.sp = Math.round(bio.but.flag.h * 0.75 + bio.but.flag.w);
 				if (grFlag) {
+					const grFlagSize = bio.but.flag.h * 1.66;
+					const grFlagSpacing = bio.but.flag.w + bio.but.flag.h * 0.33;
 					for (let i = 0; i < maxFlags; i++) {
-						gr.DrawImage(grm.ui.flagImgs[i], bio.but.flag.x, bio.but.flag.y - bio.but.flag.h * 0.33, grm.ui.flagImgs[i].Width + SCALE(biographyFontSize) - (RES._4K ? 76 : 26), bio.but.flag.h * 1.66, 0, 0, grm.ui.flagImgs[i].Width, grm.ui.flagImgs[i].Height);
-						bio.but.flag.x  += grm.ui.flagImgs[i].Width + SCALE(biographyFontSize) - (RES._4K ? 60 : 18);
-						bio.but.flag.sp += grm.ui.flagImgs[i].Width + SCALE(biographyFontSize) - (RES._4K ? 60 : 18);
+						gr.DrawImage(grm.ui.flagImgs[i], bio.but.flag.x, bio.but.flag.y - bio.but.flag.h * 0.33, grFlagSize, grFlagSize, 0, 0, grm.ui.flagImgs[i].Width, grm.ui.flagImgs[i].Height);
+						bio.but.flag.x  += grFlagSpacing;
 					}
+					bio.but.flag.sp += (maxFlags - 1) * grFlagSpacing - bio.but.flag.h * 0.33; // Adjust the spacing only once at the end
 				} else {
 					gr.DrawImage(flag, bio.but.flag.x, bio.but.flag.y, bio.but.flag.w, bio.but.flag.h, 0, 0, flag.Width, flag.Height, '', 212);
 					// const w = bio.ui.style.l_w;
@@ -893,8 +894,8 @@ class BioBtn {
 		const col = bio.ui.col.headingText;
 		gr.SetTextRenderingHint(3); // AntiAliasGridFit
 		if (!bio.panel.lock) {
-			gr.DrawString(!bio.panel.style.moreTags || !bioSet.artistView ? '\uF107' : '\uF107', bio.but.lookUp.font, col, this.x - (RES._4K ? 1 : 0), this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
-			gr.DrawString(!bio.panel.style.moreTags || !bioSet.artistView ? '\uF107' : '\uF107', bio.but.lookUp.font, col, this.x - (RES._4K ? 1 : 0), this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
+			gr.DrawString(!bio.panel.style.moreTags || !bioSet.artistView ? '\uF107' : '\uF107', bio.but.lookUp.font, col, this.x - HD_4K(0, 1), this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
+			gr.DrawString(!bio.panel.style.moreTags || !bioSet.artistView ? '\uF107' : '\uF107', bio.but.lookUp.font, col, this.x - HD_4K(0, 1), this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
 			if (this.state == 'hover') gr.DrawString(!bio.panel.style.moreTags || !bioSet.artistView ? '\uF107' : '\uF107', bio.but.lookUp.font, col, this.x, this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
 		} else {
 			gr.DrawString('\uF023', bio.but.lookUp.fontLock, col, this.x, this.y + 2 * $Bio.scale, this.p1, this.p2, StringFormat(2, 0));

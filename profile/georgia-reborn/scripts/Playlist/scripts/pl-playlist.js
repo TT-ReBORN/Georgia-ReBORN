@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    extremeHunter, TheQwertiest                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    01-05-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -158,8 +158,8 @@ class Playlist extends BaseList {
 	 */
 	_calcHeaderRows() {
 		let numRows = plSet.use_compact_header ? plSet.rows_in_compact_header : plSet.rows_in_header;
-		const headerFontSize = grSet[`playlistHeaderFontSize_${grSet.layout}`];
-		const rowFontSize    = grSet[`playlistFontSize_${grSet.layout}`];
+		const headerFontSize = grSet.playlistHeaderFontSize_layout;
+		const rowFontSize    = grSet.playlistFontSize_layout;
 		const normalHeader   = !plSet.use_compact_header;
 		const headerExceedsHeight = (headerFontSize * 2 + 3 + rowFontSize) > (numRows * plSet.row_h * 0.6);
 
@@ -328,9 +328,9 @@ class Playlist extends BaseList {
 	 * - Move effect, then Copy effect, then Link effect if no modifiers are pressed.
 	 */
 	filter_effect_by_modifiers(effect) {
-		const ctrl_pressed = utils.IsKeyPressed(VK_CONTROL);
-		const shift_pressed = utils.IsKeyPressed(VK_SHIFT);
-		const alt_pressed = utils.IsKeyPressed(VK_MENU);
+		const ctrl_pressed = utils.IsKeyPressed(VKey.CONTROL);
+		const shift_pressed = utils.IsKeyPressed(VKey.SHIFT);
+		const alt_pressed = utils.IsKeyPressed(VKey.MENU);
 
 		if (ctrl_pressed && shift_pressed && !alt_pressed
 			|| alt_pressed && !ctrl_pressed && !shift_pressed) {
@@ -392,14 +392,14 @@ class Playlist extends BaseList {
 		const handles = plman.GetPlaylistItems(plIndex);
 		const index = handles.Find(fb.GetNowPlaying());
 
-		setTimeout(() => { // Wait for loadingThemeComplete
+		setTimeout(() => {
 			this.playing_item = this.cnt.rows[index];
 			if (this.playing_item) {
 				this.playing_item.is_playing = true;
 				this.playing_item.clear_title_text();
 			}
 			window.RepaintRect(this.x, this.y, this.w, this.h);
-		}, grm.ui.loadingThemeComplete);
+		}, 1);
 	}
 
 	/**
@@ -429,7 +429,7 @@ class Playlist extends BaseList {
 	 * This method does not contain any redraw calls, it's purely back-end.
 	 */
 	initialize_list() {
-		grm.ui.traceCall && console.log('initialize_list');
+		CallLog('initialize_list');
 		const profiler = fb.CreateProfiler();
 		const profiler_part = grm.ui.traceListPerformance && fb.CreateProfiler();
 
@@ -534,7 +534,7 @@ class Playlist extends BaseList {
 	 * @param {PlaylistKeyActionHandler} key_handler - The PlaylistKeyActionHandler object.
 	 */
 	register_key_actions(key_handler) {
-		key_handler.register_key_action(VK_UP,
+		key_handler.register_key_action(VKey.UP,
 			(modifiers) => {
 				if (!this.cnt.rows.length) {
 					return;
@@ -565,7 +565,7 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_DOWN,
+		key_handler.register_key_action(VKey.DOWN,
 			(modifiers) => {
 				if (!this.cnt.rows.length) {
 					// Skip repaint
@@ -597,7 +597,7 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_LEFT,
+		key_handler.register_key_action(VKey.LEFT,
 			(modifiers) => {
 				if (!this.collapse_handler || !this.cnt.rows.length) {
 					return;
@@ -626,7 +626,7 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_RIGHT,
+		key_handler.register_key_action(VKey.RIGHT,
 			(modifiers) => {
 				if (!this.collapse_handler || !this.cnt.rows.length) {
 					return;
@@ -653,7 +653,7 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_PRIOR,
+		key_handler.register_key_action(VKey.PRIOR,
 			(modifiers) => {
 				if (!this.cnt.rows.length) {
 					return;
@@ -691,7 +691,7 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_NEXT,
+		key_handler.register_key_action(VKey.NEXT,
 			(modifiers) => {
 				if (!this.cnt.rows.length) {
 					return;
@@ -730,21 +730,21 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_HOME,
+		key_handler.register_key_action(VKey.HOME,
 			(modifiers) => {
 				this.selection_handler.update_selection(this.cnt.rows[0], undefined, modifiers.shift);
 				this.scrollbar.scroll_to_start();
 			}
 		);
 
-		key_handler.register_key_action(VK_END,
+		key_handler.register_key_action(VKey.END,
 			(modifiers) => {
 				this.selection_handler.update_selection(Last(this.cnt.rows), undefined, modifiers.shift);
 				this.scrollbar.scroll_to_end();
 			}
 		);
 
-		key_handler.register_key_action(VK_DELETE,
+		key_handler.register_key_action(VKey.DELETE,
 			(modifiers) => {
 				if (!this.selection_handler.has_selected_items() && this.focused_item) {
 					this.selection_handler.update_selection(this.focused_item);
@@ -754,7 +754,7 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_KEY_A,
+		key_handler.register_key_action(VKey.KEY_A,
 			(modifiers) => {
 				if (modifiers.ctrl) {
 					this.selection_handler.select_all();
@@ -763,7 +763,7 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_KEY_F,
+		key_handler.register_key_action(VKey.KEY_F,
 			(modifiers) => {
 				if (modifiers.ctrl) {
 					fb.RunMainMenuCommand('Edit/Search');
@@ -774,7 +774,7 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_RETURN,
+		key_handler.register_key_action(VKey.RETURN,
 			(modifiers) => {
 				if (!this.focused_item) { // Needed to reinit lost focus to prevent crash, e.g from 3rd party components using their own window
 					const top_item = this.items_to_draw[0];
@@ -784,7 +784,7 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_KEY_O,
+		key_handler.register_key_action(VKey.KEY_O,
 			(modifiers) => {
 				if (modifiers.shift) {
 					fb.RunContextCommandWithMetadb('Open Containing Folder', this.focused_item.metadb);
@@ -792,7 +792,7 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_KEY_Q,
+		key_handler.register_key_action(VKey.KEY_Q,
 			(modifiers) => {
 				if (!this.queue_handler) {
 					return;
@@ -819,14 +819,14 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_F5,
+		key_handler.register_key_action(VKey.F5,
 			(modifiers) => {
 				PlaylistHeader.img_cache.clear();
 				this.initialize_and_repaint_list(true);
 			}
 		);
 
-		key_handler.register_key_action(VK_KEY_C,
+		key_handler.register_key_action(VKey.KEY_C,
 			(modifiers) => {
 				if (modifiers.ctrl) {
 					this.selection_handler.copy();
@@ -834,7 +834,7 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_KEY_X,
+		key_handler.register_key_action(VKey.KEY_X,
 			(modifiers) => {
 				if (modifiers.ctrl) {
 					this.selection_handler.cut();
@@ -842,7 +842,7 @@ class Playlist extends BaseList {
 			}
 		);
 
-		key_handler.register_key_action(VK_KEY_V,
+		key_handler.register_key_action(VKey.KEY_V,
 			(modifiers) => {
 				if (modifiers.ctrl && !plman.IsPlaylistLocked(this.cur_playlist_idx)) {
 					this.selection_handler.paste();
@@ -886,6 +886,19 @@ class Playlist extends BaseList {
 			const item = this.cnt.rows[i];
 			item.update_title_color();
 		}
+	}
+
+	/**
+	 * Iterates through all playlist headers and updates the background color of each item.
+	 * Used when updating playlist header background color in Reborn/Random theme or when switching themes.
+	 */
+	header_color_change() {
+		pl.cache_header = false;
+		for (let i = 0; i < this.cnt.sub_items.length; i++) {
+			const item = this.cnt.sub_items[i];
+			item.clearCachedHeaderImg();
+		}
+		pl.cache_header = true;
 	}
 	// #endregion
 
@@ -1357,21 +1370,18 @@ class Playlist extends BaseList {
 
 		appear.appendItem('Show artist name on difference', () => {
 			grSet.showDifferentArtist = !grSet.showDifferentArtist;
-
 			this.initialize_list();
 			this.scroll_to_focused_or_now_playing();
 		}, { is_checked: grSet.showDifferentArtist });
 
 		appear.appendItem('Show artist name in all rows', () => {
 			grSet.showArtistPlaylistRows = !grSet.showArtistPlaylistRows;
-
 			this.initialize_list();
 			this.scroll_to_focused_or_now_playing();
 		}, { is_checked: grSet.showArtistPlaylistRows });
 
 		appear.appendItem('Show album title in all rows', () => {
 			grSet.showAlbumPlaylistRows = !grSet.showAlbumPlaylistRows;
-
 			this.initialize_list();
 			this.scroll_to_focused_or_now_playing();
 		}, { is_checked: grSet.showAlbumPlaylistRows });
@@ -1487,6 +1497,16 @@ class Playlist extends BaseList {
 		appear_row.appendItem('Show PLR value', () => {
 			plSet.show_PLR = !plSet.show_PLR;
 		}, { is_checked: plSet.show_PLR });
+
+		appear_row.separator();
+
+		const playbackDisplayTimeMenu = new ContextMenu('Playback time display');
+		for (const playbackTimeDisplay of [['Default', 'default'], ['Remaining', 'remaining'], ['Percent', 'percent']]) {
+			playbackDisplayTimeMenu.appendItem(playbackTimeDisplay[0], () => {
+				grSet.playlistPlaybackTimeDisplay = playbackTimeDisplay[1];
+			}, { is_radio_checked: grSet.playlistPlaybackTimeDisplay === playbackTimeDisplay[1] });
+		}
+		appear_row.append(playbackDisplayTimeMenu);
 	}
 
 	/**
@@ -1617,23 +1637,16 @@ class Playlist extends BaseList {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	ctx_menu_weblinks(parent_menu, metadb) {
-		const web = new ContextMenu('Weblinks');
-		parent_menu.append(web);
+		const weblinks = new ContextMenu('Weblinks');
+		parent_menu.append(weblinks);
 
-		const web_links = [
-			['Google', 'google'],
-			['Google Images', 'googleImages'],
-			['Wikipedia', 'wikipedia'],
-			['YouTube', 'youTube'],
-			['Last.fm', 'lastFM'],
-			['Discogs', 'discogs'],
-			['MusicBrainz', 'musicbrainz']
-		];
+		const { websiteLabels, websiteValues } = grm.utils.generateWebsiteLinks(grCfg.customWebsiteLinks);
+		const websites = websiteLabels.map((label, index) => [label, websiteValues[index]]);
 
-		for (const item of web_links) {
-			web.appendItem(item[0], ((url) => {
+		for (const website of websites) {
+			weblinks.appendItem(website[0], ((url) => {
 				grm.utils.link(url, metadb);
-			}).bind(null, item[1]));
+			}).bind(null, website[1]));
 		}
 	}
 

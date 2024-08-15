@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-06-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -471,12 +471,14 @@ class ConfigDefaults {
 		// #region DISPLAY
 		/** @public @type {object} Options > Display settings with default value. */
 		this.themeDisplayDefaults = {
-			resolution: 'HD'
+			resolution: 'HD',
+			scaling: 100
 		};
 
 		/** @public @type {object} Options > Display settings config name description. */
 		this.themeDisplayComments = {
-			resolution: 'Values: "4K", "QHD", "HD" - Options > Display'
+			resolution: 'Values: "4K", "QHD", "HD" - Options > Display',
+			scaling: 'Values: 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 - Options > Display > Scaling'
 		};
 
 		/** @public @type {object} Options > Display settings config header description. */
@@ -519,45 +521,45 @@ class ConfigDefaults {
 		// #region FONT SIZE
 		/** @public @type {object} Options > Font size settings with default values. */
 		this.themeFontSizesDefaults = {
-			menuFontSize_default: RES._QHD ? 14 : 12,
-			menuFontSize_artwork: RES._QHD ? 14 : 12,
-			menuFontSize_compact: RES._QHD ? 14 : 12,
-			lowerBarFontSize_default: RES._QHD ? 20 : 18,
-			lowerBarFontSize_artwork: RES._QHD ? 18 : 16,
-			lowerBarFontSize_compact: RES._QHD ? 18 : 16,
-			notificationFontSize_default: RES._QHD ? 20 : 18,
-			notificationFontSize_artwork: RES._QHD ? 18 : 16,
-			notificationFontSize_compact: RES._QHD ? 18 : 16,
-			popupFontSize_default: RES._QHD ? 18 : 16,
-			popupFontSize_artwork: RES._QHD ? 16 : 14,
-			popupFontSize_compact: RES._QHD ? 16 : 14,
-			tooltipFontSize_default: RES._QHD ? 18 : 16,
-			tooltipFontSize_artwork: RES._QHD ? 16 : 14,
-			tooltipFontSize_compact: RES._QHD ? 16 : 14,
-			gridArtistFontSize_default: RES._QHD ? 20 : 18,
-			gridArtistFontSize_artwork: RES._QHD ? 20 : 18,
-			gridTrackNumFontSize_default: RES._QHD ? 20 : 18,
-			gridTrackNumFontSize_artwork: RES._QHD ? 20 : 18,
-			gridTitleFontSize_default: RES._QHD ? 20 : 18,
-			gridTitleFontSize_artwork: RES._QHD ? 20 : 18,
-			gridAlbumFontSize_default: RES._QHD ? 20 : 18,
-			gridAlbumFontSize_artwork: RES._QHD ? 20 : 18,
-			gridKeyFontSize_default: RES._QHD ? 19 : 17,
-			gridKeyFontSize_artwork: RES._QHD ? 19 : 17,
-			gridValueFontSize_default: RES._QHD ? 19 : 17,
-			gridValueFontSize_artwork: RES._QHD ? 19 : 17,
-			playlistHeaderFontSize_default: RES._QHD ? 17 : 15,
-			playlistHeaderFontSize_artwork: RES._QHD ? 17 : 15,
-			playlistHeaderFontSize_compact: RES._QHD ? 17 : 15,
-			playlistFontSize_default: RES._QHD ? 14 : 12,
-			playlistFontSize_artwork: RES._QHD ? 14 : 12,
-			playlistFontSize_compact: RES._QHD ? 14 : 12,
-			libraryFontSize_default: RES._4K ? 24 : RES._QHD ? 14 : 12,
-			libraryFontSize_artwork: RES._4K ? 24 : RES._QHD ? 14 : 12,
-			biographyFontSize_default: RES._4K ? 24 : RES._QHD ? 14 : 12,
-			biographyFontSize_artwork: RES._4K ? 24 : RES._QHD ? 14 : 12,
-			lyricsFontSize_default: RES._QHD ? 22 : 20,
-			lyricsFontSize_artwork: RES._QHD ? 22 : 20
+			menuFontSize_default: HD_QHD_4K(12, 14),
+			menuFontSize_artwork: HD_QHD_4K(12, 14),
+			menuFontSize_compact: HD_QHD_4K(12, 14),
+			lowerBarFontSize_default: HD_QHD_4K(18, 20),
+			lowerBarFontSize_artwork: HD_QHD_4K(16, 18),
+			lowerBarFontSize_compact: HD_QHD_4K(16, 18),
+			notificationFontSize_default: HD_QHD_4K(18, 20),
+			notificationFontSize_artwork: HD_QHD_4K(16, 18),
+			notificationFontSize_compact: HD_QHD_4K(16, 18),
+			popupFontSize_default: HD_QHD_4K(16, 18),
+			popupFontSize_artwork: HD_QHD_4K(14, 16),
+			popupFontSize_compact: HD_QHD_4K(14, 16),
+			tooltipFontSize_default: HD_QHD_4K(16, 18),
+			tooltipFontSize_artwork: HD_QHD_4K(14, 16),
+			tooltipFontSize_compact: HD_QHD_4K(14, 16),
+			gridArtistFontSize_default: HD_QHD_4K(18, 20),
+			gridArtistFontSize_artwork: HD_QHD_4K(18, 20),
+			gridTrackNumFontSize_default: HD_QHD_4K(18, 20),
+			gridTrackNumFontSize_artwork: HD_QHD_4K(18, 20),
+			gridTitleFontSize_default: HD_QHD_4K(18, 20),
+			gridTitleFontSize_artwork: HD_QHD_4K(18, 20),
+			gridAlbumFontSize_default: HD_QHD_4K(18, 20),
+			gridAlbumFontSize_artwork: HD_QHD_4K(18, 20),
+			gridKeyFontSize_default: HD_QHD_4K(17, 19),
+			gridKeyFontSize_artwork: HD_QHD_4K(17, 19),
+			gridValueFontSize_default: HD_QHD_4K(17, 19),
+			gridValueFontSize_artwork: HD_QHD_4K(17, 19),
+			playlistHeaderFontSize_default: HD_QHD_4K(15, 17),
+			playlistHeaderFontSize_artwork: HD_QHD_4K(15, 17),
+			playlistHeaderFontSize_compact: HD_QHD_4K(15, 17),
+			playlistFontSize_default: HD_QHD_4K(12, 14),
+			playlistFontSize_artwork: HD_QHD_4K(12, 14),
+			playlistFontSize_compact: HD_QHD_4K(12, 14),
+			libraryFontSize_default: HD_QHD_4K(12, 14, 24),
+			libraryFontSize_artwork: HD_QHD_4K(12, 14, 24),
+			biographyFontSize_default: HD_QHD_4K(12, 14, 24),
+			biographyFontSize_artwork: HD_QHD_4K(12, 14, 24),
+			lyricsFontSize_default: HD_QHD_4K(20, 22),
+			lyricsFontSize_artwork: HD_QHD_4K(20, 22)
 		};
 
 		/** @public @type {object} Options > Font size settings config name description. */
@@ -619,6 +621,7 @@ class ConfigDefaults {
 		this.themePlayerControlsDefaults = {
 			showPanelDetails_default: true,
 			showPanelDetails_artwork: true,
+			showPanelPlaylist_artwork: true,
 			showPanelLibrary_default: true,
 			showPanelLibrary_artwork: true,
 			showPanelBiography_default: true,
@@ -668,6 +671,7 @@ class ConfigDefaults {
 			showTooltipBiography: false,
 			showStyledTooltips: true,
 			panelWidthAuto: false,
+			panelBrowseMode: false,
 			showPanelOnStartup: 'playlist',
 			showPreloaderLogo: true,
 			returnToHomeOnPlaybackStop: true,
@@ -676,7 +680,6 @@ class ConfigDefaults {
 			fullscreenESCDisabled: false,
 			fullscreenMaximize: true,
 			lockPlayerSize: false,
-			switchPlaybackTime: false,
 			transportButtonSize_default: 32,
 			transportButtonSize_artwork: 32,
 			transportButtonSize_compact: 32,
@@ -729,7 +732,10 @@ class ConfigDefaults {
 			showWaveformBar_default: true,
 			showWaveformBar_artwork: true,
 			showWaveformBar_compact: true,
+			lowerBarArtistBtnAction: 'playlist',
+			lowerBarArtistBtnWebsite: 'lastfm',
 			addTracksPlaylist: 'Favorites',
+			playbackTimeDisplay: 'default',
 			seekbar: 'progressbar',
 			progressBarWheelSeekSpeed: 5,
 			progressBarRefreshRate: 'variable',
@@ -774,6 +780,7 @@ class ConfigDefaults {
 		this.themePlayerControlsComments = {
 			showPanelDetails_default: 'Values: true, false - Options > Player controls > Top menu > Default > Details',
 			showPanelDetails_artwork: 'Values: true, false - Options > Player controls > Top menu > Artwork > Details',
+			showPanelPlaylist_artwork: 'Values: true, false - Options > Player controls > Top menu > Artwork > Playlist',
 			showPanelLibrary_default: 'Values: true, false - Options > Player controls > Top menu > Default > Library',
 			showPanelLibrary_artwork: 'Values: true, false - Options > Player controls > Top menu > Artwork > Library',
 			showPanelBiography_default: 'Values: true, false - Options > Player controls > Top menu > Default > Biography',
@@ -822,7 +829,8 @@ class ConfigDefaults {
 			showTooltipLibrary: 'Values: true, false - Options > Player controls > Tooltip > Show library tooltips',
 			showTooltipBiography: 'Values: true, false - Options > Player controls > Tooltip > Show biography tooltips',
 			showStyledTooltips: 'Values: true, false - Options > Player controls > Tooltip > Show styled tooltips',
-			panelWidthAuto: 'Values: true, false - Options > Player controls > Panel > Width > Use auto panel width',
+			panelWidthAuto: 'Values: true, false - Options > Player controls > Panel > Mode > Auto panel width',
+			panelBrowseMode: 'Values: true, false - Options > Player controls > Panel > Mode > Browse mode',
 			showPanelOnStartup: 'Values: "cover", "playlist", "details", "library", "biography", "lyrics" - Options > Player controls > Panel > Show panel on startup',
 			showPreloaderLogo: 'Values: true, false - Options > Player controls > Panel > Show logo on preloader',
 			returnToHomeOnPlaybackStop: 'Values: true, false - Options > Player controls > Panel > Return to home on playback stop',
@@ -831,7 +839,6 @@ class ConfigDefaults {
 			fullscreenESCDisabled: 'Values: true, false - Options > Player controls > Panel > Disable fullscreen ESC',
 			fullscreenMaximize: 'Values: true, false - not in Options - enable or disable the maximize to fullscreen function',
 			lockPlayerSize: 'Values: true, false - Options > Player controls > Panel > Lock player size',
-			switchPlaybackTime: 'Values: true, false - not in Options - switch to playback time remaining when clicking on the playback time in the lower bar',
 			transportButtonSize_default: 'Values: 28, 30, 32, 34, 36, 38, 40, 42 - Options > Player controls > Transport button size > Default',
 			transportButtonSize_artwork: 'Values: 28, 30, 32, 34, 36 - Options > Player controls > Lower bar > Transport button size > Artwork',
 			transportButtonSize_compact: 'Values: 28, 30, 32, 34, 36 - Options > Player controls > Lower bar > Transport button size > Compact',
@@ -863,9 +870,9 @@ class ConfigDefaults {
 			showLowerBarTrackNum_default: 'Values: true, false - Options > Player controls > Lower bar > Show track number > Default',
 			showLowerBarTrackNum_artwork: 'Values: true, false - Options > Player controls > Lower bar > Show track number > Artwork',
 			showLowerBarTrackNum_compact: 'Values: true, false - Options > Player controls > Lower bar > Show track number > Compact',
-			showLowerBarTitle_default: 'Values: true, false - Options > Player controls > Lower bar > Show song title > Default',
-			showLowerBarTitle_artwork: 'Values: true, false - Options > Player controls > Lower bar > Show song title > Artwork',
-			showLowerBarTitle_compact: 'Values: true, false - Options > Player controls > Lower bar > Show song title > Compact',
+			showLowerBarTitle_default: 'Values: true, false - Options > Player controls > Lower bar > Show track title > Default',
+			showLowerBarTitle_artwork: 'Values: true, false - Options > Player controls > Lower bar > Show track title > Artwork',
+			showLowerBarTitle_compact: 'Values: true, false - Options > Player controls > Lower bar > Show track title > Compact',
 			showLowerBarComposer_default: 'Values: true, false - Options > Player controls > Lower bar > Show composer > Default',
 			showLowerBarComposer_artwork: 'Values: true, false - Options > Player controls > Lower bar > Show composer > Artwork',
 			showLowerBarComposer_compact: 'Values: true, false - Options > Player controls > Lower bar > Show composer > Compact',
@@ -884,7 +891,10 @@ class ConfigDefaults {
 			showWaveformBar_default: 'Values: true, false - Options > Player controls > Lower bar > Show waveform bar > Default',
 			showWaveformBar_artwork: 'Values: true, false - Options > Player controls > Lower bar > Show waveform bar > Artwork',
 			showWaveformBar_compact: 'Values: true, false - Options > Player controls > Lower bar > Show waveform bar > Compact',
+			lowerBarArtistBtnAction: 'Values: "playlist", "website", - Options > Player controls > Lower bar > Artist button action',
+			lowerBarArtistBtnWebsite: 'Values: "google", "googleImages", "wikipedia", "youTube", "lastfm", "allMusic", "discogs", "musicBrainz", "bandcamp", "custom", - Options > Player controls > Lower bar > Artist button action',
 			addTracksPlaylist: 'Values: "Favorites", "OrAnyOtherName", - Options > Player controls > Lower bar > Add tracks playlist',
+			playbackTimeDisplay: 'Values: "default", "remaining", "percent" - Options > Player controls > Lower bar > Playback time display',
 			seekbar: 'Values: "progressbar", "peakmeterBar", "waveformbar", - Options > Player controls > Seekbar > Type',
 			progressBarWheelSeekSpeed: 'Values: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Player controls > Seekbar > Progress bar > Mouse wheel seek speed',
 			progressBarRefreshRate: 'Values: 1000, 500, 333, "variable", 100, 60, 30 - Options > Player controls > Seekbar > Progress bar > Refresh rate',
@@ -969,10 +979,10 @@ class ConfigDefaults {
 			showDifferentArtist: false,
 			showArtistPlaylistRows: false,
 			showAlbumPlaylistRows: false,
-			playlistTimeRemaining: false,
 			showVinylNums: true,
 			lastFmScrobblesFallback: true,
 			playlistRowHover: true,
+			playlistPlaybackTimeDisplay: 'default',
 			playlistSortOrderAuto: false,
 			playlistSortOrder: '',
 			playlistSortOrderDirection: '_asc',
@@ -1021,10 +1031,10 @@ class ConfigDefaults {
 			showDifferentArtist: 'Values: true, false - Options > Playlist > Track row > Show artist name on difference',
 			showArtistPlaylistRows: 'Values: true, false - Options > Playlist > Track row > Show artist name in all rows',
 			showAlbumPlaylistRows: 'Values: true, false - Options > Playlist > Track row > Show album title in all rows',
-			playlistTimeRemaining: 'Values: true, false - Options > Playlist > Track row > Show time remaining on playing track',
 			showVinylNums: 'Values: true, false - Options > Playlist > Track row > Show vinyl style numbering if available',
 			lastFmScrobblesFallback: 'Values: true, false - Options > Playlist > Track row > Show last.fm scrobbles on no local plays',
 			playlistRowHover: 'Values: true, false - Options > Playlist > Track row > Row mouse hover',
+			playlistPlaybackTimeDisplay: 'Values: "default", "remaining", "percent" - Options > Playlist > Track row > Playback time display',
 			playlistSortOrderAuto: 'Values: true, false - Options > Playlist > Sort order > Always auto-sort',
 			playlistSortOrder: 'Values: "", "default", "artistDate_asc", "artistDate_dsc", "album", "title", "trackNumber", "year_asc", "year_dsc", "filePath", "custom" - Options > Playlist > Sort order',
 			playlistSortOrderDirection: 'Values: "_asc", "_dsc" - Options > Playlist > Sort order',
@@ -1187,8 +1197,8 @@ class ConfigDefaults {
 			showGridArtist_artwork: 'Values: true, false - Options > Details > Metadata grid > Show artist - when Artwork layout is active',
 			showGridTrackNum_default: 'Values: true, false - Options > Details > Metadata grid > Show track number - when Default layout is active',
 			showGridTrackNum_artwork: 'Values: true, false - Options > Details > Metadata grid > Show track number - when Artwork layout is active',
-			showGridTitle_default: 'Values: true, false - Options > Details > Metadata grid > Show song title - when Default layout is active',
-			showGridTitle_artwork: 'Values: true, false - Options > Details > Metadata grid > Show song title - when Artwork layout is active',
+			showGridTitle_default: 'Values: true, false - Options > Details > Metadata grid > Show track title - when Default layout is active',
+			showGridTitle_artwork: 'Values: true, false - Options > Details > Metadata grid > Show track title - when Artwork layout is active',
 			showGridPlayingPlaylist: 'Values: true, false - Options > Details > Metadata grid > Show playing playlist',
 			showGridTimeline_default: 'Values: true, false - Options > Details > Metadata grid > Show timeline - when Default layout is active',
 			showGridTimeline_artwork: 'Values: true, false - Options > Details > Metadata grid > Show timeline - when Artwork layout is active',
@@ -1632,7 +1642,6 @@ class ConfigDefaults {
 			playlistSortFilePath: '%path_sort% $if3(%original release date%,%originaldate%,%date%) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
 			playlistSortCustom: '$if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
 			playlistShowBitSampleAlways: false,
-			extraTrackInfo: '$ifequal(%samplerate%,44100,, |$ifgreater($info(bitspersample),16, $info(bitspersample)bit,) $div(%samplerate%,1000).$left($right(%samplerate%,3),1)kHz)[ | $replace(%replaygain_album_gain%, dB,dB)]',
 			hideCursor: false,
 			hidePanelBgWhenCollapsed: false,
 			doubleClickRefresh: false,
@@ -1675,7 +1684,6 @@ class ConfigDefaults {
 			playlistSortFilePath: 'Options > Playlist > Sort order > File path',
 			playlistSortCustom: 'Options > Playlist > Sort order > Custom',
 			playlistShowBitSampleAlways: 'Always show the bit depth and sample rate in the playlist header.',
-			extraTrackInfo: 'Portion of the trackInfo in the upper right, directly under the year. Only part of the info string is customizable',
 			hideCursor: 'Hides the mouse cursor when song is playing after 10 seconds of no mouse activity',
 			hidePanelBgWhenCollapsed: 'Hides panel background when playing an album and the playlist or library view is active',
 			doubleClickRefresh: 'Enables refreshing the theme by double-clicking, for example, on the lower bar',
@@ -1684,9 +1692,9 @@ class ConfigDefaults {
 			showDebugThemeOverlay: 'Displays various theme debug logs on the album art as an overlay.',
 			showDebugPerformanceOverlay: 'Displays various performance debug logs on the album art as an overlay.',
 			showPanelContextMenu: 'Displays the Spider Monkey Panel context menu when right clicking in the panel',
-			stoppedString1: 'The bolded portion of text shown above the progress bar when nothing is playing',
-			stoppedString1acr: 'The bolded portion of text shown above the progress bar when nothing is playing - when Artwork or Compact layout is active',
-			stoppedString2: 'The second (non-bold) portion of text shown above the progress bar when nothing is playing'
+			stoppedString1: 'The bolded portion of text shown above the seekbar when nothing is playing',
+			stoppedString1acr: 'The bolded portion of text shown above the seekbar when nothing is playing - when Artwork or Compact layout is active',
+			stoppedString2: 'The second (non-bold) portion of text shown above the seekbar when nothing is playing'
 		};
 
 		/** @public @type {object} General settings config header description. */
@@ -1767,6 +1775,26 @@ class ConfigDefaults {
 			'* CUSTOM WAVEFORM BAR DIRECTORY:                                                                                                                                                                        ' +
 			'* You can set your own custom waveform bar directory.                                                                                                                                                   ' +
 			'* Replace the path below and activate in top menu Options > Settings > Theme cache > Waveform bar > Use custom waveform bar directory. Restart foobar to take effect.                                   ' +
+			'* Note: This setting will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                          ' +
+			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
+		// #endregion
+
+		// * CUSTOM WEBSITE LINKS * //
+		// #region CUSTOM WEBSITE LINKS
+		/** @public @type {array} Custom website links. */
+		this.customWebsiteLinksDefaults = [
+			'https://www.website1.com/artist.php?artistname={artist}',
+			'https://www.website2.org/title/search&q={title}&album={album}',
+			'https://www.website3.net/search?query={artist}+{title}+{album}'
+		];
+
+		/** @public @type {object} Custom website links config header description. */
+		this.customWebsiteLinksSchema = new ConfigurationObjectSchema('customWebsiteLinks', ConfigurationObjectType.Array, undefined,
+			'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
+			'* CUSTOM WEBSITE LINKS:                                                                                                                                                                                 ' +
+			'* You can set your own custom website links for the artist lower bar button when the action is set to "Open website" and "Custom".                                                                      ' +
+			'* Replace the URL below and activate in top menu Options > Player controls > Lower bar > Artist button action > Custom. Restart foobar to take effect.                                                  ' +
+			'* The placeholders {artist}, {title} and {album} can be used, which will be replaced with the actual metadata when the URL is generated.                                                                ' +
 			'* Note: This setting will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                          ' +
 			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 		// #endregion

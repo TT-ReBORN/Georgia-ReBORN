@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred + WilB                                          * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-06-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -66,6 +66,35 @@ class Lyrics {
 
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
+	/**
+	 * Sets the size and position of the lyrics.
+	 */
+	setLyricsPosition() {
+		const fullW = grSet.layout === 'default' && grSet.lyricsLayout === 'full' && grm.ui.displayLyrics;
+		const noAlbumArtSize = grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight;
+		const margin = SCALE(40);
+
+		this.x =
+			(grm.ui.noAlbumArtStub ?
+				fullW ? grSet.panelWidthAuto && grSet.lyricsLayout === 'normal' ? noAlbumArtSize * 0.5 : grm.ui.ww * 0.333 :
+				grSet.panelWidthAuto ? grm.ui.albumArtSize.x : 0 :
+			grm.ui.albumArtSize.x) + margin;
+
+		this.y = (grm.ui.noAlbumArtStub ? grm.ui.topMenuHeight : grm.ui.albumArtSize.y) + margin;
+
+		this.w =
+			(grm.ui.noAlbumArtStub ?
+				grSet.layout === 'artwork' ? grm.ui.ww :
+				fullW ? grm.ui.ww * 0.333 :
+				grSet.panelWidthAuto ? noAlbumArtSize :
+				grm.ui.ww * 0.5 :
+			grm.ui.albumArtSize.w) - margin * 2;
+
+		this.h = (grm.ui.noAlbumArtStub ? grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight : grm.ui.albumArtSize.h) - margin * 2;
+
+		this.on_size(this.x, this.y, this.w, this.h);
+	}
+
 	/**
 	 * Initializes the lyrics as follows:
 	 * - Loads them from cache if found locally or from embedded tags.
@@ -246,19 +275,19 @@ class Lyrics {
 			this.userOffset = 0;
 		}
 
+		// When foobar starts in `Compact` layout with the startup panel set to `Lyrics`,
+		// the lyric fonts need to be recreated first when switching back to `Normal` layout.
+		if (!grFont.lyrics || !grFont.lyricsHighlight) grm.ui.createFonts();
+
 		/** @type {GdiFont} */
 		this.font = { lyrics: grSet.lyricsLargerCurrentSync ? grFont.lyricsHighlight : grFont.lyrics };
 
 		/** @type {GdiGraphics} */
 		GDI(1, 1, false, g => {
-			this.font.lyrics_h = Math.round(g.CalcTextHeight('STRING', this.font.lyrics) + (grSet.lyricsLargerCurrentSync ? 0 : this.textPad));
+			this.font.lyrics_h = Math.round(g.CalcTextHeight('Ag', this.font.lyrics));
 		});
 
-		this.x = grm.ui.albumArtSize.x + SCALE(40);
-		this.y = grm.ui.albumArtSize.y + SCALE(40);
-		this.w = grm.ui.albumArtSize.w - SCALE(80);
-		this.h = grm.ui.albumArtSize.h - SCALE(80);
-		if (grm.ui.noAlbumArtStub) this.resetLyricsPosition();
+		this.setLyricsPosition();
 
 		this.alignCenter = StringFormat(1, 1);
 		this.alignRight = StringFormat(2, 1);
@@ -296,8 +325,7 @@ class Lyrics {
 		const oddNumLines = linesDrawn % 2;
 		this.locusOffset = this.h / 2 - (oddNumLines ? this.lineHeight / 2 : this.lineHeight);
 		this.top = this.locusOffset - this.lineHeight * (Math.floor(linesDrawn / 2) - (oddNumLines ? 1 : 2)) + this.y - this.lineHeight;
-		this.bot = this.top + this.lineHeight * (linesDrawn - 3);
-
+		this.bot = this.top + this.lineHeight * (linesDrawn - 2);
 		this.parseLyrics(lyr);
 	}
 
@@ -410,13 +438,31 @@ class Lyrics {
 	}
 
 	/**
-	 * Defines the draw area when lyrics should be displayed.
-	 * @param {number} y - The distance from the top of the screen to the top of the lyrics.
-	 * @param {number} top - The top position of the lyrics display area.
-	 * @returns {boolean} True if the given `y` value is within the range of `top` and `top` plus the line height.
+	 * Draws a single lyric line.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {object} lyric - The lyric object.
+	 * @param {object} font - The font to use for drawing the lyric.
+	 * @param {number} line_y - The y-coordinate of the line.
+	 * @param {object} bounds - The object containing bounds information.
 	 */
-	displayLyrics(y, top) {
-		return y >= top && y + (grSet.lyricsFadeScroll ? this.lineHeight : 0) <= this.h + top;
+	drawLyric(gr, lyric, font, line_y, bounds) {
+		const transition_factor = Clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
+		const transition_factor_in = !this.lyrics[this.locus].multiLine ? transition_factor : 1;
+		const blendIn = this.type.synced ? GetBlend(grCol.lyricsHighlight, grCol.lyricsNormal, transition_factor_in) : grCol.lyricsNormal;
+
+		if (bounds.visibleBounds) {
+			this.drawLyricsShadow(gr, lyric.content, font, line_y);
+		}
+
+		const fadeFactor = grSet.lyricsFadeScroll &&
+			bounds.outsideVisibleBounds	? (bounds.aboveTop ? (this.top - line_y) / this.lineHeight :
+			(line_y - this.bot) / this.lineHeight) : 0;
+
+		const color =
+			bounds.outsideVisibleBounds	? RGBtoRGBA(grCol.lyricsNormal, 255 * (1 - Clamp(fadeFactor, 0, 1))) :
+			(lyric.highlight ? blendIn : grCol.lyricsNormal);
+
+		gr.DrawString(lyric.content, font, color, this.x, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
 	}
 
 	/**
@@ -424,60 +470,67 @@ class Lyrics {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawLyrics(gr) {
-		if (!(grm.ui.displayLyrics && this.lyrics.length && this.locus >= 0)) return;
+		if (!grm.ui.displayLyrics || this.lyrics.length === 0 || this.locus < 0) return;
+
+		const drawLyricsProfiler = grm.ui.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> lyrics');
 
 		const top = this.locus * this.lineHeight - this.locusOffset + this.scrollDragOffset;
-		const transition_factor = Clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
-		const transition_factor_in = !this.lyrics[this.locus].multiLine ? transition_factor : 1;
-		const transition_factor_out = Clamp(transition_factor_in * 3, 0, 1);
-		const alpha = Math.min(255 * transition_factor * 4 / 3, 255);
-		const blendIn = this.type.synced ? GetBlend(grCol.lyricsHighlight, grCol.lyricsNormal, transition_factor_in) : grCol.lyricsNormal;
-		const blendOut = this.type.synced ? GetBlend(grCol.lyricsNormal, grCol.lyricsHighlight, transition_factor_out) : grCol.lyricsNormal;
 		const y = this.y + this.scroll;
 
-		let color  = grCol.lyricsNormal;
-
-		let fadeBot = grSet.lyricsFadeScroll ? this.transBot[transition_factor] : color;
-		if (!fadeBot) {
-			fadeBot = RGBtoRGBA(color, alpha);
-			this.transBot[transition_factor] = fadeBot;
-		}
-
-		let fadeTop = grSet.lyricsFadeScroll ? this.transTop[transition_factor] : color;
-		if (!fadeTop) {
-			fadeTop = RGBtoRGBA(color, 255 - alpha);
-			this.transTop[transition_factor] = fadeTop;
-		}
-
+		// DEBUG gr.DrawRect(this.x, this.top, this.w, this.bot, 3, RGBA(255, 0, 0, 255));
 		gr.SetTextRenderingHint(5);
 
 		for (const [i, lyric] of this.lyrics.entries()) {
 			const font = lyric.highlight && grSet.lyricsLargerCurrentSync ? grFont.lyricsHighlight : grFont.lyrics;
 			const lyric_y = this.lineHeight * i;
-			const line_y = Math.round(y - top + lyric_y - ((this.stringSearching || this.stringNotFound) ? SCALE(24) : 0));
-			const bottomLine = line_y > this.bot + this.lineHeight * (grSet.lyricsFadeScroll ? 2 : 3);
+			const line_y = Math.round(y - top + lyric_y);
+			const bounds = this.checkBounds(line_y);
 
-			if (!this.displayLyrics(lyric_y, top)) continue;
-
-			if (this.shadowEffect && line_y >= this.top && !bottomLine) { // * Do not show drop shadow at top and bottom
-				if (this.dropNegativeShadowLevel) {
-					gr.DrawString(lyric.content, font, grCol.lyricsShadow, this.x - this.dropNegativeShadowLevel, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
-					gr.DrawString(lyric.content, font, grCol.lyricsShadow, this.x, line_y - this.dropNegativeShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
-				}
-
-				gr.DrawString(lyric.content, font, grCol.lyricsShadow, this.x + this.dropShadowLevel, line_y + this.dropShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
+			if (bounds.lyricsDrawBounds) {
+				// DEBUG gr.DrawRect(this.x, line_y, this.w, this.lineHeight, 1, RGBA(0, 255, 255, 100));
+				this.drawLyric(gr, lyric, font, line_y, bounds);
 			}
-
-			color = line_y >= this.top ? lyric.highlight ? blendIn : i === this.locus - 1 ? blendOut : bottomLine ? fadeBot : grCol.lyricsNormal : fadeTop;
-			gr.DrawString(lyric.content, font, color, this.x, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
 		}
 
-		if (this.showOffset) {
-			this.offsetW = gr.CalcTextWidth(`Offset: ${this.userOffset / 1000}s`, grFont.notification) + this.lineHeight;
-			gr.FillRoundRect(this.x + this.w - this.offsetW, this.y, this.offsetW, this.lineHeight + 1, this.arc, this.arc, grCol.popupBg);
-			gr.DrawRoundRect(this.x + this.w - this.offsetW, this.y, this.offsetW, this.lineHeight + 1, this.arc, this.arc, 1, 0x64000000);
-			gr.DrawString(`Offset: ${this.userOffset / 1000}s`, grFont.notification, grCol.popupText, this.x - this.lineHeight * 0.5, this.y, this.w, this.lineHeight + 1, this.alignRight);
+		this.drawLyricsOffset(gr);
+
+		if (drawLyricsProfiler) drawLyricsProfiler.Print();
+	}
+
+	/**
+	 * Draws the shadow effect for the lyrics.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {string} text - The lyric text to draw.
+	 * @param {GdiFont} font - The font to use for the text.
+	 * @param {number} line_y - The vertical position where the text should be drawn.
+	 */
+	drawLyricsShadow(gr, text, font, line_y) {
+		if (!this.shadowEffect) return;
+
+		if (this.dropNegativeShadowLevel) {
+			gr.DrawString(text, font, grCol.lyricsShadow, this.x - this.dropNegativeShadowLevel, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
+			gr.DrawString(text, font, grCol.lyricsShadow, this.x, line_y - this.dropNegativeShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
 		}
+
+		gr.DrawString(text, font, grCol.lyricsShadow, this.x + this.dropShadowLevel, line_y + this.dropShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
+	}
+
+	/**
+	 * Draws the offset information on the screen.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawLyricsOffset(gr) {
+		if (!this.showOffset) return;
+
+		const margin = SCALE(20);
+		this.offsetW = gr.CalcTextWidth(`Offset: ${this.userOffset / 1000}s`, grFont.notification) + this.lineHeight;
+		const offsetH = this.lineHeight + 1;
+		const offsetX = this.x + this.w - this.offsetW - margin;
+		const offsetY = this.y + margin;
+
+		gr.FillRoundRect(offsetX, offsetY, this.offsetW, offsetH, this.arc, this.arc, grCol.popupBg);
+		gr.DrawRoundRect(offsetX, offsetY, this.offsetW, offsetH, this.arc, this.arc, 1, 0x64000000);
+		gr.DrawString(`Offset: ${this.userOffset / 1000}s`, grFont.notification, grCol.popupText, offsetX, offsetY, this.w, offsetH, this.alignRight);
 	}
 
 	/**
@@ -494,6 +547,24 @@ class Lyrics {
 		this.getScrollSpeed();
 		this.setHighlight();
 		this.repaintRect();
+	}
+
+	/**
+	 * Checks various positional bounds for a given line's y-coordinate.
+	 * @param {number} line_y - The y-coordinate of the line.
+	 * @returns {object} An object containing various bounds-related properties:
+	 * - {boolean} aboveTop - Whether the line is above the top boundary.
+	 * - {boolean} visibleBounds - Whether the line is within the visible bounds.
+	 * - {boolean} outsideVisibleBounds - Whether the line is outside the visible bounds.
+	 * - {boolean} lyricsDrawBounds - Whether the line is inside the lyrics draw bounds.
+	 */
+	checkBounds(line_y) {
+		return {
+			aboveTop: (line_y < this.top),
+			visibleBounds: (line_y >= this.top) && (line_y <= this.bot),
+			outsideVisibleBounds: (line_y < this.top || line_y > this.bot),
+			lyricsDrawBounds: (line_y >= this.top - this.lineHeight * 0.5) && (line_y <= this.bot + this.lineHeight)
+		};
 	}
 
 	/**
@@ -597,36 +668,6 @@ class Lyrics {
 	 */
 	repaintRect() {
 		window.RepaintRect(this.x, this.y, this.w, this.h);
-	}
-
-	/**
-	 * Resets the size and position of the lyrics.
-	 */
-	resetLyricsPosition() {
-		const fullW = grSet.layout === 'default' && grSet.lyricsLayout === 'full' && grm.ui.displayLyrics;
-		const noAlbumArtSize = grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight;
-
-		const lyricsX =
-			grm.ui.noAlbumArtStub ?
-				fullW ? grSet.panelWidthAuto && grSet.lyricsLayout === 'normal' ? noAlbumArtSize * 0.5 : grm.ui.ww * 0.333 :
-				grSet.panelWidthAuto ? grm.ui.albumArtSize.x : 0 :
-			grm.ui.albumArtSize.x;
-
-		const lyricsY = grm.ui.noAlbumArtStub ? grm.ui.topMenuHeight : grm.ui.albumArtSize.y;
-
-		const lyricsW =
-			grm.ui.noAlbumArtStub ?
-				grSet.layout === 'artwork' ? grm.ui.ww :
-				fullW ? grm.ui.ww * 0.333 :
-				grSet.panelWidthAuto ? noAlbumArtSize :
-				grm.ui.ww * 0.5 :
-			grm.ui.albumArtSize.w;
-
-		const lyricsH = grm.ui.noAlbumArtStub ? grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight : grm.ui.albumArtSize.h;
-
-		if (grm.lyrics) {
-			this.on_size(lyricsX, lyricsY, lyricsW, lyricsH);
-		}
 	}
 
 	/**
@@ -740,7 +781,7 @@ class Lyrics {
 	on_mouse_move(x, y, m) {
 		if (!this.scrollDrag) return;
 
-		if (utils.IsKeyPressed(VK_MENU)) {
+		if (utils.IsKeyPressed(VKey.MENU)) {
 			this.scrollDragOffset = 0;
 			this.userOffset = 0;
 		} else {
@@ -756,7 +797,7 @@ class Lyrics {
 	 * @param {number} step - The amount of scrolling offset that should be performed.
 	 */
 	on_mouse_wheel(step) {
-		const scrollStepOffset = utils.IsKeyPressed(VK_SHIFT) ? 5000 : this.type.synced ? 500 : 1000;
+		const scrollStepOffset = utils.IsKeyPressed(VKey.SHIFT) ? 5000 : this.type.synced ? 500 : 1000;
 		step *= Clamp(Math.round(scrollStepOffset / ((Date.now() - this.stepTime) * 5)), 1, 5);
 		this.stepTime = Date.now();
 		this.userOffset += scrollStepOffset * -step;
@@ -772,7 +813,7 @@ class Lyrics {
 
 	/**
 	 * Checks if the playback is paused and stops or starts accordingly.
-	 * @param {boolean} isPaused - Wether playback is currently paused or not.
+	 * @param {boolean} isPaused - Whether playback is currently paused or not.
 	 */
 	on_playback_pause(isPaused) {
 		if (isPaused) this.stop();
@@ -795,10 +836,10 @@ class Lyrics {
 	 * @param {number} h - The height.
 	 */
 	on_size(x, y, w, h) {
-		this.x = x + SCALE(40);
-		this.y = y + SCALE(40);
-		this.w = w - SCALE(80);
-		this.h = h - SCALE(80);
+		this.x = x;
+		this.y = y;
+		this.w = w;
+		this.h = h;
 		this.repaintRect();
 	}
 	// #endregion

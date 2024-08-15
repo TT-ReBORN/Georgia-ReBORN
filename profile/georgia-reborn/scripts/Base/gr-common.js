@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    TheQwertiest                                            * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-04-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -708,421 +708,498 @@ const CountryCodes = {
 
 
 ///////////////////
-// * MENU ITEM * //
+// * MENU FLAG * //
 ///////////////////
 /**
- * The menu item is disabled.
- * @type {number}
- * @global
+ * A set of menu item enums.
+ * @typedef  {object} MenuFlag
+ * @property {number} Disabled - The menu item is disabled.
+ * @property {number} Grayed - The menu item is grayed out.
+ * @property {number} Popup - The menu item is a popup menu item.
+ * @property {number} String - The menu item is a string.
  */
-const MF_DISABLED = 0x00000002;
+/** @global @type {MenuFlag} */
+const MenuFlag = {
+	Disabled: 0x00000002,
+	Grayed: 0x00000001,
+	Popup: 0x00000010,
+	String: 0x00000000
+};
 
+
+///////////////////
+// * MOUSE KEY * //
+///////////////////
 /**
- * The menu item is grayed out.
- * @type {number}
- * @global
+ * A set of mouse key enums.
+ * @typedef  {object} MouseKey
+ * @property {number} Control - The CTRL key is down.
+ * @property {number} LButton - The left mouse button is down.
+ * @property {number} MButton - The middle mouse button is down.
+ * @property {number} RButton - The right mouse button is down.
+ * @property {number} Shift - The SHIFT key is down.
+ * @property {number} XButton1 - The first X button is down.
+ * @property {number} XButton2 - The second X button is down.
  */
-const MF_GRAYED = 0x00000001;
-
-/**
- * The menu item is a popup menu item.
- * @type {number}
- * @global
- */
-const MF_POPUP = 0x00000010;
-
-/**
- * The menu item is a string.
- * @type {number}
- * @global
- */
-const MF_STRING = 0x00000000;
-
-
-////////////////////
-// * MOUSE MASK * //
-////////////////////
-/**
- * The CTRL key is down.
- * @type {number}
- * @global
- */
-const MK_CONTROL = 0x0008;
-
-/**
- * The left mouse button is down.
- * @type {number}
- * @global
- */
-const MK_LBUTTON = 0x0001;
-
-/**
- * The middle mouse button is down.
- * @type {number}
- * @global
- */
-const MK_MBUTTON = 0x0010;
-
-/**
- * The right mouse button is down.
- * @type {number}
- * @global
- */
-const MK_RBUTTON = 0x0002;
-
-/**
- * The SHIFT key is down.
- * @type {number}
- * @global
- */
-const MK_SHIFT = 0x0004;
-
-/**
- * The first X button is down.
- * @type {number}
- * @global
- */
-const MK_XBUTTON1 = 0x0020;
-
-/**
- * The second X button is down.
- * @type {number}
- * @global
- */
-const MK_XBUTTON2 = 0x0040;
+/** @global @type {MouseKey} */
+const MouseKey = {
+	Control: 0x0008,
+	LButton: 0x0001,
+	MButton: 0x0010,
+	RButton: 0x0002,
+	Shift: 0x0004,
+	XButton1: 0x0020,
+	XButton2: 0x0040
+};
 
 
 //////////////////////
 // * MOUSE CURSOR * //
 //////////////////////
 /**
- * The standard arrow cursor with small hourglass to indicate application is starting.
- * @type {number}
- * @global
+ * A set of mouse cursor symbol enums.
+ * @typedef  {object} Cursor
+ * @property {number} AppStarting - The standard arrow cursor with a small hourglass to indicate the application is starting.
+ * @property {number} Arrow - The standard arrow cursor.
+ * @property {number} Cross - The crosshair cursor.
+ * @property {number} Hand - The pointing hand cursor.
+ * @property {number} Help - The arrow cursor with a question mark to indicate help.
+ * @property {number} Hide - The cursor will be hidden.
+ * @property {number} IBeam - The text insertion cursor (I-beam).
+ * @property {number} Icon - The application icon cursor.
+ * @property {number} No - The slashed circle cursor indicating "no".
+ * @property {number} Size - The double-headed horizontal arrow cursor.
+ * @property {number} SizeAll - The four-headed arrow cursor (North/South/East/West).
+ * @property {number} SizeWE - The double-headed horizontal arrow cursor (West/East).
+ * @property {number} SizeNESW - The double-headed diagonal arrow cursor (Northeast/Southwest).
+ * @property {number} SizeNWSE - The double-headed diagonal arrow cursor (Northwest/Southeast).
+ * @property {number} SizeNS - The double-headed vertical arrow cursor (North/South).
+ * @property {number} UpArrow - The up arrow cursor.
+ * @property {number} Wait - The wait/busy cursor.
  */
-const IDC_APPSTARTING = 32650;
-
-/**
- * The standard arrow cursor.
- * @type {number}
- * @global
- */
-const IDC_ARROW = 32512;
-
-/**
- * The crosshair cursor.
- * @type {number}
- * @global
- */
-const IDC_CROSS = 32515;
-
-/**
- * The pointing hand cursor.
- * @type {number}
- * @global
- */
-const IDC_HAND = 32649;
-
-/**
- * The arrow cursor with a question mark to indicate help.
- * @type {number}
- * @global
- */
-const IDC_HELP = 32651;
-
-/**
- * The text insertion cursor (I-beam).
- * @type {number}
- * @global
- */
-const IDC_IBEAM = 32513;
-
-/**
- * The application icon cursor.
- * @type {number}
- * @global
- */
-const IDC_ICON = 32641;
-
-/**
- * The slashed circle cursor indicating "no".
- * @type {number}
- * @global
- */
-const IDC_NO = 32648;
-
-/**
- * The double-headed horizontal arrow cursor.
- * @type {number}
- * @global
- */
-const IDC_SIZE = 32640;
-
-/**
- * The four-headed arrow cursor (North/South/East/West).
- * @type {number}
- * @global
- */
-const IDC_SIZEALL = 32646;
-
-/**
- * The double-headed horizontal arrow cursor (West/East).
- * @type {number}
- * @global
- */
-const IDC_SIZEWE = 32644;
-
-/**
- * The double-headed diagonal arrow cursor (Northeast/Southwest).
- * @type {number}
- * @global
- */
-const IDC_SIZENESW = 32643;
-
-/**
- * The double-headed diagonal arrow cursor (Northwest/Southeast).
- * @type {number}
- * @global
- */
-const IDC_SIZENWSE = 32642;
-
-/**
- * The double-headed vertical arrow cursor (North/South).
- * @type {number}
- * @global
- */
-const IDC_SIZENS = 32645;
-
-/**
- * The up arrow cursor.
- * @type {number}
- * @global
- */
-const IDC_UPARROW = 32516;
-
-/**
- * The wait/busy cursor.
- * @type {number}
- * @global
- */
-const IDC_WAIT = 32514;
+/** @global @type {Cursor} */
+const Cursor = {
+	AppStarting: 32650,
+	Arrow: 32512,
+	Cross: 32515,
+	Hand: 32649,
+	Help: 32651,
+	Hide: -1,
+	IBeam: 32513,
+	Icon: 32641,
+	No: 32648,
+	Size: 32640,
+	SizeAll: 32646,
+	SizeWE: 32644,
+	SizeNESW: 32643,
+	SizeNWSE: 32642,
+	SizeNS: 32645,
+	UpArrow: 32516,
+	Wait: 32514
+};
 
 
 ///////////////////////////
 // * VIRTUAL KEY CODES * //
 ///////////////////////////
-const VK_LBUTTON    = 0x01; // Left mouse button
-const VK_RBUTTON    = 0x02; // Right mouse button
-const VK_CANCEL     = 0x03; // Control-break processing
-const VK_MBUTTON    = 0x04; // Middle mouse button (three-button mouse)
-const VK_XBUTTON1   = 0x05; // X1 mouse button
-const VK_XBUTTON2   = 0x06; // X2 mouse button
+/**
+ * A set of virtual key codes.
+ * @typedef  {object} VKey
+ * @property {number} LBUTTON - The left mouse button.
+ * @property {number} RBUTTON - The right mouse button.
+ * @property {number} CANCEL - The control-break processing.
+ * @property {number} MBUTTON - The middle mouse button (three-button mouse).
+ * @property {number} XBUTTON1 - The X1 mouse button.
+ * @property {number} XBUTTON2 - The X2 mouse button.
+ * @property {number} COPY - The Copy command.
+ * @property {number} CUT - The Cut command.
+ * @property {number} PASTE - The Paste command.
+ * @property {number} SELECT_ALL - The Select All command.
+ * @property {number} BACK - The BACKSPACE key.
+ * @property {number} TAB - The TAB key.
+ * @property {number} CLEAR - The CLEAR key.
+ * @property {number} RETURN - The ENTER key.
+ * @property {number} SHIFT - The SHIFT key.
+ * @property {number} CONTROL - The CTRL key.
+ * @property {number} MENU - The ALT key.
+ * @property {number} PAUSE - The PAUSE key.
+ * @property {number} CAPITAL - The CAPS LOCK key.
+ * @property {number} KANA - The IME Kana mode.
+ * @property {number} HANGUEL - The IME Hanguel mode (maintained for compatibility; use HANGUL).
+ * @property {number} HANGUL - The IME Hangul mode.
+ * @property {number} IME_ON - The IME On.
+ * @property {number} JUNJA - The IME Junja mode.
+ * @property {number} FINAL - The IME final mode.
+ * @property {number} HANJA - The IME Hanja mode.
+ * @property {number} KANJI - The IME Kanji mode.
+ * @property {number} IME_OFF - The IME Off.
+ * @property {number} ESCAPE - The ESC key.
+ * @property {number} CONVERT - The IME convert.
+ * @property {number} NONCONVERT - The IME nonconvert.
+ * @property {number} ACCEPT - The IME accept.
+ * @property {number} MODECHANGE - The IME mode change request.
+ * @property {number} SPACE - The SPACEBAR key.
+ * @property {number} PRIOR - The PAGE UP key.
+ * @property {number} NEXT - The PAGE DOWN key.
+ * @property {number} END - The END key.
+ * @property {number} HOME - The HOME key.
+ * @property {number} LEFT - The LEFT ARROW key.
+ * @property {number} UP - The UP ARROW key.
+ * @property {number} RIGHT - The RIGHT ARROW key.
+ * @property {number} DOWN - The DOWN ARROW key.
+ * @property {number} SELECT - The SELECT key.
+ * @property {number} PRINT - The PRINT key.
+ * @property {number} EXECUTE - The EXECUTE key.
+ * @property {number} SNAPSHOT - The PRINT SCREEN key.
+ * @property {number} INSERT - The INS key.
+ * @property {number} DELETE - The DEL key.
+ * @property {number} HELP - The HELP key.
+ * @property {number} KEY_0 - The 0 key.
+ * @property {number} KEY_1 - The 1 key.
+ * @property {number} KEY_2 - The 2 key.
+ * @property {number} KEY_3 - The 3 key.
+ * @property {number} KEY_4 - The 4 key.
+ * @property {number} KEY_5 - The 5 key.
+ * @property {number} KEY_6 - The 6 key.
+ * @property {number} KEY_7 - The 7 key.
+ * @property {number} KEY_8 - The 8 key.
+ * @property {number} KEY_9 - The 9 key.
+ * @property {number} KEY_A - The A key.
+ * @property {number} KEY_B - The B key.
+ * @property {number} KEY_C - The C key.
+ * @property {number} KEY_D - The D key.
+ * @property {number} KEY_E - The E key.
+ * @property {number} KEY_F - The F key.
+ * @property {number} KEY_G - The G key.
+ * @property {number} KEY_H - The H key.
+ * @property {number} KEY_I - The I key.
+ * @property {number} KEY_J - The J key.
+ * @property {number} KEY_K - The K key.
+ * @property {number} KEY_L - The L key.
+ * @property {number} KEY_M - The M key.
+ * @property {number} KEY_N - The N key.
+ * @property {number} KEY_O - The O key.
+ * @property {number} KEY_P - The P key.
+ * @property {number} KEY_Q - The Q key.
+ * @property {number} KEY_R - The R key.
+ * @property {number} KEY_S - The S key.
+ * @property {number} KEY_T - The T key.
+ * @property {number} KEY_U - The U key.
+ * @property {number} KEY_V - The V key.
+ * @property {number} KEY_W - The W key.
+ * @property {number} KEY_X - The X key.
+ * @property {number} KEY_Y - The Y key.
+ * @property {number} KEY_Z - The Z key.
+ * @property {number} LWIN - The left Windows key (Natural keyboard).
+ * @property {number} RWIN - The right Windows key (Natural keyboard).
+ * @property {number} APPS - The applications key (Natural keyboard).
+ * @property {number} SLEEP - The computer sleep key.
+ * @property {number} NUMPAD0 - The numeric keypad 0 key.
+ * @property {number} NUMPAD1 - The numeric keypad 1 key.
+ * @property {number} NUMPAD2 - The numeric keypad 2 key.
+ * @property {number} NUMPAD3 - The numeric keypad 3 key.
+ * @property {number} NUMPAD4 - The numeric keypad 4 key.
+ * @property {number} NUMPAD5 - The numeric keypad 5 key.
+ * @property {number} NUMPAD6 - The numeric keypad 6 key.
+ * @property {number} NUMPAD7 - The numeric keypad 7 key.
+ * @property {number} NUMPAD8 - The numeric keypad 8 key.
+ * @property {number} NUMPAD9 - The numeric keypad 9 key.
+ * @property {number} MULTIPLY - The MULTIPLY key.
+ * @property {number} ADD - The ADD key.
+ * @property {number} SEPARATOR - The Separator key.
+ * @property {number} SUBTRACT - The Subtract key.
+ * @property {number} DECIMAL - The Decimal key.
+ * @property {number} DIVIDE - The Divide key.
+ * @property {number} F1 - The F1 key.
+ * @property {number} F2 - The F2 key.
+ * @property {number} F3 - The F3 key.
+ * @property {number} F4 - The F4 key.
+ * @property {number} F5 - The F5 key.
+ * @property {number} F6 - The F6 key.
+ * @property {number} F7 - The F7 key.
+ * @property {number} F8 - The F8 key.
+ * @property {number} F9 - The F9 key.
+ * @property {number} F10 - The F10 key.
+ * @property {number} F11 - The F11 key.
+ * @property {number} F12 - The F12 key.
+ * @property {number} F13 - The F13 key.
+ * @property {number} F14 - The F14 key.
+ * @property {number} F15 - The F15 key.
+ * @property {number} F16 - The F16 key.
+ * @property {number} F17 - The F17 key.
+ * @property {number} F18 - The F18 key.
+ * @property {number} F19 - The F19 key.
+ * @property {number} F20 - The F20 key.
+ * @property {number} F21 - The F21 key.
+ * @property {number} F22 - The F22 key.
+ * @property {number} F23 - The F23 key.
+ * @property {number} F24 - The F24 key.
+ * @property {number} NUMLOCK - The NUM LOCK key.
+ * @property {number} SCROLL - The SCROLL LOCK key.
+ * @property {number} LSHIFT - The Left SHIFT key.
+ * @property {number} RSHIFT - The Right SHIFT key.
+ * @property {number} LCONTROL - The Left CONTROL key.
+ * @property {number} RCONTROL - The Right CONTROL key.
+ * @property {number} LMENU - The Left ALT key.
+ * @property {number} RMENU - The Right ALT key.
+ * @property {number} BROWSER_BACK - The Browser Back key.
+ * @property {number} BROWSER_FORWARD - The Browser Forward key.
+ * @property {number} BROWSER_REFRESH - The Browser Refresh key.
+ * @property {number} BROWSER_STOP - The Browser Stop key.
+ * @property {number} BROWSER_SEARCH - The Browser Search key.
+ * @property {number} BROWSER_FAVORITES - The Browser Favorites key.
+ * @property {number} BROWSER_HOME - The Browser Start and Home key.
+ * @property {number} VOLUME_MUTE - The Volume Mute key.
+ * @property {number} VOLUME_DOWN - The Volume Down key.
+ * @property {number} VOLUME_UP - The Volume Up key.
+ * @property {number} MEDIA_NEXT_TRACK - The Next Track key.
+ * @property {number} MEDIA_PREV_TRACK - The Previous Track key.
+ * @property {number} MEDIA_STOP - The Stop Media key.
+ * @property {number} MEDIA_PLAY_PAUSE - The Play/Pause Media key.
+ * @property {number} LAUNCH_MAIL - The Start Mail key.
+ * @property {number} LAUNCH_MEDIA_SELECT - The Select Media key.
+ * @property {number} LAUNCH_APP1 - The Start Application 1 key.
+ * @property {number} LAUNCH_APP2 - The Start Application 2 key.
+ * @property {number} OEM_1 - The ';:' key for the US standard keyboard.
+ * @property {number} OEM_PLUS - The '+' key for any country/region.
+ * @property {number} OEM_COMMA - The ',' key for any country/region.
+ * @property {number} OEM_MINUS - The '-' key for any country/region.
+ * @property {number} OEM_PERIOD - The '.' key for any country/region.
+ * @property {number} OEM_2 - The '/?' key for the US standard keyboard.
+ * @property {number} OEM_3 - The '`~' key for the US standard keyboard.
+ * @property {number} OEM_4 - The '[{' key for the US standard keyboard.
+ * @property {number} OEM_5 - The '\|' key for the US standard keyboard.
+ * @property {number} OEM_6 - The ']}' key for the US standard keyboard.
+ * @property {number} OEM_7 - The 'single-quote/double-quote' key for the US standard keyboard.
+ * @property {number} OEM_8 - The Miscellaneous characters key.
+ * @property {number} OEM_102 - The '<>' or '\\|' key for the US standard or non-US 102-key keyboard.
+ * @property {number} PROCESSKEY - The IME PROCESS key.
+ * @property {number} PACKET - The Packet key for passing Unicode characters as if they were keystrokes.
+ * @property {number} ATTN - The Attn key.
+ * @property {number} CRSEL - The CrSel key.
+ * @property {number} EXSEL - The ExSel key.
+ * @property {number} EREOF - The Erase EOF key.
+ * @property {number} PLAY - The Play key.
+ * @property {number} ZOOM - The Zoom key.
+ * @property {number} NONAME - Reserved.
+ * @property {number} PA1 - The PA1 key.
+ * @property {number} OEM_CLEAR - The Clear key.
+ */
+/** @global @type {VKey} */
+const VKey = {
+	LBUTTON:    0x01,
+	RBUTTON:    0x02,
+	CANCEL:     0x03,
+	MBUTTON:    0x04,
+	XBUTTON1:   0x05,
+	XBUTTON2:   0x06,
 
-const VK_COPY       = 0x03; // Copy command
-const VK_CUT        = 0x18; // Cut command
-const VK_PASTE      = 0x16; // Paste command
-const VK_SELECT_ALL = 0x01; // Select All command
+	COPY:       0x03,
+	CUT:        0x18,
+	PASTE:      0x16,
+	SELECT_ALL: 0x01,
 
-const VK_BACK       = 0x08; // BACKSPACE key
-const VK_TAB        = 0x09; // TAB key
-const VK_CLEAR      = 0x0C; // CLEAR key
-const VK_RETURN     = 0x0D; // ENTER key
-const VK_SHIFT      = 0x10; // SHIFT key
-const VK_CONTROL    = 0x11; // CTRL key
-const VK_MENU       = 0x12; // ALT key
-const VK_PAUSE      = 0x13; // PAUSE key
-const VK_CAPITAL    = 0x14; // CAPS LOCK key
-const VK_KANA       = 0x15; // IME Kana mode
-const VK_HANGUEL    = 0x15; // IME Hanguel mode (maintained for compatibility; use const VK_HANGUL)
-const VK_HANGUL     = 0x15; // IME Hangul mode
-const VK_IME_ON     = 0x16; // IME On
-const VK_JUNJA      = 0x17; // IME Junja mode
-const VK_FINAL      = 0x18; // IME final mode
-const VK_HANJA      = 0x19; // IME Hanja mode
-const VK_KANJI      = 0x19; // IME Kanji mode
-const VK_IME_OFF    = 0x1A; // IME Off
-const VK_ESCAPE     = 0x1B; // ESC key
-const VK_CONVERT    = 0x1C; // IME convert
-const VK_NONCONVERT = 0x1D; // IME nonconvert
-const VK_ACCEPT     = 0x1E; // IME accept
-const VK_MODECHANGE = 0x1F; // IME mode change request
-const VK_SPACE      = 0x20; // SPACEBAR
-const VK_PRIOR      = 0x21; // PAGE UP key
-const VK_NEXT       = 0x22; // PAGE DOWN key
-const VK_END        = 0x23; // END key
-const VK_HOME       = 0x24; // HOME key
-const VK_LEFT       = 0x25; // LEFT ARROW key
-const VK_UP         = 0x26; // UP ARROW key
-const VK_RIGHT      = 0x27; // RIGHT ARROW key
-const VK_DOWN       = 0x28; // DOWN ARROW key
-const VK_SELECT     = 0x29; // SELECT key
-const VK_PRINT      = 0x2A; // PRINT key
-const VK_EXECUTE    = 0x2B; // EXECUTE key
-const VK_SNAPSHOT   = 0x2C; // PRINT SCREEN key
-const VK_INSERT     = 0x2D; // INS key
-const VK_DELETE     = 0x2E; // DEL key
-const VK_HELP       = 0x2F; // HELP key
+	BACK:       0x08,
+	TAB:        0x09,
+	CLEAR:      0x0C,
+	RETURN:     0x0D,
+	SHIFT:      0x10,
+	CONTROL:    0x11,
+	MENU:       0x12,
+	PAUSE:      0x13,
+	CAPITAL:    0x14,
+	KANA:       0x15,
+	HANGUEL:    0x15, // Maintained for compatibility
+	HANGUL:     0x15,
+	IME_ON:     0x16,
+	JUNJA:      0x17,
+	FINAL:      0x18,
+	HANJA:      0x19,
+	KANJI:      0x19,
+	IME_OFF:    0x1A,
+	ESCAPE:     0x1B,
+	CONVERT:    0x1C,
+	NONCONVERT: 0x1D,
+	ACCEPT:     0x1E,
+	MODECHANGE: 0x1F,
+	SPACE:      0x20,
+	PRIOR:      0x21,
+	NEXT:       0x22,
+	END:        0x23,
+	HOME:       0x24,
+	LEFT:       0x25,
+	UP:         0x26,
+	RIGHT:      0x27,
+	DOWN:       0x28,
+	SELECT:     0x29,
+	PRINT:      0x2A,
+	EXECUTE:    0x2B,
+	SNAPSHOT:   0x2C,
+	INSERT:     0x2D,
+	DELETE:     0x2E,
+	HELP:       0x2F,
 
-const VK_KEY_0 = 0x30; // 0 key
-const VK_KEY_1 = 0x31; // 1 key
-const VK_KEY_2 = 0x32; // 2 key
-const VK_KEY_3 = 0x33; // 3 key
-const VK_KEY_4 = 0x34; // 4 key
-const VK_KEY_5 = 0x35; // 5 key
-const VK_KEY_6 = 0x36; // 6 key
-const VK_KEY_7 = 0x37; // 7 key
-const VK_KEY_8 = 0x38; // 8 key
-const VK_KEY_9 = 0x39; // 9 key
+	KEY_0:      0x30,
+	KEY_1:      0x31,
+	KEY_2:      0x32,
+	KEY_3:      0x33,
+	KEY_4:      0x34,
+	KEY_5:      0x35,
+	KEY_6:      0x36,
+	KEY_7:      0x37,
+	KEY_8:      0x38,
+	KEY_9:      0x39,
 
-const VK_KEY_A = 0x41; // A key
-const VK_KEY_B = 0x42; // B key
-const VK_KEY_C = 0x43; // C key
-const VK_KEY_D = 0x44; // D key
-const VK_KEY_E = 0x45; // E key
-const VK_KEY_F = 0x46; // F key
-const VK_KEY_G = 0x47; // G key
-const VK_KEY_H = 0x48; // H key
-const VK_KEY_I = 0x49; // I key
-const VK_KEY_J = 0x4A; // J key
-const VK_KEY_K = 0x4B; // K key
-const VK_KEY_L = 0x4C; // L key
-const VK_KEY_M = 0x4D; // M key
-const VK_KEY_N = 0x4E; // N key
-const VK_KEY_O = 0x4F; // O key
-const VK_KEY_P = 0x50; // P key
-const VK_KEY_Q = 0x51; // Q key
-const VK_KEY_R = 0x52; // R key
-const VK_KEY_S = 0x53; // S key
-const VK_KEY_T = 0x54; // T key
-const VK_KEY_U = 0x55; // U key
-const VK_KEY_V = 0x56; // V key
-const VK_KEY_W = 0x57; // W key
-const VK_KEY_X = 0x58; // X key
-const VK_KEY_Y = 0x59; // Y key
-const VK_KEY_Z = 0x5A; // Z key
+	KEY_A:      0x41,
+	KEY_B:      0x42,
+	KEY_C:      0x43,
+	KEY_D:      0x44,
+	KEY_E:      0x45,
+	KEY_F:      0x46,
+	KEY_G:      0x47,
+	KEY_H:      0x48,
+	KEY_I:      0x49,
+	KEY_J:      0x4A,
+	KEY_K:      0x4B,
+	KEY_L:      0x4C,
+	KEY_M:      0x4D,
+	KEY_N:      0x4E,
+	KEY_O:      0x4F,
+	KEY_P:      0x50,
+	KEY_Q:      0x51,
+	KEY_R:      0x52,
+	KEY_S:      0x53,
+	KEY_T:      0x54,
+	KEY_U:      0x55,
+	KEY_V:      0x56,
+	KEY_W:      0x57,
+	KEY_X:      0x58,
+	KEY_Y:      0x59,
+	KEY_Z:      0x5A,
 
-const VK_LWIN  = 0x5B; // Left Windows key (Natural keyboard)
-const VK_RWIN  = 0x5C; // Right Windows key (Natural keyboard)
-const VK_APPS  = 0x5D; // Applications key (Natural keyboard)
-const VK_SLEEP = 0x5F; // Computer Sleep key
+	LWIN:       0x5B,
+	RWIN:       0x5C,
+	APPS:       0x5D,
+	SLEEP:      0x5F,
 
-const VK_NUMPAD0 = 0x60; // Numeric keypad 0 key
-const VK_NUMPAD1 = 0x61; // Numeric keypad 1 key
-const VK_NUMPAD2 = 0x62; // Numeric keypad 2 key
-const VK_NUMPAD3 = 0x63; // Numeric keypad 3 key
-const VK_NUMPAD4 = 0x64; // Numeric keypad 4 key
-const VK_NUMPAD5 = 0x65; // Numeric keypad 5 key
-const VK_NUMPAD6 = 0x66; // Numeric keypad 6 key
-const VK_NUMPAD7 = 0x67; // Numeric keypad 7 key
-const VK_NUMPAD8 = 0x68; // Numeric keypad 8 key
-const VK_NUMPAD9 = 0x69; // Numeric keypad 9 key
+	NUMPAD0:    0x60,
+	NUMPAD1:    0x61,
+	NUMPAD2:    0x62,
+	NUMPAD3:    0x63,
+	NUMPAD4:    0x64,
+	NUMPAD5:    0x65,
+	NUMPAD6:    0x66,
+	NUMPAD7:    0x67,
+	NUMPAD8:    0x68,
+	NUMPAD9:    0x69,
 
-const VK_MULTIPLY  = 0x6A; // Multiply key
-const VK_ADD       = 0x6B; // Add key
-const VK_SEPARATOR = 0x6C; // Separator key
-const VK_SUBTRACT  = 0x6D; // Subtract key
-const VK_DECIMAL   = 0x6E; // Decimal key
-const VK_DIVIDE    = 0x6F; // Divide key
+	MULTIPLY:   0x6A,
+	ADD:        0x6B,
+	SEPARATOR:  0x6C,
+	SUBTRACT:   0x6D,
+	DECIMAL:    0x6E,
+	DIVIDE:     0x6F,
 
-const VK_F1  = 0x70; // F1 key
-const VK_F2  = 0x71; // F2 key
-const VK_F3  = 0x72; // F3 key
-const VK_F4  = 0x73; // F4 key
-const VK_F5  = 0x74; // F5 key
-const VK_F6  = 0x75; // F6 key
-const VK_F7  = 0x76; // F7 key
-const VK_F8  = 0x77; // F8 key
-const VK_F9  = 0x78; // F9 key
-const VK_F10 = 0x79; // F10 key
-const VK_F11 = 0x7A; // F11 key
-const VK_F12 = 0x7B; // F12 key
-const VK_F13 = 0x7C; // F13 key
-const VK_F14 = 0x7D; // F14 key
-const VK_F15 = 0x7E; // F15 key
-const VK_F16 = 0x7F; // F16 key
-const VK_F17 = 0x80; // F17 key
-const VK_F18 = 0x81; // F18 key
-const VK_F19 = 0x82; // F19 key
-const VK_F20 = 0x83; // F20 key
-const VK_F21 = 0x84; // F21 key
-const VK_F22 = 0x85; // F22 key
-const VK_F23 = 0x86; // F23 key
-const VK_F24 = 0x87; // F24 key
+	F1:        0x70,
+	F2:        0x71,
+	F3:        0x72,
+	F4:        0x73,
+	F5:        0x74,
+	F6:        0x75,
+	F7:        0x76,
+	F8:        0x77,
+	F9:        0x78,
+	F10:       0x79,
+	F11:       0x7A,
+	F12:       0x7B,
+	F13:       0x7C,
+	F14:       0x7D,
+	F15:       0x7E,
+	F16:       0x7F,
+	F17:       0x80,
+	F18:       0x81,
+	F19:       0x82,
+	F20:       0x83,
+	F21:       0x84,
+	F22:       0x85,
+	F23:       0x86,
+	F24:       0x87,
 
-const VK_NUMLOCK  = 0x90; // NUM LOCK key
-const VK_SCROLL   = 0x91; // SCROLL LOCK key
-const VK_LSHIFT   = 0xA0; // Left SHIFT key
-const VK_RSHIFT   = 0xA1; // Right SHIFT key
-const VK_LCONTROL = 0xA2; // Left CONTROL key
-const VK_RCONTROL = 0xA3; // Right CONTROL key
-const VK_LMENU    = 0xA4; // Left ALT key
-const VK_RMENU    = 0xA5; // Right ALT key
+	NUMLOCK:   0x90,
+	SCROLL:    0x91,
+	LSHIFT:    0xA0,
+	RSHIFT:    0xA1,
+	LCONTROL:  0xA2,
+	RCONTROL:  0xA3,
+	LMENU:     0xA4,
+	RMENU:     0xA5,
 
-const VK_BROWSER_BACK      = 0xA6; // Browser Back key
-const VK_BROWSER_FORWARD   = 0xA7; // Browser Forward key
-const VK_BROWSER_REFRESH   = 0xA8; // Browser Refresh key
-const VK_BROWSER_STOP      = 0xA9; // Browser Stop key
-const VK_BROWSER_SEARCH    = 0xAA; // Browser Search key
-const VK_BROWSER_FAVORITES = 0xAB; // Browser Favorites key
-const VK_BROWSER_HOME      = 0xAC; // Browser Start and Home key
+	BROWSER_BACK: 0xA6,
+	BROWSER_FORWARD: 0xA7,
+	BROWSER_REFRESH: 0xA8,
+	BROWSER_STOP: 0xA9,
+	BROWSER_SEARCH: 0xAA,
+	BROWSER_FAVORITES: 0xAB,
+	BROWSER_HOME: 0xAC,
 
-const VK_VOLUME_MUTE = 0xAD; // Volume Mute key
-const VK_VOLUME_DOWN = 0xAE; // Volume Down key
-const VK_VOLUME_UP   = 0xAF; // Volume Up key
+	VOLUME_MUTE: 0xAD,
+	VOLUME_DOWN: 0xAE,
+	VOLUME_UP: 0xAF,
 
-const VK_MEDIA_NEXT_TRACK = 0xB0; // Next Track key
-const VK_MEDIA_PREV_TRACK = 0xB1; // Previous Track key
-const VK_MEDIA_STOP       = 0xB2; // Stop Media key
-const VK_MEDIA_PLAY_PAUSE = 0xB3; // Play/Pause Media key
+	MEDIA_NEXT_TRACK: 0xB0,
+	MEDIA_PREV_TRACK: 0xB1,
+	MEDIA_STOP: 0xB2,
+	MEDIA_PLAY_PAUSE: 0xB3,
 
-const VK_LAUNCH_MAIL         = 0xB4; // Start Mail key
-const VK_LAUNCH_MEDIA_SELECT = 0xB5; // Select Media key
-const VK_LAUNCH_APP1         = 0xB6; // Start Application 1 key
-const VK_LAUNCH_APP2         = 0xB7; // Start Application 2 key
+	LAUNCH_MAIL: 0xB4,
+	LAUNCH_MEDIA_SELECT: 0xB5,
+	LAUNCH_APP1: 0xB6,
+	LAUNCH_APP2: 0xB7,
 
-const VK_OEM_1      = 0xBA; // Used for miscellaneous characters; it can vary by keyboard. For the US standard keyboard, the ';:' key
-const VK_OEM_PLUS   = 0xBB; // For any country/region, the '+' key
-const VK_OEM_COMMA  = 0xBC; // For any country/region, the ',' key
-const VK_OEM_MINUS  = 0xBD; // For any country/region, the '-' key
-const VK_OEM_PERIOD = 0xBE; // For any country/region, the '.' key
-const VK_OEM_2      = 0xBF; // Used for miscellaneous characters; it can vary by keyboard. For the US standard keyboard, the '/?' key
-const VK_OEM_3      = 0xC0; // Used for miscellaneous characters; it can vary by keyboard. For the US standard keyboard, the '`~' key
-const VK_OEM_4      = 0xDB; // Used for miscellaneous characters; it can vary by keyboard. For the US standard keyboard, the '[{' key
-const VK_OEM_5      = 0xDC; // Used for miscellaneous characters; it can vary by keyboard. For the US standard keyboard, the '\|' key
-const VK_OEM_6      = 0xDD; // Used for miscellaneous characters; it can vary by keyboard. For the US standard keyboard, the ']}' key
-const VK_OEM_7      = 0xDE; // Used for miscellaneous characters; it can vary by keyboard. For the US standard keyboard, the 'single-quote/double-quote' key
-const VK_OEM_8      = 0xDF; // Used for miscellaneous characters; it can vary by keyboard.
-const VK_OEM_102    = 0xE2; // The <> keys on the US standard keyboard, or the \\| key on the non-US 102-key keyboard
-const VK_PROCESSKEY = 0xE5; // IME PROCESS key
-const VK_PACKET     = 0xE7; // Used to pass Unicode characters as if they were keystrokes. The const VK_PACKET key is the low word of a 32-bit Virtual Key value used for non-keyboard input methods. For more information, see Remark in KEYBDINPUT, SendInput, WM_KEYDOWN, and WM_KEYUP
-const VK_ATTN       = 0xF6; // Attn key
-const VK_CRSEL      = 0xF7; // CrSel key
-const VK_EXSEL      = 0xF8; // ExSel key
-const VK_EREOF      = 0xF9; // Erase EOF key
-const VK_PLAY       = 0xFA; // Play key
-const VK_ZOOM       = 0xFB; // Zoom key
-const VK_NONAME     = 0xFC; // Reserved
-const VK_PA1        = 0xFD; // PA1 key
-const VK_OEM_CLEAR  = 0xFE; // Clear key
+	OEM_1: 0xBA,
+	OEM_PLUS: 0xBB,
+	OEM_COMMA: 0xBC,
+	OEM_MINUS: 0xBD,
+	OEM_PERIOD: 0xBE,
+	OEM_2: 0xBF,
+	OEM_3: 0xC0,
+	OEM_4: 0xDB,
+	OEM_5: 0xDC,
+	OEM_6: 0xDD,
+	OEM_7: 0xDE,
+	OEM_8: 0xDF,
+	OEM_102: 0xE2,
+	PROCESSKEY: 0xE5,
+	PACKET: 0xE7,
+	ATTN: 0xF6,
+	CRSEL: 0xF7,
+	EXSEL: 0xF8,
+	EREOF: 0xF9,
+	PLAY: 0xFA,
+	ZOOM: 0xFB,
+	NONAME: 0xFC,
+	PA1: 0xFD,
+	OEM_CLEAR: 0xFE
 
-/************************/
-// 0x0A-0B // Reserved
-// 0x0E-0F // Undefined
-// 0x3A-40 // Undefined
-// 0x5E    // Reserved
-// 0x88-8F // Unassigned
-// 0x92-96 // OEM specific
-// 0x97-9F // Unassigned
-// 0xB8-B9 // Reserved
-// 0xC1-D7 // Reserved
-// 0xD8-DA // Unassigned
-// 0xE0    // Reserved
-// 0xE1    // OEM specific
-// 0xE3-E4 // OEM specific
-// 0xE6    // OEM specific
-// 0xE8    // Unassigned
-// 0xE9-F5 // OEM specific
-/************************/
+	/************************/
+	// 0x0A-0B // Reserved
+	// 0x0E-0F // Undefined
+	// 0x3A-40 // Undefined
+	// 0x5E    // Reserved
+	// 0x88-8F // Unassigned
+	// 0x92-96 // OEM specific
+	// 0x97-9F // Unassigned
+	// 0xB8-B9 // Reserved
+	// 0xC1-D7 // Reserved
+	// 0xD8-DA // Unassigned
+	// 0xE0    // Reserved
+	// 0xE1    // OEM specific
+	// 0xE3-E4 // OEM specific
+	// 0xE6    // OEM specific
+	// 0xE8    // Unassigned
+	// 0xE9-F5 // OEM specific
+	/************************/
+};
 
 
 ///////////////
@@ -1295,49 +1372,102 @@ class Utilities {
 	}
 
 	/**
-	 * Constructs a search URL for a specified site using available track metadata.
-	 * @param {string} site - The name of the site to generate a search URL for.
+	 * Constructs a search URL for a specified website using available track metadata.
+	 * @param {string} website - The name of the website to generate a search URL for.
 	 * @param {FbMetadbHandle} metadb - The metadata handle of the track.
 	 */
-	link(site, metadb) {
+	link(website, metadb) {
 		if (!metadb) return;
 
 		const metaInfo = metadb.GetFileInfo();
 		const artist = metaInfo.MetaValue(metaInfo.MetaFind('artist'), 0).replace(/\s+/g, '+').replace(/&/g, '%26');
 		const album = metaInfo.MetaValue(metaInfo.MetaFind('album'), 0).replace(/\s+/g, '+');
 		const title = metaInfo.MetaValue(metaInfo.MetaFind('title'), 0).replace(/\s+/g, '+');
+		const searchQuery = artist || title;
 
-		const searchQuerry = artist || title;
+		const replacePlaceholders = (link) => link
+			.replace('{artist}', artist)
+			.replace('{title}', title)
+			.replace('{album}', album);
 
-		switch (site.toLowerCase()) {
-			case 'google':
-				site = (searchQuerry ? `http://images.google.com/search?q=${searchQuerry}&ie=utf-8` : null);
-				break;
-			case 'googleimages':
-				site = (searchQuerry ? `http://images.google.com/images?hl=en&q=${searchQuerry}&ie=utf-8` : null);
-				break;
-			case 'wikipedia':
-				site = (artist ? `http://en.wikipedia.org/wiki/${artist.replace(/\+/g, '_')}` : null);
-				break;
-			case 'youtube':
-				site = (searchQuerry ? `http://www.youtube.com/results?search_type=&search_query=${searchQuerry}&ie=utf-8` : null);
-				break;
-			case 'lastfm':
-				site = (searchQuerry ? `http://www.last.fm/music/${searchQuerry.replace('/', '%252F')}` : null);
-				break;
-			case 'discogs':
-				site = (searchQuerry || album ? `http://www.discogs.com/search?q=${searchQuerry}+${album}&ie=utf-8` : null);
-				break;
-			case 'musicbrainz':
-				site = (searchQuerry || album ? `https://musicbrainz.org/taglookup/index?tag-lookup.artist=${searchQuerry}&tag-lookup.release=${album}&ie=utf-8` : null);
-				break;
-			default:
-				site = '';
+		const urls = {
+			google: searchQuery ? `https://google.com/search?q=${searchQuery}` : null,
+			googleImages: searchQuery ? `https://images.google.com/images?hl=en&q=${searchQuery}` : null,
+			wikipedia: artist ? `https://en.wikipedia.org/wiki/${artist.replace(/\+/g, '_')}` : null,
+			youTube: searchQuery ? `https://www.youtube.com/results?search_type=&search_query=${searchQuery}` : null,
+			lastfm: searchQuery ? `https://www.last.fm/music/${searchQuery.replace('/', '%252F')}` : null,
+			allMusic: searchQuery ? `https://www.allmusic.com/search/all/${searchQuery}` : null,
+			discogs: searchQuery || album ? `https://www.discogs.com/search?q=${searchQuery}+${album}` : null,
+			musicBrainz: searchQuery || album ? `https://musicbrainz.org/taglookup/index?tag-lookup.artist=${searchQuery}&tag-lookup.release=${album}` : null,
+			bandcamp: searchQuery || album ? `https://bandcamp.com/search?q=${searchQuery}&item_type` : null,
+			default: 'https://github.com/TT-ReBORN/Georgia-ReBORN'
+		};
+
+		// Add custom URLs to the urls object
+		grCfg.customWebsiteLinks.forEach((link) => {
+			const domain = this.extractDomainName(link);
+			urls[domain] = replacePlaceholders(link);
+		});
+
+		website = urls[website] || urls.default;
+
+		RunCmd(website);
+	}
+
+	/**
+	 * Extracts the domain name from a given URL and formats it.
+	 * @param {string} url - The URL from which to extract the domain name.
+	 * @returns {string} The formatted domain name.
+	 */
+	extractDomainName(url) {
+		const domain = url.match(/:\/\/(www\.)?([^/]+)/)[2];
+		return domain.charAt(0).toUpperCase() + domain.slice(1).replace(/\.[^/.]+$/, '');
+	}
+
+	/**
+	 * Generates labels and values for predefined and custom website links.
+	 * @param {Array} customWebsiteLinks - Array of custom website URLs.
+	 * @returns {object} - Object containing combined labels and values.
+	 */
+	generateWebsiteLinks(customWebsiteLinks) {
+		const customLabels = customWebsiteLinks.map((url) => this.extractDomainName(url));
+		const customValues = customWebsiteLinks.map((url) => this.extractDomainName(url));
+
+		const labels = ['Google', 'Google Images', 'Wikipedia', 'YouTube', 'Last.fm', 'AllMusic', 'Discogs', 'MusicBrainz', 'Bandcamp'];
+		const values = ['google', 'googleImages', 'wikipedia', 'youTube', 'lastfm', 'allMusic', 'discogs', 'musicBrainz', 'bandcamp'];
+
+		const websiteLabels = labels.concat(customLabels);
+		const websiteValues = values.concat(customValues);
+
+		return { websiteLabels, websiteValues };
+	}
+
+	/**
+	 * Opens a website based on the provided site name or opens all predefined websites.
+	 * @param {string} website - The name of the website to open.
+	 * @param {FbMetadbHandle} metadb - The metadata handle of the track.
+	 * @param {boolean} openAll - Whether to open all predefined websites.
+	 */
+	openWebsite(website, metadb, openAll) {
+		const websites = [
+			'google',
+			'googleImages',
+			'wikipedia',
+			'youTube',
+			'lastfm',
+			'allMusic',
+			'discogs',
+			'musicBrainz',
+			'bandcamp'
+		];
+
+		if (openAll) {
+			for (const site of websites) {
+				this.link(site, metadb);
+			}
+		} else {
+			this.link(website, metadb);
 		}
-
-		if (!site) return;
-
-		RunCmd(site);
 	}
 
 	/**
@@ -1360,15 +1490,15 @@ class Utilities {
 	 */
 	setMouseCursor(x, y) {
 		if (!mouseInLibrarySearch(x, y)) {
-			window.SetCursor(32512); // Arrow
+			SetCursor('Arrow');
 		}
 
 		if (grCfg.settings.hideCursor && fb.IsPlaying) {
-			clearTimeout(grm.ui.hideCursorTimeout);
+			grm.ui.clearTimer('hideCursor');
 			grm.ui.hideCursorTimeout = setTimeout(() => {
 				// * If there's a menu id (i.e. a menu is down) we don't want the cursor to ever disappear
 				if (!grm.ui.activeMenu && fb.IsPlaying) {
-					window.SetCursor(-1); // Hide cursor
+					SetCursor('Hide');
 				}
 			}, 10000);
 		}
@@ -1380,7 +1510,7 @@ class Utilities {
 	 * @returns {boolean} Whether the key event should be suppressed.
 	 */
 	suppressKey(key) {
-		if ((VK_SHIFT === key || VK_CONTROL === key || VK_MENU === key) && this.savedKey === key) {
+		if ((VKey.SHIFT === key || VKey.CONTROL === key || VKey.MENU === key) && this.savedKey === key) {
 			return true;
 		}
 

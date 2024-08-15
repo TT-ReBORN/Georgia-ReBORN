@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-04-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -53,8 +53,6 @@ class CustomMenu {
 
 		/** @protected @type {string} */
 		this.font = grFont.popup;
-		/** @protected @type {string} */
-		this.popupFontSize = grSet[`popupFontSize_${grSet.layout}`];
 		/** @protected @type {boolean} */
 		this.closeBtn = this.label === '\u2715';
 
@@ -399,45 +397,45 @@ class CustomMenuDropDown extends CustomMenu {
 	 */
 	_buttonHandler(label, labelArray, activeIndex) {
 		const customThemeMenu = {
-			Main_Pre:        () => { grm.ui.displayPanel('details'); grm.cthMenu.initCustomThemeMenu(false, 'main_pre'); },
-			Main_Bg:         () => { grm.ui.displayPanel('details'); grm.cthMenu.initCustomThemeMenu(false, 'main_bg'); },
-			Main_Bar:        () => { grm.ui.displayPanel('details'); grm.cthMenu.initCustomThemeMenu(false, 'main_bar'); },
-			Main_Bar2:       () => { grm.ui.displayPanel('details'); grm.cthMenu.initCustomThemeMenu(false, 'main_bar2'); },
-			Main_Bar3:       () => { grm.ui.displayPanel('details'); grm.cthMenu.initCustomThemeMenu(false, 'main_bar3'); },
-			Main_Text:       () => { grm.ui.displayPanel('details'); grm.cthMenu.initCustomThemeMenu(false, 'main_text'); },
-			Main_Btns:       () => { grm.ui.displayPanel('details'); grm.cthMenu.initCustomThemeMenu(false, 'main_btns'); },
-			Main_Btns2:      () => { grm.ui.displayPanel('details'); grm.cthMenu.initCustomThemeMenu(false, 'main_btns2'); },
-			Main_Style:      () => { grm.ui.displayPanel('details'); grm.cthMenu.initCustomThemeMenu(false, 'main_style'); },
+			Main_Pre:        () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_pre'); },
+			Main_Bg:         () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_bg'); },
+			Main_Bar:        () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_bar'); },
+			Main_Bar2:       () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_bar2'); },
+			Main_Bar3:       () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_bar3'); },
+			Main_Text:       () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_text'); },
+			Main_Btns:       () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_btns'); },
+			Main_Btns2:      () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_btns2'); },
+			Main_Style:      () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_style'); },
 
-			Playlist_Bg:     () => { grm.ui.displayPanel('playlist'); grm.cthMenu.initCustomThemeMenu('pl_bg'); },
-			Playlist_Text:   () => { grm.ui.displayPanel('playlist'); grm.cthMenu.initCustomThemeMenu('pl_text1'); },
-			Playlist_Text2:  () => { grm.ui.displayPanel('playlist'); grm.cthMenu.initCustomThemeMenu('pl_text2'); },
-			Playlist_Misc:   () => { grm.ui.displayPanel('playlist'); grm.cthMenu.initCustomThemeMenu('pl_misc'); },
-			Playlist_Btns:   () => { grm.ui.displayPanel('playlist'); grm.cthMenu.initCustomThemeMenu('pl_btns'); },
+			Playlist_Bg:     () => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+			Playlist_Text:   () => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_text1'); },
+			Playlist_Text2:  () => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_text2'); },
+			Playlist_Misc:   () => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_misc'); },
+			Playlist_Btns:   () => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_btns'); },
 
-			Library_Bg:      () => { grm.ui.displayPanel('library'); grm.cthMenu.initCustomThemeMenu(false, false, 'lib_bg'); },
-			Library_Text:    () => { grm.ui.displayPanel('library'); grm.cthMenu.initCustomThemeMenu(false, false, 'lib_text'); },
-			Library_Node:    () => { grm.ui.displayPanel('library'); grm.cthMenu.initCustomThemeMenu(false, false, 'lib_node'); },
-			Library_Btns:    () => { grm.ui.displayPanel('library'); grm.cthMenu.initCustomThemeMenu(false, false, 'lib_btns'); },
+			Library_Bg:      () => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_bg'); },
+			Library_Text:    () => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_text'); },
+			Library_Node:    () => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_node'); },
+			Library_Btns:    () => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_btns'); },
 
-			Biography_Bg:    () => { grm.ui.displayPanel('biography'); grm.cthMenu.initCustomThemeMenu(false, false, false, 'bio_bg'); },
-			Biography_Text:  () => { grm.ui.displayPanel('biography'); grm.cthMenu.initCustomThemeMenu(false, false, false, 'bio_text'); },
-			Biography_Misc:  () => { grm.ui.displayPanel('biography'); grm.cthMenu.initCustomThemeMenu(false, false, false, 'bio_misc'); },
-			Biography_Btns:  () => { grm.ui.displayPanel('biography'); grm.cthMenu.initCustomThemeMenu(false, false, false, 'bio_btns'); },
+			Biography_Bg:    () => { grm.ui.displayPanel('biography', true); grm.cthMenu.initCustomThemeMenu('biography', 'bio_bg'); },
+			Biography_Text:  () => { grm.ui.displayPanel('biography', true); grm.cthMenu.initCustomThemeMenu('biography', 'bio_text'); },
+			Biography_Misc:  () => { grm.ui.displayPanel('biography', true); grm.cthMenu.initCustomThemeMenu('biography', 'bio_misc'); },
+			Biography_Btns:  () => { grm.ui.displayPanel('biography', true); grm.cthMenu.initCustomThemeMenu('biography', 'bio_btns'); },
 
-			Options_Info:    () => { grm.cthMenu.initCustomThemeMenu(false, false, false, false, true); window.Repaint(); },
-			Options_Theme01: () => { grSet.theme = 'custom01'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('pl_bg'); },
-			Options_Theme02: () => { grSet.theme = 'custom02'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('pl_bg'); },
-			Options_Theme03: () => { grSet.theme = 'custom03'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('pl_bg'); },
-			Options_Theme04: () => { grSet.theme = 'custom04'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('pl_bg'); },
-			Options_Theme05: () => { grSet.theme = 'custom05'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('pl_bg'); },
-			Options_Theme06: () => { grSet.theme = 'custom06'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('pl_bg'); },
-			Options_Theme07: () => { grSet.theme = 'custom07'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('pl_bg'); },
-			Options_Theme08: () => { grSet.theme = 'custom08'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('pl_bg'); },
-			Options_Theme09: () => { grSet.theme = 'custom09'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('pl_bg'); },
-			Options_Theme10: () => { grSet.theme = 'custom10'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('pl_bg'); },
+			Options_Info:    () => { grm.cthMenu.initCustomThemeMenu('info'); window.Repaint(); },
+			Options_Theme01: () => { grSet.theme = 'custom01'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+			Options_Theme02: () => { grSet.theme = 'custom02'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+			Options_Theme03: () => { grSet.theme = 'custom03'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+			Options_Theme04: () => { grSet.theme = 'custom04'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+			Options_Theme05: () => { grSet.theme = 'custom05'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+			Options_Theme06: () => { grSet.theme = 'custom06'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+			Options_Theme07: () => { grSet.theme = 'custom07'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+			Options_Theme08: () => { grSet.theme = 'custom08'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+			Options_Theme09: () => { grSet.theme = 'custom09'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+			Options_Theme10: () => { grSet.theme = 'custom10'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
 			Options_Rename:  () => { grm.inputBox.renameCustomTheme(); },
-			Options_Reset:   () => { grm.ui.initCustomTheme(); grm.cthMenu.resetCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('pl_bg'); }
+			Options_Reset:   () => { grm.ui.initCustomTheme(); grm.cthMenu.resetCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); }
 		};
 
 		const metadataGridMenu = {
@@ -452,9 +450,8 @@ class CustomMenuDropDown extends CustomMenu {
 		const closeBtn = {
 			Close: () => {
 				CustomMenu.activeControl.isSelectUp = false;
-				if (grm.ui.displayCustomThemeMenu) grm.ui.displayPanel('playlist');
-				grm.ui.displayCustomThemeMenu = false;
-				grm.ui.displayMetadataGridMenu = false;
+				if (grm.ui.displayCustomThemeMenu) grm.ui.initCustomThemeMenuState();
+				if (grm.ui.displayMetadataGridMenu) grm.details.initGridMenuState();
 			}
 		}
 
@@ -599,8 +596,8 @@ class CustomMenuDropDown extends CustomMenu {
 	 */
 	onKey(vkey) {
 		switch (vkey) {
-			case VK_RETURN:
-			case VK_SPACE:
+			case VKey.RETURN:
+			case VKey.SPACE:
 				if (!this.selectUp) {
 					this.clicked();
 				} else {
@@ -608,17 +605,17 @@ class CustomMenuDropDown extends CustomMenu {
 					this.repaint();
 				}
 				break;
-			case VK_UP:
+			case VKey.UP:
 				if (this.activeIndex !== -1) {
 					this.activeIndex = Math.max(this.activeIndex - 1, 0);
 					this.repaint();
 				}
 				break;
-			case VK_DOWN:
+			case VKey.DOWN:
 				this.activeIndex = Math.min(this.activeIndex + 1, this.labelArray.length - 1);
 				this.repaint();
 				break;
-			case VK_ESCAPE:
+			case VKey.ESCAPE:
 				this.clearFocus();
 				break;
 		}
@@ -671,7 +668,7 @@ class CustomMenuInputField extends CustomMenu {
 		/** @private @type {number} */
 		this.labelW = labelWidth;
 		/** @private @type {number} */
-		this.inputW = inputWidth - this.padding * 2 + this.popupFontSize; // Subtract out padding
+		this.inputW = inputWidth - this.padding * 2 + grSet.popupFontSize_layout; // Subtract out padding
 		/** @private @constant @type {number} */
 		this.cursorRefreshInterval = 350;
 		/** @private @type {number} */
@@ -810,7 +807,7 @@ class CustomMenuInputField extends CustomMenu {
 		this.focus = true;
 		const oldCursor = this.cursorPos;
 		this.cursorPos = this.getCursorIndex(x);
-		if (utils.IsKeyPressed(VK_SHIFT)) {
+		if (utils.IsKeyPressed(VKey.SHIFT)) {
 			if (!this.hasSelection) {
 				this.selAnchor = oldCursor;
 			}
@@ -831,7 +828,7 @@ class CustomMenuInputField extends CustomMenu {
 		if (this.hasSelection && Math.abs(this.selAnchor - this.selEnd) !== this.value.length &&
 			((clickPos >= this.selAnchor && clickPos <= this.selEnd) ||
 			 (clickPos <= this.selAnchor && clickPos >= this.selEnd))) {
-			this.onChar(VK_SELECT_ALL);
+			this.onChar(VKey.SELECT_ALL);
 		} else {
 			this.selAnchor = Math.max(0, this.value.slice(0, clickPos).lastIndexOf(' ') + 1);
 			this.selEnd = this.value.indexOf(' ', clickPos);
@@ -907,13 +904,13 @@ class CustomMenuInputField extends CustomMenu {
 		const end = this.hasSelection ?  Math.max(this.cursorPos, this.selAnchor) : this.cursorPos;
 
 		switch (code) {
-			case VK_RETURN:
+			case VKey.RETURN:
 				this.value = this.value.substring(0, start) + this.value.substring(end);
 				if (grm.ui.displayCustomThemeMenu) this.updateColors();
 				if (grm.ui.displayMetadataGridMenu) this.updateMetadata();
 				this.clearFocus();
 				break;
-			case VK_BACK:
+			case VKey.BACK:
 				if (this.hasSelection) {
 					this.value = this.value.substring(0, start) + this.value.substring(end);
 					this.cursorPos = start;
@@ -927,11 +924,11 @@ class CustomMenuInputField extends CustomMenu {
 					this.offsetChars = this.cursorPos;
 				}
 				break;
-			case VK_CUT:
+			case VKey.CUT:
 				if (!this.hasSelection) return;
 				doc.parentWindow.clipboardData.setData('text', this.value.substring(start, end));
 				// Fall through
-			case VK_DELETE:
+			case VKey.DELETE:
 				if (this.hasSelection) {
 					this.value = this.value.substring(0, start) + this.value.substring(end);
 					this.cursorPos = start;
@@ -940,20 +937,20 @@ class CustomMenuInputField extends CustomMenu {
 				}
 				this.calcOffsetIndex();
 				break;
-			case VK_SELECT_ALL:
+			case VKey.SELECT_ALL:
 				this.selAnchor = 0; this.cursorPos = this.selEnd = this.value.length;
 				this.calcOffsetIndex();
 				clearSelection = false;
 				break;
-			case VK_ESCAPE: // Clears selection below
+			case VKey.ESCAPE: // Clears selection below
 				break;
-			case VK_COPY:
+			case VKey.COPY:
 				if (this.hasSelection) {
 					doc.parentWindow.clipboardData.setData('text', this.value.substring(start, end));
 				}
 				clearSelection = false;
 				break;
-			case VK_PASTE:
+			case VKey.PASTE:
 				text = doc.parentWindow.clipboardData.getData('text');
 				this.value = this.value === '' ? this.value : text;
 				if (grm.ui.displayCustomThemeMenu) this.updateColors();
@@ -978,11 +975,11 @@ class CustomMenuInputField extends CustomMenu {
 	 * @param {number} vkey - The virtual key code.
 	 */
 	onKey(vkey) {
-		const ShiftKeyPressed = utils.IsKeyPressed(VK_SHIFT);
+		const ShiftKeyPressed = utils.IsKeyPressed(VKey.SHIFT);
 		switch (vkey) {
-			case VK_LEFT:
-			case VK_RIGHT: {
-				const dir = vkey === VK_LEFT ? -1 : 1;
+			case VKey.LEFT:
+			case VKey.RIGHT: {
+				const dir = vkey === VKey.LEFT ? -1 : 1;
 				if (ShiftKeyPressed) {
 					if (this.hasSelection) { // Expand or contract selection
 						this.selEnd = this.strClamp(this.selEnd + dir);
@@ -1012,11 +1009,11 @@ class CustomMenuInputField extends CustomMenu {
 				}
 				break;
 			}
-			case VK_UP:
-			case VK_DOWN:
-			case VK_HOME:
-			case VK_END: {
-				const home = vkey === VK_UP || vkey === VK_HOME;
+			case VKey.UP:
+			case VKey.DOWN:
+			case VKey.HOME:
+			case VKey.END: {
+				const home = vkey === VKey.UP || vkey === VKey.HOME;
 				if (ShiftKeyPressed) {
 					if (!this.hasSelection) {
 						this.selAnchor = this.cursorPos;
@@ -1029,8 +1026,8 @@ class CustomMenuInputField extends CustomMenu {
 				this.calcOffsetIndex();
 				break;
 			}
-			case VK_DELETE:
-				this.onChar(VK_DELETE);
+			case VKey.DELETE:
+				this.onChar(VKey.DELETE);
 				break;
 		}
 		this.flashCursor(true);
@@ -1069,7 +1066,6 @@ class CustomMenuInputField extends CustomMenu {
 	 */
 	updateMetadata() {
 		grm.gridMenu.updateMetadataGridFromConfig(this.id, this.value, this.value2);
-		grm.gridMenu.initMetadataGridMenu();
 		this.repaint();
 	}
 	// #endregion
@@ -1242,7 +1238,7 @@ class CustomMenuInputField2 extends CustomMenu {
 		this.focus = true;
 		const oldCursor = this.cursorPos;
 		this.cursorPos = this.getCursorIndex(x);
-		if (utils.IsKeyPressed(VK_SHIFT)) {
+		if (utils.IsKeyPressed(VKey.SHIFT)) {
 			if (!this.hasSelection) {
 				this.selAnchor = oldCursor;
 			}
@@ -1263,7 +1259,7 @@ class CustomMenuInputField2 extends CustomMenu {
 		if (this.hasSelection && Math.abs(this.selAnchor - this.selEnd) !== this.value2.length &&
 			((clickPos >= this.selAnchor && clickPos <= this.selEnd) ||
 			 (clickPos <= this.selAnchor && clickPos >= this.selEnd))) {
-			this.onChar(VK_SELECT_ALL);
+			this.onChar(VKey.SELECT_ALL);
 		} else {
 			this.selAnchor = Math.max(0, this.value2.slice(0, clickPos).lastIndexOf(' ') + 1);
 			this.selEnd = this.value2.indexOf(' ', clickPos);
@@ -1341,12 +1337,12 @@ class CustomMenuInputField2 extends CustomMenu {
 		const end = this.hasSelection ?  Math.max(this.cursorPos, this.selAnchor) : this.cursorPos;
 
 		switch (code) {
-			case VK_RETURN:
+			case VKey.RETURN:
 				this.value2 = this.value2.substring(0, start) + this.value2.substring(end);
-				this.updateMetadata();
+				if (grm.ui.displayMetadataGridMenu) this.updateMetadata();
 				this.clearFocus();
 				break;
-			case VK_BACK:
+			case VKey.BACK:
 				if (this.hasSelection) {
 					this.value2 = this.value2.substring(0, start) + this.value2.substring(end);
 					this.cursorPos = start;
@@ -1361,11 +1357,11 @@ class CustomMenuInputField2 extends CustomMenu {
 					this.offsetChars = this.cursorPos;
 				}
 				break;
-			case VK_CUT:
+			case VKey.CUT:
 				if (!this.hasSelection) return;
 				doc.parentWindow.clipboardData.setData('text', this.value2.substring(start, end));
 				// Fall through
-			case VK_DELETE:
+			case VKey.DELETE:
 				if (this.hasSelection) {
 					this.value2 = this.value2.substring(0, start) + this.value2.substring(end);
 					this.cursorPos = start;
@@ -1374,20 +1370,20 @@ class CustomMenuInputField2 extends CustomMenu {
 				}
 				this.calcOffsetIndex();
 				break;
-			case VK_SELECT_ALL:
+			case VKey.SELECT_ALL:
 				this.selAnchor = 0; this.cursorPos = this.selEnd = this.value2.length;
 				this.calcOffsetIndex();
 				clearSelection = false;
 				break;
-			case VK_ESCAPE: // Clears selection below
+			case VKey.ESCAPE: // Clears selection below
 				break;
-			case VK_COPY:
+			case VKey.COPY:
 				if (this.hasSelection) {
 					doc.parentWindow.clipboardData.setData('text', this.value2.substring(start, end));
 				}
 				clearSelection = false;
 				break;
-			case VK_PASTE:
+			case VKey.PASTE:
 				text = doc.parentWindow.clipboardData.getData('text');
 				this.value2 = this.value2 === '' ? this.value2 : text;
 				if (grm.ui.displayMetadataGridMenu) this.updateMetadata();
@@ -1411,11 +1407,11 @@ class CustomMenuInputField2 extends CustomMenu {
 	 * @param {number} vkey - The virtual key code.
 	 */
 	onKey(vkey) {
-		const ShiftKeyPressed = utils.IsKeyPressed(VK_SHIFT);
+		const ShiftKeyPressed = utils.IsKeyPressed(VKey.SHIFT);
 		switch (vkey) {
-			case VK_LEFT:
-			case VK_RIGHT: {
-				const dir = vkey === VK_LEFT ? -1 : 1;
+			case VKey.LEFT:
+			case VKey.RIGHT: {
+				const dir = vkey === VKey.LEFT ? -1 : 1;
 				if (ShiftKeyPressed) {
 					if (this.hasSelection) { // Expand or contract selection
 						this.selEnd = this.strClamp(this.selEnd + dir);
@@ -1445,11 +1441,11 @@ class CustomMenuInputField2 extends CustomMenu {
 				}
 				break;
 			}
-			case VK_UP:
-			case VK_DOWN:
-			case VK_HOME:
-			case VK_END: {
-				const home = vkey === VK_UP || vkey === VK_HOME;
+			case VKey.UP:
+			case VKey.DOWN:
+			case VKey.HOME:
+			case VKey.END: {
+				const home = vkey === VKey.UP || vkey === VKey.HOME;
 				if (ShiftKeyPressed) {
 					if (!this.hasSelection) {
 						this.selAnchor = this.cursorPos;
@@ -1462,8 +1458,8 @@ class CustomMenuInputField2 extends CustomMenu {
 				this.calcOffsetIndex();
 				break;
 			}
-			case VK_DELETE:
-				this.onChar(VK_DELETE);
+			case VKey.DELETE:
+				this.onChar(VKey.DELETE);
 				break;
 		}
 		this.flashCursor(true);
@@ -1491,7 +1487,6 @@ class CustomMenuInputField2 extends CustomMenu {
 	 */
 	updateMetadata() {
 		grm.gridMenu.updateMetadataGridFromConfig(this.id, this.value, this.value2);
-		grm.gridMenu.initMetadataGridMenu();
 		this.repaint();
 	}
 	// #endregion
@@ -1610,7 +1605,7 @@ class CustomMenuColorMarker extends CustomMenu {
 		/** @private @type {string} */
 		this.value = value;
 		/** @private @type {GdiFont} */
-		this.fontAwesome = Font(grFont.fontAwesome, this.popupFontSize + 4, 0);
+		this.fontAwesome = Font(grFont.fontAwesome, grSet.popupFontSize_layout + 4, 0);
 		/** @private @type {number} */
 		this.x = x;
 		/** @private @type {number} */
@@ -1787,346 +1782,119 @@ class CustomThemeMenu {
 	 * @private
 	 */
 	_customMainColors(x, y, w, h, main_section) {
-		const popupFontSize = grSet[`popupFontSize_${grSet.layout}`];
 		const margin = SCALE(20);
-		const labelW = SCALE(300) + popupFontSize;
-		const inputW = SCALE(80)  + popupFontSize;
-		const markerX = x + margin + inputW + (popupFontSize * (RES._4K ? 0.25 : 0.5)) - SCALE(2);
+		const labelW = SCALE(300) + grSet.popupFontSize_layout;
+		const inputW = SCALE(80)  + grSet.popupFontSize_layout;
+		const markerX = x + margin + inputW + (grSet.popupFontSize_layout * HD_4K(0.5, 0.25)) - SCALE(2);
 
-		switch (main_section) {
-			case 'main_pre':
-				{
-					const mainColors = new CustomMenuInputField('main_pre_01', 'grCol.preloaderBg', grCfg.cTheme.grCol_preloaderBg, x, y, labelW, inputW);
-					CustomMenu.controlList.push(mainColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_pre_01', grCfg.cTheme.grCol_preloaderBg, x + 2, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_pre_02', 'grCol.preloaderLogo', grCfg.cTheme.grCol_preloaderLogo, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_pre_02', grCfg.cTheme.grCol_preloaderLogo, x + 2, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_pre_03', 'grCol.preloaderLowerBarTitle', grCfg.cTheme.grCol_preloaderLowerBarTitle, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_pre_03', grCfg.cTheme.grCol_preloaderLowerBarTitle, x + 2, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_pre_04', 'grCol.preloaderProgressBar', grCfg.cTheme.grCol_preloaderProgressBar, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_pre_04', grCfg.cTheme.grCol_preloaderProgressBar, x + 2, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_pre_05', 'grCol.preloaderProgressBarFill', grCfg.cTheme.grCol_preloaderProgressBarFill, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_pre_05', grCfg.cTheme.grCol_preloaderProgressBarFill, x + 2, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_pre_06', 'grCol.preloaderProgressBarFrame', grCfg.cTheme.grCol_preloaderProgressBarFrame, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_pre_06', grCfg.cTheme.grCol_preloaderProgressBarFrame, x + 2, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_pre_07', 'grCol.preloaderUIHacksFrame', grCfg.cTheme.grCol_preloaderUIHacksFrame, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_pre_07', grCfg.cTheme.grCol_preloaderUIHacksFrame, x + 2, y));
-				}
-				break;
-			case 'main_bg':
-				{
-					const mainColors = new CustomMenuInputField('main_bg_01', 'grCol.bg', grCfg.cTheme.grCol_bg, x, y, labelW, inputW);
-					CustomMenu.controlList.push(mainColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bg_01', grCfg.cTheme.grCol_bg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bg_01', grCfg.cTheme.grCol_bg, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bg_02', 'grCol.popupBg', grCfg.cTheme.grCol_popupBg, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bg_02', grCfg.cTheme.grCol_popupBg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bg_02', grCfg.cTheme.grCol_popupBg, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bg_03', 'grCol.detailsBg', grCfg.cTheme.grCol_detailsBg, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bg_03', grCfg.cTheme.grCol_detailsBg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bg_03', grCfg.cTheme.grCol_detailsBg, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bg_04', 'grCol.shadow', grCfg.cTheme.grCol_shadow, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bg_04', grCfg.cTheme.grCol_shadow, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bg_04', grCfg.cTheme.grCol_shadow, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bg_05', 'grCol.discArtShadow', grCfg.cTheme.grCol_discArtShadow, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bg_05', grCfg.cTheme.grCol_discArtShadow, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bg_05', grCfg.cTheme.grCol_discArtShadow, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bg_06', 'grCol.noAlbumArtStub', grCfg.cTheme.grCol_noAlbumArtStub, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bg_06', grCfg.cTheme.grCol_noAlbumArtStub, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bg_06', grCfg.cTheme.grCol_noAlbumArtStub, markerX, y));
-				}
-				break;
-			case 'main_bar':
-				{
-					const mainColors = new CustomMenuInputField('main_bar_01', 'grCol.timelineAdded', grCfg.cTheme.grCol_timelineAdded, x, y, labelW, inputW);
-					CustomMenu.controlList.push(mainColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_01', grCfg.cTheme.grCol_timelineAdded, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_01', grCfg.cTheme.grCol_timelineAdded, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_02', 'grCol.timelinePlayed', grCfg.cTheme.grCol_timelinePlayed, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_02', grCfg.cTheme.grCol_timelinePlayed, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_02', grCfg.cTheme.grCol_timelinePlayed, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_03', 'grCol.timelineUnplayed', grCfg.cTheme.grCol_timelineUnplayed, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_03', grCfg.cTheme.grCol_timelineUnplayed, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_03', grCfg.cTheme.grCol_timelineUnplayed, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_04', 'grCol.timelineFrame', grCfg.cTheme.grCol_timelineFrame, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_04', grCfg.cTheme.grCol_timelineFrame, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_04', grCfg.cTheme.grCol_timelineFrame, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_05', 'grCol.progressBar', grCfg.cTheme.grCol_progressBar, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_05', grCfg.cTheme.grCol_progressBar, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_05', grCfg.cTheme.grCol_progressBar, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_06', 'grCol.progressBarStreaming', grCfg.cTheme.grCol_progressBarStreaming, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_06', grCfg.cTheme.grCol_progressBarStreaming, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_06', grCfg.cTheme.grCol_progressBarStreaming, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_07', 'grCol.progressBarFrame', grCfg.cTheme.grCol_progressBarFrame, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_07', grCfg.cTheme.grCol_progressBarFrame, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_07', grCfg.cTheme.grCol_progressBarFrame, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_08', 'grCol.progressBarFill', grCfg.cTheme.grCol_progressBarFill, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_08', grCfg.cTheme.grCol_progressBarFill, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_08', grCfg.cTheme.grCol_progressBarFill, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_09', 'grCol.volumeBar', grCfg.cTheme.grCol_volumeBar, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_09', grCfg.cTheme.grCol_volumeBar, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_09', grCfg.cTheme.grCol_volumeBar, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_10', 'grCol.volumeBarFrame', grCfg.cTheme.grCol_volumeBarFrame, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_10', grCfg.cTheme.grCol_volumeBarFrame, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_10', grCfg.cTheme.grCol_volumeBarFrame, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_11', 'grCol.volumeBarFill', grCfg.cTheme.grCol_volumeBarFill, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_11', grCfg.cTheme.grCol_volumeBarFill, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_11', grCfg.cTheme.grCol_volumeBarFill, markerX, y));
-				}
-				break;
-			case 'main_bar2':
-				{
-					const mainColors = new CustomMenuInputField('main_bar_12', 'grCol.peakmeterBarProg', grCfg.cTheme.grCol_peakmeterBarProg, x, y, labelW, inputW);
-					CustomMenu.controlList.push(mainColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_12', grCfg.cTheme.grCol_peakmeterBarProg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_12', grCfg.cTheme.grCol_peakmeterBarProg, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_13', 'grCol.peakmeterBarProgFill', grCfg.cTheme.grCol_peakmeterBarProgFill, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_13', grCfg.cTheme.grCol_peakmeterBarProgFill, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_13', grCfg.cTheme.grCol_peakmeterBarProgFill, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_14', 'grCol.peakmeterBarFillTop', grCfg.cTheme.grCol_peakmeterBarFillTop, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_14', grCfg.cTheme.grCol_peakmeterBarFillTop, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_14', grCfg.cTheme.grCol_peakmeterBarFillTop, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_15', 'grCol.peakmeterBarFillMiddle', grCfg.cTheme.grCol_peakmeterBarFillMiddle, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_15', grCfg.cTheme.grCol_peakmeterBarFillMiddle, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_15', grCfg.cTheme.grCol_peakmeterBarFillMiddle, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_16', 'grCol.peakmeterBarFillBack', grCfg.cTheme.grCol_peakmeterBarFillBack, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_16', grCfg.cTheme.grCol_peakmeterBarFillBack, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_16', grCfg.cTheme.grCol_peakmeterBarFillBack, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_17', 'grCol.peakmeterBarVertProgFill', grCfg.cTheme.grCol_peakmeterBarVertProgFill, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_17', grCfg.cTheme.grCol_peakmeterBarVertProgFill, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_17', grCfg.cTheme.grCol_peakmeterBarVertProgFill, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_18', 'grCol.peakmeterBarVertFill', grCfg.cTheme.grCol_peakmeterBarVertFill, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_18', grCfg.cTheme.grCol_peakmeterBarVertFill, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_18', grCfg.cTheme.grCol_peakmeterBarVertFill, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_19', 'grCol.peakmeterBarVertFillPeaks', grCfg.cTheme.grCol_peakmeterBarVertFillPeaks, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_19', grCfg.cTheme.grCol_peakmeterBarVertFillPeaks, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_19', grCfg.cTheme.grCol_peakmeterBarVertFillPeaks, markerX, y));
-				}
-				break;
-			case 'main_bar3':
-				{
-					const mainColors = new CustomMenuInputField('main_bar_20', 'grCol.waveformBarFillFront', grCfg.cTheme.grCol_waveformBarFillFront, x, y, labelW, inputW);
-					CustomMenu.controlList.push(mainColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_20', grCfg.cTheme.grCol_waveformBarFillFront, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_20', grCfg.cTheme.grCol_waveformBarFillFront, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_21', 'grCol.waveformBarFillBack', grCfg.cTheme.grCol_waveformBarFillBack, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_21', grCfg.cTheme.grCol_waveformBarFillBack, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_21', grCfg.cTheme.grCol_waveformBarFillBack, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_22', 'grCol.waveformBarFillPreFront', grCfg.cTheme.grCol_waveformBarFillPreFront, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_22', grCfg.cTheme.grCol_waveformBarFillPreFront, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_22', grCfg.cTheme.grCol_waveformBarFillPreFront, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_23', 'grCol.waveformBarFillPreBack', grCfg.cTheme.grCol_waveformBarFillPreBack, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_23', grCfg.cTheme.grCol_waveformBarFillPreBack, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_23', grCfg.cTheme.grCol_waveformBarFillPreBack, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_bar_24', 'grCol.waveformBarIndicator', grCfg.cTheme.grCol_waveformBarIndicator, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_bar_24', grCfg.cTheme.grCol_waveformBarIndicator, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_bar_24', grCfg.cTheme.grCol_waveformBarIndicator, markerX, y));
-				}
-				break;
-			case 'main_text':
-				{
-					const mainColors = new CustomMenuInputField('main_text_01', 'grCol.lowerBarArtist', grCfg.cTheme.grCol_lowerBarArtist, x, y, labelW, inputW);
-					CustomMenu.controlList.push(mainColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_text_01', grCfg.cTheme.grCol_lowerBarArtist, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_text_01', grCfg.cTheme.grCol_lowerBarArtist, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_text_02', 'grCol.lowerBarTitle', grCfg.cTheme.grCol_lowerBarTitle, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_text_02', grCfg.cTheme.grCol_lowerBarTitle, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_text_02', grCfg.cTheme.grCol_lowerBarTitle, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_text_03', 'grCol.lowerBarTime', grCfg.cTheme.grCol_lowerBarTime, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_text_03', grCfg.cTheme.grCol_lowerBarTime, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_text_03', grCfg.cTheme.grCol_lowerBarTime, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_text_04', 'grCol.lowerBarLength', grCfg.cTheme.grCol_lowerBarLength, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_text_04', grCfg.cTheme.grCol_lowerBarLength, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_text_04', grCfg.cTheme.grCol_lowerBarLength, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_text_05', 'grCol.detailsText', grCfg.cTheme.grCol_detailsText, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_text_05', grCfg.cTheme.grCol_detailsText, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_text_05', grCfg.cTheme.grCol_detailsText, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_text_06', 'grCol.detailsRating', grCfg.cTheme.grCol_detailsRating, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_text_06', grCfg.cTheme.grCol_detailsRating, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_text_06', grCfg.cTheme.grCol_detailsRating, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_text_08', 'grCol.popupText', grCfg.cTheme.grCol_popupText, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_text_08', grCfg.cTheme.grCol_popupText, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_text_08', grCfg.cTheme.grCol_popupText, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_text_09', 'grCol.lyricsNormal', grCfg.cTheme.grCol_lyricsNormal, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_text_09', grCfg.cTheme.grCol_lyricsNormal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_text_09', grCfg.cTheme.grCol_lyricsNormal, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_text_10', 'grCol.lyricsHighlight', grCfg.cTheme.grCol_lyricsHighlight, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_text_10', grCfg.cTheme.grCol_lyricsHighlight, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_text_10', grCfg.cTheme.grCol_lyricsHighlight, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_text_11', 'grCol.lyricsShadow', grCfg.cTheme.grCol_lyricsShadow, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_text_11', grCfg.cTheme.grCol_lyricsShadow, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_text_11', grCfg.cTheme.grCol_lyricsShadow, markerX, y));
-				}
-				break;
-			case 'main_btns':
-				{
-					const mainColors = new CustomMenuInputField('main_btns_01', 'grCol.menuBgColor', grCfg.cTheme.grCol_menuBgColor, x, y, labelW, inputW);
-					CustomMenu.controlList.push(mainColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_01', grCfg.cTheme.grCol_menuBgColor, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_01', grCfg.cTheme.grCol_menuBgColor, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_02', 'grCol.menuStyleBg', grCfg.cTheme.grCol_menuStyleBg, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_02', grCfg.cTheme.grCol_menuStyleBg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_02', grCfg.cTheme.grCol_menuStyleBg, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_03', 'grCol.menuRectStyleEmbossTop', grCfg.cTheme.grCol_menuRectStyleEmbossTop, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_03', grCfg.cTheme.grCol_menuRectStyleEmbossTop, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_03', grCfg.cTheme.grCol_menuRectStyleEmbossTop, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_04', 'grCol.menuRectStyleEmbossBottom', grCfg.cTheme.grCol_menuRectStyleEmbossBottom, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_04', grCfg.cTheme.grCol_menuRectStyleEmbossBottom, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_04', grCfg.cTheme.grCol_menuRectStyleEmbossBottom, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_05', 'grCol.menuRectNormal', grCfg.cTheme.grCol_menuRectNormal, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_05', grCfg.cTheme.grCol_menuRectNormal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_05', grCfg.cTheme.grCol_menuRectNormal, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_06', 'grCol.menuRectHovered', grCfg.cTheme.grCol_menuRectHovered, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_06', grCfg.cTheme.grCol_menuRectHovered, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_06', grCfg.cTheme.grCol_menuRectHovered, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_07', 'grCol.menuRectDown', grCfg.cTheme.grCol_menuRectDown, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_07', grCfg.cTheme.grCol_menuRectDown, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_07', grCfg.cTheme.grCol_menuRectDown, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_08', 'grCol.menuTextNormal', grCfg.cTheme.grCol_menuTextNormal, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_08', grCfg.cTheme.grCol_menuTextNormal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_08', grCfg.cTheme.grCol_menuTextNormal, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_09', 'grCol.menuTextHovered', grCfg.cTheme.grCol_menuTextHovered, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_09', grCfg.cTheme.grCol_menuTextHovered, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_09', grCfg.cTheme.grCol_menuTextHovered, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_10', 'grCol.menuTextDown', grCfg.cTheme.grCol_menuTextDown, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_10', grCfg.cTheme.grCol_menuTextDown, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_10', grCfg.cTheme.grCol_menuTextDown, markerX, y));
-				}
-				break;
-			case 'main_btns2':
-				{
-					const mainColors = new CustomMenuInputField('main_btns_11', 'grCol.transportEllipseBg', grCfg.cTheme.grCol_transportEllipseBg, x, y, labelW, inputW);
-					CustomMenu.controlList.push(mainColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_11', grCfg.cTheme.grCol_transportEllipseBg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_11', grCfg.cTheme.grCol_transportEllipseBg, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_12', 'grCol.transportEllipseNormal', grCfg.cTheme.grCol_transportEllipseNormal, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_12', grCfg.cTheme.grCol_transportEllipseNormal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_12', grCfg.cTheme.grCol_transportEllipseNormal, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_13', 'grCol.transportEllipseHovered', grCfg.cTheme.grCol_transportEllipseHovered, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_13', grCfg.cTheme.grCol_transportEllipseHovered, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_13', grCfg.cTheme.grCol_transportEllipseHovered, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_14', 'grCol.transportEllipseDown', grCfg.cTheme.grCol_transportEllipseDown, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_14', grCfg.cTheme.grCol_transportEllipseDown, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_14', grCfg.cTheme.grCol_transportEllipseDown, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_15', 'grCol.transportStyleBg', grCfg.cTheme.grCol_transportStyleBg, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_15', grCfg.cTheme.grCol_transportStyleBg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_15', grCfg.cTheme.grCol_transportStyleBg, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_16', 'grCol.transportStyleTop', grCfg.cTheme.grCol_transportStyleTop, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_16', grCfg.cTheme.grCol_transportStyleTop, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_16', grCfg.cTheme.grCol_transportStyleTop, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_17', 'grCol.transportStyleBottom', grCfg.cTheme.grCol_transportStyleBottom, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_17', grCfg.cTheme.grCol_transportStyleBottom, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_17', grCfg.cTheme.grCol_transportStyleBottom, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_18', 'grCol.transportIconNormal', grCfg.cTheme.grCol_transportIconNormal, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_18', grCfg.cTheme.grCol_transportIconNormal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_18', grCfg.cTheme.grCol_transportIconNormal, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_19', 'grCol.transportIconHovered', grCfg.cTheme.grCol_transportIconHovered, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_19', grCfg.cTheme.grCol_transportIconHovered, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_19', grCfg.cTheme.grCol_transportIconHovered, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_btns_20', 'grCol.transportIconDown', grCfg.cTheme.grCol_transportIconDown, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_btns_20', grCfg.cTheme.grCol_transportIconDown, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_btns_20', grCfg.cTheme.grCol_transportIconDown, markerX, y));
-				}
-				break;
-			case 'main_style':
-				{
-					const mainColors = new CustomMenuInputField('main_style_01', 'grCol.styleBevel', grCfg.cTheme.grCol_styleBevel, x, y, labelW, inputW);
-					CustomMenu.controlList.push(mainColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_style_01', grCfg.cTheme.grCol_styleBevel, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_style_01', grCfg.cTheme.grCol_styleBevel, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_style_02', 'grCol.styleGradient', grCfg.cTheme.grCol_styleGradient, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_style_02', grCfg.cTheme.grCol_styleGradient, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_style_02', grCfg.cTheme.grCol_styleGradient, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_style_03', 'grCol.styleGradient2', grCfg.cTheme.grCol_styleGradient2, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_style_03', grCfg.cTheme.grCol_styleGradient2, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_style_03', grCfg.cTheme.grCol_styleGradient2, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_style_04', 'grCol.styleProgressBar', grCfg.cTheme.grCol_styleProgressBar, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_style_04', grCfg.cTheme.grCol_styleProgressBar, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_style_04', grCfg.cTheme.grCol_styleProgressBar, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_style_05', 'grCol.styleProgressBarLineTop', grCfg.cTheme.grCol_styleProgressBarLineTop, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_style_05', grCfg.cTheme.grCol_styleProgressBarLineTop, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_style_05', grCfg.cTheme.grCol_styleProgressBarLineTop, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_style_06', 'grCol.styleProgressBarLineBottom', grCfg.cTheme.grCol_styleProgressBarLineBottom, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_style_06', grCfg.cTheme.grCol_styleProgressBarLineBottom, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_style_06', grCfg.cTheme.grCol_styleProgressBarLineBottom, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_style_07', 'grCol.styleProgressBarFill', grCfg.cTheme.grCol_styleProgressBarFill, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_style_07', grCfg.cTheme.grCol_styleProgressBarFill, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_style_07', grCfg.cTheme.grCol_styleProgressBarFill, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_style_08', 'grCol.styleVolumeBar', grCfg.cTheme.grCol_styleVolumeBar, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_style_08', grCfg.cTheme.grCol_styleVolumeBar, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_style_08', grCfg.cTheme.grCol_styleVolumeBar, markerX, y));
-					y += mainColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('main_style_09', 'grCol.styleVolumeBarFill', grCfg.cTheme.grCol_styleVolumeBarFill, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('main_style_09', grCfg.cTheme.grCol_styleVolumeBarFill, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('main_style_09', grCfg.cTheme.grCol_styleVolumeBarFill, markerX, y));
-				}
-				break;
+		const addColorSection = (id, label, value, addMarker = true, x, y, labelW, inputW, markerX) => {
+			const mainColors = new CustomMenuInputField(id, label, value, x, y, labelW, inputW);
+			CustomMenu.controlList.push(mainColors);
+			CustomMenu.controlList.push(new CustomMenuColorPicker(id, value, x + 2, y));
+			if (addMarker) CustomMenu.controlList.push(new CustomMenuColorMarker(id, value, markerX, y));
+			return mainColors.h;
+		};
+
+		const sections = {
+			main_pre: [
+				{ id: 'main_pre_01', label: 'grCol.preloaderBg', value: grCfg.cTheme.grCol_preloaderBg, addMarker: false },
+				{ id: 'main_pre_02', label: 'grCol.preloaderLogo', value: grCfg.cTheme.grCol_preloaderLogo, addMarker: false },
+				{ id: 'main_pre_03', label: 'grCol.preloaderLowerBarTitle', value: grCfg.cTheme.grCol_preloaderLowerBarTitle, addMarker: false },
+				{ id: 'main_pre_04', label: 'grCol.preloaderProgressBar', value: grCfg.cTheme.grCol_preloaderProgressBar, addMarker: false },
+				{ id: 'main_pre_05', label: 'grCol.preloaderProgressBarFill', value: grCfg.cTheme.grCol_preloaderProgressBarFill, addMarker: false },
+				{ id: 'main_pre_06', label: 'grCol.preloaderProgressBarFrame', value: grCfg.cTheme.grCol_preloaderProgressBarFrame, addMarker: false },
+				{ id: 'main_pre_07', label: 'grCol.preloaderUIHacksFrame', value: grCfg.cTheme.grCol_preloaderUIHacksFrame, addMarker: false }
+			],
+			main_bg: [
+				{ id: 'main_bg_01', label: 'grCol.bg', value: grCfg.cTheme.grCol_bg },
+				{ id: 'main_bg_02', label: 'grCol.popupBg', value: grCfg.cTheme.grCol_popupBg },
+				{ id: 'main_bg_03', label: 'grCol.detailsBg', value: grCfg.cTheme.grCol_detailsBg },
+				{ id: 'main_bg_04', label: 'grCol.shadow', value: grCfg.cTheme.grCol_shadow },
+				{ id: 'main_bg_05', label: 'grCol.discArtShadow', value: grCfg.cTheme.grCol_discArtShadow },
+				{ id: 'main_bg_06', label: 'grCol.noAlbumArtStub', value: grCfg.cTheme.grCol_noAlbumArtStub }
+			],
+			main_bar: [
+				{ id: 'main_bar_01', label: 'grCol.timelineAdded', value: grCfg.cTheme.grCol_bg },
+				{ id: 'main_bar_02', label: 'grCol.timelinePlayed', value: grCfg.cTheme.grCol_timelinePlayed },
+				{ id: 'main_bar_03', label: 'grCol.timelineUnplayed', value: grCfg.cTheme.grCol_timelineUnplayed },
+				{ id: 'main_bar_04', label: 'grCol.timelineFrame', value: grCfg.cTheme.grCol_timelineFrame },
+				{ id: 'main_bar_05', label: 'grCol.progressBar', value: grCfg.cTheme.grCol_progressBar },
+				{ id: 'main_bar_06', label: 'grCol.progressBarStreaming', value: grCfg.cTheme.grCol_progressBarStreaming },
+				{ id: 'main_bar_07', label: 'grCol.progressBarFrame', value: grCfg.cTheme.grCol_progressBarFrame },
+				{ id: 'main_bar_08', label: 'grCol.progressBarFill', value: grCfg.cTheme.grCol_progressBarFill },
+				{ id: 'main_bar_09', label: 'grCol.volumeBar', value: grCfg.cTheme.grCol_volumeBar },
+				{ id: 'main_bar_10', label: 'grCol.volumeBarFrame', value: grCfg.cTheme.grCol_volumeBarFrame },
+				{ id: 'main_bar_11', label: 'grCol.volumeBarFill', value: grCfg.cTheme.grCol_volumeBarFill }
+			],
+			main_bar2: [
+				{ id: 'main_bar_12', label: 'grCol.peakmeterBarProg', value: grCfg.cTheme.grCol_peakmeterBarProg },
+				{ id: 'main_bar_13', label: 'grCol.peakmeterBarProgFill', value: grCfg.cTheme.grCol_peakmeterBarProgFill },
+				{ id: 'main_bar_14', label: 'grCol.peakmeterBarFillTop', value: grCfg.cTheme.grCol_peakmeterBarFillTop },
+				{ id: 'main_bar_15', label: 'grCol.peakmeterBarFillMiddle', value: grCfg.cTheme.grCol_peakmeterBarFillMiddle },
+				{ id: 'main_bar_16', label: 'grCol.peakmeterBarFillBack', value: grCfg.cTheme.grCol_peakmeterBarFillBack },
+				{ id: 'main_bar_17', label: 'grCol.peakmeterBarVertProgFill', value: grCfg.cTheme.grCol_peakmeterBarVertProgFill },
+				{ id: 'main_bar_18', label: 'grCol.peakmeterBarVertFill', value: grCfg.cTheme.grCol_peakmeterBarVertFill },
+				{ id: 'main_bar_19', label: 'grCol.peakmeterBarVertFillPeaks', value: grCfg.cTheme.grCol_peakmeterBarVertFillPeaks }
+			],
+			main_bar3: [
+				{ id: 'main_bar_20', label: 'grCol.waveformBarFillFront', value: grCfg.cTheme.grCol_waveformBarFillFront },
+				{ id: 'main_bar_21', label: 'grCol.waveformBarFillBack', value: grCfg.cTheme.grCol_waveformBarFillBack },
+				{ id: 'main_bar_22', label: 'grCol.waveformBarFillPreFront', value: grCfg.cTheme.grCol_waveformBarFillPreFront },
+				{ id: 'main_bar_23', label: 'grCol.waveformBarFillPreBack', value: grCfg.cTheme.grCol_waveformBarFillPreBack },
+				{ id: 'main_bar_24', label: 'grCol.waveformBarIndicator', value: grCfg.cTheme.grCol_waveformBarIndicator }
+			],
+			main_text: [
+				{ id: 'main_text_02', label: 'grCol.lowerBarTitle', value: grCfg.cTheme.grCol_lowerBarTitle },
+				{ id: 'main_text_03', label: 'grCol.lowerBarTime', value: grCfg.cTheme.grCol_lowerBarTime },
+				{ id: 'main_text_04', label: 'grCol.lowerBarLength', value: grCfg.cTheme.grCol_lowerBarLength },
+				{ id: 'main_text_05', label: 'grCol.detailsText', value: grCfg.cTheme.grCol_detailsText },
+				{ id: 'main_text_06', label: 'grCol.detailsRating', value: grCfg.cTheme.grCol_detailsRating },
+				{ id: 'main_text_08', label: 'grCol.popupText', value: grCfg.cTheme.grCol_popupText },
+				{ id: 'main_text_09', label: 'grCol.lyricsNormal', value: grCfg.cTheme.grCol_lyricsNormal },
+				{ id: 'main_text_10', label: 'grCol.lyricsHighlight', value: grCfg.cTheme.grCol_lyricsHighlight },
+				{ id: 'main_text_11', label: 'grCol.lyricsShadow', value: grCfg.cTheme.grCol_lyricsShadow }
+			],
+			main_btns: [
+				{ id: 'main_btns_01', label: 'grCol.menuBgColor', value: grCfg.cTheme.grCol_menuBgColor },
+				{ id: 'main_btns_02', label: 'grCol.menuStyleBg', value: grCfg.cTheme.grCol_menuStyleBg },
+				{ id: 'main_btns_03', label: 'grCol.menuRectStyleEmbossTop', value: grCfg.cTheme.grCol_menuRectStyleEmbossTop },
+				{ id: 'main_btns_04', label: 'grCol.menuRectStyleEmbossBottom', value: grCfg.cTheme.grCol_menuRectStyleEmbossBottom },
+				{ id: 'main_btns_05', label: 'grCol.menuRectNormal', value: grCfg.cTheme.grCol_menuRectNormal },
+				{ id: 'main_btns_06', label: 'grCol.menuRectHovered', value: grCfg.cTheme.grCol_menuRectHovered },
+				{ id: 'main_btns_07', label: 'grCol.menuRectDown', value: grCfg.cTheme.grCol_menuRectDown },
+				{ id: 'main_btns_08', label: 'grCol.menuTextNormal', value: grCfg.cTheme.grCol_menuTextNormal },
+				{ id: 'main_btns_09', label: 'grCol.menuTextHovered', value: grCfg.cTheme.grCol_menuTextHovered },
+				{ id: 'main_btns_10', label: 'grCol.menuTextDown', value: grCfg.cTheme.grCol_menuTextDown }
+			],
+			main_btns2: [
+				{ id: 'main_btns_11', label: 'grCol.transportEllipseBg', value: grCfg.cTheme.grCol_transportEllipseBg },
+				{ id: 'main_btns_12', label: 'grCol.transportEllipseNormal', value: grCfg.cTheme.grCol_transportEllipseNormal },
+				{ id: 'main_btns_13', label: 'grCol.transportEllipseHovered', value: grCfg.cTheme.grCol_transportEllipseHovered },
+				{ id: 'main_btns_14', label: 'grCol.transportEllipseDown', value: grCfg.cTheme.grCol_transportEllipseDown },
+				{ id: 'main_btns_15', label: 'grCol.transportStyleBg', value: grCfg.cTheme.grCol_transportStyleBg },
+				{ id: 'main_btns_16', label: 'grCol.transportStyleTop', value: grCfg.cTheme.grCol_transportStyleTop },
+				{ id: 'main_btns_17', label: 'grCol.transportStyleBottom', value: grCfg.cTheme.grCol_transportStyleBottom },
+				{ id: 'main_btns_18', label: 'grCol.transportIconNormal', value: grCfg.cTheme.grCol_transportIconNormal },
+				{ id: 'main_btns_19', label: 'grCol.transportIconHovered', value: grCfg.cTheme.grCol_transportIconHovered },
+				{ id: 'main_btns_20', label: 'grCol.transportIconDown', value: grCfg.cTheme.grCol_transportIconDown }
+			],
+			main_style: [
+				{ id: 'main_style_01', label: 'grCol.styleBevel', value: grCfg.cTheme.grCol_styleBevel },
+				{ id: 'main_style_02', label: 'grCol.styleGradient', value: grCfg.cTheme.grCol_styleGradient },
+				{ id: 'main_style_03', label: 'grCol.styleGradient2', value: grCfg.cTheme.grCol_styleGradient2 },
+				{ id: 'main_style_04', label: 'grCol.styleProgressBar', value: grCfg.cTheme.grCol_styleProgressBar },
+				{ id: 'main_style_05', label: 'grCol.styleProgressBarLineTop', value: grCfg.cTheme.grCol_styleProgressBarLineTop },
+				{ id: 'main_style_06', label: 'grCol.styleProgressBarLineBottom', value: grCfg.cTheme.grCol_styleProgressBarLineBottom },
+				{ id: 'main_style_07', label: 'grCol.styleProgressBarFill', value: grCfg.cTheme.grCol_styleProgressBarFill },
+				{ id: 'main_style_08', label: 'grCol.styleVolumeBar', value: grCfg.cTheme.grCol_styleVolumeBar },
+				{ id: 'main_style_09', label: 'grCol.styleVolumeBarFill', value: grCfg.cTheme.grCol_styleVolumeBarFill }
+			]
+		};
+
+		if (sections[main_section]) {
+			for (const section of sections[main_section]) {
+				y += addColorSection(section.id, section.label, section.value, section.addMarker, x, y, labelW, inputW, markerX) + margin;
+			}
 		}
 	}
 
@@ -2140,165 +1908,69 @@ class CustomThemeMenu {
 	 * @private
 	 */
 	_customPlaylistColors(x, y, w, h, playlist_section) {
-		const popupFontSize = grSet[`popupFontSize_${grSet.layout}`];
 		const margin = SCALE(20);
-		const labelW = SCALE(300) + popupFontSize;
-		const inputW = SCALE(80)  + popupFontSize;
-		const markerX = x + margin + inputW + (popupFontSize * (RES._4K ? 0.25 : 0.5)) - SCALE(2);
+		const labelW = SCALE(300) + grSet.popupFontSize_layout;
+		const inputW = SCALE(80)  + grSet.popupFontSize_layout;
+		const markerX = x + margin + inputW + (grSet.popupFontSize_layout * HD_4K(0.5, 0.25)) - SCALE(2);
 
-		switch (playlist_section) {
-			case 'pl_bg':
-				{
-					const plColors = new CustomMenuInputField('pl_bg_01', 'pl.col.bg', grCfg.cTheme.pl_col_bg, x, y, labelW, inputW);
-					CustomMenu.controlList.push(plColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_bg_01', grCfg.cTheme.pl_col_bg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_bg_01', grCfg.cTheme.pl_col_bg, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_bg_02', 'pl.col.header_nowplaying_bg', grCfg.cTheme.pl_col_header_nowplaying_bg, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_bg_02', grCfg.cTheme.pl_col_header_nowplaying_bg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_bg_02', grCfg.cTheme.pl_col_header_nowplaying_bg, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_bg_03', 'pl.col.header_sideMarker', grCfg.cTheme.pl_col_header_sideMarker, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_bg_03', grCfg.cTheme.pl_col_header_sideMarker, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_bg_03', grCfg.cTheme.pl_col_header_sideMarker, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_bg_04', 'pl.col.row_nowplaying_bg', grCfg.cTheme.pl_col_row_nowplaying_bg, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_bg_04', grCfg.cTheme.pl_col_row_nowplaying_bg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_bg_04', grCfg.cTheme.pl_col_row_nowplaying_bg, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_bg_05', 'pl.col.row_stripes_bg', grCfg.cTheme.pl_col_row_stripes_bg, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_bg_05', grCfg.cTheme.pl_col_row_stripes_bg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_bg_05', grCfg.cTheme.pl_col_row_stripes_bg, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_bg_06', 'pl.col.row_sideMarker', grCfg.cTheme.pl_col_row_sideMarker, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_bg_06', grCfg.cTheme.pl_col_row_sideMarker, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_bg_06', grCfg.cTheme.pl_col_row_sideMarker, markerX, y));
-				}
-				break;
-			case 'pl_text1':
-				{
-					const plColors = new CustomMenuInputField('pl_text_01', 'pl.col.plman_text_normal', grCfg.cTheme.pl_col_plman_text_normal, x, y, labelW, inputW);
-					CustomMenu.controlList.push(plColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_01', grCfg.cTheme.pl_col_plman_text_normal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_01', grCfg.cTheme.pl_col_plman_text_normal, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_text_02', 'pl.col.plman_text_hovered', grCfg.cTheme.pl_col_plman_text_hovered, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_02', grCfg.cTheme.pl_col_plman_text_hovered, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_02', grCfg.cTheme.pl_col_plman_text_hovered, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_text_03', 'pl.col.plman_text_pressed', grCfg.cTheme.pl_col_plman_text_pressed, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_03', grCfg.cTheme.pl_col_plman_text_pressed, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_03', grCfg.cTheme.pl_col_plman_text_pressed, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_text_04', 'pl.col.header_artist_normal', grCfg.cTheme.pl_col_header_artist_normal, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_04', grCfg.cTheme.pl_col_header_artist_normal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_04', grCfg.cTheme.pl_col_header_artist_normal, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_text_05', 'pl.col.header_artist_playing', grCfg.cTheme.pl_col_header_artist_playing, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_05', grCfg.cTheme.pl_col_header_artist_playing, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_05', grCfg.cTheme.pl_col_header_artist_playing, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_text_06', 'pl.col.header_album_normal', grCfg.cTheme.pl_col_header_album_normal, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_06', grCfg.cTheme.pl_col_header_album_normal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_06', grCfg.cTheme.pl_col_header_album_normal, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_text_07', 'pl.col.header_album_playing', grCfg.cTheme.pl_col_header_album_playing, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_07', grCfg.cTheme.pl_col_header_album_playing, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_07', grCfg.cTheme.pl_col_header_album_playing, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_text_08', 'pl.col.header_info_normal', grCfg.cTheme.pl_col_header_info_normal, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_08', grCfg.cTheme.pl_col_header_info_normal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_08', grCfg.cTheme.pl_col_header_info_normal, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_text_09', 'pl.col.header_info_playing', grCfg.cTheme.pl_col_header_info_playing, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_09', grCfg.cTheme.pl_col_header_info_playing, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_09', grCfg.cTheme.pl_col_header_info_playing, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_text_10', 'pl.col.header_date_normal', grCfg.cTheme.pl_col_header_date_normal, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_10', grCfg.cTheme.pl_col_header_date_normal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_10', grCfg.cTheme.pl_col_header_date_normal, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_text_11', 'pl.col.header_date_playing', grCfg.cTheme.pl_col_header_date_playing, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_11', grCfg.cTheme.pl_col_header_date_playing, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_11', grCfg.cTheme.pl_col_header_date_playing, markerX, y));
-				}
-				break;
-			case 'pl_text2':
-				{
-					const plColors = new CustomMenuInputField('pl_text_12', 'pl.col.row_title_normal', grCfg.cTheme.pl_col_row_title_normal, x, y, labelW, inputW);
-					CustomMenu.controlList.push(plColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_12', grCfg.cTheme.pl_col_row_title_normal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_12', grCfg.cTheme.pl_col_row_title_normal, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_text_13', 'pl.col.row_title_playing', grCfg.cTheme.pl_col_row_title_playing, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_13', grCfg.cTheme.pl_col_row_title_playing, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_13', grCfg.cTheme.pl_col_row_title_playing, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_text_14', 'pl.col.row_title_selected', grCfg.cTheme.pl_col_row_title_selected, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_14', grCfg.cTheme.pl_col_row_title_selected, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_14', grCfg.cTheme.pl_col_row_title_selected, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_text_15', 'pl.col.row_title_hovered', grCfg.cTheme.pl_col_row_title_hovered, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_text_15', grCfg.cTheme.pl_col_row_title_hovered, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_text_15', grCfg.cTheme.pl_col_row_title_hovered, markerX, y));
-				}
-				break;
-			case 'pl_misc':
-				{
-					const plColors = new CustomMenuInputField('pl_misc_01', 'pl.col.header_line_normal', grCfg.cTheme.pl_col_header_line_normal, x, y, labelW, inputW);
-					CustomMenu.controlList.push(plColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_misc_01', grCfg.cTheme.pl_col_header_line_normal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_misc_01', grCfg.cTheme.pl_col_header_line_normal, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_misc_02', 'pl.col.header_line_playing', grCfg.cTheme.pl_col_header_line_playing, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_misc_02', grCfg.cTheme.pl_col_header_line_playing, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_misc_02', grCfg.cTheme.pl_col_header_line_playing, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_misc_03', 'pl.col.row_disc_subheader_line', grCfg.cTheme.pl_col_row_disc_subheader_line, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_misc_03', grCfg.cTheme.pl_col_row_disc_subheader_line, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_misc_03', grCfg.cTheme.pl_col_row_disc_subheader_line, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_misc_04', 'pl.col.row_drag_line', grCfg.cTheme.pl_col_row_drag_line, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_misc_04', grCfg.cTheme.pl_col_row_drag_line, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_misc_04', grCfg.cTheme.pl_col_row_drag_line, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_misc_05', 'pl.col.row_drag_line_reached', grCfg.cTheme.pl_col_row_drag_line_reached, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_misc_05', grCfg.cTheme.pl_col_row_drag_line_reached, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_misc_05', grCfg.cTheme.pl_col_row_drag_line_reached, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_misc_06', 'pl.col.row_selection_frame', grCfg.cTheme.pl_col_row_selection_frame, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_misc_06', grCfg.cTheme.pl_col_row_selection_frame, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_misc_06', grCfg.cTheme.pl_col_row_selection_frame, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_misc_07', 'pl.col.row_rating_color', grCfg.cTheme.pl_col_row_rating_color, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_misc_07', grCfg.cTheme.pl_col_row_rating_color, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_misc_07', grCfg.cTheme.pl_col_row_rating_color, markerX, y));
-				}
-				break;
-			case 'pl_btns':
-				{
-					const plColors = new CustomMenuInputField('pl_btns_01', 'pl.col.sbar_btn_normal', grCfg.cTheme.pl_col_sbar_btn_normal, x, y, labelW, inputW);
-					CustomMenu.controlList.push(plColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_btns_01', grCfg.cTheme.pl_col_sbar_btn_normal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_btns_01', grCfg.cTheme.pl_col_sbar_btn_normal, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_btns_02', 'pl.col.sbar_btn_hovered', grCfg.cTheme.pl_col_sbar_btn_hovered, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_btns_02', grCfg.cTheme.pl_col_sbar_btn_hovered, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_btns_02', grCfg.cTheme.pl_col_sbar_btn_hovered, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_btns_03', 'pl.col.sbar_thumb_normal', grCfg.cTheme.pl_col_sbar_thumb_normal, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_btns_03', grCfg.cTheme.pl_col_sbar_thumb_normal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_btns_03', grCfg.cTheme.pl_col_sbar_thumb_normal, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_btns_04', 'pl.col.sbar_thumb_hovered', grCfg.cTheme.pl_col_sbar_thumb_hovered, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_btns_04', grCfg.cTheme.pl_col_sbar_thumb_hovered, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_btns_04', grCfg.cTheme.pl_col_sbar_thumb_hovered, markerX, y));
-					y += plColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('pl_btns_05', 'pl.col.sbar_thumb_drag', grCfg.cTheme.pl_col_sbar_thumb_drag, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('pl_btns_05', grCfg.cTheme.pl_col_sbar_thumb_drag, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('pl_btns_05', grCfg.cTheme.pl_col_sbar_thumb_drag, markerX, y));
-				}
-				break;
+		const addColorSection = (id, label, value, x, y, labelW, inputW, markerX) => {
+			const plColors = new CustomMenuInputField(id, label, value, x, y, labelW, inputW);
+			CustomMenu.controlList.push(plColors);
+			CustomMenu.controlList.push(new CustomMenuColorPicker(id, value, x + 2, y));
+			CustomMenu.controlList.push(new CustomMenuColorMarker(id, value, markerX, y));
+			return plColors.h;
+		};
+
+		const sections = {
+			pl_bg: [
+				{ id: 'pl_bg_01', label: 'pl.col.bg', value: grCfg.cTheme.pl_col_bg },
+				{ id: 'pl_bg_02', label: 'pl.col.header_nowplaying_bg', value: grCfg.cTheme.pl_col_header_nowplaying_bg },
+				{ id: 'pl_bg_03', label: 'pl.col.header_sideMarker', value: grCfg.cTheme.pl_col_header_sideMarker },
+				{ id: 'pl_bg_04', label: 'pl.col.row_nowplaying_bg', value: grCfg.cTheme.pl_col_row_nowplaying_bg },
+				{ id: 'pl_bg_05', label: 'pl.col.row_stripes_bg', value: grCfg.cTheme.pl_col_row_stripes_bg },
+				{ id: 'pl_bg_06', label: 'pl.col.row_sideMarker', value: grCfg.cTheme.pl_col_row_sideMarker }
+			],
+			pl_text1: [
+				{ id: 'pl_text_01', label: 'pl.col.plman_text_normal', value: grCfg.cTheme.pl_col_plman_text_normal },
+				{ id: 'pl_text_02', label: 'pl.col.plman_text_hovered', value: grCfg.cTheme.pl_col_plman_text_hovered },
+				{ id: 'pl_text_03', label: 'pl.col.plman_text_pressed', value: grCfg.cTheme.pl_col_plman_text_pressed },
+				{ id: 'pl_text_04', label: 'pl.col.header_artist_normal', value: grCfg.cTheme.pl_col_header_artist_normal },
+				{ id: 'pl_text_05', label: 'pl.col.header_artist_playing', value: grCfg.cTheme.pl_col_header_artist_playing },
+				{ id: 'pl_text_06', label: 'pl.col.header_album_normal', value: grCfg.cTheme.pl_col_header_album_normal },
+				{ id: 'pl_text_07', label: 'pl.col.header_album_playing', value: grCfg.cTheme.pl_col_header_album_playing },
+				{ id: 'pl_text_08', label: 'pl.col.header_info_normal', value: grCfg.cTheme.pl_col_header_info_normal },
+				{ id: 'pl_text_09', label: 'pl.col.header_info_playing', value: grCfg.cTheme.pl_col_header_info_playing },
+				{ id: 'pl_text_10', label: 'pl.col.header_date_normal', value: grCfg.cTheme.pl_col_header_date_normal },
+				{ id: 'pl_text_11', label: 'pl.col.header_date_playing', value: grCfg.cTheme.pl_col_header_date_playing }
+			],
+			pl_text2: [
+				{ id: 'pl_text_12', label: 'pl.col.row_title_normal', value: grCfg.cTheme.pl_col_row_title_normal },
+				{ id: 'pl_text_13', label: 'pl.col.row_title_playing', value: grCfg.cTheme.pl_col_row_title_playing },
+				{ id: 'pl_text_14', label: 'pl.col.row_title_selected', value: grCfg.cTheme.pl_col_row_title_selected },
+				{ id: 'pl_text_15', label: 'pl.col.row_title_hovered', value: grCfg.cTheme.pl_col_row_title_hovered }
+			],
+			pl_misc: [
+				{ id: 'pl_misc_01', label: 'pl.col.header_line_normal', value: grCfg.cTheme.pl_col_header_line_normal },
+				{ id: 'pl_misc_02', label: 'pl.col.header_line_playing', value: grCfg.cTheme.pl_col_header_line_playing },
+				{ id: 'pl_misc_03', label: 'pl.col.row_disc_subheader_line', value: grCfg.cTheme.pl_col_row_disc_subheader_line },
+				{ id: 'pl_misc_04', label: 'pl.col.row_drag_line', value: grCfg.cTheme.pl_col_row_drag_line },
+				{ id: 'pl_misc_05', label: 'pl.col.row_drag_line_reached', value: grCfg.cTheme.pl_col_row_drag_line_reached },
+				{ id: 'pl_misc_06', label: 'pl.col.row_selection_frame', value: grCfg.cTheme.pl_col_row_selection_frame },
+				{ id: 'pl_misc_07', label: 'pl.col.row_rating_color', value: grCfg.cTheme.pl_col_row_rating_color }
+			],
+			pl_btns: [
+				{ id: 'pl_btns_01', label: 'pl.col.sbar_btn_normal', value: grCfg.cTheme.pl_col_sbar_btn_normal },
+				{ id: 'pl_btns_02', label: 'pl.col.sbar_btn_hovered', value: grCfg.cTheme.pl_col_sbar_btn_hovered },
+				{ id: 'pl_btns_03', label: 'pl.col.sbar_thumb_normal', value: grCfg.cTheme.pl_col_sbar_thumb_normal },
+				{ id: 'pl_btns_04', label: 'pl.col.sbar_thumb_hovered', value: grCfg.cTheme.pl_col_sbar_thumb_hovered },
+				{ id: 'pl_btns_04', label: 'pl.col.sbar_thumb_drag', value: grCfg.cTheme.pl_col_sbar_thumb_drag }
+			]
+		};
+
+		if (sections[playlist_section]) {
+			for (const section of sections[playlist_section]) {
+				y += addColorSection(section.id, section.label, section.value, x, y, labelW, inputW, markerX) + margin;
+			}
 		}
 	}
 
@@ -2312,160 +1984,68 @@ class CustomThemeMenu {
 	 * @private
 	 */
 	_customLibraryColors(x, y, w, h, library_section) {
-		const popupFontSize = grSet[`popupFontSize_${grSet.layout}`];
 		const margin = SCALE(20);
-		const labelW = SCALE(300) + popupFontSize;
-		const inputW = SCALE(80)  + popupFontSize;
-		const markerX = x + margin + inputW + (popupFontSize * (RES._4K ? 0.25 : 0.5)) - SCALE(2);
+		const labelW = SCALE(300) + grSet.popupFontSize_layout;
+		const inputW = SCALE(80)  + grSet.popupFontSize_layout;
+		const markerX = x + margin + inputW + (grSet.popupFontSize_layout * HD_4K(0.5, 0.25)) - SCALE(2);
 
-		switch (library_section) {
-			case 'lib_bg':
-				{
-					const libColors = new CustomMenuInputField('lib_bg_01', 'lib.ui.col.bg', grCfg.cTheme.lib_ui_col_bg, x, y, labelW, inputW);
-					CustomMenu.controlList.push(libColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_bg_01', grCfg.cTheme.lib_ui_col_bg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_bg_01', grCfg.cTheme.lib_ui_col_bg, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_bg_02', 'lib.ui.col.rowStripes', grCfg.cTheme.lib_ui_col_rowStripes, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_bg_02', grCfg.cTheme.lib_ui_col_rowStripes, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_bg_02', grCfg.cTheme.lib_ui_col_rowStripes, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_bg_03', 'lib.ui.col.nowPlayingBg', grCfg.cTheme.lib_ui_col_nowPlayingBg, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_bg_03', grCfg.cTheme.lib_ui_col_nowPlayingBg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_bg_03', grCfg.cTheme.lib_ui_col_nowPlayingBg, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_bg_04', 'lib.ui.col.sideMarker', grCfg.cTheme.lib_ui_col_sideMarker, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_bg_04', grCfg.cTheme.lib_ui_col_sideMarker, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_bg_04', grCfg.cTheme.lib_ui_col_sideMarker, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_bg_05', 'lib.ui.col.selectionFrame', grCfg.cTheme.lib_ui_col_selectionFrame, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_bg_05', grCfg.cTheme.lib_ui_col_selectionFrame, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_bg_05', grCfg.cTheme.lib_ui_col_selectionFrame, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_bg_06', 'lib.ui.col.selectionFrame2', grCfg.cTheme.lib_ui_col_selectionFrame2, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_bg_06', grCfg.cTheme.lib_ui_col_selectionFrame2, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_bg_06', grCfg.cTheme.lib_ui_col_selectionFrame2, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_bg_07', 'lib.ui.col.hoverFrame', grCfg.cTheme.lib_ui_col_hoverFrame, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_bg_07', grCfg.cTheme.lib_ui_col_hoverFrame, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_bg_07', grCfg.cTheme.lib_ui_col_hoverFrame, markerX, y));
-				}
-				break;
-			case 'lib_text':
-				{
-					const libColors = new CustomMenuInputField('lib_text_01', 'lib.ui.col.text', grCfg.cTheme.lib_ui_col_text, x, y, labelW, inputW);
-					CustomMenu.controlList.push(libColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_text_01', grCfg.cTheme.lib_ui_col_text, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_text_01', grCfg.cTheme.lib_ui_col_text, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_text_02', 'lib.ui.col.text_h', grCfg.cTheme.lib_ui_col_text_h, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_text_02', grCfg.cTheme.lib_ui_col_text_h, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_text_02', grCfg.cTheme.lib_ui_col_text_h, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_text_03', 'lib.ui.col.text_nowp', grCfg.cTheme.lib_ui_col_text_nowp, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_text_03', grCfg.cTheme.lib_ui_col_text_nowp, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_text_03', grCfg.cTheme.lib_ui_col_text_nowp, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_text_04', 'lib.ui.col.textSel', grCfg.cTheme.lib_ui_col_textSel, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_text_04', grCfg.cTheme.lib_ui_col_textSel, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_text_04', grCfg.cTheme.lib_ui_col_textSel, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_text_05', 'lib.ui.col.txt', grCfg.cTheme.lib_ui_col_txt, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_text_05', grCfg.cTheme.lib_ui_col_txt, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_text_05', grCfg.cTheme.lib_ui_col_txt, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_text_06', 'lib.ui.col.txt_h', grCfg.cTheme.lib_ui_col_txt_h, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_text_06', grCfg.cTheme.lib_ui_col_txt_h, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_text_06', grCfg.cTheme.lib_ui_col_txt_h, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_text_07', 'lib.ui.col.txt_box', grCfg.cTheme.lib_ui_col_txt_box, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_text_07', grCfg.cTheme.lib_ui_col_txt_box, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_text_07', grCfg.cTheme.lib_ui_col_txt_box, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_text_08', 'lib.ui.col.search', grCfg.cTheme.lib_ui_col_search, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_text_08', grCfg.cTheme.lib_ui_col_search, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_text_08', grCfg.cTheme.lib_ui_col_search, markerX, y));
-				}
-				break;
-			case 'lib_node':
-				{
-					const libColors = new CustomMenuInputField('lib_node_01', 'lib.ui.col.iconPlus', grCfg.cTheme.lib_ui_col_iconPlus, x, y, labelW, inputW);
-					CustomMenu.controlList.push(libColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_node_01', grCfg.cTheme.lib_ui_col_iconPlus, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_node_01', grCfg.cTheme.lib_ui_col_iconPlus, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_node_02', 'lib.ui.col.iconPlus_h', grCfg.cTheme.lib_ui_col_iconPlus_h, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_node_02', grCfg.cTheme.lib_ui_col_iconPlus_h, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_node_02', grCfg.cTheme.lib_ui_col_iconPlus_h, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_node_03', 'lib.ui.col.iconPlus_sel', grCfg.cTheme.lib_ui_col_iconPlus_sel, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_node_03', grCfg.cTheme.lib_ui_col_iconPlus_sel, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_node_03', grCfg.cTheme.lib_ui_col_iconPlus_sel, markerX, y));
-					y += libColors.h + margin;
+		const addColorSection = (id, label, value, x, y, labelW, inputW, markerX) => {
+			const libColors = new CustomMenuInputField(id, label, value, x, y, labelW, inputW);
+			CustomMenu.controlList.push(libColors);
+			CustomMenu.controlList.push(new CustomMenuColorPicker(id, value, x + 2, y));
+			CustomMenu.controlList.push(new CustomMenuColorMarker(id, value, markerX, y));
+			return libColors.h;
+		};
 
-					if (grSet.libraryDesign === 'traditional') {
-						CustomMenu.controlList.push(new CustomMenuInputField('lib_node_04', 'lib.ui.col.iconPlusBg', grCfg.cTheme.lib_ui_col_iconPlusBg, x, y, labelW, inputW));
-						CustomMenu.controlList.push(new CustomMenuColorPicker('lib_node_04', grCfg.cTheme.lib_ui_col_iconPlusBg, x + 2, y));
-						CustomMenu.controlList.push(new CustomMenuColorMarker('lib_node_04', grCfg.cTheme.lib_ui_col_iconPlusBg, markerX, y));
-						y += libColors.h + margin;
-						CustomMenu.controlList.push(new CustomMenuInputField('lib_node_05', 'lib.ui.col.iconMinus_e', grCfg.cTheme.lib_ui_col_iconMinus_e, x, y, labelW, inputW));
-						CustomMenu.controlList.push(new CustomMenuColorPicker('lib_node_05', grCfg.cTheme.lib_ui_col_iconMinus_e, x + 2, y));
-						CustomMenu.controlList.push(new CustomMenuColorMarker('lib_node_05', grCfg.cTheme.lib_ui_col_iconMinus_e, markerX, y));
-						y += libColors.h + margin;
-						CustomMenu.controlList.push(new CustomMenuInputField('lib_node_06', 'lib.ui.col.iconMinus_c', grCfg.cTheme.lib_ui_col_iconMinus_c, x, y, labelW, inputW));
-						CustomMenu.controlList.push(new CustomMenuColorPicker('lib_node_06', grCfg.cTheme.lib_ui_col_iconMinus_c, x + 2, y));
-						CustomMenu.controlList.push(new CustomMenuColorMarker('lib_node_06', grCfg.cTheme.lib_ui_col_iconMinus_c, markerX, y));
-						y += libColors.h + margin;
-						CustomMenu.controlList.push(new CustomMenuInputField('lib_node_07', 'lib.ui.col.iconMinus_h', grCfg.cTheme.lib_ui_col_iconMinus_h, x, y, labelW, inputW));
-						CustomMenu.controlList.push(new CustomMenuColorPicker('lib_node_07', grCfg.cTheme.lib_ui_col_iconMinus_h, x + 2, y));
-						CustomMenu.controlList.push(new CustomMenuColorMarker('lib_node_07', grCfg.cTheme.lib_ui_col_iconMinus_h, markerX, y));
-					}
-				}
-				break;
-			case 'lib_btns':
-				{
-					const libColors = new CustomMenuInputField('lib_btns_01', 'lib.ui.col.searchBtn', grCfg.cTheme.lib_ui_col_searchBtn, x, y, labelW, inputW);
-					CustomMenu.controlList.push(libColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_btns_01', grCfg.cTheme.lib_ui_col_searchBtn, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_btns_01', grCfg.cTheme.lib_ui_col_searchBtn, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_btns_02', 'lib.ui.col.crossBtn', grCfg.cTheme.lib_ui_col_crossBtn, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_btns_02', grCfg.cTheme.lib_ui_col_crossBtn, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_btns_02', grCfg.cTheme.lib_ui_col_crossBtn, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_btns_03', 'lib.ui.col.filterBtn', grCfg.cTheme.lib_ui_col_filterBtn, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_btns_03', grCfg.cTheme.lib_ui_col_filterBtn, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_btns_03', grCfg.cTheme.lib_ui_col_filterBtn, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_btns_04', 'lib.ui.col.settingsBtn', grCfg.cTheme.lib_ui_col_settingsBtn, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_btns_04', grCfg.cTheme.lib_ui_col_settingsBtn, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_btns_04', grCfg.cTheme.lib_ui_col_settingsBtn, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_btns_05', 'lib.ui.col.line', grCfg.cTheme.lib_ui_col_line, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_btns_05', grCfg.cTheme.lib_ui_col_line, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_btns_05', grCfg.cTheme.lib_ui_col_line, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_btns_06', 'lib.ui.col.s_line', grCfg.cTheme.lib_ui_col_s_line, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_btns_06', grCfg.cTheme.lib_ui_col_s_line, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_btns_06', grCfg.cTheme.lib_ui_col_s_line, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_btns_07', 'lib.ui.col.sbarBtns', grCfg.cTheme.lib_ui_col_sbarBtns, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_btns_07', grCfg.cTheme.lib_ui_col_sbarBtns, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_btns_07', grCfg.cTheme.lib_ui_col_sbarBtns, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_btns_08', 'lib.ui.col.sbarNormal', grCfg.cTheme.lib_ui_col_sbarNormal, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_btns_08', grCfg.cTheme.lib_ui_col_sbarNormal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_btns_08', grCfg.cTheme.lib_ui_col_sbarNormal, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_btns_09', 'lib.ui.col.sbarHovered', grCfg.cTheme.lib_ui_col_sbarHovered, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_btns_09', grCfg.cTheme.lib_ui_col_sbarHovered, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_btns_09', grCfg.cTheme.lib_ui_col_sbarHovered, markerX, y));
-					y += libColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('lib_btns_10', 'lib.ui.col.sbarDrag', grCfg.cTheme.lib_ui_col_sbarDrag, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('lib_btns_10', grCfg.cTheme.lib_ui_col_sbarDrag, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('lib_btns_10', grCfg.cTheme.lib_ui_col_sbarDrag, markerX, y));
-				}
-				break;
+		const sections = {
+			lib_bg: [
+				{ id: 'lib_bg_01', label: 'lib.ui.col.bg', value: grCfg.cTheme.lib_ui_col_bg },
+				{ id: 'lib_bg_02', label: 'lib.ui.col.rowStripes', value: grCfg.cTheme.lib_ui_col_rowStripes },
+				{ id: 'lib_bg_03', label: 'lib.ui.col.nowPlayingBg', value: grCfg.cTheme.lib_ui_col_nowPlayingBg },
+				{ id: 'lib_bg_04', label: 'lib.ui.col.sideMarker', value: grCfg.cTheme.lib_ui_col_sideMarker },
+				{ id: 'lib_bg_05', label: 'lib.ui.col.selectionFrame', value: grCfg.cTheme.lib_ui_col_selectionFrame },
+				{ id: 'lib_bg_06', label: 'lib.ui.col.selectionFrame2', value: grCfg.cTheme.lib_ui_col_selectionFrame2 },
+				{ id: 'lib_bg_07', label: 'lib.ui.col.hoverFrame', value: grCfg.cTheme.lib_ui_col_hoverFrame }
+			],
+			lib_text: [
+				{ id: 'lib_text_01', label: 'lib.ui.col.text', value: grCfg.cTheme.lib_ui_col_text },
+				{ id: 'lib_text_02', label: 'lib.ui.col.text_h', value: grCfg.cTheme.lib_ui_col_text_h },
+				{ id: 'lib_text_03', label: 'lib.ui.col.text_nowp', value: grCfg.cTheme.lib_ui_col_text_nowp },
+				{ id: 'lib_text_04', label: 'lib.ui.col.textSel', value: grCfg.cTheme.lib_ui_col_textSel },
+				{ id: 'lib_text_05', label: 'lib.ui.col.txt', value: grCfg.cTheme.lib_ui_col_txt },
+				{ id: 'lib_text_06', label: 'lib.ui.col.txt_h', value: grCfg.cTheme.lib_ui_col_txt_h },
+				{ id: 'lib_text_07', label: 'lib.ui.col.txt_box', value: grCfg.cTheme.lib_ui_col_txt_box },
+				{ id: 'lib_text_08', label: 'lib.ui.col.search', value: grCfg.cTheme.lib_ui_col_search }
+			],
+			lib_node: [
+				{ id: 'lib_node_01', label: 'lib.ui.col.iconPlus', value: grCfg.cTheme.lib_ui_col_iconPlus },
+				{ id: 'lib_node_02', label: 'lib.ui.col.iconPlus_h', value: grCfg.cTheme.lib_ui_col_iconPlus_h },
+				{ id: 'lib_node_03', label: 'lib.ui.col.iconPlus_sel', value: grCfg.cTheme.lib_ui_col_iconPlus_sel },
+				...(grSet.libraryDesign === 'traditional' ? [
+					{ id: 'lib_node_04', label: 'lib.ui.col.iconPlusBg', value: grCfg.cTheme.lib_ui_col_iconPlusBg },
+					{ id: 'lib_node_05', label: 'lib.ui.col.iconMinus_e', value: grCfg.cTheme.lib_ui_col_iconMinus_e },
+					{ id: 'lib_node_06', label: 'lib.ui.col.iconMinus_c', value: grCfg.cTheme.lib_ui_col_iconMinus_c },
+					{ id: 'lib_node_07', label: 'lib.ui.col.iconMinus_h', value: grCfg.cTheme.lib_ui_col_iconMinus_h }
+				] : [])
+			],
+			lib_btns: [
+				{ id: 'lib_btns_01', label: 'lib.ui.col.searchBtn', value: grCfg.cTheme.lib_ui_col_searchBtn },
+				{ id: 'lib_btns_02', label: 'lib.ui.col.crossBtn', value: grCfg.cTheme.lib_ui_col_crossBtn },
+				{ id: 'lib_btns_03', label: 'lib.ui.col.filterBtn', value: grCfg.cTheme.lib_ui_col_filterBtn },
+				{ id: 'lib_btns_04', label: 'lib.ui.col.settingsBtn', value: grCfg.cTheme.lib_ui_col_settingsBtn },
+				{ id: 'lib_btns_05', label: 'lib.ui.col.line', value: grCfg.cTheme.lib_ui_col_line },
+				{ id: 'lib_btns_06', label: 'lib.ui.col.s_line', value: grCfg.cTheme.lib_ui_col_s_line },
+				{ id: 'lib_btns_07', label: 'lib.ui.col.sbarBtns', value: grCfg.cTheme.lib_ui_col_sbarBtns },
+				{ id: 'lib_btns_08', label: 'lib.ui.col.sbarNormal', value: grCfg.cTheme.lib_ui_col_sbarNormal },
+				{ id: 'lib_btns_09', label: 'lib.ui.col.sbarHovered', value: grCfg.cTheme.lib_ui_col_sbarHovered },
+				{ id: 'lib_btns_10', label: 'lib.ui.col.sbarDrag', value: grCfg.cTheme.lib_ui_col_sbarDrag }
+			]
+		};
+
+		if (sections[library_section]) {
+			for (const section of sections[library_section]) {
+				y += addColorSection(section.id, section.label, section.value, x, y, labelW, inputW, markerX) + margin;
+			}
 		}
 	}
 
@@ -2479,101 +2059,52 @@ class CustomThemeMenu {
 	 * @private
 	 */
 	_customBiographyColors(x, y, w, h, biography_section) {
-		const popupFontSize = grSet[`popupFontSize_${grSet.layout}`];
 		const margin = SCALE(20);
-		const labelW = SCALE(300) + popupFontSize;
-		const inputW = SCALE(80)  + popupFontSize;
-		const markerX = x + margin + inputW + (popupFontSize * (RES._4K ? 0.25 : 0.5)) - SCALE(2);
+		const labelW = SCALE(300) + grSet.popupFontSize_layout;
+		const inputW = SCALE(80) + grSet.popupFontSize_layout;
+		const markerX = x + margin + inputW + (grSet.popupFontSize_layout * HD_4K(0.5, 0.25)) - SCALE(2);
 
-		switch (biography_section) {
-			case 'bio_bg':
-				{
-					const bioColors = new CustomMenuInputField('bio_bg_01', 'bio.ui.col.bg', grCfg.cTheme.bio_ui_col_bg, x, y, labelW, inputW);
-					CustomMenu.controlList.push(bioColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_bg_01', grCfg.cTheme.bio_ui_col_bg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_bg_01', grCfg.cTheme.bio_ui_col_bg, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_bg_02', 'bio.ui.col.rowStripes', grCfg.cTheme.bio_ui_col_rowStripes, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_bg_02', grCfg.cTheme.bio_ui_col_rowStripes, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_bg_02', grCfg.cTheme.bio_ui_col_rowStripes, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_bg_03', 'bio.ui.col.noPhotoStubBg', grCfg.cTheme.bio_ui_col_noPhotoStubBg, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_bg_03', grCfg.cTheme.bio_ui_col_noPhotoStubBg, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_bg_03', grCfg.cTheme.bio_ui_col_noPhotoStubBg, markerX, y));
-				}
-				break;
-			case 'bio_text':
-				{
-					const bioColors = new CustomMenuInputField('bio_text_01', 'bio.ui.col.headingText', grCfg.cTheme.bio_ui_col_headingText, x, y, labelW, inputW);
-					CustomMenu.controlList.push(bioColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_text_01', grCfg.cTheme.bio_ui_col_headingText, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_text_01', grCfg.cTheme.bio_ui_col_headingText, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_text_02', 'bio.ui.col.source', grCfg.cTheme.bio_ui_col_source, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_text_02', grCfg.cTheme.bio_ui_col_source, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_text_02', grCfg.cTheme.bio_ui_col_source, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_text_03', 'bio.ui.col.accent', grCfg.cTheme.bio_ui_col_accent, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_text_03', grCfg.cTheme.bio_ui_col_accent, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_text_03', grCfg.cTheme.bio_ui_col_accent, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_text_04', 'bio.ui.col.summary', grCfg.cTheme.bio_ui_col_summary, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_text_04', grCfg.cTheme.bio_ui_col_summary, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_text_04', grCfg.cTheme.bio_ui_col_summary, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_text_05', 'bio.ui.col.text', grCfg.cTheme.bio_ui_col_text, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_text_05', grCfg.cTheme.bio_ui_col_text, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_text_05', grCfg.cTheme.bio_ui_col_text, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_text_06', 'bio.ui.col.lyricsNormal', grCfg.cTheme.bio_ui_col_lyricsNormal, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_text_06', grCfg.cTheme.bio_ui_col_lyricsNormal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_text_06', grCfg.cTheme.bio_ui_col_lyricsNormal, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_text_07', 'bio.ui.col.lyricsHighlight', grCfg.cTheme.bio_ui_col_lyricsHighlight, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_text_07', grCfg.cTheme.bio_ui_col_lyricsHighlight, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_text_07', grCfg.cTheme.bio_ui_col_lyricsHighlight, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_text_08', 'bio.ui.col.noPhotoStubText', grCfg.cTheme.bio_ui_col_noPhotoStubText, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_text_08', grCfg.cTheme.bio_ui_col_noPhotoStubText, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_text_08', grCfg.cTheme.bio_ui_col_noPhotoStubText, markerX, y));
-				}
-				break;
-			case 'bio_misc':
-				{
-					const bioColors = new CustomMenuInputField('bio_misc_01', 'bio.ui.col.bottomLine', grCfg.cTheme.bio_ui_col_bottomLine, x, y, labelW, inputW);
-					CustomMenu.controlList.push(bioColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_misc_01', grCfg.cTheme.bio_ui_col_bottomLine, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_misc_01', grCfg.cTheme.bio_ui_col_bottomLine, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_misc_02', 'bio.ui.col.centerLine', grCfg.cTheme.bio_ui_col_centerLine, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_misc_02', grCfg.cTheme.bio_ui_col_centerLine, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_misc_02', grCfg.cTheme.bio_ui_col_centerLine, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_misc_03', 'bio.ui.col.sectionLine', grCfg.cTheme.bio_ui_col_sectionLine, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_misc_03', grCfg.cTheme.bio_ui_col_sectionLine, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_misc_03', grCfg.cTheme.bio_ui_col_sectionLine, markerX, y));
-				}
-				break;
-			case 'bio_btns':
-				{
-					const bioColors = new CustomMenuInputField('bio_btns_01', 'bio.ui.col.sbarBtns', grCfg.cTheme.bio_ui_col_sbarBtns, x, y, labelW, inputW);
-					CustomMenu.controlList.push(bioColors);
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_btns_01', grCfg.cTheme.bio_ui_col_sbarBtns, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_btns_01', grCfg.cTheme.bio_ui_col_sbarBtns, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_btns_02', 'bio.ui.col.sbarNormal', grCfg.cTheme.bio_ui_col_sbarNormal, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_btns_02', grCfg.cTheme.bio_ui_col_sbarNormal, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_btns_02', grCfg.cTheme.bio_ui_col_sbarNormal, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_btns_03', 'bio.ui.col.sbarHovered', grCfg.cTheme.bio_ui_col_sbarHovered, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_btns_03', grCfg.cTheme.bio_ui_col_sbarHovered, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_btns_03', grCfg.cTheme.bio_ui_col_sbarHovered, markerX, y));
-					y += bioColors.h + margin;
-					CustomMenu.controlList.push(new CustomMenuInputField('bio_btns_04', 'bio.ui.col.sbarDrag', grCfg.cTheme.bio_ui_col_sbarDrag, x, y, labelW, inputW));
-					CustomMenu.controlList.push(new CustomMenuColorPicker('bio_btns_04', grCfg.cTheme.bio_ui_col_sbarDrag, x + 2, y));
-					CustomMenu.controlList.push(new CustomMenuColorMarker('bio_btns_04', grCfg.cTheme.bio_ui_col_sbarDrag, markerX, y));
-				}
-				break;
+		const addColorSection = (id, label, value, x, y, labelW, inputW, markerX) => {
+			const bioColors = new CustomMenuInputField(id, label, value, x, y, labelW, inputW);
+			CustomMenu.controlList.push(bioColors);
+			CustomMenu.controlList.push(new CustomMenuColorPicker(id, value, x + 2, y));
+			CustomMenu.controlList.push(new CustomMenuColorMarker(id, value, markerX, y));
+			return bioColors.h;
+		};
+
+		const sections = {
+			bio_bg: [
+				{ id: 'bio_bg_01', label: 'bio.ui.col.bg', value: grCfg.cTheme.bio_ui_col_bg },
+				{ id: 'bio_bg_02', label: 'bio.ui.col.rowStripes', value: grCfg.cTheme.bio_ui_col_rowStripes },
+				{ id: 'bio_bg_03', label: 'bio.ui.col.noPhotoStubBg', value: grCfg.cTheme.bio_ui_col_noPhotoStubBg }
+			],
+			bio_text: [
+				{ id: 'bio_text_01', label: 'bio.ui.col.headingText', value: grCfg.cTheme.bio_ui_col_headingText },
+				{ id: 'bio_text_02', label: 'bio.ui.col.source', value: grCfg.cTheme.bio_ui_col_source },
+				{ id: 'bio_text_03', label: 'bio.ui.col.accent', value: grCfg.cTheme.bio_ui_col_accent },
+				{ id: 'bio_text_04', label: 'bio.ui.col.summary', value: grCfg.cTheme.bio_ui_col_summary },
+				{ id: 'bio_text_05', label: 'bio.ui.col.text', value: grCfg.cTheme.bio_ui_col_text },
+				{ id: 'bio_text_06', label: 'bio.ui.col.lyricsNormal', value: grCfg.cTheme.bio_ui_col_lyricsNormal },
+				{ id: 'bio_text_07', label: 'bio.ui.col.lyricsHighlight', value: grCfg.cTheme.bio_ui_col_lyricsHighlight },
+				{ id: 'bio_text_08', label: 'bio.ui.col.noPhotoStubText', value: grCfg.cTheme.bio_ui_col_noPhotoStubText }
+			],
+			bio_misc: [
+				{ id: 'bio_misc_01', label: 'bio.ui.col.bottomLine', value: grCfg.cTheme.bio_ui_col_bottomLine },
+				{ id: 'bio_misc_02', label: 'bio.ui.col.centerLine', value: grCfg.cTheme.bio_ui_col_centerLine },
+				{ id: 'bio_misc_03', label: 'bio.ui.col.sectionLine', value: grCfg.cTheme.bio_ui_col_sectionLine }
+			],
+			bio_btns: [
+				{ id: 'bio_btns_01', label: 'bio.ui.col.sbarBtns', value: grCfg.cTheme.bio_ui_col_sbarBtns },
+				{ id: 'bio_btns_02', label: 'bio.ui.col.sbarNormal', value: grCfg.cTheme.bio_ui_col_sbarNormal },
+				{ id: 'bio_btns_03', label: 'bio.ui.col.sbarHovered', value: grCfg.cTheme.bio_ui_col_sbarHovered },
+				{ id: 'bio_btns_04', label: 'bio.ui.col.sbarDrag', value: grCfg.cTheme.bio_ui_col_sbarDrag }
+			]
+		};
+
+		if (sections[biography_section]) {
+			for (const section of sections[biography_section]) {
+				y += addColorSection(section.id, section.label, section.value, x, y, labelW, inputW, markerX) + margin;
+			}
 		}
 	}
 
@@ -2591,11 +2122,10 @@ class CustomThemeMenu {
 		const margin = SCALE(20);
 		const maxWidth = (grm.ui.ww * 0.5) - (margin * 4);
 
-		const text = 'You can modify the main colors, the playlist colors, the library colors and the biography colors. First select a custom theme slot in the drop down menu "Options" that you want to modify. You can either select the color via the color picker or paste a HEX value in the input field.\nIt will apply all changes in real time and saves it automatically in the georgia-reborn-custom.jsonc config file. Each color has a name that you can also find in the georgia-reborn-custom.jsonc config file and modify it there.\n\nTo reset the colors to the default ones, select the "Reset" option from the drop down menu.\n\nTip: Download the resource pack from the Github page to open the custom theme template and modify colors in Photoshop or Gimp.\nIf you are happy with the result, just copy and paste the HEX values.\n\nYou can showcase your custom themes and share your configs here: Click on this text.';
-
+		const text = grm.msg.getMessage('customMenu', 'customThemeInfo');
 		const height = MeasureString(text, grFont.popup, 0, 0, maxWidth, grm.ui.wh).Height;
-
 		const info = new CustomMenuInfo(x, y, maxWidth, height, text, link);
+
 		CustomMenu.controlList.push(info);
 	}
 	// #endregion
@@ -2604,30 +2134,24 @@ class CustomThemeMenu {
 	// #region PUBLIC METHODS
 	/**
 	 * Initializes the custom theme menu with panel sections and options for customizing the theme colors.
-	 * @param {string} playlist_section - The playlist color page to be opened.
-	 * @param {string} main_section - The main color page to be opened.
-	 * @param {string} library_section - The library color page to be opened.
-	 * @param {string} biography_section - The biography color page to be opened.
-	 * @param {boolean} info - The custom theme menu info page to be opened.
+	 * @param {string} panel - The panel to be opened. Can be 'main', 'playlist', 'library', 'biography', 'info'.
+	 * @param {string} section - The specific section to be opened within the panel.
+	 * - For 'main': 'main_pre', 'main_bg', 'main_bar', 'main_bar2', 'main_bar3', 'main_text', 'main_btns', 'main_btns2', 'main_style'.
+	 * - For 'playlist': 'pl_bg', 'pl_text1', 'pl_text2', 'pl_misc', 'pl_btns'.
+	 * - For 'library': 'lib_bg', 'lib_text', 'lib_node', 'lib_btns'.
+	 * - For 'biography': 'bio_bg', 'bio_text', 'bio_misc', 'bio_btns'.
 	 */
-	initCustomThemeMenu(playlist_section, main_section, library_section, biography_section, info) {
-		if (grSet.libraryLayout   === 'full') { grSet.libraryLayout   = 'normal'; grm.ui.setLibrarySize(); }
-		if (grSet.biographyLayout === 'full') { grSet.biographyLayout = 'normal'; grm.ui.setBiographySize(); }
-		if (grSet.lyricsLayout    === 'full') { grSet.lyricsLayout    = 'normal'; grm.ui.resizeArtwork(true); }
-
+	initCustomThemeMenu(panel, section) {
 		CustomMenu.controlList = [];
 
 		const margin = SCALE(40);
-		const baseX = grm.ui.displayBiography || grm.ui.displayLyrics ? grm.ui.ww * 0.5 + margin : grm.ui.displayDetails ? grm.ui.noAlbumArtStub ? grm.ui.ww * 0.3 : grm.ui.albumArtSize.x + margin : margin;
+		const menuOnRightSide = grm.ui.displayBiography || grm.ui.displayLyrics && !grm.ui.displayDetails && !grm.ui.displayLibrary;
+		const baseX = margin + (menuOnRightSide ? grSet.panelWidthAuto ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w : pl.playlist.x : grm.ui.displayDetails ? grm.ui.albumArtSize.x : 0);
+
 		let x = baseX;
 		let y = grm.ui.topMenuHeight + margin * 0.75;
-		const w = grm.ui.ww * 0.5;
+		const w = menuOnRightSide ? grm.ui.ww - grm.ui.albumArtSize.w : grm.ui.albumArtSize.w;
 		const h = grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight;
-
-		const mainSection      = ['main_pre', 'main_bg',  'main_bar',  'main_bar2', 'main_bar3', 'main_text', 'main_btns', 'main_btns2', 'main_style'].includes(main_section);
-		const playlistSection  = ['pl_bg',    'pl_text1', 'pl_text2',  'pl_misc', 'pl_btns'].includes(playlist_section);
-		const librarySection   = ['lib_bg',   'lib_text', 'lib_node',  'lib_btns'].includes(library_section);
-		const biographySection = ['bio_bg',   'bio_text', 'bio_misc',  'bio_btns'].includes(biography_section);
 
 		const menu = new CustomMenuDropDown(x, y, 'Main', ['Pre', 'Bg', 'Bar', 'Bar 2', 'Bar 3', 'Text', 'Btns', 'Btns 2', 'Style'], 0);
 		CustomMenu.controlList.push(menu);
@@ -2639,13 +2163,16 @@ class CustomThemeMenu {
 		x = baseX;
 		y += menu.h + margin * 0.75;
 
-		switch (true) {
-			case playlistSection:  this._customPlaylistColors(x, y, w, h, playlist_section); break;
-			case mainSection:      this._customMainColors(x, y, w, h, main_section); break;
-			case librarySection:   this._customLibraryColors(x, y, w, h, library_section); break;
-			case biographySection: this._customBiographyColors(x, y, w, h, biography_section); break;
-			case info:             this._customThemeInfo(x, y, w, h); break;
-		}
+		const panels = {
+			main: () => this._customMainColors(x, y, w, h, section),
+			playlist: () => this._customPlaylistColors(x, y, w, h, section),
+			library: () => this._customLibraryColors(x, y, w, h, section),
+			biography: () => this._customBiographyColors(x, y, w, h, section),
+			info: () => this._customThemeInfo(x, y, w, h)
+		};
+
+		const action = panels[panel];
+		if (action) action();
 	}
 
 	/**
@@ -2653,11 +2180,20 @@ class CustomThemeMenu {
 	 */
 	reinitCustomThemeMenu() {
 		if (!grm.ui.displayCustomThemeMenu) return;
-		if (grm.ui.displayPlaylist)  this.initCustomThemeMenu('pl_bg');
-		if (grm.ui.displayDetails)   this.initCustomThemeMenu(false, 'main_bg');
-		if (grm.ui.displayLibrary)   this.initCustomThemeMenu(false, false, 'lib_bg');
-		if (grm.ui.displayBiography) this.initCustomThemeMenu(false, false, false, 'bio_bg');
-		if (grm.ui.displayLyrics)    this.initCustomThemeMenu(false, 'main_text');
+
+		grm.ui.initCustomThemeMenuPosition();
+
+		if (grm.ui.displayPlaylist && !grm.ui.displayBiography && !grm.ui.displayLyrics) {
+			this.initCustomThemeMenu('playlist', 'pl_bg');
+		} else if (grm.ui.displayDetails) {
+			this.initCustomThemeMenu('main', 'main_bg');
+		} else if (grm.ui.displayLibrary) {
+			this.initCustomThemeMenu('library', 'lib_bg');
+		} else if (grm.ui.displayBiography) {
+			this.initCustomThemeMenu('biography', 'bio_bg');
+		} else if (grm.ui.displayLyrics) {
+			this.initCustomThemeMenu('main', 'main_text');
+		}
 	}
 
 	/**
@@ -2884,7 +2420,7 @@ class CustomThemeMenu {
 		// Update control list colors
 		for (const color of CustomMenu.controlList) {
 			if (color.id === id) {
-			color.value = value;
+				color.value = value;
 			}
 		}
 	}
@@ -2914,10 +2450,10 @@ class MetadataGridMenu {
 		link = 'https://wiki.hydrogenaud.io/index.php?title=Foobar2000:Title_Formatting_Reference';
 		const maxWidth = grm.ui.ww * 0.66 - SCALE(100);
 
-		const text = 'You can modify existing entries or add your new custom patterns.\nTo confirm changes, press "Enter" or paste a new pattern into the input field.\nAll changes will be applied in real time and automatically saved in the\ngeorgia-reborn-config.jsonc file where it can be also manually modified.\n\nTo reset the metadata grid to its default patterns, select the "Reset" option\nfrom the drop down menu.\n\nTip: To reorder the entries, first copy the ones you want to change in your\nnotepad and paste the label and pattern afterwards.\n\nNote: Not all entries will be displayed if the height of the player size is too small,\nchange to a larger player size if desired.\n\nYou can learn more about patterns here, click on this text.';
-
+		const text = grm.msg.getMessage('customMenu', 'metadataGridMenuInfo');
 		const height = MeasureString(text, grFont.popup, 0, 0, maxWidth, grm.ui.wh).Height;
 		const info = new CustomMenuInfo(x, y, maxWidth, height, text, link);
+
 		CustomMenu.controlList.push(info);
 	}
 
@@ -2932,9 +2468,8 @@ class MetadataGridMenu {
 	 */
 	_page(x, y, w, h, page) {
 		const prefs = grCfg.config.readConfiguration();
-		const popupFontSize = grSet[`popupFontSize_${grSet.layout}`];
 		const margin = SCALE(20);
-		const inputW = SCALE(80) + popupFontSize;
+		const inputW = SCALE(80) + grSet.popupFontSize_layout;
 		const start  = page === 1 ? 0 : page === 2 ?  8 : page === 3 ? 16 : page === 4 ? 24 : 0;
 		const end    = page === 1 ? 8 : page === 2 ? 16 : page === 3 ? 24 : page === 4 ? 32 : 8;
 
@@ -2999,7 +2534,7 @@ class MetadataGridMenu {
 		}
 
 		grCfg.config.updateConfigObjValues('metadataGrid', metadataGrid, true);
-		grm.ui.updateMetadataGrid();
+		grm.details.updateGrid();
 		window.Repaint();
 	}
 
@@ -3029,7 +2564,7 @@ class MetadataGridMenu {
 		}
 
 		grCfg.config.updateConfigObjValues('metadataGrid', metadataGrid, true);
-		grm.ui.updateMetadataGrid();
+		grm.details.updateGrid();
 		window.Repaint();
 	}
 	// #endregion

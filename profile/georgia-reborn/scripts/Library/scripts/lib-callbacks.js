@@ -165,10 +165,7 @@ class LibCallbacks {
 
 	on_mouse_lbtn_down(x, y) {
 		if (libSet.touchControl) {
-			lib.panel.last_pressed_coord = {
-				x,
-				y
-			};
+			lib.panel.last_pressed_coord = { x, y };
 		}
 		if (lib.ui.style.topBarShow || libSet.sbarShow) lib.but.lbtn_dn(x, y);
 		if (libSet.searchShow) lib.search.lbtn_dn(x, y);
@@ -367,7 +364,7 @@ class LibCallbacks {
 		if (!pl.playlist) return; // Abort if Playlist was not initialized
 		if (grSet.playlistSortOrderAuto) grm.ui.setPlaylistSortOrder();
 		grm.ui.initPlaylist(); // Update Playlist when adding items from Library
-		pl.call.on_size(grm.ui.ww, grm.ui.wh);
+		grm.ui.setPlaylistSize();
 	}
 
 	on_playlist_items_removed(playlistIndex) {

@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-06-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -20,6 +20,9 @@
  * A class that is responsible for drawing all main user interface parts.
  */
 class MainUI {
+	/**
+	 * Creates the `MainUI` instance.
+	 */
 	constructor() {
 		// * GEOMETRY * //
 		// #region GEOMETRY
@@ -27,50 +30,120 @@ class MainUI {
 		this.ww = 0;
 		/** @public @type {number} The global window.Height. */
 		this.wh = 0;
+		/** @public @type {number} The margin width from the edge of the player to the seekbar. */
+		this.edgeMargin = SCALE(grSet.layout !== 'default' ? 20 : 40);
+		/** @public @type {number} The both margin widths from the edge of the player to the seekbar. */
+		this.edgeMarginBoth = this.edgeMargin * 2;
 		/** @public @type {number} The width and height of the pause button. */
 		this.pauseSize = SCALE(100);
-		/** @public @type {number} The size of the disc art shadow. */
-		this.discArtShadow = SCALE(6);
-		/** @private @type {number} The top position of the metadata grid. */
-		this.gridTop = 0;
-		/** @public @type {number} The height of the metadata grid tooltip area. */
-		this.gridTooltipHeight = SCALE(100);
-		/** @public @type {number} The height of the timeline. */
-		this.timelineHeight = SCALE(8);
+		/** @public @type {number} The x-position of the styled tooltip string. */
+		this.styledToolTipX = 0;
+		/** @public @type {number} The y-position of the styled tooltip string. */
+		this.styledToolTipY = 0;
+		/** @public @type {number} The width of the styled tooltip string. */
+		this.styledToolTipW = 0;
+		/** @public @type {number} The height of the styled tooltip string. */
+		this.styledToolTipH = 0;
 		/** @public @type {number} The height of the top menu. */
 		this.topMenuHeight = SCALE(40);
-		/** @public @type {number} The height of the song title and time + progress bar area. */
+		/** @public @type {number} The top menu button count of the panel buttons. */
+		this.topMenuBtnCount = 5;
+		/** @public @type {number} The transport button count in the lower bar. */
+		this.lowerBarBtnCount = 6;
+		/** @public @type {number} The y-position of the transport buttons in the lower bar. */
+		this.lowerBarBtnY = 0;
+		/** @public @type {number} The margin between artist/track title and seekbar in the lower bar. */
+		this.lowerBarTextMargin = SCALE(15);
+		/** @public @type {number} The starting y-position of the text strings in the lower bar. */
+		this.lowerBarTextStartY = 0;
+		/** @public @type {number} The top position where strings will begin to drawn in the lower bar. */
+		this.lowerBarTop = 0;
+		/** @public @type {number} The total transport button width in the lower bar. */
+		this.lowerBarTotalBtnW = 0;
+		/** @public @type {number} The time area width in the lower bar. */
+		this.lowerBarTimeAreaW = 0;
+		/** @public @type {number} The available width to display artist/track title strings in the lower bar. */
+		this.lowerBarAvailableW = 0;
+		/** @public @type {number} The total height of lower bar. */
 		this.lowerBarHeight = SCALE(120);
-		/** @private @type {number} The width of time string in the lower bar. */
-		this.lowerBarTimeW = 0;
-		/** @private @type {number} The height of time string in the lower bar. */
-		this.lowerBarTimeH = 0;
-		/** @private @type {number} The x-position of the time string in the lower bar. */
+		/** @public @type {number} The width of the artist country flags in the lower bar. */
+		this.lowerBarFlagW = 0;
+		/** @public @type {number} The x-position of the artist in the lower bar. */
+		this.lowerBarArtistX = 0;
+		/** @public @type {number} The y-position of the artist in the lower bar. */
+		this.lowerBarArtistY = 0;
+		/** @public @type {number} The width of the artist string in the lower bar. */
+		this.lowerBarArtistW = 0;
+		/** @public @type {number} The height of the artist string in the lower bar. */
+		this.lowerBarArtistH = 0;
+		/** @public @type {number} The x-position of the track number string in the lower bar. */
+		this.lowerBarTrackNumX = 0;
+		/** @public @type {number} The y-position of the track number string in the lower bar. */
+		this.lowerBarTrackNumY = 0;
+		/** @public @type {number} The width of the track number string in the lower bar. */
+		this.lowerBarTrackNumW = 0;
+		/** @public @type {number} The x-position of the track title string in the lower bar. */
+		this.lowerBarTitleX = 0;
+		/** @public @type {number} The y-position of the track title string in the lower bar. */
+		this.lowerBarTitleY = 0;
+		/** @public @type {number} The width of the track title string in the lower bar. */
+		this.lowerBarTitleW = 0;
+		/** @public @type {number} The height of the track title string in the lower bar. */
+		this.lowerBarTitleH = 0;
+		/** @public @type {number} The width of the combined artist and title strings in the lower bar. */
+		this.lowerBarArtistTitleW = 0;
+		/** @public @type {boolean} The lower bar's one-line artist/track title display. */
+		this.lowerBarOneLine = true;
+		/** @public @type {boolean} The lower bar's two-lines artist/track title display. */
+		this.lowerBarTwoLines = false;
+		/** @public @type {number} The x-position of the software version string in the lower bar. */
+		this.lowerBarVersionX = 0;
+		/** @public @type {number} The y-position of the software version string in the lower bar. */
+		this.lowerBarVersionY = 0;
+		/** @public @type {number} The width of the software version string in the lower bar. */
+		this.lowerBarVersionW = 0;
+		/** @public @type {number} The height of the software version string in the lower bar. */
+		this.lowerBarVersionH = 0;
+		/** @public @type {number} The x-position of the track length string in the lower bar. */
+		this.lowerBarLengthX = 0;
+		/** @public @type {number} The y-position of the track length string in the lower bar. */
+		this.lowerBarLengthY = 0;
+		/** @public @type {number} The width of the track length string in the lower bar. */
+		this.lowerBarLengthW = 0;
+		/** @public @type {number} The height of the track length string in the lower bar. */
+		this.lowerBarLengthH = 0;
+		/** @public @type {number} The x-position of the track time string in the lower bar. */
 		this.lowerBarTimeX = 0;
-		/** @private @type {number} The y-position of the time string in the lower bar. */
+		/** @public @type {number} The y-position of the track time string in the lower bar. */
 		this.lowerBarTimeY = 0;
-		/** @private @type {number} The y-position of the progress bar in the lower bar. */
-		this.progressBarY = 0;
-		/** @public @type {number} The height of the progress bar. */
-		this.progressBarH = SCALE(12);
-		/** @private @type {number} The y-position of the peakmeter bar in the lower bar. */
-		this.peakmeterBarY = 0;
-		/** @public @type {number} The height of the peakmeter bar. */
-		this.peakmeterBarH = SCALE(26);
-		/** @private @type {number} The y-position of the waveform bar in the lower bar. */
-		this.waveformBarY = 0;
-		/** @public @type {number} The height of the waveform bar. */
-		this.waveformBarH = SCALE(26);
+		/** @public @type {number} The width of track time string in the lower bar. */
+		this.lowerBarTimeW = 0;
+		/** @public @type {number} The height of track time string in the lower bar. */
+		this.lowerBarTimeH = 0;
+		/** @public @type {number} The x-position of the disc string in the lower bar. */
+		this.lowerBarDiscX = 0;
+		/** @public @type {number} The y-position of the disc string in the lower bar. */
+		this.lowerBarDiscY = 0;
+		/** @public @type {number} The width of the disc string in the lower bar. */
+		this.lowerBarDiscW = 0;
+		/** @public @type {number} The height of the disc string in the lower bar. */
+		this.lowerBarDiscH = 0;
+		/** @public @type {number} The y-position of the seekbar in the lower bar. */
+		this.seekbarY = 0;
+		/** @public @type {number} The height of the seekbar (progress bar, peakmeter bar, waveform bar ) in the lower bar. */
+		this.seekbarHeight = 0;
+		// #endregion
+
+		// * CACHE * //
+		// #region CACHE
+		/** @public @type {boolean} The calculated lower bar metrics saved so we don't have to recalculate every on every on_paint unless size or metadata changed. */
+		this.cachedLowerBarMetrics = false;
 		// #endregion
 
 		// * CONTROLS *//
 		// #region CONTROLS
 		/** @public @type {boolean} The top menu and contextual menu state, is it open ( active ) or not. */
 		this.activeMenu = false;
-		/** @public @type {object} The theme button object. */
-		this.btn = {};
-		/** @public @type {GdiGraphics[]} The theme button images array. */
-		this.btnImg = [];
 		/** @public @type {boolean} The display state of the Playlist panel. */
 		this.displayPlaylist = false;
 		/** @public @type {boolean} The display state of the Playlist panel in Artwork layout. */
@@ -91,6 +164,8 @@ class MainUI {
 		this.doubleClicked = false;
 		/** @public @type {object} The mouse move position state. */
 		this.state = {};
+		/** @private @type {string} The text content of the lower bar tooltip. */
+		this.lowerBarTooltipText = '';
 		/** @public @type {string} The tooltip text handler for styled tooltip. */
 		this.styledTooltipText = '';
 		/** @public @type {FbTooltip} The tooltip object. */
@@ -123,62 +198,14 @@ class MainUI {
 		this.hasArtwork = false;
 		/** @public @type {boolean} The no album art stub when no album cover was found. */
 		this.noAlbumArtStub = false;
-		/** @public @type {GdiBitmap} The disc art image used in Details. */
-		this.discArt = null;
-		/** @public @type {GdiBitmap} The disc art album cover image used in Details. */
-		this.discArtCover = null;
-		/** @public @type {GdiBitmap[]} The array of disc art images used in Details. */
-		this.discArtArray = [];
-		/** @public @type {GdiBitmap[]} The array of disc art album cover images used in Details. */
-		this.discArtArrayCover = [];
-		/** @private @type {boolean} The state when disc art was found on hard drive used in Details. */
-		this.discArtFound = false;
-		/** @public @type {object} The disc art position used in Details (offset from albumArtSize). */
-		this.discArtSize = new ImageSize(0, 0, 0, 0);
-		/** @public @type {GdiBitmap} The rotated disc art from the RotateImg helper used in Details. */
-		this.discArtRotation = null;
-		/** @public @type {GdiBitmap} The rotated disc art album cover from the RotateImg helper used in Details. */
-		this.discArtRotationCover = null;
-		/** @public @type {number} The global index of current discArtArray img to draw used in Details. */
-		this.discArtRotationIndex = 0;
-		/** @public @type {number} The global index of current discArtArrayCover img to draw used in Details. */
-		this.discArtRotationIndexCover = 0;
-		/** @public @type {GdiBitmap[]} The array of record label images used in Details. */
-		this.recordLabels = [];
-		/** @public @type {GdiBitmap[]} The array of inverted record label images used in Details. */
-		this.recordLabelsInverted = [];
-		/** @public @type {GdiBitmap} The band logo image used in Details. */
-		this.bandLogo = null;
-		/** @public @type {GdiBitmap} The inverted band logo image shown in Details. */
-		this.bandLogoInverted = null;
 		/** @public @type {GdiBitmap[]} The array of flag images shown in Details and in the lower bar. */
 		this.flagImgs = [];
-		/** @private @type {GdiBitmap} The release country flag image shown in the metadata grid in Details. */
-		this.releaseFlagImg = null;
-		/** @private @type {GdiBitmap} The codec logo image shown in the metadata grid in Details. */
-		this.codecLogo = null;
-		/** @private @type {GdiBitmap} The channel logo image shown in the metadata grid in Details. */
-		this.channelLogo = null;
 		/** @private @type {GdiBitmap} The Hi-Res Audio badge logo image shown on album art when enabled. */
 		this.hiResAudioLogo = null;
-		/** @public @type {boolean} The last.fm logo image displayed when we %lastfm_play_count% > 0, shown in the metadata grid in Details. */
-		this.playCountVerifiedByLastFm = false;
-		/** @private @type {GdiBitmap} The shadow behind labels used in Details. */
-		this.labelShadowImg = null;
-		/** @private @type {GdiBitmap} The shadow behind the artwork + disc art used in Details. */
-		this.shadowImg = null;
 		// #endregion
 
 		// * STATE * //
 		// #region STATE
-		/** @public @type {number} The left edge of the record labels in Details. Saved so we don't have to recalculate every on every on_paint unless size has changed. */
-		this.lastLeftEdge = 0;
-		/** @private @type {number} The last label height of the record labels in Details. Saved so we don't have to recalculate every on every on_paint unless size has changed. */
-		this.lastLabelHeight = 0;
-		/** @private @type {number} The first played ratio used on the timeline in Details. */
-		this.timelineFirstPlayedRatio = 0;
-		/** @private @type {number} The last played ratio used on the timeline in Details. */
-		this.timelineLastPlayedRatio = 0;
 		/** @public @type {string} The path of the current playing album directory, used for art caching purposes on_playback_new_track. */
 		this.currentAlbumFolder = '';
 		/** @public @type {string} The path of the last played album directory, used for art caching purposes on_playback_new_track. */
@@ -195,8 +222,6 @@ class MainUI {
 		this.playingPlaylist = '';
 		/** @public @type {number} Saves last playback order. */
 		this.lastPlaybackOrder = fb.PlaybackOrder;
-		/** @public @type {boolean} Saves active full width lyrics layout via grSet.lyricsLayout. */
-		this.lyricsLayoutFullWidth = false;
 		/** @public @type {boolean} Is the song from a streaming source? */
 		this.isStreaming = false;
 		/** @public @type {boolean} Is the song playing from a CD? */
@@ -211,38 +236,30 @@ class MainUI {
 		this.themePresetName = '';
 		/** @public @type {string} The text of the theme notification. */
 		this.themeNotification = '';
-		/** @public @type {boolean} When no artwork, don't set themeColor every redraw. */
-		this.themeColorSet = false;
 		/** @public @type {boolean} The state to override condition in getRandomThemeColor() when using "Generate new color" from context menu. */
 		this.getRandomThemeColorContextMenu = false;
 		/** @public @type {boolean} Only use default theme when noArtwork was found. */
 		this.noArtwork = false;
+		/** @public @type {boolean} The state when noAlbumArtSize was set or not. */
+		this.noAlbumArtSizeSet = false;
 		/** @public @type {boolean} Only load theme colors when newTrackFetchingArtwork = true. */
 		this.newTrackFetchingArtwork = false;
-		/** @public @type {boolean} The state when new album art / disc art loaded and other things finished, used for smoother Playlist auto-scrolling. */
-		this.newTrackFetchingDone = false;
 		/** @public @type {boolean} The state when Library should not call window.Reload() from panel.set() -> panel.load(), i.e when saving theme settings or restoring theme backup. */
 		this.libraryCanReload = true;
-		/** @public @type {boolean} The state if grMain.ui.initTheme() needs to be fully executed to save performance. */
+		/** @public @type {boolean} The state if this.initTheme() needs to be fully executed to save performance. */
 		this.initThemeFull = false;
-		/** @private @type {boolean} The state to skip most grMain.ui.initTheme() and get grMain.color.getThemeColors(grMain.ui.albumArt), mostly used for theme presets to prevent double inits. */
-		this.initThemeSkip = false;
-		/** @private @type {boolean} The state when the theme is loading on startup or reload. */
-		this.loadingTheme = false;
 		/** @public @type {boolean} The state when the theme has completely loaded, used for pseudo delay background logo mask on startup or reload. */
 		this.loadingThemeComplete = false;
 		// #endregion
 
 		// * TIMERS * //
 		// #region TIMERS
-		/** @public @type {number} The setTimeout ID for cycling album art. */
-		this.albumArtTimeout = null;
-		/** @public @type {number} The timer when disc art spins while song is playing. */
-		this.discArtRotationTimer = null;
 		/** @public @type {number} The timer interval for the biography auto-download. */
 		this.autoDownloadBioTimer = null;
 		/** @public @type {number} The timer interval for the lyrics auto-download. */
 		this.autoDownloadLyricsTimer = null;
+		/** @public @type {number} The setTimeout ID for cycling album art. */
+		this.albumArtTimeout = null;
 		/** @public @type {number} The setTimeout ID for hiding cursor. */
 		this.hideCursorTimeout = null;
 		/** @public @type {number} The timer of seekbar. */
@@ -320,20 +337,15 @@ class MainUI {
 		const drawTimingStart = (this.showDrawTiming || this.showDrawExtendedTiming) && new Date();
 
 		this.drawBackgrounds(gr);
+		this.drawUIHacksGlassFrameFix(gr, 'top');
 
-		// * UIHacks aero glass shadow frame fix, needed for style Blend in Details
-		if (UIHacks.Aero.Effect === 2) gr.DrawLine(0, 0, this.ww, 0, 1, grCol.bg);
-
-		this.drawDetailsBlend(gr);
+		this.drawDetails(gr);
 		this.drawPanels(gr);
 		this.drawAlbumArt(gr);
-		this.drawNoAlbumArt(gr)
+		this.drawNoAlbumArt(gr);
 		this.drawHiResAudioLogo(gr);
 		this.drawPauseBtn(gr);
 		this.drawJumpSearch(gr);
-		this.drawDetailsMetadataGrid(gr);
-		this.drawDetailsBandLogo(gr);
-		this.drawDetailsLabelLogo(gr);
 		this.drawLyrics(gr);
 		this.drawStyles(gr);
 		this.drawThemeNotification(gr);
@@ -341,71 +353,43 @@ class MainUI {
 		this.drawTopMenuBar(gr);
 		this.drawLowerBar(gr);
 		this.drawCustomThemeMenu(gr);
-		this.drawMetadataGridMenu(gr);
 		this.drawStyledTooltips(gr);
 		this.drawStartupBackground(gr);
 
-		// * UIHacks aero glass shadow frame fix
-		if (UIHacks.Aero.Effect === 2 && (!this.loadingThemeComplete && (grSet.styleBlend || grSet.styleBlend2)) || !grSet.styleBlend && !grSet.styleBlend2) {
-			gr.DrawLine(0, 0, this.ww, 0, 1, !this.loadingThemeComplete ? grCol.loadingThemeBg : grCol.uiHacksFrame);
-			if (grSet.styleDefault) gr.DrawLine(this.ww, this.wh - 1, 0, this.wh - 1, 1, !this.loadingThemeComplete ? grCol.loadingThemeBg : grCol.uiHacksFrame);
-			else if (grSet.styleGradient || grSet.styleGradient2) {
-				gr.DrawLine(0, 0, this.ww, 0, 1, grCol.bg);
-				gr.FillGradRect(-0.5, 0, this.ww, 1, grSet.styleGradient2 ? -200 : 0, grSet.styleGradient2 ? 0 : grCol.styleGradient, grSet.styleGradient2 ? grCol.styleGradient2 : 0, 0.5);
-			}
-		}
+		this.drawUIHacksGlassFrameFix(gr, 'main');
 
 		this.drawDebugThemeOverlay(gr);
 		this.drawDebugPerformanceOverlay(gr);
 		this.drawDebugTiming(drawTimingStart);
 		this.drawDebugRectAreas(gr);
-		this.repaintRectCount = 0;
 	}
 
 	/**
-	 * Draws the Main and Details background.
+	 * Draws the Main background.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawBackgrounds(gr) {
-		gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 		gr.SetSmoothingMode(SmoothingMode.None);
 
 		// * MAIN BACKGROUND * //
-		if (!this.albumArt && this.noArtwork) { // We use noArtwork to prevent flashing of blue default theme
-			this.initNoAlbumArtSize();
-
-			if (!this.themeColorSet) {
-				grm.color.setThemeColors();
-				this.themeColorSet = true;
-			}
-		}
 		gr.FillSolidRect(0, 0, this.ww, this.wh, grCol.bg);
 
 		// * ALBUM ART BACKGROUND * //
-		if (fb.IsPlaying && grSet.albumArtBg !== 'none' && !this.displayDetails) {
-			gr.FillSolidRect(0, this.albumArtSize.y, grSet.albumArtBg === 'full' || grSet.layout === 'artwork' ? this.ww : this.albumArtSize.x, this.albumArtSize.h, grCol.detailsBg);
+		if (!this.displayDetails && (fb.IsPlaying || grSet.panelBrowseMode) && grSet.albumArtBg !== 'none') {
+			const width = (
+				grSet.albumArtBg === 'full' || grSet.layout === 'artwork' ||
+				grm.ui.displayLyrics && grSet.lyricsLayout === 'full'
+			) ? this.ww : this.albumArtSize.x;
+
+			gr.FillSolidRect(0, this.albumArtSize.y, width, this.albumArtSize.h, grCol.detailsBg);
 		}
 
-		// * DETAILS BACKGROUND * //
-		if (fb.IsPlaying && this.displayDetails || this.displayLyrics && grSet.lyricsLayout === 'full') {
-			if (this.isStreaming && this.noArtwork || !this.albumArt && this.noArtwork || this.displayLyrics && grSet.lyricsLayout === 'full') {
-				gr.FillSolidRect(0, this.topMenuHeight, this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, grCol.detailsBg);
-			} else {
-				gr.FillSolidRect(0, this.albumArtSize.y, grSet.noDiscArtBg && !this.discArt ? this.ww : this.albumArtSize.x, this.albumArtSize.h, grCol.detailsBg);
-			}
+		// * BLENDED BACKGROUND FOR HOME PANEL IN ARTWORK LAYOUT * //
+		if (grSet.styleBlend && this.albumArt && grCol.imgBlended && (grSet.layout === 'artwork' && !this.displayPlaylistArtwork && !this.displayDetails)) {
+			gr.DrawImage(grCol.imgBlended, 0, 0, this.ww, this.wh, 0, 0, grCol.imgBlended.Width, grCol.imgBlended.Height);
 		}
 
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
-	}
-
-	/**
-	 * Draws the style Blend in the Details panel.
-	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 */
-	drawDetailsBlend(gr) {
-		if (grSet.styleBlend && this.albumArt && grCol.imgBlended && this.displayDetails) {
-			gr.DrawImage(grCol.imgBlended, 0, 0, this.ww, this.wh, 0, 0, grCol.imgBlended.Width, grCol.imgBlended.Height);
-		}
 	}
 
 	/**
@@ -413,27 +397,33 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawPanels(gr) {
-		if (grSet.layout === 'default' || grSet.layout === 'artwork') {
+		const displayPlaylist =
+			grSet.layout !== 'artwork' && this.displayPlaylist ||
+			grSet.layout === 'artwork' && this.displayPlaylistArtwork ||
+			this.displayLibrarySplit();
+
+		const drawPanel = (panel, label) => {
+			const profiler = this.showDrawExtendedTiming && fb.CreateProfiler(`on_paint -> ${label}`);
+			panel.call.on_paint(gr);
+			if (profiler) profiler.Print();
+		};
+
+		// * Default && Artwork layout
+		if (grSet.layout !== 'compact') {
 			if (this.displayLibrary) {
-				const drawLibraryProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> library');
-				lib.call.on_paint(gr);
-				if (drawLibraryProfiler) drawLibraryProfiler.Print();
+				drawPanel(lib, 'library');
 			}
-			if (grSet.layout === 'default' && this.displayPlaylist || grSet.layout === 'artwork' && this.displayPlaylistArtwork || this.displayLibrarySplit()) {
-				const drawPlaylistProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> playlist');
-				pl.call.on_paint(gr);
-				if (drawPlaylistProfiler) drawPlaylistProfiler.Print();
+			if (displayPlaylist) {
+				drawPanel(pl, 'playlist');
 			}
 			if (this.displayBiography) {
-				const drawBiographyProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> biography');
-				bio.call.on_paint(gr);
-				if (drawBiographyProfiler) drawBiographyProfiler.Print();
+				drawPanel(bio, 'biography');
 			}
+			return;
 		}
-		else if (grSet.layout === 'compact' && this.displayPlaylist) {
-			const drawPlaylistProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> playlist');
-			pl.call.on_paint(gr);
-			if (drawPlaylistProfiler) drawPlaylistProfiler.Print();
+		// * Compact layout
+		if (displayPlaylist) {
+			drawPanel(pl, 'playlist');
 		}
 	}
 
@@ -442,40 +432,24 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawAlbumArt(gr) {
-		const displayAlbumArt =
-			grSet.layout === 'default' && (grSet.playlistLayout !== 'full' && this.displayPlaylist && !this.displayBiography
-			|| grSet.libraryLayout === 'normal' && this.displayLibrary || this.displayLyrics)
-			|| !this.displayPlaylist && !this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography;
-
-		if (!fb.IsPlaying || !displayAlbumArt || this.displayLibrarySplit()) return;
+		if (!fb.IsPlaying && !grSet.panelBrowseMode || !this.albumArt && !this.albumArtScaled ||
+			!this.albumArtDisplayed() || this.displayLibrarySplit()) {
+			return;
+		}
 
 		const drawAlbumArtProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> album art');
 
 		// * BIG ALBUM ART - NEEDS TO BE DRAWN AFTER ALL BLENDING IS DONE, I.E AFTER PLAYLIST * //
-		if (!this.noAlbumArtStub) {
-			if (this.displayDetails && grSet.displayDiscArt && this.discArt && !this.discArtRotation) {
-				this.createDiscArtRotation();
+		if (!grSet.discArtOnTop || this.displayLyrics) {
+			grm.details.drawDiscArt(gr);
+			if (this.displayDetails && grm.details.discArtRotation && grSet.detailsAlbumArtDiscAreaOpacity !== 255) { // Do not use opacity if image is a booklet, i.e this.albumArtSize.w > this.ww * 0.66
+				grm.details.createDiscArtAlbumArtMask(gr, this.albumArtSize.x, this.albumArtSize.y, this.albumArtSize.w, this.albumArtSize.h, 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height, 0, this.displayDetails && !this.displayLyrics && this.albumArtSize.w < this.ww * 0.66 ? grSet.detailsAlbumArtDiscAreaOpacity : 255);
+			} else {
+				gr.DrawImage(this.albumArtScaled, this.albumArtSize.x, this.albumArtSize.y, this.albumArtSize.w, this.albumArtSize.h, 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height, 0, this.displayDetails && !this.displayLyrics && this.albumArtSize.w < this.ww * 0.66 ? grSet.detailsAlbumArtOpacity : 255);
 			}
-			if (this.displayDetails && grSet.displayDiscArt && this.albumArt && (this.albumArtScaled || this.discArtRotation) && this.discArt) {
-				this.shadowImg && gr.DrawImage(this.shadowImg, -this.discArtShadow, this.albumArtSize.y - this.discArtShadow, this.shadowImg.Width, this.shadowImg.Height, 0, 0, this.shadowImg.Width, this.shadowImg.Height);
-			}
-			if (this.albumArt && this.albumArtScaled) {
-				if (!grSet.discArtOnTop || this.displayLyrics) {
-					if (this.discArtRotation) {
-						this.drawDiscArt(gr);
-					}
-					if (this.displayDetails && this.discArtRotation && grSet.detailsAlbumArtDiscAreaOpacity !== 255) { // Do not use opacity if image is a booklet, i.e this.albumArtSize.w > this.ww * 0.66
-						this.createDiscArtAlbumArtMask(gr, this.albumArtSize.x, this.albumArtSize.y, this.albumArtSize.w, this.albumArtSize.h, 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height, 0, this.displayDetails && !this.displayLyrics && this.albumArtSize.w < this.ww * 0.66 ? grSet.detailsAlbumArtDiscAreaOpacity : 255);
-					} else {
-						gr.DrawImage(this.albumArtScaled, this.albumArtSize.x, this.albumArtSize.y, this.albumArtSize.w, this.albumArtSize.h, 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height, 0, this.displayDetails && !this.displayLyrics && this.albumArtSize.w < this.ww * 0.66 ? grSet.detailsAlbumArtOpacity : 255);
-					}
-				} else { // Draw discArt on top of front cover
-					gr.DrawImage(this.albumArtScaled, this.albumArtSize.x, this.albumArtSize.y, this.albumArtSize.w, this.albumArtSize.h, 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height);
-					if (this.discArtRotation) {
-						this.drawDiscArt(gr);
-					}
-				}
-			}
+		} else { // Draw discArt on top of front cover
+			gr.DrawImage(this.albumArtScaled, this.albumArtSize.x, this.albumArtSize.y, this.albumArtSize.w, this.albumArtSize.h, 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height);
+			grm.details.drawDiscArt(gr);
 		}
 
 		if (drawAlbumArtProfiler) drawAlbumArtProfiler.Print();
@@ -486,75 +460,93 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawNoAlbumArt(gr) {
-		const noAlbumArtLayoutDefault =
-			grSet.layout === 'default' && !this.displayLibrarySplit() && (this.displayPlaylist && grSet.playlistLayout !== 'full' && !this.displayBiography || this.displayLibrary && grSet.libraryLayout === 'normal' || this.displayDetails);
+		if (this.albumArt || !this.noArtwork || !fb.IsPlaying) {
+			this.noAlbumArtStub = false;
+			this.noAlbumArtSizeSet = false;
+			return;
+		}
 
-		const noAlbumArtLayoutArtwork =
-			grSet.layout === 'artwork' && (!this.displayPlaylist && !this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography || this.displayDetails);
+		if (!this.noAlbumArtSizeSet || !this.albumArtSize.w) {
+			this.noAlbumArtStub = true;
+			this.albumArt = null;
+			this.setNoAlbumArtSize();
+			this.noAlbumArtSizeSet = true;
+		}
 
-		if (!this.albumArt && this.noArtwork && fb.IsPlaying) {
-			if (noAlbumArtLayoutDefault || noAlbumArtLayoutArtwork) {
-				// * Clear previous artwork related stuff
-				this.noAlbumArtStub = true;
-				this.albumArt = null;
-				this.discArt = null;
-				this.discArtCover = null;
-				this.discArtArray = [];
-				this.discArtArrayCover = [];
+		if ((fb.IsPlaying || grSet.panelBrowseMode) && this.albumArtDisplayed(true)) {
+			const noAlbumArtSize = this.wh - this.topMenuHeight - this.lowerBarHeight;
 
-				const noAlbumArtSize = this.wh - this.topMenuHeight - this.lowerBarHeight;
+			const bgWidth =
+				grSet.lyricsLayout === 'full' && this.displayLyrics || grSet.layout === 'artwork' ? this.ww :
+				grSet.panelWidthAuto ? noAlbumArtSize :
+				this.ww * 0.5;
 
-				const bgWidth =
-					grSet.lyricsLayout === 'full' && this.displayLyrics || grSet.layout === 'artwork' ? this.ww :
-					grSet.panelWidthAuto ? noAlbumArtSize :
-					this.ww * 0.5;
+			const bgHeight = noAlbumArtSize;
 
-				const bgHeight = noAlbumArtSize;
+			const symbolWidth =
+				grSet.layout === 'artwork' ? this.ww :
+				grSet.panelWidthAuto ? noAlbumArtSize :
+				this.ww * 0.5;
 
-				const noteWidth =
-					grSet.layout === 'artwork' ? this.ww :
-					grSet.panelWidthAuto ? noAlbumArtSize :
-					this.ww * 0.5;
+			const symbolHeight = noAlbumArtSize + grFont.noAlbumArtStub.Height * 0.5 - SCALE(14);
 
-				const noteHeight = noAlbumArtSize + grFont.noAlbumArtStub.Height * 0.5 - SCALE(14);
+			// * Stub background
+			gr.FillSolidRect(0, this.topMenuHeight, this.albumArtSize.x, bgHeight, !grSet.albumArtBg ? pl.col.bg : grCol.bg);
+			gr.FillSolidRect(this.albumArtSize.x, this.topMenuHeight, bgWidth, bgHeight, pl.col.bg);
 
-				// * Stub background
-				gr.FillSolidRect(0, this.topMenuHeight, this.albumArtSize.x, bgHeight, !grSet.albumArtBg ? pl.col.bg : grCol.bg);
-				gr.FillSolidRect(this.albumArtSize.x, this.topMenuHeight, bgWidth, bgHeight, pl.col.bg);
-				if (!this.displayLyrics) {
-					gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
-					gr.DrawString('\uf001', grFont.noAlbumArtStub, grCol.noAlbumArtStub, this.albumArtSize.x, 0, noteWidth, noteHeight, StringFormat(1, 1));
+			// * Stub symbol
+			if (!this.displayLyrics) {
+				gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
+				if (this.isStreaming) {
+					gr.DrawString('\uf130\nLIVE', grFont.noAlbumArtStub2, grCol.noAlbumArtStub, this.albumArtSize.x, 0, symbolWidth, symbolHeight, StringFormat(1, 1));
+				} else {
+					gr.DrawString('\uf001', grFont.noAlbumArtStub, grCol.noAlbumArtStub, this.albumArtSize.x, 0, symbolWidth, symbolHeight, StringFormat(1, 1));
 				}
 			}
-		}
-		else if (grSet.panelWidthAuto && !fb.IsPlaying) {
-			this.noAlbumArtStub = true; // * Needed on_playback_stop when noAlbumArtStub was playing to reposition all panels correctly
-		}
-		else {
-			this.noAlbumArtStub = false;
 		}
 	}
 
 	/**
-	 * Draws the disc art in Details.
+	 * Draws the artist country flags for specified type - either 'metadataGrid' or 'lowerBar'.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {string} type - The type specifying where to draw the flags ('metadataGrid' or 'lowerBar').
 	 */
-	drawDiscArt(gr) {
-		if (grSet.layout !== 'default' || !grSet.displayDiscArt || !this.displayDetails ||
-			this.discArtSize.y < this.albumArtSize.y || this.discArtSize.h > this.albumArtSize.h) {
-			return;
+	drawArtistCountryFlag(gr, type) {
+		if (!this.flagImgs.length) return;
+
+		const fontSize = type === 'metadataGrid' ? grSet.gridArtistFontSize_layout : grSet.lowerBarFontSize_layout;
+		const maxFlags = Math.min(this.flagImgs.length, 6);
+		const flagWidth = HD_4K(this.flagImgs[0].Height, this.flagImgs[0].Height * 0.5) * (SCALE(fontSize) / fontSize);
+
+		let flagsLeft;
+		let fontSizeAdjustment;
+		let widthAdjustment;
+		let heightAdjustment;
+		let yOffset;
+
+		if (type === 'metadataGrid') {
+			const gridArtistHeight = gr.CalcTextHeight(grStr.artist, grFont.gridArtist);
+			flagsLeft = grm.details.gridMarginLeft;
+			fontSizeAdjustment = SCALE(grSet.gridArtistFontSize_layout) - SCALE(18);
+			widthAdjustment = SCALE(grSet.gridArtistFontSize_layout) - SCALE(26);
+			heightAdjustment = gridArtistHeight + SCALE(2);
+			yOffset = Math.round(grm.details.gridTop - (this.flagImgs[0].Height / heightAdjustment) - HD_4K(0, 1));
+		}
+		else if (type === 'lowerBar') {
+			flagsLeft = this.edgeMargin - HD_4K(0, 1);
+			fontSizeAdjustment = SCALE(grSet.lowerBarFontSize_layout) - SCALE(18);
+			widthAdjustment = SCALE(grSet.lowerBarFontSize_layout) - SCALE(26);
+			heightAdjustment = this.lowerBarArtistH + SCALE(2);
+			yOffset = Math.round(this.lowerBarArtistY - (flagWidth / heightAdjustment) - HD_4K(0, 1));
 		}
 
-		const drawDiscArtProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> disc art');
-		const discArtImg = this.discArtArray[this.discArtRotationIndex] || this.discArtRotation;
-		gr.DrawImage(discArtImg, this.discArtSize.x, this.discArtSize.y, this.discArtSize.w, this.discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);
+		gr.SetInterpolationMode(InterpolationMode.HighQualityBicubic);
 
-		if (['cdAlbumCover', 'vinylAlbumCover'].includes(grSet.discArtStub) && this.discArtCover && !this.discArtFound && (!grSet.noDiscArtStub || grSet.showDiscArtStub)) {
-			const discArtImgCover = this.discArtArrayCover[this.discArtRotationIndexCover] || this.discArtRotationCover;
-			gr.DrawImage(discArtImgCover, this.discArtSize.x, this.discArtSize.y, this.discArtSize.w, this.discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);
+		for (let i = 0; i < maxFlags; i++) {
+			const flagImg = this.flagImgs[i];
+			gr.DrawImage(flagImg, flagsLeft, yOffset, flagWidth + widthAdjustment, heightAdjustment, 0, 0, flagImg.Width, flagImg.Height);
+			flagsLeft += flagWidth + fontSizeAdjustment;
 		}
-
-		if (drawDiscArtProfiler) drawDiscArtProfiler.Print();
 	}
 
 	/**
@@ -562,16 +554,14 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawHiResAudioLogo(gr) {
+		if (!grSet.showHiResAudioBadge) return;
+
 		const trackIsHiRes =
-			(Number($('$info(bitspersample)', fb.GetNowPlaying())) > 16 || Number($('$info(bitrate)', fb.GetNowPlaying())) > 1411);
+			(Number($('$info(bitspersample)', this.initMetadb())) > 16
+			||
+			Number($('$info(bitrate)', this.initMetadb())) > 1411);
 
-		const displayHiResAudioLogo =
-			trackIsHiRes && grSet.showHiResAudioBadge && grSet.layout !== 'compact' &&
-			(this.displayPlaylist && !this.displayPlaylistArtwork && !this.displayLibrarySplit() && !this.displayBiography && (grSet.playlistLayout === 'normal' || this.displayLyrics) ||
-			!this.displayPlaylist && !this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography ||
-			this.displayLibrary && grSet.libraryLayout === 'normal' && grSet.layout === 'default');
-
-		if (!displayHiResAudioLogo) return;
+		if (!trackIsHiRes && !this.albumArtDisplayed()) return;
 
 		this.hiResAudioLogo = gdi.Image(grPath.hiResAudioLogoPath());
 
@@ -593,12 +583,13 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawPauseBtn(gr) {
-		if (this.loadingThemeComplete && grSet.showPause && fb.IsPaused && !this.presetIndicatorTimer && !this.doubleClicked
-			&&
-			(grSet.layout === 'default' && (this.displayPlaylist && grSet.playlistLayout !== 'full' && !this.displayLibrary && !this.displayBiography ||
-			this.displayLibrary && grSet.libraryLayout === 'normal' && !this.displayPlaylist || this.displayDetails)
-			||
-			grSet.layout === 'artwork' && !this.displayPlaylist && !this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography)) {
+		if (!fb.IsPaused) return;
+
+		const buttonCanDisplay =
+			grSet.showPause && this.themeNotification === '' && this.themePresetName === '' && !this.doubleClicked &&
+			this.albumArtSize.w !== 0 && this.albumArtDisplayed();
+
+		if (buttonCanDisplay) {
 			grm.pseBtn.draw(gr);
 		}
 	}
@@ -613,499 +604,12 @@ class MainUI {
 	}
 
 	/**
-	 * Draws the metadata grid on the left side in the Details panel.
+	 * Draws the Details panel.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
-	drawDetailsMetadataGrid(gr) {
-		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
-		gr.SetInterpolationMode(InterpolationMode.HighQualityBicubic);
-
-		if (!fb.IsPlaying || !this.displayDetails || grSet.lyricsLayout === 'full' && this.displayLyrics) return;
-
-		const drawMetadataGridProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> metadata grid');
-
-		const gridArtistFontSize   = grSet[`gridArtistFontSize_${grSet.layout}`];
-		const showGridArtist       = grSet[`showGridArtist_${grSet.layout}`];
-		const showGridTrackNum     = grSet[`showGridTrackNum_${grSet.layout}`];
-		const showGridTitle        = grSet[`showGridTitle_${grSet.layout}`];
-		const showGridTimeline     = grSet[`showGridTimeline_${grSet.layout}`];
-		const showGridArtistFlags  = grSet[`showGridArtistFlags_${grSet.layout}`];
-		const showGridReleaseFlags = grSet[`showGridReleaseFlags_${grSet.layout}`];
-		const showGridChannelLogo  = grSet[`showGridChannelLogo_${grSet.layout}`];
-		const showGridCodecLogo    = grSet[`showGridCodecLogo_${grSet.layout}`];
-
-		this.gridMarginLeft = SCALE(grSet.layout !== 'default' ? 20 : 40);
-		this.gridMarginRight = SCALE(20);
-		this.gridTextWidth = Math.round((!this.albumArt && this.discArt ? this.discArtSize.x : this.albumArtSize.x) - this.discArtShadow - this.gridMarginLeft - this.gridMarginRight);
-		this.gridTop = this.albumArtSize.y ? this.albumArtSize.y + this.gridMarginLeft : this.topMenuHeight + this.gridMarginLeft;
-
-		// * DETAILS METADATA GRID * //
-		if (this.gridTextWidth > 150) {
-			let txtRec;
-			let gridArtistTxtRec;
-			let gridTitleTxtRec;
-			let gridAlbumTxtRec;
-
-			const drawArtist = (top) => {
-				if (!grStr.artist) return 0;
-
-				const flagSizeWhiteSpaceTable = {
-					24: [35, 29, 24, 18, 12, 6],
-					23: [36, 30, 25, 19, 12, 6],
-					22: [36, 30, 25, 19, 12, 6],
-					21: [37, 31, 26, 20, 12, 6],
-					20: [37, 31, 26, 20, 12, 6],
-					19: [38, 32, 26, 20, 12, 6],
-					18: [39, 32, 26, 20, 13, 6],
-					17: [40, 33, 27, 20, 13, 6],
-					16: [41, 34, 28, 21, 13, 6],
-					15: [42, 35, 29, 22, 14, 6],
-					14: [44, 36, 29, 22, 14, 6],
-					13: [45, 37, 30, 23, 15, 6],
-					12: [47, 39, 31, 24, 15, 7],
-					11: [49, 41, 32, 25, 16, 7],
-					10: [51, 43, 34, 26, 17, 7]
-				};
-
-				const flagSizeWhiteSpace = ' '.repeat(
-					flagSizeWhiteSpaceTable[gridArtistFontSize][
-						this.flagImgs.length >=  6 ? 0 :
-						this.flagImgs.length === 5 ? 1 :
-						this.flagImgs.length === 4 ? 2 :
-						this.flagImgs.length === 3 ? 3 :
-						this.flagImgs.length === 2 ? 4 :
-						5
-					]
-				);
-
-				const flagSize =
-					this.flagImgs.length >=  6 ? SCALE(84 + gridArtistFontSize * 6) :
-					this.flagImgs.length === 5 ? SCALE(70 + gridArtistFontSize * 5) :
-					this.flagImgs.length === 4 ? SCALE(56 + gridArtistFontSize * 4) :
-					this.flagImgs.length === 3 ? SCALE(42 + gridArtistFontSize * 3) :
-					this.flagImgs.length === 2 ? SCALE(28 + gridArtistFontSize * 2) :
-					this.flagImgs.length === 1 ? SCALE(14 + gridArtistFontSize) : '';
-
-				gridArtistTxtRec = gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, showGridArtistFlags && this.flagImgs.length ? this.gridTextWidth - flagSize : this.gridTextWidth, this.wh);
-				const gridArtistNumLines  = Math.min(2, gridArtistTxtRec.Lines);
-				const gridArtistNumHeight = gr.CalcTextHeight(grStr.artist, grFont.gridArtist) * gridArtistNumLines + 3;
-				const gridArtistHeight    = gr.CalcTextHeight(grStr.artist, grFont.gridArtist);
-
-				// * Apply better anti-aliasing on smaller font sizes in HD res
-				gr.SetTextRenderingHint(!RES._4K && gridArtistFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-				DrawString(gr, showGridArtistFlags && this.flagImgs.length ? flagSizeWhiteSpace + grStr.artist : grStr.artist, grFont.gridArtist, ['white', 'black', 'reborn', 'random'].includes(grSet.theme) ? grCol.detailsText : grSet.theme === 'cream' ? pl.col.header_artist_normal : pl.col.header_artist_playing, this.gridMarginLeft, Math.round(top), this.gridTextWidth, gridArtistNumHeight, Stringformat.trim_ellipsis_char);
-
-				// * Artist flags
-				if (grStr.artist && this.flagImgs.length && showGridArtistFlags && this.displayDetails) {
-					const maxFlags = Math.min(this.flagImgs.length, 6);
-					let flagsLeft = this.gridMarginLeft;
-					for (let i = 0; i < maxFlags; i++) {
-						gr.DrawImage(this.flagImgs[i], flagsLeft, Math.round(top - (this.flagImgs[i].Height / (gridArtistHeight + SCALE(2))) - (RES._4K ? 1 : 0)), this.flagImgs[i].Width + SCALE(gridArtistFontSize) - SCALE(26), gridArtistHeight + SCALE(2), 0, 0, this.flagImgs[i].Width, this.flagImgs[i].Height);
-						flagsLeft += this.flagImgs[i].Width + SCALE(gridArtistFontSize) - SCALE(18);
-					}
-				}
-
-				this.gridArtistTop = this.gridTop;
-				this.gridArtistBottom = this.gridTop + gridArtistNumHeight + (RES._4K ? 17 : 9);
-				return gridArtistNumHeight + (RES._4K ? 17 : 9);
-			};
-
-			this.gridTop -= SCALE(2);
-
-			const drawTitle = (top) => {
-				if (!grStr.title) return 0;
-				gridTitleTxtRec = gr.MeasureString(this.isStreaming ? showGridTrackNum ? grStr.tracknum + grStr.title : grStr.title : grStr.tracknum === '' ? grStr.title : showGridTrackNum ? `${grStr.tracknum}\xa0${grStr.title}` : grStr.title, grFont.gridTitle, 0, 0, this.gridTextWidth, this.wh);
-				const gridTitleNumLines = Math.min(2, gridTitleTxtRec.Lines);
-				const gridTitleNumHeight = gr.CalcTextHeight(grStr.title, grFont.gridTitle) * gridTitleNumLines + 3;
-				const gridTitleFontSize = grSet[`gridTitleFontSize_${grSet.layout}`];
-
-				// * Apply better anti-aliasing on smaller font sizes in HD res
-				gr.SetTextRenderingHint(!RES._4K && gridTitleFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-				DrawString(gr, this.isStreaming ? showGridTrackNum ? grStr.tracknum + grStr.title : grStr.title : grStr.tracknum === '' ? grStr.title : showGridTrackNum ? `${grStr.tracknum}\xa0${grStr.title}` : grStr.title, grFont.gridTitle, grCol.detailsText, this.gridMarginLeft, Math.round(top), this.gridTextWidth, gridTitleNumHeight, Stringformat.trim_ellipsis_char);
-
-				this.gridTitleTop = this.gridTop;
-				this.gridTitleBottom = this.gridTop + gridTitleNumHeight + (RES._4K ? 17 : 9);
-				return gridTitleNumHeight + (RES._4K ? 17 : 9);
-			};
-
-			this.gridTop -= SCALE(2);
-
-			const drawAlbumTitle = (top, maxLines) => {
-				if (!grStr.album) return 0;
-				gridAlbumTxtRec = gr.MeasureString(grStr.album, grFont.gridAlbum, 0, 0, this.gridTextWidth, this.wh);
-				const gridAlbumNumLines = Math.min(showGridArtist || showGridTitle ? 2 : 3, gridAlbumTxtRec.Lines);
-				const gridAlbumNumHeight = gr.CalcTextHeight(grStr.album, grFont.gridAlbum) * gridAlbumNumLines + 3;
-				const gridAlbumFontSize = grSet[`gridAlbumFontSize_${grSet.layout}`];
-
-				// * Apply better anti-aliasing on smaller font sizes in HD res
-				gr.SetTextRenderingHint(!RES._4K && gridAlbumFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-				DrawString(gr, grStr.album, grFont.gridAlbum, grCol.detailsText, this.gridMarginLeft, Math.round(top), this.gridTextWidth, gridAlbumNumHeight, Stringformat.trim_ellipsis_char);
-
-				this.gridAlbumTop = this.gridTop;
-				this.gridAlbumBottom = this.gridTop + gridAlbumNumHeight + SCALE(13);
-				return gridAlbumNumHeight + SCALE(13);
-			};
-
-			if (showGridArtist) {
-				this.gridTop += drawArtist(this.gridTop);
-			}
-			if (showGridTitle) {
-				this.gridTop += drawTitle(this.gridTop);
-			} else if (!showGridArtist) {
-				this.gridTop += drawAlbumTitle(this.gridTop, 3);
-			}
-			// * Timeline
-			if (showGridTimeline && grm.timeline && fb.IsPlaying) {
-				grm.timeline.setSize(this.gridMarginLeft, this.gridTop + SCALE(4), this.albumArtSize.x - this.gridMarginLeft * 2);
-				grm.timeline.draw(gr);
-			}
-			// * Tooltip
-			if (grm.gridTip && fb.IsPlaying) {
-				grm.gridTip.setSize(this.gridMarginLeft, this.topMenuHeight, this.albumArtSize.x - this.gridMarginLeft * 2);
-				grm.gridTip.draw(gr);
-			}
-			if (showGridTimeline) {
-				this.gridTop += this.timelineHeight + SCALE(20);
-			}
-			if (showGridArtist || showGridTitle) {
-				this.gridTop += drawAlbumTitle(this.gridTop, 2);
-			}
-
-			// * Tags
-			const font_array = [grFont.gridKey];
-			const key_font_array = [grFont.gridVal];
-			let grid_key_ft = grFont.gridKey;
-			for (const el of grStr.grid) {
-				if (font_array.length > 1) { // Only check if there's more than one entry in font_array
-					grid_key_ft = ChooseFontForWidth(gr, this.gridTextWidth / 3, el, font_array);
-					while (grid_key_ft !== font_array[0]) { // If font returned was first item in the array, then everything fits, otherwise pare down array
-						font_array.shift();
-						key_font_array.shift();
-					}
-				}
-			}
-			const grid_val_ft = key_font_array.shift();
-			const columnMargin = SCALE(10);
-			this.gridCol1Width = CalcGridMaxTextWidth(gr, grStr.grid, grid_key_ft);
-			this.gridCol2Width = this.gridTextWidth - columnMargin - this.gridCol1Width + SCALE(5);
-			this.gridCol2Left = this.gridMarginLeft + this.gridCol1Width + columnMargin;
-			this.gridTagNameHeight = gr.MeasureString('Ag', grid_key_ft, 0, 0, this.gridTextWidth, this.wh).Height;
-			this.gridTagValueHeight = gr.MeasureString('Ag', grid_val_ft, 0, 0, this.gridTextWidth, this.wh).Height;
-
-			for (let k = 0; k < grStr.grid.length; k++) {
-				let key = grStr.grid[k].label;
-				let value = grStr.grid[k].val;
-				let showLastFmImage = false;
-				let showReleaseFlagImage = false;
-				let showGridCodecLogoImage = false;
-				let showGridChannelLogoImage = false;
-				let dropShadow = false;
-				let grid_val_col = grCol.detailsText;
-
-				this.gridTagNameBottom = this.gridTop + this.gridTagNameHeight;
-				this.gridTagValueBottom = this.gridTop + this.gridTagValueHeight;
-
-				if (value.length) {
-					switch (key) {
-						case 'Catalog':
-						case 'Rel. Country':
-							showReleaseFlagImage = showGridReleaseFlags;
-							break;
-
-						case 'Codec': {
-							const codec = $('$lower($if2(%codec%,$ext(%path%)))');
-							if (['dts', 'dca (dts coherent acoustics)'].includes(codec)) {
-								value = 'DCA'; // * Show only DCA abbreviation if codec is DTS
-							}
-							showGridCodecLogoImage = showGridCodecLogo;
-							break;
-						}
-
-						case 'Channels': {
-							const channels = $('%channels%');
-							const logoType = grSet[`showGridChannelLogo_${grSet.layout}`];
-							const textLogo = logoType === 'textlogo';
-							const noLogo = logoType === false;
-							const ChannelString = (number, string) => {
-								if (textLogo) return string;
-								if (noLogo) return `${number} \u00B7 ${string}`;
-							};
-							const channelLogoMapping = {
-								'mono':   ChannelString(1, 'Mono'),
-								'stereo': ChannelString(2, 'Stereo'),
-								'3ch':    ChannelString(3, 'Center'),
-								'4ch':    ChannelString(4, 'Quad'),
-								'5ch':    ChannelString(5, 'Surround'),
-								'6ch':    ChannelString(6, 'Surround'),
-								'7ch':    ChannelString(7, 'Surround'),
-								'8ch':    ChannelString(8, 'Surround'),
-								'10ch':   ChannelString(10, 'Surround'),
-								'12ch':   ChannelString(12, 'Surround')
-							};
-							// * Remap foobar's org. channel strings
-							if (Object.prototype.hasOwnProperty.call(channelLogoMapping, channels)) {
-								value = channelLogoMapping[channels];
-							}
-							showGridChannelLogoImage = showGridChannelLogo;
-							break;
-						}
-
-						case 'Hotness':
-							grid_val_col = grCol.detailsHotness;
-							dropShadow = true;
-							break;
-
-						case 'Play Count':
-							showLastFmImage = true;
-							break;
-
-						case 'Rating':
-							grid_val_col = grCol.detailsRating;
-							dropShadow = true;
-							break;
-
-						default: {
-							let matchCount = 0;
-							const smallHDRes  = grSet.displayRes === 'HD'  && (this.ww < 1250 || this.wh < 800);
-							const smallQHDRes = grSet.displayRes === 'QHD' && (this.ww < 1350 || this.wh < 900);
-							const small4KRes  = grSet.displayRes === '4K'  && (this.ww < 2350 || this.wh < 1550);
-							const basicMeta = ['Year', 'Label', 'Genre', 'Codec', 'Channels', 'Source', 'Data', 'Play Count', 'Rating'];
-
-							// * On small player sizes, there is no space for all metadata entries. Hide them and only display entries from basicMeta.
-							if (grSet.autoHideGridMetadata && grSet.layout === 'default' && (smallHDRes || smallQHDRes || small4KRes) && !basicMeta.includes(key)) {
-								value = '';
-								key = '';
-								matchCount++;
-							}
-							txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, this.gridCol2Width, this.wh);
-							const cellHeight = txtRec.Height + 5;
-							this.gridTop -= cellHeight * matchCount;
-						}
-					}
-
-					txtRec = gr.MeasureString(value, grid_val_ft, 0, 0, this.gridCol2Width, this.wh);
-
-					if (this.gridTop + txtRec.Height < this.albumArtSize.y + this.albumArtSize.h) {
-						const borderWidth = SCALE(0.5);
-						const cellHeight = txtRec.Height + 5;
-						const keyFontSize = grSet[`gridKeyFontSize_${grSet.layout}`];
-						const valFontSize = grSet[`gridValueFontSize_${grSet.layout}`] + SCALE(1);
-						const showReleaseFlagOnly = grSet[`showGridReleaseFlags_${grSet.layout}`] === 'logo';
-						const showCodecLogoOnly = grSet[`showGridCodecLogo_${grSet.layout}`] === 'logo';
-						const showChannelLogoOnly = grSet[`showGridChannelLogo_${grSet.layout}`] === 'logo';
-						const flag = showReleaseFlagOnly && key === 'Rel. Country';
-						const codec = showCodecLogoOnly && key === 'Codec';
-						const channels = showChannelLogoOnly && key === 'Channels';
-						const ratingLinux = Detect.Wine && key === 'Rating';
-
-						// * Apply better anti-aliasing on smaller font sizes in HD res
-						gr.SetTextRenderingHint(!RES._4K && (keyFontSize < 17 || valFontSize < 18) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-
-						if (dropShadow) {
-							gr.DrawString(value, grid_val_ft, grCol.darkAccent_50, Math.round(this.gridCol2Left + borderWidth), Math.round(this.gridTop + borderWidth), this.gridCol2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
-							gr.DrawString(value, grid_val_ft, grCol.darkAccent_50, Math.round(this.gridCol2Left - borderWidth), Math.round(this.gridTop + borderWidth), this.gridCol2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
-							gr.DrawString(value, grid_val_ft, grCol.darkAccent_50, Math.round(this.gridCol2Left + borderWidth), Math.round(this.gridTop - borderWidth), this.gridCol2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
-							gr.DrawString(value, grid_val_ft, grCol.darkAccent_50, Math.round(this.gridCol2Left - borderWidth), Math.round(this.gridTop - borderWidth), this.gridCol2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
-						}
-						gr.DrawString(key, grid_key_ft, grCol.detailsText, this.gridMarginLeft, Math.round(this.gridTop), this.gridCol1Width, cellHeight, Stringformat.trim_ellipsis_char);
-						gr.DrawString(flag || codec || channels ? '' : value, grid_val_ft, grid_val_col, this.gridCol2Left, Math.round(this.gridTop), this.gridCol2Width + (ratingLinux ? SCALE(20) : 0), cellHeight, StringFormat(0, 0, 4));
-
-						// * Last.fm logo
-						if (this.playCountVerifiedByLastFm && showLastFmImage) {
-							const lastFmImg = gdi.Image(grPath.lastFmImageRed);
-							const lastFmWhiteImg = gdi.Image(grPath.lastFmImageWhite);
-							const lastFmLogo = ColorDistance(grCol.primary, RGB(185, 0, 0), false) < 133 ? lastFmWhiteImg : lastFmImg;
-							const heightRatio = (cellHeight - 12) / lastFmLogo.Height;
-							if (txtRec.Width + SCALE(12) + Math.round(lastFmLogo.Width * heightRatio) < this.gridCol2Width) {
-								gr.DrawImage(lastFmLogo, this.gridCol2Left + txtRec.Width + SCALE(12), this.gridTop + 3,
-									Math.round(lastFmLogo.Width * heightRatio), cellHeight - 12, 0, 0, lastFmLogo.Width, lastFmLogo.Height);
-							}
-						}
-						// * Release flags
-						if (showReleaseFlagImage && this.releaseFlagImg) {
-							const sizeCorr = txtRec.Lines === 4 ? 4 : txtRec.Lines === 3 ? 3 : txtRec.Lines === 2 ? 2 : 1;
-							const yCorr = txtRec.Lines === 4 ? cellHeight / 4 : txtRec.Lines === 3 ? cellHeight / 3 : 0;
-							const heightRatio = (cellHeight) / this.releaseFlagImg.Height;
-							if ((!showReleaseFlagOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(this.releaseFlagImg.Width * heightRatio) < this.gridCol2Width) {
-								gr.DrawImage(this.releaseFlagImg, showReleaseFlagOnly && key === 'Rel. Country' ? this.gridCol2Left : this.gridCol2Left + txtRec.Width + SCALE(8), this.gridTop - 3 + yCorr,
-									Math.round(this.releaseFlagImg.Width * heightRatio / sizeCorr), cellHeight / sizeCorr, 0, 0, this.releaseFlagImg.Width, this.releaseFlagImg.Height);
-							}
-						}
-						// * Codec logo
-						if (showGridCodecLogoImage) {
-							this.loadCodecLogo();
-							const heightRatio = this.codecLogo != null ? (cellHeight - 4) / this.codecLogo.Height : '';
-							if (this.codecLogo != null && (!showCodecLogoOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(this.codecLogo.Width * heightRatio) < this.gridCol2Width) {
-								gr.DrawImage(this.codecLogo, showCodecLogoOnly && key === 'Codec' ? this.gridCol2Left : this.gridCol2Left + txtRec.Width + SCALE(8), this.gridTop - 1,
-									Math.round(this.codecLogo.Width * heightRatio), cellHeight - 4, 0, 0, this.codecLogo.Width, this.codecLogo.Height);
-							}
-						}
-						// * Channel logo
-						if (showGridChannelLogoImage) {
-							this.loadChannelLogo();
-							const heightRatio = this.channelLogo != null ? (cellHeight - 4) / this.channelLogo.Height : '';
-							if (this.channelLogo != null && (!showChannelLogoOnly ? txtRec.Width + SCALE(8) : 0) + Math.round(this.channelLogo.Width * heightRatio) < this.gridCol2Width) {
-								gr.DrawImage(this.channelLogo, showChannelLogoOnly && key === 'Channels' ? this.gridCol2Left : this.gridCol2Left + txtRec.Width + SCALE(8), this.gridTop - 1,
-									Math.round(this.channelLogo.Width * heightRatio), cellHeight - 4, 0, 0, this.channelLogo.Width, this.channelLogo.Height);
-							}
-						}
-						this.gridTop += cellHeight + 5;
-					}
-				}
-			}
-		}
-
-		if (drawMetadataGridProfiler) drawMetadataGridProfiler.Print();
-	}
-
-	/**
-	 * Draws the band logo on the bottom left side in the Details panel.
-	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 */
-	drawDetailsBandLogo(gr) {
-		if (!fb.IsPlaying || !this.albumArt || grSet.layout !== 'default' || !this.displayDetails ||
-			grSet.lyricsLayout === 'full' && this.displayLyrics) {
-			return;
-		}
-
-		const drawBandLogoProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> band logo');
-		const availableSpace = this.albumArtSize.y + this.albumArtSize.h - this.gridTop;
-		const lightBg = new Color(grCol.detailsText).brightness < 140;
-		const logo = lightBg || this.noAlbumArtStub ? (this.bandLogoInverted || this.bandLogo) : this.bandLogo;
-
-		if (logo && availableSpace > 75) {
-			let logoWidth = Math.min(RES._4K ? logo.Width : logo.Width / 2, this.albumArtSize.x - this.ww * 0.05);
-			const heightScale = Math.min(logoWidth / logo.Width, availableSpace / logo.Height);
-			logoWidth = logo.Width * heightScale; // Adjust logoWidth after heightScale is potentially updated
-
-			const logoX = Math.round(this.isStreaming ? SCALE(40) : this.albumArtSize.x / 2 - logoWidth / 2);
-			const logoY = Math.round(this.albumArtSize.y + this.albumArtSize.h - (logo.Height * heightScale)) - (RES._4K ? 24 : 4);
-			const logoW = Math.round(logoWidth);
-			const logoH = Math.round(logo.Height * heightScale);
-
-			gr.DrawImage(logo, logoX, logoY, logoW, logoH, 0, 0, logo.Width, logo.Height, 0);
-		}
-
-		if (drawBandLogoProfiler) drawBandLogoProfiler.Print();
-	}
-
-	/**
-	 * Draws the label logo on the bottom right side in the Details panel.
-	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 */
-	drawDetailsLabelLogo(gr) {
-		if (!fb.IsPlaying || !this.albumArt || grSet.layout !== 'default' || !this.displayDetails ||
-			grSet.lyricsLayout === 'full' && this.displayLyrics) {
-			return;
-		}
-
-		const drawLabelLogoProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> label logo');
-
-		if (this.recordLabels.length > 0) {
-			const lightBg = grSet.labelArtOnBg ? new Color(grCol.bg).brightness > 140 : new Color(grCol.detailsText).brightness < 140;
-			const labels = lightBg || this.noAlbumArtStub ? (this.recordLabelsInverted.length ? this.recordLabelsInverted : this.recordLabels) : this.recordLabels;
-			const rightSideGap = 20; // How close last label is to right edge
-			const leftEdgeGap = (this.albumArtOffCenter ? 20 : 40) * (RES._4K ? 1.8 : 1); // Space between art and label
-			const leftEdgeWidth = RES._4K ? 45 : 30; // How far label background extends on left
-			const maxLabelWidth = SCALE(200);
-			let leftEdge = 0;
-			let topEdge = 0;
-			let totalLabelWidth = 0;
-			let labelAreaWidth = 0;
-			let labelSpacing = 0;
-			let labelWidth;
-			let labelHeight;
-
-			for (const label of labels) {
-				if (label.Width > maxLabelWidth) {
-					totalLabelWidth += maxLabelWidth;
-				} else {
-					totalLabelWidth += RES._4K && label.Width < 200 ? label.Width * 2 : label.Width;
-				}
-			}
-			if (!this.lastLeftEdge) { // We don't want to recalculate this every screen refresh
-				DebugLog('recalculating lastLeftEdge');
-				this.shadowImgLabel = null;
-				labelWidth = Math.round(totalLabelWidth / labels.length);
-				labelHeight = Math.round(labels[0].Height * labelWidth / labels[0].Width); // Might be recalc'd below
-				if (this.albumArt) {
-					if (this.discArt && grSet.displayDiscArt) {
-						leftEdge = Math.round(Math.max(this.albumArtSize.x + this.albumArtScaled.Width + 5, this.ww * 0.975 - totalLabelWidth + 1));
-						const discCenter = {};
-						discCenter.x = Math.round(this.discArtSize.x + this.discArtSize.w / 2);
-						discCenter.y = Math.round(this.discArtSize.y + this.discArtSize.h / 2);
-						const radius = discCenter.y - this.discArtSize.y;
-						const radiusSquared = radius * radius;
-						let posValid = false;
-
-						while (!posValid) {
-							const allLabelsWidth = Math.max(Math.min(Math.round((this.ww - leftEdge - rightSideGap) / labels.length), maxLabelWidth), 50);
-							//console.log("leftEdge = " + leftEdge + ", this.ww-leftEdge-10 = " + (this.ww-leftEdge-10) + ", allLabelsWidth=" + allLabelsWidth);
-							const maxWidth = RES._4K && labels[0].Width < 200 ? labels[0].Width * 2 : labels[0].Width;
-							labelWidth = (allLabelsWidth > maxWidth) ? maxWidth : allLabelsWidth;
-							labelHeight = Math.round(labels[0].Height * labelWidth / labels[0].Width); // Width is based on height scale
-							topEdge = Math.round(this.albumArtSize.y + this.albumArtSize.h - labelHeight);
-
-							const a = topEdge - discCenter.y + 1; // Adding 1 to a and b so that the border just touches the edge of the discArt
-							const b = leftEdge - discCenter.x + 1;
-
-							if ((a * a + b * b) > radiusSquared) {
-								posValid = true;
-							} else {
-								leftEdge += 4;
-							}
-						}
-					} else {
-						leftEdge = Math.round(Math.max(this.albumArtSize.x + this.albumArtSize.w + leftEdgeWidth + leftEdgeGap, this.ww * 0.975 - totalLabelWidth + 1));
-					}
-				} else {
-					leftEdge = Math.round(this.ww * 0.975 - totalLabelWidth);
-				}
-				labelAreaWidth = this.ww - leftEdge - rightSideGap;
-				this.lastLeftEdge = leftEdge;
-				this.lastLabelHeight = labelHeight;
-			}
-			else { // Already calculated
-				leftEdge = this.lastLeftEdge;
-				labelHeight = this.lastLabelHeight;
-				labelAreaWidth = this.ww - leftEdge - rightSideGap;
-			}
-			if (labelAreaWidth >= SCALE(50)) {
-				if (labels.length > 1) {
-					labelSpacing = Math.min(12, Math.max(3, Math.round((labelAreaWidth / (labels.length - 1)) * 0.048))); // Spacing should be proportional, and between 3 and 12 pixels
-				}
-				// console.log('labelAreaWidth = ' + labelAreaWidth + ", labelSpacing = " + labelSpacing);
-				const allLabelsWidth = Math.max(Math.min(Math.round((labelAreaWidth - (labelSpacing * (labels.length - 1))) / labels.length), maxLabelWidth), 50); // allLabelsWidth must be between 50 and 200 pixels wide
-				const origLabelHeight = labelHeight;
-				let labelX = leftEdge;
-				topEdge = this.albumArtSize.y + this.albumArtSize.h - labelHeight - 20;
-
-				if (!grSet.labelArtOnBg && !grSet.noDiscArtBg || grSet.noDiscArtBg && grSet.displayDiscArt && this.discArt) {
-					if (!['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(grSet.theme)) {
-						if (!this.shadowImgLabel) {
-							this.shadowImgLabel = ShadowRect(this.discArtShadow, this.discArtShadow, this.ww - labelX + leftEdgeWidth, labelHeight + 40, this.discArtShadow, grCol.shadow);
-						}
-						gr.DrawImage(this.shadowImgLabel, labelX - leftEdgeWidth - this.discArtShadow, topEdge - 20 - this.discArtShadow, this.ww - labelX + leftEdgeWidth + 2 * this.discArtShadow, labelHeight + 40 + 2 * this.discArtShadow,
-							0, 0, this.shadowImgLabel.Width, this.shadowImgLabel.Height);
-					}
-					gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing
-					gr.FillSolidRect(labelX - leftEdgeWidth, topEdge - 20, this.ww - labelX + leftEdgeWidth, labelHeight + 40, grCol.detailsBg);
-					gr.DrawRect(labelX - leftEdgeWidth, topEdge - 20, this.ww - labelX + leftEdgeWidth, labelHeight + 40 - 1, 1, grCol.shadow);
-					gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
-				}
-				for (let i = 0; i < labels.length; i++) {
-					// allLabelsWidth can never be greater than 200, so if a label image is 161 pixels wide, never draw it wider than 161
-					const maxWidth = RES._4K && labels[i].Width < 200 ? labels[i].Width * 2 : labels[i].Width;
-					labelWidth = (allLabelsWidth > maxWidth) ? maxWidth : allLabelsWidth;
-					labelHeight = Math.round(labels[i].Height * labelWidth / labels[i].Width); // Width is based on height scale
-
-					gr.DrawImage(labels[i], labelX, Math.round(topEdge + origLabelHeight / 2 - labelHeight / 2), labelWidth, labelHeight, 0, 0, this.recordLabels[i].Width, this.recordLabels[i].Height);
-					labelX += labelWidth + labelSpacing;
-				}
-			}
-		}
-
-		if (drawLabelLogoProfiler) drawLabelLogoProfiler.Print();
+	drawDetails(gr) {
+		if (!this.displayDetails || !fb.IsPlaying || !grm.details) return;
+		grm.details.drawDetails(gr);
 	}
 
 	/**
@@ -1113,7 +617,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawLyrics(gr) {
-		if (!this.displayLyrics || !fb.IsPlaying) return;
+		if (!this.displayLyrics || !fb.IsPlaying || !grm.lyrics) return;
 
 		const fullW = grSet.layout === 'default' && grSet.lyricsLayout === 'full' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
 
@@ -1122,7 +626,7 @@ class MainUI {
 			fullW ? this.ww : this.albumArtSize.w, fullW ? this.wh - this.topMenuHeight - this.lowerBarHeight : this.albumArtSize.h,
 			grSet.lyricsAlbumArt ? RGBA(0, 0, 0, 170) : pl.col.bg);
 
-		if (grm.lyrics) grm.lyrics.drawLyrics(gr);
+		grm.lyrics.drawLyrics(gr);
 	}
 
 	/**
@@ -1157,7 +661,7 @@ class MainUI {
 			gr.FillGradRect(-0.5, this.wh - this.lowerBarHeight, this.ww, this.lowerBarHeight, grSet.styleGradient2 ? -200 : grSet.styleRebornBlack || grSet.styleNighttime ? -180 : 0, grSet.styleGradient2 || grSet.styleNighttime || grSet.styleRebornBlack ? 0 : grCol.styleGradient, grSet.styleGradient2 || grSet.styleNighttime || grSet.styleRebornBlack ? grCol.styleGradient2 : 0, 0.5);
 		}
 		if ((grSet.styleAlternative || grSet.styleAlternative2) && (['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(grSet.theme))) {
-			gr.FillGradRect(0, 0, this.ww, this.topMenuHeight, grSet.styleAlternative2 ? -87 : -87, grCol.styleAlternative, 0);
+			gr.FillGradRect(0, 0, this.ww, this.topMenuHeight, -87, grCol.styleAlternative, 0);
 			gr.FillGradRect(0, this.wh - this.lowerBarHeight, this.ww, this.lowerBarHeight, grSet.styleAlternative2 ? 87 : -87, 0, grCol.styleAlternative);
 		}
 
@@ -1170,8 +674,8 @@ class MainUI {
 	 */
 	drawThemeNotification(gr) {
 		if (grSet.themeSetupDay || grSet.themeSetupNight) {
-			const timeOfDay = grSet.themeSetupDay ? 'daytime' : 'nighttime';
-			this.themeNotification = `Theme setup for ${timeOfDay} is active:\n\nPlease select your theme and styles\nfor ${timeOfDay} usage.\n\nAfter configuration,\nrevisit the theme day/night menu\nto save changes.`;
+			const msg = grm.msg.getMessage('main', 'themeDayNightSetup');
+			this.themeNotification = msg;
 		}
 
 		if (this.themeNotification === '' && this.themePresetName === '' ||
@@ -1228,19 +732,19 @@ class MainUI {
 		const layoutArtwork = grSet.layout === 'artwork' &&
 			!this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography;
 
-		const displayAlbumArtDetailsShadows = fb.IsPlaying &&
+		const displayAlbumArtDetailsShadows =
 			(this.albumArt && this.albumArtScaled || this.noAlbumArtStub) && !this.displayLibrarySplit() && (layoutDefault || layoutArtwork);
 
-		const displayDetails = (!this.discArt || !grSet.displayDiscArt) && this.displayDetails;
+		const displayDetails = this.displayDetails && (!grm.details.discArt || !grSet.displayDiscArt);
 
-		const noDefaultLayout = grSet.layout !== 'default';
+		const noDefaultLayout = grSet.layout !== 'default' || this.displayMetadataGridMenu;
 
 		if (displayAlbumArtDetailsShadows) {
 			gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 
 			// Top shadow
-			gr.FillGradRect(0, libSet.albumArtShow && grSet.libraryLayout === 'full' && this.displayLibrary ? lib.ui.y - (RES._4K ? 10 : 6) : this.albumArtSize.y - (RES._4K ? 10 : 6),
-				displayDetails && grSet.noDiscArtBg || noDefaultLayout ? this.ww : this.albumArtSize.x + this.albumArtSize.w, RES._4K ? 10 : 6, 90, 0, grCol.shadow);
+			gr.FillGradRect(0, libSet.albumArtShow && grSet.libraryLayout === 'full' && this.displayLibrary ? lib.ui.y - HD_4K(6, 10) : this.albumArtSize.y - HD_4K(6, 10),
+				displayDetails && grSet.noDiscArtBg || noDefaultLayout ? this.ww : this.albumArtSize.x + this.albumArtSize.w, HD_4K(6, 10), 90, 0, grCol.shadow);
 
 			if (displayDetails && !grSet.noDiscArtBg && !this.noAlbumArtStub) {
 				// Middle shadow
@@ -1249,7 +753,7 @@ class MainUI {
 					this.noAlbumArtStub ? 0 : grSet.styleBlackAndWhite ? RGB(0, 0, 0) : grCol.shadow, this.noAlbumArtStub ? grSet.styleBlackAndWhite ? RGB(0, 0, 0) : grCol.shadow : 0);
 			}
 			// Bottom shadow
-			gr.FillGradRect(0, libSet.albumArtShow && grSet.libraryLayout === 'full' && this.displayLibrary ? lib.ui.y + lib.ui.h + (RES._4K ? 0 : -1) : this.albumArtSize.y + this.albumArtSize.h + (RES._4K ? 0 : -1),
+			gr.FillGradRect(0, libSet.albumArtShow && grSet.libraryLayout === 'full' && this.displayLibrary ? lib.ui.y + lib.ui.h + HD_4K(-1, 0) : this.albumArtSize.y + this.albumArtSize.h + HD_4K(-1, 0),
 				displayDetails && grSet.noDiscArtBg || noDefaultLayout ? this.ww : this.albumArtSize.x + this.albumArtSize.w, SCALE(5), 90, grCol.shadow, 0);
 		}
 
@@ -1265,13 +769,13 @@ class MainUI {
 
 		if (displayPanelShadows) {
 			const x =
-				this.displayLibrarySplit() || this.displayBiography || this.displayCustomThemeMenu && !fb.IsPlaying || grSet.layout !== 'default' || !panelLayoutNormal ? 0 :
+				this.displayLibrarySplit() || this.displayBiography || (this.displayCustomThemeMenu || grSet.panelWidthAuto) && !fb.IsPlaying || grSet.layout !== 'default' || !panelLayoutNormal ? 0 :
 				grSet.panelWidthAuto ? this.albumArtSize.x + this.albumArtSize.w : this.ww * 0.5;
 
 			gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 
 			// Top shadow
-			gr.FillGradRect(x, this.topMenuHeight - (RES._4K ? 10 : 6), this.ww, RES._4K ? 10 : 6, 90, 0, grCol.shadow);
+			gr.FillGradRect(x, this.topMenuHeight - HD_4K(6, 10), this.ww, HD_4K(6, 10), 90, 0, grCol.shadow);
 
 			if (panelLayoutNormal && pl.playlist.x !== 0 && !grSet.hideMiddlePanelShadow) {
 				// Middle shadow for playlist
@@ -1283,7 +787,7 @@ class MainUI {
 				}
 			}
 			// Bottom shadow
-			gr.FillGradRect(x, this.wh - this.lowerBarHeight + (RES._4K ? 0 : -1), this.ww, SCALE(5), 90, grCol.shadow, 0);
+			gr.FillGradRect(x, this.wh - this.lowerBarHeight + HD_4K(-1, 0), this.ww, SCALE(5), 90, grCol.shadow, 0);
 		}
 
 		if (drawPanelShadowsProfiler) drawPanelShadowsProfiler.Print();
@@ -1296,22 +800,24 @@ class MainUI {
 	drawTopMenuBar(gr) {
 		const drawTopMenuBarProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> top menu bar');
 
-		for (const i in this.btn) { // Can't replace for..in until non-numeric indexes are removed
-			const btn = this.btn[i];
-			const { x, y, w, h, img } = btn;
-			const disabled = btn.isEnabled ? !btn.isEnabled() : false;
-			const alpha = disabled ? 140 : 255;
+		const noPlaylistHistoryBtns = !this.displayPlaylist && !this.displayPlaylistArtwork;
+		const buttons = Object.values(grm.button.btn);
 
-			if ((i === 'back' || i === 'forward') && !this.displayPlaylist && !this.displayPlaylistArtwork) {
+		for (const btn of buttons) {
+			const { x, y, w, h, img, isEnabled, hoverAlpha, downAlpha, id } = btn;
+
+			if (noPlaylistHistoryBtns && (id === 'back' || id === 'forward')) {
 				continue;
 			}
 
 			if (img) {
-				gr.DrawImage(img[0], x, y, w, h, 0, 0, w, h, 0, alpha); // Normal
+				const disabled = isEnabled && !isEnabled();
+				const alpha = disabled ? 150 : 255;
+				gr.DrawImage(img.Default, x, y, w, h, 0, 0, w, h, 0, alpha);
 				if (!disabled) {
-					btn.hoverAlpha && gr.DrawImage(img[1], x, y, w, h, 0, 0, w, h, 0, btn.hoverAlpha);
-					btn.downAlpha && gr.DrawImage(img[2], x, y, w, h, 0, 0, w, h, 0, btn.downAlpha);
-					btn.enabled && img[3] && gr.DrawImage(img[3], x, y, w, h, 0, 0, w, h, 0, 255);
+					hoverAlpha && gr.DrawImage(img.Hovered, x, y, w, h, 0, 0, w, h, 0, hoverAlpha);
+					downAlpha && gr.DrawImage(img.Down, x, y, w, h, 0, 0, w, h, 0, downAlpha);
+					// btn.enabled && img.Enabled && gr.DrawImage(img.Enabled, x, y, w, h, 0, 0, w, h, 0, 255);
 				}
 			}
 		}
@@ -1324,194 +830,81 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawLowerBar(gr) {
-		const drawLowerBarProfiler     = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> lower bar');
-		const lowerBarTop              = this.wh - this.lowerBarHeight + (grSet.layout === 'default' ? (RES._4K ? 65 : 35) : (RES._4K ? 33 : 18));
-		const lowerMargin              = SCALE(grSet.layout === 'compact' || grSet.layout === 'artwork' ? 80 : grSet.showTransportControls_default ? 80 : 120);
-		const lowerBarFontSize         = grSet[`lowerBarFontSize_${grSet.layout}`];
-		const showLowerBarArtist       = grSet[`showLowerBarArtist_${grSet.layout}`];
-		const showLowerBarTrackNum     = grSet[`showLowerBarTrackNum_${grSet.layout}`];
-		const showLowerBarTitle        = grSet[`showLowerBarTitle_${grSet.layout}`];
-		const showLowerBarComposer     = grSet[`showLowerBarComposer_${grSet.layout}`];
-		const showLowerBarArtistFlags  = grSet[`showLowerBarArtistFlags_${grSet.layout}`];
-		const showLowerBarPlaybackTime = grSet[`showPlaybackTime_${grSet.layout}`];
-		const showProgressBar          = grSet[`showProgressBar_${grSet.layout}`];
-		const showWaveformBar          = grSet[`showWaveformBar_${grSet.layout}`];
-		const showPeakmeterBar         = grSet[`showPeakmeterBar_${grSet.layout}`];
+		const drawLowerBarProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> lower bar');
 
-		const flagSize =
-		this.flagImgs.length >=  6 ? SCALE(84 + lowerBarFontSize * 6) :
-		this.flagImgs.length === 5 ? SCALE(70 + lowerBarFontSize * 5) :
-		this.flagImgs.length === 4 ? SCALE(56 + lowerBarFontSize * 4) :
-		this.flagImgs.length === 3 ? SCALE(42 + lowerBarFontSize * 3) :
-		this.flagImgs.length === 2 ? SCALE(28 + lowerBarFontSize * 2) :
-		this.flagImgs.length === 1 ? SCALE(14 + lowerBarFontSize) : '';
-		const availableFlags = showLowerBarArtistFlags && this.flagImgs.length ? flagSize : 0;
-
-		// * Calculate all transport buttons width
-		const showPlaybackOrderBtn = grSet[`showPlaybackOrderBtn_${grSet.layout}`];
-		const showReloadBtn        = grSet[`showReloadBtn_${grSet.layout}`];
-		const showAddTrackskBtn    = grSet[`showAddTracksBtn_${grSet.layout}`];
-		const showVolumeBtn        = grSet[`showVolumeBtn_${grSet.layout}`];
-		const transportBtnSize     = grSet[`transportButtonSize_${grSet.layout}`];
-		const transportBtnSpacing  = grSet[`transportButtonSpacing_${grSet.layout}`];
-		const buttonSize           = SCALE(transportBtnSize);
-		const buttonSpacing        = SCALE(transportBtnSpacing);
-		const buttonCount          = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showAddTrackskBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
-
-		// * Setup time area width
-		const timeAreaWidth = this.ww > 400 ? grStr.disc !== '' && grSet.layout === 'default' ? gr.CalcTextWidth(`${grStr.disc}   ${grStr.time}   ${grStr.length}`, grFont.lowerBarTitle) : gr.CalcTextWidth(` ${grStr.time}   ${grStr.length}`, grFont.lowerBarTitle) : 0;
-
-		// * Setup width for artist and song title
-		const playbackTime   = grSet[`showPlaybackTime_${grSet.layout}`];
-		const availableWidth = grSet.layout === 'default' && grSet.showTransportControls_default && (grSet.showLowerBarArtist_default || grSet.showLowerBarTitle_default) ?
-			Math.round(this.ww * 0.5 - lowerMargin - availableFlags - ((buttonSize * buttonCount + buttonSpacing * buttonCount) / 2)) : Math.round(this.ww - lowerMargin - availableFlags - (playbackTime ? timeAreaWidth : 0));
-
-		// * Measure width and height for artist, orig artist and song title
-		const artistWidth       = gr.MeasureString(grStr.artist, grFont.lowerBarArtist, 0, 0, 0, 0).Width;
-		const artistHeight      = gr.CalcTextHeight(grStr.artist, grFont.lowerBarArtist);
-		const trackNumWidth     = Math.ceil(gr.MeasureString(grStr.tracknum === '' ? '00.' : grStr.tracknum, grFont.lowerBarTitle, 0, 0, 0, 0).Width);
-		const titleMeasurements = gr.MeasureString((showLowerBarComposer ? grStr.titleLower + grStr.composer : grStr.titleLower) || 'Ag', grFont.lowerBarTitle, 0, 0, 0, 0);
-		// const titleWidth        = trackNumWidth + gr.MeasureString(showLowerBarComposer ? grStr.titleLower + grStr.composer : grStr.titleLower, grFont.lowerBarTitle, 0, 0, 0, 0).Width;
-		const titleHeight       = gr.CalcTextHeight(grStr.titleLower, grFont.lowerBarTitle);
-		const artistTitleWidth  = gr.MeasureString(grStr.artist, grFont.lowerBarArtist, 0, 0, 0, 0).Width + trackNumWidth + gr.MeasureString(showLowerBarComposer ? grStr.titleLower + grStr.composer : grStr.titleLower, grFont.lowerBarTitle, 0, 0, 0, 0).Width + gr.MeasureString(grStr.original_artist, grFont.lowerBarTitle, 0, 0, 0, 0).Width;
-		const oneLine           = artistTitleWidth < availableWidth || !showLowerBarTitle;
-		const twoLines          = artistTitleWidth > availableWidth && showLowerBarTitle;
-		const lineCorrection    = SCALE(grSet.customThemeFonts ? RES._4K ? 0 : 4 : RES._4K ? 0 : 2);
-
-		// * Adjustments
-		const flagWidth          = showLowerBarArtistFlags && this.flagImgs.length && grStr.tracknum < 100 ? SCALE(14) + SCALE(lowerBarFontSize) : trackNumWidth + SCALE(6);
-		const heightAdjustment   = grSet.customThemeFonts ? 0 : ((lowerBarFontSize === 12 || lowerBarFontSize === 14) && !RES._4K || (lowerBarFontSize === 16 || lowerBarFontSize === 18 || lowerBarFontSize === 20 || lowerBarFontSize === 22) && RES._4K) ? 1 : 0;
-		const trackNumAdjustment = gr.MeasureString('\u2013', grFont.lowerBarTitle, 0, 0, 0, 0).Width;
-		const titleAdjustment    = gr.MeasureString(grSet.customThemeFonts ? '\u2013.' : 'M', grFont.lowerBarTitle, 0, 0, 0, 0).Width;
-		const titleAdjustment2   = gr.MeasureString('-', grFont.lowerBarTitle, 0, 0, 0, 0).Width;
-
-		// * Setup artist, track number and title
-		const artist = showLowerBarArtist ? grStr.artist : '';
-		const artistX =	twoLines ? grm.progBar.x + availableFlags : Math.round(grm.progBar.x + availableFlags - (grSet.layout === 'default' ? SCALE(1) : 0));
-
-		const artistY =	twoLines ? Math.round(lowerBarTop - lineCorrection - artistHeight + (grSet.customThemeFonts ? artistHeight * 0.125 : 0) + (lowerBarFontSize < 18 ? SCALE(-2) : lowerBarFontSize > 18 ? SCALE(RES._QHD ? 1 : 3) : 0)) :
-			Math.round(lowerBarTop - lineCorrection);
-
-		const trackNum = twoLines ? showLowerBarTrackNum && showLowerBarTitle || !showLowerBarTitle && !fb.IsPlaying ? grStr.tracknum : '' :
-			showLowerBarTrackNum && showLowerBarTitle || (!showLowerBarTrackNum || !showLowerBarTitle) && !fb.IsPlaying ? grStr.tracknum === '' ? '-' : grStr.tracknum :
-			!showLowerBarTrackNum && showLowerBarArtist && fb.IsPlaying ? '-' : '';
-
-		const trackNumX = twoLines ? grm.progBar.x :
-			showLowerBarArtist && fb.IsPlaying && fb.PlaybackLength > 0 ? Math.floor(grm.progBar.x + availableFlags + artistWidth + (!showLowerBarTrackNum || grStr.tracknum === '' ? titleAdjustment2 * 0.5 : trackNumAdjustment)) : grm.progBar.x;
-
-		const trackNumY = Math.round(lowerBarTop - lineCorrection - heightAdjustment);
-
-		const title = twoLines ? showLowerBarTitle || !showLowerBarTitle && !fb.IsPlaying ? showLowerBarComposer && fb.IsPlaying ? grStr.titleLower + grStr.original_artist + grStr.composer : grStr.titleLower : '' :
-			showLowerBarTitle || !showLowerBarTitle && !fb.IsPlaying ? showLowerBarComposer && fb.IsPlaying ? grStr.titleLower + grStr.composer : grStr.titleLower : '';
-
-		const titleX = twoLines ? !showLowerBarTrackNum || grStr.tracknum === '' ? grm.progBar.x : Math.round(grm.progBar.x + flagWidth) :
-			// When not playing or stopped
-			!fb.IsPlaying ? Math.round(grm.progBar.x + trackNumWidth) :
-			// Artist and no track number displayed
-			showLowerBarArtist ? !showLowerBarTrackNum || grStr.tracknum === '' ? Math.floor(grm.progBar.x + availableFlags + artistWidth + titleAdjustment) :
-			// Artist with track number displayed
-			Math.round(grm.progBar.x + availableFlags + artistWidth + trackNumWidth + (fb.PlaybackLength > 0 ? titleAdjustment : 0)) :
-			// No artist and no track number displayed
-			!showLowerBarTrackNum || grStr.tracknum === '' ? grm.progBar.x :
-			// No artist with track number displayed
-			Math.round(grm.progBar.x + trackNumWidth + (fb.PlaybackLength > 0 ? titleAdjustment : 0));
-
-		const titleY = trackNumY;
+		this.setLowerBarMetrics(gr);
 
 		// * Apply better anti-aliasing on smaller font sizes in HD res
-		gr.SetTextRenderingHint(!RES._4K && lowerBarFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
+		gr.SetTextRenderingHint(!RES._4K && (grSet.lowerBarFontSize_layout < 18 || grSet.displayScale < 100) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 
 		// * Artist, tracknum, title
-		if (oneLine || twoLines && grSet.layout === 'default') DrawString(gr, artist, grFont.lowerBarArtist, grCol.lowerBarArtist, artistX, artistY, availableWidth, artistHeight, Stringformat.trim_ellipsis_char);
-		gr.DrawString(trackNum, grFont.lowerBarTitle, grCol.lowerBarTitle, trackNumX, trackNumY, trackNumWidth - timeAreaWidth, titleHeight, StringFormat(0, 0, 4, 0x00001000));
-		DrawString(gr, title, grFont.lowerBarTitle, grCol.lowerBarTitle, titleX, titleY, fb.IsPlaying ? availableWidth + (twoLines ? availableFlags : 0) : this.ww, titleHeight, Stringformat.trim_ellipsis_char);
+		if (this.lowerBarOneLine || this.lowerBarTwoLines && grSet.layout === 'default') {
+			DrawString(gr, grStr.artistLower, grFont.lowerBarArtist, grCol.lowerBarArtist, this.lowerBarArtistX, this.lowerBarArtistY, this.lowerBarAvailableW - this.lowerBarFlagW, this.lowerBarArtistH, Stringformat.trim_ellipsis_char);
+		}
+		gr.DrawString(this.getFormattedString('lowerBarTrackNum'), grFont.lowerBarTitle, grCol.lowerBarTitle, this.lowerBarTrackNumX, this.lowerBarTrackNumY, this.lowerBarTrackNumW - this.lowerBarTimeAreaW, this.lowerBarTitleH, StringFormat(0, 0, 4, 0x00001000));
+		DrawString(gr, grStr.titleLower, grFont.lowerBarTitle, grCol.lowerBarTitle, this.lowerBarTitleX, this.lowerBarTitleY, this.lowerBarAvailableW - this.lowerBarTrackNumW, this.lowerBarTitleH, Stringformat.trim_ellipsis_char);
 
-		// * Artist flags
-		if (showLowerBarArtist && showLowerBarArtistFlags && (grSet.layout === 'default' || grSet.layout !== 'default' && !twoLines)) {
-			const maxFlags = Math.min(this.flagImgs.length, 6);
-			const marginLeft = SCALE(grSet.layout !== 'default' ? 20 : 40);
-			let flagsLeft = marginLeft - (RES._4K ? 1 : 0);
-			for (let i = 0; i < maxFlags; i++) {
-				gr.DrawImage(this.flagImgs[i], flagsLeft, Math.round(artistY - (this.flagImgs[i].Height / (artistHeight + SCALE(2))) - (RES._4K ? 1 : 0)), this.flagImgs[i].Width + SCALE(lowerBarFontSize) - SCALE(26), artistHeight + SCALE(2), 0, 0, this.flagImgs[i].Width, this.flagImgs[i].Height);
-				flagsLeft += this.flagImgs[i].Width + SCALE(lowerBarFontSize) - SCALE(18);
-			}
+		// * Artist country flags
+		if (grSet.showLowerBarArtist_layout && grSet.showLowerBarArtistFlags_layout && (grSet.layout === 'default' || grSet.layout !== 'default' && !this.lowerBarTwoLines)) {
+			this.drawArtistCountryFlag(gr, 'lowerBar');
 		}
 
 		// * Playback time, length, disc number
-		if (this.ww > 400) {
-			gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
-			let width = gr.CalcTextWidth(`  ${grStr.length}`, grFont.lowerBarLength);
-			const lowerBarVersionW = gr.CalcTextWidth(`  ${grStr.time}`, grFont.lowerBarLength);
-			const lowerBarVersionH = Math.ceil(titleMeasurements.Height);
-			const lowerBarVersionX = this.ww - SCALE(grSet.layout !== 'default' ? 20 : 40) - lowerBarVersionW;
-			const lowerBarVersionY = Math.round(lowerBarTop - lineCorrection - heightAdjustment);
-			const lowerBarLengthX = this.ww - SCALE(grSet.layout !== 'default' ? 20 : 40) - width;
-			const lowerBarLengthY = lowerBarVersionY;
-			const lowerBarLengthW = width;
-			const lowerBarLengthH = lowerBarVersionH;
-			this.lowerBarTimeX = this.ww - SCALE(grSet.layout !== 'default' ? 20 : 40) - (this.isStreaming ? width : width * 2);
-			this.lowerBarTimeY = Math.round(lowerBarTop - lineCorrection);
-			this.lowerBarTimeW = lowerBarLengthW;
-			this.lowerBarTimeH = lowerBarVersionH;
-			const lowerBarDiscW = gr.CalcTextWidth(`  ${grStr.disc}`, grFont.lowerBarDisc);
-			const lowerBarDiscH = lowerBarVersionH;
-			const lowerBarDiscY = lowerBarVersionY;
-			const lowerBarDiscX = this.lowerBarTimeX - lowerBarDiscW;
-
-			if (showLowerBarPlaybackTime && fb.PlaybackLength > 0) { // * Playing track
-				gr.DrawString(grStr.length, grFont.lowerBarLength, grCol.lowerBarLength, lowerBarLengthX, lowerBarLengthY, lowerBarLengthW, lowerBarLengthH, StringFormat(2, 0));
-				gr.DrawString(grStr.time, grFont.lowerBarTime, grCol.lowerBarTime, this.lowerBarTimeX, this.lowerBarTimeY, this.lowerBarTimeW, this.lowerBarTimeH, StringFormat(2, 0));
-				width += gr.CalcTextWidth(`  ${grStr.time}`, grFont.lowerBarTime);
-				gr.DrawString(grSet.layout !== 'default' ? '' : grStr.disc, grFont.lowerBarDisc, grCol.lowerBarTitle, lowerBarDiscX, lowerBarDiscY, lowerBarDiscW, lowerBarDiscH, StringFormat(2, 0));
+		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
+		if (grSet.showPlaybackTime_layout && (fb.PlaybackLength > 0 || grSet.panelBrowseMode && grStr.time !== grCfg.lowerBarStoppedTime)) { // * Playing track
+			gr.DrawString(grStr.disc, grFont.lowerBarDisc, grCol.lowerBarTitle, this.lowerBarDiscX, this.lowerBarDiscY, this.lowerBarDiscW, this.lowerBarDiscH, StringFormat(2, 0));
+			gr.DrawString(grStr.time, grFont.lowerBarTime, grCol.lowerBarTime, this.lowerBarTimeX, this.lowerBarTimeY, this.lowerBarTimeW, this.lowerBarTimeH, StringFormat(2, 0));
+			gr.DrawString(grStr.length, grFont.lowerBarLength, grCol.lowerBarLength, this.lowerBarLengthX, this.lowerBarLengthY, this.lowerBarLengthW, this.lowerBarLengthH, StringFormat(2, 0));
+		}
+		else if (grSet.showPlaybackTime_layout && fb.IsPlaying && this.isStreaming) { // * Streaming, but still want to show time
+			gr.DrawString(grStr.time, grFont.lowerBarTime, grCol.lowerBarTime, this.lowerBarTimeX, this.lowerBarTimeY, this.lowerBarTimeW, this.lowerBarTimeH, StringFormat(2, 0));
+		}
+		else { // * Not playing anything, will show theme version or update link if available
+			let offset = 0;
+			if (grCfg.updateAvailable && grCfg.updateHyperlink) {
+				offset = grCfg.updateHyperlink.getWidth();
+				grCfg.updateHyperlink.setContainerWidth(this.ww);
+				grCfg.updateHyperlink.setY(this.lowerBarTextStartY + 1);
+				grCfg.updateHyperlink.setXOffset(this.ww - offset - this.edgeMargin);
+				grCfg.updateHyperlink.draw(gr, grCol.lowerBarTitle);
 			}
-			else if (showLowerBarPlaybackTime && fb.IsPlaying && this.isStreaming) { // * Streaming, but still want to show time
-				gr.DrawString(grStr.time, grFont.lowerBarTime, grCol.lowerBarTitle, this.lowerBarTimeX, this.lowerBarTimeY, this.lowerBarTimeW, this.lowerBarTimeH, StringFormat(2, 0));
-			}
-			else { // * Not playing anything, will show theme version or update link if available
-				let offset = 0;
-				if (grCfg.updateAvailable && grCfg.updateHyperlink) {
-					offset = grCfg.updateHyperlink.getWidth();
-					grCfg.updateHyperlink.setContainerWidth(this.ww);
-					grCfg.updateHyperlink.setY(lowerBarTop);
-					grCfg.updateHyperlink.setXOffset(this.ww - offset - SCALE(grSet.layout !== 'default' ? 20 : 40));
-					grCfg.updateHyperlink.draw(gr, grCol.lowerBarTitle);
-				}
-				if (showLowerBarPlaybackTime) {
-					gr.DrawString(grStr.time, grFont.lowerBarLength, grCol.lowerBarTitle, lowerBarVersionX - offset, lowerBarVersionY, lowerBarVersionW, lowerBarVersionH, StringFormat(2, 0));
-				}
-			}
-			if (showLowerBarPlaybackTime && fb.IsPlaying) { // * Switch to playback time remaining
-				this.btn.playbackTime = new Button(this.ww - timeAreaWidth - SCALE(grSet.layout !== 'default' ? 20 : 40), this.lowerBarTimeY,
-				timeAreaWidth, this.lowerBarTimeH, showLowerBarPlaybackTime ? 'PlaybackTime' : '', '', showLowerBarPlaybackTime ? 'Switch playback time' : '');
+			else if (grSet.showPlaybackTime_layout) {
+				gr.DrawString(grStr.time, grFont.lowerBarLength, grCol.lowerBarTitle, this.lowerBarVersionX - offset, this.lowerBarVersionY, this.lowerBarVersionW, this.lowerBarVersionH, StringFormat(2, 0));
 			}
 		}
 
-		// * LOWER BAR TOOLTIP * //
-		if ((grSet.showTooltipMain || grSet.showTooltipTruncated) && grm.lowerTip && fb.IsPlaying) {
-			grm.lowerTip.draw(gr);
+		// * ARTIST PLAYLIST BTN * //
+		if (grSet.showLowerBarArtist_layout) {
+			grm.button.btn.artistPlaylist = new Button(this.lowerBarArtistX, this.lowerBarArtistY,
+			this.lowerBarArtistW, this.lowerBarArtistH, 'ArtistBtn', '', 'Display artist playlist');
 		}
-
+		// * TITLE NOW PLAYING BTN * //
+		if (grSet.showLowerBarTitle_layout) {
+			grm.button.btn.titleNowPlaying = new Button(this.lowerBarTitleX, this.lowerBarTitleY,
+			this.lowerBarTitleW - this.lowerBarTrackNumW, this.lowerBarTitleH, 'TitleBtn', '', 'Show now playing');
+		}
+		// * PLAYBACK TIME REMAINING BTN * //
+		if (grSet.showPlaybackTime_layout) {
+			grm.button.btn.playbackTime = new Button(this.ww - this.lowerBarTimeAreaW - this.edgeMargin, this.lowerBarTimeY,
+			this.lowerBarTimeAreaW, this.lowerBarTimeH, 'PlaybackTime', '', 'Switch playback time');
+		}
 		// * VOLUME BTN * //
-		if (showVolumeBtn && this.loadingThemeComplete) {
+		if (grSet.showVolumeBtn_layout) {
 			grm.volBtn.draw(gr);
 		}
-
 		// * PROGRESS BAR * //
-		if (showProgressBar && (grSet.seekbar === 'progressbar' || !fb.IsPlaying)) {
-			this.progressBarY = Math.round(lowerBarTop + titleMeasurements.Height + grm.progBar.h);
-			grm.progBar.setY(this.progressBarY);
+		if (grSet.showProgressBar_layout && (grSet.seekbar === 'progressbar' || !fb.IsPlaying)) {
+			grm.progBar.setY(this.seekbarY);
 			grm.progBar.draw(gr);
 		}
 		// * WAVEFORM BAR * //
-		else if (showWaveformBar && grSet.seekbar === 'waveformbar') {
-			this.waveformBarY = Math.round(lowerBarTop + titleMeasurements.Height + grm.waveBar.h);
-			grm.waveBar.setY(this.waveformBarY);
+		else if (grSet.showWaveformBar_layout && grSet.seekbar === 'waveformbar') {
+			grm.waveBar.setY(this.seekbarY);
 			grm.waveBar.draw(gr);
 		}
 		// * PEAKMETER BAR * //
-		else if (showPeakmeterBar && grSet.seekbar === 'peakmeterbar') {
-			this.peakmeterBarY = Math.round(lowerBarTop + titleMeasurements.Height + grm.peakBar.h * 0.5);
-			grm.peakBar.setY(this.peakmeterBarY);
+		else if (grSet.showPeakmeterBar_layout && grSet.seekbar === 'peakmeterbar') {
+			grm.peakBar.setY(this.seekbarY);
 			grm.peakBar.draw(gr);
 		}
 
@@ -1525,32 +918,14 @@ class MainUI {
 	drawCustomThemeMenu(gr) {
 		if (!this.displayCustomThemeMenu || grSet.layout !== 'default') return;
 
-		const x = this.displayBiography || this.displayLyrics ? this.ww * 0.5 : this.displayDetails ? this.albumArtSize.x : 0;
+		const menuOnRightSide = this.displayBiography || this.displayLyrics && !this.displayDetails && !this.displayLibrary;
+
+		const x = menuOnRightSide ? grSet.panelWidthAuto ? this.albumArtSize.x + this.albumArtSize.w : pl.playlist.x : this.displayDetails ? this.albumArtSize.x : 0;
 		const y = this.topMenuHeight;
-		const width = !fb.IsPlaying && this.displayDetails || this.displayLyrics && !this.albumArt ? this.ww : this.displayDetails ? this.albumArtSize.w : this.ww * 0.5;
+		const width = grSet.panelWidthAuto ? menuOnRightSide ? this.ww - this.albumArtSize.w : this.albumArtSize.w - 2 : this.displayDetails ? this.albumArtSize.w : this.ww * 0.5;
 		const height = this.wh - this.topMenuHeight - this.lowerBarHeight;
 
 		gr.SetSmoothingMode(SmoothingMode.None);
-		gr.FillSolidRect(x, y, width, height, pl.col.bg);
-		for (const c of CustomMenu.controlList) c.draw(gr);
-
-		if (CustomMenu.activeControl && CustomMenu.activeControl instanceof CustomMenuDropDown && CustomMenu.activeControl.isSelectUp) {
-			CustomMenu.activeControl.draw(gr);
-		}
-	}
-
-	/**
-	 * Draws the custom metadata grid menu.
-	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 */
-	drawMetadataGridMenu(gr) {
-		if (!this.displayMetadataGridMenu || grSet.layout !== 'default' || (this.displayPlaylist || this.displayLibrary || this.displayBiography || this.displayLyrics)) return;
-
-		const x = this.albumArtSize.x - 1;
-		const y = this.topMenuHeight;
-		const width = this.ww;
-		const height = this.wh - this.topMenuHeight - this.lowerBarHeight;
-
 		gr.FillSolidRect(x, y, width, height, pl.col.bg);
 		for (const c of CustomMenu.controlList) c.draw(gr);
 
@@ -1564,25 +939,28 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawStyledTooltips(gr) {
-		if (this.styledTooltipText === '' || !grSet.showStyledTooltips) return;
+		if (!grSet.showStyledTooltips) return;
 
 		const drawStyledTooltipsProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> styled tooltips');
-		const tooltipFontSize = grSet[`tooltipFontSize_${grSet.layout}`];
 		const offset = SCALE(30);
 		const padding = SCALE(15);
 		const edgeSpace = padding * 0.5;
 		const arc = SCALE(6);
-		const w = Math.min(gr.MeasureString(this.styledTooltipText, grFont.tooltip, 0, 0, 0, 0).Width + padding + 1, this.ww - (this.state.mouse_x > this.ww * 0.85 ? this.state.mouse_x - this.ww * 0.15 : this.state.mouse_x) - edgeSpace);
-		const h = Math.min(gr.MeasureString(this.styledTooltipText, grFont.tooltip, 0, 0, w, this.wh).Height + padding, this.wh - (this.state.mouse_y > this.wh * 0.85 ? this.state.mouse_y - this.wh * 0.15 : this.state.mouse_y) - edgeSpace - offset);
-		const x = this.state.mouse_x > this.ww * 0.85 ? this.state.mouse_x - w : this.state.mouse_x; // * When tooltip is too close to the right edge, it will be drawn on the left side of the mouse cursor
-		const y = this.state.mouse_y > this.wh * 0.85 ? this.state.mouse_y - h : this.state.mouse_y + offset; // * When tooltip is too close to the bottom edge, it will be drawn on the top side of the mouse cursor
+
+		this.styledToolTipW = Math.min(gr.MeasureString(this.styledTooltipText, grFont.tooltip, 0, 0, 0, 0).Width + padding + 1, this.ww - (this.state.mouse_x > this.ww * 0.85 ? this.state.mouse_x - this.ww * 0.15 : this.state.mouse_x) - edgeSpace);
+		this.styledToolTipH = Math.min(gr.MeasureString(this.styledTooltipText, grFont.tooltip, 0, 0, this.styledToolTipW, this.wh).Height + padding, this.wh - (this.state.mouse_y > this.wh * 0.85 ? this.state.mouse_y - this.wh * 0.15 : this.state.mouse_y) - edgeSpace - offset);
+		this.styledToolTipX = this.state.mouse_x > this.ww * 0.85 ? this.state.mouse_x - this.styledToolTipW : this.state.mouse_x; // * When tooltip is too close to the right edge, it will be drawn on the left side of the mouse cursor
+		this.styledToolTipY = this.state.mouse_y > this.wh * 0.85 ? this.state.mouse_y - this.styledToolTipH : this.state.mouse_y + offset; // * When tooltip is too close to the bottom edge, it will be drawn on the top side of the mouse cursor
+
+		if (this.styledTooltipText === '') return;
 
 		// * Apply better anti-aliasing on smaller font sizes in HD res
-		gr.SetTextRenderingHint(!RES._4K && tooltipFontSize < 18 ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
-		gr.FillRoundRect(x, y, w, h, arc, arc, RGBtoRGBA(grCol.popupBg, 220));
-		gr.DrawRoundRect(x, y, w, h, arc, arc, SCALE(2), 0x64000000);
-		gr.DrawString(this.styledTooltipText, grFont.tooltip, grCol.popupText, x + padding * 0.5, y + padding * 0.5, w - padding, h - padding, StringFormat(0, 0, 4));
-		this.repaintStyledTooltips(x - offset * 0.5, y - offset * 0.5, w + offset, h + offset);
+		gr.SetTextRenderingHint(!RES._4K && (grSet.tooltipFontSize_layout < 18 || grSet.displayScale < 100) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
+		gr.FillRoundRect(this.styledToolTipX, this.styledToolTipY, this.styledToolTipW, this.styledToolTipH, arc, arc, RGBtoRGBA(grCol.popupBg, 220));
+		gr.DrawRoundRect(this.styledToolTipX, this.styledToolTipY, this.styledToolTipW, this.styledToolTipH, arc, arc, SCALE(2), 0x64000000);
+		gr.DrawString(this.styledTooltipText, grFont.tooltip, grCol.popupText, this.styledToolTipX + padding * 0.5, this.styledToolTipY + padding * 0.5, this.styledToolTipW - padding, this.styledToolTipH - padding, StringFormat(0, 0, 4));
+
+		this.repaintStyledTooltips(this.styledToolTipX - offset * 2, this.styledToolTipY - offset, this.styledToolTipW + offset * 4, this.styledToolTipH + offset * 2);
 
 		if (drawStyledTooltipsProfiler) drawStyledTooltipsProfiler.Print();
 	}
@@ -1595,7 +973,32 @@ class MainUI {
 	drawStartupBackground(gr) {
 		if (this.loadingThemeComplete) return;
 		gr.FillSolidRect(0, 0, this.ww, this.wh, grCol.loadingThemeBg);
-		if (grSet.showPreloaderLogo) drawLogo(gr);
+		if (grSet.showPreloaderLogo) grPreloader.drawLogo(gr);
+	}
+
+	/**
+	 * Draws the UIHacks aero glass shadow frame fix.
+	 * This workaround crap is needed to hide the black 1px line at the top and bottom
+	 * when UIHacks Glass Frame is active in foobar's Preferences > Display > Main Window > Aero effecs > Glass frame.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {string} type - The type of fix to apply ('top' or 'main').
+	 */
+	drawUIHacksGlassFrameFix(gr, type) {
+		if (UIHacks.Aero.Effect !== 2) return;
+
+		if (type === 'top') {
+			gr.DrawLine(0, 0, this.ww, 0, 1, grCol.bg);
+		}
+		else if (type === 'main' && (!this.loadingThemeComplete && (grSet.styleBlend || grSet.styleBlend2) || !grSet.styleBlend && !grSet.styleBlend2)) {
+			gr.DrawLine(0, 0, this.ww, 0, 1, !this.loadingThemeComplete ? grCol.loadingThemeBg : grCol.uiHacksFrame);
+			if (grSet.styleDefault) {
+				gr.DrawLine(this.ww, this.wh - 1, 0, this.wh - 1, 1, !this.loadingThemeComplete ? grCol.loadingThemeBg : grCol.uiHacksFrame);
+			}
+			else if (grSet.styleGradient || grSet.styleGradient2) {
+				gr.DrawLine(0, 0, this.ww, 0, 1, grCol.bg);
+				gr.FillGradRect(-0.5, 0, this.ww, 1, grSet.styleGradient2 ? -200 : 0, grSet.styleGradient2 ? 0 : grCol.styleGradient, grSet.styleGradient2 ? grCol.styleGradient2 : 0, 0.5);
+			}
+		}
 	}
 
 	/**
@@ -1603,14 +1006,14 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawDebugThemeOverlay(gr) {
-		if (!grCfg.settings.showDebugThemeOverlay || !grm.ui.loadingThemeComplete) return;
+		if (!grCfg.settings.showDebugThemeOverlay || !this.loadingThemeComplete) return;
 
 		const fullW = grSet.layout === 'default' && grSet.lyricsLayout === 'full' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
 		const titleWidth = this.albumArtSize.w - SCALE(80);
 		const titleHeight = gr.CalcTextHeight(' ', grFont.popup);
 		const lineSpacing = titleHeight * 1.5;
 		const logColor = RGB(255, 255, 255);
-		const x = this.albumArtSize.x + SCALE(grSet.layout !== 'default' ? 20 : 40);
+		const x = this.albumArtSize.x + this.edgeMargin;
 		let y = this.albumArtSize.y;
 
 		const createBlock = (obj) => Object.keys(obj).find(key => obj[key]) || '';
@@ -1692,10 +1095,9 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawDebugPerformanceOverlay(gr) {
-		if (!grCfg.settings.showDebugPerformanceOverlay || !grm.ui.loadingThemeComplete) return;
+		if (!grCfg.settings.showDebugPerformanceOverlay || !this.loadingThemeComplete) return;
 
 		if (grm.cpuTrack.cpuTrackerTimer === null) {
-			grm.cpuTrack = new CPUTracker();
 			grm.cpuTrack.start();
 		}
 
@@ -1706,16 +1108,16 @@ class MainUI {
 		const titleMaxWidthRepaint = gr.CalcTextWidth('Ram usage for current panel:  6291456 MB', grFont.popup);
 		const lineSpacing = titleHeight * 1.5;
 		const logColor = RGB(255, 255, 255);
-		const x = this.albumArtSize.x + SCALE(grSet.layout !== 'default' ? 20 : 40);
+		const x = this.albumArtSize.x + this.edgeMargin;
 		let y = this.albumArtSize.y + lineSpacing;
 
 		const systemLog = [
 			{ title: 'System: ', log: '' },
 			{ title: 'CPU usage: ', log: `${grm.cpuTrack.getCpuUsage()}%` },
 			{ title: 'GUI usage: ', log: `${grm.cpuTrack.getGuiCpuUsage()}%` },
-			{ title: 'Ram usage for current panel: ', log: `${(window.JsMemoryStats.MemoryUsage / 1024 ** 2).toFixed(2)} MB` },
-			{ title: 'Ram usage for all panels: ', log: `${(window.JsMemoryStats.TotalMemoryUsage / 1024 ** 2).toFixed(2)} MB` },
-			{ title: 'Ram usage limit: ', log: `${(window.JsMemoryStats.TotalMemoryLimit / 1024 ** 2).toFixed(2)} MB` },
+			{ title: 'Ram usage for current panel: ', log: FormatSize(window.JsMemoryStats.MemoryUsage) },
+			{ title: 'Ram usage for all panels: ', log: FormatSize(window.JsMemoryStats.TotalMemoryUsage) },
+			{ title: 'Ram usage limit: ', log: FormatSize(window.JsMemoryStats.TotalMemoryLimit) },
 			{ title: 'Separator', log: '' },
 			{ title: 'Timings: ', log: '' },
 			{ title: '', log: debugTimingsSorted.join('\n') }
@@ -1770,6 +1172,7 @@ class MainUI {
 	 */
 	drawDebugRectAreas(gr) {
 		if (!this.repaintRects.length) return;
+		this.repaintRectCount = 0;
 
 		try {
 			for (const rect of this.repaintRects) {
@@ -1780,8 +1183,438 @@ class MainUI {
 	}
 	// #endregion
 
+	// * MAIN - PLUBLIC METHODS - METRICS * //
+	// #region MAIN - PUBLIC METHODS - METRICS
+	/**
+	 * Gets the flag size width based on the type (metadataGrid or lowerBar).
+	 * Calculates the scale value based on the number of flag images and the font size.
+	 * The scale value is adjusted specifically for each possible number of flag images.
+	 * @param {string} type - Indicates if it should get the flag size for the 'metadataGrid' or the 'lowerBar'.
+	 * @returns {number} The calculated scale value or 0 if no flags are present or the conditions are not met.
+	 */
+	getFlagSizeWidth(type) {
+		if (!this.flagImgs.length ||
+			(type === 'metadataGrid' && !grSet.showGridArtistFlags_layout) ||
+			(type === 'lowerBar' && !grSet.showLowerBarArtistFlags_layout)) {
+			return 0;
+		}
+
+		const fontSize = type === 'metadataGrid' ? grSet.gridArtistFontSize_layout : grSet.lowerBarFontSize_layout;
+		const { length } = this.flagImgs;
+
+		return length === 0 ? 0 : SCALE(14 * length + fontSize * length);
+	}
+
+	/**
+	 * Gets the appropriate amount of white space to be used between flags in the UI.
+	 * This is determined based on the artist's font size and the number of flags to be displayed.
+	 * @param {string} type - Indicates if it should get the flag size for the 'metadataGrid' or the 'lowerBar'.
+	 * @returns {string} A string consisting of spaces, representing the calculated white space.
+	 */
+	getFlagSizeWhiteSpace(type) {
+		if (!this.flagImgs.length) return 0;
+
+		const fontSize = type === 'metadataGrid' ? grSet.gridArtistFontSize_layout : grSet.lowerBarFontSize_layout;
+
+		const flagSizeWhiteSpaceTable = {
+			24: [35, 29, 24, 18, 12, 6],
+			23: [36, 30, 25, 19, 12, 6],
+			22: [36, 30, 25, 19, 12, 6],
+			21: [37, 31, 26, 20, 12, 6],
+			20: [37, 31, 26, 20, 12, 6],
+			19: [38, 32, 26, 20, 12, 6],
+			18: [39, 32, 26, 20, 13, 6],
+			17: [40, 33, 27, 20, 13, 6],
+			16: [41, 34, 28, 21, 13, 6],
+			15: [42, 35, 29, 22, 14, 6],
+			14: [44, 36, 29, 22, 14, 6],
+			13: [45, 37, 30, 23, 15, 6],
+			12: [47, 39, 31, 24, 15, 7],
+			11: [49, 41, 32, 25, 16, 7],
+			10: [51, 43, 34, 26, 17, 7]
+		};
+
+		return ' '.repeat(
+			flagSizeWhiteSpaceTable[fontSize][
+				this.flagImgs.length >=  6 ? 0 :
+				this.flagImgs.length === 5 ? 1 :
+				this.flagImgs.length === 4 ? 2 :
+				this.flagImgs.length === 3 ? 3 :
+				this.flagImgs.length === 2 ? 4 :
+				5
+			]
+		);
+	}
+
+	/**
+	 * Gets the formatted string based on the provided key.
+	 * This includes formatting for the grid artist, grid title, and lower bar track number.
+	 * @param {string} key - The key for the formatted string to retrieve, can be 'gridArtist', 'gridTitle', and 'lowerBarTrackNum'.
+	 * @returns {string} The formatted string corresponding to the provided key.
+	 */
+	getFormattedString(key) {
+		const formattedString = {
+			gridArtist:
+				grSet.showGridArtistFlags_layout && this.flagImgs.length ? grm.details.gridFlagSizeWhiteSpace + grStr.artist :
+				grStr.artist,
+
+			gridTitle:
+				this.isStreaming ? (grSet.showGridTrackNum_layout ? grStr.tracknum + grStr.title : grStr.title) :
+				(grSet.showGridTrackNum_layout && grStr.tracknum !== '' ? `${grStr.tracknum}\xa0${grStr.title}` : grStr.title),
+
+			lowerBarTrackNum:
+				this.lowerBarTwoLines && !grSet.showLowerBarTrackNum_layout ? '' :
+				fb.IsPlaying && this.lowerBarOneLine && (!grSet.showLowerBarTrackNum_layout || fb.PlaybackLength <= 0 && grStr.tracknum === '') ? '\u2013' :
+				grStr.tracknum
+		};
+
+		return formattedString[key];
+	}
+
+	/**
+	 * Gets the height of the seekbar based on the current configuration.
+	 * The height is determined by the type of seekbar set in the configuration: 'progressbar', 'peakmeterbar', or 'waveformbar'.
+	 * @returns {number} The height of the configured seekbar. If none of the conditions are met, undefined is returned.
+	 */
+	getSeekbarHeight() {
+		const layoutNotDefault = grSet.layout !== 'default';
+		const progressBarDefaultOrRounded = grSet.styleProgressBarDesign === 'default' || grSet.styleProgressBarDesign === 'rounded';
+		const additionalHeight = this.ww > 1920 ? 2 : 0;
+
+		const seekbarHeight = {
+			progressbar:  SCALE(layoutNotDefault && progressBarDefaultOrRounded ? 10 : 12) + additionalHeight,
+			peakmeterbar: SCALE(layoutNotDefault ? 16 : 26) + additionalHeight,
+			waveformbar:  SCALE(layoutNotDefault ? 16 : 26) + additionalHeight
+		};
+
+		return seekbarHeight[grSet.seekbar] || SCALE(12);
+	}
+
+	/**
+	 * Gets the y-position of the seekbar.
+	 * @returns {number} The calculated y-position of the seekbar.
+	 */
+	getSeekbarY() {
+		return grSet.layout === 'default' ? this.wh - this.edgeMargin :
+											this.lowerBarTitleY + this.lowerBarTitleH + this.seekbarHeight;
+	}
+
+	/**
+	 * Gets the y-position for lower bar transport buttons based on the current layout.
+	 * @returns {number} The calculated y-position for lower bar transport buttons.
+	 */
+	getLowerBarButtonsY() {
+		return grSet.layout === 'default' ? this.lowerBarTop + ((this.lowerBarHeight - SCALE(grSet.transportButtonSize_layout)) * 0.5) - this.lowerBarTextMargin * 0.5 :
+											this.seekbarY + this.edgeMargin;
+	}
+
+	/**
+	 * Gets the y-position for the lower bar strings.
+	 * @returns {number} The calculated y-position.
+	 */
+	getLowerBarTextY() {
+		const lowerBarContentHeight = this.lowerBarTitleH + this.lowerBarTextMargin;
+		return grSet.layout === 'default' ? Math.round(this.lowerBarTop + (this.lowerBarHeight - lowerBarContentHeight) / 2) :
+											this.lowerBarTop + this.edgeMargin;
+	}
+
+	/**
+	 * Gets the x-position for the lower bar track number.
+	 * @returns {number} The calculated x-position.
+	 */
+	getLowerBarTrackNumX() {
+		if (this.lowerBarOneLine) {
+			return Math.floor(grm.progBar.x + (grSet.showLowerBarArtist_layout ? this.lowerBarArtistW : 0));
+		}
+
+		// * Two lines
+		return grm.progBar.x;
+	}
+
+	/**
+	 * Gets the x-position for the lower bar track title.
+	 * @returns {number} The calculated x-position.
+	 */
+	getLowerBarTrackTitleX() {
+		const noTrackNumber =
+			(fb.PlaybackLength > 0 || this.isStreaming) && (!grSet.showLowerBarTrackNum_layout || grStr.tracknum === '');
+
+		if (this.lowerBarOneLine) {
+			if (grSet.showLowerBarArtist_layout) {
+				return Math.round(grm.progBar.x + this.lowerBarArtistW + this.lowerBarTrackNumW);
+			}
+			return noTrackNumber ? grm.progBar.x : Math.round(grm.progBar.x + this.lowerBarTrackNumW);
+		}
+
+		// * Two lines
+		const twoLinesX =
+			grSet.showLowerBarArtistFlags_layout && this.flagImgs.length && grStr.tracknum < 100 ?
+			SCALE(14 + grSet.lowerBarFontSize_layout) : this.lowerBarTrackNumW;
+
+		return noTrackNumber ? grm.progBar.x : Math.round(grm.progBar.x + twoLinesX);
+	}
+
+	/**
+	 * Sets the sizes and positions for various main UI elements.
+	 */
+	setMainMetrics() {
+		this.edgeMargin     = SCALE(grSet.layout !== 'default' ? 20 : 40);
+		this.edgeMarginBoth = this.edgeMargin * 2;
+		this.pauseSize      = SCALE(100);
+		this.topMenuHeight  = SCALE(40);
+		this.lowerBarHeight = SCALE(120);
+		this.seekbarHeight  = this.getSeekbarHeight();
+	}
+
+	/**
+	 * Sets the lower bar metrics and caches all calculated values.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	setLowerBarMetrics(gr) {
+		if (this.cachedLowerBarMetrics) return;
+
+		const metricsPromises = [
+			new Promise((resolve) => this.setLowerBarMainMetrics(gr, resolve)),
+			new Promise((resolve) => this.setLowerBarTextMetrics(gr, resolve))
+		];
+
+		Promise.all(metricsPromises).then(() => {
+			this.cachedLowerBarMetrics = this.loadingThemeComplete && !grm.display.hasPlayerSizeChanged();
+		});
+	}
+
+	/**
+	 * Sets the lower bar main sizes and position.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {Function} metricsCalculated - The callback function to be executed after calculations are finished.
+	 */
+	setLowerBarMainMetrics(gr, metricsCalculated) {
+		this.lowerBarTop = this.wh - this.lowerBarHeight;
+
+		this.lowerBarTotalBtnW =
+			this.lowerBarBtnCount * SCALE(grSet.transportButtonSize_layout) +
+			(this.lowerBarBtnCount - 1) * SCALE(grSet.transportButtonSpacing_layout);
+
+		this.lowerBarTimeAreaW =
+			this.ww > 400 ?
+				grStr.disc !== '' && grSet.layout === 'default' ?
+					gr.CalcTextWidth(`${grStr.disc}   ${grStr.time}   ${grStr.length}`, grFont.lowerBarTitle) :
+				gr.CalcTextWidth(` ${grStr.time}   ${grStr.length}`, grFont.lowerBarTitle) :
+			0;
+
+		this.lowerBarAvailableW =
+			Math.round((grSet.layout === 'default' && grSet.showTransportControls_default ? this.ww * 0.5 : this.ww) -
+			(grSet.layout === 'default' && grSet.showTransportControls_default ? this.lowerBarTotalBtnW * 0.5 :
+			grSet.showPlaybackTime_layout ? this.lowerBarTimeAreaW + this.edgeMargin : 0) - this.edgeMarginBoth);
+
+		metricsCalculated();
+	}
+
+	/**
+	 * Sets the lower bar text sizes.
+	 * This includes flag sizes, artist, track title, album, time, length and other text elements based on the configuration.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {Function} metricsCalculated - The callback function to be executed after calculations are finished.
+	 */
+	setLowerBarTextMetrics(gr, metricsCalculated) {
+		// * Left bottom corner
+		this.lowerBarFlagW        = this.getFlagSizeWidth('lowerBar');
+		this.lowerBarArtistW      = this.lowerBarFlagW + gr.MeasureString(!grSet.showLowerBarTrackNum_layout || this.isStreaming ? `  ${grStr.artistLower}` : `   ${grStr.artistLower}`, grFont.lowerBarArtist, 0, 0, 0, 0).Width;
+		this.lowerBarArtistH      = gr.CalcTextHeight(grStr.artistLower, grFont.lowerBarArtist);
+		this.lowerBarTrackNumW    = gr.CalcTextWidth(fb.IsPlaying && (!grSet.showLowerBarTrackNum_layout || fb.PlaybackLength <= 0 && grStr.tracknum === '') ? ' \u2013 ' : ` ${grStr.tracknum}`, grFont.lowerBarTitle);
+		this.lowerBarTitleW       = this.lowerBarTrackNumW + gr.MeasureString(grStr.titleLower || 'Ag', grFont.lowerBarTitle, 0, 0, 0, 0).Width;
+		this.lowerBarTitleH       = gr.CalcTextHeight(grStr.titleLower || 'Ag', grFont.lowerBarTitle);
+		this.lowerBarArtistTitleW = this.lowerBarArtistW + this.lowerBarTitleW;
+
+		// * One and two lines
+		this.lowerBarOneLine  = this.lowerBarArtistTitleW < this.lowerBarAvailableW || !grSet.showLowerBarTitle_layout;
+		this.lowerBarTwoLines = this.lowerBarArtistTitleW > this.lowerBarAvailableW && grSet.showLowerBarTitle_layout;
+
+		// * Assigned after one and two lines display has been calculated
+		this.lowerBarTextStartY = this.getLowerBarTextY();
+		this.lowerBarArtistX    = grm.progBar.x + this.lowerBarFlagW;
+		this.lowerBarArtistY    = this.lowerBarTextStartY - (this.lowerBarTwoLines ? this.lowerBarArtistH + this.seekbarHeight * 0.25 : 0);
+		this.lowerBarTrackNumX  = this.getLowerBarTrackNumX();
+		this.lowerBarTrackNumY  = this.lowerBarTextStartY;
+		this.lowerBarTitleX     = this.getLowerBarTrackTitleX();
+		this.lowerBarTitleY     = this.lowerBarTrackNumY;
+		this.lowerBarBtnY       = this.getLowerBarButtonsY();
+		this.seekbarY           = this.getSeekbarY();
+
+		// * Right bottom corner
+		this.lowerBarLengthW  = gr.CalcTextWidth(`  ${grStr.length}`, grFont.lowerBarLength);
+		this.lowerBarLengthH  = this.lowerBarTitleH;
+		this.lowerBarLengthX  = this.ww - this.edgeMargin - this.lowerBarLengthW;
+		this.lowerBarLengthY  = this.lowerBarTextStartY;
+
+		this.lowerBarTimeW    = gr.CalcTextWidth(`  ${grStr.time}`, grFont.lowerBarTime);
+		this.lowerBarTimeH    = this.lowerBarTitleH;
+		this.lowerBarTimeX    = this.ww - this.edgeMargin - (fb.IsPlaying && fb.PlaybackLength <= 0 ? this.lowerBarTimeW : this.lowerBarTimeW + this.lowerBarLengthW);
+		this.lowerBarTimeY    = this.lowerBarTextStartY;
+
+		this.lowerBarDiscW    = gr.CalcTextWidth(`  ${grStr.disc}`, grFont.lowerBarDisc);
+		this.lowerBarDiscH    = this.lowerBarTitleH;
+		this.lowerBarDiscY    = this.lowerBarTextStartY;
+		this.lowerBarDiscX    = this.lowerBarTimeX - this.lowerBarDiscW;
+
+		this.lowerBarVersionW = this.lowerBarTimeW;
+		this.lowerBarVersionH = this.lowerBarTimeH;
+		this.lowerBarVersionX = this.ww - this.edgeMargin - this.lowerBarVersionW;
+		this.lowerBarVersionY = this.lowerBarTextStartY;
+
+		metricsCalculated();
+	}
+
+	/**
+	 * Sets the size and position when noAlbumArtStub is being displayed.
+	 */
+	setNoAlbumArtSize() {
+		const noAlbumArtSize = this.wh - this.topMenuHeight - this.lowerBarHeight;
+
+		this.albumArtSize.x =
+			grSet.layout === 'default' &&  this.displayCustomThemeMenu && this.displayDetails ? this.ww * 0.3 :
+			grSet.layout === 'default' && !this.displayCustomThemeMenu && this.displayDetails ||
+			grSet.layout === 'artwork' &&  this.displayPlaylist ? this.ww :
+			grSet.panelWidthAuto ?
+				grSet.albumArtAlign === 'left' ? 0 :
+				grSet.albumArtAlign === 'leftMargin' ? this.ww / this.wh > 1.8 ? this.edgeMargin : 0 :
+				grSet.albumArtAlign === 'center' ? Math.floor(this.ww * 0.25 - noAlbumArtSize * 0.5) :
+				Math.floor(this.ww * 0.5 - noAlbumArtSize) :
+			0;
+
+		this.albumArtSize.y = this.topMenuHeight;
+
+		this.albumArtSize.w =
+			grSet.panelWidthAuto && this.noAlbumArtStub ? !fb.IsPlaying && !this.displayCustomThemeMenu ? 0 : noAlbumArtSize :
+			this.ww * 0.5;
+
+		this.albumArtSize.h = noAlbumArtSize;
+	}
+
+	/**
+	 * Sets the size and position of the pause button.
+	 */
+	setPausePosition() {
+		const noAlbumArtSize = this.wh - this.topMenuHeight - this.lowerBarHeight;
+		const windowFullscreenOrMaximized = UIHacks.FullScreen || UIHacks.MainWindowState === WindowState.Maximized;
+
+		const albumArtPauseBtnX = windowFullscreenOrMaximized ? this.ww * 0.25 : this.albumArtSize.x + this.albumArtSize.w * 0.5;
+		const albumArtPauseBtnY = this.albumArtSize.y + this.albumArtSize.h * 0.5;
+		const discArtPauseBtnX = grm.details.discArtSize.x + grm.details.discArtSize.w * 0.5;
+		const discArtPauseBtnY = grm.details.discArtSize.y + grm.details.discArtSize.h * 0.5;
+
+		const noAlbumArtPauseBtnX =
+			!grSet.panelWidthAuto && grSet.layout !== 'artwork' && !this.noAlbumArtStub && (this.displayPlaylist || this.displayLibrary) ||
+				grSet.layout === 'artwork' || this.displayDetails || grSet.lyricsLayout === 'full' && this.displayLyrics ? this.ww * 0.5 :
+			grSet.panelWidthAuto ?
+				grSet.albumArtAlign === 'left' ? noAlbumArtSize * 0.5 :
+				grSet.albumArtAlign === 'leftMargin' ? this.ww / this.wh > 1.8 ? noAlbumArtSize * 0.5 + this.edgeMargin : 0 :
+				grSet.albumArtAlign === 'center' ? Math.floor(this.ww * 0.5 - noAlbumArtSize * 0.5 - (this.ww * 0.25 - noAlbumArtSize * 0.5)) :
+				this.ww * 0.5 - noAlbumArtSize * 0.5 :
+			this.ww * 0.25;
+
+		const noAlbumArtPauseBtnY = this.wh * 0.5 - this.topMenuHeight;
+
+		if (this.albumArt) {
+			grm.pseBtn.setCoords(albumArtPauseBtnX, albumArtPauseBtnY);
+		}
+		else if (grm.details.discArt && !this.noAlbumArtStub) {
+			grm.pseBtn.setCoords(discArtPauseBtnX, discArtPauseBtnY);
+		}
+		else if (this.noAlbumArtStub) {
+			grm.pseBtn.setCoords(noAlbumArtPauseBtnX, noAlbumArtPauseBtnY);
+		}
+	}
+	// #endregion
+
 	// * MAIN - PUBLIC METHODS - INITIALIZATION * //
 	// #region PUBLIC METHODS - INITIALIZATION
+	/**
+	 * Initializes by recursively checking the loading state of album art or stub with a default or specified timeout.
+	 * Resolves the promise once the album art or stub is loaded, or handles an artwork error if the timeout is reached.
+	 * @param {number} timeout - The maximum time in milliseconds to wait for the album art or stub to load. Default is 5 seconds.
+	 * @returns {Promise<void>} A promise that resolves when the album art or stub is loaded or the timeout is reached.
+	 */
+	async initAlbumArtLoading(timeout = 5000) {
+		const startTime = Date.now();
+
+		const checkAlbumArtLoadState = (resolve) => {
+			if (this.albumArt || this.noAlbumArtStub) {
+				resolve();
+			} else if (Date.now() - startTime >= timeout) {
+				this.handleArtworkError('albumArt');
+				resolve();
+			} else {
+				setTimeout(() => checkAlbumArtLoadState(resolve), 50);
+			}
+		};
+
+		return new Promise(checkAlbumArtLoadState);
+	}
+
+	/**
+	 * Initializes the browse mode on current track selection.
+	 */
+	initBrowseMode() {
+		if (!grSet.panelBrowseMode) return;
+
+		const handle = this.initMetadb();
+
+		if (!fb.IsPlaying) grStr.time = '0:00';
+		this.newTrackFetchingArtwork = true;
+
+		this.clearCache(undefined, undefined, true);
+		this.initMetadata(handle);
+		this.fetchNewArtwork(handle);
+		this.loadCountryFlags(handle);
+
+		grm.details.clearCache(undefined, undefined, true);
+		grm.details.updateGridTimeline(true, handle);
+		grm.details.updateGrid(this.currentLastPlayed, this.playingPlaylist, handle);
+		grm.details.loadGridReleaseCountryFlag(handle);
+		grm.details.loadGridCodecLogo(handle);
+		grm.details.loadGridChannelLogo(handle);
+		grm.details.getBandLogo(handle);
+		grm.details.getLabelLogo(handle);
+
+		bio.panel.id.focus = handle;
+		bio.panel.changed();
+		bio.txt.on_playback_new_track();
+		bio.img.on_playback_new_track();
+
+		window.Repaint();
+	}
+
+	/**
+	 * Initializes the browse mode state and resumes now playing track when disabled.
+	 */
+	initBrowserModeState() {
+		const initialActionMode = libSet.actionMode;
+
+		if (!grSet.panelBrowseMode) {
+			if (fb.IsPlaying) {
+				this.handlePlaybackNewTrack(fb.GetNowPlaying());
+				if (this.displayLibrary) {
+					lib.pop.nowPlayingShow();
+				} else {
+					this.displayPanel('playlist', true);
+					pl.playlist.show_now_playing();
+				}
+			} else {
+				this.handlePlaybackStop(0);
+			}
+			libSet.actionMode = 0;
+		} else {
+			libSet.actionMode = 2;
+		}
+
+		if (libSet.actionMode !== initialActionMode) {
+			setTimeout(() => { lib.panel.updateProp(1); }, 1000);
+		}
+
+		this.initBrowseMode();
+	}
+
 	/**
 	 * Initializes auto deletion of theme cache on startup.
 	 */
@@ -1810,171 +1643,75 @@ class MainUI {
 		const fontsInstalled = fontList.every((fontName) => TestFont(fontName));
 
 		if (!fontsInstalled) {
-			fb.ShowPopupMessage('Georgia-ReBORN WAS UNABLE TO LOAD SOME FONTS\n\n' +
-			'Be sure all fonts from\nfoobar2000\\profile\\georgia-reborn\\fonts\nare correctly installed in these directories:\n\n' +
-			'For Windows: C:\\Windows\\Fonts\\\nFor Linux: /usr/share/fonts or ~/.local/share/fonts\n\n' +
-			'If you use custom fonts, all your custom fonts need to have\nthe exact font name / font family name in your\n' +
-			'foobar\\profile\\georgia-reborn\\configs\\georgia-reborn-config.jsonc config file.\n\n' +
-			'You can also check foobar\'s console ( Top menu > View > Console ),\nit will show font errors with its wrong font names.', 'FONT ERROR WARNING');
+			const msg = grm.msg.getMessage('main', 'fontsNotInstalled');
+			fb.ShowPopupMessage(msg, 'FONT ERROR WARNING');
 		}
 
 		if (grSet.customThemeFonts) {
-			console.log('\nUser\'s set custom fonts are being used:\n\n'
-				+ `Panel default: ${grCfg.customFont.fontDefault}\n`
-				+ `Top menu: ${grCfg.customFont.fontTopMenu}\n`
-				+ `Lower bar artist: ${grCfg.customFont.fontLowerBarArtist}\n`
-				+ `Lower bar title: ${grCfg.customFont.fontLowerBarTitle}\n`
-				+ `Lower bar disc: ${grCfg.customFont.fontLowerBarDisc}\n`
-				+ `Lower bar time: ${grCfg.customFont.fontLowerBarTime}\n`
-				+ `Lower bar length: ${grCfg.customFont.fontLowerBarLength}\n`
-				+ `Lower bar waveform bar: ${grCfg.customFont.fontLowerBarWave}\n`
-				+ `Notification: ${grCfg.customFont.fontNotification}\n`
-				+ `Popup: ${grCfg.customFont.fontPopup}\n`
-				+ `Tooltip: ${grCfg.customFont.fontTooltip}\n`
-				+ `Grid artist: ${grCfg.customFont.fontGridArtist}\n`
-				+ `Grid title: ${grCfg.customFont.fontGridTitle}\n`
-				+ `Grid title bold: ${grCfg.customFont.fontGridTitleBold}\n`
-				+ `Grid album: ${grCfg.customFont.fontGridAlbum}\n`
-				+ `Grid key: ${grCfg.customFont.fontGridKey}\n`
-				+ `Grid value: ${grCfg.customFont.fontGridValue}\n`
-				+ `Playlist artist normal: ${grCfg.customFont.playlistArtistNormal}\n`
-				+ `Playlist artist playing: ${grCfg.customFont.playlistArtistPlaying}\n`
-				+ `Playlist artist normal compact: ${grCfg.customFont.playlistArtistNormalCompact}\n`
-				+ `Playlist artist playing compact: ${grCfg.customFont.playlistArtistPlayingCompact}\n`
-				+ `Playlist title normal: ${grCfg.customFont.playlistTitleNormal}\n`
-				+ `Playlist title selected: ${grCfg.customFont.playlistTitleSelected}\n`
-				+ `Playlist title playing: ${grCfg.customFont.playlistTitlePlaying}\n`
-				+ `Playlist album: ${grCfg.customFont.playlistAlbum}\n`
-				+ `Playlist date: ${grCfg.customFont.playlistDate}\n`
-				+ `Playlist date compact: ${grCfg.customFont.playlistDateCompact}\n`
-				+ `Playlist info: ${grCfg.customFont.playlistInfo}\n`
-				+ `Playlist cover: ${grCfg.customFont.playlistCover}\n`
-				+ `Playlist playcount: ${grCfg.customFont.playlistPlaycount}\n`
-				+ `Library: ${grCfg.customFont.fontLibrary}\n`
-				+ `Biography: ${grCfg.customFont.fontBiography}\n`
-				+ `Lyrics: ${grCfg.customFont.fontLyrics}\n\n`
-			);
+			const msg = grm.msg.getMessage('main', 'customFontsUsed');
+			console.log(msg);
 		}
 
 		return fontsInstalled;
 	}
 
 	/**
-	 * Initializes and sets the sizes and positions for various UI elements.
+	 * Initializes the metadb of the track.
+	 * When browse mode is enabled, it returns the currently selected track; otherwise, it returns the current playing track.
+	 * @returns {FbMetadbHandle} The metadb of the track.
 	 */
-	initMetrics() {
-		this.pauseSize = SCALE(100);
-		this.discArtShadow = SCALE(6);
-		this.gridTooltipHeight = SCALE(100);
-		this.timelineHeight = Math.round(this.progressBarH * 0.66);
-		this.topMenuHeight = SCALE(40);
-		this.lowerBarHeight = SCALE(120);
-		this.progressBarH = SCALE(grSet.layout !== 'default' && (grSet.styleProgressBarDesign === 'default' || grSet.styleProgressBarDesign === 'rounded') ? 10 : 12) + (this.ww > 1920 ? 2 : 0);
-		this.peakmeterBarH = SCALE(grSet.layout !== 'default' ? 16 : 26) + (this.ww > 1920 ? 2 : 0);
-		this.waveformBarH = SCALE(grSet.layout !== 'default' ? 16 : 26) + (this.ww > 1920 ? 2 : 0);
+	initMetadb() {
+		if (!grSet.panelBrowseMode) {
+			return fb.GetNowPlaying();
+		} else {
+			return this.displayPlaylist ? fb.GetFocusItem() : fb.GetSelection();
+		}
 	}
 
 	/**
-	 * Initializes the theme on startup or reload.
+	 * Initializes the metadata strings based on the current playback information.
+	 * This includes setting up artist, album, track title, and more.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
-	initMain() {
-		// * Init state
-		console.log('initMain()');
-		this.loadingTheme = true;
-		this.ww = window.Width;
-		this.wh = window.Height;
-		this.clearUIVariables();
-		this.initCacheDeletion();
+	initMetadata(metadb = undefined) {
+		grStr.artist = $(grTF.artist, metadb);
+		grStr.artistLower = !grSet.showLowerBarArtist_layout ? '' : grStr.artist;
+		grStr.original_artist = $(grTF.original_artist, metadb);
+		grStr.composer = $(grTF.composer, metadb);
+		grStr.tracknum = grSet.showVinylNums ? $(grTF.vinyl_track, metadb) : $(grTF.tracknum, metadb).trim();
+		grStr.title = `${$(grTF.title, metadb)} ${$(grTF.original_artist, metadb)}`;
+		grStr.titleLower = !grSet.showLowerBarTitle_layout ? '' : grSet.showLowerBarComposer_layout  ? `${grStr.title} ${grStr.composer}` : `${grStr.title}`;
+		grStr.album = $(`[%album%][ '['${grTF.album_translation}']']`, metadb);
+		grStr.album_subtitle = $(`[ '['${grTF.album_subtitle}']']`, metadb);
+		grStr.year = $(grTF.year, metadb) === '0000' ? '' : $(grTF.year, metadb);
+		grStr.disc = grSet.layout !== 'default' ? '' :  $(grTF.disc, metadb);
 
-		on_size();
+		const playbackLength = metadb ? metadb.Length : fb.PlaybackLength;
+		const h = Math.floor(playbackLength / 3600);
+		const m = Math.floor(playbackLength % 3600 / 60);
+		const s = Math.floor(playbackLength % 60);
+		grStr.length = `${h > 0 ? `${h}:${m < 10 ? '0' : ''}${m}` : m}:${s < 10 ? '0' : ''}${s}`;
 
-		if (fb.IsPlaying && fb.GetNowPlaying()) {
-			on_playback_new_track(fb.GetNowPlaying());
-		}
-		plman.SetActivePlaylistContext();
+		const lastfmPlayCount = $('%lastfm_play_count%', metadb);
+		grm.details.playCountVerifiedByLastFm = lastfmPlayCount !== '0' && lastfmPlayCount !== '?';
 
-		// * Init panels
-		this.displayPanelControl(true);
+		this.currentAlbumFolder = !this.isStreaming ? metadb && metadb.Path.substring(0, metadb.Path.lastIndexOf('\\')) : '';
+		this.lastAlbumFolder = this.currentAlbumFolder;
+		this.lastAlbumFolderTag = $('%album%', metadb);
+		this.lastAlbumDiscNumber = $('$if2(%discnumber%,0)', metadb);
+		this.lastAlbumVinylSide = $(`$if2(${grTF.vinyl_side},ZZ)`, metadb);
 
-		if (!lib.initialized) {
-			this.initLibraryPanel();
-			this.setLibrarySize();
-			setTimeout(() => {
-				lib.lib.initialise();
-				this.initLibraryLayout();
-			}, 1);
-		}
-		if (!bio.initialized) {
-			this.initBiographyPanel();
-			this.setBiographySize();
-		}
-
-		if (grSet.lyricsRememberPanelState) {
-			this.displayLyrics = grSet.lyricsPanelState;
-		}
-		else if (this.displayLyrics && grSet.lyricsLayout === 'full') {
-			this.displayPlaylist = !this.displayPlaylist;
-			this.resizeArtwork(true);
-		}
-		if (this.displayLyrics) {
-			this.displayLyricsOnStart();
-		}
-
-		if (grSet.panelWidthAuto) {
-			this.initPanelWidthAuto();
-		}
-
-		// * Init colors
-		grm.color.setThemeColors();
-		if (grSet.theme.startsWith('custom')) this.initCustomTheme();
-		grm.theme.initMainColors(); // Preloader background color
-		if (grSet.theme === 'random' && grSet.randomThemeAutoColor !== 'off') {
-			grm.color.getRandomThemeAutoColor();
-		}
-		this.themeColorSet = true;
-		this.loadingTheme = false;
-
-		// * Restore backup workaround to successfully restore playlist files after foobar installation
-		if (grSet.restoreBackupPlaylist) {
-			setTimeout(() => {
-				RestoreBackupPlaylist();
-			}, !this.loadingTheme);
-		}
-
-		// * Hide loading screen
-		setTimeout(() => {
-			this.initThemeFull = true;
-			this.initTheme();
-			this.loadingThemeComplete = true;
-			window.Repaint();
-			DebugLog('\n>>> initTheme => initMain <<<\n');
-		}, 100);
+		this.currentLastPlayed = $(grTF.last_played, metadb);
+		this.playingPlaylist = grSet.showGridPlayingPlaylist ? $(grTF.playing_playlist = plman.GetPlaylistName(plman.PlayingPlaylist)) : '';
 	}
 
 	/**
-	 * Initializes size and position when noAlbumArtStub is being displayed.
+	 * Initializes the playback state if it is streaming or playing from CD.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
-	initNoAlbumArtSize() {
-		const noAlbumArtSize = this.wh - this.topMenuHeight - this.lowerBarHeight;
-
-		this.albumArtSize.x =
-			grSet.layout === 'default' &&  this.displayCustomThemeMenu && this.displayDetails ? this.ww * 0.3 :
-			grSet.layout === 'default' && !this.displayCustomThemeMenu && this.displayDetails ||
-			grSet.layout === 'artwork' &&  this.displayPlaylist ? this.ww :
-			grSet.panelWidthAuto ?
-				grSet.albumArtAlign === 'left' ? 0 :
-				grSet.albumArtAlign === 'leftMargin' ? this.ww / this.wh > 1.8 ? SCALE(40) : 0 :
-				grSet.albumArtAlign === 'center' ? Math.floor(this.ww * 0.25 - noAlbumArtSize * 0.5) :
-				Math.floor(this.ww * 0.5 - noAlbumArtSize) :
-			0;
-
-		this.albumArtSize.y = this.topMenuHeight;
-
-		this.albumArtSize.w =
-			grSet.panelWidthAuto && this.noAlbumArtStub ? !fb.IsPlaying ? 0 : noAlbumArtSize :
-			this.ww * 0.5;
-
-		this.albumArtSize.h = noAlbumArtSize;
+	initStreamingOrCD(metadb) {
+		this.isPlayingCD = metadb && metadb.RawPath.startsWith('cdda://');
+		this.isStreaming = metadb && /^(http:\/\/|https:\/\/)/.test(metadb.RawPath);
 	}
 
 	/**
@@ -1983,67 +1720,122 @@ class MainUI {
 	initPanels() {
 		// * Update Main
 		this.createFonts();
-		this.initMetrics();
-		grm.timeline = new Timeline(this.timelineHeight);
-		grm.gridTip = new MetadataGridTooltip(this.gridTooltipHeight);
-		grm.lowerTip = new LowerBarTooltip();
-		grm.jSearch = new JumpSearch(this.ww, this.wh);
-		grm.volBtn = new VolumeButton();
-		grm.progBar = new ProgressBar(this.ww, this.wh);
-		grm.peakBar = new PeakmeterBar(this.ww, this.wh);
-		grm.peakBar.on_size(this.ww, this.wh);
-		grm.waveBar = new WaveformBar(this.ww, this.wh);
-		grm.waveBar.updateBar();
-		this.createButtonImages();
-		this.createButtonObjects(this.ww, this.wh);
+		this.setMainMetrics();
+		this.setMainComponents('all');
 		this.resizeArtwork(true);
+		grm.button.createButtons(this.ww, this.wh);
 		grm.button.initButtonState();
+		if (fb.GetNowPlaying()) on_metadb_changed();
 
-		if (fb.GetNowPlaying()) on_metadb_changed(); // Refresh panel
+		// * Update Playlist
+		PlaylistRescale(true);
+		this.initPlaylist();
+		this.setPlaylistSize();
 
-		setTimeout(() => {
-			// * Update Playlist
-			PlaylistRescale(true);
-			this.initPlaylist();
-			pl.call.on_size(this.ww, this.wh);
+		// * Update Library
+		this.setLibrarySize();
+		lib.pop.createImages();
+		lib.panel.zoomReset();
+		this.initLibraryLayout();
 
-			// * Update Library
-			this.setLibrarySize();
-			lib.panel.tree.y = lib.panel.search.h;
-			lib.pop.createImages();
-			lib.panel.zoomReset();
-			this.initLibraryLayout();
-
-			// * Update Biography
-			this.setBiographySize();
-			bio.ui.setSbar();
-			bio.but.createImages();
-			bio.but.resetZoom();
-			grm.theme.initBiographyColors();
-			this.initBiographyLayout();
-		}, this.loadingThemeComplete);
+		// * Update Biography
+		this.setBiographySize();
+		bio.ui.setSbar();
+		bio.but.createImages();
+		bio.but.resetZoom();
+		grm.theme.initBiographyColors();
+		this.initBiographyLayout();
 	}
 
 	/**
-	 * Initializes size and position of the current panel when using grSet.panelWidthAuto.
+	 * Initializes the size and position of the current panel when using `grSet.panelWidthAuto`.
+	 * @param {boolean} resizeArtwork - Indicates whether to resize the artwork.
+	 * Note: The `resizeArtwork` parameter is only needed when there is no `resizeArtwork()` method in the called code block.
+	 * Otherwise, place this method under the `resizeArtwork()` method.
 	 */
-	initPanelWidthAuto() {
-		this.resizeArtwork(true);
+	initPanelWidthAuto(resizeArtwork) {
+		if (!grSet.panelWidthAuto || this.displayLibrarySplit() || this.displayLibrary && grSet.libraryLayout === 'full') return;
 
-		if (this.displayLibrarySplit() || this.displayLibrary && grSet.libraryLayout === 'full') return;
+		if (resizeArtwork) this.resizeArtwork(true);
 
 		if (this.displayPlaylist && (this.noAlbumArtStub || pl.playlist.x !== this.albumArtSize.x + this.albumArtSize.w)) {
-			DebugLog('initPanelWidthAuto -> Playlist');
-			pl.call.on_size(this.ww, this.wh);
+			DebugLog('Init => initPanelWidthAuto -> Playlist');
+			this.setPlaylistSize();
 		}
 		if (this.displayLibrary && (this.noAlbumArtStub || lib.ui.x !== this.albumArtSize.x + this.albumArtSize.w)) {
-			DebugLog('initPanelWidthAuto -> Library');
+			DebugLog('Init => initPanelWidthAuto -> Library');
 			this.setLibrarySize();
 		}
-		if (this.displayBiography && (this.noAlbumArtStub || bio.ui.x + bio.ui.w !== this.albumArtSize.x + this.albumArtSize.w)) {
-			DebugLog('initPanelWidthAuto -> Biography');
+		if (this.displayBiography && (this.noAlbumArtStub || bio.ui.x + bio.ui.w !== this.albumArtSize.x + this.albumArtSize.w) || bio.ui.x + bio.ui.w > pl.playlist.x) {
+			DebugLog('Init => initPanelWidthAuto -> Biography');
 			this.setBiographySize();
 		}
+	}
+
+	/**
+	 * Initializes the theme on startup or reload.
+	 * @returns {Promise<void>} A promise that resolves when the initialization is complete.
+	 */
+	async initMain() {
+		DebugLog('Init => initMain');
+		this.ww = window.Width;
+		this.wh = window.Height;
+
+		// * Init colors
+		this.initCustomTheme();
+		grm.theme.initMainColors(); // Init preloader background color
+		if (grSet.theme === 'random' && grSet.randomThemeAutoColor !== 'off') {
+			grm.color.getRandomThemeAutoColor();
+		}
+
+		// * Init main
+		this.initCacheDeletion();
+		this.clearPlaybackState(true);
+		this.createFonts();
+		this.setMainMetrics();
+		this.setMainComponents('all');
+
+		// * Init panels
+		PlaylistRescale(true);
+		this.initPlaylist();
+		if (!lib.initialized) {
+			this.initLibraryPanel();
+			this.setLibrarySize();
+			await new Promise(resolve => {
+				lib.lib.initialise();
+				resolve();
+			});
+		}
+		if (!bio.initialized) {
+			this.initBiographyPanel();
+			this.setBiographySize();
+		}
+
+		// * Init state
+		if (fb.IsPlaying && fb.GetNowPlaying()) {
+			on_playback_new_track(fb.GetNowPlaying());
+		}
+		plman.SetActivePlaylistContext();
+		this.displayPanel(false, true);
+		this.initLyricsDisplayState('startup');
+		this.initPanelWidthAuto(true);
+
+		// * Restore backup workaround to successfully restore playlist files after foobar installation
+		if (grSet.restoreBackupPlaylist) {
+			await RestoreBackupPlaylist();
+		}
+
+		// * Wait for album art to load if player is playing, then hide loading screen
+		if (fb.IsPlaying) {
+			await this.initAlbumArtLoading();
+		}
+
+		// * Hide loading screen
+		DebugLog('\n>>> initTheme => initMain <<<\n');
+		this.initThemeFull = true;
+		this.initTheme();
+		this.loadingThemeComplete = true;
+		window.Repaint();
 	}
 
 	/**
@@ -2062,48 +1854,32 @@ class MainUI {
 			grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn;
 
 		// * SETUP COLORS * //
+		this.initCustomTheme();
+		this.initThemeDayNightState();
+		grm.color.initThemeStyleProperties();
 		grm.color.setImageBrightness();
-		if (grSet.styleBlackAndWhiteReborn) {
-			grm.style.initBlackAndWhiteReborn();
-		}
-		if (grSet.theme === 'random' && !this.isStreaming && !this.isPlayingCD) {
-			grm.color.getRandomThemeColor();
-		}
-		if (this.noAlbumArtStub || this.isStreaming || this.isPlayingCD) {
-			grm.color.setNoAlbumArtColors();
-		}
-		if (this.albumArt && (grSet.styleBlend || grSet.styleBlend2 || grSet.styleProgressBarFill === 'blend')) {
-			grm.color.setStyleBlend();
-		}
-		if (grSet.themeDayNightMode && !grSet.themeSetupDay && !grSet.themeSetupNight) {
-			this.initThemeDayNightState();
-		}
+		grm.color.setNoAlbumArtColors();
+		grm.color.getRandomThemeColor();
+		grm.style.setStyleBlend();
+		grm.style.initBlackAndWhiteReborn();
 		grm.color.setBackgroundColorDefinition();
 
 		// * INIT COLORS * //
-		grm.theme.initThemeSetVals();
 		grm.theme.initPlaylistColors();
 		grm.theme.initLibraryColors();
 		grm.theme.initBiographyColors();
 		grm.theme.initMainColors();
 		grm.theme.initChronflowColors();
-		grm.style.initThemeSetVals();
 		grm.style.initStyleColors();
 
 		// * POST-INIT COLOR ADJUSTMENTS * //
 		grm.theme.themeColorAdjustments();
-		if (!fullInit) {
-			return;
-		}
-		if (grSet.themeBrightness !== 'default') {
-			grm.color.adjustThemeBrightness(grSet.themeBrightness);
-		}
-		if (grSet.playlistRowHover) {
-			pl.playlist.title_color_change();
-		}
-		if (libImg.labels.overlayDark) {
-			lib.ui.getItemColours();
-		}
+		grm.details.updateGridLogos();
+		if (!fullInit) return;
+		grSet.themeBrightness !== 'default' && grm.color.adjustThemeBrightness(grSet.themeBrightness);
+		pl.playlist.header_color_change();
+		grSet.playlistRowHover && pl.playlist.title_color_change();
+		libImg.labels.overlayDark && lib.ui.getItemColours();
 		bio.txt.artCalc();
 		bio.txt.albCalc();
 
@@ -2117,8 +1893,7 @@ class MainUI {
 		bio.art_scrollbar.setCol();
 		bio.but.createImages('all');
 		bio.img.createImages();
-		this.createButtonImages();
-		this.createButtonObjects(this.ww, this.wh);
+		grm.button.createButtons(this.ww, this.wh, true, false);
 		grm.button.initButtonState();
 
 		// * REFRESH * //
@@ -2126,6 +1901,29 @@ class MainUI {
 
 		if (themeProfiler) themeProfiler.Print();
 		if (grCfg.settings.showDebugPerformanceOverlay) this.debugTimingsArray.push(`initTheme: ${themeProfiler.Time} ms`);
+	}
+
+	/**
+	 * Initializes the theme based on the artwork and various settings.
+	 * @param {GdiBitmap} artwork - The artwork image.
+	 */
+	initThemeState(artwork) {
+		if (this.hasAutoRandomPresetMode()) {
+			this.setRandomThemePreset();
+			return;
+		}
+
+		if (this.hasThemeTags()) {
+			this.initThemeTags();
+		} else {
+			this.restoreThemeState();
+			grm.color.getThemeColors(artwork);
+		}
+
+		if (grSet.presetAutoRandomMode !== 'album' && grSet.presetSelectMode !== 'harmonic' && !this.hasThemeTags()) {
+			this.initTheme();
+			DebugLog('\n>>> initTheme => loadImageFromAlbumArtList >>>\n');
+		}
 	}
 
 	/**
@@ -2139,7 +1937,8 @@ class MainUI {
 		const customStyle  = $('[%GR_STYLE%]');
 		const customPreset = $('[%GR_PRESET%]');
 
-		if (!grSet.themeDayNightMode || customTheme || customStyle || customPreset) {
+		if (!grSet.themeDayNightMode || grSet.themeSetupDay || grSet.themeSetupNight ||
+			customTheme || customStyle || customPreset) {
 			return;
 		}
 
@@ -2158,7 +1957,7 @@ class MainUI {
 				initThemeDayNightMode(new Date());
 				this.initThemeFull = true;
 				this.initTheme();
-				DebugLog('\n>>> initTheme => fetchNewArtwork => on_playback_new_track => themeDayNightModeTimer <<<\n');
+				DebugLog('\n>>> initTheme => initThemeDayNightState => themeDayNightModeTimer <<<\n');
 			}, 600000);
 		}
 	}
@@ -2217,26 +2016,6 @@ class MainUI {
 			'volumeBarFill=inner' : () => { grSet.styleVolumeBarFill = 'bevel'; }
 		};
 
-		// * Restore last theme state
-		if (grSet.presetSelectMode === 'default' && this.themeRestoreState) {
-			DebugLog('\n>>> initThemeTags restore <<<\n');
-			this.resetStyle('all');
-			this.resetTheme();
-			this.restoreThemeStylePreset(); // * Retore saved grSet settings
-			if (grSet.savedPreset !== false) grm.preset.setThemePreset(grSet.savedPreset);
-			if (grSet.theme.startsWith('custom')) this.initCustomTheme();
-			this.initStyleState();
-			this.themeRestoreState = false;
-		}
-
-		// * Skip restore also on next call
-		if (grSet.theme === grSet.savedTheme && !customTheme && !customStyle && !customPreset) {
-			DebugLog('\n>>> initThemeTags skipped <<<\n');
-			this.restoreThemeStylePreset(true); // * Reset saved grSet settings
-			this.themeRestoreState = false;
-			return;
-		}
-
 		// * 1. Set preset
 		if (customPreset.length) {
 			DebugLog('\n>>> initThemeTags => %GR_PRESET% loaded <<<');
@@ -2263,7 +2042,7 @@ class MainUI {
 		}
 
 		// * 4. Update theme
-		if (!customPreset.length) { // Prevent double initialization for theme presets to save performance, grMain.ui.updateStyle() already handled in setThemePreset()
+		if (!customPreset.length) { // Prevent double initialization for theme presets, this.updateStyle() already handled in setThemePreset()
 			this.updateStyle();
 		}
 	}
@@ -2272,6 +2051,8 @@ class MainUI {
 	 * Initializes the custom themes to check if any are currently active.
 	 */
 	initCustomTheme() {
+		if (!grSet.theme.startsWith('custom')) return;
+
 		const customThemes = {
 			custom01: grCfg.customTheme01,
 			custom02: grCfg.customTheme02,
@@ -2288,6 +2069,72 @@ class MainUI {
 		if (grSet.theme in customThemes) {
 			grCfg.cTheme = customThemes[grSet.theme];
 		}
+	}
+
+	/**
+	 * Initializes the custom theme menu position when using auto panel width ( grSet.panelWidthAuto ).
+	 */
+	initCustomThemeMenuPosition() {
+		if (!this.displayLibrary && !grSet.libraryLayout !== 'split') {
+			this.displayPlaylist = !this.displayLibrary && !this.displayDetails;
+		}
+		else if (this.displayLibrarySplit()) {
+			this.displayPlaylist = true;
+		}
+
+		this.resizeArtwork(true);
+
+		if (this.displayPlaylist) this.setPlaylistSize();
+		if (this.displayLibrary) this.setLibrarySize();
+		if (this.displayBiography) this.setBiographySize();
+	}
+
+	/**
+	 * Initializes the custom theme menu and toggles its open/close state.
+	 */
+	initCustomThemeMenuState() {
+		if (plman.PlaylistItemCount(plman.ActivePlaylist) <= 0) {
+			this.handlePlaybackStart();
+			return;
+		}
+		else if (grSet.layout !== 'default') {
+			const msg = grm.msg.getMessage('main', 'customThemeLiveEdit');
+			fb.ShowPopupMessage(msg, 'Custom theme live editing');
+			return;
+		}
+
+		this.displayCustomThemeMenu = !this.displayCustomThemeMenu;
+		this.displayMetadataGridMenu = false;
+
+		if (this.displayCustomThemeMenu) {
+			if (!grSet.theme.startsWith('custom')) grSet.theme = 'custom01';
+			this.initCustomTheme();
+			this.initTheme();
+			this.handlePanelLayout('all', 'resetLayout');
+
+			if (!fb.IsPlaying) {
+				fb.Play(); fb.Pause();
+
+				if (grSet.lyricsRememberPanelState) this.initLyricsRememberedState();
+				if (!this.albumArtSize.w) this.setNoAlbumArtSize();
+				this.initPanelWidthAuto(true);
+				this.setMainComponents('customMenu');
+			}
+
+			grm.cthMenu.reinitCustomThemeMenu();
+		}
+		else {
+			this.handlePanelLayout('all', 'restoreLayout');
+			this.resizeArtwork(true);
+		}
+
+		if (this.displayBiography && grSet.biographyLayout === 'full') {
+			this.displayPlaylist = false;
+		}
+
+		// Keep Playlist layout in normal width
+		this.handlePanelLayout('playlist', 'initLayout');
+		window.Repaint();
 	}
 
 	/**
@@ -2328,68 +2175,462 @@ class MainUI {
 	}
 
 	/**
-	 * Sets and updates main component size.
-	 * @param {string} component - The component to update its size.
+	 * Initializes and sets the theme to a factory reset state.
+	 * Used on the very first foobar start after installation or when resetting the theme.
+	 * @returns {Promise<void>} A promise that resolves when the initialization is complete.
 	 */
-	setMainComponentSize(component) {
-		const customMenu = () => {
-			grm.cusMenu.on_size(grm.ui.ww, grm.ui.wh);
-		};
-
-		const jSearch = () => {
-			grm.jSearch.on_size(grm.ui.ww, grm.ui.wh);
-		};
-
-		const seekbar = () => {
-			if (grSet.seekbar === 'progressbar') {
-				grm.progBar.on_size(grm.ui.ww, grm.ui.wh);
-			} else if (grSet.seekbar === 'peakmeterbar') {
-				grm.peakBar.on_size(grm.ui.ww, grm.ui.wh);
-			} else if (grSet.seekbar === 'waveformbar') {
-				grm.waveBar.on_size(grm.ui.ww, grm.ui.wh);
-			}
-		};
-
-		if (component === 'all') {
-			customMenu();
-			jSearch();
-			seekbar();
-			return;
-		}
-
-		if (component === 'seekbar') {
-			seekbar();
-		}
-	}
-
-	/**
-	 * Sets the theme to a factory reset state, used on the very first foobar start after installation or when resetting the theme.
-	 */
-	async systemFirstLaunch() {
+	async initSystemFirstLaunch() {
 		if (!grSet.systemFirstLaunch) return;
 
-		this.initMain();
+		await this.initMain();
 		await grm.settings.setThemeSettings(false, false, true);
-		this.initMain();
+		await this.initMain();
 		await grm.display.autoDetectRes();
 
 		grSet.systemFirstLaunch = false;
 	}
 	// #endregion
 
+	// * MAIN - PUBLIC METHODS - PLAYBACK * //
+	// #region PUBLIC METHODS - PLAYBACK
+	/**
+	 * Handles updating the main UI to reflect the current track's metadata, including track details and artist country flags.
+	 * Adjusts UI elements like color schemes and metadata grids based on track information.
+	 * @param {FbMetadbHandleList} [handleList] - Can be undefined when called manually from on_playback_new_track.
+	 */
+	handlePlaybackMetadb(handleList) {
+		if (!fb.IsPlaying) return;
+
+		let nowPlayingUpdated = !handleList; // If we don't have a handleList we called this manually from on_playback_new_track
+		const metadb = fb.GetNowPlaying();
+
+		if (metadb && handleList) {
+			for (let i = 0; i < handleList.Count; i++) {
+				if (metadb.RawPath === handleList[i].RawPath) {
+					nowPlayingUpdated = true;
+					break;
+				}
+			}
+		}
+
+		if (!nowPlayingUpdated) return;
+
+		this.clearCache('metrics');
+		this.initMetadata();
+		this.loadCountryFlags();
+
+		grm.details.clearCache('metrics');
+		grm.details.updateGridTimeline(true);
+		grm.details.updateGrid(this.currentLastPlayed, this.playingPlaylist);
+		grm.details.loadGridReleaseCountryFlag();
+	}
+
+	/**
+	 * Handles new track playback of the main UI and initializes various properties and UI elements.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
+	 */
+	handlePlaybackNewTrack(metadb) {
+		UpdateTimezoneOffset();
+
+		this.initThemeFull = false;
+		this.newTrackFetchingArtwork = true;
+
+		this.clearCache('debug');
+		this.clearCache('metrics');
+		this.initStreamingOrCD(metadb);
+		this.handleArtwork(metadb);
+		grm.details.clearCache('metrics');
+		grm.details.getBandLogo();
+		grm.details.getLabelLogo(metadb);
+
+		if (grSet.rotateDiscArt && !grSet.spinDiscArt) {
+			grm.details.createDiscArtRotation(); // We need to always setup the rotated image because it rotates on every track
+		}
+
+		// * Pick a new random theme preset on new track
+		if (grSet.presetAutoRandomMode === 'track' && !this.doubleClicked) {
+			grm.preset.getRandomThemePreset();
+		}
+		// * Generate a new color in Random theme on new track
+		if (grSet.styleRandomAutoColor === 'track' && !this.doubleClicked) {
+			grm.color.getRandomThemeAutoColor();
+		}
+
+		if (fb.GetNowPlaying()) on_metadb_changed(); // Refresh metadata
+		on_playback_time();
+		this.setSeekbarRefresh();
+
+		if (grSet.seekbar === 'progressbar') {
+			grm.progBar.on_playback_new_track(metadb);
+		} else if (grSet.seekbar === 'peakmeterbar') {
+			grm.peakBar.on_playback_new_track(metadb);
+		} else if (grSet.seekbar === 'waveformbar') {
+			grm.waveBar.on_playback_new_track_queue(metadb);
+		}
+
+		this.initLyricsDisplayState('newTrack');
+	}
+
+	/**
+	 * Handles seeking playback of the main UI.
+	 */
+	handlePlaybackSeek() {
+		if (grSet.seekbar === 'progressbar') {
+			grm.progBar.progressMoved = true;
+		} else if (grSet.seekbar === 'peakmeterbar') {
+			grm.peakBar.progressMoved = true;
+		}
+		if (this.displayLyrics) {
+			grm.lyrics.seek();
+		}
+		this.refreshSeekbar();
+	}
+
+	/**
+	 * Handles starting playback of the main UI.
+	 * If the playlist contains no tracks to play, the user action will be canceled.
+	 */
+	handlePlaybackStart() {
+		if (plman.PlaylistItemCount(plman.ActivePlaylist) <= 0) {
+			this.displayCustomThemeMenu = false;
+			fb.Stop();
+			this.clearPlaybackState(true);
+			window.Repaint();
+
+			const msg = grm.msg.getMessage('main', 'playlistEmptyError');
+			grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+			return;
+		}
+		else if (grCfg.settings.hideCursor) {
+			SetCursor('Hide');
+		}
+		grm.button.lowerPlayPause();
+	}
+
+	/**
+	 * Handles the playback stop event of the main UI.
+	 * @param {number} reason - The playback stop has the following settings:
+	 * - 0 - Invoked by the user.
+	 * - 1 - End of file.
+	 * - 2 - Starting another track.
+	 * - 3 - Fb2k is shutting down.
+	 */
+	handlePlaybackStop(reason) {
+		if (reason !== 2) {
+			this.clearPlaybackState(true);
+			this.clearCache();
+			this.clearTimer();
+			grm.details.clearCache();
+			grm.details.clearTimer();
+			grm.button.lowerPlayPause();
+			this.initTheme();
+			DebugLog('\n>>> initTheme => on_playback_stop <<<\n');
+		}
+
+		this.initPanelWidthAuto(true);
+
+		if (reason === 0 || reason === 1) {
+			this.displayPanel();
+		}
+
+		window.Repaint();
+	}
+
+	/**
+	 * Handles the playback pause event of the main UI.
+	 * @param {boolean} state - Whether the playback is paused or not.
+	 */
+	handlePlaybackPause(state) {
+		grm.button.lowerPlayPause();
+
+		if (state || fb.PlaybackLength < 0) {
+			this.clearTimer('seekbar');
+			grm.details.clearTimer('discArt');
+			window.RepaintRect(0, this.topMenuHeight, Math.max(this.albumArtSize.x, SCALE(40)), this.wh - this.topMenuHeight - this.lowerBarHeight);
+		}
+		else { // Unpausing
+			this.clearTimer('seekbar'); // Clear to avoid multiple seekbarTimer which can happen depending on the playback state when theme is loaded
+			DebugLog(`Playback => on_playback_pause: creating refreshSeekbar() interval with delay = ${this.seekbarTimerInterval}`);
+
+			this.seekbarTimer = setInterval(() => {
+				this.refreshSeekbar();
+			}, this.seekbarTimerInterval || 1000);
+
+			if (grm.details.discArt && grSet.spinDiscArt) {
+				grm.details.setDiscArtRotationTimer();
+			}
+		}
+
+		grm.pseBtn.repaint();
+	}
+
+	/**
+	 * Handles the playback order event of the main UI when it is changed
+	 * via the transport playback order button or foobar's playback menu.
+	 * @global
+	 * @param {number} pbo - The playback order has the following settings:
+	 * - 0 - Default.
+	 * - 1 - Repeat (Playlist).
+	 * - 2 - Repeat (Track).
+	 * - 3 - Random, 4 Shuffle (tracks).
+	 * - 5 - Shuffle (albums).
+	 * - 6 - Shuffle (folders).
+	 */
+	handlePlaybackOrder(pbo) {
+		// Repaint playback order
+		if (pbo !== this.lastPlaybackOrder) {
+			DebugLog('Playback => Repainting on_playback_order_changed');
+			window.RepaintRect(0.5 * this.ww, this.wh - this.lowerBarHeight, 0.5 * this.ww, this.lowerBarHeight);
+		}
+		this.lastPlaybackOrder = pbo;
+
+		// Link foobar's playback order menu functions with playback order button
+		const showBtns = grSet.showTransportControls_layout && grSet.showPlaybackOrderBtn_layout;
+
+		const playbackOrderStr = {
+			[PlaybackOrder.Default]: 'default',
+			[PlaybackOrder.RepeatPlaylist]: 'repeatPlaylist',
+			[PlaybackOrder.RepeatTrack]: 'repeatTrack',
+			[PlaybackOrder.Random]: 'shuffle',
+			[PlaybackOrder.ShuffleTracks]: 'shuffle',
+			[PlaybackOrder.ShuffleAlbums]: 'shuffle',
+			[PlaybackOrder.ShuffleFolders]: 'shuffle'
+		};
+
+		const playbackOrderImg = {
+			default: grm.button.btnImg.PlaybackDefault,
+			repeatPlaylist: grm.button.btnImg.PlaybackRepeatPlaylist,
+			repeatTrack: grm.button.btnImg.PlaybackRepeatTrack,
+			shuffle: grm.button.btnImg.PlaybackShuffle
+		};
+
+		const order = playbackOrderStr[pbo];
+
+		if (order) {
+			grSet.playbackOrder = order;
+			if (showBtns) {
+				grm.button.btn.playbackOrder.img = playbackOrderImg[order];
+			}
+		}
+	}
+
+	/**
+	 * Handles the playback time event of the main UI.
+	 */
+	handlePlaybackTime() {
+		const time =
+			grSet.playbackTimeDisplay === 'default' ? $('%playback_time%') :
+			grSet.playbackTimeDisplay === 'remaining' ? $('-%playback_time_remaining%') :
+			PlaybackTimePercentage();
+
+		if (!grSet.panelBrowseMode) {
+			grStr.time = time;
+			return;
+		}
+
+		const nowPlayingTrack = fb.GetNowPlaying();
+		const focusTrack = fb.GetFocusItem();
+		const notPlayingTrackSelection = nowPlayingTrack.Path !== focusTrack.Path;
+
+		grStr.time = (grSet.panelBrowseMode && notPlayingTrackSelection) ? '0:00' : time;
+	}
+
+	/**
+	 * Handles the playback position of the main UI based on the x-coordinate of a mouse click within the seekbar or a mouse wheel event.
+	 * @param {number} x - The x-coordinate of the mouse click within the playback bar.
+	 * @param {number} step - The step direction for the mouse wheel event: -1 or 1.
+	 * This method assumes the click or mouse wheel event has already been verified to be within the seekbar's bounds.
+	 */
+	handleSeekbarPlayback(x, step = 0) {
+		// Handle mouse click event
+		if (x !== 0) {
+			let v = (x - this.edgeMargin) / (this.ww - this.edgeMarginBoth);
+			v = Clamp(v, 0, 1);
+			if (fb.PlaybackTime !== v * fb.PlaybackLength) {
+				fb.PlaybackTime = v * fb.PlaybackLength;
+			}
+		}
+		// Handle mouse wheel event
+		else if (step !== 0) {
+			fb.PlaybackTime = fb.PlaybackTime - step * grSet.progressBarWheelSeekSpeed;
+			this.refreshSeekbar();
+			if (grSet.seekbar === 'peakmeterbar') {
+				grm.peakBar.on_mouse_wheel(step);
+			}
+		}
+
+		window.RepaintRect(0, this.wh - this.lowerBarHeight, this.ww, this.lowerBarHeight);
+	}
+	// #endregion
+
 	// * MAIN - PUBLIC METHODS - COMMON * //
 	// #region MAIN - PUBLIC METHODS - COMMON
 	/**
-	 * Clears all now playing related UI strings.
+	 * Clears the specified cache, individual properties, or all caches.
+	 * @param {string} [type] - The type of cache to clear. Can be 'metrics', 'albumArt', 'flag', 'debug'.
+	 * @param {string} [property] - The specific property to clear within the cacheType.
+	 * @param {boolean} [clearArtCache] - Whether to clear everything in the artCache object.
+	 * @param {boolean} [keepAlbumArt] - Whether to keep the album art.
+	 * @example
+	 * // Clear all caches
+	 * clearCache();
+	 * @example
+	 * // Clear a specific section of the cache
+	 * clearCache('metrics');
+	 * @example
+	 * // Clear an individual property within a specific section
+	 * clearCache('metrics', 'cachedLowerBarMetrics');
+	 * @example
+	 * // Clear all caches and the artCache
+	 * clearCache(undefined, undefined, true);
 	 */
-	clearUIVariables() {
-		const showLowerBarVersion = grSet[`showLowerBarVersion_${grSet.layout}`];
-		grStr.artist = '';
-		grStr.tracknum = $(showLowerBarVersion ? grSet.layout !== 'default' ? grCfg.settings.stoppedString1acr : grCfg.settings.stoppedString1 : ' ', undefined, true);
-		grStr.titleLower = $(showLowerBarVersion ? ` ${grCfg.settings.stoppedString2}` : ' ', undefined, true);
-		grStr.year = '';
-		grStr.grid = [];
-		grStr.time = showLowerBarVersion || grCfg.updateAvailable ? grCfg.lowerBarStoppedTime : ' ';
+	clearCache(type, property, clearArtCache, keepAlbumArt) {
+		const cacheProperties = {
+			metrics: {
+				cachedLowerBarMetrics: false
+			},
+			albumArt: {
+				albumArt: keepAlbumArt ? this.albumArt : null,
+				albumArtScaled: null
+			},
+			flag : {
+				flagImgs: []
+			},
+			debug: {
+				debugTimingsArray: []
+			}
+		};
+
+		if (clearArtCache) {
+			grm.artCache && grm.artCache.clear();
+			DebugLog('Main cache => Art cache cleared');
+		}
+
+		if (type && cacheProperties[type]) {
+			if (property && cacheProperties[type][property] !== undefined) {
+				this[property] = cacheProperties[type][property];
+				DebugLog(`Main cache => Cleared property "${property}" in cache type "${type}"`);
+			} else {
+				Object.assign(this, cacheProperties[type]);
+				DebugLog(`Main cache => Cleared all properties in cache type "${type}"`);
+			}
+		}
+		else if (!type) {
+			for (const property in cacheProperties) {
+				Object.assign(this, cacheProperties[property]);
+				DebugLog(`Main cache => Cleared all properties in cache type "${property}"`);
+			}
+		}
+	}
+
+	/**
+	 * Clears playback state properties and optionally clears now playing strings.
+	 * @param {boolean} clearNowPlaying - Whether to clear now playing strings.
+	 */
+	clearPlaybackState(clearNowPlaying) {
+		this.isPlayingCD = false;
+		this.isStreaming = false;
+		this.lastAlbumFolder = '';
+		this.lastAlbumDiscNumber = '0';
+		this.playbackTime = '';
+
+		if (clearNowPlaying) {
+			grStr.grid = [];
+			grStr.artist = '';
+			grStr.artistLower = '';
+			grStr.tracknum = $(grSet.showLowerBarVersion_layout ? grSet.layout !== 'default' ? grCfg.settings.stoppedString1acr : grCfg.settings.stoppedString1 : ' ', undefined, true);
+			grStr.titleLower = $(grSet.showLowerBarVersion_layout ? ` ${grCfg.settings.stoppedString2}` : ' ', undefined, true);
+			grStr.time = grSet.showLowerBarVersion_layout || grCfg.updateAvailable ? grCfg.lowerBarStoppedTime = grCfg.getCurrentVersionInfo() : ' ';
+			grStr.year = '';
+		}
+
+		DebugLog('Playback => Playback state cleared');
+	}
+
+	/**
+	 * Clears timers based on the timer type.
+	 * @param {string} [type] - The type of timer to clear. If not provided, all timers will be cleared.
+	 * - 'autoDownloadBio'
+	 * - 'autoDownloadLyrics'
+	 * - 'albumArt'
+	 * - 'hideCursor',
+	 * - 'seekbar'
+	 * - 'seekbarInterval',
+	 * - 'presetAutoRandomMode'
+	 * - 'presetIndicator'
+	 * - 'randomThemeAutoColor'
+	 * - 'themeDayNightMode'.
+	 */
+	clearTimer(type) {
+		const timers = {
+			autoDownloadBio: {
+				timer: this.autoDownloadBioTimer,
+				clear: clearInterval,
+				log: 'Timer => Biography auto-download timer cleared'
+			},
+			autoDownloadLyrics: {
+				timer: this.autoDownloadLyricsTimer,
+				clear: clearInterval,
+				log: 'Timer => Lyrics auto-download timer cleared'
+			},
+			albumArt: {
+				timer: this.albumArtTimeout,
+				clear: clearTimeout,
+				log: 'Timer => Album art timer cleared'
+			},
+			hideCursor: {
+				timer: this.hideCursorTimeout,
+				clear: clearTimeout,
+				log: 'Timer => Hide cursor timer cleared'
+			},
+			seekbar: {
+				timer: this.seekbarTimer,
+				clear: clearInterval,
+				log: 'Timer => Seekbar timer cleared'
+			},
+			seekbarInterval: {
+				timer: this.seekbarTimerInterval,
+				clear: clearInterval,
+				log: 'Timer => Seekbar interval timer cleared'
+			},
+			presetAutoRandomMode: {
+				timer: this.presetAutoRandomModeTimer,
+				clear: clearInterval,
+				log: 'Timer => Auto random preset timer cleared'
+			},
+			presetIndicator: {
+				timer: this.presetIndicatorTimer,
+				clear: clearInterval,
+				log: 'Timer => Theme preset indicator timer cleared'
+			},
+			randomThemeAutoColor: {
+				timer: this.randomThemeAutoColorTimer,
+				clear: clearInterval,
+				log: 'Timer => Random theme auto-color timer cleared'
+			},
+			themeDayNightMode: {
+				timer: this.themeDayNightModeTimer,
+				clear: clearInterval,
+				log: 'Timer => Theme day/night mode timer cleared'
+			}
+		};
+
+		const clearTimerByType = (type) => {
+			const { timer, clear, log } = timers[type];
+			if (timer) {
+				clear(timer);
+				timers[type].timer = null;
+			}
+			DebugLog(log);
+		};
+
+		if (type && timers[type]) {
+			clearTimerByType(type);
+		} else {
+			for (const key in timers) {
+				clearTimerByType(key);
+			}
+		}
 	}
 
 	/**
@@ -2404,88 +2645,93 @@ class MainUI {
 			this.ttip.SetMaxWidth(SCALE(grSet.layout !== 'default' ? 600 : 800));
 		}
 
-		// * FONT SIZES * //
-		const menuFontSize          = grSet[`menuFontSize_${grSet.layout}`];
-		const menuCaptionFontSize   = grSet[`menuFontSize_${grSet.layout}`] + 1;
-		const lowerBarFontSize      = grSet[`lowerBarFontSize_${grSet.layout}`];
-		const notificationFontSize  = grSet[`notificationFontSize_${grSet.layout}`];
-		const popupFontSize         = grSet[`popupFontSize_${grSet.layout}`];
-		const tooltipFontSize       = grSet[`tooltipFontSize_${grSet.layout}`];
-
-		const guiFxBtnFontSize      = grSet[`transportButtonSize_${grSet.layout}`] / 2;
-		const pboDefaultBtnFontSize = grSet[`transportButtonSize_${grSet.layout}`] / 1.6;
-		const pboReplayBtnFontSize  = grSet[`transportButtonSize_${grSet.layout}`] / 2;
-		const pboShuffleBtnFontSize = grSet[`transportButtonSize_${grSet.layout}`] / 1.65;
-		const reloadBtnFontSize     = grSet[`transportButtonSize_${grSet.layout}`] / 1.5;
-		const addTrackBtnFontSize   = grSet[`transportButtonSize_${grSet.layout}`] / 1.5;
-		const volumeBtnFontSize     = grSet[`transportButtonSize_${grSet.layout}`] / 1.33;
-
-		const gridArtistFontSize    = grSet[`gridArtistFontSize_${grSet.layout}`];
-		const gridTrackNumFontSize  = grSet[`gridTrackNumFontSize_${grSet.layout}`];
-		const gridTitleFontSize     = grSet[`gridTitleFontSize_${grSet.layout}`];
-		const gridAlbumFontSize     = grSet[`gridAlbumFontSize_${grSet.layout}`];
-		const gridKeyFontSize       = grSet[`gridKeyFontSize_${grSet.layout}`];
-		const gridValueFontSize     = grSet[`gridValueFontSize_${grSet.layout}`] + 1;
-
-		const playlistFontSize      = grSet[`playlistFontSize_${grSet.layout}`];
-		const libraryFontSize       = libSet[`baseFontSize_${grSet.layout}`];
-		const biographyFontSize     = bioSet[`baseFontSizeBio_${grSet.layout}`];
-		const lyricsFontSize        = grSet[`lyricsFontSize_${grSet.layout}`];
-
 		// * STYLE CHANGE * //
 		const artistTitle = grSet.showGridArtist_default && grSet.showGridTitle_default || grSet.showGridArtist_artwork && grSet.showGridTitle_artwork;
 
 		// * TOP MENU BUTTONS * //
-		grFont.topMenu        = Font(grFont.fontTopMenu, menuFontSize, 0);
-		grFont.topMenuCaption = Font(grFont.fontTopMenuCaption, menuCaptionFontSize, 0);
-		grFont.topMenuCompact = Font(grFont.fontAwesome, menuFontSize, 0);
+		grFont.topMenu        = Font(grFont.fontTopMenu, grSet.menuFontSize_layout, 0);
+		grFont.topMenuCaption = Font(grFont.fontTopMenuCaption, grSet.menuCaptionFontSize_layout, 0);
+		grFont.topMenuCompact = Font(grFont.fontAwesome, grSet.menuFontSize_layout, 0);
 
 		// * LOWER BAR * //
-		grFont.lowerBarArtist = Font(grFont.fontLowerBarArtist, lowerBarFontSize, grSet.customThemeFonts ? FontStyle.bold : 0);
-		grFont.lowerBarTitle  = Font(grFont.fontLowerBarTitle,  lowerBarFontSize, 0);
-		grFont.lowerBarDisc   = Font(grFont.fontLowerBarDisc,   lowerBarFontSize, 0);
-		grFont.lowerBarTime   = Font(grFont.fontLowerBarTime,   lowerBarFontSize, grSet.customThemeFonts ? FontStyle.bold : 0);
-		grFont.lowerBarLength = Font(grFont.fontLowerBarLength, lowerBarFontSize, 0);
-		grFont.lowerBarWave   = Font(grFont.fontLowerBarWave,   lowerBarFontSize - 6, grSet.customThemeFonts ? FontStyle.bold : 0);
+		grFont.lowerBarArtist = Font(grFont.fontLowerBarArtist, grSet.lowerBarFontSize_layout, grSet.customThemeFonts ? FontStyle.bold : 0);
+		grFont.lowerBarTitle  = Font(grFont.fontLowerBarTitle,  grSet.lowerBarFontSize_layout, 0);
+		grFont.lowerBarDisc   = Font(grFont.fontLowerBarDisc,   grSet.lowerBarFontSize_layout, 0);
+		grFont.lowerBarTime   = Font(grFont.fontLowerBarTime,   grSet.lowerBarFontSize_layout, grSet.customThemeFonts ? FontStyle.bold : 0);
+		grFont.lowerBarLength = Font(grFont.fontLowerBarLength, grSet.lowerBarFontSize_layout, 0);
+		grFont.lowerBarWave   = Font(grFont.fontLowerBarWave,   grSet.lowerBarFontSize_layout - 6, grSet.customThemeFonts ? FontStyle.bold : 0);
 
 		if (grCfg.updateHyperlink) grCfg.updateHyperlink.setFont(grFont.lowerBarTitle);
 
 		// * LOWER BAR TRANSPORT BUTTONS * //
-		grFont.guifx             = Font(grFont.fontGuiFx,   Math.floor(guiFxBtnFontSize), 0);
-		grFont.pboDefault        = Font(grFont.fontGuiFx,   Math.floor(pboDefaultBtnFontSize), 0);
-		grFont.pboRepeatPlaylist = Font(grFont.fontAwesome, Math.floor(pboReplayBtnFontSize), 0);
-		grFont.pboRepeatTrack    = Font(grFont.fontAwesome, Math.floor(pboReplayBtnFontSize), 0);
-		grFont.pboShuffle        = Font(grFont.fontGuiFx,   Math.floor(pboShuffleBtnFontSize), 0);
-		grFont.guifxReload       = Font(grFont.fontGuiFx,   Math.floor(reloadBtnFontSize), 0);
-		grFont.guifxAddTrack     = Font(grFont.fontGuiFx,   Math.floor(addTrackBtnFontSize), 0);
-		grFont.guifxVolume       = Font(grFont.fontGuiFx,   Math.floor(volumeBtnFontSize), 0);
+		grFont.guifx             = Font(grFont.fontGuiFx,   grSet.guiFxBtnFontSize_layout, 0);
+		grFont.pboDefault        = Font(grFont.fontGuiFx,   grSet.pboDefaultBtnFontSize_layout, 0);
+		grFont.pboRepeatPlaylist = Font(grFont.fontAwesome, grSet.pboReplayBtnFontSize_layout, 0);
+		grFont.pboRepeatTrack    = Font(grFont.fontAwesome, grSet.pboReplayBtnFontSize_layout, 0);
+		grFont.pboShuffle        = Font(grFont.fontGuiFx,   grSet.pboShuffleBtnFontSize_layout, 0);
+		grFont.guifxReload       = Font(grFont.fontGuiFx,   grSet.reloadBtnFontSize_layout, 0);
+		grFont.guifxAddTrack     = Font(grFont.fontGuiFx,   grSet.addTrackBtnFontSize_layout, 0);
+		grFont.guifxVolume       = Font(grFont.fontGuiFx,   grSet.volumeBtnFontSize_layout, 0);
 
 		// * MISC * //
-		grFont.noAlbumArtStub = Font(grFont.fontAwesome, 160, 0);
-		grFont.symbol         = Font(grFont.fontSegoeUISymbol, playlistFontSize, 0);
-		grFont.notification   = Font(grFont.fontNotification, notificationFontSize, 0);
-		grFont.popup          = Font(grFont.fontPopup, popupFontSize, 0);
-		grFont.tooltip        = Font(grFont.fontTooltip, tooltipFontSize, 0);
+		grFont.noAlbumArtStub  = Font(grFont.fontAwesome, 160, 0);
+		grFont.noAlbumArtStub2 = Font(grFont.fontAwesome, 100, 0);
+		grFont.symbol          = Font(grFont.fontSegoeUISymbol, grSet.playlistFontSize_layout, 0);
+		grFont.notification    = Font(grFont.fontNotification, grSet.notificationFontSize_layout, 0);
+		grFont.popup           = Font(grFont.fontPopup, grSet.popupFontSize_layout, 0);
+		grFont.tooltip         = Font(grFont.fontTooltip, grSet.tooltipFontSize_layout, 0);
 
 		if (grSet.layout === 'compact') return; // These fonts below are not available in Compact layout, so skip these to prevent errors
 
 		// * DETAILS METADATA GRID * //
-		grFont.gridArtist      = Font(grFont.fontGridArtist, gridArtistFontSize, grSet.customThemeFonts ? FontStyle.bold : 0);
-		grFont.gridTrackNumber = Font(artistTitle ? grFont.fontGridTitle : grFont.fontGridTitleBold, gridTrackNumFontSize, 0);
-		grFont.gridTitle       = Font(artistTitle ? grFont.fontGridTitle : grFont.fontGridTitleBold, gridTitleFontSize, 0);
-		grFont.gridAlbum       = Font(grFont.fontGridAlbum, gridAlbumFontSize, grSet.customThemeFonts ? FontStyle.bold : 0);
-		grFont.gridKey         = Font(grFont.fontGridKey, gridKeyFontSize, 0);
-		grFont.gridVal         = Font(grFont.fontGridValue, gridValueFontSize, 0);
+		grFont.gridArtist      = Font(grFont.fontGridArtist, grSet.gridArtistFontSize_layout, grSet.customThemeFonts ? FontStyle.bold : 0);
+		grFont.gridTrackNumber = Font(artistTitle ? grFont.fontGridTitle : grFont.fontGridTitleBold, grSet.gridTrackNumFontSize_layout, 0);
+		grFont.gridTitle       = Font(artistTitle ? grFont.fontGridTitle : grFont.fontGridTitleBold, grSet.gridTitleFontSize_layout, 0);
+		grFont.gridAlbum       = Font(grFont.fontGridAlbum, grSet.gridAlbumFontSize_layout, grSet.customThemeFonts ? FontStyle.bold : 0);
+		grFont.gridKey         = Font(grFont.fontGridKey, grSet.gridKeyFontSize_layout, 0);
+		grFont.gridVal         = Font(grFont.fontGridValue, grSet.gridValueFontSize_layout + 1, 0);
 
 		// * LIBRARY * //
-		grFont.library = Font(grFont.fontLibrary, libraryFontSize, 0);
+		grFont.library = Font(grFont.fontLibrary, grSet.libraryFontSize_layout, 0);
 
 		// * BIOGRAPHY * //
-		grFont.biography = Font(grFont.fontBiography, biographyFontSize, 0);
+		grFont.biography = Font(grFont.fontBiography, grSet.biographyFontSize_layout, 0);
 
 		// * LYRICS * //
-		grFont.lyrics          = Font(grFont.fontLyrics, lyricsFontSize, 1);
-		grFont.lyricsHighlight = Font(grFont.fontLyrics, lyricsFontSize * 1.5, 1);
+		grFont.lyrics          = Font(grFont.fontLyrics, grSet.lyricsFontSize_layout, 1);
+		grFont.lyricsHighlight = Font(grFont.fontLyrics, grSet.lyricsFontSize_layout * 1.5, 1);
+	}
+
+	/**
+	 * Checks if the auto-random preset mode is enabled.
+	 * @returns {boolean} True if the auto-random preset mode is enabled, false otherwise.
+	 */
+	hasAutoRandomPresetMode() {
+		return !this.doubleClicked &&
+		(!['off', 'track'].includes(grSet.presetAutoRandomMode) && grSet.presetSelectMode === 'harmonic'
+		||
+		grSet.presetAutoRandomMode === 'dblclick' && grSet.presetSelectMode === 'theme');
+	}
+
+	/**
+	 * Checks if any theme tags are present in the music file metadata fields.
+	 * @returns {boolean} True if any theme tags are present, false otherwise.
+	 */
+	hasThemeTags() {
+		return $('[%GR_THEME%]') || $('[%GR_STYLE%]') || $('[%GR_PRESET%]');
+	}
+
+	/**
+	 * Refreshes the theme by clearing various UI elements and caches,
+	 * repainting the window, and updating the playback information.
+	 */
+	refreshTheme() {
+		this.clearCache(undefined, undefined, true);
+		this.clearTimer();
+		grm.details.clearCache(undefined, undefined, true);
+		grm.details.clearTimer();
+		RepaintWindow();
+		on_playback_new_track(fb.GetNowPlaying());
 	}
 
 	/**
@@ -2498,10 +2744,10 @@ class MainUI {
 		if (grSet.seekbar === 'waveformbar') return;
 
 		// * Progress bar and Peakmeter bar
-		const x = grSet.layout !== 'default' ? SCALE(18) : SCALE(38);
-		const y = (grSet.seekbar === 'peakmeterbar' ? this.peakmeterBarY - SCALE(4) : this.progressBarY) - SCALE(2);
-		const w = grSet.layout !== 'default' ? this.ww - SCALE(36) : this.ww - SCALE(76);
-		const h = (grSet.seekbar === 'peakmeterbar' ? this.peakmeterBarH + SCALE(8) : this.progressBarH) + SCALE(4);
+		const x = this.edgeMargin - SCALE(2);
+		const y = this.seekbarY - SCALE(2);
+		const w = this.ww - this.edgeMarginBoth + SCALE(4);
+		const h = this.seekbarHeight + SCALE(4);
 		window.RepaintRect(x, y, w, h, grSet.spinDiscArt && !this.displayLyrics);
 	}
 
@@ -2509,10 +2755,10 @@ class MainUI {
 	 * Sets a given timer interval to update the seekbar.
 	 */
 	setSeekbarRefresh() {
-		DebugLog('setSeekbarRefresh()');
+		DebugLog('Seekbar => setSeekbarRefresh');
 
 		if (fb.PlaybackLength > 0) {
-			const variableRefreshRate = Math.max(60, Math.ceil(1000 / ((this.ww - SCALE(80)) / fb.PlaybackLength)));
+			const variableRefreshRate = Math.max(60, Math.ceil(1000 / ((this.ww - this.edgeMarginBoth) / fb.PlaybackLength)));
 			const selectedRefreshRate = grSet.seekbar === 'peakmeterbar' ? grSet.peakmeterBarRefreshRate : grSet.progressBarRefreshRate;
 			this.seekbarTimerInterval = selectedRefreshRate === 'variable' ? variableRefreshRate : selectedRefreshRate;
 
@@ -2526,27 +2772,59 @@ class MainUI {
 		}
 
 		if (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) {
-			this.debugTimingsArray.push(`Progress bar: ${this.seekbarTimerInterval} ms or ${(1000 / this.seekbarTimerInterval).toFixed(2)} Hz`);
-			console.log(`Progress bar will update every ${this.seekbarTimerInterval}ms or ${(1000 / this.seekbarTimerInterval).toFixed(2)} times per second.`);
+			this.debugTimingsArray.push(`Seekbar => Seekar: ${this.seekbarTimerInterval} ms or ${(1000 / this.seekbarTimerInterval).toFixed(2)} Hz`);
+			DebugLog(`Seekbar => Seekbar will update every ${this.seekbarTimerInterval} ms or ${(1000 / this.seekbarTimerInterval).toFixed(2)} times per second.`);
 		}
 
-		clearInterval(this.seekbarTimer);
+		this.clearTimer('seekbar');
 		this.seekbarTimer = !fb.IsPaused ? setInterval(() => this.refreshSeekbar(), this.seekbarTimerInterval) : null;
 	}
 
 	/**
-	 * Resets the current player size, used in top menu Options > Player size.
+	 * Sets and updates main components.
+	 * @param {string} component - The component to update:
+	 * - all
+	 * - customMenu
+	 * - jSearch
+	 * - timeline
+	 * - seekbar
+	 * - volumeButton
 	 */
-	resetPlayerSize() {
-		grSet.playerSize_HD_small   = false;
-		grSet.playerSize_HD_normal  = false;
-		grSet.playerSize_HD_large   = false;
-		grSet.playerSize_QHD_small  = false;
-		grSet.playerSize_QHD_normal = false;
-		grSet.playerSize_QHD_large  = false;
-		grSet.playerSize_4K_small   = false;
-		grSet.playerSize_4K_normal  = false;
-		grSet.playerSize_4K_large   = false;
+	setMainComponents(component) {
+		const components = {
+			customMenu: () => {
+				grm.cusMenu.on_size(this.ww, this.wh);
+			},
+			jSearch: () => {
+				grm.jSearch = new JumpSearch();
+				grm.jSearch.on_size(this.ww, this.wh);
+			},
+			timeline: () => {
+				grm.details.updateGridTimeline(true);
+			},
+			seekbar: () => {
+				if (grSet.seekbar === 'progressbar') {
+					grm.progBar = new ProgressBar(this.ww, this.wh);
+				} else if (grSet.seekbar === 'peakmeterbar') {
+					grm.peakBar = new PeakmeterBar(this.ww, this.wh);
+					grm.peakBar.on_size(this.ww, this.wh);
+				} else if (grSet.seekbar === 'waveformbar') {
+					grm.waveBar = new WaveformBar(this.ww, this.wh);
+					grm.waveBar.updateBar();
+				}
+			},
+			volumeButton: () => {
+				grm.volBtn = new VolumeButton();
+			}
+		};
+
+		if (component === 'all') {
+			for (const component of Object.values(components)) {
+				component();
+			}
+		} else if (components[component]) {
+			components[component]();
+		}
 	}
 
 	/**
@@ -2571,11 +2849,6 @@ class MainUI {
 		if (invalidWhiteThemeStyle || invalidBlackThemeStyle || invalidRebornThemeStyle || invalidGradientStyle) {
 			this.resetStyle('all');
 		}
-
-		grm.color.getThemeColors(this.albumArt);
-
-		// * Update default theme colors when nothing is playing or when changing themes
-		if (!fb.IsPlaying) grm.color.setThemeColors();
 	}
 
 	/**
@@ -2679,8 +2952,32 @@ class MainUI {
 	}
 
 	/**
+	 * Restores the theme state based on the saved `theme`, `style`, `preset` settings.
+	 * Mainly used to restore the previous theme state after %GR_THEME%, %GR_STYLE%, %GR_PRESET% usage.
+	 */
+	restoreThemeState() {
+		if (!this.themeRestoreState) return;
+
+		if (grSet.presetSelectMode === 'default') {
+			DebugLog('\n>>> restoreThemeState <<<\n');
+			this.resetStyle('all');
+			this.resetTheme();
+			this.restoreThemeStylePreset(); // * Retore saved grSet settings
+			if (grSet.savedPreset !== false) grm.preset.setThemePreset(grSet.savedPreset);
+			this.initCustomTheme();
+			this.initStyleState();
+		}
+
+		if (grSet.theme === grSet.savedTheme) {
+			this.restoreThemeStylePreset(true); // * Reset saved grSet settings
+		}
+
+		this.themeRestoreState = false;
+	}
+
+	/**
 	 * Restores theme, style, preset after custom %GR_THEME%, %GR_STYLE%, %GR_PRESET% usage or in theme sandbox.
-	 * Used in initThemeTags() and theme sandbox options.
+	 * Used in restoreThemeState() and theme sandbox options.
 	 * @param {boolean} reset - Determines whether to reset the theme styles and theme preset or restore them.
 	 * @param {boolean} keepPreset - Determines whether to keep the current theme preset or reset it.
 	 */
@@ -2749,50 +3046,52 @@ class MainUI {
 	setStyle(style, value) {
 		// * Check for active theme day/night mode and return if active
 		if (grSet.themeDayNightMode) {
-			initThemeDayNightMode(new Date());
-			ShowThemeDayNightModePopup();
+			const msg = grm.msg.getMessage('main', 'themeDayNightModeNotice');
+			const msgFb = grm.msg.getMessage('main', 'themeDayNightModeNotice', true);
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				if (confirmed) grSet.themeDayNightMode = false;
+			});
 			if (grSet.themeDayNightMode) return;
 		}
 
 		// * Reset all styles in the group of the chosen style to prevent compatibility issues
 		const styleGroups = {
-			blend: 'group_one',
-			blend2: 'group_one',
-			gradient: 'group_one',
-			gradient2: 'group_one',
-			alternative: 'group_two',
-			alternative2: 'group_two',
-			blackAndWhite: 'group_two',
-			blackAndWhite2: 'group_two',
-			blackAndWhiteReborn: 'group_two',
-			blackReborn: 'group_two',
-			rebornWhite: 'group_two',
-			rebornBlack: 'group_two',
-			rebornFusion: 'group_two',
-			rebornFusion2: 'group_two',
-			rebornFusionAccent: 'group_two',
-			randomPastel: 'group_two',
-			randomDark: 'group_two'
+			styleBlend: 'group_one',
+			styleBlend2: 'group_one',
+			styleGradient: 'group_one',
+			styleGradient2: 'group_one',
+			styleAlternative: 'group_two',
+			styleAlternative2: 'group_two',
+			styleBlackAndWhite: 'group_two',
+			styleBlackAndWhite2: 'group_two',
+			styleBlackAndWhiteReborn: 'group_two',
+			styleBlackReborn: 'group_two',
+			styleRebornWhite: 'group_two',
+			styleRebornBlack: 'group_two',
+			styleRebornFusion: 'group_two',
+			styleRebornFusion2: 'group_two',
+			styleRebornFusionAccent: 'group_two',
+			styleRandomPastel: 'group_two',
+			styleRandomDark: 'group_two'
 		};
 		const resetTarget = (grSet.themeSetupDay || grSet.themeSetupNight) ? 'all_theme_day_night' : styleGroups[style];
 		this.resetStyle(resetTarget);
 
-		if (style === 'night' && (grSet.styleRebornWhite || grSet.styleRebornBlack)) {
+		if (style === 'styleNighttime' && (grSet.styleRebornWhite || grSet.styleRebornBlack)) {
 			grSet.styleRebornWhite = false;
 			grSet.styleRebornBlack = false;
-		} else if ((style === 'rebornWhite' || style === 'rebornBlack') && grSet.styleNighttime) {
+		} else if ((style === 'styleRebornWhite' || style === 'styleRebornBlack') && grSet.styleNighttime) {
 			grSet.styleNighttime = false;
 		}
 
 		// * Then set and apply the chosen style
 		if (style) {
-			const styleName = `style${style.charAt(0).toUpperCase()}${style.slice(1)}`;
-			const savedStyleName = `savedStyle${style.charAt(0).toUpperCase()}${style.slice(1)}`;
 			if (grSet.themeSandbox) {
-				grSet[styleName] = value;
+				grSet[style] = value;
 			} else {
-				grm.ui.restoreThemeStylePreset(true, true);
-				grSet[savedStyleName] = grSet[styleName] = value;
+				this.restoreThemeStylePreset(true, true);
+				const savedStyleName = `savedStyle${style.charAt(5).toUpperCase()}${style.slice(6)}`;
+				grSet[savedStyleName] = grSet[style] = value;
 			}
 		}
 
@@ -2806,8 +3105,7 @@ class MainUI {
 		if (grSet.presetSelectMode === 'theme') {
 			this.setThemePresetSelection(false, true);
 		}
-		if ((!['off', 'track'].includes(grSet.presetAutoRandomMode) && grSet.presetSelectMode === 'harmonic' ||
-			grSet.presetAutoRandomMode === 'dblclick' && grSet.presetSelectMode === 'theme') && !this.doubleClicked) {
+		if (this.hasAutoRandomPresetMode()) {
 			grm.preset.getRandomThemePreset();
 		}
 	}
@@ -2854,18 +3152,12 @@ class MainUI {
 	updateStyle() {
 		this.initThemeFull = true;
 
-		if (['white', 'black', 'reborn', 'random'].includes(grSet.theme)) {
-			// * Update grCol.primary for dynamic themes
-			if (fb.IsPlaying) {
-				grm.color.getThemeColors(this.albumArt);
-			} else {
-				grm.color.setThemeColors();
-			}
+		if (['white', 'black', 'reborn', 'random'].includes(grSet.theme) && fb.IsPlaying) {
+			grm.color.getThemeColors(this.albumArt); // * Update grCol.primary for dynamic themes
 		}
 
 		this.initTheme();
 		DebugLog('\n>>> initTheme => updateStyle <<<\n');
-		if (grSet.theme === 'random' && grSet.randomThemeAutoColor !== 'off') grm.color.getRandomThemeAutoColor();
 		this.initStyleState();
 		grm.preset.initThemePresetState();
 		grm.button.initButtonState();
@@ -2884,12 +3176,12 @@ class MainUI {
 
 		const handlePopup = (showPopup, msg) => {
 			if (!showPopup) return;
-			ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+			grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
 		};
 
 		if (invalidNighttimeStyle) {
 			grSet.styleNighttime = false;
-			const msg = 'The "Night" theme style has been deactivated!\n\nIt is supported only for the following themes:\n"Reborn"\n"Random"\n"Custom"\n\nIt is not supported with these theme styles:\n"Reborn White"\n"Reborn Black"\n\n\n';
+			const msg = grm.msg.getMessage('main', 'validateStyleNight');
 			handlePopup(showPopup, msg);
 		}
 
@@ -2897,13 +3189,13 @@ class MainUI {
 			grSet.styleBlackAndWhite = false;
 			grSet.styleBlackAndWhite2 = false;
 			grSet.styleBlackAndWhiteReborn = false;
-			const msg = 'The "Black and white" theme styles have been deactivated!\n\nIt is supported only for the "White" theme.\n\n\n';
+			const msg = grm.msg.getMessage('main', 'validateStyleBlackAndWhite');
 			handlePopup(showPopup, msg);
 		}
 
 		if (invalidBlackThemeStyle) {
 			grSet.styleBlackReborn = false;
-			const msg = 'The "Black reborn" theme style has been deactivated!\n\nIt is supported only for the "Black" theme.\n\n\n';
+			const msg = grm.msg.getMessage('main', 'validateStyleBlackReborn');
 			handlePopup(showPopup, msg);
 		}
 
@@ -2913,14 +3205,14 @@ class MainUI {
 			grSet.styleRebornFusion = false;
 			grSet.styleRebornFusion2 = false;
 			grSet.styleRebornFusionAccent = false;
-			const msg = 'The "Reborn" special theme styles have been deactivated!\n\nOnly one theme style can be active\nat a time for this theme style group:\n"Reborn white"\n"Reborn black"\n"Reborn fusion"\n"Reborn fusion 2"\n"Reborn fusion accent"\n\nIt is supported only for the "Reborn" theme.\n\n\n';
+			const msg = grm.msg.getMessage('main', 'validateStyleRebornSpecials');
 			handlePopup(showPopup, msg);
 		}
 
 		if (invalidGradientStyle) {
 			grSet.styleGradient = false;
 			grSet.styleGradient2 = false;
-			const msg = 'The "Gradient" theme styles have been deactivated!\n\nIt is supported only for following themes:\n"Reborn"\n"Random"\n"Blue"\n"Dark blue"\n"Red"\n"Custom".\n\n\n';
+			const msg = grm.msg.getMessage('main', 'validateStyleGradient');
 			handlePopup(showPopup, msg);
 		}
 
@@ -2935,7 +3227,7 @@ class MainUI {
 					grSet[style] = false;
 				}
 			}
-			const msg = 'Multiple active theme styles detected!\n\nOnly one theme style can be active\nat a time for this theme style group:\n"Blend"\n"Blend 2"\n"Gradient"\n"Gradient 2"\n\nOther theme styles for this group\nhave been deactivated.\n\n\n';
+			const msg = grm.msg.getMessage('main', 'validateStyleGroupOne');
 			handlePopup(showPopup, msg);
 		}
 
@@ -2953,7 +3245,7 @@ class MainUI {
 					grSet[style] = false;
 				}
 			}
-			const msg = 'Multiple active theme styles detected!\n\nOnly one theme style can be active\nat a time for this theme style group:\n"Alternative"\n"Alternative 2"\n"Black and white"\n"Black and white 2"\n"Black and white reborn"\n"Black reborn"\n"Reborn white"\n"Reborn black"\n"Reborn fusion"\n"Reborn fusion 2"\n"Reborn fusion accent"\n"Random pastel"\n"Random dark"\n\nOther theme styles for this group\nhave been deactivated.\n\n\n';
+			const msg = grm.msg.getMessage('main', 'validateStyleGroupTwo');
 			handlePopup(showPopup, msg);
 		}
 
@@ -2964,49 +3256,20 @@ class MainUI {
 	// * MAIN - PUBLIC METHODS - CONTROLS * //
 	// #region MAIN - PUBLIC METHODS - CONTROLS
 	/**
-	 * Displays the panel, mostly used for the custom menu.
-	 * @param {string} panel - The panel to display:
-	 * - 'playlist'
-	 * - 'details'
-	 * - 'library'
-	 * - 'biography'
-	 * - 'lyrics'
+	 * Displays the specified panel, either based on explicit argument, at startup, or during playback changes.
+	 * @param {string} panel - The name of the panel to display. Defaults to startup setting if not specified.
+	 * @param {boolean} force - Whether to forcibly display the panel, bypassing automatic conditions.
 	 */
-	displayPanel(panel) {
-		this.displayPlaylist  = false;
-		this.displayDetails   = false;
-		this.displayLibrary   = false;
-		this.displayBiography = false;
-		this.displayLyrics    = false;
-
-		const panelActions = {
-			playlist:  () => { this.displayPlaylist  = true; },
-			details:   () => { this.displayDetails   = true; },
-			library:   () => { this.displayLibrary   = true; },
-			biography: () => { this.displayBiography = true; },
-			lyrics:    () => { this.displayPlaylist  = true; this.displayLyrics = true; }
-		};
-
-		if (panelActions[panel]) {
-			panelActions[panel]();
-		}
-
-		this.resizeArtwork(true);
-		grm.button.initButtonState();
-	}
-
-	/**
-	 * Displays and controls the user set panel state on startup and when playback is being started or stopped.
-	 * This method is used for:
-	 * - Options > Player controls > Panel > Show panel on startup.
-	 * - Options > Player controls > Panel > Return to home on playback stop.
-	 * @param {boolean} force - Force the display state of the panel.
-	 */
-	displayPanelControl(force) {
-		if (!grSet.returnToHomeOnPlaybackStop && !grSet.showPanelOnStartup || !force && fb.PlaybackLength > 1) {
+	displayPanel(panel, force) {
+		if (!force && (!grSet.returnToHomeOnPlaybackStop && !grSet.showPanelOnStartup || fb.PlaybackLength > 1)) {
 			return;
 		}
 
+		// * Reset all panels
+		if (!fb.IsPlaying || grSet.layout !== 'default') {
+			this.displayCustomThemeMenu = false;
+			this.displayMetadataGridMenu = false;
+		}
 		this.displayPlaylist = false;
 		this.displayPlaylistArtwork = false;
 		this.displayDetails = false;
@@ -3014,13 +3277,12 @@ class MainUI {
 		this.displayBiography = false;
 		this.displayLyrics = false;
 
+		// * Setup all panels
 		const panelActions = {
 			cover: () => { // Artwork layout only
 				if (grSet.layout === 'default') {
 					grSet.showPanelOnStartup = 'playlist';
 					this.displayPlaylist = true;
-				} else if (grSet.layout === 'artwork') {
-					this.resizeArtwork(true);
 				}
 			},
 			playlist: () => {
@@ -3028,688 +3290,207 @@ class MainUI {
 					this.displayPlaylistArtwork = true;
 				} else {
 					this.displayPlaylist = true;
-					this.resizeArtwork(true);
 				}
 			},
 			details: () => {
 				if (grSet.layout === 'artwork') {
 					this.displayPlaylist = true;
 					if (pl.playlist) pl.playlist.x = this.ww; // Move hidden Playlist offscreen to disable Playlist mouse functions in Details
-					this.resizeArtwork(true);
 				}
 				this.displayDetails = true;
 			},
 			library: () => {
-				this.displayPlaylist = this.displayLibrarySplit();
+				this.displayPlaylist = grSet.layout === 'default' && grSet.libraryLayout === 'split';
 				this.displayLibrary = true;
 			},
 			biography: () => {
-				this.displayPlaylist = true;
+				this.displayPlaylist = grSet.layout === 'default';
 				this.displayBiography = true;
 			},
 			lyrics: () => {
-				this.displayPlaylist = grSet.layout === 'default';
-				this.displayLyrics = true;
+				this.displayPlaylist = grSet.layout === 'default' && grSet.lyricsLayout !== 'full';
+				this.displayLyrics = grSet.layout !== 'compact';
 			}
 		};
 
-		if (panelActions[grSet.showPanelOnStartup]) {
-			panelActions[grSet.showPanelOnStartup]();
+		// * Apply chosen panel
+		const chosenPanel = panel || grSet.showPanelOnStartup;
+		if (panelActions[chosenPanel]) {
+			panelActions[chosenPanel]();
 		}
 
 		if (grSet.layout === 'compact') { // Override, needs to be always Playlist panel for Compact layout
 			this.displayPlaylist = true;
 		}
 
+		this.resizeArtwork(true);
+		this.initPanelWidthAuto();
+		this.setPlaylistSize();
+		this.setLibrarySize();
+		this.setBiographySize();
 		grm.button.initButtonState();
 		window.Repaint();
 	}
 
 	/**
-	 * Displays the Library and Playlist side by side, called when Library layout is in split mode.
-	 * @param {boolean} control - Limits the area to the width and height of the playlist panel.
-	 * @returns {boolean} True if Library and Playlist are being displayed.
+	 * Handles the panel layouts by initializing, resetting, or restoring the panel layout.
+	 * This includes setting up the Library and Biography layouts with its presets.
+	 *
+	 * Note 1: When the Playlist layout is in full width, it needs to be temporarily disabled to prevent panel overlapping
+	 * when displaying the Library, Biography, Lyrics, or the custom theme menu.
+	 *
+	 * Note 2: The Lyrics layout in full width can only be displayed in the Playlist panel.
+	 * @param {string} panel - The panel to be handled. Can be `library`, `biography`, `lyrics`, or `all`.
+	 * @param {string} action - The action to be performed on the panel. Can be `initLayout`, `resetLayout`, or `restoreLayout`.
 	 */
-	displayLibrarySplit(control) {
-		return grSet.libraryLayout === 'split' && grSet.layout === 'default' && this.displayLibrary && this.displayPlaylist &&
-		(control ? this.state.mouse_x > pl.playlist.x && this.state.mouse_x <= pl.playlist.x + pl.playlist.w &&
-				   this.state.mouse_y > pl.playlist.y - SCALE(plSet.row_h) && this.state.mouse_y <= pl.playlist.y + pl.playlist.h : this.ww);
+	handlePanelLayout(panel, action) {
+		const panels = ['playlist', 'library', 'biography', 'lyrics'];
+
+		const layoutActions = {
+			initLayout: {
+				playlist: () => {
+					if ((grSet.playlistLayout === 'full' || grSet.savedPlaylistLayoutFull) &&
+						(this.displayCustomThemeMenu || this.displayLibrary || this.displayBiography || this.displayLyrics)) {
+						layoutActions.resetLayout.playlist();
+					} else {
+						layoutActions.restoreLayout.playlist();
+					}
+				},
+				library: () => {
+					if (this.displayLibrary && grSet.layout === 'default' && grSet.libraryLayout === 'split') {
+						this.displayPlaylist = true;
+						this.initLibraryLayout();
+					}
+				},
+				biography: () => {
+					if (this.displayBiography && grSet.layout === 'default' && grSet.biographyLayoutFullPreset) {
+						this.initBiographyLayout();
+					}
+				},
+				lyrics: () => {
+					if ((grSet.lyricsLayout === 'full' || grSet.savedLyricsLayoutFull) &&
+						(this.displayCustomThemeMenu || this.displayDetails || this.displayLibrary || this.displayBiography)) {
+						layoutActions.resetLayout.lyrics();
+					} else {
+						layoutActions.restoreLayout.lyrics();
+					}
+				}
+			},
+			resetLayout: {
+				playlist: () => {
+					if (grSet.playlistLayout !== 'full') return;
+					grSet.savedPlaylistLayoutFull = true;
+					grSet.playlistLayout = 'normal';
+					this.setPlaylistSize();
+				},
+				library: () => {
+					if (grSet.libraryLayout !== 'full') return;
+					grSet.savedLibraryLayoutFull = true;
+					grSet.libraryLayout = 'normal';
+					this.setLibrarySize();
+				},
+				biography: () => {
+					if (grSet.biographyLayout !== 'full') return;
+					grSet.savedBiographyLayoutFull = true;
+					grSet.biographyLayout = 'normal';
+					this.setBiographySize();
+				},
+				lyrics: () => {
+					if (grSet.lyricsLayout !== 'full') return;
+					grSet.savedLyricsLayoutFull = true;
+					grSet.lyricsLayout = 'normal';
+					this.setPlaylistSize();
+				}
+			},
+			restoreLayout: {
+				playlist: () => {
+					if (!grSet.savedPlaylistLayoutFull) return;
+					grSet.playlistLayout = 'full';
+					this.setPlaylistSize();
+				},
+				library: () => {
+					if (!grSet.savedLibraryLayoutFull) return;
+					grSet.libraryLayout = 'full';
+					this.setLibrarySize();
+				},
+				biography: () => {
+					if (!grSet.savedBiographyLayoutFull) return;
+					grSet.biographyLayout = 'full';
+					this.setBiographySize();
+				},
+				lyrics: () => {
+					if (!grSet.savedLyricsLayoutFull || this.displayDetails) return;
+					grSet.lyricsLayout = 'full';
+					if (this.displayLyrics) this.displayPlaylist = false;
+					this.setPlaylistSize();
+				}
+			}
+		};
+
+		for (const p of panels) {
+			if (panel === p || panel === 'all') {
+				layoutActions[action][p]();
+			}
+		}
 	}
 
 	/**
-	 * Displays Lyrics on startup or when remembering the Lyrics panel state.
+	 * Handles keyboard actions for specific keys and combinations.
+	 * @param {number} vkey - The virtual key code of the pressed key.
 	 */
-	displayLyricsOnStart() {
-		fb.Play();
-		this.displayPlaylist = grSet.layout === 'default' && grSet.lyricsLayout === 'normal';
-		setTimeout(() => {
-			if (!grSet.lyricsRememberPanelState) {
-				grSet.lyricsPanelState = false;
-			}
-			this.displayLyrics = true;
-			if (grSet.lyricsLayout === 'full') {
-				this.resizeArtwork(true);
-			}
-			grm.lyrics.initLyrics();
-			grm.button.initButtonState();
-		}, 500);
-	}
+	handleKeyAction(vkey) {
+		const setRating = (action) => {
+			const metadb = fb.GetNowPlaying();
+			const metadbList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 
-	/**
-	 * Restores the Lyrics layout to full width.
-	 */
-	restoreLyricsLayout() {
-		if (!this.displayLyrics || !this.lyricsLayoutFullWidth) return;
-		if (!this.displayBiography) this.displayPlaylist = false;
-		grSet.lyricsLayout = 'full';
+			if (fb.IsPlaying) {
+				fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadb);
+			}
+			else if (!metadb && (this.displayPlaylist && !this.displayLibrary || this.displayPlaylistArtwork || this.displayLibrarySplit(true))) {
+				if (metadbList.Count === 1) {
+					fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadbList[0]);
+				} else {
+					console.log('Won\'t change rating with more than one selected item');
+				}
+			}
+		};
+
+		const keyActions = {
+			[VKey.ADD]: {
+				ctrlNoShift: () => grm.display.handleDisplayScaleKeyAction('increase'),
+				altNoShift: () => grm.display.handleDisplayScaleKeyAction('reset'),
+				ctrlShift: () => setRating('+')
+			},
+			[VKey.SUBTRACT]: {
+				ctrlNoShift: () => grm.display.handleDisplayScaleKeyAction('decrease'),
+				altNoShift: () => grm.display.handleDisplayScaleKeyAction('reset'),
+				ctrlShift: () => setRating('-')
+			},
+			[VKey.KEY_Z]: {
+				ctrl: () => fb.RunMainMenuCommand('Edit/Undo')
+			}
+		};
+
+		if (keyActions[vkey]) {
+			KeyPressAction(keyActions[vkey]);
+		}
 	}
 	// #endregion
 
 	// * MAIN - PUBLIC METHODS - GRAPHICS * //
 	// #region MAIN - PUBLIC METHODS - GRAPHICS
 	/**
-	 * Creates the top menu and lower bar button images for button state 'Enabled', 'Hovered', 'Down'.
-	 */
-	createButtonImages() {
-		const createButtonProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('createButtonImages');
-		const transportCircleSize = Math.round(grSet[`transportButtonSize_${grSet.layout}`] * 0.93333);
-		let btns = {};
-
-		try {
-			btns = {
-				Stop: {
-					ico: Guifx.stop,
-					font: grFont.guifx,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				Previous: {
-					ico: Guifx.previous,
-					font: grFont.guifx,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				Play: {
-					ico: Guifx.play,
-					font: grFont.guifx,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				Pause: {
-					ico: Guifx.pause,
-					font: grFont.guifx,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				Next: {
-					ico: Guifx.next,
-					font: grFont.guifx,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				PlaybackDefault: {
-					ico: Guifx.right,
-					font: grFont.pboDefault,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				PlaybackRepeatPlaylist: {
-					ico: '\uf01e',
-					font: grFont.pboRepeatPlaylist,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				PlaybackRepeatTrack: {
-					ico: '\uf021',
-					font: grFont.pboRepeatTrack,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				PlaybackShuffle: {
-					ico: Guifx.shuffle,
-					font: grFont.pboShuffle,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				ShowVolume: {
-					ico: Guifx.volume_down,
-					font: grFont.guifxVolume,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				Reload: {
-					ico: Guifx.power,
-					font: grFont.guifxReload,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				AddTracks: {
-					ico: Guifx.medical,
-					font: grFont.guifxAddTrack,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				Minimize: {
-					ico: '0',
-					font: grFont.topMenuCaption,
-					type: 'window',
-					w: 22,
-					h: 22
-				},
-				Maximize: {
-					ico: '2',
-					font: grFont.topMenuCaption,
-					type: 'window',
-					w: 22,
-					h: 22
-				},
-				Close: {
-					ico: 'r',
-					font: grFont.topMenuCaption,
-					type: 'window',
-					w: 22,
-					h: 22
-				},
-				Hamburger: {
-					ico: '\uf0c9',
-					font: grFont.topMenuCompact,
-					type: 'compact'
-				},
-				TopMenu: {
-					ico: 'Menu',
-					font: grFont.topMenu,
-					type: 'compact'
-				},
-				File: {
-					ico: 'File',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				Edit: {
-					ico: 'Edit',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				View: {
-					ico: 'View',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				Playback: {
-					ico: 'Playback',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				MediaLibrary: {
-					ico: 'Media',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				Help: {
-					ico: 'Help',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				Playlists: {
-					ico: 'Playlists',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				Options: {
-					ico: 'Options',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				Details: {
-					ico: 'Details',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				PlaylistArtworkLayout: {
-					ico: 'Playlist',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				Library: {
-					ico: 'Library',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				Lyrics: {
-					ico: 'Lyrics',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				Biography: {
-					ico: 'Biography',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				Rating: {
-					ico: 'Rating',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				Properties: {
-					ico: 'Properties',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				Settings: {
-					ico: 'Settings',
-					font: grFont.topMenu,
-					type: 'menu'
-				},
-				Back: {
-					ico: '\uE00E',
-					type: 'backforward',
-					font: grFont.symbol,
-					w: 22,
-					h: 22
-				},
-				Forward: {
-					ico: '\uE00F',
-					type: 'backforward',
-					font: grFont.symbol,
-					w: 22,
-					h: 22
-				}
-			};
-		} catch (e) {
-			console.log('**********************************');
-			console.log('ATTENTION: Buttons could not be created');
-			console.log(`Make sure you installed the theme correctly to ${fb.ProfilePath}.`);
-			console.log('**********************************');
-		}
-
-		this.btnImg = [];
-
-		for (const i in btns) {
-			if (btns[i].type === 'menu') {
-				const img = gdi.CreateImage(100, 100);
-				const g = img.GetGraphics();
-				const measurements = g.MeasureString(btns[i].ico, btns[i].font, 0, 0, 0, 0);
-
-				btns[i].w = Math.ceil(measurements.Width + 20);
-				btns[i].h = Math.ceil(measurements.Height + 5);
-				img.ReleaseGraphics(g);
-			}
-
-			if (btns[i].type === 'compact') {
-				const img = gdi.CreateImage(100, 100);
-				const g = img.GetGraphics();
-				const measurements = g.MeasureString(btns[i].ico, btns[i].font, 0, 0, 0, 0);
-
-				btns[i].w = Math.ceil(measurements.Width + (RES._4K ? 32 : 41));
-				btns[i].h = Math.ceil(measurements.Height + (RES._4K ? -2 : 5));
-				img.ReleaseGraphics(g);
-			}
-
-			// const { x, y } = btns[i];
-			let { w, h } = btns[i];
-			const lineW = SCALE(2);
-
-			if (RES._4K && btns[i].type === 'transport') {
-				w *= 2;
-				h *= 2;
-			} else if (RES._4K && btns[i].type !== 'menu') {
-				w = Math.round(btns[i].w * 1.5);
-				h = Math.round(btns[i].h * 1.6);
-			} else if (RES._4K) {
-				w += 20;
-				h += 10;
-			}
-
-			const stateImages = []; // 0=ButtonState.Default, 1=hover, 2=down, 3=Enabled;
-			for (let state = 0; state < Object.keys(ButtonState).length; state++) {
-				const btn = btns[i];
-				if (state === 3 && btn.type !== 'image') break;
-				const img = gdi.CreateImage(w, h);
-				const g = img.GetGraphics();
-				g.SetSmoothingMode(SmoothingMode.AntiAlias);
-				// * Positions playback icons weirdly on AntiAliasGridFit
-				if (btns[i].type !== 'transport' && !grSet.customThemeFonts) {
-					g.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
-				}
-				// * Positions some top menu buttons weirdly when using custom theme fonts on AntiAliasGridFit and vertical/horizontal centered font alignment, i.e StringFormat(1, 1);
-				else if ((btns[i].type === 'menu' || btn.type === 'compact') && grSet.customThemeFonts || btns[i].type === 'transport') {
-					g.SetTextRenderingHint(TextRenderingHint.AntiAlias);
-				}
-
-				let menuTextColor = grCol.menuTextNormal;
-				let menuRectColor = grCol.menuRectNormal;
-				let menuBgColor = grCol.menuBgColor;
-				let transportIconColor = grCol.transportIconNormal;
-				let transportEllipseColor = grCol.transportEllipseNormal;
-				// let iconAlpha = 255; // Used for images only and not used atm
-
-				switch (state) {
-					case ButtonState.Hovered:
-						menuTextColor = grCol.menuTextHovered;
-						menuRectColor = grCol.menuRectHovered;
-						menuBgColor = grCol.menuBgColor;
-						transportIconColor = grCol.transportIconHovered;
-						transportEllipseColor = grCol.transportEllipseHovered;
-						// iconAlpha = 215;
-						break;
-					case ButtonState.Down:
-						menuTextColor = grCol.menuTextDown;
-						menuRectColor = grCol.menuRectDown;
-						menuBgColor = grCol.menuBgColor;
-						transportIconColor = grCol.transportIconDown;
-						transportEllipseColor = grCol.transportEllipseDown;
-						// iconAlpha = 215;
-						break;
-					case ButtonState.Enabled:
-						// iconAlpha = 255;
-						break;
-				}
-
-				switch (btn.type) {
-					case 'menu': case 'window': case 'compact':
-						if (grSet.styleTopMenuButtons === 'default' || grSet.styleTopMenuButtons === 'filled') {
-							if (grSet.styleTopMenuButtons === 'filled') state && g.FillRoundRect(Math.floor(lineW / 2), Math.floor(lineW / 2), w - lineW, h - lineW, 3, 3, menuBgColor);
-							state && g.DrawRoundRect(Math.floor(lineW / 2), Math.floor(lineW / 2), w - lineW, h - lineW, 3, 3, 1, menuRectColor);
-						}
-						else if (grSet.styleTopMenuButtons === 'bevel') {
-							state && g.FillRoundRect(Math.floor(lineW / 2), Math.floor(lineW / 2), w - lineW, h - lineW, 4, 4, menuBgColor);
-							state && FillGradRoundRect(g, Math.floor(lineW / 2), Math.floor(lineW / 2) + 1, w, h - 1, 4, 4, 90, 0, grCol.menuStyleBg, 1);
-							state && g.DrawRoundRect(Math.floor(lineW / 2), Math.floor(lineW / 2), w - lineW, h - lineW, 4, 4, 1, menuRectColor);
-						}
-						else if (grSet.styleTopMenuButtons === 'inner') {
-							state && g.FillRoundRect(Math.floor(lineW / 2), Math.floor(lineW / 2), w - lineW, h - lineW, 4, 4, menuBgColor);
-							state && FillGradRoundRect(g, Math.floor(lineW / 2), Math.floor(lineW / 2) + 1, w, h - 1, 4, 4, 90, 0, grCol.menuStyleBg, 0);
-							state && g.DrawRoundRect(Math.floor(lineW / 2), Math.floor(lineW / 2), w - lineW, h - lineW, 4, 4, 1, menuRectColor);
-						}
-						else if (grSet.styleTopMenuButtons === 'emboss') {
-							state && g.FillRoundRect(Math.floor(lineW / 2), Math.floor(lineW / 2), w - lineW, h - lineW, 4, 4, menuBgColor);
-							state && FillGradRoundRect(g, Math.floor(lineW / 2), Math.floor(lineW / 2) + 1, w, h - 1, 4, 4, 90, 0, grCol.menuStyleBg, 0.33);
-							state && g.DrawRoundRect(Math.floor(lineW / 2) + 1, Math.floor(lineW / 2) + 1, w - lineW - 2, h - lineW - 1, 4, 4, 1, grCol.menuRectStyleEmbossTop);
-							state && g.DrawRoundRect(Math.floor(lineW / 2) + 1, Math.floor(lineW / 2), w - lineW - 2, h - lineW - 1, 4, 4, 1, grCol.menuRectStyleEmbossBottom);
-						}
-						if (btn.type === 'compact') {
-							g.DrawString('\uf0c9', grFont.topMenuCompact, menuTextColor, RES._4K ? -39 : -19, 0, w, h, StringFormat(1, 1));
-							g.DrawString(btn.ico, btn.font, menuTextColor, RES._4K ? 20 : 10, RES._4K ? -1 : 0, w, h, StringFormat(1, 1));
-						} else {
-							g.DrawString(btn.ico, btn.font, menuTextColor, 0, 0, w, btn.type === 'window' ? h : h - 1, StringFormat(1, 1));
-						}
-						break;
-
-					case 'transport':
-						if (grSet.styleTransportButtons === 'default') {
-							g.DrawEllipse(Math.floor(lineW / 2) + 1, Math.floor(lineW / 2) + 1, w - lineW - 2, h - lineW - 2, lineW, transportEllipseColor);
-							g.FillEllipse(Math.floor(lineW / 2) + 1, Math.floor(lineW / 2) + 1, w - lineW - 2, h - lineW - 2, grCol.transportEllipseBg);
-						}
-						else if (grSet.styleTransportButtons === 'bevel') {
-							g.FillEllipse(Math.floor(lineW / 2), Math.floor(lineW / 2), w - lineW - 1, h - lineW - 1, grCol.transportStyleTop);
-							g.DrawEllipse(Math.floor(lineW / 2), Math.floor(lineW / 2), w - lineW - 1, h - lineW, 1, grCol.transportStyleBottom);
-							FillGradEllipse(g, Math.floor(lineW / 2) - 0.5, Math.floor(lineW / 2), w + 0.5, h + 0.5, 90, 0, grCol.transportStyleBg, 1);
-						}
-						else if (grSet.styleTransportButtons === 'inner') {
-							g.FillEllipse(Math.floor(lineW / 2), Math.floor(lineW / 2), w - lineW, h - lineW - 1, grCol.transportStyleTop);
-							g.DrawEllipse(Math.floor(lineW / 2), Math.floor(lineW / 2) - 1, w - lineW, h - lineW + 1, 1, grCol.transportStyleBottom);
-							FillGradEllipse(g, Math.floor(lineW / 2) - 0.5, Math.floor(lineW / 2), w + 1.5, h + 0.5, 90, 0, grCol.transportStyleBg, 0);
-						}
-						else if (grSet.styleTransportButtons === 'emboss') {
-							g.FillEllipse(Math.floor(lineW / 2) + 1, Math.floor(lineW / 2) + 1, w - lineW - 2, h - lineW - 2, grCol.transportEllipseBg);
-							FillGradEllipse(g, Math.floor(lineW / 2) + 2, Math.floor(lineW / 2) + 2, w - lineW - 2, h - lineW - 2, 90, 0, grCol.transportStyleBg, 0.33);
-							g.DrawEllipse(Math.floor(lineW / 2) + 1, Math.floor(lineW / 2) + 2, w - lineW - 2, h - lineW - 3, lineW, grCol.transportStyleTop);
-							g.DrawEllipse(Math.floor(lineW / 2) + 1, Math.floor(lineW / 2), w - lineW - 2, h - lineW - 2, lineW, grCol.transportStyleBottom);
-						}
-						g.DrawString(btn.ico, btn.font, transportIconColor, 1, (['Stop', 'Reload', 'AddTracks'].includes(i)) ? 0 : 1, w, h, StringFormat(1, 1));
-						break;
-
-					case 'backforward':
-						g.DrawString(btn.ico, btn.font, pl.col.plman_text_hovered, i === 'Back' ? -1 : 0, 0, w, h, StringFormat(1, 1));
-						break;
-				}
-
-				img.ReleaseGraphics(g);
-				stateImages[state] = img;
-			}
-
-			this.btnImg[i] = stateImages;
-		}
-
-		if (createButtonProfiler) createButtonProfiler.Print();
-	}
-
-	/**
-	 * Creates the top menu and lower bar transport buttons.
-	 * @param {number} ww - The window.Width.
-	 * @param {number} wh - The window.Height.
-	 */
-	createButtonObjects(ww, wh) {
-		this.btn = [];
-		const menuFontSize = grSet[`menuFontSize_${grSet.layout}`];
-		const showingMinMaxButtons = !!(UIHacks && UIHacks.FrameStyle);
-		const showTransportControls = grSet[`showTransportControls_${grSet.layout}`];
-
-		if (ww <= 0 || wh <= 0) {
-			return;
-		} else if (this.btnImg.length === 0) {
-			this.createButtonImages();
-		}
-
-		// * TOP MENU BUTTONS * //
-		/** @type {GdiBitmap[]} */
-		let img = this.btnImg.File;
-		const w = img[0].Width;
-		const h = img[0].Height;
-		let   x = RES._4K ? 18 : 8;
-		const y = Math.round(this.topMenuHeight * 0.5 - h * 0.5 - SCALE(1));
-		const overMinWidth = ww > SCALE(grSet.layout === 'compact' ? 580 : 620);
-
-		// Top menu font size X-correction for Artwork and Compact layout when width is minimum size
-		const xOffset = overMinWidth ? 0 :
-		menuFontSize === 12 ? SCALE(RES._QHD ? 0 : 2) :
-		menuFontSize === 13 ? SCALE(RES._QHD ? 2 : 8) :
-		menuFontSize === 14 ? SCALE(RES._QHD ? 4 : 10) :
-		menuFontSize === 15 ? SCALE(RES._QHD ? 6 : 12) :
-		menuFontSize === 16 ? SCALE(RES._QHD ? 8 : 14) : 0;
-
-		const widthCorrection =
-			RES._4K ? (grSet.customThemeFonts && menuFontSize > 12 && ww < 1080) ? 12 : (grSet.customThemeFonts && menuFontSize > 10 && ww < 1080) ? 6 : 3 :
-					  (grSet.customThemeFonts && menuFontSize > 12 && ww <  600) ?  6 : (grSet.customThemeFonts && menuFontSize > 10 && ww <  600) ? 4 : 0;
-		const correction = widthCorrection + (grSet.layout !== 'default' ? xOffset : 0);
-
-		// * Top menu compact
-		if (grSet.showTopMenuCompact) {
-			img = this.btnImg.TopMenu;
-			this.btn[19] = new Button(x, y, w + SCALE(41), h, 'Menu', img, 'Open menu');
-		}
-
-		// * Default foobar2000 buttons
-		if (!grSet.showTopMenuCompact) {
-			img = this.btnImg.File;
-			this.btn[20] = new Button(x, y, w, h, 'File', img);
-		}
-
-		// These buttons are not available in Artwork layout
-		if (grSet.layout !== 'artwork') {
-			x += img[0].Width - correction;
-			img = this.btnImg.Edit;
-			if (!grSet.showTopMenuCompact) this.btn[21] = new Button(x, y, img[0].Width, h, 'Edit', img);
-
-			x += img[0].Width - correction;
-			img = this.btnImg.View;
-			if (!grSet.showTopMenuCompact) this.btn[22] = new Button(x, y, img[0].Width, h, 'View', img);
-
-			x += img[0].Width - correction;
-			img = this.btnImg.Playback;
-			if (!grSet.showTopMenuCompact) this.btn[23] = new Button(x, y, img[0].Width, h, 'Playback', img);
-
-			x += img[0].Width - correction;
-			img = this.btnImg.MediaLibrary;
-			if (!grSet.showTopMenuCompact) this.btn[24] = new Button(x, y, img[0].Width, h, 'Library', img);
-
-			x += img[0].Width - correction;
-			img = this.btnImg.Help;
-			if (!grSet.showTopMenuCompact) this.btn[25] = new Button(x, y, img[0].Width, h, 'Help', img);
-
-			x += img[0].Width - correction;
-			img = this.btnImg.Playlists;
-			if (!grSet.showTopMenuCompact) this.btn[26] = new Button(x, y, img[0].Width, h, 'Playlists', img);
-		}
-
-		// * Theme buttons
-		const showPanelDetails   = grSet[`showPanelDetails_${grSet.layout}`];
-		const showPanelLibrary   = grSet[`showPanelLibrary_${grSet.layout}`];
-		const showPanelBiography = grSet[`showPanelBiography_${grSet.layout}`];
-		const showPanelLyrics    = grSet[`showPanelLyrics_${grSet.layout}`];
-		const showPanelRating    = grSet[`showPanelRating_${grSet.layout}`];
-
-		const buttonCount = (showPanelDetails ? 1 : 0) + (showPanelLibrary ? 1 : 0) + (showPanelBiography ? 1 : 0) + (showPanelLyrics ? 1 : 0) + (showPanelRating ? 1 : 0);
-		const buttonXCorr = 0.33 + (buttonCount === 5 ? 0 : buttonCount === 4 ? 0.3 : buttonCount === 3 ? 0.6 : buttonCount === 2 ? 1.5 : buttonCount === 1 ? 4 : 0);
-		const buttonOptionsXCoor = (grSet.layout === 'compact' && ww < SCALE(580) && menuFontSize > 14 ? SCALE(10) : 0);
-
-		x += img[0].Width - widthCorrection - buttonOptionsXCoor;
-		if (grSet.layout === 'artwork') x -= xOffset;
-		// Options button is available in all layouts
-		img = this.btnImg.Options;
-		if (!grSet.showTopMenuCompact) this.btn[27] = new Button(x, y, img[0].Width, h, 'Options', img, 'Theme options');
-
-		// These buttons are not available in Compact layout
-		if (grSet.layout !== 'compact') {
-			if (grSet.topMenuAlignment === 'center' && ww > SCALE(grSet.layout === 'artwork' ? 600 : 1380) || grSet.showTopMenuCompact) {
-				const centerMenu = Math.ceil(w * (buttonCount + (grSet.layout === 'artwork' && grSet.topMenuCompact && overMinWidth ? 0.5 : 0)) + (menuFontSize * buttonCount * buttonXCorr));
-				x = Math.round(ww * 0.5 - centerMenu);
-			}
-
-			if (showPanelDetails) {
-				x += img[0].Width - correction;
-				img = this.btnImg.Details;
-				this.btn.details = new Button(x, y, img[0].Width, h, 'Details', img, 'Display Details');
-
-				// Playlist button only available in Artwork layout
-				if (grSet.layout === 'artwork') {
-					x += img[0].Width - correction;
-					img = this.btnImg.PlaylistArtworkLayout;
-					this.btn.playlistArtworkLayout = new Button(x, y, img[0].Width, h, 'PlaylistArtworkLayout', img, 'Display Playlist');
-				}
-			}
-			if (showPanelLibrary) {
-				x += img[0].Width - correction;
-				img = this.btnImg.Library;
-				this.btn.library = new Button(x, y, img[0].Width, h, 'library', img, 'Display Library');
-			}
-			if (showPanelBiography) {
-				x += img[0].Width - correction;
-				img = this.btnImg.Biography;
-				this.btn.biography = new Button(x, y, img[0].Width, h, 'Biography', img, 'Display Biography');
-			}
-			if (showPanelLyrics) {
-				x += img[0].Width - correction;
-				img = this.btnImg.Lyrics;
-				this.btn.lyrics = new Button(x, y, img[0].Width, h, 'Lyrics', img, 'Display Lyrics');
-			}
-			if (showPanelRating) {
-				x += img[0].Width - correction;
-				img = this.btnImg.Rating;
-				this.btn.rating = new Button(x, y, img[0].Width, h, 'Rating', img, 'Rate Song');
-			}
-		}
-
-		// * Top menu 🗕 🗖 ✖ caption buttons
-		if (showingMinMaxButtons) {
-			const hideClose = UIHacks.FrameStyle === FrameStyle.SmallCaption && UIHacks.FullScreen !== true;
-
-			const w = SCALE(22);
-			const h = w;
-			const p = 3;
-			const x = ww - w * (hideClose ? 2 : 3) - p * (hideClose ? 1 : 2) - (RES._4K ? 21 : 14);
-			const y = Math.round(this.topMenuHeight * 0.5 - h * 0.5 - SCALE(1));
-
-			if (grSet.layout === 'default') {
-				this.btn.Minimize = new Button(x, y, w, h, 'Minimize', this.btnImg.Minimize);
-				this.btn.Maximize = new Button(x + w + p, y, w, h, 'Maximize', this.btnImg.Maximize);
-				if (!hideClose) {
-					this.btn.Close = new Button(x + (w + p) * 2, menuFontSize < 10 ? y + 1 : y, menuFontSize < 10 ? w - 1 : w, menuFontSize < 10 ? h - 1 : h, 'Close', this.btnImg.Close);
-				}
-			}
-			else {
-				this.btn.Minimize = new Button(x + w + p, y, w, h, 'Minimize', this.btnImg.Minimize);
-				if (!hideClose) {
-					this.btn[12] = new Button(x + (w + p) * 2, y, w, h, 'Close', this.btnImg.Close);
-				}
-			}
-		}
-
-		// * LOWER BAR TRANSPORT BUTTONS * //
-		if (showTransportControls) {
-			const lowerBarFontSize     = grSet[`lowerBarFontSize_${grSet.layout}`];
-			const showPlaybackOrderBtn = grSet[`showPlaybackOrderBtn_${grSet.layout}`];
-			const showReloadBtn        = grSet[`showReloadBtn_${grSet.layout}`];
-			const showAddTrackskBtn    = grSet[`showAddTracksBtn_${grSet.layout}`];
-			const showVolumeBtn        = grSet[`showVolumeBtn_${grSet.layout}`];
-			const transportBtnSize     = grSet[`transportButtonSize_${grSet.layout}`];
-			const transportBtnSpacing  = grSet[`transportButtonSpacing_${grSet.layout}`];
-
-			let count = 4 + (showPlaybackOrderBtn ? 1 : 0) + (showReloadBtn ? 1 : 0) + (showAddTrackskBtn ? 1 : 0) + (showVolumeBtn ? 1 : 0);
-
-			const buttonSize = SCALE(transportBtnSize);
-			const y = wh - buttonSize - SCALE(grSet.layout !== 'default' ? 36 : 78) + SCALE(lowerBarFontSize);
-			const w = buttonSize;
-			const h = w;
-			const p = SCALE(transportBtnSpacing); // Space between buttons
-			const x = (ww - w * count - p * (count - 1)) / 2;
-
-			const calcX = (index) => x + (w + p) * index;
-
-			count = 0;
-			this.btn.stop = new Button(x, y, w, h, 'Stop', this.btnImg.Stop, grm.button.lowerTransportTooltip('stop'));
-			this.btn.prev = new Button(calcX(++count), y, w, h, 'Previous', this.btnImg.Previous, grm.button.lowerTransportTooltip('prev'));
-			this.btn.play = new Button(calcX(++count), y, w, h, 'PlayPause', !fb.IsPlaying || fb.IsPaused ? this.btnImg.Play : this.btnImg.Pause, grm.button.lowerTransportTooltip('play'));
-			this.btn.next = new Button(calcX(++count), y, w, h, 'Next', this.btnImg.Next, grm.button.lowerTransportTooltip('next'));
-
-			if (showPlaybackOrderBtn) {
-				switch (plman.PlaybackOrder) {
-					case 0:
-						this.btn.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', this.btnImg.PlaybackDefault);
-						break;
-					case 1:
-						this.btn.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', this.btnImg.PlaybackRepeatPlaylist);
-						break;
-					case 2:
-						this.btn.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', this.btnImg.PlaybackRepeatTrack);
-						break;
-					case 3:	case 4:	case 5: case 6:
-						this.btn.playbackOrder = new Button(calcX(++count), y, w, h, 'PlaybackOrder', this.btnImg.PlaybackShuffle);
-						break;
-				}
-			}
-			if (showReloadBtn) {
-				this.btn.reload = new Button(calcX(++count), y, w, h, 'Reload', this.btnImg.Reload, grm.button.lowerTransportTooltip('reload'));
-			}
-			if (showAddTrackskBtn) {
-				this.btn.addTracks = new Button(calcX(++count), y, w, h, 'AddTracks', this.btnImg.AddTracks, grm.button.lowerTransportTooltip('addTracks'));
-			}
-			if (showVolumeBtn) {
-				this.btn.volume = new Button(calcX(++count), y, w, h, 'Volume', this.btnImg.ShowVolume);
-				grm.volBtn.setMetrics(this.btn.volume.x, y);
-			}
-		}
-	}
-
-	/**
 	 * Loads country flags when defined in tags, displayed in the lower bar and Details.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
-	loadCountryFlags() {
+	loadCountryFlags(metadb = undefined) {
+		if (!grSet.showGridArtistFlags_layout && !grSet.showLowerBarArtistFlags_layout) return;
+
 		this.flagImgs = [];
-		for (const country of GetMetaValues(grTF.artist_country)) {
-			const flagImage = this.loadFlagImage(country);
+		const countries = GetMetaValues(grTF.artist_country, metadb);
+
+		for (const country of countries) {
+			const flagImage = this.loadFlagImage(country, metadb);
 			flagImage && this.flagImgs.push(flagImage);
 		}
 	}
@@ -3717,17 +3498,133 @@ class MainUI {
 	/**
 	 * Loads flag images from the image directory based on the country name or ISO country code provided.
 	 * @param {string} country - The country for which we want to load the flag image.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 * @returns {GdiBitmap} The flag image object.
 	 */
-	loadFlagImage(country) {
+	loadFlagImage(country, metadb = undefined) {
 		const countryName = (ConvertIsoCountryCodeToFull(country) || country).trim().replace(/ /g, '-'); // In case we have a 2-digit country code
-		const path = `${$($Escape(grPath.flagsBase)) + (RES._4K ? '64\\' : '32\\') + countryName}.png`;
+		const path = `${$($Escape(grPath.flagsBase), metadb) + HD_4K('32\\', '64\\') + countryName}.png`;
 		return gdi.Image(path);
+	}
+	// #endregion
+
+	// * MAIN - PUBLIC METHODS - ARTWORK * //
+	// #region MAIN - PUBLIC METHODS - ARTWORK
+	/**
+	 * Fetches new album art/disc art when a new album is being played, disc art has changed or when cycling through album artworks.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
+	 */
+	fetchNewArtwork(metadb) {
+		this.fetchAlbumArt(metadb);
+		grm.details.fetchDiscArt();
+	}
+
+	/**
+	 * Handles the fetching or displaying of album art/disc art based on various conditions.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
+	 */
+	handleArtwork(metadb) {
+		if (this.albumArtTimeout) {
+			this.clearTimer('albumArt');
+		}
+
+		if ((grSet.cycleArt && this.albumArtIndex !== 0)
+			|| this.isStreaming
+			|| this.albumArtEmbedded
+			|| this.currentAlbumFolder !== this.lastAlbumFolder
+			|| this.albumArt == null
+			|| $('%album%') !== this.lastAlbumFolderTag
+			|| $('$if2(%discnumber%,0)') !== this.lastAlbumDiscNumber
+			|| $(`$if2(${grTF.vinyl_side},ZZ)`) !== this.lastAlbumVinylSide) {
+			this.clearPlaylistNowPlayingBg();
+			this.fetchNewArtwork(metadb);
+		}
+		else if (grSet.cycleArt && this.albumArtList.length > 1) {
+			// Need to do this here since we're no longer always fetching when this.albumArtList.length > 1
+			this.albumArtTimeout = setTimeout(() => {
+				this.displayAlbumArtImage('next', true);
+			}, grCfg.settings.artworkDisplayTime * 1000);
+		}
+	}
+
+	/**
+	 * Handles the case when the artwork (album art/disc art) is corrupt.
+	 * @param {string} artType - The type of art to handle ('albumArt', 'discArt', 'both').
+	 */
+	handleArtworkError(artType) {
+		const handleAlbumArt = () => {
+			this.noArtwork = true;
+			this.noAlbumArtStub = true;
+			this.albumArtCorrupt = true;
+			this.albumArtEmbedded = false;
+			this.albumArt = null;
+			this.albumArtSize = new ImageSize(0, this.topMenuHeight, 0, 0);
+			this.setPausePosition();
+			setTimeout(() => {
+				const msg = grm.msg.getMessage('main', 'albumArtCorruptError');
+				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+			}, 1000);
+		};
+
+		const handleDiscArt = () => {
+			grm.details.clearCache('discArt');
+			setTimeout(() => {
+				const msg = grm.msg.getMessage('main', 'discArtCorruptError');
+				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+			}, 1000);
+		};
+
+		if (artType === 'albumArt') {
+			handleAlbumArt();
+		} else if (artType === 'discArt') {
+			handleDiscArt();
+		} else if (artType === 'both') {
+			handleAlbumArt();
+			handleDiscArt();
+		}
+	}
+
+	/**
+	 * Resizes loaded album art/disc art and resets its position.
+	 * Also resets the size and position of the pause button and lyrics.
+	 * @param {boolean} resetDiscArtPosition - Whether the position of the disc art should be reset.
+	 */
+	resizeArtwork(resetDiscArtPosition) {
+		DebugLog('Artwork => Resizing artwork');
+		this.hasArtwork = false;
+		this.resizeAlbumArt();
+		grm.details.resizeDiscArt(resetDiscArtPosition);
+		this.setPausePosition();
+		grm.lyrics.setLyricsPosition();
 	}
 	// #endregion
 
 	// * MAIN - PUBLIC METHODS - ALBUM ART * //
 	// #region MAIN - PUBLIC METHODS - ALBUM ART
+	/**
+	 * Determines if the album art is displayed based on the current layout and display flags.
+	 * @param {boolean} noAlbumArtStub - Whether the noAlbumArtStub is being displayed.
+	 * @returns {boolean} True if the album art or noAlbumArtStub is displayed, false otherwise.
+	 */
+	albumArtDisplayed(noAlbumArtStub) {
+		if (!noAlbumArtStub && this.noAlbumArtStub) return false;
+
+		if (grSet.layout === 'default') {
+			return this.displayPlaylist && grSet.playlistLayout === 'normal' && !this.displayLibrary && !this.displayBiography
+			||
+			this.displayLibrary && grSet.libraryLayout === 'normal'
+			||
+			this.displayDetails && !noAlbumArtStub
+			||
+			this.displayLyrics;
+		}
+		else if (grSet.layout === 'artwork') {
+			return !this.displayPlaylist && !this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography;
+		}
+
+		return false;
+	}
+
 	/**
 	 * Scales album art to a global size, handling potential errors.
 	 * @throws Logs an error if the scaling operation fails.
@@ -3744,15 +3641,7 @@ class MainUI {
 			sg.DrawImage(HQscaled, 2, 2, this.albumArtScaled.Width - 4, this.albumArtScaled.Height - 4, 2, 2, this.albumArtScaled.Width - 4, this.albumArtScaled.Height - 4);
 			this.albumArtScaled.ReleaseGraphics(sg);
 		} catch (e) {
-			this.noArtwork = true;
-			this.noAlbumArtStub = true;
-			this.albumArtCorrupt = true;
-			this.albumArt = null;
-			this.albumArtSize = new ImageSize(0, this.topMenuHeight, 0, 0);
-			setTimeout(() => {
-				const msg = 'Album art could not be properly parsed!\n\nMaybe it is corrupt, file format is not supported\nor has an unusual ICC profile embedded.\n\n\n';
-				ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
-			}, 1000);
+			this.handleArtworkError('albumArt');
 		}
 	}
 
@@ -3793,29 +3682,148 @@ class MainUI {
 	}
 
 	/**
-	 * Displays the next artwork image when cycling through album artworks with a default 30 sec interval or when using album art context menu.
+	 * Cycles through album artwork based on user scroll direction. The function updates the album artwork index
+	 * to show previous or next artwork. Positive `step` values show previous art, negative values show next.
+	 * @param {number} step - Indicates scroll direction and magnitude.
 	 */
-	displayNextImage() {
-		DebugLog(`Repainting in displayNextImage: ${this.albumArtIndex}`);
-		this.albumArtIndex = (this.albumArtIndex + 1) % this.albumArtList.length;
-		this.loadImageFromAlbumArtList(this.albumArtIndex);
-		if (grSet.theme === 'reborn' || grSet.theme === 'random' || grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn) {
+	cycleAlbumArtImage(step) {
+		// Prev album art image
+		if (step > 0) {
+			if (this.albumArtIndex !== 0) {
+				this.albumArtIndex = (this.albumArtIndex - 1) % this.albumArtList.length;
+			}
+		}
+		// Next album art image
+		else if (this.albumArtIndex !== this.albumArtList.length - 1) {
+			this.albumArtIndex = (this.albumArtIndex + 1) % this.albumArtList.length;
+		}
+		this.loadAlbumArtFromList(this.albumArtIndex);
+
+		// Display embedded album art image
+		if (grSet.loadEmbeddedAlbumArtFirst && this.albumArtIndex === 0) {
+			this.albumArt = utils.GetAlbumArtV2(fb.GetNowPlaying());
+			this.albumArtList.unshift(this.albumArt);
+			this.albumArtIndex = 0;
+		}
+
+		// Update colors for dynamic themes
+		if (['white', 'black', 'reborn', 'random'].includes(grSet.theme)) {
 			this.newTrackFetchingArtwork = true;
 			grm.color.getThemeColors(this.albumArt);
 			this.initTheme();
-			DebugLog('\n>>> initTheme => displayNextImage <<<\n');
+			DebugLog('\n>>> initTheme => on_mouse_wheel <<<\n');
 		}
-		this.lastLeftEdge = 0;
+
+		// Update positions
+		this.resizeArtwork(true); // Re-adjust discArt shadow size if artwork size changes
+		if (grSet.panelWidthAuto && this.albumArtSize.w !== this.albumArtSize.h) { // Re-adjust playlist if artwork size changes
+			this.setPlaylistSize();
+		}
+		grm.details.clearCache('metrics', 'cachedLabelLastLeftEdge');
+		RepaintWindow();
+	}
+
+	/**
+	 * Displays the previous or next album artwork image when cycling through the album art list.
+	 * It can also cycle to the next image using a default 30-second interval or be triggered by the album art context menu.
+	 * @param {string} direction - Indicates the direction of image cycling, can be either `prev` or `next`.
+	 * @param {boolean} timer - If true, sets a timer to automatically cycle to the next image.
+	 */
+	displayAlbumArtImage(direction, timer) {
+		DebugLog(`Album art => Repainting in displayAlbumArtImage: ${this.albumArtIndex}`);
+		const increment = direction === 'next' ? 1 : (direction === 'prev' ? -1 : 0);
+		this.albumArtIndex = (this.albumArtIndex + increment + this.albumArtList.length) % this.albumArtList.length;
+
+		setTimeout(() => {
+			this.loadAlbumArtFromList(this.albumArtIndex);
+			if (grSet.theme === 'reborn' || grSet.theme === 'random' || grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn) {
+				this.newTrackFetchingArtwork = true;
+				grm.color.getThemeColors(this.albumArt);
+				this.initTheme();
+				DebugLog('\n>>> initTheme => Album cover context menu => Display next/previous artwork <<<\n');
+			}
+			window.Repaint();
+		}, 1);
+
+		grm.details.clearCache('metrics', 'cachedLabelLastLeftEdge');
 		this.resizeArtwork(true); // Needed to readjust discArt shadow size if artwork size changes
 		RepaintWindow();
+
+		if (!timer) return;
+
 		this.albumArtTimeout = setTimeout(() => {
-			this.displayNextImage();
+			this.displayAlbumArtImage('next', true);
 		}, grCfg.settings.artworkDisplayTime * 1000);
+
 		grm.button.initButtonState();
 	}
 
 	/**
-	 * Fetches new album art when a new album is being played or when cycling through album artworks.
+	 * Displays album art from the list of local files.
+	 */
+	displayAlbumArtFromList() {
+		this.noArtwork = false;
+		this.noAlbumArtStub = false;
+		this.albumArtEmbedded = false;
+
+		if (this.albumArtList.length > 1 && grSet.cycleArt) {
+			this.albumArtTimeout = setTimeout(() => {
+				this.displayAlbumArtImage('next', true);
+			}, grCfg.settings.artworkDisplayTime * 1000);
+		}
+
+		this.albumArtIndex = 0;
+		this.loadAlbumArtFromList(this.albumArtIndex); // Display first image
+	}
+
+	/**
+	 * Displays embedded album art from the music file.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
+	 */
+	displayAlbumArtEmbedded(metadb) {
+		grm.details.discArtCover = grm.artCache.encache(utils.GetAlbumArtV2(metadb), this.albumArtList[metadb], 2);
+		this.noArtwork = false;
+		this.noAlbumArtStub = false;
+
+		if (this.hasAutoRandomPresetMode()) {
+			this.setRandomThemePreset();
+		}
+		else {
+			if (this.hasThemeTags()) {
+				this.initThemeTags();
+			} else {
+				this.restoreThemeState();
+				grm.color.getThemeColors(this.albumArt);
+			}
+			if (this.loadingThemeComplete) {
+				this.initTheme();  // Prevent incorrect theme brightness at startup/reload when using embedded art
+				DebugLog('\n>>> initTheme => fetchAlbumArt => albumArtEmbedded <<<\n');
+			}
+		}
+
+		this.resizeArtwork(true);
+		this.initPanelWidthAuto();
+		this.albumArtEmbedded = true;
+	}
+
+	/**
+	 * Displays the no album art stub when no album art is found.
+	 */
+	displayNoAlbumArtStub() {
+		this.noArtwork = true;
+		this.noAlbumArtStub = true;
+		this.albumArt = null;
+		grm.details.clearCache('discArt');
+		this.initTheme();
+		DebugLog('\n>>> initTheme => fetchAlbumArt => noAlbumArtStub <<<\n');
+		DebugLog('Album art => Repainting on_playback_new_track due to no cover image');
+		this.resizeArtwork(true);
+		this.initPanelWidthAuto();
+		RepaintWindow();
+	}
+
+	/**
+	 * Fetches album art when a new album is being played or when cycling through album artworks.
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	fetchAlbumArt(metadb) {
@@ -3823,85 +3831,10 @@ class MainUI {
 
 		const fetchAlbumArtProfiler = (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('fetchAlbumArt');
 
-		const autoRandomPreset =
-			(!['off', 'track'].includes(grSet.presetAutoRandomMode) && grSet.presetSelectMode === 'harmonic' ||
-			grSet.presetAutoRandomMode === 'dblclick' && grSet.presetSelectMode === 'theme') && !this.doubleClicked;
-
 		if (this.isStreaming || this.isPlayingCD) {
-			this.discArt = this.disposeDiscArt(this.discArt);
-			this.discArtCover = this.disposeDiscArt(this.discArtCover);
-			this.albumArt = utils.GetAlbumArtV2(metadb);
-			grSet.showGridTitle_default = true;
-			grSet.showGridTitle_artwork = true;
-			if (this.albumArt) {
-				grm.color.getThemeColors(this.albumArt);
-				this.resizeArtwork(true);
-			} else {
-				this.noArtwork = true;
-				this.shadowImg = null;
-			}
-			this.initTheme();
-			DebugLog('\n>>> initTheme => fetchNewArtwork => isStreaming || isPlayingCD <<<\n');
-		}
-		else {
-			this.albumArtList = grCfg.imgPaths && grCfg.imgPaths.map(path => utils.Glob($(path), FileAttributes.Directory | FileAttributes.Hidden)).flat();
-			const filteredFileTypes = grSet.filterDiscJpgsFromAlbumArt ? '(png|jpg)' : 'png';
-			const pattern = new RegExp(`(cd|disc|vinyl|${grCfg.settings.discArtBasename})([0-9]*|[a-h]).${filteredFileTypes}`, 'i');
-			const imageType = /(jpg|png)$/i;
-			// * Remove duplicates and cd/vinyl art and make sure all files are jpg or pngs
-			this.albumArtList = [...new Set(this.albumArtList)].filter(path => !pattern.test(path) && imageType.test(path));
-
-			// * Try loading album art from artwork image paths
-			if (this.albumArtList.length && !grSet.loadEmbeddedAlbumArtFirst) {
-				this.noArtwork = false;
-				this.noAlbumArtStub = false;
-				this.albumArtEmbedded = false;
-				if (this.albumArtList.length > 1 && grSet.cycleArt) {
-					this.albumArtTimeout = setTimeout(() => {
-						this.displayNextImage();
-					}, grCfg.settings.artworkDisplayTime * 1000);
-				}
-				this.albumArtIndex = 0;
-				this.loadImageFromAlbumArtList(this.albumArtIndex); // Display first image
-			}
-			// * If not found, try embedded artwork from music file
-			else if (metadb && (this.albumArt = utils.GetAlbumArtV2(metadb))) {
-				this.discArtCover = grm.artCache.encache(utils.GetAlbumArtV2(metadb), this.albumArtList[metadb], 2);
-				this.noArtwork = false;
-				this.noAlbumArtStub = false;
-				if (autoRandomPreset) { // Prevent double initialization for theme presets to save performance, grMain.color.getThemeColors() and grMain.ui.initTheme() already handled in getRandomThemePreset()
-					this.setRandomThemePreset();
-				} else {
-					this.initThemeTags();
-					grm.color.getThemeColors(this.albumArt);
-					if (!this.loadingTheme) {
-						this.initTheme(); // * Prevent incorrect theme brightness at startup/reload when using embedded art
-						DebugLog('\n>>> initTheme => fetchNewArtwork => albumArtEmbedded <<<\n');
-					}
-				}
-				if (grSet.panelWidthAuto) {
-					this.initPanelWidthAuto();
-				} else {
-					this.resizeArtwork(true);
-				}
-				this.albumArtEmbedded = true;
-			}
-			// * No album art found, using noAlbumArtStub
-			else {
-				this.noArtwork = true;
-				this.noAlbumArtStub = true;
-				this.albumArt = null;
-				this.discArtCover = null;
-				this.initTheme();
-				DebugLog('\n>>> initTheme => fetchNewArtwork => noAlbumArtStub <<<\n');
-				if (grSet.panelWidthAuto) {
-					this.initPanelWidthAuto();
-				} else {
-					this.resizeArtwork(true);
-				}
-				DebugLog('Repainting on_playback_new_track due to no cover image');
-				RepaintWindow();
-			}
+			this.fetchAlbumArtStreamingOrCD(metadb);
+		} else {
+			this.fetchAlbumArtLocalFiles(metadb);
 		}
 
 		if (fetchAlbumArtProfiler) fetchAlbumArtProfiler.Print();
@@ -3909,114 +3842,102 @@ class MainUI {
 	}
 
 	/**
-	 * Fetches new album art/disc art when a new album is being played, disc art has changed or when cycling through album artworks.
+	 * Fetches album art when streaming or playing a CD.
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
-	fetchNewArtwork(metadb) {
-		if (grSet.presetAutoRandomMode === 'album' || grSet.presetSelectMode === 'harmonic') this.initThemeSkip = true;
-		this.fetchAlbumArt(metadb);
-		this.fetchDiscArt();
+	fetchAlbumArtStreamingOrCD(metadb) {
+		grm.details.discArt = grm.details.disposeDiscArt(grm.details.discArt);
+		grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
+		this.albumArt = utils.GetAlbumArtV2(metadb);
+
+		grSet.showGridTitle_default = true;
+		grSet.showGridTitle_artwork = true;
+
+		if (this.albumArt) {
+			grm.color.getThemeColors(this.albumArt);
+			this.resizeArtwork(true);
+		} else {
+			this.noArtwork = true;
+			grm.details.discArtShadowImg = null;
+		}
+
+		this.initTheme();
+		DebugLog('\n>>> initTheme => fetchAlbumArt => isStreaming || isPlayingCD <<<\n');
 	}
 
 	/**
-	 * Loads an image from the this.albumArtList array.
+	 * Fetches album art from local files.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
+	 */
+	fetchAlbumArtLocalFiles(metadb) {
+		const filteredFileTypes = grSet.filterDiscJpgsFromAlbumArt ? '(png|jpg)' : 'png';
+		const pattern = new RegExp(`(cd|disc|vinyl|${grCfg.settings.discArtBasename})([0-9]*|[a-h]).${filteredFileTypes}`, 'i');
+		const imageType = /(jpg|png)$/i;
+
+		this.albumArtList = grCfg.imgPaths && grCfg.imgPaths.map(path => utils.Glob($(path, metadb), FileAttributes.Directory | FileAttributes.Hidden)).flat();
+		this.albumArtList = [...new Set(this.albumArtList)].filter(path => !pattern.test(path) && imageType.test(path));
+
+		if (this.albumArtList.length && !grSet.loadEmbeddedAlbumArtFirst) {
+			this.displayAlbumArtFromList();
+		}
+		else if (metadb && (this.albumArt = utils.GetAlbumArtV2(metadb))) {
+			this.displayAlbumArtEmbedded(metadb);
+		}
+		else {
+			this.displayNoAlbumArtStub();
+		}
+	}
+
+	/**
+	 * Loads the album art image from the this.albumArtList array.
 	 * @param {number} index - The index of this.albumArtList signifying which image to load.
 	 */
-	loadImageFromAlbumArtList(index) {
-		const metadb = fb.GetNowPlaying();
+	loadAlbumArtFromList(index) {
 		const artIndex = this.albumArtList[index];
-		const tempAlbumArt = grm.artCache && grm.artCache.getImage(this.albumArtList[index]);
-		const tempDiscArtCover = grm.artCache && grm.artCache.getImage(this.albumArtList[index], 2);
-
-		const autoRandomPreset = !this.doubleClicked &&
-			(!['off', 'track'].includes(grSet.presetAutoRandomMode) && grSet.presetSelectMode === 'harmonic'
-			||
-			grSet.presetAutoRandomMode === 'dblclick' && grSet.presetSelectMode === 'theme');
-
-		const hasThemeTags = $('[%GR_THEME%]') || $('[%GR_STYLE%]') || $('[%GR_PRESET%]');
-
-		const _initTheme = (albumArt) => {
-			if (autoRandomPreset) {
-				this.setRandomThemePreset();
-				return;
-			}
-			this.initThemeTags();
-			grm.color.getThemeColors(albumArt);
-			if (!this.initThemeSkip && !hasThemeTags) {
-				this.initTheme();
-				DebugLog('\n>>> initTheme => loadImageFromAlbumArtList >>>\n');
-			}
-		};
+		const tempAlbumArt = grm.artCache && grm.artCache.getImage(artIndex);
+		const tempDiscArtCover = grm.artCache && grm.artCache.getImage(artIndex, 2);
 
 		if (tempAlbumArt) {
 			this.albumArt = tempAlbumArt;
-			this.discArtCover = tempDiscArtCover;
+			grm.details.discArtCover = tempDiscArtCover;
 			this.albumArtCopy = this.albumArt;
-
-			if (grSet.panelWidthAuto) {
-				this.initPanelWidthAuto();
-			}
+			this.initPanelWidthAuto(true);
 
 			if (index !== 0 && !this.newTrackFetchingArtwork) return;
 			this.newTrackFetchingArtwork = false;
-			_initTheme(this.albumArt);
+			this.initThemeState(this.albumArt);
 		}
 		else {
 			gdi.LoadImageAsyncV2(window.ID, artIndex).then(coverImage => {
 				this.albumArtCorrupt = false;
 				this.albumArt = grm.artCache.encache(coverImage, artIndex);
-				this.discArtCover = grm.artCache.encache(coverImage, artIndex, 2);
+				grm.details.discArtCover = grm.artCache.encache(coverImage, artIndex, 2);
 
 				if (this.newTrackFetchingArtwork) {
+					const metadb = this.initMetadb();
 					if (!this.albumArt && fb.IsPlaying && metadb) {
 						this.albumArt = utils.GetAlbumArtV2(metadb);
 						if (this.albumArt) {
-							this.discArtCover = grm.artCache.encache(this.albumArt, artIndex, 2);
+							grm.details.discArtCover = grm.artCache.encache(this.albumArt, artIndex, 2);
 							this.albumArtEmbedded = true;
 						} else {
-							this.noArtwork = true;
-							this.noAlbumArtStub = true;
-							this.albumArtCorrupt = true;
-							this.albumArtEmbedded = false;
-							setTimeout(() => {
-								const msg = 'Album art could not be properly parsed!\n\nMaybe it is corrupt, file format is not supported\nor has an unusual ICC profile embedded.\n\n\n';
-								ShowPopup(true, msg, msg, 'OK', false, (confirmed) => {});
-							}, 1000);
+							this.handleArtworkError('albumArt');
 						}
 					}
-					_initTheme(this.albumArt);
+					this.initThemeState(this.albumArt);
 					this.newTrackFetchingArtwork = false;
 				}
 
 				this.albumArtCopy = this.albumArt;
-
-				if (grSet.panelWidthAuto) {
-					this.initPanelWidthAuto();
-				} else {
-					this.resizeArtwork(true);
-				}
-
-				if (this.discArt) this.createDiscArtRotation();
+				this.resizeArtwork(true);
+				this.initPanelWidthAuto();
+				grm.details.createDiscArtRotation();
 				RepaintWindow();
 			});
 		}
 
 		if (!this.displayLibrarySplit()) this.resizeArtwork(false);
-		if (this.discArt) this.createDiscArtRotation();
-	}
-
-	/**
-	 * Resizes loaded artwork to have better drawing performance and resets its position.
-	 * Also resets the size and position of the pause button and lyrics.
-	 * @param {boolean} resetDiscArtPosition - Whether the position of the disc art should be reset.
-	 */
-	resizeArtwork(resetDiscArtPosition) {
-		DebugLog('Resizing artwork');
-		this.hasArtwork = false;
-		this.resizeAlbumArt();
-		this.resizeDiscArt(resetDiscArtPosition);
-		this.resetPausePosition();
-		grm.lyrics.resetLyricsPosition();
+		grm.details.createDiscArtRotation();
 	}
 
 	/**
@@ -4026,7 +3947,7 @@ class MainUI {
 	 */
 	resizeAlbumArt() {
 		if (!this.albumArt || !this.albumArt.Width || !this.albumArt.Height) {
-			this.albumArtSize = new ImageSize(0, this.topMenuHeight, 0, 0);
+			this.setNoAlbumArtSize();
 			return;
 		}
 
@@ -4065,36 +3986,33 @@ class MainUI {
 		if (this.displayPlaylist || this.displayLibrary) {
 			xCenter = grSet.layout === 'artwork' ? 0 : this.ww * 0.25;
 		} else if (albumArtScale === this.ww * 0.75 / this.albumArt.Width) {
-			xCenter = Math.round(this.ww * 0.66 - SCALE(40)); // xCenter += this.ww * 0.1;
+			xCenter = Math.round(this.ww * 0.66 - this.edgeMargin); // xCenter += this.ww * 0.1;
 			this.albumArtOffCenter = true;
 		}
 
 		// * Set album art x-coordinate
-		switch (grSet.layout) {
-			case 'default': // In a non-proportional player size, 'grSet.albumArtAlign' sets album art alignment in Default layout
-				if (this.displayPlaylist || this.displayLibrary) {
-					switch (grSet.albumArtAlign) {
-						case 'left':
-							this.albumArtSize.x = Math.round(Math.min(0, this.ww * 0.5 - this.albumArtSize.w));
-							break;
-						case 'leftMargin':
-							this.albumArtSize.x = Math.round(Math.min(this.ww / this.wh > 1.8 ? SCALE(40) : 0, this.ww * 0.5 - this.albumArtSize.w));
-							break;
-						case 'center':
-							this.albumArtSize.x = Math.round(Math.min(xCenter - 0.5 * this.albumArtSize.w, this.ww * 0.5 - this.albumArtSize.w));
-							break;
-						default:
-							this.albumArtSize.x = Math.round(this.ww * 0.5 - this.albumArtSize.w);
-							break;
-					}
-				} else {
-					this.albumArtSize.x = Math.round(xCenter - 0.5 * this.albumArtSize.w);
+		if (grSet.layout === 'default') { // In a non-proportional player size, 'grSet.albumArtAlign' sets album art alignment in Default layout
+			if (this.displayPlaylist || this.displayLibrary) {
+				switch (grSet.albumArtAlign) {
+					case 'left':
+						this.albumArtSize.x = Math.round(Math.min(0, this.ww * 0.5 - this.albumArtSize.w));
+						break;
+					case 'leftMargin':
+						this.albumArtSize.x = Math.round(Math.min(this.ww / this.wh > 1.8 ? this.edgeMargin : 0, this.ww * 0.5 - this.albumArtSize.w));
+						break;
+					case 'center':
+						this.albumArtSize.x = Math.round(Math.min(xCenter - 0.5 * this.albumArtSize.w, this.ww * 0.5 - this.albumArtSize.w));
+						break;
+					default:
+						this.albumArtSize.x = Math.round(this.ww * 0.5 - this.albumArtSize.w);
+						break;
 				}
-				break;
-
-			case 'artwork': // And is always centered in Artwork layout
-				this.albumArtSize.x = Math.round(!this.displayPlaylist || this.displayLyrics ? this.ww * 0.5 - this.albumArtSize.w * 0.5 : this.ww);
-				break;
+			} else {
+				this.albumArtSize.x = Math.round(xCenter - 0.5 * this.albumArtSize.w);
+			}
+		}
+		else if (grSet.layout === 'artwork') { // And is always centered in Artwork layout
+			this.albumArtSize.x = Math.round(!this.displayPlaylist || this.displayLyrics ? this.ww * 0.5 - this.albumArtSize.w * 0.5 : this.ww);
 		}
 
 		// * Set album art y-coordinate
@@ -4105,721 +4023,52 @@ class MainUI {
 		this.createScaledAlbumArt();
 		this.hasArtwork = true;
 	}
-
-	/**
-	 * Resets the size and position of the pause button.
-	 */
-	resetPausePosition() {
-		const noAlbumArtSize = this.wh - this.topMenuHeight - this.lowerBarHeight;
-		const windowFullscreenOrMaximized = UIHacks.FullScreen || UIHacks.MainWindowState === WindowState.Maximized;
-
-		const albumArtPauseBtnX = windowFullscreenOrMaximized ? this.ww * 0.25 : this.albumArtSize.x + this.albumArtSize.w * 0.5;
-		const albumArtPauseBtnY = this.albumArtSize.y + this.albumArtSize.h * 0.5;
-		const discArtPauseBtnX = this.discArtSize.x + this.discArtSize.w * 0.5;
-		const discArtPauseBtnY = this.discArtSize.y + this.discArtSize.h * 0.5;
-
-		const noAlbumArtPauseBtnX =
-			!grSet.panelWidthAuto && grSet.layout !== 'artwork' && !this.noAlbumArtStub && (this.displayPlaylist || this.displayLibrary) ||
-				grSet.layout === 'artwork' || this.displayDetails || grSet.lyricsLayout === 'full' && this.displayLyrics ? this.ww * 0.5 :
-			grSet.panelWidthAuto ?
-				grSet.albumArtAlign === 'left' ? noAlbumArtSize * 0.5 :
-				grSet.albumArtAlign === 'leftMargin' ? this.ww / this.wh > 1.8 ? noAlbumArtSize * 0.5 + SCALE(40) : 0 :
-				grSet.albumArtAlign === 'center' ? Math.floor(this.ww * 0.5 - noAlbumArtSize * 0.5 - (this.ww * 0.25 - noAlbumArtSize * 0.5)) :
-				this.ww * 0.5 - noAlbumArtSize * 0.5 :
-			this.ww * 0.25;
-
-		const noAlbumArtPauseBtnY = this.wh * 0.5 - this.topMenuHeight;
-
-		if (this.albumArt) grm.pseBtn.setCoords(albumArtPauseBtnX, albumArtPauseBtnY);
-		else if (this.discArt) grm.pseBtn.setCoords(discArtPauseBtnX, discArtPauseBtnY);
-		else if (this.noAlbumArtStub) grm.pseBtn.setCoords(noAlbumArtPauseBtnX, noAlbumArtPauseBtnY);
-	}
 	// #endregion
 
-	// * DETAILS - PUBLIC METHODS - DISC ART * //
-	// #region DETAILS - PUBLIC METHODS - DISC ART
+	// * MAIN - PUBLIC METHODS - TOOLTIP * //
+	// #region MAIN - PUBLIC METHODS - TOOLTIP
 	/**
-	 * Creates and masks an image to the disc art.
-	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 * @param {number} x - The X-coordinate of the disc area.
-	 * @param {number} y - The Y-coordinate of the disc area.
-	 * @param {number} w - The width of the mask.
-	 * @param {number} h - The height of the mask.
-	 * @param {number} srcX - The X-coordinate of the source image.
-	 * @param {number} srcY - The Y-coordinate of the source image.
-	 * @param {number} srcW - The width of the source image.
-	 * @param {number} srcH - The height of the source image.
-	 * @param {number} [angle] - The angle of the mask in degrees. Default 0.
-	 * @param {number} [alpha] - The alpha of the mask. Values 0-255.
-	 * @returns {GdiGraphics} The rounded masked image.
+	 * Gets the lower bar tooltip string based on the specified layout.
+	 * @param {string} layout - The layout type ('default', 'artwork_compact').
+	 * @returns {string} The tooltip string.
 	 */
-	createDiscArtAlbumArtMask(gr, x, y, w, h, srcX, srcY, srcW, srcH, angle, alpha) {
-		// * First draw album art in the background
-		gr.DrawImage(this.albumArtScaled, x, y, w, h, 0, 0, w, h, 0, alpha);
-
-		// * Mask
-		const maskImg = gdi.CreateImage(w, h);
-		let g = maskImg.GetGraphics();
-		g.FillEllipse(this.discArtSize.x - this.albumArtSize.x + this.discArtShadow - SCALE(4), this.discArtSize.y - this.albumArtSize.y + SCALE(2),
-					  this.discArtSize.w - this.discArtShadow + SCALE(4), this.discArtSize.h - this.discArtShadow + SCALE(2), 0xffffffff);
-		maskImg.ReleaseGraphics(g);
-
-		// * Album art
-		const albumArtImg = gdi.CreateImage(w, h);
-		g = albumArtImg.GetGraphics();
-		g.DrawImage(this.albumArtScaled, 0, 0, w, h, 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height);
-		albumArtImg.ReleaseGraphics(g);
-
-		const mask = maskImg.Resize(w, h);
-		albumArtImg.ApplyMask(mask);
-
-		return gr.DrawImage(albumArtImg, x, y, w, h, 0, 0, w, h, 0, 255);
-	}
-
-	/**
-	 * Creates the album cover mask for the disc art stub.
-	 * @param {GdiBitmap} img - The image to apply the mask to.
-	 * @param {number} w - The width of the mask.
-	 * @param {number} h - The height of the mask.
-	 */
-	createDiscArtCoverMask(img, w, h) {
-		const mask = GDI(this.discArtSize.w, this.discArtSize.h, true, g => {
-			const lw = SCALE(25);
-			const innerRingSize = Math.round(this.discArtSize.h * 0.666 + lw * 0.5);
-			const innerCenterX  = Math.round(this.discArtSize.w * 0.5);
-			const innerCenterY  = Math.round(this.discArtSize.h * 0.5);
-			const innerRadiusX  = Math.round(this.discArtSize.w * 0.5 - innerRingSize * 0.5);
-			const innerRadiusY  = Math.round(this.discArtSize.h * 0.5 - innerRingSize * 0.5);
-
-			g.SetSmoothingMode(SmoothingMode.AntiAlias);
-			g.FillSolidRect(0, 0, this.discArtSize.w, this.discArtSize.h, RGB(255, 255, 255));
-			g.FillEllipse(lw * 0.5, lw * 0.5, this.discArtSize.w - lw, this.discArtSize.h - lw, RGB(0, 0, 0)); // Outer ring
-			g.FillEllipse(innerCenterX - innerRadiusX, innerCenterY - innerRadiusY, innerRadiusX * 2, innerRadiusY * 2, RGB(255, 255, 255)); // Inner ring
-		});
-
-		img.ApplyMask(mask.Resize(w, h));
-	}
-
-	/**
-	 * Creates the disc art rotation animation with RotateImg().
-	 * @returns {object} The rotated disc art image.
-	 */
-	createDiscArtRotation() {
-		// Drawing discArt rotated is slow, so first draw it rotated into the discArtRotation image, and then draw discArtRotation image unrotated in on_paint.
-		if (grSet.displayDiscArt && !this.albumArtCorrupt && this.albumArt && this.discArt && this.discArtSize.w > 0) {
-			let tracknum = parseInt(fb.TitleFormat(`$num($if(${grTF.vinyl_tracknum},$sub($mul(${grTF.vinyl_tracknum},2),1),$if2(%tracknumber%,1)),1)`).Eval()) - 1;
-			if (!grSet.rotateDiscArt || Number.isNaN(tracknum)) tracknum = 0; // Avoid NaN issues when changing tracks rapidly
-
-			this.discArtRotation = RotateImg(this.discArt, this.discArtSize.w, this.discArtSize.h, tracknum * grSet.rotationAmt);
-			if (['cdAlbumCover', 'vinylAlbumCover'].includes(grSet.discArtStub) && (!grSet.noDiscArtStub || grSet.showDiscArtStub) &&
-				this.discArtCover && this.discArtCover.Width && this.discArtCover.Height) {
-				this.createDiscArtCoverMask(this.discArtCover, this.discArtCover.Width, this.discArtCover.Height);
-				this.discArtRotationCover = RotateImg(this.discArtCover, this.discArtSize.w, this.discArtSize.h, tracknum * grSet.rotationAmt);
-			}
-		}
-
-		// TODO: Once spinning art is done, scrap this and the rotation amount crap and just use indexes into the discArtArray when needed.
-		// ? IDEA: Smooth rotation to new position?
-		return this.discArtRotation;
-	}
-
-	/**
-	 * Creates the drop shadow for disc art.
-	 */
-	createDiscArtShadow() {
-		const discArtShadowProfiler = (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('createDiscArtShadow');
-		const discArtMargin = SCALE(2);
-
-		if (this.displayDetails && ((this.albumArt && this.albumArtSize.w > 0) || (this.discArt && grSet.displayDiscArt && this.discArtSize.w > 0))) {
-			this.shadowImg = this.discArt && grSet.displayDiscArt ?
-				gdi.CreateImage(this.discArtSize.x + this.discArtSize.w + 2 * this.discArtShadow, this.discArtSize.h + discArtMargin + 2 * this.discArtShadow) :
-				gdi.CreateImage(this.albumArtSize.x + this.albumArtSize.w + 2 * this.discArtShadow, this.albumArtSize.h + 2 * this.discArtShadow);
-			if (grSet.layout === 'default' && this.shadowImg) {
-				const shimg = this.shadowImg.GetGraphics();
-				if (this.discArt && grSet.displayDiscArt) {
-					const offset = this.discArtSize.w * 0.40; // Don't change this value
-					const xVal = this.discArtSize.x;
-					const shadowOffset = this.discArtShadow * 2;
-
-					shimg.DrawEllipse(xVal + shadowOffset, shadowOffset + discArtMargin, this.discArtSize.w - shadowOffset, this.discArtSize.w - shadowOffset, this.discArtShadow * 2, grCol.discArtShadow); // outer shadow
-					shimg.DrawEllipse(xVal + this.discArtShadow + offset, offset + this.discArtShadow + discArtMargin, this.discArtSize.w - offset * 2, this.discArtSize.h - offset * 2, 60, grCol.discArtShadow); // inner shadow
-				}
-				this.shadowImg.ReleaseGraphics(shimg);
-				this.shadowImg.StackBlur(this.discArtShadow);
-			}
-		}
-
-		if (discArtShadowProfiler) discArtShadowProfiler.Print();
-		if (grCfg.settings.showDebugPerformanceOverlay) this.debugTimingsArray.push(`createDiscArtShadow: ${discArtShadowProfiler.Time} ms`);
-	}
-
-	/**
-	 * Disposes the disc art image when changing or deactivating disc art.
-	 * @param {GdiBitmap} discArtImg - The loaded disc art image.
-	 */
-	disposeDiscArt(discArtImg) {
-		this.discArtSize = new ImageSize(0, 0, 0, 0);
-		discArtImg = null;
-	}
-
-	/**
-	 * Fetches new disc art when a new album is being played.
-	 */
-	fetchDiscArt() {
-		const fetchDiscArtProfiler = (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('fetchDiscArt');
-		const getDiscArtImagePaths = grPath.discArtImagePaths();
-		const getDiscArtStubPaths = grPath.discArtStubPaths();
-		let discArtPath;
-		let tempDiscArt;
-
-		if (grSet.displayDiscArt && !this.isStreaming) { // We must attempt to load CD/vinyl art first so that the shadow is drawn correctly
-			if (grSet.noDiscArtStub || grSet.showDiscArtStub) {
-				// * Search for disc art
-				for (const path of getDiscArtImagePaths) {
-					if (IsFile(path)) {
-						this.discArtFound = true;
-						discArtPath = path;
-						break;
-					}
-				}
-			}
-
-			// * No disc art found, display custom disc art stubs
-			if (!discArtPath && (!grSet.noDiscArtStub || grSet.showDiscArtStub)) {
-				this.discArtFound = false;
-				discArtPath = Object.prototype.hasOwnProperty.call(getDiscArtStubPaths, grSet.discArtStub) ? getDiscArtStubPaths[grSet.discArtStub] : grPath.discArtCustomStub;
-			}
-
-			// * Load disc art
-			if (this.albumArtFromCache) {
-				tempDiscArt = grm.artCache && grm.artCache.getImage(discArtPath);
-			}
-			if (tempDiscArt) {
-				this.disposeDiscArt(this.discArt);
-				this.discArt = tempDiscArt;
-				this.resizeArtwork(true);
-				this.createDiscArtRotation();
-				if (grSet.spinDiscArt) {
-					this.discArtArray = []; // Clear last image
-					this.setDiscArtRotationTimer();
-				}
-			}
-			else {
-				gdi.LoadImageAsyncV2(window.ID, discArtPath).then(discArtImg => {
-					this.disposeDiscArt(this.discArt); // Delay disposal so we don't get flashing
-					this.discArt = grm.artCache.encache(discArtImg, discArtPath);
-					this.resizeArtwork(true);
-					this.createDiscArtRotation();
-					if (grSet.spinDiscArt) {
-						this.discArtArray = []; // Clear last image
-						this.setDiscArtRotationTimer();
-					}
-					this.lastLeftEdge = 0; // Recalc label location
-					RepaintWindow();
-				});
-			}
-		}
-
-		if (fetchDiscArtProfiler) fetchDiscArtProfiler.Print();
-		if (grCfg.settings.showDebugPerformanceOverlay) this.debugTimingsArray.push(`fetchDiscArt: ${fetchDiscArtProfiler.Time} ms`);
-	}
-
-	/**
-	 * Resizes and resets the size and position of the disc art.
-	 * @param {boolean} resetDiscArtPosition - Whether the position of the disc art should be reset.
-	 */
-	resizeDiscArt(resetDiscArtPosition) {
-		if (!this.discArt) {
-			this.discArtSize = new ImageSize(0, 0, 0, 0);
-			return;
-		}
-
-		const discArtSizeCorr = SCALE(4);
-		const discArtMargin = SCALE(2);
-		const discArtMarginRight = SCALE(36);
-		const discArtMaxHeight = this.wh - this.topMenuHeight - this.lowerBarHeight;
-		const discScaleFactor = this.displayPlaylist || this.displayLibrary ? 0.5 : 0.75;
-		const discScale = Math.min(this.ww * discScaleFactor / this.discArt.Width, (discArtMaxHeight - SCALE(16)) / this.discArt.Height);
-
-		if (this.hasArtwork) {
-			if (resetDiscArtPosition) {
-				this.discArtSize.x =
-					this.ww - (this.albumArtSize.x + this.albumArtSize.w) < this.albumArtSize.h * grSet.discArtDisplayAmount ? Math.floor(this.ww - this.albumArtSize.h - discArtMarginRight) :
-					grSet.discArtDisplayAmount === 1 ? Math.floor(this.ww - this.albumArtSize.h - discArtMarginRight) :
-					grSet.discArtDisplayAmount === 0.5 ? Math.floor(Math.min(this.ww - this.albumArtSize.h - discArtMarginRight,
-						this.albumArtSize.x + this.albumArtSize.w - (this.albumArtSize.h - 4) * (1 - grSet.discArtDisplayAmount) - (grSet.discArtDisplayAmount === 1 || grSet.discArtDisplayAmount === 0.5 ? 0 : discArtMarginRight))) :
-					Math.floor(this.albumArtSize.x + this.albumArtSize.w - (this.albumArtSize.h - discArtSizeCorr) * (1 - grSet.discArtDisplayAmount) - discArtMarginRight);
-
-				this.discArtSize.y = this.albumArtSize.y + discArtMargin;
-				this.discArtSize.w = this.albumArtSize.h - discArtSizeCorr; // Disc art must be square so use the height of album art for width of discArt
-				this.discArtSize.h = this.discArtSize.w;
-			} else { // When disc art moves because folder images are different sizes we want to push it outwards, but not move it back in so it jumps around less
-				this.discArtSize.x = Math.max(this.discArtSize.x, Math.floor(Math.min(this.ww - this.albumArtSize.h - discArtMarginRight,
-					this.albumArtSize.x + this.albumArtSize.w - (this.albumArtSize.h - 4) * (1 - grSet.discArtDisplayAmount) - (grSet.discArtDisplayAmount === 1 || grSet.discArtDisplayAmount === 0.5 ? 0 : discArtMarginRight))));
-
-				this.discArtSize.y = this.discArtSize.y > 0 ? Math.min(this.discArtSize.y, this.albumArtSize.y + discArtMargin) : this.albumArtSize.y + discArtMargin;
-				this.discArtSize.w = Math.max(this.discArtSize.w, this.albumArtSize.h - discArtSizeCorr);
-				this.discArtSize.h = this.discArtSize.w;
-				if (this.discArtSize.x + this.discArtSize.w > this.ww) {
-					this.discArtSize.x = this.ww - this.discArtSize.w - discArtMarginRight;
-				}
-			}
-		}
-		else { // * No album art so we need to calc size of disc
-			let xCenter = this.ww * 0.5;
-			this.albumArtOffCenter = false;
-			if (this.displayPlaylist || this.displayLibrary) {
-				xCenter = this.ww * 0.25;
-			} else if (discScale === this.ww * 0.75 / this.discArt.Width) {
-				xCenter = Math.round(this.ww * 0.66 - SCALE(40));
-				this.albumArtOffCenter = true;
-			}
-
-			// Need to -4 from height and add 2 to y to avoid skipping discArt drawing - not sure this is needed
-			this.discArtSize.w = Math.floor(this.discArt.Width * discScale) - discArtSizeCorr;
-			this.discArtSize.h = this.discArtSize.w;
-			this.discArtSize.x = Math.floor(xCenter - this.discArtSize.w * 0.5);
-
-			// * Set disc art y-coordinate
-			const restrictedWidth = discScale !== (discArtMaxHeight - SCALE(16)) / this.discArt.Height;
-			const centerY = this.topMenuHeight + Math.floor(((discArtMaxHeight - SCALE(16)) / 2) - this.discArtSize.h / 2);
-			this.discArtSize.y = restrictedWidth ? Math.min(centerY, 160) : this.topMenuHeight + discArtMargin;
-
-			this.hasArtwork = true;
-		}
-
-		if ((this.hasArtwork || this.noAlbumArtStub) && (this.discArt && this.displayDetails && grSet.displayDiscArt && grSet.layout !== 'compact')) {
-			this.createDiscArtShadow();
-		}
-	}
-
-	/**
-	 * Sets the disc art timer with different set interval values for rotating the disc art.
-	 */
-	setDiscArtRotationTimer() {
-		clearInterval(this.discArtRotationTimer);
-		if (grSet.layout === 'default' && !this.albumArtCorrupt && this.albumArt && this.discArt && fb.IsPlaying && !fb.IsPaused && grSet.displayDiscArt && grSet.spinDiscArt && this.displayDetails) {
-			console.log(`creating ${grSet.spinDiscArtImageCount} rotated disc images, shown every ${grSet.spinDiscArtRedrawInterval}ms`);
-			this.discArtRotationTimer = setInterval(() => {
-				this.discArtRotationIndex++;
-				this.discArtRotationIndex %= grSet.spinDiscArtImageCount;
-				this.discArtRotationIndexCover++;
-				this.discArtRotationIndexCover %= grSet.spinDiscArtImageCount;
-
-				if (!this.discArtArray[this.discArtRotationIndex] && this.discArt && this.discArtSize.w) {
-					DebugLog(`creating discArtImg: ${this.discArtRotationIndex} (${this.discArtSize.w}x${this.discArtSize.h}) with rotation: ${360 / grSet.spinDiscArtImageCount * this.discArtRotationIndex} degrees`);
-					this.discArtArray[this.discArtRotationIndex] = RotateImg(this.discArt, this.discArtSize.w, this.discArtSize.h, 360 / grSet.spinDiscArtImageCount * this.discArtRotationIndex);
-					if (['cdAlbumCover', 'vinylAlbumCover'].includes(grSet.discArtStub) && this.discArtCover && (!grSet.noDiscArtStub || grSet.showDiscArtStub)) {
-						this.discArtArrayCover[this.discArtRotationIndexCover] = RotateImg(this.discArtCover, this.discArtSize.w, this.discArtSize.h, 360 / grSet.spinDiscArtImageCount * this.discArtRotationIndexCover);
-					}
-				}
-
-				// The first line of discArtImg that will be drawn
-				const discArtLeftEdge = grSet.detailsAlbumArtOpacity !== 255 || grSet.detailsAlbumArtDiscAreaOpacity !== 255 || grSet.discArtOnTop ? this.discArtSize.x : this.albumArtSize.x + this.albumArtSize.w - 1;
-				window.RepaintRect(discArtLeftEdge, this.discArtSize.y, this.discArtSize.w - (discArtLeftEdge - this.discArtSize.x), this.discArtSize.h, !grSet.discArtOnTop && !this.displayLyrics);
-			}, grSet.spinDiscArtRedrawInterval);
-		}
-	}
-	// #endregion
-
-	// * DETAILS - PUBLIC METHODS - BAND & LABEL LOGO * //
-	// #region DETAILS - PUBLIC METHODS - BAND & LABEL LOGO
-	/**
-	 * Checks if a band logo exists at various paths.
-	 * @param {string} bandStr - The name of the band.
-	 * @returns {string} The path of the band logo if it exists.
-	 */
-	checkBandLogo(bandStr) {
-		const testBandLogoPath = (imgDir, name) => {
-			if (name) {
-				const logoPath = `${imgDir}${name}.png`;
-				if (IsFile(logoPath)) {
-					console.log(`Found band logo: ${logoPath}`);
-					return logoPath;
-				}
-			}
-			return '';
+	getLowerBarTooltip(layout) {
+		const tooltipLayoutType = {
+			default: `${grStr.artistLower}\n${grStr.tracknum === '' ? '' : `${grStr.tracknum} `}${grStr.titleLower}`,
+			artwork_compact: `${grStr.artistLower}\n${grStr.tracknum} ${grStr.titleLower}`
 		};
-
-		return testBandLogoPath(grPath.artistlogos, bandStr) || // Try 800x310 white
-			   testBandLogoPath(grPath.artistlogosColor, bandStr) || ''; // Try 800x310 color
+		return tooltipLayoutType[layout];
 	}
 
 	/**
-	 * Gets the band logo and its inverted version based on the current playing album artist in Details.
+	 * Handles the lower bar artist/tite tooltip. If a tooltip is ready, it displays and then clears it.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
 	 */
-	getBandLogo() {
-		this.bandLogo = null;
-		this.bandLogoInverted = null;
-		let path;
-		let tryArtistList = [
-			...GetMetaValues('%album artist%').map(artist => ReplaceFileChars(artist)),
-			...GetMetaValues('%album artist%').map(artist => ReplaceFileChars(artist).replace(/^[Tt]he /, '')),
-			ReplaceFileChars($('[%track artist%]')),
-			...GetMetaValues('%artist%').map(artist => ReplaceFileChars(artist)),
-			...GetMetaValues('%artist%').map(artist => ReplaceFileChars(artist).replace(/^[Tt]he /, ''))
-		];
+	handleLowerBarTooltip(x, y) {
+		const artistOverflow = this.lowerBarArtistW > this.lowerBarAvailableW;
+		const titleOverflow = this.lowerBarTitleW > this.lowerBarAvailableW;
+		const twoLinesOverflow = grSet.showLowerBarArtist_layout && grSet.showLowerBarTitle_layout && this.lowerBarTwoLines;
 
-		tryArtistList = [...new Set(tryArtistList)];
-		tryArtistList.some(artistString => {
-			path = this.checkBandLogo(artistString);
-			return path;
-		});
+		const showTooltip_default = grSet.layout === 'default' &&
+			(grSet.showLowerBarArtist_layout && artistOverflow || grSet.showLowerBarTitle_layout && titleOverflow);
 
-		if (!path) return;
+		const showTooltip_artwork_compact = grSet.layout !== 'default' &&
+			(grSet.showLowerBarArtist_layout && artistOverflow || grSet.showLowerBarTitle_layout && titleOverflow || twoLinesOverflow);
 
-		this.bandLogo = grm.artCache.getImage(path);
-		if (!this.bandLogo) {
-			const logo = gdi.Image(path);
-			if (logo) {
-				this.bandLogo = grm.artCache.encache(logo, path);
-				this.bandLogoInverted = grm.artCache.encache(logo.InvertColours(), `${path}-inv`);
-			}
+		const tooltip = showTooltip_default ? this.getLowerBarTooltip('default') :
+				showTooltip_artwork_compact ? this.getLowerBarTooltip('artwork_compact') : '';
+
+		if (tooltip.length) { // * Display tooltip
+			const offset = SCALE(30);
+			this.lowerBarTooltipText = tooltip;
+			grm.ttip.showDelayed(this.lowerBarTooltipText);
+			this.repaintStyledTooltips(this.styledToolTipX - offset * 2, this.styledToolTipY - offset, this.styledToolTipW + offset * 4, this.styledToolTipH + offset * 2);
+		} else { // * Clear tooltip
+			this.lowerBarTooltipText = '';
+			grm.ttip.stop();
+			window.Repaint();
 		}
-
-		this.bandLogoInverted = grm.artCache.getImage(`${path}-inv`);
-		if (!this.bandLogoInverted && this.bandLogo) {
-			this.bandLogoInverted = grm.artCache.encache(this.bandLogo.InvertColours(), `${path}-inv`);
-		}
-	}
-
-	/**
-	 * Gets label logos based on current playing album artist in Details.
-	 * @param {FbMetadbHandle} metadb - The metadb of the track.
-	 */
-	getLabelLogo(metadb) {
-		const labelTags = ['label', 'publisher', 'discogs_label'];
-		let labelStrings = [];
-		this.recordLabels = []; // Will free memory from earlier loaded record label images
-		this.recordLabelsInverted = [];
-
-		for (const label of labelTags) {
-			labelStrings.push(...GetMetaValues(label, metadb));
-		}
-		labelStrings = [...new Set(labelStrings)];
-
-		for (const labelString of labelStrings) {
-			const addLabel = this.loadLabelLogo(labelString);
-			if (addLabel != null) {
-				this.recordLabels.push(addLabel);
-				try {
-					this.recordLabelsInverted.push(addLabel.InvertColours());
-				} catch (e) {}
-			}
-		}
-	}
-
-	/**
-	 * Loads the label logo in Details.
-	 * @param {string} publisherString - The name of a record label or publisher.
-	 * @returns {GdiBitmap} The record label logo as a gdi image object.
-	 */
-	loadLabelLogo(publisherString) {
-		const d = new Date();
-		const lastSrchYear = d.getFullYear();
-		let dir = grPath.labelsBase;
-		let recordLabel = null;
-		let labelStr = ReplaceFileChars(publisherString);
-
-		if (labelStr) {
-			// * First check for record label folder
-			if (IsFolder(dir + labelStr) ||
-				IsFolder(dir + (labelStr =
-				labelStr.replace(/ Records$/, '')
-						.replace(/ Recordings$/, '')
-						.replace(/ Music$/, '')
-						.replace(/\.$/, '')
-						.replace(/[\u2010\u2013\u2014]/g, '-')))) { // Hyphen, endash, emdash
-							let year = parseInt($('$year(%date%)'));
-							for (; year <= lastSrchYear; year++) {
-								const yearFolder = `${dir + labelStr}\\${year}`;
-								if (IsFolder(yearFolder)) {
-									console.log(`Found folder for ${labelStr} for year ${year}.`);
-									dir += `${labelStr}\\${year}\\`;
-									break;
-								}
-							}
-							if (year > lastSrchYear) {
-								dir += `${labelStr}\\`; // We didn't find a year folder so use the "default" logo in the root
-								console.log(`Found folder for ${labelStr} and using latest logo.`);
-							}
-						}
-			// * Actually load the label from either the directory we found above, or the base record label folder
-			labelStr = ReplaceFileChars(publisherString); // We need to start over with the original string when searching for the file, just to be safe
-			let label = `${dir + labelStr}.png`;
-
-			if (IsFile(label)) {
-				recordLabel = gdi.Image(label);
-				console.log('Found Record label:', label, !recordLabel ? '<COULD NOT LOAD>' : '');
-			}
-			else {
-				labelStr =
-					labelStr.replace(/ Records$/, '')
-							.replace(/ Recordings$/, '')
-							.replace(/ Music$/, '')
-							.replace(/[\u2010\u2013\u2014]/g, '-'); // Hyphen, endash, emdash
-
-				label = `${dir + labelStr}.png`;
-				if (IsFile(label)) return gdi.Image(label);
-				label = `${dir + labelStr} Records.png`;
-				if (IsFile(label)) return gdi.Image(label);
-			}
-		}
-		return recordLabel;
-	}
-	// #endregion
-
-	// * DETAILS - PUBLIC METHODS - METADATA GRID * //
-	// #region DETAILS - PUBLIC METHODS - METADATA GRID
-	/**
-	 * Calculates date ratios based on various time-related properties of a music track, displayed on the timeline in Details.
-	 * @param {boolean} dontUpdateLastPlayed - Whether the last played date should be updated or not.
-	 * @param {string} currentLastPlayed - The current value of the last played time.
-	 */
-	calcDateRatios(dontUpdateLastPlayed = false, currentLastPlayed) {
-		const newDate = new Date();
-		const timezoneOffset = UpdateTimezoneOffset();
-
-		let ratio;
-		let lfmPlayedTimesJsonLast = '';
-		let playedTimesJsonLast = '';
-		let playedTimesRatios = [];
-		let lfmPlayedTimes = [];
-		let playedTimes = [];
-
-		let added = ToTime($('$if2(%added_enhanced%,%added%)'), timezoneOffset);
-		let lastPlayed = ToTime($('$if2(%last_played_enhanced%,%last_played%)'), timezoneOffset);
-		const firstPlayed = ToTime($('$if2(%first_played_enhanced%,%first_played%)'), timezoneOffset);
-		const today = DateToYMD(newDate);
-
-		if (dontUpdateLastPlayed && $Date(lastPlayed) === today) {
-			lastPlayed = ToTime(currentLastPlayed, timezoneOffset);
-		}
-
-		if (Component.EnhancedPlaycount) {
-			const playedTimesJson = $('[%played_times_js%]', fb.GetNowPlaying());
-			const lastfmJson = $('[%lastfm_played_times_js%]', fb.GetNowPlaying());
-			const log = ''; // ! Don't need this crap to flood the console // playedTimesJson === playedTimesJsonLast && lastfmJson === lfmPlayedTimesJsonLast ? false : grCfg.settings.showDebugLog;
-			lfmPlayedTimesJsonLast = lastfmJson;
-			playedTimesJsonLast = playedTimesJson;
-			lfmPlayedTimes = ParseJson(lastfmJson, 'lastfm: ', log);
-			playedTimes = ParseJson(playedTimesJson, 'foobar: ', log);
-		}
-		else {
-			playedTimes.push(firstPlayed);
-			playedTimes.push(lastPlayed);
-		}
-
-		if (firstPlayed) {
-			if (!added) {
-				added = firstPlayed;
-			}
-			const age = CalcAge(added);
-
-			this.timelineFirstPlayedRatio = CalcAgeRatio(firstPlayed, age);
-			this.timelineLastPlayedRatio = CalcAgeRatio(lastPlayed, age);
-			if (this.timelineLastPlayedRatio < this.timelineFirstPlayedRatio) {
-				// Due to daylight savings time, if there's a single play before the time changed lastPlayed could be < firstPlayed
-				this.timelineLastPlayedRatio = this.timelineFirstPlayedRatio;
-			}
-
-			if (playedTimes.length) {
-				for (let i = 0; i < playedTimes.length; i++) {
-					ratio = CalcAgeRatio(playedTimes[i], age);
-					playedTimesRatios.push(ratio);
-				}
-			} else {
-				playedTimesRatios = [this.timelineFirstPlayedRatio, this.timelineLastPlayedRatio];
-				playedTimes = [firstPlayed, lastPlayed];
-			}
-
-			let j = 0;
-			const tempPlayedTimesRatios = playedTimesRatios.slice();
-			tempPlayedTimesRatios.push(1.0001); // Pick up every last.fm time after lastPlayed fb knows about
-			for (let i = 0; i < tempPlayedTimesRatios.length; i++) {
-				while (j < lfmPlayedTimes.length && (ratio = CalcAgeRatio(lfmPlayedTimes[j], age)) < tempPlayedTimesRatios[i]) {
-					playedTimesRatios.push(ratio);
-					playedTimes.push(lfmPlayedTimes[j]);
-					j++;
-				}
-				if (ratio === tempPlayedTimesRatios[i]) { // Skip one instance
-					// console.log('skipped -->', ratio);
-					j++;
-				}
-			}
-			playedTimesRatios.sort();
-			playedTimes.sort();
-
-			this.timelineFirstPlayedRatio = playedTimesRatios[0];
-			this.timelineLastPlayedRatio = playedTimesRatios[Math.max(0, playedTimesRatios.length - (dontUpdateLastPlayed ? 2 : 1))];
-		}
-		else {
-			this.timelineFirstPlayedRatio = 0.33;
-			this.timelineLastPlayedRatio = 0.66;
-		}
-		grm.timeline.setPlayTimes(this.timelineFirstPlayedRatio, this.timelineLastPlayedRatio, playedTimesRatios, playedTimes);
-	}
-
-	/**
-	 * Loads the codec logo of the now playing track, displayed in the metadata grid in Details.
-	 */
-	loadCodecLogo() {
-		const codec = $('$lower($if2(%codec%,$ext(%path%)))');
-		const format = $('$lower($ext(%path%))', fb.GetNowPlaying());
-		const lightBg = new Color(grCol.detailsText).brightness < 140;
-		const bw = lightBg ? 'black' : 'white';
-
-		const codecFormat = {
-			'aac':  'aac', 'aac acm codec': 'aac',
-			'ac3':  'ac3', 'atsc a/52': 'ac3', 'e-ac3': 'ac3',
-			'aiff': 'pcm-aiff',
-			'alac': 'alac',
-			'alaw': 'alaw', 'ccitt a-law': 'alaw',
-			'amr':  'amr',
-			'ape':  'ape', 'monkey\'s audio': 'ape',
-			'caf':  'caf',
-			'dsd':  format === 'iso' ? 'dsd-sacd' : 'dsd',
-			'dst':  'dsd-sacd',
-			'dts':  'dts', 'dca (dts coherent acoustics)': 'dts',
-			'dxd':  format === 'iso' ? 'dsd-sacd' : 'dxd',
-			'flac': 'flac',
-			'gsm':  'gsm', 'gsm 6.10': 'gsm',
-			'imaadpcm': 'imaadpcm', 'ima adpcm': 'imaadpcm',
-			'la':   'la',
-			'mid':  'mid',
-			'mlp':  'mlp',
-			'mod':  'mod',
-			'mp2':  'mp2',
-			'mp3':  'mp3', 'mpeg layer-3': 'mp3',
-			'mpc':  'musepack', 'musepack': 'musepack',
-			'msadpcm': 'msadpcm', 'microsoft adpcm': 'msadpcm',
-			'ofr':  'ofr', 'optimfrog': 'ofr',
-			'ogg':  'ogg', 'vorbis': 'ogg',
-			'opus': 'opus',
-			'pcm':  format === 'aiff' ? 'pcm-aiff' : ['w64', 'wav'].includes(format) ? 'pcm-wav' : 'pcm',
-			'qoa':  'qoa',
-			'shn':  'shn', 'shorten': 'shn',
-			'spx':  'spx', 'speex': 'spx',
-			'tak':  'tak',
-			'tta':  'tta', 'true audio': 'tta',
-			'ulaw': 'ulaw', 'ccitt u-law': 'ulaw',
-			'usac': 'usac',
-			'wav':  'pcm-wav',
-			'w64':  'pcm-wav',
-			'wma':  'wma',
-			'wv':   'wavpack', 'wavpack': 'wavpack'
-		};
-
-		const codecName = codecFormat[codec] || codecFormat[format];
-		const codecLogoPath = (codecName) => `${grPath.images}codec\\${codecName}-${bw}.png`;
-
-		if (codecName) {
-			this.codecLogo = gdi.Image(codecLogoPath(codecName));
-		}
-		// Handle special cases
-		if (codec.startsWith('dsd')) {
-			this.codecLogo = gdi.Image(codecLogoPath(codecFormat.dsd));
-		} else if (codec.startsWith('dxd')) {
-			this.codecLogo = gdi.Image(codecLogoPath(codecFormat.dxd));
-		} else if (codec.startsWith('dst')) {
-			this.codecLogo = gdi.Image(codecLogoPath(codecFormat.dst));
-		}
-	}
-
-	/**
-	 * Loads the channel logo of the now playing track, displayed in the metadata grid in Details.
-	 */
-	loadChannelLogo() {
-		const channels = $('%channels%');
-		const type =
-			(grSet.layout === 'default' && grSet.showGridChannelLogo_default === 'textlogo' ||
-			 grSet.layout === 'artwork' && grSet.showGridChannelLogo_artwork === 'textlogo') ? '_text' : '';
-
-		const lightBg = new Color(grCol.detailsText).brightness < 140;
-		const bw = lightBg ? 'black' : 'white';
-
-		const channelFormat = {
-			'mono':   '10_mono',
-			'stereo': '20_stereo',
-			'3ch':    '30_center',
-			'4ch':    '40_quad',
-			'5ch':    '50_surround',
-			'6ch':    '51_surround',
-			'7ch':    '61_surround',
-			'8ch':    '71_surround',
-			'10ch':   '91_surround',
-			'12ch':   '111_surround'
-		};
-
-		const channelName = channelFormat[channels];
-		const channelLogoPath = (channelName) => `${grPath.images}channels\\${channelName}${type}-${bw}.png`;
-		if (channelName) this.channelLogo = gdi.Image(channelLogoPath(channelName));
-	}
-
-	/**
-	 * Loads the release country flags, displayed in the metadata grid in Details.
-	 */
-	loadReleaseCountryFlag() {
-		this.releaseFlagImg = this.loadFlagImage($(grTF.releaseCountry));
-	}
-
-	/**
-	 * Updates the metadata grid in Details, reuses last value for last played unless provided one.
-	 * @param {string} currentLastPlayed - The current value of the "Last Played" metadata field.
-	 * @param {string} currentPlayingPlaylist - The current active playlist that is being played from.
-	 * @returns {Array|null} The updated metadata grid, which is an array of objects with properties `label`, `val` and `age`.
-	 */
-	updateMetadataGrid(currentLastPlayed, currentPlayingPlaylist) {
-		if (!grCfg.metadataGrid) return null;
-
-		currentLastPlayed = (grStr && grStr.grid ? grStr.grid.find(value => value.label === 'Last Played') || {} : {}).val;
-		grStr.grid = [];
-
-		for (const key of grCfg.metadataGrid) {
-			let val = $(key.val);
-			if (val && key.label) {
-				if (key.age) {
-					val = $(`$date(${val})`); // Never show time
-					const age = CalcAgeDateString(val);
-					if (age) val += ` (${age})`;
-				}
-				grStr.grid.push({
-					age: key.age,
-					label: key.label,
-					val
-				});
-			}
-		}
-		if (typeof currentLastPlayed !== 'undefined') {
-			const lp = grStr.grid.find(value => value.label === 'Last Played');
-			if (lp) {
-				lp.val = $Date(currentLastPlayed);
-				if (CalcAgeDateString(lp.val)) {
-					lp.val += ` (${CalcAgeDateString(lp.val)})`;
-				}
-			}
-		}
-		if (typeof currentPlayingPlaylist !== 'undefined') {
-			const pl = grStr.grid.find(value => value.label === 'Playing List');
-			if (pl) {
-				pl.val = currentPlayingPlaylist;
-			}
-		}
-		return grStr.grid;
-	}
-
-	/**
-	 * Updates the metadata grid positions in Details.
-	 * This method is primarily used to refresh the coordinates for mouseInMetadataGrid.
-	 */
-	updateMetadataGridPos() {
-		this.gridTop = 0;
-		this.gridArtistTop = 0;
-		this.gridArtistBottom = 0;
-		this.gridTitleTop = 0;
-		this.gridTitleBottom = 0;
-		this.gridAlbumTop = 0;
-		this.gridAlbumBottom = 0;
 	}
 	// #endregion
 
@@ -4841,6 +4090,36 @@ class MainUI {
 	initPlaylist() {
 		pl.call = new PlaylistCallbacks();
 		pl.playlist.initialize();
+	}
+
+	/**
+	 * Initializes the Playlist state and active Playlist layout presets.
+	 */
+	initPlaylistLayoutState() {
+		grSet.savedPlaylistLayoutFull = grSet.playlistLayout === 'full';
+
+		if (this.displayBiography && grSet.playlistLayout === 'full') {
+			this.displayPlaylist = true;
+			this.displayLibrary = false;
+			this.displayBiography = false;
+		}
+
+		if (this.displayLyrics) this.displayLyrics = false;
+		if (this.displayCustomThemeMenu) this.initCustomThemeMenuState();
+
+		this.resizeArtwork(true);
+		this.initPanelWidthAuto();
+		this.setPlaylistSize();
+		grm.jSearch.on_size();
+		grm.button.initButtonState();
+		window.Repaint();
+	}
+
+	/**
+	 * Sets the Playlist size and position.
+	 */
+	setPlaylistSize() {
+		pl.call.on_size(this.ww, this.wh)
 	}
 
 	/**
@@ -4935,33 +4214,32 @@ class MainUI {
 			lib.pop.clearTree();
 			lib.ui.getFont(); // * Reset font size when grSet.libraryLayoutSplitPreset4 was used
 			RepaintWindowRectAreas();
+
 			if (grSet.libraryLayout !== 'split' && (!grSet.libraryLayoutFullPreset || !libraryLayoutSplitPresets)) {
-				libSet.albumArtShow = grSet.savedAlbumArtShow;
-				libSet.albumArtLabelType = grSet.savedAlbumArtLabelType;
+				libSet.albumArtShow = grSet.savedLibraryAlbumArtShow;
+				libSet.albumArtLabelType = grSet.savedLibraryAlbumArtLabelType;
 			}
-			lib.panel.imgView = grSet.libraryLayout === 'normal' && grSet.libraryLayoutFullPreset ? libSet.albumArtShow = false : libSet.albumArtShow;
-			lib.men.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
-		}
+
+			setTimeout(() => {
+				lib.panel.imgView = grSet.libraryLayout === 'normal' && grSet.libraryLayoutFullPreset ? libSet.albumArtShow = false : libSet.albumArtShow;
+				lib.men.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
+			}, 1);
+		};
 
 		// * Full layout preset
 		if (grSet.libraryLayout === 'full' && grSet.libraryLayoutFullPreset) {
 			grSet.libraryDesign = 'reborn';
-			grSet.libraryThumbnailSize = grSet.libraryThumbnailSizeSaved;
-			if (grSet.playerSize_HD_small && (grSet.libraryThumbnailSize === 'auto' || libSet.thumbNailSize === 'auto')) {
+			grSet.libraryThumbnailSize = grSet.savedLibraryThumbnailSize;
+			if (grm.display.checkPlayerSize(this.ww, this.wh, 'default', 'HD') === 'small' && (grSet.libraryThumbnailSize === 'auto' || libSet.thumbNailSize === 'auto')) {
 				libSet.thumbNailSize = 1;
 			}
 			libSet.albumArtLabelType = 1;
+			libSet.albumArtFlowMode = false;
 			lib.panel.imgView = libSet.albumArtShow = true;
 		}
 		// * Split layout with active split layout presets
 		else if (grSet.libraryLayout === 'split' && libraryLayoutSplitPresets) {
 			if (grSet.layout !== 'default') return;
-
-			if (!plSet.show_header) this.updatePlaylist();
-
-			if (grSet.playlistLayout === 'full') {
-				grSet.playlistLayout = 'normal';
-			}
 
 			if (grSet.libraryLayoutSplitPreset) {
 				grSet.libraryDesign = 'reborn';
@@ -4969,21 +4247,12 @@ class MainUI {
 				lib.panel.imgView = libSet.albumArtShow = false;
 				libSet.albumArtLabelType = 1;
 				plSet.show_header = true;
-				if (this.displayPlaylist && this.displayLibrary) {
-					plSet.auto_collapse = true;
-					pl.playlist.header_auto_collapse();
-				}
-				else {
-					plSet.auto_collapse = false;
-					pl.playlist.header_expand();
-				}
 			}
 			else if (grSet.libraryLayoutSplitPreset2) {
 				grSet.libraryDesign = 'reborn';
 				grSet.libraryThumbnailSize = 'playlist';
 				lib.panel.imgView = libSet.albumArtShow = false;
 				libSet.albumArtLabelType = 1;
-				plSet.auto_collapse = false;
 				plSet.show_header = this.displayPlaylist && !this.displayLibrary && grSet.libraryLayout === 'split';
 				this.updatePlaylist();
 			}
@@ -4993,39 +4262,52 @@ class MainUI {
 				lib.panel.imgView = libSet.albumArtShow = true;
 				libSet.albumArtLabelType = 1;
 				plSet.show_header = true;
-				if (this.displayPlaylist && this.displayLibrary) {
-					plSet.auto_collapse = true;
-					pl.playlist.header_auto_collapse();
-				}
-				else {
-					plSet.auto_collapse = false;
-					pl.playlist.header_expand();
-				}
 			}
 			else if (grSet.libraryLayoutSplitPreset4) {
-				grSet.libraryDesign = 'artistLabelsRight';
+				grSet.libraryDesign = 'coversLabelsRight';
 				grSet.libraryThumbnailSize = 'playlist';
 				lib.panel.imgView = libSet.albumArtShow = true;
 				libSet.albumArtLabelType = 2;
 				plSet.show_header = true;
-				if (this.displayPlaylist && this.displayLibrary) {
-					plSet.auto_collapse = true;
-					pl.playlist.header_auto_collapse();
-				}
-				else {
-					plSet.auto_collapse = false;
-					pl.playlist.header_expand();
-				}
 			}
-			pl.call.on_size(this.ww, this.wh);
+
+			this.setPlaylistSize();
 		}
 		// * Normal layout with active split layout presets
 		else if (grSet.libraryLayout === 'normal' && libraryLayoutSplitPresets) {
-			grSet.libraryThumbnailSize = grSet.libraryThumbnailSizeSaved;
+			grSet.libraryThumbnailSize = grSet.savedLibraryThumbnailSize;
 		}
 
 		setLibraryView();
 		this.setLibrarySize();
+	}
+
+	/**
+	 * Initializes the Library state and active Library layout presets.
+	 */
+	initLibraryLayoutState() {
+		grSet.savedLibraryLayoutFull = grSet.libraryLayout === 'full';
+		this.displayPlaylist = grSet.libraryLayout === 'split';
+
+		if (!this.displayLibrary) {
+			this.displayDetails = false;
+			this.displayLibrary = true;
+			this.displayBiography = false;
+		}
+
+		if (this.displayLyrics && ['full', 'split'].includes(grSet.libraryLayout)) {
+			this.displayLyrics = false;
+		} else if (grSet.savedLyricsDisplayed && grSet.libraryLayout === 'normal') {
+			this.displayLyrics = true;
+		}
+
+		this.handlePanelLayout('playlist', 'initLayout');
+		if (this.displayCustomThemeMenu) this.initCustomThemeMenuState();
+
+		this.resizeArtwork(true);
+		this.initPanelWidthAuto();
+		this.initLibraryLayout();
+		grm.button.initButtonState();
 		window.Repaint();
 	}
 
@@ -5056,6 +4338,29 @@ class MainUI {
 	}
 
 	/**
+	 * Sets the Library layout split presets.
+	 * @param {boolean} libraryLayoutSplitPreset - Whether the Library layout split preset should be set.
+	 */
+	setLibrarySplitPreset(libraryLayoutSplitPreset) {
+		grSet.libraryLayoutSplitPreset  = false;
+		grSet.libraryLayoutSplitPreset2 = false;
+		grSet.libraryLayoutSplitPreset3 = false;
+		grSet.libraryLayoutSplitPreset4 = false;
+		if (libraryLayoutSplitPreset) grSet[libraryLayoutSplitPreset] = true;
+
+		// * Reset to default settings when deactivating Library layout split presets
+		if (!grSet.libraryLayoutSplitPreset  && !grSet.libraryLayoutSplitPreset2 &&
+			!grSet.libraryLayoutSplitPreset3 && !grSet.libraryLayoutSplitPreset4) {
+			plSet.show_header = true;
+			pl.playlist.header_expand();
+		}
+
+		this.initLibraryLayout();
+		this.initPlaylist();
+		this.setPlaylistSize();
+	}
+
+	/**
 	 * Sets the Library size and position.
 	 */
 	setLibrarySize() {
@@ -5083,6 +4388,37 @@ class MainUI {
 
 	// * LIBRARY - PUBLIC METHODS - CONTROLS * //
 	// #region LIBRARY - PUBLIC METHODS - CONTROLS
+	/**
+	 * Displays the Library and Playlist side by side, called when Library layout is in split mode.
+	 * @param {boolean} control - Limits the area to the width and height of the playlist panel.
+	 * @returns {boolean} True if Library and Playlist are being displayed.
+	 */
+	displayLibrarySplit(control) {
+		return grSet.layout === 'default' && grSet.libraryLayout === 'split' && this.displayLibrary && this.displayPlaylist &&
+		(control ? this.state.mouse_x > pl.playlist.x && this.state.mouse_x <= pl.playlist.x + pl.playlist.w &&
+				   this.state.mouse_y > pl.playlist.y - SCALE(plSet.row_h) && this.state.mouse_y <= pl.playlist.y + pl.playlist.h : true);
+	}
+
+	/**
+	 * Handles the Playlist header collapse when the Library layout split presets are enabled.
+	 */
+	handleLibrarySplitCollapse() {
+		if (plSet.auto_collapse || !plSet.show_header
+			&& !grSet.libraryLayoutSplitPreset
+			&& !grSet.libraryLayoutSplitPreset3
+			&& !grSet.libraryLayoutSplitPreset4) {
+			return;
+		}
+
+		grSet.savedPlaylistHeaderCollapse = this.displayLibrarySplit();
+
+		if (grSet.savedPlaylistHeaderCollapse) {
+			pl.playlist.collapse_handler.collapse_all();
+		} else if (!grSet.savedPlaylistHeaderCollapse) {
+			pl.playlist.collapse_handler.expand_all();
+		}
+	}
+
 	/**
 	 * Drags and drops items from Library to Playlist in split layout.
 	 */
@@ -5115,58 +4451,63 @@ class MainUI {
 	autoThumbnailSize() {
 		if (grSet.libraryThumbnailSize !== 'auto') return;
 
+		// * Thumbnail sizes
+		const MINI = 0;
+		const SMALL = 1;
+		const REGULAR = 2;
+		const MEDIUM = 3;
+		const LARGE = 4;
+		const XL = 5;
+		const ARTWORK_DEFAULT_LAYOUT = grSet.layout === 'artwork' ? SMALL : REGULAR;
+
+		// * Layouts
 		const noStd = ['coversLabelsRight', 'artistLabelsRight'].includes(grSet.libraryDesign) || libSet.albumArtLabelType === 2;
 		const fullW = grSet.libraryLayout === 'full' && grSet.layout === 'default';
 
+		/**
+		 * Sets the library thumbnail size and vertical padding based on resolution.
+		 * @param {number} noStd_fullWidth - The thumbnail size for no standard library layout while in full width.
+		 * @param {number} noStd_noFullWidth - The thumbnail size for no standard library layout not in full width.
+		 * @param {number} fullWidth - The thumbnail size for standard library layout while in full width.
+		 * @param {number} normalWidth - The thumbnail size for standard library layout in normal width.
+		 * @param {number} verticalPadding - The noStd full width.
+		 */
+		const setThumbnailMetrics = (noStd_fullWidth, noStd_noFullWidth, fullWidth, normalWidth, verticalPadding) => {
+			libSet.thumbNailSize = noStd && fullW ? noStd_fullWidth : noStd && !fullW ? noStd_noFullWidth : fullW ? fullWidth : normalWidth;
+			libSet.verticalAlbumArtPad = verticalPadding;
+		}
+
 		if (!RES._4K && !RES._QHD) {
 			if (grSet.layout === 'default' && this.ww < 1600 && this.wh < 960 || grSet.layout === 'artwork' && this.ww < 700 && this.wh < 860) {
-				libSet.thumbNailSize = noStd && fullW ? 1 : noStd && !fullW ? 0 : // Thumbnail size 'Small' or 'Mini'
-				grSet.layout === 'artwork' ? 1 : 2; // Thumbnail size 'Small' or 'Regular'
-				libSet.verticalAlbumArtPad = 2;
+				setThumbnailMetrics(SMALL, MINI, ARTWORK_DEFAULT_LAYOUT, ARTWORK_DEFAULT_LAYOUT, 2);
 			}
 			if (grSet.layout === 'default' && this.ww >= 1600 && this.wh >= 960 || grSet.layout === 'artwork' && this.ww >= 700 && this.wh >= 860) {
-				libSet.thumbNailSize = noStd && fullW ? 2 : noStd && !fullW ? 1 : // Thumbnail size 'Small'
-				fullW ? 3 : 3; // Thumbnail size 'Medium'
-				libSet.verticalAlbumArtPad = 2;
+				setThumbnailMetrics(REGULAR, SMALL, MEDIUM, MEDIUM, 2);
 			}
 			if (grSet.layout === 'default' && this.ww >= 1802 && this.wh >= 1061 || grSet.layout === 'artwork' && this.ww >= 901 && this.wh >= 1062) {
-				libSet.thumbNailSize = noStd && !fullW ? 2 : noStd && fullW ? 3 : // Thumbnail size 'Small' or 'Regular'
-				fullW ? this.ww === 1802 && this.wh === 1061 ? 5 : 4 : 3; // Thumbnail size 'XL' or 'Large' or 'Medium'
-				libSet.verticalAlbumArtPad = 2;
+				setThumbnailMetrics(MEDIUM, REGULAR, (this.ww === 1802 && this.wh === 1061 ? 5 : 4), MEDIUM, 2);
 			}
 		}
 		else if (RES._QHD) {
 			if (grSet.layout === 'default' && this.ww < 1802 && this.wh < 1061 || grSet.layout === 'artwork' && this.ww < 901 && this.wh < 1061) {
-				libSet.thumbNailSize = noStd && fullW ? 1 : noStd && !fullW ? 0 : // Thumbnail size 'Small' or 'Mini'
-				grSet.layout === 'artwork' ? 1 : 2; // Thumbnail size 'Small' or 'Regular'
-				libSet.verticalAlbumArtPad = 2;
+				setThumbnailMetrics(SMALL, MINI, ARTWORK_DEFAULT_LAYOUT, ARTWORK_DEFAULT_LAYOUT, 2);
 			}
 			if (grSet.layout === 'default' && this.ww >= 1802 && this.wh >= 1061 || grSet.layout === 'artwork' && this.ww >= 901 && this.wh >= 1061) {
-				libSet.thumbNailSize = noStd && fullW ? 1 : noStd && !fullW ? 1 : // Thumbnail size 'Small'
-				fullW ? 4 : 2; // Thumbnail size 'Medium' or 'Regular'
-				libSet.verticalAlbumArtPad = 3;
+				setThumbnailMetrics(SMALL, SMALL, LARGE, REGULAR, 3);
 			}
 			if (grSet.layout === 'default' && this.ww >= 2280 && this.wh >= 1300 || grSet.layout === 'artwork' && this.ww >= 1140 && this.wh >= 1300) {
-				libSet.thumbNailSize = noStd && !fullW ? 2 : noStd && fullW ? 3 : // Thumbnail size 'Small' or 'Regular'
-				fullW ? 5 : 3; // Thumbnail size 'Large' or 'Medium'
-				libSet.verticalAlbumArtPad = fullW ? 2 : 3;
+				setThumbnailMetrics(MEDIUM, REGULAR, XL, MEDIUM, fullW ? 2 : 3);
 			}
 		}
 		else if (RES._4K) {
 			if (grSet.layout === 'default' && this.ww < 2800 && this.wh < 1720 || grSet.layout === 'artwork' && this.ww < 1400 && this.wh < 1720) {
-				libSet.thumbNailSize = noStd && fullW ? 1 : noStd && !fullW ? 0 : // Thumbnail size 'Small' or 'Mini'
-				fullW ? 2 : 1;  // Thumbnail size 'Small'
-				libSet.verticalAlbumArtPad = 2;
+				setThumbnailMetrics(SMALL, MINI, REGULAR, SMALL, 2);
 			}
 			if (grSet.layout === 'default' && this.ww >= 2800 && this.wh >= 1720 || grSet.layout === 'artwork' && this.ww >= 1400 && this.wh >= 1720) {
-				libSet.thumbNailSize = noStd && fullW ? 1 : noStd && !fullW ? 1 : // Thumbnail size 'Small'
-				fullW ? 3 : 1; // Thumbnail size 'Regular' or 'Small'
-				libSet.verticalAlbumArtPad = 3;
+				setThumbnailMetrics(SMALL, SMALL, MEDIUM, SMALL, 3);
 			}
 			if (grSet.layout === 'default' && this.ww >= 3400 && this.wh >= 2020 || grSet.layout === 'artwork' && this.ww >= 1400 && this.wh >= 1720) {
-				libSet.thumbNailSize = noStd && !fullW ? 1 : noStd && fullW ? 3 : // Thumbnail size 'Small' or 'Regular'
-				fullW ? this.ww === 3400 && this.wh === 2020 ? 4 : 4 : 2; // Thumbnail size 'Medium' or 'Regular'
-				libSet.verticalAlbumArtPad = 2;
+				setThumbnailMetrics(MEDIUM, SMALL, LARGE, REGULAR, 2);
 			}
 		}
 	}
@@ -5219,22 +4560,42 @@ class MainUI {
 	}
 
 	/**
+	 * Initializes the Biography state and active Biography layout presets.
+	 */
+	initBiographyLayoutState() {
+		grSet.savedBiographyLayoutFull = grSet.biographyLayout === 'full';
+
+		const biographyFull = this.displayBiography && bio.ui.x + bio.ui.w === this.ww && !fb.IsPlaying || grSet.biographyLayout === 'full';
+		this.displayPlaylist = grSet.layout === 'default' && (biographyFull ? !this.displayBiography : true);
+
+		if (!this.displayBiography) {
+			this.displayDetails = false;
+			this.displayLibrary = false;
+			this.displayBiography = true;
+		}
+
+		if (this.displayPlaylist) this.setPlaylistSize();
+		if (this.displayCustomThemeMenu) this.initCustomThemeMenuState();
+
+		this.initPanelWidthAuto(true);
+		this.initBiographyLayout();
+		grm.button.initButtonState();
+		window.Repaint();
+	}
+
+	/**
 	 * Sets the Biography display layout.
 	 */
 	setBiographyDisplay() {
-		switch (grSet.biographyDisplay) {
-			case 'Image+text':
-				bioSet.img_only = false;
-				bioSet.text_only = false;
-				break;
-			case 'Image':
-				bioSet.img_only = true;
-				bioSet.text_only = false;
-				break;
-			case 'Text':
-				bioSet.img_only = false;
-				bioSet.text_only = true;
-				break;
+		if (grSet.biographyDisplay === 'Image+text') {
+			bioSet.img_only = false;
+			bioSet.text_only = false;
+		} else if (grSet.biographyDisplay === 'Image') {
+			bioSet.img_only = true;
+			bioSet.text_only = false;
+		} else if (grSet.biographyDisplay === 'Text') {
+			bioSet.img_only = false;
+			bioSet.text_only = true;
 		}
 	}
 
@@ -5255,6 +4616,148 @@ class MainUI {
 		const biographyHeight = Math.max(0, this.wh - this.lowerBarHeight - y);
 
 		bio.call.on_size(x, y, biographyWidth, biographyHeight);
+	}
+	// #endregion
+
+	// * LYRICS - PUBLIC METHODS - INITIALIZATION * //
+	// #region LYRICS - PUBLIC METHODS - INITIALIZATION
+	/**
+	 * Initializes the Lyrics display state.
+	 * @param {string} state - The lyrics display state to initialize, can be one of the following values:
+	 * - `startup`
+	 * - `newTrack`
+	 * - `stopTrack`
+	 * - `contextMenu`
+	 */
+	initLyricsDisplayState(state) {
+		if (state !== 'contextMenu') {
+			if (grSet.lyricsRememberPanelState) {
+				this.initLyricsRememberedState();
+			}
+			if (this.displayLyrics) {
+				if (state === 'startup') {
+					this.initLyricsStartup();
+				}
+				else if (state === 'newTrack') {
+					this.initLyricsNewTrack();
+				}
+				else if (state === 'stopTrack') {
+					this.initLyricsStopTrack();
+				}
+			}
+		}
+		else if (state === 'contextMenu') {
+			this.initLyricsContextMenu();
+		}
+		this.handlePanelLayout('playlist', 'initLayout');
+	}
+
+	/**
+	 * Initializes the lyrics display on foobar startup.
+	 * Used when the remembered `Lyrics` panel state is restored or when the startup panel is set to `Lyrics`.
+	 */
+	initLyricsStartup() {
+		if (this.displayBiography || grSet.layout === 'artwork' && (this.displayPlaylistArtwork || this.displayDetails || this.displayLibrary)) {
+			this.displayLyrics = false;
+			return;
+		}
+		else if (!fb.IsPlaying) {
+			fb.Play(); fb.Pause();
+		}
+
+		this.displayPlaylist = grSet.layout === 'default' && grSet.lyricsLayout === 'normal' && ['playlist', 'lyrics'].includes(grSet.showPanelOnStartup);
+		this.displayDetails = grSet.showPanelOnStartup === 'details';
+		this.displayLyrics = true;
+
+		this.handlePanelLayout('lyrics', 'initLayout');
+
+		setTimeout(() => {
+			grm.lyrics.initLyrics();
+			grm.button.initButtonState();
+		}, 1);
+	}
+
+	/**
+	 * Initializes the lyrics display when a new track is played.
+	 */
+	initLyricsNewTrack() {
+		if (grSet.lyricsLayout === 'full') {
+			this.displayPlaylist = false;
+			this.resizeArtwork(true);
+		}
+		setTimeout(() => {
+			grm.lyrics.initLyrics();
+			grm.button.initButtonState();
+		}, 1);
+	}
+
+	/**
+	 * Initializes the lyrics display when a track stops.
+	 */
+	initLyricsStopTrack() {
+		if (fb.IsPlaying) return;
+
+		this.displayPlaylist = grSet.lyricsLayout !== 'full';
+		this.displayLyrics = grSet.showPanelOnStartup === 'lyrics';
+
+		this.setPlaylistSize();
+		this.resizeArtwork(true);
+		grm.button.initButtonState();
+	}
+
+	/**
+	 * Initializes the lyrics display when the context menu is used to toggle the lyrics panel.
+	 */
+	initLyricsContextMenu() {
+		this.displayLyrics = !this.displayLyrics;
+		grSet.savedLyricsDisplayed = this.displayLyrics && grSet.lyricsRememberPanelState;
+
+		if (this.displayLyrics && grSet.lyricsLayout === 'full' || this.displayPlaylist && grSet.layout === 'artwork' || this.displayLibrary) {
+			this.displayPlaylist = false;
+			this.displayDetails = false;
+		}
+		else if (!this.displayLyrics && grSet.lyricsLayout === 'full' || this.noAlbumArtStub) {
+			this.displayPlaylist = grSet.layout === 'default';
+		}
+
+		if (this.displayCustomThemeMenu) this.initCustomThemeMenuState();
+
+		this.resizeArtwork(true);
+		this.initPanelWidthAuto();
+		this.setPlaylistSize();
+		grm.lyrics.initLyrics();
+		grm.button.initButtonState();
+		window.Repaint();
+	}
+
+	/**
+	 * Initializes the Lyrics layout state.
+	 */
+	initLyricsLayoutState() {
+		grSet.savedLyricsLayoutFull = grSet.lyricsLayout === 'full';
+		this.displayPlaylist = grSet.lyricsLayout === 'normal';
+
+		if (this.displayDetails && this.displayLyrics && grSet.lyricsLayout === 'full') {
+			this.displayDetails = false;
+			this.displayPlaylist = false;
+		}
+
+		if (this.displayCustomThemeMenu) this.initCustomThemeMenuState();
+
+		this.resizeArtwork(true);
+		this.initPanelWidthAuto();
+		grm.button.initButtonState();
+		window.Repaint();
+	}
+
+	/**
+	 * Initializes the remembered lyrics state based on various conditions.
+	 */
+	initLyricsRememberedState() {
+		this.displayLyrics =
+			grSet.layout === 'compact' || this.displayLibrary && grSet.libraryLayout !== 'normal' || this.displayBiography ? false :
+			grSet.showPanelOnStartup === 'lyrics' ? true :
+			grSet.savedLyricsDisplayed;
 	}
 	// #endregion
 }

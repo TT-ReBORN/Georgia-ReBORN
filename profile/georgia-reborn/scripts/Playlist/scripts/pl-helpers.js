@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    extremeHunter, TheQwertiest                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-DEV                                                 * //
+// * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-02-2024                                              * //
+// * Last change:    15-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -28,8 +28,8 @@ function PlaylistCreateFonts(forceCreation = false) {
 	}
 
 	const fontDefault    = grSet.customThemeFonts ? grCfg.customFont.fontDefault : 'Segoe UI';
-	const headerFontSize = grSet[`playlistHeaderFontSize_${grSet.layout}`];
-	const rowFontSize    = grSet[`playlistFontSize_${grSet.layout}`];
+	const headerFontSize = grSet.playlistHeaderFontSize_layout;
+	const rowFontSize    = grSet.playlistFontSize_layout;
 
 	const titleNormalFont   = grSet.customThemeFonts ? grCfg.customFont.playlistTitleNormal   : 'Segoe UI';
 	const titleSelectedFont = grSet.customThemeFonts ? grCfg.customFont.playlistTitleSelected : 'Segoe UI';
@@ -84,7 +84,7 @@ function PlaylistCreateFonts(forceCreation = false) {
  */
 function PlaylistRescale(forceRescale = false) {
 	PlaylistCreateFonts(forceRescale);
-	plSet.row_h = Math.round(grSet[`playlistFontSize_${grSet.layout}`] * 1.667);
+	plSet.row_h = Math.round(grSet.playlistFontSize_layout * 1.667);
 	pl.geo.row_h = SCALE(plSet.row_h);
 	pl.geo.scrollbar_w = plSet.scrollbar_w; // Don't use SCALE()
 	pl.geo.scrollbar_right_pad = SCALE(plSet.scrollbar_right_pad);
@@ -105,10 +105,10 @@ function PlaylistRescale(forceRescale = false) {
 function PlaylistSetX() {
 	const noAlbumArtSize = grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight;
 
-	if (grSet.panelWidthAuto && grm.ui.noAlbumArtStub) grm.ui.initNoAlbumArtSize();
+	if (grSet.panelWidthAuto && grm.ui.noAlbumArtStub) grm.ui.setNoAlbumArtSize();
 
 	return grSet.layout === 'default' && (grSet.playlistLayout === 'normal' ||
-		grSet.playlistLayoutNormal && (grm.ui.displayBiography || grm.ui.displayLyrics)) ?
+		!grSet.savedPlaylistLayoutFull && (grm.ui.displayLibrarySplit() || grm.ui.displayBiography || grm.ui.displayLyrics)) ?
 		grSet.panelWidthAuto ? grm.ui.displayLibrarySplit() ? noAlbumArtSize : !fb.IsPlaying ? 0 : grm.ui.albumArtSize.x + grm.ui.albumArtSize.w :
 		grm.ui.ww * 0.5 :
 	0;

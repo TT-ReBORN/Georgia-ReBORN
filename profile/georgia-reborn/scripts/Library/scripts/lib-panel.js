@@ -578,7 +578,7 @@ class LibPanel {
 		const vertical = !libSet.albumArtFlowMode || lib.ui.h - this.search.h > lib.ui.w - lib.ui.sbar.w;
 		switch (true) {
 			case !this.imgView || vertical: {
-				this.sbar_x = lib.ui.x + lib.ui.w - lib.ui.sbar.sp - (RES._4K ? 48 : 18);
+				this.sbar_x = lib.ui.x + lib.ui.w - SCALE(lib.ui.sbar.sp + 18);
 				const top_corr = [this.sbar_o - (lib.ui.sbar.but_h - lib.ui.sbar.but_w) / 2, this.sbar_o, 0][lib.ui.sbar.type];
 				const bot_corr = [(lib.ui.sbar.but_h - lib.ui.sbar.but_w) / 2 - this.sbar_o, -this.sbar_o, 0][lib.ui.sbar.type];
 				let sbar_y = lib.ui.y + (lib.ui.sbar.type < sbarStyle || lib.ui.style.topBarShow ? this.search.sp + 1 : 0) + sbar_top + top_corr;
@@ -701,7 +701,7 @@ class LibPanel {
 								libSet.highLightNode = true;
 								libSet.verticalPad = 3;
 								libSet.rootNode = 0; // libSet.rootNode = 1;
-								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = false;
+								lib.panel.imgView = grSet.savedLibraryAlbumArtShow = libSet.albumArtShow = false;
 								libSet.albumArtLabelType = 1;
 								libSet.artId = 0;
 								libSet.albumArtFlowMode = false; // In default does not exist
@@ -737,7 +737,7 @@ class LibPanel {
 								libSet.highLightNode = true;
 								libSet.verticalPad = 5;
 								libSet.rootNode = 3;
-								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = false;
+								lib.panel.imgView = grSet.savedLibraryAlbumArtShow = libSet.albumArtShow = false;
 								libSet.albumArtLabelType = 1;
 								if (grSet.libraryThumbnailSize === 'auto') libSet.thumbNailSize = 2; // In default the same
 								libSet.artId = 0;
@@ -774,7 +774,7 @@ class LibPanel {
 								libSet.highLightNode = true; // libSet.highLightNode = false;
 								libSet.verticalPad = 5;
 								libSet.rootNode = 3;
-								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = false;
+								lib.panel.imgView = grSet.savedLibraryAlbumArtShow = libSet.albumArtShow = false;
 								if (!libSet.presetLoadCurView) libSet.viewBy = 1;
 								libSet.albumArtFlowMode = false;
 								libSet.albumArtLabelType = 1;
@@ -814,7 +814,7 @@ class LibPanel {
 								libSet.highLightNode = true;
 								libSet.verticalPad = 5;
 								libSet.rootNode = 3;
-								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = false;
+								lib.panel.imgView = grSet.savedLibraryAlbumArtShow = libSet.albumArtShow = false;
 								grSet.libraryLayout = libSet.albumArtShow ? 'full' : 'normal';
 								libSet.albumArtLabelType = 1;
 								if (grSet.libraryThumbnailSize === 'auto') libSet.thumbNailSize = 2; // In default the same
@@ -841,7 +841,7 @@ class LibPanel {
 								libSet.autoCollapse = false;
 								libSet.treeAutoExpandSingle = false;
 								libSet.facetView = true;
-								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = false;
+								lib.panel.imgView = grSet.savedLibraryAlbumArtShow = libSet.albumArtShow = false;
 								libSet.albumArtLabelType = 1;
 								if (grSet.libraryThumbnailSize === 'auto') libSet.thumbNailSize = 2; // In default the same
 								libSet.artId = 0;
@@ -884,7 +884,7 @@ class LibPanel {
 							libSet.verticalPad = 5;
 							libSet.rootNode = 3;
 							libSet.facetView = false;
-							lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = true;
+							lib.panel.imgView = grSet.savedLibraryAlbumArtShow = libSet.albumArtShow = true;
 							if (!libSet.presetLoadCurView) libSet.viewBy = 0; // libSet.viewBy = 1;
 							libSet.albumArtFlowMode = false;
 							libSet.albumArtLabelType = 2;
@@ -921,7 +921,7 @@ class LibPanel {
 								libSet.verticalPad = 5;
 								libSet.rootNode = 3;
 								libSet.facetView = false;
-								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = true;
+								lib.panel.imgView = grSet.savedLibraryAlbumArtShow = libSet.albumArtShow = true;
 								if (!libSet.presetLoadCurView) libSet.viewBy = 1; // libSet.viewBy = 1;
 								libSet.albumArtFlowMode = false;
 								libSet.albumArtLabelType = 1;
@@ -959,7 +959,7 @@ class LibPanel {
 								libSet.verticalPad = 5;
 								libSet.rootNode = 3;
 								libSet.facetView = false;
-								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = true;
+								lib.panel.imgView = grSet.savedLibraryAlbumArtShow = libSet.albumArtShow = true;
 								if (!libSet.presetLoadCurView) libSet.viewBy = 0; // if (!libSet.presetLoadCurView) libSet.viewBy = 1;
 								libSet.albumArtFlowMode = false;
 								libSet.albumArtLabelType = 4;
@@ -994,7 +994,7 @@ class LibPanel {
 								libSet.verticalPad = 5;
 								libSet.rootNode = 3;
 								libSet.facetView = false;
-								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = true;
+								lib.panel.imgView = grSet.savedLibraryAlbumArtShow = libSet.albumArtShow = true;
 								if (!libSet.presetLoadCurView) libSet.viewBy = 0;
 								libSet.albumArtFlowMode = false;
 								libSet.albumArtLabelType = 2;
@@ -1018,9 +1018,9 @@ class LibPanel {
 						// const continue_confirmation = (status, confirmed) => {
 						// 	if (confirmed) {
 								grSet.libraryDesign = 'flowMode';
-								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = true;
+								lib.panel.imgView = grSet.savedLibraryAlbumArtShow = libSet.albumArtShow = true;
 								grSet.libraryLayout = libSet.albumArtShow ? 'full' : 'normal';
-								if (grSet.playerSize_HD_small && libSet.thumbNailSize === 'auto') libSet.thumbNailSize = 2;
+								if (grm.display.checkPlayerSize(grm.ui.ww, grm.ui.wh, 'default', 'HD') === 'small' && libSet.thumbNailSize === 'auto') libSet.thumbNailSize = 2;
 								libSet.highLightNowplaying = true; // In default does not exist
 								libSet.zoomNode = 100; // In default does not exist
 								libSet.countsRight = true;
@@ -1051,7 +1051,7 @@ class LibPanel {
 						// 	if (confirmed) {
 								grSet.libraryDesign = 'reborn';
 								grSet.libraryLayout = 'normal';
-								if (grSet.playerSize_HD_small && libSet.thumbNailSize === 'auto') libSet.thumbNailSize = 1;
+								if (grm.display.checkPlayerSize(grm.ui.ww, grm.ui.wh, 'default', 'HD') === 'small' && libSet.thumbNailSize === 'auto') libSet.thumbNailSize = 1;
 								libSet.highLightNowplaying = true;
 								libSet.zoomNode = 100;
 								libSet.countsRight = true;
@@ -1070,7 +1070,7 @@ class LibPanel {
 								libSet.highLightNode = true;
 								libSet.verticalPad = 5;
 								libSet.rootNode = 3;
-								lib.panel.imgView = grSet.savedAlbumArtShow = libSet.albumArtShow = false;
+								lib.panel.imgView = grSet.savedLibraryAlbumArtShow = libSet.albumArtShow = false;
 								if (!libSet.presetLoadCurView) libSet.viewBy = 2;
 								libSet.albumArtLabelType = 1;
 								libSet.albumArtFlipLabels = false;
@@ -1205,8 +1205,9 @@ class LibPanel {
 	setTopBar() {
 		// const sz = Math.round(12 * $Lib.scale * this.zoomFilter);
 		// const mod = sz > 15 ? (sz % 2) - 1 : 0;
-		const libraryFontSize = libSet[`baseFontSize_${grSet.layout}`] || 14;
-		this.filter.font = gdi.Font(grFont.fontDefault, this.zoomFilter > 1.05 ? Math.floor(libraryFontSize /*11 * $Lib.scale * this.zoomFilter*/) : Math.max((libraryFontSize) /*11 * $Lib.scale * this.zoomFilter*/, 9), 1);
+		// this.filter.font = gdi.Font(grFont.fontDefault, SCALE(this.zoomFilter > 1.05 ? Math.floor(11 * $Lib.scale * this.zoomFilter) : Math.max(11 * $Lib.scale * this.zoomFilter, 12), 1);
+		const libraryFontSize = SCALE(RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout || 14);
+		this.filter.font = gdi.Font(grFont.fontDefault, this.zoomFilter > 1.05 ? Math.floor(libraryFontSize) : Math.max(libraryFontSize, SCALE(12)), 1);
 		this.settings.font = gdi.Font('Segoe UI Symbol', libraryFontSize /*sz + mod*/, 0);
 		this.settings.icon = '\uE10C';
 		this.settings.offset = Math.round(1 * this.settings.font.Size / 17);

@@ -512,7 +512,7 @@ class LibFind {
 
 	on_char(code) {
 		if (grSet.jumpSearchDisabled || lib.panel.search.active ||
-			utils.IsKeyPressed(VK_CONTROL) || utils.IsKeyPressed(VK_ESCAPE)) {
+			utils.IsKeyPressed(VKey.CONTROL) || utils.IsKeyPressed(VKey.ESCAPE)) {
 			return;
 		}
 
