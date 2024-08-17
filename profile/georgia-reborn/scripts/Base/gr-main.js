@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    17-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -339,10 +339,10 @@ class MainUI {
 		this.drawBackgrounds(gr);
 		this.drawUIHacksGlassFrameFix(gr, 'top');
 
-		this.drawDetails(gr);
 		this.drawPanels(gr);
 		this.drawAlbumArt(gr);
 		this.drawNoAlbumArt(gr);
+		this.drawDetails(gr);
 		this.drawHiResAudioLogo(gr);
 		this.drawPauseBtn(gr);
 		this.drawJumpSearch(gr);
@@ -352,7 +352,7 @@ class MainUI {
 		this.drawPanelShadows(gr);
 		this.drawTopMenuBar(gr);
 		this.drawLowerBar(gr);
-		this.drawCustomThemeMenu(gr);
+		this.drawCustomMenu(gr);
 		this.drawStyledTooltips(gr);
 		this.drawStartupBackground(gr);
 
@@ -561,7 +561,7 @@ class MainUI {
 			||
 			Number($('$info(bitrate)', this.initMetadb())) > 1411);
 
-		if (!trackIsHiRes && !this.albumArtDisplayed()) return;
+		if (!trackIsHiRes || !this.albumArtDisplayed()) return;
 
 		this.hiResAudioLogo = gdi.Image(grPath.hiResAudioLogoPath());
 
@@ -909,6 +909,15 @@ class MainUI {
 		}
 
 		if (drawLowerBarProfiler) drawLowerBarProfiler.Print();
+	}
+
+	/**
+	 * Draws the custom menu, either custom theme menu or metadata grid menu.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawCustomMenu(gr) {
+		this.drawCustomThemeMenu(gr);
+		grm.details.drawGridMenu(gr);
 	}
 
 	/**
@@ -2075,7 +2084,7 @@ class MainUI {
 	 * Initializes the custom theme menu position when using auto panel width ( grSet.panelWidthAuto ).
 	 */
 	initCustomThemeMenuPosition() {
-		if (!this.displayLibrary && !grSet.libraryLayout !== 'split') {
+		if (!this.displayLibrary && grSet.libraryLayout !== 'split') {
 			this.displayPlaylist = !this.displayLibrary && !this.displayDetails;
 		}
 		else if (this.displayLibrarySplit()) {
@@ -4721,6 +4730,7 @@ class MainUI {
 		}
 
 		if (this.displayCustomThemeMenu) this.initCustomThemeMenuState();
+		else if (this.displayMetadataGridMenu) grm.details.initGridMenuState();
 
 		this.resizeArtwork(true);
 		this.initPanelWidthAuto();
@@ -4743,6 +4753,7 @@ class MainUI {
 		}
 
 		if (this.displayCustomThemeMenu) this.initCustomThemeMenuState();
+		else if (this.displayMetadataGridMenu) grm.details.initGridMenuState();
 
 		this.resizeArtwork(true);
 		this.initPanelWidthAuto();

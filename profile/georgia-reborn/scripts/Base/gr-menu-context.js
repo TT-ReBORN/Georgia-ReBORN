@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    17-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -627,6 +627,10 @@ class ContextMenus {
 				grm.button.topMenu(false);
 			}
 		}, { is_checked: grSet.topMenuCompact });
+		topMenuDisplayMenu.appendItem('Compact top menu (symbol only)', () => {
+			grSet.topMenuCompactSymbolOnly = !grSet.topMenuCompactSymbolOnly;
+			updateButtons();
+		}, { is_checked: grSet.topMenuCompactSymbolOnly, is_grayed_out: !grSet.topMenuCompact });
 
 		cm.append(topMenuDisplayMenu);
 

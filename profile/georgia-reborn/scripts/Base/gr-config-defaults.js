@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    17-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -632,6 +632,7 @@ class ConfigDefaults {
 			showPanelRating_artwork: true,
 			topMenuAlignment: 'center',
 			topMenuCompact: true,
+			topMenuCompactSymbolOnly: false,
 			albumArtAlign: 'right',
 			albumArtBg: 'left',
 			albumArtScale: 'cropped',
@@ -791,6 +792,7 @@ class ConfigDefaults {
 			showPanelRating_artwork: 'Values: true, false - Options > Player controls > Top menu > Artwork > Rating',
 			topMenuAlignment: 'Values: left, center - Options > Player controls > Top menu',
 			topMenuCompact: 'Values: true, false - Options > Player controls > Top menu > Compact top menu',
+			topMenuCompactSymbolOnly: 'Values: true, false - Options > Player controls > Top menu > Compact top menu (symbol only)',
 			albumArtAlign: 'Values: "left", "leftMargin", "center", "right" - Options > Player controls > Album art > When player size is not proportional',
 			albumArtBg: 'Values: "left", "full", "none" - Options > Player controls > Album art > When player size is not proportional',
 			albumArtScale: 'Values: "cropped", "stretched", "proportional" - Options > Player controls > Album art > When player size is maximized/fullscreen',

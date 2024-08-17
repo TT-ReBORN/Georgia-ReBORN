@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    17-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2500,7 +2500,7 @@ class MetadataGridMenu {
 		CustomMenu.controlList = [];
 
 		const margin = SCALE(40);
-		const baseX = grm.ui.displayBiography || grm.ui.displayLyrics ? grm.ui.ww * 0.5 + margin : grm.ui.displayDetails ? grm.ui.albumArtSize.x + margin : margin;
+		const baseX = grm.ui.displayBiography || grm.ui.displayLyrics && !grm.ui.displayDetails ? grm.ui.ww * 0.5 + margin : grm.ui.displayDetails ? grm.ui.albumArtSize.x + margin : margin;
 		let x = baseX;
 		let y = grm.ui.albumArtSize.y + margin * 0.75;
 

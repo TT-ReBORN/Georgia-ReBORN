@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    17-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -232,7 +232,8 @@ class Details {
 			album:    (x, y) => x >= this.gridMarginLeft && x <= (this.gridMarginLeft + this.gridContentWidth)   && y >= this.gridAlbumTop    && y <= this.gridAlbumBottom,
 			tagKey:   (x, y) => x >= this.gridMarginLeft && x <= (this.gridMarginLeft + this.gridColumnKeyWidth) && y >= this.gridAlbumBottom && y <= this.gridColumnKeyBottom,
 			tagValue: (x, y) => x >= this.gridMarginLeft && x <= (this.gridMarginLeft + this.gridColumnKeyWidth + this.gridColumnValueWidth)  && y >= this.gridAlbumBottom && y <= this.gridColumnValueBottom,
-			timeline: (x, y) => x >= this.gridMarginLeft && x <= (this.gridMarginLeft + this.gridContentWidth)   && y >= this.timelineY - SCALE(10) && y < this.timelineY + this.timelineH + SCALE(10)
+			timeline: (x, y) => x >= this.gridMarginLeft && x <= (this.gridMarginLeft + this.gridContentWidth)   && y >= this.timelineY - SCALE(10) && y < this.timelineY + this.timelineH + SCALE(10),
+			grid:     (x, y) => x >= this.gridMarginLeft && x <= (this.gridMarginLeft + this.gridContentWidth)   && y >= this.gridArtistTop   && y <= this.gridColumnValueBottom
 		};
 		/** @private @type {string} The text content of the grid tooltip. */
 		this.gridTooltipText = '';
@@ -256,7 +257,6 @@ class Details {
 	drawDetails(gr) {
 		this.drawBackground(gr);
 		this.drawGrid(gr);
-		this.drawGridMenu(gr);
 		this.drawBandLogo(gr);
 		this.drawLabelLogo(gr);
 	}
@@ -447,59 +447,6 @@ class Details {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawGridColumns(gr) {
-		const borderWidth = SCALE(0.5);
-		const flagLogo = grSet.showGridReleaseFlags_layout === 'logo' && this.gridColumnKey === 'Rel. Country';
-		const codecLogo = grSet.showGridCodecLogo_layout === 'logo' && this.gridColumnKey === 'Codec';
-		const channelLogo = grSet.showGridChannelLogo_layout === 'logo' && this.gridColumnKey === 'Channels';
-		const ratingLinux = Detect.Wine && this.gridColumnKey === 'Rating';
-
-		const getCodecString = () => {
-			const codec = $('$lower($if2(%codec%,$ext(%path%)))');
-			if (['dts', 'dca (dts coherent acoustics)'].includes(codec)) {
-				return 'DCA'; // Show only DCA abbreviation if codec is DTS
-			}
-			return codec;
-		};
-
-		const getChannelString = (channelType) => {
-			const channelMapping = {
-				'mono':   { number: 1,  string: 'Mono' },
-				'stereo': { number: 2,  string: 'Stereo' },
-				'3ch':    { number: 3,  string: 'Center' },
-				'4ch':    { number: 4,  string: 'Quad' },
-				'5ch':    { number: 5,  string: 'Surround' },
-				'6ch':    { number: 6,  string: 'Surround' },
-				'7ch':    { number: 7,  string: 'Surround' },
-				'8ch':    { number: 8,  string: 'Surround' },
-				'10ch':   { number: 10, string: 'Surround' },
-				'12ch':   { number: 12, string: 'Surround' }
-			};
-
-			const channel = channelMapping[channelType];
-			if (!channel) return '';
-
-			if (grSet.showGridChannelLogo_layout === 'textlogo') {
-				return channel.string;
-			} else if (grSet.showGridChannelLogo_layout === false) {
-				return `${channel.number} \u00B7 ${channel.string}`;
-			} else {
-				return '';
-			}
-		};
-
-		const displayBasicMetadata = (gridColumnKey) => {
-			const resolutions = [
-				{ displayRes: 'HD',  maxW: 1250, maxH: 800 },
-				{ displayRes: 'QHD', maxW: 1350, maxH: 900 },
-				{ displayRes: '4K',  maxW: 2350, maxH: 1550 }
-			];
-
-			const basicMeta = ['Year', 'Label', 'Genre', 'Codec', 'Channels', 'Source', 'Data', 'Play Count', 'Rating'];
-			const smallRes = resolutions.some(res => grSet.displayRes === res.displayRes && (grm.ui.ww < res.maxW || grm.ui.wh < res.maxH));
-
-			return grSet.autoHideGridMetadata && grSet.layout === 'default' && smallRes && !basicMeta.includes(gridColumnKey);
-		};
-
 		for (let k = 0; k < grStr.grid.length; k++) {
 			this.gridColumnKey = grStr.grid[k].label;
 			this.gridColumnValue = grStr.grid[k].val;
@@ -518,17 +465,18 @@ class Details {
 				const columnKey = {
 					'Catalog': () => {
 						gridShowReleaseFlagImage = grSet.showGridReleaseFlags_layout;
+						if (grSet.showGridReleaseFlags_layout === 'logo') this.gridColumnValue = '';
 					},
 					'Rel. Country': () => {
 						gridShowReleaseFlagImage = grSet.showGridReleaseFlags_layout;
 					},
 					'Codec': () => {
-						this.gridColumnValue = getCodecString();
 						gridShowCodecLogoImage = grSet.showGridCodecLogo_layout;
+						this.gridColumnValue = grSet.showGridCodecLogo_layout === 'logo' ? '' : this.getCodecString();
 					},
 					'Channels': () => {
-						this.gridColumnValue = getChannelString($('%channels%'));
 						gridShowChannelLogoImage = grSet.showGridChannelLogo_layout;
+						this.gridColumnValue = grSet.showGridChannelLogo_layout === 'logo' ? '' : this.getChannelString($('%channels%'));
 					},
 					'Hotness': () => {
 						gridValueColor = grCol.detailsHotness;
@@ -545,7 +493,7 @@ class Details {
 						let matchCount = 0;
 						// * On small player sizes, there is no space for all metadata entries.
 						// * Hide them and only display entries from basicMeta.
-						if (displayBasicMetadata(this.gridColumnKey)) {
+						if (this.basicMetadataDisplay(this.gridColumnKey)) {
 							this.gridColumnValue = '';
 							this.gridColumnKey = '';
 							matchCount++;
@@ -560,13 +508,14 @@ class Details {
 					gr.SetTextRenderingHint(!RES._4K && (grSet.gridKeyFontSize_layout < 17 || grSet.gridValueFontSize_layout + SCALE(1) < 18 || grSet.displayScale < 100) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 
 					if (gridDropShadow) {
-						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft + borderWidth), Math.round(this.gridTop + borderWidth), this.gridColumnValueWidth + (ratingLinux ? SCALE(20) : 0), this.gridColumnCellHeight, StringFormat(0, 0, 4));
-						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft - borderWidth), Math.round(this.gridTop + borderWidth), this.gridColumnValueWidth + (ratingLinux ? SCALE(20) : 0), this.gridColumnCellHeight, StringFormat(0, 0, 4));
-						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft + borderWidth), Math.round(this.gridTop - borderWidth), this.gridColumnValueWidth + (ratingLinux ? SCALE(20) : 0), this.gridColumnCellHeight, StringFormat(0, 0, 4));
-						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft - borderWidth), Math.round(this.gridTop - borderWidth), this.gridColumnValueWidth + (ratingLinux ? SCALE(20) : 0), this.gridColumnCellHeight, StringFormat(0, 0, 4));
+						const gridBorderWidth = SCALE(0.5);
+						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft + gridBorderWidth), Math.round(this.gridTop + gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
+						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft - gridBorderWidth), Math.round(this.gridTop + gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
+						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft + gridBorderWidth), Math.round(this.gridTop - gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
+						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft - gridBorderWidth), Math.round(this.gridTop - gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
 					}
 					gr.DrawString(this.gridColumnKey, grFont.gridKey, grCol.detailsText, this.gridMarginLeft, Math.round(this.gridTop), this.gridColumnKeyWidth, this.gridColumnCellHeight, Stringformat.trim_ellipsis_char);
-					gr.DrawString(flagLogo || codecLogo || channelLogo ? '' : this.gridColumnValue, grFont.gridVal, gridValueColor, this.gridColumnValueLeft, Math.round(this.gridTop), this.gridColumnValueWidth + (ratingLinux ? SCALE(20) : 0), this.gridColumnCellHeight, StringFormat(0, 0, 4));
+					gr.DrawString(this.gridColumnValue, grFont.gridVal, gridValueColor, this.gridColumnValueLeft, Math.round(this.gridTop), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
 
 					// * Release flag
 					if (gridShowReleaseFlagImage) {
@@ -824,7 +773,7 @@ class Details {
 		];
 
 		Promise.all(metricsPromises).then(() => {
-			this.cachedGridMetrics = grm.ui.loadingThemeComplete && !grm.display.hasPlayerSizeChanged();
+			this.cachedGridMetrics = this.gridColumnValueBottom > this.gridColumnTop && !grm.display.hasPlayerSizeChanged();
 		});
 	}
 
@@ -1023,14 +972,135 @@ class Details {
 				grm.ui.resizeArtwork(true);
 			}
 
-			grm.ui.displayLyrics = false;
 			grm.gridMenu.initMetadataGridMenu(1);
-		} else {
-			grm.ui.displayLyrics = grSet.savedLyricsDisplayed;
 		}
 
 		grm.button.initButtonState();
 		window.Repaint();
+	}
+
+	/**
+	 * Determines whether basic metadata should be displayed based on the grid column width.
+	 * @param {string} gridColumnKey - The grid column key.
+	 * @returns {boolean} True if basic metadata should be displayed, otherwise false.
+	 */
+	basicMetadataDisplay(gridColumnKey) {
+		const resolutions = [
+			{ displayRes: 'HD',  maxW: 1250, maxH: 800 },
+			{ displayRes: 'QHD', maxW: 1350, maxH: 900 },
+			{ displayRes: '4K',  maxW: 2350, maxH: 1550 }
+		];
+
+		const basicMeta = ['Year', 'Label', 'Genre', 'Codec', 'Channels', 'Source', 'Data', 'Play Count', 'Rating'];
+		const smallRes = resolutions.some(res => grSet.displayRes === res.displayRes && (grm.ui.ww < res.maxW || grm.ui.wh < res.maxH));
+
+		return grSet.autoHideGridMetadata && grSet.layout === 'default' && smallRes && !basicMeta.includes(gridColumnKey);
+	}
+
+	/**
+	 * Gets the codec string, returning 'DCA' if the codec is DTS.
+	 * @returns {string} The codec string or 'DCA' if the codec is DTS.
+	 */
+	getCodecString() {
+		const codec = $('$lower($if2(%codec%,$ext(%path%)))');
+		if (['dts', 'dca (dts coherent acoustics)'].includes(codec)) {
+			return 'DCA'; // Show only DCA abbreviation if codec is DTS
+		}
+		return codec;
+	}
+
+	/**
+	 * Gets the channel string based on the provided channel type.
+	 * @param {string} channelType - The type of the channel (e.g., 'mono', 'stereo').
+	 * @returns {string} The channel string or an empty string if the channel type is not found.
+	 */
+	getChannelString(channelType) {
+		const channelMapping = {
+			'mono':   { number: 1,  string: 'Mono' },
+			'stereo': { number: 2,  string: 'Stereo' },
+			'3ch':    { number: 3,  string: 'Center' },
+			'4ch':    { number: 4,  string: 'Quad' },
+			'5ch':    { number: 5,  string: 'Surround' },
+			'6ch':    { number: 6,  string: 'Surround' },
+			'7ch':    { number: 7,  string: 'Surround' },
+			'8ch':    { number: 8,  string: 'Surround' },
+			'10ch':   { number: 10, string: 'Surround' },
+			'12ch':   { number: 12, string: 'Surround' }
+		};
+
+		const channel = channelMapping[channelType];
+		if (!channel) return '';
+
+		if (grSet.showGridChannelLogo_layout === 'textlogo') {
+			return channel.string;
+		} else if (grSet.showGridChannelLogo_layout === false) {
+			return `${channel.number} \u00B7 ${channel.string}`;
+		} else {
+			return '';
+		}
+	}
+
+	/**
+	 * Gets the grid tooltip string based on the specified type.
+	 * @param {string} type - The type of metadata ('artist', 'title', 'album').
+	 * @returns {string} The tooltip string.
+	 */
+	getGridTooltip(type) {
+		const tooltipType = {
+			artist: grStr.artist,
+			title: `${grStr.tracknum} ${grStr.title} ${grStr.composer}`,
+			album: `${grStr.album} ${grStr.composer}`
+		};
+		return tooltipType[type];
+	}
+
+	/**
+	 * Handles the grid tooltip. If a tooltip is ready, it displays and then clears it.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 */
+	handleGridTooltip(x, y) {
+		const artistTooltipRange = this.mouseInMetadataGrid(x, y, 'artist');
+		const titleTooltipRange  = this.mouseInMetadataGrid(x, y, 'title');
+		const albumTooltipRange  = this.mouseInMetadataGrid(x, y, 'album');
+
+		if (!artistTooltipRange && !titleTooltipRange && !albumTooltipRange) return;
+
+		const showArtistToolTip = artistTooltipRange && grSet.showGridArtist_layout && (
+			this.gridArtistWidth > this.gridContentWidth * 2
+			||
+			this.gridArtistWrapLinesExceed
+		);
+
+		const showTitleToolTip = titleTooltipRange && grSet.showGridTitle_layout && (
+			this.gridTitleWidth > this.gridContentWidth * 2
+			||
+			this.gridTitleWrapLinesExceed
+		);
+
+		const showAlbumToolTip = albumTooltipRange && (
+			!grSet.showGridArtist_layout && !grSet.showGridTitle_layout && (this.gridAlbumWidth > this.gridContentWidth * 3)
+			||
+			(grSet.showGridArtist_layout || grSet.showGridTitle_layout) && (this.gridAlbumWidth > this.gridContentWidth * 2)
+			||
+			this.gridAlbumWrapLinesExceed
+		);
+
+		const tooltip =
+			showArtistToolTip ? this.getGridTooltip('artist') :
+			showTitleToolTip  ? this.getGridTooltip('title') :
+			showAlbumToolTip  ? this.getGridTooltip('album') : '';
+
+		if (tooltip.length) { // * Display tooltip
+			const offset = SCALE(30);
+			this.gridTooltipText = tooltip;
+			grm.ttip.showDelayed(this.gridTooltipText);
+			grm.ui.repaintStyledTooltips(grm.ui.styledToolTipX - offset * 2, grm.ui.styledToolTipY - offset, grm.ui.styledToolTipW + offset * 4, grm.ui.styledToolTipH + offset * 2);
+		} else { // * Clear tooltip
+			this.gridTooltipText = '';
+			grm.ttip.stop();
+			window.Repaint();
+		}
 	}
 
 	/**
@@ -1208,69 +1278,6 @@ class Details {
 		this.gridTitleBottom = 0;
 		this.gridAlbumTop = 0;
 		this.gridAlbumBottom = 0;
-	}
-
-	/**
-	 * Gets the grid tooltip string based on the specified type.
-	 * @param {string} type - The type of metadata ('artist', 'title', 'album').
-	 * @returns {string} The tooltip string.
-	 */
-	getGridTooltip(type) {
-		const tooltipType = {
-			artist: grStr.artist,
-			title: `${grStr.tracknum} ${grStr.title} ${grStr.composer}`,
-			album: `${grStr.album} ${grStr.composer}`
-		};
-		return tooltipType[type];
-	}
-
-	/**
-	 * Handles the grid tooltip. If a tooltip is ready, it displays and then clears it.
-	 * @param {number} x - The x-coordinate.
-	 * @param {number} y - The y-coordinate.
-	 */
-	handleGridTooltip(x, y) {
-		const artistTooltipRange = this.mouseInMetadataGrid(x, y, 'artist');
-		const titleTooltipRange  = this.mouseInMetadataGrid(x, y, 'title');
-		const albumTooltipRange  = this.mouseInMetadataGrid(x, y, 'album');
-
-		if (!artistTooltipRange && !titleTooltipRange && !albumTooltipRange) return;
-
-		const showArtistToolTip = artistTooltipRange && grSet.showGridArtist_layout && (
-			this.gridArtistWidth > this.gridContentWidth * 2
-			||
-			this.gridArtistWrapLinesExceed
-		);
-
-		const showTitleToolTip = titleTooltipRange && grSet.showGridTitle_layout && (
-			this.gridTitleWidth > this.gridContentWidth * 2
-			||
-			this.gridTitleWrapLinesExceed
-		);
-
-		const showAlbumToolTip = albumTooltipRange && (
-			!grSet.showGridArtist_layout && !grSet.showGridTitle_layout && (this.gridAlbumWidth > this.gridContentWidth * 3)
-			||
-			(grSet.showGridArtist_layout || grSet.showGridTitle_layout) && (this.gridAlbumWidth > this.gridContentWidth * 2)
-			||
-			this.gridAlbumWrapLinesExceed
-		);
-
-		const tooltip =
-			showArtistToolTip ? this.getGridTooltip('artist') :
-			showTitleToolTip  ? this.getGridTooltip('title') :
-			showAlbumToolTip  ? this.getGridTooltip('album') : '';
-
-		if (tooltip.length) { // * Display tooltip
-			const offset = SCALE(30);
-			this.gridTooltipText = tooltip;
-			grm.ttip.showDelayed(this.gridTooltipText);
-			grm.ui.repaintStyledTooltips(grm.ui.styledToolTipX - offset * 2, grm.ui.styledToolTipY - offset, grm.ui.styledToolTipW + offset * 4, grm.ui.styledToolTipH + offset * 2);
-		} else { // * Clear tooltip
-			this.gridTooltipText = '';
-			grm.ttip.stop();
-			window.Repaint();
-		}
 	}
 	// #endregion
 
@@ -1478,8 +1485,8 @@ class Details {
 					j++;
 				}
 			}
-			playedTimesRatios.sort();
-			playedTimes.sort();
+			playedTimesRatios.sort((a, b) => a - b);
+			playedTimes.sort((a, b) => a - b);
 
 			this.timelineFirstPlayedRatio = playedTimesRatios[0];
 			this.timelineLastPlayedRatio = playedTimesRatios[Math.max(0, playedTimesRatios.length - (dontUpdateLastPlayed ? 2 : 1))];
@@ -1497,7 +1504,7 @@ class Details {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	updateGridTimeline(updateLastPlayed, metadb) {
-		this.setGridTimelineSize(this.gridMarginLeft, this.gridTop + Math.floor(this.gridLineSpacing * 0.33), grm.ui.albumArtSize.x - this.gridMarginLeft * 2);
+		this.setGridTimelineSize(this.gridMarginLeft, this.gridTop + Math.floor(this.gridLineSpacing * 0.33), grm.ui.albumArtSize.x - this.gridMarginLeft * 2, this.timelineH);
 		this.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 
 		if (!updateLastPlayed) return;
@@ -2026,7 +2033,7 @@ class Details {
 	 * @global
 	 * @param {number} x - The x-coordinate.
 	 * @param {number} y - The y-coordinate.
-	 * @param {string} boundary - The boundary to check ('artist', 'title', 'album', 'tagKey', 'tagValue', 'timeline).
+	 * @param {string} boundary - The boundary to check ('artist', 'title', 'album', 'tagKey', 'tagValue', 'timeline', 'grid').
 	 * @returns {boolean} True or false.
 	 */
 	mouseInMetadataGrid(x, y, boundary) {

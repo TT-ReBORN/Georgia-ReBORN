@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    17-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -869,7 +869,7 @@ class Button {
 			this.btnMap = this._createButtonMap();
 		}
 
-		const btnCompact = '\uf0c9  Menu';
+		const btnCompact = grSet.topMenuCompactSymbolOnly ? '\uf0c9' : '\uf0c9  Menu';
 		const lineW = SCALE(2);
 		const halfLineW = Math.floor(lineW / 2);
 
@@ -984,7 +984,12 @@ class Button {
 						}
 
 						if (btn.type === 'compact') {
-							g.DrawString(btnCompact, grFont.topMenuCompact, menuTextColor, 0, 0, w, h, StringFormat(1, 1));
+							const hamburgerW = g.CalcTextWidth('\uf0c9', grFont.topMenuCompact);
+							const hamburgerX = Math.round(grSet.topMenuCompactSymbolOnly ? (w - hamburgerW) / 2 : hamburgerW * 0.75);
+							g.DrawString('\uf0c9', grFont.topMenuCompact, menuTextColor, hamburgerX, HD_4K(0, 1), hamburgerW, h, StringFormat(1, 1));
+							if (!grSet.topMenuCompactSymbolOnly) {
+								g.DrawString(btn.ico, btn.font, menuTextColor, hamburgerW * 1.25, 0, w - hamburgerW, h, StringFormat(1, 1));
+							}
 						} else {
 							g.DrawString(btn.ico, btn.font, menuTextColor, 0, 0, w, h, StringFormat(1, 1));
 						}
@@ -1011,11 +1016,11 @@ class Button {
 							g.DrawEllipse(halfLineW + 1, halfLineW + 2, w - lineW - 2, h - lineW - 3, lineW, grCol.transportStyleTop);
 							g.DrawEllipse(halfLineW + 1, halfLineW, w - lineW - 2, h - lineW - 2, lineW, grCol.transportStyleBottom);
 						}
-						g.DrawString(btn.ico, btn.font, transportIconColor, 1, (['Stop', 'Reload', 'AddTracks'].includes(this.btnMap)) ? 0 : 1, w, h, StringFormat(1, 1));
+						g.DrawString(btn.ico, btn.font, transportIconColor, 1, (['Stop', 'Reload', 'AddTracks'].includes(btnKey)) ? 0 : 1, w, h, StringFormat(1, 1));
 						break;
 
 					case 'backforward':
-						g.DrawString(btn.ico, btn.font, pl.col.plman_text_hovered, this.btnMap === 'Back' ? -1 : 0, 0, w, h, StringFormat(1, 1));
+						g.DrawString(btn.ico, btn.font, pl.col.plman_text_hovered, btnKey === 'Back' ? -1 : 0, 0, w, h, StringFormat(1, 1));
 						break;
 				}
 

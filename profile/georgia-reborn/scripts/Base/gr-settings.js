@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    17-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -364,6 +364,7 @@ grSet.addProperties({
 	topMenuAlignment:                   ['Georgia-ReBORN - 09. Player controls: Top menu alignment', 'center'], // 'left' or 'center' - top menu alignment
 	showTopMenuCompact:                 ['Georgia-ReBORN - 09. Player controls: Show top menu compact', true], // true: will display the top menu will be displayed as a hamburger menu
 	topMenuCompact:                     ['Georgia-ReBORN - 09. Player controls: Top menu compact', true], // true: top menu will be displayed as a hamburger menu
+	topMenuCompactSymbolOnly:           ['Georgia-ReBORN - 09. Player controls: Top menu compact symbol only', false], // true: Displays the compact top menu only as a hamburger symbol
 	albumArtAlign:                      ['Georgia-ReBORN - 09. Player controls: Album art alignment', 'right'], // right: Align album art in Default layout when player size is not proportional
 	albumArtBg:                         ['Georgia-ReBORN - 09. Player controls: Album art background', 'left'], // 'left': Show album art background when player size is not proportional
 	albumArtScale:                      ['Georgia-ReBORN - 09. Player controls: Album art scale fullscreen', 'cropped'], // cropped: Scale album art in Default layout when player size is maximized/fullscreen
@@ -967,6 +968,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'showPanelRating_artwork', grCfg.themeControls, 'showPanelRating_artwork', true);
 		this._setSetting(grSet, 'topMenuAlignment', grCfg.themeControls, 'topMenuAlignment', 'center');
 		this._setSetting(grSet, 'topMenuCompact', grCfg.themeControls, 'topMenuCompact', true);
+		this._setSetting(grSet, 'topMenuCompactSymbolOnly', grCfg.themeControls, 'topMenuCompactSymbolOnly', false);
 		this._setSetting(grSet, 'albumArtAlign', grCfg.themeControls, 'albumArtAlign', 'right');
 		this._setSetting(grSet, 'albumArtBg', grCfg.themeControls, 'albumArtBg', 'left');
 		this._setSetting(grSet, 'albumArtScale', grCfg.themeControls, 'albumArtScale', 'cropped');
