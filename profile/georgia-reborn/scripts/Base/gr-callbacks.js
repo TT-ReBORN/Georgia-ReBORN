@@ -785,7 +785,7 @@ function on_mouse_rbtn_up(x, y, m) {
 		handleContextMenu(x, y);
 		return true;
 	}
-	else if (mouseInAlbumArt(x, y) || grm.details.mouseInMetadataGrid(x, y, 'grid')) {
+	else if (mouseInAlbumArt(x, y) || grm.ui.displayDetails && grm.details.mouseInMetadataGrid(x, y, 'grid')) {
 		CallLog('Album art => on_mouse_rbtn_up');
 		grm.ctxMenu.contextMenuAlbumCover(cmm);
 		handleContextMenu(x, y);
