@@ -339,10 +339,10 @@ class MainUI {
 		this.drawBackgrounds(gr);
 		this.drawUIHacksGlassFrameFix(gr, 'top');
 
+		this.drawDetails(gr);
 		this.drawPanels(gr);
 		this.drawAlbumArt(gr);
 		this.drawNoAlbumArt(gr);
-		this.drawDetails(gr);
 		this.drawHiResAudioLogo(gr);
 		this.drawPauseBtn(gr);
 		this.drawJumpSearch(gr);
@@ -430,8 +430,9 @@ class MainUI {
 	/**
 	 * Draws the big album art on the left side.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {number} [alpha] - The alpha to apply to the album art image.
 	 */
-	drawAlbumArt(gr) {
+	drawAlbumArt(gr, alpha) {
 		if (!fb.IsPlaying && !grSet.panelBrowseMode || !this.albumArt && !this.albumArtScaled ||
 			!this.albumArtDisplayed() || this.displayLibrarySplit()) {
 			return;
@@ -439,18 +440,8 @@ class MainUI {
 
 		const drawAlbumArtProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> album art');
 
-		// * BIG ALBUM ART - NEEDS TO BE DRAWN AFTER ALL BLENDING IS DONE, I.E AFTER PLAYLIST * //
-		if (!grSet.discArtOnTop || this.displayLyrics) {
-			grm.details.drawDiscArt(gr);
-			if (this.displayDetails && grm.details.discArtRotation && grSet.detailsAlbumArtDiscAreaOpacity !== 255) { // Do not use opacity if image is a booklet, i.e this.albumArtSize.w > this.ww * 0.66
-				grm.details.createDiscArtAlbumArtMask(gr, this.albumArtSize.x, this.albumArtSize.y, this.albumArtSize.w, this.albumArtSize.h, 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height, 0, this.displayDetails && !this.displayLyrics && this.albumArtSize.w < this.ww * 0.66 ? grSet.detailsAlbumArtDiscAreaOpacity : 255);
-			} else {
-				gr.DrawImage(this.albumArtScaled, this.albumArtSize.x, this.albumArtSize.y, this.albumArtSize.w, this.albumArtSize.h, 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height, 0, this.displayDetails && !this.displayLyrics && this.albumArtSize.w < this.ww * 0.66 ? grSet.detailsAlbumArtOpacity : 255);
-			}
-		} else { // Draw discArt on top of front cover
-			gr.DrawImage(this.albumArtScaled, this.albumArtSize.x, this.albumArtSize.y, this.albumArtSize.w, this.albumArtSize.h, 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height);
-			grm.details.drawDiscArt(gr);
-		}
+		const imgAlpha = this.displayDetails && grm.details.discArt ? alpha : 255;
+		gr.DrawImage(this.albumArtScaled, this.albumArtSize.x, this.albumArtSize.y, this.albumArtSize.w, this.albumArtSize.h, 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height, 0, imgAlpha);
 
 		if (drawAlbumArtProfiler) drawAlbumArtProfiler.Print();
 	}
