@@ -465,10 +465,10 @@ class Details {
 				const columnKey = {
 					'Catalog': () => {
 						gridShowReleaseFlagImage = grSet.showGridReleaseFlags_layout;
-						if (grSet.showGridReleaseFlags_layout === 'logo') this.gridColumnValue = '';
 					},
 					'Rel. Country': () => {
 						gridShowReleaseFlagImage = grSet.showGridReleaseFlags_layout;
+						if (grSet.showGridReleaseFlags_layout === 'logo') this.gridColumnValue = '';
 					},
 					'Codec': () => {
 						gridShowCodecLogoImage = grSet.showGridCodecLogo_layout;

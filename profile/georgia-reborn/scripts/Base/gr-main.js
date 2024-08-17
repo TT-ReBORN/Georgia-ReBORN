@@ -1572,12 +1572,12 @@ class MainUI {
 		if (!fb.IsPlaying) grStr.time = '0:00';
 		this.newTrackFetchingArtwork = true;
 
-		this.clearCache(undefined, undefined, true);
+		this.clearCache(undefined, undefined, true, true);
 		this.initMetadata(handle);
 		this.fetchNewArtwork(handle);
 		this.loadCountryFlags(handle);
 
-		grm.details.clearCache(undefined, undefined, true);
+		grm.details.clearCache(undefined, undefined, true, true);
 		grm.details.updateGridTimeline(true, handle);
 		grm.details.updateGrid(this.currentLastPlayed, this.playingPlaylist, handle);
 		grm.details.loadGridReleaseCountryFlag(handle);
