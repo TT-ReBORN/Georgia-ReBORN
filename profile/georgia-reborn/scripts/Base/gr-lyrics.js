@@ -530,11 +530,12 @@ class Lyrics {
 		this.offsetW = gr.CalcTextWidth(`Offset: ${this.userOffset / 1000}s`, grFont.notification) + this.lineHeight;
 		const offsetH = this.lineHeight + 1;
 		const offsetX = this.x + this.w - this.offsetW - margin;
+		const offsetXS = this.x - this.lineHeight * 0.5 - margin;
 		const offsetY = this.y + margin;
 
 		gr.FillRoundRect(offsetX, offsetY, this.offsetW, offsetH, this.arc, this.arc, grCol.popupBg);
 		gr.DrawRoundRect(offsetX, offsetY, this.offsetW, offsetH, this.arc, this.arc, 1, 0x64000000);
-		gr.DrawString(`Offset: ${this.userOffset / 1000}s`, grFont.notification, grCol.popupText, offsetX, offsetY, this.w, offsetH, this.alignRight);
+		gr.DrawString(`Offset: ${this.userOffset / 1000}s`, grFont.notification, grCol.popupText, offsetXS, offsetY, this.w, offsetH, this.alignRight);
 	}
 
 	/**
