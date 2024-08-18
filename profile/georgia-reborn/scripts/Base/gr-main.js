@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-08-2024                                              * //
+// * Last change:    19-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -795,7 +795,7 @@ class MainUI {
 		for (const btn of buttons) {
 			const { x, y, w, h, img, isEnabled, hoverAlpha, downAlpha, id } = btn;
 
-			if (noPlaylistHistoryBtns && (id === 'back' || id === 'forward')) {
+			if (noPlaylistHistoryBtns && (id === 'Back' || id === 'Forward')) {
 				continue;
 			}
 
@@ -886,15 +886,15 @@ class MainUI {
 			grm.progBar.setY(this.seekbarY);
 			grm.progBar.draw(gr);
 		}
-		// * WAVEFORM BAR * //
-		else if (grSet.showWaveformBar_layout && grSet.seekbar === 'waveformbar') {
-			grm.waveBar.setY(this.seekbarY);
-			grm.waveBar.draw(gr);
-		}
 		// * PEAKMETER BAR * //
 		else if (grSet.showPeakmeterBar_layout && grSet.seekbar === 'peakmeterbar') {
 			grm.peakBar.setY(this.seekbarY);
 			grm.peakBar.draw(gr);
+		}
+		// * WAVEFORM BAR * //
+		else if (grSet.showWaveformBar_layout && grSet.seekbar === 'waveformbar') {
+			grm.waveBar.setY(this.seekbarY);
+			grm.waveBar.draw(gr);
 		}
 
 		if (drawLowerBarProfiler) drawLowerBarProfiler.Print();
