@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-08-2024                                              * //
+// * Last change:    18-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -293,7 +293,7 @@ class Details {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawDiscArt(gr) {
-		if (grSet.layout !== 'default' || !grSet.displayDiscArt || !grm.ui.displayDetails ||
+		if (grSet.layout !== 'default' || !grSet.displayDiscArt || !grm.ui.displayDetails || grm.ui.noAlbumArtStub ||
 			this.discArtSize.y < grm.ui.albumArtSize.y || this.discArtSize.h > grm.ui.albumArtSize.h) {
 			return;
 		}
@@ -869,7 +869,7 @@ class Details {
 	// #region PUBLIC METHODS - COMMON
 	/**
 	 * Clears the specified cache, individual properties, or all caches.
-	 * @param {string} [type] - The type of cache to clear. Can be 'metrics', 'discArt', 'bandLogo', 'labelLogo'.
+	 * @param {string} [type] - The type of cache to clear. Can be 'metrics', 'discArt', 'codecLogo', 'channelLogo', 'bandLogo', 'labelLogo'.
 	 * @param {string} [property] - The specific property to clear within the cacheType.
 	 * @param {boolean} [clearArtCache] - Whether to clear everything in the artCache object.
 	 * @param {boolean} [keepDiscArt] - Whether to keep the disc art.
@@ -899,6 +899,12 @@ class Details {
 				discArtCover: null,
 				discArtArray: [],
 				discArtRotation: null
+			},
+			codecLogo: {
+				gridCodecLogo: null
+			},
+			channelLogo: {
+				gridChannelLogo: null
 			},
 			bandLogo: {
 				bandLogo: null,

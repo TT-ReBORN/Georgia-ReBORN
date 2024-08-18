@@ -451,7 +451,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawNoAlbumArt(gr) {
-		if (this.albumArt || !this.noArtwork || !fb.IsPlaying) {
+		if (this.albumArt || !this.noArtwork || !fb.IsPlaying && !grSet.panelBrowseMode) {
 			this.noAlbumArtStub = false;
 			this.noAlbumArtSizeSet = false;
 			return;
@@ -464,7 +464,7 @@ class MainUI {
 			this.noAlbumArtSizeSet = true;
 		}
 
-		if ((fb.IsPlaying || grSet.panelBrowseMode) && this.albumArtDisplayed(true)) {
+		if (this.albumArtDisplayed(true)) {
 			const noAlbumArtSize = this.wh - this.topMenuHeight - this.lowerBarHeight;
 
 			const bgWidth =
@@ -599,7 +599,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawDetails(gr) {
-		if (!this.displayDetails || !fb.IsPlaying || !grm.details) return;
+		if (!this.displayDetails || !fb.IsPlaying && !grSet.panelBrowseMode) return;
 		grm.details.drawDetails(gr);
 	}
 
@@ -739,9 +739,7 @@ class MainUI {
 
 			if (displayDetails && !grSet.noDiscArtBg && !this.noAlbumArtStub) {
 				// Middle shadow
-				gr.FillGradRect(this.noAlbumArtStub ? this.ww * 0.5 - 4 : this.albumArtSize.x + this.albumArtSize.w, this.noAlbumArtStub ? this.topMenuHeight : this.albumArtSize.y - 3,
-					4, this.noAlbumArtStub ? this.wh - this.topMenuHeight - this.lowerBarHeight : this.albumArtSize.h + 5, 0.5,
-					this.noAlbumArtStub ? 0 : grSet.styleBlackAndWhite ? RGB(0, 0, 0) : grCol.shadow, this.noAlbumArtStub ? grSet.styleBlackAndWhite ? RGB(0, 0, 0) : grCol.shadow : 0);
+				gr.FillGradRect(this.albumArtSize.x + this.albumArtSize.w, this.albumArtSize.y - 3, 4, this.albumArtSize.h + 5, 0.5, grSet.styleBlackAndWhite ? RGB(0, 0, 0) : grCol.shadow, 0);
 			}
 			// Bottom shadow
 			gr.FillGradRect(0, libSet.albumArtShow && grSet.libraryLayout === 'full' && this.displayLibrary ? lib.ui.y + lib.ui.h + HD_4K(-1, 0) : this.albumArtSize.y + this.albumArtSize.h + HD_4K(-1, 0),
@@ -760,7 +758,7 @@ class MainUI {
 
 		if (displayPanelShadows) {
 			const x =
-				this.displayLibrarySplit() || this.displayBiography || (this.displayCustomThemeMenu || grSet.panelWidthAuto) && !fb.IsPlaying || grSet.layout !== 'default' || !panelLayoutNormal ? 0 :
+				this.displayLibrarySplit() || this.displayBiography || (this.displayCustomThemeMenu || grSet.panelWidthAuto) && !fb.IsPlaying && !grSet.panelBrowseMode || grSet.layout !== 'default' || !panelLayoutNormal ? 0 :
 				grSet.panelWidthAuto ? this.albumArtSize.x + this.albumArtSize.w : this.ww * 0.5;
 
 			gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
@@ -1485,7 +1483,7 @@ class MainUI {
 		this.albumArtSize.y = this.topMenuHeight;
 
 		this.albumArtSize.w =
-			grSet.panelWidthAuto && this.noAlbumArtStub ? !fb.IsPlaying && !this.displayCustomThemeMenu ? 0 : noAlbumArtSize :
+			grSet.panelWidthAuto && this.noAlbumArtStub ? !fb.IsPlaying && !grSet.panelBrowseMode && !this.displayCustomThemeMenu ? 0 : noAlbumArtSize :
 			this.ww * 0.5;
 
 		this.albumArtSize.h = noAlbumArtSize;
@@ -1664,7 +1662,7 @@ class MainUI {
 		if (!grSet.panelBrowseMode) {
 			return fb.GetNowPlaying();
 		} else {
-			return this.displayPlaylist ? fb.GetFocusItem() : fb.GetSelection();
+			return !this.displayLibrary ? fb.GetFocusItem() : fb.GetSelection();
 		}
 	}
 
@@ -1783,6 +1781,7 @@ class MainUI {
 
 		// * Init colors
 		this.initCustomTheme();
+		grm.color.setThemeColors();
 		grm.theme.initMainColors(); // Init preloader background color
 		if (grSet.theme === 'random' && grSet.randomThemeAutoColor !== 'off') {
 			grm.color.getRandomThemeAutoColor();
@@ -4370,14 +4369,14 @@ class MainUI {
 
 		const x =
 			grSet.layout === 'artwork' || grSet.libraryLayout !== 'normal' ? 0 :
-			grSet.panelWidthAuto ? this.displayLibrarySplit() || !fb.IsPlaying ? 0 : this.noAlbumArtStub ? noAlbumArtSize : this.albumArtSize.x + this.albumArtSize.w :
+			grSet.panelWidthAuto ? this.displayLibrarySplit() || !fb.IsPlaying && !grSet.panelBrowseMode ? 0 : this.noAlbumArtStub ? noAlbumArtSize : this.albumArtSize.x + this.albumArtSize.w :
 			this.ww * 0.5;
 
 		const y = this.topMenuHeight;
 
 		const libraryWidth =
 			grSet.layout === 'artwork' || grSet.libraryLayout === 'full' ? this.ww :
-			grSet.panelWidthAuto ? this.displayLibrarySplit() ? noAlbumArtSize : !fb.IsPlaying ? this.ww : this.ww - (this.noAlbumArtStub ? noAlbumArtSize : this.albumArtSize.x + this.albumArtSize.w) :
+			grSet.panelWidthAuto ? this.displayLibrarySplit() ? noAlbumArtSize : !fb.IsPlaying && !grSet.panelBrowseMode ? this.ww : this.ww - (this.noAlbumArtStub ? noAlbumArtSize : this.albumArtSize.x + this.albumArtSize.w) :
 			this.ww * 0.5;
 
 		const libraryHeight = Math.max(0, this.wh - this.lowerBarHeight - y);
@@ -4610,7 +4609,7 @@ class MainUI {
 
 		const biographyWidth =
 			grSet.layout === 'artwork' || grSet.biographyLayout === 'full' ? this.ww :
-			grSet.panelWidthAuto ? (!this.albumArt && !this.noAlbumArtStub || !fb.IsPlaying) ? this.ww : this.albumArtSize.x + this.albumArtSize.w :
+			grSet.panelWidthAuto ? (!this.albumArt && !this.noAlbumArtStub || !fb.IsPlaying && !grSet.panelBrowseMode) ? this.ww : this.albumArtSize.x + this.albumArtSize.w :
 			this.ww * 0.5;
 
 		const biographyHeight = Math.max(0, this.wh - this.lowerBarHeight - y);

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    18-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -805,7 +805,7 @@ class BaseColors {
 		if (grm.ui.isStreaming && (['white', 'black', 'reborn', 'random'].includes(grSet.theme))) {
 			grCol.primary = RGB(207, 0, 5);
 		}
-		else if (grm.ui.isPlayingCD || grm.ui.noAlbumArtStub || !fb.IsPlaying) {
+		else if (grm.ui.isPlayingCD || grm.ui.noAlbumArtStub || !fb.IsPlaying && !grSet.panelBrowseMode) {
 			grm.ui.initCustomTheme();
 			grm.color.setThemeColors();
 			bio.ui.updateProp(1); // Needed to update color for NO PHOTO/COVER stub in Biography when changing themes

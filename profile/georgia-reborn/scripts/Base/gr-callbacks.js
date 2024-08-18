@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-08-2024                                              * //
+// * Last change:    18-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1354,7 +1354,7 @@ function mouseInAlbumArt(x, y) {
 		&&
 		grm.ui.state.mouse_y > grm.ui.albumArtSize.y && grm.ui.state.mouse_y <= grm.ui.albumArtSize.y + grm.ui.albumArtSize.h;
 
-	if (fb.IsPlaying && displayAlbumArt && albumArtBounds) {
+	if ((grm.ui.albumArt || grm.ui.noAlbumArtStub) && (displayAlbumArt && albumArtBounds)) {
 		MoveLog('mouseInAlbumArt');
 		return true;
 	}
@@ -1394,7 +1394,7 @@ function mouseInPause(x, y) {
 		(grSet.layout === 'default' && !grm.ui.albumArt && (panelPlaylist || panelDetails || panelLibrary || panelLyrics) || artworkLayout) &&
 		!grm.ui.displayCustomThemeMenu && !grm.ui.displayMetadataGridMenu && noAlbumArtBounds;
 
-	if (pauseOnAlbumArt || pauseOnNoAlbumArt) {
+	if ((grm.ui.albumArt || grm.ui.noAlbumArtStub) && (pauseOnAlbumArt || pauseOnNoAlbumArt)) {
 		MoveLog('mouseInPause');
 		return true;
 	}
