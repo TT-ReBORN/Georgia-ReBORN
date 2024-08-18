@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    18-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4299,7 +4299,7 @@ class WaveformBar {
 	 * @param {number} y - The y-coordinate.
 	 */
 	setY(y) {
-		this.y = y;
+		this.y = y + SCALE(10);
 	}
 
 	/**
