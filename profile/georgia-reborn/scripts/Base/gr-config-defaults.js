@@ -129,27 +129,29 @@ class ConfigDefaults {
 		// #region DISC ART IMAGE PATHS
 		/** @public @type {array} Disc art image paths load order - add, change or re-order entries as needed. */
 		this.discArtPathDefaults = [
-			// * Specific disc art image paths (CD)
+			// * File names with formats in the current directory
 			'$directory_path(%path%)\\*cd.png',
 			'$directory_path(%path%)\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
-			'$directory_path(%path%)\\Artwork\\*cd.png',
-			'$directory_path(%path%)\\Artwork\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
-			'$directory_path(%path%)\\Scans\\*cd.png',
-			'$directory_path(%path%)\\Scans\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
-			'$directory_path(%path%)\\..\\Artwork\\*cd.png',
-			'$directory_path(%path%)\\..\\Artwork\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
-			'$directory_path(%path%)\\..\\Scans\\*cd.png',
-			'$directory_path(%path%)\\..\\Scans\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
-
-			// * Specific disc art image paths (Vinyl)
 			'$directory_path(%path%)\\*vinyl.png',
 			'$directory_path(%path%)\\*vinyl$if2(%vinyl side%,).png',
+
+			// * Artwork, Scans in root directory ( 1 Disc )
+			'$directory_path(%path%)\\Artwork\\*cd.png',
+			'$directory_path(%path%)\\Artwork\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
 			'$directory_path(%path%)\\Artwork\\*vinyl.png',
 			'$directory_path(%path%)\\Artwork\\*vinyl$if2(%vinyl side%,).png',
+			'$directory_path(%path%)\\Scans\\*cd.png',
+			'$directory_path(%path%)\\Scans\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
 			'$directory_path(%path%)\\Scans\\*vinyl.png',
 			'$directory_path(%path%)\\Scans\\*vinyl$if2(%vinyl side%,).png',
+
+			// * Artwork, Scans in other subfolders ( Multi Discs )
+			'$directory_path(%path%)\\..\\Artwork\\*cd.png',
+			'$directory_path(%path%)\\..\\Artwork\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
 			'$directory_path(%path%)\\..\\Artwork\\*vinyl.png',
 			'$directory_path(%path%)\\..\\Artwork\\*vinyl$if2(%vinyl side%,).png',
+			'$directory_path(%path%)\\..\\Scans\\*cd.png',
+			'$directory_path(%path%)\\..\\Scans\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
 			'$directory_path(%path%)\\..\\Scans\\*vinyl.png',
 			'$directory_path(%path%)\\..\\Scans\\*vinyl$if2(%vinyl side%,).png'
 		];
