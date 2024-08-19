@@ -188,7 +188,7 @@ class LibUserInterface {
 	}
 
 	calcText(refreshImg) {
-		const libraryFontSize = SCALE(RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout || 14);
+		const libraryFontSize = SCALE((RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout) || 14);
 		$Lib.gr(1, 1, false, g => {
 			if (!this.id.local) this.row.h = Math.max(Math.round(g.CalcTextHeight('String', this.font.main)) + SCALE(libSet.verticalPad), 2);
 			if (this.style.squareNode) {
@@ -466,7 +466,7 @@ class LibUserInterface {
 	}
 
 	getFont(init) {
-		const libraryFontSize = SCALE(RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout || 14);
+		const libraryFontSize = SCALE((RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout) || 14);
 
 		if (grSet.customThemeFonts) this.font.main = grFont.library;
 		else if (libSet.custFontUse && libSet.custFont.length) {
@@ -1044,7 +1044,7 @@ class LibUserInterface {
 
 		const fnm = this.font.main.Name;
 		const fst = this.font.main.Style;
-		const libraryFontSize = SCALE(RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout || 14);
+		const libraryFontSize = SCALE((RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout) || 14);
 		this.font.main = gdi.Font(fnm, this.font.zoomSize, fst);
 		this.font.search = gdi.Font(fnm, this.font.zoomSize, 0);
 		this.font.find = gdi.Font(fnm, this.font.zoomSize * 1.5, 1);

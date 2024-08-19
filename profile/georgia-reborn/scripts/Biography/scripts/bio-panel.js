@@ -1328,7 +1328,7 @@ class BioPanel {
 		const filmStripRight = bioSet.artistView && bioSet.showFilmStrip && bioSet.filmStripPos === 1;
 		const filmStripLeft = bioSet.artistView && bioSet.showFilmStrip && bioSet.filmStripPos === 3;
 		const RES_4K_Corr = HD_4K(0, bio.ui.heading.linePad * 0.5);
-		const biographyFontSize = SCALE(RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout || 14);
+		const biographyFontSize = SCALE((RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout) || 14);
 
 		switch (true) {
 			case bioSet.img_only: { // img_only

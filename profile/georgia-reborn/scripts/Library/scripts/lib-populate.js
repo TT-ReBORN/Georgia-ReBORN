@@ -2346,7 +2346,7 @@ class LibPopulate {
 	}
 
 	treeTooltipFont() {
-		const libraryFontSize = SCALE(RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout || 14);
+		const libraryFontSize = SCALE((RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout) || 14);
 		return !lib.panel.imgView ? [lib.ui.font.main.Name, /* ui.font.main.Size */ libraryFontSize + 3, lib.ui.font.main.Style] : [lib.ui.font.group.Name, /* ui.font.group.Size */ libraryFontSize + 3, lib.ui.font.group.Style];
 	}
 

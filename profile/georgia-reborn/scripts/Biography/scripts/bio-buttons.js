@@ -239,7 +239,7 @@ class BioButtons {
 		const hs = bio.ui.font.heading.Size;
 		const fs = bio.ui.stars != 1 ? (this.src.icon ? (this.src.bahnInstalled ? 12 : 11) : 10) * $Bio.scale : HD_4K(14, 26);
 		const srcFontSize = this.src.fontSize;
-		const biographyFontSize = SCALE(RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout || 14);
+		const biographyFontSize = SCALE((RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout) || 14);
 		this.src.fontSize = $Bio.clamp(Math.round(hs * 1.0) + (bioSet.zoomHeadBtn - 100) / 10, Math.min(fs, hs), Math.max(fs, hs));
 		if (this.src.fontSize != srcFontSize || force) this.src.font = gdi.Font('Segoe UI', this.src.fontSize, 1);
 		$Bio.gr(1, 1, false, g => {
@@ -677,7 +677,7 @@ class BioButtons {
 
 	srcTiptext() {
 		const n = bioSet.artistView ? 'bio' : 'rev';
-		const biographyFontSize = SCALE(RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout || 14);
+		const biographyFontSize = SCALE((RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout) || 14);
 		const grFlag = grm.ui.flagImgs.length;
 		const flagWidth = grFlag ? grm.ui.flagImgs.reduce((sum, img) => sum + img.Width + biographyFontSize - HD_4K(18, 60), 0) : bio.but.flag.w;
 		const flagTooltip = grFlag ? `[${GetMetaValues(grTF.artist_country).join(' \u00B7 ')}] ${bio.txt.artist}` : bio.txt[n].flagCountry;

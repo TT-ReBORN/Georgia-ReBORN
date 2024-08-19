@@ -1206,7 +1206,7 @@ class LibPanel {
 		// const sz = Math.round(12 * $Lib.scale * this.zoomFilter);
 		// const mod = sz > 15 ? (sz % 2) - 1 : 0;
 		// this.filter.font = gdi.Font(grFont.fontDefault, SCALE(this.zoomFilter > 1.05 ? Math.floor(11 * $Lib.scale * this.zoomFilter) : Math.max(11 * $Lib.scale * this.zoomFilter, 12), 1);
-		const libraryFontSize = SCALE(RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout || 14);
+		const libraryFontSize = SCALE((RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout) || 14);
 		this.filter.font = gdi.Font(grFont.fontDefault, this.zoomFilter > 1.05 ? Math.floor(libraryFontSize) : Math.max(libraryFontSize, SCALE(12)), 1);
 		this.settings.font = gdi.Font('Segoe UI Symbol', libraryFontSize /*sz + mod*/, 0);
 		this.settings.icon = '\uE10C';

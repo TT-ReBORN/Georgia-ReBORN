@@ -297,7 +297,7 @@ class BioUserInterface {
 				} catch (e) { return false; }
 			});
 		}
-		const biographyFontSize = SCALE(RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout || 14);
+		const biographyFontSize = SCALE((RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout) || 14);
 
 		if (grSet.customThemeFonts) this.font.main = grFont.biography;
 		else if (bioSet.custFontUse && bioSet.custFont.length) {
@@ -767,7 +767,7 @@ class BioUserInterface {
 	}
 
 	wheel(step) {
-		const biographyFontSize = SCALE(RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout || 14);
+		const biographyFontSize = SCALE((RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout) || 14);
 		if (!bio.panel || bio.but.trace('lookUp', bio.panel.m.x, bio.panel.m.y)) return;
 		if (bio.vk.k('ctrl')) {
 			if (bio.but.trace('heading', bio.panel.m.x, bio.panel.m.y)) {
