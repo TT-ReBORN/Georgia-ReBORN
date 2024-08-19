@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-08-2024                                              * //
+// * Last change:    19-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1442,7 +1442,7 @@ function mouseInLowerBar(x, y, tooltip) {
 function mouseInTransport(x, y) {
 	const buttonSize = SCALE(grSet.transportButtonSize_layout);
 	const startX = (grm.ui.ww - grm.ui.lowerBarTotalBtnW) / 2;
-	const endX = startX + grm.ui.lowerBarTotalBtnW + grm.volBtn.volumeBar.w + buttonSize;
+	const endX = startX + grm.ui.lowerBarTotalBtnW + (grm.volBtn.volumeBar ? grm.volBtn.volumeBar.w + buttonSize : 0);
 	const startY = grm.ui.lowerBarBtnY;
 	const endY = startY + buttonSize;
 
