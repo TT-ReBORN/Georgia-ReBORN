@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    19-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -122,43 +122,8 @@ const grPath = {
 	 * @type {() => string[]} A function returning an array of string paths.
 	 */
 	discArtImagePaths() {
-		return [
-			// * CD ART ( named cd1.png, cd2.png, etc. ) * //
-			$(`$directory_path(%path%)\\${grCfg.settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`),              // Root -> cd%discnumber%.png
-			$(`$directory_path(%path%)\\..\\Artwork\\${grCfg.settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`), // Root Artwork -> cd%discnumber%.png
-			$(`$directory_path(%path%)\\..\\Images\\${grCfg.settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`),  // Root Images -> cd%discnumber%.png
-			$(`$directory_path(%path%)\\..\\Scans\\${grCfg.settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`),   // Root Scans -> cd%discnumber%.png
-			$(`$directory_path(%path%)\\Artwork\\${grCfg.settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`),     // Subfolder Artwork -> cd%discnumber%.png
-			$(`$directory_path(%path%)\\Images\\${grCfg.settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`),      // Subfolder Images -> cd%discnumber%.png
-			$(`$directory_path(%path%)\\Scans\\${grCfg.settings.discArtBasename}$ifgreater(%totaldiscs%,1,%discnumber%,).png`),       // Subfolder Scans -> cd%discnumber%.png
-
-			// * CD ART ( named cd.png (or whatever custom value was specified). This is the most common single disc case. ) * //
-			$(`$directory_path(%path%)\\${grCfg.settings.discArtBasename}.png`),              // Root -> cd.png
-			$(`$directory_path(%path%)\\..\\Artwork\\${grCfg.settings.discArtBasename}.png`), // Root Artwork -> cd.png
-			$(`$directory_path(%path%)\\..\\Images\\${grCfg.settings.discArtBasename}.png`),  // Root Images -> cd.png
-			$(`$directory_path(%path%)\\..\\Scans\\${grCfg.settings.discArtBasename}.png`),   // Root Scans -> cd.png
-			$(`$directory_path(%path%)\\Artwork\\${grCfg.settings.discArtBasename}.png`),     // Subfolder Artwork -> cd.png
-			$(`$directory_path(%path%)\\Images\\${grCfg.settings.discArtBasename}.png`),      // Subfolder Images -> cd.png
-			$(`$directory_path(%path%)\\Scans\\${grCfg.settings.discArtBasename}.png`),       // Subfolder Scans -> cd.png
-
-			// * VINYL DISC ART ( named vinylA.png, vinylB.png, etc. ) * //
-			$(`$directory_path(%path%)\\vinyl$if2(${grTF.vinyl_side},).png`),              // Root -> vinyl side
-			$(`$directory_path(%path%)\\..\\Artwork\\vinyl$if2(${grTF.vinyl_side},).png`), // Root Artwork -> vinyl%vinyl disc%.png
-			$(`$directory_path(%path%)\\..\\Images\\vinyl$if2(${grTF.vinyl_side},).png`),  // Root Images -> vinyl%vinyl disc%.png
-			$(`$directory_path(%path%)\\..\\Scans\\vinyl$if2(${grTF.vinyl_side},).png`),   // Root Scans -> vinyl%vinyl disc%.png
-			$(`$directory_path(%path%)\\Artwork\\vinyl$if2(${grTF.vinyl_side},).png`),     // Subfolder Artwork -> vinyl%vinyl disc%.png
-			$(`$directory_path(%path%)\\Images\\vinyl$if2(${grTF.vinyl_side},).png`),      // Subfolder Images -> vinyl%vinyl disc%.png
-			$(`$directory_path(%path%)\\Scans\\vinyl$if2(${grTF.vinyl_side},).png`),       // Subfolder Scans -> vinyl%vinyl disc%.png
-
-			// * VINYL DISC ART ( named vinylA.png, vinylB.png, etc. ) * //
-			$('$directory_path(%path%)\\vinyl.png'),              // Root -> vinyl.png
-			$('$directory_path(%path%)\\..\\Artwork\\vinyl.png'), // Root Artwork -> vinyl.png
-			$('$directory_path(%path%)\\..\\Images\\vinyl.png'),  // Root Images -> vinyl.png
-			$('$directory_path(%path%)\\..\\Scans\\vinyl.png'),   // Root Scans -> vinyl.png
-			$('$directory_path(%path%)\\Artwork\\vinyl.png'),     // Subfolder Artwork -> vinyl.png
-			$('$directory_path(%path%)\\Images\\vinyl.png'),      // Subfolder Images -> vinyl.png
-			$('$directory_path(%path%)\\Scans\\vinyl.png')        // Subfolder Scans -> vinyl.png
-		];
+		const paths = grCfg.discArtPaths.map(path => $(path));
+		return paths.flatMap(pattern => utils.Glob(pattern, FileAttributes.Directory));
 	},
 
 	/**

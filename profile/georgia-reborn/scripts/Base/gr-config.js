@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    19-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -572,7 +572,8 @@ class ConfigurationManager {
 		 * for the objects so that the file gets automatically written when a setting is changed.
 		 */
 		this.config.addConfigurationObject(grDef.titleFormatSchema, Object.assign({}, grDef.titleFormatDefaults, cfgSet.title_format_strings), grDef.titleFormatComments);
-		this.config.addConfigurationObject(grDef.imgPathSchema, cfgSet.imgPaths);
+		this.config.addConfigurationObject(grDef.imgPathSchema, cfgSet.imgPaths || grDef.imgPathDefaults);
+		this.config.addConfigurationObject(grDef.discArtPathSchema, cfgSet.discArtPaths || grDef.discArtPathDefaults);
 
 		this.theme           = this.config.addConfigurationObject(grDef.themeSchema, Object.assign({}, grDef.themeDefaults, cfgSet.theme), grDef.themeComments);
 		this.style           = this.config.addConfigurationObject(grDef.themeStyleSchema, Object.assign({}, grDef.themeStyleDefaults, cfgSet.style), grDef.themeStyleComments);
@@ -607,11 +608,11 @@ class ConfigurationManager {
 		this.settings       = this.config.addConfigurationObject(grDef.settingsSchema, Object.assign({}, grDef.settingsDefaults, cfgSet.settings), grDef.settingsComments);
 
 		// Safety checks. Fix up potentially bad vals from config
-		this.settings.discArtBasename = this.settings.discArtBasename && this.settings.discArtBasename.trim().length ? this.settings.discArtBasename.trim() : 'cd';
-		this.settings.artworkDisplayTime = Math.min(Math.max(this.settings.artworkDisplayTime, 5), 120);	// Ensure min of 5sec and max of 120sec
+		this.settings.artworkDisplayTime = Math.min(Math.max(this.settings.artworkDisplayTime, 5), 120); // Ensure min of 5sec and max of 120sec
 
 		this.titleFormat = cfgSet.title_format_strings;
 		this.imgPaths = cfgSet.imgPaths;
+		this.discArtPaths = cfgSet.discArtPaths;
 		this.lyricsFilenamePatterns = cfgSet.lyricsFilenamePatterns;
 		this.metadataGrid = cfgSet.metadataGrid;
 		this.configVersion = cfgSet.configVersion || cfgSet.version;
@@ -668,6 +669,7 @@ class ConfigurationManager {
 	writeDefaultConfig() {
 		this.config.addConfigurationObject(grDef.titleFormatSchema, grDef.titleFormatDefaults, grDef.titleFormatComments);
 		this.config.addConfigurationObject(grDef.imgPathSchema, grDef.imgPathDefaults);
+		this.config.addConfigurationObject(grDef.discArtPathSchema, grDef.discArtPathDefaults);
 
 		this.theme           = this.config.addConfigurationObject(grDef.themeSchema, grDef.themeDefaults, grDef.themeComments);
 		this.style           = this.config.addConfigurationObject(grDef.themeStyleSchema, grDef.themeStyleDefaults, grDef.themeStyleComments);
@@ -866,6 +868,13 @@ class ConfigurationManager {
 		if (!configFileCustom.customWebsiteLinks) {
 			configFileCustom.customWebsiteLinks = this.configCustom.addConfigurationObject(grDef.customWebsiteLinksSchema, grDef.customWebsiteLinksDefaults, grDef.customWebsiteLinksComments);
 			this.configCustom.writeConfiguration();
+			window.Reload(); // Reinit new config
+		}
+
+		// * Check for new discArtPaths section and write if it doesn't exist
+		if (!configFile.discArtPaths) {
+			configFile.discArtPaths = this.config.addConfigurationObject(grDef.discArtPathSchema, grDef.discArtPathDefaults);
+			this.config.writeConfiguration();
 			window.Reload(); // Reinit new config
 		}
 

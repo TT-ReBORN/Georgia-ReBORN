@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-08-2024                                              * //
+// * Last change:    19-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -82,7 +82,7 @@ class ConfigDefaults {
 		// #region ARTWORK IMAGE PATHS
 		/** @public @type {array} Artwork image paths load order - add, change or re-order entries as needed. */
 		this.imgPathDefaults = [
-			// * File names with formats
+			// * File names with formats in the current directory
 			'$replace(%path%,%filename_ext%,)folder*',
 			'$replace(%path%,%filename_ext%,)cover*',
 			'$replace(%path%,%filename_ext%,)front*',
@@ -94,33 +94,25 @@ class ConfigDefaults {
 			'$replace(%path%,%directoryname%\\%filename_ext%,)front*',
 			'$replace(%path%,%directoryname%\\%filename_ext%,)*.*',
 
-			// * Artwork, Images, Scans in root directory ( 1 Disc )
-			'$replace(%path%\\..\\Artwork\\,%filename_ext%,)folder*',
-			'$replace(%path%\\..\\Artwork\\,%filename_ext%,)cover*',
-			'$replace(%path%\\..\\Artwork\\,%filename_ext%,)front*',
-			'$replace(%path%\\..\\Artwork\\,%filename_ext%,)*.*',
-			'$replace(%path%\\..\\Images\\,%filename_ext%,)folder*',
-			'$replace(%path%\\..\\Images\\,%filename_ext%,)cover*',
-			'$replace(%path%\\..\\Images\\,%filename_ext%,)front*',
-			'$replace(%path%\\..\\Images\\,%filename_ext%,)*.*',
-			'$replace(%path%\\..\\Scans\\,%filename_ext%,)folder*',
-			'$replace(%path%\\..\\Scans\\,%filename_ext%,)cover*',
-			'$replace(%path%\\..\\Scans\\,%filename_ext%,)front*',
-			'$replace(%path%\\..\\Scans\\,%filename_ext%,)*.*',
-
-			// * Artwork, Images, Scans in other subfolders ( Multi Discs )
+			// * Artwork, Scans in root directory ( 1 Disc )
 			'$replace(%path%\\Artwork\\,%filename_ext%,)folder*',
 			'$replace(%path%\\Artwork\\,%filename_ext%,)cover*',
 			'$replace(%path%\\Artwork\\,%filename_ext%,)front*',
 			'$replace(%path%\\Artwork\\,%filename_ext%,)*.*',
-			'$replace(%path%\\Images\\,%filename_ext%,)folder*',
-			'$replace(%path%\\Images\\,%filename_ext%,)cover*',
-			'$replace(%path%\\Images\\,%filename_ext%,)front*',
-			'$replace(%path%\\Images\\,%filename_ext%,)*.*',
 			'$replace(%path%\\Scans\\,%filename_ext%,)folder*',
 			'$replace(%path%\\Scans\\,%filename_ext%,)cover*',
 			'$replace(%path%\\Scans\\,%filename_ext%,)front*',
-			'$replace(%path%\\Scans\\,%filename_ext%,)*.*'
+			'$replace(%path%\\Scans\\,%filename_ext%,)*.*',
+
+			// * Artwork, Scans in other subfolders ( Multi Discs )
+			'$replace(%path%\\..\\Artwork\\,%filename_ext%,)folder*',
+			'$replace(%path%\\..\\Artwork\\,%filename_ext%,)cover*',
+			'$replace(%path%\\..\\Artwork\\,%filename_ext%,)front*',
+			'$replace(%path%\\..\\Artwork\\,%filename_ext%,)*.*',
+			'$replace(%path%\\..\\Scans\\,%filename_ext%,)folder*',
+			'$replace(%path%\\..\\Scans\\,%filename_ext%,)cover*',
+			'$replace(%path%\\..\\Scans\\,%filename_ext%,)front*',
+			'$replace(%path%\\..\\Scans\\,%filename_ext%,)*.*'
 		];
 
 		/** @public @type {object} Artwork image paths config header description. */
@@ -130,6 +122,46 @@ class ConfigDefaults {
 			'* The title formatting defined paths for artwork to be displayed. The first image matched will be shown first.                                                                                          ' +
 			'* Re-arrange, add, or remove as needed. Folder delimiters must be double-slashes.                                                                                                                       ' +
 			'* Note: This setting will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                          ' +
+			'* Performance Note: Adding more paths affects performance. If your music collection consistently uses specific folders for artwork consider removing unnecessary paths to optimize performance.         ' +
+			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
+
+		// * DISC ART IMAGE PATHS * //
+		// #region DISC ART IMAGE PATHS
+		/** @public @type {array} Disc art image paths load order - add, change or re-order entries as needed. */
+		this.discArtPathDefaults = [
+			// * Specific disc art image paths (CD)
+			'$directory_path(%path%)\\*cd.png',
+			'$directory_path(%path%)\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
+			'$directory_path(%path%)\\Artwork\\*cd.png',
+			'$directory_path(%path%)\\Artwork\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
+			'$directory_path(%path%)\\Scans\\*cd.png',
+			'$directory_path(%path%)\\Scans\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
+			'$directory_path(%path%)\\..\\Artwork\\*cd.png',
+			'$directory_path(%path%)\\..\\Artwork\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
+			'$directory_path(%path%)\\..\\Scans\\*cd.png',
+			'$directory_path(%path%)\\..\\Scans\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
+
+			// * Specific disc art image paths (Vinyl)
+			'$directory_path(%path%)\\*vinyl.png',
+			'$directory_path(%path%)\\*vinyl$if2(%vinyl side%,).png',
+			'$directory_path(%path%)\\Artwork\\*vinyl.png',
+			'$directory_path(%path%)\\Artwork\\*vinyl$if2(%vinyl side%,).png',
+			'$directory_path(%path%)\\Scans\\*vinyl.png',
+			'$directory_path(%path%)\\Scans\\*vinyl$if2(%vinyl side%,).png',
+			'$directory_path(%path%)\\..\\Artwork\\*vinyl.png',
+			'$directory_path(%path%)\\..\\Artwork\\*vinyl$if2(%vinyl side%,).png',
+			'$directory_path(%path%)\\..\\Scans\\*vinyl.png',
+			'$directory_path(%path%)\\..\\Scans\\*vinyl$if2(%vinyl side%,).png'
+		];
+
+		/** @public @type {object} Disc art image paths config header description. */
+		this.discArtPathSchema = new ConfigurationObjectSchema('discArtPaths', ConfigurationObjectType.Array, undefined,
+			'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
+			'* DISC ART IMAGE PATHS:                                                                                                                                                                                 ' +
+			'* The title formatting defined paths for disc art to be displayed. The first image matched will be shown first.                                                                                         ' +
+			'* Re-arrange, add, or remove as needed. Folder delimiters must be double-slashes.                                                                                                                       ' +
+			'* Note: This setting will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                          ' +
+			'* Performance Note: Adding more paths affects performance. If your music collection consistently uses specific folders for artwork consider removing unnecessary paths to optimize performance.         ' +
 			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 		// #endregion
 
@@ -1618,7 +1650,6 @@ class ConfigDefaults {
 		/** @public @type {object} General settings with default values. */
 		this.settingsDefaults = {
 			artworkDisplayTime: 30,
-			discArtBasename: 'cd',
 			playlistCustomHeaderInfo: '',
 			playlistCustomTitle: '',
 			playlistCustomTitleNoHeader: '',
@@ -1660,7 +1691,6 @@ class ConfigDefaults {
 		/** @public @type {object} General settings config name description. */
 		this.settingsComments = {
 			artworkDisplayTime: 'Number of seconds to show each image if more than one is found and "Cycle through all artwork" option is enabled. (Min: 5, Max: 120)',
-			discArtBasename: 'Do not include extension. Example: "discart", if the image provider uses that name for saving discArt and you want those filtered from showing up as albumArt. Would also filter out discart1.png, etc.',
 			playlistCustomHeaderInfo: 'You can use your own custom pattern for the playlist header info',
 			playlistCustomTitle: 'You can use your own custom title pattern for the playlist row',
 			playlistCustomTitleNoHeader: 'You can use your own custom title pattern for the playlist row - when playlist header is not being displayed',

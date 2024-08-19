@@ -3870,7 +3870,7 @@ class MainUI {
 	 */
 	fetchAlbumArtLocalFiles(metadb) {
 		const filteredFileTypes = grSet.filterDiscJpgsFromAlbumArt ? '(png|jpg)' : 'png';
-		const pattern = new RegExp(`(cd|disc|vinyl|${grCfg.settings.discArtBasename})([0-9]*|[a-h]).${filteredFileTypes}`, 'i');
+		const pattern = new RegExp(`(cd|disc|vinyl)([0-9]*|[a-h]).${filteredFileTypes}`, 'i');
 		const imageType = /(jpg|png)$/i;
 
 		this.albumArtList = grCfg.imgPaths && grCfg.imgPaths.map(path => utils.Glob($(path, metadb), FileAttributes.Directory | FileAttributes.Hidden)).flat();
