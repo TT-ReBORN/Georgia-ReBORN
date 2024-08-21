@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-08-2024                                              * //
+// * Last change:    22-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1552,9 +1552,11 @@ class TopMenuOptions {
 		const playerControlsSeekBarMenu = new Menu('Seekbar');
 		playerControlsSeekBarMenu.createRadioSubMenu('Type', ['Progress bar', 'Peakmeter bar', 'Waveform bar'], grSet.seekbar, ['progressbar', 'peakmeterbar', 'waveformbar'], (type) => {
 			grSet.seekbar = type;
+			grm.ui.clearCache('metrics');
 			grm.ui.setMainMetrics();
 			grm.ui.setMainComponents('seekbar');
 			grm.ui.setSeekbarRefresh();
+			grm.button.createButtons(grm.ui.ww, grm.ui.wh);
 			if (grSet.seekbar === 'waveformbar') grm.waveBar.updateBar();
 			RepaintWindow();
 		});
@@ -1975,8 +1977,10 @@ class TopMenuOptions {
 
 			// * DISC ART OPTIONS * //
 			discArtMenu.addToggleItem('Display disc art', grSet, 'displayDiscArt', () => {
-				if (fb.IsPlaying) grm.ui.fetchNewArtwork(fb.GetNowPlaying());
+				grm.details.clearCache('discArt');
 				grm.details.clearCache('metrics', 'cachedLabelLastLeftEdge'); // resize labels
+				grm.details.clearTimer();
+				if (fb.IsPlaying) grm.ui.fetchNewArtwork(fb.GetNowPlaying());
 				grm.ui.resizeArtwork(true);
 				RepaintWindow();
 			});

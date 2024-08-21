@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-08-2024                                              * //
+// * Last change:    22-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -128,6 +128,8 @@ class MainUI {
 		this.lowerBarDiscW = 0;
 		/** @public @type {number} The height of the disc string in the lower bar. */
 		this.lowerBarDiscH = 0;
+		/** @public @type {number} The x-position of the seekbar in the lower bar. */
+		this.seekbarX = 0;
 		/** @public @type {number} The y-position of the seekbar in the lower bar. */
 		this.seekbarY = 0;
 		/** @public @type {number} The height of the seekbar (progress bar, peakmeter bar, waveform bar ) in the lower bar. */
@@ -384,8 +386,9 @@ class MainUI {
 			gr.FillSolidRect(0, this.albumArtSize.y, width, this.albumArtSize.h, grCol.detailsBg);
 		}
 
-		// * BLENDED BACKGROUND FOR HOME PANEL IN ARTWORK LAYOUT * //
-		if (grSet.styleBlend && this.albumArt && grCol.imgBlended && (grSet.layout === 'artwork' && !this.displayPlaylistArtwork && !this.displayDetails)) {
+		// * BLENDED BACKGROUND FOR HOME PANEL IN ARTWORK LAYOUT & WHEN LYRICS LAYOUT IS FULL * //
+		if (grSet.styleBlend && this.albumArt && grCol.imgBlended &&
+			(this.displayArtworkLayoutCover() || this.displayLyrics && grSet.lyricsLayout === 'full')) {
 			gr.DrawImage(grCol.imgBlended, 0, 0, this.ww, this.wh, 0, 0, grCol.imgBlended.Width, grCol.imgBlended.Height);
 		}
 
@@ -1289,7 +1292,7 @@ class MainUI {
 	 */
 	getSeekbarY() {
 		return grSet.layout === 'default' ? this.wh - this.edgeMargin :
-											this.lowerBarTitleY + this.lowerBarTitleH + this.seekbarHeight;
+											this.lowerBarTitleY + this.lowerBarTitleH + (this.seekbarHeight * (grSet.seekbar === 'waveformbar' ? 0.5 : grSet.seekbar === 'peakmeterbar' ? 0.66 : 1));
 	}
 
 	/**
@@ -1317,11 +1320,11 @@ class MainUI {
 	 */
 	getLowerBarTrackNumX() {
 		if (this.lowerBarOneLine) {
-			return Math.floor(grm.progBar.x + (grSet.showLowerBarArtist_layout ? this.lowerBarArtistW : 0));
+			return Math.floor(this.seekbarX + (grSet.showLowerBarArtist_layout ? this.lowerBarArtistW : 0));
 		}
 
 		// * Two lines
-		return grm.progBar.x;
+		return this.seekbarX;
 	}
 
 	/**
@@ -1334,9 +1337,9 @@ class MainUI {
 
 		if (this.lowerBarOneLine) {
 			if (grSet.showLowerBarArtist_layout) {
-				return Math.round(grm.progBar.x + this.lowerBarArtistW + this.lowerBarTrackNumW);
+				return Math.round(this.seekbarX + this.lowerBarArtistW + this.lowerBarTrackNumW);
 			}
-			return noTrackNumber ? grm.progBar.x : Math.round(grm.progBar.x + this.lowerBarTrackNumW);
+			return noTrackNumber ? this.seekbarX : Math.round(this.seekbarX + this.lowerBarTrackNumW);
 		}
 
 		// * Two lines
@@ -1344,7 +1347,7 @@ class MainUI {
 			grSet.showLowerBarArtistFlags_layout && this.flagImgs.length && grStr.tracknum < 100 ?
 			SCALE(14 + grSet.lowerBarFontSize_layout) : this.lowerBarTrackNumW;
 
-		return noTrackNumber ? grm.progBar.x : Math.round(grm.progBar.x + twoLinesX);
+		return noTrackNumber ? this.seekbarX : Math.round(this.seekbarX + twoLinesX);
 	}
 
 	/**
@@ -1357,6 +1360,7 @@ class MainUI {
 		this.topMenuHeight  = SCALE(40);
 		this.lowerBarHeight = SCALE(120);
 		this.seekbarHeight  = this.getSeekbarHeight();
+		this.seekbarX       = this.edgeMargin;
 	}
 
 	/**
@@ -1425,7 +1429,7 @@ class MainUI {
 
 		// * Assigned after one and two lines display has been calculated
 		this.lowerBarTextStartY = this.getLowerBarTextY();
-		this.lowerBarArtistX    = grm.progBar.x + this.lowerBarFlagW;
+		this.lowerBarArtistX    = this.seekbarX + this.lowerBarFlagW;
 		this.lowerBarArtistY    = this.lowerBarTextStartY - (this.lowerBarTwoLines ? this.lowerBarArtistH + this.seekbarHeight * 0.25 : 0);
 		this.lowerBarTrackNumX  = this.getLowerBarTrackNumX();
 		this.lowerBarTrackNumY  = this.lowerBarTextStartY;
@@ -2496,7 +2500,7 @@ class MainUI {
 	 * @returns {boolean} True if the home panel is displayed, false otherwise.
 	 */
 	displayArtworkLayoutCover() {
-		return grSet.layout === 'artwork' && !this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography;
+		return grSet.layout === 'artwork' && !this.displayPlaylistArtwork && !this.displayDetails && !this.displayLibrary && !this.displayBiography;
 	}
 
 	/**
@@ -4605,7 +4609,7 @@ class MainUI {
 	initBiographyLayoutState() {
 		grSet.savedBiographyLayoutFull = grSet.biographyLayout === 'full';
 
-		const biographyFull = this.displayBiography && bio.ui.x + bio.ui.w === this.ww && !fb.IsPlaying || grSet.biographyLayout === 'full';
+		const biographyFull = this.displayBiography && grSet.biographyLayout === 'full';
 		this.displayPlaylist = grSet.layout === 'default' && (biographyFull ? !this.displayBiography : true);
 
 		if (!this.displayBiography) {

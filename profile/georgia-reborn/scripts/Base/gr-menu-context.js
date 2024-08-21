@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-08-2024                                              * //
+// * Last change:    22-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1440,9 +1440,11 @@ class ContextMenus {
 		for (const type of seekbar) {
 			cm.appendItem(type[0], () => {
 				grSet.seekbar = type[1];
+				grm.ui.clearCache('metrics');
 				grm.ui.setMainMetrics();
 				grm.ui.setMainComponents('seekbar');
 				grm.ui.setSeekbarRefresh();
+				grm.button.createButtons(grm.ui.ww, grm.ui.wh);
 				if (grSet.seekbar === 'waveformbar') grm.waveBar.updateBar();
 				RepaintWindow();
 			}, { is_radio_checked: type[1] === grSet.seekbar });

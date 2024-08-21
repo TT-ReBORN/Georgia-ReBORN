@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-08-2024                                              * //
+// * Last change:    22-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1131,8 +1131,15 @@ class Details {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	loadGridCodecLogo(metadb = grm.ui.initMetadb()) {
-		const codec = $('$lower($if2(%codec%,$ext(%path%)))', metadb);
-		const format = $('$lower($ext(%path%))', metadb);
+		let codec = $('$lower($if2(%codec%,$ext(%path%)))', metadb);
+		let format = $('$lower($ext(%path%))', metadb);
+
+		// Foobar bug showing wrong metadata when DTS is in wav file format
+		if (codec === 'pcm' && format === 'wav') {
+			codec = $('$lower($if2(%codec%,$ext(%path%)))');
+			format = $('$lower($ext(%path%))');
+		}
+
 		const lightBg = new Color(grCol.detailsText).brightness < 140;
 		const bw = lightBg ? 'black' : 'white';
 
@@ -1198,7 +1205,12 @@ class Details {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	loadGridChannelLogo(metadb = grm.ui.initMetadb()) {
-		const channels = $('%channels%', metadb);
+		const codec = $('$lower($if2(%codec%,$ext(%path%)))', metadb);
+		const format = $('$lower($ext(%path%))', metadb);
+
+		// Foobar bug showing wrong metadata when DTS is in wav file format
+		const channels = codec === 'pcm' && format === 'wav' ? $('%channels%') : $('%channels%', metadb);
+
 		const type =
 			(grSet.layout === 'default' && grSet.showGridChannelLogo_default === 'textlogo' ||
 			 grSet.layout === 'artwork' && grSet.showGridChannelLogo_artwork === 'textlogo') ? '_text' : '';
@@ -1720,10 +1732,12 @@ class Details {
 		const discArtImagePaths = grPath.discArtImagePaths();
 		const discArtStubPaths = grPath.discArtStubPaths();
 
-		for (const path of discArtImagePaths) {
-			if (IsFile(path)) {
-				this.discArtFound = true;
-				return path;
+		if (grSet.noDiscArtStub || grSet.showDiscArtStub) {
+			for (const path of discArtImagePaths) {
+				if (IsFile(path)) {
+					this.discArtFound = true;
+					return path;
+				}
 			}
 		}
 
