@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    19-08-2024                                              * //
+// * Last change:    21-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -349,7 +349,7 @@ class MainUI {
 		this.drawLyrics(gr);
 		this.drawStyles(gr);
 		this.drawThemeNotification(gr);
-		this.drawPanelShadows(gr);
+		this.drawShadows(gr);
 		this.drawTopMenuBar(gr);
 		this.drawLowerBar(gr);
 		this.drawCustomMenu(gr);
@@ -378,7 +378,7 @@ class MainUI {
 		if (!this.displayDetails && (fb.IsPlaying || grSet.panelBrowseMode) && grSet.albumArtBg !== 'none') {
 			const width = (
 				grSet.albumArtBg === 'full' || grSet.layout === 'artwork' ||
-				grm.ui.displayLyrics && grSet.lyricsLayout === 'full'
+				this.displayLyrics && grSet.lyricsLayout === 'full'
 			) ? this.ww : this.albumArtSize.x;
 
 			gr.FillSolidRect(0, this.albumArtSize.y, width, this.albumArtSize.h, grCol.detailsBg);
@@ -713,73 +713,68 @@ class MainUI {
 	 * Draws all the shadows for album art and panels.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
-	drawPanelShadows(gr) {
-		const drawPanelShadowsProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> panel shadows');
+	drawShadows(gr) {
+		const drawPanelShadowsProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> draw shadows');
 
-		// * SHADOWS FOR ALBUM ART, noAlbumArtStub AND DETAILS * //
-		const layoutDefault = grSet.layout === 'default' &&
-			(this.displayDetails || !this.displayBiography && (grSet.playlistLayout !== 'full' && this.displayPlaylist || grSet.libraryLayout === 'normal' && this.displayLibrary));
-
-		const layoutArtwork = grSet.layout === 'artwork' &&
-			!this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography;
-
-		const displayAlbumArtDetailsShadows =
-			(this.albumArt && this.albumArtScaled || this.noAlbumArtStub) && !this.displayLibrarySplit() && (layoutDefault || layoutArtwork);
-
-		const displayDetails = this.displayDetails && (!grm.details.discArt || !grSet.displayDiscArt);
-
-		const noDefaultLayout = grSet.layout !== 'default' || this.displayMetadataGridMenu;
-
-		if (displayAlbumArtDetailsShadows) {
-			gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
-
-			// Top shadow
-			gr.FillGradRect(0, libSet.albumArtShow && grSet.libraryLayout === 'full' && this.displayLibrary ? lib.ui.y - HD_4K(6, 10) : this.albumArtSize.y - HD_4K(6, 10),
-				displayDetails && grSet.noDiscArtBg || noDefaultLayout ? this.ww : this.albumArtSize.x + this.albumArtSize.w, HD_4K(6, 10), 90, 0, grCol.shadow);
-
-			if (displayDetails && !grSet.noDiscArtBg && !this.noAlbumArtStub) {
-				// Middle shadow
-				gr.FillGradRect(this.albumArtSize.x + this.albumArtSize.w, this.albumArtSize.y - 3, 4, this.albumArtSize.h + 5, 0.5, grSet.styleBlackAndWhite ? RGB(0, 0, 0) : grCol.shadow, 0);
-			}
-			// Bottom shadow
-			gr.FillGradRect(0, libSet.albumArtShow && grSet.libraryLayout === 'full' && this.displayLibrary ? lib.ui.y + lib.ui.h + HD_4K(-1, 0) : this.albumArtSize.y + this.albumArtSize.h + HD_4K(-1, 0),
-				displayDetails && grSet.noDiscArtBg || noDefaultLayout ? this.ww : this.albumArtSize.x + this.albumArtSize.w, SCALE(5), 90, grCol.shadow, 0);
-		}
-
-		// * SHADOWS FOR ALL PANELS * //
-		const panelLayoutNormal = grSet.layout === 'default' &&
-			(grSet.playlistLayout  === 'normal' && this.displayPlaylist && !this.displayBiography ||
-			 grSet.libraryLayout   === 'normal' && this.displayLibrary   ||
-			 grSet.biographyLayout === 'normal' && this.displayBiography ||
-			this.displayLibrarySplit());
-
-		const displayPanelShadows =
-			grSet.layout !== 'artwork' && this.displayPlaylist || this.displayPlaylistArtwork || this.displayLibrary || this.displayBiography || this.displayLyrics && grSet.lyricsLayout === 'full' || this.displayCustomThemeMenu && !fb.IsPlaying;
-
-		if (displayPanelShadows) {
-			const x =
-				this.displayLibrarySplit() || this.displayBiography || (this.displayCustomThemeMenu || grSet.panelWidthAuto) && !fb.IsPlaying && !grSet.panelBrowseMode || grSet.layout !== 'default' || !panelLayoutNormal ? 0 :
-				grSet.panelWidthAuto ? this.albumArtSize.x + this.albumArtSize.w : this.ww * 0.5;
-
-			gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
-
-			// Top shadow
-			gr.FillGradRect(x, this.topMenuHeight - HD_4K(6, 10), this.ww, HD_4K(6, 10), 90, 0, grCol.shadow);
-
-			if (panelLayoutNormal && pl.playlist.x !== 0 && !grSet.hideMiddlePanelShadow) {
-				// Middle shadow for playlist
-				gr.FillGradRect(grSet.panelWidthAuto ? this.displayLibrarySplit() ? this.wh - this.topMenuHeight - this.lowerBarHeight - 4 : this.albumArtSize.x + this.albumArtSize.w - 4 : this.ww * 0.5 - 4, this.topMenuHeight, 4, this.wh - this.topMenuHeight - this.lowerBarHeight, 0.5, 0,
-					grSet.styleBlackAndWhite && this.noAlbumArtStub ? RGB(0, 0, 0) : grSet.styleNighttime || grSet.styleBlackAndWhite2 || grSet.styleRebornBlack ? RGBA(0, 0, 0, 30) : grCol.shadow);
-				// Middle shadow for album art
-				if (this.albumArt && this.albumArtSize.w !== this.ww * 0.5 && !this.displayLibrarySplit() && !this.displayBiography && !this.noAlbumArtStub) {
-					gr.FillGradRect(this.albumArtSize.x + this.albumArtSize.w - 2, this.albumArtSize.y, 4, this.albumArtSize.h, 0.5, grSet.styleBlackAndWhite ? RGB(0, 0, 0) : grCol.shadow, 0);
-				}
-			}
-			// Bottom shadow
-			gr.FillGradRect(x, this.wh - this.lowerBarHeight + HD_4K(-1, 0), this.ww, SCALE(5), 90, grCol.shadow, 0);
-		}
+		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
+		this.drawAlbumArtShadows(gr);
+		this.drawPanelShadows(gr);
 
 		if (drawPanelShadowsProfiler) drawPanelShadowsProfiler.Print();
+	}
+
+	/**
+	 * Draws shadows for the album art.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawAlbumArtShadows(gr) {
+		if (this.displayDetails || !this.albumArt || !this.albumArtDisplayed() ||
+			this.displayLyrics && grSet.lyricsLayout === 'full' || this.displayArtworkLayoutCover()) {
+			return;
+		}
+
+		const middleX =
+			grSet.hideMiddlePanelShadow || this.albumArtSize.w === this.ww * 0.5 ? this.ww + 4 :
+			this.albumArtSize.x + this.albumArtSize.w - 2;
+
+		// Top shadow
+		gr.FillGradRect(0, this.albumArtSize.y - HD_4K(6, 10), this.albumArtSize.x + this.albumArtSize.w, HD_4K(6, 10), 90, 0, grCol.shadow);
+		// Middle shadow
+		gr.FillGradRect(middleX, this.albumArtSize.y, 4, this.albumArtSize.h, 0.5, grm.color.getMiddleShadowColor(), 0);
+		// Bottom shadow
+		gr.FillGradRect(0, this.albumArtSize.y + this.albumArtSize.h + HD_4K(-1, 0), this.albumArtSize.x + this.albumArtSize.w, SCALE(5), 90, grCol.shadow, 0);
+	}
+
+	/**
+	 * Draws shadows for all panels.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawPanelShadows(gr) {
+		if (!fb.IsPlaying && !grSet.panelBrowseMode && (this.displayDetails || this.displayArtworkLayoutCover())) {
+			return;
+		}
+
+		const albumArtW =
+			this.albumArtDisplayed() && !this.displayDetails && !this.displayArtworkLayoutCover() &&
+			(grSet.lyricsLayout !== 'full' || !this.displayLyrics);
+
+		const panelX =
+			this.displayPlaylist ? pl.playlist.x :
+			this.displayLibrary ? lib.ui.x :
+			this.displayBiography ? bio.ui.x :
+			grSet.layout !== 'default' || !this.albumArtSize.w ? 0 :
+			this.albumArtSize.x + this.albumArtSize.w;
+
+		const middleX = grSet.hideMiddlePanelShadow ? this.ww + 4 : panelX - 4;
+		const x = albumArtW ? panelX : 0;
+		const w = albumArtW && !grSet.panelWidthAuto || this.discArtDisplayed() ? panelX : this.ww;
+
+		// Top shadow
+		gr.FillGradRect(x, this.topMenuHeight - HD_4K(6, 10), w, HD_4K(6, 10), 90, 0, grCol.shadow);
+		// Middle shadow
+		gr.FillGradRect(middleX, this.topMenuHeight, 4, this.wh - this.topMenuHeight - this.lowerBarHeight, 0.5, 0, grm.color.getMiddleShadowColor());
+		// Bottom shadow
+		gr.FillGradRect(x, this.wh - this.lowerBarHeight + HD_4K(-1, 0), w, SCALE(5), 90, grCol.shadow, 0);
 	}
 
 	/**
@@ -2462,6 +2457,330 @@ class MainUI {
 	}
 	// #endregion
 
+	// * MAIN - PUBLIC METHODS - STATE * //
+	// #region MAIN - PUBLIC METHODS - STATE
+	/**
+	 * Checks if the album art is displayed based on the current layout and display flags.
+	 * @param {boolean} noAlbumArtStub - Whether the noAlbumArtStub is being displayed.
+	 * @returns {boolean} True if the album art or noAlbumArtStub is displayed, false otherwise.
+	 */
+	albumArtDisplayed(noAlbumArtStub) {
+		if (!noAlbumArtStub && this.noAlbumArtStub) return false;
+
+		if (grSet.layout === 'default') {
+			return this.displayPlaylist && grSet.playlistLayout === 'normal' && !this.displayLibrary && !this.displayBiography
+			||
+			this.displayLibrary && grSet.libraryLayout === 'normal'
+			||
+			this.displayDetails && !noAlbumArtStub
+			||
+			this.displayLyrics;
+		}
+		else if (grSet.layout === 'artwork') {
+			return !this.displayPlaylist && !this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if the disc art is displayed based on the current settings.
+	 * @returns {boolean} True if the disc art is displayed, false otherwise.
+	 */
+	discArtDisplayed() {
+		return this.displayDetails && grSet.displayDiscArt && grm.details.discArt !== undefined;
+	}
+
+	/**
+	 * Checks if the Artwork layout is currently displaying the home panel ( album art cover ).
+	 * @returns {boolean} True if the home panel is displayed, false otherwise.
+	 */
+	displayArtworkLayoutCover() {
+		return grSet.layout === 'artwork' && !this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography;
+	}
+
+	/**
+	 * Checks if the Library and Playlist are side by side, called when Library layout is in split mode.
+	 * @param {boolean} control - Limits the area to the width and height of the playlist panel.
+	 * @returns {boolean} True if Library and Playlist are being displayed.
+	 */
+	displayLibrarySplit(control) {
+		return grSet.layout === 'default' && grSet.libraryLayout === 'split' && this.displayLibrary && this.displayPlaylist &&
+		(control ? this.state.mouse_x > pl.playlist.x && this.state.mouse_x <= pl.playlist.x + pl.playlist.w &&
+				   this.state.mouse_y > pl.playlist.y - SCALE(plSet.row_h) && this.state.mouse_y <= pl.playlist.y + pl.playlist.h : true);
+	}
+
+	/**
+	 * Checks if the auto-random preset mode is enabled.
+	 * @returns {boolean} True if the auto-random preset mode is enabled, false otherwise.
+	 */
+	hasAutoRandomPresetMode() {
+		return !this.doubleClicked &&
+		(!['off', 'track'].includes(grSet.presetAutoRandomMode) && grSet.presetSelectMode === 'harmonic'
+		||
+		grSet.presetAutoRandomMode === 'dblclick' && grSet.presetSelectMode === 'theme');
+	}
+
+	/**
+	 * Checks if any theme tags are present in the music file metadata fields.
+	 * @returns {boolean} True if any theme tags are present, false otherwise.
+	 */
+	hasThemeTags() {
+		return $('[%GR_THEME%]') || $('[%GR_STYLE%]') || $('[%GR_PRESET%]');
+	}
+
+	/**
+	 * Checks the panel layout state based on the provided condition.
+	 * @param {string} condition - The condition to check. Use 'all' to check all conditions.
+	 * @returns {boolean} - True if the condition(s) are met, otherwise false.
+	 */
+	panelLayoutState(condition) {
+		const layout = {
+			playlistLayoutNormal: grSet.playlistLayout === 'normal' && this.displayPlaylist && !this.displayBiography,
+			libraryLayoutNormal: grSet.libraryLayout === 'normal' && this.displayLibrary,
+			biographyLayoutNormal: grSet.biographyLayout === 'normal' && this.displayBiography,
+			lyricsLayoutNormal: grSet.lyricsLayout === 'normal' && this.displayLyrics,
+			lyricsLayoutFull: grSet.lyricsLayout === 'full' && this.displayLyrics,
+			displayLibrarySplit: this.displayLibrarySplit()
+		};
+
+		if (condition === 'allNormal') {
+			return grSet.layout === 'default'
+			&& (layout.playlistLayoutNormal
+			|| layout.libraryLayoutNormal
+			|| layout.biographyLayoutNormal
+			|| layout.lyricsLayoutNormal
+			|| layout.displayLibrarySplit);
+		}
+
+		return layout[condition];
+	}
+	// #endregion
+
+	// * MAIN - PUBLIC METHODS - CONTROLS * //
+	// #region MAIN - PUBLIC METHODS - CONTROLS
+	/**
+	 * Displays the specified panel, either based on explicit argument, at startup, or during playback changes.
+	 * @param {string} panel - The name of the panel to display. Defaults to startup setting if not specified.
+	 * @param {boolean} force - Whether to forcibly display the panel, bypassing automatic conditions.
+	 */
+	displayPanel(panel, force) {
+		if (!force && (!grSet.returnToHomeOnPlaybackStop && !grSet.showPanelOnStartup || fb.PlaybackLength > 1)) {
+			return;
+		}
+
+		// * Reset all panels
+		if (!fb.IsPlaying || grSet.layout !== 'default') {
+			this.displayCustomThemeMenu = false;
+			this.displayMetadataGridMenu = false;
+		}
+		this.displayPlaylist = false;
+		this.displayPlaylistArtwork = false;
+		this.displayDetails = false;
+		this.displayLibrary = false;
+		this.displayBiography = false;
+		this.displayLyrics = false;
+
+		// * Setup all panels
+		const panelActions = {
+			cover: () => { // Artwork layout only
+				if (grSet.layout === 'default') {
+					grSet.showPanelOnStartup = 'playlist';
+					this.displayPlaylist = true;
+				}
+			},
+			playlist: () => {
+				if (grSet.layout === 'artwork') {
+					this.displayPlaylistArtwork = true;
+				} else {
+					this.displayPlaylist = true;
+				}
+			},
+			details: () => {
+				if (grSet.layout === 'artwork') {
+					this.displayPlaylist = true;
+					if (pl.playlist) pl.playlist.x = this.ww; // Move hidden Playlist offscreen to disable Playlist mouse functions in Details
+				}
+				this.displayDetails = true;
+			},
+			library: () => {
+				this.displayPlaylist = grSet.layout === 'default' && grSet.libraryLayout === 'split';
+				this.displayLibrary = true;
+			},
+			biography: () => {
+				this.displayPlaylist = grSet.layout === 'default';
+				this.displayBiography = true;
+			},
+			lyrics: () => {
+				this.displayPlaylist = grSet.layout === 'default' && grSet.lyricsLayout !== 'full';
+				this.displayLyrics = grSet.layout !== 'compact';
+			}
+		};
+
+		// * Apply chosen panel
+		const chosenPanel = panel || grSet.showPanelOnStartup;
+		if (panelActions[chosenPanel]) {
+			panelActions[chosenPanel]();
+		}
+
+		if (grSet.layout === 'compact') { // Override, needs to be always Playlist panel for Compact layout
+			this.displayPlaylist = true;
+		}
+
+		this.resizeArtwork(true);
+		this.initPanelWidthAuto();
+		this.setPlaylistSize();
+		this.setLibrarySize();
+		this.setBiographySize();
+		grm.button.initButtonState();
+		window.Repaint();
+	}
+
+	/**
+	 * Handles the panel layouts by initializing, resetting, or restoring the panel layout.
+	 * This includes setting up the Library and Biography layouts with its presets.
+	 *
+	 * Note 1: When the Playlist layout is in full width, it needs to be temporarily disabled to prevent panel overlapping
+	 * when displaying the Library, Biography, Lyrics, or the custom theme menu.
+	 *
+	 * Note 2: The Lyrics layout in full width can only be displayed in the Playlist panel.
+	 * @param {string} panel - The panel to be handled. Can be `library`, `biography`, `lyrics`, or `all`.
+	 * @param {string} action - The action to be performed on the panel. Can be `initLayout`, `resetLayout`, or `restoreLayout`.
+	 */
+	handlePanelLayout(panel, action) {
+		const panels = ['playlist', 'library', 'biography', 'lyrics'];
+
+		const layoutActions = {
+			initLayout: {
+				playlist: () => {
+					if ((grSet.playlistLayout === 'full' || grSet.savedPlaylistLayoutFull) &&
+						(this.displayCustomThemeMenu || this.displayLibrary || this.displayBiography || this.displayLyrics)) {
+						layoutActions.resetLayout.playlist();
+					} else {
+						layoutActions.restoreLayout.playlist();
+					}
+				},
+				library: () => {
+					if (this.displayLibrary && grSet.layout === 'default' && grSet.libraryLayout === 'split') {
+						this.displayPlaylist = true;
+						this.initLibraryLayout();
+					}
+				},
+				biography: () => {
+					if (this.displayBiography && grSet.layout === 'default' && grSet.biographyLayoutFullPreset) {
+						this.initBiographyLayout();
+					}
+				},
+				lyrics: () => {
+					if ((grSet.lyricsLayout === 'full' || grSet.savedLyricsLayoutFull) &&
+						(this.displayCustomThemeMenu || this.displayDetails || this.displayLibrary || this.displayBiography)) {
+						layoutActions.resetLayout.lyrics();
+					} else {
+						layoutActions.restoreLayout.lyrics();
+					}
+				}
+			},
+			resetLayout: {
+				playlist: () => {
+					if (grSet.playlistLayout !== 'full') return;
+					grSet.savedPlaylistLayoutFull = true;
+					grSet.playlistLayout = 'normal';
+					this.setPlaylistSize();
+				},
+				library: () => {
+					if (grSet.libraryLayout !== 'full') return;
+					grSet.savedLibraryLayoutFull = true;
+					grSet.libraryLayout = 'normal';
+					this.setLibrarySize();
+				},
+				biography: () => {
+					if (grSet.biographyLayout !== 'full') return;
+					grSet.savedBiographyLayoutFull = true;
+					grSet.biographyLayout = 'normal';
+					this.setBiographySize();
+				},
+				lyrics: () => {
+					if (grSet.lyricsLayout !== 'full') return;
+					grSet.savedLyricsLayoutFull = true;
+					grSet.lyricsLayout = 'normal';
+					this.setPlaylistSize();
+				}
+			},
+			restoreLayout: {
+				playlist: () => {
+					if (!grSet.savedPlaylistLayoutFull) return;
+					grSet.playlistLayout = 'full';
+					this.setPlaylistSize();
+				},
+				library: () => {
+					if (!grSet.savedLibraryLayoutFull) return;
+					grSet.libraryLayout = 'full';
+					this.setLibrarySize();
+				},
+				biography: () => {
+					if (!grSet.savedBiographyLayoutFull) return;
+					grSet.biographyLayout = 'full';
+					this.setBiographySize();
+				},
+				lyrics: () => {
+					if (!grSet.savedLyricsLayoutFull || this.displayDetails) return;
+					grSet.lyricsLayout = 'full';
+					if (this.displayLyrics) this.displayPlaylist = false;
+					this.setPlaylistSize();
+				}
+			}
+		};
+
+		for (const p of panels) {
+			if (panel === p || panel === 'all') {
+				layoutActions[action][p]();
+			}
+		}
+	}
+
+	/**
+	 * Handles keyboard actions for specific keys and combinations.
+	 * @param {number} vkey - The virtual key code of the pressed key.
+	 */
+	handleKeyAction(vkey) {
+		const setRating = (action) => {
+			const metadb = fb.GetNowPlaying();
+			const metadbList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+
+			if (fb.IsPlaying) {
+				fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadb);
+			}
+			else if (!metadb && (this.displayPlaylist && !this.displayLibrary || this.displayPlaylistArtwork || this.displayLibrarySplit(true))) {
+				if (metadbList.Count === 1) {
+					fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadbList[0]);
+				} else {
+					console.log('Won\'t change rating with more than one selected item');
+				}
+			}
+		};
+
+		const keyActions = {
+			[VKey.ADD]: {
+				ctrlNoShift: () => grm.display.handleDisplayScaleKeyAction('increase'),
+				altNoShift: () => grm.display.handleDisplayScaleKeyAction('reset'),
+				ctrlShift: () => setRating('+')
+			},
+			[VKey.SUBTRACT]: {
+				ctrlNoShift: () => grm.display.handleDisplayScaleKeyAction('decrease'),
+				altNoShift: () => grm.display.handleDisplayScaleKeyAction('reset'),
+				ctrlShift: () => setRating('-')
+			},
+			[VKey.KEY_Z]: {
+				ctrl: () => fb.RunMainMenuCommand('Edit/Undo')
+			}
+		};
+
+		if (keyActions[vkey]) {
+			KeyPressAction(keyActions[vkey]);
+		}
+	}
+	// #endregion
+
 	// * MAIN - PUBLIC METHODS - COMMON * //
 	// #region MAIN - PUBLIC METHODS - COMMON
 	/**
@@ -2699,25 +3018,6 @@ class MainUI {
 		// * LYRICS * //
 		grFont.lyrics          = Font(grFont.fontLyrics, grSet.lyricsFontSize_layout, 1);
 		grFont.lyricsHighlight = Font(grFont.fontLyrics, grSet.lyricsFontSize_layout * 1.5, 1);
-	}
-
-	/**
-	 * Checks if the auto-random preset mode is enabled.
-	 * @returns {boolean} True if the auto-random preset mode is enabled, false otherwise.
-	 */
-	hasAutoRandomPresetMode() {
-		return !this.doubleClicked &&
-		(!['off', 'track'].includes(grSet.presetAutoRandomMode) && grSet.presetSelectMode === 'harmonic'
-		||
-		grSet.presetAutoRandomMode === 'dblclick' && grSet.presetSelectMode === 'theme');
-	}
-
-	/**
-	 * Checks if any theme tags are present in the music file metadata fields.
-	 * @returns {boolean} True if any theme tags are present, false otherwise.
-	 */
-	hasThemeTags() {
-		return $('[%GR_THEME%]') || $('[%GR_STYLE%]') || $('[%GR_PRESET%]');
 	}
 
 	/**
@@ -3252,230 +3552,6 @@ class MainUI {
 	}
 	// #endregion
 
-	// * MAIN - PUBLIC METHODS - CONTROLS * //
-	// #region MAIN - PUBLIC METHODS - CONTROLS
-	/**
-	 * Displays the specified panel, either based on explicit argument, at startup, or during playback changes.
-	 * @param {string} panel - The name of the panel to display. Defaults to startup setting if not specified.
-	 * @param {boolean} force - Whether to forcibly display the panel, bypassing automatic conditions.
-	 */
-	displayPanel(panel, force) {
-		if (!force && (!grSet.returnToHomeOnPlaybackStop && !grSet.showPanelOnStartup || fb.PlaybackLength > 1)) {
-			return;
-		}
-
-		// * Reset all panels
-		if (!fb.IsPlaying || grSet.layout !== 'default') {
-			this.displayCustomThemeMenu = false;
-			this.displayMetadataGridMenu = false;
-		}
-		this.displayPlaylist = false;
-		this.displayPlaylistArtwork = false;
-		this.displayDetails = false;
-		this.displayLibrary = false;
-		this.displayBiography = false;
-		this.displayLyrics = false;
-
-		// * Setup all panels
-		const panelActions = {
-			cover: () => { // Artwork layout only
-				if (grSet.layout === 'default') {
-					grSet.showPanelOnStartup = 'playlist';
-					this.displayPlaylist = true;
-				}
-			},
-			playlist: () => {
-				if (grSet.layout === 'artwork') {
-					this.displayPlaylistArtwork = true;
-				} else {
-					this.displayPlaylist = true;
-				}
-			},
-			details: () => {
-				if (grSet.layout === 'artwork') {
-					this.displayPlaylist = true;
-					if (pl.playlist) pl.playlist.x = this.ww; // Move hidden Playlist offscreen to disable Playlist mouse functions in Details
-				}
-				this.displayDetails = true;
-			},
-			library: () => {
-				this.displayPlaylist = grSet.layout === 'default' && grSet.libraryLayout === 'split';
-				this.displayLibrary = true;
-			},
-			biography: () => {
-				this.displayPlaylist = grSet.layout === 'default';
-				this.displayBiography = true;
-			},
-			lyrics: () => {
-				this.displayPlaylist = grSet.layout === 'default' && grSet.lyricsLayout !== 'full';
-				this.displayLyrics = grSet.layout !== 'compact';
-			}
-		};
-
-		// * Apply chosen panel
-		const chosenPanel = panel || grSet.showPanelOnStartup;
-		if (panelActions[chosenPanel]) {
-			panelActions[chosenPanel]();
-		}
-
-		if (grSet.layout === 'compact') { // Override, needs to be always Playlist panel for Compact layout
-			this.displayPlaylist = true;
-		}
-
-		this.resizeArtwork(true);
-		this.initPanelWidthAuto();
-		this.setPlaylistSize();
-		this.setLibrarySize();
-		this.setBiographySize();
-		grm.button.initButtonState();
-		window.Repaint();
-	}
-
-	/**
-	 * Handles the panel layouts by initializing, resetting, or restoring the panel layout.
-	 * This includes setting up the Library and Biography layouts with its presets.
-	 *
-	 * Note 1: When the Playlist layout is in full width, it needs to be temporarily disabled to prevent panel overlapping
-	 * when displaying the Library, Biography, Lyrics, or the custom theme menu.
-	 *
-	 * Note 2: The Lyrics layout in full width can only be displayed in the Playlist panel.
-	 * @param {string} panel - The panel to be handled. Can be `library`, `biography`, `lyrics`, or `all`.
-	 * @param {string} action - The action to be performed on the panel. Can be `initLayout`, `resetLayout`, or `restoreLayout`.
-	 */
-	handlePanelLayout(panel, action) {
-		const panels = ['playlist', 'library', 'biography', 'lyrics'];
-
-		const layoutActions = {
-			initLayout: {
-				playlist: () => {
-					if ((grSet.playlistLayout === 'full' || grSet.savedPlaylistLayoutFull) &&
-						(this.displayCustomThemeMenu || this.displayLibrary || this.displayBiography || this.displayLyrics)) {
-						layoutActions.resetLayout.playlist();
-					} else {
-						layoutActions.restoreLayout.playlist();
-					}
-				},
-				library: () => {
-					if (this.displayLibrary && grSet.layout === 'default' && grSet.libraryLayout === 'split') {
-						this.displayPlaylist = true;
-						this.initLibraryLayout();
-					}
-				},
-				biography: () => {
-					if (this.displayBiography && grSet.layout === 'default' && grSet.biographyLayoutFullPreset) {
-						this.initBiographyLayout();
-					}
-				},
-				lyrics: () => {
-					if ((grSet.lyricsLayout === 'full' || grSet.savedLyricsLayoutFull) &&
-						(this.displayCustomThemeMenu || this.displayDetails || this.displayLibrary || this.displayBiography)) {
-						layoutActions.resetLayout.lyrics();
-					} else {
-						layoutActions.restoreLayout.lyrics();
-					}
-				}
-			},
-			resetLayout: {
-				playlist: () => {
-					if (grSet.playlistLayout !== 'full') return;
-					grSet.savedPlaylistLayoutFull = true;
-					grSet.playlistLayout = 'normal';
-					this.setPlaylistSize();
-				},
-				library: () => {
-					if (grSet.libraryLayout !== 'full') return;
-					grSet.savedLibraryLayoutFull = true;
-					grSet.libraryLayout = 'normal';
-					this.setLibrarySize();
-				},
-				biography: () => {
-					if (grSet.biographyLayout !== 'full') return;
-					grSet.savedBiographyLayoutFull = true;
-					grSet.biographyLayout = 'normal';
-					this.setBiographySize();
-				},
-				lyrics: () => {
-					if (grSet.lyricsLayout !== 'full') return;
-					grSet.savedLyricsLayoutFull = true;
-					grSet.lyricsLayout = 'normal';
-					this.setPlaylistSize();
-				}
-			},
-			restoreLayout: {
-				playlist: () => {
-					if (!grSet.savedPlaylistLayoutFull) return;
-					grSet.playlistLayout = 'full';
-					this.setPlaylistSize();
-				},
-				library: () => {
-					if (!grSet.savedLibraryLayoutFull) return;
-					grSet.libraryLayout = 'full';
-					this.setLibrarySize();
-				},
-				biography: () => {
-					if (!grSet.savedBiographyLayoutFull) return;
-					grSet.biographyLayout = 'full';
-					this.setBiographySize();
-				},
-				lyrics: () => {
-					if (!grSet.savedLyricsLayoutFull || this.displayDetails) return;
-					grSet.lyricsLayout = 'full';
-					if (this.displayLyrics) this.displayPlaylist = false;
-					this.setPlaylistSize();
-				}
-			}
-		};
-
-		for (const p of panels) {
-			if (panel === p || panel === 'all') {
-				layoutActions[action][p]();
-			}
-		}
-	}
-
-	/**
-	 * Handles keyboard actions for specific keys and combinations.
-	 * @param {number} vkey - The virtual key code of the pressed key.
-	 */
-	handleKeyAction(vkey) {
-		const setRating = (action) => {
-			const metadb = fb.GetNowPlaying();
-			const metadbList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
-
-			if (fb.IsPlaying) {
-				fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadb);
-			}
-			else if (!metadb && (this.displayPlaylist && !this.displayLibrary || this.displayPlaylistArtwork || this.displayLibrarySplit(true))) {
-				if (metadbList.Count === 1) {
-					fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${action}`, metadbList[0]);
-				} else {
-					console.log('Won\'t change rating with more than one selected item');
-				}
-			}
-		};
-
-		const keyActions = {
-			[VKey.ADD]: {
-				ctrlNoShift: () => grm.display.handleDisplayScaleKeyAction('increase'),
-				altNoShift: () => grm.display.handleDisplayScaleKeyAction('reset'),
-				ctrlShift: () => setRating('+')
-			},
-			[VKey.SUBTRACT]: {
-				ctrlNoShift: () => grm.display.handleDisplayScaleKeyAction('decrease'),
-				altNoShift: () => grm.display.handleDisplayScaleKeyAction('reset'),
-				ctrlShift: () => setRating('-')
-			},
-			[VKey.KEY_Z]: {
-				ctrl: () => fb.RunMainMenuCommand('Edit/Undo')
-			}
-		};
-
-		if (keyActions[vkey]) {
-			KeyPressAction(keyActions[vkey]);
-		}
-	}
-	// #endregion
-
 	// * MAIN - PUBLIC METHODS - GRAPHICS * //
 	// #region MAIN - PUBLIC METHODS - GRAPHICS
 	/**
@@ -3600,30 +3676,6 @@ class MainUI {
 
 	// * MAIN - PUBLIC METHODS - ALBUM ART * //
 	// #region MAIN - PUBLIC METHODS - ALBUM ART
-	/**
-	 * Determines if the album art is displayed based on the current layout and display flags.
-	 * @param {boolean} noAlbumArtStub - Whether the noAlbumArtStub is being displayed.
-	 * @returns {boolean} True if the album art or noAlbumArtStub is displayed, false otherwise.
-	 */
-	albumArtDisplayed(noAlbumArtStub) {
-		if (!noAlbumArtStub && this.noAlbumArtStub) return false;
-
-		if (grSet.layout === 'default') {
-			return this.displayPlaylist && grSet.playlistLayout === 'normal' && !this.displayLibrary && !this.displayBiography
-			||
-			this.displayLibrary && grSet.libraryLayout === 'normal'
-			||
-			this.displayDetails && !noAlbumArtStub
-			||
-			this.displayLyrics;
-		}
-		else if (grSet.layout === 'artwork') {
-			return !this.displayPlaylist && !this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography;
-		}
-
-		return false;
-	}
-
 	/**
 	 * Scales album art to a global size, handling potential errors.
 	 * @throws Logs an error if the scaling operation fails.
@@ -4387,17 +4439,6 @@ class MainUI {
 
 	// * LIBRARY - PUBLIC METHODS - CONTROLS * //
 	// #region LIBRARY - PUBLIC METHODS - CONTROLS
-	/**
-	 * Displays the Library and Playlist side by side, called when Library layout is in split mode.
-	 * @param {boolean} control - Limits the area to the width and height of the playlist panel.
-	 * @returns {boolean} True if Library and Playlist are being displayed.
-	 */
-	displayLibrarySplit(control) {
-		return grSet.layout === 'default' && grSet.libraryLayout === 'split' && this.displayLibrary && this.displayPlaylist &&
-		(control ? this.state.mouse_x > pl.playlist.x && this.state.mouse_x <= pl.playlist.x + pl.playlist.w &&
-				   this.state.mouse_y > pl.playlist.y - SCALE(plSet.row_h) && this.state.mouse_y <= pl.playlist.y + pl.playlist.h : true);
-	}
-
 	/**
 	 * Handles the Playlist header collapse when the Library layout split presets are enabled.
 	 */

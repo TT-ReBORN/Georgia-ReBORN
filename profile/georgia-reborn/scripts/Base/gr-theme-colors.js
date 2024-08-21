@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-08-2024                                              * //
+// * Last change:    21-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -724,6 +724,16 @@ class BaseColors {
 			themeObj.lightAccent_alt = ShadeColor(color2.val, 10);
 		}
 		return themeObj;
+	}
+
+	/**
+	 * Gets the shadow color for the middle album art and panel shadow based on active theme styles.
+	 * @returns {number} The shadow color.
+	 */
+	getMiddleShadowColor() {
+		return grSet.styleBlackAndWhite && grm.ui.noAlbumArtStub ? RGB(0, 0, 0) :
+			grSet.styleNighttime || grSet.styleBlackAndWhite2 || grSet.styleRebornBlack ? RGBA(0, 0, 0, 30) :
+			grCol.shadow;
 	}
 	// #endregion
 
