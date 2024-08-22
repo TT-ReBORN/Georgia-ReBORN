@@ -583,11 +583,18 @@ class Details {
 		if (this.gridCodecLogo == null) this.loadGridCodecLogo();
 
 		const showCodecLogoOnly = grSet.showGridCodecLogo_layout === 'logo';
-		const heightRatio = this.gridCodecLogo != null ? (this.gridColumnCellHeight - 4) / this.gridCodecLogo.Height : '';
+		const heightRatio = this.gridCodecLogo != null ? (this.gridColumnCellHeight - 4) / this.gridCodecLogo.Height : 1;
+		const availableWidth = this.gridColumnValueWidth - (!showCodecLogoOnly ? this.gridTxtRec.Width + SCALE(8) : 0);
+		let logoWidth = Math.round(this.gridCodecLogo.Width * heightRatio);
 
-		if (this.gridCodecLogo != null && (!showCodecLogoOnly ? this.gridTxtRec.Width + SCALE(8) : 0) + Math.round(this.gridCodecLogo.Width * heightRatio) < this.gridColumnValueWidth) {
-			gr.DrawImage(this.gridCodecLogo, showCodecLogoOnly && this.gridColumnKey === 'Codec' ? this.gridColumnValueLeft : this.gridColumnValueLeft + this.gridTxtRec.Width + SCALE(8), this.gridTop - 1,
-				Math.round(this.gridCodecLogo.Width * heightRatio), this.gridColumnCellHeight - 4, 0, 0, this.gridCodecLogo.Width, this.gridCodecLogo.Height);
+		if (logoWidth > availableWidth) {
+			const widthRatio = availableWidth / this.gridCodecLogo.Width;
+			logoWidth = Math.round(this.gridCodecLogo.Width * widthRatio);
+		}
+
+		if (this.gridCodecLogo != null) {
+			const xPosition = showCodecLogoOnly && this.gridColumnKey === 'Codec' ? this.gridColumnValueLeft : this.gridColumnValueLeft + this.gridTxtRec.Width + SCALE(8);
+			gr.DrawImage(this.gridCodecLogo, xPosition, this.gridTop - 1, logoWidth, this.gridColumnCellHeight - 4, 0, 0, this.gridCodecLogo.Width, this.gridCodecLogo.Height);
 		}
 	}
 
@@ -599,11 +606,18 @@ class Details {
 		if (this.gridChannelLogo == null) this.loadGridChannelLogo();
 
 		const showChannelLogoOnly = grSet.showGridChannelLogo_layout === 'logo';
-		const heightRatio = this.gridChannelLogo != null ? (this.gridColumnCellHeight - 4) / this.gridChannelLogo.Height : '';
+		const heightRatio = this.gridChannelLogo != null ? (this.gridColumnCellHeight - 4) / this.gridChannelLogo.Height : 1;
+		const availableWidth = this.gridColumnValueWidth - (!showChannelLogoOnly ? this.gridTxtRec.Width + SCALE(8) : 0);
+		let logoWidth = Math.round(this.gridChannelLogo.Width * heightRatio);
 
-		if (this.gridChannelLogo != null && (!showChannelLogoOnly ? this.gridTxtRec.Width + SCALE(8) : 0) + Math.round(this.gridChannelLogo.Width * heightRatio) < this.gridColumnValueWidth) {
-			gr.DrawImage(this.gridChannelLogo, showChannelLogoOnly && this.gridColumnKey === 'Channels' ? this.gridColumnValueLeft : this.gridColumnValueLeft + this.gridTxtRec.Width + SCALE(8), this.gridTop - 1,
-				Math.round(this.gridChannelLogo.Width * heightRatio), this.gridColumnCellHeight - 4, 0, 0, this.gridChannelLogo.Width, this.gridChannelLogo.Height);
+		if (logoWidth > availableWidth) {
+			const widthRatio = availableWidth / this.gridChannelLogo.Width;
+			logoWidth = Math.round(this.gridChannelLogo.Width * widthRatio);
+		}
+
+		if (this.gridChannelLogo != null) {
+			const xPosition = showChannelLogoOnly && this.gridColumnKey === 'Channels' ? this.gridColumnValueLeft : this.gridColumnValueLeft + this.gridTxtRec.Width + SCALE(8);
+			gr.DrawImage(this.gridChannelLogo, xPosition, this.gridTop - 1, logoWidth, this.gridColumnCellHeight - 4, 0, 0, this.gridChannelLogo.Width, this.gridChannelLogo.Height);
 		}
 	}
 

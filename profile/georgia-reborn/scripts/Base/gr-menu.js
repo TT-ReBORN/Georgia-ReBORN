@@ -2152,11 +2152,13 @@ class TopMenuOptions {
 		detailsShowCodecLogoMenu.createRadioSubMenu('Default', ['Disabled', 'Logo', 'Text + Logo'], grSet.showGridCodecLogo_default, [false, 'logo', 'textlogo'], type => {
 			grSet.showGridCodecLogo_default = type;
 			grm.details.clearCache('metrics');
+			grm.details.clearCache('codecLogo');
 			RepaintWindow();
 		});
 		detailsShowCodecLogoMenu.createRadioSubMenu('Artwork', ['Disabled', 'Logo', 'Text + Logo'], grSet.showGridCodecLogo_artwork, [false, 'logo', 'textlogo'], type => {
 			grSet.showGridCodecLogo_artwork = type;
 			grm.details.clearCache('metrics');
+			grm.details.clearCache('codecLogo');
 			RepaintWindow();
 		});
 		detailsShowCodecLogoMenu.appendTo(detailsMetadataGridMenu);
@@ -2166,11 +2168,13 @@ class TopMenuOptions {
 		detailsShowChannelLogoMenu.createRadioSubMenu('Default', ['Disabled', 'Logo', 'Text + Logo'], grSet.showGridChannelLogo_default, [false, 'logo', 'textlogo'], type => {
 			grSet.showGridChannelLogo_default = type;
 			grm.details.clearCache('metrics');
+			grm.details.clearCache('channelLogo');
 			RepaintWindow();
 		});
 		detailsShowChannelLogoMenu.createRadioSubMenu('Artwork', ['Disabled', 'Logo', 'Text + Logo'], grSet.showGridChannelLogo_artwork, [false, 'logo', 'textlogo'], type => {
 			grSet.showGridChannelLogo_artwork = type;
 			grm.details.clearCache('metrics');
+			grm.details.clearCache('channelLogo');
 			RepaintWindow();
 		});
 		detailsShowChannelLogoMenu.appendTo(detailsMetadataGridMenu);
