@@ -305,6 +305,7 @@ class Details {
 		}
 
 		const drawDiscArtImage = () => {
+			if (!grSet.filterDiscArtFromArtwork && grm.ui.discArtImageDisplayed) return;
 			const discArtImg = this.discArtArray[this.discArtRotationIndex] || this.discArtRotation;
 			this.discArtShadowImg && gr.DrawImage(this.discArtShadowImg, -this.discArtShadow, grm.ui.albumArtSize.y - this.discArtShadow, this.discArtShadowImg.Width, this.discArtShadowImg.Height, 0, 0, this.discArtShadowImg.Width, this.discArtShadowImg.Height);
 			gr.DrawImage(discArtImg, this.discArtSize.x, this.discArtSize.y, this.discArtSize.w, this.discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);

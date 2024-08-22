@@ -1989,7 +1989,9 @@ class TopMenuOptions {
 				grSet.detailsAlbumArtDiscAreaOpacity = 255;
 				RepaintWindow();
 			}, !grSet.displayDiscArt);
-			discArtMenu.addToggleItem('Filter cd/disc/vinyl .jpgs from artwork', grSet, 'filterDiscJpgsFromAlbumArt');
+			discArtMenu.addToggleItem('Filter disc art from artwork', grSet, 'filterDiscArtFromArtwork', () => {
+				window.Reload();
+			});
 			discArtMenu.addSeparator();
 			discArtMenu.addToggleItem('Spin disc art while songs play (increases memory and CPU)', grSet, 'spinDiscArt', () => {
 				if (grSet.spinDiscArt) {

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    19-08-2024                                              * //
+// * Last change:    22-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1180,7 +1180,7 @@ class ConfigDefaults {
 			discArtStub: 'cdAlbumCover',
 			displayDiscArt: true,
 			discArtOnTop: false,
-			filterDiscJpgsFromAlbumArt: true,
+			filterDiscArtFromArtwork: true,
 			spinDiscArt: false,
 			spinDiscArtImageCount: 72,
 			spinDiscArtRedrawInterval: 75,
@@ -1219,7 +1219,7 @@ class ConfigDefaults {
 			discArtStub: 'Values: "cdAlbumCover", "cdWhite", "cdBlack", "cdBlank", "cdTrans", "vinylAlbumCover", "vinylWhite", "vinylVoid", "vinylColdFusion", "vinylRingOfFire", "vinylMaple", "vinylBlack", "vinylBlackHole", "vinylEbony", "vinylTrans" - Options > Details > Disc art > Disc art placeholder',
 			displayDiscArt: 'Values: true, false - Options > Details > Disc art > Display disc art',
 			discArtOnTop: 'Values: true, false - Options > Details > Disc art > Display disc art above cover',
-			filterDiscJpgsFromAlbumArt: 'Values: true, false - Options > Details > Disc art > Filter cd/disc/vinyl .jpgs from artwork',
+			filterDiscArtFromArtwork: 'Values: true, false - Options > Details > Disc art > Filter disc art from artwork',
 			spinDiscArt: 'Values: true, false - Options > Details > Disc art > Spin disc art while songs play (increases memory and CPU)',
 			spinDiscArtImageCount: 'Values: 36, 45, 60, 72, 90, 120, 180 - Options > Details > Disc art > # Rotation images (memory usage/rotational speed)',
 			spinDiscArtRedrawInterval: 'Values: 250, 200, 150, 125, 100, 75, 50, 40, 30, 20, 10 - Options > Details > Disc art > Spinning disc art redraw speed',

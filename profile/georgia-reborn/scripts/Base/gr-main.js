@@ -180,22 +180,28 @@ class MainUI {
 		this.albumArt = null;
 		/** @private @type {GdiBitmap} The copy of the original album art image, used for cropping. */
 		this.albumArtCopy = null;
-		/** @public @type {GdiBitmap[]} The album art list array containing album and disc art images. */
-		this.albumArtList = [];
-		/** @public @type {number} The index of currently displayed album art if more than 1. */
-		this.albumArtIndex = 0;
-		/** @public @type {object} The album art position (big image). */
-		this.albumArtSize = new ImageSize(0, 0, 0, 0);
-		/** @public @type {GdiBitmap} The pre-scaled album art to speed up drawing considerably. */
-		this.albumArtScaled = null;
 		/** @public @type {boolean} The state when album art is corrupt and can not be loaded. */
 		this.albumArtCorrupt = false;
 		/** @public @type {boolean} The state when artwork displayed is embedded and not loaded from a file. */
 		this.albumArtEmbedded = false;
-		/** @private @type {boolean} The off-center position of the album art, if true, it will shift 40 pixels to the right. */
-		this.albumArtOffCenter = false;
 		/** @private @type {boolean} The state to always load art from cache unless this is set. */
 		this.albumArtFromCache = true;
+		/** @public @type {number} The index of currently displayed album art if more than 1. */
+		this.albumArtIndex = 0;
+		/** @public @type {GdiBitmap[]} The album art list array containing album and disc art images. */
+		this.albumArtList = [];
+		/** @public @type {boolean} The state when album art is loaded. */
+		this.albumArtLoaded = false;
+		/** @private @type {boolean} The off-center position of the album art, if true, it will shift 40 pixels to the right. */
+		this.albumArtOffCenter = false;
+		/** @public @type {GdiBitmap} The pre-scaled album art to speed up drawing considerably. */
+		this.albumArtScaled = null;
+		/** @public @type {object} The album art position (big image). */
+		this.albumArtSize = new ImageSize(0, 0, 0, 0);
+		/** @public @type {boolean} The state when the disc art image from the album art list is displayed. */
+		this.discArtImageDisplayed = false;
+		/** @public @type {boolean} The state when the disc art image is in PNG format. */
+		this.discArtImagePNG = false;
 		/** @private @type {boolean} The state when album art or disc art has artwork loaded. */
 		this.hasArtwork = false;
 		/** @public @type {boolean} The no album art stub when no album cover was found. */
@@ -442,9 +448,12 @@ class MainUI {
 		}
 
 		const drawAlbumArtProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> album art');
-
+		const padding = !grSet.filterDiscArtFromArtwork && this.discArtImageDisplayed && this.discArtImagePNG && this.albumArtLoaded ? Math.round(this.edgeMargin * 0.75) : 0;
 		const imgAlpha = this.displayDetails && grm.details.discArt ? alpha : 255;
-		gr.DrawImage(this.albumArtScaled, this.albumArtSize.x, this.albumArtSize.y, this.albumArtSize.w, this.albumArtSize.h, 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height, 0, imgAlpha);
+
+		gr.DrawImage(this.albumArtScaled, this.albumArtSize.x + padding, this.albumArtSize.y + padding,
+					 this.albumArtSize.w - padding * 2, this.albumArtSize.h - padding * 2,
+					 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height, 0, imgAlpha);
 
 		if (drawAlbumArtProfiler) drawAlbumArtProfiler.Print();
 	}
@@ -768,9 +777,11 @@ class MainUI {
 			grSet.layout !== 'default' || !this.albumArtSize.w ? 0 :
 			this.albumArtSize.x + this.albumArtSize.w;
 
-		const middleX = grSet.hideMiddlePanelShadow ? this.ww + 4 : panelX - 4;
+		const discArtInAlbumArtArea = this.displayDetails && this.discArtImageDisplayed;
+
+		const middleX = grSet.hideMiddlePanelShadow || discArtInAlbumArtArea ? this.ww + 4 : panelX - 4;
 		const x = albumArtW ? panelX : 0;
-		const w = albumArtW && !grSet.panelWidthAuto || this.discArtDisplayed() ? panelX : this.ww;
+		const w = (albumArtW && !grSet.panelWidthAuto || this.discArtDisplayed()) && !discArtInAlbumArtArea ? panelX : this.ww;
 
 		// Top shadow
 		gr.FillGradRect(x, this.topMenuHeight - HD_4K(6, 10), w, HD_4K(6, 10), 90, 0, grCol.shadow);
@@ -3681,6 +3692,20 @@ class MainUI {
 	// * MAIN - PUBLIC METHODS - ALBUM ART * //
 	// #region MAIN - PUBLIC METHODS - ALBUM ART
 	/**
+	 * Checks if the current artwork in the album art list is a disc art image.
+	 * @returns {boolean} - Returns `true` if the current album art matches the disc art pattern, otherwise `false`.
+	 */
+	checkAlbumArtFromListDiscArt() {
+		const pattern = /(cd|disc|vinyl)([0-9]*|[a-h])\.(png|jpg)/i;
+		const match = this.albumArtList[this.albumArtIndex].match(pattern);
+
+		this.discArtImageDisplayed = Boolean(match);
+		this.discArtImagePNG = match && match[3].toLowerCase() === 'png';
+
+		return this.discArtImageDisplayed;
+	}
+
+	/**
 	 * Scales album art to a global size, handling potential errors.
 	 * @throws Logs an error if the scaling operation fails.
 	 */
@@ -3753,6 +3778,7 @@ class MainUI {
 			this.albumArtIndex = (this.albumArtIndex + 1) % this.albumArtList.length;
 		}
 		this.loadAlbumArtFromList(this.albumArtIndex);
+		this.checkAlbumArtFromListDiscArt();
 
 		// Display embedded album art image
 		if (grSet.loadEmbeddedAlbumArtFirst && this.albumArtIndex === 0) {
@@ -3791,6 +3817,7 @@ class MainUI {
 
 		setTimeout(() => {
 			this.loadAlbumArtFromList(this.albumArtIndex);
+			this.checkAlbumArtFromListDiscArt();
 			if (grSet.theme === 'reborn' || grSet.theme === 'random' || grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn) {
 				this.newTrackFetchingArtwork = true;
 				grm.color.getThemeColors(this.albumArt);
@@ -3883,6 +3910,7 @@ class MainUI {
 	 */
 	fetchAlbumArt(metadb) {
 		this.albumArtList = [];
+		this.albumArtLoaded = false;
 
 		const fetchAlbumArtProfiler = (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('fetchAlbumArt');
 
@@ -3909,6 +3937,7 @@ class MainUI {
 		grSet.showGridTitle_artwork = true;
 
 		if (this.albumArt) {
+			this.albumArtLoaded = true;
 			grm.color.getThemeColors(this.albumArt);
 			this.resizeArtwork(true);
 		} else {
@@ -3925,12 +3954,15 @@ class MainUI {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	fetchAlbumArtLocalFiles(metadb) {
-		const filteredFileTypes = grSet.filterDiscJpgsFromAlbumArt ? '(png|jpg)' : 'png';
-		const pattern = new RegExp(`(cd|disc|vinyl)([0-9]*|[a-h]).${filteredFileTypes}`, 'i');
-		const imageType = /(jpg|png)$/i;
+		const filterPattern = grSet.filterDiscArtFromArtwork ? '(cd|disc|vinyl)([0-9]*|[a-h]).(png|jpg)' : '';
+		const pattern = filterPattern ? new RegExp(filterPattern, 'i') : null;
+		const imageType = /\.(jpg|png)$/i;
 
-		this.albumArtList = grCfg.imgPaths && grCfg.imgPaths.map(path => utils.Glob($(path, metadb), FileAttributes.Directory | FileAttributes.Hidden)).flat();
-		this.albumArtList = [...new Set(this.albumArtList)].filter(path => !pattern.test(path) && imageType.test(path));
+		const uniquePaths = new Set(grCfg.imgPaths.flatMap(path =>
+			utils.Glob($(path, metadb), FileAttributes.Directory | FileAttributes.Hidden)));
+
+		this.albumArtList = Array.from(uniquePaths).filter(path =>
+			(!pattern || !pattern.test(path)) && imageType.test(path));
 
 		if (this.albumArtList.length && !grSet.loadEmbeddedAlbumArtFirst) {
 			this.displayAlbumArtFromList();
@@ -3951,11 +3983,13 @@ class MainUI {
 		const artIndex = this.albumArtList[index];
 		const tempAlbumArt = grm.artCache && grm.artCache.getImage(artIndex);
 		const tempDiscArtCover = grm.artCache && grm.artCache.getImage(artIndex, 2);
+		this.albumArtLoaded = false;
 
 		if (tempAlbumArt) {
 			this.albumArt = tempAlbumArt;
 			grm.details.discArtCover = tempDiscArtCover;
 			this.albumArtCopy = this.albumArt;
+			this.albumArtLoaded = true;
 			this.initPanelWidthAuto(true);
 
 			if (index !== 0 && !this.newTrackFetchingArtwork) return;
@@ -3984,6 +4018,7 @@ class MainUI {
 				}
 
 				this.albumArtCopy = this.albumArt;
+				this.albumArtLoaded = true;
 				this.resizeArtwork(true);
 				this.initPanelWidthAuto();
 				grm.details.createDiscArtRotation();

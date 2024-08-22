@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-08-2024                                              * //
+// * Last change:    22-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -532,7 +532,7 @@ grSet.addProperties({
 	discArtStub:                        ['Georgia-ReBORN - 11. Details: Disc art placeholder', 'cdAlbumCover'], // Displays the disc art placeholder
 	displayDiscArt:                     ['Georgia-ReBORN - 11. Details: Display disc art', true], // true: Show disc artwork behind album artwork. This artwork is expected to be named cd.png and have transparent backgrounds (can be found at fanart.tv)
 	discArtOnTop:                       ['Georgia-ReBORN - 11. Details: Show disc art above front cover', false], // true: Display discArt above front cover
-	filterDiscJpgsFromAlbumArt:         ['Georgia-ReBORN - 11. Details: Filter out cd/disc/vinyl .jpgs from showing as artwork', true],
+	filterDiscArtFromArtwork:           ['Georgia-ReBORN - 11. Details: Filter disc art from artwork', true], // true: Filters discArt from artwork images
 	spinDiscArt:                        ['Georgia-ReBORN - 11. Details: Spin disc art', false], // true: discArt will spin while the song plays
 	spinDiscArtImageCount:              ['Georgia-ReBORN - 11. Details: # of images to create while spinning', 72], // Higher numbers will increase memory usage, and slow down spin
 	spinDiscArtRedrawInterval:          ['Georgia-ReBORN - 11. Details: Spin disc draw interval', 75], // Speed in ms with which to attempt redraw. Lower numbers will increase CPU
@@ -1195,7 +1195,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'discArtStub', grCfg.themeDetails, 'discArtStub', 'cdAlbumCover');
 		this._setSetting(grSet, 'displayDiscArt', grCfg.themeDetails, 'displayDiscArt', true);
 		this._setSetting(grSet, 'discArtOnTop', grCfg.themeDetails, 'discArtOnTop', false);
-		this._setSetting(grSet, 'filterDiscJpgsFromAlbumArt', grCfg.themeDetails, 'filterDiscJpgsFromAlbumArt', true);
+		this._setSetting(grSet, 'filterDiscArtFromArtwork', grCfg.themeDetails, 'filterDiscArtFromArtwork', true);
 		this._setSetting(grSet, 'spinDiscArt', grCfg.themeDetails, 'spinDiscArt', false);
 		this._setSetting(grSet, 'spinDiscArtImageCount', grCfg.themeDetails, 'spinDiscArtImageCount', 72);
 		this._setSetting(grSet, 'spinDiscArtRedrawInterval', grCfg.themeDetails, 'spinDiscArtRedrawInterval', 75);
