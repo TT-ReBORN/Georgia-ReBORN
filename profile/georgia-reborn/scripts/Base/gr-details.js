@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-08-2024                                              * //
+// * Last change:    23-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -583,18 +583,19 @@ class Details {
 		if (this.gridCodecLogo == null) this.loadGridCodecLogo();
 
 		const showCodecLogoOnly = grSet.showGridCodecLogo_layout === 'logo';
-		const heightRatio = this.gridCodecLogo != null ? (this.gridColumnCellHeight - 4) / this.gridCodecLogo.Height : 1;
-		const availableWidth = this.gridColumnValueWidth - (!showCodecLogoOnly ? this.gridTxtRec.Width + SCALE(8) : 0);
+		const gridColumnValueMetrics = gr.MeasureString(this.gridColumnValue, grFont.gridVal, 0, 0, this.gridColumnValueWidth, grm.ui.wh);
+		const height = gridColumnValueMetrics.Height || this.gridColumnCellHeight;
+		const heightRatio = this.gridCodecLogo != null ? (height - 4) / this.gridCodecLogo.Height : 1;
 		let logoWidth = Math.round(this.gridCodecLogo.Width * heightRatio);
 
-		if (logoWidth > availableWidth) {
-			const widthRatio = availableWidth / this.gridCodecLogo.Width;
+		if (logoWidth > this.gridColumnValueWidth) {
+			const widthRatio = this.gridColumnValueWidth / this.gridCodecLogo.Width;
 			logoWidth = Math.round(this.gridCodecLogo.Width * widthRatio);
 		}
 
 		if (this.gridCodecLogo != null) {
-			const xPosition = showCodecLogoOnly && this.gridColumnKey === 'Codec' ? this.gridColumnValueLeft : this.gridColumnValueLeft + this.gridTxtRec.Width + SCALE(8);
-			gr.DrawImage(this.gridCodecLogo, xPosition, this.gridTop - 1, logoWidth, this.gridColumnCellHeight - 4, 0, 0, this.gridCodecLogo.Width, this.gridCodecLogo.Height);
+			const xPosition = showCodecLogoOnly ? this.gridColumnValueLeft : this.gridColumnValueLeft + gridColumnValueMetrics.Width + SCALE(8);
+			gr.DrawImage(this.gridCodecLogo, xPosition, this.gridTop - 1, logoWidth, height - 4, 0, 0, this.gridCodecLogo.Width, this.gridCodecLogo.Height);
 		}
 	}
 
@@ -606,18 +607,19 @@ class Details {
 		if (this.gridChannelLogo == null) this.loadGridChannelLogo();
 
 		const showChannelLogoOnly = grSet.showGridChannelLogo_layout === 'logo';
-		const heightRatio = this.gridChannelLogo != null ? (this.gridColumnCellHeight - 4) / this.gridChannelLogo.Height : 1;
-		const availableWidth = this.gridColumnValueWidth - (!showChannelLogoOnly ? this.gridTxtRec.Width + SCALE(8) : 0);
+		const gridColumnValueMetrics = gr.MeasureString(this.gridColumnValue, grFont.gridVal, 0, 0, this.gridColumnValueWidth, grm.ui.wh);
+		const height = gridColumnValueMetrics.Height || this.gridColumnCellHeight;
+		const heightRatio = this.gridChannelLogo != null ? (height) / this.gridChannelLogo.Height : 1;
 		let logoWidth = Math.round(this.gridChannelLogo.Width * heightRatio);
 
-		if (logoWidth > availableWidth) {
-			const widthRatio = availableWidth / this.gridChannelLogo.Width;
+		if (logoWidth > this.gridColumnValueWidth) {
+			const widthRatio = this.gridColumnValueWidth / this.gridChannelLogo.Width;
 			logoWidth = Math.round(this.gridChannelLogo.Width * widthRatio);
 		}
 
 		if (this.gridChannelLogo != null) {
-			const xPosition = showChannelLogoOnly && this.gridColumnKey === 'Channels' ? this.gridColumnValueLeft : this.gridColumnValueLeft + this.gridTxtRec.Width + SCALE(8);
-			gr.DrawImage(this.gridChannelLogo, xPosition, this.gridTop - 1, logoWidth, this.gridColumnCellHeight - 4, 0, 0, this.gridChannelLogo.Width, this.gridChannelLogo.Height);
+			const xPosition = showChannelLogoOnly ? this.gridColumnValueLeft : this.gridColumnValueLeft + gridColumnValueMetrics.Width + SCALE(8);
+			gr.DrawImage(this.gridChannelLogo, xPosition, this.gridTop - 1, logoWidth, height - 4, 0, 0, this.gridChannelLogo.Width, this.gridChannelLogo.Height);
 		}
 	}
 
