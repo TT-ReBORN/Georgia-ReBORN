@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-08-2024                                              * //
+// * Last change:    23-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1284,6 +1284,8 @@ class ThemeSettingsManager {
 		this._setSetting(libSet, 'nodeCounts', grCfg.themeLibrary, 'nodeCounts', 1);
 		this._setSetting(libSet, 'countsRight', grCfg.themeLibrary, 'countsRight', true);
 		this._setSetting(libSet, 'autoCollapse', grCfg.themeLibrary, 'autoCollapse', false);
+		this._setSetting(libSet, 'treeAutoExpand', grCfg.themeLibrary, 'treeAutoExpand', false);
+		this._setSetting(libSet, 'treeAutoExpandSingle', grCfg.themeLibrary, 'treeAutoExpandSingle', true);
 		this._setSetting(libSet, 'itemShowStatistics', grCfg.themeLibrary, 'itemShowStatistics', 0);
 		this._setSetting(libSet, 'highLightNowplaying', grCfg.themeLibrary, 'highLightNowplaying', true);
 		this._setSetting(libSet, 'showTracks', grCfg.themeLibrary, 'showTracks', true);

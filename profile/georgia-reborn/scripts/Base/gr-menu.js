@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-08-2024                                              * //
+// * Last change:    23-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2457,6 +2457,23 @@ class TopMenuOptions {
 		});
 		libraryTrackRowMenu.createRadioSubMenu('Node auto collapse', ['On', 'Off'], libSet.autoCollapse, [true, false], (nodeCollapse) => {
 			libSet.autoCollapse = nodeCollapse;
+			if (libSet.autoCollapse) {
+				libSet.treeAutoExpand = false;
+				lib.pop.collapseAll();
+			}
+			lib.panel.updateProp(1);
+		});
+		libraryTrackRowMenu.createRadioSubMenu('Node auto expand', ['On', 'Off'], libSet.treeAutoExpand, [true, false], (nodeAutoExpand) => {
+			libSet.treeAutoExpand = nodeAutoExpand;
+			if (libSet.treeAutoExpand) {
+				libSet.autoCollapse = false;
+			} else {
+				lib.pop.collapseAll();
+			}
+			lib.panel.updateProp(1);
+		});
+		libraryTrackRowMenu.createRadioSubMenu('Node auto expand single items', ['On', 'Off'], libSet.treeAutoExpandSingle, [true, false], (nodeAutoExpandSingle) => {
+			libSet.treeAutoExpandSingle = nodeAutoExpandSingle;
 			lib.panel.updateProp(1);
 		});
 		libraryTrackRowMenu.addSeparator();

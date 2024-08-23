@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-08-2024                                              * //
+// * Last change:    23-08-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1360,6 +1360,8 @@ class ConfigDefaults {
 			nodeCounts: 1,
 			countsRight: true,
 			autoCollapse: false,
+			treeAutoExpand: false,
+			treeAutoExpandSingle: true,
 			itemShowStatistics: 0,
 			highLightNowplaying: true,
 			showTracks: true,
@@ -1416,6 +1418,8 @@ class ConfigDefaults {
 			nodeCounts: 'Values: 0, 1, 2 - Options > Library > Track row > Node item counts',
 			countsRight: 'Values: true, false - Options > Library > Track row > Node item counts position',
 			autoCollapse: 'Values: true, false - Options > Library > Track row > Node auto collapse',
+			treeAutoExpand: 'Values: true, false - Options > Library > Track row > Node auto expand',
+			treeAutoExpandSingle: 'Values: true, false - Options > Library > Track row > Node auto expand single items',
 			itemShowStatistics: 'Values: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 - Options > Library > Track row > Statistics',
 			highLightNowplaying: 'Values: true, false - Options > Library > Track row > Show now playing',
 			showTracks: 'Values: true, false - Options > Library > Track row > Show tracks when expanding nodes',
