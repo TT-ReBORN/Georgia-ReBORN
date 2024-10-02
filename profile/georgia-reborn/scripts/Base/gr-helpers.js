@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    02-09-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2091,7 +2091,7 @@ function DrawMultipleLines(gr, availableWidth, left, top, color, text1, fontList
  * @returns {GdiGraphics} The drawn text string with replaced Segoe UI Symbol font as fallback when the string contains special symbols.
  */
 function DrawString(gr, str, font, color, x, y, w, h, flags) {
-	const specialSymbolsRegex = /[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2020-\u26FF]|\uD83E[\uDD10-\uDDFF]/;
+	const specialSymbolsRegex = /[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2020-\u2021\u2023-\u26FF]|\uD83E[\uDD10-\uDDFF]/;
 	return gr.DrawString(str, specialSymbolsRegex.test(str) ? gdi.Font('Segoe UI Symbol', font.Size, font.Style) : font, color, x, y, w, h, flags);
 }
 
