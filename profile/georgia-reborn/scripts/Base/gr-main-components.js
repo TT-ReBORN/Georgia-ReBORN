@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-08-2024                                              * //
+// * Last change:    02-09-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3950,6 +3950,8 @@ class WaveformBar {
 		this.mouseDown = false;
 		/** @private @type {boolean} Set at checkAllowedFile(). */
 		this.isAllowedFile = true;
+		/** @private @type {boolean} Set at checkAllowedFile(). */
+		this.isZippedFile = false;
 		/** @private @type {boolean} Set at verifyData() after retrying analysis. */
 		this.isError = false;
 		/** @private @type {boolean} For visualizerFallback, set at checkAllowedFile(). */
@@ -4307,7 +4309,11 @@ class WaveformBar {
 	 * @param {object} handle - The current file handle.
 	 */
 	checkAllowedFile(handle = fb.GetNowPlaying()) {
-		this.isAllowedFile = this.analysis.binaryMode !== 'visualizer' && handle.SubSong === 0 && this.compatibleFiles[this.analysis.binaryMode].test(handle.Path);
+		const noVisual = this.analysis.binaryMode !== 'visualizer';
+		const noSubSong = handle.SubSong === 0;
+		const validExt = this.compatibleFiles[this.analysis.binaryMode].test(handle.Path);
+		this.isZippedFile = handle.RawPath.indexOf('unpack://') !== -1;
+		this.isAllowedFile = noVisual && noSubSong && validExt && !this.isZippedFile;
 		this.isFallback = !this.isAllowedFile && this.analysis.visualizerFallback;
 	}
 
@@ -4406,7 +4412,8 @@ class WaveformBar {
 		const fileName = id.split('\\').pop();
 		const waveformBarFolder = this.cacheDir + id.replace(fileName, '');
 		const waveformBarFile = this.cacheDir + id;
-		return { waveformBarFolder, waveformBarFile };
+		const sourceFile = this.isZippedFile ? handle.Path.split('|')[0] : handle.Path;
+		return { waveformBarFolder, waveformBarFile, sourceFile };
 	}
 
 	/**
@@ -4587,15 +4594,16 @@ class WaveformBar {
 	 * @param {FbMetadbHandle} handle - The handle to analyze.
 	 * @param {string} waveformBarFolder - The folder where the waveform bar data should be saved.
 	 * @param {string} waveformBarFile - The name of the waveform bar file.
+	 * @param {string} [sourceFile] - The path of the source file.
 	 * @returns {Promise<void>} A promise that resolves when the analysis has finished.
 	 */
-	async analyzeData(handle, waveformBarFolder, waveformBarFile) {
+	async analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile = handle.Path) {
 		if (!IsFolder(waveformBarFolder)) { _CreateFolder(waveformBarFolder); }
 		let profiler;
 		let cmd;
 		// Change to track folder since ffprobe has stupid escape rules which are impossible to apply right with amovie input mode.
-		let handleFileName = handle.Path.split('\\').pop();
-		const handleFolder = handle.Path.replace(handleFileName, '');
+		let handleFileName = sourceFile.split('\\').pop();
+		const handleFolder = sourceFile.replace(handleFileName, '');
 
 		if (this.isAllowedFile && !this.fallbackMode.analysis && this.analysis.binaryMode === 'audiowaveform') {
 			if (this.profile) {
@@ -4622,7 +4630,12 @@ class WaveformBar {
 			profiler = new FbProfiler('visualizer');
 		}
 
-		if (this.debug && cmd) { console.log(cmd); }
+		if (cmd) {
+			console.log(`Waveform bar scanning: ${sourceFile}`);
+			if (this.debug) { console.log(cmd); }
+		} else if (!this.isAllowedFile && this.analysis.binaryMode !== 'visualizer' && !this.fallbackMode.analysis) {
+			console.log(`Waveform bar skipping incompatible file: ${sourceFile}`);
+		}
 
 		let processed = cmd ? RunCmd(cmd, false) : true;
 		processed = processed && (await new Promise((resolve) => {
@@ -4718,7 +4731,7 @@ class WaveformBar {
 			if (this.current.length) {
 				this.throttlePaint();
 			} else {
-				console.log(`${this.analysis.binaryMode}: failed analyzing the file -> ${handle.Path}`);
+				console.log(`${this.analysis.binaryMode}: failed analyzing the file -> ${sourceFile}`);
 			}
 		}
 	}
@@ -4812,6 +4825,7 @@ class WaveformBar {
 		this.maxStep = 6;
 		this.offset = [];
 		this.isAllowedFile = true;
+		this.isZippedFile = false;
 		this.isError = false;
 		this.isFallback = false;
 		this.fallbackMode.paint = this.fallbackMode.analysis = false;
@@ -4914,7 +4928,7 @@ class WaveformBar {
 		if (handle) {
 			this.checkAllowedFile(handle);
 			let analysis = false;
-			const { waveformBarFolder, waveformBarFile } = this.getPaths(handle);
+			const { waveformBarFolder, waveformBarFile, sourceFile } = this.getPaths(handle);
 			// Uncompressed file -> Compressed UTF8 file -> Compressed UTF16 file -> Analyze
 			if (this.analysis.binaryMode === 'ffprobe' && IsFile(`${waveformBarFile}.ff.json`)) {
 				this.current = _JsonParseFile(`${waveformBarFile}.ff.json`, this.codePage) || [];
@@ -4948,10 +4962,10 @@ class WaveformBar {
 				this.current = str ? JSON.parse(str) || [] : [];
 				if (!this.verifyData(handle, `${waveformBarFile}.aw.lz16`, isRetry)) { return; };
 			}
-			else if (this.analysis.autoAnalysis && IsFile(handle.Path)) {
+			else if (this.analysis.autoAnalysis && IsFile(sourceFile)) {
 				if (this.analysis.visualizerFallbackAnalysis) {
 					this.fallbackMode.analysis = this.fallbackMode.paint = true;
-					await this.analyzeData(handle, waveformBarFolder, waveformBarFile);
+					await this.analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile);
 					// Calculate waveform on the fly
 					this.normalizePoints();
 					// Set animation using BPM if possible
@@ -4963,7 +4977,7 @@ class WaveformBar {
 				if (this.analysis.visualizerFallbackAnalysis) {
 					this.fallbackMode.analysis = false;
 				}
-				await this.analyzeData(handle, waveformBarFolder, waveformBarFile);
+				await this.analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile);
 				if (!this.verifyData(handle, undefined, isRetry)) { return; };
 				this.fallbackMode.analysis = this.fallbackMode.paint = false;
 				analysis = true;
