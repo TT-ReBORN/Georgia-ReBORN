@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    23-08-2024                                              * //
+// * Last change:    02-09-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -936,10 +936,10 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'playlistFontSize_default', grCfg.themeFontSize, 'playlistFontSize_default', HD_QHD_4K(12, 14));
 		this._setSetting(grSet, 'playlistFontSize_artwork', grCfg.themeFontSize, 'playlistFontSize_artwork', HD_QHD_4K(12, 14));
 		this._setSetting(grSet, 'playlistFontSize_compact', grCfg.themeFontSize, 'playlistFontSize_compact', HD_QHD_4K(12, 14));
-		this._setSetting(grSet, 'libraryFontSize_default', grCfg.themeFontSize, 'libraryFontSize_default', HD_QHD_4K(12, 14, 24));
-		this._setSetting(grSet, 'libraryFontSize_artwork', grCfg.themeFontSize, 'libraryFontSize_artwork', HD_QHD_4K(12, 14, 24));
-		this._setSetting(grSet, 'biographyFontSize_default', grCfg.themeFontSize, 'biographyFontSize_default', HD_QHD_4K(12, 14, 24));
-		this._setSetting(grSet, 'biographyFontSize_artwork', grCfg.themeFontSize, 'biographyFontSize_artwork', HD_QHD_4K(12, 14, 24));
+		this._setSetting(grSet, 'libraryFontSize_default', grCfg.themeFontSize, 'libraryFontSize_default', HD_QHD_4K(12, 14));
+		this._setSetting(grSet, 'libraryFontSize_artwork', grCfg.themeFontSize, 'libraryFontSize_artwork', HD_QHD_4K(12, 14));
+		this._setSetting(grSet, 'biographyFontSize_default', grCfg.themeFontSize, 'biographyFontSize_default', HD_QHD_4K(12, 14));
+		this._setSetting(grSet, 'biographyFontSize_artwork', grCfg.themeFontSize, 'biographyFontSize_artwork', HD_QHD_4K(12, 14));
 		this._setSetting(grSet, 'lyricsFontSize_default', grCfg.themeFontSize, 'lyricsFontSize_default', HD_QHD_4K(20, 22));
 		this._setSetting(grSet, 'lyricsFontSize_artwork', grCfg.themeFontSize, 'lyricsFontSize_artwork', HD_QHD_4K(20, 22));
 	}

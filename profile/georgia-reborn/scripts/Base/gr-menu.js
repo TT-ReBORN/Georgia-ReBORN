@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    23-08-2024                                              * //
+// * Last change:    02-09-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1016,13 +1016,13 @@ class TopMenuOptions {
 
 		// * LIBRARY * //
 		changeFontSizeMenu.createRadioSubMenu('Library', ['-1', '  8px', '10px', '11px', HD_QHD_4K('12px (default)', '12px'), '13px', HD_QHD_4K('14px', '14px (default)'), '16px', '18px', '+1'], grSet.libraryFontSize_layout,
-			[-1, HD_4K(8, 8 * 1.5), HD_4K(10, 10 * 1.5), HD_4K(11, 11 * 1.5), HD_4K(12, 12 * 1.5), HD_4K(13, 13 * 1.5), HD_4K(14, 14 * 1.5), HD_4K(16, 16 * 1.5), HD_4K(18, 18 * 1.5), 1], (size) => {
+			[-1, 8, 10, 11, 12, 13, 14, 16, 18, 1], (size) => {
 			grm.display.setLibraryFontSize(size);
 		});
 
 		// * BIOGRAPHY * //
 		changeFontSizeMenu.createRadioSubMenu('Biography', ['-1', '  8px', '10px', '11px', HD_QHD_4K('12px (default)', '12px'), '13px', HD_QHD_4K('14px', '14px (default)'), '16px', '18px', '+1'], grSet.biographyFontSize_layout,
-			[-1, HD_4K(8, 8 * 1.5), HD_4K(10, 10 * 2), HD_4K(11, 11 * 2), HD_4K(12, 12 * 2), HD_4K(13, 13 * 2), HD_4K(14, 14 * 2), HD_4K(16, 16 * 2), HD_4K(18, 18 * 2), 1], (size) => {
+			[-1, 8, 10, 11, 12, 13, 14, 16, 18, 1], (size) => {
 			grm.display.setBiographyFontSize(size);
 		});
 
