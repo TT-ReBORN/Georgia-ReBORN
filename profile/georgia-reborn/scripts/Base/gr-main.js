@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-08-2024                                              * //
+// * Last change:    02-09-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2439,7 +2439,7 @@ class MainUI {
 
 		const nowPlayingTrack = fb.GetNowPlaying();
 		const focusTrack = fb.GetFocusItem();
-		const notPlayingTrackSelection = nowPlayingTrack.Path !== focusTrack.Path;
+		const notPlayingTrackSelection = focusTrack && focusTrack.Path !== nowPlayingTrack.Path;
 
 		grStr.time = (grSet.panelBrowseMode && notPlayingTrackSelection) ? '0:00' : time;
 	}
