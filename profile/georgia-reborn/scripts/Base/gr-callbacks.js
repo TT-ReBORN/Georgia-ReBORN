@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    19-08-2024                                              * //
+// * Last change:    02-09-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -197,7 +197,7 @@ function on_char(code) {
  * @param {number} mask - The mouse mask.
  */
 function on_drag_enter(action, x, y, mask) {
-	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+	if (grm.ui && (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork)) {
 		CallLog('Playlist => on_drag_enter');
 		pl.call.on_drag_enter(action, x, y, mask);
 	}
@@ -217,7 +217,7 @@ function on_drag_enter(action, x, y, mask) {
  * @param {number} mask - The mouse mask.
  */
 function on_drag_over(action, x, y, mask) {
-	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
+	if (grm.ui && (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork)) {
 		CallLog('Playlist => on_drag_over');
 		pl.call.on_drag_over(action, x, y, mask);
 	}
@@ -233,7 +233,7 @@ function on_drag_over(action, x, y, mask) {
  * @global
  */
 function on_drag_leave() {
-	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
+	if (grm.ui && (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true))) {
 		CallLog('Playlist => on_drag_leave');
 		pl.call.on_drag_leave();
 	}
@@ -253,7 +253,7 @@ function on_drag_leave() {
  * @param {number} mask - The mouse mask.
  */
 function on_drag_drop(action, x, y, mask) {
-	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
+	if (grm.ui && (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true))) {
 		CallLog('Playlist => on_drag_drop');
 		pl.call.on_drag_drop(action, x, y, mask);
 	}
