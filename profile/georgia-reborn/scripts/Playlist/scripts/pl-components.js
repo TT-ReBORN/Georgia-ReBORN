@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    03-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -423,6 +423,7 @@ class PlaylistBatchProcessor {
 		let batchIndexEnd = Math.min(batchIndex + this.batchSizeCurrent, totalRows);
 		if (batchIndexEnd === 0) return 0; // In case the playlist is empty
 
+		if (!albumDirCache) albumDirCache = this._cacheAlbumDirs();
 		const albumPathLast = albumDirCache.get(pl.playlist.playlist_items_array[batchIndexEnd - 1].Path);
 
 		for (; batchIndexEnd < totalRows; batchIndexEnd++) {
