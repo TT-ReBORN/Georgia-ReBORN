@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2024                                              * //
+// * Last change:    04-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -462,6 +462,7 @@ grSet.addProperties({
 	lowerBarArtistBtnAction:            ['Georgia-ReBORN - 09. Player controls: Lower bar artist button action', 'playlist'], // 'playlist', the lower bar artist button action type when clicked upon.
 	lowerBarArtistBtnWebsite:           ['Georgia-ReBORN - 09. Player controls: Lower bar artist button website', 'lastfm'], // 'lastfm', which website will be opened when the lower bar artist button is clicked upon.
 	addTracksPlaylist:                  ['Georgia-ReBORN - 09. Player controls: Add tracks playlist', 'Favorites'], // 'Favorites', the playlist where tracks will be added when using the add tracks button.
+	addTracksButtonAction:              ['Georgia-ReBORN - 09. Player controls: Add tracks button action', 'selection'], // 'selection', 'nowplaying, the add tracks button action behavior when adding tracks.
 	playbackTimeDisplay:                ['Georgia-ReBORN - 09. Player controls: Playback time display', 'default'], // Change playback time display from time elapsed to time remaining or percent
 	seekbar:                            ['Georgia-ReBORN - 09. Player controls: Seekbar', 'progressbar'], // 'progressbar', 'peakmeterbar', 'waveformbar' - Seekbar type
 	progressBarWheelSeekSpeed:          ['Georgia-ReBORN - 09. Player controls: Progress bar mouse wheel seek speed', 5], // Progress bar mouse wheel seeking speed, seconds per wheel step
@@ -1074,6 +1075,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'lowerBarArtistBtnAction', grCfg.themeControls, 'lowerBarArtistBtnAction', 'playlist');
 		this._setSetting(grSet, 'lowerBarArtistBtnWebsite', grCfg.themeControls, 'lowerBarArtistBtnWebsite', 'lastfm');
 		this._setSetting(grSet, 'addTracksPlaylist', grCfg.themeControls, 'addTracksPlaylist', 'Favorites');
+		this._setSetting(grSet, 'addTracksButtonAction', grCfg.themeControls, 'addTracksButtonAction', 'selection');
 		this._setSetting(grSet, 'playbackTimeDisplay', grCfg.themeControls, 'playbackTimeDisplay', 'default');
 		this._setSetting(grSet, 'seekbar', grCfg.themeControls, 'seekbar', 'progressbar');
 		this._setSetting(grSet, 'progressBarWheelSeekSpeed', grCfg.themeControls, 'progressBarWheelSeekSpeed', 5);

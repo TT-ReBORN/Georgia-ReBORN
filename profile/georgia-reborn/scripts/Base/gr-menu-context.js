@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-08-2024                                              * //
+// * Last change:    04-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1368,7 +1368,16 @@ class ContextMenus {
 			}).bind(null, website[1]), { is_radio_checked: website[1] === grSet.lowerBarArtistBtnWebsite });
 		}
 		buttonControlsMenu.append(lowerBarArtistBtnControlsMenu);
-		buttonControlsMenu.appendItem('Add tracks playlist', () => { grm.inputBox.addTracksPlaylist(); });
+		const lowerBarAddTrackBtnControlsMenu = new ContextMenu('Add tracks button');
+		const lowerBarAddTrackBtnControls = [['Selection', 'selection'], ['Nowplaying', 'nowplaying']];
+		lowerBarAddTrackBtnControlsMenu.appendItem('Add tracks playlist', () => { grm.inputBox.addTracksPlaylist(); });
+		lowerBarAddTrackBtnControlsMenu.separator();
+		for (const action of lowerBarAddTrackBtnControls) {
+			lowerBarAddTrackBtnControlsMenu.appendItem(action[0], ((action) => {
+				grSet.addTracksButtonAction = action;
+			}).bind(null, action[1]), { is_radio_checked: action[1] === grSet.addTracksButtonAction });
+		}
+		buttonControlsMenu.append(lowerBarAddTrackBtnControlsMenu);
 		buttonControlsMenu.appendItem('Switch to playlist when adding songs', () => {
 			grSet.addTracksPlaylistSwitch = !grSet.addTracksPlaylistSwitch;
 		}, { is_checked: grSet.addTracksPlaylistSwitch });

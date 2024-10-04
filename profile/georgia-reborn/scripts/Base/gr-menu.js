@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2024                                              * //
+// * Last change:    04-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1538,6 +1538,10 @@ class TopMenuOptions {
 		// * ADD TRACKS BUTTON CONTROLS * //
 		const addTracksBtnControlsMenu = new Menu('Add tracks button');
 		addTracksBtnControlsMenu.addItem('Add tracks playlist', false, () => { grm.inputBox.addTracksPlaylist(); });
+		addTracksBtnControlsMenu.addSeparator();
+		addTracksBtnControlsMenu.addRadioItems(['Selection', 'Nowplaying'], grSet.addTracksButtonAction, ['selection', 'nowplaying'], (action) => {
+			grSet.addTracksButtonAction = action;
+		});
 		addTracksBtnControlsMenu.appendTo(playerControlsLowerBarMenu);
 
 		// * TIME BUTTON CONTROLS * //

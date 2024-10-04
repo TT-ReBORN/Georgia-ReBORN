@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-08-2024                                              * //
+// * Last change:    04-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -479,8 +479,10 @@ class Button {
 	 * Handles the AddTracks button action in the lower bar.
 	 */
 	lowerAddTracks() {
-		const addTracks = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+		const addNowPlaying = () => new FbMetadbHandleList([fb.GetNowPlaying()]);
+		const addTracks = grSet.addTracksButtonAction === 'nowplaying' ? addNowPlaying() : plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 		const addTrackPl = plman.FindOrCreatePlaylist(`${grCfg.themeControls.addTracksPlaylist}`, true);
+		const initialActivePlaylist = plman.ActivePlaylist;
 
 		if (grm.ui.displayPlaylist) {
 			plman.SetPlaylistSelection(pl.playlist.cur_playlist_idx, pl.playlist.selection_handler.selected_indexes, true);
@@ -488,7 +490,8 @@ class Button {
 		}
 		else if (grm.ui.displayLibrary) {
 			plman.ActivePlaylist = addTrackPl;
-			lib.pop.load(lib.pop.sel_items, true, true, false, false, false);
+			const libItems = grSet.addTracksButtonAction === 'nowplaying' ? addNowPlaying() : lib.pop.sel_items;
+			lib.pop.load(libItems, grSet.addTracksButtonAction === 'selection', true, false, false, false);
 			lib.lib.treeState(false, libSet.rememberTree);
 			if (grSet.addTracksPlaylistSwitch) {
 				this.btn.library.enabled = false;
@@ -507,6 +510,10 @@ class Button {
 				}
 			}, 500);
 		}
+		else {
+			plman.ActivePlaylist = initialActivePlaylist;
+		}
+
 		window.Repaint();
 	}
 
