@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2024                                              * //
+// * Last change:    05-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3950,7 +3950,7 @@ class WaveformBar {
 		this.mouseDown = false;
 		/** @private @type {boolean} Set at checkAllowedFile(). */
 		this.isAllowedFile = true;
-		/** @private @type {boolean} Set at checkAllowedFile(). */
+    /** @private @type {boolean} Set at checkAllowedFile(). */
 		this.isZippedFile = false;
 		/** @private @type {boolean} Set at verifyData() after retrying analysis. */
 		this.isError = false;
@@ -4597,13 +4597,15 @@ class WaveformBar {
 	 * @param {string} [sourceFile] - The path of the source file.
 	 * @returns {Promise<void>} A promise that resolves when the analysis has finished.
 	 */
-	async analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile = handle.Path) {
-		if (!IsFolder(waveformBarFolder)) { _CreateFolder(waveformBarFolder); }
+	async analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile = handle ? handle.Path : null) {
 		let profiler;
 		let cmd;
 		// Change to track folder since ffprobe has stupid escape rules which are impossible to apply right with amovie input mode.
 		let handleFileName = sourceFile.split('\\').pop();
 		const handleFolder = sourceFile.replace(handleFileName, '');
+		
+		// waveformBarFolder Creation only for AllowedFile And not ZippedFile
+		if (!IsFolder(waveformBarFolder) && this.isAllowedFile && !this.isZippedFile) { _CreateFolder(waveformBarFolder); }
 
 		if (this.isAllowedFile && !this.fallbackMode.analysis && this.analysis.binaryMode === 'audiowaveform') {
 			if (this.profile) {
@@ -4789,9 +4791,10 @@ class WaveformBar {
 	 * @returns {boolean} True if the data is valid.
 	 */
 	verifyData(handle, file, isRetry = false) {
+		if (this.debug) { console.log(handle.Path + ' - verifyData file ' + file + ' - isRetry : ' + isRetry); }
 		if (!this.isDataValid()) {
 			if (isRetry) {
-				console.log('File was not successfully analyzed after retrying.');
+				console.log(`File ${file} was not successfully analyzed after retrying.`);
 				if (file) _DeleteFile(file);
 				this.isAllowedFile = false;
 				this.isFallback = this.analysis.visualizerFallback;
@@ -4804,6 +4807,7 @@ class WaveformBar {
 			}
 			return false;
 		}
+		console.log(`File ${file} was successfully analyzed.`);
 		return true;
 	}
 
@@ -4977,10 +4981,17 @@ class WaveformBar {
 				if (this.analysis.visualizerFallbackAnalysis) {
 					this.fallbackMode.analysis = false;
 				}
-				await this.analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile);
-				if (!this.verifyData(handle, undefined, isRetry)) { return; };
-				this.fallbackMode.analysis = this.fallbackMode.paint = false;
-				analysis = true;
+				// No need to check the data of a zipped file
+				if (!this.isZippedFile) {
+					await this.analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile);
+					if (!this.verifyData(handle, undefined, isRetry)) { return; };
+					this.fallbackMode.analysis = this.fallbackMode.paint = false;
+					analysis = true;
+				}
+				else {
+					this.fallbackMode.analysis = this.fallbackMode.paint = true;
+					analysis = false;
+				}
 			}
 			if (!analysis) { this.isFallback = false; } // Allow reading data from files, even if track is incompatible.
 			// Calculate waveform on the fly
