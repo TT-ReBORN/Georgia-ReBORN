@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-10-2024                                              * //
+// * Last change:    06-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1613,7 +1613,7 @@ class ContextMenus {
 			const waveformBarAnalysisMenu = new ContextMenu('Analysis');
 			const waveformBarAnalysis = [['RMS level', 'rms_level'], ['Peak level', 'peak_level'], ['RMS peak', 'rms_peak']];
 			for (const type of waveformBarAnalysis) {
-				waveformBarAnalysisMenu.appendItem(type[0] + (grSet.waveformBarMode === 'ffprobe' ? '' : '\t (ffprobe only)'), () => {
+				waveformBarAnalysisMenu.appendItem(type[0] + (grSet.waveformBarMode === 'ffprobe' ? '' : ' (ffprobe only)'), () => {
 					grSet.waveformBarAnalysis = type[1];
 					grm.waveBar.updateConfig({ preset: { analysisMode: type[1] } });
 					grm.waveBar.updateBar();
@@ -1637,6 +1637,21 @@ class ContextMenus {
 				grm.waveBar.updateConfig({ analysis: { autoDelete: grSet.waveformBarAutoDelete } });
 			}, { is_grayed_out: grSet.waveformBarMode === 'visualizer' });
 			cm.append(waveformBarAnalysisMenu);
+			waveformBarAnalysisMenu.separator();
+			waveformBarAnalysisMenu.appendItem('Visualizer during analysis', () => {
+				grSet.waveformBarFallbackAnalysis = !grSet.waveformBarFallbackAnalysis;
+				grm.waveBar.updateConfig({ analysis: { visualizerFallbackAnalysis: grSet.waveformBarFallbackAnalysis } });
+			}, {
+				is_grayed_out: grSet.waveformBarMode === 'visualizer',
+				is_checked: grSet.waveformBarFallbackAnalysis
+			});
+			waveformBarAnalysisMenu.appendItem('Visualizer for incompatible files', () => {
+				grSet.waveformBarFallback = !grSet.waveformBarFallback;
+				grm.waveBar.updateConfig({ analysis: { visualizerFallback: grSet.waveformBarFallback } });
+			}, {
+				is_grayed_out: grSet.waveformBarMode === 'visualizer',
+				is_checked: grSet.waveformBarFallback
+			});
 
 			const waveformBarModeMenu = new ContextMenu('Mode');
 			const waveformBarMode = [['FFprobe', 'ffprobe'], ['Audiowaveform', 'audiowaveform'], ['Visualizer', 'visualizer']];

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2024                                              * //
+// * Last change:    06-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3825,8 +3825,8 @@ class WaveformBar {
 		 * @property {string} compressionMode - Settings: none | 'utf-8' (~50% compression) | 'utf-16' (~70% compression)  7zip (~80% compression).
 		 * @property {boolean} autoAnalysis - Auto-analyze files.
 		 * @property {boolean} autoDelete - Auto-deletes analysis files when unloading the script, present during play session to prevent recalculation.
-		 * @property {boolean} visualizerFallback - Uses visualizer mode when file can not be processed (incompatible format).
 		 * @property {boolean} visualizerFallbackAnalysis - Uses visualizer mode when analyzing file.
+		 * @property {boolean} visualizerFallback - Uses visualizer mode when file can not be processed (incompatible format).
 		 * @public
 		 */
 		/** @public @type {waveformBarAnalysis} */
@@ -3836,8 +3836,8 @@ class WaveformBar {
 			compressionMode: 'utf-16',
 			autoAnalysis: true,
 			autoDelete: grSet.waveformBarAutoDelete,
-			visualizerFallback: true,
-			visualizerFallbackAnalysis: true
+			visualizerFallbackAnalysis: grSet.waveformBarFallbackAnalysis,
+			visualizerFallback: grSet.waveformBarFallback
 		};
 
 		/**
@@ -4001,10 +4001,10 @@ class WaveformBar {
 		/** @private @type {waveformBarCompatibility} */
 		this.compatibleFiles = {
 			ffprobe: new RegExp('\\.(' +
-				['mp3', 'flac', 'wav', 'ogg', 'opus', 'aac', 'ac3', 'aiff', 'ape', 'wv', 'wma', 'spx', 'spc', 'snd', 'ogx', 'mp4', 'au', 'aac', '2sf', 'dff', 'shn', 'tak', 'tta', 'vgm', 'minincsf', 'la', 'hmi']
+				['2sf', 'aa', 'aac', 'ac3', 'ac4', 'aiff', 'ape', 'dff', 'dts', 'eac3', 'flac', 'hmi', 'la', 'lpcm', 'm4a', 'minincsf', 'mp2', 'mp3', 'mp4', 'mpc', 'ogg', 'ogx', 'opus', 'ra', 'snd', 'shn', 'spc', 'tak', 'tta', 'vgm', 'wav', 'wma', 'wv']
 				.join('|') + ')$', 'i'),
 			audiowaveform: new RegExp('\\.(' +
-				['mp3', 'flac', 'wav', 'ogg', 'opus']
+				['flac', 'mp3', 'ogg', 'opus', 'wav']
 				.join('|') + ')$', 'i')
 		};
 
@@ -4311,7 +4311,7 @@ class WaveformBar {
 	checkAllowedFile(handle = fb.GetNowPlaying()) {
 		const noVisual = this.analysis.binaryMode !== 'visualizer';
 		const noSubSong = handle.SubSong === 0;
-		const validExt = this.compatibleFiles[this.analysis.binaryMode].test(handle.Path);
+		const validExt = noVisual ? this.compatibleFiles[this.analysis.binaryMode].test(handle.Path) : true;
 		this.isZippedFile = handle.RawPath.indexOf('unpack://') !== -1;
 		this.isAllowedFile = noVisual && noSubSong && validExt && !this.isZippedFile;
 		this.isFallback = !this.isAllowedFile && this.analysis.visualizerFallback;
@@ -4963,7 +4963,7 @@ class WaveformBar {
 				if (!this.verifyData(handle, `${waveformBarFile}.aw.lz16`, isRetry)) { return; };
 			}
 			else if (this.analysis.autoAnalysis && IsFile(sourceFile)) {
-				if (this.analysis.visualizerFallbackAnalysis) {
+				if (this.analysis.visualizerFallbackAnalysis && this.isAllowedFile) {
 					this.fallbackMode.analysis = this.fallbackMode.paint = true;
 					await this.analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile);
 					// Calculate waveform on the fly

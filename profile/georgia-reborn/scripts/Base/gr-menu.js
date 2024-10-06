@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-10-2024                                              * //
+// * Last change:    06-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1627,13 +1627,23 @@ class TopMenuOptions {
 
 		// * SEEKBAR - WAVEFORM BAR * //
 		const playerControlsWaveformBarMenu = new Menu('Waveform bar');
-		playerControlsWaveformBarMenu.createRadioSubMenu(`Analysis${grSet.waveformBarMode === 'ffprobe' ? '' : '\t (ffprobe only)'}`,
-			['RMS level', 'Peak level', 'RMS peak'], grSet.waveformBarAnalysis, ['rms_level', 'peak_level', 'rms_peak'], (type) => {
+		const playerControlsWaveformBarAnalysisMenu = new Menu('Analysis');
+		playerControlsWaveformBarAnalysisMenu.addRadioItems(
+			grSet.waveformBarMode === 'ffprobe' ? ['RMS level', 'Peak level', 'RMS peak'] : ['RMS level  (ffprobe only)', 'Peak level  (ffprobe only)', 'RMS peak (ffprobe only)'],
+			grSet.waveformBarAnalysis, ['rms_level', 'peak_level', 'rms_peak'], (type) => {
 			grSet.waveformBarAnalysis = type;
 			grm.waveBar.updateConfig({ preset: { analysisMode: type } });
 			grm.waveBar.updateBar();
 			RepaintWindow();
 		}, grSet.waveformBarMode !== 'ffprobe');
+		playerControlsWaveformBarAnalysisMenu.addSeparator();
+		playerControlsWaveformBarAnalysisMenu.addToggleItem('Visualizer during analysis', grSet, 'waveformBarFallbackAnalysis', () => {
+			grm.waveBar.updateConfig({ analysis: { visualizerFallbackAnalysis: grSet.waveformBarFallbackAnalysis } });
+		});
+		playerControlsWaveformBarAnalysisMenu.addToggleItem('Visualizer for incompatible files', grSet, 'waveformBarFallback', () => {
+			grm.waveBar.updateConfig({ analysis: { visualizerFallback: grSet.waveformBarFallback } });
+		});
+		playerControlsWaveformBarAnalysisMenu.appendTo(playerControlsWaveformBarMenu);
 
 		playerControlsWaveformBarMenu.createRadioSubMenu('Mode', ['FFprobe', 'Audiowaveform', 'Visualizer'], grSet.waveformBarMode, ['ffprobe', 'audiowaveform', 'visualizer'], (mode) => {
 			grSet.waveformBarMode = mode;

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-10-2024                                              * //
+// * Last change:    06-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -793,6 +793,8 @@ class ConfigDefaults {
 			peakmeterBarRefreshRate: 80,
 			waveformBarMode: 'audiowaveform',
 			waveformBarAnalysis: 'rms_level',
+			waveformBarFallbackAnalysis: true,
+			waveformBarFallback: true,
 			waveformBarDesign: 'halfbars',
 			waveformBarSizeWave: 3,
 			waveformBarSizeBars: 1,
@@ -954,6 +956,8 @@ class ConfigDefaults {
 			peakmeterBarRefreshRate: 'Values: 200, 150, 120, 100, 80, 60, 30 - Options > Player controls > Seekbar > Peakmeter bar > Refresh rate',
 			waveformBarMode: 'Values: "ffprobe", "audiowaveform", "visualizer" - Options > Player controls > Seekbar > Waveform bar > Mode',
 			waveformBarAnalysis: 'Values: "rms_level", "peak_level", "rms_peak" - Options > Player controls > Seekbar > Waveform bar > Analysis',
+			waveformBarFallbackAnalysis: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Analysis > Visualizer during analysis',
+			waveformBarFallback: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Analysis > Visualizer for incompatible files',
 			waveformBarDesign: 'Values: "waveform", "bars", "dots", "halfbars" - Options > Player controls > Seekbar > Waveform bar > Shape',
 			waveformBarSizeWave: 'Values: 1, 2, 3, 4, 5 - Options > Player controls > Seekbar > Waveform bar > Size > Waveform',
 			waveformBarSizeBars: 'Values: 1, 2, 3, 4, 5 - Options > Player controls > Seekbar > Waveform bar > Size > Bars',
