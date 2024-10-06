@@ -4000,13 +4000,14 @@ class WaveformBar {
 		 */
 		/** @private @type {waveformBarCompatibility} */
 		this.compatibleFiles = {
-			ffprobe: new RegExp('\\.(' +
-				['2sf', 'aa', 'aac', 'ac3', 'ac4', 'aiff', 'ape', 'dff', 'dts', 'eac3', 'flac', 'hmi', 'la', 'lpcm', 'm4a', 'minincsf', 'mp2', 'mp3', 'mp4', 'mpc', 'ogg', 'ogx', 'opus', 'ra', 'snd', 'shn', 'spc', 'tak', 'tta', 'vgm', 'wav', 'wma', 'wv']
-				.join('|') + ')$', 'i'),
-			audiowaveform: new RegExp('\\.(' +
-				['flac', 'mp3', 'ogg', 'opus', 'wav']
-				.join('|') + ')$', 'i')
+			ffprobeList: ['2sf', 'aa', 'aac', 'ac3', 'ac4', 'aiff', 'ape', 'dff', 'dts', 'eac3', 'flac', 'hmi', 'la', 'lpcm', 'm4a', 'minincsf', 'mp2', 'mp3', 'mp4', 'mpc', 'ogg', 'ogx', 'opus', 'ra', 'snd', 'shn', 'spc', 'tak', 'tta', 'vgm', 'wav', 'wma', 'wv'],
+			ffprobe: null,
+			audiowaveformList: ['flac', 'mp3', 'ogg', 'opus', 'wav'],
+			audiowaveform: null
 		};
+		for (const key of ['ffprobe', 'audiowaveform']) {
+			this.compatibleFiles[key] = new RegExp(`\\.(${this.compatibleFiles[`${key}List`].join('|')})$`, 'i');
+		}
 
 		/** @private @type {FbProfiler} */
 		this.profilerPaint = new FbProfiler('paint');
@@ -4054,8 +4055,15 @@ class WaveformBar {
 		this.profilerPaint.Reset();
 		if (!fb.IsPlaying) { this.reset(); } // In case paint has been delayed after playback has stopped...
 		const frames = this.current.length;
-		const prepaint = this.preset.paintMode === 'partial' && this.preset.prepaint;
+		const partial = this.preset.paintMode === 'partial';
+		const prepaint = partial && this.preset.prepaint;
 		const visualizer = this.analysis.binaryMode === 'visualizer' || this.isFallback || this.fallbackMode.paint;
+		const visualizerMode = this.analysis.binaryMode === 'visualizer';
+		const ffprobe = this.analysis.binaryMode === 'ffprobe';
+		const waveform = this.preset.barDesign === 'waveform';
+		const bars = this.preset.barDesign === 'bars';
+		const dots = this.preset.barDesign === 'dots';
+		const halfbars = this.preset.barDesign === 'halfbars';
 		const currX = this.x + this.w * ((fb.PlaybackTime / fb.PlaybackLength) || 0);
 		const currPosColor = grCol.waveformBarIndicator;
 
@@ -4076,7 +4084,7 @@ class WaveformBar {
 				const scale = frame;
 				const x = this.x + barW * n;
 
-				if (this.preset.paintMode === 'partial' && !prepaint && isPrepaint) { break; }
+				if (partial && !prepaint && isPrepaint) { break; }
 				else if (prepaint && isPrepaint && !isPrepaintAllowed) { break; }
 				if (!this.offset[n]) { this.offset.push(0); }
 
@@ -4086,8 +4094,8 @@ class WaveformBar {
 				// }
 
 				// Ensure points don't overlap too much without normalization
-				if (past.every((p) => (p.y !== Math.sign(scale) && this.preset.barDesign !== 'halfbars') || (p.y === Math.sign(scale) || this.preset.barDesign === 'halfbars') && (x - p.x) >= minPointDiff)) {
-					if (this.preset.barDesign === 'waveform') {
+				if (past.every((p) => (p.y !== Math.sign(scale) && !halfbars) || (p.y === Math.sign(scale) || halfbars) && (x - p.x) >= minPointDiff)) {
+					if (waveform) {
 						const sizeWave = this.ui.sizeWave;
 						const scaledSize = this.h / 2 * scale;
 						this.offset[n] += (prepaint && isPrepaint && this.preset.animate || visualizer ? -Math.sign(scale) * Math.random() * scaledSize / 10 * this.step / this.maxStep : 0); // Add movement when pre-painting
@@ -4115,8 +4123,8 @@ class WaveformBar {
 							}
 						}
 					}
-					else if (this.preset.barDesign === 'halfbars') {
-						const sizeHalf = grSet.waveformBarMode !== 'visualizer' ? this.ui.sizeHalf : barW * this.ui.sizeHalf * (visualizer ? 0.2 : 0.5);
+					else if (halfbars) {
+						const sizeHalf = !visualizer ? this.ui.sizeHalf : barW * this.ui.sizeHalf * (visualizer ? 0.2 : 0.5);
 						const scaledSize = this.h / 2 * scale;
 						this.offset[n] += (prepaint && isPrepaint && this.preset.animate || visualizer ? -Math.sign(scale) * Math.random() * scaledSize / 10 * this.step / this.maxStep : 0); // Add movement when pre-painting
 						const rand = Math.sign(scale) * this.offset[n];
@@ -4127,7 +4135,7 @@ class WaveformBar {
 						const x = this.x + barW * n;
 
 						// * Current position
-						if ((this.preset.indicator || this.mouseDown) && this.analysis.binaryMode !== 'ffprobe' && (x <= currX && x >= currX - 2 * barW)) {
+						if ((this.preset.indicator || this.mouseDown) && !ffprobe && (x <= currX && x >= currX - 2 * barW)) {
 							colorBack = colorFront = currPosColor;
 						}
 						if (y > 0) {
@@ -4145,7 +4153,7 @@ class WaveformBar {
 							// }
 						}
 					}
-					else if (this.preset.barDesign === 'bars') {
+					else if (bars) {
 						const sizeBars = barW * this.ui.sizeBars;
 						const scaledSize = this.h / 2 * scale;
 						this.offset[n] += (prepaint && isPrepaint && this.preset.animate || visualizer ? -Math.sign(scale) * Math.random() * scaledSize / 10 * this.step / this.maxStep : 0); // Add movement when pre-painting
@@ -4156,7 +4164,7 @@ class WaveformBar {
 						const x = this.x + barW * n;
 
 						// * Current position
-						if ((this.preset.indicator || this.mouseDown) && this.analysis.binaryMode !== 'ffprobe' && (x <= currX && x >= currX - 2 * barW)) {
+						if ((this.preset.indicator || this.mouseDown) && !ffprobe && (x <= currX && x >= currX - 2 * barW)) {
 							colorBack = colorFront = currPosColor;
 						}
 						let z = visualizer ? Math.abs(y) : y;
@@ -4178,7 +4186,7 @@ class WaveformBar {
 							}
 						}
 					}
-					else if (this.preset.barDesign === 'dots') {
+					else if (dots) {
 						const scaledSize = this.h / 2 * scale;
 						const y = scaledSize > 0 ? Math.max(scaledSize, 1) : Math.min(scaledSize, -1);
 						const colorBack = prepaint && isPrepaint ? ShadeColor(grCol.waveformBarFillBack, 40) : grCol.waveformBarFillBack; // Back
@@ -4230,9 +4238,9 @@ class WaveformBar {
 			if (this.preset.indicator || this.mouseDown) {
 				gr.SetSmoothingMode(0);
 				const minBarW = Math.round(Math.max(barW, SCALE(1)));
-				if (this.analysis.binaryMode === 'ffprobe') {
+				if (ffprobe) {
 					gr.DrawLine(currX, this.y - this.h * 0.5, currX, this.y + this.h * 0.5, minBarW, currPosColor);
-				} else if (this.preset.barDesign === 'waveform' || this.preset.barDesign === 'dots') {
+				} else if (waveform || dots) {
 					gr.DrawLine(currX, this.y - this.h * 0.5, currX, this.y + this.h * 0.5, minBarW, currPosColor);
 				}
 			}
@@ -4245,7 +4253,7 @@ class WaveformBar {
 
 			if (updatedNowpBg) {
 				gr.FillSolidRect(this.x, this.y - this.h * 0.5, this.w, this.h, bgColor); // * Waveform bar background
-				if (!this.isAllowedFile && !this.isFallback && this.analysis.binaryMode !== 'visualizer') {
+				if (!this.isAllowedFile && !this.isFallback && !visualizerMode) {
 					gr.GdiDrawText('Incompatible file format', grFont.lowerBarWave, textColor, this.x, this.y - this.h * 0.5, this.w, this.h, DT_CENTER);
 				} else if (!this.analysis.autoAnalysis) {
 					gr.GdiDrawText('Waveform bar file not found', grFont.lowerBarWave, textColor, this.x, this.y - this.h * 0.5, this.w, this.h, DT_CENTER);
@@ -4271,8 +4279,8 @@ class WaveformBar {
 			if (visualizer) {
 				this.throttlePaint();
 			}
-			else if ((this.preset.paintMode === 'partial' || this.preset.indicator) && frames) {
-				const widerModesScale = (this.preset.waveMode === 'bars' || this.preset.waveMode === 'halfbars' ? 2 : 1);
+			else if ((prepaint || partial || this.preset.indicator) && frames) {
+				const widerModesScale = (bars || halfbars ? 2 : 1);
 				const barW = Math.ceil(Math.max(this.w / frames, SCALE(2))) * widerModesScale;
 				const timeConstant =  fb.PlaybackLength / frames;
 				const prePaintW = Math.min(
@@ -4307,14 +4315,35 @@ class WaveformBar {
 	/**
 	 * Checks if the current file is allowed to be played, i.e not corrupted.
 	 * @param {object} handle - The current file handle.
+	 * @throws {Error} Throws an error if no handle argument is provided.
 	 */
 	checkAllowedFile(handle = fb.GetNowPlaying()) {
+		if (!handle) { throw new Error('No handle argument'); }
 		const noVisual = this.analysis.binaryMode !== 'visualizer';
 		const noSubSong = handle.SubSong === 0;
-		const validExt = noVisual ? this.compatibleFiles[this.analysis.binaryMode].test(handle.Path) : true;
+		const validExt = this.checkCompatibleFileExtension(handle);
 		this.isZippedFile = handle.RawPath.indexOf('unpack://') !== -1;
 		this.isAllowedFile = noVisual && noSubSong && validExt && !this.isZippedFile;
 		this.isFallback = !this.isAllowedFile && this.analysis.visualizerFallback;
+	}
+
+	/**
+	 * Checks if the file extension of the current file handle is compatible.
+	 * @param {object} handle - The current file handle.
+	 * @param {string} mode - The analysis binary mode.
+	 * @returns {boolean} True if the file extension is compatible, otherwise false.
+	 */
+	checkCompatibleFileExtension(handle = fb.GetNowPlaying(), mode = this.analysis.binaryMode) {
+		return mode === 'visualizer' ? true : handle ? this.compatibleFiles[mode].test(handle.Path) : false;
+	}
+
+	/**
+	 * Checks the report list of compatible file extensions for the given mode.
+	 * @param {string} mode - The analysis binary mode.
+	 * @returns {Array<string>} An array of compatible file extensions.
+	 */
+	checkCompatibleFileExtensionReport(mode = this.analysis.binaryMode) {
+		return [...this.compatibleFiles[`${mode}List`]];
 	}
 
 	/**
@@ -4604,8 +4633,11 @@ class WaveformBar {
 		// Change to track folder since ffprobe has stupid escape rules which are impossible to apply right with amovie input mode.
 		let handleFileName = sourceFile.split('\\').pop();
 		const handleFolder = sourceFile.replace(handleFileName, '');
+		const ffprobe = this.analysis.binaryMode === 'ffprobe';
+		const auWav = this.analysis.binaryMode === 'audiowaveform';
+		const visualizer = this.analysis.binaryMode === 'visualizer';
 
-		if (this.isAllowedFile && !this.fallbackMode.analysis && this.analysis.binaryMode === 'audiowaveform') {
+		if (this.isAllowedFile && !this.fallbackMode.analysis && auWav) {
 			if (this.profile) {
 				profiler = new FbProfiler('audiowaveform');
 			}
@@ -4615,7 +4647,7 @@ class WaveformBar {
 				' --pixels-per-second ' + (Math.round(this.analysis.resolution) || 1) + ' --input-format ' + extension + ' --bits 8' +
 				' -o ' + Quotes(`${waveformBarFolder}data.json`);
 		}
-		else if (this.isAllowedFile && !this.fallbackMode.analysis && this.analysis.binaryMode === 'ffprobe') {
+		else if (this.isAllowedFile && !this.fallbackMode.analysis && ffprobe) {
 			if (this.profile) {
 				profiler = new FbProfiler('ffprobe');
 			}
@@ -4626,29 +4658,27 @@ class WaveformBar {
 				',astats=metadata=1:reset=1 -show_entries frame=pkt_pts_time:frame_tags=lavfi.astats.Overall.Peak_level,lavfi.astats.Overall.RMS_level,lavfi.astats.Overall.RMS_peak -print_format json > ' +
 				Quotes(`${waveformBarFolder}data.json`);
 		}
-		else if (this.isFallback || this.analysis.binaryMode === 'visualizer' || this.fallbackMode.analysis) {
+		else if (this.isFallback || visualizer || this.fallbackMode.analysis) {
 			profiler = new FbProfiler('visualizer');
 		}
 
 		if (cmd) {
 			console.log(`Waveform bar scanning: ${sourceFile}`);
 			if (this.debug) { console.log(cmd); }
-		} else if (!this.isAllowedFile && this.analysis.binaryMode !== 'visualizer' && !this.fallbackMode.analysis) {
+		} else if (!this.isAllowedFile && !visualizer && !this.fallbackMode.analysis) {
 			console.log(`Waveform bar skipping incompatible file: ${sourceFile}`);
 		}
 
 		let processed = cmd ? RunCmd(cmd, false) : true;
 		processed = processed && (await new Promise((resolve) => {
-			if (this.isFallback || this.analysis.binaryMode === 'visualizer' || this.fallbackMode.analysis) {
+			if (this.isFallback || visualizer || this.fallbackMode.analysis) {
 				resolve(true);
 			}
 			const timeout = Date.now() + Math.round(10000 * (handle.Length / 180)); // Break if it takes too much time: 10 secs per 3 min of track
 			const id = setInterval(() => {
 				if (IsFile(`${waveformBarFolder}data.json`)) {
 					// ffmpeg writes sequentially, wait until job is done.
-					if (this.analysis.binaryMode === 'ffprobe' && _JsonParseFile(`${waveformBarFolder}data.json`, this.codePage)) {
-						clearInterval(id); resolve(true);
-					} else if (this.analysis.binaryMode !== 'ffprobe') {
+					if (!ffprobe || _JsonParseFile(`${waveformBarFolder}data.json`, this.codePage)) {
 						clearInterval(id); resolve(true);
 					}
 				}
@@ -4661,7 +4691,7 @@ class WaveformBar {
 			const data = cmd ? _JsonParseFile(`${waveformBarFolder}data.json`, this.codePage) : this.visualizerData(handle);
 			DeleteFile(`${waveformBarFolder}data.json`);
 			if (data) {
-				if (!this.isFallback && !this.fallbackMode.analysis && this.analysis.binaryMode === 'ffprobe' && data.frames && data.frames.length) {
+				if (!this.isFallback && !this.fallbackMode.analysis && ffprobe && data.frames && data.frames.length) {
 					const processedData = [];
 					for (const frame of data.frames) {
 						// Save values as array to compress file as much as possible, also round decimals...
@@ -4696,7 +4726,7 @@ class WaveformBar {
 						Save(`${waveformBarFile}.ff.json`, str);
 					}
 				}
-				else if (!this.isFallback && !this.fallbackMode.analysis && this.analysis.binaryMode === 'audiowaveform' && data.data && data.data.length) {
+				else if (!this.isFallback && !this.fallbackMode.analysis && auWav && data.data && data.data.length) {
 					this.current = data.data;
 					const str = JSON.stringify(this.current);
 					if (this.analysis.compressionMode === 'utf-16') {
@@ -4715,7 +4745,7 @@ class WaveformBar {
 						Save(`${waveformBarFile}.aw.json`, str);
 					}
 				}
-				else if ((this.isFallback || this.analysis.binaryMode === 'visualizer' || this.fallbackMode.analysis) && data.length) {
+				else if ((this.isFallback || visualizer || this.fallbackMode.analysis) && data.length) {
 					this.current = data;
 				}
 			}
@@ -4929,34 +4959,37 @@ class WaveformBar {
 			this.checkAllowedFile(handle);
 			let analysis = false;
 			const { waveformBarFolder, waveformBarFile, sourceFile } = this.getPaths(handle);
+			const ffprobe = this.analysis.binaryMode === 'ffprobe';
+			const auWav = this.analysis.binaryMode === 'audiowaveform';
+			const visualizer = this.analysis.binaryMode === 'visualizer';
 			// Uncompressed file -> Compressed UTF8 file -> Compressed UTF16 file -> Analyze
-			if (this.analysis.binaryMode === 'ffprobe' && IsFile(`${waveformBarFile}.ff.json`)) {
+			if (ffprobe && IsFile(`${waveformBarFile}.ff.json`)) {
 				this.current = _JsonParseFile(`${waveformBarFile}.ff.json`, this.codePage) || [];
 				if (!this.verifyData(handle, `${waveformBarFile}.ff.json`, isRetry)) { return; };
 			}
-			else if (this.analysis.binaryMode === 'ffprobe' && IsFile(`${waveformBarFile}.ff.lz`)) {
+			else if (ffprobe && IsFile(`${waveformBarFile}.ff.lz`)) {
 				let str = Open(`${waveformBarFile}.ff.lz`, this.codePage) || '';
 				str = LZUTF8.decompress(str, { inputEncoding: 'Base64' }) || null;
 				this.current = str ? JSON.parse(str) || [] : [];
 				if (!this.verifyData(handle, `${waveformBarFile}.ff.lz`, isRetry)) { return; };
 			}
-			else if (this.analysis.binaryMode === 'ffprobe' && IsFile(`${waveformBarFile}.ff.lz16`)) {
+			else if (ffprobe && IsFile(`${waveformBarFile}.ff.lz16`)) {
 				let str = Open(`${waveformBarFile}.ff.lz16`, this.codePageV2) || '';
 				str = LZString.decompressFromUTF16(str) || null;
 				this.current = str ? JSON.parse(str) || [] : [];
 				if (!this.verifyData(handle, `${waveformBarFile}.ff.lz16`, isRetry)) { return; };
 			}
-			else if (this.analysis.binaryMode === 'audiowaveform' && IsFile(`${waveformBarFile}.aw.json`)) {
+			else if (auWav && IsFile(`${waveformBarFile}.aw.json`)) {
 				this.current = _JsonParseFile(`${waveformBarFile}.aw.json`, this.codePage) || [];
 				if (!this.verifyData(handle, `${waveformBarFile}.aw.json`, isRetry)) { return; };
 			}
-			else if (this.analysis.binaryMode === 'audiowaveform' && IsFile(`${waveformBarFile}.aw.lz`)) {
+			else if (auWav && IsFile(`${waveformBarFile}.aw.lz`)) {
 				let str = Open(`${waveformBarFile}.aw.lz`, this.codePage) || '';
 				str = LZUTF8.decompress(str, { inputEncoding: 'Base64' }) || null;
 				this.current = str ? JSON.parse(str) || [] : [];
 				if (!this.verifyData(handle, `${waveformBarFile}.aw.lz`, isRetry)) { return; };
 			}
-			else if (this.analysis.binaryMode === 'audiowaveform' && IsFile(`${waveformBarFile}.aw.lz16`)) {
+			else if (auWav && IsFile(`${waveformBarFile}.aw.lz16`)) {
 				let str = Open(`${waveformBarFile}.aw.lz16`, this.codePageV2) || '';
 				str = LZString.decompressFromUTF16(str) || null;
 				this.current = str ? JSON.parse(str) || [] : [];
@@ -4984,7 +5017,7 @@ class WaveformBar {
 			}
 			if (!analysis) { this.isFallback = false; } // Allow reading data from files, even if track is incompatible.
 			// Calculate waveform on the fly
-			this.normalizePoints(this.analysis.binaryMode !== 'visualizer' && this.ui.sizeNormalizeWidth);
+			this.normalizePoints(!visualizer && this.ui.sizeNormalizeWidth);
 		}
 		this.resetAnimation();
 		// Set animation using BPM if possible

@@ -1638,6 +1638,12 @@ class ContextMenus {
 			}, { is_grayed_out: grSet.waveformBarMode === 'visualizer' });
 			cm.append(waveformBarAnalysisMenu);
 			waveformBarAnalysisMenu.separator();
+			waveformBarAnalysisMenu.appendItem('Show compatible extensions', () => {
+				fb.ShowPopupMessage(grm.waveBar.checkCompatibleFileExtensionReport().join(', '), `Mode: ${grm.waveBar.analysis.binaryMode}`);
+			}, {
+				is_grayed_out: grSet.waveformBarMode === 'visualizer'
+			});
+			waveformBarAnalysisMenu.separator();
 			waveformBarAnalysisMenu.appendItem('Visualizer during analysis', () => {
 				grSet.waveformBarFallbackAnalysis = !grSet.waveformBarFallbackAnalysis;
 				grm.waveBar.updateConfig({ analysis: { visualizerFallbackAnalysis: grSet.waveformBarFallbackAnalysis } });

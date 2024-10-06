@@ -1637,6 +1637,10 @@ class TopMenuOptions {
 			RepaintWindow();
 		}, grSet.waveformBarMode !== 'ffprobe');
 		playerControlsWaveformBarAnalysisMenu.addSeparator();
+		playerControlsWaveformBarAnalysisMenu.addItem('Show compatible extensions', false, () => {
+			fb.ShowPopupMessage(grm.waveBar.checkCompatibleFileExtensionReport().join(', '), `Mode: ${grm.waveBar.analysis.binaryMode}`);
+		}, grSet.waveformBarMode === 'visualizer');
+		playerControlsWaveformBarAnalysisMenu.addSeparator();
 		playerControlsWaveformBarAnalysisMenu.addToggleItem('Visualizer during analysis', grSet, 'waveformBarFallbackAnalysis', () => {
 			grm.waveBar.updateConfig({ analysis: { visualizerFallbackAnalysis: grSet.waveformBarFallbackAnalysis } });
 		});
