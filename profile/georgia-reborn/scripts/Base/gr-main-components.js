@@ -4238,9 +4238,7 @@ class WaveformBar {
 			if (this.preset.indicator || this.mouseDown) {
 				gr.SetSmoothingMode(0);
 				const minBarW = Math.round(Math.max(barW, SCALE(1)));
-				if (ffprobe) {
-					gr.DrawLine(currX, this.y - this.h * 0.5, currX, this.y + this.h * 0.5, minBarW, currPosColor);
-				} else if (waveform || dots) {
+				if (ffprobe || waveform || dots) {
 					gr.DrawLine(currX, this.y - this.h * 0.5, currX, this.y + this.h * 0.5, minBarW, currPosColor);
 				}
 			}
