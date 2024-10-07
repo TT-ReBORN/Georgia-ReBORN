@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2024                                              * //
+// * Last change:    07-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2229,6 +2229,8 @@ class MainUI {
 		this.loadCountryFlags();
 
 		grm.details.clearCache('metrics');
+		grm.details.clearCache('codecLogo');
+		grm.details.clearCache('channelLogo');
 		grm.details.updateGridTimeline(true);
 		grm.details.updateGrid(this.currentLastPlayed, this.playingPlaylist);
 		grm.details.loadGridReleaseCountryFlag();

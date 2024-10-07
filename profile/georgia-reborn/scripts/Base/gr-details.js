@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    23-08-2024                                              * //
+// * Last change:    07-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -483,6 +483,9 @@ class Details {
 				const columnKey = {
 					'Catalog': () => {
 						gridShowReleaseFlagImage = grSet.showGridReleaseFlags_layout;
+						if (grSet.showGridReleaseFlags_layout === 'logo') {
+							this.gridColumnValue = this.gridColumnValue.replace($('%releasecountry%'), '');
+						}
 					},
 					'Rel. Country': () => {
 						gridShowReleaseFlagImage = grSet.showGridReleaseFlags_layout;
@@ -491,10 +494,12 @@ class Details {
 					'Codec': () => {
 						gridShowCodecLogoImage = grSet.showGridCodecLogo_layout;
 						this.gridColumnValue = grSet.showGridCodecLogo_layout === 'logo' ? '' : this.getCodecString();
+						this.gridColumnCellHeight = this.gridColumnValueHeight + 5;
 					},
 					'Channels': () => {
 						gridShowChannelLogoImage = grSet.showGridChannelLogo_layout;
 						this.gridColumnValue = grSet.showGridChannelLogo_layout === 'logo' ? '' : this.getChannelString($('%channels%'));
+						this.gridColumnCellHeight = this.gridColumnValueHeight + 5;
 					},
 					'Hotness': () => {
 						gridValueColor = grCol.detailsHotness;
@@ -558,21 +563,57 @@ class Details {
 	}
 
 	/**
+	 * Draws an image on the metadata grid in the Details panel.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {GdiBitmap} image - The image to draw.
+	 * @param {boolean} showLogoOnly - Whether to show only the logo.
+	 * @param {number} xOffset - The offset added to x position.
+	 * @param {number} yOffset - The offset added to y position.
+	 * @param {number} cellHeightAdjustment - The adjustment applied to cell height.
+	 */
+	drawGridImage(gr, image, showLogoOnly, xOffset = 0, yOffset = 0, cellHeightAdjustment = 0) {
+		if (image == null) return;
+
+		// Calculate metrics and ratios
+		const gridColumnValueMetrics = gr.MeasureString(showLogoOnly ? '' : this.gridColumnValue, grFont.gridVal, 0, 0, this.gridColumnValueWidth, grm.ui.wh);
+		const heightRatio = (gr.CalcTextHeight(showLogoOnly ? 'Ag' : this.gridColumnValue, grFont.gridVal) - cellHeightAdjustment) / image.Height;
+		const logoHeight = Math.round(image.Height * heightRatio);
+		const logoWidth = Math.round(image.Width * heightRatio);
+
+		// Get the width of the last line
+		const newLineWidth = gr.EstimateLineWrap(this.gridColumnValue, grFont.gridVal, this.gridTxtRec.Lines === 1 ? this.gridColumnValueWidth : this.gridTxtRec.Width);
+		const lastLineIndex = newLineWidth.length - 1;
+		const lastLineWidth = newLineWidth[lastLineIndex] || gridColumnValueMetrics.Width;
+
+		// Initial positions
+		const stringWidth = lastLineWidth + xOffset;
+		let xPos = this.gridColumnValueLeft + stringWidth;
+		let yPos = this.gridTop + yOffset;
+
+		// Adjust positions if the logo width exceeds the grid column width and move logo to the next line
+		if (xPos + logoWidth > this.gridColumnValueLeft + this.gridColumnValueWidth) {
+			const textHeight = gr.CalcTextHeight('Ag', grFont.gridVal);
+			xPos = this.gridColumnValueLeft;
+			yPos += textHeight;
+			this.gridTxtRec = { ...this.gridTxtRec, Lines: this.gridTxtRec.Lines + 1, Height: this.gridTxtRec.Height + textHeight };
+			this.gridColumnCellHeight = this.gridTxtRec.Height + 5;
+		}
+
+		gr.DrawImage(image, xPos, yPos, logoWidth, logoHeight, 0, 0, image.Width, image.Height);
+	}
+
+	/**
 	 * Draws the release flag on the metadata grid in the Details panel.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawGridReleaseFlag(gr) {
 		if (this.gridReleaseFlagImg == null) return;
 
-		const showReleaseFlagOnly = grSet.showGridReleaseFlags_layout === 'logo';
-		const sizeCorr = this.gridTxtRec.Lines === 4 ? 4 : this.gridTxtRec.Lines === 3 ? 3 : this.gridTxtRec.Lines === 2 ? 2 : 1;
-		const yCorr = this.gridTxtRec.Lines === 4 ? this.gridColumnCellHeight / 4 : this.gridTxtRec.Lines === 3 ? this.gridColumnCellHeight / 3 : 0;
-		const heightRatio = (this.gridColumnCellHeight) / this.gridReleaseFlagImg.Height;
+		const logoOnly = grSet.showGridReleaseFlags_layout === 'logo' && this.gridColumnKey === 'Rel. Country';
+		const lineHeight = this.gridTxtRec.Height / this.gridTxtRec.Lines;
+		const yCorr = (this.gridTxtRec.Lines - 1) * lineHeight;
 
-		if ((!showReleaseFlagOnly ? this.gridTxtRec.Width + SCALE(8) : 0) + Math.round(this.gridReleaseFlagImg.Width * heightRatio) < this.gridColumnValueWidth) {
-			gr.DrawImage(this.gridReleaseFlagImg, showReleaseFlagOnly && this.gridColumnKey === 'Rel. Country' ? this.gridColumnValueLeft : this.gridColumnValueLeft + this.gridTxtRec.Width + SCALE(8), this.gridTop - 3 + yCorr,
-				Math.round(this.gridReleaseFlagImg.Width * heightRatio / sizeCorr), this.gridColumnCellHeight / sizeCorr, 0, 0, this.gridReleaseFlagImg.Width, this.gridReleaseFlagImg.Height);
-		}
+		this.drawGridImage(gr, this.gridReleaseFlagImg, logoOnly, SCALE(logoOnly ? 0 : 8), logoOnly ? 0 : yCorr);
 	}
 
 	/**
@@ -581,22 +622,10 @@ class Details {
 	 */
 	drawGridCodecLogo(gr) {
 		if (this.gridCodecLogo == null) this.loadGridCodecLogo();
+		if (this.gridCodecLogo == null) return;
 
-		const showCodecLogoOnly = grSet.showGridCodecLogo_layout === 'logo';
-		const gridColumnValueMetrics = gr.MeasureString(this.gridColumnValue, grFont.gridVal, 0, 0, this.gridColumnValueWidth, grm.ui.wh);
-		const height = gridColumnValueMetrics.Height || this.gridColumnCellHeight;
-		const heightRatio = this.gridCodecLogo != null ? (height - 4) / this.gridCodecLogo.Height : 1;
-		let logoWidth = Math.round(this.gridCodecLogo.Width * heightRatio);
-
-		if (logoWidth > this.gridColumnValueWidth) {
-			const widthRatio = this.gridColumnValueWidth / this.gridCodecLogo.Width;
-			logoWidth = Math.round(this.gridCodecLogo.Width * widthRatio);
-		}
-
-		if (this.gridCodecLogo != null) {
-			const xPosition = showCodecLogoOnly ? this.gridColumnValueLeft : this.gridColumnValueLeft + gridColumnValueMetrics.Width + SCALE(8);
-			gr.DrawImage(this.gridCodecLogo, xPosition, this.gridTop - 1, logoWidth, height - 4, 0, 0, this.gridCodecLogo.Width, this.gridCodecLogo.Height);
-		}
+		const logoOnly = grSet.showGridCodecLogo_layout === 'logo';
+		this.drawGridImage(gr, this.gridCodecLogo, logoOnly, SCALE(logoOnly ? 0 : 8), logoOnly ? -1 : 2);
 	}
 
 	/**
@@ -605,22 +634,10 @@ class Details {
 	 */
 	drawGridChannelLogo(gr) {
 		if (this.gridChannelLogo == null) this.loadGridChannelLogo();
+		if (this.gridChannelLogo == null) return;
 
-		const showChannelLogoOnly = grSet.showGridChannelLogo_layout === 'logo';
-		const gridColumnValueMetrics = gr.MeasureString(this.gridColumnValue, grFont.gridVal, 0, 0, this.gridColumnValueWidth, grm.ui.wh);
-		const height = gridColumnValueMetrics.Height || this.gridColumnCellHeight;
-		const heightRatio = this.gridChannelLogo != null ? (height) / this.gridChannelLogo.Height : 1;
-		let logoWidth = Math.round(this.gridChannelLogo.Width * heightRatio);
-
-		if (logoWidth > this.gridColumnValueWidth) {
-			const widthRatio = this.gridColumnValueWidth / this.gridChannelLogo.Width;
-			logoWidth = Math.round(this.gridChannelLogo.Width * widthRatio);
-		}
-
-		if (this.gridChannelLogo != null) {
-			const xPosition = showChannelLogoOnly ? this.gridColumnValueLeft : this.gridColumnValueLeft + gridColumnValueMetrics.Width + SCALE(8);
-			gr.DrawImage(this.gridChannelLogo, xPosition, this.gridTop - 1, logoWidth, height - 4, 0, 0, this.gridChannelLogo.Width, this.gridChannelLogo.Height);
-		}
+		const logoOnly = grSet.showGridChannelLogo_layout === 'logo';
+		this.drawGridImage(gr, this.gridChannelLogo, logoOnly, SCALE(logoOnly ? 0 : 8), logoOnly ? -1 : 2);
 	}
 
 	/**
@@ -633,12 +650,10 @@ class Details {
 		const lastFmImg = gdi.Image(grPath.lastFmImageRed);
 		const lastFmWhiteImg = gdi.Image(grPath.lastFmImageWhite);
 		const lastFmLogo = ColorDistance(grCol.primary, RGB(185, 0, 0), false) < 133 ? lastFmWhiteImg : lastFmImg;
-		const heightRatio = (this.gridColumnCellHeight - 12) / lastFmLogo.Height;
+		const lineHeight = this.gridTxtRec.Height / this.gridTxtRec.Lines;
+		const yCorr = (this.gridTxtRec.Lines - 1) * lineHeight;
 
-		if (this.gridTxtRec.Width + SCALE(12) + Math.round(lastFmLogo.Width * heightRatio) < this.gridColumnValueWidth) {
-			gr.DrawImage(lastFmLogo, this.gridColumnValueLeft + this.gridTxtRec.Width + SCALE(12), this.gridTop + 3,
-				Math.round(lastFmLogo.Width * heightRatio), this.gridColumnCellHeight - 12, 0, 0, lastFmLogo.Width, lastFmLogo.Height);
-		}
+		this.drawGridImage(gr, lastFmLogo, false, SCALE(8), yCorr, 6);
 	}
 
 	/**
@@ -1152,7 +1167,7 @@ class Details {
 		let format = $('$lower($ext(%path%))', metadb);
 
 		// Foobar bug showing wrong metadata when DTS is in wav file format
-		if (codec === 'pcm' && format === 'wav') {
+		if (codec === 'pcm' && (format === 'cue' || format === 'wav')) {
 			codec = $('$lower($if2(%codec%,$ext(%path%)))');
 			format = $('$lower($ext(%path%))');
 		}
@@ -1226,7 +1241,7 @@ class Details {
 		const format = $('$lower($ext(%path%))', metadb);
 
 		// Foobar bug showing wrong metadata when DTS is in wav file format
-		const channels = codec === 'pcm' && format === 'wav' ? $('%channels%') : $('%channels%', metadb);
+		const channels = codec === 'pcm' && (format === 'cue' || format === 'wav') ? $('%channels%') : $('%channels%', metadb);
 
 		const type =
 			(grSet.layout === 'default' && grSet.showGridChannelLogo_default === 'textlogo' ||
@@ -1314,8 +1329,8 @@ class Details {
 	 * This method is primarily used to refresh the colors of the logos.
 	 */
 	updateGridLogos() {
-		this.gridCodecLogo = null;
-		this.gridChannelLogo = null;
+		this.clearCache('codecLogo');
+		this.clearCache('channelLogo');
 	}
 
 	/**
