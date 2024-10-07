@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    07-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -56,8 +56,8 @@ class FileLoader {
 			'playlist\\scripts\\pl-list-content.js',
 			'playlist\\scripts\\pl-list-header.js',
 			'playlist\\scripts\\pl-list-row.js',
-			'playlist\\scripts\\pl-callbacks.js',
 			'playlist\\scripts\\pl-playlist.js',
+			'playlist\\scripts\\pl-callbacks.js',
 			'library\\lib-main.js',
 			'library\\scripts\\lib-helpers.js',
 			'library\\scripts\\lib-properties.js',
@@ -123,31 +123,23 @@ class FileLoader {
 		 */
 		this.loadStr = { loading: 'Loading:', fileName: '', fileIndex: 0 };
 
-		/**
-		 * Start loading all Georgia-ReBORN scripts from fileList and schedule an update check.
-		 */
-		this.includeFiles(this.fileList, this.loadStartTime).then(() => {
-			console.log(`Georgia-ReBORN loaded in ${Date.now() - this.loadStartTime}ms`);
-
-			if (grSet.checkForUpdates) {
-				grCfg.scheduleUpdateCheck(0);
-			}
-		});
+		/** Initialize the file loading process by including all specified script files. */
+		this.init();
 	}
 
 	/**
-	 * Loads script files asynchronously on foobar startup or reload.
+	 * Initialize loading all Georgia-ReBORN scripts from fileList and schedule an update check.
 	 * @global
-	 * @param {string} filePath - The path to the file to load.
-	 * @returns {Promise} A promise that resolves when the file has been loaded.
+	 * @returns {Promise<void>} A promise that resolves when all files are loaded and update check is scheduled.
 	 */
-	loadAsyncFile(filePath) {
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				include(filePath);
-				resolve();
-			}, 0);
-		});
+	async init() {
+		await this.includeFiles(this.fileList, this.loadStartTime);
+
+		console.log(`Georgia-ReBORN loaded in ${Date.now() - this.loadStartTime}ms`);
+
+		if (grSet.checkForUpdates) {
+			grCfg.scheduleUpdateCheck(0);
+		}
 	}
 
 	/**
@@ -176,6 +168,21 @@ class FileLoader {
 		for (const filePath of fileList) {
 			include(`${fb.ProfilePath}georgia-reborn\\scripts\\${filePath}`);
 		}
+	}
+
+	/**
+	 * Loads script files asynchronously on foobar startup or reload.
+	 * @global
+	 * @param {string} filePath - The path to the file to load.
+	 * @returns {Promise} A promise that resolves when the file has been loaded.
+	 */
+	loadAsyncFile(filePath) {
+		return new Promise((resolve) => {
+			setTimeout(() => {
+				include(filePath);
+				resolve();
+			}, 0);
+		});
 	}
 }
 
