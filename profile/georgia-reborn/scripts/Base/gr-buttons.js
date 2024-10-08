@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-10-2024                                              * //
+// * Last change:    08-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1150,7 +1150,7 @@ class Button {
 		let buttonCount = this.initButtonCount('lowerBar');
 
 		const btnSize = SCALE(grSet.transportButtonSize_layout);
-		const y = grSet.layout === 'default' ? wh - grm.ui.lowerBarHeight + ((grm.ui.lowerBarHeight - SCALE(grSet.transportButtonSize_layout)) * 0.5) - grm.ui.lowerBarTextMargin * 0.5 : grm.ui.lowerBarTitleY + grm.ui.lowerBarTitleH + grm.ui.seekbarHeight + grm.ui.edgeMargin;
+		const y = grm.ui.getLowerBarButtonsY();
 		const p = SCALE(grSet.transportButtonSpacing_layout); // Space between buttons
 		const x = (ww - btnSize * buttonCount - p * (buttonCount - 1)) * 0.5;
 		const calcX = (index) => x + (btnSize + p) * index;

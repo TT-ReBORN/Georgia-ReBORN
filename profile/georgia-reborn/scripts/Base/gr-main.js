@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-10-2024                                              * //
+// * Last change:    08-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -27,9 +27,9 @@ class MainUI {
 		// * GEOMETRY * //
 		// #region GEOMETRY
 		/** @public @type {number} The global window.Width. */
-		this.ww = 0;
+		this.ww = window.Width;
 		/** @public @type {number} The global window.Height. */
-		this.wh = 0;
+		this.wh = window.Height;
 		/** @public @type {number} The margin width from the edge of the player to the seekbar. */
 		this.edgeMargin = SCALE(grSet.layout !== 'default' ? 20 : 40);
 		/** @public @type {number} The both margin widths from the edge of the player to the seekbar. */
@@ -1302,8 +1302,8 @@ class MainUI {
 	 * @returns {number} The calculated y-position of the seekbar.
 	 */
 	getSeekbarY() {
-		return grSet.layout === 'default' ? this.wh - this.edgeMargin :
-											this.lowerBarTitleY + this.lowerBarTitleH + (this.seekbarHeight * (grSet.seekbar === 'waveformbar' ? 0.5 : grSet.seekbar === 'peakmeterbar' ? 0.66 : 1));
+		return grSet.layout === 'default' ? Math.round(this.wh - this.edgeMargin) :
+											Math.round(this.lowerBarTitleY + this.lowerBarTitleH + (this.seekbarHeight * (grSet.seekbar === 'waveformbar' ? 0.5 : grSet.seekbar === 'peakmeterbar' ? 0.66 : 1)));
 	}
 
 	/**
@@ -1311,8 +1311,13 @@ class MainUI {
 	 * @returns {number} The calculated y-position for lower bar transport buttons.
 	 */
 	getLowerBarButtonsY() {
-		return grSet.layout === 'default' ? this.lowerBarTop + ((this.lowerBarHeight - SCALE(grSet.transportButtonSize_layout)) * 0.5) - this.lowerBarTextMargin * 0.5 :
-											this.seekbarY + this.edgeMargin;
+		const buttonSize = SCALE(grSet.transportButtonSize_layout);
+		const baseButtonSize = SCALE(32);
+		const baseTextHeight = SCALE(18);
+		const textHeightDiff = SCALE(grSet.lowerBarFontSize_layout) - baseTextHeight;
+
+		return grSet.layout === 'default' ? Math.round(this.wh - this.lowerBarHeight + ((this.lowerBarHeight - buttonSize) * 0.5) - this.lowerBarTextMargin * 0.5) :
+											Math.round(this.wh - buttonSize - (this.edgeMargin * 0.85) + (buttonSize - baseButtonSize + textHeightDiff * SCALE(HD_4K(1, 0.66))));
 	}
 
 	/**
@@ -1321,8 +1326,9 @@ class MainUI {
 	 */
 	getLowerBarTextY() {
 		const lowerBarContentHeight = this.lowerBarTitleH + this.lowerBarTextMargin;
+
 		return grSet.layout === 'default' ? Math.round(this.lowerBarTop + (this.lowerBarHeight - lowerBarContentHeight) / 2) :
-											this.lowerBarTop + this.edgeMargin;
+											Math.round(this.lowerBarTop + this.edgeMargin);
 	}
 
 	/**
@@ -1786,8 +1792,6 @@ class MainUI {
 	 */
 	async initMain() {
 		DebugLog('Init => initMain');
-		this.ww = window.Width;
-		this.wh = window.Height;
 
 		// * Init colors
 		this.initCustomTheme();
