@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-10-2024                                              * //
+// * Last change:    09-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -201,11 +201,9 @@ class Preloader {
 		// * GEOMETRY * //
 		// #region GEOMETRY
 		/** @public @type {number} The global window.Width. */
-		this.ww = 0;
+		this.ww = window.Width;
 		/** @public @type {number} The global window.Height. */
-		this.wh = 0;
-		/** @public @type {boolean} The state of 4K mode. */
-		this.RES_4K = false;
+		this.wh = window.Height;
 		/** @public @type {number} The y-position of the lower bar text. */
 		this.lowerBarTextY = 0;
 		/** @public @type {number} The width of the lower bar text. */
@@ -249,6 +247,8 @@ class Preloader {
 
 		// * STATE * //
 		// #region STATE
+		/** @public @type {boolean} The state of 4K mode. */
+		RES._4K = grSet.displayRes === '4K' || this.ww > 2560 && this.wh > 1600;
 		/** @public @type {boolean} The state indicating if the layout is not default. */
 		this.layoutNotDefault = grSet.layout !== 'default';
 		/** @public @type {boolean} The state indicating if the theme is one of the neon themes. */
@@ -270,7 +270,7 @@ class Preloader {
 		 * @private
 		 */
 		this.SCALE = (val) => {
-			const baseScale = this.RES_4K ? 2 : 1;
+			const baseScale = RES._4K ? 2 : 1;
 			const scaleFactor = grSet.displayScale / 100;
 			return val * baseScale * scaleFactor;
 		}
@@ -396,15 +396,13 @@ class Preloader {
 		const fontLowerBarBold = grSet.customThemeFonts ? grCfg.customFont.fontLowerBarArtist : 'HelveticaNeueLT Pro 65 Md';
 		const fontLowerBarLight = grSet.customThemeFonts ? grCfg.customFont.fontLowerBarTitle : 'HelveticaNeueLT Pro 45 Lt';
 
-		this.ft_lower_bar_bold = Font(fontLowerBarBold,
+		const fontSize =
 			grSet.layout === 'compact' ? grSet.lowerBarFontSize_compact || 16 :
 			grSet.layout === 'artwork' ? grSet.lowerBarFontSize_artwork || 16 :
-										 grSet.lowerBarFontSize_default || 18, 0);
+										 grSet.lowerBarFontSize_default || 18;
 
-		this.ft_lower_bar_light = Font(fontLowerBarLight,
-			grSet.layout === 'compact' ? grSet.lowerBarFontSize_compact || 16 :
-			grSet.layout === 'artwork' ? grSet.lowerBarFontSize_artwork || 16 :
-										 grSet.lowerBarFontSize_default || 18, 0);
+		this.ft_lower_bar_bold  = Font(fontLowerBarBold,  fontSize, 0);
+		this.ft_lower_bar_light = Font(fontLowerBarLight, fontSize, 0);
 	}
 
 	/**
@@ -413,10 +411,6 @@ class Preloader {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	setMetrics(gr) {
-		this.ww = window.Width;
-		this.wh = window.Height;
-		this.RES_4K = grSet.displayRes === '4K' || this.ww > 2560 && this.wh > 1600;
-
 		const lowerBarHeight = this.SCALE(120);
 		const lowerBarTop = this.wh - lowerBarHeight;
 		const edgeMargin = this.SCALE(this.layoutNotDefault ? 20 : 40);
@@ -425,11 +419,12 @@ class Preloader {
 
 		this.lowerBarTextW = gr.CalcTextWidth(grFileLoader.loadStr.loading, this.ft_lower_bar_light);
 		this.lowerBarTextH = gr.CalcTextHeight(grFileLoader.loadStr.fileName, this.ft_lower_bar_light);
-		this.lowerBarTextY = (this.layoutNotDefault ? lowerBarTop + edgeMargin : this.wh - edgeMargin - this.lowerBarTextH - textMargin) - this.SCALE(1);
+		this.lowerBarTextY = this.layoutNotDefault ? Math.round(lowerBarTop + edgeMargin) : Math.round(lowerBarTop + (lowerBarHeight - (this.lowerBarTextH + textMargin)) / 2);
+
 		this.seekbarW = this.ww - edgeMarginBoth;
-		this.seekbarH = this.SCALE(this.layoutNotDefault ? 10 : 12) + (this.wh > 1920 ? 2 : 0);
+		this.seekbarH = this.SCALE(this.layoutNotDefault ? 10 : 12);
 		this.seekbarX = edgeMargin;
-		this.seekbarY = this.layoutNotDefault ? lowerBarTop + edgeMargin + this.lowerBarTextH + this.seekbarH : this.wh - edgeMargin;
+		this.seekbarY = this.layoutNotDefault ? Math.round(this.lowerBarTextY + this.lowerBarTextH + this.seekbarH) : Math.round(this.wh - edgeMargin);
 	}
 
 	/**
@@ -439,7 +434,9 @@ class Preloader {
 	drawPreloader(gr) {
 		this.setMetrics(gr);
 
-		gr.SetSmoothingMode(3);
+		// * Apply better anti-aliasing on smaller font sizes in HD res
+		gr.SetTextRenderingHint(!RES._4K && (grSet.gridArtistFontSize_layout < 18 || grSet.displayScale < 100) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
+		gr.SetSmoothingMode(SmoothingMode.None);
 
 		// * BACKGROUND * //
 		gr.FillSolidRect(0, 0, this.ww, this.wh, this.col.bg);
@@ -469,7 +466,7 @@ class Preloader {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawLogo(gr) {
-		const plus4K = this.RES_4K ? '4K-' : '';
+		const plus4K = RES._4K ? '4K-' : '';
 
 		// * CUSTOM LOGO * //
 		const logoNight = grSet.styleNighttime ? '-night' : '';
@@ -530,7 +527,7 @@ class Preloader {
 		}
 		if (utils.IsFile(paths.logo)) {
 			const logo = gdi.Image(paths.logo);
-			const scaleFactor = this.RES_4K ? 0.5 : 1;
+			const scaleFactor = RES._4K ? 0.5 : 1;
 			const w = this.SCALE(logo.Width * scaleFactor);
 			const h = this.SCALE(logo.Height * scaleFactor);
 			const x = this.ww * 0.5 - w * 0.5;

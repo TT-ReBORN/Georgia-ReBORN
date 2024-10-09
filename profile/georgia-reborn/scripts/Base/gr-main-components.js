@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-10-2024                                              * //
+// * Last change:    09-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2696,14 +2696,12 @@ class VolumeButton {
 class ProgressBar {
 	/**
 	 * Creates the `ProgressBar` instance.
-	 * @param {number} ww - Window.Width.
-	 * @param {number} wh - Window.Height.
 	 */
-	constructor(ww, wh) {
+	constructor() {
 		/** @public @type {number} */
 		this.x = grm.ui.edgeMargin;
 		/** @public @type {number} */
-		this.w = ww - grm.ui.edgeMarginBoth;
+		this.w = grm.ui.ww - grm.ui.edgeMarginBoth;
 		/** @public @type {number} */
 		this.y = 0;
 		/** @public @type {number} */
@@ -2933,10 +2931,8 @@ class ProgressBar {
 class PeakmeterBar {
 	/**
 	 * Creates the `PeakmeterBar` instance.
-	 * @param {number} ww - Window.Width.
-	 * @param {number} wh - Window.Height.
 	 */
-	constructor(ww, wh) {
+	constructor() {
 		if (Component.VUMeter) {
 			this.VUMeter = new ActiveXObject('VUMeter');
 		}
@@ -2947,7 +2943,7 @@ class PeakmeterBar {
 		/** @public @type {number} */
 		this.y = 0;
 		/** @public @type {number} */
-		this.w = ww - grm.ui.edgeMarginBoth;
+		this.w = grm.ui.ww - grm.ui.edgeMarginBoth;
 		/** @public @type {number} */
 		this.w2 = 0;
 		/** @public @type {number} */
@@ -3116,6 +3112,10 @@ class PeakmeterBar {
 		}
 		if (grSet.peakmeterBarInfo) {
 			this.drawPeakmeterBarInfo(gr);
+		}
+		if (!fb.IsPlaying) {
+			gr.FillSolidRect(this.x, this.y, this.w, this.h, grCol.bg);
+			gr.FillSolidRect(this.x, grm.ui.seekbarY, this.w, SCALE(grSet.layout !== 'default' ? 10 : 12), grCol.progressBar);
 		}
 	}
 
@@ -3800,10 +3800,8 @@ class PeakmeterBar {
 class WaveformBar {
 	/**
 	 * Creates the `WaveformBar` instance.
-	 * @param {number} ww - Window.Width.
-	 * @param {number} wh - Window.Height.
 	 */
-	constructor(ww, wh) {
+	constructor() {
 		// * Dependencies
 		include(`${fb.ProfilePath}georgia-reborn\\externals\\Codepages.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\externals\\lz-utf8\\lzutf8.js`); // For string compression
@@ -3911,7 +3909,7 @@ class WaveformBar {
 		/** @public @type {number} */
 		this.y = 0;
 		/** @public @type {number} */
-		this.w = ww - grm.ui.edgeMarginBoth;
+		this.w = grm.ui.ww - grm.ui.edgeMarginBoth;
 		/** @public @type {number} */
 		this.h = grm.ui.seekbarHeight;
 
@@ -4053,7 +4051,12 @@ class WaveformBar {
 	 */
 	draw(gr) {
 		this.profilerPaint.Reset();
-		if (!fb.IsPlaying) { this.reset(); } // In case paint has been delayed after playback has stopped...
+
+		if (!fb.IsPlaying) { // In case paint has been delayed after playback has stopped...
+			gr.FillSolidRect(this.x, grm.ui.seekbarY, this.w, SCALE(grSet.layout !== 'default' ? 10 : 12), grCol.progressBar);
+			this.reset();
+		}
+
 		const frames = this.current.length;
 		const partial = this.preset.paintMode === 'partial';
 		const prepaint = partial && this.preset.prepaint;

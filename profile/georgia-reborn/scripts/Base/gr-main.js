@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-10-2024                                              * //
+// * Last change:    09-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -891,7 +891,7 @@ class MainUI {
 			grm.volBtn.draw(gr);
 		}
 		// * PROGRESS BAR * //
-		if (grSet.showProgressBar_layout && (grSet.seekbar === 'progressbar' || !fb.IsPlaying)) {
+		if (grSet.showProgressBar_layout && (grSet.seekbar === 'progressbar')) {
 			grm.progBar.setY(this.seekbarY);
 			grm.progBar.draw(gr);
 		}
@@ -1286,12 +1286,11 @@ class MainUI {
 	getSeekbarHeight() {
 		const layoutNotDefault = grSet.layout !== 'default';
 		const progressBarDefaultOrRounded = grSet.styleProgressBarDesign === 'default' || grSet.styleProgressBarDesign === 'rounded';
-		const additionalHeight = this.ww > 1920 ? 2 : 0;
 
 		const seekbarHeight = {
-			progressbar:  SCALE(layoutNotDefault && progressBarDefaultOrRounded ? 10 : 12) + additionalHeight,
-			peakmeterbar: SCALE(layoutNotDefault ? 16 : 26) + additionalHeight,
-			waveformbar:  SCALE(layoutNotDefault ? 16 : 26) + additionalHeight
+			progressbar:  SCALE(layoutNotDefault && progressBarDefaultOrRounded ? 10 : 12),
+			peakmeterbar: SCALE(layoutNotDefault ? 16 : 26),
+			waveformbar:  SCALE(layoutNotDefault ? 16 : 26)
 		};
 
 		return seekbarHeight[grSet.seekbar] || SCALE(12);
@@ -1303,7 +1302,9 @@ class MainUI {
 	 */
 	getSeekbarY() {
 		return grSet.layout === 'default' ? Math.round(this.wh - this.edgeMargin) :
-											Math.round(this.lowerBarTitleY + this.lowerBarTitleH + (this.seekbarHeight * (grSet.seekbar === 'waveformbar' ? 0.5 : grSet.seekbar === 'peakmeterbar' ? 0.66 : 1)));
+											Math.round(this.lowerBarTitleY + this.lowerBarTitleH +
+											(!fb.IsPlaying ? SCALE(grSet.layout !== 'default' ? 10 : 12) :
+											this.seekbarHeight * (grSet.seekbar === 'waveformbar' ? 0.33 : grSet.seekbar === 'peakmeterbar' ? 0.5 : 1)));
 	}
 
 	/**
@@ -3124,12 +3125,12 @@ class MainUI {
 			},
 			seekbar: () => {
 				if (grSet.seekbar === 'progressbar') {
-					grm.progBar = new ProgressBar(this.ww, this.wh);
+					grm.progBar = new ProgressBar();
 				} else if (grSet.seekbar === 'peakmeterbar') {
-					grm.peakBar = new PeakmeterBar(this.ww, this.wh);
+					grm.peakBar = new PeakmeterBar();
 					grm.peakBar.on_size(this.ww, this.wh);
 				} else if (grSet.seekbar === 'waveformbar') {
-					grm.waveBar = new WaveformBar(this.ww, this.wh);
+					grm.waveBar = new WaveformBar();
 					grm.waveBar.updateBar();
 				}
 			},
