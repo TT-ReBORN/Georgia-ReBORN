@@ -316,9 +316,12 @@ class BioHelpers {
 
 	save(fn, text, bom) {
 		try {
-			utils.WriteTextFile(fn, text, bom);
+			const success = utils.WriteTextFile(fn, text, bom);
+			if (!success && fn.length >= 256) {
+				fb.ShowPopupMessage(`The bio script is trying to save a file in a path containing more than 256 characters, which can cause problems on Windows systems.\n\nPath:\n${fn}\n\nTo avoid this issue, install your Foobar portable installation at another path (with less nesting) or change the cache folders in 'biography.cfg'.`);
+			}
 		} catch (e) {
-			this.trace(`error saving: ${fn}`);
+			this.trace(`Error saving file: ${fn}. Error: ${e.message}`);
 		}
 	}
 

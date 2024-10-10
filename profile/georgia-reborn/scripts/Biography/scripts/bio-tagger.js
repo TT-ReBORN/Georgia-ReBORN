@@ -295,7 +295,7 @@ class BioTagger {
 						if (localeTag.length && !/\s*in\s/.test(localeTag[0])) localeTag.shift();
 						if (localeTag.length && /\s*in\s/.test(localeTag[0])) localeTag[0] = localeTag[0].split(/\s*in\s/)[1].trim();
 						if (!locale[i] && notify) locale[i] = localeTag;
-						if (!locale[i].length) locale[i] = '';
+						if (!locale[i] || !locale[i].length) locale[i] = '';
 					}
 				}
 			} else {
@@ -402,7 +402,7 @@ class BioTagger {
 				artist: artists[0],
 				album: albums[0],
 				handle: handles[0],
-				selectionMode: !notifyFocus ? 'Prefer nowplaying' : 'Follow selected track (playlist)',
+				selectionMode: !bio.panel.id.focus ? 'Prefer nowplaying' : 'Follow selected track (playlist)',
 				tags: tags[0]
 			});
 		}

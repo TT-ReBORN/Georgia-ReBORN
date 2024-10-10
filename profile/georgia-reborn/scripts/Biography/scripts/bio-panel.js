@@ -399,11 +399,16 @@ class BioPanel {
 		if (!pth.endsWith('\\')) pth += '\\';
 
 		const c_pos = pth.indexOf(':');
+		const dotPathRegEx = /([/\\]).((?:foobar2000|fb2k)[^/\\]*|cache|local)([/\\])/g;
+		const dotPath = dotPathRegEx.test(pth);
 		pth = type != 'lyr' ?
 			pth.replace(/[/|:]/g, '-').replace(/\*/g, 'x').replace(/"/g, "''").replace(/[<>]/g, '_').replace(/\?/g, '').replace(/\\\./g, '\\_').replace(/\.+\\/, '\\').replace(/\s*\\\s*/g, '\\') :
 			pth.replace(/[/|:*"<>?]/g, '_');
 		if (c_pos < 3 && c_pos != -1) pth = $Bio.replaceAt(pth, c_pos, ':');
 
+		if (dotPath) { // Allow some special folders with dots
+			pth = pth.replace(dotPathRegEx, (_, p1, p2, p3) => `${p1}.${p2}${p3}`);
+		}
 		while (pth.includes('\\\\')) pth = pth.replace(/\\\\/g, '\\_\\');
 		if (UNC) pth = `\\\\${pth}`;
 		return pth.trim();
