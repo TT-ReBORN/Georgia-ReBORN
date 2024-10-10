@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-10-2024                                              * //
+// * Last change:    10-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -201,9 +201,9 @@ class Preloader {
 		// * GEOMETRY * //
 		// #region GEOMETRY
 		/** @public @type {number} The global window.Width. */
-		this.ww = window.Width;
+		this.ww = 0;
 		/** @public @type {number} The global window.Height. */
-		this.wh = window.Height;
+		this.wh = 0;
 		/** @public @type {number} The y-position of the lower bar text. */
 		this.lowerBarTextY = 0;
 		/** @public @type {number} The width of the lower bar text. */
@@ -247,8 +247,6 @@ class Preloader {
 
 		// * STATE * //
 		// #region STATE
-		/** @public @type {boolean} The state of 4K mode. */
-		RES._4K = grSet.displayRes === '4K' || this.ww > 2560 && this.wh > 1600;
 		/** @public @type {boolean} The state indicating if the layout is not default. */
 		this.layoutNotDefault = grSet.layout !== 'default';
 		/** @public @type {boolean} The state indicating if the theme is one of the neon themes. */
@@ -411,6 +409,10 @@ class Preloader {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	setMetrics(gr) {
+		this.ww = window.Width;
+		this.wh = window.Height;
+		RES._4K = grSet.displayRes === '4K' || this.ww > 2560 && this.wh > 1600;
+
 		const lowerBarHeight = this.SCALE(120);
 		const lowerBarTop = this.wh - lowerBarHeight;
 		const edgeMargin = this.SCALE(this.layoutNotDefault ? 20 : 40);
