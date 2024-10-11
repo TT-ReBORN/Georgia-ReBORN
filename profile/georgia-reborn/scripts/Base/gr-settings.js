@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-10-2024                                              * //
+// * Last change:    11-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1176,7 +1176,7 @@ class ThemeSettingsManager {
 		plSet.list_left_pad = 0;
 		plSet.list_top_pad = 0;
 		plSet.list_right_pad = 0;
-		plSet.list_bottom_pad = 15;
+		plSet.list_bottom_pad = 0;
 		plSet.show_scrollbar = false;
 		plSet.scrollbar_right_pad = 0;
 		plSet.scrollbar_top_pad = 0;

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    11-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -101,10 +101,10 @@ class PlaylistCallbacks {
 		this.y = y;
 		this.h = playlist_h;
 		this.w = playlist_w;
-		this.plman_h = SCALE(plSet.row_h);
+		this.plman_h = SCALE(plSet.row_h + 4);
 
 		pl.playlist.was_on_size_called = true;
-		pl.playlist.on_size(playlist_w, playlist_h - (this.plman_h * 2), x, y + this.plman_h + SCALE(4));
+		pl.playlist.on_size(playlist_w, playlist_h - (this.plman_h * 2) + SCALE(4), x, y + this.plman_h);
 		pl.plman.set_xywh(x, y, grSet.showPlaylistManager_layout ? this.w : 0); // Hide Playlist manager
 
 		grm.ui.handleLibrarySplitCollapse();

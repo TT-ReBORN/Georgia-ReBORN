@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    11-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -67,7 +67,7 @@ plSet.addProperties(
 		load_playlist_async:            ['Panel Playlist - System: Load.playlist.asynchronously', true],
 		list_top_pad:                   ['Panel Playlist - System: List.padding.top', 0],
 		list_right_pad:                 ['Panel Playlist - System: List.padding.right', 0],
-		list_bottom_pad:                ['Panel Playlist - System: List.padding.bottom', 15],
+		list_bottom_pad:                ['Panel Playlist - System: List.padding.bottom', 0],
 		list_left_pad:                  ['Panel Playlist - System: List.padding.left', 0],
 		playlist_group_data:            ['Panel Playlist - System: Playlist.grouping.data_list', ''],
 		playlist_custom_group_data:     ['Panel Playlist - System: Playlist.grouping.custom_data_list', ''],
@@ -81,6 +81,10 @@ plSet.addProperties(
 //////////////////////////
 // * FIXUP PROPERTIES * //
 //////////////////////////
+plSet.list_left_pad = 0;
+plSet.list_top_pad = 0;
+plSet.list_right_pad = 0;
+plSet.list_bottom_pad = 0;
 plSet.row_h = Math.max(10, plSet.row_h);
 plSet.rows_in_header = Math.max(0, plSet.rows_in_header);
 plSet.rows_in_compact_header = Math.max(0, plSet.rows_in_compact_header);

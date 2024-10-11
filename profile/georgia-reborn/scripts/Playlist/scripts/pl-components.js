@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    03-10-2024                                              * //
+// * Last change:    11-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1161,7 +1161,7 @@ class PlaylistScrollbar {
 		this.thumb_h = Math.max(Math.round(this.scrollbar_h * this.rows_drawn / this.row_count), HD_4K(30, 45));
 		this.scrollbar_travel = this.scrollbar_h - this.thumb_h;
 		// * Scrolling info
-		this.scrollable_lines = this.row_count - this.rows_drawn;
+		this.scrollable_lines = Math.ceil(this.row_count - this.rows_drawn);
 		this.thumb_y = this.btn_h + this.scroll * this.scrollbar_travel / this.scrollable_lines;
 		this.drag_distance_per_row = this.scrollbar_travel / this.scrollable_lines;
 	}
@@ -1190,7 +1190,6 @@ class PlaylistScrollbar {
 	wheel(wheel_direction) {
 		const direction = -wheel_direction;
 		const scrollStep = direction * grSet.playlistWheelScrollSteps;
-		const newScroll = this.nearestScroll(direction);
 
 		if (this.scrollbar_wheel_scroll_page) {
 			this.shift_page(direction);
@@ -1198,11 +1197,12 @@ class PlaylistScrollbar {
 		}
 
 		if (typeof this.desiredScrollPosition === 'undefined') {
-			this.desiredScrollPosition = newScroll;
+			this.desiredScrollPosition = this.scroll; // this.nearestScroll(direction);
 		}
 
-		this.desiredScrollPosition += scrollStep;
-		this.desiredScrollPosition = Math.max(0, Math.min(this.desiredScrollPosition, this.scrollable_lines));
+		this.desiredScrollPosition = Math.round(
+			Math.max(0, Math.min(this.desiredScrollPosition + scrollStep, this.scrollable_lines))
+		);
 
 		if (grSet.playlistSmoothScrolling) {
 			this.smooth_scroll_to(this.desiredScrollPosition);
@@ -1322,7 +1322,7 @@ class PlaylistScrollbar {
 	}
 
 	/**
-	 * Handles left mouse button up events on the scrollbar.
+	 * Handles left mouse button down events on the scrollbar.
 	 * @param {number} p_x - The x-coordinate.
 	 * @param {number} p_y - The y-coordinate.
 	 */
@@ -1469,20 +1469,15 @@ class PlaylistScrollbar {
 	 * @returns {number} The nearest scroll position.
 	 */
 	nearestScroll(direction) {
-		if (direction === 0) return this.scroll;
+		if (direction === 0) return Math.round(this.scroll);
 
 		const scrollFloor = Math.floor(this.scroll);
 		const scrollShift = this.scroll - scrollFloor;
-		const drawnShift = 1 - (this.rows_drawn - Math.floor(this.rows_drawn));
 
 		if (direction < 0) {
-			return scrollShift !== 0 ? scrollFloor : this.scroll + direction;
-		}
-		else if (Math.abs(drawnShift - scrollShift) > 0.0001) {
-			return (drawnShift > scrollShift ? scrollFloor : Math.ceil(this.scroll)) + drawnShift;
-		}
-		else {
-			return this.scroll + direction;
+			return scrollShift !== 0 ? scrollFloor : scrollFloor + direction;
+		} else {
+			return scrollShift !== 0 ? Math.ceil(this.scroll) : scrollFloor + direction;
 		}
 	}
 
@@ -1490,7 +1485,7 @@ class PlaylistScrollbar {
 	 * Stops the scrollbar scroll and clears the timer.
 	 */
 	stopScrolling() {
-		clearInterval(this.smoothScrollTimer);
+		clearTimeout(this.smoothScrollTimer);
 		this.smoothScrollTimer = null;
 	}
 
@@ -1507,10 +1502,11 @@ class PlaylistScrollbar {
 
 		const endPos = Math.max(0, Math.min(newPosition, this.scrollable_lines));
 		if (endPos === this.scroll) return;
-		clearInterval(this.smoothScrollTimer);
+		clearTimeout(this.smoothScrollTimer);
 
 		const startPos = this.scroll;
 		const totalDistance = endPos - startPos;
+		const scrollDuration = grSet.playlistWheelScrollDuration / 10;
 		let animationProgress = 0; // Percent of animation completion: 0 (startPos) - 100 (endPos)
 
 		/**
@@ -1523,24 +1519,23 @@ class PlaylistScrollbar {
 			const newVal = startPos + this.easeOut(animationProgress / 100) * totalDistance;
 
 			const isEnding =
-				Math.abs(newPosition - newVal) < 0.1
+				Math.abs(endPos - newVal) < 0.1
 				||
-				totalDistance > 0 && newVal >= newPosition
+				totalDistance > 0 && newVal >= endPos
 				||
-				totalDistance < 0 && newVal <= newPosition;
+				totalDistance < 0 && newVal <= endPos;
 
-			const scrollPos = newPosition === 0 ? 0 : Math.round(newVal * 100) / 100;
+			const scrollPos = isEnding ? endPos : Math.round(newVal * 100) / 100;
 
 			this.scroll_to(scrollPos, false);
 
-			if (isEnding || newPosition <= 0) {
+			if (isEnding) {
 				animationProgress = 100;
-				this.desiredScrollPosition = undefined;
 				this.stopScrolling();
 				return;
 			}
 
-			this.smoothScrollTimer = setTimeout(_scrollStep, grSet.playlistWheelScrollDuration / 10);
+			this.smoothScrollTimer = setTimeout(_scrollStep, scrollDuration);
 		};
 
 		_scrollStep();
@@ -2235,7 +2230,7 @@ class PlaylistManager {
 		 * @private
 		 */
 		this.throttled_repaint = Throttle(() => {
-			window.RepaintRect(this.x, this.y, this.w, this.h);
+			window.RepaintRect(this.x - SCALE(1), this.y, this.w + SCALE(2), this.h);
 		}, 1000 / 60);
 
 		/**

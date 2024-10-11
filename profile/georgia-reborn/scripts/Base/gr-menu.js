@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-10-2024                                              * //
+// * Last change:    11-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1190,7 +1190,7 @@ class TopMenuOptions {
 		const playerControlsScrollbarMenu = new Menu('Scrollbar');
 		const playerControlsScrollbarPlaylistMenu = new Menu('Playlist');
 		const playerControlsScrollbarPlaylistStepsMenu = new Menu('Mouse wheel scroll steps');
-		playerControlsScrollbarPlaylistStepsMenu.addRadioItems(['1 Step', '2 Steps', '3 Steps (default)', '4 Steps', '5 Steps', '6 Steps', '7 Steps', '8 Steps', '9 Steps', '10 Steps'], grSet.playlistWheelScrollSteps, [0.5, 2, 3, 4, 5, 6, 7, 8, 9, 10], (steps) => {
+		playerControlsScrollbarPlaylistStepsMenu.addRadioItems(['1 Step', '2 Steps', '3 Steps (default)', '4 Steps', '5 Steps', '6 Steps', '7 Steps', '8 Steps', '9 Steps', '10 Steps'], grSet.playlistWheelScrollSteps, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (steps) => {
 			grSet.playlistWheelScrollSteps = steps;
 			playlistCallback();
 		});
