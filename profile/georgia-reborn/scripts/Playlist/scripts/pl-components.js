@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-10-2024                                              * //
+// * Last change:    13-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1531,6 +1531,7 @@ class PlaylistScrollbar {
 
 			if (isEnding) {
 				animationProgress = 100;
+				this.desiredScrollPosition = endPos;
 				this.stopScrolling();
 				return;
 			}
