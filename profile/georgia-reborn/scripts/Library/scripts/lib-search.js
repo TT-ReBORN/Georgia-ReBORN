@@ -269,7 +269,7 @@ class LibSearch {
 					for (let k = 0; k < leftSide.length; k++) {
 						if (lib.panel.search.txt[k] == ' ' && lib.panel.search.txt[k + 1] != ' ') boundary = k + 1;
 					}
-					lib.panel.search.txt = leftSide.slice(0, boundary) + lib.panel.search.txt.slice(this.cx).trimStart()
+					lib.panel.search.txt = leftSide.slice(0, boundary) + lib.panel.search.txt.slice(this.cx).trimStart();
 					this.cx = boundary;
 
 					if (this.offset > 0) {

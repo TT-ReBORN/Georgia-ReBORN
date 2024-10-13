@@ -1365,7 +1365,7 @@ class BioText {
 				case !/Metadata\*|General\*|Other\*/i.test(v):
 					properties.forEach(w => {
 						if (!w.name || !w.titleformat) return;
-						w.titleformat = w.titleformat.replace(/%BIO_ALBUMARTIST%/gi, bioCfg.tfAlbumArtist).replace(/%BIO_ARTIST%/gi, bioCfg.tfArtist).replace(/%BIO_ALBUM%/gi, bioCfg.tfAlbum).replace(/%BIO_TITLE%/gi, bioCfg.tfTitle)
+						w.titleformat = w.titleformat.replace(/%BIO_ALBUMARTIST%/gi, bioCfg.tfAlbumArtist).replace(/%BIO_ARTIST%/gi, bioCfg.tfArtist).replace(/%BIO_ALBUM%/gi, bioCfg.tfAlbum).replace(/%BIO_TITLE%/gi, bioCfg.tfTitle);
 						let value = this.formatValue(showEmpty ? $Bio.eval(`$trim(${w.titleformat})`, bio.panel.id.focus) : $Bio.eval(`[$trim(${w.titleformat})]`, bio.panel.id.focus));
 						names = names.concat(fields(w.titleformat.toUpperCase()).filter(v => v.trim()));
 						if (typeof w.titleformat == 'string' && w.titleformat.toLowerCase().includes('%album rating allmusic%')) value /= 2;

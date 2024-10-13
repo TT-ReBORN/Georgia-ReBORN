@@ -519,7 +519,7 @@ class LibMenuItems {
 		d.valueLength = d.value.length;
 		let l = d.sortYear.length;
 		while (l-- && l) {
-			d.value = d.value.replace(RegExp($Lib.regexEscape(d.sortYear[l]), 'g'), '')
+			d.value = d.value.replace(RegExp($Lib.regexEscape(d.sortYear[l]), 'g'), '');
 			if (d.valueLength != d.value.length) {
 				d.sortIX = l;
 				d.valueLength = d.value.length;
@@ -989,7 +989,7 @@ class LibMenuItems {
 				} else d.value = str[0];
 			}
 		} else if (d.sortType == 2 && i && sortByIX != -1) {
-			d.value = d.value.replace(/%album%/g, d.sortAlbumByYear[sortByIX])
+			d.value = d.value.replace(/%album%/g, d.sortAlbumByYear[sortByIX]);
 		}
 		if (d.sortType == 1 || sortByIX != -1) {
 			const expanded = [];

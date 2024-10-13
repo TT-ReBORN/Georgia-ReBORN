@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-10-2024                                              * //
+// * Last change:    13-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4216,7 +4216,7 @@ class MainUI {
 	 * Sets the Playlist size and position.
 	 */
 	setPlaylistSize() {
-		pl.call.on_size(this.ww, this.wh)
+		pl.call.on_size(this.ww, this.wh);
 	}
 
 	/**

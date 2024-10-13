@@ -93,7 +93,7 @@ class BioDldLastfm {
 						return true;
 					});
 					$Bio.htmlParse(h3, 'className', 'catalogue-overview-similar-artists-full-width-item-name', v => {
-						this.simArtists.push($Bio.titlecase(v.innerText.trim()))
+						this.simArtists.push($Bio.titlecase(v.innerText.trim()));
 					});
 					$Bio.htmlParse(h4, 'className', 'header-metadata-tnew-title', v => {
 						this.scrobbles[j] = $Bio.titlecase(v.innerText.trim());

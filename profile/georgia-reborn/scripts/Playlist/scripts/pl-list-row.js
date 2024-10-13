@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    13-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -221,7 +221,7 @@ class PlaylistRow extends BaseListItem {
 		// * PLR
 		if (plSet.show_PLR) {
 			if ($('[%replaygain_track_gain%]', this.metadb) && $('[%replaygain_track_peak_db%]', this.metadb)) {
-				this.plr_track = this.meta_handler.get_PLR($('%replaygain_track_gain%', this.metadb), $('%replaygain_track_peak_db%', this.metadb))
+				this.plr_track = this.meta_handler.get_PLR($('%replaygain_track_gain%', this.metadb), $('%replaygain_track_peak_db%', this.metadb));
 			}
 
 			if (this.plr_track) {
