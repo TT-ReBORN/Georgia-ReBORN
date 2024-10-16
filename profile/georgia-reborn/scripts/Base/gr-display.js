@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    16-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -31,7 +31,7 @@ class Display {
 		/** @private @type {boolean} Setup variable for 4K check. */
 		this.lastSize = undefined;
 		/** @private @type {object} Saves last used active window width and height. */
-		this.fbHandle = {
+		this.lastPlayerSize = {
 			Width: window.Width,
 			Height: window.Height
 		};
@@ -269,11 +269,11 @@ class Display {
 		const currentWidth = grm.ui.ww;
 		const currentHeight = grm.ui.wh;
 
-		if (this.lastSize && (this.lastSize.width === currentWidth && this.lastSize.height === currentHeight)) {
+		if (this.lastPlayerSize.Width === currentWidth && this.lastPlayerSize.Height === currentHeight) {
 			return false;
 		}
 
-		this.lastSize = { width: currentWidth, height: currentHeight };
+		this.lastPlayerSize = { Width: currentWidth, Height: currentHeight };
 		return true;
 	}
 
@@ -286,9 +286,9 @@ class Display {
 
 		if (UIHacks.FullScreen) {
 			UIHacks.FullScreen = false;
-		} else if (this.fbHandle) {
-			grSet.savedWidth_default = this.fbHandle.Width = window.Width;
-			grSet.savedHeight_default = this.fbHandle.Height = window.Height;
+		} else if (this.lastPlayerSize) {
+			grSet.savedWidth_default = this.lastPlayerSize.Width = window.Width;
+			grSet.savedHeight_default = this.lastPlayerSize.Height = window.Height;
 		}
 
 		const size = this.getPlayerSize(sizeName);
@@ -787,9 +787,9 @@ class Display {
 	 * @returns {boolean} Whether the window size needs to be fixed.
 	 */
 	setWindowSizeFix() {
-		const lastW = this.fbHandle ? this.fbHandle.Width : window.Width;
-		const lastH = this.fbHandle ? this.fbHandle.Height : window.Height;
-		const systemFirstLaunch = !this.fbHandle ? grSet.systemFirstLaunch : '';
+		const lastW = this.lastPlayerSize ? this.lastPlayerSize.Width : window.Width;
+		const lastH = this.lastPlayerSize ? this.lastPlayerSize.Height : window.Height;
+		const systemFirstLaunch = !this.lastPlayerSize ? grSet.systemFirstLaunch : '';
 
 		this.setWindowSizeLimitsForLayouts(lastW, lastH);
 
