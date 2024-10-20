@@ -446,16 +446,16 @@ class LibPanel {
 	getViews() {
 		let pt = [
 			['Panel Library - View 01: Name // Pattern', 'View by Folder Structure // Pattern Not Configurable'],
-			['Panel Library - View 02: Name // Pattern', 'View by Artist // %artist%|[%album%]|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%'],
-			['Panel Library - View 03: Name // Pattern', 'View by Album Artist // %album artist%|[%album%]|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%'],
-			['Panel Library - View 04: Name // Pattern', 'View by Album Artist | Album // [%album artist% - ][%album%]|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%'],
-			['Panel Library - View 05: Name // Pattern', 'View by Album // %album% - [%album artist%]|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%'],
-			['Panel Library - View 06: Name // Pattern', 'View by Composer // [%<composer>%]|[%album%]|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%'],
-			['Panel Library - View 07: Name // Pattern', 'View by Country // %artistcountry%|[%album artist%]|[%album%]|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%'],
-			['Panel Library - View 08: Name // Pattern', 'View by Country | Genre // %artistcountry%|%<genre>%|[%album artist% - ]%album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%'],
-			['Panel Library - View 09: Name // Pattern', 'View by Genre // %<genre>%|[%album artist% - ]%album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%'],
-			['Panel Library - View 10: Name // Pattern', 'View by Label // %label%|[%album artist%]|[%album%]|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%'],
-			['Panel Library - View 11: Name // Pattern', 'View by Year // %date%|[%album artist% - ]%album%|[[%discnumber%.]%tracknumber%. ][%track artist% - ]%title%']
+			['Panel Library - View 02: Name // Pattern', 'View by Artist // %artist%|[%album%]|[$ifgreater(%totaldiscs%,1,[%discnumber%.],)%tracknumber%. ][%track artist% - ]%title%'],
+			['Panel Library - View 03: Name // Pattern', 'View by Album Artist // %album artist%|[%album%]|[$ifgreater(%totaldiscs%,1,[%discnumber%.],)%tracknumber%. ][%track artist% - ]%title%'],
+			['Panel Library - View 04: Name // Pattern', 'View by Album Artist | Album // [%album artist% - ][%album%]|[$ifgreater(%totaldiscs%,1,[%discnumber%.],)%tracknumber%. ][%track artist% - ]%title%'],
+			['Panel Library - View 05: Name // Pattern', 'View by Album // %album% - [%album artist%]|[$ifgreater(%totaldiscs%,1,[%discnumber%.],)%tracknumber%. ][%track artist% - ]%title%'],
+			['Panel Library - View 06: Name // Pattern', 'View by Composer // [%<composer>%]|[%album%]|[$ifgreater(%totaldiscs%,1,[%discnumber%.],)%tracknumber%. ][%track artist% - ]%title%'],
+			['Panel Library - View 07: Name // Pattern', 'View by Country // %artistcountry%|[%album artist%]|[%album%]|[$ifgreater(%totaldiscs%,1,[%discnumber%.],)%tracknumber%. ][%track artist% - ]%title%'],
+			['Panel Library - View 08: Name // Pattern', 'View by Country | Genre // %artistcountry%|%<genre>%|[%album artist% - ]%album%|[$ifgreater(%totaldiscs%,1,[%discnumber%.],)%tracknumber%. ][%track artist% - ]%title%'],
+			['Panel Library - View 09: Name // Pattern', 'View by Genre // %<genre>%|[%album artist% - ]%album%|[$ifgreater(%totaldiscs%,1,[%discnumber%.],)%tracknumber%. ][%track artist% - ]%title%'],
+			['Panel Library - View 10: Name // Pattern', 'View by Label // %label%|[%album artist%]|[%album%]|[$ifgreater(%totaldiscs%,1,[%discnumber%.],)%tracknumber%. ][%track artist% - ]%title%'],
+			['Panel Library - View 11: Name // Pattern', 'View by Year // %date%|[%album artist% - ]%album%|[$ifgreater(%totaldiscs%,1,[%discnumber%.],)%tracknumber%. ][%track artist% - ]%title%']
 		];
 		let grps = [];
 		this.defViewPatterns = pt.map(v => {
