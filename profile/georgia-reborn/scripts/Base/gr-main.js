@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-10-2024                                              * //
+// * Last change:    22-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -568,17 +568,21 @@ class MainUI {
 
 		this.hiResAudioLogo = gdi.Image(grPath.hiResAudioLogoPath());
 
+		const scaleFactor = RES._4K ? 0.5 : 1;
+		const w = SCALE(this.hiResAudioLogo.Width * scaleFactor);
+		const h = SCALE(this.hiResAudioLogo.Height * scaleFactor);
+
 		const x =
 			grSet.hiResAudioBadgePos === 'topleft' ? this.albumArtSize.x + SCALE(20) :
-			grSet.hiResAudioBadgePos === 'topright' ? this.albumArtSize.x + this.albumArtSize.w - this.hiResAudioLogo.Width - SCALE(20) :
+			grSet.hiResAudioBadgePos === 'topright' ? this.albumArtSize.x + this.albumArtSize.w - w - SCALE(20) :
 			grSet.hiResAudioBadgePos === 'bottomleft' ? this.albumArtSize.x + SCALE(40) :
-			grSet.hiResAudioBadgePos === 'bottomright' ? this.albumArtSize.x + this.albumArtSize.w - this.hiResAudioLogo.Width - SCALE(40) : '';
+			grSet.hiResAudioBadgePos === 'bottomright' ? this.albumArtSize.x + this.albumArtSize.w - w - SCALE(40) : '';
 
 		const y =
 			grSet.hiResAudioBadgePos === 'topleft' || grSet.hiResAudioBadgePos === 'topright' ? this.albumArtSize.y + SCALE(20) :
-			this.albumArtSize.y + this.albumArtSize.h - this.hiResAudioLogo.Height - SCALE(40);
+			this.albumArtSize.y + this.albumArtSize.h - h - SCALE(40);
 
-		gr.DrawImage(this.hiResAudioLogo, x, y, this.hiResAudioLogo.Width, this.hiResAudioLogo.Height, 0, 0, this.hiResAudioLogo.Width, this.hiResAudioLogo.Height);
+		gr.DrawImage(this.hiResAudioLogo, x, y, w, h, 0, 0, this.hiResAudioLogo.Width, this.hiResAudioLogo.Height);
 	}
 
 	/**
