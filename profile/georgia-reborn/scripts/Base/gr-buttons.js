@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-10-2024                                              * //
+// * Last change:    22-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -877,6 +877,7 @@ class Button {
 		}
 
 		const btnCompact = grSet.topMenuCompactSymbolOnly ? '\uf0c9' : '\uf0c9  Menu';
+		const arc = SCALE(4);
 		const lineW = SCALE(2);
 		const halfLineW = Math.floor(lineW / 2);
 
@@ -969,24 +970,24 @@ class Button {
 					case 'menu': case 'window': case 'compact':
 						if (stateButton) {
 							if (btnStyle.topMenuDefault || btnStyle.topMenuFilled) {
-								if (btnStyle.topMenuFilled) g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 3, 3, menuBgColor);
-								g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 3, 3, 1, menuRectColor);
+								if (btnStyle.topMenuFilled) g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, menuBgColor);
+								g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, 1, menuRectColor);
 							}
 							else if (btnStyle.topMenuBevel) {
-								g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 4, 4, menuBgColor);
-								FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, 4, 4, 90, 0, grCol.menuStyleBg, 1);
-								g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 4, 4, 1, menuRectColor);
+								g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, menuBgColor);
+								FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, arc, arc, 90, 0, grCol.menuStyleBg, 1);
+								g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, 1, menuRectColor);
 							}
 							else if (btnStyle.topMenuInner) {
-								g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 4, 4, menuBgColor);
-								FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, 4, 4, 90, 0, grCol.menuStyleBg, 0);
-								g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 4, 4, 1, menuRectColor);
+								g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, menuBgColor);
+								FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, arc, arc, 90, 0, grCol.menuStyleBg, 0);
+								g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, 1, menuRectColor);
 							}
 							else if (btnStyle.topMenuEmboss) {
-								g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, 4, 4, menuBgColor);
-								FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, 4, 4, 90, 0, grCol.menuStyleBg, 0.33);
-								g.DrawRoundRect(halfLineW + 1, halfLineW + 1, w - lineW - 2, h - lineW - 1, 4, 4, 1, grCol.menuRectStyleEmbossTop);
-								g.DrawRoundRect(halfLineW + 1, halfLineW, w - lineW - 2, h - lineW - 1, 4, 4, 1, grCol.menuRectStyleEmbossBottom);
+								g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, menuBgColor);
+								FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, arc, arc, 90, 0, grCol.menuStyleBg, 0.33);
+								g.DrawRoundRect(halfLineW + 1, halfLineW + 1, w - lineW - 2, h - lineW - 1, arc, arc, 1, grCol.menuRectStyleEmbossTop);
+								g.DrawRoundRect(halfLineW + 1, halfLineW, w - lineW - 2, h - lineW - 1, arc, arc, 1, grCol.menuRectStyleEmbossBottom);
 							}
 						}
 
