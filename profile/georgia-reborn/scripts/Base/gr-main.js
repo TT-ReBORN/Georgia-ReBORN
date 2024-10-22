@@ -1705,7 +1705,7 @@ class MainUI {
 		grStr.year = $(grTF.year, metadb) === '0000' ? '' : $(grTF.year, metadb);
 		grStr.disc = grSet.layout !== 'default' ? '' :  $(grTF.disc, metadb);
 
-		const playbackLength = metadb ? metadb.Length : fb.PlaybackLength;
+		const playbackLength = Math.round(metadb ? metadb.Length : fb.PlaybackLength);
 		const h = Math.floor(playbackLength / 3600);
 		const m = Math.floor(playbackLength % 3600 / 60);
 		const s = Math.floor(playbackLength % 60);
