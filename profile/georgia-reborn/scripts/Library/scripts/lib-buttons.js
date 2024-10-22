@@ -177,6 +177,7 @@ class LibButtons {
 		let hand = false;
 		this.checkScrollBtns(x, y, hover_btn);
 		if (hover_btn) {
+			grm.ui.styledTooltipText = grSet.showTooltipLibrary && typeof hover_btn.tiptext === 'function' ? hover_btn.tiptext() : '';
 			hand = hover_btn.hand;
 		}
 		lib.pop.hand = hand;

@@ -379,7 +379,10 @@ class BioButtons {
 		let hand = false;
 		this.scr.init = false;
 		this.checkScrollBtns(x, y, hover_btn);
-		if (hover_btn) hand = hover_btn.hand;
+		if (hover_btn) {
+			grm.ui.styledTooltipText = grSet.showTooltipBiography && typeof hover_btn.tiptext === 'function' ? hover_btn.tiptext() : '';
+			hand = hover_btn.hand;
+		}
 		if (!bio.resize.down) SetCursor(!hand && !bio.seeker.hand && !bio.filmStrip.hand ? 'Arrow' : 'Hand');
 		if (hover_btn && hover_btn.hide) {
 			if (this.cur) {
