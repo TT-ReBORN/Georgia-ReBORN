@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2024                                              * //
+// * Last change:    25-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -147,6 +147,7 @@ function Assert(predicate, ExceptionType, ...args) {
 /**
  * Calculates and logs the average execution time of given functions (code blocks) over a specified number of iterations.
  * Optionally compares the performance of two code blocks with their respective arguments.
+ * @global
  * @param {number} iterations - The number of times the code blocks should be executed.
  * @param {Function} func1 - The first function whose performance is to be measured.
  * @param {Array} [args1] - The optional arguments for the first function as an array.
@@ -193,6 +194,7 @@ function CalcExecutionTime(iterations, func1, args1 = [], func2, args2 = []) {
 
 /**
  * Calculates and logs one or two given functions over a specified duration and compares their performance if both are provided.
+ * @global
  * @param {number} duration - The duration (in milliseconds) for which the functions should be executed.
  * @param {Function} func1 - The first function to be measured.
  * @param {Array} [args1] - The optional arguments for the first function as an array.
@@ -251,6 +253,7 @@ function CalcExecutionDuration(duration, func1, args1, func2, args2) {
 
 /**
  * Calculates and logs the performance of given functions either by iterations or duration.
+ * @global
  * @param {string} mode - The mode of performance measurement ('time' for iterations or 'duration' for time-based).
  * @param {number} metric - The number of iterations or the duration in milliseconds.
  * @param {Function} func1 - The first function whose performance is to be measured.
@@ -286,6 +289,7 @@ function CalcPerformance(mode, metric, func1, args1 = [], func2, args2 = []) {
 /**
  * Prints logs for specific callback actions.
  * Will be shown in the console when `Show panel calls` in Developer tools is active.
+ * @global
  * @param {string} msg - The callback action message to log.
  */
 function CallLog(msg) {
@@ -297,6 +301,7 @@ function CallLog(msg) {
 /**
  * Prints exclusive theme debug logs and avoids cluttering the console constantly.
  * Will be shown in the console when `Enable debug log` in Developer tools is active.
+ * @global
  * @param {...any} args - The debug messages to log.
  */
 function DebugLog(...args) {
@@ -308,6 +313,7 @@ function DebugLog(...args) {
 /**
  * Prints logs for specific callback on_mouse_move actions.
  * Will be shown in the console when `Show panel moves` in Developer tools is active.
+ * @global
  * @param {string} msg - The callback mouse move message to log.
  */
 function MoveLog(msg) {
@@ -834,6 +840,7 @@ function Debounce(func, delay, { leading } = {}) {
 
 /**
  * Handles key press actions based on the state of control keys (Ctrl, Alt, Shift).
+ * @global
  * @param {object} action - An object mapping key press combinations to their respective actions.
  * @param {Function} [action.ctrlAltShift] - Action to perform if `Ctrl`, `Alt`, and `Shift` keys are all pressed.
  * @param {Function} [action.ctrlShift] - Action to perform if both `Ctrl` and `Shift` keys are pressed.
@@ -894,6 +901,26 @@ function KeyPressAction(action = {}) {
 
 
 /**
+ * Creates a function that can only be called once.
+ * The result of the first call is cached and returned on subsequent calls.
+ * @global
+ * @param {Function} fn - A function to be called only once.
+ * @returns {Function} A new function that wraps the `fn` function, caching and returning the result of the first invocation.
+ */
+function Once(fn) {
+	let called = false;
+	let result;
+	return (...args) => {
+		if (!called) {
+			result = fn(...args);
+			called = true;
+		}
+		return result;
+	};
+}
+
+
+/**
  * Repeats the specified function a specified number of times.
  * @global
  * @param {Function} func - The function to be repeated.
@@ -925,27 +952,6 @@ function RunCmd(command, wait, show) {
 		return false;
 	}
 }
-
-
-/**
- * Creates a function that can only be called once.
- * The result of the first call is cached and returned on subsequent calls.
- * @global
- * @param {Function} fn - A function to be called only once.
- * @returns {Function} A new function that wraps the `fn` function, caching and returning the result of the first invocation.
- */
-function Once(fn) {
-	let called = false;
-	let result;
-	return (...args) => {
-		if (!called) {
-			result = fn(...args);
-			called = true;
-		}
-		return result;
-	};
-}
-
 
 /**
  * Limits the execution of a given function to a specified time frame.
@@ -1418,6 +1424,7 @@ function CombineColors(c1, c2, f) {
 
 /**
  * Darkens a color value based on a percentage.
+ * @global
  * @param {number} color - The color to darken.
  * @param {number} percent - The percentage of the color to darken.
  * @returns {number} The darkened color value in the range of 0-255.
@@ -1502,6 +1509,7 @@ class ImageSize {
 /**
  * A class that encapsulates the creation and management of GDI image and graphics objects.
  * It ensures that only one instance of each object exists within the application at a time (singleton pattern).
+ * @global
  * @example
  * Use GdiService.getInstance() to access the singleton instance of this service throughout the application:
  * const gdiService = GdiService.getInstance();
@@ -1589,6 +1597,7 @@ function GDI(w, h, img, func) {
 
 /**
  * Combines two images into a single image.
+ * @global
  * @param {GdiBitmap} img1 - The first image.
  * @param {GdiBitmap} img2 - The second image.
  * @param {number} w - The width for the combined image.
@@ -1807,6 +1816,7 @@ function ShadowRect(x, y, w, h, radius, color) {
 /**
  * Sets the appropriate value based on detected display mode.
  * @template T
+ * @global
  * @param {T} valHD - The value to use for HD display mode.
  * @param {T} valQHD - The value to use for QHD display mode.
  * @param {T|null} val4K - The value to use for 4K display mode.
@@ -1822,6 +1832,7 @@ function HD_QHD_4K(valHD, valQHD, val4K = null) {
 /**
  * Sets the appropriate value based on detected display mode for HD and 4K only.
  * @template T
+ * @global
  * @param {T} valHD - The value to use for HD display mode.
  * @param {T|null} val4K - The value to use for 4K display mode.
  * Optional; if not provided, HD value will be used as fallback.
@@ -1848,6 +1859,7 @@ function SCALE(val) {
 
 /**
  * Sets the mouse cursor using the specified cursor symbol name.
+ * @global
  * @param {string} symbol - The name of the cursor symbol.
  */
 function SetCursor(symbol) {
@@ -1946,6 +1958,7 @@ function CalcGridMaxTextWidth(gr, gridArray, font) {
 
 /**
  * Calculates the wrap space for text within a given container width and provides detailed information.
+ * @global
  * @param {GdiGraphics} gr - The GDI graphics object used for text measurement.
  * @param {string} text - The text to be wrapped.
  * @param {object} font - The font used for measuring the text.
@@ -2418,6 +2431,7 @@ function Clamp(num, min, max) {
 
 /**
  * Formats the given file size in bytes to the most appropriate unit (bytes, KB, MB, GB, ...).
+ * @global
  * @param {number} sizeInBytes - The size of the file in bytes.
  * @returns {string} The formatted size as a string with the appropriate unit appended.
  */
@@ -2441,6 +2455,7 @@ function FormatSize(sizeInBytes) {
  * - 'toPercent': Converts the volume (expected between 0 and 1) to a percentage representation.
  * - 'toDecibel': Converts the volume (expected between 0 and 1) to decibels (dB).
  * - 'vuLevelToDecibel': Converts VU meter levels to decibel.
+ * @global
  * @param {number} volume - The volume to be converted, expected to be between 0 and 1.
  * @param {string} type - Determines the format of the output.
  * @returns {number|undefined} The converted volume as a number, or undefined if an invalid type is specified.
@@ -2958,6 +2973,7 @@ function DateToYMD(date) {
 
 /**
  * Returns the elapsed time progress of the current track as a percentage.
+ * @global
  * @returns {string} The elapsed time percentage as a string formatted to two decimal places.
  */
 function PlaybackTimePercentage() {
