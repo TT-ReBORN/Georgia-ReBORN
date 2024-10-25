@@ -111,12 +111,12 @@ class LibCallbacks {
 			lib.lib.initialise(handleList);
 			return;
 		}
-		if (!lib.initialized || !libSet.libAutoSync || libSet.fixedPlaylist || !libSet.libSource) return;
+		if (!libSet.libAutoSync || libSet.fixedPlaylist || !libSet.libSource) return;
 		lib.lib.treeState(false, 2, handleList, 0);
 	}
 
 	on_library_items_removed(handleList) {
-		if (!lib.initialized || !libSet.libAutoSync || libSet.fixedPlaylist || !libSet.libSource) return;
+		if (!libSet.libAutoSync || libSet.fixedPlaylist || !libSet.libSource) return;
 		if (libSet.libSource == 2) {
 			const libList = lib.lib.list.Clone();
 			libList.Sort();
@@ -127,7 +127,7 @@ class LibCallbacks {
 	}
 
 	on_library_items_changed(handleList) {
-		if (!lib.initialized || !libSet.libAutoSync || libSet.fixedPlaylist || !libSet.libSource) return;
+		if (!libSet.libAutoSync || libSet.fixedPlaylist || !libSet.libSource) return;
 		if (libSet.libSource == 2) {
 			const libList = lib.lib.list.Clone();
 			libList.Sort();

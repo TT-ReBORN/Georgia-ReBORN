@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-10-2024                                              * //
+// * Last change:    25-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1814,20 +1814,11 @@ class MainUI {
 		this.setMainComponents('all');
 
 		// * Init panels
-		PlaylistRescale(true);
-		this.initPlaylist();
-		if (!lib.initialized) {
-			this.initLibraryPanel();
-			this.setLibrarySize();
-			await new Promise(resolve => {
-				lib.lib.initialise();
-				resolve();
-			});
-		}
-		if (!bio.initialized) {
-			this.initBiographyPanel();
-			this.setBiographySize();
-		}
+		await MakeAsync(() => PlaylistRescale(true));
+		await MakeAsync(() => this.initPlaylist());
+		await MakeAsync(() => this.initLibraryPanel());
+		await MakeAsync(() => lib.lib.initialise());
+		await MakeAsync(() => this.initBiographyPanel());
 
 		// * Init state
 		if (fb.IsPlaying && fb.GetNowPlaying()) {
@@ -1836,7 +1827,6 @@ class MainUI {
 		plman.SetActivePlaylistContext();
 		this.displayPanel(false, true);
 		this.initLyricsDisplayState('startup');
-		this.initPanelWidthAuto(true);
 
 		// * Restore backup workaround to successfully restore playlist files after foobar installation
 		if (grSet.restoreBackupPlaylist) {
@@ -2202,8 +2192,8 @@ class MainUI {
 
 		await this.initMain();
 		await grm.settings.setThemeSettings(false, false, true);
-		await this.initMain();
 		await grm.display.autoDetectRes();
+		await this.initMain();
 
 		grSet.systemFirstLaunch = false;
 	}
@@ -4284,7 +4274,6 @@ class MainUI {
 	 * Initializes the Library.
 	 */
 	initLibraryPanel() {
-		if (lib.initialized) return;
 		lib.ui = new LibUserInterface();
 		lib.panel = new LibPanel();
 		lib.sbar = new LibScrollbar();
@@ -4298,15 +4287,12 @@ class MainUI {
 		lib.men = new LibMenuItems();
 		lib.timer = new LibTimers();
 		lib.call = new LibCallbacks();
-		lib.initialized = true;
 	}
 
 	/**
 	 * Initializes active Library layout presets.
 	 */
 	initLibraryLayout() {
-		if (!lib.initialized) return;
-
 		const libraryLayoutSplitPresets =
 			grSet.libraryLayoutSplitPreset || grSet.libraryLayoutSplitPreset2 || grSet.libraryLayoutSplitPreset3 || grSet.libraryLayoutSplitPreset4;
 
@@ -4465,8 +4451,6 @@ class MainUI {
 	 * Sets the Library size and position.
 	 */
 	setLibrarySize() {
-		if (!lib.initialized) return;
-
 		const noAlbumArtSize = this.wh - this.topMenuHeight - this.lowerBarHeight;
 
 		const x =
@@ -4609,7 +4593,6 @@ class MainUI {
 	 * Initializes the Biography.
 	 */
 	initBiographyPanel() {
-		if (bio.initialized) return;
 		bio.ui = new BioUserInterface();
 		bio.vk = new BioVkeys();
 		bio.panel = new BioPanel();
@@ -4633,7 +4616,6 @@ class MainUI {
 		bio.infobox = new BioInfobox();
 		bio.lyrics = new BioLyrics();
 		bio.call = new BioCallbacks();
-		bio.initialized = true;
 	}
 
 	/**
@@ -4693,8 +4675,6 @@ class MainUI {
 	 * Sets the Biography size and position.
 	 */
 	setBiographySize() {
-		if (!bio.initialized) return;
-
 		const x = 0;
 		const y = this.topMenuHeight;
 

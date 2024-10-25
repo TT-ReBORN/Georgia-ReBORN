@@ -30,8 +30,6 @@
 /** @global @type {bio} */
 const bio = {};
 
-bio.initialized = false;
-
 bio.ui            = new BioUserInterface();
 bio.vk            = new BioVkeys();
 bio.panel         = new BioPanel();

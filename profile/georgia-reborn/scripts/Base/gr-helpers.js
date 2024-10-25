@@ -901,6 +901,22 @@ function KeyPressAction(action = {}) {
 
 
 /**
+ * Wraps a synchronous function call that does not return a promise in a promise.
+ * This utility function is useful for converting functions that perform synchronous operations
+ * into a promise-based interface, allowing them to be used with async/await syntax.
+ * @global
+ * @param {function(): void} func - The synchronous function to wrap. This function should not return a promise.
+ * @returns {Promise<void>} A promise that resolves immediately after the function call completes.
+ */
+function MakeAsync(func) {
+	return new Promise(resolve => {
+		func();
+		resolve();
+	});
+}
+
+
+/**
  * Creates a function that can only be called once.
  * The result of the first call is cached and returned on subsequent calls.
  * @global
@@ -952,6 +968,7 @@ function RunCmd(command, wait, show) {
 		return false;
 	}
 }
+
 
 /**
  * Limits the execution of a given function to a specified time frame.

@@ -20,8 +20,6 @@
 /** @global @type {lib} */
 const lib = {};
 
-lib.initialized = false;
-
 lib.ui       = new LibUserInterface();
 lib.panel    = new LibPanel();
 lib.sbar     = new LibScrollbar();

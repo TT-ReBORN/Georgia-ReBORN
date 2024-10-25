@@ -128,19 +128,19 @@ class BioCallbacks {
 	}
 
 	on_library_items_added() {
-		if (!bio.initialized || !bioSet.panelActive) return;
+		if (!bioSet.panelActive) return;
 		if (!bio.lib) return;
 		bio.lib.update = true;
 	}
 
 	on_library_items_removed() {
-		if (!bio.initialized || !bioSet.panelActive) return;
+		if (!bioSet.panelActive) return;
 		if (!bio.lib) return;
 		bio.lib.update = true;
 	}
 
 	on_library_items_changed() {
-		if (!bio.initialized || !bioSet.panelActive) return;
+		if (!bioSet.panelActive) return;
 		if (!bio.lib) return;
 		bio.lib.update = true;
 	}
