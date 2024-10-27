@@ -911,6 +911,8 @@ class LibPopulate {
 		const nm = [];
 		const nowp_c = [];
 		const updatedNowpBg = pl.col.header_nowplaying_bg !== ''; // * Wait until nowplaying bg has a new color to prevent flashing
+		const colNowPlaying = grSet.libraryBgImg ? RGBtoRGBA(lib.ui.col.nowPlayingBg, grSet.libraryBgRowOpacity) : lib.ui.col.nowPlayingBg;
+		const colRowStripes = grSet.libraryBgImg ? RGBtoRGBA(lib.ui.col.rowStripes, grSet.libraryBgRowOpacity) : lib.ui.col.rowStripes;
 		const row = [];
 		const y1 = Math.round(lib.panel.search.h - lib.sbar.delta + lib.panel.node_y) + Math.floor(lib.ui.sz.node / 2);
 		let i = 0;
@@ -970,7 +972,7 @@ class LibPopulate {
 					}
 					// * Now playing bg selection
 					else if (this.highlight.nowPlaying && updatedNowpBg) {
-						gr.FillSolidRect(grSet.libraryDesign === 'traditional' ? item_x - SCALE(2) : lib.ui.x, item_y, grSet.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - lib.ui.sz.margin - lib.ui.sz.node + lib.ui.l.w : grSet.libraryDesign === 'traditional' && !this.fullLineSelection ? sel_w + sel_x - item_x + SCALE(2) : !this.fullLineSelection ? sel_w + lib.ui.sz.margin + sel_x - lib.ui.x - lib.ui.sz.sideMarker : sel_w, lib.ui.row.h, lib.ui.col.nowPlayingBg);
+						gr.FillSolidRect(grSet.libraryDesign === 'traditional' ? item_x - SCALE(2) : lib.ui.x, item_y, grSet.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - lib.ui.sz.margin - lib.ui.sz.node + lib.ui.l.w : grSet.libraryDesign === 'traditional' && !this.fullLineSelection ? sel_w + sel_x - item_x + SCALE(2) : !this.fullLineSelection ? sel_w + lib.ui.sz.margin + sel_x - lib.ui.x - lib.ui.sz.sideMarker : sel_w, lib.ui.row.h, colNowPlaying);
 
 						if (grSet.libraryDesign !== 'traditional') {
 							gr.FillSolidRect(lib.ui.x, item_y, lib.ui.sz.sideMarker, lib.ui.row.h, lib.ui.col.sideMarker);
@@ -983,21 +985,21 @@ class LibPopulate {
 							gr.FillSolidRect(lib.ui.x, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? item_y + 1 : item_y, lib.ui.sz.sideMarker, this.highlight.nowPlaying && !item.root && this.inRange(this.nowp, item.item) ? lib.ui.row.h - 1 : lib.ui.row.h + 1, lib.ui.col.sideMarker);
 						}
 						else if (grSet.libraryDesign === 'traditional') {
-							gr.FillSolidRect(item_x - SCALE(2), item_y, grSet.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - lib.ui.sz.margin - lib.ui.sz.node + lib.ui.l.w : sel_w, lib.ui.row.h, lib.ui.col.nowPlayingBg);
+							gr.FillSolidRect(item_x - SCALE(2), item_y, grSet.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - lib.ui.sz.margin - lib.ui.sz.node + lib.ui.l.w : sel_w, lib.ui.row.h, colNowPlaying);
 						}
 					}
 					// * Marker selection with now playing deactivated
 					if (item.sel && !this.highlight.nowPlaying && updatedNowpBg) {
-						gr.FillSolidRect(grSet.libraryDesign === 'traditional' && this.fullLineSelection ? item_x - SCALE(2) : sel_x, item_y, grSet.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - lib.ui.sz.margin - lib.ui.sz.node + lib.ui.l.w : sel_w, lib.ui.row.h, lib.ui.col.nowPlayingBg);
+						gr.FillSolidRect(grSet.libraryDesign === 'traditional' && this.fullLineSelection ? item_x - SCALE(2) : sel_x, item_y, grSet.libraryDesign === 'traditional' && this.fullLineSelection ? sel_w - item_x - lib.ui.sz.margin - lib.ui.sz.node + lib.ui.l.w : sel_w, lib.ui.row.h, colNowPlaying);
 
 						if (grSet.libraryDesign !== 'traditional') {
-							gr.FillSolidRect(lib.ui.x, item_y, lib.ui.w, lib.ui.row.h, lib.ui.col.nowPlayingBg);
+							gr.FillSolidRect(lib.ui.x, item_y, lib.ui.w, lib.ui.row.h, colNowPlaying);
 							gr.FillSolidRect(lib.ui.x, item_y, lib.ui.sz.sideMarker, lib.ui.row.h, lib.ui.col.sideMarker);
 						}
 					}
 				}
 				if (this.rowStripes) {
-					if (i % 2 == 0) gr.FillSolidRect(lib.ui.x, item_y + 1, lib.panel.tree.stripe.w, lib.ui.row.h - 2, lib.ui.col.rowStripes /*ui.col.bg1*/);
+					if (i % 2 == 0) gr.FillSolidRect(lib.ui.x, item_y + 1, lib.panel.tree.stripe.w, lib.ui.row.h - 2, colRowStripes /*ui.col.bg1*/);
 					else gr.FillSolidRect(lib.ui.x, item_y, lib.panel.tree.stripe.w, lib.ui.row.h, lib.ui.col.bg2);
 				}
 			}

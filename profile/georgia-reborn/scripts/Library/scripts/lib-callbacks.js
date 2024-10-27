@@ -290,6 +290,11 @@ class LibCallbacks {
 		}
 		lib.ui.draw(gr);
 		lib.lib.checkTree();
+
+		if (grSet.libraryBgImg && grm.bgImg.libraryBgImg) {
+			grm.bgImg.drawBgImage(gr, grm.bgImg.libraryBgImg, grSet.libraryBgImgScale, this.x, this.y, this.w, this.h, grSet.libraryBgImgOpacity, false, 0, 0);
+		}
+
 		libImg.draw(gr);
 		lib.ui.drawLine(gr);
 		lib.search.draw(gr);

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-10-2024                                              * //
+// * Last change:    27-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -104,7 +104,7 @@ class PlaylistRow extends BaseListItem {
 		gr.SetSmoothingMode(SmoothingMode.None);
 
 		if (this.is_odd && plSet.show_row_stripes) {
-			gr.FillSolidRect(this.x, this.y, this.w, this.h, pl.col.row_stripes_bg);
+			gr.FillSolidRect(this.x, this.y, this.w, this.h, grSet.playlistBgImg ? RGBtoRGBA(pl.col.row_stripes_bg, grSet.playlistBgRowOpacity) : pl.col.row_stripes_bg);
 		}
 
 		let title_font = pl.font.title_normal;
@@ -140,7 +140,8 @@ class PlaylistRow extends BaseListItem {
 			this.title_color = pl.col.row_title_playing;
 			title_font = pl.font.title_playing;
 
-			const bg_color = pl.col.row_nowplaying_bg;
+			const bg_color = grSet.playlistBgImg ? RGBtoRGBA(pl.col.row_nowplaying_bg, grSet.playlistBgRowOpacity) : pl.col.row_nowplaying_bg;
+			if (!grSet.styleBlend && !grSet.playlistBgImg || !grSet.playlistBgRowNowPlaying) gr.FillSolidRect(this.x, this.y, scrollbar ? this.w - SCALE(12) : this.w, this.h, bg_color); // Correct bg alpha for nowplaying
 			gr.FillSolidRect(this.x, this.y, scrollbar ? this.w - SCALE(12) : this.w, this.h, bg_color);
 			if (ColorDistance(bg_color, title_artist_color) < 195) {
 				title_artist_color = this.title_color;

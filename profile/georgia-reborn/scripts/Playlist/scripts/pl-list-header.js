@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-10-2024                                              * //
+// * Last change:    27-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -441,7 +441,9 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			this.clipImg = gdi.CreateImage(this.w, this.h);
 			const grClip = this.clipImg.GetGraphics();
 
-			if (!grSet.styleBlend) grClip.FillSolidRect(0, 0, this.w, this.h, pl.col.bg); // Solid background for ClearTypeGridFit text rendering
+			if (!grSet.styleBlend && !grSet.playlistBgImg || !grSet.playlistBgRowNowPlaying) { // Solid background for ClearTypeGridFit text rendering
+				grClip.FillSolidRect(0, 0, this.w, this.h, grSet.playlistBgImg ? RGBtoRGBA(pl.col.bg, grSet.playlistBgRowOpacity) : pl.col.bg);
+			}
 
 			// if (this.hasSelection && grSet.theme.startsWith('custom')) {
 			// 	grClip.FillSolidRect(0, 0, this.w, this.h, pl.col.row_selection_bg);
@@ -451,18 +453,18 @@ class PlaylistHeader extends PlaylistBaseHeader {
 				const p = SCALE(6);  // From art below
 
 				if (grSet.theme === 'white' && !grSet.styleBlackAndWhite && !grSet.styleBlackAndWhite2 && grSet.layout === 'default' || (grSet.theme === 'reborn' || grSet.theme === 'random') && grm.ui.noAlbumArtStub && !grSet.styleNighttime) {
-					grClip.FillSolidRect(0, p, SCALE(8), this.h - p * 2, pl.col.header_nowplaying_bg);
+					grClip.FillSolidRect(0, p, SCALE(8), this.h - p * 2, grSet.playlistBgImg ? RGBtoRGBA(pl.col.header_nowplaying_bg, grSet.playlistBgRowOpacity) : pl.col.header_nowplaying_bg);
 				}
 				else {
-					grClip.FillSolidRect(0, 0, plSet.show_scrollbar && pl.playlist.is_scrollbar_available ? this.w - SCALE(12) : this.w, this.h * 2, pl.col.header_nowplaying_bg);
+					grClip.FillSolidRect(0, 0, plSet.show_scrollbar && pl.playlist.is_scrollbar_available ? this.w - SCALE(12) : this.w, this.h * 2, grSet.playlistBgImg ? RGBtoRGBA(pl.col.header_nowplaying_bg, grSet.playlistBgRowOpacity) : pl.col.header_nowplaying_bg);
 				}
 				if (grSet.theme === 'white' && (grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2) || !['white', 'black', 'cream'].includes(grSet.theme)) {
 					grClip.FillSolidRect(0, 0, SCALE(8), this.h, pl.col.header_sideMarker);
 				}
 			}
 
-			// * Need to apply text rendering AntiAliasGridFit when using style Blend or when using custom theme fonts with larger font sizes
-			grClip.SetTextRenderingHint(grSet.styleBlend || grSet.customThemeFonts && grSet.playlistHeaderFontSize_layout > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
+			// * Need to apply text rendering AntiAliasGridFit when using style Blend, Biography's artist image on background or when using custom theme fonts with larger font sizes
+			grClip.SetTextRenderingHint(grSet.styleBlend || grSet.playlistBgImg || grSet.libraryBgImg || grSet.customThemeFonts && grSet.playlistHeaderFontSize_layout > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
 
 			if (this.is_collapsed && this.is_focused() || this.is_completely_selected() && plSet.show_header && plSet.auto_collapse) {
 				grClip.DrawRect(-1, 0, this.w + 1, this.h - 1, 1, line_color);
@@ -812,13 +814,15 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		const grClip = clipImg.GetGraphics();
 
 		//--->
-		if (!grSet.styleBlend) grClip.FillSolidRect(0, 0, this.w, this.h, pl.col.bg); // Solid background for ClearTypeGridFit text rendering
+		if (!grSet.styleBlend && !grSet.playlistBgImg || !grSet.playlistBgRowNowPlaying) { // Solid background for ClearTypeGridFit text rendering
+			grClip.FillSolidRect(0, 0, this.w, this.h, grSet.playlistBgImg ? RGBtoRGBA(pl.col.bg, grSet.playlistBgRowOpacity) : pl.col.bg);
+		}
 		// if (this.has_selected_items() && grSet.theme.startsWith('custom')) {
 		// 	grClip.FillSolidRect(0, 0, this.w, this.h, pl.col.row_selection_bg);
 		// }
 
 		if (this.is_playing() && updatedNowpBg) {
-			grClip.FillSolidRect(0, 0, plSet.show_scrollbar && pl.playlist.is_scrollbar_available ? this.w - SCALE(12) : this.w, this.h, pl.col.header_nowplaying_bg);
+			grClip.FillSolidRect(0, 0, plSet.show_scrollbar && pl.playlist.is_scrollbar_available ? this.w - SCALE(12) : this.w, this.h, grSet.playlistBgImg ? RGBtoRGBA(pl.col.header_nowplaying_bg, grSet.playlistBgRowOpacity) : pl.col.header_nowplaying_bg);
 			grClip.FillSolidRect(0, 0, ['white', 'black', 'cream'].includes(grSet.theme) ? 0 : SCALE(8), this.h, pl.col.header_sideMarker);
 		}
 

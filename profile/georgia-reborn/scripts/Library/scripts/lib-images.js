@@ -401,20 +401,22 @@ class LibImages {
 				// const lotCol = this.getLotCol(item, nowp, lib.pop.highlight.text && i == lib.pop.m.i);
 				const coversRightBottom = ['coversLabelsRight', 'coversLabelsBottom'].includes(grSet.libraryDesign) || libSet.albumArtLabelType === 2;
 				const updatedNowpBg = pl.col.header_nowplaying_bg !== ''; // * Wait until nowplaying bg has a new color to prevent flashing
+				const colNowPlaying = grSet.libraryBgImg ? RGBtoRGBA(lib.ui.col.nowPlayingBg, grSet.libraryBgRowOpacity) : lib.ui.col.nowPlayingBg;
+				const colRowStripes = grSet.libraryBgImg ? RGBtoRGBA(lib.ui.col.rowStripes, grSet.libraryBgRowOpacity) : lib.ui.col.rowStripes;
 
 				this.drawSelBg(gr, cur_img, box_x, box_y, i, nowp);
 
 				// * Now playing bg for labels overlay mode ( album art )
 				if (this.labels.overlay && !item.root && lib.pop.inRange(lib.pop.nowp, item.item) && updatedNowpBg) {
-					gr.FillSolidRect(box_x, box_y, this.box.w, this.box.h, lib.ui.col.nowPlayingBg);
+					gr.FillSolidRect(box_x, box_y, this.box.w, this.box.h, colNowPlaying);
 				}
 				// * Now playing bg selection with now playing deactivated ( album art )
 				if (item.sel && libSet.albumArtShow && !coversRightBottom && updatedNowpBg) {
-					gr.FillSolidRect(box_x, box_y, this.box.w, this.box.h, lib.ui.col.nowPlayingBg);
+					gr.FillSolidRect(box_x, box_y, this.box.w, this.box.h, colNowPlaying);
 				}
 				// * Now playing bg selection with now playing deactivated
 				if (!lib.pop.highlight.nowPlaying && item.sel && coversRightBottom && updatedNowpBg) {
-					gr.FillSolidRect(lib.ui.x, box_y, lib.sbar.w ? lib.ui.w - SCALE(42) : lib.ui.w, this.box.h, lib.ui.col.nowPlayingBg);
+					gr.FillSolidRect(lib.ui.x, box_y, lib.sbar.w ? lib.ui.w - SCALE(42) : lib.ui.w, this.box.h, colNowPlaying);
 					gr.FillSolidRect(lib.ui.x, box_y, lib.ui.sz.sideMarker, this.box.h, lib.ui.col.sideMarker);
 				}
 				// * Marker selection with now playing active
@@ -429,7 +431,7 @@ class LibImages {
 
 				this.im.y = this.labels.overlay ? this.im.offset + box_y + libSet.thumbNailGapCompact / 2 : this.im.offset + box_y;
 				if (lib.pop.rowStripes && this.labels.right) {
-					if (i % 2 == 0) gr.FillSolidRect(0, box_y + 1, lib.panel.tree.stripe.w, this.row.h, lib.ui.col.rowStripes /*ui.col.bg1*/);
+					if (i % 2 == 0) gr.FillSolidRect(0, box_y + 1, lib.panel.tree.stripe.w, this.row.h, colRowStripes /*ui.col.bg1*/);
 					else gr.FillSolidRect(0, box_y, lib.panel.tree.stripe.w, this.row.h, lib.ui.col.bg2);
 				}
 				let x1 = 0;
@@ -687,7 +689,8 @@ class LibImages {
 		y = this.labels.overlay ? box_y + (cur_img ? libSet.thumbNailGapCompact / 2 + this.im.w - cur_img.Height + 1 : libSet.thumbNailGapCompact / 2 + 2) : box_y + (!this.labels.right ? 1 : 1);
 		const coversRight = grSet.libraryDesign === 'coversLabelsRight' || libSet.albumArtLabelType === 2;
 
-		gr.FillSolidRect(x, coversRight ? y - 1 : y, w - (lib.sbar.w && coversRight ? SCALE(42) : 0), coversRight ? h + 2 : h, lib.ui.col.nowPlayingBg);
+		const colNowPlaying = grSet.libraryBgImg ? RGBtoRGBA(lib.ui.col.nowPlayingBg, grSet.libraryBgRowOpacity) : lib.ui.col.nowPlayingBg;
+		gr.FillSolidRect(x, coversRight ? y - 1 : y, w - (lib.sbar.w && coversRight ? SCALE(42) : 0), coversRight ? h + 2 : h, colNowPlaying);
 
 		if ((grSet.theme !== 'white' && grSet.theme !== 'black') && (!libSet.albumArtShow || libSet.albumArtShow && coversRight) ||
 			(grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2) && libSet.albumArtShow && coversRight) {

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-10-2024                                              * //
+// * Last change:    27-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -143,6 +143,7 @@ function on_size() {
 		grm.ui.setBiographySize();
 	}
 
+	grm.bgImg.initBgImage(false, true);
 	grm.ui.displayLyrics && grm.lyrics.initLyrics();
 	grm.style.setStyleBlend();
 	grm.button.initButtonState();
@@ -833,7 +834,7 @@ function on_mouse_wheel(step) {
 		return;
 	}
 
-	if (mouseInAlbumArt() && grSet.cycleArtMWheel && grm.ui.albumArtList.length > 1 && !grm.ui.displayLyrics) {
+	if (mouseInAlbumArt() && grSet.albumArtCycleMouseWheel && grm.ui.albumArtList.length > 1 && !grm.ui.displayLyrics) {
 		grm.ui.cycleAlbumArtImage(step);
 		return;
 	}
@@ -905,6 +906,7 @@ function on_mouse_wheel(step) {
 		KeyPressAction({
 			ctrlNoShift: () => grm.display.setPlaylistFontSize(step),
 			altNoShift: () => grm.display.setPlaylistFontSize(0),
+			shift: () => grm.bgImg.cycleBgImage('playlist', step),
 			default: () => pl.call.on_mouse_wheel(step)
 		});
 	} else if (grm.ui.displayLibrary && mouseInLibrary(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
@@ -912,6 +914,7 @@ function on_mouse_wheel(step) {
 		KeyPressAction({
 			ctrlNoShift: () => grm.display.setLibraryFontSize(step),
 			altNoShift: () => grm.display.setLibraryFontSize(0),
+			shift: () => grm.bgImg.cycleBgImage('library', step),
 			default: () => lib.call.on_mouse_wheel(step)
 		});
 	} else if (grm.ui.displayBiography && mouseInBiography(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {

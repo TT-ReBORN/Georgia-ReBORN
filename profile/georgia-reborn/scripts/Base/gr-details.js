@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-10-2024                                              * //
+// * Last change:    27-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1680,7 +1680,7 @@ class Details {
 		const tracknumRotation = tracknum * grSet.rotationAmt;
 		const combinedImg = this.combineDiscArtWithCover(true);
 
-		this.discArtRotation = RotateImg(combinedImg, this.discArtSize.w, this.discArtSize.h, tracknumRotation, grm.artCache.discArtImgMaxRes);
+		this.discArtRotation = RotateImage(combinedImg, this.discArtSize.w, this.discArtSize.h, tracknumRotation, grm.artCache.discArtImgMaxRes);
 
 		// TODO: Once spinning art is done, scrap this and the rotation amount crap and just use indexes into the discArtArray when needed.
 		// ? IDEA: Smooth rotation to new position?
@@ -1901,7 +1901,7 @@ class Details {
 			if (!this.discArtArray[this.discArtRotationIndex]) {
 				const rotationDegrees = rotationDegreeIncrement * this.discArtRotationIndex;
 				const combinedImg = this.combineDiscArtWithCover(false);
-				this.discArtArray[this.discArtRotationIndex] = RotateImg(combinedImg, this.discArtSize.w, this.discArtSize.h, rotationDegrees, grm.artCache.discArtImgMaxRes);
+				this.discArtArray[this.discArtRotationIndex] = RotateImage(combinedImg, this.discArtSize.w, this.discArtSize.h, rotationDegrees, grm.artCache.discArtImgMaxRes);
 
 				DebugLog(`Disc art => creating discArtImg: ${this.discArtRotationIndex} (${this.discArtSize.w}x${this.discArtSize.h}) with rotation: ${rotationDegrees} degrees`);
 			}

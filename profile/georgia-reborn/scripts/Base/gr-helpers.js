@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-10-2024                                              * //
+// * Last change:    27-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -656,6 +656,30 @@ function DeleteFolder(folder, force = true) {
 		return !(IsFolder(folder));
 	}
 	return false;
+}
+
+
+/**
+ * Filters an array of file names, returning only those that match the specified file pattern.
+ * @global
+ * @param {string[]} files - The array of file names to filter.
+ * @param {RegExp|string[]} allowedFormats - The regex pattern or an array of file formats to include in the filter.
+ * @param {RegExp|null} excludePattern - The regex pattern to exclude files.
+ * @returns {string[]} The filtered array containing only the specified file formats or matching the regex pattern.
+ * @example
+ * // Filter out only *.jpg and *.png files:
+ * FilterFiles(['image.jpg', 'document.pdf', 'photo.png', 'note.txt'], ['jpg', 'png']);
+ * // Returns: ['image.jpg', 'photo.png']
+ *
+ * // Filter out files matching a custom pattern:
+ * FilterFiles(['cd1.jpg', 'discA.png', 'vinyl2.jpg', 'cover.jpg', 'note.txt'], ['jpg', 'png'], /(cd|disc|vinyl)([0-9]*|[a-h]).(png|jpg)/i);
+ * // Returns: ['cover.jpg']
+ */
+function FilterFiles(files = [], allowedFormats = [], excludePattern = null) {
+	const filePattern =
+		Array.isArray(allowedFormats) ? new RegExp(`\\.(${allowedFormats.join('|')})$`, 'i') : allowedFormats;
+
+	return files.filter(file => filePattern.test(file) && (!excludePattern || !excludePattern.test(file)));
 }
 
 
@@ -1777,6 +1801,42 @@ function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1,
 
 
 /**
+ * Masks the given image with the specified rectangular area.
+ * @global
+ * @param {GdiGraphics} img - The image to be masked.
+ * @param {number} x - The x-coordinate of the rectangular mask area.
+ * @param {number} y - The y-coordinate of the rectangular mask area.
+ * @param {number} w - The width of the rectangular mask area.
+ * @param {number} h - The height of the rectangular mask area.
+ * @param {boolean} [inverted] - If true, the mask will be inverted.
+ * @returns {GdiGraphics} The masked image.
+ */
+function MaskImage(img, x, y, w, h, inverted = false) {
+	const imgW = img.Width;
+	const imgH = img.Height;
+	const maskedImg = gdi.CreateImage(imgW, imgH);
+	const g = maskedImg.GetGraphics();
+	const mask = gdi.CreateImage(imgW, imgH);
+	const mg = mask.GetGraphics();
+
+	g.DrawImage(img, 0, 0, imgW, imgH, 0, 0, imgW, imgH);
+
+	const maskColor = inverted ? RGB(0, 0, 0) : RGB(255, 255, 255);
+	const unmaskColor = inverted ? RGB(255, 255, 255) : RGB(0, 0, 0);
+
+	mg.FillSolidRect(0, 0, imgW, imgH, maskColor);  // Apply the mask to the entire image
+	mg.FillSolidRect(0, 0, imgW, y, unmaskColor); // Unmask the top area
+	mg.FillSolidRect(0, y + h, imgW, imgH - (y + h), unmaskColor); // Unmask the bottom area
+
+	maskedImg.ApplyMask(mask);
+	mask.ReleaseGraphics(mg);
+	maskedImg.ReleaseGraphics(g);
+
+	return maskedImg;
+}
+
+
+/**
  * Creates a rotated image, mostly used for disc art.
  * @global
  * @param {GdiBitmap} img - The source image.
@@ -1786,7 +1846,7 @@ function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1,
  * @param {number} [imgMaxRes] - The maximum resolution for the image.
  * @returns {GdiBitmap|null} The rotated image or null if an error occurs.
  */
-function RotateImg(img, w, h, degrees, imgMaxRes = w) {
+function RotateImage(img, w, h, degrees, imgMaxRes = w) {
 	if (!img || !w || !h) return null;
 
 	w = Math.floor(Math.min(w, imgMaxRes));
@@ -1802,6 +1862,55 @@ function RotateImg(img, w, h, degrees, imgMaxRes = w) {
 	rotatedImg.ReleaseGraphics(gotGraphics);
 
 	return rotatedImg;
+}
+
+
+/**
+ * Scales an image with various scaling modes.
+ * This function includes modes for `default`, `filled`, or `stretched` scaling.
+ * @global
+ * @param {GdiGraphics} img - The image to draw.
+ * @param {string} mode - The mode of drawing the image ('default', 'filled', 'stretched').
+ * @param {number} x - The x-coordinate of the top-left corner.
+ * @param {number} y - The y-coordinate of the top-left corner.
+ * @param {number} w - The width of the area to draw the image in.
+ * @param {number} h - The height of the area to draw the image in.
+ * @param {number} srcX - The x-coordinate of the top-left corner of the source area.
+ * @param {number} srcY - The y-coordinate of the top-left corner of the source area.
+ * @param {number} srcW - The width of the source area.
+ * @param {number} srcH - The height of the source area.
+ * @returns {GdiGraphics} The scaled drawn image.
+ */
+function ScaleImage(img, mode, x, y, w, h, srcX, srcY, srcW, srcH) {
+	if (!img || !img.Width || !img.Height) {
+		console.log('Invalid image passed to ScaleImage', img);
+		return null;
+	}
+
+	const imgRatio = img.Width / img.Height;
+	const areaRatio = w / h;
+
+	const modes = {
+		default: imgRatio > areaRatio ?
+		{ width: w, height: w / imgRatio, offsetX: 0, offsetY: (h - w / imgRatio) / 2 } :
+		{ width: h * imgRatio, height: h, offsetX: (w - h * imgRatio) / 2, offsetY: 0 },
+
+		filled: imgRatio > areaRatio ?
+		{ width: h * imgRatio, height: h, offsetX: (w - h * imgRatio) / 2, offsetY: 0 } :
+		{ width: w, height: w / imgRatio, offsetX: 0, offsetY: (h - w / imgRatio) / 2 },
+
+		stretched:
+		{ width: w, height: h, offsetX: 0, offsetY: 0 }
+	};
+
+	const { width, height, offsetX, offsetY } = modes[mode];
+	const scaledImg = gdi.CreateImage(w, h);
+	const g = scaledImg.GetGraphics();
+
+	g.DrawImage(img, offsetX, offsetY, width, height, srcX, srcY, srcW, srcH);
+	scaledImg.ReleaseGraphics(g);
+
+	return scaledImg;
 }
 
 

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-10-2024                                              * //
+// * Last change:    27-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3037,6 +3037,36 @@ class MainUI {
 	}
 
 	/**
+	 * Gets a list of image paths based on the specified type.
+	 * @param {string} type - The type ('artistArt', 'albumArt', 'customArt') of images to retrieve.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
+	 * @returns {string[]} - An array of image paths.
+	 */
+	getImagePathList(type, metadb) {
+		const fileFormats = ['jpg', 'png'];
+
+		if (type === 'artistArt') {
+			const artistArtPathsRaw = bio.panel.cleanPth(bioCfg.pth.foImgArt, bio.panel.id.focus);
+			const artistArtPaths = utils.Glob(`${artistArtPathsRaw}*`);
+			return FilterFiles(artistArtPaths, fileFormats);
+		}
+
+		if (type === 'albumArt') {
+			const albumArtExclude = grSet.filterDiscArtFromArtwork && (/(cd|disc|vinyl)([0-9]*|[a-h])\.(png|jpg)/i);
+			const albumArtPathsRaw = grCfg.imgPaths.flatMap(path => utils.Glob($(path, metadb), FileAttributes.Directory | FileAttributes.Hidden));
+			const albumArtPaths = [...new Set(albumArtPathsRaw)];
+			return FilterFiles(albumArtPaths, fileFormats, albumArtExclude);
+		}
+
+		if (type === 'customArt') {
+			const customArtPaths = utils.Glob(`${grPath.images}background\\*`, FileAttributes.Directory | FileAttributes.Hidden);
+			return FilterFiles(customArtPaths, fileFormats);
+		}
+
+		return [];
+	}
+
+	/**
 	 * Refreshes the theme by clearing various UI elements and caches,
 	 * repainting the window, and updating the playback information.
 	 */
@@ -3611,7 +3641,7 @@ class MainUI {
 	}
 
 	/**
-	 * Handles the fetching or displaying of album art/disc art based on various conditions.
+	 * Handles the fetching or displaying of album art/disc art or background images.
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	handleArtwork(metadb) {
@@ -3619,22 +3649,30 @@ class MainUI {
 			this.clearTimer('albumArt');
 		}
 
-		if ((grSet.cycleArt && this.albumArtIndex !== 0)
-			|| this.isStreaming
-			|| this.albumArtEmbedded
-			|| this.currentAlbumFolder !== this.lastAlbumFolder
+		const fetchNewArtwork =
+			grSet.albumArtCycle && this.albumArtIndex !== 0
 			|| this.albumArt == null
+			|| this.albumArtEmbedded
+			|| this.isStreaming
+			|| this.currentAlbumFolder !== this.lastAlbumFolder
 			|| $('%album%') !== this.lastAlbumFolderTag
 			|| $('$if2(%discnumber%,0)') !== this.lastAlbumDiscNumber
-			|| $(`$if2(${grTF.vinyl_side},ZZ)`) !== this.lastAlbumVinylSide) {
+			|| $(`$if2(${grTF.vinyl_side},ZZ)`) !== this.lastAlbumVinylSide;
+
+		if (fetchNewArtwork) {
 			this.clearPlaylistNowPlayingBg();
 			this.fetchNewArtwork(metadb);
+			grm.bgImg.initBgImage(false, true);
+			return;
 		}
-		else if (grSet.cycleArt && this.albumArtList.length > 1) {
-			// Need to do this here since we're no longer always fetching when this.albumArtList.length > 1
+
+		const cycleNewArtwork =
+			grSet.albumArtCycle && this.albumArtList.length > 1;
+
+		if (cycleNewArtwork) {
 			this.albumArtTimeout = setTimeout(() => {
 				this.displayAlbumArtImage('next', true);
-			}, grCfg.settings.artworkDisplayTime * 1000);
+			}, grSet.albumArtCycleTime * 1000);
 		}
 	}
 
@@ -3836,7 +3874,7 @@ class MainUI {
 
 		this.albumArtTimeout = setTimeout(() => {
 			this.displayAlbumArtImage('next', true);
-		}, grCfg.settings.artworkDisplayTime * 1000);
+		}, grSet.albumArtCycleTime * 1000);
 
 		grm.button.initButtonState();
 	}
@@ -3849,10 +3887,10 @@ class MainUI {
 		this.noAlbumArtStub = false;
 		this.albumArtEmbedded = false;
 
-		if (this.albumArtList.length > 1 && grSet.cycleArt) {
+		if (this.albumArtList.length > 1 && grSet.albumArtCycle) {
 			this.albumArtTimeout = setTimeout(() => {
 				this.displayAlbumArtImage('next', true);
-			}, grCfg.settings.artworkDisplayTime * 1000);
+			}, grSet.albumArtCycleTime * 1000);
 		}
 
 		this.albumArtIndex = 0;
@@ -3955,15 +3993,7 @@ class MainUI {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	fetchAlbumArtLocalFiles(metadb) {
-		const filterPattern = grSet.filterDiscArtFromArtwork ? '(cd|disc|vinyl)([0-9]*|[a-h]).(png|jpg)' : '';
-		const pattern = filterPattern ? new RegExp(filterPattern, 'i') : null;
-		const imageType = /\.(jpg|png)$/i;
-
-		const uniquePaths = new Set(grCfg.imgPaths.flatMap(path =>
-			utils.Glob($(path, metadb), FileAttributes.Directory | FileAttributes.Hidden)));
-
-		this.albumArtList = Array.from(uniquePaths).filter(path =>
-			(!pattern || !pattern.test(path)) && imageType.test(path));
+		this.albumArtList = this.getImagePathList('albumArt', metadb);
 
 		if (this.albumArtList.length && !grSet.loadEmbeddedAlbumArtFirst) {
 			this.displayAlbumArtFromList();
@@ -4201,6 +4231,7 @@ class MainUI {
 		this.resizeArtwork(true);
 		this.initPanelWidthAuto();
 		this.setPlaylistSize();
+		grm.bgImg.initBgImage(false, true);
 		grm.jSearch.on_size();
 		grm.button.initButtonState();
 		window.Repaint();
@@ -4394,6 +4425,7 @@ class MainUI {
 		this.resizeArtwork(true);
 		this.initPanelWidthAuto();
 		this.initLibraryLayout();
+		grm.bgImg.initBgImage(false, true);
 		grm.button.initButtonState();
 		window.Repaint();
 	}

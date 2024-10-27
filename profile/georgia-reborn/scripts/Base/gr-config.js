@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    19-08-2024                                              * //
+// * Last change:    27-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -608,8 +608,6 @@ class ConfigurationManager {
 		this.settings       = this.config.addConfigurationObject(grDef.settingsSchema, Object.assign({}, grDef.settingsDefaults, cfgSet.settings), grDef.settingsComments);
 
 		// Safety checks. Fix up potentially bad vals from config
-		this.settings.artworkDisplayTime = Math.min(Math.max(this.settings.artworkDisplayTime, 5), 120); // Ensure min of 5sec and max of 120sec
-
 		this.titleFormat = cfgSet.title_format_strings;
 		this.imgPaths = cfgSet.imgPaths;
 		this.discArtPaths = cfgSet.discArtPaths;

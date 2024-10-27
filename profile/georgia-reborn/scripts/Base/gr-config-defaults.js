@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-10-2024                                              * //
+// * Last change:    27-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -671,8 +671,9 @@ class ConfigDefaults {
 			albumArtBg: 'left',
 			albumArtScale: 'cropped',
 			albumArtAspectRatioLimit: 1.5,
-			cycleArt: false,
-			cycleArtMWheel: true,
+			albumArtCycle: false,
+			albumArtCycleMouseWheel: true,
+			albumArtCycleTime: 15,
 			loadEmbeddedAlbumArtFirst: false,
 			showHiResAudioBadge: false,
 			hiResAudioBadgeRound: false,
@@ -834,8 +835,9 @@ class ConfigDefaults {
 			albumArtBg: 'Values: "left", "full", "none" - Options > Player controls > Album art > When player size is not proportional',
 			albumArtScale: 'Values: "cropped", "stretched", "proportional" - Options > Player controls > Album art > When player size is maximized/fullscreen',
 			albumArtAspectRatioLimit: 'Values: 1, 1.25, 1.5, 1.75, 2 - Options > Player controls > Album art > When player size is maximized/fullscreen > Keep wide and tall artworks proportional',
-			cycleArt: 'Values: min: 5, max: 120 in seconds - Options > Player controls > Album art > Cycle album artwork',
-			cycleArtMWheel: 'Values: true, false - Options > Player controls > Album art > Cycle album artwork with mouse wheel',
+			albumArtCycle: 'Values: true, false - Options > Player controls > Album art > Cycle album artwork > Enabled',
+			albumArtCycleMouseWheel: 'Values: true, false - Options > Player controls > Album art > Cycle album artwork > Cycle with mouse wheel',
+			albumArtCycleTime: 'Values: 5, 10, 15, 30, 60 - Options > Player controls > Album art > Cycle album artwork > Cycle time',
 			loadEmbeddedAlbumArtFirst: 'Values: true, false - Options > Player controls > Album art > Load embedded album art first',
 			showHiResAudioBadge: 'Values: true, false - Options > Player controls > Album art > Show hi-res audio badge on album cover > Enabled',
 			hiResAudioBadgeRound: 'Values: true, false - Options > Player controls > Album art > Show hi-res audio badge on album cover > Round',
@@ -991,6 +993,14 @@ class ConfigDefaults {
 		/** @public @type {object} Options > Playlist settings with default values. */
 		this.themePlaylistDefaults = {
 			playlistLayout: 'normal',
+			playlistBgImg: false,
+			playlistBgImgCycle: true,
+			playlistBgImgCycleTime: 15,
+			playlistBgImgSource: 'artist',
+			playlistBgImgScale: 'filled',
+			playlistBgImgOpacity: 76,
+			playlistBgRowOpacity: 128,
+			playlistBgRowNowPlaying: false,
 			showPlaylistManager_default: true,
 			showPlaylistManager_artwork: false,
 			showPlaylistManager_compact: false,
@@ -1043,6 +1053,14 @@ class ConfigDefaults {
 		/** @public @type {object} Options > Playlist settings config name description. */
 		this.themePlaylistComments = {
 			playlistLayout: 'Values: "normal", "full" - Options > Playlist > Layout',
+			playlistBgImg: 'Values: true, false - Options > Playlist > Background > Show image on background',
+			playlistBgImgCycle: 'Values: true, false - Options > Playlist > Background > Cycle images',
+			playlistBgImgCycleTime: 'Values: 5, 10, 15, 30, 60 - Options > Playlist > Background > Cycle time',
+			playlistBgImgSource: 'Values: "artist", "album", "custom" - Options > Playlist > Background > Image source',
+			playlistBgImgScale: 'Values: "default", "filled", "stretched" - Options > Playlist > Background > Image scaling',
+			playlistBgImgOpacity: 'Values: 255, 230, 204, 178, 153, 128, 102, 76, 51, 25 - from 100% - 10% - Options > Playlist > Background > Image opacity',
+			playlistBgRowOpacity: 'Values: 255, 230, 204, 178, 153, 128, 102, 76, 51, 25 - from 100% - 10% - Options > Playlist > Background > Row opacity',
+			playlistBgRowNowPlaying: 'Values: true, false - Options > Playlist > Background > Show now playing rows only',
 			showPlaylistManager_default: 'Values: true, false - Options > Playlist > Playlist manager > Show playlist manager > Default',
 			showPlaylistManager_artwork: 'Values: true, false - Options > Playlist > Playlist manager > Show playlist manager > Artwork',
 			showPlaylistManager_compact: 'Values: true, false - Options > Playlist > Playlist manager > Show playlist manager > Compact',
@@ -1352,6 +1370,13 @@ class ConfigDefaults {
 			imgStyleArtist: 1,
 			albumArtLabelType: 1,
 			albumArtFlipLabels: false,
+			libraryBgImg: false,
+			libraryBgImgCycle: true,
+			libraryBgImgCycleTime: 15,
+			libraryBgImgSource: 'artist',
+			libraryBgImgScale: 'filled',
+			libraryBgImgOpacity: 76,
+			libraryBgRowOpacity: 128,
 			actionMode: 0,
 			clickAction: 0,
 			dblClickAction: 1,
@@ -1410,6 +1435,13 @@ class ConfigDefaults {
 			imgStyleArtist: 'Values: 0, 1, 2 - Options > Library > Album art > Image > Artist',
 			albumArtLabelType: 'Values: 1, 2, 3, 4, 0 - Options > Library > Album art > Labels',
 			albumArtFlipLabels: 'Values: true, false - Options > Library > Album art > Labels',
+			libraryBgImg: 'Values: true, false - Options > Library > Background > Show image on background',
+			libraryBgImgCycle: 'Values: true, false - Options > Library > Background > Cycle images',
+			libraryBgImgCycleTime: 'Values: 5, 10, 15, 30, 60 - Options > Library > Background > Cycle time',
+			libraryBgImgSource: 'Values: "artist", "album", "custom" - Options > Library > Background > Image source',
+			libraryBgImgScale: 'Values: "default", "filled", "stretched" - Options > Library > Background > Image scaling',
+			libraryBgImgOpacity: 'Values: 255, 230, 204, 178, 153, 128, 102, 76, 51, 25 - from 100% - 10% - Options > Library > Background > Image opacity',
+			libraryBgRowOpacity: 'Values: 255, 230, 204, 178, 153, 128, 102, 76, 51, 25 - from 100% - 10% - Options > Library > Background > Row opacity',
 			actionMode: 'Values: 0, 1, 2 - Options > Library > Controls > Action mode',
 			clickAction: 'Values: 0, 1, 2, 3 - Options > Library > Controls > Single-click action',
 			dblClickAction: 'Values: 0, 1, 2, 3 - Options > Library > Controls > Double-click action',
@@ -1661,7 +1693,6 @@ class ConfigDefaults {
 
 		/** @public @type {object} General settings with default values. */
 		this.settingsDefaults = {
-			artworkDisplayTime: 30,
 			playlistCustomHeaderInfo: '',
 			playlistCustomTitle: '',
 			playlistCustomTitleNoHeader: '',
@@ -1702,7 +1733,6 @@ class ConfigDefaults {
 
 		/** @public @type {object} General settings config name description. */
 		this.settingsComments = {
-			artworkDisplayTime: 'Number of seconds to show each image if more than one is found and "Cycle through all artwork" option is enabled. (Min: 5, Max: 120)',
 			playlistCustomHeaderInfo: 'You can use your own custom pattern for the playlist header info',
 			playlistCustomTitle: 'You can use your own custom title pattern for the playlist row',
 			playlistCustomTitleNoHeader: 'You can use your own custom title pattern for the playlist row - when playlist header is not being displayed',

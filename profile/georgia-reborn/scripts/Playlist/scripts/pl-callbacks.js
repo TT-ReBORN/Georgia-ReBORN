@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-10-2024                                              * //
+// * Last change:    27-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -59,8 +59,12 @@ class PlaylistCallbacks {
 			pl.playlist.reinitialize();
 		}
 
-		if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended && (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork)) {
+		if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended && (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork)) { // * Display the full image
 			gr.DrawImage(grCol.imgBlended, grm.ui.displayLibrarySplit() ? grSet.panelWidthAuto ? this.x : grm.ui.ww * 0.5 : 0, 0, grm.ui.ww, grm.ui.wh, grm.ui.displayLibrarySplit() ? grSet.panelWidthAuto ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w : grm.ui.ww * 0.5 : 0, 0, grCol.imgBlended.Width, grCol.imgBlended.Height);
+		}
+
+		if (grSet.playlistBgImg && grm.bgImg.playlistBgImg) { // * Display the full image
+			grm.bgImg.drawBgImage(gr, grm.bgImg.playlistBgImg, grSet.playlistBgImgScale, this.x, this.y, this.w, this.h, grSet.playlistBgImgOpacity, false, 0, 0);
 		}
 
 		pl.playlist.on_paint(gr);
@@ -74,13 +78,17 @@ class PlaylistCallbacks {
 
 		if (UIHacks.Aero.Effect === 2) gr.DrawLine(this.x, 0, grm.ui.ww, 0, 1, grCol.bg); // UIHacks aero glass shadow frame fix - needed for style Blend
 
-		if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended) {
+		if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended) { // * Display only top and bottom
 			gr.DrawImage(grCol.imgBlended, this.x, this.y - this.h - grm.ui.topMenuHeight - grm.ui.lowerBarHeight + pl.plman.h, grm.ui.ww, grm.ui.wh, this.x, this.y - this.h - grm.ui.topMenuHeight - grm.ui.lowerBarHeight + pl.plman.h, grCol.imgBlended.Width, grCol.imgBlended.Height);
 			gr.DrawImage(grCol.imgBlended, this.x, this.y + this.h - pl.geo.row_h, grm.ui.ww, grm.ui.wh, this.x, this.y + this.h - pl.geo.row_h, grCol.imgBlended.Width, grCol.imgBlended.Height);
 		}
 
 		if (plSet.show_plman) {
 			pl.plman.on_paint(gr);
+		}
+
+		if (grSet.playlistBgImg && grm.bgImg.playlistBgImg) { // * Display only top and bottom
+			grm.bgImg.drawBgImage(gr, grm.bgImg.playlistBgImg, grSet.playlistBgImgScale, this.x, this.y, this.w, this.h, grSet.playlistBgImgOpacity, true, this.plman_h, this.plman_h * 2 - SCALE(4));
 		}
 	}
 

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-10-2024                                              * //
+// * Last change:    27-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -57,6 +57,7 @@ grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
  * @property {CustomThemeMenu} cthMenu - The instance of `CustomThemeMenu` class for custom theme menu operations.
  * @property {MetadataGridMenu} gridMenu - The instance of `MetadataGridMenu` class for metadata grid menu operations.
  * @property {ArtCache} artCache - The instance of `ArtCache` class for artwork caching operations.
+ * @property {BackgroundImage} bgImg - The instance of `BackgroundImage` class for background image operations.
  * @property {CPUTracker} cpuTrack - The instance of `CPUTracker` class for cpu tracking operations.
  * @property {Scaling} scaling - The instance of `Scaling` class for scaling size operations.
  * @property {MessageManager} msg - The instance of `MessageManager` class for message operations.

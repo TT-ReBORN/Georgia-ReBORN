@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-10-2024                                              * //
+// * Last change:    27-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1139,14 +1139,21 @@ class TopMenuOptions {
 				playerControlsAlbumArtScaleMenu.appendTo(playerControlsAlbumArtMenu);
 			}
 			playerControlsAlbumArtMenu.addSeparator();
-			playerControlsAlbumArtMenu.addToggleItem(`Cycle album artwork (${grCfg.settings.artworkDisplayTime}s delay)`, grSet, 'cycleArt', () => {
-				if (!grSet.cycleArt) {
+			const cycleAlbumArtMenu = new Menu('Cycle album artwork');
+			cycleAlbumArtMenu.addToggleItem('Enabled', grSet, 'albumArtCycle', () => {
+				if (!grSet.albumArtCycle) {
 					grm.ui.clearTimer('albumArt');
 				} else {
 					grm.ui.displayAlbumArtImage('next', true);
 				}
 			});
-			playerControlsAlbumArtMenu.addToggleItem('Cycle album artwork with mouse wheel', grSet, 'cycleArtMWheel');
+			cycleAlbumArtMenu.addToggleItem('Cycle with mouse wheel', grSet, 'albumArtCycleMouseWheel');
+			cycleAlbumArtMenu.addSeparator();
+			cycleAlbumArtMenu.createRadioSubMenu('Cycle time', ['  5 sec', '10 sec', '15 sec (default)', '30 sec', '60 sec'], grSet.albumArtCycleTime, [5, 10, 15, 30, 60], (time) => {
+				grSet.albumArtCycleTime = time;
+				RepaintWindow();
+			});
+			cycleAlbumArtMenu.appendTo(playerControlsAlbumArtMenu);
 			playerControlsAlbumArtMenu.addSeparator();
 			playerControlsAlbumArtMenu.addToggleItem('Load embedded album art first', grSet, 'loadEmbeddedAlbumArtFirst', () => {
 				const msg = grm.msg.getMessage('menu', 'loadEmbeddedAlbumArtFirst');
@@ -1763,6 +1770,56 @@ class TopMenuOptions {
 			});
 		}
 
+		// * BACKGROUND * //
+		const playlistBackgroundMenu = new Menu('Background');
+		playlistBackgroundMenu.addToggleItem('Show image on background', grSet, 'playlistBgImg', () => {
+			if (grSet.playlistBgImg) {
+				grm.bgImg.initBgImage();
+				grm.ui.updatePlaylist();
+			} else {
+				grm.bgImg.clearBgImageCache();
+			}
+			RepaintWindow();
+		});
+		playlistBackgroundMenu.addToggleItem('Show now playing rows only', grSet, 'playlistBgRowNowPlaying', () => {
+			if (grSet.playlistBgRowNowPlaying) {
+				plSet.show_row_stripes = false;
+			}
+			grm.ui.updatePlaylist();
+			RepaintWindow();
+		});
+		playlistBackgroundMenu.addSeparator();
+		playlistBackgroundMenu.addToggleItem('Cycle images', grSet, 'playlistBgImgCycle', () => {
+			grm.bgImg.initBgImageCycle(grSet.playlistBgImgCycle ? false : 'playlist');
+			RepaintWindow();
+		});
+		playlistBackgroundMenu.createRadioSubMenu('Cycle time', ['  5 sec', '10 sec', '15 sec (default)', '30 sec', '60 sec'], grSet.playlistBgImgCycleTime, [5, 10, 15, 30, 60], (time) => {
+			grSet.playlistBgImgCycleTime = time;
+			grm.bgImg.initBgImageCycle(grSet.playlistBgImgCycle ? false : 'playlist');
+			RepaintWindow();
+		});
+		playlistBackgroundMenu.addSeparator();
+		playlistBackgroundMenu.createRadioSubMenu('Image source', ['Artist', 'Album', 'Custom'], grSet.playlistBgImgSource, ['artist', 'album', 'custom'], (source) => {
+			grSet.playlistBgImgSource = source;
+			grm.bgImg.initBgImage(false, true);
+			RepaintWindow();
+		});
+		playlistBackgroundMenu.createRadioSubMenu('Image scaling', ['Proportional', 'Filled', 'Stretched'], grSet.playlistBgImgScale, ['default', 'filled', 'stretched'], (scale) => {
+			grSet.playlistBgImgScale = scale;
+			grm.bgImg.initBgImage(false, true);
+			RepaintWindow();
+		});
+		playlistBackgroundMenu.createRadioSubMenu('Image opacity', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], grSet.playlistBgImgOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
+			grSet.playlistBgImgOpacity = value;
+			RepaintWindow();
+		});
+		playlistBackgroundMenu.addSeparator();
+		playlistBackgroundMenu.createRadioSubMenu('Row opacity', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], grSet.playlistBgRowOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
+			grSet.playlistBgRowOpacity = value;
+			grm.ui.updatePlaylist();
+		});
+		playlistBackgroundMenu.appendTo(playlistMenu);
+
 		// * PLAYLIST MANAGER * //
 		const playlistManagerMenu = new Menu('Playlist manager');
 		const playlistManagerShowMenu = new Menu('Show playlist manager');
@@ -1817,7 +1874,12 @@ class TopMenuOptions {
 
 		// * TRACK ROW * //
 		const rowsMenu = new Menu('Track row');
-		rowsMenu.addToggleItem('Show row stripes', plSet, 'show_row_stripes', playlistCallback);
+		rowsMenu.addToggleItem('Show row stripes', plSet, 'show_row_stripes', () => {
+			if (plSet.show_row_stripes) {
+				grSet.playlistBgRowNowPlaying = false;
+			}
+			playlistCallback();
+		});
 		rowsMenu.addSeparator();
 		rowsMenu.addToggleItem('Show play count', plSet, 'show_playcount', playlistCallback);
 		rowsMenu.addToggleItem('Show queue position', plSet, 'show_queue_position', playlistCallback);
@@ -2368,6 +2430,48 @@ class TopMenuOptions {
 		libraryLabelsMenu.addSeparator();
 		libraryLabelsMenu.addToggleItem('Flip', libSet, 'albumArtFlipLabels', () => {  lib.panel.updateProp(1); });
 		libraryLabelsMenu.appendTo(libraryAlbumArtMenu);
+
+		// * BACKGROUND * //
+		const libraryBackgroundMenu = new Menu('Background');
+		libraryBackgroundMenu.addToggleItem('Show image on background', grSet, 'libraryBgImg', () => {
+			if (grSet.libraryBgImg) {
+				grm.bgImg.initBgImage();
+			} else {
+				grm.bgImg.clearBgImageCache();
+			}
+			RepaintWindow();
+		});
+		libraryBackgroundMenu.addSeparator();
+		libraryBackgroundMenu.addToggleItem('Cycle images', grSet, 'libraryBgImgCycle', () => {
+			grm.bgImg.initBgImageCycle(grSet.libraryBgImgCycle ? false : 'library');
+			RepaintWindow();
+		});
+		libraryBackgroundMenu.createRadioSubMenu('Cycle time', ['  5 sec', '10 sec', '15 sec (default)', '30 sec', '60 sec'], grSet.libraryBgImgCycleTime, [5, 10, 15, 30, 60], (time) => {
+			grSet.libraryBgImgCycleTime = time;
+			grm.bgImg.initBgImageCycle(grSet.libraryBgImgCycle ? false : 'library');
+			RepaintWindow();
+		});
+		libraryBackgroundMenu.addSeparator();
+		libraryBackgroundMenu.createRadioSubMenu('Image source', ['Artist', 'Album', 'Custom'], grSet.libraryBgImgSource, ['artist', 'album', 'custom'], (source) => {
+			grSet.libraryBgImgSource = source;
+			grm.bgImg.initBgImage(false, true);
+			RepaintWindow();
+		});
+		libraryBackgroundMenu.createRadioSubMenu('Image scaling', ['Proportional', 'Filled', 'Stretched'], grSet.libraryBgImgScale, ['default', 'filled', 'stretched'], (scale) => {
+			grSet.libraryBgImgScale = scale;
+			grm.bgImg.initBgImage(false, true);
+			RepaintWindow();
+		});
+		libraryBackgroundMenu.createRadioSubMenu('Image opacity', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], grSet.libraryBgImgOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
+			grSet.libraryBgImgOpacity = value;
+			RepaintWindow();
+		});
+		libraryBackgroundMenu.addSeparator();
+		libraryBackgroundMenu.createRadioSubMenu('Row opacity', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], grSet.libraryBgRowOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
+			grSet.libraryBgRowOpacity = value;
+			RepaintWindow();
+		});
+		libraryBackgroundMenu.appendTo(libraryMenu);
 
 		// * CONTROLS * //
 		const libraryControlsMenu = new Menu('Controls');
