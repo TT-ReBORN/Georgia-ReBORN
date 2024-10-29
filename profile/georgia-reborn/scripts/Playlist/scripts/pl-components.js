@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-10-2024                                              * //
+// * Last change:    29-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2082,6 +2082,7 @@ class PlaylistRating {
 		}
 
 		this.rating = (current_rating === new_rating) ? 0 : new_rating;
+		pl.playlist.update_playlist_headers();
 	}
 
 	/**
@@ -2145,22 +2146,27 @@ class PlaylistRating {
 
 		// Group tracks by album
 		for (let i = 0; i < playlistItems.length; ++i) {
-			const albumName  = $('%album%', playlistItems[i]);
-			const rating = this.get_track_rating(playlistItems[i]);
+			const track = playlistItems[i];
+			const albumName = $('%album%', track);
+			const rating = this.get_track_rating(track);
 
-			const albumData = albums.get(albumName);
-			if (albumData === undefined) {
-				albums.set(albumName, { albumTotalRating: rating, albumTrackCount: 1 });
-			} else {
+			if (rating === null) continue; // Skip tracks with no rating
+
+			if (albums.has(albumName)) {
+				const albumData = albums.get(albumName);
 				albumData.albumTotalRating += rating;
 				albumData.albumTrackCount++;
-			}
+			  } else {
+				albums.set(albumName, { albumTotalRating: rating, albumTrackCount: 1 });
+			  }
 		}
 
 		// Calculate average rating for each album
-		for (const [albumName, albumData] of albums) {
-			const albumAverageRating = Number((albumData.albumTotalRating / albumData.albumTrackCount).toFixed(2));
-			pl.album_ratings.set(albumName, albumAverageRating);
+		for (const [albumName, { albumTotalRating, albumTrackCount }] of albums) {
+			if (albumTrackCount > 0) {
+				const albumAverageRating = Number((albumTotalRating / albumTrackCount).toFixed(2));
+				pl.album_ratings.set(albumName, albumAverageRating);
+			}
 		}
 
 		return pl.album_ratings;

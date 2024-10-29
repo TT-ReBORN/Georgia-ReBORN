@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-10-2024                                              * //
+// * Last change:    29-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1196,11 +1196,11 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			info_text += ` | Time: ${utils.FormatDuration(this.get_duration())}`;
 		}
 
-		if (plSet.show_rating_header && $('%rating%', this.metadb) !== '') {
+		if (plSet.show_rating_header) {
 			const albumName = $('%album%', this.metadb);
 			const albumRating = this.rating.get_album_rating().get(albumName);
 
-			if (albumRating !== undefined) {
+			if (albumRating > 0) {
 				info_text += ` | Rating: ${albumRating}`;
 			}
 		}

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-10-2024                                              * //
+// * Last change:    29-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1885,8 +1885,8 @@ class MainUI {
 		grm.details.updateGridLogos();
 		if (!fullInit) return;
 		grSet.themeBrightness !== 'default' && grm.color.adjustThemeBrightness(grSet.themeBrightness);
-		pl.playlist.header_color_change();
-		grSet.playlistRowHover && pl.playlist.title_color_change();
+		pl.playlist.update_playlist_headers();
+		grSet.playlistRowHover && pl.playlist.update_playlist_rows();
 		libImg.labels.overlayDark && lib.ui.getItemColours();
 		bio.txt.artCalc();
 		bio.txt.albCalc();
@@ -2760,6 +2760,7 @@ class MainUI {
 	 */
 	handleKeyAction(vkey) {
 		const setRating = (action) => {
+			pl.album_ratings.clear();
 			const metadb = fb.GetNowPlaying();
 			const metadbList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 
@@ -2773,6 +2774,8 @@ class MainUI {
 					console.log('Won\'t change rating with more than one selected item');
 				}
 			}
+
+			pl.playlist.update_playlist_headers();
 		};
 
 		const keyActions = {

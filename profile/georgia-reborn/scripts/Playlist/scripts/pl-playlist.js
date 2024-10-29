@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    29-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -878,27 +878,27 @@ class Playlist extends BaseList {
 	}
 
 	/**
-	 * Iterates through all playlist rows and updates the title color of each item.
-	 * Used when updating title color in Reborn/Random theme.
+	 * Iterates through all playlist headers and updates the background color and metadata of each item.
+	 * Used when updating playlist header background color in Reborn/Random theme, when switching themes or setting a new rating.
 	 */
-	title_color_change() {
-		for (let i = 0; i < this.cnt.rows.length; i++) {
-			const item = this.cnt.rows[i];
-			item.update_title_color();
-		}
-	}
-
-	/**
-	 * Iterates through all playlist headers and updates the background color of each item.
-	 * Used when updating playlist header background color in Reborn/Random theme or when switching themes.
-	 */
-	header_color_change() {
+	update_playlist_headers() {
 		pl.cache_header = false;
 		for (let i = 0; i < this.cnt.sub_items.length; i++) {
 			const item = this.cnt.sub_items[i];
 			item.clearCachedHeaderImg();
 		}
 		pl.cache_header = true;
+	}
+
+	/**
+	 * Iterates through all playlist rows and updates the title color of each item.
+	 * Used when updating title color in Reborn/Random theme.
+	 */
+	update_playlist_rows() {
+		for (let i = 0; i < this.cnt.rows.length; i++) {
+			const item = this.cnt.rows[i];
+			item.update_title_color();
+		}
 	}
 	// #endregion
 
