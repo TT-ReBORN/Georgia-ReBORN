@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-10-2024                                              * //
+// * Last change:    30-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2032,12 +2032,12 @@ class Details {
 		if (!labelStr) return recordLabel;
 
 		// * Clean up the label string
-		const cleanLabelString = (str) => str
-			.replace(/ Records$/, '')
-			.replace(/ Recordings$/, '')
-			.replace(/ Music$/, '')
-			.replace(/\.$/, '')
-			.replace(/[\u2010\u2013\u2014]/g, '-'); // Hyphen, endash, emdash
+		const cleanLabelString = (str) => {
+			const cleanedStr = str
+				.replace(/ (Records|Recordings|Music)$/, '')
+				.replace(/[\u2010\u2013\u2014]/g, '-'); // Hyphen, endash, emdash
+			return str.endsWith('.') ? `${cleanedStr}.` : cleanedStr;
+		};
 
 		// * Check for label folders by year
 		const checkLabelFolders = (label) => {
