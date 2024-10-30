@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-10-2024                                              * //
+// * Last change:    30-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1822,6 +1822,8 @@ class MainUI {
 
 		// * Init state
 		if (fb.IsPlaying && fb.GetNowPlaying()) {
+			// Wait for on_playback_new_track to be loaded in gr-callbacks.js
+			await MakeAsync(() => {}, () => typeof on_playback_new_track !== 'undefined');
 			on_playback_new_track(fb.GetNowPlaying());
 		}
 		plman.SetActivePlaylistContext();
@@ -2193,7 +2195,6 @@ class MainUI {
 		await this.initMain();
 		await grm.settings.setThemeSettings(false, false, true);
 		await grm.display.autoDetectRes();
-		await this.initMain();
 
 		grSet.systemFirstLaunch = false;
 	}

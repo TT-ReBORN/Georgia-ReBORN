@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-10-2024                                              * //
+// * Last change:    30-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -112,8 +112,8 @@ class FileLoader {
 			'base\\gr-main.js',
 			'base\\gr-main-components.js',
 			'base\\gr-lyrics.js',
-			'base\\gr-callbacks.js',
-			'base\\gr-initialize.js'
+			'base\\gr-initialize.js',
+			'base\\gr-callbacks.js'
 		];
 
 		/**
@@ -201,9 +201,9 @@ class Preloader {
 		// * GEOMETRY * //
 		// #region GEOMETRY
 		/** @public @type {number} The global window.Width. */
-		this.ww = 0;
+		this.ww = window.Width;
 		/** @public @type {number} The global window.Height. */
-		this.wh = 0;
+		this.wh = window.Height;
 		/** @public @type {number} The y-position of the lower bar text. */
 		this.lowerBarTextY = 0;
 		/** @public @type {number} The width of the lower bar text. */

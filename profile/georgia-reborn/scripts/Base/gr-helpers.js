@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-10-2024                                              * //
+// * Last change:    30-10-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -928,13 +928,29 @@ function KeyPressAction(action = {}) {
  * Wraps a synchronous function call that does not return a promise in a promise.
  * This utility function is useful for converting functions that perform synchronous operations
  * into a promise-based interface, allowing them to be used with async/await syntax.
+ * Additionally, it can poll for a condition before resolving.
  * @global
  * @param {function(): void} func - The synchronous function to wrap. This function should not return a promise.
- * @returns {Promise<void>} A promise that resolves immediately after the function call completes.
+ * @param {function(): boolean} [condition] - An optional condition function to check before resolving the promise.
+ * @returns {Promise<void>} A promise that resolves immediately after the function call completes or the condition is met.
  */
-function MakeAsync(func) {
+function MakeAsync(func, condition) {
 	return new Promise(resolve => {
 		func();
+
+		if (condition) {
+			const checkCondition = () => {
+				if (condition()) {
+					clearInterval(interval);
+					resolve();
+				}
+			};
+
+			const interval = setInterval(checkCondition, 50);
+			setTimeout(checkCondition, 0); // Fallback to setTimeout in case the condition is met very quickly
+			return;
+		}
+
 		resolve();
 	});
 }
