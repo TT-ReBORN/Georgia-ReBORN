@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-10-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -83,8 +83,10 @@ class Playlist extends BaseList {
 		this.batch_processor = new PlaylistBatchProcessor();
 		/** @public @type {?PlaylistImage} */
 		this.header_artwork = new PlaylistImage();
-		/** @public @type {?PlaylistMetaHandler} */
-		this.meta_handler = new PlaylistMetaHandler();
+		/** @public @type {?PlaylistMetaProvider} */
+		this.meta_provider = new PlaylistMetaProvider();
+		/** @public @type {?PlaylistMetaManager} */
+		this.meta_manager = new PlaylistMetaManager();
 		/** @public @type {?PlaylistKeyActionHandler} */
 		this.key_handler = new PlaylistKeyActionHandler();
 		/** @public @type {?PlaylistSelectionHandler} */
@@ -1541,6 +1543,8 @@ class Playlist extends BaseList {
 		const sortOrder = [
 			['Default', 'default'],
 			['Artist | date', 'artistDate'],
+			['Artist rating', 'artistRating'],
+			['Artist playcount', 'artistPlaycount'],
 			['Album', 'albumTitle'],
 			['Album rating', 'albumRating'],
 			['Album playcount', 'albumPlaycount'],
@@ -1569,7 +1573,7 @@ class Playlist extends BaseList {
 
 		for (const direction of sortOrderDirection) {
 			const savedOrder = grSet.playlistSortOrder.slice(0, -4);
-			const sortOrderWithDirection = ['artistDate', 'albumRating', 'albumPlaycount', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country'].includes(savedOrder);
+			const sortOrderWithDirection = ['artistDate', 'artistRating', 'artistPlaycount', 'albumRating', 'albumPlaycount', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country'].includes(savedOrder);
 			sort.appendItem(direction[0], () => {
 				grSet.playlistSortOrderDirection = direction[1];
 				grSet.playlistSortOrder = sortOrderWithDirection ? `${savedOrder}${grSet.playlistSortOrderDirection}` : savedOrder;
@@ -1583,7 +1587,7 @@ class Playlist extends BaseList {
 		sort.separator();
 
 		for (const item of sortOrder) {
-			const sortOrderWithDirection = ['artistDate', 'albumRating', 'albumPlaycount', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country'].includes(item[1]);
+			const sortOrderWithDirection = ['artistDate', 'artistRating', 'artistPlaycount', 'albumRating', 'albumPlaycount', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country'].includes(item[1]);
 			sort.appendItem(item[0], ((order) => {
 				const savedDirection = grSet.playlistSortOrderDirection;
 				grSet.playlistSortOrder = sortOrderWithDirection ? `${order}${savedDirection}` : order;
@@ -1701,13 +1705,31 @@ class Playlist extends BaseList {
 	 * @param {ContextMenu} parent_menu - The parent menu to append to.
 	 */
 	ctx_menu_playlist_stats(parent_menu) {
-		// * Set up metadata and playlist stats settings
-		const playlistName = plman.GetPlaylistName(plman.ActivePlaylist);
 		const playlistStatsMenu = new ContextMenu('Write playlist statistics to list');
+		const playlistName = ReplaceFileChars(plman.GetPlaylistName(plman.ActivePlaylist));
 		const sortBy = plSet.playlist_stats_sort_by;
 		const sortDirection = plSet.playlist_stats_sort_direction;
 
-		// * Set up playlist stats option menu items
+		// * Include menu
+		const statsIncludeMenu = [
+			['Include artist', 'playlist_stats_include_artist'],
+			['Include album', 'playlist_stats_include_album'],
+			['Include track', 'playlist_stats_include_track'],
+			['Include year', 'playlist_stats_include_year'],
+			['Include genre', 'playlist_stats_include_genre'],
+			['Include label', 'playlist_stats_include_label'],
+			['Include country', 'playlist_stats_include_country'],
+			['Include stats', 'playlist_stats_include_stats']
+		];
+		for (const [label, setting] of statsIncludeMenu) {
+			playlistStatsMenu.appendItem(label, () => {
+				plSet[setting] = !plSet[setting];
+			}, { is_checked: plSet[setting] });
+		}
+
+		playlistStatsMenu.separator();
+
+		// * Sort by menu
 		const sortByMenu = [
 			['Sort by artist', 'artist'],
 			['Sort by album', 'albumTitle'],
@@ -1718,52 +1740,6 @@ class Playlist extends BaseList {
 			['Sort by country', 'country'],
 			['Sort by stats', '']
 		];
-
-		const sortDirectionMenu = [
-			['Order by ascending',  '_asc'],
-			['Order by descending', '_dsc']
-		];
-
-		const statsTypeMenu = [
-			['Album rating', 'albumRating'],
-			['Album playcount', 'albumPlaycount'],
-			['Album playcount total', 'albumPlaycountTotal'],
-			['Album track rating', 'albumTrackRating'],
-			['Album track playcount', 'albumTrackPlaycount'],
-			['Track rating', 'trackRating'],
-			['Track playcount', 'trackPlaycount'],
-			['Top rated', 'topRated'],
-			['Top played', 'topPlayed']
-		];
-
-		// * Create playlist stats settings menu
-		playlistStatsMenu.appendItem('Include artist', () => {
-			plSet.playlist_stats_include_artist = !plSet.playlist_stats_include_artist;
-		}, { is_checked: plSet.playlist_stats_include_artist });
-		playlistStatsMenu.appendItem('Include album', () => {
-			plSet.playlist_stats_include_album = !plSet.playlist_stats_include_album;
-		}, { is_checked: plSet.playlist_stats_include_album });
-		playlistStatsMenu.appendItem('Include track', () => {
-			plSet.playlist_stats_include_track = !plSet.playlist_stats_include_track;
-		}, { is_checked: plSet.playlist_stats_include_track });
-		playlistStatsMenu.appendItem('Include year', () => {
-			plSet.playlist_stats_include_year = !plSet.playlist_stats_include_year;
-		}, { is_checked: plSet.playlist_stats_include_year });
-		playlistStatsMenu.appendItem('Include genre', () => {
-			plSet.playlist_stats_include_genre = !plSet.playlist_stats_include_genre;
-		}, { is_checked: plSet.playlist_stats_include_genre });
-		playlistStatsMenu.appendItem('Include label', () => {
-			plSet.playlist_stats_include_label = !plSet.playlist_stats_include_label;
-		}, { is_checked: plSet.playlist_stats_include_label });
-		playlistStatsMenu.appendItem('Include country', () => {
-			plSet.playlist_stats_include_country = !plSet.playlist_stats_include_country;
-		}, { is_checked: plSet.playlist_stats_include_country });
-		playlistStatsMenu.appendItem('Include stats', () => {
-			plSet.playlist_stats_include_stats = !plSet.playlist_stats_include_stats;
-		}, { is_checked: plSet.playlist_stats_include_stats });
-
-		playlistStatsMenu.separator();
-
 		for (const sortBy of sortByMenu) {
 			playlistStatsMenu.appendItem(sortBy[0], () => {
 				plSet.playlist_stats_sort_by = sortBy[1];
@@ -1772,6 +1748,11 @@ class Playlist extends BaseList {
 
 		playlistStatsMenu.separator();
 
+		// * Order by menu
+		const sortDirectionMenu = [
+			['Order by ascending',  '_asc'],
+			['Order by descending', '_dsc']
+		];
 		for (const direction of sortDirectionMenu) {
 			playlistStatsMenu.appendItem(direction[0], () => {
 				plSet.playlist_stats_sort_direction = direction[1];
@@ -1780,6 +1761,7 @@ class Playlist extends BaseList {
 
 		playlistStatsMenu.separator();
 
+		// * Reset settings menu item
 		playlistStatsMenu.appendItem('Reset settings', () => {
 			plSet.playlist_stats_include_artist = true;
 			plSet.playlist_stats_include_album = true;
@@ -1795,41 +1777,124 @@ class Playlist extends BaseList {
 
 		playlistStatsMenu.separator();
 
-		// * Create playlist stats list menu
+		// * Playlist stats list menu
+		const statsTypeMenu = [
+			['Artist rating', 'artistRating'],
+			['Artist playcount', 'artistPlaycount'],
+			['Album rating', 'albumRating'],
+			['Album playcount', 'albumPlaycount'],
+			['Album playcount total', 'albumPlaycountTotal'],
+			['Album track rating', 'albumTrackRating'],
+			['Album track playcount', 'albumTrackPlaycount'],
+			['Track rating', 'trackRating'],
+			['Track playcount', 'trackPlaycount'],
+			['Top rated', 'topRated'],
+			['Top played', 'topPlayed']
+		];
+
 		for (const item of statsTypeMenu) {
 			const statsTypeAlbums = item[1].startsWith('album');
 			const statsTypeTracks = statsTypeAlbums && plSet.playlist_stats_sort_by.startsWith('track');
 
 			playlistStatsMenu.appendItem(item[0], ((statsType) => {
-				const metadata = Array.from(this.meta_handler.get_metadata().values()); // ! Takes long time to process for a very large playlist
 				const metadataType =
+					item[1].startsWith('artist') ? 'artist' :
 					item[1].startsWith('track') ? 'track' :
 					item[1].startsWith('album') ? 'album' :
 					item[1].endsWith('topRated') ? 'topRated' :
 					item[1].endsWith('topPlayed') ? 'topPlayed' :
 					'album';
 
-				const statsName = item[0];
+				const statsName = CapitalizeString(item[0], true);
 				const newStatsType = sortBy ? `${sortBy}${sortDirection}_${statsType}` : `${statsType}${sortDirection}`;
 				const filePath = `${fb.ProfilePath}cache\\playlist\\${playlistName}_${statsName}${statsType.startsWith('top') ? '_statistics' : `_[${newStatsType}]`}.txt`;
 
-				const ratingType =
-					statsType === 'albumRating' ? 'albumAverage' :
-					statsType === 'albumRatingTotal' ? 'albumTotal' :
-					statsType === 'albumTrackRating' ? 'albumTracks' :
-					false;
-				const playcountType =
-					statsType === 'albumPlaycount' ? 'albumAverage' :
-					statsType === 'albumPlaycountTotal' ? 'albumTotal' :
-					statsType === 'albumTrackPlaycount' ? 'albumTracks' :
-					false;
+				const ratingType = {
+					artistRating: 'artistAverage',
+					albumRating: 'albumAverage',
+					albumRatingTotal: 'albumTotal',
+					albumTrackRating: 'albumTracks'
+				};
 
-				this.meta_handler.write_stats_to_text_file(metadata, metadataType, filePath, statsName, newStatsType, ratingType, playcountType);
+				const playcountType = {
+					artistPlaycount: 'artistPlaycount',
+					albumPlaycount: 'albumAverage',
+					albumPlaycountTotal: 'albumTotal',
+					albumTrackPlaycount: 'albumTracks'
+				};
+
+				this.meta_manager.write_stats_to_text_file(metadataType, filePath, statsName, newStatsType, ratingType[item[1]], playcountType[item[1]]);
 				fb.ShowPopupMessage(`${statsName} list was saved in:\n\n${filePath}`, `${statsName} list`);
 			}).bind(this, item[1]), { is_grayed_out: statsTypeTracks });
 		}
 
 		parent_menu.append(playlistStatsMenu);
+	}
+
+	/**
+	 * Appends the playlist "write playlist diagnostics list" menu to the parent menu.
+	 * @param {ContextMenu} parent_menu - The parent menu to append to.
+	 */
+	ctx_menu_playlist_diagnostics(parent_menu) {
+		const playlistDiagnosticsMenu = new ContextMenu('Write playlist diagnostics to list');
+		const playlistName = ReplaceFileChars(plman.GetPlaylistName(plman.ActivePlaylist));
+
+		// * Include album art menu
+		const includeAlbumArtMenu = [
+			['Include album art (Check all list)', 'album_art'],
+			['Include album art local (Check all list)', 'album_art_local'],
+			['Include album art embedded (Check all list)', 'album_art_embedded']
+		];
+		for (const includeAlbumArt of includeAlbumArtMenu) {
+			playlistDiagnosticsMenu.appendItem(includeAlbumArt[0], () => {
+				plSet.playlist_diagnostic_album_art = includeAlbumArt[1];
+			}, { is_radio_checked: plSet.playlist_diagnostic_album_art === includeAlbumArt[1] });
+		}
+		playlistDiagnosticsMenu.separator();
+
+		// * Playlist diagnostics files menu
+		const diagnosticsFilesMenu = [
+			['Missing album art', 'album_art'],
+			['Missing album art (local)', 'album_art_local'],
+			['Missing album art (embedded)', 'album_art_embedded'],
+			['Missing disc art', 'disc_art'],
+			['Missing playlist files', 'playlist_files'],
+			['Check all missing files', 'checkFiles']
+		];
+		for (const item of diagnosticsFilesMenu) {
+			playlistDiagnosticsMenu.appendItem(item[0], ((type) => {
+				const diagnosticsName = CapitalizeString(item[0], true);
+				const filePath = `${fb.ProfilePath}cache\\playlist\\${playlistName}_${diagnosticsName}.txt`;
+				this.meta_manager.write_diagnostics_to_text_file(type, filePath);
+				fb.ShowPopupMessage(`${diagnosticsName} list was saved in:\n\n${filePath}`, `${diagnosticsName} list`);
+			}).bind(this, item[1]));
+			if (item[1] === 'playlist_files') playlistDiagnosticsMenu.separator();
+		}
+		playlistDiagnosticsMenu.separator();
+
+		// * Playlist diagnostics tags menu
+		const diagnosticsTagsMenu = [
+			['Missing artist name', 'artist_name'],
+			['Missing album title', 'album_title'],
+			['Missing track number', 'track_number'],
+			['Missing track title', 'track_title'],
+			['Missing year', 'year'],
+			['Missing genre', 'genre'],
+			['Missing label', 'label'],
+			['Missing country', 'country'],
+			['Check all missing tagging', 'checkTags']
+		];
+		for (const item of diagnosticsTagsMenu) {
+			playlistDiagnosticsMenu.appendItem(item[0], ((type) => {
+				const diagnosticsName = CapitalizeString(item[0], true);
+				const filePath = `${fb.ProfilePath}cache\\playlist\\${playlistName}_${diagnosticsName}.txt`;
+				this.meta_manager.write_diagnostics_to_text_file(type, filePath);
+				fb.ShowPopupMessage(`${diagnosticsName} list was saved in:\n\n${filePath}`, `${diagnosticsName} list`);
+			}).bind(this, item[1]));
+			if (item[1] === 'country') playlistDiagnosticsMenu.separator();
+		}
+
+		parent_menu.append(playlistDiagnosticsMenu);
 	}
 	// #endregion
 }

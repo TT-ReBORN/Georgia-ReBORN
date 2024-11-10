@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-10-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -348,6 +348,7 @@ grSet.addProperties({
 	biographyFontSize_artwork:          ['Georgia-ReBORN - 08. Font size: Biography (Artwork)', 12], // Biography font size in Artwork layout
 	lyricsFontSize_default:             ['Georgia-ReBORN - 08. Font size: Lyrics (Default)', 20], // Lyrics font size in Default layout
 	lyricsFontSize_artwork:             ['Georgia-ReBORN - 08. Font size: Lyrics (Artwork)', 20], // Lyrics font size in Artwork layout
+	lyricsInfoFontSize_default:         ['Georgia-ReBORN - 08. Font size: Lyrics info (Default)', 20], // Lyrics info font size in Default layout
 
 	// * Player controls
 	showPanelDetails_default:           ['Georgia-ReBORN - 09. Player controls: Show Details panel (Default)', true], // true: Show Details panel in top menu in Default layout
@@ -607,10 +608,15 @@ grSet.addProperties({
 
 	// * Lyrics
 	lyricsLayout:                       ['Georgia-ReBORN - 14. Lyrics: Layout', 'normal'], // Lyrics layout - normal (default) or full
+	lyricsBgImg:                        ['Georgia-ReBORN - 14. Lyrics: Background: Image',  false], // Show Image on Library background
+	lyricsBgImgCycle:                   ['Georgia-ReBORN - 14. Lyrics: Background: Image cycle', true], // Image cycle
+	lyricsBgImgCycleTime:               ['Georgia-ReBORN - 14. Lyrics: Background: Image cycle time', 15], // Image cycle time
+	lyricsBgImgSource:                  ['Georgia-ReBORN - 14. Lyrics: Background: Image source', 'album'], // 'album', 'album', 'custom' - Image source
+	lyricsBgImgScale:                   ['Georgia-ReBORN - 14. Lyrics: Background: Image scale', 'filled'], // Image on background scale
+	lyricsBgImgOpacity:                 ['Georgia-ReBORN - 14. Lyrics: Background: Image opacity', 76], // Image on background opacity
 	lyricsDropShadowLevel:              ['Georgia-ReBORN - 14. Lyrics: Show drop shadow', 2], // 0 - 3 - Show drop shadow on lyrics text
 	lyricsFadeScroll:                   ['Georgia-ReBORN - 14. Lyrics: Show fade scroll', true], // true: Show lyrics fade scroll
 	lyricsLargerCurrentSync:            ['Georgia-ReBORN - 14. Lyrics: Show larger current sync', true], // true: Displays larger font on current synced lyric
-	lyricsAlbumArt:                     ['Georgia-ReBORN - 14. Lyrics: Show lyrics on album art', true], // true: Show lyrics on album art
 	lyricsRememberPanelState:           ['Georgia-ReBORN - 14. Lyrics: Remember lyrics panel state', false], // true: Displays lyrics panel state on startup and when switching through panels
 	lyricsAutoScrollUnsynced:           ['Georgia-ReBORN - 14. Lyrics: Auto-scroll unsynced lyrics', true], // true: Automatically scroll unsynced lyrics
 	lyricsScrollSpeed:                  ['Georgia-ReBORN - 14. Lyrics: Scroll speed', 'normal'], // 'fastest', 'fast', 'normal', 'slow', 'slowest' - lyrics scroll speed based on scroll average and maximum
@@ -640,12 +646,15 @@ grSet.addProperties({
 
 	// * System
 	asyncThemePreloader:                ['Georgia-ReBORN - 16. System: Asynchronous theme preloader', true], // Loads individual theme files asynchronously at startup to reduce risk of SMP throwing slow script error on startup
-	bgImgArtistIdxPlaylist:             ['Georgia-ReBORN - 16. System: Saved background image playlist artist index', 0],
-	bgImgAlbumIdxPlaylist:              ['Georgia-ReBORN - 16. System: Saved background image playlist album index', 0],
-	bgImgCustomIdxPlaylist:             ['Georgia-ReBORN - 16. System: Saved background image playlist custom index', 0],
-	bgImgArtistIdxLibrary:              ['Georgia-ReBORN - 16. System: Saved background image library artist index', 0],
-	bgImgAlbumIdxLibrary:               ['Georgia-ReBORN - 16. System: Saved background image library album index', 0],
-	bgImgCustomIdxLibrary:              ['Georgia-ReBORN - 16. System: Saved background image library custom index', 0],
+	bgImgArtistIdxPlaylist:             ['Georgia-ReBORN - 16. System: Saved background image playlist artist index', 0], // The saved background image playlist artist index
+	bgImgAlbumIdxPlaylist:              ['Georgia-ReBORN - 16. System: Saved background image playlist album index', 0], // The saved background image playlist album index
+	bgImgCustomIdxPlaylist:             ['Georgia-ReBORN - 16. System: Saved background image playlist custom index', 0], // The saved background image playlist custom index
+	bgImgArtistIdxLibrary:              ['Georgia-ReBORN - 16. System: Saved background image library artist index', 0], // The saved background image library artist index
+	bgImgAlbumIdxLibrary:               ['Georgia-ReBORN - 16. System: Saved background image library album index', 0], // The saved background image library album index
+	bgImgCustomIdxLibrary:              ['Georgia-ReBORN - 16. System: Saved background image library custom index', 0], // The saved background image library custom index
+	bgImgArtistIdxLyrics:               ['Georgia-ReBORN - 16. System: Saved background image lyrics artist index', 0], // The saved background image lyrics artist index
+	bgImgAlbumIdxLyrics:                ['Georgia-ReBORN - 16. System: Saved background image lyrics album index', 0], // The saved background image lyrics album index
+	bgImgCustomIdxLyrics:               ['Georgia-ReBORN - 16. System: Saved background image lyrics custom index', 0], // The saved background image lyrics custom index
 	checkForUpdates:                    ['Georgia-ReBORN - 16. System: Check for updates', true], // true: Check github repo to determine if updates exist
 	restoreBackupPlaylist:              ['Georgia-ReBORN - 16. System: Restore backup playlist', false], // false: Used to copy playlist files again after fb2k installation
 	savedBiographyLayoutFull:           ['Georgia-ReBORN - 16. System: Saved biography layout full width', false], // Biography layout at the moment - DO NOT CHANGE - used to restore the Biography layout to full width
@@ -661,6 +670,7 @@ grSet.addProperties({
 	savedLibraryLayoutFull:             ['Georgia-ReBORN - 16. System: Saved library layout full width', false], // Library layout at the moment - DO NOT CHANGE - used to restore the Library layout to full width
 	savedLibraryThumbnailSize:          ['Georgia-ReBORN - 16. System: Saved library thumbnail size', 'auto'], // Library thumbnail size saved setting, used to restore user setting when switching from library split layout to full layout
 	savedLyricsDisplayed:               ['Georgia-ReBORN - 16. System: Saved lyrics displayed state', false], // false: Saved the lyrics displayed state, used for lyricsRememberPanelState
+	savedLyricsLayout:                  ['Georgia-ReBORN - 16. System: Saved lyrics layout', 'normal'], // Lyrics layout - DO NOT CHANGE - used to restore the Lyrics layout
 	savedLyricsLayoutFull:              ['Georgia-ReBORN - 16. System: Saved lyrics layout full width', false], // Lyrics layout at the moment - DO NOT CHANGE - used to restore the Lyrics layout to full width
 	savedPlaylistLayoutFull:            ['Georgia-ReBORN - 16. System: Saved playlist layout normal width', false], // Playlist layout at the moment - DO NOT CHANGE - used when using active Library layout split presets or when Playlist without Biography or Lyrics panel is full it will always change to normal when showing the Biography, otherwise it's overlayed by the Biography
 	savedPlaylistHeaderCollapse:        ['Georgia-ReBORN - 16. System: Saved playlist header collapsed state', false], // Playlist header collapsed at the moment - DO NOT CHANGE - used to restore the playlist header state when using active Library layout split presets
@@ -967,6 +977,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'biographyFontSize_artwork', grCfg.themeFontSize, 'biographyFontSize_artwork', HD_QHD_4K(12, 14));
 		this._setSetting(grSet, 'lyricsFontSize_default', grCfg.themeFontSize, 'lyricsFontSize_default', HD_QHD_4K(20, 22));
 		this._setSetting(grSet, 'lyricsFontSize_artwork', grCfg.themeFontSize, 'lyricsFontSize_artwork', HD_QHD_4K(20, 22));
+		this._setSetting(grSet, 'lyricsInfoFontSize_default', grCfg.themeFontSize, 'lyricsInfoFontSize_default', HD_QHD_4K(20, 22));
 	}
 
 	/**
@@ -1402,10 +1413,15 @@ class ThemeSettingsManager {
 	 */
 	setLyrics() {
 		this._setSetting(grSet, 'lyricsLayout', grCfg.themeLyrics, 'lyricsLayout', 'normal');
+		this._setSetting(grSet, 'lyricsBgImg', grCfg.themeLyrics, 'lyricsBgImg', true);
+		this._setSetting(grSet, 'lyricsBgImgCycle', grCfg.themeLyrics, 'lyricsBgImgCycle', true);
+		this._setSetting(grSet, 'lyricsBgImgCycleTime', grCfg.themeLyrics, 'lyricsBgImgCycleTime', 15);
+		this._setSetting(grSet, 'lyricsBgImgSource', grCfg.themeLyrics, 'lyricsBgImgSource', 'album');
+		this._setSetting(grSet, 'lyricsBgImgScale', grCfg.themeLyrics, 'lyricsBgImgScale', 'filled');
+		this._setSetting(grSet, 'lyricsBgImgOpacity', grCfg.themeLyrics, 'lyricsBgImgOpacity', 76);
 		this._setSetting(grSet, 'lyricsDropShadowLevel', grCfg.themeLyrics, 'lyricsDropShadowLevel', 2);
 		this._setSetting(grSet, 'lyricsFadeScroll', grCfg.themeLyrics, 'lyricsFadeScroll', true);
 		this._setSetting(grSet, 'lyricsLargerCurrentSync', grCfg.themeLyrics, 'lyricsLargerCurrentSync', true);
-		this._setSetting(grSet, 'lyricsAlbumArt', grCfg.themeLyrics, 'lyricsAlbumArt', true);
 		this._setSetting(grSet, 'lyricsRememberPanelState', grCfg.themeLyrics, 'lyricsRememberPanelState', false);
 		this._setSetting(grSet, 'lyricsAutoScrollUnsynced', grCfg.themeLyrics, 'lyricsAutoScrollUnsynced', true);
 		this._setSetting(grSet, 'lyricsScrollSpeed', grCfg.themeLyrics, 'lyricsScrollSpeed', 'normal');
@@ -1563,6 +1579,7 @@ class ThemeSettingsManager {
 		grSet.savedLibraryAlbumArtShow = libSet.albumArtShow;
 		grSet.savedLibraryLayoutFull = false;
 		grSet.savedLyricsDisplayed = false;
+		grSet.savedLyricsLayout = 'normal';
 		grSet.savedLyricsLayoutFull = false;
 		grSet.savedPlaylistLayoutFull = false;
 		grSet.savedPlaylistHeaderCollapse = false;
@@ -1641,9 +1658,10 @@ class ThemeSettingsManager {
 				grSet.lyricsAutoDelete = false;
 				bioSet.focusLoadRate = 1000;
 				bioSet.focusLoadImmediate = false;
+				grSet.lyricsBgImg = true;
+				grSet.lyricsBgImgCycleTime = 15;
 				grSet.lyricsDropShadowLevel = 2;
 				grSet.lyricsFadeScroll = true;
-				grSet.lyricsAlbumArt = true;
 				grSet.lyricsRememberPanelState = false;
 				grSet.lyricsScrollSpeed = 'normal';
 				grSet.lyricsScrollRateAvg = 750;
@@ -1698,9 +1716,9 @@ class ThemeSettingsManager {
 				libSet.albumArtDiskCache = true;
 				libSet.albumArtPreLoad = false;
 				bioSet.focusLoadRate = 3000;
+				grSet.lyricsBgImg = false;
 				grSet.lyricsDropShadowLevel = 0;
 				grSet.lyricsFadeScroll = false;
-				grSet.lyricsAlbumArt = false;
 				grSet.lyricsRememberPanelState = false;
 				grSet.lyricsScrollSpeed = 'fastest';
 				grSet.lyricsScrollRateAvg = 300;

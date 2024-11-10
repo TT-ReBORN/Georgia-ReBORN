@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-10-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -347,7 +347,7 @@ class TopMenuOptions {
 			this.applyThemeSetting('theme', theme);
 			grm.ui.resetTheme();
 			grm.ui.initTheme();
-			grm.details.createDiscArtShadow();
+			grm.details.setDiscArtShadow();
 			grm.preset.initThemePresetState();
 		}, false, false, [3, 7]);
 		themeMenu.addSeparator();
@@ -372,7 +372,7 @@ class TopMenuOptions {
 			grm.ui.resetTheme();
 			grm.ui.initCustomTheme();
 			grm.ui.initTheme();
-			grm.details.createDiscArtShadow();
+			grm.details.setDiscArtShadow();
 			grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg');
 			grm.preset.initThemePresetState();
 		});
@@ -667,7 +667,7 @@ class TopMenuOptions {
 			this.applyThemeSetting('preset', preset);
 			grm.preset.setThemePreset(preset);
 			this.applyThemeSetting(); // After applying the preset, synchronize the daytime/nighttime theme preset if necessary
-			grm.details.createDiscArtShadow();
+			grm.details.setDiscArtShadow();
 		};
 
 		// * WHITE THEME PRESETS * //
@@ -1923,7 +1923,7 @@ class TopMenuOptions {
 			RepaintWindow();
 		};
 
-		const sortOrderWithDirection = ['artistDate', 'albumRating', 'albumPlaycount', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country'];
+		const sortOrderWithDirection = ['artistDate', 'artistRating', 'artistPlaycount', 'albumRating', 'albumPlaycount', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country'];
 
 		/** @type {string} Holds the current sort order preference without any direction suffix ('_asc' or '_dsc'). */
 		let savedOrder = grSet.playlistSortOrder;
@@ -1939,8 +1939,8 @@ class TopMenuOptions {
 
 		playlistSortOrderMenu.addSeparator();
 
-		playlistSortOrderMenu.addRadioItems(['Default', 'Artist | date', 'Album', 'Album rating', 'Album playcount', 'Track', 'Track number', 'Track rating', 'Track playcount', 'Year', 'Genre', 'Label', 'Country', 'File path', 'Custom'], savedOrder,
-			['default', 'artistDate', 'albumTitle', 'albumRating', 'albumPlaycount', 'trackTitle', 'trackNumber', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country', 'filePath', 'custom'], (order) => {
+		playlistSortOrderMenu.addRadioItems(['Default', 'Artist | date', 'Artist rating', 'Artist playcount', 'Album', 'Album rating', 'Album playcount', 'Track', 'Track number', 'Track rating', 'Track playcount', 'Year', 'Genre', 'Label', 'Country', 'File path', 'Custom'], savedOrder,
+			['default', 'artistDate', 'artistRating', 'artistPlaycount', 'albumTitle', 'albumRating', 'albumPlaycount', 'trackTitle', 'trackNumber', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country', 'filePath', 'custom'], (order) => {
 			savedOrderWithDirection = sortOrderWithDirection.includes(order);
 			savedOrder = order;
 			grSet.playlistSortOrder = `${order}${savedOrderWithDirection ? grSet.playlistSortOrderDirection : ''}`;
@@ -2096,7 +2096,7 @@ class TopMenuOptions {
 			discArtMenu.addToggleItem('Rotate disc art as tracks change', grSet, 'rotateDiscArt', () => { RepaintWindow(); }, !grSet.displayDiscArt || grSet.spinDiscArt);
 			discArtMenu.createRadioSubMenu('Disc art rotation amount', ['2 degrees', '3 degrees', '4 degrees', '5 degrees'], parseInt(grSet.rotationAmt), [2, 3, 4, 5], (rot) => {
 				grSet.rotationAmt = rot;
-				grm.details.createDiscArtRotation();
+				grm.details.setDiscArtRotation();
 				RepaintWindow();
 			}, !grSet.rotateDiscArt || grSet.spinDiscArt);
 			discArtMenu.appendTo(detailsMenu);
@@ -2962,11 +2962,50 @@ class TopMenuOptions {
 		const lyricsMenu = context_menu ? menu : new Menu('Lyrics');
 
 		if (grSet.layout === 'default') {
-			lyricsMenu.createRadioSubMenu('Layout', ['Normal', 'Full'], grSet.lyricsLayout, ['normal', 'full'], (width) => {
-				grSet.lyricsLayout = width;
+			const lyricsLayoutMenu = new Menu('Layout');
+			lyricsLayoutMenu.addRadioItems(['Normal', 'Full', 'Left', 'Right'], grSet.lyricsLayout, ['normal', 'full', 'left', 'right'], (layout) => {
+				grSet.savedLyricsLayout = grSet.lyricsLayout = layout;
 				grm.ui.initLyricsLayoutState();
 			});
+			lyricsLayoutMenu.appendTo(lyricsMenu);
 		}
+
+		const lyricsBackgroundMenu = new Menu('Background');
+		lyricsBackgroundMenu.addToggleItem('Show image on background', grSet, 'lyricsBgImg', () => {
+			if (grSet.lyricsBgImg) {
+				grm.bgImg.initBgImage();
+				grm.ui.updatePlaylist();
+			} else {
+				grm.bgImg.clearBgImageCache();
+			}
+			RepaintWindow();
+		});
+		lyricsBackgroundMenu.addSeparator();
+		lyricsBackgroundMenu.addToggleItem('Cycle images', grSet, 'lyricsBgImgCycle', () => {
+			grm.bgImg.initBgImageCycle(grSet.lyricsBgImgCycle ? false : 'lyrics');
+			RepaintWindow();
+		});
+		lyricsBackgroundMenu.createRadioSubMenu('Cycle time', ['  5 sec', '10 sec', '15 sec (default)', '30 sec', '60 sec'], grSet.lyricsBgImgCycleTime, [5, 10, 15, 30, 60], (time) => {
+			grSet.lyricsBgImgCycleTime = time;
+			grm.bgImg.initBgImageCycle(grSet.lyricsBgImgCycle ? false : 'lyrics');
+			RepaintWindow();
+		});
+		lyricsBackgroundMenu.addSeparator();
+		lyricsBackgroundMenu.createRadioSubMenu('Image source', ['Artist', 'Album', 'Custom'], grSet.lyricsBgImgSource, ['artist', 'album', 'custom'], (source) => {
+			grSet.lyricsBgImgSource = source;
+			grm.bgImg.initBgImage(false, true);
+			RepaintWindow();
+		});
+		lyricsBackgroundMenu.createRadioSubMenu('Image scaling', ['Proportional', 'Filled', 'Stretched'], grSet.lyricsBgImgScale, ['default', 'filled', 'stretched'], (scale) => {
+			grSet.lyricsBgImgScale = scale;
+			grm.bgImg.initBgImage(false, true);
+			RepaintWindow();
+		});
+		lyricsBackgroundMenu.createRadioSubMenu('Image opacity', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], grSet.lyricsBgImgOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
+			grSet.lyricsBgImgOpacity = value;
+			RepaintWindow();
+		});
+		lyricsBackgroundMenu.appendTo(lyricsMenu);
 
 		const lyricsDisplayMenu = new Menu('Display');
 		lyricsDisplayMenu.createRadioSubMenu('Show drop shadow', ['None', 'Small', 'Normal', 'Large'], grSet.lyricsDropShadowLevel, [0, 1, 2, 3], (size) => {
@@ -2982,10 +3021,6 @@ class TopMenuOptions {
 			bioSet.largerSyncLyricLine = grSet.lyricsLargerCurrentSync;
 			grm.lyrics.initLyrics();
 			bio.ui.updateProp(1);
-			RepaintWindow();
-		});
-		lyricsDisplayMenu.addToggleItem('Show lyrics on album art', grSet, 'lyricsAlbumArt', () => {
-			grm.theme.initMainColors();
 			RepaintWindow();
 		});
 		lyricsDisplayMenu.appendTo(lyricsMenu);

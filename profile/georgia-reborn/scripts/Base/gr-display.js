@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-10-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -654,6 +654,7 @@ class Display {
 		};
 		const newSize = getSize[size] || (() => size);
 		grSet.lyricsFontSize_layout = newSize();
+		grSet.lyricsInfoFontSize_default = Clamp(grSet.lyricsFontSize_layout, 10, grm.ui.wh < 860 ? 20 : 30);
 
 		grm.ui.createFonts();
 		grm.ui.displayLyrics && grm.lyrics.initLyrics();

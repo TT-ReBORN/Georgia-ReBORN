@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-10-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -531,6 +531,24 @@ function StripJsonComments(jsonString, options = { whitespace: false }) {
 /////////////////////////
 // * FILE MANAGEMENT * //
 /////////////////////////
+/**
+ * Constructs a file path by replacing patterns with the file extension of the provided file.
+ * Replace patterns like *.* with the actual file name, and folder.*, cover.*, front.*
+ * with folder.<ext>, cover.<ext>, front.<ext> where <ext> is the file extension of 'file'.
+ * @global
+ * @param {string} basePath - The base path that may contain patterns to replace.
+ * @param {string} file - The file name whose extension will be used for replacement.
+ * @param {string} fileExtension - The file extension extracted from the file.
+ * @param {string[]} patterns - The array of patterns to replace in the base path.
+ * @param {RegExp} [precompiledRegex] - Optional precompiled regex for performance when called frequently.
+ * @returns {string} - The constructed file path with patterns replaced by the file extension.
+ */
+function CreateFilePathWithPatterns(basePath, file, fileExtension, patterns, precompiledRegex) {
+	const regex = precompiledRegex || new RegExp(`(\\*|\\b(${patterns.join('|')})\\b)\\.\\*`, 'g');
+	return basePath.replace(regex, (_, p1, p2) => p2 ? `${p2}.${fileExtension}` : file);
+}
+
+
 /**
  * Creates a folder if it doesn't exist.
  * @global
@@ -1619,6 +1637,7 @@ class GdiService {
 	/**
 	 * Retrieves the singleton instance of the GdiService class, creating it if it doesn't exist.
 	 * @returns {GdiService} The singleton instance of the GdiService class.
+	 * @static
 	 */
 	static getInstance() {
 		if (!GdiService.instance) {
@@ -2099,6 +2118,61 @@ function CalcGridMaxTextWidth(gr, gridArray, font) {
 
 
 /**
+ * Calculates the X and Y positions for drawing text based on alignment.
+ * @global
+ * @param {number} x - The initial X position.
+ * @param {number} y - The initial Y position.
+ * @param {number} w - The width of the area.
+ * @param {number} h - The height of the area.
+ * @param {number} maxWidth - The maximum width available for the text.
+ * @param {number} totalHeight - The total height of the text elements.
+ * @param {number} padding - The padding from the edges.
+ * @param {number} multiplierH - The multiplier for horizontal alignment (0 to 1).
+ * @param {number} multiplierV - The multiplier for vertical alignment (0 to 1).
+ * @param {boolean} centerInArea - Whether to center the text in the area or not.
+ * @returns {object} The calculated X and Y positions: { textX, textY }.
+ */
+function CalcTextPosition(x, y, w, h, maxWidth, totalHeight, padding, multiplierH = 0.5, multiplierV = 0.5, centerInArea = false) {
+	let textX = Math.round((x + w * multiplierH) - (maxWidth * multiplierH + padding));
+	let textY = Math.round((y + h * multiplierV) - (totalHeight * multiplierV + padding));
+
+	if (centerInArea) {
+		textX = Math.round(x + (w - maxWidth) * 0.5);
+		textY = Math.round(y + (h - totalHeight) * 0.5);
+	}
+
+	return { textX, textY };
+}
+
+
+/**
+ * Calculates the total height of the text elements including padding.
+ * @global
+ * @param {GdiGraphics} gr - The GDI graphics object used for text measurement.
+ * @param {Array<{text: string, font: string}>} textElements - The array of text elements, each containing `text` and `font`.
+ * @param {number} maxWidth - The maximum width available for the text.
+ * @param {number} lineHeight - The height of each line, including the size of symbols.
+ * @param {number} padding - The padding between text elements.
+ * @param {number} [lineHeightMultiplier] - The multiplier for line height.
+ * @param {number} [paddingMultiplier] - The multiplier for the padding size.
+ * @returns {number} The total height of the text elements, including padding.
+ * @example
+ * const textElements = [
+ * 	{ text: "Hello", font: "Helvetica" },
+ * 	{ text: "World", font: "Helvetica" }
+ * ];
+ * const totalHeight = CalcTextTotalHeight(gr, textElements, 100, 20, 15, 2, 1.5);
+ */
+function CalcTextTotalHeight(gr, textElements, maxWidth, lineHeight, padding, lineHeightMultiplier = 1, paddingMultiplier = 1) {
+	let totalHeight = textElements.reduce((acc, textElement) =>
+		acc + gr.MeasureString(textElement.text, textElement.font, 0, 0, maxWidth, 0).Height, 0);
+
+	totalHeight += textElements.length * (lineHeight * lineHeightMultiplier + padding * paddingMultiplier);
+	return totalHeight;
+}
+
+
+/**
  * Calculates the wrap space for text within a given container width and provides detailed information.
  * @global
  * @param {GdiGraphics} gr - The GDI graphics object used for text measurement.
@@ -2157,6 +2231,52 @@ function CalcWrapSpace(gr, text, font, containerWidth, cache) {
 	}
 
 	return result;
+}
+
+
+/**
+ * Draws multiline text string within a specified width.
+ * @global
+ * @param {GdiGraphics} gr - The GDI graphics object.
+ * @param {string} str - The text to be drawn.
+ * @param {GdiFont} font - The font to be used for the text.
+ * @param {number} color - The color of the text.
+ * @param {number} x - The x-coordinate where the text starts.
+ * @param {number} y - The initial y-coordinate where the text starts.
+ * @param {number} width - The maximum width of the text block.
+ * @param {number} textPadding - The padding to be used around the text.
+ * @param {number} stringFormat - The string format, see Flags.js > StringFormatFlags.
+ * @returns {number} The updated y-coordinate after the text is drawn.
+ */
+function DrawMultilineString(gr, str, font, color, x, y, width, textPadding, stringFormat) {
+	if (!str) return y;
+
+	let currentY = y;
+	let currentLine = '';
+	const words = str.split(' ');
+
+	for (const word of words) {
+		const testLine = currentLine ? `${currentLine} ${word}` : word;
+		const testSize = gr.MeasureString(testLine, font, 0, 0, width, 0);
+
+		if (testSize.Width > width && currentLine) {
+			const lineHeight = testSize.Height + textPadding;
+			gr.DrawString(currentLine, font, color, x, currentY, width, lineHeight, stringFormat);
+			currentLine = word;
+			currentY += lineHeight;
+		} else {
+			currentLine = testLine;
+		}
+	}
+
+	if (currentLine) { // Draw the last line
+		const testSize = gr.MeasureString(currentLine, font, 0, 0, width, 0);
+		const lineHeight = testSize.Height + textPadding;
+		gr.DrawString(currentLine, font, color, x, currentY, width, lineHeight, stringFormat);
+		currentY += lineHeight;
+	}
+
+	return currentY;
 }
 
 
@@ -2592,6 +2712,19 @@ function FormatSize(sizeInBytes) {
 
 
 /**
+ * Converts a rating from a 0-5 scale to a 0-100 scale.
+ * Foobar2000 does not handle floating point numbers well in its metadata fields when sorting,
+ * so we store the ratings as integers to ensure they are processed correctly.
+ * @global
+ * @param {number} rating - The rating to convert, expected to be a floating point number between 0 and 5.
+ * @returns {number} - The converted rating, as an integer between 0 and 100.
+ */
+function ConvertRatingToPercentage(rating) {
+	return Math.round(rating * 20);
+}
+
+
+/**
  * Converts the volume to percentage, decibels, or VU meter levels to decibels.
  * Depending on the 'type' parameter, this function behaves as follows:
  * - 'toPercent': Converts the volume (expected between 0 and 1) to a percentage representation.
@@ -2707,13 +2840,16 @@ function AllEqual(str) {
 
 
 /**
- * Capitalizes first letter of a string.
+ * Capitalizes the first letter of a string or the first letter of every word in a string.
  * @global
- * @param {string} s - The string that will be capitalized.
+ * @param {string} str - The string that will be capitalized.
+ * @param {boolean} [everyWord] - If true, capitalizes the first letter of every word.
  * @returns {string} The capitalized string.
  */
-function CapitalizeString(s) {
-	return s && s[0].toUpperCase() + s.slice(1);
+function CapitalizeString(str, everyWord = false) {
+	if (!str) return '';
+	return everyWord ? str.replace(/\b\w/g, char => char.toUpperCase()) :
+					   str[0].toUpperCase() + str.slice(1);
 }
 
 

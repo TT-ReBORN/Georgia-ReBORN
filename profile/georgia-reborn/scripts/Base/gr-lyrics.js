@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-08-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -70,27 +70,29 @@ class Lyrics {
 	 * Sets the size and position of the lyrics.
 	 */
 	setLyricsPosition() {
-		const fullW = grSet.layout === 'default' && grSet.lyricsLayout === 'full' && grm.ui.displayLyrics;
+		const fullW = grSet.layout === 'default' && grSet.lyricsLayout !== 'normal' && grm.ui.displayLyrics;
 		const noAlbumArtSize = grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight;
 		const margin = SCALE(40);
-
-		this.x =
-			(grm.ui.noAlbumArtStub ?
-				fullW ? grSet.panelWidthAuto && grSet.lyricsLayout === 'normal' ? noAlbumArtSize * 0.5 : grm.ui.ww * 0.333 :
-				grSet.panelWidthAuto ? grm.ui.albumArtSize.x : 0 :
-			grm.ui.albumArtSize.x) + margin;
-
-		this.y = (grm.ui.noAlbumArtStub ? grm.ui.topMenuHeight : grm.ui.albumArtSize.y) + margin;
 
 		this.w =
 			(grm.ui.noAlbumArtStub ?
 				grSet.layout === 'artwork' ? grm.ui.ww :
-				fullW ? grm.ui.ww * 0.333 :
 				grSet.panelWidthAuto ? noAlbumArtSize :
 				grm.ui.ww * 0.5 :
 			grm.ui.albumArtSize.w) - margin * 2;
 
 		this.h = (grm.ui.noAlbumArtStub ? grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight : grm.ui.albumArtSize.h) - margin * 2;
+
+		this.x =
+			(grm.ui.noAlbumArtStub || grSet.lyricsLayout !== 'normal' ?
+				fullW ? grSet.panelWidthAuto && grSet.lyricsLayout === 'normal' ? noAlbumArtSize * 0.5 :
+				grSet.lyricsLayout === 'left'  ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w + margin * 1.5 :
+				grSet.lyricsLayout === 'right' ? grm.ui.albumArtSize.x - grm.ui.albumArtSize.w - margin * 1.5 :
+				(grm.ui.ww - this.w) * 0.5 :
+				grSet.panelWidthAuto ? grm.ui.albumArtSize.x : 0 :
+			grm.ui.albumArtSize.x) + margin;
+
+		this.y = (grm.ui.noAlbumArtStub ? grm.ui.topMenuHeight : grm.ui.albumArtSize.y) + margin;
 
 		this.on_size(this.x, this.y, this.w, this.h);
 	}
@@ -141,7 +143,7 @@ class Lyrics {
 			this.loadLyrics(this.stringNoLyrics);
 		}
 
-		this.on_size(grm.ui.albumArtSize.x, grm.ui.albumArtSize.y, grm.ui.albumArtSize.w, grm.ui.albumArtSize.h);
+		this.on_size(this.x, this.y, this.w, this.h);
 	}
 
 	/**
@@ -206,7 +208,7 @@ class Lyrics {
 		this.searchTimeout = setTimeout(() => {
 			if (!this.findLyrics()) {
 				this.loadLyrics(this.stringNotFound);
-				this.on_size(grm.ui.albumArtSize.x, grm.ui.albumArtSize.y, grm.ui.albumArtSize.w, grm.ui.albumArtSize.h);
+				this.on_size(this.x, this.y, this.w, this.h);
 			}
 			clearInterval(this.lyricsSearchTimer);
 		}, 60000);
@@ -672,7 +674,7 @@ class Lyrics {
 	 * Repaints the lyrics when scroll animation occurs.
 	 */
 	repaintRect() {
-		window.RepaintRect(this.x, this.y, this.w, this.h);
+		window.RepaintRect(this.x - SCALE(2), this.y - SCALE(2), this.w + SCALE(4), this.h + SCALE(4));
 	}
 
 	/**
@@ -802,7 +804,7 @@ class Lyrics {
 	 * @param {number} step - The amount of scrolling offset that should be performed.
 	 */
 	on_mouse_wheel(step) {
-		const scrollStepOffset = utils.IsKeyPressed(VKey.SHIFT) ? 5000 : this.type.synced ? 500 : 1000;
+		const scrollStepOffset = this.type.synced ? 500 : 1000;
 		step *= Clamp(Math.round(scrollStepOffset / ((Date.now() - this.stepTime) * 5)), 1, 5);
 		this.stepTime = Date.now();
 		this.userOffset += scrollStepOffset * -step;

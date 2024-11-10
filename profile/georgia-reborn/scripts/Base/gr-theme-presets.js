@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2604,7 +2604,7 @@ class ThemePreset {
 		grm.ui.resetStyle('all');
 		this[preset](); // Call the method on the ThemePreset instance
 		grm.ui.updateStyle();
-		grm.details.createDiscArtShadow();
+		grm.details.setDiscArtShadow();
 	}
 	// #endregion
 }

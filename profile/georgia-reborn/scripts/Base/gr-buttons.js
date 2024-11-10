@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-10-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -161,7 +161,10 @@ class Button {
 
 			// * PLAYLIST HISTORY BUTTONS * //
 			Back: () => pl.history.buttons(btn),
-			Forward: () => pl.history.buttons(btn)
+			Forward: () => pl.history.buttons(btn),
+
+			// * LYRICS INFO OVERLAY BUTTON * //
+			LyricsInfoOverlay:() => this.lyricsFullLayoutBtnAction()
 		};
 
 		const btnAction = buttons[btn.id];
@@ -251,7 +254,7 @@ class Button {
 	 */
 	topDetails() {
 		const biographyLayoutFull = grm.ui.displayBiography && grSet.biographyLayout === 'full';
-		const lyricsLayoutFull = grm.ui.displayLyrics && grSet.lyricsLayout === 'full';
+		const lyricsLayoutFull = grm.ui.displayLyrics && grSet.lyricsLayout !== 'normal';
 		const playlistNeedsToggle = grSet.layout === 'default' && (grm.ui.displayLibrary || biographyLayoutFull || lyricsLayoutFull);
 
 		grm.ui.displayPlaylist = playlistNeedsToggle ? false : !grm.ui.displayPlaylist;
@@ -395,7 +398,9 @@ class Button {
 		grm.ui.activeMenu = true;
 
 		menu.addRadioItems(['No rating', '1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'], parseInt(rating), [0, 1, 2, 3, 4, 5], (rating) => {
+			pl.artist_ratings.clear();
 			pl.album_ratings.clear();
+			grm.ui.clearCache('ratings');
 
 			for (let i = 0; i < selectedItems.Count; i++) {
 				const metadb = selectedItems[i];
@@ -435,6 +440,16 @@ class Button {
 		grm.display.handleWindowControl('button');
 	}
 	// #endregion
+
+	/**
+	 * Handles the action of the lyrics full layout button.
+	 * If the mouse is in the right edge of the full lyrics layout, it will toggle play or pause.
+	 */
+	lyricsFullLayoutBtnAction() {
+		if (grm.ui.mouseInLyricsFullLayoutEdge) {
+			fb.PlayOrPause();
+		}
+	}
 
 	// * PUBLIC METHODS - LOWER BAR BUTTONS * //
 	// #region PUBLIC METHODS - LOWER BAR BUTTONS

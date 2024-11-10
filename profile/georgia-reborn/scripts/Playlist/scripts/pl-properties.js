@@ -63,6 +63,7 @@ plSet.addProperties(
 		playlist_stats_include_stats:   ['Panel Playlist - User: Misc.playlist_stats_include_stats', true],
 		playlist_stats_sort_by:         ['Panel Playlist - User: Misc.playlist_stats_sort_by', ''],
 		playlist_stats_sort_direction:  ['Panel Playlist - User: Misc.playlist_stats_sort_direction', '_dsc'],
+		playlist_diagnostic_album_art:  ['Panel Playlist - User: Misc.playlist_diagnostic_album_art', 'album_art'],
 
 		load_playlist_async:            ['Panel Playlist - System: Load.playlist.asynchronously', true],
 		list_top_pad:                   ['Panel Playlist - System: List.padding.top', 0],

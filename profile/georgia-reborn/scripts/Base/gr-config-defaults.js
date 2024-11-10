@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-10-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -593,7 +593,8 @@ class ConfigDefaults {
 			biographyFontSize_default: HD_QHD_4K(12, 14, 24),
 			biographyFontSize_artwork: HD_QHD_4K(12, 14, 24),
 			lyricsFontSize_default: HD_QHD_4K(20, 22),
-			lyricsFontSize_artwork: HD_QHD_4K(20, 22)
+			lyricsFontSize_artwork: HD_QHD_4K(20, 22),
+			lyricsInfoFontSize_default: HD_QHD_4K(20, 22)
 		};
 
 		/** @public @type {object} Options > Font size settings config name description. */
@@ -636,7 +637,8 @@ class ConfigDefaults {
 			biographyFontSize_default: 'Values: 8, 10, 11, 12, 13, 14, 16, 18 - Options > Font size > Biography - when Default layout is active',
 			biographyFontSize_artwork: 'Values: 8, 10, 11, 12, 13, 14, 16, 18 - Options > Font size > Biography - when Artwork layout is active',
 			lyricsFontSize_default: 'Values: 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30 - Options > Font size > Lyrics - when Default layout is active',
-			lyricsFontSize_artwork: 'Values: 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30 - Options > Font size > Lyrics - when Artwork layout is active'
+			lyricsFontSize_artwork: 'Values: 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30 - Options > Font size > Lyrics - when Artwork layout is active',
+			lyricsInfoFontSize_default: 'Values: 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30 - Options > Font size > Lyrics - when Default layout is active'
 		};
 
 		/** @public @type {object} Options > Font size settings config header description. */
@@ -1096,7 +1098,7 @@ class ConfigDefaults {
 			playlistRowHover: 'Values: true, false - Options > Playlist > Track row > Row mouse hover',
 			playlistPlaybackTimeDisplay: 'Values: "default", "remaining", "percent" - Options > Playlist > Track row > Playback time display',
 			playlistSortOrderAuto: 'Values: true, false - Options > Playlist > Sort order > Always auto-sort',
-			playlistSortOrder: 'Values: "", "default", "artistDate_asc", "artistDate_dsc", "album", "title", "trackNumber", "year_asc", "year_dsc", "filePath", "custom" - Options > Playlist > Sort order',
+			playlistSortOrder: 'Values: "", "default", "artistDate_asc", "artistDate_dsc", "artistRating_asc", "artistRating_dsc", "album", "title", "trackNumber", "year_asc", "year_dsc", "filePath", "custom" - Options > Playlist > Sort order',
 			playlistSortOrderDirection: 'Values: "_asc", "_dsc" - Options > Playlist > Sort order',
 			playlist_stats_include_artist: 'Values: true, false - Playlist context menu > Write playlist statistics to list > Include artist',
 			playlist_stats_include_album: 'Values: true, false - Playlist context menu > Write playlist statistics to list > Include album',
@@ -1587,10 +1589,15 @@ class ConfigDefaults {
 		/** @public @type {object} Options > Lyrics settings with default values. */
 		this.themeLyricsDefaults = {
 			lyricsLayout: 'normal',
+			lyricsBgImg: true,
+			lyricsBgImgCycle: true,
+			lyricsBgImgCycleTime: 15,
+			lyricsBgImgSource: 'album',
+			lyricsBgImgScale: 'filled',
+			lyricsBgImgOpacity: 76,
 			lyricsDropShadowLevel: 2,
 			lyricsFadeScroll: true,
 			lyricsLargerCurrentSync: true,
-			lyricsAlbumArt: true,
 			lyricsRememberPanelState: false,
 			lyricsAutoScrollUnsynced: true,
 			lyricsScrollSpeed: 'normal',
@@ -1600,11 +1607,16 @@ class ConfigDefaults {
 
 		/** @public @type {object} Options > Lyrics settings config name dscription. */
 		this.themeLyricsComments = {
-			lyricsLayout: 'Values: "normal", "full" - Options > Lyrics > Layout',
+			lyricsLayout: 'Values: "normal", "full", "left", "right" - Options > Lyrics > Layout',
+			lyricsBgImg: 'Values: true, false - Options > Lyrics > Background > Show image on background',
+			lyricsBgImgCycle: 'Values: true, false - Options > Lyrics > Background > Cycle images',
+			lyricsBgImgCycleTime: 'Values: 5, 10, 15, 30, 60 - Options > Lyrics > Background > Cycle time',
+			lyricsBgImgSource: 'Values: "artist", "album", "custom" - Options > Lyrics > Background > Image source',
+			lyricsBgImgScale: 'Values: "default", "filled", "stretched" - Options > Lyrics > Background > Image scaling',
+			lyricsBgImgOpacity: 'Values: 255, 230, 204, 178, 153, 128, 102, 76, 51, 25 - from 100% - 10% - Options > Lyrics > Background > Image opacity',
 			lyricsDropShadowLevel: 'Values: 0, 1, 2, 3 - Options > Lyrics > Display > Show drop shadow',
 			lyricsFadeScroll: 'Values: true, false - Options > Lyrics > Display > Show fade scroll',
 			lyricsLargerCurrentSync: 'Values: true, false - Options > Lyrics > Display > Larger current sync',
-			lyricsAlbumArt: 'Values: true, false - Options > Lyrics > Display > Show lyrics on album art',
 			lyricsRememberPanelState: 'Values: true, false - Options > Lyrics > Display > Remember lyrics panel state',
 			lyricsAutoScrollUnsynced: 'Values: true, false - Options > Lyrics > Display > Auto-scroll unsynced lyrics',
 			lyricsScrollSpeed: 'Values: "fastest", "fast", "normal", "slow", "slowest" - Options > Lyrics > Scroll speed',
@@ -1699,6 +1711,10 @@ class ConfigDefaults {
 			playlistSortDefault: '$if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
 			playlistSortArtistDate_asc: '$if2(%artist sort order%,%album artist%) $if3(%album sort order%,%original release date%,%originaldate%,%date%) %album% %edition% %codec% %discnumber% %tracknumber%',
 			playlistSortArtistDate_dsc: '$if2(%artist sort order%,%album artist%) $if3(%album sort order%,$sub(99999,%original release date%),$sub(99999,%originaldate%),$sub(99999,%date%)) %album% %edition% %codec% %discnumber% %tracknumber%',
+			playlistSortArtistRating_asc: '%artistrating% $if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
+			playlistSortArtistRating_dsc: '$sub(99999,%artistrating%) $if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
+			playlistSortArtistPlaycount_asc: '%artistplaycount% $if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
+			playlistSortArtistPlaycount_dsc: '$sub(99999,%artistplaycount%) $if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
 			playlistSortAlbumTitle: '%album% $if3(%original release date%,%originaldate%,%date%) $if2(%artist sort order%,%album artist%) %edition% %codec% %discnumber% %tracknumber%',
 			playlistSortAlbumRating_asc: '%albumrating% $if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
 			playlistSortAlbumRating_dsc: '$sub(99999,%albumrating%) $if2(%artist sort order%,%album artist%) $if2(%album sort order%,%album%) %edition% %codec% %discnumber% %tracknumber%',
@@ -1739,6 +1755,10 @@ class ConfigDefaults {
 			playlistSortDefault: 'Options > Playlist > Sort order > Default - sort pattern to sort playlists generated from Library selections or clicking on hyperlinks in the Playlist',
 			playlistSortArtistDate_asc: 'Options > Playlist > Sort order > Artist | date ascending',
 			playlistSortArtistDate_dsc: 'Options > Playlist > Sort order > Artist | date descending',
+			playlistSortArtistRating_asc: 'Options > Playlist > Sort order > Artist rating | ascending',
+			playlistSortArtistRating_dsc: 'Options > Playlist > Sort order > Artist rating | descending',
+			playlistSortArtistPlaycount_asc: 'Options > Playlist > Sort order > Artist playcount | ascending',
+			playlistSortArtistPlaycount_dsc: 'Options > Playlist > Sort order > Artist playcount | descending',
 			playlistSortAlbumTitle: 'Options > Playlist > Sort order > Album',
 			playlistSortAlbumRating_asc: 'Options > Playlist > Sort order > Album rating | ascending',
 			playlistSortAlbumRating_dsc: 'Options > Playlist > Sort order > Album rating | descending',

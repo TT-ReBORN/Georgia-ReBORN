@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -74,6 +74,7 @@ const plSet = new PanelProperties();
  * @property {boolean} cache_header - The playlist header cache state, must be deactivated on bg color and playlist size changes.
  * @property {PlaylistHistory} history - The playlist history object.
  * @property {boolean} history_used - The playlist history state, used for playlist scroll.
+ * @property {Map} artist_ratings - The playlist artist ratings cached.
  * @property {Map} album_ratings - The playlist album ratings cached.
  * @property {Map} track_ratings - The playlist track ratings cached.
  * @property {FbMetadbHandle[]} thumbnail_list - The list of handles that we are loading artwork for.
@@ -90,6 +91,7 @@ const pl = {
 	cache_header: true,
 	history: undefined,
 	history_used: false,
+	artist_ratings: new Map(),
 	album_ratings: new Map(),
 	track_ratings: new Map(),
 	thumbnail_list: new Set(),

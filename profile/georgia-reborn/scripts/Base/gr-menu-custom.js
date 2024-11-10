@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-08-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -66,6 +66,7 @@ class CustomMenu {
 	/**
 	 * Gets the active control.
 	 * @returns {CustomMenu | null} The active control instance or null.
+	 * @static
 	 */
 	static get activeControl() {
 		return CustomMenu._activeControl;
@@ -74,6 +75,7 @@ class CustomMenu {
 	/**
 	 * Sets the active control.
 	 * @param {CustomMenu} control - An instance of CustomMenu to set as active.
+	 * @static
 	 */
 	static set activeControl(control) {
 		CustomMenu._activeControl = control;
@@ -82,6 +84,7 @@ class CustomMenu {
 	/**
 	 * Gets the control list.
 	 * @returns {CustomMenu | null} The control list instance or null.
+	 * @static
 	 */
 	static get controlList() {
 		return CustomMenu._controlList;
@@ -90,6 +93,7 @@ class CustomMenu {
 	/**
 	 * Sets the control list.
 	 * @param {CustomMenu} list - An instance of CustomMenu to set as active.
+	 * @static
 	 */
 	static set controlList(list) {
 		CustomMenu._controlList = list;

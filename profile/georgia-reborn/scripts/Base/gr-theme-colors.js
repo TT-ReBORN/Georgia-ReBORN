@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-08-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1531,7 +1531,7 @@ class ThemeColors extends BaseColors {
 		grCol.lowerBarTime = grCol.lowerBarTitle;
 		grCol.lowerBarLength = grCol.lowerBarTitle;
 		grCol.lyricsNormal = RGB(255, 255, 255);
-		grCol.lyricsHighlight = grSet.lyricsAlbumArt ? RGB(255, 240, 150) : RGB(220, 160, 40);
+		grCol.lyricsHighlight = grSet.lyricsBgImg ? RGB(255, 240, 150) : RGB(220, 160, 40);
 		grCol.lyricsShadow = RGB(0, 0, 0);
 
 		// * DETAILS COLORS * //
@@ -1841,7 +1841,7 @@ class ThemeColors extends BaseColors {
 		grCol.lowerBarTime = grCol.lowerBarTitle;
 		grCol.lowerBarLength = grCol.lowerBarTitle;
 		grCol.lyricsNormal = RGB(255, 255, 255);
-		grCol.lyricsHighlight = grSet.lyricsAlbumArt ? RGB(255, 240, 150) : RGB(220, 160, 40);
+		grCol.lyricsHighlight = grSet.lyricsBgImg ? RGB(255, 240, 150) : RGB(220, 160, 40);
 		grCol.lyricsShadow = RGB(0, 0, 0);
 
 		// * DETAILS COLORS * //

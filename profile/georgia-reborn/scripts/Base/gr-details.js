@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-10-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -193,6 +193,8 @@ class Details {
 		this.discArtCover = null;
 		/** @public @type {GdiBitmap[]} The array of disc art images used in Details. */
 		this.discArtArray = [];
+		/** @public @type {number} The scale factor of the disc art used in Details. */
+		this.discArtScaleFactor = 0;
 		/** @private @type {GdiBitmap} The shadow behind the disc art used in Details. */
 		this.discArtShadowImg = null;
 		/** @public @type {object} The disc art position used in Details (offset from albumArtSize). */
@@ -301,7 +303,7 @@ class Details {
 		const drawDiscArtProfiler = grm.ui.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> disc art');
 
 		if (!this.discArtRotation) {
-			this.createDiscArtRotation();
+			this.setDiscArtRotation();
 		}
 
 		const drawDiscArtImage = () => {
@@ -345,7 +347,7 @@ class Details {
 		this.setGridMetrics(gr);
 		this.gridTop = this.gridTopStart;
 
-		if (this.gridContentWidth > 100) {
+		if (this.gridContentWidth > 150) {
 			const spacing = Math.floor(this.gridLineSpacing * 0.33);
 			const spacing2 = Math.floor(this.gridLineSpacing * 0.5);
 
@@ -1665,29 +1667,6 @@ class Details {
 	}
 
 	/**
-	 * Creates the disc art rotation animation with RotateImg().
-	 * @returns {GdiBitmap} The rotated disc art image.
-	 */
-	createDiscArtRotation() {
-		if (!grSet.displayDiscArt || grm.ui.albumArtCorrupt || !grm.ui.albumArt || !this.discArt || this.discArtSize.w <= 0) {
-			return null;
-		}
-
-		// Drawing discArt rotated is slow, so first draw it rotated into the discArtRotation image, and then draw discArtRotation image unrotated in on_paint.
-		let tracknum = parseInt(fb.TitleFormat(`$num($if(${grTF.vinyl_tracknum},$sub($mul(${grTF.vinyl_tracknum},2),1),$if2(%tracknumber%,1)),1)`).Eval()) - 1;
-		if (!grSet.rotateDiscArt || Number.isNaN(tracknum)) tracknum = 0;
-
-		const tracknumRotation = tracknum * grSet.rotationAmt;
-		const combinedImg = this.combineDiscArtWithCover(true);
-
-		this.discArtRotation = RotateImage(combinedImg, this.discArtSize.w, this.discArtSize.h, tracknumRotation, grm.artCache.discArtImgMaxRes);
-
-		// TODO: Once spinning art is done, scrap this and the rotation amount crap and just use indexes into the discArtArray when needed.
-		// ? IDEA: Smooth rotation to new position?
-		return this.discArtRotation;
-	}
-
-	/**
 	 * Combines disc art with album cover art if conditions are met.
 	 * @param {boolean} applyMask - Whether to apply the disc art cover mask or not.
 	 * @returns {GdiBitmap} The combined image.
@@ -1702,35 +1681,6 @@ class Details {
 			return CombineImages(this.discArt, this.discArtCover, this.discArtSize.w, this.discArtSize.h);
 		}
 		return this.discArt;
-	}
-
-	/**
-	 * Creates the drop shadow for disc art.
-	 */
-	createDiscArtShadow() {
-		const discArtShadowProfiler = (grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('createDiscArtShadow');
-		const discArtMargin = SCALE(2);
-
-		if (grm.ui.displayDetails && ((grm.ui.albumArt && grm.ui.albumArtSize.w > 0) || (this.discArt && grSet.displayDiscArt && this.discArtSize.w > 0))) {
-			this.discArtShadowImg = this.discArt && grSet.displayDiscArt ?
-				gdi.CreateImage(this.discArtSize.x + this.discArtSize.w + 2 * this.discArtShadow, this.discArtSize.h + discArtMargin + 2 * this.discArtShadow) :
-				gdi.CreateImage(grm.ui.albumArtSize.x + grm.ui.albumArtSize.w + 2 * this.discArtShadow, grm.ui.albumArtSize.h + 2 * this.discArtShadow);
-			if (grSet.layout === 'default' && this.discArtShadowImg) {
-				const shimg = this.discArtShadowImg.GetGraphics();
-				if (this.discArt && grSet.displayDiscArt) {
-					const offset = this.discArtSize.w * 0.40; // Don't change this value
-					const xVal = this.discArtSize.x;
-					const shadowOffset = this.discArtShadow * 2;
-					shimg.DrawEllipse(xVal + shadowOffset, shadowOffset + discArtMargin, this.discArtSize.w - shadowOffset, this.discArtSize.w - shadowOffset, this.discArtShadow * 2, grCol.discArtShadow); // outer shadow
-					shimg.DrawEllipse(xVal + this.discArtShadow + offset, offset + this.discArtShadow + discArtMargin, this.discArtSize.w - offset * 2, this.discArtSize.h - offset * 2, 60, grCol.discArtShadow); // inner shadow
-				}
-				this.discArtShadowImg.ReleaseGraphics(shimg);
-				this.discArtShadowImg.StackBlur(this.discArtShadow);
-			}
-		}
-
-		if (discArtShadowProfiler) discArtShadowProfiler.Print();
-		if (grCfg.settings.showDebugPerformanceOverlay) grm.ui.debugTimingsArray.push(`createDiscArtShadow: ${discArtShadowProfiler.Time} ms`);
 	}
 
 	/**
@@ -1821,63 +1771,115 @@ class Details {
 			return;
 		}
 
+		this.setDiscArtScaleFactor();
+		this.setDiscArtSize(resetDiscArtPosition);
+		this.setDiscArtPosition(resetDiscArtPosition);
+		this.setDiscArtShadow();
+	}
+
+	/**
+	 * Set the scale factor for the disc art based on the window size and layout.
+	 */
+	setDiscArtScaleFactor() {
+		const discArtMaxHeight = grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight;
+		const scaleFactor = grm.ui.displayPlaylist || grm.ui.displayLibrary ? 0.5 : 0.75;
+		const discScale = Math.min(grm.ui.ww * scaleFactor / this.discArt.Width, (discArtMaxHeight - SCALE(16)) / this.discArt.Height);
+		this.discArtScaleFactor = discScale;
+	}
+
+	/**
+	 * Set the size of the disc art based on its scale, window state, and layout settings.
+	 * @param {boolean} resetDiscArtPosition - Whether the position of the disc art should be reset.
+	 */
+	setDiscArtSize(resetDiscArtPosition) {
+		const discArtSizeCorr = SCALE(4);
+
+		const discArtSize =
+			grm.ui.hasArtwork ? grm.ui.albumArtSize.h - discArtSizeCorr :
+			Math.floor(this.discArt.Width * this.discArtScaleFactor) - discArtSizeCorr;
+
+		if (resetDiscArtPosition) {
+			this.discArtSize = { w: discArtSize, h: discArtSize };
+		} else {
+			this.discArtSize.w = Math.max(this.discArtSize.w, discArtSize);
+			this.discArtSize.h = this.discArtSize.w;
+		}
+	}
+
+	/**
+	 * Set the position of the disc art based on the window size and layout settings.
+	 * @param {boolean} resetDiscArtPosition - Whether the position of the disc art should be reset.
+	 */
+	setDiscArtPosition(resetDiscArtPosition) {
 		const discArtSizeCorr = SCALE(4);
 		const discArtMargin = SCALE(2);
 		const discArtMarginRight = SCALE(36);
 		const discArtMaxHeight = grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight;
-		const discScaleFactor = grm.ui.displayPlaylist || grm.ui.displayLibrary ? 0.5 : 0.75;
-		const discScale = Math.min(grm.ui.ww * discScaleFactor / this.discArt.Width, (discArtMaxHeight - SCALE(16)) / this.discArt.Height);
 
 		if (grm.ui.hasArtwork) {
-			if (resetDiscArtPosition) {
-				this.discArtSize.x =
-					grm.ui.ww - (grm.ui.albumArtSize.x + grm.ui.albumArtSize.w) < grm.ui.albumArtSize.h * grSet.discArtDisplayAmount ? Math.floor(grm.ui.ww - grm.ui.albumArtSize.h - discArtMarginRight) :
-					grSet.discArtDisplayAmount === 1 ? Math.floor(grm.ui.ww - grm.ui.albumArtSize.h - discArtMarginRight) :
-					grSet.discArtDisplayAmount === 0.5 ? Math.floor(Math.min(grm.ui.ww - grm.ui.albumArtSize.h - discArtMarginRight,
-						grm.ui.albumArtSize.x + grm.ui.albumArtSize.w - (grm.ui.albumArtSize.h - 4) * (1 - grSet.discArtDisplayAmount) - (grSet.discArtDisplayAmount === 1 || grSet.discArtDisplayAmount === 0.5 ? 0 : discArtMarginRight))) :
-					Math.floor(grm.ui.albumArtSize.x + grm.ui.albumArtSize.w - (grm.ui.albumArtSize.h - discArtSizeCorr) * (1 - grSet.discArtDisplayAmount) - discArtMarginRight);
+			const baseX = grm.ui.ww - grm.ui.albumArtSize.h - discArtMarginRight;
 
-				this.discArtSize.y = grm.ui.albumArtSize.y + discArtMargin;
-				this.discArtSize.w = grm.ui.albumArtSize.h - discArtSizeCorr; // Disc art must be square so use the height of album art for width of discArt
-				this.discArtSize.h = this.discArtSize.w;
-			} else { // When disc art moves because folder images are different sizes we want to push it outwards, but not move it back in so it jumps around less
-				this.discArtSize.x = Math.max(this.discArtSize.x, Math.floor(Math.min(grm.ui.ww - grm.ui.albumArtSize.h - discArtMarginRight,
-					grm.ui.albumArtSize.x + grm.ui.albumArtSize.w - (grm.ui.albumArtSize.h - 4) * (1 - grSet.discArtDisplayAmount) - (grSet.discArtDisplayAmount === 1 || grSet.discArtDisplayAmount === 0.5 ? 0 : discArtMarginRight))));
+			const adjustedX = grm.ui.albumArtSize.x + grm.ui.albumArtSize.w -
+				(grm.ui.albumArtSize.h - discArtSizeCorr) * (1 - grSet.discArtDisplayAmount) -
+				(grSet.discArtDisplayAmount === 1 || grSet.discArtDisplayAmount === 0.5 ? 0 : discArtMarginRight);
 
-				this.discArtSize.y = this.discArtSize.y > 0 ? Math.min(this.discArtSize.y, grm.ui.albumArtSize.y + discArtMargin) : grm.ui.albumArtSize.y + discArtMargin;
-				this.discArtSize.w = Math.max(this.discArtSize.w, grm.ui.albumArtSize.h - discArtSizeCorr);
-				this.discArtSize.h = this.discArtSize.w;
-				if (this.discArtSize.x + this.discArtSize.w > grm.ui.ww) {
-					this.discArtSize.x = grm.ui.ww - this.discArtSize.w - discArtMarginRight;
-				}
-			}
-		}
-		else { // * No album art so we need to calc size of disc
-			let xCenter = grm.ui.ww * 0.5;
-			grm.ui.albumArtOffCenter = false;
-			if (grm.ui.displayPlaylist || grm.ui.displayLibrary) {
-				xCenter = grm.ui.ww * 0.25;
-			} else if (discScale === grm.ui.ww * 0.75 / this.discArt.Width) {
-				xCenter = Math.round(grm.ui.ww * 0.66 - grm.ui.edgeMargin);
-				grm.ui.albumArtOffCenter = true;
+			const discArtX = Math.floor(
+				grSet.discArtDisplayAmount === 1 ? baseX :
+				grSet.discArtDisplayAmount === 0.5 ? Math.min(baseX, adjustedX) :
+				adjustedX
+			);
+
+			this.discArtSize.x = resetDiscArtPosition ? discArtX : Math.max(this.discArtSize.x, discArtX);
+			this.discArtSize.y = resetDiscArtPosition ? (grm.ui.albumArtSize.y + discArtMargin) :
+				Math.min(this.discArtSize.y > 0 ? this.discArtSize.y :
+				(grm.ui.albumArtSize.y + discArtMargin), grm.ui.albumArtSize.y + discArtMargin);
+
+			if (this.discArtSize.x + this.discArtSize.w > grm.ui.ww) {
+				this.discArtSize.x = grm.ui.ww - this.discArtSize.w - discArtMarginRight;
 			}
 
-			// Need to -4 from height and add 2 to y to avoid skipping discArt drawing - not sure this is needed
-			this.discArtSize.w = Math.floor(this.discArt.Width * discScale) - discArtSizeCorr;
-			this.discArtSize.h = this.discArtSize.w;
-			this.discArtSize.x = Math.floor(xCenter - this.discArtSize.w * 0.5);
-
-			// * Set disc art y-coordinate
-			const restrictedWidth = discScale !== (discArtMaxHeight - SCALE(16)) / this.discArt.Height;
-			const centerY = grm.ui.topMenuHeight + Math.floor(((discArtMaxHeight - SCALE(16)) / 2) - this.discArtSize.h / 2);
-			this.discArtSize.y = restrictedWidth ? Math.min(centerY, 160) : grm.ui.topMenuHeight + discArtMargin;
-
-			grm.ui.hasArtwork = true;
+			return;
 		}
 
-		if ((grm.ui.hasArtwork || grm.ui.noAlbumArtStub) && (this.discArt && grm.ui.displayDetails && grSet.displayDiscArt && grSet.layout !== 'compact')) {
-			this.createDiscArtShadow();
+		// * Set no disc art x-coordinate
+		const discArtOffCenter = this.discArtScaleFactor === (grm.ui.ww * 0.75 / this.discArt.Width);
+
+		const discArtCenterX =
+			discArtOffCenter ? Math.round(grm.ui.ww * 0.66 - grm.ui.edgeMargin) :
+			(grm.ui.displayPlaylist || grm.ui.displayLibrary) ? grm.ui.ww * 0.25 :
+			grm.ui.ww * 0.5;
+
+		this.discArtSize.x = Math.floor(discArtCenterX - this.discArtSize.w * 0.5);
+
+		// * Set no disc art y-coordinate
+		const restrictedWidth = this.discArtScaleFactor !== (discArtMaxHeight - SCALE(16)) / this.discArt.Height;
+		const discArtCenterY = grm.ui.topMenuHeight + Math.floor(((discArtMaxHeight - SCALE(16)) / 2) - this.discArtSize.h / 2);
+		this.discArtSize.y = restrictedWidth ? Math.min(discArtCenterY, 160) : grm.ui.topMenuHeight + discArtMargin;
+
+		grm.ui.hasArtwork = true;
+	}
+
+	/**
+	 * Sets and creates the disc art rotation animation with RotateImg().
+	 * @returns {GdiBitmap} The rotated disc art image.
+	 */
+	setDiscArtRotation() {
+		if (!grSet.displayDiscArt || grm.ui.albumArtCorrupt || !grm.ui.albumArt || !this.discArt || this.discArtSize.w <= 0) {
+			return null;
 		}
+
+		// Drawing discArt rotated is slow, so first draw it rotated into the discArtRotation image, and then draw discArtRotation image unrotated in on_paint.
+		let tracknum = parseInt(fb.TitleFormat(`$num($if(${grTF.vinyl_tracknum},$sub($mul(${grTF.vinyl_tracknum},2),1),$if2(%tracknumber%,1)),1)`).Eval()) - 1;
+		if (!grSet.rotateDiscArt || Number.isNaN(tracknum)) tracknum = 0;
+
+		const tracknumRotation = tracknum * grSet.rotationAmt;
+		const combinedImg = this.combineDiscArtWithCover(true);
+
+		this.discArtRotation = RotateImage(combinedImg, this.discArtSize.w, this.discArtSize.h, tracknumRotation, grm.artCache.discArtImgMaxRes);
+
+		// TODO: Once spinning art is done, scrap this and the rotation amount crap and just use indexes into the discArtArray when needed.
+		// ? IDEA: Smooth rotation to new position?
+		return this.discArtRotation;
 	}
 
 	/**
@@ -1915,11 +1917,45 @@ class Details {
 	}
 
 	/**
+	 * Sets the drop shadow for disc art.
+	 */
+	setDiscArtShadow() {
+		if (!this.discArt || !grm.ui.hasArtwork && !grm.ui.noAlbumArtStub ||
+			!grm.ui.displayDetails || !grSet.displayDiscArt || grSet.layout === 'compact') {
+			return;
+		}
+
+		const discArtShadowProfiler = (grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('createDiscArtShadow');
+		const discArtMargin = SCALE(2);
+
+		if (grm.ui.albumArtSize.w > 0 || this.discArtSize.w > 0) {
+			this.discArtShadowImg = this.discArt ?
+				gdi.CreateImage(this.discArtSize.x + this.discArtSize.w + 2 * this.discArtShadow, this.discArtSize.h + discArtMargin + 2 * this.discArtShadow) :
+				gdi.CreateImage(grm.ui.albumArtSize.x + grm.ui.albumArtSize.w + 2 * this.discArtShadow, grm.ui.albumArtSize.h + 2 * this.discArtShadow);
+			if (grSet.layout === 'default' && this.discArtShadowImg) {
+				const shimg = this.discArtShadowImg.GetGraphics();
+				if (this.discArt) {
+					const offset = this.discArtSize.w * 0.40; // Don't change this value
+					const xVal = this.discArtSize.x;
+					const shadowOffset = this.discArtShadow * 2;
+					shimg.DrawEllipse(xVal + shadowOffset, shadowOffset + discArtMargin, this.discArtSize.w - shadowOffset, this.discArtSize.w - shadowOffset, this.discArtShadow * 2, grCol.discArtShadow); // outer shadow
+					shimg.DrawEllipse(xVal + this.discArtShadow + offset, offset + this.discArtShadow + discArtMargin, this.discArtSize.w - offset * 2, this.discArtSize.h - offset * 2, 60, grCol.discArtShadow); // inner shadow
+				}
+				this.discArtShadowImg.ReleaseGraphics(shimg);
+				this.discArtShadowImg.StackBlur(this.discArtShadow);
+			}
+		}
+
+		if (discArtShadowProfiler) discArtShadowProfiler.Print();
+		if (grCfg.settings.showDebugPerformanceOverlay) grm.ui.debugTimingsArray.push(`createDiscArtShadow: ${discArtShadowProfiler.Time} ms`);
+	}
+
+	/**
 	 * Updates the disc art by resizing artwork, creating rotation, and setting the rotation timer.
 	 */
 	updateDiscArt() {
 		grm.ui.resizeArtwork(true);
-		this.createDiscArtRotation();
+		this.setDiscArtRotation();
 		if (!grSet.spinDiscArt) return;
 		this.discArtArray = []; // Clear last image
 		this.setDiscArtRotationTimer();

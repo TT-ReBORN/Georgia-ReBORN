@@ -342,10 +342,10 @@ class LibMenuItems {
 			func: () => WriteThemeTags()
 		});
 
-		const meta_handler = new PlaylistMetaHandler();
+		const meta_manager = new PlaylistMetaManager();
 		libMenu.newItem({
 			str: 'Write album statistics to tags',
-			func: () => meta_handler.write_album_stats_to_tags()
+			func: () => meta_manager.write_album_stats_to_tags()
 		});
 
 		libMenu.newItem({

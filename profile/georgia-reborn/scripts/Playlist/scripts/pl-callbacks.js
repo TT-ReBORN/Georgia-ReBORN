@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-10-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -811,9 +811,10 @@ class PlaylistCallbacks {
 						WriteThemeTags();
 					});
 					cmm.appendItem('Write album statistics to tags', () => {
-						pl.playlist.meta_handler.write_album_stats_to_tags();
+						pl.playlist.meta_manager.write_album_stats_to_tags();
 					});
 					pl.playlist.ctx_menu_playlist_stats(cmm);
+					pl.playlist.ctx_menu_playlist_diagnostics(cmm);
 				}
 			}
 			else {

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-06-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -161,6 +161,7 @@ class Color {
 	 * A static property that provides an enumeration of event names used by the Color class.
 	 * This allows for consistent naming of events throughout the application.
 	 * @returns {object} An object containing event name constants.
+	 * @static
 	 * @example
 	 * Assuming Color is a class that emits events and has an 'on' method for event listening.
 	 * colorInstance.on(Color.Events.RGB_UPDATED, (newColor) => {
@@ -182,6 +183,7 @@ class Color {
 	/**
 	 * A static method that generates a random color instance.
 	 * @returns {Color} A new Color instance with a random color value.
+	 * @static
 	 * @example
 	 * const randomColor = Color.random(); // Creates a Color instance with a random RGB value.
 	 */

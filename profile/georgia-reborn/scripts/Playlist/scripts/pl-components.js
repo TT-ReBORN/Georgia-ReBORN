@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-10-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2062,7 +2062,9 @@ class PlaylistRating {
 			return;
 		}
 
+		pl.artist_ratings.clear();
 		pl.album_ratings.clear();
+		grm.ui.clearCache('ratings');
 		const new_rating = Math.floor((x - this.x) / this.btn_w) + 1;
 		const current_rating = this.get_rating();
 
@@ -2096,39 +2098,56 @@ class PlaylistRating {
 	}
 
 	/**
-	 * Gets the rating for the current track.
-	 * If no rating has been fetched yet, it fetches the rating using the get_track_rating method.
-	 * @returns {number|null} The rating of the current track, or null if no rating.
+	 * Gets the ratings for the current artist, album, and track.
+	 * @returns {object} An object containing artist rating, album rating and track rating.
 	 */
-	get_rating() {
-		const trackId = $('%rating%', this.metadb);
-		let rating = pl.track_ratings.get(trackId);
+	get_current_ratings() {
+		const artistRating = this.get_artist_rating();
+		const albumRating = this.get_album_rating();
+		const trackRating = this.get_track_rating();
 
-		if (rating === undefined) {
-			rating = this.get_track_rating(this.metadb);
-			pl.track_ratings.set(trackId, rating);
-		}
-
-		return rating;
+		return { artistRating, albumRating, trackRating };
 	}
 
 	/**
-	 * Gets the rating for a given track.
-	 * If no track is provided, it defaults to the current playlist row.
-	 * @param {FbMetadbHandle} [track] - The track to get the rating for.
-	 * @returns {number|null} The rating of the provided or default track, or null if no rating.
+	 * Gets the average rating for an artist.
+	 * @returns {Map<string, number>} A map where the key is the artist name and the value is the average rating of all tracks by that artist.
 	 */
-	get_track_rating(track = this.metadb) {
-		let currentRating;
-
-		if (plSet.use_rating_from_tags) {
-			const fileInfo = track.GetFileInfo();
-			const ratingIdx = fileInfo.MetaFind('RATING');
-			currentRating = ratingIdx !== -1 ? fileInfo.MetaValue(ratingIdx, 0) : 0;
-		} else {
-			currentRating = $('%rating%', track);
+	get_artist_rating() {
+		// Return cached results if available
+		if (pl.artist_ratings.size !== 0) {
+			return pl.artist_ratings;
 		}
-		return currentRating === '' ? null : Number(currentRating);
+
+		const artists = new Map();
+		const playlistItems = pl.playlist.playlist_items_array;
+
+		// Group tracks by artist
+		for (let i = 0; i < playlistItems.length; ++i) {
+			const track = playlistItems[i];
+			const artistName = $('%artist%', track);
+			const rating = this.get_track_rating(track);
+
+			if (rating === null) continue; // Skip tracks with no rating
+
+			if (artists.has(artistName)) {
+				const artistData = artists.get(artistName);
+				artistData.artistTotalRating += rating;
+				artistData.artistTrackCount++;
+			} else {
+				artists.set(artistName, { artistTotalRating: rating, artistTrackCount: 1 });
+			}
+		}
+
+		// Calculate average rating for each artist
+		for (const [artistName, { artistTotalRating, artistTrackCount }] of artists) {
+			if (artistTrackCount > 0) {
+				const artistAverageRating = Number((artistTotalRating / artistTrackCount).toFixed(2));
+				pl.artist_ratings.set(artistName, artistAverageRating);
+			}
+		}
+
+		return pl.artist_ratings;
 	}
 
 	/**
@@ -2142,7 +2161,7 @@ class PlaylistRating {
 		}
 
 		const albums = new Map();
-		const playlistItems = plman.GetPlaylistItems(plman.ActivePlaylist).Convert();
+		const playlistItems = pl.playlist.playlist_items_array;
 
 		// Group tracks by album
 		for (let i = 0; i < playlistItems.length; ++i) {
@@ -2170,6 +2189,43 @@ class PlaylistRating {
 		}
 
 		return pl.album_ratings;
+	}
+
+	/**
+	 * Gets the rating for a given track.
+	 * If no track is provided, it defaults to the current playlist row.
+	 * @param {FbMetadbHandle} [track] - The track to get the rating for.
+	 * @returns {number|null} The rating of the provided or default track, or null if no rating.
+	 */
+	get_track_rating(track = this.metadb) {
+		let currentRating;
+
+		if (plSet.use_rating_from_tags) {
+			const fileInfo = track.GetFileInfo();
+			const ratingIdx = fileInfo.MetaFind('RATING');
+			currentRating = ratingIdx !== -1 ? fileInfo.MetaValue(ratingIdx, 0) : 0;
+		} else {
+			currentRating = $('%rating%', track);
+		}
+
+		return currentRating === '' ? null : Number(currentRating);
+	}
+
+	/**
+	 * Gets the rating for the current track.
+	 * If no rating has been fetched yet, it fetches the rating using the get_track_rating method.
+	 * @returns {number|null} The rating of the current track, or null if no rating.
+	 */
+	get_rating() {
+		const trackId = $('%rating%', this.metadb);
+		let rating = pl.track_ratings.get(trackId);
+
+		if (rating === undefined) {
+			rating = this.get_track_rating(this.metadb);
+			pl.track_ratings.set(trackId, rating);
+		}
+
+		return rating;
 	}
 
 	/**
@@ -2256,6 +2312,7 @@ class PlaylistManager {
 	 * Appends a context menu item to the given parent menu that allows the user
 	 * to toggle the visibility of the playlist manager text button.
 	 * @param {ContextMenu} parent_menu - The parent menu to append the item to.
+	 * @static
 	 */
 	static append_playlist_info_visibility_context_menu_to(parent_menu) {
 		parent_menu.appendItem('Show playlist manager', () => {
@@ -2704,6 +2761,1315 @@ class PlaylistManager {
 	on_playlist_modified() {
 		this.info_text = undefined;
 		this.repaint();
+	}
+	// #endregion
+}
+
+
+////////////////////////////////
+// * PLAYLIST META PROVIDER * //
+////////////////////////////////
+/**
+ * A class that provides various metadata for artists, albums, tracks, ratings, playcounts and more.
+ */
+class PlaylistMetaProvider {
+	/**
+	 * Creates the `PlaylistMetaProvder` instance.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
+	 */
+	constructor(metadb) {
+		/** @private @type {FbMetadbHandle} The metadb of the track. */
+		this.metadb = metadb;
+		/** @public @type {PlaylistRating} The rating instance for the playlist. */
+		this.rating = new PlaylistRating();
+		/** Initialize all Maps. */
+		this.init_metadata_maps();
+	}
+
+	// * STATIC METHODS * //
+	// #region STATIC METHODS
+	/**
+	 * Initializes the given meta value if it exists and is not equal to '?', otherwise returns the default value.
+	 * Empty meta string values are stored as a question mark '?' placeholder, which are then remapped to the specified default value.
+	 * @param {string} value - The meta value to initialize. If the value is an empty string or a question mark '?', it will be considered invalid.
+	 * @param {string|string[]} defaultValue - The default value(s) to return if the meta value is invalid. This can be a string or an array of strings.
+	 * @param {boolean} toArray - If true, the result will be an array of strings, splitting the valid meta value by commas. If false, the result will be a single string.
+	 * @returns {string|string[]} The initialized value, either as a string or an array of strings, or the default value(s) if the meta value is invalid.
+	 * @static
+	 */
+	static initMetaValue(value, defaultValue, toArray) {
+		if (value && value !== '?') {
+			return toArray ? value.split(',').map(item => item.trim()) : value;
+		}
+		return defaultValue;
+	}
+
+	/**
+	 * Initializes the meta map with a default value for the given key if it doesn't already exist.
+	 * - For genres, countries, and labels, a new Set is used to avoid duplicates.
+	 * - For ratings and playcounts, a number (default 0) is used.
+	 * - For other cases, a string is used.
+	 * @param {Map<any, string|number|Set<any>>} map - The map to initialize.
+	 * @param {any} key - The key to check in the map.
+	 * @param {string|number|Set<any>} defaultValue - The default value to set for the key.
+	 * @returns {string|number|Set<any>} - The value associated with the key in the map.
+	 * @static
+	 */
+	static initMetaMapValue(map, key, defaultValue) {
+		if (!map.has(key)) map.set(key, defaultValue);
+		return map.get(key);
+	}
+
+	/**
+	 * Updates the meta value for a given key in the map by incrementing it.
+	 * If the key does not exist, it initializes it with the increment value.
+	 * @param {Map<any, number>} map - The map to update.
+	 * @param {any} key - The key for which the value should be updated.
+	 * @param {number} incrementBy - The value to increment the key's value by.
+	 * @returns {number} - The updated value for the key in the map.
+	 * @static
+	 */
+	static updateMetaMapValue(map, key, incrementBy) {
+		const updatedValue = (map.get(key) || 0) + incrementBy;
+		map.set(key, updatedValue);
+		return updatedValue;
+	}
+	// #endregion
+
+	// * PRIVATE METHODS * //
+	// #region PRIVATE METHODS
+	/**
+	 * Processes album metadata and updates internal maps and sets.
+	 * @param {Map<string, object>} metadata - The metadata map.
+	 * @private
+	 */
+	_process_metadata_album_data(metadata) {
+		const { artist, album, year, genre, label, country } = metadata;
+
+		// * Set maps have entries for artist and album
+		this.artistGenre.set(artist, PlaylistMetaProvider.initMetaMapValue(this.artistGenre, artist, new Set()));
+		this.artistCountry.set(artist, PlaylistMetaProvider.initMetaMapValue(this.artistCountry, artist, new Set()));
+		this.albumArtist.set(album, PlaylistMetaProvider.initMetaMapValue(this.albumArtist, album, artist));
+		this.albumYear.set(album, PlaylistMetaProvider.initMetaMapValue(this.albumYear, album, year));
+		this.albumGenre.set(album, PlaylistMetaProvider.initMetaMapValue(this.albumGenre, album, new Set()));
+		this.albumLabel.set(album, PlaylistMetaProvider.initMetaMapValue(this.albumLabel, album, new Set()));
+		this.albumCountry.set(album, PlaylistMetaProvider.initMetaMapValue(this.albumCountry, album, new Set()));
+
+		// * Set ratings, counts, and playcounts to 0 if they don't exist
+		this.artistRatings.set(artist, PlaylistMetaProvider.initMetaMapValue(this.artistRatings, artist, 0));
+		this.albumRatings.set(album, PlaylistMetaProvider.initMetaMapValue(this.albumRatings, album, 0));
+		this.artistCounts.set(artist, PlaylistMetaProvider.initMetaMapValue(this.artistCounts, artist, 0));
+		this.albumCounts.set(album, PlaylistMetaProvider.initMetaMapValue(this.albumCounts, album, 0));
+		this.artistPlaycounts.set(artist, PlaylistMetaProvider.initMetaMapValue(this.artistPlaycounts, artist, 0));
+		this.albumPlaycounts.set(album, PlaylistMetaProvider.initMetaMapValue(this.albumPlaycounts, album, 0));
+
+		// * Add genres to artist/album, labels to album, and countries to artist/album sets
+		for (const genreAlbum of genre) {
+			this.artistGenre.get(artist).add(genreAlbum);
+			this.albumGenre.get(album).add(genreAlbum);
+		}
+		for (const labelAlbum of label) {
+			this.albumLabel.get(album).add(labelAlbum);
+		}
+		for (const countryAlbum of country) {
+			this.artistCountry.get(artist).add(countryAlbum);
+			this.albumCountry.get(album).add(countryAlbum);
+		}
+	}
+
+	/**
+	 * Processes track metadata and updates internal maps and sets.
+	 * @param {Map<string, object>} metadata - The metadata map.
+	 * @private
+	 */
+	_process_metadata_track_data(metadata) {
+		const { artist, album, year, title, genre, label, country, rating, playcount } = metadata;
+
+		this.trackArtist.set(title, PlaylistMetaProvider.initMetaMapValue(this.trackArtist, title, artist));
+		this.trackAlbum.set(title, PlaylistMetaProvider.initMetaMapValue(this.trackAlbum, title, album));
+		this.trackYear.set(title, PlaylistMetaProvider.initMetaMapValue(this.trackYear, title, year));
+		this.trackGenre.set(title, PlaylistMetaProvider.initMetaMapValue(this.trackGenre, title, new Set()));
+		this.trackLabel.set(title, PlaylistMetaProvider.initMetaMapValue(this.trackLabel, title, new Set()));
+		this.trackCountry.set(title, PlaylistMetaProvider.initMetaMapValue(this.trackCountry, title, new Set()));
+		this.trackRatings.set(title, PlaylistMetaProvider.initMetaMapValue(this.trackRatings, title, 0));
+		this.trackCounts.set(title, PlaylistMetaProvider.initMetaMapValue(this.trackCounts, title, 0));
+
+		this.artistRatings.set(artist, PlaylistMetaProvider.updateMetaMapValue(this.artistRatings, artist, rating));
+		this.albumRatings.set(album, PlaylistMetaProvider.updateMetaMapValue(this.albumRatings, album, rating));
+		this.trackRatings.set(title, PlaylistMetaProvider.updateMetaMapValue(this.trackRatings, title, rating));
+		this.artistCounts.set(artist, PlaylistMetaProvider.updateMetaMapValue(this.artistCounts, artist, 1));
+		this.albumCounts.set(album, PlaylistMetaProvider.updateMetaMapValue(this.albumCounts, album, 1));
+		this.trackCounts.set(title, PlaylistMetaProvider.updateMetaMapValue(this.trackCounts, title, 1));
+		this.artistPlaycounts.set(artist, PlaylistMetaProvider.updateMetaMapValue(this.artistPlaycounts, artist, playcount));
+		this.albumPlaycounts.set(album, PlaylistMetaProvider.updateMetaMapValue(this.albumPlaycounts, album, playcount));
+		this.trackPlaycounts.set(title, PlaylistMetaProvider.updateMetaMapValue(this.trackPlaycounts, title, playcount));
+
+		// * Process genre, label, country metadata fields
+		for (const genreTrack of genre) {
+			this.trackGenre.get(title).add(genreTrack);
+			this.genrePlaycounts.set(genreTrack, PlaylistMetaProvider.updateMetaMapValue(this.genrePlaycounts, genreTrack, playcount));
+		}
+
+		for (const labelTrack of label) {
+			this.trackLabel.get(title).add(labelTrack);
+			this.labelPlaycounts.set(labelTrack, PlaylistMetaProvider.updateMetaMapValue(this.labelPlaycounts, labelTrack, playcount));
+		}
+
+		for (const countryTrack of country) {
+			this.trackCountry.get(title).add(countryTrack);
+			this.countryPlaycounts.set(countryTrack, PlaylistMetaProvider.updateMetaMapValue(this.countryPlaycounts, countryTrack, playcount));
+		}
+	}
+
+	/**
+	 * Processes the top-rated stats based on metadata ratings.
+	 * @private
+	 */
+	_process_metadata_top_rated_stats() {
+		this.topRatedArtists = SortKeyValuesByAvg(this.artistRatings, this.artistCounts);
+		this.topRatedAlbums  = SortKeyValuesByAvg(this.albumRatings, this.albumCounts);
+		this.topRatedTracks  = SortKeyValuesByAvg(this.trackRatings, this.trackCounts);
+	}
+
+	/**
+	 * Processes the top-played stats based on metadata play counts.
+	 * @private
+	 */
+	_process_metadata_top_played_stats() {
+		this.topPlayedArtists   = SortKeyValuesByDsc(this.artistPlaycounts);
+		this.topPlayedAlbums    = SortKeyValuesByDsc(this.albumPlaycounts);
+		this.topPlayedTracks    = SortKeyValuesByDsc(this.trackPlaycounts);
+		this.topPlayedGenres    = SortKeyValuesByDsc(this.genrePlaycounts);
+		this.topPlayedLabels    = SortKeyValuesByDsc(this.labelPlaycounts);
+		this.topPlayedCountries = SortKeyValuesByDsc(this.countryPlaycounts);
+	}
+
+	/**
+	 * Calculates the total stats from the given metadata.
+	 * @param {Map<string, object>} metadata - The metadata map.
+	 * @private
+	 */
+	_process_metadata_total_stats(metadata) {
+		const artists = new Set();
+		const albums = new Set();
+		const years = new Set();
+		const genres = new Set();
+		const labels = new Set();
+		const countries = new Set();
+
+		let totalTracks = 0;
+		let totalRatings = 0;
+		let totalPlaycounts = 0;
+
+		for (const album of metadata.values()) {
+			artists.add(album.artist);
+			albums.add(album.album);
+			years.add(album.year);
+			genres.add(album.genre);
+			labels.add(album.label);
+			countries.add(album.country);
+
+			totalTracks += album.tracks.length;
+			for (const track of album.tracks) {
+				totalRatings += track.rating;
+				totalPlaycounts += track.playcount;
+			}
+		}
+
+		this.totalArtists = artists.size;
+		this.totalAlbums = albums.size;
+		this.totalTracks = totalTracks;
+		this.totalYears = years.size;
+		this.totalGenres = genres.size;
+		this.totalLabels = labels.size;
+		this.totalCountries = countries.size;
+		this.totalRatings = totalRatings;
+		this.totalPlaycounts = totalPlaycounts;
+
+		const playcountSum = (playcounts) => [...playcounts.values()].reduce((acc, count) => acc + count, 0);
+		this.totalArtistPlays  = playcountSum(this.artistPlaycounts);
+		this.totalAlbumPlays   = playcountSum(this.albumPlaycounts);
+		this.totalTrackPlays   = playcountSum(this.trackPlaycounts);
+		this.totalGenrePlays   = playcountSum(this.genrePlaycounts);
+		this.totalLabelPlays   = playcountSum(this.labelPlaycounts);
+		this.totalCountryPlays = playcountSum(this.countryPlaycounts);
+	}
+
+	/**
+	 * Determines the best-rated stats based on average ratings.
+	 * @private
+	 */
+	_process_metadata_best_rated_stats() {
+		this.bestRatedArtist = GetKeyByHighestAvg(this.artistRatings, this.artistCounts);
+		this.bestRatedAlbum  = GetKeyByHighestAvg(this.albumRatings, this.albumCounts);
+		this.bestRatedTrack  = GetKeyByHighestAvg(this.trackRatings, this.trackCounts);
+	}
+
+	/**
+	 * Determines the most-listened stats based on play counts.
+	 * @private
+	 */
+	_process_metadata_most_listened_stats() {
+		this.mostPlayedArtist  = GetKeyByHighestVal(this.artistPlaycounts);
+		this.mostPlayedAlbum   = GetKeyByHighestVal(this.albumPlaycounts);
+		this.mostPlayedTrack   = GetKeyByHighestVal(this.trackPlaycounts);
+		this.mostPlayedGenre   = GetKeyByHighestVal(this.genrePlaycounts);
+		this.mostPlayedLabel   = GetKeyByHighestVal(this.labelPlaycounts);
+		this.mostPlayedCountry = GetKeyByHighestVal(this.countryPlaycounts);
+
+		this.artistPlaycount  = this.artistPlaycounts.get(this.mostPlayedArtist);
+		this.albumPlaycount   = this.albumPlaycounts.get(this.mostPlayedAlbum);
+		this.trackPlaycount   = this.trackPlaycounts.get(this.mostPlayedTrack);
+		this.genrePlaycount   = this.genrePlaycounts.get(this.mostPlayedGenre);
+		this.labelPlaycount   = this.labelPlaycounts.get(this.mostPlayedLabel);
+		this.countryPlaycount = this.countryPlaycounts.get(this.mostPlayedCountry);
+
+		this.artistPercentage  = (this.artistPlaycount / this.totalArtistPlays) * 100;
+		this.albumPercentage   = (this.albumPlaycount / this.totalAlbumPlays) * 100;
+		this.trackPercentage   = (this.trackPlaycount / this.totalTrackPlays) * 100;
+		this.genrePercentage   = (this.genrePlaycount / this.totalGenrePlays) * 100;
+		this.labelPercentage   = (this.labelPlaycount / this.totalLabelPlays) * 100;
+		this.countryPercentage = (this.countryPlaycount / this.totalCountryPlays) * 100;
+	}
+	// #endregion
+
+	// * PUBLIC METHODS * //
+	// #region PUBLIC METHODS
+	/**
+	 * Initializes all metadata maps.
+	 * This method sets up various maps to store metadata information for artists, albums, and tracks.
+	 */
+	init_metadata_maps() {
+		/** @type {Map<string, string>} A map of artist names to their genres. */
+		this.artistGenre = new Map();
+		/** @type {Map<string, string>} A map of artist names to their countries. */
+		this.artistCountry = new Map();
+
+		/** @type {Map<string, string>} A map of album names to their artists. */
+		this.albumArtist = new Map();
+		/** @type {Map<string, number>} A map of album names to their release years. */
+		this.albumYear = new Map();
+		/** @type {Map<string, string>} A map of album names to their genres. */
+		this.albumGenre = new Map();
+		/** @type {Map<string, string>} A map of album names to their labels. */
+		this.albumLabel = new Map();
+		/** @type {Map<string, string>} A map of album names to their countries. */
+		this.albumCountry = new Map();
+
+		/** @type {Map<string, string>} A map of track names to their artists. */
+		this.trackArtist = new Map();
+		/** @type {Map<string, string>} A map of track names to their albums. */
+		this.trackAlbum = new Map();
+		/** @type {Map<string, number>} A map of track names to their release years. */
+		this.trackYear = new Map();
+		/** @type {Map<string, string>} A map of track names to their genres. */
+		this.trackGenre = new Map();
+		/** @type {Map<string, string>} A map of track names to their labels. */
+		this.trackLabel = new Map();
+		/** @type {Map<string, string>} A map of track names to their countries. */
+		this.trackCountry = new Map();
+
+		/** @type {Map<string, number>} A map of artist names to their ratings. */
+		this.artistRatings = new Map();
+		/** @type {Map<string, number>} A map of album names to their ratings. */
+		this.albumRatings = new Map();
+		/** @type {Map<string, number>} A map of track names to their ratings. */
+		this.trackRatings = new Map();
+
+		/** @type {Map<string, number>} A map of artist names to their play counts. */
+		this.artistCounts = new Map();
+		/** @type {Map<string, number>} A map of album names to their play counts. */
+		this.albumCounts = new Map();
+		/** @type {Map<string, number>} A map of track names to their play counts. */
+		this.trackCounts = new Map();
+
+		/** @type {Map<string, number>} A map of artist names to their play counts. */
+		this.artistPlaycounts = new Map();
+		/** @type {Map<string, number>} A map of album names to their play counts. */
+		this.albumPlaycounts = new Map();
+		/** @type {Map<string, number>} A map of track names to their play counts. */
+		this.trackPlaycounts = new Map();
+		/** @type {Map<string, number>} A map of genres to their play counts. */
+		this.genrePlaycounts = new Map();
+		/** @type {Map<string, number>} A map of labels to their play counts. */
+		this.labelPlaycounts = new Map();
+		/** @type {Map<string, number>} A map of countries to their play counts. */
+		this.countryPlaycounts = new Map();
+	}
+
+	/**
+	 * Iterates through the current active playlist and builds metadata for each album.
+	 * @returns {Map<string, object>} The map where keys are album names and values are objects with properties:
+	 * - artist: {string} The name of the artist of the album.
+	 * - album: {string} The name of the album.
+	 * - title: {string} The title of the album.
+	 * - year: {string} The year of the album.
+	 * - genre: {string} The genre of the album.
+	 * - label: {string} The label the artist is signed to.
+	 * - country: {string} The country the artist is from.
+	 * - artistAverageRating: {number} The calculated average artist rating.
+	 * - artistPlaycount: {number} The calculated total playcount of the artist.
+	 * - albumTrackCount: {number} The total number of tracks on the album.
+	 * - albumTotalRating: {number} The calculated total rating of all tracks on the album.
+	 * - albumTotalPlaycount: {number} The calculated total playcount of all tracks on the album.
+	 * - albumAverageRating: {number} The calculated average album rating.
+	 * - albumAveragePlaycount: {number} The calculated average album playcount.
+	 * - tracks: {Array<Object>} An array of track objects, each with properties:
+	 *   - artist: {string} The name of the artist of the track.
+	 *   - album: {string} The name of the album the track belongs to.
+	 *   - trackNumber: {string} The track number.
+	 *   - title: {string} The title of the track.
+	 *   - year: {string} The release year of the track.
+	 *   - genre: {string} The genre of the track.
+	 *   - label: {string} The label the track is signed to.
+	 *   - country: {string} The country the artist is from.
+	 *   - rating: {number} The rating of the track.
+	 *   - playcount: {number} The playcount of the track.
+	 *   - fileSize: {number} The file size of the track.
+	 *   - length: {number} The length of the track.
+	 *   - path: {string} The file path of the track.
+	 */
+	get_metadata() {
+		const metadata = new Map();
+		const playlistItems = pl.playlist.playlist_items_array;
+		const getArtistRating = this.rating.get_artist_rating();
+
+		const createTrackLevelMeta = (metadata) => ({
+			artist: PlaylistMetaProvider.initMetaValue($(grTF.artist, metadata), 'NO ARTIST'),
+			album: PlaylistMetaProvider.initMetaValue($('%album%', metadata), 'NO ALBUM'),
+			trackNumber: PlaylistMetaProvider.initMetaValue($('%tracknumber%', metadata), '??'),
+			title: PlaylistMetaProvider.initMetaValue($('$if2($meta(title),)', metadata), 'NO TRACK TITLE'),
+			year: PlaylistMetaProvider.initMetaValue($(grTF.year, metadata), 'NO YEAR'),
+			genre: PlaylistMetaProvider.initMetaValue($('%genre%', metadata), ['NO GENRE'], true),
+			label: PlaylistMetaProvider.initMetaValue($('$if2(%label%,[%publisher%])', metadata), ['NO LABEL'], true),
+			country: PlaylistMetaProvider.initMetaValue($(grTF.artist_country, metadata), ['NO COUNTRY'], true),
+			rating: PlaylistMetaProvider.initMetaValue(this.rating.get_track_rating(metadata), 0),
+			playcount: PlaylistMetaProvider.initMetaValue(this.get_track_playcount(metadata), 0),
+			fileSize: metadata.FileSize,
+			length: metadata.Length,
+			path: metadata.Path
+		});
+
+		const createAlbumLevelMeta = (metadata) => ({
+			artist: metadata.artist,
+			album: metadata.album,
+			trackNumber: metadata.trackNumber,
+			title: metadata.title,
+			year: metadata.year,
+			genre: metadata.genre,
+			label: metadata.label,
+			country: metadata.country,
+			rating: metadata.rating,
+			playcount: metadata.playcount,
+			artistAverageRating: 0,
+			artistPlaycount: 0,
+			albumTrackCount: 0,
+			albumTotalRating: 0,
+			albumTotalPlaycount: 0,
+			albumAverageRating: 0,
+			albumAveragePlaycount: 0,
+			tracks: []
+		});
+
+		for (const playlistItem of playlistItems) {
+			const track = createTrackLevelMeta(playlistItem);
+			const album = metadata.get(track.album) || createAlbumLevelMeta(track);
+
+			// * Update album metadata with track information
+			album.albumTrackCount += 1;
+			album.albumTotalRating += track.rating;
+			album.albumTotalPlaycount += track.playcount;
+			album.tracks.push(track);
+
+			this.artistPlaycounts.set(track.artist, (this.artistPlaycounts.get(track.artist) || 0) + track.playcount);
+			metadata.set(track.album, album);
+		}
+
+		for (const album of metadata.values()) {
+			album.artistAverageRating = getArtistRating.get(album.artist) || 0;
+			album.artistPlaycount = this.artistPlaycounts.get(album.artist) || 0;
+			album.albumAverageRating = album.albumTrackCount ? Number((album.albumTotalRating / album.albumTrackCount).toFixed(2)) : 0;
+			album.albumAveragePlaycount = album.albumTrackCount ? Math.round(album.albumTotalPlaycount / album.albumTrackCount) : 0;
+		}
+
+		return metadata;
+	}
+
+	/**
+	 * Gets metadata statistics for artists, albums, and tracks from the current active playlist.
+	 * Sets default values where data is missing, computes various stats like ratings, counts, playcounts, and sorts them to find top rated and most played entries.
+	 * @param {Map<string, object>} metadata - The metadata map.
+	 * @returns {object} An object with aggregated metadata statistics, including:
+	 * - Mappings of artists to genres, countries, and their ratings, counts, and playcounts.
+	 * - Mappings of albums to artists, years, genres, labels, countries, and their ratings, counts, and playcounts.
+	 * - Mappings of tracks to artists, albums, years, genres, labels, and their ratings, counts.
+	 * - Sorted lists of top rated and most played artists, albums, tracks, genres, labels, and countries.
+	 * - Total play counts for artists, albums, tracks, genres, labels, and countries.
+	 */
+	get_metadata_stats(metadata) {
+		this.init_metadata_maps();
+
+		for (const album of metadata.values()) {
+			this._process_metadata_album_data(album);
+			for (const track of album.tracks) {
+				this._process_metadata_track_data({ ...track, ...album });
+			}
+		}
+
+		this._process_metadata_top_rated_stats();
+		this._process_metadata_top_played_stats();
+		this._process_metadata_total_stats(metadata);
+		this._process_metadata_best_rated_stats();
+		this._process_metadata_most_listened_stats();
+
+		return {
+			artistGenre: this.artistGenre, artistCountry: this.artistCountry,
+			albumArtist: this.albumArtist, albumYear: this.albumYear, albumGenre: this.albumGenre,
+			albumLabel: this.albumLabel, albumCountry: this.albumCountry,
+			trackArtist: this.trackArtist, trackAlbum: this.trackAlbum, trackYear: this.trackYear, trackGenre: this.trackGenre, trackLabel: this.trackLabel, trackCountry: this.trackCountry,
+
+			artistRatings: this.artistRatings, albumRatings: this.albumRatings, trackRatings: this.trackRatings,
+			artistCounts: this.artistCounts, albumCounts: this.albumCounts, trackCounts: this.trackCounts,
+			artistPlaycounts: this.artistPlaycounts, albumPlaycounts: this.albumPlaycounts, trackPlaycounts: this.trackPlaycounts, genrePlaycounts: this.genrePlaycounts, labelPlaycounts: this.labelPlaycounts, countryPlaycounts: this.countryPlaycounts,
+
+			topRatedArtists: this.topRatedArtists, topRatedAlbums: this.topRatedAlbums, topRatedTracks: this.topRatedTracks,
+			topPlayedArtists: this.topPlayedArtists, topPlayedAlbums: this.topPlayedAlbums, topPlayedTracks: this.topPlayedTracks, topPlayedGenres: this.topPlayedGenres, topPlayedLabels: this.topPlayedLabels, topPlayedCountries: this.topPlayedCountries,
+
+			totalArtists: this.totalArtists, totalAlbums: this.totalAlbums, totalTracks: this.totalTracks, totalYears: this.totalYears, totalGenres: this.totalGenres, totalLabels: this.totalLabels, totalCountries: this.totalCountries, totalRatings: this.totalRatings, totalPlaycounts: this.totalPlaycounts,
+			totalArtistPlays: this.totalArtistPlays, totalAlbumPlays: this.totalAlbumPlays, totalTrackPlays: this.totalTrackPlays, totalGenrePlays: this.totalGenrePlays, totalLabelPlays: this.totalLabelPlays, totalCountryPlays: this.totalCountryPlays,
+
+			bestRatedArtist: this.bestRatedArtist, bestRatedAlbum: this.bestRatedAlbum, bestRatedTrack: this.bestRatedTrack,
+
+			mostPlayedArtist: this.mostPlayedArtist, mostPlayedAlbum: this.mostPlayedAlbum, mostPlayedTrack: this.mostPlayedTrack, mostPlayedGenre: this.mostPlayedGenre, mostPlayedLabel: this.mostPlayedLabel, mostPlayedCountry: this.mostPlayedCountry,
+			artistPlaycount: this.artistPlaycount, albumPlaycount: this.albumPlaycount, trackPlaycount: this.trackPlaycount, genrePlaycount: this.genrePlaycount, labelPlaycount: this.labelPlaycount, countryPlaycount: this.countryPlaycount,
+			artistPercentage: this.artistPercentage, albumPercentage: this.albumPercentage, trackPercentage: this.trackPercentage, genrePercentage: this.genrePercentage, labelPercentage: this.labelPercentage, countryPercentage: this.countryPercentage
+		};
+	}
+
+	/**
+	 * Calculate Peak Loudness Ratio keeping in mind replayGain 2.0 is implemented in Foobar2000.
+	 * Reference value in Foobar 2000 is set on -18 LUFS in order to maintain backwards compatibility with RG1, RG2.
+	 * EBU R 128 reference is -23 LUFS.
+	 * @param {string} gain - The ReplayGain gain value for track %replaygain_track_gain% | for album %replaygain_album_gain%.
+	 * @param {string} peak - The ReplayGain peak value for track %replaygain_track_peak_db% | for album %replaygain_album_peak_db%.
+	 * @returns {string} The Peak Loudness Ratio.
+	 */
+	get_PLR(gain, peak) {
+		const lufs = -2300 - (Number(gain.replace(/[^0-9+-]/g, '')) - 500);
+		const tpfs = Number(peak.replace(/[^0-9+-]/g, ''));
+		const plr = tpfs - lufs;
+		const plr_value = plr % 100 > 49 ? plr + 100 : plr;
+
+		return Math.floor(plr_value / 100);
+	}
+
+	/**
+	 * Gets the playcount for a given track.
+	 * If no track is provided, it defaults to the current playlist row.
+	 * @param {FbMetadbHandle} metadb - The metadata handle of the track.
+	 * @returns {number} The playcount of the provided or default track.
+	 */
+	get_track_playcount(metadb) {
+		if (plSet.use_rating_from_tags) {
+			const fileInfo = metadb.GetFileInfo();
+			const ratingIdx = fileInfo.MetaFind('PLAY COUNT');
+			const playcount = ratingIdx !== -1 ? fileInfo.MetaValue(ratingIdx, 0) : 0;
+			return playcount === '' ? null : Number(playcount);
+		}
+
+		const playcount = $('%play_count%', metadb);
+		return playcount === '' ? null : Number(playcount);
+	}
+	// #endregion
+}
+
+
+///////////////////////////////
+// * PLAYLIST META MANAGER * //
+///////////////////////////////
+/**
+ * A class that handles metadata operations including retrieving album metadata,
+ * and writing meta tags or playlist stats to a file.
+ */
+class PlaylistMetaManager {
+	/**
+	 * Creates the `PlaylistMetaManager` instance.
+	 */
+	constructor() {
+		/**
+		 * The artwork configuration settings used for checking missing artwork images.
+		 * @type {object}
+		 * @property {object} albumArt - The configuration for album artwork.
+		 * @property {string[]} albumArt.files - The list of filenames for album artwork.
+		 * @property {string[]} albumArt.patterns - The list of patterns for album artwork.
+		 * @property {string[]} albumArt.paths - The paths to search for album artwork.
+		 * @property {object} albumArt.checks - The different types of checks for album artwork.
+		 * @property {string[]} albumArt.checks.albumArt - The types of album artwork checks.
+		 * @property {string[]} albumArt.checks.albumArtLocal - The types of local album artwork checks.
+		 * @property {string[]} albumArt.checks.albumArtEmbedded - The types of embedded album artwork checks.
+		 * @property {RegExp} albumArt.regex - The regex pattern for album artwork.
+		 * @property {object} discArt - The configuration for disc artwork.
+		 * @property {string[]} discArt.files - The list of filenames for disc artwork.
+		 * @property {string[]} discArt.patterns - The list of patterns for disc artwork.
+		 * @property {string[]} discArt.paths - The paths to search for disc artwork.
+		 * @property {RegExp} discArt.regex - The regex pattern for disc artwork.
+		 */
+		this.artworkConfig = {
+			albumArt: {
+				files: ['cover.jpg', 'cover.png', 'folder.jpg', 'folder.png', 'front.jpg', 'front.png'],
+				patterns: ['folder', 'cover', 'front'],
+				paths: grCfg.imgPaths,
+				checks: { albumArt: ['local', 'embedded'], albumArtLocal: ['local'], albumArtEmbedded: ['embedded'] },
+				regex: /(\*|\b(folder|cover|front)\b)\.\*/g
+			},
+			discArt: {
+				files: ['cd.png', 'disc.png', 'vinyl.png'],
+				patterns: ['cd', 'disc', 'vinyl'],
+				paths: grCfg.discArtPaths,
+				regex: /(\*|\b(cd|disc|vinyl)\b)\.\*/g
+			}
+		};
+
+		/** @public @type {?PlaylistMetaProvider} The instance of the PlaylistMetaProvider class. */
+		this.meta_provider = new PlaylistMetaProvider();
+		/** @public @type {Map<string, any>} The sorted metadata cache. */
+		this.metadataSortedCache = new Map();
+	}
+
+	// * STATIC METHODS * //
+	// #region STATIC METHODS
+	/**
+	 * Initializes a metadata field based on the inclusion flag and the provided field value.
+	 * @param {boolean} include - The flag setting indicating whether to include the field.
+	 * @param {string} metadataField - The value of the metadata field to be initialized.
+	 * @returns {string} The metadata field value if `include` is true, otherwise an empty string.
+	 * @static
+	 */
+	static initMetaValue(include, metadataField) {
+		return include ? metadataField : '';
+	}
+
+	/**
+	 * Checks if a meta value is invalid.
+	 * @param {string|Array<string>} value - The meta value to initialize.
+	 * @param {string} [customInvalidValue] - The additional values to consider as invalid.
+	 * @returns {boolean} - True if the value is invalid, false otherwise.
+	 */
+	static initInvalidMetaValue(value, customInvalidValue) {
+		if (!value || value === customInvalidValue) {
+			return true;
+		}
+
+		if (Array.isArray(value)) {
+			return value.some(v => PlaylistMetaManager.initInvalidMetaValue(v, customInvalidValue));
+		}
+
+		if (typeof value === 'string') {
+			const trimmedValue = value.trim();
+			return trimmedValue === '' || trimmedValue === '?';
+		}
+
+		return false;
+	}
+	// #endregion
+
+	// * PRIVATE METHODS * //
+	// #region PRIVATE METHODS
+	/**
+	 * Converts the metadata map to an array and sorts it if a sort function is provided.
+	 * Caches the result to avoid redundant computation.
+	 * @param {Map<string, object>} metadata - The metadata map.
+	 * @param {string} statsType - The statistic type to be used for sorting.
+	 * @returns {Array} - The sorted metadata array.
+	 * @private
+	 */
+	_get_metadata_sorted(metadata, statsType) {
+		if (this.metadataSortedCache.has(statsType)) {
+			return this.metadataSortedCache.get(statsType);
+		}
+
+		const sortFunction = this._get_stats_sorting(statsType);
+		const metadataArray = Array.from(metadata.values());
+		const sortedMetadata = sortFunction ? metadataArray.sort(sortFunction) : metadataArray;
+
+		this.metadataSortedCache.set(statsType, sortedMetadata);
+		return sortedMetadata;
+	}
+
+	/**
+	 * Chooses and returns either the `rating` or `playcount` based on the `statsType`.
+	 * The `statsType` string should be in the format 'property_subproperty'.
+	 * If it has three parts ('property_subproperty_subproperty'), the third subproperty determines the return value.
+	 * If `statsType` does not indicate 'rating', 'artistPlaycount', or 'trackPlaycount', the function defaults to returning the `rating`.
+	 * @param {string} statsType - The type of stats to return, expected to be either 'rating', 'artistPlaycount', or 'trackPlaycount'.
+	 * @param {number} rating - The rating value to return if `statsType` is 'rating' or invalid.
+	 * @param {number} playcount - The playcount value to return if `statsType` is 'artistPlaycount' or 'trackPlaycount'.
+	 * @returns {number} The `rating` or `playcount` value, based on the `statsType`.
+	 * @private
+	 */
+	_get_stats_by_type(statsType, rating, playcount) {
+		const statsArray = statsType.split('_');
+		const statsProperty = statsArray.length === 3 ? statsArray[2] : statsArray[0];
+		return ['artistPlaycount', 'trackPlaycount'].includes(statsProperty) ? playcount : rating;
+	}
+
+	/**
+	 * Gets a sorting function based on the provided statistic type.
+	 * The statistic type string should be in the format 'property_direction'.
+	 * The property indicates the statistic to sort by, and the direction indicates the order ('asc' for ascending, 'dsc' for descending).
+	 * @param {string} statsType - The statistic type to sort by.
+	 * @returns {function(any, any): number} The sorting function.
+	 * @private
+	 */
+	_get_stats_sorting(statsType) {
+		const sortMethods = {
+			artist: (a, b) => CompareValues(a.artist, b.artist),
+			artistRating: (a, b) => CompareValues(a.artistAverageRating, b.artistAverageRating),
+			artistPlaycount: (a, b) => CompareValues(a.artistPlaycount, b.artistPlaycount),
+			albumTitle: (a, b) => CompareValues(a.album, b.album),
+			albumRating: (a, b) => CompareValues(a.albumAverageRating, b.albumAverageRating),
+			albumPlaycount: (a, b) => CompareValues(a.albumAveragePlaycount, b.albumAveragePlaycount),
+			albumPlaycountTotal: (a, b) => CompareValues(a.albumTotalPlaycount, b.albumTotalPlaycount),
+			albumTrackPlaycount: (a, b) => CompareValues(a.albumTotalPlaycount, b.albumTotalPlaycount),
+			trackTitle: (a, b) => CompareValues(a.track, b.track),
+			trackRating: (a, b) => CompareValues(a.rating, b.rating),
+			trackPlaycount: (a, b) => CompareValues(a.playcount, b.playcount),
+			year: (a, b) => CompareValues(a.year, b.year),
+			genre: (a, b) => CompareValues(a.genre, b.genre),
+			label: (a, b) => CompareValues(a.label, b.label),
+			country: (a, b) => CompareValues(a.country, b.country)
+		};
+
+		const [property, direction] = statsType.split('_');
+		const sortMethod = sortMethods[property];
+
+		// Retrieve sortMethod from sortMethods with the given property.
+		// If 'dsc', sort descending by reversing arguments; otherwise, sort ascending.
+		return sortMethod && ((direction === 'dsc') ? (a, b) => sortMethod(b, a) : sortMethod);
+	}
+
+	/**
+	 * Generates a list of artist ratings.
+	 * @param {Map<string, object>} metadata - The metadata map.
+	 * @param {object} settings - The settings that specify which metadata to include.
+	 * @param {string} statsType - The statistic type to be used for sorting.
+	 * @returns {string} - The formatted string of artist ratings.
+	 * @private
+	 */
+	_generate_artist_list(metadata, settings, statsType) {
+		const artists = new Set();
+		const artistMetadata = [];
+		const artistMetadataSorted = this._get_metadata_sorted(metadata, statsType);
+
+		for (const album of artistMetadataSorted) {
+			if (album.artist && !artists.has(album.artist)) {
+				const stat = this._get_stats_by_type(statsType, album.artistAverageRating, album.artistPlaycount);
+				if (stat !== null) {
+					artistMetadata.push({ artist: album.artist, stat });
+					artists.add(album.artist);
+				}
+			}
+		}
+
+		return artistMetadata.map(({ artist, stat }) => `${artist}: ${stat}`).join('\n');
+	}
+
+	/**
+	 * Generates a list of album statistics.
+	 * @param {Map<string, object>} metadata - The metadata map.
+	 * @param {object} settings - The settings that specify which metadata to include.
+	 * @param {string} statsType - The statistic type to be used for sorting.
+	 * @param {string} ratingType - The type of rating to include (e.g., 'albumAverage', 'albumTotal').
+	 * @param {string} playcountType - The type of playcount to include (e.g., 'albumAverage', 'albumTotal').
+	 * @returns {string} - The formatted string of album statistics.
+	 * @private
+	 */
+	_generate_album_list(metadata, settings, statsType, ratingType, playcountType) {
+		const albumMetadataSorted = this._get_metadata_sorted(metadata, statsType);
+
+		return albumMetadataSorted.map((metadata) => {
+			const separator = settings.includeArtist && settings.includeAlbum ? ' - ' : '';
+			const artist  = PlaylistMetaManager.initMetaValue(settings.includeArtist, `${metadata.artist}${separator}`);
+			const album   = PlaylistMetaManager.initMetaValue(settings.includeAlbum, metadata.album);
+			const year    = PlaylistMetaManager.initMetaValue(settings.includeYear, metadata.year);
+			const genre   = PlaylistMetaManager.initMetaValue(settings.includeGenre, metadata.genre);
+			const label   = PlaylistMetaManager.initMetaValue(settings.includeLabel, metadata.label);
+			const country = PlaylistMetaManager.initMetaValue(settings.includeCountry, metadata.country);
+
+			const includeParts = [year, genre, label, country].filter(part => part !== '');
+			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+
+			const albumTracksRating =
+				settings.includeTrack && metadata.tracks ? `\n${metadata.tracks.map(trackRating =>
+					` ${trackRating.trackNumber}. ${trackRating.title}${settings.includeStats ? `: ${trackRating.rating}` : ''}`
+				).join('\n')}` : '';
+
+			const ratingTypeMeta = {
+				artistAverage: settings.includeStats && metadata.artistAverageRating,
+				albumAverage: settings.includeStats && metadata.albumAverageRating,
+				albumTotal: settings.includeStats && metadata.albumTotalRating,
+				albumTracks: albumTracksRating
+			};
+
+			const albumTracksPlaycount =
+				settings.includeTrack && metadata.tracks ? `\n${metadata.tracks.map(trackPlaycount =>
+					` ${trackPlaycount.trackNumber}. ${trackPlaycount.title}${settings.includeStats ? `: ${trackPlaycount.playcount}` : ''}`
+				).join('\n')}` : '';
+
+			const playcountTypeMeta = {
+				albumAverage: settings.includeStats && metadata.albumAveragePlaycount,
+				albumTotal: settings.includeStats && metadata.albumTotalPlaycount,
+				albumTracks: albumTracksPlaycount
+			};
+
+			const typeMeta = ratingType ? ratingTypeMeta : playcountTypeMeta;
+			const typeKey = ratingType || playcountType;
+			const typeValue = `: ${typeMeta[typeKey]}`;
+			const typeAvg = settings.includeStats ? `: ${ratingType ? metadata.albumAverageRating : metadata.albumAveragePlaycount}` : '';
+
+			if (typeKey) {
+				return typeKey === 'albumTracks' ?
+				`${artist}${album}${include}${typeAvg}${typeValue}\n` :
+				`${artist}${album}${include}${typeValue}`;
+			} else {
+				return `${artist}${album}${include}`;
+			}
+		}).join('\n');
+	}
+
+	/**
+	 * Generates a list of track statistics.
+	 * @param {Map<string, object>} metadata - The metadata map.
+	 * @param {object} settings - The settings that specify which metadata to include.
+	 * @param {string} statsType - The type of statistics to include (e.g., 'rating', 'playcount').
+	 * @returns {string} - The formatted string of track statistics.
+	 * @private
+	 */
+	_generate_track_list(metadata, settings, statsType) {
+		const trackMetadata = [];
+
+		for (const album of metadata.values()) {
+			for (const track of album.tracks) {
+				trackMetadata.push({
+					artist: album.artist,
+					album: album.album,
+					trackNumber: track.trackNumber,
+					title: track.title,
+					year: album.year,
+					genre: album.genre,
+					label: album.label,
+					country: album.country,
+					rating: track.rating,
+					playcount: track.playcount
+				});
+			}
+		}
+
+		const trackMetadataSorted = this._get_metadata_sorted(trackMetadata, statsType);
+
+		return trackMetadataSorted.map((metadata) => {
+			const artist  = PlaylistMetaManager.initMetaValue(settings.includeArtist, metadata.artist);
+			const album   = PlaylistMetaManager.initMetaValue(settings.includeAlbum, metadata.album);
+			const track   = PlaylistMetaManager.initMetaValue(settings.includeTrack, `${metadata.trackNumber}. ${metadata.title}`);
+			const year    = PlaylistMetaManager.initMetaValue(settings.includeYear, metadata.year);
+			const genre   = PlaylistMetaManager.initMetaValue(settings.includeGenre, metadata.genre);
+			const label   = PlaylistMetaManager.initMetaValue(settings.includeLabel, metadata.label);
+			const country = PlaylistMetaManager.initMetaValue(settings.includeCountry, metadata.country);
+
+			const includeParts = [year, genre, label, country].filter(part => part !== '');
+			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+
+			const rating    = settings.includeStats ? `: ${metadata.rating}` : '';
+			const playcount = settings.includeStats ? `: ${metadata.playcount}` : '';
+
+			const separator1 = settings.includeTrack && settings.includeAlbum ? ' - ' : '';
+			const separator2 = (settings.includeAlbum && settings.includeArtist) || (settings.includeTrack && settings.includeArtist) ? ' - ' : '';
+
+			return `${track}${separator1}${album}${include}${separator2}${artist}${this._get_stats_by_type(statsType, rating, playcount)}`;
+		}).join('\n');
+	}
+
+	/**
+	 * Generates a formatted string of total and top statistics from the current active playlist.
+	 * @param {Map<string, object>} metadata - The metadata map.
+	 * @param {string} statsType - The string that indicates whether to return 'rating' or 'playcount' total statistics.
+	 * @param {string} topStatsType - The string that indicates whether to return 'topRated' or 'topPlayed' statistics.
+	 * @returns {string} The formatted string with the requested statistics.
+	 * @private
+	 */
+	_generate_total_top_stats(metadata, statsType, topStatsType) {
+		const rating = statsType.toLowerCase().includes('rating') || statsType.toLowerCase().includes('rated');
+		const playcount = statsType.toLowerCase().includes('playcount') || statsType.toLowerCase().includes('played');
+		let list = '';
+
+		list += 'Total statistics:\n'
+			+ ` \u00B7 Artists: ${metadata.totalArtists}\n`
+			+ ` \u00B7 Albums: ${metadata.totalAlbums}\n`
+			+ ` \u00B7 Tracks: ${metadata.totalTracks}\n`
+			+ ` \u00B7 Years: ${metadata.totalYears}\n`
+			+ ` \u00B7 Genres: ${metadata.totalGenres}\n`
+			+ ` \u00B7 Labels: ${metadata.totalLabels}\n`
+			+ ` \u00B7 Countries: ${metadata.totalCountries}\n`
+			+ (rating ? ` \u00B7 Ratings: ${metadata.totalRatings}\n` : '')
+			+ (playcount ? ` \u00B7 Playcounts: ${metadata.totalPlaycounts}\n` : '') + '\n';
+
+		if (topStatsType === 'topRated') {
+			list += 'Top statistics:\n'
+				+ ` \u00B7 Best rated artist: ${metadata.bestRatedArtist}\n`
+				+ ` \u00B7 Best rated album: ${metadata.bestRatedAlbum}\n`
+				+ ` \u00B7 Best rated track: ${metadata.bestRatedTrack}\n\n\n`;
+		}
+
+		if (topStatsType === 'topPlayed') {
+			list += 'Top statistics:\n'
+				+ ` \u00B7 Most played artist: ${metadata.mostPlayedArtist} - ${metadata.artistPlaycount} plays (${metadata.artistPercentage.toFixed(2)}%)\n`
+				+ ` \u00B7 Most played album: ${metadata.mostPlayedAlbum} - ${metadata.albumPlaycount} plays (${metadata.albumPercentage.toFixed(2)}%)\n`
+				+ ` \u00B7 Most played track: ${metadata.mostPlayedTrack} - ${metadata.trackPlaycount} plays (${metadata.trackPercentage.toFixed(2)}%)\n`
+				+ ` \u00B7 Most played genre: ${metadata.mostPlayedGenre} - ${metadata.genrePlaycount} plays (${metadata.genrePercentage.toFixed(2)}%)\n`
+				+ ` \u00B7 Most played label: ${metadata.mostPlayedLabel} - ${metadata.labelPlaycount} plays (${metadata.labelPercentage.toFixed(2)}%)\n`
+				+ ` \u00B7 Most played country: ${metadata.mostPlayedCountry} - ${metadata.countryPlaycount} plays (${metadata.countryPercentage.toFixed(2)}%)\n\n\n`;
+		}
+
+		return list;
+	}
+
+	/**
+	 * Generates top rated statistics list for:
+	 * - Top rated artists
+	 * - Top rated albums
+	 * - Top rated tracks
+	 *
+	 * It provides a detailed ranked list from top to bottom for each category from the current active playlist.
+	 * @param {Map<string, object>} metadata - The metadata map.
+	 * @param {object} settings - The settings that specify which metadata to include.
+	 * @returns {string} The string formatted for display, containing the top statistics.
+	 * @private
+	 */
+	_generate_top_rated_list(metadata, settings) {
+		const data = this.meta_provider.get_metadata_stats(metadata);
+		let list = '';
+
+		const generateList = (header, items, getItemDetails) => {
+			list += `${WriteFancyHeader(header)}\n`;
+			let index = 0;
+			for (const item of items) {
+				const details = getItemDetails(item);
+				if (details) {
+					list += `${index + 1}: ${details}\n`;
+					index++;
+				}
+			}
+			list += '\n\n';
+		};
+
+		const getArtistDetails = (artist) => {
+			const country = settings.includeCountry ? Array.from(data.artistCountry.get(artist) || []).join(', ') : '';
+			const genre = settings.includeGenre ? Array.from(data.artistGenre.get(artist) || []).join(', ') : '';
+			const include = country || genre ? ` (${country}${country && genre ? ' \u00B7 ' : ''}${genre})` : '';
+			const average = data.artistRatings.get(artist) / data.artistCounts.get(artist);
+			const stats = settings.includeStats ? `: ${average.toFixed(2)}` : '';
+			return `${artist}${include}${stats}`;
+		};
+
+		const getAlbumDetails = (album) => {
+			const year = settings.includeYear && data.albumYear.get(album) ? `${data.albumYear.get(album)}` : '';
+			const genreSet = data.albumGenre.get(album);
+			const genre = settings.includeGenre && genreSet && genreSet.size > 0 ? Array.from(genreSet).join(', ') : '';
+			const labelSet = data.albumLabel.get(album);
+			const label = settings.includeLabel && labelSet && labelSet.size > 0 ? Array.from(labelSet).join(', ') : '';
+			const includeParts = [year, genre, label].filter(part => part !== '');
+			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+			const artist = settings.includeArtist && data.albumArtist.get(album) ? ` - ${data.albumArtist.get(album)}` : '';
+			const average = data.albumRatings.get(album) / data.albumCounts.get(album);
+			const stats = settings.includeStats ? `: ${average.toFixed(2)}` : '';
+			return `${album}${include}${artist}${stats}`;
+		};
+
+		const getTrackDetails = (track) => {
+			const album = settings.includeAlbum && data.trackAlbum.get(track) ? ` - ${data.trackAlbum.get(track)}` : '';
+			const year = settings.includeYear && data.trackYear.get(track) ? `${data.trackYear.get(track)}` : '';
+			const genreSet = data.trackGenre.get(track);
+			const genre = settings.includeGenre && genreSet && genreSet.size > 0 ? Array.from(genreSet).join(', ') : '';
+			const labelSet = data.trackLabel.get(track);
+			const label = settings.includeLabel && labelSet && labelSet.size > 0 ? Array.from(labelSet).join(', ') : '';
+			const includeParts = [year, genre, label].filter(part => part !== '');
+			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+			const artist = settings.includeArtist && data.trackArtist.get(track) ? ` - ${data.trackArtist.get(track)}` : '';
+			const average = data.trackRatings.get(track);
+			const stats = settings.includeStats ? `: ${average.toFixed(2)}` : '';
+			return `${track}${album}${include}${artist}${stats}`;
+		};
+
+		generateList('Top rated artists', data.topRatedArtists, getArtistDetails);
+		generateList('Top rated albums', data.topRatedAlbums, getAlbumDetails);
+		generateList('Top rated tracks', data.topRatedTracks, getTrackDetails);
+
+		return list;
+	}
+
+	/**
+	 * Generates top played statistics list for:
+	 * - Top played artists
+	 * - Top played albums
+	 * - Top played tracks
+	 * - Top played genres
+	 * - Top played labels
+	 * - Top played countries
+	 *
+	 * It provides a detailed ranked list from top to bottom for each category from the current active playlist.
+	 * @param {Map<string, object>} metadata - The metadata map.
+	 * @param {object} settings - The settings that specify which metadata to include.
+	 * @returns {string} The string formatted for display, containing the top statistics.
+	 * @private
+	 */
+	_generate_top_played_list(metadata, settings) {
+		const data = this.meta_provider.get_metadata_stats(metadata);
+		let list = '';
+
+		const generateList = (header, items, getItemDetails) => {
+			list += `${WriteFancyHeader(header)}\n`;
+			let index = 0;
+			for (const item of items) {
+				const details = getItemDetails(item);
+				if (details) {
+					list += `${index + 1}: ${details}\n`;
+					index++;
+				}
+			}
+			list += '\n\n';
+		};
+
+		const getArtistDetails = (artist) => {
+			const country = settings.includeCountry ? Array.from(data.artistCountry.get(artist) || []).join(', ') : '';
+			const genre = settings.includeGenre ? Array.from(data.artistGenre.get(artist) || []).join(', ') : '';
+			const include = country || genre ? ` (${country}${country && genre ? ' \u00B7 ' : ''}${genre})` : '';
+			const playcount = data.artistPlaycounts.get(artist);
+			const percentage = (playcount / data.totalArtistPlays) * 100;
+			const stats = settings.includeStats ? ` - ${playcount} plays (${percentage.toFixed(2)}%)` : '';
+			return `${artist}${include}${stats}`;
+		};
+
+		const getAlbumDetails = (album) => {
+			const year = settings.includeYear && data.albumYear.get(album) ? data.albumYear.get(album) : '';
+			const genreSet = data.albumGenre.get(album);
+			const genre = settings.includeGenre && genreSet && genreSet.size > 0 ? Array.from(genreSet).join(', ') : '';
+			const labelSet = data.albumLabel.get(album);
+			const label = settings.includeLabel && labelSet && labelSet.size > 0 ? Array.from(labelSet).join(', ') : '';
+			const includeParts = [year, genre, label].filter(part => part !== '');
+			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+			const artist = settings.includeArtist && data.albumArtist.get(album) ? ` - ${data.albumArtist.get(album)}` : '';
+			const playcount = data.albumPlaycounts.get(album);
+			const percentage = (playcount / data.totalAlbumPlays) * 100;
+			const stats = settings.includeStats ? ` - ${playcount} plays (${percentage.toFixed(2)}%)` : '';
+			return `${album}${include}${artist}${stats}`;
+		};
+
+		const getTrackDetails = (track) => {
+			const album = settings.includeAlbum && data.trackAlbum.get(track) ? ` - ${data.trackAlbum.get(track)}` : '';
+			const year = settings.includeYear && data.trackYear.get(track) ? data.trackYear.get(track) : '';
+			const genreSet = data.trackGenre.get(track);
+			const genre = settings.includeGenre && genreSet && genreSet.size > 0 ? Array.from(genreSet).join(', ') : '';
+			const labelSet = data.trackLabel.get(track);
+			const label = settings.includeLabel && labelSet && labelSet.size > 0 ? Array.from(labelSet).join(', ') : '';
+			const includeParts = [year, genre, label].filter(part => part !== '');
+			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+			const artist = settings.includeArtist && data.trackArtist.get(track) ? ` - ${data.trackArtist.get(track)}` : '';
+			const playcount = data.trackPlaycounts.get(track);
+			const percentage = (playcount / data.totalTrackPlays) * 100;
+			const stats = settings.includeStats ? ` - ${playcount} plays (${percentage.toFixed(2)}%)` : '';
+			return `${track}${album}${include}${artist}${stats}`;
+		};
+
+		const getGenreDetails = (genre) => {
+			const playcount = data.genrePlaycounts.get(genre);
+			const percentage = (playcount / data.totalGenrePlays) * 100;
+			const stats = settings.includeStats ? ` - ${playcount} plays (${percentage.toFixed(2)}%)` : '';
+			return `${genre}${stats}`;
+		};
+
+		const getLabelDetails = (label) => {
+			const playcount = data.labelPlaycounts.get(label);
+			const percentage = (playcount / data.totalLabelPlays) * 100;
+			const stats = settings.includeStats ? ` - ${playcount} plays (${percentage.toFixed(2)}%)` : '';
+			return `${label}${stats}`;
+		};
+
+		const getCountryDetails = (country) => {
+			const playcount = data.countryPlaycounts.get(country);
+			const percentage = (playcount / data.totalCountryPlays) * 100;
+			const stats = settings.includeStats ? ` - ${playcount} plays (${percentage.toFixed(2)}%)` : '';
+			return `${country}${stats}`;
+		};
+
+		generateList('Top played artists', data.topPlayedArtists, getArtistDetails);
+		generateList('Top played albums', data.topPlayedAlbums, getAlbumDetails);
+		generateList('Top played tracks', data.topPlayedTracks, getTrackDetails);
+		generateList('Top played genres', data.topPlayedGenres, getGenreDetails);
+		generateList('Top played labels', data.topPlayedLabels, getLabelDetails);
+		generateList('Top played countries', data.topPlayedCountries, getCountryDetails);
+
+		return list;
+	}
+	// #endregion
+
+	// * PUBLIC METHODS * //
+	// #region PUBLIC METHODS
+	/**
+	 * Initializes and builds a Map indexing the playlist items by their paths.
+	 * @returns {Map<string, object>} The map where the keys are the paths of the playlist items, and the values are the corresponding objects from the playlist.
+	 */
+	init_metadata_path_index() {
+		const metadataPathIndex = new Map();
+
+		for (const item of pl.playlist.playlist_items_array) {
+			metadataPathIndex.set(item.Path, item);
+		}
+
+		return metadataPathIndex;
+	}
+
+	/**
+	 * Checks for the presence of artwork files (album art or disc art) in the directories of tracks in the playlist.
+	 * Depending on the `artworkType`, it searches for different sets of artwork file patterns.
+	 * @param {Map<string, object>} metadata - The metadata map.
+	 * @param {Map<string, object>} metadataPathIndex - The map indexing playlist items by their paths.
+	 * @param {string} artworkType - The type of artwork to search for, either 'albumArt' or 'discArt'.
+	 * @returns {object} - The object containing a boolean `hasArtwork` indicating if artwork was found, and the `path` to the artwork file if found, or the original track path if not.
+	 */
+	check_missing_artwork(metadata, metadataPathIndex, artworkType) {
+		const artworkPath = metadata.path.replace(/[^/\\]*$/, '');
+		const imageConfig = this.artworkConfig[artworkType.includes('albumArt') ? 'albumArt' : 'discArt'];
+		const artworkCheck = imageConfig.checks ? imageConfig.checks[artworkType] : ['local'];
+
+		const trackHandle = metadataPathIndex.get(metadata.path);
+		if (!trackHandle) return { hasArtwork: false, path: metadata.path };
+
+		const checkLocalArtwork = () => {
+			const imagePathList = [];
+			const imageFileExtensions = new Map(imageConfig.files.map(file => [file, file.split('.').pop()]));
+			const rawImagePathList = $(imageConfig.paths, trackHandle).split(',')
+				.map(path => artworkType === 'discArt' ? path.replace(/\*/g, '') : path.trim());
+
+			// * Process each raw image path to handle cases where paths are split by commas
+			for (const rawPath of rawImagePathList) {
+				if (imagePathList.length > 0 && rawPath.startsWith(' ')) {
+					imagePathList[imagePathList.length - 1] += `,${rawPath.trim()}`;
+				} else {
+					imagePathList.push(rawPath.trim());
+				}
+			}
+
+			// * Check each image path for the presence of artwork files
+			return imagePathList.some(imagePath =>
+				imageConfig.files.some(file => {
+					const fileExtension = imageFileExtensions.get(file);
+					const filePath = CreateFilePathWithPatterns(imagePath, file, fileExtension, imageConfig.patterns, imageConfig.regex);
+					const fullPath = imagePath.includes(':') ? filePath : `${artworkPath}${filePath}`;
+					return fullPath.startsWith(artworkPath) && IsFile(fullPath);
+				})
+			);
+		};
+
+		if (artworkCheck.includes('local') && checkLocalArtwork()) {
+			return { hasArtwork: true, path: metadata.path };
+		}
+
+		if (artworkCheck.includes('embedded') && utils.GetAlbumArtV2(trackHandle, 0)) {
+			return { hasArtwork: true, path: metadata.path };
+		}
+
+		return { hasArtwork: false, path: metadata.path };
+	}
+
+	/**
+	 * Writes calculated %ARTISTRATING%, %ARTISTPLAYCOUNT%, %ALBUMRATING%, '%ALBUMPLAYCOUNT%' and '%ALBUMPLAYCOUNTTOTAL%' values to music files via the Playlist context menu.
+	 * - '%ARTISTRATING%': The calculated average artist rating, converted from a 0-5 scale to a 0-100 scale due to Foobar2000's incompatibility with floating point numbers when sorting.
+	 * - '%ARTISTPLAYCOUNT%': The calculated total playcount of the artist.
+	 * - '%ALBUMRATING%': The calculated average album rating, converted from a 0-5 scale to a 0-100 scale due to Foobar2000's incompatibility with floating point numbers when sorting.
+	 * - '%ALBUMPLAYCOUNT%': The calculated average playcount of the album.
+	 * - '%ALBUMPLAYCOUNTTOTAL%': The calculated total playcount of all tracks on the album.
+	 */
+	write_album_stats_to_tags() {
+		const metadata = this.meta_provider.get_metadata();
+		const handleList = new FbMetadbHandleList();
+		const plItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+		const libItems = new FbMetadbHandleList(lib.pop.getHandleList('newItems'));
+		const items = grm.ui.displayLibrary && !grm.ui.displayPlaylist || grm.ui.displayLibrarySplit() && grm.ui.state.mouse_x < grm.ui.ww * 0.5 ? libItems : plItems;
+
+		if (!items || !items.Count) return;
+
+		const albumMetadata = new Map();
+		const albumUpdates = [];
+
+		for (const item of items) {
+			const albumName = $('%album%', item);
+			if (!albumMetadata.has(albumName)) {
+				albumMetadata.set(albumName, []);
+			}
+			albumMetadata.get(albumName).push(item);
+		}
+
+		for (const [albumName, items] of albumMetadata.entries()) {
+			const metadataEntry = metadata.get(albumName);
+			if (!metadataEntry) continue;
+			const albumStats = {};
+
+			if (metadataEntry.artistAverageRating) {
+				albumStats.ARTISTRATING = ConvertRatingToPercentage(metadataEntry.artistAverageRating);
+			}
+			if (metadataEntry.artistPlaycount) {
+				albumStats.ARTISTPLAYCOUNT = metadataEntry.artistPlaycount;
+			}
+			if (metadataEntry.albumAverageRating) {
+				albumStats.ALBUMRATING = ConvertRatingToPercentage(metadataEntry.albumAverageRating);
+			}
+			if (metadataEntry.albumAveragePlaycount) {
+				albumStats.ALBUMPLAYCOUNT = metadataEntry.albumAveragePlaycount;
+			}
+			if (metadataEntry.albumTotalPlaycount) {
+				albumStats.ALBUMPLAYCOUNTTOTAL = metadataEntry.albumTotalPlaycount;
+			}
+
+			if (Object.keys(albumStats).length > 0) {
+				for (const item of items) {
+					handleList.Add(item);
+					albumUpdates.push(albumStats);
+				}
+			}
+		}
+
+		if (albumUpdates.length) {
+			handleList.UpdateFileInfoFromJSON(JSON.stringify(albumUpdates));
+		}
+	}
+
+	/**
+	 * Writes various statistics for the current playlist to a text file.
+	 * @param {string} metadataType - The type of metadata: 'artist', 'album', 'track', 'topRated', or 'topPlayed'.
+	 * @param {string} filePath - The path to the text file where statistics will be written.
+	 * @param {string} statsName - The name of the statistic type.
+	 * @param {string} statsType - The statistic type to be used for sorting.
+	 * @param {string} ratingType - The rating type, one of 'artistAverage', 'albumAverage', 'albumTotal', or 'albumTracks'.
+	 * @param {string} playcountType - The playcount type, one of 'artistPlaycount', 'albumAverage', 'albumTotal', or 'albumTracks'.
+	 * @returns {boolean} True if writing to the text file was successful, false otherwise.
+	 */
+	write_stats_to_text_file(metadataType, filePath, statsName, statsType, ratingType, playcountType) {
+		const msg = grm.msg.getMessage('contextMenu', 'writingList');
+		grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+
+		this.metadataSortedCache = new Map();
+		const metadata = this.meta_provider.get_metadata();
+
+		const settings = {
+			includeArtist:  plSet.playlist_stats_include_artist,
+			includeAlbum:   plSet.playlist_stats_include_album,
+			includeTrack:   plSet.playlist_stats_include_track,
+			includeYear:    plSet.playlist_stats_include_year,
+			includeGenre:   plSet.playlist_stats_include_genre,
+			includeLabel:   plSet.playlist_stats_include_label,
+			includeCountry: plSet.playlist_stats_include_country,
+			includeStats:   plSet.playlist_stats_include_stats
+		};
+
+		const metadataStats = this.meta_provider.get_metadata_stats(metadata);
+		const playlistStats = settings.includeStats ? this._generate_total_top_stats(metadataStats, statsType, metadataType) : '\n';
+		const playlistName  = ReplaceFileChars(plman.GetPlaylistName(plman.ActivePlaylist));
+		const playlistTitle = `${playlistName} - ${statsName} statistics${metadataType.startsWith('top') ? '' : ` - sorted by ${statsType}`}`;
+		const playlistData  = `${WriteFancyHeader(playlistTitle)}\n\n${playlistStats}`;
+
+		const statsList = {
+			artist:    () => this._generate_artist_list(metadata, settings, statsType),
+			album:     () => this._generate_album_list(metadata, settings, statsType, ratingType, playcountType),
+			track:     () => this._generate_track_list(metadata, settings, statsType),
+			topRated:  () => this._generate_top_rated_list(metadata, settings),
+			topPlayed: () => this._generate_top_played_list(metadata, settings)
+		};
+
+		const data = statsList[metadataType] ? statsList[metadataType]() : '';
+		return Save(filePath, playlistData + data);
+	}
+
+	/**
+	 * Writes a list of tracks with missing metadata fields.
+	 * The method checks for missing playlist files, artist names, album titles, track numbers, track titles, genres, years, labels, and countries.
+	 * @param {string} type - The specific type of metadata to check: 'files', 'artist_name', 'album_title', 'track_number', 'track_title', 'genre', 'year', 'label', 'country'.
+	 * @param {string} filePath - The path to the text file where diagnostics will be written.
+	 * @returns {boolean} True if writing to the text file was successful, false otherwise.
+	 */
+	write_diagnostics_to_text_file(type, filePath) {
+		const msg = grm.msg.getMessage('contextMenu', 'writingList');
+		grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+
+		const metadata = this.meta_provider.get_metadata();
+		const metadataPathIndex = this.init_metadata_path_index();
+
+		const checkArtwork = (metadata, type) =>
+			this.check_missing_artwork(metadata, metadataPathIndex, type).hasArtwork ? null : { path: metadata.path };
+
+		const checkMetaValue = (metadata, field, defaultValue) =>
+			PlaylistMetaManager.initInvalidMetaValue(metadata[field], defaultValue) ? { path: metadata.path } : null;
+
+		const diagnosticsFiles = {
+			album_art: (metadata) => checkArtwork(metadata, 'albumArt'),
+			album_art_local: (metadata) => checkArtwork(metadata, 'albumArtLocal'),
+			album_art_embedded: (metadata) => checkArtwork(metadata, 'albumArtEmbedded'),
+			disc_art: (metadata) => checkArtwork(metadata, 'discArt'),
+			playlist_files: (metadata) => IsFile(metadata.path) ? null : { path: metadata.path }
+		};
+
+		const diagnosticsTags = {
+			artist_name: (metadata) => checkMetaValue(metadata, 'artist', 'NO ARTIST'),
+			album_title: (metadata) => checkMetaValue(metadata, 'album', 'NO ALBUM'),
+			track_number: (metadata) => checkMetaValue(metadata, 'trackNumber', '??'),
+			track_title: (metadata) => checkMetaValue(metadata, 'title', 'NO TRACK TITLE'),
+			year: (metadata) => checkMetaValue(metadata, 'year', 'NO YEAR'),
+			genre: (metadata) => checkMetaValue(metadata, 'genre', 'NO GENRE'),
+			label: (metadata) => checkMetaValue(metadata, 'label', 'NO LABEL'),
+			country: (metadata) => checkMetaValue(metadata, 'country', 'NO COUNTRY')
+		};
+
+		const diagnostics = { ...diagnosticsFiles, ...diagnosticsTags };
+
+		const diagnosticTypes = (type) => {
+			if (type === 'checkFiles') {
+				return [...new Set(Object.keys(diagnosticsFiles).map(type =>
+					['album_art', 'album_art_local', 'album_art_embedded'].includes(type) ? plSet.playlist_diagnostic_album_art : type))];
+			}
+			else if (type === 'checkTags') {
+				return Object.keys(diagnosticsTags);
+			}
+			else {
+				return [type];
+			}
+		};
+
+		const runDiagnostics = (metadata, diagnostics) => (type) => {
+			const diagnosticsFunc = diagnostics[type];
+			const result = new Map();
+
+			for (const album of metadata.values()) {
+				for (const track of album.tracks) {
+					if (diagnosticsFunc(track)) {
+						result.set(track.path, track);
+					}
+				}
+			}
+
+			return result;
+		};
+
+		const generateList = (list, type) => {
+			const header = WriteFancyHeader(`Missing ${type.replace(/_/g, ' ')}`);
+			const listItems = Array.from(list.values(), item => item.path);
+			return [header, ...listItems, '\n\n'].join('\n');
+		};
+
+		const output = diagnosticTypes(type).reduce((acc, type) => {
+			const result = runDiagnostics(metadata, diagnostics)(type);
+			return acc + generateList(result, type);
+		}, '');
+
+		return Save(filePath, output);
 	}
 	// #endregion
 }

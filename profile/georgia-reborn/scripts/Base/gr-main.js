@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-10-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -138,6 +138,8 @@ class MainUI {
 
 		// * CACHE * //
 		// #region CACHE
+		/** @public @type {boolean} The state when to update the ratings for the artist, album, and track of the currently playing track. */
+		this.cachedCurrentRatings = false;
 		/** @public @type {boolean} The calculated lower bar metrics saved so we don't have to recalculate every on every on_paint unless size or metadata changed. */
 		this.cachedLowerBarMetrics = false;
 		// #endregion
@@ -194,6 +196,8 @@ class MainUI {
 		this.albumArtLoaded = false;
 		/** @private @type {boolean} The off-center position of the album art, if true, it will shift 40 pixels to the right. */
 		this.albumArtOffCenter = false;
+		/** @public @type {number} The scale factor of the album art. */
+		this.albumArtScaleFactor = 0;
 		/** @public @type {GdiBitmap} The pre-scaled album art to speed up drawing considerably. */
 		this.albumArtScaled = null;
 		/** @public @type {object} The album art position (big image). */
@@ -226,6 +230,8 @@ class MainUI {
 		this.lastAlbumVinylSide = '';
 		/** @public @type {string} The date and time of the current last played album, used for art caching purposes on_playback_new_track. */
 		this.currentLastPlayed = '';
+		/** @public @type {object} The current ratings for the artist, album, and track of the currently playing track. */
+		this.currentRatings = {};
 		/** @public @type {string} Displays the active playlist of the current playing track in the metadata grid in Details. */
 		this.playingPlaylist = '';
 		/** @public @type {number} Saves last playback order. */
@@ -252,6 +258,10 @@ class MainUI {
 		this.noAlbumArtSizeSet = false;
 		/** @public @type {boolean} Only load theme colors when newTrackFetchingArtwork = true. */
 		this.newTrackFetchingArtwork = false;
+		/** @public @type {boolean} The state when the mouse is within the boundaries of the lyrics album art. */
+		this.mouseInLyricsAlbumArt = false;
+		/** @public @type {boolean} The state when the mouse is within the boundaries of the lyrics full layout edge bounds. */
+		this.mouseInLyricsFullLayoutEdge = false;
 		/** @public @type {boolean} The state when Library should not call window.Reload() from panel.set() -> panel.load(), i.e when saving theme settings or restoring theme backup. */
 		this.libraryCanReload = true;
 		/** @public @type {boolean} The state if this.initTheme() needs to be fully executed to save performance. */
@@ -383,18 +393,25 @@ class MainUI {
 		gr.FillSolidRect(0, 0, this.ww, this.wh, grCol.bg);
 
 		// * ALBUM ART BACKGROUND * //
-		if (!this.displayDetails && (fb.IsPlaying || grSet.panelBrowseMode) && grSet.albumArtBg !== 'none') {
+		if (!this.displayDetails && (fb.IsPlaying || grSet.panelBrowseMode) && grSet.albumArtBg !== 'none' &&
+			!(this.displayLyrics && grSet.lyricsLayout !== 'normal')) {
 			const width = (
 				grSet.albumArtBg === 'full' || grSet.layout === 'artwork' ||
-				this.displayLyrics && grSet.lyricsLayout === 'full'
+				this.displayLyrics && grSet.lyricsLayout !== 'normal'
 			) ? this.ww : this.albumArtSize.x;
 
 			gr.FillSolidRect(0, this.albumArtSize.y, width, this.albumArtSize.h, grCol.detailsBg);
 		}
 
+		// * LYRICS BACKGROUND IMAGE * //
+		if (this.displayLyrics && grSet.lyricsLayout !== 'normal' && grSet.lyricsBgImg && grm.bgImg.lyricsBgImg) {
+			grm.bgImg.drawBgImage(gr, grm.bgImg.lyricsBgImg, grSet.lyricsBgImgScale, 0, this.topMenuHeight, this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, grSet.lyricsBgImgOpacity, false, 0, 0);
+			if (this.mouseInLyricsFullLayoutEdge) gr.FillSolidRect(0, this.topMenuHeight,  this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, RGBA(0, 0, 0, 170));
+		}
+
 		// * BLENDED BACKGROUND FOR HOME PANEL IN ARTWORK LAYOUT & WHEN LYRICS LAYOUT IS FULL * //
 		if (grSet.styleBlend && this.albumArt && grCol.imgBlended &&
-			(this.displayArtworkLayoutCover() || this.displayLyrics && grSet.lyricsLayout === 'full')) {
+			(this.displayArtworkLayoutCover() || this.displayLyrics && grSet.lyricsLayout !== 'normal')) {
 			gr.DrawImage(grCol.imgBlended, 0, 0, this.ww, this.wh, 0, 0, grCol.imgBlended.Width, grCol.imgBlended.Height);
 		}
 
@@ -480,7 +497,7 @@ class MainUI {
 			const noAlbumArtSize = this.wh - this.topMenuHeight - this.lowerBarHeight;
 
 			const bgWidth =
-				grSet.lyricsLayout === 'full' && this.displayLyrics || grSet.layout === 'artwork' ? this.ww :
+				grSet.lyricsLayout !== 'normal' && this.displayLyrics || grSet.layout === 'artwork' ? this.ww :
 				grSet.panelWidthAuto ? noAlbumArtSize :
 				this.ww * 0.5;
 
@@ -557,7 +574,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawHiResAudioLogo(gr) {
-		if (!grSet.showHiResAudioBadge) return;
+		if (!grSet.showHiResAudioBadge || this.displayLyrics && grSet.lyricsLayout === 'full') return;
 
 		const trackIsHiRes =
 			(Number($('$info(bitspersample)', this.initMetadb())) > 16
@@ -626,14 +643,102 @@ class MainUI {
 	drawLyrics(gr) {
 		if (!this.displayLyrics || !fb.IsPlaying || !grm.lyrics) return;
 
-		const fullW = grSet.layout === 'default' && grSet.lyricsLayout === 'full' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
+		if (grSet.lyricsLayout === 'normal') {
+			gr.SetSmoothingMode(SmoothingMode.None);
+			if (grSet.layout === 'artwork') {
+				gr.FillSolidRect(0, this.topMenuHeight, this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, grSet.lyricsBgImg ? RGBA(0, 0, 0, 170) : pl.col.bg);
+			} else {
+				gr.FillSolidRect(this.albumArtSize.x, this.albumArtSize.y, this.albumArtSize.w, this.albumArtSize.h, grSet.lyricsBgImg ? RGBA(0, 0, 0, 170) : pl.col.bg);
+			}
+		}
 
-		gr.SetSmoothingMode(SmoothingMode.None);
-		gr.FillSolidRect(fullW ? 0 : this.albumArtSize.x, fullW ? this.topMenuHeight : this.albumArtSize.y,
-			fullW ? this.ww : this.albumArtSize.w, fullW ? this.wh - this.topMenuHeight - this.lowerBarHeight : this.albumArtSize.h,
-			grSet.lyricsAlbumArt ? RGBA(0, 0, 0, 170) : pl.col.bg);
+		this.drawLyricsInfoOverlay(gr);
+		if (!this.mouseInLyricsFullLayoutEdge) grm.lyrics.drawLyrics(gr);
+	}
 
-		grm.lyrics.drawLyrics(gr);
+	/**
+	 * Draws the lyrics info overlay on the album art when lyrics layout is 'full', 'left' or 'right'.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawLyricsInfoOverlay(gr) {
+		if (grSet.lyricsLayout === 'normal') return;
+
+		// * Button handles repaint refresh and full layout right edge pause functionality
+		grm.button.btn.lyricsInfoOverlay =
+			new Button(0, this.topMenuHeight, this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, 'LyricsInfoOverlay', '', '');
+
+		if (!this.mouseInLyricsAlbumArt && ['left', 'right'].includes(grSet.lyricsLayout) ||
+			!this.mouseInLyricsFullLayoutEdge && grSet.lyricsLayout === 'full') {
+			return;
+		}
+
+		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+
+		// * Calculations
+		const textMaxWidth = grSet.lyricsLayout === 'full' ? this.ww * 0.5 - this.edgeMarginBoth : this.albumArtSize.w - this.edgeMarginBoth;
+		const textPadding = SCALE(Math.round(grSet.lyricsInfoFontSize_default * 0.333));
+		const starSize = SCALE(grSet.lyricsInfoFontSize_default + 10);
+		const starsTotalW = 5 * (starSize + textPadding) - textPadding;
+
+		const { artistRating, albumRating, trackRating } = this.getCurrentRatings();
+		const textElements = [
+			{ str: grStr.artist, font: grFont.lyricsInfoHeadline, rating: artistRating },
+			{ str: `${grStr.year} - ${grStr.album}`, font: grFont.lyricsInfoRegular, rating: albumRating },
+			{ str: `${grStr.tracknum} ${grStr.titleLower}`, font: grFont.lyricsInfoRegular, rating: trackRating }
+		];
+
+		const textTotalHeight = CalcTextTotalHeight(gr, textElements, textMaxWidth, starSize, textPadding, 2, 2);
+		let textX = Math.round(this.albumArtSize.x + this.edgeMargin);
+		let textY = Math.round(this.albumArtSize.y + (this.albumArtSize.h - textTotalHeight) * 0.5);
+
+		// * Adjustments
+		if (grSet.lyricsLayout === 'full') {
+			textX = Math.round(this.albumArtSize.x + this.albumArtSize.w + (this.ww - textMaxWidth - this.albumArtSize.w) * 0.5);
+		} else {
+			gr.FillSolidRect(this.albumArtSize.x - SCALE(1), this.albumArtSize.y - SCALE(1), this.albumArtSize.w + SCALE(1), this.albumArtSize.h + SCALE(1), RGBA(0, 0, 0, 170));
+		}
+
+		// * Drawing
+		const ratingX = Math.round(textX + (textMaxWidth - starsTotalW) * 0.5);
+		for (const { str, font, rating } of textElements) {
+			textY = DrawMultilineString(gr, str, font, grCol.lyricsNormal, textX, textY, textMaxWidth, textPadding, StringFormat(1, 1));
+			this.drawRatingStars(gr, rating, grFont.lyricsInfoHeadline, ratingX, textY + textPadding, starSize, textPadding);
+			textY += starSize * 2 + textPadding * 2;
+		}
+	}
+
+	/**
+	 * Draws a 5-star rating system with fractional star support.
+	 * @param {GdiGraphics} gr - The GDI graphics object used for drawing.
+	 * @param {number} rating - The current rating (0 to 5), which can be fractional.
+	 * @param {GdiFont} font - The font object used for drawing the stars.
+	 * @param {number} x - The x-coordinate where the rating starts.
+	 * @param {number} y - The y-coordinate where the rating starts.
+	 * @param {number} starSize - The size of each star.
+	 * @param {number} textPadding - The padding between stars.
+	 */
+	drawRatingStars(gr, rating, font, x, y, starSize, textPadding) {
+		const starPadding = starSize + textPadding;
+		const starFull = Math.floor(rating);
+		const starFractional = rating % 1;
+
+		const getStarType = (index) => {
+			if (index < starFull) return Stars.full;
+			if (index < rating) {
+				if (starFractional >= 0.75) return Stars.threeQ;
+				if (starFractional >= 0.50) return Stars.half;
+				if (starFractional >= 0.25) return Stars.quarter;
+			}
+			return Stars.empty;
+		};
+
+		for (let i = 0; i < 5; i++) {
+			const star = getStarType(i);
+			const color = (i < rating) ? grCol.detailsRating : grCol.lyricsNormal;
+			const calcX = x + i * starPadding;
+			gr.DrawString(star, font, RGB(0, 0, 0), calcX, y, starSize, starSize, StringFormat(1, 1));
+			gr.DrawString(star, font, color, calcX, y, starSize, starSize, StringFormat(1, 1));
+		}
 	}
 
 	/**
@@ -710,7 +815,7 @@ class MainUI {
 			||
 			this.displayBiography && grSet.biographyLayout === 'full'
 			||
-			this.displayLyrics && grSet.lyricsLayout === 'full');
+			this.displayLyrics && grSet.lyricsLayout !== 'normal');
 
 		const cover = fb.IsPlaying && this.albumArt && grSet.layout !== 'compact' && !fullW;
 		const noCoverDefault = grSet.layout === 'default' && !fullW && !grSet.panelWidthAuto;
@@ -749,6 +854,12 @@ class MainUI {
 			return;
 		}
 
+		if (this.displayLyrics && grSet.lyricsLayout !== 'normal') {
+			gr.DrawRect(grSet.lyricsLayout === 'full' ? this.ww + 4 : this.albumArtSize.x - 1,
+			this.albumArtSize.y - 1, this.albumArtSize.w + 1, this.albumArtSize.h + 1, 1, RGBA(0, 0, 0, 25));
+			return;
+		}
+
 		const middleX =
 			grSet.hideMiddlePanelShadow || this.albumArtSize.w === this.ww * 0.5 ? this.ww + 4 :
 			this.albumArtSize.x + this.albumArtSize.w - 2;
@@ -772,18 +883,20 @@ class MainUI {
 
 		const albumArtW =
 			this.albumArtDisplayed() && !this.displayDetails && !this.displayArtworkLayoutCover() &&
-			(grSet.lyricsLayout !== 'full' || !this.displayLyrics);
+			(grSet.lyricsLayout === 'normal' || !this.displayLyrics);
+
+		const albumArtLyricsLayoutNotNormal = this.displayLyrics && grSet.lyricsLayout !== 'normal';
 
 		const panelX =
 			this.displayPlaylist ? pl.playlist.x :
 			this.displayLibrary ? lib.ui.x :
 			this.displayBiography ? bio.ui.x :
-			grSet.layout !== 'default' || !this.albumArtSize.w ? 0 :
+			grSet.layout !== 'default' || !this.albumArtSize.w || albumArtLyricsLayoutNotNormal ? 0 :
 			this.albumArtSize.x + this.albumArtSize.w;
 
 		const discArtInAlbumArtArea = this.displayDetails && this.discArtImageDisplayed;
 
-		const middleX = grSet.hideMiddlePanelShadow || discArtInAlbumArtArea ? this.ww + 4 : panelX - 4;
+		const middleX = grSet.hideMiddlePanelShadow || discArtInAlbumArtArea || this.displayLyrics && grSet.lyricsLayout !== 'normal' ? this.ww + 4 : panelX - 4;
 		const x = albumArtW ? panelX : 0;
 		const w = (albumArtW && !grSet.panelWidthAuto || this.discArtDisplayed()) && !discArtInAlbumArtArea ? panelX : this.ww;
 
@@ -1019,7 +1132,7 @@ class MainUI {
 	drawDebugThemeOverlay(gr) {
 		if (!grCfg.settings.showDebugThemeOverlay || !this.loadingThemeComplete) return;
 
-		const fullW = grSet.layout === 'default' && grSet.lyricsLayout === 'full' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
+		const fullW = grSet.layout === 'default' && grSet.lyricsLayout !== 'normal' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
 		const titleWidth = this.albumArtSize.w - SCALE(80);
 		const titleHeight = gr.CalcTextHeight(' ', grFont.popup);
 		const lineSpacing = titleHeight * 1.5;
@@ -1113,7 +1226,7 @@ class MainUI {
 		}
 
 		const debugTimingsSorted = [...this.debugTimingsArray].sort((a, b) => a.localeCompare(b));
-		const fullW = grSet.layout === 'default' && grSet.lyricsLayout === 'full' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
+		const fullW = grSet.layout === 'default' && grSet.lyricsLayout !== 'normal' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
 		const titleWidth = this.albumArtSize.w - SCALE(80);
 		const titleHeight = gr.CalcTextHeight(' ', grFont.popup);
 		const titleMaxWidthRepaint = gr.CalcTextWidth('Ram usage for current panel:  6291456 MB', grFont.popup);
@@ -1485,36 +1598,9 @@ class MainUI {
 	}
 
 	/**
-	 * Sets the size and position when noAlbumArtStub is being displayed.
-	 */
-	setNoAlbumArtSize() {
-		const noAlbumArtSize = this.wh - this.topMenuHeight - this.lowerBarHeight;
-
-		this.albumArtSize.x =
-			grSet.layout === 'default' &&  this.displayCustomThemeMenu && this.displayDetails ? this.ww * 0.3 :
-			grSet.layout === 'default' && !this.displayCustomThemeMenu && this.displayDetails ||
-			grSet.layout === 'artwork' &&  this.displayPlaylist ? this.ww :
-			grSet.panelWidthAuto ?
-				grSet.albumArtAlign === 'left' ? 0 :
-				grSet.albumArtAlign === 'leftMargin' ? this.ww / this.wh > 1.8 ? this.edgeMargin : 0 :
-				grSet.albumArtAlign === 'center' ? Math.floor(this.ww * 0.25 - noAlbumArtSize * 0.5) :
-				Math.floor(this.ww * 0.5 - noAlbumArtSize) :
-			0;
-
-		this.albumArtSize.y = this.topMenuHeight;
-
-		this.albumArtSize.w =
-			grSet.panelWidthAuto && this.noAlbumArtStub ? !fb.IsPlaying && !grSet.panelBrowseMode && !this.displayCustomThemeMenu ? 0 : noAlbumArtSize :
-			this.ww * 0.5;
-
-		this.albumArtSize.h = noAlbumArtSize;
-	}
-
-	/**
 	 * Sets the size and position of the pause button.
 	 */
 	setPausePosition() {
-		const noAlbumArtSize = this.wh - this.topMenuHeight - this.lowerBarHeight;
 		const windowFullscreenOrMaximized = UIHacks.FullScreen || UIHacks.MainWindowState === WindowState.Maximized;
 
 		const albumArtPauseBtnX = windowFullscreenOrMaximized ? this.ww * 0.25 : this.albumArtSize.x + this.albumArtSize.w * 0.5;
@@ -1522,9 +1608,11 @@ class MainUI {
 		const discArtPauseBtnX = grm.details.discArtSize.x + grm.details.discArtSize.w * 0.5;
 		const discArtPauseBtnY = grm.details.discArtSize.y + grm.details.discArtSize.h * 0.5;
 
+		const noAlbumArtSize = this.wh - this.topMenuHeight - this.lowerBarHeight;
+
 		const noAlbumArtPauseBtnX =
 			!grSet.panelWidthAuto && grSet.layout !== 'artwork' && !this.noAlbumArtStub && (this.displayPlaylist || this.displayLibrary) ||
-				grSet.layout === 'artwork' || this.displayDetails || grSet.lyricsLayout === 'full' && this.displayLyrics ? this.ww * 0.5 :
+				grSet.layout === 'artwork' || this.displayDetails || grSet.lyricsLayout !== 'normal' && this.displayLyrics ? this.ww * 0.5 :
 			grSet.panelWidthAuto ?
 				grSet.albumArtAlign === 'left' ? noAlbumArtSize * 0.5 :
 				grSet.albumArtAlign === 'leftMargin' ? this.ww / this.wh > 1.8 ? noAlbumArtSize * 0.5 + this.edgeMargin : 0 :
@@ -2225,6 +2313,7 @@ class MainUI {
 		if (!nowPlayingUpdated) return;
 
 		this.clearCache('metrics');
+		this.clearCache('ratings');
 		this.initMetadata();
 		this.loadCountryFlags();
 
@@ -2246,8 +2335,9 @@ class MainUI {
 		this.initThemeFull = false;
 		this.newTrackFetchingArtwork = true;
 
-		this.clearCache('debug');
 		this.clearCache('metrics');
+		this.clearCache('ratings');
+		this.clearCache('debug');
 		this.initStreamingOrCD(metadb);
 		this.handleArtwork(metadb);
 		grm.details.clearCache('metrics');
@@ -2255,7 +2345,7 @@ class MainUI {
 		grm.details.getLabelLogo(metadb);
 
 		if (grSet.rotateDiscArt && !grSet.spinDiscArt) {
-			grm.details.createDiscArtRotation(); // We need to always setup the rotated image because it rotates on every track
+			grm.details.setDiscArtRotation(); // We need to always setup the rotated image because it rotates on every track
 		}
 
 		// * Pick a new random theme preset on new track
@@ -2491,7 +2581,7 @@ class MainUI {
 			||
 			this.displayDetails && !noAlbumArtStub
 			||
-			this.displayLyrics;
+			this.displayLyrics && grSet.lyricsLayout !== 'full' || this.mouseInLyricsFullLayoutEdge && grSet.lyricsLayout === 'full';
 		}
 		else if (grSet.layout === 'artwork') {
 			return !this.displayPlaylist && !this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography;
@@ -2629,7 +2719,7 @@ class MainUI {
 				this.displayBiography = true;
 			},
 			lyrics: () => {
-				this.displayPlaylist = grSet.layout === 'default' && grSet.lyricsLayout !== 'full';
+				this.displayPlaylist = grSet.layout === 'default' && grSet.lyricsLayout === 'normal';
 				this.displayLyrics = grSet.layout !== 'compact';
 			}
 		};
@@ -2689,7 +2779,7 @@ class MainUI {
 					}
 				},
 				lyrics: () => {
-					if ((grSet.lyricsLayout === 'full' || grSet.savedLyricsLayoutFull) &&
+					if ((grSet.lyricsLayout !== 'normal' || grSet.savedLyricsLayoutFull) &&
 						(this.displayCustomThemeMenu || this.displayDetails || this.displayLibrary || this.displayBiography)) {
 						layoutActions.resetLayout.lyrics();
 					} else {
@@ -2717,7 +2807,7 @@ class MainUI {
 					this.setBiographySize();
 				},
 				lyrics: () => {
-					if (grSet.lyricsLayout !== 'full') return;
+					if (grSet.lyricsLayout === 'normal') return;
 					grSet.savedLyricsLayoutFull = true;
 					grSet.lyricsLayout = 'normal';
 					this.setPlaylistSize();
@@ -2741,7 +2831,7 @@ class MainUI {
 				},
 				lyrics: () => {
 					if (!grSet.savedLyricsLayoutFull || this.displayDetails) return;
-					grSet.lyricsLayout = 'full';
+					grSet.lyricsLayout = grSet.savedLyricsLayout;
 					if (this.displayLyrics) this.displayPlaylist = false;
 					this.setPlaylistSize();
 				}
@@ -2761,7 +2851,9 @@ class MainUI {
 	 */
 	handleKeyAction(vkey) {
 		const setRating = (action) => {
+			pl.artist_ratings.clear();
 			pl.album_ratings.clear();
+			this.clearCache('ratings');
 			const metadb = fb.GetNowPlaying();
 			const metadbList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 
@@ -2805,7 +2897,7 @@ class MainUI {
 	// #region MAIN - PUBLIC METHODS - COMMON
 	/**
 	 * Clears the specified cache, individual properties, or all caches.
-	 * @param {string} [type] - The type of cache to clear. Can be 'metrics', 'albumArt', 'flag', 'debug'.
+	 * @param {string} [type] - The type of cache to clear. Can be 'metrics', 'ratings', 'albumArt', 'flag', 'debug'.
 	 * @param {string} [property] - The specific property to clear within the cacheType.
 	 * @param {boolean} [clearArtCache] - Whether to clear everything in the artCache object.
 	 * @param {boolean} [keepAlbumArt] - Whether to keep the album art.
@@ -2826,6 +2918,9 @@ class MainUI {
 		const cacheProperties = {
 			metrics: {
 				cachedLowerBarMetrics: false
+			},
+			ratings: {
+				cachedCurrentRatings: false
 			},
 			albumArt: {
 				albumArt: keepAlbumArt ? this.albumArt : null,
@@ -3036,8 +3131,30 @@ class MainUI {
 		grFont.biography = Font(grFont.fontBiography, grSet.biographyFontSize_layout, 0);
 
 		// * LYRICS * //
-		grFont.lyrics          = Font(grFont.fontLyrics, grSet.lyricsFontSize_layout, 1);
-		grFont.lyricsHighlight = Font(grFont.fontLyrics, grSet.lyricsFontSize_layout * 1.5, 1);
+		grFont.lyrics             = Font(grFont.fontLyrics, grSet.lyricsFontSize_layout, 1);
+		grFont.lyricsHighlight    = Font(grFont.fontLyrics, grSet.lyricsFontSize_layout * 1.5, 1);
+		grFont.lyricsInfoRegular  = Font(grFont.fontLyrics, grSet.lyricsInfoFontSize_default, 0);
+		grFont.lyricsInfoHeadline = Font(grFont.fontLyrics, grSet.lyricsInfoFontSize_default * 1.5, 1);
+	}
+
+	/**
+	 * Fetches and returns the current ratings for the artist, album, and track.
+	 * @returns {{artistRating: number, albumRating: number, trackRating: number}} An object containing the ratings.
+	 */
+	getCurrentRatings() {
+		if (this.cachedCurrentRatings) return this.currentRatings;
+
+		const rating = new PlaylistRating();
+		const getRating = rating.get_current_ratings();
+
+		this.currentRatings = {
+			artistRating: getRating.artistRating.get(grStr.artist) || 0,
+			albumRating: getRating.albumRating.get(grStr.album) || 0,
+			trackRating: getRating.trackRating || 0
+		};
+
+		this.cachedCurrentRatings = true;
+		return this.currentRatings;
 	}
 
 	/**
@@ -3749,26 +3866,6 @@ class MainUI {
 	}
 
 	/**
-	 * Scales album art to a global size, handling potential errors.
-	 * @throws Logs an error if the scaling operation fails.
-	 */
-	createScaledAlbumArt() {
-		if (this.albumArtScaled) this.albumArtScaled = null;
-
-		try {
-			// * Avoid weird anti-aliased scaling along border of images, see: https://stackoverflow.com/questions/4772273/interpolationmode-highqualitybicubic-introducing-artefacts-on-edge-of-resized-im
-			this.albumArtCorrupt = false;
-			this.albumArtScaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h, InterpolationMode.Bicubic); // Old method -> this.albumArtScaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h);
-			const sg = this.albumArtScaled.GetGraphics();
-			const HQscaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h, InterpolationMode.HighQualityBicubic);
-			sg.DrawImage(HQscaled, 2, 2, this.albumArtScaled.Width - 4, this.albumArtScaled.Height - 4, 2, 2, this.albumArtScaled.Width - 4, this.albumArtScaled.Height - 4);
-			this.albumArtScaled.ReleaseGraphics(sg);
-		} catch (e) {
-			this.handleArtworkError('albumArt');
-		}
-	}
-
-	/**
 	 * Creates cropped album art within max dimensions.
 	 * @param {object} albumArt - The original album art with Width and Height.
 	 * @param {number} maxWidth - The max width for the art.
@@ -3843,7 +3940,7 @@ class MainUI {
 		if (grSet.panelWidthAuto && this.albumArtSize.w !== this.albumArtSize.h) { // Re-adjust playlist if artwork size changes
 			this.setPlaylistSize();
 		}
-		grm.details.clearCache('metrics', 'cachedLabelLastLeftEdge');
+		grm.details.clearCache('metrics');
 		RepaintWindow();
 	}
 
@@ -3870,7 +3967,7 @@ class MainUI {
 			window.Repaint();
 		}, 1);
 
-		grm.details.clearCache('metrics', 'cachedLabelLastLeftEdge');
+		grm.details.clearCache('metrics');
 		this.resizeArtwork(true); // Needed to readjust discArt shadow size if artwork size changes
 		RepaintWindow();
 
@@ -4056,19 +4153,18 @@ class MainUI {
 				this.albumArtLoaded = true;
 				this.resizeArtwork(true);
 				this.initPanelWidthAuto();
-				grm.details.createDiscArtRotation();
+				grm.details.clearCache('metrics');
+				grm.details.setDiscArtRotation();
 				RepaintWindow();
 			});
 		}
 
 		if (!this.displayLibrarySplit()) this.resizeArtwork(false);
-		grm.details.createDiscArtRotation();
+		grm.details.setDiscArtRotation();
 	}
 
 	/**
 	 * Resizes and resets the size and position of the album art.
-	 * Accounts for different window states and user preferences to calculate
-	 * the appropriate size and position of the album artwork.
 	 */
 	resizeAlbumArt() {
 		if (!this.albumArt || !this.albumArt.Width || !this.albumArt.Height) {
@@ -4076,77 +4172,152 @@ class MainUI {
 			return;
 		}
 
-		// * Set album scale
-		const windowFullscreenOrMaximized = UIHacks.FullScreen || UIHacks.MainWindowState === WindowState.Maximized;
-		const aspectRatioInBounds = !grSet.albumArtAspectRatioLimit || (this.albumArt.Width < this.albumArt.Height * grSet.albumArtAspectRatioLimit) && (this.albumArt.Height < this.albumArt.Width * grSet.albumArtAspectRatioLimit);
-		const albumArtCropped = grSet.albumArtScale === 'cropped' && windowFullscreenOrMaximized && aspectRatioInBounds && (this.displayPlaylist || this.displayLibrary);
-		const albumArtStretched = grSet.albumArtScale === 'stretched' && windowFullscreenOrMaximized && aspectRatioInBounds && (this.displayPlaylist || this.displayLibrary);
+		this.setAlbumArtScaleFactor();
+		this.setAlbumArtSize();
+		this.setAlbumArtPosition();
+		this.setAlbumArtScaled();
+
+		this.hasArtwork = true;
+	}
+
+	/**
+	 * Set the scale factor for the album art based on the window size and layout settings.
+	 */
+	setAlbumArtScaleFactor() {
+		const albumArtMaxHeight = this.wh - this.topMenuHeight - this.lowerBarHeight;
+		const scaleFactor = this.displayPlaylist || this.displayLibrary ? 0.5 : 0.75;
+		const defaultScale = Math.min(this.ww * scaleFactor / this.albumArt.Width, albumArtMaxHeight / this.albumArt.Height);
+		const artworkScale = Math.min(this.ww / this.albumArt.Width, albumArtMaxHeight / this.albumArt.Height);
+		this.albumArtScaleFactor = grSet.layout === 'artwork' ? artworkScale : defaultScale;
+	}
+
+	/**
+	 * Set the size of the album art based on its scale, window state, and various layout settings.
+	 */
+	setAlbumArtSize() {
 		const albumArtMaxWidth = this.ww * 0.5;
 		const albumArtMaxHeight = this.wh - this.topMenuHeight - this.lowerBarHeight;
-		const albumArtScaleFactor = this.displayPlaylist || this.displayLibrary ? 0.5 : 0.75;
-		const albumArtScaleDefault = Math.min(this.ww * albumArtScaleFactor / this.albumArt.Width, albumArtMaxHeight / this.albumArt.Height);
-		const albumArtScaleArtwork = Math.min(this.ww / this.albumArt.Width, albumArtMaxHeight / this.albumArt.Height);
-		let albumArtScale = grSet.layout === 'artwork' ? albumArtScaleArtwork : albumArtScaleDefault;
 
-		// * Set album art width, height and proportions
-		if (albumArtCropped) {
+		const aspectRatioInBounds = !grSet.albumArtAspectRatioLimit ||
+			(this.albumArt.Width  < this.albumArt.Height * grSet.albumArtAspectRatioLimit) &&
+			(this.albumArt.Height < this.albumArt.Width  * grSet.albumArtAspectRatioLimit);
+		const scaleWhenFullscreen = (UIHacks.FullScreen  || UIHacks.MainWindowState === WindowState.Maximized) &&
+			aspectRatioInBounds && (this.displayPlaylist || this.displayLibrary);
+
+		// * Album art lyrics layouts
+		if (grSet.lyricsLayout !== 'normal' && this.displayLyrics) {
+			const size = Math.round(albumArtMaxHeight - this.edgeMarginBoth);
+			this.albumArtSize = { w: size, h: size };
+			return;
+		}
+		// * Album art cropped
+		if (grSet.albumArtScale === 'cropped' && scaleWhenFullscreen) {
 			const { image, scale } = this.createCroppedAlbumArt(this.albumArt, albumArtMaxWidth, albumArtMaxHeight);
 			this.albumArtCopy = image;
-			albumArtScale = scale;
-			this.albumArtSize.w = Math.floor(this.albumArtCopy.Width * albumArtScale);
-			this.albumArtSize.h = Math.floor(this.albumArtCopy.Height * albumArtScale);
-		} else if (albumArtStretched) {
-			this.albumArtCopy = null;
-			this.albumArtSize.w = albumArtMaxWidth;
-			this.albumArtSize.h = albumArtMaxHeight;
-		} else { // Restore original proportional album art image
-			this.albumArtCopy = null;
-			this.albumArtSize.w = Math.floor(this.albumArt.Width * albumArtScale);
-			this.albumArtSize.h = Math.floor(this.albumArt.Height * albumArtScale);
+			this.albumArtScaleFactor = scale;
+			this.albumArtSize = { w: Math.floor(image.Width * scale), h: Math.floor(image.Height * scale) };
+			return;
 		}
+		// * Album art stretched
+		if (grSet.albumArtScale === 'stretched' && scaleWhenFullscreen) {
+			this.albumArtCopy = null;
+			this.albumArtSize = { w: albumArtMaxWidth, h: albumArtMaxHeight };
+			return;
+		}
+		// * Album art proportional
+		this.albumArtCopy = null;
+		this.albumArtSize = { w: Math.floor(this.albumArt.Width * this.albumArtScaleFactor), h: Math.floor(this.albumArt.Height * this.albumArtScaleFactor) };
+	}
 
-		// * Set xCenter position
-		let xCenter = this.ww * 0.5;
-		this.albumArtOffCenter = false;
-		if (this.displayPlaylist || this.displayLibrary) {
-			xCenter = grSet.layout === 'artwork' ? 0 : this.ww * 0.25;
-		} else if (albumArtScale === this.ww * 0.75 / this.albumArt.Width) {
-			xCenter = Math.round(this.ww * 0.66 - this.edgeMargin); // xCenter += this.ww * 0.1;
-			this.albumArtOffCenter = true;
-		}
+	/**
+	 * Set the position of the album art based on the layout settings and window size.
+	 */
+	setAlbumArtPosition() {
+		const albumArtLyricsLayoutNotNormal = this.displayLyrics && grSet.lyricsLayout !== 'normal';
+
+		this.albumArtOffCenter = this.albumArtScaleFactor === (this.ww * 0.75 / this.albumArt.Width);
+
+		// * Set album art centerX/centerY coordinate
+		const albumArtCenterX =
+			this.albumArtOffCenter ? Math.round(this.ww * 0.66 - this.edgeMargin) :
+			(this.displayPlaylist || this.displayLibrary) ? grSet.layout === 'artwork' ? 0 : this.ww * 0.25 :
+			this.ww * 0.5;
+
+		const albumArtCenterY = Math.floor(((this.wh - this.lowerBarHeight + this.topMenuHeight) / 2) - this.albumArtSize.h / 2);
 
 		// * Set album art x-coordinate
-		if (grSet.layout === 'default') { // In a non-proportional player size, 'grSet.albumArtAlign' sets album art alignment in Default layout
-			if (this.displayPlaylist || this.displayLibrary) {
-				switch (grSet.albumArtAlign) {
-					case 'left':
-						this.albumArtSize.x = Math.round(Math.min(0, this.ww * 0.5 - this.albumArtSize.w));
-						break;
-					case 'leftMargin':
-						this.albumArtSize.x = Math.round(Math.min(this.ww / this.wh > 1.8 ? this.edgeMargin : 0, this.ww * 0.5 - this.albumArtSize.w));
-						break;
-					case 'center':
-						this.albumArtSize.x = Math.round(Math.min(xCenter - 0.5 * this.albumArtSize.w, this.ww * 0.5 - this.albumArtSize.w));
-						break;
-					default:
-						this.albumArtSize.x = Math.round(this.ww * 0.5 - this.albumArtSize.w);
-						break;
-				}
-			} else {
-				this.albumArtSize.x = Math.round(xCenter - 0.5 * this.albumArtSize.w);
-			}
-		}
-		else if (grSet.layout === 'artwork') { // And is always centered in Artwork layout
-			this.albumArtSize.x = Math.round(!this.displayPlaylist || this.displayLyrics ? this.ww * 0.5 - this.albumArtSize.w * 0.5 : this.ww);
-		}
+		const albumArtX = {
+			left: Math.min(0, this.ww * 0.5 - this.albumArtSize.w),
+			leftMargin: Math.min(this.ww / this.wh > 1.8 ? this.edgeMargin : 0, this.ww * 0.5 - this.albumArtSize.w),
+			center: Math.min(albumArtCenterX - 0.5 * this.albumArtSize.w, this.ww * 0.5 - this.albumArtSize.w),
+			right: this.ww * 0.5 - this.albumArtSize.w,
+			lyricsLayoutLeft: this.edgeMargin,
+			lyricsLayoutRight: this.ww - this.albumArtSize.w - this.edgeMargin,
+			centerDefault: Math.round(albumArtCenterX - 0.5 * this.albumArtSize.w),
+			centerArtwork: Math.round(!this.displayPlaylist || this.displayLyrics ? this.ww * 0.5 - this.albumArtSize.w * 0.5 : this.ww)
+		};
+
+		const albumArtLayoutX = {
+			default:
+				this.displayPlaylist || this.displayLibrary ? Math.round(albumArtX[grSet.albumArtAlign]) :
+				albumArtLyricsLayoutNotNormal ? ['full', 'left'].includes(grSet.lyricsLayout) ? albumArtX.lyricsLayoutLeft : albumArtX.lyricsLayoutRight :
+				albumArtX.centerDefault,
+			artwork: albumArtX.centerArtwork
+		};
+
+		this.albumArtSize.x = albumArtLayoutX[grSet.layout];
 
 		// * Set album art y-coordinate
-		const restrictedWidth = albumArtScale !== (this.wh - this.topMenuHeight - this.lowerBarHeight) / this.albumArt.Height;
-		const centerY = Math.floor(((this.wh - this.lowerBarHeight + this.topMenuHeight) / 2) - this.albumArtSize.h / 2);
-		this.albumArtSize.y = restrictedWidth ? Math.min(centerY, SCALE(150) + 10) : this.topMenuHeight;
+		const albumArtMaxHeight = this.wh - this.topMenuHeight - this.lowerBarHeight;
+		const restrictedWidth = this.albumArtScaleFactor !== (albumArtMaxHeight) / this.albumArt.Height;
+		this.albumArtSize.y = albumArtLyricsLayoutNotNormal ? this.topMenuHeight + this.edgeMargin :
+			restrictedWidth ? Math.min(albumArtCenterY, SCALE(150) + 10) : this.topMenuHeight;
+	}
 
-		this.createScaledAlbumArt();
-		this.hasArtwork = true;
+	/**
+	 * Scales album art to a global size, handling potential errors.
+	 * @throws Logs an error if the scaling operation fails.
+	 */
+	setAlbumArtScaled() {
+		if (this.albumArtScaled) this.albumArtScaled = null;
+
+		try {
+			// * Avoid weird anti-aliased scaling along border of images, see: https://stackoverflow.com/questions/4772273/interpolationmode-highqualitybicubic-introducing-artefacts-on-edge-of-resized-im
+			this.albumArtCorrupt = false;
+			this.albumArtScaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h, InterpolationMode.Bicubic); // Old method -> this.albumArtScaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h);
+			const sg = this.albumArtScaled.GetGraphics();
+			const HQscaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h, InterpolationMode.HighQualityBicubic);
+			sg.DrawImage(HQscaled, 2, 2, this.albumArtScaled.Width - 4, this.albumArtScaled.Height - 4, 2, 2, this.albumArtScaled.Width - 4, this.albumArtScaled.Height - 4);
+			this.albumArtScaled.ReleaseGraphics(sg);
+		} catch (e) {
+			this.handleArtworkError('albumArt');
+		}
+	}
+
+	/**
+	 * Sets the size and position when noAlbumArtStub is being displayed.
+	 */
+	setNoAlbumArtSize() {
+		const noAlbumArtSize = this.wh - this.topMenuHeight - this.lowerBarHeight;
+
+		this.albumArtSize.x =
+			grSet.layout === 'default' &&  this.displayCustomThemeMenu && this.displayDetails ? this.ww * 0.3 :
+			grSet.layout === 'default' && !this.displayCustomThemeMenu && this.displayDetails ||
+			grSet.layout === 'artwork' &&  this.displayPlaylist ? this.ww :
+			grSet.panelWidthAuto ?
+				grSet.albumArtAlign === 'left' ? 0 :
+				grSet.albumArtAlign === 'leftMargin' ? this.ww / this.wh > 1.8 ? this.edgeMargin : 0 :
+				grSet.albumArtAlign === 'center' ? Math.floor(this.ww * 0.25 - noAlbumArtSize * 0.5) :
+				Math.floor(this.ww * 0.5 - noAlbumArtSize) :
+			0;
+
+		this.albumArtSize.y = this.topMenuHeight;
+
+		this.albumArtSize.w =
+			grSet.panelWidthAuto && this.noAlbumArtStub ? !fb.IsPlaying && !grSet.panelBrowseMode && !this.displayCustomThemeMenu ? 0 : noAlbumArtSize :
+			this.ww * 0.5;
+
+		this.albumArtSize.h = noAlbumArtSize;
 	}
 	// #endregion
 
@@ -4272,6 +4443,10 @@ class MainUI {
 			default: grCfg.settings.playlistSortDefault,
 			artistDate_asc: grCfg.settings.playlistSortArtistDate_asc,
 			artistDate_dsc: grCfg.settings.playlistSortArtistDate_dsc,
+			artistRating_asc: grCfg.settings.playlistSortArtistRating_asc,
+			artistRating_dsc: grCfg.settings.playlistSortArtistRating_dsc,
+			artistPlaycount_asc: grCfg.settings.playlistSortArtistPlaycount_asc,
+			artistPlaycount_dsc: grCfg.settings.playlistSortArtistPlaycount_dsc,
 			albumTitle: grCfg.settings.playlistSortAlbumTitle,
 			albumRating_asc: grCfg.settings.playlistSortAlbumRating_asc,
 			albumRating_dsc: grCfg.settings.playlistSortAlbumRating_dsc,
@@ -4787,7 +4962,7 @@ class MainUI {
 	 * Initializes the lyrics display when a new track is played.
 	 */
 	initLyricsNewTrack() {
-		if (grSet.lyricsLayout === 'full') {
+		if (grSet.lyricsLayout !== 'normal') {
 			this.displayPlaylist = false;
 			this.resizeArtwork(true);
 		}
@@ -4818,11 +4993,11 @@ class MainUI {
 		this.displayLyrics = !this.displayLyrics;
 		grSet.savedLyricsDisplayed = this.displayLyrics && grSet.lyricsRememberPanelState;
 
-		if (this.displayLyrics && grSet.lyricsLayout === 'full' || this.displayPlaylist && grSet.layout === 'artwork' || this.displayLibrary) {
+		if (this.displayLyrics && grSet.lyricsLayout !== 'normal' || this.displayPlaylist && grSet.layout === 'artwork' || this.displayLibrary) {
 			this.displayPlaylist = false;
 			this.displayDetails = false;
 		}
-		else if (!this.displayLyrics && grSet.lyricsLayout === 'full' || this.noAlbumArtStub) {
+		else if (!this.displayLyrics && grSet.lyricsLayout !== 'normal' || this.noAlbumArtStub) {
 			this.displayPlaylist = grSet.layout === 'default';
 		}
 
@@ -4841,10 +5016,10 @@ class MainUI {
 	 * Initializes the Lyrics layout state.
 	 */
 	initLyricsLayoutState() {
-		grSet.savedLyricsLayoutFull = grSet.lyricsLayout === 'full';
+		grSet.savedLyricsLayoutFull = grSet.lyricsLayout !== 'normal';
 		this.displayPlaylist = grSet.lyricsLayout === 'normal';
 
-		if (this.displayDetails && this.displayLyrics && grSet.lyricsLayout === 'full') {
+		if (this.displayDetails && this.displayLyrics && grSet.lyricsLayout !== 'normal') {
 			this.displayDetails = false;
 			this.displayPlaylist = false;
 		}

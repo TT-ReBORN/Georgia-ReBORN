@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-08-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -308,6 +308,20 @@ const Guifx = {
 	fire: 'i',
 	medical: 'o',
 	police: 'p'
+};
+
+
+/**
+ * A set of various star symbols mainly used for ratings.
+ * @global
+ * @enum {string}
+ */
+const Stars = {
+	empty:   '\u2606',
+	quarter: '\u2606',
+	half:    '\u272B',
+	threeQ:  '\u2605',
+	full:    '\u2605'
 };
 
 

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-10-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -506,7 +506,7 @@ function on_mouse_lbtn_down(x, y, m) {
 			CallLog('Biography => on_mouse_lbtn_down');
 			bio.call.on_mouse_lbtn_down(x, y, m);
 		}
-		if (grm.ui.displayLyrics && mouseInAlbumArt(x, y)) {
+		if (grm.ui.displayLyrics && mouseInLyrics(x, y)) {
 			MoveLog('Lyrics => on_mouse_lbtn_down');
 			grm.lyrics.on_mouse_lbtn_down(x, y, m);
 		}
@@ -568,7 +568,7 @@ function on_mouse_lbtn_up(x, y, m) {
 		CallLog('Biography => on_mouse_lbtn_up');
 		bio.call.on_mouse_lbtn_up(x, y, m);
 	}
-	if (grm.ui.displayLyrics && mouseInAlbumArt(x, y)) {
+	if (grm.ui.displayLyrics && mouseInLyrics(x, y)) {
 		MoveLog('Lyrics => on_mouse_lbtn_up');
 		grm.lyrics.on_mouse_lbtn_up(x, y, m);
 	}
@@ -717,7 +717,7 @@ function on_mouse_move(x, y, m) {
 		bio.call.on_mouse_move(x, y, m);
 		return;
 	}
-	if (grm.ui.displayLyrics && mouseInAlbumArt(x, y)) {
+	if (grm.ui.displayLyrics && mouseInLyrics(x, y)) {
 		MoveLog('Lyrics => on_mouse_move');
 		grm.lyrics.on_mouse_move(x, y, m);
 		return;
@@ -783,7 +783,7 @@ function on_mouse_rbtn_up(x, y, m) {
 		handleContextMenu(x, y);
 		return true;
 	}
-	else if (mouseInAlbumArt(x, y) || grm.ui.displayDetails && grm.details.mouseInMetadataGrid(x, y, 'grid')) {
+	else if (mouseInAlbumArt(x, y) || grm.ui.displayLyrics && mouseInLyrics(x, y) || grm.ui.displayDetails && grm.details.mouseInMetadataGrid(x, y, 'grid')) {
 		CallLog('Album art => on_mouse_rbtn_up');
 		grm.ctxMenu.contextMenuAlbumCover(cmm);
 		handleContextMenu(x, y);
@@ -834,7 +834,8 @@ function on_mouse_wheel(step) {
 		return;
 	}
 
-	if (mouseInAlbumArt() && grSet.albumArtCycleMouseWheel && grm.ui.albumArtList.length > 1 && !grm.ui.displayLyrics) {
+	if (mouseInAlbumArt(grm.ui.state.mouse_x, grm.ui.state.mouse_y) &&
+		grSet.albumArtCycleMouseWheel && grm.ui.albumArtList.length > 1 && !grm.ui.displayLyrics) {
 		grm.ui.cycleAlbumArtImage(step);
 		return;
 	}
@@ -924,10 +925,11 @@ function on_mouse_wheel(step) {
 			altNoShift: () => grm.display.setBiographyFontSize(0),
 			default: () => bio.call.on_mouse_wheel(step)
 		});
-	} else if (grm.ui.displayLyrics && mouseInAlbumArt()) {
+	} else if (grm.ui.displayLyrics && mouseInLyrics(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
 		KeyPressAction({
 			ctrlNoShift: () => grm.display.setLyricsFontSize(step),
 			altNoShift: () => grm.display.setLyricsFontSize(0),
+			shift: () => grm.bgImg.cycleBgImage('lyrics', step),
 			default: () => grm.lyrics.on_mouse_wheel(step)
 		});
 	}
@@ -1350,16 +1352,15 @@ function mouseInAlbumArt(x, y) {
 		grSet.layout === 'artwork' && !grm.ui.displayBiography && (grm.ui.displayPlaylist || !grm.ui.displayPlaylistArtwork && !grm.ui.displayLibrary); // Cover, Details, Lyrics
 
 	const albumArtBounds =
-		grm.ui.state.mouse_x > grm.ui.albumArtSize.x && grm.ui.state.mouse_x <= grm.ui.albumArtSize.x + grm.ui.albumArtSize.w
-		&&
-		grm.ui.state.mouse_y > grm.ui.albumArtSize.y && grm.ui.state.mouse_y <= grm.ui.albumArtSize.y + grm.ui.albumArtSize.h;
+		x > grm.ui.albumArtSize.x && x < grm.ui.albumArtSize.x + grm.ui.albumArtSize.w &&
+		y > grm.ui.albumArtSize.y && y < grm.ui.albumArtSize.y + grm.ui.albumArtSize.h;
 
 	if ((grm.ui.albumArt || grm.ui.noAlbumArtStub) && (displayAlbumArt && albumArtBounds)) {
 		MoveLog('mouseInAlbumArt');
 		return true;
 	}
 
-	if (grm.lyrics.scrollDrag) {
+	if (grm.lyrics.scrollDrag && grSet.lyricsLayout === 'normal') {
 		grm.lyrics.scrollDrag = false;
 	}
 
@@ -1379,7 +1380,7 @@ function mouseInPause(x, y) {
 	const panelPlaylist = grm.ui.displayPlaylist && !grm.ui.displayLibrary && !grm.ui.displayBiography && grSet.playlistLayout !== 'full';
 	const panelDetails  = grm.ui.displayDetails;
 	const panelLibrary  = grm.ui.displayLibrary && grSet.libraryLayout === 'normal' && grSet.libraryDesign !== 'flowMode';
-	const panelLyrics   = grm.ui.displayLyrics;
+	const panelLyrics   = grm.ui.displayLyrics && grSet.lyricsLayout !== 'full';
 	const artworkLayout = grSet.layout === 'artwork' && !grm.ui.displayDetails && !grm.ui.displayPlaylistArtwork && !grm.ui.displayLibrary && !grm.ui.displayBiography;
 
 	const albumArtBounds   = grm.ui.albumArtSize.x <= x && grm.ui.albumArtSize.y <= y && grm.ui.albumArtSize.x + grm.ui.albumArtSize.w >= x && grm.ui.albumArtSize.y + grm.ui.albumArtSize.h >= y;
@@ -1481,7 +1482,7 @@ function mouseInSeekbar(x, y) {
  * @returns {boolean} True or false.
  */
 function mouseInPanel(x, y) {
-	if (y < grm.ui.topMenuHeight && y > grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight) {
+	if (y > grm.ui.topMenuHeight && y < grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight) {
 		MoveLog('mouseInPanel');
 		return true;
 	}
@@ -1581,6 +1582,47 @@ function mouseInBiography(x, y) {
 
 	if (bio.lyrics.scrollDrag) {
 		bio.lyrics.scrollDrag = false;
+	}
+
+	return false;
+}
+
+
+/**
+ * Checks if the mouse is within the boundaries of the Lyrics.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @returns {boolean} True or false.
+ */
+function mouseInLyrics(x, y) {
+	if (grSet.lyricsLayout !== 'normal' &&
+		(y > grm.ui.topMenuHeight && y < grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight) || mouseInAlbumArt(x, y)) {
+		MoveLog('mouseInLyrics');
+		grm.ui.mouseInLyricsAlbumArt = mouseInAlbumArt(x, y);
+		grm.ui.mouseInLyricsFullLayoutEdge = mouseInLyricsFullLayoutEdge(x, y);
+		return true;
+	}
+
+	grm.ui.mouseInLyricsAlbumArt = false;
+	grm.ui.mouseInLyricsFullLayoutEdge = false;
+	return false;
+}
+
+
+/**
+ * Checks if the mouse is within the boundaries of the Lyrics full layout right edge bounds.
+ * @global
+ * @param {number} x - The x-coordinate.
+ * @param {number} y - The y-coordinate.
+ * @returns {boolean} True or false.
+ */
+function mouseInLyricsFullLayoutEdge(x, y) {
+	if (grSet.lyricsLayout === 'full' && grm.ui.displayLyrics &&
+		(y > grm.ui.topMenuHeight && y < grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight) &&
+		(x > grm.ui.ww - SCALE(50) && x <= grm.ui.ww)) {
+		MoveLog('mouseInLyricsEdgeBounds');
+		return true;
 	}
 
 	return false;

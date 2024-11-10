@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-10-2024                                              * //
+// * Last change:    10-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -49,8 +49,8 @@ class PlaylistBaseHeader extends BaseListItem {
 		/** @public @type {Array<PlaylistRow>|Array<PlaylistBaseHeader>} */
 		this.sub_items = [];
 
-		/** @public @type {PlaylistMetaHandler} */
-		this.meta_handler = new PlaylistMetaHandler();
+		/** @public @type {?PlaylistMetaProvider} The instance of the PlaylistMetaProvider class. */
+		this.meta_provider = new PlaylistMetaProvider();
 	}
 
 	// * PUBLIC METHODS * //
@@ -288,6 +288,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	/**
 	 * Gets the image cache, creating it if it doesn't exist.
 	 * @returns {PlaylistImageCache} The singleton instance of the PlaylistImageCache.
+	 * @static
 	 */
 	static get img_cache() {
 		if (!this._imgCache) {
@@ -299,6 +300,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	/**
 	 * Gets the grouping handler, creating it if it doesn't exist.
 	 * @returns {PlaylistGroupingHandler} The singleton instance of the PlaylistGroupingHandler.
+	 * @static
 	 */
 	static get grouping_handler() {
 		if (!this._groupingHandler) {
@@ -312,6 +314,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	 * @param {Array<PlaylistRow>} rows_to_process - The rows to process.
 	 * @param {FbMetadbHandleList} rows_metadb - The metadb of the rows to process.
 	 * @returns {Array} An array of two elements, has the following format [Array<[row,row_data]>, disc_header_prepared_data].
+	 * @static
 	 */
 	static prepare_header_data(rows_to_process, rows_metadb) {
 		const showDiscHeader = plSet.show_disc_header;
@@ -339,6 +342,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	 * @param {number} h - The height.
 	 * @param {Array} prepared_rows - The prepared rows, has the following format [Array<[row,row_data]>, disc_header_prepared_data].
 	 * @returns {Array<PlaylistHeader>} An array of headers.
+	 * @static
 	 */
 	static create_headers(parent, x, y, w, h, prepared_rows) {
 		const prepared_header_rows = prepared_rows[0];
@@ -1186,7 +1190,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			(this.grouping_handler.show_disc() && has_discs && ($('[%totaldiscs%]', this.metadb) > 1) ? `${this.sub_items.length} Discs - ` : '') +
 			track_count + (track_count === 1 ? ' Track' : ' Tracks');
 		const replaygain = (this.grouping_handler.show_disc() && (!has_discs || $('[%totaldiscs%]', this.metadb) === '')) ? $('[ | %replaygain_album_gain%]', this.metadb) : '';
-		const plr_album = (plSet.show_PLR_header && this.grouping_handler.show_disc() && (!has_discs || $('[%totaldiscs%]', this.metadb) === '')) ? ` | ${this.meta_handler.get_PLR($('%replaygain_album_gain%', this.metadb), $('%replaygain_album_peak_db%', this.metadb))} LU` : '';
+		const plr_album = (plSet.show_PLR_header && this.grouping_handler.show_disc() && (!has_discs || $('[%totaldiscs%]', this.metadb) === '')) ? ` | ${this.meta_provider.get_PLR($('%replaygain_album_gain%', this.metadb), $('%replaygain_album_peak_db%', this.metadb))} LU` : '';
 		let info_text = codec + disc_number + replaygain + plr_album + track_text;
 
 		if (hasGenreTags) {
@@ -1387,6 +1391,7 @@ class PlaylistDiscHeader extends PlaylistBaseHeader {
 	 * @param {Array<PlaylistRow>} rows_to_process - The rows to process.
 	 * @param {FbMetadbHandleList} rows_metadb - The metadb of the rows to process.
 	 * @returns {Array<Array>} Has the following format Array<[row,row_data]>.
+	 * @static
 	 */
 	static prepare_disc_header_data(rows_to_process, rows_metadb) {
 		const tfo = fb.TitleFormat(`$ifgreater(%totaldiscs%,1,[Disc %discnumber% $if(${grTF.disc_subtitle}, \u2014 ,) ],)[${grTF.disc_subtitle}]`);
@@ -1400,6 +1405,7 @@ class PlaylistDiscHeader extends PlaylistBaseHeader {
 	 * @param {Array} rows_with_data - The rows of data.
 	 * @param {number} rows_to_check_count - The number of rows to check.
 	 * @returns {boolean} True if the data is valid, false otherwise.
+	 * @static
 	 */
 	static validate_disc_header_data(rows_with_data, rows_to_check_count) {
 		for (let i = 0; i < rows_to_check_count; ++i) {
@@ -1420,6 +1426,7 @@ class PlaylistDiscHeader extends PlaylistBaseHeader {
 	 * @param {Array<Array>} prepared_rows - The rows of data. Has the following format Array<[row,row_data]>.
 	 * @param {number} rows_to_process_count - The number of rows to process.
 	 * @returns {Array<PlaylistDiscHeader>} An array of PlaylistDiscHeader instances that have been created.
+	 * @static
 	 */
 	static create_disc_headers(parent, x, y, w, h, prepared_rows, rows_to_process_count) {
 		if (!this.validate_disc_header_data(prepared_rows, rows_to_process_count)) {
@@ -1480,7 +1487,7 @@ class PlaylistDiscHeader extends PlaylistBaseHeader {
 		gr.DrawString(disc_text, title_font, title_color, cur_x, this.y, this.w, this.h, disc_header_text_format);
 		const disc_w = Math.ceil(gr.MeasureString(disc_text, title_font, 0, 0, 0, 0).Width + 14);
 
-		const subheader_PLR_album = (plSet.show_PLR_header && $('[%totaldiscs%]', this.sub_items[0].metadb) > 1) ? `${this.meta_handler.get_PLR($('%replaygain_album_gain%', this.sub_items[0].metadb), $('%replaygain_album_peak_db%', this.sub_items[0].metadb))} LU | ` : '';
+		const subheader_PLR_album = (plSet.show_PLR_header && $('[%totaldiscs%]', this.sub_items[0].metadb) > 1) ? `${this.meta_provider.get_PLR($('%replaygain_album_gain%', this.sub_items[0].metadb), $('%replaygain_album_peak_db%', this.sub_items[0].metadb))} LU | ` : '';
 		const replayGain = ($('[%totaldiscs%]', this.sub_items[0].metadb) > 1) ? $('[%replaygain_album_gain% | ]', this.sub_items[0].metadb) : '';
 		const tracks_text = `${(replayGain)}${(subheader_PLR_album)}${this.sub_items.length} Track${this.sub_items.length > 1 ? 's' : ''} - ${utils.FormatDuration(this.get_duration())}`;
 
