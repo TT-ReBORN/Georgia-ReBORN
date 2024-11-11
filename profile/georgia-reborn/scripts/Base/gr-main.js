@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    11-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -339,9 +339,9 @@ class MainUI {
 		// * REPAINT RECTS * //
 		// #region REPAINT RECTS
 		/** @public @type {Function} Throttles and limits the repaint requests for styled tooltips to 50 ms. */
-		this.repaintStyledTooltips = _Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 50);
+		this.repaintStyledTooltips = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 50);
 		/** @public @type {Function} Throttles and limits repaint requests for the debug system overlay to 1 sec. */
-		this.repaintDebugSystemOverlay = _Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 1000);
+		this.repaintDebugSystemOverlay = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 1000);
 		// #endregion
 	}
 

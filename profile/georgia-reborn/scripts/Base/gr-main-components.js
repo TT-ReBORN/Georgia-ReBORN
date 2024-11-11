@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    11-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4436,7 +4436,7 @@ class WaveformBar {
 		 * @param {boolean} [force=false] - If set to true, the repaint will be forced even if the window is not dirty.
 		 * @private
 		 */
-		this.throttlePaint = _Throttle((force = false) => window.RepaintRect(
+		this.throttlePaint = Throttle((force = false) => window.RepaintRect(
 			this.x - SCALE(2), this.y - this.h * 0.5 - SCALE(4),
 			this.w + SCALE(4), this.h + SCALE(8), force), this.ui.refreshRate);
 
@@ -4451,14 +4451,14 @@ class WaveformBar {
 		 * @param {boolean} [force=false] - If set to true, the repaint will be forced even if the window is not dirty.
 		 * @private
 		 */
-		this.throttlePaintRect = _Throttle((x, y, w, h, force = false) => window.RepaintRect(
+		this.throttlePaintRect = Throttle((x, y, w, h, force = false) => window.RepaintRect(
 			x - SCALE(2), y - h * 0.5 - SCALE(4),
 			w + SCALE(4), h + SCALE(8), force), this.ui.refreshRate);
 
 		// * Check
 		this.checkConfig();
 		this.defaultSteps();
-		if (!IsFolder(this.cacheDir)) { _CreateFolder(this.cacheDir); }
+		if (!IsFolder(this.cacheDir)) { CreateFolder(this.cacheDir); }
 	}
 
 	// * PUBLIC METHODS * //
@@ -4807,10 +4807,10 @@ class WaveformBar {
 		if (newConfig.ui) {
 			if (Object.prototype.hasOwnProperty.call(newConfig.ui, 'refreshRate')) {
 				this.ui.refreshRateOpt = this.ui.refreshRate;
-				this.throttlePaint = _Throttle((force = false) => window.RepaintRect(
+				this.throttlePaint = Throttle((force = false) => window.RepaintRect(
 					this.x - SCALE(2), this.y - this.h * 0.5 - SCALE(4),
 					this.w + SCALE(4), this.h + SCALE(8), force), this.ui.refreshRate);
-				this.throttlePaintRect = _Throttle((x, y, w, h, force = false) => window.RepaintRect(
+				this.throttlePaintRect = Throttle((x, y, w, h, force = false) => window.RepaintRect(
 					x - SCALE(2), y - h * 0.5 - SCALE(4),
 					w + SCALE(4), h + SCALE(8), force), this.ui.refreshRate);
 			}
@@ -4856,7 +4856,7 @@ class WaveformBar {
 	 * @returns {object} The paths to the waveform bar cache folder and file.
 	 */
 	getPaths(handle) {
-		const id = SanitizePath(this.Tf.EvalWithMetadb(handle)); // Ensures paths are valid!
+		const id = CleanFilePath(this.Tf.EvalWithMetadb(handle)); // Ensures paths are valid!
 		const fileName = id.split('\\').pop();
 		const waveformBarFolder = this.cacheDir + id.replace(fileName, '');
 		const waveformBarFile = this.cacheDir + id;
@@ -5046,7 +5046,7 @@ class WaveformBar {
 	 * @returns {Promise<void>} A promise that resolves when the analysis has finished.
 	 */
 	async analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile = handle.Path) {
-		if (!IsFolder(waveformBarFolder)) { _CreateFolder(waveformBarFolder); }
+		if (!IsFolder(waveformBarFolder)) { CreateFolder(waveformBarFolder); }
 		let profiler;
 		let cmd;
 		// Change to track folder since ffprobe has stupid escape rules which are impossible to apply right with amovie input mode.
@@ -5097,7 +5097,7 @@ class WaveformBar {
 			const id = setInterval(() => {
 				if (IsFile(`${waveformBarFolder}data.json`)) {
 					// ffmpeg writes sequentially, wait until job is done.
-					if (!ffprobe || _JsonParseFile(`${waveformBarFolder}data.json`, this.codePage)) {
+					if (!ffprobe || JsonParseFile(`${waveformBarFolder}data.json`, this.codePage)) {
 						clearInterval(id); resolve(true);
 					}
 				}
@@ -5107,7 +5107,7 @@ class WaveformBar {
 			}, 300);
 		}));
 		if (processed) {
-			const data = cmd ? _JsonParseFile(`${waveformBarFolder}data.json`, this.codePage) : this.visualizerData(handle);
+			const data = cmd ? JsonParseFile(`${waveformBarFolder}data.json`, this.codePage) : this.visualizerData(handle);
 			DeleteFile(`${waveformBarFolder}data.json`);
 			if (data) {
 				if (!this.isFallback && !this.fallbackMode.analysis && ffprobe && data.frames && data.frames.length) {
@@ -5241,14 +5241,14 @@ class WaveformBar {
 		if (!this.isDataValid()) {
 			if (isRetry) {
 				console.log('File was not successfully analyzed after retrying.');
-				if (file) _DeleteFile(file);
+				if (file) DeleteFile(file);
 				this.isAllowedFile = false;
 				this.isFallback = this.analysis.visualizerFallback;
 				this.isError = true;
 				this.current = [];
 			}  else {
 				console.log(`Waveform bar file not valid. Creating new one${file ? `: ${file}` : '.'}`);
-				if (file) _DeleteFile(file);
+				if (file) DeleteFile(file);
 				this.on_playback_new_track(handle, true);
 			}
 			return false;
@@ -5383,7 +5383,7 @@ class WaveformBar {
 			const visualizer = this.analysis.binaryMode === 'visualizer';
 			// Uncompressed file -> Compressed UTF8 file -> Compressed UTF16 file -> Analyze
 			if (ffprobe && IsFile(`${waveformBarFile}.ff.json`)) {
-				this.current = _JsonParseFile(`${waveformBarFile}.ff.json`, this.codePage) || [];
+				this.current = JsonParseFile(`${waveformBarFile}.ff.json`, this.codePage) || [];
 				if (!this.verifyData(handle, `${waveformBarFile}.ff.json`, isRetry)) { return; };
 			}
 			else if (ffprobe && IsFile(`${waveformBarFile}.ff.lz`)) {
@@ -5399,7 +5399,7 @@ class WaveformBar {
 				if (!this.verifyData(handle, `${waveformBarFile}.ff.lz16`, isRetry)) { return; };
 			}
 			else if (auWav && IsFile(`${waveformBarFile}.aw.json`)) {
-				this.current = _JsonParseFile(`${waveformBarFile}.aw.json`, this.codePage) || [];
+				this.current = JsonParseFile(`${waveformBarFile}.aw.json`, this.codePage) || [];
 				if (!this.verifyData(handle, `${waveformBarFile}.aw.json`, isRetry)) { return; };
 			}
 			else if (auWav && IsFile(`${waveformBarFile}.aw.lz`)) {

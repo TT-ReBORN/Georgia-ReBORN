@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-10-2024                                              * //
+// * Last change:    11-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -185,7 +185,7 @@ class Configuration {
 	 * Resets the config to the default values.
 	 */
 	resetConfiguration() {
-		fso.DeleteFile(this.path);
+		DeleteFile(this.path);
 		setTimeout(() => {
 			window.Reload();
 		}, 1);

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    11-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -376,7 +376,7 @@ function GetMetaValues(name, metadb = undefined) {
  * @param {string} value - The string to parse.
  * @returns {*} The parsed value or null if there was an error.
  */
-function _JsonParse(value) {
+function JsonParse(value) {
 	try {
 		return JSON.parse(value);
 	} catch (e) {
@@ -392,8 +392,8 @@ function _JsonParse(value) {
  * @param {number} codePage - The code page of the JSON document.
  * @returns {object} The JSON object parsed from the file.
  */
-function _JsonParseFile(file, codePage = 0) {
-	return _JsonParse(Open(file, codePage));
+function JsonParseFile(file, codePage = 0) {
+	return JsonParse(Open(file, codePage));
 }
 
 
@@ -532,6 +532,26 @@ function StripJsonComments(jsonString, options = { whitespace: false }) {
 // * FILE MANAGEMENT * //
 /////////////////////////
 /**
+ * Cleans a given file path by replacing illegal characters, normalizing dashes, and removing unnecessary spaces.
+ * @param {string} value - The file path to clean.
+ * @returns {string} - The cleaned file path.
+ */
+function CleanFilePath(value) {
+	if (!value || !value.length) return '';
+	const disk = (value.match(/^[a-zA-Z]:\\/g) || [''])[0];
+	const pathWithoutDisk = value.replace(disk, '');
+
+	const cleanedParts = pathWithoutDisk.split('\\').map(part => part
+		.replace(/[<>:"/\\|?*]+/g, '_') // Replace illegal characters with '_'
+		.replace(/[|–‐—-]/g, '-') // Replace various dash characters with '-'
+		.replace(/(?! )\s/g, '') // Remove spaces not preceded by another space
+	);
+
+	return `${disk}${cleanedParts.join('\\')}`;
+}
+
+
+/**
  * Constructs a file path by replacing patterns with the file extension of the provided file.
  * Replace patterns like *.* with the actual file name, and folder.*, cover.*, front.*
  * with folder.<ext>, cover.<ext>, front.<ext> where <ext> is the file extension of 'file'.
@@ -550,65 +570,32 @@ function CreateFilePathWithPatterns(basePath, file, fileExtension, patterns, pre
 
 
 /**
- * Creates a folder if it doesn't exist.
+ * Creates the complete directory tree up to the specified folder if it doesn't already exist.
  * @global
- * @param {string} folder - The folder to create.
- * @param {boolean} is_recursive - Whether to create the folder recursively.
- * @returns {boolean} - True if the folder was created or already exists, false on error.
+ * @param {string} folder - The path of the folder to create.
+ * @returns {boolean} True if the folder was successfully created, false otherwise.
  */
-function CreateFolder(folder, is_recursive) {
-	if (utils.IsDirectory(folder)) {
-		return true;
+function CreateFolder(folder) {
+	if (!folder.length) return false;
+
+	folder = CleanFilePath(folder); // Handle root directory and illegal characters
+
+	if (IsFolder(folder)) return true;
+
+	if (folder.startsWith('.\\')) { // Adjust for relative path
+		folder = `${fb.FoobarPath}${folder.slice(2)}`;
 	}
 
-	// If recursive creation is needed and the parent directory does not exist, create it
-	if (is_recursive) {
-		const parentPath = fso.GetParentFolderName(folder);
-		if (!utils.IsDirectory(parentPath) && !CreateFolder(parentPath, true)) {
-			return false;
-		}
+	try { // Create each folder in the path if it doesn't exist
+		folder.split('\\').reduce((acc, part) => {
+			const path = `${acc}${part}\\`;
+			if (!IsFolder(path)) fso.CreateFolder(path);
+			return path;
+		}, '');
 	}
-
-	try {
-		fso.CreateFolder(folder);
-		return true;
-	} catch (e) {
+	catch (e) {
+		console.log('\n>>> CreateFolder => Error creating folder:\n', e);
 		return false;
-	}
-}
-
-
-/**
- * Creates complete dir tree if needed up to the final folder.
- * @global
- * @param {string} folder - The folder to create.
- * @returns {boolean} True if the folder was created.
- */
-function _CreateFolder(folder) {
-	if (!folder.length) {
-		return false;
-	}
-
-	if (!IsFolder(folder)) {
-		if (folder.startsWith('.\\')) {
-			folder = fb.FoobarPath + folder.replace('.\\', '');
-		}
-
-		const subFolders = folder.split('\\').map((_, i, arr) => i ? arr.slice(0, i + 1).reduce((path, name) => `${path}\\${name}`) : arr[0]);
-		let created = true;
-
-		for (const path of subFolders) {
-			if (!IsFolder(path)) {
-				try {
-					fso.CreateFolder(path);
-				} catch (e) {
-					created = false;
-					break;
-				}
-			}
-		}
-
-		return created && IsFolder(folder);
 	}
 
 	return true;
@@ -616,63 +603,51 @@ function _CreateFolder(folder) {
 
 
 /**
- * Deletes a file from the file system.
+ * Deletes a file or files from the file system.
  * @global
- * @param {string} file - The file to delete.
- * @param {boolean} force - Whether to force the deletion even if the file doesn't exist.
- * @returns {boolean} True if the file was deleted.
+ * @param {string} file - The file or files ("dir\*.*") to delete.
+ * @param {boolean} [force] - Whether to force the deletion even if the file doesn't exist.
+ * @returns {boolean} True if the file or files were successfully deleted, false otherwise.
  */
-function _DeleteFile(file, force = true) {
-	if (IsFile(file)) {
-		if (file.startsWith('.\\')) { file = fb.FoobarPath + file.replace('.\\', ''); }
+function DeleteFile(file, force = true) {
+	if (IsFile(file) || file.includes('*')) {
+		if (file.startsWith('.\\')) {
+			file = fb.FoobarPath + file.slice(2);
+		}
+
 		try {
 			fso.DeleteFile(file, force);
 		} catch (e) {
 			return false;
 		}
+
 		return !(IsFile(file));
 	}
+
 	return false;
 }
 
 
 /**
- * Deletes a file.
+ * Deletes a folder or folders from the file system.
  * @global
- * @param {string} file - The file to delete.
- * @returns {boolean} True if the file was successfully deleted, false otherwise.
- */
-function DeleteFile(file) {
-	if (utils.IsFile(file)) {
-		try {
-			fso.DeleteFile(file);
-			return true;
-		} catch (e) {
-			return false;
-		}
-	}
-	return false;
-}
-
-
-/**
- * Deletes a folder from FSO.
- * @global
- * @param {string} folder - The folder to delete.
- * @param {boolean} force - Makes force deletion even if the folder is inaccessible.
+ * @param {string} folder - The folder or folders ("dir\*.*") to delete.
+ * @param {boolean} [force] - Whether to force the deletion even if the folder doesn't exist.
  * @returns {boolean} True if the folder was deleted.
  */
 function DeleteFolder(folder, force = true) {
-	if (IsFolder(folder)) {
-		if (folder.startsWith('.\\')) { folder = fb.FoobarPath + folder.replace('.\\', ''); }
-		if (folder.endsWith('\\')) { folder = folder.slice(0, -1); }
+	if (IsFolder(folder) || folder.includes('*')) {
+		folder = folder.replace(/^\.\\/, fb.FoobarPath).replace(/\\$/, '');
+
 		try {
 			fso.DeleteFolder(folder, force);
 		} catch (e) {
 			return false;
 		}
-		return !(IsFolder(folder));
+
+		return !IsFolder(folder);
 	}
+
 	return false;
 }
 
@@ -782,19 +757,6 @@ function OpenFile(filePath) {
 
 
 /**
- * Sanitizes illegal chars in the file path but skips drive.
- * @global
- * @param {string} value - The value to sanitize. Must be a string of space - separated UTF-8 characters.
- * @returns {string} The sanitized path string.
- */
-function SanitizePath(value) {
-	if (!value || !value.length) return '';
-	const disk = (value.match(/^\w:\\/g) || [''])[0];
-	return disk + (disk && disk.length ? value.replace(disk, '') : value).replace(/\//g, '\\').replace(/[|–‐—-]/g, '-').replace(/\*/g, 'x').replace(/"/g, '\'\'').replace(/[<>]/g, '_').replace(/[?:]/g, '').replace(/(?! )\s/g, '');
-}
-
-
-/**
  * Saves value to file, if file doesn't exist it will be created.
  * @global
  * @param {string} file - The path to file to save to.
@@ -805,7 +767,7 @@ function SanitizePath(value) {
 function Save(file, value, bBOM = false) {
 	if (file.startsWith('.\\')) { file = fb.FoobarPath + file.replace('.\\', ''); }
 	const filePath = utils.SplitFilePath(file)[0];
-	if (!IsFolder(filePath)) { _CreateFolder(filePath); }
+	if (!IsFolder(filePath)) { CreateFolder(filePath); }
 	if (IsFolder(filePath) && utils.WriteTextFile(file, value, bBOM)) {
 		return true;
 	}
@@ -825,7 +787,7 @@ function Save(file, value, bBOM = false) {
 function SaveFSO(file, value, bUTF16) {
 	if (file.startsWith('.\\')) { file = fb.FoobarPath + file.replace('.\\', ''); }
 	const filePath = utils.SplitFilePath(file)[0];
-	if (!IsFolder(filePath)) { _CreateFolder(filePath); }
+	if (!IsFolder(filePath)) { CreateFolder(filePath); }
 	if (IsFolder(filePath)) {
 		try {
 			const fileObj = fso.CreateTextFile(file, true, bUTF16);
@@ -1029,47 +991,25 @@ function RunCmd(command, wait, show) {
 
 
 /**
- * Limits the execution of a given function to a specified time frame.
- * @global
- * @param {Function} func - The function to be throttled, will be called after the specified time frame has passed since the last invocation.
- * @param {number} timeFrame - The minimum time interval in milliseconds between function calls. It determines how often the `func` function can be called.
- * @returns {Function} A new function that will execute only if the time elapsed since the last execution is greater than or equal to the specified timeFrame.
- */
-function Throttle(func, timeFrame) {
-	let lastTime = 0;
-	return (...args) => {
-		const now = new Date();
-		if (now - lastTime >= timeFrame) {
-			func(...args);
-			lastTime = now;
-		}
-	};
-}
-
-
-/**
  * Limits the execution of a given function to a specified delay, with an optional immediate execution.
  * @global
  * @param {Function} fn - The function to be throttled, it is the function that will be called after the specified delay.
  * @param {number} delay - The time in milliseconds that specifies how long to wait between function invocations.
  * @param {boolean} immediate - Whether the function should be executed immediately or after the delay.
  * @param {object} parent - The parent object to bind the function to.
- * @returns {Function} A throttled version of the original function.
+ * @returns {Function} The throttled version of the original function.
  */
-function _Throttle(fn, delay, immediate = false, parent = this) {
-	let timerId;
+function Throttle(fn, delay, immediate = false, parent = this) {
+	const boundFunc = fn.bind(parent);
+	let timerId = null;
+
 	return (...args) => {
-		const boundFunc = fn.bind(parent, ...args);
-		if (timerId) {
-			return;
-		}
-		if (immediate && !timerId) {
-			boundFunc();
-		}
+		if (timerId) return;
+
+		if (immediate && !timerId) boundFunc(...args);
+
 		timerId = setTimeout(() => {
-			if (!immediate) {
-				boundFunc();
-			}
+			if (!immediate) boundFunc(...args);
 			timerId = null;
 		}, delay);
 	};
@@ -3321,8 +3261,7 @@ function UpdateTimezoneOffset() {
  * @global
  */
 function DeleteBiographyCache() {
-	try { fso.DeleteFolder(grSet.customBiographyDir ? `${grCfg.customBiographyDir}\\*.*` : `${fb.ProfilePath}cache\\biography\\biography-cache`); }
-	catch (e) {}
+	DeleteFolder(grSet.customBiographyDir ? `${grCfg.customBiographyDir}\\*.*` : `${fb.ProfilePath}cache\\biography\\biography-cache`);
 }
 
 
@@ -3331,8 +3270,7 @@ function DeleteBiographyCache() {
  * @global
  */
 function DeleteLibraryCache() {
-	try { fso.DeleteFolder(grSet.customLibraryDir ? `${grCfg.customLibraryDir}\\*.*` : `${fb.ProfilePath}cache\\library\\library-tree-cache`); }
-	catch (e) {}
+	DeleteFolder(grSet.customLibraryDir ? `${grCfg.customLibraryDir}\\*.*` : `${fb.ProfilePath}cache\\library\\library-tree-cache`);
 }
 
 
@@ -3341,8 +3279,7 @@ function DeleteLibraryCache() {
  * @global
  */
 function DeleteLyrics() {
-	try { fso.DeleteFile(grSet.customLyricsDir ? `${grCfg.customLyricsDir}\\*.*` : `${fb.ProfilePath}cache\\lyrics\\*.*`); }
-	catch (e) {}
+	DeleteFile(grSet.customLyricsDir ? `${grCfg.customLyricsDir}\\*.*` : `${fb.ProfilePath}cache\\lyrics\\*.*`);
 }
 
 
@@ -3351,8 +3288,7 @@ function DeleteLyrics() {
  * @global
  */
 function DeleteWaveformBarCache() {
-	try { fso.DeleteFolder(grSet.customWaveformBarDir ? `${grCfg.customWaveformBarDir}\\*.*` : `${fb.ProfilePath}cache\\waveform\\*.*`); }
-	catch (e) {}
+	DeleteFolder(grSet.customWaveformBarDir ? `${grCfg.customWaveformBarDir}\\*.*` : `${fb.ProfilePath}cache\\waveform\\*.*`);
 }
 
 
@@ -3457,7 +3393,7 @@ async function ManageBackup(make, restore) {
 		try { cfg.Copy(make ? `${backupPath}configuration` : cfgPathFb, true); } catch (e) {}
 
 		// * Delete user's foo_ui_columns.dll.cfg, we use the clean cfg file from the zip
-		try { backup.DeleteFile(`${backupPath}configuration\\foo_ui_columns.dll.cfg`, true); } catch (e) {}
+		DeleteFile(`${backupPath}configuration\\foo_ui_columns.dll.cfg`);
 
 		// * If old version, copy the old library data files
 		if (oldVersion) {

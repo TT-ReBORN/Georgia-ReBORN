@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    23-10-2024                                              * //
+// * Last change:    11-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -85,7 +85,7 @@ class BaseList {
 		 */
 		this.throttled_repaint = Throttle(() => {
 			window.RepaintRect(this.x - SCALE(1), this.y - pl.plman.h, this.w + SCALE(2), this.h + pl.plman.h * 2);
-		}, 1000 / 60);
+		}, 1000 / 60, false, this);
 	}
 
 	// * PRIVATE METHODS * //
@@ -545,7 +545,7 @@ class BaseListItem {
 		 */
 		this.throttled_repaint = Throttle(() => {
 			window.RepaintRect(this.x, this.y, this.w, this.h);
-		}, 1000 / 60);
+		}, 1000 / 60, false, this);
 
 		this.x = x;
 		this.y = y;

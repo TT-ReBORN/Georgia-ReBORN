@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    11-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3275,7 +3275,7 @@ class TopMenuOptions {
 		themeCacheLibraryMenu.addSeparator();
 		themeCacheLibraryMenu.addItem('Open library cache directory', false, () => {
 			const cacheDir = grSet.customLibraryDir ? grCfg.customLibraryDir : `${fb.ProfilePath}cache\\library\\library-tree-cache`;
-			try { if (!IsFolder(cacheDir)) CreateFolder(cacheDir); } catch (e) {}
+			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
 		themeCacheLibraryMenu.addItem('Delete library cache', false, () => {
@@ -3307,7 +3307,7 @@ class TopMenuOptions {
 		themeCacheBiographyMenu.addSeparator();
 		themeCacheBiographyMenu.addItem('Open biography cache directory', false, () => {
 			const cacheDir = grSet.customBiographyDir ? grCfg.customBiographyDir : `${fb.ProfilePath}cache\\biography\\biography-cache`;
-			try { if (!IsFolder(cacheDir)) CreateFolder(cacheDir); } catch (e) {}
+			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
 		themeCacheBiographyMenu.addItem('Delete biography cache', false, () => {
@@ -3335,7 +3335,7 @@ class TopMenuOptions {
 		themeCacheLyricsMenu.addSeparator();
 		themeCacheLyricsMenu.addItem('Open lyrics directory', false, () => {
 			const cacheDir = grSet.customLyricsDir ? grCfg.customLyricsDir : `${fb.ProfilePath}cache\\lyrics`;
-			try { if (!IsFolder(cacheDir)) CreateFolder(cacheDir); } catch (e) {}
+			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
 		themeCacheLyricsMenu.addItem('Delete lyrics', false, () => {
@@ -3363,7 +3363,7 @@ class TopMenuOptions {
 		themeCacheWaveformBarMenu.addSeparator();
 		themeCacheWaveformBarMenu.addItem('Open waveform bar cache directory', false, () => {
 			const cacheDir = grSet.customWaveformBarDir ? grCfg.customWaveformBarDir : `${fb.ProfilePath}cache\\waveform`;
-			try { if (!IsFolder(cacheDir)) CreateFolder(cacheDir); } catch (e) {}
+			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
 		themeCacheWaveformBarMenu.addItem('Delete waveform bar cache', false, () => {
@@ -3487,7 +3487,7 @@ class TopMenuOptions {
 				if (!confirmed) return;
 				grSet.systemFirstLaunch = true; // Reset Georgia-ReBORN theme settings
 				try { // Needed to prevent crash when there is no config file
-					fso.DeleteFile(`${fb.ProfilePath}configuration\\foo_ui_columns.dll.cfg`);
+					DeleteFile(`${fb.ProfilePath}configuration\\foo_ui_columns.dll.cfg`);
 					grCfg.config.resetConfiguration(); // Reset Georgia-ReBORN config file
 					lib.panel.updateProp(libSet, 'default_value'); // Reset Library settings
 					bio.ui.updateProp(bioSet, 'default_value'); // Reset Biography settings
