@@ -3351,12 +3351,12 @@ async function ManageBackup(make, restore) {
 	};
 
 	const createFolders = async () => {
-		CreateFolder(themePath, true);
-		CreateFolder(cfgPathFb, true);
-		CreateFolder(cfgPathBp, true);
-		CreateFolder(dspPathFb, true);
-		CreateFolder(dspPathBp, true);
-		if (oldVersion) CreateFolder(indexPath, true);
+		CreateFolder(themePath);
+		CreateFolder(cfgPathFb);
+		CreateFolder(cfgPathBp);
+		CreateFolder(dspPathFb);
+		CreateFolder(dspPathBp);
+		if (oldVersion) CreateFolder(indexPath);
 	};
 
 	const checkFolders = () => {
