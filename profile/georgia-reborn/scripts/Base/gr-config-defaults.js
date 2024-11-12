@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    12-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -793,9 +793,11 @@ class ConfigDefaults {
 			peakmeterBarInfo: false,
 			peakmeterBarVertPeaks: true,
 			peakmeterBarVertBaseline: true,
+			peakmeterBarWheelSeekSpeed: 5,
 			peakmeterBarRefreshRate: 80,
 			waveformBarMode: 'audiowaveform',
 			waveformBarAnalysis: 'rms_level',
+			waveformBarSaveMode: 'always',
 			waveformBarFallbackAnalysis: true,
 			waveformBarFallback: true,
 			waveformBarDesign: 'halfbars',
@@ -811,6 +813,8 @@ class ConfigDefaults {
 			waveformBarBPM: true,
 			waveformBarInvertHalfbars: true,
 			waveformBarIndicator: false,
+			waveformBarWheelSeekSpeed: 5,
+			waveformBarWheelSeekType: 'seconds',
 			waveformBarRefreshRate: 200,
 			waveformBarRefreshRateVar: false,
 			waveformBarAutoDelete: false,
@@ -957,9 +961,11 @@ class ConfigDefaults {
 			peakmeterBarInfo: 'Values: true, false - Options > Player controls > Seekbar > Peakmeter bar > Display > Show info',
 			peakmeterBarVertPeaks: 'Values: true, false - Options > Player controls > Seekbar > Peakmeter bar > Display > Show peaks',
 			peakmeterBarVertBaseline: 'Values: true, false - Options > Player controls > Seekbar > Peakmeter bar > Display > Show baseline',
+			peakmeterBarWheelSeekSpeed: 'Values: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Player controls > Seekbar > Peakmeter bar > Mouse wheel seek speed',
 			peakmeterBarRefreshRate: 'Values: 200, 150, 120, 100, 80, 60, 30 - Options > Player controls > Seekbar > Peakmeter bar > Refresh rate',
 			waveformBarMode: 'Values: "ffprobe", "audiowaveform", "visualizer" - Options > Player controls > Seekbar > Waveform bar > Mode',
 			waveformBarAnalysis: 'Values: "rms_level", "peak_level", "rms_peak" - Options > Player controls > Seekbar > Waveform bar > Analysis',
+			waveformBarSaveMode: 'Values: "always", "library", "never" - Options > Player controls > Seekbar > Waveform bar > Analysis',
 			waveformBarFallbackAnalysis: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Analysis > Visualizer during analysis',
 			waveformBarFallback: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Analysis > Visualizer for incompatible files',
 			waveformBarDesign: 'Values: "waveform", "bars", "dots", "halfbars" - Options > Player controls > Seekbar > Waveform bar > Shape',
@@ -975,6 +981,8 @@ class ConfigDefaults {
 			waveformBarBPM: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Display > Use BPM',
 			waveformBarInvertHalfbars: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Display > Invert halfbars',
 			waveformBarIndicator: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Display > Show indicator',
+			waveformBarWheelSeekSpeed: 'Values: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Player controls > Seekbar > Waveform bar > Mouse wheel > Seek speed',
+			waveformBarWheelSeekType: 'Values: "seconds", "percentage" - Options > Player controls > Seekbar > Waveform bar > Mouse wheel > Seek type',
 			waveformBarRefreshRate: 'Values: 1000, 500, 200, 100, 80, 60, 30, - Options > Player controls > Seekbar > Waveform bar > Refresh rate',
 			waveformBarRefreshRateVar: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Refresh rate > Variable',
 			playbackOrder: 'Values: "default", "repeatPlaylist", "repeatTrack", "shuffle" - not in Options - playback order state button'

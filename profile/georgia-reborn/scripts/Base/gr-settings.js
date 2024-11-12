@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    12-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -484,9 +484,11 @@ grSet.addProperties({
 	peakmeterBarInfo:                   ['Georgia-ReBORN - 09. Player controls: Peakmeter bar info', false], // false - Show peakmeter bar info
 	peakmeterBarVertPeaks:              ['Georgia-ReBORN - 09. Player controls: Peakmeter bar vertical peaks', true], // true - Show peakmeter bar peaks in vertical design
 	peakmeterBarVertBaseline:           ['Georgia-ReBORN - 09. Player controls: Peakmeter bar baseline', true], // true - Show peakmeter bar baseline in vertical design
+	peakmeterBarWheelSeekSpeed:         ['Georgia-ReBORN - 09. Player controls: Peakmeter bar mouse wheel seek speed', 5], // Peakmeter bar mouse wheel seeking speed, seconds per wheel step
 	peakmeterBarRefreshRate:            ['Georgia-ReBORN - 09. Player controls: Peakmeter bar refresh rate', 80], // 200, 150, 120, 100, 80, 60, 30 - Peakmeter bars refresh rate
 	waveformBarMode:                    ['Georgia-ReBORN - 09. Player controls: Waveform bar mode', 'audiowaveform'], // 'ffprobe' 'audiowaveform' 'visualizer' - Which binary type the waveform bar will use
 	waveformBarAnalysis:                ['Georgia-ReBORN - 09. Player controls: Waveform bar analysis', 'rms_level'], // 'rms_level'  'peak_level' 'rms_peak' - Analysis type available only with ffprobe
+	waveformBarSaveMode:                ['Georgia-ReBORN - 09. Player controls: Waveform bar save mode', 'always'], // 'always' 'library' 'never' - Waveform bar analysis save mode
 	waveformBarFallbackAnalysis:        ['Georgia-ReBORN - 09. Player controls: Waveform bar analysis fallback', true], // true - Waveform bar visualizer fallback during analysis process
 	waveformBarFallback:                ['Georgia-ReBORN - 09. Player controls: Waveform bar fallback', true], // true - Waveform bar visualizer fallback if analysis fails
 	waveformBarDesign:                  ['Georgia-ReBORN - 09. Player controls: Waveform bar design', 'halfbars'], // 'waveform' 'bars' 'dots' 'halfbars' - waveform bar design
@@ -502,6 +504,8 @@ grSet.addProperties({
 	waveformBarBPM:                     ['Georgia-ReBORN - 09. Player controls: Waveform bar BPM', true], // true: Animate the waveform bar with BPM
 	waveformBarInvertHalfbars:          ['Georgia-ReBORN - 09. Player controls: Waveform bar invert halfbars', true], // true: Displays the waveform bar halfbars inverted
 	waveformBarIndicator:               ['Georgia-ReBORN - 09. Player controls: Waveform bar indicator', false], // false: Shows the waveform bar indicator
+	waveformBarWheelSeekSpeed:          ['Georgia-ReBORN - 09. Player controls: Waveform bar mouse wheel seek speed', 5], // Waveform bar mouse wheel seeking speed, seconds per wheel step
+	waveformBarWheelSeekType:           ['Georgia-ReBORN - 09. Player controls: Waveform bar mouse wheel seek type', 'seconds'], // Waveform bar mouse wheel seeking type, seconds or percentage per wheel step
 	waveformBarRefreshRate:             ['Georgia-ReBORN - 09. Player controls: Waveform bar refresh rate', 200], // 1000, 500, 200, 100, 60, 30 - Waveform bars refresh rate
 	waveformBarRefreshRateVar:          ['Georgia-ReBORN - 09. Player controls: Waveform bar refresh rate variable', false], // false: Should the waveform bar use variable refresh rate
 	playbackOrder:                      ['Georgia-ReBORN - 09. Player controls: Playback order', 'default'], // Playback order 'default' for context plus foobar menu when no transport controls are displayed
@@ -1131,8 +1135,10 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'peakmeterBarInfo', grCfg.themeControls, 'peakmeterBarInfo', false);
 		this._setSetting(grSet, 'peakmeterBarVertPeaks', grCfg.themeControls, 'peakmeterBarVertPeaks', true);
 		this._setSetting(grSet, 'peakmeterBarVertBaseline', grCfg.themeControls, 'peakmeterBarVertBaseline', true);
+		this._setSetting(grSet, 'peakmeterBarWheelSeekSpeed', grCfg.themeControls, 'peakmeterBarWheelSeekSpeed', 5);
 		this._setSetting(grSet, 'peakmeterBarRefreshRate', grCfg.themeControls, 'peakmeterBarRefreshRate', 80);
 		this._setSetting(grSet, 'waveformBarMode', grCfg.themeControls, 'waveformBarMode', 'audiowaveform');
+		this._setSetting(grSet, 'waveformBarSaveMode', grCfg.themeControls, 'waveformBarSaveMode', 'always');
 		this._setSetting(grSet, 'waveformBarAnalysis', grCfg.themeControls, 'waveformBarAnalysis', 'rms_level');
 		this._setSetting(grSet, 'waveformBarFallbackAnalysis', grCfg.themeControls, 'waveformBarFallbackAnalysis', true);
 		this._setSetting(grSet, 'waveformBarFallback', grCfg.themeControls, 'waveformBarFallback', true);
@@ -1148,6 +1154,8 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'waveformBarBPM', grCfg.themeControls, 'waveformBarBPM', true);
 		this._setSetting(grSet, 'waveformBarInvertHalfbars', grCfg.themeControls, 'waveformBarInvertHalfbars', true);
 		this._setSetting(grSet, 'waveformBarIndicator', grCfg.themeControls, 'waveformBarIndicator', false);
+		this._setSetting(grSet, 'waveformBarWheelSeekSpeed', grCfg.themeControls, 'waveformBarWheelSeekSpeed', 5);
+		this._setSetting(grSet, 'waveformBarWheelSeekType', grCfg.themeControls, 'waveformBarWheelSeekType', 'seconds');
 		this._setSetting(grSet, 'waveformBarRefreshRate', grCfg.themeControls, 'waveformBarRefreshRate', 200);
 		this._setSetting(grSet, 'waveformBarRefreshRateVar', grCfg.themeControls, 'waveformBarRefreshRateVar', false);
 		this._setSetting(grSet, 'playbackOrder', grCfg.themeControls, 'playbackOrder', 'default');

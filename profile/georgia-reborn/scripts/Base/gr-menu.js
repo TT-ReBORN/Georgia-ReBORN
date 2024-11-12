@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-11-2024                                              * //
+// * Last change:    12-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1626,6 +1626,9 @@ class TopMenuOptions {
 		}
 		playerControlspeakmeterBarDisplayMenu.addToggleItem(grSet.layout !== 'default' ? 'Show info (only available in Default layout)' : 'Show info', grSet, 'peakmeterBarInfo', () => { RepaintWindow(); });
 		playerControlspeakmeterBarDisplayMenu.appendTo(playerControlspeakmeterBarMenu);
+		playerControlspeakmeterBarMenu.createRadioSubMenu('Mouse wheel seek speed', ['  1 sec', '  2 sec', '  3 sec', '  4 sec', '  5 sec (default)', '  6 sec', '  7 sec', '  8 sec', '  9 sec', '10 sec'], grSet.peakmeterBarWheelSeekSpeed, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (speed) => {
+			grSet.peakmeterBarWheelSeekSpeed = speed;
+		});
 		playerControlspeakmeterBarMenu.createRadioSubMenu('Refresh rate', ['  200 ms (very slow CPU)', '  150 ms', '  120 ms', '  100 ms', '    80 ms (default)', '    60 ms', '    30 ms (very fast CPU)'], grSet.peakmeterBarRefreshRate, [200, 150, 120, 100, 80, 60, 30], (rate) => {
 			grSet.peakmeterBarRefreshRate = rate;
 			grm.ui.setSeekbarRefresh();
@@ -1643,6 +1646,18 @@ class TopMenuOptions {
 			grm.waveBar.updateBar();
 			RepaintWindow();
 		}, grSet.waveformBarMode !== 'ffprobe');
+		playerControlsWaveformBarAnalysisMenu.addSeparator();
+		playerControlsWaveformBarAnalysisMenu.addRadioItems(
+			['Save mode - always', 'Save mode - library', 'Save mode - never'], grSet.waveformBarSaveMode, ['always', 'library', 'never'], (mode) => {
+			grSet.waveformBarSaveMode = mode;
+			grm.waveBar.updateConfig({ analysis: { saveMode: mode } });
+			grm.waveBar.updateBar();
+			if (mode === 'always') return;
+			const key = mode === 'library' ? 'waveformBarSaveModeLibrary' : 'waveformBarSaveModeNever';
+			const msg = grm.msg.getMessage('menu', key);
+			const msgFb = grm.msg.getMessage('menu', key, true);
+			grm.msg.showPopup(true, msgFb, msg, 'OK', false, (confirmed) => {});
+		}, grSet.waveformBarMode === 'visualizer');
 		playerControlsWaveformBarAnalysisMenu.addSeparator();
 		playerControlsWaveformBarAnalysisMenu.addItem('Show compatible extensions', false, () => {
 			fb.ShowPopupMessage(grm.waveBar.checkCompatibleFileExtensionReport().join(', '), `Mode: ${grm.waveBar.analysis.binaryMode}`);
@@ -1707,7 +1722,6 @@ class TopMenuOptions {
 			grSet.waveformBarPrepaintFront = time;
 			grm.waveBar.updateConfig({ preset: { prepaintFront: time } });
 		}, waveformBarPrepaintMenuDisabled);
-		playerControlsWaveformBarDisplayMenu.appendTo(playerControlsWaveformBarMenu);
 		playerControlsWaveformBarDisplayMenu.addSeparator();
 
 		playerControlsWaveformBarDisplayMenu.addToggleItem('Animate', grSet, 'waveformBarAnimate', () => {
@@ -1730,6 +1744,21 @@ class TopMenuOptions {
 		playerControlsWaveformBarDisplayMenu.addToggleItem('Show indicator', grSet, 'waveformBarIndicator', () => {
 			grm.waveBar.updateConfig({ preset: { indicator: grSet.waveformBarIndicator } });
 		});
+		playerControlsWaveformBarDisplayMenu.appendTo(playerControlsWaveformBarMenu);
+
+		const playerControlsWaveformBarWheelMenu = new Menu('Mouse wheel');
+		playerControlsWaveformBarWheelMenu.createRadioSubMenu('Seek speed', grSet.waveformBarWheelSeekType === 'percentage' ?
+			['  1%', '  2%', '  3%', '  4%', '  5% (default)', '  6%', '  7%', '  8%', '  9%', '10%'] :
+			['  1 sec', '  2 sec', '  3 sec', '  4 sec', '  5 sec (default)', '  6 sec', '  7 sec', '  8 sec', '  9 sec', '10 sec'],
+			grSet.waveformBarWheelSeekSpeed, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (speed) => {
+			grSet.waveformBarWheelSeekSpeed = speed;
+			grm.waveBar.updateConfig({ wheel: { seekSpeed: speed } });
+		});
+		playerControlsWaveformBarWheelMenu.createRadioSubMenu('Seek type', ['Seconds', 'Percentage'], grSet.waveformBarWheelSeekType, ['seconds', 'percentage'], (type) => {
+			grSet.waveformBarWheelSeekType = type;
+			grm.waveBar.updateConfig({ wheel: { seekType: type } });
+		});
+		playerControlsWaveformBarWheelMenu.appendTo(playerControlsWaveformBarMenu);
 
 		const playerControlsWaveformBarRefreshMenu = new Menu(`Refresh rate${grSet.waveformBarPaint === 'full' && grSet.waveformBarMode !== 'visualizer' ? '\t(partial only)' : ''}`);
 		const waveformBarRefreshMenuDisabled = grSet.waveformBarPaint === 'full' || grSet.waveformBarMode === 'visualizer' || !grSet.waveformBarPrepaint;

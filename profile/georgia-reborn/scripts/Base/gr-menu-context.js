@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-10-2024                                              * //
+// * Last change:    12-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1597,6 +1597,15 @@ class ContextMenus {
 
 			cm.append(peakmeterBarDisplayMenu);
 
+			const peakmeterBarSeekSpeedMenu = new ContextMenu('Mouse wheel seek speed');
+			const peakmeterBarSeekSpeed = [['  1 sec', 1], ['  2 sec', 2], ['  3 sec', 3], ['  4 sec', 4], ['  5 sec (default)', 5], ['  6 sec', 6], ['  7 sec', 7], ['  8 sec', 8], ['  9 sec', 9], ['10 sec', 10]];
+			for (const sec of peakmeterBarSeekSpeed) {
+				peakmeterBarSeekSpeedMenu.appendItem(sec[0], () => {
+					grSet.peakmeterBarWheelSeekSpeed = sec[1];
+				}, { is_radio_checked: sec[1] === grSet.peakmeterBarWheelSeekSpeed });
+			}
+			cm.append(peakmeterBarSeekSpeedMenu);
+
 			const peakmeterBarRefreshMenu = new ContextMenu('Refresh rate');
 			const peakmeterBarRefresh = [['200 ms (very slow CPU)', 200], ['150 ms', 150], ['120 ms', 120], ['100 ms', 100], ['  80 ms (default)', 80], ['  60 ms', 60], ['  30 ms (very fast CPU)', 30]];
 			for (const rate of peakmeterBarRefresh) {
@@ -1623,6 +1632,20 @@ class ContextMenus {
 					is_radio_checked: type[1] === grSet.waveformBarAnalysis
 					}
 				);
+			}
+			waveformBarAnalysisMenu.separator();
+			const waveformBarSaveModes = [['Save mode - always', 'always'], ['Save mode - library', 'library'], ['Save mode - never', 'never']];
+			for (const mode of waveformBarSaveModes) {
+				waveformBarAnalysisMenu.appendItem(mode[0], () => {
+					grSet.waveformBarSaveMode = mode[1];
+					grm.waveBar.updateConfig({ analysis: { saveMode: mode[1] } });
+					grm.waveBar.updateBar();
+					if (mode === 'always') return;
+					const key = mode === 'library' ? 'waveformBarSaveModeLibrary' : 'waveformBarSaveModeNever';
+					const msg = grm.msg.getMessage('menu', key);
+					const msgFb = grm.msg.getMessage('menu', key, true);
+					grm.msg.showPopup(true, msgFb, msg, 'OK', false, (confirmed) => {});
+				}, { is_radio_checked: mode[1] === grSet.waveformBarSaveMode });
 			}
 			waveformBarAnalysisMenu.separator();
 			waveformBarAnalysisMenu.appendItem('Delete analysis files', () => {
@@ -1810,6 +1833,29 @@ class ContextMenus {
 				grm.waveBar.updateConfig({ preset: { indicator: grSet.waveformBarIndicator } });
 			}, { is_checked: grSet.waveformBarIndicator });
 			cm.append(waveformBarDisplayMenu);
+
+			const waveformBarWheelMenu = new ContextMenu('Mouse wheel');
+			const waveformBarWheelSeekSpeedMenu = new ContextMenu('Seek speed');
+			const waveformBarSeekSpeed = grSet.waveformBarWheelSeekType === 'percentage' ?
+				[['  1%', 1], ['  2%', 2], ['  3%', 3], ['  4%', 4], ['  5% (default)', 5], ['  6%', 6], ['  7%', 7], ['  8%', 8], ['  9%', 9], ['10%', 10]] :
+				[['  1 sec', 1], ['  2 sec', 2], ['  3 sec', 3], ['  4 sec', 4], ['  5 sec (default)', 5], ['  6 sec', 6], ['  7 sec', 7], ['  8 sec', 8], ['  9 sec', 9], ['10 sec', 10]];
+			for (const sec of waveformBarSeekSpeed) {
+				waveformBarWheelSeekSpeedMenu.appendItem(sec[0], () => {
+					grSet.waveformBarWheelSeekSpeed = sec[1];
+					grm.waveBar.updateConfig({ wheel: { seekSpeed: grSet.waveformBarWheelSeekSpeed } });
+				}, { is_radio_checked: sec[1] === grSet.waveformBarWheelSeekSpeed });
+			}
+			waveformBarWheelMenu.append(waveformBarWheelSeekSpeedMenu);
+			const waveformBarWheelSeekTypeMenu = new ContextMenu('Seek type');
+			const waveformBarSeekType = [['Seconds', 'seconds'], ['Percentage', 'percentage']];
+			for (const type of waveformBarSeekType) {
+				waveformBarWheelSeekTypeMenu.appendItem(type[0], () => {
+					grSet.waveformBarWheelSeekType = type[1];
+					grm.waveBar.updateConfig({ wheel: { seekType: grSet.waveformBarWheelSeekType } });
+				}, { is_radio_checked: type[1] === grSet.waveformBarWheelSeekType });
+			}
+			waveformBarWheelMenu.append(waveformBarWheelSeekTypeMenu);
+			cm.append(waveformBarWheelMenu);
 
 			const waveformBarRefreshMenuDisabled = !(grSet.waveformBarPaint === 'partial' && grSet.waveformBarPrepaint || grSet.waveformBarMode === 'visualizer');
 			const waveformBarRefreshMenu = new ContextMenu(`Refresh rate${grSet.waveformBarPaint === 'full' && grSet.waveformBarMode !== 'visualizer' ? '\t(partial only)' : ''}`, { is_grayed_out: waveformBarRefreshMenuDisabled });

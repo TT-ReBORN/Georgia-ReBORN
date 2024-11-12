@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-11-2024                                              * //
+// * Last change:    12-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2553,11 +2553,20 @@ class MainUI {
 		}
 		// Handle mouse wheel event
 		else if (step !== 0) {
-			fb.PlaybackTime = fb.PlaybackTime - step * grSet.progressBarWheelSeekSpeed;
-			this.refreshSeekbar();
-			if (grSet.seekbar === 'peakmeterbar') {
-				grm.peakBar.on_mouse_wheel(step);
+			if (grSet.seekbar === 'waveformbar') {
+				grm.waveBar.on_mouse_wheel(step);
 			}
+			else if (grSet.seekbar === 'peakmeterbar') {
+				if (utils.IsKeyPressed(VKey.SHIFT)) {
+					grm.peakBar.on_mouse_wheel(step);
+				} else {
+					fb.PlaybackTime = fb.PlaybackTime - step * grSet.peakmeterBarWheelSeekSpeed;
+				}
+			}
+			else {
+				fb.PlaybackTime = fb.PlaybackTime - step * grSet.progressBarWheelSeekSpeed;
+			}
+			this.refreshSeekbar();
 		}
 
 		window.RepaintRect(0, this.wh - this.lowerBarHeight, this.ww, this.lowerBarHeight);

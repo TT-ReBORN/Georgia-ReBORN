@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-11-2024                                              * //
+// * Last change:    12-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1078,6 +1078,16 @@ class MessageManager {
 					+ 'or lower bar track title click to return.\n\n',
 				msg: 'Do you want to enable browse mode?\n\n{content}Continue?\n\n',
 				msgFb: 'Browse mode enabled:\n\n{content}'
+			},
+			waveformBarSaveModeLibrary: {
+				content: 'This mode will not save any data files\nif the tracks are not indexed in the library.\n\n',
+				msg: 'Waveform bar\'s "Library" save mode enabled.\n\n{content}\n\n',
+				msgFb: 'Waveform bar\'s "Library" save mode enabled.\n\n{content}'
+			},
+			waveformBarSaveModeNever: {
+				content: 'This mode will never save any data files,\nand analysis process will always be re-initialized.\n\n',
+				msg: 'Waveform bar\'s save mode deactivated.\n\n{content}\n\n',
+				msgFb: 'Waveform bar\'s save mode deactivated.\n\n{content}'
 			}
 		};
 
@@ -4227,7 +4237,7 @@ class WaveformBar {
 
 		const arch = Detect.Win64 ? '' : '_32';
 		/** @private @type {string} Used to create folder path */
-		this.matchPattern = '$lower([%ALBUM ARTIST%]\\[%ALBUM%]\\%TRACKNUMBER% - %TITLE%)';
+		this.matchPattern = '$replace($ascii([$replace($if2($meta(ALBUMARTIST,0),$meta(ARTIST,0)),\\,)]\\[$replace([$if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,) - ]%ALBUM%,\\,)]\\%TRACKNUMBER% - $replace(%TITLE%,\\,)), ?,,= ,,?,)';
 		/** @private @type {boolean} */
 		this.debug = false;
 		/** @private @type {boolean} */
@@ -4239,6 +4249,7 @@ class WaveformBar {
 		 * @property {string} binaryMode - Settings: ffprobe | audiowaveform | visualizer.
 		 * @property {number} resolution - Pixels per second on audiowaveform, per sample on ffmpeg (higher values than 1 require resampling). Visualizer mode is adjusted via window width.
 		 * @property {string} compressionMode - Settings: none | 'utf-8' (~50% compression) | 'utf-16' (~70% compression)  7zip (~80% compression).
+		 * @property {string} saveMode - Settings: always | library | never.
 		 * @property {boolean} autoAnalysis - Auto-analyze files.
 		 * @property {boolean} autoDelete - Auto-deletes analysis files when unloading the script, present during play session to prevent recalculation.
 		 * @property {boolean} visualizerFallbackAnalysis - Uses visualizer mode when analyzing file.
@@ -4250,6 +4261,7 @@ class WaveformBar {
 			binaryMode: grSet.waveformBarMode,
 			resolution: 1,
 			compressionMode: 'utf-16',
+			saveMode: grSet.waveformBarSaveMode,
 			autoAnalysis: true,
 			autoDelete: grSet.waveformBarAutoDelete,
 			visualizerFallbackAnalysis: grSet.waveformBarFallbackAnalysis,
@@ -4319,6 +4331,19 @@ class WaveformBar {
 			sizeNormalizeWidth: grSet.waveformBarSizeNormalize,
 			refreshRate: grSet.waveformBarRefreshRate,
 			refreshRateVar: grSet.waveformBarRefreshRateVar
+		};
+
+		/**
+		 * The waveform bar wheel settings.
+		 * @typedef {object} waveformBarWheel
+		 * @property {number} seekSpeed - The mouse wheel seek type, 'seconds' or 'percentage.
+		 * @property {string} seekType - The mouse wheel seek speed.
+		 * @public
+		 */
+		/** @public @type {waveformBarWheel} */
+		this.wheel = {
+			seekSpeed: grSet.waveformBarWheelSeekSpeed,
+			seekType: grSet.waveformBarWheelSeekType
 		};
 
 		// * Easy access
@@ -4779,6 +4804,11 @@ class WaveformBar {
 		if (this.preset.prepaintFront <= 0 || this.preset.prepaintFront === null) {
 			this.preset.prepaintFront = Infinity;
 		}
+		if (this.wheel.seekSpeed < 0) {
+			this.wheel.seekSpeed = 1;
+		} else if (this.wheel.seekSpeed > 100 && this.wheel.seekType === 'percentage') {
+			this.wheel.seekSpeed = 100;
+		}
 	}
 
 	/**
@@ -4858,7 +4888,7 @@ class WaveformBar {
 	getPaths(handle) {
 		const id = CleanFilePath(this.Tf.EvalWithMetadb(handle)); // Ensures paths are valid!
 		const fileName = id.split('\\').pop();
-		const waveformBarFolder = this.cacheDir + id.replace(fileName, '');
+		const waveformBarFolder = this.cacheDir + (this.saveDataAllowed(handle) ? id.replace(fileName, '') : '');
 		const waveformBarFile = this.cacheDir + id;
 		const sourceFile = this.isZippedFile ? handle.Path.split('|')[0] : handle.Path;
 		return { waveformBarFolder, waveformBarFile, sourceFile };
@@ -5128,40 +5158,44 @@ class WaveformBar {
 					}
 					this.current = processedData;
 					// Save data and compress it optionally
-					const str = JSON.stringify(this.current);
-					if (this.analysis.compressionMode === 'utf-16') {
-						// FSO is needed in order to save UTF16-LE files:
-						// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
-						const compressed = LZString.compressToUTF16(str);
-						SaveFSO(`${waveformBarFile}.ff.lz16`, compressed, true);
-					}
-					else if (this.analysis.compressionMode === 'utf-8') {
-						// Only Base64 strings can be saved in UTF8 files:
-						// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
-						const compressed = LZUTF8.compress(str, { outputEncoding: 'Base64' });
-						Save(`${waveformBarFile}.ff.lz`, compressed);
-					}
-					else {
-						Save(`${waveformBarFile}.ff.json`, str);
+					if (this.saveDataAllowed(handle)) {
+						const str = JSON.stringify(this.current);
+						if (this.analysis.compressionMode === 'utf-16') {
+							// FSO is needed in order to save UTF16-LE files:
+							// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
+							const compressed = LZString.compressToUTF16(str);
+							SaveFSO(`${waveformBarFile}.ff.lz16`, compressed, true);
+						}
+						else if (this.analysis.compressionMode === 'utf-8') {
+							// Only Base64 strings can be saved in UTF8 files:
+							// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
+							const compressed = LZUTF8.compress(str, { outputEncoding: 'Base64' });
+							Save(`${waveformBarFile}.ff.lz`, compressed);
+						}
+						else {
+							Save(`${waveformBarFile}.ff.json`, str);
+						}
 					}
 				}
 				else if (!this.isFallback && !this.fallbackMode.analysis && auWav && data.data && data.data.length) {
 					this.current = data.data;
-					const str = JSON.stringify(this.current);
-					if (this.analysis.compressionMode === 'utf-16') {
-						// FSO is needed in order to save UTF16-LE files:
-						// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
-						const compressed = LZString.compressToUTF16(str);
-						SaveFSO(`${waveformBarFile}.aw.lz16`, compressed, true);
-					}
-					else if (this.analysis.compressionMode === 'utf-8') {
-						// Only Base64 strings can be saved in UTF8 files:
-						// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
-						const compressed = LZUTF8.compress(str, { outputEncoding: 'Base64' });
-						Save(`${waveformBarFile}.aw.lz`, compressed);
-					}
-					else {
-						Save(`${waveformBarFile}.aw.json`, str);
+					if (this.saveDataAllowed(handle)) {
+						const str = JSON.stringify(this.current);
+						if (this.analysis.compressionMode === 'utf-16') {
+							// FSO is needed in order to save UTF16-LE files:
+							// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
+							const compressed = LZString.compressToUTF16(str);
+							SaveFSO(`${waveformBarFile}.aw.lz16`, compressed, true);
+						}
+						else if (this.analysis.compressionMode === 'utf-8') {
+							// Only Base64 strings can be saved in UTF8 files:
+							// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
+							const compressed = LZUTF8.compress(str, { outputEncoding: 'Base64' });
+							Save(`${waveformBarFile}.aw.lz`, compressed);
+						}
+						else {
+							Save(`${waveformBarFile}.aw.json`, str);
+						}
 					}
 				}
 				else if ((this.isFallback || visualizer || this.fallbackMode.analysis) && data.length) {
@@ -5257,6 +5291,16 @@ class WaveformBar {
 	}
 
 	/**
+	 * Determines whether data should be saved based on the current analysis save mode and the handle.
+	 * @param {FbMetadbHandle} handle - The handle to check against the save mode and media library.
+	 * @returns {boolean} - Returns `true` if the data should be saved, `false` otherwise.
+	 */
+	saveDataAllowed(handle) {
+		return this.analysis.saveMode === 'always' ||
+			this.analysis.saveMode === 'library' && handle && fb.IsMetadbInMediaLibrary(handle);
+	}
+
+	/**
 	 * Deletes the waveform bar cache diretory with its processed data.
 	 */
 	removeData() {
@@ -5335,6 +5379,7 @@ class WaveformBar {
 	on_mouse_lbtn_up(x, y, mask) {
 		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar)) return false;
 		this.mouseDown = false;
+		if (!this.active) { return; }
 		if (!this.trace(x, y)) { return false; }
 		const handle = fb.GetSelection();
 		if (handle && fb.IsPlaying) { // Seek
@@ -5363,6 +5408,31 @@ class WaveformBar {
 		if (mask === MouseKey.LButton && this.on_mouse_lbtn_up(x, y, mask)) {
 			this.mouseDown = true;
 		}
+	}
+
+	/**
+	 * Handles the mouse wheel event to seek through the playback.
+	 * @param {number} step - The wheel scroll direction.
+	 * @returns {boolean} True or false.
+	 */
+	on_mouse_wheel(step) {
+		if (!this.active || !fb.GetSelection() || !fb.IsPlaying || this.current.length === 0) {
+			return false;
+		}
+
+		let time = fb.PlaybackTime;
+
+		const seekTypes = {
+			seconds: (scroll) => scroll * this.wheel.seekSpeed,
+			percentage: (scroll) => (scroll * this.wheel.seekSpeed) / 100 * fb.PlaybackLength
+		};
+
+		const seekTypeFunc = seekTypes[this.wheel.seekType] || seekTypes.seconds;
+		time += seekTypeFunc(step);
+		fb.PlaybackTime = Clamp(time, 0, fb.PlaybackLength);
+
+		this.throttlePaint(true);
+		return true;
 	}
 
 	/**
