@@ -1640,8 +1640,8 @@ class ContextMenus {
 					grSet.waveformBarSaveMode = mode[1];
 					grm.waveBar.updateConfig({ analysis: { saveMode: mode[1] } });
 					grm.waveBar.updateBar();
-					if (mode === 'always') return;
-					const key = mode === 'library' ? 'waveformBarSaveModeLibrary' : 'waveformBarSaveModeNever';
+					if (mode[1] === 'always') return;
+					const key = mode[1] === 'library' ? 'waveformBarSaveModeLibrary' : 'waveformBarSaveModeNever';
 					const msg = grm.msg.getMessage('menu', key);
 					const msgFb = grm.msg.getMessage('menu', key, true);
 					grm.msg.showPopup(true, msgFb, msg, 'OK', false, (confirmed) => {});
