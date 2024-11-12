@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    12-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -31,10 +31,7 @@ class Display {
 		/** @private @type {boolean} Setup variable for 4K check. */
 		this.lastSize = undefined;
 		/** @private @type {object} Saves last used active window width and height. */
-		this.lastPlayerSize = {
-			Width: window.Width,
-			Height: window.Height
-		};
+		this.lastPlayerSize = {	w: window.Width, h: window.Height };
 
 		// * UIHACKS * //
 		/** @public @type {boolean} UIHacks pseudo caption state, used in setWindowDrag. */
@@ -134,7 +131,6 @@ class Display {
 			this.setWindowSize(2800, 1720); // Check if player size 'Normal' for 4K can be attained
 			if (grm.ui.ww > 2560 && grm.ui.wh > 1600) {
 				RES._4K = true;
-				RES._QHD = false;
 				grSet.displayRes = '4K';
 				this.setSizesForDisplay();
 			}
@@ -147,7 +143,6 @@ class Display {
 					resetSize();
 				}
 				else { // Set to QHD mode
-					RES._4K = false;
 					RES._QHD = true;
 					grSet.displayRes = 'QHD';
 					this.setSizesForDisplay();
@@ -156,8 +151,10 @@ class Display {
 		};
 
 		const updatePanels = async () => {
-			this.setPlayerSize('small');
-			grm.ui.initPanels();
+			setTimeout(() => {
+				this.setPlayerSize('small');
+				grm.ui.initPanels();
+			}, 1);
 		};
 
 		// * Start detection
@@ -203,19 +200,13 @@ class Display {
 	 * Initializes the current player size and called from setThemeSettings(), used to save player size in the config file.
 	 */
 	initPlayerSize() {
-		if (grSet.layout === 'default') {
-			grSet.savedWidth_default  = window.GetProperty('Georgia-ReBORN - 16. System: Saved layout width (Default)');
-			grSet.savedHeight_default = window.GetProperty('Georgia-ReBORN - 16. System: Saved layout height (Default)');
-			this.setWindowSize(grSet.savedWidth_default, grSet.savedHeight_default);
-		} else if (grSet.layout === 'artwork') {
-			grSet.savedWidth_artwork  = window.GetProperty('Georgia-ReBORN - 16. System: Saved layout width (Artwork)');
-			grSet.savedHeight_artwork = window.GetProperty('Georgia-ReBORN - 16. System: Saved layout height (Artwork)');
-			this.setWindowSize(grSet.savedWidth_artwork, grSet.savedHeight_artwork);
-		} else if (grSet.layout === 'compact') {
-			grSet.savedWidth_compact  = window.GetProperty('Georgia-ReBORN - 16. System: Saved layout width (Compact)');
-			grSet.savedHeight_compact = window.GetProperty('Georgia-ReBORN - 16. System: Saved layout height (Compact)');
-			this.setWindowSize(grSet.savedWidth_compact, grSet.savedHeight_compact);
-		}
+		const layout = { default: 'Default', artwork: 'Artwork', compact: 'Compact' };
+		const layoutStr = layout[grSet.layout] || layout.default;
+
+		const ww = grSet[`savedWidth_${grSet.layout}`]  = window.GetProperty(`Georgia-ReBORN - 16. System: Saved layout width (${layoutStr})`);
+		const wh = grSet[`savedHeight_${grSet.layout}`] = window.GetProperty(`Georgia-ReBORN - 16. System: Saved layout height (${layoutStr})`);
+
+		this.setWindowSize(ww, wh);
 	}
 	// #endregion
 
@@ -269,11 +260,11 @@ class Display {
 		const currentWidth = grm.ui.ww;
 		const currentHeight = grm.ui.wh;
 
-		if (this.lastPlayerSize.Width === currentWidth && this.lastPlayerSize.Height === currentHeight) {
+		if (this.lastPlayerSize.w === currentWidth && this.lastPlayerSize.h === currentHeight) {
 			return false;
 		}
 
-		this.lastPlayerSize = { Width: currentWidth, Height: currentHeight };
+		this.lastPlayerSize = { w: currentWidth, h: currentHeight };
 		return true;
 	}
 
@@ -286,9 +277,9 @@ class Display {
 
 		if (UIHacks.FullScreen) {
 			UIHacks.FullScreen = false;
-		} else if (this.lastPlayerSize) {
-			grSet.savedWidth_default = this.lastPlayerSize.Width = window.Width;
-			grSet.savedHeight_default = this.lastPlayerSize.Height = window.Height;
+		} else {
+			grSet.savedWidth_default = this.lastPlayerSize.w = window.Width;
+			grSet.savedHeight_default = this.lastPlayerSize.h = window.Height;
 		}
 
 		const size = this.getPlayerSize(sizeName);
@@ -788,9 +779,9 @@ class Display {
 	 * @returns {boolean} Whether the window size needs to be fixed.
 	 */
 	setWindowSizeFix() {
-		const lastW = this.lastPlayerSize ? this.lastPlayerSize.Width : window.Width;
-		const lastH = this.lastPlayerSize ? this.lastPlayerSize.Height : window.Height;
-		const systemFirstLaunch = !this.lastPlayerSize ? grSet.systemFirstLaunch : '';
+		const lastW = this.lastPlayerSize.w ? this.lastPlayerSize.w : window.Width;
+		const lastH = this.lastPlayerSize.h ? this.lastPlayerSize.h : window.Height;
+		const systemFirstLaunch = !this.lastPlayerSize.w ? grSet.systemFirstLaunch : false;
 
 		this.setWindowSizeLimitsForLayouts(lastW, lastH);
 
