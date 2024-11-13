@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-11-2024                                              * //
+// * Last change:    13-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2994,6 +2994,7 @@ class TopMenuOptions {
 			const lyricsLayoutMenu = new Menu('Layout');
 			lyricsLayoutMenu.addRadioItems(['Normal', 'Full', 'Left', 'Right'], grSet.lyricsLayout, ['normal', 'full', 'left', 'right'], (layout) => {
 				grSet.savedLyricsLayout = grSet.lyricsLayout = layout;
+				grm.ui.displayLyrics = true;
 				grm.ui.initLyricsLayoutState();
 			});
 			lyricsLayoutMenu.appendTo(lyricsMenu);
