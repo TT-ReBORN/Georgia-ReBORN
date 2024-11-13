@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-11-2024                                              * //
+// * Last change:    13-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3177,19 +3177,19 @@ class MainUI {
 
 		if (type === 'artistArt') {
 			const artistArtPathsRaw = bio.panel.cleanPth(bioCfg.pth.foImgArt, bio.panel.id.focus);
-			const artistArtPaths = utils.Glob(`${artistArtPathsRaw}*`);
+			const artistArtPaths = UtilsGlob(`${artistArtPathsRaw}*`);
 			return FilterFiles(artistArtPaths, fileFormats);
 		}
 
 		if (type === 'albumArt') {
 			const albumArtExclude = grSet.filterDiscArtFromArtwork && (/(cd|disc|vinyl)([0-9]*|[a-h])\.(png|jpg)/i);
-			const albumArtPathsRaw = grCfg.imgPaths.flatMap(path => utils.Glob($(path, metadb), FileAttributes.Directory | FileAttributes.Hidden));
+			const albumArtPathsRaw = grCfg.imgPaths.flatMap(path => UtilsGlob($(path, metadb)));
 			const albumArtPaths = [...new Set(albumArtPathsRaw)];
 			return FilterFiles(albumArtPaths, fileFormats, albumArtExclude);
 		}
 
 		if (type === 'customArt') {
-			const customArtPaths = utils.Glob(`${grPath.images}background\\*`, FileAttributes.Directory | FileAttributes.Hidden);
+			const customArtPaths = UtilsGlob(`${grPath.images}background\\*`);
 			return FilterFiles(customArtPaths, fileFormats);
 		}
 

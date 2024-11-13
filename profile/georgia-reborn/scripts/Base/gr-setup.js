@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-10-2024                                              * //
+// * Last change:    13-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -124,17 +124,7 @@ const grPath = {
 	 */
 	discArtImagePaths() {
 		const paths = grCfg.discArtPaths.map(path => $(path));
-
-		return paths.flatMap(pattern => {
-			if (pattern.includes(';')) {
-				// * Check if the directory path contains a semicolon, utils.Glob cannot parse :(
-				const filePath = pattern.replace('\\*', '\\'); // * Wildcard cannot be used
-				return IsFile(filePath) ? [filePath] : [];
-			} else {
-				// * For directory paths without semicolons, use utils.Glob with * wildcard support
-				return utils.Glob(pattern, FileAttributes.Directory);
-			}
-		});
+		return paths.flatMap(pattern => UtilsGlob(pattern));
 	},
 
 	/**
