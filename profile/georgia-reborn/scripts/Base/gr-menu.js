@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-11-2024                                              * //
+// * Last change:    14-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -427,7 +427,7 @@ class TopMenuOptions {
 			grm.ui.initTheme();
 		});
 		styleMenu.addSeparator();
-		if (grSet.theme === 'reborn' || grSet.theme === 'random' || grSet.theme.startsWith('custom')) {
+		if (['reborn', 'random'].includes(grSet.theme) || grSet.theme.startsWith('custom')) {
 			styleMenu.addToggleItem('Night', grSet, 'styleNighttime', () => {
 				grm.ui.setStyle('styleNighttime', grSet.styleNighttime);
 				grm.ui.updateStyle();

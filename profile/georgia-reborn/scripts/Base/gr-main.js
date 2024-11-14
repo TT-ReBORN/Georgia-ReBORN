@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-11-2024                                              * //
+// * Last change:    14-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1947,7 +1947,7 @@ class MainUI {
 			||
 			libSet.theme !== 0 || bioSet.theme !== 0
 			||
-			grSet.theme === 'reborn' || grSet.theme === 'random'
+			['reborn', 'random'].includes(grSet.theme)
 			||
 			grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn;
 
@@ -3967,7 +3967,7 @@ class MainUI {
 		setTimeout(() => {
 			this.loadAlbumArtFromList(this.albumArtIndex);
 			this.checkAlbumArtFromListDiscArt();
-			if (grSet.theme === 'reborn' || grSet.theme === 'random' || grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn) {
+			if (['reborn', 'random'].includes(grSet.theme) || grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn) {
 				this.newTrackFetchingArtwork = true;
 				grm.color.getThemeColors(this.albumArt);
 				this.initTheme();

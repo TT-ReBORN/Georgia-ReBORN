@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-11-2024                                              * //
+// * Last change:    14-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1339,11 +1339,32 @@ function ToRGBA(c) {
  * @param {number} c - The color to calculate the brightness of, must be in the range of 0-255.
  * @returns {number} The brightness of the color in the range of 0-255.
  */
-function CalcBrightness(c) {
+function CalcBrightnessOld(c) {
 	const r = GetRed(c);
 	const g = GetGreen(c);
 	const b = GetBlue(c);
 	return Math.round(Math.sqrt(0.299 * r * r + 0.587 * g * g + 0.114 * b * b));
+}
+
+
+/**
+ * Calculates the brightness of a color based on the provided color type.
+ * @global
+ * @param {string} type - The type of the color. Supported types are 'RGB', 'RGBA', 'HEX', 'IMG', 'IMGCOLOR'.
+ * @param {number} color - The color to calculate the brightness of, must be in the range of 0-255.
+ * @param {GdiBitmap} image - The image to calculate brightness for, used for 'IMG' and 'IMGCOLOR' color types.
+ * @returns {number} The brightness of the color.
+ */
+function CalcBrightness(type, color, image) {
+	const colorTypes = {
+		RGB: (color) => Color.BRT(color),
+		RGBA: (color) => Color.BRT(RGBAtoRGB(color)),
+		HEX: (color) => Color.BRT(HEXtoRGB(color)),
+		IMG: (image) => CalcImgBrightness(image),
+		IMGCOLOR: (image, color) => CalcImgBrightness(image) + Color.BRT(color)
+	};
+
+	return colorTypes[type](color, image);
 }
 
 

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    14-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -549,8 +549,8 @@ class BaseColors {
 			grCol.styleVolumeBar = ShadeColor(grCol.styleVolumeBar, percent);
 
 			// * ONLY DARKEN BLACK TEXT AND BUTTON COLORS BUT NOT WHITE TEXT COLORS * //
-			const bgColBrightness = new Color(grCol.bg).brightness;
-			const txtColBrightness = new Color(pl.col.row_title_normal).brightness;
+			const bgColBrightness = Color.BRT(grCol.bg);
+			const txtColBrightness = Color.BRT(pl.col.row_title_normal);
 			if (bgColBrightness < 200 && txtColBrightness < 150) {
 				this.adjustTextButtonColors(percent, true, false, false, false);
 			}
@@ -663,13 +663,13 @@ class BaseColors {
 			grCol.styleVolumeBar = TintColor(grCol.styleVolumeBar, percent);
 
 			// * LIGHTEN TEXT AND BUTTON COLORS * //
-			const bgColBrightness = new Color(grCol.bg).brightness;
+			const bgColBrightness = Color.BRT(grCol.bg);
 			if (bgColBrightness < 150 && bgColBrightness > 50) {
 				this.adjustTextButtonColors(percent, false, false, true, false);
 			}
 		}
 
-		const bgColBrightness = new Color(grCol.bg).brightness;
+		const bgColBrightness = Color.BRT(grCol.bg);
 		if (grSet.themeBrightness > 20 && bgColBrightness < 200 && bgColBrightness > 125) {
 			grCol.lightBg = false;
 			this.adjustTextButtonColors(percent, false, true, false, false);
@@ -735,6 +735,36 @@ class BaseColors {
 			grSet.styleNighttime || grSet.styleBlackAndWhite2 || grSet.styleRebornBlack ? RGBA(0, 0, 0, 30) :
 			grCol.shadow;
 	}
+
+	/**
+	 * Determines if the background color is considered light based on various conditions.
+	 * @param {number} colBrightness - The color brightness value to check.
+	 * @returns {boolean} - Returns true if the background is considered light, otherwise false.
+	 */
+	isLightBg(colBrightness) {
+		return colBrightness + grCol.imgBrightness > 285 && (grSet.styleBlend || grSet.styleBlend2)
+		||
+		colBrightness > 150 && (!grSet.styleBlend && !grSet.styleBlend2 || grSet.styleBlend2 && grSet.styleRebornFusion2);
+	}
+
+	/**
+	 * Determines if the background is considered light based on various conditions.
+	 * This is used for the standard themes ('white', 'black', 'reborn', 'random', 'cream') without any special styles.
+	 * @param {number} colBrightness - The primary color brightness value to check.
+	 * @returns {boolean} - Returns true if the background is considered light, otherwise false.
+	 */
+	isLightBgStandard(colBrightness) {
+		const lightBrightness = (colBrightness > 150) && (!grSet.styleBlend && !grSet.styleBlend2 && !grSet.styleRandomDark);
+
+		const lightBlend =
+			((colBrightness + grCol.imgBrightness > 285) && (grSet.styleBlend || grSet.styleBlend2))
+			&&
+			((colBrightness > 150 && ['white', 'black'].includes(grSet.theme)) || (['reborn', 'random'].includes(grSet.theme) && !grSet.styleRandomDark));
+
+		const noAlbumArt = grm.ui.noAlbumArtStub && (grSet.theme === 'white' && !grSet.styleBlackAndWhite && !grm.ui.isStreaming || ['reborn', 'random'].includes(grSet.theme));
+
+		return lightBrightness || lightBlend || noAlbumArt || grSet.theme === 'cream';
+	}
 	// #endregion
 
 	// * PUBLIC METHODS - SET THEME COLORS * //
@@ -745,10 +775,10 @@ class BaseColors {
 	 * Used in White, Black, Reborn, Random and Custom themes.
 	 */
 	setBackgroundColorDefinition() {
-		const primaryBrightness    = new Color(grCol.primary).brightness;
-		const primaryBrightnessAlt = new Color(grCol.primary_alt).brightness;
+		const primaryBrightness = Color.BRT(grCol.primary);
+		const primaryBrightnessAlt = Color.BRT(grCol.primary_alt);
 		const colBrightness = grSet.styleRebornFusion ? primaryBrightnessAlt : primaryBrightness;
-		grCol.colBrightness  = primaryBrightness;
+		grCol.colBrightness = primaryBrightness;
 		grCol.colBrightness2 = primaryBrightnessAlt;
 
 		const standardThemes = ['white', 'black', 'reborn', 'random', 'cream'].includes(grSet.theme) && !grSet.styleRebornFusion && !grSet.styleRebornFusion2;
@@ -756,47 +786,31 @@ class BaseColors {
 
 		// * STANDARD THEMES * //
 		if (standardThemes) {
-			const lightBrightness = (primaryBrightness > 150) && (!grSet.styleBlend && !grSet.styleBlend2 && !grSet.styleRandomDark);
-
-			const lightBlend =
-				(primaryBrightness + grCol.imgBrightness > 285) && (grSet.styleBlend || grSet.styleBlend2)
-				&&
-				(primaryBrightness > 150 && (grSet.theme === 'white' || grSet.theme === 'black') || grSet.theme === 'reborn' || grSet.theme === 'random' && !grSet.styleRandomDark);
-
-			const noAlbumArt = grm.ui.noAlbumArtStub && (grSet.theme === 'white' && !grSet.styleBlackAndWhite && !grm.ui.isStreaming || grSet.theme === 'reborn' || grSet.theme === 'random');
-
-			grCol.lightBg = lightBrightness || lightBlend || noAlbumArt || grSet.theme === 'cream';
+			grCol.lightBg = this.isLightBgStandard(primaryBrightness);
 		}
 
 		// * GRADIENT STYLES, REBORN FUSION STYLES, CUSTOM THEMES * //
 		if (!(grSet.styleGradient || grSet.styleGradient2 || grSet.styleRebornFusion || grSet.styleRebornFusion2 || customThemes)) {
 			return;
 		}
-		else if (grSet.theme === 'reborn' || grSet.theme === 'random') {
+		else if (['reborn', 'random'].includes(grSet.theme)) {
 			grCol.styleGradient = grCol.darkAccent;
 			grCol.styleGradient2 = grCol.darkAccent;
 		}
 
-		const gradientBRT = (color) => new Color(RGBAtoRGB(color)).brightness;
-		const cThemeBRT = (color) => new Color(HEXtoRGB(color)).brightness;
-		const isLightBg = (color) =>
-			color + grCol.imgBrightness > 285 && (grSet.styleBlend || grSet.styleBlend2)
-			||
-			color > 150 && (!grSet.styleBlend && !grSet.styleBlend2 || grSet.styleBlend2 && grSet.styleRebornFusion2);
+		const getColor = (styleGradient, styleGradient2, defaultColor, customColorKey) => {
+			if (grSet.styleGradient)  return colBrightness - (CalcBrightness('RGBA', styleGradient) * 0.5);
+			if (grSet.styleGradient2) return colBrightness - (CalcBrightness('RGBA', styleGradient2) * 0.5);
+			if (grSet.styleRebornFusion2) return primaryBrightnessAlt;
+			if (customThemes) return CalcBrightness('HEX', grCfg.cTheme[customColorKey]);
+			return defaultColor;
+		};
 
-		const mainBgColor      = grSet.styleGradient      ? colBrightness - (gradientBRT(grCol.styleGradient) * 0.5) :
-								 grSet.styleGradient2     ? colBrightness - (gradientBRT(grCol.styleGradient2) * 0.5) :
-								 grSet.styleRebornFusion2 ? primaryBrightness    : customThemes ? cThemeBRT(grCfg.cTheme.grCol_bg)        : primaryBrightnessAlt;
-		const playlistBgColor  = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.pl_col_bg)       : primaryBrightness;
-		const detailsBgColor   = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.grCol_detailsBg) : primaryBrightness;
-		const libraryBgColor   = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.lib_ui_col_bg)   : primaryBrightness;
-		const biographyBgColor = grSet.styleRebornFusion2 ? primaryBrightnessAlt : customThemes ? cThemeBRT(grCfg.cTheme.bio_ui_col_bg)   : primaryBrightness;
-
-		grCol.lightBgMain      = isLightBg(mainBgColor);
-		grCol.lightBgPlaylist  = isLightBg(playlistBgColor);
-		grCol.lightBgDetails   = isLightBg(detailsBgColor);
-		grCol.lightBgLibrary   = isLightBg(libraryBgColor);
-		grCol.lightBgBiography = isLightBg(biographyBgColor);
+		grCol.lightBgMain      = this.isLightBg(getColor(grCol.styleGradient, grCol.styleGradient2, primaryBrightness, 'grCol_bg'));
+		grCol.lightBgPlaylist  = this.isLightBg(getColor(null, null, primaryBrightness, 'pl_col_bg'));
+		grCol.lightBgDetails   = this.isLightBg(getColor(null, null, primaryBrightness, 'grCol_detailsBg'));
+		grCol.lightBgLibrary   = this.isLightBg(getColor(null, null, primaryBrightness, 'lib_ui_col_bg'));
+		grCol.lightBgBiography = this.isLightBg(getColor(null, null, primaryBrightness, 'bio_ui_col_bg'));
 	}
 
 	/**
@@ -4259,8 +4273,8 @@ class ThemeColors extends BaseColors {
 	mainColorsCustomTheme() {
 		try {
 			const lightImg = grCol.imgBrightness > 180;
-			const lightBg = new Color(HEXtoRGB(grCfg.cTheme.grCol_bg)).brightness > 200;
-			const darkBg = new Color(HEXtoRGB(grCfg.cTheme.grCol_bg)).brightness < 50;
+			const lightBg = Color.BRT(HEXtoRGB(grCfg.cTheme.grCol_bg)) > 200;
+			const darkBg = Color.BRT(HEXtoRGB(grCfg.cTheme.grCol_bg)) < 50;
 
 			// * MAIN COLORS * //
 			grCol.bg = this.BEVEL ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_bg), grCol.lightBgMain ? 80 : 0) : HEXtoRGB(grCfg.cTheme.grCol_bg);
@@ -4932,7 +4946,7 @@ class ThemeColors extends BaseColors {
 	 */
 	libraryThemeColors() {
 		// * SETUP COLORS * //
-		const colBrightness = new Color(lib.ui.col.bg).brightness;
+		const colBrightness = Color.BRT(lib.ui.col.bg);
 		grCol.lightBgLib =
 			libSet.theme === 1 && grCol.imgBrightness > 200
 			||
@@ -4977,7 +4991,7 @@ class ThemeColors extends BaseColors {
 	 */
 	biographyThemeColors() {
 		// * SETUP COLORS * //
-		const colBrightness = new Color(bio.ui.col.bg).brightness;
+		const colBrightness = Color.BRT(bio.ui.col.bg);
 		grCol.lightBgBio =
 			bioSet.theme === 1 && grCol.imgBrightness > 200
 			||

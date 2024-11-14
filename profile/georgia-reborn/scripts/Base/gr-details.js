@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    14-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -670,7 +670,7 @@ class Details {
 
 		const drawBandLogoProfiler = grm.ui.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> band logo');
 		const availableSpace = grm.ui.albumArtSize.y + grm.ui.albumArtSize.h - this.gridTop;
-		const lightBg = new Color(grCol.detailsText).brightness < 140;
+		const lightBg = Color.BRT(grCol.detailsText) < 140;
 		const logo = lightBg || grm.ui.noAlbumArtStub ? (this.bandLogoInverted || this.bandLogo) : this.bandLogo;
 
 		if (logo && availableSpace > 75) {
@@ -702,7 +702,7 @@ class Details {
 		const drawLabelLogoProfiler = grm.ui.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> label logo');
 
 		if (this.labelLogo.length > 0) {
-			const lightBg = grSet.labelArtOnBg ? new Color(grCol.bg).brightness > 140 : new Color(grCol.detailsText).brightness < 140;
+			const lightBg = grSet.labelArtOnBg ? Color.BRT(grCol.bg) > 140 : Color.BRT(grCol.detailsText) < 140;
 			const labels = lightBg || grm.ui.noAlbumArtStub ? (this.labelLogoInverted.length ? this.labelLogoInverted : this.labelLogo) : this.labelLogo;
 			const rightSideGap = 20; // How close last label is to right edge
 			const leftEdgeGap = (grm.ui.albumArtOffCenter ? 20 : 40) * HD_4K(1, 1.8); // Space between art and label
@@ -1174,7 +1174,7 @@ class Details {
 			format = $('$lower($ext(%path%))');
 		}
 
-		const lightBg = new Color(grCol.detailsText).brightness < 140;
+		const lightBg = Color.BRT(grCol.detailsText) < 140;
 		const bw = lightBg ? 'black' : 'white';
 
 		const codecFormat = {
@@ -1249,7 +1249,7 @@ class Details {
 			(grSet.layout === 'default' && grSet.showGridChannelLogo_default === 'textlogo' ||
 			 grSet.layout === 'artwork' && grSet.showGridChannelLogo_artwork === 'textlogo') ? '_text' : '';
 
-		const lightBg = new Color(grCol.detailsText).brightness < 140;
+		const lightBg = Color.BRT(grCol.detailsText) < 140;
 		const bw = lightBg ? 'black' : 'white';
 
 		const channelFormat = {

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    14-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -181,6 +181,30 @@ class Color {
 	}
 
 	/**
+	 * Gets the shared instance, creating it if it doesn't exist.
+	 * @returns {Color} The singleton instance of the Color.
+	 * @static
+	 */
+	static get _instance() {
+		if (!this._sharedInstance) {
+			this._sharedInstance = new Color();
+		}
+		return this._sharedInstance;
+	}
+
+	/**
+	 * A static method that calculates the brightness of a given color.
+	 * @param {number} color - The color value to calculate brightness for.
+	 * @returns {number} The brightness value of the given color.
+	 * @static
+	 */
+	static BRT(color) {
+		const col = this._instance;
+		col.parse(color);
+		return col.brightness;
+	}
+
+	/**
 	 * A static method that generates a random color instance.
 	 * @returns {Color} A new Color instance with a random color value.
 	 * @static
@@ -188,7 +212,9 @@ class Color {
 	 * const randomColor = Color.random(); // Creates a Color instance with a random RGB value.
 	 */
 	static random() {
-		return new Color(this.AbsRound(Math.random() * 16777215));
+		const col = this._instance;
+		col.parse(Math.floor(Math.random() * 16777215));
+		return col;
 	}
 	// #endregion
 

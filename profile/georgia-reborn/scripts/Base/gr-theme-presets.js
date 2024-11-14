@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    14-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2326,8 +2326,8 @@ class ThemePreset {
 		];
 
 		if (grSet.presetSelectMode === 'harmonic') {
-			grCol.colBrightness  = new Color(grCol.primary).brightness;
-			grCol.colBrightness2 = new Color(grCol.primary_alt).brightness;
+			grCol.colBrightness  = Color.BRT(grCol.primary);
+			grCol.colBrightness2 = Color.BRT(grCol.primary_alt);
 			grCol.imgBrightness = CalcImgBrightness(grm.ui.albumArt);
 
 			if (grCol.colBrightness > 200 || grCol.imgBrightness > 180) { // * Light

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    14-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -456,7 +456,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			if (this.is_playing() && updatedNowpBg) {
 				const p = SCALE(6);  // From art below
 
-				if (grSet.theme === 'white' && !grSet.styleBlackAndWhite && !grSet.styleBlackAndWhite2 && grSet.layout === 'default' || (grSet.theme === 'reborn' || grSet.theme === 'random') && grm.ui.noAlbumArtStub && !grSet.styleNighttime) {
+				if (grSet.theme === 'white' && !grSet.styleBlackAndWhite && !grSet.styleBlackAndWhite2 && grSet.layout === 'default' || ['reborn', 'random'].includes(grSet.theme) && grm.ui.noAlbumArtStub && !grSet.styleNighttime) {
 					grClip.FillSolidRect(0, p, SCALE(8), this.h - p * 2, grSet.playlistBgImg ? RGBtoRGBA(pl.col.header_nowplaying_bg, grSet.playlistBgRowOpacity) : pl.col.header_nowplaying_bg);
 				}
 				else {
@@ -774,7 +774,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			h = bottom - this.y;
 		}
 		gr.DrawImage(cache_header ? this.header_image : this.clipImg, this.x, y, this.w, h, 0, srcY, this.w, h);
-		if (this.is_completely_selected() && (grSet.theme === 'white' || grSet.theme === 'black')) {
+		if (this.is_completely_selected() && ['white', 'black'].includes(grSet.theme)) {
 			gr.SetSmoothingMode(SmoothingMode.None);
 			gr.FillSolidRect(this.x, y + SCALE(6), 0, h, grCol.primary);
 			gr.SetSmoothingMode(SmoothingMode.HighQuality);
@@ -802,12 +802,12 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			line_color = pl.col.header_line_playing;
 			artist_font = pl.font.artist_playing_compact;
 
-			if (grCol.lightBg && (grSet.theme === 'white' || grSet.theme === 'black')) {
+			if (grCol.lightBg && ['white', 'black'].includes(grSet.theme)) {
 				artist_color = RGB(0, 0, 0);
 				album_color = RGB(20, 20, 20);
 				date_color = RGB(20, 20, 20);
 			}
-			else if (!grCol.lightBg && (grSet.theme === 'white' || grSet.theme === 'black')) {
+			else if (!grCol.lightBg && ['white', 'black'].includes(grSet.theme)) {
 				artist_color = RGB(240, 240, 240);
 				album_color = RGB(220, 220, 220);
 				date_color = RGB(220, 220, 220);

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    14-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -490,11 +490,7 @@ class CustomMenuDropDown extends CustomMenu {
 		gr.SetSmoothingMode(SmoothingMode.None);
 		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 
-		const lightBg =
-			new Color(grCol.bg).brightness + grCol.imgBrightness > 285 && (grSet.styleBlend || grSet.styleBlend2)
-			||
-			new Color(grCol.bg).brightness > 150 && !grSet.styleBlend && !grSet.styleBlend2;
-
+		const lightBg = grm.color.isLightBg(Color.BRT(grCol.bg));
 		const textColor = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
 		const lineHeight = this.hovered || this.focus ? this.h : 1;
 		const optionH = this.optionHeight + this.padding * 2;
@@ -727,11 +723,7 @@ class CustomMenuInputField extends CustomMenu {
 		gr.SetTextRenderingHint(TextRenderingHint.AntiAlias);
 		const margin = SCALE(20);
 		const textX = this.inputX + this.padding * 4;
-		const lightBg =
-			new Color(pl.col.bg).brightness + grCol.imgBrightness > 285 && (grSet.styleBlend || grSet.styleBlend2)
-			||
-			new Color(pl.col.bg).brightness > 150 && !grSet.styleBlend && !grSet.styleBlend2;
-
+		const lightBg = grm.color.isLightBg(Color.BRT(pl.col.bg));
 		const textColor = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
 		const outlineColor = this.focus ? HEXtoRGB(this.value) : RGB(120, 120, 120);
 
@@ -750,12 +742,7 @@ class CustomMenuInputField extends CustomMenu {
 			const start = textX + this.getCursorX(selStartIndex);
 			const end = textX + this.getCursorX(selEndIndex);
 			const maxWidth = Math.min(this.inputW - (start - textX), end - start);
-
-			const lightBg =
-				new Color(HEXtoRGB(this.value)).brightness + grCol.imgBrightness > 285 && (grSet.styleBlend || grSet.styleBlend2)
-				||
-				new Color(HEXtoRGB(this.value)).brightness > 150 && !grSet.styleBlend && !grSet.styleBlend2;
-
+			const lightBg = grm.color.isLightBg(Color.BRT(HEXtoRGB(this.value)));
 			const textColor = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
 
 			gr.FillSolidRect(start, this.y, maxWidth, this.h, HEXtoRGB(this.value));
@@ -1183,11 +1170,7 @@ class CustomMenuInputField2 extends CustomMenu {
 			const start = textX + this.getCursorX(selStartIndex);
 			const end = textX + this.getCursorX(selEndIndex);
 			const maxWidth = Math.min(this.inputW - (start - textX), end - start);
-			const lightBg =
-				new Color(pl.col.bg).brightness + grCol.imgBrightness > 285 && (grSet.styleBlend || grSet.styleBlend2)
-				||
-				new Color(pl.col.bg).brightness > 150 && !grSet.styleBlend && !grSet.styleBlend2;
-
+			const lightBg = grm.color.isLightBg(Color.BRT(pl.col.bg));
 			const textColor = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
 			gr.FillSolidRect(start, this.y, maxWidth, this.h, HEXtoRGB(this.value2));
 			gr.GdiDrawText(this.value2.slice(selStartIndex, selEndIndex), this.font, textColor, start, this.y, maxWidth, this.h, StringFormat(0, 0, 4));
@@ -1717,11 +1700,7 @@ class CustomMenuInfo extends CustomMenu {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	draw(gr) {
-		const lightBg =
-			new Color(pl.col.bg).brightness + grCol.imgBrightness > 285 && (grSet.styleBlend || grSet.styleBlend2)
-			||
-			new Color(pl.col.bg).brightness > 150 && !grSet.styleBlend && !grSet.styleBlend2;
-
+		const lightBg = grm.color.isLightBg(Color.BRT(pl.col.bg));
 		const textColor = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
 		gr.DrawString(this.text, this.font, textColor, this.x, this.y, this.w, this.h, StringFormat(0, 0, 4));
 	}

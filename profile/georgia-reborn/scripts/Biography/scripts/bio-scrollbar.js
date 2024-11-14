@@ -190,13 +190,13 @@ class BioScrollbar {
 			let thumbColors = [bio.ui.col.sbarNormalRGBA, bio.ui.col.sbarHoveredRGBA, bio.ui.col.sbarDragRGBA];
 
 			if (pl.col.bg !== RGB(255, 255, 255) && !grSet.styleRebornFusion && !grSet.styleRebornFusion2) {
-				if ((grSet.theme === 'reborn' || grSet.theme === 'random') && grCol.lightBg) {
+				if (['reborn', 'random'].includes(grSet.theme) && grCol.lightBg) {
 					thumbColors = [bio.ui.col.darkAccentRGBA_75, bio.ui.col.darkAccentRGBA_50, bio.ui.col.lightAccentRGBA2_50];
 				}
-				else if ((grSet.theme === 'reborn' || grSet.theme === 'random') && !grCol.lightBg) {
+				else if (['reborn', 'random'].includes(grSet.theme) && !grCol.lightBg) {
 					thumbColors = [bio.ui.col.lightAccentRGBA_80, bio.ui.col.lightAccentRGBA_50, bio.ui.col.lightAccentRGBA2_50];
 				}
-				if ((grSet.theme === 'reborn' || grSet.theme === 'random') && (grCol.imgBrightness > 230)) {
+				if (['reborn', 'random'].includes(grSet.theme) && grCol.imgBrightness > 230) {
 					thumbColors = [bio.ui.col.lightAccentRGBA_100, bio.ui.col.lightAccentRGBA2_100, bio.ui.col.lightAccentRGBA3_100];
 				}
 			}

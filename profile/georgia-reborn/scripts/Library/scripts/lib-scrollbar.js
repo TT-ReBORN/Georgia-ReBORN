@@ -209,13 +209,13 @@ class LibScrollbar {
 			let thumbColors = [lib.ui.col.sbarNormalRGBA, lib.ui.col.sbarHoveredRGBA, lib.ui.col.sbarDragRGBA];
 
 			if (pl.col.bg !== RGB(255, 255, 255) && !grSet.styleRebornFusion && !grSet.styleRebornFusion2) {
-				if ((grSet.theme === 'reborn' || grSet.theme === 'random') && grCol.lightBg) {
+				if (['reborn', 'random'].includes(grSet.theme) && grCol.lightBg) {
 					thumbColors = [lib.ui.col.darkAccentRGBA_75, lib.ui.col.darkAccentRGBA_50, lib.ui.col.lightAccentRGBA2_50];
 				}
-				else if ((grSet.theme === 'reborn' || grSet.theme === 'random') && !grCol.lightBg) {
+				else if (['reborn', 'random'].includes(grSet.theme) && !grCol.lightBg) {
 					thumbColors = [lib.ui.col.lightAccentRGBA_80, lib.ui.col.lightAccentRGBA_50, lib.ui.col.lightAccentRGBA2_50];
 				}
-				if ((grSet.theme === 'reborn' || grSet.theme === 'random') && (grCol.imgBrightness > 230)) {
+				if (['reborn', 'random'].includes(grSet.theme) && (grCol.imgBrightness > 230)) {
 					thumbColors = [lib.ui.col.lightAccentRGBA_100, lib.ui.col.lightAccentRGBA2_100, lib.ui.col.lightAccentRGBA3_100];
 				}
 			}
