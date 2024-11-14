@@ -111,15 +111,15 @@ function IsNewerVersion(oldVer, newVer) {
  * @returns {void}
  */
 function MakeHttpRequest(type, url, successCB) {
-	const xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
-	xmlhttp.open(type, url, true);
-	xmlhttp.setRequestHeader('User-Agent', 'foo_spider_monkey_georgia');
-	xmlhttp.onreadystatechange = () => {
-		if (xmlhttp.readyState === 4) {
-			successCB(xmlhttp.responseText);
-		}
-	}
 	try {
+		const xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+		xmlhttp.open(type, url, true);
+		xmlhttp.setRequestHeader('User-Agent', 'foo_spider_monkey_georgia');
+		xmlhttp.onreadystatechange = () => {
+			if (xmlhttp.readyState === 4) {
+				successCB(xmlhttp.responseText);
+			}
+		};
 		xmlhttp.send();
 	} catch (e) {
 		console.log('The HTTP request failed:', e);
