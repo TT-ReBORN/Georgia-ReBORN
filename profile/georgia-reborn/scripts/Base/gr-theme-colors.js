@@ -742,7 +742,7 @@ class BaseColors {
 	 * @returns {boolean} - Returns true if the background is considered light, otherwise false.
 	 */
 	isLightBg(colBrightness) {
-		return colBrightness + grCol.imgBrightness > 285 && (grSet.styleBlend || grSet.styleBlend2)
+		return colBrightness + grCol.imgBrightness > 240 && (grSet.styleBlend || grSet.styleBlend2)
 		||
 		colBrightness > 150 && (!grSet.styleBlend && !grSet.styleBlend2 || grSet.styleBlend2 && grSet.styleRebornFusion2);
 	}
@@ -757,7 +757,7 @@ class BaseColors {
 		const lightBrightness = (colBrightness > 150) && (!grSet.styleBlend && !grSet.styleBlend2 && !grSet.styleRandomDark);
 
 		const lightBlend =
-			((colBrightness + grCol.imgBrightness > 285) && (grSet.styleBlend || grSet.styleBlend2))
+			((colBrightness + grCol.imgBrightness > 240) && (grSet.styleBlend || grSet.styleBlend2))
 			&&
 			((colBrightness > 150 && ['white', 'black'].includes(grSet.theme)) || (['reborn', 'random'].includes(grSet.theme) && !grSet.styleRandomDark));
 

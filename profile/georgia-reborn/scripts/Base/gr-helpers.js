@@ -1360,8 +1360,8 @@ function CalcBrightness(type, color, image) {
 		RGB: (color) => Color.BRT(color),
 		RGBA: (color) => Color.BRT(RGBAtoRGB(color)),
 		HEX: (color) => Color.BRT(HEXtoRGB(color)),
-		IMG: (image) => CalcImgBrightness(image),
-		IMGCOLOR: (image, color) => CalcImgBrightness(image) + Color.BRT(color)
+		IMG: (color, image) => CalcImgBrightness(image),
+		IMGCOLOR: (color, image) => Color.BRT(color) + CalcImgBrightness(image)
 	};
 
 	return colorTypes[type](color, image);

@@ -406,7 +406,9 @@ class MainUI {
 		// * LYRICS BACKGROUND IMAGE * //
 		if (this.displayLyrics && grSet.lyricsLayout !== 'normal' && grSet.lyricsBgImg && grm.bgImg.lyricsBgImg) {
 			grm.bgImg.drawBgImage(gr, grm.bgImg.lyricsBgImg, grSet.lyricsBgImgScale, 0, this.topMenuHeight, this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, grSet.lyricsBgImgOpacity, false, 0, 0);
-			if (this.mouseInLyricsFullLayoutEdge) gr.FillSolidRect(0, this.topMenuHeight,  this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, RGBA(0, 0, 0, 170));
+			if (this.mouseInLyricsFullLayoutEdge || CalcBrightness('IMGCOLOR', grCol.bg, this.albumArt) > 240) {
+				gr.FillSolidRect(0, this.topMenuHeight,  this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, RGBA(0, 0, 0, 100));
+			}
 		}
 
 		// * BLENDED BACKGROUND FOR HOME PANEL IN ARTWORK LAYOUT & WHEN LYRICS LAYOUT IS FULL * //
@@ -5038,6 +5040,8 @@ class MainUI {
 
 		this.resizeArtwork(true);
 		this.initPanelWidthAuto();
+		this.setPlaylistSize();
+		grm.lyrics.initLyrics();
 		grm.button.initButtonState();
 		window.Repaint();
 	}

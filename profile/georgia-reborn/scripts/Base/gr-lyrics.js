@@ -79,6 +79,7 @@ class Lyrics {
 				grSet.layout === 'artwork' ? grm.ui.ww :
 				grSet.panelWidthAuto ? noAlbumArtSize :
 				grm.ui.ww * 0.5 :
+			grSet.lyricsLayout === 'full' ? grm.ui.ww * 0.75 :
 			grm.ui.albumArtSize.w) - margin * 2;
 
 		this.h = (grm.ui.noAlbumArtStub ? grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight : grm.ui.albumArtSize.h) - margin * 2;
