@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    13-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -88,7 +88,7 @@ class Lyrics {
 				fullW ? grSet.panelWidthAuto && grSet.lyricsLayout === 'normal' ? noAlbumArtSize * 0.5 :
 				grSet.lyricsLayout === 'left'  ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w + margin * 1.5 :
 				grSet.lyricsLayout === 'right' ? grm.ui.albumArtSize.x - grm.ui.albumArtSize.w - margin * 1.5 :
-				(grm.ui.ww - this.w) * 0.5 :
+				(grm.ui.ww - this.w) * 0.5 - margin :
 				grSet.panelWidthAuto ? grm.ui.albumArtSize.x : 0 :
 			grm.ui.albumArtSize.x) + margin;
 
