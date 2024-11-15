@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-11-2024                                              * //
+// * Last change:    15-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -866,7 +866,7 @@ class PlaylistScrollbar {
 		 */
 		this.throttled_scroll_to = Throttle(() => {
 			this.smooth_scroll_to((this.throttled_scroll_y - this.btn_h) / this.drag_distance_per_row);
-		}, 1000 / 60, false, this);
+		}, 1000 / 60);
 
 		this._create_scrollbar_images();
 	}
@@ -2294,7 +2294,7 @@ class PlaylistManager {
 		 */
 		this.throttled_repaint = Throttle(() => {
 			window.RepaintRect(this.x - SCALE(1), this.y, this.w + SCALE(2), this.h);
-		}, 1000 / 60, false, this);
+		}, 1000 / 60);
 
 		/**
 		 * The animation timer for the playlist manager text button.

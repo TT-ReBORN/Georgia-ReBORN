@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-11-2024                                              * //
+// * Last change:    15-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1049,27 +1049,52 @@ function RunCmd(command, wait, show) {
 
 
 /**
- * Limits the execution of a given function to a specified delay, with an optional immediate execution.
- * @global
- * @param {Function} fn - The function to be throttled, it is the function that will be called after the specified delay.
- * @param {number} delay - The time in milliseconds that specifies how long to wait between function invocations.
- * @param {boolean} immediate - Whether the function should be executed immediately or after the delay.
- * @param {object} parent - The parent object to bind the function to.
- * @returns {Function} The throttled version of the original function.
+ * Throttles the execution rate of a function to ensure it is executed no more frequently than the specified delay period.
+ * This is the fastest throttle helper with minimal overhead.
+ * @param {Function} func - The function to be throttled.
+ * @param {number} delay - The minimum time interval, in milliseconds, that must pass between consecutive function executions.
+ * @returns {Function} The throttled version of the provided function.
  */
-function Throttle(fn, delay, immediate = false, parent = this) {
-	const boundFunc = fn.bind(parent);
-	let timerId = null;
+function Throttle(func, delay) {
+	let lastCallTime = 0;
 
 	return (...args) => {
-		if (timerId) return;
+		const now = new Date();
 
-		if (immediate && !timerId) boundFunc(...args);
+		if (now - lastCallTime >= delay) {
+			func(...args);
+			lastCallTime = now;
+		}
+	};
+}
 
-		timerId = setTimeout(() => {
-			if (!immediate) boundFunc(...args);
-			timerId = null;
-		}, delay);
+
+/**
+ * Throttles the execution rate of a function to ensure it is executed no more frequently than the specified delay period.
+ * This advanced version has additional features but incurs slightly more overhead.
+ * @param {Function} fn - The function to be throttled.
+ * @param {number} delay - The minimum time interval, in milliseconds, that must pass between consecutive function executions.
+ * @param {boolean} [immediate] - Whether to execute the function immediately on the first call.
+ * @param {object} [parent] - The context (`this` value) to bind the function to.
+ * @returns {Function} The throttled version of the provided function.
+ */
+function ThrottleADV(fn, delay, immediate = false, parent = this) {
+	let lastCallTime = 0;
+	const boundFunc = fn.bind(parent);
+
+	return (...args) => {
+		const now = Date.now();
+
+		if (immediate && !lastCallTime) {
+			lastCallTime = now;
+			boundFunc(...args);
+			return;
+		}
+
+		if (now - lastCallTime >= delay) {
+			lastCallTime = now;
+			boundFunc(...args);
+		}
 	};
 }
 
