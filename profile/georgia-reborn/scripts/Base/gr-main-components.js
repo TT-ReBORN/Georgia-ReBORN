@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-11-2024                                              * //
+// * Last change:    15-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1151,7 +1151,7 @@ class MessageManager {
 				msgFb: 'Theme sandbox mode activated::\n\n{content}'
 			},
 			customThemeFonts: {
-				msg: 'Do you want to use custom theme fonts?\n\nYou need to set your custom fonts\nin your config file located in\nfoobar\\profile\\georgia-reborn\\configs\\georgia-reborn-config.jsonc\n\nContinue?\n\n'
+				msg: 'Do you want to use custom theme fonts?\n\nYou need to set your custom fonts\nin your config file located in\nfoobar\\profile\\georgia-reborn\\configs\\georgia-reborn-config.jsonc\n\n\n'
 			},
 			customPreloaderLogo: {
 				msg: `The custom logo placeholder can be replaced\nwith a new logo:\n\n${fb.ProfilePath}georgia-reborn\\images\\custom\\logo\\_4K-custom-logo.png and _custom-logo.png\n\nRecommended logo dimensions are:\n500x500 pixels for 4K\n250x250 pixels for HD\n\n`
