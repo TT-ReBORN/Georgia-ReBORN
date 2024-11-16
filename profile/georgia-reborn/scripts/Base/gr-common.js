@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    16-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,19 +16,19 @@
 /////////////////////////
 // * ACTIVEX OBJECTS * //
 /////////////////////////
-/** @global @type {ActiveXObject} */
+/** @global @type {ActiveXObject} The Shell.Application ActiveX object. */
 const app = new ActiveXObject('Shell.Application');
-/** @global @type {ActiveXObject} */
+/** @global @type {ActiveXObject} The eslyric ActiveX object. */
 const esl = new ActiveXObject('eslyric');
-/** @global @type {ActiveXObject} */
+/** @global @type {ActiveXObject} The htmlfile ActiveX object. */
 const doc = new ActiveXObject('htmlfile');
-/** @global @type {ActiveXObject} */
+/** @global @type {ActiveXObject} The Scripting.FileSystemObject ActiveX object. */
 const fso = new ActiveXObject('Scripting.FileSystemObject');
-/** @global @type {ActiveXObject} */
+/** @global @type {ActiveXObject} The UIHacks ActiveX object. */
 const UIHacks = new ActiveXObject('UIHacks');
-/** @global @type {ActiveXObject} */
+/** @global @type {ActiveXObject} The ScriptControl ActiveX object. */
 const vb = new ActiveXObject('ScriptControl');
-/** @global @type {ActiveXObject} */
+/** @global @type {ActiveXObject} The WScript.Shell ActiveX object. */
 const WshShell = new ActiveXObject('WScript.Shell');
 
 
@@ -38,17 +38,17 @@ const WshShell = new ActiveXObject('WScript.Shell');
 /**
  * A set of boolean flags indicating the presence of specific components.
  * Each flag is set based on the result of a check performed at the time of initialization.
- * @global
- * @enum {boolean}
+ * @typedef  {object} Component
+ * @property {boolean} ChronFlow - The state indicates if the foo_chronflow component or its mod version is installed.
+ * @property {boolean} EnhancedPlaycount - The state indicates if the foo_enhanced_playcount component is installed.
+ * @property {boolean} ESLyric - The state indicates if the foo_uie_eslyric component is installed.
+ * @property {boolean} VUMeter - The state indicates if the foo_vis_vumeter component is installed.
  */
+/** @global @type {Component} */
 const Component = {
-	/** Indicates if the foo_chronflow component or its mod version is installed. */
 	ChronFlow: utils.CheckComponent('foo_chronflow') || utils.CheckComponent('foo_chronflow_mod'),
-	/** Indicates if the foo_enhanced_playcount component is installed. */
 	EnhancedPlaycount: utils.CheckComponent('foo_enhanced_playcount'),
-	/** Indicates if the foo_uie_eslyric component is installed. */
 	ESLyric: utils.CheckComponent('foo_uie_eslyric'),
-	/** Indicates if the foo_vis_vumeter component is installed. */
 	VUMeter: utils.CheckComponent('foo_vis_vumeter')
 };
 
@@ -58,15 +58,15 @@ const Component = {
 ///////////////////////
 /**
  * A set of boolean flags indicating various environment conditions.
- * @global
- * @enum {boolean}
+ * @typedef  {object} Detect
+ * @property {boolean} IE - The state indicates if user has Internet Explorer installed, needed to render HTML popups.
+ * @property {boolean} Win64 - The state indicates if the user's system is running on Windows 64 bit.
+ * @property {boolean} Wine - The state indicates if the user's system is running Wine on Linux or macOS.
  */
+/** @global @type {Detect} */
 const Detect = {
-	/** Indicates if user has Internet Explorer installed, needed to render HTML popups. */
 	IE: DetectIE(),
-	/** Indicates if the user's system is running on Windows 64 bit. */
 	Win64: DetectWin64(),
-	/** Indicates if the user's system is running Wine on Linux or macOS. */
 	Wine: DetectWine()
 };
 
@@ -76,13 +76,16 @@ const Detect = {
 ///////////////////////
 /**
  * A set of configuration type settings.
- * @global
- * @enum {string}
+ * @typedef  {object} ConfigurationObjectType
+ * @property {string} Array - The array configuration type.
+ * @property {string} Object - The object configuration type.
+ * @property {string} Value - The value configuration type (not currently handled).
  */
+/** @global @enum @type {ConfigurationObjectType} */
 const ConfigurationObjectType = {
 	Array:  'array',
 	Object: 'object',
-	Value:  'value' // Not currently handled
+	Value:  'value'
 };
 
 
@@ -90,19 +93,75 @@ const ConfigurationObjectType = {
 // * DISPLAY * //
 /////////////////
 /**
+ * A set of FPS values and their corresponding refresh intervals rounded up in milliseconds (1000 / FPS).
+ * @typedef  {object} FPS
+ * @property {number} _360 - 2.77 ms (High-end gaming monitors).
+ * @property {number} _240 - 4.17 ms (High-end gaming monitors).
+ * @property {number} _165 - 6.06 ms (High-end gaming monitors).
+ * @property {number} _144 - 6.94 ms (Gaming monitors).
+ * @property {number} _120 - 8.33 ms (Gaming monitors).
+ * @property {number} _90 - 11.11 ms (VR headsets).
+ * @property {number} _75 - 13.33 ms (Older gaming monitors).
+ * @property {number} _60 - 16.67 ms (Video and standard monitors).
+ * @property {number} _50 - 20 ms (PAL video format).
+ * @property {number} _45 - 22.22 ms (Video).
+ * @property {number} _30 - 33.33 ms (Standard for many video formats).
+ * @property {number} _25 - 40 ms (PAL video format).
+ * @property {number} _20 - 50 ms (GDI very high rendering).
+ * @property {number} _15 - 66.67 ms (GDI very high rendering).
+ * @property {number} _12 - 83.33 ms (GDI very high rendering).
+ * @property {number} _10 - 100 ms (GDI high rendering).
+ * @property {number} _9 - 111.11 ms (GDI high rendering).
+ * @property {number} _8 - 125 ms (GDI high rendering).
+ * @property {number} _7 - 142.86 ms (GDI moderate rendering).
+ * @property {number} _6 - 166.67 ms (GDI moderate rendering).
+ * @property {number} _5 - 200 ms (GDI slow rendering).
+ * @property {number} _4 - 250 ms (GDI slow rendering).
+ * @property {number} _3 - 333.33 ms (GDI very slow rendering).
+ * @property {number} _2 - 500 ms (GDI very slow rendering).
+ * @property {number} _1 - 1000 ms (GDI very slow rendering).
+ */
+/** @global @enum @type {FPS} */
+const FPS = {
+	_360: 3,
+	_240: 4,
+	_165: 6,
+	_144: 7,
+	_120: 8,
+	_90: 11,
+	_75: 13,
+	_60: 17,
+	_50: 20,
+	_45: 22,
+	_30: 33,
+	_25: 40,
+	_20: 50,
+	_15: 67,
+	_12: 83,
+	_10: 100,
+	_9: 111,
+	_8: 125,
+	_7: 143,
+	_6: 167,
+	_5: 200,
+	_4: 250,
+	_3: 333,
+	_2: 500,
+	_1: 1000
+};
+
+/**
  * A set of display resolution state settings, initially set to false.
  * These states can be modified at runtime to reflect the current display settings.
- * @global
- * @enum {boolean}
+ * @typedef  {object} RES
+ * @property {boolean} _4K - The 4K resolution state.
+ * @property {boolean} _QHD - The Quad HD resolution state.
+ * @property {boolean} _HD - The High Definition resolution state.
  */
+/** @global @type {RES} */
 const RES = {
-	/** 4K resolution state. */
 	_4K: false,
-
-	/** Quad HD resolution state. */
 	_QHD: false,
-
-	/** High Definition resolution state. */
 	_HD: false
 };
 
@@ -114,9 +173,18 @@ const RES = {
  * A set of several different quality type settings for interpolation of image processing when resizing or transforming.
  * Used in SetInterpolationMode().
  * For more information, see: http://msdn.microsoft.com/en-us/library/ms534141(VS.85).aspx.
- * @global
- * @enum {number}
+ * @typedef  {object} InterpolationMode
+ * @property {number} Invalid - Used internally.
+ * @property {number} Default - Specifies the default interpolation mode.
+ * @property {number} LowQuality - Specifies a low-quality mode.
+ * @property {number} HighQuality - Specifies a high-quality mode.
+ * @property {number} Bilinear - Specifies bilinear interpolation. No prefiltering is done. This mode is not suitable for shrinking an image below 50 percent of its original size.
+ * @property {number} Bicubic - Specifies bicubic interpolation. No prefiltering is done. This mode is not suitable for shrinking an image below 25 percent of its original size.
+ * @property {number} NearestNeighbor - Specifies nearest-neighbor interpolation.
+ * @property {number} HighQualityBilinear - Specifies high-quality, bilinear interpolation. Prefiltering is performed to ensure high-quality shrinking.
+ * @property {number} HighQualityBicubic - Specifies high-quality, bicubic interpolation. Prefiltering is performed to ensure high-quality shrinking. This mode produces the highest quality transformed images.
  */
+/** @global @enum @type {InterpolationMode} */
 const InterpolationMode = {
 	Invalid: -1,
 	Default: 0,
@@ -126,16 +194,22 @@ const InterpolationMode = {
 	Bicubic: 4,
 	NearestNeighbor: 5,
 	HighQualityBilinear: 6,
-	HighQualityBicubic: 7  // Highest quality
+	HighQualityBicubic: 7
 };
 
 /**
  * A set of several different quality type settings for anti-aliasing that is applied to the edges of lines and curves.
  * Used in SetSmoothingMode().
  * For more information, see: http://msdn.microsoft.com/en-us/library/ms534173(VS.85).aspx.
- * @global
- * @enum {number}
+ * @typedef  {object} SmoothingMode
+ * @property {number} Invalid - Reserved.
+ * @property {number} Default - Specifies that smoothing is not applied.
+ * @property {number} HighSpeed - Specifies that smoothing is not applied.
+ * @property {number} HighQuality - Specifies that smoothing is applied using an 8x4 box filter.
+ * @property {number} None - Specifies that smoothing is not applied.
+ * @property {number} AntiAlias - Specifies that smoothing is applied using an 8x4 box filter.
  */
+/** @global @enum @type {SmoothingMode} */
 const SmoothingMode = {
 	Invalid: -1,
 	Default: 0,
@@ -149,9 +223,15 @@ const SmoothingMode = {
  * A set of several different quality type settings for text rendering.
  * Used in SetTextRenderingHint().
  * For more information, see: http://msdn.microsoft.com/en-us/library/ms534404(VS.85).aspx.
- * @global
- * @enum {number}
+ * @typedef  {object} TextRenderingHint
+ * @property {number} SystemDefault - Specifies that a character is drawn using the currently selected system font smoothing mode (also called a rendering hint).
+ * @property {number} SingleBitPerPixelGridFit - Specifies that a character is drawn using its glyph bitmap and hinting to improve character appearance on stems and curvature.
+ * @property {number} SingleBitPerPixel - Specifies that a character is drawn using its glyph bitmap and no hinting. This results in better performance at the expense of quality.
+ * @property {number} AntiAliasGridFit - Specifies that a character is drawn using its antialiased glyph bitmap and hinting. This results in much better quality due to antialiasing at a higher performance cost.
+ * @property {number} AntiAlias - Specifies that a character is drawn using its antialiased glyph bitmap and no hinting. Stem width differences may be noticeable because hinting is turned off.
+ * @property {number} ClearTypeGridFit - Specifies that a character is drawn using its glyph ClearType bitmap and hinting. This type of text rendering cannot be used along with CompositingModeSourceCopy.
  */
+/** @global @enum @type {TextRenderingHint} */
 const TextRenderingHint = {
 	SystemDefault: 0,
 	SingleBitPerPixelGridFit: 1,
@@ -167,9 +247,14 @@ const TextRenderingHint = {
 //////////////////
 /**
  * A set of foobar's album art ID settings used to identify which album art image to load.
- * @global
- * @enum {number}
+ * @typedef  {object} AlbumArtId
+ * @property {number} front - The front album art image.
+ * @property {number} back - The back album art image.
+ * @property {number} disc - The disc album art image.
+ * @property {number} icon - The ccon album art image.
+ * @property {number} artist - The artist album art image.
  */
+/** @global @enum @type {AlbumArtId} */
 const AlbumArtId = {
 	front: 0,
 	back: 1,
@@ -180,9 +265,18 @@ const AlbumArtId = {
 
 /**
  * A set of different text alignment and formatting settings.
- * @global
- * @enum {number}
+ * @typedef  {object} DrawText
+ * @property {number} Left - The left text alignment.
+ * @property {number} Center - The center text alignment.
+ * @property {number} Right - The right text alignment.
+ * @property {number} VCenter - The vertical center text alignment.
+ * @property {number} SingleLine - The single line text formatting.
+ * @property {number} CalcRect - The calculate rectangle dimensions.
+ * @property {number} NoPrefix - The no prefix text formatting.
+ * @property {number} EndEllipsis - The end ellipsis text formatting.
+ * @property {number} WordEllipsis - The word ellipsis text formatting.
  */
+/** @global @enum @type {DrawText} */
 const DrawText = {
 	Left: 0x00000000,
 	Center: 0x00000001,
@@ -197,9 +291,31 @@ const DrawText = {
 
 /**
  * A set of text formatting settings used in gr.DrawString() or gr.GdiDrawText().
- * @global
- * @enum {number}
+ * @typedef  {object} Stringformat
+ * @property {number} h_align_near - The horizontal align near.
+ * @property {number} h_align_center - The horizontal align center.
+ * @property {number} h_align_far - The horizontal align far.
+ * @property {number} v_align_near - The vertical align near.
+ * @property {number} v_align_center - The vertical align center.
+ * @property {number} v_align_far - The vertical align far.
+ * @property {number} align_center - The align center.
+ * @property {number} trim_none - The no trimming.
+ * @property {number} trim_char - The trim to character.
+ * @property {number} trim_word - The trim to word.
+ * @property {number} trim_ellipsis_char - The trim with ellipsis at character.
+ * @property {number} trim_ellipsis_word - The trim with ellipsis at word.
+ * @property {number} trim_ellipsis_path - The trim with ellipsis at path.
+ * @property {number} dir_right_to_Left - The right to left text direction.
+ * @property {number} dir_vertical - The vertical text direction.
+ * @property {number} no_fit_black_box - The no fit black box.
+ * @property {number} display_format_control - The display format control.
+ * @property {number} no_font_fallback - The no font fallback.
+ * @property {number} measure_trailing_spaces - The measure trailing spaces.
+ * @property {number} no_wrap - The no wrap.
+ * @property {number} line_limit - The line limit.
+ * @property {number} no_clip - The no clip.
  */
+/** @global @enum @type {Stringformat} */
 const Stringformat = {
 	h_align_near: 0x00000000,
 	h_align_center: 0x10000000,
@@ -231,9 +347,15 @@ const Stringformat = {
 
 /**
  * A set of font style settings used when creating font objects.
- * @global
- * @enum {number}
+ * @typedef  {object} FontStyle
+ * @property {number} regular - The regular font style.
+ * @property {number} bold - The bold font style.
+ * @property {number} italic - The italic font style.
+ * @property {number} bold_italic - The bold and italic font style.
+ * @property {number} underline - The underline font style.
+ * @property {number} strikeout - The strikeout font style.
  */
+/** @global @enum @type {FontStyle} */
 const FontStyle = {
 	regular: 0,
 	bold: 1,
@@ -245,9 +367,68 @@ const FontStyle = {
 
 /**
  * A set of font mapping settings for the 'Guifx v2 Transports' font used for button symbols.
- * @global
- * @enum {string|number}
+ * @typedef  {object} Guifx
+ * @property {string} name - The name of the font.
+ * @property {number} play - The play button symbol.
+ * @property {number} pause - The pause button symbol.
+ * @property {number} stop - The stop button symbol.
+ * @property {number} record - The record button symbol.
+ * @property {number} rewind - The rewind button symbol.
+ * @property {number} fast_forward - The fast forward button symbol.
+ * @property {number} previous - The previous button symbol.
+ * @property {number} next - The next button symbol.
+ * @property {number} replay - The replay button symbol.
+ * @property {number} refresh - The refresh button symbol.
+ * @property {string} mute - The mute button symbol.
+ * @property {string} mute2 - The alternative mute button symbol.
+ * @property {string} volume_down - The volume down button symbol.
+ * @property {string} volume_up - The volume up button symbol.
+ * @property {string} thumbs_down - The thumbs down button symbol.
+ * @property {string} thumbs_up - The thumbs up button symbol.
+ * @property {string} shuffle - The shuffle button symbol.
+ * @property {string} repeat - The repeat button symbol.
+ * @property {string} repeat1 - The repeat one button symbol.
+ * @property {string} zoom - The zoom button symbol.
+ * @property {string} zoom_out - The zoom out button symbol.
+ * @property {string} zoom_in - The zoom in button symbol.
+ * @property {string} minus - The minus button symbol.
+ * @property {string} plus - The plus button symbol.
+ * @property {string} up - The up button symbol.
+ * @property {string} down - The down button symbol.
+ * @property {string} left - The left button symbol.
+ * @property {string} right - The right button symbol.
+ * @property {string} up2 - The alternative up button symbol.
+ * @property {string} down2 - The alternative down button symbol.
+ * @property {string} left2 - The alternative left button symbol.
+ * @property {string} right2 - The alternative right button symbol.
+ * @property {string} start - The start button symbol.
+ * @property {string} end - The end button symbol.
+ * @property {string} top - The top button symbol.
+ * @property {string} bottom - The bottom button symbol.
+ * @property {string} jump_backward - The jump backward button symbol.
+ * @property {string} jump_forward - The jump forward button symbol.
+ * @property {string} slow_backward - The slow backward button symbol.
+ * @property {string} slow_forward - The slow forward button symbol.
+ * @property {string} eject - The eject button symbol.
+ * @property {string} reject - The reject button symbol.
+ * @property {string} up3 - The third alternative up button symbol.
+ * @property {string} down3 - The third alternative down button symbol.
+ * @property {string} left3 - The third alternative left button symbol.
+ * @property {string} right3 - The third alternative right button symbol.
+ * @property {string} screen_up - The screen up button symbol.
+ * @property {string} screen_down - The screen down button symbol.
+ * @property {string} guifx - The Guifx button symbol.
+ * @property {string} power - The power button symbol.
+ * @property {string} checkmark - The checkmark button symbol.
+ * @property {string} close - The close button symbol.
+ * @property {string} hourglass - The hourglass button symbol.
+ * @property {string} heart - The heart button symbol.
+ * @property {string} star - The star button symbol.
+ * @property {string} fire - The fire button symbol.
+ * @property {string} medical - The medical button symbol.
+ * @property {string} police - The police button symbol.
  */
+/** @global @enum @type {Guifx} */
 const Guifx = {
 	name: 'Guifx v2 Transports',
 	play: 1,
@@ -310,12 +491,16 @@ const Guifx = {
 	police: 'p'
 };
 
-
 /**
  * A set of various star symbols mainly used for ratings.
- * @global
- * @enum {string}
+ * @typedef  {object} Stars
+ * @property {string} empty - The empty star symbol.
+ * @property {string} quarter - The quarter star symbol.
+ * @property {string} half - The half star symbol.
+ * @property {string} threeQ - The three-quarter star symbol.
+ * @property {string} full - The full star symbol.
  */
+/** @global @enum @type {Stars} */
 const Stars = {
 	empty:   '\u2606',
 	quarter: '\u2606',
@@ -331,32 +516,48 @@ const Stars = {
 /**
  * A set of file attribute settings that specifies the attributes of a file, used with utils.Glob().
  * For more information, see: http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx.
- * @global
- * @enum {number}
+ * @typedef  {object} FileAttributes
+ * @property {number} Archive - The file or directory marked for backup or removal.
+ * @property {number} Compressed - The file or directory with data compression.
+ * @property {number} Directory - The handle that identifies a directory.
+ * @property {number} Encrypted - The file or directory with encrypted data.
+ * @property {number} Hidden - The file or directory that is hidden.
+ * @property {number} Normal - The file with no other attributes set.
+ * @property {number} NotContentIndexed - The file or directory not indexed by content indexing service.
+ * @property {number} Offline - The file with data moved to offline storage.
+ * @property {number} ReadOnly - The file that is read-only.
+ * @property {number} ReparsePoint - The file or directory with an associated reparse point.
+ * @property {number} SparseFile - The file that is a sparse file.
+ * @property {number} System - The file or directory used by the operating system.
+ * @property {number} Temporary - The file used for temporary storage.
  */
+/** @global @enum @type {FileAttributes} */
 const FileAttributes = {
-	ReadOnly: 0x00000001,
-	Hidden: 0x00000002,
-	System: 0x00000004,
-	Directory: 0x00000010,
 	Archive: 0x00000020,
-	// Device: 0x00000040, // ! Do Not Use
-	Normal: 0x00000080,
-	Temporary: 0x00000100,
-	SparseFile: 0x00000200,
-	ReparsePoint: 0x00000400,
 	Compressed: 0x00000800,
-	Offline: 0x00001000,
+	Directory: 0x00000010,
+	Encrypted: 0x00004000,
+	Hidden: 0x00000002,
+	Normal: 0x00000080,
 	NotContentIndexed: 0x00002000,
-	Encrypted: 0x00004000
+	Offline: 0x00001000,
+	ReadOnly: 0x00000001,
+	ReparsePoint: 0x00000400,
+	SparseFile: 0x00000200,
+	System: 0x00000004,
+	Temporary: 0x00000100
+	// Device: 0x00000040, // ! Do Not Use
 	// Virtual: 0x00010000; // ! Do not use
 };
 
 /**
  * A set of file mode settings that specifies how the operating system should open a file.
- * @global
- * @enum {number}
+ * @typedef  {object} FileMode
+ * @property {number} Read - The mode to open a file for reading.
+ * @property {number} Write - The mode to open a file for writing.
+ * @property {number} Append - The mode to open a file and append to it.
  */
+/** @global @enum @type {FileMode} */
 const FileMode = {
 	Read: 1,
 	Write: 2,
@@ -365,9 +566,12 @@ const FileMode = {
 
 /**
  * A set of file type settings that specifies the file format.
- * @global
- * @enum {number}
+ * @typedef  {object} FileType
+ * @property {number} SystemDefault - The system default file format.
+ * @property {number} Unicode - The Unicode file format.
+ * @property {number} Ascii - The ASCII file format.
  */
+/** @global @enum @type {FileType} */
 const FileType = {
 	SystemDefault: -2,
 	Unicode: -1,
@@ -380,9 +584,13 @@ const FileType = {
 ////////////////
 /**
  * A set of all button state settings.
- * @global
- * @enum {number}
+ * @typedef  {object} ButtonState
+ * @property {number} Default - The default button state.
+ * @property {number} Hovered - The hovered button state.
+ * @property {number} Down - The button is pressed down.
+ * @property {number} Enabled - The button is enabled.
  */
+/** @global @enum @type {ButtonState} */
 const ButtonState = {
 	Default: 0,
 	Hovered: 1,
@@ -392,9 +600,11 @@ const ButtonState = {
 
 /**
  * A set of all hyperlink state settings.
- * @global
- * @enum {number}
+ * @typedef  {object} HyperlinkStates
+ * @property {number} Normal - The normal hyperlink state.
+ * @property {number} Hovered - The hovered hyperlink state.
  */
+/** @global @enum @type {HyperlinkStates} */
 const HyperlinkStates = {
 	Normal: 0,
 	Hovered: 1
@@ -402,9 +612,16 @@ const HyperlinkStates = {
 
 /**
  * A set of all available foobar playback order state settings.
- * @global
- * @enum {number}
+ * @typedef  {object} PlaybackOrder
+ * @property {number} Default - The default playback order.
+ * @property {number} RepeatPlaylist - The order to repeat the entire playlist.
+ * @property {number} RepeatTrack - The order to repeat the current track.
+ * @property {number} Random - The order to play tracks in random order.
+ * @property {number} ShuffleTracks - The order to shuffle tracks.
+ * @property {number} ShuffleAlbums - The order to shuffle albums.
+ * @property {number} ShuffleFolders - The order to shuffle folders.
  */
+/** @global @enum @type {PlaybackOrder} */
 const PlaybackOrder = {
 	Default: 0,
 	RepeatPlaylist: 1,
@@ -421,9 +638,12 @@ const PlaybackOrder = {
 /////////////////
 /**
  * A set of UIHacks main menu state settings.
- * @global
- * @enum {number}
+ * @typedef  {object} MainMenuState
+ * @property {number} Show - The state to show the main menu.
+ * @property {number} Hide - The state to hide the main menu.
+ * @property {number} Auto - The state to automatically show or hide the main menu.
  */
+/** @global @enum @type {MainMenuState} */
 const MainMenuState = {
 	Show: 0,
 	Hide: 1,
@@ -432,9 +652,12 @@ const MainMenuState = {
 
 /**
  * A set of UIHacks window state settings.
- * @global
- * @enum {number}
+ * @typedef  {object} WindowState
+ * @property {number} Normal - The window is in normal state.
+ * @property {number} Minimized - The window is minimized.
+ * @property {number} Maximized - The window is maximized.
  */
+/** @global @enum @type {WindowState} */
 const WindowState = {
 	Normal:    0,
 	Minimized: 1,
@@ -443,9 +666,13 @@ const WindowState = {
 
 /**
  * A set of UIHacks frame style settings, see foobar's Preferences > Display > Main Window > Frame style.
- * @global
- * @enum {number}
+ * @typedef  {object} FrameStyle
+ * @property {number} Default - The default frame style.
+ * @property {number} SmallCaption - The frame style with small caption.
+ * @property {number} NoCaption - The frame style with no caption.
+ * @property {number} NoBorder - The frame style with no border.
  */
+/** @global @enum @type {FrameStyle} */
 const FrameStyle = {
 	Default: 0,
 	SmallCaption: 1,
@@ -455,9 +682,13 @@ const FrameStyle = {
 
 /**
  * A set of UIHacks move style settings, see foobar's Preferences > Display > Main Window > Move with.
- * @global
- * @enum {number}
+ * @typedef  {object} MoveStyle
+ * @property {number} Default - The default move style.
+ * @property {number} Middle - The move style with middle mouse button.
+ * @property {number} Left - The move style with left mouse button.
+ * @property {number} Both - The move style with both left and middle mouse buttons.
  */
+/** @global @enum @type {MoveStyle} */
 const MoveStyle = {
 	Default: 0,
 	Middle: 1,
@@ -470,10 +701,253 @@ const MoveStyle = {
 // * COUNTRY CODES * //
 ///////////////////////
 /**
- * A set of country codes that maps two digit country codes to full names, mostly used for displaying flag images via tags.
- * @global
- * @enum {string}
+ * A set of country codes that maps two-digit country codes to full names, mostly used for displaying flag images via tags.
+ * @typedef  {object} CountryCodes
+ * @property {string} US - United States.
+ * @property {string} GB - United Kingdom.
+ * @property {string} AU - Australia.
+ * @property {string} DE - Germany.
+ * @property {string} FR - France.
+ * @property {string} SE - Sweden.
+ * @property {string} NO - Norway.
+ * @property {string} IT - Italy.
+ * @property {string} JP - Japan.
+ * @property {string} CN - China.
+ * @property {string} FI - Finland.
+ * @property {string} KR - South Korea.
+ * @property {string} RU - Russia.
+ * @property {string} IE - Ireland.
+ * @property {string} GR - Greece.
+ * @property {string} IS - Iceland.
+ * @property {string} IN - India.
+ * @property {string} AD - Andorra.
+ * @property {string} AE - United Arab Emirates.
+ * @property {string} AF - Afghanistan.
+ * @property {string} AG - Antigua and Barbuda.
+ * @property {string} AI - Anguilla.
+ * @property {string} AL - Albania.
+ * @property {string} AM - Armenia.
+ * @property {string} AO - Angola.
+ * @property {string} AQ - Antarctica.
+ * @property {string} AR - Argentina.
+ * @property {string} AS - American Samoa.
+ * @property {string} AT - Austria.
+ * @property {string} AW - Aruba.
+ * @property {string} AX - Åland.
+ * @property {string} AZ - Azerbaijan.
+ * @property {string} BA - Bosnia and Herzegovina.
+ * @property {string} BB - Barbados.
+ * @property {string} BD - Bangladesh.
+ * @property {string} BE - Belgium.
+ * @property {string} BF - Burkina Faso.
+ * @property {string} BG - Bulgaria.
+ * @property {string} BH - Bahrain.
+ * @property {string} BI - Burundi.
+ * @property {string} BJ - Benin.
+ * @property {string} BL - Saint Barthelemy.
+ * @property {string} BM - Bermuda.
+ * @property {string} BN - Brunei Darussalam.
+ * @property {string} BO - Bolivia.
+ * @property {string} BQ - Bonaire, Sint Eustatius and Saba.
+ * @property {string} BR - Brazil.
+ * @property {string} BS - Bahamas.
+ * @property {string} BT - Bhutan.
+ * @property {string} BV - Bouvet Island.
+ * @property {string} BW - Botswana.
+ * @property {string} BY - Belarus.
+ * @property {string} BZ - Belize.
+ * @property {string} CA - Canada.
+ * @property {string} CC - Cocos Keeling Islands.
+ * @property {string} CD - Democratic Republic of the Congo.
+ * @property {string} CF - Central African Republic.
+ * @property {string} CH - Switzerland.
+ * @property {string} CI - Cote d'Ivoire.
+ * @property {string} CK - Cook Islands.
+ * @property {string} CL - Chile.
+ * @property {string} CM - Cameroon.
+ * @property {string} CO - Colombia.
+ * @property {string} CR - Costa Rica.
+ * @property {string} CU - Cuba.
+ * @property {string} CV - Cape Verde.
+ * @property {string} CX - Christmas Island.
+ * @property {string} CY - Cyprus.
+ * @property {string} CZ - Czech Republic.
+ * @property {string} DJ - Djibouti.
+ * @property {string} DK - Denmark.
+ * @property {string} DM - Dominica.
+ * @property {string} DO - Dominican Republic.
+ * @property {string} DZ - Algeria.
+ * @property {string} EC - Ecuador.
+ * @property {string} EE - Estonia.
+ * @property {string} EG - Egypt.
+ * @property {string} EH - Western Sahara.
+ * @property {string} ER - Eritrea.
+ * @property {string} ES - Spain.
+ * @property {string} ET - Ethiopia.
+ * @property {string} FJ - Fiji.
+ * @property {string} FK - Falkland Islands.
+ * @property {string} FM - Micronesia.
+ * @property {string} FO - Faroess.
+ * @property {string} GA - Gabon.
+ * @property {string} GD - Grenada.
+ * @property {string} GE - Georgia.
+ * @property {string} GG - Guernsey.
+ * @property {string} GH - Ghana.
+ * @property {string} GI - Gibraltar.
+ * @property {string} GL - Greenland.
+ * @property {string} GM - Gambia.
+ * @property {string} GN - Guinea.
+ * @property {string} GQ - Equatorial Guinea.
+ * @property {string} GS - South Georgia and the South Sandwich Islands.
+ * @property {string} GT - Guatemala.
+ * @property {string} GU - Guam.
+ * @property {string} GW - Guinea-Bissau.
+ * @property {string} GY - Guyana.
+ * @property {string} HK - Hong Kong.
+ * @property {string} HN - Honduras.
+ * @property {string} HR - Croatia.
+ * @property {string} HT - Haiti.
+ * @property {string} HU - Hungary.
+ * @property {string} ID - Indonesia.
+ * @property {string} IL - Israel.
+ * @property {string} IM - Isle of Man.
+ * @property {string} IQ - Iraq.
+ * @property {string} IR - Iran.
+ * @property {string} JE - Jersey.
+ * @property {string} JM - Jamaica.
+ * @property {string} JO - Jordan.
+ * @property {string} KE - Kenya.
+ * @property {string} KG - Kyrgyzstan.
+ * @property {string} KH - Cambodia.
+ * @property {string} KI - Kiribati.
+ * @property {string} KM - Comoros.
+ * @property {string} KN - Saint Kitts and Nevis.
+ * @property {string} KP - North Korea.
+ * @property {string} KW - Kuwait.
+ * @property {string} KY - Cayman Islands.
+ * @property {string} KZ - Kazakhstan.
+ * @property {string} LA - Laos.
+ * @property {string} LB - Lebanon.
+ * @property {string} LC - Saint Lucia.
+ * @property {string} LI - Liechtenstein.
+ * @property {string} LK - Sri Lanka.
+ * @property {string} LR - Liberia.
+ * @property {string} LS - Lesotho.
+ * @property {string} LT - Lithuania.
+ * @property {string} LU - Luxembourg.
+ * @property {string} LV - Latvia.
+ * @property {string} LY - Libya.
+ * @property {string} MA - Morocco.
+ * @property {string} MC - Monaco.
+ * @property {string} MD - Moldova.
+ * @property {string} ME - Montenegro.
+ * @property {string} MF - Saint Martin.
+ * @property {string} MG - Madagascar.
+ * @property {string} MH - Marshall Islands.
+ * @property {string} MK - Macedonia.
+ * @property {string} ML - Mali.
+ * @property {string} MM - Myanmar.
+ * @property {string} MN - Mongolia.
+ * @property {string} MO - Macao.
+ * @property {string} MP - Northern Mariana Islands.
+ * @property {string} MQ - Martinique.
+ * @property {string} MR - Mauritania.
+ * @property {string} MS - Montserrat.
+ * @property {string} MT - Malta.
+ * @property {string} MU - Mauritius.
+ * @property {string} MV - Maldives.
+ * @property {string} MW - Malawi.
+ * @property {string} MX - Mexico.
+ * @property {string} MY - Malaysia.
+ * @property {string} MZ - Mozambique.
+ * @property {string} NA - Namibia.
+ * @property {string} NC - New Caledonia.
+ * @property {string} NE - Niger.
+ * @property {string} NF - Norfolk Island.
+ * @property {string} NG - Nigeria.
+ * @property {string} NI - Nicaragua.
+ * @property {string} NL - Netherlands.
+ * @property {string} NP - Nepal.
+ * @property {string} NR - Nauru.
+ * @property {string} NU - Niue.
+ * @property {string} NZ - New Zealand.
+ * @property {string} OM - Oman.
+ * @property {string} PA - Panama.
+ * @property {string} PE - Peru.
+ * @property {string} PF - French Polynesia.
+ * @property {string} PG - Papua New Guinea.
+ * @property {string} PH - Philippines.
+ * @property {string} PK - Pakistan.
+ * @property {string} PL - Poland.
+ * @property {string} PM - Saint Pierre and Miquelon.
+ * @property {string} PN - Pitcairn.
+ * @property {string} PR - Puerto Rico.
+ * @property {string} PS - Palestine.
+ * @property {string} PT - Portugal.
+ * @property {string} PW - Palau.
+ * @property {string} PY - Paraguay.
+ * @property {string} QA - Qatar.
+ * @property {string} RE - Réunion.
+ * @property {string} RO - Romania.
+ * @property {string} RS - Serbia.
+ * @property {string} RW - Rwanda.
+ * @property {string} SA - Saudi Arabia.
+ * @property {string} SB - Solomon Islands.
+ * @property {string} SC - Seychelles.
+ * @property {string} SD - Sudan.
+ * @property {string} SG - Singapore.
+ * @property {string} SH - Saint Helena.
+ * @property {string} SI - Slovenia.
+ * @property {string} SJ - Svalbard and Jan Mayen.
+ * @property {string} SK - Slovakia.
+ * @property {string} SL - Sierra Leone.
+ * @property {string} SM - San Marino.
+ * @property {string} SN - Senegal.
+ * @property {string} SO - Somalia.
+ * @property {string} SR - Suriname.
+ * @property {string} SS - South Sudan.
+ * @property {string} ST - Sao Tome and Principe.
+ * @property {string} SV - El Salvador.
+ * @property {string} SX - Sint Maarten.
+ * @property {string} SY - Syrian Arab Republic.
+ * @property {string} SZ - Swaziland.
+ * @property {string} TC - Turks and Caicos Islands.
+ * @property {string} TD - Chad.
+ * @property {string} TF - French Southern Territories.
+ * @property {string} TG - Togo.
+ * @property {string} TH - Thailand.
+ * @property {string} TJ - Tajikistan.
+ * @property {string} TK - Tokelau.
+ * @property {string} TL - Timor-Leste.
+ * @property {string} TM - Turkmenistan.
+ * @property {string} TN - Tunisia.
+ * @property {string} TO - Tonga.
+ * @property {string} TR - Turkey.
+ * @property {string} TT - Trinidad and Tobago.
+ * @property {string} TV - Tuvalu.
+ * @property {string} TW - Taiwan.
+ * @property {string} TZ - Tanzania.
+ * @property {string} UA - Ukraine.
+ * @property {string} UG - Uganda.
+ * @property {string} UY - Uruguay.
+ * @property {string} UZ - Uzbekistan.
+ * @property {string} VA - Vatican City.
+ * @property {string} VC - Saint Vincent and the Grenadines.
+ * @property {string} VE - Venezuela.
+ * @property {string} VI - US Virgin Islands.
+ * @property {string} VN - Vietnam.
+ * @property {string} VU - Vanuatu.
+ * @property {string} WF - Wallis and Futuna.
+ * @property {string} WS - Samoa.
+ * @property {string} XE - European Union - Musicbrainz code for European releases. Council of Europe uses same flag as EU.
+ * @property {string} XW - United Nations - Musicbrainz code for all World releases. Uses the UN flag which is the MB standard.
+ * @property {string} YE - Yemen.
+ * @property {string} YT - Mayotte.
+ * @property {string} ZA - South Africa.
+ * @property {string} ZM - Zambia.
+ * @property {string} ZW - Zimbabwe.
  */
+/** @global @enum @type {CountryCodes} */
 const CountryCodes = {
 	US: 'United States',
 	GB: 'United Kingdom',
@@ -711,14 +1185,14 @@ const CountryCodes = {
 	VU: 'Vanuatu',
 	WF: 'Wallis and Futuna',
 	WS: 'Samoa',
-	XE: 'European Union', // Musicbrainz code for European releases. Council of Europe uses same flag as EU.
-	XW: 'United Nations', // Musicbrainz code for all World releases. Uses the UN flag which is the MB standard.
+	XE: 'European Union',
+	XW: 'United Nations',
 	YE: 'Yemen',
 	YT: 'Mayotte',
 	ZA: 'South Africa',
 	ZM: 'Zambia',
 	ZW: 'Zimbabwe'
-}
+};
 
 
 ///////////////////
@@ -732,7 +1206,7 @@ const CountryCodes = {
  * @property {number} Popup - The menu item is a popup menu item.
  * @property {number} String - The menu item is a string.
  */
-/** @global @type {MenuFlag} */
+/** @global @enum @type {MenuFlag} */
 const MenuFlag = {
 	Disabled: 0x00000002,
 	Grayed: 0x00000001,
@@ -755,7 +1229,7 @@ const MenuFlag = {
  * @property {number} XButton1 - The first X button is down.
  * @property {number} XButton2 - The second X button is down.
  */
-/** @global @type {MouseKey} */
+/** @global @enum @type {MouseKey} */
 const MouseKey = {
 	Control: 0x0008,
 	LButton: 0x0001,
@@ -791,7 +1265,7 @@ const MouseKey = {
  * @property {number} UpArrow - The up arrow cursor.
  * @property {number} Wait - The wait/busy cursor.
  */
-/** @global @type {Cursor} */
+/** @global @enum @type {Cursor} */
 const Cursor = {
 	AppStarting: 32650,
 	Arrow: 32512,
@@ -999,7 +1473,7 @@ const Cursor = {
  * @property {number} PA1 - The PA1 key.
  * @property {number} OEM_CLEAR - The Clear key.
  */
-/** @global @type {VKey} */
+/** @global @enum @type {VKey} */
 const VKey = {
 	LBUTTON:    0x01,
 	RBUTTON:    0x02,
@@ -1305,7 +1779,6 @@ class ArgumentError extends Error {
 ///////////////////
 /**
  * A class that provides a collection of utilities for various operations.
- * @type {object}
  */
 class Utilities {
 	/**
