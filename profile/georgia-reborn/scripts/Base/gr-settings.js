@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-11-2024                                              * //
+// * Last change:    17-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -468,7 +468,7 @@ grSet.addProperties({
 	playbackTimeDisplay:                ['Georgia-ReBORN - 09. Player controls: Playback time display', 'default'], // Change playback time display from time elapsed to time remaining or percent
 	seekbar:                            ['Georgia-ReBORN - 09. Player controls: Seekbar', 'progressbar'], // 'progressbar', 'peakmeterbar', 'waveformbar' - Seekbar type
 	progressBarWheelSeekSpeed:          ['Georgia-ReBORN - 09. Player controls: Progress bar mouse wheel seek speed', 5], // Progress bar mouse wheel seeking speed, seconds per wheel step
-	progressBarRefreshRate:             ['Georgia-ReBORN - 09. Player controls: Progress bar refresh rate', 'variable'], // variable - default: Update progress bar multiple times a second. Smoother, but uses more CPU
+	progressBarRefreshRate:             ['Georgia-ReBORN - 09. Player controls: Progress bar refresh rate', 'variable'], // 1000, 500, 333, 250, 200, 166, 142, 125, 111, 100, 83, 67, 50, 40, 33, 22, 17, "variable" - progress bar refresh rate
 	peakmeterBarDesign:                 ['Georgia-ReBORN - 09. Player controls: Peakmeter bar design', 'horizontal'], // 'horizontal', 'horizontal_center', 'vertical' - peakmeter bar design
 	peakmeterBarVertSize:               ['Georgia-ReBORN - 09. Player controls: Peakmeter bar vertical bar size', 20], // 0, 2, 4, 6, 8, 10, 20, 25, 30, 35, 40, 'min' - Width size of drawn bars in vertical design
 	peakmeterBarVertDbRange:            ['Georgia-ReBORN - 09. Player controls: Peakmeter bar vertical decibel range', 220], // 220, 215, 210, 320, 315, 310, 520, 515, 510 - Decibel range in vertical design
@@ -485,7 +485,7 @@ grSet.addProperties({
 	peakmeterBarVertPeaks:              ['Georgia-ReBORN - 09. Player controls: Peakmeter bar vertical peaks', true], // true - Show peakmeter bar peaks in vertical design
 	peakmeterBarVertBaseline:           ['Georgia-ReBORN - 09. Player controls: Peakmeter bar baseline', true], // true - Show peakmeter bar baseline in vertical design
 	peakmeterBarWheelSeekSpeed:         ['Georgia-ReBORN - 09. Player controls: Peakmeter bar mouse wheel seek speed', 5], // Peakmeter bar mouse wheel seeking speed, seconds per wheel step
-	peakmeterBarRefreshRate:            ['Georgia-ReBORN - 09. Player controls: Peakmeter bar refresh rate', 80], // 200, 150, 120, 100, 80, 60, 30 - Peakmeter bars refresh rate
+	peakmeterBarRefreshRate:            ['Georgia-ReBORN - 09. Player controls: Peakmeter bar refresh rate', 'variable'], // 1000, 500, 333, 250, 200, 166, 142, 125, 111, 100, 83, 67, 50, 40, 33, 22, 17, "variable" - peakmeter bar refresh rate
 	waveformBarMode:                    ['Georgia-ReBORN - 09. Player controls: Waveform bar mode', 'audiowaveform'], // 'ffprobe' 'audiowaveform' 'visualizer' - Which binary type the waveform bar will use
 	waveformBarAnalysis:                ['Georgia-ReBORN - 09. Player controls: Waveform bar analysis', 'rms_level'], // 'rms_level'  'peak_level' 'rms_peak' - Analysis type available only with ffprobe
 	waveformBarSaveMode:                ['Georgia-ReBORN - 09. Player controls: Waveform bar save mode', 'always'], // 'always' 'library' 'never' - Waveform bar analysis save mode
@@ -506,8 +506,7 @@ grSet.addProperties({
 	waveformBarIndicator:               ['Georgia-ReBORN - 09. Player controls: Waveform bar indicator', false], // false: Shows the waveform bar indicator
 	waveformBarWheelSeekSpeed:          ['Georgia-ReBORN - 09. Player controls: Waveform bar mouse wheel seek speed', 5], // Waveform bar mouse wheel seeking speed, seconds per wheel step
 	waveformBarWheelSeekType:           ['Georgia-ReBORN - 09. Player controls: Waveform bar mouse wheel seek type', 'seconds'], // Waveform bar mouse wheel seeking type, seconds or percentage per wheel step
-	waveformBarRefreshRate:             ['Georgia-ReBORN - 09. Player controls: Waveform bar refresh rate', 200], // 1000, 500, 200, 100, 60, 30 - Waveform bars refresh rate
-	waveformBarRefreshRateVar:          ['Georgia-ReBORN - 09. Player controls: Waveform bar refresh rate variable', false], // false: Should the waveform bar use variable refresh rate
+	waveformBarRefreshRate:             ['Georgia-ReBORN - 09. Player controls: Waveform bar refresh rate', 'variable'], // 1000, 500, 333, 250, 200, 166, 142, 125, 111, 100, 83, 67, 50, 40, 33, 22, 17, "variable" - waveform bar refresh rate
 	playbackOrder:                      ['Georgia-ReBORN - 09. Player controls: Playback order', 'default'], // Playback order 'default' for context plus foobar menu when no transport controls are displayed
 
 	// * Playlist
@@ -1136,7 +1135,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'peakmeterBarVertPeaks', grCfg.themeControls, 'peakmeterBarVertPeaks', true);
 		this._setSetting(grSet, 'peakmeterBarVertBaseline', grCfg.themeControls, 'peakmeterBarVertBaseline', true);
 		this._setSetting(grSet, 'peakmeterBarWheelSeekSpeed', grCfg.themeControls, 'peakmeterBarWheelSeekSpeed', 5);
-		this._setSetting(grSet, 'peakmeterBarRefreshRate', grCfg.themeControls, 'peakmeterBarRefreshRate', 80);
+		this._setSetting(grSet, 'peakmeterBarRefreshRate', grCfg.themeControls, 'peakmeterBarRefreshRate', 'variable');
 		this._setSetting(grSet, 'waveformBarMode', grCfg.themeControls, 'waveformBarMode', 'audiowaveform');
 		this._setSetting(grSet, 'waveformBarSaveMode', grCfg.themeControls, 'waveformBarSaveMode', 'always');
 		this._setSetting(grSet, 'waveformBarAnalysis', grCfg.themeControls, 'waveformBarAnalysis', 'rms_level');
@@ -1156,8 +1155,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'waveformBarIndicator', grCfg.themeControls, 'waveformBarIndicator', false);
 		this._setSetting(grSet, 'waveformBarWheelSeekSpeed', grCfg.themeControls, 'waveformBarWheelSeekSpeed', 5);
 		this._setSetting(grSet, 'waveformBarWheelSeekType', grCfg.themeControls, 'waveformBarWheelSeekType', 'seconds');
-		this._setSetting(grSet, 'waveformBarRefreshRate', grCfg.themeControls, 'waveformBarRefreshRate', 200);
-		this._setSetting(grSet, 'waveformBarRefreshRateVar', grCfg.themeControls, 'waveformBarRefreshRateVar', false);
+		this._setSetting(grSet, 'waveformBarRefreshRate', grCfg.themeControls, 'waveformBarRefreshRate', 'variable');
 		this._setSetting(grSet, 'playbackOrder', grCfg.themeControls, 'playbackOrder', 'default');
 	}
 
@@ -1620,13 +1618,13 @@ class ThemeSettingsManager {
 				grSet.showPause = true;
 				grSet.seekbar = 'progressbar';
 				grSet.progressBarRefreshRate = 'variable';
-				grSet.peakmeterBarRefreshRate = 80;
+				grSet.peakmeterBarRefreshRate = 'variable';
 				grSet.waveformBarPaint = 'partial';
 				grSet.waveformBarPrepaint = true;
 				grSet.waveformBarPrepaintFront = Infinity;
 				grSet.waveformBarAnimate = true;
 				grSet.waveformBarBPM = true;
-				grSet.waveformBarRefreshRate = 200;
+				grSet.waveformBarRefreshRate = 'variable';
 				grSet.playlistLayout = 'normal';
 				grSet.playlistBgImg = false;
 				grSet.playlistBgImgCycleTime = 15;
@@ -1692,7 +1690,7 @@ class ThemeSettingsManager {
 				grSet.showPause = false;
 				grSet.seekbar = 'progressbar';
 				grSet.progressBarRefreshRate = 1000;
-				grSet.peakmeterBarRefreshRate = 200;
+				grSet.peakmeterBarRefreshRate = 1000;
 				grSet.waveformBarPaint = 'full';
 				grSet.waveformBarPrepaint = false;
 				grSet.waveformBarPrepaintFront = 2;
@@ -1740,7 +1738,7 @@ class ThemeSettingsManager {
 				grSet.showStyledTooltips = false;
 				grSet.seekbar = 'progressbar';
 				grSet.progressBarRefreshRate = 500;
-				grSet.peakmeterBarRefreshRate = 120;
+				grSet.peakmeterBarRefreshRate = 200;
 				grSet.waveformBarPaint = 'full';
 				grSet.waveformBarPrepaint = false;
 				grSet.waveformBarPrepaintFront = 2;
@@ -1772,12 +1770,11 @@ class ThemeSettingsManager {
 			case 'highQuality':
 				grSet.playerSize = 'normal';
 				grSet.progressBarRefreshRate = 100;
-				grSet.peakmeterBarRefreshRate = 60;
+				grSet.peakmeterBarRefreshRate = 40;
 				grSet.waveformBarPaint = 'partial';
 				grSet.waveformBarPrepaint = true;
 				grSet.waveformBarPrepaintFront = Infinity;
 				grSet.waveformBarRefreshRate = 100;
-				grSet.waveformBarRefreshRateVar = false;
 				grSet.spinDiscArt = true;
 				grSet.spinDiscArtImageCount = 120;
 				grm.artCache.discArtImgMaxRes = grm.artCache.setDiscArtMaxResolution(grSet.spinDiscArtImageCount);
@@ -1797,13 +1794,12 @@ class ThemeSettingsManager {
 
 			case 'highestQuality':
 				grSet.playerSize = 'large';
-				grSet.progressBarRefreshRate = 30;
-				grSet.peakmeterBarRefreshRate = 30;
+				grSet.progressBarRefreshRate = 33;
+				grSet.peakmeterBarRefreshRate = 33;
 				grSet.waveformBarPaint = 'partial';
 				grSet.waveformBarPrepaint = true;
 				grSet.waveformBarPrepaintFront = Infinity;
-				grSet.waveformBarRefreshRate = 30;
-				grSet.waveformBarRefreshRateVar = false;
+				grSet.waveformBarRefreshRate = 33;
 				grSet.spinDiscArt = true;
 				grSet.spinDiscArtImageCount = 180;
 				grm.artCache.discArtImgMaxRes = grm.artCache.setDiscArtMaxResolution(grSet.spinDiscArtImageCount);

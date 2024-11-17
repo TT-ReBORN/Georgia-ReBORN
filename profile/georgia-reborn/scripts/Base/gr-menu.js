@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-11-2024                                              * //
+// * Last change:    17-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -384,8 +384,7 @@ class TopMenuOptions {
 
 		customThemeMenu.addItem('Rename custom theme', false, () => {
 			if (!grSet.theme.startsWith('custom')) {
-				const msg = grm.msg.getMessage('menu', 'renameCustomTheme');
-				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				grm.msg.showPopupNotice('menu', 'renameCustomTheme');
 				return;
 			}
 			grm.inputBox.renameCustomTheme();
@@ -414,8 +413,7 @@ class TopMenuOptions {
 		// * STYLES * //
 		styleMenu.addToggleItem('Default', grSet, 'styleDefault', () => {
 			if (grSet.themeSandbox) {
-				const msg = grm.msg.getMessage('menu', 'styleDefault');
-				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				grm.msg.showPopupNotice('menu', 'styleDefault');
 				grSet.styleDefault = false;
 				return;
 			}
@@ -1580,60 +1578,84 @@ class TopMenuOptions {
 		playerControlsProgressBarMenu.createRadioSubMenu('Mouse wheel seek speed', ['  1 sec', '  2 sec', '  3 sec', '  4 sec', '  5 sec (default)', '  6 sec', '  7 sec', '  8 sec', '  9 sec', '10 sec'], grSet.progressBarWheelSeekSpeed, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (speed) => {
 			grSet.progressBarWheelSeekSpeed = speed;
 		});
-		playerControlsProgressBarMenu.createRadioSubMenu('Refresh rate', ['1000 ms (very slow CPU)', '  500 ms', '  333 ms', '  Variable (default)', '  100 ms', '    60 ms', '    30 ms (very fast CPU)'], grSet.progressBarRefreshRate, [1000, 500, 333, 'variable', 100, 60, 30], (rate) => {
+		const playerControlsProgressBarRefreshMenu = new Menu('Refresh rate');
+		playerControlsProgressBarRefreshMenu.addRadioItems(['  1 fps ~ 1000 ms (very slow CPU)', '  2 fps ~ 500 ms', '  3 fps ~ 333 ms', '  4 fps ~ 250 ms', '  5 fps ~ 200 ms', '  6 fps ~ 166 ms', '  7 fps ~ 142 ms', '  8 fps ~ 125 ms', '  9 fps ~ 111 ms', '10 fps ~ 100 ms', '12 fps ~ 83 ms', '15 fps ~ 67 ms', '20 fps ~ 50 ms', '25 fps ~ 40 ms', '30 fps ~ 33 ms', '45 fps ~ 22 ms', '60 fps ~ 17 ms (very fast CPU)'], grSet.progressBarRefreshRate, [FPS._1, FPS._2, FPS._3, FPS._4, FPS._5, FPS._6, FPS._7, FPS._8, FPS._9, FPS._10, FPS._12, FPS._15, FPS._20, FPS._25, FPS._30, FPS._45, FPS._60], (rate) => {
+			grSet.progressBarRefreshRate = rate;
+			grm.ui.setSeekbarRefresh();
+			if (rate < FPS._20) {
+				grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
+			} else if (rate < FPS._10) {
+				grm.msg.showPopupNotice('menu', 'seekbarRefreshRateFast', 'Confirm');
+			}
+		}, !grSet.showProgressBar_default || !grSet.showProgressBar_artwork || !grSet.showProgressBar_compact);
+		playerControlsProgressBarRefreshMenu.addSeparator();
+		playerControlsProgressBarRefreshMenu.addRadioItems(['Variable refresh rate (default)'], grSet.progressBarRefreshRate, ['variable'], (rate) => {
 			grSet.progressBarRefreshRate = rate;
 			grm.ui.setSeekbarRefresh();
 		}, !grSet.showProgressBar_default || !grSet.showProgressBar_artwork || !grSet.showProgressBar_compact);
+		playerControlsProgressBarRefreshMenu.appendTo(playerControlsProgressBarMenu);
 		playerControlsProgressBarMenu.appendTo(playerControlsSeekBarMenu);
 
 		// * SEEKBAR - PEAKMETER BAR * //
-		const playerControlspeakmeterBarMenu = new Menu('Peakmeter bar');
-		playerControlspeakmeterBarMenu.createRadioSubMenu('Style', ['Horizontal', 'Horizontal center', 'Vertical'], grSet.peakmeterBarDesign, ['horizontal', 'horizontal_center', 'vertical'], (design) => {
+		const playerControlsPeakmeterBarMenu = new Menu('Peakmeter bar');
+		playerControlsPeakmeterBarMenu.createRadioSubMenu('Style', ['Horizontal', 'Horizontal center', 'Vertical'], grSet.peakmeterBarDesign, ['horizontal', 'horizontal_center', 'vertical'], (design) => {
 			grSet.peakmeterBarDesign = design;
 			RepaintWindow();
 		});
 		if (grSet.peakmeterBarDesign === 'vertical') {
-			playerControlspeakmeterBarMenu.createRadioSubMenu('Size', ['  0 px', '  2 px', '  4 px', '  6 px', '  8 px', '10 px', grSet.layout !== 'default' ? '12 px (default)' : '12 px', '14 px', '16 px', '18 px', grSet.layout !== 'default' ? '20 px' : '20 px (default)', '25 px', '30 px', '35 px', '40 px', 'Minimum'], grSet.peakmeterBarVertSize, [0, 2, 4, 6, 8, 10, 20, 25, 30, 35, 40, 'min'], (size) => {
+			playerControlsPeakmeterBarMenu.createRadioSubMenu('Size', ['  0 px', '  2 px', '  4 px', '  6 px', '  8 px', '10 px', grSet.layout !== 'default' ? '12 px (default)' : '12 px', '14 px', '16 px', '18 px', grSet.layout !== 'default' ? '20 px' : '20 px (default)', '25 px', '30 px', '35 px', '40 px', 'Minimum'], grSet.peakmeterBarVertSize, [0, 2, 4, 6, 8, 10, 20, 25, 30, 35, 40, 'min'], (size) => {
 				grSet.peakmeterBarVertSize = size;
 				RepaintWindow();
 			});
-			playerControlspeakmeterBarMenu.createRadioSubMenu('Decibel range', ['2 to -20 db (default)', '2 to -15 db', '2 to -10 db', '3 to -20 db', '3 to -15 db', '3 to -10 db', '5 to -20 db', '5 to -15 db', '5 to -10 db'], grSet.peakmeterBarVertDbRange, [220, 215, 210, 320, 315, 310, 520, 515, 510], (range) => {
+			playerControlsPeakmeterBarMenu.createRadioSubMenu('Decibel range', ['2 to -20 db (default)', '2 to -15 db', '2 to -10 db', '3 to -20 db', '3 to -15 db', '3 to -10 db', '5 to -20 db', '5 to -15 db', '5 to -10 db'], grSet.peakmeterBarVertDbRange, [220, 215, 210, 320, 315, 310, 520, 515, 510], (range) => {
 				grSet.peakmeterBarVertDbRange = range;
 				RepaintWindow();
 			});
 		}
-		const playerControlspeakmeterBarDisplayMenu = new Menu('Display');
+		const playerControlsPeakmeterBarDisplayMenu = new Menu('Display');
 		if (grSet.peakmeterBarDesign === 'horizontal' || grSet.peakmeterBarDesign === 'horizontal_center') {
-			playerControlspeakmeterBarDisplayMenu.addToggleItem('Show over bars', grSet, 'peakmeterBarOverBars', () => { RepaintWindow(); });
-			playerControlspeakmeterBarDisplayMenu.addSeparator();
-			playerControlspeakmeterBarDisplayMenu.addToggleItem('Show outer bars', grSet, 'peakmeterBarOuterBars', () => { RepaintWindow(); });
-			playerControlspeakmeterBarDisplayMenu.addToggleItem('Show outer peaks', grSet, 'peakmeterBarOuterPeaks', () => { RepaintWindow(); });
-			playerControlspeakmeterBarDisplayMenu.addSeparator();
-			playerControlspeakmeterBarDisplayMenu.addToggleItem('Show main bars', grSet, 'peakmeterBarMainBars', () => { RepaintWindow(); });
-			playerControlspeakmeterBarDisplayMenu.addToggleItem('Show main peaks', grSet, 'peakmeterBarMainPeaks', () => { RepaintWindow(); });
-			playerControlspeakmeterBarDisplayMenu.addSeparator();
-			playerControlspeakmeterBarDisplayMenu.addToggleItem('Show middle bars', grSet, 'peakmeterBarMiddleBars', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show over bars', grSet, 'peakmeterBarOverBars', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addSeparator();
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show outer bars', grSet, 'peakmeterBarOuterBars', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show outer peaks', grSet, 'peakmeterBarOuterPeaks', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addSeparator();
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show main bars', grSet, 'peakmeterBarMainBars', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show main peaks', grSet, 'peakmeterBarMainPeaks', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addSeparator();
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show middle bars', grSet, 'peakmeterBarMiddleBars', () => { RepaintWindow(); });
 		}
-		playerControlspeakmeterBarDisplayMenu.addToggleItem('Show progress bar', grSet, 'peakmeterBarProgBar', () => { RepaintWindow(); });
+		playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show progress bar', grSet, 'peakmeterBarProgBar', () => { RepaintWindow(); });
 		if (grSet.peakmeterBarDesign === 'horizontal' || grSet.peakmeterBarDesign === 'horizontal_center') {
-			playerControlspeakmeterBarDisplayMenu.addSeparator();
-			playerControlspeakmeterBarDisplayMenu.addToggleItem('Show gaps', grSet, 'peakmeterBarGaps', () => { RepaintWindow(); });
-			playerControlspeakmeterBarDisplayMenu.addToggleItem('Show grid', grSet, 'peakmeterBarGrid', () => { grm.peakBar.on_size(grm.ui.ww, grm.ui.wh); RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addSeparator();
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show gaps', grSet, 'peakmeterBarGaps', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show grid', grSet, 'peakmeterBarGrid', () => { grm.peakBar.on_size(grm.ui.ww, grm.ui.wh); RepaintWindow(); });
 		}
 		if (grSet.peakmeterBarDesign === 'vertical') {
-			playerControlspeakmeterBarDisplayMenu.addToggleItem('Show peaks', grSet, 'peakmeterBarVertPeaks', () => { RepaintWindow(); });
-			playerControlspeakmeterBarDisplayMenu.addToggleItem('Show baseline', grSet, 'peakmeterBarVertBaseline', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show peaks', grSet, 'peakmeterBarVertPeaks', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show baseline', grSet, 'peakmeterBarVertBaseline', () => { RepaintWindow(); });
 		}
-		playerControlspeakmeterBarDisplayMenu.addToggleItem(grSet.layout !== 'default' ? 'Show info (only available in Default layout)' : 'Show info', grSet, 'peakmeterBarInfo', () => { RepaintWindow(); });
-		playerControlspeakmeterBarDisplayMenu.appendTo(playerControlspeakmeterBarMenu);
-		playerControlspeakmeterBarMenu.createRadioSubMenu('Mouse wheel seek speed', ['  1 sec', '  2 sec', '  3 sec', '  4 sec', '  5 sec (default)', '  6 sec', '  7 sec', '  8 sec', '  9 sec', '10 sec'], grSet.peakmeterBarWheelSeekSpeed, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (speed) => {
+		playerControlsPeakmeterBarDisplayMenu.addToggleItem(grSet.layout !== 'default' ? 'Show info (only available in Default layout)' : 'Show info', grSet, 'peakmeterBarInfo', () => { RepaintWindow(); });
+		playerControlsPeakmeterBarDisplayMenu.appendTo(playerControlsPeakmeterBarMenu);
+		playerControlsPeakmeterBarMenu.createRadioSubMenu('Mouse wheel seek speed', ['  1 sec', '  2 sec', '  3 sec', '  4 sec', '  5 sec (default)', '  6 sec', '  7 sec', '  8 sec', '  9 sec', '10 sec'], grSet.peakmeterBarWheelSeekSpeed, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (speed) => {
 			grSet.peakmeterBarWheelSeekSpeed = speed;
 		});
-		playerControlspeakmeterBarMenu.createRadioSubMenu('Refresh rate', ['  200 ms (very slow CPU)', '  150 ms', '  120 ms', '  100 ms', '    80 ms (default)', '    60 ms', '    30 ms (very fast CPU)'], grSet.peakmeterBarRefreshRate, [200, 150, 120, 100, 80, 60, 30], (rate) => {
+		const playerControlsPeakmeterBarRefreshMenu = new Menu('Refresh rate');
+		playerControlsPeakmeterBarRefreshMenu.addRadioItems(['  1 fps ~ 1000 ms (very slow CPU)', '  2 fps ~ 500 ms', '  3 fps ~ 333 ms', '  4 fps ~ 250 ms', '  5 fps ~ 200 ms', '  6 fps ~ 166 ms', '  7 fps ~ 142 ms', '  8 fps ~ 125 ms', '  9 fps ~ 111 ms', '10 fps ~ 100 ms', '12 fps ~ 83 ms', '15 fps ~ 67 ms', '20 fps ~ 50 ms', '25 fps ~ 40 ms', '30 fps ~ 33 ms', '45 fps ~ 22 ms', '60 fps ~ 17 ms (very fast CPU)'], grSet.peakmeterBarRefreshRate, [FPS._1, FPS._2, FPS._3, FPS._4, FPS._5, FPS._6, FPS._7, FPS._8, FPS._9, FPS._10, FPS._12, FPS._15, FPS._20, FPS._25, FPS._30, FPS._45, FPS._60], (rate) => {
+			grSet.peakmeterBarRefreshRate = rate;
+			grm.ui.setSeekbarRefresh();
+			if (rate < FPS._20) {
+				grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
+			} else if (rate < FPS._10) {
+				grm.msg.showPopupNotice('menu', 'seekbarRefreshRateFast', 'Confirm');
+			}
+		}, !grSet.showPeakmeterBar_default || !grSet.showPeakmeterBar_artwork || !grSet.showPeakmeterBar_compact);
+		playerControlsPeakmeterBarRefreshMenu.addSeparator();
+		playerControlsPeakmeterBarRefreshMenu.addRadioItems(['Variable refresh rate (default)'], grSet.peakmeterBarRefreshRate, ['variable'], (rate) => {
 			grSet.peakmeterBarRefreshRate = rate;
 			grm.ui.setSeekbarRefresh();
 		}, !grSet.showPeakmeterBar_default || !grSet.showPeakmeterBar_artwork || !grSet.showPeakmeterBar_compact);
-		playerControlspeakmeterBarMenu.appendTo(playerControlsSeekBarMenu);
+		playerControlsPeakmeterBarRefreshMenu.appendTo(playerControlsPeakmeterBarMenu);
+		playerControlsPeakmeterBarMenu.appendTo(playerControlsSeekBarMenu);
 
 		// * SEEKBAR - WAVEFORM BAR * //
 		const playerControlsWaveformBarMenu = new Menu('Waveform bar');
@@ -1654,9 +1676,7 @@ class TopMenuOptions {
 			grm.waveBar.updateBar();
 			if (mode === 'always') return;
 			const key = mode === 'library' ? 'waveformBarSaveModeLibrary' : 'waveformBarSaveModeNever';
-			const msg = grm.msg.getMessage('menu', key);
-			const msgFb = grm.msg.getMessage('menu', key, true);
-			grm.msg.showPopup(true, msgFb, msg, 'OK', false, (confirmed) => {});
+			grm.msg.showPopupNotice('menu', key);
 		}, grSet.waveformBarMode === 'visualizer');
 		playerControlsWaveformBarAnalysisMenu.addSeparator();
 		playerControlsWaveformBarAnalysisMenu.addItem('Show compatible extensions', false, () => {
@@ -1729,11 +1749,7 @@ class TopMenuOptions {
 		});
 
 		playerControlsWaveformBarDisplayMenu.addToggleItem(`Use BPM${grSet.waveformBarPaint === 'full' && grSet.waveformBarMode !== 'visualizer' ? '\t(partial only)' : ''}`, grSet, 'waveformBarBPM', () => {
-			if (grSet.waveformBarBPM) grSet.waveformBarRefreshRateVar = true;
-			grm.waveBar.updateConfig({
-				preset: { useBPM: grSet.waveformBarBPM },
-				ui: { refreshRateVar: grSet.waveformBarRefreshRateVar }
-			});
+			grm.waveBar.updateConfig({ preset: { useBPM: grSet.waveformBarBPM } });
 		}, !(grSet.waveformBarPaint === 'partial' && grSet.waveformBarPrepaint || grSet.waveformBarMode === 'visualizer'));
 
 		playerControlsWaveformBarDisplayMenu.addToggleItem('Invert halfbars', grSet, 'waveformBarInvertHalfbars', () => {
@@ -1762,14 +1778,22 @@ class TopMenuOptions {
 
 		const playerControlsWaveformBarRefreshMenu = new Menu(`Refresh rate${grSet.waveformBarPaint === 'full' && grSet.waveformBarMode !== 'visualizer' ? '\t(partial only)' : ''}`);
 		const waveformBarRefreshMenuDisabled = grSet.waveformBarPaint === 'full' || grSet.waveformBarMode === 'visualizer' || !grSet.waveformBarPrepaint;
-		playerControlsWaveformBarRefreshMenu.addRadioItems(['1000 ms (very slow CPU)', '  500 ms', '  200 ms', '  100 ms (default)', '    80 ms', '    60 ms', '    30 ms (very fast CPU)'], grSet.waveformBarRefreshRate, [1000, 500, 200, 100, 80, 60, 30], (rate) => {
+		playerControlsWaveformBarRefreshMenu.addRadioItems(['  1 fps ~ 1000 ms (very slow CPU)', '  2 fps ~ 500 ms', '  3 fps ~ 333 ms', '  4 fps ~ 250 ms', '  5 fps ~ 200 ms', '  6 fps ~ 166 ms', '  7 fps ~ 142 ms', '  8 fps ~ 125 ms', '  9 fps ~ 111 ms', '10 fps ~ 100 ms', '12 fps ~ 83 ms', '15 fps ~ 67 ms', '20 fps ~ 50 ms', '25 fps ~ 40 ms', '30 fps ~ 33 ms', '45 fps ~ 22 ms', '60 fps ~ 17 ms (very fast CPU)'], grSet.waveformBarRefreshRate, [FPS._1, FPS._2, FPS._3, FPS._4, FPS._5, FPS._6, FPS._7, FPS._8, FPS._9, FPS._10, FPS._12, FPS._15, FPS._20, FPS._25, FPS._30, FPS._45, FPS._60], (rate) => {
 			grSet.waveformBarRefreshRate = rate;
 			grm.waveBar.updateConfig({ ui: { refreshRate: rate } });
+			grm.ui.setSeekbarRefresh();
+			if (rate < FPS._20) {
+				grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
+			} else if (rate < FPS._10) {
+				grm.msg.showPopupNotice('menu', 'seekbarRefreshRateFast', 'Confirm');
+			}
 		}, waveformBarRefreshMenuDisabled);
 		playerControlsWaveformBarRefreshMenu.addSeparator();
-		playerControlsWaveformBarRefreshMenu.addToggleItem('    Variable refresh rate', grSet, 'waveformBarRefreshRateVar', () => {
-			grm.waveBar.updateConfig({ ui: { refreshRateVar: grSet.waveformBarRefreshRateVar } });
-		});
+		playerControlsWaveformBarRefreshMenu.addRadioItems(['Variable refresh rate (default)'], grSet.waveformBarRefreshRate, ['variable'], (rate) => {
+			grSet.waveformBarRefreshRate = rate;
+			grm.waveBar.updateConfig({ ui: { refreshRate: rate } });
+			grm.ui.setSeekbarRefresh();
+		}, waveformBarRefreshMenuDisabled);
 		playerControlsWaveformBarRefreshMenu.appendTo(playerControlsWaveformBarMenu);
 		playerControlsWaveformBarMenu.appendTo(playerControlsSeekBarMenu);
 		playerControlsSeekBarMenu.appendTo(playerControlsMenu);
@@ -2077,8 +2101,7 @@ class TopMenuOptions {
 				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
 				RepaintWindow();
 				if (!IsFile(grPath.discArtCustomStub)) {
-					const msg = grm.msg.getMessage('menu', 'discArtStub');
-					grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+					grm.msg.showPopupNotice('menu', 'discArtStub');
 				}
 			}, !grSet.displayDiscArt);
 			discArtCustomMenu.appendTo(displayDiscArtMenu);
@@ -3183,8 +3206,7 @@ class TopMenuOptions {
 					grm.ui.themeNotification = '';
 					return;
 				}
-				const msg = grm.msg.getMessage('menu', 'themeSetupDay');
-				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				grm.msg.showPopupNotice('menu', 'themeSetupDay');
 				grm.ui.resetTheme();
 				setThemeDayNightTheme(true);
 				grm.ui.initThemeFull = true;
@@ -3202,8 +3224,7 @@ class TopMenuOptions {
 					grm.ui.themeNotification = '';
 					return;
 				}
-				const msg = grm.msg.getMessage('menu', 'themeSetupNight');
-				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				grm.msg.showPopupNotice('menu', 'themeSetupNight');
 				grm.ui.resetTheme();
 				setThemeDayNightTheme(false);
 				grm.ui.initThemeFull = true;
@@ -3281,14 +3302,12 @@ class TopMenuOptions {
 		const themeImagesMenu = new Menu('Theme images');
 		themeImagesMenu.addToggleItem('Use custom preloader logo', grSet, 'customPreloaderLogo', () => {
 			if (!grSet.customPreloaderLogo) return window.Reload();
-			const msg = grm.msg.getMessage('menu', 'customPreloaderLogo');
-			grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+			grm.msg.showPopupNotice('menu', 'customPreloaderLogo');
 			window.Reload();
 		});
 		themeImagesMenu.addToggleItem('Use custom theme images', grSet, 'customThemeImages', () => {
 			if (!grSet.customThemeImages) return window.Reload();
-			const msg = grm.msg.getMessage('menu', 'customThemeImages');
-			grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+			grm.msg.showPopupNotice('menu', 'customThemeImages');
 			window.Reload();
 		});
 		themeImagesMenu.appendTo(settingsMenu);

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-11-2024                                              * //
+// * Last change:    17-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -938,8 +938,7 @@ class ContextMenus {
 				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
 				RepaintWindow();
 				if (!IsFile(grPath.discArtCustomStub)) {
-					const msg = grm.msg.getMessage('contextMenu', 'discArtCustomStub');
-					grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+					grm.msg.showPopupNotice('contextMenu', 'discArtCustomStub');
 				}
 			}).bind(null, customDiscArtValues[index]), { is_radio_checked: customDiscArtValues[index] === grSet.discArtStub });
 		}
@@ -1483,12 +1482,18 @@ class ContextMenus {
 			cm.append(progressBarSeekSpeedMenu);
 
 			const progressBarRefreshMenu = new ContextMenu('Refresh rate');
-			const progressBarRefresh = [['1000 ms (very slow CPU)', 1000], ['  500 ms', 500], ['  333 ms', 333], ['  Variable (default)', 'variable'], ['  250 ms', 250], ['  200 ms', 200], ['  150 ms', 150], ['  100 ms', 100], ['    60 ms', 60], ['    30 ms (very fast CPU)', 30]];
+			const progressBarRefresh = [['  1 fps ~ 1000 ms (very slow CPU)', FPS._1], ['  2 fps ~ 500 ms', FPS._2], ['  3 fps ~ 333 ms', FPS._3], ['  4 fps ~ 250 ms', FPS._4], ['  5 fps ~ 200 ms', FPS._5], ['  6 fps ~ 166 ms', FPS._6], ['  7 fps ~ 142 ms', FPS._7], ['  8 fps ~ 125 ms', FPS._8], ['  9 fps ~ 111 ms', FPS._9], ['10 fps ~ 100 ms', FPS._10], ['12 fps ~ 83 ms', FPS._12], ['15 fps ~ 67 ms', FPS._15], ['20 fps ~ 50 ms', FPS._20], ['25 fps ~ 40 ms', FPS._25], ['30 fps ~ 33 ms', FPS._30], ['45 fps ~ 22 ms', FPS._45], ['60 fps ~ 17 ms (very fast CPU)', FPS._60], ['Variable refresh rate (default)', 'variable']];
 			for (const rate of progressBarRefresh) {
 				progressBarRefreshMenu.appendItem(rate[0], () => {
 					grSet.progressBarRefreshRate = rate[1];
 					grm.ui.setSeekbarRefresh();
+					if (rate[1] < FPS._20) {
+						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
+					} else if (rate[1] < FPS._10) {
+						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateFast', 'Confirm');
+					}
 				}, { is_radio_checked: rate[1] === grSet.progressBarRefreshRate });
+				if (rate[1] === FPS._60) progressBarRefreshMenu.separator();
 			}
 			cm.append(progressBarRefreshMenu);
 		}
@@ -1607,12 +1612,18 @@ class ContextMenus {
 			cm.append(peakmeterBarSeekSpeedMenu);
 
 			const peakmeterBarRefreshMenu = new ContextMenu('Refresh rate');
-			const peakmeterBarRefresh = [['200 ms (very slow CPU)', 200], ['150 ms', 150], ['120 ms', 120], ['100 ms', 100], ['  80 ms (default)', 80], ['  60 ms', 60], ['  30 ms (very fast CPU)', 30]];
+			const peakmeterBarRefresh = [['  1 fps ~ 1000 ms (very slow CPU)', FPS._1], ['  2 fps ~ 500 ms', FPS._2], ['  3 fps ~ 333 ms', FPS._3], ['  4 fps ~ 250 ms', FPS._4], ['  5 fps ~ 200 ms', FPS._5], ['  6 fps ~ 166 ms', FPS._6], ['  7 fps ~ 142 ms', FPS._7], ['  8 fps ~ 125 ms', FPS._8], ['  9 fps ~ 111 ms', FPS._9], ['10 fps ~ 100 ms', FPS._10], ['12 fps ~ 83 ms', FPS._12], ['15 fps ~ 67 ms', FPS._15], ['20 fps ~ 50 ms', FPS._20], ['25 fps ~ 40 ms', FPS._25], ['30 fps ~ 33 ms', FPS._30], ['45 fps ~ 22 ms', FPS._45], ['60 fps ~ 17 ms (very fast CPU)', FPS._60], ['Variable refresh rate (default)', 'variable']];
 			for (const rate of peakmeterBarRefresh) {
 				peakmeterBarRefreshMenu.appendItem(rate[0], () => {
 					grSet.peakmeterBarRefreshRate = rate[1];
 					grm.ui.setSeekbarRefresh();
+					if (rate[1] < FPS._20) {
+						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
+					} else if (rate[1] < FPS._10) {
+						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateFast', 'Confirm');
+					}
 				}, { is_radio_checked: rate[1] === grSet.peakmeterBarRefreshRate });
+				if (rate[1] === FPS._60) peakmeterBarRefreshMenu.separator();
 			}
 			cm.append(peakmeterBarRefreshMenu);
 		}
@@ -1642,9 +1653,7 @@ class ContextMenus {
 					grm.waveBar.updateBar();
 					if (mode[1] === 'always') return;
 					const key = mode[1] === 'library' ? 'waveformBarSaveModeLibrary' : 'waveformBarSaveModeNever';
-					const msg = grm.msg.getMessage('menu', key);
-					const msgFb = grm.msg.getMessage('menu', key, true);
-					grm.msg.showPopup(true, msgFb, msg, 'OK', false, (confirmed) => {});
+					grm.msg.showPopupNotice('menu', key);
 				}, { is_radio_checked: mode[1] === grSet.waveformBarSaveMode });
 			}
 			waveformBarAnalysisMenu.separator();
@@ -1811,11 +1820,7 @@ class ContextMenus {
 
 			waveformBarDisplayMenu.appendItem(`Use BPM${grSet.waveformBarPaint === 'full' && grSet.waveformBarMode !== 'visualizer' ? '\t(partial only)' : ''}`, () => {
 				grSet.waveformBarBPM = !grSet.waveformBarBPM;
-				if (grSet.waveformBarBPM) grSet.waveformBarRefreshRateVar = true;
-				grm.waveBar.updateConfig({
-					preset: { useBPM: grSet.waveformBarBPM },
-					ui: { refreshRateVar: grSet.waveformBarRefreshRateVar }
-				});
+				grm.waveBar.updateConfig({ preset: { useBPM: grSet.waveformBarBPM } });
 				}, {
 					is_grayed_out: !(grSet.waveformBarPaint === 'partial' && grSet.waveformBarPrepaint || grSet.waveformBarMode === 'visualizer'),
 					is_checked: grSet.waveformBarBPM
@@ -1859,22 +1864,24 @@ class ContextMenus {
 
 			const waveformBarRefreshMenuDisabled = !(grSet.waveformBarPaint === 'partial' && grSet.waveformBarPrepaint || grSet.waveformBarMode === 'visualizer');
 			const waveformBarRefreshMenu = new ContextMenu(`Refresh rate${grSet.waveformBarPaint === 'full' && grSet.waveformBarMode !== 'visualizer' ? '\t(partial only)' : ''}`, { is_grayed_out: waveformBarRefreshMenuDisabled });
-			const waveformBarRefresh = [['1000 ms (very slow CPU)', 1000], ['  500 ms', 500], ['  200 ms', 200], ['  100 ms (default)', 100], ['    80 ms', 80], ['    60 ms', 60], ['    30 ms (very fast CPU)', 30]];
+			const waveformBarRefresh = [['  1 fps ~ 1000 ms (very slow CPU)', FPS._1], ['  2 fps ~ 500 ms', FPS._2], ['  3 fps ~ 333 ms', FPS._3], ['  4 fps ~ 250 ms', FPS._4], ['  5 fps ~ 200 ms', FPS._5], ['  6 fps ~ 166 ms', FPS._6], ['  7 fps ~ 142 ms', FPS._7], ['  8 fps ~ 125 ms', FPS._8], ['  9 fps ~ 111 ms', FPS._9], ['10 fps ~ 100 ms', FPS._10], ['12 fps ~ 83 ms', FPS._12], ['15 fps ~ 67 ms', FPS._15], ['20 fps ~ 50 ms', FPS._20], ['25 fps ~ 40 ms', FPS._25], ['30 fps ~ 33 ms', FPS._30], ['45 fps ~ 22 ms', FPS._45], ['60 fps ~ 17 ms (very fast CPU)', FPS._60], ['Variable refresh rate (default)', 'variable']];
 			for (const rate of waveformBarRefresh) {
 				waveformBarRefreshMenu.appendItem(rate[0], () => {
 					grSet.waveformBarRefreshRate = rate[1];
 					grm.waveBar.updateConfig({ ui: { refreshRate: rate[1] } });
+					grm.ui.setSeekbarRefresh();
+					if (rate[1] < FPS._20) {
+						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
+					} else if (rate[1] < FPS._10) {
+						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateFast', 'Confirm');
+					}
 				}, {
 					is_grayed_out: waveformBarRefreshMenuDisabled,
 					is_radio_checked: rate[1] === grSet.waveformBarRefreshRate
 					}
 				);
+				if (rate[1] === FPS._60) waveformBarRefreshMenu.separator();
 			}
-			waveformBarRefreshMenu.separator();
-			waveformBarRefreshMenu.appendItem('    Variable refresh rate', () => {
-				grSet.waveformBarRefreshRateVar = !grSet.waveformBarRefreshRateVar;
-				grm.waveBar.updateConfig({ ui: { refreshRateVar: grSet.waveformBarRefreshRateVar } });
-			}, { is_checked: grSet.waveformBarRefreshRateVar });
 			cm.append(waveformBarRefreshMenu);
 		}
 	}

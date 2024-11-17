@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-11-2024                                              * //
+// * Last change:    17-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3954,8 +3954,7 @@ class PlaylistMetaManager {
 	 * @returns {boolean} True if writing to the text file was successful, false otherwise.
 	 */
 	write_stats_to_text_file(metadataType, filePath, statsName, statsType, ratingType, playcountType) {
-		const msg = grm.msg.getMessage('contextMenu', 'writingList');
-		grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+		grm.msg.showPopupNotice('contextMenu', 'writingList');
 
 		this.metadataSortedCache = new Map();
 		const metadata = this.meta_provider.get_metadata();
@@ -3997,8 +3996,7 @@ class PlaylistMetaManager {
 	 * @returns {boolean} True if writing to the text file was successful, false otherwise.
 	 */
 	write_diagnostics_to_text_file(type, filePath) {
-		const msg = grm.msg.getMessage('contextMenu', 'writingList');
-		grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+		grm.msg.showPopupNotice('contextMenu', 'writingList');
 
 		const metadata = this.meta_provider.get_metadata();
 		const metadataPathIndex = this.init_metadata_path_index();

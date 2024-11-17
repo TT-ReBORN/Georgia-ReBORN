@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-11-2024                                              * //
+// * Last change:    17-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1079,6 +1079,22 @@ class MessageManager {
 				msg: 'Do you want to enable browse mode?\n\n{content}Continue?\n\n',
 				msgFb: 'Browse mode enabled:\n\n{content}'
 			},
+			seekbarRefreshRateFast: {
+				content: 'A fast refresh rate has been selected.\n'
+					+ 'This setting is recommended only for\nhigh-end single-threaded CPUs.\n\n'
+					+ 'If your CPU can not handle this rate,\nyou will experience lag and freezes.\n'
+					+ 'Please select a slower refresh rate\nto avoid these issues.\n\n',
+				msg: '>>> WARNING <<<\n\n{content}',
+				msgFb: '>>> WARNING <<<\n\n{content}'
+			},
+			seekbarRefreshRateVeryFast: {
+				content: 'A very fast refresh rate has been selected.\n'
+					+ 'This setting is recommended only for\ntop-end single-threaded CPUs or\nbenchmarking purposes.\n\n'
+					+ 'If your CPU can not handle this rate,\nyou will experience lag and freezes.\n'
+					+ 'Please select a slower refresh rate\nto avoid these issues.\n\n',
+				msg: '>>> WARNING <<<\n\n{content}',
+				msgFb: '>>> WARNING <<<\n\n{content}'
+			},
 			waveformBarSaveModeLibrary: {
 				content: 'This mode will not save any data files\nif the tracks are not indexed in the library.\n\n',
 				msg: 'Waveform bar\'s "Library" save mode enabled.\n\n{content}\n\n',
@@ -1388,6 +1404,18 @@ class MessageManager {
 		else {
 			lib.popUpBox.confirm('Georgia-ReBORN', popUpMsg, btn1Label, btn2Label, false, 'center', btn2Label ? continue_confirmation : false);
 		}
+	}
+
+	/**
+	 * Displays a simple popup notice message without canceling.
+	 * @param {string} menuKey - The key of the menu from which to retrieve the message.
+	 * @param {string} messageKey - The key of the message to be displayed.
+	 * @param {string} [buttonLabel] - The optional label for the popup button.
+	 */
+	showPopupNotice(menuKey, messageKey, buttonLabel = 'OK') {
+		const msgFb = grm.msg.getMessage(menuKey, messageKey, true);
+		const msg = grm.msg.getMessage(menuKey, messageKey);
+		grm.msg.showPopup(true, msgFb, msg, buttonLabel, false, (confirmed) => {});
 	}
 }
 
@@ -1716,8 +1744,7 @@ class InputBox {
 				throw new Error('Invalid type');
 			}
 			if (dirInfo.name === 'customLyricsDir') {
-				const msg = grm.msg.getMessage('inputBox', 'customCacheDirLyrics');
-				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				grm.msg.showPopupNotice('inputBox', 'customCacheDirLyrics');
 			}
 		}
 		catch (e) {
@@ -3149,6 +3176,8 @@ class ProgressBar {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	draw(gr) {
+		if (grm.ui.showDrawExtendedTiming) grm.ui.seekbarProfiler.Reset();
+
 		gr.SetSmoothingMode(grSet.styleProgressBarDesign === 'rounded' ? SmoothingMode.AntiAlias : SmoothingMode.None);
 		const arc = Math.min(this.w, this.h) / 2;
 		const arcIsValid = this.h > arc; // * Needed when bg changes to prevent invalid arc value crash
@@ -3269,6 +3298,23 @@ class ProgressBar {
 		v = Clamp(v, 0, 1);
 		if (fb.PlaybackTime !== v * fb.PlaybackLength) {
 			fb.PlaybackTime = v * fb.PlaybackLength;
+		}
+	}
+
+	/**
+	 * Sets the refresh rate for the progress bar.
+	 */
+	setRefreshRate() {
+		if (grm.ui.isStreaming) {
+			grm.ui.seekbarTimerInterval = FPS._1;
+		}
+		else if (grSet.progressBarRefreshRate !== 'variable') {
+			grm.ui.seekbarTimerInterval = grSet.progressBarRefreshRate;
+		}
+		else {
+			const pixelsPerMillisecond = (grm.ui.ww - grm.ui.edgeMarginBoth) / fb.PlaybackLength;
+			const FPS_VARIABLE = Math.ceil(1000 / pixelsPerMillisecond);
+			grm.ui.seekbarTimerInterval = Clamp(FPS_VARIABLE, FPS._15, FPS._2);
 		}
 	}
 
@@ -3519,6 +3565,8 @@ class PeakmeterBar {
 		/** @private @type {number} */
 		this.sep2 = this.points - this.sep1;
 
+		grm.ui.seekbarTimerInterval = grSet.peakmeterBarRefreshRate === 'variable' ? FPS._10 : grSet.peakmeterBarRefreshRate;
+
 		this.setColors(fb.GetNowPlaying());
 	}
 
@@ -3529,6 +3577,10 @@ class PeakmeterBar {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	draw(gr) {
+		if (grSet.peakmeterBarRefreshRate === 'variable' || grm.ui.showDrawExtendedTiming) {
+			grm.ui.seekbarProfiler.Reset();
+		}
+
 		if (grSet.peakmeterBarDesign === 'horizontal') {
 			this.drawPeakmeterBarHorizontal(gr);
 		}
@@ -3538,13 +3590,17 @@ class PeakmeterBar {
 		else if (grSet.peakmeterBarDesign === 'vertical') {
 			this.drawPeakmeterBarVertical(gr);
 		}
+
 		if (grSet.peakmeterBarInfo) {
 			this.drawPeakmeterBarInfo(gr);
 		}
+
 		if (!fb.IsPlaying) {
 			gr.FillSolidRect(this.x, this.y, this.w, this.h, grCol.bg);
 			gr.FillSolidRect(this.x, grm.ui.seekbarY, this.w, SCALE(grSet.layout !== 'default' ? 10 : 12), grCol.progressBar);
 		}
+
+		this.setRefreshRate();
 	}
 
 	/**
@@ -3963,8 +4019,8 @@ class PeakmeterBar {
 		this.rightPeak = ConvertVolume(this.VUMeter.RightPeak, 'vuLevelToDecibel');
 
 		// * Debug stuff
-		DebugLog('LEFT PEAKS: ',  this.leftPeak,   '      RIGHT PEAKS: ',  this.rightPeak);
-		DebugLog('LEFT LEVEL:  ', this.leftLevel,  '      RIGHT LEVEL:  ', this.rightLevel, '\n\n');
+		// DebugLog('LEFT PEAKS: ',  this.leftPeak,   '      RIGHT PEAKS: ',  this.rightPeak);
+		// DebugLog('LEFT LEVEL:  ', this.leftLevel,  '      RIGHT LEVEL:  ', this.rightLevel, '\n\n');
 
 		// * Set horizontal animation
 		if (grSet.peakmeterBarDesign === 'horizontal' || grSet.peakmeterBarDesign === 'horizontal_center') {
@@ -4086,6 +4142,34 @@ class PeakmeterBar {
 		v = Clamp(v, 0, 1);
 		if (fb.PlaybackTime !== v * fb.PlaybackLength) {
 			fb.PlaybackTime = v * fb.PlaybackLength;
+		}
+	}
+
+	/**
+	 * Sets the refresh rate for the peakmeter bar.
+	 */
+	setRefreshRate() {
+		if (grm.ui.isStreaming) { // Radio streaming refresh rate
+			grm.ui.seekbarTimerInterval = FPS._1;
+		}
+		else if (grSet.peakmeterBarRefreshRate !== 'variable') { // Fixed refresh rate
+			grm.ui.seekbarTimerInterval = grSet.peakmeterBarRefreshRate;
+		}
+		else { // Variable refresh rate calculation
+			const now = Date.now();
+			if (this.updateTimeLast && (now - this.updateTimeLast) < 250) return; // Check every 250 ms
+			this.updateTimeLast = now;
+
+			if (this.profilerPaintTimeLast === undefined) {
+				this.profilerPaintTimeLast = grm.ui.seekbarProfiler.Time;
+			}
+
+			const timeDifference = grm.ui.seekbarProfiler.Time - this.profilerPaintTimeLast;
+			grm.ui.seekbarTimerInterval = Clamp(grm.ui.seekbarTimerInterval + (timeDifference > 0 ? 8 : -5), FPS._20, FPS._10);
+			this.profilerPaintTimeLast = grm.ui.seekbarProfiler.Time;
+
+			grm.ui.clearTimer('seekbar', true);
+			grm.ui.seekbarTimer = !fb.IsPaused ? setInterval(() => grm.ui.refreshSeekbar(), grm.ui.seekbarTimerInterval) : null;
 		}
 	}
 	// #endregion
@@ -4319,7 +4403,6 @@ class WaveformBar {
 		 * @property {number} sizeHalf - The width size of drawn halfbars.
 		 * @property {number} sizeNormalizeWidth - The visualizer binary to use.
 		 * @property {number} refreshRate - The refresh rate in ms when using animations for any type. 100 is smooth enough but the performance hit is high.
-		 * @property {number} refreshRateVar - The refresh rate changes around the selected value to ensure code is running smoothly (for very low refresh rates).
 		 * @public
 		 */
 		/** @public @type {waveformBarUI} */
@@ -4329,8 +4412,7 @@ class WaveformBar {
 			sizeDots: grSet.waveformBarSizeDots,
 			sizeHalf: grSet.waveformBarSizeHalf,
 			sizeNormalizeWidth: grSet.waveformBarSizeNormalize,
-			refreshRate: grSet.waveformBarRefreshRate,
-			refreshRateVar: grSet.waveformBarRefreshRateVar
+			refreshRate: grm.ui.seekbarTimerInterval = grSet.waveformBarRefreshRate === 'variable' ? FPS._6 : grSet.waveformBarRefreshRate
 		};
 
 		/**
@@ -4385,8 +4467,6 @@ class WaveformBar {
 		this.maxStep = 4;
 		/** @private @type {number} */
 		this.time = 0;
-		/** @private @type {number} */
-		this.ui.refreshRateOpt = this.ui.refreshRate;
 		/** @private @type {boolean} */
 		this.mouseDown = false;
 		/** @private @type {boolean} Set at checkAllowedFile(). */
@@ -4450,9 +4530,6 @@ class WaveformBar {
 			this.compatibleFiles[key] = new RegExp(`\\.(${this.compatibleFiles[`${key}List`].join('|')})$`, 'i');
 		}
 
-		/** @private @type {FbProfiler} */
-		this.profilerPaint = new FbProfiler('paint');
-
 		// * Helpers
 		/**
 		 * Throttles the window repaint to improve performance by limiting the rate of repaint operations.
@@ -4493,7 +4570,9 @@ class WaveformBar {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	draw(gr) {
-		this.profilerPaint.Reset();
+		if (grSet.waveformBarRefreshRate === 'variable' || grm.ui.showDrawExtendedTiming) {
+			grm.ui.seekbarProfiler.Reset();
+		}
 
 		if (!fb.IsPlaying) { // In case paint has been delayed after playback has stopped...
 			gr.FillSolidRect(this.x, grm.ui.seekbarY, this.w, SCALE(grSet.layout !== 'default' ? 10 : 12), grCol.progressBar);
@@ -4737,14 +4816,7 @@ class WaveformBar {
 				);
 				this.throttlePaintRect(currX - barW - grm.ui.edgeMargin, this.y, prePaintW + grm.ui.edgeMarginBoth, this.h);
 			}
-			if (this.ui.refreshRateVar) {
-				if (this.profilerPaint.Time > this.ui.refreshRate) {
-					this.updateConfig({ ui: { refreshRate: this.ui.refreshRate + 50 } });
-				}
-				else if (this.profilerPaint.Time < this.ui.refreshRate && this.profilerPaint.Time >= this.ui.refreshRateOpt) {
-					this.updateConfig({ ui: { refreshRate: this.ui.refreshRate - 25 } });
-				}
-			}
+			this.setRefreshRate();
 		}
 	}
 
@@ -4836,7 +4908,6 @@ class WaveformBar {
 		}
 		if (newConfig.ui) {
 			if (Object.prototype.hasOwnProperty.call(newConfig.ui, 'refreshRate')) {
-				this.ui.refreshRateOpt = this.ui.refreshRate;
 				this.throttlePaint = Throttle((force = false) => window.RepaintRect(
 					this.x - SCALE(2), this.y - this.h * 0.5 - SCALE(4),
 					this.w + SCALE(4), this.h + SCALE(8), force), this.ui.refreshRate);
@@ -5333,6 +5404,34 @@ class WaveformBar {
 		this.step = 0;
 		this.offset = [];
 		this.defaultSteps();
+	}
+
+	/**
+	 * Sets the refresh rate for the waveform bar.
+	 */
+	setRefreshRate() {
+		if (grm.ui.isStreaming) { // Radio streaming refresh rate
+			grm.ui.seekbarTimerInterval = FPS._1;
+		}
+		else if (grSet.waveformBarRefreshRate !== 'variable') { // Fixed refresh rate
+			grm.ui.seekbarTimerInterval = grSet.waveformBarRefreshRate;
+		}
+		else { // Variable refresh rate calculation
+			const now = Date.now();
+			if (this.updateTimeLast && (now - this.updateTimeLast) < 250) return; // Check every 250 ms
+			this.updateTimeLast = now;
+
+			if (this.profilerPaintTimeLast === undefined) {
+				this.profilerPaintTimeLast = grm.ui.seekbarProfiler.Time;
+			}
+
+			const timeDifference = grm.ui.seekbarProfiler.Time - this.profilerPaintTimeLast;
+			grm.ui.seekbarTimerInterval = Clamp(grm.ui.seekbarTimerInterval + (timeDifference > 0 ? 12 : -7), FPS._10, FPS._5);
+			this.profilerPaintTimeLast = grm.ui.seekbarProfiler.Time;
+
+			grm.ui.clearTimer('seekbar', true);
+			grm.ui.seekbarTimer = !fb.IsPaused ? setInterval(() => grm.ui.refreshSeekbar(), grm.ui.seekbarTimerInterval) : null;
+		}
 	}
 
 	/**

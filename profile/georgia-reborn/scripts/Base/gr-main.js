@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-11-2024                                              * //
+// * Last change:    17-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -132,6 +132,8 @@ class MainUI {
 		this.seekbarX = 0;
 		/** @public @type {number} The y-position of the seekbar in the lower bar. */
 		this.seekbarY = 0;
+		/** @public @type {number} The width of the seekbar (progress bar, peakmeter bar, waveform bar ) in the lower bar. */
+		this.seekbarWidth = 0;
 		/** @public @type {number} The height of the seekbar (progress bar, peakmeter bar, waveform bar ) in the lower bar. */
 		this.seekbarHeight = 0;
 		// #endregion
@@ -280,7 +282,9 @@ class MainUI {
 		this.albumArtTimeout = null;
 		/** @public @type {number} The setTimeout ID for hiding cursor. */
 		this.hideCursorTimeout = null;
-		/** @public @type {number} The timer of seekbar. */
+		/** @public @type {number} The time profiler of the seekbar. */
+		this.seekbarProfiler = fb.CreateProfiler('on_paint -> seekbar');
+		/** @public @type {number} The timer of the seekbar. */
 		this.seekbarTimer = null;
 		/** @public @type {number} The timer interval between seekbar updates. */
 		this.seekbarTimerInterval = null;
@@ -342,6 +346,8 @@ class MainUI {
 		this.repaintStyledTooltips = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 50);
 		/** @public @type {Function} Throttles and limits repaint requests for the debug system overlay to 1 sec. */
 		this.repaintDebugSystemOverlay = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 1000);
+		/** @public @type {Function} Throttles and limits repaint requests for the debug system overlay seekbar area to 1 sec. */
+		this.repaintDebugSystemOverlaySeekbar = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 1000);
 		// #endregion
 	}
 
@@ -1227,17 +1233,25 @@ class MainUI {
 			grm.cpuTrack.start();
 		}
 
-		const debugTimingsSorted = [...this.debugTimingsArray].sort((a, b) => a.localeCompare(b));
+		const debugTimingsSorted = this.debugTimingsArray.slice().sort((a, b) => a.localeCompare(b));
 		const fullW = grSet.layout === 'default' && grSet.lyricsLayout !== 'normal' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
 		const titleWidth = this.albumArtSize.w - SCALE(80);
 		const titleHeight = gr.CalcTextHeight(' ', grFont.popup);
-		const titleMaxWidthRepaint = gr.CalcTextWidth('Ram usage for current panel:  6291456 MB', grFont.popup);
+		const titleMaxWidthRepaint = gr.CalcTextWidth('Ram usage for current panel: 6291456 MB', grFont.popup);
 		const lineSpacing = titleHeight * 1.5;
 		const logColor = RGB(255, 255, 255);
 		const x = this.albumArtSize.x + this.edgeMargin;
 		let y = this.albumArtSize.y + lineSpacing;
+		let seekbarLogY = 0;
 
-		const systemLog = [
+		const seekbarLog = () => {
+			const seekbarTiming = `${this.seekbarTimerInterval} ms / ${(1000 / this.seekbarTimerInterval).toFixed(2)} Hz`;
+			const existingIndex = this.debugTimingsArray.findIndex(value => value.includes('Seekar'));
+			this.debugTimingsArray[existingIndex] = seekbarTiming;
+			return seekbarTiming;
+		};
+
+		const performanceLog = [
 			{ title: 'System: ', log: '' },
 			{ title: 'CPU usage: ', log: `${grm.cpuTrack.getCpuUsage()}%` },
 			{ title: 'GUI usage: ', log: `${grm.cpuTrack.getGuiCpuUsage()}%` },
@@ -1246,6 +1260,7 @@ class MainUI {
 			{ title: 'Ram usage limit: ', log: FormatSize(window.JsMemoryStats.TotalMemoryLimit) },
 			{ title: 'Separator', log: '' },
 			{ title: 'Timings: ', log: '' },
+			{ title: 'Seekbar: ', log: seekbarLog() },
 			{ title: '', log: debugTimingsSorted.join('\n') }
 		];
 
@@ -1262,15 +1277,19 @@ class MainUI {
 			});
 		};
 
-		for (const { title, log } of systemLog) {
+		for (const { title, log } of performanceLog) {
 			if (title !== 'Separator') {
 				drawString(title, log);
+				if (title === 'Seekbar: ') {
+					seekbarLogY = y - lineSpacing;
+				}
 			} else {
 				y += lineSpacing;
 			}
 		}
 
 		this.repaintDebugSystemOverlay(x, this.albumArtSize.y + lineSpacing * 2, titleMaxWidthRepaint, lineSpacing * 4);
+		this.repaintDebugSystemOverlaySeekbar(x, seekbarLogY, titleMaxWidthRepaint, lineSpacing);
 	}
 
 	/**
@@ -1288,6 +1307,8 @@ class MainUI {
 		const milliseconds = String(drawTimingStart.getMilliseconds()).padStart(3, '0');
 		const time = `${hours}:${minutes}:${seconds}.${milliseconds}`;
 		const repaintRectCalls = this.repaintRectCount > 1 ? ` - ${this.repaintRectCount} repaintRect calls` : '';
+
+		console.log(`Spider Monkey Panel v${utils.Version}: profiler (on_paint -> seekbar): ${this.seekbarProfiler.Time} ms => refresh rate: ${this.seekbarTimerInterval} ms`);
 
 		console.log(`${time}: on_paint total: ${duration}ms${repaintRectCalls}`);
 	}
@@ -1497,6 +1518,7 @@ class MainUI {
 		this.topMenuHeight  = SCALE(40);
 		this.lowerBarHeight = SCALE(120);
 		this.seekbarHeight  = this.getSeekbarHeight();
+		this.seekbarWidth   = this.ww - this.edgeMarginBoth;
 		this.seekbarX       = this.edgeMargin;
 	}
 
@@ -2399,9 +2421,7 @@ class MainUI {
 			fb.Stop();
 			this.clearPlaybackState(true);
 			window.Repaint();
-
-			const msg = grm.msg.getMessage('main', 'playlistEmptyError');
-			grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+			grm.msg.showPopupNotice('main', 'playlistEmptyError');
 			return;
 		}
 		else if (grCfg.settings.hideCursor) {
@@ -2994,6 +3014,7 @@ class MainUI {
 	/**
 	 * Clears timers based on the timer type.
 	 * @param {string} [type] - The type of timer to clear. If not provided, all timers will be cleared.
+	 * @param {boolean} [supressLog] - Whether to suppress the log message.
 	 * - 'autoDownloadBio'
 	 * - 'autoDownloadLyrics'
 	 * - 'albumArt'
@@ -3005,7 +3026,7 @@ class MainUI {
 	 * - 'randomThemeAutoColor'
 	 * - 'themeDayNightMode'.
 	 */
-	clearTimer(type) {
+	clearTimer(type, supressLog) {
 		const timers = {
 			autoDownloadBio: {
 				timer: this.autoDownloadBioTimer,
@@ -3065,7 +3086,7 @@ class MainUI {
 				clear(timer);
 				timers[type].timer = null;
 			}
-			DebugLog(log);
+			if (!supressLog) DebugLog(log);
 		};
 
 		if (type && timers[type]) {
@@ -3215,45 +3236,30 @@ class MainUI {
 	 * Repaints rectangles on the seekbar for real time update.
 	 */
 	refreshSeekbar() {
+		const shouldForceRepaint = grSet.spinDiscArt && !this.displayLyrics;
+
 		// * Time
-		window.RepaintRect(this.lowerBarTimeX, this.lowerBarTimeY, this.lowerBarTimeW + this.lowerBarTimeH * 0.3, this.lowerBarTimeH, grSet.spinDiscArt && !this.displayLyrics);
+		window.RepaintRect(this.lowerBarTimeX, this.lowerBarTimeY, this.lowerBarTimeW + this.lowerBarTimeH * 0.3, this.lowerBarTimeH, shouldForceRepaint);
 
-		if (grSet.seekbar === 'waveformbar') return;
-
-		// * Progress bar and Peakmeter bar
-		const x = this.edgeMargin - SCALE(2);
-		const y = this.seekbarY - SCALE(2);
-		const w = this.ww - this.edgeMarginBoth + SCALE(4);
-		const h = this.seekbarHeight + SCALE(4);
-		window.RepaintRect(x, y, w, h, grSet.spinDiscArt && !this.displayLyrics);
+		// * Progress bar/Peakmeter bar
+		if (grSet.seekbar !== 'waveformbar') {
+			window.RepaintRect(this.seekbarX - SCALE(2), this.seekbarY - SCALE(2), this.seekbarWidth + SCALE(4), this.seekbarHeight + SCALE(4), shouldForceRepaint);
+		}
 	}
 
 	/**
-	 * Sets a given timer interval to update the seekbar.
+	 * Sets a given timer interval to update the seekbar (progress bar, peakmeter bar, waveform bar).
 	 */
 	setSeekbarRefresh() {
-		DebugLog('Seekbar => setSeekbarRefresh');
+		const seekbarRefreshRate = {
+			progressbar:  () => grm.progBar.setRefreshRate(),
+			peakmeterbar: () => grm.peakBar.setRefreshRate(),
+			waveformbar:  () => grm.waveBar.setRefreshRate()
+		};
 
-		if (fb.PlaybackLength > 0) {
-			const variableRefreshRate = Math.max(60, Math.ceil(1000 / ((this.ww - this.edgeMarginBoth) / fb.PlaybackLength)));
-			const selectedRefreshRate = grSet.seekbar === 'peakmeterbar' ? grSet.peakmeterBarRefreshRate : grSet.progressBarRefreshRate;
-			this.seekbarTimerInterval = selectedRefreshRate === 'variable' ? variableRefreshRate : selectedRefreshRate;
+		(seekbarRefreshRate[grSet.seekbar] || seekbarRefreshRate.progressbar)();
 
-			if (selectedRefreshRate === 'variable') {
-				while (this.seekbarTimerInterval > 500) {
-					this.seekbarTimerInterval = Math.floor(this.seekbarTimerInterval / 2);
-				}
-			}
-		} else {
-			this.seekbarTimerInterval = 1000; // Radio streaming
-		}
-
-		if (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) {
-			this.debugTimingsArray.push(`Seekbar => Seekar: ${this.seekbarTimerInterval} ms or ${(1000 / this.seekbarTimerInterval).toFixed(2)} Hz`);
-			DebugLog(`Seekbar => Seekbar will update every ${this.seekbarTimerInterval} ms or ${(1000 / this.seekbarTimerInterval).toFixed(2)} times per second.`);
-		}
-
-		this.clearTimer('seekbar');
+		this.clearTimer('seekbar', true);
 		this.seekbarTimer = !fb.IsPaused ? setInterval(() => this.refreshSeekbar(), this.seekbarTimerInterval) : null;
 	}
 
@@ -3822,16 +3828,14 @@ class MainUI {
 			this.albumArtSize = new ImageSize(0, this.topMenuHeight, 0, 0);
 			this.setPausePosition();
 			setTimeout(() => {
-				const msg = grm.msg.getMessage('main', 'albumArtCorruptError');
-				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				grm.msg.showPopupNotice('main', 'albumArtCorruptError');
 			}, 1000);
 		};
 
 		const handleDiscArt = () => {
 			grm.details.clearCache('discArt');
 			setTimeout(() => {
-				const msg = grm.msg.getMessage('main', 'discArtCorruptError');
-				grm.msg.showPopup(true, msg, msg, 'OK', false, (confirmed) => {});
+				grm.msg.showPopupNotice('main', 'discArtCorruptError');
 			}, 1000);
 		};
 
