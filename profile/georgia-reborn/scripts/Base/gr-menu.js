@@ -3686,7 +3686,7 @@ class TopMenuOptions {
 		});
 		debugMenu.addItem('Enable debug performance overlay', grCfg.settings.showDebugPerformanceOverlay, () => {
 			grCfg.settings.showDebugPerformanceOverlay = !grCfg.settings.showDebugPerformanceOverlay;
-			grm.utils.profiler = {};
+			grm.ui.clearCache('debug');
 			if (grCfg.settings.showDebugPerformanceOverlay) {
 				grCfg.settings.showDebugThemeOverlay = false;
 				grm.cpuTrack.start();
@@ -3708,15 +3708,15 @@ class TopMenuOptions {
 		debugMenu.addSeparator();
 		debugMenu.addToggleItem('Show draw timing', grm.ui, 'showDrawTiming', () => {
 			if (grm.ui.showDrawTiming) fb.RunMainMenuCommand('View/Console');
-			grm.utils.profiler = {};
+			grm.ui.clearCache('debug');
 		});
 		debugMenu.addToggleItem('Show draw extended timing', grm.ui, 'showDrawExtendedTiming', () => {
 			if (grm.ui.showDrawExtendedTiming) fb.RunMainMenuCommand('View/Console');
-			grm.utils.profiler = {};
+			grm.ui.clearCache('debug');
 		});
 		debugMenu.addToggleItem('Show debug timing', grm.ui, 'showDebugTiming', () => {
 			if (grm.ui.showDebugTiming) fb.RunMainMenuCommand('View/Console');
-			grm.utils.profiler = {};
+			grm.ui.clearCache('debug');
 		});
 		debugMenu.addSeparator();
 		debugMenu.addToggleItem('Show panel calls', grm.ui, 'showPanelTraceCall', () => {

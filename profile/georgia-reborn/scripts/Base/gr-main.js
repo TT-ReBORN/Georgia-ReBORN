@@ -2928,41 +2928,46 @@ class MainUI {
 	// * MAIN - PUBLIC METHODS - COMMON * //
 	// #region MAIN - PUBLIC METHODS - COMMON
 	/**
-	 * Clears the specified cache, individual properties, or all caches.
-	 * @param {string} [type] - The type of cache to clear. Can be 'metrics', 'ratings', 'albumArt', 'flag', 'debug'.
-	 * @param {string} [property] - The specific property to clear within the cacheType.
+	 * Clears individual cache properties, the specified cache type, or all caches.
+	 * @param {string} [type] - The type of cache to clear. Can be 'metrics', 'ratings', 'albumArt', 'flag', 'debug'. If not provided, all caches will be cleared.
+	 * @param {string} [property] - The specific property to clear within the cache type. Applicable only if `type` is provided.
 	 * @param {boolean} [clearArtCache] - Whether to clear everything in the artCache object.
-	 * @param {boolean} [keepAlbumArt] - Whether to keep the album art.
+	 * @param {boolean} [keepAlbumArt] - Whether to keep the album art. Applicable only if `type` is 'albumArt' or not provided (clearing all caches).
+	 * @example
+	 * // Clear an individual property within a specific cache type
+	 * clearCache('metrics', 'cachedLowerBarMetrics');
+	 * @example
+	 * // Clear a specific cache type
+	 * clearCache('metrics');
 	 * @example
 	 * // Clear all caches
 	 * clearCache();
-	 * @example
-	 * // Clear a specific section of the cache
-	 * clearCache('metrics');
-	 * @example
-	 * // Clear an individual property within a specific section
-	 * clearCache('metrics', 'cachedLowerBarMetrics');
 	 * @example
 	 * // Clear all caches and the artCache
 	 * clearCache(undefined, undefined, true);
 	 */
 	clearCache(type, property, clearArtCache, keepAlbumArt) {
-		const cacheProperties = {
-			metrics: {
-				cachedLowerBarMetrics: false
+		const cacheActions = {
+			metrics: () => {
+				this.cachedLowerBarMetrics = false;
 			},
-			ratings: {
-				cachedCurrentRatings: false
+			ratings: () => {
+				this.cachedCurrentRatings = false;
 			},
-			albumArt: {
-				albumArt: keepAlbumArt ? this.albumArt : null,
-				albumArtScaled: null
+			albumArt: () => {
+				this.albumArt = keepAlbumArt ? this.albumArt : null;
+				this.albumArtScaled = null;
 			},
-			flag : {
-				flagImgs: []
+			albumArtCache: () => {
+				grm.artCache && grm.artCache.clear();
+				DebugLog('Main cache => Art cache cleared');
 			},
-			debug: {
-				debugTimingsArray: []
+			flag: () => {
+				this.flagImgs = [];
+			},
+			debug: () => {
+				this.debugTimingsArray = [];
+				grm.utils.profiler = {};
 			}
 		};
 
@@ -2971,21 +2976,25 @@ class MainUI {
 			DebugLog('Main cache => Art cache cleared');
 		}
 
-		if (type && cacheProperties[type]) {
-			if (property && cacheProperties[type][property] !== undefined) {
-				this[property] = cacheProperties[type][property];
+		if (type) {
+			// * Clear individual cache property
+			if (property && Object.hasOwnProperty.call(this, property)) {
+				this[property] = null;
 				DebugLog(`Main cache => Cleared property "${property}" in cache type "${type}"`);
-			} else {
-				Object.assign(this, cacheProperties[type]);
-				DebugLog(`Main cache => Cleared all properties in cache type "${type}"`);
 			}
-		}
-		else if (!type) {
-			for (const property in cacheProperties) {
-				Object.assign(this, cacheProperties[property]);
-				DebugLog(`Main cache => Cleared all properties in cache type "${property}"`);
+			// * Clear specific cache type
+			else if (cacheActions[type]) {
+				cacheActions[type]();
+				DebugLog(`Main cache => Cleared cache type "${type}"`);
 			}
+			return;
 		}
+
+		// * Clear all caches
+		for (const action in cacheActions) {
+			cacheActions[action]();
+		}
+		DebugLog('Main cache => Cleared all caches');
 	}
 
 	/**
