@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-11-2024                                              * //
+// * Last change:    18-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -437,9 +437,9 @@ class MainUI {
 			this.displayLibrarySplit();
 
 		const drawPanel = (panel, label) => {
-			const profiler = this.showDrawExtendedTiming && fb.CreateProfiler(`on_paint -> ${label}`);
+			grm.utils.profile(this.showDrawExtendedTiming, 'create', `on_paint -> ${label}`);
 			panel.call.on_paint(gr);
-			if (profiler) profiler.Print();
+			grm.utils.profile(false, 'print', `on_paint -> ${label}`);
 		};
 
 		// * Default && Artwork layout
@@ -472,7 +472,8 @@ class MainUI {
 			return;
 		}
 
-		const drawAlbumArtProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> album art');
+		grm.utils.profile(this.showDrawExtendedTiming, 'create', 'on_paint -> album art');
+
 		const padding = !grSet.filterDiscArtFromArtwork && this.discArtImageDisplayed && this.discArtImagePNG && this.albumArtLoaded ? Math.round(this.edgeMargin * 0.75) : 0;
 		const imgAlpha = this.displayDetails && grm.details.discArt ? alpha : 255;
 
@@ -480,7 +481,7 @@ class MainUI {
 					 this.albumArtSize.w - padding * 2, this.albumArtSize.h - padding * 2,
 					 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height, 0, imgAlpha);
 
-		if (drawAlbumArtProfiler) drawAlbumArtProfiler.Print();
+		grm.utils.profile(false, 'print', 'on_paint -> album art');
 	}
 
 	/**
@@ -754,7 +755,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawStyles(gr) {
-		const drawStylesProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> theme styles');
+		grm.utils.profile(this.showDrawExtendedTiming, 'create', 'on_paint -> theme styles');
 
 		if (grSet.styleBevel) {
 			gr.SetSmoothingMode(SmoothingMode.None);
@@ -785,7 +786,7 @@ class MainUI {
 			gr.FillGradRect(0, this.wh - this.lowerBarHeight, this.ww, this.lowerBarHeight, grSet.styleAlternative2 ? 87 : -87, 0, grCol.styleAlternative);
 		}
 
-		if (drawStylesProfiler) drawStylesProfiler.Print();
+		grm.utils.profile(false, 'print', 'on_paint -> theme styles');
 	}
 
 	/**
@@ -843,13 +844,13 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawShadows(gr) {
-		const drawPanelShadowsProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> draw shadows');
+		grm.utils.profile(this.showDrawExtendedTiming, 'create', 'on_paint -> draw shadows');
 
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 		this.drawAlbumArtShadows(gr);
 		this.drawPanelShadows(gr);
 
-		if (drawPanelShadowsProfiler) drawPanelShadowsProfiler.Print();
+		grm.utils.profile(false, 'print', 'on_paint -> draw shadows');
 	}
 
 	/**
@@ -921,7 +922,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawTopMenuBar(gr) {
-		const drawTopMenuBarProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> top menu bar');
+		grm.utils.profile(this.showDrawExtendedTiming, 'create', 'on_paint -> top menu bar');
 
 		const noPlaylistHistoryBtns = !this.displayPlaylist && !this.displayPlaylistArtwork;
 		const buttons = Object.values(grm.button.btn);
@@ -945,7 +946,7 @@ class MainUI {
 			}
 		}
 
-		if (drawTopMenuBarProfiler) drawTopMenuBarProfiler.Print();
+		grm.utils.profile(false, 'print', 'on_paint -> top menu bar');
 	}
 
 	/**
@@ -953,7 +954,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawLowerBar(gr) {
-		const drawLowerBarProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> lower bar');
+		grm.utils.profile(this.showDrawExtendedTiming, 'create', 'on_paint -> lower bar');
 
 		this.setLowerBarMetrics(gr);
 
@@ -1031,7 +1032,7 @@ class MainUI {
 			grm.waveBar.draw(gr);
 		}
 
-		if (drawLowerBarProfiler) drawLowerBarProfiler.Print();
+		grm.utils.profile(false, 'print', 'on_paint -> lower bar');
 	}
 
 	/**
@@ -1073,7 +1074,8 @@ class MainUI {
 	drawStyledTooltips(gr) {
 		if (!grSet.showStyledTooltips) return;
 
-		const drawStyledTooltipsProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('on_paint -> styled tooltips');
+		grm.utils.profile(this.showDrawExtendedTiming, 'create', 'on_paint -> styled tooltips');
+
 		const offset = SCALE(30);
 		const padding = SCALE(15);
 		const edgeSpace = padding * 0.5;
@@ -1094,7 +1096,7 @@ class MainUI {
 
 		this.repaintStyledTooltips(this.styledToolTipX - offset * 2, this.styledToolTipY - offset, this.styledToolTipW + offset * 4, this.styledToolTipH + offset * 2);
 
-		if (drawStyledTooltipsProfiler) drawStyledTooltipsProfiler.Print();
+		grm.utils.profile(false, 'print', 'on_paint -> styled tooltips');
 	}
 
 	/**
@@ -1293,7 +1295,7 @@ class MainUI {
 	}
 
 	/**
-	 * Draws the draw timing in the console when `Show extra draw timing` in Developer tools is active.
+	 * Draws the draw timing in the console when `Show draw timing` or `Show draw extended timing` in Developer tools is active.
 	 * @param {Date} drawTimingStart - The start time of the operation.
 	 */
 	drawDebugTiming(drawTimingStart) {
@@ -1308,7 +1310,7 @@ class MainUI {
 		const time = `${hours}:${minutes}:${seconds}.${milliseconds}`;
 		const repaintRectCalls = this.repaintRectCount > 1 ? ` - ${this.repaintRectCount} repaintRect calls` : '';
 
-		console.log(`Spider Monkey Panel v${utils.Version}: profiler (on_paint -> seekbar): ${this.seekbarProfiler.Time} ms => refresh rate: ${this.seekbarTimerInterval} ms`);
+		if (this.showDrawExtendedTiming) console.log(`Spider Monkey Panel v${utils.Version}: profiler (on_paint -> seekbar): ${this.seekbarProfiler.Time} ms => refresh rate: ${this.seekbarTimerInterval} ms`);
 
 		console.log(`${time}: on_paint total: ${duration}ms${repaintRectCalls}`);
 	}
@@ -1964,7 +1966,7 @@ class MainUI {
 	 * Initializes the theme when updating colors.
 	 */
 	initTheme() {
-		const themeProfiler = (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('initTheme');
+		grm.utils.profile(this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'initTheme');
 
 		const fullInit =
 			this.initThemeFull || grSet.themeBrightness !== 'default'
@@ -2021,8 +2023,7 @@ class MainUI {
 		// * REFRESH * //
 		window.Repaint();
 
-		if (themeProfiler) themeProfiler.Print();
-		if (grCfg.settings.showDebugPerformanceOverlay) this.debugTimingsArray.push(`initTheme: ${themeProfiler.Time} ms`);
+		grm.utils.profile(false, 'print', 'initTheme');
 	}
 
 	/**
@@ -4067,7 +4068,7 @@ class MainUI {
 		this.albumArtList = [];
 		this.albumArtLoaded = false;
 
-		const fetchAlbumArtProfiler = (this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('fetchAlbumArt');
+		grm.utils.profile(this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'fetchAlbumArt');
 
 		if (this.isStreaming || this.isPlayingCD) {
 			this.fetchAlbumArtStreamingOrCD(metadb);
@@ -4075,8 +4076,7 @@ class MainUI {
 			this.fetchAlbumArtLocalFiles(metadb);
 		}
 
-		if (fetchAlbumArtProfiler) fetchAlbumArtProfiler.Print();
-		if (grCfg.settings.showDebugPerformanceOverlay) this.debugTimingsArray.push(`fetchAlbumArt: ${fetchAlbumArtProfiler.Time} ms`);
+		grm.utils.profile(false, 'print', 'fetchAlbumArt');
 	}
 
 	/**

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    18-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -886,7 +886,7 @@ class Button {
 	 */
 	_createButtonImages(createButtonMap = true) {
 		// DebugLog('Buttons => createButtonImages');
-		const createButtonProfiler = this.showDrawExtendedTiming && fb.CreateProfiler('createButtonImages');
+		grm.utils.profile(grm.ui.showDrawExtendedTiming, 'create', 'createButtonImages');
 
 		if (createButtonMap || IsEmpty(this.btnMap)) {
 			this.btnMap = this._createButtonMap();
@@ -1055,7 +1055,7 @@ class Button {
 			this.btnImg[btnKey] = stateImages;
 		}
 
-		if (createButtonProfiler) createButtonProfiler.Print();
+		grm.utils.profile(false, 'print', 'createButtonImages');
 	}
 
 	/**

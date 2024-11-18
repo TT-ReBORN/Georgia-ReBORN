@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-11-2024                                              * //
+// * Last change:    18-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1786,13 +1786,17 @@ class Utilities {
 	 * Initializes default values for saved coordinates and modifier keys.
 	 */
 	constructor() {
-		/** @private @type {number} */
+		/** @private @type {object} The profiler used for performance measurement. */
+		this.profiler = {};
+		/** @private @type {boolean} The profiler active state. */
+		this.profilerActive = false;
+		/** @private @type {number} The saved x-coordinate of the mouse. */
 		this.savedX = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The saved y-coordinate of the mouse. */
 		this.savedY = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The saved mouse mask. */
 		this.savedM = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The saved key code. */
 		this.savedKey = 0;
 	}
 
@@ -1968,6 +1972,25 @@ class Utilities {
 		const cssPath = `${fb.FoobarPath}georgia-reborn\\scripts\\playlist\\assets\\html\\${newCss}`;
 
 		return htmlCode.replace(/href="styles10.css"/i, `href="${cssPath}"`);
+	}
+
+	/**
+	 * Handles the profiler setup and printing based on the given condition and action.
+	 * @param {boolean} condition - The condition to check before proceeding with the profiler operation.
+	 * @param {string} action - The action to perform ('create' or 'print').
+	 * @param {string} message - The log message to use when creating the profiler (required for 'create' action).
+	 */
+	profile(condition, action, message) {
+		if (condition && action === 'create') {
+			this.profiler[message] = fb.CreateProfiler(message);
+			this.profilerActive = condition;
+		}
+		else if (this.profiler[message] && this.profilerActive && action === 'print') {
+			this.profiler[message].Print();
+			if (grCfg.settings.showDebugPerformanceOverlay) {
+				grm.ui.debugTimingsArray.push(`${message}: ${this.profiler[message].Time} ms`);
+			}
+		}
 	}
 
 	/**

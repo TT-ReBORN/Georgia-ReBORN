@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    18-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -91,7 +91,8 @@ function on_metadb_changed(handle_list, fromhook) {
  */
 function on_playback_new_track(metadb) {
 	if (!metadb) return; // Solve weird corner case
-	const newTrackProfiler = (grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay) && fb.CreateProfiler('on_playback_new_track');
+
+	grm.utils.profile(grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'on_playback_new_track');
 	DebugLog('Playback => on_playback_new_track()');
 
 	grm.ui.handlePlaybackNewTrack(metadb);
@@ -106,8 +107,7 @@ function on_playback_new_track(metadb) {
 		bio.call.on_playback_new_track();
 	}
 
-	if (newTrackProfiler) newTrackProfiler.Print();
-	if (grCfg.settings.showDebugPerformanceOverlay) grm.ui.debugTimingsArray.push(`on_playback_new_track: ${newTrackProfiler.Time} ms`);
+	grm.utils.profile(false, 'print', 'on_playback_new_track');
 }
 
 

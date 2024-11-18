@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-11-2024                                              * //
+// * Last change:    18-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3686,6 +3686,7 @@ class TopMenuOptions {
 		});
 		debugMenu.addItem('Enable debug performance overlay', grCfg.settings.showDebugPerformanceOverlay, () => {
 			grCfg.settings.showDebugPerformanceOverlay = !grCfg.settings.showDebugPerformanceOverlay;
+			grm.utils.profiler = {};
 			if (grCfg.settings.showDebugPerformanceOverlay) {
 				grCfg.settings.showDebugThemeOverlay = false;
 				grm.cpuTrack.start();
@@ -3707,12 +3708,15 @@ class TopMenuOptions {
 		debugMenu.addSeparator();
 		debugMenu.addToggleItem('Show draw timing', grm.ui, 'showDrawTiming', () => {
 			if (grm.ui.showDrawTiming) fb.RunMainMenuCommand('View/Console');
+			grm.utils.profiler = {};
 		});
 		debugMenu.addToggleItem('Show draw extended timing', grm.ui, 'showDrawExtendedTiming', () => {
 			if (grm.ui.showDrawExtendedTiming) fb.RunMainMenuCommand('View/Console');
+			grm.utils.profiler = {};
 		});
 		debugMenu.addToggleItem('Show debug timing', grm.ui, 'showDebugTiming', () => {
 			if (grm.ui.showDebugTiming) fb.RunMainMenuCommand('View/Console');
+			grm.utils.profiler = {};
 		});
 		debugMenu.addSeparator();
 		debugMenu.addToggleItem('Show panel calls', grm.ui, 'showPanelTraceCall', () => {
