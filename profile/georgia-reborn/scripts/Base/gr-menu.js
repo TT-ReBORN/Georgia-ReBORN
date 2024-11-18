@@ -1828,10 +1828,10 @@ class TopMenuOptions {
 		playlistBackgroundMenu.addToggleItem('Show image on background', grSet, 'playlistBgImg', () => {
 			if (grSet.playlistBgImg) {
 				grm.bgImg.initBgImage();
-				grm.ui.updatePlaylist();
 			} else {
 				grm.bgImg.clearBgImageCache();
 			}
+			grm.ui.updatePlaylist();
 			RepaintWindow();
 		});
 		playlistBackgroundMenu.addToggleItem('Show now playing rows only', grSet, 'playlistBgRowNowPlaying', () => {

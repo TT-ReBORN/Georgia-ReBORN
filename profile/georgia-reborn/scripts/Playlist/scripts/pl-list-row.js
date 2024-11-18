@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    18-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -141,7 +141,7 @@ class PlaylistRow extends BaseListItem {
 			title_font = pl.font.title_playing;
 
 			const bg_color = grSet.playlistBgImg ? RGBtoRGBA(pl.col.row_nowplaying_bg, grSet.playlistBgRowOpacity) : pl.col.row_nowplaying_bg;
-			if (!grSet.styleBlend && !grSet.playlistBgImg || !grSet.playlistBgRowNowPlaying) gr.FillSolidRect(this.x, this.y, scrollbar ? this.w - SCALE(12) : this.w, this.h, bg_color); // Correct bg alpha for nowplaying
+			if (!grSet.styleBlend && !grSet.playlistBgImg || grSet.playlistBgImg && !grSet.playlistBgRowNowPlaying) gr.FillSolidRect(this.x, this.y, scrollbar ? this.w - SCALE(12) : this.w, this.h, bg_color); // Correct bg alpha for nowplaying
 			gr.FillSolidRect(this.x, this.y, scrollbar ? this.w - SCALE(12) : this.w, this.h, bg_color);
 			if (ColorDistance(bg_color, title_artist_color) < 195) {
 				title_artist_color = this.title_color;

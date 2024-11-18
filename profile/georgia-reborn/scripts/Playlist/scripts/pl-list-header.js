@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-11-2024                                              * //
+// * Last change:    18-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -445,7 +445,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			this.clipImg = gdi.CreateImage(this.w, this.h);
 			const grClip = this.clipImg.GetGraphics();
 
-			if (!grSet.styleBlend && !grSet.playlistBgImg || !grSet.playlistBgRowNowPlaying) { // Solid background for ClearTypeGridFit text rendering
+			if (!grSet.styleBlend && !grSet.playlistBgImg || grSet.playlistBgImg && !grSet.playlistBgRowNowPlaying) { // Solid background for ClearTypeGridFit text rendering
 				grClip.FillSolidRect(0, 0, this.w, this.h, grSet.playlistBgImg ? RGBtoRGBA(pl.col.bg, grSet.playlistBgRowOpacity) : pl.col.bg);
 			}
 
@@ -818,7 +818,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		const grClip = clipImg.GetGraphics();
 
 		//--->
-		if (!grSet.styleBlend && !grSet.playlistBgImg || !grSet.playlistBgRowNowPlaying) { // Solid background for ClearTypeGridFit text rendering
+		if (!grSet.styleBlend && !grSet.playlistBgImg || grSet.playlistBgImg && !grSet.playlistBgRowNowPlaying) { // Solid background for ClearTypeGridFit text rendering
 			grClip.FillSolidRect(0, 0, this.w, this.h, grSet.playlistBgImg ? RGBtoRGBA(pl.col.bg, grSet.playlistBgRowOpacity) : pl.col.bg);
 		}
 		// if (this.has_selected_items() && grSet.theme.startsWith('custom')) {
