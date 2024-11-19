@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-11-2024                                              * //
+// * Last change:    19-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4412,7 +4412,7 @@ class WaveformBar {
 			sizeDots: grSet.waveformBarSizeDots,
 			sizeHalf: grSet.waveformBarSizeHalf,
 			sizeNormalizeWidth: grSet.waveformBarSizeNormalize,
-			refreshRate: grm.ui.seekbarTimerInterval = grSet.waveformBarRefreshRate === 'variable' ? FPS._6 : grSet.waveformBarRefreshRate
+			refreshRate: grSet.waveformBarRefreshRate === 'variable' ? FPS._5 : grSet.waveformBarRefreshRate
 		};
 
 		/**
@@ -4799,6 +4799,7 @@ class WaveformBar {
 		}
 		// * Animate smoothly, repaint by zone when possible. Only when not paused!
 		if (fb.IsPlaying && !fb.IsPaused) {
+			this.setRefreshRate();
 			if (visualizer) {
 				this.throttlePaint();
 			}
@@ -4816,7 +4817,6 @@ class WaveformBar {
 				);
 				this.throttlePaintRect(currX - barW - grm.ui.edgeMargin, this.y, prePaintW + grm.ui.edgeMarginBoth, this.h);
 			}
-			this.setRefreshRate();
 		}
 	}
 
@@ -5411,10 +5411,10 @@ class WaveformBar {
 	 */
 	setRefreshRate() {
 		if (grm.ui.isStreaming) { // Radio streaming refresh rate
-			grm.ui.seekbarTimerInterval = FPS._1;
+			this.ui.refreshRate = grm.ui.seekbarTimerInterval = FPS._1;
 		}
 		else if (grSet.waveformBarRefreshRate !== 'variable') { // Fixed refresh rate
-			grm.ui.seekbarTimerInterval = grSet.waveformBarRefreshRate;
+			this.ui.refreshRate = grm.ui.seekbarTimerInterval = grSet.waveformBarRefreshRate;
 		}
 		else { // Variable refresh rate calculation
 			const now = Date.now();
@@ -5426,7 +5426,7 @@ class WaveformBar {
 			}
 
 			const timeDifference = grm.ui.seekbarProfiler.Time - this.profilerPaintTimeLast;
-			grm.ui.seekbarTimerInterval = Clamp(grm.ui.seekbarTimerInterval + (timeDifference > 0 ? 12 : -7), FPS._10, FPS._5);
+			this.ui.refreshRate = grm.ui.seekbarTimerInterval = Clamp(grm.ui.seekbarTimerInterval + (timeDifference > 0 ? 12 : -7), FPS._10, FPS._5);
 			this.profilerPaintTimeLast = grm.ui.seekbarProfiler.Time;
 
 			grm.ui.clearTimer('seekbar', true);

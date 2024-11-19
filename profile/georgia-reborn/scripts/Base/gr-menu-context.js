@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-11-2024                                              * //
+// * Last change:    19-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1868,8 +1868,7 @@ class ContextMenus {
 			for (const rate of waveformBarRefresh) {
 				waveformBarRefreshMenu.appendItem(rate[0], () => {
 					grSet.waveformBarRefreshRate = rate[1];
-					grm.waveBar.updateConfig({ ui: { refreshRate: rate[1] } });
-					grm.ui.setSeekbarRefresh();
+					grm.waveBar.updateConfig({ ui: { refreshRate: rate[1] === 'variable' ? FPS._5 : rate[1] } });
 					if (rate[1] < FPS._20) {
 						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
 					} else if (rate[1] < FPS._10) {
