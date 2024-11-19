@@ -904,10 +904,11 @@ class MainUI {
 			this.albumArtSize.x + this.albumArtSize.w;
 
 		const discArtInAlbumArtArea = this.displayDetails && this.discArtImageDisplayed;
+		const noDiscArtAndBg = this.displayDetails && !grm.details.discArt && !grSet.noDiscArtBg;
 
 		const middleX = grSet.hideMiddlePanelShadow || discArtInAlbumArtArea || this.displayLyrics && grSet.lyricsLayout !== 'normal' ? this.ww + 4 : panelX - 4;
 		const x = albumArtW ? panelX : 0;
-		const w = (albumArtW && !grSet.panelWidthAuto || this.discArtDisplayed()) && !discArtInAlbumArtArea ? panelX : this.ww;
+		const w = (albumArtW && !grSet.panelWidthAuto || this.discArtDisplayed()) && !discArtInAlbumArtArea || noDiscArtAndBg ? panelX : this.ww;
 
 		// Top shadow
 		gr.FillGradRect(x, this.topMenuHeight - HD_4K(6, 10), w, HD_4K(6, 10), 90, 0, grCol.shadow);
