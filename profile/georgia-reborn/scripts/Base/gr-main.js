@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    19-11-2024                                              * //
+// * Last change:    21-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -876,7 +876,7 @@ class MainUI {
 		// Top shadow
 		gr.FillGradRect(0, this.albumArtSize.y - HD_4K(6, 10), this.albumArtSize.x + this.albumArtSize.w, HD_4K(6, 10), 90, 0, grCol.shadow);
 		// Middle shadow
-		gr.FillGradRect(middleX, this.albumArtSize.y, 4, this.albumArtSize.h, 0.5, grm.color.getMiddleShadowColor(), 0);
+		gr.FillGradRect(middleX, this.albumArtSize.y, 4, this.albumArtSize.h, 0, grm.color.getMiddleShadowColor(), 0);
 		// Bottom shadow
 		gr.FillGradRect(0, this.albumArtSize.y + this.albumArtSize.h + HD_4K(-1, 0), this.albumArtSize.x + this.albumArtSize.w, SCALE(5), 90, grCol.shadow, 0);
 	}
@@ -913,7 +913,7 @@ class MainUI {
 		// Top shadow
 		gr.FillGradRect(x, this.topMenuHeight - HD_4K(6, 10), w, HD_4K(6, 10), 90, 0, grCol.shadow);
 		// Middle shadow
-		gr.FillGradRect(middleX, this.topMenuHeight, 4, this.wh - this.topMenuHeight - this.lowerBarHeight, 0.5, 0, grm.color.getMiddleShadowColor());
+		gr.FillGradRect(middleX, this.topMenuHeight, 4, this.wh - this.topMenuHeight - this.lowerBarHeight, 0, 0, grm.color.getMiddleShadowColor());
 		// Bottom shadow
 		gr.FillGradRect(x, this.wh - this.lowerBarHeight + HD_4K(-1, 0), w, SCALE(5), 90, grCol.shadow, 0);
 	}
@@ -1311,7 +1311,9 @@ class MainUI {
 		const time = `${hours}:${minutes}:${seconds}.${milliseconds}`;
 		const repaintRectCalls = this.repaintRectCount > 1 ? ` - ${this.repaintRectCount} repaintRect calls` : '';
 
-		if (this.showDrawExtendedTiming) console.log(`Spider Monkey Panel v${utils.Version}: profiler (on_paint -> seekbar): ${this.seekbarProfiler.Time} ms => refresh rate: ${this.seekbarTimerInterval} ms`);
+		if (this.showDrawExtendedTiming && fb.IsPlaying) {
+			console.log(`Spider Monkey Panel v${utils.Version}: profiler (on_paint -> seekbar): ${this.seekbarProfiler.Time} ms => refresh rate: ${this.seekbarTimerInterval} ms`);
+		}
 
 		console.log(`${time}: on_paint total: ${duration}ms${repaintRectCalls}`);
 	}
