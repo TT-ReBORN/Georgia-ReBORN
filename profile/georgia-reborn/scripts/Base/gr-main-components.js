@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    19-11-2024                                              * //
+// * Last change:    24-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4316,28 +4316,29 @@ class WaveformBar {
 	constructor() {
 		// * Dependencies
 		include(`${fb.ProfilePath}georgia-reborn\\externals\\Codepages.js`);
-		include(`${fb.ProfilePath}georgia-reborn\\externals\\lz-utf8\\lzutf8.js`); // For string compression
-		include(`${fb.ProfilePath}georgia-reborn\\externals\\lz-string\\lz-string.min.js`); // For string compression
+		include(`${fb.ProfilePath}georgia-reborn\\externals\\lz-utf8\\lzutf8.js`);
+		include(`${fb.ProfilePath}georgia-reborn\\externals\\lz-string\\lz-string.min.js`);
 
-		const arch = Detect.Win64 ? '' : '_32';
-		/** @private @type {string} Used to create folder path */
+		/** @private @type {string} The match pattern used to create folder path. */
 		this.matchPattern = '$replace($ascii([$replace($if2($meta(ALBUMARTIST,0),$meta(ARTIST,0)),\\,)]\\[$replace([$if3(%original release date%,%originaldate%,%date%,%fy_upload_date%,) - ]%ALBUM%,\\,)]\\%TRACKNUMBER% - $replace(%TITLE%,\\,)), ?,,= ,,?,)';
-		/** @private @type {boolean} */
+		/** @private @type {boolean} The debug flag for logging debug information. */
 		this.debug = false;
-		/** @private @type {boolean} */
+		/** @private @type {boolean} The profile flag for logging performance information. */
 		this.profile = false;
+		/** @private @type {FbProfiler} The profiler for logging performance information. */
+		this.profiler = null;
 
 		/**
 		 * The waveform bar analysis settings.
 		 * @typedef {object} waveformBarAnalysis
-		 * @property {string} binaryMode - Settings: ffprobe | audiowaveform | visualizer.
-		 * @property {number} resolution - Pixels per second on audiowaveform, per sample on ffmpeg (higher values than 1 require resampling). Visualizer mode is adjusted via window width.
-		 * @property {string} compressionMode - Settings: none | 'utf-8' (~50% compression) | 'utf-16' (~70% compression)  7zip (~80% compression).
-		 * @property {string} saveMode - Settings: always | library | never.
-		 * @property {boolean} autoAnalysis - Auto-analyze files.
-		 * @property {boolean} autoDelete - Auto-deletes analysis files when unloading the script, present during play session to prevent recalculation.
-		 * @property {boolean} visualizerFallbackAnalysis - Uses visualizer mode when analyzing file.
-		 * @property {boolean} visualizerFallback - Uses visualizer mode when file can not be processed (incompatible format).
+		 * @property {string} binaryMode - The settings: ffprobe | audiowaveform | visualizer.
+		 * @property {number} resolution - The pixels per second on audiowaveform, per sample on ffmpeg (higher values than 1 require resampling). Visualizer mode is adjusted via window width.
+		 * @property {string} compressionMode - The settings: none | 'utf-8' (~50% compression) | 'utf-16' (~70% compression) 7zip (~80% compression).
+		 * @property {string} saveMode - The settings: always | library | never.
+		 * @property {boolean} autoAnalysis - The flag to auto-analyze files.
+		 * @property {boolean} autoDelete - The flag to auto-delete analysis files when unloading the script, present during play session to prevent recalculation.
+		 * @property {boolean} visualizerFallbackAnalysis - The flag to use visualizer mode when analyzing the file.
+		 * @property {boolean} visualizerFallback - The flag to use visualizer mode when the file cannot be processed (incompatible format).
 		 * @public
 		 */
 		/** @public @type {waveformBarAnalysis} */
@@ -4363,7 +4364,7 @@ class WaveformBar {
 		/** @public @type {waveformBarBinaries} */
 		this.binaries = {
 			ffprobe:       `${fb.ProfilePath}georgia-reborn\\externals\\ffprobe\\ffprobe.exe`,
-			audiowaveform: `${fb.ProfilePath}georgia-reborn\\externals\\audiowaveform\\audiowaveform${arch}.exe`,
+			audiowaveform: `${fb.ProfilePath}georgia-reborn\\externals\\audiowaveform\\audiowaveform${Detect.Win64 ? '' : '_32'}.exe`,
 			visualizer:    `${fb.ProfilePath}running`
 		};
 
@@ -4373,12 +4374,12 @@ class WaveformBar {
 		 * @property {string} analysisMode - The waveform bar analysis mode `rms_level`, `peak_level`, `rms_peak (only available when using ffprobe)`.
 		 * @property {string} barDesign - The waveform bar design `waveform`, `bars`, `dots`, `halfbars`.
 		 * @property {string} paintMode - The waveform bar paint mode `full`, `partial`.
-		 * @property {boolean} animate - Whether to display animation or not.
-		 * @property {boolean} useBPM - Whether to use synced BPM or not.
-		 * @property {boolean} indicator - Whether to show waveform bar progress indicator or not.
-		 * @property {boolean} prepaint - Whether to prepaint waveform bar progress or not.
+		 * @property {boolean} animate - The flag to display animation.
+		 * @property {boolean} useBPM - The flag to use synced BPM.
+		 * @property {boolean} indicator - The flag to show waveform bar progress indicator.
+		 * @property {boolean} prepaint - The flag to prepaint waveform bar progress.
 		 * @property {number} prepaintFront - The prepaint waveform bar progress length.
-		 * @property {boolean} invertHalfbars - Whether to invert waveform bar halfbars or not.
+		 * @property {boolean} invertHalfbars - The flag to invert waveform bar halfbars.
 		 * @public
 		 */
 		/** @public @type {waveformBarPreset} */
@@ -4429,60 +4430,60 @@ class WaveformBar {
 		};
 
 		// * Easy access
-		/** @public @type {number} */
+		/** @public @type {number} The x-coordinate of the waveform bar. */
 		this.x = grm.ui.edgeMargin;
-		/** @public @type {number} */
+		/** @public @type {number} The y-coordinate of the waveform bar. */
 		this.y = 0;
-		/** @public @type {number} */
+		/** @public @type {number} The width of the waveform bar. */
 		this.w = grm.ui.ww - grm.ui.edgeMarginBoth;
-		/** @public @type {number} */
+		/** @public @type {number} The height of the waveform bar. */
 		this.h = grm.ui.seekbarHeight;
 
 		// * Internals
-		/** @private @type {boolean} */
+		/** @private @type {boolean} The active state of the waveform bar. */
 		this.active = true;
-		/** @private @type {string} */
+		/** @private @type {string} The title format used for the waveform bar. */
 		this.Tf = fb.TitleFormat(this.matchPattern);
-		/** @private @type {number} */
+		/** @private @type {number} The maximum step for the title format. */
 		this.TfMaxStep = fb.TitleFormat('[%BPM%]');
-		/** @private @type {string[]} */
+		/** @private @type {string[]} The cache storage for the waveform data. */
 		this.cache = null;
-		/** @private @type {string} */
+		/** @private @type {string} The directory for the waveform cache. */
 		this.cacheDir = `${fb.ProfilePath}cache\\waveform\\`;
-		/** @private @type {string} */
+		/** @private @type {string} The code page for character encoding conversion. */
 		this.codePage = convertCharsetToCodepage('UTF-8');
-		/** @private @type {string} */
+		/** @private @type {string} The code page for UTF-16LE character encoding conversion. */
 		this.codePageV2 = convertCharsetToCodepage('UTF-16LE');
-		/** @private @type {number} */
+		/** @private @type {number} The queue identifier for the waveform bar. */
 		this.queueId = null;
-		/** @private @type {number} */
+		/** @private @type {number} The queue interval in milliseconds. */
 		this.queueMs = 1000;
-		/** @private @type {string[]} */
+		/** @private @type {string[]} The current waveform data. */
 		this.current = [];
-		/** @private @type {number[]} */
+		/** @private @type {number[]} The offset values for the waveform data. */
 		this.offset = [];
-		/** @private @type {number} */
+		/** @private @type {number} The current step in the waveform animation. */
 		this.step = 0; // 0 - maxStep
-		/** @private @type {number} */
+		/** @private @type {number} The maximum step for the waveform animation. */
 		this.maxStep = 4;
-		/** @private @type {number} */
+		/** @private @type {number} The current playback time for the waveform bar. */
 		this.time = 0;
-		/** @private @type {boolean} */
+		/** @private @type {boolean} The state indicating if the mouse is down. */
 		this.mouseDown = false;
-		/** @private @type {boolean} Set at checkAllowedFile(). */
+		/** @private @type {boolean} The state indicating if the file is allowed. Set at checkAllowedFile(). */
 		this.isAllowedFile = true;
-		/** @private @type {boolean} Set at checkAllowedFile(). */
+		/** @private @type {boolean} The state indicating if the file is a zipped file. Set at checkAllowedFile(). */
 		this.isZippedFile = false;
-		/** @private @type {boolean} Set at verifyData() after retrying analysis. */
+		/** @private @type {boolean} The state indicating if there was an error. Set at verifyData() after retrying analysis. */
 		this.isError = false;
-		/** @private @type {boolean} For visualizerFallback, set at checkAllowedFile(). */
+		/** @private @type {boolean} The state indicating if fallback mode is active. For visualizerFallback, set at checkAllowedFile(). */
 		this.isFallback = false;
 
 		/**
 		 * The waveform bar fallback mode settings for visualizerFallbackAnalysis.
 		 * @typedef {object} waveformBarFallbackMode
-		 * @property {boolean} paint - Indicates whether to use the paint fallback mode.
-		 * @property {boolean} analysis - Indicates whether to use the analysis fallback mode.
+		 * @property {boolean} paint - The state that indicates whether to use the paint fallback mode.
+		 * @property {boolean} analysis - The state that indicates whether to use the analysis fallback mode.
 		 * @public
 		 */
 		/** @private @type {waveformBarFallbackMode} */
@@ -4515,8 +4516,8 @@ class WaveformBar {
 		/**
 		 * The waveform bar compatible file settings.
 		 * @typedef {object} waveformBarCompatibility
-		 * @property {RegExp} ffprobe - A regular expression to test for file types compatible with ffprobe.
-		 * @property {RegExp} audiowaveform - A regular expression to test for file types compatible with audiowaveform.
+		 * @property {RegExp} ffprobe - The regular expression to test for file types compatible with ffprobe.
+		 * @property {RegExp} audiowaveform - The regular expression to test for file types compatible with audiowaveform.
 		 * @public
 		 */
 		/** @private @type {waveformBarCompatibility} */
@@ -4530,266 +4531,257 @@ class WaveformBar {
 			this.compatibleFiles[key] = new RegExp(`\\.(${this.compatibleFiles[`${key}List`].join('|')})$`, 'i');
 		}
 
-		// * Helpers
-		/**
-		 * Throttles the window repaint to improve performance by limiting the rate of repaint operations.
-		 * This function is specifically tailored to repaint a defined rectangular area of the window.
-		 * The repaint is controlled by the UI refresh rate.
-		 * @param {boolean} [force=false] - If set to true, the repaint will be forced even if the window is not dirty.
-		 * @private
-		 */
-		this.throttlePaint = Throttle((force = false) => window.RepaintRect(
-			this.x - SCALE(2), this.y - this.h * 0.5 - SCALE(4),
-			this.w + SCALE(4), this.h + SCALE(8), force), this.ui.refreshRate);
-
-		/**
-		 * Throttles the window repaint to improve performance by limiting the rate of repaint operations.
-		 * This function allows for the specification of the rectangular area to be repainted.
-		 * The repaint is controlled by the UI refresh rate.
-		 * @param {number} x - The x-coordinate of the upper-left corner of the rectangle to repaint.
-		 * @param {number} y - The y-coordinate of the upper-left corner of the rectangle to repaint.
-		 * @param {number} w - The width of the rectangle to repaint.
-		 * @param {number} h - The height of the rectangle to repaint.
-		 * @param {boolean} [force=false] - If set to true, the repaint will be forced even if the window is not dirty.
-		 * @private
-		 */
-		this.throttlePaintRect = Throttle((x, y, w, h, force = false) => window.RepaintRect(
-			x - SCALE(2), y - h * 0.5 - SCALE(4),
-			w + SCALE(4), h + SCALE(8), force), this.ui.refreshRate);
-
-		// * Check
+		// * Initialization
 		this.checkConfig();
 		this.defaultSteps();
+		this.setThrottlePaint();
 		if (!IsFolder(this.cacheDir)) { CreateFolder(this.cacheDir); }
 	}
 
-	// * PUBLIC METHODS * //
-	// #region PUBLIC METHODS
+	// * PUBLIC METHODS - DRAW * //
+	// #region PUBLIC METHODS - DRAW
 	/**
-	 * Draws the waveform bar with various waveform bar styles.
+	 * Draws the waveform bar with various designs based on the current settings.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	draw(gr) {
+		if (!fb.IsPlaying) {
+			gr.FillSolidRect(this.x, grm.ui.seekbarY, this.w, SCALE(grSet.layout !== 'default' ? 10 : 12), grCol.progressBar);
+			this.reset();
+			return;
+		}
+
+		if (this.current.length === 0) {
+			this.drawBarInfo(gr);
+			return;
+		}
+
 		if (grSet.waveformBarRefreshRate === 'variable' || grm.ui.showDrawExtendedTiming) {
 			grm.ui.seekbarProfiler.Reset();
 		}
 
-		if (!fb.IsPlaying) { // In case paint has been delayed after playback has stopped...
-			gr.FillSolidRect(this.x, grm.ui.seekbarY, this.w, SCALE(grSet.layout !== 'default' ? 10 : 12), grCol.progressBar);
-			this.reset();
-		}
+		// * Set shared properties
+		/** @private @type {number} The time constant for the waveform bar calculation. */
+		this.timeConstant = fb.PlaybackLength / this.current.length;
+		/** @private @type {number} The current X position based on playback time. */
+		this.currX = this.x + this.w * ((fb.PlaybackTime / fb.PlaybackLength) || 0);
+		/** @private @type {number} The width of each bar in the waveform. */
+		this.barW = this.w / this.current.length;
+		/** @private @type {boolean} The state whether prepaint mode is active. */
+		this.prepaint = this.preset.paintMode === 'partial' && this.preset.prepaint;
+		/** @private @type {boolean} The state whether visualizer mode is active. */
+		this.visualizer = this.analysis.binaryMode === 'visualizer' || this.isFallback || this.fallbackMode.paint;
 
-		const frames = this.current.length;
-		const partial = this.preset.paintMode === 'partial';
-		const prepaint = partial && this.preset.prepaint;
-		const visualizer = this.analysis.binaryMode === 'visualizer' || this.isFallback || this.fallbackMode.paint;
-		const visualizerMode = this.analysis.binaryMode === 'visualizer';
-		const ffprobe = this.analysis.binaryMode === 'ffprobe';
-		const waveform = this.preset.barDesign === 'waveform';
-		const bars = this.preset.barDesign === 'bars';
-		const dots = this.preset.barDesign === 'dots';
-		const halfbars = this.preset.barDesign === 'halfbars';
-		const currX = this.x + this.w * ((fb.PlaybackTime / fb.PlaybackLength) || 0);
-		const currPosColor = grCol.waveformBarIndicator;
+		const minPointDiff = 1; // in px
+		const past = [{ x: 0, y: 1 }, { x: 0, y: -1 }];
+		let pastIndex = 0;
 
-		if (frames !== 0) {
-			const barW = this.w / frames;
-			const minPointDiff = 1; // in px
-			const timeConstant = fb.PlaybackLength / frames;
-			const past = [{ x: 0, y: 1 }, { x: 0, y: -1 }];
-			let current;
-			let n = 0;
+		gr.SetSmoothingMode(SmoothingMode.AntiAlias);
 
-			gr.SetSmoothingMode(SmoothingMode.AntiAlias);
+		for (let n = 0; n < this.current.length; n++) {
+			const frame = this.current[n];
+			const current = this.timeConstant * n;
+			const isPrepaintAllowed = (current - this.time) < this.preset.prepaintFront;
 
-			for (const frame of this.current) { // [peak]
-				current = timeConstant * n;
-				const isPrepaint = current > this.time;
-				const isPrepaintAllowed = (current - this.time) < this.preset.prepaintFront;
-				const scale = frame;
-				const x = this.x + barW * n;
+			/** @private @type {boolean} The state whether the current frame is in prepaint mode. */
+			this.isPrepaint = current > this.time;
+			/** @private @type {number} The scaled size of the current frame. */
+			this.scaledSize = this.h / 2 * frame;
+			/** @private @type {number} The x-position of the current frame. */
+			this.frameX = this.x + this.barW * n;
 
-				if (partial && !prepaint && isPrepaint) { break; }
-				else if (prepaint && isPrepaint && !isPrepaintAllowed) { break; }
-				if (!this.offset[n]) { this.offset.push(0); }
+			// * Exit loop if prepaint mode conditions are met
+			if (this.preset.paintMode === 'partial' && !this.prepaint && this.isPrepaint) break;
+			if (this.prepaint && this.isPrepaint && !isPrepaintAllowed) break;
+			if (!this.offset[n]) this.offset[n] = 0;
 
-				// if (isPrepaint && prepaint && !paintedBg) { // ! WHY DO I NEED THIS WHEN PREPAINT IS ACTIVE?
-				// 	gr.FillSolidRect(currX, this.y, this.w, this.h, grCol.bg);
-				// 	paintedBg = true;
-				// }
+			// * Calculate offsets for prepainting and visualizer animation
+			/** @private @type {number} The offset value for prepainting and visualizer animation. */
+			this.offset[n] += (this.prepaint && this.isPrepaint && this.preset.animate || this.visualizer ? // Add movement when pre-painting
+				this.preset.barDesign === 'dots' ? Math.random() * Math.abs(this.step / this.maxStep) :
+				-Math.sign(frame) * Math.random() * this.scaledSize / 10 * this.step / this.maxStep : 0);
 
-				// Ensure points don't overlap too much without normalization
-				if (past.every((p) => (p.y !== Math.sign(scale) && !halfbars) || (p.y === Math.sign(scale) || halfbars) && (x - p.x) >= minPointDiff)) {
-					if (waveform) {
-						const sizeWave = this.ui.sizeWave;
-						const scaledSize = this.h / 2 * scale;
-						this.offset[n] += (prepaint && isPrepaint && this.preset.animate || visualizer ? -Math.sign(scale) * Math.random() * scaledSize / 10 * this.step / this.maxStep : 0); // Add movement when pre-painting
-						const rand = Math.sign(scale) * this.offset[n];
-						const y = scaledSize > 0 ? Math.max(scaledSize + rand, 1) : Math.min(scaledSize + rand, -1);
-						const colorBack = prepaint && isPrepaint ? ShadeColor(grCol.waveformBarFillBack, 40) : grCol.waveformBarFillBack; // Back
-						const colorFront = prepaint && isPrepaint ? ShadeColor(grCol.waveformBarFillFront, 20) : grCol.waveformBarFillFront; // Front
-						let z = visualizer ? Math.abs(y) : y;
+			/** @private @type {number} The random offset value for the current frame. */
+			this.offsetRandom = this.preset.barDesign === 'dots' ? this.offset[n] : Math.sign(frame) * this.offset[n];
 
-						if (z > 0) { // * Top
-							if (colorFront !== colorBack) {
-								gr.FillSolidRect(x, this.y - z, sizeWave, z / 2, colorBack);
-								gr.FillSolidRect(x, this.y - z / 2, sizeWave, z / 2, colorFront);
-							} else {
-								gr.FillSolidRect(x, this.y - z, sizeWave, z, colorBack);
-							}
-						}
-						z = visualizer ? -Math.abs(y) : y;
-						if (z < 0) { // * Bottom
-							if (colorFront !== colorBack) {
-								gr.FillSolidRect(x, this.y - z / 2, sizeWave, -z / 2, colorBack);
-								gr.FillSolidRect(x, this.y, sizeWave, -z / 2, colorFront);
-							} else {
-								gr.FillSolidRect(x, this.y, sizeWave, -z, colorBack);
-							}
-						}
-					}
-					else if (halfbars) {
-						const sizeHalf = !visualizer ? this.ui.sizeHalf : barW * this.ui.sizeHalf * (visualizer ? 0.2 : 0.5);
-						const scaledSize = this.h / 2 * scale;
-						this.offset[n] += (prepaint && isPrepaint && this.preset.animate || visualizer ? -Math.sign(scale) * Math.random() * scaledSize / 10 * this.step / this.maxStep : 0); // Add movement when pre-painting
-						const rand = Math.sign(scale) * this.offset[n];
-						let y = scaledSize > 0 ? Math.max(scaledSize + rand, 1) : Math.min(scaledSize + rand, -1);
-						if (this.preset.invertHalfbars) y = Math.abs(y);
-						let colorBack = prepaint && isPrepaint ? grCol.waveformBarFillPreBack : grCol.waveformBarFillBack; // Back
-						let colorFront = prepaint && isPrepaint ? grCol.waveformBarFillPreFront : grCol.waveformBarFillFront; // Front
-						const x = this.x + barW * n;
+			// * Draw the waveform bar
+			if (past.every((p) =>
+				(p.y !== Math.sign(frame) && this.preset.barDesign !== 'halfbars') ||
+				(p.y === Math.sign(frame) || this.preset.barDesign === 'halfbars') && (this.frameX - p.x) >= minPointDiff)) {
+				this.drawWaveformBar(gr);
 
-						// * Current position
-						if ((this.preset.indicator || this.mouseDown) && !ffprobe && (x <= currX && x >= currX - 2 * barW)) {
-							colorBack = colorFront = currPosColor;
-						}
-						if (y > 0) {
-							if (colorFront !== colorBack) {
-								gr.FillSolidRect(x, this.y - 2 * y + this.h * 0.5, sizeHalf, y, colorBack);
-								gr.FillSolidRect(x, this.y - y + this.h * 0.5, sizeHalf, y, colorFront);
-							} else {
-								gr.FillSolidRect(x, this.y - 2 * y + this.h * 0.5, sizeHalf, 2 * y, colorBack);
-							}
-							// if (colorFront !== colorBack) { // ! Does not look good with DrawRect
-							// 	gr.DrawRect(x, this.y - 2 * y + this.h * 0.5, sizeHalf, y, 1, colorBack);
-							// 	gr.DrawRect(x, this.y - y + this.h * 0.5, sizeHalf, y, 1, colorFront);
-							// } else {
-							// 	gr.DrawRect(x, this.y - 2 * y + this.h * 0.5, sizeHalf, 2 * y, 1, colorBack);
-							// }
-						}
-					}
-					else if (bars) {
-						const sizeBars = barW * this.ui.sizeBars;
-						const scaledSize = this.h / 2 * scale;
-						this.offset[n] += (prepaint && isPrepaint && this.preset.animate || visualizer ? -Math.sign(scale) * Math.random() * scaledSize / 10 * this.step / this.maxStep : 0); // Add movement when pre-painting
-						const rand = Math.sign(scale) * this.offset[n];
-						const y = scaledSize > 0 ? Math.max(scaledSize + rand, 1) : Math.min(scaledSize + rand, -1);
-						let colorBack = prepaint && isPrepaint ? ShadeColor(grCol.waveformBarFillBack, 40) : grCol.waveformBarFillBack; // Back
-						let colorFront = prepaint && isPrepaint ? ShadeColor(grCol.waveformBarFillFront, 20) : grCol.waveformBarFillFront; // Front
-						const x = this.x + barW * n;
-
-						// * Current position
-						if ((this.preset.indicator || this.mouseDown) && !ffprobe && (x <= currX && x >= currX - 2 * barW)) {
-							colorBack = colorFront = currPosColor;
-						}
-						let z = visualizer ? Math.abs(y) : y;
-						if (z > 0) { // * Top
-							if (colorFront !== colorBack) {
-								gr.DrawRect(x, this.y - z, sizeBars, z / 2, 1, colorBack);
-								gr.DrawRect(x, this.y - z / 2, sizeBars, z / 2, 1, colorFront);
-							} else {
-								gr.DrawRect(x, this.y - z, sizeBars, z, 1, colorBack);
-							}
-						}
-						z = visualizer ? -Math.abs(y) : y;
-						if (z < 0) { // * Bottom
-							if (colorFront !== colorBack) {
-								gr.DrawRect(x, this.y - z / 2, sizeBars, -z / 2, 1, colorBack);
-								gr.DrawRect(x, this.y, sizeBars, -z / 2, 1, colorFront);
-							} else {
-								gr.DrawRect(x, this.y, sizeBars, -z, 1, colorBack);
-							}
-						}
-					}
-					else if (dots) {
-						const scaledSize = this.h / 2 * scale;
-						const y = scaledSize > 0 ? Math.max(scaledSize, 1) : Math.min(scaledSize, -1);
-						const colorBack = prepaint && isPrepaint ? ShadeColor(grCol.waveformBarFillBack, 40) : grCol.waveformBarFillBack; // Back
-						const colorFront = prepaint && isPrepaint ? ShadeColor(grCol.waveformBarFillFront, 20) : grCol.waveformBarFillFront; // Front
-						this.offset[n] += (prepaint && isPrepaint && this.preset.animate || visualizer ? Math.random() * Math.abs(this.step / this.maxStep) : 0); // Add movement when pre-painting
-						const rand = this.offset[n];
-						const step = Math.max(this.h / 80, 5) + (rand || 1) // Point density
-						const circleSize = Math.max(step / 25, 1) * this.ui.sizeDots;
-
-						// Split waveform in two, and then half each for highlighting. If colors match, the same amount of dots are painted anyway.
-						const sign = Math.sign(y);
-						let yCalc = this.y;
-						let bottom = this.y - y / 2;
-
-						while (sign * (yCalc - bottom) > 0) {
-							gr.DrawEllipse(x, yCalc, circleSize, circleSize, 1, colorFront);
-							yCalc += (-sign) * step;
-						}
-						bottom += -y / 2;
-
-						while (sign * (yCalc - bottom) > 0) {
-							gr.DrawEllipse(x, yCalc, circleSize, circleSize, 1, colorBack);
-							yCalc += (-sign) * step;
-						}
-
-						if (visualizer) {
-							const sign = -Math.sign(y);
-							let yCalc = this.y;
-							let bottom = this.y + y / 2;
-							while (sign * (yCalc - bottom) > 0) {
-								gr.DrawEllipse(x, yCalc, circleSize, circleSize, 1, colorFront);
-								yCalc += (-sign) * step;
-							}
-							bottom += +y / 2;
-
-							while (sign * (yCalc - bottom) > 0) {
-								gr.DrawEllipse(x, yCalc, circleSize, circleSize, 1, colorBack);
-								yCalc += (-sign) * step;
-							}
-						}
-					}
-					past.shift();
-					past.push({ x, y: Math.sign(scale) });
-				}
-				n++;
-			}
-
-			// * Progress line
-			if (this.preset.indicator || this.mouseDown) {
-				gr.SetSmoothingMode(0);
-				const minBarW = Math.round(Math.max(barW, SCALE(1)));
-				if (ffprobe || waveform || dots) {
-					gr.DrawLine(currX, this.y - this.h * 0.5, currX, this.y + this.h * 0.5, minBarW, currPosColor);
-				}
-			}
-		}
-		else if (fb.IsPlaying) {
-			const DT_CENTER = DrawText.VCenter | DrawText.Center | DrawText.EndEllipsis | DrawText.CalcRect | DrawText.NoPrefix;
-			const updatedNowpBg = pl.col.row_nowplaying_bg !== ''; // * Wait until nowplaying bg has a new color to prevent flashing
-			const bgColor = grSet.theme === 'reborn' ? pl.col.row_nowplaying_bg : grCol.transportEllipseBg;
-			const textColor = pl.col.header_artist_normal;
-
-			if (updatedNowpBg) {
-				gr.FillSolidRect(this.x, this.y - this.h * 0.5, this.w, this.h, bgColor); // * Waveform bar background
-				if (!this.isAllowedFile && !this.isFallback && !visualizerMode) {
-					gr.GdiDrawText('Incompatible file format', grFont.lowerBarWave, textColor, this.x, this.y - this.h * 0.5, this.w, this.h, DT_CENTER);
-				} else if (!this.analysis.autoAnalysis) {
-					gr.GdiDrawText('Waveform bar file not found', grFont.lowerBarWave, textColor, this.x, this.y - this.h * 0.5, this.w, this.h, DT_CENTER);
-				} else if (this.isError) {
-					gr.GdiDrawText('Waveform bar file can not be analyzed', grFont.lowerBarWave, textColor, this.x, this.y - this.h * 0.5, this.w, this.h, DT_CENTER);
-				} else if (this.active) {
-					gr.GdiDrawText('Loading', grFont.lowerBarWave, textColor, this.x, this.y - this.h * 0.5, this.w, this.h, DT_CENTER);
-				}
+				past[pastIndex] = { x: this.frameX, y: Math.sign(frame) };
+				pastIndex = (pastIndex + 1) % past.length;
 			}
 		}
 
-		// * Incrementally draw animation on small steps
-		if (prepaint && this.preset.animate || visualizer) {
+		this.drawBarProgressLine(gr);
+		this.drawBarAnimation();
+	}
+
+	/**
+	 * Draws the waveform bar based on the preset design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawWaveformBar(gr) {
+		const drawBarDesign = {
+			waveform: () => this.drawBarDesignWaveform(gr),
+			bars:     () => this.drawBarDesignBars(gr),
+			halfbars: () => this.drawBarDesignHalfbars(gr),
+			dots:     () => this.drawBarDesignDots(gr)
+		};
+
+		drawBarDesign[this.preset.barDesign]();
+	}
+
+	/**
+	 * Draws the waveform bar in "waveform" design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawBarDesignWaveform(gr) {
+		const yOffset = this.scaledSize > 0 ? Math.max(this.scaledSize + this.offsetRandom, 1) : Math.min(this.scaledSize + this.offsetRandom, -1);
+		const zTop = this.visualizer ? Math.abs(yOffset) : yOffset;
+		const zBottom = this.visualizer ? -Math.abs(yOffset) : yOffset;
+		const { sizeWave } = this.ui;
+		const { colorBack, colorFront, colorsDiffer } = this.getColors();
+
+		if (zTop > 0) {
+			if (colorsDiffer) {
+				gr.FillSolidRect(this.frameX, this.y - zTop, sizeWave, zTop / 2, colorBack);
+				gr.FillSolidRect(this.frameX, this.y - zTop / 2, sizeWave, zTop / 2, colorFront);
+			} else {
+				gr.FillSolidRect(this.frameX, this.y - zTop, sizeWave, zTop, colorBack);
+			}
+		}
+
+		if (zBottom < 0) {
+			if (colorsDiffer) {
+				gr.FillSolidRect(this.frameX, this.y - zBottom / 2, sizeWave, -zBottom / 2, colorBack);
+				gr.FillSolidRect(this.frameX, this.y, sizeWave, -zBottom / 2, colorFront);
+			} else {
+				gr.FillSolidRect(this.frameX, this.y, sizeWave, -zBottom, colorBack);
+			}
+		}
+	}
+
+	/**
+	 * Draws the waveform bar in "bars" design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawBarDesignBars(gr) {
+		const yOffset = this.scaledSize > 0 ? Math.max(this.scaledSize + this.offsetRandom, 1) : Math.min(this.scaledSize + this.offsetRandom, -1);
+		const zTop = this.visualizer ? Math.abs(yOffset) : yOffset;
+		const zBottom = this.visualizer ? -Math.abs(yOffset) : yOffset;
+		const sizeBars = this.barW * this.ui.sizeBars;
+		const { colorBack, colorFront, colorsDiffer } = this.getColors(true, true);
+
+		if (zTop > 0) {
+			if (colorsDiffer) {
+				gr.DrawRect(this.frameX, this.y - zTop, sizeBars, zTop / 2, 1, colorBack);
+				gr.DrawRect(this.frameX, this.y - zTop / 2, sizeBars, zTop / 2, 1, colorFront);
+			} else {
+				gr.DrawRect(this.frameX, this.y - zTop, sizeBars, zTop, 1, colorBack);
+			}
+		}
+
+		if (zBottom < 0) {
+			if (colorsDiffer) {
+				gr.DrawRect(this.frameX, this.y - zBottom / 2, sizeBars, -zBottom / 2, 1, colorBack);
+				gr.DrawRect(this.frameX, this.y, sizeBars, -zBottom / 2, 1, colorFront);
+			} else {
+				gr.DrawRect(this.frameX, this.y, sizeBars, -zBottom, 1, colorBack);
+			}
+		}
+	}
+
+	/**
+	 * Draws the waveform bar in "halfbars" design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawBarDesignHalfbars(gr) {
+		const yOffset = this.scaledSize > 0 ? Math.max(this.scaledSize + this.offsetRandom, 1) : Math.min(this.scaledSize + this.offsetRandom, -1);
+		const y = this.preset.invertHalfbars ? Math.abs(yOffset) : yOffset;
+		const sizeHalf = this.visualizer ? this.barW * this.ui.sizeHalf * (this.visualizer ? 0.2 : 0.5) : this.ui.sizeHalf;
+		const { colorBack, colorFront, colorsDiffer } = this.getColors(false, true);
+
+		if (y > 0) {
+			if (colorsDiffer) {
+				gr.FillSolidRect(this.frameX, this.y - 2 * y + this.h * 0.5, sizeHalf, y, colorBack);
+				gr.FillSolidRect(this.frameX, this.y - y + this.h * 0.5, sizeHalf, y, colorFront);
+			} else {
+				gr.FillSolidRect(this.frameX, this.y - 2 * y + this.h * 0.5, sizeHalf, 2 * y, colorBack);
+			}
+		}
+	}
+
+	/**
+	 * Draws the waveform bar in "dots" design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawBarDesignDots(gr) {
+		const yOffset = this.scaledSize > 0 ? Math.max(this.scaledSize, 1) : Math.min(this.scaledSize, -1);
+		const dotStep = Math.max(this.h / 80, 5) + (this.offsetRandom || 1);
+		const dotSize = Math.max(dotStep / 25, 1) * this.ui.sizeDots;
+		const { colorBack, colorFront } = this.getColors();
+
+		const drawDots = (direction, startY, yOffset, color1, color2) => {
+			const sign = this.visualizer ? direction : Math.sign(yOffset);
+			const step = direction * yOffset / 2;
+			let currentY = startY;
+
+			for (const endY = startY - step; sign * (currentY - endY) > 0; currentY -= sign * dotStep) {
+				gr.DrawEllipse(this.frameX, currentY, dotSize, dotSize, 1, color1);
+			}
+
+			for (const endY = startY - 2 * step; sign * (currentY - endY) > 0; currentY -= sign * dotStep) {
+				gr.DrawEllipse(this.frameX, currentY, dotSize, dotSize, 1, color2);
+			}
+		};
+
+		drawDots(1, this.y, yOffset, colorFront, colorBack);
+		if (!this.visualizer) return;
+		drawDots(-1, this.y, yOffset, colorFront, colorBack);
+	}
+
+	/**
+	 * Draws the progress line on the waveform bar.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawBarProgressLine(gr) {
+		if (!this.preset.indicator && !this.mouseDown) return;
+
+		gr.SetSmoothingMode(0);
+
+		if (this.analysis.binaryMode === 'ffprobe' || ['waveform', 'dots'].includes(this.preset.barDesign)) {
+			const minBarW = Math.round(Math.max(this.barW, SCALE(1)));
+			gr.DrawLine(this.currX, this.y - this.h * 0.5, this.currX, this.y + this.h * 0.5, minBarW, grCol.waveformBarIndicator);
+		}
+	}
+
+	/**
+	 * Draws information text when waveform data is loading or when it is not available.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawBarInfo(gr) {
+		if (pl.col.row_nowplaying_bg === '') return; // * Wait until nowplaying bg has a new color to prevent flashing
+
+		const DT_CENTER = DrawText.VCenter | DrawText.Center | DrawText.EndEllipsis | DrawText.CalcRect | DrawText.NoPrefix;
+		const bgColor = grSet.theme === 'reborn' ? pl.col.row_nowplaying_bg : grCol.transportEllipseBg;
+		const message =
+			!this.isAllowedFile && !this.isFallback && this.analysis.binaryMode !== 'visualizer' ? 'Incompatible file format' :
+			!this.analysis.autoAnalysis ? 'Waveform bar file not found' :
+			this.isError ? 'Waveform bar file can not be analyzed' :
+			this.active ? 'Loading' : '';
+
+		gr.FillSolidRect(this.x, this.y - this.h * 0.5, this.w, this.h, bgColor);
+		gr.GdiDrawText(message, grFont.lowerBarWave, pl.col.header_artist_normal, this.x, this.y - this.h * 0.5, this.w, this.h, DT_CENTER);
+	}
+
+	/**
+	 * Draw the waveform bar animation.
+	 */
+	drawBarAnimation() {
+		if (this.prepaint && this.preset.animate || this.visualizer) {
 			if (this.step >= this.maxStep) {
 				this.step = -this.step;
 			} else {
@@ -4797,48 +4789,35 @@ class WaveformBar {
 				this.step++;
 			}
 		}
-		// * Animate smoothly, repaint by zone when possible. Only when not paused!
+
 		if (fb.IsPlaying && !fb.IsPaused) {
 			this.setRefreshRate();
-			if (visualizer) {
+
+			if (this.visualizer) {
 				this.throttlePaint();
 			}
-			else if ((prepaint || partial || this.preset.indicator) && frames) {
-				const widerModesScale = (bars || halfbars ? 2 : 1);
-				const barW = Math.ceil(Math.max(this.w / frames, SCALE(2))) * widerModesScale;
-				const timeConstant =  fb.PlaybackLength / frames;
-				const prePaintW = Math.min(
-					prepaint && this.preset.prepaintFront !== Infinity || this.preset.animate
-						? this.preset.prepaintFront === Infinity  && this.preset.animate
-							? Infinity
-							: this.preset.prepaintFront / timeConstant * barW + barW
-						: 2.5 * barW,
-					this.w - currX + barW
-				);
-				this.throttlePaintRect(currX - barW - grm.ui.edgeMargin, this.y, prePaintW + grm.ui.edgeMarginBoth, this.h);
+			else if (this.current.length && (this.prepaint || this.preset.paintMode === 'partial' || this.preset.indicator)) {
+				const paintRect = this.setPaintRect(this.time);
+				this.throttlePaintRect(paintRect.x, paintRect.y, paintRect.width, paintRect.height);
 			}
 		}
 	}
+	// #endregion
 
-	/**
-	 * Sets the vertical waveform bar position.
-	 * @param {number} y - The y-coordinate.
-	 */
-	setY(y) {
-		this.y = y + SCALE(10);
-	}
-
+	// * PUBLIC METHODS - INITALIZATION * //
+	// #region PUBLIC METHODS - INITALIZATION
 	/**
 	 * Checks if the current file is allowed to be played, i.e not corrupted.
 	 * @param {object} handle - The current file handle.
-	 * @throws {Error} Throws an error if no handle argument is provided.
 	 */
 	checkAllowedFile(handle = fb.GetNowPlaying()) {
-		if (!handle) { throw new Error('No handle argument'); }
+		if (!handle) return;
+
 		const noVisual = this.analysis.binaryMode !== 'visualizer';
 		const noSubSong = handle.SubSong === 0;
 		const validExt = this.checkCompatibleFileExtension(handle);
-		this.isZippedFile = handle.RawPath.indexOf('unpack://') !== -1;
+
+		this.isZippedFile = handle.RawPath.includes('unpack://');
 		this.isAllowedFile = noVisual && noSubSong && validExt && !this.isZippedFile;
 		this.isFallback = !this.isAllowedFile && this.analysis.visualizerFallback;
 	}
@@ -4850,7 +4829,7 @@ class WaveformBar {
 	 * @returns {boolean} True if the file extension is compatible, otherwise false.
 	 */
 	checkCompatibleFileExtension(handle = fb.GetNowPlaying(), mode = this.analysis.binaryMode) {
-		return mode === 'visualizer' ? true : handle ? this.compatibleFiles[mode].test(handle.Path) : false;
+		return (mode === 'visualizer') || (handle && this.compatibleFiles[mode].test(handle.Path));
 	}
 
 	/**
@@ -4868,14 +4847,16 @@ class WaveformBar {
 	 */
 	checkConfig() {
 		if (!Object.prototype.hasOwnProperty.call(this.binaries, this.analysis.binaryMode)) {
-			throw new Error(`Binary mode not recognized or path not set: ${this.analysis.binaryMode}`);
+			throw new Error(`Waveform bar => binary mode not recognized or path not set: ${this.analysis.binaryMode}`);
 		}
 		if (!IsFile(this.binaries[this.analysis.binaryMode])) {
-			fb.ShowPopupMessage(`Required dependency not found: ${this.analysis.binaryMode}\n\n${JSON.stringify(this.binaries[this.analysis.binaryMode])}`, window.Name);
+			fb.ShowPopupMessage(`Waveform bar => required dependency not found: ${this.analysis.binaryMode}\n\n${JSON.stringify(this.binaries[this.analysis.binaryMode])}`, window.Name);
 		}
+
 		if (this.preset.prepaintFront <= 0 || this.preset.prepaintFront === null) {
 			this.preset.prepaintFront = Infinity;
 		}
+
 		if (this.wheel.seekSpeed < 0) {
 			this.wheel.seekSpeed = 1;
 		} else if (this.wheel.seekSpeed > 100 && this.wheel.seekType === 'percentage') {
@@ -4891,14 +4872,17 @@ class WaveformBar {
 		if (newConfig) {
 			DeepAssign()(this, newConfig);
 		}
+
 		this.checkConfig();
 		let recalculate = false;
+
 		if (newConfig.preset) {
 			if (this.preset.paintMode === 'partial' && this.preset.prepaint || this.analysis.binaryMode === 'visualizer') {
 				this.offset = [];
 				this.step = 0;
 			}
-			if (Object.prototype.hasOwnProperty.call(newConfig.preset, 'animate') || Object.prototype.hasOwnProperty.call(newConfig.preset, 'useBPM')) {
+			if (Object.prototype.hasOwnProperty.call(newConfig.preset, 'animate') ||
+				Object.prototype.hasOwnProperty.call(newConfig.preset, 'useBPM')) {
 				if (this.preset.animate && this.preset.useBPM) {
 					this.bpmSteps();
 				} else {
@@ -4906,75 +4890,361 @@ class WaveformBar {
 				}
 			}
 		}
+
 		if (newConfig.ui) {
 			if (Object.prototype.hasOwnProperty.call(newConfig.ui, 'refreshRate')) {
-				this.throttlePaint = Throttle((force = false) => window.RepaintRect(
-					this.x - SCALE(2), this.y - this.h * 0.5 - SCALE(4),
-					this.w + SCALE(4), this.h + SCALE(8), force), this.ui.refreshRate);
-				this.throttlePaintRect = Throttle((x, y, w, h, force = false) => window.RepaintRect(
-					x - SCALE(2), y - h * 0.5 - SCALE(4),
-					w + SCALE(4), h + SCALE(8), force), this.ui.refreshRate);
+				this.setThrottlePaint();
 			}
-			if (Object.prototype.hasOwnProperty.call(newConfig.ui, 'sizeNormalizeWidth') ||  Object.prototype.hasOwnProperty.call(newConfig.ui, 'normalizeWidth')) {
+			if (Object.prototype.hasOwnProperty.call(newConfig.ui, 'sizeNormalizeWidth') ||
+				Object.prototype.hasOwnProperty.call(newConfig.ui, 'normalizeWidth')) {
 				recalculate = true;
 			}
 		}
+
 		if (newConfig.analysis) {
 			recalculate = true;
 		}
-		// Recalculate data points or repaint
+
 		if (recalculate) {
 			this.on_playback_new_track();
 		} else {
 			this.throttlePaint();
 		}
 	}
+	// #endregion
 
+	// * PUBLIC METHODS - DATA * //
+	// #region PUBLIC METHODS - DATA
 	/**
-	 * Updates the waveform bar with the current track information, playback time and size.
-	 * @param {boolean} current - Whether the current track has changed or not.
+	 * Starts the analysis process of the waveform data and updates the current state.
+	 * @param {FbMetadbHandle} handle - The handle of the current track.
+	 * @param {boolean} isRetry - The flag indicating whether the method call is a retry attempt.
+	 * @returns {Promise<boolean>} The promise that resolves to `true` if analysis is successful, `false` otherwise.
 	 */
-	updateBar(current) {
-		if (!current) this.on_playback_new_track(fb.GetNowPlaying());
-		this.on_playback_time(fb.PlaybackTime);
-		this.on_size(grm.ui.ww, grm.ui.wh);
+	async analyzeDataStart(handle, isRetry) {
+		const { waveformBarFolder, waveformBarFile, sourceFile } = this.getPaths(handle);
+		const files = this.getFileConfigs();
+		const binaryExt = { ffprobe: 'ff', audiowaveform: 'aw' };
+		const binaryDotExt = `.${binaryExt[this.analysis.binaryMode]}`;
+		let analysisComplete = false;
+
+		for (const file of files) {
+			const fileWithExt = `${waveformBarFile}${file.ext}`;
+			if (file.ext.startsWith(binaryDotExt) && IsFile(fileWithExt)) {
+				const str = Open(fileWithExt, file.codePage) || '';
+				this.current = file.decompress(str) || [];
+				if (this.verifyData(handle, fileWithExt, isRetry)) {
+					analysisComplete = true;
+					break;
+				}
+			}
+		}
+
+		if (!analysisComplete && this.analysis.autoAnalysis && IsFile(sourceFile)) {
+			if (this.analysis.visualizerFallbackAnalysis && this.isAllowedFile) {
+				this.fallbackMode.analysis = this.fallbackMode.paint = true;
+				await this.analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile);
+				this.normalizePoints();
+				if (this.preset.animate && this.preset.useBPM) this.bpmSteps(handle);
+				if (fb.IsPlaying) this.time = fb.PlaybackTime;
+			}
+
+			this.throttlePaint(true);
+			if (this.analysis.visualizerFallbackAnalysis) {
+				this.fallbackMode.analysis = false;
+			}
+
+			await this.analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile);
+			this.fallbackMode.analysis = this.fallbackMode.paint = false;
+			analysisComplete = this.verifyData(handle, undefined, isRetry);
+		}
+
+		this.isFallback = !analysisComplete;
+		this.normalizePoints(this.analysis.binaryMode !== 'visualizer' && this.ui.sizeNormalizeWidth);
 	}
 
 	/**
-	 * Gets ffprobe for Windows or Linux.
+	 * Analyzes data of the given handle and saves the results in the waveform bar cache directory.
+	 * This method handles command generation, execution, data processing, and saving.
+	 * @param {FbMetadbHandle} handle - The handle to analyze.
+	 * @param {string} waveformBarFolder - The folder where the waveform bar data should be saved.
+	 * @param {string} waveformBarFile - The name of the waveform bar file.
+	 * @param {string} [sourceFile] - The path of the source file.
+	 * @returns {Promise<void>} The promise that resolves when the analysis has finished.
 	 */
-	getFFprobe() {
-		const url = Detect.Win64 ?
-			'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip' :
-			'https://github.com/sudo-nautilus/FFmpeg-Builds-Win32/releases/download/latest/ffmpeg-master-latest-win32-gpl.zip';
-		RunCmd(url);
-		fb.ShowPopupMessage(`Accept download, extract ffprobe.exe from bin to ${this.binaries.ffprobe}\nand restart foobar.`, 'FFprobe');
+	async analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile = handle.Path) {
+		if (!IsFolder(waveformBarFolder)) CreateFolder(waveformBarFolder);
+
+		this.profiler = this.profile ? new FbProfiler(this.analysis.binaryMode) : null;
+
+		const handleFileName = sourceFile.split('\\').pop();
+		const handleFolder = sourceFile.replace(handleFileName, '');
+		const cmd = this.analyzeDataGetCommand(handleFileName, handleFolder, waveformBarFolder);
+
+		if (cmd) {
+			console.log(`Waveform bar scanning: ${sourceFile}`);
+			this.debug && console.log(cmd);
+		}
+		else if (!this.isAllowedFile && this.analysis.binaryMode !== 'visualizer' && !this.fallbackMode.analysis) {
+			console.log(`Waveform bar skipping incompatible file: ${sourceFile}`);
+		}
+
+		const processed = cmd ? await this.analyzeDataRunCommand(cmd, waveformBarFolder, handle.Length) : true;
+		if (!processed) return;
+
+		const data = cmd ? JsonParseFile(`${waveformBarFolder}data.json`, this.codePage) : this.visualizerData(handle);
+		DeleteFile(`${waveformBarFolder}data.json`);
+		data && this.analyzeDataProcess(handle, waveformBarFile, data);
+
+		if (this.preset.animate && this.preset.useBPM) {
+			this.bpmSteps(handle);
+		}
+
+		if (this.profiler) {
+			this.profiler.Print(`Retrieve volume levels. Compression ${this.analysis.compressionMode}.`);
+		}
+
+		if (this.current.length) {
+			this.throttlePaint();
+		} else {
+			console.log(`${this.analysis.binaryMode}: failed analyzing the file -> ${sourceFile}`);
+		}
 	}
 
 	/**
-	 * Gets the paths to the waveform bar cache folder and file.
-	 * @param {object} handle - The handle of the track.
-	 * @returns {object} The paths to the waveform bar cache folder and file.
+	 * Generates the command to run based on the binary mode.
+	 * @param {string} handleFileName - The name of the file being processed.
+	 * @param {string} handleFolder - The folder containing the file being processed.
+	 * @param {string} waveformBarFolder - The folder where the waveform bar data should be saved.
+	 * @returns {string} The command to run.
 	 */
-	getPaths(handle) {
-		const id = CleanFilePath(this.Tf.EvalWithMetadb(handle)); // Ensures paths are valid!
-		const fileName = id.split('\\').pop();
-		const waveformBarFolder = this.cacheDir + (this.saveDataAllowed(handle) ? id.replace(fileName, '') : '');
-		const waveformBarFile = this.cacheDir + id;
-		const sourceFile = this.isZippedFile ? handle.Path.split('|')[0] : handle.Path;
-		return { waveformBarFolder, waveformBarFile, sourceFile };
+	analyzeDataGetCommand(handleFileName, handleFolder, waveformBarFolder) {
+		if (!this.isAllowedFile || this.fallbackMode.analysis) return '';
+
+		const commands = {
+			audiowaveform: () => {
+				const extension = handleFileName.match(/(?:\.)(\w+$)/i)[1];
+
+				return `CMD /C PUSHD ${Quotes(handleFolder)} && ` +
+					Quotes(this.binaries.audiowaveform) + ' -i ' + Quotes(handleFileName) +
+					' --pixels-per-second ' + (Math.round(this.analysis.resolution) || 1) + ' --input-format ' + extension + ' --bits 8' +
+					' -o ' + Quotes(`${waveformBarFolder}data.json`);
+			},
+			ffprobe: () => {
+				handleFileName = handleFileName.replace(/[,:%.*+?^${}()|[\]\\]/g, '\\$&').replace(/'/g, '\\\\\\\'');
+
+				return `CMD /C PUSHD ${Quotes(handleFolder)} && ` +
+					Quotes(this.binaries.ffprobe) + ' -hide_banner -v panic -f lavfi -i amovie=' + Quotes(handleFileName) +
+					(this.analysis.resolution > 1 ? `,aresample=${Math.round((this.analysis.resolution || 1) * 100)},asetnsamples=${Math.round((this.analysis.resolution / 10) ** 2)}` : '') +
+					',astats=metadata=1:reset=1 -show_entries frame=pkt_pts_time:frame_tags=lavfi.astats.Overall.Peak_level,lavfi.astats.Overall.RMS_level,lavfi.astats.Overall.RMS_peak -print_format json > ' +
+					Quotes(`${waveformBarFolder}data.json`);
+			}
+		};
+
+		return commands[this.analysis.binaryMode]();
 	}
 
+	/**
+	 * Runs the command and waits for it to complete.
+	 * @param {string} cmd - The command to run.
+	 * @param {string} waveformBarFolder - The folder where the waveform bar data should be saved.
+	 * @param {number} trackLength - The length of the track being processed.
+	 * @returns {Promise<boolean>} The promise that resolves to true if the command completed successfully, false otherwise.
+	 */
+	async analyzeDataRunCommand(cmd, waveformBarFolder, trackLength) {
+		const processed = RunCmd(cmd, false);
+
+		return processed && (await new Promise((resolve) => {
+			if (this.isFallback || this.analysis.binaryMode === 'visualizer' || this.fallbackMode.analysis) {
+				resolve(true);
+			}
+
+			const timeout = Date.now() + Math.round(10000 * (trackLength / 180));
+
+			const id = setInterval(() => {
+				if (IsFile(`${waveformBarFolder}data.json`)) {
+					if (JsonParseFile(`${waveformBarFolder}data.json`, this.codePage)) {
+						clearInterval(id);
+						resolve(true);
+					}
+				} else if (Date.now() > timeout) {
+					clearInterval(id);
+					resolve(false);
+				}
+			}, 300);
+		}));
+	}
+
+	/**
+	 * Processes the data generated by the command.
+	 * @param {FbMetadbHandle} handle - The handle to analyze.
+	 * @param {string} waveformBarFile - The name of the waveform bar file.
+	 * @param {object} data - The data generated by the command.
+	 */
+	analyzeDataProcess(handle, waveformBarFile, data) {
+		const processFFProbeData = (frames) => frames.map(frame => {
+			const getTagValue = (tag) => tag === '-inf' ? -Infinity : Round(Number(tag), 1);
+			return [
+				Round(Number(frame.pkt_pts_time), 2),
+				getTagValue(frame.tags['lavfi.astats.Overall.RMS_level']),
+				getTagValue(frame.tags['lavfi.astats.Overall.RMS_peak']),
+				getTagValue(frame.tags['lavfi.astats.Overall.Peak_level'])
+			];
+		});
+
+		let processedData = null;
+
+		// * Process data
+		if (!this.isFallback && !this.fallbackMode.analysis) {
+			if (this.analysis.binaryMode === 'ffprobe' && data.frames && data.frames.length) {
+				processedData = processFFProbeData(data.frames);
+			}
+			else if (this.analysis.binaryMode === 'audiowaveform' && data.data && data.data.length) {
+				processedData = data.data;
+			}
+		}
+		else if ((this.analysis.binaryMode === 'visualizer' || this.isFallback || this.fallbackMode.analysis) && data.length) {
+			processedData = data;
+		}
+
+		// * Save compressed data
+		if (processedData !== null) {
+			this.current = processedData;
+			if (this.saveDataAllowed(handle)) {
+				this.analyzeDataSave(waveformBarFile, JSON.stringify(this.current));
+			}
+		}
+	}
+
+	/**
+	 * Saves the compressed data to a file.
+	 * @param {string} waveformBarFile - The name of the waveform bar file.
+	 * @param {string} dataStr - The data to be saved.
+	 */
+	analyzeDataSave(waveformBarFile, dataStr) {
+		if (this.analysis.binaryMode === 'visualizer') return;
+
+		const binaryExt = { ffprobe: 'ff', audiowaveform: 'aw' };
+		const fileName = `${waveformBarFile}.${binaryExt[this.analysis.binaryMode]}`;
+
+		const compression = {
+			'utf-16': () => SaveFSO(`${fileName}.lz16`, LZString.compressToUTF16(dataStr), true),
+			'utf-8':  () => Save(`${fileName}.lz`, LZUTF8.compress(dataStr, { outputEncoding: 'Base64' })),
+			'none':   () => Save(`${fileName}.json`, dataStr)
+		};
+
+		(compression[this.analysis.compressionMode] || compression.none)();
+	}
+
+	/**
+	 * Generates data for the visualizer.
+	 * @param {FbMetadbHandle} handle - The handle to analyze.
+	 * @param {string} preset - The preset to use for the visualizer.
+	 * @param {boolean} variableLen - The flag whether the length of the data should be variable.
+	 * @returns {Array} The data for the visualizer bar.
+	 */
+	visualizerData(handle, preset = 'classic spectrum analyzer', variableLen = false) {
+		const resolution = this.analysis.resolution || 1;
+		const samples = variableLen ? handle.Length * resolution : this.w / SCALE(5) * resolution;
+		const data = new Array(samples);
+
+		if (preset === 'classic spectrum analyzer') {
+			const third = Math.round(samples / 3);
+			const half = Math.round(samples / 2);
+
+			// * Filling first half
+			for (let i = 0; i < third; i++) {
+				const val = (Math.random() * i) / third;
+				data[i] = val;
+			}
+			for (let i = third; i < half; i++) {
+				const val = (Math.random() * i) / third;
+				data[i] = val;
+			}
+			// * Filling second half with reversed first half
+			for (let i = half, j = 0; i < samples; i++, j++) {
+				data[i] = data[half - 1 - j];
+			}
+		}
+
+		return data;
+	}
+
+	/**
+	 * Checks if the processed data is valid.
+	 * @returns {boolean} True if the data is valid.
+	 */
+	validData() {
+		if (!Array.isArray(this.current) || !this.current.length) {
+			return false; // When iterating too many tracks in a short amount of time, weird things may happen without this check
+		}
+
+		const checkFrame =
+			this.analysis.binaryMode === 'ffprobe' ? (frame) => {
+				const len = Object.prototype.hasOwnProperty.call(frame, 'length') ? frame.length : null;
+				return len === 4 || len === 5;
+			} : (frame) => frame >= -128 && frame <= 127;
+
+		return this.current.every(checkFrame);
+	}
+
+	/**
+	 * Verifies if the processed data is valid.
+	 * @param {FbMetadbHandle} handle - The handle to analyze.
+	 * @param {string} file - The file to analyze.
+	 * @param {boolean} isRetry - The flag whether the data should be retried.
+	 * @returns {boolean} True if the data is valid.
+	 */
+	verifyData(handle, file, isRetry = false) {
+		if (this.validData()) return true;
+
+		if (file) DeleteFile(file);
+
+		if (isRetry) {
+			console.log('File was not successfully analyzed after retrying.');
+			this.isAllowedFile = false;
+			this.isFallback = this.analysis.visualizerFallback;
+			this.isError = true;
+			this.current = [];
+		} else {
+			console.log(`Waveform bar file not valid. Creating new one${file ? `: ${file}` : '.'}`);
+			this.on_playback_new_track(handle, true);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Deletes the waveform bar cache diretory with its processed data.
+	 */
+	removeData() {
+		DeleteFolder(this.cacheDir);
+	}
+
+	/**
+	 * Determines whether data should be saved based on the current analysis save mode and the handle.
+	 * @param {FbMetadbHandle} handle - The handle to check against the save mode and media library.
+	 * @returns {boolean} - Returns `true` if the data should be saved, `false` otherwise.
+	 */
+	saveDataAllowed(handle) {
+		return this.analysis.saveMode === 'always' || (this.analysis.saveMode === 'library' && handle && fb.IsMetadbInMediaLibrary(handle));
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - COMMON * //
+	// #region PUBLIC METHODS - COMMON
 	/**
 	 * Sets the max step based on the BPM of the track.
 	 * @param {object} handle - The handle of the track.
 	 * @returns {number} The max steps.
 	 */
 	bpmSteps(handle = fb.GetNowPlaying()) {
+		if (!handle) return this.defaultSteps();
+
 		// Don't allow anything faster than 2 steps or slower than 10 (scaled to 200 ms refresh rate) and consider setting tracks having 100 BPM as default.
-		if (!handle) { return this.defaultSteps(); }
 		const BPM = Number(this.TfMaxStep.EvalWithMetadb(handle));
 		this.maxStep = Math.round(Math.min(Math.max(200 / (BPM || 100) * 2, 2), 10) * (200 / this.ui.refreshRate) ** (1 / 2));
+
 		return this.maxStep;
 	}
 
@@ -4988,394 +5258,273 @@ class WaveformBar {
 	}
 
 	/**
+	 * Gets the bar width based on the bar design preset.
+	 * @returns {number} The width of the bar corresponding to the design preset.
+	 */
+	getBarWidth() {
+		const barWidth = {
+			waveform: this.ui.sizeWave,
+			bars:     this.ui.sizeBars,
+			dots:     this.ui.sizeDots,
+			halfbars: this.ui.sizeHalf
+		};
+
+		return barWidth[this.preset.barDesign] || 1;
+	}
+
+	/**
+	 * Gets the colors for the waveform bars.
+	 * @param {boolean} useShadeColor - The flag indicating whether to use the ShadeColor for adjustments.
+	 * @param {boolean} highlightCurrentPosition - The flag indicating whether to highlight the current position indicator.
+	 * @returns {object} The object containing colorBack, colorFront and colorsDiffer.
+	 */
+	getColors(useShadeColor = true, highlightCurrentPosition = false) {
+		if (highlightCurrentPosition && (this.preset.indicator || this.mouseDown) && this.analysis.binaryMode !== 'ffprobe' &&
+			(this.frameX <= this.currX && this.frameX >= this.currX - 2 * this.barW)) {
+			return { colorBack: grCol.waveformBarIndicator, colorFront: grCol.waveformBarIndicator, colorsDiffer: false };
+		}
+
+		const colorBack = this.prepaint && this.isPrepaint ?
+			useShadeColor ? ShadeColor(grCol.waveformBarFillBack, 40) : grCol.waveformBarFillPreBack :
+			grCol.waveformBarFillBack;
+
+		const colorFront = this.prepaint && this.isPrepaint ?
+			useShadeColor ? ShadeColor(grCol.waveformBarFillFront, 20) : grCol.waveformBarFillPreFront :
+			grCol.waveformBarFillFront;
+
+		return { colorBack, colorFront, colorsDiffer: colorFront !== colorBack };
+	}
+
+	/**
+	 * Gets ffprobe for Windows or Linux.
+	 */
+	getFFprobe() {
+		const url = Detect.Win64 ?
+			'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip' :
+			'https://github.com/sudo-nautilus/FFmpeg-Builds-Win32/releases/download/latest/ffmpeg-master-latest-win32-gpl.zip';
+
+		RunCmd(url);
+		fb.ShowPopupMessage(`Accept download, extract ffprobe.exe from bin to ${this.binaries.ffprobe}\nand restart foobar.`, 'FFprobe');
+	}
+
+	/**
+	 * Gets the configuration for the different file types to be analyzed.
+	 * @returns {Array<object>} An array of file configuration objects. Each object contains:
+	 * - {string} ext - The file extension.
+	 * - {Function} decompress - The function to decompress and parse the file content.
+	 * - {string} codePage - The code page to be used when reading the file.
+	 */
+	getFileConfigs() {
+		return [
+			{ ext: '.ff.json', decompress: JSON.parse, codePage: this.codePage },
+			{ ext: '.ff.lz',   decompress: str => JSON.parse(LZUTF8.decompress(str, { inputEncoding: 'Base64' })), codePage: this.codePage },
+			{ ext: '.ff.lz16', decompress: str => JSON.parse(LZString.decompressFromUTF16(str)), codePage: this.codePageV2 },
+			{ ext: '.aw.json', decompress: JSON.parse, codePage: this.codePage },
+			{ ext: '.aw.lz',   decompress: str => JSON.parse(LZUTF8.decompress(str, { inputEncoding: 'Base64' })), codePage: this.codePage },
+			{ ext: '.aw.lz16', decompress: str => JSON.parse(LZString.decompressFromUTF16(str)), codePage: this.codePageV2 }
+		];
+	}
+
+	/**
+	 * Gets the paths to the waveform bar cache folder and file.
+	 * @param {object} handle - The handle of the track.
+	 * @returns {object} The paths to the waveform bar cache folder and file.
+	 */
+	getPaths(handle) {
+		const id = CleanFilePath(this.Tf.EvalWithMetadb(handle)); // Ensures paths are valid!
+		const fileName = id.split('\\').pop();
+		const waveformBarFolder = this.cacheDir + (this.saveDataAllowed(handle) ? id.replace(fileName, '') : '');
+		const waveformBarFile = this.cacheDir + id;
+		const sourceFile = this.isZippedFile ? handle.Path.split('|')[0] : handle.Path;
+
+		return { waveformBarFolder, waveformBarFile, sourceFile };
+	}
+
+	/**
+	 * Gets the maximum and minimum values from the frames.
+	 * @param {number[]} frames - The array of frame values.
+	 * @returns {object} The object containing the `upper` and `lower` values.
+	 */
+	getMaxValue(frames) {
+		let upper = 0;
+		let lower = 0;
+
+		for (let i = 0; i < frames.length; i++) {
+			const frame = frames[i];
+			upper = Math.max(upper, frame);
+			lower = Math.min(lower, frame);
+		}
+
+		return { upper, lower };
+	}
+
+	/**
+	 * Gets the minimum value at a specific position in the frames.
+	 * @param {Array} frames - The array of frame data.
+	 * @param {number} pos - The position index in the frame data.
+	 * @returns {number} The minimum value at the specified position.
+	 */
+	getMinValuePos(frames, pos) {
+		let minVal = Infinity;
+
+		for (let i = 0; i < frames.length; i++) {
+			const frame = frames[i];
+			if (frame[pos] === null) frame[pos] = -Infinity;
+			const val = frame[pos];
+			if (isFinite(val)) {
+				minVal = Math.min(minVal, val);
+			}
+		}
+
+		return minVal === Infinity ? 0 : minVal;
+	}
+
+	/**
+	 * Gets the Normalized frame values by subtracting the maximum value from each frame.
+	 * @param {Array} frames - The array of frame data.
+	 * @param {number} maxVal - The maximum value to be subtracted from each frame.
+	 * @returns {Array} The normalized frame data.
+	 */
+	getNormalizedFrameValues(frames, maxVal) {
+		const normalizedFrames = new Array(frames.length);
+
+		for (let i = 0; i < frames.length; i++) {
+			const frame = frames[i];
+			const newFrame = frame.slice();
+
+			if (newFrame[4] !== 1) newFrame[4] -= maxVal;
+			if (!isFinite(newFrame[4])) newFrame[4] = 0;
+
+			normalizedFrames[i] = newFrame;
+		}
+
+		return normalizedFrames;
+	}
+
+	/**
+	 * Gets the scaled frames based on the given position, maximum value, and level type.
+	 * @param {Array} frames - The array of frame data.
+	 * @param {number} pos - The position index in the frame data to be scaled.
+	 * @param {number} max - The maximum value for scaling.
+	 * @param {boolean} isRmsLevel - Whether if RMS level scaling should be applied.
+	 * @returns {Array} The scaled frame data.
+	 */
+	getScaledFrames(frames, pos, max, isRmsLevel) {
+		const scaledFrames = new Array(frames.length);
+		const logMax = Math.log(Math.abs(max));
+
+		for (let i = 0; i < frames.length; i++) {
+			const frame = frames[i];
+			const value = isFinite(frame[pos]) ? frame[pos] : -Infinity;
+
+			let scaledVal =
+				!isFinite(value) ? 1 :
+				isRmsLevel ? 1 - Math.abs((value - max) / max) :
+				Math.abs(1 - (logMax + Math.log(Math.abs(value))) / logMax);
+
+			if (!isFinite(scaledVal)) scaledVal = 0;
+
+			const newFrame = frame.slice(0, 4);
+			newFrame.push(scaledVal);
+			scaledFrames[i] = newFrame;
+		}
+
+		return scaledFrames;
+	}
+
+	/**
+	 * Gets the resized frames based on the given scale and new frame count.
+	 * @param {number} scale - The scale factor for resizing.
+	 * @param {number} frames - The current number of frames.
+	 * @param {number} newFrames - The desired number of frames after resizing.
+	 * @returns {Array} The resized frame data.
+	 */
+	getResizedFrames(scale, frames, newFrames) {
+		const data = Array(newFrames).fill(null).map(() => ({ val: 0, count: 0 }));
+		const scaleFactor = newFrames < frames ? frames / newFrames : newFrames / frames;
+
+		for (let i = 0, j = 0, h = 0; i < frames; i++) {
+			const frame = this.current[i];
+
+			if (newFrames < frames) {
+				while (h >= scaleFactor) {
+					const w = h - scaleFactor;
+					if (j + 1 < newFrames) {
+						data[j + 1].val += frame * w;
+						data[j + 1].count += w;
+					}
+					j += 2;
+					h = 0;
+					if (j >= newFrames) break;
+					data[j].val += frame * (1 - w);
+					data[j].count += (1 - w);
+				}
+				if (i % 2 === 0 && j + 1 < newFrames) {
+					data[j + 1].val += frame;
+					data[j + 1].count++;
+				} else {
+					data[j].val += frame;
+					data[j].count++;
+					h++;
+				}
+			}
+			else {
+				while (h < scaleFactor && j < newFrames) {
+					data[j].val += frame;
+					data[j].count++;
+					j++;
+					h++;
+				}
+				h -= scaleFactor;
+			}
+		}
+
+		return data.filter(el => el.count > 0).map(el => el.val / el.count);
+	}
+
+	/**
 	 * Normalizes points to ensure all points are on the same scale to prevent distortion of the waveform.
 	 * @param {boolean} normalizeWidth - If `true`, adjusts the number of frames to match the window size.
 	 */
 	normalizePoints(normalizeWidth = false) {
 		if (!this.current.length) return;
-		let upper = 0;
-		let lower = 0;
-		if (!this.isFallback && !this.fallbackMode.paint && this.analysis.binaryMode === 'ffprobe') {
-			// Calculate max values
-			const { pos } = this.ffprobeMode[this.preset.analysisMode];
-			let max = 0;
-			for (const frame of this.current) {
-				// After parsing JSON, restore infinity values
-				if (frame[pos] === null) { frame[pos] = -Infinity; }
-				const val = frame[pos];
-				max = Math.min(max, isFinite(val) ? val : 0);
-			}
-			// Calculate point scale
-			let maxVal = 1;
-			if (this.preset.analysisMode !== 'rms_level') {
-				for (const frame of this.current) {
-					if (frame.length === 5) { frame.length = 4; }
-					frame.push(isFinite(frame[pos]) ? Math.abs(1 - (Math.log(Math.abs(+max)) + Math.log(Math.abs(+frame[pos]))) / Math.log(Math.abs(+max))) : 1);
-					if (!isFinite(frame[4])) { frame[4] = 0; }
-					maxVal = Math.min(maxVal, frame[4]);
-				}
-			}
-			else {
-				for (const frame of this.current) {
-					frame.push(isFinite(frame[pos]) ? 1 - Math.abs((frame[pos] - max) / max) : 1);
-					maxVal = Math.min(maxVal, frame[4]);
-				}
-			}
-			// Normalize
-			if (maxVal !== 0) {
-				for (const frame of this.current) {
-					if (frame[4] !== 1) { frame[4] = frame[4] - maxVal; }
-				}
-			}
-			// Flat data
-			this.current = this.current.map((x, i) => Math.sign((0.5 - i % 2)) * (1 - x[4]));
-			// Calculate max values
-			for (const frame of this.current) {
-				upper = Math.max(upper, frame);
-				lower = Math.min(lower, frame);
-			}
-			// max = Math.max(Math.abs(upper), Math.abs(lower));
-		}
-		else if (this.analysis.binaryMode === 'audiowaveform' || this.analysis.binaryMode === 'visualizer' || this.isFallback || this.fallbackMode.paint) {
-			// Calculate max values
-			let max = 0;
-			for (const frame of this.current) {
-				upper = Math.max(upper, frame);
-				lower = Math.min(lower, frame);
-			}
-			max = Math.max(Math.abs(upper), Math.abs(lower));
-			// Calculate point scale
-			this.current = this.current.map((frame) => frame / max);
-		}
-		// Adjust num of frames to window size
-		if (normalizeWidth) {
-			const barW =
-				this.preset.barDesign === 'waveform' ? this.ui.sizeWave :
-				this.preset.barDesign === 'bars'     ? this.ui.sizeBars :
-				this.preset.barDesign === 'dots'     ? this.ui.sizeDots :
-				this.preset.barDesign === 'halfbars' ? this.ui.sizeHalf : 1;
 
+		let { upper, lower } = this.getMaxValue(this.current);
+
+		if (!this.isFallback && !this.fallbackMode.paint && this.analysis.binaryMode === 'ffprobe') {
+			const { pos } = this.ffprobeMode[this.preset.analysisMode];
+			const minVal = this.getMinValuePos(this.current, pos);
+
+			this.current = this.getScaledFrames(this.current, pos, minVal, this.preset.analysisMode === 'rms_level');
+			this.current = this.getNormalizedFrameValues(this.current, Math.min(...this.current.map(frame => frame[4])));
+			this.current = this.current.map((x, i) => Math.sign((0.5 - i % 2)) * (1 - x[4]));
+		}
+		else if (['audiowaveform', 'visualizer'].includes(this.analysis.binaryMode) || this.isFallback || this.fallbackMode.paint) {
+			const maxVal = Math.max(Math.abs(upper), Math.abs(lower));
+			this.current = this.current.map(frame => frame / maxVal);
+		}
+
+		if (normalizeWidth) {
+			const barW = this.getBarWidth();
 			const frames = this.current.length;
 			const newFrames = Math.floor(this.w / barW);
 
-			let data;
-			if (newFrames !== frames) {
-				if (newFrames < frames) {
-					const scale = frames / newFrames;
-					data = Array(newFrames).fill(null).map((_) => ({ val: 0, count: 0 }));
-					let j = 0;
-					let h = 0;
-					let frame;
-					for (let i = 0; i < frames; i++) {
-						frame = this.current[i];
-						if (h >= scale) {
-							const w = (h - scale);
-							if (i % 2 === 0) {
-								if ((j + 1) >= newFrames) { break; }
-								data[j + 1].val += frame * w;
-								data[j + 1].count += w;
-							} else {
-								data[j].val += frame * w;
-								data[j].count += w;
-							}
-							j += 2;
-							h = 0;
-							data[j].val += frame * (1 - w);
-							data[j].count += (1 - w);
-						}
-						else if (i % 2 === 0) {
-							if ((j + 1) >= newFrames) { break; }
-							data[j + 1].val += frame;
-							data[j + 1].count++;
-						}
-						else {
-							data[j].val += frame;
-							data[j].count++;
-							h++;
-						}
-					}
-				}
-				else {
-					const scale = newFrames / frames;
-					data = Array(newFrames).fill(null).map((_) => ({ val: 0, count: 0 }));
-					let j = 0;
-					let h = 0;
-					let frame;
-					for (let i = 0; i < frames; i++) {
-						frame = this.current[i];
-						while (h < scale) {
-							data[j].val += frame;
-							data[j].count++;
-							h++;
-							j++;
-							if (j >= newFrames) { break; }
-						}
-						h = (h - scale);
-						if (j >= newFrames) { break; }
-					}
-				}
-				// Filter non valid values
-				let len = data.length;
-				while (data[len - 1].count === 0) { data.pop(); len--; }
-				// Normalize
-				this.current = data.map((el) => el.val / el.count);
-				// Some combinations of bar widths and number of points may affect the bias to the upper or lower part of the waveform
-				// Lower or upper side can be normalized to the max value of the other side to account for this
-				const bias = Math.abs(upper / lower);
-				upper = lower = 0;
-				for (const frame of this.current) {
-					upper = Math.max(upper, frame);
-					lower = Math.min(lower, frame);
-				}
-				const newBias = Math.abs(upper / lower);
-				const diff = bias - newBias;
-				if (diff > 0.1) {
-					const distort = bias / newBias;
-					const sign = Math.sign(diff);
-					this.current = this.current.map((frame) => sign === 1 && frame > 0 || sign !== 1 && frame < 0 ? frame * distort : frame);
-				}
+			if (newFrames === frames) return;
+
+			this.current = this.getResizedFrames(frames / newFrames, frames, newFrames);
+
+			const bias = Math.abs(upper / lower);
+			upper = lower = 0;
+			({ upper, lower } = this.getMaxValue(this.current));
+			const newBias = Math.abs(upper / lower);
+			const biasDiff = bias - newBias;
+
+			if (biasDiff > 0.1) {
+				const distort = bias / newBias;
+				const sign = Math.sign(biasDiff);
+				this.current = this.current.map(frame => (sign === 1 && frame > 0) || (sign !== 1 && frame < 0) ? frame * distort : frame);
 			}
 		}
-	}
-
-	/**
-	 * Analyzes data of the given handle and saves the results in the waveform bar cache directory.
-	 * @param {FbMetadbHandle} handle - The handle to analyze.
-	 * @param {string} waveformBarFolder - The folder where the waveform bar data should be saved.
-	 * @param {string} waveformBarFile - The name of the waveform bar file.
-	 * @param {string} [sourceFile] - The path of the source file.
-	 * @returns {Promise<void>} A promise that resolves when the analysis has finished.
-	 */
-	async analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile = handle.Path) {
-		if (!IsFolder(waveformBarFolder)) { CreateFolder(waveformBarFolder); }
-		let profiler;
-		let cmd;
-		// Change to track folder since ffprobe has stupid escape rules which are impossible to apply right with amovie input mode.
-		let handleFileName = sourceFile.split('\\').pop();
-		const handleFolder = sourceFile.replace(handleFileName, '');
-		const ffprobe = this.analysis.binaryMode === 'ffprobe';
-		const auWav = this.analysis.binaryMode === 'audiowaveform';
-		const visualizer = this.analysis.binaryMode === 'visualizer';
-
-		if (this.isAllowedFile && !this.fallbackMode.analysis && auWav) {
-			if (this.profile) {
-				profiler = new FbProfiler('audiowaveform');
-			}
-			const extension = handleFileName.match(/(?:\.)(\w+$)/i)[1];
-			cmd = `CMD /C PUSHD ${Quotes(handleFolder)} && ` +
-				Quotes(this.binaries.audiowaveform) + ' -i ' + Quotes(handleFileName) +
-				' --pixels-per-second ' + (Math.round(this.analysis.resolution) || 1) + ' --input-format ' + extension + ' --bits 8' +
-				' -o ' + Quotes(`${waveformBarFolder}data.json`);
-		}
-		else if (this.isAllowedFile && !this.fallbackMode.analysis && ffprobe) {
-			if (this.profile) {
-				profiler = new FbProfiler('ffprobe');
-			}
-			handleFileName = handleFileName.replace(/[,:%.*+?^${}()|[\]\\]/g, '\\$&').replace(/'/g, '\\\\\\\''); // And here we go again...
-			cmd = `CMD /C PUSHD ${Quotes(handleFolder)} && ` +
-				Quotes(this.binaries.ffprobe) + ' -hide_banner -v panic -f lavfi -i amovie=' + Quotes(handleFileName) +
-				(this.analysis.resolution > 1 ? `,aresample=${Math.round((this.analysis.resolution || 1) * 100)},asetnsamples=${Math.round((this.analysis.resolution / 10) ** 2)}` : '') +
-				',astats=metadata=1:reset=1 -show_entries frame=pkt_pts_time:frame_tags=lavfi.astats.Overall.Peak_level,lavfi.astats.Overall.RMS_level,lavfi.astats.Overall.RMS_peak -print_format json > ' +
-				Quotes(`${waveformBarFolder}data.json`);
-		}
-		else if (this.isFallback || visualizer || this.fallbackMode.analysis) {
-			profiler = new FbProfiler('visualizer');
-		}
-
-		if (cmd) {
-			console.log(`Waveform bar scanning: ${sourceFile}`);
-			if (this.debug) { console.log(cmd); }
-		} else if (!this.isAllowedFile && !visualizer && !this.fallbackMode.analysis) {
-			console.log(`Waveform bar skipping incompatible file: ${sourceFile}`);
-		}
-
-		let processed = cmd ? RunCmd(cmd, false) : true;
-		processed = processed && (await new Promise((resolve) => {
-			if (this.isFallback || visualizer || this.fallbackMode.analysis) {
-				resolve(true);
-			}
-			const timeout = Date.now() + Math.round(10000 * (handle.Length / 180)); // Break if it takes too much time: 10 secs per 3 min of track
-			const id = setInterval(() => {
-				if (IsFile(`${waveformBarFolder}data.json`)) {
-					// ffmpeg writes sequentially, wait until job is done.
-					if (!ffprobe || JsonParseFile(`${waveformBarFolder}data.json`, this.codePage)) {
-						clearInterval(id); resolve(true);
-					}
-				}
-				else if (Date.now() > timeout) {
-					clearInterval(id); resolve(false);
-				}
-			}, 300);
-		}));
-		if (processed) {
-			const data = cmd ? JsonParseFile(`${waveformBarFolder}data.json`, this.codePage) : this.visualizerData(handle);
-			DeleteFile(`${waveformBarFolder}data.json`);
-			if (data) {
-				if (!this.isFallback && !this.fallbackMode.analysis && ffprobe && data.frames && data.frames.length) {
-					const processedData = [];
-					for (const frame of data.frames) {
-						// Save values as array to compress file as much as possible, also round decimals...
-						const rms = frame.tags['lavfi.astats.Overall.RMS_level'] === '-inf'	? -Infinity :
-							Round(Number(frame.tags['lavfi.astats.Overall.RMS_level']), 1);
-
-						const rmsPeak = frame.tags['lavfi.astats.Overall.RMS_peak'] === '-inf' ? -Infinity :
-							Round(Number(frame.tags['lavfi.astats.Overall.RMS_peak']), 1);
-
-						const peak = frame.tags['lavfi.astats.Overall.Peak_level'] === '-inf' ? -Infinity :
-							Round(Number(frame.tags['lavfi.astats.Overall.Peak_level']), 1);
-
-						const time = Round(Number(frame.pkt_pts_time), 2);
-						processedData.push([time, rms, rmsPeak, peak]);
-					}
-					this.current = processedData;
-					// Save data and compress it optionally
-					if (this.saveDataAllowed(handle)) {
-						const str = JSON.stringify(this.current);
-						if (this.analysis.compressionMode === 'utf-16') {
-							// FSO is needed in order to save UTF16-LE files:
-							// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
-							const compressed = LZString.compressToUTF16(str);
-							SaveFSO(`${waveformBarFile}.ff.lz16`, compressed, true);
-						}
-						else if (this.analysis.compressionMode === 'utf-8') {
-							// Only Base64 strings can be saved in UTF8 files:
-							// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
-							const compressed = LZUTF8.compress(str, { outputEncoding: 'Base64' });
-							Save(`${waveformBarFile}.ff.lz`, compressed);
-						}
-						else {
-							Save(`${waveformBarFile}.ff.json`, str);
-						}
-					}
-				}
-				else if (!this.isFallback && !this.fallbackMode.analysis && auWav && data.data && data.data.length) {
-					this.current = data.data;
-					if (this.saveDataAllowed(handle)) {
-						const str = JSON.stringify(this.current);
-						if (this.analysis.compressionMode === 'utf-16') {
-							// FSO is needed in order to save UTF16-LE files:
-							// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
-							const compressed = LZString.compressToUTF16(str);
-							SaveFSO(`${waveformBarFile}.aw.lz16`, compressed, true);
-						}
-						else if (this.analysis.compressionMode === 'utf-8') {
-							// Only Base64 strings can be saved in UTF8 files:
-							// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/200
-							const compressed = LZUTF8.compress(str, { outputEncoding: 'Base64' });
-							Save(`${waveformBarFile}.aw.lz`, compressed);
-						}
-						else {
-							Save(`${waveformBarFile}.aw.json`, str);
-						}
-					}
-				}
-				else if ((this.isFallback || visualizer || this.fallbackMode.analysis) && data.length) {
-					this.current = data;
-				}
-			}
-			// Set animation using BPM if possible
-			if (this.preset.animate && this.preset.useBPM) {
-				this.bpmSteps(handle);
-			}
-			// Console and paint
-			if (this.profile) {
-				if (cmd) { profiler.Print(`Retrieve volume levels. Compression ${this.analysis.compressionMode}.`); }
-				else { profiler.Print('Visualizer.'); }
-			}
-			if (this.current.length) {
-				this.throttlePaint();
-			} else {
-				console.log(`${this.analysis.binaryMode}: failed analyzing the file -> ${sourceFile}`);
-			}
-		}
-	}
-
-	/**
-	 * Generates data for the visualizer.
-	 * @param {FbMetadbHandle} handle - The handle to analyze.
-	 * @param {string} preset - The preset to use for the visualizer.
-	 * @param {boolean} variableLen - Whether the length of the data should be variable.
-	 * @returns {Array} The data for the visualizer bar.
-	 */
-	visualizerData(handle, preset = 'classic spectrum analyzer', variableLen = false) {
-		const samples =
-			variableLen ? handle.Length * (this.analysis.resolution || 1) :
-			this.w / SCALE(5) * (this.analysis.resolution || 1);
-
-		const data = [];
-
-		if (preset === 'classic spectrum analyzer') {
-			const third = Math.round(samples / 3);
-			const half = Math.round(samples / 2);
-			for (let i = 0; i < third; i++) {
-				const val = (Math.random() * i) / third;
-				data.push(val);
-			}
-			for (let i = third; i < half; i++) {
-				const val = (Math.random() * i) / third;
-				data.push(val);
-			}
-			for (const frame of [...data].reverse()) data.push(frame);
-		}
-		return data;
-	}
-
-	/**
-	 * Checks if the processed data is valid.
-	 * @returns {boolean} Ture if the data is valid.
-	 */
-	isDataValid() {
-		// When iterating too many tracks in a short ammount of time, weird things may happen without this check
-		if (!Array.isArray(this.current) || !this.current.length) return false;
-		return this.analysis.binaryMode === 'ffprobe' ?
-			this.current.every((frame) => {
-				const len = Object.prototype.hasOwnProperty.call(frame, 'length') ? frame.length : null;
-				return (len === 4 || len === 5);
-			})
-		: this.current.every((frame) => (frame >= -128 && frame <= 127));
-	}
-
-	/**
-	 * Verifies if the processed data is valid.
-	 * @param {FbMetadbHandle} handle - The handle to analyze.
-	 * @param {string} file - The file to analyze.
-	 * @param {boolean} isRetry - Whether the data is being retried.
-	 * @returns {boolean} True if the data is valid.
-	 */
-	verifyData(handle, file, isRetry = false) {
-		if (!this.isDataValid()) {
-			if (isRetry) {
-				console.log('File was not successfully analyzed after retrying.');
-				if (file) DeleteFile(file);
-				this.isAllowedFile = false;
-				this.isFallback = this.analysis.visualizerFallback;
-				this.isError = true;
-				this.current = [];
-			}  else {
-				console.log(`Waveform bar file not valid. Creating new one${file ? `: ${file}` : '.'}`);
-				if (file) DeleteFile(file);
-				this.on_playback_new_track(handle, true);
-			}
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Determines whether data should be saved based on the current analysis save mode and the handle.
-	 * @param {FbMetadbHandle} handle - The handle to check against the save mode and media library.
-	 * @returns {boolean} - Returns `true` if the data should be saved, `false` otherwise.
-	 */
-	saveDataAllowed(handle) {
-		return this.analysis.saveMode === 'always' ||
-			this.analysis.saveMode === 'library' && handle && fb.IsMetadbInMediaLibrary(handle);
-	}
-
-	/**
-	 * Deletes the waveform bar cache diretory with its processed data.
-	 */
-	removeData() {
-		DeleteFolder(this.cacheDir);
 	}
 
 	/**
@@ -5394,7 +5543,7 @@ class WaveformBar {
 		this.isFallback = false;
 		this.fallbackMode.paint = this.fallbackMode.analysis = false;
 		this.resetAnimation();
-		if (this.queueId) clearTimeout(this.queueId);
+		clearTimeout(this.queueId);
 	}
 
 	/**
@@ -5435,23 +5584,88 @@ class WaveformBar {
 	}
 
 	/**
+	 * Sets the rectangular area to be painted.
+	 * @param {number} time - The current playback time.
+	 * @returns {{ x: number, y: number, width: number, height: number }} The object containing the dimensions of the rectangle to be painted.
+	 */
+	setPaintRect(time) {
+		const widerModesScale = ['bars', 'halfbars'].includes(this.preset.barDesign) ? 2 : 1;
+		const barW = Math.ceil(Math.max(this.w / this.current.length, SCALE(2))) * widerModesScale;
+		const currX = this.x + (this.w * time / fb.PlaybackLength);
+
+		const prePaintW = Math.min(
+			this.prepaint && this.preset.prepaintFront !== Infinity || this.preset.animate
+				? this.preset.prepaintFront === Infinity && this.preset.animate
+					? Infinity
+					: (this.preset.prepaintFront / this.timeConstant * barW) + barW
+				: 2.5 * barW,
+			this.w - currX + barW
+		);
+
+		return {
+			x: currX - barW - grm.ui.edgeMargin,
+			y: this.y,
+			width: prePaintW + grm.ui.edgeMarginBoth,
+			height: this.h
+		};
+	}
+
+	/**
+	 * Sets the throttle paint methods based on the current UI refresh rate.
+	 */
+	setThrottlePaint() {
+		/**
+		 * Throttles the window repaint to improve performance by limiting the rate of repaint operations.
+		 * This function is specifically tailored to repaint a defined rectangular area of the window.
+		 * The repaint is controlled by the UI refresh rate.
+		 * @param {boolean} [force] - If set to true, the repaint will be forced even if the window is not dirty.
+		 * @private
+		 */
+		this.throttlePaint = Throttle((force = false) =>
+			window.RepaintRect(this.x - SCALE(2), this.y - this.h * 0.5 - SCALE(4), this.w + SCALE(4), this.h + SCALE(8), force), this.ui.refreshRate);
+
+		/**
+		 * Throttles the window repaint to improve performance by limiting the rate of repaint operations.
+		 * This function allows for the specification of the rectangular area to be repainted.
+		 * The repaint is controlled by the UI refresh rate.
+		 * @param {number} x - The x-coordinate of the upper-left corner of the rectangle to repaint.
+		 * @param {number} y - The y-coordinate of the upper-left corner of the rectangle to repaint.
+		 * @param {number} w - The width of the rectangle to repaint.
+		 * @param {number} h - The height of the rectangle to repaint.
+		 * @param {boolean} [force] - If set to true, the repaint will be forced even if the window is not dirty.
+		 * @private
+		 */
+		this.throttlePaintRect = Throttle((x, y, w, h, force = false) =>
+			window.RepaintRect(x - SCALE(2), y - h * 0.5 - SCALE(4), w + SCALE(4), h + SCALE(8), force), this.ui.refreshRate);
+	}
+
+	/**
+	 * Sets the vertical waveform bar position.
+	 * @param {number} y - The y-coordinate.
+	 */
+	setY(y) {
+		this.y = y + SCALE(10);
+	}
+
+	/**
 	 * This method is currently not used.
 	 * @param {boolean} [enable] - If true, activates the component; if false, deactivates it.
 	 */
 	switch(enable = !this.active) {
+		if (!fb.IsPlaying) return;
+
 		const wasActive = this.active;
 		this.active = enable;
-		if (fb.IsPlaying) {
-			if (!wasActive && this.active) {
-				window.Repaint();
-				setTimeout(() => {
-					this.on_playback_new_track(fb.GetNowPlaying());
-					this.on_playback_time(fb.PlaybackTime);
-				}, 0);
-			}
-			else if (wasActive && !this.active) {
-				this.on_playback_stop(-1);
-			}
+
+		if (!wasActive && this.active) {
+			window.Repaint();
+			setTimeout(() => {
+				this.on_playback_new_track(fb.GetNowPlaying());
+				this.on_playback_time(fb.PlaybackTime);
+			}, 0);
+		}
+		else if (wasActive && !this.active) {
+			this.on_playback_stop(-1);
 		}
 	}
 
@@ -5463,6 +5677,16 @@ class WaveformBar {
 	 */
 	trace(x, y) {
 		return (x >= this.x && y >= this.y && x <= this.x + this.w && y <= this.y + this.h);
+	}
+
+	/**
+	 * Updates the waveform bar with the current track information, playback time and size.
+	 * @param {boolean} current - Whether the current track has changed or not.
+	 */
+	updateBar(current) {
+		if (!current) this.on_playback_new_track(fb.GetNowPlaying());
+		this.on_playback_time(fb.PlaybackTime);
+		this.on_size(grm.ui.ww, grm.ui.wh);
 	}
 	// #endregion
 
@@ -5476,24 +5700,22 @@ class WaveformBar {
 	 * @returns {boolean} True or false.
 	 */
 	on_mouse_lbtn_up(x, y, mask) {
-		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar)) return false;
-		this.mouseDown = false;
-		if (!this.active) { return; }
-		if (!this.trace(x, y)) { return false; }
-		const handle = fb.GetSelection();
-		if (handle && fb.IsPlaying) { // Seek
-			const frames = this.current.length;
-			if (frames !== 0) {
-				const barW = this.w / frames;
-				let time = Math.round(fb.PlaybackLength / frames * (x - this.x) / barW);
-				if (time < 0) { time = 0; }
-				else if (time > fb.PlaybackLength) { time = fb.PlaybackLength; }
-				fb.PlaybackTime = time;
-				this.throttlePaint(true);
-				return true;
-			}
+		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar) ||
+			!this.active || !this.trace(x, y) || !fb.IsPlaying || this.current.length === 0) {
+			this.mouseDown = false;
+			return false;
 		}
-		return false;
+
+		this.mouseDown = false;
+
+		if (!fb.GetSelection()) return;
+
+		const barW = this.w / this.current.length;
+		const time = Math.round(fb.PlaybackLength / this.current.length * (x - this.x) / barW);
+		fb.PlaybackTime = Clamp(time, 0, fb.PlaybackLength);
+		this.throttlePaint(true);
+
+		return true;
 	}
 
 	/**
@@ -5503,10 +5725,11 @@ class WaveformBar {
 	 * @param {number} mask - The mouse mask.
 	 */
 	on_mouse_move(x, y, mask) {
-		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar)) return;
-		if (mask === MouseKey.LButton && this.on_mouse_lbtn_up(x, y, mask)) {
-			this.mouseDown = true;
+		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar)) {
+			return;
 		}
+
+		this.mouseDown = (mask === MouseKey.LButton && this.on_mouse_lbtn_up(x, y, mask));
 	}
 
 	/**
@@ -5519,18 +5742,16 @@ class WaveformBar {
 			return false;
 		}
 
-		let time = fb.PlaybackTime;
-
-		const seekTypes = {
-			seconds: (scroll) => scroll * this.wheel.seekSpeed,
+		const seekType = {
+			seconds:    (scroll) => scroll * this.wheel.seekSpeed,
 			percentage: (scroll) => (scroll * this.wheel.seekSpeed) / 100 * fb.PlaybackLength
 		};
 
-		const seekTypeFunc = seekTypes[this.wheel.seekType] || seekTypes.seconds;
-		time += seekTypeFunc(step);
-		fb.PlaybackTime = Clamp(time, 0, fb.PlaybackLength);
-
+		const seekTypeFunc = seekType[this.wheel.seekType] || seekType.seconds;
+		const newTime = fb.PlaybackTime + seekTypeFunc(step);
+		fb.PlaybackTime = Clamp(newTime, 0, fb.PlaybackLength);
 		this.throttlePaint(true);
+
 		return true;
 	}
 
@@ -5538,92 +5759,33 @@ class WaveformBar {
 	 * Resets the current waveform and processes new data for the new current playing track.
 	 * @param {FbMetadbHandle} handle - The handle of the new track.
 	 * @param {boolean} [isRetry] - The flag indicating whether the method call is a retry attempt.
-	 * @returns {Promise<void>} A promise that resolves when the processing has finished.
+	 * @returns {Promise<void>} The promise that resolves when the processing has finished.
 	 */
 	async on_playback_new_track(handle = fb.GetNowPlaying(), isRetry = false) {
-		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar) || !this.active) { return; }
-		this.reset();
-		if (handle) {
-			this.checkAllowedFile(handle);
-			let analysis = false;
-			const { waveformBarFolder, waveformBarFile, sourceFile } = this.getPaths(handle);
-			const ffprobe = this.analysis.binaryMode === 'ffprobe';
-			const auWav = this.analysis.binaryMode === 'audiowaveform';
-			const visualizer = this.analysis.binaryMode === 'visualizer';
-			// Uncompressed file -> Compressed UTF8 file -> Compressed UTF16 file -> Analyze
-			if (ffprobe && IsFile(`${waveformBarFile}.ff.json`)) {
-				this.current = JsonParseFile(`${waveformBarFile}.ff.json`, this.codePage) || [];
-				if (!this.verifyData(handle, `${waveformBarFile}.ff.json`, isRetry)) { return; };
-			}
-			else if (ffprobe && IsFile(`${waveformBarFile}.ff.lz`)) {
-				let str = Open(`${waveformBarFile}.ff.lz`, this.codePage) || '';
-				str = LZUTF8.decompress(str, { inputEncoding: 'Base64' }) || null;
-				this.current = str ? JSON.parse(str) || [] : [];
-				if (!this.verifyData(handle, `${waveformBarFile}.ff.lz`, isRetry)) { return; };
-			}
-			else if (ffprobe && IsFile(`${waveformBarFile}.ff.lz16`)) {
-				let str = Open(`${waveformBarFile}.ff.lz16`, this.codePageV2) || '';
-				str = LZString.decompressFromUTF16(str) || null;
-				this.current = str ? JSON.parse(str) || [] : [];
-				if (!this.verifyData(handle, `${waveformBarFile}.ff.lz16`, isRetry)) { return; };
-			}
-			else if (auWav && IsFile(`${waveformBarFile}.aw.json`)) {
-				this.current = JsonParseFile(`${waveformBarFile}.aw.json`, this.codePage) || [];
-				if (!this.verifyData(handle, `${waveformBarFile}.aw.json`, isRetry)) { return; };
-			}
-			else if (auWav && IsFile(`${waveformBarFile}.aw.lz`)) {
-				let str = Open(`${waveformBarFile}.aw.lz`, this.codePage) || '';
-				str = LZUTF8.decompress(str, { inputEncoding: 'Base64' }) || null;
-				this.current = str ? JSON.parse(str) || [] : [];
-				if (!this.verifyData(handle, `${waveformBarFile}.aw.lz`, isRetry)) { return; };
-			}
-			else if (auWav && IsFile(`${waveformBarFile}.aw.lz16`)) {
-				let str = Open(`${waveformBarFile}.aw.lz16`, this.codePageV2) || '';
-				str = LZString.decompressFromUTF16(str) || null;
-				this.current = str ? JSON.parse(str) || [] : [];
-				if (!this.verifyData(handle, `${waveformBarFile}.aw.lz16`, isRetry)) { return; };
-			}
-			else if (this.analysis.autoAnalysis && IsFile(sourceFile)) {
-				if (this.analysis.visualizerFallbackAnalysis && this.isAllowedFile) {
-					this.fallbackMode.analysis = this.fallbackMode.paint = true;
-					await this.analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile);
-					// Calculate waveform on the fly
-					this.normalizePoints();
-					// Set animation using BPM if possible
-					if (this.preset.animate && this.preset.useBPM) { this.bpmSteps(handle); }
-					// Update time if needed
-					if (fb.IsPlaying) { this.time = fb.PlaybackTime; }
-				}
-				this.throttlePaint(true);
-				if (this.analysis.visualizerFallbackAnalysis) {
-					this.fallbackMode.analysis = false;
-				}
-				await this.analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile);
-				if (!this.verifyData(handle, undefined, isRetry)) { return; };
-				this.fallbackMode.analysis = this.fallbackMode.paint = false;
-				analysis = true;
-			}
-			if (!analysis) { this.isFallback = false; } // Allow reading data from files, even if track is incompatible.
-			// Calculate waveform on the fly
-			this.normalizePoints(!visualizer && this.ui.sizeNormalizeWidth);
+		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar) || !this.active || !handle) {
+			return;
 		}
+
+		this.reset();
+		this.checkAllowedFile(handle);
+		await this.analyzeDataStart(handle, isRetry);
 		this.resetAnimation();
-		// Set animation using BPM if possible
-		if (this.preset.animate && this.preset.useBPM) { this.bpmSteps(handle); }
-		// Update time if needed
-		if (fb.IsPlaying) { this.time = fb.PlaybackTime; }
-		// And paint
+
+		if (this.preset.animate && this.preset.useBPM) this.bpmSteps(handle);
+		if (fb.IsPlaying) this.time = fb.PlaybackTime;
+
 		this.throttlePaint();
 	}
 
 	/**
-	 * Queues the `on_playback_new_track` event to be fired after a given delay.
-	 * This is useful for debouncing the event, so that it is only fired once after a series of track changes.
+	 * Schedules the `on_playback_new_track` event to be triggered after a specified delay.
+	 * This is useful for debouncing the event, ensuring it is fired only once after a series of track changes.
 	 */
 	on_playback_new_track_queue() {
-		if (this.queueId) clearTimeout(this.queueId);
+		clearTimeout(this.queueId);
+
 		this.queueId = setTimeout(() => {
-			this.on_playback_new_track(...arguments) // Arguments points to the first non arrow func
+			this.on_playback_new_track(...arguments);
 		}, this.queueMs);
 	}
 
@@ -5631,10 +5793,13 @@ class WaveformBar {
 	 * Resets the waveform bar on playback stop.
 	 * @param {number} reason - The type of playback stop.
 	 */
-	on_playback_stop(reason = -1) { // -1 Invoked by JS | 0 Invoked by user | 1 End of file | 2 Starting another track | 3 Fb2k is shutting down
-		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar) || reason !== -1 && !this.active) { return; }
+	on_playback_stop(reason = -1) {
+		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar) || reason !== -1 && !this.active) {
+			return;
+		}
+
 		this.reset();
-		if (reason !== 2) { this.throttlePaint(); }
+		if (reason !== 2) this.throttlePaint();
 	}
 
 	/**
@@ -5642,35 +5807,25 @@ class WaveformBar {
 	 * @param {number} time - The current playback time.
 	 */
 	on_playback_time(time) {
-		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar) || !this.active) { return; }
-		this.time = time;
-		if (this.cache === this.current) { // Paint only once if there is no animation
-			if (this.preset.paintMode === 'full' && !this.preset.indicator && this.analysis.binaryMode !== 'visualizer') {
-				return;
-			}
-		} else {
-			this.cache = this.current;
+		if (['progressbar', 'peakmeterbar'].includes(grSet.seekbar) || !this.active) {
+			return;
 		}
-		// Repaint by zone when possible
-		const frames = this.current.length;
-		if (this.analysis.binaryMode === 'visualizer' || !frames) {
+
+		this.time = time;
+
+		if ((this.preset.paintMode === 'full' || this.preset.indicator || this.analysis.binaryMode === 'visualizer') &&
+			this.cache === this.current) {
+			return;
+		}
+
+		this.cache = this.current;
+
+		if (this.analysis.binaryMode === 'visualizer' || !this.current.length) {
 			this.throttlePaint();
 		}
 		else if (this.preset.paintMode === 'partial' || this.preset.indicator) {
-			const prepaint = this.preset.paintMode === 'partial' && this.preset.bPrePaint;
-			const widerModesScale = (this.preset.waveMode === 'bars' || this.preset.waveMode === 'halfbars' ? 2 : 1);
-			const currX = this.x + this.w * time / fb.PlaybackLength;
-			const barW = Math.ceil(Math.max(this.w / frames, SCALE(2))) * widerModesScale;
-			const timeConstant =  fb.PlaybackLength / frames;
-			const prePaintW = Math.min(
-				prepaint && this.preset.prepaintFront !== Infinity || this.preset.animate
-					? this.preset.prepaintFront === Infinity && this.preset.animate
-						? Infinity
-						: this.preset.prepaintFront / timeConstant * barW + barW
-					: 2.5 * barW,
-				this.w - currX + barW
-			);
-			this.throttlePaintRect(currX - barW - grm.ui.edgeMargin, this.y, prePaintW + grm.ui.edgeMarginBoth, this.h);
+			const paintRect = this.setPaintRect(this.time);
+			this.throttlePaintRect(paintRect.x, paintRect.y, paintRect.width, paintRect.height);
 		}
 	}
 
