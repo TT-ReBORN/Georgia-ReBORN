@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-11-2024                                              * //
+// * Last change:    27-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2460,6 +2460,9 @@ class MainUI {
 			this.displayPanel();
 		}
 
+		grm.peakBar.on_playback_stop(reason);
+		grm.waveBar.on_playback_stop(reason);
+
 		window.Repaint();
 	}
 
@@ -2571,10 +2574,10 @@ class MainUI {
 	handleSeekbarPlayback(x, step = 0) {
 		// Handle mouse click event
 		if (x !== 0) {
-			let v = (x - this.edgeMargin) / (this.ww - this.edgeMarginBoth);
-			v = Clamp(v, 0, 1);
-			if (fb.PlaybackTime !== v * fb.PlaybackLength) {
-				fb.PlaybackTime = v * fb.PlaybackLength;
+			const clampedPosition = Clamp((x - this.edgeMargin) / (this.ww - this.edgeMarginBoth), 0, 1);
+			const newPlaybackTime = clampedPosition * fb.PlaybackLength;
+			if (fb.PlaybackTime !== newPlaybackTime) {
+				fb.PlaybackTime = newPlaybackTime;
 			}
 		}
 		// Handle mouse wheel event

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-11-2024                                              * //
+// * Last change:    27-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1095,7 +1095,6 @@ function on_playback_stop(reason) {
 	DebugLog('Playback => Repainting on_playback_stop:', reason);
 
 	grm.ui.handlePlaybackStop(reason);
-	grm.waveBar.on_playback_stop(reason);
 
 	// The playing playlist state always needs to be cleared when the Playlist is not displayed,
 	// i.e., when the startup panel is not set to `Playlist` and when clicking on the stop button.

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-11-2024                                              * //
+// * Last change:    27-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3294,10 +3294,10 @@ class ProgressBar {
 	 * @private
 	 */
 	setPlaybackTime(x) {
-		let v = (x - this.x) / this.w;
-		v = Clamp(v, 0, 1);
-		if (fb.PlaybackTime !== v * fb.PlaybackLength) {
-			fb.PlaybackTime = v * fb.PlaybackLength;
+		const clampedPosition = Clamp((x - this.x) / this.w, 0, 1);
+		const newPlaybackTime = clampedPosition * fb.PlaybackLength;
+		if (fb.PlaybackTime !== newPlaybackTime) {
+			fb.PlaybackTime = newPlaybackTime;
 		}
 	}
 
@@ -3407,587 +3407,711 @@ class PeakmeterBar {
 	 * Creates the `PeakmeterBar` instance.
 	 */
 	constructor() {
-		if (Component.VUMeter) {
-			this.VUMeter = new ActiveXObject('VUMeter');
-		}
-
-		// * Geometry - Style Horizontal
-		/** @public @type {number} */
+		// * GEOMETRY - STYLE HORIZONTAL * //
+		// #region GEOMETRY - STYLE HORIZONTAL
+		/** @public @type {number} The x-position of the peakmeter bar. */
 		this.x = grm.ui.edgeMargin;
-		/** @public @type {number} */
+		/** @public @type {number} The y-position of the peakmeter bar. */
 		this.y = 0;
-		/** @public @type {number} */
+		/** @public @type {number} The width of the peakmeter bar. */
 		this.w = grm.ui.ww - grm.ui.edgeMarginBoth;
-		/** @public @type {number} */
+		/** @public @type {number} The secondary width of the peakmeter bar. */
 		this.w2 = 0;
-		/** @public @type {number} */
+		/** @public @type {number} The height of the peakmeter bar. */
 		this.h = grm.ui.seekbarHeight;
-		/** @private @type {number} */
+		/** @private @type {number} The height of the bar for the peakmeter. */
 		this.bar_h = grSet.layout !== 'default' ? SCALE(2) : SCALE(4);
-		/** @private @type {number} */
+		/** @private @type {number} The half height of the bar for the peakmeter. */
+		this.bar2_h = this.bar_h * 0.5;
+		/** @private @type {number} The offset for the peakmeter bar. */
 		this.offset = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The middle offset for the peakmeter bar. */
 		this.middleOffset = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The middle width for the peakmeter bar. */
 		this.middle_w = 0;
 
 		// * Top
-		/** @private @type {number} */
+		/** @private @type {number} The width of the outer left bar. */
 		this.outerLeft_w = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The old width of the outer left bar. */
 		this.outerLeft_w_old = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The animated width of the outer left bar. */
 		this.outerLeftAnim_w = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The x-position of the animated outer left bar. */
 		this.outerLeftAnim_x = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The offset for the outer left bar. */
 		this.outerLeft_k = 0;
 
-		/** @private @type {number} */
+		/** @private @type {number} The x-position of the main left bar. */
 		this.mainLeft_x = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The x-position of the animated main left bar. */
 		this.mainLeftAnim_x = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The secondary x-position of the animated main left bar. */
 		this.mainLeftAnim2_x = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The offset for the main left bar. */
 		this.mainLeft_k = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The secondary offset for the main left bar. */
 		this.mainLeft2_k = 0;
 
 		// * Bottom
-		/** @private @type {number} */
+		/** @private @type {number} The width of the outer right bar. */
 		this.outerRight_w = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The old width of the outer right bar. */
 		this.outerRight_w_old = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The animated width of the outer right bar. */
 		this.outerRightAnim_w = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The x-position of the animated outer right bar. */
 		this.outerRightAnim_x = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The offset for the outer right bar. */
 		this.outerRight_k = 0;
 
-		/** @private @type {number} */
+		/** @private @type {number} The x-position of the main right bar. */
 		this.mainRight_x = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The x-position of the animated main right bar. */
 		this.mainRightAnim_x = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The secondary x-position of the animated main right bar. */
 		this.mainRightAnim2_x = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The offset for the main right bar. */
 		this.mainRight_k = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The secondary offset for the main right bar. */
 		this.mainRight2_k = 0;
+		// #endregion
 
-		// * Progress bar state
-		/** @public @type {number} */
+		// * GEOMETRY - STYLE VERTICAL * //
+		// #region GEOMETRY - STYLE VERTICAL
+		/** @private @type {number} The vertical offset for the bar. */
+		this.vertBar_offset = 0;
+		/** @private @type {number} The vertical width of the bar. */
+		this.vertBar_w = 0;
+		/** @private @type {number} The vertical height of the bar. */
+		this.vertBar_h = 0;
+		/** @private @type {number} The x-coordinate for the left vertical bar. */
+		this.vertLeft_x = 0;
+		/** @private @type {number} The x-coordinate for the right vertical bar. */
+		this.vertRight_x = 0;
+		// #endregion
+
+		// * PROGRESS BAR * //
+		// #region PROGRESS BAR
+		/** @public @type {number} The length of the progress bar. */
 		this.progressLength = 0;
-		/** @public @type {boolean} */
+		/** @public @type {boolean} The state indicating whether the progress bar has moved. */
 		this.progressMoved = false;
-		/** @private @type {boolean} */
+		/** @private @type {boolean} The state indicating whether the progress bar is being dragged. */
 		this.drag = false;
+		// #endregion
 
-		// * Mouse events
-		/** @private @type {number} */
+		// * MOUSE EVENTS * //
+		// #region MOUSE EVENTS
+		/** @private @type {number} The x-coordinate position of the mouse. */
 		this.pos_x = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The y-coordinate position of the mouse. */
 		this.pos_y = 0;
-		/** @private @type {boolean} */
+		/** @private @type {boolean} The state indicating whether the mouse is over the peakmeter bar. */
 		this.on_mouse = false;
-		/** @private @type {boolean} */
+		/** @private @type {boolean} The state indicating whether the mouse wheel is being used. */
 		this.wheel = false;
+		// #endregion
 
-		// * Text
-		/** @private @type {GdiFont} */
+		// * TEXT * //
+		// #region TEXT
+		/** @private @type {GdiFont} The font used for text rendering. */
 		this.textFont = gdi.Font('Segoe UI', HD_4K(9, 16), 1);
-		/** @private @type {number} */
+		/** @private @type {number} The width of the text. */
 		this.textWidth = 0;
-		/** @private @type {number} */
+		/** @private @type {number} The height of the text. */
 		this.textHeight = 0;
-		/** @private @type {string} */
+		/** @private @type {string} The text for the tooltip. */
 		this.tooltipText = '';
-		/** @private @type {number} */
+		/** @private @type {number} The timer for the tooltip. */
 		this.tooltipTimer = null;
+		// #endregion
 
-		// * Volume
-		/** @private @type {number[]} */
-		this.db_middle = [-100, -95, -90, -85, -80, -75, -70, -65, -62.5, -60, -57.5, -55, -52.5, -50, -47.5, -45, -42.5, -40, -37.5, -35, -32.5, -30, -27.5, -25, -22.5];
-		/** @private @type {number[]} */
-		this.db = [-20, -17.5, -15, -12.5, -10, -7.5, -5, -4.5, -4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5,	0, 0.1, 1, 1.5, 2, 2.5, 3, 3.5, 5];
-		/** @private @type {number[]} */
-		this.db_vert =
-			grSet.peakmeterBarVertDbRange === 220 ? [-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2] :
-			grSet.peakmeterBarVertDbRange === 215 ? [-15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2] :
-			grSet.peakmeterBarVertDbRange === 210 ? [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2] :
-			grSet.peakmeterBarVertDbRange === 320 ? [-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3] :
-			grSet.peakmeterBarVertDbRange === 315 ? [-15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3] :
-			grSet.peakmeterBarVertDbRange === 310 ? [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3] :
-			grSet.peakmeterBarVertDbRange === 520 ? [-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5] :
-			grSet.peakmeterBarVertDbRange === 515 ? [-15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5] :
-			grSet.peakmeterBarVertDbRange === 510 ? [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5] : '';
+		// * VOLUME * //
+		// #region VOLUME
+		/** @private @type {number[]} The middle decibel values. */
+		this.db_middle = [];
+		/** @private @type {number[]} The current decibel values. */
+		this.db = [];
+		/** @private @type {object[]} The vertical decibel values. */
+		this.db_vert = {};
 
-		/** @private @type {number} */
-		this.points_middle = this.db_middle.length;
-		/** @private @type {number} */
-		this.points = this.db.length;
-		/** @private @type {number} */
-		this.points_vert = this.db_vert.length;
-		/** @private @type {number[]} */
+		/** @private @type {number} The middle points for the peakmeter. */
+		this.points_middle = 0;
+		/** @private @type {number} The points for the peakmeter. */
+		this.points = 0;
+		/** @private @type {number} The vertical points for the peakmeter. */
+		this.points_vert = 0;
+		/** @private @type {number[]} The left peaks for the peakmeter. */
 		this.leftPeaks_s = [];
-		/** @private @type {number[]} */
+		/** @private @type {number[]} The right peaks for the peakmeter. */
 		this.rightPeaks_s = [];
+		// #endregion
 
-		for (let i = 0; i <= this.points_vert; i++) {
-			this.leftPeaks_s[i] = 0;
-			this.rightPeaks_s[i] = 0;
-		}
-
-		// * Geometry - Style Vertical
-		/** @private @type {number} */
-		this.vertBar_offset = ((this.w / this.points_vert) + ((grSet.peakmeterBarVertSize === 'min' ? 2 : grSet.peakmeterBarVertSize) / this.points_vert * 0.5)) * 0.5;
-		/** @private @type {number} */
-		this.vertBar_w = grSet.peakmeterBarVertSize === 'min' ? Math.ceil(this.vertBar_offset * 0.1 * 0.5) : this.vertBar_offset - grSet.peakmeterBarVertSize * 0.5;
-		/** @private @type {number} */
-		this.vertBar_h = 2;
-		/** @private @type {number} */
-		this.vertLeft_x = this.x;
-		/** @private @type {number} */
-		this.vertRight_x = this.vertLeft_x + this.vertBar_offset * this.points_vert;
-
-		// * Colors
-		/** @private @type {number} */
+		// * COLORS * //
+		// #region COLORS
+		/** @private @type {number} The separator index for the peakmeter. */
 		this.separator = 0;
+		/** @private @type {number} The first separator value for the peakmeter. */
+		this.sep1 = 0;
+		/** @private @type {number} The second separator value for the peakmeter. */
+		this.sep2 = 0;
+		// #endregion
 
-		for (let i = 0; i < this.db.length; i++) {
-			if (this.db[i] === 0) this.separator = i;
-		}
-
-		/** @private @type {number} */
-		this.sep1 = this.separator;
-		/** @private @type {number} */
-		this.sep2 = this.points - this.sep1;
-
+		// * INITIALIZATION * //
+		// #region INITIALIZATION
 		grm.ui.seekbarTimerInterval = grSet.peakmeterBarRefreshRate === 'variable' ? FPS._10 : grSet.peakmeterBarRefreshRate;
-
-		this.setColors(fb.GetNowPlaying());
+		this.VUMeter = Component.VUMeter ? new ActiveXObject('VUMeter') : null;
+		this.initDecibel();
+		this.initPeaks();
+		this.initPoints();
+		this.initSeparator();
+		this.setColors();
+		// #endregion
 	}
 
-	// * PUBLIC METHODS * //
-	// #region PUBLIC METHODS
+	// * PUBLIC METHODS - DRAW * //
+	// #region PUBLIC METHODS - DRAW
 	/**
 	 * Draws the peakmeter bar in various peakmeter bar designs.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	draw(gr) {
+		if (!fb.IsPlaying) {
+			gr.FillSolidRect(this.x, this.y, this.w, this.h, grCol.bg);
+			gr.FillSolidRect(this.x, grm.ui.seekbarY, this.w, SCALE(grSet.layout !== 'default' ? 10 : 12), grCol.progressBar);
+			return;
+		}
+
 		if (grSet.peakmeterBarRefreshRate === 'variable' || grm.ui.showDrawExtendedTiming) {
 			grm.ui.seekbarProfiler.Reset();
 		}
 
-		if (grSet.peakmeterBarDesign === 'horizontal') {
-			this.drawPeakmeterBarHorizontal(gr);
-		}
-		else if (grSet.peakmeterBarDesign === 'horizontal_center') {
-			this.drawPeakmeterBarCenter(gr);
-		}
-		else if (grSet.peakmeterBarDesign === 'vertical') {
-			this.drawPeakmeterBarVertical(gr);
-		}
-
-		if (grSet.peakmeterBarInfo) {
-			this.drawPeakmeterBarInfo(gr);
-		}
-
-		if (!fb.IsPlaying) {
-			gr.FillSolidRect(this.x, this.y, this.w, this.h, grCol.bg);
-			gr.FillSolidRect(this.x, grm.ui.seekbarY, this.w, SCALE(grSet.layout !== 'default' ? 10 : 12), grCol.progressBar);
-		}
-
+		this.drawPeakmeterBar(gr);
+		this.setAnimation();
 		this.setRefreshRate();
 	}
 
 	/**
-	 * Draws the peakmeter bar in horizontal design.
+	 * Draws the peakmeter bar design based on design setting.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
-	drawPeakmeterBarHorizontal(gr) {
-		// * Progress Bar
-		if (grSet.peakmeterBarProgBar && fb.PlaybackLength) {
-			if (this.progressMoved || Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
-				this.progressLength = Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength));
-			}
-			this.progressMoved = false;
+	drawPeakmeterBar(gr) {
+		const drawBarDesign = {
+			horizontal:        () => this.drawBarDesignHorizontal(gr),
+			horizontal_center: () => this.drawBarDesignCenter(gr),
+			vertical:          () => this.drawBarDesignVertical(gr)
+		};
 
-			gr.FillSolidRect(this.x, this.middleLeft_y, this.w, this.bar_h, grCol.peakmeterBarProg);
-			gr.FillSolidRect(this.x, this.middleLeft_y, this.progressLength, this.bar_h, grCol.peakmeterBarProgFill);
-		}
-		// * Middle bars
-		else if (grSet.peakmeterBarMiddleBars) {
-			for (let i = 0; i <= this.points_middle; i++) {
-				if (this.leftPeak > this.db_middle[i]) {
-					gr.FillSolidRect(this.x + i * this.middleOffset, this.middleLeft_y, this.middle_w, this.bar_h * 0.5, grCol.peakmeterBarProgFill);
-				}
-				if (this.rightPeak > this.db_middle[i]) {
-					gr.FillSolidRect(this.x + i * this.middleOffset, this.middleRight_y, this.middle_w, this.bar_h * 0.5, grCol.peakmeterBarProgFill);
-				}
-			}
-		}
-		// * Grid
-		if (grSet.peakmeterBarGrid) {
-			gr.FillSolidRect(this.x, this.y, this.w, this.bar_h, grCol.peakmeterBarProg);
-			gr.FillSolidRect(this.x, this.outerRight_y, this.w, this.bar_h, grCol.peakmeterBarProg);
-		}
-
-		for (let i = 0; i <= this.points; i++) {
-			// * MAIN BARS * //
-			if (this.leftPeak > this.db[i]) {
-				if (grSet.peakmeterBarMainBars) {
-					// * Main left bars
-					gr.FillSolidRect(this.x + i * this.offset, this.mainLeft_y, this.w2, this.bar_h, this.color[i]);
-				}
-
-				// * Main left middle peaks
-				if (this.leftPeak < this.db[i + 1]) {
-					this.mainLeft_x = i * this.offset;
-				}
-				if (grSet.peakmeterBarMainPeaks) {
-					gr.FillSolidRect(this.x + this.mainLeftAnim_x + this.offset, this.mainLeft_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-
-					// * Main left top peaks
-					const x = Clamp(this.x + this.mainLeftAnim2_x + this.offset + this.w2 * 0.66, this.x, this.x + this.w - this.w2 * 0.33); // Don't extend right edge of bar
-					const w = x > this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend right edge of bar
-					gr.FillSolidRect(x, this.mainLeft_y, w, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-				}
-			}
-			if (this.rightPeak > this.db[i]) {
-				if (grSet.peakmeterBarMainBars) {
-					// * Main right bars
-					gr.FillSolidRect(this.x + i * this.offset, this.mainRight_y, this.w2, this.bar_h, this.color[i]);
-				}
-
-				// * Main right middle peaks
-				if (this.rightPeak < this.db[i + 1]) {
-					this.mainRight_x = i * this.offset;
-				}
-				if (grSet.peakmeterBarMainPeaks) {
-					gr.FillSolidRect(this.x + this.mainRightAnim_x + this.offset, this.mainRight_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
-
-					// * Main right top peaks
-					const x = Clamp(this.x + this.mainRightAnim2_x + this.offset + this.w2 * 0.66, this.x, this.x + this.w - this.w2 * 0.33); // Don't extend right edge of bar
-					const w = x >= this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend right edge of bar
-					gr.FillSolidRect(x, this.mainRight_y, w, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
-				}
-			}
-
-			// * OUTER BARS * //
-			if (this.leftLevel > this.db[i]) {
-				// * Outer left bars
-				if (this.leftLevel < this.db[i + 1]) {
-					this.outerLeft_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.leftLevel - this.db[i]) - this.x;
-				}
-				if (grSet.peakmeterBarOuterBars) {
-					gr.FillSolidRect(this.x, this.outerLeft_y, this.outerLeft_w, this.bar_h, this.color[1]);
-				}
-
-				// * Outer left peaks
-				if (grSet.peakmeterBarOuterPeaks) {
-					const x = Clamp(this.x + this.outerLeftAnim_x, this.x, this.x + this.w - this.outerLeftAnim_w); // Don't extend right edge of bar
-					gr.FillSolidRect(x, this.outerLeft_y, this.outerLeftAnim_w <= 0 ? 2 : this.outerLeftAnim_w, this.bar_h, this.color[1]);
-				}
-			}
-			if (this.rightLevel > this.db[i]) {
-				// * Outer right bars
-				if (this.rightLevel < this.db[i + 1]) {
-					this.outerRight_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.rightLevel - this.db[i]) - this.x;
-				}
-				if (grSet.peakmeterBarOuterBars) {
-					gr.FillSolidRect(this.x, this.outerRight_y, this.outerRight_w, this.bar_h, this.color[1]);
-				}
-
-				// * Outer right peaks
-				if (grSet.peakmeterBarOuterPeaks) {
-					const x = Clamp(this.x + this.outerRightAnim_x, this.x, this.x + this.w - this.outerRightAnim_w); // Don't extend right edge of bar
-					gr.FillSolidRect(x, this.outerRight_y, this.outerRightAnim_w <= 0 ? 2 : this.outerRightAnim_w, this.bar_h, this.color[1]);
-				}
-			}
-
-			// * OUTER OVER BARS * //
-			if (grSet.peakmeterBarOverBars) {
-				const overLeft  = this.outerLeftAnim_x  + this.outerLeftAnim_w  - this.w;
-				const overRight = this.outerRightAnim_x + this.outerRightAnim_w - this.w;
-				const xLeft     = this.w - overLeft  - this.x;
-				const xRight    = this.w - overRight - this.x;
-				const wLeft     = this.w - xLeft  + this.x;
-				const wRight    = this.w - xRight + this.x;
-				if (overLeft  > 0) gr.FillSolidRect(xLeft,  this.overLeft_y,   wLeft, this.bar_h * 0.5, this.color[10]);
-				if (overRight > 0) gr.FillSolidRect(xRight, this.overRight_y, wRight, this.bar_h * 0.5, this.color[10]);
-			}
-		}
-
-		this.setAnimation();
+		drawBarDesign[grSet.peakmeterBarDesign]();
 	}
 
 	/**
-	 * Draws the peakmeter bar in horizontal center design.
+	 * Draws the horizontal peakmeter bar design.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
-	drawPeakmeterBarCenter(gr) {
-		// * Progress Bar
-		if (grSet.peakmeterBarProgBar && fb.PlaybackLength) {
-			if (this.progressMoved || Math.floor(this.w * 0.5 * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
-				this.progressLength = Math.floor(this.w * 0.5 * (fb.PlaybackTime / fb.PlaybackLength));
-			}
-			this.progressMoved = false;
+	drawBarDesignHorizontal(gr) {
+		this.drawBarGrid(gr);
 
+		for (let i = 0; i <= this.points; i++) {
+			const color = this.color[i];
+			const db = this.db[i];
+			const dbNext = this.db[i + 1];
+			const offset = i * this.offset;
+
+			this.drawHorizontalMainBars(gr, db, dbNext, offset, this.leftPeak, this.mainLeftAnim_x, this.mainLeftAnim2_x, 'mainLeft_x', this.mainLeft_y, color);
+			this.drawHorizontalMainBars(gr, db, dbNext, offset, this.rightPeak, this.mainRightAnim_x, this.mainRightAnim2_x, 'mainRight_x', this.mainRight_y, color);
+
+			this.drawHorizontalOuterBars(gr, db, dbNext, offset, this.leftLevel, this.outerLeftAnim_x, this.outerLeftAnim_w, this.outerLeft_y, 'outerLeft_w');
+			this.drawHorizontalOuterBars(gr, db, dbNext, offset, this.rightLevel, this.outerRightAnim_x, this.outerRightAnim_w, this.outerRight_y, 'outerRight_w');
+
+			this.drawOverBars(gr);
+		}
+
+		this.drawMiddleBars(gr);
+		this.drawProgressBar(gr);
+		this.drawBarInfo(gr);
+	}
+
+	/**
+	 * Draws the main bars in the horizontal peakmeter bar design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {number} db - The current decibel level.
+	 * @param {number} dbNext - The next decibel level.
+	 * @param {number} offset - The offset for drawing.
+	 * @param {number} peak - The peak value.
+	 * @param {number} anim_x - The animation x-coordinate.
+	 * @param {number} anim2_x - The second animation x-coordinate.
+	 * @param {string} main_x - The main x-coordinate property key name.
+	 * @param {number} main_y - The main y-coordinate.
+	 * @param {number} color - The color of the bar.
+	 * @private
+	 */
+	drawHorizontalMainBars(gr, db, dbNext, offset, peak, anim_x, anim2_x, main_x, main_y, color) {
+		if (peak <= db) return;
+
+		if (peak < dbNext) this[main_x] = offset;
+
+		if (grSet.peakmeterBarMainBars) {
+			gr.FillSolidRect(this.x + offset, main_y, this.w2, this.bar_h, color);
+		}
+
+		if (grSet.peakmeterBarMainPeaks) {
+			const color = this.color[Math.round(this.mainLeftAnim_x / this.offset)];
+			gr.FillSolidRect(this.x + anim_x + this.offset, main_y, this.w2 * 0.66, this.bar_h, color);
+
+			const x = Clamp(this.x + anim2_x + this.offset + this.w2 * 0.66, this.x, this.x + this.w - this.w2 * 0.33);
+			const w = x > this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33;
+			gr.FillSolidRect(x, main_y, w, this.bar_h, color);
+		}
+	}
+
+	/**
+	 * Draws the outer bars in the horizontal peakmeter bar design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {number} db - The current decibel level.
+	 * @param {number} dbNext - The next decibel level.
+	 * @param {number} offset - The offset for drawing.
+	 * @param {number} level - The level value.
+	 * @param {number} anim_x - The animation x-coordinate.
+	 * @param {number} anim_w - The animation width.
+	 * @param {number} outer_y - The outer y-coordinate.
+	 * @param {string} outer_w - The outer width property key name.
+	 * @private
+	 */
+	drawHorizontalOuterBars(gr, db, dbNext, offset, level, anim_x, anim_w, outer_y, outer_w) {
+		if (level <= db) return;
+
+		if (level < dbNext) {
+			this[outer_w] = offset + this.offset / Math.abs(dbNext - db) * Math.abs(level - db) - this.x;
+		}
+
+		if (grSet.peakmeterBarOuterBars) {
+			gr.FillSolidRect(this.x, outer_y, this[outer_w], this.bar_h, this.color[1]);
+		}
+
+		if (grSet.peakmeterBarOuterPeaks) {
+			const x = Clamp(this.x + anim_x, this.x, this.x + this.w - anim_w);
+			gr.FillSolidRect(x, outer_y, anim_w <= 0 ? 2 : anim_w, this.bar_h, this.color[1]);
+		}
+	}
+
+	/**
+	 * Draws the horizontal center peakmeter bar design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawBarDesignCenter(gr) {
+		this.drawBarGrid(gr);
+
+		for (let i = 0; i <= this.points; i++) {
+			const color = this.color[i];
+			const db = this.db[i];
+			const dbNext = this.db[i + 1];
+			const offset = i * this.offset;
+			const mainLeft_x = this.x * 0.5 + this.w * 0.5 - i * this.offset + 1;
+			const mainRight_x = this.x + i * this.offset + this.w * 0.5 - 1;
+
+			this.drawCenterMainBars(gr, db, dbNext, offset, this.leftPeak, this.mainLeftAnim_x, this.mainLeftAnim2_x, mainLeft_x, mainRight_x, 'mainLeft_x', this.mainLeft_y, color);
+			this.drawCenterMainBars(gr, db, dbNext, offset, this.rightPeak, this.mainRightAnim_x, this.mainRightAnim2_x, mainLeft_x, mainRight_x, 'mainRight_x', this.mainRight_y, color);
+
+			this.drawCenterOuterBars(gr, db, dbNext, offset, this.leftLevel, this.outerLeftAnim_x, this.outerLeftAnim_w, this.outerLeft_y, 'outerLeft_w');
+			this.drawCenterOuterBars(gr, db, dbNext, offset, this.rightLevel, this.outerRightAnim_x, this.outerRightAnim_w, this.outerRight_y, 'outerRight_w');
+
+			this.drawOverBars(gr);
+		}
+
+		this.drawMiddleBars(gr);
+		this.drawProgressBar(gr);
+		this.drawBarInfo(gr);
+	}
+
+	/**
+	 * Draws the main bars in the horizontal center peakmeter bar design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {number} db - The current decibel level.
+	 * @param {number} dbNext - The next decibel level.
+	 * @param {number} offset - The offset for drawing.
+	 * @param {number} peak - The peak value.
+	 * @param {number} anim_x - The animation x-coordinate.
+	 * @param {number} anim2_x - The second animation x-coordinate.
+	 * @param {number} mainLeft_x - The main left x-coordinate.
+	 * @param {number} mainRight_x - The main right x-coordinate.
+	 * @param {string} main_x - The main x-coordinate property key name.
+	 * @param {number} main_y - The main y-coordinate.
+	 * @param {string} color - The color of the bar.
+	 * @private
+	 */
+	drawCenterMainBars(gr, db, dbNext, offset, peak, anim_x, anim2_x, mainLeft_x, mainRight_x, main_x, main_y, color) {
+		if (peak <= db) return;
+
+		if (peak < dbNext) this[main_x] = offset;
+
+		if (grSet.peakmeterBarMainBars) {
+			gr.FillSolidRect(mainLeft_x,  main_y, this.w2, this.bar_h, color);
+			gr.FillSolidRect(mainRight_x, main_y, this.w2, this.bar_h, color);
+		}
+
+		if (grSet.peakmeterBarMainPeaks) {
+			const color = this.color[Math.round(anim_x / this.offset)];
+			const xLeft  = this.x * 0.5 + this.w * 0.5 - (anim_x + this.offset) + this.w2 * 0.33;
+			const xRight = this.x + anim_x + this.offset + this.w * 0.5;
+			gr.FillSolidRect(xLeft,  main_y, this.w2 * 0.66, this.bar_h, color);
+			gr.FillSolidRect(xRight, main_y, this.w2 * 0.66, this.bar_h, color);
+
+			const xLeftPeaks  = this.x + this.w * 0.5 - anim2_x - this.offset - this.w2 * 0.66;
+			const wLeftPeaks  = xLeftPeaks < this.x + this.w2 * 0.5 ? 0 : this.w2 * 0.33;
+			const xRightPeaks = this.x + this.w * 0.5 + anim2_x + this.offset + this.w2 * 0.66;
+			const wRightPeaks = xRightPeaks > this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33;
+			gr.FillSolidRect(xLeftPeaks,  main_y, wLeftPeaks,  this.bar_h, color);
+			gr.FillSolidRect(xRightPeaks, main_y, wRightPeaks, this.bar_h, color);
+		}
+	}
+
+	/**
+	 * Draws the outer bars in the horizontal center peakmeter bar design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {number} db - The current decibel level.
+	 * @param {number} dbNext - The next decibel level.
+	 * @param {number} offset - The offset for drawing.
+	 * @param {number} level - The level value.
+	 * @param {number} anim_x - The animation x-coordinate.
+	 * @param {number} anim_w - The animation width.
+	 * @param {number} outer_y - The outer y-coordinate.
+	 * @param {string} outer_w - The outer width property name.
+	 * @private
+	 */
+	drawCenterOuterBars(gr, db, dbNext, offset, level, anim_x, anim_w, outer_y, outer_w) {
+		if (level <= db) return;
+
+		if (level < dbNext) {
+			this[outer_w] = offset + this.offset / Math.abs(dbNext - db) * Math.abs(level - db) - this.x;
+		}
+
+		if (grSet.peakmeterBarOuterBars) {
+			const xLeft = Clamp(this.x + this.w * 0.5 - this[outer_w], this.x, this.w * 0.5);
+			const xRight = this.x + this.w * 0.5;
+			const w = Clamp(this[outer_w], 0, this.w * 0.5);
+			gr.FillSolidRect(xLeft,  outer_y, w, this.bar_h, this.color[1]);
+			gr.FillSolidRect(xRight, outer_y, w, this.bar_h, this.color[1]);
+		}
+
+		if (grSet.peakmeterBarOuterPeaks) {
+			const x = Clamp(this.x + anim_x, this.x, this.x + this.w * 0.5 - anim_w);
+			const w = anim_w <= 0 ? 2 : anim_w;
+			const xLeftPeaks  = this.w * 0.5 + this.x * 2 - x - w;
+			const xRightPeaks = this.w * 0.5 + x;
+			gr.FillSolidRect(xLeftPeaks,  outer_y, w, this.bar_h, this.color[1]);
+			gr.FillSolidRect(xRightPeaks, outer_y, w, this.bar_h, this.color[1]);
+		}
+	}
+
+	/**
+	 * Draws the vertical peakmeter bar design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawBarDesignVertical(gr) {
+		const peakL = Math.round(this.leftPeak);
+		const peakR = Math.round(this.rightPeak);
+		const vertBarH = this.vertBar_h * 1.5;
+
+		const toleranceBase = 0.05;
+		const toleranceMin = 0.1;
+		const toleranceMax = 1.0;
+		const toleranceL = Clamp(toleranceBase * Math.abs(peakL), toleranceMin, toleranceMax);
+		const toleranceR = Clamp(toleranceBase * Math.abs(peakR), toleranceMin, toleranceMax);
+
+		for (let i = 0; i < this.points_vert; i++) {
+			const dbL = this.db_vert[i];
+			const dbR = this.db_vert[this.points_vert - 1 - i];
+			const offset = this.vertBar_offset * i;
+
+			if (Math.abs(peakL - dbL) <= toleranceL) this.leftPeaks_s[i] = vertBarH;
+			if (Math.abs(peakR - dbR) <= toleranceR) this.rightPeaks_s[i] = vertBarH;
+
+			this.drawVerticalPeaks(gr, this.vertLeft_x, offset, this.leftPeaks_s[i]);
+			this.drawVerticalPeaks(gr, this.vertRight_x, offset, this.rightPeaks_s[i]);
+		}
+
+		if (grSet.peakmeterBarVertBaseline) {
+			gr.FillSolidRect(this.x, this.y + this.h - this.vertBar_h, this.w, this.vertBar_h, grCol.peakmeterBarProg);
+		}
+
+		this.drawProgressBar(gr);
+		this.drawBarInfo(gr);
+	}
+
+	/**
+	 * Draws the peaks in the vertical peakmeter bar design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {number} xBase - The base x-coordinate.
+	 * @param {number} offset - The offset for drawing.
+	 * @param {number} peak_s - The peak value.
+	 * @private
+	 */
+	drawVerticalPeaks(gr, xBase, offset, peak_s) {
+		const x = xBase + offset;
+		const y = this.y + peak_s - this.vertBar_h;
+
+		if (peak_s <= this.h) {
+			const h = Math.min(this.h - peak_s, this.h);
+			gr.FillSolidRect(x, y, this.vertBar_w, h, grCol.peakmeterBarVertFill);
+		}
+
+		if (grSet.peakmeterBarVertPeaks && peak_s >= 0) {
+			gr.FillSolidRect(x, y, this.vertBar_w, this.vertBar_h, grCol.peakmeterBarVertFillPeaks);
+		}
+	}
+
+	/**
+	 * Draws the over bars in the peakmeter bar designs.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @private
+	 */
+	drawOverBars(gr) {
+		if (!grSet.peakmeterBarOverBars) return;
+
+		const widthSize = grSet.peakmeterBarDesign === 'horizontal' ? 1 : 0.5;
+		const overLeft  = this.outerLeftAnim_x  + this.outerLeftAnim_w  - (this.w * widthSize);
+		const overRight = this.outerRightAnim_x + this.outerRightAnim_w - (this.w * widthSize);
+
+		const outerAnim     = this.outerLeftAnim_x - this.outerLeftAnim_w;
+		const outerAnimHalf = outerAnim * 0.5;
+
+		const xLeft   = this.w - overLeft  - this.x;
+		const xRight  = this.w - overRight - this.x;
+		const xLeft2  = Clamp(this.w * 0.5 - overLeft  - outerAnim, this.x, this.w * 0.5);
+		const xRight2 = Clamp(this.w * 0.5 - overRight - outerAnim, this.x, this.w * 0.5);
+
+		const wLeft   = this.w - xLeft  + this.x;
+		const wRight  = this.w - xRight + this.x;
+		const wLeft2  = this.w - xLeft  + outerAnimHalf;
+		const wRight2 = this.w - xRight + outerAnimHalf;
+
+		if (overLeft > 0) { // Top
+			gr.FillSolidRect(xLeft, this.overLeft_y, wLeft, this.bar2_h, this.color[10]);
+			grSet.peakmeterBarDesign === 'horizontal_center' && gr.FillSolidRect(xLeft2, this.overLeft_y, wLeft2, this.bar2_h, this.color[10]);
+		}
+		if (overRight > 0) { // Bottom
+			gr.FillSolidRect(xRight, this.overRight_y, wRight, this.bar2_h, this.color[10]);
+			grSet.peakmeterBarDesign === 'horizontal_center' && gr.FillSolidRect(xRight2, this.overRight_y, wRight2, this.bar2_h, this.color[10]);
+		}
+	}
+
+	/**
+	 * Draws the middle bars in the peakmeter bar designs.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @private
+	 */
+	drawMiddleBars(gr) {
+		if (!grSet.peakmeterBarMiddleBars) return;
+
+		if (grSet.peakmeterBarDesign === 'horizontal') {
+			for (let i = 0; i <= this.points_middle; i++) {
+				const dbMiddle = this.db_middle[i];
+				const x = this.x + i * this.middleOffset;
+
+				if (this.leftPeak > dbMiddle) {
+					gr.FillSolidRect(x, this.middleLeft_y, this.middle_w, this.bar2_h, grCol.peakmeterBarProgFill);
+				}
+				if (this.rightPeak > dbMiddle) {
+					gr.FillSolidRect(x, this.middleRight_y, this.middle_w, this.bar2_h, grCol.peakmeterBarProgFill);
+				}
+			}
+		}
+		else if (grSet.peakmeterBarDesign === 'horizontal_center') {
+			for (let i = 0; i <= this.points_middle; i++) {
+				const dbMiddle = this.db_middle[i];
+				const x1 = this.x * 0.5 + this.w * 0.5 - i * this.middleOffset + 1;
+				const x2 = this.x + this.w * 0.5 + i * this.middleOffset - 1;
+
+				if (this.leftPeak > dbMiddle) {
+					gr.FillSolidRect(x1, this.middleLeft_y, this.middle_w, this.bar2_h, grCol.peakmeterBarProgFill);
+					gr.FillSolidRect(x2, this.middleLeft_y, this.middle_w, this.bar2_h, grCol.peakmeterBarProgFill);
+				}
+				if (this.rightPeak > dbMiddle) {
+					gr.FillSolidRect(x1, this.middleRight_y, this.middle_w, this.bar2_h, grCol.peakmeterBarProgFill);
+					gr.FillSolidRect(x2, this.middleRight_y, this.middle_w, this.bar2_h, grCol.peakmeterBarProgFill);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Draws the progress bar in the peakmeter bar designs.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @private
+	 */
+	drawProgressBar(gr) {
+		if (!fb.IsPlaying || !grSet.peakmeterBarProgBar) return;
+
+		const playbackRatio = fb.PlaybackTime / fb.PlaybackLength;
+		const progLength = Math.floor(this.w * (grSet.peakmeterBarDesign === 'horizontal_center' ? 0.5 : 1) * playbackRatio);
+
+		if (this.progressMoved || progLength > this.progressLength) {
+			this.progressLength = progLength;
+		}
+		this.progressMoved = false;
+
+		if (grSet.peakmeterBarDesign === 'horizontal') {
+			gr.FillSolidRect(this.x, this.middleLeft_y, this.w, this.bar_h, grCol.peakmeterBarProg);
+			gr.FillSolidRect(this.x, this.middleLeft_y, this.progressLength, this.bar_h, grCol.peakmeterBarProgFill);
+		}
+		else if (grSet.peakmeterBarDesign === 'horizontal_center') {
 			gr.FillSolidRect(this.x, this.middleLeft_y, this.w, this.bar_h, grCol.peakmeterBarProg);
 			gr.FillSolidRect(this.x + this.w * 0.5 - this.progressLength, this.middleLeft_y, this.progressLength, this.bar_h, grCol.peakmeterBarProgFill);
 			gr.FillSolidRect(this.x + this.w * 0.5, this.middleLeft_y, this.progressLength, this.bar_h, grCol.peakmeterBarProgFill);
 		}
-		// * Middle bars
-		else if (grSet.peakmeterBarMiddleBars) {
-			for (let i = 0; i <= this.points_middle; i++) {
-				if (this.leftPeak > this.db_middle[i]) {
-					gr.FillSolidRect(this.x * 0.5 + this.w * 0.5 - i * this.middleOffset + 1, this.middleLeft_y, this.middle_w, this.bar_h * 0.5, grCol.peakmeterBarProgFill);
-					gr.FillSolidRect(this.x + this.w * 0.5 + i * this.middleOffset - 1, this.middleLeft_y, this.middle_w, this.bar_h * 0.5, grCol.peakmeterBarProgFill);
-				}
-				if (this.rightPeak > this.db_middle[i]) {
-					gr.FillSolidRect(this.x * 0.5 + this.w * 0.5 - i * this.middleOffset + 1, this.middleRight_y, this.middle_w, this.bar_h * 0.5, grCol.peakmeterBarProgFill);
-					gr.FillSolidRect(this.x + this.w * 0.5 + i * this.middleOffset - 1, this.middleRight_y, this.middle_w, this.bar_h * 0.5, grCol.peakmeterBarProgFill);
-				}
-			}
+		else if (grSet.peakmeterBarDesign === 'vertical') {
+			gr.FillSolidRect(this.x, this.y + this.h - this.vertBar_h, this.w, this.bar_h, grCol.peakmeterBarProg);
+			gr.FillSolidRect(this.x, this.y + this.h - this.vertBar_h, this.progressLength, this.bar_h, grCol.peakmeterBarVertProgFill);
 		}
-		// * Grid
-		if (grSet.peakmeterBarGrid) {
-			gr.FillSolidRect(this.x, this.y, this.w, this.bar_h, grCol.peakmeterBarProg);
-			gr.FillSolidRect(this.x, this.outerRight_y, this.w, this.bar_h, grCol.peakmeterBarProg);
-		}
-
-		for (let i = 0; i <= this.points; i++) {
-			// * MAIN BARS * //
-			if (this.leftPeak > this.db[i]) {
-				if (grSet.peakmeterBarMainBars) {
-					// * Main left bars
-					const xLeft  = this.x * 0.5 + this.w * 0.5 - i * this.offset + 1;
-					const xRight = this.x + i * this.offset + this.w * 0.5 - 1;
-					gr.FillSolidRect(xLeft,  this.mainLeft_y, this.w2, this.bar_h, this.color[i]);
-					gr.FillSolidRect(xRight, this.mainLeft_y, this.w2, this.bar_h, this.color[i]);
-				}
-
-				// * Main left middle peaks
-				if (this.leftPeak < this.db[i + 1]) {
-					this.mainLeft_x = i * this.offset;
-				}
-				if (grSet.peakmeterBarMainPeaks) {
-					const xLeft  = this.x * 0.5 + this.w * 0.5 - (this.mainLeftAnim_x + this.offset) + this.w2 * 0.33;
-					const xRight = this.w * 0.5 + this.x + this.mainLeftAnim_x + this.offset;
-					gr.FillSolidRect(xLeft,  this.mainLeft_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-					gr.FillSolidRect(xRight, this.mainLeft_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-
-					// * Main left top peaks
-					const xLeftPeaks  = this.x + this.w * 0.5 - this.mainLeftAnim2_x - this.offset - this.w2 * 0.66;
-					const wLeftPeaks  = xLeftPeaks < this.x + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend left edge of bar
-					const xRightPeaks = this.x + this.w * 0.5 + this.mainLeftAnim2_x + this.offset + this.w2 * 0.66;
-					const wRightPeaks = xRightPeaks > this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend left edge of bar
-					gr.FillSolidRect(xLeftPeaks,  this.mainLeft_y, wLeftPeaks,  this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-					gr.FillSolidRect(xRightPeaks, this.mainLeft_y, wRightPeaks, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-				}
-			}
-			if (this.rightPeak > this.db[i]) {
-				if (grSet.peakmeterBarMainBars) {
-					// * Main right bars
-					const xLeft  = this.x * 0.5 + this.w * 0.5 - i * this.offset + 1;
-					const xRight = this.x + i * this.offset + this.w * 0.5 - 1;
-					gr.FillSolidRect(xLeft,  this.mainRight_y, this.w2, this.bar_h, this.color[i]);
-					gr.FillSolidRect(xRight, this.mainRight_y, this.w2, this.bar_h, this.color[i]);
-				}
-
-				// * Main right middle peaks
-				if (this.rightPeak < this.db[i + 1]) {
-					this.mainRight_x = i * this.offset;
-				}
-				if (grSet.peakmeterBarMainPeaks) {
-					const xLeft  = this.x * 0.5 + this.w * 0.5 - (this.mainRightAnim_x + this.offset) + this.w2 * 0.33;
-					const xRight = this.x + this.mainRightAnim_x + this.offset + this.w * 0.5;
-					gr.FillSolidRect(xLeft,  this.mainRight_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
-					gr.FillSolidRect(xRight, this.mainRight_y, this.w2 * 0.66, this.bar_h, this.color[Math.round(this.mainRightAnim_x / this.offset)]);
-
-					// * Main right top peaks
-					const xLeftPeaks  = this.x + this.w * 0.5 - this.mainRightAnim2_x - this.offset - this.w2 * 0.66;
-					const wLeftPeaks  = xLeftPeaks < this.x + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend left edge of bar
-					const xRightPeaks = this.x + this.w * 0.5 + this.mainRightAnim2_x + this.offset + this.w2 * 0.66;
-					const wRightPeaks = xRightPeaks > this.w + this.w2 * 0.5 ? 0 : this.w2 * 0.33; // Don't extend left edge of bar
-					gr.FillSolidRect(xLeftPeaks,  this.mainRight_y, wLeftPeaks,  this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-					gr.FillSolidRect(xRightPeaks, this.mainRight_y, wRightPeaks, this.bar_h, this.color[Math.round(this.mainLeftAnim_x / this.offset)]);
-				}
-			}
-
-			// * OUTER BARS * //
-			if (this.leftLevel > this.db[i]) {
-				// * Outer left bars
-				if (this.leftLevel < this.db[i + 1]) {
-					this.outerLeft_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.leftLevel - this.db[i]) - this.x;
-				}
-				if (grSet.peakmeterBarOuterBars) {
-					const xLeft  = Clamp(this.x + this.w * 0.5 - this.outerLeft_w, this.x, this.w * 0.5);
-					const xRight = this.x + this.w * 0.5;
-					const w      = Clamp(this.outerLeft_w, 0, this.w * 0.5);
-					gr.FillSolidRect(xLeft,  this.outerLeft_y, w, this.bar_h, this.color[1]);
-					gr.FillSolidRect(xRight, this.outerLeft_y, w, this.bar_h, this.color[1]);
-				}
-
-				// * Outer left peaks
-				if (grSet.peakmeterBarOuterPeaks) {
-					const clamped_x = Clamp(this.x + this.outerLeftAnim_x, this.x, this.x + this.w * 0.5 - this.outerLeftAnim_w); // Don't extend left edge of bar
-					const w = this.outerLeftAnim_w <= 0 ? 2 : this.outerLeftAnim_w;
-					const xLeft  = this.w * 0.5 + this.x * 2 - clamped_x - w;
-					const xRight = this.w * 0.5 + clamped_x;
-					gr.FillSolidRect(xLeft,  this.outerLeft_y, w, this.bar_h, this.color[1]);
-					gr.FillSolidRect(xRight, this.outerLeft_y, w, this.bar_h, this.color[1]);
-				}
-			}
-			if (this.rightLevel > this.db[i]) {
-				// * Outer right bars
-				if (this.rightLevel < this.db[i + 1]) {
-					this.outerRight_w = i * this.offset + this.offset / Math.abs(this.db[i + 1] - this.db[i]) * Math.abs(this.rightLevel - this.db[i]) - this.x;
-				}
-				if (grSet.peakmeterBarOuterBars) {
-					const xLeft  = Clamp(this.x + this.w * 0.5 - this.outerRight_w, this.x, this.w * 0.5);
-					const xRight = this.x + this.w * 0.5;
-					const w      = Clamp(this.outerRight_w, 0, this.w * 0.5);
-					gr.FillSolidRect(xLeft,  this.outerRight_y, w, this.bar_h, this.color[1]);
-					gr.FillSolidRect(xRight, this.outerRight_y, w, this.bar_h, this.color[1]);
-				}
-
-				// * Outer right peaks
-				if (grSet.peakmeterBarOuterPeaks) {
-					const clamped_x = Clamp(this.x + this.outerRightAnim_x, this.x, this.x + this.w * 0.5 - this.outerRightAnim_w); // Don't extend right edge of bar
-					const w = this.outerRightAnim_w <= 0 ? 2 : this.outerRightAnim_w;
-					const xLeftPeaks  = this.w * 0.5 + this.x * 2 - clamped_x - w;
-					const xRightPeaks = this.w * 0.5 + clamped_x;
-					gr.FillSolidRect(xLeftPeaks,  this.outerRight_y, w, this.bar_h, this.color[1]);
-					gr.FillSolidRect(xRightPeaks, this.outerRight_y, w, this.bar_h, this.color[1]);
-				}
-			}
-
-			// * OUTER OVER BARS * //
-			if (grSet.peakmeterBarOverBars) {
-				const overLeft  = this.outerLeftAnim_x  + this.outerLeftAnim_w  - this.w * 0.5;
-				const overRight = this.outerRightAnim_x + this.outerRightAnim_w - this.w * 0.5;
-
-				const xLeft   = this.w - overLeft  - this.x;
-				const xRight  = this.w - overRight - this.x;
-				const xLeft2  = Clamp(this.w * 0.5 - overLeft  - this.outerLeftAnim_x  - this.outerLeftAnim_w,  this.x, this.w * 0.5);
-				const xRight2 = Clamp(this.w * 0.5 - overRight - this.outerRightAnim_x - this.outerRightAnim_w, this.x, this.w * 0.5);
-
-				const wLeft   = this.w - xLeft  + this.x;
-				const wRight  = this.w - xRight + this.x;
-				const wLeft2  = this.w - xLeft  + this.outerLeftAnim_x  * 0.5  - this.outerLeftAnim_w  * 0.5;
-				const wRight2 = this.w - xRight + this.outerRightAnim_x * 0.5  - this.outerRightAnim_w * 0.5;
-
-				if (overLeft  > 0) { // Top
-					gr.FillSolidRect(xLeft,  this.overLeft_y, wLeft,  this.bar_h * 0.5, this.color[10]);
-					gr.FillSolidRect(xLeft2, this.overLeft_y, wLeft2, this.bar_h * 0.5, this.color[10]);
-				}
-				if (overRight > 0) { // Bottom
-					gr.FillSolidRect(xRight,  this.overRight_y, wRight,  this.bar_h * 0.5, this.color[10]);
-					gr.FillSolidRect(xRight2, this.overRight_y, wRight2, this.bar_h * 0.5, this.color[10]);
-				}
-			}
-		}
-
-		this.setAnimation();
 	}
 
 	/**
-	 * Draws the peakmeter bar in vertical design.
+	 * Draws the grid in the peakmeter bar designs.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
-	drawPeakmeterBarVertical(gr) {
-		for (let i = 0; i < this.points_vert; i++) {
-			// * Left Peaks
-			if (Math.round(this.leftPeak) === this.db_vert[i]) {
-				this.leftPeaks_s[i] = this.vertBar_h * 1.5; // Max height of bars
-			}
-			if (this.leftPeaks_s[i] <= this.h) {
-				const x = this.vertLeft_x + this.vertBar_offset * i;
-				const y = this.y + this.leftPeaks_s[i] - this.vertBar_h;
-				const h = this.leftPeaks_s[i] <= this.vertBar_h ? this.h : this.h - this.leftPeaks_s[i];
-				gr.FillSolidRect(x, y, this.vertBar_w, h, grCol.peakmeterBarVertFill);
-			}
-			if (grSet.peakmeterBarVertPeaks && this.leftPeaks_s[i] >= 0) {
-				const x = this.vertLeft_x + this.vertBar_offset * i;
-				const y = this.y + this.leftPeaks_s[i] - this.vertBar_h;
-				gr.FillSolidRect(x, y, this.vertBar_w, this.vertBar_h, grCol.peakmeterBarVertFillPeaks);
-			}
-
-			// * Right Peaks
-			if (Math.round(this.rightPeak) === this.db_vert[this.points_vert - 1 - i]) {
-				this.rightPeaks_s[i] = this.vertBar_h * 1.5; // Max height of bars
-			}
-			if (this.rightPeaks_s[i] <= this.h) {
-				const x = this.vertRight_x + this.vertBar_offset * i;
-				const y = this.y + this.rightPeaks_s[i] - this.vertBar_h;
-				const h = this.rightPeaks_s[i] <= this.vertBar_h ? this.h : this.h - this.rightPeaks_s[i];
-				gr.FillSolidRect(x, y, this.vertBar_w, h, grCol.peakmeterBarVertFill);
-			}
-			if (grSet.peakmeterBarVertPeaks && this.rightPeaks_s[i] >= 0) {
-				const x = this.vertRight_x + this.vertBar_offset * i;
-				const y = this.y + this.rightPeaks_s[i] - this.vertBar_h;
-				gr.FillSolidRect(x, y, this.vertBar_w, this.vertBar_h, grCol.peakmeterBarVertFillPeaks);
-			}
-		}
-		// * Progress Bar
-		if (grSet.peakmeterBarProgBar && fb.PlaybackLength) {
-			if (this.progressMoved || Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
-				this.progressLength = Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength));
-			}
-			this.progressMoved = false;
-
-			gr.FillSolidRect(this.x, this.y + this.h - this.vertBar_h, this.w, Math.round(this.bar_h), grCol.peakmeterBarProg);
-			gr.FillSolidRect(this.x, this.y + this.h - this.vertBar_h, this.progressLength, Math.round(this.bar_h), grCol.peakmeterBarVertProgFill);
-		}
-		else if (grSet.peakmeterBarVertBaseline) {
-			gr.FillSolidRect(this.x, this.y + this.h - this.vertBar_h, this.w, this.vertBar_h, grCol.peakmeterBarProg);
-		}
-
-		this.setAnimation();
+	drawBarGrid(gr) {
+		if (!grSet.peakmeterBarGrid) return;
+		gr.FillSolidRect(this.x, this.outerLeft_y, this.w, this.bar_h, grCol.peakmeterBarProg);
+		gr.FillSolidRect(this.x, this.outerRight_y, this.w, this.bar_h, grCol.peakmeterBarProg);
 	}
 
 	/**
-	 * Draws the peakmeter bar info.
+	 * Draws the bar info in the peakmeter bar designs.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
-	drawPeakmeterBarInfo(gr) {
+	drawBarInfo(gr) {
+		if (!grSet.peakmeterBarInfo) return;
+
 		const infoTextColor = grCol.lowerBarArtist;
+
 		if (grSet.peakmeterBarDesign === 'horizontal') {
-			for (let i = 0; i <= this.points; i = i + 2) {
+			const text_db_w = gr.CalcTextWidth('db', this.textFont);
+
+			for (let i = 4; i <= this.points; i += 2) {
 				const text_w = gr.CalcTextWidth(this.db[i], this.textFont);
-				if (i > 2) {
-					gr.GdiDrawText(this.db[i], this.textFont, infoTextColor, this.x + this.offset * i - text_w * 0.5, this.text_y, this.w, this.h);
-				}
+				gr.GdiDrawText(this.db[i], this.textFont, infoTextColor, this.x + this.offset * i - text_w * 0.5, this.text_y, this.w, this.h);
 			}
-			const text_w = gr.CalcTextWidth('db', this.textFont);
-			gr.GdiDrawText('db', this.textFont, infoTextColor, this.x + this.offset * 2 - text_w, this.text_y, this.w, this.h);
+
+			gr.GdiDrawText('db', this.textFont, infoTextColor, this.x + this.offset * 2 - text_db_w, this.text_y, this.w, this.h);
 		}
 		else if (grSet.peakmeterBarDesign === 'horizontal_center') {
-			for (let i = 0; i <= this.points; i = i + 2) {
+			const text_db_w = gr.CalcTextWidth('db', this.textFont);
+
+			for (let i = 4; i <= this.points; i += 2) {
 				const textRight_w = gr.CalcTextWidth(this.db[i], this.textFont);
 				const textLeft_w2 = gr.CalcTextWidth(`${this.db[this.points + 3 - i]}-`, this.textFont);
-				if (i > 2) {
-					gr.GdiDrawText(this.db[i], this.textFont, infoTextColor, this.w * 0.5 + this.offset * i - textRight_w * 0.5, this.text_y, this.w, this.h);
-					gr.GdiDrawText(this.db[this.points + 3 - i], this.textFont, infoTextColor, this.x + this.offset * i - textLeft_w2 * 1.5, this.text_y, this.w, this.h);
-				}
+
+				gr.GdiDrawText(this.db[i], this.textFont, infoTextColor, this.w * 0.5 + this.offset * i - textRight_w * 0.5, this.text_y, this.w, this.h);
+				gr.GdiDrawText(this.db[this.points + 3 - i], this.textFont, infoTextColor, this.x + this.offset * i - textLeft_w2 * 1.5, this.text_y, this.w, this.h);
 			}
-			const text_w = gr.CalcTextWidth('db', this.textFont);
-			gr.GdiDrawText('db', this.textFont, infoTextColor, this.w * 0.5 + this.offset * 2 - text_w * 0.5, this.text_y, this.w, this.h);
+
+			gr.GdiDrawText('db', this.textFont, infoTextColor, this.w * 0.5 + this.offset * 2 - text_db_w * 0.5, this.text_y, this.w, this.h);
 		}
 		else if (grSet.peakmeterBarDesign === 'vertical') {
-			for (let  i = 0; i <= this.points_vert; i++) {
-				const textWidthLeft  = gr.CalcTextWidth(`${this.db_vert[i]}--`, this.textFont);
-				const textWidthRight = gr.CalcTextWidth(`${this.db_vert[this.points_vert - 1 - i]}--`, this.textFont);
-				const textLeft_x     = this.vertLeft_x  + this.vertBar_offset * i - textWidthLeft  / 2 + (this.vertBar_offset - this.vertBar_w);
-				const textRight_x    = this.vertRight_x + this.vertBar_offset * i - textWidthRight / 2 + (this.vertBar_offset - this.vertBar_w);
-				gr.GdiDrawText(this.db_vert[i] % 2 === 0 ? this.db_vert[i] : '', this.textFont, infoTextColor, textLeft_x, this.y, grm.ui.ww, grm.ui.wh);
-				gr.GdiDrawText(this.db_vert[this.points_vert - 1 - i] % 2 === 0 ? this.db_vert[this.points_vert - 1 - i] : '', this.textFont, infoTextColor, textRight_x, this.y, grm.ui.ww, grm.ui.wh);
+			for (let i = 0; i <= this.points_vert; i++) {
+				const dbLeft = this.db_vert[i];
+				const dbRight = this.db_vert[this.points_vert - 1 - i];
+
+				const textLeft_w = gr.CalcTextWidth(`${dbLeft}--`, this.textFont);
+				const textRight_w = gr.CalcTextWidth(`${dbRight}--`, this.textFont);
+				const textLeft_x = this.vertLeft_x + this.vertBar_offset * i - textLeft_w / 2 + (this.vertBar_offset - this.vertBar_w);
+				const textRight_x = this.vertRight_x + this.vertBar_offset * i - textRight_w / 2 + (this.vertBar_offset - this.vertBar_w);
+
+				gr.GdiDrawText(dbLeft % 2 === 0 ? dbLeft : '', this.textFont, infoTextColor, textLeft_x, this.y, grm.ui.ww, grm.ui.wh);
+				gr.GdiDrawText(dbRight % 2 === 0 ? dbRight : '', this.textFont, infoTextColor, textRight_x, this.y, grm.ui.ww, grm.ui.wh);
 			}
 		}
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - INITIALIZATION * //
+	// #region PUBLIC METHODS - INITIALIZATION
+	/**
+	 * Initializes the decibel arrays for different configurations.
+	 */
+	initDecibel() {
+		this.db = [-20, -17.5, -15, -12.5, -10, -7.5, -5, -4.5, -4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5,	0, 0.1, 1, 1.5, 2, 2.5, 3, 3.5, 5];
+		this.db_middle = [-100, -95, -90, -85, -80, -75, -70, -65, -62.5, -60, -57.5, -55, -52.5, -50, -47.5, -45, -42.5, -40, -37.5, -35, -32.5, -30, -27.5, -25, -22.5];
+		this.db_vert = {
+			220: [-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2],
+			215: [-15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2],
+			210: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2],
+			320: [-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3],
+			315: [-15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3],
+			310: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3],
+			520: [-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+			515: [-15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+			510: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+		}[grSet.peakmeterBarVertDbRange];
+	}
+
+	/**
+	 * Initializes the points for different decibel arrays.
+	 */
+	initPoints() {
+		this.points_middle = this.db_middle.length;
+		this.points = this.db.length;
+		this.points_vert = this.db_vert.length;
+
+		for (let i = 0; i <= this.points_vert; i++) {
+			this.leftPeaks_s[i] = 0;
+			this.rightPeaks_s[i] = 0;
+		}
+	}
+
+	/**
+	 * Initializes the peaks arrays for left and right channels.
+	 */
+	initPeaks() {
+		this.leftPeaks_s  = new Array(this.points_vert + 1).fill(0);
+		this.rightPeaks_s = new Array(this.points_vert + 1).fill(0);
+	}
+
+	/**
+	 * Initializes the separator index based on the decibel array.
+	 */
+	initSeparator() {
+		this.separator = this.db.indexOf(0);
+		this.sep1 = this.separator;
+		this.sep2 = this.points - this.sep1;
+	}
+
+	/**
+	 * Initializes bar geometry properties.
+	 */
+	initGeometry() {
+		this.bar_h = grSet.layout !== 'default' ? SCALE(2) : SCALE(4);
+
+		this.offset       = (grSet.peakmeterBarDesign === 'horizontal_center' ? this.w * 0.5 : this.w) / this.points;
+		this.middleOffset = (grSet.peakmeterBarDesign === 'horizontal_center' ? this.w * 0.5 : this.w) / this.points_middle;
+		this.middle_w     = this.middleOffset - (grSet.peakmeterBarGaps ? 1 : 0);
+		this.w2           = this.offset - (grSet.peakmeterBarGaps ? 1 : 0);
+
+		this.vertBar_offset = ((this.w / this.points_vert) + ((grSet.peakmeterBarVertSize === 'min' ? 2 : grSet.peakmeterBarVertSize) / this.points_vert * 0.5)) * 0.5;
+		this.vertBar_w = grSet.peakmeterBarVertSize === 'min' ? Math.ceil(this.vertBar_offset * 0.1 * 0.5) : this.vertBar_offset - grSet.peakmeterBarVertSize * 0.5;
+		this.vertBar_h = 2;
+		this.vertLeft_x = this.x;
+		this.vertRight_x = this.vertLeft_x + this.vertBar_offset * this.points_vert;
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - COMMON * //
+	// #region PUBLIC METHODS - COMMON
+	/**
+	 * Resets the state of the peakmeter bar.
+	 */
+	reset() {
+		this.leftLevel = 0;
+		this.leftPeak = 0;
+		this.rightLevel = 0;
+		this.rightPeak = 0;
+		this.leftPeaks_s = [];
+		this.rightPeaks_s = [];
+		this.progressLength = 0;
+		this.progressMoved = false;
+		this.tooltipText = '';
 	}
 
 	/**
@@ -3995,14 +4119,14 @@ class PeakmeterBar {
 	 * Bars are ordered from top to bottom.
 	 * @param {number} y - The y-coordinate.
 	 */
-	setY(y) {
+	setY(y = grm.ui.seekbarY) {
 		this.y = y;
 		this.overLeft_y    = this.y;
-		this.outerLeft_y   = this.overLeft_y    + this.bar_h * 0.5;
+		this.outerLeft_y   = this.overLeft_y    + this.bar2_h;
 		this.mainLeft_y    = this.outerLeft_y   + this.bar_h;
 		this.middleLeft_y  = this.mainLeft_y    + this.bar_h + SCALE(1);
-		this.middleRight_y = this.middleLeft_y  + this.bar_h * 0.5;
-		this.mainRight_y   = this.middleRight_y + this.bar_h * 0.5 + SCALE(1);
+		this.middleRight_y = this.middleLeft_y  + this.bar2_h;
+		this.mainRight_y   = this.middleRight_y + this.bar2_h + SCALE(1);
 		this.outerRight_y  = this.mainRight_y   + this.bar_h;
 		this.overRight_y   = this.outerRight_y  + this.bar_h;
 		this.text_y        = this.outerRight_y  + this.bar_h * 2;
@@ -4013,29 +4137,33 @@ class PeakmeterBar {
 	 */
 	setAnimation() {
 		// * Set and monitor volume level/peaks from VUMeter
-		this.leftLevel = ConvertVolume(this.VUMeter.LeftLevel, 'vuLevelToDecibel');
-		this.leftPeak = ConvertVolume(this.VUMeter.LeftPeak, 'vuLevelToDecibel');
-		this.rightLevel = ConvertVolume(this.VUMeter.RightLevel, 'vuLevelToDecibel');
-		this.rightPeak = ConvertVolume(this.VUMeter.RightPeak, 'vuLevelToDecibel');
+		const convertVolume = ConvertVolume;
+		const vuMeter = this.VUMeter;
+		this.leftLevel  = convertVolume(vuMeter.LeftLevel,  'vuLevelToDecibel');
+		this.leftPeak   = convertVolume(vuMeter.LeftPeak,   'vuLevelToDecibel');
+		this.rightLevel = convertVolume(vuMeter.RightLevel, 'vuLevelToDecibel');
+		this.rightPeak  = convertVolume(vuMeter.RightPeak,  'vuLevelToDecibel');
 
 		// * Debug stuff
 		// DebugLog('LEFT PEAKS: ',  this.leftPeak,   '      RIGHT PEAKS: ',  this.rightPeak);
 		// DebugLog('LEFT LEVEL:  ', this.leftLevel,  '      RIGHT LEVEL:  ', this.rightLevel, '\n\n');
 
 		// * Set horizontal animation
-		if (grSet.peakmeterBarDesign === 'horizontal' || grSet.peakmeterBarDesign === 'horizontal_center') {
+		if (['horizontal', 'horizontal_center'].includes(grSet.peakmeterBarDesign)) {
+			const increment1 = 0.09; // 0.3 ** 2
+			const increment2 = 1.21; // 1.1 ** 2
+
 			// * Main left middle peaks
 			if (this.mainLeftAnim_x <= this.mainLeft_x) {
 				this.mainLeftAnim_x  = this.mainLeft_x;
 				this.mainLeftAnim2_x = this.mainLeft_x;
 				this.mainLeft_k  = 0;
 				this.mainLeft2_k = 0;
-			};
-
-			this.mainLeft_k      = this.mainLeft_k + 0.3 ** 2;
-			this.mainLeftAnim_x  = this.mainLeftAnim_x - this.mainLeft_k;
-			this.mainLeft2_k     = this.mainLeft2_k + 1.1 ** 2;
-			this.mainLeftAnim2_x = this.mainLeftAnim2_x + this.mainLeft2_k;
+			}
+			this.mainLeft_k      += increment1;
+			this.mainLeftAnim_x  -= this.mainLeft_k;
+			this.mainLeft2_k     += increment2;
+			this.mainLeftAnim2_x += this.mainLeft2_k;
 
 			// * Main right middle peaks
 			if (this.mainRightAnim_x <= this.mainRight_x) {
@@ -4044,11 +4172,10 @@ class PeakmeterBar {
 				this.mainRight_k  = 0;
 				this.mainRight2_k = 0;
 			}
-
-			this.mainRight_k      = this.mainRight_k + 0.3 ** 2;
-			this.mainRightAnim_x  = this.mainRightAnim_x - this.mainRight_k;
-			this.mainRight2_k     = this.mainRight2_k + 1.1 ** 2;
-			this.mainRightAnim2_x = this.mainRightAnim2_x + this.mainRight2_k;
+			this.mainRight_k      += increment1;
+			this.mainRightAnim_x  -= this.mainRight_k;
+			this.mainRight2_k     += increment2;
+			this.mainRightAnim2_x += this.mainRight2_k;
 
 			// * Outer left peaks
 			if (this.outerLeftAnim_x <= this.outerLeft_w) {
@@ -4058,10 +4185,9 @@ class PeakmeterBar {
 			} else {
 				this.outerLeft_w_old = this.outerLeft_w;
 			}
-
-			this.outerLeft_k     = this.outerLeft_k + 0.3 ** 2;
-			this.outerLeftAnim_x = this.outerLeftAnim_x - this.outerLeft_k;
-			this.outerLeftAnim_w = this.outerLeftAnim_w - this.outerLeft_k * 2;
+			this.outerLeft_k     += increment1;
+			this.outerLeftAnim_x -= this.outerLeft_k;
+			this.outerLeftAnim_w -= this.outerLeft_k * 2;
 
 			// * Outer right peaks
 			if (this.outerRightAnim_x <= this.outerRight_w) {
@@ -4071,15 +4197,18 @@ class PeakmeterBar {
 			} else {
 				this.outerRight_w_old = this.outerRight_w;
 			}
-
-			this.outerRight_k     = this.outerRight_k + 0.3 ** 2;
-			this.outerRightAnim_x = this.outerRightAnim_x - this.outerRight_k;
-			this.outerRightAnim_w = this.outerRightAnim_w - this.outerRight_k * 2;
+			this.outerRight_k     += increment1;
+			this.outerRightAnim_x -= this.outerRight_k;
+			this.outerRightAnim_w -= this.outerRight_k * 2;
 		}
 		// * Set vertical animation
 		else if (grSet.peakmeterBarDesign === 'vertical') {
-			for (let j = 0; j < this.leftPeaks_s.length;   j++) this.leftPeaks_s[j]  = this.leftPeaks_s[j]  < this.h ? this.leftPeaks_s[j]  + 2 : this.h;
-			for (let j = 0; j < this.rightPeaks_s.length;  j++) this.rightPeaks_s[j] = this.rightPeaks_s[j] < this.h ? this.rightPeaks_s[j] + 2 : this.h;
+			for (let j = 0; j < this.leftPeaks_s.length; j++) {
+				this.leftPeaks_s[j] = this.leftPeaks_s[j] < this.h ? this.leftPeaks_s[j] + 2 : this.h;
+			}
+			for (let j = 0; j < this.rightPeaks_s.length; j++) {
+				this.rightPeaks_s[j] = this.rightPeaks_s[j] < this.h ? this.rightPeaks_s[j] + 2 : this.h;
+			}
 		}
 	}
 
@@ -4087,38 +4216,40 @@ class PeakmeterBar {
 	 * Sets the peakmeter bar colors.
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
-	setColors(metadb) {
+	setColors(metadb = fb.GetNowPlaying()) {
 		let img = gdi.CreateImage(1, 1);
 		const g = img.GetGraphics();
-		if (img) img.ReleaseGraphics(g);
+		img.ReleaseGraphics(g);
+
 		if (metadb) img = utils.GetAlbumArtV2(metadb, 0);
 
-		if (metadb && img) {
+		if (img) {
 			try {
 				grm.ui.albumArtCorrupt = false;
 				this.colors = JSON.parse(img.GetColourSchemeJSON(4));
+				this.c1 = grCol.peakmeterBarFillMiddle; // this.colors[1].col;
+				this.c2 = grCol.peakmeterBarFillTop; // this.colors[2].col;
+				this.c3 = grCol.peakmeterBarFillBack; // this.colors[3].col;
 			} catch (e) {
 				grm.ui.noArtwork = true;
 				grm.ui.noAlbumArtStub = true;
 				grm.ui.albumArtCorrupt = true;
+				this.setDefaultColors();
 			}
-			this.c1 = grCol.peakmeterBarFillMiddle; // this.colors[1].col;
-			this.c2 = grCol.peakmeterBarFillTop; // this.colors[2].col;
-			this.c3 = grCol.peakmeterBarFillBack; // this.colors[3].col;
 		} else {
 			this.setDefaultColors();
 		}
 
 		this.color = [];
-		this.combinedColor1 = [];
-		this.combinedColor2 = [];
 		this.color1 = [this.c2, this.c3];
 		this.color2 = [this.c3, this.c1];
 
-		for (let j = 0; j < this.sep1; j++) this.combinedColor1.push(CombineColors(this.color1[0], this.color1[1], j / this.sep1));
-		for (let j = 0; j < this.sep2; j++) this.combinedColor2.push(CombineColors(this.color2[0], this.color2[1], j / this.sep2));
-
-		this.color = this.combinedColor1.concat(this.combinedColor2);
+		for (let j = 0; j < this.sep1; j++) {
+			this.color.push(CombineColors(this.color1[0], this.color1[1], j / this.sep1));
+		}
+		for (let j = 0; j < this.sep2; j++) {
+			this.color.push(CombineColors(this.color2[0], this.color2[1], j / this.sep2));
+		}
 	}
 
 	/**
@@ -4138,10 +4269,10 @@ class PeakmeterBar {
 	 * @private
 	 */
 	setPlaybackTime(x) {
-		let v = (x - this.x) / this.w;
-		v = Clamp(v, 0, 1);
-		if (fb.PlaybackTime !== v * fb.PlaybackLength) {
-			fb.PlaybackTime = v * fb.PlaybackLength;
+		const clampedPosition = Clamp((x - this.x) / this.w, 0, 1);
+		const newPlaybackTime = clampedPosition * fb.PlaybackLength;
+		if (fb.PlaybackTime !== newPlaybackTime) {
+			fb.PlaybackTime = newPlaybackTime;
 		}
 	}
 
@@ -4263,37 +4394,31 @@ class PeakmeterBar {
 	}
 
 	/**
-	 * Sets the size and position of the peakmeter bar and updates them on window resizing.
-	 * @param {number} w - The width of the peakmeter bar.
-	 * @param {number} h - The height of the peakmeter bar.
+	 * Resets the peakmeter bar on playback stop.
+	 * @param {number} reason - The type of playback stop.
 	 */
-	on_size(w, h) {
+	on_playback_stop(reason = -1) {
+		if (['progressbar', 'waveformbar'].includes(grSet.seekbar)) {
+			return;
+		}
+
+		if (reason !== 2) {
+			this.reset();
+			window.Repaint();
+		}
+	}
+
+	/**
+	 * Sets the size and position of the peakmeter bar and updates them on window resizing.
+	 */
+	on_size() {
 		this.x = grm.ui.edgeMargin;
-		this.y = 0;
-		this.w = w - grm.ui.edgeMarginBoth;
+		this.y = grm.ui.seekbarY;
+		this.w = grm.ui.ww - grm.ui.edgeMarginBoth;
 		this.h = grm.ui.seekbarHeight;
-		this.bar_h = grSet.layout !== 'default' ? SCALE(2) : SCALE(4);
 
-		this.offset        = (grSet.peakmeterBarDesign === 'horizontal_center' ? this.w * 0.5 : this.w) / this.points;
-		this.middleOffset  = (grSet.peakmeterBarDesign === 'horizontal_center' ? this.w * 0.5 : this.w) / this.points_middle;
-		this.middle_w      = this.middleOffset - (grSet.peakmeterBarGaps ? 1 : 0);
-		this.w2            = this.offset - (grSet.peakmeterBarGaps ? 1 : 0);
-
-		this.overLeft_y    = this.y;
-		this.outerLeft_y   = this.overLeft_y    + this.bar_h * 0.5;
-		this.mainLeft_y    = this.outerLeft_y   + this.bar_h;
-		this.middleLeft_y  = this.mainLeft_y    + this.bar_h + SCALE(1);
-		this.middleRight_y = this.middleLeft_y  + this.bar_h * 0.5;
-		this.mainRight_y   = this.middleRight_y + this.bar_h * 0.5 + SCALE(1);
-		this.outerRight_y  = this.mainRight_y   + this.bar_h;
-		this.overRight_y   = this.outerRight_y  + this.bar_h;
-		this.text_y        = this.outerRight_y  + this.bar_h * 2;
-
-		this.vertBar_offset = ((this.w / this.points_vert) + ((grSet.peakmeterBarVertSize === 'min' ? 2 : grSet.peakmeterBarVertSize) / this.points_vert * 0.5)) * 0.5;
-		this.vertBar_w = grSet.peakmeterBarVertSize === 'min' ? Math.ceil(this.vertBar_offset * 0.1 * 0.5) : this.vertBar_offset - grSet.peakmeterBarVertSize * 0.5;
-		this.vertBar_h = 2;
-		this.vertLeft_x = this.x;
-		this.vertRight_x = this.vertLeft_x + this.vertBar_offset * this.points_vert;
+		this.initGeometry();
+		this.setY();
 
 		this.progressMoved = true;
 		this.textFont = gdi.Font('Segoe UI', HD_4K(9, 16), 1);
