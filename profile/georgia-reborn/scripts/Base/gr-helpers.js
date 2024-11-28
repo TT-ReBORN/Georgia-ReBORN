@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-11-2024                                              * //
+// * Last change:    27-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1769,6 +1769,34 @@ function CropImage(image, cropWidth = 0, cropHeight = 0) {
 
 
 /**
+ * Creates a round rectangle with additional safeguards for arc dimensions.
+ * This is a custom method that ensures the arc dimensions are valid and non-negative,
+ * preventing crashes not handled by the native SMP's `DrawRoundRect` method.
+ * @global
+ * @param {GdiGraphics} gr - The GDI graphics object.
+ * @param {number} x - The x-coordinate of the top-left corner of the rectangle.
+ * @param {number} y - The y-coordinate of the top-left corner of the rectangle.
+ * @param {number} w - The width of the rectangle.
+ * @param {number} h - The height of the rectangle.
+ * @param {number} arc_width - The width of the arcs for the rounded corners.
+ * @param {number} arc_height - The height of the arcs for the rounded corners.
+ * @param {number} line_width - The line width of the rectangle.
+ * @param {number} color - The fill color of the rectangle.
+ * @returns {GdiGraphics} The round rectangle.
+ */
+function DrawRoundRect(gr, x, y, w, h, arc_width, arc_height, line_width, color) {
+	if (w <= 0 || h <= 0) return null;
+
+	// * Arc dimension safeguard
+	const minArc = Math.min(w, h) / 2;
+	arc_width  = Math.max(0, Math.min(arc_width, minArc));
+	arc_height = Math.max(0, Math.min(arc_height, minArc));
+
+	return gr.DrawRoundRect(x, y, w, h, arc_width, arc_height, line_width, color);
+}
+
+
+/**
  * Creates a blended filled round rectangle, a custom method not implemented in SMP.
  * @global
  * @param {GdiGraphics} gr - The GDI graphics object.
@@ -1855,9 +1883,16 @@ function FillGradEllipse(gr, x, y, w, h, angle, color1, color2, focus) {
  * @param {number} color1 - The color of the top side of the gradient.
  * @param {number} color2 - The color of the bottom side of the gradient.
  * @param {number} focus - The focus where the centered color will be at its highest intensity. Values 0 or 1.
- * @returns {GdiGraphics} The gradient filled round rectangle.
+ * @returns {GdiGraphics} The gradient filled rounded rectangle.
  */
 function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1, color2, focus) {
+	if (w <= 0 || h <= 0) return null;
+
+	// * Arc dimension safeguard
+	const minArc = Math.min(w, h) / 2;
+	arc_width  = Math.max(0, Math.min(arc_width, minArc));
+	arc_height = Math.max(0, Math.min(arc_height, minArc));
+
 	// * Mask
 	const maskImg = gdi.CreateImage(w + SCALE(1), h + SCALE(1));
 	let g = maskImg.GetGraphics();
@@ -1876,6 +1911,33 @@ function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1,
 	gradRectImg.ApplyMask(mask);
 
 	return gr.DrawImage(gradRectImg, x, y, w - SCALE(1), h - SCALE(1), 0, 0, w, h, 0, 255);
+}
+
+
+/**
+ * Creates a filled rounded rectangle with additional safeguards for arc dimensions.
+ * This is a custom method that ensures the arc dimensions are valid and non-negative,
+ * preventing crashes not handled by the native SMP's `FillRoundRect` method.
+ * @global
+ * @param {GdiGraphics} gr - The GDI graphics object.
+ * @param {number} x - The x-coordinate of the top-left corner of the rectangle.
+ * @param {number} y - The y-coordinate of the top-left corner of the rectangle.
+ * @param {number} w - The width of the rectangle.
+ * @param {number} h - The height of the rectangle.
+ * @param {number} arc_width - The width of the arcs for the rounded corners.
+ * @param {number} arc_height - The height of the arcs for the rounded corners.
+ * @param {number} color - The fill color of the rectangle.
+ * @returns {GdiGraphics} The filled rounded rectangle.
+ */
+function FillRoundRect(gr, x, y, w, h, arc_width, arc_height, color) {
+	if (w <= 0 || h <= 0) return null;
+
+	// * Arc dimension safeguard
+	const minArc = Math.min(w, h) / 2;
+	arc_width  = Math.max(0, Math.min(arc_width, minArc));
+	arc_height = Math.max(0, Math.min(arc_height, minArc));
+
+	return gr.FillRoundRect(x, y, w, h, arc_width, arc_height, color);
 }
 
 

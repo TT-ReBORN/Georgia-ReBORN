@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-11-2024                                              * //
+// * Last change:    28-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2925,23 +2925,21 @@ class VolumeButton {
 		const p = 2;
 		const fillWidth = this.volumeBar && this.volumeBar.fillSize('w');
 		const arcBg = SCALE(6);
-		const arcBgIsValid = h > arcBg; // * Needed when display res changes to prevent invalid arc value crash
 		const arcFill = SCALE(3);
-		const arcFillIsValid = fillWidth > arcFill * 3; // * Needed when dragging volume to prevent invalid arc value crash
 
 		gr.SetSmoothingMode(grSet.styleVolumeBarDesign === 'rounded' ? SmoothingMode.AntiAlias : SmoothingMode.None);
 
 		// * Default background
-		if (grSet.styleVolumeBarDesign === 'rounded' && grSet.styleTransportButtons !== 'minimal' && arcBgIsValid) {
-			gr.FillRoundRect(x - SCALE(2), y + HD_4K(p, p + 1), w + SCALE(2), h, arcBg, arcBg, grCol.volumeBar);
-			gr.DrawRoundRect(x - HD_4K(this.showReloadBtn ? 3 : 2, 5), y + SCALE(1), w + HD_4K(3, 5), h + 2, arcBg, arcBg, 1, grCol.volumeBarFrame);
+		if (grSet.styleVolumeBarDesign === 'rounded' && grSet.styleTransportButtons !== 'minimal') {
+			FillRoundRect(gr, x - SCALE(2), y + HD_4K(p, p + 1), w + SCALE(2), h, arcBg, arcBg, grCol.volumeBar);
+			DrawRoundRect(gr, x - HD_4K(this.showReloadBtn ? 3 : 2, 5), y + SCALE(1), w + HD_4K(3, 5), h + 2, arcBg, arcBg, 1, grCol.volumeBarFrame);
 		}
 		else if (grSet.styleVolumeBarDesign !== 'rounded' && grSet.styleTransportButtons !== 'minimal') {
 			gr.FillSolidRect(x - SCALE(2), y + HD_4K(p, p + 1), w + SCALE(2), h, grCol.volumeBar);
 			gr.DrawRect(x - HD_4K(this.showReloadBtn ? 3 : 2, 5), y + SCALE(1), w + HD_4K(3, 5), h + 1, 1, grCol.volumeBarFrame);
 		}
 		// * Style background
-		if ((grSet.styleVolumeBar === 'bevel' || grSet.styleVolumeBar === 'inner') && grSet.styleTransportButtons !== 'minimal' && arcBgIsValid) {
+		if ((grSet.styleVolumeBar === 'bevel' || grSet.styleVolumeBar === 'inner') && grSet.styleTransportButtons !== 'minimal') {
 			if (grSet.styleVolumeBarDesign === 'rounded') {
 				FillGradRoundRect(gr, x - SCALE(2), y + HD_4K(p, p + 1) - (grSet.styleVolumeBar === 'inner' ? 1 : 0), w + SCALE(5), h + SCALE(4), arcBg, arcBg,
 				grSet.styleVolumeBar === 'inner' ? -89 : 89, grSet.styleVolumeBar === 'inner' ? grCol.styleVolumeBar : 0, grSet.styleVolumeBar === 'inner' ? 0 : grCol.styleVolumeBar, grSet.styleVolumeBar === 'inner' ? 0 : 1);
@@ -2950,13 +2948,13 @@ class VolumeButton {
 			}
 		}
 		// * Default fill
-		if (grSet.styleVolumeBarDesign === 'rounded' && arcBgIsValid && arcFillIsValid) {
-			gr.FillRoundRect(x + 1, y + HD_4K(4, 7), fillWidth - SCALE(3), h - SCALE(4), arcFill, arcFill, grCol.volumeBarFill);
+		if (grSet.styleVolumeBarDesign === 'rounded') {
+			FillRoundRect(gr, x + 1, y + HD_4K(4, 7), fillWidth - SCALE(3), h - SCALE(4), arcFill, arcFill, grCol.volumeBarFill);
 		} else {
 			gr.FillSolidRect(x, y + HD_4K(4, 7), fillWidth - SCALE(2), h - SCALE(4), grCol.volumeBarFill);
 		}
 		// * Style fill
-		if ((grSet.styleVolumeBarFill === 'bevel' || grSet.styleVolumeBarFill === 'inner') && arcBgIsValid && arcFillIsValid) {
+		if ((grSet.styleVolumeBarFill === 'bevel' || grSet.styleVolumeBarFill === 'inner')) {
 			if (grSet.styleVolumeBarDesign === 'rounded') {
 				FillGradRoundRect(gr, x + 1, y + HD_4K(4, 7), fillWidth - SCALE(0.5), h - SCALE(2), arcFill, arcFill, grSet.styleVolumeBarFill === 'inner' ? -89 : 89, 0, grCol.styleVolumeBarFill, 1);
 			} else {
@@ -3153,20 +3151,22 @@ class ProgressBar {
 	 * Creates the `ProgressBar` instance.
 	 */
 	constructor() {
-		/** @public @type {number} */
+		/** @public @type {number} The x-coordinate of the progress bar. */
 		this.x = grm.ui.edgeMargin;
-		/** @public @type {number} */
-		this.w = grm.ui.ww - grm.ui.edgeMarginBoth;
-		/** @public @type {number} */
+		/** @public @type {number} The y-coordinate of the progress bar. */
 		this.y = 0;
-		/** @public @type {number} */
+		/** @public @type {number} The width of the progress bar. */
+		this.w = grm.ui.ww - grm.ui.edgeMarginBoth;
+		/** @public @type {number} The height of the progress bar. */
 		this.h = grm.ui.seekbarHeight;
-		/** @public @type {number} */
-		this.progressLength = 0; // Fixing jumpiness in progressBar
-		/** @public @type {boolean} */
-		this.progressMoved = false; // Playback position changed, so reset progressLength
-		/** @private @type {boolean} */
-		this.drag = false; // Progress bar is being dragged
+		/** @public @type {number} The arc radius for rounded corners of the progress bar. */
+		this.arc = Math.min(this.w, this.h) / 2;
+		/** @public @type {number} The length of the progress bar fill. */
+		this.progressLength = 0;
+		/** @public @type {boolean} The state that indicates if the playback position changed. */
+		this.progressMoved = false;
+		/** @private @type {boolean} The state that indicates if the progress bar is being dragged. */
+		this.drag = false;
 	}
 
 	// * PUBLIC METHODS * //
@@ -3178,106 +3178,156 @@ class ProgressBar {
 	draw(gr) {
 		if (grm.ui.showDrawExtendedTiming) grm.ui.seekbarProfiler.Reset();
 
-		gr.SetSmoothingMode(grSet.styleProgressBarDesign === 'rounded' ? SmoothingMode.AntiAlias : SmoothingMode.None);
-		const arc = Math.min(this.w, this.h) / 2;
-		const arcIsValid = this.h > arc; // * Needed when bg changes to prevent invalid arc value crash
+		const styleRounded = grSet.styleProgressBarDesign === 'rounded';
+		if (styleRounded) this.arc = Math.min(this.w, this.h) / 2;
 
-		// * Progress bar background
-		if (grSet.styleProgressBarDesign === 'rounded' && arcIsValid) {
-			gr.FillRoundRect(this.x, this.y, this.w, this.h, arc, arc, grm.ui.isStreaming && fb.IsPlaying ? grCol.progressBarStreaming : grCol.progressBar);
-		} else if (!['dots', 'thin'].includes(grSet.styleProgressBarDesign)) {
-			gr.FillSolidRect(this.x, this.y, this.w, this.h, grm.ui.isStreaming && fb.IsPlaying ? grCol.progressBarStreaming : grCol.progressBar);
+		gr.SetSmoothingMode(styleRounded ? SmoothingMode.AntiAlias : SmoothingMode.None);
+
+		this.drawProgressBarBg(gr);
+		this.drawProgressBarFill(gr);
+	}
+
+	/**
+	 * Draws the progress bar background.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawProgressBarBg(gr) {
+		const barDesignNoDotsThin = !['dots', 'thin'].includes(grSet.styleProgressBarDesign);
+		const styleRounded = grSet.styleProgressBarDesign === 'rounded';
+		const styleDefault = grSet.styleDefault && (['blue', 'darkblue', 'red', 'cream'].includes(grSet.theme) || grSet.theme.startsWith('custom'));
+		const styleCream = grSet.theme === 'cream' && (grSet.styleAlternative || grSet.styleAlternative2) && (!grSet.styleBevel && !grSet.styleBlend && !grSet.styleBlend2 && grSet.styleProgressBarDesign !== 'rounded') && !grSet.systemFirstLaunch;
+		const styleBevelOrInner = barDesignNoDotsThin && ['bevel', 'inner'].includes(grSet.styleProgressBar);
+		const progressBarColor = grm.ui.isStreaming && fb.IsPlaying ? grCol.progressBarStreaming : grCol.progressBar;
+
+		if (styleRounded) {
+			FillRoundRect(gr, this.x, this.y, this.w, this.h, this.arc, this.arc, progressBarColor);
+		} else if (barDesignNoDotsThin) {
+			gr.FillSolidRect(this.x, this.y, this.w, this.h, progressBarColor);
 		}
-		if (grSet.styleDefault && (['blue', 'darkblue', 'red', 'cream', 'custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'].includes(grSet.theme)) ||
-			(grSet.theme === 'cream' && (grSet.styleAlternative || grSet.styleAlternative2) && (!grSet.styleBevel && !grSet.styleBlend && !grSet.styleBlend2 && grSet.styleProgressBarDesign !== 'rounded')) && !grSet.systemFirstLaunch) {
+
+		if (styleDefault || styleCream) {
 			gr.DrawRect(this.x - 2, this.y - 2, this.w + 3, this.h + 3, 1, grCol.progressBarFrame);
 		}
-		if (!['dots', 'thin'].includes(grSet.styleProgressBarDesign) && (grSet.styleProgressBar === 'bevel' || grSet.styleProgressBar === 'inner') && arcIsValid) {
-			if (grSet.styleProgressBarDesign === 'rounded') {
-				FillGradRoundRect(gr, this.x, this.y, this.w + SCALE(2), this.h + SCALE(2.5), arc, arc,
-					grSet.styleProgressBar === 'inner' ? grSet.styleBlackReborn && fb.IsPlaying ? 90 : -90 : grSet.styleBlackReborn && fb.IsPlaying ? -90 : 90, 0, grCol.styleProgressBar, 1);
-			} else {
-				gr.FillGradRect(this.x, this.y, this.w, this.h, grSet.styleProgressBar === 'inner' ? grSet.styleBlackReborn && fb.IsPlaying ? 90 : -90 : grSet.styleBlackReborn && fb.IsPlaying ? -90 : 90, 0, grCol.styleProgressBar);
-			}
-			if (grSet.styleProgressBarDesign === 'rounded') { // Smooth top and bottom line edges
-				gr.FillGradRect(this.x + SCALE(3), this.y - 0.5, SCALE(9), 1, 179, grCol.styleProgressBarLineTop, 0); // Top left
-				gr.FillGradRect(this.x + SCALE(3), this.y + this.h - 0.5, SCALE(9), 1, 179, grCol.styleProgressBarLineBottom, 0); // Bottom left
-				gr.FillGradRect(this.w + this.x - SCALE(12), this.y - 0.5, SCALE(9), 1, 179, 0, grCol.styleProgressBarLineTop); // Top right
-				gr.FillGradRect(this.w + this.x - SCALE(12), this.y + this.h - 0.5, SCALE(9), 1, 179, 0, grCol.styleProgressBarLineBottom); // Bottom right
-			}
-			gr.DrawLine(this.x + (grSet.styleProgressBarDesign === 'rounded' ? SCALE(12) : 0), this.y, this.x + this.w - (grSet.styleProgressBarDesign === 'rounded' ? SCALE(12) : 1), this.y, 1, grCol.styleProgressBarLineTop);
-			gr.DrawLine(this.x + (grSet.styleProgressBarDesign === 'rounded' ? SCALE(12) : 0), this.y + this.h, this.x + this.w - (grSet.styleProgressBarDesign === 'rounded' ? SCALE(12) : 1), this.y + this.h, 1, grCol.styleProgressBarLineBottom);
-		}
 
-		// * Progress bar fill
-		if (!fb.PlaybackLength) return;
-		/* In some cases the progress bar would move backwards at the end of a song while buffering/streaming was occurring.
-			This created strange looking jitter so now the progress bar can only increase unless the user seeked in the track. */
-		if (this.progressMoved || Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength)) > this.progressLength) {
-			this.progressLength = Math.floor(this.w * (fb.PlaybackTime / fb.PlaybackLength));
+		if (styleBevelOrInner) {
+			const styleBlackReborn = grSet.styleBlackReborn && fb.IsPlaying;
+			const angle = grSet.styleProgressBar === 'inner' ? (styleBlackReborn ? 90 : -90) : (styleBlackReborn ? -90 : 90);
+
+			if (styleRounded) {
+				FillGradRoundRect(gr, this.x, this.y, this.w + SCALE(2), this.h + SCALE(2.5), this.arc, this.arc, angle, 0, grCol.styleProgressBar, 1);
+
+				const xLeft = this.x + SCALE(3);
+				const xRight = this.w + this.x - SCALE(12);
+				const yTop = this.y - 0.5;
+				const yBottom = this.y + this.h - 0.5;
+				gr.FillGradRect(xLeft, yTop, SCALE(9), 1, 179, grCol.styleProgressBarLineTop, 0); // Top left
+				gr.FillGradRect(xLeft, yBottom, SCALE(9), 1, 179, grCol.styleProgressBarLineBottom, 0); // Bottom left
+				gr.FillGradRect(xRight, yTop, SCALE(9), 1, 179, 0, grCol.styleProgressBarLineTop); // Top right
+				gr.FillGradRect(xRight, yBottom, SCALE(9), 1, 179, 0, grCol.styleProgressBarLineBottom); // Bottom right
+			}
+			else {
+				gr.FillGradRect(this.x, this.y, this.w, this.h, angle, 0, grCol.styleProgressBar);
+			}
+
+			const lineX1 = this.x + (styleRounded ? SCALE(12) : 0);
+			const lineX2 = this.x + this.w - (styleRounded ? SCALE(12) : 1);
+			gr.DrawLine(lineX1, this.y, lineX2, this.y, 1, grCol.styleProgressBarLineTop);
+			gr.DrawLine(lineX1, this.y + this.h, lineX2, this.y + this.h, 1, grCol.styleProgressBarLineBottom);
+		}
+	}
+
+	/**
+	 * Draws the progress bar fill.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawProgressBarFill(gr) {
+		if (!fb.PlaybackLength && !fb.IsPlaying) return;
+
+		const playbackRatio = fb.PlaybackTime / fb.PlaybackLength;
+		const progLength = Math.floor(this.w * playbackRatio);
+
+		if (this.progressMoved || progLength > this.progressLength) {
+			this.progressLength = progLength;
 		}
 		this.progressMoved = false;
 
-		const arcIsValid2 = this.progressLength > arc * 2; // * Needed when playback starts to prevent invalid arc value crash
+		const drawBarDesign = {
+			default: () => gr.FillSolidRect(this.x, this.y, this.progressLength, this.h, grCol.progressBarFill),
+			rounded: () => FillRoundRect(gr, this.x, this.y, this.progressLength, this.h, this.arc, this.arc, grCol.progressBarFill),
+			lines:   () => this.drawBarDesignLines(gr),
+			blocks:  () => this.drawBarDesignBlocks(gr),
+			dots:    () => this.drawBarDesignDots(gr),
+			thin:    () => this.drawBarDesignThin(gr)
+		};
 
-		if (grSet.styleProgressBarDesign === 'default') {
-			gr.FillSolidRect(this.x, this.y, this.progressLength, this.h, grCol.progressBarFill);
-		}
-		else if (grSet.styleProgressBarDesign === 'rounded' && arcIsValid2) {
-			gr.FillRoundRect(this.x, this.y, this.progressLength, this.h, arc, arc, grCol.progressBarFill);
-		}
-		else if (grSet.styleProgressBarDesign === 'lines') {
-			let progressLine = 0;
-			if (progressLine < this.progressLength) {
-				gr.FillSolidRect(this.x + this.progressLength, this.y, SCALE(2), grm.ui.seekbarHeight, grCol.progressBarFill);
-			}
-			while (progressLine < this.progressLength) {
-				gr.DrawLine(this.x + progressLine + SCALE(2), this.y, this.x + progressLine + SCALE(2), this.y + this.h, SCALE(2), grCol.progressBarFill);
-				progressLine += SCALE(4);
-			}
-		}
-		else if (grSet.styleProgressBarDesign === 'blocks' && arcIsValid2) {
-			let progressLine = 0;
-			while (progressLine < this.progressLength) {
-				gr.FillSolidRect(this.x + progressLine, this.y + SCALE(2), grm.ui.seekbarHeight, grm.ui.seekbarHeight - SCALE(4), grCol.progressBarFill);
-				progressLine += grm.ui.seekbarHeight + SCALE(2);
-			}
-			gr.FillSolidRect(this.x + this.progressLength, this.y + 1, grm.ui.seekbarHeight, grm.ui.seekbarHeight - 1, grCol.progressBar);
-			gr.FillGradRect(this.x + this.progressLength,  this.y + 1, grm.ui.seekbarHeight, grm.ui.seekbarHeight - 1, grSet.styleProgressBar === 'inner' ? grSet.styleBlackReborn && fb.IsPlaying ? 88 : -88 : grSet.styleBlackReborn && fb.IsPlaying ? -88 : 88, 0, grCol.styleProgressBar);
-		}
-		else if (grSet.styleProgressBarDesign === 'dots') {
-			let progressLine = 0;
-			while (progressLine < this.progressLength) {
-				gr.DrawLine(this.x + this.progressLength + SCALE(10), this.y + this.h * 0.5, this.x + this.w, this.y + this.h * 0.5, SCALE(1), grCol.progressBar);
-				gr.SetSmoothingMode(SmoothingMode.AntiAlias);
-				gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - SCALE(1), SCALE(2), SCALE(2), SCALE(2), grCol.progressBarFill);
-				progressLine += SCALE(8);
-			}
-			const posFix = HD_4K(3, grSet.layout !== 'default' ? 6 : 7);
-			gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - grm.ui.seekbarHeight * 0.5 + SCALE(2), grm.ui.seekbarHeight - SCALE(4), grm.ui.seekbarHeight - SCALE(4), SCALE(2), grCol.progressBarFill); // Knob outline
-			gr.DrawEllipse(this.x + progressLine + posFix, this.y + this.h * 0.5 - SCALE(1), SCALE(2), SCALE(2), SCALE(2), grCol.transportIconHovered); // Knob inner
-		}
-		else if (grSet.styleProgressBarDesign === 'thin') {
-			gr.DrawLine(this.x, this.y + this.h * 0.5, this.x + this.w, this.y + this.h * 0.5, SCALE(1), grCol.progressBar);
-			gr.SetSmoothingMode(SmoothingMode.AntiAlias);
-			gr.FillSolidRect(this.x, this.y + this.h * 0.5 - SCALE(2), this.progressLength, SCALE(4), grCol.progressBarFill);
-			gr.FillSolidRect(this.x + this.progressLength, this.y + this.h * 0.5 - SCALE(3), SCALE(6), SCALE(6), grCol.progressBarFill);
-		}
+		drawBarDesign[grSet.styleProgressBarDesign]();
 
-		if (!['dots', 'thin'].includes(grSet.styleProgressBarDesign) && (grSet.styleProgressBarFill === 'bevel' || grSet.styleProgressBarFill === 'inner') && fb.IsPlaying && arcIsValid2) {
+		if (!['dots', 'thin'].includes(grSet.styleProgressBarDesign) && ['bevel', 'inner'].includes(grSet.styleProgressBarFill)) {
 			if (grSet.styleProgressBarDesign === 'rounded') {
-				FillGradRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2.5), arc, arc, grSet.styleProgressBarFill === 'inner' ? -88 : 88, grCol.styleProgressBarFill, 0);
+				FillGradRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2.5), this.arc, this.arc, grSet.styleProgressBarFill === 'inner' ? -88 : 88, grCol.styleProgressBarFill, 0);
 			} else {
 				gr.FillGradRect(this.x, this.y, this.progressLength, this.h, grSet.styleProgressBarFill === 'inner' ? -90 : 89, 0, grCol.styleProgressBarFill);
 			}
 		}
-		else if (grSet.styleProgressBarFill === 'blend' && fb.IsPlaying && grm.ui.albumArt && grCol.imgBlended && arcIsValid2) {
+		else if (grSet.styleProgressBarFill === 'blend' && grm.ui.albumArt && grCol.imgBlended) {
 			if (grSet.styleProgressBarDesign === 'rounded') {
-				FillBlendedRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2.5), arc, arc, 88, grCol.imgBlended, 0);
+				FillBlendedRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2.5), this.arc, this.arc, 88, grCol.imgBlended, 0);
 			} else {
 				gr.DrawImage(grCol.imgBlended, this.x, this.y, this.progressLength, this.h, 0, this.h, grCol.imgBlended.Width, grCol.imgBlended.Height);
 			}
 		}
+	}
+
+	/**
+	 * Draws the progress bar fill in lines design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawBarDesignLines(gr) {
+		gr.FillSolidRect(this.x + this.progressLength, this.y, SCALE(2), grm.ui.seekbarHeight, grCol.progressBarFill);
+
+		for (let progressLine = 0; progressLine < this.progressLength; progressLine += SCALE(4)) {
+			gr.DrawLine(this.x + progressLine + SCALE(2), this.y, this.x + progressLine + SCALE(2), this.y + this.h, SCALE(2), grCol.progressBarFill);
+		}
+	}
+
+	/**
+	 * Draws the progress bar fill in blocks design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawBarDesignBlocks(gr) {
+		for (let progressLine = 0; progressLine < this.progressLength; progressLine += grm.ui.seekbarHeight + SCALE(2)) {
+			gr.FillSolidRect(this.x + progressLine, this.y + SCALE(2), grm.ui.seekbarHeight, grm.ui.seekbarHeight - SCALE(4), grCol.progressBarFill);
+		}
+
+		gr.FillSolidRect(this.x + this.progressLength, this.y + 1, grm.ui.seekbarHeight, grm.ui.seekbarHeight - 1, grCol.progressBar);
+		gr.FillGradRect(this.x + this.progressLength, this.y + 1, grm.ui.seekbarHeight, grm.ui.seekbarHeight - 1, grSet.styleProgressBar === 'inner' ? grSet.styleBlackReborn && fb.IsPlaying ? 88 : -88 : grSet.styleBlackReborn && fb.IsPlaying ? -88 : 88, 0, grCol.styleProgressBar);
+	}
+
+	/**
+	 * Draws the progress bar fill in dots design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawBarDesignDots(gr) {
+		for (let progressLine = 0; progressLine < this.progressLength; progressLine += SCALE(8)) {
+			gr.DrawLine(this.x + this.progressLength + SCALE(10), this.y + this.h * 0.5, this.x + this.w, this.y + this.h * 0.5, SCALE(1), grCol.progressBar);
+			gr.SetSmoothingMode(SmoothingMode.AntiAlias);
+			gr.DrawEllipse(this.x + progressLine, this.y + this.h * 0.5 - SCALE(1), SCALE(2), SCALE(2), SCALE(2), grCol.progressBarFill);
+		}
+
+		const posFix = HD_4K(3, grSet.layout !== 'default' ? 6 : 7);
+		gr.DrawEllipse(this.x + this.progressLength, this.y + this.h * 0.5 - grm.ui.seekbarHeight * 0.5 + SCALE(2), grm.ui.seekbarHeight - SCALE(4), grm.ui.seekbarHeight - SCALE(4), SCALE(2), grCol.progressBarFill); // Knob outline
+		gr.DrawEllipse(this.x + this.progressLength + posFix, this.y + this.h * 0.5 - SCALE(1), SCALE(2), SCALE(2), SCALE(2), grCol.transportIconHovered); // Knob inner
+	}
+
+	/**
+	 * Draws the progress bar fill in thin design.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawBarDesignThin(gr) {
+		gr.DrawLine(this.x, this.y + this.h * 0.5, this.x + this.w, this.y + this.h * 0.5, SCALE(1), grCol.progressBar);
+		gr.SetSmoothingMode(SmoothingMode.AntiAlias);
+		gr.FillSolidRect(this.x, this.y + this.h * 0.5 - SCALE(2), this.progressLength, SCALE(4), grCol.progressBarFill);
+		gr.FillSolidRect(this.x + this.progressLength, this.y + this.h * 0.5 - SCALE(3), SCALE(6), SCALE(6), grCol.progressBarFill);
 	}
 
 	/**
