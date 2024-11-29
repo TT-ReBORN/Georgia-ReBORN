@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    28-11-2024                                              * //
+// * Last change:    29-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -5320,7 +5320,7 @@ class WaveformBar {
 	 */
 	visualizerData(handle, preset = 'classic spectrum analyzer', variableLen = false) {
 		const resolution = this.analysis.resolution || 1;
-		const samples = variableLen ? handle.Length * resolution : this.w / SCALE(5) * resolution;
+		const samples = Math.max(0, Math.floor(variableLen ? handle.Length * resolution : this.w / SCALE(5) * resolution));
 		const data = new Array(samples);
 
 		if (preset === 'classic spectrum analyzer') {
