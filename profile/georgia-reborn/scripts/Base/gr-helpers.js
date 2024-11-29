@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-11-2024                                              * //
+// * Last change:    29-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1816,7 +1816,7 @@ function FillBlendedRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, focu
 	let g = maskImg.GetGraphics();
 	g.FillSolidRect(0, 0, w, h, 0xffffffff);
 	g.SetSmoothingMode(SmoothingMode.AntiAlias);
-	g.FillRoundRect(0, 0, w - SCALE(1), h - SCALE(1), arc_width, arc_height, 0xff000000);
+	FillRoundRect(g, 0, 0, w - SCALE(1), h - SCALE(1), arc_width, arc_height, 0xff000000);
 	maskImg.ReleaseGraphics(g);
 
 	// * Blended rect
@@ -1886,19 +1886,12 @@ function FillGradEllipse(gr, x, y, w, h, angle, color1, color2, focus) {
  * @returns {GdiGraphics} The gradient filled rounded rectangle.
  */
 function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1, color2, focus) {
-	if (w <= 0 || h <= 0) return null;
-
-	// * Arc dimension safeguard
-	const minArc = Math.min(w, h) / 2;
-	arc_width  = Math.max(0, Math.min(arc_width, minArc));
-	arc_height = Math.max(0, Math.min(arc_height, minArc));
-
 	// * Mask
 	const maskImg = gdi.CreateImage(w + SCALE(1), h + SCALE(1));
 	let g = maskImg.GetGraphics();
 	g.FillSolidRect(0, 0, w, h, 0xffffffff);
 	g.SetSmoothingMode(SmoothingMode.AntiAlias);
-	g.FillRoundRect(0, 0, w - SCALE(1), h - SCALE(1), arc_width, arc_height, 0xff000000);
+	FillRoundRect(g, 0, 0, w - SCALE(1), h - SCALE(1), arc_width, arc_height, 0xff000000);
 	maskImg.ReleaseGraphics(g);
 
 	// * Gradient rect
