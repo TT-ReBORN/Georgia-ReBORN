@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-11-2024                                              * //
+// * Last change:    29-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -26,8 +26,6 @@ const doc = new ActiveXObject('htmlfile');
 const fso = new ActiveXObject('Scripting.FileSystemObject');
 /** @global @type {ActiveXObject} The UIHacks ActiveX object. */
 const UIHacks = new ActiveXObject('UIHacks');
-/** @global @type {ActiveXObject} The ScriptControl ActiveX object. */
-const vb = new ActiveXObject('ScriptControl');
 /** @global @type {ActiveXObject} The WScript.Shell ActiveX object. */
 const WshShell = new ActiveXObject('WScript.Shell');
 

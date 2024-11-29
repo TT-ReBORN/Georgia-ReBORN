@@ -3627,7 +3627,7 @@ class PeakmeterBar {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	draw(gr) {
-		if (!fb.IsPlaying) {
+		if (!fb.IsPlaying || !this.VUMeter) {
 			gr.FillSolidRect(this.x, this.y, this.w, this.h, grCol.bg);
 			gr.FillSolidRect(this.x, grm.ui.seekbarY, this.w, SCALE(grSet.layout !== 'default' ? 10 : 12), grCol.progressBar);
 			return;
