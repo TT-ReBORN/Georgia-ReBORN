@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-11-2024                                              * //
+// * Last change:    01-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1065,7 +1065,7 @@ class MessageManager {
 
 		this.msgMenuPlayerControlsOptions = {
 			loadEmbeddedAlbumArtFirst: {
-				content: 'You also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art\n\n',
+				content: 'You also need to set it in foobar\'s preferences.\nFile > Preferences > Advanced > Display > Album art >\nEmbedded vs external: Prefer embedded.\n\nA restart is required to take effect.\n\n',
 				msg: 'Do you want to load embedded album art first?\n\n{content}Continue?\n\n',
 				msgFb: 'Embedded album art enabled:\n\n{content}'
 			},

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-11-2024                                              * //
+// * Last change:    01-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3951,11 +3951,15 @@ class MainUI {
 		this.loadAlbumArtFromList(this.albumArtIndex);
 		this.checkAlbumArtFromListDiscArt();
 
-		// Display embedded album art image
+		// Display embedded album art image when cycled back to the first image
 		if (grSet.loadEmbeddedAlbumArtFirst && this.albumArtIndex === 0) {
-			this.albumArt = utils.GetAlbumArtV2(fb.GetNowPlaying());
-			this.albumArtList.unshift(this.albumArt);
-			this.albumArtIndex = 0;
+			const embeddedAlbumArt = utils.GetAlbumArtV2(fb.GetNowPlaying());
+			if (embeddedAlbumArt) {
+				this.albumArt = embeddedAlbumArt;
+				if (typeof this.albumArt === 'string') {
+					this.albumArtList.unshift(this.albumArt);
+				}
+			}
 		}
 
 		// Update colors for dynamic themes
@@ -4154,9 +4158,10 @@ class MainUI {
 			this.albumArtLoaded = true;
 			this.initPanelWidthAuto(true);
 
-			if (index !== 0 && !this.newTrackFetchingArtwork) return;
-			this.newTrackFetchingArtwork = false;
-			this.initThemeState(this.albumArt);
+			if (index === 0 && this.newTrackFetchingArtwork) {
+				this.newTrackFetchingArtwork = false;
+				this.initThemeState(this.albumArt);
+			}
 		}
 		else {
 			gdi.LoadImageAsyncV2(window.ID, artIndex).then(coverImage => {

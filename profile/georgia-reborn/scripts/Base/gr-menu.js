@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    19-11-2024                                              * //
+// * Last change:    01-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1159,6 +1159,7 @@ class TopMenuOptions {
 				grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
 					if (!confirmed) grSet.loadEmbeddedAlbumArtFirst = false;
 				});
+				window.Reload();
 			});
 			playerControlsAlbumArtMenu.addSeparator();
 
