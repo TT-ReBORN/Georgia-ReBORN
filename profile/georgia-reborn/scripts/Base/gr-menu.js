@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    01-12-2024                                              * //
+// * Last change:    07-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1137,7 +1137,7 @@ class TopMenuOptions {
 				playerControlsAlbumArtScaleMenu.appendTo(playerControlsAlbumArtMenu);
 			}
 			playerControlsAlbumArtMenu.addSeparator();
-			const cycleAlbumArtMenu = new Menu('Cycle album artwork');
+			const cycleAlbumArtMenu = new Menu('Cycle album art');
 			cycleAlbumArtMenu.addToggleItem('Enabled', grSet, 'albumArtCycle', () => {
 				if (!grSet.albumArtCycle) {
 					grm.ui.clearTimer('albumArt');
@@ -1153,6 +1153,9 @@ class TopMenuOptions {
 			});
 			cycleAlbumArtMenu.appendTo(playerControlsAlbumArtMenu);
 			playerControlsAlbumArtMenu.addSeparator();
+			playerControlsAlbumArtMenu.addToggleItem('Filter album art images', grSet, 'filterAlbumArt', () => {
+				window.Reload();
+			});
 			playerControlsAlbumArtMenu.addToggleItem('Load embedded album art first', grSet, 'loadEmbeddedAlbumArtFirst', () => {
 				const msg = grm.msg.getMessage('menu', 'loadEmbeddedAlbumArtFirst');
 				const msgFb = grm.msg.getMessage('menu', 'loadEmbeddedAlbumArtFirst', true);
@@ -1851,11 +1854,17 @@ class TopMenuOptions {
 			RepaintWindow();
 		});
 		playlistBackgroundMenu.addSeparator();
-		playlistBackgroundMenu.createRadioSubMenu('Image source', ['Artist', 'Album', 'Custom'], grSet.playlistBgImgSource, ['artist', 'album', 'custom'], (source) => {
+		const playlistBackgroundImageSourceMenu = new Menu('Image source');
+		playlistBackgroundImageSourceMenu.addRadioItems(['Artist', 'Album', 'Custom'], grSet.playlistBgImgSource, ['artist', 'album', 'custom'], (source) => {
 			grSet.playlistBgImgSource = source;
 			grm.bgImg.initBgImage(false, true);
 			RepaintWindow();
 		});
+		playlistBackgroundImageSourceMenu.addSeparator();
+		playlistBackgroundImageSourceMenu.addToggleItem('Filter album art images', grSet, 'playlistBgImgAlbumArtFilter', () => {
+			window.Reload();
+		});
+		playlistBackgroundImageSourceMenu.appendTo(playlistBackgroundMenu);
 		playlistBackgroundMenu.createRadioSubMenu('Image scaling', ['Proportional', 'Filled', 'Stretched'], grSet.playlistBgImgScale, ['default', 'filled', 'stretched'], (scale) => {
 			grSet.playlistBgImgScale = scale;
 			grm.bgImg.initBgImage(false, true);
@@ -2120,9 +2129,6 @@ class TopMenuOptions {
 				grSet.detailsAlbumArtDiscAreaOpacity = 255;
 				RepaintWindow();
 			}, !grSet.displayDiscArt);
-			discArtMenu.addToggleItem('Filter disc art from artwork', grSet, 'filterDiscArtFromArtwork', () => {
-				window.Reload();
-			});
 			discArtMenu.addSeparator();
 			discArtMenu.addToggleItem('Spin disc art while songs play (increases memory and CPU)', grSet, 'spinDiscArt', () => {
 				if (grSet.spinDiscArt) {
@@ -2503,11 +2509,17 @@ class TopMenuOptions {
 			RepaintWindow();
 		});
 		libraryBackgroundMenu.addSeparator();
-		libraryBackgroundMenu.createRadioSubMenu('Image source', ['Artist', 'Album', 'Custom'], grSet.libraryBgImgSource, ['artist', 'album', 'custom'], (source) => {
+		const libraryBackgroundImageSourceMenu = new Menu('Image source');
+		libraryBackgroundImageSourceMenu.addRadioItems(['Artist', 'Album', 'Custom'], grSet.libraryBgImgSource, ['artist', 'album', 'custom'], (source) => {
 			grSet.libraryBgImgSource = source;
 			grm.bgImg.initBgImage(false, true);
 			RepaintWindow();
 		});
+		libraryBackgroundImageSourceMenu.addSeparator();
+		libraryBackgroundImageSourceMenu.addToggleItem('Filter album art images', grSet, 'libraryBgImgAlbumArtFilter', () => {
+			window.Reload();
+		});
+		libraryBackgroundImageSourceMenu.appendTo(libraryBackgroundMenu);
 		libraryBackgroundMenu.createRadioSubMenu('Image scaling', ['Proportional', 'Filled', 'Stretched'], grSet.libraryBgImgScale, ['default', 'filled', 'stretched'], (scale) => {
 			grSet.libraryBgImgScale = scale;
 			grm.bgImg.initBgImage(false, true);
@@ -3043,11 +3055,17 @@ class TopMenuOptions {
 			RepaintWindow();
 		});
 		lyricsBackgroundMenu.addSeparator();
-		lyricsBackgroundMenu.createRadioSubMenu('Image source', ['Artist', 'Album', 'Custom'], grSet.lyricsBgImgSource, ['artist', 'album', 'custom'], (source) => {
+		const lyricsBackgroundImageSourceMenu = new Menu('Image source');
+		lyricsBackgroundImageSourceMenu.addRadioItems(['Artist', 'Album', 'Custom'], grSet.lyricsBgImgSource, ['artist', 'album', 'custom'], (source) => {
 			grSet.lyricsBgImgSource = source;
 			grm.bgImg.initBgImage(false, true);
 			RepaintWindow();
 		});
+		lyricsBackgroundImageSourceMenu.addSeparator();
+		lyricsBackgroundImageSourceMenu.addToggleItem('Filter album art images', grSet, 'lyricsBgImgAlbumArtFilter', () => {
+			window.Reload();
+		});
+		lyricsBackgroundImageSourceMenu.appendTo(lyricsBackgroundMenu);
 		lyricsBackgroundMenu.createRadioSubMenu('Image scaling', ['Proportional', 'Filled', 'Stretched'], grSet.lyricsBgImgScale, ['default', 'filled', 'stretched'], (scale) => {
 			grSet.lyricsBgImgScale = scale;
 			grm.bgImg.initBgImage(false, true);

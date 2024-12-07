@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-11-2024                                              * //
+// * Last change:    07-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -373,6 +373,7 @@ grSet.addProperties({
 	albumArtCycle:                      ['Georgia-ReBORN - 09. Player controls: Album art cycle', false], // false: Album art cycle
 	albumArtCycleMouseWheel:            ['Georgia-ReBORN - 09. Player controls: Album art cycle with mouse wheel', true], // true: Album art cycle with mouse wheel
 	albumArtCycleTime:                  ['Georgia-ReBORN - 09. Player controls: Album art cycle time', 15], // 15: Album art cycle time in seconds
+	filterAlbumArt:                     ['Georgia-ReBORN - 09. Player controls: Filter album art images', true], // true: Filters out unwanted artwork images
 	loadEmbeddedAlbumArtFirst:          ['Georgia-ReBORN - 09. Player controls: Load embedded album art first', false], // false: Loads embedded album art from music files first
 	showHiResAudioBadge:                ['Georgia-ReBORN - 09. Player controls: Show Hi-res audio badge on album cover', false], // false: Show hi-res audio badge on album cover
 	showPause:                          ['Georgia-ReBORN - 09. Player controls: Show pause on album cover', true], // true: Show pause button on album cover
@@ -515,6 +516,7 @@ grSet.addProperties({
 	playlistBgImgCycle:                 ['Georgia-ReBORN - 10. Playlist: Background: Image cycle', true], // Image cycle
 	playlistBgImgCycleTime:             ['Georgia-ReBORN - 10. Playlist: Background: Image cycle time', 15], // Image cycle time
 	playlistBgImgSource:                ['Georgia-ReBORN - 10. Playlist: Background: Image source', 'artist'], // 'artist', 'album', 'custom' - Image source
+	playlistBgImgAlbumArtFilter:        ['Georgia-ReBORN - 10. Playlist: Background: Image source album art filter', true], // Filters album art images based on playlistBgAlbumArt pattern
 	playlistBgImgScale:                 ['Georgia-ReBORN - 10. Playlist: Background: Image scale', 'filled'], // Image on background scale
 	playlistBgImgOpacity:               ['Georgia-ReBORN - 10. Playlist: Background: Image opacity', 76], // Image on background opacity
 	playlistBgRowOpacity:               ['Georgia-ReBORN - 10. Playlist: Background: Row opacity', 128], // Playlist rows now playing rows only
@@ -548,7 +550,6 @@ grSet.addProperties({
 	discArtStub:                        ['Georgia-ReBORN - 11. Details: Disc art placeholder', 'cdAlbumCover'], // Displays the disc art placeholder
 	displayDiscArt:                     ['Georgia-ReBORN - 11. Details: Display disc art', true], // true: Show disc artwork behind album artwork. This artwork is expected to be named cd.png and have transparent backgrounds (can be found at fanart.tv)
 	discArtOnTop:                       ['Georgia-ReBORN - 11. Details: Show disc art above front cover', false], // true: Display discArt above front cover
-	filterDiscArtFromArtwork:           ['Georgia-ReBORN - 11. Details: Filter disc art from artwork', true], // true: Filters discArt from artwork images
 	spinDiscArt:                        ['Georgia-ReBORN - 11. Details: Spin disc art', false], // true: discArt will spin while the song plays
 	spinDiscArtImageCount:              ['Georgia-ReBORN - 11. Details: # of images to create while spinning', 72], // Higher numbers will increase memory usage, and slow down spin
 	spinDiscArtRedrawInterval:          ['Georgia-ReBORN - 11. Details: Spin disc draw interval', 75], // Speed in ms with which to attempt redraw. Lower numbers will increase CPU
@@ -595,6 +596,7 @@ grSet.addProperties({
 	libraryBgImgCycle:                  ['Georgia-ReBORN - 12. Library: Background: Image cycle', true], // Image cycle
 	libraryBgImgCycleTime:              ['Georgia-ReBORN - 12. Library: Background: Image cycle time', 15], // Image cycle time
 	libraryBgImgSource:                 ['Georgia-ReBORN - 12. Library: Background: Image source', 'artist'], // 'artist', 'album', 'custom' - Image source
+	libraryBgImgAlbumArtFilter:         ['Georgia-ReBORN - 12. Library: Background: Image source album art filter', true], // Filters album art images based on libraryBgAlbumArt pattern
 	libraryBgImgScale:                  ['Georgia-ReBORN - 12. Library: Background: Image scale', 'filled'], // Image on background scale
 	libraryBgImgOpacity:                ['Georgia-ReBORN - 12. Library: Background: Image opacity', 76], // Image on background opacity
 	libraryBgRowOpacity:                ['Georgia-ReBORN - 12. Library: Background: Row opacity', 128], // Library row opacity
@@ -615,6 +617,7 @@ grSet.addProperties({
 	lyricsBgImgCycle:                   ['Georgia-ReBORN - 14. Lyrics: Background: Image cycle', true], // Image cycle
 	lyricsBgImgCycleTime:               ['Georgia-ReBORN - 14. Lyrics: Background: Image cycle time', 15], // Image cycle time
 	lyricsBgImgSource:                  ['Georgia-ReBORN - 14. Lyrics: Background: Image source', 'album'], // 'album', 'album', 'custom' - Image source
+	lyricsBgImgAlbumArtFilter:          ['Georgia-ReBORN - 14. Lyrics: Background: Image source album art filter', true], // Filters album art images based on lyricsBgAlbumArt pattern
 	lyricsBgImgScale:                   ['Georgia-ReBORN - 14. Lyrics: Background: Image scale', 'filled'], // Image on background scale
 	lyricsBgImgOpacity:                 ['Georgia-ReBORN - 14. Lyrics: Background: Image opacity', 76], // Image on background opacity
 	lyricsDropShadowLevel:              ['Georgia-ReBORN - 14. Lyrics: Show drop shadow', 2], // 0 - 3 - Show drop shadow on lyrics text
@@ -1015,6 +1018,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'albumArtCycle', grCfg.themeControls, 'albumArtCycle', false);
 		this._setSetting(grSet, 'albumArtCycleMouseWheel', grCfg.themeControls, 'albumArtCycleMouseWheel', true);
 		this._setSetting(grSet, 'albumArtCycleTime', grCfg.themeControls, 'albumArtCycleTime', 15);
+		this._setSetting(grSet, 'filterAlbumArt', grCfg.themeControls, 'filterAlbumArt', true);
 		this._setSetting(grSet, 'loadEmbeddedAlbumArtFirst', grCfg.themeControls, 'loadEmbeddedAlbumArtFirst', false);
 		this._setSetting(grSet, 'showHiResAudioBadge', grCfg.themeControls, 'showHiResAudioBadge', false);
 		this._setSetting(grSet, 'hiResAudioBadgeRound', grCfg.themeControls, 'hiResAudioBadgeRound', false);
@@ -1168,6 +1172,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'playlistBgImgCycle', grCfg.themePlaylist, 'playlistBgImgCycle', true);
 		this._setSetting(grSet, 'playlistBgImgCycleTime', grCfg.themePlaylist, 'playlistBgImgCycleTime', 15);
 		this._setSetting(grSet, 'playlistBgImgSource', grCfg.themePlaylist, 'playlistBgImgSource', 'artist');
+		this._setSetting(grSet, 'playlistBgImgAlbumArtFilter', grCfg.themePlaylist, 'playlistBgImgAlbumArtFilter', true);
 		this._setSetting(grSet, 'playlistBgImgScale', grCfg.themePlaylist, 'playlistBgImgScale', 'filled');
 		this._setSetting(grSet, 'playlistBgImgOpacity', grCfg.themePlaylist, 'playlistBgImgOpacity', 76);
 		this._setSetting(grSet, 'playlistBgRowOpacity', grCfg.themePlaylist, 'playlistBgImgOpacity', 128);
@@ -1249,7 +1254,6 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'discArtStub', grCfg.themeDetails, 'discArtStub', 'cdAlbumCover');
 		this._setSetting(grSet, 'displayDiscArt', grCfg.themeDetails, 'displayDiscArt', true);
 		this._setSetting(grSet, 'discArtOnTop', grCfg.themeDetails, 'discArtOnTop', false);
-		this._setSetting(grSet, 'filterDiscArtFromArtwork', grCfg.themeDetails, 'filterDiscArtFromArtwork', true);
 		this._setSetting(grSet, 'spinDiscArt', grCfg.themeDetails, 'spinDiscArt', false);
 		this._setSetting(grSet, 'spinDiscArtImageCount', grCfg.themeDetails, 'spinDiscArtImageCount', 72);
 		this._setSetting(grSet, 'spinDiscArtRedrawInterval', grCfg.themeDetails, 'spinDiscArtRedrawInterval', 75);
@@ -1328,6 +1332,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'libraryBgImgCycle', grCfg.themeLibrary, 'libraryBgImgCycle', true);
 		this._setSetting(grSet, 'libraryBgImgCycleTime', grCfg.themeLibrary, 'libraryBgImgCycleTime', 15);
 		this._setSetting(grSet, 'libraryBgImgSource', grCfg.themeLibrary, 'libraryBgImgSource', 'artist');
+		this._setSetting(grSet, 'libraryBgImgAlbumArtFilter', grCfg.themeLibrary, 'libraryBgImgAlbumArtFilter', true);
 		this._setSetting(grSet, 'libraryBgImgScale', grCfg.themeLibrary, 'libraryBgImgScale', 'filled');
 		this._setSetting(grSet, 'libraryBgImgOpacity', grCfg.themeLibrary, 'libraryBgImgOpacity', 76);
 		this._setSetting(grSet, 'libraryBgRowOpacity', grCfg.themeLibrary, 'libraryBgRowOpacity', 128);
@@ -1423,6 +1428,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'lyricsBgImgCycle', grCfg.themeLyrics, 'lyricsBgImgCycle', true);
 		this._setSetting(grSet, 'lyricsBgImgCycleTime', grCfg.themeLyrics, 'lyricsBgImgCycleTime', 15);
 		this._setSetting(grSet, 'lyricsBgImgSource', grCfg.themeLyrics, 'lyricsBgImgSource', 'album');
+		this._setSetting(grSet, 'lyricsBgImgAlbumArtFilter', grCfg.themeLyrics, 'lyricsBgImgAlbumArtFilter', true);
 		this._setSetting(grSet, 'lyricsBgImgScale', grCfg.themeLyrics, 'lyricsBgImgScale', 'filled');
 		this._setSetting(grSet, 'lyricsBgImgOpacity', grCfg.themeLyrics, 'lyricsBgImgOpacity', 76);
 		this._setSetting(grSet, 'lyricsDropShadowLevel', grCfg.themeLyrics, 'lyricsDropShadowLevel', 2);

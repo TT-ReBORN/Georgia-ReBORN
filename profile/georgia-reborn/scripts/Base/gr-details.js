@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-11-2024                                              * //
+// * Last change:    07-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -307,7 +307,7 @@ class Details {
 		}
 
 		const drawDiscArtImage = () => {
-			if (!grSet.filterDiscArtFromArtwork && grm.ui.discArtImageDisplayed) return;
+			if (!grSet.filterAlbumArt && grm.ui.discArtImageDisplayed) return;
 			const discArtImg = this.discArtArray[this.discArtRotationIndex] || this.discArtRotation;
 			this.discArtShadowImg && gr.DrawImage(this.discArtShadowImg, -this.discArtShadow, grm.ui.albumArtSize.y - this.discArtShadow, this.discArtShadowImg.Width, this.discArtShadowImg.Height, 0, 0, this.discArtShadowImg.Width, this.discArtShadowImg.Height);
 			gr.DrawImage(discArtImg, this.discArtSize.x, this.discArtSize.y, this.discArtSize.w, this.discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);
@@ -1737,11 +1737,7 @@ class Details {
 	 * @param {string} discArtPath - The path to the disc art.
 	 */
 	loadDiscArt(discArtPath) {
-		let tempDiscArt;
-
-		if (grm.ui.albumArtFromCache) {
-			tempDiscArt = grm.artCache && grm.artCache.getImage(discArtPath);
-		}
+		const tempDiscArt = grm.ui.albumArtFromCache ? grm.artCache.getImage(discArtPath) : null;
 
 		if (tempDiscArt) {
 			this.disposeDiscArt(this.discArt);

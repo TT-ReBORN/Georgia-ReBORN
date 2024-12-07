@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    01-12-2024                                              * //
+// * Last change:    07-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -603,7 +603,9 @@ class BackgroundImage {
 	 */
 	getBgImage(panel) {
 		const { imgType, imgList, imgIdx, bgImg, bgImgIdx } = this.getBgImageSourceKeys(panel);
-		this[imgList] = grm.ui.getImagePathList(imgType, grm.ui.initMetadb());
+		const bgImagePattern = this.getBgImagePatterns(panel);
+
+		this[imgList] = grm.ui.getImagePathList(imgType, grm.ui.initMetadb(), bgImagePattern);
 
 		if (!this[imgList].length) {
 			const embeddedIdx = this.albumArtIdx[this[imgIdx]];
@@ -616,6 +618,21 @@ class BackgroundImage {
 		}
 
 		return this.fetchBgImage(panel, imgList, imgIdx, bgImg, bgImgIdx);
+	}
+
+	/**
+	 * Gets the background image pattern for a given panel type.
+	 * @param {string} panel - The panel type, which can be 'playlist', 'library', or 'lyrics'.
+	 * @returns {RegExp} The pattern for the specified panel type.
+	 */
+	getBgImagePatterns(panel) {
+		const bgImagePatterns = {
+			playlist: grSet.playlistBgImgAlbumArtFilter && ParseStringToRegExp(grCfg.artworkPatterns.playlistBgAlbumArt),
+			library: grSet.libraryBgImgAlbumArtFilter && ParseStringToRegExp(grCfg.artworkPatterns.libraryBgAlbumArt),
+			lyrics: grSet.lyricsBgImgAlbumArtFilter && ParseStringToRegExp(grCfg.artworkPatterns.lyricsBgAlbumArt)
+		};
+
+		return bgImagePatterns[panel];
 	}
 
 	/**

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    01-12-2024                                              * //
+// * Last change:    07-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -474,7 +474,7 @@ class MainUI {
 
 		grm.utils.profile(this.showDrawExtendedTiming, 'create', 'on_paint -> album art');
 
-		const padding = !grSet.filterDiscArtFromArtwork && this.discArtImageDisplayed && this.discArtImagePNG && this.albumArtLoaded ? Math.round(this.edgeMargin * 0.75) : 0;
+		const padding = !grSet.filterAlbumArt && this.discArtImageDisplayed && this.discArtImagePNG && this.albumArtLoaded ? Math.round(this.edgeMargin * 0.75) : 0;
 		const imgAlpha = this.displayDetails && grm.details.discArt ? alpha : 255;
 
 		gr.DrawImage(this.albumArtScaled, this.albumArtSize.x + padding, this.albumArtSize.y + padding,
@@ -906,7 +906,7 @@ class MainUI {
 		const discArtInAlbumArtArea = this.displayDetails && this.discArtImageDisplayed;
 		const noDiscArtAndBg = this.displayDetails && !grm.details.discArt && !grSet.noDiscArtBg;
 
-		const middleX = grSet.hideMiddlePanelShadow || discArtInAlbumArtArea || this.displayLyrics && grSet.lyricsLayout !== 'normal' ? this.ww + 4 : panelX - 4;
+		const middleX = grSet.discArtOnTop || grSet.hideMiddlePanelShadow || discArtInAlbumArtArea || this.displayLyrics && grSet.lyricsLayout !== 'normal' ? this.ww + 4 : panelX - 4;
 		const x = albumArtW ? panelX : 0;
 		const w = (albumArtW && !grSet.panelWidthAuto || this.discArtDisplayed()) && !discArtInAlbumArtArea || noDiscArtAndBg ? panelX : this.ww;
 
@@ -3209,27 +3209,25 @@ class MainUI {
 	 * Gets a list of image paths based on the specified type.
 	 * @param {string} type - The type ('artistArt', 'albumArt', 'customArt') of images to retrieve.
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
-	 * @returns {string[]} - An array of image paths.
+	 * @param {RegExp|null} [pattern] - The pattern to include or exclude the image paths.
+	 * @returns {string[]} - The array of image paths.
 	 */
-	getImagePathList(type, metadb) {
-		const fileFormats = ['jpg', 'png'];
-
+	getImagePathList(type, metadb, pattern = null) {
 		if (type === 'artistArt') {
 			const artistArtPathsRaw = bio.panel.cleanPth(bioCfg.pth.foImgArt, bio.panel.id.focus);
 			const artistArtPaths = UtilsGlob(`${artistArtPathsRaw}*`);
-			return FilterFiles(artistArtPaths, fileFormats);
+			return FilterFiles(artistArtPaths, pattern);
 		}
 
 		if (type === 'albumArt') {
-			const albumArtExclude = grSet.filterDiscArtFromArtwork && (/(cd|disc|vinyl)([0-9]*|[a-h])\.(png|jpg)/i);
 			const albumArtPathsRaw = grCfg.imgPaths.flatMap(path => UtilsGlob($(path, metadb)));
 			const albumArtPaths = [...new Set(albumArtPathsRaw)];
-			return FilterFiles(albumArtPaths, fileFormats, albumArtExclude);
+			return FilterFiles(albumArtPaths, pattern);
 		}
 
 		if (type === 'customArt') {
 			const customArtPaths = UtilsGlob(`${grPath.images}background\\*`);
-			return FilterFiles(customArtPaths, fileFormats);
+			return FilterFiles(customArtPaths, pattern);
 		}
 
 		return [];
@@ -4128,7 +4126,8 @@ class MainUI {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	fetchAlbumArtLocalFiles(metadb) {
-		this.albumArtList = this.getImagePathList('albumArt', metadb);
+		const albumArtPattern = grSet.filterAlbumArt && ParseStringToRegExp(grCfg.artworkPatterns.albumArt);
+		this.albumArtList = this.getImagePathList('albumArt', metadb, albumArtPattern);
 
 		if (this.albumArtList.length && !grSet.loadEmbeddedAlbumArtFirst) {
 			this.displayAlbumArtFromList();

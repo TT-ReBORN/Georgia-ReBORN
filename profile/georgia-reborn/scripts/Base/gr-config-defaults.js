@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-11-2024                                              * //
+// * Last change:    07-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -75,6 +75,36 @@ class ConfigDefaults {
 			'* TITLE FORMATTING STRINGS:                                                                                                                                                                             ' +
 			'* Used throughout the display. Do NOT change the key names or add new ones.                                                                                                                             ' +
 			'* Note: These settings will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                        ' +
+			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
+		// #endregion
+
+		// * ARTWORK PATTERNS * //
+		// #region ARTWORK PATTERNs
+		/** @public @type {object} Artwork patterns to filter out artwork images. */
+		this.artworkPatternsDefaults = {
+			albumArt: '!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i',
+			playlistBgAlbumArt: '!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i',
+			libraryBgAlbumArt: '!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i',
+			lyricsBgAlbumArt: '!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i'
+		};
+
+		/** @public @type {object} Artwork patterns config name description. */
+		this.artworkPatternsComments = {
+			albumArt: 'Artwork images will be excluded "!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i" or included "/(artist)\\.(jpg|png)$/i" from album art.',
+			playlistBgAlbumArt: 'Artwork images will be excluded "!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i" or included "/(artist)\\.(jpg|png)$/i" from playlist background album art.',
+			libraryBgAlbumArt: 'Artwork images will be excluded "!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i" or included "/(artist|cover)\\.(jpg|png)$/i" from library background album art.',
+			lyricsBgAlbumArt: 'Artwork images will be excluded "!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i" or included "/(artist|cover|folder)\\.(jpg|png)$/i" from lyrics background album art.'
+		};
+
+		/** @public @type {object} Artwork patterns config header description. */
+		this.artworkPatternsSchema = new ConfigurationObjectSchema('artworkPatterns', ConfigurationObjectType.Object, undefined,
+			'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
+			'* ARTWORK PATTERNS:                                                                                                                                                                                     ' +
+			'* You can use regular expression patterns to exclude specific artwork images, or use the include pattern to only show specific artwork images.                                                          ' +
+			'* The "albumArt" pattern handles the left large album art display when using Options > Player controls > Album art > Filter album art images.                                                           ' +
+			'* The "playlistBgAlbumArt", "libraryBgAlbumArt", and "lyricsBgAlbumArt" patterns handle the background image album art.                                                                                 ' +
+			'* Adjust the patterns as needed to match the naming conventions of your artwork files.                                                                                                                  ' +
+			'* Note: This setting will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file.                                                         ' +
 			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 		// #endregion
 
@@ -676,6 +706,7 @@ class ConfigDefaults {
 			albumArtCycle: false,
 			albumArtCycleMouseWheel: true,
 			albumArtCycleTime: 15,
+			filterAlbumArt: true,
 			loadEmbeddedAlbumArtFirst: false,
 			showHiResAudioBadge: false,
 			hiResAudioBadgeRound: false,
@@ -843,6 +874,7 @@ class ConfigDefaults {
 			albumArtCycle: 'Values: true, false - Options > Player controls > Album art > Cycle album artwork > Enabled',
 			albumArtCycleMouseWheel: 'Values: true, false - Options > Player controls > Album art > Cycle album artwork > Cycle with mouse wheel',
 			albumArtCycleTime: 'Values: 5, 10, 15, 30, 60 - Options > Player controls > Album art > Cycle album artwork > Cycle time',
+			filterAlbumArt: 'Values: true, false - Options > Player controls > Album art > Filter album art images',
 			loadEmbeddedAlbumArtFirst: 'Values: true, false - Options > Player controls > Album art > Load embedded album art first',
 			showHiResAudioBadge: 'Values: true, false - Options > Player controls > Album art > Show hi-res audio badge on album cover > Enabled',
 			hiResAudioBadgeRound: 'Values: true, false - Options > Player controls > Album art > Show hi-res audio badge on album cover > Round',
@@ -1005,6 +1037,7 @@ class ConfigDefaults {
 			playlistBgImgCycle: true,
 			playlistBgImgCycleTime: 15,
 			playlistBgImgSource: 'artist',
+			playlistBgImgAlbumArtFilter: true,
 			playlistBgImgScale: 'filled',
 			playlistBgImgOpacity: 76,
 			playlistBgRowOpacity: 128,
@@ -1065,6 +1098,7 @@ class ConfigDefaults {
 			playlistBgImgCycle: 'Values: true, false - Options > Playlist > Background > Cycle images',
 			playlistBgImgCycleTime: 'Values: 5, 10, 15, 30, 60 - Options > Playlist > Background > Cycle time',
 			playlistBgImgSource: 'Values: "artist", "album", "custom" - Options > Playlist > Background > Image source',
+			playlistBgImgAlbumArtFilter: 'Values: true, false - Options > Playlist > Background > Image source > Filter album art images',
 			playlistBgImgScale: 'Values: "default", "filled", "stretched" - Options > Playlist > Background > Image scaling',
 			playlistBgImgOpacity: 'Values: 255, 230, 204, 178, 153, 128, 102, 76, 51, 25 - from 100% - 10% - Options > Playlist > Background > Image opacity',
 			playlistBgRowOpacity: 'Values: 255, 230, 204, 178, 153, 128, 102, 76, 51, 25 - from 100% - 10% - Options > Playlist > Background > Row opacity',
@@ -1212,7 +1246,6 @@ class ConfigDefaults {
 			discArtStub: 'cdAlbumCover',
 			displayDiscArt: true,
 			discArtOnTop: false,
-			filterDiscArtFromArtwork: true,
 			spinDiscArt: false,
 			spinDiscArtImageCount: 72,
 			spinDiscArtRedrawInterval: 75,
@@ -1251,7 +1284,6 @@ class ConfigDefaults {
 			discArtStub: 'Values: "cdAlbumCover", "cdWhite", "cdBlack", "cdBlank", "cdTrans", "vinylAlbumCover", "vinylWhite", "vinylVoid", "vinylColdFusion", "vinylRingOfFire", "vinylMaple", "vinylBlack", "vinylBlackHole", "vinylEbony", "vinylTrans" - Options > Details > Disc art > Disc art placeholder',
 			displayDiscArt: 'Values: true, false - Options > Details > Disc art > Display disc art',
 			discArtOnTop: 'Values: true, false - Options > Details > Disc art > Display disc art above cover',
-			filterDiscArtFromArtwork: 'Values: true, false - Options > Details > Disc art > Filter disc art from artwork',
 			spinDiscArt: 'Values: true, false - Options > Details > Disc art > Spin disc art while songs play (increases memory and CPU)',
 			spinDiscArtImageCount: 'Values: 36, 45, 60, 72, 90, 120, 180 - Options > Details > Disc art > # Rotation images (memory usage/rotational speed)',
 			spinDiscArtRedrawInterval: 'Values: 250, 200, 150, 125, 100, 75, 50, 40, 30, 20, 10 - Options > Details > Disc art > Spinning disc art redraw speed',
@@ -1382,6 +1414,7 @@ class ConfigDefaults {
 			libraryBgImgCycle: true,
 			libraryBgImgCycleTime: 15,
 			libraryBgImgSource: 'artist',
+			libraryBgImgAlbumArtFilter: true,
 			libraryBgImgScale: 'filled',
 			libraryBgImgOpacity: 76,
 			libraryBgRowOpacity: 128,
@@ -1447,6 +1480,7 @@ class ConfigDefaults {
 			libraryBgImgCycle: 'Values: true, false - Options > Library > Background > Cycle images',
 			libraryBgImgCycleTime: 'Values: 5, 10, 15, 30, 60 - Options > Library > Background > Cycle time',
 			libraryBgImgSource: 'Values: "artist", "album", "custom" - Options > Library > Background > Image source',
+			libraryBgImgAlbumArtFilter: 'Values: true, false - Options > Library > Background > Image source > Filter album art images',
 			libraryBgImgScale: 'Values: "default", "filled", "stretched" - Options > Library > Background > Image scaling',
 			libraryBgImgOpacity: 'Values: 255, 230, 204, 178, 153, 128, 102, 76, 51, 25 - from 100% - 10% - Options > Library > Background > Image opacity',
 			libraryBgRowOpacity: 'Values: 255, 230, 204, 178, 153, 128, 102, 76, 51, 25 - from 100% - 10% - Options > Library > Background > Row opacity',
@@ -1599,6 +1633,7 @@ class ConfigDefaults {
 			lyricsBgImgCycle: true,
 			lyricsBgImgCycleTime: 15,
 			lyricsBgImgSource: 'album',
+			lyricsBgImgAlbumArtFilter: true,
 			lyricsBgImgScale: 'filled',
 			lyricsBgImgOpacity: 76,
 			lyricsDropShadowLevel: 2,
@@ -1618,6 +1653,7 @@ class ConfigDefaults {
 			lyricsBgImgCycle: 'Values: true, false - Options > Lyrics > Background > Cycle images',
 			lyricsBgImgCycleTime: 'Values: 5, 10, 15, 30, 60 - Options > Lyrics > Background > Cycle time',
 			lyricsBgImgSource: 'Values: "artist", "album", "custom" - Options > Lyrics > Background > Image source',
+			lyricsBgImgAlbumArtFilter: 'Values: true, false - Options > Lyrics > Background > Image source > Filter album art images',
 			lyricsBgImgScale: 'Values: "default", "filled", "stretched" - Options > Lyrics > Background > Image scaling',
 			lyricsBgImgOpacity: 'Values: 255, 230, 204, 178, 153, 128, 102, 76, 51, 25 - from 100% - 10% - Options > Lyrics > Background > Image opacity',
 			lyricsDropShadowLevel: 'Values: 0, 1, 2, 3 - Options > Lyrics > Display > Show drop shadow',

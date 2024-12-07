@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-11-2024                                              * //
+// * Last change:    07-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -70,6 +70,13 @@ class Configuration {
 		/** @protected @type {Array<ConfigurationObject>} */
 		this._configuration = [];
 
+		/**
+		 * Escapes backslashes in a string.
+		 * @param {string} str - The string in which to escape backslashes.
+		 * @returns {string} - The string with backslashes escaped.
+		 */
+		this.escapeBackslashes = (str) => str.replace(/\\/g, '\\\\');
+
 		if (!configurationPath.includes('.jsonc')) {
 			console.log('<WARNING: Config file is not a .jsonc. Text editors may complain about comments in the file>');
 		}
@@ -118,15 +125,15 @@ class Configuration {
 	 * @returns {ConfigurationThemeSettings} Provides getters and setters to automatically update the config file when config value changes.
 	 */
 	addConfigurationObject(objectDefinition, values, comments = []) {
-		/** @type {ConfigurationObject} */
 		const obj = { definition: objectDefinition, values, comments };
 		const idx = this._configuration.findIndex(c => c.definition.name === objectDefinition.name);
-		if (idx !== -1) {
-			// Replace existing object
+
+		if (idx !== -1) { // Replace existing object
 			this._configuration.splice(idx, 1, obj);
 		} else {
 			this._configuration.push(obj);
 		}
+
 		return this._getConfigObject(objectDefinition.name);
 	}
 
@@ -139,15 +146,18 @@ class Configuration {
 	 */
 	updateConfigObjValues(objectName, values, writeConfig = false) {
 		const configObj = this._configuration.find(c => c.definition.name === objectName);
+
 		if (Array.isArray(configObj.values)) {
 			if (Array.isArray(values)) {
 				configObj.values.splice(0, Infinity, ...values);
 			} else {
 				throw new InvalidTypeError('values', typeof values, 'array', 'Don\'t call updateConfigObjValues() to update Array values with non Array objects.');
 			}
-		} else {
+		}
+		else {
 			Object.assign(configObj.values, values);
 		}
+
 		if (writeConfig) {
 			this.writeConfiguration();
 		}
@@ -160,11 +170,13 @@ class Configuration {
 	 */
 	readConfiguration() {
 		try {
-			const f = fso.GetFile(this.path);
-			const p = f.OpenAsTextStream(FileMode.Read, FileType.Unicode);
-			const jsonString = StripJsonComments(p.ReadAll());
+			const getFile = fso.GetFile(this.path);
+			const configFile = getFile.OpenAsTextStream(FileMode.Read, FileType.Unicode);
+			const jsonString = StripJsonComments(configFile.ReadAll());
 			const config = JSON.parse(jsonString);
-			p.Close();
+
+			configFile.Close();
+
 			return config;
 		}
 		catch (e) {
@@ -198,86 +210,166 @@ class Configuration {
 	 * ( Only happens if not using a ConfigurationThemeSettings object received from addConfigurationObject ).
 	 */
 	writeConfiguration() {
-		const p = fso.CreateTextFile(this.path, true, true);
+		const configFile = fso.CreateTextFile(this.path, true, true);
 
-		p.WriteLine('/////////////////////////////////////////////////////////////////////////////////');
-		p.WriteLine('// * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //');
-		p.WriteLine('// * Description:    Georgia-ReBORN Configuration File                       * //');
-		p.WriteLine('// * Author:         TT                                                      * //');
-		p.WriteLine('// * Org. Author:    Mordred                                                 * //');
-		p.WriteLine('// * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //');
-		p.WriteLine('// *                                                                         * //');
-		p.WriteLine('// * Manual changes to this file will take effect on the next reload.        * //');
-		p.WriteLine('// * To ensure changes are not overwritten or lost, reload the theme         * //');
-		p.WriteLine('// * immediately after manually changing values.                             * //');
-		p.WriteLine('/////////////////////////////////////////////////////////////////////////////////');
-		p.WriteLine('');
-		p.WriteLine('');
-		p.WriteLine('{');
-		p.WriteLine('/////////////////////////////////////////////////////////////////////////////////');
-		p.WriteLine(`\t"configVersion": "${grCfg.currentVersion}",`);
-		p.WriteLine('/////////////////////////////////////////////////////////////////////////////////');
-		p.WriteLine('');
+		this.writeConfigHeader(configFile);
 
-		for (const conf of this._configuration) {
-			p.WriteLine('');
-			const container = conf.definition.container === ConfigurationObjectType.Array ? '[' : '{';
-			p.WriteLine(`\t"${conf.definition.name}": ${container}`);
-
-			if (conf.definition.comment) {
-				let line = conf.definition.comment;
-				let done = false;
-				while (!done) {
-					const lineLen = 200;
-					if (line.length < lineLen) {
-						p.WriteLine(`\t\t// ${line.trim()}`);
-						done = true;
-					} else {
-						const idx = line.lastIndexOf(' ', lineLen);
-						p.WriteLine(`\t\t// ${line.slice(0, idx).trim()}`);
-						line = line.slice(idx);
-					}
-				}
-			}
-
-			if (conf.definition.fields) {
-				// Array of fields
-				for (const value of conf.values) {
-					let entry = '';
-					if (conf.definition.container === ConfigurationObjectType.Array) {
-						for (const field of conf.definition.fields) {
-							if (!field.optional || value[field.name]) {
-								const quotes = typeof value[field.name] === 'string' ? '"' : '';
-								entry += `, "${field.name}": ${quotes}${value[field.name]}${quotes}`;
-							}
-						}
-						entry = `{${entry.slice(1)} }`;
-					}
-					const comment = value.comment ? ` // ${value.comment}` : '';
-					p.WriteLine(`\t\t${entry}${value !== conf.values[conf.values.length - 1] ? ',' : ''}${comment}`);
-				}
-			}
-			else if (conf.definition.container === ConfigurationObjectType.Array) {
-				// Array of comma separated entries
-				for (const val of conf.values) {
-					p.WriteLine(`\t\t"${val.replace(/\\/g, '\\\\')}"${val !== conf.values[conf.values.length - 1] ? ',' : ''}`);
-				}
-			}
-			else {
-				// Object with key/value pairs
-				const keys = Object.keys(conf.values);
-				for (const key of keys) {
-					const comment = conf.comments[key] ? ` // ${conf.comments[key]}` : '';
-					const quotes = typeof conf.values[key] === 'string' ? '"' : '';
-					p.WriteLine(`\t\t"${key}": ${quotes}${conf.values[key]}${quotes}${key !== keys[keys.length - 1] ? ',' : ''}${comment}`);
-				}
-			}
-			const closeContainer = conf.definition.container === ConfigurationObjectType.Array ? ']' : '}';
-			p.WriteLine(`\t${closeContainer}${conf !== this._configuration[this._configuration.length - 1] ? ',' : ''}`);
+		for (const configObject of this._configuration) {
+			configFile.WriteLine('');
+			this.writeConfigObject(configFile, configObject);
 		}
 
-		p.WriteLine('}');
-		p.Close();
+		configFile.WriteLine('}');
+		configFile.Close();
+	}
+
+	/**
+	 * Writes the configuration header to the provided output.
+	 * @param {object} configFile - The output object where the header is written.
+	 * @private
+	 */
+	writeConfigHeader(configFile) {
+		const headerLines = [
+			'/////////////////////////////////////////////////////////////////////////////////',
+			'// * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //',
+			'// * Description:    Georgia-ReBORN Configuration File                       * //',
+			'// * Author:         TT                                                      * //',
+			'// * Org. Author:    Mordred                                                 * //',
+			'// * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //',
+			'// *                                                                         * //',
+			'// * Manual changes to this file will take effect on the next reload.        * //',
+			'// * To ensure changes are not overwritten or lost, reload the theme         * //',
+			'// * immediately after manually changing values.                             * //',
+			'/////////////////////////////////////////////////////////////////////////////////',
+			'',
+			'',
+			'{',
+			'/////////////////////////////////////////////////////////////////////////////////',
+			`\t"configVersion": "${grCfg.currentVersion}",`,
+			'/////////////////////////////////////////////////////////////////////////////////',
+			''
+		];
+
+		for (const headerLine of headerLines) {
+			configFile.WriteLine(headerLine);
+		}
+	}
+
+	/**
+	 * Writes a configuration object to the provided output.
+	 * @param {object} configFile - The output object where the configuration is written.
+	 * @param {object} configObject - The configuration object to write.
+	 * @private
+	 */
+	writeConfigObject(configFile, configObject) {
+		const { container, name, comment, fields } = configObject.definition;
+		const array = container === ConfigurationObjectType.Array;
+		const containerStart = array ? '[' : '{';
+		const containerEnd = array ? ']' : '}';
+		const lastConfigObject = configObject === this._configuration[this._configuration.length - 1];
+		const separator = lastConfigObject ? '' : ',';
+
+		configFile.WriteLine(`\t"${name}": ${containerStart}`);
+
+		if (comment) {
+			this.writeConfigComment(configFile, comment);
+		}
+		if (fields) {
+			this.writeConfigArrayFields(configFile, configObject);
+		} else if (array) {
+			this.writeConfigArrayValues(configFile, configObject);
+		} else {
+			this.writeConfigKeyValuePairs(configFile, configObject);
+		}
+
+		configFile.WriteLine(`\t${containerEnd}${separator}`);
+	}
+
+	/**
+	 * Writes a comment to the provided output.
+	 * @param {object} configFile - The output object where the comment is written.
+	 * @param {string} comment - The comment to write.
+	 * @private
+	 */
+	writeConfigComment(configFile, comment) {
+		const lineLengthMax = 200;
+
+		while (comment.length > 0) {
+			const line = comment.slice(0, lineLengthMax);
+			const lineBackslashCount = (line.match(/\\\\/g) || []).length;
+			const lineLength = lineLengthMax - lineBackslashCount;
+
+			const indexEnd = comment.slice(0, lineLength).lastIndexOf(' ');
+			const indexNewLine = indexEnd > 0 ? indexEnd : lineLength;
+
+			const currentLine = comment.slice(0, indexNewLine).trim();
+			comment = comment.slice(indexNewLine).trim();
+
+			configFile.WriteLine(`\t\t// ${currentLine}`);
+		}
+	}
+
+	/**
+	 * Writes an array of fields from a configuration object to the provided output.
+	 * @param {object} configFile - The output object where the fields are written.
+	 * @param {object} configObject - The configuration object containing the fields.
+	 * @private
+	 */
+	writeConfigArrayFields(configFile, configObject) {
+		for (const value of configObject.values) {
+			const entryString = configObject.definition.fields
+				.filter(field => !field.optional || value[field.name])
+				.map(field => {
+					const fieldValue = value[field.name];
+					const quotes = typeof fieldValue === 'string' ? '"' : '';
+
+					return `"${field.name}": ${quotes}${fieldValue}${quotes}`;
+				})
+				.join(', ');
+
+			const entry = `{ ${entryString} }`;
+			const separator = value === configObject.values[configObject.values.length - 1] ? '' : ',';
+			const comment = value.comment ? ` // ${this.escapeBackslashes(value.comment)}` : '';
+
+			configFile.WriteLine(`\t\t${entry}${separator}${comment}`);
+		}
+	}
+
+	/**
+	 * Writes an array of fields from a configuration object to the provided output.
+	 * @param {object} configFile - The output object where the fields are written.
+	 * @param {object} configObject - The configuration object containing the fields.
+	 * @private
+	 */
+	writeConfigArrayValues(configFile, configObject) {
+		const lastValue = configObject.values[configObject.values.length - 1];
+
+		for (const value of configObject.values) {
+			const val = this.escapeBackslashes(value);
+			const separator = value === lastValue ? '' : ',';
+
+			configFile.WriteLine(`\t\t"${val}"${separator}`);
+		}
+	}
+
+	/**
+	 * Writes key-value pairs from a configuration object to the provided output.
+	 * @param {object} configFile - The output object where the key-value pairs are written.
+	 * @param {object} configObject - The configuration object containing the key-value pairs.
+	 * @private
+	 */
+	writeConfigKeyValuePairs(configFile, configObject) {
+		const keys = Object.keys(configObject.values);
+		const lastKey = keys[keys.length - 1];
+
+		for (const [key, value] of Object.entries(configObject.values)) {
+			const val = typeof value === 'string' ? this.escapeBackslashes(value) : value;
+			const quotes = typeof val === 'string' ? '"' : '';
+			const separator = key === lastKey ? '' : ',';
+			const comment = configObject.comments[key] ? ` // ${this.escapeBackslashes(configObject.comments[key])}` : '';
+
+			configFile.WriteLine(`\t\t"${key}": ${quotes}${val}${quotes}${separator}${comment}`);
+		}
 	}
 	// #endregion
 }
@@ -321,6 +413,8 @@ class ConfigurationManager {
 		// #region GEORGIA-REBORN-CONFIG.JSONC SETUP
 		/** @public @type {object} The config `title_format_strings` settings in the main config. */
 		this.titleFormat = {};
+		/** @public @type {object} The config `artworkPatterns` settings in the main config. */
+		this.artworkPatterns = {};
 		/** @public @type {object} The config `Theme` settings in the main config. */
 		this.theme = {};
 		/** @public @type {object} The config `Style` settings in the main config. */
@@ -400,7 +494,8 @@ class ConfigurationManager {
 	 * @private
 	 */
 	_checkSettings(settings, ...settingNames) {
-		return settingNames.some(settingName => Object.prototype.hasOwnProperty.call(settings, settingName));
+		return settingNames.some(settingName =>
+			Object.prototype.hasOwnProperty.call(settings, settingName));
 	}
 
 	/**
@@ -431,6 +526,7 @@ class ConfigurationManager {
 			console.log(`Updated "${key}" setting to the new value.`);
 			return true;
 		}
+
 		return false;
 	}
 
@@ -462,14 +558,17 @@ class ConfigurationManager {
 		for (const key of Object.keys(settings)) {
 			for (let index = 0; index < oldPrefixes.length; index++) {
 				const oldPrefix = oldPrefixes[index];
+
 				if (key.startsWith(oldPrefix)) {
 					const newKey = key.replace(oldPrefix, newPrefixes[index]);
+
 					if (settings[key] !== undefined) { // Make sure the old key has a value
 						settings[newKey] = settings[key];
 						console.log(`Renaming ${key} to ${newKey}`);
 					} else {
 						console.log(`Skipping rename for undefined ${key}`);
 					}
+
 					delete settings[key];
 					break;
 				}
@@ -508,7 +607,8 @@ class ConfigurationManager {
 	 * @private
 	 */
 	_gridCheckEntry(grid, ...labels) {
-		return labels.every(label => grid.some(gridEntry => gridEntry.label.toLowerCase() === label.toLowerCase()));
+		return labels.every(label => grid.some(gridEntry =>
+			gridEntry.label.toLowerCase() === label.toLowerCase()));
 	}
 
 	/**
@@ -519,7 +619,9 @@ class ConfigurationManager {
 	 * @private
 	 */
 	_gridRenameEntry(grid, oldLabel, newLabel) {
-		const entryIdx = grid.findIndex(gridEntry => gridEntry && gridEntry.label.toLowerCase() === oldLabel.toLowerCase());
+		const entryIdx = grid.findIndex(gridEntry =>
+			gridEntry && gridEntry.label.toLowerCase() === oldLabel.toLowerCase());
+
 		if (entryIdx >= 0) {
 			grid[entryIdx].label = newLabel;
 		}
@@ -533,8 +635,13 @@ class ConfigurationManager {
 	 * @private
 	 */
 	_gridReplaceEntry(grid, label, position) {
-		const entryIdx = grid.findIndex(gridEntry => gridEntry && gridEntry.label.toLowerCase() === label.toLowerCase());
-		const newVal = grDef.metadataGridDefaults[grDef.metadataGridDefaults.findIndex(e => e && e.label.toLowerCase() === label.toLowerCase())];
+		const entryIdx = grid.findIndex(gridEntry =>
+			gridEntry && gridEntry.label.toLowerCase() === label.toLowerCase());
+
+		const newVal = grDef.metadataGridDefaults[
+			grDef.metadataGridDefaults.findIndex(e => e && e.label.toLowerCase() === label.toLowerCase())
+		];
+
 		if (entryIdx >= 0) {
 			grid[entryIdx] = newVal;
 		} else {
@@ -555,6 +662,7 @@ class ConfigurationManager {
 		} else {
 			this.writeDefaultConfig();
 		}
+
 		if (this.configCustom.fileExists) {
 			this.readCustomConfig();
 		} else {
@@ -572,6 +680,7 @@ class ConfigurationManager {
 		 * for the objects so that the file gets automatically written when a setting is changed.
 		 */
 		this.config.addConfigurationObject(grDef.titleFormatSchema, Object.assign({}, grDef.titleFormatDefaults, cfgSet.title_format_strings), grDef.titleFormatComments);
+		this.config.addConfigurationObject(grDef.artworkPatternsSchema, cfgSet.artworkPatterns || grDef.artworkPatternsDefaults, grDef.artworkPatternsComments);
 		this.config.addConfigurationObject(grDef.imgPathSchema, cfgSet.imgPaths || grDef.imgPathDefaults);
 		this.config.addConfigurationObject(grDef.discArtPathSchema, cfgSet.discArtPaths || grDef.discArtPathDefaults);
 
@@ -609,6 +718,7 @@ class ConfigurationManager {
 
 		// Safety checks. Fix up potentially bad vals from config
 		this.titleFormat = cfgSet.title_format_strings;
+		this.artworkPatterns = cfgSet.artworkPatterns;
 		this.imgPaths = cfgSet.imgPaths;
 		this.discArtPaths = cfgSet.discArtPaths;
 		this.lyricsFilenamePatterns = cfgSet.lyricsFilenamePatterns;
@@ -666,6 +776,7 @@ class ConfigurationManager {
 	 */
 	writeDefaultConfig() {
 		this.config.addConfigurationObject(grDef.titleFormatSchema, grDef.titleFormatDefaults, grDef.titleFormatComments);
+		this.config.addConfigurationObject(grDef.artworkPatternsSchema, grDef.artworkPatternsDefaults, grDef.artworkPatternsComments);
 		this.config.addConfigurationObject(grDef.imgPathSchema, grDef.imgPathDefaults);
 		this.config.addConfigurationObject(grDef.discArtPathSchema, grDef.discArtPathDefaults);
 
@@ -866,6 +977,13 @@ class ConfigurationManager {
 		if (!configFileCustom.customWebsiteLinks) {
 			configFileCustom.customWebsiteLinks = this.configCustom.addConfigurationObject(grDef.customWebsiteLinksSchema, grDef.customWebsiteLinksDefaults, grDef.customWebsiteLinksComments);
 			this.configCustom.writeConfiguration();
+			window.Reload(); // Reinit new config
+		}
+
+		// * Check for new artworkPatterns section and write if it doesn't exist
+		if (!configFile.artworkPatterns) {
+			configFile.artworkPatterns = this.config.addConfigurationObject(grDef.artworkPatternsSchema, grDef.artworkPatternsDefaults, grDef.artworkPatternsComments);
+			this.config.writeConfiguration();
 			window.Reload(); // Reinit new config
 		}
 

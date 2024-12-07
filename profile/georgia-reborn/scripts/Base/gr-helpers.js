@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-11-2024                                              * //
+// * Last change:    07-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -421,6 +421,23 @@ function ParseJson(json, label, log) {
 
 
 /**
+ * Parses a string pattern to a RegExp object.
+ * @global
+ * @param {string} patternStr - The string representation of the pattern.
+ * @returns {RegExp} The RegExp object.
+ */
+function ParseStringToRegExp(patternStr) {
+	const match = patternStr.match(/^(!)?\/(.*?)\/([gimsuy]*)$/);
+	if (!match) return null;
+
+	const [, exclude, pattern, flags] = match;
+	const regex = new RegExp(pattern, flags);
+
+	return exclude ? new RegExp(`!${regex.source}`, regex.flags) : regex;
+}
+
+
+/**
  * Sanitizes a string to be safe for insertion into a JSON config.
  * Removes double quotes, backslashes, newlines and trailing spaces.
  * @global
@@ -656,23 +673,27 @@ function DeleteFolder(folder, force = true) {
  * Filters an array of file names, returning only those that match the specified file pattern.
  * @global
  * @param {string[]} files - The array of file names to filter.
- * @param {RegExp|string[]} allowedFormats - The regex pattern or an array of file formats to include in the filter.
- * @param {RegExp|null} excludePattern - The regex pattern to exclude files.
- * @returns {string[]} The filtered array containing only the specified file formats or matching the regex pattern.
+ * @param {RegExp|null} [pattern] - The regex pattern to include or exclude files. Use `!` prefix for exclusion.
+ * @returns {string[]} The filtered array matching the regex pattern.
  * @example
- * // Filter out only *.jpg and *.png files:
- * FilterFiles(['image.jpg', 'document.pdf', 'photo.png', 'note.txt'], ['jpg', 'png']);
+ * // Include only *.jpg and *.png files:
+ * FilterFiles(['image.jpg', 'document.pdf', 'photo.png', 'note.txt'], /\.(jpg|png)$/i);
  * // Returns: ['image.jpg', 'photo.png']
  *
- * // Filter out files matching a custom pattern:
- * FilterFiles(['cd1.jpg', 'discA.png', 'vinyl2.jpg', 'cover.jpg', 'note.txt'], ['jpg', 'png'], /(cd|disc|vinyl)([0-9]*|[a-h]).(png|jpg)/i);
+ * // Exclude files matching a custom pattern:
+ * FilterFiles(['cd1.jpg', 'discA.png', 'vinyl2.jpg', 'cover.jpg', 'note.txt'], /!(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i);
  * // Returns: ['cover.jpg']
+ *
+ * // Include only a specific image:
+ * FilterFiles(['image.jpg', 'document.pdf', 'photo.png', 'note.txt'], /image\\.jpg/i);
+ * // Returns: ['image.jpg']
  */
-function FilterFiles(files = [], allowedFormats = [], excludePattern = null) {
-	const filePattern =
-		Array.isArray(allowedFormats) ? new RegExp(`\\.(${allowedFormats.join('|')})$`, 'i') : allowedFormats;
+function FilterFiles(files = [], pattern = null) {
+	const excludePattern = pattern && pattern.source.startsWith('!');
 
-	return files.filter(file => filePattern.test(file) && (!excludePattern || !excludePattern.test(file)));
+	return files.filter(file =>
+		(!pattern || (excludePattern ? !new RegExp(pattern.source.slice(1), pattern.flags).test(file) : pattern.test(file)))
+	);
 }
 
 
