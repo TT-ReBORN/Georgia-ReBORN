@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-11-2024                                              * //
+// * Last change:    11-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1869,10 +1869,25 @@ class Utilities {
 		if (!metadb) return;
 
 		const metaInfo = metadb.GetFileInfo();
-		const artist = metaInfo.MetaValue(metaInfo.MetaFind('artist'), 0).replace(/\s+/g, '+').replace(/&/g, '%26');
-		const album = metaInfo.MetaValue(metaInfo.MetaFind('album'), 0).replace(/\s+/g, '+');
-		const title = metaInfo.MetaValue(metaInfo.MetaFind('title'), 0).replace(/\s+/g, '+');
+		const getMetaValue = (metafield) => {
+			const index = metaInfo.MetaFind(metafield);
+			return index === -1 ? '' : metaInfo.MetaValue(index, 0);
+		};
+
+		const artist = getMetaValue('artist').replace(/\s+/g, '+').replace(/&/g, '%26');
+		const album = getMetaValue('album').replace(/\s+/g, '+');
+		const title = getMetaValue('title').replace(/\s+/g, '+');
 		const searchQuery = artist || title;
+
+		const metadata = { artist, album, title };
+		const missingMeta = Object.keys(metadata).filter(key => !metadata[key]).map(key => `%${key}%`);
+
+		if (missingMeta.length > 0) {
+			const missingFields = missingMeta.join('\n');
+			const msg = `Web search aborted!\n\nPlease provide the necessary\nmetadata fields for:\n\n${missingFields}\n\n`;
+			grm.msg.showPopup(true, msg, msg, 'OK', null, (confirmed) => {});
+			return;
+		}
 
 		const replacePlaceholders = (link) => link
 			.replace('{artist}', artist)
@@ -1880,15 +1895,18 @@ class Utilities {
 			.replace('{album}', album);
 
 		const urls = {
-			google: searchQuery ? `https://google.com/search?q=${searchQuery}` : null,
-			googleImages: searchQuery ? `https://images.google.com/images?hl=en&q=${searchQuery}` : null,
-			wikipedia: artist ? `https://en.wikipedia.org/wiki/${artist.replace(/\+/g, '_')}` : null,
-			youTube: searchQuery ? `https://www.youtube.com/results?search_type=&search_query=${searchQuery}` : null,
-			lastfm: searchQuery ? `https://www.last.fm/music/${searchQuery.replace('/', '%252F')}` : null,
-			allMusic: searchQuery ? `https://www.allmusic.com/search/all/${searchQuery}` : null,
-			discogs: searchQuery || album ? `https://www.discogs.com/search?q=${searchQuery}+${album}` : null,
-			musicBrainz: searchQuery || album ? `https://musicbrainz.org/taglookup/index?tag-lookup.artist=${searchQuery}&tag-lookup.release=${album}` : null,
-			bandcamp: searchQuery || album ? `https://bandcamp.com/search?q=${searchQuery}&item_type` : null,
+			google: `https://google.com/search?q=${searchQuery}`,
+			googleImages: `https://images.google.com/images?hl=en&q=${searchQuery}`,
+			wikipedia: `https://en.wikipedia.org/wiki/${artist.replace(/\+/g, '_')}`,
+			youTube: `https://www.youtube.com/results?search_type=&search_query=${searchQuery}`,
+			lastfm: `https://www.last.fm/music/${searchQuery.replace('/', '%252F')}`,
+			allMusic: `https://www.allmusic.com/search/all/${searchQuery}`,
+			discogs: `https://www.discogs.com/search?q=${searchQuery}+${album}`,
+			musicBrainz: `https://musicbrainz.org/taglookup/index?tag-lookup.artist=${searchQuery}&tag-lookup.release=${album}`,
+			bandcamp: `https://bandcamp.com/search?q=${searchQuery}&item_type`,
+			aoty: `https://www.albumoftheyear.org/search/?q=${searchQuery}+${album}`,
+			rym: `https://rateyourmusic.com/search?searchterm=${searchQuery}+${album}`,
+			sputnikmusic: `https://www.sputnikmusic.com/search_results.php?search_in=Bands&search_text=${searchQuery}`,
 			default: 'https://github.com/TT-ReBORN/Georgia-ReBORN'
 		};
 
@@ -1898,9 +1916,7 @@ class Utilities {
 			urls[domain] = replacePlaceholders(link);
 		});
 
-		website = urls[website] || urls.default;
-
-		RunCmd(website);
+		RunCmd(urls[website] || urls.default);
 	}
 
 	/**
@@ -1922,8 +1938,8 @@ class Utilities {
 		const customLabels = customWebsiteLinks.map((url) => this.extractDomainName(url));
 		const customValues = customWebsiteLinks.map((url) => this.extractDomainName(url));
 
-		const labels = ['Google', 'Google Images', 'Wikipedia', 'YouTube', 'Last.fm', 'AllMusic', 'Discogs', 'MusicBrainz', 'Bandcamp'];
-		const values = ['google', 'googleImages', 'wikipedia', 'youTube', 'lastfm', 'allMusic', 'discogs', 'musicBrainz', 'bandcamp'];
+		const labels = ['Google', 'Google Images', 'Wikipedia', 'YouTube', 'Last.fm', 'AllMusic', 'Discogs', 'MusicBrainz', 'Bandcamp', 'Album of the Year', 'Rate Your Music', 'Sputnikmusic'];
+		const values = ['google', 'googleImages', 'wikipedia', 'youTube', 'lastfm', 'allMusic', 'discogs', 'musicBrainz', 'bandcamp', 'aoty', 'rym', 'sputnikmusic'];
 
 		const websiteLabels = labels.concat(customLabels);
 		const websiteValues = values.concat(customValues);
@@ -1947,7 +1963,10 @@ class Utilities {
 			'allMusic',
 			'discogs',
 			'musicBrainz',
-			'bandcamp'
+			'bandcamp',
+			'aoty',
+			'rym',
+			'sputnikmusic'
 		];
 
 		if (openAll) {

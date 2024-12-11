@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-12-2024                                              * //
+// * Last change:    11-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -970,7 +970,7 @@ class ConfigDefaults {
 			showWaveformBar_artwork: 'Values: true, false - Options > Player controls > Lower bar > Show waveform bar > Artwork',
 			showWaveformBar_compact: 'Values: true, false - Options > Player controls > Lower bar > Show waveform bar > Compact',
 			lowerBarArtistBtnAction: 'Values: "playlist", "website", - Options > Player controls > Lower bar > Artist button action',
-			lowerBarArtistBtnWebsite: 'Values: "google", "googleImages", "wikipedia", "youTube", "lastfm", "allMusic", "discogs", "musicBrainz", "bandcamp", "custom", - Options > Player controls > Lower bar > Artist button action',
+			lowerBarArtistBtnWebsite: 'Values: "google", "googleImages", "wikipedia", "youTube", "lastfm", "allMusic", "discogs", "musicBrainz", "bandcamp", "aoty", "rym", "sputnikmusic", "custom", - Options > Player controls > Lower bar > Artist button action',
 			addTracksPlaylist: 'Values: "Favorites", "OrAnyOtherName", - Options > Player controls > Lower bar > Add tracks buttion > Add tracks playlist',
 			addTracksButtonAction: 'Values: "selection", "nowplaying", - Options > Player controls > Lower bar > Add tracks buttion',
 			playbackTimeDisplay: 'Values: "default", "remaining", "percent" - Options > Player controls > Lower bar > Playback time display',

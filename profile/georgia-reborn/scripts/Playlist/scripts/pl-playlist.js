@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    11-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1651,6 +1651,9 @@ class Playlist extends BaseList {
 			weblinks.appendItem(website[0], ((url) => {
 				grm.utils.link(url, metadb);
 			}).bind(null, website[1]));
+			if (['youTube', 'bandcamp', 'sputnikmusic'].includes(website[1])) {
+				weblinks.separator();
+			}
 		}
 	}
 
