@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    13-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -799,12 +799,13 @@ class PlaylistCallbacks {
 
 				pl.playlist.ctx_menu_sort(cmm);
 
-				if (grSet.showWeblinks) {
-					pl.playlist.ctx_menu_weblinks(cmm, metadb);
-				}
-
 				if (has_selected_item) {
 					pl.playlist.ctx_menu_send(cmm);
+
+					if (grSet.showWeblinks) {
+						cmm.separator();
+						pl.playlist.ctx_menu_weblinks(cmm, metadb);
+					}
 
 					cmm.separator();
 					cmm.appendItem('Write theme to tags', () => {

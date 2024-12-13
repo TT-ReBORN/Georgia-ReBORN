@@ -337,6 +337,23 @@ class LibMenuItems {
 			}));
 		}
 
+		// * Weblinks menu
+		if (grSet.showWeblinks) {
+			libMenu.newMenu({ menuName: 'Weblinks', separator: true });
+
+			const { websiteLabels, websiteValues } = grm.utils.generateWebsiteLinks(grCfg.customWebsiteLinks);
+			const websites = websiteLabels.map((label, index) => [label, websiteValues[index]]);
+
+			websites.forEach((website, index) => {
+				libMenu.newItem({
+					menuName: 'Weblinks',
+					str: website[0],
+					func: () => { grm.utils.link(website[1], fb.GetSelection()); },
+					separator: ['youTube', 'bandcamp', 'sputnikmusic'].includes(website[1])
+				});
+			});
+		}
+
 		libMenu.newItem({
 			str: 'Write theme to tags',
 			func: () => WriteThemeTags()
