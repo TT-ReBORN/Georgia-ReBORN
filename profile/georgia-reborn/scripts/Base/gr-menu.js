@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-12-2024                                              * //
+// * Last change:    14-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1326,6 +1326,7 @@ class TopMenuOptions {
 			showPanelOnStartupMenu.appendTo(playerControlsPanelMenu);
 		}
 		playerControlsPanelMenu.addToggleItem('Show logo on preloader', grSet, 'showPreloaderLogo', () => { RepaintWindow(); });
+		playerControlsPanelMenu.addToggleItem('Show weblinks in context menu', grSet, 'showWeblinks');
 		playerControlsPanelMenu.addSeparator();
 		playerControlsPanelMenu.addToggleItem('Return to home on playback stop', grSet, 'returnToHomeOnPlaybackStop');
 		playerControlsPanelMenu.addToggleItem('Switch to playlist when adding songs', grSet, 'addTracksPlaylistSwitch');
@@ -1924,7 +1925,6 @@ class TopMenuOptions {
 		playlistAlbumMenu.addToggleItem('Show disc sub-header', plSet, 'show_disc_header', () => { grm.ui.updatePlaylist(); });
 		playlistAlbumMenu.addToggleItem('Show group info', plSet, 'show_group_info', () => { grm.ui.updatePlaylist(); });
 		playlistAlbumMenu.addToggleItem('Show bit depth and sample rate always', grCfg.settings, 'playlistShowBitSampleAlways', () => { grm.ui.updatePlaylist(); });
-		playlistAlbumMenu.addToggleItem('Show weblinks in context menu', grSet, 'showWeblinks');
 		playlistAlbumMenu.addToggleItem('Show long release date (YYYY-MM-DD)', grSet, 'showPlaylistFullDate', () => { grm.ui.updatePlaylist(); });
 		playlistAlbumMenu.addSeparator();
 		playlistAlbumMenu.addToggleItem('Show rating', plSet, 'show_rating_header', () => { grm.ui.updatePlaylist(); });

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-12-2024                                              * //
+// * Last change:    14-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -743,6 +743,7 @@ class ConfigDefaults {
 			panelBrowseMode: false,
 			showPanelOnStartup: 'playlist',
 			showPreloaderLogo: true,
+			showWeblinks: true,
 			returnToHomeOnPlaybackStop: true,
 			addTracksPlaylistSwitch: false,
 			hideMiddlePanelShadow: false,
@@ -911,6 +912,7 @@ class ConfigDefaults {
 			panelBrowseMode: 'Values: true, false - Options > Player controls > Panel > Mode > Browse mode',
 			showPanelOnStartup: 'Values: "cover", "playlist", "details", "library", "biography", "lyrics" - Options > Player controls > Panel > Show panel on startup',
 			showPreloaderLogo: 'Values: true, false - Options > Player controls > Panel > Show logo on preloader',
+			showWeblinks: 'Values: true, false - Options > Player controls > Panel > Show weblinks in context menu',
 			returnToHomeOnPlaybackStop: 'Values: true, false - Options > Player controls > Panel > Return to home on playback stop',
 			addTracksPlaylistSwitch: 'Values: true, false - Options > Player controls > Panel > Switch to playlist when adding songs',
 			hideMiddlePanelShadow: 'Values: true, false - Options > Player controls > Panel > Hide middle panel shadow',
@@ -1058,7 +1060,6 @@ class ConfigDefaults {
 			headerFlipRows: false,
 			show_disc_header: true,
 			show_group_info: true,
-			showWeblinks: true,
 			showPlaylistFullDate: false,
 			show_row_stripes: false,
 			show_playcount: true,
@@ -1119,7 +1120,6 @@ class ConfigDefaults {
 			headerFlipRows: 'Values: true, false - Options > Playlist > Album header > Flip header rows',
 			show_disc_header: 'Values: true, false - Options > Playlist > Album header > Show disc sub-header',
 			show_group_info: 'Values: true, false - Options > Playlist > Album header > Show group info',
-			showWeblinks: 'Values: true, false - Options > Playlist > Album header > Show weblinks in context menu',
 			showPlaylistFullDate: 'Values: true, false - Options > Playlist > Album header > Show long release date (YYYY-MM-DD)',
 			show_row_stripes: 'Values: true, false - Options > Playlist > Track row > Show row stripes',
 			show_playcount: 'Values: true, false - Options > Playlist > Track row > Show play count',

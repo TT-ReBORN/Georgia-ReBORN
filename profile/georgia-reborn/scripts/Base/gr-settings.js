@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-12-2024                                              * //
+// * Last change:    14-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -404,6 +404,7 @@ grSet.addProperties({
 	panelBrowseMode:                    ['Georgia-ReBORN - 09. Player controls: Browse mode', false], // false: Enable browse mode to browse through albums when playing or not playing
 	showPanelOnStartup:                 ['Georgia-ReBORN - 09. Player controls: Show panel on startup', 'playlist'], // "cover", "playlist", "details", "library", "biography", "lyrics" - show panel on foobar startup
 	showPreloaderLogo:                  ['Georgia-ReBORN - 09. Player controls: Show logo on preloader', true], // true: Show logo on preloader
+	showWeblinks:                       ['Georgia-ReBORN - 09. Player controls: Show weblinks', true], // Show weblinks in Playlist's and Library's context menu
 	returnToHomeOnPlaybackStop:         ['Georgia-ReBORN - 09. Player controls: Return to home on playback stop', true], // true: Return to home on playback stop
 	addTracksPlaylistSwitch:            ['Georgia-ReBORN - 09. Player controls: Switch to playlist when adding songs', false], // When adding songs from Library or Playlist to another playlist
 	hideMiddlePanelShadow:              ['Georgia-ReBORN - 09. Player controls: Hide middle panel shadow', false], // false: Hides the middle panel shadow
@@ -528,7 +529,6 @@ grSet.addProperties({
 	autoHidePlman:                      ['Georgia-ReBORN - 10. Playlist: Auto hide playlist manager', true], // Playlist Automatic Playlist Manager Hide
 	hyperlinksCtrlClick:                ['Georgia-ReBORN - 10. Playlist: Ctrl+click to follow hyperlinks', false], // true: Clicking on hyperlinks only works if CTRL key is held down
 	headerFlipRows:                     ['Georgia-ReBORN - 10. Playlist: Flip header rows', false], // true: Playlist header title and subtitle rows will be reversed
-	showWeblinks:                       ['Georgia-ReBORN - 10. Playlist: Show weblinks', true], // Show weblinks in context menu
 	showPlaylistFullDate:               ['Georgia-ReBORN - 10. Playlist: Show full date', false], // Playlist show full date YYYY-MM-DD
 	showPlaylistRatingGrid:             ['Georgia-ReBORN - 10. Playlist: Show rating grid', false], // Show rating grid in playlist rows
 	showPlaylistTrackNumbers:           ['Georgia-ReBORN - 10. Playlist: Show track numbers', true], // Show track numbers in playlist rows
@@ -1057,6 +1057,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'panelBrowseMode', grCfg.themeControls, 'panelBrowseMode', false);
 		this._setSetting(grSet, 'showPanelOnStartup', grCfg.themeControls, 'showPanelOnStartup', 'playlist');
 		this._setSetting(grSet, 'showPreloaderLogo', grCfg.themeControls, 'showPreloaderLogo', true);
+		this._setSetting(grSet, 'showWeblinks', grCfg.themeControls, 'showWeblinks', true);
 		this._setSetting(grSet, 'returnToHomeOnPlaybackStop', grCfg.themeControls, 'returnToHomeOnPlaybackStop', true);
 		this._setSetting(grSet, 'addTracksPlaylistSwitch', grCfg.themeControls, 'addTracksPlaylistSwitch', false);
 		this._setSetting(grSet, 'hideMiddlePanelShadow', grCfg.themeControls, 'hideMiddlePanelShadow', false);
@@ -1193,7 +1194,6 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'headerFlipRows', grCfg.themePlaylist, 'headerFlipRows', false);
 		this._setSetting(plSet, 'show_disc_header', grCfg.themePlaylist, 'show_disc_header', true);
 		this._setSetting(plSet, 'show_group_info', grCfg.themePlaylist, 'show_group_info', true);
-		this._setSetting(grSet, 'showWeblinks', grCfg.themePlaylist, 'showWeblinks', true);
 		this._setSetting(grSet, 'showPlaylistFullDate', grCfg.themePlaylist, 'showPlaylistFullDate', false);
 		this._setSetting(plSet, 'show_row_stripes', grCfg.themePlaylist, 'show_row_stripes', false);
 		this._setSetting(plSet, 'show_playcount', grCfg.themePlaylist, 'show_playcount', true);
