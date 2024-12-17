@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-12-2024                                              * //
+// * Last change:    17-12-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2038,6 +2038,7 @@ class TopMenuOptions {
 			const setDiscArtStub = (discArt) => {
 				grSet.discArtStub = discArt;
 				grSet.noDiscArtStub = false;
+				grm.ui.newTrackFetchingArtwork = true;
 				grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
 				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
 				RepaintWindow();
