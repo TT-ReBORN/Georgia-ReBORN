@@ -190,6 +190,10 @@ class MainUI {
 		this.albumArtEmbedded = false;
 		/** @private @type {boolean} The state to always load art from cache unless this is set. */
 		this.albumArtFromCache = true;
+		/** @public @type {RegExp} The regular expression for matching album art image formats based on configuration. */
+		this.albumArtImageFormats = ParseStringToRegExp(grCfg.artworkImageFormats.albumArt);
+		/** @public @type {RegExp} The regular expression pattern for filtering album art images based on configuration. */
+		this.albumArtPattern = ParseStringToRegExp(grCfg.artworkPatterns.albumArt);
 		/** @public @type {number} The index of currently displayed album art if more than 1. */
 		this.albumArtIndex = 0;
 		/** @public @type {GdiBitmap[]} The album art list array containing album and disc art images. */
@@ -3931,15 +3935,11 @@ class MainUI {
 	 * @param {number} step - Indicates scroll direction and magnitude.
 	 */
 	cycleAlbumArtImage(step) {
-		// Prev album art image
-		if (step > 0) {
-			if (this.albumArtIndex !== 0) {
-				this.albumArtIndex = (this.albumArtIndex - 1) % this.albumArtList.length;
-			}
+		if (step > 0 && this.albumArtIndex > 0) {
+			this.albumArtIndex--; // Cycle to the previous image
 		}
-		// Next album art image
-		else if (this.albumArtIndex !== this.albumArtList.length - 1) {
-			this.albumArtIndex = (this.albumArtIndex + 1) % this.albumArtList.length;
+		else if (step < 0 && this.albumArtIndex < this.albumArtList.length - 1) {
+			this.albumArtIndex++; // Cycle to the next image
 		}
 		this.loadAlbumArtFromList(this.albumArtIndex);
 		this.checkAlbumArtFromListDiscArt();
@@ -4121,8 +4121,8 @@ class MainUI {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	fetchAlbumArtLocalFiles(metadb) {
-		const albumArtPattern = grSet.filterAlbumArt && ParseStringToRegExp(grCfg.artworkPatterns.albumArt);
-		this.albumArtList = this.getImagePathList('albumArt', metadb, albumArtPattern);
+		const albumArtPattern = grSet.filterAlbumArt && this.albumArtPattern;
+		this.albumArtList = this.getImagePathList('albumArt', metadb, albumArtPattern).filter(path => this.albumArtImageFormats.test(path));
 
 		if (this.albumArtList.length && !grSet.loadEmbeddedAlbumArtFirst) {
 			this.displayAlbumArtFromList();

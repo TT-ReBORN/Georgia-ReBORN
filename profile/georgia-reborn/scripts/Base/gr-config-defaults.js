@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-12-2024                                              * //
+// * Last change:    06-01-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -75,6 +75,30 @@ class ConfigDefaults {
 			'* TITLE FORMATTING STRINGS:                                                                                                                                                                             ' +
 			'* Used throughout the display. Do NOT change the key names or add new ones.                                                                                                                             ' +
 			'* Note: These settings will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                        ' +
+			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
+		// #endregion
+
+		// * ARTWORK IMAGE FORMATS * //
+		// #region ARTWORK IMAGE FORMATS
+		/** @public @type {object} Allowed artwork image formats. */
+		this.artworkImageFormatsDefaults = {
+			albumArt: '/\\.(jpg|png|webp)$/i',
+			bgImage: '/\\.(jpg|png|webp)$/i'
+		};
+
+		/** @public @type {object} Artwork file formats config name description. */
+		this.artworkImageFormatsComments = {
+			albumArt: 'Defines allowed image formats for album art images. For example, "jpg|png|webp" allows JPEG, PNG, and WEBP formats.',
+			bgImage: 'Defines allowed image formats for background images. For example, "jpg|png|webp" allows JPEG, PNG, and WEBP formats.'
+		};
+
+		/** @public @type {object} Artwork file formats config header description. */
+		this.artworkImageFormatsSchema = new ConfigurationObjectSchema('artworkImageFormats', ConfigurationObjectType.Object, undefined,
+			'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
+			'* ARTWORK IMAGE FORMATS:                                                                                                                                                                                ' +
+			'* You can specify the file types to include or exclude based on your requirements.                                                                                                                      ' +
+			'* These allowed image formats will be displayed in the large artwork panel and as background images.                                                                                                    ' +
+			'* Note: This setting will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file.                                                         ' +
 			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 		// #endregion
 

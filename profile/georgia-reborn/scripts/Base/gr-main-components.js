@@ -603,9 +603,10 @@ class BackgroundImage {
 	 */
 	getBgImage(panel) {
 		const { imgType, imgList, imgIdx, bgImg, bgImgIdx } = this.getBgImageSourceKeys(panel);
+		const bgImageFormats = ParseStringToRegExp(grCfg.artworkImageFormats.bgImage);
 		const bgImagePattern = this.getBgImagePatterns(panel);
 
-		this[imgList] = grm.ui.getImagePathList(imgType, grm.ui.initMetadb(), bgImagePattern);
+		this[imgList] = grm.ui.getImagePathList(imgType, grm.ui.initMetadb(), bgImagePattern).filter(path => bgImageFormats.test(path));
 
 		if (!this[imgList].length) {
 			const embeddedIdx = this.albumArtIdx[this[imgIdx]];

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-12-2024                                              * //
+// * Last change:    06-01-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -413,6 +413,8 @@ class ConfigurationManager {
 		// #region GEORGIA-REBORN-CONFIG.JSONC SETUP
 		/** @public @type {object} The config `title_format_strings` settings in the main config. */
 		this.titleFormat = {};
+		/** @public @type {object} The config `artworkImageFormats` settings in the main config. */
+		this.artworkImageFormats = {};
 		/** @public @type {object} The config `artworkPatterns` settings in the main config. */
 		this.artworkPatterns = {};
 		/** @public @type {object} The config `Theme` settings in the main config. */
@@ -680,6 +682,7 @@ class ConfigurationManager {
 		 * for the objects so that the file gets automatically written when a setting is changed.
 		 */
 		this.config.addConfigurationObject(grDef.titleFormatSchema, Object.assign({}, grDef.titleFormatDefaults, cfgSet.title_format_strings), grDef.titleFormatComments);
+		this.config.addConfigurationObject(grDef.artworkImageFormatsSchema, cfgSet.artworkImageFormats || grDef.artworkImageFormatsDefaults, grDef.artworkImageFormatsComments);
 		this.config.addConfigurationObject(grDef.artworkPatternsSchema, cfgSet.artworkPatterns || grDef.artworkPatternsDefaults, grDef.artworkPatternsComments);
 		this.config.addConfigurationObject(grDef.imgPathSchema, cfgSet.imgPaths || grDef.imgPathDefaults);
 		this.config.addConfigurationObject(grDef.discArtPathSchema, cfgSet.discArtPaths || grDef.discArtPathDefaults);
@@ -718,6 +721,7 @@ class ConfigurationManager {
 
 		// Safety checks. Fix up potentially bad vals from config
 		this.titleFormat = cfgSet.title_format_strings;
+		this.artworkImageFormats = cfgSet.artworkImageFormats;
 		this.artworkPatterns = cfgSet.artworkPatterns;
 		this.imgPaths = cfgSet.imgPaths;
 		this.discArtPaths = cfgSet.discArtPaths;
@@ -776,6 +780,7 @@ class ConfigurationManager {
 	 */
 	writeDefaultConfig() {
 		this.config.addConfigurationObject(grDef.titleFormatSchema, grDef.titleFormatDefaults, grDef.titleFormatComments);
+		this.config.addConfigurationObject(grDef.artworkImageFormatsSchema, grDef.artworkImageFormatsDefaults, grDef.artworkImageFormatsComments);
 		this.config.addConfigurationObject(grDef.artworkPatternsSchema, grDef.artworkPatternsDefaults, grDef.artworkPatternsComments);
 		this.config.addConfigurationObject(grDef.imgPathSchema, grDef.imgPathDefaults);
 		this.config.addConfigurationObject(grDef.discArtPathSchema, grDef.discArtPathDefaults);
@@ -977,6 +982,13 @@ class ConfigurationManager {
 		if (!configFileCustom.customWebsiteLinks) {
 			configFileCustom.customWebsiteLinks = this.configCustom.addConfigurationObject(grDef.customWebsiteLinksSchema, grDef.customWebsiteLinksDefaults, grDef.customWebsiteLinksComments);
 			this.configCustom.writeConfiguration();
+			window.Reload(); // Reinit new config
+		}
+
+		// * Check for new artworkImageFormats section and write if it doesn't exist
+		if (!configFile.artworkImageFormats) {
+			configFile.artworkImageFormats = this.config.addConfigurationObject(grDef.artworkImageFormatsSchema, grDef.artworkImageFormatsDefaults, grDef.artworkImageFormatsComments);
+			this.config.writeConfiguration();
 			window.Reload(); // Reinit new config
 		}
 
