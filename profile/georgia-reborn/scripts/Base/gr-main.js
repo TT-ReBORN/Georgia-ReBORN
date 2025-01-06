@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-12-2024                                              * //
+// * Last change:    06-01-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2404,11 +2404,6 @@ class MainUI {
 	 * Handles seeking playback of the main UI.
 	 */
 	handlePlaybackSeek() {
-		if (grSet.seekbar === 'progressbar') {
-			grm.progBar.progressMoved = true;
-		} else if (grSet.seekbar === 'peakmeterbar') {
-			grm.peakBar.progressMoved = true;
-		}
 		if (this.displayLyrics) {
 			grm.lyrics.seek();
 		}

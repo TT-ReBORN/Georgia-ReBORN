@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-12-2024                                              * //
+// * Last change:    06-01-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3180,8 +3180,6 @@ class ProgressBar {
 		this.arc = Math.min(this.w, this.h) / 2;
 		/** @public @type {number} The length of the progress bar fill. */
 		this.progressLength = 0;
-		/** @public @type {boolean} The state that indicates if the playback position changed. */
-		this.progressMoved = false;
 		/** @private @type {boolean} The state that indicates if the progress bar is being dragged. */
 		this.drag = false;
 	}
@@ -3261,12 +3259,8 @@ class ProgressBar {
 		if (!fb.PlaybackLength && !fb.IsPlaying) return;
 
 		const playbackRatio = fb.PlaybackTime / fb.PlaybackLength;
-		const progLength = Math.floor(this.w * playbackRatio);
-
-		if (this.progressMoved || progLength > this.progressLength) {
-			this.progressLength = progLength;
-		}
-		this.progressMoved = false;
+		this.progressLength = Math.floor(this.w * playbackRatio);
+		if (!this.progressLength) return;
 
 		const drawBarDesign = {
 			default: () => gr.FillSolidRect(this.x, this.y, this.progressLength, this.h, grCol.progressBarFill),
@@ -3456,7 +3450,6 @@ class ProgressBar {
 		this.y = 0;
 		this.w = w - grm.ui.edgeMarginBoth;
 		this.h = grm.ui.seekbarHeight;
-		this.progressMoved = true;
 	}
 	// #endregion
 }
@@ -3562,8 +3555,6 @@ class PeakmeterBar {
 		// #region PROGRESS BAR
 		/** @public @type {number} The length of the progress bar. */
 		this.progressLength = 0;
-		/** @public @type {boolean} The state indicating whether the progress bar has moved. */
-		this.progressMoved = false;
 		/** @private @type {boolean} The state indicating whether the progress bar is being dragged. */
 		this.drag = false;
 		// #endregion
@@ -4012,12 +4003,8 @@ class PeakmeterBar {
 		if (!fb.IsPlaying || !grSet.peakmeterBarProgBar) return;
 
 		const playbackRatio = fb.PlaybackTime / fb.PlaybackLength;
-		const progLength = Math.floor(this.w * (grSet.peakmeterBarDesign === 'horizontal_center' ? 0.5 : 1) * playbackRatio);
-
-		if (this.progressMoved || progLength > this.progressLength) {
-			this.progressLength = progLength;
-		}
-		this.progressMoved = false;
+		this.progressLength = Math.floor(this.w * (grSet.peakmeterBarDesign === 'horizontal_center' ? 0.5 : 1) * playbackRatio);
+		if (!this.progressLength) return;
 
 		if (grSet.peakmeterBarDesign === 'horizontal') {
 			gr.FillSolidRect(this.x, this.middleLeft_y, this.w, this.bar_h, grCol.peakmeterBarProg);
@@ -4177,7 +4164,6 @@ class PeakmeterBar {
 		this.leftPeaks_s = [];
 		this.rightPeaks_s = [];
 		this.progressLength = 0;
-		this.progressMoved = false;
 		this.tooltipText = '';
 	}
 
@@ -4487,7 +4473,6 @@ class PeakmeterBar {
 		this.initGeometry();
 		this.setY();
 
-		this.progressMoved = true;
 		this.textFont = gdi.Font('Segoe UI', HD_4K(9, 16), 1);
 	}
 	// #endregion
