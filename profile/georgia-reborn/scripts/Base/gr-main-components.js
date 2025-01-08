@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-01-2025                                              * //
+// * Last change:    08-01-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3648,6 +3648,7 @@ class PeakmeterBar {
 
 		this.drawPeakmeterBar(gr);
 		this.setAnimation();
+		this.setMonitoring();
 		this.setRefreshRate();
 	}
 
@@ -4190,18 +4191,6 @@ class PeakmeterBar {
 	 * Monitors volume levels and peaks and sets horizontal or vertical animations based on peakmeterBarDesign.
 	 */
 	setAnimation() {
-		// * Set and monitor volume level/peaks from VUMeter
-		const convertVolume = ConvertVolume;
-		const vuMeter = this.VUMeter;
-		this.leftLevel  = convertVolume(vuMeter.LeftLevel,  'vuLevelToDecibel');
-		this.leftPeak   = convertVolume(vuMeter.LeftPeak,   'vuLevelToDecibel');
-		this.rightLevel = convertVolume(vuMeter.RightLevel, 'vuLevelToDecibel');
-		this.rightPeak  = convertVolume(vuMeter.RightPeak,  'vuLevelToDecibel');
-
-		// * Debug stuff
-		// DebugLog('LEFT PEAKS: ',  this.leftPeak,   '      RIGHT PEAKS: ',  this.rightPeak);
-		// DebugLog('LEFT LEVEL:  ', this.leftLevel,  '      RIGHT LEVEL:  ', this.rightLevel, '\n\n');
-
 		// * Set horizontal animation
 		if (['horizontal', 'horizontal_center'].includes(grSet.peakmeterBarDesign)) {
 			const increment1 = 0.09; // 0.3 ** 2
@@ -4315,6 +4304,33 @@ class PeakmeterBar {
 		this.c3 = grCol.peakmeterBarFillBack; // RGB(230, 230, 30);
 		this.color1 = [this.c3, this.c1];
 		this.color2 = [this.c2, this.c3];
+	}
+
+	/**
+	 * Sets monitoring of audio levels and peaks based on playback state.
+	 * Converts and stores volume levels and peaks for both left and right channels in decibels.
+	 */
+	setMonitoring() {
+		const convertVolume = ConvertVolume;
+		const vuMeter = this.VUMeter;
+
+		this.leftLevel  = convertVolume(vuMeter.LeftLevel,  'vuLevelToDecibel');
+		this.leftPeak   = convertVolume(vuMeter.LeftPeak,   'vuLevelToDecibel');
+		this.rightLevel = convertVolume(vuMeter.RightLevel, 'vuLevelToDecibel');
+		this.rightPeak  = convertVolume(vuMeter.RightPeak,  'vuLevelToDecibel');
+
+		// * Debug stuff
+		// const leftPeak = this.leftPeak.toFixed(2).padStart(6, ' ');
+		// const leftPeakRaw = vuMeter.LeftPeak.toFixed(2);
+		// const rightPeak = this.rightPeak.toFixed(2).padStart(6, ' ');
+		// const rightPeakRaw = vuMeter.RightPeak.toFixed(2);
+		// const leftLevel = this.leftLevel.toFixed(2).padStart(6, ' ');
+		// const leftLevelRaw = vuMeter.LeftLevel.toFixed(2);
+		// const rightLevel = this.rightLevel.toFixed(2).padStart(6, ' ');
+		// const rightLevelRaw = vuMeter.RightLevel.toFixed(2);
+		// console.log('Offset: ', vuMeter.Offset.toFixed(2).padStart(12, ' '));
+		// console.log('LEFT PEAK: ', leftPeak,  `(Raw: ${leftPeakRaw})`,  '      RIGHT PEAK: ', rightPeak,  `(Raw: ${rightPeakRaw})`);
+		// console.log('LEFT LEVEL:', leftLevel, `(Raw: ${leftLevelRaw})`, '      RIGHT LEVEL:', rightLevel, `(Raw: ${rightLevelRaw})`, '\n');
 	}
 
 	/**
