@@ -1935,6 +1935,8 @@ class MainUI {
 		this.setMainComponents('all');
 
 		// * Init panels
+		// Wait for on_size to be loaded in gr-callbacks.js after gr-initialize.js
+		await MakeAsync(() => {}, () => typeof on_size !== 'undefined');
 		await MakeAsync(() => PlaylistRescale(true));
 		await MakeAsync(() => this.initPlaylist());
 		await MakeAsync(() => this.initLibraryPanel());
@@ -1943,8 +1945,6 @@ class MainUI {
 
 		// * Init state
 		if (fb.IsPlaying && fb.GetNowPlaying()) {
-			// Wait for on_playback_new_track to be loaded in gr-callbacks.js
-			await MakeAsync(() => {}, () => typeof on_playback_new_track !== 'undefined');
 			on_playback_new_track(fb.GetNowPlaying());
 		}
 		plman.SetActivePlaylistContext();

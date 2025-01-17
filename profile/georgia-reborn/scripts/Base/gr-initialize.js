@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-10-2024                                              * //
+// * Last change:    17-01-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -61,14 +61,4 @@ if (grSet.systemFirstLaunch) {
 } else {
 	grm.ui.initFonts();
 	grm.ui.initMain();
-}
-
-/**
- * Called when drawing graphics.
- * Draws the main user interface.
- * @global
- * @param {GdiGraphics} gr - The GDI graphics object.
- */
-function on_paint(gr) {
-	grm.ui.drawMain(gr);
 }

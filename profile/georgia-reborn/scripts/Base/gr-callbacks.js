@@ -112,6 +112,17 @@ function on_playback_new_track(metadb) {
 
 
 /**
+ * Called when drawing graphics.
+ * Draws the main user interface.
+ * @global
+ * @param {GdiGraphics} gr - The GDI graphics object.
+ */
+function on_paint(gr) {
+	grm.ui.drawMain(gr);
+}
+
+
+/**
  * Called when window is being resized.
  *
  * !IMPORTANT: Do NOT call window.Repaint from this callback!
