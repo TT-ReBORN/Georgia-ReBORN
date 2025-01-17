@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-11-2024                                              * //
+// * Last change:    17-01-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1098,7 +1098,7 @@ function on_playback_stop(reason) {
 
 	// The playing playlist state always needs to be cleared when the Playlist is not displayed,
 	// i.e., when the startup panel is not set to `Playlist` and when clicking on the stop button.
-	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork || grSet.showPanelOnStartup !== 'playlist') {
+	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork || grSet.showPanelOnStartup !== 'playlist' || !grSet.returnToHomeOnPlaybackStop) {
 		CallLog('Playlist => on_playback_stop');
 		pl.call.on_playback_stop(reason);
 	}

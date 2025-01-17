@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-01-2025                                              * //
+// * Last change:    17-01-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2709,7 +2709,7 @@ class MainUI {
 	 * @param {boolean} force - Whether to forcibly display the panel, bypassing automatic conditions.
 	 */
 	displayPanel(panel, force) {
-		if (!force && (!grSet.returnToHomeOnPlaybackStop && !grSet.showPanelOnStartup || fb.PlaybackLength > 1)) {
+		if (!force && (!grSet.returnToHomeOnPlaybackStop || fb.PlaybackLength > 1)) {
 			return;
 		}
 
