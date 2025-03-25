@@ -361,8 +361,11 @@ class BioText {
 					if (ti) {
 						ti.forEach(w => {
 							if (g.CalcTextWidth(w, bio.ui.font.subHeadTrack) > bio.panel.text.w) {
-								const new_ti = `${g.EstimateLineWrap(w, bio.ui.font.subHeadTrack, bio.panel.text.w - g.CalcTextWidth('... ', bio.ui.font.subHeadTrack))[0]}...`;
-								v = v.replace(RegExp($Bio.regexEscape(w)), new_ti);
+								const availableWidth = bio.panel.text.w - g.CalcTextWidth('... ', bio.ui.font.subHeadTrack);
+								if (availableWidth > 0) {
+									const new_ti = `${g.EstimateLineWrap(w, bio.ui.font.subHeadTrack, availableWidth)[0]}...`;
+									v = v.replace(RegExp($Bio.regexEscape(w)), new_ti);
+								}
 							}
 						});
 					}
@@ -986,7 +989,10 @@ class BioText {
 					li.forEach((v, i, arr) => {
 						let nm = (en ? `${i + 1}. ` : '\u2022 ') + v;
 							if (g.CalcTextWidth(nm, bio.ui.font.main) > bio.panel.text.w) {
-								nm = `${g.EstimateLineWrap(nm, bio.ui.font.main, bio.panel.text.w - g.CalcTextWidth('... ', bio.ui.font.main))[0]}...`;
+								const availableWidth = bio.panel.text.w - g.CalcTextWidth('... ', bio.ui.font.main);
+								if (availableWidth > 0) {
+									nm = `${g.EstimateLineWrap(nm, bio.ui.font.main, )[0]}...`;
+								}
 							}
 						list += nm;
 						if (i < arr.length - 1) list += '\r\n';
@@ -1073,6 +1079,8 @@ class BioText {
 				if (prefix) {
 					$Bio.gr(1, 1, false, g => {
 						sub[n] = s[n].key.replace(/(Album\s|Track\s)Moods: /g, 'Moods: ').replace(/Group Members: /g, 'Members: ') + sub[n];
+						const availableWidth = bio.panel.text.w - g.CalcTextWidth('... ', bio.ui.font.summary);
+
 						if (bioSet.summaryCompact) {
 							if (type == 'amBio') {
 								let tt_needed = false;
@@ -1080,8 +1088,8 @@ class BioText {
 								if (/^Members:\s/.test(sub[n])) {
 									membersFound = true;
 									tt_needed = g.CalcTextWidth(sub[n], bio.ui.font.summary, true) > bio.panel.text.w;
-									if (tt_needed) {
-										members = g.EstimateLineWrap(sub[n], bio.ui.font.summary, bio.panel.text.w - g.CalcTextWidth('... ', bio.ui.font.summary))[0];
+									if (tt_needed && availableWidth > 0) {
+										members = g.EstimateLineWrap(sub[n], bio.ui.font.summary, availableWidth)[0];
 										members = `${members.replace(/\u2219\s?$/, '')}...`;
 									}
 								}
@@ -1094,8 +1102,8 @@ class BioText {
 								if (bio.panel.style.inclTrackRev && /^Composers:\s/.test(sub[n])) {
 									composersFound = true;
 									tt_needed = g.CalcTextWidth(sub[n], bio.ui.font.summary, true) > bio.panel.text.w;
-									if (tt_needed) {
-										composers = g.EstimateLineWrap(sub[n], bio.ui.font.summary, bio.panel.text.w - g.CalcTextWidth('... ', bio.ui.font.summary))[0];
+									if (tt_needed && availableWidth > 0) {
+										composers = g.EstimateLineWrap(sub[n], bio.ui.font.summary, availableWidth)[0];
 										composers = `${composers.replace(/\u2219\s?$/, '')}...`;
 									}
 								}
