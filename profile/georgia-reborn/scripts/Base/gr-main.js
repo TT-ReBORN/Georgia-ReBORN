@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-01-2025                                              * //
+// * Last change:    08-04-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1634,9 +1634,7 @@ class MainUI {
 	 * Sets the size and position of the pause button.
 	 */
 	setPausePosition() {
-		const windowFullscreenOrMaximized = UIHacks.FullScreen || UIHacks.MainWindowState === WindowState.Maximized;
-
-		const albumArtPauseBtnX = windowFullscreenOrMaximized ? this.ww * 0.25 : this.albumArtSize.x + this.albumArtSize.w * 0.5;
+		const albumArtPauseBtnX = this.albumArtSize.x + this.albumArtSize.w * 0.5;
 		const albumArtPauseBtnY = this.albumArtSize.y + this.albumArtSize.h * 0.5;
 		const discArtPauseBtnX = grm.details.discArtSize.x + grm.details.discArtSize.w * 0.5;
 		const discArtPauseBtnY = grm.details.discArtSize.y + grm.details.discArtSize.h * 0.5;
