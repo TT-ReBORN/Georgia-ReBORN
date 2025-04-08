@@ -519,7 +519,6 @@ class LibFind {
 			return;
 		}
 
-		const text = String.fromCharCode(code);
 		switch (code) {
 			case lib.vk.back:
 				this.jSearch = this.jSearch.substr(0, this.jSearch.length - 1);
