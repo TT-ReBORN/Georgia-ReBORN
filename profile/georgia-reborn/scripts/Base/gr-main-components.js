@@ -2416,7 +2416,6 @@ class JumpSearch {
 			return;
 		}
 
-		const text = String.fromCharCode(code);
 		const playlistItems = plman.GetPlaylistItems(plman.ActivePlaylist);
 		const search = fb.TitleFormat(grSet.jumpSearchComposerOnly ? '%composer%' : '$if2(%album artist%, %artist%)').EvalWithMetadbs(playlistItems);
 		let focusIndex = plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist);
