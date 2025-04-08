@@ -511,8 +511,11 @@ class LibFind {
 	}
 
 	on_char(code) {
+		const text = String.fromCharCode(code);
+
 		if (grSet.jumpSearchDisabled || lib.panel.search.active ||
-			utils.IsKeyPressed(VKey.CONTROL) || utils.IsKeyPressed(VKey.ESCAPE)) {
+			utils.IsKeyPressed(VKey.CONTROL) || utils.IsKeyPressed(VKey.ESCAPE) ||
+			this.jSearch === '' && text === ' ') {
 			return;
 		}
 

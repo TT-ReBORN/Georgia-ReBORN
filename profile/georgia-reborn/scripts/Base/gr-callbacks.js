@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-01-2025                                              * //
+// * Last change:    08-04-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -179,14 +179,18 @@ function on_char(code) {
 	}
 	else if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || !grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayLibrarySplit(true)) {
 		CallLog('Playlist => on_char');
-		grm.jSearch.on_char(code);
+		const text = String.fromCharCode(code);
 
-		// Switch back to Playlist
-		if (grSet.layout === 'default' && grm.ui.displayDetails) {
-			grm.button.btn.details.onClick();
-		}
-		else if (grSet.layout === 'artwork' && !grm.ui.displayPlaylistArtwork && !grm.ui.displayLibrary) {
-			grm.button.btn.playlist.onClick();
+		if (!grSet.jumpSearchDisabled && !(grm.jSearch.jSearch === '' && text === ' ')) {
+			grm.jSearch.on_char(code);
+
+			// Switch back to Playlist logic
+			if (grSet.layout === 'default' && grm.ui.displayDetails) {
+				grm.button.btn.details.onClick();
+			}
+			else if (grSet.layout === 'artwork' && !grm.ui.displayPlaylistArtwork && !grm.ui.displayLibrary) {
+				grm.button.btn.playlist.onClick();
+			}
 		}
 	}
 	else if (grm.ui.displayLibrary) {
