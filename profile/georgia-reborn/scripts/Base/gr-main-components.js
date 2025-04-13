@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-04-2025                                              * //
+// * Last change:    13-04-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2964,7 +2964,7 @@ class VolumeButton {
 				FillGradRoundRect(gr, x - SCALE(2), y + HD_4K(p, p + 1) - (grSet.styleVolumeBar === 'inner' ? 1 : 0), w + SCALE(5), h + SCALE(4), arcBg, arcBg,
 				grSet.styleVolumeBar === 'inner' ? -89 : 89, grSet.styleVolumeBar === 'inner' ? grCol.styleVolumeBar : 0, grSet.styleVolumeBar === 'inner' ? 0 : grCol.styleVolumeBar, grSet.styleVolumeBar === 'inner' ? 0 : 1);
 			} else {
-				gr.FillGradRect(x - SCALE(2), y + HD_4K(p, p + (grSet.styleVolumeBar === 'inner' ? 0 : 2)), w + SCALE(2), h, grSet.styleVolumeBar === 'inner' ? -90 : 90, 0, grCol.styleVolumeBar);
+				FillGradRect(gr, x - SCALE(2), y + HD_4K(p, p + (grSet.styleVolumeBar === 'inner' ? 0 : 2)), w + SCALE(2), h, grSet.styleVolumeBar === 'inner' ? -90 : 90, 0, grCol.styleVolumeBar);
 			}
 		}
 		// * Default fill
@@ -2978,7 +2978,7 @@ class VolumeButton {
 			if (grSet.styleVolumeBarDesign === 'rounded') {
 				FillGradRoundRect(gr, x + 1, y + HD_4K(4, 7), fillWidth - SCALE(0.5), h - SCALE(2), arcFill, arcFill, grSet.styleVolumeBarFill === 'inner' ? -89 : 89, 0, grCol.styleVolumeBarFill, 1);
 			} else {
-				gr.FillGradRect(x, y + HD_4K(4, 7), fillWidth - SCALE(2), h - SCALE(3), grSet.styleVolumeBarFill === 'inner' ? -90 : 90, grSet.styleBlackAndWhite ? grCol.styleVolumeBarFill : 0, grSet.styleBlackAndWhite ? 0 : grCol.styleVolumeBarFill);
+				FillGradRect(gr, x, y + HD_4K(4, 7), fillWidth - SCALE(2), h - SCALE(3), grSet.styleVolumeBarFill === 'inner' ? -90 : 90, grSet.styleBlackAndWhite ? grCol.styleVolumeBarFill : 0, grSet.styleBlackAndWhite ? 0 : grCol.styleVolumeBarFill);
 			}
 		}
 	}
@@ -3238,13 +3238,13 @@ class ProgressBar {
 				const xRight = this.w + this.x - SCALE(12);
 				const yTop = this.y - 0.5;
 				const yBottom = this.y + this.h - 0.5;
-				gr.FillGradRect(xLeft, yTop, SCALE(9), 1, 179, grCol.styleProgressBarLineTop, 0); // Top left
-				gr.FillGradRect(xLeft, yBottom, SCALE(9), 1, 179, grCol.styleProgressBarLineBottom, 0); // Bottom left
-				gr.FillGradRect(xRight, yTop, SCALE(9), 1, 179, 0, grCol.styleProgressBarLineTop); // Top right
-				gr.FillGradRect(xRight, yBottom, SCALE(9), 1, 179, 0, grCol.styleProgressBarLineBottom); // Bottom right
+				FillGradRect(gr, xLeft, yTop, SCALE(9), 1, 179, grCol.styleProgressBarLineTop, 0); // Top left
+				FillGradRect(gr, xLeft, yBottom, SCALE(9), 1, 179, grCol.styleProgressBarLineBottom, 0); // Bottom left
+				FillGradRect(gr, xRight, yTop, SCALE(9), 1, 179, 0, grCol.styleProgressBarLineTop); // Top right
+				FillGradRect(gr, xRight, yBottom, SCALE(9), 1, 179, 0, grCol.styleProgressBarLineBottom); // Bottom right
 			}
 			else {
-				gr.FillGradRect(this.x, this.y, this.w, this.h, angle, 0, grCol.styleProgressBar);
+				FillGradRect(gr, this.x, this.y, this.w, this.h, angle, 0, grCol.styleProgressBar);
 			}
 
 			const lineX1 = this.x + (styleRounded ? SCALE(12) : 0);
@@ -3280,7 +3280,7 @@ class ProgressBar {
 			if (grSet.styleProgressBarDesign === 'rounded') {
 				FillGradRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2.5), this.arc, this.arc, grSet.styleProgressBarFill === 'inner' ? -88 : 88, grCol.styleProgressBarFill, 0);
 			} else {
-				gr.FillGradRect(this.x, this.y, this.progressLength, this.h, grSet.styleProgressBarFill === 'inner' ? -90 : 89, 0, grCol.styleProgressBarFill);
+				FillGradRect(gr, this.x, this.y, this.progressLength, this.h, grSet.styleProgressBarFill === 'inner' ? -90 : 89, 0, grCol.styleProgressBarFill);
 			}
 		}
 		else if (grSet.styleProgressBarFill === 'blend' && grm.ui.albumArt && grCol.imgBlended) {
@@ -3314,7 +3314,7 @@ class ProgressBar {
 		}
 
 		gr.FillSolidRect(this.x + this.progressLength, this.y + 1, grm.ui.seekbarHeight, grm.ui.seekbarHeight - 1, grCol.progressBar);
-		gr.FillGradRect(this.x + this.progressLength, this.y + 1, grm.ui.seekbarHeight, grm.ui.seekbarHeight - 1, grSet.styleProgressBar === 'inner' ? grSet.styleBlackReborn && fb.IsPlaying ? 88 : -88 : grSet.styleBlackReborn && fb.IsPlaying ? -88 : 88, 0, grCol.styleProgressBar);
+		FillGradRect(gr, this.x + this.progressLength, this.y + 1, grm.ui.seekbarHeight, grm.ui.seekbarHeight - 1, grSet.styleProgressBar === 'inner' ? grSet.styleBlackReborn && fb.IsPlaying ? 88 : -88 : grSet.styleBlackReborn && fb.IsPlaying ? -88 : 88, 0, grCol.styleProgressBar);
 	}
 
 	/**

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-12-2024                                              * //
+// * Last change:    13-04-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1880,13 +1880,36 @@ function FillGradEllipse(gr, x, y, w, h, angle, color1, color2, focus) {
 	// * Gradient ellipse
 	const gradEllipseImg = gdi.CreateImage(w + SCALE(1), h + SCALE(1));
 	g = gradEllipseImg.GetGraphics();
-	g.FillGradRect(Math.floor(lw / 2), Math.floor(lw / 2), w - lw - SCALE(1), h - lw - SCALE(1), angle, color1, color2, focus);
+	FillGradRect(g, Math.floor(lw / 2), Math.floor(lw / 2), w - lw - SCALE(1), h - lw - SCALE(1), angle, color1, color2, focus);
 	gradEllipseImg.ReleaseGraphics(g);
 
 	const mask = maskImg.Resize(w + SCALE(1), h + SCALE(1));
 	gradEllipseImg.ApplyMask(mask);
 
 	return gr.DrawImage(gradEllipseImg, x, y, w - SCALE(1), h - SCALE(1), 0, 0, w, h, 0, 255);
+}
+
+
+/**
+ * Creates a filled gradient rectangle with additional safeguards for size dimensions.
+ * This is a custom method that ensures the size dimensions are valid and non-negative,
+ * preventing crashes not handled by the native SMP's `FillGradRect` method.
+ * @global
+ * @param {GdiGraphics} gr - The GDI graphics object.
+ * @param {number} x - The x-coordinate of the top-left corner of the rectangle.
+ * @param {number} y - The y-coordinate of the top-left corner of the rectangle.
+ * @param {number} w - The width of the rectangle.
+ * @param {number} h - The height of the rectangle.
+ * @param {number} angle - The angle of the gradient in degrees.
+ * @param {number} color1 - The first color of the gradient.
+ * @param {number} color2 - The second color of the gradient.
+ * @param {number} focus - The focus where the centered color will be at its highest intensity. Values 0 or 1.
+ * @returns {GdiGraphics} The filled rectangle.
+ */
+function FillGradRect(gr, x, y, w, h, angle, color1, color2, focus = 1) {
+	if (w <= 0 || h <= 0) return null;
+
+	return gr.FillGradRect(x, y, w, h, angle, color1, color2, focus);
 }
 
 
@@ -1918,7 +1941,7 @@ function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1,
 	// * Gradient rect
 	const gradRectImg = gdi.CreateImage(w + SCALE(1), h + SCALE(1));
 	g = gradRectImg.GetGraphics();
-	g.FillGradRect(0, 0, w - SCALE(1), h - SCALE(1), angle, color1, color2, focus);
+	FillGradRect(g, 0, 0, w - SCALE(1), h - SCALE(1), angle, color1, color2, focus);
 	gradRectImg.ReleaseGraphics(g);
 
 	const mask = maskImg.Resize(w + SCALE(1), h + SCALE(1));

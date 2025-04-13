@@ -453,8 +453,8 @@ class LibImages {
 						}
 					} else if (this.style.dropGrad) {
 						if (this.style.image != 2) {
-							gr.FillGradRect(x1 + w, y1, 4 * $Lib.scale, h,  0, RGBA(0, 0, 0, 56), 0);
-							gr.FillGradRect(x1, y1 + h, w, 4 * $Lib.scale, 90, RGBA(0, 0, 0, 56), 0);
+							FillGradRect(gr, x1 + w, y1, 4 * $Lib.scale, h,  0, RGBA(0, 0, 0, 56), 0);
+							FillGradRect(gr, x1, y1 + h, w, 4 * $Lib.scale, 90, RGBA(0, 0, 0, 56), 0);
 						} else {
 							gr.SetSmoothingMode(4);
 							gr.DrawEllipse(x1, y1, iw, ih, 4 * $Lib.scale, RGBA(0, 0, 0, 32));
@@ -488,8 +488,8 @@ class LibImages {
 							gr.DrawImage(this.shadowStub, x1, y1, this.shadowStub.Width, this.shadowStub.Height, 0, 0, this.shadowStub.Width, this.shadowStub.Height);
 						} else if (this.style.dropGradStub) {
 							if (this.style.image != 2) {
-								gr.FillGradRect(x1 + iw - 2 * $Lib.scale, y1, 6 * $Lib.scale, ih,  0, RGBA(0, 0, 0, 56), 0);
-								gr.FillGradRect(x1, y1 + ih - 2 * $Lib.scale, iw, 6 * $Lib.scale, 90, RGBA(0, 0, 0, 56), 0);
+								FillGradRect(gr, x1 + iw - 2 * $Lib.scale, y1, 6 * $Lib.scale, ih,  0, RGBA(0, 0, 0, 56), 0);
+								FillGradRect(gr, x1, y1 + ih - 2 * $Lib.scale, iw, 6 * $Lib.scale, 90, RGBA(0, 0, 0, 56), 0);
 							} else {
 								gr.SetSmoothingMode(2);
 								gr.DrawEllipse(x1, y1, iw, ih, 4 * $Lib.scale, RGBA(0, 0, 0, 32));
@@ -501,8 +501,8 @@ class LibImages {
 					else if (!this.style.rootComposite && this.stub.root) gr.DrawImage(this.stub.root, x1, y1, iw, ih, 0, 0, iw, ih);
 
 					if (this.labels.overlay) {
-						gr.FillGradRect(x1, y2 - 1, iw / 2, lib.ui.l.w, 1, RGBA(0, 0, 0, 0), lib.ui.col.imgBor);
-						gr.FillGradRect(x1 + iw / 2, y2 - 1, iw / 2, lib.ui.l.w, 1, lib.ui.col.imgBor, RGBA(0, 0, 0, 0));
+						FillGradRect(gr, x1, y2 - 1, iw / 2, lib.ui.l.w, 1, RGBA(0, 0, 0, 0), lib.ui.col.imgBor);
+						FillGradRect(gr, x1 + iw / 2, y2 - 1, iw / 2, lib.ui.l.w, 1, lib.ui.col.imgBor, RGBA(0, 0, 0, 0));
 					}
 					if (this.labels.overlayDark) {
 						if (item.sel || nowp) gr.FillSolidRect(x2, y2, this.im.w, this.overlayHeight, RGBA(150, 150, 150, 150));

@@ -751,8 +751,8 @@ class LibPopulate {
 					plus = !j || j == 2;
 					if (grSet.libraryDesign !== 'reborn') {
 						g.FillSolidRect(x, y, sz, sz, RGB(145, 145, 145));
-						if (!hot) g.FillGradRect(x + ln_w, y + ln_w, sz - ln_w * 2, sz - ln_w * 2, 91, plus ? lib.ui.col.icon_e[0] : lib.ui.col.icon_c[0], plus ? lib.ui.col.icon_e[1] : lib.ui.col.icon_c[1], 1.0);
-						else g.FillGradRect(x + ln_w, y + ln_w, sz - ln_w * 2, sz - ln_w * 2, 91, lib.ui.col.icon_h[0], lib.ui.col.icon_h[1], 1.0);
+						if (!hot) FillGradRect(g, x + ln_w, y + ln_w, sz - ln_w * 2, sz - ln_w * 2, 91, plus ? lib.ui.col.icon_e[0] : lib.ui.col.icon_c[0], plus ? lib.ui.col.icon_e[1] : lib.ui.col.icon_c[1], 1.0);
+						else FillGradRect(g, x + ln_w, y + ln_w, sz - ln_w * 2, sz - ln_w * 2, 91, lib.ui.col.icon_h[0], lib.ui.col.icon_h[1], 1.0);
 						// const x_o = [x, x + sz - ln_w, x, x + sz - ln_w];
 						// const y_o = [y, y, y + sz - ln_w, y + sz - ln_w];
 						for (let i = 0; i < 4; i++) { // g.FillSolidRect(x_o[i], y_o[i], ln_w, ln_w, RGB(186, 187, 188));

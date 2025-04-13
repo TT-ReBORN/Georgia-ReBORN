@@ -245,7 +245,7 @@ class LibUserInterface {
 				g.SetSmoothingMode(2);
 				if (!this.img.blurDark && !this.img.blurLight) {
 					g.FillSolidRect(0, 0, 500, 500, tcol);
-					g.FillGradRect(-1, 0, 505, 500, 90, this.col.bg & 0xbbffffff, this.col.bg, 1.0);
+					FillGradRect(g, -1, 0, 505, 500, 90, this.col.bg & 0xbbffffff, this.col.bg, 1.0);
 				}
 				g.SetTextRenderingHint(3);
 				g.DrawString('NO', i ? font3 : font1, tcol & 0x25ffffff, 0, 0, 500, 275, cc);
@@ -273,8 +273,8 @@ class LibUserInterface {
 		// if (!libSet.searchShow || !libSet.filterShow) return;
 		// const l_x = lib.panel.filter.x - this.l.wc;
 		// const l_h = lib.ui.row.h / 2;
-		// gr.FillGradRect(l_x, lib.ui.y, this.l.w, l_h, 91, RGBA(0, 0, 0, 0), this.col.s_line);
-		// gr.FillGradRect(l_x, lib.ui.y + l_h, this.l.w, l_h, 91, this.col.s_line, RGBA(0, 0, 0, 0));
+		// FillGradRect(gr, l_x, lib.ui.y, this.l.w, l_h, 91, RGBA(0, 0, 0, 0), this.col.s_line);
+		// FillGradRect(gr, l_x, lib.ui.y + l_h, this.l.w, l_h, 91, this.col.s_line, RGBA(0, 0, 0, 0));
 	}
 
 	drawTopBarUnderlay(gr) {
