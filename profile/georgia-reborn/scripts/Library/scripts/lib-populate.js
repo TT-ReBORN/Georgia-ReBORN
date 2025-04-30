@@ -2292,6 +2292,8 @@ class LibPopulate {
 	sort(data) {
 		if (!libSet.libSource && !lib.panel.multiProcess) return;
 		this.specialCharSort(data);
+		// View By Folder Structure is already sorted
+		if (libSet.viewBy === 10) return;
 		data.sort((a, b) => this.collator.compare(a.srt[2], b.srt[2]) || (a.srt[3] && !b.srt[3] ? 1 : 0));
 	}
 
