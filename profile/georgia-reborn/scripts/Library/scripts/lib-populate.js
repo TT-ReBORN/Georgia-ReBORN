@@ -2292,14 +2292,43 @@ class LibPopulate {
 	sort(data) {
 		if (!libSet.libSource && !lib.panel.multiProcess) return;
 		this.specialCharSort(data);
-		// View By Folder Structure is already sorted
-		if (lib.panel.folderView) return;
-		data.sort((a, b) => this.collator.compare(a.srt[2], b.srt[2]) || (a.srt[3] && !b.srt[3] ? 1 : 0));
+
+		if (lib.panel.folderView) { // Handle sorting for View By Folder Structure
+			this.sortViewByFolder(data);
+		} else { // Default sorting for other views
+			data.sort((a, b) => this.collator.compare(a.srt[2], b.srt[2]) || (a.srt[3] && !b.srt[3] ? 1 : 0));
+		}
 	}
 
 	sortIfNeeded(items) {
 		if (lib.panel.multiProcess && !libSet.customSort.length) items.OrderByFormat(lib.panel.playlistSort, 1);
 		else if (libSet.customSort.length) items.OrderByFormat(this.customSort, 1);
+	}
+
+	sortViewByFolder(data) {
+		const getNumber = (name) => { // TODO: WilB - move to Libs helper collection
+			const match = name.match(/^(\d+\.\d{1,2}|\d+)(?:[-_\s#.:=+]|\b)(.*)/);
+			if (!match) return { number: null, rest: name };
+			return { number: parseFloat(match[1]), rest: match[2] };
+		};
+
+		data.sort((a, b) => {
+			const { number: numA, rest: restA } = getNumber(a.srt[0]);
+			const { number: numB, rest: restB } = getNumber(b.srt[0]);
+
+			// Compare numerical prefixes if both exist
+			if (numA !== null && numB !== null) {
+				const numCompare = numA - numB;
+				if (numCompare !== 0) return numCompare;
+				return this.collator.compare(restA, restB);
+			}
+
+			// If only one has a number, it comes first
+			if (numA !== null) return -1;
+			if (numB !== null) return 1;
+
+			return this.collator.compare(a.srt[2], b.srt[2]) || (a.srt[3] && !b.srt[3] ? 1 : 0);
+		});
 	}
 
 	specialCharHas(name) {
