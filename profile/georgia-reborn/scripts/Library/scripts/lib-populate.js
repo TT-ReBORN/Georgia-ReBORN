@@ -342,7 +342,7 @@ class LibPopulate {
 		if (level == 0) this.clearTree();
 
 		// * Apply View By Folder Hide if View by Folder Structure is active
-		if (libSet.viewBy === 10) lib.men.setViewByFolderHide(this.tree, libSet.viewByFolderHide);
+		if (lib.panel.folderView) lib.men.setViewByFolderHide(this.tree, libSet.viewByFolderHide);
 
 		br.forEach((v, i) => {
 			j = this.tree.length;
@@ -2292,6 +2292,8 @@ class LibPopulate {
 	sort(data) {
 		if (!libSet.libSource && !lib.panel.multiProcess) return;
 		this.specialCharSort(data);
+		// View By Folder Structure is already sorted
+		if (lib.panel.folderView) return;
 		data.sort((a, b) => this.collator.compare(a.srt[2], b.srt[2]) || (a.srt[3] && !b.srt[3] ? 1 : 0));
 	}
 
