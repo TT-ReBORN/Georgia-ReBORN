@@ -4,7 +4,7 @@ const lyricContainerElements = [];
 
 export function getConfig(cfg) {
 	cfg.name = 'Genius (Unsynced)';
-	cfg.version = '0.2';
+	cfg.version = '0.3';
 	cfg.author = 'ohyeah & TT';
 	cfg.useRawMeta = false;
 }
@@ -60,6 +60,11 @@ function findLyrics(rootElement) {
 		return false;
 	}
 
+	// Skip elements with data-exclude-from-selection="true" for unwanted stuff
+	if (attributes.some(attr => attr.key === 'data-exclude-from-selection' && attr.value === 'true')) {
+		return false;
+	}
+
 	for (const attribute of attributes) {
 		if (attribute.key === 'data-lyrics-container' && attribute.value === 'true') {
 			lyricContainerElements.push(rootElement);
@@ -99,6 +104,12 @@ function parseLyrics(element, lyricText) {
 	const type = element.type || '';
 	const children = element.children || [];
 	const content = element.content || '';
+	const attributes = element.attributes || [];
+
+	// Skip elements with data-exclude-from-selection="true" for unwanted stuff
+	if (attributes.some(attr => attr.key === 'data-exclude-from-selection' && attr.value === 'true')) {
+		return lyricText;
+	}
 
 	if (type === 'text') {
 		return lyricText + content;
