@@ -7,7 +7,441 @@
 <br>
 
 
-## Update v3.0 - October ??, 2023
+## Update v3.0-RC3 - May 29, 2025
+
+### Added:
+
+#### Playlist Grouping Presets:
+
+- Implemented Playlist grouping presets in the config file
+  * Playlist grouping presets and changes are now saved to the config file when using the Playlist grouping manager
+  * Playlist grouping presets can also be edited directly in the config file
+  * Playlist grouping presets will now be saved and restored in the theme backup process
+
+#### Library Source Mode:
+
+- Added Library source mode in top menu Options > Library > Source
+  * When changing Library source mode and selecting a playlist, the Library will show the content of the selected playlist in the Library instead of foobar's Media Library
+  * When changing the Library source to active playlist, it will sync the content of the current active playlist
+  * The Library source mode can also be quickly accessed via Library's right click context menu or via the Library's hamburger menu (...)
+  * The Library source mode settings are saved when making a new theme backup and written to the georgia-reborn-config.jsonc file
+
+#### ESLyric and Playlist Enhancements:
+
+- Added additional ESLyric sources
+- Added index number support for playlist row customization
+- Added option to flip playlist header rows in top menu > Options > Playlist > Album header > Flip header rows
+- Added theme preset info in top menu > Options > Preset > Info
+
+#### Rating Systems:
+
+- Implemented a new 5-star rating system with fractional ratings
+  * Supports quarter, half, and three-quarter star ratings
+  * Used in the new Lyrics layouts for displaying track ratings
+
+- Implemented artist rating functionality
+  * Calculates artist rating based on all rated artist tracks
+  * Visible in the new Lyrics layouts to encourage comprehensive track rating
+
+#### Playlist Diagnostics:
+
+- Implemented playlist diagnostics lists
+
+  * Accessible via right-click on Playlist's context menu > Write playlist diagnostics to list
+
+  * File checks:
+    - Missing album art (checks for local or embedded album art in music album folders)
+    - Missing album art (local) (checks for local album art in music album folders)
+    - Missing album art (embedded) (checks for embedded album art in music files)
+    - Missing disc art (checks for local disc art in music folders)
+    - Missing playlist files (checks for dead music files in the playlist)
+    - Check all missing files (writes all file checks in one list; includes album art item menu for selection)
+
+  * Tagging checks:
+    - Missing artist name (checks for %artist% metadata)
+    - Missing album title (checks for %album% metadata)
+    - Missing track number (checks for %tracknumber% metadata)
+    - Missing track title (checks for %title% metadata)
+    - Missing year (checks for %date% or %year% metadata)
+    - Missing genre (checks for %genre% metadata)
+    - Missing label (checks for %label% metadata)
+    - Missing country (checks for %artistcountry% or %country% metadata)
+    - Check all missing tagging (writes all tagging checks in one list)
+
+#### Playlist Sorting:
+
+- Added new playlist sorting options
+  * Added `Artist rating` and `Artist playcount` sorting options
+  * Accessible via Top menu > Options > Playlist > Sort order > Artist rating and Artist playcount
+  * Requires custom metadata from tags; use `Write album statistics to tags` via Playlist's context menu to write metadata
+
+#### Lyrics Layouts:
+
+- Implemented redesigned Lyrics layouts
+
+  * Completely redesigned Lyrics full layout
+    - Mouse hover on the right edge displays an album overlay with artist, album, and track ratings
+    - Clicking the right edge pauses the track
+
+  * Added two new Lyrics layouts: `Left` and `Right`
+    - Hovering over album covers displays the new fractional ratings
+    - Clicking the album cover pauses playback
+
+  * All new layouts use the background image functionality by default, with `Shift + mouse wheel` to cycle images
+
+#### Background Image Support:
+
+- Implemented background image functionality for Playlist, Library, and Lyrics
+
+  * Lyrics background image functionality
+    - Navigate to `Top Menu` > `Options` > `Lyrics` > `Background`
+    - Alternatively, use `Lyrics's context menu` > `Playlist options menu` > `Background`
+    - Features mirror Playlist and Library background functionality:
+      - Show image on background (must be activated)
+      - Cycle images with configurable intervals
+      - Image source: Artist, Album, or Custom (from `foobar2000\profile\georgia-reborn\images\background`)
+      - Image scaling: Proportional, Filled, or Stretched
+      - Image opacity and row opacity adjustments
+      - Manual image cycling with `Shift + mouse wheel`
+
+  * Access for Playlist:
+    - Navigate to `Top Menu` > `Options` > `Playlist` > `Background`
+    - Alternatively, use `Playlist's context menu` > `Playlist options menu` > `Background`
+
+  * Access for Library:
+    - Navigate to `Top Menu` > `Options` > `Library` > `Background`
+    - Alternatively, use `Library's context menu` > `Playlist options menu` > `Background`
+
+  * Features:
+    - Show image on background (must be activated)
+    - Show now playing rows only (Playlist only): Hides Playlist header and row backgrounds for the currently playing track
+    - Cycle images with configurable intervals
+    - Image source: Artist, Album, or Custom (from `foobar2000\profile\georgia-reborn\images\background`)
+    - Image scaling: Proportional, Filled, or Stretched (default: Filled)
+    - Image opacity and row opacity adjustments for readability
+    - Manual image cycling with `Shift + mouse wheel`
+
+#### Display Scaling:
+
+- Implemented display scaling
+  * Accessible in top Menu > Options > Display > Scaling
+  * Use keyboard shortcuts `Ctrl + +/-` for increase/decrease and `Alt + +/-` for reset
+  * Scales the UI from 50% to 150% for each player size and display resolution (up to 8K)
+  * Allows fine-tuning of font and button sizes alongside scaling
+  * Settings saved in theme backup
+
+#### Browse Mode:
+
+- Implemented Browse mode
+  * Available in top Menu > Options > Player controls > Mode > Browse mode
+  * Allows browsing albums/tracks in Playlist or Library without altering playback
+  * Syncs album art and metadata across Details, Biography, and Lower Bar
+  * Library play mode enabled; does not modify playlist content until disabled
+  * Use "Show Now Playing" or lower bar track title click to return to playing track
+
+#### Lower Bar Features:
+
+- Implemented Lower Bar features
+  * Artist button actions (top Menu > Options > Player controls > Lower bar > Artist button action or right-click context menu):
+    - Artist playlist: Creates "Artist Discography" playlist with all artist albums (requires indexed Media Library)
+    - Open website: Opens custom website links set in `georgia-reborn-custom.jsonc`
+
+  * Track title button: Clicking shows now playing in Playlist or Library
+
+#### Playback Time Display:
+
+- Implemented Playback time display menus for Lower Bar and Playlist
+  * Includes playback time percentage
+  * Accessible via top Menu > Options > Player controls > Lower bar > Playback time display or by clicking Lower Bar time
+  * Playlist playback time row display via top Menu > Options > Playlist > Track row > Playback time display or Playlist's context menu
+
+#### Library View by Folder Options:
+
+- Implemented Library View by Folder options
+  * Hide album year, track number, and file extension via Library hamburger menu > Views > View by Folder Structure > Hide
+  * Node auto-expand and Node auto expand single items via top Menu > Options > Library > Track row
+
+#### Mouse Wheel Interface Scaling:
+
+- Implemented mouse wheel interface scaling
+  * `Ctrl + mouse wheel` to enlarge/shrink; `Alt + mouse wheel` to reset
+  * Available in top menu, lower bar, Playlist, Details, Library, Biography, and Lyrics panels
+  * Lower bar transport buttons: `Shift + mouse wheel` for button spacing, `Shift + Alt + mouse wheel` to reset
+
+#### Playlist Dynamic Batch Processor:
+
+- Implemented playlist dynamic batch processor
+  * Loads 1000 tracks initially, processes remaining tracks in background for faster startup and playlist switching
+
+#### Website Searches:
+
+- Added `Album of the Year`, `Rate Your Music`, `Sputnikmusic` to website searches
+  * Accessible via Playlist's and Library's context menu > Weblinks
+
+#### Playlist Statistics and Sorting:
+
+- Implemented playlist average album rating, playlist average album playcount, playlist statistics, and improved playlist rating, sorting, and tag writing:
+
+  * Playlist sorting:
+    - Unified sort order main and context menu
+    - New sort options: Album rating, Album playcount, Track rating, Track playcount, Genre, Label, Country, Artist rating, Artist playcount
+    - Improved auto-sort indication and fixed sort order issues
+
+  * Playlist rating:
+    - Average album rating calculated from track ratings, written to %ALBUMRATING% (0-100 scale, displayed as 0-5)
+    - Top menu rating now supports non-playing tracks and multiple selections
+
+  * Playlist playcount:
+    - Average album playcount calculated from track playcounts, written to %ALBUMPLAYCOUNT% and %ALBUMPLAYCOUNTTOTAL%
+    - Requires manual update via Playlist's context menu > Write album statistics to tags
+
+  * Playlist statistics:
+    - Accessible via Playlist's context menu > Write playlist statistics to text
+    - Lists: Album rating, Album playcount, Album playcount total, Album track rating, Album track playcount, Track rating, Track playcount, Top rated, Top played
+    - Configurable include settings: artist, album, track, stats, year, genre, label, country
+    - Sort by stats or other metadata; ascending/descending order
+    - Lists saved to `foobar2000\profile\cache\playlist`
+
+#### Theme Day/Night Mode:
+
+- Implemented configurable theme day/night mode
+  * Custom time range via top Menu > Options > Settings > Theme day/night mode > Set custom time range
+  * Theme setup for day/night via top Menu > Options > Settings > Theme day/night mode > Theme setup for daytime/nighttime
+  * Supports custom GR theme tags; Reborn and Random themes start dark-themed at night
+
+#### Channel Logos:
+
+- Implemented channel logos for metadata grid in Details
+  * Two variants: logo only and text with logo
+  * Accessible via top Menu > Options > Details > Metadata grid > Show channel logo
+
+#### Auto-Hide Metadata:
+
+- Implemented auto-hide metadata on small player size in Details
+  * Ensures artist logos remain visible
+  * Accessible via top Menu > Options > Details > Metadata grid > Auto-hide full metadata on small player
+
+#### Custom Disc Art:
+
+- Implemented dynamic custom disc art placeholder configuration
+  * Configurable in `georgia-reborn-custom.jsonc` under "customDiscArtStub"
+  * Images located in `georgia-reborn/images/custom/discart`
+
+#### Album Art Display:
+
+- Implemented album art display features in maximize/fullscreen mode
+  * Options: Scale album art cropped, stretched, or always (no aspect ratio limits)
+  * Accessible via top Menu > Options > Player controls > Album art > When player size is maximized/fullscreen
+
+#### Custom Theme Images:
+
+- Implemented support for custom theme images
+  * Accessible via top Menu > Options > Settings > Theme images > Use custom theme images
+
+#### Add Tracks Button:
+
+- Implemented "Add tracks" button
+  * Adds selected albums/tracks to a user-defined playlist (default: "Favorites")
+  * Accessible via top Menu > Options > Player controls > Lower bar > Show add tracks button
+  * Options to switch to playlist or add now playing track
+
+#### Auto-Download Modes:
+
+- Implemented auto-download biography and lyrics modes
+  * Requires Developer tools enabled
+  * 5s timer for biography, 15s timer for lyrics
+
+#### Album Art Filtering:
+
+- Implemented custom configurable album art filtering
+  * Configurable in `georgia-reborn-config.jsonc` under "artworkPatterns"
+  * Default excludes disc art; supports inclusion/exclusion patterns
+  * Requires enabling in respective panel options
+
+#### Debug Tools:
+
+- Implemented debug performance overlay and CPU tracker
+  * Accessible via top Menu > Options > Developer tools > Enable debug performance overlay
+
+#### Lyrics Scrolling:
+
+- Implemented mouse drag scrolling for lyrics
+  * Left-click and drag to scroll; `Alt + drag` to reset position
+  * Option to disable auto-scroll for unsynced lyrics via top Menu > Options > Lyrics > Controls > Auto-scroll unsynced lyrics
+
+#### Waveform Bar Enhancements:
+
+- Added waveform bar visualizer fallback options
+  * Accessible via top Menu > Options > Player controls > Seekbar > Waveform bar > Analysis
+
+- Added waveform bar mouse wheel seek speeds, seek type, and analysis save mode
+  * Seek speeds: Options > Player controls > Seekbar > Peakmeter bar/Waveform bar > Mouse wheel seek speed
+  * Seek type: Options > Player controls > Seekbar > Waveform bar > Mouse wheel > Seek type
+  * Analysis save mode: Options > Player controls > Seekbar > Waveform bar > Analysis (always, library, never)
+
+- Added waveform bar compatible extensions list
+  * Accessible via top Menu > Options > Player controls > Seekbar > Waveform bar > Analysis > Show compatible extensions
+
+#### Miscellaneous:
+
+- Added option to disable jump search
+  * Accessible via top Menu > Options > Player controls > Jump search > Disable jump search
+
+- Added option to disable ESC key to exit fullscreen
+  * Accessible via top Menu > Options > Player controls > Panel > Disable fullscreen ESC
+
+- Added new codec logos
+- Added disc art placeholders for existing and custom themes
+
+<br>
+
+### Changed:
+
+#### Main:
+
+- Restored original playlist header album subtitle behavior
+- Removed intentional set alpha value from Playlist thumbnails
+
+- Changed `Filter disc art from artwork` to `Filter album art images`
+  * Moved to `Options > Player controls > Album art > Filter album art images`
+
+<br>
+
+### Improved:
+
+#### Main:
+
+- Implemented custom DrawString method to support font fallback for special characters
+
+- Improved theme brightness and initialization
+  * Added more brightness levels
+  * Improved text color handling based on brightness
+  * Optimized initialization order
+
+- Changed "Use auto panel width" to "Auto panel width" in top Menu > Options > Player controls > Mode
+
+- Improved top menu collapse
+  * Hides caption buttons in Artwork and Compact layouts for small player sizes
+  * Option for compact top menu (symbol only) via top Menu > Player controls > Top menu
+
+- Implemented custom disc art paths in config file
+  * Configurable in `georgia-reborn-config.jsonc` under "discArtPaths"
+
+#### Code Rewrites:
+
+- Rewritten playlist statistics codebase
+  * Improved modularity and simplified logic
+  * Added artist ratings and playcounts as separate lists
+
+- Rewritten main album art and Details disc art resize functionality
+  * Enhanced modularity and simplified logic
+
+- Refactored progress bar, peakmeter bar, waveform bar, and seekbar refresh rate system
+  * Modularized code, separated draw logic, added JSDocs, optimized calculations
+  * Seekbar refresh rate now uses FPS, with popup warnings for fast rates
+
+- Refactored configuration write code
+  * Modularized, improved readability, added backslash escaping
+
+#### Details:
+
+- Improved metadata grid menu live edit with safeguards
+
+#### Library:
+
+- Improved Library’s album & artist grid view menu items
+
+#### Biography:
+
+- Improved country flags in Biography with tooltips
+
+#### Lyrics:
+
+- Improved mouse wheel lyrics scrolling
+  * Added `Shift + wheel` for faster scrolling
+  * Consistent behavior in Biography and Lyrics panels
+
+<br>
+
+### Removed:
+
+#### Main:
+
+- Removed and merged Options > Lyrics > Controls > Remember active lyrics state into Remember lyrics panel state
+- Removed Options > Library > Controls > Switch to playlist when adding songs (replaced by Player controls > Panel)
+
+- Removed `Shift + mouse wheel` lyrics shortcut for 10-second offset
+  * Replaced by left-click dragging; shortcut now cycles background images
+
+- Removed `Options > Lyrics > Display > Show lyrics on album art`
+  * Replaced by `Options > Lyrics > Background > Show image on background`
+
+<br>
+
+### Fixed:
+
+#### Fixed - Main:
+
+- Fixed QHD display mode fullscreen issue
+- Fixed embedded album cover display when cycling artworks
+- Fixed Lower Bar country flags display
+- Fixed fractional Lower Bar playback length
+- Fixed rare artCache crash
+- Fixed disc art rotation crash in 4K mode for high-resolution images
+- Fixed styled tooltips truncation and sticky issues
+- Fixed country flag parsing with parentheses in filepath
+- Fixed auto panel width init with embedded album art
+- Fixed cosmetic lyric state issue in full-width Library layout
+- Fixed cosmetic gradient bevel issue
+- Fixed rare disc art rotation crash
+- Fixed Reborn theme brightness issue on reload
+- Fixed playlist manager text button visibility and history button positioning
+- Fixed sticky scrollbars when dragged outside window
+- Fixed panel display/state issues in full-width lyrics layout
+- Fixed custom cache usage abort on popup cancel
+- Fixed waveform bar issues with incompatible files
+
+#### Fixed - Playlist:
+
+- Fixed Playlist drag and drop crash during theme load
+- Fixed Playlist user-defined grouping and reset
+- Fixed cosmetic Playlist repaint issue
+- Fixed Playlist header hyperlink issues
+
+#### Fixed - Library:
+
+- Fixed Library drag and drop crash in split mode with Playlist source
+- Fixed Library filter/view issues
+- Fixed Library item list refresh with Playlist source
+- Fixed missing default Library settings
+
+#### Fixed - Biography:
+
+- Fixed Biography top menu option for Sources > Cover
+- Fixed Biography file name issues with reserved characters
+
+#### Fixed - Lyrics:
+
+- Fixed lyrics parsing with parentheses in filepath
+
+#### Fixed - Details:
+
+- Fixed cosmetic metadata grid refresh in Details for wide artwork
+
+#### Fixed - Playlist Statistics:
+
+- Fixed ghost folder creation in playlist statistic lists
+
+<br>
+
+### Updated:
+
+- Updated audiowaveform to v1.10.1
+- Updated Biography to v1.4.2
+- Updated foo_cuefixer to v1.3.2
+- Updated foo_ui_columns to v2.1.0
+- Updated foo_uie_eslyric to v1.0.3.2
+
 <br>
 
 
@@ -395,6 +829,7 @@
     Restoring backups works only if a backup exist.
   * WARNING: Changes and modifications since your last backup (new theme settings, new playlists and play statistics) will be lost!
     It is recommended to make a new backup before you restore.
+
 #### Added - Playlist:
 - Added Playlist "Auto collapse and expand" in top menu Options > Playlist > Album header
 - Added Playlist "Show" and "Auto-hide when no cover" options in top menu Options > Playlist > Album header > Album art
@@ -427,6 +862,7 @@
 - Added SMP playlist lock, can be accessed via playlist tools context menu or playlist right click context menu.
   * Old components like foo_utils are no longer needed and should be removed. If you have playlists locked with foo_utils,
     first unlock them all via deactivating top menu Edit > Read-only, then you can use normally the SMP playlist lock feature.
+
 #### Added - Details:
 - Added option to control album art transparency in Details in top menu Options > Details > Album art
   * If you have selected the right theme or theme preset, the spinning disc art can look pretty cool with the right opacity setting.
@@ -456,6 +892,7 @@
 - Added and using new default entry "File Size" in the metadata grid in Details
   * Will show the file size of the current playing track
 - Added additional display options for Details release country flags in top menu Options > Details > Metadata grid > Show release country flags
+
 #### Added - Library:
 - Added split layout for Library in top menu Options > Library > Layout > Split
   * Quick access via right clicking on the Library panel > Change layout to split
@@ -498,6 +935,7 @@
 - Added album art thumbnail options in top menu Options > Library > Album art > Thumbnail border
 - Added library album art year overlay and changed Options > Library > Album art > Track count > Show overlay to Options > Library > Album art > Overlay
 - Added option to play only albums/songs in the Library for double click action via top menu Options > Library > Track row > Double-click action > Play only
+
 #### Added - Biography:
 - Added additional Biography layout "Full overlay" in top menu Options > Biography > Layout > Full overlay
 - Added Biography option to show/hide summary in top menu Options > Biography > Display > Summary
@@ -507,11 +945,13 @@
 - Added Biography image downloads in top menu Options > Biography > Image > Downloads
   * This will set the number of image downloads for one artist when displaying the Biography.
     Higher number will increase the size of the Biography cache folder.
+
 #### Added - Lyrics:
 - Added option to make current synced lyric larger in top menu Options > Lyrics > Display > Larger current sync
 - Added option to remember active lyrics state in top menu Options > Lyrics > Display
 - Added various lyrics options in top menu Options > Lyrics and also in the lyrics context menu
 - Added support for embedded offset in lyric lrc files
+
 #### Added - Various:
 - Added F11 shortcut for going into/out fullscreen mode ( disabled/not supported in Artwork layout, ESC also exits fullscreen mode )
 - Added Mordred's more precise color distance calculation
@@ -568,6 +1008,7 @@
 - Theme init issues on playback new track when a context menu is being active/open
 - Fixed scaling popup issues, thx @Wil-B =)
 - Various small cosmetic fixes
+
 #### Fixed - Playlist:
 - Title color draw issue while using the Reborn/Random theme when Playlist title color changed from black to white and vice versa
 - Smooth scroll jump bug when removing songs
@@ -585,6 +1026,7 @@
   * Was sometimes visible when using the White or Black theme with a slow CPU since SMP v1.6.0
 - Fixed cosmetic now playing indicator width change when using scrollbar auto-hide and scrollbar does not exist
 - Fixed/Enhanced playlist label hyperlinks ( works now with %publisher% tag )
+
 #### Fixed - Library:
 - Rare track init issues on startup in the library - thx @Wil-B =)
 - Cosmetic mouse move cursor caret/arrow bug on library search box
@@ -592,6 +1034,7 @@
 - Update Library's nowPlaying when playing a song from the Playlist
 - A very old cosmetic library flashing in row now playing background
 - Various color issues when using labels overlay dark mode
+
 #### Fixed - Biography:
 - Filmstrip thumbnails not always loading images, thx @Wil-B =)
 - Tooltips ( were in conflict with lowerBar tooltips )
@@ -600,6 +1043,7 @@
 - Mode Image only was not centered when using two different image formats ( circular and regular ) on artist and album cover
 - Fixed cosmetic disc art placeholder issues ( flickering and some cut edges due to compression ) being very visible in 4K resolution.
 - When using animation with transparent round objects it is recommended NOT to use any compression at all or it will become dirty.
+
 #### Fixed - Library:
 - Display of synced lyrics with multi-timestamps for enhanced lrc extension
 
@@ -625,6 +1069,7 @@
 - Extended SMP ram usage to 4 GB ( maximum for foobar 32bit )
 - Extended SMP slow script warning to 60 sec ( maximum )
 - Cleaned console logging -> show Enhanced Playcount logging only in debug log
+
 #### Improved - Main:
 - JumpSearch now works properly with Playlist content and is independent of indexed Media Library items,
   also added more search patterns ( %artist%, %album artist%, %composer% )
@@ -647,20 +1092,24 @@
     window drag will resume.
 - Adjusted colors when using the Reborn theme with almost white album art covers or primary color
 - Adjusted colors when using the Reborn theme with almost pure black primary color
+
 - Various theme improvements
 #### Improved - Playlist:
 - Added selection indicator when playlist header is collapsed
 - Auto-collapse playlist headers when using drag and drop (e.g reordering items) with auto-collapse feature
+
 #### Improved - Details:
 - New redesigned and improved Details timeline
   * Cleaner overall design ( looks like a headline now which integrates better with the metadata grid )
   * Harmonic proportions - 2/3 height of the progressbar with margin on both sides for continuous vertical flow
   * Better color palettes for various themes
+
 #### Improved - Library:
 - You can now also playback queue your tracks in the Library, right click for context menu > Add to playback queue
   * To show the playback queue in the Library change statistics view to Playback queue via Options > Library > Track row > Statistics
     or clicking on the Library hamburger menu ( right beside Filter ) > Statistics or right click in Library > Library options > Track row > Statistics
   * If you set a playback queue either from the Library or from Playlist, playback queue will be automatically displayed in both panels.
+
 #### Improved - Biography:
 - Filmstrip positioning in Biography now also supported outside the image ( when not overlayed )
 - Some small Biography layout improvements
@@ -670,6 +1119,7 @@
 - Improved volume bar width size when using Artwork or Compact layout with various transport button settings and a small player size
 - Automated search query when using "Get disc art" from the album art context menu
 - Improved "Display next artwork" and "Display previous artwork" in album art context menu
+
 #### Improved - Lyrics:
 - Some visual lyric improvements when not using album art as background
 
