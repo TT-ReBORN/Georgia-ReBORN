@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-04-2025                                              * //
+// * Last change:    29-05-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3584,8 +3584,6 @@ class PeakmeterBar {
 		this.textHeight = 0;
 		/** @private @type {string} The text for the tooltip. */
 		this.tooltipText = '';
-		/** @private @type {number} The timer for the tooltip. */
-		this.tooltipTimer = null;
 		// #endregion
 
 		// * VOLUME * //
@@ -4427,8 +4425,17 @@ class PeakmeterBar {
 		this.on_mouse = true;
 		this.pos_x = x <= this.textWidth ? this.x + this.textWidth : this.x + x;
 		this.pos_y = y <= this.textHeight ? this.textHeight : y;
+
 		if (this.drag) {
 			this.setPlaybackTime(x);
+		}
+
+		if (this.tooltipText) {
+			this.wheel = false;
+			this.tooltipTimer = false;
+			this.tooltipText = '';
+			grm.ttip.stop();
+			window.Repaint();
 		}
 	}
 
@@ -4438,21 +4445,12 @@ class PeakmeterBar {
 	 */
 	on_mouse_wheel(step) {
 		this.wheel = true;
-		if (Component.VUMeter) {
+
+		if (this.VUMeter) {
 			this.VUMeter.Offset = this.VUMeter.Offset + step;
 			this.tooltipText = `${Math.round(this.VUMeter.Offset)} db`;
 			grm.ttip.showImmediate(this.tooltipText);
 		}
-		if (this.tooltipTimer) {
-			clearTimeout(this.tooltipTimer);
-		}
-		this.tooltipTimer = setTimeout(() => {
-			this.wheel = false;
-			if (this.tooltipTimer) clearTimeout(this.tooltipTimer);
-			this.tooltipTimer = false;
-			this.tooltipText = '';
-			grm.ttip.stop();
-		}, 2000);
 	}
 
 	/**
