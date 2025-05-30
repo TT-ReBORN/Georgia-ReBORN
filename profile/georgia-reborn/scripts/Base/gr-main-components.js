@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-05-2025                                              * //
+// * Last change:    30-05-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3259,7 +3259,7 @@ class ProgressBar {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawProgressBarFill(gr) {
-		if (!fb.PlaybackLength && !fb.IsPlaying) return;
+		if (!fb.IsPlaying || fb.PlaybackLength <= 0) return;
 
 		const playbackRatio = fb.PlaybackTime / fb.PlaybackLength;
 		this.progressLength = Math.floor(this.w * playbackRatio);
@@ -4002,7 +4002,7 @@ class PeakmeterBar {
 	 * @private
 	 */
 	drawProgressBar(gr) {
-		if (!fb.IsPlaying || !grSet.peakmeterBarProgBar) return;
+		if (!fb.IsPlaying || fb.PlaybackLength <= 0 || !grSet.peakmeterBarProgBar) return;
 
 		const playbackRatio = fb.PlaybackTime / fb.PlaybackLength;
 		this.progressLength = Math.floor(this.w * (grSet.peakmeterBarDesign === 'horizontal_center' ? 0.5 : 1) * playbackRatio);
