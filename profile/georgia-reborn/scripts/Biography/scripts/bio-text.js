@@ -991,7 +991,7 @@ class BioText {
 							if (g.CalcTextWidth(nm, bio.ui.font.main) > bio.panel.text.w) {
 								const availableWidth = bio.panel.text.w - g.CalcTextWidth('... ', bio.ui.font.main);
 								if (availableWidth > 0) {
-									nm = `${g.EstimateLineWrap(nm, bio.ui.font.main, )[0]}...`;
+									nm = `${g.EstimateLineWrap(nm, bio.ui.font.main, availableWidth)[0]}...`;
 								}
 							}
 						list += nm;
