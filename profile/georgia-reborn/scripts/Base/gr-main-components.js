@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-05-2025                                              * //
+// * Last change:    04-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2851,7 +2851,7 @@ class Volume {
 		if (this.trace(x, y) || this.drag) {
 			if (this.drag) {
 				x -= this.x;
-				const pos = x > this.w ? 1 : x / this.w;
+				const pos = Clamp(x / this.w, 0, 1);
 				this.dragVol = ConvertVolume(pos, 'toDecibel');
 				fb.Volume = this.dragVol;
 			}
