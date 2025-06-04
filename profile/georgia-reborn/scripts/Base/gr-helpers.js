@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-04-2025                                              * //
+// * Last change:    04-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1832,6 +1832,8 @@ function DrawRoundRect(gr, x, y, w, h, arc_width, arc_height, line_width, color)
  * @returns {GdiGraphics} The blended filled round rectangle.
  */
 function FillBlendedRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, focus) {
+	if (w <= 0 || h <= 0) return null;
+
 	// * Mask
 	const maskImg = gdi.CreateImage(w + SCALE(1), h + SCALE(1));
 	let g = maskImg.GetGraphics();
@@ -1868,6 +1870,8 @@ function FillBlendedRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, focu
  * @returns {GdiGraphics} The gradient filled ellipse.
  */
 function FillGradEllipse(gr, x, y, w, h, angle, color1, color2, focus) {
+	if (w <= 0 || h <= 0) return null;
+
 	const lw = SCALE(2);
 	// * Mask
 	const maskImg = gdi.CreateImage(w + SCALE(1), h + SCALE(1));
@@ -1930,6 +1934,8 @@ function FillGradRect(gr, x, y, w, h, angle, color1, color2, focus = 1) {
  * @returns {GdiGraphics} The gradient filled rounded rectangle.
  */
 function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1, color2, focus) {
+	if (w <= 0 || h <= 0) return null;
+
 	// * Mask
 	const maskImg = gdi.CreateImage(w + SCALE(1), h + SCALE(1));
 	let g = maskImg.GetGraphics();
