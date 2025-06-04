@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-04-2025                                              * //
+// * Last change:    04-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4367,8 +4367,9 @@ class MainUI {
 	 * Handles the lower bar artist/tite tooltip. If a tooltip is ready, it displays and then clears it.
 	 * @param {number} x - The x-coordinate.
 	 * @param {number} y - The y-coordinate.
+	 * @param {boolean} clear - Clears the lower bar tooltip.
 	 */
-	handleLowerBarTooltip(x, y) {
+	handleLowerBarTooltip(x, y, clear) {
 		const artistOverflow = this.lowerBarArtistW > this.lowerBarAvailableW;
 		const titleOverflow = this.lowerBarTitleW > this.lowerBarAvailableW;
 		const twoLinesOverflow = grSet.showLowerBarArtist_layout && grSet.showLowerBarTitle_layout && this.lowerBarTwoLines;
@@ -4382,7 +4383,7 @@ class MainUI {
 		const tooltip = showTooltip_default ? this.getLowerBarTooltip('default') :
 				showTooltip_artwork_compact ? this.getLowerBarTooltip('artwork_compact') : '';
 
-		if (tooltip.length) { // * Display tooltip
+		if (tooltip.length && !clear) { // * Display tooltip
 			const offset = SCALE(30);
 			this.lowerBarTooltipText = tooltip;
 			grm.ttip.showDelayed(this.lowerBarTooltipText);
