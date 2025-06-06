@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-12-2024                                              * //
+// * Last change:    06-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1495,6 +1495,22 @@ class Playlist extends BaseList {
 		appear_row.appendItem('Show rating', () => {
 			plSet.show_rating = !plSet.show_rating;
 		}, { is_checked: plSet.show_rating });
+
+		appear_row.appendItem('Show rating from tags', () => {
+			plSet.use_rating_from_tags = !plSet.use_rating_from_tags;
+			pl.artist_ratings.clear();
+			pl.album_ratings.clear();
+			pl.track_ratings.clear();
+			grm.ui.clearCache('ratings');
+			this.initialize_list();
+			this.scroll_to_focused_or_now_playing();
+		}, { is_checked: plSet.use_rating_from_tags });
+
+		appear_row.appendItem('Show rating grid', () => {
+			grSet.showPlaylistRatingGrid = !grSet.showPlaylistRatingGrid;
+			this.initialize_list();
+			this.scroll_to_focused_or_now_playing();
+		}, { is_checked: grSet.showPlaylistRatingGrid });
 
 		appear_row.appendItem('Show PLR value', () => {
 			plSet.show_PLR = !plSet.show_PLR;

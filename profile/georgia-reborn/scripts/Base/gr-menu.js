@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-12-2024                                              * //
+// * Last change:    06-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1946,7 +1946,13 @@ class TopMenuOptions {
 		rowsMenu.addToggleItem('Show queue position', plSet, 'show_queue_position', playlistCallback);
 		rowsMenu.addSeparator();
 		rowsMenu.addToggleItem('Show rating', plSet, 'show_rating', playlistCallback);
-		rowsMenu.addToggleItem('Show rating from tags', plSet, 'use_rating_from_tags', () => { grm.ui.updatePlaylist(); });
+		rowsMenu.addToggleItem('Show rating from tags', plSet, 'use_rating_from_tags', () => {
+			pl.artist_ratings.clear();
+			pl.album_ratings.clear();
+			pl.track_ratings.clear();
+			grm.ui.clearCache('ratings');
+			grm.ui.updatePlaylist();
+		});
 		rowsMenu.addToggleItem('Show rating grid', grSet, 'showPlaylistRatingGrid', playlistCallback);
 		rowsMenu.addSeparator();
 		rowsMenu.addToggleItem('Show PLR value', plSet, 'show_PLR', playlistCallback);

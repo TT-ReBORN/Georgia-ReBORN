@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-11-2024                                              * //
+// * Last change:    06-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -383,11 +383,13 @@ class Button {
 	topRating(x, y) {
 		const handle = new FbMetadbHandleList();
 		const metadb = fb.GetFocusItem();
+
 		if (!metadb) {
 			const msg = grm.msg.getMessage('main', 'playlistEmptyError');
 			fb.ShowPopupMessage(msg, 'Empty playlist');
 			return;
 		}
+
 		const fileInfo = metadb.GetFileInfo();
 		const ratingMetaIdx = fileInfo.MetaFind('RATING');
 		const ratingMeta = ratingMetaIdx === -1 ? 0 : fileInfo.MetaValue(ratingMetaIdx, 0);
@@ -400,11 +402,13 @@ class Button {
 		menu.addRadioItems(['No rating', '1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'], parseInt(rating), [0, 1, 2, 3, 4, 5], (rating) => {
 			pl.artist_ratings.clear();
 			pl.album_ratings.clear();
+			pl.track_ratings.clear();
 			grm.ui.clearCache('ratings');
 
 			for (let i = 0; i < selectedItems.Count; i++) {
 				const metadb = selectedItems[i];
 				const noStream = !metadb.RawPath.startsWith('http');
+				let ratingUpdated = rating;
 
 				if (rating === 0) {
 					if (ratingTags && noStream) {
@@ -413,6 +417,7 @@ class Button {
 					} else {
 						fb.RunContextCommandWithMetadb('Playback Statistics/Rating/<not set>', metadb);
 					}
+					ratingUpdated = 0;
 				}
 				else if (ratingTags && noStream) {
 					handle.Add(metadb);
@@ -422,8 +427,8 @@ class Button {
 					fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${rating}`, metadb);
 				}
 
-				const trackId = $('%rating%', metadb);
-				pl.track_ratings.set(trackId, rating);
+				const trackId = $('%artist% - %album% - %title%', metadb) || metadb.RawPath;
+				pl.track_ratings.set(trackId, ratingUpdated);
 			}
 		});
 

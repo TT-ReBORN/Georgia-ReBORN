@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-11-2024                                              * //
+// * Last change:    06-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2064,26 +2064,30 @@ class PlaylistRating {
 
 		pl.artist_ratings.clear();
 		pl.album_ratings.clear();
+		pl.track_ratings.clear();
 		grm.ui.clearCache('ratings');
-		const new_rating = Math.floor((x - this.x) / this.btn_w) + 1;
-		const current_rating = this.get_rating();
+
+		const ratingNew = Math.floor((x - this.x) / this.btn_w) + 1;
+		const ratingCurrent = this.get_rating();
+		let ratingUpdated = ratingCurrent;
 
 		if (plSet.use_rating_from_tags) {
 			if (!this.metadb.RawPath.startsWith('http')) {
 				const handle = new FbMetadbHandleList();
 				handle.Add(this.metadb);
-				handle.UpdateFileInfoFromJSON(
-					JSON.stringify({
-						RATING: (current_rating === new_rating) ? '' : new_rating
-					})
-				);
+				const newValue = (ratingCurrent === ratingNew) ? '' : ratingNew;
+				handle.UpdateFileInfoFromJSON(JSON.stringify({ RATING: newValue }));
+				ratingUpdated = newValue === '' ? 0 : Number(newValue);
 			}
-		}
-		else {
-			fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${current_rating === new_rating ? '<not set>' : new_rating}`, this.metadb);
+		} else {
+			const command = ratingCurrent === ratingNew ? '<not set>' : ratingNew;
+			fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${command}`, this.metadb);
+			ratingUpdated = command === '<not set>' ? 0 : ratingNew;
 		}
 
-		this.rating = (current_rating === new_rating) ? 0 : new_rating;
+		this.rating = ratingUpdated;
+		const trackId = $('%artist% - %album% - %title%', this.metadb) || this.metadb.RawPath;
+		pl.track_ratings.set(trackId, ratingUpdated);
 		pl.playlist.update_playlist_headers();
 	}
 
@@ -2217,12 +2221,23 @@ class PlaylistRating {
 	 * @returns {number|null} The rating of the current track, or null if no rating.
 	 */
 	get_rating() {
-		const trackId = $('%rating%', this.metadb);
+		const trackId = $('%artist% - %album% - %title%', this.metadb) || this.metadb.RawPath;
 		let rating = pl.track_ratings.get(trackId);
 
 		if (rating === undefined) {
-			rating = this.get_track_rating(this.metadb);
+			let currentRating;
+
+			if (plSet.use_rating_from_tags) {
+				const file_info = this.metadb.GetFileInfo();
+				const rating_meta_idx = file_info.MetaFind('RATING');
+				currentRating = rating_meta_idx !== -1 ? file_info.MetaValue(rating_meta_idx, 0) : 0;
+			} else {
+				currentRating = $('%rating%', this.metadb);
+			}
+
+			rating = isNaN(Number(currentRating)) || currentRating === '' ? 0 : Number(currentRating);
 			pl.track_ratings.set(trackId, rating);
+			this.rating = rating;
 		}
 
 		return rating;
