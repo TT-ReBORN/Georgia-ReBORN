@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-06-2025                                              * //
+// * Last change:    15-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4229,7 +4229,7 @@ class MainUI {
 			(this.albumArt.Width  < this.albumArt.Height * grSet.albumArtAspectRatioLimit) &&
 			(this.albumArt.Height < this.albumArt.Width  * grSet.albumArtAspectRatioLimit);
 		const scaleWhenFullscreen = (UIHacks.FullScreen  || UIHacks.MainWindowState === WindowState.Maximized) &&
-			aspectRatioInBounds && (this.displayPlaylist || this.displayLibrary);
+			aspectRatioInBounds && (this.displayPlaylist || this.displayDetails || this.displayLibrary);
 
 		// * Album art lyrics layouts
 		if (grSet.lyricsLayout !== 'normal' && this.displayLyrics) {
@@ -4242,7 +4242,10 @@ class MainUI {
 			const { image, scale } = this.createCroppedAlbumArt(this.albumArt, albumArtMaxWidth, albumArtMaxHeight);
 			this.albumArtCopy = image;
 			this.albumArtScaleFactor = scale;
-			this.albumArtSize = { w: Math.floor(image.Width * scale), h: Math.floor(image.Height * scale) };
+			this.albumArtSize = {
+				w: Math.min(Math.floor(image.Width * scale), albumArtMaxWidth),
+				h: Math.min(Math.floor(image.Height * scale), albumArtMaxHeight)
+			};
 			return;
 		}
 		// * Album art stretched

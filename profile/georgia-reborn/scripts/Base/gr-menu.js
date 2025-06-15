@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-06-2025                                              * //
+// * Last change:    15-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1117,8 +1117,7 @@ class TopMenuOptions {
 			if (grSet.layout === 'default') {
 				playerControlsAlbumArtScaleMenu.addRadioItems(['Scale album art cropped', 'Scale album art stretched', 'Scale album art proportional'], grSet.albumArtScale, ['cropped', 'stretched', 'proportional'], (scale) => {
 					grSet.albumArtScale = scale;
-					grm.ui.loadAlbumArtFromList(grm.ui.albumArtIndex);
-					grm.ui.resizeArtwork(true);
+					grm.ui.fetchNewArtwork(grm.ui.initMetadb());
 					RepaintWindow();
 				});
 				playerControlsAlbumArtScaleMenu.addSeparator();
@@ -1130,8 +1129,7 @@ class TopMenuOptions {
 					'Crop and stretch - limit aspect ratio 2.00x'
 				], grSet.albumArtAspectRatioLimit, [false, 1.25, 1.5, 1.75, 2], (factor) => {
 					grSet.albumArtAspectRatioLimit = factor;
-					grm.ui.loadAlbumArtFromList(grm.ui.albumArtIndex);
-					grm.ui.resizeArtwork(true);
+					grm.ui.fetchNewArtwork(grm.ui.initMetadb());
 					RepaintWindow();
 				});
 				playerControlsAlbumArtScaleMenu.appendTo(playerControlsAlbumArtMenu);
