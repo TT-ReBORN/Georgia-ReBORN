@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-04-2025                                              * //
+// * Last change:    18-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -369,7 +369,7 @@ grSet.addProperties({
 	albumArtAlign:                      ['Georgia-ReBORN - 09. Player controls: Album art alignment', 'right'], // right: Align album art in Default layout when player size is not proportional
 	albumArtBg:                         ['Georgia-ReBORN - 09. Player controls: Album art background', 'left'], // 'left': Show album art background when player size is not proportional
 	albumArtScale:                      ['Georgia-ReBORN - 09. Player controls: Album art scale fullscreen', 'cropped'], // cropped: Scale album art in Default layout when player size is maximized/fullscreen
-	albumArtAspectRatioLimit:           ['Georgia-ReBORN - 09. Player controls: Album art aspect ratio limits fullscreen', 1.5], // 1.5: Keep wide and tall artworks proportional when player size is maximized/fullscreen
+	albumArtAspectRatioLimit:           ['Georgia-ReBORN - 09. Player controls: Album art aspect ratio limits fullscreen', false], // false: Keep wide and tall artworks proportional when player size is maximized/fullscreen
 	albumArtCycle:                      ['Georgia-ReBORN - 09. Player controls: Album art cycle', false], // false: Album art cycle
 	albumArtCycleMouseWheel:            ['Georgia-ReBORN - 09. Player controls: Album art cycle with mouse wheel', true], // true: Album art cycle with mouse wheel
 	albumArtCycleTime:                  ['Georgia-ReBORN - 09. Player controls: Album art cycle time', 15], // 15: Album art cycle time in seconds
@@ -625,9 +625,12 @@ grSet.addProperties({
 	lyricsLargerCurrentSync:            ['Georgia-ReBORN - 14. Lyrics: Show larger current sync', true], // true: Displays larger font on current synced lyric
 	lyricsRememberPanelState:           ['Georgia-ReBORN - 14. Lyrics: Remember lyrics panel state', false], // true: Displays lyrics panel state on startup and when switching through panels
 	lyricsAutoScrollUnsynced:           ['Georgia-ReBORN - 14. Lyrics: Auto-scroll unsynced lyrics', true], // true: Automatically scroll unsynced lyrics
+	lyricsLineSpacing:                  ['Georgia-ReBORN - 14. Lyrics: Line spacing', 46], // 26 - 66 - the line spacing between each lyric line
 	lyricsScrollSpeed:                  ['Georgia-ReBORN - 14. Lyrics: Scroll speed', 'normal'], // 'fastest', 'fast', 'normal', 'slow', 'slowest' - lyrics scroll speed based on scroll average and maximum
 	lyricsScrollRateAvg:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed avg rate', 750], // 300, 500, 750, 1000, 1500 - average lyrics scroll in ms
 	lyricsScrollRateMax:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed max rate', 375], // average lyrics scroll / 2 = maximum lyrics scroll in ms
+	lyricsTranslation:                  ['Georgia-ReBORN - 14. Lyrics: Show lyrics translation', true], // true - show translation in bilingual lyrics
+	lyricsTranslationLine:              ['Georgia-ReBORN - 14. Lyrics: Translation line', 1], // 1 - 2 - the index of the translation line, first or second line in bilingual lyrics
 
 	// * Settings
 	themeDayNightMode:                  ['Georgia-ReBORN - 15. Settings: Auto-day/night mode', false], // false: The theme day/night mode state controlled by OS clock and users set themeSettings.themeDayNightMode value
@@ -1014,7 +1017,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'albumArtAlign', grCfg.themeControls, 'albumArtAlign', 'right');
 		this._setSetting(grSet, 'albumArtBg', grCfg.themeControls, 'albumArtBg', 'left');
 		this._setSetting(grSet, 'albumArtScale', grCfg.themeControls, 'albumArtScale', 'cropped');
-		this._setSetting(grSet, 'albumArtAspectRatioLimit', grCfg.themeControls, 'albumArtAspectRatioLimit', 1.5);
+		this._setSetting(grSet, 'albumArtAspectRatioLimit', grCfg.themeControls, 'albumArtAspectRatioLimit', false);
 		this._setSetting(grSet, 'albumArtCycle', grCfg.themeControls, 'albumArtCycle', false);
 		this._setSetting(grSet, 'albumArtCycleMouseWheel', grCfg.themeControls, 'albumArtCycleMouseWheel', true);
 		this._setSetting(grSet, 'albumArtCycleTime', grCfg.themeControls, 'albumArtCycleTime', 15);
@@ -1436,9 +1439,12 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'lyricsLargerCurrentSync', grCfg.themeLyrics, 'lyricsLargerCurrentSync', true);
 		this._setSetting(grSet, 'lyricsRememberPanelState', grCfg.themeLyrics, 'lyricsRememberPanelState', false);
 		this._setSetting(grSet, 'lyricsAutoScrollUnsynced', grCfg.themeLyrics, 'lyricsAutoScrollUnsynced', true);
+		this._setSetting(grSet, 'lyricsLineSpacing', grCfg.themeLyrics, 'lyricsLineSpacing', 46);
 		this._setSetting(grSet, 'lyricsScrollSpeed', grCfg.themeLyrics, 'lyricsScrollSpeed', 'normal');
 		this._setSetting(grSet, 'lyricsScrollRateAvg', grCfg.themeLyrics, 'lyricsScrollRateAvg', 750);
 		this._setSetting(grSet, 'lyricsScrollRateMax', grCfg.themeLyrics, 'lyricsScrollRateMax', 375);
+		this._setSetting(grSet, 'lyricsTranslation', grCfg.themeLyrics, 'lyricsTranslation', true);
+		this._setSetting(grSet, 'lyricsTranslationLine', grCfg.themeLyrics, 'lyricsTranslationLine', 1);
 		this._setSetting(grSet, 'displayLyrics', grCfg.themeLyrics, 'displayLyrics', false);
 	}
 

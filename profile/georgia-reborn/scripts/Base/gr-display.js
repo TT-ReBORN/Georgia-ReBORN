@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-11-2024                                              * //
+// * Last change:    18-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -648,6 +648,22 @@ class Display {
 		grSet.lyricsInfoFontSize_default = Clamp(grSet.lyricsFontSize_layout, 10, grm.ui.wh < 860 ? 20 : 30);
 
 		grm.ui.createFonts();
+		grm.ui.displayLyrics && grm.lyrics.initLyrics();
+	}
+
+	/**
+	 * Sets the Lyrics line spacing size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1).
+	 */
+	setLyricsLineSpacingSize(size) {
+		const currentSize = grSet.lyricsLineSpacing;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 4, 26),
+			'1': () => Math.min(currentSize + 4, 66),
+			'0': () => 46
+		};
+		const newSize = getSize[size] || (() => currentSize);
+		grSet.lyricsLineSpacing = newSize();
 		grm.ui.displayLyrics && grm.lyrics.initLyrics();
 	}
 	// #endregion

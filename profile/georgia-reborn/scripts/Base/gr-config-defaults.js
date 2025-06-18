@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-01-2025                                              * //
+// * Last change:    18-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -726,7 +726,7 @@ class ConfigDefaults {
 			albumArtAlign: 'right',
 			albumArtBg: 'left',
 			albumArtScale: 'cropped',
-			albumArtAspectRatioLimit: 1.5,
+			albumArtAspectRatioLimit: false,
 			albumArtCycle: false,
 			albumArtCycleMouseWheel: true,
 			albumArtCycleTime: 15,
@@ -895,7 +895,7 @@ class ConfigDefaults {
 			albumArtAlign: 'Values: "left", "leftMargin", "center", "right" - Options > Player controls > Album art > When player size is not proportional',
 			albumArtBg: 'Values: "left", "full", "none" - Options > Player controls > Album art > When player size is not proportional',
 			albumArtScale: 'Values: "cropped", "stretched", "proportional" - Options > Player controls > Album art > When player size is maximized/fullscreen',
-			albumArtAspectRatioLimit: 'Values: 1, 1.25, 1.5, 1.75, 2 - Options > Player controls > Album art > When player size is maximized/fullscreen > Keep wide and tall artworks proportional',
+			albumArtAspectRatioLimit: 'Values: false, 1.25, 1.5, 1.75, 2 - Options > Player controls > Album art > When player size is maximized/fullscreen > Keep wide and tall artworks proportional',
 			albumArtCycle: 'Values: true, false - Options > Player controls > Album art > Cycle album artwork > Enabled',
 			albumArtCycleMouseWheel: 'Values: true, false - Options > Player controls > Album art > Cycle album artwork > Cycle with mouse wheel',
 			albumArtCycleTime: 'Values: 5, 10, 15, 30, 60 - Options > Player controls > Album art > Cycle album artwork > Cycle time',
@@ -1665,9 +1665,12 @@ class ConfigDefaults {
 			lyricsLargerCurrentSync: true,
 			lyricsRememberPanelState: false,
 			lyricsAutoScrollUnsynced: true,
+			lyricsLineSpacing: 46,
 			lyricsScrollSpeed: 'normal',
 			lyricsScrollRateAvg: 750,
-			lyricsScrollRateMax: 375
+			lyricsScrollRateMax: 375,
+			lyricsTranslation: true,
+			lyricsTranslationLine: 1
 		};
 
 		/** @public @type {object} Options > Lyrics settings config name dscription. */
@@ -1685,9 +1688,12 @@ class ConfigDefaults {
 			lyricsLargerCurrentSync: 'Values: true, false - Options > Lyrics > Display > Larger current sync',
 			lyricsRememberPanelState: 'Values: true, false - Options > Lyrics > Display > Remember lyrics panel state',
 			lyricsAutoScrollUnsynced: 'Values: true, false - Options > Lyrics > Display > Auto-scroll unsynced lyrics',
+			lyricsLineSpacing: 'Values: 26 - 66 - Options > Lyrics > Line spacing',
 			lyricsScrollSpeed: 'Values: "fastest", "fast", "normal", "slow", "slowest" - Options > Lyrics > Scroll speed',
 			lyricsScrollRateAvg: 'Values: false, 300, 500, 750, 1000, 1500 - not in Options, set by lyricsScrollSpeed',
-			lyricsScrollRateMax: 'Values: false, 150, 250, 375, 500, 725 - not in Options, set by lyricsScrollSpeed'
+			lyricsScrollRateMax: 'Values: false, 150, 250, 375, 500, 725 - not in Options, set by lyricsScrollSpeed',
+			lyricsTranslation: 'Values: true, false - Options > Lyrics > Translation > Show translation',
+			lyricsTranslationLine: 'Values: 1, 2 - Options > Lyrics > Translation',
 		};
 
 		/** @public @type {object} Options > Lyrics settings config header dscription. */

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-06-2025                                              * //
+// * Last change:    18-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3115,6 +3115,12 @@ class TopMenuOptions {
 		});
 		lyricsControlsMenu.appendTo(lyricsMenu);
 
+		lyricsMenu.createRadioSubMenu('Line spacing', ['26px', '30px', '34px', '38px', '42px', '46px (default)', '50px', '54px', '58px', '62px', '66px'], grSet.lyricsLineSpacing,
+			[26, 30, 34, 38, 42, 46, 50, 54, 58, 62, 66], (size) => {
+			grSet.lyricsLineSpacing = size;
+			grm.display.setLyricsLineSpacingSize(size);
+		});
+
 		const lyricsScrollSpeedMenu = new Menu('Scroll speed');
 		lyricsScrollSpeedMenu.addRadioItems(['Fastest (very slow CPU)', 'Fast', 'Normal', 'Slow', 'Slowest (very fast CPU)'], grSet.lyricsScrollSpeed, ['fastest', 'fast', 'normal', 'slow', 'slowest'], (speed) => {
 			grSet.lyricsScrollSpeed = speed;
@@ -3144,6 +3150,19 @@ class TopMenuOptions {
 			RepaintWindow();
 		});
 		lyricsScrollSpeedMenu.appendTo(lyricsMenu);
+
+		const lyricsTranslationMenu = new Menu('Translation');
+		lyricsTranslationMenu.addToggleItem('Show translation', grSet, 'lyricsTranslation', () => {
+			grm.lyrics.initLyrics();
+			RepaintWindow();
+		});
+		lyricsTranslationMenu.addSeparator();
+		lyricsTranslationMenu.addRadioItems(['First line', 'Second Line'], grSet.lyricsTranslationLine, [1, 2], (line) => {
+			grSet.lyricsTranslationLine = line;
+			grm.lyrics.initLyrics();
+			RepaintWindow();
+		});
+		lyricsTranslationMenu.appendTo(lyricsMenu);
 		lyricsMenu.addSeparator();
 
 		lyricsMenu.addItem('Lyrics information', false, () => { fb.RunMainMenuCommand('View/ESLyric/Panels/Lyric information'); });

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-06-2025                                              * //
+// * Last change:    18-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -926,6 +926,7 @@ function Debounce(func, delay, { leading } = {}) {
  * @global
  * @param {object} action - An object mapping key press combinations to their respective actions.
  * @param {Function} [action.ctrlAltShift] - Action to perform if `Ctrl`, `Alt`, and `Shift` keys are all pressed.
+ * @param {Function} [action.ctrlAltNoShift] - Action to perform if `Ctrl` and `Alt` keys are pressed without `Shift`.
  * @param {Function} [action.ctrlShift] - Action to perform if both `Ctrl` and `Shift` keys are pressed.
  * @param {Function} [action.ctrlNoShift] - Action to perform if `Ctrl` key is pressed and `Shift` key is not pressed.
  * @param {Function} [action.ctrl] - Action to perform if `Ctrl` key is pressed.
@@ -939,6 +940,7 @@ function Debounce(func, delay, { leading } = {}) {
  * @example
  * KeyPressAction({
  *     ctrlAltShift: () => console.log('Ctrl, Alt, and Shift keys pressed'),
+ *     ctrlAltNoShift: () => console.log('Ctrl and Alt keys pressed without Shift'),
  *     ctrlShift: () => console.log('Ctrl and Shift keys pressed'),
  *     ctrlNoShift: () => console.log('Ctrl key pressed without Shift'),
  *     ctrl: () => console.log('Ctrl key pressed'),
@@ -957,8 +959,10 @@ function KeyPressAction(action = {}) {
 	const SHIFT = utils.IsKeyPressed(VKey.SHIFT);
 
 	const combinations = [
-		// Ctrl combinations
+		// Ctrl + Alt combinations
 		{ condition: CTRL && ALT && SHIFT, action: action.ctrlAltShift },
+		{ condition: CTRL && ALT && !SHIFT, action: action.ctrlAltNoShift },
+		// Ctrl combinations
 		{ condition: CTRL && SHIFT, action: action.ctrlShift },
 		{ condition: CTRL && !SHIFT, action: action.ctrlNoShift },
 		{ condition: CTRL, action: action.ctrl },
