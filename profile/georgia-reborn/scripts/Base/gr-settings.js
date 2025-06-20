@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-06-2025                                              * //
+// * Last change:    20-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -625,7 +625,8 @@ grSet.addProperties({
 	lyricsLargerCurrentSync:            ['Georgia-ReBORN - 14. Lyrics: Show larger current sync', true], // true: Displays larger font on current synced lyric
 	lyricsRememberPanelState:           ['Georgia-ReBORN - 14. Lyrics: Remember lyrics panel state', false], // true: Displays lyrics panel state on startup and when switching through panels
 	lyricsAutoScrollUnsynced:           ['Georgia-ReBORN - 14. Lyrics: Auto-scroll unsynced lyrics', true], // true: Automatically scroll unsynced lyrics
-	lyricsLineSpacing:                  ['Georgia-ReBORN - 14. Lyrics: Line spacing', 46], // 26 - 66 - the line spacing between each lyric line
+	lyricsLineSpacing:                  ['Georgia-ReBORN - 14. Lyrics: Line spacing', 40], // 20 - 60 - the line spacing between each lyric line
+	lyricsSentenceSpacing:              ['Georgia-ReBORN - 14. Lyrics: Sentence spacing', 30], // 10 - 50 - the sentence spacing between each lyric group
 	lyricsScrollSpeed:                  ['Georgia-ReBORN - 14. Lyrics: Scroll speed', 'normal'], // 'fastest', 'fast', 'normal', 'slow', 'slowest' - lyrics scroll speed based on scroll average and maximum
 	lyricsScrollRateAvg:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed avg rate', 750], // 300, 500, 750, 1000, 1500 - average lyrics scroll in ms
 	lyricsScrollRateMax:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed max rate', 375], // average lyrics scroll / 2 = maximum lyrics scroll in ms
@@ -1439,7 +1440,8 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'lyricsLargerCurrentSync', grCfg.themeLyrics, 'lyricsLargerCurrentSync', true);
 		this._setSetting(grSet, 'lyricsRememberPanelState', grCfg.themeLyrics, 'lyricsRememberPanelState', false);
 		this._setSetting(grSet, 'lyricsAutoScrollUnsynced', grCfg.themeLyrics, 'lyricsAutoScrollUnsynced', true);
-		this._setSetting(grSet, 'lyricsLineSpacing', grCfg.themeLyrics, 'lyricsLineSpacing', 46);
+		this._setSetting(grSet, 'lyricsLineSpacing', grCfg.themeLyrics, 'lyricsLineSpacing', 40);
+		this._setSetting(grSet, 'lyricsSentenceSpacing', grCfg.themeLyrics, 'lyricsSentenceSpacing', 30);
 		this._setSetting(grSet, 'lyricsScrollSpeed', grCfg.themeLyrics, 'lyricsScrollSpeed', 'normal');
 		this._setSetting(grSet, 'lyricsScrollRateAvg', grCfg.themeLyrics, 'lyricsScrollRateAvg', 750);
 		this._setSetting(grSet, 'lyricsScrollRateMax', grCfg.themeLyrics, 'lyricsScrollRateMax', 375);

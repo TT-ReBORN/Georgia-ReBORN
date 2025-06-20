@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-06-2025                                              * //
+// * Last change:    20-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -658,12 +658,28 @@ class Display {
 	setLyricsLineSpacingSize(size) {
 		const currentSize = grSet.lyricsLineSpacing;
 		const getSize = {
-			'-1': () => Math.max(currentSize - 4, 26),
-			'1': () => Math.min(currentSize + 4, 66),
-			'0': () => 46
+			'-1': () => Math.max(currentSize - 4, 20),
+			'1': () => Math.min(currentSize + 4, 60),
+			'0': () => 40
 		};
 		const newSize = getSize[size] || (() => currentSize);
 		grSet.lyricsLineSpacing = newSize();
+		grm.ui.displayLyrics && grm.lyrics.initLyrics();
+	}
+
+	/**
+	 * Sets the Lyrics sentence spacing size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1).
+	 */
+	setLyricsSentenceSpacingSize(size) {
+		const currentSize = grSet.lyricsSentenceSpacing;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 4, 10),
+			'1': () => Math.min(currentSize + 4, 50),
+			'0': () => 30
+		};
+		const newSize = getSize[size] || (() => currentSize);
+		grSet.lyricsSentenceSpacing = newSize();
 		grm.ui.displayLyrics && grm.lyrics.initLyrics();
 	}
 	// #endregion

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-06-2025                                              * //
+// * Last change:    20-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1665,7 +1665,8 @@ class ConfigDefaults {
 			lyricsLargerCurrentSync: true,
 			lyricsRememberPanelState: false,
 			lyricsAutoScrollUnsynced: true,
-			lyricsLineSpacing: 46,
+			lyricsLineSpacing: 40,
+			lyricsSentenceSpacing: 30,
 			lyricsScrollSpeed: 'normal',
 			lyricsScrollRateAvg: 750,
 			lyricsScrollRateMax: 375,
@@ -1688,7 +1689,8 @@ class ConfigDefaults {
 			lyricsLargerCurrentSync: 'Values: true, false - Options > Lyrics > Display > Larger current sync',
 			lyricsRememberPanelState: 'Values: true, false - Options > Lyrics > Display > Remember lyrics panel state',
 			lyricsAutoScrollUnsynced: 'Values: true, false - Options > Lyrics > Display > Auto-scroll unsynced lyrics',
-			lyricsLineSpacing: 'Values: 26 - 66 - Options > Lyrics > Line spacing',
+			lyricsLineSpacing: 'Values: 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60 - Options > Lyrics > Spacing > Line',
+			lyricsSentenceSpacing: 'Values: 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50 - Options > Lyrics > Spacing > Sentence',
 			lyricsScrollSpeed: 'Values: "fastest", "fast", "normal", "slow", "slowest" - Options > Lyrics > Scroll speed',
 			lyricsScrollRateAvg: 'Values: false, 300, 500, 750, 1000, 1500 - not in Options, set by lyricsScrollSpeed',
 			lyricsScrollRateMax: 'Values: false, 150, 250, 375, 500, 725 - not in Options, set by lyricsScrollSpeed',

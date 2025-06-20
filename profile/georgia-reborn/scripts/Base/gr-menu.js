@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-06-2025                                              * //
+// * Last change:    20-06-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3115,11 +3115,18 @@ class TopMenuOptions {
 		});
 		lyricsControlsMenu.appendTo(lyricsMenu);
 
-		lyricsMenu.createRadioSubMenu('Line spacing', ['26px', '30px', '34px', '38px', '42px', '46px (default)', '50px', '54px', '58px', '62px', '66px'], grSet.lyricsLineSpacing,
-			[26, 30, 34, 38, 42, 46, 50, 54, 58, 62, 66], (size) => {
+		const lyricsSpacingMenu = new Menu('Spacing');
+		lyricsSpacingMenu.createRadioSubMenu('Line', ['20px', '24px', '28px', '32px', '36px', '40px (default)', '44px', '48px', '52px', '56px', '60px'], grSet.lyricsLineSpacing,
+			[20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60], (size) => {
 			grSet.lyricsLineSpacing = size;
 			grm.display.setLyricsLineSpacingSize(size);
 		});
+		lyricsSpacingMenu.createRadioSubMenu('Sentence', ['10px', '14px', '18px', '22px', '26px', '30px (default)', '34px', '38px', '42px', '46px', '50px'], grSet.lyricsSentenceSpacing,
+			[10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50], (size) => {
+			grSet.lyricsSentenceSpacing = size;
+			grm.display.setLyricsSentenceSpacingSize(size);
+		});
+		lyricsSpacingMenu.appendTo(lyricsMenu);
 
 		const lyricsScrollSpeedMenu = new Menu('Scroll speed');
 		lyricsScrollSpeedMenu.addRadioItems(['Fastest (very slow CPU)', 'Fast', 'Normal', 'Slow', 'Slowest (very fast CPU)'], grSet.lyricsScrollSpeed, ['fastest', 'fast', 'normal', 'slow', 'slowest'], (speed) => {
