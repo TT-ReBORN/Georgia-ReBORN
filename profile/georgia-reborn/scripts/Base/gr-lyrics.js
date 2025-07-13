@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-06-2025                                              * //
+// * Last change:    13-07-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -300,8 +300,8 @@ class Lyrics {
 		// Calculate scaling factor based on font size
 		const defaultFontSize = HD_QHD_4K(20, 22);
 		const scaleFactor = grSet.lyricsFontSize_layout / defaultFontSize;
-		this.lineHeight = grSet.lyricsLineSpacing * scaleFactor;
-		this.sentenceSpacing = grSet.lyricsSentenceSpacing * scaleFactor;
+		this.lineHeight = SCALE(grSet.lyricsLineSpacing * scaleFactor);
+		this.sentenceSpacing = SCALE(grSet.lyricsSentenceSpacing * scaleFactor);
 
 		this.alignCenter = StringFormat(1, 1);
 		this.alignRight = StringFormat(2, 1);
