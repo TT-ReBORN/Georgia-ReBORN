@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-RC3                                                 * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-06-2025                                              * //
+// * Last change:    29-08-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3978,8 +3978,11 @@ class MainUI {
 	 */
 	displayAlbumArtImage(direction, timer) {
 		DebugLog(`Album art => Repainting in displayAlbumArtImage: ${this.albumArtIndex}`);
-		const increment = direction === 'next' ? 1 : (direction === 'prev' ? -1 : 0);
-		this.albumArtIndex = (this.albumArtIndex + increment + this.albumArtList.length) % this.albumArtList.length;
+
+		const increment = direction === 'next' ? 1 : direction === 'prev' ? -1 : 0;
+		const listLength = Array.isArray(this.albumArtList) && this.albumArtList.length > 0 ? this.albumArtList.length : 1;
+		this.albumArtIndex = Number.isFinite(Number(this.albumArtIndex)) && this.albumArtIndex >= 0 ? Number(this.albumArtIndex) : 0;
+		this.albumArtIndex = (this.albumArtIndex + increment + listLength) % listLength;
 
 		setTimeout(() => {
 			this.loadAlbumArtFromList(this.albumArtIndex);
