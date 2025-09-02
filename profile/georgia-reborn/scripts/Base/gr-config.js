@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-01-2025                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -394,7 +394,7 @@ class ConfigurationManager {
 		/** @public @type {Configuration} The instance of the `Configuration` custom config object. */
 		this.configCustom = new Configuration(this.configPathCustom);
 		/** @public @type {string} The Georgia-ReBORN current version. */
-		this.currentVersion = '3.0-RC3';
+		this.currentVersion = '3.0-x64-DEV';
 		/** @public @type {string} The Georgia-ReBORN version will be overwritten when loaded from config file. */
 		this.configVersion = this.currentVersion;
 		/** @public @type {string} The Georgia-ReBORN version will be shown on the right side of the lower bar when nothing is playing. */
