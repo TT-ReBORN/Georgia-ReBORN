@@ -192,7 +192,7 @@ class BioUserInterface {
 		if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended) {
 			gr.FillSolidRect(0, 0, grSet.layout === 'artwork' || grSet.biographyLayout === 'full' ? grm.ui.ww : grSet.panelWidthAuto ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w : grm.ui.ww * 0.5, grm.ui.topMenuHeight, grCol.bg); // Hide alpha overlapping at the top
 			if (grSet.layout === 'artwork') gr.FillSolidRect(0, this.y + this.h, grm.ui.ww, grm.ui.lowerBarHeight, grCol.bg); // Hide alpha overlapping at the bottom
-			if (UIHacks.Aero.Effect === 2) gr.DrawLine(0, 0, grSet.layout === 'artwork' || grSet.biographyLayout === 'full' ? grm.ui.ww : grSet.panelWidthAuto ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w : grm.ui.ww * 0.5 - 1, 0, 1, grCol.bg); // UIHacks aero glass shadow frame fix - needed for style Blend
+
 			if (grSet.layout === 'default' && grSet.biographyLayout === 'full') {
 				gr.DrawImage(grCol.imgBlended, 0, 0, grm.ui.ww, grm.ui.wh, 0, 0, grCol.imgBlended.Width, grCol.imgBlended.Height);
 			} else {

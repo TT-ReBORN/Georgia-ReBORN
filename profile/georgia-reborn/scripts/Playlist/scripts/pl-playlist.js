@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    extremeHunter, TheQwertiest                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-06-2025                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1667,9 +1667,6 @@ class Playlist extends BaseList {
 			weblinks.appendItem(website[0], ((url) => {
 				grm.utils.link(url, metadb);
 			}).bind(null, website[1]));
-			if (['youTube', 'bandcamp', 'sputnikmusic'].includes(website[1])) {
-				weblinks.separator();
-			}
 		}
 	}
 

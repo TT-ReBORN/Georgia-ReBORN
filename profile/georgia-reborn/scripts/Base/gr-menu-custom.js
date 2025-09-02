@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-11-2024                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1785,8 +1785,7 @@ class CustomThemeMenu {
 				{ id: 'main_pre_03', label: 'grCol.preloaderLowerBarTitle', value: grCfg.cTheme.grCol_preloaderLowerBarTitle, addMarker: false },
 				{ id: 'main_pre_04', label: 'grCol.preloaderProgressBar', value: grCfg.cTheme.grCol_preloaderProgressBar, addMarker: false },
 				{ id: 'main_pre_05', label: 'grCol.preloaderProgressBarFill', value: grCfg.cTheme.grCol_preloaderProgressBarFill, addMarker: false },
-				{ id: 'main_pre_06', label: 'grCol.preloaderProgressBarFrame', value: grCfg.cTheme.grCol_preloaderProgressBarFrame, addMarker: false },
-				{ id: 'main_pre_07', label: 'grCol.preloaderUIHacksFrame', value: grCfg.cTheme.grCol_preloaderUIHacksFrame, addMarker: false }
+				{ id: 'main_pre_06', label: 'grCol.preloaderProgressBarFrame', value: grCfg.cTheme.grCol_preloaderProgressBarFrame, addMarker: false }
 			],
 			main_bg: [
 				{ id: 'main_bg_01', label: 'grCol.bg', value: grCfg.cTheme.grCol_bg },
@@ -2217,7 +2216,6 @@ class CustomThemeMenu {
 			main_pre_04: 'grCol_preloaderProgressBar',
 			main_pre_05: 'grCol_preloaderProgressBarFill',
 			main_pre_06: 'grCol_preloaderProgressBarFrame',
-			main_pre_07: 'grCol_preloaderUIHacksFrame',
 			// * MAIN - BG * //
 			main_bg_01: 'grCol_bg',
 			main_bg_02: 'grCol_popupBg',

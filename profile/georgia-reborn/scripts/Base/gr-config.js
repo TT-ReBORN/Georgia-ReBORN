@@ -939,13 +939,11 @@ class ConfigurationManager {
 		const oldColorNames = [
 			'preloaderBg', 'preloaderLogo', 'preloaderLowerBarTitle',
 			'preloaderProgressBar', 'preloaderProgressBarFill', 'preloaderProgressBarFrame',
-			'preloaderUIHacksFrame',
 			'g_pl_colors_', 'ui_col_', 'uiBio_col_', 'col_'
 		];
 		const newColorNames = [
 			'grCol_preloaderBg', 'grCol_preloaderLogo', 'grCol_preloaderLowerBarTitle',
 			'grCol_preloaderProgressBar', 'grCol_preloaderProgressBarFill',	'grCol_preloaderProgressBarFrame',
-			'grCol_preloaderUIHacksFrame',
 			'pl_col_', 'lib_ui_col_', 'bio_ui_col_', 'grCol_'
 		];
 		if (this._checkSettingsByPrefix(configFileCustom.customTheme01, ...oldColorNames)) {

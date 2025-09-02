@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    TheQwertiest                                            * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-12-2024                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -511,6 +511,14 @@ class ContextMainMenu extends ContextMenu {
  * A class that holds the collection of all available context menus in the theme.
  */
 class ContextMenus {
+	/**
+	 * Creates the `ContextMenus` instance.
+	 */
+	constructor() {
+		/** @public @type {ActiveXObject} The Audio Wizard ActiveX object. */
+		this.audioWizard = Component.AudioWizard ? new ActiveXObject('AudioWizard') : null;
+	}
+
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
 	/**
@@ -1454,7 +1462,14 @@ class ContextMenus {
 				grm.ui.setMainComponents('seekbar');
 				grm.ui.setSeekbarRefresh();
 				grm.button.createButtons(grm.ui.ww, grm.ui.wh);
+
+				if (grSet.seekbar === 'peakmeterbar' && fb.IsPlaying) {
+					grm.peakBar.startPeakmeter();
+				} else {
+					grm.peakBar.stopPeakmeter();
+				}
 				if (grSet.seekbar === 'waveformbar') grm.waveBar.updateBar();
+
 				RepaintWindow();
 			}, { is_radio_checked: type[1] === grSet.seekbar });
 		}
@@ -1618,6 +1633,7 @@ class ContextMenus {
 				peakmeterBarRefreshMenu.appendItem(rate[0], () => {
 					grSet.peakmeterBarRefreshRate = rate[1];
 					grm.ui.setSeekbarRefresh();
+					this.audioWizard.SetMonitoringRefreshRate(rate[1]);
 					if (rate[1] < FPS._20) {
 						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
 					} else if (rate[1] < FPS._10) {
@@ -1632,15 +1648,15 @@ class ContextMenus {
 		else if (grSet.seekbar === 'waveformbar') {
 			cm.separator();
 			const waveformBarAnalysisMenu = new ContextMenu('Analysis');
-			const waveformBarAnalysis = [['RMS level', 'rms_level'], ['Peak level', 'peak_level'], ['RMS peak', 'rms_peak']];
+			const waveformBarAnalysis = [['RMS level', 'rms_level'], ['Peak level', 'peak_level'], ['RMS peak', 'rms_peak'], ['Waveform peak', 'waveform_peak']];
 			for (const type of waveformBarAnalysis) {
-				waveformBarAnalysisMenu.appendItem(type[0] + (grSet.waveformBarMode === 'ffprobe' ? '' : ' (ffprobe only)'), () => {
+				waveformBarAnalysisMenu.appendItem(type[0] + (grSet.waveformBarMode === 'audioWizard' ? '' : ' (Audio Wizard only)'), () => {
 					grSet.waveformBarAnalysis = type[1];
 					grm.waveBar.updateConfig({ preset: { analysisMode: type[1] } });
 					grm.waveBar.updateBar();
 					RepaintWindow();
 				}, {
-					is_grayed_out: grSet.waveformBarMode !== 'ffprobe',
+					is_grayed_out: grSet.waveformBarMode === 'visualizer',
 					is_radio_checked: type[1] === grSet.waveformBarAnalysis
 					}
 				);
@@ -1693,15 +1709,9 @@ class ContextMenus {
 			});
 
 			const waveformBarModeMenu = new ContextMenu('Mode');
-			const waveformBarMode = [['FFprobe', 'ffprobe'], ['Audiowaveform', 'audiowaveform'], ['Visualizer', 'visualizer']];
-			if (!IsFile(grm.waveBar.binaries.ffprobe)) {
-				waveformBarModeMenu.appendItem('Download FFprobe', () => {
-					grm.waveBar.getFFprobe();
-				});
-				waveformBarModeMenu.separator();
-			}
+			const waveformBarMode = [['Audio Wizard', 'audioWizard'], ['Visualizer', 'visualizer']];
 			for (const mode of waveformBarMode) {
-				const found = IsFile(grm.waveBar.binaries[mode[1]]);
+				const found = grm.waveBar.binaries[mode[1]];
 				waveformBarModeMenu.appendItem(mode[0] + (found ? '' : '\t(not found)'), () => {
 					grSet.waveformBarMode = mode[1];
 					grm.waveBar.updateConfig({ analysis: { binaryMode: grSet.waveformBarMode } });
@@ -1714,6 +1724,28 @@ class ContextMenus {
 				);
 			}
 			cm.append(waveformBarModeMenu);
+
+			const waveformBarResolutionMenu = new ContextMenu('Resolution');
+			const waveformBarResolution = [['Minimum', 1], ['Very low', 5], ['Low', 10], ['Balanced', 15], ['Standard (default)', 20], ['High', 50], ['Very high', 100]];
+			for (const res of waveformBarResolution) {
+				waveformBarResolutionMenu.appendItem(res[0], () => {
+					grSet.waveformBarResolution = res[1];
+					grm.waveBar.updateConfig({ analysis: { resolution: res[1] } });
+
+					const handle = fb.GetNowPlaying();
+					if (handle) {
+						grm.waveBar.deleteWaveformFile(handle);
+						grm.waveBar.on_playback_new_track(handle);
+					}
+
+					grm.waveBar.updateBar();
+					RepaintWindow();
+				}, {
+					is_radio_checked: res[1] === grSet.waveformBarResolution
+					}
+				);
+			}
+			cm.append(waveformBarResolutionMenu);
 
 			const waveformBarDesignMenu = new ContextMenu('Style');
 			const waveformBarDesign = [['Waveform', 'waveform'], ['Bars', 'bars'], ['Dots', 'dots'], ['Halfbars', 'halfbars']];

@@ -4,7 +4,7 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
 // * Last change:    17-01-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////

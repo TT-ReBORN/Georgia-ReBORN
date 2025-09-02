@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-06-2025                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -331,6 +331,9 @@ class TopMenuOptions {
 
 			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
 		}
+
+		/** @public @type {ActiveXObject} The Audio Wizard ActiveX object. */
+		this.audioWizard = Component.AudioWizard ? new ActiveXObject('AudioWizard') : null;
 	}
 
 	// * PUBLIC METHODS * //
@@ -1333,7 +1336,7 @@ class TopMenuOptions {
 		playerControlsPanelMenu.addSeparator();
 		playerControlsPanelMenu.addToggleItem('Disable fullscreen ESC', grSet, 'fullscreenESCDisabled');
 		playerControlsPanelMenu.addSeparator();
-		playerControlsPanelMenu.addToggleItem('Lock player size', grSet, 'lockPlayerSize', () => { UIHacks.DisableSizing = true; });
+		playerControlsPanelMenu.addToggleItem('Lock player size', grSet, 'lockPlayerSize', () => { UIWizard.DisableWindowSizing = true; });
 		playerControlsPanelMenu.appendTo(playerControlsMenu);
 
 		// * LOWER BAR MENU * //
@@ -1569,7 +1572,14 @@ class TopMenuOptions {
 			grm.ui.setMainComponents('seekbar');
 			grm.ui.setSeekbarRefresh();
 			grm.button.createButtons(grm.ui.ww, grm.ui.wh);
+
+			if (grSet.seekbar === 'peakmeterbar' && fb.IsPlaying) {
+				grm.peakBar.startPeakmeter();
+			} else {
+				grm.peakBar.stopPeakmeter();
+			}
 			if (grSet.seekbar === 'waveformbar') grm.waveBar.updateBar();
+
 			RepaintWindow();
 		});
 		const playerControlsProgressBarMenu = new Menu('Progress bar');
@@ -1646,6 +1656,7 @@ class TopMenuOptions {
 		playerControlsPeakmeterBarRefreshMenu.addRadioItems(['  1 fps ~ 1000 ms (very slow CPU)', '  2 fps ~ 500 ms', '  3 fps ~ 333 ms', '  4 fps ~ 250 ms', '  5 fps ~ 200 ms', '  6 fps ~ 166 ms', '  7 fps ~ 142 ms', '  8 fps ~ 125 ms', '  9 fps ~ 111 ms', '10 fps ~ 100 ms', '12 fps ~ 83 ms', '15 fps ~ 67 ms', '20 fps ~ 50 ms', '25 fps ~ 40 ms', '30 fps ~ 33 ms', '45 fps ~ 22 ms', '60 fps ~ 17 ms (very fast CPU)'], grSet.peakmeterBarRefreshRate, [FPS._1, FPS._2, FPS._3, FPS._4, FPS._5, FPS._6, FPS._7, FPS._8, FPS._9, FPS._10, FPS._12, FPS._15, FPS._20, FPS._25, FPS._30, FPS._45, FPS._60], (rate) => {
 			grSet.peakmeterBarRefreshRate = rate;
 			grm.ui.setSeekbarRefresh();
+			this.audioWizard.SetMonitoringRefreshRate(rate);
 			if (rate < FPS._20) {
 				grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
 			} else if (rate < FPS._10) {
@@ -1664,13 +1675,13 @@ class TopMenuOptions {
 		const playerControlsWaveformBarMenu = new Menu('Waveform bar');
 		const playerControlsWaveformBarAnalysisMenu = new Menu('Analysis');
 		playerControlsWaveformBarAnalysisMenu.addRadioItems(
-			grSet.waveformBarMode === 'ffprobe' ? ['RMS level', 'Peak level', 'RMS peak'] : ['RMS level  (ffprobe only)', 'Peak level  (ffprobe only)', 'RMS peak (ffprobe only)'],
-			grSet.waveformBarAnalysis, ['rms_level', 'peak_level', 'rms_peak'], (type) => {
+			grSet.waveformBarMode === 'audioWizard' ? ['RMS level', 'Peak level', 'RMS peak', 'Waveform peak'] : ['RMS level  (Audio Wizard only)', 'Peak level  (Audio Wizard only)', 'RMS peak (Audio Wizard only)', 'Waveform (Audio Wizard only)'],
+			grSet.waveformBarAnalysis, ['rms_level', 'peak_level', 'rms_peak', 'waveform_peak'], (type) => {
 			grSet.waveformBarAnalysis = type;
 			grm.waveBar.updateConfig({ preset: { analysisMode: type } });
 			grm.waveBar.updateBar();
 			RepaintWindow();
-		}, grSet.waveformBarMode !== 'ffprobe');
+		}, grSet.waveformBarMode !== 'audioWizard');
 		playerControlsWaveformBarAnalysisMenu.addSeparator();
 		playerControlsWaveformBarAnalysisMenu.addRadioItems(
 			['Save mode - always', 'Save mode - library', 'Save mode - never'], grSet.waveformBarSaveMode, ['always', 'library', 'never'], (mode) => {
@@ -1694,11 +1705,24 @@ class TopMenuOptions {
 		});
 		playerControlsWaveformBarAnalysisMenu.appendTo(playerControlsWaveformBarMenu);
 
-		playerControlsWaveformBarMenu.createRadioSubMenu('Mode', ['FFprobe', 'Audiowaveform', 'Visualizer'], grSet.waveformBarMode, ['ffprobe', 'audiowaveform', 'visualizer'], (mode) => {
+		playerControlsWaveformBarMenu.createRadioSubMenu('Mode', ['Audio Wizard', 'Visualizer'], grSet.waveformBarMode, ['audioWizard', 'visualizer'], (mode) => {
 			grSet.waveformBarMode = mode;
 			grm.waveBar.updateConfig({ analysis: { binaryMode: mode } });
 			grm.waveBar.updateBar();
 			RepaintWindow();
+		});
+
+		playerControlsWaveformBarMenu.createRadioSubMenu('Resolution', ['Minimum', 'Very low', 'Low', 'Balanced', 'Standard (default)', 'High', 'Very high'], grSet.waveformBarResolution, [1, 5, 10, 15, 20, 50, 100], (res) => {
+			grSet.waveformBarResolution = res;
+			grm.waveBar.updateConfig({ analysis: { resolution: res } });
+
+			const handle = fb.GetNowPlaying();
+			if (handle) {
+				grm.waveBar.deleteWaveformFile(handle);
+				grm.waveBar.on_playback_new_track(handle);
+			}
+
+			grm.waveBar.updateBar();
 		});
 
 		playerControlsWaveformBarMenu.createRadioSubMenu('Style', ['Waveform', 'Bars', 'Dots', 'Halfbars'], grSet.waveformBarDesign, ['waveform', 'bars', 'dots', 'halfbars'], (design) => {

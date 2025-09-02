@@ -196,7 +196,7 @@ class LibCallbacks {
 	}
 
 	on_mouse_mbtn_up(x, y, mask) {
-		// UIHacks at default settings blocks on_mouse_mbtn_up, at least in windows; workaround configure hacks: main window > move with > caption only & ensure pseudo-caption doesn't overlap buttons
+		// UIWizard at default settings blocks on_mouse_mbtn_up, at least in windows; workaround configure UI Wizard: UI Wizard > Move style > Caption only & ensure pseudo-caption doesn't overlap buttons
 		lib.pop.mbtnUpOrAltClickUp(x, y, mask, 'mbtn');
 	}
 
@@ -314,7 +314,6 @@ class LibCallbacks {
 
 		gr.FillSolidRect(this.x, 0, this.w, grm.ui.topMenuHeight, grCol.bg); // Hides top row that shouldn't be visible in album art mode
 		gr.FillSolidRect(this.x, this.y + this.h, this.w, this.h, grCol.bg); // Hides bottom row that shouldn't be visible in album art mode
-		if (UIHacks.Aero.Effect === 2) gr.DrawLine(this.x, 0, grm.ui.ww, 0, 1, grCol.bg); // UIHacks aero glass shadow frame fix - needed for style Blend
 
 		if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended) {
 			gr.DrawImage(grCol.imgBlended, this.x, this.y - this.h - grm.ui.topMenuHeight - grm.ui.lowerBarHeight, grm.ui.ww, grm.ui.wh, this.x, this.y - this.h - grm.ui.topMenuHeight - grm.ui.lowerBarHeight, grCol.imgBlended.Width, grCol.imgBlended.Height);

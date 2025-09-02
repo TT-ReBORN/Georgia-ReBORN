@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-06-2025                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -31,23 +31,19 @@ class Display {
 		/** @private @type {boolean} Setup variable for 4K check. */
 		this.lastSize = undefined;
 		/** @private @type {object} Saves last used active window width and height. */
-		this.lastPlayerSize = {	w: window.Width, h: window.Height };
+		this.lastPlayerSize = { w: window.Width, h: window.Height };
 
-		// * UIHACKS * //
-		/** @public @type {boolean} UIHacks pseudo caption state, used in setWindowDrag. */
+		// * UI WIZARD * //
+		/** @public @type {boolean} UI Wizard pseudo caption state, used in setWindowDrag. */
 		this.pseudoCaption = false;
-		/** @public @type {number} UIHacks sets pseudo caption width when dragging foobar, used in setWindowDrag. */
+		/** @public @type {number} UI Wizard sets pseudo caption width when dragging foobar, used in setWindowDrag. */
 		this.pseudoCaptionWidth = 0;
-		/** Preferences > Display > Main Window > Frame style: No border. */
-		UIHacks.FrameStyle = 3;
-		/** Preferences > Display > Main Window > Move with: Any method. */
-		UIHacks.MoveStyle = 3;
-		/** Preferences > Display > Main Window > Aero effects: Glass frame. */
-		UIHacks.Aero.Effect = 2;
-		/** Preferences > Display > Main Window > Aero top: 1 px fix for window drop shadow. */
-		UIHacks.Aero.Top = 1;
-		/** Preferences > Display > Main Window > Constraints: Disable window maximization. */
-		UIHacks.BlockMaximize = false;
+		/** Preferences > Display > UI Wizard > Frame style: No border. */
+		UIWizard.FrameStyle = 3;
+		/** Preferences > Display > UI Wizard > Move with: Any method. */
+		UIWizard.MoveStyle = 3;
+		/** Preferences > Display > UI Wizard > Constraints: Disable window maximizing. */
+		UIWizard.DisableWindowMaximizing = false;
 
 		/**
 		 * Contains all available predefined player sizes in Georgia-ReBORN.
@@ -109,8 +105,11 @@ class Display {
 			}
 		};
 
-		// * INITIALIZE 4K PROPERTY * //
+		// * INITIALIZE * //
+		grm.ui.ww = window.Width;  // These are actually only needed here for cosmetic reasons: to update child window when the user changes the hardcoded frame style to 3 (NoBorder).
+		grm.ui.wh = window.Height; // These are actually only needed here for cosmetic reasons: to update child window when the user changes the hardcoded frame style to 3 (NoBorder).
 		RES._4K = grSet.displayRes === '4K' || window.Width > 2560 && window.Height > 1600;
+		this.setWindowSizeLimitsForLayouts(window.Width, window.Height);
 	}
 
 	// * PUBLIC METHODS - INITIALIZATION * //
@@ -120,48 +119,17 @@ class Display {
 	 * @returns {Promise<void>} A promise that resolves when the initialization has finished.
 	 */
 	async autoDetectRes() {
-		const resetSize = async () => {
-			RES._4K = false;
-			RES._QHD = false;
-			grSet.displayRes = 'HD';
-			this.setSizesForDisplay();
-		};
+		const displayMode = UIWizard.DisplayResolutionMode || 'HD';
+		RES._4K = displayMode === '4K';
+		RES._QHD = displayMode === 'QHD';
+		grSet.displayRes = displayMode;
 
-		const check4k = async () => {
-			this.setWindowSize(2800, 1720); // Check if player size 'Normal' for 4K can be attained
-			if (grm.ui.ww > 2560 && grm.ui.wh > 1600) {
-				RES._4K = true;
-				grSet.displayRes = '4K';
-				this.setSizesForDisplay();
-			}
-		};
+		this.setSizesForDisplay();
 
-		const checkQHD = async () => {
-			if (grm.ui.ww < 2800 && grm.ui.wh < 1720) {
-				this.setWindowSize(2500, 1400); // Check if this resolution for QHD can be attained
-				if (grm.ui.ww < 2500 && grm.ui.wh < 1400) { // If not, set to HD mode
-					resetSize();
-				}
-				else { // Set to QHD mode
-					RES._QHD = true;
-					grSet.displayRes = 'QHD';
-					this.setSizesForDisplay();
-				}
-			}
-		};
-
-		const updatePanels = async () => {
-			setTimeout(() => {
-				this.setPlayerSize('small');
-				grm.ui.initPanels();
-			}, 1);
-		};
-
-		// * Start detection
-		await resetSize();
-		await check4k();
-		await checkQHD();
-		await updatePanels();
+		setTimeout(() => {
+			this.setPlayerSize('small');
+			grm.ui.initPanels();
+		}, 1);
 	}
 
 	/**
@@ -185,8 +153,8 @@ class Display {
 		}
 
 		// * Check and set display monitor resolution mode for 4K or QHD
-		RES._4K  = grSet.displayRes === '4K'  || (grm.ui.ww > 2560 && grm.ui.wh > 1600);
-		RES._QHD = grSet.displayRes === 'QHD' || (grm.ui.ww > 2500 && grm.ui.ww <= 2560 && grm.ui.wh > 1400 && grm.ui.wh <= 1600);
+		RES._4K  = grSet.displayRes === '4K'  || UIWizard.DisplayResolutionMode === '4K';
+		RES._QHD = grSet.displayRes === 'QHD' || UIWizard.DisplayResolutionMode === 'QHD';
 
 		if (this.lastSize !== RES._4K) {
 			this.sizeInitialized = false;
@@ -275,8 +243,8 @@ class Display {
 	setPlayerSize(sizeName) {
 		if (!sizeName) return;
 
-		if (UIHacks.FullScreen) {
-			UIHacks.FullScreen = false;
+		if (UIWizard.WindowState === WindowState.FullScreen) {
+			UIWizard.ExitFullscreen();
 		} else {
 			grSet.savedWidth_default = this.lastPlayerSize.w = window.Width;
 			grSet.savedHeight_default = this.lastPlayerSize.h = window.Height;
@@ -740,24 +708,19 @@ class Display {
 	 * - Handling exceptions that may occur during the state adjustment process.
 	 */
 	handleWindowControl(triggeredBy) {
-		const isDoubleClick = triggeredBy === 'doubleClick';
 		const isKeyF11 = triggeredBy === 'key' && utils.IsKeyPressed(VKey.F11);
-		const isKeyEscape = triggeredBy === 'key' && utils.IsKeyPressed(VKey.ESCAPE) && UIHacks.FullScreen && !grSet.fullscreenESCDisabled;
+		const isKeyEscape = triggeredBy === 'key' && utils.IsKeyPressed(VKey.ESCAPE) && !grSet.fullscreenESCDisabled;
 		const isButtonPress = triggeredBy === 'button';
 
 		try {
-			if (isDoubleClick && !utils.IsKeyPressed(VKey.CONTROL) && UIHacks.FullScreen && UIHacks.MainWindowState === WindowState.Normal ||
-				grSet.layout === 'artwork' && UIHacks.MainWindowState === WindowState.Maximized) {
-				UIHacks.MainWindowState = WindowState.Normal;
-			}
-			else if (isKeyF11 || (isButtonPress && grSet.fullscreenMaximize)) {
-				UIHacks.FullScreen = !UIHacks.FullScreen;
+			if (grSet.layout === 'default' && (isKeyF11 || (isButtonPress && grSet.fullscreenMaximize))) {
+				UIWizard.ToggleFullscreen();
 			}
 			else if (isKeyEscape) {
-				UIHacks.MainWindowState = WindowState.Normal;
+				UIWizard.ExitFullscreen();
 			}
-			else if (isButtonPress) {
-				UIHacks.MainWindowState = UIHacks.MainWindowState === WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+			if (grSet.layout !== 'default' && UIWizard.WindowState === WindowState.Maximized) {
+				UIWizard.ExitMaximize();
 			}
 		}
 		catch (e) {}
@@ -770,16 +733,16 @@ class Display {
 	 */
 	setWindowDrag(x, y) {
 		// * Disable mouse middle btn (wheel) to be able to use Library & Biography mouse middle actions
-		UIHacks.MoveStyle = grm.ui.displayLibrary && mouseInLibrary(x, y) || grm.ui.displayBiography && mouseInBiography(x, y) ? 0 : 3;
+		UIWizard.MoveStyle = grm.ui.displayLibrary && mouseInLibrary(x, y) || grm.ui.displayBiography && mouseInBiography(x, y) ? 0 : 3;
 		try {
 			if (grm.button.mouseInControl || grm.button.downButton) {
-				UIHacks.SetPseudoCaption(0, 0, 0, 0);
-				if (UIHacks.FrameStyle === 3) UIHacks.DisableSizing = true;
+				UIWizard.SetCaptionAreaSize(0, 0, 0, 0);
+				if (UIWizard.FrameStyle === 3) UIWizard.DisableWindowSizing = true;
 				this.pseudoCaption = false;
 			}
 			else if (!this.pseudoCaption || this.pseudoCaptionWidth !== grm.ui.ww) {
-				UIHacks.SetPseudoCaption(0, 0, grm.ui.ww, grSet.layout !== 'default' ? grm.ui.topMenuHeight + SCALE(5) : grm.ui.topMenuHeight);
-				if (UIHacks.FrameStyle === 3 && !grSet.lockPlayerSize) UIHacks.DisableSizing = false;
+				UIWizard.SetCaptionAreaSize(0, 0, grm.ui.ww, grSet.layout !== 'default' ? grm.ui.topMenuHeight + SCALE(5) : grm.ui.topMenuHeight);
+				if (UIWizard.FrameStyle === 3 && !grSet.lockPlayerSize) UIWizard.DisableWindowSizing = false;
 				this.pseudoCaption = true;
 				this.pseudoCaptionWidth = grm.ui.ww;
 			}
@@ -787,23 +750,12 @@ class Display {
 	}
 
 	/**
-	 * Sets the window size via UIHacks.
+	 * Sets the window size via UI Wizard.
 	 * @param {number} width - The window width.
 	 * @param {number} height - The window height.
 	 */
 	setWindowSize(width, height) {
-		// * Avoid resizing bugs, when the window is bigger\smaller than the saved one.
-		UIHacks.MinSize.Enabled = false;
-		UIHacks.MaxSize.Enabled = false;
-		UIHacks.MinSize.Width   = width;
-		UIHacks.MinSize.Height  = height;
-		UIHacks.MaxSize.Width   = width;
-		UIHacks.MaxSize.Height  = height;
-
-		UIHacks.MaxSize.Enabled = true;
-		UIHacks.MaxSize.Enabled = false;
-		UIHacks.MinSize.Enabled = true;
-		UIHacks.MinSize.Enabled = false;
+		UIWizard.SetWindowSize(width, height);
 	}
 
 	/**
@@ -823,22 +775,14 @@ class Display {
 	/**
 	 * Sets the minimum and maximum sizes of the window based on different screen resolutions.
 	 * @param {number} min_w - The minimum width.
-	 * @param {number} max_w - The maximum width.
 	 * @param {number} min_h - The minimum height.
+	 * @param {number} max_w - The maximum width.
 	 * @param {number} max_h - The maximum height.
 	 */
-	setWindowSizeLimits(min_w, max_w, min_h, max_h) {
-		UIHacks.MinSize.Enabled = !!min_w;
-		UIHacks.MinSize.Width   =   min_w;
-
-		UIHacks.MaxSize.Enabled = !!max_w;
-		UIHacks.MaxSize.Width   =   max_w;
-
-		UIHacks.MinSize.Enabled = !!min_h;
-		UIHacks.MinSize.Height  =   min_h;
-
-		UIHacks.MaxSize.Enabled = !!max_h;
-		UIHacks.MaxSize.Height  =   max_h;
+	setWindowSizeLimits(min_w, min_h, max_w, max_h) {
+		UIWizard.WindowMinSize = true;
+		UIWizard.WindowMaxSize = false;
+		UIWizard.SetWindowSizeLimits(min_w, min_h, max_w, max_h);
 	}
 
 	/**
@@ -849,8 +793,8 @@ class Display {
 	setWindowSizeLimitsForLayouts(width, height) {
 		let min_w = 0;
 		let min_h = 0;
-		const max_w = 0;
-		const max_h = 0;
+		const max_w = 9999;
+		const max_h = 9999;
 
 		const size = this.playerSize[grSet.layout][grSet.displayRes];
 
@@ -860,11 +804,11 @@ class Display {
 			min_w = Math.min(scaledWidth, width);
 			min_h = Math.min(scaledHeight, height);
 		} else {
-			min_w = size.small.width;
-			min_h = size.small.height;
+			min_w = size ? size.small.width  : grm.ui.ww;
+			min_h = size ? size.small.height : grm.ui.wh;
 		}
 
-		this.setWindowSizeLimits(min_w, max_w, min_h, max_h);
+		this.setWindowSizeLimits(min_w, min_h, max_w, max_h);
 	}
 	// #endregion
 }

@@ -1,0 +1,53 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: Timer.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-variable language_">window</span>.<span class="hljs-title class_">DefineScript</span>(<span class="hljs-string">&#x27;Timer&#x27;</span>, { <span class="hljs-attr">author</span>: <span class="hljs-string">&#x27;T.P Wang&#x27;</span> });
+
+<span class="hljs-comment">// This sample create two timers</span>
+<span class="hljs-comment">// Click the window to start the timer, and see the result after the console is shown.</span>
+<span class="hljs-comment">// Click the window again to kill all timers.</span>
+
+<span class="hljs-keyword">let</span> g_timer_started = <span class="hljs-literal">false</span>;
+<span class="hljs-keyword">let</span> g_count = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">let</span> g_timer1_ID = <span class="hljs-number">0</span>, g_timer2_ID = <span class="hljs-number">0</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">print_to_console</span>(<span class="hljs-params">msg</span>) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Timer test:&#x27;</span>, msg);
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_mouse_lbtn_up</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">if</span> (!g_timer_started) {
+        <span class="hljs-comment">// Timer are created here</span>
+        <span class="hljs-comment">// 2s - one shot, happens after 2000 ms, only once</span>
+        g_timer1_ID = <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> {
+            <span class="hljs-comment">// Print and show console</span>
+            fb.<span class="hljs-title class_">ShowConsole</span>();
+            <span class="hljs-title function_">print_to_console</span>(<span class="hljs-string">&#x27;g_timer1: Show console now.&#x27;</span>);
+        }, <span class="hljs-number">2000</span>);
+
+        <span class="hljs-comment">// 500ms - periodic, happens every 500 ms</span>
+        g_timer2_ID = <span class="hljs-built_in">setInterval</span>(<span class="hljs-function">() =&gt;</span> {
+            g_count++;
+            <span class="hljs-title function_">print_to_console</span>(<span class="hljs-string">&#x27;g_timer2: &#x27;</span> + g_count + <span class="hljs-string">&#x27; time(s).&#x27;</span>);
+        }, <span class="hljs-number">500</span>);
+
+        g_timer_started = <span class="hljs-literal">true</span>;
+    }
+    <span class="hljs-keyword">else</span> {
+        <span class="hljs-comment">// Kill all timers</span>
+        <span class="hljs-built_in">clearTimeout</span>(g_timer2_ID);
+        <span class="hljs-built_in">clearInterval</span>(g_timer1_ID);
+        g_timer_started = <span class="hljs-literal">false</span>;
+        g_count = <span class="hljs-number">0</span>;
+        <span class="hljs-title function_">print_to_console</span>(<span class="hljs-string">&#x27;Timers killed.&#x27;</span>);
+    }
+}
+</code></pre>
+      </body>
+    </html>
+  

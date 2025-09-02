@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-08-2025                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -365,8 +365,6 @@ class MainUI {
 		const drawTimingStart = (this.showDrawTiming || this.showDrawExtendedTiming) && new Date();
 
 		this.drawBackgrounds(gr);
-		this.drawUIHacksGlassFrameFix(gr, 'top');
-
 		this.drawDetails(gr);
 		this.drawPanels(gr);
 		this.drawAlbumArt(gr);
@@ -383,8 +381,6 @@ class MainUI {
 		this.drawCustomMenu(gr);
 		this.drawStyledTooltips(gr);
 		this.drawStartupBackground(gr);
-
-		this.drawUIHacksGlassFrameFix(gr, 'main');
 
 		this.drawDebugThemeOverlay(gr);
 		this.drawDebugPerformanceOverlay(gr);
@@ -1113,31 +1109,6 @@ class MainUI {
 		if (this.loadingThemeComplete) return;
 		gr.FillSolidRect(0, 0, this.ww, this.wh, grCol.loadingThemeBg);
 		if (grSet.showPreloaderLogo) grPreloader.drawLogo(gr);
-	}
-
-	/**
-	 * Draws the UIHacks aero glass shadow frame fix.
-	 * This workaround crap is needed to hide the black 1px line at the top and bottom
-	 * when UIHacks Glass Frame is active in foobar's Preferences > Display > Main Window > Aero effecs > Glass frame.
-	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 * @param {string} type - The type of fix to apply ('top' or 'main').
-	 */
-	drawUIHacksGlassFrameFix(gr, type) {
-		if (UIHacks.Aero.Effect !== 2) return;
-
-		if (type === 'top') {
-			gr.DrawLine(0, 0, this.ww, 0, 1, grCol.bg);
-		}
-		else if (type === 'main' && (!this.loadingThemeComplete && (grSet.styleBlend || grSet.styleBlend2) || !grSet.styleBlend && !grSet.styleBlend2)) {
-			gr.DrawLine(0, 0, this.ww, 0, 1, !this.loadingThemeComplete ? grCol.loadingThemeBg : grCol.uiHacksFrame);
-			if (grSet.styleDefault) {
-				gr.DrawLine(this.ww, this.wh - 1, 0, this.wh - 1, 1, !this.loadingThemeComplete ? grCol.loadingThemeBg : grCol.uiHacksFrame);
-			}
-			else if (grSet.styleGradient || grSet.styleGradient2) {
-				gr.DrawLine(0, 0, this.ww, 0, 1, grCol.bg);
-				FillGradRect(gr, -0.5, 0, this.ww, 1, grSet.styleGradient2 ? -200 : 0, grSet.styleGradient2 ? 0 : grCol.styleGradient, grSet.styleGradient2 ? grCol.styleGradient2 : 0, 0.5);
-			}
-		}
 	}
 
 	/**
@@ -2026,6 +1997,7 @@ class MainUI {
 		grm.button.initButtonState();
 
 		// * REFRESH * //
+		UIWizard.WindowBgColor = grCol.bg;
 		window.Repaint();
 
 		grm.utils.profile(false, 'print', 'initTheme');
@@ -4231,7 +4203,7 @@ class MainUI {
 		const aspectRatioInBounds = !grSet.albumArtAspectRatioLimit ||
 			(this.albumArt.Width  < this.albumArt.Height * grSet.albumArtAspectRatioLimit) &&
 			(this.albumArt.Height < this.albumArt.Width  * grSet.albumArtAspectRatioLimit);
-		const scaleWhenFullscreen = (UIHacks.FullScreen  || UIHacks.MainWindowState === WindowState.Maximized) &&
+		const scaleWhenFullscreen = (UIWizard.WindowState === WindowState.Fullscreen || UIWizard.WindowState === WindowState.Maximized) &&
 			aspectRatioInBounds && (this.displayPlaylist || this.displayDetails || this.displayLibrary);
 
 		// * Album art lyrics layouts

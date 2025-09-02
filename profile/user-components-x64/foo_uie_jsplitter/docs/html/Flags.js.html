@@ -1,0 +1,1345 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Source: Flags.js | JSplitter</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-jsdoc.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/tui-doc.css">
+
+    
+</head>
+<body>
+<nav class="lnb" id="lnb">
+    <div class="logo" style="">
+        
+            <img src="img/toast-ui.png" width="100%" height="100%">
+        
+    </div>
+    <div class="title">
+        <h1><a href="index.html" class="link">JSplitter</a></h1>
+        
+            <span class="version">v4.0.4</span>
+        
+    </div>
+    <div class="search-container" id="search-container">
+        <input type="text" placeholder="Search">
+        <ul></ul>
+    </div>
+    
+    <div class="lnb-api hidden"><h3>Modules</h3><ul><li><a href="module-Callbacks.html">Callbacks</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:Callbacks_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="module-Callbacks.html#.on_always_on_top_changed">on_always_on_top_changed</a></li><li><a href="module-Callbacks.html#.on_button_click">on_button_click</a></li><li><a href="module-Callbacks.html#.on_char">on_char</a></li><li><a href="module-Callbacks.html#.on_colours_changed">on_colours_changed</a></li><li><a href="module-Callbacks.html#.on_cursor_follow_playback_changed">on_cursor_follow_playback_changed</a></li><li><a href="module-Callbacks.html#.on_download_file_done">on_download_file_done</a></li><li><a href="module-Callbacks.html#.on_drag_drop">on_drag_drop</a></li><li><a href="module-Callbacks.html#.on_drag_enter">on_drag_enter</a></li><li><a href="module-Callbacks.html#.on_drag_leave">on_drag_leave</a></li><li><a href="module-Callbacks.html#.on_drag_over">on_drag_over</a></li><li><a href="module-Callbacks.html#.on_dsp_preset_changed">on_dsp_preset_changed</a></li><li><a href="module-Callbacks.html#.on_focus">on_focus</a></li><li><a href="module-Callbacks.html#.on_font_changed">on_font_changed</a></li><li><a href="module-Callbacks.html#.on_get_album_art_done">on_get_album_art_done</a></li><li><a href="module-Callbacks.html#.on_item_focus_change">on_item_focus_change</a></li><li><a href="module-Callbacks.html#.on_item_played">on_item_played</a></li><li><a href="module-Callbacks.html#.on_key_down">on_key_down</a></li><li><a href="module-Callbacks.html#.on_key_up">on_key_up</a></li><li><a href="module-Callbacks.html#.on_library_items_added">on_library_items_added</a></li><li><a href="module-Callbacks.html#.on_library_items_changed">on_library_items_changed</a></li><li><a href="module-Callbacks.html#.on_library_items_removed">on_library_items_removed</a></li><li><a href="module-Callbacks.html#.on_load_image_done">on_load_image_done</a></li><li><a href="module-Callbacks.html#.on_locations_added">on_locations_added</a></li><li><a href="module-Callbacks.html#.on_main_menu">on_main_menu</a></li><li><a href="module-Callbacks.html#.on_main_menu_dynamic">on_main_menu_dynamic</a></li><li><a href="module-Callbacks.html#.on_metadb_changed">on_metadb_changed</a></li><li><a href="module-Callbacks.html#.on_mouse_lbtn_dblclk">on_mouse_lbtn_dblclk</a></li><li><a href="module-Callbacks.html#.on_mouse_lbtn_down">on_mouse_lbtn_down</a></li><li><a href="module-Callbacks.html#.on_mouse_lbtn_up">on_mouse_lbtn_up</a></li><li><a href="module-Callbacks.html#.on_mouse_leave">on_mouse_leave</a></li><li><a href="module-Callbacks.html#.on_mouse_mbtn_dblclk">on_mouse_mbtn_dblclk</a></li><li><a href="module-Callbacks.html#.on_mouse_mbtn_down">on_mouse_mbtn_down</a></li><li><a href="module-Callbacks.html#.on_mouse_mbtn_up">on_mouse_mbtn_up</a></li><li><a href="module-Callbacks.html#.on_mouse_move">on_mouse_move</a></li><li><a href="module-Callbacks.html#.on_mouse_rbtn_dblclk">on_mouse_rbtn_dblclk</a></li><li><a href="module-Callbacks.html#.on_mouse_rbtn_down">on_mouse_rbtn_down</a></li><li><a href="module-Callbacks.html#.on_mouse_rbtn_up">on_mouse_rbtn_up</a></li><li><a href="module-Callbacks.html#.on_mouse_wheel">on_mouse_wheel</a></li><li><a href="module-Callbacks.html#.on_mouse_wheel_h">on_mouse_wheel_h</a></li><li><a href="module-Callbacks.html#.on_notify_data">on_notify_data</a></li><li><a href="module-Callbacks.html#.on_output_device_changed">on_output_device_changed</a></li><li><a href="module-Callbacks.html#.on_paint">on_paint</a></li><li><a href="module-Callbacks.html#.on_panel_mouse_enter">on_panel_mouse_enter</a></li><li><a href="module-Callbacks.html#.on_panel_mouse_leave">on_panel_mouse_leave</a></li><li><a href="module-Callbacks.html#.on_panel_mouse_move">on_panel_mouse_move</a></li><li><a href="module-Callbacks.html#.on_playback_dynamic_info">on_playback_dynamic_info</a></li><li><a href="module-Callbacks.html#.on_playback_dynamic_info_track">on_playback_dynamic_info_track</a></li><li><a href="module-Callbacks.html#.on_playback_edited">on_playback_edited</a></li><li><a href="module-Callbacks.html#.on_playback_follow_cursor_changed">on_playback_follow_cursor_changed</a></li><li><a href="module-Callbacks.html#.on_playback_new_track">on_playback_new_track</a></li><li><a href="module-Callbacks.html#.on_playback_order_changed">on_playback_order_changed</a></li><li><a href="module-Callbacks.html#.on_playback_pauseQueueChangeType">on_playback_pauseQueueChangeType</a></li><li><a href="module-Callbacks.html#.on_playback_queue_changed">on_playback_queue_changed</a></li><li><a href="module-Callbacks.html#.on_playback_seek">on_playback_seek</a></li><li><a href="module-Callbacks.html#.on_playback_starting">on_playback_starting</a></li><li><a href="module-Callbacks.html#.on_playback_stop">on_playback_stop</a></li><li><a href="module-Callbacks.html#.on_playback_time">on_playback_time</a></li><li><a href="module-Callbacks.html#.on_playlist_item_ensure_visible">on_playlist_item_ensure_visible</a></li><li><a href="module-Callbacks.html#.on_playlist_items_added">on_playlist_items_added</a></li><li><a href="module-Callbacks.html#.on_playlist_items_removed">on_playlist_items_removed</a></li><li><a href="module-Callbacks.html#.on_playlist_items_reordered">on_playlist_items_reordered</a></li><li><a href="module-Callbacks.html#.on_playlist_items_selection_change">on_playlist_items_selection_change</a></li><li><a href="module-Callbacks.html#.on_playlist_stop_after_current_changed">on_playlist_stop_after_current_changed</a></li><li><a href="module-Callbacks.html#.on_playlist_switch">on_playlist_switch</a></li><li><a href="module-Callbacks.html#.on_playlists_changed">on_playlists_changed</a></li><li><a href="module-Callbacks.html#.on_replaygain_mode_changed">on_replaygain_mode_changed</a></li><li><a href="module-Callbacks.html#.on_script_unload">on_script_unload</a></li><li><a href="module-Callbacks.html#.on_selection_changed">on_selection_changed</a></li><li><a href="module-Callbacks.html#.on_size">on_size</a></li><li><a href="module-Callbacks.html#.on_volume_change">on_volume_change</a></li></ul></div></li><li><a href="module-Codepages.html">Codepages</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:Codepages_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="module-Codepages.html#.CharsetMapping">CharsetMapping</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="module-Codepages.html#.convertCharsetToCodepage">convertCharsetToCodepage</a></li><li><a href="module-Codepages.html#.getLocalCharset">getLocalCharset</a></li></ul></div></li><li><a href="module-Flags.html">Flags</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:Flags_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="module-Flags.html#.AlbumArtId">AlbumArtId</a></li><li><a href="module-Flags.html#.ColourTypeCUI">ColourTypeCUI</a></li><li><a href="module-Flags.html#.ColourTypeDUI">ColourTypeDUI</a></li><li><a href="module-Flags.html#.DLGC_BUTTON">DLGC_BUTTON</a></li><li><a href="module-Flags.html#.DLGC_DEFPUSHBUTTON">DLGC_DEFPUSHBUTTON</a></li><li><a href="module-Flags.html#.DLGC_HASSETSEL">DLGC_HASSETSEL</a></li><li><a href="module-Flags.html#.DLGC_RADIOBUTTON">DLGC_RADIOBUTTON</a></li><li><a href="module-Flags.html#.DLGC_STATIC">DLGC_STATIC</a></li><li><a href="module-Flags.html#.DLGC_UNDEFPUSHBUTTON">DLGC_UNDEFPUSHBUTTON</a></li><li><a href="module-Flags.html#.DLGC_WANTALLKEYS">DLGC_WANTALLKEYS</a></li><li><a href="module-Flags.html#.DLGC_WANTARROWS">DLGC_WANTARROWS</a></li><li><a href="module-Flags.html#.DLGC_WANTCHARS">DLGC_WANTCHARS</a></li><li><a href="module-Flags.html#.DLGC_WANTMESSAGE">DLGC_WANTMESSAGE</a></li><li><a href="module-Flags.html#.DLGC_WANTTAB">DLGC_WANTTAB</a></li><li><a href="module-Flags.html#.DT_BOTTOM">DT_BOTTOM</a></li><li><a href="module-Flags.html#.DT_CALCRECT">DT_CALCRECT</a></li><li><a href="module-Flags.html#.DT_CENTER">DT_CENTER</a></li><li><a href="module-Flags.html#.DT_EDITCONTROL">DT_EDITCONTROL</a></li><li><a href="module-Flags.html#.DT_END_ELLIPSIS">DT_END_ELLIPSIS</a></li><li><a href="module-Flags.html#.DT_EXPANDTABS">DT_EXPANDTABS</a></li><li><a href="module-Flags.html#.DT_EXTERNALLEADING">DT_EXTERNALLEADING</a></li><li><a href="module-Flags.html#.DT_HIDEPREFIX">DT_HIDEPREFIX</a></li><li><a href="module-Flags.html#.DT_INTERNAL">DT_INTERNAL</a></li><li><a href="module-Flags.html#.DT_LEFT">DT_LEFT</a></li><li><a href="module-Flags.html#.DT_MODIFYSTRING">DT_MODIFYSTRING</a></li><li><a href="module-Flags.html#.DT_NOCLIP">DT_NOCLIP</a></li><li><a href="module-Flags.html#.DT_NOFULLWIDTHCHARBREAK">DT_NOFULLWIDTHCHARBREAK</a></li><li><a href="module-Flags.html#.DT_NOPREFIX">DT_NOPREFIX</a></li><li><a href="module-Flags.html#.DT_PATH_ELLIPSIS">DT_PATH_ELLIPSIS</a></li><li><a href="module-Flags.html#.DT_PREFIXONLY">DT_PREFIXONLY</a></li><li><a href="module-Flags.html#.DT_RIGHT">DT_RIGHT</a></li><li><a href="module-Flags.html#.DT_RTLREADING">DT_RTLREADING</a></li><li><a href="module-Flags.html#.DT_SINGLELINE">DT_SINGLELINE</a></li><li><a href="module-Flags.html#.DT_TABSTOP">DT_TABSTOP</a></li><li><a href="module-Flags.html#.DT_TOP">DT_TOP</a></li><li><a href="module-Flags.html#.DT_VCENTER">DT_VCENTER</a></li><li><a href="module-Flags.html#.DT_WORDBREAK">DT_WORDBREAK</a></li><li><a href="module-Flags.html#.DT_WORD_ELLIPSIS">DT_WORD_ELLIPSIS</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_ARCHIVE">FILE_ATTRIBUTE_ARCHIVE</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_COMPRESSED">FILE_ATTRIBUTE_COMPRESSED</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_DIRECTORY">FILE_ATTRIBUTE_DIRECTORY</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_ENCRYPTED">FILE_ATTRIBUTE_ENCRYPTED</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_HIDDEN">FILE_ATTRIBUTE_HIDDEN</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_NORMAL">FILE_ATTRIBUTE_NORMAL</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_NOT_CONTENT_INDEXED">FILE_ATTRIBUTE_NOT_CONTENT_INDEXED</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_OFFLINE">FILE_ATTRIBUTE_OFFLINE</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_READONLY">FILE_ATTRIBUTE_READONLY</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_REPARSE_POINT">FILE_ATTRIBUTE_REPARSE_POINT</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_SPARSE_FILE">FILE_ATTRIBUTE_SPARSE_FILE</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_SYSTEM">FILE_ATTRIBUTE_SYSTEM</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_TEMPORARY">FILE_ATTRIBUTE_TEMPORARY</a></li><li><a href="module-Flags.html#.FontStyle">FontStyle</a></li><li><a href="module-Flags.html#.FontTypeCUI">FontTypeCUI</a></li><li><a href="module-Flags.html#.FontTypeDUI">FontTypeDUI</a></li><li><a href="module-Flags.html#.IDC_APPSTARTING">IDC_APPSTARTING</a></li><li><a href="module-Flags.html#.IDC_ARROW">IDC_ARROW</a></li><li><a href="module-Flags.html#.IDC_CROSS">IDC_CROSS</a></li><li><a href="module-Flags.html#.IDC_HAND">IDC_HAND</a></li><li><a href="module-Flags.html#.IDC_HELP">IDC_HELP</a></li><li><a href="module-Flags.html#.IDC_IBEAM">IDC_IBEAM</a></li><li><a href="module-Flags.html#.IDC_ICON">IDC_ICON</a></li><li><a href="module-Flags.html#.IDC_NO">IDC_NO</a></li><li><a href="module-Flags.html#.IDC_SIZE">IDC_SIZE</a></li><li><a href="module-Flags.html#.IDC_SIZEALL">IDC_SIZEALL</a></li><li><a href="module-Flags.html#.IDC_SIZENESW">IDC_SIZENESW</a></li><li><a href="module-Flags.html#.IDC_SIZENS">IDC_SIZENS</a></li><li><a href="module-Flags.html#.IDC_SIZENWSE">IDC_SIZENWSE</a></li><li><a href="module-Flags.html#.IDC_SIZEWE">IDC_SIZEWE</a></li><li><a href="module-Flags.html#.IDC_UPARROW">IDC_UPARROW</a></li><li><a href="module-Flags.html#.IDC_WAIT">IDC_WAIT</a></li><li><a href="module-Flags.html#.InterpolationMode">InterpolationMode</a></li><li><a href="module-Flags.html#.LCMAP_BYTEREV">LCMAP_BYTEREV</a></li><li><a href="module-Flags.html#.LCMAP_FULLWIDTH">LCMAP_FULLWIDTH</a></li><li><a href="module-Flags.html#.LCMAP_HALFWIDTH">LCMAP_HALFWIDTH</a></li><li><a href="module-Flags.html#.LCMAP_HIRAGANA">LCMAP_HIRAGANA</a></li><li><a href="module-Flags.html#.LCMAP_KATAKANA">LCMAP_KATAKANA</a></li><li><a href="module-Flags.html#.LCMAP_LINGUISTIC_CASING">LCMAP_LINGUISTIC_CASING</a></li><li><a href="module-Flags.html#.LCMAP_LOWERCASE">LCMAP_LOWERCASE</a></li><li><a href="module-Flags.html#.LCMAP_SIMPLIFIED_CHINESE">LCMAP_SIMPLIFIED_CHINESE</a></li><li><a href="module-Flags.html#.LCMAP_SORTKEY">LCMAP_SORTKEY</a></li><li><a href="module-Flags.html#.LCMAP_TITLECASE">LCMAP_TITLECASE</a></li><li><a href="module-Flags.html#.LCMAP_TRADITIONAL_CHINESE">LCMAP_TRADITIONAL_CHINESE</a></li><li><a href="module-Flags.html#.LCMAP_UPPERCASE">LCMAP_UPPERCASE</a></li><li><a href="module-Flags.html#.MF_CHECKED">MF_CHECKED</a></li><li><a href="module-Flags.html#.MF_DISABLED">MF_DISABLED</a></li><li><a href="module-Flags.html#.MF_ENABLED">MF_ENABLED</a></li><li><a href="module-Flags.html#.MF_GRAYED">MF_GRAYED</a></li><li><a href="module-Flags.html#.MF_MENUBARBREAK">MF_MENUBARBREAK</a></li><li><a href="module-Flags.html#.MF_MENUBREAK">MF_MENUBREAK</a></li><li><a href="module-Flags.html#.MF_SEPARATOR">MF_SEPARATOR</a></li><li><a href="module-Flags.html#.MF_STRING">MF_STRING</a></li><li><a href="module-Flags.html#.MF_UNCHECKED">MF_UNCHECKED</a></li><li><a href="module-Flags.html#.MK_CONTROL">MK_CONTROL</a></li><li><a href="module-Flags.html#.MK_LBUTTON">MK_LBUTTON</a></li><li><a href="module-Flags.html#.MK_MBUTTON">MK_MBUTTON</a></li><li><a href="module-Flags.html#.MK_RBUTTON">MK_RBUTTON</a></li><li><a href="module-Flags.html#.MK_SHIFT">MK_SHIFT</a></li><li><a href="module-Flags.html#.MK_XBUTTON1">MK_XBUTTON1</a></li><li><a href="module-Flags.html#.MK_XBUTTON2">MK_XBUTTON2</a></li><li><a href="module-Flags.html#.PlaybackOrder">PlaybackOrder</a></li><li><a href="module-Flags.html#.PlaybackStartCmd">PlaybackStartCmd</a></li><li><a href="module-Flags.html#.PlaybackStopReason">PlaybackStopReason</a></li><li><a href="module-Flags.html#.QueueChangeOrigin">QueueChangeOrigin</a></li><li><a href="module-Flags.html#.ReplayGainMode">ReplayGainMode</a></li><li><a href="module-Flags.html#.RotateFlipType">RotateFlipType</a></li><li><a href="module-Flags.html#.SelectionType">SelectionType</a></li><li><a href="module-Flags.html#.SmoothingMode">SmoothingMode</a></li><li><a href="module-Flags.html#.StringAlignment">StringAlignment</a></li><li><a href="module-Flags.html#.StringFormatFlags">StringFormatFlags</a></li><li><a href="module-Flags.html#.StringTrimming">StringTrimming</a></li><li><a href="module-Flags.html#.TPM_BOTTOMALIGN">TPM_BOTTOMALIGN</a></li><li><a href="module-Flags.html#.TPM_CENTERALIGN">TPM_CENTERALIGN</a></li><li><a href="module-Flags.html#.TPM_HORIZONTAL">TPM_HORIZONTAL</a></li><li><a href="module-Flags.html#.TPM_HORNEGANIMATION">TPM_HORNEGANIMATION</a></li><li><a href="module-Flags.html#.TPM_HORPOSANIMATION">TPM_HORPOSANIMATION</a></li><li><a href="module-Flags.html#.TPM_LEFTALIGN">TPM_LEFTALIGN</a></li><li><a href="module-Flags.html#.TPM_NOANIMATION">TPM_NOANIMATION</a></li><li><a href="module-Flags.html#.TPM_RIGHTALIGN">TPM_RIGHTALIGN</a></li><li><a href="module-Flags.html#.TPM_TOPALIGN">TPM_TOPALIGN</a></li><li><a href="module-Flags.html#.TPM_VCENTERALIGN">TPM_VCENTERALIGN</a></li><li><a href="module-Flags.html#.TPM_VERNEGANIMATION">TPM_VERNEGANIMATION</a></li><li><a href="module-Flags.html#.TPM_VERPOSANIMATION">TPM_VERPOSANIMATION</a></li><li><a href="module-Flags.html#.TPM_VERTICAL">TPM_VERTICAL</a></li><li><a href="module-Flags.html#.TTDT_AUTOMATIC">TTDT_AUTOMATIC</a></li><li><a href="module-Flags.html#.TTDT_AUTOPOP">TTDT_AUTOPOP</a></li><li><a href="module-Flags.html#.TTDT_INITIAL">TTDT_INITIAL</a></li><li><a href="module-Flags.html#.TTDT_RESHOW">TTDT_RESHOW</a></li><li><a href="module-Flags.html#.TextRenderingHint">TextRenderingHint</a></li><li><a href="module-Flags.html#.UIInstanceType">UIInstanceType</a></li><li><a href="module-Flags.html#.VK_ALT">VK_ALT</a></li><li><a href="module-Flags.html#.VK_BACK">VK_BACK</a></li><li><a href="module-Flags.html#.VK_CONTROL">VK_CONTROL</a></li><li><a href="module-Flags.html#.VK_DELETE">VK_DELETE</a></li><li><a href="module-Flags.html#.VK_DOWN">VK_DOWN</a></li><li><a href="module-Flags.html#.VK_END">VK_END</a></li><li><a href="module-Flags.html#.VK_ESCAPE">VK_ESCAPE</a></li><li><a href="module-Flags.html#.VK_HOME">VK_HOME</a></li><li><a href="module-Flags.html#.VK_INSERT">VK_INSERT</a></li><li><a href="module-Flags.html#.VK_LEFT">VK_LEFT</a></li><li><a href="module-Flags.html#.VK_PGDN">VK_PGDN</a></li><li><a href="module-Flags.html#.VK_PGUP">VK_PGUP</a></li><li><a href="module-Flags.html#.VK_RETURN">VK_RETURN</a></li><li><a href="module-Flags.html#.VK_RIGHT">VK_RIGHT</a></li><li><a href="module-Flags.html#.VK_SHIFT">VK_SHIFT</a></li><li><a href="module-Flags.html#.VK_SPACEBAR">VK_SPACEBAR</a></li><li><a href="module-Flags.html#.VK_TAB">VK_TAB</a></li><li><a href="module-Flags.html#.VK_UP">VK_UP</a></li></ul></div></li><li><a href="module-Helpers.html">Helpers</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:Helpers_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="module-Helpers.html#.colours">colours</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="module-Helpers.html#.Point2Pixel">Point2Pixel</a></li><li><a href="module-Helpers.html#.RGB">RGB</a></li><li><a href="module-Helpers.html#.RGBA">RGBA</a></li><li><a href="module-Helpers.html#.StringFormat">StringFormat</a></li><li><a href="module-Helpers.html#.getAlpha">getAlpha</a></li><li><a href="module-Helpers.html#.getBlue">getBlue</a></li><li><a href="module-Helpers.html#.getGreen">getGreen</a></li><li><a href="module-Helpers.html#.getRed">getRed</a></li><li><a href="module-Helpers.html#.pos2vol">pos2vol</a></li><li><a href="module-Helpers.html#.setAlpha">setAlpha</a></li><li><a href="module-Helpers.html#.setBlue">setBlue</a></li><li><a href="module-Helpers.html#.setGreen">setGreen</a></li><li><a href="module-Helpers.html#.setRed">setRed</a></li><li><a href="module-Helpers.html#.toRGB">toRGB</a></li><li><a href="module-Helpers.html#.vol2pos">vol2pos</a></li></ul></div></li></ul></div><div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="ActiveXObject.html">ActiveXObject</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="ActiveXObject_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="ActiveXObject.html#ActiveX_CreateArray">ActiveX_CreateArray</a></li><li><a href="ActiveXObject.html#ActiveX_Get">ActiveX_Get</a></li><li><a href="ActiveXObject.html#ActiveX_Set">ActiveX_Set</a></li></ul></div></li><li><a href="ButtonObject.html">ButtonObject</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="ButtonObject_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="ButtonObject.html#Click">Click</a></li><li><a href="ButtonObject.html#HandOnHover">HandOnHover</a></li><li><a href="ButtonObject.html#Height">Height</a></li><li><a href="ButtonObject.html#Hidden">Hidden</a></li><li><a href="ButtonObject.html#ID">ID</a></li><li><a href="ButtonObject.html#State">State</a></li><li><a href="ButtonObject.html#Width">Width</a></li><li><a href="ButtonObject.html#X">X</a></li><li><a href="ButtonObject.html#Y">Y</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="ButtonObject.html#Move">Move</a></li><li><a href="ButtonObject.html#Resize">Resize</a></li><li><a href="ButtonObject.html#Show">Show</a></li></ul></div></li><li><a href="ContextMenuManager.html">ContextMenuManager</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="ContextMenuManager_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="ContextMenuManager.html#BuildMenu">BuildMenu</a></li><li><a href="ContextMenuManager.html#ExecuteByID">ExecuteByID</a></li><li><a href="ContextMenuManager.html#InitContext">InitContext</a></li><li><a href="ContextMenuManager.html#InitContextPlaylist">InitContextPlaylist</a></li><li><a href="ContextMenuManager.html#InitNowPlaying">InitNowPlaying</a></li></ul></div></li><li><a href="DropTargetAction.html">DropTargetAction</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="DropTargetAction_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="DropTargetAction.html#Base">Base</a></li><li><a href="DropTargetAction.html#Effect">Effect</a></li><li><a href="DropTargetAction.html#IsInternal">IsInternal</a></li><li><a href="DropTargetAction.html#Playlist">Playlist</a></li><li><a href="DropTargetAction.html#Text">Text</a></li><li><a href="DropTargetAction.html#ToSelect">ToSelect</a></li></ul></div></li><li><a href="Enumerator.html">Enumerator</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="Enumerator_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="Enumerator.html#atEnd">atEnd</a></li><li><a href="Enumerator.html#item">item</a></li><li><a href="Enumerator.html#moveFirst">moveFirst</a></li><li><a href="Enumerator.html#moveNext">moveNext</a></li></ul></div></li><li><a href="FbAudioChunk.html">FbAudioChunk</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbAudioChunk_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbAudioChunk.html#ChannelConfig">ChannelConfig</a></li><li><a href="FbAudioChunk.html#ChannelCount">ChannelCount</a></li><li><a href="FbAudioChunk.html#Data">Data</a></li><li><a href="FbAudioChunk.html#SampleCount">SampleCount</a></li><li><a href="FbAudioChunk.html#SampleRate">SampleRate</a></li></ul></div></li><li><a href="FbFileInfo.html">FbFileInfo</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbFileInfo_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbFileInfo.html#InfoCount">InfoCount</a></li><li><a href="FbFileInfo.html#InfoFind">InfoFind</a></li><li><a href="FbFileInfo.html#InfoName">InfoName</a></li><li><a href="FbFileInfo.html#InfoValue">InfoValue</a></li><li><a href="FbFileInfo.html#MetaCount">MetaCount</a></li><li><a href="FbFileInfo.html#MetaFind">MetaFind</a></li><li><a href="FbFileInfo.html#MetaName">MetaName</a></li><li><a href="FbFileInfo.html#MetaValue">MetaValue</a></li><li><a href="FbFileInfo.html#MetaValueCount">MetaValueCount</a></li></ul></div></li><li><a href="FbMetadbHandle.html">FbMetadbHandle</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbMetadbHandle_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbMetadbHandle.html#FileSize">FileSize</a></li><li><a href="FbMetadbHandle.html#Length">Length</a></li><li><a href="FbMetadbHandle.html#Path">Path</a></li><li><a href="FbMetadbHandle.html#RawPath">RawPath</a></li><li><a href="FbMetadbHandle.html#SubSong">SubSong</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="FbMetadbHandle.html#ClearStats">ClearStats</a></li><li><a href="FbMetadbHandle.html#Compare">Compare</a></li><li><a href="FbMetadbHandle.html#GetFileInfo">GetFileInfo</a></li><li><a href="FbMetadbHandle.html#RefreshStats">RefreshStats</a></li><li><a href="FbMetadbHandle.html#SetFirstPlayed">SetFirstPlayed</a></li><li><a href="FbMetadbHandle.html#SetLastPlayed">SetLastPlayed</a></li><li><a href="FbMetadbHandle.html#SetLoved">SetLoved</a></li><li><a href="FbMetadbHandle.html#SetPlayCount">SetPlayCount</a></li><li><a href="FbMetadbHandle.html#SetRating">SetRating</a></li></ul></div></li><li><a href="FbMetadbHandleList.html">FbMetadbHandleList</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbMetadbHandleList_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbMetadbHandleList.html#Count">Count</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="FbMetadbHandleList.html#Add">Add</a></li><li><a href="FbMetadbHandleList.html#AddRange">AddRange</a></li><li><a href="FbMetadbHandleList.html#AttachImage">AttachImage</a></li><li><a href="FbMetadbHandleList.html#BSearch">BSearch</a></li><li><a href="FbMetadbHandleList.html#CalcTotalDuration">CalcTotalDuration</a></li><li><a href="FbMetadbHandleList.html#CalcTotalSize">CalcTotalSize</a></li><li><a href="FbMetadbHandleList.html#Clone">Clone</a></li><li><a href="FbMetadbHandleList.html#Convert">Convert</a></li><li><a href="FbMetadbHandleList.html#Find">Find</a></li><li><a href="FbMetadbHandleList.html#GetLibraryRelativePaths">GetLibraryRelativePaths</a></li><li><a href="FbMetadbHandleList.html#Insert">Insert</a></li><li><a href="FbMetadbHandleList.html#InsertRange">InsertRange</a></li><li><a href="FbMetadbHandleList.html#MakeDifference">MakeDifference</a></li><li><a href="FbMetadbHandleList.html#MakeIntersection">MakeIntersection</a></li><li><a href="FbMetadbHandleList.html#MakeUnion">MakeUnion</a></li><li><a href="FbMetadbHandleList.html#OrderByFormat">OrderByFormat</a></li><li><a href="FbMetadbHandleList.html#OrderByPath">OrderByPath</a></li><li><a href="FbMetadbHandleList.html#OrderByRelativePath">OrderByRelativePath</a></li><li><a href="FbMetadbHandleList.html#RefreshStats">RefreshStats</a></li><li><a href="FbMetadbHandleList.html#Remove">Remove</a></li><li><a href="FbMetadbHandleList.html#RemoveAll">RemoveAll</a></li><li><a href="FbMetadbHandleList.html#RemoveAttachedImage">RemoveAttachedImage</a></li><li><a href="FbMetadbHandleList.html#RemoveAttachedImages">RemoveAttachedImages</a></li><li><a href="FbMetadbHandleList.html#RemoveById">RemoveById</a></li><li><a href="FbMetadbHandleList.html#RemoveRange">RemoveRange</a></li><li><a href="FbMetadbHandleList.html#SaveAs">SaveAs</a></li><li><a href="FbMetadbHandleList.html#Sort">Sort</a></li><li><a href="FbMetadbHandleList.html#UpdateFileInfoFromJSON">UpdateFileInfoFromJSON</a></li></ul></div></li><li><a href="FbPlaybackQueueItem.html">FbPlaybackQueueItem</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbPlaybackQueueItem_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbPlaybackQueueItem.html#Handle">Handle</a></li><li><a href="FbPlaybackQueueItem.html#PlaylistIndex">PlaylistIndex</a></li><li><a href="FbPlaybackQueueItem.html#PlaylistItemIndex">PlaylistItemIndex</a></li></ul></div></li><li><a href="FbPlayingItemLocation.html">FbPlayingItemLocation</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbPlayingItemLocation_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbPlayingItemLocation.html#IsValid">IsValid</a></li><li><a href="FbPlayingItemLocation.html#PlaylistIndex">PlaylistIndex</a></li><li><a href="FbPlayingItemLocation.html#PlaylistItemIndex">PlaylistItemIndex</a></li></ul></div></li><li><a href="FbPlaylistRecycler.html">FbPlaylistRecycler</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbPlaylistRecycler_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbPlaylistRecycler.html#Count">Count</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="FbPlaylistRecycler.html#GetContent">GetContent</a></li><li><a href="FbPlaylistRecycler.html#GetName">GetName</a></li><li><a href="FbPlaylistRecycler.html#Purge">Purge</a></li><li><a href="FbPlaylistRecycler.html#Restore">Restore</a></li></ul></div></li><li><a href="FbProfiler.html">FbProfiler</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbProfiler_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbProfiler.html#Time">Time</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="FbProfiler.html#Print">Print</a></li><li><a href="FbProfiler.html#Reset">Reset</a></li></ul></div></li><li><a href="FbTitleFormat.html">FbTitleFormat</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbTitleFormat_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="FbTitleFormat.html#Eval">Eval</a></li><li><a href="FbTitleFormat.html#EvalWithMetadb">EvalWithMetadb</a></li><li><a href="FbTitleFormat.html#EvalWithMetadbs">EvalWithMetadbs</a></li></ul></div></li><li><a href="FbTooltip.html">FbTooltip</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbTooltip_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbTooltip.html#Text">Text</a></li><li><a href="FbTooltip.html#TrackActivate">TrackActivate</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="FbTooltip.html#Activate">Activate</a></li><li><a href="FbTooltip.html#Deactivate">Deactivate</a></li><li><a href="FbTooltip.html#GetDelayTime">GetDelayTime</a></li><li><a href="FbTooltip.html#SetDelayTime">SetDelayTime</a></li><li><a href="FbTooltip.html#SetFont">SetFont</a></li><li><a href="FbTooltip.html#SetMaxWidth">SetMaxWidth</a></li><li><a href="FbTooltip.html#TrackPosition">TrackPosition</a></li></ul></div></li><li><a href="FbUiSelectionHolder.html">FbUiSelectionHolder</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbUiSelectionHolder_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="FbUiSelectionHolder.html#SetPlaylistSelectionTracking">SetPlaylistSelectionTracking</a></li><li><a href="FbUiSelectionHolder.html#SetPlaylistTracking">SetPlaylistTracking</a></li><li><a href="FbUiSelectionHolder.html#SetSelection">SetSelection</a></li></ul></div></li><li><a href="GdiBitmap.html">GdiBitmap</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="GdiBitmap_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="GdiBitmap.html#Height">Height</a></li><li><a href="GdiBitmap.html#Width">Width</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="GdiBitmap.html#ApplyAlpha">ApplyAlpha</a></li><li><a href="GdiBitmap.html#ApplyMask">ApplyMask</a></li><li><a href="GdiBitmap.html#Clone">Clone</a></li><li><a href="GdiBitmap.html#CreateRawBitmap">CreateRawBitmap</a></li><li><a href="GdiBitmap.html#GetColourScheme">GetColourScheme</a></li><li><a href="GdiBitmap.html#GetColourSchemeJSON">GetColourSchemeJSON</a></li><li><a href="GdiBitmap.html#GetGraphics">GetGraphics</a></li><li><a href="GdiBitmap.html#InvertColours">InvertColours</a></li><li><a href="GdiBitmap.html#ReleaseGraphics">ReleaseGraphics</a></li><li><a href="GdiBitmap.html#Resize">Resize</a></li><li><a href="GdiBitmap.html#RotateFlip">RotateFlip</a></li><li><a href="GdiBitmap.html#SaveAs">SaveAs</a></li><li><a href="GdiBitmap.html#StackBlur">StackBlur</a></li></ul></div></li><li><a href="GdiFont.html">GdiFont</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="GdiFont_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="GdiFont.html#Height">Height</a></li><li><a href="GdiFont.html#Name">Name</a></li><li><a href="GdiFont.html#Size">Size</a></li><li><a href="GdiFont.html#Style">Style</a></li></ul></div></li><li><a href="GdiGraphics.html">GdiGraphics</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="GdiGraphics_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="GdiGraphics.html#CalcTextHeight">CalcTextHeight</a></li><li><a href="GdiGraphics.html#CalcTextWidth">CalcTextWidth</a></li><li><a href="GdiGraphics.html#DrawEllipse">DrawEllipse</a></li><li><a href="GdiGraphics.html#DrawImage">DrawImage</a></li><li><a href="GdiGraphics.html#DrawLine">DrawLine</a></li><li><a href="GdiGraphics.html#DrawPolygon">DrawPolygon</a></li><li><a href="GdiGraphics.html#DrawRect">DrawRect</a></li><li><a href="GdiGraphics.html#DrawRoundRect">DrawRoundRect</a></li><li><a href="GdiGraphics.html#DrawString">DrawString</a></li><li><a href="GdiGraphics.html#EstimateLineWrap">EstimateLineWrap</a></li><li><a href="GdiGraphics.html#FillEllipse">FillEllipse</a></li><li><a href="GdiGraphics.html#FillGradRect">FillGradRect</a></li><li><a href="GdiGraphics.html#FillPolygon">FillPolygon</a></li><li><a href="GdiGraphics.html#FillRoundRect">FillRoundRect</a></li><li><a href="GdiGraphics.html#FillSolidRect">FillSolidRect</a></li><li><a href="GdiGraphics.html#GdiAlphaBlend">GdiAlphaBlend</a></li><li><a href="GdiGraphics.html#GdiDrawBitmap">GdiDrawBitmap</a></li><li><a href="GdiGraphics.html#GdiDrawText">GdiDrawText</a></li><li><a href="GdiGraphics.html#MeasureString">MeasureString</a></li><li><a href="GdiGraphics.html#SetInterpolationMode">SetInterpolationMode</a></li><li><a href="GdiGraphics.html#SetSmoothingMode">SetSmoothingMode</a></li><li><a href="GdiGraphics.html#SetTextRenderingHint">SetTextRenderingHint</a></li></ul></div></li><li><a href="GdiGraphics-MeasureStringInfo.html">MeasureStringInfo</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="GdiGraphics~MeasureStringInfo_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="GdiGraphics-MeasureStringInfo.html#Chars">Chars</a></li><li><a href="GdiGraphics-MeasureStringInfo.html#Height">Height</a></li><li><a href="GdiGraphics-MeasureStringInfo.html#Lines">Lines</a></li><li><a href="GdiGraphics-MeasureStringInfo.html#Width">Width</a></li><li><a href="GdiGraphics-MeasureStringInfo.html#X">X</a></li><li><a href="GdiGraphics-MeasureStringInfo.html#Y">Y</a></li></ul></div></li><li><a href="GdiRawBitmap.html">GdiRawBitmap</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="GdiRawBitmap_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="GdiRawBitmap.html#Height">Height</a></li><li><a href="GdiRawBitmap.html#Width">Width</a></li></ul></div></li><li><a href="IUIHacks.html">IUIHacks</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="IUIHacks_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="IUIHacks.html#Aero">Aero</a></li><li><a href="IUIHacks.html#BlockMaximize">BlockMaximize</a></li><li><a href="IUIHacks.html#DisableSizing">DisableSizing</a></li><li><a href="IUIHacks.html#EnableSizing">EnableSizing</a></li><li><a href="IUIHacks.html#FoobarCPUUsage">FoobarCPUUsage</a></li><li><a href="IUIHacks.html#FrameStyle">FrameStyle</a></li><li><a href="IUIHacks.html#FullScreen">FullScreen</a></li><li><a href="IUIHacks.html#MainMenuState">MainMenuState</a></li><li><a href="IUIHacks.html#MainWindowID">MainWindowID</a></li><li><a href="IUIHacks.html#MainWindowState">MainWindowState</a></li><li><a href="IUIHacks.html#MasterVolume">MasterVolume</a></li><li><a href="IUIHacks.html#MaxSize">MaxSize</a></li><li><a href="IUIHacks.html#MinSize">MinSize</a></li><li><a href="IUIHacks.html#MoveStyle">MoveStyle</a></li><li><a href="IUIHacks.html#StatusBarState">StatusBarState</a></li><li><a href="IUIHacks.html#SystemCPUUsage">SystemCPUUsage</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="IUIHacks.html#SetPseudoCaption">SetPseudoCaption</a></li></ul></div></li><li><a href="IUIHacks-IAero.html">IAero</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="IUIHacks~IAero_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="IUIHacks-IAero.html#Active">Active</a></li><li><a href="IUIHacks-IAero.html#Bottom">Bottom</a></li><li><a href="IUIHacks-IAero.html#Effect">Effect</a></li><li><a href="IUIHacks-IAero.html#Left">Left</a></li><li><a href="IUIHacks-IAero.html#Right">Right</a></li><li><a href="IUIHacks-IAero.html#Top">Top</a></li><li><a href="IUIHacks-IAero.html#Transparency">Transparency</a></li></ul></div></li><li><a href="IUIHacks-IConstraints.html">IConstraints</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="IUIHacks~IConstraints_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="IUIHacks-IConstraints.html#Enabled">Enabled</a></li><li><a href="IUIHacks-IConstraints.html#Height">Height</a></li><li><a href="IUIHacks-IConstraints.html#Width">Width</a></li></ul></div></li><li><a href="IUIHacks-IMasterVolume.html">IMasterVolume</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="IUIHacks~IMasterVolume_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="IUIHacks-IMasterVolume.html#ChannelCount">ChannelCount</a></li><li><a href="IUIHacks-IMasterVolume.html#Mute">Mute</a></li><li><a href="IUIHacks-IMasterVolume.html#Volume">Volume</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="IUIHacks-IMasterVolume.html#GetChannelVolume">GetChannelVolume</a></li><li><a href="IUIHacks-IMasterVolume.html#SetChannelVolume">SetChannelVolume</a></li><li><a href="IUIHacks-IMasterVolume.html#VolumeStepDown">VolumeStepDown</a></li><li><a href="IUIHacks-IMasterVolume.html#VolumeStepUp">VolumeStepUp</a></li></ul></div></li><li><a href="MainMenuManager.html">MainMenuManager</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="MainMenuManager_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="MainMenuManager.html#BuildMenu">BuildMenu</a></li><li><a href="MainMenuManager.html#ExecuteByID">ExecuteByID</a></li><li><a href="MainMenuManager.html#Init">Init</a></li></ul></div></li><li><a href="MenuObject.html">MenuObject</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="MenuObject_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="MenuObject.html#AppendMenuItem">AppendMenuItem</a></li><li><a href="MenuObject.html#AppendMenuSeparator">AppendMenuSeparator</a></li><li><a href="MenuObject.html#AppendTo">AppendTo</a></li><li><a href="MenuObject.html#CheckMenuItem">CheckMenuItem</a></li><li><a href="MenuObject.html#CheckMenuRadioItem">CheckMenuRadioItem</a></li><li><a href="MenuObject.html#TrackPopupMenu">TrackPopupMenu</a></li></ul></div></li><li><a href="PanelObject.html">PanelObject</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="PanelObject_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="PanelObject.html#EraseBackground">EraseBackground</a></li><li><a href="PanelObject.html#Height">Height</a></li><li><a href="PanelObject.html#Hidden">Hidden</a></li><li><a href="PanelObject.html#Locked">Locked</a></li><li><a href="PanelObject.html#Name">Name</a></li><li><a href="PanelObject.html#ShowCaption">ShowCaption</a></li><li><a href="PanelObject.html#SupportPseudoTransparency">SupportPseudoTransparency</a></li><li><a href="PanelObject.html#Text">Text</a></li><li><a href="PanelObject.html#TopMost">TopMost</a></li><li><a href="PanelObject.html#Width">Width</a></li><li><a href="PanelObject.html#X">X</a></li><li><a href="PanelObject.html#Y">Y</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="PanelObject.html#Move">Move</a></li><li><a href="PanelObject.html#Show">Show</a></li></ul></div></li><li><a href="ThemeManager.html">ThemeManager</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="ThemeManager_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="ThemeManager.html#DrawThemeBackground">DrawThemeBackground</a></li><li><a href="ThemeManager.html#IsThemePartDefined">IsThemePartDefined</a></li><li><a href="ThemeManager.html#SetPartAndStateID">SetPartAndStateID</a></li></ul></div></li></ul></div><div class="lnb-api hidden"><h3>Namespaces</h3><ul><li><a href="console.html">console</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="console_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="console.html#.log">log</a></li></ul></div></li><li><a href="fb.html">fb</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="fb_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="fb.html#.AlwaysOnTop">AlwaysOnTop</a></li><li><a href="fb.html#.ComponentPath">ComponentPath</a></li><li><a href="fb.html#.CursorFollowPlayback">CursorFollowPlayback</a></li><li><a href="fb.html#.CustomVolume">CustomVolume</a></li><li><a href="fb.html#.FoobarPath">FoobarPath</a></li><li><a href="fb.html#.IsPaused">IsPaused</a></li><li><a href="fb.html#.IsPlaying">IsPlaying</a></li><li><a href="fb.html#.PlaybackFollowCursor">PlaybackFollowCursor</a></li><li><a href="fb.html#.PlaybackLength">PlaybackLength</a></li><li><a href="fb.html#.PlaybackTime">PlaybackTime</a></li><li><a href="fb.html#.ProfilePath">ProfilePath</a></li><li><a href="fb.html#.ReplaygainMode">ReplaygainMode</a></li><li><a href="fb.html#.StopAfterCurrent">StopAfterCurrent</a></li><li><a href="fb.html#.Version">Version</a></li><li><a href="fb.html#.Volume">Volume</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="fb.html#.AcquireUiSelectionHolder">AcquireUiSelectionHolder</a></li><li><a href="fb.html#.AddDirectory">AddDirectory</a></li><li><a href="fb.html#.AddFiles">AddFiles</a></li><li><a href="fb.html#.AddLocationsAsync">AddLocationsAsync</a></li><li><a href="fb.html#.CheckClipboardContents">CheckClipboardContents</a></li><li><a href="fb.html#.ClearPlaylist">ClearPlaylist</a></li><li><a href="fb.html#.CopyHandleListToClipboard">CopyHandleListToClipboard</a></li><li><a href="fb.html#.CreateContextMenuManager">CreateContextMenuManager</a></li><li><a href="fb.html#.CreateHandleList">CreateHandleList</a></li><li><a href="fb.html#.CreateMainMenuManager">CreateMainMenuManager</a></li><li><a href="fb.html#.CreateProfiler">CreateProfiler</a></li><li><a href="fb.html#.DoDragDrop">DoDragDrop</a></li><li><a href="fb.html#.Exit">Exit</a></li><li><a href="fb.html#.GetAudioChunk">GetAudioChunk</a></li><li><a href="fb.html#.GetClipboardContents">GetClipboardContents</a></li><li><a href="fb.html#.GetDSPPresets">GetDSPPresets</a></li><li><a href="fb.html#.GetFocusItem">GetFocusItem</a></li><li><a href="fb.html#.GetLibraryItems">GetLibraryItems</a></li><li><a href="fb.html#.GetLibraryRelativePath">GetLibraryRelativePath</a></li><li><a href="fb.html#.GetNowPlaying">GetNowPlaying</a></li><li><a href="fb.html#.GetOutputDevices">GetOutputDevices</a></li><li><a href="fb.html#.GetQueryItems">GetQueryItems</a></li><li><a href="fb.html#.GetSelection">GetSelection</a></li><li><a href="fb.html#.GetSelectionType">GetSelectionType</a></li><li><a href="fb.html#.GetSelections">GetSelections</a></li><li><a href="fb.html#.IsLibraryEnabled">IsLibraryEnabled</a></li><li><a href="fb.html#.IsMainMenuCommandChecked">IsMainMenuCommandChecked</a></li><li><a href="fb.html#.IsMetadbInMediaLibrary">IsMetadbInMediaLibrary</a></li><li><a href="fb.html#.LoadPlaylist">LoadPlaylist</a></li><li><a href="fb.html#.Next">Next</a></li><li><a href="fb.html#.Pause">Pause</a></li><li><a href="fb.html#.Play">Play</a></li><li><a href="fb.html#.PlayOrPause">PlayOrPause</a></li><li><a href="fb.html#.Prev">Prev</a></li><li><a href="fb.html#.Random">Random</a></li><li><a href="fb.html#.RegisterMainMenuCommand">RegisterMainMenuCommand</a></li><li><a href="fb.html#.Restart">Restart</a></li><li><a href="fb.html#.RunContextCommand">RunContextCommand</a></li><li><a href="fb.html#.RunContextCommandWithMetadb">RunContextCommandWithMetadb</a></li><li><a href="fb.html#.RunMainMenuCommand">RunMainMenuCommand</a></li><li><a href="fb.html#.SavePlaylist">SavePlaylist</a></li><li><a href="fb.html#.SetDSPPreset">SetDSPPreset</a></li><li><a href="fb.html#.SetOutputDevice">SetOutputDevice</a></li><li><a href="fb.html#.ShowConsole">ShowConsole</a></li><li><a href="fb.html#.ShowLibrarySearchUI">ShowLibrarySearchUI</a></li><li><a href="fb.html#.ShowPictureViewer">ShowPictureViewer</a></li><li><a href="fb.html#.ShowPopupMessage">ShowPopupMessage</a></li><li><a href="fb.html#.ShowPreferences">ShowPreferences</a></li><li><a href="fb.html#.Stop">Stop</a></li><li><a href="fb.html#.TitleFormat">TitleFormat</a></li><li><a href="fb.html#.UnregisterMainMenuCommand">UnregisterMainMenuCommand</a></li><li><a href="fb.html#.VolumeDown">VolumeDown</a></li><li><a href="fb.html#.VolumeMute">VolumeMute</a></li><li><a href="fb.html#.VolumeUp">VolumeUp</a></li></ul></div></li><li><a href="gdi.html">gdi</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="gdi_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="gdi.html#.CreateImage">CreateImage</a></li><li><a href="gdi.html#.Font">Font</a></li><li><a href="gdi.html#.Image">Image</a></li><li><a href="gdi.html#.LoadImageAsync">LoadImageAsync</a></li><li><a href="gdi.html#.LoadImageAsyncV2">LoadImageAsyncV2</a></li></ul></div></li><li><a href="plman.html">plman</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="plman_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="plman.html#.ActivePlaylist">ActivePlaylist</a></li><li><a href="plman.html#.PlaybackOrder">PlaybackOrder</a></li><li><a href="plman.html#.PlayingPlaylist">PlayingPlaylist</a></li><li><a href="plman.html#.PlaylistCount">PlaylistCount</a></li><li><a href="plman.html#.PlaylistRecycler">PlaylistRecycler</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="plman.html#.AddItemToPlaybackQueue">AddItemToPlaybackQueue</a></li><li><a href="plman.html#.AddLocations">AddLocations</a></li><li><a href="plman.html#.AddPlaylistItemToPlaybackQueue">AddPlaylistItemToPlaybackQueue</a></li><li><a href="plman.html#.ClearPlaylist">ClearPlaylist</a></li><li><a href="plman.html#.ClearPlaylistSelection">ClearPlaylistSelection</a></li><li><a href="plman.html#.CreateAutoPlaylist">CreateAutoPlaylist</a></li><li><a href="plman.html#.CreatePlaylist">CreatePlaylist</a></li><li><a href="plman.html#.DuplicatePlaylist">DuplicatePlaylist</a></li><li><a href="plman.html#.EnsurePlaylistItemVisible">EnsurePlaylistItemVisible</a></li><li><a href="plman.html#.ExecutePlaylistDefaultAction">ExecutePlaylistDefaultAction</a></li><li><a href="plman.html#.FindByGUID">FindByGUID</a></li><li><a href="plman.html#.FindOrCreatePlaylist">FindOrCreatePlaylist</a></li><li><a href="plman.html#.FindPlaybackQueueItemIndex">FindPlaybackQueueItemIndex</a></li><li><a href="plman.html#.FindPlaylist">FindPlaylist</a></li><li><a href="plman.html#.FlushPlaybackQueue">FlushPlaybackQueue</a></li><li><a href="plman.html#.GetGUID">GetGUID</a></li><li><a href="plman.html#.GetPlaybackQueueContents">GetPlaybackQueueContents</a></li><li><a href="plman.html#.GetPlaybackQueueHandles">GetPlaybackQueueHandles</a></li><li><a href="plman.html#.GetPlayingItemLocation">GetPlayingItemLocation</a></li><li><a href="plman.html#.GetPlaylistFocusItemIndex">GetPlaylistFocusItemIndex</a></li><li><a href="plman.html#.GetPlaylistItems">GetPlaylistItems</a></li><li><a href="plman.html#.GetPlaylistLockName">GetPlaylistLockName</a></li><li><a href="plman.html#.GetPlaylistLockedActions">GetPlaylistLockedActions</a></li><li><a href="plman.html#.GetPlaylistName">GetPlaylistName</a></li><li><a href="plman.html#.GetPlaylistSelectedItems">GetPlaylistSelectedItems</a></li><li><a href="plman.html#.InsertPlaylistItems">InsertPlaylistItems</a></li><li><a href="plman.html#.InsertPlaylistItemsFilter">InsertPlaylistItemsFilter</a></li><li><a href="plman.html#.IsAutoPlaylist">IsAutoPlaylist</a></li><li><a href="plman.html#.IsPlaylistItemSelected">IsPlaylistItemSelected</a></li><li><a href="plman.html#.IsPlaylistLocked">IsPlaylistLocked</a></li><li><a href="plman.html#.IsRedoAvailable">IsRedoAvailable</a></li><li><a href="plman.html#.IsUndoAvailable">IsUndoAvailable</a></li><li><a href="plman.html#.MovePlaylist">MovePlaylist</a></li><li><a href="plman.html#.MovePlaylistSelection">MovePlaylistSelection</a></li><li><a href="plman.html#.PlaylistItemCount">PlaylistItemCount</a></li><li><a href="plman.html#.Redo">Redo</a></li><li><a href="plman.html#.RemoveItemFromPlaybackQueue">RemoveItemFromPlaybackQueue</a></li><li><a href="plman.html#.RemoveItemsFromPlaybackQueue">RemoveItemsFromPlaybackQueue</a></li><li><a href="plman.html#.RemovePlaylist">RemovePlaylist</a></li><li><a href="plman.html#.RemovePlaylistSelection">RemovePlaylistSelection</a></li><li><a href="plman.html#.RemovePlaylistSwitch">RemovePlaylistSwitch</a></li><li><a href="plman.html#.RenamePlaylist">RenamePlaylist</a></li><li><a href="plman.html#.SetActivePlaylistContext">SetActivePlaylistContext</a></li><li><a href="plman.html#.SetPlaylistFocusItem">SetPlaylistFocusItem</a></li><li><a href="plman.html#.SetPlaylistFocusItemByHandle">SetPlaylistFocusItemByHandle</a></li><li><a href="plman.html#.SetPlaylistLockedActions">SetPlaylistLockedActions</a></li><li><a href="plman.html#.SetPlaylistSelection">SetPlaylistSelection</a></li><li><a href="plman.html#.SetPlaylistSelectionSingle">SetPlaylistSelectionSingle</a></li><li><a href="plman.html#.ShowAutoPlaylistUI">ShowAutoPlaylistUI</a></li><li><a href="plman.html#.SortByFormat">SortByFormat</a></li><li><a href="plman.html#.SortByFormatV2">SortByFormatV2</a></li><li><a href="plman.html#.SortPlaylistsByName">SortPlaylistsByName</a></li><li><a href="plman.html#.Undo">Undo</a></li><li><a href="plman.html#.UndoBackup">UndoBackup</a></li></ul></div></li><li><a href="utils.html">utils</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="utils_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="utils.html#.Version">Version</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="utils.html#.CheckComponent">CheckComponent</a></li><li><a href="utils.html#.CheckFont">CheckFont</a></li><li><a href="utils.html#.ColourPicker">ColourPicker</a></li><li><a href="utils.html#.DetectCharset">DetectCharset</a></li><li><a href="utils.html#.DownloadFileAsync">DownloadFileAsync</a></li><li><a href="utils.html#.EditTextFile">EditTextFile</a></li><li><a href="utils.html#.FileExists">FileExists</a></li><li><a href="utils.html#.FileTest">FileTest</a></li><li><a href="utils.html#.FormatDuration">FormatDuration</a></li><li><a href="utils.html#.FormatFileSize">FormatFileSize</a></li><li><a href="utils.html#.GetAlbumArtAsync">GetAlbumArtAsync</a></li><li><a href="utils.html#.GetAlbumArtAsyncV2">GetAlbumArtAsyncV2</a></li><li><a href="utils.html#.GetAlbumArtEmbedded">GetAlbumArtEmbedded</a></li><li><a href="utils.html#.GetAlbumArtV2">GetAlbumArtV2</a></li><li><a href="utils.html#.GetClipboardText">GetClipboardText</a></li><li><a href="utils.html#.GetFileSize">GetFileSize</a></li><li><a href="utils.html#.GetPackageInfo">GetPackageInfo</a></li><li><a href="utils.html#.GetPackagePath">GetPackagePath</a></li><li><a href="utils.html#.GetSysColour">GetSysColour</a></li><li><a href="utils.html#.GetSystemMetrics">GetSystemMetrics</a></li><li><a href="utils.html#.Glob">Glob</a></li><li><a href="utils.html#.InputBox">InputBox</a></li><li><a href="utils.html#.IsDirectory">IsDirectory</a></li><li><a href="utils.html#.IsFile">IsFile</a></li><li><a href="utils.html#.IsKeyPressed">IsKeyPressed</a></li><li><a href="utils.html#.MapString">MapString</a></li><li><a href="utils.html#.PathWildcardMatch">PathWildcardMatch</a></li><li><a href="utils.html#.ReadINI">ReadINI</a></li><li><a href="utils.html#.ReadTextFile">ReadTextFile</a></li><li><a href="utils.html#.SetClipboardText">SetClipboardText</a></li><li><a href="utils.html#.ShowHtmlDialog">ShowHtmlDialog</a></li><li><a href="utils.html#.SplitFilePath">SplitFilePath</a></li><li><a href="utils.html#.WriteINI">WriteINI</a></li><li><a href="utils.html#.WriteTextFile">WriteTextFile</a></li></ul></div></li><li><a href="window.html">window</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="window_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="window.html#.DPI">DPI</a></li><li><a href="window.html#.DlgCode">DlgCode</a></li><li><a href="window.html#.FoobarWindowHeight">FoobarWindowHeight</a></li><li><a href="window.html#.FoobarWindowWidth">FoobarWindowWidth</a></li><li><a href="window.html#.FoobarWindowX">FoobarWindowX</a></li><li><a href="window.html#.FoobarWindowY">FoobarWindowY</a></li><li><a href="window.html#.HandOnButtons">HandOnButtons</a></li><li><a href="window.html#.Height">Height</a></li><li><a href="window.html#.ID">ID</a></li><li><a href="window.html#.InstanceType">InstanceType</a></li><li><a href="window.html#.IsTransparent">IsTransparent</a></li><li><a href="window.html#.IsVisible">IsVisible</a></li><li><a href="window.html#.JsMemoryStats">JsMemoryStats</a></li><li><a href="window.html#.MaxHeight">MaxHeight</a></li><li><a href="window.html#.MaxWidth">MaxWidth</a></li><li><a href="window.html#.MemoryLimit">MemoryLimit</a></li><li><a href="window.html#.MinHeight">MinHeight</a></li><li><a href="window.html#.MinWidth">MinWidth</a></li><li><a href="window.html#.Name">Name</a></li><li><a href="window.html#.PanelMemoryUsage">PanelMemoryUsage</a></li><li><a href="window.html#.ScriptInfo">ScriptInfo</a></li><li><a href="window.html#.Tooltip">Tooltip</a></li><li><a href="window.html#.TotalMemoryUsage">TotalMemoryUsage</a></li><li><a href="window.html#.TrackMouseEnterLeaveOnPanels">TrackMouseEnterLeaveOnPanels</a></li><li><a href="window.html#.TrackMouseMoveOnPanels">TrackMouseMoveOnPanels</a></li><li><a href="window.html#.Width">Width</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="window.html#.ClearInterval">ClearInterval</a></li><li><a href="window.html#.ClearTimeout">ClearTimeout</a></li><li><a href="window.html#.CreateButton">CreateButton</a></li><li><a href="window.html#.CreatePopupMenu">CreatePopupMenu</a></li><li><a href="window.html#.CreateThemeManager">CreateThemeManager</a></li><li><a href="window.html#.CreateTooltip">CreateTooltip</a></li><li><a href="window.html#.DefinePanel">DefinePanel</a></li><li><a href="window.html#.DefineScript">DefineScript</a></li><li><a href="window.html#.EditScript">EditScript</a></li><li><a href="window.html#.GetButton">GetButton</a></li><li><a href="window.html#.GetColourCUI">GetColourCUI</a></li><li><a href="window.html#.GetColourDUI">GetColourDUI</a></li><li><a href="window.html#.GetFontCUI">GetFontCUI</a></li><li><a href="window.html#.GetFontDUI">GetFontDUI</a></li><li><a href="window.html#.GetPanel">GetPanel</a></li><li><a href="window.html#.GetPanelByIndex">GetPanelByIndex</a></li><li><a href="window.html#.GetProperty">GetProperty</a></li><li><a href="window.html#.NotifyOthers">NotifyOthers</a></li><li><a href="window.html#.RadioButtons">RadioButtons</a></li><li><a href="window.html#.Reload">Reload</a></li><li><a href="window.html#.RemoveButton">RemoveButton</a></li><li><a href="window.html#.Repaint">Repaint</a></li><li><a href="window.html#.RepaintRect">RepaintRect</a></li><li><a href="window.html#.SetCursor">SetCursor</a></li><li><a href="window.html#.SetInterval">SetInterval</a></li><li><a href="window.html#.SetProperty">SetProperty</a></li><li><a href="window.html#.SetTimeout">SetTimeout</a></li><li><a href="window.html#.ShowConfigure">ShowConfigure</a></li><li><a href="window.html#.ShowConfigureV2">ShowConfigureV2</a></li><li><a href="window.html#.ShowProperties">ShowProperties</a></li></ul></div></li></ul></div><div class="lnb-api hidden"><h3>Global</h3><ul><li class="hidden"><a href="global.html#ArtPromiseResult">ArtPromiseResult</a></li><li class="hidden"><a href="global.html#JsMemoryStats">JsMemoryStats</a></li><li class="hidden"><a href="global.html#JsPackageDirs">JsPackageDirs</a></li><li class="hidden"><a href="global.html#JsPackageInfo">JsPackageInfo</a></li><li class="hidden"><a href="global.html#ScriptInfo">ScriptInfo</a></li><li><a href="global.html#clearInterval">clearInterval</a></li><li><a href="global.html#clearTimeout">clearTimeout</a></li><li class="hidden"><a href="global.html#float">float</a></li><li><a href="global.html#include">include</a></li><li><a href="global.html#setInterval">setInterval</a></li><li><a href="global.html#setTimeout">setTimeout</a></li></ul></div>
+</nav>
+<div id="resizer"></div>
+
+<div class="main" id="main">
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ *  @module Flags 
+ */
+
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000000
+ */
+const DT_TOP = 0x00000000;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000000
+ */
+const DT_LEFT = 0x00000000;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000001
+ */
+const DT_CENTER = 0x00000001;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000002
+ */
+const DT_RIGHT = 0x00000002;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000004
+ */
+const DT_VCENTER = 0x00000004;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000008
+ */
+const DT_BOTTOM = 0x00000008;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000010
+ */
+const DT_WORDBREAK = 0x00000010;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000020
+ */
+const DT_SINGLELINE = 0x00000020;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000040
+ */
+const DT_EXPANDTABS = 0x00000040;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000080
+ */
+const DT_TABSTOP = 0x00000080;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000100
+ */
+const DT_NOCLIP = 0x00000100;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000200
+ */
+const DT_EXTERNALLEADING = 0x00000200;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000400
+ */
+const DT_CALCRECT = 0x00000400;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}&lt;br>
+ * NOTE: Please use this flag, or a '&amp;' character will become an underline '_'
+ * @memberof module:Flags
+ * @default 0x00000800
+ */
+const DT_NOPREFIX = 0x00000800;  // NOTE: Please use this flag, or a '&amp;' character will become an underline '_'
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00001000
+ */
+const DT_INTERNAL = 0x00001000;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00002000
+ */
+const DT_EDITCONTROL = 0x00002000;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00004000
+ */
+const DT_PATH_ELLIPSIS = 0x00004000;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00008000
+ */
+const DT_END_ELLIPSIS = 0x00008000;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}&lt;br>
+ * DO NOT USE
+ * @memberof module:Flags
+ * @default 0x00010000
+ */
+const DT_MODIFYSTRING = 0x00010000;  // DO NOT USE
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00020000
+ */
+const DT_RTLREADING = 0x00020000;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00040000
+ */
+const DT_WORD_ELLIPSIS = 0x00040000;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00080000
+ */
+const DT_NOFULLWIDTHCHARBREAK = 0x00080000;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00100000
+ */
+const DT_HIDEPREFIX = 0x00100000;
+/** 
+ * Flag used with {@link GdiGraphics#GdiDrawText GdiDrawText}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/dd162498(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00200000
+ */
+const DT_PREFIXONLY = 0x00200000;
+
+/** 
+ * Used in {@link MenuObject#AppendMenuItem AppendMenuItem} and {@link MenuObject#AppendTo AppendTo}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms647616(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000800
+ */
+const MF_SEPARATOR = 0x00000800;
+/** 
+ * Used in {@link MenuObject#AppendMenuItem AppendMenuItem} and {@link MenuObject#AppendTo AppendTo}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms647616(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000000
+ */
+const MF_ENABLED = 0x00000000;
+/** 
+ * Used in {@link MenuObject#AppendMenuItem AppendMenuItem} and {@link MenuObject#AppendTo AppendTo}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms647616(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000001
+ */
+const MF_GRAYED = 0x00000001;
+/** 
+ * Used in {@link MenuObject#AppendMenuItem AppendMenuItem} and {@link MenuObject#AppendTo AppendTo}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms647616(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000002
+ */
+const MF_DISABLED = 0x00000002;
+/** 
+ * Used in {@link MenuObject#AppendMenuItem AppendMenuItem} and {@link MenuObject#AppendTo AppendTo}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms647616(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000000
+ */
+const MF_UNCHECKED = 0x00000000;
+/** 
+ * Used in {@link MenuObject#AppendMenuItem AppendMenuItem} and {@link MenuObject#AppendTo AppendTo}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms647616(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000008
+ */
+const MF_CHECKED = 0x00000008;
+/** 
+ * Used in {@link MenuObject#AppendMenuItem AppendMenuItem} and {@link MenuObject#AppendTo AppendTo}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms647616(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000000
+ */
+const MF_STRING = 0x00000000;
+/** 
+ * Used in {@link MenuObject#AppendMenuItem AppendMenuItem} and {@link MenuObject#AppendTo AppendTo}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms647616(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000020
+ */
+const MF_MENUBARBREAK = 0x00000020;
+/** 
+ * Used in {@link MenuObject#AppendMenuItem AppendMenuItem} and {@link MenuObject#AppendTo AppendTo}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms647616(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x00000040
+ */
+const MF_MENUBREAK = 0x00000040;
+
+/** 
+ * Used in {@link MenuObject#TrackPopupMenu TrackPopupMenu}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms648002(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x0000
+ */
+const TPM_LEFTALIGN       = 0x0000;
+/** 
+ * Used in {@link MenuObject#TrackPopupMenu TrackPopupMenu}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms648002(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x0004
+ */
+const TPM_CENTERALIGN     = 0x0004;
+/** 
+ * Used in {@link MenuObject#TrackPopupMenu TrackPopupMenu}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms648002(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x0008
+ */
+const TPM_RIGHTALIGN      = 0x0008;
+/** 
+ * Used in {@link MenuObject#TrackPopupMenu TrackPopupMenu}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms648002(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x0000
+ */
+const TPM_TOPALIGN        = 0x0000;
+/** 
+ * Used in {@link MenuObject#TrackPopupMenu TrackPopupMenu}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms648002(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x0010
+ */
+const TPM_VCENTERALIGN    = 0x0010;
+/** 
+ * Used in {@link MenuObject#TrackPopupMenu TrackPopupMenu}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms648002(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x0020
+ */
+const TPM_BOTTOMALIGN     = 0x0020;
+/** 
+ * Used in {@link MenuObject#TrackPopupMenu TrackPopupMenu}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms648002(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x0000
+ */
+const TPM_HORIZONTAL      = 0x0000;     /* Horz alignment matters more */
+/** 
+ * Used in {@link MenuObject#TrackPopupMenu TrackPopupMenu}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms648002(VS.85).aspx}&lt;br>
+ * NOTE: Vert alignment matters more
+ * @memberof module:Flags
+ * @default 0x0040
+ */
+const TPM_VERTICAL        = 0x0040;     /* Vert alignment matters more */
+
+/**
+ * Animations
+ * Used in {@link MenuObject#TrackPopupMenu TrackPopupMenu}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms648002(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x0400
+ */
+const TPM_HORPOSANIMATION = 0x0400;
+/**
+ * Animations
+ * Used in {@link MenuObject#TrackPopupMenu TrackPopupMenu}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms648002(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x0800
+ */
+const TPM_HORNEGANIMATION = 0x0800;
+/**
+ * Animations
+ * Used in {@link MenuObject#TrackPopupMenu TrackPopupMenu}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms648002(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x1000
+ */
+const TPM_VERPOSANIMATION = 0x1000;
+/**
+ * Animations
+ * Used in {@link MenuObject#TrackPopupMenu TrackPopupMenu}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms648002(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x2000
+ */
+const TPM_VERNEGANIMATION = 0x2000;
+/**
+ * Animations
+ * Used in {@link MenuObject#TrackPopupMenu TrackPopupMenu}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms648002(VS.85).aspx}
+ * @memberof module:Flags
+ * @default 0x4000
+ */
+const TPM_NOANIMATION     = 0x4000;
+
+/** 
+ * Mask for mouse callbacks (on_mouse_*)
+ * @memberof module:Flags
+ * @default 0x0001
+ */
+const MK_LBUTTON  = 0x0001;
+/** 
+ * Mask for mouse callbacks (on_mouse_*)
+ * @memberof module:Flags
+ * @default 0x0002
+ */
+const MK_RBUTTON  = 0x0002;
+/** 
+ * Mask for mouse callbacks (on_mouse_*)
+ * @memberof module:Flags
+ * @default 0x0004
+ */
+const MK_SHIFT    = 0x0004;
+/** 
+ * Mask for mouse callbacks (on_mouse_*)
+ * @memberof module:Flags
+ * @default 0x0008
+ */
+const MK_CONTROL  = 0x0008; // The CTRL key is down.
+/** 
+ * Mask for mouse callbacks (on_mouse_*)
+ * @memberof module:Flags
+ * @default 0x0010
+ */
+const MK_MBUTTON  = 0x0010;
+/** 
+ * Mask for mouse callbacks (on_mouse_*)
+ * @memberof module:Flags
+ * @default 0x0020
+ */
+const MK_XBUTTON1 = 0x0020;
+/** 
+ * Mask for mouse callbacks (on_mouse_*)
+ * @memberof module:Flags
+ * @default 0x0040
+ */
+const MK_XBUTTON2 = 0x0040;
+
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_ARROW = 32512;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_IBEAM = 32513;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_WAIT = 32514;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_CROSS = 32515;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_UPARROW = 32516;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_SIZE = 32640;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_ICON = 32641;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_SIZENWSE = 32642;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_SIZENESW = 32643;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_SIZEWE = 32644;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_SIZENS = 32645;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_SIZEALL = 32646;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_NO = 32648;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_APPSTARTING = 32650;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_HAND = 32649;
+/**
+ * Used in {@link window.SetCursor}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursor}
+ * @memberof module:Flags
+ * @default
+ */
+const IDC_HELP = 32651;
+
+/**
+ * Used in {@link utils.Glob}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx}
+ * @memberof module:Flags
+ * @default 0x00000001
+ */
+const FILE_ATTRIBUTE_READONLY            = 0x00000001;
+/**
+ * Used in {@link utils.Glob}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx}
+ * @memberof module:Flags
+ * @default 0x00000002
+ */
+const FILE_ATTRIBUTE_HIDDEN              = 0x00000002;
+/**
+ * Used in {@link utils.Glob}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx}
+ * @memberof module:Flags
+ * @default 0x00000004
+ */
+const FILE_ATTRIBUTE_SYSTEM              = 0x00000004;
+/**
+ * Used in {@link utils.Glob}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx}
+ * @memberof module:Flags
+ * @default 0x00000010
+ */
+const FILE_ATTRIBUTE_DIRECTORY           = 0x00000010;
+/**
+ * Used in {@link utils.Glob}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx}
+ * @memberof module:Flags
+ * @default 0x00000020
+ */
+const FILE_ATTRIBUTE_ARCHIVE             = 0x00000020;
+/**
+ * Used in {@link utils.Glob}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx}
+ * @memberof module:Flags
+ * @default 0x00000080
+ */
+const FILE_ATTRIBUTE_NORMAL              = 0x00000080;
+/**
+ * Used in {@link utils.Glob}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx}
+ * @memberof module:Flags
+ * @default 0x00000100
+ */
+const FILE_ATTRIBUTE_TEMPORARY           = 0x00000100;
+/**
+ * Used in {@link utils.Glob}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx}
+ * @memberof module:Flags
+ * @default 0x00000200
+ */
+const FILE_ATTRIBUTE_SPARSE_FILE         = 0x00000200;
+/**
+ * Used in {@link utils.Glob}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx}
+ * @memberof module:Flags
+ * @default 0x00000400
+ */
+const FILE_ATTRIBUTE_REPARSE_POINT       = 0x00000400;
+/**
+ * Used in {@link utils.Glob}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx}
+ * @memberof module:Flags
+ * @default 0x00000800
+ */
+const FILE_ATTRIBUTE_COMPRESSED          = 0x00000800;
+/**
+ * Used in {@link utils.Glob}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx}
+ * @memberof module:Flags
+ * @default 0x00001000
+ */
+const FILE_ATTRIBUTE_OFFLINE             = 0x00001000;
+/**
+ * Used in {@link utils.Glob}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx}
+ * @memberof module:Flags
+ * @default 0x00002000
+ */
+const FILE_ATTRIBUTE_NOT_CONTENT_INDEXED = 0x00002000;
+/**
+ * Used in {@link utils.Glob}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx}
+ * @memberof module:Flags
+ * @default 0x00004000
+ */
+const FILE_ATTRIBUTE_ENCRYPTED           = 0x00004000;
+
+/**
+ * With {@link window.DlgCode}, can be combined.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/dlgbox/wm-getdlgcode}
+ * If you don't know what they mean, igonre them.
+ * @memberof module:Flags
+ * @default 0x0001
+ */
+const DLGC_WANTARROWS            = 0x0001;     /* Control wants arrow keys         */
+/**
+ * With {@link window.DlgCode}, can be combined.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/dlgbox/wm-getdlgcode}
+ * If you don't know what they mean, igonre them.
+ * @memberof module:Flags
+ * @default 0x0002
+ */
+const DLGC_WANTTAB               = 0x0002;     /* Control wants tab keys           */
+/**
+ * With {@link window.DlgCode}, can be combined.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/dlgbox/wm-getdlgcode}
+ * If you don't know what they mean, igonre them.
+ * @memberof module:Flags
+ * @default 0x0004
+ */
+const DLGC_WANTALLKEYS           = 0x0004;     /* Control wants all keys           */
+/**
+ * With {@link window.DlgCode}, can be combined.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/dlgbox/wm-getdlgcode}
+ * If you don't know what they mean, igonre them.
+ * @memberof module:Flags
+ * @default 0x0004
+ */
+const DLGC_WANTMESSAGE           = 0x0004;     /* Pass message to control          */
+/**
+ * With {@link window.DlgCode}, can be combined.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/dlgbox/wm-getdlgcode}
+ * If you don't know what they mean, igonre them.
+ * @memberof module:Flags
+ * @default 0x0008
+ */
+const DLGC_HASSETSEL             = 0x0008;     /* Understands EM_SETSEL message    */
+/**
+ * With {@link window.DlgCode}, can be combined.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/dlgbox/wm-getdlgcode}
+ * If you don't know what they mean, igonre them.
+ * @memberof module:Flags
+ * @default 0x0010
+ */
+const DLGC_DEFPUSHBUTTON         = 0x0010;     /* Default pushbutton               */
+/**
+ * With {@link window.DlgCode}, can be combined.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/dlgbox/wm-getdlgcode}
+ * If you don't know what they mean, igonre them.
+ * @memberof module:Flags
+ * @default 0x0020
+ */
+const DLGC_UNDEFPUSHBUTTON       = 0x0020;     /* Non-default pushbutton           */
+/**
+ * With {@link window.DlgCode}, can be combined.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/dlgbox/wm-getdlgcode}
+ * If you don't know what they mean, igonre them.
+ * @memberof module:Flags
+ * @default 0x0040
+ */
+const DLGC_RADIOBUTTON           = 0x0040;     /* Radio button                     */
+/**
+ * With {@link window.DlgCode}, can be combined.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/dlgbox/wm-getdlgcode}
+ * If you don't know what they mean, igonre them.
+ * @memberof module:Flags
+ * @default 0x0080
+ */
+const DLGC_WANTCHARS             = 0x0080;     /* Want WM_CHAR messages            */
+/**
+ * With {@link window.DlgCode}, can be combined.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/dlgbox/wm-getdlgcode}
+ * If you don't know what they mean, igonre them.
+ * @memberof module:Flags
+ * @default 0x0100
+ */
+const DLGC_STATIC                = 0x0100;     /* Static item: don't include       */
+/**
+ * With {@link window.DlgCode}, can be combined.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/dlgbox/wm-getdlgcode}
+ * If you don't know what they mean, igonre them.
+ * @memberof module:Flags
+ * @default 0x2000
+ */
+const DLGC_BUTTON                = 0x2000;     /* Button item: can be checked      */
+
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x08
+ */
+const VK_BACK = 0x08;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x09
+ */
+const VK_TAB = 0x09;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x0D
+ */
+const VK_RETURN = 0x0D;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x10
+ */
+const VK_SHIFT = 0x10;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x11
+ */
+const VK_CONTROL = 0x11;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x12
+ */
+const VK_ALT = 0x12;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x1B
+ */
+const VK_ESCAPE = 0x1B;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x21
+ */
+const VK_PGUP = 0x21;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x22
+ */
+const VK_PGDN = 0x22;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x23
+ */
+const VK_END = 0x23;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x24
+ */
+const VK_HOME = 0x24;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x25
+ */
+const VK_LEFT = 0x25;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x26
+ */
+const VK_UP = 0x26;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x27
+ */
+const VK_RIGHT = 0x27;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x28
+ */
+const VK_DOWN = 0x28;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x2D
+ */
+const VK_INSERT = 0x2D;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x2E
+ */
+const VK_DELETE = 0x2E;
+/**
+ * Used with {@link utils.IsKeyPressed}, {@link module:Callbacks.on_key_down on_key_down}, {@link module:Callbacks.on_key_up on_key_up}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes}
+ * @memberof module:Flags
+ * @default 0x20
+ */
+const VK_SPACEBAR = 0x20;
+
+/**
+ * Used in {@link FbTooltip#GetDelayTime GetDelayTime} and {@link FbTooltip#SetDelayTime SetDelayTime}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/bb760404(VS.85).aspx}
+ * @memberof module:Flags
+ * @default
+ */
+const TTDT_AUTOMATIC = 0;
+/**
+ * Used in {@link FbTooltip#GetDelayTime GetDelayTime} and {@link FbTooltip#SetDelayTime SetDelayTime}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/bb760404(VS.85).aspx}
+ * @memberof module:Flags
+ * @default
+ */
+const TTDT_RESHOW = 1;
+/**
+ * Used in {@link FbTooltip#GetDelayTime GetDelayTime} and {@link FbTooltip#SetDelayTime SetDelayTime}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/bb760404(VS.85).aspx}
+ * @memberof module:Flags
+ * @default
+ */
+const TTDT_AUTOPOP = 2;
+/**
+ * Used in {@link FbTooltip#GetDelayTime GetDelayTime} and {@link FbTooltip#SetDelayTime SetDelayTime}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/bb760404(VS.85).aspx}
+ * @memberof module:Flags
+ * @default
+ */
+const TTDT_INITIAL = 3;
+
+/**
+ * Used in {@link gdi.Font}, can be combined.&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms534124(VS.85).aspx}
+ * @memberof module:Flags
+ * @default
+ */
+const FontStyle = {
+    Regular: 0,
+    Bold: 1,
+    Italic: 2,
+    BoldItalic: 3,
+    Underline: 4,
+    Strikeout: 8
+};
+
+/**
+ * Used in {@link GdiGraphics#SetTextRenderingHint SetTextRenderingHint}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms534404(VS.85).aspx}
+ * @memberof module:Flags
+ * @default
+ */
+const TextRenderingHint = {
+    SystemDefault: 0,
+    SingleBitPerPixelGridFit: 1,
+    SingleBitPerPixel: 2,
+    AntiAliasGridFit: 3,
+    AntiAlias: 4,
+    ClearTypeGridFit: 5
+};
+
+/**
+ * Used in {@link GdiGraphics#SetSmoothingMode SetSmoothingMode}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms534173(VS.85).aspx}
+ * @memberof module:Flags
+ * @default
+ */
+const SmoothingMode = {
+    Invalid: -1,
+    Default: 0,
+    HighSpeed: 1,
+    HighQuality: 2,
+    None: 3,
+    AntiAlias: 4
+};
+
+/**
+ * Used in {@link GdiGraphics#SetInterpolationMode SetInterpolationMode}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms534141(VS.85).aspx}
+ * @memberof module:Flags
+ * @default
+ */
+const InterpolationMode = {
+    Invalid: -1,
+    Default: 0,
+    LowQuality: 1,
+    HighQuality: 2,
+    Bilinear: 3,
+    Bicubic: 4,
+    NearestNeighbor: 5,
+    HighQualityBilinear: 6,
+    HighQualityBicubic: 7
+};
+
+/**
+ * Used in {@link GdiBitmap#RotateFlip RotateFlip}&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms534171(VS.85).aspx}
+ * @memberof module:Flags
+ * @default
+ */
+const RotateFlipType = {
+    RotateNoneFlipNone: 0,
+    Rotate90FlipNone: 1,
+    Rotate180FlipNone: 2,
+    Rotate270FlipNone: 3,
+
+    RotateNoneFlipX: 4,
+    Rotate90FlipX: 5,
+    Rotate180FlipX: 6,
+    Rotate270FlipX: 7,
+
+    RotateNoneFlipY: 6,
+    Rotate90FlipY: 7,
+    Rotate180FlipY: 4,
+    Rotate270FlipY: 5,
+
+    RotateNoneFlipXY: 2,
+    Rotate90FlipXY: 3,
+    Rotate180FlipXY: 0,
+    Rotate270FlipXY: 1
+};
+
+/**
+ * h_align/v_align:&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms534177(VS.85).aspx}
+ * @memberof module:Flags
+ * @default
+ */
+const StringAlignment = {
+    Near: 0,
+    Center: 1,
+    Far: 2
+};
+
+/**
+ * trimming:&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms534403(VS.85).aspx}
+ * @memberof module:Flags
+ * @default
+ */
+const StringTrimming = {
+    None: 0,
+    Character: 1,
+    Word: 2,
+    EllipsisCharacter: 3,
+    EllipsisWord: 4,
+    EllipsisPath: 5
+};
+
+/**
+ * flags for StringFormat (helpers) can be combined of:&lt;br>
+ * For more information, see: {@link http://msdn.microsoft.com/en-us/library/ms534181(VS.85).aspx}
+ * @memberof module:Flags
+ * @default
+ */
+const StringFormatFlags = {
+    DirectionRightToLeft: 0x00000001,
+    DirectionVertical: 0x00000002,
+    NoFitBlackBox: 0x00000004,
+    DisplayFormatControl: 0x00000020,
+    NoFontFallback: 0x00000400,
+    MeasureTrailingSpaces: 0x00000800,
+    NoWrap: 0x00001000,
+    LineLimit: 0x00002000,
+    NoClip: 0x00004000
+};
+
+/**
+ * Used in {@link utils.GetAlbumArtV2}, {@link utils.GetAlbumArtEmbedded}, {@link utils.GetAlbumArtAsync}, {@link utils.GetAlbumArtAsyncV2}
+ * @memberof module:Flags
+ * @default
+ */
+const AlbumArtId = {
+    front: 0,
+    back: 1,
+    disc: 2,
+    icon: 3,
+    artist: 4
+};
+
+/**
+ * Used in {@link window.GetColourCUI}
+ * @memberof module:Flags
+ * @default
+ */
+const ColourTypeCUI = {
+    text: 0,
+    selection_text: 1,
+    inactive_selection_text: 2,
+    background: 3,
+    selection_background: 4,
+    inactive_selection_background: 5,
+    active_item_frame: 6
+};
+
+/**
+ * Used in {@link window.GetFontCUI}
+ * @memberof module:Flags
+ * @default
+ */
+const FontTypeCUI = {
+    items: 0,
+    labels: 1
+};
+
+/**
+ * Used in {@link window.GetColourDUI}
+ * @memberof module:Flags
+ * @default
+ */
+const ColourTypeDUI = {
+    text: 0,
+    background: 1,
+    highlight: 2,
+    selection: 3
+};
+
+/**
+ * Used in {@link window.GetFontDUI}
+ * @memberof module:Flags
+ * @default
+ */
+const FontTypeDUI = {
+    defaults: 0,
+    tabs: 1,
+    lists: 2,
+    playlists: 3,
+    statusbar: 4,
+    console: 5
+};
+
+/**
+ * Used as a result of {@link plman.PlaybackOrder} and in {@link module:Callbacks.on_playback_order_changed on_playback_order_changed}
+ * @memberof module:Flags
+ * @default
+ */
+const PlaybackOrder = {
+    Default: 0,
+    RepeatPlaylist: 1,
+    RepeatTrack: 2,
+    Random: 3,
+    ShuffleTracks: 4,
+    ShuffleAlbums: 5,
+    ShuffleFolders: 6    
+};
+
+/**
+ * Used in {@link module:Callbacks.on_playback_queue_changed on_playback_queue_changed}
+ * @memberof module:Flags
+ * @default
+ */
+const QueueChangeOrigin = {
+    UserAdded: 0,
+    UserRemoved: 1,
+    PlaybackAdvance: 2
+};
+
+/**
+ * Used in {@link module:Callbacks.on_playback_starting on_playback_starting}
+ * @memberof module:Flags
+ * @default
+ */
+const PlaybackStartCmd = {
+    Default: 0,
+    Play: 1,
+    PlayNext: 2,
+    PlayPrevious: 3,
+    SetTrack: 4,
+    PlayRandom: 5,
+    Resume: 6
+};
+
+/**
+ * Used in {@link module:Callbacks.on_playback_stop on_playback_stop}
+ * @memberof module:Flags
+ * @default
+ */
+const PlaybackStopReason = {
+    InvokedByUser: 0,
+    EndOfFile: 1,
+    StartingAnotherTrack: 2,
+    PlayerShutDown: 3
+};
+
+/**
+ * Used in {@link module:Callbacks.on_playback_stop on_playback_stop}
+ * @memberof module:Flags
+ * @default
+ */
+const ReplayGainMode = {
+    None: 0,
+    Track: 1,
+    Album: 2,
+    TrackAlbumByPlaybackOrder: 3
+};
+
+/**
+ * Used as a result of {@link fb.GetSelectionType}
+ * @memberof module:Flags
+ * @default
+ */
+const SelectionType = {
+    Undefined: 0,
+    ActivePlaylistSelection: 1,
+    CallerActivePlaylist: 2,
+    PlaylistManager: 3,
+    NowPlaying: 4,
+    KeyboardShortcutList: 5,
+    MediaLibraryViewer: 6
+};
+
+/** 
+ * lower case letters&lt;br>
+ * Flag used with {@link utils.MapString}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex}
+ * @memberof module:Flags
+ * @default 0x00000100
+ */
+const LCMAP_LOWERCASE =           0x00000100; // lower case letters
+/** 
+ * UPPER CASE LETTERS&lt;br>
+ * Flag used with {@link utils.MapString}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex}
+ * @memberof module:Flags
+ * @default 0x00000200
+ */
+const LCMAP_UPPERCASE =           0x00000200; // UPPER CASE LETTERS
+/** 
+ * Title Case Letters&lt;br>
+ * Flag used with {@link utils.MapString}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex}
+ * @memberof module:Flags
+ * @default 0x00000300
+ */
+const LCMAP_TITLECASE =           0x00000300; // Title Case Letters
+/** 
+ * WC sort key (normalize)&lt;br>
+ * Flag used with {@link utils.MapString}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex}
+ * @memberof module:Flags
+ * @default 0x00000400
+ */
+const LCMAP_SORTKEY =             0x00000400; // WC sort key (normalize)
+/** 
+ * byte reversal&lt;br>
+ * Flag used with {@link utils.MapString}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex}
+ * @memberof module:Flags
+ * @default 0x00000800
+ */
+const LCMAP_BYTEREV =             0x00000800; // byte reversal
+/** 
+ * map katakana to hiragana&lt;br>
+ * Flag used with {@link utils.MapString}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex}
+ * @memberof module:Flags
+ * @default 0x00100000
+ */
+const LCMAP_HIRAGANA =            0x00100000; // map katakana to hiragana
+/** 
+ * map hiragana to katakana&lt;br>
+ * Flag used with {@link utils.MapString}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex}
+ * @memberof module:Flags
+ * @default 0x00200000
+ */
+const LCMAP_KATAKANA =            0x00200000; // map hiragana to katakana
+/** 
+ * map double byte to single byte&lt;br>
+ * Flag used with {@link utils.MapString}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex}
+ * @memberof module:Flags
+ * @default 0x00400000
+ */
+const LCMAP_HALFWIDTH =           0x00400000; // map double byte to single byte
+/** 
+ * map single byte to double byte&lt;br>
+ * Flag used with {@link utils.MapString}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex}
+ * @memberof module:Flags
+ * @default 0x00800000
+ */
+const LCMAP_FULLWIDTH =           0x00800000; // map single byte to double byte
+/** 
+ * use linguistic rules for casing&lt;br>
+ * Flag used with {@link utils.MapString}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex}
+ * @memberof module:Flags
+ * @default 0x01000000
+ */
+const LCMAP_LINGUISTIC_CASING =   0x01000000; // use linguistic rules for casing
+/** 
+ * map traditional chinese to simplified chinese&lt;br>
+ * Flag used with {@link utils.MapString}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex}
+ * @memberof module:Flags
+ * @default 0x02000000
+ */
+const LCMAP_SIMPLIFIED_CHINESE =  0x02000000; // map traditional chinese to simplified chinese
+/** 
+ * map simplified chinese to traditional chinese&lt;br>
+ * Flag used with {@link utils.MapString}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex}
+ * @memberof module:Flags
+ * @default 0x04000000
+ */
+const LCMAP_TRADITIONAL_CHINESE = 0x04000000; // map simplified chinese to traditional chinese
+
+/**
+ * Used as a result of {@link window.InstanceType}
+ * @memberof module:Flags
+ * @default
+ */
+const UIInstanceType = {
+    ColumnsUI: 0,
+    DefaultUI: 1
+};
+
+/**
+ * SupportColourFlagCUI = {
+ *     text: 0x0,
+ *     selection_text: 0x2,
+ *     inactive_selection_text: 0x4,
+ *     background: 0x8,
+ *     selection_background: 0x10;
+ *     inactive_selection_background: 0x20,
+ *     active_item_frame: 0x40,
+ *     group_foreground: 0x80,
+ *     group_background: 0x100,
+ *     colour_flag_all: 0x1ff
+ * };
+ * 
+ * === Colours ===
+ * Used in GetColourCUI() as client_guid
+ * NG Playlist: "{C882D3AC-C014-44DF-9C7E-2DADF37645A0}" Support Bits: 0x000001ff
+ * Columns Playlist: "{0CF29D60-1262-4F55-A6E1-BC4AE6579D19}" Support Bits: 0x000001ff
+ * Item Details: "{4E20CEED-42F6-4743-8EB3-610454457E19}" Support Bits: 0x00000009
+ * Album List: "{DA66E8F3-D210-4AD2-89D4-9B2CC58D0235}" Support Bits: 0x00000049
+ * Filter Panel: "{4D6774AF-C292-44AC-8A8F-3B0855DCBDF4}" Support Bits: 0x000001ff
+ * Biography View: "{1CE33A5C-1D79-48F7-82EF-089EC49A9CA3}" Support Bits: 0x00000059
+ * Artwork View: "{E32DCBA9-A2BF-4901-AB43-228628071410}" Support Bits: 0x00000008
+ * Playlist Switcher: "{EB38A997-3B5F-4126-8746-262AA9C1F94B}" Support Bits: 0x000001ff
+ * Item Properties: "{862F8A37-16E0-4A74-B27E-2B73DB567D0F}" Support Bits: 0x000001ff
+ * 
+ * === Fonts ===
+ * Used in GetFontCUI() as client_guid
+ * Album List: "{06B856CC-86E7-4459-A75C-2DAB5B33B8BB}"
+ * Item Properties: Group Titles: "{AF5A96A6-96ED-468F-8BA1-C22533C53491}"
+ * Columns Playlist: Items: "{82196D79-69BC-4041-8E2A-E3B4406BB6FC}"
+ * NG Playlist: Group Titles: "{FB127FFA-1B35-4572-9C1A-4B96A5C5D537}"
+ * NG Playlist: Column Titles: "{30FBD64C-2031-4F0B-A937-F21671A2E195}"
+ * Playlist Switcher: "{70A5C273-67AB-4BB6-B61C-F7975A6871FD}"
+ * Filter Panel: Column Titles: "{FCA8752B-C064-41C4-9BE3-E125C7C7FC34}"
+ * Columns Playlist: Column Titles: "{C0D3B76C-324D-46D3-BB3C-E81C7D3BCB85}"
+ * Tab Stack: "{6F000FC4-3F86-4FC5-80EA-F7AA4D9551E6}"
+ * Console: "{26059FEB-488B-4CE1-824E-4DF113B4558E}"
+ * Biography View: "{F692FE36-D0CB-40A9-A53E-1492D6EFAC65}"
+ * NG Playlist: Items: "{19F8E0B3-E822-4F07-B200-D4A67E4872F9}"
+ * Playlist Tabs: "{942C36A4-4E28-4CEA-9644-F223C9A838EC}"
+ * Status Bar: "{B9D5EA18-5827-40BE-A896-302A71BCAA9C}"
+ * Item Details: "{77F3FA70-E39C-46F8-8E8A-6ECC64DDE234}"
+ * Item Properties: Column Titles: "{7B9DF268-4ECC-4E10-A308-E145DA9692A5}"
+ * Item Properties: Items: "{755FBB3D-A8D4-46F3-B0BA-005B0A10A01A}"
+ * Filter Panel: Items: "{D93F1EF3-4AEE-4632-B5BF-0220CEC76DED}"
+*/
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<footer>
+    <img class="logo" src="img/toast-ui.png" style="">
+    <div class="footer-text">NHN Entertainment. Frontend Development Lab</div>
+</footer>
+<script>prettyPrint();</script>
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/tui-doc.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+    <script>
+        var id = '_sub'.replace(/"/g, '_');
+        var selectedApi = document.getElementById(id); // do not use jquery selector
+        var $selectedApi = $(selectedApi);
+
+        $selectedApi.removeClass('hidden');
+        $selectedApi.parent().find('.glyphicon').removeClass('glyphicon-plus').addClass('glyphicon-minus');
+        showLnbApi();
+    </script>
+
+</body>
+</html>

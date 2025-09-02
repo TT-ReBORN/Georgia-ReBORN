@@ -1,12 +1,12 @@
-/////////////////////////////////////////////////////////////////////////////////
+﻿/////////////////////////////////////////////////////////////////////////////////
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Preloader                                * //
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-10-2024                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -18,7 +18,7 @@
 /////////////////////
 window.DefineScript('Georgia-ReBORN', {
 	author: 'TT',
-	version: window.GetProperty('Georgia-ReBORN - #Version: Do not hand edit!', '3.0-RC3'),
+	version: window.GetProperty('Georgia-ReBORN - #Version: Do not hand edit!', '3.0-x64-DEV'),
 	features: { drag_n_drop: true }
 });
 
@@ -316,6 +316,7 @@ class Preloader {
 			(this.themeNeon ? RGB(20, 20, 20) :
 			themeCustom('grCol_preloaderBg', themeNight ? RGB(25, 25, 25) : RGB(245, 245, 245)))
 		);
+		UIWizard.WindowBgColor = this.col.bg;
 
 		this.col.lowerBarTitle = ({
 			white: RGB(120, 120, 120),
@@ -369,20 +370,6 @@ class Preloader {
 			cream: RGB(230, 230, 230)
 		}[grSet.theme] ||
 			themeCustom('grCol_preloaderProgressBarFrame', themeNight ? RGB(25, 25, 25) : RGB(255, 255, 255))
-		);
-
-		this.col.uiHacksFrame = ({
-			white: grSet.styleBlackAndWhite ? RGB(230, 230, 230) : grSet.styleBlackAndWhite2 ? RGB(25, 25, 25) : RGB(245, 245, 245),
-			black: RGB(35, 35, 35),
-			reborn: rebornDark ? RGB(25, 25, 25) : RGB(245, 245, 245),
-			random: rebornDark ? RGB(25, 25, 25) : RGB(245, 245, 245),
-			blue: RGB(63, 155, 202),
-			darkblue: RGB(27, 55, 90),
-			red: RGB(125, 0, 0),
-			cream: RGB(255, 247, 240)
-		}[grSet.theme] ||
-			(this.themeNeon ? RGB(30, 30, 30) :
-			themeCustom('grCol_preloaderUIHacksFrame', themeNight ? RGB(25, 25, 25) : RGB(245, 245, 245)))
 		);
 	}
 
@@ -442,10 +429,6 @@ class Preloader {
 
 		// * BACKGROUND * //
 		gr.FillSolidRect(0, 0, this.ww, this.wh, this.col.bg);
-
-		// * UIHacks aero glass shadow frame fix
-		gr.DrawLine(0, 0, this.ww, 0, 1, this.col.uiHacksFrame);
-		gr.DrawLine(this.ww, this.wh - 1, 0, this.wh - 1, 1, this.col.uiHacksFrame);
 
 		// * LOGO/TEXT * //
 		if (grSet.showPreloaderLogo) {

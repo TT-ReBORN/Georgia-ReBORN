@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-06-2025                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3263,7 +3263,6 @@ class ProgressBar {
 
 		const playbackRatio = fb.PlaybackTime / fb.PlaybackLength;
 		this.progressLength = Math.floor(this.w * playbackRatio);
-		if (!this.progressLength) return;
 
 		const drawBarDesign = {
 			default: () => gr.FillSolidRect(this.x, this.y, this.progressLength, this.h, grCol.progressBarFill),
@@ -3620,7 +3619,7 @@ class PeakmeterBar {
 		// * INITIALIZATION * //
 		// #region INITIALIZATION
 		grm.ui.seekbarTimerInterval = grSet.peakmeterBarRefreshRate === 'variable' ? FPS._10 : grSet.peakmeterBarRefreshRate;
-		this.VUMeter = Component.VUMeter ? new ActiveXObject('VUMeter') : null;
+
 		this.initDecibel();
 		this.initPeaks();
 		this.initPoints();
@@ -3636,7 +3635,7 @@ class PeakmeterBar {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	draw(gr) {
-		if (!fb.IsPlaying || !this.VUMeter) {
+		if (!fb.IsPlaying || !AudioWizard) {
 			gr.FillSolidRect(this.x, this.y, this.w, this.h, grCol.bg);
 			gr.FillSolidRect(this.x, grm.ui.seekbarY, this.w, SCALE(grSet.layout !== 'default' ? 10 : 12), grCol.progressBar);
 			return;
@@ -3768,8 +3767,8 @@ class PeakmeterBar {
 			const db = this.db[i];
 			const dbNext = this.db[i + 1];
 			const offset = i * this.offset;
-			const mainLeft_x = this.x * 0.5 + this.w * 0.5 - i * this.offset + 1;
-			const mainRight_x = this.x + i * this.offset + this.w * 0.5 - 1;
+			const mainLeft_x = this.x * 0.5 + this.w * 0.5 - i * this.offset + this.w2;
+			const mainRight_x = this.x + this.w * 0.5 + i * this.offset - this.w2;
 
 			this.drawCenterMainBars(gr, db, dbNext, offset, this.leftPeak, this.mainLeftAnim_x, this.mainLeftAnim2_x, mainLeft_x, mainRight_x, 'mainLeft_x', this.mainLeft_y, color);
 			this.drawCenterMainBars(gr, db, dbNext, offset, this.rightPeak, this.mainRightAnim_x, this.mainRightAnim2_x, mainLeft_x, mainRight_x, 'mainRight_x', this.mainRight_y, color);
@@ -4006,7 +4005,6 @@ class PeakmeterBar {
 
 		const playbackRatio = fb.PlaybackTime / fb.PlaybackLength;
 		this.progressLength = Math.floor(this.w * (grSet.peakmeterBarDesign === 'horizontal_center' ? 0.5 : 1) * playbackRatio);
-		if (!this.progressLength) return;
 
 		if (grSet.peakmeterBarDesign === 'horizontal') {
 			gr.FillSolidRect(this.x, this.middleLeft_y, this.w, this.bar_h, grCol.peakmeterBarProg);
@@ -4088,8 +4086,13 @@ class PeakmeterBar {
 	 * Initializes the decibel arrays for different configurations.
 	 */
 	initDecibel() {
-		this.db = [-20, -17.5, -15, -12.5, -10, -7.5, -5, -4.5, -4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5,	0, 0.1, 1, 1.5, 2, 2.5, 3, 3.5, 5];
-		this.db_middle = [-100, -95, -90, -85, -80, -75, -70, -65, -62.5, -60, -57.5, -55, -52.5, -50, -47.5, -45, -42.5, -40, -37.5, -35, -32.5, -30, -27.5, -25, -22.5];
+		this.db = [
+			-20, -19.5, -19, -18.5, -18, -17.5, -17, -16.5, -16, -15.5, -15, -14.5, -14, -13.5, -13, -12.5, -12, -11.5, -11, -10.5,
+			-10, -9.5, -9, -8.5, -8, -7.5, -7, -6.5, -6, -5.5, -5, -4.5, -4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5
+		];
+		this.db_middle = [
+			-70, -65, -62.5, -60, -57.5, -55, -52.5, -50, -47.5, -45, -42.5, -40, -37.5, -35, -32.5, -30, -27.5, -25, -22.5
+		];
 		this.db_vert = {
 			220: [-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2],
 			215: [-15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2],
@@ -4311,26 +4314,15 @@ class PeakmeterBar {
 	 * Converts and stores volume levels and peaks for both left and right channels in decibels.
 	 */
 	setMonitoring() {
-		const convertVolume = ConvertVolume;
-		const vuMeter = this.VUMeter;
+		if (!AudioWizard) return;
 
-		this.leftLevel  = convertVolume(vuMeter.LeftLevel,  'vuLevelToDecibel');
-		this.leftPeak   = convertVolume(vuMeter.LeftPeak,   'vuLevelToDecibel');
-		this.rightLevel = convertVolume(vuMeter.RightLevel, 'vuLevelToDecibel');
-		this.rightPeak  = convertVolume(vuMeter.RightPeak,  'vuLevelToDecibel');
+		this.leftLevel = AudioWizard.PeakmeterAdjustedLeftRMS;
+		this.rightLevel = AudioWizard.PeakmeterAdjustedRightRMS;
+		this.leftPeak = AudioWizard.PeakmeterAdjustedLeftSamplePeak;
+		this.rightPeak = AudioWizard.PeakmeterAdjustedRightSamplePeak;
 
-		// * Debug stuff
-		// const leftPeak = this.leftPeak.toFixed(2).padStart(6, ' ');
-		// const leftPeakRaw = vuMeter.LeftPeak.toFixed(2);
-		// const rightPeak = this.rightPeak.toFixed(2).padStart(6, ' ');
-		// const rightPeakRaw = vuMeter.RightPeak.toFixed(2);
-		// const leftLevel = this.leftLevel.toFixed(2).padStart(6, ' ');
-		// const leftLevelRaw = vuMeter.LeftLevel.toFixed(2);
-		// const rightLevel = this.rightLevel.toFixed(2).padStart(6, ' ');
-		// const rightLevelRaw = vuMeter.RightLevel.toFixed(2);
-		// console.log('Offset: ', vuMeter.Offset.toFixed(2).padStart(12, ' '));
-		// console.log('LEFT PEAK: ', leftPeak,  `(Raw: ${leftPeakRaw})`,  '      RIGHT PEAK: ', rightPeak,  `(Raw: ${rightPeakRaw})`);
-		// console.log('LEFT LEVEL:', leftLevel, `(Raw: ${leftLevelRaw})`, '      RIGHT LEVEL:', rightLevel, `(Raw: ${rightLevelRaw})`, '\n');
+		// AWStartRealTimeMonitoring();
+		// AWStartRawAudioMonitoring();
 	}
 
 	/**
@@ -4372,6 +4364,21 @@ class PeakmeterBar {
 			grm.ui.clearTimer('seekbar', true);
 			grm.ui.seekbarTimer = !fb.IsPaused ? setInterval(() => grm.ui.refreshSeekbar(), grm.ui.seekbarTimerInterval) : null;
 		}
+	}
+
+	/**
+	 * Starts Audio Wizard's peakmeter real-time monitoring.
+	 */
+	startPeakmeter() {
+		const refreshRate = grSet.peakmeterBarRefreshRate === 'variable' ? 17 : grSet.peakmeterBarRefreshRate;
+		AudioWizard && AudioWizard.StartPeakmeterMonitoring(refreshRate, 50);
+	}
+
+	/**
+	 * Stops Audio Wizard's peakmeter real-time monitoring.
+	 */
+	stopPeakmeter() {
+		AudioWizard && AudioWizard.StopPeakmeterMonitoring();
 	}
 	// #endregion
 
@@ -4446,11 +4453,13 @@ class PeakmeterBar {
 	on_mouse_wheel(step) {
 		this.wheel = true;
 
-		if (this.VUMeter) {
-			this.VUMeter.Offset = this.VUMeter.Offset + step;
-			this.tooltipText = `${Math.round(this.VUMeter.Offset)} db`;
+		if (AudioWizard) {
+			AudioWizard.PeakmeterOffset = AudioWizard.PeakmeterOffset + step;
+			this.tooltipText = `${Math.round(AudioWizard.PeakmeterOffset)} db`;
 			grm.ttip.showImmediate(this.tooltipText);
 		}
+
+		AWStartFullTrackAnalysis();
 	}
 
 	/**
@@ -4459,6 +4468,7 @@ class PeakmeterBar {
 	 */
 	on_playback_new_track(metadb) {
 		if (!metadb) return;
+		this.startPeakmeter();
 		this.progressLength = 0;
 		this.setColors(metadb);
 	}
@@ -4473,6 +4483,7 @@ class PeakmeterBar {
 		}
 
 		if (reason !== 2) {
+			this.stopPeakmeter();
 			this.reset();
 			window.Repaint();
 		}
@@ -4522,23 +4533,82 @@ class WaveformBar {
 		/** @private @type {FbProfiler} The profiler for logging performance information. */
 		this.profiler = null;
 
+		// * Easy access
+		/** @public @type {number} The x-coordinate of the waveform bar. */
+		this.x = grm.ui.edgeMargin;
+		/** @public @type {number} The y-coordinate of the waveform bar. */
+		this.y = 0;
+		/** @public @type {number} The width of the waveform bar. */
+		this.w = grm.ui.ww - grm.ui.edgeMarginBoth;
+		/** @public @type {number} The height of the waveform bar. */
+		this.h = grm.ui.seekbarHeight;
+
+		// * Internals
+		/** @private @type {boolean} The active state of the waveform bar. */
+		this.active = true;
+		/** @private @type {string} The title format used for the waveform bar. */
+		this.Tf = fb.TitleFormat(this.matchPattern);
+		/** @private @type {number} The maximum step for the title format. */
+		this.TfMaxStep = fb.TitleFormat('[%BPM%]');
+		/** @private @type {string[]} The cache storage for the waveform data. */
+		this.cache = null;
+		/** @private @type {string} The directory for the waveform cache. */
+		this.cacheDir = `${fb.ProfilePath}cache\\waveform\\`;
+		/** @private @type {string} The code page for character encoding conversion. */
+		this.codePage = convertCharsetToCodepage('UTF-8');
+		/** @private @type {string} The code page for UTF-16LE character encoding conversion. */
+		this.codePageV2 = convertCharsetToCodepage('UTF-16LE');
+		/** @private @type {number} The queue identifier for the waveform bar. */
+		this.queueId = null;
+		/** @private @type {number} The queue interval in milliseconds. */
+		this.queueMs = 1000;
+		/** @private @type {string[]} The current waveform data. */
+		this.current = [];
+		/** @private @type {number[]} The offset values for the waveform data. */
+		this.offset = [];
+		/** @private @type {number} The current step in the waveform animation. */
+		this.step = 0; // 0 - maxStep
+		/** @private @type {number} The maximum step for the waveform animation. */
+		this.maxStep = 4;
+		/** @private @type {number} The current playback time for the waveform bar. */
+		this.time = 0;
+		/** @private @type {boolean} The state indicating if the mouse is down. */
+		this.mouseDown = false;
+		/** @private @type {boolean} The state indicating if the file is allowed. Set at checkAllowedFile(). */
+		this.isAllowedFile = true;
+		/** @private @type {boolean} The state indicating if the file is a zipped file. Set at checkAllowedFile(). */
+		this.isZippedFile = false;
+		/** @private @type {boolean} The state indicating if there was an error. Set at verifyData() after retrying analysis. */
+		this.isError = false;
+		/** @private @type {boolean} The state indicating if fallback mode is active. For visualizerFallback, set at checkAllowedFile(). */
+		this.isFallback = false;
+
 		/**
 		 * The waveform bar analysis settings.
 		 * @typedef {object} waveformBarAnalysis
-		 * @property {string} binaryMode - The settings: ffprobe | audiowaveform | visualizer.
-		 * @property {number} resolution - The pixels per second on audiowaveform, per sample on ffmpeg (higher values than 1 require resampling). Visualizer mode is adjusted via window width.
-		 * @property {string} compressionMode - The settings: none | 'utf-8' (~50% compression) | 'utf-16' (~70% compression) 7zip (~80% compression).
-		 * @property {string} saveMode - The settings: always | library | never.
-		 * @property {boolean} autoAnalysis - The flag to auto-analyze files.
-		 * @property {boolean} autoDelete - The flag to auto-delete analysis files when unloading the script, present during play session to prevent recalculation.
-		 * @property {boolean} visualizerFallbackAnalysis - The flag to use visualizer mode when analyzing the file.
-		 * @property {boolean} visualizerFallback - The flag to use visualizer mode when the file cannot be processed (incompatible format).
+		 * @property {string} binaryMode - The analysis mode: 'audioWizard' | 'visualizer'.
+		 * @property {number} resolution - The temporal resolution in samples per second from 1-1000, recommended preset ranges are:
+		 * - 100 samples/sec: Very High Details (10ms, for transient-heavy audio like EDM).
+		 * - 50 samples/sec: High Details (20ms, for mastering and detailed visualization).
+		 * - 20 samples/sec: Standard Details (50ms, matches FFmpeg/astats, ideal for broadcast).
+		 * - 15 samples/sec: Balanced Details (~67ms, for smooth audio like pop or jazz).
+		 * - 10 samples/sec: Low Details (100ms, for basic visualization).
+		 * - 5 samples/sec: Very Low Details (200ms, for low-performance devices, very smooth audio).
+		 * - 1 sample/sec: Minimum Details (1000ms, for ultra-minimal previews on very slow devices).
+		 * @property {number} timeout - The maximum duration for waveform analysis in milliseconds.
+		 * @property {string} compressionMode - The compression mode: 'none' | 'utf-8' | 'utf-16' | '7zip'.
+		 * @property {string} saveMode - The save behavior: 'always' | 'library' | 'never'.
+		 * @property {boolean} autoAnalysis - Whether to automatically analyze files.
+		 * @property {boolean} autoDelete - Whether to auto-delete analysis files when unloading the script.
+		 * @property {boolean} visualizerFallbackAnalysis - Whether to use visualizer mode when analyzing the file.
+		 * @property {boolean} visualizerFallback - Whether to use visualizer mode for incompatible file formats.
 		 * @public
 		 */
 		/** @public @type {waveformBarAnalysis} */
 		this.analysis = {
 			binaryMode: grSet.waveformBarMode,
-			resolution: 1,
+			resolution: grSet.waveformBarResolution,
+			timeout: 60000,
 			compressionMode: 'utf-16',
 			saveMode: grSet.waveformBarSaveMode,
 			autoAnalysis: true,
@@ -4550,22 +4620,79 @@ class WaveformBar {
 		/**
 		 * The waveform bar binary settings.
 		 * @typedef {object} waveformBarBinaries
-		 * @property {string} ffprobe - The ffprobe binary to use.
-		 * @property {string} audiowaveform - The audiowaveform binary to use.
 		 * @property {string} visualizer - The visualizer binary to use.
 		 * @public
 		 */
 		/** @public @type {waveformBarBinaries} */
 		this.binaries = {
-			ffprobe:       `${fb.ProfilePath}georgia-reborn\\externals\\ffprobe\\ffprobe.exe`,
-			audiowaveform: `${fb.ProfilePath}georgia-reborn\\externals\\audiowaveform\\audiowaveform${Detect.Win64 ? '' : '_32'}.exe`,
-			visualizer:    `${fb.ProfilePath}running`
+			audioWizard: Component.AudioWizard,
+			visualizer: `${fb.ProfilePath}running`
+		};
+
+		/**
+		 * The waveform bar compatible file settings.
+		 * @typedef {object} waveformBarCompatibility
+		 * @property {RegExp} audioWizard - The regular expression to test for file types compatible with audioWizard.
+		 * @public
+		 */
+		/** @private @type {waveformBarCompatibility} */
+		this.compatibleFiles = {
+			audioWizardList: ['2sf', 'aa', 'aac', 'ac3', 'ac4', 'aiff', 'ape', 'dff', 'dts', 'eac3', 'flac', 'hmi', 'la', 'lpcm', 'm4a', 'minincsf', 'mp2', 'mp3', 'mp4', 'mpc', 'ogg', 'ogx', 'opus', 'ra', 'snd', 'shn', 'spc', 'tak', 'tta', 'vgm', 'wav', 'wma', 'wv'],
+			audioWizard: null
+		};
+		for (const key of ['audioWizard']) {
+			this.compatibleFiles[key] = new RegExp(`\\.(${this.compatibleFiles[`${key}List`].join('|')})$`, 'i');
+		}
+
+		/**
+		 * The waveform bar fallback mode settings for visualizerFallbackAnalysis.
+		 * @typedef {object} waveformBarFallbackMode
+		 * @property {boolean} paint - The state that indicates whether to use the paint fallback mode.
+		 * @property {boolean} analysis - The state that indicates whether to use the analysis fallback mode.
+		 * @public
+		 */
+		/** @private @type {waveformBarFallbackMode} */
+		this.fallbackMode = {
+			paint: false,
+			analysis: false
+		};
+
+		/**
+		 * The waveform bar metrics configuration.
+		 * @typedef {object} waveformBarMetricsConfig
+		 * @property {number} count - The number of metrics per frame.
+		 * @property {object} index - The metric names to their frame indexes (e.g., rms: 0).
+		 * @property {object} range - The valid ranges for each metric (e.g., [-100, 0] for dB metrics).
+		 * @property {object} mode - The analysisMode values to metric names (e.g., rms_level: 'rms').
+		 * @public
+		 */
+		/** @private @type {waveformBarMetricsConfig} */
+		this.metrics = {
+			count: 4,
+			index: {
+				rms: 0,
+				rms_peak: 1,
+				peak: 2,
+				waveform_peak: 3
+			},
+			mode: {
+				rms_level: 'rms',
+				rms_peak: 'rms_peak',
+				peak_level: 'peak',
+				waveform_peak: 'waveform_peak'
+			},
+			range: {
+				rms: [-100, 0],
+				rms_peak: [-100, 0],
+				peak: [-100, 0],
+				waveform_peak: [-1, 1]
+			}
 		};
 
 		/**
 		 * The waveform bar preset settings.
 		 * @typedef {object} waveformBarPreset
-		 * @property {string} analysisMode - The waveform bar analysis mode `rms_level`, `peak_level`, `rms_peak (only available when using ffprobe)`.
+		 * @property {string} analysisMode - The waveform bar analysis mode `rms_level`, `rms_peak`, `peak_level`, `waveform_peak`.
 		 * @property {string} barDesign - The waveform bar design `waveform`, `bars`, `dots`, `halfbars`.
 		 * @property {string} paintMode - The waveform bar paint mode `full`, `partial`.
 		 * @property {boolean} animate - The flag to display animation.
@@ -4622,108 +4749,6 @@ class WaveformBar {
 			seekSpeed: grSet.waveformBarWheelSeekSpeed,
 			seekType: grSet.waveformBarWheelSeekType
 		};
-
-		// * Easy access
-		/** @public @type {number} The x-coordinate of the waveform bar. */
-		this.x = grm.ui.edgeMargin;
-		/** @public @type {number} The y-coordinate of the waveform bar. */
-		this.y = 0;
-		/** @public @type {number} The width of the waveform bar. */
-		this.w = grm.ui.ww - grm.ui.edgeMarginBoth;
-		/** @public @type {number} The height of the waveform bar. */
-		this.h = grm.ui.seekbarHeight;
-
-		// * Internals
-		/** @private @type {boolean} The active state of the waveform bar. */
-		this.active = true;
-		/** @private @type {string} The title format used for the waveform bar. */
-		this.Tf = fb.TitleFormat(this.matchPattern);
-		/** @private @type {number} The maximum step for the title format. */
-		this.TfMaxStep = fb.TitleFormat('[%BPM%]');
-		/** @private @type {string[]} The cache storage for the waveform data. */
-		this.cache = null;
-		/** @private @type {string} The directory for the waveform cache. */
-		this.cacheDir = `${fb.ProfilePath}cache\\waveform\\`;
-		/** @private @type {string} The code page for character encoding conversion. */
-		this.codePage = convertCharsetToCodepage('UTF-8');
-		/** @private @type {string} The code page for UTF-16LE character encoding conversion. */
-		this.codePageV2 = convertCharsetToCodepage('UTF-16LE');
-		/** @private @type {number} The queue identifier for the waveform bar. */
-		this.queueId = null;
-		/** @private @type {number} The queue interval in milliseconds. */
-		this.queueMs = 1000;
-		/** @private @type {string[]} The current waveform data. */
-		this.current = [];
-		/** @private @type {number[]} The offset values for the waveform data. */
-		this.offset = [];
-		/** @private @type {number} The current step in the waveform animation. */
-		this.step = 0; // 0 - maxStep
-		/** @private @type {number} The maximum step for the waveform animation. */
-		this.maxStep = 4;
-		/** @private @type {number} The current playback time for the waveform bar. */
-		this.time = 0;
-		/** @private @type {boolean} The state indicating if the mouse is down. */
-		this.mouseDown = false;
-		/** @private @type {boolean} The state indicating if the file is allowed. Set at checkAllowedFile(). */
-		this.isAllowedFile = true;
-		/** @private @type {boolean} The state indicating if the file is a zipped file. Set at checkAllowedFile(). */
-		this.isZippedFile = false;
-		/** @private @type {boolean} The state indicating if there was an error. Set at verifyData() after retrying analysis. */
-		this.isError = false;
-		/** @private @type {boolean} The state indicating if fallback mode is active. For visualizerFallback, set at checkAllowedFile(). */
-		this.isFallback = false;
-
-		/**
-		 * The waveform bar fallback mode settings for visualizerFallbackAnalysis.
-		 * @typedef {object} waveformBarFallbackMode
-		 * @property {boolean} paint - The state that indicates whether to use the paint fallback mode.
-		 * @property {boolean} analysis - The state that indicates whether to use the analysis fallback mode.
-		 * @public
-		 */
-		/** @private @type {waveformBarFallbackMode} */
-		this.fallbackMode = {
-			paint: false,
-			analysis: false
-		};
-
-		/**
-		 * The waveform bar ffprobeMode settings.
-		 * @typedef {object} waveformBarFFProbeMode
-		 * @property {object} rms_level - The settings for RMS level mode.
-		 * @property {string} rms_level.key - The key for the RMS level mode.
-		 * @property {number} rms_level.pos - The position index for RMS level mode.
-		 * @property {object} rms_peak - The settings for RMS peak mode.
-		 * @property {string} rms_peak.key - The key for the RMS peak mode.
-		 * @property {number} rms_peak.pos - The position index for RMS peak mode.
-		 * @property {object} peak_level - The settings for peak level mode.
-		 * @property {string} peak_level.key - The key for peak level mode.
-		 * @property {number} peak_level.pos - The position index for peak level mode.
-		 * @public
-		 */
-		/** @private @type {waveformBarFFProbeMode} */
-		this.ffprobeMode = {
-			rms_level:  { key: 'rms',     pos: 1 },
-			rms_peak:   { key: 'rmsPeak', pos: 2 },
-			peak_level: { key: 'peak',    pos: 3 }
-		};
-
-		/**
-		 * The waveform bar compatible file settings.
-		 * @typedef {object} waveformBarCompatibility
-		 * @property {RegExp} ffprobe - The regular expression to test for file types compatible with ffprobe.
-		 * @property {RegExp} audiowaveform - The regular expression to test for file types compatible with audiowaveform.
-		 * @public
-		 */
-		/** @private @type {waveformBarCompatibility} */
-		this.compatibleFiles = {
-			ffprobeList: ['2sf', 'aa', 'aac', 'ac3', 'ac4', 'aiff', 'ape', 'dff', 'dts', 'eac3', 'flac', 'hmi', 'la', 'lpcm', 'm4a', 'minincsf', 'mp2', 'mp3', 'mp4', 'mpc', 'ogg', 'ogx', 'opus', 'ra', 'snd', 'shn', 'spc', 'tak', 'tta', 'vgm', 'wav', 'wma', 'wv'],
-			ffprobe: null,
-			audiowaveformList: ['flac', 'mp3', 'ogg', 'opus', 'wav'],
-			audiowaveform: null
-		};
-		for (const key of ['ffprobe', 'audiowaveform']) {
-			this.compatibleFiles[key] = new RegExp(`\\.(${this.compatibleFiles[`${key}List`].join('|')})$`, 'i');
-		}
 
 		// * Initialization
 		this.checkConfig();
@@ -4946,7 +4971,7 @@ class WaveformBar {
 
 		gr.SetSmoothingMode(0);
 
-		if (this.analysis.binaryMode === 'ffprobe' || ['waveform', 'dots'].includes(this.preset.barDesign)) {
+		if (this.analysis.binaryMode === 'audioWizard' || ['waveform', 'dots'].includes(this.preset.barDesign)) {
 			const minBarW = Math.round(Math.max(this.barW, SCALE(1)));
 			gr.DrawLine(this.currX, this.y - this.h * 0.5, this.currX, this.y + this.h * 0.5, minBarW, grCol.waveformBarIndicator);
 		}
@@ -5036,14 +5061,13 @@ class WaveformBar {
 	}
 
 	/**
-	 * Checks the configuration for validity and throws an error if not, called from the constructor.
-	 * @throws {Error} Throws an error if the binary mode is not recognized or path is not set.
+	 * Checks the configuration for validity, called from the constructor.
 	 */
 	checkConfig() {
 		if (!Object.prototype.hasOwnProperty.call(this.binaries, this.analysis.binaryMode)) {
-			throw new Error(`Waveform bar => binary mode not recognized or path not set: ${this.analysis.binaryMode}`);
+			this.analysis.binaryMode = 'visualizer';
 		}
-		if (!IsFile(this.binaries[this.analysis.binaryMode])) {
+		if (!this.binaries[this.analysis.binaryMode]) {
 			fb.ShowPopupMessage(`Waveform bar => required dependency not found: ${this.analysis.binaryMode}\n\n${JSON.stringify(this.binaries[this.analysis.binaryMode])}`, window.Name);
 		}
 
@@ -5116,15 +5140,22 @@ class WaveformBar {
 	 * @returns {Promise<boolean>} The promise that resolves to `true` if analysis is successful, `false` otherwise.
 	 */
 	async analyzeDataStart(handle, isRetry) {
+		if (this.analysis.binaryMode === 'visualizer' || this.analysis.visualizerFallbackAnalysis) {
+			this.current = this.visualizerData(handle);
+
+			if (this.analysis.binaryMode === 'visualizer') {
+				this.normalizePoints();
+				return;
+			}
+		}
+
 		const { waveformBarFolder, waveformBarFile, sourceFile } = this.getPaths(handle);
 		const files = this.getFileConfigs();
-		const binaryExt = { ffprobe: 'ff', audiowaveform: 'aw' };
-		const binaryDotExt = `.${binaryExt[this.analysis.binaryMode]}`;
 		let analysisComplete = false;
 
 		for (const file of files) {
 			const fileWithExt = `${waveformBarFile}${file.ext}`;
-			if (file.ext.startsWith(binaryDotExt) && IsFile(fileWithExt)) {
+			if (IsFile(fileWithExt)) {
 				const str = Open(fileWithExt, file.codePage) || '';
 				this.current = file.decompress(str) || [];
 				if (this.verifyData(handle, fileWithExt, isRetry)) {
@@ -5137,7 +5168,6 @@ class WaveformBar {
 		if (!analysisComplete && this.analysis.autoAnalysis && IsFile(sourceFile)) {
 			if (this.analysis.visualizerFallbackAnalysis && this.isAllowedFile) {
 				this.fallbackMode.analysis = this.fallbackMode.paint = true;
-				await this.analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile);
 				this.normalizePoints();
 				if (this.preset.animate && this.preset.useBPM) this.bpmSteps(handle);
 				if (fb.IsPlaying) this.time = fb.PlaybackTime;
@@ -5167,146 +5197,54 @@ class WaveformBar {
 	 * @returns {Promise<void>} The promise that resolves when the analysis has finished.
 	 */
 	async analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile = handle.Path) {
+		if (!this.isAllowedFile || !AudioWizard) return;
+
 		if (!IsFolder(waveformBarFolder)) CreateFolder(waveformBarFolder);
 
-		this.profiler = this.profile ? new FbProfiler(this.analysis.binaryMode) : null;
+		this.startTime = Date.now();
+		const metric = this.metrics.mode[this.preset.analysisMode];
+		AudioWizard.WaveformMetric = this.metrics.index[metric];
+		this.handle = handle;
+		this.waveformBarFile = waveformBarFile;
 
-		const handleFileName = sourceFile.split('\\').pop();
-		const handleFolder = sourceFile.replace(handleFileName, '');
-		const cmd = this.analyzeDataGetCommand(handleFileName, handleFolder, waveformBarFolder);
+		console.log(`Audio Wizard => Starting waveform analysis: mode=${this.preset.analysisMode}, resolution=${this.analysis.resolution}`);
 
-		if (cmd) {
-			console.log(`Waveform bar scanning: ${sourceFile}`);
-			this.debug && console.log(cmd);
-		}
-		else if (!this.isAllowedFile && this.analysis.binaryMode !== 'visualizer' && !this.fallbackMode.analysis) {
-			console.log(`Waveform bar skipping incompatible file: ${sourceFile}`);
-		}
+		try {
+			await new Promise((resolve, reject) => {
+				const timeout = setTimeout(() => {
+					AudioWizard.StopWaveformAnalysis();
+					reject(new Error(`Audio Wizard => Analysis timed out after ${this.analysis.timeout}ms`));
+				}, this.analysis.timeout);
 
-		const processed = cmd ? await this.analyzeDataRunCommand(cmd, waveformBarFolder, handle.Length) : true;
-		if (!processed) return;
+				AudioWizard.SetFullTrackWaveformCallback(() => {
+					clearTimeout(timeout);
+					const waveformData = AudioWizard.WaveformData;
+					console.log(`Audio Wizard => Retrieved ${waveformData && waveformData.length ? waveformData.length : 0} samples`);
 
-		const data = cmd ? JsonParseFile(`${waveformBarFolder}data.json`, this.codePage) : this.visualizerData(handle);
-		DeleteFile(`${waveformBarFolder}data.json`);
-		data && this.analyzeDataProcess(handle, waveformBarFile, data);
-
-		if (this.preset.animate && this.preset.useBPM) {
-			this.bpmSteps(handle);
-		}
-
-		if (this.profiler) {
-			this.profiler.Print(`Retrieve volume levels. Compression ${this.analysis.compressionMode}.`);
-		}
-
-		if (this.current.length) {
-			this.throttlePaint();
-		} else {
-			console.log(`${this.analysis.binaryMode}: failed analyzing the file -> ${sourceFile}`);
-		}
-	}
-
-	/**
-	 * Generates the command to run based on the binary mode.
-	 * @param {string} handleFileName - The name of the file being processed.
-	 * @param {string} handleFolder - The folder containing the file being processed.
-	 * @param {string} waveformBarFolder - The folder where the waveform bar data should be saved.
-	 * @returns {string} The command to run.
-	 */
-	analyzeDataGetCommand(handleFileName, handleFolder, waveformBarFolder) {
-		if (!this.isAllowedFile || this.fallbackMode.analysis) return '';
-
-		const commands = {
-			audiowaveform: () => {
-				const extension = handleFileName.match(/(?:\.)(\w+$)/i)[1];
-
-				return `CMD /C PUSHD ${Quotes(handleFolder)} && ` +
-					Quotes(this.binaries.audiowaveform) + ' -i ' + Quotes(handleFileName) +
-					' --pixels-per-second ' + (Math.round(this.analysis.resolution) || 1) + ' --input-format ' + extension + ' --bits 8' +
-					' -o ' + Quotes(`${waveformBarFolder}data.json`);
-			},
-			ffprobe: () => {
-				handleFileName = handleFileName.replace(/[,:%.*+?^${}()|[\]\\]/g, '\\$&').replace(/'/g, '\\\\\\\'');
-
-				return `CMD /C PUSHD ${Quotes(handleFolder)} && ` +
-					Quotes(this.binaries.ffprobe) + ' -hide_banner -v panic -f lavfi -i amovie=' + Quotes(handleFileName) +
-					(this.analysis.resolution > 1 ? `,aresample=${Math.round((this.analysis.resolution || 1) * 100)},asetnsamples=${Math.round((this.analysis.resolution / 10) ** 2)}` : '') +
-					',astats=metadata=1:reset=1 -show_entries frame=pkt_pts_time:frame_tags=lavfi.astats.Overall.Peak_level,lavfi.astats.Overall.RMS_level,lavfi.astats.Overall.RMS_peak -print_format json > ' +
-					Quotes(`${waveformBarFolder}data.json`);
-			}
-		};
-
-		return commands[this.analysis.binaryMode]();
-	}
-
-	/**
-	 * Runs the command and waits for it to complete.
-	 * @param {string} cmd - The command to run.
-	 * @param {string} waveformBarFolder - The folder where the waveform bar data should be saved.
-	 * @param {number} trackLength - The length of the track being processed.
-	 * @returns {Promise<boolean>} The promise that resolves to true if the command completed successfully, false otherwise.
-	 */
-	async analyzeDataRunCommand(cmd, waveformBarFolder, trackLength) {
-		const processed = RunCmd(cmd, false);
-
-		return processed && (await new Promise((resolve) => {
-			if (this.isFallback || this.analysis.binaryMode === 'visualizer' || this.fallbackMode.analysis) {
-				resolve(true);
-			}
-
-			const timeout = Date.now() + Math.round(10000 * (trackLength / 180));
-
-			const id = setInterval(() => {
-				if (IsFile(`${waveformBarFolder}data.json`)) {
-					if (JsonParseFile(`${waveformBarFolder}data.json`, this.codePage)) {
-						clearInterval(id);
-						resolve(true);
+					const processedData = [];
+					waveformData.length = Math.floor(waveformData.length / this.metrics.count) * this.metrics.count;
+					for (let i = 0; i < waveformData.length; i += this.metrics.count) {
+						processedData.push(waveformData.slice(i, i + this.metrics.count));
 					}
-				} else if (Date.now() > timeout) {
-					clearInterval(id);
-					resolve(false);
-				}
-			}, 300);
-		}));
-	}
 
-	/**
-	 * Processes the data generated by the command.
-	 * @param {FbMetadbHandle} handle - The handle to analyze.
-	 * @param {string} waveformBarFile - The name of the waveform bar file.
-	 * @param {object} data - The data generated by the command.
-	 */
-	analyzeDataProcess(handle, waveformBarFile, data) {
-		const processFFProbeData = (frames) => frames.map(frame => {
-			const getTagValue = (tag) => tag === '-inf' ? -Infinity : Round(Number(tag), 1);
-			return [
-				Round(Number(frame.pkt_pts_time), 2),
-				getTagValue(frame.tags['lavfi.astats.Overall.RMS_level']),
-				getTagValue(frame.tags['lavfi.astats.Overall.RMS_peak']),
-				getTagValue(frame.tags['lavfi.astats.Overall.Peak_level'])
-			];
-		});
+					this.current = processedData;
+					console.log(`Audio Wizard => Stored ${this.current.length} frames`);
 
-		let processedData = null;
+					if (this.saveDataAllowed(handle) && this.current.length) {
+						this.analyzeDataSave(waveformBarFile, JSON.stringify(this.current));
+					}
 
-		// * Process data
-		if (!this.isFallback && !this.fallbackMode.analysis) {
-			if (this.analysis.binaryMode === 'ffprobe' && data.frames && data.frames.length) {
-				processedData = processFFProbeData(data.frames);
-			}
-			else if (this.analysis.binaryMode === 'audiowaveform' && data.data && data.data.length) {
-				processedData = data.data;
-			}
+					console.log(`Audio Wizard => Analysis completed in ${(Date.now() - this.startTime) / 1000} seconds`);
+					this.throttlePaint();
+					resolve();
+				});
+
+				AudioWizard.StartWaveformAnalysis(this.analysis.resolution);
+			});
 		}
-		else if ((this.analysis.binaryMode === 'visualizer' || this.isFallback || this.fallbackMode.analysis) && data.length) {
-			processedData = data;
-		}
-
-		// * Save compressed data
-		if (processedData !== null) {
-			this.current = processedData;
-			if (this.saveDataAllowed(handle)) {
-				this.analyzeDataSave(waveformBarFile, JSON.stringify(this.current));
-			}
+		catch (e) {
+			console.log(`Audio Wizard => Analysis error: ${e.message}`);
+			AudioWizard.StopWaveformAnalysis();
 		}
 	}
 
@@ -5318,13 +5256,10 @@ class WaveformBar {
 	analyzeDataSave(waveformBarFile, dataStr) {
 		if (this.analysis.binaryMode === 'visualizer') return;
 
-		const binaryExt = { ffprobe: 'ff', audiowaveform: 'aw' };
-		const fileName = `${waveformBarFile}.${binaryExt[this.analysis.binaryMode]}`;
-
 		const compression = {
-			'utf-16': () => SaveFSO(`${fileName}.lz16`, LZString.compressToUTF16(dataStr), true),
-			'utf-8':  () => Save(`${fileName}.lz`, LZUTF8.compress(dataStr, { outputEncoding: 'Base64' })),
-			'none':   () => Save(`${fileName}.json`, dataStr)
+			'utf-16': () => SaveFSO(`${waveformBarFile}.aw.lz16`, LZString.compressToUTF16(dataStr), true),
+			'utf-8':  () => Save(`${waveformBarFile}.aw.lz`, LZUTF8.compress(dataStr, { outputEncoding: 'Base64' })),
+			'none':   () => Save(`${waveformBarFile}.aw.json`, dataStr)
 		};
 
 		(compression[this.analysis.compressionMode] || compression.none)();
@@ -5338,8 +5273,10 @@ class WaveformBar {
 	 * @returns {Array} The data for the visualizer bar.
 	 */
 	visualizerData(handle, preset = 'classic spectrum analyzer', variableLen = false) {
-		const resolution = this.analysis.resolution || 1;
-		const samples = Math.max(0, Math.floor(variableLen ? handle.Length * resolution : this.w / SCALE(5) * resolution));
+		const barW = this.getBarWidth();
+		const samplesMax = Math.floor(this.w / barW);
+		const samplesTotal = Math.floor(handle.Length * this.analysis.resolution);
+		const samples = variableLen ? samplesTotal : Math.min(samplesMax, samplesTotal);
 		const data = new Array(samples);
 
 		if (preset === 'classic spectrum analyzer') {
@@ -5365,21 +5302,34 @@ class WaveformBar {
 	}
 
 	/**
-	 * Checks if the processed data is valid.
+	 * Checks if the processed waveform data is valid for audioWizard mode.
 	 * @returns {boolean} True if the data is valid.
 	 */
 	validData() {
 		if (!Array.isArray(this.current) || !this.current.length) {
-			return false; // When iterating too many tracks in a short amount of time, weird things may happen without this check
+			return false; // Ensure this.current is a non-empty array
 		}
 
-		const checkFrame =
-			this.analysis.binaryMode === 'ffprobe' ? (frame) => {
-				const len = Object.prototype.hasOwnProperty.call(frame, 'length') ? frame.length : null;
-				return len === 4 || len === 5;
-			} : (frame) => frame >= -128 && frame <= 127;
+		return this.current.every(frame => {
+			// Check that frame is an array with the expected number of elements
+			if (!Array.isArray(frame) || frame.length < this.metrics.count) {
+				return false;
+			}
 
-		return this.current.every(checkFrame);
+			// Validate all metrics are finite numbers and within expected ranges
+			for (const [metric, index] of Object.entries(this.metrics.index)) {
+				const value = frame[index];
+				if (typeof value !== 'number' || !isFinite(value)) {
+					return false;
+				}
+				const [min, max] = this.metrics.range[metric];
+				if (value < min || value > max) {
+					return false;
+				}
+			}
+
+			return true;
+		});
 	}
 
 	/**
@@ -5409,7 +5359,29 @@ class WaveformBar {
 	}
 
 	/**
-	 * Deletes the waveform bar cache diretory with its processed data.
+	 * Deletes the waveform file(s) associated with the given track handle.
+	 * @param {FbMetadbHandle} handle - The handle of the track.
+	 */
+	deleteWaveformFile(handle) {
+		if (!handle) return;
+
+		const { waveformBarFile } = this.getPaths(handle);
+		const fileConfigs = this.getFileConfigs();
+
+		for (const config of fileConfigs) {
+			const filePath = `${waveformBarFile}${config.ext}`;
+			if (IsFile(filePath)) {
+				try {
+					DeleteFile(filePath);
+				} catch (e) {
+					console.log(`Error deleting waveform file: ${filePath}`, e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Deletes the waveform bar cache directory with its processed data.
 	 */
 	removeData() {
 		DeleteFolder(this.cacheDir);
@@ -5473,7 +5445,7 @@ class WaveformBar {
 	 * @returns {object} The object containing colorBack, colorFront and colorsDiffer.
 	 */
 	getColors(useShadeColor = true, highlightCurrentPosition = false) {
-		if (highlightCurrentPosition && (this.preset.indicator || this.mouseDown) && this.analysis.binaryMode !== 'ffprobe' &&
+		if (highlightCurrentPosition && (this.preset.indicator || this.mouseDown) && this.analysis.binaryMode === 'audioWizard' &&
 			(this.frameX <= this.currX && this.frameX >= this.currX - 2 * this.barW)) {
 			return { colorBack: grCol.waveformBarIndicator, colorFront: grCol.waveformBarIndicator, colorsDiffer: false };
 		}
@@ -5490,18 +5462,6 @@ class WaveformBar {
 	}
 
 	/**
-	 * Gets ffprobe for Windows or Linux.
-	 */
-	getFFprobe() {
-		const url = Detect.Win64 ?
-			'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip' :
-			'https://github.com/sudo-nautilus/FFmpeg-Builds-Win32/releases/download/latest/ffmpeg-master-latest-win32-gpl.zip';
-
-		RunCmd(url);
-		fb.ShowPopupMessage(`Accept download, extract ffprobe.exe from bin to ${this.binaries.ffprobe}\nand restart foobar.`, 'FFprobe');
-	}
-
-	/**
 	 * Gets the configuration for the different file types to be analyzed.
 	 * @returns {Array<object>} An array of file configuration objects. Each object contains:
 	 * - {string} ext - The file extension.
@@ -5510,9 +5470,6 @@ class WaveformBar {
 	 */
 	getFileConfigs() {
 		return [
-			{ ext: '.ff.json', decompress: JSON.parse, codePage: this.codePage },
-			{ ext: '.ff.lz',   decompress: str => JSON.parse(LZUTF8.decompress(str, { inputEncoding: 'Base64' })), codePage: this.codePage },
-			{ ext: '.ff.lz16', decompress: str => JSON.parse(LZString.decompressFromUTF16(str)), codePage: this.codePageV2 },
 			{ ext: '.aw.json', decompress: JSON.parse, codePage: this.codePage },
 			{ ext: '.aw.lz',   decompress: str => JSON.parse(LZUTF8.decompress(str, { inputEncoding: 'Base64' })), codePage: this.codePage },
 			{ ext: '.aw.lz16', decompress: str => JSON.parse(LZString.decompressFromUTF16(str)), codePage: this.codePageV2 }
@@ -5581,13 +5538,14 @@ class WaveformBar {
 	 */
 	getNormalizedFrameValues(frames, maxVal) {
 		const normalizedFrames = new Array(frames.length);
+		const scaledIndex = this.metrics.count; // Scaled value stored at metric.count
 
 		for (let i = 0; i < frames.length; i++) {
 			const frame = frames[i];
 			const newFrame = frame.slice();
 
-			if (newFrame[4] !== 1) newFrame[4] -= maxVal;
-			if (!isFinite(newFrame[4])) newFrame[4] = 0;
+			if (newFrame[scaledIndex] !== 1) newFrame[scaledIndex] -= maxVal;
+			if (!isFinite(newFrame[scaledIndex])) newFrame[scaledIndex] = 0;
 
 			normalizedFrames[i] = newFrame;
 		}
@@ -5618,7 +5576,7 @@ class WaveformBar {
 
 			if (!isFinite(scaledVal)) scaledVal = 0;
 
-			const newFrame = frame.slice(0, 4);
+			const newFrame = frame.slice(0, this.metrics.count);
 			newFrame.push(scaledVal);
 			scaledFrames[i] = newFrame;
 		}
@@ -5634,37 +5592,58 @@ class WaveformBar {
 	 * @returns {Array} The resized frame data.
 	 */
 	getResizedFrames(scale, frames, newFrames) {
-		const data = Array(newFrames).fill(null).map(() => ({ val: 0, count: 0 }));
+		const data = Array(newFrames).fill(null).map(() => ({ maxAbs: 0, maxSigned: 0, val: 0, count: 0 }));
 		const scaleFactor = newFrames < frames ? frames / newFrames : newFrames / frames;
+		const isWaveformPeak = this.preset.analysisMode === 'waveform_peak';
+
+		if (frames === 0 || newFrames === 0) return [];
 
 		for (let i = 0, j = 0, h = 0; i < frames; i++) {
 			const frame = this.current[i];
 
 			if (newFrames < frames) {
-				while (h >= scaleFactor) {
-					const w = h - scaleFactor;
-					if (j + 1 < newFrames) {
-						data[j + 1].val += frame * w;
-						data[j + 1].count += w;
-					}
-					j += 2;
-					h = 0;
-					if (j >= newFrames) break;
-					data[j].val += frame * (1 - w);
-					data[j].count += (1 - w);
-				}
-				if (i % 2 === 0 && j + 1 < newFrames) {
-					data[j + 1].val += frame;
-					data[j + 1].count++;
-				} else {
-					data[j].val += frame;
+				if (isWaveformPeak) { // Track max absolute and signed values for waveform_peak
+					data[j].maxAbs = Math.max(data[j].maxAbs, Math.abs(frame));
+					data[j].maxSigned = Math.abs(frame) > Math.abs(data[j].maxSigned) ? frame : data[j].maxSigned;
 					data[j].count++;
-					h++;
+					h += 1;
+					if (h >= scaleFactor) {
+						j++;
+						h -= scaleFactor;
+						if (j >= newFrames) break;
+					}
+				}
+				else { // Averaging logic for other modes
+					while (h >= scaleFactor) {
+						const w = h - scaleFactor;
+						if (j + 1 < newFrames) {
+							data[j + 1].val += frame * w;
+							data[j + 1].count += w;
+						}
+						j += 2;
+						h = 0;
+						if (j >= newFrames) break;
+						data[j].val += frame * (1 - w);
+						data[j].count += (1 - w);
+					}
+					if (i % 2 === 0 && j + 1 < newFrames) {
+						data[j + 1].val += frame;
+						data[j + 1].count++;
+					} else {
+						data[j].val += frame;
+						data[j].count++;
+						h++;
+					}
 				}
 			}
-			else {
+			else { // Upsampling: repeat or interpolate frames
 				while (h < scaleFactor && j < newFrames) {
-					data[j].val += frame;
+					if (isWaveformPeak) {
+						data[j].maxAbs = Math.max(data[j].maxAbs, Math.abs(frame));
+						data[j].maxSigned = Math.abs(frame) > Math.abs(data[j].maxSigned) ? frame : data[j].maxSigned;
+					} else {
+						data[j].val += frame;
+					}
 					data[j].count++;
 					j++;
 					h++;
@@ -5673,7 +5652,7 @@ class WaveformBar {
 			}
 		}
 
-		return data.filter(el => el.count > 0).map(el => el.val / el.count);
+		return data.filter(el => el.count > 0).map(el => isWaveformPeak ? el.maxSigned : el.val / el.count);
 	}
 
 	/**
@@ -5685,15 +5664,19 @@ class WaveformBar {
 
 		let { upper, lower } = this.getMaxValue(this.current);
 
-		if (!this.isFallback && !this.fallbackMode.paint && this.analysis.binaryMode === 'ffprobe') {
-			const { pos } = this.ffprobeMode[this.preset.analysisMode];
+		if (this.analysis.binaryMode === 'audioWizard' && !this.isFallback && !this.fallbackMode.paint && this.preset.analysisMode !== 'waveform_peak') {
+			const metric = this.metrics.mode[this.preset.analysisMode];
+			const pos = this.metrics.index[metric];
 			const minVal = this.getMinValuePos(this.current, pos);
 
 			this.current = this.getScaledFrames(this.current, pos, minVal, this.preset.analysisMode === 'rms_level');
-			this.current = this.getNormalizedFrameValues(this.current, Math.min(...this.current.map(frame => frame[4])));
-			this.current = this.current.map((x, i) => Math.sign((0.5 - i % 2)) * (1 - x[4]));
+			this.current = this.getNormalizedFrameValues(this.current, Math.min(...this.current.map(frame => frame[this.metrics.count])));
+			this.current = this.current.map((x, i) => Math.sign((0.5 - i % 2)) * (1 - x[this.metrics.count]));
 		}
-		else if (['audiowaveform', 'visualizer'].includes(this.analysis.binaryMode) || this.isFallback || this.fallbackMode.paint) {
+		else if (this.analysis.binaryMode === 'audioWizard' && this.preset.analysisMode === 'waveform_peak') {
+			this.current = this.current.map(frame => frame[this.metrics.index.waveform_peak]);
+		}
+		else if (this.visualizer) {
 			const maxVal = Math.max(Math.abs(upper), Math.abs(lower));
 			this.current = this.current.map(frame => frame / maxVal);
 		}

@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    26-03-2025                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -486,7 +486,6 @@ class BaseColors {
 
 			// * MAIN COLORS * //
 			grCol.bg = ShadeColor(grCol.bg, percent);
-			grCol.uiHacksFrame = ShadeColor(grCol.uiHacksFrame, percent);
 			grCol.shadow = ShadeColor(grCol.shadow, percent);
 			grCol.detailsBg = ShadeColor(grCol.detailsBg, percent);
 			grCol.timelineAdded = ShadeColor(grCol.timelineAdded, percent);
@@ -600,7 +599,6 @@ class BaseColors {
 
 			// * MAIN COLORS * //
 			grCol.bg = TintColor(grCol.bg, percent);
-			grCol.uiHacksFrame = TintColor(grCol.uiHacksFrame, percent);
 			grCol.shadow = TintColor(grCol.shadow, percent);
 			grCol.detailsBg = TintColor(grCol.detailsBg, percent);
 			grCol.timelineAdded = TintColor(grCol.timelineAdded, percent);
@@ -950,7 +948,6 @@ class BaseColors {
 			grCol_preloaderProgressBar: RGBFtoHEX(grCol.progressBar),
 			grCol_preloaderProgressBarFill: RGBFtoHEX(grCol.progressBarFill),
 			grCol_preloaderProgressBarFrame: RGBFtoHEX(grCol.progressBarFrame),
-			grCol_preloaderUIHacksFrame: RGBFtoHEX(grCol.bg),
 			// * PLAYLIST COLORS * //
 			pl_col_bg: RGBFtoHEX(pl.col.bg),
 			pl_col_plman_text_normal: RGBFtoHEX(pl.col.plman_text_normal),
@@ -1533,10 +1530,6 @@ class ThemeColors extends BaseColors {
 		// * MAIN COLORS * //
 		grCol.bg = this.BEVEL ? RGB(255, 255, 255) : RGB(245, 245, 245);
 		grCol.loadingThemeBg = this.BW ? RGB(230, 230, 230) : this.BW2 ? RGB(25, 25, 25) : RGB(245, 245, 245);
-		grCol.uiHacksFrame =
-			this.BW ? this.BEVEL ? RGB(255, 255, 255) : RGB(230, 230, 230) :
-			this.BW2 ? this.BEVEL ? RGB(50, 50, 50) : RGB(25, 25, 25) :
-			RGB(245, 245, 245);
 		grCol.shadow = this.BW2 ? RGBA(0, 0, 0, 240) : RGBA(0, 0, 0, 25);
 		grCol.discArtShadow = this.BW2 ? RGBA(0, 0, 0, 30) : RGBA(0, 0, 0, 10);
 		grCol.noAlbumArtStub = this.BLEND12 ? RGB(80, 80, 80) : grm.ui.isStreaming ? RGB(207, 0, 5) : RGB(120, 120, 120);
@@ -1842,7 +1835,6 @@ class ThemeColors extends BaseColors {
 		// * MAIN COLORS * //
 		grCol.bg = this.BEVEL ? RGB(40, 40, 40) : RGB(25, 25, 25);
 		grCol.loadingThemeBg = RGB(25, 25, 25);
-		grCol.uiHacksFrame = this.BR && fb.IsPlaying && !grm.ui.isStreaming && !grm.ui.isPlayingCD ? grCol.primary : RGB(35, 35, 35);
 		grCol.shadow =
 			this.BEVEL && (this.THEME !== 'black' && !this.BR) ? RGBA(0, 0, 0, 240) :
 			this.ALT ? RGBA(0, 0, 0, 100) :
@@ -2339,10 +2331,6 @@ class ThemeColors extends BaseColors {
 		// * MAIN COLORS * //
 		grCol.bg = grCol.isColored ? grCol.primary : RGB(245, 245, 245);
 		grCol.loadingThemeBg = this.NIGHTTIME || this.RB ? RGB(25, 25, 25) : RGB(245, 245, 245);
-		grCol.uiHacksFrame =
-			this.RW ? RGB(245, 245, 245) :
-			this.RB ? RGB(25, 25, 25) :
-			grCol.isColored ? grCol.primary : RGB(245, 245, 245);
 		grCol.shadow =
 			this.RB ? RGBA(0, 0, 0, 255) :
 			grm.ui.isStreaming || grm.ui.isPlayingCD || grm.ui.noAlbumArtStub || !grm.ui.albumArt ? RGBA(0, 0, 0, 25) : RGBA(0, 0, 0, 35);
@@ -2772,7 +2760,6 @@ class ThemeColors extends BaseColors {
 		const accentColor = RGB(242, 230, 170);
 		grCol.bg = RGB(5, 110, 195);
 		grCol.loadingThemeBg = RGB(5, 110, 195);
-		grCol.uiHacksFrame = RGB(63, 155, 202);
 		grCol.shadow = RGBA(0, 0, 0, 25);
 		grCol.discArtShadow = RGBA(0, 0, 0, 30);
 		grCol.noAlbumArtStub = accentColor;
@@ -3057,7 +3044,6 @@ class ThemeColors extends BaseColors {
 		const accentColor = RGB(255, 202, 128);
 		grCol.bg = RGB(22, 40, 63);
 		grCol.loadingThemeBg = RGB(22, 40, 63);
-		grCol.uiHacksFrame = RGB(27, 55, 90);
 		grCol.shadow = RGBA(0, 0, 0, 75);
 		grCol.discArtShadow = RGBA(0, 0, 0, 80);
 		grCol.noAlbumArtStub = accentColor;
@@ -3335,7 +3321,6 @@ class ThemeColors extends BaseColors {
 		const accentColor = RGB(245, 212, 165);
 		grCol.bg = RGB(100, 20, 20);
 		grCol.loadingThemeBg = RGB(100, 20, 20);
-		grCol.uiHacksFrame = RGB(125, 0, 0);
 		grCol.shadow = RGBA(0, 0, 0, 75);
 		grCol.discArtShadow = RGBA(0, 0, 0, 80);
 		grCol.noAlbumArtStub = accentColor;
@@ -3626,7 +3611,6 @@ class ThemeColors extends BaseColors {
 		const accentColor = RGB(120, 170, 130);
 		grCol.bg = RGB(255, 247, 240);
 		grCol.loadingThemeBg = RGB(255, 247, 240);
-		grCol.uiHacksFrame = RGB(255, 247, 240);
 		grCol.shadow = RGBA(0, 0, 0, 25);
 		grCol.discArtShadow = RGBA(0, 0, 0, 10);
 		grCol.noAlbumArtStub = this.BLEND12 ? RGB(65, 135, 80) : RGB(100, 150, 110);
@@ -3981,7 +3965,6 @@ class ThemeColors extends BaseColors {
 
 		grCol.bg = this.BEVEL ? RGB(30, 30, 30) : RGB(20, 20, 20);
 		grCol.loadingThemeBg = RGB(20, 20, 20);
-		grCol.uiHacksFrame = RGB(30, 30, 30);
 		grCol.shadow = RGBA(0, 0, 0, 255);
 		grCol.discArtShadow = RGBA(0, 0, 0, 40);
 		grCol.noAlbumArtStub = accentColor;
@@ -4279,7 +4262,6 @@ class ThemeColors extends BaseColors {
 			// * MAIN COLORS * //
 			grCol.bg = this.BEVEL ? TintColor(HEXtoRGB(grCfg.cTheme.grCol_bg), grCol.lightBgMain ? 80 : 0) : HEXtoRGB(grCfg.cTheme.grCol_bg);
 			grCol.loadingThemeBg = this.NIGHTTIME && grCfg.cTheme.grCol_preloaderBg === '' ? RGB(25, 25, 25) : grCfg.cTheme.grCol_preloaderBg !== '' ? HEXtoRGB(grCfg.cTheme.grCol_preloaderBg) : RGB(245, 245, 245);
-			grCol.uiHacksFrame = this.NIGHTTIME ? RGB(25, 25, 25) : grCol.bg;
 			grCol.shadow = HEXtoRGBA(grCfg.cTheme.grCol_shadow, grCol.lightBgMain ? 50 : 75);
 			grCol.discArtShadow = HEXtoRGBA(grCfg.cTheme.grCol_discArtShadow, grCol.lightBgMain ? 50 : 75);
 			grCol.noAlbumArtStub = HEXtoRGB(grCfg.cTheme.grCol_noAlbumArtStub);
@@ -4594,7 +4576,6 @@ class ThemeColors extends BaseColors {
 		// * MAIN COLORS * //
 		grCol.bg = lighterBg || this.BEVEL ? RGB(255, 255, 255) : RGB(230, 230, 230);
 		grCol.loadingThemeBg = grCol.bg;
-		grCol.uiHacksFrame = grCol.bg;
 		grCol.noAlbumArtStub = RGB(255, 255, 255);
 		grCol.lowerBarArtist = RGB(80, 80, 80);
 		grCol.lowerBarTitle = RGB(80, 80, 80);
@@ -4827,7 +4808,6 @@ class ThemeColors extends BaseColors {
 		// * MAIN COLORS * //
 		grCol.bg = this.BEVEL ? darkerBg ? RGB(25, 25, 25) : RGB(50, 50, 50) : darkerBg ? RGB(0, 0, 0) : RGB(25, 25, 25);
 		grCol.loadingThemeBg = this.NIGHTTIME || this.BW2 ? RGB(25, 25, 25) : grCol.bg;
-		grCol.uiHacksFrame = grCol.bg;
 		grCol.shadow = grm.ui.isPlayingCD ? RGBA(0, 0, 0, 30) : grCol.shadow;
 		grCol.noAlbumArtStub = this.NIGHTTIME ? RGB(240, 240, 240) : RGB(40, 40, 40);
 		grCol.lowerBarArtist = RGB(240, 240, 240);
@@ -5660,8 +5640,6 @@ class StyleColors extends BaseColors {
 			['nblue', 'ngreen', 'nred', 'ngold'].includes(grSet.theme) ? RGB(30, 30, 30) :
 			this.CTHEME ? TintColor(grCol.bg, 8) : '';
 
-		grCol.uiHacksFrame = grCol.bg;
-
 		grCol.shadow =
 			grSet.theme === 'reborn' || grSet.theme === 'random' ? RGBA(0, 0, 0, 25) :
 			grSet.theme === 'blue' ? grCol.shadow + RGBA(0, 0, 0, 25) :
@@ -5783,8 +5761,6 @@ class StyleColors extends BaseColors {
 			grSet.theme === 'cream' ? RGB(255, 247, 240) :
 			['nblue', 'ngreen', 'nred', 'ngold'].includes(grSet.theme) ? RGB(25, 25, 25) :
 			this.CTHEME ? ShadeColor(grCol.bg, 8) : '';
-
-		grCol.uiHacksFrame = grCol.bg;
 
 		grCol.shadow =
 			grSet.theme === 'black' ? grCol.shadow - RGBA(0, 0, 0, 80) :
@@ -6250,7 +6226,6 @@ class StyleColors extends BaseColors {
 
 		// * MAIN COLORS * //
 		grCol.bg = grCol.primary_alt;
-		grCol.uiHacksFrame = grCol.bg;
 		grCol.transportEllipseBg = grCol.lightAccent_50_alt;
 		grCol.transportEllipseNormal = grCol.lightAccent_alt;
 		grCol.transportEllipseHovered = grCol.lightAccent_50_alt;

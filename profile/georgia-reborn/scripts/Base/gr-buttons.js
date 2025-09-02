@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-06-2025                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1131,13 +1131,13 @@ class Button {
 	 * @private
 	 */
 	_createTopMenuCaptionButtons(ww, wh) {
-		if (!UIHacks || UIHacks.FrameStyle === FrameStyle.Default ||
+		if (!UIWizard || UIWizard.FrameStyle === FrameStyle.Default ||
 			grSet.layout !== 'default' && !grSet.showTopMenuCompact && ww < SCALE(grSet.layout === 'compact' ? 580 : 620)) {
 			return;
 		}
 
 		const layoutDefault = grSet.layout === 'default';
-		const hideClose = UIHacks.FrameStyle === FrameStyle.SmallCaption && !UIHacks.FullScreen;
+		const hideClose = UIWizard.FrameStyle === FrameStyle.SmallCaption && UIWizard.WindowState !== WindowState.Fullscreen;
 		const btnSize = this.btnImg.Close.Default.Height;
 		const btnCount = hideClose ? (layoutDefault ? 2 : 1) : layoutDefault ? 3 : 2;
 		const totalWidth = btnSize * btnCount + (btnCount - 1);

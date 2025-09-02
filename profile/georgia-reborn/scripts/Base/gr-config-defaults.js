@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-06-2025                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -851,11 +851,12 @@ class ConfigDefaults {
 			peakmeterBarVertBaseline: true,
 			peakmeterBarWheelSeekSpeed: 5,
 			peakmeterBarRefreshRate: 'variable',
-			waveformBarMode: 'audiowaveform',
+			waveformBarMode: 'audioWizard',
 			waveformBarAnalysis: 'rms_level',
 			waveformBarSaveMode: 'always',
 			waveformBarFallbackAnalysis: true,
 			waveformBarFallback: true,
+			waveformBarResolution: 20,
 			waveformBarDesign: 'halfbars',
 			waveformBarSizeWave: 3,
 			waveformBarSizeBars: 1,
@@ -1020,11 +1021,12 @@ class ConfigDefaults {
 			peakmeterBarVertBaseline: 'Values: true, false - Options > Player controls > Seekbar > Peakmeter bar > Display > Show baseline',
 			peakmeterBarWheelSeekSpeed: 'Values: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Player controls > Seekbar > Peakmeter bar > Mouse wheel seek speed',
 			peakmeterBarRefreshRate: 'Values: 1000, 500, 333, 250, 200, 166, 142, 125, 111, 100, 83, 67, 50, 40, 33, 22, 17, "variable" - Options > Player controls > Seekbar > Peakmeter bar > Refresh rate',
-			waveformBarMode: 'Values: "ffprobe", "audiowaveform", "visualizer" - Options > Player controls > Seekbar > Waveform bar > Mode',
+			waveformBarMode: 'Values: "waveform", "visualizer" - Options > Player controls > Seekbar > Waveform bar > Mode',
 			waveformBarAnalysis: 'Values: "rms_level", "peak_level", "rms_peak" - Options > Player controls > Seekbar > Waveform bar > Analysis',
 			waveformBarSaveMode: 'Values: "always", "library", "never" - Options > Player controls > Seekbar > Waveform bar > Analysis',
 			waveformBarFallbackAnalysis: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Analysis > Visualizer during analysis',
 			waveformBarFallback: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Analysis > Visualizer for incompatible files',
+			waveformBarResolution: 'Values: 1, 5, 10, 15, 20, 50, 100 - Options > Player controls > Seekbar > Waveform bar > Resolution',
 			waveformBarDesign: 'Values: "waveform", "bars", "dots", "halfbars" - Options > Player controls > Seekbar > Waveform bar > Shape',
 			waveformBarSizeWave: 'Values: 1, 2, 3, 4, 5 - Options > Player controls > Seekbar > Waveform bar > Size > Waveform',
 			waveformBarSizeBars: 'Values: 1, 2, 3, 4, 5 - Options > Player controls > Seekbar > Waveform bar > Size > Bars',
@@ -2219,7 +2221,6 @@ class ConfigDefaults {
 			grCol_preloaderProgressBar: '412d64',
 			grCol_preloaderProgressBarFill: 'ebc841',
 			grCol_preloaderProgressBarFrame: '372355',
-			grCol_preloaderUIHacksFrame: '372355',
 			// #endregion
 
 			// * PLAYLIST COLORS * //
@@ -2455,7 +2456,6 @@ class ConfigDefaults {
 			grCol_preloaderProgressBar: 'Preloader progress bar color. If this value is empty, the default color will be used',
 			grCol_preloaderProgressBarFill: 'Preloader progress bar fill color. If this value is empty, the default color will be used',
 			grCol_preloaderProgressBarFrame: 'Preloader progress bar frame color. If this value is empty, the default color will be used',
-			grCol_preloaderUIHacksFrame: 'Preloader UIHacks frame color. Should have the same color as preloaderBg. If this value is empty, the default color will be used',
 			// #endregion
 
 			// * PLAYLIST COLORS * //

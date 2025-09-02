@@ -1,0 +1,331 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: vu_meter.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">Clamp</span>(<span class="hljs-params">value, min, max</span>) {
+	<span class="hljs-keyword">if</span> (value &lt; min)
+		<span class="hljs-keyword">return</span> min;
+	<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (value &gt; max)
+		<span class="hljs-keyword">return</span> max;
+	<span class="hljs-keyword">else</span>
+		<span class="hljs-keyword">return</span> value;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">EnableMenuIf</span>(<span class="hljs-params">condition</span>) {
+	<span class="hljs-keyword">return</span> condition ? <span class="hljs-variable constant_">MF_STRING</span> : <span class="hljs-variable constant_">MF_GRAYED</span>;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">_vu_meter</span>(<span class="hljs-params">x, y, w, h</span>) {
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">clear_graph</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> c = <span class="hljs-number">0</span>; c &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span>; ++c) {
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">RMS_levels</span>[c] = <span class="hljs-number">0</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_levels</span>[c] = <span class="hljs-number">0</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_falldown</span>[c] = <span class="hljs-number">0</span>;
+		}
+
+		<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">init</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">dBrange</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">maxDB</span> - <span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span>;
+
+		<span class="hljs-keyword">if</span> (fb.<span class="hljs-property">IsPaused</span>)
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update_graph</span>();
+		<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (fb.<span class="hljs-property">IsPlaying</span>)
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">start_timer</span>();
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">start_timer</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+		<span class="hljs-keyword">if</span> (!<span class="hljs-variable language_">this</span>.<span class="hljs-property">timer_id</span>) {
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">timer_id</span> = <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">SetInterval</span>((<span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) { <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update_graph</span>(); }).<span class="hljs-title function_">bind</span>(<span class="hljs-variable language_">this</span>), <span class="hljs-variable language_">this</span>.<span class="hljs-property">timer_interval</span>);
+		}
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">stop_timer</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+		<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">timer_id</span>) {
+			<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">ClearInterval</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">timer_id</span>);
+		}
+
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">timer_id</span> = <span class="hljs-number">0</span>;
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">to_db</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">num</span>) {
+		<span class="hljs-keyword">return</span> <span class="hljs-number">20</span> * <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">log</span>(num) / <span class="hljs-title class_">Math</span>.<span class="hljs-property">LN10</span>;
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">update_graph</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+		<span class="hljs-keyword">var</span> cur_time = fb.<span class="hljs-property">Time</span>;
+
+		<span class="hljs-keyword">if</span> (cur_time &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">rms_window</span>)
+			<span class="hljs-keyword">return</span>;
+
+		<span class="hljs-keyword">var</span> chunk = fb.<span class="hljs-title class_">GetAudioChunk</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">rms_window</span>);
+
+		<span class="hljs-keyword">if</span> (!chunk)
+			<span class="hljs-keyword">return</span>;
+
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span> = chunk.<span class="hljs-property">ChannelCount</span>;
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">config</span> = chunk.<span class="hljs-property">ChannelConfig</span>;
+		<span class="hljs-keyword">var</span> data = chunk.<span class="hljs-property">Data</span>;
+		<span class="hljs-keyword">var</span> frame_len = chunk.<span class="hljs-property">SampleCount</span>;
+
+		<span class="hljs-keyword">if</span> (data &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span> &gt; <span class="hljs-number">0</span> &amp;&amp; frame_len &gt; <span class="hljs-number">0</span>) {
+			<span class="hljs-keyword">var</span> old_count = <span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_levels</span>.<span class="hljs-property">length</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">RMS_levels</span>.<span class="hljs-property">length</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_levels</span>.<span class="hljs-property">length</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_falldown</span>.<span class="hljs-property">length</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span>;
+
+			<span class="hljs-keyword">if</span> (old_count &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span>) {
+				<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> c = old_count; c &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span>; ++c) {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_levels</span>[c] = <span class="hljs-number">0</span>;
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_falldown</span>[c] = <span class="hljs-number">0</span>;
+				}
+			}
+
+			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> c = <span class="hljs-number">0</span>; c &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span>; ++c) {
+				<span class="hljs-keyword">var</span> sum = <span class="hljs-number">0</span>, peak = <span class="hljs-number">0</span>;
+
+				<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = c; i &lt; data.<span class="hljs-property">length</span>; i += <span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span>) {
+					<span class="hljs-keyword">var</span> s = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">abs</span>(data[i]);
+
+					<span class="hljs-keyword">if</span> (s &gt; peak) {
+						peak = s;
+					}
+
+					sum += s * s;
+				}
+
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">RMS_levels</span>[c] = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">sqrt</span>(sum / frame_len);
+
+				<span class="hljs-keyword">if</span> (peak &gt;= <span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_levels</span>[c]) {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_levels</span>[c] = peak;
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_falldown</span>[c] = <span class="hljs-number">0</span>;
+				} <span class="hljs-keyword">else</span> {
+					<span class="hljs-keyword">if</span> (++<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_falldown</span>[c] &gt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">peak_hold</span>) {
+						<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_levels</span>[c] *= <span class="hljs-variable language_">this</span>.<span class="hljs-property">peak_fall_mul</span>;
+					}
+				}
+			}
+
+			<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+		}
+	}
+
+<span class="hljs-comment">// callbacks begin</span>
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">paint</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">gr</span>) {
+		<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span> &lt; <span class="hljs-number">1</span> || <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span> &lt; <span class="hljs-number">1</span>)
+			<span class="hljs-keyword">return</span>;
+
+		<span class="hljs-keyword">var</span> smooth_mode = <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">meter_style</span>.<span class="hljs-property">value</span> == <span class="hljs-number">0</span>;
+
+		<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span> &gt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span>) { <span class="hljs-comment">// horizontal</span>
+			<span class="hljs-keyword">var</span> bar_width = <span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span>;
+			<span class="hljs-keyword">var</span> bar_height = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span> / <span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span>);
+
+			<span class="hljs-keyword">if</span> (!smooth_mode) {
+				<span class="hljs-keyword">var</span> block_count = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">max</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">dBrange</span> / <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">rms_block_db</span>.<span class="hljs-property">value</span>), <span class="hljs-number">1</span>);
+				<span class="hljs-keyword">var</span> block_width = bar_width / block_count;
+				<span class="hljs-keyword">var</span> block_pad = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">max</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">ceil</span>(block_width * <span class="hljs-number">0.05</span>), <span class="hljs-number">1</span>);
+			}
+
+			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> c = <span class="hljs-number">0</span>; c &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span>; ++c) {
+				<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">RMS_levels</span>[c]) {
+					<span class="hljs-keyword">var</span> rms_db = <span class="hljs-title class_">Clamp</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">to_db</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">RMS_levels</span>[c]), <span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">maxDB</span>);
+
+					<span class="hljs-keyword">if</span> (smooth_mode) {
+						<span class="hljs-keyword">var</span> width = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">round</span>(bar_width * (rms_db - <span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span>) / <span class="hljs-variable language_">this</span>.<span class="hljs-property">dBrange</span>);
+						gr.<span class="hljs-title class_">FillSolidRect</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + (bar_height * c), width, bar_height - <span class="hljs-number">1</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_bar</span>.<span class="hljs-property">value</span>);
+					} <span class="hljs-keyword">else</span> {
+						<span class="hljs-keyword">var</span> blocks = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">round</span>(block_count * (rms_db - <span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span>) / <span class="hljs-variable language_">this</span>.<span class="hljs-property">dBrange</span>);
+						<span class="hljs-keyword">var</span> width = blocks * block_width;
+						gr.<span class="hljs-title class_">FillSolidRect</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + (bar_height * c), width, bar_height - <span class="hljs-number">1</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_bar</span>.<span class="hljs-property">value</span>);
+
+						<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">1</span>; i &lt;= blocks; ++i) {
+							gr.<span class="hljs-title class_">FillSolidRect</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> - <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">ceil</span>(block_pad / <span class="hljs-number">2</span>) + (i * block_width), <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + (bar_height * c), block_pad, bar_height - <span class="hljs-number">1</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_background</span>.<span class="hljs-property">value</span>);
+						}
+					}
+				}
+
+				<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">peak_bar_width</span> &gt; <span class="hljs-number">0</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_levels</span>[c] &gt; <span class="hljs-number">0</span>) {
+					<span class="hljs-keyword">var</span> peak_db = <span class="hljs-title class_">Clamp</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">to_db</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_levels</span>[c]), <span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">maxDB</span>);
+
+					<span class="hljs-keyword">if</span> (peak_db &gt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span>) {
+						<span class="hljs-keyword">var</span> peak_pos = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">round</span>(bar_width * (peak_db - <span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span>) / <span class="hljs-variable language_">this</span>.<span class="hljs-property">dBrange</span>);
+						gr.<span class="hljs-title class_">FillSolidRect</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + peak_pos - <span class="hljs-variable language_">this</span>.<span class="hljs-property">peak_bar_width</span> / <span class="hljs-number">2</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + (bar_height * c), <span class="hljs-variable language_">this</span>.<span class="hljs-property">peak_bar_width</span>, bar_height - <span class="hljs-number">1</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_peak</span>.<span class="hljs-property">value</span>);
+					}
+				}
+			}
+		} <span class="hljs-keyword">else</span> { <span class="hljs-comment">// vertical</span>
+			<span class="hljs-keyword">var</span> bar_width = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span> / <span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span>);
+			<span class="hljs-keyword">var</span> bar_height = <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span>;
+
+			<span class="hljs-keyword">if</span> (!smooth_mode) {
+				<span class="hljs-keyword">var</span> block_count = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">max</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">dBrange</span> / <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">rms_block_db</span>.<span class="hljs-property">value</span>), <span class="hljs-number">1</span>);
+				<span class="hljs-keyword">var</span> block_height = bar_height / block_count;
+				<span class="hljs-keyword">var</span> block_pad = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">max</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">ceil</span>(block_height * <span class="hljs-number">0.05</span>), <span class="hljs-number">1</span>);
+			}
+
+			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> c = <span class="hljs-number">0</span>; c &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span>.<span class="hljs-property">count</span>; ++c) {
+				<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">RMS_levels</span>[c]) {
+					<span class="hljs-keyword">var</span> rms_db = <span class="hljs-title class_">Clamp</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">to_db</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">RMS_levels</span>[c]), <span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">maxDB</span>);
+
+					<span class="hljs-keyword">if</span> (smooth_mode) {
+						<span class="hljs-keyword">var</span> height = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">round</span>(bar_height * (rms_db - <span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span>) / <span class="hljs-variable language_">this</span>.<span class="hljs-property">dBrange</span>);
+					} <span class="hljs-keyword">else</span> {
+						<span class="hljs-keyword">var</span> blocks = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">round</span>(block_count * (rms_db - <span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span>) / <span class="hljs-variable language_">this</span>.<span class="hljs-property">dBrange</span>);
+						<span class="hljs-keyword">var</span> height = blocks * block_height;
+					}
+
+					gr.<span class="hljs-title class_">FillSolidRect</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + (bar_width * c), <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span>, bar_width - <span class="hljs-number">1</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_bar</span>.<span class="hljs-property">value</span>);
+					gr.<span class="hljs-title class_">FillSolidRect</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + (bar_width * c), <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span>, bar_width - <span class="hljs-number">1</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span> - height, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_background</span>.<span class="hljs-property">value</span>);
+
+					<span class="hljs-keyword">if</span> (!smooth_mode) {
+						<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">1</span>; i &lt;= blocks; ++i) {
+							gr.<span class="hljs-title class_">FillSolidRect</span>(bar_width * c, <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span> - height + <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">ceil</span>(block_pad / <span class="hljs-number">2</span>) + (i * block_height), bar_width - <span class="hljs-number">1</span>, block_pad, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_background</span>.<span class="hljs-property">value</span>);
+						}
+					}
+				}
+
+				<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">peak_bar_width</span> &gt; <span class="hljs-number">0</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_levels</span>[c] &gt; <span class="hljs-number">0</span>) {
+					<span class="hljs-keyword">var</span> peak_db = <span class="hljs-title class_">Clamp</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">to_db</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_levels</span>[c]), <span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">maxDB</span>);
+
+					<span class="hljs-keyword">if</span> (peak_db &gt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span>) {
+						<span class="hljs-keyword">var</span> peak_pos = <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span> - <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">round</span>(bar_height * (peak_db - <span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span>) / <span class="hljs-variable language_">this</span>.<span class="hljs-property">dBrange</span>);
+						gr.<span class="hljs-title class_">FillSolidRect</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + (bar_width * c), <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + peak_pos, bar_width - <span class="hljs-number">1</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">peak_bar_width</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_peak</span>.<span class="hljs-property">value</span>);
+					}
+				}
+			}
+		}
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">playback_new_track</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+		<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">start_timer</span>();
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">playback_pause</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">state</span>) {
+		state ? <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">stop_timer</span>() : <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">start_timer</span>();
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">playback_stop</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">reason</span>) {
+		<span class="hljs-keyword">if</span> (reason != <span class="hljs-number">2</span>) {
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">stop_timer</span>();
+		}
+
+		<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">clear_graph</span>();
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">rbtn_up</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">x, y</span>) {
+		<span class="hljs-keyword">var</span> menu = <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">CreatePopupMenu</span>();
+		<span class="hljs-keyword">var</span> style_menu = <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">CreatePopupMenu</span>();
+
+		menu.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">3</span>, <span class="hljs-string">&#x27;Background...&#x27;</span>);
+		menu.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">4</span>, <span class="hljs-string">&#x27;Bar...&#x27;</span>);
+		menu.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-title class_">EnableMenuIf</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">peak_bar_width</span> &gt; <span class="hljs-number">0</span>), <span class="hljs-number">5</span>, <span class="hljs-string">&#x27;Peak...&#x27;</span>);
+
+		style_menu.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">10</span>, <span class="hljs-string">&#x27;Smooth&#x27;</span>);
+		style_menu.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">11</span>, <span class="hljs-string">&#x27;Blocks&#x27;</span>);
+		style_menu.<span class="hljs-title class_">CheckMenuRadioItem</span>(<span class="hljs-number">10</span>, <span class="hljs-number">11</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">meter_style</span>.<span class="hljs-property">value</span> + <span class="hljs-number">10</span>);
+
+		<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">meter_style</span>.<span class="hljs-property">value</span> == <span class="hljs-number">1</span>) {
+			style_menu.<span class="hljs-title class_">AppendMenuSeparator</span>();
+			style_menu.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_GRAYED</span>, <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;Block width (dB)&#x27;</span>);
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">rms_block_dbs</span>.<span class="hljs-title function_">forEach</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">item, index</span>) {
+				style_menu.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">20</span> + index, item);
+			});
+
+			<span class="hljs-keyword">var</span> rms_block_db_index = <span class="hljs-variable language_">this</span>.<span class="hljs-property">rms_block_dbs</span>.<span class="hljs-title function_">indexOf</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">rms_block_db</span>.<span class="hljs-property">value</span>);
+			style_menu.<span class="hljs-title class_">CheckMenuRadioItem</span>(<span class="hljs-number">20</span>, <span class="hljs-number">20</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">rms_block_dbs</span>.<span class="hljs-property">length</span>, <span class="hljs-number">20</span> + rms_block_db_index);
+		}
+
+		style_menu.<span class="hljs-title class_">AppendTo</span>(menu, <span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-string">&#x27;Meter style&#x27;</span>);
+
+		menu.<span class="hljs-title class_">AppendMenuSeparator</span>();
+		menu.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">50</span>, <span class="hljs-string">&#x27;Configure...&#x27;</span>);
+
+		<span class="hljs-keyword">var</span> idx = menu.<span class="hljs-title class_">TrackPopupMenu</span>(x, y);
+
+		<span class="hljs-keyword">switch</span> (idx) {
+		<span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">3</span>:
+			<span class="hljs-keyword">var</span> tmp = utils.<span class="hljs-title class_">ColourPicker</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">ID</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_background</span>.<span class="hljs-property">value</span>);
+
+			<span class="hljs-keyword">if</span> (tmp != <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_background</span>.<span class="hljs-property">value</span>) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_background</span>.<span class="hljs-property">value</span> = tmp;
+				<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+			}
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">4</span>:
+			<span class="hljs-keyword">var</span> tmp = utils.<span class="hljs-title class_">ColourPicker</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">ID</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_bar</span>.<span class="hljs-property">value</span>);
+
+			<span class="hljs-keyword">if</span> (tmp != <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_bar</span>.<span class="hljs-property">value</span>) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_bar</span>.<span class="hljs-property">value</span> = tmp;
+				<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+			}
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">5</span>:
+			<span class="hljs-keyword">var</span> tmp = utils.<span class="hljs-title class_">ColourPicker</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">ID</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_peak</span>.<span class="hljs-property">value</span>);
+
+			<span class="hljs-keyword">if</span> (tmp != <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_peak</span>.<span class="hljs-property">value</span>) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">custom_peak</span>.<span class="hljs-property">value</span> = tmp;
+				<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+			}
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">10</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">11</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">meter_style</span>.<span class="hljs-property">value</span> = idx - <span class="hljs-number">10</span>;
+			<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">20</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">21</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">22</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">23</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">rms_block_db</span>.<span class="hljs-property">value</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">rms_block_dbs</span>[idx - <span class="hljs-number">20</span>];
+			<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">50</span>:
+			<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">ShowConfigure</span>();
+			<span class="hljs-keyword">break</span>;
+		}
+
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+	}
+<span class="hljs-comment">// callbacks end</span>
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> = x;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> = y;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span> = w;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span> = h;
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">minDB</span> = -<span class="hljs-number">60</span>; <span class="hljs-comment">// minimum dB on the meter (meter range)</span>
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">maxDB</span> = <span class="hljs-number">5</span>; <span class="hljs-comment">// maximum dB on the meter (meter range)</span>
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">rms_block_dbs</span> = [<span class="hljs-number">0.3125</span>, <span class="hljs-number">0.625</span>, <span class="hljs-number">1.25</span>, <span class="hljs-number">2.5</span>];
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">RMS_levels</span> = [];
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_levels</span> = [];
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">Peak_falldown</span> = [];
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">timer_id</span> = <span class="hljs-number">0</span>;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">dBrange</span> = <span class="hljs-number">0</span>;
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">channels</span> = {
+		count : <span class="hljs-number">2</span>,
+		config : <span class="hljs-number">0</span>,
+	};
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span> = {
+		custom_background : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&quot;2K3.METER.BACKGROUND.COLOUR&quot;</span>, <span class="hljs-title function_">_RGB</span>(<span class="hljs-number">30</span>, <span class="hljs-number">30</span>, <span class="hljs-number">30</span>)),
+		custom_bar : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&quot;2K3.METER.BAR.COLOUR&quot;</span>, <span class="hljs-title function_">_RGB</span>(<span class="hljs-number">200</span>, <span class="hljs-number">200</span>, <span class="hljs-number">200</span>)),
+		custom_peak : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&quot;2K3.METER.PEAK.COLOUR&quot;</span>, <span class="hljs-title function_">_RGB</span>(<span class="hljs-number">255</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>)), <span class="hljs-comment">// no default</span>
+		meter_style : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&quot;2K3.METER.STYLE&quot;</span>, <span class="hljs-number">1</span>), <span class="hljs-comment">// 0: smooth, 1: blocks</span>
+		rms_block_db : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&quot;2K3.METER.BLOCK.DB&quot;</span>, <span class="hljs-number">0.625</span>),
+	};
+}
+</code></pre>
+      </body>
+    </html>
+  

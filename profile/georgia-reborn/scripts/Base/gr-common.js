@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    TheQwertiest                                            * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-12-2024                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -24,8 +24,10 @@ const esl = new ActiveXObject('eslyric');
 const doc = new ActiveXObject('htmlfile');
 /** @global @type {ActiveXObject} The Scripting.FileSystemObject ActiveX object. */
 const fso = new ActiveXObject('Scripting.FileSystemObject');
-/** @global @type {ActiveXObject} The UIHacks ActiveX object. */
-const UIHacks = new ActiveXObject('UIHacks');
+/** @global @type {ActiveXObject} The AudioWizard ActiveX object. */
+const AudioWizard = new ActiveXObject('AudioWizard');
+/** @global @type {ActiveXObject} The UIWizard ActiveX object. */
+const UIWizard = new ActiveXObject('UIWizard');
 /** @global @type {ActiveXObject} The WScript.Shell ActiveX object. */
 const WshShell = new ActiveXObject('WScript.Shell');
 
@@ -37,17 +39,19 @@ const WshShell = new ActiveXObject('WScript.Shell');
  * A set of boolean flags indicating the presence of specific components.
  * Each flag is set based on the result of a check performed at the time of initialization.
  * @typedef  {object} Component
+ * @property {boolean} AudioWizard - The state indicates if the foo_audio_wizard component is installed.
  * @property {boolean} ChronFlow - The state indicates if the foo_chronflow component or its mod version is installed.
  * @property {boolean} EnhancedPlaycount - The state indicates if the foo_enhanced_playcount component is installed.
  * @property {boolean} ESLyric - The state indicates if the foo_uie_eslyric component is installed.
- * @property {boolean} VUMeter - The state indicates if the foo_vis_vumeter component is installed.
+ * @property {boolean} UIWizard - The state indicates if the foo_ui_wizard component is installed.
  */
 /** @global @type {Component} */
 const Component = {
+	AudioWizard: utils.CheckComponent('foo_audio_wizard'),
 	ChronFlow: utils.CheckComponent('foo_chronflow') || utils.CheckComponent('foo_chronflow_mod'),
 	EnhancedPlaycount: utils.CheckComponent('foo_enhanced_playcount'),
 	ESLyric: utils.CheckComponent('foo_uie_eslyric'),
-	VUMeter: utils.CheckComponent('foo_vis_vumeter')
+	UIWizard: utils.CheckComponent('foo_ui_wizard')
 };
 
 
@@ -631,11 +635,11 @@ const PlaybackOrder = {
 };
 
 
-/////////////////
-// * UIHACKS * //
-/////////////////
+///////////////////
+// * UI WIZARD * //
+///////////////////
 /**
- * A set of UIHacks main menu state settings.
+ * A set of UI Wizard main menu state settings.
  * @typedef  {object} MainMenuState
  * @property {number} Show - The state to show the main menu.
  * @property {number} Hide - The state to hide the main menu.
@@ -649,37 +653,41 @@ const MainMenuState = {
 };
 
 /**
- * A set of UIHacks window state settings.
+ * A set of UI Wizard window state settings.
  * @typedef  {object} WindowState
  * @property {number} Normal - The window is in normal state.
  * @property {number} Minimized - The window is minimized.
  * @property {number} Maximized - The window is maximized.
+ * @property {number} Fullscreen - The window is fullscreen.
  */
 /** @global @enum @type {WindowState} */
 const WindowState = {
-	Normal:    0,
+	Normal: 0,
 	Minimized: 1,
-	Maximized: 2
+	Maximized: 2,
+	Fullscreen: 3
 };
 
 /**
- * A set of UIHacks frame style settings, see foobar's Preferences > Display > Main Window > Frame style.
+ * A set of UI Wizard frame style settings, see foobar's Preferences > Display > UI Wizard > Frame style.
  * @typedef  {object} FrameStyle
  * @property {number} Default - The default frame style.
  * @property {number} SmallCaption - The frame style with small caption.
  * @property {number} NoCaption - The frame style with no caption.
  * @property {number} NoBorder - The frame style with no border.
+ * @property {number} NoBorderAutoHide - The frame style with no border and auto hide.
  */
 /** @global @enum @type {FrameStyle} */
 const FrameStyle = {
 	Default: 0,
 	SmallCaption: 1,
 	NoCaption: 2,
-	NoBorder: 3
+	NoBorder: 3,
+	NoBorderAutoHide: 4
 };
 
 /**
- * A set of UIHacks move style settings, see foobar's Preferences > Display > Main Window > Move with.
+ * A set of UI Wizard move style settings, see foobar's Preferences > Display > UI Wizard > Move with.
  * @typedef  {object} MoveStyle
  * @property {number} Default - The default move style.
  * @property {number} Middle - The move style with middle mouse button.
@@ -1801,13 +1809,13 @@ class Utilities {
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
 	/**
-	 * Disables window resizing if certain conditions are met via UIHacks.
+	 * Disables window resizing if certain conditions are met via UI Wizard.
 	 * @param {number} m - The mouse mask.
 	 */
 	disableSizing(m) {
 		try {
-			if (m && UIHacks && UIHacks.FrameStyle === 3 && !UIHacks.DisableSizing) {
-				UIHacks.DisableSizing = true;
+			if (m && UIWizard && UIWizard.FrameStyle === 3 && !UIWizard.DisableSizing) {
+				UIWizard.DisableWindowSizing = true;
 			}
 		}
 		catch (e) {
@@ -1816,13 +1824,13 @@ class Utilities {
 	}
 
 	/**
-	 * Enables window resizing if certain conditions are met via UIHacks.
+	 * Enables window resizing if certain conditions are met via UI Wizard.
 	 * @param {number} m - The mouse mask.
 	 */
 	enableSizing(m) {
 		try {
-			if (UIHacks && UIHacks.FrameStyle === 3 && UIHacks.DisableSizing) {
-				UIHacks.DisableSizing = false;
+			if (UIWizard && UIWizard.FrameStyle === 3 && UIWizard.DisableWindowSizing) {
+				UIWizard.DisableWindowSizing = false;
 			}
 		}
 		catch (e) {

@@ -4,13 +4,326 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-06-2025                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
 'use strict';
+
+
+/////////////
+// * API * //
+/////////////
+/**
+ * Starts analyzing asynchronously selected tracks and logs detailed audio metrics.
+ */
+async function AWStartFullTrackAnalysis() {
+	if (!AudioWizard) return;
+
+	console.log("Audio Wizard => Starting full-track metrics analysis...");
+
+	try {
+		await new Promise((resolve, reject) => {
+			const onComplete = () => {
+				console.log("Audio Wizard => Analysis complete!");
+
+				const metricsPerTrack = 12; // M LUFS, S LUFS, I LUFS, RMS, SP, TP, PSR, PLR, CF, LRA, DR, PD
+				const metrics = AudioWizard.GetFullTrackMetrics();
+
+				const selectedTracks = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+				const tfArtist = fb.TitleFormat("%artist%");
+				const tfAlbum = fb.TitleFormat("%album%");
+				const tfTitle = fb.TitleFormat("%title%");
+
+				console.log(`Audio Wizard => Analyzed ${selectedTracks.Count} track(s):`);
+
+				for (let i = 0; i < selectedTracks.Count; i++) {
+					const track = selectedTracks[i];
+					const artist = tfArtist.EvalWithMetadb(track);
+					const album = tfAlbum.EvalWithMetadb(track);
+					const title = tfTitle.EvalWithMetadb(track);
+					const offset = i * metricsPerTrack;
+
+					console.log(`Audio Wizard => GetFullTrackMetrics => Track ${i + 1}: ${artist} - ${album} - ${title}`);
+					console.log(`  M LUFS: ${metrics[offset + 0].toFixed(2)}`);
+					console.log(`  S LUFS: ${metrics[offset + 1].toFixed(2)}`);
+					console.log(`  I LUFS: ${metrics[offset + 2].toFixed(2)}`);
+					console.log(`  RMS: ${metrics[offset + 3].toFixed(2)}`);
+					console.log(`  Sample Peak: ${metrics[offset + 4].toFixed(2)}`);
+					console.log(`  True Peak: ${metrics[offset + 5].toFixed(2)}`);
+					console.log(`  PSR: ${metrics[offset + 6].toFixed(2)}`);
+					console.log(`  PLR: ${metrics[offset + 7].toFixed(2)}`);
+					console.log(`  CF: ${metrics[offset + 8].toFixed(2)}`);
+					console.log(`  LRA: ${metrics[offset + 9].toFixed(2)}`);
+					console.log(`  DR: ${metrics[offset + 10].toFixed(2)}`);
+					console.log(`  PD: ${metrics[offset + 11].toFixed(2)}`);
+
+					console.log(`Audio Wizard => Individual Metrics => Track ${i + 1}: ${artist} - ${album} - ${title}`);
+					console.log(`  M LUFS: ${AudioWizard.GetMomentaryLUFSFull(i).toFixed(2)}`);
+					console.log(`  S LUFS: ${AudioWizard.GetShortTermLUFSFull(i).toFixed(2)}`);
+					console.log(`  I LUFS: ${AudioWizard.GetIntegratedLUFSFull(i).toFixed(2)}`);
+					console.log(`  RMS: ${AudioWizard.GetRMSFull(i).toFixed(2)}`);
+					console.log(`  Sample Peak: ${AudioWizard.GetSamplePeakFull(i).toFixed(2)}`);
+					console.log(`  True Peak: ${AudioWizard.GetTruePeakFull(i).toFixed(2)}`);
+					console.log(`  PSR: ${AudioWizard.GetPSRFull(i).toFixed(2)}`);
+					console.log(`  PLR: ${AudioWizard.GetPLRFull(i).toFixed(2)}`);
+					console.log(`  CF: ${AudioWizard.GetCrestFactorFull(i).toFixed(2)}`);
+					console.log(`  LRA: ${AudioWizard.GetLoudnessRangeFull(i).toFixed(2)}`);
+					console.log(`  DR: ${AudioWizard.GetDynamicRangeFull(i).toFixed(2)}`);
+					console.log(`  PD: ${AudioWizard.GetPureDynamicsFull(i).toFixed(2)}`);
+
+					console.log("\n");
+				}
+
+				// Compute and log DR and PD album metrics
+				const albums = new Map();
+				for (let i = 0; i < selectedTracks.Count; i++) {
+					const track = selectedTracks[i];
+					const album = tfAlbum.EvalWithMetadb(track);
+					const artist = tfArtist.EvalWithMetadb(track);
+					if (album && !albums.has(album)) {
+						albums.set(album, artist || "Unknown Artist");
+					}
+				}
+
+				console.log(`Audio Wizard => Analyzed ${albums.size} album(s):`);
+
+				for (const [album, artist] of albums.entries()) {
+					const dr = AudioWizard.GetDynamicRangeAlbumFull(album);
+					const pd = AudioWizard.GetPureDynamicsAlbumFull(album);
+					console.log(`Audio Wizard => Album metrics: ${artist} - ${album}`);
+					console.log(`  DR-A: ${dr === -Infinity ? '-inf' : dr.toFixed(2)}`);
+					console.log(`  PD-A: ${pd === -Infinity ? '-inf' : pd.toFixed(2)}`);
+				}
+
+				resolve();
+			};
+
+			try {
+				AudioWizard.SetFullTrackAnalysisCallback(onComplete);
+				AudioWizard.StartFullTrackAnalysis(100);
+			} catch (e) {
+				reject(new Error(`Audio Wizard => Failed to start full-track metrics analysis: ${e.description}`));
+			}
+		});
+	}
+	catch (e) {
+		console.log(`Audio Wizard => Error in full-track metrics analysis: ${e.message}`);
+	}
+}
+
+
+/**
+ * Starts peakmeter monitoring and logs adjusted RMS and sample peak levels.
+ */
+function AWStartPeakmeterMonitoring() {
+	if (!AudioWizard) return;
+
+	AudioWizard.StartPeakmeterMonitoring(17, 50); // 17ms refresh rate, 50ms chunk duration
+
+	console.log('Peakmeter - Adjusted Left RMS:', AudioWizard.PeakmeterAdjustedLeftRMS.toFixed(2));
+	console.log('Peakmeter - Adjusted Right RMS:', AudioWizard.PeakmeterAdjustedRightRMS.toFixed(2));
+	console.log('Peakmeter - Adjusted Left Sample Peak:', AudioWizard.PeakmeterAdjustedLeftSamplePeak.toFixed(2));
+	console.log('Peakmeter - Adjusted Right Sample Peak:', AudioWizard.PeakmeterAdjustedRightSamplePeak.toFixed(2));
+	console.log('Peakmeter - Offset:', AudioWizard.PeakmeterOffset.toFixed(2), '\n');
+
+	// Call AudioWizard.StopPeakmeterMonitoring() when done
+}
+
+
+/**
+ * Starts raw audio monitoring and processes raw PCM audio samples.
+ */
+function AWStartRawAudioMonitoring() {
+	if (!AudioWizard) return;
+
+	AudioWizard.StartRawAudioMonitoring(17, 50); // 17ms refresh rate, 50ms chunk duration
+
+	try {
+		const startTime = Date.now();
+		const rawData = AudioWizard.RawAudioData;
+
+		if (rawData) {
+			const accessTime = Date.now() - startTime;
+
+			console.log('RawData length:', rawData.length);
+			console.log('RawData first element:', rawData[0]);
+			console.log('RawData middle element:', rawData[Math.floor(rawData.length / 2)]);
+			console.log('RawData current element:', rawData[rawData.length - 1]);
+			console.log('Array access time (ms):', accessTime.toFixed(2));
+			console.log('Last 5 samples:', rawData.slice(-5).join(', '));
+
+			const rmsStartTime = Date.now();
+			const windowSize = 100;
+			const startIndex = Math.max(0, rawData.length - windowSize);
+
+			const leftSamples = rawData.filter((_, i) => i >= startIndex && i % 2 === 0);
+			const rightSamples = rawData.filter((_, i) => i >= startIndex && i % 2 !== 0);
+			const sumSquaresLeft = leftSamples.reduce((sum, x) => sum + x * x, 0);
+			const sumSquaresRight = rightSamples.reduce((sum, x) => sum + x * x, 0);
+			const rmsLeft = leftSamples.length > 0 ? Math.sqrt(sumSquaresLeft / leftSamples.length) : 0;
+			const rmsRight = rightSamples.length > 0 ? Math.sqrt(sumSquaresRight / rightSamples.length) : 0;
+			const rmsTime = Date.now() - rmsStartTime;
+
+			console.log(`RMS left channel (last ~${leftSamples.length} samples):`, rmsLeft.toFixed(6));
+			console.log(`RMS right channel (last ~${rightSamples.length} samples):`, rmsRight.toFixed(6));
+			console.log('RMS calculation time (ms):', rmsTime.toFixed(2));
+		} else {
+			console.log('Audio Wizard => RawData is empty');
+		}
+	}
+	catch (e) {
+		console.log('Audio Wizard => Error accessing RawAudioData:', e.message);
+	}
+
+	// Call AudioWizard.StopRawAudioMonitoring() when done
+}
+
+
+/**
+ * Starts real-time audio monitoring and logs various audio metrics.
+ */
+function AWStartRealTimeMonitoring() {
+	if (!AudioWizard) return;
+
+	AudioWizard.StartRealTimeMonitoring(17, 50); // 17ms refresh rate, 50ms chunk duration
+
+	console.log('Real-time - Momentary LUFS:', AudioWizard.MomentaryLUFS.toFixed(2));
+	console.log('Real-time - Short Term LUFS:', AudioWizard.ShortTermLUFS.toFixed(2));
+	console.log('Real-time - RMS:', AudioWizard.RMS.toFixed(2));
+	console.log('Real-time - Left RMS:', AudioWizard.LeftRMS.toFixed(2));
+	console.log('Real-time - Right RMS:', AudioWizard.RightRMS.toFixed(2));
+	console.log('Real-time - Left Sample Peak:', AudioWizard.LeftSamplePeak.toFixed(2));
+	console.log('Real-time - Right Sample Peak:', AudioWizard.RightSamplePeak.toFixed(2));
+	console.log('Real-time - True Peak:', AudioWizard.TruePeak.toFixed(2));
+	console.log('Real-time - PSR:', AudioWizard.PSR.toFixed(2));
+	console.log('Real-time - PLR:', AudioWizard.PLR.toFixed(2));
+	console.log('Real-time - Crest Factor:', AudioWizard.CrestFactor.toFixed(2));
+	console.log('Real-time - DR:', AudioWizard.DynamicRange.toFixed(2));
+	console.log('Real-time - PD:', AudioWizard.PureDynamics.toFixed(2));
+	console.log('Real-time - Phase Correlation:', AudioWizard.PhaseCorrelation.toFixed(2));
+	console.log('Real-time - Stereo Width:', AudioWizard.StereoWidth.toFixed(2), '\n');
+}
+
+
+/**
+ * Starts waveform analysis and logs the resulting waveform data.
+ */
+function AWStartWaveformAnalysis() {
+	if (!AudioWizard) return;
+
+	console.log("Audio Wizard => Starting waveform analysis...");
+
+	AudioWizard.WaveformMetric = 0; // 0 = RMS, 2 = RMS_Peak, 3 = Peak, 4 = Waveform_Peak
+	AudioWizard.StartWaveformAnalysis(100); // 100 ms resolution
+
+	AudioWizard.SetFullTrackWaveformCallback(() => {
+		console.log('Audio Wizard => Waveform analysis complete!');
+		console.log('Waveform Data:', AudioWizard.WaveformData);
+		AudioWizard.StopWaveformAnalysis();
+	});
+}
+
+
+/**
+ * Adjusts the window's position and size with optional constraints.
+ */
+function UIWAdjustWindowGeometry() {
+	if (!UIWizard) return;
+
+	UIWizard.SetWindowPosition(100, 100); // Move window to (100, 100)
+	console.log('Window Position:', UIWizard.WindowX, UIWizard.WindowY);
+
+	UIWizard.SetWindowSize(800, 600); // Set size to 800x600
+	console.log('Window Size:', UIWizard.WindowWidth, UIWizard.WindowHeight);
+
+	UIWizard.WindowMinSize = true; // Enable minimum size constraints
+	UIWizard.WindowMinWidth = 400;
+	UIWizard.WindowMinHeight = 300;
+	UIWizard.WindowMaxSize = true; // Enable maximum size constraints
+	UIWizard.WindowMaxWidth = 1200;
+	UIWizard.WindowMaxHeight = 900;
+	UIWizard.SetWindowSizeLimits(400, 300, 1200, 900); // Apply constraints
+	console.log('Size Constraints:', UIWizard.WindowMinWidth, UIWizard.WindowMinHeight, UIWizard.WindowMaxWidth, UIWizard.WindowMaxHeight);
+
+	UIWizard.SetWindowPositionInGrid('top-left'); // Snap to top-left grid
+	console.log('Window snapped to top-left grid');
+}
+
+
+/**
+ * Customizes the window's frame style and background color.
+ */
+function UIWCustomizeWindowAppearance() {
+	if (!UIWizard) return;
+
+	UIWizard.FrameStyle = 3; // Set to No Border
+	console.log('Frame Style set to:', UIWizard.FrameStyle); // 3 (No Border)
+
+	UIWizard.WindowBgColor = RGB(255, 0, 0); // Set background to red (RGB)
+	console.log('Window Background Color set to:', UIWizard.WindowBgColor.toString(16));
+}
+
+
+/**
+ * Configures window dragging and ESC key behavior.
+ */
+function UIWConfigureWindowBehavior() {
+	if (!UIWizard) return;
+
+	UIWizard.MoveStyle = 2; // Ctrl + Alt + Left mouse button
+	console.log('Move Style set to:', UIWizard.MoveStyle);
+
+	UIWizard.SetCaptionAreaSize(0, 0, 200, 30); // Set caption area for dragging
+	console.log('Caption Area set to: (0, 0, 200, 30)');
+
+	UIWizard.DisableWindowMaximizing = true; // Disable maximizing
+	console.log('Window Maximizing disabled:', UIWizard.DisableWindowMaximizing);
+
+	UIWizard.DisableWindowSizing = false; // Enable resizing
+	console.log('Window Sizing enabled:', !UIWizard.DisableWindowSizing);
+}
+
+
+/**
+ * Retrieves and logs display-related properties.
+ */
+function UIWGetDisplayInfo() {
+	if (!UIWizard) return;
+
+	console.log('Display DPI:', UIWizard.DisplayDPI);
+	console.log('Display Resolution Mode:', UIWizard.DisplayResolutionMode);
+	console.log('Display Resolution:', UIWizard.DisplayResolution);
+	console.log('Multi-Monitor Resolution:', UIWizard.DisplayResolutionMultiMonitors);
+}
+
+
+/**
+ * Manages window state transitions (e.g., fullscreen, maximized).
+ */
+function UIWManageWindowState() {
+	if (!UIWizard) return;
+
+	console.log('Current Window State:', UIWizard.WindowState); // 0 (Normal), 1 (Maximized), 2 (Fullscreen)
+
+	UIWizard.ToggleFullscreen(); // Enter fullscreen
+	console.log('Toggled to Fullscreen:', UIWizard.WindowState);
+
+	setTimeout(() => {
+		UIWizard.ExitFullscreen(); // Exit fullscreen
+		console.log('Exited Fullscreen:', UIWizard.WindowState);
+	}, 2000);
+
+	UIWizard.ToggleMaximize(); // Maximize window
+	console.log('Toggled to Maximized:', UIWizard.WindowState);
+
+	setTimeout(() => {
+		UIWizard.ExitMaximize(); // Restore to normal
+		console.log('Exited Maximized:', UIWizard.WindowState);
+	}, 4000);
+}
 
 
 ///////////////////////
@@ -2894,7 +3207,7 @@ function ConvertVolume(volume, type) {
 	} else if (type === 'toDecibel') {
 		return (50 * Math.log(0.99 * volume + 0.01)) / Math.LN10;
 	} else if (type === 'vuLevelToDecibel') {
-		return Math.round(2000 * Math.log(volume) / Math.LN10) / 100;
+		return 20 * Math.log10(volume);
 	} else {
 		console.log('Invalid type. Please specify \'toPercent\', \'toDecibel\', or \'vuLevelToDecibel\'.');
 		return undefined;

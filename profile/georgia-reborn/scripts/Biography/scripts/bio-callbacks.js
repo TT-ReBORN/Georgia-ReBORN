@@ -226,7 +226,7 @@ class BioCallbacks {
 	}
 
 	on_mouse_mbtn_up(x, y, mask) {
-		// UIHacks at default settings blocks on_mouse_mbtn_up, at least in windows; workaround configure hacks: main window > move with > caption only & ensure pseudo-caption doesn't overlap buttons
+		// UIWizard at default settings blocks on_mouse_mbtn_up, at least in windows; workaround configure UI Wizard: UI Wizard > Move style > Caption only & ensure pseudo-caption doesn't overlap buttons
 		switch (true) {
 			case mask == 0x0004:
 				bio.panel.inactivate();

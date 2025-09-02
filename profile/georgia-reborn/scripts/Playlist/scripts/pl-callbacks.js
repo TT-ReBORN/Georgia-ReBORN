@@ -4,9 +4,9 @@
 // * Author:         TT                                                      * //
 // * Org. Author:    extremeHunter, TheQwertiest                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
-// * Version:        3.0-RC3                                                 * //
+// * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-12-2024                                              * //
+// * Last change:    02-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -75,8 +75,6 @@ class PlaylistCallbacks {
 		gr.FillSolidRect(this.x, this.y, this.w, pl.plman.h, pl.col.bg); // Hide alpha overlapping at the top
 		gr.FillSolidRect(this.x, this.y + this.h - pl.geo.row_h, this.w, pl.geo.row_h + grm.ui.lowerBarHeight, pl.col.bg); // Hide alpha overlapping at the bottom
 		gr.FillSolidRect(this.x, this.y + this.h, this.w, grm.ui.lowerBarHeight, grCol.bg); // Hide alpha overlapping at the bottom
-
-		if (UIHacks.Aero.Effect === 2) gr.DrawLine(this.x, 0, grm.ui.ww, 0, 1, grCol.bg); // UIHacks aero glass shadow frame fix - needed for style Blend
 
 		if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended) { // * Display only top and bottom
 			gr.DrawImage(grCol.imgBlended, this.x, this.y - this.h - grm.ui.topMenuHeight - grm.ui.lowerBarHeight + pl.plman.h, grm.ui.ww, grm.ui.wh, this.x, this.y - this.h - grm.ui.topMenuHeight - grm.ui.lowerBarHeight + pl.plman.h, grCol.imgBlended.Width, grCol.imgBlended.Height);
@@ -799,13 +797,12 @@ class PlaylistCallbacks {
 
 				pl.playlist.ctx_menu_sort(cmm);
 
+				if (grSet.showWeblinks) {
+					pl.playlist.ctx_menu_weblinks(cmm, metadb);
+				}
+
 				if (has_selected_item) {
 					pl.playlist.ctx_menu_send(cmm);
-
-					if (grSet.showWeblinks) {
-						cmm.separator();
-						pl.playlist.ctx_menu_weblinks(cmm, metadb);
-					}
 
 					cmm.separator();
 					cmm.appendItem('Write theme to tags', () => {

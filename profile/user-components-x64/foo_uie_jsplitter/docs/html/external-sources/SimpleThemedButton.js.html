@@ -1,0 +1,156 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: SimpleThemedButton.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-variable language_">window</span>.<span class="hljs-title class_">DefineScript</span>(<span class="hljs-string">&#x27;SimpleThemedButton&#x27;</span>, {<span class="hljs-attr">author</span>: <span class="hljs-string">&#x27;T.P Wang&#x27;</span>});
+<span class="hljs-title function_">include</span>(<span class="hljs-string">&#x27;docs/Flags.js&#x27;</span>);
+<span class="hljs-title function_">include</span>(<span class="hljs-string">&#x27;docs/Helpers.js&#x27;</span>);
+
+<span class="hljs-keyword">const</span> g_theme = <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">CreateThemeManager</span>(<span class="hljs-string">&#x27;Button&#x27;</span>);
+<span class="hljs-keyword">const</span> g_font = gdi.<span class="hljs-title class_">Font</span>(<span class="hljs-string">&#x27;Segoe UI&#x27;</span>, <span class="hljs-number">12</span>);
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">ButtonStates</span> = {
+    <span class="hljs-attr">normal</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">hover</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">down</span>: <span class="hljs-number">2</span>,
+    <span class="hljs-attr">hide</span>: <span class="hljs-number">3</span>
+};
+
+<span class="hljs-keyword">const</span> buttons = {
+    <span class="hljs-title class_">Console</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">SimpleButton</span>(<span class="hljs-number">5</span>, <span class="hljs-number">5</span>, <span class="hljs-number">80</span>, <span class="hljs-number">26</span>, <span class="hljs-string">&#x27;Console&#x27;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+        fb.<span class="hljs-title class_">ShowConsole</span>();
+    }),
+    <span class="hljs-title class_">Configure</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">SimpleButton</span>(<span class="hljs-number">5</span>, <span class="hljs-number">40</span>, <span class="hljs-number">80</span>, <span class="hljs-number">26</span>, <span class="hljs-string">&#x27;Configure&#x27;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+        <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">ShowConfigure</span>();
+    })
+};
+
+<span class="hljs-keyword">let</span> g_down = <span class="hljs-literal">false</span>;
+<span class="hljs-keyword">let</span> cur_btn = <span class="hljs-literal">null</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">SimpleButton</span>(<span class="hljs-params">x, y, w, h, text, fonClick, state</span>) {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span> = state ? state : <span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">normal</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> = x;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> = y;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span> = w;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span> = h;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">text</span> = text;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">fonClick</span> = fonClick;
+
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">containXY</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">x, y</span>) {
+        <span class="hljs-keyword">return</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> &lt;= x) &amp;&amp; (x &lt;= <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span>) &amp;&amp; (<span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> &lt;= y) &amp;&amp; (y &lt;= <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span>);
+    };
+
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">changeState</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">state</span>) {
+        <span class="hljs-keyword">let</span> old = <span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span>;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span> = state;
+        <span class="hljs-keyword">return</span> old;
+    };
+
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">draw</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">gr</span>) {
+        <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span> === <span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">hide</span>) {
+            <span class="hljs-keyword">return</span>;
+        }
+
+        <span class="hljs-keyword">switch</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span>) {
+            <span class="hljs-keyword">case</span> <span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">normal</span>:
+                g_theme.<span class="hljs-title class_">SetPartAndStateID</span>(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>);
+                <span class="hljs-keyword">break</span>;
+
+            <span class="hljs-keyword">case</span> <span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">hover</span>:
+                g_theme.<span class="hljs-title class_">SetPartAndStateID</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>);
+                <span class="hljs-keyword">break</span>;
+
+            <span class="hljs-keyword">case</span> <span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">down</span>:
+                g_theme.<span class="hljs-title class_">SetPartAndStateID</span>(<span class="hljs-number">1</span>, <span class="hljs-number">3</span>);
+                <span class="hljs-keyword">break</span>;
+
+            <span class="hljs-keyword">case</span> <span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">hide</span>:
+                <span class="hljs-keyword">return</span>;
+        }
+
+        g_theme.<span class="hljs-title class_">DrawThemeBackground</span>(gr, <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span>);
+        gr.<span class="hljs-title class_">GdiDrawText</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">text</span>, g_font, <span class="hljs-title function_">RGB</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>), <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span>, <span class="hljs-variable constant_">DT_CENTER</span> | <span class="hljs-variable constant_">DT_VCENTER</span> | <span class="hljs-variable constant_">DT_CALCRECT</span> | <span class="hljs-variable constant_">DT_NOPREFIX</span>);
+    };
+
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">onClick</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">fonClick</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">fonClick</span>();
+    };
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">drawAllButtons</span>(<span class="hljs-params">gr</span>) {
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i <span class="hljs-keyword">in</span> buttons) {
+        buttons[i].<span class="hljs-title function_">draw</span>(gr);
+    }
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">chooseButton</span>(<span class="hljs-params">x, y</span>) {
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i <span class="hljs-keyword">in</span> buttons) {
+        <span class="hljs-keyword">if</span> (buttons[i].<span class="hljs-title function_">containXY</span>(x, y) &amp;&amp; buttons[i].<span class="hljs-property">state</span> !== <span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">hide</span>) {
+            <span class="hljs-keyword">return</span> buttons[i];
+        }
+    }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_paint</span>(<span class="hljs-params">gr</span>) {
+    gr.<span class="hljs-title class_">FillSolidRect</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-variable language_">window</span>.<span class="hljs-property">Width</span>, <span class="hljs-variable language_">window</span>.<span class="hljs-property">Height</span>, utils.<span class="hljs-title class_">GetSysColour</span>(<span class="hljs-number">15</span>));
+    <span class="hljs-title function_">drawAllButtons</span>(gr);
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_mouse_move</span>(<span class="hljs-params">x, y</span>) {
+    <span class="hljs-keyword">let</span> old = cur_btn;
+    cur_btn = <span class="hljs-title function_">chooseButton</span>(x, y);
+
+    <span class="hljs-keyword">if</span> (old === cur_btn) {
+        <span class="hljs-keyword">if</span> (g_down) {
+            <span class="hljs-keyword">return</span>;
+        }
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (g_down &amp;&amp; cur_btn &amp;&amp; cur_btn.<span class="hljs-property">state</span> !== <span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">down</span>) {
+        cur_btn.<span class="hljs-title function_">changeState</span>(<span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">down</span>);
+        <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+        <span class="hljs-keyword">return</span>;
+    }
+
+    old &amp;&amp; old.<span class="hljs-title function_">changeState</span>(<span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">normal</span>);
+    cur_btn &amp;&amp; cur_btn.<span class="hljs-title function_">changeState</span>(<span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">hover</span>);
+    <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_mouse_leave</span>(<span class="hljs-params"></span>) {
+    g_down = <span class="hljs-literal">false</span>;
+
+    <span class="hljs-keyword">if</span> (cur_btn) {
+        cur_btn.<span class="hljs-title function_">changeState</span>(<span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">normal</span>);
+        <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+    }
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_mouse_lbtn_down</span>(<span class="hljs-params">x, y</span>) {
+    g_down = <span class="hljs-literal">true</span>;
+
+    <span class="hljs-keyword">if</span> (cur_btn) {
+        cur_btn.<span class="hljs-title function_">changeState</span>(<span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">down</span>);
+        <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+    }
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_mouse_lbtn_up</span>(<span class="hljs-params">x, y</span>) {
+    g_down = <span class="hljs-literal">false</span>;
+
+    <span class="hljs-keyword">if</span> (cur_btn) {
+        cur_btn.<span class="hljs-title function_">onClick</span>();
+        cur_btn.<span class="hljs-title function_">changeState</span>(<span class="hljs-title class_">ButtonStates</span>.<span class="hljs-property">hover</span>);
+        <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+    }
+}
+
+</code></pre>
+      </body>
+    </html>
+  
