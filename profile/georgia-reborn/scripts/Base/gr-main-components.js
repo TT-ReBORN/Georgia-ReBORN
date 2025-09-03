@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    03-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2943,7 +2943,7 @@ class VolumeButton {
 
 		const { x, y, w, h } = this;
 		const p = 2;
-		const fillWidth = this.volumeBar && this.volumeBar.fillSize('w');
+		const fillWidth = this.volumeBar ? this.volumeBar.fillSize('w') : 0;
 		const arcBg = SCALE(6);
 		const arcFill = SCALE(3);
 
@@ -2976,7 +2976,7 @@ class VolumeButton {
 		// * Style fill
 		if ((grSet.styleVolumeBarFill === 'bevel' || grSet.styleVolumeBarFill === 'inner')) {
 			if (grSet.styleVolumeBarDesign === 'rounded') {
-				FillGradRoundRect(gr, x + 1, y + HD_4K(4, 7), fillWidth - SCALE(0.5), h - SCALE(2), arcFill, arcFill, grSet.styleVolumeBarFill === 'inner' ? -89 : 89, 0, grCol.styleVolumeBarFill, 1);
+				FillGradRoundRect(gr, x + 1, y + HD_4K(4, 7), fillWidth - SCALE(1), h - SCALE(2), arcFill, arcFill, grSet.styleVolumeBarFill === 'inner' ? -89 : 89, 0, grCol.styleVolumeBarFill, 1);
 			} else {
 				FillGradRect(gr, x, y + HD_4K(4, 7), fillWidth - SCALE(2), h - SCALE(3), grSet.styleVolumeBarFill === 'inner' ? -90 : 90, grSet.styleBlackAndWhite ? grCol.styleVolumeBarFill : 0, grSet.styleBlackAndWhite ? 0 : grCol.styleVolumeBarFill);
 			}
