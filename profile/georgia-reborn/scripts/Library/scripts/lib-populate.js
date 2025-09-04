@@ -2306,27 +2306,15 @@ class LibPopulate {
 	}
 
 	sortViewByFolder(data) {
-		const getNumber = (name) => { // TODO: WilB - move to Libs helper collection
-			const match = name.match(/^(\d+\.\d{1,2}|\d+)(?:[-_\s#.:=+]|\b)(.*)/);
-			if (!match) return { number: null, rest: name };
-			return { number: parseFloat(match[1]), rest: match[2] };
-		};
+		// Use Intl.Collator with numeric: true to sort file/folder names (srt[0]) naturally,
+		// matching Windows Explorer's alphanumeric order (e.g., "2.01" < "2.15", "1985a" < "1986 -").
+		// This fixes incorrect track and folder sorting in View by Folder Structure.
+		const naturalCollator = new Intl.Collator(undefined, { numeric: true });
 
 		data.sort((a, b) => {
-			const { number: numA, rest: restA } = getNumber(a.srt[0]);
-			const { number: numB, rest: restB } = getNumber(b.srt[0]);
-
-			// Compare numerical prefixes if both exist
-			if (numA !== null && numB !== null) {
-				const numCompare = numA - numB;
-				if (numCompare !== 0) return numCompare;
-				return this.collator.compare(restA, restB);
-			}
-
-			// If only one has a number, it comes first
-			if (numA !== null) return -1;
-			if (numB !== null) return 1;
-
+			const nameCompare = naturalCollator.compare(a.srt[0], b.srt[0]);
+			if (nameCompare !== 0) return nameCompare;
+			// Fallback to metadata sorting (srt[2], srt[3]) for identical file/folder names.
 			return this.collator.compare(a.srt[2], b.srt[2]) || (a.srt[3] && !b.srt[3] ? 1 : 0);
 		});
 	}
