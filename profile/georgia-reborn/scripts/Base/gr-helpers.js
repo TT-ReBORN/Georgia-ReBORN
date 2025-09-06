@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    06-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2083,10 +2083,15 @@ function CombineImages(img1, img2, w, h) {
  * @returns {GdiBitmap} The cropped image.
  */
 function CropImage(image, cropWidth = 0, cropHeight = 0) {
-	const maskWidth = cropWidth ? image.Width - cropWidth : image.Width;
-	const maskHeight = cropHeight ? image.Height - cropHeight : image.Height;
-	const maskX = cropWidth / 2;
-	const maskY = cropHeight / 2;
+	const croppedWidth = Clamp(cropWidth, 0, image.Width);
+	const croppedHeight = Clamp(cropHeight, 0, image.Height);
+	const maskWidth = image.Width - croppedWidth;
+	const maskHeight = image.Height - croppedHeight;
+
+	if (maskWidth <= 0 || maskHeight <= 0) return image;
+
+	const maskX = croppedWidth / 2;
+	const maskY = croppedHeight / 2;
 
 	// * Mask
 	const maskImg = gdi.CreateImage(maskWidth, maskHeight);
@@ -2098,7 +2103,7 @@ function CropImage(image, cropWidth = 0, cropHeight = 0) {
 	const croppedImg = gdi.CreateImage(maskWidth, maskHeight);
 	g = croppedImg.GetGraphics();
 	g.SetSmoothingMode(SmoothingMode.None);
-	g.DrawImage(image, 0, 0, maskWidth, maskHeight, cropWidth ? maskX : 0, cropHeight ? maskY : 0, maskWidth, maskHeight);
+	g.DrawImage(image, 0, 0, maskWidth, maskHeight, maskX, maskY, maskWidth, maskHeight);
 	croppedImg.ReleaseGraphics(g);
 	croppedImg.ApplyMask(maskImg);
 
