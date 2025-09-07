@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    07-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3878,7 +3878,7 @@ class MainUI {
 
 		// * Fill the height and crop the width
 		if (scaledWidth >= maxWidth) {
-			const cropWidth = (scaledWidth - maxWidth) / 2;
+			const cropWidth = (scaledWidth - maxWidth) / heightScale;
 			return {
 				image: CropImage(albumArt, cropWidth, 0),
 				scale: heightScale
@@ -3886,7 +3886,7 @@ class MainUI {
 		}
 		// * Fill the width and crop the height
 		else if (scaledHeight >= maxHeight) {
-			const cropHeight = scaledHeight - maxHeight;
+			const cropHeight = (scaledHeight - maxHeight) / widthScale;
 			return {
 				image: CropImage(albumArt, 0, cropHeight),
 				scale: widthScale
@@ -4286,12 +4286,14 @@ class MainUI {
 	setAlbumArtScaled() {
 		if (this.albumArtScaled) this.albumArtScaled = null;
 
+		const sourceArt = this.albumArtCopy || this.albumArt;
+
 		try {
 			// * Avoid weird anti-aliased scaling along border of images, see: https://stackoverflow.com/questions/4772273/interpolationmode-highqualitybicubic-introducing-artefacts-on-edge-of-resized-im
 			this.albumArtCorrupt = false;
-			this.albumArtScaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h, InterpolationMode.Bicubic); // Old method -> this.albumArtScaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h);
+			this.albumArtScaled = sourceArt.Resize(this.albumArtSize.w, this.albumArtSize.h, InterpolationMode.Bicubic); // Old method -> this.albumArtScaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h);
 			const sg = this.albumArtScaled.GetGraphics();
-			const HQscaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h, InterpolationMode.HighQualityBicubic);
+			const HQscaled = sourceArt.Resize(this.albumArtSize.w, this.albumArtSize.h, InterpolationMode.HighQualityBicubic);
 			sg.DrawImage(HQscaled, 2, 2, this.albumArtScaled.Width - 4, this.albumArtScaled.Height - 4, 2, 2, this.albumArtScaled.Width - 4, this.albumArtScaled.Height - 4);
 			this.albumArtScaled.ReleaseGraphics(sg);
 		} catch (e) {
