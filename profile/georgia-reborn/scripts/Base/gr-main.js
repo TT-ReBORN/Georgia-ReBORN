@@ -3949,12 +3949,15 @@ class MainUI {
 	 * @param {boolean} timer - If true, sets a timer to automatically cycle to the next image.
 	 */
 	displayAlbumArtImage(direction, timer) {
+		if (!Array.isArray(this.albumArtList) || this.albumArtList.length === 0) {
+			return;
+		}
+
 		DebugLog(`Album art => Repainting in displayAlbumArtImage: ${this.albumArtIndex}`);
 
 		const increment = direction === 'next' ? 1 : direction === 'prev' ? -1 : 0;
-		const listLength = Array.isArray(this.albumArtList) && this.albumArtList.length > 0 ? this.albumArtList.length : 1;
 		this.albumArtIndex = Number.isFinite(Number(this.albumArtIndex)) && this.albumArtIndex >= 0 ? Number(this.albumArtIndex) : 0;
-		this.albumArtIndex = (this.albumArtIndex + increment + listLength) % listLength;
+		this.albumArtIndex = (this.albumArtIndex + increment + this.albumArtList.length) % this.albumArtList.length;
 
 		setTimeout(() => {
 			this.loadAlbumArtFromList(this.albumArtIndex);
