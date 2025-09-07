@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-09-2025                                              * //
+// * Last change:    07-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2094,13 +2094,13 @@ function CropImage(image, cropWidth = 0, cropHeight = 0) {
 	const maskY = croppedHeight / 2;
 
 	// * Mask
-	const maskImg = gdi.CreateImage(maskWidth, maskHeight);
+	const maskImg = gdi.CreateImage(maskWidth + SCALE(1), maskHeight + SCALE(1));
 	let g = maskImg.GetGraphics();
 	g.FillSolidRect(0, 0, maskWidth, maskHeight, 0xff000000);
 	maskImg.ReleaseGraphics(g);
 
 	// * Canvas with cropped image
-	const croppedImg = gdi.CreateImage(maskWidth, maskHeight);
+	const croppedImg = gdi.CreateImage(maskWidth + SCALE(1), maskHeight + SCALE(1));
 	g = croppedImg.GetGraphics();
 	g.SetSmoothingMode(SmoothingMode.None);
 	g.DrawImage(image, 0, 0, maskWidth, maskHeight, maskX, maskY, maskWidth, maskHeight);
