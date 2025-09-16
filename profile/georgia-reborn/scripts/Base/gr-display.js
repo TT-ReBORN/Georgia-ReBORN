@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    16-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -697,10 +697,11 @@ class Display {
 	/**
 	 * Manages and adjusts the window state based on various triggers such as key presses, button clicks, and double-click events on the top menu bar.
 	 * This method handles toggling between fullscreen and normal window states, maximizing/restoring the window, and adjusting window state during specific UI interactions.
-	 * @param {string} triggeredBy - Specifies the type of trigger that invoked the method. Expected values are 'key', 'button', or 'doubleClick'.
+	 * @param {string} triggeredBy - Specifies the type of trigger that invoked the method. Expected values are 'key', 'minimize', 'maximize', or 'doubleClick'.
 	 * The method distinguishes between different types of triggers:
 	 * - 'key': Handles key press events, specifically for F11 to toggle fullscreen and ESC to exit fullscreen, respecting certain conditions.
-	 * - 'button': Handles button click events that are meant to toggle the window state between maximized and normal, or toggle fullscreen based on specific settings.
+	 * - 'minimize': Handles minimize button click events.
+	 * - 'maximize': Handles maximize button click events.
 	 * - 'doubleClick': Handles double-click events on the top menu bar, adjusting the window state based on fullscreen mode or specific layout settings.
 	 * It also includes condition checks for:
 	 * - Disabling specific functionality in certain layouts (e.g., 'Artwork' layout).
@@ -708,12 +709,20 @@ class Display {
 	 * - Handling exceptions that may occur during the state adjustment process.
 	 */
 	handleWindowControl(triggeredBy) {
+		const isKeyF10 = triggeredBy === 'key' && utils.IsKeyPressed(VKey.F10);
 		const isKeyF11 = triggeredBy === 'key' && utils.IsKeyPressed(VKey.F11);
 		const isKeyEscape = triggeredBy === 'key' && utils.IsKeyPressed(VKey.ESCAPE) && !grSet.fullscreenESCDisabled;
-		const isButtonPress = triggeredBy === 'button';
+		const isMinimize = triggeredBy === 'minimize';
+		const isMaximize = triggeredBy === 'maximize';
 
 		try {
-			if (grSet.layout === 'default' && (isKeyF11 || (isButtonPress && grSet.fullscreenMaximize))) {
+			if (isMinimize) {
+				UIWizard.WindowMinimize();
+			}
+			if (isKeyF10) {
+				UIWizard.ToggleMaximize();
+			}
+			else if (grSet.layout === 'default' && (isKeyF11 || (isMaximize && grSet.fullscreenMaximize))) {
 				UIWizard.ToggleFullscreen();
 			}
 			else if (isKeyEscape) {

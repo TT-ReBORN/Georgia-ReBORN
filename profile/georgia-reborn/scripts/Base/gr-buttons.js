@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    16-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -141,7 +141,7 @@ class Button {
 			Rating: () => this.topRating(btn.x, btn.y + btn.h),
 
 			// * TOP MENU 🗕 🗖 ✖ CAPTION BUTTONS * //
-			Minimize: () => fb.RunMainMenuCommand('View/Hide'),
+			Minimize: () => this.topMinimize(),
 			Maximize: () => this.topMaximize(),
 			Close: () => fb.Exit(),
 
@@ -439,10 +439,17 @@ class Button {
 	}
 
 	/**
+	 * Handles the minimize button action in the top menu, player goes into minimize window state.
+	 */
+	topMinimize() {
+		grm.display.handleWindowControl('minimize');
+	}
+
+	/**
 	 * Handles the maximize button action in the top menu, player goes into fullscreen and resumes player size.
 	 */
 	topMaximize() {
-		grm.display.handleWindowControl('button');
+		grm.display.handleWindowControl('maximize');
 	}
 	// #endregion
 
