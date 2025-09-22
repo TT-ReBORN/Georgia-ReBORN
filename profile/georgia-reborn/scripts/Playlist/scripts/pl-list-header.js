@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-11-2024                                              * //
+// * Last change:    22-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -373,7 +373,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	 * @param {number} bottom - The y-coordinate of the bottom edge of the header.
 	 */
 	draw(gr, top, bottom) {
-		if (this.w <= 0 || this.h <= 0) return;
+		if (this.w < 1 || this.h < 1) return;
 		// const drawProfiler = fb.CreateProfiler(`PlaylistHeader.draw items:${this.sub_items.length}`);
 		if (plSet.use_compact_header) {
 			this.draw_compact_header(gr);

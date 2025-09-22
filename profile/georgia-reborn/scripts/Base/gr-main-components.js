@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    03-09-2025                                              * //
+// * Last change:    22-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3232,7 +3232,7 @@ class ProgressBar {
 			const angle = grSet.styleProgressBar === 'inner' ? (styleBlackReborn ? 90 : -90) : (styleBlackReborn ? -90 : 90);
 
 			if (styleRounded) {
-				FillGradRoundRect(gr, this.x, this.y, this.w + SCALE(2), this.h + SCALE(2.5), this.arc, this.arc, angle, 0, grCol.styleProgressBar, 1);
+				FillGradRoundRect(gr, this.x, this.y, this.w + SCALE(2), this.h + SCALE(2), this.arc, this.arc, angle, 0, grCol.styleProgressBar, 1);
 
 				const xLeft = this.x + SCALE(3);
 				const xRight = this.w + this.x - SCALE(12);
@@ -3277,14 +3277,14 @@ class ProgressBar {
 
 		if (!['dots', 'thin'].includes(grSet.styleProgressBarDesign) && ['bevel', 'inner'].includes(grSet.styleProgressBarFill)) {
 			if (grSet.styleProgressBarDesign === 'rounded') {
-				FillGradRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2.5), this.arc, this.arc, grSet.styleProgressBarFill === 'inner' ? -88 : 88, grCol.styleProgressBarFill, 0);
+				FillGradRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2), this.arc, this.arc, grSet.styleProgressBarFill === 'inner' ? -88 : 88, grCol.styleProgressBarFill, 0);
 			} else {
 				FillGradRect(gr, this.x, this.y, this.progressLength, this.h, grSet.styleProgressBarFill === 'inner' ? -90 : 89, 0, grCol.styleProgressBarFill);
 			}
 		}
 		else if (grSet.styleProgressBarFill === 'blend' && grm.ui.albumArt && grCol.imgBlended) {
 			if (grSet.styleProgressBarDesign === 'rounded') {
-				FillBlendedRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2.5), this.arc, this.arc, 88, grCol.imgBlended, 0);
+				FillBlendedRoundRect(gr, this.x, this.y, this.progressLength + SCALE(2), this.h + SCALE(2), this.arc, this.arc, 88, grCol.imgBlended, 0);
 			} else {
 				gr.DrawImage(grCol.imgBlended, this.x, this.y, this.progressLength, this.h, 0, this.h, grCol.imgBlended.Width, grCol.imgBlended.Height);
 			}

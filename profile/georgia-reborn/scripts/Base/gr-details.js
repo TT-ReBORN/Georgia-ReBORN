@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-12-2024                                              * //
+// * Last change:    22-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1613,6 +1613,8 @@ class Details {
 	 * @returns {GdiGraphics} The rounded masked image.
 	 */
 	createDiscArtAlbumArtMask(gr, x, y, w, h, srcX, srcY, srcW, srcH, angle, alpha) {
+		if (w < 1 || h < 1) return null;
+
 		// * First draw album art in the background
 		gr.DrawImage(grm.ui.albumArtScaled, x, y, w, h, 0, 0, w, h, 0, alpha);
 
@@ -1864,7 +1866,7 @@ class Details {
 	 * @returns {GdiBitmap} The rotated disc art image.
 	 */
 	setDiscArtRotation() {
-		if (!grSet.displayDiscArt || grm.ui.albumArtCorrupt || !grm.ui.albumArt || !this.discArt || this.discArtSize.w <= 0) {
+		if (!grSet.displayDiscArt || grm.ui.albumArtCorrupt || !grm.ui.albumArt || !this.discArt || this.discArtSize.w < 1) {
 			return null;
 		}
 

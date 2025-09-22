@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    22-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -134,7 +134,7 @@ function on_size() {
 
 	DebugLog(`in on_size() => width: ${grm.ui.ww}, height: ${grm.ui.wh}`);
 
-	if (grm.ui.ww <= 0 || grm.ui.wh <= 0) return;
+	if (grm.ui.ww < 1 || grm.ui.wh < 1) return;
 
 	grm.ui.clearCache('metrics');
 	grm.details.clearCache('metrics');

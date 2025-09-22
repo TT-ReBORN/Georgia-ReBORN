@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-09-2025                                              * //
+// * Last change:    22-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1222,7 +1222,7 @@ class Button {
 		// DebugLog('Buttons => createButtons');
 		this.btn = {};
 
-		if (ww <= 0 || wh <= 0) {
+		if (ww < 1 || wh < 1) {
 			return;
 		}
 		else if (createButtonImages === true || this.btnImg.File === undefined) {

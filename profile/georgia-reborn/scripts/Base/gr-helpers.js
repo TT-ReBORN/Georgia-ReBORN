@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-09-2025                                              * //
+// * Last change:    22-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2063,6 +2063,8 @@ function GDI(w, h, img, func) {
  * @returns {GdiBitmap} The combined image.
  */
 function CombineImages(img1, img2, w, h) {
+	if (w < 1 || h < 1) return null;
+
 	const combinedImg = gdi.CreateImage(w, h);
 	const gotGraphics = combinedImg.GetGraphics();
 
@@ -2083,24 +2085,25 @@ function CombineImages(img1, img2, w, h) {
  * @returns {GdiBitmap} The cropped image.
  */
 function CropImage(image, cropWidth = 0, cropHeight = 0) {
+	const SCALE1 = SCALE(1);
 	const croppedWidth = Clamp(cropWidth, 0, image.Width);
 	const croppedHeight = Clamp(cropHeight, 0, image.Height);
 	const maskWidth = image.Width - croppedWidth;
 	const maskHeight = image.Height - croppedHeight;
 
-	if (maskWidth <= 0 || maskHeight <= 0) return image;
+	if (maskWidth < SCALE1 || maskHeight < SCALE1) return image;
 
 	const maskX = croppedWidth / 2;
 	const maskY = croppedHeight / 2;
 
 	// * Mask
-	const maskImg = gdi.CreateImage(maskWidth + SCALE(1), maskHeight + SCALE(1));
+	const maskImg = gdi.CreateImage(maskWidth + SCALE1, maskHeight + SCALE1);
 	let g = maskImg.GetGraphics();
 	g.FillSolidRect(0, 0, maskWidth, maskHeight, 0xff000000);
 	maskImg.ReleaseGraphics(g);
 
 	// * Canvas with cropped image
-	const croppedImg = gdi.CreateImage(maskWidth + SCALE(1), maskHeight + SCALE(1));
+	const croppedImg = gdi.CreateImage(maskWidth + SCALE1, maskHeight + SCALE1);
 	g = croppedImg.GetGraphics();
 	g.SetSmoothingMode(SmoothingMode.None);
 	g.DrawImage(image, 0, 0, maskWidth, maskHeight, maskX, maskY, maskWidth, maskHeight);
@@ -2128,7 +2131,7 @@ function CropImage(image, cropWidth = 0, cropHeight = 0) {
  * @returns {GdiGraphics} The round rectangle.
  */
 function DrawRoundRect(gr, x, y, w, h, arc_width, arc_height, line_width, color) {
-	if (w <= 0 || h <= 0) return null;
+	if (w < 1 || h < 1) return null;
 
 	// * Arc dimension safeguard
 	const minArc = Math.min(w, h) / 2;
@@ -2154,26 +2157,28 @@ function DrawRoundRect(gr, x, y, w, h, arc_width, arc_height, line_width, color)
  * @returns {GdiGraphics} The blended filled round rectangle.
  */
 function FillBlendedRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, focus) {
-	if (w <= 0 || h <= 0) return null;
+	const SCALE1 = SCALE(1);
+
+	if (w < SCALE1 || h < SCALE1) return null;
 
 	// * Mask
-	const maskImg = gdi.CreateImage(w + SCALE(1), h + SCALE(1));
+	const maskImg = gdi.CreateImage(w + SCALE1, h + SCALE1);
 	let g = maskImg.GetGraphics();
 	g.FillSolidRect(0, 0, w, h, 0xffffffff);
 	g.SetSmoothingMode(SmoothingMode.AntiAlias);
-	FillRoundRect(g, 0, 0, w - SCALE(1), h - SCALE(1), arc_width, arc_height, 0xff000000);
+	FillRoundRect(g, 0, 0, w - SCALE1, h - SCALE1, arc_width, arc_height, 0xff000000);
 	maskImg.ReleaseGraphics(g);
 
 	// * Blended rect
-	const gradRectImg = gdi.CreateImage(w + SCALE(1), h + SCALE(1));
+	const gradRectImg = gdi.CreateImage(w + SCALE1, h + SCALE1);
 	g = gradRectImg.GetGraphics();
-	g.DrawImage(grCol.imgBlended, 0, 0, w - SCALE(1), h - SCALE(1), 0, h, grCol.imgBlended.Width, grCol.imgBlended.Height);
+	g.DrawImage(grCol.imgBlended, 0, 0, w - SCALE1, h - SCALE1, 0, h, grCol.imgBlended.Width, grCol.imgBlended.Height);
 	gradRectImg.ReleaseGraphics(g);
 
-	const mask = maskImg.Resize(w + SCALE(1), h + SCALE(1));
+	const mask = maskImg.Resize(w + SCALE1, h + SCALE1);
 	gradRectImg.ApplyMask(mask);
 
-	return gr.DrawImage(gradRectImg, x, y, w - SCALE(1), h - SCALE(1), 0, 0, w, h, 0, 255);
+	return gr.DrawImage(gradRectImg, x, y, w - SCALE1, h - SCALE1, 0, 0, w, h, 0, 255);
 }
 
 
@@ -2192,27 +2197,32 @@ function FillBlendedRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, focu
  * @returns {GdiGraphics} The gradient filled ellipse.
  */
 function FillGradEllipse(gr, x, y, w, h, angle, color1, color2, focus) {
-	if (w <= 0 || h <= 0) return null;
+	const SCALE1 = SCALE(1);
+	const SCALE3 = 3 * SCALE1;
+	const innerW = w - SCALE3;
+	const innerH = h - SCALE3;
+	const offset = Math.floor(SCALE1);
 
-	const lw = SCALE(2);
+	if (w < SCALE3 || h < SCALE3) return null;
+
 	// * Mask
-	const maskImg = gdi.CreateImage(w + SCALE(1), h + SCALE(1));
+	const maskImg = gdi.CreateImage(w + SCALE1, h + SCALE1);
 	let g = maskImg.GetGraphics();
 	g.FillSolidRect(0, 0, w, h, 0xffffffff);
 	g.SetSmoothingMode(SmoothingMode.AntiAlias);
-	g.FillEllipse(Math.floor(lw / 2), Math.floor(lw / 2), w - lw - SCALE(1), h - lw - SCALE(1), 0xff000000);
+	g.FillEllipse(offset, offset, innerW, innerH, 0xff000000);
 	maskImg.ReleaseGraphics(g);
 
 	// * Gradient ellipse
-	const gradEllipseImg = gdi.CreateImage(w + SCALE(1), h + SCALE(1));
+	const gradEllipseImg = gdi.CreateImage(w + SCALE1, h + SCALE1);
 	g = gradEllipseImg.GetGraphics();
-	FillGradRect(g, Math.floor(lw / 2), Math.floor(lw / 2), w - lw - SCALE(1), h - lw - SCALE(1), angle, color1, color2, focus);
+	FillGradRect(g, offset, offset, innerW, innerH, angle, color1, color2, focus);
 	gradEllipseImg.ReleaseGraphics(g);
 
-	const mask = maskImg.Resize(w + SCALE(1), h + SCALE(1));
+	const mask = maskImg.Resize(w + SCALE1, h + SCALE1);
 	gradEllipseImg.ApplyMask(mask);
 
-	return gr.DrawImage(gradEllipseImg, x, y, w - SCALE(1), h - SCALE(1), 0, 0, w, h, 0, 255);
+	return gr.DrawImage(gradEllipseImg, x, y, w - SCALE1, h - SCALE1, 0, 0, w, h, 0, 255);
 }
 
 
@@ -2233,7 +2243,7 @@ function FillGradEllipse(gr, x, y, w, h, angle, color1, color2, focus) {
  * @returns {GdiGraphics} The filled rectangle.
  */
 function FillGradRect(gr, x, y, w, h, angle, color1, color2, focus = 1) {
-	if (w <= 0 || h <= 0) return null;
+	if (w < 1 || h < 1) return null;
 
 	return gr.FillGradRect(x, y, w, h, angle, color1, color2, focus);
 }
@@ -2256,26 +2266,28 @@ function FillGradRect(gr, x, y, w, h, angle, color1, color2, focus = 1) {
  * @returns {GdiGraphics} The gradient filled rounded rectangle.
  */
 function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1, color2, focus) {
-	if (w <= 0 || h <= 0) return null;
+	const SCALE1 = SCALE(1);
+
+	if (w < SCALE1 || h < SCALE1) return null;
 
 	// * Mask
-	const maskImg = gdi.CreateImage(w + SCALE(1), h + SCALE(1));
+	const maskImg = gdi.CreateImage(w + SCALE1, h + SCALE1);
 	let g = maskImg.GetGraphics();
 	g.FillSolidRect(0, 0, w, h, 0xffffffff);
 	g.SetSmoothingMode(SmoothingMode.AntiAlias);
-	FillRoundRect(g, 0, 0, w - SCALE(1), h - SCALE(1), arc_width, arc_height, 0xff000000);
+	FillRoundRect(g, 0, 0, w - SCALE1, h - SCALE1, arc_width, arc_height, 0xff000000);
 	maskImg.ReleaseGraphics(g);
 
 	// * Gradient rect
-	const gradRectImg = gdi.CreateImage(w + SCALE(1), h + SCALE(1));
+	const gradRectImg = gdi.CreateImage(w + SCALE1, h + SCALE1);
 	g = gradRectImg.GetGraphics();
-	FillGradRect(g, 0, 0, w - SCALE(1), h - SCALE(1), angle, color1, color2, focus);
+	FillGradRect(g, 0, 0, w - SCALE1, h - SCALE1, angle, color1, color2, focus);
 	gradRectImg.ReleaseGraphics(g);
 
-	const mask = maskImg.Resize(w + SCALE(1), h + SCALE(1));
+	const mask = maskImg.Resize(w + SCALE1, h + SCALE1);
 	gradRectImg.ApplyMask(mask);
 
-	return gr.DrawImage(gradRectImg, x, y, w - SCALE(1), h - SCALE(1), 0, 0, w, h, 0, 255);
+	return gr.DrawImage(gradRectImg, x, y, w - SCALE1, h - SCALE1, 0, 0, w, h, 0, 255);
 }
 
 
@@ -2295,7 +2307,7 @@ function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1,
  * @returns {GdiGraphics} The filled rounded rectangle.
  */
 function FillRoundRect(gr, x, y, w, h, arc_width, arc_height, color) {
-	if (w <= 0 || h <= 0) return null;
+	if (w < 1 || h < 1) return null;
 
 	// * Arc dimension safeguard
 	const minArc = Math.min(w, h) / 2;
@@ -2320,6 +2332,9 @@ function FillRoundRect(gr, x, y, w, h, arc_width, arc_height, color) {
 function MaskImage(img, x, y, w, h, inverted = false) {
 	const imgW = img.Width;
 	const imgH = img.Height;
+
+	if (!imgW || !imgH || w < 1 || h < 1) return null;
+
 	const maskedImg = gdi.CreateImage(imgW, imgH);
 	const g = maskedImg.GetGraphics();
 	const mask = gdi.CreateImage(imgW, imgH);
@@ -2353,7 +2368,9 @@ function MaskImage(img, x, y, w, h, inverted = false) {
  * @returns {GdiBitmap|null} The rotated image or null if an error occurs.
  */
 function RotateImage(img, w, h, degrees, imgMaxRes = w) {
-	if (!img || !w || !h) return null;
+	if (!img || !img.Width || !img.Height || w < 1 || h < 1) {
+		return null
+	}
 
 	w = Math.floor(Math.min(w, imgMaxRes));
 	h = Math.floor(Math.min(h, imgMaxRes));
@@ -2388,7 +2405,7 @@ function RotateImage(img, w, h, degrees, imgMaxRes = w) {
  * @returns {GdiGraphics} The scaled drawn image.
  */
 function ScaleImage(img, mode, x, y, w, h, srcX, srcY, srcW, srcH) {
-	if (!img || !img.Width || !img.Height) {
+	if (!img || !img.Width || !img.Height || w < 1 || h < 1) {
 		console.log('Invalid image passed to ScaleImage', img);
 		return null;
 	}
@@ -2432,8 +2449,11 @@ function ScaleImage(img, mode, x, y, w, h, srcX, srcY, srcW, srcH) {
  * @returns {GdiBitmap} The image object with the applied drop shadow.
  */
 function ShadowRect(x, y, w, h, radius, color) {
+	if (w < 1 || h < 1) return null;
+
 	const shadow = gdi.CreateImage(w + 2 * radius, h + 2 * radius);
 	const shimg = shadow.GetGraphics();
+
 	shimg.FillRoundRect(x, y, w, h, 0.5 * radius, 0.5 * radius, color);
 	shadow.ReleaseGraphics(shimg);
 	shadow.StackBlur(radius);
