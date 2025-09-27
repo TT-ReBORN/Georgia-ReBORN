@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    27-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1633,7 +1633,9 @@ class ContextMenus {
 				peakmeterBarRefreshMenu.appendItem(rate[0], () => {
 					grSet.peakmeterBarRefreshRate = rate[1];
 					grm.ui.setSeekbarRefresh();
-					this.audioWizard.SetMonitoringRefreshRate(rate[1]);
+					if (rate[1] != 'variable') {
+						this.audioWizard.SetMonitoringRefreshRate(rate[1]);
+					}
 					if (rate[1] < FPS._20) {
 						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
 					} else if (rate[1] < FPS._10) {
