@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-09-2025                                              * //
+// * Last change:    27-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1179,9 +1179,6 @@ class Details {
 			format = $('$lower($ext(%path%))');
 		}
 
-		const lightBg = Color.BRT(grCol.detailsText) < 140;
-		const bw = lightBg ? 'black' : 'white';
-
 		const codecFormat = {
 			'aac':  'aac', 'aac acm codec': 'aac',
 			'ac3':  'ac3', 'atsc a/52': 'ac3', 'e-ac3': 'ac3',
@@ -1223,20 +1220,25 @@ class Details {
 			'wv':   'wavpack', 'wavpack': 'wavpack'
 		};
 
+		let logoName;
+		const HDCD = $('%__hdcd%') === 'yes';
 		const codecName = codecFormat[codec] || codecFormat[format];
-		const codecLogoPath = (codecName) => `${grPath.images}codec\\${codecName}-${bw}.png`;
 
-		if (codecName) {
-			this.gridCodecLogo = gdi.Image(codecLogoPath(codecName));
-		}
-		// Handle special cases
 		if (codec.startsWith('dsd')) {
-			this.gridCodecLogo = gdi.Image(codecLogoPath(codecFormat.dsd));
+			logoName = codecFormat.dsd;
 		} else if (codec.startsWith('dxd')) {
-			this.gridCodecLogo = gdi.Image(codecLogoPath(codecFormat.dxd));
+			logoName = codecFormat.dxd;
 		} else if (codec.startsWith('dst')) {
-			this.gridCodecLogo = gdi.Image(codecLogoPath(codecFormat.dst));
+			logoName = codecFormat.dst;
+		} else {
+			logoName = HDCD && codecName === 'pcm-wav' ? 'pcm-hdcd' : HDCD ? `${codecName}-hdcd` : codecName;
 		}
+
+		const lightBg = Color.BRT(grCol.detailsText) < 140;
+		const bw = lightBg ? 'black' : 'white';
+		const path = `${grPath.images}codec\\${logoName}-${bw}.png`;
+
+		this.gridCodecLogo = gdi.Image(path);
 	}
 
 	/**
