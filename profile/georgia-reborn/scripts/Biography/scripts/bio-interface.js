@@ -830,5 +830,5 @@ let bioColourSelector = {}
 /** @global @type {{image: Function}} */
 let bioSync = { image: () => {} }
 /** @global @type {string} */
-const bioSyncer = grSet.customBiographyDir ? `${grCfg.customBiographyDir}cache\\biography\\themed\\bioSyncTheme.js` : `${fb.ProfilePath}cache\\biography\\themed\\bioSyncTheme.js`;
+const bioSyncer = grSet.customBiographyDir ? $(`${grCfg.customBiographyDir}cache\\biography\\themed\\bioSyncTheme.js`, undefined, true) : `${fb.ProfilePath}cache\\biography\\themed\\bioSyncTheme.js`;
 if (bioSet.themed && $Bio.file(bioSyncer)) include(bioSyncer);

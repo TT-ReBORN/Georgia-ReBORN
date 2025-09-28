@@ -5,7 +5,7 @@ class LibImages {
 		this.accessed = 0;
 		this.asyncBypass = 0;
 		this.blockWidth = 150;
-		this.cachePath = grSet.customLibraryDir ? `${grCfg.customLibraryDir}library-tree-cache\\` : `${fb.ProfilePath}cache\\library\\library-tree-cache\\`;
+		this.cachePath = grSet.customLibraryDir ? $(`${grCfg.customLibraryDir}library-tree-cache\\`, undefined, true) : `${fb.ProfilePath}cache\\library\\library-tree-cache\\`;
 		this.cellWidth = 200;
 		this.column = 0;
 		this.columnWidth = 150;

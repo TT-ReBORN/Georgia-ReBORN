@@ -44,7 +44,7 @@ class BioSettings {
 		// this.key_list = {}; debug
 
 		this.cfgBaseName = name;
-		this.storageFolder = grSet.customBiographyDir ? `${grCfg.customBiographyDir}` : `${fb.ProfilePath}cache\\biography\\`;
+		this.storageFolder = grSet.customBiographyDir ? NormalizePath(grCfg.customBiographyDir) : `${fb.ProfilePath}cache\\biography\\`;
 		$Bio.buildPth(this.storageFolder);
 		this.bio = `${this.storageFolder + this.cfgBaseName}.cfg`;
 		this.item_properties = `${this.storageFolder}item_properties.json`;
@@ -72,7 +72,7 @@ class BioSettings {
 		this.photoRecycler = `${this.storageFolder}oldPhotosForDeletion\\`;
 		this.settingsKeys = [];
 
-		this.caPath = grSet.customBiographyDir ? `${grCfg.customBiographyDir}biography-cache\\` : `${this.storageFolder}biography-cache`;
+		this.caPath = `${this.storageFolder}biography-cache`;
 		this.cachePath = `${this.caPath}\\`;
 
 		this.suffix = {
@@ -181,13 +181,13 @@ class BioSettings {
 		if (!$Bio.file(this.nowplaying)) $Bio.save(this.nowplaying, bioNowplaying, true);
 		if (!$Bio.file(this.radioParser)) $Bio.save(this.radioParser, bioRadioParser, true);
 		if ($Bio.file(this.bio)) return;
-		const orig_cfg = `${fb.ProfilePath}cache\\biography\\biography.cfg`;
+		const orig_cfg = grSet.customBiographyDir ? $(`${grCfg.customBiographyDir}biography.cfg`, undefined, true) : `${fb.ProfilePath}cache\\biography\\biography.cfg`;
 		const orig_cfg_copied = $Bio.file(`${bioCfg.storageFolder}foo_lastfm_img.vbs`);
 		if ($Bio.file(orig_cfg) && !orig_cfg_copied) {
 			try {
 				bioFSO.CopyFile(orig_cfg, this.bio);
 				this.cfg = $Bio.jsonParse(this.bio, {}, 'file');
-				const blacklist_image = `${fb.ProfilePath}cache\\biography\\blacklist_image.json`;
+				const blacklist_image = grSet.customBiographyDir ? $(`${grCfg.customBiographyDir}blacklist_image.json`, undefined, true) : `${fb.ProfilePath}cache\\biography\\blacklist_image.json`;
 				if ($Bio.file(blacklist_image)) {
 					bioFSO.CopyFile(blacklist_image, `${bioCfg.storageFolder}blacklist_image.json`);
 				}

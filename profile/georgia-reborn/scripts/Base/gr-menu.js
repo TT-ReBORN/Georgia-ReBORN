@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    28-09-2025                                              * //
+// * Last change:    29-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3391,11 +3391,11 @@ class TopMenuOptions {
 		themeCacheLibraryMenu.addToggleItem('Preload images in disk cache', libSet, 'albumArtPreLoad');
 		themeCacheLibraryMenu.addToggleItem('Use custom library directory', grSet, 'customLibraryDir', () => {
 			if (grSet.customLibraryDir) grm.inputBox.customCacheDir('library');
-			window.Reload();
+			setTimeout(()=> { window.Reload(); }, 500);
 		});
 		themeCacheLibraryMenu.addSeparator();
 		themeCacheLibraryMenu.addItem('Open library cache directory', false, () => {
-			const cacheDir = grSet.customLibraryDir ? fb.TitleFormat(grCfg.customLibraryDir[0]).Eval(true) : `${fb.ProfilePath}cache\\library\\library-tree-cache`;
+			const cacheDir = grSet.customLibraryDir ? $(grCfg.customLibraryDir, undefined, true) : `${fb.ProfilePath}cache\\library\\library-tree-cache`;
 			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
@@ -3423,11 +3423,11 @@ class TopMenuOptions {
 				const bioCfg = new BioSettings();
 				bioCfg.resetCfg();
 			}
-			window.Reload();
+			setTimeout(()=> { window.Reload(); }, 500);
 		});
 		themeCacheBiographyMenu.addSeparator();
 		themeCacheBiographyMenu.addItem('Open biography cache directory', false, () => {
-			const cacheDir = grSet.customBiographyDir ? fb.TitleFormat(grCfg.customBiographyDir[0]).Eval(true)  : `${fb.ProfilePath}cache\\biography\\biography-cache`;
+			const cacheDir = grSet.customBiographyDir ? $(grCfg.customBiographyDir, undefined, true) : `${fb.ProfilePath}cache\\biography\\biography-cache`;
 			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
@@ -3451,11 +3451,11 @@ class TopMenuOptions {
 		const themeCacheLyricsMenu = new Menu('Lyrics');
 		themeCacheLyricsMenu.addToggleItem('Use custom lyrics directory', grSet, 'customLyricsDir', () => {
 			if (grSet.customLyricsDir) grm.inputBox.customCacheDir('lyrics');
-			window.Reload();
+			setTimeout(()=> { window.Reload(); }, 500);
 		});
 		themeCacheLyricsMenu.addSeparator();
 		themeCacheLyricsMenu.addItem('Open lyrics directory', false, () => {
-			const cacheDir = grSet.customLyricsDir ? fb.TitleFormat(grCfg.customLyricsDir[0]).Eval(true) : `${fb.ProfilePath}cache\\lyrics`;
+			const cacheDir = grSet.customLyricsDir ? $(grCfg.customLyricsDir, undefined, true) : `${fb.ProfilePath}cache\\lyrics`;
 			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
@@ -3479,11 +3479,11 @@ class TopMenuOptions {
 		const themeCacheWaveformBarMenu = new Menu('Waveform bar');
 		themeCacheWaveformBarMenu.addToggleItem('Use custom waveform bar directory', grSet, 'customWaveformBarDir', () => {
 			if (grSet.customWaveformBarDir) grm.inputBox.customCacheDir('waveformBar');
-			window.Reload();
+			setTimeout(()=> { window.Reload(); }, 500);
 		});
 		themeCacheWaveformBarMenu.addSeparator();
 		themeCacheWaveformBarMenu.addItem('Open waveform bar cache directory', false, () => {
-			const cacheDir = grSet.customWaveformBarDir ? fb.TitleFormat(grCfg.customWaveformBarDir[0]).Eval(true) : `${fb.ProfilePath}cache\\waveform`;
+			const cacheDir = grSet.customWaveformBarDir ? $(grCfg.customWaveformBarDir, undefined, true)  : `${fb.ProfilePath}cache\\waveform`;
 			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});

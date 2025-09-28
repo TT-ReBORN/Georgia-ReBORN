@@ -4,7 +4,7 @@ class BioCallbacks {
 	constructor() {
 		/** @type {string} */
 		this.windowMetricsPathBio = grSet.customBiographyDir
-			? `${grCfg.customBiographyDir}cache\\biography\\themed\\windowMetrics.json`
+			? $(`${grCfg.customBiographyDir}cache\\biography\\themed\\windowMetrics.json`, undefined, true)
 			: `${fb.ProfilePath}cache\\biography\\themed\\windowMetrics.json`;
 	}
 

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-09-2025                                              * //
+// * Last change:    29-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1761,6 +1761,9 @@ class InputBox {
 			if (typeof this.inputBoxNewValue !== 'string') {
 				throw new Error('Invalid type');
 			}
+
+			this.inputBoxNewValue = this.inputBoxNewValue.trim();
+
 			if (dirInfo.name === 'customLyricsDir') {
 				grm.msg.showPopupNotice('inputBox', 'customCacheDirLyrics');
 			}
@@ -1777,6 +1780,11 @@ class InputBox {
 
 		grCfg.configCustom.addConfigurationObject(customDirSchema, [this.inputBoxNewValue]);
 		grCfg.configCustom.writeConfiguration();
+
+		if (this.inputBoxNewValue) {
+			const cacheDir = $(this.inputBoxNewValue, undefined, true);
+			if (cacheDir && !IsFolder(cacheDir)) CreateFolder(cacheDir);
+		}
 	}
 
 	/**
@@ -4553,7 +4561,7 @@ class WaveformBar {
 		/** @private @type {string[]} The cache storage for the waveform data. */
 		this.cache = null;
 		/** @private @type {string} The directory for the waveform cache. */
-		this.cacheDir = `${fb.ProfilePath}cache\\waveform\\`;
+		this.cacheDir = grSet.customWaveformBarDir ? $(`${grCfg.customWaveformBarDir}`, undefined, true) : `${fb.ProfilePath}cache\\waveform\\`;
 		/** @private @type {string} The code page for character encoding conversion. */
 		this.codePage = convertCharsetToCodepage('UTF-8');
 		/** @private @type {string} The code page for UTF-16LE character encoding conversion. */

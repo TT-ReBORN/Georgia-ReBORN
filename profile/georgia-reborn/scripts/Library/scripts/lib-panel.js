@@ -1322,7 +1322,7 @@ class LibPanel {
 		lib.call.on_colours_changed();
 		if (lib.ui.col.counts) lib.panel.colMarker = true;
 		if (libSet.themed && libSet.theme) {
-			const themed_image = grSet.customLibraryDir ? `${grCfg.customLibraryDir}cache\\library\\themed\\themed_image.bmp` : `${fb.ProfilePath}cache\\library\\themed\\themed_image.bmp`;
+			const themed_image = grSet.customLibraryDir ? $(`${grCfg.customLibraryDir}cache\\library\\themed\\themed_image.bmp`, undefined, true) : `${fb.ProfilePath}cache\\library\\themed\\themed_image.bmp`;
 			if ($Lib.file(themed_image)) libSync.image(gdi.Image(themed_image));
 		}
 

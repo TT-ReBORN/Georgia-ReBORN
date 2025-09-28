@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-09-2025                                              * //
+// * Last change:    29-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1083,6 +1083,24 @@ function IsFolder(folder) {
 	} catch (e) {
 		return false;
 	}
+}
+
+
+/**
+ * Normalizes a path to an absolute Windows-style path ending with a backslash.
+ * Handles arrays (uses first element), evaluates title format strings with '%', and ensures string type.
+ * @param {string|string[]|*} path - The path to normalize (string, array, or evaluable).
+ * @returns {string} The normalized absolute path.
+ */
+function NormalizePath(path) {
+	path = Array.isArray(path) ? path[0] : path;
+
+	const needsEval = typeof path === 'string' && path.includes('%');
+	const raw = needsEval ? fb.TitleFormat(path).Eval(true) : path;
+	const normalized = String(raw).replace(/\//g, '\\');
+	const absolute = fso.GetAbsolutePathName(normalized);
+
+	return `${absolute.replace(/\\+$/, '')}\\`;
 }
 
 
@@ -3812,7 +3830,7 @@ function UpdateTimezoneOffset() {
  * @global
  */
 function DeleteBiographyCache() {
-	DeleteFolder(grSet.customBiographyDir ? `${grCfg.customBiographyDir}\\*.*` : `${fb.ProfilePath}cache\\biography\\biography-cache`);
+	DeleteFolder(grSet.customBiographyDir ? $(`${grCfg.customBiographyDir}\\*.*`, undefined, true) : `${fb.ProfilePath}cache\\biography\\biography-cache`);
 }
 
 
@@ -3821,7 +3839,7 @@ function DeleteBiographyCache() {
  * @global
  */
 function DeleteLibraryCache() {
-	DeleteFolder(grSet.customLibraryDir ? `${grCfg.customLibraryDir}\\*.*` : `${fb.ProfilePath}cache\\library\\library-tree-cache`);
+	DeleteFolder(grSet.customLibraryDir ? $(`${grCfg.customLibraryDir}\\*.*`, undefined, true) : `${fb.ProfilePath}cache\\library\\library-tree-cache`);
 }
 
 
@@ -3830,7 +3848,7 @@ function DeleteLibraryCache() {
  * @global
  */
 function DeleteLyrics() {
-	DeleteFile(grSet.customLyricsDir ? `${grCfg.customLyricsDir}\\*.*` : `${fb.ProfilePath}cache\\lyrics\\*.*`);
+	DeleteFile(grSet.customLyricsDir ? $(`${grCfg.customLyricsDir}\\*.*`, undefined, true) : `${fb.ProfilePath}cache\\lyrics\\*.*`);
 }
 
 
@@ -3839,7 +3857,7 @@ function DeleteLyrics() {
  * @global
  */
 function DeleteWaveformBarCache() {
-	DeleteFolder(grSet.customWaveformBarDir ? `${grCfg.customWaveformBarDir}\\*.*` : `${fb.ProfilePath}cache\\waveform\\*.*`);
+	DeleteFolder(grSet.customWaveformBarDir ? $(`${grCfg.customWaveformBarDir}\\*.*`, undefined, true) : `${fb.ProfilePath}cache\\waveform\\*.*`);
 }
 
 

@@ -1120,7 +1120,7 @@ let libColourSelector = {}
 /** @global @type {{image: Function}} */
 let libSync = { image: () => {} }
 /** @global @type {string} */
-const libSyncer = grSet.customLibraryDir ? `${grCfg.customLibraryDir}cache\\library\\themed\\libraryTreeSyncTheme.js` : `${fb.ProfilePath}cache\\library\\themed\\libraryTreeSyncTheme.js`;
+const libSyncer = grSet.customLibraryDir ? $(`${grCfg.customLibraryDir}cache\\library\\themed\\libraryTreeSyncTheme.js`, undefined, true) : `${fb.ProfilePath}cache\\library\\themed\\libraryTreeSyncTheme.js`;
 if (libSet.themed && $Lib.file(libSyncer)) include(libSyncer);
 
 /* eslint-disable */
