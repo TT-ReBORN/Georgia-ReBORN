@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-09-2025                                              * //
+// * Last change:    28-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3395,7 +3395,7 @@ class TopMenuOptions {
 		});
 		themeCacheLibraryMenu.addSeparator();
 		themeCacheLibraryMenu.addItem('Open library cache directory', false, () => {
-			const cacheDir = grSet.customLibraryDir ? fb.TitleFormat(grCfg.customLibraryDir[0]).Eval() : `${fb.ProfilePath}cache\\library\\library-tree-cache`;
+			const cacheDir = grSet.customLibraryDir ? fb.TitleFormat(grCfg.customLibraryDir[0]).Eval(true) : `${fb.ProfilePath}cache\\library\\library-tree-cache`;
 			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
@@ -3427,7 +3427,7 @@ class TopMenuOptions {
 		});
 		themeCacheBiographyMenu.addSeparator();
 		themeCacheBiographyMenu.addItem('Open biography cache directory', false, () => {
-			const cacheDir = grSet.customBiographyDir ? fb.TitleFormat(grCfg.customBiographyDir[0]).Eval()  : `${fb.ProfilePath}cache\\biography\\biography-cache`;
+			const cacheDir = grSet.customBiographyDir ? fb.TitleFormat(grCfg.customBiographyDir[0]).Eval(true)  : `${fb.ProfilePath}cache\\biography\\biography-cache`;
 			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
@@ -3455,7 +3455,7 @@ class TopMenuOptions {
 		});
 		themeCacheLyricsMenu.addSeparator();
 		themeCacheLyricsMenu.addItem('Open lyrics directory', false, () => {
-			const cacheDir = grSet.customLyricsDir ? fb.TitleFormat(grCfg.customLyricsDir[0]).Eval() : `${fb.ProfilePath}cache\\lyrics`;
+			const cacheDir = grSet.customLyricsDir ? fb.TitleFormat(grCfg.customLyricsDir[0]).Eval(true) : `${fb.ProfilePath}cache\\lyrics`;
 			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
@@ -3483,7 +3483,7 @@ class TopMenuOptions {
 		});
 		themeCacheWaveformBarMenu.addSeparator();
 		themeCacheWaveformBarMenu.addItem('Open waveform bar cache directory', false, () => {
-			const cacheDir = grSet.customWaveformBarDir ? fb.TitleFormat(grCfg.customWaveformBarDir[0]).Eval() : `${fb.ProfilePath}cache\\waveform`;
+			const cacheDir = grSet.customWaveformBarDir ? fb.TitleFormat(grCfg.customWaveformBarDir[0]).Eval(true) : `${fb.ProfilePath}cache\\waveform`;
 			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
 			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
 		});
