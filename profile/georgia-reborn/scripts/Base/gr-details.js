@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-09-2025                                              * //
+// * Last change:    29-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1782,6 +1782,21 @@ class Details {
 	}
 
 	/**
+	 * Repaints the disc art area to only cover the necessary region based on album art opacity settings and disc art layering.
+	 */
+	repaintDiscArt() {
+		const discArtLeftEdge = (
+			grSet.detailsAlbumArtOpacity !== 255 || grSet.detailsAlbumArtDiscAreaOpacity !== 255 || grSet.discArtOnTop
+		) ? this.discArtSize.x : grm.ui.albumArtSize.x + grm.ui.albumArtSize.w - 1;
+
+		window.RepaintRect(
+			discArtLeftEdge, this.discArtSize.y,
+			this.discArtSize.w - (discArtLeftEdge - this.discArtSize.x), this.discArtSize.h,
+			!grSet.discArtOnTop && !grm.ui.displayLyrics
+		);
+	}
+
+	/**
 	 * Set the scale factor for the disc art based on the window size and layout.
 	 */
 	setDiscArtScaleFactor() {
@@ -1864,6 +1879,77 @@ class Details {
 	}
 
 	/**
+	 * Sets up async precomputation of disc art frames, prioritized from current index.
+	 * @param {GdiBitmap} combinedImg - The base image to rotate.
+	 * @param {string} currentAlbumId - Unique ID to detect album changes.
+	 * @param {number} rotationDegreeIncrement - Degrees per frame.
+	 */
+	setDiscArtPrecomputation(combinedImg, currentAlbumId, rotationDegreeIncrement) {
+		let batchCount = 0;
+		let frameTimeAvg = 0;
+		let precomputeIndex = (this.discArtRotationIndex + 1) % grSet.spinDiscArtImageCount;
+		let precomputeTimer = null;
+		let performanceTierCurrent = 'medium';
+
+		const performanceTiers = {
+			low:    { batchSize: 1, batchDelay: 75 }, // 50-100ms
+			medium: { batchSize: 2, batchDelay: 25 }, // 20-40ms
+			high:   { batchSize: 4, batchDelay: 10 }  // 10-20ms
+		};
+
+		const updatePerformanceTier = (frameTime) => {
+			frameTimeAvg = (frameTimeAvg + frameTime) / 2;
+			const performanceTierNew = frameTimeAvg > 50 ? 'low' : frameTimeAvg < 10 ? 'high' : 'medium';
+			if (performanceTierNew === performanceTierCurrent) return;
+			performanceTierCurrent = performanceTierNew;
+			const tier = performanceTiers[performanceTierCurrent];
+			DebugLog(`Disc art => Adapted to ${performanceTierCurrent} perf: batchSize=${tier.batchSize}, batchDelay=${tier.batchDelay}ms (avgFrameTime=${Math.round(frameTimeAvg)}ms)`);
+		};
+
+		const precomputeBatch = () => {
+			if (this.discArt.Path !== currentAlbumId) return;
+
+			const tier = performanceTiers[performanceTierCurrent];
+			let computedInBatch = 0;
+
+			while (computedInBatch < tier.batchSize && !this.discArtArray[precomputeIndex]) {
+				const rotationDegrees = rotationDegreeIncrement * precomputeIndex;
+				const frameStart = Date.now();
+				this.discArtArray[precomputeIndex] = RotateImage(combinedImg, this.discArtSize.w, this.discArtSize.h, rotationDegrees, grm.artCache.discArtImgMaxRes);
+				const frameTime = Date.now() - frameStart;
+				updatePerformanceTier(frameTime); // Update per-frame for quicker response
+				DebugLog(`Disc art => Precomputed discArtImg: ${precomputeIndex} (${this.discArtSize.w}x${this.discArtSize.h}) with rotation: ${rotationDegrees} degrees`);
+				computedInBatch++;
+				precomputeIndex = (precomputeIndex + 1) % grSet.spinDiscArtImageCount;
+			}
+
+			batchCount++;
+
+			if (this.discArtArray.every(frame => !!frame)) {
+				DebugLog('Disc art => All frames precomputed');
+				return;
+			}
+
+			if (computedInBatch > 0) {
+				precomputeTimer = setTimeout(precomputeBatch, tier.batchDelay);
+			}
+		};
+
+		// Start immediately but async
+		setTimeout(precomputeBatch, 0);
+
+		// Cleanup
+		this.clearTimer = (type) => {
+			if (type === 'discArt' && precomputeTimer) {
+				clearTimeout(precomputeTimer);
+				DebugLog('Disc art => Cleared precompute timer');
+			}
+			Details.prototype.clearTimer.call(this, type);
+			delete this.clearTimer; // Restore to prototype chain
+		};
+	}
+
+	/**
 	 * Sets and creates the disc art rotation animation with RotateImg().
 	 * @returns {GdiBitmap} The rotated disc art image.
 	 */
@@ -1873,16 +1959,16 @@ class Details {
 		}
 
 		// Drawing discArt rotated is slow, so first draw it rotated into the discArtRotation image, and then draw discArtRotation image unrotated in on_paint.
-		let tracknum = parseInt(fb.TitleFormat(`$num($if(${grTF.vinyl_tracknum},$sub($mul(${grTF.vinyl_tracknum},2),1),$if2(%tracknumber%,1)),1)`).Eval()) - 1;
+		const vinylAdjustedTrackNumFormat = `$num($if(${grTF.vinyl_tracknum},$sub($mul(${grTF.vinyl_tracknum},2),1),$if2(%tracknumber%,1)),1)`;
+		let tracknum = parseInt($(vinylAdjustedTrackNumFormat)) - 1;
 		if (!grSet.rotateDiscArt || Number.isNaN(tracknum)) tracknum = 0;
 
-		const tracknumRotation = tracknum * grSet.rotationAmt;
+		const tracknumRotation = tracknum * grSet.rotationAmt % 360;
 		const combinedImg = this.combineDiscArtWithCover(true);
 
 		this.discArtRotation = RotateImage(combinedImg, this.discArtSize.w, this.discArtSize.h, tracknumRotation, grm.artCache.discArtImgMaxRes);
+		this.discArtRotationIndex = Math.round(tracknumRotation / (360 / grSet.spinDiscArtImageCount)) % grSet.spinDiscArtImageCount;
 
-		// TODO: Once spinning art is done, scrap this and the rotation amount crap and just use indexes into the discArtArray when needed.
-		// ? IDEA: Smooth rotation to new position?
 		return this.discArtRotation;
 	}
 
@@ -1898,26 +1984,52 @@ class Details {
 			return;
 		}
 
-		DebugLog(`Disc art => Creating ${grSet.spinDiscArtImageCount} rotated disc images, shown every ${grSet.spinDiscArtRedrawInterval}ms`);
+		DebugLog(`Disc art => Starting lazy spin with async precompute: ${grSet.spinDiscArtImageCount} frames, every ${grSet.spinDiscArtRedrawInterval}ms`);
+
 		const rotationDegreeIncrement = 360 / grSet.spinDiscArtImageCount;
+		const combinedImg = this.combineDiscArtWithCover(false);
+		const currentAlbumId = this.discArt.Path;
 
+		// Main animation timer
 		this.discArtRotationTimer = setInterval(() => {
-			this.discArtRotationIndex = (this.discArtRotationIndex + 1) % grSet.spinDiscArtImageCount;
+			const intendedIndex = (this.discArtRotationIndex + 1) % grSet.spinDiscArtImageCount;
 
-			if (!this.discArtArray[this.discArtRotationIndex]) {
-				const rotationDegrees = rotationDegreeIncrement * this.discArtRotationIndex;
-				const combinedImg = this.combineDiscArtWithCover(false);
-				this.discArtArray[this.discArtRotationIndex] = RotateImage(combinedImg, this.discArtSize.w, this.discArtSize.h, rotationDegrees, grm.artCache.discArtImgMaxRes);
+			let displayIndex = intendedIndex;
+			if (!this.discArtArray[intendedIndex]) {
+				// Nearest available: prioritize smallest angular distance, alternating fwd/bwd
+				const count = grSet.spinDiscArtImageCount;
+				let nearestFound = false;
+				for (let dist = 0; dist < count; dist++) {
+					const fwd = (intendedIndex + dist) % count;
+					if (this.discArtArray[fwd]) {
+						displayIndex = fwd;
+						nearestFound = true;
+						break;
+					}
 
-				DebugLog(`Disc art => creating discArtImg: ${this.discArtRotationIndex} (${this.discArtSize.w}x${this.discArtSize.h}) with rotation: ${rotationDegrees} degrees`);
+					const bwd = (intendedIndex - dist + count) % count;
+					if (this.discArtArray[bwd]) {
+						displayIndex = bwd;
+						nearestFound = true;
+						break;
+					}
+				}
+				if (!nearestFound) displayIndex = 0; // Ultimate fallback
+
+				DebugLog(`Disc art => Frame ${intendedIndex} not ready, displaying nearest ${displayIndex}`);
+
+				// Emergency compute intended (sync for immediacy, but only one frame)
+				const rotationDegrees = rotationDegreeIncrement * intendedIndex;
+				this.discArtArray[intendedIndex] = RotateImage(combinedImg, this.discArtSize.w, this.discArtSize.h, rotationDegrees, grm.artCache.discArtImgMaxRes);
+				DebugLog(`Disc art => Emergency computed discArtImg: ${intendedIndex} (${this.discArtSize.w}x${this.discArtSize.h}) with rotation: ${rotationDegrees} degrees`);
 			}
 
-			const discArtLeftEdge = (
-				grSet.detailsAlbumArtOpacity !== 255 || grSet.detailsAlbumArtDiscAreaOpacity !== 255 || grSet.discArtOnTop
-			) ? this.discArtSize.x : grm.ui.albumArtSize.x + grm.ui.albumArtSize.w - 1;
-
-			window.RepaintRect(discArtLeftEdge, this.discArtSize.y, this.discArtSize.w - (discArtLeftEdge - this.discArtSize.x), this.discArtSize.h, !grSet.discArtOnTop && !grm.ui.displayLyrics);
+			this.discArtRotationIndex = intendedIndex; // Advance intended for next tick
+			this.repaintDiscArt(); // Repaint with displayIndex (but since we just computed if missing, often same)
 		}, grSet.spinDiscArtRedrawInterval);
+
+		// Start precomputation
+		this.setDiscArtPrecomputation(combinedImg, currentAlbumId, rotationDegreeIncrement);
 	}
 
 	/**
