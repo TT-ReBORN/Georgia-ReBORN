@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-09-2025                                              * //
+// * Last change:    30-09-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4328,9 +4328,6 @@ class PeakmeterBar {
 		this.rightLevel = AudioWizard.PeakmeterAdjustedRightRMS;
 		this.leftPeak = AudioWizard.PeakmeterAdjustedLeftSamplePeak;
 		this.rightPeak = AudioWizard.PeakmeterAdjustedRightSamplePeak;
-
-		// AWStartRealTimeMonitoring();
-		// AWStartRawAudioMonitoring();
 	}
 
 	/**
@@ -4461,13 +4458,11 @@ class PeakmeterBar {
 	on_mouse_wheel(step) {
 		this.wheel = true;
 
-		if (AudioWizard) {
-			AudioWizard.PeakmeterOffset = AudioWizard.PeakmeterOffset + step;
-			this.tooltipText = `${Math.round(AudioWizard.PeakmeterOffset)} db`;
-			grm.ttip.showImmediate(this.tooltipText);
-		}
+		if (!AudioWizard) return;
 
-		AWStartFullTrackAnalysis();
+		AudioWizard.PeakmeterOffset = AudioWizard.PeakmeterOffset + step;
+		this.tooltipText = `${Math.round(AudioWizard.PeakmeterOffset)} db`;
+		grm.ttip.showImmediate(this.tooltipText);
 	}
 
 	/**
