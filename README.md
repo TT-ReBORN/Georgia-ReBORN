@@ -87,7 +87,7 @@ these resources, respectively templates, that contain all Georgia-ReBORN logos p
 Feel free to post your creations in the **[HydrogenAudio](https://hydrogenaud.io/index.php?topic=121047.0)** thread or
 start your own at **[Discussions](https://github.com/TT-ReBORN/Georgia-ReBORN/discussions)**. I would love to see<br />
 what you have created, and I am sure other users feel the same!
-**[Download Resources](https://github.com/TT-ReBORN/Georgia-ReBORN-resources/raw/master/Resources/Georgia-ReBORN_Resources.7z)**.
+**[Download Resources](https://github.com/TT-ReBORN/Georgia-ReBORN-resources/archive/refs/heads/master.zip)**.
 
 ## Features
 
