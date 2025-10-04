@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    04-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -320,6 +320,17 @@ class Playlist extends BaseList {
 
 	// * PUBLIC METHODS - GENERAL * //
 	// #region PUBLIC METHODS - GENERAL
+	/**
+	 * Clear cached playlist elements, e.g group info, ratings etc.
+	 */
+	clear_cache() {
+		pl.header_group_info.clear();
+		pl.artist_ratings.clear();
+		pl.album_ratings.clear();
+		pl.track_ratings.clear();
+		grm.ui.clearCache('ratings');
+	}
+
 	/**
 	 * Filters a drop effect based on the modifiers (Ctrl, Shift, Alt) pressed during the event.
 	 * @param {number} effect - A bitmask that represents the available drop effects for a drag-and-drop action.
@@ -1425,12 +1436,14 @@ class Playlist extends BaseList {
 
 			appear_header.appendItem('Show rating', () => {
 				plSet.show_rating_header = !plSet.show_rating_header;
+				this.clear_cache();
 				this.initialize_list();
 				this.scroll_to_focused_or_now_playing();
 			}, { is_checked: plSet.show_rating_header });
 
 			appear_header.appendItem('Show PLR value', () => {
 				plSet.show_PLR_header = !plSet.show_PLR_header;
+				this.clear_cache();
 				this.initialize_list();
 				this.scroll_to_focused_or_now_playing();
 			}, { is_checked: plSet.show_PLR_header });
@@ -1438,12 +1451,14 @@ class Playlist extends BaseList {
 			if (!plSet.use_compact_header) {
 				appear_header.appendItem('Show group info', () => {
 					plSet.show_group_info = !plSet.show_group_info;
+					this.clear_cache();
 					this.initialize_list();
 					this.scroll_to_focused_or_now_playing();
 				}, { is_checked: plSet.show_group_info });
 
 				appear_header.appendItem('Flip header rows', () => {
 					grSet.headerFlipRows = !grSet.headerFlipRows;
+					this.clear_cache();
 					this.initialize_list();
 					this.scroll_to_focused_or_now_playing();
 				}, { is_checked: grSet.headerFlipRows });
@@ -1498,10 +1513,7 @@ class Playlist extends BaseList {
 
 		appear_row.appendItem('Show rating from tags', () => {
 			plSet.use_rating_from_tags = !plSet.use_rating_from_tags;
-			pl.artist_ratings.clear();
-			pl.album_ratings.clear();
-			pl.track_ratings.clear();
-			grm.ui.clearCache('ratings');
+			this.clear_cache();
 			this.initialize_list();
 			this.scroll_to_focused_or_now_playing();
 		}, { is_checked: plSet.use_rating_from_tags });

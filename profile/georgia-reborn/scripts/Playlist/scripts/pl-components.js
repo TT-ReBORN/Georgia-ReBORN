@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-06-2025                                              * //
+// * Last change:    04-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2029,6 +2029,38 @@ class PlaylistRating {
 		this.rating = undefined;
 	}
 
+	// * PRIVATE METHODS * //
+	// #region PRIVATE METHODS
+	/**
+	 * Computes the raw album rating.
+	 * @param {Array<PlaylistRow|PlaylistBaseHeader>} sub_items - The sub-items.
+	 * @returns {number} The average rating.
+	 * @private
+	 */
+	_compute_album_rating(sub_items) {
+		let totalRating = 0;
+		let trackCount = 0;
+
+		const iterate = (items) => {
+			for (const item of items) {
+				if (item instanceof PlaylistRow) {
+					const rating = this.get_track_rating(item.metadb);
+					if (rating > 0) {
+						totalRating += rating;
+						trackCount++;
+					}
+				}
+				else {
+					iterate(item.sub_items);
+				}
+			}
+		};
+
+		iterate(sub_items);
+		return trackCount > 0 ? Math.round(totalRating / trackCount * 10) / 10 : 0;
+	}
+	// #endregion
+
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
 	/**
@@ -2062,10 +2094,7 @@ class PlaylistRating {
 			return;
 		}
 
-		pl.artist_ratings.clear();
-		pl.album_ratings.clear();
-		pl.track_ratings.clear();
-		grm.ui.clearCache('ratings');
+		pl.playlist.clear_cache();
 
 		const ratingNew = Math.floor((x - this.x) / this.btn_w) + 1;
 		const ratingCurrent = this.get_rating();
@@ -2155,44 +2184,22 @@ class PlaylistRating {
 	}
 
 	/**
-	 * Gets the average rating for an album.
-	 * @returns {number} The average rating of all tracks in the album.
+	 * Gets the average rating for an album by iterating over the provided sub-items (local to the header/album).
+	 * @param {Array<PlaylistRow|PlaylistBaseHeader>} sub_items - The sub-items (tracks/discs) for this album/header.
+	 * @returns {number} The average rating (rounded to 1 decimal), or 0 if no rated tracks.
 	 */
-	get_album_rating() {
-		// Return cached results if available
-		if (pl.album_ratings.size !== 0) {
-			return pl.album_ratings;
+	get_album_rating(sub_items = pl.playlist.playing_item.parent.sub_items) {
+		if (!plSet.show_rating_header) return 0;
+
+		const albumKey = PlaylistHeader.get_album_key(this.metadb);
+		let rating = pl.album_ratings.get(albumKey);
+
+		if (rating === undefined) {
+			rating = this._compute_album_rating(sub_items);
+			pl.album_ratings.set(albumKey, rating);
 		}
 
-		const albums = new Map();
-		const playlistItems = pl.playlist.playlist_items_array;
-
-		// Group tracks by album
-		for (let i = 0; i < playlistItems.length; ++i) {
-			const track = playlistItems[i];
-			const albumName = $('%album%', track);
-			const rating = this.get_track_rating(track);
-
-			if (rating === null) continue; // Skip tracks with no rating
-
-			if (albums.has(albumName)) {
-				const albumData = albums.get(albumName);
-				albumData.albumTotalRating += rating;
-				albumData.albumTrackCount++;
-			  } else {
-				albums.set(albumName, { albumTotalRating: rating, albumTrackCount: 1 });
-			  }
-		}
-
-		// Calculate average rating for each album
-		for (const [albumName, { albumTotalRating, albumTrackCount }] of albums) {
-			if (albumTrackCount > 0) {
-				const albumAverageRating = Number((albumTotalRating / albumTrackCount).toFixed(2));
-				pl.album_ratings.set(albumName, albumAverageRating);
-			}
-		}
-
-		return pl.album_ratings;
+		return rating;
 	}
 
 	/**

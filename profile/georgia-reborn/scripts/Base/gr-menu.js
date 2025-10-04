@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-09-2025                                              * //
+// * Last change:    04-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1945,14 +1945,14 @@ class TopMenuOptions {
 		});
 		playlistAlbumMenu.addSeparator();
 		playlistAlbumMenu.addToggleItem('Show disc sub-header', plSet, 'show_disc_header', () => { grm.ui.updatePlaylist(); });
-		playlistAlbumMenu.addToggleItem('Show group info', plSet, 'show_group_info', () => { grm.ui.updatePlaylist(); });
-		playlistAlbumMenu.addToggleItem('Show bit depth and sample rate always', grCfg.settings, 'playlistShowBitSampleAlways', () => { grm.ui.updatePlaylist(); });
+		playlistAlbumMenu.addToggleItem('Show group info', plSet, 'show_group_info', () => { pl.playlist.clear_cache(); grm.ui.updatePlaylist(); });
+		playlistAlbumMenu.addToggleItem('Show bit depth and sample rate always', grCfg.settings, 'playlistShowBitSampleAlways', () => { pl.playlist.clear_cache(); grm.ui.updatePlaylist(); });
 		playlistAlbumMenu.addToggleItem('Show long release date (YYYY-MM-DD)', grSet, 'showPlaylistFullDate', () => { grm.ui.updatePlaylist(); });
 		playlistAlbumMenu.addSeparator();
-		playlistAlbumMenu.addToggleItem('Show rating', plSet, 'show_rating_header', () => { grm.ui.updatePlaylist(); });
-		playlistAlbumMenu.addToggleItem('Show PLR value', plSet, 'show_PLR_header', () => { grm.ui.updatePlaylist(); });
+		playlistAlbumMenu.addToggleItem('Show rating', plSet, 'show_rating_header', () => {pl.playlist.clear_cache(); grm.ui.updatePlaylist(); });
+		playlistAlbumMenu.addToggleItem('Show PLR value', plSet, 'show_PLR_header', () => { pl.playlist.clear_cache(); grm.ui.updatePlaylist(); });
 		playlistAlbumMenu.addSeparator();
-		playlistAlbumMenu.addItem('Customize header info', false, () => { grm.inputBox.playlistCustomHeaderInfo(); grm.ui.updatePlaylist(); });
+		playlistAlbumMenu.addItem('Customize header info', false, () => { grm.inputBox.playlistCustomHeaderInfo(); pl.playlist.clear_cache(); grm.ui.updatePlaylist(); });
 		playlistAlbumMenu.appendTo(playlistMenu);
 
 		// * TRACK ROW * //
@@ -1969,10 +1969,7 @@ class TopMenuOptions {
 		rowsMenu.addSeparator();
 		rowsMenu.addToggleItem('Show rating', plSet, 'show_rating', playlistCallback);
 		rowsMenu.addToggleItem('Show rating from tags', plSet, 'use_rating_from_tags', () => {
-			pl.artist_ratings.clear();
-			pl.album_ratings.clear();
-			pl.track_ratings.clear();
-			grm.ui.clearCache('ratings');
+			pl.playlist.clear_cache();
 			grm.ui.updatePlaylist();
 		});
 		rowsMenu.addToggleItem('Show rating grid', grSet, 'showPlaylistRatingGrid', playlistCallback);

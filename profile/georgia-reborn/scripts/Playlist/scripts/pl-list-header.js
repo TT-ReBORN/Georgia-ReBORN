@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-09-2025                                              * //
+// * Last change:    04-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -158,24 +158,26 @@ class PlaylistBaseHeader extends BaseListItem {
 	}
 
 	/**
-	 * Calculates the total duration in seconds of a list of sub-items, recursively if the sub-items are not of type PlaylistRow.
-	 * @returns {number} A float number.
+	 * Calculates the total duration in seconds of sub-items (rows only).
+	 * @override
+	 * @returns {number} A float number (0 if empty).
 	 */
 	get_duration() {
-		let duration_in_seconds = 0;
+		let duration = 0;
+		const stack = [...this.sub_items];
 
-		if (this.sub_items[0] instanceof PlaylistRow) {
-			for (const item of this.sub_items) {
-				duration_in_seconds += item.metadb.Length;
+		while (stack.length) {
+			const item = stack.pop();
+
+			if (item instanceof PlaylistRow) {
+				duration += item.metadb.Length;
+			}
+			else if (!item.is_collapsed && item.sub_items) {
+				stack.push(...item.sub_items);
 			}
 		}
-		else {
-			for (const item of this.sub_items) {
-				duration_in_seconds += item.get_duration();
-			}
-		}
 
-		return duration_in_seconds;
+		return duration;
 	}
 
 	/**
@@ -263,8 +265,10 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		/** @public @type {GdiBitmap} */
 		this.header_image = undefined;
 
-		/** @private @type {array} */
+		/** @private @type {Object.<string, Hyperlink>} */
 		this.hyperlinks = {};
+		/** @private @type {Array.<Hyperlink>} */
+		this.hyperlinks_list = [];
 		/** @public @type {boolean} */
 		this.hyperlinks_initialized = false;
 
@@ -275,6 +279,8 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		/** @private @type {PlaylistRating} */
 		this.rating = undefined;
 
+		/** @private @type {Object} */
+		this.group_info_meta = {};
 		/** @public @type {PlaylistGroupingHandler} */
 		this.grouping_handler = PlaylistHeader.grouping_handler;
 
@@ -307,6 +313,16 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			this._groupingHandler = new PlaylistGroupingHandler();
 		}
 		return this._groupingHandler;
+	}
+
+	/**
+	 * Gets a stable key for the album (artist - album - date to handle variations).
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
+	 * @returns {string} The album key.
+	 * @static
+	 */
+	static get_album_key(metadb) {
+		return `${$(' %artist%', metadb)} - ${$(' %album%', metadb)} - ${$(' %date%', metadb) || 'Unknown'}`;
 	}
 
 	/**
@@ -362,6 +378,33 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		return headers;
 	}
 	// #endregion
+
+	// * PRIVATE METHODS * //
+	// #region PRIVATE METHODS
+	/**
+	 * Adjusts x-coordinates of hyperlinks by offsetting based on the first one's position relative to left padding, ensuring alignment.
+	 * @param {Object.<string, Hyperlink>} hyperlinks - The object of hyperlinks keyed by property-index (e.g. 'artist0').
+	 * @param {string} property - The base property name for keys (e.g. 'artist').
+	 * @param {number} left_pad - The left padding for offset calculation.
+	 * @private
+	 */
+	adjustHyperlinkOffsets(hyperlinks, property, left_pad) {
+		let i = 0;
+		const firstKey = `${property}0`;
+		const firstLink = hyperlinks[firstKey];
+
+		if (!firstLink || typeof firstLink.x !== 'number') return;
+
+		const offset = firstLink.x - left_pad;
+		if (!offset) return;
+
+		firstLink.x -= offset;
+
+		for (i = 1; hyperlinks[property + i]; i++) {
+			hyperlinks[property + i].x -= offset;
+		}
+	}
+	//#endregion
 
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
@@ -481,19 +524,6 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 			// * ART BOX * //
 			if (plSet.show_album_art) {
-				const adjustHyperlinkOffsets = (hyperlinks, property, left_pad) => {
-					let i = 0;
-					let offset = 0;
-					while (hyperlinks[`${property}${i}`]) {
-						if (i === 0) {
-							offset = hyperlinks[`${property}0`].x - left_pad;
-							if (!offset) break;
-						}
-						hyperlinks[`${property}${i}`].x -= offset;
-						i++;
-					}
-				};
-
 				if (!this.is_art_loaded()) {
 					const cached_art = PlaylistHeader.img_cache.get_image_for_meta(this.metadb);
 					if (cached_art) {
@@ -537,12 +567,12 @@ class PlaylistHeader extends PlaylistBaseHeader {
 					grClip.DrawRect(art_box_x, art_box_y, art_box_w - 1, art_box_h - 1, 1, line_color);
 
 					left_pad += art_box_x + art_box_w;
-					adjustHyperlinkOffsets(this.hyperlinks, 'artist', left_pad);
-					adjustHyperlinkOffsets(this.hyperlinks, 'genre', left_pad);
+					this.adjustHyperlinkOffsets(this.hyperlinks, 'artist', left_pad);
+					this.adjustHyperlinkOffsets(this.hyperlinks, 'genre', left_pad);
 					this.hyperlinks.album && this.hyperlinks.album.setXOffset(left_pad);
 				}
 				else if (this.art === null && plSet.auto_album_art && !this.hyperlinks_reinitialized) {
-					adjustHyperlinkOffsets(this.hyperlinks, 'genre', left_pad);
+					this.adjustHyperlinkOffsets(this.hyperlinks, 'genre', left_pad);
 					this.hyperlinks.artist0 && this.hyperlinks.artist0.setXOffset(left_pad);
 					this.hyperlinks.album && this.hyperlinks.album.setXOffset(left_pad);
 					this.hyperlinks.genre0 && this.hyperlinks.genre0.setXOffset(left_pad);
@@ -696,7 +726,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 				}
 
 				const info_text = this.getGroupInfoString(is_radio, genre_text_w > 0);
-				const info_text_w = Math.ceil(gr.MeasureString(info_text, pl.font.info, 0, 0, 0, 0).Width); // TODO: Mordred - should only call MeasureString once
+				const info_text_w = Math.ceil(gr.MeasureString(info_text, pl.font.info, 0, 0, 0, 0).Width);
 				grClip.DrawString(info_text, pl.font.info, info_color, genreX + (genre_text_w || 0), info_y + 1, info_w - (genreX - info_x) - (genre_text_w || 0) - SCALE(20), info_h, info_text_format);
 
 				// * Record labels
@@ -992,6 +1022,18 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		const sub_headers = show_disc_headers ? this.create_disc_headers(rows_with_disc_header_data, idx) : [];
 		this.sub_items = sub_headers.length ? sub_headers : owned_rows;
 
+		// * Precompute group meta once per header
+		this.group_info_meta = this.getGroupInfoMeta();
+
+		// * Precompute album ratings
+		if (plSet.show_rating_header) {
+			const albumKey = PlaylistHeader.get_album_key(this.metadb);
+			if (!pl.album_ratings.has(albumKey)) {
+				const rating = this.rating._compute_album_rating(this.sub_items);
+				pl.album_ratings.set(albumKey, rating);
+			}
+		}
+
 		return idx;
 	}
 
@@ -1117,6 +1159,8 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 		// * Hyperlinks init done
 		this.hyperlinks_initialized = true;
+
+		this.hyperlinks_list = Object.values(this.hyperlinks);
 	}
 
 	/**
@@ -1138,84 +1182,145 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	}
 
 	/**
-	 * Returns a string containing information about a group of audio files,
+	 * Gets various metadata properties using title formatting strings for constructing the group info.
+	 * This centralizes all title format evaluations to avoid repeated calls.
+	 * @returns {Object} An object containing extracted metadata values like bit depth, sample rate, codec details, and more.
+	 */
+	getGroupInfoMeta() {
+		const tf = (pattern) => $(pattern, this.metadb);
+		const codec_profile = tf('$info(codec_profile)');
+		const encoding = tf('$info(encoding)');
+
+		return {
+			bitspersample: Number(tf('$info(bitspersample)')) || 0,
+			samplerate: Number(tf('$info(samplerate)')) || 0,
+			totaldiscs: tf('[%totaldiscs%]'),
+			discnumber: tf('%discnumber%'),
+			replaygain_album_gain: tf('%replaygain_album_gain%'),
+			replaygain_album_peak_db: tf('%replaygain_album_peak_db%'),
+			encoding,
+			codec_profile,
+			bitrate: tf('%bitrate%'),
+			channel_mode: tf('$info(channel_mode)'),
+			codec: tf('$if2(%codec%,$ext(%path%))'),
+			ext: tf('$upper($ext(%path%))'),
+			referenced_ext: tf('$ext($info(referenced_file))'),
+			profile_addon: tf('[-$info(codec_profile)]').replace('quality ', 'q'),
+			channel_addon: tf("[ $replace($replace($replace($info(channel_mode), + LFE,),' front, ','/'),' rear surround channels',$if($strstr($info(channel_mode),' + LFE'),.1,.0))] %bitrate%"),
+			lossy_addon: encoding === 'lossy' ? (codec_profile === 'CBR' ? tf('[-%bitrate% kbps]') : tf('[-$info(codec_profile)]')) : ''
+		};
+	}
+
+	/**
+	 * Gets the codec portion of the group info string based on format-specific rules and metadata.
+	 * Handles special cases like AIFF/WAV, DTS, MPC, and lossy encoding.
+	 * @param {Object} meta - The metadata object returned by `getGroupInfoMeta()`.
+	 * @param {string} sample - The formatted sample rate and bit depth string (e.g., ' 24bit/48khz').
+	 * @returns {string} The complete codec string, or a fallback path/identifier if no codec is detected.
+	 */
+	getGroupInfoMetaCodec(meta, sample) {
+		const isAiffWav = ['AIFF', 'WAV'].includes(meta.ext);
+		let codec = isAiffWav ? meta.ext : meta.codec;
+		let codecLower = codec.toLowerCase();
+
+		if (codecLower === 'dca (dts coherent acoustics)') {
+			codec = 'dts';
+			codecLower = 'dts';
+		}
+		if (codecLower === 'cue') {
+			codec = meta.referenced_ext;
+		}
+		else if (codecLower === 'mpc') {
+			codec += meta.profile_addon;
+		}
+		else if (['dts', 'ac3', 'atsc a/52'].includes(codecLower)) {
+			codec += `${meta.channel_addon} kbps`;
+			codec = codec.replace(/atsc a\/52/i, 'Dolby Digital');
+		}
+		else if (meta.encoding === 'lossy') {
+			codec += meta.lossy_addon;
+		}
+
+		return codec ? `${codec}${sample}` :
+			((this.metadb.RawPath.startsWith('3dydfy:') || this.metadb.RawPath.startsWith('fy+')) ? 'yt' : this.metadb.Path);
+	}
+
+	/**
+	 * Gets disc number, track count, and related text for the group info string.
+	 * Accounts for radio streams, multi-disc albums, and header visibility settings.
+	 * @param {boolean} radio - Whether the source is a radio stream (skips track text).
+	 * @param {string} totaldiscs - The total discs value from metadata (e.g., '2').
+	 * @param {string} discnumber - The current disc number from metadata (e.g., '1').
+	 * @returns {Object} An object with `hasDiscs` (boolean), `discNumber` (string), and `trackText` (string) properties.
+	 */
+	getGroupInfoMetaDisc(radio, totaldiscs, discnumber) {
+		let trackCount = this.sub_items.length;
+		let hasDiscs = false;
+
+		if (this.sub_items[0] instanceof PlaylistDiscHeader) {
+			trackCount = 0;
+			hasDiscs = true;
+			for (const discHeader of this.sub_items) {
+				trackCount += discHeader.sub_items.length;
+			}
+		}
+
+		const discNumber = (!plSet.show_disc_header && totaldiscs !== '1' && !!discnumber) ? ` | Disc: ${discnumber}${totaldiscs ? `/${totaldiscs}` : ''}` : '';
+		const showDiscsCount = this.grouping_handler.show_disc() && hasDiscs && (totaldiscs > 1);
+		const trackText = radio ? '' : ` | ${showDiscsCount ? `${this.sub_items.length} Discs/` : ''}${trackCount}${trackCount === 1 ? ' Track' : ' Tracks'}`;
+
+		return { hasDiscs, discNumber, trackText };
+	}
+
+	/**
+	 * Gets a string containing information about a group of audio files,
 	 * including codec, sample rate, bit depth, track count, disc number, replay gain, genre tags and duration.
-	 * @param {boolean} is_radio - If the playback source is from radio streaming.
-	 * @param {boolean} hasGenreTags - If the group has genre tags or not.
+	 * @param {boolean} radio - If the playback source is from radio streaming.
+	 * @param {boolean} hasGenre - If the group has genre tags or not.
 	 * @returns {string} The information about the group.
 	 */
-	getGroupInfoString(is_radio, hasGenreTags) {
-		const bitspersample = Number($('$info(bitspersample)', this.metadb));
-		const samplerate = Number($('$info(samplerate)', this.metadb));
-		const sample = ((bitspersample > 16 || samplerate > 44100 || grCfg.settings.playlistShowBitSampleAlways) ? $(' [$info(bitspersample)bit/]', this.metadb) + samplerate / 1000 + 'khz' : '');
-		const formatAiffWav = 'aiff' || 'wav';
-		let codec = formatAiffWav ? $('$upper($ext(%path%))', this.metadb) : $('$if2(%codec%,$ext(%path%))', this.metadb);
+	getGroupInfoString(radio, hasGenre) {
+		const albumKey = PlaylistHeader.get_album_key(this.metadb);
+		const cacheKey = `${albumKey}_${radio ? 1 : 0}_${hasGenre ? 1 : 0}`;
 
-		if (codec === 'dca (dts coherent acoustics)') {
-			codec = 'dts';
-		}
-		if (codec === 'cue') {
-			codec = $('$ext($info(referenced_file))', this.metadb);
-		}
-		else if (codec === 'mpc') {
-			codec += $('[-$info(codec_profile)]', this.metadb).replace('quality ', 'q');
-		}
-		else if (['dts', 'ac3', 'atsc a/52'].includes(codec)) {
-			codec += $("[ $replace($replace($replace($info(channel_mode), + LFE,),' front, ','/'),' rear surround channels',$if($strstr($info(channel_mode),' + LFE'),.1,.0))] %bitrate%", this.metadb) + ' kbps';
-			codec = codec.replace('atsc a/52', 'Dolby Digital');
-		}
-		else if ($('$info(encoding)', this.metadb) === 'lossy') {
-			codec += $('$info(codec_profile)', this.metadb) === 'CBR' ? $('[-%bitrate% kbps]', this.metadb) : $('[-$info(codec_profile)]', this.metadb);
-		}
-		if (codec) {
-			codec += sample;
-		}
-		else {
-			codec = (this.metadb.RawPath.startsWith('3dydfy:') || this.metadb.RawPath.startsWith('fy+')) ? 'yt' : this.metadb.Path;
+		// * Cache hit: immediate return if valid
+		if (pl.header_group_info.has(cacheKey)) {
+			return pl.header_group_info.get(cacheKey);
 		}
 
-		let track_count = this.sub_items.length;
-		let has_discs = false;
-		if (this.sub_items[0] instanceof PlaylistDiscHeader) {
-			track_count = 0;
-			has_discs = true;
-			for (const discHeader of this.sub_items) {
-				track_count += discHeader.sub_items.length;
-			}
-		}
+		// * Cache miss: compute fully
+		const meta = this.group_info_meta;
+		const showSample = meta.bitspersample > 16 || meta.samplerate > 44100 || grCfg.settings.playlistShowBitSampleAlways;
+		const sample = showSample ? ` ${meta.bitspersample ? `${meta.bitspersample}bit/` : ''}${meta.samplerate / 1000}khz` : '';
+		const codec = this.getGroupInfoMetaCodec(meta, sample);
+		const { hasDiscs, discNumber, trackText } = this.getGroupInfoMetaDisc(radio, meta.totaldiscs, meta.discnumber);
 
-		const disc_number = (!plSet.show_disc_header && $('[%totaldiscs%]', this.metadb) !== '1') ? $('[ | Disc: %discnumber%[/%totaldiscs%]]', this.metadb) : '';
-		const track_text = is_radio ? '' : ' | ' +
-			// (this.grouping_handler.show_disc() && has_discs ? this.sub_items.length + ' Discs - ' : '') +
-			(this.grouping_handler.show_disc() && has_discs && ($('[%totaldiscs%]', this.metadb) > 1) ? `${this.sub_items.length} Discs - ` : '') +
-			track_count + (track_count === 1 ? ' Track' : ' Tracks');
-		const replaygain = (this.grouping_handler.show_disc() && (!has_discs || $('[%totaldiscs%]', this.metadb) === '')) ? $('[ | %replaygain_album_gain%]', this.metadb) : '';
-		const plr_album = (plSet.show_PLR_header && this.grouping_handler.show_disc() && (!has_discs || $('[%totaldiscs%]', this.metadb) === '')) ? ` | ${this.meta_provider.get_PLR($('%replaygain_album_gain%', this.metadb), $('%replaygain_album_peak_db%', this.metadb))} LU` : '';
-		let info_text = codec + disc_number + replaygain + plr_album + track_text;
+		const showReplaygainSection = this.grouping_handler.show_disc() && (!hasDiscs || meta.totaldiscs === '');
+		const replaygain = showReplaygainSection && meta.replaygain_album_gain.includes(' dB') ? ` | ${meta.replaygain_album_gain}` : '';
 
-		if (hasGenreTags) {
-			info_text = ` | ${info_text}`;
+		const showPLR = plSet.show_PLR_header && showReplaygainSection && meta.replaygain_album_gain.includes(' dB') && meta.replaygain_album_peak_db.includes(' dB');
+		const PLR_album = showPLR ? ` | ${this.meta_provider.get_PLR(meta.replaygain_album_gain, meta.replaygain_album_peak_db)} LU` : '';
+
+		let infoText = `${codec}${discNumber}${replaygain}${PLR_album}${trackText}`;
+
+		if (hasGenre) {
+			infoText = ` | ${infoText}`;
 		}
 		if (this.get_duration()) {
-			info_text += ` | Time: ${utils.FormatDuration(this.get_duration())}`;
+			infoText += ` | Time: ${utils.FormatDuration(this.get_duration())}`;
 		}
-
 		if (plSet.show_rating_header) {
-			const albumName = $('%album%', this.metadb);
-			const albumRating = this.rating.get_album_rating().get(albumName);
-
-			if (albumRating > 0) {
-				info_text += ` | Rating: ${albumRating}`;
-			}
+			const albumRating = this.rating.get_album_rating(this.sub_items);
+			if (albumRating > 0) infoText += ` | Rating: ${albumRating}`;
 		}
 
-		// * Use custom playlist header info if pattern was defined in the config file
 		const customInfoText = $(grCfg.settings.playlistCustomHeaderInfo, this.metadb);
-		if (customInfoText !== '') {
-			return ` | ${customInfoText}`;
-		}
+		if (customInfoText !== '') return ` | ${customInfoText}`;
 
-		return info_text;
+		// * Cache it: store under key for this variation
+		pl.header_group_info.set(cacheKey, infoText);
+
+		return infoText;
 	}
 
 	/**
@@ -1306,9 +1411,9 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	 * @returns {boolean} True or false.
 	 */
 	on_mouse_lbtn_down(x, y, m) {
-		for (const h in this.hyperlinks) {
-			if (this.hyperlinks[h].trace(x - this.x, y)) {
-				this.hyperlinks[h].click();
+		for (const link of this.hyperlinks_list) {
+			if (link.trace(x - this.x, y)) {
+				link.click();
 				return true;
 			}
 		}
@@ -1327,17 +1432,18 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		let handled = false;
 		let needs_redraw = false;
 
-		for (const h in this.hyperlinks) {
-			if (this.hyperlinks[h].trace(x - this.x, y)) {
+		for (const link of this.hyperlinks_list) {
+			if (link.trace(x - this.x, y)) {
 				is_hovering = true;
-				if (this.hyperlinks[h].state !== HyperlinkStates.Hovered) {
-					this.hyperlinks[h].state = HyperlinkStates.Hovered;
+				if (link.state !== HyperlinkStates.Hovered) {
+					link.state = HyperlinkStates.Hovered;
 					needs_redraw = true;
 				}
 				handled = true;
+				break; // Only one hyperlink per position
 			}
-			else if (this.hyperlinks[h].state !== HyperlinkStates.Normal) {
-				this.hyperlinks[h].state = HyperlinkStates.Normal;
+			else if (link.state !== HyperlinkStates.Normal) {
+				link.state = HyperlinkStates.Normal;
 				needs_redraw = true;
 			}
 		}

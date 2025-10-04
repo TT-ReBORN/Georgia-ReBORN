@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-09-2025                                              * //
+// * Last change:    04-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2858,8 +2858,7 @@ class MainUI {
 	 */
 	handleKeyAction(vkey) {
 		const setRating = (action) => {
-			pl.artist_ratings.clear();
-			pl.album_ratings.clear();
+			pl.playlist.clear_cache();
 			this.clearCache('ratings');
 			const metadb = fb.GetNowPlaying();
 			const metadbList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
@@ -3166,7 +3165,7 @@ class MainUI {
 
 		this.currentRatings = {
 			artistRating: getRating.artistRating.get(grStr.artist) || 0,
-			albumRating: getRating.albumRating.get(grStr.album) || 0,
+			albumRating: getRating.albumRating || 0,
 			trackRating: getRating.trackRating || 0
 		};
 

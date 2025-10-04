@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-09-2025                                              * //
+// * Last change:    04-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -400,10 +400,7 @@ class Button {
 		grm.ui.activeMenu = true;
 
 		menu.addRadioItems(['No rating', '1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'], parseInt(rating), [0, 1, 2, 3, 4, 5], (rating) => {
-			pl.artist_ratings.clear();
-			pl.album_ratings.clear();
-			pl.track_ratings.clear();
-			grm.ui.clearCache('ratings');
+			pl.playlist.clear_cache();
 
 			for (let i = 0; i < selectedItems.Count; i++) {
 				const metadb = selectedItems[i];
