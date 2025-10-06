@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-10-2025                                              * //
+// * Last change:    06-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2188,7 +2188,7 @@ class PlaylistRating {
 	 * @param {Array<PlaylistRow|PlaylistBaseHeader>} sub_items - The sub-items (tracks/discs) for this album/header.
 	 * @returns {number} The average rating (rounded to 1 decimal), or 0 if no rated tracks.
 	 */
-	get_album_rating(sub_items = pl.playlist.playing_item.parent.sub_items) {
+	get_album_rating(sub_items = pl.playlist.cnt.sub_items) {
 		if (!plSet.show_rating_header) return 0;
 
 		const albumKey = PlaylistHeader.get_album_key(this.metadb);
