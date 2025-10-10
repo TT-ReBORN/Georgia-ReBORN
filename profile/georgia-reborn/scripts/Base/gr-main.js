@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-10-2025                                              * //
+// * Last change:    10-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -467,7 +467,7 @@ class MainUI {
 	 * @param {number} [alpha] - The alpha to apply to the album art image.
 	 */
 	drawAlbumArt(gr, alpha) {
-		if (!fb.IsPlaying && !grSet.panelBrowseMode || !this.albumArt && !this.albumArtScaled ||
+		if (!fb.IsPlaying && !grSet.panelBrowseMode || !this.albumArt || !this.albumArtScaled ||
 			!this.albumArtDisplayed() || this.displayLibrarySplit()) {
 			return;
 		}
