@@ -892,7 +892,7 @@ class LibPopulate {
 			this.sortIfNeeded(handleList);
 
 			if (grm.ui.displayLibrarySplit()) { // * Drag and drop action from Library to Playlist in split layout
-				grm.ui.librarySplitDragDrop();
+				grm.ui.librarySplitDragDrop(handleList);
 			} else {
 				fb.DoDragDrop(0, handleList, handleList.Count ? 1 | 4 : 0);
 			}

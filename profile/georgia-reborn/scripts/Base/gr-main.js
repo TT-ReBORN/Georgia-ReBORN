@@ -4530,6 +4530,7 @@ class MainUI {
 			setTimeout(() => {
 				lib.panel.imgView = grSet.libraryLayout === 'normal' && grSet.libraryLayoutFullPreset ? libSet.albumArtShow = false : libSet.albumArtShow;
 				lib.men.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
+				if (!lib.panel.imgView && lib.browser.visible) lib.browser.browserHide();
 			}, 1);
 		};
 
@@ -4716,20 +4717,22 @@ class MainUI {
 
 	/**
 	 * Drags and drops items from Library to Playlist in split layout.
+	 * @param {FbMetadbHandleList} handleList - The handle list of the library items.
 	 */
-	librarySplitDragDrop() {
-		const handleList = lib.pop.getHandleList('newItems');
+	librarySplitDragDrop(handleList) {
 		lib.pop.sortIfNeeded(handleList);
 		fb.DoDragDrop(0, handleList, handleList.Count ? 1 | 4 : 0);
 
-		if (plman.IsPlaylistLocked(plman.ActivePlaylist) || !pl.playlist.selection_handler.last_hover_row) {
+		const itemCount = plman.PlaylistItemCount(plman.ActivePlaylist);
+
+		if (plman.IsPlaylistLocked(plman.ActivePlaylist) || itemCount !== 0 && !pl.playlist.selection_handler.last_hover_row) {
 			return; // Do nothing, it's locked, an auto-playlist or no pl selection
 		}
 
-		plman.ClearPlaylistSelection(plman.ActivePlaylist);
-
-		const dropIndex = pl.playlist.selection_handler.last_hover_row.idx +
+		const dropIndex = itemCount === 0 ? 0 : pl.playlist.selection_handler.last_hover_row.idx +
 			(pl.playlist.selection_handler.last_hover_row.is_drop_bottom_selected ? 1 : 0);
+
+		plman.ClearPlaylistSelection(plman.ActivePlaylist);
 
 		setTimeout(() => {
 			plman.RemovePlaylistSelection(plman.ActivePlaylist);
