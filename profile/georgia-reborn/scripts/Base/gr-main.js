@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-10-2025                                              * //
+// * Last change:    13-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4728,7 +4728,8 @@ class MainUI {
 
 		plman.ClearPlaylistSelection(plman.ActivePlaylist);
 
-		const dropIndex = pl.playlist.selection_handler.last_hover_row.idx;
+		const dropIndex = pl.playlist.selection_handler.last_hover_row.idx +
+			(pl.playlist.selection_handler.last_hover_row.is_drop_bottom_selected ? 1 : 0);
 
 		setTimeout(() => {
 			plman.RemovePlaylistSelection(plman.ActivePlaylist);
