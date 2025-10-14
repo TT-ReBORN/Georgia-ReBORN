@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-10-2025                                              * //
+// * Last change:    14-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4530,7 +4530,6 @@ class MainUI {
 			setTimeout(() => {
 				lib.panel.imgView = grSet.libraryLayout === 'normal' && grSet.libraryLayoutFullPreset ? libSet.albumArtShow = false : libSet.albumArtShow;
 				lib.men.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
-				if (!lib.panel.imgView && lib.browser.visible) lib.browser.browserHide();
 			}, 1);
 		};
 
