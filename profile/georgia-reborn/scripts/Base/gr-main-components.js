@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-09-2025                                              * //
+// * Last change:    16-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -413,40 +413,47 @@ class BackgroundImage {
 
 		this.handleBgImageIndex(panel, 'getIndexes');
 
+		const displayPanel = {
+			playlist: grm.ui.displayPlaylist,
+			library: grm.ui.displayLibrary,
+			lyrics: grm.ui.displayLyrics
+		};
+
 		const panelSize = {
 			playlist: [pl.playlist.x - SCALE(1), pl.playlist.y - pl.plman.h, pl.playlist.w + SCALE(2), pl.playlist.h + pl.plman.h * 2],
 			library:  [lib.ui.x, lib.ui.y, lib.ui.w, lib.ui.h],
 			lyrics:   [0, grm.ui.topMenuHeight, grm.ui.ww, grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight]
 		};
 
-		for (const p of ['playlist', 'library', 'lyrics']) { // Process specific `panel` or all if `panel` argument is false or image unavailable
-			if (panel === p || !panel || this[`${p}BgImg`] == null) {
-				this.getBgImage(p).then(img => {
-					this[`${p}BgImg`] = img;
-					this.handleBgImageIndex(p, 'setIndexes');
-					window.RepaintRect(...panelSize[p]);
-				});
-			}
+		const panelToProcess = panel ? [panel] : ['playlist', 'library', 'lyrics'].filter(p => grSet[`${p}BgImg`]);
+
+		for (const p of panelToProcess) {
+			this.getBgImage(p).then(img => {
+				this[`${p}BgImg`] = img;
+				this.handleBgImageIndex(p, 'setIndexes');
+				if (displayPanel[p]) window.RepaintRect(...panelSize[p]);
+			});
 		}
 	}
 
 	/**
 	 * Initializes or clears the cycling of background images.
-	 * @param {string} [clear] - The panel ('playlist', 'library', 'lyrics') to clear the background image intervals.
 	 */
-	initBgImageCycle(clear) {
+	initBgImageCycle() {
 		for (const panel of ['playlist', 'library', 'lyrics']) {
+			clearInterval(this.imgCycleIntervals[panel]);
+			this.imgCycleIntervals[panel] = null;
+
+			const enabled = grSet[`${panel}BgImg`];
 			const cycle = grSet[`${panel}BgImgCycle`];
 			const cycleTime = grSet[`${panel}BgImgCycleTime`];
 
-			clearInterval(this.imgCycleIntervals[panel]);
-
-			if (!cycle && panel !== clear) continue;
+			if (!enabled || !cycle) continue;
 
 			DebugLog(`\n>>> initImage => initImgCycle => Panel: ${CapitalizeString(panel)} - Cycle time: ${cycleTime} seconds <<<\n`);
-			this.imgCycleIntervals[panel] = cycle ? setInterval(() => {
+			this.imgCycleIntervals[panel] = setInterval(() => {
 				this.cycleBgImage(panel, 1);
-			}, cycleTime * 1000) : null;
+			}, cycleTime * 1000);
 		}
 	}
 
