@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-07-2025                                              * //
+// * Last change:    16-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1063,7 +1063,6 @@ class Lyrics {
 		this.y = y;
 		this.w = w;
 		this.h = h;
-		this.repaintRect();
 	}
 	// #endregion
 }
