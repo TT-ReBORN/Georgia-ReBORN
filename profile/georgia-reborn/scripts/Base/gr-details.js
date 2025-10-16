@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    29-09-2025                                              * //
+// * Last change:    16-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -306,18 +306,11 @@ class Details {
 			this.setDiscArtRotation();
 		}
 
-		const drawDiscArtImage = () => {
-			if (!grSet.filterAlbumArt && grm.ui.discArtImageDisplayed) return;
-			const discArtImg = this.discArtArray[this.discArtRotationIndex] || this.discArtRotation;
-			this.discArtShadowImg && gr.DrawImage(this.discArtShadowImg, -this.discArtShadow, grm.ui.albumArtSize.y - this.discArtShadow, this.discArtShadowImg.Width, this.discArtShadowImg.Height, 0, 0, this.discArtShadowImg.Width, this.discArtShadowImg.Height);
-			gr.DrawImage(discArtImg, this.discArtSize.x, this.discArtSize.y, this.discArtSize.w, this.discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);
-		};
-
 		const applyOpacity = !grm.ui.displayLyrics && grm.ui.albumArtSize.w < grm.ui.ww * 0.66;
 		const albumArtOpacity = applyOpacity ? grSet.detailsAlbumArtOpacity : 255;
 
 		if (!grSet.discArtOnTop || grm.ui.displayLyrics) {
-			drawDiscArtImage();
+			this.drawDiscArtImage(gr);
 			if (this.discArtRotation && grSet.detailsAlbumArtDiscAreaOpacity !== 255) {
 				const discArtOpacity = applyOpacity ? grSet.detailsAlbumArtDiscAreaOpacity : 255;
 				this.createDiscArtAlbumArtMask(gr, grm.ui.albumArtSize.x, grm.ui.albumArtSize.y, grm.ui.albumArtSize.w, grm.ui.albumArtSize.h, 0, 0, grm.ui.albumArtScaled.Width, grm.ui.albumArtScaled.Height, 0, discArtOpacity);
@@ -326,10 +319,23 @@ class Details {
 			}
 		} else { // * Draw discArt on top of front cover
 			grm.ui.drawAlbumArt(gr, albumArtOpacity);
-			drawDiscArtImage();
+			this.drawDiscArtImage(gr);
 		}
 
 		grm.utils.profile(false, 'print', 'on_paint -> disc art');
+	}
+
+	/**
+	 * Draws the disc art image and its shadow (if applicable).
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	drawDiscArtImage(gr) {
+		if (!grSet.filterAlbumArt && grm.ui.discArtImageDisplayed) return;
+
+		const discArtImg = this.discArtArray[this.discArtRotationIndex] || this.discArtRotation;
+		this.discArtShadowImg && gr.DrawImage(this.discArtShadowImg, -this.discArtShadow, grm.ui.albumArtSize.y - this.discArtShadow, this.discArtShadowImg.Width, this.discArtShadowImg.Height, 0, 0, this.discArtShadowImg.Width, this.discArtShadowImg.Height);
+
+		gr.DrawImage(discArtImg, this.discArtSize.x, this.discArtSize.y, this.discArtSize.w, this.discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);
 	}
 
 	/**
@@ -1794,6 +1800,14 @@ class Details {
 			this.discArtSize.w - (discArtLeftEdge - this.discArtSize.x), this.discArtSize.h,
 			!grSet.discArtOnTop && !grm.ui.displayLyrics
 		);
+	}
+
+	/**
+	 * Repaints the metadata grid area to only cover the necessary region.
+	 */
+	repaintMetadataGrid() {
+		if (!grm.ui.displayDetails) return;
+		window.RepaintRect(0, grm.ui.topMenuHeight, Math.max(grm.ui.albumArtSize.x, SCALE(40)), grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight);
 	}
 
 	/**

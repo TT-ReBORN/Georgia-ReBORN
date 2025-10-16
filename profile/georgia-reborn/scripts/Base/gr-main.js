@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-10-2025                                              * //
+// * Last change:    16-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2445,7 +2445,7 @@ class MainUI {
 		if (state || fb.PlaybackLength < 0) {
 			this.clearTimer('seekbar');
 			grm.details.clearTimer('discArt');
-			window.RepaintRect(0, this.topMenuHeight, Math.max(this.albumArtSize.x, SCALE(40)), this.wh - this.topMenuHeight - this.lowerBarHeight);
+			grm.details.repaintMetadataGrid();
 		}
 		else { // Unpausing
 			this.clearTimer('seekbar'); // Clear to avoid multiple seekbarTimer which can happen depending on the playback state when theme is loaded
