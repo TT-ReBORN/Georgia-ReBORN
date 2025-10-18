@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-09-2025                                              * //
+// * Last change:    18-10-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -66,10 +66,9 @@ function on_metadb_changed(handle_list, fromhook) {
 
 	// * Not called manually from on_playback_new_track
 	if (handle_list) {
-		if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork || !grm.ui.displayPlaylist) {
-			CallLog('Playlist => on_metadb_changed');
-			pl.call && pl.call.on_metadb_changed(handle_list, fromhook);
-		}
+		CallLog('Playlist => on_metadb_changed');
+		pl.call && pl.call.on_metadb_changed(handle_list, fromhook); // Always process for Playlist: keeps caches fresh even when hidden
+
 		if (grm.ui.displayLibrary) {
 			CallLog('Library => on_metadb_changed');
 			lib.call && lib.call.on_metadb_changed(handle_list, fromhook);
@@ -96,10 +95,8 @@ function on_playback_new_track(metadb) {
 	DebugLog('Playback => on_playback_new_track()');
 
 	grm.ui.handlePlaybackNewTrack(metadb);
+	pl.call.on_playback_new_track(metadb); // Always process for Playlist: updates now-playing state even when hidden
 
-	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork || !grm.ui.displayPlaylist) {
-		pl.call.on_playback_new_track(metadb);
-	}
 	if (grm.ui.displayLibrary) {
 		lib.call.on_playback_new_track(metadb);
 	}
