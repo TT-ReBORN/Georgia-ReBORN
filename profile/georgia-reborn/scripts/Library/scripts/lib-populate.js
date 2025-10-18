@@ -953,6 +953,11 @@ class LibPopulate {
 			item_y = Math.round(lib.ui.y + lib.ui.row.h * i + lib.panel.search.h - lib.sbar.delta);
 			if (item_y < lib.panel.filter.y) {
 				this.rows++;
+				if (this.rowStripes) {
+					const width = lib.sbar.w && libSet.sbarShow !== 0 ? lib.ui.w - SCALE(42) : lib.ui.w + 1;
+					if (i % 2 == 0) gr.FillSolidRect(lib.ui.x, item_y + 1, width, lib.ui.row.h - 2, colRowStripes /*ui.col.bg1*/);
+					else gr.FillSolidRect(lib.ui.x, item_y, width, lib.ui.row.h, lib.ui.col.bg2);
+				}
 				if ((item.sel || this.highlight.nowPlaying) && (lib.ui.col.bgSel != 0 || grCol.primary != 0)) {
 					const icon_w = !this.inlineRoot || i ? lib.ui.icon.w : 0;
 					item_x = Math.round(lib.ui.x + this.treeIndent * level + lib.ui.sz.margin) + icon_w;
@@ -961,7 +966,7 @@ class LibPopulate {
 					sel_w = Math.min(item.name_w + lib.ui.sz.sel * 2, lib.ui.x + lib.panel.tree.w - sel_x - item.count_w - 1);
 					if (this.fullLineSelection) {
 						sel_x = lib.ui.x;
-						sel_w = lib.sbar.w ? lib.ui.w - SCALE(42) : lib.ui.w + 1;
+						sel_w = lib.sbar.w && libSet.sbarShow !== 0 ? lib.ui.w - SCALE(42) : lib.ui.w + 1;
 					}
 					if (!nowp_c.includes(i)) {
 						if (this.fullLineSelection && this.sbarShow === 1 && lib.ui.sbar.type === 2 && (this.highlight.row || !this.fullLineSelection)) {
@@ -997,10 +1002,6 @@ class LibPopulate {
 							gr.FillSolidRect(lib.ui.x, item_y, lib.ui.sz.sideMarker, lib.ui.row.h, lib.ui.col.sideMarker);
 						}
 					}
-				}
-				if (this.rowStripes) {
-					if (i % 2 == 0) gr.FillSolidRect(lib.ui.x, item_y + 1, lib.panel.tree.stripe.w, lib.ui.row.h - 2, colRowStripes /*ui.col.bg1*/);
-					else gr.FillSolidRect(lib.ui.x, item_y, lib.panel.tree.stripe.w, lib.ui.row.h, lib.ui.col.bg2);
 				}
 			}
 		}
@@ -1090,7 +1091,7 @@ class LibPopulate {
 
 				!lib.panel.colMarker ? gr.GdiDrawText(nm[i], lib.ui.font.main, txt_c, item_x, item_y, w, lib.ui.row.h, lib.panel.lc) : this.cusCol(gr, nm[i], item, item_x, item_y, w, lib.ui.row.h, type, np, lib.ui.font.main, lib.ui.font.mainEllipsisSpace, 'text');
 				if (this.countsRight || this.statisticsShow) {
-					const scrollbar = lib.sbar.w === SCALE(12) && lib.sbar.scrollable_lines > 0;
+					const scrollbar = libSet.sbarShow !== 0 && lib.sbar.w === SCALE(12) && lib.sbar.scrollable_lines > 0;
 					const x = lib.panel.tree.w - item_x + (grSet.libraryLayout === 'split' ? 0 : lib.ui.x) - (scrollbar ? SCALE(24) : 0);
 					gr.GdiDrawText(!this.statisticsShow ? item.count : item.statistics, !item.root || !this.label ?  lib.ui.font.small : lib.ui.font.label, txt_c, item_x, item_y, x, lib.ui.row.h, lib.panel.rc);
 				}
