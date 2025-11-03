@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-10-2025                                              * //
+// * Last change:    03-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -504,7 +504,7 @@ class Button {
 	 * Handles the AddTracks button action in the lower bar.
 	 */
 	lowerAddTracks() {
-		const addNowPlaying = () => new FbMetadbHandleList([fb.GetNowPlaying()]);
+		const addNowPlaying = () => new FbMetadbHandleList(fb.IsPlaying ? [fb.GetNowPlaying()] : null);
 		const addTracks = grSet.addTracksButtonAction === 'nowplaying' ? addNowPlaying() : plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 		const addTrackPl = plman.FindOrCreatePlaylist(`${grCfg.themeControls.addTracksPlaylist}`, true);
 		const initialActivePlaylist = plman.ActivePlaylist;
