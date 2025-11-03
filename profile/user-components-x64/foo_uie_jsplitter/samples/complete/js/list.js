@@ -20,7 +20,7 @@ function _list(mode, x, y, w, h) {
 			this.update();
 		}
 	}
-	
+
 	this.size = () => {
 		this.index = 0;
 		this.offset = 0;
@@ -30,7 +30,7 @@ function _list(mode, x, y, w, h) {
 		this.up_btn.y = this.y;
 		this.down_btn.y = this.y + this.h - _scale(12);
 	}
-	
+
 	this.paint = (gr) => {
 		if (this.mode === 'lastfm_info' && !lastfm.api_key.value.length) {
 			gr.GdiDrawText('No API key found. Add it using R. Click.', panel.fonts.normal, panel.colours.text, this.x, this.y + _scale(12), this.w, panel.row_height, LEFT);
@@ -78,7 +78,7 @@ function _list(mode, x, y, w, h) {
 		this.up_btn.paint(gr, panel.colours.text);
 		this.down_btn.paint(gr, panel.colours.text);
 	}
-	
+
 	this.metadb_changed = () => {
 		let temp_artist;
 		switch (true) {
@@ -115,12 +115,12 @@ function _list(mode, x, y, w, h) {
 			break;
 		}
 	}
-	
+
 	this.playback_new_track = () => {
 		panel.item_focus_change();
 		this.time_elapsed = 0;
 	}
-	
+
 	this.playback_time = () => {
 		if (this.mode == 'lastfm_info') {
 			this.time_elapsed++;
@@ -129,11 +129,11 @@ function _list(mode, x, y, w, h) {
 			}
 		}
 	}
-	
+
 	this.trace = (x, y) => {
 		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
 	}
-	
+
 	this.wheel = (s) => {
 		if (this.trace(this.mx, this.my)) {
 			if (this.items > this.rows) {
@@ -154,7 +154,7 @@ function _list(mode, x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.move = (x, y) => {
 		this.mx = x;
 		this.my = y;
@@ -196,7 +196,7 @@ function _list(mode, x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.lbtn_up = (x, y) => {
 		if (this.trace(x, y)) {
 			switch (true) {
@@ -223,7 +223,7 @@ function _list(mode, x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.rbtn_up = (x, y) => {
 		switch (this.mode) {
 		case 'autoplaylists':
@@ -307,7 +307,7 @@ function _list(mode, x, y, w, h) {
 			panel.m.AppendMenuSeparator();
 		}
 	}
-	
+
 	this.rbtn_up_done = (idx) => {
 		switch (idx) {
 		case 1000:
@@ -409,7 +409,7 @@ function _list(mode, x, y, w, h) {
 			break;
 		}
 	}
-	
+
 	this.key_down = (k) => {
 		switch (k) {
 		case VK_UP:
@@ -422,7 +422,7 @@ function _list(mode, x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.update = () => {
 		this.data = [];
 		this.spacer_w = _textWidth('0000', panel.fonts.normal);
@@ -514,7 +514,6 @@ function _list(mode, x, y, w, h) {
 			if (this.properties.mode.value == 0) {
 				this.mb_data = [];
 				this.mb_offset = 0;
-				this.attempt = 1;
 				this.filename = _artistFolder(this.artist) + 'musicbrainz.releases.' + this.mb_id + '.json';
 				if (_isFile(this.filename)) {
 					let data = _(_jsonParseFile(this.filename))
@@ -618,108 +617,7 @@ function _list(mode, x, y, w, h) {
 		this.index = 0;
 		window.Repaint();
 	}
-	
-	this.get = () => {
-		let url;
-		const f = this.filename;
-		switch (this.mode) {
-		case 'lastfm_info':
-			switch (this.properties.mode.value) {
-			case 0:
-				if (!_tagged(this.artist)) {
-					return;
-				}
-				url = lastfm.get_base_url() + '&limit=100&method=artist.getSimilar&artist=' + encodeURIComponent(this.artist);
-				break;
-			case 1:
-				url = lastfm.get_base_url() + '&limit=100&method=' + this.methods[this.properties.method.value].method + '&period=' + this.periods[this.properties.period.value].period + '&user=' + lastfm.username;
-				break;
-			case 2:
-				url = lastfm.get_base_url() + '&limit=100&method=user.getRecentTracks&user=' + lastfm.username;
-				break;
-			}
-			break;
-		case 'musicbrainz':
-			if (!_isUUID(this.mb_id)) {
-				return console.log(N, 'Invalid/missing MBID');
-			}
-			if (this.properties.mode.value == 0) {
-				url = 'https://musicbrainz.org/ws/2/release-group?fmt=json&limit=100&offset=' + this.mb_offset + '&artist=' + this.mb_id;
-			} else {
-				url = 'https://musicbrainz.org/ws/2/artist/' + this.mb_id + '?fmt=json&inc=url-rels';
-			}
-			break;
-		default:
-			return;
-		}
-		this.xmlhttp.open('GET', url, true);
-		this.xmlhttp.setRequestHeader('User-Agent', this.ua);
-		this.xmlhttp.setRequestHeader('If-Modified-Since', 'Thu, 01 Jan 1970 00:00:00 GMT');
-		this.xmlhttp.send();
-		this.xmlhttp.onreadystatechange = () => {
-			if (this.xmlhttp.readyState == 4) {
-				switch (true) {
-				case this.xmlhttp.status == 200:
-					this.success(f);
-					break;
-				case this.xmlhttp.status == 503 && this.mode == 'musicbrainz' && this.attempt < 5:
-					window.SetTimeout(this.mb_retry, 1500);
-					break;
-				default:
-					console.log(N, 'HTTP error:', this.xmlhttp.status);
-					this.xmlhttp.responseText && console.log(this.xmlhttp.responseText);
-					break;
-				}
-			}
-		}
-	}
-	
-	this.success = (f) => {
-		let data;
-		switch (true) {
-		case this.mode == 'musicbrainz' && this.properties.mode.value == 0: // releases
-			data = _jsonParse(this.xmlhttp.responseText);
-			const max_offset = Math.min(500, data['release-group-count'] || 0) - 100;
-			let rg = data['release-groups'] || [];
-			if (rg.length) {
-				this.mb_data = [...this.mb_data, ...rg];
-			}
-			if (this.mb_offset < max_offset) {
-				this.mb_offset += 100;
-				this.get();
-			} else {
-				if (_save(f, JSON.stringify(this.mb_data))) {
-					this.reset();
-				}
-			}
-			break;
-		case this.mode == 'musicbrainz': // links
-			if (_save(f, this.xmlhttp.responseText)) {
-				this.reset();
-			}
-			break;
-		case this.mode == 'lastfm_info':
-			data = _jsonParse(this.xmlhttp.responseText);
-			if (data.error) {
-				return console.log(N, data.message);
-			}
-			if (this.properties.mode.value == 0) {
-				// last.fm playing up again so don't overwrite cached data with nothing
-				if (_.get(data, 'similarartists.artist', []).length == 0) {
-					return;
-				}
-				if (_save(f, this.xmlhttp.responseText)) {
-					this.reset();
-				}
-			} else {
-				if (_save(f, this.xmlhttp.responseText)) {
-					this.update();
-				}
-			}
-			break;
-		}
-	}
-	
+
 	this.header_text = () => {
 		switch (this.mode) {
 		case 'autoplaylists':
@@ -742,14 +640,19 @@ function _list(mode, x, y, w, h) {
 			return 'Queue Viewer';
 		}
 	}
-	
+
 	this.reset = () => {
 		this.items = 0;
 		this.data = [];
 		this.artist = '';
-		panel.item_focus_change();
+
+		if (this.mode == 'lastfm_info' && this.properties.mode.value > 0) {
+			this.update();
+		} else {
+			panel.item_focus_change();
+		}
 	}
-	
+
 	this.init = () => {
 		switch (this.mode) {
 		case 'autoplaylists':
@@ -757,11 +660,11 @@ function _list(mode, x, y, w, h) {
 				_save(this.filename, JSON.stringify(this.data, this.replacer));
 				this.update();
 			}
-			
+
 			this.replacer = (key, value) => {
 				return key == 'width' ? undefined : value;
 			}
-			
+
 			this.add = () => {
 				const new_name = utils.InputBox(window.ID, 'Enter autoplaylist name', window.ScriptInfo.Name);
 				if (!new_name.length) {
@@ -781,7 +684,7 @@ function _list(mode, x, y, w, h) {
 				});
 				this.edit_done(this.data.length - 1);
 			}
-			
+
 			this.edit = (x, y) => {
 				const z = this.index;
 				_tt('');
@@ -845,12 +748,12 @@ function _list(mode, x, y, w, h) {
 					break;
 				}
 			}
-			
+
 			this.edit_done = (z) => {
 				this.run_query(this.data[z].name, this.data[z].query, this.data[z].sort, this.data[z].forced);
 				this.save();
 			}
-			
+
 			this.run_query = (n, q, s, f) => {
 				let i = 0;
 				while (i < plman.PlaylistCount) {
@@ -867,18 +770,65 @@ function _list(mode, x, y, w, h) {
 					fb.ShowPopupMessage(`${e}`);
 				}
 			}
-			
+
 			_createFolder(folders.data);
 			this.deleted_items = [];
 			this.filename = folders.data + 'autoplaylists.json';
 			this.update();
 			break;
 		case 'lastfm_info':
+			this.get = function () {
+				if (lastfm.api_key.value.length == 0)
+					return;
+
+				let url;
+
+				switch (this.properties.mode.value) {
+				case 0:
+					if (!_tagged(this.artist)) {
+						return;
+					}
+					url = lastfm.get_base_url() + '&limit=100&method=artist.getSimilar&artist=' + encodeURIComponent(this.artist);
+					break;
+				case 1:
+					url = lastfm.get_base_url() + '&limit=100&method=' + this.methods[this.properties.method.value].method + '&period=' + this.periods[this.properties.period.value].period + '&user=' + lastfm.username;
+					break;
+				case 2:
+					url = lastfm.get_base_url() + '&limit=100&method=user.getRecentTracks&user=' + lastfm.username;
+					break;
+				}
+
+				var task_id = utils.HTTPRequestAsync(0, url, lastfm.ua);
+				this.filenames[task_id] = this.filename;
+			}
+
+			this.http_request_done = function (task_id, success, response_text) {
+				var f = this.filenames[task_id];
+
+				if (!f)
+					return;
+
+				if (!success) {
+					console.log(N, response_text);
+					return;
+				}
+
+				var data = _jsonParse(response_text);
+
+				if (data.error) {
+					console.log(N, data.message);
+					return;
+				}
+
+				if (_save(f, response_text)) {
+					this.reset();
+				}
+			}
+
 			_createFolder(folders.data);
 			_createFolder(folders.artists);
 			_createFolder(folders.lastfm);
-			this.time_elapsed = 0;
-			this.ua = lastfm.ua;
+
 			this.methods = [{
 					method : 'user.getTopArtists',
 					json : 'topartists.artist',
@@ -893,6 +843,7 @@ function _list(mode, x, y, w, h) {
 					display : 'track'
 				}
 			];
+
 			this.periods = [{
 					period : 'overall',
 					display : 'overall'
@@ -913,6 +864,10 @@ function _list(mode, x, y, w, h) {
 					display : '12 month'
 				}
 			];
+
+			this.time_elapsed = 0;
+			this.filenames = {};
+
 			this.properties = {
 				mode : new _p('2K3.LIST.LASTFM.MODE', 0), // 0 similar artists 1 charts
 				method : new _p('2K3.LIST.LASTFM.CHARTS.METHOD', 0),
@@ -920,24 +875,67 @@ function _list(mode, x, y, w, h) {
 				colour : new _p('2K3.LIST.LASTFM.CHARTS.BAR.COLOUR', _RGB(60, 60, 60)),
 				link : new _p('2K3.LIST.LASTFM.LINK', 0) // 0 last.fm website 1 autoplaylist
 			};
+
 			if (this.properties.mode.value > 0) {
 				this.update();
 			}
+
 			break;
 		case 'musicbrainz':
-			this.mb_retry = () => {
-				console.log(N, 'Retrying...');
-				this.attempt++;
-				this.get();
+			this.get = function () {
+				if (this.properties.mode.value == 0) {
+					var url = 'https://musicbrainz.org/ws/2/release-group?fmt=json&limit=100&offset=' + this.mb_offset + '&artist=' + this.mb_id;
+				} else {
+					var url = 'https://musicbrainz.org/ws/2/artist/' + this.mb_id + '?fmt=json&inc=url-rels';
+				}
+
+				var task_id = utils.HTTPRequestAsync(0, url, 'spider_monkey_panel_musicbrainz');
+				this.filenames[task_id] = this.filename;
 			}
-			
-			_createFolder(folders.data);
-			_createFolder(folders.artists);
-			this.ua = 'foo_jscript_panel_musicbrainz +https://github.com/marc2k3';
+
+			this.http_request_done = function (id, success, response_text) {
+				var f = this.filenames[id];
+
+				if (!f)
+					return;
+
+				if (!success) {
+					console.log(N, response_text);
+					return;
+				}
+
+				if (this.properties.mode.value == 0) {
+					var data = _jsonParse(response_text);
+					var max_offset = Math.min(500, data['release-group-count'] || 0) - 100;
+					var rg = data['release-groups'] || [];
+
+					if (rg.length) {
+						Array.prototype.push.apply(this.mb_data, rg);
+					}
+
+					if (this.mb_offset < max_offset) {
+						this.mb_offset += 100;
+						this.get();
+					} else {
+						if (_save(f, JSON.stringify(this.mb_data))) {
+							this.reset();
+						}
+					}
+				} else {
+					if (_save(f, response_text)) {
+						this.reset();
+					}
+				}
+			}
+
+			this.filenames = {};
 			this.mb_id = '';
 			this.properties = {
 				mode : new _p('2K3.LIST.MUSICBRAINZ.MODE', 0) // 0 releases 1 links
 			};
+
+			_createFolder(folders.data);
+			_createFolder(folders.artists);
 			break;
 		case 'properties':
 			this.add_meta = (f) => {
@@ -993,7 +991,7 @@ function _list(mode, x, y, w, h) {
 					this.add();
 				}
 			}
-			
+
 			this.add_location = () => {
 				let names = ['FILE NAME', 'FOLDER NAME', 'FILE PATH', 'SUBSONG INDEX', 'FILE SIZE', 'LAST MODIFIED'];
 				let values = [panel.tf('%filename_ext%'), panel.tf('$directory_path(%path%)'), this.filename, panel.metadb.SubSong, panel.tf('[%filesize_natural%]'), panel.tf('[%last_modified%]')];
@@ -1007,7 +1005,7 @@ function _list(mode, x, y, w, h) {
 				}
 				this.add();
 			}
-			
+
 			this.add_tech = (f) => {
 				const duration = utils.FormatDuration(Math.max(0, panel.metadb.Length));
 				const samples = _formatNumber(panel.tf('%length_samples%'), ' ');
@@ -1029,27 +1027,27 @@ function _list(mode, x, y, w, h) {
 				this.data = [...this.data, ...(_.orderBy(tmp, 'name'))];
 				this.add();
 			}
-			
+
 			this.add_custom = () => {
 				this.add(this.custom_fields);
 				this.add();
 			}
-			
+
 			this.add_playcount = () => {
 				this.add(['PLAY_COUNT', 'FIRST_PLAYED', 'LAST_PLAYED', 'ADDED', 'RATING']);
 				this.add();
 			}
-			
+
 			this.add_stats = () => {
 				this.add(['SMP_PLAYCOUNT', 'SMP_LOVED', 'SMP_FIRST_PLAYED', 'SMP_LAST_PLAYED', 'SMP_RATING']);
 				this.add();
 			}
-			
+
 			this.add_rg = () => {
 				this.add(['REPLAYGAIN_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_PEAK', 'REPLAYGAIN_TRACK_GAIN', 'REPLAYGAIN_TRACK_PEAK']);
 				this.add();
 			}
-			
+
 			this.add = (names) => {
 				if (names) {
 					this.data = [...this.data, ...(_.map(names, (item) => ({
@@ -1061,7 +1059,7 @@ function _list(mode, x, y, w, h) {
 					this.data.push({name : '', value : '', url : ''});
 				}
 			}
-			
+
 			this.properties = {
 				meta : new _p('2K3.LIST.PROPERTIES.META', true),
 				location : new _p('2K3.LIST.PROPERTIES.LOCATION', true),
@@ -1070,7 +1068,7 @@ function _list(mode, x, y, w, h) {
 				stats: new _p('2K3.LIST.PROPERTIES.STATS', true),
 				rg : new _p('2K3.LIST.PROPERTIES.RG', true)
 			};
-			
+
 			this.foo_playcount = _cc('foo_playcount');
 			break;
 		case 'queue_viewer':
@@ -1082,7 +1080,7 @@ function _list(mode, x, y, w, h) {
 			break;
 		}
 	}
-	
+
 	panel.list_objects.push(this);
 	this.mode = mode;
 	this.x = x;
@@ -1100,6 +1098,5 @@ function _list(mode, x, y, w, h) {
 	this.filename = '';
 	this.up_btn = new _sb(chars.up, this.x, this.y, _scale(12), _scale(12), () => { return this.offset > 0; }, () => { this.wheel(1); });
 	this.down_btn = new _sb(chars.down, this.x, this.y, _scale(12), _scale(12), () => { return this.offset < this.items - this.rows; }, () => { this.wheel(-1); });
-	this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
 	this.init();
 }

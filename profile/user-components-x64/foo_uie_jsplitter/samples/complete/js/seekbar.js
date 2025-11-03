@@ -4,16 +4,16 @@ function _seekbar(x, y, w, h) {
 	this.playback_seek = () => {
 		window.RepaintRect(this.x - _scale(75), this.y - _scale(10), this.w + _scale(150), this.h + _scale(20));
 	}
-	
+
 	this.playback_stop = () => {
 		this.playback_seek();
 	}
-	
+
 	this.trace = (x, y) => {
 		const m = this.drag ? 200 : 0;
 		return x > this.x - m && x < this.x + this.w + (m * 2) && y > this.y - m && y < this.y + this.h + (m * 2);
 	}
-	
+
 	this.wheel = (s) => {
 		if (this.trace(this.mx, this.my)) {
 			switch (true) {
@@ -36,7 +36,7 @@ function _seekbar(x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.move = (x, y) => {
 		this.mx = x;
 		this.my = y;
@@ -60,7 +60,7 @@ function _seekbar(x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.lbtn_down = (x, y) => {
 		if (this.trace(x, y)) {
 			if (fb.IsPlaying && fb.PlaybackLength > 0) {
@@ -71,7 +71,7 @@ function _seekbar(x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.lbtn_up = (x, y) => {
 		if (this.trace(x, y)) {
 			if (this.drag) {
@@ -83,17 +83,17 @@ function _seekbar(x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.pos = () => {
 		return Math.ceil(this.w * (this.drag ? this.drag_seek : fb.PlaybackTime / fb.PlaybackLength));
 	}
-	
+
 	this.interval_func = () => {
 		if (fb.IsPlaying && !fb.IsPaused && fb.PlaybackLength > 0) {
 			this.playback_seek();
 		}
 	};
-	
+
 	this.x = x;
 	this.y = y;
 	this.w = w;

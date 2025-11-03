@@ -641,7 +641,7 @@ function on_download_file_done(path, success, error_text) { }
  * Called when {@link fb.AddLocationsAsync} thread is finished
  * 
  * @memberof module:Callbacks
- * @param {string} task_id
+ * @param {number} task_id
  * @param {boolean} handles
  * 
  * @example
@@ -657,3 +657,15 @@ function on_download_file_done(path, success, error_text) { }
  * }
  */
 function on_locations_added(task_id, handles) { }
+
+/**
+ * Called when {@link utils.HTTPRequestAsync} request is finished
+ * 
+ * @memberof module:Callbacks
+ * @param {number} task_id task id returned by {@link utils.HTTPRequestAsync}
+ * @param {boolean} success 
+ * @param {string} response_text
+ * @param {string} status HTTP response code
+ * @param {string} content_type 'Content-Type' HTTP response header
+ */
+function on_http_request_done(task_id, success, response_text, status, content_type) { }

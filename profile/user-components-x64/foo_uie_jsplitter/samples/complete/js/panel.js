@@ -14,7 +14,7 @@ function _panel(custom_background = false) {
 			}
 		}
 	}
-	
+
 	this.colours_changed = () => {
 		if (window.InstanceType) {
 			this.colours.background = window.GetColourDUI(1);
@@ -27,7 +27,7 @@ function _panel(custom_background = false) {
 		}
 		this.colours.header = this.colours.highlight & 0x45FFFFFF;
 	}
-	
+
 	this.font_changed = () => {
 		let name;
 		let font = window.InstanceType ? window.GetFontDUI(0) : window.GetFontCUI(0);
@@ -45,12 +45,12 @@ function _panel(custom_background = false) {
 		_.invokeMap(this.list_objects, 'update');
 		_.invokeMap(this.text_objects, 'size');
 	}
-	
+
 	this.size = () => {
 		this.w = window.Width;
 		this.h = window.Height;
 	}
-	
+
 	this.paint = (gr) => {
 		let col;
 		switch (true) {
@@ -69,7 +69,7 @@ function _panel(custom_background = false) {
 		}
 		gr.FillSolidRect(0, 0, this.w, this.h, col);
 	}
-	
+
 	this.rbtn_up = (x, y, object) => {
 		this.m = window.CreatePopupMenu();
 		this.s1 = window.CreatePopupMenu();
@@ -145,7 +145,7 @@ function _panel(custom_background = false) {
 		}
 		return true;
 	}
-	
+
 	this.tf = (t) => {
 		if (!this.metadb) {
 			return '';
@@ -160,7 +160,7 @@ function _panel(custom_background = false) {
 			return this.tfo[t].EvalWithMetadb(this.metadb);
 		}
 	}
-	
+
 	window.DlgCode = DLGC_WANTALLKEYS;
 	this.fonts = {};
 	this.colours = {};

@@ -25,25 +25,25 @@ function _lastfm() {
 			this.update_sk('');
 		}
 	}
-	
+
 	this.get_base_url = () => {
 		return 'http://ws.audioscrobbler.com/2.0/?format=json&api_key=' + this.api_key.value;
 	}
-	
+
 	this.read_ini = (k) => {
 		return utils.ReadINI(this.ini_file, 'Last.fm', k);
 	}
-	
+
 	this.write_ini = (k, v) => {
 		utils.WriteINI(this.ini_file, 'Last.fm', k, v);
 	}
-	
+
 	this.update_sk = (sk) => {
 		this.write_ini('sk', sk);
 		window.NotifyOthers('2K3.NOTIFY.LASTFM', 'update');
 		this.notify_data('2K3.NOTIFY.LASTFM', 'update');
 	}
-	
+
 	this.tfo = {
 		key : fb.TitleFormat('$lower(%artist% - %title%)'),
 		artist : fb.TitleFormat('%artist%'),
@@ -53,12 +53,11 @@ function _lastfm() {
 		playcount : fb.TitleFormat('$if2(%SMP_PLAYCOUNT%,0)'),
 		first_played : fb.TitleFormat('%SMP_FIRST_PLAYED%')
 	};
-	
+
 	_createFolder(folders.data);
 	this.ini_file = folders.data + 'lastfm.ini';
 	this.api_key = new _p('2K3.LASTFM.APIKEY', '');
 	this.username = this.read_ini('username');
 	this.sk = this.read_ini('sk');
-	this.ua = 'foo_jscript_panel_lastfm2';
-	this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+	this.ua = 'spider_monkey_panel_lastfm';
 }

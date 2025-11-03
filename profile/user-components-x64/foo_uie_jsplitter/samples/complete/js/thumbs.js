@@ -79,7 +79,7 @@ function _thumbs() {
 			break;
 		}
 	}
-	
+
 	this.paint = (gr) => {
 		switch (true) {
 		case !this.images.length:
@@ -142,7 +142,7 @@ function _thumbs() {
 			break;
 		}
 	}
-	
+
 	this.metadb_changed = () => {
 		if (panel.metadb) {
 			if (this.properties.source.value == 0) { // custom folder
@@ -166,12 +166,12 @@ function _thumbs() {
 		}
 		this.update();
 	}
-	
+
 	this.playback_new_track = () => {
 		this.counter = 0;
 		panel.item_focus_change();
 	}
-	
+
 	this.playback_time = () => {
 		this.counter++;
 		if (this.properties.source.value == 1 && this.properties.auto_download.enabled && this.counter == 2 && this.images.length == 0) {
@@ -182,11 +182,11 @@ function _thumbs() {
 			}
 		}
 	}
-	
+
 	this.trace = (x, y) => {
 		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
 	}
-	
+
 	this.image_xywh_trace = (x, y) => {
 		switch (true) {
 		case !this.images.length:
@@ -197,7 +197,7 @@ function _thumbs() {
 			return x > this.image_xywh[0] && x < this.image_xywh[0] + this.image_xywh[2] && y > this.image_xywh[1] && y < this.image_xywh[1] + this.image_xywh[3];
 		}
 	}
-	
+
 	this.wheel = (s) => {
 		let offset = this.offset - s;
 		switch (true) {
@@ -256,7 +256,7 @@ function _thumbs() {
 			window.RepaintRect(this.x, this.y, this.w, this.h);
 		}
 	}
-	
+
 	this.move = (x, y) => {
 		this.mx = x;
 		this.my = y;
@@ -284,7 +284,7 @@ function _thumbs() {
 		}
 		window.SetCursor(this.index < this.images.length ? IDC_HAND : IDC_ARROW);
 	}
-	
+
 	this.lbtn_up = (x, y) => {
 		switch (true) {
 		case !this.trace(x, y):
@@ -302,13 +302,13 @@ function _thumbs() {
 			break;
 		}
 	}
-	
+
 	this.lbtn_dblclk = (x, y) => {
 		if (this.image_xywh_trace(x, y)) {
 			_run(this.files[this.image]);
 		}
 	}
-	
+
 	this.rbtn_up = (x, y) => {
 		panel.m.AppendMenuItem(MF_STRING, 1000, 'Custom folder');
 		panel.m.AppendMenuItem(MF_STRING, 1001, 'Last.fm artist art');
@@ -375,7 +375,7 @@ function _thumbs() {
 		panel.m.AppendMenuItem(_isFolder(this.folder) ? MF_STRING : MF_GRAYED, 1540, 'Open containing folder');
 		panel.m.AppendMenuSeparator();
 	}
-	
+
 	this.rbtn_up_done = (idx) => {
 		switch (idx) {
 		case 1000:
@@ -470,7 +470,7 @@ function _thumbs() {
 			break;
 		}
 	}
-	
+
 	this.key_down = (k) => {
 		switch (k) {
 		case VK_ESCAPE:
@@ -488,7 +488,7 @@ function _thumbs() {
 			break;
 		}
 	}
-	
+
 	this.update = () => {
 		this.image = 0;
 		this.files = _getFiles(this.folder, this.exts, this.properties.sort.value == 1);
@@ -504,47 +504,58 @@ function _thumbs() {
 		this.size(true);
 		window.Repaint();
 	}
-	
+
 	this.enable_overlay = (b) => {
 		this.overlay = b;
 		window.Repaint();
 	}
-	
+
 	this.set_default = (t) => {
 		utils.WriteINI(this.ini_file, 'Defaults', _fbSanitise(this.artist), t);
 		this.update();
 	}
-	
+
 	this.download = () => {
-		if (!_tagged(this.artist)) {
+		if (!_tagged(this.artist))
+			return;
+
+		var url = 'https://www.last.fm/music/' + encodeURIComponent(this.artist) + '/+images';
+		var task_id = utils.HTTPRequestAsync(0, url, this.headers);
+		this.artists[task_id] = this.artist;
+	}
+
+	this.http_request_done = function (id, success, response_text) {
+		var artist = this.artists[id];
+
+		if (!artist)
+			return; // we didn't request this id
+
+		if (!success) {
+			console.log(N, response_text);
 			return;
 		}
-		const base = this.folder + _fbSanitise(this.artist) + '_';
-		this.xmlhttp.open('GET', 'https://www.last.fm/music/' + encodeURIComponent(this.artist) + '/+images', true);
-		this.xmlhttp.setRequestHeader('If-Modified-Since', 'Thu, 01 Jan 1970 00:00:00 GMT');
-		this.xmlhttp.send();
-		this.xmlhttp.onreadystatechange = () => {
-			if (this.xmlhttp.readyState == 4) {
-				if (this.xmlhttp.status == 200) {
-					this.success(base);
-				} else {
-					console.log(N, 'HTTP error:', this.xmlhttp.status);
-				}
-			}
-		}
-	}
-	
-	this.success = (base) => {
-		_(_getElementsByTagName(this.xmlhttp.responseText, 'li'))
+
+		var filename_base = _artistFolder(artist) + _fbSanitise(artist) + '_';
+
+		_(_getElementsByTagName(response_text, 'li'))
 			.filter({ className : 'image-list-item-wrapper' })
+			.map((item) => {
+				var img = _firstElement(item, 'img');
+				var url = img.src.replace('avatar170s/', '');
+				return {
+					url : url,
+					filename : filename_base + url.substring(url.lastIndexOf('/') + 1) + '.jpg',
+				};
+			})
+			.filter((item) => {
+				return !utils.IsFile(item.filename);
+			})
 			.take(this.properties.limit.value)
 			.forEach((item) => {
-				const url = item.getElementsByTagName('img')[0].src.replace('avatar170s/', '');
-				const filename = base + url.substring(url.lastIndexOf('/') + 1) + '.jpg';
-				utils.DownloadFileAsync(url, filename);
-			})
+				utils.DownloadFileAsync(item.url, item.filename, true);
+			});
 	}
-	
+
 	this.interval_func = () => {
 		this.time++;
 		if (this.properties.cycle.value > 0 && this.images.length > 1 && this.time % this.properties.cycle.value == 0) {
@@ -558,13 +569,14 @@ function _thumbs() {
 			this.update();
 		}
 	}
-	
+
 	_createFolder(folders.data);
 	_createFolder(folders.artists);
 	this.mx = 0;
 	this.my = 0;
 	this.files = [];
 	this.images = [];
+	this.artists = {};
 	this.limits = [1, 3, 5, 10, 15, 20];
 	this.modes = ['grid', 'left', 'right', 'top', 'bottom', 'off'];
 	this.pxs = [75, 100, 150, 200, 250, 300];
@@ -580,7 +592,7 @@ function _thumbs() {
 	this.index = 0;
 	this.time = 0;
 	this.counter = 0;
-	this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+
 	this.properties = {
 		mode : new _p('2K3.THUMBS.MODE', 4), // 0 grid 1 left 2 right 3 top 4 bottom 5 off
 		source : new _p('2K3.THUMBS.SOURCE', 0), // 0 custom folder 1 last.fm
@@ -592,6 +604,12 @@ function _thumbs() {
 		aspect : new _p('2K3.THUMBS.ASPECT', image.crop_top),
 		auto_download : new _p('2K3.THUMBS.AUTO.DOWNLOAD', true),
 	};
+
+	this.headers = JSON.stringify({
+		'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0',
+		'Referer' : 'https://www.last.fm',
+	});
+
 	this.close_btn = new _sb(chars.close, 0, 0, _scale(12), _scale(12), () => { return this.properties.mode.value == 0 && this.overlay; }, () => { this.enable_overlay(false); });
 	window.SetInterval(this.interval_func, 1000);
 }

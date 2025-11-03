@@ -1,18 +1,19 @@
 'use strict';
-//29/10/24
 
-window.DefineScript('Allmusic Review', {author:'marc2003 && regorxxx'});
+window.DefineScript('Allmusic Review', {author:'marc2003'});
 include(fb.ComponentPath + 'samples\\complete\\js\\lodash.min.js');
 include(fb.ComponentPath + 'samples\\complete\\js\\helpers.js');
 include(fb.ComponentPath + 'samples\\complete\\js\\panel.js');
 include(fb.ComponentPath + 'samples\\complete\\js\\text.js');
-include(fb.ComponentPath + 'samples\\complete\\js\\allmusic.js');
 
 let panel = new _panel();
 let text = new _text('allmusic', LM, TM, 0, 0);
-allMusicReq = new RequestAllmusic();
 
 panel.item_focus_change();
+
+function on_http_request_done(task_id, success, response_text) {
+	text.http_request_done(task_id, success, response_text);
+}
 
 function on_size() {
 	panel.size();
@@ -83,4 +84,3 @@ function on_playback_stop(reason) {
 function on_playlist_switch() {
 	panel.item_focus_change();
 }
-

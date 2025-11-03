@@ -4,12 +4,12 @@ function _volume(x, y, w, h) {
 	this.volume_change = () => {
 		window.RepaintRect(this.x, this.y, this.w, this.h);
 	}
-	
+
 	this.trace = (x, y) => {
 		const m = this.drag ? 200 : 0;
 		return x > this.x - m && x < this.x + this.w + (m * 2) && y > this.y - m && y < this.y + this.h + (m * 2);
 	}
-	
+
 	this.wheel = (s) => {
 		if (this.trace(this.mx, this.my)) {
 			if (s == 1) {
@@ -23,7 +23,7 @@ function _volume(x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.move = (x, y) => {
 		this.mx = x;
 		this.my = y;
@@ -46,7 +46,7 @@ function _volume(x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.lbtn_down = (x, y) => {
 		if (this.trace(x, y)) {
 			this.drag = true;
@@ -55,7 +55,7 @@ function _volume(x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.lbtn_up = (x, y) => {
 		if (this.trace(x, y)) {
 			if (this.drag) {
@@ -67,11 +67,11 @@ function _volume(x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.pos = (type) => {
 		return Math.ceil((type == 'h' ? this.h : this.w) * Math.pow(2, fb.Volume / 10));
 	}
-	
+
 	this.x = x;
 	this.y = y;
 	this.w = w;

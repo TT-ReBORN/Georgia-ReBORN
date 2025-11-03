@@ -1564,6 +1564,7 @@ let utils = {
 
     /**
      * Downloads file from specified URL to save file path.
+     * Result of asyncronous operation can be found in callback {@link module:Callbacks.on_download_file_done on_download_file_done}
      *
      * @param {number} url File URL
      * @param {number} path Save file path
@@ -1577,6 +1578,35 @@ let utils = {
      * 
      */
     DownloadFileAsync: function (url, path) { },
+
+    /**
+     * Does HTTP request of specified type to URL
+     * with optional user headers and post data
+     *
+     * @param {number} type Request type (0 - GET, 1 - POST)
+     * @param {number} url
+     * @param {string=} [user_agent_or_headers=""] can be a string specifying the user agent, or a stringified JSON object specifying user HTTP request headers (see examples)
+     * @param {string=} [post_data=""] data for POST request
+     * @return {number} task id used in callback {@link module:Callbacks.on_http_request_done on_http_request_done}
+     * 
+     * @sourceFile ../../component/samples/complete/js/thumbs.js
+     * @sourceFile ../../component/samples/complete/js/list.js
+     * 
+     * @example
+     * let headers = JSON.stringify({
+     *   'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0',
+     *   'Referer' : 'https://www.last.fm',
+     * });
+     * let url = 'https://www.last.fm/music/Madonna/+images';
+     * let task_id = utils.HTTPRequestAsync(0, url, headers);
+     * 
+     * function on_http_request_done(task_id, success, response_text, status, content_type)
+     * {
+     *   console.log("status = ", status, "response_text = ", response_text);
+     * }
+     * 
+     */
+    HTTPRequestAsync: function (type, url, user_agent_or_headers, post_data) { },
 
     /**
      * Edit a text file with the default text editor. <br>

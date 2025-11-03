@@ -1,0 +1,1114 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: list.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-meta">&#x27;use strict&#x27;</span>;
+<span class="hljs-comment">//29/10/24</span>
+
+_.<span class="hljs-title function_">mixin</span>({
+	<span class="hljs-title function_">nest</span>(<span class="hljs-params">collection, keys</span>) {
+		<span class="hljs-keyword">if</span> (!keys.<span class="hljs-property">length</span>) {
+			<span class="hljs-keyword">return</span> collection;
+		} <span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">return</span> <span class="hljs-title function_">_</span>(collection)
+				.<span class="hljs-title function_">groupBy</span>(keys[<span class="hljs-number">0</span>])
+				.<span class="hljs-title function_">mapValues</span>(<span class="hljs-function">(<span class="hljs-params">values</span>) =&gt;</span> _.<span class="hljs-title function_">nest</span>(values, keys.<span class="hljs-title function_">slice</span>(<span class="hljs-number">1</span>)))
+				.<span class="hljs-title function_">value</span>();
+		}
+	}
+});
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">_list</span>(<span class="hljs-params">mode, x, y, w, h</span>) {
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">playback_queue_changed</span> = <span class="hljs-function">() =&gt;</span> {
+		<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> == <span class="hljs-string">&#x27;queue_viewer&#x27;</span>) {
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+		}
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">size</span> = <span class="hljs-function">() =&gt;</span> {
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span> = <span class="hljs-number">0</span>;
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span> = <span class="hljs-number">0</span>;
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">rows</span> = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>((<span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span> - <span class="hljs-title function_">_scale</span>(<span class="hljs-number">24</span>)) / panel.<span class="hljs-property">row_height</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">up_btn</span>.<span class="hljs-property">x</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">round</span>((<span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span> - <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>)) / <span class="hljs-number">2</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">down_btn</span>.<span class="hljs-property">x</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">up_btn</span>.<span class="hljs-property">x</span>;
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">up_btn</span>.<span class="hljs-property">y</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span>;
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">down_btn</span>.<span class="hljs-property">y</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span> - <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>);
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">paint</span> = <span class="hljs-function">(<span class="hljs-params">gr</span>) =&gt;</span> {
+		<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> === <span class="hljs-string">&#x27;lastfm_info&#x27;</span> &amp;&amp; !lastfm.<span class="hljs-property">api_key</span>.<span class="hljs-property">value</span>.<span class="hljs-property">length</span>) {
+			gr.<span class="hljs-title class_">GdiDrawText</span>(<span class="hljs-string">&#x27;No API key found. Add it using R. Click.&#x27;</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>, panel.<span class="hljs-property">colours</span>.<span class="hljs-property">text</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>), <span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span>, panel.<span class="hljs-property">row_height</span>, <span class="hljs-variable constant_">LEFT</span>);
+			<span class="hljs-keyword">return</span>;
+		}
+		<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span> == <span class="hljs-number">0</span>) {
+			<span class="hljs-keyword">return</span>;
+		}
+		<span class="hljs-keyword">switch</span> (<span class="hljs-literal">true</span>) {
+		<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> == <span class="hljs-string">&#x27;lastfm_info&#x27;</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> == <span class="hljs-number">1</span>: <span class="hljs-comment">// charts</span>
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">spacer_w</span> + <span class="hljs-number">5</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">text_width</span> = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">round</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span> / <span class="hljs-number">2</span>) + <span class="hljs-number">30</span>;
+			<span class="hljs-keyword">const</span> lastfm_charts_bar_x = <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_width</span> + <span class="hljs-number">10</span>;
+			<span class="hljs-keyword">const</span> unit_width = (<span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span> - lastfm_charts_bar_x - <span class="hljs-title function_">_scale</span>(<span class="hljs-number">50</span>)) / <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[<span class="hljs-number">0</span>].<span class="hljs-property">playcount</span>;
+			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">rows</span>); i++) {
+				<span class="hljs-keyword">let</span> bar_width = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">ceil</span>(unit_width * <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[i + <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span>].<span class="hljs-property">playcount</span>);
+				gr.<span class="hljs-title class_">GdiDrawText</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[i + <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span>].<span class="hljs-property">rank</span> + <span class="hljs-string">&#x27;.&#x27;</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>, panel.<span class="hljs-property">colours</span>.<span class="hljs-property">highlight</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>) + (i * panel.<span class="hljs-property">row_height</span>), <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span> - <span class="hljs-number">5</span>, panel.<span class="hljs-property">row_height</span>, <span class="hljs-variable constant_">RIGHT</span>);
+				gr.<span class="hljs-title class_">GdiDrawText</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[i + <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span>].<span class="hljs-property">name</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>, panel.<span class="hljs-property">colours</span>.<span class="hljs-property">text</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>) + (i * panel.<span class="hljs-property">row_height</span>), <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_width</span>, panel.<span class="hljs-property">row_height</span>, <span class="hljs-variable constant_">LEFT</span>);
+				gr.<span class="hljs-title class_">FillSolidRect</span>(lastfm_charts_bar_x, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + <span class="hljs-title function_">_scale</span>(<span class="hljs-number">13</span>) + (i * panel.<span class="hljs-property">row_height</span>), bar_width, panel.<span class="hljs-property">row_height</span> - <span class="hljs-number">3</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">colour</span>.<span class="hljs-property">value</span>);
+				gr.<span class="hljs-title class_">GdiDrawText</span>(<span class="hljs-title function_">_formatNumber</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[i + <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span>].<span class="hljs-property">playcount</span>, <span class="hljs-string">&#x27;,&#x27;</span>), panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>, panel.<span class="hljs-property">colours</span>.<span class="hljs-property">text</span>, lastfm_charts_bar_x + bar_width + <span class="hljs-number">5</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>) + (i * panel.<span class="hljs-property">row_height</span>), <span class="hljs-title function_">_scale</span>(<span class="hljs-number">60</span>), panel.<span class="hljs-property">row_height</span>, <span class="hljs-variable constant_">LEFT</span>);
+			}
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> == <span class="hljs-string">&#x27;musicbrainz&#x27;</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> == <span class="hljs-number">0</span>: <span class="hljs-comment">// releases</span>
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">text_width</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span> - <span class="hljs-variable language_">this</span>.<span class="hljs-property">spacer_w</span> - <span class="hljs-number">10</span>;
+			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">rows</span>); i++) {
+				gr.<span class="hljs-title class_">GdiDrawText</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[i + <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span>].<span class="hljs-property">name</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[i + <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span>].<span class="hljs-property">width</span> == <span class="hljs-number">0</span> ? panel.<span class="hljs-property">colours</span>.<span class="hljs-property">highlight</span> : panel.<span class="hljs-property">colours</span>.<span class="hljs-property">text</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>) + (i * panel.<span class="hljs-property">row_height</span>), <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_width</span>, panel.<span class="hljs-property">row_height</span>, <span class="hljs-variable constant_">LEFT</span>);
+				gr.<span class="hljs-title class_">GdiDrawText</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[i + <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span>].<span class="hljs-property">date</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>, panel.<span class="hljs-property">colours</span>.<span class="hljs-property">highlight</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>) + (i * panel.<span class="hljs-property">row_height</span>), <span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span>, panel.<span class="hljs-property">row_height</span>, <span class="hljs-variable constant_">RIGHT</span>);
+			}
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> == <span class="hljs-string">&#x27;properties&#x27;</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">text_width</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span> - <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span>;
+			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">rows</span>); i++) {
+				gr.<span class="hljs-title class_">GdiDrawText</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[i + <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span>].<span class="hljs-property">name</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>, panel.<span class="hljs-property">colours</span>.<span class="hljs-property">highlight</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>) + (i * panel.<span class="hljs-property">row_height</span>), <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span> - <span class="hljs-number">10</span>, panel.<span class="hljs-property">row_height</span>, <span class="hljs-variable constant_">LEFT</span>);
+				gr.<span class="hljs-title class_">GdiDrawText</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[i + <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span>].<span class="hljs-property">value</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>, panel.<span class="hljs-property">colours</span>.<span class="hljs-property">text</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>) + (i * panel.<span class="hljs-property">row_height</span>), <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_width</span>, panel.<span class="hljs-property">row_height</span>, <span class="hljs-variable constant_">LEFT</span>);
+			}
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-attr">default</span>: <span class="hljs-comment">// autoplaylists / last.fm similar artists / last.fm recent tracks / musicbrainz links / queue viewer</span>
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span> = <span class="hljs-number">0</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">text_width</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span>;
+			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">rows</span>); i++) {
+				gr.<span class="hljs-title class_">GdiDrawText</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[i + <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span>].<span class="hljs-property">name</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>, panel.<span class="hljs-property">colours</span>.<span class="hljs-property">text</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>) + (i * panel.<span class="hljs-property">row_height</span>), <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_width</span>, panel.<span class="hljs-property">row_height</span>, <span class="hljs-variable constant_">LEFT</span>);
+			}
+			<span class="hljs-keyword">break</span>;
+		}
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">up_btn</span>.<span class="hljs-title function_">paint</span>(gr, panel.<span class="hljs-property">colours</span>.<span class="hljs-property">text</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">down_btn</span>.<span class="hljs-title function_">paint</span>(gr, panel.<span class="hljs-property">colours</span>.<span class="hljs-property">text</span>);
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">metadb_changed</span> = <span class="hljs-function">() =&gt;</span> {
+		<span class="hljs-keyword">let</span> temp_artist;
+		<span class="hljs-keyword">switch</span> (<span class="hljs-literal">true</span>) {
+		<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> == <span class="hljs-string">&#x27;autoplaylists&#x27;</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> == <span class="hljs-string">&#x27;lastfm_info&#x27;</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> &gt; <span class="hljs-number">0</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> == <span class="hljs-string">&#x27;queue_viewer&#x27;</span>:
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> !panel.<span class="hljs-property">metadb</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span> = <span class="hljs-string">&#x27;&#x27;</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span> = [];
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span> = <span class="hljs-number">0</span>;
+			<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> == <span class="hljs-string">&#x27;properties&#x27;</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> == <span class="hljs-string">&#x27;musicbrainz&#x27;</span>:
+			temp_artist = panel.<span class="hljs-title function_">tf</span>(<span class="hljs-variable constant_">DEFAULT_ARTIST</span>);
+			<span class="hljs-keyword">const</span> temp_id = panel.<span class="hljs-title function_">tf</span>(<span class="hljs-string">&#x27;$if3($meta(musicbrainz_artistid,0),$meta(musicbrainz artist id,0),)&#x27;</span>);
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span> == temp_artist &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_id</span> == temp_id) {
+				<span class="hljs-keyword">return</span>;
+			}
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span> = temp_artist;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_id</span> = temp_id;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-attr">default</span>:
+			temp_artist = panel.<span class="hljs-title function_">tf</span>(<span class="hljs-variable constant_">DEFAULT_ARTIST</span>);
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span> == temp_artist) {
+				<span class="hljs-keyword">return</span>;
+			}
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span> = temp_artist;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+			<span class="hljs-keyword">break</span>;
+		}
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">playback_new_track</span> = <span class="hljs-function">() =&gt;</span> {
+		panel.<span class="hljs-title function_">item_focus_change</span>();
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">time_elapsed</span> = <span class="hljs-number">0</span>;
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">playback_time</span> = <span class="hljs-function">() =&gt;</span> {
+		<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> == <span class="hljs-string">&#x27;lastfm_info&#x27;</span>) {
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">time_elapsed</span>++;
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">time_elapsed</span> == <span class="hljs-number">3</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> == <span class="hljs-number">2</span> &amp;&amp; lastfm.<span class="hljs-property">username</span>.<span class="hljs-property">length</span>) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>();
+			}
+		}
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">trace</span> = <span class="hljs-function">(<span class="hljs-params">x, y</span>) =&gt;</span> {
+		<span class="hljs-keyword">return</span> x &gt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> &amp;&amp; x &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span> &amp;&amp; y &gt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> &amp;&amp; y &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span>;
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">wheel</span> = <span class="hljs-function">(<span class="hljs-params">s</span>) =&gt;</span> {
+		<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">trace</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">mx</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">my</span>)) {
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span> &gt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">rows</span>) {
+				<span class="hljs-keyword">let</span> offset = <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span> - (s * <span class="hljs-number">3</span>);
+				<span class="hljs-keyword">if</span> (offset &lt; <span class="hljs-number">0</span>) {
+					offset = <span class="hljs-number">0</span>;
+				}
+				<span class="hljs-keyword">if</span> (offset + <span class="hljs-variable language_">this</span>.<span class="hljs-property">rows</span> &gt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span>) {
+					offset = <span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span> - <span class="hljs-variable language_">this</span>.<span class="hljs-property">rows</span>;
+				}
+				<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span> != offset) {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span> = offset;
+					<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">RepaintRect</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span>);
+				}
+			}
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+		} <span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+		}
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">move</span> = <span class="hljs-function">(<span class="hljs-params">x, y</span>) =&gt;</span> {
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">mx</span> = x;
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">my</span> = y;
+		<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">SetCursor</span>(<span class="hljs-variable constant_">IDC_ARROW</span>);
+		<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">trace</span>(x, y)) {
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span> = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>((y - <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> - <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>)) / panel.<span class="hljs-property">row_height</span>) + <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">in_range</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span> &gt;= <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span> &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span> + <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">rows</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span>);
+			<span class="hljs-keyword">switch</span> (<span class="hljs-literal">true</span>) {
+			<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">up_btn</span>.<span class="hljs-title function_">move</span>(x, y):
+			<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">down_btn</span>.<span class="hljs-title function_">move</span>(x, y):
+				<span class="hljs-keyword">break</span>;
+			<span class="hljs-keyword">case</span> !<span class="hljs-variable language_">this</span>.<span class="hljs-property">in_range</span>:
+				<span class="hljs-keyword">break</span>;
+			<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> == <span class="hljs-string">&#x27;autoplaylists&#x27;</span>:
+				<span class="hljs-keyword">switch</span> (<span class="hljs-literal">true</span>) {
+				<span class="hljs-keyword">case</span> x &gt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> &amp;&amp; x &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span>].<span class="hljs-property">width</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_width</span>):
+					<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">SetCursor</span>(<span class="hljs-variable constant_">IDC_HAND</span>);
+					<span class="hljs-title function_">_tt</span>(<span class="hljs-string">&#x27;Autoplaylist: &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span>].<span class="hljs-property">name</span>);
+					<span class="hljs-keyword">break</span>;
+				<span class="hljs-attr">default</span>:
+					<span class="hljs-title function_">_tt</span>(<span class="hljs-string">&#x27;&#x27;</span>);
+					<span class="hljs-keyword">break</span>;
+				}
+				<span class="hljs-keyword">break</span>;
+			<span class="hljs-keyword">case</span> x &gt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span> &amp;&amp; x &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span> + <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span>].<span class="hljs-property">width</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_width</span>):
+				<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">SetCursor</span>(<span class="hljs-variable constant_">IDC_HAND</span>);
+				<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span>].<span class="hljs-property">url</span>.<span class="hljs-title function_">startsWith</span>(<span class="hljs-string">&#x27;http&#x27;</span>)) {
+					<span class="hljs-title function_">_tt</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span>].<span class="hljs-property">url</span>);
+				} <span class="hljs-keyword">else</span> {
+					<span class="hljs-title function_">_tt</span>(<span class="hljs-string">&#x27;Autoplaylist: &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span>].<span class="hljs-property">url</span>);
+				}
+				<span class="hljs-keyword">break</span>;
+			<span class="hljs-attr">default</span>:
+				<span class="hljs-title function_">_tt</span>(<span class="hljs-string">&#x27;&#x27;</span>);
+				<span class="hljs-keyword">break</span>;
+			}
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+		} <span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+		}
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">lbtn_up</span> = <span class="hljs-function">(<span class="hljs-params">x, y</span>) =&gt;</span> {
+		<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">trace</span>(x, y)) {
+			<span class="hljs-keyword">switch</span> (<span class="hljs-literal">true</span>) {
+			<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">up_btn</span>.<span class="hljs-title function_">lbtn_up</span>(x, y):
+			<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">down_btn</span>.<span class="hljs-title function_">lbtn_up</span>(x, y):
+			<span class="hljs-keyword">case</span> !<span class="hljs-variable language_">this</span>.<span class="hljs-property">in_range</span>:
+				<span class="hljs-keyword">break</span>;
+			<span class="hljs-keyword">case</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> == <span class="hljs-string">&#x27;autoplaylists&#x27;</span>:
+				<span class="hljs-keyword">if</span> (x &gt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> &amp;&amp; x &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span>].<span class="hljs-property">width</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_width</span>)) {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">edit</span>(x, y);
+				}
+				<span class="hljs-keyword">break</span>;
+			<span class="hljs-keyword">case</span> x &gt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span> &amp;&amp; x &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span> + <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span>].<span class="hljs-property">width</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">text_width</span>):
+				<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span>].<span class="hljs-property">url</span>.<span class="hljs-title function_">startsWith</span>(<span class="hljs-string">&#x27;http&#x27;</span>)) {
+					<span class="hljs-title function_">_run</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span>].<span class="hljs-property">url</span>);
+				} <span class="hljs-keyword">else</span> {
+					plman.<span class="hljs-title class_">CreateAutoPlaylist</span>(plman.<span class="hljs-property">PlaylistCount</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span>].<span class="hljs-property">name</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span>].<span class="hljs-property">url</span>);
+					plman.<span class="hljs-property">ActivePlaylist</span> = plman.<span class="hljs-property">PlaylistCount</span> - <span class="hljs-number">1</span>;
+				}
+				<span class="hljs-keyword">break</span>;
+			}
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+		} <span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+		}
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">rbtn_up</span> = <span class="hljs-function">(<span class="hljs-params">x, y</span>) =&gt;</span> {
+		<span class="hljs-keyword">switch</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span>) {
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;autoplaylists&#x27;</span>:
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1000</span>, <span class="hljs-string">&#x27;Add new autoplaylist...&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">deleted_items</span>.<span class="hljs-property">length</span>) {
+				<span class="hljs-title function_">_</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">deleted_items</span>)
+					.<span class="hljs-title function_">take</span>(<span class="hljs-number">8</span>)
+					.<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">item, i</span>) =&gt;</span> {
+						panel.<span class="hljs-property">s10</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, i + <span class="hljs-number">1010</span>, item.<span class="hljs-property">name</span>);
+					})
+				panel.<span class="hljs-property">s10</span>.<span class="hljs-title class_">AppendTo</span>(panel.<span class="hljs-property">m</span>, <span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-string">&#x27;Restore&#x27;</span>);
+				panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+			}
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;lastfm_info&#x27;</span>:
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1100</span>, <span class="hljs-string">&#x27;Similar artists&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1101</span>, <span class="hljs-string">&#x27;User Charts&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1102</span>, <span class="hljs-string">&#x27;Recent Tracks&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">CheckMenuRadioItem</span>(<span class="hljs-number">1100</span>, <span class="hljs-number">1102</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> + <span class="hljs-number">1100</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> &lt; <span class="hljs-number">2</span>) {
+				panel.<span class="hljs-property">s10</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1110</span>, <span class="hljs-string">&#x27;Open Last.fm website&#x27;</span>);
+				panel.<span class="hljs-property">s10</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1111</span>, <span class="hljs-string">&#x27;Autoplaylist&#x27;</span>);
+				panel.<span class="hljs-property">s10</span>.<span class="hljs-title class_">CheckMenuRadioItem</span>(<span class="hljs-number">1110</span>, <span class="hljs-number">1111</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">link</span>.<span class="hljs-property">value</span> + <span class="hljs-number">1110</span>);
+				panel.<span class="hljs-property">s10</span>.<span class="hljs-title class_">AppendTo</span>(panel.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> == <span class="hljs-number">0</span> || <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">method</span>.<span class="hljs-property">value</span> == <span class="hljs-number">0</span> ? <span class="hljs-variable constant_">MF_STRING</span> : <span class="hljs-variable constant_">MF_GRAYED</span>, <span class="hljs-string">&#x27;Links&#x27;</span>);
+				panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+			}
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> == <span class="hljs-number">1</span>) {
+				_.<span class="hljs-title function_">forEach</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">methods</span>, <span class="hljs-function">(<span class="hljs-params">item, i</span>) =&gt;</span> {
+					panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, i + <span class="hljs-number">1120</span>, _.<span class="hljs-title function_">capitalize</span>(item.<span class="hljs-property">display</span>));
+				});
+				panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">CheckMenuRadioItem</span>(<span class="hljs-number">1120</span>, <span class="hljs-number">1122</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">method</span>.<span class="hljs-property">value</span> + <span class="hljs-number">1120</span>);
+				panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+				_.<span class="hljs-title function_">forEach</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">periods</span>, <span class="hljs-function">(<span class="hljs-params">item, i</span>) =&gt;</span> {
+					panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, i + <span class="hljs-number">1130</span>, _.<span class="hljs-title function_">capitalize</span>(item.<span class="hljs-property">display</span>));
+				});
+				panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">CheckMenuRadioItem</span>(<span class="hljs-number">1130</span>, <span class="hljs-number">1135</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">period</span>.<span class="hljs-property">value</span> + <span class="hljs-number">1130</span>);
+				panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+				panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1140</span>, <span class="hljs-string">&#x27;Bar colour...&#x27;</span>);
+				panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+			}
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1150</span>, <span class="hljs-string">&#x27;Last.fm username...&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1199</span>, <span class="hljs-string">&#x27;Last.fm API key&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;musicbrainz&#x27;</span>:
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1200</span>, <span class="hljs-string">&#x27;Releases&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1201</span>, <span class="hljs-string">&#x27;Links&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">CheckMenuRadioItem</span>(<span class="hljs-number">1200</span>, <span class="hljs-number">1201</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> + <span class="hljs-number">1200</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+			<span class="hljs-keyword">if</span> (!<span class="hljs-title function_">_isUUID</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_id</span>)) {
+				panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_GRAYED</span>, <span class="hljs-number">1203</span>, <span class="hljs-string">&#x27;Artist MBID missing. Use Musicbrainz Picard or foo_musicbrainz to tag your files.&#x27;</span>);
+				panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+			}
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;properties&#x27;</span>:
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1300</span>, <span class="hljs-string">&#x27;Metadata&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">CheckMenuItem</span>(<span class="hljs-number">1300</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">meta</span>.<span class="hljs-property">enabled</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1301</span>, <span class="hljs-string">&#x27;Location&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">CheckMenuItem</span>(<span class="hljs-number">1301</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">location</span>.<span class="hljs-property">enabled</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1302</span>, <span class="hljs-string">&#x27;Tech Info&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">CheckMenuItem</span>(<span class="hljs-number">1302</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">tech</span>.<span class="hljs-property">enabled</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">foo_playcount</span> ? <span class="hljs-variable constant_">MF_STRING</span> : <span class="hljs-variable constant_">MF_GRAYED</span>, <span class="hljs-number">1303</span>, <span class="hljs-string">&#x27;Playback Statistics (foo_playcount)&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">CheckMenuItem</span>(<span class="hljs-number">1303</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">foo_playcount</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">playcount</span>.<span class="hljs-property">enabled</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1304</span>, <span class="hljs-string">&#x27;Spider Monkey Panel Stats&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">CheckMenuItem</span>(<span class="hljs-number">1304</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">stats</span>.<span class="hljs-property">enabled</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1305</span>, <span class="hljs-string">&#x27;Replaygain&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">CheckMenuItem</span>(<span class="hljs-number">1305</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">rg</span>.<span class="hljs-property">enabled</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;queue_viewer&#x27;</span>:
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1400</span>, <span class="hljs-string">&#x27;Item display title formatting...&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-property">length</span> ? <span class="hljs-variable constant_">MF_STRING</span> : <span class="hljs-variable constant_">MF_GRAYED</span>, <span class="hljs-number">1401</span>, <span class="hljs-string">&#x27;Flush playback queue&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+			<span class="hljs-keyword">break</span>;
+		}
+		<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> != <span class="hljs-string">&#x27;queue_viewer&#x27;</span>) {
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-title function_">_isFile</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>) ? <span class="hljs-variable constant_">MF_STRING</span> : <span class="hljs-variable constant_">MF_GRAYED</span>, <span class="hljs-number">1999</span>, <span class="hljs-string">&#x27;Open containing folder&#x27;</span>);
+			panel.<span class="hljs-property">m</span>.<span class="hljs-title class_">AppendMenuSeparator</span>();
+		}
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">rbtn_up_done</span> = <span class="hljs-function">(<span class="hljs-params">idx</span>) =&gt;</span> {
+		<span class="hljs-keyword">switch</span> (idx) {
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1000</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1010</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1011</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1012</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1013</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1014</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1015</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1016</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1017</span>:
+			<span class="hljs-keyword">const</span> item = idx - <span class="hljs-number">1010</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">push</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">deleted_items</span>[item]);
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">deleted_items</span>.<span class="hljs-title function_">splice</span>(item, <span class="hljs-number">1</span>);
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">save</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1100</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> = <span class="hljs-number">0</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">reset</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1101</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1102</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> = idx - <span class="hljs-number">1100</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1110</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1111</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">link</span>.<span class="hljs-property">value</span> = idx - <span class="hljs-number">1110</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1120</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1121</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1122</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">method</span>.<span class="hljs-property">value</span> = idx - <span class="hljs-number">1120</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1130</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1131</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1132</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1133</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1134</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1135</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">period</span>.<span class="hljs-property">value</span> = idx - <span class="hljs-number">1130</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1140</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">colour</span>.<span class="hljs-property">value</span> = utils.<span class="hljs-title class_">ColourPicker</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">ID</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">colour</span>.<span class="hljs-property">value</span>);
+			<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1150</span>:
+			lastfm.<span class="hljs-title function_">update_username</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1199</span>:
+			lastfm.<span class="hljs-property">api_key</span>.<span class="hljs-property">value</span> = utils.<span class="hljs-title class_">InputBox</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">ID</span>, <span class="hljs-string">&#x27;On the 31st August 2024, it was noticed that the Last.fm API key supplied for many years has been blocked for excessive usage.\nYou can get one from this link:\n\nhttps://www.last.fm/api/account/create\n\nInput your own API key:&#x27;</span>, <span class="hljs-string">&#x27;Last.fm API key&#x27;</span>, lastfm.<span class="hljs-property">api_key</span>.<span class="hljs-property">value</span>, <span class="hljs-literal">false</span>);
+			<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Reload</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1200</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1201</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> = idx - <span class="hljs-number">1200</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">reset</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1300</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">meta</span>.<span class="hljs-title function_">toggle</span>();
+			panel.<span class="hljs-title function_">item_focus_change</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1301</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">location</span>.<span class="hljs-title function_">toggle</span>();
+			panel.<span class="hljs-title function_">item_focus_change</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1302</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">tech</span>.<span class="hljs-title function_">toggle</span>();
+			panel.<span class="hljs-title function_">item_focus_change</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1303</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">playcount</span>.<span class="hljs-title function_">toggle</span>();
+			panel.<span class="hljs-title function_">item_focus_change</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1304</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">stats</span>.<span class="hljs-title function_">toggle</span>();
+			panel.<span class="hljs-title function_">item_focus_change</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1305</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">rg</span>.<span class="hljs-title function_">toggle</span>();
+			panel.<span class="hljs-title function_">item_focus_change</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1400</span>:
+			<span class="hljs-keyword">let</span> tmp = utils.<span class="hljs-title class_">InputBox</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">ID</span>, <span class="hljs-string">&#x27;Enter title formatting&#x27;</span>, <span class="hljs-variable language_">window</span>.<span class="hljs-property">ScriptInfo</span>.<span class="hljs-property">Name</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">tf</span>.<span class="hljs-property">value</span>);
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">tf</span>.<span class="hljs-property">value</span> = tmp || <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">tf</span>.<span class="hljs-property">default_</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">tfo</span> = fb.<span class="hljs-title class_">TitleFormat</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">tf</span>.<span class="hljs-property">value</span>);
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1401</span>:
+			plman.<span class="hljs-title class_">FlushPlaybackQueue</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1999</span>:
+			<span class="hljs-title function_">_explorer</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>);
+			<span class="hljs-keyword">break</span>;
+		}
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">key_down</span> = <span class="hljs-function">(<span class="hljs-params">k</span>) =&gt;</span> {
+		<span class="hljs-keyword">switch</span> (k) {
+		<span class="hljs-keyword">case</span> <span class="hljs-attr">VK_UP</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">wheel</span>(<span class="hljs-number">1</span>);
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-attr">VK_DOWN</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">wheel</span>(-<span class="hljs-number">1</span>);
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+		<span class="hljs-attr">default</span>:
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+		}
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">update</span> = <span class="hljs-function">() =&gt;</span> {
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span> = [];
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">spacer_w</span> = <span class="hljs-title function_">_textWidth</span>(<span class="hljs-string">&#x27;0000&#x27;</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>);
+		<span class="hljs-keyword">switch</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span>) {
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;autoplaylists&#x27;</span>:
+			<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_isFile</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>)) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span> = <span class="hljs-title function_">_</span>(<span class="hljs-title function_">_jsonParseFile</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>))
+					.<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> {
+						item.<span class="hljs-property">width</span> = <span class="hljs-title function_">_textWidth</span>(item.<span class="hljs-property">name</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>);
+					})
+			}
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;lastfm_info&#x27;</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span> = <span class="hljs-string">&#x27;&#x27;</span>;
+			<span class="hljs-keyword">switch</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span>) {
+			<span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span> = <span class="hljs-title function_">_artistFolder</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span>) + <span class="hljs-string">&#x27;lastfm.artist.getSimilar.json&#x27;</span>;
+				<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_isFile</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>)) {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span> = <span class="hljs-title function_">_</span>(_.<span class="hljs-title function_">get</span>(<span class="hljs-title function_">_jsonParseFile</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>), <span class="hljs-string">&#x27;similarartists.artist&#x27;</span>, []))
+						.<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> ({
+							name : item.<span class="hljs-property">name</span>,
+							width : <span class="hljs-title function_">_textWidth</span>(item.<span class="hljs-property">name</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>),
+							url : <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">link</span>.<span class="hljs-property">value</span> == <span class="hljs-number">0</span> ? item.<span class="hljs-property">url</span> : <span class="hljs-string">&#x27;artist HAS &#x27;</span> + item.<span class="hljs-property">name</span>
+						}))
+						.<span class="hljs-title function_">value</span>();
+					<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_fileExpired</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>, <span class="hljs-variable constant_">ONE_DAY</span>)) {
+						<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>();
+					}
+				} <span class="hljs-keyword">else</span> {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>();
+				}
+				<span class="hljs-keyword">break</span>;
+			<span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:
+				<span class="hljs-keyword">if</span> (!lastfm.<span class="hljs-property">username</span>.<span class="hljs-property">length</span>) {
+					<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(N, <span class="hljs-string">&#x27;Last.fm username not set.&#x27;</span>);
+					<span class="hljs-keyword">break</span>;
+				}
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span> = folders.<span class="hljs-property">lastfm</span> + lastfm.<span class="hljs-property">username</span> + <span class="hljs-string">&#x27;.&#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">methods</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">method</span>.<span class="hljs-property">value</span>].<span class="hljs-property">method</span> + <span class="hljs-string">&#x27;.&#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">periods</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">period</span>.<span class="hljs-property">value</span>].<span class="hljs-property">period</span> + <span class="hljs-string">&#x27;.json&#x27;</span>;
+				<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_isFile</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>)) {
+					<span class="hljs-keyword">let</span> data = _.<span class="hljs-title function_">get</span>(<span class="hljs-title function_">_jsonParseFile</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>), <span class="hljs-variable language_">this</span>.<span class="hljs-property">methods</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">method</span>.<span class="hljs-property">value</span>].<span class="hljs-property">json</span>, []);
+					<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; data.<span class="hljs-property">length</span>; i++) {
+						<span class="hljs-keyword">let</span> name, url;
+						<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">method</span>.<span class="hljs-property">value</span> == <span class="hljs-number">0</span>) {
+							name = data[i].<span class="hljs-property">name</span>;
+							url = <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">link</span>.<span class="hljs-property">value</span> == <span class="hljs-number">0</span> ? data[i].<span class="hljs-property">url</span> : <span class="hljs-string">&#x27;artist HAS &#x27;</span> + name;
+						} <span class="hljs-keyword">else</span> {
+							name = data[i].<span class="hljs-property">artist</span>.<span class="hljs-property">name</span> + <span class="hljs-string">&#x27; - &#x27;</span> + data[i].<span class="hljs-property">name</span>;
+							url = data[i].<span class="hljs-property">url</span>;
+						}
+						<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[i] = {
+							name : name,
+							width : <span class="hljs-title function_">_textWidth</span>(name, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>),
+							url : url,
+							playcount : data[i].<span class="hljs-property">playcount</span>,
+							rank : i &gt; <span class="hljs-number">0</span> &amp;&amp; data[i].<span class="hljs-property">playcount</span> == data[i - <span class="hljs-number">1</span>].<span class="hljs-property">playcount</span> ? <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[i - <span class="hljs-number">1</span>].<span class="hljs-property">rank</span> : i + <span class="hljs-number">1</span>
+						};
+					}
+					<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_fileExpired</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>, <span class="hljs-variable constant_">ONE_DAY</span>)) {
+						<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>();
+					}
+				} <span class="hljs-keyword">else</span> {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>();
+				}
+				<span class="hljs-keyword">break</span>;
+			<span class="hljs-keyword">case</span> <span class="hljs-number">2</span>:
+				<span class="hljs-keyword">if</span> (!lastfm.<span class="hljs-property">username</span>.<span class="hljs-property">length</span>) {
+					<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(N, <span class="hljs-string">&#x27;Last.fm username not set.&#x27;</span>);
+					<span class="hljs-keyword">break</span>;
+				}
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span> = folders.<span class="hljs-property">lastfm</span> + lastfm.<span class="hljs-property">username</span> + <span class="hljs-string">&#x27;.user.getRecentTracks.json&#x27;</span>;
+				<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_isFile</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>)) {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span> = <span class="hljs-title function_">_</span>(_.<span class="hljs-title function_">get</span>(<span class="hljs-title function_">_jsonParseFile</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>), <span class="hljs-string">&#x27;recenttracks.track&#x27;</span>, []))
+						.<span class="hljs-title function_">filter</span>(<span class="hljs-string">&#x27;date&#x27;</span>)
+						.<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> {
+							<span class="hljs-keyword">const</span> name = item.<span class="hljs-property">artist</span>[<span class="hljs-string">&#x27;#text&#x27;</span>] + <span class="hljs-string">&#x27; - &#x27;</span> + item.<span class="hljs-property">name</span>;
+							<span class="hljs-keyword">return</span> {
+								name : name,
+								width : <span class="hljs-title function_">_textWidth</span>(name, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>),
+								url : item.<span class="hljs-property">url</span>
+							};
+						})
+						.<span class="hljs-title function_">value</span>();
+				} <span class="hljs-keyword">else</span> {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>();
+				}
+			}
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;musicbrainz&#x27;</span>:
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> == <span class="hljs-number">0</span>) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_data</span> = [];
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_offset</span> = <span class="hljs-number">0</span>;
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span> = <span class="hljs-title function_">_artistFolder</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span>) + <span class="hljs-string">&#x27;musicbrainz.releases.&#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_id</span> + <span class="hljs-string">&#x27;.json&#x27;</span>;
+				<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_isFile</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>)) {
+					<span class="hljs-keyword">let</span> data = <span class="hljs-title function_">_</span>(<span class="hljs-title function_">_jsonParseFile</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>))
+						.<span class="hljs-title function_">orderBy</span>([<span class="hljs-string">&#x27;first-release-date&#x27;</span>, <span class="hljs-string">&#x27;title&#x27;</span>], [<span class="hljs-string">&#x27;desc&#x27;</span>, <span class="hljs-string">&#x27;asc&#x27;</span>])
+						.<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> ({
+							name : item.<span class="hljs-property">title</span>,
+							width : <span class="hljs-title function_">_textWidth</span>(item.<span class="hljs-property">title</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>),
+							url : <span class="hljs-string">&#x27;https://musicbrainz.org/release-group/&#x27;</span> + item.<span class="hljs-property">id</span>,
+							date : item[<span class="hljs-string">&#x27;first-release-date&#x27;</span>].<span class="hljs-title function_">substring</span>(<span class="hljs-number">0</span>, <span class="hljs-number">4</span>),
+							primary : item[<span class="hljs-string">&#x27;primary-type&#x27;</span>],
+							secondary : item[<span class="hljs-string">&#x27;secondary-types&#x27;</span>].<span class="hljs-title function_">sort</span>()[<span class="hljs-number">0</span>] || <span class="hljs-literal">null</span>
+						}))
+						.<span class="hljs-title function_">nest</span>([<span class="hljs-string">&#x27;primary&#x27;</span>, <span class="hljs-string">&#x27;secondary&#x27;</span>])
+						.<span class="hljs-title function_">value</span>()
+					_.<span class="hljs-title function_">forEach</span>([<span class="hljs-string">&#x27;Album&#x27;</span>, <span class="hljs-string">&#x27;Single&#x27;</span>, <span class="hljs-string">&#x27;EP&#x27;</span>, <span class="hljs-string">&#x27;Other&#x27;</span>, <span class="hljs-string">&#x27;Broadcast&#x27;</span>, <span class="hljs-string">&#x27;null&#x27;</span>], <span class="hljs-function">(<span class="hljs-params">primary</span>) =&gt;</span> {
+						_.<span class="hljs-title function_">forEach</span>([<span class="hljs-string">&#x27;null&#x27;</span>, <span class="hljs-string">&#x27;Audiobook&#x27;</span>, <span class="hljs-string">&#x27;Compilation&#x27;</span>, <span class="hljs-string">&#x27;Demo&#x27;</span>, <span class="hljs-string">&#x27;DJ-mix&#x27;</span>, <span class="hljs-string">&#x27;Interview&#x27;</span>, <span class="hljs-string">&#x27;Live&#x27;</span>, <span class="hljs-string">&#x27;Mixtape/Street&#x27;</span>, <span class="hljs-string">&#x27;Remix&#x27;</span>, <span class="hljs-string">&#x27;Spokenword&#x27;</span>, <span class="hljs-string">&#x27;Soundtrack&#x27;</span>], <span class="hljs-function">(<span class="hljs-params">secondary</span>) =&gt;</span> {
+							<span class="hljs-keyword">let</span> group = _.<span class="hljs-title function_">get</span>(data, primary + <span class="hljs-string">&#x27;.&#x27;</span> + secondary);
+							<span class="hljs-keyword">if</span> (group) {
+								<span class="hljs-keyword">const</span> name = (primary + <span class="hljs-string">&#x27; + &#x27;</span> + secondary).<span class="hljs-title function_">replace</span>(<span class="hljs-string">&#x27;null + null&#x27;</span>, <span class="hljs-string">&#x27;Unspecified type&#x27;</span>).<span class="hljs-title function_">replace</span>(<span class="hljs-string">&#x27;null + &#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>).<span class="hljs-title function_">replace</span>(<span class="hljs-string">&#x27; + null&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>);
+								<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">push</span>({name : name, width : <span class="hljs-number">0</span>, url : <span class="hljs-string">&#x27;&#x27;</span>, date : <span class="hljs-string">&#x27;&#x27;</span>});
+								<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span> = [...<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>, ...group];
+								<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">push</span>({name : <span class="hljs-string">&#x27;&#x27;</span>, width : <span class="hljs-number">0</span>, url : <span class="hljs-string">&#x27;&#x27;</span>, date : <span class="hljs-string">&#x27;&#x27;</span>});
+							}
+						});
+					});
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">pop</span>();
+					<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_fileExpired</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>, <span class="hljs-variable constant_">ONE_DAY</span>)) {
+						<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>();
+					}
+				} <span class="hljs-keyword">else</span> {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>();
+				}
+			} <span class="hljs-keyword">else</span> {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span> = <span class="hljs-title function_">_artistFolder</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span>) + <span class="hljs-string">&#x27;musicbrainz.links.&#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_id</span> + <span class="hljs-string">&#x27;.json&#x27;</span>;
+				<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_isFile</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>)) {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span> = <span class="hljs-title function_">_</span>(_.<span class="hljs-title function_">get</span>(<span class="hljs-title function_">_jsonParseFile</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>), <span class="hljs-string">&#x27;relations&#x27;</span>, []))
+						.<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> {
+							<span class="hljs-keyword">const</span> url = <span class="hljs-built_in">decodeURIComponent</span>(item.<span class="hljs-property">url</span>.<span class="hljs-property">resource</span>);
+							<span class="hljs-keyword">return</span> {
+								name : url,
+								url : url,
+								width : <span class="hljs-title function_">_textWidth</span>(url, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>)
+							};
+						})
+						.<span class="hljs-title function_">sortBy</span>(<span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> {
+							<span class="hljs-keyword">return</span> item.<span class="hljs-property">name</span>.<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27;//&#x27;</span>)[<span class="hljs-number">1</span>].<span class="hljs-title function_">replace</span>(<span class="hljs-string">&#x27;www.&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>);
+						})
+						.<span class="hljs-title function_">value</span>();
+					<span class="hljs-keyword">const</span> url = <span class="hljs-string">&#x27;https://musicbrainz.org/artist/&#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_id</span>;
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">unshift</span>({
+						name : url,
+						url : url,
+						width : <span class="hljs-title function_">_textWidth</span>(url, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>)
+					});
+					<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_fileExpired</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>, <span class="hljs-variable constant_">ONE_DAY</span>)) {
+						<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>();
+					}
+				} <span class="hljs-keyword">else</span> {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>();
+				}
+			}
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;properties&#x27;</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span> = <span class="hljs-number">0</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span> = panel.<span class="hljs-property">metadb</span>.<span class="hljs-property">Path</span>;
+			<span class="hljs-keyword">let</span> fileinfo = panel.<span class="hljs-property">metadb</span>.<span class="hljs-title class_">GetFileInfo</span>();
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">meta</span>.<span class="hljs-property">enabled</span>) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add_meta</span>(fileinfo);
+			}
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">location</span>.<span class="hljs-property">enabled</span>) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add_location</span>();
+			}
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">tech</span>.<span class="hljs-property">enabled</span>) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add_tech</span>(fileinfo);
+			}
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">custom_fields</span>) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add_custom</span>();
+			}
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">foo_playcount</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">playcount</span>.<span class="hljs-property">enabled</span>) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add_playcount</span>();
+			}
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">stats</span>.<span class="hljs-property">enabled</span>) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add_stats</span>();
+			}
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">rg</span>.<span class="hljs-property">enabled</span>) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add_rg</span>();
+			}
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">pop</span>();
+			_.<span class="hljs-title function_">forEach</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>, <span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> {
+				item.<span class="hljs-property">width</span> = <span class="hljs-title function_">_textWidth</span>(item.<span class="hljs-property">value</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>);
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span> = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">max</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span>, <span class="hljs-title function_">_textWidth</span>(item.<span class="hljs-property">name</span>, panel.<span class="hljs-property">fonts</span>.<span class="hljs-property">normal</span>) + <span class="hljs-number">20</span>);
+			});
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;queue_viewer&#x27;</span>:
+			<span class="hljs-keyword">let</span> items = plman.<span class="hljs-title class_">GetPlaybackQueueHandles</span>();
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span> = _.<span class="hljs-title function_">map</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">tfo</span>.<span class="hljs-title class_">EvalWithMetadbs</span>(items), <span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> ({ name : item }));
+			<span class="hljs-keyword">break</span>;
+		}
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-property">length</span>;
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span> = <span class="hljs-number">0</span>;
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span> = <span class="hljs-number">0</span>;
+		<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">header_text</span> = <span class="hljs-function">() =&gt;</span> {
+		<span class="hljs-keyword">switch</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span>) {
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;autoplaylists&#x27;</span>:
+			<span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Autoplaylists&#x27;</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;lastfm_info&#x27;</span>:
+			<span class="hljs-keyword">switch</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span>) {
+			<span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:
+				<span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span> + <span class="hljs-string">&#x27;: similar artists&#x27;</span>;
+			<span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:
+				<span class="hljs-keyword">return</span> lastfm.<span class="hljs-property">username</span> + <span class="hljs-string">&#x27;: &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">periods</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">period</span>.<span class="hljs-property">value</span>].<span class="hljs-property">display</span> + <span class="hljs-string">&#x27; &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">methods</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">method</span>.<span class="hljs-property">value</span>].<span class="hljs-property">display</span> + <span class="hljs-string">&#x27; charts&#x27;</span>;
+			<span class="hljs-keyword">case</span> <span class="hljs-number">2</span>:
+				<span class="hljs-keyword">return</span> lastfm.<span class="hljs-property">username</span> + <span class="hljs-string">&#x27;: recent tracks&#x27;</span>;
+			}
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;musicbrainz&#x27;</span>:
+			<span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span> + <span class="hljs-string">&#x27;: &#x27;</span> + (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> == <span class="hljs-number">0</span> ? <span class="hljs-string">&#x27;releases&#x27;</span> : <span class="hljs-string">&#x27;links&#x27;</span>);
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;properties&#x27;</span>:
+			<span class="hljs-keyword">return</span> panel.<span class="hljs-title function_">tf</span>(<span class="hljs-string">&#x27;%artist% - %title%&#x27;</span>);
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;queue_viewer&#x27;</span>:
+			<span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Queue Viewer&#x27;</span>;
+		}
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">reset</span> = <span class="hljs-function">() =&gt;</span> {
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span> = <span class="hljs-number">0</span>;
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span> = [];
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span> = <span class="hljs-string">&#x27;&#x27;</span>;
+
+		<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> == <span class="hljs-string">&#x27;lastfm_info&#x27;</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> &gt; <span class="hljs-number">0</span>) {
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+		} <span class="hljs-keyword">else</span> {
+			panel.<span class="hljs-title function_">item_focus_change</span>();
+		}
+	}
+
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">init</span> = <span class="hljs-function">() =&gt;</span> {
+		<span class="hljs-keyword">switch</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span>) {
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;autoplaylists&#x27;</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">save</span> = <span class="hljs-function">() =&gt;</span> {
+				<span class="hljs-title function_">_save</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>, <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">replacer</span>));
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">replacer</span> = <span class="hljs-function">(<span class="hljs-params">key, value</span>) =&gt;</span> {
+				<span class="hljs-keyword">return</span> key == <span class="hljs-string">&#x27;width&#x27;</span> ? <span class="hljs-literal">undefined</span> : value;
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">add</span> = <span class="hljs-function">() =&gt;</span> {
+				<span class="hljs-keyword">const</span> new_name = utils.<span class="hljs-title class_">InputBox</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">ID</span>, <span class="hljs-string">&#x27;Enter autoplaylist name&#x27;</span>, <span class="hljs-variable language_">window</span>.<span class="hljs-property">ScriptInfo</span>.<span class="hljs-property">Name</span>);
+				<span class="hljs-keyword">if</span> (!new_name.<span class="hljs-property">length</span>) {
+					<span class="hljs-keyword">return</span>;
+				}
+				<span class="hljs-keyword">const</span> new_query = utils.<span class="hljs-title class_">InputBox</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">ID</span>, <span class="hljs-string">&#x27;Enter autoplaylist query&#x27;</span>, <span class="hljs-variable language_">window</span>.<span class="hljs-property">ScriptInfo</span>.<span class="hljs-property">Name</span>);
+				<span class="hljs-keyword">if</span> (!new_query.<span class="hljs-property">length</span>) {
+					<span class="hljs-keyword">return</span>;
+				}
+				<span class="hljs-keyword">const</span> new_sort = utils.<span class="hljs-title class_">InputBox</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">ID</span>, <span class="hljs-string">&#x27;Enter sort pattern\n\n(optional)&#x27;</span>, <span class="hljs-variable language_">window</span>.<span class="hljs-property">ScriptInfo</span>.<span class="hljs-property">Name</span>);
+				<span class="hljs-keyword">const</span> new_forced = (new_sort.<span class="hljs-property">length</span> ? <span class="hljs-title class_">WshShell</span>.<span class="hljs-title class_">Popup</span>(<span class="hljs-string">&#x27;Force sort?&#x27;</span>, <span class="hljs-number">0</span>, <span class="hljs-variable language_">window</span>.<span class="hljs-property">ScriptInfo</span>.<span class="hljs-property">Name</span>, popup.<span class="hljs-property">question</span> + popup.<span class="hljs-property">yes_no</span>) : popup.<span class="hljs-property">no</span>) == popup.<span class="hljs-property">yes</span>;
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">push</span>({
+					name : new_name,
+					query : new_query,
+					sort : new_sort,
+					forced : new_forced
+				});
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">edit_done</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>);
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">edit</span> = <span class="hljs-function">(<span class="hljs-params">x, y</span>) =&gt;</span> {
+				<span class="hljs-keyword">const</span> z = <span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span>;
+				<span class="hljs-title function_">_tt</span>(<span class="hljs-string">&#x27;&#x27;</span>);
+				<span class="hljs-keyword">let</span> m = <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">CreatePopupMenu</span>();
+				m.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;Run query&#x27;</span>);
+				m.<span class="hljs-title class_">AppendMenuSeparator</span>();
+				m.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">2</span>, <span class="hljs-string">&#x27;Rename...&#x27;</span>);
+				m.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">3</span>, <span class="hljs-string">&#x27;Edit query...&#x27;</span>);
+				m.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">4</span>, <span class="hljs-string">&#x27;Edit sort pattern...&#x27;</span>);
+				m.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">5</span>, <span class="hljs-string">&#x27;Force Sort&#x27;</span>);
+				m.<span class="hljs-title class_">CheckMenuItem</span>(<span class="hljs-number">5</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">forced</span>);
+				m.<span class="hljs-title class_">AppendMenuSeparator</span>();
+				m.<span class="hljs-title class_">AppendMenuItem</span>(z &gt; <span class="hljs-number">0</span> ? <span class="hljs-variable constant_">MF_STRING</span> : <span class="hljs-variable constant_">MF_GRAYED</span>, <span class="hljs-number">6</span>, <span class="hljs-string">&#x27;Move up&#x27;</span>);
+				m.<span class="hljs-title class_">AppendMenuItem</span>(z &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-property">length</span> - <span class="hljs-number">1</span> ? <span class="hljs-variable constant_">MF_STRING</span> : <span class="hljs-variable constant_">MF_GRAYED</span>, <span class="hljs-number">7</span>, <span class="hljs-string">&#x27;Move down&#x27;</span>);
+				m.<span class="hljs-title class_">AppendMenuSeparator</span>();
+				m.<span class="hljs-title class_">AppendMenuItem</span>(<span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-number">8</span>, <span class="hljs-string">&#x27;Delete&#x27;</span>);
+				<span class="hljs-keyword">const</span> idx = m.<span class="hljs-title class_">TrackPopupMenu</span>(x, y);
+				<span class="hljs-keyword">switch</span> (idx) {
+				<span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:
+					<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">run_query</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">name</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">query</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">sort</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">forced</span>);
+					<span class="hljs-keyword">break</span>;
+				<span class="hljs-keyword">case</span> <span class="hljs-number">2</span>:
+					<span class="hljs-keyword">const</span> new_name = utils.<span class="hljs-title class_">InputBox</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">ID</span>, <span class="hljs-string">&#x27;Rename autoplaylist&#x27;</span>, <span class="hljs-variable language_">window</span>.<span class="hljs-property">ScriptInfo</span>.<span class="hljs-property">Name</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">name</span>);
+					<span class="hljs-keyword">if</span> (new_name.<span class="hljs-property">length</span> &amp;&amp; new_name != <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">name</span>) {
+						<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">name</span> = new_name;
+						<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">edit_done</span>(z);
+					}
+					<span class="hljs-keyword">break</span>;
+				<span class="hljs-keyword">case</span> <span class="hljs-number">3</span>:
+					<span class="hljs-keyword">const</span> new_query = utils.<span class="hljs-title class_">InputBox</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">ID</span>, <span class="hljs-string">&#x27;Enter autoplaylist query&#x27;</span>, <span class="hljs-variable language_">window</span>.<span class="hljs-property">ScriptInfo</span>.<span class="hljs-property">Name</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">query</span>);
+					<span class="hljs-keyword">if</span> (new_query.<span class="hljs-property">length</span> &amp;&amp; new_query != <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">query</span>) {
+						<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">query</span> = new_query;
+						<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">edit_done</span>(z);
+					}
+					<span class="hljs-keyword">break</span>;
+				<span class="hljs-keyword">case</span> <span class="hljs-number">4</span>:
+					<span class="hljs-keyword">const</span> new_sort = utils.<span class="hljs-title class_">InputBox</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">ID</span>, <span class="hljs-string">&#x27;Enter sort pattern\n\n(optional)&#x27;</span>, <span class="hljs-variable language_">window</span>.<span class="hljs-property">ScriptInfo</span>.<span class="hljs-property">Name</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">sort</span>);
+					<span class="hljs-keyword">if</span> (new_sort != <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">sort</span>) {
+						<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">sort</span> = new_sort;
+						<span class="hljs-keyword">if</span> (new_sort.<span class="hljs-property">length</span>) {
+							<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">forced</span> = <span class="hljs-title class_">WshShell</span>.<span class="hljs-title class_">Popup</span>(<span class="hljs-string">&#x27;Force sort?&#x27;</span>, <span class="hljs-number">0</span>, <span class="hljs-variable language_">window</span>.<span class="hljs-property">ScriptInfo</span>.<span class="hljs-property">Name</span>, popup.<span class="hljs-property">question</span> + popup.<span class="hljs-property">yes_no</span>) == popup.<span class="hljs-property">yes</span>;
+						}
+						<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">edit_done</span>(z);
+					}
+					<span class="hljs-keyword">break</span>;
+				<span class="hljs-keyword">case</span> <span class="hljs-number">5</span>:
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">forced</span> = !<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">forced</span>;
+					<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">edit_done</span>(z);
+					<span class="hljs-keyword">break</span>;
+				<span class="hljs-keyword">case</span> <span class="hljs-number">6</span>:
+				<span class="hljs-keyword">case</span> <span class="hljs-number">7</span>:
+					<span class="hljs-keyword">let</span> tmp = <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z];
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">splice</span>(z, <span class="hljs-number">1</span>);
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">splice</span>(idx == <span class="hljs-number">6</span> ? z - <span class="hljs-number">1</span> : z + <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, tmp);
+					<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">save</span>();
+					<span class="hljs-keyword">break</span>;
+				<span class="hljs-keyword">case</span> <span class="hljs-number">8</span>:
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">deleted_items</span>.<span class="hljs-title function_">unshift</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z]);
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">splice</span>(z, <span class="hljs-number">1</span>);
+					<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">save</span>();
+					<span class="hljs-keyword">break</span>;
+				}
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">edit_done</span> = <span class="hljs-function">(<span class="hljs-params">z</span>) =&gt;</span> {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">run_query</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">name</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">query</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">sort</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>[z].<span class="hljs-property">forced</span>);
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">save</span>();
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">run_query</span> = <span class="hljs-function">(<span class="hljs-params">n, q, s, f</span>) =&gt;</span> {
+				<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>;
+				<span class="hljs-keyword">while</span> (i &lt; plman.<span class="hljs-property">PlaylistCount</span>) {
+					<span class="hljs-keyword">if</span> (plman.<span class="hljs-title class_">GetPlaylistName</span>(i) == n) {
+						plman.<span class="hljs-title class_">RemovePlaylist</span>(i);
+					} <span class="hljs-keyword">else</span> {
+						i++;
+					}
+				}
+				<span class="hljs-keyword">try</span> {
+					plman.<span class="hljs-title class_">CreateAutoPlaylist</span>(plman.<span class="hljs-property">PlaylistCount</span>, n, q, s, f ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>);
+					plman.<span class="hljs-property">ActivePlaylist</span> = plman.<span class="hljs-property">PlaylistCount</span> - <span class="hljs-number">1</span>;
+				} <span class="hljs-keyword">catch</span> (e) {
+					fb.<span class="hljs-title class_">ShowPopupMessage</span>(<span class="hljs-string">`<span class="hljs-subst">${e}</span>`</span>);
+				}
+			}
+
+			<span class="hljs-title function_">_createFolder</span>(folders.<span class="hljs-property">data</span>);
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">deleted_items</span> = [];
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span> = folders.<span class="hljs-property">data</span> + <span class="hljs-string">&#x27;autoplaylists.json&#x27;</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;lastfm_info&#x27;</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">get</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+				<span class="hljs-keyword">if</span> (lastfm.<span class="hljs-property">api_key</span>.<span class="hljs-property">value</span>.<span class="hljs-property">length</span> == <span class="hljs-number">0</span>)
+					<span class="hljs-keyword">return</span>;
+
+				<span class="hljs-keyword">let</span> url;
+
+				<span class="hljs-keyword">switch</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span>) {
+				<span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:
+					<span class="hljs-keyword">if</span> (!<span class="hljs-title function_">_tagged</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span>)) {
+						<span class="hljs-keyword">return</span>;
+					}
+					url = lastfm.<span class="hljs-title function_">get_base_url</span>() + <span class="hljs-string">&#x27;&amp;limit=100&amp;method=artist.getSimilar&amp;artist=&#x27;</span> + <span class="hljs-built_in">encodeURIComponent</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span>);
+					<span class="hljs-keyword">break</span>;
+				<span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:
+					url = lastfm.<span class="hljs-title function_">get_base_url</span>() + <span class="hljs-string">&#x27;&amp;limit=100&amp;method=&#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">methods</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">method</span>.<span class="hljs-property">value</span>].<span class="hljs-property">method</span> + <span class="hljs-string">&#x27;&amp;period=&#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">periods</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">period</span>.<span class="hljs-property">value</span>].<span class="hljs-property">period</span> + <span class="hljs-string">&#x27;&amp;user=&#x27;</span> + lastfm.<span class="hljs-property">username</span>;
+					<span class="hljs-keyword">break</span>;
+				<span class="hljs-keyword">case</span> <span class="hljs-number">2</span>:
+					url = lastfm.<span class="hljs-title function_">get_base_url</span>() + <span class="hljs-string">&#x27;&amp;limit=100&amp;method=user.getRecentTracks&amp;user=&#x27;</span> + lastfm.<span class="hljs-property">username</span>;
+					<span class="hljs-keyword">break</span>;
+				}
+
+				<span class="hljs-keyword">var</span> task_id = utils.<span class="hljs-title class_">HTTPRequestAsync</span>(<span class="hljs-number">0</span>, url, lastfm.<span class="hljs-property">ua</span>);
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">filenames</span>[task_id] = <span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>;
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">http_request_done</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">task_id, success, response_text</span>) {
+				<span class="hljs-keyword">var</span> f = <span class="hljs-variable language_">this</span>.<span class="hljs-property">filenames</span>[task_id];
+
+				<span class="hljs-keyword">if</span> (!f)
+					<span class="hljs-keyword">return</span>;
+
+				<span class="hljs-keyword">if</span> (!success) {
+					<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(N, response_text);
+					<span class="hljs-keyword">return</span>;
+				}
+
+				<span class="hljs-keyword">var</span> data = <span class="hljs-title function_">_jsonParse</span>(response_text);
+
+				<span class="hljs-keyword">if</span> (data.<span class="hljs-property">error</span>) {
+					<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(N, data.<span class="hljs-property">message</span>);
+					<span class="hljs-keyword">return</span>;
+				}
+
+				<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_save</span>(f, response_text)) {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">reset</span>();
+				}
+			}
+
+			<span class="hljs-title function_">_createFolder</span>(folders.<span class="hljs-property">data</span>);
+			<span class="hljs-title function_">_createFolder</span>(folders.<span class="hljs-property">artists</span>);
+			<span class="hljs-title function_">_createFolder</span>(folders.<span class="hljs-property">lastfm</span>);
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">methods</span> = [{
+					method : <span class="hljs-string">&#x27;user.getTopArtists&#x27;</span>,
+					json : <span class="hljs-string">&#x27;topartists.artist&#x27;</span>,
+					display : <span class="hljs-string">&#x27;artist&#x27;</span>
+				}, {
+					method : <span class="hljs-string">&#x27;user.getTopAlbums&#x27;</span>,
+					json : <span class="hljs-string">&#x27;topalbums.album&#x27;</span>,
+					display : <span class="hljs-string">&#x27;album&#x27;</span>
+				}, {
+					method : <span class="hljs-string">&#x27;user.getTopTracks&#x27;</span>,
+					json : <span class="hljs-string">&#x27;toptracks.track&#x27;</span>,
+					display : <span class="hljs-string">&#x27;track&#x27;</span>
+				}
+			];
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">periods</span> = [{
+					period : <span class="hljs-string">&#x27;overall&#x27;</span>,
+					display : <span class="hljs-string">&#x27;overall&#x27;</span>
+				}, {
+					period : <span class="hljs-string">&#x27;7day&#x27;</span>,
+					display : <span class="hljs-string">&#x27;last 7 days&#x27;</span>
+				}, {
+					period : <span class="hljs-string">&#x27;1month&#x27;</span>,
+					display : <span class="hljs-string">&#x27;1 month&#x27;</span>
+				}, {
+					period : <span class="hljs-string">&#x27;3month&#x27;</span>,
+					display : <span class="hljs-string">&#x27;3 month&#x27;</span>
+				}, {
+					period : <span class="hljs-string">&#x27;6month&#x27;</span>,
+					display : <span class="hljs-string">&#x27;6 month&#x27;</span>
+				}, {
+					period : <span class="hljs-string">&#x27;12month&#x27;</span>,
+					display : <span class="hljs-string">&#x27;12 month&#x27;</span>
+				}
+			];
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">time_elapsed</span> = <span class="hljs-number">0</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">filenames</span> = {};
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span> = {
+				mode : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&#x27;2K3.LIST.LASTFM.MODE&#x27;</span>, <span class="hljs-number">0</span>), <span class="hljs-comment">// 0 similar artists 1 charts</span>
+				method : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&#x27;2K3.LIST.LASTFM.CHARTS.METHOD&#x27;</span>, <span class="hljs-number">0</span>),
+				period : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&#x27;2K3.LIST.LASTFM.CHARTS.PERIOD&#x27;</span>, <span class="hljs-number">0</span>),
+				colour : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&#x27;2K3.LIST.LASTFM.CHARTS.BAR.COLOUR&#x27;</span>, <span class="hljs-title function_">_RGB</span>(<span class="hljs-number">60</span>, <span class="hljs-number">60</span>, <span class="hljs-number">60</span>)),
+				link : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&#x27;2K3.LIST.LASTFM.LINK&#x27;</span>, <span class="hljs-number">0</span>) <span class="hljs-comment">// 0 last.fm website 1 autoplaylist</span>
+			};
+
+			<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> &gt; <span class="hljs-number">0</span>) {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+			}
+
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;musicbrainz&#x27;</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">get</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+				<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> == <span class="hljs-number">0</span>) {
+					<span class="hljs-keyword">var</span> url = <span class="hljs-string">&#x27;https://musicbrainz.org/ws/2/release-group?fmt=json&amp;limit=100&amp;offset=&#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_offset</span> + <span class="hljs-string">&#x27;&amp;artist=&#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_id</span>;
+				} <span class="hljs-keyword">else</span> {
+					<span class="hljs-keyword">var</span> url = <span class="hljs-string">&#x27;https://musicbrainz.org/ws/2/artist/&#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_id</span> + <span class="hljs-string">&#x27;?fmt=json&amp;inc=url-rels&#x27;</span>;
+				}
+
+				<span class="hljs-keyword">var</span> task_id = utils.<span class="hljs-title class_">HTTPRequestAsync</span>(<span class="hljs-number">0</span>, url, <span class="hljs-string">&#x27;spider_monkey_panel_musicbrainz&#x27;</span>);
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">filenames</span>[task_id] = <span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>;
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">http_request_done</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">id, success, response_text</span>) {
+				<span class="hljs-keyword">var</span> f = <span class="hljs-variable language_">this</span>.<span class="hljs-property">filenames</span>[id];
+
+				<span class="hljs-keyword">if</span> (!f)
+					<span class="hljs-keyword">return</span>;
+
+				<span class="hljs-keyword">if</span> (!success) {
+					<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(N, response_text);
+					<span class="hljs-keyword">return</span>;
+				}
+
+				<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">mode</span>.<span class="hljs-property">value</span> == <span class="hljs-number">0</span>) {
+					<span class="hljs-keyword">var</span> data = <span class="hljs-title function_">_jsonParse</span>(response_text);
+					<span class="hljs-keyword">var</span> max_offset = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(<span class="hljs-number">500</span>, data[<span class="hljs-string">&#x27;release-group-count&#x27;</span>] || <span class="hljs-number">0</span>) - <span class="hljs-number">100</span>;
+					<span class="hljs-keyword">var</span> rg = data[<span class="hljs-string">&#x27;release-groups&#x27;</span>] || [];
+
+					<span class="hljs-keyword">if</span> (rg.<span class="hljs-property">length</span>) {
+						<span class="hljs-title class_">Array</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">push</span>.<span class="hljs-title function_">apply</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_data</span>, rg);
+					}
+
+					<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_offset</span> &lt; max_offset) {
+						<span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_offset</span> += <span class="hljs-number">100</span>;
+						<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>();
+					} <span class="hljs-keyword">else</span> {
+						<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_save</span>(f, <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_data</span>))) {
+							<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">reset</span>();
+						}
+					}
+				} <span class="hljs-keyword">else</span> {
+					<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_save</span>(f, response_text)) {
+						<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">reset</span>();
+					}
+				}
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">filenames</span> = {};
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">mb_id</span> = <span class="hljs-string">&#x27;&#x27;</span>;
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span> = {
+				mode : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&#x27;2K3.LIST.MUSICBRAINZ.MODE&#x27;</span>, <span class="hljs-number">0</span>) <span class="hljs-comment">// 0 releases 1 links</span>
+			};
+
+			<span class="hljs-title function_">_createFolder</span>(folders.<span class="hljs-property">data</span>);
+			<span class="hljs-title function_">_createFolder</span>(folders.<span class="hljs-property">artists</span>);
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;properties&#x27;</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">add_meta</span> = <span class="hljs-function">(<span class="hljs-params">f</span>) =&gt;</span> {
+				<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; f.<span class="hljs-property">MetaCount</span>; i++) {
+					<span class="hljs-keyword">let</span> name = f.<span class="hljs-title class_">MetaName</span>(i);
+					<span class="hljs-keyword">let</span> num = f.<span class="hljs-title class_">MetaValueCount</span>(i);
+					<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> j = <span class="hljs-number">0</span>; j &lt; num; j++) {
+						<span class="hljs-keyword">let</span> url;
+						<span class="hljs-keyword">let</span> value = f.<span class="hljs-title class_">MetaValue</span>(i, j).<span class="hljs-title function_">replace</span>(<span class="hljs-regexp">/\s{2,}/g</span>, <span class="hljs-string">&#x27; &#x27;</span>);
+						<span class="hljs-keyword">if</span> (<span class="hljs-title function_">_isUUID</span>(value)) {
+							<span class="hljs-keyword">switch</span> (name.<span class="hljs-title function_">toUpperCase</span>()) {
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ_ARTISTID&#x27;</span>:
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ_ALBUMARTISTID&#x27;</span>:
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ ARTIST ID&#x27;</span>:
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ ALBUM ARTIST ID&#x27;</span>:
+								url = <span class="hljs-string">&#x27;https://musicbrainz.org/artist/&#x27;</span> + value;
+								<span class="hljs-keyword">break</span>;
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ_ALBUMID&#x27;</span>:
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ ALBUM ID&#x27;</span>:
+								url = <span class="hljs-string">&#x27;https://musicbrainz.org/release/&#x27;</span> + value;
+								<span class="hljs-keyword">break</span>;
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ_RELEASEGROUPID&#x27;</span>:
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ RELEASE GROUP ID&#x27;</span>:
+								url = <span class="hljs-string">&#x27;https://musicbrainz.org/release-group/&#x27;</span> + value;
+								<span class="hljs-keyword">break</span>;
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ_RELEASETRACKID&#x27;</span>:
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ RELEASE TRACK ID&#x27;</span>:
+								url = <span class="hljs-string">&#x27;https://musicbrainz.org/track/&#x27;</span> + value;
+								<span class="hljs-keyword">break</span>;
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ_TRACKID&#x27;</span>:
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ TRACK ID&#x27;</span>:
+								url = <span class="hljs-string">&#x27;https://musicbrainz.org/recording/&#x27;</span> + value;
+								<span class="hljs-keyword">break</span>;
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ_WORKID&#x27;</span>:
+							<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;MUSICBRAINZ WORK ID&#x27;</span>:
+								url = <span class="hljs-string">&#x27;https://musicbrainz.org/work/&#x27;</span> + value;
+								<span class="hljs-keyword">break</span>;
+							<span class="hljs-attr">default</span>:
+								url = name.<span class="hljs-title function_">toLowerCase</span>() + (num == <span class="hljs-number">1</span> ? <span class="hljs-string">&#x27; IS &#x27;</span> : <span class="hljs-string">&#x27; HAS &#x27;</span>) + value;
+								<span class="hljs-keyword">break</span>;
+							}
+						} <span class="hljs-keyword">else</span> {
+							url = name.<span class="hljs-title function_">toLowerCase</span>() + (num == <span class="hljs-number">1</span> ? <span class="hljs-string">&#x27; IS &#x27;</span> : <span class="hljs-string">&#x27; HAS &#x27;</span>) + value;
+						}
+						<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">push</span>({
+							name : j == <span class="hljs-number">0</span> ? name.<span class="hljs-title function_">toUpperCase</span>() : <span class="hljs-string">&#x27;&#x27;</span>,
+							value : value,
+							url : url
+						});
+					}
+				}
+				<span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-property">length</span>) { <span class="hljs-comment">// only add blank line if there is some metadata</span>
+					<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add</span>();
+				}
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">add_location</span> = <span class="hljs-function">() =&gt;</span> {
+				<span class="hljs-keyword">let</span> names = [<span class="hljs-string">&#x27;FILE NAME&#x27;</span>, <span class="hljs-string">&#x27;FOLDER NAME&#x27;</span>, <span class="hljs-string">&#x27;FILE PATH&#x27;</span>, <span class="hljs-string">&#x27;SUBSONG INDEX&#x27;</span>, <span class="hljs-string">&#x27;FILE SIZE&#x27;</span>, <span class="hljs-string">&#x27;LAST MODIFIED&#x27;</span>];
+				<span class="hljs-keyword">let</span> values = [panel.<span class="hljs-title function_">tf</span>(<span class="hljs-string">&#x27;%filename_ext%&#x27;</span>), panel.<span class="hljs-title function_">tf</span>(<span class="hljs-string">&#x27;$directory_path(%path%)&#x27;</span>), <span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span>, panel.<span class="hljs-property">metadb</span>.<span class="hljs-property">SubSong</span>, panel.<span class="hljs-title function_">tf</span>(<span class="hljs-string">&#x27;[%filesize_natural%]&#x27;</span>), panel.<span class="hljs-title function_">tf</span>(<span class="hljs-string">&#x27;[%last_modified%]&#x27;</span>)];
+				<span class="hljs-keyword">let</span> urls = [<span class="hljs-string">&#x27;%filename_ext% IS &#x27;</span>, <span class="hljs-string">&#x27;&quot;$directory_path(%path%)&quot; IS &#x27;</span>, <span class="hljs-string">&#x27;%path% IS &#x27;</span>, <span class="hljs-string">&#x27;%subsong% IS &#x27;</span>, <span class="hljs-string">&#x27;%filesize_natural% IS &#x27;</span>, <span class="hljs-string">&#x27;%last_modified% IS &#x27;</span>];
+				<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">6</span>; i++) {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">push</span>({
+						name : names[i],
+						value : values[i],
+						url : urls[i] + values[i]
+					});
+				}
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add</span>();
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">add_tech</span> = <span class="hljs-function">(<span class="hljs-params">f</span>) =&gt;</span> {
+				<span class="hljs-keyword">const</span> duration = utils.<span class="hljs-title class_">FormatDuration</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">max</span>(<span class="hljs-number">0</span>, panel.<span class="hljs-property">metadb</span>.<span class="hljs-property">Length</span>));
+				<span class="hljs-keyword">const</span> samples = <span class="hljs-title function_">_formatNumber</span>(panel.<span class="hljs-title function_">tf</span>(<span class="hljs-string">&#x27;%length_samples%&#x27;</span>), <span class="hljs-string">&#x27; &#x27;</span>);
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">push</span>({
+					name : <span class="hljs-string">&#x27;DURATION&#x27;</span>,
+					value : duration + <span class="hljs-string">&#x27; (&#x27;</span> + samples + <span class="hljs-string">&#x27; samples)&#x27;</span>,
+					url : <span class="hljs-string">&#x27;%length% IS &#x27;</span> + duration
+				});
+				<span class="hljs-keyword">let</span> tmp = [];
+				<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; f.<span class="hljs-property">InfoCount</span>; i++) {
+					<span class="hljs-keyword">const</span> name = f.<span class="hljs-title class_">InfoName</span>(i);
+					<span class="hljs-keyword">const</span> value = f.<span class="hljs-title class_">InfoValue</span>(i).<span class="hljs-title function_">replace</span>(<span class="hljs-regexp">/\s{2,}/g</span>, <span class="hljs-string">&#x27; &#x27;</span>);
+					tmp.<span class="hljs-title function_">push</span>({
+						name : name.<span class="hljs-title function_">toUpperCase</span>(),
+						value : value,
+						url : <span class="hljs-string">&#x27;%__&#x27;</span> + name.<span class="hljs-title function_">toLowerCase</span>() + <span class="hljs-string">&#x27;% IS &#x27;</span> + value
+					});
+				}
+				<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span> = [...<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>, ...(_.<span class="hljs-title function_">orderBy</span>(tmp, <span class="hljs-string">&#x27;name&#x27;</span>))];
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add</span>();
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">add_custom</span> = <span class="hljs-function">() =&gt;</span> {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">custom_fields</span>);
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add</span>();
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">add_playcount</span> = <span class="hljs-function">() =&gt;</span> {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add</span>([<span class="hljs-string">&#x27;PLAY_COUNT&#x27;</span>, <span class="hljs-string">&#x27;FIRST_PLAYED&#x27;</span>, <span class="hljs-string">&#x27;LAST_PLAYED&#x27;</span>, <span class="hljs-string">&#x27;ADDED&#x27;</span>, <span class="hljs-string">&#x27;RATING&#x27;</span>]);
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add</span>();
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">add_stats</span> = <span class="hljs-function">() =&gt;</span> {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add</span>([<span class="hljs-string">&#x27;SMP_PLAYCOUNT&#x27;</span>, <span class="hljs-string">&#x27;SMP_LOVED&#x27;</span>, <span class="hljs-string">&#x27;SMP_FIRST_PLAYED&#x27;</span>, <span class="hljs-string">&#x27;SMP_LAST_PLAYED&#x27;</span>, <span class="hljs-string">&#x27;SMP_RATING&#x27;</span>]);
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add</span>();
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">add_rg</span> = <span class="hljs-function">() =&gt;</span> {
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add</span>([<span class="hljs-string">&#x27;REPLAYGAIN_ALBUM_GAIN&#x27;</span>, <span class="hljs-string">&#x27;REPLAYGAIN_ALBUM_PEAK&#x27;</span>, <span class="hljs-string">&#x27;REPLAYGAIN_TRACK_GAIN&#x27;</span>, <span class="hljs-string">&#x27;REPLAYGAIN_TRACK_PEAK&#x27;</span>]);
+				<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">add</span>();
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">add</span> = <span class="hljs-function">(<span class="hljs-params">names</span>) =&gt;</span> {
+				<span class="hljs-keyword">if</span> (names) {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span> = [...<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>, ...(_.<span class="hljs-title function_">map</span>(names, <span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> ({
+						name : item,
+						value : panel.<span class="hljs-title function_">tf</span>(<span class="hljs-string">&#x27;[%&#x27;</span> + item + <span class="hljs-string">&#x27;%]&#x27;</span>),
+						url : <span class="hljs-string">&#x27;%&#x27;</span> + item + <span class="hljs-string">&#x27;% IS &#x27;</span> + panel.<span class="hljs-title function_">tf</span>(<span class="hljs-string">&#x27;[%&#x27;</span> + item + <span class="hljs-string">&#x27;%]&#x27;</span>)
+					})))];
+				} <span class="hljs-keyword">else</span> {
+					<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">push</span>({name : <span class="hljs-string">&#x27;&#x27;</span>, value : <span class="hljs-string">&#x27;&#x27;</span>, url : <span class="hljs-string">&#x27;&#x27;</span>});
+				}
+			}
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span> = {
+				meta : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&#x27;2K3.LIST.PROPERTIES.META&#x27;</span>, <span class="hljs-literal">true</span>),
+				location : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&#x27;2K3.LIST.PROPERTIES.LOCATION&#x27;</span>, <span class="hljs-literal">true</span>),
+				tech : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&#x27;2K3.LIST.PROPERTIES.TECH&#x27;</span>, <span class="hljs-literal">true</span>),
+				playcount : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&#x27;2K3.LIST.PROPERTIES.PLAYCOUNT&#x27;</span>, <span class="hljs-literal">true</span>),
+				<span class="hljs-attr">stats</span>: <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&#x27;2K3.LIST.PROPERTIES.STATS&#x27;</span>, <span class="hljs-literal">true</span>),
+				rg : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&#x27;2K3.LIST.PROPERTIES.RG&#x27;</span>, <span class="hljs-literal">true</span>)
+			};
+
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">foo_playcount</span> = <span class="hljs-title function_">_cc</span>(<span class="hljs-string">&#x27;foo_playcount&#x27;</span>);
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;queue_viewer&#x27;</span>:
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span> = {
+				tf : <span class="hljs-keyword">new</span> <span class="hljs-title function_">_p</span>(<span class="hljs-string">&#x27;2K3.LIST.QUEUE.TF&#x27;</span>, <span class="hljs-string">&#x27;%artist% - %title%&#x27;</span>)
+			};
+			<span class="hljs-variable language_">this</span>.<span class="hljs-property">tfo</span> = fb.<span class="hljs-title class_">TitleFormat</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">properties</span>.<span class="hljs-property">tf</span>.<span class="hljs-property">value</span>);
+			<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+			<span class="hljs-keyword">break</span>;
+		}
+	}
+
+	panel.<span class="hljs-property">list_objects</span>.<span class="hljs-title function_">push</span>(<span class="hljs-variable language_">this</span>);
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">mode</span> = mode;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span> = x;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span> = y;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">w</span> = w;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">h</span> = h;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">mx</span> = <span class="hljs-number">0</span>;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">my</span> = <span class="hljs-number">0</span>;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">index</span> = <span class="hljs-number">0</span>;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span> = <span class="hljs-number">0</span>;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span> = <span class="hljs-number">0</span>;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">text_x</span> = <span class="hljs-number">0</span>;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">spacer_w</span> = <span class="hljs-number">0</span>;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">artist</span> = <span class="hljs-string">&#x27;&#x27;</span>;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">filename</span> = <span class="hljs-string">&#x27;&#x27;</span>;
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">up_btn</span> = <span class="hljs-keyword">new</span> <span class="hljs-title function_">_sb</span>(chars.<span class="hljs-property">up</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span>, <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>), <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>), <span class="hljs-function">() =&gt;</span> { <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span> &gt; <span class="hljs-number">0</span>; }, <span class="hljs-function">() =&gt;</span> { <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">wheel</span>(<span class="hljs-number">1</span>); });
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">down_btn</span> = <span class="hljs-keyword">new</span> <span class="hljs-title function_">_sb</span>(chars.<span class="hljs-property">down</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">x</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">y</span>, <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>), <span class="hljs-title function_">_scale</span>(<span class="hljs-number">12</span>), <span class="hljs-function">() =&gt;</span> { <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">offset</span> &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">items</span> - <span class="hljs-variable language_">this</span>.<span class="hljs-property">rows</span>; }, <span class="hljs-function">() =&gt;</span> { <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">wheel</span>(-<span class="hljs-number">1</span>); });
+	<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">init</span>();
+}
+</code></pre>
+      </body>
+    </html>
+  

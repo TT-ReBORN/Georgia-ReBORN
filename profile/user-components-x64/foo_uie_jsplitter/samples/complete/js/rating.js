@@ -9,7 +9,7 @@ function _rating(x, y, size, colour) {
 			}
 		}
 	}
-	
+
 	this.metadb_changed = () => {
 		if (panel.metadb) {
 			this.hover = false;
@@ -19,11 +19,11 @@ function _rating(x, y, size, colour) {
 		}
 		window.Repaint();
 	}
-	
+
 	this.trace = (x, y) => {
 		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
 	}
-	
+
 	this.move = (x, y) => {
 		if (this.trace(x, y)) {
 			if (panel.metadb) {
@@ -38,7 +38,7 @@ function _rating(x, y, size, colour) {
 			return false;
 		}
 	}
-	
+
 	this.leave = () => {
 		if (this.hover) {
 			_tt('');
@@ -46,7 +46,7 @@ function _rating(x, y, size, colour) {
 			window.RepaintRect(this.x, this.y, this.w, this.h);
 		}
 	}
-	
+
 	this.lbtn_up = (x, y) => {
 		if (this.trace(x, y)) {
 			if (panel.metadb) {
@@ -57,7 +57,7 @@ function _rating(x, y, size, colour) {
 			return false;
 		}
 	}
-	
+
 	this.rbtn_up = (x, y) => {
 		_.forEach(this.modes, (item, i) => {
 			panel.s10.AppendMenuItem(i == 1 && !this.foo_playcount ? MF_GRAYED : MF_STRING, i + 1000, item);
@@ -68,7 +68,7 @@ function _rating(x, y, size, colour) {
 		panel.m.AppendMenuItem(this.properties.mode.value > 1 ? MF_STRING : MF_GRAYED, 1005, 'Max value...');
 		panel.m.AppendMenuSeparator();
 	}
-	
+
 	this.rbtn_up_done = (idx) => {
 		let tmp;
 		switch (true) {
@@ -87,7 +87,7 @@ function _rating(x, y, size, colour) {
 		this.w = this.h * this.get_max();
 		panel.item_focus_change();
 	}
-	
+
 	this.get_rating = () => {
 		switch (this.properties.mode.value) {
 		case 1: // foo_playcount
@@ -103,7 +103,7 @@ function _rating(x, y, size, colour) {
 			return 0;
 		}
 	}
-	
+
 	this.set_rating = () => {
 		switch (this.properties.mode.value) {
 		case 1: // foo_playcount
@@ -122,11 +122,11 @@ function _rating(x, y, size, colour) {
 			break;
 		}
 	}
-	
+
 	this.get_max = () => {
 		return this.properties.mode.value < 2 ? 5 : this.properties.max.value;
 	}
-	
+
 	this.properties = {
 		mode : new _p('2K3.RATING.MODE', 0), // 0 not set 1 foo_playcount 2 file tag 3 Spider Monkey Panel DB
 		max : new _p('2K3.RATING.MAX', 5), // only use for file tag/Spider Monkey Panel DB

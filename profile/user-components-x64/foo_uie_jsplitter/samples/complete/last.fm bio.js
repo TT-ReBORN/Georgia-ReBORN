@@ -13,6 +13,10 @@ let text = new _text('lastfm_bio', LM, TM, 0, 0);
 
 panel.item_focus_change();
 
+function on_download_file_done(path, success, error_text) {
+	text.download_file_done(path, success, error_text);
+}
+
 function on_size() {
 	panel.size();
 	text.w = panel.w - (LM * 2);

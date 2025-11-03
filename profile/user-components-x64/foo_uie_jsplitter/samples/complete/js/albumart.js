@@ -23,7 +23,7 @@ function _albumart (x, y, w, h) {
 			_drawImage(gr, this.img, this.x, this.y, this.w, this.h, this.properties.aspect.value);
 		}
 	}
-	
+
 	this.metadb_changed = () => {
 		this.img = null;
 		this.tooltip = this.path = '';
@@ -33,11 +33,11 @@ function _albumart (x, y, w, h) {
 			window.Repaint();
 		}
 	}
-	
+
 	this.trace = (x, y) => {
 		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
 	}
-	
+
 	this.wheel = (s) => {
 		if (this.trace(this.mx, this.my)) {
 			let id = this.properties.id.value - s;
@@ -55,7 +55,7 @@ function _albumart (x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.move = (x, y) => {
 		this.mx = x;
 		this.my = y;
@@ -73,7 +73,7 @@ function _albumart (x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.lbtn_dblclk = (x, y) => {
 		if (this.trace(x, y)) {
 			if (panel.metadb && panel.metadb.Path == this.path) {
@@ -86,7 +86,7 @@ function _albumart (x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	this.rbtn_up = (x, y) => {
 		panel.m.AppendMenuItem(MF_STRING, 1000, 'Refresh');
 		panel.m.AppendMenuSeparator();
@@ -112,7 +112,7 @@ function _albumart (x, y, w, h) {
 		panel.m.AppendMenuItem(panel.metadb ? MF_STRING : MF_GRAYED, 1040, 'Google image search');
 		panel.m.AppendMenuSeparator();
 	}
-	
+
 	this.rbtn_up_done = (idx) => {
 		switch (idx) {
 		case 1000:
@@ -153,7 +153,7 @@ function _albumart (x, y, w, h) {
 			break;
 		}
 	}
-	
+
 	this.key_down = (k) => {
 		switch (k) {
 		case VK_LEFT:
@@ -168,7 +168,7 @@ function _albumart (x, y, w, h) {
 			return false;
 		}
 	}
-	
+
 	let get_album_art = async (obj) => {
 		if (!panel.metadb) return;
 		let result = await utils.GetAlbumArtAsyncV2(window.ID, panel.metadb, obj.properties.id.value);
@@ -185,7 +185,7 @@ function _albumart (x, y, w, h) {
 		}
 		window.Repaint();
 	}
-	
+
 	this.x = x;
 	this.y = y;
 	this.w = w;
