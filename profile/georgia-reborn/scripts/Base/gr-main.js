@@ -2365,7 +2365,6 @@ class MainUI {
 		// * Check for new themes in tracks that have GR_* tags in metadata
 		if (this.newTrackFetchingArtwork && (this.hasThemeTags() || this.themeFromTags)) {
 			this.initThemeState(this.albumArt);
-			this.initTheme();
 			this.newTrackFetchingArtwork = false;
 		}
 
