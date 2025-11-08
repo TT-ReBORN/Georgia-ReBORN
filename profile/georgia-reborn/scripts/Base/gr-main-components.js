@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-10-2025                                              * //
+// * Last change:    08-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -5672,6 +5672,9 @@ class WaveformBar {
 	normalizePoints(normalizeWidth = false) {
 		if (!this.current.length) return;
 
+		// Safety filter for any unexpected invalid frames
+		this.current = this.current.filter(frame => frame != null && Array.isArray(frame) && frame.length >= this.metrics.count);
+
 		let { upper, lower } = this.getMaxValue(this.current);
 
 		if (this.analysis.binaryMode === 'audioWizard' && !this.isFallback && !this.fallbackMode.paint && this.preset.analysisMode !== 'waveform_peak') {
@@ -5712,6 +5715,9 @@ class WaveformBar {
 				this.current = this.current.map(frame => (sign === 1 && frame > 0) || (sign !== 1 && frame < 0) ? frame * distort : frame);
 			}
 		}
+
+		// Clamp frame values to [-1, 1] to prevent overflow/distortion from imbalanced data or edge cases
+		this.current = this.current.map(frame => Math.max(-1, Math.min(1, frame)));
 	}
 
 	/**
