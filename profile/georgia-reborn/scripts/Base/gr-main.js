@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-10-2025                                              * //
+// * Last change:    08-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -246,6 +246,8 @@ class MainUI {
 		this.isStreaming = false;
 		/** @public @type {boolean} Is the song playing from a CD? */
 		this.isPlayingCD = false;
+		/** @private @type {boolean} Checks if the previous track used GR_* tags, for pending restoration on next track. */
+		this.themeFromTags = false;
 		/** @private @type {boolean} Used to restore theme state after custom [%GR_THEME%] or [%GR_STYLE%] or [%GR_PRESET%] usage. */
 		this.themeRestoreState = false;
 		/** @public @type {boolean} When active styles match any theme presets, used for the notification popup in the showThemePresetIndicator. */
@@ -2145,6 +2147,8 @@ class MainUI {
 		if (!customPreset.length) { // Prevent double initialization for theme presets, this.updateStyle() already handled in setThemePreset()
 			this.updateStyle();
 		}
+
+		this.themeFromTags = true;
 	}
 
 	/**
@@ -2357,6 +2361,12 @@ class MainUI {
 		// * Generate a new color in Random theme on new track
 		if (grSet.styleRandomAutoColor === 'track' && !this.doubleClicked) {
 			grm.color.getRandomThemeAutoColor();
+		}
+		// * Check for new themes in tracks that have GR_* tags in metadata
+		if (this.newTrackFetchingArtwork && (this.hasThemeTags() || this.themeFromTags)) {
+			this.initThemeState(this.albumArt);
+			this.initTheme();
+			this.newTrackFetchingArtwork = false;
 		}
 
 		if (fb.GetNowPlaying()) on_metadb_changed(); // Refresh metadata
@@ -3437,6 +3447,7 @@ class MainUI {
 			this.restoreThemeStylePreset(true); // * Reset saved grSet settings
 		}
 
+		this.themeFromTags = false;
 		this.themeRestoreState = false;
 	}
 
