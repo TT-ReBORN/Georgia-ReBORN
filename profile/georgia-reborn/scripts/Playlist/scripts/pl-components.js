@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-10-2025                                              * //
+// * Last change:    09-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2117,7 +2117,14 @@ class PlaylistRating {
 		this.rating = ratingUpdated;
 		const trackId = $('%artist% - %album% - %title%', this.metadb) || this.metadb.RawPath;
 		pl.track_ratings.set(trackId, ratingUpdated);
-		pl.playlist.update_playlist_headers();
+		const albumKey = PlaylistHeader.get_album_key(this.metadb);
+		pl.album_ratings.delete(albumKey);
+
+		setTimeout(() => {
+			pl.header_group_info.clear();
+			pl.playlist.update_playlist_headers();
+			pl.playlist.repaint();
+		}, 100);
 	}
 
 	/**

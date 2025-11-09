@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    03-11-2025                                              * //
+// * Last change:    09-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -381,8 +381,8 @@ class Button {
 	 * @param {number} y - The y-coordinate.
 	 */
 	topRating(x, y) {
-		const handle = new FbMetadbHandleList();
 		const metadb = fb.GetFocusItem();
+		const selectedItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 
 		if (!metadb) {
 			const msg = grm.msg.getMessage('main', 'playlistEmptyError');
@@ -390,17 +390,18 @@ class Button {
 			return;
 		}
 
+		const handle = new FbMetadbHandleList();
 		const fileInfo = metadb.GetFileInfo();
 		const ratingMetaIdx = fileInfo.MetaFind('RATING');
 		const ratingMeta = ratingMetaIdx === -1 ? 0 : fileInfo.MetaValue(ratingMetaIdx, 0);
 		const ratingTags = plSet.use_rating_from_tags;
 		const rating = ratingTags ? ratingMeta : $('$if2(%rating%,0)', metadb);
-		const selectedItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 		const menu = new Menu();
 		grm.ui.activeMenu = true;
 
 		menu.addRadioItems(['No rating', '1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'], parseInt(rating), [0, 1, 2, 3, 4, 5], (rating) => {
 			pl.playlist.clear_cache();
+			const albumKeys = new Set();
 
 			for (let i = 0; i < selectedItems.Count; i++) {
 				const metadb = selectedItems[i];
@@ -426,7 +427,14 @@ class Button {
 
 				const trackId = $('%artist% - %album% - %title%', metadb) || metadb.RawPath;
 				pl.track_ratings.set(trackId, ratingUpdated);
+				const albumKey = PlaylistHeader.get_album_key(metadb);
+				albumKeys.add(albumKey);
 			}
+
+			for (const albumKey of albumKeys) {
+				pl.album_ratings.delete(albumKey);
+			}
+			pl.header_group_info.clear();
 		});
 
 		const idx = menu.trackPopupMenu(x, y);
@@ -593,8 +601,13 @@ class Button {
 	 */
 	lowerTitleBtnAction() {
 		if (!fb.IsPlaying) return;
+
 		if (grm.ui.displayLibrary) {
-			lib.pop.nowPlayingShow();
+			if (lib.ex.main.state.visible) {
+				lib.ex.album.showNowPlaying();
+			} else {
+				lib.pop.nowPlayingShow();
+			}
 		} else {
 			grm.ui.displayPanel('playlist', true);
 			pl.playlist.show_now_playing();

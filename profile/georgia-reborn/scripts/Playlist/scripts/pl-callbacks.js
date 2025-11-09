@@ -386,21 +386,43 @@ class PlaylistCallbacks {
 			pl.plman.on_playlist_modified();
 		}
 
-		const changedHandlesSet = new Set(handle_list.Convert().map(handle => handle.RawPath));
+		const handlesChanged = new Set(handle_list.Convert().map(handle => handle.RawPath));
+		if (handlesChanged.size === 0) return;
+
+		const albumsToInvalidate = new Set();
+		let needsCacheClear = false;
 
 		for (const item of pl.playlist.cnt.sub_items) { // Playlist headers
 			const shouldUpdate = item.header_image || item.hyperlinks_initialized;
 			const firstRowMetadbPath = item.get_first_row().metadb.RawPath;
-			if (shouldUpdate && changedHandlesSet.has(firstRowMetadbPath)) {
+			if (shouldUpdate && handlesChanged.has(firstRowMetadbPath)) {
 				item.header_image = null;
 				item.reset_hyperlinks();
+				const albumKey = PlaylistHeader.get_album_key(item.metadb);
+				albumsToInvalidate.add(albumKey);
+				needsCacheClear = true;
 			}
 		}
 
 		for (const item of pl.playlist.cnt.rows) { // Playlist rows
-			if (changedHandlesSet.has(item.metadb.RawPath)) {
+			const metadbPath = item.metadb.RawPath;
+			if (handlesChanged.has(metadbPath)) {
 				item.reset_queried_data();
+				item.rating.reset_queried_data();
+				const trackId = $('%artist% - %album% - %title%', item.metadb) || metadbPath;
+				pl.track_ratings.delete(trackId);
+				const albumKey = PlaylistHeader.get_album_key(item.metadb);
+				albumsToInvalidate.add(albumKey);
+				needsCacheClear = true;
 			}
+		}
+
+		// Batch invalidate
+		if (needsCacheClear) {
+			for (const albumKey of albumsToInvalidate) {
+				pl.album_ratings.delete(albumKey);
+			}
+			pl.header_group_info.clear();
 		}
 	}
 
