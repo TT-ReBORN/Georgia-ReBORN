@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-11-2025                                              * //
+// * Last change:    13-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -381,8 +381,14 @@ class Button {
 	 * @param {number} y - The y-coordinate.
 	 */
 	topRating(x, y) {
-		const metadb = fb.GetFocusItem();
-		const selectedItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+		let metadb = fb.GetFocusItem();
+		let selectedItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+
+		if (selectedItems.Count === 0 && fb.IsPlaying) {
+			const nowPlaying = fb.GetNowPlaying();
+			selectedItems = new FbMetadbHandleList(nowPlaying);
+			metadb = nowPlaying;
+		}
 
 		if (!metadb) {
 			const msg = grm.msg.getMessage('main', 'playlistEmptyError');
@@ -601,13 +607,8 @@ class Button {
 	 */
 	lowerTitleBtnAction() {
 		if (!fb.IsPlaying) return;
-
 		if (grm.ui.displayLibrary) {
-			if (lib.ex.main.state.visible) {
-				lib.ex.album.showNowPlaying();
-			} else {
-				lib.pop.nowPlayingShow();
-			}
+			lib.pop.nowPlayingShow();
 		} else {
 			grm.ui.displayPanel('playlist', true);
 			pl.playlist.show_now_playing();
