@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-11-2025                                              * //
+// * Last change:    16-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -390,39 +390,44 @@ class PlaylistCallbacks {
 		if (handlesChanged.size === 0) return;
 
 		const albumsToInvalidate = new Set();
+		const affectedHeaders = new Map();
 		let needsCacheClear = false;
 
-		for (const item of pl.playlist.cnt.sub_items) { // Playlist headers
-			const shouldUpdate = item.header_image || item.hyperlinks_initialized;
-			const firstRowMetadbPath = item.get_first_row().metadb.RawPath;
-			if (shouldUpdate && handlesChanged.has(firstRowMetadbPath)) {
-				item.header_image = null;
-				item.reset_hyperlinks();
-				const albumKey = PlaylistHeader.get_album_key(item.metadb);
-				albumsToInvalidate.add(albumKey);
-				needsCacheClear = true;
-			}
-		}
-
-		for (const item of pl.playlist.cnt.rows) { // Playlist rows
-			const metadbPath = item.metadb.RawPath;
-			if (handlesChanged.has(metadbPath)) {
+		for (const item of pl.playlist.cnt.rows) { // Playlist rows (covers all tracks, including first rows of headers)
+			if (handlesChanged.has(item.metadb.RawPath)) {
 				item.reset_queried_data();
 				item.rating.reset_queried_data();
-				const trackId = $('%artist% - %album% - %title%', item.metadb) || metadbPath;
+
+				const trackId = $('%artist% - %album% - %title%', item.metadb) || item.metadb.RawPath;
 				pl.track_ratings.delete(trackId);
 				const albumKey = PlaylistHeader.get_album_key(item.metadb);
 				albumsToInvalidate.add(albumKey);
+
+				if (item.parent && !affectedHeaders.has(albumKey)) {
+					affectedHeaders.set(albumKey, item.parent);
+				}
+
 				needsCacheClear = true;
 			}
 		}
 
-		// Batch invalidate
+		// Batch invalidate cache
 		if (needsCacheClear) {
 			for (const albumKey of albumsToInvalidate) {
 				pl.album_ratings.delete(albumKey);
+				const header = affectedHeaders.get(albumKey);
+
+				if (header) {
+					header.header_image = null;
+					header.group_info_meta = header.getGroupInfoMeta();
+				}
+
+				for (let radio = 0; radio < 2; radio++) {
+					for (let hasGenre = 0; hasGenre < 2; hasGenre++) {
+						pl.header_group_info.delete(`${albumKey}_${radio}_${hasGenre}`);
+					}
+				}
 			}
-			pl.header_group_info.clear();
 		}
 	}
 
