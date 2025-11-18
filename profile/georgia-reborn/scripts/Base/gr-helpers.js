@@ -3958,10 +3958,17 @@ async function ManageBackup(make, restore) {
 		const cfg       = backup.GetFolder(make ? cfgPathFb : `${backupPath}configuration`);
 
 		// * If old or new version, copy the library, playlist and config files
-		library.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-		playlists.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-		configs.Copy(make ? `${backupPath}georgia-reborn\\configs` : `${fb.ProfilePath}georgia-reborn\\configs`, true);
-		try { cfg.Copy(make ? `${backupPath}configuration` : cfgPathFb, true); } catch (e) {}
+		try { library.Copy(make ? backupPath : `${fb.ProfilePath}`, true); }
+			catch (e) { fb.ShowPopupMessage('>>> WARNING <<<\n\nTheme backup could not copy library files.', 'Theme backup'); }
+
+		try { playlists.Copy(make ? backupPath : `${fb.ProfilePath}`, true); }
+			catch (e) { fb.ShowPopupMessage('>>> WARNING <<<\n\nTheme backup could not copy playlist files.', 'Theme backup'); }
+
+		try { configs.Copy(make ? `${backupPath}georgia-reborn\\configs` : `${fb.ProfilePath}georgia-reborn\\configs`, true); }
+			catch (e) { fb.ShowPopupMessage('>>> WARNING <<<\n\nTheme backup could not copy Georgia-ReBORN config files.', 'Theme backup'); }
+
+		try { cfg.Copy(make ? `${backupPath}configuration` : cfgPathFb, true); }
+			catch (e) { fb.ShowPopupMessage('>>> WARNING <<<\n\nTheme backup could not copy foobar2000 configuration directory.', 'Theme backup'); }
 
 		// * Delete user's foo_ui_columns.dll.cfg, we use the clean cfg file from the zip
 		DeleteFile(`${backupPath}configuration\\foo_ui_columns.dll.cfg`);
@@ -3978,10 +3985,18 @@ async function ManageBackup(make, restore) {
 		const dspConfig = backup.GetFile(make ? `${fb.ProfilePath}config.fb2k-dsp` : `${backupPath}config.fb2k-dsp`);
 		const fbConfig = backup.GetFile(make ? `${fb.ProfilePath}config.sqlite` : `${backupPath}config.sqlite`);
 		const metadb = backup.GetFile(make ? `${fb.ProfilePath}metadb.sqlite` : `${backupPath}metadb.sqlite`);
-		dspPresets.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-		dspConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-		fbConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
-		metadb.Copy(make ? backupPath : `${fb.ProfilePath}`, true);
+
+		try { dspPresets.Copy(make ? backupPath : `${fb.ProfilePath}`, true); }
+			catch (e) { fb.ShowPopupMessage('>>> WARNING <<<\n\nTheme backup could not copy DSP presets directory.', 'Theme backup'); }
+
+		try { dspConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true); }
+			catch (e) { fb.ShowPopupMessage('>>> WARNING <<<\n\nTheme backup could not copy config.fb2k-dsp file.', 'Theme backup'); }
+
+		try { fbConfig.Copy(make ? backupPath : `${fb.ProfilePath}`, true); }
+			catch (e) { fb.ShowPopupMessage('>>> WARNING <<<\n\nTheme backup could not copy config.sqlite file.', 'Theme backup'); }
+
+		try { metadb.Copy(make ? backupPath : `${fb.ProfilePath}`, true); }
+			catch (e) { fb.ShowPopupMessage('>>> WARNING <<<\n\nTheme backup could not copy metadb.sqlite file.', 'Theme backup'); }
 	};
 
 	const makeBackup = async () => {
