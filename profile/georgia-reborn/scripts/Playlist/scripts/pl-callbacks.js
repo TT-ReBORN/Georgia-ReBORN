@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-11-2025                                              * //
+// * Last change:    18-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -393,32 +393,43 @@ class PlaylistCallbacks {
 		const affectedHeaders = new Map();
 		let needsCacheClear = false;
 
-		for (const item of pl.playlist.cnt.rows) { // Playlist rows (covers all tracks, including first rows of headers)
-			if (handlesChanged.has(item.metadb.RawPath)) {
-				item.reset_queried_data();
-				item.rating.reset_queried_data();
-
-				const trackId = $('%artist% - %album% - %title%', item.metadb) || item.metadb.RawPath;
-				pl.track_ratings.delete(trackId);
-				const albumKey = PlaylistHeader.get_album_key(item.metadb);
-				albumsToInvalidate.add(albumKey);
-
-				if (item.parent && !affectedHeaders.has(albumKey)) {
-					affectedHeaders.set(albumKey, item.parent);
+		// Process playlist headers
+		for (const header of pl.playlist.cnt.sub_items) {
+			if (header.header_image || header.hyperlinks_initialized) {
+				const firstRowPath = header.get_first_row()?.metadb.RawPath;
+				if (firstRowPath && handlesChanged.has(firstRowPath)) {
+					const albumKey = PlaylistHeader.get_album_key(header.metadb);
+					albumsToInvalidate.add(albumKey);
+					affectedHeaders.set(albumKey, header);
+					needsCacheClear = true;
 				}
+			}
+		}
 
+		// Process playlist track rows
+		for (const row of pl.playlist.cnt.rows) {
+			if (handlesChanged.has(row.metadb.RawPath)) {
+				row.reset_queried_data();
+				row.rating.reset_queried_data();
+
+				const trackId = $('%artist% - %album% - %title%', row.metadb) || row.metadb.RawPath;
+				pl.track_ratings.delete(trackId);
+
+				const albumKey = PlaylistHeader.get_album_key(row.metadb);
+				albumsToInvalidate.add(albumKey);
 				needsCacheClear = true;
 			}
 		}
 
-		// Batch invalidate cache
+		// Batch invalidate caches
 		if (needsCacheClear) {
 			for (const albumKey of albumsToInvalidate) {
 				pl.album_ratings.delete(albumKey);
-				const header = affectedHeaders.get(albumKey);
 
+				const header = affectedHeaders.get(albumKey);
 				if (header) {
 					header.header_image = null;
+					header.reset_hyperlinks();
 					header.group_info_meta = header.getGroupInfoMeta();
 				}
 
