@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-09-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1368,7 +1368,7 @@ class ContextMenus {
 		}
 		lowerBarArtistBtnControlsMenu.separator();
 
-		const { websiteLabels, websiteValues } = grm.utils.generateWebsiteLinks(grCfg.customWebsiteLinks);
+		const { websiteLabels, websiteValues } = WebsiteGenerateLinks(grCfg.customWebsiteLinks);
 		const websites = websiteLabels.map((label, index) => [label, websiteValues[index]]);
 		for (const website of websites) {
 			lowerBarArtistBtnControlsMenu.appendItem(website[0], ((website) => {

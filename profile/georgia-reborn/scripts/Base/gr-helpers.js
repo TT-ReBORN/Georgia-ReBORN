@@ -402,6 +402,46 @@ function DetectWine() {
 }
 
 
+/**
+ * Gets the major and minor version of Windows operating system from the registry.
+ * Falls back to a default version if registry read is unsuccessful.
+ * @returns {string} The Windows version in 'major.minor' format or a default if not obtainable.
+ */
+function GetWindowsVersion() {
+	return Once(() => {
+		let version = '';
+		let ret = Attempt(() => {
+			version = (WshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentMajorVersionNumber')).toString();
+			version += '.';
+			version += (WshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentMinorVersionNumber')).toString();
+		});
+		if (!IsError(ret)) {
+			return version;
+		}
+		ret = Attempt(() => {
+			version = WshShell.RegRead('HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\CurrentVersion');
+		});
+		if (!IsError(ret)) {
+			return version;
+		}
+		return '6.1';
+	});
+}
+
+
+/**
+ * Prepares an HTML file by replacing the CSS file reference with a new CSS file based on the Windows version.
+ * @param {string} path - The file path of the HTML file that needs to be prepared.
+ * @returns {string} The modified HTML content with the updated CSS file reference.
+ */
+function PrepareHTML(path) {
+	const htmlCode = utils.ReadTextFile(path);
+	const newCss = GetWindowsVersion() === '6.1' ? 'styles7.css' : 'styles10.css';
+	const cssPath = `${fb.FoobarPath}georgia-reborn\\scripts\\playlist\\assets\\html\\${newCss}`;
+	return htmlCode.replace(/href="styles10.css"/i, `href="${cssPath}"`);
+}
+
+
 /////////////
 // * WEB * //
 /////////////
@@ -461,9 +501,204 @@ function MakeHttpRequest(type, url, successCB) {
 }
 
 
+/**
+ * Extracts the domain name from a given URL and formats it.
+ * @param {string} url - The URL from which to extract the domain name.
+ * @returns {string} The formatted domain name.
+ */
+function WebsiteExtractDomainName(url) {
+	const domain = url.match(RegexPattern.WebDomain)[2];
+	return domain.charAt(0).toUpperCase() + domain.slice(1).replace(RegexPattern.WebTopLevelDomain, '');
+}
+
+
+/**
+ * Generates labels and values for predefined and custom website links.
+ * @param {Array} customWebsiteLinks - Array of custom website URLs.
+ * @returns {object} - Object containing combined labels and values.
+ */
+function WebsiteGenerateLinks(customWebsiteLinks) {
+	const customLabels = customWebsiteLinks.map((url) => WebsiteExtractDomainName(url));
+	const customValues = customWebsiteLinks.map((url) => WebsiteExtractDomainName(url));
+
+	const labels = ['Google', 'Google Images', 'Wikipedia', 'YouTube', 'Last.fm', 'AllMusic', 'Discogs', 'MusicBrainz', 'Bandcamp', 'Album of the Year', 'Rate Your Music', 'Sputnikmusic'];
+	const values = ['google', 'googleImages', 'wikipedia', 'youTube', 'lastfm', 'allMusic', 'discogs', 'musicBrainz', 'bandcamp', 'aoty', 'rym', 'sputnikmusic'];
+
+	const websiteLabels = labels.concat(customLabels);
+	const websiteValues = values.concat(customValues);
+
+	return { websiteLabels, websiteValues };
+}
+
+
+/**
+ * Opens a website (or all predefined websites) based on the provided site name using track metadata.
+ * @param {string} [website] - The name of the website to open (optional if openAll is true).
+ * @param {FbMetadbHandle} metadb - The metadata handle of the track.
+ * @param {boolean} [openAll=false] - Whether to open all predefined websites.
+ */
+function WebsiteOpen(website, metadb, openAll = false) {
+	if (!metadb) return;
+
+	const metaInfo = metadb.GetFileInfo();
+	const getMetaValue = (metafield) => {
+		const index = metaInfo.MetaFind(metafield);
+		return index === -1 ? '' : metaInfo.MetaValue(index, 0);
+	};
+
+	const artist = getMetaValue('artist').replace(RegexPattern.SpaceAll, '+').replace(/&/g, '%26');
+	const album = getMetaValue('album').replace(RegexPattern.SpaceAll, '+');
+	const title = getMetaValue('title').replace(RegexPattern.SpaceAll, '+');
+	const searchQuery = artist || title;
+
+	const metadata = { artist, album, title };
+	const missingMeta = Object.keys(metadata).filter(key => !metadata[key]).map(key => `%${key}%`);
+
+	if (missingMeta.length > 0) {
+		const missingFields = missingMeta.join('\n');
+		const msg = `Web search aborted!\n\nPlease provide the necessary\nmetadata fields for:\n\n${missingFields}\n\n`;
+		grm.msg.showPopup(true, msg, msg, 'OK', null, (confirmed) => {});
+		return;
+	}
+
+	const replacePlaceholders = (link) => link
+		.replace('{artist}', artist)
+		.replace('{title}', title)
+		.replace('{album}', album);
+
+	const urls = {
+		google: `https://google.com/search?q=${searchQuery}`,
+		googleImages: `https://images.google.com/images?hl=en&q=${searchQuery}`,
+		wikipedia: `https://en.wikipedia.org/wiki/${artist.replace(RegexPattern.PunctPlus, '_')}`,
+		youTube: `https://www.youtube.com/results?search_type=&search_query=${searchQuery}`,
+		lastfm: `https://www.last.fm/music/${searchQuery.replace('/', '%252F')}`,
+		allMusic: `https://www.allmusic.com/search/all/${searchQuery}`,
+		discogs: `https://www.discogs.com/search?q=${searchQuery}+${album}`,
+		musicBrainz: `https://musicbrainz.org/taglookup/index?tag-lookup.artist=${searchQuery}&tag-lookup.release=${album}`,
+		bandcamp: `https://bandcamp.com/search?q=${searchQuery}&item_type`,
+		aoty: `https://www.albumoftheyear.org/search/?q=${searchQuery}+${album}`,
+		rym: `https://rateyourmusic.com/search?searchterm=${searchQuery}+${album}`,
+		sputnikmusic: `https://www.sputnikmusic.com/search_results.php?search_in=Bands&search_text=${searchQuery}`,
+		default: 'https://github.com/TT-ReBORN/Georgia-ReBORN'
+	};
+
+	const predefinedWebsites = [
+		'google',
+		'googleImages',
+		'wikipedia',
+		'youTube',
+		'lastfm',
+		'allMusic',
+		'discogs',
+		'musicBrainz',
+		'bandcamp',
+		'aoty',
+		'rym',
+		'sputnikmusic'
+	];
+
+	// Add custom URLs to the urls object
+	grCfg.customWebsiteLinks.forEach((link) => {
+		const domain = WebsiteExtractDomainName(link);
+		urls[domain] = replacePlaceholders(link);
+	});
+
+	if (openAll) {
+		for (const site of predefinedWebsites) {
+			const url = urls[site] || urls.default;
+			RunCmd(url);
+		}
+	} else if (website) {
+		const url = urls[website] || urls.default;
+		RunCmd(url);
+	}
+}
+
+
 ///////////////
 // * DEBUG * //
 ///////////////
+/**
+ * A class that handles theme errors with detailed messages.
+ * @augments {Error}
+ */
+class ThemeError extends Error {
+	/**
+	 * Creates the `ThemeError` instance.
+	 * @param {string} msg - The error message.
+	 */
+	constructor(msg) {
+		super(msg);
+		/** @private @type {string} */
+		this.name = 'ThemeError';
+		/** @private @type {string} */
+		this.message = `\n${msg}\n`;
+	}
+}
+
+
+/**
+ * A class that handles logic errors with detailed messages.
+ * @augments {Error}
+ */
+class LogicError extends Error {
+	/**
+	 * Creates the `LogicError` instance.
+	 * @param {string} msg - The error message.
+	 */
+	constructor(msg) {
+		super(msg);
+		/** @private @type {string} */
+		this.name = 'LogicError';
+		/** @private @type {string} */
+		this.message = `\n${msg}\n`;
+	}
+}
+
+
+/**
+ * A class that handles invalid type errors with detailed messages.
+ * @augments {Error}
+ */
+class InvalidTypeError extends Error {
+	/**
+	 * Creates the `InvalidTypeError` instance.
+	 * @param {string} arg_name - The name of the argument that caused the error.
+	 * @param {string} arg_type - The actual type of the argument that was passed.
+	 * @param {string} valid_type - The expected type of the argument.
+	 * @param {string} [additional_msg] - An optional message to provide more information about the error.
+	 */
+	constructor(arg_name, arg_type, valid_type, additional_msg = '') {
+		super('');
+		/** @private @type {string} */
+		this.name = 'InvalidTypeError';
+		/** @private @type {string} */
+		this.message = `\n'${arg_name}' is not a ${valid_type}, it's a ${arg_type}${additional_msg ? `\n${additional_msg}` : ''}\n`;
+	}
+}
+
+
+/**
+ * A class that handles argument errors with detailed messages.
+ * @augments {Error}
+ */
+class ArgumentError extends Error {
+	/**
+	 * Creates the `ArgumentError` instance.
+	 * @param {string} arg_name - The name of the argument that has an invalid value.
+	 * @param {*} arg_value - The value of the argument that is considered invalid.
+	 * @param {string} [additional_msg] - An optional message to provide more information about the error.
+	 */
+	constructor(arg_name, arg_value, additional_msg = '') {
+		super('');
+		/** @private @type {string} */
+		this.name = 'ArgumentError';
+		/** @private @type {string} */
+		this.message = `\n'${arg_name}' has invalid value: ${arg_value}${additional_msg ? `\n${additional_msg}` : ''}\n`;
+	}
+}
+
+
 /**
  * Asserts that a condition is true and throws an error if it is not.
  * @global
@@ -671,6 +906,32 @@ function PrintColorObj(obj) {
 		console.log(`\t\t${propName}: ${ColToRgb(propValue, true)},\t\t// #${ToPaddedHexString(0xffffff & propValue, 6)}`);
 	}
 	console.log(`\t},\n\thint: [${ColToRgb(obj.primary, true)}]`);
+}
+
+
+/**
+ * Handles the profiler setup and printing based on the given condition and action.
+ * @param {boolean} condition - The condition to check before proceeding with the profiler operation.
+ * @param {string} action - The action to perform ('create' or 'print').
+ * @param {string} message - The log message to use when creating the profiler (required for 'create' action).
+ */
+function SetDebugProfile(condition, action, message) {
+	// Initialize properties on first call
+	if (typeof SetDebugProfile.profiler === 'undefined') {
+		SetDebugProfile.profiler = {};
+		SetDebugProfile.profilerActive = false;
+	}
+
+	if (condition && action === 'create') {
+		SetDebugProfile.profiler[message] = fb.CreateProfiler(message);
+		SetDebugProfile.profilerActive = condition;
+	}
+	else if (SetDebugProfile.profiler[message] && SetDebugProfile.profilerActive && action === 'print') {
+		SetDebugProfile.profiler[message].Print();
+		if (grCfg.settings.showDebugPerformanceOverlay) {
+			grm.ui.debugTimingsArray.push(`${message}: ${SetDebugProfile.profiler[message].Time} ms`);
+		}
+	}
 }
 
 
@@ -1274,72 +1535,6 @@ function Debounce(func, delay, { leading } = {}) {
 
 
 /**
- * Handles key press actions based on the state of control keys (Ctrl, Alt, Shift).
- * @global
- * @param {object} action - An object mapping key press combinations to their respective actions.
- * @param {Function} [action.ctrlAltShift] - Action to perform if `Ctrl`, `Alt`, and `Shift` keys are all pressed.
- * @param {Function} [action.ctrlAltNoShift] - Action to perform if `Ctrl` and `Alt` keys are pressed without `Shift`.
- * @param {Function} [action.ctrlShift] - Action to perform if both `Ctrl` and `Shift` keys are pressed.
- * @param {Function} [action.ctrlNoShift] - Action to perform if `Ctrl` key is pressed and `Shift` key is not pressed.
- * @param {Function} [action.ctrl] - Action to perform if `Ctrl` key is pressed.
- * @param {Function} [action.altShift] - Action to perform if both `Alt` and `Shift` keys are pressed.
- * @param {Function} [action.altNoShift] - Action to perform if `Alt` key is pressed and `Shift` key is not pressed.
- * @param {Function} [action.alt] - Action to perform if `Alt` key is pressed.
- * @param {Function} [action.shiftNoCtrl] - Action to perform if `Shift` key is pressed and `Ctrl` key is not pressed.
- * @param {Function} [action.shiftNoAlt] - Action to perform if `Shift` key is pressed and `Alt` key is not pressed.
- * @param {Function} [action.shift] - Action to perform if `Shift` key is pressed.
- * @param {Function} [action.default] - Default action to perform if no other key combinations match.
- * @example
- * KeyPressAction({
- *     ctrlAltShift: () => console.log('Ctrl, Alt, and Shift keys pressed'),
- *     ctrlAltNoShift: () => console.log('Ctrl and Alt keys pressed without Shift'),
- *     ctrlShift: () => console.log('Ctrl and Shift keys pressed'),
- *     ctrlNoShift: () => console.log('Ctrl key pressed without Shift'),
- *     ctrl: () => console.log('Ctrl key pressed'),
- *     altShift: () => console.log('Alt and Shift keys pressed'),
- *     altNoShift: () => console.log('Alt key pressed without Shift'),
- *     alt: () => console.log('Alt key pressed'),
- *     shiftNoCtrl: () => console.log('Shift key pressed without Ctrl'),
- *     shiftNoAlt: () => console.log('Shift key pressed without Alt'),
- *     shift: () => console.log('Shift key pressed'),
- *     default: () => console.log('No specific key combination matched')
- * });
- */
-function KeyPressAction(action = {}) {
-	const CTRL = utils.IsKeyPressed(VKey.CONTROL);
-	const ALT = utils.IsKeyPressed(VKey.MENU);
-	const SHIFT = utils.IsKeyPressed(VKey.SHIFT);
-
-	const combinations = [
-		// Ctrl + Alt combinations
-		{ condition: CTRL && ALT && SHIFT, action: action.ctrlAltShift },
-		{ condition: CTRL && ALT && !SHIFT, action: action.ctrlAltNoShift },
-		// Ctrl combinations
-		{ condition: CTRL && SHIFT, action: action.ctrlShift },
-		{ condition: CTRL && !SHIFT, action: action.ctrlNoShift },
-		{ condition: CTRL, action: action.ctrl },
-		// Alt combinations
-		{ condition: ALT && SHIFT, action: action.altShift },
-		{ condition: ALT && !SHIFT, action: action.altNoShift },
-		{ condition: ALT, action: action.alt },
-		// Shift combinations
-		{ condition: SHIFT && !CTRL, action: action.shiftNoCtrl },
-		{ condition: SHIFT && !ALT, action: action.shiftNoAlt },
-		{ condition: SHIFT, action: action.shift }
-	];
-
-	for (const combo of combinations) {
-		if (combo.condition && combo.action) {
-			combo.action();
-			return;
-		}
-	}
-
-	if (action.default) action.default();
-}
-
-
-/**
  * Wraps a synchronous function call that does not return a promise in a promise.
  * This utility function is useful for converting functions that perform synchronous operations
  * into a promise-based interface, allowing them to be used with async/await syntax.
@@ -1490,6 +1685,151 @@ function TryMethod(fn, parent) {
 			return parent[fn](...args);
 		} catch (e) { }
 	};
+}
+
+
+//////////////////
+// * CONTROLS * //
+//////////////////
+/**
+ * Disables window resizing if certain conditions are met via UI Wizard.
+ * @param {number} m - The mouse mask.
+ */
+function DisableWindowSizing(m) {
+	try {
+		if (m && UIWizard && UIWizard.FrameStyle === 3 && !UIWizard.DisableSizing) {
+			UIWizard.DisableWindowSizing = true;
+		}
+	} catch (e) {
+		console.log(e);
+	}
+}
+
+
+/**
+ * Enables window resizing if certain conditions are met via UI Wizard.
+ * @param {number} m - The mouse mask.
+ */
+function EnableWindowSizing(m) {
+	try {
+		if (UIWizard && UIWizard.FrameStyle === 3 && UIWizard.DisableWindowSizing) {
+			UIWizard.DisableWindowSizing = false;
+		}
+	} catch (e) {
+		console.log(e);
+	}
+}
+
+
+/**
+ * Handles key press actions based on the state of control keys (Ctrl, Alt, Shift).
+ * @global
+ * @param {object} action - An object mapping key press combinations to their respective actions.
+ * @param {Function} [action.ctrlAltShift] - Action to perform if `Ctrl`, `Alt`, and `Shift` keys are all pressed.
+ * @param {Function} [action.ctrlAltNoShift] - Action to perform if `Ctrl` and `Alt` keys are pressed without `Shift`.
+ * @param {Function} [action.ctrlShift] - Action to perform if both `Ctrl` and `Shift` keys are pressed.
+ * @param {Function} [action.ctrlNoShift] - Action to perform if `Ctrl` key is pressed and `Shift` key is not pressed.
+ * @param {Function} [action.ctrl] - Action to perform if `Ctrl` key is pressed.
+ * @param {Function} [action.altShift] - Action to perform if both `Alt` and `Shift` keys are pressed.
+ * @param {Function} [action.altNoShift] - Action to perform if `Alt` key is pressed and `Shift` key is not pressed.
+ * @param {Function} [action.alt] - Action to perform if `Alt` key is pressed.
+ * @param {Function} [action.shiftNoCtrl] - Action to perform if `Shift` key is pressed and `Ctrl` key is not pressed.
+ * @param {Function} [action.shiftNoAlt] - Action to perform if `Shift` key is pressed and `Alt` key is not pressed.
+ * @param {Function} [action.shift] - Action to perform if `Shift` key is pressed.
+ * @param {Function} [action.default] - Default action to perform if no other key combinations match.
+ * @example
+ * KeyPressAction({
+ *     ctrlAltShift: () => console.log('Ctrl, Alt, and Shift keys pressed'),
+ *     ctrlAltNoShift: () => console.log('Ctrl and Alt keys pressed without Shift'),
+ *     ctrlShift: () => console.log('Ctrl and Shift keys pressed'),
+ *     ctrlNoShift: () => console.log('Ctrl key pressed without Shift'),
+ *     ctrl: () => console.log('Ctrl key pressed'),
+ *     altShift: () => console.log('Alt and Shift keys pressed'),
+ *     altNoShift: () => console.log('Alt key pressed without Shift'),
+ *     alt: () => console.log('Alt key pressed'),
+ *     shiftNoCtrl: () => console.log('Shift key pressed without Ctrl'),
+ *     shiftNoAlt: () => console.log('Shift key pressed without Alt'),
+ *     shift: () => console.log('Shift key pressed'),
+ *     default: () => console.log('No specific key combination matched')
+ * });
+ */
+function KeyPressAction(action = {}) {
+	const CTRL = utils.IsKeyPressed(VKey.CONTROL);
+	const ALT = utils.IsKeyPressed(VKey.MENU);
+	const SHIFT = utils.IsKeyPressed(VKey.SHIFT);
+
+	const combinations = [
+		// Ctrl + Alt combinations
+		{ condition: CTRL && ALT && SHIFT, action: action.ctrlAltShift },
+		{ condition: CTRL && ALT && !SHIFT, action: action.ctrlAltNoShift },
+		// Ctrl combinations
+		{ condition: CTRL && SHIFT, action: action.ctrlShift },
+		{ condition: CTRL && !SHIFT, action: action.ctrlNoShift },
+		{ condition: CTRL, action: action.ctrl },
+		// Alt combinations
+		{ condition: ALT && SHIFT, action: action.altShift },
+		{ condition: ALT && !SHIFT, action: action.altNoShift },
+		{ condition: ALT, action: action.alt },
+		// Shift combinations
+		{ condition: SHIFT && !CTRL, action: action.shiftNoCtrl },
+		{ condition: SHIFT && !ALT, action: action.shiftNoAlt },
+		{ condition: SHIFT, action: action.shift }
+	];
+
+	for (const combo of combinations) {
+		if (combo.condition && combo.action) {
+			combo.action();
+			return;
+		}
+	}
+
+	if (action.default) action.default();
+}
+
+
+/**
+ * Suppresses key events for SHIFT, CONTROL, and MENU keys if they are triggered in quick succession.
+ * @param {number} key - The keycode of the key to potentially suppress.
+ * @returns {boolean} Whether the key event should be suppressed.
+ */
+function SuppressKey(key) {
+	// Initialize on first call
+	if (typeof SuppressKey.savedKey === 'undefined') {
+		SuppressKey.savedKey = 0;
+	}
+
+	if ((VKey.SHIFT === key || VKey.CONTROL === key || VKey.MENU === key) && SuppressKey.savedKey === key) {
+		return true;
+	}
+
+	SuppressKey.savedKey = key;
+	return false;
+}
+
+
+/**
+ * Suppresses mouse movement events if the current position and modifier keys are the same as the last.
+ * @param {number} x - The current x-coordinate of the mouse.
+ * @param {number} y - The current y-coordinate of the mouse.
+ * @param {number} m - The current mouse mask.
+ * @returns {boolean} Whether the mouse move event should be suppressed.
+ */
+function SuppressMouseMove(x, y, m) {
+	// Initialize on first call
+	if (typeof SuppressMouseMove.savedX === 'undefined') {
+		SuppressMouseMove.savedX = 0;
+		SuppressMouseMove.savedY = 0;
+		SuppressMouseMove.savedM = 0;
+	}
+
+	if (SuppressMouseMove.savedX === x && SuppressMouseMove.savedY === y && SuppressMouseMove.savedM === m) {
+		return true;
+	}
+
+	SuppressMouseMove.savedX = x;
+	SuppressMouseMove.savedY = y;
+	SuppressMouseMove.savedM = m;
+	return false;
 }
 
 

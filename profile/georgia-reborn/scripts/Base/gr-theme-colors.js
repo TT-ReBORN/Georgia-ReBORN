@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -6502,11 +6502,11 @@ class StyleColors extends BaseColors {
 			return;
 		}
 
-		grm.utils.profile(grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'setStyleBlend');
+		SetDebugProfile(grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'setStyleBlend');
 
 		grCol.imgBlended = this._formatStyleBlendImage(grm.ui.albumArt, grm.ui.ww, grm.ui.wh, grCol.imgBrightness);
 
-		grm.utils.profile(false, 'print', 'setStyleBlend');
+		SetDebugProfile(false, 'print', 'setStyleBlend');
 	}
 	// #endregion
 }

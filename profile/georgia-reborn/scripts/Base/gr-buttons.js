@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-11-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -576,7 +576,7 @@ class Button {
 		grm.ui.displayPanel('playlist', true);
 
 		if (grSet.lowerBarArtistBtnAction === 'website') {
-			grm.utils.openWebsite(grSet.lowerBarArtistBtnWebsite, grm.ui.initMetadb());
+			WebsiteOpen(grSet.lowerBarArtistBtnWebsite, grm.ui.initMetadb());
 			return;
 		}
 
@@ -909,7 +909,7 @@ class Button {
 	 */
 	_createButtonImages(createButtonMap = true) {
 		// DebugLog('Buttons => createButtonImages');
-		grm.utils.profile(grm.ui.showDrawExtendedTiming, 'create', 'createButtonImages');
+		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'createButtonImages');
 
 		if (createButtonMap || IsEmpty(this.btnMap)) {
 			this.btnMap = this._createButtonMap();
@@ -1078,7 +1078,7 @@ class Button {
 			this.btnImg[btnKey] = stateImages;
 		}
 
-		grm.utils.profile(false, 'print', 'createButtonImages');
+		SetDebugProfile(false, 'print', 'createButtonImages');
 	}
 
 	/**

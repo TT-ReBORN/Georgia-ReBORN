@@ -40,7 +40,6 @@ grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
 /**
  * A collection of all Georgia-ReBORN class instances that will be initialized at the end in gr.initialize.js.
  * @typedef  {object} grm - The Georgia-ReBORN main object.
- * @property {Utilities} utils - The instance of `Utilities` class for utility operations.
  * @property {MainUI} ui - The instance of `MainUI` class for main user interface operations.
  * @property {Details} details - The instance of `Details` class for details interface operations.
  * @property {ThemeSettingsManager} settings - The instance of `ThemeSettingsManager` class for theme settings operations.

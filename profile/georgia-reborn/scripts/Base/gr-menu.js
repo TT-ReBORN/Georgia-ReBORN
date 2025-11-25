@@ -1540,7 +1540,7 @@ class TopMenuOptions {
 		});
 		lowerBarArtistBtnControlsMenu.addSeparator();
 
-		const { websiteLabels, websiteValues } = grm.utils.generateWebsiteLinks(grCfg.customWebsiteLinks); // Get labels and values for predefined and custom website links
+		const { websiteLabels, websiteValues } = WebsiteGenerateLinks(grCfg.customWebsiteLinks); // Get labels and values for predefined and custom website links
 		lowerBarArtistBtnControlsMenu.addRadioItems(websiteLabels, grSet.lowerBarArtistBtnWebsite, websiteValues, (website) => {
 			grSet.lowerBarArtistBtnWebsite = website;
 		});

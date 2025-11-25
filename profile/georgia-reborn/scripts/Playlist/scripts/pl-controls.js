@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-11-2024                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1088,7 +1088,7 @@ class PlaylistGroupingHandler {
 			on_execute_callback_fn();
 		};
 
-		const htmlCode = grm.utils.prepareHTML(`${fb.ProfilePath}georgia-reborn\\scripts\\playlist\\assets\\html\\GroupPresetsMngr.html`);
+		const htmlCode = PrepareHTML(`${fb.ProfilePath}georgia-reborn\\scripts\\playlist\\assets\\html\\GroupPresetsMngr.html`);
 		utils.ShowHtmlDialog(window.ID, htmlCode, { width: 650, height: 425, data: [JSON.stringify([this.settings.group_presets, this.cur_group.name, this.settings.default_group_name]), on_ok_fn] });
 	}
 
@@ -1114,7 +1114,7 @@ class PlaylistGroupingHandler {
 		};
 
 		const parsed_query = this.cur_group.name === 'user_defined' ? [this.cur_group.group_query, this.cur_group.title_query]	: ['', '[%album artist%]'];
-		const htmlCode = grm.utils.prepareHTML(`${fb.ProfilePath}georgia-reborn\\scripts\\playlist\\assets\\html\\MsgBox.html`);
+		const htmlCode = PrepareHTML(`${fb.ProfilePath}georgia-reborn\\scripts\\playlist\\assets\\html\\MsgBox.html`);
 		utils.ShowHtmlDialog(window.ID, htmlCode, { width: 650, height: 425, data: ['Foobar2000: Group by', ['Grouping Query', 'Title Query'], parsed_query, on_ok_fn] });
 	}
 

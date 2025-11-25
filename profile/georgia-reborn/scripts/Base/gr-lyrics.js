@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-10-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -603,7 +603,7 @@ class Lyrics {
 	drawLyrics(gr) {
 		if (!grm.ui.displayLyrics || this.lyrics.length === 0 || this.locus < 0) return;
 
-		grm.utils.profile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> lyrics');
+		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> lyrics');
 
 		const top = this.lyrics[this.locus].yOffset - this.locusOffset + this.scrollDragOffset;
 		const y = this.y + this.scroll;
@@ -624,7 +624,7 @@ class Lyrics {
 
 		this.drawLyricsOffset(gr);
 
-		grm.utils.profile(false, 'print', 'on_paint -> lyrics');
+		SetDebugProfile(false, 'print', 'on_paint -> lyrics');
 	}
 
 	/**

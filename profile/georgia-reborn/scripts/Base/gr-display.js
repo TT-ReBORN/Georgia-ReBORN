@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-09-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -733,6 +733,25 @@ class Display {
 			}
 		}
 		catch (e) {}
+	}
+
+	/**
+	 * Handle the window mouse cursor appearance based on position and application state.
+	 * @param {number} x - The current x-coordinate of the mouse.
+	 * @param {number} y - The current y-coordinate of the mouse.
+	 */
+	handleWindowCursor(x, y) {
+		if (!mouseInLibrarySearch(x, y)) {
+			SetCursor('Arrow');
+		}
+		if (grCfg.settings.hideCursor && fb.IsPlaying) {
+			grm.ui.clearTimer('hideCursor');
+			grm.ui.hideCursorTimeout = setTimeout(() => {
+				if (!grm.ui.activeMenu && fb.IsPlaying) {
+					SetCursor('Hide');
+				}
+			}, 10000);
+		}
 	}
 
 	/**

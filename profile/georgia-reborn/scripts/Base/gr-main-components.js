@@ -3087,7 +3087,7 @@ class VolumeButton {
 	on_mouse_lbtn_up(x, y, m) {
 		if (!this.volumeBar) return false;
 
-		if (!grSet.lockPlayerSize) grm.utils.enableSizing(m);
+		if (!grSet.lockPlayerSize) EnableWindowSizing(m);
 
 		if (this.displayVolumeBar) {
 			return this.volumeBar.lbtnUp(x, y);
@@ -3123,7 +3123,7 @@ class VolumeButton {
 	on_mouse_move(x, y, m) {
 		if (!this.volumeBar || !this.displayVolumeBar) return;
 
-		grm.utils.disableSizing(m);
+		DisableWindowSizing(m);
 
 		this.mouseInVolumeBar = this.volumeBar.trace(x, y);
 

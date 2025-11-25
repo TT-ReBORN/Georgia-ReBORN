@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-11-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -439,9 +439,9 @@ class MainUI {
 			this.displayLibrarySplit();
 
 		const drawPanel = (panel, label) => {
-			grm.utils.profile(this.showDrawExtendedTiming, 'create', `on_paint -> ${label}`);
+			SetDebugProfile(this.showDrawExtendedTiming, 'create', `on_paint -> ${label}`);
 			panel.call.on_paint(gr);
-			grm.utils.profile(false, 'print', `on_paint -> ${label}`);
+			SetDebugProfile(false, 'print', `on_paint -> ${label}`);
 		};
 
 		// * Default && Artwork layout
@@ -474,7 +474,7 @@ class MainUI {
 			return;
 		}
 
-		grm.utils.profile(this.showDrawExtendedTiming, 'create', 'on_paint -> album art');
+		SetDebugProfile(this.showDrawExtendedTiming, 'create', 'on_paint -> album art');
 
 		const padding = !grSet.filterAlbumArt && this.discArtImageDisplayed && this.discArtImagePNG && this.albumArtLoaded ? Math.round(this.edgeMargin * 0.75) : 0;
 		const imgAlpha = this.displayDetails && grm.details.discArt ? alpha : 255;
@@ -483,7 +483,7 @@ class MainUI {
 					 this.albumArtSize.w - padding * 2, this.albumArtSize.h - padding * 2,
 					 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height, 0, imgAlpha);
 
-		grm.utils.profile(false, 'print', 'on_paint -> album art');
+		SetDebugProfile(false, 'print', 'on_paint -> album art');
 	}
 
 	/**
@@ -757,7 +757,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawStyles(gr) {
-		grm.utils.profile(this.showDrawExtendedTiming, 'create', 'on_paint -> theme styles');
+		SetDebugProfile(this.showDrawExtendedTiming, 'create', 'on_paint -> theme styles');
 
 		if (grSet.styleBevel) {
 			gr.SetSmoothingMode(SmoothingMode.None);
@@ -788,7 +788,7 @@ class MainUI {
 			FillGradRect(gr, 0, this.wh - this.lowerBarHeight, this.ww, this.lowerBarHeight, grSet.styleAlternative2 ? 87 : -87, 0, grCol.styleAlternative);
 		}
 
-		grm.utils.profile(false, 'print', 'on_paint -> theme styles');
+		SetDebugProfile(false, 'print', 'on_paint -> theme styles');
 	}
 
 	/**
@@ -846,13 +846,13 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawShadows(gr) {
-		grm.utils.profile(this.showDrawExtendedTiming, 'create', 'on_paint -> draw shadows');
+		SetDebugProfile(this.showDrawExtendedTiming, 'create', 'on_paint -> draw shadows');
 
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 		this.drawAlbumArtShadows(gr);
 		this.drawPanelShadows(gr);
 
-		grm.utils.profile(false, 'print', 'on_paint -> draw shadows');
+		SetDebugProfile(false, 'print', 'on_paint -> draw shadows');
 	}
 
 	/**
@@ -925,7 +925,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawTopMenuBar(gr) {
-		grm.utils.profile(this.showDrawExtendedTiming, 'create', 'on_paint -> top menu bar');
+		SetDebugProfile(this.showDrawExtendedTiming, 'create', 'on_paint -> top menu bar');
 
 		const noPlaylistHistoryBtns = !this.displayPlaylist && !this.displayPlaylistArtwork;
 		const buttons = Object.values(grm.button.btn);
@@ -949,7 +949,7 @@ class MainUI {
 			}
 		}
 
-		grm.utils.profile(false, 'print', 'on_paint -> top menu bar');
+		SetDebugProfile(false, 'print', 'on_paint -> top menu bar');
 	}
 
 	/**
@@ -957,7 +957,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawLowerBar(gr) {
-		grm.utils.profile(this.showDrawExtendedTiming, 'create', 'on_paint -> lower bar');
+		SetDebugProfile(this.showDrawExtendedTiming, 'create', 'on_paint -> lower bar');
 
 		this.setLowerBarMetrics(gr);
 
@@ -1035,7 +1035,7 @@ class MainUI {
 			grm.waveBar.draw(gr);
 		}
 
-		grm.utils.profile(false, 'print', 'on_paint -> lower bar');
+		SetDebugProfile(false, 'print', 'on_paint -> lower bar');
 	}
 
 	/**
@@ -1077,7 +1077,7 @@ class MainUI {
 	drawStyledTooltips(gr) {
 		if (!grSet.showStyledTooltips) return;
 
-		grm.utils.profile(this.showDrawExtendedTiming, 'create', 'on_paint -> styled tooltips');
+		SetDebugProfile(this.showDrawExtendedTiming, 'create', 'on_paint -> styled tooltips');
 
 		const offset = SCALE(30);
 		const padding = SCALE(15);
@@ -1099,7 +1099,7 @@ class MainUI {
 
 		this.repaintStyledTooltips(this.styledToolTipX - offset * 2, this.styledToolTipY - offset, this.styledToolTipW + offset * 4, this.styledToolTipH + offset * 2);
 
-		grm.utils.profile(false, 'print', 'on_paint -> styled tooltips');
+		SetDebugProfile(false, 'print', 'on_paint -> styled tooltips');
 	}
 
 	/**
@@ -1944,7 +1944,7 @@ class MainUI {
 	 * Initializes the theme when updating colors.
 	 */
 	initTheme() {
-		grm.utils.profile(this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'initTheme');
+		SetDebugProfile(this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'initTheme');
 
 		const fullInit =
 			this.initThemeFull || grSet.themeBrightness !== 'default'
@@ -2002,7 +2002,7 @@ class MainUI {
 		UIWizard.WindowBgColor = grCol.bg;
 		window.Repaint();
 
-		grm.utils.profile(false, 'print', 'initTheme');
+		SetDebugProfile(false, 'print', 'initTheme');
 	}
 
 	/**
@@ -2950,7 +2950,7 @@ class MainUI {
 			},
 			debug: () => {
 				this.debugTimingsArray = [];
-				grm.utils.profiler = {};
+				SetDebugProfiler = {};
 			}
 		};
 
@@ -4065,7 +4065,7 @@ class MainUI {
 		this.albumArtList = [];
 		this.albumArtLoaded = false;
 
-		grm.utils.profile(this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'fetchAlbumArt');
+		SetDebugProfile(this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'fetchAlbumArt');
 
 		if (this.isStreaming || this.isPlayingCD) {
 			this.fetchAlbumArtStreamingOrCD(metadb);
@@ -4073,7 +4073,7 @@ class MainUI {
 			this.fetchAlbumArtLocalFiles(metadb);
 		}
 
-		grm.utils.profile(false, 'print', 'fetchAlbumArt');
+		SetDebugProfile(false, 'print', 'fetchAlbumArt');
 	}
 
 	/**

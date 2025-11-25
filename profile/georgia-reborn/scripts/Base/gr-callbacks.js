@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-10-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -91,7 +91,7 @@ function on_metadb_changed(handle_list, fromhook) {
 function on_playback_new_track(metadb) {
 	if (!metadb) return; // Solve weird corner case
 
-	grm.utils.profile(grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'on_playback_new_track');
+	SetDebugProfile(grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'on_playback_new_track');
 	DebugLog('Playback => on_playback_new_track()');
 
 	grm.ui.handlePlaybackNewTrack(metadb);
@@ -104,7 +104,7 @@ function on_playback_new_track(metadb) {
 		bio.call.on_playback_new_track();
 	}
 
-	grm.utils.profile(false, 'print', 'on_playback_new_track');
+	SetDebugProfile(false, 'print', 'on_playback_new_track');
 }
 
 
@@ -340,7 +340,7 @@ function on_key_down(vkey) {
 	else {
 		if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
 			CallLog('Playlist => on_key_down');
-			if (grm.utils.suppressKey(vkey)) return;
+			if (SuppressKey(vkey)) return;
 			pl.call.on_key_down(vkey);
 		}
 		else if (grm.ui.displayLibrary) {
@@ -568,7 +568,7 @@ function on_mouse_lbtn_up(x, y, m) {
 		CallLog('Playlist => on_mouse_lbtn_up');
 		pl.call.on_mouse_lbtn_up(x, y, m);
 
-		if (!grSet.lockPlayerSize) grm.utils.enableSizing(m);
+		if (!grSet.lockPlayerSize) EnableWindowSizing(m);
 	}
 	else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
 		if (grm.ui.displayCustomThemeMenu && grSet.libraryLayout === 'split') return;
@@ -682,8 +682,8 @@ function on_mouse_move(x, y, m) {
 	grm.ui.styledTooltipText = '';
 	grm.ui.state.mouse_x = x;
 	grm.ui.state.mouse_y = y;
+	grm.display.handleWindowCursor(x, y);
 	grm.display.setWindowDrag(x, y);
-	grm.utils.setMouseCursor(x, y);
 
 	if (grm.button) grm.button.on_mouse_move(x, y, m);
 	if (grCfg.updateHyperlink) grCfg.updateHyperlink.on_mouse_move(grCfg.updateHyperlink, x, y);
@@ -713,8 +713,8 @@ function on_mouse_move(x, y, m) {
 
 	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
 		MoveLog('Playlist => on_mouse_move');
-		if (grm.utils.suppressMouseMove(x, y, m)) return;
-		grm.utils.disableSizing(m);
+		if (SuppressMouseMove(x, y, m)) return;
+		DisableWindowSizing(m);
 		pl.call.on_mouse_move(x, y, m);
 		return;
 	}

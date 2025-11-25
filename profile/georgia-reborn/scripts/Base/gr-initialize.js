@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-01-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,8 +16,6 @@
 ////////////////////////
 // * MAIN INSTANCES * //
 ////////////////////////
-grm.utils    = new Utilities();
-
 grm.ui       = new MainUI();
 grm.details  = new Details();
 grm.settings = new ThemeSettingsManager();

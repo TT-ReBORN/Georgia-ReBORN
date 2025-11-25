@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-10-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1672,12 +1672,12 @@ class Playlist extends BaseList {
 		const weblinks = new ContextMenu('Weblinks');
 		parent_menu.append(weblinks);
 
-		const { websiteLabels, websiteValues } = grm.utils.generateWebsiteLinks(grCfg.customWebsiteLinks);
+		const { websiteLabels, websiteValues } = WebsiteGenerateLinks(grCfg.customWebsiteLinks);
 		const websites = websiteLabels.map((label, index) => [label, websiteValues[index]]);
 
 		for (const website of websites) {
 			weblinks.appendItem(website[0], ((url) => {
-				grm.utils.link(url, metadb);
+				WebsiteOpen(url, metadb);
 			}).bind(null, website[1]));
 		}
 	}

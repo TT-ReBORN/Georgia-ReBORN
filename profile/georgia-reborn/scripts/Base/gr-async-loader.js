@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -37,8 +37,8 @@ class FileLoader {
 		/** @global @type {number} The load start time when foobar was started. */
 		this.loadStartTime = Date.now();
 
-		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-helpers.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-common.js`);
+		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-helpers.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-config.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-config-defaults.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-settings.js`);

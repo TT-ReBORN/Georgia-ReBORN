@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-10-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -300,7 +300,7 @@ class Details {
 			return;
 		}
 
-		grm.utils.profile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> disc art');
+		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> disc art');
 
 		if (!this.discArtRotation) {
 			this.setDiscArtRotation();
@@ -322,7 +322,7 @@ class Details {
 			this.drawDiscArtImage(gr);
 		}
 
-		grm.utils.profile(false, 'print', 'on_paint -> disc art');
+		SetDebugProfile(false, 'print', 'on_paint -> disc art');
 	}
 
 	/**
@@ -345,7 +345,7 @@ class Details {
 	drawGrid(gr) {
 		if (!fb.IsPlaying && !grSet.panelBrowseMode || !grm.ui.displayDetails) return;
 
-		grm.utils.profile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> metadata grid');
+		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> metadata grid');
 
 		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
 		gr.SetInterpolationMode(InterpolationMode.HighQualityBicubic);
@@ -385,7 +385,7 @@ class Details {
 			this.drawGridColumns(gr);
 		}
 
-		grm.utils.profile(false, 'print', 'on_paint -> metadata grid');
+		SetDebugProfile(false, 'print', 'on_paint -> metadata grid');
 	}
 
 	/**
@@ -674,7 +674,7 @@ class Details {
 			return;
 		}
 
-		grm.utils.profile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> band logo');
+		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> band logo');
 
 		const availableSpace = grm.ui.albumArtSize.y + grm.ui.albumArtSize.h - this.gridTop;
 		const lightBg = Color.BRT(grCol.detailsText) < 140;
@@ -693,7 +693,7 @@ class Details {
 			gr.DrawImage(logo, logoX, logoY, logoW, logoH, 0, 0, logo.Width, logo.Height, 0);
 		}
 
-		grm.utils.profile(false, 'print', 'on_paint -> band logo');
+		SetDebugProfile(false, 'print', 'on_paint -> band logo');
 	}
 
 	/**
@@ -706,7 +706,7 @@ class Details {
 			return;
 		}
 
-		grm.utils.profile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> label logo');
+		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> label logo');
 
 		if (this.labelLogo.length > 0) {
 			const lightBg = grSet.labelArtOnBg ? Color.BRT(grCol.bg) > 140 : Color.BRT(grCol.detailsText) < 140;
@@ -812,7 +812,7 @@ class Details {
 			}
 		}
 
-		grm.utils.profile(false, 'print', 'on_paint -> label logo');
+		SetDebugProfile(false, 'print', 'on_paint -> label logo');
 	}
 	// #endregion
 
@@ -1711,13 +1711,13 @@ class Details {
 	 * Fetches new disc art when a new album is being played.
 	 */
 	fetchDiscArt() {
-		grm.utils.profile(grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'fetchDiscArt');
+		SetDebugProfile(grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'fetchDiscArt');
 
 		if (grSet.displayDiscArt && !grm.ui.isStreaming) {
 			this.loadDiscArt(this.findDiscArtPath());
 		}
 
-		grm.utils.profile(false, 'print', 'fetchDiscArt');
+		SetDebugProfile(false, 'print', 'fetchDiscArt');
 	}
 
 	/**
@@ -2055,7 +2055,7 @@ class Details {
 			return;
 		}
 
-		grm.utils.profile(grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'createDiscArtShadow');
+		SetDebugProfile(grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'createDiscArtShadow');
 
 		const discArtMargin = SCALE(2);
 
@@ -2077,7 +2077,7 @@ class Details {
 			}
 		}
 
-		grm.utils.profile(false, 'print', 'createDiscArtShadow');
+		SetDebugProfile(false, 'print', 'createDiscArtShadow');
 	}
 
 	/**
