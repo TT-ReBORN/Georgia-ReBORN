@@ -288,15 +288,6 @@ class BioUserInterface {
 	}
 
 	getFont(init) {
-		const DetectWine = () => { /*Detects if user is running Wine on Linux or MacOs, default Wine mount point is Z:\*/
-			const diskLetters = Array.from(Array(26)).map((e, i) => i + 65).map((x) => `${String.fromCharCode(x)}:\\`);
-			const paths = ['bin\\bash', 'bin\\ls', 'bin\\sh', 'etc\\fstab'];
-			return diskLetters.some(d => {
-				try { // Needed when permission error occurs and current SMP implementation is broken for some devices....
-					return utils.IsDirectory(d) ? paths.some(p => utils.IsFile(d + p)) : false;
-				} catch (e) { return false; }
-			});
-		}
 		const biographyFontSize = SCALE((RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout) || 14);
 
 		if (grSet.customThemeFonts) this.font.main = grFont.biography;

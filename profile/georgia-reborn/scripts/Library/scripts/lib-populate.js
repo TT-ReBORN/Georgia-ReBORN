@@ -1153,9 +1153,9 @@ class LibPopulate {
 					if (hover) {
 						gr.DrawString(lib.ui.icon.expand, lib.ui.icon.font, icon_c, x, y2 - HD_4K(1, -1), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h, lib.panel.s_lc);
 						gr.DrawString(lib.ui.icon.expand, lib.ui.icon.font, icon_c, x, y2 - HD_4K(1, -1), lib.ui.x + lib.panel.tree.w - x + 2, lib.ui.row.h + 2, lib.panel.s_lc);
-					} else gr.DrawString(lib.ui.icon.expand, lib.ui.icon.font, icon_c, x, y2 - (DetectWine ? HD_4K(0, -1) : HD_4K(1, -1)), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h, lib.panel.s_lc);
+					} else gr.DrawString(lib.ui.icon.expand, lib.ui.icon.font, icon_c, x, y2 - (DetectWine() ? HD_4K(0, -1) : HD_4K(1, -1)), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h, lib.panel.s_lc);
 				} else { // Minus
-					gr.DrawString(lib.ui.icon.collapse, lib.ui.icon.font, icon_c, x - lib.ui.icon.offset, y2 - (DetectWine ? HD_4K(1, -1) : HD_4K(1, 0)), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h, lib.panel.s_lc);
+					gr.DrawString(lib.ui.icon.collapse, lib.ui.icon.font, icon_c, x - lib.ui.icon.offset, y2 - (DetectWine() ? HD_4K(1, -1) : HD_4K(1, 0)), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h, lib.panel.s_lc);
 					gr.DrawString(lib.ui.icon.collapse, lib.ui.icon.font, icon_c, x - lib.ui.icon.offset, y2 - HD_4K(1, -1), lib.ui.x + lib.panel.tree.w - x, lib.ui.row.h + 2, lib.panel.s_lc);
 				}
 				break;
