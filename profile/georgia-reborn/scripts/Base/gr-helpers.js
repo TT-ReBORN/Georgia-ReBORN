@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-11-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -330,54 +330,75 @@ function UIWManageWindowState() {
 // * COMPATIBILITY * //
 ///////////////////////
 /**
- * Detects if Internet Explorer is installed on the user's system by searching for specific file paths
- * in the Program Files directories of all available disk drives. Needed to render HTML popups.
+ * Detects if the user's system is running Wine on Linux or MacOs.
+ * Caches result after first call for performance.
  * @global
- * @returns {boolean} True or false.
- */
-function DetectIE() {
-	const diskLetters = Array.from(Array(26)).map((e, i) => i + 65).map((x) => `${String.fromCharCode(x)}:\\`);
-	const paths = ['Program Files\\Internet Explorer\\ieinstal.exe', 'Program Files (x86)\\Internet Explorer\\ieinstal.exe'];
-	return diskLetters.some((d) => {
-		try { // Needed when permission error occurs and current SMP implementation is broken for some devices....
-			return IsFolder(d) ? paths.some((p) => IsFile(d + p)) : false;
-		} catch (e) { return false; }
-	});
-}
-
-
-/**
- * Detects if the user's system is running on Win x64 by looking for specific folders
- * in the Program Files (x86) directory on all available disk drives. Actually used only for x86 detection.
- * @global
- * @returns {boolean} True or false.
- */
-function DetectWin64() {
-	const diskLetters = Array.from(Array(26)).map((e, i) => i + 65).map((x) => `${String.fromCharCode(x)}:\\`);
-	const paths = ['Program Files (x86)'];
-	return diskLetters.some((d) => {
-		try { // Needed when permission error occurs and current SMP implementation is broken for some devices....
-			return IsFolder(d) ? paths.some((p) => IsFolder(d + p)) : false;
-		} catch (e) { return false; }
-	});
-}
-
-
-/**
- * Detects if the user's system is running Wine on Linux or MacOs by looking for specific folder
- * with the name 'bin' and files with the names 'bash', 'ls', 'sh', and 'fstab' on any partitions from A to Z.
- * Default Wine mount point is Z:\.
- * @global
- * @returns {boolean} True or false.
+ * @returns {boolean} True if Wine is detected, false otherwise.
  */
 function DetectWine() {
-	const diskLetters = Array.from(Array(26)).map((e, i) => i + 65).map((x) => `${String.fromCharCode(x)}:\\`);
-	const paths = ['bin\\bash', 'bin\\ls', 'bin\\sh', 'etc\\fstab'];
-	return diskLetters.some((d) => {
-		try { // Needed when permission error occurs and current SMP implementation is broken for some devices....
-			return IsFolder(d) ? paths.some((p) => IsFile(d + p)) : false;
-		} catch (e) { return false; }
-	});
+	// * Cache check: Return stored result if already computed.
+	if (typeof DetectWine.result !== 'undefined') {
+		return DetectWine.result;
+	}
+
+	// * Method 1: Registry check
+	let runningWine = false;
+	try {
+		const WshShell = new ActiveXObject('WScript.Shell');
+		try {
+			WshShell.RegRead('HKEY_CURRENT_USER\\Software\\Wine\\');
+			runningWine = true;
+		} catch (e) {
+			try {
+				WshShell.RegRead('HKEY_LOCAL_MACHINE\\Software\\Wine\\');
+				runningWine = true;
+			} catch (e) {}
+		}
+	}
+	catch (e) { /* WScript.Shell unavailable */ }
+
+	// * Method 2: WMI process check (if registry didn't confirm; verifies active Wine).
+	if (!runningWine) {
+		try {
+			const wmi = GetObject("winmgmts:");
+			const processes = wmi.ExecQuery("SELECT Name FROM Win32_Process WHERE Name LIKE 'wine%'");
+			runningWine = processes.Count > 0; // Covers wineserver.exe, wine-preloader.exe, etc.
+		}
+		catch (e) { /* WMI unavailable */ }
+	}
+
+	// * Method 3: Filesystem check (fallback; checks Z:\ and profile drive for portables).
+	if (!runningWine) {
+		const drives = ['Z:\\'];
+		try {
+			const fso = new ActiveXObject('Scripting.FileSystemObject');
+			const currentDrive = `${fso.GetDriveName(fb.ProfilePath)}\\`;
+			if (currentDrive.toUpperCase() !== 'Z:\\') {
+				drives.push(currentDrive);
+			}
+		}
+		catch (e) {}
+
+		const unixPaths = ['bin\\bash', 'bin\\ls', 'bin\\sh', 'etc\\fstab', 'usr\\bin\\env'];
+		runningWine = drives.some((drive) => {
+			try {
+				if (!IsFolder(drive)) return false;
+				let foundCount = 0;
+				for (const unixPath of unixPaths) {
+					if (IsFile(drive + unixPath)) {
+						foundCount++;
+						if (foundCount >= 2) return true; // Threshold for low false positives
+					}
+				}
+				return false;
+			}
+			catch (e) { return false; }
+		});
+	}
+
+	// * Cache the result.
+	DetectWine.result = runningWine;
+	return runningWine;
 }
 
 
@@ -4008,7 +4029,7 @@ async function ManageBackup(make, restore) {
 		await grm.settings.setThemeSettings(true);
 		await copyFolders();
 
-		if (Detect.Wine || !Detect.IE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (DetectWine()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			const msgFb = `>>> Theme backup has been successfully saved <<<\n\n${fb.ProfilePath}backup`;
 			fb.ShowPopupMessage(msgFb, 'Theme backup');
 		} else {

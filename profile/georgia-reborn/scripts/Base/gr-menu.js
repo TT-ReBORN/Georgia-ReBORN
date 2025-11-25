@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-10-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2709,7 +2709,7 @@ class TopMenuOptions {
 			libSet.filterBy = order;
 			lib.panel.set('Filter', order);
 		});
-		if (!Detect.Wine && Detect.IE) {
+		if (!DetectWine()) {
 			libraryFilterOrderMenu.addSeparator();
 			libraryFilterOrderMenu.addItem('Configure filters', false, () => { lib.panel.open('filters'); });
 		}
@@ -2742,7 +2742,7 @@ class TopMenuOptions {
 			lib.pop.clearTree();
 			lib.men.loadView(false, !lib.panel.imgView ? (libSet.artTreeSameView ? libSet.viewBy : libSet.treeViewBy) : (libSet.artTreeSameView ? libSet.viewBy : libSet.albumArtViewBy), lib.pop.sel_items[0]);
 		});
-		if (!Detect.Wine && Detect.IE) {
+		if (!DetectWine()) {
 			libraryViewOrderMenu.addSeparator();
 			libraryViewOrderMenu.addItem('Configure views', false, () => { lib.panel.open('views'); });
 		}

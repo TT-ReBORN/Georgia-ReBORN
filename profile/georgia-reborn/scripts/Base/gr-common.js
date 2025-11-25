@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -52,24 +52,6 @@ const Component = {
 	EnhancedPlaycount: utils.CheckComponent('foo_enhanced_playcount'),
 	ESLyric: utils.CheckComponent('foo_uie_eslyric'),
 	UIWizard: utils.CheckComponent('foo_ui_wizard')
-};
-
-
-///////////////////////
-// * COMPATIBILITY * //
-///////////////////////
-/**
- * A set of boolean flags indicating various environment conditions.
- * @typedef  {object} Detect
- * @property {boolean} IE - The state indicates if user has Internet Explorer installed, needed to render HTML popups.
- * @property {boolean} Win64 - The state indicates if the user's system is running on Windows 64 bit.
- * @property {boolean} Wine - The state indicates if the user's system is running Wine on Linux or macOS.
- */
-/** @global @type {Detect} */
-const Detect = {
-	IE: DetectIE(),
-	Win64: DetectWin64(),
-	Wine: DetectWine()
 };
 
 

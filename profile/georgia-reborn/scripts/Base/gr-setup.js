@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-11-2024                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -292,7 +292,7 @@ const grFont = {
 	fontGridTitleBold:  grSet.customThemeFonts ? grCfg.customFont.fontGridTitleBold  : 'HelveticaNeueLT Pro 65 Md',
 	fontGridAlbum:      grSet.customThemeFonts ? grCfg.customFont.fontGridAlbum      : 'HelveticaNeueLT Pro 65 Md',
 	fontGridKey:        grSet.customThemeFonts ? grCfg.customFont.fontGridKey        :
-						Detect.Wine            ? 'HelveticaNeueLT Pro 65 Md'         : 'HelveticaNeueLT Pro 75 Bd',
+						DetectWine()           ? 'HelveticaNeueLT Pro 65 Md'         : 'HelveticaNeueLT Pro 75 Bd',
 	fontGridValue:      grSet.customThemeFonts ? grCfg.customFont.fontGridValue      : 'HelveticaNeueLT Pro 45 Lt',
 
 	fontLibrary:        grSet.customThemeFonts ? grCfg.customFont.fontLibrary        : 'Segoe UI',

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-11-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1422,7 +1422,7 @@ class MessageManager {
 			callback(confirmed);
 		};
 
-		if (Detect.Wine || !Detect.IE) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
+		if (DetectWine()) { // Disable fancy popup on Linux or if no IE is installed, otherwise it will crash and is not yet supported
 			continue_confirmation(false, btn1Label);
 			if (fbPopup) fb.ShowPopupMessage(fbMsg, 'Georgia-ReBORN');
 		}
